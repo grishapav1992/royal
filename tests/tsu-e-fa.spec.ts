@@ -35,6 +35,10 @@ test('right-click and E open a consent invitation; decline, revised terms and re
     await expect(a.locator('[data-stake]')).toHaveValue('100000');await expect(a.locator('[name=mode]')).toHaveCount(0);await expect(a.locator('.td-active-hand')).toHaveCount(2);
     await a.locator('[data-ready]').click();await expect(b.locator('[data-peer-ready]')).toContainText('Соперник готов');await b.locator('[data-stake]').selectOption('200000');await expect(a.locator('[data-ready]')).toHaveText('Готово');await expect(a.locator('[data-stake]')).toHaveValue('200000');
     await a.locator('[data-ready]').click();await a.locator('[data-ready]').click();await expect(a.locator('[data-ready]')).toHaveText('Готово');expect(await balance(a)).toBe(20000);
+    await a.setViewportSize({width:1280,height:720});
+    for(const control of ['[data-ready]','[data-exit]']){const box=(await a.locator(control).boundingBox())!;expect(box.y).toBeGreaterThanOrEqual(0);expect(box.y+box.height).toBeLessThanOrEqual(720);}
+    await a.screenshot({path:'artifacts/work/tsu-refined-short-desktop.png'});
+    await a.setViewportSize({width:1366,height:900});
     await a.screenshot({path:'artifacts/work/tsu-v3-terms.png'});await a.setViewportSize({width:390,height:844});const chat=(await a.locator('#pvp-dialog .game-chat-dock').boundingBox())!,readyBox=(await a.locator('[data-ready]').boundingBox())!;expect(readyBox.y+readyBox.height).toBeLessThanOrEqual(chat.y);await a.screenshot({path:'artifacts/work/tsu-v3-terms-mobile.png'});await b.locator('[data-exit]').click();await expect(a.locator('.td-status')).toContainText('Деньги не списаны');expect(await balance(b)).toBe(20000);expect(c.errors).toEqual([]);
   }finally{await c.close();}
 });

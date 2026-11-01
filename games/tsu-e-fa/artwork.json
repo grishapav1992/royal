@@ -1,0 +1,20 @@
+{
+  "asset": "public/assets/tsu-e-fa/v2/hand-poses.png",
+  "generator": "Built-in imagegen",
+  "purpose": "Eight production cutout-paper side-view hand sprites, two columns and four rows",
+  "references": [
+    "Approved side-view South Park style concept from this chat",
+    "User-provided side-view hand pose photo"
+  ],
+  "columns": [
+    "burgundy sleeve, tan skin, points right",
+    "blue sleeve, peach skin, points left"
+  ],
+  "rows": [
+    "rock",
+    "scissors",
+    "paper",
+    "support palm"
+  ],
+  "prompt": "Use case: stylized-concept. Asset type: production transparent sprite atlas for an animated rock-paper-scissors game.\nImage 1 is the APPROVED ART STYLE AND HAND-SHAPE reference. Image 2 is a physical POSE AND SIDE-VIEW reference only. Create the actual eight isolated hand-and-sleeve sprites matching Image 1 closely, no UI.\nOutput a SQUARE 2048x2048 PNG with genuinely transparent background. EXACT regular grid: TWO equal columns, FOUR equal rows. Each cell is 1024 wide by 512 high. No visible grid, no text, no UI, no labels.\nIn EVERY left-column cell: burgundy sleeve entering from its left cell edge, wrist at 45% cell width, warm tan hand extending toward the right. In EVERY right-column cell: cobalt blue sleeve entering from its right cell edge, wrist at 55% cell width, pale peach hand extending toward the left. Mirror-consistent anatomy and exact matching scale across poses. Each sprite fits entirely inside its own cell with 28px transparent vertical padding; the cut end of each sleeve is flush with the outer cell edge. Keep the INNER cell edges fully transparent, fingers must not cross into neighboring cells.\nROW 1: two closed ROCK fists, matching the reference's plump rounded fist, thumb folded over the curled fingers. Broad palm, rounded three visible knuckle lobes, curved crease lines.\nROW 2: SCISSORS, two distinct long rounded fingers making a sideways V toward the opponent, other fingers folded into palm, thumb holding them. Clearly two extended fingers only.\nROW 3: PAPER, side-view open hand held horizontally palm DOWN toward the opponent, four fingers straight and held together, rounded fingertips, natural lower thumb silhouette. This is the upper gesture hand, not a high-five vertical hand.\nROW 4: the LOWER SUPPORT hands, horizontal cupped open palms facing UP, gently curved fingers like the bottom hands in both references, relaxed thumbs. These are stationary hands under the active fists.\nStyle: faithfully follow Image 1: South Park-like flat construction-paper cutout cartoon, subtly irregular organic outline, thick clean black outer contour, restrained curved finger lines, matte softly mottled paper texture within skin and sleeves, warm tan/peach skin, deep burgundy and cobalt fabric. Proper wrist-to-palm transition, broad substantial fingers rather than sticks. No 3D, no photorealism, no lighting gradients, no detached fingers, no extra hands, no shadows outside silhouettes. Preserve real alpha transparency, no checkerboard graphic. Exactly eight separate sprites, consistent perspective and line weights, crisp final game asset."
+}

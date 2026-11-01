@@ -28,7 +28,11 @@ async function enter(page: Page, roomPath: string, lang = 'ru') {
   await page.locator('[data-cabinet="studio-cosmic-escape"]').click();
   await expect.poll(async () => {
     if (await page.locator('#mini-dialog').isVisible()) return true;
-    try { await page.locator('[data-cabinet="studio-cosmic-escape"]').click({ timeout: 600 }); } catch {}
+    try {
+      const cabinet=page.locator('[data-cabinet="studio-cosmic-escape"]');
+      if(!await cabinet.isVisible())await page.locator('#games-tab').click();
+      await cabinet.click({timeout:2000});
+    } catch {}
     return page.locator('#mini-dialog').isVisible();
   }, { timeout: 25000, intervals: [1000, 2000] }).toBe(true);
   await choose(page);
@@ -39,6 +43,11 @@ async function choose(page: Page) {
   await expect(game(page).locator('[data-fh=spin]:visible,[data-fh=pass]:visible,[data-fh=retry]:visible').first()).toBeEnabled();
   await expect.poll(() => game(page).locator('.fh-elf').evaluateAll(images => images.every(i => (i as HTMLImageElement).complete && (i as HTMLImageElement).naturalWidth > 0))).toBe(true);
   await expect.poll(async () => (await state(page)).character.ready).toBe(true);
+  // Fresh synthetic scenarios use 10 USDT; accepted or pending series keep their original stake.
+  if(await game(page).locator('[data-fh=higher]').isEnabled()){
+    for(let step=0;step<20&&(await game(page).locator('[data-fh=stake]').textContent())!=='10';step++)await game(page).locator('[data-fh=higher]').click();
+    await expect(game(page).locator('[data-fh=stake]')).toHaveText('10');
+  }
 }
 async function routeScenario(page: Page, scenario: string, loseFirst = false) {
   let lost = false;
@@ -46,7 +55,7 @@ async function routeScenario(page: Page, scenario: string, loseFirst = false) {
     const request = route.request();
     if (request.method() !== 'POST' || request.postDataJSON()?.gameId !== id) { await route.fallback(); return; }
     const response = await route.fetch({ url: new URL('/__test/forest-heart/operate', request.url()).href, headers: { ...request.headers(), 'x-forest-scenario': scenario } });
-    if (loseFirst && !lost) { lost = true; await route.abort('connectionreset'); return; }
+    if (loseFirst && !lost) { expect(response.status()).toBe(200); lost = true; await route.abort('connectionreset'); return; }
     await route.fulfill({ response });
   });
 }
@@ -69,6 +78,156 @@ async function wallet(page: Page) {
     return (await fetch('/api/demo-wallet', { headers: { 'X-Royal-Account-Id': me.account.id } })).json();
   });
 }
+
+test('three different gestures alternate with a living idle and stop for rules and reduced motion', async ({page,roomPath}) => {
+  const errors: string[] = []; page.on('pageerror',error=>errors.push(error.message));
+  await routeScenario(page,'win'); await enter(page,roomPath);
+  const video = async () => (await state(page)).character.video;
+  await expect.poll(async()=>(await video()).blend,{timeout:20000}).toBeGreaterThan(.95);
+  expect((await video()).clip).toBe('look');
+  expect((await video()).media.every((media:any)=>media.muted&&!media.loop)).toBe(true);
+  const source=await game(page).locator('video').evaluateAll(elements=>elements.map(element=>(element as HTMLVideoElement).currentSrc));
+  expect(source.some(url=>/\/game-modules\/studio-forest-heart\/versions\/[^/]+\/media\/forest-heart\/video-v3\/look\.mp4/.test(url))).toBe(true);
+  await page.screenshot({path:out+'/living-v15-first.png'});
+  await game(page).locator('[data-fh=spin]').click();
+  await expect(game(page).locator('[data-fh=skip]')).toBeVisible();
+  await expect.poll(async()=>(await video()).phase,{timeout:6000}).toBe('standing');
+  await expect.poll(async()=>!(await state(page)).busy,{timeout:15000}).toBe(true);
+  await expect.poll(async()=>(await video()).blend).toBe(0);
+  const firstRest=await video();
+  expect(firstRest.blend).toBe(0);
+  expect(firstRest.media.every((media:any)=>media.paused)).toBe(true);
+  await expect(game(page).locator('.fh-character-canvas')).toHaveCSS('opacity','1');
+  await page.screenshot({path:out+'/living-v15-standing.png'});
+  await page.waitForTimeout(1000);
+  expect((await video()).history).toHaveLength(1);
+  await expect.poll(async()=>(await video()).clip,{timeout:10000}).toBe('focus');
+  await expect.poll(async()=>(await video()).phase).toBe('playing');
+  await expect.poll(async()=>(await video()).blend).toBeGreaterThan(.95);
+  await page.screenshot({path:out+'/living-v15-second.png'});
+  await expect.poll(async()=>(await video()).history.length,{timeout:15000}).toBe(3);
+  await expect.poll(async()=>(await video()).weights.video).toBeGreaterThan(.95);
+  await page.screenshot({path:out+'/living-v15-third.png'});
+  await expect.poll(async()=>(await video()).phase,{timeout:6000}).toBe('standing');
+  const cycle=await video();
+  expect(cycle.history.map((event:any)=>event.clip)).toEqual(['look','focus','magic']);
+  for(const event of cycle.history) { expect(event.endMs).toBeGreaterThan(event.startMs); expect(event.endMs-event.startMs).toBeLessThanOrEqual(3100); }
+  for(let i=1;i<cycle.history.length;i++)expect(cycle.history[i].startMs-cycle.history[i-1].endMs).toBeGreaterThanOrEqual(6000);
+  expect(cycle.media.every((media:any)=>media.paused)).toBe(true);
+  const urls=await game(page).locator('video').evaluateAll(elements=>elements.map(element=>(element as HTMLVideoElement).currentSrc));
+  expect(urls.every(url=>url.endsWith('.mp4'))).toBe(true);expect(new Set(urls).size).toBe(3);
+  expect((await state(page)).character.eyeAnimation).toBe('source-video-only');
+  await expect(game(page).locator('.fh-elf[data-pose=blink]')).toHaveCount(0);
+  await writeFile(out+'/living-v15-timeline.json',JSON.stringify(cycle,null,2));
+  await game(page).locator('[data-fh=rules]').click();
+  expect((await video()).blend).toBe(0);
+  expect((await video()).media.every((media:any)=>media.paused)).toBe(true);
+  await game(page).locator('[data-fh=close]').click();
+  expect((await video()).phase).toBe('standing');
+  await page.setViewportSize({width:390,height:844}); await fit(game(page));
+  await expect(page.locator('#chat-input')).toBeInViewport();
+  await page.screenshot({path:out+'/living-v15-mobile.png'});
+  await game(page).locator('[data-fh=settings]').click();
+  await game(page).locator('[data-fh=motion]').check();
+  await game(page).locator('[data-fh=close]').click();
+  expect((await video()).blend).toBe(0);
+  expect((await video()).media.every((media:any)=>media.paused)).toBe(true);
+  await game(page).locator('[data-fh=settings]').click();
+  await game(page).locator('[data-fh=motion]').uncheck();
+  await game(page).locator('[data-fh=close]').click();
+  expect((await video()).phase).toBe('standing');
+  await page.locator('#mini-dialog .mini-top [data-close]').click();
+  await expect(page.locator('.forest-heart-frame')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('living idle moves around source video without an opacity dip or extra video motion',async({page,roomPath})=>{
+  await enter(page,roomPath);
+  const video=async()=>(await state(page)).character.video;
+  await game(page).locator('.fh-character-canvas').evaluate(canvas=>{
+    const gl=(canvas as HTMLCanvasElement).getContext('webgl')!,draw=gl.drawElements.bind(gl);
+    (canvas as any).__idleStage='before';(canvas as any).__idleFrames=[];
+    gl.drawElements=(...args:Parameters<WebGLRenderingContext['drawElements']>)=>{
+      draw(...args);
+      const rows=(canvas as any).__idleFrames,stage=(canvas as any).__idleStage;
+      if(rows.filter((r:any)=>r.stage===stage).length>=12)return;
+      const c=canvas as HTMLCanvasElement,pixels=new Uint8Array(c.width*c.height*4);
+      gl.readPixels(0,0,c.width,c.height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
+      let hash=2166136261;for(let i=0;i<pixels.length;i+=16)hash=Math.imul(hash^pixels[i],16777619)>>>0;
+      rows.push({stage,hash,width:c.width,height:c.height,at:performance.now()});
+    };
+  });
+  await page.waitForTimeout(600);
+  const before=await game(page).locator('.fh-character-canvas').evaluate(c=>(c as any).__idleFrames);
+  expect(before.length).toBeGreaterThanOrEqual(8);expect(new Set(before.map((r:any)=>r.hash)).size).toBeGreaterThanOrEqual(3);
+  expect((await video()).phase).toBe('standing');
+  await page.screenshot({path:out+'/living-idle-before.png'});
+  await expect.poll(async()=>(await video()).draws,{timeout:15000}).toBeGreaterThan(0);
+  await game(page).locator('.fh-character-video').evaluate(canvas=>{
+    const gl=(canvas as HTMLCanvasElement).getContext('webgl')!,draw=gl.drawArrays.bind(gl),pixel=new Uint8Array(4);
+    (canvas as any).__coverage=[];
+    gl.drawArrays=(...args:Parameters<WebGLRenderingContext['drawArrays']>)=>{draw(...args);gl.readPixels(390,348,1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixel);(canvas as any).__coverage.push(pixel[3]);};
+  });
+  await expect.poll(async()=>(await video()).weights.video).toBeGreaterThan(.95);
+  await page.screenshot({path:out+'/living-idle-gesture.png'});
+  await expect.poll(async()=>(await video()).weights.video).toBe(1);
+  await game(page).locator('video').evaluateAll(elements=>{
+    const media=elements.find(element=>!(element as HTMLVideoElement).paused) as HTMLVideoElement;
+    (media as any).__originalPlay=media.play;media.play=async()=>{};media.pause();
+  });
+  await page.waitForTimeout(100);
+  await game(page).locator('.fh-character-video').evaluate(canvas=>{
+    const gl=(canvas as HTMLCanvasElement).getContext('webgl')!,draw=gl.drawArrays.bind(gl);
+    (canvas as any).__stationaryFrames=[];
+    gl.drawArrays=(...args:Parameters<WebGLRenderingContext['drawArrays']>)=>{
+      draw(...args);const frames=(canvas as any).__stationaryFrames;if(frames.length>=6)return;
+      const c=canvas as HTMLCanvasElement,pixels=new Uint8Array(c.width*c.height*4);gl.readPixels(0,0,c.width,c.height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
+      let hash=2166136261;for(let i=0;i<pixels.length;i++)hash=Math.imul(hash^pixels[i],16777619)>>>0;
+      frames.push({hash,at:performance.now()});
+    };
+  });
+  await expect.poll(async()=>game(page).locator('.fh-character-video').evaluate(c=>(c as any).__stationaryFrames.length)).toBe(6);
+  const stationary=await game(page).locator('.fh-character-video').evaluate(c=>(c as any).__stationaryFrames as {hash:number;at:number}[]);
+  expect(new Set(stationary.map(frame=>frame.hash)).size).toBe(1);
+  expect(stationary.at(-1)!.at-stationary[0].at).toBeGreaterThan(100);
+  await game(page).locator('video').evaluateAll(elements=>{for(const media of elements as HTMLVideoElement[])if((media as any).__originalPlay){media.play=(media as any).__originalPlay;delete(media as any).__originalPlay;}});
+  await expect.poll(async()=>(await video()).history[0]?.endMs,{timeout:6000}).toBeGreaterThan(0);
+  await expect.poll(async()=>(await video()).blend).toBe(0);
+  expect((await video()).heldClip).toBe(null);
+  expect((await video()).media.every((m:any)=>m.paused)).toBe(true);
+  await expect(game(page).locator('.fh-character-canvas')).toHaveCSS('opacity','1');
+  await game(page).locator('.fh-character-canvas').evaluate(c=>{(c as any).__idleStage='after';});
+  await page.waitForTimeout(600);
+  const rows=await game(page).locator('.fh-character-canvas').evaluate(c=>(c as any).__idleFrames as {stage:string;hash:number;width:number;height:number;at:number}[]);
+  const after=rows.filter(r=>r.stage==='after');expect(after.length).toBeGreaterThanOrEqual(8);
+  expect(new Set(after.map(r=>r.hash)).size).toBeGreaterThanOrEqual(3);
+  expect(new Set(rows.map(r=>r.width+'x'+r.height)).size).toBe(1);
+  await expect.poll(async()=>(await video()).clip,{timeout:10000}).toBe('focus');
+  await expect.poll(async()=>(await video()).weights.video).toBeGreaterThan(.95);
+  await page.screenshot({path:out+'/living-v15-focus.png'});
+  await expect.poll(async()=>(await video()).history.length,{timeout:15000}).toBe(3);
+  await expect.poll(async()=>(await video()).weights.video).toBeGreaterThan(.95);
+  await page.screenshot({path:out+'/living-v15-magic.png'});
+  await expect.poll(async()=>(await video()).history[2].endMs,{timeout:6000}).toBeGreaterThan(0);
+  await expect.poll(async()=>(await video()).blend).toBe(0);
+  expect((await state(page)).character.blinks).toBe(0);
+  await expect(game(page).locator('.fh-elf[data-pose=blink]')).toHaveCount(0);
+  const alpha=await game(page).locator('.fh-character-video').evaluate(c=>(c as any).__coverage as number[]);
+  expect(alpha.length).toBeGreaterThan(20);expect(Math.min(...alpha)).toBeGreaterThanOrEqual(240);
+  await page.screenshot({path:out+'/living-idle-after.png'});
+  await writeFile(out+'/living-idle-rendered.json',JSON.stringify({nativeFrames:rows,stationaryVideoFrames:stationary,minOpaqueAlpha:Math.min(...alpha),compositeFrames:alpha.length,video:await video()},null,2));
+});
+
+test('unavailable character videos preserve the existing elf and playable controls', async({page,roomPath})=>{
+  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+  await page.route('**/video-v3/*.mp4',route=>route.abort());
+  await enter(page,roomPath);
+  await expect.poll(async()=>(await state(page)).character.video.failed,{timeout:12000}).toContain('look');
+  expect((await state(page)).character.video.blend).toBe(0);
+  await expect(game(page).locator('.fh-character-canvas')).toHaveCSS('opacity','1');
+  await expect(game(page).locator('[data-fh=spin]')).toBeEnabled();
+  expect(errors).toEqual([]);
+});
 async function fit(frame: FrameLocator) {
   const boxes = await frame.locator('.fh').evaluate(root => ({ width: root.ownerDocument.documentElement.clientWidth, scroll: root.ownerDocument.documentElement.scrollWidth, board: root.querySelector('.fh-board')!.getBoundingClientRect().toJSON(), bonusBottom:(root.querySelector('.fh-bonus') as HTMLElement).hidden ? 0 : root.querySelector('.fh-bonus')!.getBoundingClientRect().bottom, controlsTop:root.querySelector('.fh-controls')!.getBoundingClientRect().top }));
   expect(boxes.scroll).toBeLessThanOrEqual(boxes.width + 1); expect(boxes.board.width).toBeGreaterThanOrEqual(180);
@@ -119,6 +278,7 @@ test('real host preserves choice, bonus, exact settlement and connected chat acr
 test('a lost accepted response retries the same UUID once, with no repeated charge or award', async ({ page, roomPath }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' }); await routeScenario(page, 'partial', true); await enter(page, roomPath);
   await game(page).locator('[data-fh=spin]').click(); await expect(game(page).locator('[data-fh=retry]')).toBeVisible();
+  await expect(game(page).locator('[data-fh=retry]')).toBeEnabled();
   expect((await wallet(page)).balance).toBe(9996.31);
   await page.reload();await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});
   await expect.poll(()=>online(page)).toBe(true);
@@ -296,15 +456,21 @@ test('a held root stays visible and fixed while the next bonus field is assemble
   await writeFile(out+'/held-field.json',JSON.stringify({held,frames},null,2));
 });
 
-test('the elf blinks and renders local movement, stops for rules, and reacts only to fresh positive results', async ({page,roomPath}) => {
+test('the native face stays intact while idle motion, rules and fresh reactions work', async ({page,roomPath}) => {
+  await page.route('**/video-v3/*.mp4',route=>route.abort());
   await routeScenario(page,'win'); await enter(page,roomPath);
   const initial=(await state(page)).character;
   expect(initial.renderer).toBe('webgl');expect(initial.events).toEqual([]);
   const canvas=game(page).locator('.fh-character');
   const idle=await canvas.screenshot();
-  await expect.poll(async()=>(await state(page)).character.blink,{timeout:12000,intervals:[30]}).toBeGreaterThan(.4);
-  const blink=await canvas.screenshot();expect(blink.equals(idle)).toBe(false);
-  await writeFile(out+'/elf-blink.png',blink);
+  await page.waitForTimeout(600);
+  const moving=await canvas.screenshot();expect(moving.equals(idle)).toBe(false);
+  expect((await state(page)).character.eyeAnimation).toBe('source-video-only');
+  expect((await state(page)).character.blinks).toBe(0);
+  await expect(game(page).locator('.fh-elf[data-pose=blink]')).toHaveCount(0);
+  const shaders=await game(page).locator('.fh-character-canvas').evaluate(canvas=>{const gl=(canvas as HTMLCanvasElement).getContext('webgl')!,program=gl.getParameter(gl.CURRENT_PROGRAM);return(gl.getAttachedShaders(program)||[]).map(shader=>gl.getShaderSource(shader)||'').join('\n');});
+  expect(shaders).not.toContain('uEyes');expect(shaders).not.toContain('uBlink');
+  await writeFile(out+'/native-face.png',moving);
   await game(page).locator('[data-fh=rules]').click();
   const stopped=(await state(page)).character;expect(stopped.running).toBe(false);expect(stopped.blink).toBe(0);
   await page.waitForTimeout(300);
@@ -327,6 +493,7 @@ test('the elf blinks and renders local movement, stops for rules, and reacts onl
     expect((await state(page)).character.events.some((e:any)=>e.pose==='win'||e.pose==='big')).toBe(false);
   }
   await game(page).locator('[data-fh=settings]').click();await game(page).locator('[data-fh=motion]').check();await game(page).locator('[data-fh=close]').click();
+  await game(page).locator('.fh-character').evaluate(async()=>{await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));});
   const reduced=(await state(page)).character;expect(reduced.reduced).toBe(true);expect(reduced.running).toBe(false);
   await page.waitForTimeout(300);expect((await state(page)).character.frames).toBe(reduced.frames);
   await writeFile(out+'/character-lifecycle.json',JSON.stringify({idle:initial,paused:stopped,reopened:current.character,reduced},null,2));
@@ -476,7 +643,7 @@ test('the full host uses the available monitor and keeps the board, elf and paid
     const inner=await game(page).locator('.fh').evaluate(root=>{
       const box=(selector:string)=>root.querySelector(selector)!.getBoundingClientRect().toJSON();
       const logo=root.querySelector<HTMLImageElement>('.fh-title-logo')!;
-      return{width:root.clientWidth,height:root.clientHeight,layout:(root as HTMLElement).dataset.layout,header:box('.fh-top'),world:box('.fh-world'),logo:{...logo.getBoundingClientRect().toJSON(),fit:getComputedStyle(logo).objectFit},board:box('.fh-board'),machine:box('.fh-machine'),character:box('.fh-character'),portrait:box('.fh-character-canvas'),controls:box('.fh-controls'),status:box('.fh-status-band'),spin:box('[data-fh=spin]'),scrollWidth:root.ownerDocument.documentElement.scrollWidth,scrollHeight:root.ownerDocument.documentElement.scrollHeight};
+      return{width:root.clientWidth,height:root.clientHeight,layout:(root as HTMLElement).dataset.layout,header:box('.fh-top'),world:box('.fh-world'),logo:{...logo.getBoundingClientRect().toJSON(),fit:getComputedStyle(logo).objectFit},board:box('.fh-board'),machine:box('.fh-machine'),character:box('.fh-character'),portrait:box('.fh-character-canvas'),controls:box('.fh-controls'),status:box('.fh-status-band'),spin:box('[data-fh=spin]'),flowers:[...root.querySelectorAll('.fh-flower')].map(flower=>({image:flower.querySelector('img')!.getBoundingClientRect().toJSON(),value:flower.querySelector('.fh-flower-value')!.getBoundingClientRect().toJSON(),font:parseFloat(getComputedStyle(flower.querySelector('.fh-flower-value')!).fontSize),fits:flower.querySelector('.fh-flower-value')!.scrollWidth<=flower.querySelector('.fh-flower-value')!.clientWidth+1})),scrollWidth:root.ownerDocument.documentElement.scrollWidth,scrollHeight:root.ownerDocument.documentElement.scrollHeight};
     });
     await page.screenshot({path:out+`/responsive-${viewport.width}x${viewport.height}.png`});
     records.push({viewport,outer,inner});await writeFile(out+'/responsive-metrics.json',JSON.stringify(records,null,2));
@@ -490,7 +657,16 @@ test('the full host uses the available monitor and keeps the board, elf and paid
     expect(inner.logo.fit).toBe('contain');
     expect(inner.logo.top).toBeGreaterThanOrEqual(inner.header.top-1);expect(inner.logo.bottom).toBeLessThanOrEqual(inner.header.bottom+1);
     if(inner.layout==='wide'){
-      expect(inner.machine.top-inner.header.bottom).toBeLessThanOrEqual(12);
+      expect(inner.machine.top).toBeGreaterThanOrEqual(inner.header.bottom);
+      expect(inner.machine.bottom).toBeLessThanOrEqual(inner.status.top+1);
+      expect(inner.height-inner.controls.bottom).toBeLessThanOrEqual(19);
+      for(const flower of inner.flowers){
+        expect(flower.value.left).toBeGreaterThanOrEqual(inner.board.right);
+        expect(flower.value.right).toBeLessThanOrEqual(inner.width);
+        expect(flower.value.bottom).toBeLessThanOrEqual(inner.status.top);
+        expect(flower.font).toBeGreaterThanOrEqual(16);expect(flower.fits).toBe(true);
+        if(inner.board.width>=450)expect(flower.image.height).toBeGreaterThanOrEqual(96);
+      }
       expect(Math.abs(inner.character.top-inner.machine.top)).toBeLessThanOrEqual(2);
       expect(inner.portrait.height).toBeGreaterThanOrEqual(inner.board.height*.95);
       expect(inner.portrait.width/inner.portrait.height).toBeCloseTo(5/6,1);
@@ -499,6 +675,7 @@ test('the full host uses the available monitor and keeps the board, elf and paid
     await expect(page.locator('#chat-input')).toBeInViewport();
   }
   await act(page);await expect(game(page).locator('[data-cell]:enabled')).toHaveCount(12);
+  await page.screenshot({path:out+'/layout-v11-connected.png'});
   await page.setViewportSize({width:844,height:390});await expect(game(page).locator('[data-fh=pass]')).toBeInViewport();
   await act(page,'[data-cell="5"]');
   await expect(game(page).locator('[data-fh=spin]')).toBeInViewport();
