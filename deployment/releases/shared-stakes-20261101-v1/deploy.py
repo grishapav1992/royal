@@ -3,6 +3,7 @@ from pathlib import Path
 import fcntl, hashlib, importlib.util, io, json, os, re, shutil, subprocess, sys, tarfile, time
 ROOT=Path(__file__).resolve().parent
 NAME='shared-stakes-20261101-v2'
+BUILD_TAG=NAME+'-verified'
 LIVE=Path('/opt/royal'); MODULES=Path('/opt/royal-game-modules'); STATE=Path('/opt/royal-game-modules-state')
 BACKUP=Path('/opt/royal-backups')/NAME
 MIN_FREE=5*1024**3
@@ -37,6 +38,8 @@ def atomic(source,target):
 def inspect(container):return json.loads(run(['docker','inspect',container]))[0]
 def image(reference):return load('stake_image_metadata',ROOT/'image_metadata.py').image(reference)
 def tag(source,destination):
+    if run(['ctr','--namespace','moby','images','ls','--quiet','name==docker.io/library/'+destination]):
+        require(image(source)==image(destination),'Existing backup tag differs');return
     run(['ctr','--namespace','moby','images','tag','docker.io/library/'+source,'docker.io/library/'+destination]);require(image(source)==image(destination),'Image tag differs')
 def snapshot():return json.loads(run([sys.executable,str(ROOT/'snapshot.py')],timeout=900))
 def stable(s):return {k:v for k,v in s.items() if k not in ['at','availableBytes']}
@@ -76,44 +79,63 @@ def service_facts(name):
     return {'container':name,'environment':selected,'credential':{'source':mounted['Source'],'destination':credential},'composeFiles':files,'composeHashes':{n:sha(n) for n in files},'cwd':cwd,'user':value['Config']['User'],'groups':value['HostConfig'].get('GroupAdd') or [],'networks':sorted(value['NetworkSettings']['Networks'])}
 
 def build(m):
-    require(not (ROOT/'build-result.json').exists() and not BACKUP.exists(),'Build or backup already exists');before=baseline(m)
+    require(not (ROOT/'build-result.json').exists(),'Build result already exists');before=baseline(m)
     native=service_facts('royal-nile-play');game=service_facts('royal-game-1');require(image('royal-nile-play:local')==before['services']['/royal-nile-play']['image'],'Another prepared Native image exists')
     save('service-facts.json',{'native':native,'game':game})
     tag('royal-game:latest','royal-game:before-'+NAME);tag('royal-game:latest','royal-game:before-'+NAME+'-prepared');tag('royal-nile-play:local','royal-nile-play:before-'+NAME)
-    BACKUP.mkdir(mode=0o700)
-    with tarfile.open(BACKUP/'source.tgz','w:gz') as archive:
-        for n in m['changed']:
-            if n in before['source']:require(sha(LIVE/n)==before['source'][n],'Source changed during backup');archive.add(LIVE/n,arcname=n,recursive=False)
-    with tarfile.open(BACKUP/'source.tgz') as archive:require({r.name:hashlib.sha256(archive.extractfile(r).read()).hexdigest() for r in archive.getmembers()}=={n:h for n,h in before['source'].items() if n in m['changed']},'Source backup differs')
-    run(['docker','cp','royal-game-1:/app/dist/index.html',str(BACKUP/'index.html')]);require(sha(BACKUP/'index.html')==before['program']['dist/index.html'],'Client backup differs')
-    atomic(STATE/'host.json',BACKUP/'host.json')
-    for game_id in m['packages']:
-        active=read(MODULES/game_id/'active.json');old=active['manifest'].split('/')[4];require('/' not in old,'Unsafe prior module version');(BACKUP/game_id).mkdir()
-        atomic(MODULES/game_id/'active.json',BACKUP/game_id/'active.json');shutil.copytree(MODULES/game_id/'versions'/old,BACKUP/game_id/'package',copy_function=os.link)
-    command=['docker','exec','royal-finance-sim-finance-db-1','sh','-ec','export PGPASSWORD="$(cat /run/secrets/finance_admin_password)"; exec pg_dump -h 127.0.0.1 -U finance_schema_owner -d royal_finance_sim --format=custom --schema=royal_game --schema=royal_nile_play']
-    with (BACKUP/'financial.dump').open('wb') as output:subprocess.run(command,stdout=output,stderr=subprocess.PIPE,check=True,timeout=600)
-    (BACKUP/'financial.dump').chmod(0o600);require(0<(BACKUP/'financial.dump').stat().st_size<256*1024**2,'Financial backup budget exceeded')
-    with (BACKUP/'financial.dump').open('rb') as inp:listing=run(['docker','exec','-i','royal-finance-sim-finance-db-1','pg_restore','--list'],stdin=inp)
-    require('royal_game' in listing and 'royal_nile_play' in listing,'Financial backup is incomplete')
-    backup={'sourceBackupSha256':sha(BACKUP/'source.tgz'),'databaseBackup':{'path':str(BACKUP/'financial.dump'),'sha256':sha(BACKUP/'financial.dump'),'bytes':(BACKUP/'financial.dump').stat().st_size},'backup':str(BACKUP)}
-    save('backup.json',backup)
-    contexts=[]
-    for kind,parent,outputs in [('game','royal-game:before-'+NAME,{'dist-delta':'dist','server-delta':'dist-server'}),('native','royal-nile-play:before-'+NAME,{'native':'.'})]:
-        context=ROOT/(kind+'-context');context.mkdir();contexts.append(context);recipe='FROM '+parent+'\n'
-        for source,target in outputs.items():shutil.copytree(ROOT/source,context/source);recipe+='COPY --chown=node:node '+source+'/ /app/'+target+'/\n'
-        recipe+='LABEL org.opencontainers.image.revision="'+m['sourceCommit']+'"\n';(context/'Dockerfile').write_text(recipe)
-        with (ROOT/(kind+'-build.log')).open('w') as log:subprocess.run(['docker','build','--pull=false','-t',('royal-game:' if kind=='game' else 'royal-nile-play:')+NAME,'.'],cwd=context,stdout=log,stderr=subprocess.STDOUT,check=True,timeout=600)
-        capacity()
-    current=image('royal-game:'+NAME);financial=image('royal-nile-play:'+NAME);expected={**before['program'],**{'dist/'+n:h for n,h in m['delta'].items()},**{'dist-server/'+n:h for n,h in m['serverDelta'].items()}}
+    if BACKUP.exists():
+        backup=read(ROOT/'backup.json')
+        require(backup['backup']==str(BACKUP) and backup['databaseBackup']['path']==str(BACKUP/'financial.dump'),'Backup path changed')
+        require(sha(BACKUP/'source.tgz')==backup['sourceBackupSha256'] and sha(BACKUP/'financial.dump')==backup['databaseBackup']['sha256'],'Existing backups changed')
+        expected={n:h for n,h in before['source'].items() if n in m['changed']}
+        with tarfile.open(BACKUP/'source.tgz') as archive:
+            members=archive.getmembers();require(len(members)==len(expected) and all(v.isfile() for v in members),'Existing backup scope changed')
+            require({v.name:hashlib.sha256(archive.extractfile(v).read()).hexdigest() for v in members}==expected,'Existing source backup differs')
+        require(sha(BACKUP/'host.json')==before['moduleHostContract'],'Backup host contract differs')
+        for game_id in m['packages']:
+            require(sha(BACKUP/game_id/'active.json')==before['moduleFiles'][str(MODULES/game_id/'active.json')],'Backup module pointer differs')
+            prior=read(BACKUP/game_id/'active.json');prefix=str(MODULES/game_id/'versions'/prior['manifest'].split('/')[4])+'/'
+            require(inventory(BACKUP/game_id/'package')=={n[len(prefix):]:h for n,h in before['moduleFiles'].items() if n.startswith(prefix)},'Backup package differs')
+    else:
+        BACKUP.mkdir(mode=0o700)
+        with tarfile.open(BACKUP/'source.tgz','w:gz') as archive:
+            for n in m['changed']:
+                if n in before['source']:require(sha(LIVE/n)==before['source'][n],'Source changed during backup');archive.add(LIVE/n,arcname=n,recursive=False)
+        with tarfile.open(BACKUP/'source.tgz') as archive:require({r.name:hashlib.sha256(archive.extractfile(r).read()).hexdigest() for r in archive.getmembers()}=={n:h for n,h in before['source'].items() if n in m['changed']},'Source backup differs')
+        run(['docker','cp','royal-game-1:/app/dist/index.html',str(BACKUP/'index.html')]);require(sha(BACKUP/'index.html')==before['program']['dist/index.html'],'Client backup differs')
+        atomic(STATE/'host.json',BACKUP/'host.json')
+        for game_id in m['packages']:
+            active=read(MODULES/game_id/'active.json');old=active['manifest'].split('/')[4];require('/' not in old,'Unsafe prior module version');(BACKUP/game_id).mkdir()
+            atomic(MODULES/game_id/'active.json',BACKUP/game_id/'active.json');shutil.copytree(MODULES/game_id/'versions'/old,BACKUP/game_id/'package',copy_function=os.link)
+        command=['docker','exec','royal-finance-sim-finance-db-1','sh','-ec','export PGPASSWORD="$(cat /run/secrets/finance_admin_password)"; exec pg_dump -h 127.0.0.1 -U finance_schema_owner -d royal_finance_sim --format=custom --schema=royal_game --schema=royal_nile_play']
+        with (BACKUP/'financial.dump').open('wb') as output:subprocess.run(command,stdout=output,stderr=subprocess.PIPE,check=True,timeout=600)
+        (BACKUP/'financial.dump').chmod(0o600);require(0<(BACKUP/'financial.dump').stat().st_size<256*1024**2,'Financial backup budget exceeded')
+        with (BACKUP/'financial.dump').open('rb') as inp:listing=run(['docker','exec','-i','royal-finance-sim-finance-db-1','pg_restore','--list'],stdin=inp)
+        require('royal_game' in listing and 'royal_nile_play' in listing,'Financial backup is incomplete')
+        backup={'sourceBackupSha256':sha(BACKUP/'source.tgz'),'databaseBackup':{'path':str(BACKUP/'financial.dump'),'sha256':sha(BACKUP/'financial.dump'),'bytes':(BACKUP/'financial.dump').stat().st_size},'backup':str(BACKUP)}
+        save('backup.json',backup)
+    builder=load('stake_engine_build',ROOT/'engine_build.py')
+    for parent,repo,mapping in [
+        (before['preparedImage'],'royal-game',{**{'dist-delta/'+n:'dist/'+n for n in m['delta']},**{'server-delta/'+n:'dist-server/'+n for n in m['serverDelta']}}),
+        (before['services']['/royal-nile-play']['image'],'royal-nile-play',{'native/play.js':'play.js','native/proof.js':'proof.js'})]:
+        capacity(64*1024**2)
+        committed=builder.build(ROOT,parent,repo,BUILD_TAG,m['sourceCommit'],mapping)
+        identity=image(repo+':'+BUILD_TAG);require(committed in [identity,builder.metadata(identity)['configDigest']],'Committed candidate identity differs')
+    current=image('royal-game:'+BUILD_TAG);financial=image('royal-nile-play:'+BUILD_TAG);expected={**before['program'],**{'dist/'+n:h for n,h in m['delta'].items()},**{'dist-server/'+n:h for n,h in m['serverDelta'].items()}}
     actual=program(current,(ROOT/'runtime-inventory.cjs').read_text());require(actual==expected,'Candidate changed an unreviewed host byte')
     native_script="const f=require('fs'),c=require('crypto'),o={};for(const n of ['play.js','proof.js','dist-server/card-engine','dist-server/card-engine-v1'])o[n]=c.createHash('sha256').update(f.readFileSync('/app/'+n)).digest('hex');console.log(JSON.stringify(o))"
     native_expected={**m['nativeProtectedBefore'],'play.js':m['nativeOutputs']['play.js']['sha256'],'proof.js':m['nativeOutputs']['proof.js']['sha256']};require(program(financial,native_script)==native_expected,'Native bytes differ from qualified output')
     for parent,child in [(before['preparedImage'],current),(before['services']['/royal-nile-play']['image'],financial)]:
-        meta=load('stake_retention_metadata',ROOT/'retention-runtime.py');a=meta.image_metadata(parent);b=meta.image_metadata(child)
+        meta=load('stake_engine_metadata',ROOT/'engine_build.py');a=meta.metadata(parent);b=meta.metadata(child)
         for key in ['User','WorkingDir','Env','Entrypoint','Cmd','ExposedPorts','Healthcheck','Volumes']:require(a['Config'].get(key)==b['Config'].get(key),'Image settings changed: '+key)
         require(b['RootFS']['Layers'][:len(a['RootFS']['Layers'])]==a['RootFS']['Layers'],'Parent layers changed')
     baseline(m);result={**backup,'sourceCommit':m['sourceCommit'],'image':current,'nativeImage':financial,'program':actual,'nativeProgram':native_expected};save('build-result.json',result)
-    for context in contexts:shutil.rmtree(context)
+    for name in ['game-context','native-context']:
+        context=ROOT/name
+        if context.exists():
+            entries=inventory(context)
+            for n,h in entries.items():require(n=='Dockerfile' or m['payload'].get(n)==h,'Unrecognized old build context')
+            shutil.rmtree(context)
     return {'built':True,'image':current,'nativeImage':financial}
 
 def gate_command(facts,schema,rollback=False):
@@ -140,7 +162,7 @@ def publish(m,rollback=False):
     if not rollback:
         require(not (ROOT/'published.json').exists(),'Already published');baseline(m)
         require(image('royal-nile-play:local')==m['before']['services']['/royal-nile-play']['image'],'Another prepared Native image appeared')
-        require(image('royal-game:'+NAME)==built['image'] and image('royal-nile-play:'+NAME)==built['nativeImage'],'Candidate image tag changed')
+        require(image('royal-game:'+BUILD_TAG)==built['image'] and image('royal-nile-play:'+BUILD_TAG)==built['nativeImage'],'Candidate image tag changed')
     facts=read(ROOT/'service-facts.json');require('royal-finance-sim_finance_private' in facts['game']['networks'] and 'royal-finance-sim_finance_private' in facts['native']['networks'],'Financial network is unavailable')
     for f in facts.values():
         for n,h in f['composeHashes'].items():require(sha(n)==h,'Compose configuration changed')
@@ -181,7 +203,7 @@ def publish(m,rollback=False):
             for game,row in m['packages'].items():
                 options=SimpleNamespace(operation='install',package=str(ROOT/'packages'/game),game=game,root=str(MODULES),state=str(STATE),expected_sha=m['before']['moduleFiles'][str(MODULES/game/'active.json')])
                 result=publisher.run(options);require(result['verified'] and sha(MODULES/game/'active.json')==row['pointerSha256'],'Published package differs');results.append(result)
-            save('module-publication.json',results);native_tag='royal-nile-play:'+NAME;game_tag='royal-game:'+NAME
+            save('module-publication.json',results);native_tag='royal-nile-play:'+BUILD_TAG;game_tag='royal-game:'+BUILD_TAG
         host.run(['ctr','--namespace','moby','images','tag','--force','docker.io/library/'+native_tag,'docker.io/library/royal-nile-play:local']);host.run(['ctr','--namespace','moby','images','tag','--force','docker.io/library/'+game_tag,'docker.io/library/royal-game:latest'])
         for kind,service in [('native','nile-play'),('game','game')]:
             f=facts[kind];args=['docker','compose',*[item for n in f['composeFiles'] for item in ['-f',n]],'up','-d','--no-deps','--no-build','--force-recreate',service]
