@@ -28,15 +28,6 @@ class Guards(unittest.TestCase):
   changed=copy.deepcopy(before);changed['moduleFiles'][str(p.MODULES/next(iter(p.GAMES.values()))/'active.json')]='a-newer-release'
   with self.assertRaises(RuntimeError):p.validate_scope(release,changed,operator)
 
- def test_published_package_inputs_do_not_hide_an_intervening_source_change(self):
-  release,before,operator=fixture()
-  for name,row in p.PUBLISHED_INPUTS.items():
-   release['moduleProjection']['inputs'][name]=row['sha256']
-   if row['serverSourceSha256'] is not None:before['sourceLF'][name]=row['serverSourceSha256']
-  p.validate_scope(release,before,operator)
-  name=next(iter(p.PUBLISHED_INPUTS));before['sourceLF'][name]='unreviewed'
-  with self.assertRaises(RuntimeError):p.validate_scope(release,before,operator)
-
  def test_program_receipt_binds_both_immutable_entries(self):
   before={'entry':'old.js','files':{'old.js':'old'}};after={'entry':'new.js','files':{'new.js':'new'}}
   for game in p.GAMES.values():

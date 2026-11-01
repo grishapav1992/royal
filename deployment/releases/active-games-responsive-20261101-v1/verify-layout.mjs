@@ -67,6 +67,7 @@ try{
  if(await page.locator('#character-step').isVisible())await page.getByRole('button',{name:'Войти в зал',exact:true}).click();
  await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});await expect.poll(()=>page.evaluate(()=>{try{return window.royalDemo.getState().online;}catch{return false;}}),{timeout:30000}).toBe(true);
  if(process.env.ROYAL_LAYOUT_FUNDED!=='0'){const r=await context.request.post(origin+'/__test/layout/topup');expect(r.ok(),await r.text()).toBe(true);await page.reload();await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});await expect.poll(()=>page.evaluate(()=>{try{return window.royalDemo.getState().online;}catch{return false;}}),{timeout:30000}).toBe(true);}
+ if(process.env.ROYAL_LAYOUT_CARDS_ONLY!=='1'){
  await page.locator('#room-overview').click();
  await expect.poll(async()=>{
   if(await page.locator('#mini-dialog').isVisible())return true;
@@ -74,9 +75,10 @@ try{
   await page.locator('[data-cabinet="studio-cosmic-escape"]').click();return false;
  },{timeout:35000,intervals:[1000,3000]}).toBe(true);
  await expect(page.locator('.royal-platform')).toBeVisible({timeout:30000});
+ }
  for(const {id,cardTable} of [...baseline.cards,...baseline.cardGames||[]]){
   if(!/^[a-z0-9-]+$/.test(id))throw Error('Unexpected catalogue identity');
-  if(process.env.ONLY_GAME&&id!==process.env.ONLY_GAME)continue;
+  if(process.env.ONLY_GAME&&id!==process.env.ONLY_GAME)continue;if(process.env.ROYAL_LAYOUT_CARDS_ONLY==='1'&&!cardTable)continue;
   const entry={id,views:[],errors:[]};all.push(entry);
   try{
    await page.setViewportSize(touch?{width:390,height:844}:{width:1440,height:1000});
@@ -119,7 +121,21 @@ try{
    }
    console.log(JSON.stringify({id,version:entry.version,views:entry.views.map(v=>({w:v.width,mode:v.frames[0].mode,stage:[v.frames[0].stage.width,v.frames[0].stage.height],scroll:v.frames[0].stageScroll.height-v.frames[0].stageScroll.clientHeight,x:v.frames.map(f=>f.pageOverflowX),iframes:v.frames.length-1}))}));
   }catch(e){entry.errors.push(String(e));console.log(JSON.stringify({id,error:String(e)}));await page.screenshot({path:out+'screens/'+id+'-failure.jpg',type:'jpeg',quality:65});}
-  await writeFile(out+'layout-'+(touch?'touch':'desktop')+(process.env.ONLY_GAME?'-'+process.env.ONLY_GAME:'')+'.json',JSON.stringify({productionCheckedAtUtc:baseline.checkedAtUtc,pinnedProductionModules:true,realHostAndChat:true,source:process.env.ROYAL_LAYOUT_SOURCE_COMMIT||'unrecorded',all,errors},null,2)+'\n');
+  await writeFile(out+'layout-'+(touch?'touch':'desktop')+(process.env.ONLY_GAME?'-'+process.env.ONLY_GAME:process.env.ROYAL_LAYOUT_CARDS_ONLY==='1'?'-cards':'')+'.json',JSON.stringify({productionCheckedAtUtc:baseline.checkedAtUtc,pinnedProductionModules:true,realHostAndChat:true,source:process.env.ROYAL_LAYOUT_SOURCE_COMMIT||'unrecorded',all,errors},null,2)+'\n');
+ }
+ if(process.env.ROYAL_LAYOUT_RECOVERY==='1'){
+  if(process.env.ONLY_GAME!=='studio-caramel-carnival')throw Error('Recovery scenario requires the isolated Caramel Carnival selection');
+  await page.setViewportSize({width:390,height:844});let starts=0;
+  page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/expansion')&&r.postDataJSON()?.action==='start')starts++;});
+  const before=await context.request.get(origin+'/api/demo-wallet').then(r=>r.json());
+  const response=page.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/expansion'));
+  await page.locator('[data-cc-spin]').click();const acceptedResponse=await response;expect(acceptedResponse.ok(),await acceptedResponse.text()).toBe(true);const accepted=await acceptedResponse.json();expect(accepted.session.id).toBeTruthy();
+  await page.locator('#mini-dialog .mini-top [data-close]').click();await expect(page.locator('#mini-dialog')).toBeHidden();
+  await page.locator('#room-overview').click();await expect.poll(async()=>{if(await page.locator('#mini-dialog').isVisible())return true;if(!await page.locator('[data-cabinet="studio-cosmic-escape"]').isVisible())await page.locator('#games-tab').click();await page.locator('[data-cabinet="studio-cosmic-escape"]').click();return false;},{timeout:35000,intervals:[1000,2000]}).toBe(true);
+  await page.locator('[data-platform-game="studio-caramel-carnival"]').click();await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id','studio-caramel-carnival');
+  const intro=page.locator('[data-cc-action="enter"]');if(await intro.count()){await expect(intro).toBeEnabled();await intro.click();}await page.waitForTimeout(1500);
+  const recovered=await context.request.get(origin+'/api/demo-wallet').then(r=>r.json());expect(starts).toBe(1);expect(recovered.balance).toBe(accepted.wallet.balance);expect(recovered.entries.length).toBe(accepted.wallet.entries.length);
+  await writeFile(out+'wallet-recovery.json',JSON.stringify({localOnly:true,game:'studio-caramel-carnival',source:process.env.ROYAL_LAYOUT_SOURCE_COMMIT,acceptedSession:accepted.session.id,acceptedState:accepted.session.state,paidStarts:starts,balanceBefore:before.balance,balanceAfter:recovered.balance,entriesPreserved:true,closeReopenPassed:true},null,2)+'\n');
  }
  if(errors.length||all.some(g=>g.errors.length))process.exitCode=1;
 }finally{await context.close();await browser.close();await Promise.race([room.leave(),new Promise(r=>setTimeout(r,1500))]);await host.dispose();}
