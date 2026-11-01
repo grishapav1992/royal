@@ -1,6 +1,6 @@
 /** Disposable full-host verification. Production has no fixture endpoints or forced outcomes. */
 import {spawn} from 'node:child_process';
-import {randomUUID} from 'node:crypto';
+import {randomUUID,randomInt} from 'node:crypto';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {createServer,type Plugin} from 'vite';
 import {temporaryDatabase} from './database-test';
@@ -14,14 +14,18 @@ let logs='',stopping=false,db:PostgresDatabase|undefined,wallet:DemoWalletStore;
 const forced=new Map<string,number[]>();
 backend.stdout.on('data',v=>logs=(logs+v).slice(-6000));backend.stderr.on('data',v=>logs=(logs+v).slice(-6000));
 const scenarios:Record<string,number[]>={loss:[30,30,30,30,30],nudge:[1,2,62,63,30],bonus:[2,45,2,16,14,...Array(40).fill(30)],maximum:[2,45,2,16,14,...Array(40).fill(2)],win:[2,2,2,2,2]};
-const plugin:Plugin={name:'wild-nudge-local-fixture',configureServer(server){server.middlewares.use(async(req,res,next)=>{
+// Local-only opt-in for the user's unpublished module. Production catalogue and
+// its ten-cent admission gate remain unchanged until the monetary migration.
+const plugin:Plugin={name:'wild-nudge-local-fixture',enforce:'pre',transform(code,id){
+ if(!id.replaceAll('\\','/').endsWith('/src/shared/arcadeCatalog.ts'))return;
+ return{code:code.replace("...ARCADE_HOUSE_GAMES, CARIBBEAN_GAME, 'studio-flooded-temple'","...ARCADE_HOUSE_GAMES, CARIBBEAN_GAME, 'studio-wild-nudge', 'studio-flooded-temple'").replace("id==='studio-wild-nudge'||id==='flag-tote'","id==='flag-tote'"),map:null};
+},configureServer(server){server.middlewares.use(async(req,res,next)=>{
  const path=new URL(req.url||'/',api).pathname;
  if(path==='/__test/nudge/stop'&&req.method==='POST'){res.end('stopping');void stop().then(()=>process.exit(0));return;}
  const fixture=path.startsWith('/__test/nudge/');
  if(!fixture&&!(path==='/api/demo-wallet/expansion'&&req.method==='POST')){next();return;}
  try{
   const identity=await fetch(api+'/api/auth/me',{headers:{Cookie:req.headers.cookie||''}}).then(r=>r.json());if(!identity.account)throw new WalletError(401,'Войди в зал.');const account=identity.account.id;
-  if(!fixture&&!forced.has(account)){next();return;}
   if(req.headers.origin&&new URL(req.headers.origin).origin!==new URL('http://127.0.0.1:'+webPort).origin)throw new WalletError(403,'Unexpected local origin');
   if(req.headers['x-royal-account-id']&&req.headers['x-royal-account-id']!==account)throw new WalletError(401,'Account changed');
   let text='';if(req.method==='POST')for await(const part of req){text+=part;if(text.length>8192)throw new WalletError(413,'Too large');}const body=text?JSON.parse(text):{};
@@ -30,8 +34,8 @@ const plugin:Plugin={name:'wild-nudge-local-fixture',configureServer(server){ser
   if(path==='/__test/nudge/topup'&&req.method==='POST'){const amount=body.amount??1000;if(!Number.isSafeInteger(amount)||amount<1||amount>10000)throw Error('Invalid fixture credit');reply=await wallet.operate(account,{id:randomUUID(),kind:'deposit',amount});}
   else if(path==='/__test/nudge/scenario'&&req.method==='POST'){const tickets=scenarios[body.name];if(!tickets)throw Error('Unknown scenario');forced.set(account,tickets.slice());reply={ready:true};}
   else if(path==='/api/demo-wallet/expansion'&&req.method==='POST'){
-   if(body.gameId!==WILD_NUDGE_GAME)throw new WalletError(400,'Fixture only supports Galactic Reactor');const tickets=forced.get(account)!;
-   const local=new DemoWalletStore(db,max=>{const ticket=tickets.length?tickets.shift()!:30;if(ticket>=max)throw Error('Fixture entropy mismatch');return ticket;});await local.ready;
+   if(body.gameId!==WILD_NUDGE_GAME){const response=await fetch(api+path,{method:'POST',headers:{...Object.fromEntries(Object.entries(req.headers).filter(([key,value])=>!['host','content-length','connection'].includes(key)&&typeof value==='string')),'Content-Type':'application/json'},body:JSON.stringify(body)});res.statusCode=response.status;res.setHeader('Content-Type','application/json');res.end(await response.text());return;}const tickets=forced.get(account);
+   const local=new DemoWalletStore(db,max=>{const ticket=tickets?(tickets.length?tickets.shift()!:30):randomInt(max);if(ticket>=max)throw Error('Fixture entropy mismatch');return ticket;});await local.ready;
    reply=await local.expansion.operate(account,body,2,true,true,true,true,true,true,true,true,2,4,true,true,2,2,2,req.headers[WILD_NUDGE_CLIENT_HEADER.toLowerCase()]==='1');
    if((reply as any).session?.state==='settled')forced.delete(account);
   }else throw new WalletError(404,'Unknown fixture');

@@ -25,7 +25,7 @@ export const BASE_EXPANSION_GAMES = ['github-diamonds','github-crash','github-th
 export const EXPANSION_GAMES = [...BASE_EXPANSION_GAMES,...VARIANT_GAMES,...STUDIO_GAMES,PENALTY_GAME,TEMPLE_GAME,FOREST_HEART_GAME,CARIBBEAN_GAME,FLAG_GAME,JACKIE_GAME,WILD_NUDGE_GAME] as const;
 export type ExpansionGameId = typeof EXPANSION_GAMES[number];
 export const EXPANSION_NAMES: Record<ExpansionGameId,string> = {
-  [WILD_NUDGE_GAME]:translateText('Star Spin'),
+  [WILD_NUDGE_GAME]:translateText('Галактический реактор'),
   [JACKIE_GAME]:translateText('Гонконгский воин'),
   [FLAG_GAME]:translateText('Флажочки'),
   [FOREST_HEART_GAME]:translateText('Сердце леса'),

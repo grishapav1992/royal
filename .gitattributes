@@ -1,0 +1,2 @@
+# Qualification references bind exact JSON bytes on Windows and Linux.
+docs/game-math/qualifications/*.json text eol=lf

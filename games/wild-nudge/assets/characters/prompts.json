@@ -1,7 +1,7 @@
 {
   "game": "Star Spin",
   "tool": "Built-in image_gen",
-  "version": 1,
+  "version": 2,
   "note": "Four original adult companions, two per side. Source images retained; runtime assets only resized and converted to WebP. No figure cropping.",
   "characters": [
     {
@@ -11,8 +11,8 @@
       "width": 640,
       "height": 960,
       "hasAlpha": true,
-      "bytes": 198812,
-      "sha256": "3d8f344568b24660e29505760d553e5fb81beda428695f22f7b28285c56e3e81"
+      "bytes": 163696,
+      "sha256": "bd61ed5a356ed4a64a5777bf3cd75dd8f3867d0c7ff11399e1107ab7040d63ea"
     },
     {
       "id": "aeliri",
@@ -21,8 +21,8 @@
       "width": 640,
       "height": 960,
       "hasAlpha": true,
-      "bytes": 189862,
-      "sha256": "b5b1df27854282b6ff0c1e8623cae51dc67b6c344076bbb7cefa13375023d658"
+      "bytes": 185542,
+      "sha256": "1db152e1e067a5545480c17857ac6fae9edf6d2877a154a0d7aecaa02b68207e"
     },
     {
       "id": "vespera",
@@ -31,8 +31,8 @@
       "width": 640,
       "height": 960,
       "hasAlpha": true,
-      "bytes": 191418,
-      "sha256": "0400d4ad1fcff24fd4aa60c32d225d652d1d0a5a09405c2a654f7620c268fdd4"
+      "bytes": 183822,
+      "sha256": "aca132497d65fcd5edd71e880e13377a8b8066d138ee881193f320cf7ea52fa9"
     },
     {
       "id": "nyxara",
@@ -41,8 +41,9 @@
       "width": 640,
       "height": 960,
       "hasAlpha": true,
-      "bytes": 213350,
-      "sha256": "c6f57f269324f487b90a3b82dd5b495ddae65de68a02712bbf088653cde04fe5"
+      "bytes": 199262,
+      "sha256": "0bd85ec325898d6653cd965ffdc45661b7c246b9e5db63b84fb17b6745b0cf2f"
     }
-  ]
+  ],
+  "poseManifest": "games/wild-nudge/assets/characters/poses.json"
 }
