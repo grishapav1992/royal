@@ -149,6 +149,29 @@ for(const both of [false,true])test(`expired reconnect ${both?'both players refu
   }finally{await c.db.close();}
 });
 
+test('global sweep and commands cannot adjudicate a duel before fresh room presence',async()=>{
+  for(const source of ['sweep','command']){
+    const c=await duelFixture();try{
+      await c.start();await c.choose(0,'paper');
+      const deadline=(await c.snapshot()).tsuEFa!.duel!.endsAt;
+      await c.step(deadline-c.now()-500);
+      Object.assign(c.people[1],{connected:false,disconnectedAt:c.now()});
+      if(source==='sweep')await c.store.sweep(deadline);
+      else await assert.rejects(c.store.command(c.actors[0],{id:randomUUID(),action:'move',challengeId:c.id,revision:0,move:{kind:'choose',round:1,choice:'rock'}},deadline),/недоступен/);
+      assert.equal((await c.snapshot()).active!.status,'playing');
+      await c.store.syncRoom(c.actors[0].roomId,c.people,deadline+50);
+      const paused=await c.store.snapshot(c.actors[0],deadline+50);
+      assert.equal(paused.active!.status,'playing');assert(paused.tsuEFa!.duel!.paused);
+      assert.equal(paused.active!.disconnected[0].until,deadline-500+60000);
+      assert.equal((await c.common.snapshot(c.actors[1].accountId)).balance,199.9);
+      await c.store.sweep(deadline+1000);assert.equal((await c.snapshot()).active!.status,'playing');
+      c.people[1].connected=true;await c.store.syncRoom(c.actors[0].roomId,c.people,deadline+1050);
+      const resumed=await c.store.snapshot(c.actors[0],deadline+1050);
+      assert.equal(resumed.active!.status,'playing');assert(!resumed.tsuEFa!.duel!.paused);
+    }finally{await c.db.close();}
+  }
+});
+
 test('mutual terms-ready race never charges an unconfirmed changed amount',async()=>{
   const c=await duelFixture();try{
     await c.accept();await Promise.allSettled([c.ready(0),c.command(1,{action:'terms',challengeId:c.id,termsRevision:0,stakeUnits:'500000'})]);

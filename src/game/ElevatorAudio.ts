@@ -65,9 +65,11 @@ export class ElevatorAudio {
     const immediate = document.hidden || preferences.muted || preferences.volume === 0 || c?.state !== 'running';
     for (const { source, gain } of this.voices) {
       if (c) {
-        gain.gain.cancelScheduledValues(c.currentTime);
-        if (immediate) gain.gain.setValueAtTime(0, c.currentTime);
-        else gain.gain.setTargetAtTime(.0001, c.currentTime, .008);
+        if (immediate) {
+          gain.gain.cancelScheduledValues(c.currentTime);gain.gain.setValueAtTime(0, c.currentTime);
+        } else {
+          gain.gain.cancelAndHoldAtTime(c.currentTime);gain.gain.setTargetAtTime(.0001, c.currentTime, .008);
+        }
         try { source.stop(c.currentTime + (immediate ? 0 : .04)); } catch { /* Already ended. */ }
       }
     }

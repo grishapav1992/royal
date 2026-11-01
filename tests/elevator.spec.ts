@@ -12,18 +12,20 @@ async function loaded(page: Page, path = '/?offline=1') {
   await page.goto(path);await expect(page.locator('#loading')).toHaveCount(0, { timeout: 30000 });
 }
 async function call(page: Page) {
+  await page.bringToFront();
   await page.locator('#elevator-shortcut').click();
   await expect(page.locator('#elevator-dialog')).toBeVisible({ timeout: 20000 });
   await expect(page.locator('#elevator-dialog')).toHaveAttribute('data-phase', 'choose');
 }
 async function travel(page: Page, target: HallId) {
+  await page.bringToFront();
   await page.locator(`[data-elevator-floor="${target}"]`).click();
   await expect(page.locator('#elevator-dialog')).toHaveAttribute('data-phase', 'closing');
   await expect.poll(async () => (await state(page)).hall).toBe(target);
   await expect(page.locator('#elevator-dialog')).toBeHidden();
   const s = await state(page), { dock } = await feedback(page);
   expect(Math.hypot(s.x - dock.arrival.x, s.y - dock.arrival.y)).toBeLessThan(3);
-  expect(s.locked).toBe(false);
+  await expect.poll(async () => (await state(page)).locked).toBe(false);
 }
 
 test('desktop cabin travels directly across all floors, returns control and leaves stairs usable', async ({ page }) => {
@@ -83,6 +85,35 @@ test('English names and cabin labels follow the current hall registry', async ({
   await expect(page.locator('.elevator-status')).toHaveText('Go directly to any floor');
   await expect(page.locator('[data-elevator-floor="github"]')).toContainText('Card lounge');
   await travel(page, 'github');
+});
+
+test('cancelling the motor preserves the current envelope without an amplitude spike', async ({ page }) => {
+  await loaded(page);
+  const result = await page.evaluate(async () => {
+    const modulePath = '/src/game/ElevatorAudio.ts';
+    const { ElevatorAudio } = await import(modulePath);
+    const c = new OfflineAudioContext(1, 48000, 48000);
+    // Offline rendering is scheduled while suspended; emulate the live context gate only.
+    const context = new Proxy(c, { get(target, key) {
+      if (key === 'state') return 'running';
+      const value = Reflect.get(target, key, target);
+      return typeof value === 'function' ? value.bind(target) : value;
+    } });
+    const audio = new ElevatorAudio({ context, output: c.destination,
+      getPreferences: () => ({ muted: false, volume: 1, casinoEnabled: false }), onPreferences: () => () => {} });
+    audio.play('ride');
+    const paused = c.suspend(.34), complete = c.startRendering();await paused;
+    const at = c.currentTime;audio.cancel();await c.resume();
+    const data = (await complete).getChannelData(0), center = Math.round(at * c.sampleRate);
+    let before = 0, after = 0;
+    for (let i = center - 480; i < center; i++) before = Math.max(before, Math.abs(data[i]));
+    for (let i = center; i < center + 480; i++) after = Math.max(after, Math.abs(data[i]));
+    const jump = Math.abs(data[center] - data[center - 1]);audio.dispose();
+    return { before, after, jump };
+  });
+  expect(result.before).toBeGreaterThan(.001);
+  expect(result.after).toBeLessThan(result.before * 1.2);
+  expect(result.jump).toBeLessThan(.001);
 });
 
 test('two online visitors use independent cabins and receive authoritative arrivals', async ({ page, browser }) => {

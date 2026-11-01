@@ -1,0 +1,777 @@
+{
+  "release": "security-idle-20261101-v1",
+  "status": "verified",
+  "date": "2026-11-01",
+  "sourceCommit": "4eb47d5d7b29622453616888d24f62db9e26245b",
+  "baseCommit": "455e48100e833bee9f8d79f38f1ee7214dad8e32",
+  "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "diagnosis": {
+    "sdkCloseCode": 4003,
+    "sdkMeaning": "FAILED_TO_RECONNECT",
+    "oldClientBehavior": "Invented a ten-minute guard ban for any final close with code 4003, even without a server sanction",
+    "fixedBehavior": "Only a confirmed, unexpired server ban deadline can open the guard dialog; reconnection failure follows the normal disconnected flow",
+    "affectedAccountReadOnlyCheck": "No active server ban; previous warning expired; no account state changed"
+  },
+  "changedSources": [
+    "src/network/LobbyClient.ts"
+  ],
+  "backendChanges": [],
+  "moduleChanges": [],
+  "addedGames": [],
+  "restoredGames": [],
+  "checks": {
+    "clientLifecycleTests": 15,
+    "installerScopeTests": 4,
+    "typecheck": true,
+    "rtpProfiles": 37,
+    "stakePolicies": 19,
+    "stakeAdmissions": 19,
+    "releasePlan": true,
+    "releasePrepare": true,
+    "releaseVerifyGitHub": true,
+    "packageLockIdenticalToProduction": true,
+    "localHostWithConnectedChat": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "chatConnected": true,
+        "forcedCloseCode": 4003,
+        "falseBanVisible": false,
+        "errors": [],
+        "reloadedAndRejoined": true
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "chatConnected": true,
+        "forcedCloseCode": 4003,
+        "falseBanVisible": false,
+        "errors": [],
+        "reloadedAndRejoined": true
+      }
+    ],
+    "applicationBuild": {
+      "passed": true,
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 4108
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 7519
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 6982
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 8924
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 86
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 22
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 23
+        }
+      ],
+      "durationMs": 27715
+    }
+  },
+  "preservation": {
+    "sourcePathsBefore": 2574,
+    "runtimeFilesBefore": 8581,
+    "moduleFilesBefore": 3716,
+    "otherPersistentServices": 13,
+    "productionAccountsCreated": false,
+    "productionWagersCreated": false,
+    "productionMessagesSent": false
+  },
+  "publicBefore": {
+    "mode": "before",
+    "checks": [
+      {
+        "path": "/healthz",
+        "status": 200,
+        "sha256": "7482326171995296103a4f794befc2c7831df741969bdbe936bdb637195e4dfc"
+      },
+      {
+        "path": "/api/demo-wallet",
+        "status": 401,
+        "sha256": "73b970e47d6bf990e9c3dfe858b8e2a83e72e904f4aeb01374be698bbc27b4ed"
+      },
+      {
+        "path": "/api/game-wallet",
+        "status": 410,
+        "sha256": "315631d67986c57670e9631e6aebb3c072e97b6e6f31a467c81dd6f0e83603ce"
+      },
+      {
+        "path": "/api/nile-play",
+        "status": 410,
+        "sha256": "315631d67986c57670e9631e6aebb3c072e97b6e6f31a467c81dd6f0e83603ce"
+      },
+      {
+        "path": "/?security-idle=before",
+        "status": 200,
+        "sha256": "2a484ef0d239d558e8f48e4e6bda2faa43c4e1773dae867a6011ac782fdd5811"
+      },
+      {
+        "path": "/game-modules/studio-caramel-carnival/active.json",
+        "status": 200,
+        "sha256": "77263ed8401071863eb5a4feabf7a03e91feea6bbed18740c0bdb44b612cd7a4"
+      },
+      {
+        "path": "/game-modules/studio-last-convoy/active.json",
+        "status": 200,
+        "sha256": "69946ea68712d64beac408eb61b47799601f526d86ccdc04f144e255e8faed8e"
+      },
+      {
+        "path": "/game-modules/studio-nitro-run/active.json",
+        "status": 200,
+        "sha256": "e5aef46681488697de310edd382eff0307977f49bc6a91893d6b990750dce980"
+      },
+      {
+        "path": "/game-modules/studio-meme-overload/active.json",
+        "status": 200,
+        "sha256": "815e361e74bfcf8a55329d2de5a6c9afc2c0dd91f489fba26fd5aa48ce295391"
+      },
+      {
+        "path": "/game-modules/studio-velvet-reign/active.json",
+        "status": 200,
+        "sha256": "e5e7e8df568dfac25275ac0b158ef5522ebcc486989a4a3342d9050865fa7c69"
+      },
+      {
+        "path": "/game-modules/original-cr-vs-leo/active.json",
+        "status": 200,
+        "sha256": "becdc763703591cf95d9212b819a601fb0f498426d5eede95f87ab624e9eba3a"
+      },
+      {
+        "path": "/game-modules/original-jackie-chan/active.json",
+        "status": 200,
+        "sha256": "a1607db4c45305c99fa7a996e739a009d3d008be444f576d460be2d391116147"
+      },
+      {
+        "path": "/game-modules/royal-roulette/active.json",
+        "status": 200,
+        "sha256": "620df5f0de51fffd36de900cd664bf127d878daa84fd288886d334ee342dc8ad"
+      },
+      {
+        "path": "/game-modules/royal-plinko/active.json",
+        "status": 200,
+        "sha256": "76e5dfb3670ffa03e15d7e097ec9d70be0f0b8299798b46ffb0e3ffa24d130a5"
+      },
+      {
+        "path": "/game-modules/github-crash/active.json",
+        "status": 200,
+        "sha256": "4f725d42b683d966c66fa4605c9a940e578221e0fea999bc1591cbd2d7972231"
+      },
+      {
+        "path": "/game-modules/flag-battle/active.json",
+        "status": 200,
+        "sha256": "dd68787a386773d57241d8c0aa79d1d04cb143290e475899447d09b4ecab8d37"
+      },
+      {
+        "path": "/game-modules/studio-forest-heart/active.json",
+        "status": 200,
+        "sha256": "f5da0f68999a850a50ad7113a0685cfdc130f6355c46c0166b2456ac7f2a8a6d"
+      },
+      {
+        "path": "/game-modules/studio-caribbean-treasures/active.json",
+        "status": 200,
+        "sha256": "8b052615f0d797f6b84a83a153a06e89650ce50adb4d54ea482c01f79f1f5a92"
+      },
+      {
+        "path": "/game-modules/studio-cosmic-escape/active.json",
+        "status": 200,
+        "sha256": "90ade379b4dcb1dd2eac099db0e2546ae1c243f5cc83547d3468a4d6150b1e35"
+      },
+      {
+        "path": "/game-modules/studio-flooded-temple/active.json",
+        "status": 200,
+        "sha256": "8d4572ab1b1eae5f7f7ea6c1129fc4fb1498649c685cf12f16f4965fed59b827"
+      },
+      {
+        "path": "/game-modules/studio-dracona/active.json",
+        "status": 200,
+        "sha256": "79a1f25eac921f8ba20d870bcbd0db7bd4954f636d6964dbfc5a3429d376b55e"
+      },
+      {
+        "path": "/game-modules/studio-afterglow/active.json",
+        "status": 200,
+        "sha256": "ba4dbe2264b70a49a3b0efd2572ed746402a0a91d58615c8179b0bdfbb405d86"
+      },
+      {
+        "path": "/game-modules/studio-neopolis/active.json",
+        "status": 200,
+        "sha256": "61fc159b3effb730d45036a55bffd52fc0c410c327adbe1b34b9c0c2e69897ca"
+      }
+    ],
+    "passed": true,
+    "activeGamePointers": 18,
+    "addedGames": [],
+    "restoredGames": []
+  },
+  "limits": [
+    "Connected-chat disruption was tested with disposable local accounts, not production player sessions.",
+    "Mobile verification used Chrome viewport emulation, not a physical phone."
+  ],
+  "cleanup": {
+    "owner": "security-idle-20261101",
+    "localTaskDirectory": "artifacts/work/security-idle-20261101",
+    "cleanupCondition": "Remove worktree and temporary build/transport/browser files after verification of the final GitHub report commit; retain compact completion report only",
+    "otherActiveWork": "Other worktrees, the main checkout, and its existing untracked files are outside this cleanup scope",
+    "database": {
+      "removed": "/var/folders/jf/j4h8s0g91q9fgs6xm6lbhlk80000gp/T/royal-pg-ECm5ZU",
+      "purpose": "Disposable synthetic local host database created by this task",
+      "createdAt": "2026-11-01T17:21:39.602Z",
+      "noRunningPid": true,
+      "logicalBytes": 51189024,
+      "freeBefore": 46764859392,
+      "freeAfter": 46816935936,
+      "physicalReclamationClaimed": false
+    },
+    "builds": {
+      "preservedSourceCommit": "4eb47d5d7b29622453616888d24f62db9e26245b",
+      "removed": [
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/security-idle-20261101/checkout/dist",
+          "logicalBytes": 2897965
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/security-idle-20261101/checkout/dist-server",
+          "logicalBytes": 4688792
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/security-idle-20261101/checkout/module-dist",
+          "logicalBytes": 272939850
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/security-idle-20261101/checkout/module-build",
+          "logicalBytes": 1659315
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/security-idle-20261101/payload",
+          "logicalBytes": 7095495
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/security-idle-20261101/transport.tgz",
+          "logicalBytes": 2018176
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/security-idle-20261101/before.json",
+          "logicalBytes": 3502365
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/security-idle-20261101/startup.png",
+          "logicalBytes": 47702
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/security-idle-20261101/reconnect-1440.png",
+          "logicalBytes": 168089
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/security-idle-20261101/reconnect-390.png",
+          "logicalBytes": 55934
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/security-idle-20261101/stand.ts",
+          "logicalBytes": 5360
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/security-idle-20261101/browser-check.mjs",
+          "logicalBytes": 2682
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/security-idle-20261101/public-check.mjs",
+          "logicalBytes": 1445
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/security-idle-20261101/public-browser.mjs",
+          "logicalBytes": 979
+        }
+      ],
+      "freeBefore": 46816632832,
+      "freeAfter": 46814957568,
+      "physicalReclamationClaimed": false
+    },
+    "server": {
+      "removed": [
+        {
+          "path": "/opt/royal-releases/security-idle-20261101-v1/runtime-context",
+          "logicalBytes": 2733622
+        },
+        {
+          "path": "/opt/royal-releases/security-idle-20261101-v1.tgz",
+          "logicalBytes": 2019086
+        }
+      ],
+      "freeBefore": 12175298560,
+      "freeAfter": 12177342464,
+      "physicalReclamationClaimed": false,
+      "preservedSourceCommit": "4eb47d5d7b29622453616888d24f62db9e26245b"
+    },
+    "gitMetadata": [
+      {
+        "source": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/refs/heads/feature/casino-street 2",
+        "quarantine": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/codex-invalid-refs/security-idle-20261101-casino-street-duplicate-ref",
+        "bytes": 41,
+        "commit": "715a56afd1355bd7618bd984a10c41a3c945abfc",
+        "validBranchUntouched": "refs/heads/feature/casino-street",
+        "reason": "Git ref names cannot contain spaces; the duplicate file blocked origin fetch. Its original bytes are preserved."
+      },
+      {
+        "reason": "Files with spaces are invalid Git reference names and block fetching; original bytes retained in Git metadata quarantine",
+        "preserved": [
+          {
+            "source": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/refs/heads/feature/security-idle-20261101 2",
+            "quarantine": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/codex-invalid-refs/security-idle-20261101-heads_feature_security-idle-20261101_2",
+            "bytes": 41,
+            "commit": "831ede0765e7bb0fe323bd52290657497da370a2"
+          },
+          {
+            "source": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/refs/remotes/origin/feature/casino-street 2",
+            "quarantine": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/codex-invalid-refs/security-idle-20261101-remotes_origin_feature_casino-street_2",
+            "bytes": 41,
+            "commit": "f87719e87a0cff04b8771d88cdfc6ae0aeff1e4f"
+          },
+          {
+            "source": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/refs/remotes/origin/feature/game-layout-priorities-plan 2",
+            "quarantine": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/codex-invalid-refs/security-idle-20261101-remotes_origin_feature_game-layout-priorities-plan_2",
+            "bytes": 41,
+            "commit": "831ede0765e7bb0fe323bd52290657497da370a2"
+          },
+          {
+            "source": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/refs/remotes/origin/main 2",
+            "quarantine": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/codex-invalid-refs/security-idle-20261101-remotes_origin_main_2",
+            "bytes": 41,
+            "commit": "831ede0765e7bb0fe323bd52290657497da370a2"
+          }
+        ],
+        "activeValidRefsUntouched": true
+      }
+    ],
+    "localCompletionReport": "artifacts/work/security-idle-20261101/completion.json",
+    "activeWorkExceptions": [
+      {
+        "scope": "Primary checkout, its pre-existing untracked files, and all other chats worktrees and outputs",
+        "condition": "Keep the current checkout and active work; each owning chat removes its temporary work only after preserving its sources in GitHub."
+      },
+      {
+        "scope": ".git/codex-invalid-refs/security-idle-20261101-*",
+        "bytes": 205,
+        "condition": "Tiny invalid-reference metadata is retained with its original commit identifiers; valid Git references were preserved."
+      }
+    ]
+  },
+  "publication": {
+    "published": true,
+    "preparedImage": "sha256:7268c76952c9ad690324d740ea0f1d64d055fde902a934a2695faf0ac82ff4af",
+    "runningImage": "sha256:7268c76952c9ad690324d740ea0f1d64d055fde902a934a2695faf0ac82ff4af",
+    "containerRestarted": true,
+    "sourceCommit": "4eb47d5d7b29622453616888d24f62db9e26245b",
+    "changedSources": 1,
+    "clientDeltaFiles": 2,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 0,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 13
+  },
+  "rollback": {
+    "image": "sha256:f7766eabb92360c3e788a5406bc8786ae9a3eeb416c4e0b6d7ef3c1ed21ae10f",
+    "sourceArchive": "/opt/royal-backups/security-idle-20261101-v1/source.tgz",
+    "sourceArchiveBytes": 4101,
+    "sourceArchiveSha256": "ec73cc1e1f16e9feb6770bb5e6fde5b315509425e75d6c998f37a2232a3174e4"
+  },
+  "verifiedAfter": {
+    "sourceCommit": "4eb47d5d7b29622453616888d24f62db9e26245b",
+    "sourceFiles": 2574,
+    "runtimeFiles": 8582,
+    "moduleFiles": 3716,
+    "availableBytes": 12152119296,
+    "healthy": "healthy"
+  },
+  "publicAfter": {
+    "mode": "after",
+    "checks": [
+      {
+        "path": "/healthz",
+        "status": 200,
+        "sha256": "7482326171995296103a4f794befc2c7831df741969bdbe936bdb637195e4dfc"
+      },
+      {
+        "path": "/api/demo-wallet",
+        "status": 401,
+        "sha256": "73b970e47d6bf990e9c3dfe858b8e2a83e72e904f4aeb01374be698bbc27b4ed"
+      },
+      {
+        "path": "/api/game-wallet",
+        "status": 410,
+        "sha256": "315631d67986c57670e9631e6aebb3c072e97b6e6f31a467c81dd6f0e83603ce"
+      },
+      {
+        "path": "/api/nile-play",
+        "status": 410,
+        "sha256": "315631d67986c57670e9631e6aebb3c072e97b6e6f31a467c81dd6f0e83603ce"
+      },
+      {
+        "path": "/?security-idle=after",
+        "status": 200,
+        "sha256": "ba08f2040c7ff0e0fe8afce17de5763fd5aa811268f5c4027bc1b26c0dd4ac91"
+      },
+      {
+        "path": "/game-modules/studio-caramel-carnival/active.json",
+        "status": 200,
+        "sha256": "77263ed8401071863eb5a4feabf7a03e91feea6bbed18740c0bdb44b612cd7a4"
+      },
+      {
+        "path": "/game-modules/studio-last-convoy/active.json",
+        "status": 200,
+        "sha256": "69946ea68712d64beac408eb61b47799601f526d86ccdc04f144e255e8faed8e"
+      },
+      {
+        "path": "/game-modules/studio-nitro-run/active.json",
+        "status": 200,
+        "sha256": "e5aef46681488697de310edd382eff0307977f49bc6a91893d6b990750dce980"
+      },
+      {
+        "path": "/game-modules/studio-meme-overload/active.json",
+        "status": 200,
+        "sha256": "815e361e74bfcf8a55329d2de5a6c9afc2c0dd91f489fba26fd5aa48ce295391"
+      },
+      {
+        "path": "/game-modules/studio-velvet-reign/active.json",
+        "status": 200,
+        "sha256": "e5e7e8df568dfac25275ac0b158ef5522ebcc486989a4a3342d9050865fa7c69"
+      },
+      {
+        "path": "/game-modules/original-cr-vs-leo/active.json",
+        "status": 200,
+        "sha256": "becdc763703591cf95d9212b819a601fb0f498426d5eede95f87ab624e9eba3a"
+      },
+      {
+        "path": "/game-modules/original-jackie-chan/active.json",
+        "status": 200,
+        "sha256": "a1607db4c45305c99fa7a996e739a009d3d008be444f576d460be2d391116147"
+      },
+      {
+        "path": "/game-modules/royal-roulette/active.json",
+        "status": 200,
+        "sha256": "620df5f0de51fffd36de900cd664bf127d878daa84fd288886d334ee342dc8ad"
+      },
+      {
+        "path": "/game-modules/royal-plinko/active.json",
+        "status": 200,
+        "sha256": "76e5dfb3670ffa03e15d7e097ec9d70be0f0b8299798b46ffb0e3ffa24d130a5"
+      },
+      {
+        "path": "/game-modules/github-crash/active.json",
+        "status": 200,
+        "sha256": "4f725d42b683d966c66fa4605c9a940e578221e0fea999bc1591cbd2d7972231"
+      },
+      {
+        "path": "/game-modules/flag-battle/active.json",
+        "status": 200,
+        "sha256": "dd68787a386773d57241d8c0aa79d1d04cb143290e475899447d09b4ecab8d37"
+      },
+      {
+        "path": "/game-modules/studio-forest-heart/active.json",
+        "status": 200,
+        "sha256": "f5da0f68999a850a50ad7113a0685cfdc130f6355c46c0166b2456ac7f2a8a6d"
+      },
+      {
+        "path": "/game-modules/studio-caribbean-treasures/active.json",
+        "status": 200,
+        "sha256": "8b052615f0d797f6b84a83a153a06e89650ce50adb4d54ea482c01f79f1f5a92"
+      },
+      {
+        "path": "/game-modules/studio-cosmic-escape/active.json",
+        "status": 200,
+        "sha256": "90ade379b4dcb1dd2eac099db0e2546ae1c243f5cc83547d3468a4d6150b1e35"
+      },
+      {
+        "path": "/game-modules/studio-flooded-temple/active.json",
+        "status": 200,
+        "sha256": "8d4572ab1b1eae5f7f7ea6c1129fc4fb1498649c685cf12f16f4965fed59b827"
+      },
+      {
+        "path": "/game-modules/studio-dracona/active.json",
+        "status": 200,
+        "sha256": "79a1f25eac921f8ba20d870bcbd0db7bd4954f636d6964dbfc5a3429d376b55e"
+      },
+      {
+        "path": "/game-modules/studio-afterglow/active.json",
+        "status": 200,
+        "sha256": "ba4dbe2264b70a49a3b0efd2572ed746402a0a91d58615c8179b0bdfbb405d86"
+      },
+      {
+        "path": "/game-modules/studio-neopolis/active.json",
+        "status": 200,
+        "sha256": "61fc159b3effb730d45036a55bffd52fc0c410c327adbe1b34b9c0c2e69897ca"
+      },
+      {
+        "path": "/assets/index-CnjnyioA.js",
+        "status": 200,
+        "sha256": "4a8398696bb9c6a9e57515d13c6d48971940a758c88ec3b8910294ca6389033d"
+      },
+      {
+        "path": "/index.html",
+        "status": 200,
+        "sha256": "ba08f2040c7ff0e0fe8afce17de5763fd5aa811268f5c4027bc1b26c0dd4ac91"
+      }
+    ],
+    "passed": true,
+    "activeGamePointers": 18,
+    "addedGames": [],
+    "restoredGames": []
+  },
+  "publicBrowser": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "guestHallLoaded": true,
+      "errors": [],
+      "falseBanVisible": false
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "guestHallLoaded": true,
+      "errors": [],
+      "falseBanVisible": false
+    }
+  ],
+  "executableComparison": {
+    "oldPath": "/assets/index-Ctjck0k4.js",
+    "unchangedPrefixCharacters": 2515845,
+    "unchangedSuffixCharacters": 46915,
+    "before": "this.events.ejected(g||Date.now()+6e5",
+    "after": "g>Date.now()&&this.events.ejected(g"
+  },
+  "maintenance": {
+    "startedAt": 1793555555.85472,
+    "status": "completed",
+    "freeBefore": 12145537024,
+    "release": "security-idle-20261101-v1",
+    "sourceCommit": "4eb47d5d7b29622453616888d24f62db9e26245b",
+    "currentImage": "sha256:7268c76952c9ad690324d740ea0f1d64d055fde902a934a2695faf0ac82ff4af",
+    "rollbackImage": "sha256:f7766eabb92360c3e788a5406bc8786ae9a3eeb416c4e0b6d7ef3c1ed21ae10f",
+    "plannedEntries": 39,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 102,
+    "removedEntries": 39,
+    "removedImageTags": 5,
+    "freeAfter": 12174823424,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "finishedAt": 1793556512.4898512,
+    "durationSeconds": 956.64,
+    "result": {
+      "ok": true,
+      "atUtc": "2026-11-01T18:08:32Z",
+      "release": "security-idle-20261101-v1",
+      "sourceCommit": "4eb47d5d7b29622453616888d24f62db9e26245b",
+      "currentImage": "sha256:7268c76952c9ad690324d740ea0f1d64d055fde902a934a2695faf0ac82ff4af",
+      "rollbackImage": "sha256:f7766eabb92360c3e788a5406bc8786ae9a3eeb416c4e0b6d7ef3c1ed21ae10f",
+      "removedEntries": 39,
+      "removedImageTags": 5,
+      "dockerRetainedImages": [],
+      "freeBefore": 12144807936,
+      "freeAfter": 12174839808,
+      "freedBytes": 30031872,
+      "containersUnchanged": true,
+      "configurationUnchanged": true,
+      "externalModulesUnchanged": true,
+      "databaseRestored": false,
+      "volumesDeleted": false,
+      "healthOk": true
+    },
+    "hourlyTimerEnabled": true,
+    "deletions": {
+      "removed": [
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/__pycache__",
+          "allocatedBytes": 24576
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/after.json",
+          "allocatedBytes": 3616768
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/baseline-backend.js",
+          "allocatedBytes": 2363392
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/before.json",
+          "allocatedBytes": 3506176
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/build-result.json",
+          "allocatedBytes": 1171456
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/build.log",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/cleanup.json",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/deploy.py",
+          "allocatedBytes": 12288
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/dist-delta",
+          "allocatedBytes": 2748416
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/engine-build.py",
+          "allocatedBytes": 8192
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/image_metadata.py",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/install-manifest.json",
+          "allocatedBytes": 3670016
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/overlay-base.py",
+          "allocatedBytes": 28672
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/published.json",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/quiesce.cjs",
+          "allocatedBytes": 12288
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/release-github.json",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/release-manifest.json",
+          "allocatedBytes": 868352
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/runtime-inventory.cjs",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/server-delta",
+          "allocatedBytes": 2367488
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/server-summary.json",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/snapshot-base.py",
+          "allocatedBytes": 16384
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/snapshot.py",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/source",
+          "allocatedBytes": 483328
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/test_deploy.py",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/hall-elevator-20261101-v1/deploy.py",
+          "allocatedBytes": 12288
+        },
+        {
+          "path": "/opt/royal-releases/hall-elevator-20261101-v1/dist-delta",
+          "allocatedBytes": 2932736
+        },
+        {
+          "path": "/opt/royal-releases/hall-elevator-20261101-v1/engine-build.py",
+          "allocatedBytes": 8192
+        },
+        {
+          "path": "/opt/royal-releases/hall-elevator-20261101-v1/image_metadata.py",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/hall-elevator-20261101-v1/install-manifest.json",
+          "allocatedBytes": 3670016
+        },
+        {
+          "path": "/opt/royal-releases/hall-elevator-20261101-v1/overlay-base.py",
+          "allocatedBytes": 28672
+        },
+        {
+          "path": "/opt/royal-releases/hall-elevator-20261101-v1/quiesce.cjs",
+          "allocatedBytes": 12288
+        },
+        {
+          "path": "/opt/royal-releases/hall-elevator-20261101-v1/release-github.json",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/hall-elevator-20261101-v1/release-manifest.json",
+          "allocatedBytes": 905216
+        },
+        {
+          "path": "/opt/royal-releases/hall-elevator-20261101-v1/runtime-inventory.cjs",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/hall-elevator-20261101-v1/server-delta",
+          "allocatedBytes": 2367488
+        },
+        {
+          "path": "/opt/royal-releases/hall-elevator-20261101-v1/snapshot-base.py",
+          "allocatedBytes": 16384
+        },
+        {
+          "path": "/opt/royal-releases/hall-elevator-20261101-v1/snapshot.py",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/hall-elevator-20261101-v1/source",
+          "allocatedBytes": 724992
+        },
+        {
+          "path": "/opt/royal-backups/guard-counter-20261101-v1",
+          "allocatedBytes": 143360
+        }
+      ],
+      "consideredAllocatedBytes": 31772672,
+      "physicalReclamationClaimed": false
+    }
+  },
+  "publicationRecovery": "The initial SSH connection ended after building the candidate. The completed build was published by the same guarded publish operation in an independent systemd task."
+}

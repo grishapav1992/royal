@@ -19,11 +19,11 @@ def metadata(identity,content=CONTENT,architecture=None):
     config=blob(manifest['config']['digest'],content);layers=config.get('rootfs',{}).get('diff_ids')
     require(isinstance(layers,list) and layers and all(re.fullmatch('sha256:[a-f0-9]{64}',n) for n in layers),'Invalid OCI layers')
     return {'Config':config['config'],'RootFS':{'Layers':layers},'configDigest':manifest['config']['digest']}
-def engine(method,path,body=None,binary=False):
+def engine(method,path,body=None,binary=False,timeout=300):
     class Connection(http.client.HTTPConnection):
         def connect(self):
             self.sock=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM);self.sock.settimeout(self.timeout);self.sock.connect('/var/run/docker.sock')
-    c=Connection('localhost',timeout=300)
+    c=Connection('localhost',timeout=timeout)
     try:
         c.request(method,path,body if binary else json.dumps(body).encode() if body is not None else None,{'Content-Type':'application/x-tar' if binary else 'application/json'})
         r=c.getresponse();data=r.read();require(r.status in {200,201,204},'Docker staging request failed: '+method+' '+path+' '+str(r.status));return data
@@ -44,7 +44,7 @@ def build(root,parent,repo,tag,source_commit,files):
         created=json.loads(engine('POST','/containers/create?name=royal-stake-build-'+owner,{'Image':parent,'Labels':{'royal.stake.build':owner},'HostConfig':{'NetworkMode':'none','CapDrop':['ALL'],'SecurityOpt':['no-new-privileges=true']}}));identity=created['Id'];require(re.fullmatch('[a-f0-9]{64}',identity),'Invalid staging container')
         engine('PUT','/containers/'+identity+'/archive?path=/app&noOverwriteDirNonDir=true&copyUIDGID=true',archive(root,files),True)
         config=dict(parent_info['Config']);config['Labels']={**(config.get('Labels') or {}),'org.opencontainers.image.revision':source_commit}
-        committed=json.loads(engine('POST','/commit?container='+identity+'&repo='+repo+'&tag='+tag+'&pause=false',config))
+        committed=json.loads(engine('POST','/commit?container='+identity+'&repo='+repo+'&tag='+tag+'&pause=false',config,timeout=900))
         require(re.fullmatch('sha256:[a-f0-9]{64}',committed.get('Id','')),'Uncertain staging commit')
         return committed['Id']
     finally:

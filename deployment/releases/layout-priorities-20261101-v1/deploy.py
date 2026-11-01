@@ -163,17 +163,25 @@ def rollback_all(b):
         b.OLD['moduleFiles']=b.snapshot()['moduleFiles']
     return b.rollback()
 
+def release_all(b):
+    built=b.build()
+    backup_modules(b)
+    host=b.publish()
+    published=publish_modules(b)
+    return {'build':built,'host':host,'published':published}
+
 def main():
-    require(len(sys.argv)==2 and sys.argv[1] in ['check','build','publish','modules','rollback'],'Unexpected operation')
+    require(len(sys.argv)==2 and sys.argv[1] in ['check','build','publish','modules','release','rollback'],'Unexpected operation')
+    operation=sys.argv[1]
     b=configure();b.payload();locks=[]
     for name in ['/opt/royal-releases/themed-publish.lock','/opt/royal/.client-presentation-deploy.lock','/opt/royal-game-modules-state/module.lock']:
-        require(not Path(name).is_symlink(),'Deployment lock symlink rejected');handle=open(name,'a');fcntl.flock(handle,fcntl.LOCK_EX|fcntl.LOCK_NB);locks.append(handle)
+        require(not Path(name).is_symlink(),'Deployment lock symlink rejected');handle=open(name,'a');fcntl.flock(handle,fcntl.LOCK_EX|(0 if operation=='release' else fcntl.LOCK_NB));locks.append(handle)
     for number in [signal.SIGTERM,signal.SIGHUP,signal.SIGINT]:signal.signal(number,lambda n,f:(_ for _ in ()).throw(InterruptedError(str(n))))
-    operation=sys.argv[1]
     if operation=='check':b.baseline();result={'ready':True}
     elif operation=='build':result=b.build();backup_modules(b)
     elif operation=='publish':backup_modules(b);result=b.publish()
     elif operation=='modules':result=publish_modules(b)
+    elif operation=='release':result=release_all(b)
     else:result=rollback_all(b)
     print(json.dumps(result),flush=True)
 if __name__=='__main__':main()

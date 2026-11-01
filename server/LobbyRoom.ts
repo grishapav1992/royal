@@ -432,6 +432,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.stop(client.sessionId);
     const control = this.controls.get(client.sessionId); if (control) control.chatRevision++;
     const p = this.state.players.get(client.sessionId); if (p) p.connected = false;
+    this.pvp.dropped(client.sessionId);
     if (!p || !this.accessAllowed(client)) return;
     // Refused joins, expired reservations and shutdown must not reject outside the room lifecycle.
     void this.allowReconnection(client, this.pvp.locked(client.sessionId)?60:20).catch(() => {});

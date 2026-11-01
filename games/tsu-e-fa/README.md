@@ -1,6 +1,6 @@
 # Цу-е-фа
 
-Independent module `tsu-e-fa`, package 1.3.0, host API/rules/progress 1/4/1. Requires the matching host/backend. Shared authentication, room transport, chat, operation recovery and current virtual USDT wallet remain in the host. The module creates no separate wallet or game service. This work does not publish or restore any other game.
+Independent module `tsu-e-fa`, package 1.3.1, host API/rules/progress 1/4/1. Requires the matching host/backend. Shared authentication, room transport, chat, operation recovery and current virtual USDT wallet remain in the host. The module creates no separate wallet or game service. This work does not publish or restore any other game.
 
 ## Rules 4: best of three
 
@@ -39,13 +39,13 @@ The server owns phases, deadlines, participants and settlement. Requests use sta
 | Confirmed event | Presentation | Recovery |
 | --- | --- | --- |
 | Terms agreed | Exact amount, both readiness states, future net credit | A new revision clears consent; no inferred payment from a button animation. |
-| Own sign accepted | Selected button pressed, buttons disabled, hand stays closed | Same sign and UUID survive reload. |
-| Both signs accepted | Cutout fist rhythm and the visible Russian chant | Opponent sign remains secret; reduced motion removes the hand movement. |
-| Final server beat | Both gesture poses, confirmed result and score, «Три» | Reopening a completed result is quiet. |
+| Own sign accepted | Selected button pressed, buttons disabled, hand stays closed; short wooden tick | Same sign and UUID survive reload; no replayed tick. |
+| Both signs accepted | Cutout fist rhythm, visible Russian chant and soft palm knocks | Opponent sign remains secret; reduced motion removes the hand movement. |
+| Final server beat | Palm slap, both gesture poses, confirmed result and score, «Три» | Reveal follows the estimated audible accent; reopening a completed result is quiet. |
 | Reconnect pause | Pause overlay and remaining allowance | No delayed chant or new reward on recovery. |
 | Match settlement | Actual winner and exact credited amount | Wallet is authoritative, one debit per side and one final credit. |
 
-The current chant is visual. No separate audio context, TTS, music or sound assets are introduced. Keyboard controls, visible focus, explicit readiness and surrender confirmation are available. Module timers and listeners are destroyed on close. Layout verification uses the actual Royal host with connected chat on desktop and phone, not only a fixture.
+The chant has percussive accompaniment, with distinct wooden signals for a point, tie and final match result. Royal's shared audio context, output, volume and mute preference own playback. The module sound button toggles the same global mute setting. There is no spoken TTS or music loop. See [the sound event specification and verification limits](feedback.md). Keyboard controls, visible focus, explicit readiness and surrender confirmation are available. Owned sources, animation frames and listeners are destroyed on close. Layout verification uses the actual Royal host with connected chat on desktop and phone, not only a fixture.
 
 ### Side-view artwork 1.2.1
 
@@ -54,6 +54,8 @@ The hand shapes now use a single transparent imagegen atlas matching the approve
 The stage reaches both side edges at its native aspect ratio. In short desktop windows the host header and stake controls compact into fewer rows so the hand proportions stay unchanged. Phone layouts use the natural scene proportions. Dark charcoal framing, cream panels and condensed headings follow the reference. The active-hand rhythm, reduced-motion setting and shared host chat remain in place. This presentation update does not change deadlines, stakes, private selections or settlement rules.
 
 ## Compatibility and qualification
+
+Version 1.3.2 keeps negotiated phase deadlines inside fresh room synchronization. The room records the server-observed drop time, so a global sweep or concurrent command cannot consume the reconnect pause. Late acknowledgements preserve newer wallet and server-clock state. Countdown audio freezes across reconnect pauses, and final settlement dismisses any pending surrender confirmation.
 
 New creation uses `invite`, `terms`, `duel-ready` and `unready`. New invitations pin rules 4 and two wins. Accepted rules-3 invitations and running duels retain their three-win target, even through reload or restart. Old Tsu-e-fa creation is closed. Already accepted historical rules-1 and rules-2 invitations, paid matches and free matches still recover and finish under their original terms, including the old table flow and two-win rules 1, or three/five/seven-win rules 2. Historical requests stay parseable for UUID recovery; they cannot create another old-rules match. The package retains its previous renderer for those pinned snapshots.
 

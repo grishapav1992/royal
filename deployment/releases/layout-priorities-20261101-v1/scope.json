@@ -1,6 +1,6 @@
 {
   "release": "layout-priorities-20261101-v1",
-  "productionCommit": "455e48100e833bee9f8d79f38f1ee7214dad8e32",
+  "productionCommit": "2683c223a46450c456079b487fc36cdfb4e6eade",
   "featureCommit": "831ede0765e7bb0fe323bd52290657497da370a2",
   "changedSources": [
     "games/caramel-carnival/package.json",
@@ -72,7 +72,8 @@
     "src/ui/slotKit/SlotPriorityLayout.ts",
     "src/ui/slotKit/SlotSettings.ts",
     "src/ui/slotKit/slot-priorities.css",
-    "src/ui/volcanic-plinko-priorities.css"
+    "src/ui/volcanic-plinko-priorities.css",
+    "games/girlhub/entry.ts"
   ],
   "expectedSources": {
     "games/caramel-carnival/package.json": "d261e5e60713454f13e59653dcc009c6e564750fa2de15521408e889cd719c54",
@@ -103,7 +104,7 @@
     "games/forest-heart/priorityStyles.ts": "d4e0efa3c2045fbf54cb595fbbabb18dd3f9e0fa1e5312885b1d0f00db3e93f9",
     "games/forest-heart/shell.css": "4d5602b86c8f65ed38c793967501d83155eb1dd3e3a300763c3c802e28eea576",
     "games/forest-heart/styles.ts": "ab1b1f708c267ba94779abbf75da136697eec514ff956f6179aef4090b4245cb",
-    "games/girlhub/package.json": "d6829dc346aec86a9d9b0e3c1621219d98a527d5a48dd7b6852304bb5196d947",
+    "games/girlhub/package.json": "78ea7f3199efeb61f188cb7cece131cfd83b90cb00259d0ad1b9502a79c549fe",
     "games/jackie-chan/JackieUI.ts": "c42f04757331ebfddba968fb5ffaffd6e32fd62505f8d73b1de4f44f767d6a58",
     "games/jackie-chan/package.json": "27e245290a2fd02d395b68cec27a1775855cbe7fa218d6f296acc7425b6342ed",
     "games/jackie-chan/priorities.css": "225cf41da3b049c8fb7d7f248f54c87c183201b9cd3e37938117d9ac0cee35f8",
@@ -121,8 +122,8 @@
     "games/royal-roulette/package.json": "062eb8beb1a252f260fe9768dfe7ec1266724e648bde4cbdee72270d44f180e7",
     "games/royal-roulette/priorities.css": "7de6841bd98a843195158624c1868e107512cc079fa8e9aeb355fd650e97596f",
     "games/velvet-reign/package.json": "773f521b3466a091afe3566e05726367717a7353b381bf8935fa27021da84b2a",
-    "src/i18n/en.ts": "eebb616fae1546056d356b4479265a4058a55294b5240f13277838a752d145f7",
-    "src/main.ts": "784d71168ebe8c74228c3be80f8f4b997bc1d543040abf371a600383a8640edd",
+    "src/i18n/en.ts": "59281b823affce1810d7a6db78e003605de75bf49671fe99102a1eec476d50ae",
+    "src/main.ts": "1c954dd3d23cbe253c4f2e8bbee86dcc332ae689d11774b581bd9286e176b234",
     "src/ui/ActionGameLayout.ts": "9b4697dee6b29e28cddf3a67d8d691b2eec0f3968daa8eb08c21b576d4fc12ea",
     "src/ui/CrLeoUI.ts": "586ae090ee7d5e255a2196994c2e14d4b268030a5944202872e0abb7d0a69238",
     "src/ui/GameChat.ts": "20a8ba4ffb9fb47b90f9006d47121338454a0ad78fe206c5ee29b4b759ca3176",
@@ -130,7 +131,7 @@
     "src/ui/GamePriorityPanel.ts": "e7962834ba950151c3de176899ec3b6e49e1c5175f35ac1e5087787d5e0abd34",
     "src/ui/GameViewport.ts": "392a5b044f0e79ef51bcce596699f30835289bb2ae9883a93d5959b72697f4a0",
     "src/ui/LastExitUI.ts": "57ac00213e58ebd12686294d8bd31eb4c7ae748c736a4f7cbaaa3f506c35413b",
-    "src/ui/SocialUI.ts": "2bab2587b32423225fc649203e6203c057478008c59b25a05ac93275e7b0d9b0",
+    "src/ui/SocialUI.ts": "c3d5d9f9401cb29787c60e072987a56c25e8fdd0014d26d9820f056930571562",
     "src/ui/VolcanicPlinkoUI.ts": "9dc1ab948ecdc127aa382d045964b5cd6196eb6df926016bef3e7b5770878ed9",
     "src/ui/action-game-priorities.css": "79f5ae4a93349b57a29b6387632923cdcf943b2df4fc35d55f9a997cac0c5f12",
     "src/ui/active-game-viewport.css": "493e85699b284319a6e0dcaf6aa178c308ef2640bb7dc180625c052a4b6d60c7",
@@ -144,7 +145,8 @@
     "src/ui/slotKit/SlotPriorityLayout.ts": "947932d761ede2150900d9fd0278a2560b032aec8c9372f0085b717f1af796f2",
     "src/ui/slotKit/SlotSettings.ts": "6b8ba3cb19aead9fa589ad65d4cd563fa3f3d6600384bdbec8f7e24072dd149b",
     "src/ui/slotKit/slot-priorities.css": "05266abd09f5f3cbfbe91dde79ac8188f74b6d333bc2acb9e3884530f4aaee5f",
-    "src/ui/volcanic-plinko-priorities.css": "04e76e4ef4afe06b5950b83179abdecd8691ac9ab5660fe9ad916b5fb8801c6b"
+    "src/ui/volcanic-plinko-priorities.css": "04e76e4ef4afe06b5950b83179abdecd8691ac9ab5660fe9ad916b5fb8801c6b",
+    "games/girlhub/entry.ts": "e2c0986f796a3dcec167019e5f7c674580785e0938dcadb9f35f3eddb724d6d0"
   },
   "moduleGames": [
     "caramel-carnival",
@@ -188,5 +190,8 @@
   ],
   "addedGames": [],
   "restoredGames": [],
-  "backendChanges": []
+  "backendChanges": [],
+  "compatibilitySources": [
+    "games/girlhub/entry.ts"
+  ]
 }

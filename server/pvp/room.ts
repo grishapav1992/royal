@@ -21,11 +21,17 @@ export class PvpRoom {
   private deadline?:ReturnType<typeof setTimeout>;
   private outstanding=new Map<string,string>();
   private attempts=new Map<string,{at:number;n:number}>();
+  private drops=new Map<string,number>();
   constructor(private host:Host,private socket:string|((account:string,action:string,value:unknown)=>Promise<{status:number;value:any}>)|undefined=process.env.NILE_PLAY_SOCKET_FILE){
     host.activities.canJoin=(session,game)=>!this.matches.some(c=>!isDirectPvp(c)&&c.gameId===game&&['arriving','playing'].includes(c.status))
       ||this.matches.some(c=>c.gameId===game&&c.status==='playing'&&this.host.people().some(p=>p.sessionId===session&&(p.accountId===c.creatorId||p.accountId===c.opponentId)));
   }
   locked(session:string){return [...this.host.activities.wagers.values()].some(ids=>ids.includes(session));}
+  dropped(session:string){
+    const person=this.host.people().find(p=>p.sessionId===session);
+    if(person&&!this.drops.has(person.accountId))this.drops.set(person.accountId,Date.now());
+    this.tick();
+  }
   private publicSnapshot(snapshot:PvpSnapshot):PvpSnapshot{
     const people=this.host.people();
     return {...snapshot,people:snapshot.people.map(person=>({...person,sessionId:people.find(p=>p.accountId===person.accountId&&p.connected)?.sessionId}))};
@@ -88,9 +94,10 @@ export class PvpRoom {
   private async sync(){
     if(this.stopped)return;
     const people=this.host.people(),owner=people[0]?.accountId;if(!owner)return;
-    const result=await this.call(owner,'pvp-sync',{roomId:this.host.roomId(),people:people.map(({accountId,name,connected,available})=>({accountId,name,connected,available}))});
+    const result=await this.call(owner,'pvp-sync',{roomId:this.host.roomId(),people:people.map(({accountId,name,connected,available})=>({accountId,name,connected,available,...(!connected&&this.drops.has(accountId)?{disconnectedAt:this.drops.get(accountId)}:{})}))});
     if(result.status!==200||!Array.isArray(result.value?.snapshots)||!Array.isArray(result.value?.matches))return;
     this.matches=result.value.matches;
+    for(const id of this.drops.keys())if(people.some(p=>p.accountId===id&&p.connected)||!this.matches.some(c=>c.creatorId===id||c.opponentId===id))this.drops.delete(id);
     for(const [game,id] of this.running)if(!this.matches.some(c=>c.id===id&&c.status==='playing')){this.host.activities.finishWager(game);this.running.delete(game);}
     for(const c of this.matches){
       if(c.status!=='playing')continue;

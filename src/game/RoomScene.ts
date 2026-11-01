@@ -111,6 +111,7 @@ export class RoomScene extends Phaser.Scene {
   private bar!: Bar;
   private atelier?: TailorRenderer;
   private pendingLounge: string | null = null;
+  private elevatorApproachAt = 0;
   private overview=false;
   onBar: () => void = () => {};
   onAtelier: () => void = () => { this.onNotice('Войди в аккаунт, чтобы заказать образ в ателье.'); };
@@ -379,6 +380,7 @@ export class RoomScene extends Phaser.Scene {
     if (this.locked || this.isHuggingCat() || this.typing || this.switching || this.player.cabinet || this.networkSelf?.playing || this.player.action === 'drink') return;
     this.pendingCabinet = null;
     this.pendingLounge = 'elevator';
+    this.elevatorApproachAt = this.time.now + 800;
     this.goTo(elevatorDock(this.hall).entry);
   }
   private openElevator() {
@@ -821,6 +823,11 @@ export class RoomScene extends Phaser.Scene {
         if(this.pendingLounge==='elevator') {
           const {entry}=elevatorDock(this.hall);
           if(Math.hypot(this.player.x-entry.x,this.player.y-entry.y)<18)this.openElevator();
+          else if(!this.player.path.length&&!this.prediction.active&&time>=this.elevatorApproachAt) {
+            this.elevatorApproachAt=time+800;
+            const nearPatrol=this.guard.getState().some(guard=>guard.hall===this.hall&&guard.phase!=='door'&&Math.hypot(guard.x-this.player.x,guard.y-this.player.y)<110);
+            if(!nearPatrol)this.goTo(entry);
+          }
         }
         else if(this.pendingLounge.startsWith('activity:')){
           const id=this.pendingLounge.slice(9) as ActivityId,entry=ACTIVITIES[id].entry;
