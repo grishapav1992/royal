@@ -1,0 +1,655 @@
+{
+  "date": "2026-11-01",
+  "release": "active-games-responsive-20261101-v1",
+  "sourceCommit": "91365aa7af95f08fbb36d0391353384c967fd614",
+  "hostSourceCommit": "db07429000d2116d257f0735f4916e661ce9efa8",
+  "state": "published-and-verified",
+  "mathematicsChanged": false,
+  "stakeRulesChanged": false,
+  "addedGames": [],
+  "restoredGames": [],
+  "checks": {
+    "normalReleasePrepared": true,
+    "normalReleaseVerifiedWithGitHub": true,
+    "rtpQualified": 35,
+    "stakePoliciesQualified": 18,
+    "unchangedLegacy": 114,
+    "typecheck": true,
+    "publisherTests": 6,
+    "maintenanceTests": 34,
+    "compiledInputFiles": 216,
+    "sameBytesAsReviewedBuild": true,
+    "alphaEquivalentPrograms": 12,
+    "draconaLogicAndBaseCssPreserved": true,
+    "localDesktopViews": 180,
+    "localTouchViews": 54,
+    "cardTableDesktopViews": 40,
+    "cardTableTouchViews": 12,
+    "pvpSetupDialogs": 6,
+    "pvpSetupViews": 30,
+    "pvpGameplayVerified": false,
+    "realConnectedHostAndChat": true,
+    "physicalDevicesTested": false,
+    "localWalletRecovery": {
+      "localOnly": true,
+      "game": "studio-caramel-carnival",
+      "source": "9a1cc99cce6ebfb4d59b603b4e886dce553bb374",
+      "acceptedState": "settled",
+      "paidStarts": 1,
+      "balanceBefore": 1000,
+      "balanceAfter": 999.97,
+      "entriesPreserved": true,
+      "closeReopenPassed": true
+    },
+    "public": {
+      "checkedAtUtc": "2026-11-01T09:25:55.512Z",
+      "sourceCommit": "91365aa7af95f08fbb36d0391353384c967fd614",
+      "verifiedFiles": 276,
+      "verifiedBytes": 86545222,
+      "unchangedPointers": 9,
+      "catalogue": [
+        "studio-cosmic-escape",
+        "studio-caramel-carnival",
+        "studio-velvet-reign",
+        "studio-last-convoy",
+        "studio-nitro-run",
+        "studio-afterglow",
+        "studio-meme-overload",
+        "studio-dracona",
+        "studio-neopolis",
+        "studio-forest-heart",
+        "github-crash",
+        "royal-plinko",
+        "original-cr-vs-leo",
+        "original-jackie-chan",
+        "studio-caribbean-treasures",
+        "studio-flooded-temple",
+        "royal-roulette",
+        "flag-battle"
+      ],
+      "cardTables": [
+        "variant-blackjack-target",
+        "variant-duel",
+        "variant-triple-poker",
+        "variant-war"
+      ],
+      "routes": {
+        "/healthz": 200,
+        "/api/demo-wallet": 401,
+        "/api/game-wallet": 410,
+        "/api/caribbean-crew": 401
+      },
+      "errors": [],
+      "mutations": [],
+      "productionAccountsCreated": false,
+      "productionWagersPlaced": false
+    }
+  },
+  "publication": {
+    "published": true,
+    "release": "active-games-responsive-20261101-v1",
+    "sourceCommit": "91365aa7af95f08fbb36d0391353384c967fd614",
+    "baseCommit": "db07429000d2116d257f0735f4916e661ce9efa8",
+    "modules": [
+      {
+        "verified": true,
+        "gameId": "studio-cosmic-escape",
+        "version": "1.0.0-715bd9944bba",
+        "bytes": 3859417,
+        "files": 8,
+        "beforeSha256": "f695d8bae8f0fb96561b1e8f2f0e5953d4b0d3b27f1e863b55f0a90b0906122c",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "90ade379b4dcb1dd2eac099db0e2546ae1c243f5cc83547d3468a4d6150b1e35",
+        "history": "/opt/royal-game-modules-state/history/20261101T092221-bc3df699409542bba1fdde3cb4109901.json"
+      },
+      {
+        "verified": true,
+        "gameId": "studio-caramel-carnival",
+        "version": "1.0.0-fa524ebb81a0",
+        "bytes": 3172860,
+        "files": 7,
+        "beforeSha256": "dc0caef38b29c3fbf7e3ac52af110f8d5d4bb2ade51a2d3a9fd03d59764ecc1f",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "77263ed8401071863eb5a4feabf7a03e91feea6bbed18740c0bdb44b612cd7a4",
+        "history": "/opt/royal-game-modules-state/history/20261101T092223-092c9c88ad834c068586339eb4491907.json"
+      },
+      {
+        "verified": true,
+        "gameId": "studio-velvet-reign",
+        "version": "1.0.0-a852878c2f61",
+        "bytes": 4291473,
+        "files": 12,
+        "beforeSha256": "fefb83b64b21bfb8836876d7dc6ef46b1d5c21aefba3bd74cb108ba5ecf5bc39",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "e5e7e8df568dfac25275ac0b158ef5522ebcc486989a4a3342d9050865fa7c69",
+        "history": "/opt/royal-game-modules-state/history/20261101T092225-5b2be03aa8cc48d780c5c6c9e20e8801.json"
+      },
+      {
+        "verified": true,
+        "gameId": "studio-last-convoy",
+        "version": "1.0.0-3bb027aefac6",
+        "bytes": 6330297,
+        "files": 17,
+        "beforeSha256": "01da87a6c9de831d67dc3394adb5e6da2c22eee9102c234c86a0e3e3bb0d5623",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "69946ea68712d64beac408eb61b47799601f526d86ccdc04f144e255e8faed8e",
+        "history": "/opt/royal-game-modules-state/history/20261101T092228-964aabfa38894afaa7fbfaea12551aee.json"
+      },
+      {
+        "verified": true,
+        "gameId": "studio-nitro-run",
+        "version": "1.0.0-545f924e7bd6",
+        "bytes": 2566141,
+        "files": 5,
+        "beforeSha256": "cd829d90457e94b1cf17ccd3d83f39324029defcdb5578d38f7de16db374bb74",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "e5aef46681488697de310edd382eff0307977f49bc6a91893d6b990750dce980",
+        "history": "/opt/royal-game-modules-state/history/20261101T092230-9af8df8200ae4e2e95c972a806530b3a.json"
+      },
+      {
+        "verified": true,
+        "gameId": "studio-afterglow",
+        "version": "1.1.0-21be7ae7e65f",
+        "bytes": 3241034,
+        "files": 21,
+        "beforeSha256": "883123e0bd645186dcbcda3a7b811f38ed104aefe66b9a9b47b0d384b8a4864c",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "ba4dbe2264b70a49a3b0efd2572ed746402a0a91d58615c8179b0bdfbb405d86",
+        "history": "/opt/royal-game-modules-state/history/20261101T092233-4b2fb0c81b7741458c744297154be96b.json"
+      },
+      {
+        "verified": true,
+        "gameId": "studio-meme-overload",
+        "version": "1.0.0-72fcde4470eb",
+        "bytes": 3523980,
+        "files": 16,
+        "beforeSha256": "fac62f8e5e417f5f85dd3102324cc4a338c37fe67295e2568d056c255c4af84d",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "815e361e74bfcf8a55329d2de5a6c9afc2c0dd91f489fba26fd5aa48ce295391",
+        "history": "/opt/royal-game-modules-state/history/20261101T092237-8b432f7f9c024f13b23288278a5cd2bf.json"
+      },
+      {
+        "verified": true,
+        "gameId": "github-crash",
+        "version": "1.0.0-1f60fee2585a",
+        "bytes": 21960124,
+        "files": 18,
+        "beforeSha256": "d58073aa298fac196819e4e3510467f7e99a3fe1aa707e31da846ecbb596c6c2",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "4f725d42b683d966c66fa4605c9a940e578221e0fea999bc1591cbd2d7972231",
+        "history": "/opt/royal-game-modules-state/history/20261101T092240-a4b4fc6f5e5e40dcbb2c064dffb581d1.json"
+      },
+      {
+        "verified": true,
+        "gameId": "royal-plinko",
+        "version": "1.0.0-9f61ad3403cf",
+        "bytes": 2661460,
+        "files": 8,
+        "beforeSha256": "9275c1c7ebab6798d19159d204b7be119dfcea71b4f3885226dbfef415d8d306",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "76e5dfb3670ffa03e15d7e097ec9d70be0f0b8299798b46ffb0e3ffa24d130a5",
+        "history": "/opt/royal-game-modules-state/history/20261101T092242-15e04cfc83ab402e84a020364d3068a5.json"
+      },
+      {
+        "verified": true,
+        "gameId": "original-cr-vs-leo",
+        "version": "1.0.0-9a2057fd0a6b",
+        "bytes": 7918485,
+        "files": 20,
+        "beforeSha256": "a121b04d7a6e81897fac9130eabde0d3d51ecdf3653c5896665c7a325fc55441",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "becdc763703591cf95d9212b819a601fb0f498426d5eede95f87ab624e9eba3a",
+        "history": "/opt/royal-game-modules-state/history/20261101T092245-667b4fef22fb4aeca3ca24db11162a75.json"
+      },
+      {
+        "verified": true,
+        "gameId": "flag-battle",
+        "version": "2.0.0-271a7ce2b25b",
+        "bytes": 347685,
+        "files": 50,
+        "beforeSha256": "7cddf59edc59ecdacef837c2274aaa19c6a4281de7a9ddd13402ea0e76539a30",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "dd68787a386773d57241d8c0aa79d1d04cb143290e475899447d09b4ecab8d37",
+        "history": "/opt/royal-game-modules-state/history/20261101T092250-cd0dc68df48c4126a5b58c6a051f2385.json"
+      },
+      {
+        "verified": true,
+        "gameId": "studio-dracona",
+        "version": "1.1.0-a8beb475606d",
+        "bytes": 5054049,
+        "files": 29,
+        "beforeSha256": "5b92ddd23447eb43be12c6d9225b40c5e2b2e84e17549bb23fe2cddfdbd2adfc",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "79a1f25eac921f8ba20d870bcbd0db7bd4954f636d6964dbfc5a3429d376b55e",
+        "history": "/opt/royal-game-modules-state/history/20261101T092252-9fbadb83a48543bf82c3890efd668e7e.json"
+      },
+      {
+        "verified": true,
+        "gameId": "original-jackie-chan",
+        "version": "1.1.0-c9bd00562986",
+        "bytes": 21582654,
+        "files": 39,
+        "beforeSha256": "366a9bd058f2471b0fbe5020faa366a9b41536e017268e910073aa8621b357db",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "a1607db4c45305c99fa7a996e739a009d3d008be444f576d460be2d391116147",
+        "history": "/opt/royal-game-modules-state/history/20261101T092258-a884fb2df9b14925b8a19d0ef9d86632.json"
+      }
+    ],
+    "backup": {
+      "sourceArchive": "/opt/royal-backups/active-games-responsive-20261101-v1/source.tgz",
+      "bytes": 12967,
+      "sha256": "9f55a40464e6a982e6c3db2fd1dda6d8e1746922a39d57082697691280df6de8",
+      "oldVersions": {
+        "studio-cosmic-escape": "1.0.0-6bccade1ad5d",
+        "studio-caramel-carnival": "1.0.0-bc352546cc88",
+        "studio-velvet-reign": "1.0.0-ce88bc2bfd66",
+        "studio-last-convoy": "1.0.0-1c820e16af90",
+        "studio-nitro-run": "1.0.0-4700c24502f1",
+        "studio-afterglow": "1.1.0-047e028f2224",
+        "studio-meme-overload": "1.0.0-d379665ceb88",
+        "github-crash": "1.0.0-9a104a1dda86",
+        "royal-plinko": "1.0.0-2005afa6082b",
+        "original-cr-vs-leo": "1.0.0-b9b15de9dd79",
+        "flag-battle": "2.0.0-eb7a7cc8ab20",
+        "studio-dracona": "1.1.0-53c4dea41e38",
+        "original-jackie-chan": "1.1.0-bc4b3894af38"
+      },
+      "oldPackagesHardlinked": true,
+      "imageTag": "royal-game:before-active-games-responsive-20261101-v1",
+      "image": "sha256:774c1423bc48a4743517714769856b1a2dd1906d69ff336e3790150f78cf2ccf",
+      "maintenance": {
+        "path": "cleanup-release-history.py",
+        "sourceCommit": "91365aa7af95f08fbb36d0391353384c967fd614",
+        "beforeSha256": "bf3f4a2b762ac297c3f71b02067c1a6fed0523221bad6367b1957dd858aa17c8",
+        "afterSha256": "746ec892f8a062c882c17da007575e013c8eeeebe7645a1c0cda60b4043fcab4"
+      }
+    },
+    "freeBefore": 12266676224,
+    "freeAfter": 12179058688,
+    "maintenance": {
+      "path": "cleanup-release-history.py",
+      "sourceCommit": "91365aa7af95f08fbb36d0391353384c967fd614",
+      "beforeSha256": "bf3f4a2b762ac297c3f71b02067c1a6fed0523221bad6367b1957dd858aa17c8",
+      "afterSha256": "746ec892f8a062c882c17da007575e013c8eeeebe7645a1c0cda60b4043fcab4"
+    },
+    "hostRestarted": false,
+    "databaseTouched": false,
+    "otherModulesPreserved": true,
+    "sourceFilesPreserved": 2553,
+    "runtimeFilesPreserved": 8578,
+    "servicesPreserved": 14
+  },
+  "programProof": {
+    "sourceCommit": "91365aa7af95f08fbb36d0391353384c967fd614",
+    "games": {
+      "studio-cosmic-escape": {
+        "kind": "alpha-equal",
+        "passed": true,
+        "beforeManifest": "57fdf8e6ad6f14a3e2aee5b902f19fcd83049a47975cae7a706781ffa1cdec34",
+        "afterManifest": "0bb4c3cbb37b1c7c52119d0108229e411f81ef7ecc6d7ae6632c9be3d49060df",
+        "beforeEntry": "bb31e7cf3209a37e624b516f0ad6a404b949f704350fbc43bb9844a482023e76",
+        "afterEntry": "03a0959e8e94de4d308ed4bf79ee447b91be445452662931e3bd04e5a4dac7fa"
+      },
+      "studio-caramel-carnival": {
+        "kind": "alpha-equal",
+        "passed": true,
+        "beforeManifest": "58b9639b418ea8ce70dc0b04cba89f721b973e832af63a2ecc9c175ec54666ef",
+        "afterManifest": "ef41e6b304d1df8bffda1df95024e81f2e0cdd39c4151f588109ca5cffa544d2",
+        "beforeEntry": "b5aabd7691c2a15249c8cd0a3393e78d4e28e7ee50297d3b4fd01700853a8da2",
+        "afterEntry": "081b31ccc054d8d2bf7f862c9d8f74930b5d5a1ac243a1c521beefc87698678e"
+      },
+      "studio-velvet-reign": {
+        "kind": "alpha-equal",
+        "passed": true,
+        "beforeManifest": "a26a49404ba7fb21bb01c7500e52b21e8d981feaf23c35161529f04c7e3ca0d8",
+        "afterManifest": "9b6b9b689d85eef5468462204060818c4b3aff7b0620e819c7966f08ca580488",
+        "beforeEntry": "96cbc010796950f43213e8cb03b73f34aea7822debd1b02851a5660749401eb4",
+        "afterEntry": "0964c088ab97582d79e83bae9966cd45a6a88c5d1cd15f391082d9cfb3f40fc1"
+      },
+      "studio-last-convoy": {
+        "kind": "alpha-equal",
+        "passed": true,
+        "beforeManifest": "d4355224f4d82f6053a73ef8489072ed6d929e43abd7bcc0c2aba86803cd2225",
+        "afterManifest": "afefcfea2cc53265d2cf5007f883bed2d84915fbc04238dac76d09983fa43927",
+        "beforeEntry": "7017d03e50aaadec67e1f2c7524be1f8a744d2d9014a07f8e316adae8d314bcf",
+        "afterEntry": "0fca414cd54ffa9b344e99c85046d8caeeb16c4a76937750dfa3f551f1b2ff83"
+      },
+      "studio-nitro-run": {
+        "kind": "alpha-equal",
+        "passed": true,
+        "beforeManifest": "79732b101887807f9395f7d5c646bbaf734596344eb69aaf3b826befe8bd3037",
+        "afterManifest": "625b4c2ad65125217e6a2605e798859c882c7f30c7f0e83af345b4cbc102768f",
+        "beforeEntry": "99c3ecd7ae648b0d01c00072b267bd6539ac803d5590565b425e407821afa32f",
+        "afterEntry": "43a943790862bbfdcc600e45a78d8bfea7305452dada0ab96df2d32b958e631b"
+      },
+      "studio-afterglow": {
+        "kind": "alpha-equal",
+        "passed": true,
+        "beforeManifest": "d892268fb4ccf3e48747de4406236e7948eed5fed728f4b038dfe99c85f73ec8",
+        "afterManifest": "281b134a469d59c720e44ed08f2e4501a23ed85019550f698db6c969b3cf8154",
+        "beforeEntry": "4554854e2eae36d3e3b802ebeab16bcea101069f6edde979a96477fefa893e16",
+        "afterEntry": "996ee59262c7c0c98cc54d059758e37fbb63222414b8d840f0e589665d586351"
+      },
+      "studio-meme-overload": {
+        "kind": "alpha-equal",
+        "passed": true,
+        "beforeManifest": "7e2f7ccfe1ba54ac7d87783975813527b3a07698ef0466aaf820714f73ea5057",
+        "afterManifest": "d2bde73c184305a2ff6b6ac547dba85f9a4e647360306bac8817625a1b3d69b2",
+        "beforeEntry": "2e534a6fd73f3fa6791f2d11093e7a6065ed7b3a661ed7f36b5ff1b1db7bfb80",
+        "afterEntry": "9afd792c13c8b41e758405c44fb09e08ddae68bdd55388fcfab384af50357893"
+      },
+      "github-crash": {
+        "kind": "alpha-equal",
+        "passed": true,
+        "beforeManifest": "48e3456de1064bb4624876de39c08aa01ebd71c82f3092922af04c3fc6c5a1c6",
+        "afterManifest": "73217c155e4af3d70b501d2291841abe3ddd3b1c955102f58ccac930e52f343e",
+        "beforeEntry": "f71227112fc0afca38d04342c6ccb92086b90f8e86283eae8d1666972588c4a8",
+        "afterEntry": "2086b624241fe43c779e0278954e78fb524412ddf851f36a7df6c985899f9f0c"
+      },
+      "royal-plinko": {
+        "kind": "alpha-equal",
+        "passed": true,
+        "beforeManifest": "4c090b9eb6a6c153a6a75a71ea6fbd8de91db22e786e0fea7e6c47a141649efd",
+        "afterManifest": "6726c8af02f22c51545c8b70e7fb0b7972dc0956698812e653e70965cb4c712a",
+        "beforeEntry": "9e350e68628ffad16a405d0ed68c6339bf6d227b5488c131457db09214f0bfc3",
+        "afterEntry": "4100fe1ef270de504da2e1c34a4b7614c0821940ea268658eafa89a2ce2ebdd8"
+      },
+      "original-cr-vs-leo": {
+        "kind": "alpha-equal",
+        "passed": true,
+        "beforeManifest": "f81a694fa4f4e6269d854fc52efbf5a63da4b6edd90ed42814c86560d31b9443",
+        "afterManifest": "f47fcc54c2944a2ed511f3234b684a0fd248d689931efd37fbbb0f1a2f10c860",
+        "beforeEntry": "5c414c12ae614d39a306aba557c78491888735907cd347009258734089cdadb3",
+        "afterEntry": "18ba40e95da8fecff916303e03d82a8d6f7a42133409219ce83e1b196a032e5c"
+      },
+      "flag-battle": {
+        "kind": "alpha-equal",
+        "passed": true,
+        "beforeManifest": "92471574c0a772dc1ace84579ed22018236c82a0261f6e12f6609ef3fa010188",
+        "afterManifest": "a623e8221cebb5a69fdbbe99051ea868290e452c1bd891b0bd79b9bbf6aae895",
+        "beforeEntry": "196b1be470d58ee3b6ae0958beef9346e49fb81690b1dc7e87e35fced084612a",
+        "afterEntry": "266c939d6dbe99c50210c9c95c77d75f3f60f0d7aaf533cb8c771ddad44628ef"
+      },
+      "studio-dracona": {
+        "kind": "style-composition-only",
+        "passed": true,
+        "beforeManifest": "280b9ba05e3719cc2ddf993ea1922abf955853f8e2f4d056ed7273e315c13ca9",
+        "afterManifest": "2c0519e11d9cfe214b44bd41f1d5e6873ada4246ac72367d85cd1df55900df0e",
+        "beforeEntry": "5cea72736585286f3b19c8d633c834f1e5cb0893abb3c3767f93345972e41dd8",
+        "afterEntry": "ae3b3623efeca30316571803216d8f1db52961c30add8b9a056a3ebf60edbd22",
+        "styleProjection": {
+          "baseCssEqual": true,
+          "baseDifference": null,
+          "logicEqual": true,
+          "compactCssPresent": true
+        }
+      },
+      "original-jackie-chan": {
+        "kind": "alpha-equal",
+        "passed": true,
+        "beforeManifest": "e8dec0edbe17cc07b571ddd1574bb6ba1340bb87fa09569b24dd0e785bc53d8d",
+        "afterManifest": "abddc50bb6daada7971ad1376546fbe1b99f4e43a43aa0b7b2820aba74c5d28b",
+        "beforeEntry": "4025e48ac0cf73e38e39c840295c402073e1f1cc1e6b2fb04e99d94e10f641d5",
+        "afterEntry": "de1f51364e81c16b303653f064371e930cf9a59b0b8b3ddb274610c8945de3a6"
+      }
+    }
+  },
+  "maintenance": {
+    "status": "completed",
+    "sourceCommit": "db07429000d2116d257f0735f4916e661ce9efa8",
+    "release": "shared-stakes-20261101-v2",
+    "currentImage": "sha256:774c1423bc48a4743517714769856b1a2dd1906d69ff336e3790150f78cf2ccf",
+    "rollbackImage": "sha256:06da11bea5d5b8c1c167339ff12a32952c67dcad85eb1293f56aa4b939e47bb8",
+    "startedAt": 1793525333.5523539,
+    "finishedAt": 1793526135.9494271,
+    "removedEntries": 0,
+    "removedImageTags": 0,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "freeBefore": 12175122432,
+    "freeAfter": 12163031040
+  },
+  "cleanup": {
+    "server": {
+      "removed": [
+        {
+          "path": "/opt/royal-releases/active-games-responsive-20261101-v1/transport.tgz",
+          "logicalBytes": 83789615
+        },
+        {
+          "path": "/opt/royal-releases/active-games-responsive-20261101-v1/delta.tgz",
+          "logicalBytes": 990211
+        },
+        {
+          "path": "/opt/royal-releases/active-games-responsive-20261101-v1/publisher.py",
+          "logicalBytes": 10767
+        },
+        {
+          "path": "/opt/royal-releases/active-games-responsive-20261101-v1/packages",
+          "logicalBytes": 86542340
+        },
+        {
+          "path": "/opt/royal-releases/active-games-responsive-20261101-v1/source",
+          "logicalBytes": 70485
+        },
+        {
+          "path": "/opt/royal-releases/active-games-responsive-20261101-v1/maintenance",
+          "logicalBytes": 39442
+        },
+        {
+          "path": "/opt/royal-releases/active-games-responsive-20261101-v1/media-reuse.json",
+          "logicalBytes": 41077
+        },
+        {
+          "path": "/opt/royal-releases/active-games-responsive-20261101-v1/__pycache__",
+          "logicalBytes": 20353
+        }
+      ],
+      "freeBefore": 12136488960,
+      "freeAfter": 12224323584,
+      "health": "healthy",
+      "hourlyTimerEnabled": true,
+      "maintenance": {
+        "status": "completed",
+        "sourceCommit": "db07429000d2116d257f0735f4916e661ce9efa8",
+        "release": "shared-stakes-20261101-v2",
+        "currentImage": "sha256:774c1423bc48a4743517714769856b1a2dd1906d69ff336e3790150f78cf2ccf",
+        "rollbackImage": "sha256:06da11bea5d5b8c1c167339ff12a32952c67dcad85eb1293f56aa4b939e47bb8",
+        "startedAt": 1793525333.5523539,
+        "finishedAt": 1793526135.9494271,
+        "removedEntries": 0,
+        "removedImageTags": 0,
+        "containersUnchanged": true,
+        "healthOk": true,
+        "freeBefore": 12175122432,
+        "freeAfter": 12163031040
+      },
+      "rollbackArchivePreserved": true
+    },
+    "obsoleteLocalPackages": {
+      "sourcePreservedInGitHub": "91365aa7af95f08fbb36d0391353384c967fd614",
+      "removed": [
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-cosmic-escape/versions/1.0.0-1e0b71614adf",
+          "logicalBytes": 3857194
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-cosmic-escape/versions/1.0.0-bc8fae61eea8",
+          "logicalBytes": 3860792
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-cosmic-escape/versions/1.0.0-7dbe753cc41c",
+          "logicalBytes": 3857414
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-caramel-carnival/versions/1.0.0-61033324e9b5",
+          "logicalBytes": 3170591
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-caramel-carnival/versions/1.0.0-69ba7673a050",
+          "logicalBytes": 3174057
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-caramel-carnival/versions/1.0.0-6973d6115d22",
+          "logicalBytes": 3170371
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-velvet-reign/versions/1.0.0-cdc994d5feca",
+          "logicalBytes": 4289909
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-velvet-reign/versions/1.0.0-c6fff7c224a5",
+          "logicalBytes": 4293293
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-velvet-reign/versions/1.0.0-838a34c036c5",
+          "logicalBytes": 4289689
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-last-convoy/versions/1.0.0-4b07bc7306ea",
+          "logicalBytes": 6328387
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-last-convoy/versions/1.0.0-133c89d050ef",
+          "logicalBytes": 6332649
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-nitro-run/versions/1.0.0-8ddcc9c515c4",
+          "logicalBytes": 2562836
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-nitro-run/versions/1.0.0-3570fd99c900",
+          "logicalBytes": 2567097
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-afterglow/versions/1.1.0-fa8779b48db5",
+          "logicalBytes": 3243772
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-afterglow/versions/1.1.0-eda536b0a3a3",
+          "logicalBytes": 3243772
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-afterglow/versions/1.1.0-cbfb27845ae1",
+          "logicalBytes": 3239495
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-meme-overload/versions/1.0.0-82d33879ba14",
+          "logicalBytes": 3526393
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-meme-overload/versions/1.0.0-d4ca5f0a192a",
+          "logicalBytes": 3522133
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/github-crash/versions/1.0.0-fdb01914d48f",
+          "logicalBytes": 21962428
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/github-crash/versions/1.0.0-dbcb8c95ceda",
+          "logicalBytes": 21961649
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/github-crash/versions/1.0.0-b8480af84f8b",
+          "logicalBytes": 21969798
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/royal-plinko/versions/1.0.0-4c072ad86042",
+          "logicalBytes": 2662777
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/royal-plinko/versions/1.0.0-7f610983dab7",
+          "logicalBytes": 2660239
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/original-cr-vs-leo/versions/1.0.0-0524c5cc4289",
+          "logicalBytes": 7921009
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/original-cr-vs-leo/versions/1.0.0-9edc2e033b3d",
+          "logicalBytes": 7916480
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/flag-battle/versions/2.0.0-a63617ade80b",
+          "logicalBytes": 353306
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/flag-battle/versions/2.0.0-2ca9418e419e",
+          "logicalBytes": 349091
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-dracona/versions/1.1.0-a3a5e4a66856",
+          "logicalBytes": 5053549
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/studio-dracona/versions/1.1.0-61d95bd401da",
+          "logicalBytes": 5054144
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/active-games-responsive-20261101/checkout/module-dist/original-jackie-chan/versions/1.1.0-b0b9b0f858dc",
+          "logicalBytes": 21587136
+        }
+      ],
+      "freeBefore": 48253239296,
+      "freeAfter": 48355831808
+    },
+    "localTaskDirectory": {
+      "status": "remove-after-verifying-this-record-in-GitHub",
+      "path": "artifacts/work/active-games-responsive-20261101",
+      "preserveCompactCompletionReport": true
+    },
+    "unrelatedWorkPreserved": true
+  }
+}
