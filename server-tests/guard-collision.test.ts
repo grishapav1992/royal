@@ -34,11 +34,11 @@ test('a held contact counts once; ten separated contacts show fists then eject w
   return count;
  });
  const g=state.guards.get('security')!,p=new Player();p.x=g.x-38;p.y=g.y;state.players.set('a',p);
- guards.contact('a');assert.equal(g.phase,'bump');assert.equal(count,1);assert.equal(p.security,'');
+ guards.contact('a');assert.equal(g.phase,'bump');assert.equal(count,1);assert.equal(p.security,'');assert.equal(g.speech,'Не толкайся.');
  for(let i=0;i<30;i++)guards.contact('a');assert.equal(count,1);
  for(let hit=2;hit<=10;hit++){
   p.x=g.x-60;guards.tick(.02);p.x=g.x-38;p.y=g.y;guards.contact('a');assert.equal(count,hit);
-  if(hit<10){assert.equal(g.phase,'bump');assert.equal(p.security,'');assert.equal(g.speech,hit===9?'Ещё один толчок, и на выход. 9/10.':`Не толкайся. ${hit}/10.`);}
+  if(hit<10){assert.equal(g.phase,'bump');assert.equal(p.security,'');assert.equal(g.speech,hit===9?'Ещё один толчок, и на выход.':'Не толкайся.');}
  }
  assert.equal(p.security,'ejecting');
  for(let i=0;i<600&&!finished.length;i++)guards.tick(.05);
