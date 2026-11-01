@@ -45,7 +45,7 @@ const vite=await createServer({configFile:false,root:process.cwd(),optimizeDeps:
      const result=await store.operate(account,body);res.setHeader('Content-Type','application/json');res.end(JSON.stringify(result));return;
     }
     // Preserve the real backend and its validation for all ordinary unseeded rounds.
-    const reply=await fetch(api+path,{method:'POST',headers:{'Content-Type':'application/json',Cookie:req.headers.cookie||'',[WALLET_ACCOUNT_HEADER]:account,...Object.fromEntries(Object.entries(req.headers).filter(([name,value])=>name.startsWith('x-royal-')&&typeof value==='string'))},body:raw});
+    const reply=await fetch(api+path,{method:'POST',headers:{'Content-Type':'application/json',Cookie:req.headers.cookie||'',...Object.fromEntries(Object.entries(req.headers).filter(([name,value])=>name.startsWith('x-royal-')&&typeof value==='string'))},body:raw});
     res.statusCode=reply.status;res.setHeader('Content-Type','application/json');res.end(await reply.text());return;
    }catch(error){res.statusCode=400;res.setHeader('Content-Type','application/json');res.end(JSON.stringify({error:error instanceof Error?error.message:'Fixture failed'}));return;}
   }

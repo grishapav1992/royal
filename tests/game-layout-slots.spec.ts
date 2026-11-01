@@ -74,7 +74,10 @@ async function finish(page:Page,id:string){
   }
   const session=await currentSession(page,id),spin=page.locator(`[data-${p}-spin]`);
   if(session?.state==='settled'&&await spin.isEnabled())return true;
-  if(session?.state==='active'&&await spin.isEnabled())await spin.click();
+  if(session?.state==='active'&&await spin.isEnabled()){
+   // A scheduled free spin can start between the readiness check and the click.
+   try{await spin.click({timeout:500});}catch(error){if(!(error instanceof Error)||error.name!=='TimeoutError')throw error;}
+  }
   return false;
  },{timeout:90000,intervals:[100,250,500]}).toBe(true);
 }
@@ -87,8 +90,12 @@ for(const id of games)test('settings, Stop and one accepted ten-cent round: '+id
  test.skip(process.env.LAYOUT_BROWSER==='webkit'&&!['studio-cosmic-escape','studio-caramel-carnival','studio-afterglow','studio-velvet-reign'].includes(id),'All seven flows run in Chromium; four distinct presentations also run with WebKit touch.');
  await enterGameHall(page,roomPath);await page.setViewportSize({width:393,height:852});await open(page,id);const p=family(id);
  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
- await page.locator('.slot-settings-button').click();await page.locator(`[data-${p}-auto-count]`).selectOption('25');await page.locator(`[data-${p}-speed]`).click();
+ await page.locator('.slot-settings-button').click();
+ if(process.env.LAYOUT_DEBUG==='1')console.log(await page.locator('.slot-secondary-controls').evaluate(root=>[root,...root.children,...root.querySelectorAll('.ce-sidebar>*')].map(e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return{node:e.className,display:s.display,flexDirection:s.flexDirection,contain:s.contain,columns:s.gridTemplateColumns,rows:s.gridTemplateRows,area:s.gridArea,position:s.position,height:r.height,width:r.width,left:r.left,top:r.top};})));
+ await page.locator(`[data-${p}-auto-count]`).selectOption('25');await page.locator(`[data-${p}-speed]`).click();
+ expect(errors).toEqual([]);
  await expect(page.locator(`[data-${p}-speed]`)).toHaveAttribute('aria-pressed','true');
+ if(id==='studio-velvet-reign'||id==='studio-afterglow')await page.screenshot({path:out+'/'+id+'-options.png'});
  await page.setViewportSize({width:852,height:393});await page.keyboard.press('Escape');await expect(page.locator('.slot-settings-dialog')).toBeHidden();await expect(page.locator('.slot-settings-button')).toBeFocused();
  await fit(page,id);await page.setViewportSize({width:1440,height:900});await fit(page,id);
  await expect(page.locator(`[data-${p}-speed]`)).toHaveAttribute('aria-pressed','true');
@@ -103,6 +110,14 @@ for(const id of games)test('settings, Stop and one accepted ten-cent round: '+id
  await finish(page,id);await page.unroute('**/api/demo-wallet/expansion');
  const snapshot=await walletSnapshot(page),bets=snapshot.entries.filter((e:any)=>e.kind==='bet');expect(bets).toHaveLength(1);expect(bets[0].amount).toBe(-0.1);
  await open(page,id);await finish(page,id);expect((await walletSnapshot(page)).entries).toEqual(snapshot.entries);await fit(page,id);
+ for(const kind of ['info','history','purchase']){
+  await page.locator('.slot-settings-button').click();
+  const selector=kind==='purchase'?'[data-cc-buy],[data-cosmic-missions],[data-velvet-missions]':`[data-${p}-${kind}]`;
+  await page.locator('.slot-settings-dialog').locator(selector).click();await expect(page.locator('.slot-settings-dialog')).toBeHidden();
+  await expect(page.locator('#mini-game :is(.cc-dialog,.ce-dialog)')).toBeVisible();
+  await page.keyboard.press('Escape');await expect(page.locator('#mini-game :is(.cc-dialog,.ce-dialog)')).toBeHidden();
+ }
+ expect((await walletSnapshot(page)).entries).toEqual(snapshot.entries);
  let lost=false;
  await page.route('**/api/demo-wallet/expansion',async route=>{
   if(!lost&&route.request().method()==='POST'){lost=true;await route.fetch();await route.abort('failed');}else await route.continue();
@@ -113,6 +128,33 @@ for(const id of games)test('settings, Stop and one accepted ten-cent round: '+id
  if(await retry.isVisible())await retry.click();await finish(page,id);await page.unroute('**/api/demo-wallet/expansion');
  expect((await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(2);
  await page.screenshot({path:out+'/'+id+'-result.png'});expect(errors).toEqual([]);
+});
+
+test('moving symbols retain their field through both phone orientations',async({page,roomPath})=>{
+ test.setTimeout(240000);await enterGameHall(page,roomPath);
+ for(const id of ['studio-cosmic-escape','studio-caramel-carnival','studio-velvet-reign','studio-afterglow']){
+  await page.setViewportSize({width:393,height:852});await open(page,id);const p=family(id);await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.locator(`[data-${p}-spin]`).click();await expect(page.locator('.slot-priority-game')).not.toHaveAttribute('data-phase','idle');
+  await page.setViewportSize({width:852,height:393});await fit(page,id);await page.setViewportSize({width:393,height:852});await fit(page,id);
+  await page.emulateMedia({reducedMotion:'reduce'});await finish(page,id);
+ }
+});
+
+test('album, photo and themed menu remain accessible from the compact panel',async({page,roomPath})=>{
+ await enterGameHall(page,roomPath);await page.setViewportSize({width:393,height:852});await open(page,'studio-afterglow');
+ const before=(await walletSnapshot(page)).entries;
+ await page.locator('.slot-settings-button').click();await page.screenshot({path:out+'/studio-afterglow-options.png'});await page.locator('.slot-settings-dialog [data-ag-album]').click();
+ await expect(page.locator('.slot-settings-dialog')).toBeHidden();await expect(page.getByRole('heading',{name:'АЛЬБОМ ГЕРОИНЬ',exact:true})).toBeVisible();
+ await page.keyboard.press('Escape');await page.locator('.slot-settings-button').click();await page.locator('.slot-settings-dialog [data-ag-photo]').click();
+ await expect(page.locator('.slot-settings-dialog')).toBeHidden();await expect(page.locator('.slot-photo-viewer')).toBeVisible();
+ await page.setViewportSize({width:852,height:393});await expect(page.locator('.slot-photo-viewer [aria-label="Закрыть фото"]')).toBeInViewport({ratio:1});
+ await page.keyboard.press('Escape');await expect(page.locator('.slot-photo-viewer')).toBeHidden();await fit(page,'studio-afterglow');
+ await open(page,'studio-meme-overload');
+ for(const kind of ['info','history']){
+  await page.locator('.slot-settings-button').click();await page.locator(`.slot-settings-dialog [data-mo-menu="${kind}"]`).click();
+  await expect(page.locator('.slot-settings-dialog')).toBeHidden();await expect(page.locator('[data-cc-dialog]')).toHaveAttribute('data-dialog',kind);await page.keyboard.press('Escape');
+ }
+ expect((await walletSnapshot(page)).entries).toEqual(before);
 });
 
 test('natural bonuses keep counters and free continuation visible in both orientations',async({page,roomPath})=>{
