@@ -11,6 +11,8 @@ export class SlotPriorityLayout {
   private readonly extras = document.createElement('div');
   private readonly counters: HTMLElement[];
   private readonly secondary: HTMLElement[];
+  private readonly pause: HTMLElement | null;
+  private readonly controls: HTMLElement | null;
   private moved: Home[] = [];
   private modelHome?: Home;
   private compact = false;
@@ -31,6 +33,8 @@ export class SlotPriorityLayout {
       '.cc-tickets,.cc-energy,.ce-sidebar,[data-cc-speed],[data-lg-speed],[data-cc-auto-count],[data-lg-auto-count],'
       + '.cc-tools>button:not(.slot-settings-button),.ce-tools>button:not(.slot-settings-button),[data-mo-menu]',
     ));
+    this.pause=root.querySelector('[data-cc-pause],[data-lg-pause]');
+    this.controls=root.querySelector('.cc-controls,.ce-console');
     for (const node of this.secondary) {
       if (node.matches('select')) node.setAttribute('title',node.getAttribute('aria-label')||t('Число платных автовращений'));
     }
@@ -51,6 +55,7 @@ export class SlotPriorityLayout {
         if (node.matches('select')) { const label=document.createElement('label');label.textContent=node.getAttribute('aria-label');this.extras.append(label);this.move(node,label); }
         else this.move(node,this.extras);
       }
+      if(this.pause&&this.controls)this.move(this.pause,this.controls);
     } else { this.restore();this.closePanel(); }
   }
   destroy() {

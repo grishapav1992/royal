@@ -27,7 +27,7 @@ test('measure the seven active slots in their connected host',async({page,roomPa
     const p=rect(play),hit=document.elementFromPoint(p.x+p.width/2,p.y+p.height/2);
     return{board:rect(board),play:p,playHit:!!hit&&play.contains(hit),hit:hit?.outerHTML.slice(0,200),root:rect(root),rootRows:getComputedStyle(root).gridTemplateRows,rootChildren:[...root.children].map(c=>({class:c.className,box:rect(c),display:getComputedStyle(c).display,visibility:getComputedStyle(c).visibility})),hud:[...root.querySelectorAll('.slot-feature-strip>*')].map(c=>({class:c.className,box:rect(c)})),sceneOverflow:[...root.querySelectorAll('.cc-scene,.ce-stage')].map(e=>({height:e.clientHeight,scrollHeight:e.scrollHeight,width:e.clientWidth,scrollWidth:e.scrollWidth}))};
    },family(id));rows.push({id,width,height,...state});
-   if(width===393||width===852)await page.screenshot({path:out+'/'+(process.env.LAYOUT_PHASE||'before')+'-'+id+'-'+width+'x'+height+'.png'});
+   if([393,852,1440].includes(width))await page.screenshot({path:out+'/'+(process.env.LAYOUT_PHASE||'before')+'-'+id+'-'+width+'x'+height+'.png'});
   }
  }
  await writeFile(out+'/'+(process.env.LAYOUT_PHASE||'before')+'-audit.json',JSON.stringify({games,connectedHost:true,rows},null,2));
@@ -76,10 +76,10 @@ async function finish(page:Page,id:string){
   if(session?.state==='settled'&&await spin.isEnabled())return true;
   if(session?.state==='active'&&await spin.isEnabled()){
    // A scheduled free spin can start between the readiness check and the click.
-   try{await spin.click({timeout:500});}catch(error){if(!(error instanceof Error)||error.name!=='TimeoutError')throw error;}
+   try{await spin.click({timeout:process.env.LAYOUT_BROWSER==='webkit'?5000:1000});}catch(error){if(!(error instanceof Error)||error.name!=='TimeoutError')throw error;}
   }
   return false;
- },{timeout:90000,intervals:[100,250,500]}).toBe(true);
+ },{timeout:process.env.LAYOUT_BROWSER==='webkit'?180000:90000,intervals:[100,250,500]}).toBe(true);
 }
 for(const id of games)test('field and actions without scrolling: '+id,async({page,roomPath})=>{
  await enterGameHall(page,roomPath);await open(page,id);
@@ -158,7 +158,7 @@ test('album, photo and themed menu remain accessible from the compact panel',asy
 });
 
 test('natural bonuses keep counters and free continuation visible in both orientations',async({page,roomPath})=>{
- test.setTimeout(300000);await mkdir(out,{recursive:true});await enterGameHall(page,roomPath);
+ test.setTimeout(process.env.LAYOUT_BROWSER==='webkit'?900000:300000);await mkdir(out,{recursive:true});await enterGameHall(page,roomPath);
  for(const id of games){
   await test.step(id,async()=>{
    await page.setViewportSize({width:393,height:852});await open(page,id);const p=family(id),attribute=p==='lg'?'data-lg-dialog-action':'data-cc-action';
@@ -168,7 +168,7 @@ test('natural bonuses keep counters and free continuation visible in both orient
    for(const [width,height]of [[393,852],[852,393],[568,320]]){
     await page.setViewportSize({width,height});await fit(page,id,undefined,true);await expect(bonus).toBeInViewport({ratio:1});
    }
-   await bonus.click();await expect(page.locator(`[data-${p}-pause]`)).toBeVisible({timeout:15000});
+    await bonus.click();await expect(page.locator(`[data-${p}-pause]`)).toBeVisible({timeout:15000});await fit(page,id,`[data-${p}-pause]`);
    await page.locator(`[data-${p}-pause]`).click();await page.setViewportSize({width:393,height:852});await fit(page,id);
    const before=await walletSnapshot(page),debits=before.entries.filter((e:any)=>e.kind==='bet').length;
    await page.screenshot({path:out+'/'+id+'-bonus-portrait.png'});await page.setViewportSize({width:852,height:393});await fit(page,id);

@@ -137,6 +137,9 @@
 #mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is([data-cc-auto],[data-lg-auto]) { grid-area:auto; width:100%; min-width:0; height:44px; min-height:44px; padding:3px; font-size:12px }
 #mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-tools,.ce-tools) { justify-content:stretch }
 #mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) .slot-settings-button { width:100%; font-size:23px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-controls,.ce-console)>:is([data-cc-pause],[data-lg-pause]) { display:none; grid-area:auto; width:100%; min-width:0; height:44px; min-height:44px; padding:3px; font-size:11px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority][data-remaining]:not([data-remaining="0"]):where(:not([data-slot-priority=full])) :is(.cc-controls,.ce-console)>:is([data-cc-pause],[data-lg-pause]):not(:disabled):not([hidden]) { display:block }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority][data-remaining]:not([data-remaining="0"]):where(:not([data-slot-priority=full])) :is(.cc-controls,.ce-console):has(>:is([data-cc-pause],[data-lg-pause]):not(:disabled):not([hidden])) :is([data-cc-auto],[data-lg-auto]) { display:none }
 
 /* A short pane puts controls beside the field, without reserving a second footer. */
 #mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority=landscape] {
