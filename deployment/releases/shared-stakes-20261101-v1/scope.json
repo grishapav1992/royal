@@ -1,7 +1,7 @@
 {
-  "release": "shared-stakes-20261101-v1",
+  "release": "shared-stakes-20261101-v2",
   "productionCommit": "fb599494fbee9accff92c8a30126a071ebcceb5c",
-  "featureCommit": "d9fccede2224709ea1a2aa740b037fdd3988522a",
+  "featureCommit": "223300bd892960c53b7e1b91594ccb33934299e7",
   "activeGames": [
     "studio-caramel-carnival",
     "studio-last-convoy",
@@ -233,7 +233,8 @@
     "src/ui/stakeSelection.ts",
     "src/ui/volcanicPlinkoModel.ts",
     "src/wallet/ExpansionClient.ts",
-    "src/wallet/WalletClient.ts"
+    "src/wallet/WalletClient.ts",
+    "src/ui/LastExitUI.ts"
   ],
   "preservedWardrobeProgressVersion": 3,
   "nativeService": "royal-nile-play"
