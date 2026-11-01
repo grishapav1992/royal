@@ -1,0 +1,13 @@
+# Active game viewport correction
+
+The production Royal catalogue contained 18 games when inspected on 1 November 2026. Twelve need presentation changes: Cosmic Escape, Caramel Carnival, Velvet Reign, Last Convoy, Nitro RUN, GIRLHUB, MEME OVERLOAD, LAST EXIT, Plinko, CR vs. Leo, Flag Battle and Dracona. Existing working layouts stay in the remaining six packages, including Caribbean Treasures 1.6.1. The four active card tables are checked separately. This release does not add or restore games.
+
+The shared stylesheet makes small native scenes scroll separately from their stake, spin and autoplay controls. Short landscape panes use a separate control column. Dracona applies its responsive stylesheet inside its existing iframe. Game rules, prices, probabilities, media, animation timing, wallet transport and saved-round behavior remain those of the verified production packages.
+
+`module-projection.json` pins the existing production source graph, media hashes and contracts. Main also contains an unpublished shared-stake release; the narrow projection preserves the currently published behavior. Only eleven entry imports, Dracona's style composition and two new style files change in production source. The host, backend, configuration and persistent data are outside the release scope.
+
+Prepare from a clean committed checkout using `release:plan`, `release:prepare` with `--base fb599494fbee9accff92c8a30126a071ebcceb5c --modules cosmic-escape,caramel-carnival,velvet-reign,last-convoy,nitro-run,girlhub,meme-overload,last-exit,royal-plinko,cr-vs-leo,flag-battle,dracona --module-projection deployment/releases/active-games-responsive-20261101-v1/module-projection.json`, then `release:verify --github`. Use the resulting exact packages and receipt.
+
+The guarded publisher holds all three publication locks, compares the complete private server inventory, requires the previously verified active pointers and checks every preserved source input. It preflights all twelve packages, verifies source and immutable package backups and tags the exact running image before installation. Complete before/after inventories stay on the server. Export only the public package identities, hashes, counts and verification result.
+
+After the publisher releases its locks, run canonical retention and verify a completed run, the enabled hourly timer, a healthy host and at least 5 GiB free. Preserve the old immutable game packages and their Git origins for rollback. Remove task-owned transport files and local work outputs after recording the verified publication in `deployment/SERVER.md` and GitHub.

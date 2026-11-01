@@ -209,3 +209,7 @@
 #mini-dialog.originals-mode[data-game-viewport="flow"] :is(.cc-auto-controls>div,.ce-right-controls>.lg-autoplay) { flex:0 0 74px; }
 #mini-dialog.originals-mode[data-game-viewport="flow"] :is(.cc-auto-controls select,.ce-right-controls select) { flex:0 0 36px; width:36px; min-width:36px; max-width:36px; }
 #mini-dialog.originals-mode[data-game-viewport="flow"] :is(.cc-auto-controls>div>button,.ce-right-controls .lg-autoplay button) { flex:1; min-width:36px; width:36px; }
+
+/* In-game rule and purchase panels follow the same bounded game pane. */
+#mini-dialog.originals-mode[data-game-viewport="flow"] :is(.cc-dialog-backdrop,.ce-dialog-backdrop) { position:absolute; inset:0; padding:8px; overflow:auto; align-items:safe center; }
+#mini-dialog.originals-mode[data-game-viewport="flow"] :is(.cc-dialog,.ce-dialog) { min-height:0; max-height:calc(100cqh - 16px); overflow:auto; margin:0; }
