@@ -2,7 +2,7 @@
   "version": "1.14.0-b4c74a13770a",
   "date": "2026-11-01",
   "scope": "Local Forest Heart character review, no production publication",
-  "integrationBaseline": "67ad5ecac64c2187494946c5bb1cba648457b2e6",
+  "integrationBaseline": "29daeb4e58d834d2df1500f854ba2930f89593dc",
   "newGenerationRequests": 0,
   "newGenerationChargeUsd": 0,
   "generationServiceReadOnly": {
@@ -1178,7 +1178,7 @@
   ],
   "verification": {
     "moduleBuild": "Passed, immutable module manifest and active pointer agree",
-    "rtpGate": "Passed: 35 qualified profiles, 18 stake policies, 114 unchanged legacy entries",
+    "rtpGate": "Passed again after synchronization: 35 qualified profiles, 18 stake policies, 18 stake admission checks, 114 unchanged legacy entries",
     "mathTests": {
       "passed": 9
     },
@@ -1282,6 +1282,79 @@
         "Head tilt and breathing are small illustrated deformations, not a skeletal character.",
         "Physical mobile performance and subjective long-session comfort were not measured. In-app browser control was disabled, so the existing user tab was not refreshed automatically."
       ]
+    },
+    "mergedHostBrowserRepeat": {
+      "passed": 3,
+      "failed": 0,
+      "durationSeconds": 90,
+      "reason": "Fresh main includes compact header and shared host changes. Repeated all-three sequence, actual rendered idle/opacity and desktop/mobile/chat settlement in the resulting working tree.",
+      "moduleVersion": "1.14.0-b4c74a13770a",
+      "timeline": {
+        "clip": null,
+        "heldClip": null,
+        "heldFrame": 3,
+        "phase": "standing",
+        "nextClip": "look",
+        "nextAtMs": 33295.7,
+        "episodeMs": 3000,
+        "standingMs": 6000,
+        "fadeMs": 640,
+        "history": [
+          {
+            "clip": "look",
+            "startMs": 6179.8,
+            "endMs": 9179.7
+          },
+          {
+            "clip": "focus",
+            "startMs": 15229.5,
+            "endMs": 18229.4
+          },
+          {
+            "clip": "magic",
+            "startMs": 24295.8,
+            "endMs": 27295.7
+          }
+        ],
+        "blend": 0,
+        "weights": {
+          "native": 1,
+          "held": 0,
+          "video": 0
+        },
+        "visible": false,
+        "frames": 319,
+        "draws": 393,
+        "suspended": false,
+        "failed": [],
+        "media": [
+          {
+            "clip": "look",
+            "paused": true,
+            "time": 3,
+            "ready": 4,
+            "muted": true,
+            "loop": false
+          },
+          {
+            "clip": "focus",
+            "paused": true,
+            "time": 3,
+            "ready": 4,
+            "muted": true,
+            "loop": false
+          },
+          {
+            "clip": "magic",
+            "paused": true,
+            "time": 3,
+            "ready": 4,
+            "muted": true,
+            "loop": false
+          }
+        ]
+      },
+      "minDeepBodyAlpha": 251
     }
   },
   "artifacts": {
@@ -1315,5 +1388,7 @@
     "audio score",
     "catalogue availability"
   ],
-  "research": "docs/game-feedback.md separates event correctness, artistic hypotheses and subjective quality. All timing and motion values here are local artistic choices, not universal perceptual thresholds."
+  "research": "docs/game-feedback.md separates event correctness, artistic hypotheses and subjective quality. All timing and motion values here are local artistic choices, not universal perceptual thresholds.",
+  "initialIntegrationBaseline": "67ad5ecac64c2187494946c5bb1cba648457b2e6",
+  "verifiedSourceMerge": "065ff0555b310baa898e520428a145ce05756aa9"
 }
