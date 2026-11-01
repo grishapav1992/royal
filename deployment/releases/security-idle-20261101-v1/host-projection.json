@@ -523,11 +523,11 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/network/LobbyClient.ts",
       "baseSha256": "c9c323aab32731f835b99be35b83541c4d18c45e48c80feb0dc1008643e6db3a",
-      "sha256": "4a0652cf502aacf2beef2d11f42181886bd20d0898b7aef011949ec3f394be0d",
+      "sha256": "acd040e7a450cfc814152c5f2f372bc5057c2d0b93cf511ebb0b86b7732f3e15",
       "patches": [
         {
-          "from": "      room.onLeave(code => { if (!current()) return; if(code===4000||code===4003)forgetSession(accountId,room.roomId,room.reconnectionToken); if(code===4003) this.events.ejected(banUntil || Date.now()+600000); if (this.room === room) { this.room = undefined; this.setStatus('disconnected'); } });",
-          "to": "      room.onLeave(code => {\n        if (!current()) return;\n        if (code === 4000 || code === 4003) forgetSession(accountId, room.roomId, room.reconnectionToken);\n        // The SDK also uses 4003 when reconnection fails. Only a server sanction supplies a ban deadline.\n        if (code === 4003 && banUntil > Date.now()) this.events.ejected(banUntil);\n        if (this.room === room) { this.room = undefined; this.setStatus('disconnected'); }\n      });"
+          "from": "if(code===4003) this.events.ejected(banUntil || Date.now()+600000)",
+          "to": "if(code===4003 && banUntil > Date.now()) this.events.ejected(banUntil)"
         }
       ]
     },
