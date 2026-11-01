@@ -7,7 +7,7 @@ from image_metadata import image, inspect
 
 NAME = 'lobby-connection-20261101-v1'
 ROOT = Path(__file__).resolve().parent
-SOURCES = {"server/LobbyRoom.ts","server/index.ts","src/i18n/en.ts","src/network/LobbyClient.ts","src/network/reconnection.ts","src/network/sessionRecovery.ts","src/shared/lobbyConnection.ts","src/ui/SocialUI.ts"}
+SOURCES = {"server/LobbyRoom.ts","server/index.ts","src/i18n/en.ts","src/network/LobbyClient.ts","src/network/reconnection.ts","src/shared/lobbyConnection.ts","src/ui/SocialUI.ts"}
 PRESERVED_BACKEND_INPUTS = {'src/i18n/en.ts': '8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68'}
 
 def require(value, reason):

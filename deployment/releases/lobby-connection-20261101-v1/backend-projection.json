@@ -1,15 +1,8 @@
 {
   "format": 1,
-  "productionCommit": "7beace3ee7c3450e37b8609dad241308e33640a8",
-  "changedSources": [
-    "server/LobbyRoom.ts",
-    "server/index.ts",
-    "src/i18n/en.ts",
-    "src/network/LobbyClient.ts",
-    "src/network/reconnection.ts",
-    "src/network/sessionRecovery.ts",
-    "src/shared/lobbyConnection.ts",
-    "src/ui/SocialUI.ts"
+  "productionCommit": "f2be9fd0c951c4fb5c380207bcf2308d0ba1dbe4",
+  "entries": [
+    "server/index.ts"
   ],
   "files": {
     "package.json": {
@@ -19,27 +12,11 @@
       "sha256": "992ca42e63bc84b173c51551db3f7fbb2627d73b9e1e7a1ff68261251c6326bb"
     },
     "server/LobbyRoom.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "commit": "0bc95d280f03b0395b7fba4542dd3cb837cae23e",
       "path": "server/LobbyRoom.ts",
-      "baseSha256": "339fa9f2bea088f4c92ea48a9babccc4d57da8da7a966465463d9bf78480c24a",
-      "sha256": "5255a66f322f5b2a25df1d39bcf16b421b703fa73c1f03f54f0919eb2b4f3a9d",
+      "baseSha256": "29ca9ad2ce2eeef0e1fe72e63760544ba381f2e4f8bfc3659c4f344b13449793",
+      "sha256": "791d473dc45f2c0188d87860da4aa22fd577ff98489046380b59382556c4ad19",
       "patches": [
-        {
-          "from": "top(client.sessionId));\n    listen('playing', (c",
-          "to": "top(client.sessionId));\n    listen('elevator', (client, value: unknown) => {\n      if (!value || typeof value !== 'object') return;\n      const { target, requestId, revision } = value as { target?: unknown; requestId?: unknown; revision?: unknown };\n      if (!Number.isSafeInteger(requestId) || (requestId as number) < 0) return;\n      const p = this.state.players.get(client.sessionId), control = this.controls.get(client.sessionId);\n      if (!p || !control || revision !== p.hallRevision || !canTravelByElevator(p, target)) {\n        client.send('elevator-result', { requestId, target, accepted: false, reason: 'Подойди к лифту и заверши текущее занятие.' });\n        return;\n      }\n      this.activities.leave(client.sessionId); this.releaseCabinet(client.sessionId); this.stop(client.sessionId);\n      const dock = elevatorDock(target);\n      p.hall = target; p.hallRevision++; p.x = dock.arrival.x; p.y = dock.arrival.y; p.facing = dock.facing;\n      control.lastTarget = 0;\n      client.send('elevator-result', { requestId, target, accepted: true, revision: p.hallRevision });\n      client.send('activities', this.activities.snapshot(client.sessionId));\n    });\n    listen('playing', (c"
-        },
-        {
-          "from": " Кошку.'});\n          }\n          return;\n      ",
-          "to": " Кошку.'});\n          }\n          if(type==='elevator')client.send('elevator-result',{requestId:value?.requestId,target:value?.target,accepted:false,reason:'Сначала отпусти Кошку.'});\n          return;\n      "
-        },
-        {
-          "from": "', 'cat']);\n    ",
-          "to": "', 'cat', 'elevator']);\n    "
-        },
-        {
-          "from": "world';\nimport {",
-          "to": "world';\nimport { canTravelByElevator, elevatorDock } from '../src/shared/elevator';\nimport {"
-        },
         {
           "from": "  onLeave(client: Client) {\n    this.cancelChat(cli",
           "to": "  onLeave(client: Client, code?: number) {\n    console.info(JSON.stringify({ event: 'lobby-connection', phase: 'left', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));\n    this.cancelChat(cli"
@@ -73,10 +50,10 @@
       "sha256": "f621ae52b8055c100f7d219a3030b417603927e0c8a0fb2185e1f2b25bfa8927"
     },
     "server/activities.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "commit": "7d85f4a3419e1fff9e208213853a035cebeba267",
       "path": "server/activities.ts",
-      "baseSha256": "09e57980f794cb2a153808566188a41daa628ef349bd2afa0a8047e2bcee42f2",
-      "sha256": "09e57980f794cb2a153808566188a41daa628ef349bd2afa0a8047e2bcee42f2"
+      "baseSha256": "fbfd749768618947fc6a11b4bc4cfc967c231067330ffdca28ce3077e3fddf6f",
+      "sha256": "fbfd749768618947fc6a11b4bc4cfc967c231067330ffdca28ce3077e3fddf6f"
     },
     "server/activityChanges.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -319,10 +296,10 @@
       "sha256": "5e962ec09ceb66fdc01713682461d0c4111377656bcf7621908c862606b1db90"
     },
     "server/finance/pvp-money.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "commit": "48e26ff07c96e02a97e62c21ec9d6d9ee13ce3b5",
       "path": "server/finance/pvp-money.ts",
-      "baseSha256": "14708dc154295ba2baaadf0b9dbe54a7a225b30267d2358ad2aecb729c6db614",
-      "sha256": "14708dc154295ba2baaadf0b9dbe54a7a225b30267d2358ad2aecb729c6db614"
+      "baseSha256": "e71a90edf48f23a0479b7b85933aab583263daee14edf59edf301baa92b9115b",
+      "sha256": "e71a90edf48f23a0479b7b85933aab583263daee14edf59edf301baa92b9115b"
     },
     "server/flagTote.ts": {
       "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
@@ -865,16 +842,16 @@
       "sha256": "42db70683726228f6ab2217c7ef48b269cf372368950faa9f4555825880f6cf0"
     },
     "server/pvp/room.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "commit": "0bc95d280f03b0395b7fba4542dd3cb837cae23e",
       "path": "server/pvp/room.ts",
-      "baseSha256": "438cb8c64b24f67654f3c2884aaf155b5078f50d4302f6b952411b664d433d5c",
-      "sha256": "438cb8c64b24f67654f3c2884aaf155b5078f50d4302f6b952411b664d433d5c"
+      "baseSha256": "31b7c1aedcd71f4ee52b56c5678ea839f4685c450d8aaeb6f782d1d9b77613b9",
+      "sha256": "31b7c1aedcd71f4ee52b56c5678ea839f4685c450d8aaeb6f782d1d9b77613b9"
     },
     "server/pvp/store.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "commit": "0bc95d280f03b0395b7fba4542dd3cb837cae23e",
       "path": "server/pvp/store.ts",
-      "baseSha256": "ddd870a28f9ace119fd9aeb2ecdda22711024124d5700f5f5f2ed8a29ad9390b",
-      "sha256": "ddd870a28f9ace119fd9aeb2ecdda22711024124d5700f5f5f2ed8a29ad9390b"
+      "baseSha256": "7069f7ed0e1585e172a52c87e900ddcae36cad519079a20acb492f1634f6ca43",
+      "sha256": "7069f7ed0e1585e172a52c87e900ddcae36cad519079a20acb492f1634f6ca43"
     },
     "server/pvp/virtual-service.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -883,10 +860,10 @@
       "sha256": "600c5bed3d92a4042d9bd160a4766057b77f85ed22ab2c350663fd1e9877a7f2"
     },
     "server/pvp/virtual-wallet.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "commit": "48e26ff07c96e02a97e62c21ec9d6d9ee13ce3b5",
       "path": "server/pvp/virtual-wallet.ts",
-      "baseSha256": "03cfccc604a2748c7b7e4c461adb56c6dfd0e72265726104fd8a96697570327c",
-      "sha256": "03cfccc604a2748c7b7e4c461adb56c6dfd0e72265726104fd8a96697570327c"
+      "baseSha256": "78b99a9001b544cc089028fd3ef96fbd61f57d6a2ba5c6b53f2ee913c88e6feb",
+      "sha256": "78b99a9001b544cc089028fd3ef96fbd61f57d6a2ba5c6b53f2ee913c88e6feb"
     },
     "server/removedCasino.ts": {
       "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
@@ -967,10 +944,10 @@
       "sha256": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8"
     },
     "src/shared/activities.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "commit": "80694339e4d27a11b9edd8956974513010276b44",
       "path": "src/shared/activities.ts",
-      "baseSha256": "4066a87d6fa8bcec96f5a4a419ef73f4c140ac3d46873ae7bb418f0f8b056023",
-      "sha256": "4066a87d6fa8bcec96f5a4a419ef73f4c140ac3d46873ae7bb418f0f8b056023"
+      "baseSha256": "ef5c6a0cc74b005704682523742bb71f25f0fa83aa25eeabbdeb8cc556c7142b",
+      "sha256": "ef5c6a0cc74b005704682523742bb71f25f0fa83aa25eeabbdeb8cc556c7142b"
     },
     "src/shared/afterglow.ts": {
       "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
@@ -1285,10 +1262,10 @@
       "sha256": "3e59b987bd47e61137af39aace7717bc7490e3dabf52193de8668fbcca5ca737"
     },
     "src/shared/gameStakes.ts": {
-      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "commit": "82fdd4f91c31c23ddb18c393d66dada8a33dc7dc",
       "path": "src/shared/gameStakes.ts",
-      "baseSha256": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
-      "sha256": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637"
+      "baseSha256": "111e989e050588da872771dbfc11736566737141ea612f67504146e035b6a78d",
+      "sha256": "111e989e050588da872771dbfc11736566737141ea612f67504146e035b6a78d"
     },
     "src/shared/guardCollision.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1447,16 +1424,16 @@
       "sha256": "5f79d619753062d77aa5a6c15c93a06b9435da241da861bd0308eb6a6982184e"
     },
     "src/shared/pvp.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "commit": "cc24e8f02648dbe1848d6e1e53b1ab20519b837c",
       "path": "src/shared/pvp.ts",
-      "baseSha256": "d20cd82ca7f1c8cd20d25daa3e420519a42993a8583924e38d9e67d3cd8f31b3",
-      "sha256": "d20cd82ca7f1c8cd20d25daa3e420519a42993a8583924e38d9e67d3cd8f31b3"
+      "baseSha256": "a1e4694f9f7102779a256e95820361e40383ea6396cc64af7da25e304d4d134f",
+      "sha256": "a1e4694f9f7102779a256e95820361e40383ea6396cc64af7da25e304d4d134f"
     },
     "src/shared/pvpSeats.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "commit": "80694339e4d27a11b9edd8956974513010276b44",
       "path": "src/shared/pvpSeats.ts",
-      "baseSha256": "a1430b142a89b77f77268a7a419a4ae62e735d17416b769ef3cb6dd594ea180d",
-      "sha256": "a1430b142a89b77f77268a7a419a4ae62e735d17416b769ef3cb6dd594ea180d"
+      "baseSha256": "97bba60d5044f971ac910ece29509ea3df94dd22bea25b6f80eeca56def7a492",
+      "sha256": "97bba60d5044f971ac910ece29509ea3df94dd22bea25b6f80eeca56def7a492"
     },
     "src/shared/rewardSpinCatalog.ts": {
       "commit": "60b13bb8dde910919057835ed056a98257b78857",
@@ -1546,11 +1523,15 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/shared/world.ts",
       "baseSha256": "88c5b4473a23d396e12dc699174caa764ede9257dfea2df5361eaef14ea8e45d",
-      "sha256": "1e8fae4df029be9f570b19f26c244b148421999904b5e13436668cc52e17b801",
+      "sha256": "f739222b97caf367355fede3d921a180b1a317be3ecdab974d624a669a69062f",
       "patches": [
         {
           "from": "nds = { cat?: (a",
           "to": "nds = { elevator?: (target: HallId) => Promise<boolean>; cat?: (a"
+        },
+        {
+          "from": "bounds, ...PLANT",
+          "to": "bounds, ACTIVITIES['tsu-e-fa'].bounds, ...PLANT"
         }
       ]
     },
@@ -1566,6 +1547,30 @@
       "baseSha256": "d7f4f8da997be7e9f9c35e79e5398aec50d1e3f7af1afcc0efaa6f61f466e9ca",
       "sha256": "d7f4f8da997be7e9f9c35e79e5398aec50d1e3f7af1afcc0efaa6f61f466e9ca"
     },
+    "server/pvp/tsu-e-fa.ts": {
+      "commit": "7d85f4a3419e1fff9e208213853a035cebeba267",
+      "path": "server/pvp/tsu-e-fa.ts",
+      "baseSha256": "58f0b673419810f425906220b5ff7532d1aef9a1643b011651bd22184ed37ae9",
+      "sha256": "58f0b673419810f425906220b5ff7532d1aef9a1643b011651bd22184ed37ae9"
+    },
+    "src/shared/tsuEFa.ts": {
+      "commit": "cc24e8f02648dbe1848d6e1e53b1ab20519b837c",
+      "path": "src/shared/tsuEFa.ts",
+      "baseSha256": "907dc4fae7035222cf290bcf99650b3d4945058931a54eb523cf3e3be02e18ed",
+      "sha256": "907dc4fae7035222cf290bcf99650b3d4945058931a54eb523cf3e3be02e18ed"
+    },
+    "server/pvp/tsu-duel.ts": {
+      "commit": "cc24e8f02648dbe1848d6e1e53b1ab20519b837c",
+      "path": "server/pvp/tsu-duel.ts",
+      "baseSha256": "2c0cf3c3a12770011c9261b8d185019e4b841334581253278b6a52c8048e4e92",
+      "sha256": "2c0cf3c3a12770011c9261b8d185019e4b841334581253278b6a52c8048e4e92"
+    },
+    "src/shared/tsuDuel.ts": {
+      "commit": "48e26ff07c96e02a97e62c21ec9d6d9ee13ce3b5",
+      "path": "src/shared/tsuDuel.ts",
+      "baseSha256": "c6d3f0bc21fdfeea1307a506b3e1238de7af9711ac054fa93c2785eb9a9c6505",
+      "sha256": "c6d3f0bc21fdfeea1307a506b3e1238de7af9711ac054fa93c2785eb9a9c6505"
+    },
     "src/shared/lobbyConnection.ts": {
       "commit": "ee5ca86fb0545fe4ba6d410872c48c5d80288621",
       "path": "src/shared/lobbyConnection.ts",
@@ -1573,7 +1578,13 @@
       "sha256": "4cd112040e2d4dbefefab9c882b176c9ee0944d4b167c4c9280a594e5eb2dbac"
     }
   },
-  "entries": [
-    "server/index.ts"
+  "changedSources": [
+    "server/LobbyRoom.ts",
+    "server/index.ts",
+    "src/i18n/en.ts",
+    "src/network/LobbyClient.ts",
+    "src/network/reconnection.ts",
+    "src/shared/lobbyConnection.ts",
+    "src/ui/SocialUI.ts"
   ]
 }

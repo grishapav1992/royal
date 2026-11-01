@@ -6,7 +6,7 @@ import {digest} from '../../../scripts/module-build-cache.mjs';
 import {readHostProjection} from '../../../scripts/build-host-projection.mjs';
 import {verifyRelease,assertClean,git} from '../../../scripts/release.mjs';
 const root=process.cwd(),folder=path.dirname(fileURLToPath(import.meta.url));
-const name='lobby-connection-20261101-v1',sources=["server/LobbyRoom.ts","server/index.ts","src/i18n/en.ts","src/network/LobbyClient.ts","src/network/reconnection.ts","src/network/sessionRecovery.ts","src/shared/lobbyConnection.ts","src/ui/SocialUI.ts"];
+const name='lobby-connection-20261101-v1',sources=["server/LobbyRoom.ts","server/index.ts","src/i18n/en.ts","src/network/LobbyClient.ts","src/network/reconnection.ts","src/shared/lobbyConnection.ts","src/ui/SocialUI.ts"];
 const before=JSON.parse(fs.readFileSync(process.argv[2])),out=path.resolve(process.argv[3]);
 const scope=JSON.parse(fs.readFileSync(path.join(folder,'scope.json')));
 await assertClean(root);const release=await verifyRelease(root),receipt=JSON.parse(fs.readFileSync('module-build/release-github.json'));
