@@ -1,6 +1,6 @@
 {
   "release": "tsu-e-fa-20261101-v1",
-  "productionCommit": "2683c223a46450c456079b487fc36cdfb4e6eade",
+  "productionCommit": "7beace3ee7c3450e37b8609dad241308e33640a8",
   "featureCommits": [
     "8069433",
     "7d85f4a",
@@ -35,7 +35,7 @@
     "src/ui/PvpUI.ts": "93284e78260b8352f4e1d0f1c4da2a7af66bd7af1679d907e40dbdb2a57e9189",
     "src/game/RoomScene.ts": "5529abb634e9a81f58c29ee21726c44555adfbff7f07ef20a9c64e28e3cc7831",
     "src/ui/PlayerDuelMenu.ts": "4bfe47025bd7930c53e1fa21ed5a86809b4d004a12fa7be69b289e8359301456",
-    "src/ui/SocialUI.ts": "090840df2db0034664d9e2088870883f0edf31aac7b0dabeb42cf587f76642b5",
+    "src/ui/SocialUI.ts": "3afccd446b43934147476749cbe9a6c7a3f1b39f86a62bc2f83b385b1c4cc961",
     "src/ui/pvp-invitations.css": "5d78c9795f8338a3856f1fe883e60be7d68de13ea4c6b56c030c72d920fb113b",
     "games/tsu-e-fa/HandArt.ts": "f37d6ebf3618ad55bbbab0a3cf3d7a1ca8cc676e69cf4baf2893a874bf9a07a1",
     "games/tsu-e-fa/TsuDuelUI.ts": "8aee59496b0c49b92041d6ddb334ab32bdd4be4c14a892272b405fc5e8dcf225",
