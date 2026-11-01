@@ -9,3 +9,5 @@ export const mount: GameModuleV1['mount'] = host => {
  readGameHost();
  return new AfterglowUI(host);
 };
+
+import '../../src/ui/active-game-viewport.css';

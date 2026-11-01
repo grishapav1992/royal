@@ -1,0 +1,64 @@
+"""Bind the retained Native alias and remove two verified transport archives."""
+from pathlib import Path
+import fcntl, importlib.util, json, shutil, sys
+
+ROOT = Path(__file__).resolve().parent
+spec = importlib.util.spec_from_file_location('stake_finalize_installer', ROOT / 'deploy.py')
+d = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(d)
+
+
+def main():
+    locks = []
+    for path in [Path('/opt/royal-releases/themed-publish.lock'), d.LIVE / '.client-presentation-deploy.lock', d.STATE / 'module.lock']:
+        d.require(not path.is_symlink(), 'Unsafe publication lock')
+        handle = path.open('a')
+        fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        locks.append(handle)
+    m = d.manifest()
+    built = d.read(ROOT / 'build-result.json')
+    published = d.read(ROOT / 'published.json')
+    unused = d.read(ROOT / 'unused-native-candidate.json')
+    original = m['before']['services']['/royal-nile-play']['image']
+    d.require(published['published'] and published['sourceCommit'] == m['sourceCommit'], 'Unpublished release')
+    d.require(built.get('nativeRestoredToOriginal') and built['nativeImage'] == original, 'Native restoration is not verified')
+    d.require(d.inspect('royal-game-1')['Image'] == built['image'] and d.inspect('royal-nile-play')['Image'] == original, 'A later release blocks finalization')
+    d.require(d.image('royal-nile-play:before-' + d.NAME) == original, 'Original Native image changed')
+    alias = 'royal-nile-play:' + d.BUILD_TAG
+    prior = d.image(alias)
+    d.require(prior in [unused['image'], original], 'A later Native candidate blocks finalization')
+    archives = {'final.tgz': 'f0e4a56bc6eb28f9b87136a1ee9907830cede0a45f4cd454c5b8f0285d157e3b',
+                'engine-update.tgz': '47022b6a0fcd948e98f0e6640fd961b28777e31d7a123ad884f99161c3b3d262'}
+    for name, digest in archives.items():
+        path = ROOT / name
+        if path.exists():
+            d.require(path.is_file() and not path.is_symlink() and d.sha(path) == digest, 'Transport archive changed')
+    d.health()
+    # The rollback supervisor requires candidate aliases to match the retained programs.
+    d.run(['ctr', '--namespace', 'moby', 'images', 'tag', '--force', 'docker.io/library/royal-nile-play:before-' + d.NAME, 'docker.io/library/' + alias])
+    d.require(d.image(alias) == built['nativeImage'] and d.image('royal-game:' + d.BUILD_TAG) == built['image'], 'Rollback candidate alias differs')
+    result = {'sourceCommit': m['sourceCommit'], 'nativeAliasBefore': prior, 'nativeAliasAfter': original,
+              'runningProgramsUnchanged': True, 'databaseRestored': False,
+              'operatorSha256': d.sha(__file__), 'freeBefore': shutil.disk_usage(d.LIVE).free, 'removedArchives': []}
+    # Replacing the final alias lets containerd retire its unreferenced candidate.
+    # Verify that retirement, without pruning images or touching shared layers.
+    candidate = unused['image']
+    d.require(d.re.fullmatch('sha256:[a-f0-9]{64}', candidate), 'Unsafe retired candidate identity')
+    candidate_manifest = Path('/var/lib/containerd/io.containerd.content.v1.content/blobs/sha256') / candidate.split(':')[1]
+    d.require(not candidate_manifest.exists(), 'Unused candidate is still retained by the daemon')
+    result['unusedNativeCandidateRetiredByDaemon'] = candidate
+    for name in archives:
+        path = ROOT / name
+        if path.exists():
+            size = path.stat().st_size
+            path.unlink()
+            result['removedArchives'].append({'path': str(path), 'bytes': size})
+    result['freeAfter'] = shutil.disk_usage(d.LIVE).free
+    d.capacity()
+    d.save('finalization.json', result)
+    print(json.dumps(result), flush=True)
+
+
+if __name__ == '__main__':
+    d.require(sys.argv[1:] == ['finalize'], 'Explicit finalization operation required')
+    main()
