@@ -1,7 +1,7 @@
 {
   "feature": "casino-street",
   "date": "2026-11-01",
-  "baselineCommit": "77a5d3ab19844ccfad492bbf36d7545da79722ad",
+  "baselineCommit": "26369e04ab23b424af3ddb4841bde43ce715d942",
   "deployed": false,
   "addedOrRestoredGames": [],
   "checks": {
@@ -248,5 +248,12 @@
     "completeCurrentBackendTestedSeparately": true
   },
   "previousVisualVersion": "street-details-v4",
-  "previousTestedSourceCommit": "177868031850c76c49375043f438956bbcaa8a03"
+  "previousTestedSourceCommit": "177868031850c76c49375043f438956bbcaa8a03",
+  "synchronization": {
+    "mainCommit": "26369e04ab23b424af3ddb4841bde43ce715d942",
+    "featureCommit": "4e6d5f3f343a22fb0478c82562c4d416dee14fed",
+    "testedRuntimeSourcesUnchanged": true,
+    "checkedAt": "2026-11-01T20:39:43.496163+00:00",
+    "changesSinceTesting": "Verification screenshots, report and deployment records only."
+  }
 }
