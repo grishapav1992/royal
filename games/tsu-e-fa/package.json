@@ -1,6 +1,6 @@
 {
   "name": "@royal/tsu-e-fa",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "gameId": "tsu-e-fa",
   "apiVersion": 1,
@@ -8,5 +8,7 @@
   "progressVersion": 1,
   "entry": "entry.ts",
   "assetRoots": [],
+  "assetFiles": ["tsu-e-fa/v2/hand-poses.png"],
+  "preload": ["tsu-e-fa/v2/hand-poses.png"],
   "scripts": { "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs" }
 }
