@@ -102,10 +102,16 @@
   ],
   "files": {
     "games/caramel-carnival/entry.ts": {
-      "commit": "c3d8cf628eb002f344458f646fb30c473c2573a6",
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "games/caramel-carnival/entry.ts",
-      "baseSha256": "761a7a68f1ca39712b263bcfaab9bacb901f1784a543b7c6896986c15ab41e70",
-      "sha256": "761a7a68f1ca39712b263bcfaab9bacb901f1784a543b7c6896986c15ab41e70"
+      "baseSha256": "75fbb5569222e750de09e964e46148539a4949f0df859b4b004f38b180a66319",
+      "sha256": "761a7a68f1ca39712b263bcfaab9bacb901f1784a543b7c6896986c15ab41e70",
+      "patches": [
+        {
+          "from": "import { CaramelCarnivalUI } from '../../src/ui/CaramelCarnivalUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nimport '../../src/ui/studio-games.css';\nimport { CascadeSlotUI } from '../../src/ui/CascadeSlotUI';\nimport { LuelonGameRouter } from '../../src/ui/LuelonGameRouter';\nexport const gameId = 'studio-caramel-carnival';\nexport const apiVersion = 1;\nexport const rulesVersion = 2;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new LuelonGameRouter(host, gameId, body => new CascadeSlotUI(body, gameId), body => new CaramelCarnivalUI(body));\n};\n",
+          "to": "import { CaramelCarnivalUI } from '../../src/ui/CaramelCarnivalUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nimport '../../src/ui/studio-games.css';\nimport { CascadeSlotUI } from '../../src/ui/CascadeSlotUI';\nimport { LuelonGameRouter } from '../../src/ui/LuelonGameRouter';\nexport const gameId = 'studio-caramel-carnival';\nexport const apiVersion = 1;\nexport const rulesVersion = 2;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new LuelonGameRouter(host, gameId, body => new CascadeSlotUI(body, gameId), body => new CaramelCarnivalUI(body));\n};\n\nimport '../../src/ui/active-game-viewport.css';\n"
+        }
+      ]
     },
     "games/caramel-carnival/package.json": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -120,10 +126,16 @@
       "sha256": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de"
     },
     "games/cosmic-escape/entry.ts": {
-      "commit": "c3d8cf628eb002f344458f646fb30c473c2573a6",
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "games/cosmic-escape/entry.ts",
-      "baseSha256": "8bfac1db435df66f9def07d6d38a7296b9004af6103230c99dcb8294c176b2d7",
-      "sha256": "8bfac1db435df66f9def07d6d38a7296b9004af6103230c99dcb8294c176b2d7"
+      "baseSha256": "8406506e37235924f4b89dab0c9735d0d3ed9414dc840c3fcfdde66efdf8e24f",
+      "sha256": "8bfac1db435df66f9def07d6d38a7296b9004af6103230c99dcb8294c176b2d7",
+      "patches": [
+        {
+          "from": "import { CosmicEscapeUI } from '../../src/ui/CosmicEscapeUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nimport '../../src/ui/studio-games.css';\nimport { StudioSlotUI } from '../../src/ui/StudioSlotUI';\nimport { LuelonGameRouter } from '../../src/ui/LuelonGameRouter';\nexport const gameId = 'studio-cosmic-escape';\nexport const apiVersion = 1;\nexport const rulesVersion = 2;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new LuelonGameRouter(host, gameId, body => new StudioSlotUI(body, gameId), body => new CosmicEscapeUI(body));\n};\n",
+          "to": "import { CosmicEscapeUI } from '../../src/ui/CosmicEscapeUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nimport '../../src/ui/studio-games.css';\nimport { StudioSlotUI } from '../../src/ui/StudioSlotUI';\nimport { LuelonGameRouter } from '../../src/ui/LuelonGameRouter';\nexport const gameId = 'studio-cosmic-escape';\nexport const apiVersion = 1;\nexport const rulesVersion = 2;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new LuelonGameRouter(host, gameId, body => new StudioSlotUI(body, gameId), body => new CosmicEscapeUI(body));\n};\n\nimport '../../src/ui/active-game-viewport.css';\n"
+        }
+      ]
     },
     "games/cosmic-escape/package.json": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -138,10 +150,16 @@
       "sha256": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de"
     },
     "games/cr-vs-leo/entry.ts": {
-      "commit": "c3d8cf628eb002f344458f646fb30c473c2573a6",
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "games/cr-vs-leo/entry.ts",
-      "baseSha256": "8b1a8bcedfee1a5e8fe6bbc247cd73426fe29a5744248510865f83f1d84acd9b",
-      "sha256": "8b1a8bcedfee1a5e8fe6bbc247cd73426fe29a5744248510865f83f1d84acd9b"
+      "baseSha256": "fee36c75c9198d97545a0fd69ff68683511442582d4e8fbcff3f05e662eda932",
+      "sha256": "8b1a8bcedfee1a5e8fe6bbc247cd73426fe29a5744248510865f83f1d84acd9b",
+      "patches": [
+        {
+          "from": "import { CrLeoUI } from '../../src/ui/CrLeoUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nexport const gameId = 'original-cr-vs-leo';\nexport const apiVersion = 1;\nexport const rulesVersion = 1;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new CrLeoUI(host);\n};\n",
+          "to": "import { CrLeoUI } from '../../src/ui/CrLeoUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nexport const gameId = 'original-cr-vs-leo';\nexport const apiVersion = 1;\nexport const rulesVersion = 1;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new CrLeoUI(host);\n};\n\nimport '../../src/ui/active-game-viewport.css';\n"
+        }
+      ]
     },
     "games/cr-vs-leo/package.json": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -234,10 +252,16 @@
       "sha256": "2dfd78b1f4f05b4bfdf3a9945e4d04c275c6405618b75081ffc9f31ea8a9eabe"
     },
     "games/flag-battle/entry.ts": {
-      "commit": "c3d8cf628eb002f344458f646fb30c473c2573a6",
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "games/flag-battle/entry.ts",
-      "baseSha256": "235272bf13103e0a866388d96712608ca03736547ecf379d2e158221e975dfec",
-      "sha256": "235272bf13103e0a866388d96712608ca03736547ecf379d2e158221e975dfec"
+      "baseSha256": "464509c2a1b8a13cb030437c5dfeeba8c1e6bc370745d0540f6225ee2ac44a53",
+      "sha256": "235272bf13103e0a866388d96712608ca03736547ecf379d2e158221e975dfec",
+      "patches": [
+        {
+          "from": "import { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nimport { FlagBattleUI } from './FlagBattleUI';\nimport './style.css';\nexport const gameId = 'flag-battle';\nexport const apiVersion = 1;\nexport const rulesVersion = 2;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n  readGameHost();\n  return new FlagBattleUI(host);\n};\n",
+          "to": "import { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nimport { FlagBattleUI } from './FlagBattleUI';\nimport './style.css';\nexport const gameId = 'flag-battle';\nexport const apiVersion = 1;\nexport const rulesVersion = 2;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n  readGameHost();\n  return new FlagBattleUI(host);\n};\n\nimport '../../src/ui/active-game-viewport.css';\n"
+        }
+      ]
     },
     "games/flag-battle/package.json": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -258,10 +282,16 @@
       "sha256": "8c853be9f2b69ec71f4a989a382c2019a41838a8fe8227fe069a865e3b3a0ad2"
     },
     "games/girlhub/entry.ts": {
-      "commit": "c3d8cf628eb002f344458f646fb30c473c2573a6",
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "games/girlhub/entry.ts",
-      "baseSha256": "4cae15f499784454ebab68c465facd85601ef039fe145ca4cc4edbc81fc61d3c",
-      "sha256": "4cae15f499784454ebab68c465facd85601ef039fe145ca4cc4edbc81fc61d3c"
+      "baseSha256": "e2c0986f796a3dcec167019e5f7c674580785e0938dcadb9f35f3eddb724d6d0",
+      "sha256": "0595352e71b3b7c563bf1c8c4ee7a62cc28f866d7340524c7878687ee23dd862",
+      "patches": [
+        {
+          "from": "import { AfterglowUI } from '../../src/ui/AfterglowUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nimport '../../src/ui/studio-games.css';\nexport const gameId = 'studio-afterglow';\nexport const apiVersion = 1;\nexport const rulesVersion = 2;\nexport const progressVersion = 3;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new AfterglowUI(host);\n};\n",
+          "to": "import { AfterglowUI } from '../../src/ui/AfterglowUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nimport '../../src/ui/studio-games.css';\nexport const gameId = 'studio-afterglow';\nexport const apiVersion = 1;\nexport const rulesVersion = 2;\nexport const progressVersion = 3;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new AfterglowUI(host);\n};\n\nimport '../../src/ui/active-game-viewport.css';\n"
+        }
+      ]
     },
     "games/girlhub/package.json": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -276,10 +306,16 @@
       "sha256": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de"
     },
     "games/last-convoy/entry.ts": {
-      "commit": "c3d8cf628eb002f344458f646fb30c473c2573a6",
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "games/last-convoy/entry.ts",
-      "baseSha256": "f04cf96a6756e9eaf8141027be0cf9f6ffebbc685718042f6f8210726a330805",
-      "sha256": "f04cf96a6756e9eaf8141027be0cf9f6ffebbc685718042f6f8210726a330805"
+      "baseSha256": "6a26834a48d6638eb98d5e89765b6ca8f3c3cce22f8fc7abcec17bb3b69c7d61",
+      "sha256": "f04cf96a6756e9eaf8141027be0cf9f6ffebbc685718042f6f8210726a330805",
+      "patches": [
+        {
+          "from": "import { LastConvoyUI } from '../../src/ui/LastConvoyUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nimport '../../src/ui/studio-games.css';\nexport const gameId = 'studio-last-convoy';\nexport const apiVersion = 1;\nexport const rulesVersion = 2;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new LastConvoyUI(host);\n};\n",
+          "to": "import { LastConvoyUI } from '../../src/ui/LastConvoyUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nimport '../../src/ui/studio-games.css';\nexport const gameId = 'studio-last-convoy';\nexport const apiVersion = 1;\nexport const rulesVersion = 2;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new LastConvoyUI(host);\n};\n\nimport '../../src/ui/active-game-viewport.css';\n"
+        }
+      ]
     },
     "games/last-convoy/package.json": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -294,10 +330,16 @@
       "sha256": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de"
     },
     "games/last-exit/entry.ts": {
-      "commit": "c3d8cf628eb002f344458f646fb30c473c2573a6",
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "games/last-exit/entry.ts",
-      "baseSha256": "f49ff4fcd48e7bc074d2ea8fd28e3a32d87b71fdeb6a51aa1fe3f0952ca50a3d",
-      "sha256": "f49ff4fcd48e7bc074d2ea8fd28e3a32d87b71fdeb6a51aa1fe3f0952ca50a3d"
+      "baseSha256": "aae208c71954114f39557a785290f95ca2885ec26041917aea34bc13ae677a99",
+      "sha256": "f49ff4fcd48e7bc074d2ea8fd28e3a32d87b71fdeb6a51aa1fe3f0952ca50a3d",
+      "patches": [
+        {
+          "from": "import { LastExitUI } from '../../src/ui/LastExitUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nexport const gameId = 'github-crash';\nexport const apiVersion = 1;\nexport const rulesVersion = 1;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new LastExitUI(host);\n};\n",
+          "to": "import { LastExitUI } from '../../src/ui/LastExitUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nexport const gameId = 'github-crash';\nexport const apiVersion = 1;\nexport const rulesVersion = 1;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new LastExitUI(host);\n};\n\nimport '../../src/ui/active-game-viewport.css';\n"
+        }
+      ]
     },
     "games/last-exit/package.json": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -312,10 +354,16 @@
       "sha256": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de"
     },
     "games/meme-overload/entry.ts": {
-      "commit": "c3d8cf628eb002f344458f646fb30c473c2573a6",
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "games/meme-overload/entry.ts",
-      "baseSha256": "d26e00f5d6befded12af99335cd72c51ed4df4408df2efd961e8ff34a5d4c85c",
-      "sha256": "d26e00f5d6befded12af99335cd72c51ed4df4408df2efd961e8ff34a5d4c85c"
+      "baseSha256": "f68574c3b34406c6fffdf58c5aa6a9288455244f2fc901c328ca91e19b8fd881",
+      "sha256": "d26e00f5d6befded12af99335cd72c51ed4df4408df2efd961e8ff34a5d4c85c",
+      "patches": [
+        {
+          "from": "import { MemeOverloadUI } from '../../src/ui/MemeOverloadUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nimport '../../src/ui/studio-games.css';\nexport const gameId = 'studio-meme-overload';\nexport const apiVersion = 1;\nexport const rulesVersion = 2;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new MemeOverloadUI(host);\n};\n",
+          "to": "import { MemeOverloadUI } from '../../src/ui/MemeOverloadUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nimport '../../src/ui/studio-games.css';\nexport const gameId = 'studio-meme-overload';\nexport const apiVersion = 1;\nexport const rulesVersion = 2;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new MemeOverloadUI(host);\n};\n\nimport '../../src/ui/active-game-viewport.css';\n"
+        }
+      ]
     },
     "games/meme-overload/package.json": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -330,10 +378,16 @@
       "sha256": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de"
     },
     "games/nitro-run/entry.ts": {
-      "commit": "c3d8cf628eb002f344458f646fb30c473c2573a6",
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "games/nitro-run/entry.ts",
-      "baseSha256": "749cd4b22eb5837419329a0b7a985d983531990d198779edc4ba3946ac6a0cce",
-      "sha256": "749cd4b22eb5837419329a0b7a985d983531990d198779edc4ba3946ac6a0cce"
+      "baseSha256": "0805a20f29bf1ffdbeee0635ea17c86562376474bf62b29f2573925d8ac587c0",
+      "sha256": "749cd4b22eb5837419329a0b7a985d983531990d198779edc4ba3946ac6a0cce",
+      "patches": [
+        {
+          "from": "import { NitroRunUI } from '../../src/ui/NitroRunUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nimport '../../src/ui/studio-games.css';\nexport const gameId = 'studio-nitro-run';\nexport const apiVersion = 1;\nexport const rulesVersion = 2;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new NitroRunUI(host);\n};\n",
+          "to": "import { NitroRunUI } from '../../src/ui/NitroRunUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nimport '../../src/ui/studio-games.css';\nexport const gameId = 'studio-nitro-run';\nexport const apiVersion = 1;\nexport const rulesVersion = 2;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new NitroRunUI(host);\n};\n\nimport '../../src/ui/active-game-viewport.css';\n"
+        }
+      ]
     },
     "games/nitro-run/package.json": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -348,10 +402,16 @@
       "sha256": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de"
     },
     "games/royal-plinko/entry.ts": {
-      "commit": "c3d8cf628eb002f344458f646fb30c473c2573a6",
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "games/royal-plinko/entry.ts",
-      "baseSha256": "7c5e2d14b238c3431723e58da414673e19fd0478a43689a7a160e7a613ddaab3",
-      "sha256": "7c5e2d14b238c3431723e58da414673e19fd0478a43689a7a160e7a613ddaab3"
+      "baseSha256": "97f38cc8c8888f5cef9466ff98f62f5ae5ca4d6ba38c4c4e349024c9e116822b",
+      "sha256": "7c5e2d14b238c3431723e58da414673e19fd0478a43689a7a160e7a613ddaab3",
+      "patches": [
+        {
+          "from": "import { VolcanicPlinkoUI } from '../../src/ui/VolcanicPlinkoUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nexport const gameId = 'royal-plinko';\nexport const apiVersion = 1;\nexport const rulesVersion = 1;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new VolcanicPlinkoUI(host);\n};\n",
+          "to": "import { VolcanicPlinkoUI } from '../../src/ui/VolcanicPlinkoUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nexport const gameId = 'royal-plinko';\nexport const apiVersion = 1;\nexport const rulesVersion = 1;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new VolcanicPlinkoUI(host);\n};\n\nimport '../../src/ui/active-game-viewport.css';\n"
+        }
+      ]
     },
     "games/royal-plinko/package.json": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -366,10 +426,16 @@
       "sha256": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de"
     },
     "games/velvet-reign/entry.ts": {
-      "commit": "c3d8cf628eb002f344458f646fb30c473c2573a6",
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "games/velvet-reign/entry.ts",
-      "baseSha256": "03a2f433c8491f10760e9c697b5f341d38729324d4713bc3dc75923bd1575252",
-      "sha256": "03a2f433c8491f10760e9c697b5f341d38729324d4713bc3dc75923bd1575252"
+      "baseSha256": "5b6419ab321d18be0df15f96eda014acaddaa2f96442424776fc51cdf359eaa0",
+      "sha256": "03a2f433c8491f10760e9c697b5f341d38729324d4713bc3dc75923bd1575252",
+      "patches": [
+        {
+          "from": "import { VelvetReignUI } from '../../src/ui/VelvetReignUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nimport '../../src/ui/studio-games.css';\nimport { StudioSlotUI } from '../../src/ui/StudioSlotUI';\nimport { LuelonGameRouter } from '../../src/ui/LuelonGameRouter';\nexport const gameId = 'studio-velvet-reign';\nexport const apiVersion = 1;\nexport const rulesVersion = 2;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new LuelonGameRouter(host, gameId, body => new StudioSlotUI(body, gameId), body => new VelvetReignUI(body));\n};\n",
+          "to": "import { VelvetReignUI } from '../../src/ui/VelvetReignUI';\nimport { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';\nimport '../../src/ui/studio-games.css';\nimport { StudioSlotUI } from '../../src/ui/StudioSlotUI';\nimport { LuelonGameRouter } from '../../src/ui/LuelonGameRouter';\nexport const gameId = 'studio-velvet-reign';\nexport const apiVersion = 1;\nexport const rulesVersion = 2;\nexport const progressVersion = 1;\nexport const mount: GameModuleV1['mount'] = host => {\n readGameHost();\n return new LuelonGameRouter(host, gameId, body => new StudioSlotUI(body, gameId), body => new VelvetReignUI(body));\n};\n\nimport '../../src/ui/active-game-viewport.css';\n"
+        }
+      ]
     },
     "games/velvet-reign/package.json": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
