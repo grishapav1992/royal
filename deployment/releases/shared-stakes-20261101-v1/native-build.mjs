@@ -5,15 +5,16 @@ export async function nativeBuild(root,config,output,entries=[...allowed]){
  assert(entries.length&&entries.every(e=>allowed.has(e)));const reader=await readHostProjection(root,config,{strictOrigins:true});
  const packageJson=JSON.parse(reader.read('package.json')),actual=JSON.parse(await readFile(resolve(root,'package.json'),'utf8'));
  for(const key of ['type','dependencies','devDependencies','overrides','engines'])assert.deepEqual(packageJson[key],actual[key],'Native package resolution changed');
- await mkdir(output,{recursive:true});const names={'scripts/finance-nile-play.ts':'play.js','scripts/finance-nile-play-proof.ts':'proof.js','server/finance/nile-game-runtime.ts':'runtime.mjs'},outputs={};
+ await mkdir(output,{recursive:true});const names={'scripts/finance-nile-play.ts':'play.js','scripts/finance-nile-play-proof.ts':'proof.js','server/finance/nile-game-runtime.ts':'runtime.mjs'},outputs={},dependencyHashes={};
  for(const entry of entries){
-  const result=await build({absWorkingDir:root,entryPoints:[entry],bundle:true,write:false,metafile:true,platform:'node',format:'esm',packages:'external',tsconfigRaw:reader.read('tsconfig.json').toString(),plugins:[{name:'reviewed-native-sources',setup(b){b.onLoad({filter:/\.(?:ts|mts|cts|js|mjs|cjs|json)$/},args=>{
+  const result=await build({absWorkingDir:root,entryPoints:[entry],bundle:true,write:false,metafile:true,platform:'node',format:'esm',...(entry==='server/finance/nile-game-runtime.ts'?{packages:'external'}:{external:['pg']}),tsconfigRaw:reader.read('tsconfig.json').toString(),plugins:[{name:'reviewed-native-sources',setup(b){b.onLoad({filter:/\.(?:ts|mts|cts|js|mjs|cjs|json)$/},args=>{
    const name=relative(root,args.path).replaceAll('\\','/');if(name.includes('node_modules/'))return;
    assert(/^(?:server|src|scripts)\//.test(name),'Unreviewed native source kind');return{contents:reader.read(name),loader:name.endsWith('.json')?'json':/\.([cm]?ts)$/.test(name)?'ts':'js',resolveDir:dirname(args.path)};
   });}}]});
+  for(const input of Object.keys(result.metafile.inputs)){const file=resolve(root,input),mark=file.lastIndexOf('/node_modules/');if(mark>=0){const n=file.slice(mark+1);dependencyHashes[n]=hash(await readFile(file));}}
   assert.equal(result.outputFiles.length,1);const bytes=result.outputFiles[0].contents,name=names[entry];await writeFile(resolve(output,name),bytes);outputs[name]={entry,sha256:hash(bytes),bytes:bytes.length};
  }
- const report={format:1,sourceCommit:execFileSync(process.env.ROYAL_GIT_BINARY||'git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),config,configSha256:reader.sha256,productionCommit:reader.metadata.productionCommit,esbuildVersion:version,inputs:reader.inputs,origins:reader.origins,outputs};
+ const report={format:1,sourceCommit:execFileSync(process.env.ROYAL_GIT_BINARY||'git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),config,configSha256:reader.sha256,productionCommit:reader.metadata.productionCommit,esbuildVersion:version,inputs:reader.inputs,origins:reader.origins,outputs,dependencyHashes,packageLockSha256:hash(await readFile(resolve(root,'package-lock.json')))};
  await writeFile(resolve(output,'native-build.json'),JSON.stringify(report,null,2)+'\n');return report;
 }
 export async function verifyNativeBuild(root,output){
@@ -21,6 +22,8 @@ export async function verifyNativeBuild(root,output){
  assert.equal(reader.sha256,report.configSha256);assert.equal(reader.metadata.productionCommit,report.productionCommit);assert.equal(report.esbuildVersion,version);
  for(const[n,h]of Object.entries(report.inputs)){assert.equal(hash(reader.read(n)),h);assert.deepEqual(reader.origins[n],report.origins[n]);}
  for(const[n,v]of Object.entries(report.outputs)){assert(allowed.has(v.entry));assert.equal(hash(await readFile(resolve(output,n))),v.sha256);}
+ if(report.packageLockSha256)assert.equal(hash(await readFile(resolve(root,'package-lock.json'))),report.packageLockSha256);
+ for(const[n,h]of Object.entries(report.dependencyHashes??{})){assert(n.startsWith('node_modules/')&&!n.split('/').includes('..'));assert.equal(hash(await readFile(resolve(root,n))),h);}
  return report;
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
