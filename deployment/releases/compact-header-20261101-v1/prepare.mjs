@@ -6,7 +6,7 @@ import {digest} from '../../../scripts/module-build-cache.mjs';
 import {readHostProjection} from '../../../scripts/build-host-projection.mjs';
 import {verifyRelease,assertClean,git} from '../../../scripts/release.mjs';
 const root=process.cwd(),folder=path.dirname(fileURLToPath(import.meta.url));
-const name='compact-header-20261101-v1',sources=['src/main.ts','src/ui/SocialUI.ts','src/i18n/en.ts','src/ui/compact-header.css'];
+const name='compact-header-20261101-v2',sources=['src/main.ts','src/ui/SocialUI.ts','src/i18n/en.ts','src/ui/compact-header.css'];
 const before=JSON.parse(fs.readFileSync(process.argv[2])),out=path.resolve(process.argv[3]);
 await assertClean(root);const release=await verifyRelease(root),receipt=JSON.parse(fs.readFileSync('module-build/release-github.json'));
 assert.equal(release.sourceCommit,receipt.sourceCommit);assert.equal(receipt.remoteMain,git(root,['rev-parse','origin/main']));
