@@ -33,7 +33,7 @@ def snapshot():
 def stable(value):return {k:v for k,v in value.items() if k not in IGNORED}
 def operator_inputs(release):return release['moduleProjection']['inputs']
 def validate_program(game,row,before,after,before_manifest,after_manifest):
- kind='style-composition-only' if game=='studio-dracona' else 'coordinate-only' if game in {'studio-cosmic-escape','studio-velvet-reign'} else 'alpha-equal'
+ kind='style-composition-only' if game=='studio-dracona' else 'alpha-equal'
  require(row['kind']==kind and row['passed'] is True,'Unverified client behavior')
  require(row['beforeManifest']==before_manifest and row['afterManifest']==after_manifest,'Program proof manifest differs')
  require(row['beforeEntry']==before['files'][before['entry']] and row['afterEntry']==after['files'][after['entry']],'Program proof entry differs')

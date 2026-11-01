@@ -40,7 +40,7 @@ class Guards(unittest.TestCase):
  def test_program_receipt_binds_both_immutable_entries(self):
   before={'entry':'old.js','files':{'old.js':'old'}};after={'entry':'new.js','files':{'new.js':'new'}}
   for game in p.GAMES.values():
-   kind='style-composition-only' if game=='studio-dracona' else 'coordinate-only' if game in {'studio-cosmic-escape','studio-velvet-reign'} else 'alpha-equal'
+   kind='style-composition-only' if game=='studio-dracona' else 'alpha-equal'
    row={'kind':kind,'passed':True,'beforeManifest':'a','afterManifest':'b','beforeEntry':'old','afterEntry':'new','coordinateTableSha256':'0f00e5a6178c774f48bd3eb03588acc7edd4c46e87545df35f3316bbdde91582','onlyImportedValue':'LINES'}
    p.validate_program(game,row,before,after,'a','b')
    for change in [{'afterEntry':'wrong'},{'beforeEntry':'wrong'},{'passed':False},{'kind':'unreviewed'}]:

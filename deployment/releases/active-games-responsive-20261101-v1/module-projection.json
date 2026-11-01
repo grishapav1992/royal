@@ -1564,6 +1564,534 @@
       "path": "src/ui/stakeSelection.ts",
       "baseSha256": "3db4bc3d3c8a08982d01ede17f8848fde88dc4e68ee55ad76ddbb1483741513d",
       "sha256": "3db4bc3d3c8a08982d01ede17f8848fde88dc4e68ee55ad76ddbb1483741513d"
+    },
+    "src/shared/activities.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/activities.ts",
+      "baseSha256": "4066a87d6fa8bcec96f5a4a419ef73f4c140ac3d46873ae7bb418f0f8b056023",
+      "sha256": "4066a87d6fa8bcec96f5a4a419ef73f4c140ac3d46873ae7bb418f0f8b056023"
+    },
+    "src/shared/ambientGuests.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/ambientGuests.ts",
+      "baseSha256": "6a30d7b77ae830984256dee833ebf5edb57e1c7cdd63d49f6c3d928a91a670fd",
+      "sha256": "6a30d7b77ae830984256dee833ebf5edb57e1c7cdd63d49f6c3d928a91a670fd"
+    },
+    "src/shared/appearance.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/appearance.ts",
+      "baseSha256": "d753df5f08e1c6717c4ba3fdbe1b0202013177859995751296a8a900f6a5f1a1",
+      "sha256": "d753df5f08e1c6717c4ba3fdbe1b0202013177859995751296a8a900f6a5f1a1"
+    },
+    "src/shared/arcadeCatalog.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/arcadeCatalog.ts",
+      "baseSha256": "f6a46d3ee4d427068c87af6a4289fed6e1ac7e00ca3a60da9849cb319e475dc6",
+      "sha256": "f6a46d3ee4d427068c87af6a4289fed6e1ac7e00ca3a60da9849cb319e475dc6"
+    },
+    "src/shared/atelier.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/atelier.ts",
+      "baseSha256": "6c947abfc6a4c2ce585568027bcb5a317debbbd3dbefe95b186ac843eebdcb95",
+      "sha256": "6c947abfc6a4c2ce585568027bcb5a317debbbd3dbefe95b186ac843eebdcb95"
+    },
+    "src/shared/cabinetGeometry.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/cabinetGeometry.ts",
+      "baseSha256": "c63adb8bd873e609053ee24384e999eb4fe170b0be536b02f9ec61e848c00118",
+      "sha256": "c63adb8bd873e609053ee24384e999eb4fe170b0be536b02f9ec61e848c00118"
+    },
+    "src/shared/cabinetSeating.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/cabinetSeating.ts",
+      "baseSha256": "79306f90ae0607f6f3b60bf4868816027bb023af454a1b95f09b1163815c4a8c",
+      "sha256": "79306f90ae0607f6f3b60bf4868816027bb023af454a1b95f09b1163815c4a8c"
+    },
+    "src/shared/cabinets.ts": {
+      "commit": "60b13bb8dde910919057835ed056a98257b78857",
+      "path": "src/shared/cabinets.ts",
+      "baseSha256": "1c767cf6e980b290b7920bf63da365c50fcce574b1fcde5e4295596889d9e332",
+      "sha256": "f839c2921090d9887839787b051bad6717c565037644d919cbf1681dc4a53bdd",
+      "patches": [
+        {
+          "from": "import {JACKIE_GAME} from './jackieChan';\nimport { t as translateText, language } from '../i18n/index';\nexport type Cabinet = { id: string; name: string; subtitle: string; x: number; y: number; color: number; playable: boolean; hall?: 'arcade' | 'tables' | 'github'; demo?: boolean; wallet?: boolean; provider?: boolean; github?: boolean; defaultGameId?: string; collection?: CabinetCollection | 'luelon' };\n\nimport { PENALTY_GAME } from './crLeo';\nimport { CARIBBEAN_GAME } from './caribbeanTreasures';\nimport { BASE_EXPANSION_GAMES, EXPANSION_NAMES } from './casinoExpansion';\nimport { STUDIO_GAMES, STUDIO_INFO } from './studioGames';\nimport { CARD_GAME_IDS, CARD_GAME_NAMES, isCardGame, isRetiredCardGame, cardTableBounds } from './cardTables';\nimport type { Obstacle } from '../game/navigation';\nimport { LUELON_NEW_ZONE } from './clubLayout';\nimport {ARCADE_CABINET_SPECS, type CabinetCollection} from './arcadeCatalog';\nconst expansionPositions=BASE_EXPANSION_GAMES.map((_,i)=>i===0?[240,600]:i===1?[480,810]:i===10?[240,1180]:i===11?[480,1180]:[1200,1060]);\n// Shared positions keep rendering, collisions and server play status aligned.\nexport const CABINETS: Cabinet[] = [\n  { id: 'casinoapipro', name: 'Casino Api Pro', subtitle: translateText('14 казино-игр · Общий демобаланс'), x: 240, y: 267, color: 0x72e3ee, playable: true, provider: true },\n  { id: 'royal-fruits', name: 'Royal Fruits', subtitle: translateText('Три барабана · Одна линия'), x: 500, y: 267, color: 0xf5bc64, playable: true, wallet: true },\n  { id: 'royal-dice', name: 'Royal Dice', subtitle: translateText('Выбери число и шанс выигрыша'), x: 1200, y: 320, color: 0x75cbd9, playable: true, wallet: true },\n  { id: 'royal-limbo', name: 'Royal Limbo', subtitle: translateText('Задай свой множитель'), x: 1430, y: 320, color: 0xc6a0ed, playable: true, wallet: true },\n  { id: 'royal-mines', name: 'Royal Mines', subtitle: translateText('Открывай клетки · Забирай выигрыш'), x: 1660, y: 320, color: 0x7bcaa1, playable: true, wallet: true },\n  { id: 'royal-plinko', name: language === 'en' ? 'Veil of Night · Plinko' : 'Завеса ночи · Plinko', subtitle: language === 'en' ? 'Night magic · 12 rows · Three risks' : 'Магия ночи · 12 рядов · Три риска', x: 1890, y: 320, color: 0xeb91af, playable: true, wallet: true },\n  { id: 'royal-keno', name: 'Royal Keno', subtitle: translateText('Выбирай числа от 1 до 40'), x: 1890, y: 620, color: 0x9babec, playable: true, wallet: true },\n  { id: 'luelon', name: 'Luelon Play', subtitle: translateText('Каталог демоигр · Кредиты Luelon'), x: 780, y: 810, color: 0xd6aaef, playable: true, hall: 'arcade', demo: true },\n  { id: 'github-blackjack', name: translateText('Блэкджек'), subtitle: translateText('Карты · Дилер · 21'), x: 1200, y: 570, color: 0x79c9bb, playable: true, hall: 'arcade', github: true },\n  { id: 'github-poker', name: translateText('Покер'), subtitle: translateText('Холдем · Соперник за столом'), x: 1430, y: 570, color: 0xd6aaef, playable: true, hall: 'arcade', github: true },\n  { id: 'github-video-poker', name: translateText('Видеопокер'), subtitle: translateText('Пять карт · Удержание · Джокер'), x: 1660, y: 570, color: 0xf5bc64, playable: true, hall: 'arcade', github: true },\n  { id: 'github-baccarat', name: translateText('Баккара'), subtitle: translateText('Игрок · Банкир · Ничья'), x: 1200, y: 810, color: 0xeb91af, playable: true, hall: 'arcade', github: true },\n  { id: 'github-craps', name: 'Craps', subtitle: translateText('Две кости · Pass Line · Field'), x: 1430, y: 810, color: 0x75cbd9, playable: true, hall: 'arcade', github: true },\n  { id: 'github-hilo', name: 'Hi-Lo', subtitle: translateText('Выше или ниже · USDT · Nile'), x: 1660, y: 810, color: 0xe2c484, playable: true, hall: 'arcade', github: true },\n  ...BASE_EXPANSION_GAMES.map((id,i):Cabinet=>({id,name:id==='github-crash'?'LAST EXIT':EXPANSION_NAMES[id],subtitle:id==='github-crash'?(language==='en'?'Car chase · Take the exit':'Погоня · Успей уйти'):translateText('Общий тестовый кошелёк · Ставки и выплаты'),x:expansionPositions[i][0],y:expansionPositions[i][1],color:id==='github-crash'?0xd3b477:[0xe2c484,0x8ecba2,0xc6a0ed,0x75cbd9][i%4],playable:true,hall:'arcade',github:true})),\n];\n\nCABINETS.push({id:JACKIE_GAME,name:translateText('Гонконгский воин'),subtitle:translateText('Кунг-фу кино · Коллекция костюмов'),x:1560,y:1050,color:0xd9a356,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:PENALTY_GAME,name:'CR vs. Leo',subtitle:translateText('Серия ударов · Пенальти и штрафные'),x:1380,y:1050,color:0xdce6ca,playable:true,wallet:true,hall:'arcade'});\n\nconst leftCabinets=new Set(['casinoapipro','royal-fruits','luelon','github-diamonds','github-crash','github-deuces','github-sic-bo']);\nlet tableIndex=0;\nfor(const cabinet of CABINETS){if(leftCabinets.has(cabinet.id))continue;const i=tableIndex++;cabinet.x=1200+(i%5)*180;cabinet.y=[270,410,550,790,930,1070,1210][Math.floor(i/5)];}\n\n// The new wing has separate cabinets, leaving the original club routes intact.\nconst annexGames = [\n  { id:'variant-target-plinko', name:translateText('Плинко: мишень'), subtitle:translateText('Один шарик · Выбери зону приземления'), color:0x75cbd9 },\n  { id:'variant-triple-poker', name:translateText('Три карты: комбинация'), subtitle:translateText('Пара, флеш или стрит · Один расклад'), color:0xd6aaef },\n  { id:'variant-dice-streak', name:translateText('Кости: серия'), subtitle:translateText('Пять бросков · Собери серию'), color:0xf5bc64 },\n  { id:'variant-gem-collection', name:translateText('Самоцветы: коллекция'), subtitle:translateText('Выбери три цвета · Найди их среди пяти'), color:0x86d8b0 },\n  { id:'variant-double-mines', name:translateText('Мины: парный поиск'), subtitle:translateText('Открывай пары · Забирай выигрыш'), color:0x7bba95 },\n  { id:'variant-blackjack-target', name:translateText('21: тройной расклад'), subtitle:translateText('Три карты · Выбери сумму'), color:0xf3ca77 },\n];\nCABINETS.push(...annexGames.map((game,index):Cabinet=>({...game,x:2250+index%3*180,y:410+Math.floor(index/3)*520,playable:true,wallet:true,hall:'arcade'})));\n\nconst studioOrder = [...STUDIO_GAMES.filter(id=>id!=='studio-last-convoy'&&STUDIO_INFO[id].kind==='slot'),...STUDIO_GAMES.filter(id=>STUDIO_INFO[id].kind!=='slot')];\nconst studioRows = [300,470,640,980,1150];\nCABINETS.push(...studioOrder.map((id,index):Cabinet=>({id,name:id==='studio-velvet-reign'?'Velvet Reign':id==='studio-cosmic-escape'?'Cosmic Escape':id==='studio-caramel-carnival'?'Caramel Carnival':STUDIO_INFO[id].name,subtitle:id==='studio-caramel-carnival'?translateText('8+ в любом месте · Билеты и фестиваль'):STUDIO_INFO[id].subtitle,x:id==='studio-velvet-reign'?LUELON_NEW_ZONE.velvet.x:id==='studio-cosmic-escape'?LUELON_NEW_ZONE.cosmic.x:id==='studio-caramel-carnival'?LUELON_NEW_ZONE.caramel.x:3000+index%7*180,y:id==='studio-velvet-reign'?LUELON_NEW_ZONE.velvet.y:id==='studio-cosmic-escape'?LUELON_NEW_ZONE.cosmic.y:id==='studio-caramel-carnival'?LUELON_NEW_ZONE.caramel.y:studioRows[Math.floor(index/7)],color:STUDIO_INFO[id].color,playable:true,wallet:true,hall:'arcade'})));\n\nCABINETS.push({id:'studio-last-convoy',name:translateText('Последний конвой'),subtitle:translateText('Каскады · Баррикады · Эвакуация'),x:4520,y:410,color:0x9ec6a0,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:'flag-battle',name:translateText('Флажочки'),subtitle:translateText('12 / 24 / 48 стран · Один победитель'),x:1380,y:1050,color:0x78e5bc,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:'studio-forest-heart',name:language==='en'?'Forest Heart':'Сердце леса',subtitle:language==='en'?'Living roots · One free turn · Four bonus pulses':'Живые корни · Один поворот · Четыре бонусных импульса',x:0,y:0,color:0x87d7bc,playable:true,wallet:true,hall:'arcade'});\n\n// Every card variation has its own table and dealer on the card floor.\nCABINETS.push(\n  {id:'variant-color',name:CARD_GAME_NAMES['variant-color'],subtitle:translateText('Угадай цвет · Собери серию'),x:0,y:0,color:0xe2c484,playable:true,wallet:true,hall:'github'},\n  {id:'variant-duel',name:CARD_GAME_NAMES['variant-duel'],subtitle:translateText('Две карты · Выбери расстояние между рангами'),x:0,y:0,color:0x8ecba2,playable:true,wallet:true,hall:'github'},\n  {id:'variant-war',name:CARD_GAME_NAMES['variant-war'],subtitle:translateText('Два фронта · Щит или атака'),x:0,y:0,color:0xc6a0ed,playable:true,wallet:true,hall:'github'},\n);\nconst cardRows = [340,540,740,1000,1200];\nCARD_GAME_IDS.forEach((id,index)=>{\n  const cabinet=CABINETS.find(item=>item.id===id)!;\n  cabinet.hall='github';cabinet.x=1120+index%7*460;cabinet.y=cardRows[Math.floor(index/7)];\n});\n\nfor (let index = CABINETS.length - 1; index >= 0; index--) {\n  if (isRetiredCardGame(CABINETS[index].id)) CABINETS.splice(index, 1);\n}\n\n// A collection entry uses the existing Royal seats and the shared wallet.\nCABINETS.push({id:'studio-wild-nudge',name:language==='en'?'Galactic Reactor':'Галактический реактор',subtitle:language==='en'?'Dovetail WILD · Reactor overdrive · Eight free spins':'Доводка WILD · Перегрузка реактора · Восемь бесплатных спинов',x:0,y:0,color:0x83edff,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:'studio-flooded-temple',name:language==='en'?'Flooded Temple':'Затопленный храм',subtitle:language==='en'?'5 × 3 · Cascades · Free spins':'5 × 3 · Каскады · Бесплатные вращения',x:0,y:0,color:0x58d2cd,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:CARIBBEAN_GAME,name:'Карибские сокровища',subtitle:'Гигантские символы · Капитанский залп · Две тактики',x:0,y:0,color:0xd7a04a,playable:true,wallet:true,hall:'arcade'});\n\n// Keep game descriptions available even when their game has no dedicated physical seat.\nCABINETS.push({id:'royal-roulette',name:translateText('Рулетка'),subtitle:translateText('Европейская рулетка · Одно зеро'),x:0,y:0,color:0xd7b472,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:'royal-coins',name:'Royal Coins',subtitle:translateText('Три барабана · Одна линия'),x:0,y:0,color:0xd7b472,playable:true,wallet:true,hall:'arcade'});\nexport const GAME_CABINETS: readonly Cabinet[] = CABINETS.map(c=>({...c}));\nfor (let index = CABINETS.length - 1; index >= 0; index--) {\n  if ((CABINETS[index].hall ?? 'arcade') === 'arcade') CABINETS.splice(index, 1);\n}\nconst collectionNames = {royal:'Royal',github:'GitHub',casinoapipro:'Casino API PRO',luelon:'Luelon'};\nconst collectionCounts = {royal:0,github:0,casinoapipro:0,luelon:0};\nfor (const spec of ARCADE_CABINET_SPECS) {\n  const definition=GAME_CABINETS.find(c=>c.id===(spec.defaultGameId??spec.id))!;\n  const number=++collectionCounts[spec.collection];\n  CABINETS.push({...definition,...spec,hall:'arcade',playable:true,\n    name:spec.collection==='luelon'?'Luelon Play':`${collectionNames[spec.collection]} ${String(number).padStart(2,'0')}`,\n    subtitle:spec.collection==='luelon'?translateText('Каталог демоигр · Кредиты Luelon'):translateText('Выбери игру в каталоге'),\n    demo:spec.collection==='luelon',provider:spec.collection==='casinoapipro',\n  });\n}\n\nexport const cabinetHall = (cabinet: Cabinet): 'arcade' | 'tables' | 'github' => cabinet.hall ?? 'arcade';\nexport const cabinetsInHall = (hall: string): Cabinet[] => CABINETS.filter(cabinet => cabinetHall(cabinet) === hall);\nexport const cabinetBounds = (cabinet: Cabinet): Obstacle => isCardGame(cabinet.id) ? cardTableBounds(cabinet) : {x:cabinet.x-47,y:cabinet.y-51,w:94,h:51};\n",
+          "to": "import {JACKIE_GAME} from './jackieChan';\nimport { t as translateText, language } from '../i18n/index';\nexport type Cabinet = { id: string; name: string; subtitle: string; x: number; y: number; color: number; playable: boolean; hall?: 'arcade' | 'tables' | 'github'; demo?: boolean; wallet?: boolean; provider?: boolean; github?: boolean; defaultGameId?: string; collection?: CabinetCollection | 'luelon' };\n\nimport { PENALTY_GAME } from './crLeo';\nimport { CARIBBEAN_GAME } from './caribbeanTreasures';\nimport { BASE_EXPANSION_GAMES, EXPANSION_NAMES } from './casinoExpansion';\nimport { STUDIO_GAMES, STUDIO_INFO } from './studioGames';\nimport { CARD_GAME_IDS, CARD_GAME_NAMES, isCardGame, isRetiredCardGame, cardTableBounds } from './cardTables';\nimport type { Obstacle } from '../game/navigation';\nimport { LUELON_NEW_ZONE } from './clubLayout';\nimport {ARCADE_CABINET_SPECS, type CabinetCollection} from './arcadeCatalog';\nconst expansionPositions=BASE_EXPANSION_GAMES.map((_,i)=>i===0?[240,600]:i===1?[480,810]:i===10?[240,1180]:i===11?[480,1180]:[1200,1060]);\n// Shared positions keep rendering, collisions and server play status aligned.\nexport const CABINETS: Cabinet[] = [\n  { id: 'casinoapipro', name: 'Casino Api Pro', subtitle: translateText('14 казино-игр · Общий демобаланс'), x: 240, y: 267, color: 0x72e3ee, playable: true, provider: true },\n  { id: 'royal-fruits', name: 'Royal Fruits', subtitle: translateText('Три барабана · Одна линия'), x: 500, y: 267, color: 0xf5bc64, playable: true, wallet: true },\n  { id: 'royal-dice', name: 'Royal Dice', subtitle: translateText('Выбери число и шанс выигрыша'), x: 1200, y: 320, color: 0x75cbd9, playable: true, wallet: true },\n  { id: 'royal-limbo', name: 'Royal Limbo', subtitle: translateText('Задай свой множитель'), x: 1430, y: 320, color: 0xc6a0ed, playable: true, wallet: true },\n  { id: 'royal-mines', name: 'Royal Mines', subtitle: translateText('Открывай клетки · Забирай выигрыш'), x: 1660, y: 320, color: 0x7bcaa1, playable: true, wallet: true },\n  { id: 'royal-plinko', name: language === 'en' ? 'Veil of Night · Plinko' : 'Завеса ночи · Plinko', subtitle: language === 'en' ? 'Night magic · 12 rows · Three risks' : 'Магия ночи · 12 рядов · Три риска', x: 1890, y: 320, color: 0xeb91af, playable: true, wallet: true },\n  { id: 'royal-keno', name: 'Royal Keno', subtitle: translateText('Выбирай числа от 1 до 40'), x: 1890, y: 620, color: 0x9babec, playable: true, wallet: true },\n  { id: 'luelon', name: 'Luelon Play', subtitle: translateText('Каталог демоигр · Кредиты Luelon'), x: 780, y: 810, color: 0xd6aaef, playable: true, hall: 'arcade', demo: true },\n  { id: 'github-blackjack', name: translateText('Блэкджек'), subtitle: translateText('Карты · Дилер · 21'), x: 1200, y: 570, color: 0x79c9bb, playable: true, hall: 'arcade', github: true },\n  { id: 'github-poker', name: translateText('Покер'), subtitle: translateText('Холдем · Соперник за столом'), x: 1430, y: 570, color: 0xd6aaef, playable: true, hall: 'arcade', github: true },\n  { id: 'github-video-poker', name: translateText('Видеопокер'), subtitle: translateText('Пять карт · Удержание · Джокер'), x: 1660, y: 570, color: 0xf5bc64, playable: true, hall: 'arcade', github: true },\n  { id: 'github-baccarat', name: translateText('Баккара'), subtitle: translateText('Игрок · Банкир · Ничья'), x: 1200, y: 810, color: 0xeb91af, playable: true, hall: 'arcade', github: true },\n  { id: 'github-craps', name: 'Craps', subtitle: translateText('Две кости · Pass Line · Field'), x: 1430, y: 810, color: 0x75cbd9, playable: true, hall: 'arcade', github: true },\n  { id: 'github-hilo', name: 'Hi-Lo', subtitle: translateText('Выше или ниже · USDT · Nile'), x: 1660, y: 810, color: 0xe2c484, playable: true, hall: 'arcade', github: true },\n  { id: 'github-tower', name: 'Dragon Tower', subtitle: translateText('Девять уровней · USDT · Nile'), x: 1890, y: 810, color: 0x8ecba2, playable: true, hall: 'arcade', github: true },\n  ...BASE_EXPANSION_GAMES.map((id,i):Cabinet=>({id,name:id==='github-crash'?'LAST EXIT':EXPANSION_NAMES[id],subtitle:id==='github-crash'?(language==='en'?'Car chase · Take the exit':'Погоня · Успей уйти'):translateText('Общий тестовый кошелёк · Ставки и выплаты'),x:expansionPositions[i][0],y:expansionPositions[i][1],color:id==='github-crash'?0xd3b477:[0xe2c484,0x8ecba2,0xc6a0ed,0x75cbd9][i%4],playable:true,hall:'arcade',github:true})),\n];\n\nCABINETS.push({id:JACKIE_GAME,name:translateText('Гонконгский воин'),subtitle:translateText('Кунг-фу кино · Коллекция костюмов'),x:1560,y:1050,color:0xd9a356,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:PENALTY_GAME,name:'CR vs. Leo',subtitle:translateText('Серия ударов · Пенальти и штрафные'),x:1380,y:1050,color:0xdce6ca,playable:true,wallet:true,hall:'arcade'});\n\nconst leftCabinets=new Set(['casinoapipro','royal-fruits','luelon','github-diamonds','github-crash','github-deuces','github-sic-bo']);\nlet tableIndex=0;\nfor(const cabinet of CABINETS){if(leftCabinets.has(cabinet.id))continue;const i=tableIndex++;cabinet.x=1200+(i%5)*180;cabinet.y=[270,410,550,790,930,1070,1210][Math.floor(i/5)];}\n\n// The new wing has separate cabinets, leaving the original club routes intact.\nconst annexGames = [\n  { id:'variant-target-plinko', name:translateText('Плинко: мишень'), subtitle:translateText('Один шарик · Выбери зону приземления'), color:0x75cbd9 },\n  { id:'variant-triple-poker', name:translateText('Три карты: комбинация'), subtitle:translateText('Пара, флеш или стрит · Один расклад'), color:0xd6aaef },\n  { id:'variant-dice-streak', name:translateText('Кости: серия'), subtitle:translateText('Пять бросков · Собери серию'), color:0xf5bc64 },\n  { id:'variant-gem-collection', name:translateText('Самоцветы: коллекция'), subtitle:translateText('Выбери три цвета · Найди их среди пяти'), color:0x86d8b0 },\n  { id:'variant-double-mines', name:translateText('Мины: парный поиск'), subtitle:translateText('Открывай пары · Забирай выигрыш'), color:0x7bba95 },\n  { id:'variant-blackjack-target', name:translateText('21: тройной расклад'), subtitle:translateText('Три карты · Выбери сумму'), color:0xf3ca77 },\n];\nCABINETS.push(...annexGames.map((game,index):Cabinet=>({...game,x:2250+index%3*180,y:410+Math.floor(index/3)*520,playable:true,wallet:true,hall:'arcade'})));\n\nconst studioOrder = [...STUDIO_GAMES.filter(id=>id!=='studio-last-convoy'&&STUDIO_INFO[id].kind==='slot'),...STUDIO_GAMES.filter(id=>STUDIO_INFO[id].kind!=='slot')];\nconst studioRows = [300,470,640,980,1150];\nCABINETS.push(...studioOrder.map((id,index):Cabinet=>({id,name:id==='studio-velvet-reign'?'Velvet Reign':id==='studio-cosmic-escape'?'Cosmic Escape':id==='studio-caramel-carnival'?'Caramel Carnival':STUDIO_INFO[id].name,subtitle:id==='studio-caramel-carnival'?translateText('8+ в любом месте · Билеты и фестиваль'):STUDIO_INFO[id].subtitle,x:id==='studio-velvet-reign'?LUELON_NEW_ZONE.velvet.x:id==='studio-cosmic-escape'?LUELON_NEW_ZONE.cosmic.x:id==='studio-caramel-carnival'?LUELON_NEW_ZONE.caramel.x:3000+index%7*180,y:id==='studio-velvet-reign'?LUELON_NEW_ZONE.velvet.y:id==='studio-cosmic-escape'?LUELON_NEW_ZONE.cosmic.y:id==='studio-caramel-carnival'?LUELON_NEW_ZONE.caramel.y:studioRows[Math.floor(index/7)],color:STUDIO_INFO[id].color,playable:true,wallet:true,hall:'arcade'})));\n\nCABINETS.push({id:'studio-last-convoy',name:translateText('Последний конвой'),subtitle:translateText('Каскады · Баррикады · Эвакуация'),x:4520,y:410,color:0x9ec6a0,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:'studio-forest-heart',name:language==='en'?'Forest Heart':'Сердце леса',subtitle:language==='en'?'Living roots · One free turn · Four bonus pulses':'Живые корни · Один поворот · Четыре бонусных импульса',x:0,y:0,color:0x87d7bc,playable:true,wallet:true,hall:'arcade'});\n\n// Every card variation has its own table and dealer on the card floor.\nCABINETS.push(\n  {id:'variant-color',name:CARD_GAME_NAMES['variant-color'],subtitle:translateText('Угадай цвет · Собери серию'),x:0,y:0,color:0xe2c484,playable:true,wallet:true,hall:'github'},\n  {id:'variant-duel',name:CARD_GAME_NAMES['variant-duel'],subtitle:translateText('Две карты · Выбери расстояние между рангами'),x:0,y:0,color:0x8ecba2,playable:true,wallet:true,hall:'github'},\n  {id:'variant-war',name:CARD_GAME_NAMES['variant-war'],subtitle:translateText('Два фронта · Щит или атака'),x:0,y:0,color:0xc6a0ed,playable:true,wallet:true,hall:'github'},\n);\nconst cardRows = [340,540,740,1000,1200];\nCARD_GAME_IDS.forEach((id,index)=>{\n  const cabinet=CABINETS.find(item=>item.id===id)!;\n  cabinet.hall='github';cabinet.x=1120+index%7*460;cabinet.y=cardRows[Math.floor(index/7)];\n});\n\nfor (let index = CABINETS.length - 1; index >= 0; index--) {\n  if (isRetiredCardGame(CABINETS[index].id)) CABINETS.splice(index, 1);\n}\n\n// A collection entry uses the existing Royal seats and the shared wallet.\nCABINETS.push({id:'studio-flooded-temple',name:language==='en'?'Flooded Temple':'Затопленный храм',subtitle:language==='en'?'5 × 3 · Cascades · Free spins':'5 × 3 · Каскады · Бесплатные вращения',x:0,y:0,color:0x58d2cd,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:CARIBBEAN_GAME,name:'Карибские сокровища',subtitle:'Гигантские символы · Капитанский залп · Две тактики',x:0,y:0,color:0xd7a04a,playable:true,wallet:true,hall:'arcade'});\n\n// Keep game descriptions available even when their game has no dedicated physical seat.\nCABINETS.push({id:'royal-roulette',name:translateText('Рулетка'),subtitle:translateText('Европейская рулетка · Одно зеро'),x:0,y:0,color:0xd7b472,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:'flag-battle',name:translateText('Флажочки'),subtitle:translateText('12 / 24 / 48 стран · Один победитель'),x:1380,y:1050,color:0x78e5bc,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:'royal-coins',name:'Royal Coins',subtitle:translateText('Три барабана · Одна линия'),x:0,y:0,color:0xd7b472,playable:true,wallet:true,hall:'arcade'});\nexport const GAME_CABINETS: readonly Cabinet[] = CABINETS.map(c=>({...c}));\nfor (let index = CABINETS.length - 1; index >= 0; index--) {\n  if ((CABINETS[index].hall ?? 'arcade') === 'arcade') CABINETS.splice(index, 1);\n}\nconst collectionNames = {royal:'Royal',github:'GitHub',casinoapipro:'Casino API PRO',luelon:'Luelon'};\nconst collectionCounts = {royal:0,github:0,casinoapipro:0,luelon:0};\nfor (const spec of ARCADE_CABINET_SPECS) {\n  const definition=GAME_CABINETS.find(c=>c.id===(spec.defaultGameId??spec.id))!;\n  const number=++collectionCounts[spec.collection];\n  CABINETS.push({...definition,...spec,hall:'arcade',playable:true,\n    name:spec.collection==='luelon'?'Luelon Play':`${collectionNames[spec.collection]} ${String(number).padStart(2,'0')}`,\n    subtitle:spec.collection==='luelon'?translateText('Каталог демоигр · Кредиты Luelon'):translateText('Выбери игру в каталоге'),\n    demo:spec.collection==='luelon',provider:spec.collection==='casinoapipro',\n  });\n}\n\nexport const cabinetHall = (cabinet: Cabinet): 'arcade' | 'tables' | 'github' => cabinet.hall ?? 'arcade';\nexport const cabinetsInHall = (hall: string): Cabinet[] => CABINETS.filter(cabinet => cabinetHall(cabinet) === hall);\nexport const cabinetBounds = (cabinet: Cabinet): Obstacle => isCardGame(cabinet.id) ? cardTableBounds(cabinet) : {x:cabinet.x-47,y:cabinet.y-51,w:94,h:51};\n"
+        }
+      ]
+    },
+    "src/shared/cardTables.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/cardTables.ts",
+      "baseSha256": "12197eabb008c9166bfedc0ddbb6bce5a1023090faf1c71bc56960418d00f6ab",
+      "sha256": "12197eabb008c9166bfedc0ddbb6bce5a1023090faf1c71bc56960418d00f6ab"
+    },
+    "src/shared/caribbeanCrew.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/caribbeanCrew.ts",
+      "baseSha256": "e96587114a2e20aaeb7504fd43a7c03a6769b4d77aaa3d91a4f39597d5057b7c",
+      "sha256": "e96587114a2e20aaeb7504fd43a7c03a6769b4d77aaa3d91a4f39597d5057b7c"
+    },
+    "src/shared/caribbeanTransport.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/caribbeanTransport.ts",
+      "baseSha256": "8623c8e5f4f7eef28997a3b9630873e86c4c7fa7f1ff1b790490802d9fd9415a",
+      "sha256": "8623c8e5f4f7eef28997a3b9630873e86c4c7fa7f1ff1b790490802d9fd9415a"
+    },
+    "src/shared/caribbeanTreasures.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/caribbeanTreasures.ts",
+      "baseSha256": "8e987b2de8799b444dd01fe2fcb3a567dd7921a8c1dee4b139e00e13ee3e03bb",
+      "sha256": "8e987b2de8799b444dd01fe2fcb3a567dd7921a8c1dee4b139e00e13ee3e03bb"
+    },
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/caribbeanTreasuresMath.ts",
+      "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+      "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+    },
+    "src/shared/casinoApiPro.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/casinoApiPro.ts",
+      "baseSha256": "11587445aebd984d43fb16aec2d8f4fdf2eb17c06ff49158aa0ea7f1e4564ad2",
+      "sha256": "11587445aebd984d43fb16aec2d8f4fdf2eb17c06ff49158aa0ea7f1e4564ad2"
+    },
+    "src/shared/casinoBatchVariants.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/casinoBatchVariants.ts",
+      "baseSha256": "e09ea94fdb5929596f610ef7462dc80d50bcf4926335c398fca6c031a0496135",
+      "sha256": "e09ea94fdb5929596f610ef7462dc80d50bcf4926335c398fca6c031a0496135"
+    },
+    "src/shared/casinoExpansion.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/casinoExpansion.ts",
+      "baseSha256": "c89133d0c011baa56241b09e56913e315534ac3e52871308238e234cb8c75f74",
+      "sha256": "c89133d0c011baa56241b09e56913e315534ac3e52871308238e234cb8c75f74"
+    },
+    "src/shared/casinoNextVariants.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/casinoNextVariants.ts",
+      "baseSha256": "6f525322bc640eb29ad7bfc025205686f87214b174a08a92d0f800afe636eaa7",
+      "sha256": "6f525322bc640eb29ad7bfc025205686f87214b174a08a92d0f800afe636eaa7"
+    },
+    "src/shared/casinoSessions.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/casinoSessions.ts",
+      "baseSha256": "002e31c3198d885571e78b3fdc714aeed6179cd269f5927de3ad0c23dacbb2dd",
+      "sha256": "002e31c3198d885571e78b3fdc714aeed6179cd269f5927de3ad0c23dacbb2dd"
+    },
+    "src/shared/casinoVariants.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/casinoVariants.ts",
+      "baseSha256": "806e62338241a65561b7170957045ce2fd931a599302d50785c35f6f0f9f1ca5",
+      "sha256": "806e62338241a65561b7170957045ce2fd931a599302d50785c35f6f0f9f1ca5"
+    },
+    "src/shared/cat.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/cat.ts",
+      "baseSha256": "a42a808a4d6e582a2fc7f47c0b1836a6cc1a4157a1a140d425e792c220e070b9",
+      "sha256": "a42a808a4d6e582a2fc7f47c0b1836a6cc1a4157a1a140d425e792c220e070b9"
+    },
+    "src/shared/catCare.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/catCare.ts",
+      "baseSha256": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8",
+      "sha256": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8"
+    },
+    "src/shared/catHome.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/catHome.ts",
+      "baseSha256": "37f33f935166ea7da5beeddd9f4df5c208d483f8b62d3e6d72b4298a09851b10",
+      "sha256": "37f33f935166ea7da5beeddd9f4df5c208d483f8b62d3e6d72b4298a09851b10"
+    },
+    "src/shared/catSurfaces.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/catSurfaces.ts",
+      "baseSha256": "57d15054db858053e7bc67910cd361f79aa59053b2641fcb8b8b6e41d063dd47",
+      "sha256": "57d15054db858053e7bc67910cd361f79aa59053b2641fcb8b8b6e41d063dd47"
+    },
+    "src/shared/characters.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/characters.ts",
+      "baseSha256": "ec8a3741b571d301f72f28e79f2293d7bcdb83e9654fe21d1acd9e0eb1bded1f",
+      "sha256": "ec8a3741b571d301f72f28e79f2293d7bcdb83e9654fe21d1acd9e0eb1bded1f"
+    },
+    "src/shared/chat.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/chat.ts",
+      "baseSha256": "1b513fd076d2cfb871b9be0c00bb9218a2ebf296e3b29738ca705c908e9c8d71",
+      "sha256": "1b513fd076d2cfb871b9be0c00bb9218a2ebf296e3b29738ca705c908e9c8d71"
+    },
+    "src/shared/chatMedia.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/chatMedia.ts",
+      "baseSha256": "c16f283c9310455322193a89038bd39a12213d25d777dc37425d502a85e79b78",
+      "sha256": "c16f283c9310455322193a89038bd39a12213d25d777dc37425d502a85e79b78"
+    },
+    "src/shared/clubGeometry.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/clubGeometry.ts",
+      "baseSha256": "e70216f7cea75cd5f14f868b777431f1f824ee0347e017c3124d213a243d7290",
+      "sha256": "e70216f7cea75cd5f14f868b777431f1f824ee0347e017c3124d213a243d7290"
+    },
+    "src/shared/clubLayout.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/clubLayout.ts",
+      "baseSha256": "6df6051ddd013821d78193622fa7c8bc8b765bc8f971a2d30eeb462d0cc86414",
+      "sha256": "6df6051ddd013821d78193622fa7c8bc8b765bc8f971a2d30eeb462d0cc86414"
+    },
+    "src/shared/combat.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/combat.ts",
+      "baseSha256": "89c43e69c2a65adf3213c8583c5fdef873f296a20fb6ec8682d75bd6bed3190d",
+      "sha256": "89c43e69c2a65adf3213c8583c5fdef873f296a20fb6ec8682d75bd6bed3190d"
+    },
+    "src/shared/combatEscrow.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/combatEscrow.ts",
+      "baseSha256": "16bd3c5b7a60e35ab946f98bc4a5acbc85f72e683cf913c27a834da0b03a4f44",
+      "sha256": "16bd3c5b7a60e35ab946f98bc4a5acbc85f72e683cf913c27a834da0b03a4f44"
+    },
+    "src/shared/combatView.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/combatView.ts",
+      "baseSha256": "a1b52fda09c17b623776603ba93290915fc37543f9e0b3074cc967d1c2f013d7",
+      "sha256": "a1b52fda09c17b623776603ba93290915fc37543f9e0b3074cc967d1c2f013d7"
+    },
+    "src/shared/cryptoDisplay.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/cryptoDisplay.ts",
+      "baseSha256": "a38f98bbe1d9fbb8c6dd5328195bd606d96144aec7a6bc3489ffee57ce243206",
+      "sha256": "a38f98bbe1d9fbb8c6dd5328195bd606d96144aec7a6bc3489ffee57ce243206"
+    },
+    "src/shared/cryptoWallet.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/cryptoWallet.ts",
+      "baseSha256": "4bddde9c8fa664711fd18f66207366c53e810ce9fa09fb9c98775fdd554bc89b",
+      "sha256": "4bddde9c8fa664711fd18f66207366c53e810ce9fa09fb9c98775fdd554bc89b"
+    },
+    "src/shared/dicePresentation.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/dicePresentation.ts",
+      "baseSha256": "f8f11851e9b7858e62120d2e043e5e145df0f647ac828e947a5904ac77251e19",
+      "sha256": "f8f11851e9b7858e62120d2e043e5e145df0f647ac828e947a5904ac77251e19"
+    },
+    "src/shared/financeAdmin.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/financeAdmin.ts",
+      "baseSha256": "5e3e9d41c4ce82a0ba8c610a89e622ca55fc678eb383332da9f2c565d95ad761",
+      "sha256": "5e3e9d41c4ce82a0ba8c610a89e622ca55fc678eb383332da9f2c565d95ad761"
+    },
+    "src/shared/flagTote.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/flagTote.ts",
+      "baseSha256": "98c84c8e3de49e97fde4097939fb2b42acc1ea912b09e875af80cd9597322619",
+      "sha256": "98c84c8e3de49e97fde4097939fb2b42acc1ea912b09e875af80cd9597322619"
+    },
+    "src/shared/flightGame.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/flightGame.ts",
+      "baseSha256": "5bf2cd8dc8b462ffda56bf79cfabbe59c825c49c39786ce7aa3811ec0c62e3e9",
+      "sha256": "5bf2cd8dc8b462ffda56bf79cfabbe59c825c49c39786ce7aa3811ec0c62e3e9"
+    },
+    "src/shared/floodedTemple.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/floodedTemple.ts",
+      "baseSha256": "1c1369bd31afb101871e37b45373fbdaee0db09a631e4e4a242c24b396becb5b",
+      "sha256": "1c1369bd31afb101871e37b45373fbdaee0db09a631e4e4a242c24b396becb5b"
+    },
+    "src/shared/floodedTempleCascade.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/floodedTempleCascade.ts",
+      "baseSha256": "4eeca742538d793bb5efdf79c9b15389ad827716e8728f385e0c9090ec727cde",
+      "sha256": "4eeca742538d793bb5efdf79c9b15389ad827716e8728f385e0c9090ec727cde"
+    },
+    "src/shared/floodedTempleCascadeData.json": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/floodedTempleCascadeData.json",
+      "baseSha256": "5aa05b4cca0476f48d84e70402204ec9029949a8da3c8d2c7a95b6a5456fc07a",
+      "sha256": "5aa05b4cca0476f48d84e70402204ec9029949a8da3c8d2c7a95b6a5456fc07a"
+    },
+    "src/shared/floodedTempleCascadeMath.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/floodedTempleCascadeMath.ts",
+      "baseSha256": "cf9b490bb9bb7f96f18f53e8662c9f931b5e308ca9a291acf8e66d483e352604",
+      "sha256": "cf9b490bb9bb7f96f18f53e8662c9f931b5e308ca9a291acf8e66d483e352604"
+    },
+    "src/shared/floodedTempleData.json": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/floodedTempleData.json",
+      "baseSha256": "0033975e51c12770b84dbe04146ad9f474276e783ee7c2ed2c6179ad3ee437dc",
+      "sha256": "0033975e51c12770b84dbe04146ad9f474276e783ee7c2ed2c6179ad3ee437dc"
+    },
+    "src/shared/floodedTempleMath.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/floodedTempleMath.ts",
+      "baseSha256": "514c0156493f4bfa94b7d4c56dcbc03d9d35e4430216eea359c4e02632fb7ac1",
+      "sha256": "514c0156493f4bfa94b7d4c56dcbc03d9d35e4430216eea359c4e02632fb7ac1"
+    },
+    "src/shared/forestHeart.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/forestHeart.ts",
+      "baseSha256": "1ada448ed03adb04bfb510f489bed9703a07fab982e063a4e7068bbbbf71272b",
+      "sha256": "1ada448ed03adb04bfb510f489bed9703a07fab982e063a4e7068bbbbf71272b"
+    },
+    "src/shared/forestHeartMath.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/forestHeartMath.ts",
+      "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+      "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
+    },
+    "src/shared/fruitsPresentation.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/fruitsPresentation.ts",
+      "baseSha256": "37665084b89a404ee44e6424171b3f3282dfbf14a7aca2d536df22be3f8ce382",
+      "sha256": "37665084b89a404ee44e6424171b3f3282dfbf14a7aca2d536df22be3f8ce382"
+    },
+    "src/shared/furniture.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/furniture.ts",
+      "baseSha256": "dbbb212cc84b3c1c5b6bb41b144102e38b974e29a240bca524eedeb8f6f5d5da",
+      "sha256": "dbbb212cc84b3c1c5b6bb41b144102e38b974e29a240bca524eedeb8f6f5d5da"
+    },
+    "src/shared/gameThemes.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/gameThemes.ts",
+      "baseSha256": "a24d1d8dcef7bae07f0764a78e96a7158942228815e8e2ba47a1f846e42abeab",
+      "sha256": "a24d1d8dcef7bae07f0764a78e96a7158942228815e8e2ba47a1f846e42abeab"
+    },
+    "src/shared/githubGames.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/githubGames.ts",
+      "baseSha256": "2296858200d156461f81f1c99739354ee935325848385b14d8a876d99df40bbc",
+      "sha256": "2296858200d156461f81f1c99739354ee935325848385b14d8a876d99df40bbc"
+    },
+    "src/shared/guardCollision.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/guardCollision.ts",
+      "baseSha256": "a050c55ac5d5e9ab9615635de1b64801343d9a9675c1cd1b23d7bc4e9b49a9f2",
+      "sha256": "a050c55ac5d5e9ab9615635de1b64801343d9a9675c1cd1b23d7bc4e9b49a9f2"
+    },
+    "src/shared/hockey.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/hockey.ts",
+      "baseSha256": "eba673cd220fac7d85a3ba9da53d9cf0b5dfae7ca3732306327ac7a28a7ca320",
+      "sha256": "eba673cd220fac7d85a3ba9da53d9cf0b5dfae7ca3732306327ac7a28a7ca320"
+    },
+    "src/shared/intoxication.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/intoxication.ts",
+      "baseSha256": "742b40f26c4efe392d9a76895e9287a06c877aeecc5cbbc5d2419e7ff9689e95",
+      "sha256": "742b40f26c4efe392d9a76895e9287a06c877aeecc5cbbc5d2419e7ff9689e95"
+    },
+    "src/shared/jackieChan.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/jackieChan.ts",
+      "baseSha256": "a834b1229ee97b500b1e8801f27cb3bf569d6c4bab6ca73eeaf06745747934bf",
+      "sha256": "a834b1229ee97b500b1e8801f27cb3bf569d6c4bab6ca73eeaf06745747934bf"
+    },
+    "src/shared/limboPresentation.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/limboPresentation.ts",
+      "baseSha256": "ba85eba81edb54b18b48752f617593962990b95a39aceab218f9767867bbbebb",
+      "sha256": "ba85eba81edb54b18b48752f617593962990b95a39aceab218f9767867bbbebb"
+    },
+    "src/shared/minesGame.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/minesGame.ts",
+      "baseSha256": "ec6983dd397611cf6703e8a72529844f66df5ff9131a6f30e3dba75d26ff3f1d",
+      "sha256": "ec6983dd397611cf6703e8a72529844f66df5ff9131a6f30e3dba75d26ff3f1d"
+    },
+    "src/shared/miraRoutine.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/miraRoutine.ts",
+      "baseSha256": "6c4c54350515d5157afa57edb2a29cad149d1becea98b7fccd3473d20e069c47",
+      "sha256": "6c4c54350515d5157afa57edb2a29cad149d1becea98b7fccd3473d20e069c47"
+    },
+    "src/shared/movement.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/movement.ts",
+      "baseSha256": "d9dbc4e857101b0a432d95d76f34addf5787ea7566234692e14513dbfef1cf6b",
+      "sha256": "d9dbc4e857101b0a432d95d76f34addf5787ea7566234692e14513dbfef1cf6b"
+    },
+    "src/shared/movementLimits.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/movementLimits.ts",
+      "baseSha256": "6d70cf0d47e42fc3dafac122c24f33da7a00946ad4ac22f06a0a07e4dc118d02",
+      "sha256": "6d70cf0d47e42fc3dafac122c24f33da7a00946ad4ac22f06a0a07e4dc118d02"
+    },
+    "src/shared/neopolis.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/neopolis.ts",
+      "baseSha256": "2ec8799c72f2038edafcd1f7d6f3031b4866f07f2ecd334728ae77bdb3823488",
+      "sha256": "2ec8799c72f2038edafcd1f7d6f3031b4866f07f2ecd334728ae77bdb3823488"
+    },
+    "src/shared/neopolisMathV1.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/neopolisMathV1.ts",
+      "baseSha256": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92",
+      "sha256": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92"
+    },
+    "src/shared/neopolisMathV2.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/neopolisMathV2.ts",
+      "baseSha256": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692",
+      "sha256": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692"
+    },
+    "src/shared/neopolisMathV3.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/neopolisMathV3.ts",
+      "baseSha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
+      "sha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820"
+    },
+    "src/shared/neopolisStakePayouts.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/neopolisStakePayouts.ts",
+      "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+      "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+    },
+    "src/shared/nilePlay.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/nilePlay.ts",
+      "baseSha256": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6",
+      "sha256": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6"
+    },
+    "src/shared/nileWallet.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/nileWallet.ts",
+      "baseSha256": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29",
+      "sha256": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29"
+    },
+    "src/shared/nowpaymentsSandbox.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/nowpaymentsSandbox.ts",
+      "baseSha256": "95df8061741dcf8ea642d1aa80ba7937505d3e1b81e17b1fb5dbb64711e37b43",
+      "sha256": "95df8061741dcf8ea642d1aa80ba7937505d3e1b81e17b1fb5dbb64711e37b43"
+    },
+    "src/shared/paymentMethods.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/paymentMethods.ts",
+      "baseSha256": "a5f187bce65ca55e9bf4219ecfccb4e3df8dca8dc306debc6167988a56b993ef",
+      "sha256": "a5f187bce65ca55e9bf4219ecfccb4e3df8dca8dc306debc6167988a56b993ef"
+    },
+    "src/shared/plinkoPresentation.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/plinkoPresentation.ts",
+      "baseSha256": "7376991045206b1c8e1f35603e0f7984b2a1f50575acfdd90d9c553f4cea8f70",
+      "sha256": "7376991045206b1c8e1f35603e0f7984b2a1f50575acfdd90d9c553f4cea8f70"
+    },
+    "src/shared/pool.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/pool.ts",
+      "baseSha256": "5d07e5bb44576ebac96353101584436fb22dfa8d404803195f2b1e57c01fe096",
+      "sha256": "5d07e5bb44576ebac96353101584436fb22dfa8d404803195f2b1e57c01fe096"
+    },
+    "src/shared/progression.ts": {
+      "commit": "60b13bb8dde910919057835ed056a98257b78857",
+      "path": "src/shared/progression.ts",
+      "baseSha256": "5f79d619753062d77aa5a6c15c93a06b9435da241da861bd0308eb6a6982184e",
+      "sha256": "5f79d619753062d77aa5a6c15c93a06b9435da241da861bd0308eb6a6982184e"
+    },
+    "src/shared/pvp.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/pvp.ts",
+      "baseSha256": "d20cd82ca7f1c8cd20d25daa3e420519a42993a8583924e38d9e67d3cd8f31b3",
+      "sha256": "d20cd82ca7f1c8cd20d25daa3e420519a42993a8583924e38d9e67d3cd8f31b3"
+    },
+    "src/shared/pvpSeats.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/pvpSeats.ts",
+      "baseSha256": "a1430b142a89b77f77268a7a419a4ae62e735d17416b769ef3cb6dd594ea180d",
+      "sha256": "a1430b142a89b77f77268a7a419a4ae62e735d17416b769ef3cb6dd594ea180d"
+    },
+    "src/shared/rewardFruitsPresentation.ts": {
+      "commit": "60b13bb8dde910919057835ed056a98257b78857",
+      "path": "src/shared/rewardFruitsPresentation.ts",
+      "baseSha256": "4792cfca98e464feed67e263ab75e07880acba4dfe4f2b4746373ee8e33d1a51",
+      "sha256": "4792cfca98e464feed67e263ab75e07880acba4dfe4f2b4746373ee8e33d1a51"
+    },
+    "src/shared/rewardSpinCatalog.ts": {
+      "commit": "60b13bb8dde910919057835ed056a98257b78857",
+      "path": "src/shared/rewardSpinCatalog.ts",
+      "baseSha256": "df633494f99d6fcf81b5c8a0aa87ed69e8fd3d1cb907617007124bbf8ead6429",
+      "sha256": "df633494f99d6fcf81b5c8a0aa87ed69e8fd3d1cb907617007124bbf8ead6429"
+    },
+    "src/shared/security.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/security.ts",
+      "baseSha256": "c97474be324300fae8e277dbc3480c9ad66f3fb1a1f68287317426c4c550afff",
+      "sha256": "c97474be324300fae8e277dbc3480c9ad66f3fb1a1f68287317426c4c550afff"
+    },
+    "src/shared/skinAssetUrl.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/skinAssetUrl.ts",
+      "baseSha256": "b683e9a7ea2b7cb39b295c73d5a73b0feaee25ec825e6c1c2cf5d8348d4609c4",
+      "sha256": "b683e9a7ea2b7cb39b295c73d5a73b0feaee25ec825e6c1c2cf5d8348d4609c4"
+    },
+    "src/shared/skinDescription.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/skinDescription.ts",
+      "baseSha256": "e2308ca8dae8c626a786c448eb832ac0deaad14b5f0ec0320b936c5bbe81130b",
+      "sha256": "e2308ca8dae8c626a786c448eb832ac0deaad14b5f0ec0320b936c5bbe81130b"
+    },
+    "src/shared/skinStudio.ts": {
+      "commit": "5120fa89698356a3deb9ee5788f45cd570a18154",
+      "path": "src/shared/skinStudio.ts",
+      "baseSha256": "c6a20b5cdccd89636ac727c261e62ddf52d62ddaeee734a460b213a03952d8f3",
+      "sha256": "c6a20b5cdccd89636ac727c261e62ddf52d62ddaeee734a460b213a03952d8f3"
+    },
+    "src/shared/targetPlinkoPresentation.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/targetPlinkoPresentation.ts",
+      "baseSha256": "3364addf699c9f204a2a51b6265ef8b0f409179c01e7e963bd6f127cb63c19e6",
+      "sha256": "3364addf699c9f204a2a51b6265ef8b0f409179c01e7e963bd6f127cb63c19e6"
+    },
+    "src/shared/themedGames.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/themedGames.ts",
+      "baseSha256": "49c241391d49b34e463186ca8a073e6a3bf3aa3d1de56830db4a6a4caea05946",
+      "sha256": "49c241391d49b34e463186ca8a073e6a3bf3aa3d1de56830db4a6a4caea05946"
+    },
+    "src/shared/tsuEFa.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/tsuEFa.ts",
+      "baseSha256": "114026582babfc85be93588a450b47dd9e77cde9dba046be2810638842db70e0",
+      "sha256": "114026582babfc85be93588a450b47dd9e77cde9dba046be2810638842db70e0"
+    },
+    "src/shared/usdtWallet.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/usdtWallet.ts",
+      "baseSha256": "23b523bb24b84dcdbda636f1b6bd940e3072a5069b9ba8c44c71da29129c484a",
+      "sha256": "23b523bb24b84dcdbda636f1b6bd940e3072a5069b9ba8c44c71da29129c484a"
+    },
+    "src/shared/wheelSpinPresentation.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/wheelSpinPresentation.ts",
+      "baseSha256": "586d23cdc127cbb3bfc9be7ec5b9819a91a9724c58fcb25347f843342c55b122",
+      "sha256": "586d23cdc127cbb3bfc9be7ec5b9819a91a9724c58fcb25347f843342c55b122"
+    },
+    "src/shared/wildNudge.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/wildNudge.ts",
+      "baseSha256": "de36b83b823d2fd48f69bb2aa0c383a44ffbb80ec287e759dd1115db23775624",
+      "sha256": "de36b83b823d2fd48f69bb2aa0c383a44ffbb80ec287e759dd1115db23775624"
+    },
+    "src/shared/wildNudgeData.json": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/wildNudgeData.json",
+      "baseSha256": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8",
+      "sha256": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8"
+    },
+    "src/shared/wildNudgeMath.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/wildNudgeMath.ts",
+      "baseSha256": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74",
+      "sha256": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74"
+    },
+    "src/shared/world.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/world.ts",
+      "baseSha256": "88c5b4473a23d396e12dc699174caa764ede9257dfea2df5361eaef14ea8e45d",
+      "sha256": "88c5b4473a23d396e12dc699174caa764ede9257dfea2df5361eaef14ea8e45d"
     }
   },
   "moduleAssets": {
