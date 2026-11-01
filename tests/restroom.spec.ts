@@ -53,12 +53,12 @@ test('desktop and mobile can enter, walk inside and return to floor three', asyn
 
 test('online visitor enters and returns with the server confirming each location', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
+  // Prepare an isolated visitor through the real API so this test focuses on room travel.
+  const login = await page.request.post('/api/auth/login', { data: { email: `restroom-${crypto.randomUUID()}@example.test`, password: 'Restroom-browser-password!' } });
+  expect(login.ok(), `login ${login.status()}: ${await login.text()}`).toBe(true);
+  const character = await page.request.post('/api/auth/character', { data: { skin: 0 } });
+  expect(character.ok(), `character ${character.status()}: ${await character.text()}`).toBe(true);
   await page.goto('/'); await expect(page.locator('#loading')).toHaveCount(0);
-  await page.getByLabel('Почта', { exact: true }).fill(`restroom-${crypto.randomUUID()}@example.test`);
-  await page.getByLabel('Пароль', { exact: true }).fill('Restroom-browser-password!');
-  await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
-  await expect(page.locator('#character-step')).toBeVisible();
-  await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();
   await expect.poll(async () => (await state(page)).online, { timeout: 15000 }).toBe(true);
   await expect(page.locator('#join-dialog')).toBeHidden();
   await visitRestroom(page, 'online');

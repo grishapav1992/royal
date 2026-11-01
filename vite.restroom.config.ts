@@ -5,6 +5,8 @@ const api = process.env.ROYAL_DEV_API_URL || 'http://127.0.0.1:2764';
 // Built clients use the production WebSocket paths on their own origin.
 export default mergeConfig(base, defineConfig({
   preview: { proxy: {
+    '/api': api,
+    '/game-modules': api,
     '/matchmake': api,
     '^/[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+(?:\\?.*)?$': { target: api, ws: true },
   } },
