@@ -1,5 +1,8 @@
+import {syncStakeSelect} from './stakeSelection';
+import {stakeRulesHtml} from './stakeRules';
+import {GAME_BETS as DEMO_BETS} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
-import { DEMO_BETS } from '../shared/demoWallet';
+import { } from '../shared/demoWallet';
 import type { ExpansionSession } from '../shared/casinoExpansion';
 import { expansionClient as client, type NewExpansionAction } from '../wallet/ExpansionClient';
 import { demoWallet } from '../wallet/WalletClient';
@@ -13,7 +16,7 @@ export class CrashMotionUI {
   private alive = true;
   private owner = client.accountId;
   private epoch = 0;
-  private stake = '1000';
+  private stake = '10';
   private error = '';
   private frame = 0;
   private poll: ReturnType<typeof setInterval>;
@@ -31,7 +34,7 @@ export class CrashMotionUI {
     resetGameOutcomes(this.root);
     this.root.className = 'casino-expansion crash-motion'; this.root.dataset.game = 'github-crash';
     this.root.setAttribute('aria-label', 'Crash');
-    this.root.innerHTML = tr`<div class="expansion-toolbar"><strong data-expansion-balance></strong><label>Ставка<select data-stake>${DEMO_BETS.map(value => tr`<option value="${value * 100}">${value} USDT</option>`).join('')}</select></label></div><div class="expansion-board"><div class="expansion-flight"><div class="crash-sky" aria-hidden="true"><i></i><i></i><i></i></div><span class="crash-ship" aria-hidden="true">✦</span><strong data-crash-value>1.00×</strong><small data-crash-caption>Готов к полёту</small><div class="crash-trail" aria-hidden="true"></div></div></div><p class="expansion-message" role="status"></p><p data-crash-status></p><div class="expansion-actions"><button data-start>Начать игру</button><button data-move="cashout" hidden>Забрать выплату</button><button data-retry hidden>Проверить ход</button><button data-refresh>Обновить</button></div><p class="expansion-error" role="alert"></p><details><summary>Правила и выплаты</summary><p>Множитель растёт во время полёта. Забери выплату до остановки. Результат и выплату подтверждает сервер.</p><p>Движение следует только последнему подтверждённому времени сервера. При задержке связи множитель остаётся на подтверждённом значении. Незавершённая партия сохраняется при закрытии.</p><p>Общий баланс USDT клуба. Множители включают ставку, начисление округляется вниз до 0,01 USDT.</p></details>`;
+    this.root.innerHTML = tr`<div class="expansion-toolbar"><strong data-expansion-balance></strong><label>Ставка<select data-stake>${DEMO_BETS.map(value => tr`<option value="${value * 100}">${value} USDT</option>`).join('')}</select></label></div><div class="expansion-board"><div class="expansion-flight"><div class="crash-sky" aria-hidden="true"><i></i><i></i><i></i></div><span class="crash-ship" aria-hidden="true">✦</span><strong data-crash-value>1.00×</strong><small data-crash-caption>Готов к полёту</small><div class="crash-trail" aria-hidden="true"></div></div></div><p class="expansion-message" role="status"></p><p data-crash-status></p><div class="expansion-actions"><button data-start>Начать игру</button><button data-move="cashout" hidden>Забрать выплату</button><button data-retry hidden>Проверить ход</button><button data-refresh>Обновить</button></div><p class="expansion-error" role="alert"></p><details><summary>Правила и выплаты</summary><p>Множитель растёт во время полёта. Забери выплату до остановки. Результат и выплату подтверждает сервер.</p><p>Движение следует только последнему подтверждённому времени сервера. При задержке связи множитель остаётся на подтверждённом значении. Незавершённая партия сохраняется при закрытии.</p><p>Общий баланс USDT клуба. Множители включают ставку, доли цента учитываются при завершении раунда.</p>${stakeRulesHtml()}</details>`;
     host.replaceChildren(this.root);
     this.find<HTMLSelectElement>('[data-stake]').onchange = event => { if (!client.busy && !client.pending) this.stake = (event.target as HTMLSelectElement).value; };
     this.find('[data-start]').onclick = () => void this.act({gameId: 'github-crash', action: 'start', stakeUnits: this.stake, settings: {}});
@@ -48,7 +51,7 @@ export class CrashMotionUI {
   private validTime(session: ExpansionSession) { return Number.isFinite(session.serverNow) && Number.isFinite(session.startedAt) && Number.isFinite(session.multiplier) && session.multiplier! >= 1 && session.multiplier! <= 100; }
   private sync() {
     if (!this.alive) return;
-    if (this.owner !== client.accountId) { this.clearEndCue(); this.epoch++; this.owner = client.accountId; this.stake = '1000'; this.error = ''; this.anchor = undefined; this.heldBalance = undefined; this.shownTime = 0; this.reactionFollow = false; resetGameOutcomes(this.root); cancelAnimationFrame(this.frame); this.frame = 0; }
+    if (this.owner !== client.accountId) { this.clearEndCue(); this.epoch++; this.owner = client.accountId; this.stake = '10'; this.error = ''; this.anchor = undefined; this.heldBalance = undefined; this.shownTime = 0; this.reactionFollow = false; resetGameOutcomes(this.root); cancelAnimationFrame(this.frame); this.frame = 0; }
     const session = this.session();
     const justEnded = session?.state === 'settled' && this.anchor?.id === session.id;
     if (session?.state === 'active' && this.validTime(session)) {
@@ -83,7 +86,7 @@ export class CrashMotionUI {
     const blocked = client.busy || !!client.pending || client.loading || document.hidden;
     this.root.dataset.sessionId = session?.id ?? ''; this.root.dataset.state = session?.state ?? 'idle'; this.root.dataset.reducedMotion = String(this.reduced.matches);
     this.find('[data-expansion-balance]').textContent = balance === undefined ? translateText('Баланс загружается') : tr`${(this.heldBalance ?? balance).toLocaleString(locale)} USDT`;
-    const stake = this.find<HTMLSelectElement>('[data-stake]'); if (active) this.stake = session.stakeUnits; stake.value = this.stake; stake.disabled = !!active || blocked;
+    const stake = this.find<HTMLSelectElement>('[data-stake]'); if (active) this.stake = session.stakeUnits; this.stake=syncStakeSelect(stake,this.stake,DEMO_BETS.map(n=>String(n*100)),!!active||blocked);
     const start = this.find<HTMLButtonElement>('[data-start]'); start.hidden = !!active; start.disabled = blocked || !ready || Number(this.stake) > (balance ?? 0) * 100; start.textContent = `${session ? translateText('Новая партия') : translateText('Начать игру')} · ${amount(this.stake)}`;
     const cashout = this.find<HTMLButtonElement>('[data-move]'); cashout.hidden = !active; cashout.disabled = blocked || !ready || !session || !this.validTime(session) || session.serverNow! < session.startedAt!;
     const retry = this.find<HTMLButtonElement>('[data-retry]'); retry.hidden = !client.pending || client.pending.gameId !== 'github-crash'; retry.disabled = client.busy || client.loading;

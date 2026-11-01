@@ -1,3 +1,4 @@
+import {stakeRulesHtml} from '../stakeRules';
 export type SlotDialogKind = '' | 'intro' | 'info' | 'history' | 'buy' | 'bonus' | 'complete';
 
 /** Club chat and other panels own their keys even while a slot screen is open. */
@@ -41,7 +42,8 @@ export class SlotDialog {
     this.element.dataset.dialog = kind;
   }
 
-  focus() {
+  focus(includeStakeRules = false) {
+    if (includeStakeRules && this.element.dataset.dialog === 'info' && !this.element.querySelector('[data-stake-rules]')) this.element.insertAdjacentHTML('beforeend', stakeRulesHtml());
     if (!this.disposed && this.open) this.focusable()[0]?.focus();
   }
 

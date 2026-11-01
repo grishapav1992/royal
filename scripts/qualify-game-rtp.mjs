@@ -1,3 +1,5 @@
+import {STAKE_PRECISION_METHOD,qualifyStakes,validateStakeProof} from './game-math/rtp-stakes.mjs';
+import {stakeInputs} from './game-math/rtp-gate.mjs';
 import {qualifyFlagTote} from './game-math/rtp-flag-tote.mjs';
 import {qualifyKeys} from './game-math/rtp-keys.mjs';
 import {qualifyHilo} from './game-math/rtp-hilo.mjs';
@@ -25,8 +27,21 @@ import {qualifyJackie} from './game-math/rtp-jackie.mjs';
 import {preflightAfterglow,simulateAfterglow} from './game-math/rtp-afterglow.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url)), args = process.argv.slice(2);
 const index = args.indexOf('--game'), gameId = index < 0 ? undefined : args[index + 1];
-assert(['flag-tote','variant-keys','github-hilo','royal-coins','royal-fruits','studio-wild-nudge','tsu-e-fa','flag-battle','original-jackie-chan','royal-roulette','studio-forest-heart','studio-flooded-temple','studio-afterglow','studio-caribbean-treasures','studio-neopolis','studio-dracona','studio-cosmic-escape','mortal-kombat','hockey','pool','chess','durak','transfer-durak','crazy-eights'].includes(gameId), 'Choose a registered paid game');
+const added=['studio-caramel-carnival','studio-last-convoy','studio-nitro-run','studio-meme-overload','studio-velvet-reign','royal-plinko','github-crash','original-cr-vs-leo'];
+assert([...added,'flag-tote','variant-keys','github-hilo','royal-coins','royal-fruits','studio-wild-nudge','tsu-e-fa','flag-battle','original-jackie-chan','royal-roulette','studio-forest-heart','studio-flooded-temple','studio-afterglow','studio-caribbean-treasures','studio-neopolis','studio-dracona','studio-cosmic-escape','mortal-kombat','hockey','pool','chess','durak','transfer-durak','crazy-eights'].includes(gameId), 'Choose a registered paid game');
 const registry=JSON.parse(await readFile(resolve(root,'scripts/game-math/rtp-policy.json'),'utf8'));
+const requestedRules=args.indexOf('--rules');
+const useStakePolicy=args.includes('--stake-policy'),primaryStake=registry.profiles[gameId].method===STAKE_PRECISION_METHOD&&(requestedRules<0||Number(args[requestedRules+1])===registry.profiles[gameId].rulesVersion);
+if(useStakePolicy||primaryStake){
+ const inputs=useStakePolicy?await stakeInputs(root,gameId):await rtpInputs(root,gameId),startedAt=new Date().toISOString();
+ const index=args.indexOf('--sample-dir'),sample=await qualifyStakes(gameId,inputs,{sampleDirectory:index<0?undefined:args[index+1]},value=>console.log(JSON.stringify(value)));
+ assert.deepEqual(useStakePolicy?await stakeInputs(root,gameId):await rtpInputs(root,gameId),inputs,'Sources changed during qualification');
+ const proof={schemaVersion:1,gameId,rulesVersion:inputs.policy.rulesVersion,progressVersion:inputs.policy.progressVersion,startedAt,completedAt:new Date().toISOString(),sourceHashes:inputs.sourceHashes,policySha256:inputs.policySha256,...sample};
+ validateStakeProof(gameId,inputs,proof);
+ if(args.includes('--write-proof')){await mkdir(dirname(resolve(root,inputs.policy.proof)),{recursive:true});await writeFile(resolve(root,inputs.policy.proof),JSON.stringify(proof,null,2)+'\n');}
+ console.log(JSON.stringify({gameId,stakePolicyVersion:1,qualified:true,cases:proof.results.length,serverReplayChecks:proof.serverReplayChecks,walletCases:proof.walletEvidence.cases}));
+ process.exit(0);
+}
 const rulesIndex=args.indexOf('--rules');
 const versions=rulesIndex>=0?[Number(args[rulesIndex+1])]:[registry.profiles[gameId].rulesVersion,...Object.keys(registry.versionProfiles?.[gameId]??{}).map(Number)];
 for(const rulesVersion of versions){

@@ -1,0 +1,171 @@
+{
+  "status": "not-qualified",
+  "series": [
+    {
+      "stakeUnits": "10",
+      "successfulRiskPaths": 363,
+      "exactMinimumRtp": 0.95625,
+      "exactMaximumRtp": 0.99,
+      "worstRiskPath": [
+        "safe",
+        "safe"
+      ],
+      "withinExistingBudget": false
+    },
+    {
+      "stakeUnits": "20",
+      "successfulRiskPaths": 363,
+      "exactMinimumRtp": 0.9703125,
+      "exactMaximumRtp": 0.99,
+      "worstRiskPath": [
+        "safe",
+        "safe",
+        "safe"
+      ],
+      "withinExistingBudget": false
+    },
+    {
+      "stakeUnits": "50",
+      "successfulRiskPaths": 363,
+      "exactMinimumRtp": 0.984,
+      "exactMaximumRtp": 0.99,
+      "worstRiskPath": [
+        "sharp"
+      ],
+      "withinExistingBudget": false
+    },
+    {
+      "stakeUnits": "100",
+      "successfulRiskPaths": 363,
+      "exactMinimumRtp": 0.9871875,
+      "exactMaximumRtp": 0.99,
+      "worstRiskPath": [
+        "safe",
+        "safe",
+        "safe"
+      ],
+      "withinExistingBudget": false
+    },
+    {
+      "stakeUnits": "200",
+      "successfulRiskPaths": 363,
+      "exactMinimumRtp": 0.98876953125,
+      "exactMaximumRtp": 0.99,
+      "worstRiskPath": [
+        "safe",
+        "safe",
+        "safe",
+        "safe"
+      ],
+      "withinExistingBudget": false
+    },
+    {
+      "stakeUnits": "500",
+      "successfulRiskPaths": 363,
+      "exactMinimumRtp": 0.98955,
+      "exactMaximumRtp": 0.99,
+      "worstRiskPath": [
+        "safe",
+        "safe",
+        "sharp"
+      ],
+      "withinExistingBudget": false
+    },
+    {
+      "stakeUnits": "1000",
+      "successfulRiskPaths": 363,
+      "exactMinimumRtp": 0.98971875,
+      "exactMaximumRtp": 0.99,
+      "worstRiskPath": [
+        "safe",
+        "safe",
+        "safe"
+      ],
+      "withinExistingBudget": true
+    },
+    {
+      "stakeUnits": "2000",
+      "successfulRiskPaths": 363,
+      "exactMinimumRtp": 0.989876953125,
+      "exactMaximumRtp": 0.99,
+      "worstRiskPath": [
+        "safe",
+        "safe",
+        "safe",
+        "safe"
+      ],
+      "withinExistingBudget": true
+    },
+    {
+      "stakeUnits": "5000",
+      "successfulRiskPaths": 363,
+      "exactMinimumRtp": 0.989955,
+      "exactMaximumRtp": 0.99,
+      "worstRiskPath": [
+        "safe",
+        "safe",
+        "sharp"
+      ],
+      "withinExistingBudget": true
+    }
+  ],
+  "forest": [
+    {
+      "stakeUnits": "10",
+      "accepted": false,
+      "reason": "Forest Heart payout would require rounding"
+    },
+    {
+      "stakeUnits": "20",
+      "accepted": false,
+      "reason": "Forest Heart payout would require rounding"
+    },
+    {
+      "stakeUnits": "50",
+      "accepted": false,
+      "reason": "Forest Heart payout would require rounding"
+    },
+    {
+      "stakeUnits": "100",
+      "accepted": false,
+      "reason": "Forest Heart payout would require rounding"
+    },
+    {
+      "stakeUnits": "200",
+      "accepted": false,
+      "reason": "Forest Heart payout would require rounding"
+    },
+    {
+      "stakeUnits": "500",
+      "accepted": false,
+      "reason": "Forest Heart payout would require rounding"
+    },
+    {
+      "stakeUnits": "1000",
+      "energyOnePayoutUnits": "631",
+      "accepted": true
+    },
+    {
+      "stakeUnits": "2000",
+      "energyOnePayoutUnits": "1262",
+      "accepted": true
+    },
+    {
+      "stakeUnits": "5000",
+      "energyOnePayoutUnits": "3155",
+      "accepted": true
+    }
+  ],
+  "blockers": [
+    "Forest Heart rejects denominations that need sub-cent settlement. A deliberate new rule and independent qualification are required.",
+    "The series games lose more RTP to integer rounding at low stakes than their existing approved tolerance. Their payout policy must be redesigned and independently qualified.",
+    "Other affected games require complete paid-round, bonus, player-choice and wallet qualification for the new stake domain."
+  ],
+  "research": {
+    "totalBet": "The player-facing stake is the complete normal-round price; line denomination is an internal calculation.",
+    "sources": [
+      "https://beta.netent.com/games/starburst",
+      "https://www.pokerstars.com/help/articles/slots-coins-bet-levels/229726/"
+    ]
+  }
+}

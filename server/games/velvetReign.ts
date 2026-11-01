@@ -8,7 +8,7 @@ type Random=(max:number)=>number;
 const checked=(draw:Random):Random=>max=>{const value=draw(max);if(!Number.isSafeInteger(value)||value<0||value>=max)throw Error('Invalid Velvet randomness');return value;};
 export function velvetWeighted(weights:readonly number[],random:Random){let n=random(weights.reduce((a,b)=>a+b,0));for(let i=0;i<weights.length;i++){if(n<weights[i])return i;n-=weights[i];}throw Error('Invalid Velvet weight');}
 function addStar(features:LuelonSlotFeatures,random:Random){const available=[0,1,2,3,4].filter(c=>!features.wilds.some(w=>w.column===c));if(!available.length)throw Error('No free Velvet reel');features.wilds.push({column:available[random(available.length)],factor:VELVET_FACTORS[velvetWeighted(M.starWeights,random)]});}
-function bonus(id:string,random:Random):LuelonSlotBonus{const features=velvetEmptyFeatures();if(id==='super-encore'){addStar(features,random);features.counters=[3,0];}return {id,remaining:10,awarded:10,played:0,limit:20,respins:0,features};}
+export function velvetBonus(id:string,random:Random):LuelonSlotBonus{const features=velvetEmptyFeatures();if(id==='super-encore'){addStar(features,random);features.counters=[3,0];}return {id,remaining:10,awarded:10,played:0,limit:20,respins:0,features};}
 const event=(kind:LuelonSlotEvent['kind'],positions:number[],value:number,before=0,after=value,label=''):LuelonSlotEvent=>({kind,positions,value,before,after,label,path:[]});
 /** Draw only the next accepted stage. No future bonus results are stored or sent. */
 export function velvetBoard(mode:string,features:LuelonSlotFeatures,bonusId:string|null,random:Random):number[]{
@@ -39,7 +39,7 @@ export function velvetPlay(value:LuelonSlotView,stake:string,random:Random):Luel
       events.push(event('collect',gems,gems.length,before.counters[0],after.counters[0],'Самоцветы приглашают звёзд'));
       if(grant)events.push(event('retrigger',[],grant,0,grant,'Новая звезда: дополнительные вращения'));
     }
-  }else if(!capped&&gems.length>=3){view.bonus=bonus(gems.length>=4?'super-encore':'spotlight',random);Object.assign(after,view.bonus.features);grant=10;events.push(event('scatter',gems,10,0,10,'Занавес поднимается'));
+  }else if(!capped&&gems.length>=3){view.bonus=velvetBonus(gems.length>=4?'super-encore':'spotlight',random);Object.assign(after,view.bonus.features);grant=10;events.push(event('scatter',gems,10,0,10,'Занавес поднимается'));
   }
   if(view.bonus){view.bonus.features=after;if(capped)view.bonus.remaining=0;}
   const spin:LuelonSlotSpin={index:view.history.length,kind:free?'free-spin':'base',rows:4,initialGrid:raw,frames:[{index:0,gridBefore:raw,gridAfter:grid,wins,events:frameEvents,payoutUnits:String(paid),uncappedPayoutUnits:String(uncapped),removed:[],drops:[],refills:[]}],finalGrid:grid,payoutUnits:String(paid),uncappedPayoutUnits:String(uncapped),triggerAwards:grant,featuresBefore:before,featuresAfter:after,events,stopReason:capped?'win-cap':'complete'};
@@ -51,7 +51,7 @@ function result(view:LuelonSlotView,stake:string):LuelonSlotResult{const ended=v
 }
 export function startVelvet(settings:LuelonSlotSettings,stake:string,draw:Random=randomInt):LuelonSlotResult{
   if(!validCosmicStake(stake)||!validLuelonSlotSettings(VELVET_GAME,settings))throw Error('Invalid Velvet start');const random=checked(draw),mode=VELVET_INFO.modes.find(m=>m.id===settings.luelon.mode)!;
-  const view:LuelonSlotView={kind:'luelon-slot',version:2,gameId:VELVET_GAME,mode:mode.id,phase:mode.bonus?'bonus':'complete',revision:0,decisions:[],spin:null,history:[],bonus:mode.bonus?bonus(mode.id,random):null,totalPayoutUnits:'0',capped:false};
+  const view:LuelonSlotView={kind:'luelon-slot',version:2,gameId:VELVET_GAME,mode:mode.id,phase:mode.bonus?'bonus':'complete',revision:0,decisions:[],spin:null,history:[],bonus:mode.bonus?velvetBonus(mode.id,random):null,totalPayoutUnits:'0',capped:false};
   return result(mode.bonus?view:velvetPlay(view,stake,random),stake);
 }
 export function moveVelvet(value:unknown,stake:string,revision:unknown,move:string,picks:number[]|undefined,draw:Random=randomInt):LuelonSlotResult{

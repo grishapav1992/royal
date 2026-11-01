@@ -1,3 +1,4 @@
+import {usesGameStakes} from '../shared/gameStakes';
 import { isUserMessage, t as translateText, locale } from '../i18n/index';
 import {validProviderBalance,type DemoWallet,type WalletOperation,type WalletResult} from '../shared/demoWallet';
 import type { GameId, GameInput } from '../shared/gameCore';
@@ -62,7 +63,7 @@ export class WalletClient extends EventTarget {
       }
       return this.send(pending);
     }
-    return this.send({ id: crypto.randomUUID(), kind: 'play', amount, gameId, rulesVersion: 1, input: structuredClone(input) });
+    return this.send({ id: crypto.randomUUID(), kind: 'play', amount, gameId, rulesVersion: 1,...(usesGameStakes(gameId)?{stakePolicyVersion:1 as const}:{}), input: structuredClone(input) });
   }
   async retry(): Promise<WalletResult> {
     if (!this.pending) throw new Error(translateText('Нет неподтверждённой операции.'));

@@ -17,7 +17,7 @@
     "analyze:forest-heart": "node --import tsx scripts/game-math/forest-heart-model.mjs",
     "test:forest-heart-math": "node --import tsx --test server-tests/forest-heart-math.test.ts server-tests/forest-heart-rtp.test.mjs",
     "qualify:rtp": "node --import tsx scripts/qualify-game-rtp.mjs",
-    "test:rtp-gate": "node --test server-tests/rtp-gate.test.mjs server-tests/cosmic-rtp-gate.test.mjs server-tests/flooded-temple-rtp.test.mjs server-tests/caribbean-rtp-gate.test.mjs server-tests/flooded-temple-cascade-rtp.test.mjs server-tests/forest-heart-runtime-rtp.test.mjs",
+    "test:rtp-gate": "node --test server-tests/rtp-gate.test.mjs server-tests/cosmic-rtp-gate.test.mjs server-tests/flooded-temple-rtp.test.mjs server-tests/caribbean-rtp-gate.test.mjs server-tests/flooded-temple-cascade-rtp.test.mjs server-tests/forest-heart-runtime-rtp.test.mjs server-tests/shared-stakes-rtp-gate.test.mjs",
     "test:forest-heart-server": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/forest-heart-protocol.test.ts server-tests/forest-heart-wallet.test.ts server-tests/forest-heart-http.test.ts",
     "test:forest-heart-ui": "playwright test --config=playwright.forest-heart.config.ts",
     "preview:forest-heart": "node --import tsx scripts/forest-heart-preview.ts",
@@ -71,7 +71,8 @@
     "test:temple:character": "playwright test --config playwright.temple-character.config.ts",
     "test:progression": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/progression*.test.ts server-tests/universal-spins.test.ts server-tests/finance/progression-spins.test.ts server-tests/reward-slots-rtp-gate.test.mjs",
     "test:progression:ui": "playwright test --config=playwright.progression.config.ts",
-    "progression:report": "node --env-file-if-exists=.env --import tsx scripts/progression-report.ts"
+    "progression:report": "node --env-file-if-exists=.env --import tsx scripts/progression-report.ts",
+    "test:game-stakes": "node --import tsx scripts/database-test.ts --import tsx --test --test-concurrency=1 server-tests/game-stakes.test.ts server-tests/round-precision.test.ts server-tests/game-stakes-http.test.ts"
   },
   "dependencies": {
     "@colyseus/core": "^0.18.18",

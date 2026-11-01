@@ -1,3 +1,4 @@
+import {precisionBaseRound} from '../../src/shared/roundPrecision';
 import { randomInt as cryptoRandomInt } from 'node:crypto';
 import type { CoinsRound, GameId, GameInput, GameRound } from '../../src/shared/gameCore';
 import { coinsEngine } from './coins';
@@ -76,7 +77,8 @@ export function playRoyalCoins(stakeUnits: bigint, draw?: () => number): CoinsRo
 /** Checks fixed rules and exact accounting. This does not prove a draw was random. */
 export function verifyGameRound(value: unknown): value is GameRound {
   try {
-    const round = inputRecord(value);
+    const normalized=precisionBaseRound(value);if(!normalized)return false;
+    const round = inputRecord(normalized);
     if (Object.keys(round).sort().join(',') !== 'gameId,input,multiplier,outcome,payoutUnits,rulesVersion,stakeUnits'
       || Reflect.ownKeys(round).length !== 7
       || typeof round.stakeUnits !== 'string' || !/^[1-9][0-9]*$/.test(round.stakeUnits)

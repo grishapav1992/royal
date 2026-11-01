@@ -1,5 +1,9 @@
+import {syncStakeSelect} from '../../src/ui/stakeSelection';
+import {stakeRulesHtml} from '../../src/ui/stakeRules';
+import {confirmedPayout} from '../../src/shared/roundPrecision';
+import {GAME_BETS as NEOPOLIS_BETS} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
-import { NEOPOLIS_GAME, NEOPOLIS_BETS, neopolisPointUnits, neopolisPaytable } from '../../src/shared/neopolis';
+import { NEOPOLIS_GAME, neopolisPointUnits, neopolisPaytable } from '../../src/shared/neopolis';
 import { BOSSES, HEROES, initialTeam, readyTeam, type Hero, type Team, type Battle, type Frame } from '../../src/shared/neopolisMath';
 import { neopolisCopy } from './copy';
 import { SCENES, noticeArt, portrait, skyline, symbolArt } from './art';
@@ -44,7 +48,7 @@ export class NeopolisUI {
   private autoRemaining = 0;
   private autoTimer?: number;
   private autoEpoch = 0;
-  private bet = 100;
+  private bet = 0.1;
   private selected: Hero = 'granite';
   private changed = () => this.sync();
   private get session() { return this.client.sessions.find(session => session.gameId === NEOPOLIS_GAME); }
@@ -153,7 +157,7 @@ export class NeopolisUI {
     auto.textContent = this.autoRunning ? this.copy.stopAuto + ' (' + this.autoRemaining + ')' : this.copy.autoplay;
     auto.setAttribute('aria-pressed', String(this.autoRunning));
     auto.setAttribute('aria-label', this.autoRunning ? this.copy.stopAuto + '. ' + this.copy.autoRemaining.replace('{n}', String(this.autoRemaining)) : this.copy.autoplay);
-    this.find<HTMLSelectElement>('bet').value = String(this.bet);
+    this.bet=Number(syncStakeSelect(this.find<HTMLSelectElement>('bet'),String(this.bet),NEOPOLIS_BETS,blocked||this.stakeLocked||this.autoRunning||!!pending,1));
     this.find('balance').textContent = this.number(this.balance);
     this.root.querySelector('.np-prototype')!.textContent = this.copy.prototype;
     this.find('balance').parentElement!.querySelector('small')!.textContent = this.copy.coins;
@@ -239,7 +243,7 @@ export class NeopolisUI {
       this.reels = undefined;
       this.effects.clear(); this.presentationTeam = undefined; this.presentationBattle = null;
       this.audio.cancelEffects(); this.feedback.clear(); this.feedback.setAmount(0);
-      this.busy = false; this.seen = ''; this.selected = 'granite'; this.bet = 100; delete this.root.dataset.power;
+      this.busy = false; this.seen = ''; this.selected = 'granite'; this.bet = 0.1; delete this.root.dataset.power;
       if (this.dialog.open) this.dialog.close();
       this.draw(initialGrid); this.find('win').textContent = '0';
       this.status(this.copy.collect);
@@ -250,7 +254,7 @@ export class NeopolisUI {
     if (!this.busy && view && this.seen !== marker) {
       this.seen = marker; this.bet = Number(this.session!.stakeUnits) / 100; this.selected = view.team.starter;
       this.draw(view.history.at(-1)!.result.grid);
-      this.feedback.setAmount(Number(view.totalPayoutUnits));
+      this.feedback.setAmount(Number(confirmedPayout(this.session,view.totalPayoutUnits)));
       this.find('win-label').textContent = view.battle ? this.copy.total : this.copy.payout;
       this.find('credit').textContent = this.session!.state === 'active' ? this.copy.held : this.copy.credited;
       this.status(view.capped ? this.copy.cap : this.session!.state === 'active' ? this.copy.saved : this.copy.settled);
@@ -367,7 +371,7 @@ export class NeopolisUI {
       this.draw(spin.result.grid); this.find('event').classList.remove('np-event-visible');
       delete this.root.dataset.power; delete this.root.dataset.fx;
       this.find('ability-card').classList.remove('np-ability-visible'); this.find('chapter').classList.remove('np-chapter-visible');
-      if (this.session?.state==='settled') await this.feedback.finish(Number(view.totalPayoutUnits),Number(this.session.stakeUnits),this.motionOptions(animation.signal));
+      if (this.session?.state==='settled') await this.feedback.finish(Number(confirmedPayout(this.session,view.totalPayoutUnits)),Number(this.session.stakeUnits),this.motionOptions(animation.signal));
       if (animation.signal.aborted) return false;
       this.seen = ''; this.busy = false; this.sync();
       const message = view.capped ? this.copy.cap : spin.result.finisher ? this.copy.finisher + ' · ' + this.copy.extra : spin.result.finished ? (view.battle?.won ? this.copy.victory : this.copy.escaped) + '. ' + this.copy.finished : spin.result.triggered ? this.copy.triggered : spin.result.unlocked.length ? this.copy.unlocked + ': ' + spin.result.unlocked.map(hero => this.copy[hero]).join(', ') : view.battle?.shield === 0 && !spin.result.empowered ? this.copy.empowered : this.copy.settled;
@@ -402,7 +406,7 @@ export class NeopolisUI {
     this.stopAuto();
     const c = this.copy;
     this.find('dialog-body').innerHTML = '<span class="np-dialog-kicker">ROYAL ORIGINALS / NEOPOLIS</span><h2>' + c.rules + '</h2>'
-      + [c.rulesBase,c.rulesTeam,c.rulesHeroes,this.legacy ? c.rulesLegacy : c.rulesBoss,c.rulesMoney,c.autoHelp].map(text => '<p>' + text + '</p>').join('')
+      + stakeRulesHtml() + [c.rulesBase,c.rulesTeam,c.rulesHeroes,this.legacy ? c.rulesLegacy : c.rulesBoss,c.rulesMoney,c.autoHelp].map(text => '<p>' + text + '</p>').join('')
       + '<h3>' + (this.stakeLocked ? c.bonusPayouts : c.payouts) + '</h3><table><thead><tr><th>' + c.symbol + '</th><th>3</th><th>4</th><th>5</th></tr></thead><tbody>'
       + neopolisPaytable(this.session?.state === 'active' ? this.view!.version : 4, this.session?.state === 'active' ? this.view!.origin : this.team).map((pays, index) => '<tr><th>' + c[('symbol' + index) as keyof typeof c] + '</th>' + pays.map(pay => '<td>×' + this.number(pay) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
     if (!this.dialog.open) this.dialog.showModal(); this.updatePause(); this.controls();

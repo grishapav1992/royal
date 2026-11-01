@@ -1,3 +1,4 @@
+import {precisionBaseRound} from '../shared/roundPrecision';
 import { getPlinkoMultipliers, getPlinkoRtp, exactPayoutUnits } from '../shared/originalGames';
 import type { PlinkoRound } from '../shared/gameCore';
 
@@ -40,7 +41,7 @@ export function flightPose(points: readonly Point[], progress: number): Point & 
 /** Also accepts legacy settings so an uncertain old request remains recoverable. */
 export function validVolcanicRound(value: unknown): value is PlinkoRound {
   try {
-    const round = value as PlinkoRound;
+    const round = precisionBaseRound(value) as PlinkoRound;
     if (!round || round.gameId !== 'royal-plinko' || round.rulesVersion !== 1 || !/^\d+$/.test(round.stakeUnits) || !/^\d+$/.test(round.payoutUnits)) return false;
     const { rows, risk } = round.input, { path, bucket } = round.outcome;
     if (!Array.isArray(path) || path.length !== rows || path.some(bit => bit !== 0 && bit !== 1) || bucket !== path.reduce((a, b) => a + b, 0)) return false;

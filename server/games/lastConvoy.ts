@@ -8,7 +8,7 @@ function finish(view:ConvoyView,stake:string):ConvoyResult {
  if(!validConvoySettlement(ended?'settled':'active',stake,stake,ended?view.totalPayoutUnits:'0',view))throw Error('Invalid generated Convoy settlement');
  return {view,ended,credit:ended?Number(view.totalPayoutUnits):0,message:ended?'Раунд завершён. Выплата в тестовом кошельке.':'Эвакуация сохранена. Продолжение бесплатно.',actions:ended?[]:[{move:'convoy-spin',label:'Продолжить эвакуацию',cost:0}]};
 }
-function spin(value:Omit<ConvoyView,'spin'>&{spin:ConvoyView['spin']|null},stake:string,draw:Draw):ConvoyView {
+export function advanceConvoySpin(value:Omit<ConvoyView,'spin'>&{spin:ConvoyView['spin']|null},stake:string,draw:Draw):ConvoyView {
  const v=structuredClone(value),free=!!v.bonus,pinsBefore=[...(v.bonus?.pins??[])];let pinCount=pinsBefore.length;
  const symbol=()=>{const r=draw(1000000),beacon=free?CONVOY_MATH.freeBeacon:CONVOY_MATH.baseBeacon,barrier=free?CONVOY_MATH.freeBarrier:CONVOY_MATH.baseBarrier;if(r<beacon)return 7;if(pinCount<6&&r<beacon+barrier){pinCount++;return 8;}return draw(7);};
  const initial=Array.from({length:30},(_,i)=>pinsBefore.includes(i)?8:symbol()),frames:ConvoyFrame[]=[],cap=BigInt(stake)*5000n;let grid=initial,pins=[...pinsBefore],multiplier=1+pinsBefore.length,paid=0n,raw=0n;
@@ -27,9 +27,9 @@ function spin(value:Omit<ConvoyView,'spin'>&{spin:ConvoyView['spin']|null},stake
 }
 export function startConvoy(settings:ConvoySettings,stake:string,draw:Draw=randomInt):ConvoyResult {
  if(!validConvoySettings(settings)||!validConvoyStake(stake))throw new ConvoyMoveError('Недопустимая ставка или режим конвоя.');
- return finish(spin({kind:'last-convoy',version:1,mode:'normal',revision:0,history:[],spin:null,bonus:null,totalPayoutUnits:'0',capped:false},stake,draw),stake);
+ return finish(advanceConvoySpin({kind:'last-convoy',version:1,mode:'normal',revision:0,history:[],spin:null,bonus:null,totalPayoutUnits:'0',capped:false},stake,draw),stake);
 }
 export function moveConvoy(value:ConvoyView,stake:string,revision:unknown,draw:Draw=randomInt):ConvoyResult {
  if(!value||revision!==value.revision||!validConvoySettlement('active',stake,stake,'0',value))throw new ConvoyMoveError('Эвакуация уже изменилась. Покажи сохранённый ход.');
- return finish(spin(value,stake,draw),stake);
+ return finish(advanceConvoySpin(value,stake,draw),stake);
 }
