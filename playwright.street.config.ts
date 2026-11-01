@@ -3,7 +3,7 @@ const webPort=Number(process.env.STREET_TEST_WEB_PORT||5191),apiPort=Number(proc
 const web=`http://127.0.0.1:${webPort}`,api=`http://127.0.0.1:${apiPort}`;
 
 export default defineConfig({
-  testDir: './tests', testMatch: 'street.spec.ts', timeout: 120000, workers: 1,
+  testDir: './tests', testMatch: 'street.spec.ts', timeout: 150000, workers: 1,
   use: { baseURL: web, channel: 'chrome', trace: 'off' },
   projects: [
     { name: 'desktop', use: { viewport: { width: 1440, height: 1000 } } },

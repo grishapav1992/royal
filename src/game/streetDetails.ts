@@ -15,7 +15,13 @@ export const STREET_RESIDENTS=[
     lines:['Осторожнее, тут расчищено. Снег пока не в курсе.','Проход вокруг здания свободен. Я только что победил один сугроб.','Тележку поставил у стены. Посылки ждут, когда кто-нибудь перестанет быть занят.']},
   {id:'taxi-driver',name:'Таксист Гоша',role:'Ждёт у такси',x:2435,y:1142,facing:'left',approach:{x:2395,y:1138},
     appearance:serializeAppearance({...DEFAULT_APPEARANCE,skinTone:3,body:1,top:2,topColor:10,bottomColor:9,shoes:1,shoeColor:9,hat:3,accessoryColor:9,facialHair:1,scarf:1}),
-    lines:['Я жду пассажира. Он сказал: «Ещё минутку». Это было до снегопада.','Жёлтая машина моя. Стою в кармане, проезду не мешаю.','В городе две новости: снег идёт, а я стою. Зато кофе ещё тёплый.']},
+    lines:['Я жду пассажира. Он сказал: «Ещё минутку». Это было до снегопада.','Жёлтая машина моя. Стою в кармане, проезду не мешаю.','В городе две новости: снег идёт, а я стою. Зато кофе ещё тёплый.','Кофе, перекур, взгляд на часы. Мой пассажир решил проверить весь распорядок.']},
+  {id:'tourist',name:'Турист Лёня',role:'Ищет удачный ракурс',x:1420,y:1006,facing:'up',approach:{x:1372,y:1042},
+    appearance:serializeAppearance({...DEFAULT_APPEARANCE,top:2,topColor:1,bottomColor:5,hat:2,accessoryColor:4,hairColor:3,scarf:1,shoes:1,shoeColor:10}),
+    lines:['Корону в кадр поймал. Теперь надо, чтобы фонарь не вырос у меня из головы.','Я снимаю архитектуру. Голубь почему-то уверен, что снимаю его.','Золотик уже позировал. Теперь спрашивает, с какой стороны фишка стройнее.']},
+  {id:'mascot',name:'Талисман Золотик',role:'Золотая фишка',x:1740,y:1006,facing:'down',approach:{x:1686,y:1042},
+    appearance:serializeAppearance({...DEFAULT_APPEARANCE,top:1,topColor:2,bottomColor:9,shoeColor:9,mouth:1,hat:0}),
+    lines:['Я Золотик. Фишка большая, карманы маленькие.','Для фото у меня три позы. Четвёртая называется «перерыв».','Под костюмом жарко. Снаружи зима. Почти идеальный климат.']},
 ] as const;
 export type StreetResidentId=typeof STREET_RESIDENTS[number]['id'];
 export type StreetVisitor={x:number;y:number};

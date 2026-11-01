@@ -7,6 +7,7 @@ import { findPath } from '../src/game/navigation';
 import { STREET } from '../src/shared/street';
 import { STREET_RESIDENTS, StreetConversations, streetViewOffset } from '../src/game/streetDetails';
 import { parseAppearance } from '../src/shared/appearance';
+import { streetResidentPose } from '../src/game/StreetResidentActions';
 
 test('street pedestrians stay on the pavement and traffic stays in separate road lanes', () => {
   const life=new StreetLife(),visibility=new Map<string,Set<boolean>>();
@@ -71,4 +72,23 @@ test('the rear camera frames the service area without a jump at either corner',(
     assert(streetViewOffset(360,height)<=0);
     for(let y=350;y<1050;y++)assert(Math.abs(streetViewOffset(y+1,height)-streetViewOffset(y,height))<1);
   }
+});
+
+test('resident routines vary their actions and become static during conversation or reduced motion',()=>{
+  const actions=new Map(STREET_RESIDENTS.map(p=>[p.id,new Set<string>()]));
+  for(let time=0;time<60000;time+=100){
+    for(const person of STREET_RESIDENTS){
+      const pose=streetResidentPose(person.id,time,true);
+      actions.get(person.id)!.add(pose.action);
+      assert(pose.progress>=0&&pose.progress<1);
+      assert(pose.frame>=6&&pose.frame<=16);
+      for(const [motion,talking] of [[false,false],[true,true]]){
+        assert.deepEqual(streetResidentPose(person.id,time,motion,talking),{action:'idle',progress:0,frame:6});
+      }
+    }
+  }
+  for(const action of ['clear-snow','tap-shovel','rest','look-around'])assert(actions.get('janitor')!.has(action));
+  for(const action of ['coffee','smoke','check-watch','look-around'])assert(actions.get('taxi-driver')!.has(action));
+  for(const action of ['frame-photo','take-photo','review-photo'])assert(actions.get('tourist')!.has(action));
+  for(const action of ['wave','pose','rest'])assert(actions.get('mascot')!.has(action));
 });

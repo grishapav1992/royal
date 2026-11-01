@@ -55,7 +55,7 @@ test('walk outside, circle the casino, reconnect and return through the same ent
   await page.screenshot({ path: `../street-${info.project.name}-entrance.png` });
   await overview(page, true);
   const residents=(await state(page)).street.residents.people;
-  expect(residents.map((p:any)=>p.id)).toEqual(['doorman','janitor','taxi-driver']);
+  expect(residents.map((p:any)=>p.id)).toEqual(['doorman','janitor','taxi-driver','tourist','mascot']);
   const doorman=STREET_RESIDENTS[0],hit=await worldPoint(page,doorman.x,doorman.y-35);
   await page.mouse.click(hit.x,hit.y);
   const dialogue=page.locator('.street-conversation');
@@ -69,6 +69,25 @@ test('walk outside, circle the casino, reconnect and return through the same ent
   await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
   await expect(dialogue).toBeHidden();
   await overview(page,true);
+  for(const id of ['tourist','mascot'] as const){
+    const person=STREET_RESIDENTS.find(p=>p.id===id)!;
+    await walk(page,person.approach.x,person.approach.y);
+    await expect(dialogue).toHaveAttribute('data-resident',id);
+    await overview(page,false);
+    await expect.poll(async ()=>{
+      const person=(await state(page)).street.residents.people.find((p:any)=>p.id===id);
+      return person.activity===(id==='tourist'?'take-photo':'wave');
+    },{timeout:18000}).toBe(true);
+    await page.screenshot({path:`../street-${info.project.name}-${id}.png`});
+    await dialogue.getByRole('button',{name:'Поговорить',exact:true}).click();
+    await expect(dialogue).toHaveAttribute('data-speaking','true');
+    await expect(dialogue.locator('p')).toContainText(id==='tourist'?'Корону в кадр':'Я Золотик');
+    await expect.poll(async ()=>(await state(page)).street.residents.people.find((p:any)=>p.id===id).activity).toBe('idle');
+    await dialogue.getByRole('button',{name:'Ещё',exact:true}).click();
+    await expect(dialogue.locator('p')).toContainText(id==='tourist'?'Я снимаю архитектуру':'три позы');
+    await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
+    await overview(page,true);
+  }
   await page.screenshot({ path: `../street-${info.project.name}-overview.png` });
   for (const p of STREET.loop) await walk(page, p.x, p.y);
   await walk(page, 1370, 365);
@@ -81,11 +100,16 @@ test('walk outside, circle the casino, reconnect and return through the same ent
   await overview(page,true);
   await walk(page,2320,360);await walk(page,2320,1050);await walk(page,2395,1138);
   await expect(dialogue).toHaveAttribute('data-resident','taxi-driver');
+  await overview(page,false);
+  await expect.poll(async ()=>{
+    const taxi=(await state(page)).street.residents.people.find((p:any)=>p.id==='taxi-driver');
+    return taxi.activity==='smoke'&&taxi.progress>.4;
+  },{timeout:18000}).toBe(true);
+  await page.screenshot({path:`../street-${info.project.name}-taxi.png`});
   await dialogue.getByRole('button',{name:'Поговорить',exact:true}).click();
   await expect(dialogue).toHaveAttribute('data-speaking','true');
   await expect(dialogue.locator('p')).toContainText('Я жду пассажира');
-  await overview(page,false);
-  await page.screenshot({path:`../street-${info.project.name}-taxi.png`});
+  await expect.poll(async ()=>(await state(page)).street.residents.people.find((p:any)=>p.id==='taxi-driver').activity).toBe('idle');
   await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
   // Reload while outdoors must recover the room and location, rather than spawning indoors.
   await page.emulateMedia({reducedMotion:'reduce'});
@@ -101,6 +125,7 @@ test('walk outside, circle the casino, reconnect and return through the same ent
   expect(still.time).toBe(frozen.time);
   expect(still.cars).toEqual(frozen.cars);
   expect(still.pedestrians.every((p:any)=>!p.moving)).toBe(true);
+  expect(still.residents.people.every((p:any)=>p.activity==='idle'&&p.progress===0)).toBe(true);
   expect(still.sign.sheen).toBe(0);
   expect(still.sign.sparkle).toBe(0);
   await page.locator('[data-floor-target="arcade"]').click();
