@@ -48,8 +48,13 @@
 .rr-root[data-priority-layout=landscape][data-priority-layout] .rr-spin { grid-column:1; grid-row:4 }
 .rr-root[data-priority-layout=landscape][data-priority-layout] .rr-return { grid-column:1; grid-row:5 }
 .rr-root[data-priority-layout=landscape][data-priority-layout] .rr-status { grid-column:1; grid-row:6 }
-.rr-root .game-options-content .rr-table-area { width:100%; min-width:0 }
-.rr-root .game-options-content .rr-numbers { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); grid-template-rows:none; grid-auto-rows:44px; padding:3px }
+.rr-root .game-options-content .rr-table-area { display:block; width:100%; min-width:0; max-height:none; overflow:visible }
+.rr-root .game-options-content .rr-outside { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; margin:6px 0 12px }
+.rr-root .game-options-content .rr-outside button { min-height:64px; padding:6px; gap:4px; font-size:12px }
+.rr-root .game-options-content :is(.rr-outside-heading,.rr-number-heading) { margin:12px 0 6px }
+.rr-root .game-options-content .rr-numbers { display:grid; grid-template-columns:repeat(auto-fit,minmax(44px,1fr)); grid-template-rows:none; grid-auto-rows:44px; padding:3px }
 .rr-root .game-options-content .rr-numbers button { grid-row:auto; grid-column:auto; min-height:44px; font-size:16px }
 .rr-root .game-options-content .rr-numbers .rr-green { grid-row:auto; grid-column:1/-1; display:grid; place-items:center; padding:0 }
 .rr-root .game-options-content .rr-rules { display:block }
+.rr-root .game-options-content .rr-rules p { font-size:12px; line-height:1.5 }
+.rr-root .game-options-content .rr-history { grid-column:auto; grid-row:auto; max-height:none; flex-wrap:wrap }

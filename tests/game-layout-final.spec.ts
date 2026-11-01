@@ -59,12 +59,15 @@ for(const id of ids)test('settings, paid round, reopen and lost response: '+id,a
  if(id==='original-cr-vs-leo')await panel.locator('[data-hero=leo]').click();
  let location='';
  if(id==='original-jackie-chan'){await panel.locator('[data-location]').selectOption({index:1});location=await panel.locator('[data-location]').inputValue();await panel.locator('[data-speed]').click();}
- if(id==='royal-roulette'){await panel.locator('.rr-rules summary').click();await expect(panel.locator('.rr-rules')).toHaveAttribute('open','');}
+ if(id==='royal-roulette'){
+  for(const button of await panel.locator('[data-rr-bet]').all()){const box=await button.boundingBox();expect(box!.width).toBeGreaterThanOrEqual(44);expect(box!.height).toBeGreaterThanOrEqual(44);}
+  await page.screenshot({path:out+'/'+id+'-options.png'});await panel.locator('.rr-rules summary').click();await expect(panel.locator('.rr-rules')).toHaveAttribute('open','');
+ }
  else{
   await panel.locator('[data-rules]').click();await expect(panel).toBeHidden();
   const rules=root.locator(id==='github-crash'?'.le-dialog':id==='original-cr-vs-leo'?'.cl-dialog':'[data-dialog]');await expect(rules).toBeVisible();await rules.locator('[data-close]').click();await expect(gear).toBeFocused();await gear.click();
  }
- await page.screenshot({path:out+'/'+id+'-options.png'});await page.setViewportSize({width:852,height:393});await panel.press('Escape');await expect(panel).toBeHidden();await expect(gear).toBeFocused();await fit(page,id);
+ if(id!=='royal-roulette')await page.screenshot({path:out+'/'+id+'-options.png'});await page.setViewportSize({width:852,height:393});await panel.press('Escape');await expect(panel).toBeHidden();await expect(gear).toBeFocused();await fit(page,id);
  await page.setViewportSize({width:1440,height:900});await fit(page,id);await page.setViewportSize({width:393,height:852});
  if(id==='original-cr-vs-leo')await expect(root.locator('button[data-hero=leo]')).toHaveAttribute('aria-pressed','true');
  if(id==='original-jackie-chan'){await expect(root.locator('[data-location]')).toHaveValue(location);await expect(root.locator('[data-speed]')).toHaveAttribute('aria-pressed','true');}
