@@ -59,7 +59,7 @@ const server = defineServer({
     app.get('/', (_req, res) => res.sendFile(resolve('dist/index.html')));
   },
 });
-server.onBeforeShutdown(async () => { await stopSkinStudio?.(); });
+server.onBeforeShutdown(async () => { console.info(JSON.stringify({ event: 'lobby-server-shutdown', uptimeSeconds: Math.floor(process.uptime()) })); await stopSkinStudio?.(); });
 server.onShutdown(async () => { stopTote?.(); stopCrypto?.(); stopSandbox?.(); await accounts.close(); });
 await server.listen(port, '0.0.0.0');
 console.log(`Royal server listening on port ${port}`);

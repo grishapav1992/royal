@@ -107,10 +107,10 @@ export class SocialUI {
       ejected: until => this.security.ejected(until),
       checking: value => { this.checking = value; this.chatAvailability(); },
       status: status => this.connectionStatus(status),
-      joined: (roomId, selfId) => {
+      joined: (roomId, selfId, recovering) => {
         this.pvp?.client.setAccount(this.auth.account?.id??null);
         document.querySelectorAll<HTMLDialogElement>('dialog[open]').forEach(dialog => {
-          if (dialog !== this.dialog) dialog.close();
+          if (dialog !== this.dialog && !recovering) dialog.close();
         });
         this.sanctioned = false; this.scene.setSecurity(false); this.checking = false;
         this.roomId = roomId; this.selfId = selfId;
@@ -118,7 +118,7 @@ export class SocialUI {
         this.showLatest();
         const url = new URL(location.href); url.searchParams.set('room', roomId); history.replaceState({ royalJoinedRoom: roomId }, '', url);
         this.scene.enableOnline({ elevator: target => this.client.travelByElevator(target), inputs: inputs => this.client.send('inputs',inputs), move: (x,y) => this.client.send('move',{x,y}), target: (x,y) => this.client.send('target',{x,y}), stop: () => this.client.send('stop'), sit: seat => this.client.send('sit',seat), stand: () => this.client.send('stand'), drink: drink => this.client.send('drink',drink), cat: action => this.client.send('cat',action), cabinetPlay: id => this.client.claimCabinet(id), cabinetLeave: () => this.client.releaseCabinet(), cabinetReaction: (id,reaction) => this.client.send('cabinet-reaction',{id,reaction}) });
-        this.dialog.close(); this.scene.setLocked(false); prefetchDemoGames();
+        this.dialog.close(); this.scene.setLocked(Boolean(document.querySelector('dialog[open]'))); prefetchDemoGames();
         document.querySelector('.profile-name')!.firstChild!.textContent = this.auth.account?.name || translateText('Игрок');
       },
       players: (players, selfId) => this.updatePlayers(players, selfId),
