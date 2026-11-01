@@ -28,7 +28,11 @@ async function enter(page: Page, roomPath: string, lang = 'ru') {
   await page.locator('[data-cabinet="studio-cosmic-escape"]').click();
   await expect.poll(async () => {
     if (await page.locator('#mini-dialog').isVisible()) return true;
-    try { await page.locator('[data-cabinet="studio-cosmic-escape"]').click({ timeout: 600 }); } catch {}
+    try {
+      const cabinet=page.locator('[data-cabinet="studio-cosmic-escape"]');
+      if(!await cabinet.isVisible())await page.locator('#games-tab').click();
+      await cabinet.click({timeout:2000});
+    } catch {}
     return page.locator('#mini-dialog').isVisible();
   }, { timeout: 25000, intervals: [1000, 2000] }).toBe(true);
   await choose(page);
@@ -39,6 +43,9 @@ async function choose(page: Page) {
   await expect(game(page).locator('[data-fh=spin]:visible,[data-fh=pass]:visible,[data-fh=retry]:visible').first()).toBeEnabled();
   await expect.poll(() => game(page).locator('.fh-elf').evaluateAll(images => images.every(i => (i as HTMLImageElement).complete && (i as HTMLImageElement).naturalWidth > 0))).toBe(true);
   await expect.poll(async () => (await state(page)).character.ready).toBe(true);
+  // Keep the synthetic scenarios at their original 10 USDT stake after the shared default changed.
+  for(let step=0;step<20&&(await game(page).locator('[data-fh=stake]').textContent())!=='10';step++)await game(page).locator('[data-fh=higher]').click();
+  await expect(game(page).locator('[data-fh=stake]')).toHaveText('10');
 }
 async function routeScenario(page: Page, scenario: string, loseFirst = false) {
   let lost = false;

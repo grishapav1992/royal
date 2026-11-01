@@ -432,7 +432,7 @@
   "interpretation": "Exact expectation of the specified finite candidate model, including the optimal visible action and all four sticky bonus spins. No sampled estimate or confidence interval. Not evidence of server RNG, transport, wallet settlement or runtime compatibility.",
   "registeredPolicySha256": "8bcbd93c5c07b6dfcd2fd43e8243457c83e46e8b5acb0f664d4b28738df3d0e6",
   "sourceHashes": {
-    "src/shared/forestHeartMath.ts": "c3e04efc098aa9d61f0faa70fc9159d8460dcf0816d96ef5b560efd45ab46658",
+    "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
     "scripts/game-math/forest-heart-reference.mjs": "307b64ae1ee33b4e89291a945c2827e9ef985d721f8f898005b0a34fe1bede50",
     "scripts/game-math/forest-heart-model.mjs": "37e1a4712b20337f2ee7041a8c16e0f23ebb968a9aa7d52a1d788e1bd3d68813"
   }

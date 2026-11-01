@@ -10,23 +10,23 @@
     279169025
   ],
   "boundaryHash": 279169025,
-  "minOpaqueAlpha": 253,
-  "frames": 291,
+  "minOpaqueAlpha": 254,
+  "frames": 288,
   "heldState": {
     "clip": null,
     "heldClip": "look",
     "heldFrame": 1,
     "phase": "standing",
     "nextClip": "focus",
-    "nextAtMs": 9146.5,
+    "nextAtMs": 9209.9,
     "episodeMs": 3000,
     "standingMs": 6000,
     "fadeMs": 640,
     "history": [
       {
         "clip": "look",
-        "startMs": 146.59999999999997,
-        "endMs": 3146.5
+        "startMs": 343.4,
+        "endMs": 3209.9
       }
     ],
     "blend": 1,
@@ -36,8 +36,8 @@
       "video": 0
     },
     "visible": true,
-    "frames": 91,
-    "draws": 105,
+    "frames": 87,
+    "draws": 108,
     "suspended": false,
     "failed": [],
     "media": [
