@@ -12,11 +12,13 @@ async function loaded(page: Page, path = '/?offline=1') {
   await page.goto(path);await expect(page.locator('#loading')).toHaveCount(0, { timeout: 30000 });
 }
 async function call(page: Page) {
+  await page.bringToFront();
   await page.locator('#elevator-shortcut').click();
   await expect(page.locator('#elevator-dialog')).toBeVisible({ timeout: 20000 });
   await expect(page.locator('#elevator-dialog')).toHaveAttribute('data-phase', 'choose');
 }
 async function travel(page: Page, target: HallId) {
+  await page.bringToFront();
   await page.locator(`[data-elevator-floor="${target}"]`).click();
   await expect(page.locator('#elevator-dialog')).toHaveAttribute('data-phase', 'closing');
   await expect.poll(async () => (await state(page)).hall).toBe(target);
