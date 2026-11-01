@@ -106,7 +106,7 @@ export class PvpUI {
     const tsu=this.body.querySelector<HTMLSelectElement>('[name=game]')!.value==='tsu-e-fa';
     const input=this.body.querySelector<HTMLInputElement>('[name=stake]')!;input.disabled=tsu;input.required=!tsu;
     this.body.querySelector<HTMLElement>('[data-stake-field]')!.hidden=tsu;
-    if(tsu){this.body.querySelector('[data-preview]')!.textContent='Пригласи игрока. Ставку от 0,10 USDT вы согласуете после принятия приглашения. Матч до 3 побед.';return;}
+    if(tsu){this.body.querySelector('[data-preview]')!.textContent='Пригласи игрока. Ставку от 0,10 USDT вы согласуете после принятия приглашения. Матч до 2 побед: 2:0 или 2:1. Ничьи переигрываются.';return;}
     try{const stake=usdtUnits(this.body.querySelector<HTMLInputElement>('[name=stake]')!.value.trim().replace(',','.')),payout=pvpPayout(stake);
       if(!validVirtualPvpStake(stake))throw Error();
       this.body.querySelector('[data-preview]')!.textContent=`Оба ставят по ${money(stake)}. Банк ${money(payout.potUnits)}. Победителю ${money(payout.payoutUnits)}, казино ${money(payout.feeUnits)}.`;

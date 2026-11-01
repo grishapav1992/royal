@@ -32,10 +32,12 @@ test('Tsu-e-fa qualifies the agreed 3/5/7 targets and retains accepted rules 1',
     if(rules===2){const altered=structuredClone(proof);altered.rulesCoverage.targets=[2,5,7];assert.throws(()=>validateRtpProof('tsu-e-fa',inputs,altered));}
   }
 });
-test('Tsu-e-fa rules 3 qualifies common stakes, twelve settlement classes and delayed private reveal',async()=>{
- const inputs=await rtpInputs(root,'tsu-e-fa',3),proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8'));
- assert(validateRtpProof('tsu-e-fa',inputs,proof));assert.equal(proof.serverReplayChecks,108);assert.deepEqual(proof.rulesCoverage,{targets:[3],scores:9,pairsPerScore:9,orders:2,cases:162,privacyChecks:324});
+test('Tsu-e-fa rules 3 and 4 qualify their pinned targets, common stakes and delayed private reveal',async()=>{
+ for(const rules of [3,4]){const target=rules===3?3:2;
+ const inputs=await rtpInputs(root,'tsu-e-fa',rules),proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8'));
+ assert(validateRtpProof('tsu-e-fa',inputs,proof));assert.equal(proof.serverReplayChecks,108);assert.deepEqual(proof.rulesCoverage,{targets:[target],scores:target*target,pairsPerScore:9,orders:2,cases:target*target*18,privacyChecks:target*target*36});
  for(const edit of [p=>p.results.pop(),p=>p.rulesCoverage.cases--,p=>p.walletEvidence.replayAndRestartCases--,p=>p.results[0].creditsCents=[20,0],p=>p.precisionLaw.stopping='']){const altered=structuredClone(proof);edit(altered);assert.throws(()=>validateRtpProof('tsu-e-fa',inputs,altered));}
+ }
 });
 function proofFor(id, inputs, mean = inputs.policy.target) {
   const p = inputs.policy, cycles = p.minCycles || p.minPaidRounds;

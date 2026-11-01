@@ -43,16 +43,16 @@ test('right-click and E open a consent invitation; decline, revised terms and re
   }finally{await c.close();}
 });
 
-test('ten-cent match uses secret choices, synchronized reveal, three wins, exact single credit, mobile chat and recovery',async({browser})=>{
+test('ten-cent best-of-three match uses secret choices, synchronized reveal, two wins, exact single credit, mobile chat and recovery',async({browser})=>{
   const c=await players(browser),{a,b}=c;try{
     await accept(a,b);const beforeA=await balance(a),beforeB=await balance(b);await ready(a,b);expect(await balance(a)).toBe(beforeA-10);expect(await balance(b)).toBe(beforeB-10);
     await sign(a).click();await expect(a.locator('.td-status')).toContainText('Твой знак закрыт');await expect(b.locator('.td-stage')).toHaveAttribute('data-stage','select');await expect(b.locator('.td-score')).toHaveText('0 : 0');
     await a.reload();await connected(a);await expect(a.locator('#pvp-dialog')).toBeVisible();await expect(sign(a)).toHaveAttribute('aria-pressed','true');await expect(sign(b,'rock')).toBeEnabled();await sign(b,'rock').click();await expect(a.locator('.td-stage')).toHaveAttribute('data-stage','countdown');await expect(a.locator('.td-score')).toHaveText('1 : 0',{timeout:10000});
     await a.screenshot({path:'artifacts/work/tsu-v3-desktop.png'});await a.setViewportSize({width:390,height:844});
     const chat=(await a.locator('#pvp-dialog .game-chat-dock').boundingBox())!;for(const button of await a.locator('.td-choices button').all()){const box=(await button.boundingBox())!;expect(box.width).toBeGreaterThanOrEqual(44);expect(box.x).toBeGreaterThanOrEqual(0);expect(box.x+box.width).toBeLessThanOrEqual(390);expect(box.y+box.height).toBeLessThanOrEqual(chat.y);}
-    await a.screenshot({path:'artifacts/work/tsu-v3-mobile.png'});await winRound(a,b,2);await expect(a.locator('.td-status')).not.toContainText('Ты победил');await winRound(a,b,3);
+    await a.screenshot({path:'artifacts/work/tsu-v3-mobile.png'});await expect(a.locator('.td-status')).not.toContainText('Ты победил');await winRound(a,b,2);
     await expect(a.locator('.td-status')).toContainText('Начислено 0,19 USDT');expect(await balance(a)).toBe(beforeA+9);expect(await balance(b)).toBe(beforeB-10);
-    await a.locator('#pvp-dialog [data-close]').click();if(!await a.locator('#pvp-button').isVisible())await a.locator('.profile-toggle').click();await a.locator('#pvp-button').click();await expect(a.locator('.td-score')).toHaveText('3 : 0');await expect(a.locator('[data-chant]')).toHaveText('');expect(await balance(a)).toBe(beforeA+9);expect(c.errors).toEqual([]);
+    await a.locator('#pvp-dialog [data-close]').click();if(!await a.locator('#pvp-button').isVisible())await a.locator('.profile-toggle').click();await a.locator('#pvp-button').click();await expect(a.locator('.td-score')).toHaveText('2 : 0');await expect(a.locator('[data-chant]')).toHaveText('');expect(await balance(a)).toBe(beforeA+9);expect(c.errors).toEqual([]);
   }finally{await c.close();}
 });
 
