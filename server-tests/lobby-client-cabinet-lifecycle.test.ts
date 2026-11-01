@@ -47,7 +47,7 @@ async function fixture(context: TestContext) {
     notice: message => notices.push(message), status: status => statuses.push({ status, releases: releases().length }) });
   (client as any).client = { joinOrCreate: async () => room, joinById: async () => room };
   await client.join(); room.packets.length = 0; statuses.length = 0;
-  context.after(() => { (client as any).setStatus('disconnected'); });
+  context.after(() => client.leave());
   const request = () => room.packets.filter(packet => packet.type === 'cabinet-play').at(-1)!.value;
   const reply = (accepted: boolean, result: Record<string, unknown> = {}) => room.handlers.get('cabinet-play-result')!({ ...request(), accepted, ...result });
   return { client, room, notices, ejections, statuses, releases, request, reply };
@@ -188,11 +188,11 @@ test('another account or invitation cannot adopt a saved session', async context
 });
 
 
-test('exhausted reconnection without a sanction disconnects without inventing a guard ban', async context => {
+test('exhausted reconnection automatically recovers without inventing a guard ban', async context => {
   const f = await fixture(context), pending = f.client.claimCabinet('royal-fruits');
   f.room.drop(); f.room.finalLeave(4003);
+  assert.equal(f.client.status, 'reconnecting');
   assert.equal(await pending, false);
-  assert.equal(f.client.status, 'disconnected');
   assert.deepEqual(f.ejections, []);
   await f.client.join(); assert.equal(f.client.status, 'connected');
 });
@@ -201,7 +201,8 @@ test('a warning followed by reconnection failure is not a ban', async context =>
   const f = await fixture(context);
   f.room.handlers.get('security')!({ kind: 'warning', until: Date.now() + 86400000, reason: 'spam' });
   f.room.drop(); f.room.finalLeave(4003);
-  assert.deepEqual(f.ejections, []); assert.equal(f.client.status, 'disconnected');
+  await f.client.join();
+  assert.deepEqual(f.ejections, []); assert.equal(f.client.status, 'connected');
 });
 
 test('a confirmed ban keeps the exact server deadline through final departure', async context => {
@@ -215,4 +216,81 @@ test('an explicit ejection is honored and an expired sanction cannot restart a t
   f.room.handlers.get('ejected')!({ until }); assert.deepEqual(f.ejections, [until]);
   f.room.handlers.get('security')!({ kind: 'ejecting', until: Date.now() - 1 });
   f.room.drop(); f.room.finalLeave(4003); assert.deepEqual(f.ejections, [until]);
+});
+
+test('a server restart automatically enters a replacement room without a manual login', async context => {
+  const f = await fixture(context), replacement = new TransportRoom(); replacement.roomId = 'replacement';
+  let fresh = 0;
+  (f.client as any).client = {
+    joinById: async () => { throw Object.assign(new Error('Room gone'), { code: 522 }); },
+    joinOrCreate: async () => { fresh++; return replacement; },
+  };
+  f.room.finalLeave(4001);
+  assert.equal(f.client.status, 'reconnecting');
+  await f.client.join();
+  assert.equal(fresh, 1); assert.equal(f.client.status, 'connected');
+  assert.equal(f.client.getState().roomId, 'replacement'); assert.deepEqual(f.ejections, []);
+});
+
+test('SDK retry exhaustion preserves a valid token and an open game reservation', async context => {
+  const storage = recoveryStorage(context), f = await fixture(context); f.client.leave();
+  await f.client.join(undefined, false, 'alice');
+  const resumed = new TransportRoom(); let token = '';
+  (f.client as any).client = { reconnect: async (value: string) => { token = value; return resumed; },
+    joinById: async () => { throw Error('Must resume the reserved player'); } };
+  f.room.finalLeave(4003);
+  assert(storage.size > 0, 'Exhausted SDK retries do not prove that the server reservation expired');
+  await f.client.join();
+  assert.equal(token, 'test-room:test-token'); assert.equal(f.client.status, 'connected');
+  assert.equal(resumed.packets.filter(p => p.type === 'playing' && p.value === false).length, 0);
+});
+
+test('a game closed during replacement handshake releases its recovered reservation once', async context => {
+  recoveryStorage(context); const f = await fixture(context); f.client.leave();
+  await f.client.join(undefined, false, 'alice');
+  let resolve!: (room: TransportRoom) => void;
+  (f.client as any).client = { reconnect: () => new Promise(done => { resolve = done; }) };
+  f.room.finalLeave(4003); f.client.releaseCabinet();
+  const resumed = new TransportRoom(); resolve(resumed); await f.client.join();
+  assert.equal(resumed.packets.filter(p => p.type === 'playing' && p.value === false).length, 1);
+});
+
+test('recovery stops on a revoked login or a real server ban', async context => {
+  for (const code of [401, 403]) {
+    const f = await fixture(context); let calls = 0;
+    (f.client as any).client = { joinById: async () => { calls++; throw Object.assign(new Error('Access denied'), { code }); } };
+    f.room.finalLeave(4001); await (f.client as any).recovery;
+    assert.equal(calls, 1); assert.equal(f.client.status, 'disconnected'); assert.deepEqual(f.ejections, []);
+  }
+});
+
+test('leaving during automatic recovery discards a late room and never rejoins', async context => {
+  const f = await fixture(context); let resolve!: (room: TransportRoom) => void;
+  (f.client as any).client = { joinById: () => new Promise(done => { resolve = done; }) };
+  f.room.finalLeave(4001); const recovery = (f.client as any).recovery;
+  f.client.leave(); const late = new TransportRoom(); resolve(late); await recovery;
+  assert.equal(late.left, 1); assert.equal(f.client.status, 'disconnected');
+  assert.equal(f.client.getState().roomId, undefined);
+});
+
+test('leaving while a failed recovery waits cancels the pending retry', async context => {
+  context.mock.timers.enable({ apis: ['setTimeout'] });
+  const f = await fixture(context); let calls = 0;
+  (f.client as any).client = { joinById: async () => { calls++; throw Object.assign(new Error('Temporarily unavailable'), { code: 503 }); } };
+  f.room.finalLeave(4001); const recovery = (f.client as any).recovery;
+  for (let i = 0; i < 20 && !(f.client as any).recoveryWait; i++) await Promise.resolve();
+  assert((f.client as any).recoveryWait); f.client.leave();
+  context.mock.timers.tick(10000); await recovery;
+  assert.equal(calls, 1); assert.equal(f.client.status, 'disconnected');
+});
+
+test('temporary server unavailability retries without exposing a final disconnected state', async context => {
+  context.mock.timers.enable({ apis: ['setTimeout'] });
+  const f = await fixture(context), replacement = new TransportRoom(); let calls = 0;
+  (f.client as any).client = { joinById: async () => { if (++calls === 1) throw Object.assign(new Error('Starting'), { code: 503 }); return replacement; } };
+  f.room.finalLeave(4001); const recovery = (f.client as any).recovery;
+  for (let i = 0; i < 20 && !(f.client as any).recoveryWait; i++) await Promise.resolve();
+  assert((f.client as any).recoveryWait); context.mock.timers.tick(3000); await recovery;
+  assert.equal(calls, 2); assert.equal(f.client.status, 'connected');
+  assert(!f.statuses.some(row => row.status === 'disconnected'));
 });

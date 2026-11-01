@@ -1,3 +1,4 @@
+import { LOBBY_RECONNECT_GRACE_SECONDS } from '../src/shared/lobbyConnection';
 import { CommonCombatWallet } from './commonCombatWallet';
 import { virtualPvpCommand } from './pvp/virtual-service';
 import { serializeAppearance } from '../src/shared/appearance';
@@ -393,7 +394,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     return auth;
   }
   async onJoin(client: Client, options: unknown, auth: RoomAuth) {
-    const duplicate = () => new ServerError(409, 'Этот аккаунт уже находится в зале. Закрой другую вкладку или подожди 20 секунд.');
+    const duplicate = () => new ServerError(409, 'Этот аккаунт уже находится в зале. Закрой другую вкладку и попробуй снова.');
     // Dropped clients leave this.clients before their reserved player is removed.
     if (this.joiningAccounts.has(auth.account.id) || [...this.playerAccounts.values()].includes(auth.account.id)) throw duplicate();
     this.joiningAccounts.add(auth.account.id);
@@ -426,7 +427,8 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     } catch (error) { if (this.access.get(client.sessionId) === access) this.access.delete(client.sessionId); throw error; }
     finally { this.joiningAccounts.delete(auth.account.id); }
   }
-  onDrop(client: Client) {
+  onDrop(client: Client, code?: number) {
+    console.info(JSON.stringify({ event: 'lobby-connection', phase: 'drop', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));
     this.cancelChat(client);
     this.activities.disconnect(client.sessionId);
     this.stop(client.sessionId);
@@ -435,7 +437,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.pvp.dropped(client.sessionId);
     if (!p || !this.accessAllowed(client)) return;
     // Refused joins, expired reservations and shutdown must not reject outside the room lifecycle.
-    void this.allowReconnection(client, this.pvp.locked(client.sessionId)?60:20).catch(() => {});
+    void this.allowReconnection(client, this.pvp.locked(client.sessionId)?60:LOBBY_RECONNECT_GRACE_SECONDS).catch(() => {});
   }
   onDispose() {
     this.pvp.stop();
@@ -463,6 +465,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (auth.account.skin === null) { client.leave(4001); return; }
       p.name = auth.account.name; p.skin = auth.account.skin; p.appearance = serializeAppearance(auth.account.appearance);
       p.connected = true;this.activities.reconnect(client.sessionId);
+      console.info(JSON.stringify({ event: 'lobby-connection', phase: 'reconnected', uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));
       const control = this.controls.get(client.sessionId);
       client.send('chat-check', Boolean(control && this.chatPending.get(control)));
       if (control) for (const result of this.chatResults.get(control)?.values() ?? []) if (result.status !== 'queued') client.send('chat-result', result);
@@ -476,7 +479,8 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       appearance: captured.appearance === access.profileRevision.appearance ? profile.appearance : auth.account.appearance,
     };
   }
-  onLeave(client: Client) {
+  onLeave(client: Client, code?: number) {
+    console.info(JSON.stringify({ event: 'lobby-connection', phase: 'left', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));
     this.cancelChat(client);
     const chatControl = this.controls.get(client.sessionId);
     if (chatControl) { this.chatPending.delete(chatControl); this.chatResults.delete(chatControl); }

@@ -4040,6 +4040,7 @@ export const english: Record<string, string> = {
   "Выбор образа не подтверждён.": "Look selection not confirmed.",
   "Не удалось сменить образ.": "Could not change the look.",
   "Этот аккаунт уже находится в зале. Закрой другую вкладку или подожди 20 секунд.": "This account is already in the hall. Close the other tab or wait 20 seconds.",
+  "Этот аккаунт уже находится в зале. Закрой другую вкладку и попробуй снова.": "This account is already in the hall. Close the other tab and try again.",
   "Некорректный выбор образа.": "Invalid look selection.",
   "Заверши фотосессию, чтобы сменить героиню или образ.": "Finish the photo shoot to change character or look.",
   "Образ уже изменился. Обнови альбом.": "The look already changed. Refresh the album.",
