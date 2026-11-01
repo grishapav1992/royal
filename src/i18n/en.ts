@@ -4,6 +4,9 @@ import { progressionEnglish } from './progressionEn';
 export const english: Record<string, string> = {
   'ЛИФТ': 'ELEVATOR',
   'Лифт': 'Elevator',
+  'Туалет': 'Restroom',
+  'ТУАЛЕТ · ЭТАЖ 3': 'RESTROOM · FLOOR 3',
+  'РАКОВИНЫ': 'WASHBASINS',
   'Выйти из лифта': 'Leave the elevator',
   'Подойти к лифту': 'Walk to the elevator',
   'Выбери этаж': 'Choose a floor',

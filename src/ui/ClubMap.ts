@@ -7,6 +7,7 @@ import { HALLS, hallLinks } from '../shared/world';
 import { elevatorDock } from '../shared/elevator';
 import { cabinetsInHall } from '../shared/cabinets';
 import { isCardGame } from '../shared/cardTables';
+import { RESTROOM, RESTROOM_OBSTACLES } from '../shared/restroom';
 import { WORLD, FLOOR } from '../shared/clubGeometry';
 import './club-map.css';
 
@@ -29,11 +30,11 @@ export class ClubMap {
     const timer=window.setInterval(update,200);scene.events.once('shutdown',()=>{clearInterval(timer);this.root.remove();});update();
   }
   private draw(){
-    const state=this.scene.getState(),size=state.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
+    const state=this.scene.getState(),size=state.hall==='restroom'?RESTROOM.size:state.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
     const height=Math.round(this.canvas.width*size.height/size.width);
     if(this.canvas.height!==height)this.canvas.height=height;
     const ctx=this.canvas.getContext('2d')!,sx=this.canvas.width/size.width,sy=this.canvas.height/size.height;
-    const definition=HALLS[state.hall];this.title.textContent=translateText('Этаж ')+definition.floor+' · '+definition.number;
+    const definition=HALLS[state.hall];this.title.textContent=translateText('Этаж ')+definition.floor+' · '+(state.hall==='restroom'?definition.name:definition.number);
     ctx.clearRect(0,0,this.canvas.width,this.canvas.height);ctx.save();ctx.scale(sx,sy);
     ctx.fillStyle='#202b33';ctx.fillRect(0,0,WORLD.width,WORLD.height);
     ctx.fillStyle='#5c5145';ctx.fillRect(FLOOR.x,FLOOR.y,FLOOR.width,FLOOR.height);
@@ -53,6 +54,7 @@ export class ClubMap {
       }else{ctx.fillStyle=({royal:'#86d2e5',github:'#a1d9b8',casinoapipro:'#e4ca8c',luelon:'#cfafe4'} as Record<string,string>)[cabinet.collection??'']??'#e4ca8c';ctx.fillRect(cabinet.x-28,cabinet.y-35,56,45);}
     }
     if(state.hall==='github'){
+      ctx.font='bold 40px Arial';ctx.textAlign='center';ctx.fillStyle='#e4d5a9';ctx.fillText('WC',RESTROOM.entrance.entry.x,RESTROOM.entrance.entry.y+65);
       ctx.font='bold 64px Arial';ctx.textAlign='center';ctx.fillStyle='#d6e6ed';ctx.fillText(translateText('КАРТОЧНЫЙ САЛОН'),2500,838);
     }
     if(state.hall==='arcade'){
@@ -62,7 +64,12 @@ export class ClubMap {
       }
     }
     for(const link of hallLinks(state.hall)){ctx.fillStyle='#73d4ca';ctx.fillRect(link.door.entry.x-35,link.door.entry.y-12,70,24);}
-    const lift=elevatorDock(state.hall);ctx.fillStyle='#e2c17c';ctx.fillRect(lift.entry.x-40,lift.entry.y-20,80,40);
+    if(state.hall==='restroom'){
+      ctx.fillStyle='#476b5c';
+      for(const obstacle of RESTROOM_OBSTACLES)ctx.fillRect(obstacle.x,obstacle.y,obstacle.w,obstacle.h);
+    }else{
+      const lift=elevatorDock(state.hall);ctx.fillStyle='#e2c17c';ctx.fillRect(lift.entry.x-40,lift.entry.y-20,80,40);
+    }
     for(const guest of state.guests){ctx.fillStyle='#8da49b';ctx.beginPath();ctx.arc(guest.x,guest.y,10,0,Math.PI*2);ctx.fill();}
     const view=state.view;ctx.strokeStyle='#ece2c280';ctx.lineWidth=6;ctx.strokeRect(view.x,view.y,view.width/view.zoom,view.height/view.zoom);
     ctx.fillStyle='#f7d26a';ctx.beginPath();ctx.arc(state.x,state.y,18,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#332936';ctx.lineWidth=5;ctx.stroke();ctx.restore();

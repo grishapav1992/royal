@@ -5,6 +5,7 @@ import type { HallId } from '../src/shared/world';
 
 export type GuardStop = { id: string; x: number; y: number; facing: Facing; activity: 'chat' | 'window' | 'inspect' | 'watch' };
 export const GUARD_STOPS: Record<HallId, GuardStop[]> = {
+  restroom: [{ id:'restroom-exit', x:900, y:900, facing:'down', activity:'watch' }],
   github: [
     { id:'cards', x:650, y:405, facing:'up', activity:'inspect' },
     { id:'dice', x:1480, y:875, facing:'up', activity:'watch' },

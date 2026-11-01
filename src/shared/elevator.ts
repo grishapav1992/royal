@@ -1,8 +1,8 @@
-import { HALLS, HALL_DOORS, type HallId } from './world';
+import { FLOOR_HALLS, HALL_DOORS, type HallId } from './world';
 
-/** Both the picker and scene creation follow the hall registry, including future floors. */
+/** Rooms inside a floor are reached through their doorway, not the elevator. */
 export function elevatorFloors() {
-  return (Object.keys(HALLS) as HallId[]).sort((a, b) => HALLS[a].floor - HALLS[b].floor);
+  return [...FLOOR_HALLS];
 }
 
 /** A dock beside the existing staircase, with a separate approach and safe exit. */
@@ -18,7 +18,7 @@ export function elevatorDock(hall: HallId) {
 }
 
 export function atElevator(player: { hall: string; x: number; y: number }) {
-  if (!Object.hasOwn(HALLS, player.hall)) return false;
+  if (!elevatorFloors().some(hall => hall === player.hall)) return false;
   const { entry } = elevatorDock(player.hall as HallId);
   return Math.hypot(player.x - entry.x, player.y - entry.y) <= 44;
 }
@@ -29,7 +29,7 @@ export function canTravelByElevator(player: {
   hall: string; x: number; y: number; connected?: boolean; playing?: boolean;
   security?: string; seat?: string; cabinet?: string; activity?: string; action?: string;
 }, target: unknown): target is HallId {
-  return typeof target === 'string' && Object.hasOwn(HALLS, target) && target !== player.hall
+  return typeof target === 'string' && elevatorFloors().some(hall => hall === target) && target !== player.hall
     && player.connected !== false && !player.security && !player.playing && !player.cabinet
     && !player.activity && !player.seat && player.action !== 'drink' && atElevator(player);
 }

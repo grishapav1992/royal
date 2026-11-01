@@ -374,6 +374,8 @@ document.addEventListener(GAME_REACTION_EVENT, event => {
   if (reaction === 'win' || reaction === 'lose') room.reactToGame(reaction);
 });
 function updateHall(hall:HallId){
+  const elevatorShortcut=document.querySelector<HTMLElement>('#elevator-shortcut');
+  if(elevatorShortcut)elevatorShortcut.hidden=hall==='restroom';
   document.querySelector('h1')!.innerHTML=HALLS[hall].name+' <span>'+HALLS[hall].number+'</span>';
   document.querySelectorAll<HTMLElement>('[data-activity]').forEach(b=>b.hidden=b.dataset.activity==='piano'||activityHall(b.dataset.activity!)!==hall);
   const sharedCards=document.querySelector<HTMLElement>('.shared-cards');if(sharedCards)sharedCards.hidden=hall!=='tables'&&hall!=='github';
@@ -381,6 +383,7 @@ function updateHall(hall:HallId){
   $('#card-tables-catalog').hidden=hall!=='github';
   $('#floor-links').innerHTML=hallLinks(hall).map(link=>{
     const target=HALLS[link.target];
+    if(target.floor===HALLS[hall].floor)return `<button type="button" data-floor-target="${link.target}" aria-label="${target.name}"><span aria-hidden="true">↪</span> ${target.name}</button>`;
     return tr`<button type="button" data-floor-target="${link.target}" aria-label="На ${target.floor} этаж: ${target.name}"><span aria-hidden="true">${target.floor>HALLS[hall].floor?'↑':'↓'}</span> Этаж ${target.floor}</button>`;
   }).join('');
   document.querySelectorAll<HTMLElement>('[data-cabinet]').forEach(card=>card.hidden=card.dataset.hall!==hall);

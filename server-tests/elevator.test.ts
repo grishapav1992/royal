@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { HALLS, hallLinks, hallObstacles, type HallId } from '../src/shared/world';
+import { HALLS, FLOOR_HALLS, hallLinks, hallObstacles, type HallId } from '../src/shared/world';
 import { atElevator, canTravelByElevator, elevatorDock, elevatorFloors } from '../src/shared/elevator';
 import { findPath, walkable } from '../src/game/navigation';
 import { LobbyRoom } from '../server/LobbyRoom';
@@ -8,7 +8,7 @@ import { accounts } from '../server/accounts';
 
 test('every registered floor has a reachable independent elevator approach and exit', () => {
   const floors = elevatorFloors();
-  assert.deepEqual(new Set(floors), new Set(Object.keys(HALLS)));
+  assert.deepEqual(new Set(floors), new Set(FLOOR_HALLS));
   assert.deepEqual(floors.map(hall => HALLS[hall].floor), [...floors.map(hall => HALLS[hall].floor)].sort((a, b) => a - b));
   for (const hall of floors) {
     const dock = elevatorDock(hall), obstacles = hallObstacles(hall);
@@ -54,7 +54,7 @@ test('server authorizes direct travel, rejects stale/remote/busy commands and ke
     const originalOther = { hall: other.hall, x: other.x, y: other.y, revision: other.hallRevision };
     assert.equal((await travel('github')).accepted, false, 'cannot summon travel from the middle of the room');
     Object.assign(p, elevatorDock('arcade').entry);
-    for (const target of ['missing', '__proto__', '', 3, null, 'arcade']) assert.equal((await travel(target)).accepted, false);
+    for (const target of ['missing', '__proto__', '', 3, null, 'arcade', 'restroom']) assert.equal((await travel(target)).accepted, false);
     for (const state of [{ connected: false }, { security: 'ejecting' }]) {
       const saved = Object.fromEntries(Object.keys(state).map(key => [key, (p as any)[key]]));
       Object.assign(p, state);await travel('github');assert.equal(p.hall, 'arcade');Object.assign(p, saved);

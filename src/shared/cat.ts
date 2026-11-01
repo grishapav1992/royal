@@ -1,6 +1,6 @@
 import { CAT_HOME } from './catHome';
 import { CAT_CARE } from './catCare';
-import { hallLinks, hallObstacles, HALLS, type HallId } from './world';
+import { hallLinks, hallRoute, hallObstacles, HALLS, type HallId } from './world';
 import { findPath, walkable, type Point } from '../game/navigation';
 import { movementFacing, type Facing } from './movement';
 import { catSurface, canCatUseSurface, type CatSurface } from './catSurfaces';
@@ -101,8 +101,7 @@ export class CatRoutine {
     this.transition = undefined;
     let point: Point = destination;
     if (destination.hall !== this.view.hall) {
-      const links = hallLinks(this.view.hall);
-      this.transition = links.find(link => link.target === destination.hall) ?? links[0];
+      this.transition = hallRoute(this.view.hall, destination.hall)!;
       point = this.transition.door.entry;
     }
     this.path = findPath(this.view, point, hallObstacles(this.view.hall));
