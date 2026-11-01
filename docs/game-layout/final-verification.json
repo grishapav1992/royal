@@ -1,0 +1,824 @@
+{
+  "date": "2026-11-01",
+  "verifiedSourceCommit": "2cfe61130c7d16b1d305f8f4f9d147c09344ebeb",
+  "applicationBuildCommit": "2cfe61130c7d16b1d305f8f4f9d147c09344ebeb",
+  "applicationSourcesIdentical": true,
+  "integrationBaseline": "e43676becdf0b1a8eb51f7169f228835f837cd4f",
+  "branch": "feature/game-layout-priorities-plan",
+  "productionPublished": false,
+  "activeCatalogueChanged": false,
+  "activeGameCount": 18,
+  "realConnectedHost": true,
+  "mathChanged": false,
+  "viewportSizes": [
+    [
+      1440,
+      900
+    ],
+    [
+      1280,
+      720
+    ],
+    [
+      768,
+      1024
+    ],
+    [
+      1024,
+      768
+    ],
+    [
+      393,
+      852
+    ],
+    [
+      852,
+      393
+    ],
+    [
+      320,
+      568
+    ],
+    [
+      568,
+      320
+    ]
+  ],
+  "browsers": {
+    "chromium": {
+      "initial": {
+        "stats": {
+          "startTime": "2026-11-01T16:31:52.571Z",
+          "duration": 108635.798,
+          "expected": 6,
+          "skipped": 3,
+          "unexpected": 1,
+          "flaky": 0
+        },
+        "cases": [
+          {
+            "title": "field and essential actions without scrolling: royal-roulette",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "field and essential actions without scrolling: github-crash",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "field and essential actions without scrolling: original-cr-vs-leo",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "field and essential actions without scrolling: original-jackie-chan",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "settings, paid round, reopen and lost response: royal-roulette",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "settings, paid round, reopen and lost response: github-crash",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "settings, paid round, reopen and lost response: original-cr-vs-leo",
+            "status": "unexpected",
+            "attempts": [
+              "failed"
+            ]
+          },
+          {
+            "title": "settings, paid round, reopen and lost response: original-jackie-chan",
+            "status": "skipped",
+            "attempts": []
+          },
+          {
+            "title": "free series choices, cashout and collections survive rotation",
+            "status": "skipped",
+            "attempts": []
+          },
+          {
+            "title": "moving wheel, chase, shot and fight remain visible through both orientations",
+            "status": "skipped",
+            "attempts": []
+          }
+        ]
+      },
+      "continuation": {
+        "stats": {
+          "startTime": "2026-11-01T16:35:31.652Z",
+          "duration": 114829.202,
+          "expected": 4,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "cases": [
+          {
+            "title": "settings, paid round, reopen and lost response: original-cr-vs-leo",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "settings, paid round, reopen and lost response: original-jackie-chan",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "free series choices, cashout and collections survive rotation",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "moving wheel, chase, shot and fight remain visible through both orientations",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          }
+        ]
+      },
+      "successfulDistinctScenarios": 10,
+      "singleCleanFullRun": false,
+      "initialFailure": "The retained Leo assertion matched the canvas and the button. Test selector narrowed; application unchanged.",
+      "finalPanel": {
+        "stats": {
+          "startTime": "2026-11-01T16:45:20.660Z",
+          "duration": 27549.327,
+          "expected": 1,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "cases": [
+          {
+            "title": "settings, paid round, reopen and lost response: royal-roulette",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          }
+        ]
+      }
+    },
+    "webkit": {
+      "initial": {
+        "stats": {
+          "startTime": "2026-11-01T16:31:52.572Z",
+          "duration": 206522.952,
+          "expected": 6,
+          "skipped": 3,
+          "unexpected": 1,
+          "flaky": 0
+        },
+        "cases": [
+          {
+            "title": "field and essential actions without scrolling: royal-roulette",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "field and essential actions without scrolling: github-crash",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "field and essential actions without scrolling: original-cr-vs-leo",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "field and essential actions without scrolling: original-jackie-chan",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "settings, paid round, reopen and lost response: royal-roulette",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "settings, paid round, reopen and lost response: github-crash",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "settings, paid round, reopen and lost response: original-cr-vs-leo",
+            "status": "unexpected",
+            "attempts": [
+              "failed"
+            ]
+          },
+          {
+            "title": "settings, paid round, reopen and lost response: original-jackie-chan",
+            "status": "skipped",
+            "attempts": []
+          },
+          {
+            "title": "free series choices, cashout and collections survive rotation",
+            "status": "skipped",
+            "attempts": []
+          },
+          {
+            "title": "moving wheel, chase, shot and fight remain visible through both orientations",
+            "status": "skipped",
+            "attempts": []
+          }
+        ]
+      },
+      "continuation": {
+        "stats": {
+          "startTime": "2026-11-01T16:37:01.881Z",
+          "duration": 178487.638,
+          "expected": 4,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "cases": [
+          {
+            "title": "settings, paid round, reopen and lost response: original-cr-vs-leo",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "settings, paid round, reopen and lost response: original-jackie-chan",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "free series choices, cashout and collections survive rotation",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          },
+          {
+            "title": "moving wheel, chase, shot and fight remain visible through both orientations",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          }
+        ]
+      },
+      "successfulDistinctScenarios": 10,
+      "singleCleanFullRun": false,
+      "initialFailure": "The retained Leo assertion matched the canvas and the button. Test selector narrowed; application unchanged.",
+      "finalPanelInitial": {
+        "stats": {
+          "startTime": "2026-11-01T16:45:20.670Z",
+          "duration": 100540.799,
+          "expected": 0,
+          "skipped": 0,
+          "unexpected": 1,
+          "flaky": 0
+        },
+        "cases": [
+          {
+            "title": "settings, paid round, reopen and lost response: royal-roulette",
+            "status": "unexpected",
+            "attempts": [
+              "failed"
+            ]
+          }
+        ]
+      },
+      "finalPanel": {
+        "stats": {
+          "startTime": "2026-11-01T16:49:35.754Z",
+          "duration": 92881.097,
+          "expected": 1,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "cases": [
+          {
+            "title": "settings, paid round, reopen and lost response: royal-roulette",
+            "status": "expected",
+            "attempts": [
+              "passed"
+            ]
+          }
+        ]
+      },
+      "finalPanelInitialFailure": "After rapid viewport changes and native selection, the driver did not observe a start request. The driver now verifies settled phone geometry before its single start click. Repeat passed; no second click was added."
+    }
+  },
+  "walletAndCompatibility": {
+    "passed": 35,
+    "failed": 0
+  },
+  "independentModules": {
+    "passed": 7,
+    "failed": 0,
+    "activeManifests": 124
+  },
+  "rtp": {
+    "verified": 37,
+    "stakePoliciesVerified": 19,
+    "stakeAdmissionVerified": 19,
+    "legacyNotQualified": 114
+  },
+  "geometry": {
+    "royal-roulette": [
+      {
+        "width": 1440,
+        "height": 900,
+        "field": {
+          "x": 37.125,
+          "y": 179,
+          "width": 440,
+          "height": 440
+        }
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "field": {
+          "x": 81.265625,
+          "y": 179,
+          "width": 296,
+          "height": 296
+        }
+      },
+      {
+        "width": 768,
+        "height": 1024,
+        "field": {
+          "x": 29.5,
+          "y": 105,
+          "width": 709,
+          "height": 709
+        }
+      },
+      {
+        "width": 1024,
+        "height": 768,
+        "field": {
+          "x": 65.9375,
+          "y": 179,
+          "width": 344,
+          "height": 344
+        }
+      },
+      {
+        "width": 393,
+        "height": 852,
+        "field": {
+          "x": 8,
+          "y": 185,
+          "width": 377,
+          "height": 377
+        }
+      },
+      {
+        "width": 852,
+        "height": 393,
+        "field": {
+          "x": 180.5,
+          "y": 61,
+          "width": 279,
+          "height": 279
+        }
+      },
+      {
+        "width": 320,
+        "height": 568,
+        "field": {
+          "x": 33.5,
+          "y": 105,
+          "width": 253,
+          "height": 253
+        }
+      },
+      {
+        "width": 568,
+        "height": 320,
+        "field": {
+          "x": 75,
+          "y": 61,
+          "width": 206,
+          "height": 206
+        }
+      }
+    ],
+    "github-crash": [
+      {
+        "width": 1440,
+        "height": 900,
+        "field": {
+          "x": 4,
+          "y": 52,
+          "width": 1100.8125,
+          "height": 691
+        }
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "field": {
+          "x": 4,
+          "y": 52,
+          "width": 977.609375,
+          "height": 511
+        }
+      },
+      {
+        "width": 768,
+        "height": 1024,
+        "field": {
+          "x": 4,
+          "y": 52,
+          "width": 760,
+          "height": 843
+        }
+      },
+      {
+        "width": 1024,
+        "height": 768,
+        "field": {
+          "x": 4,
+          "y": 52,
+          "width": 1016,
+          "height": 559
+        }
+      },
+      {
+        "width": 393,
+        "height": 852,
+        "field": {
+          "x": 4,
+          "y": 52,
+          "width": 385,
+          "height": 674
+        }
+      },
+      {
+        "width": 852,
+        "height": 393,
+        "field": {
+          "x": 4,
+          "y": 52,
+          "width": 642,
+          "height": 337
+        }
+      },
+      {
+        "width": 320,
+        "height": 568,
+        "field": {
+          "x": 4,
+          "y": 52,
+          "width": 312,
+          "height": 390
+        }
+      },
+      {
+        "width": 568,
+        "height": 320,
+        "field": {
+          "x": 4,
+          "y": 52,
+          "width": 358,
+          "height": 264
+        }
+      }
+    ],
+    "original-cr-vs-leo": [
+      {
+        "width": 1440,
+        "height": 900,
+        "field": {
+          "x": 3,
+          "y": 105,
+          "width": 1102.8125,
+          "height": 595
+        }
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "field": {
+          "x": 3,
+          "y": 105,
+          "width": 979.609375,
+          "height": 415
+        }
+      },
+      {
+        "width": 768,
+        "height": 1024,
+        "field": {
+          "x": 3,
+          "y": 51,
+          "width": 762,
+          "height": 762
+        }
+      },
+      {
+        "width": 1024,
+        "height": 768,
+        "field": {
+          "x": 3,
+          "y": 105,
+          "width": 1018,
+          "height": 463
+        }
+      },
+      {
+        "width": 393,
+        "height": 852,
+        "field": {
+          "x": 3,
+          "y": 51,
+          "width": 387,
+          "height": 590
+        }
+      },
+      {
+        "width": 852,
+        "height": 393,
+        "field": {
+          "x": 3,
+          "y": 51,
+          "width": 640,
+          "height": 285
+        }
+      },
+      {
+        "width": 320,
+        "height": 568,
+        "field": {
+          "x": 3,
+          "y": 51,
+          "width": 314,
+          "height": 306
+        }
+      },
+      {
+        "width": 568,
+        "height": 320,
+        "field": {
+          "x": 3,
+          "y": 51,
+          "width": 356,
+          "height": 212
+        }
+      }
+    ],
+    "original-jackie-chan": [
+      {
+        "width": 1440,
+        "height": 900,
+        "field": {
+          "x": 4,
+          "y": 141,
+          "width": 781.578125,
+          "height": 708
+        }
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "field": {
+          "x": 4,
+          "y": 140.25,
+          "width": 694.109375,
+          "height": 528.75
+        }
+      },
+      {
+        "width": 768,
+        "height": 1024,
+        "field": {
+          "x": 4,
+          "y": 52,
+          "width": 760,
+          "height": 749
+        }
+      },
+      {
+        "width": 1024,
+        "height": 768,
+        "field": {
+          "x": 4,
+          "y": 141,
+          "width": 721.375,
+          "height": 576
+        }
+      },
+      {
+        "width": 393,
+        "height": 852,
+        "field": {
+          "x": 4,
+          "y": 52,
+          "width": 385,
+          "height": 576
+        }
+      },
+      {
+        "width": 852,
+        "height": 393,
+        "field": {
+          "x": 4,
+          "y": 52,
+          "width": 640,
+          "height": 309
+        }
+      },
+      {
+        "width": 320,
+        "height": 568,
+        "field": {
+          "x": 4,
+          "y": 52,
+          "width": 312,
+          "height": 292
+        }
+      },
+      {
+        "width": 568,
+        "height": 320,
+        "field": {
+          "x": 4,
+          "y": 52,
+          "width": 356,
+          "height": 236
+        }
+      }
+    ]
+  },
+  "packages": {
+    "royal-roulette": {
+      "format": 1,
+      "gameId": "royal-roulette",
+      "manifest": "/game-modules/royal-roulette/versions/1.6.0-5afa1194db90/manifest.json",
+      "sha256": "b4e50f5487a42cb198dc0d12f831dd923539ba2246a54f9cc396c19422d5836d"
+    },
+    "github-crash": {
+      "format": 1,
+      "gameId": "github-crash",
+      "manifest": "/game-modules/github-crash/versions/1.1.0-41704804ea76/manifest.json",
+      "sha256": "a686c82c9bb0132ea03257421945c5b48ea407d4e3b3bf0538d7e320b90d78fb"
+    },
+    "original-cr-vs-leo": {
+      "format": 1,
+      "gameId": "original-cr-vs-leo",
+      "manifest": "/game-modules/original-cr-vs-leo/versions/1.1.0-79a6657c2019/manifest.json",
+      "sha256": "4df21d3b71834d65e4dae0567121c0da2158eb7e59dc0428b6b4d05b2ab6a158"
+    },
+    "original-jackie-chan": {
+      "format": 1,
+      "gameId": "original-jackie-chan",
+      "manifest": "/game-modules/original-jackie-chan/versions/1.2.0-1a9922bc1fa1/manifest.json",
+      "sha256": "4292fae0780413a3ba665a5139ff1b658ff7b83307bccd686142020f7d246377"
+    }
+  },
+  "beforeLandscape852x393": {
+    "royal-roulette": [
+      130,
+      130
+    ],
+    "github-crash": [
+      844,
+      179
+    ],
+    "original-cr-vs-leo": [
+      846,
+      123
+    ],
+    "original-jackie-chan": [
+      599,
+      243
+    ]
+  },
+  "resolvedIssues": [
+    "Compact CSS specificity overrode landscape placements; profiles now have matching specificity.",
+    "Jackie active controls and pending recovery exceeded the small landscape console; recovery has a dedicated row and disabled fight controls yield to retry while pending.",
+    "The initial roulette test listened to /api/demo-wallet instead of the actual operations endpoint.",
+    "The retained Leo test selector matched both canvas and button; it now targets the button.",
+    "Roulette retained its old table display:contents inside the options dialog. The panel now owns one normal table block with responsive number columns and controls at least 44x44."
+  ],
+  "naturalSeriesSeed": 2,
+  "physicalDevicesTested": false,
+  "listeningPerformed": false,
+  "initialFreeBytes": 328649969664,
+  "standStopped": true,
+  "portsClosed": [
+    5468,
+    2968
+  ],
+  "applicationBuild": {
+    "format": 1,
+    "startedAt": "2026-11-01T16:51:09.621Z",
+    "scope": "application",
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 6750
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 11977
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 10096
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 9493
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 109
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 31
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 118
+      }
+    ],
+    "passed": true,
+    "durationMs": 38575
+  },
+  "retainedScreenshots": 19,
+  "screenshotBytes": 8741049,
+  "temporaryDatabases": [
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-9vd3lp",
+      "removed": true
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-QGtZre",
+      "removed": true
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-zduKdF",
+      "removed": true
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-F6dNoR",
+      "removed": true
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-D8zylU",
+      "removed": true
+    }
+  ],
+  "commonBrowserApplicationCommit": "8dd3f6f6f4d87a124702fbe8bfa6025eb5532887",
+  "finalPanelChange": "Only Roulette option-panel CSS and native select color-scheme changed after common browser coverage. The complete paid/recovery scenario, all choices at least 44x44 and panel width were checked again across both phone orientations."
+}

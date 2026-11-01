@@ -62,7 +62,7 @@
 
 ## Покрытие
 
-Эта группа продолжает пилот Caribbean и первую группу: Неополис, Plinko, Флажочки. Dracona, Forest Heart и Flooded Temple реализованы следующей группой: [отчет об iframe](game-layout-iframes-verification.md). Отдельными группами остаются компоновка Royal Roulette и подробные сценарии LAST EXIT, CR vs Leo и Jackie Chan. Готовность семи слотов не означает готовность всего каталога.
+Эта группа продолжает пилот Caribbean и первую группу: Неополис, Plinko, Флажочки. Dracona, Forest Heart и Flooded Temple реализованы следующей группой: [отчет об iframe](game-layout-iframes-verification.md). Royal Roulette, LAST EXIT, CR vs Leo и Jackie Chan реализованы [заключительной группой](game-layout-final-verification.md). Покрытие семи слотов описывает эту группу; результаты остальных игр приведены отдельно.
 
 Изменения сохраняются в feature-ветке. На production эта группа не опубликована.
 
