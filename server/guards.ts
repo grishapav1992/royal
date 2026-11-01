@@ -18,7 +18,7 @@ export class Guards {
     // The map key identifies the person, while hall changes only at a doorway.
     state.guards.set('security', guard);
     this.duties.push({ guard, queue: [], path: [], elapsed: 0,
-      stops:{restroom:[...GUARD_STOPS.restroom],arcade:[...GUARD_STOPS.arcade],tables:[...GUARD_STOPS.tables],github:[...GUARD_STOPS.github]}, remaining:3,
+      stops:{'restroom-balcony':[...GUARD_STOPS['restroom-balcony']],restroom:[...GUARD_STOPS.restroom],arcade:[...GUARD_STOPS.arcade],tables:[...GUARD_STOPS.tables],github:[...GUARD_STOPS.github]}, remaining:3,
       duration:0, conversation:0, lastConversation:-1 });
   }
 

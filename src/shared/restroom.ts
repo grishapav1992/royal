@@ -10,6 +10,25 @@ export const RESTROOM = {
   sinks: [370, 570, 770],
 } as const;
 
+export const RESTROOM_WINDOW = {
+  entry: { x: 1040, y: 240 }, arrival: { x: 1040, y: 320 }, facing: 'down',
+  click: { x: 1040, y: 95 }, left: 1008, right: 1072, top: 225, bottom: 247,
+} as const;
+
+export const RESTROOM_BALCONY = {
+  size: { width: 1440, height: 760 },
+  bounds: { left: 70, right: 1370, top: 225, bottom: 620 },
+  window: RESTROOM_WINDOW,
+} as const;
+
+export const restroomFrame = (hall: string) => hall === 'restroom' ? RESTROOM.size : hall === 'restroom-balcony' ? RESTROOM_BALCONY.size : undefined;
+export const isRestroomLocation = (hall: string) => Boolean(restroomFrame(hall));
+
+export const RESTROOM_BALCONY_OBSTACLES: Obstacle[] = [
+  { x: RESTROOM_BALCONY.bounds.right + 16, y: 175, w: WORLD.width, h: WORLD.height },
+  { x: 55, y: RESTROOM_BALCONY.bounds.bottom + 16, w: WORLD.width, h: WORLD.height },
+];
+
 // The client and server use the same walls, partitions and fixture collisions.
 export const RESTROOM_OBSTACLES: Obstacle[] = [
   { x: RESTROOM.bounds.right + 16, y: 175, w: WORLD.width, h: WORLD.height },

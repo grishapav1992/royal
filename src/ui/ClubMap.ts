@@ -7,7 +7,7 @@ import { HALLS, hallLinks } from '../shared/world';
 import { elevatorDock } from '../shared/elevator';
 import { cabinetsInHall } from '../shared/cabinets';
 import { isCardGame } from '../shared/cardTables';
-import { RESTROOM, RESTROOM_OBSTACLES } from '../shared/restroom';
+import { RESTROOM, RESTROOM_OBSTACLES, RESTROOM_BALCONY_OBSTACLES, restroomFrame, isRestroomLocation } from '../shared/restroom';
 import { WORLD, FLOOR } from '../shared/clubGeometry';
 import './club-map.css';
 
@@ -30,11 +30,11 @@ export class ClubMap {
     const timer=window.setInterval(update,200);scene.events.once('shutdown',()=>{clearInterval(timer);this.root.remove();});update();
   }
   private draw(){
-    const state=this.scene.getState(),size=state.hall==='restroom'?RESTROOM.size:state.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
+    const state=this.scene.getState(),size=restroomFrame(state.hall)??(state.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD);
     const height=Math.round(this.canvas.width*size.height/size.width);
     if(this.canvas.height!==height)this.canvas.height=height;
     const ctx=this.canvas.getContext('2d')!,sx=this.canvas.width/size.width,sy=this.canvas.height/size.height;
-    const definition=HALLS[state.hall];this.title.textContent=translateText('Этаж ')+definition.floor+' · '+(state.hall==='restroom'?definition.name:definition.number);
+    const definition=HALLS[state.hall];this.title.textContent=translateText('Этаж ')+definition.floor+' · '+(isRestroomLocation(state.hall)?definition.name:definition.number);
     ctx.clearRect(0,0,this.canvas.width,this.canvas.height);ctx.save();ctx.scale(sx,sy);
     ctx.fillStyle='#202b33';ctx.fillRect(0,0,WORLD.width,WORLD.height);
     ctx.fillStyle='#5c5145';ctx.fillRect(FLOOR.x,FLOOR.y,FLOOR.width,FLOOR.height);
@@ -63,10 +63,10 @@ export class ClubMap {
         ctx.font='bold 34px Arial';ctx.fillText(zone.name,zone.x+zone.w/2,zone.y+zone.h-20);
       }
     }
-    for(const link of hallLinks(state.hall)){ctx.fillStyle='#73d4ca';ctx.fillRect(link.door.entry.x-35,link.door.entry.y-12,70,24);}
-    if(state.hall==='restroom'){
+    for(const link of hallLinks(state.hall)){ctx.fillStyle=link.kind==='window'?'#f1d28a':'#73d4ca';ctx.fillRect(link.door.entry.x-35,link.door.entry.y-12,70,24);}
+    if(isRestroomLocation(state.hall)){
       ctx.fillStyle='#476b5c';
-      for(const obstacle of RESTROOM_OBSTACLES)ctx.fillRect(obstacle.x,obstacle.y,obstacle.w,obstacle.h);
+      for(const obstacle of state.hall==='restroom'?RESTROOM_OBSTACLES:RESTROOM_BALCONY_OBSTACLES)ctx.fillRect(obstacle.x,obstacle.y,obstacle.w,obstacle.h);
     }else{
       const lift=elevatorDock(state.hall);ctx.fillStyle='#e2c17c';ctx.fillRect(lift.entry.x-40,lift.entry.y-20,80,40);
     }

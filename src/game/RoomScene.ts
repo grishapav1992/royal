@@ -2,8 +2,8 @@ import { t as translateText, tr } from '../i18n/index';
 import { cabinetSeat, type GameReaction } from '../shared/cabinetSeating';
 import { drawCabinetStool } from './cabinetStoolArt';
 import { drawClubFloor } from './clubArt';
-import { drawRestroom } from './restroomArt';
-import { RESTROOM } from '../shared/restroom';
+import { drawRestroom, drawRestroomWindow, drawRestroomBalcony } from './restroomArt';
+import { restroomFrame, isRestroomLocation } from '../shared/restroom';
 import { LUELON_NEW_ZONE, ARCADE_OVERVIEW_SIZE } from '../shared/clubLayout';
 import { CatRoutine, catApproachPoint, canHearCat, type CatAction, type CatView, type CatPerson } from '../shared/cat';
 import { CAT_HOME } from '../shared/catHome';
@@ -146,11 +146,11 @@ export class RoomScene extends Phaser.Scene {
     createCharacters(this);
     for(const hall of Object.keys(HALLS) as HallId[]){
       const before=new Set(this.children.list);this.hall=hall;this.drawRoom();
-      if(hall!=='restroom')this.hallDetails.set(hall,new RoomDetails(this,cabinetsInHall(hall).filter(cabinet=>!isCardGame(cabinet.id)),hall));
+      if(!isRestroomLocation(hall))this.hallDetails.set(hall,new RoomDetails(this,cabinetsInHall(hall).filter(cabinet=>!isCardGame(cabinet.id)),hall));
       if(hall==='arcade'){this.bar=new Bar(this,id=>this.approachSeat(id),()=>this.approachBar());drawCatCare(this);this.atelier=drawAtelier(this,()=>this.approachAtelier());}
       drawActivities(this,id=>this.approachActivity(id),hall);
       for (const link of hallLinks(hall)) this.drawDoor(link);
-      if(hall!=='restroom')drawElevator(this, hall, () => this.approachElevator());
+      if(!isRestroomLocation(hall))drawElevator(this, hall, () => this.approachElevator());
       this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
     }
     this.showHall('arcade');
@@ -186,6 +186,9 @@ export class RoomScene extends Phaser.Scene {
     this.syncGuests(this.guestViews);
   }
   private drawDoor(link:HallLink){
+    if(link.kind==='window'){
+      drawRestroomWindow(this,this.hall==='restroom-balcony',()=>this.approachFloor(link.target));return;
+    }
     const destination=HALLS[link.target],doorLabel=destination.floor!==HALLS[this.hall].floor?translateText('ЭТАЖ ')+destination.floor:link.target==='restroom'?'WC':destination.name,g=this.add.graphics().setDepth(225);
     if(link.door.facing==='up') {
       // The near wall is cut away so the doorway stays readable from above.
@@ -234,7 +237,7 @@ export class RoomScene extends Phaser.Scene {
   setDealerAction(gameId: string, action: DealerAction) { this.cardTables?.setAction(gameId, action); }
   private resizeView(){
     const width=this.scale.gameSize.width,height=this.scale.gameSize.height;
-    const frame=this.hall==='restroom'?RESTROOM.size:this.overview&&this.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
+    const frame=restroomFrame(this.hall)??(this.overview&&this.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD);
     const fit=Math.min(width/(frame.width-40),height/(frame.height-HALL_WALL.viewTop-50));
     const zoom=this.overview?fit:Math.max(fit,Phaser.Math.Clamp(Math.min(width/1000,height/760),.8,1.3));
     const viewWidth=width/zoom,viewHeight=height/zoom;
@@ -246,6 +249,7 @@ export class RoomScene extends Phaser.Scene {
   }
   private drawRoom() {
     if(this.hall==='restroom'){drawRestroom(this);return;}
+    if(this.hall==='restroom-balcony'){drawRestroomBalcony(this);return;}
     const g = this.add.graphics();
     const r = (color: number, x: number, y: number, w: number, h: number, a = 1) => g.fillStyle(color, a).fillRect(x, y, w, h);
     // Night scenery and flat colored paper preserve the cartoon silhouette.
@@ -357,7 +361,7 @@ export class RoomScene extends Phaser.Scene {
     this.pendingCabinet = null; this.pendingLounge = null; this.goTo(link.door.entry);
   }
   approachElevator() {
-    if (this.hall==='restroom' || this.locked || this.isHuggingCat() || this.typing || this.switching || this.player.cabinet || this.networkSelf?.playing || this.player.action === 'drink') return;
+    if (isRestroomLocation(this.hall) || this.locked || this.isHuggingCat() || this.typing || this.switching || this.player.cabinet || this.networkSelf?.playing || this.player.action === 'drink') return;
     this.pendingCabinet = null;
     this.pendingLounge = 'elevator';
     this.goTo(elevatorDock(this.hall).entry);
@@ -386,6 +390,8 @@ export class RoomScene extends Phaser.Scene {
   }
   interact() {
     if (this.locked || this.typing) return;
+    const window=hallLinks(this.hall).find(link=>link.kind==='window'&&Math.hypot(this.player.x-link.door.arrival.x,this.player.y-link.door.arrival.y)<110);
+    if(window&&!this.isHuggingCat()){this.approachFloor(window.target);return;}
     if (!this.isHuggingCat() && atElevator(this.player)) { this.openElevator(); return; }
     const nearbyPlayer=[...this.remotePlayers.values()].map(p=>p.target).filter(p=>p.connected&&p.hall===this.hall&&!p.playing&&!p.activity)
       .sort((a,b)=>Math.hypot(a.x-this.player.x,a.y-this.player.y)-Math.hypot(b.x-this.player.x,b.y-this.player.y))[0];

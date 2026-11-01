@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { RESTROOM } from '../src/shared/restroom';
+import { RESTROOM, RESTROOM_WINDOW } from '../src/shared/restroom';
 
 
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
@@ -29,11 +29,34 @@ async function visitRestroom(page: Page, name: string) {
   await expect(page.locator('#elevator-shortcut')).toBeHidden();
   await expect(page.locator('[data-floor-target="github"]')).toHaveText(/Карточный салон/);
   await expect(page.locator('#games-tab')).toHaveText('Игры · 0');
-  // Walk to a sink, then leave through the same shared navigation system.
+  // Walk to a sink, then use the open window in both directions before leaving.
   const sink = await worldPoint(page, 1120, 770);
   await page.mouse.click(sink.x, sink.y);
   await expect.poll(async () => Math.hypot((await state(page)).x - 1120, (await state(page)).y - 770), { timeout: 10000 }).toBeLessThan(5);
   await page.locator('#game').screenshot({ path: `artifacts/work/third-floor-restroom/${name}.png` });
+  await expect(page.locator('[data-floor-target="restroom-balcony"]')).toHaveText(/Вылезти через окно/);
+  const windowPoint = await worldPoint(page, RESTROOM_WINDOW.click.x, RESTROOM_WINDOW.click.y);
+  await page.mouse.click(windowPoint.x, windowPoint.y);
+  await expect.poll(async () => (await state(page)).hall, { timeout: 10000 }).toBe('restroom-balcony');
+  await expect(page.locator('h1')).toContainText('Служебный балкон');
+  await expect(page.locator('#elevator-shortcut')).toBeHidden();
+  await expect(page.locator('[data-floor-target="restroom"]')).toHaveText(/Залезть обратно/);
+  const balconyPoint = await worldPoint(page, 850, 500);
+  await page.mouse.click(balconyPoint.x, balconyPoint.y);
+  await expect.poll(async () => Math.hypot((await state(page)).x - 850, (await state(page)).y - 500), { timeout: 10000 }).toBeLessThan(5);
+  await page.locator('#game').screenshot({ path: `artifacts/work/third-floor-restroom/${name}-outside.png` });
+  if (name === 'online') {
+    const back = await worldPoint(page, RESTROOM_WINDOW.click.x, RESTROOM_WINDOW.click.y);
+    await page.mouse.click(back.x, back.y);
+  } else if (name === 'desktop') {
+    const sill = await worldPoint(page, RESTROOM_WINDOW.arrival.x, RESTROOM_WINDOW.arrival.y);
+    await page.mouse.click(sill.x, sill.y);
+    await expect.poll(async () => Math.hypot((await state(page)).x - RESTROOM_WINDOW.arrival.x, (await state(page)).y - RESTROOM_WINDOW.arrival.y)).toBeLessThan(5);
+    await page.locator('#game').focus(); await page.keyboard.press('e');
+  } else await page.locator('[data-floor-target="restroom"]').click();
+  await expect.poll(async () => (await state(page)).hall, { timeout: 10000 }).toBe('restroom');
+  await expect(page.locator('h1')).toContainText('Туалет');
+  await expect.poll(async () => Math.hypot((await state(page)).x - RESTROOM_WINDOW.arrival.x, (await state(page)).y - RESTROOM_WINDOW.arrival.y)).toBeLessThan(5);
   await page.locator('[data-floor-target="github"]').click();
   await expect.poll(async () => (await state(page)).hall, { timeout: 12000 }).toBe('github');
   await expect(page.locator('#elevator-shortcut')).toBeVisible();

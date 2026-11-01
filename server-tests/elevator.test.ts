@@ -54,7 +54,7 @@ test('server authorizes direct travel, rejects stale/remote/busy commands and ke
     const originalOther = { hall: other.hall, x: other.x, y: other.y, revision: other.hallRevision };
     assert.equal((await travel('github')).accepted, false, 'cannot summon travel from the middle of the room');
     Object.assign(p, elevatorDock('arcade').entry);
-    for (const target of ['missing', '__proto__', '', 3, null, 'arcade', 'restroom']) assert.equal((await travel(target)).accepted, false);
+    for (const target of ['missing', '__proto__', '', 3, null, 'arcade', 'restroom', 'restroom-balcony']) assert.equal((await travel(target)).accepted, false);
     for (const state of [{ connected: false }, { security: 'ejecting' }]) {
       const saved = Object.fromEntries(Object.keys(state).map(key => [key, (p as any)[key]]));
       Object.assign(p, state);await travel('github');assert.equal(p.hall, 'arcade');Object.assign(p, saved);

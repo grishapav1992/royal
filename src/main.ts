@@ -35,6 +35,7 @@ import './paper-theme.css';
 import './own-cabinets.css';
 import './mira-dialog.css';
 import './ui/compact-header.css';
+import { isRestroomLocation } from './shared/restroom';
 import { DRINKS, HALLS, hallLinks, activityHall, type HallId } from './shared/world';
 import type { BreakerStatus } from './game/breaker';
 import { SocialUI } from './ui/SocialUI';
@@ -375,7 +376,7 @@ document.addEventListener(GAME_REACTION_EVENT, event => {
 });
 function updateHall(hall:HallId){
   const elevatorShortcut=document.querySelector<HTMLElement>('#elevator-shortcut');
-  if(elevatorShortcut)elevatorShortcut.hidden=hall==='restroom';
+  if(elevatorShortcut)elevatorShortcut.hidden=isRestroomLocation(hall);
   document.querySelector('h1')!.innerHTML=HALLS[hall].name+' <span>'+HALLS[hall].number+'</span>';
   document.querySelectorAll<HTMLElement>('[data-activity]').forEach(b=>b.hidden=b.dataset.activity==='piano'||activityHall(b.dataset.activity!)!==hall);
   const sharedCards=document.querySelector<HTMLElement>('.shared-cards');if(sharedCards)sharedCards.hidden=hall!=='tables'&&hall!=='github';
@@ -383,6 +384,10 @@ function updateHall(hall:HallId){
   $('#card-tables-catalog').hidden=hall!=='github';
   $('#floor-links').innerHTML=hallLinks(hall).map(link=>{
     const target=HALLS[link.target];
+    if(link.kind==='window'){
+      const label=hall==='restroom'?translateText('Вылезти через окно'):translateText('Залезть обратно');
+      return `<button type="button" data-floor-target="${link.target}" aria-label="${label}"><span aria-hidden="true">↗</span> ${label}</button>`;
+    }
     if(target.floor===HALLS[hall].floor)return `<button type="button" data-floor-target="${link.target}" aria-label="${target.name}"><span aria-hidden="true">↪</span> ${target.name}</button>`;
     return tr`<button type="button" data-floor-target="${link.target}" aria-label="На ${target.floor} этаж: ${target.name}"><span aria-hidden="true">${target.floor>HALLS[hall].floor?'↑':'↓'}</span> Этаж ${target.floor}</button>`;
   }).join('');
