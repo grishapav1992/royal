@@ -1,0 +1,91 @@
+{
+  "date": "2026-11-01",
+  "owner": "star-spin-rive-20261101",
+  "status": "blocked by automatic approval review before execution",
+  "preservationCommit": "96e868dc6d333e471b33781f8c301e9b4b175da3",
+  "preservationRemoteVerified": true,
+  "freeBytesBefore": 331759304704,
+  "freeBytesAfter": 331759108096,
+  "removedLogicalBytes": 0,
+  "removedPaths": [],
+  "activeModule": "1.3.0-a31e81ac3349",
+  "temporaryPreviewDatabase": {
+    "path": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-zzlCH8",
+    "removedByNormalShutdown": true
+  },
+  "archiveInventory": [
+    {
+      "name": "rive-1.7-windows-x64.tar.gz",
+      "bytes": 20296590
+    },
+    {
+      "name": "rive-windows-x64.tar.gz",
+      "bytes": 21283779
+    }
+  ],
+  "targets": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-rive-20261101",
+      "logicalBytes": 124921992.0,
+      "fileCount": 118
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-wild-nudge\\versions\\1.3.0-02a10eebc975",
+      "logicalBytes": 12594763.0,
+      "fileCount": 23
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-wild-nudge\\versions\\1.3.0-47154b26e9f3",
+      "logicalBytes": 11245237.0,
+      "fileCount": 20
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-wild-nudge\\versions\\1.3.0-659140d524b3",
+      "logicalBytes": 11245182.0,
+      "fileCount": 20
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-wild-nudge\\versions\\1.3.0-bd58126b65e0",
+      "logicalBytes": 12593655.0,
+      "fileCount": 23
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-wild-nudge\\versions\\1.3.0-e02b853801b6",
+      "logicalBytes": 12593610.0,
+      "fileCount": 23
+    }
+  ],
+  "exceptions": [
+    {
+      "paths": [
+        "pre-existing 1.0 and 1.1 Star Spin packages",
+        "artifacts/work/wild-nudge-v1-20261030",
+        "artifacts/work/wild-nudge-relics-20261031",
+        "artifacts/work/star-spin-20261101"
+      ],
+      "reason": "Deletion was rejected by automatic approval review in prior tasks. No retry attempted.",
+      "records": [
+        "docs/concepts/wild-nudge/local-storage-v1.json",
+        "docs/concepts/wild-nudge/verification-20261101.json"
+      ]
+    },
+    {
+      "paths": [
+        "module-dist/studio-wild-nudge/versions/1.2.0-f56125793f41"
+      ],
+      "reason": "Pre-existing previews on 5234 and 5236 are outside this task; loaded versions not assumed safe to remove.",
+      "cleanupCondition": "Confirm those pre-existing sessions have ended before removing their immutable packages."
+    },
+    {
+      "paths": [
+        "other games normal build outputs",
+        "current checkout and installed dependencies",
+        "installed Rive CLI caches"
+      ],
+      "reason": "Reused current workspace and tool installations. No full source/dependency copies or extra worktrees created."
+    }
+  ],
+  "rejectionReason": "blocked by policy",
+  "deletionExecuted": false,
+  "attemptedLogicalBytes": 185194439
+}
