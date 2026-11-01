@@ -1,5 +1,5 @@
 import {confirmedPayout} from '../shared/roundPrecision';
-import {GAME_STAKE_UNITS as NITRO_BETS} from '../shared/gameStakes';
+import {GAME_STAKE_UNITS as MEME_BETS} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import {SlotSettings} from './slotKit/SlotSettings';
 import {SlotDialog, slotOwnsKeyboard} from './slotKit/SlotDialog';
@@ -9,7 +9,7 @@ import {SlotPlayback, type SlotOperation} from './slotKit/SlotPlayback';
 import {SlotSessions, type NativeSlotSession} from './slotKit/SlotSessions';
 import {bindSlotLifecycle} from './slotKit/SlotLifecycle';
 import {memeSlot} from './slotKit/nativeSlots';
-import {MEME_GAME,MEME_BETS,MEME_PAYTABLE,MEME_NAMES,MEME_RULES,MEME_LINES} from '../shared/memeOverload';
+import {MEME_GAME,MEME_PAYTABLE,MEME_NAMES,MEME_RULES,MEME_LINES} from '../shared/memeOverload';
 import {expansionClient as client} from '../wallet/ExpansionClient';
 import {demoWallet} from '../wallet/WalletClient';
 import {observeExpansionOutcome,resetGameOutcomes} from './gameReactions';

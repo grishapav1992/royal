@@ -3,7 +3,8 @@ const root=process.cwd(),[beforeFile,originsFile,feature]=process.argv.slice(2),
 assert(/^[a-f0-9]{40}$/.test(feature));const git=args=>execFileSync(process.env.ROYAL_GIT_BINARY||'git',args,{cwd:root,maxBuffer:40*1024**2,stdio:['ignore','pipe','ignore']});
 const read=(commit,name)=>Buffer.from(git(['show',commit+':'+name]).toString('utf8').replace(/\r\n/g,'\n')),hash=b=>createHash('sha256').update(b).digest('hex');
 const before=JSON.parse(fs.readFileSync(beforeFile)),files=JSON.parse(fs.readFileSync(originsFile)),registry=JSON.parse(read(feature,'scripts/game-math/rtp-policy.json'));
-const changed=git(['diff','--name-only','origin/main',feature]).toString().trim().split('\n').filter(n=>/^(src|server|scripts|games|docs\/game-math)\//.test(n));
+const previous=JSON.parse(fs.readFileSync(path.join(folder,'scope.json')));assert.equal(previous.productionCommit,before.sourceCommit);
+const changed=[...new Set([...previous.changedSources,...git(['diff','--name-only','origin/main',feature]).toString().trim().split('\n')])].filter(n=>/^(src|server|scripts|games|docs\/game-math)\//.test(n));
 const qualified=[...new Set(Object.values(registry.stakePolicies).flatMap(p=>[...p.sources,p.qualificationSource]))];
 const add=(name,commit=feature)=>{const bytes=read(commit,name),h=hash(bytes);files[name]={commit,path:name,baseSha256:h,sha256:h};};
 // These are dependencies of the updated common wallet. Their public betting route remains closed.
