@@ -405,7 +405,41 @@
     "freeAfter": 12242112512
   },
   "localCleanup": {
-    "status": "pending",
-    "condition": "Remove only the owned worktree and temporary outputs after verifying this record in GitHub."
+    "status": "completed",
+    "owner": "caribbean-stakes-followup-20261101",
+    "preservedRemoteCommit": "678f6062a04b1aaa01bba77d1212a204084dc2bd",
+    "removedRoot": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/caribbean-stakes-followup-20261101",
+    "logicalBytes": 514559285,
+    "freeBefore": 52820918272,
+    "removedArchives": [
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/caribbean-stakes-followup-20261101/delivery.tgz",
+        "bytes": 1119802
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/caribbean-stakes-followup-20261101/delivery-current.tgz",
+        "bytes": 1120638
+      }
+    ],
+    "removedFolders": [
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/caribbean-stakes-followup-20261101/checkout",
+        "logicalBytes": 494172955
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/caribbean-stakes-followup-20261101/stand",
+        "logicalBytes": 485
+      }
+    ],
+    "temporaryDatabaseRemoved": true,
+    "sharedDependenciesPreserved": true,
+    "unrelatedUntrackedFilesPreserved": true,
+    "freeAfter": 52827189248,
+    "otherWorktreesPreserved": [
+      "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/a6api-server-access-20261101/checkout",
+      "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/forest-heart-kling-20261031/checkout"
+    ],
+    "otherWorkCleanupCondition": "Their owners finish their active tasks, preserve unique source in GitHub and remove their temporary outputs.",
+    "spaceNote": "Logical sizes do not establish physical reclamation. Free space was measured directly before and after."
   }
 }
