@@ -247,7 +247,59 @@ def shared_client_source_proof(name, digest):
     return None
 
 
+
+def module_set_source_proof(name, digest):
+    """Bind a scoped multi-package source update to its exact current pointers."""
+    if not (name.startswith('games/') or name.startswith('src/ui/')): return None
+    for path in RELEASES.glob('*/operator.json'):
+        try:
+            operator=read(path); published=read(path.parent/'published.json')
+            receipt=read(path.parent/'release-github.json'); manifest=read(path.parent/'release-manifest.json')
+            modules=published.get('modules',[]); source=operator.get('source',{})
+            if not isinstance(source,dict): continue
+            inputs=manifest.get('moduleProjection',{}).get('inputs',{})
+            if not (published.get('published') is True and isinstance(modules,list) and 1 < len(modules) <= 64
+                    and source.get(name)==digest and 1 <= len(source) <= 64
+                    and all(not Path(n).is_absolute() and '..' not in Path(n).parts and (n.startswith('src/ui/') or n.startswith('games/') and n.split('/')[1] in manifest.get('modules',[]))
+                            and inputs.get(n)==h for n,h in source.items())
+                    and manifest.get('scope')=='modules' and manifest.get('build',{}).get('passed') is True
+                    and operator.get('sourceCommit')==published.get('sourceCommit')==receipt.get('sourceCommit')==manifest.get('sourceCommit')
+                    and re.fullmatch('[a-f0-9]{40}',str(receipt.get('remoteMain','')))
+                    and sha(path.parent/'release-github.json')==operator.get('receiptSha256')
+                    and sha(path.parent/'release-manifest.json')==operator.get('releaseManifestSha256')): continue
+            expected={row['gameId']:row['version'] for row in manifest['packages']}
+            if len(expected)!=len(modules) or set(expected)!=set(operator.get('packages',{})): continue
+            if any(not (LIVE/n).is_file() or (LIVE/n).is_symlink() or sha(LIVE/n)!=h for n,h in source.items()): continue
+            seen=set()
+            for module in modules:
+                game=module['gameId']; require(re.fullmatch('[a-z0-9-]+',game),'Unsafe module identity')
+                if game in seen or module.get('verified') is not True or expected.get(game)!=module.get('version'): break
+                seen.add(game); active=MODULES/game/'active.json'; pointer=read(active); row=operator['packages'][game]
+                prefix='module-dist/'+game+'/versions/'+module['version']+'/'
+                if (sha(active)!=row.get('pointerSha256') or pointer['manifest'].split('/')[4]!=module['version']
+                        or manifest['files'].get('module-dist/'+game+'/active.json')!=sha(active)
+                        or manifest['files'].get(prefix+'manifest.json')!=pointer.get('sha256')
+                        or sha(MODULES/game/'versions'/module['version']/'manifest.json')!=pointer.get('sha256')): break
+            else:
+                if seen!=set(expected): continue
+                backup=published.get('backup',{}); archive=BACKUPS/path.parent.name/'source.tgz'
+                if (not archive.is_file() or any(p.is_symlink() for p in [archive,*archive.parents])
+                        or backup.get('sourceArchive')!=str(archive) or sha(archive)!=backup.get('sha256')): continue
+                proof_path=path.parent/'program-proof.json'; proof=read(proof_path)
+                if (sha(proof_path)!=operator.get('programProofSha256') or proof.get('sourceCommit')!=manifest['sourceCommit']
+                        or set(proof.get('games',{}))!=set(expected)): continue
+                if any(row.get('passed') is not True
+                        or row.get('afterManifest')!=manifest['files']['module-dist/'+game+'/versions/'+expected[game]+'/manifest.json']
+                        or sha(archive.parent/game/'manifest.json')!=row.get('beforeManifest') for game,row in proof['games'].items()): continue
+                return [path,path.parent/'published.json',path.parent/'release-github.json',path.parent/'release-manifest.json',proof_path,
+                        *sorted(p for p in archive.parent.rglob('*') if p.is_file() and not p.is_symlink())]
+        except (OSError,ValueError,KeyError,IndexError,TypeError): continue
+    return None
+
+
 def module_source_proof(name, digest):
+    multiple = module_set_source_proof(name,digest)
+    if multiple: return multiple
     if name == 'src/ui/slotKit/SlotCascadeBoard.ts': return shared_client_source_proof(name,digest)
     if not name.startswith('games/'): return None
     for path in RELEASES.glob('*/operator.json'):

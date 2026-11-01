@@ -11,6 +11,7 @@ ADDED={'src/ui/active-game-viewport.css', 'games/dracona/compactStyles.ts'}
 IMAGE_HELPER=Path('/opt/royal-maintenance/bin/retention-runtime.py')
 PUBLISHED_INPUTS={}
 IGNORED={'at','availableBytes'}
+MAINTENANCE=Path('/opt/royal-maintenance/bin/cleanup-release-history.py')
 def require(value,message):
  if not value:raise RuntimeError(message)
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -38,6 +39,11 @@ def validate_program(game,row,before,after,before_manifest,after_manifest):
  require(row['beforeManifest']==before_manifest and row['afterManifest']==after_manifest,'Program proof manifest differs')
  require(row['beforeEntry']==before['files'][before['entry']] and row['afterEntry']==after['files'][after['entry']],'Program proof entry differs')
  if kind=='coordinate-only':require(row['coordinateTableSha256']=='0f00e5a6178c774f48bd3eb03588acc7edd4c46e87545df35f3316bbdde91582' and row['onlyImportedValue']=='LINES','Legacy coordinate proof differs')
+def validate_maintenance(row,current,staged,source_commit):
+ require(set(row)=={'path','beforeSha256','afterSha256','sourceCommit'} and row['path']=='cleanup-release-history.py','Wrong maintenance scope')
+ require(row['sourceCommit']==source_commit and re.fullmatch('[a-f0-9]{64}',row['beforeSha256']) and re.fullmatch('[a-f0-9]{64}',row['afterSha256']),'Unverified maintenance source')
+ require(current.is_file() and staged.is_file() and not any(p.is_symlink() for p in [current,staged,*current.parents,*staged.parents]),'Unsafe maintenance file')
+ require(sha(current)==row['beforeSha256'] and sha(staged)==row['afterSha256'],'Maintenance changed since review')
 def validate_scope(release,before,operator):
  require(release['scope']=='modules' and release['modules']==list(GAMES) and release['build']['passed'],'Wrong release scope')
  require(release['sourceCommit']==operator['sourceCommit'] and release['baseCommit']==before['sourceCommit'],'Wrong source/base commit')
@@ -58,11 +64,11 @@ def validate_after(before,after,source,packages):
   prefix=str(MODULES/game/'versions'/row['version'])+'/'
   expected['moduleFiles'].update({prefix+n:h for n,h in row['files'].items()});expected['moduleFiles'][str(MODULES/game/'active.json')]=row['pointerSha256']
  require(stable(after)==stable(expected),'Host, services, other sources or immutable modules changed')
-def atomic(origin,target):
+def atomic(origin,target,mode=0o644):
  require(not any(p.is_symlink() for p in [origin,target,*target.parents]),'Unsafe source path')
  partial=target.with_name(target.name+'.'+NAME+'.partial');require(not partial.exists(),'Partial source exists')
  with origin.open('rb') as inp,partial.open('xb') as out:
-  shutil.copyfileobj(inp,out);os.fchmod(out.fileno(),0o644);out.flush();os.fsync(out.fileno())
+  shutil.copyfileobj(inp,out);os.fchmod(out.fileno(),mode);out.flush();os.fsync(out.fileno())
  os.replace(partial,target)
 def main():
  require(Path(__file__).resolve()==ROOT/'publish.py','Wrong publication root')
@@ -75,6 +81,7 @@ def main():
   print(json.dumps({'sourceCommit':before['sourceCommit'],'sourceFiles':len(before['source']),'runtimeFiles':len(before['program']),'services':len(before['services']),'freeBytes':before['availableBytes']}));return
  require(not sys.argv[1:] and not (ROOT/'published.json').exists() and not BACKUP.exists(),'Publication already attempted')
  before=read(ROOT/'before.json');release=read(ROOT/'release-manifest.json');receipt=read(ROOT/'release-github.json');op=read(ROOT/'operator.json');validate_scope(release,before,op)
+ validate_maintenance(op['maintenance'],MAINTENANCE,ROOT/'maintenance'/'cleanup-release-history.py',release['sourceCommit'])
  proof=read(ROOT/'program-proof.json');require(sha(ROOT/'program-proof.json')==op['programProofSha256'] and proof['sourceCommit']==release['sourceCommit'] and set(proof['games'])==set(GAMES.values()),'Program comparison receipt differs')
  for path,key in [(ROOT/'publish.py','wrapperSha256'),(ROOT/'publisher.py','publisherSha256'),(ROOT/'release-manifest.json','releaseManifestSha256'),(ROOT/'release-github.json','receiptSha256')]:require(sha(path)==op[key],'Publication input changed')
  require(sha(BASE_HELPER)==op['snapshotSha256'] and sha(IMAGE_HELPER)==op['imageHelperSha256'] and sha(ROOT/'publisher.py')==before['source']['scripts/game-module-release.py'],'Unreviewed helper')
@@ -95,6 +102,7 @@ def main():
  require(release['files']==expected_files,'Prepared packages differ');require(shutil.disk_usage(LIVE).free>MIN_FREE+total*3+12*1024**2,'Five GiB reserve would be crossed')
  command(['docker','tag',current['container']['image'],'royal-game:before-'+NAME]);require(image('royal-game:before-'+NAME)==current['container']['image'],'Wrong rollback tag')
  BACKUP.mkdir(mode=0o700)
+ shutil.copy2(MAINTENANCE,BACKUP/'maintenance-cleanup-before.py');require(sha(BACKUP/'maintenance-cleanup-before.py')==op['maintenance']['beforeSha256'],'Maintenance backup differs')
  with tarfile.open(BACKUP/'source.tgz','w:gz') as archive:
   for name in SOURCES:
    if name not in ADDED:archive.add(LIVE/name,arcname=name,recursive=False)
@@ -104,7 +112,8 @@ def main():
  expected={n:before['source'][n] for n in SOURCES if n not in ADDED};expected.update({game+'/active.json':before['moduleFiles'][str(MODULES/game/'active.json')] for game in GAMES.values()});expected['host.json']=before['moduleHostContract']
  with tarfile.open(BACKUP/'source.tgz') as archive:require({m.name:hashlib.sha256(archive.extractfile(m).read()).hexdigest() for m in archive.getmembers() if m.isfile()}==expected,'Backup verification failed')
  for game,(_,version,old) in prepared.items():shutil.copytree(old,BACKUP/game,copy_function=os.link);publisher.verify(BACKUP/game,contracts[game],game)
- backup={'sourceArchive':str(BACKUP/'source.tgz'),'bytes':(BACKUP/'source.tgz').stat().st_size,'sha256':sha(BACKUP/'source.tgz'),'oldVersions':{g:v for g,(_,v,_) in prepared.items()},'oldPackagesHardlinked':True,'imageTag':'royal-game:before-'+NAME,'image':current['container']['image']};save('backup.json',backup)
+ backup={'sourceArchive':str(BACKUP/'source.tgz'),'bytes':(BACKUP/'source.tgz').stat().st_size,'sha256':sha(BACKUP/'source.tgz'),'oldVersions':{g:v for g,(_,v,_) in prepared.items()},'oldPackagesHardlinked':True,'imageTag':'royal-game:before-'+NAME,'image':current['container']['image']};backup['maintenance']=op['maintenance'];save('backup.json',backup)
+ atomic(ROOT/'maintenance'/'cleanup-release-history.py',MAINTENANCE,0o755)
  for name in SOURCES:
   if name in ADDED:require(name not in before['source'] and not (LIVE/name).exists(),'New source already exists')
   else:require(sha(LIVE/name)==before['source'][name],'Source changed before replacement')
@@ -113,6 +122,7 @@ def main():
  try:
   for game,(options,_,_) in prepared.items():options.operation='install';results.append(publisher.run(options))
  finally:os.umask(mask)
+ require(sha(MAINTENANCE)==op['maintenance']['afterSha256'],'Installed maintenance differs')
  after=snapshot();save('after.json',after);validate_after(before,after,op['source'],op['packages']);require(shutil.disk_usage(LIVE).free>MIN_FREE,'Five GiB reserve crossed')
- record={'published':True,'release':NAME,'sourceCommit':release['sourceCommit'],'baseCommit':release['baseCommit'],'modules':results,'backup':backup,'freeBefore':current['availableBytes'],'freeAfter':after['availableBytes'],'hostRestarted':False,'databaseTouched':False,'otherModulesPreserved':True,'sourceFilesPreserved':len(before['source'])-len(SOURCES)+len(ADDED),'runtimeFilesPreserved':len(before['program']),'servicesPreserved':len(before['services'])};save('published.json',record);print(json.dumps(record))
+ record={'published':True,'release':NAME,'sourceCommit':release['sourceCommit'],'baseCommit':release['baseCommit'],'modules':results,'backup':backup,'freeBefore':current['availableBytes'],'freeAfter':after['availableBytes'],'maintenance':op['maintenance'],'hostRestarted':False,'databaseTouched':False,'otherModulesPreserved':True,'sourceFilesPreserved':len(before['source'])-len(SOURCES)+len(ADDED),'runtimeFilesPreserved':len(before['program']),'servicesPreserved':len(before['services'])};save('published.json',record);print(json.dumps(record))
 if __name__=='__main__':main()

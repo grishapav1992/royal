@@ -1,4 +1,4 @@
-import copy,importlib.util,types,unittest
+import copy,importlib.util,types,unittest,tempfile,hashlib
 from pathlib import Path
 from unittest.mock import patch
 spec=importlib.util.spec_from_file_location('publication',Path(__file__).with_name('publish.py'))
@@ -45,6 +45,16 @@ class Guards(unittest.TestCase):
     helper=types.SimpleNamespace(image_metadata=lambda identity,value=metadata:value)
     with patch.object(p,'load',return_value=helper):
      with self.assertRaises(RuntimeError):p.image('royal-game:latest')
+
+ def test_maintenance_update_requires_exact_committed_scope_and_both_bytes(self):
+  with tempfile.TemporaryDirectory() as base:
+   current=Path(base).resolve()/'current.py';staged=current.with_name('new.py');current.write_text('old');staged.write_text('new')
+   row={'path':'cleanup-release-history.py','beforeSha256':p.sha(current),'afterSha256':p.sha(staged),'sourceCommit':'a'*40}
+   p.validate_maintenance(row,current,staged,'a'*40)
+   for change in [{'path':'automatic-retention.py'},{'beforeSha256':'b'*64},{'afterSha256':'c'*64},{'sourceCommit':'d'*40}]:
+    with self.assertRaises(RuntimeError):p.validate_maintenance({**row,**change},current,staged,'a'*40)
+   current.write_text('another operator changed it')
+   with self.assertRaises(RuntimeError):p.validate_maintenance(row,current,staged,'a'*40)
 
  def test_complete_postcheck_accepts_only_reviewed_sources_and_packages(self):
   before={'at':1,'availableBytes':100,'source':{'existing.ts':'old'},'sourceLF':{'existing.ts':'old'},'moduleFiles':{'other/active.json':'old'},'program':{'index.js':'x'},'services':{'game':'same'},'configuration':'same','moduleHostContract':'same'}
