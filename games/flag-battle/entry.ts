@@ -9,3 +9,5 @@ export const mount: GameModuleV1['mount'] = host => {
   readGameHost();
   return new FlagBattleUI(host);
 };
+
+import '../../src/ui/active-game-viewport.css';

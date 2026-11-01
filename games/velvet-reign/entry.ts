@@ -11,3 +11,5 @@ export const mount: GameModuleV1['mount'] = host => {
  readGameHost();
  return new LuelonGameRouter(host, gameId, body => new StudioSlotUI(body, gameId), body => new VelvetReignUI(body));
 };
+
+import '../../src/ui/active-game-viewport.css';
