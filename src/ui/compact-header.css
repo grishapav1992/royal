@@ -19,7 +19,7 @@
 .header .logout-button{min-height:32px;padding:6px 9px;white-space:nowrap}
 .header .profile-toggle{display:none}
 main{padding-top:6px}
-@media(max-width:1200px){
+@media(max-width:1400px){
   .header{gap:8px}
   .header .room-tools .local-label{display:none}
   .header .room-heading h1{font-size:14px}
