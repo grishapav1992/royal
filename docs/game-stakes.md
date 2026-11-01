@@ -1,0 +1,21 @@
+# Common stakes for new games
+
+Every newly added wagered game uses the shared stake mechanics. The ordinary stake starts at **$0.10 for the complete round**. In a slot this means one whole ordinary spin with all selected lines. The common choices are $0.10, $0.20, $0.50, $1, $2, $5, $10, $20 and $50; the initial selection is $0.10. Different terms require an explicit user instruction.
+
+`src/shared/gameStakes.ts` supplies the denominations, default and validation. Add the authorized game identity to its shared runtime registration; import these values in the client and common backend instead of defining another scale. Monetary requests use exact integer units, with a validated adapter if the existing wallet protocol has a different unit scale. Keep the host wallet and serialized transport. Registering a monetary policy does not register a visible game or grant production access.
+
+The ordinary price must not grow with selected lines, reels, ways or mandatory presentation steps. Paid boosts and bonus purchases show their complete separate price before acceptance and enter the qualification denominator at their actual charged cost. All free continuations belong to the original paid round and create no new stake debit.
+
+Accumulate the exact reward through the full round, every bonus continuation and final player choice. Use the qualified common final integer settlement from `src/shared/roundPrecision.ts`; do not truncate each fractional line or bonus award. Smaller stakes must not reduce the approved RTP. Qualify any new probability, paytable, cap, multiplier, price or settlement change before release. Keep exact analytical results distinct from statistical estimates and their confidence limits.
+
+Accepted rounds pin their original rules and stake policy. A package reload, retry, disconnect, restart or close/reopen keeps the same operation identity, debit, bonus state and committed settlement. Historical denominations are recovery terms, not selectable new stakes.
+
+To admit a new game:
+
+1. Implement its independent client module and common-backend rules, and register its identity in the common stake runtime. Preserve the approved production catalogue.
+2. Register its RTP profile and `stakePolicies` entry in `scripts/game-math/rtp-policy.json`. Cover the full common denomination list, every paid mode, player choice and free continuation. Include the common money sources and the game-specific mathematical sources. `ordinaryStakeBasis`, if present, must be `total-round`.
+3. Extend the real runtime, wallet and client qualification cases for the new game. Generate fresh evidence with `npm run qualify:rtp -- --game <game-id> --write-proof`. Changes to shared source inputs also require fresh qualification for every affected existing policy. Existing proofs and frozen legacy fingerprints cannot qualify a new game; never edit their hashes to bypass qualification.
+4. Run `npm run check:rtp`, the relevant mathematics/wallet/compatibility tests and the normal application/module builds. The admission gate checks every new wagered module and every game in the playable Royal catalogue for common runtime registration and stake policy; the RTP gate checks the selected policies' actual qualification evidence and hashes.
+5. Verify the real host with connected chat on desktop and mobile. The minimum normal start must debit exactly ten cents, including all selected lines. Check separately priced purchases, free continuations, idempotent retry and restart/reopen recovery without an additional debit.
+
+The existing mathematical legacy list and four separate historical definitions (Mortal Kombat, Tsu-e-fa, Wild Nudge and Flag Totalizator) remain readable and verifiable under their earlier terms. They are not new-game templates or availability exceptions. A first production publication or an explicitly requested restoration must adopt the common stakes and pass qualification. Adding any such game to the playable Royal catalogue triggers the same admission check. A genuinely non-wagered game requires a documented non-wagered classification; a paid game cannot bypass the check with that label.

@@ -38,6 +38,14 @@
 - `scripts/game-math/rtp-legacy-baseline.json` freezes existing modules outside this initial gate. It does not qualify them and must not be expanded to admit new games. Register new wagered modules with qualification or explicitly document genuinely non-wagered modules.
 - The legacy baseline also freezes mathematical source hashes. Changing a frozen source requires qualification profiles covering every affected game and mode; unchanged legacy sources are not evidence of acceptable RTP. Do not update the baseline to avoid qualification.
 
+## Default stake mechanics for every new game
+
+- Every new wagered game must use the common stake system in `src/shared/gameStakes.ts`: $0.10, $0.20, $0.50, $1, $2, $5, $10, $20 and $50, with $0.10 as the initial stake. This is the project default, not a per-game design choice. Change it only when the user explicitly requests different terms.
+- The displayed ordinary stake pays for the complete round. In a slot, $0.10 funds one whole ordinary spin with every selected line; never multiply that price by lines, reels, ways or mandatory substeps. Show optional purchases and enhanced modes with their complete separate cost before acceptance. Free continuations of an accepted round must not create another stake debit.
+- Use the common wallet, exact integer monetary transport, operation UUID/recovery and version-pinned rules. Accumulate fractional rewards for the complete round and use the qualified shared final settlement, without systematic rounding losses or a reduction in the game's approved RTP at smaller stakes. Preserve accepted historical rounds and replayed operations under their original terms.
+- Register the game in the shared stake runtime and `rtp-policy.json` stake policies, qualify every common denomination, paid mode, bonus continuation and player choice, and run `npm run check:rtp`. Follow `docs/game-stakes.md`. A new wagered module without common-stake qualification must fail application and independent module builds. An old source definition or historical compatibility exception does not authorize first publication or restoration with separate stake terms.
+- Verify the actual host with connected chat on desktop and mobile: a minimum normal start debits exactly ten cents, all selected lines are included, bonus costs are explicit, and retry, reconnect and close/reopen never create an extra debit. This policy does not add games or reopen inactive games.
+
 ## Game animation and sound
 
 - Before designing or changing game animation and audio, read `docs/game-feedback.md`. Use its event specification and verification guidance together with the game's existing design and module boundaries. Preserve choices already authorized by the user.
