@@ -1,0 +1,213 @@
+{
+  "date": "2026-11-01",
+  "game": "Star Spin",
+  "gameId": "studio-wild-nudge",
+  "sourceCommit": "e5a1f83313855f9a68f811a70cc84c2bf6dbfc09",
+  "branch": "codex/wild-nudge-relics",
+  "releaseStatus": "Unpublished development branch; no production change",
+  "module": {
+    "format": 1,
+    "gameId": "studio-wild-nudge",
+    "manifest": "/game-modules/studio-wild-nudge/versions/1.2.0-f56125793f41/manifest.json",
+    "sha256": "9a74673e031178eb4af049bf8ae71b93b89f55dcc838d7f67fc70e35ac3ce4a3"
+  },
+  "changes": [
+    "Star Spin display title and history label",
+    "Light/Dark side selection with separate remembered companions",
+    "Four original adult companions, two per side, with distinct poses",
+    "Free lessons and daily challenges; permanent account collection; no wagering requirement",
+    "Expandable character catalogue and common backend account persistence",
+    "Cosmetic UUID retry and account ownership guards",
+    "Fixed LF qualification JSON on Windows and Linux"
+  ],
+  "verification": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-01T10:09:12.718Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 6901
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 27080
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 21961
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 10806
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 100
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 35
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 34
+        }
+      ],
+      "passed": true,
+      "durationMs": 66918
+    },
+    "mathAndAdmissionTests": {
+      "passed": 17
+    },
+    "serverCollectionWalletAndCompatibilityTests": {
+      "passed": 14
+    },
+    "moduleContractAndAssetTests": {
+      "passed": 7
+    },
+    "fullHostBrowserTests": {
+      "passed": 12,
+      "failed": 0,
+      "flaky": 0,
+      "durationMs": 226609.255
+    },
+    "postMainSyncHostCollectionAndLayout": {
+      "passed": 2,
+      "failed": 0
+    },
+    "rtpGate": {
+      "verified": 35,
+      "stakePoliciesVerified": 18,
+      "stakeAdmissionVerified": 18,
+      "legacyNotQualified": 114
+    },
+    "layout": {
+      "measurements": [
+        {
+          "width": 1440,
+          "height": 1000,
+          "overflow": 0,
+          "stageHeight": 497,
+          "machineHeight": 543,
+          "boardWidth": 781
+        },
+        {
+          "width": 1280,
+          "height": 720,
+          "overflow": 0,
+          "stageHeight": 324,
+          "machineHeight": 358,
+          "boardWidth": 513
+        },
+        {
+          "width": 1024,
+          "height": 768,
+          "overflow": 0,
+          "stageHeight": 372,
+          "machineHeight": 406,
+          "boardWidth": 508
+        },
+        {
+          "width": 800,
+          "height": 600,
+          "overflow": 0,
+          "stageHeight": 204,
+          "machineHeight": 238,
+          "boardWidth": 313
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "overflow": 0,
+          "stageHeight": 88,
+          "machineHeight": 122,
+          "boardWidth": 120
+        },
+        {
+          "width": 500,
+          "height": 760,
+          "overflow": 0,
+          "stageHeight": 163,
+          "machineHeight": 197,
+          "boardWidth": 245
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "overflow": 0,
+          "stageHeight": 227,
+          "machineHeight": 261,
+          "boardWidth": 336
+        },
+        {
+          "width": 320,
+          "height": 568,
+          "overflow": 0,
+          "stageHeight": 92,
+          "machineHeight": 112,
+          "boardWidth": 140
+        },
+        {
+          "width": 844,
+          "height": 390,
+          "overflow": 0,
+          "stageHeight": 88,
+          "machineHeight": 108,
+          "boardWidth": 133
+        }
+      ],
+      "spinPanelDrift": 0
+    }
+  },
+  "mathematics": {
+    "rulesVersion": 1,
+    "progressVersion": 1,
+    "exactFullRoundRtp": 0.96137192293385,
+    "sideAndCompanionChangePayouts": false,
+    "completeRoundsComparedAcrossEveryCompanionAndOriginalStake": 72
+  },
+  "art": {
+    "tool": "Built-in image_gen",
+    "runtimeDirectory": "public/assets/wild-nudge/characters",
+    "sourceDirectory": "games/wild-nudge/assets/characters",
+    "prompts": "games/wild-nudge/assets/characters/poses.json",
+    "poses": {
+      "lyra": "Extended open-palm Force gesture with lowered cyan saber",
+      "aeliri": "Cross-legged hovering meditation",
+      "vespera": "Command stance with hand on hip and lowered red saber",
+      "nyxara": "Low diagonal combat lunge with two-handed saber"
+    },
+    "runtimeContainsWholeImages": true
+  },
+  "sourceHashes": {
+    "games/wild-nudge/GalacticReactorUI.ts": "0a721295332eda0069bf6e8e76680088fdb45b7a01251e4a7abc1fb28eb302ce",
+    "games/wild-nudge/StarSpinCollection.ts": "c9bebea45a641b02c3d713421c219c45fe46caefc30e006d56abcacb5565c88c",
+    "games/wild-nudge/reactor.css": "cd5cc819dbc68ebd5c42d59cbba381724c6f8a5ad1361ef86ab016ad676dc692",
+    "src/shared/starSpinCollection.ts": "b58b4347a5b447080b07ec30282a369bb36315071533c0fcdc95c58b8f3e48d1",
+    "server/starSpinCollection.ts": "91d6fac637a670e8f41fdb3404003f01cb87072f49b5d2ac2ab38e871b0b5000",
+    "server/starSpinCollectionRoutes.ts": "2bc88b931ab8c4d9455690ceea3e20cf6b5930bb4e5249127cb68aeecccb0623"
+  },
+  "remainingBeforePublication": [
+    "Migrate new paid starts to the current common ten-cent stake policy and qualify every common denomination, keeping accepted v1 rounds intact",
+    "Release a compatible common backend containing the collection API before the client module",
+    "Prepare and approve an exact-source production release; no server publication was requested for this step"
+  ],
+  "storage": {
+    "cleanupPending": true,
+    "preservationCommit": "e5a1f83313855f9a68f811a70cc84c2bf6dbfc09",
+    "otherUserPreviewsUntouched": [
+      5234,
+      5236
+    ],
+    "priorBlockedV1CleanupUnchanged": "docs/concepts/wild-nudge/local-storage-v1.json"
+  }
+}
