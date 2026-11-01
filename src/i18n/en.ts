@@ -2700,7 +2700,7 @@ export const english: Record<string, string> = {
   "Даже под столами?": "Even underneath?",
   "Там только потерянная удача.": "Only lost luck down there.",
   "Передай в бюро находок.": "Take it to lost and found.",
-  "Ещё один толчок, и на выход. 9/10.": "One more bump and you are out. 9/10.",
+  "Ещё один толчок, и на выход.": "One more bump and you are out.",
   "Не толкайся.": "No pushing.",
   "Не засоряй чат. Хватит спамить.": "Stop flooding the chat. Enough spam.",
   "Не оскорбляй других гостей.": "Do not insult other guests.",
