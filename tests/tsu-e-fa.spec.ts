@@ -1,6 +1,7 @@
 import {test,expect,type Page,type Browser} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 import {mkdir,writeFile} from 'node:fs/promises';
+import {renderTsuCue,type TsuCue} from '../games/tsu-e-fa/TsuSounds';
 const base='http://127.0.0.1:5193';
 const connected=(p:Page)=>expect.poll(()=>p.evaluate(()=>(window as any).royalDemo?.getNetworkState()?.status),{timeout:30000}).toBe('connected');
 const sign=(p:Page,choice='paper')=>p.locator(`.td-choices [data-choice="${choice}"]`);
@@ -90,8 +91,10 @@ test('real lost connection freezes selection and countdown; reconnect resumes th
 test('hand-duel sounds reach Royal output, follow the reveal and stay quiet after mute and reopening',async({browser})=>{
   const c=await players(browser,true),{a,b}=c;try{
     await accept(a,b);
-    await a.evaluate(async()=>{const path='/games/tsu-e-fa/TsuSounds.ts',{renderTsuCue}=await import(path),rate=(window as any)[Symbol.for('royal.game-host.v1')].gameAudio.context.sampleRate;
-      (window as any).tsuSoundTrace.known=['lock','ready','beat','reveal','draw','round-win','round-lose','match-win','match-lose'].flatMap(cue=>(cue==='beat'?[0,1,2,3,4]:[0]).map(variant=>(window as any).tsuSoundFingerprint(renderTsuCue(cue,rate,variant))));});
+    const rate=await a.evaluate(()=>(window as any)[Symbol.for('royal.game-host.v1')].gameAudio.context.sampleRate);
+    const cues:TsuCue[]=['lock','ready','beat','reveal','draw','round-win','round-lose','match-win','match-lose'];
+    const known=cues.flatMap(cue=>(cue==='beat'?[0,1,2,3,4]:[0]).map(variant=>{const data=renderTsuCue(cue,rate,variant);let hash=2166136261;for(let i=0;i<Math.min(128,data.length);i++)hash=Math.imul(hash^(Math.round(data[i]*1e7)|0),16777619);return data.length+':'+(hash>>>0);}));
+    await a.evaluate(known=>{(window as any).tsuSoundTrace.known=known;},known);
     await ready(a,b);await winRound(a,b,1);await expect(sign(a)).toBeEnabled();
     const owned=()=>a.evaluate(()=>{const t=(window as any).tsuSoundTrace;return t.sources.filter((row:any)=>t.known.includes(row.fingerprint));});
     const trace={sources:await owned(),visual:await a.evaluate(()=>(window as any).tsuSoundTrace.visual)};
