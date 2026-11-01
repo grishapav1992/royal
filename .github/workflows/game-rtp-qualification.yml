@@ -87,3 +87,4 @@ jobs:
         run: |
           npm run qualify:rtp -- --game tsu-e-fa --rules 1
           npm run qualify:rtp -- --game tsu-e-fa --rules 2
+          npm run qualify:rtp -- --game tsu-e-fa --rules 3

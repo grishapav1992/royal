@@ -1,0 +1,1902 @@
+{
+  "schemaVersion": 1,
+  "gameId": "tsu-e-fa",
+  "rulesVersion": 4,
+  "progressVersion": 1,
+  "startedAt": "2026-11-01T13:22:07.419Z",
+  "completedAt": "2026-11-01T13:22:26.054Z",
+  "sourceHashes": {
+    "src/shared/pvp.ts": "a1e4694f9f7102779a256e95820361e40383ea6396cc64af7da25e304d4d134f",
+    "src/shared/tsuEFa.ts": "907dc4fae7035222cf290bcf99650b3d4945058931a54eb523cf3e3be02e18ed",
+    "src/shared/tsuDuel.ts": "c6d3f0bc21fdfeea1307a506b3e1238de7af9711ac054fa93c2785eb9a9c6505",
+    "src/shared/gameStakes.ts": "111e989e050588da872771dbfc11736566737141ea612f67504146e035b6a78d",
+    "src/shared/roundPrecision.ts": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
+    "server/pvp/tsu-e-fa.ts": "58f0b673419810f425906220b5ff7532d1aef9a1643b011651bd22184ed37ae9",
+    "server/pvp/tsu-duel.ts": "2c0cf3c3a12770011c9261b8d185019e4b841334581253278b6a52c8048e4e92",
+    "server/pvp/store.ts": "b81b6e1dc1503011ec5eb4b290fd05b9e0fefbabeb7c1134e111a20975c54a2f",
+    "server/pvp/room.ts": "407f0b7529014ed1ac602ea22e8bb98d2c7fa2fded3ea72cffa4a0515048ffbf",
+    "server/pvp/virtual-wallet.ts": "78b99a9001b544cc089028fd3ef96fbd61f57d6a2ba5c6b53f2ee913c88e6feb",
+    "server/finance/pvp-money.ts": "e71a90edf48f23a0479b7b85933aab583263daee14edf59edf301baa92b9115b",
+    "scripts/game-math/rtp-tsu-duel-stakes.mjs": "62e3b7442684f56cdcfd55dc014adc10340ee71c4189b2bff40ee27172e34524",
+    "scripts/game-math/tsu-duel-wallet.ts": "e1dc5cd60b9be0e55c2074a368244d7f1c52acde667ffb1a046bc6ce0edd3efb",
+    "server/demoWallet.ts": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63",
+    "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
+    "server/database.ts": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8",
+    "scripts/game-math/rtp-stakes.mjs": "11a1c369b33fd4bb59da6d2c43b1743e0a9e8dc4813ad4e8ec3e50b7278eec84"
+  },
+  "policySha256": "c50e6103440798eab50aab2ed4995b947d9e05d649617219de89d3bbc7dd76f9",
+  "method": "full-round-unbiased-cent-policy-v1",
+  "precisionLaw": {
+    "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
+    "identity": "For exact reward n/d, let q=floor(n/d), r=n mod d and uniform U in {0,...,d-1}. Pay q+1 if U<r, otherwise q. The sum over all tickets is q*d+r=n.",
+    "stopping": "The ticket is drawn only after the final player choice and every free continuation. No future rounding ticket is exposed to adaptive choices.",
+    "preservation": "Every intermediate discarded fraction is restored before the final ticket. For a fixed consumed path the expected credit equals its capped exact reward, and the actual credit never falls below the original sum of floors.",
+    "caps": "Nonnegative rewards couple every denomination to the same latent capped paid round. Stopping a presentation after its floor reaches the cap does not change that round reward.",
+    "compatibility": "Only starts pinned to stakePolicyVersion=1 use this receipt. Accepted historical rounds and UUID replays retain their original rules and committed credit.",
+    "confidence": "Exact analytical bounds and statistical intervals are labelled separately. A statistical estimate is not an exact RTP. Conditional estimates are per case, not simultaneous confidence guarantees."
+  },
+  "rulesCoverage": {
+    "targets": [
+      2
+    ],
+    "scores": 4,
+    "pairsPerScore": 9,
+    "orders": 2,
+    "cases": 72,
+    "privacyChecks": 144
+  },
+  "results": [
+    {
+      "choice": "left-win",
+      "stakeUnits": 10,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 20,
+      "feeCents": 1,
+      "creditsCents": [
+        19,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "left-win",
+      "stakeUnits": 20,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 40,
+      "feeCents": 2,
+      "creditsCents": [
+        38,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "left-win",
+      "stakeUnits": 50,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 100,
+      "feeCents": 5,
+      "creditsCents": [
+        95,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "left-win",
+      "stakeUnits": 100,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 200,
+      "feeCents": 10,
+      "creditsCents": [
+        190,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "left-win",
+      "stakeUnits": 200,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 400,
+      "feeCents": 20,
+      "creditsCents": [
+        380,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "left-win",
+      "stakeUnits": 500,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 1000,
+      "feeCents": 50,
+      "creditsCents": [
+        950,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "left-win",
+      "stakeUnits": 1000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 2000,
+      "feeCents": 100,
+      "creditsCents": [
+        1900,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "left-win",
+      "stakeUnits": 2000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 4000,
+      "feeCents": 200,
+      "creditsCents": [
+        3800,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "left-win",
+      "stakeUnits": 5000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 10000,
+      "feeCents": 500,
+      "creditsCents": [
+        9500,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "right-win",
+      "stakeUnits": 10,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 20,
+      "feeCents": 1,
+      "creditsCents": [
+        0,
+        19
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "right-win",
+      "stakeUnits": 20,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 40,
+      "feeCents": 2,
+      "creditsCents": [
+        0,
+        38
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "right-win",
+      "stakeUnits": 50,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 100,
+      "feeCents": 5,
+      "creditsCents": [
+        0,
+        95
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "right-win",
+      "stakeUnits": 100,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 200,
+      "feeCents": 10,
+      "creditsCents": [
+        0,
+        190
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "right-win",
+      "stakeUnits": 200,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 400,
+      "feeCents": 20,
+      "creditsCents": [
+        0,
+        380
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "right-win",
+      "stakeUnits": 500,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 1000,
+      "feeCents": 50,
+      "creditsCents": [
+        0,
+        950
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "right-win",
+      "stakeUnits": 1000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 2000,
+      "feeCents": 100,
+      "creditsCents": [
+        0,
+        1900
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "right-win",
+      "stakeUnits": 2000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 4000,
+      "feeCents": 200,
+      "creditsCents": [
+        0,
+        3800
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "right-win",
+      "stakeUnits": 5000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 10000,
+      "feeCents": 500,
+      "creditsCents": [
+        0,
+        9500
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "draw",
+      "stakeUnits": 10,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 20,
+      "feeCents": 0,
+      "creditsCents": [
+        10,
+        10
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "draw",
+      "stakeUnits": 20,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 40,
+      "feeCents": 0,
+      "creditsCents": [
+        20,
+        20
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "draw",
+      "stakeUnits": 50,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 100,
+      "feeCents": 0,
+      "creditsCents": [
+        50,
+        50
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "draw",
+      "stakeUnits": 100,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 200,
+      "feeCents": 0,
+      "creditsCents": [
+        100,
+        100
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "draw",
+      "stakeUnits": 200,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 400,
+      "feeCents": 0,
+      "creditsCents": [
+        200,
+        200
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "draw",
+      "stakeUnits": 500,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 1000,
+      "feeCents": 0,
+      "creditsCents": [
+        500,
+        500
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "draw",
+      "stakeUnits": 1000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 2000,
+      "feeCents": 0,
+      "creditsCents": [
+        1000,
+        1000
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "draw",
+      "stakeUnits": 2000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 4000,
+      "feeCents": 0,
+      "creditsCents": [
+        2000,
+        2000
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "draw",
+      "stakeUnits": 5000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 10000,
+      "feeCents": 0,
+      "creditsCents": [
+        5000,
+        5000
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "cancel",
+      "stakeUnits": 10,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 20,
+      "feeCents": 0,
+      "creditsCents": [
+        10,
+        10
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "cancel",
+      "stakeUnits": 20,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 40,
+      "feeCents": 0,
+      "creditsCents": [
+        20,
+        20
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "cancel",
+      "stakeUnits": 50,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 100,
+      "feeCents": 0,
+      "creditsCents": [
+        50,
+        50
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "cancel",
+      "stakeUnits": 100,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 200,
+      "feeCents": 0,
+      "creditsCents": [
+        100,
+        100
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "cancel",
+      "stakeUnits": 200,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 400,
+      "feeCents": 0,
+      "creditsCents": [
+        200,
+        200
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "cancel",
+      "stakeUnits": 500,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 1000,
+      "feeCents": 0,
+      "creditsCents": [
+        500,
+        500
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "cancel",
+      "stakeUnits": 1000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 2000,
+      "feeCents": 0,
+      "creditsCents": [
+        1000,
+        1000
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "cancel",
+      "stakeUnits": 2000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 4000,
+      "feeCents": 0,
+      "creditsCents": [
+        2000,
+        2000
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "cancel",
+      "stakeUnits": 5000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 10000,
+      "feeCents": 0,
+      "creditsCents": [
+        5000,
+        5000
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "disconnect-left",
+      "stakeUnits": 10,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 20,
+      "feeCents": 1,
+      "creditsCents": [
+        19,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "disconnect-left",
+      "stakeUnits": 20,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 40,
+      "feeCents": 2,
+      "creditsCents": [
+        38,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "disconnect-left",
+      "stakeUnits": 50,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 100,
+      "feeCents": 5,
+      "creditsCents": [
+        95,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "disconnect-left",
+      "stakeUnits": 100,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 200,
+      "feeCents": 10,
+      "creditsCents": [
+        190,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "disconnect-left",
+      "stakeUnits": 200,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 400,
+      "feeCents": 20,
+      "creditsCents": [
+        380,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "disconnect-left",
+      "stakeUnits": 500,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 1000,
+      "feeCents": 50,
+      "creditsCents": [
+        950,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "disconnect-left",
+      "stakeUnits": 1000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 2000,
+      "feeCents": 100,
+      "creditsCents": [
+        1900,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "disconnect-left",
+      "stakeUnits": 2000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 4000,
+      "feeCents": 200,
+      "creditsCents": [
+        3800,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "disconnect-left",
+      "stakeUnits": 5000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 10000,
+      "feeCents": 500,
+      "creditsCents": [
+        9500,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "disconnect-right",
+      "stakeUnits": 10,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 20,
+      "feeCents": 1,
+      "creditsCents": [
+        0,
+        19
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "disconnect-right",
+      "stakeUnits": 20,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 40,
+      "feeCents": 2,
+      "creditsCents": [
+        0,
+        38
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "disconnect-right",
+      "stakeUnits": 50,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 100,
+      "feeCents": 5,
+      "creditsCents": [
+        0,
+        95
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "disconnect-right",
+      "stakeUnits": 100,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 200,
+      "feeCents": 10,
+      "creditsCents": [
+        0,
+        190
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "disconnect-right",
+      "stakeUnits": 200,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 400,
+      "feeCents": 20,
+      "creditsCents": [
+        0,
+        380
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "disconnect-right",
+      "stakeUnits": 500,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 1000,
+      "feeCents": 50,
+      "creditsCents": [
+        0,
+        950
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "disconnect-right",
+      "stakeUnits": 1000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 2000,
+      "feeCents": 100,
+      "creditsCents": [
+        0,
+        1900
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "disconnect-right",
+      "stakeUnits": 2000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 4000,
+      "feeCents": 200,
+      "creditsCents": [
+        0,
+        3800
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "disconnect-right",
+      "stakeUnits": 5000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 10000,
+      "feeCents": 500,
+      "creditsCents": [
+        0,
+        9500
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "expired",
+      "stakeUnits": 10,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 20,
+      "feeCents": 0,
+      "creditsCents": [
+        10,
+        10
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "expired",
+      "stakeUnits": 20,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 40,
+      "feeCents": 0,
+      "creditsCents": [
+        20,
+        20
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "expired",
+      "stakeUnits": 50,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 100,
+      "feeCents": 0,
+      "creditsCents": [
+        50,
+        50
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "expired",
+      "stakeUnits": 100,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 200,
+      "feeCents": 0,
+      "creditsCents": [
+        100,
+        100
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "expired",
+      "stakeUnits": 200,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 400,
+      "feeCents": 0,
+      "creditsCents": [
+        200,
+        200
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "expired",
+      "stakeUnits": 500,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 1000,
+      "feeCents": 0,
+      "creditsCents": [
+        500,
+        500
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "expired",
+      "stakeUnits": 1000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 2000,
+      "feeCents": 0,
+      "creditsCents": [
+        1000,
+        1000
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "expired",
+      "stakeUnits": 2000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 4000,
+      "feeCents": 0,
+      "creditsCents": [
+        2000,
+        2000
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "expired",
+      "stakeUnits": 5000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 10000,
+      "feeCents": 0,
+      "creditsCents": [
+        5000,
+        5000
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "server",
+      "stakeUnits": 10,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 20,
+      "feeCents": 0,
+      "creditsCents": [
+        10,
+        10
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "server",
+      "stakeUnits": 20,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 40,
+      "feeCents": 0,
+      "creditsCents": [
+        20,
+        20
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "server",
+      "stakeUnits": 50,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 100,
+      "feeCents": 0,
+      "creditsCents": [
+        50,
+        50
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "server",
+      "stakeUnits": 100,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 200,
+      "feeCents": 0,
+      "creditsCents": [
+        100,
+        100
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "server",
+      "stakeUnits": 200,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 400,
+      "feeCents": 0,
+      "creditsCents": [
+        200,
+        200
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "server",
+      "stakeUnits": 500,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 1000,
+      "feeCents": 0,
+      "creditsCents": [
+        500,
+        500
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "server",
+      "stakeUnits": 1000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 2000,
+      "feeCents": 0,
+      "creditsCents": [
+        1000,
+        1000
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "server",
+      "stakeUnits": 2000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 4000,
+      "feeCents": 0,
+      "creditsCents": [
+        2000,
+        2000
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "server",
+      "stakeUnits": 5000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 10000,
+      "feeCents": 0,
+      "creditsCents": [
+        5000,
+        5000
+      ],
+      "potReturn": 1
+    },
+    {
+      "choice": "resign-left",
+      "stakeUnits": 10,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 20,
+      "feeCents": 1,
+      "creditsCents": [
+        19,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "resign-left",
+      "stakeUnits": 20,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 40,
+      "feeCents": 2,
+      "creditsCents": [
+        38,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "resign-left",
+      "stakeUnits": 50,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 100,
+      "feeCents": 5,
+      "creditsCents": [
+        95,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "resign-left",
+      "stakeUnits": 100,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 200,
+      "feeCents": 10,
+      "creditsCents": [
+        190,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "resign-left",
+      "stakeUnits": 200,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 400,
+      "feeCents": 20,
+      "creditsCents": [
+        380,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "resign-left",
+      "stakeUnits": 500,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 1000,
+      "feeCents": 50,
+      "creditsCents": [
+        950,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "resign-left",
+      "stakeUnits": 1000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 2000,
+      "feeCents": 100,
+      "creditsCents": [
+        1900,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "resign-left",
+      "stakeUnits": 2000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 4000,
+      "feeCents": 200,
+      "creditsCents": [
+        3800,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "resign-left",
+      "stakeUnits": 5000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 10000,
+      "feeCents": 500,
+      "creditsCents": [
+        9500,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "resign-right",
+      "stakeUnits": 10,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 20,
+      "feeCents": 1,
+      "creditsCents": [
+        0,
+        19
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "resign-right",
+      "stakeUnits": 20,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 40,
+      "feeCents": 2,
+      "creditsCents": [
+        0,
+        38
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "resign-right",
+      "stakeUnits": 50,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 100,
+      "feeCents": 5,
+      "creditsCents": [
+        0,
+        95
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "resign-right",
+      "stakeUnits": 100,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 200,
+      "feeCents": 10,
+      "creditsCents": [
+        0,
+        190
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "resign-right",
+      "stakeUnits": 200,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 400,
+      "feeCents": 20,
+      "creditsCents": [
+        0,
+        380
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "resign-right",
+      "stakeUnits": 500,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 1000,
+      "feeCents": 50,
+      "creditsCents": [
+        0,
+        950
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "resign-right",
+      "stakeUnits": 1000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 2000,
+      "feeCents": 100,
+      "creditsCents": [
+        0,
+        1900
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "resign-right",
+      "stakeUnits": 2000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 4000,
+      "feeCents": 200,
+      "creditsCents": [
+        0,
+        3800
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "resign-right",
+      "stakeUnits": 5000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 10000,
+      "feeCents": 500,
+      "creditsCents": [
+        0,
+        9500
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-left",
+      "stakeUnits": 10,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 20,
+      "feeCents": 1,
+      "creditsCents": [
+        19,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-left",
+      "stakeUnits": 20,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 40,
+      "feeCents": 2,
+      "creditsCents": [
+        38,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-left",
+      "stakeUnits": 50,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 100,
+      "feeCents": 5,
+      "creditsCents": [
+        95,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-left",
+      "stakeUnits": 100,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 200,
+      "feeCents": 10,
+      "creditsCents": [
+        190,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-left",
+      "stakeUnits": 200,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 400,
+      "feeCents": 20,
+      "creditsCents": [
+        380,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-left",
+      "stakeUnits": 500,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 1000,
+      "feeCents": 50,
+      "creditsCents": [
+        950,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-left",
+      "stakeUnits": 1000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 2000,
+      "feeCents": 100,
+      "creditsCents": [
+        1900,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-left",
+      "stakeUnits": 2000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 4000,
+      "feeCents": 200,
+      "creditsCents": [
+        3800,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-left",
+      "stakeUnits": 5000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 10000,
+      "feeCents": 500,
+      "creditsCents": [
+        9500,
+        0
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-right",
+      "stakeUnits": 10,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 20,
+      "feeCents": 1,
+      "creditsCents": [
+        0,
+        19
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-right",
+      "stakeUnits": 20,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 40,
+      "feeCents": 2,
+      "creditsCents": [
+        0,
+        38
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-right",
+      "stakeUnits": 50,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 100,
+      "feeCents": 5,
+      "creditsCents": [
+        0,
+        95
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-right",
+      "stakeUnits": 100,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 200,
+      "feeCents": 10,
+      "creditsCents": [
+        0,
+        190
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-right",
+      "stakeUnits": 200,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 400,
+      "feeCents": 20,
+      "creditsCents": [
+        0,
+        380
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-right",
+      "stakeUnits": 500,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 1000,
+      "feeCents": 50,
+      "creditsCents": [
+        0,
+        950
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-right",
+      "stakeUnits": 1000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 2000,
+      "feeCents": 100,
+      "creditsCents": [
+        0,
+        1900
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-right",
+      "stakeUnits": 2000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 4000,
+      "feeCents": 200,
+      "creditsCents": [
+        0,
+        3800
+      ],
+      "potReturn": 0.95
+    },
+    {
+      "choice": "timeout-right",
+      "stakeUnits": 5000,
+      "kind": "exact-aggregate-pot-return",
+      "potCents": 10000,
+      "feeCents": 500,
+      "creditsCents": [
+        0,
+        9500
+      ],
+      "potReturn": 0.95
+    }
+  ],
+  "walletEvidence": {
+    "passed": true,
+    "gameId": "tsu-e-fa",
+    "rulesVersion": 4,
+    "cases": 108,
+    "replayAndRestartCases": 108,
+    "clientVerified": true,
+    "oneDebitAndCredit": true,
+    "sha256": "03b8b4dd0b8dbfc80d460c353fca72b7768af5e10683d2e24bd2aa5cb8d90e56"
+  },
+  "serverReplayChecks": 108,
+  "replay": {
+    "coverage": [
+      {
+        "choice": "left-win",
+        "stakeUnits": 10,
+        "sha256": "ab128801ca3227d9740d5847dea4ed797dbc3821d4c4289bd3044709c96e8bf8"
+      },
+      {
+        "choice": "left-win",
+        "stakeUnits": 20,
+        "sha256": "82677b167924074456943aa60e3d682efc5c36d6db42e65462aa40518bf68e2b"
+      },
+      {
+        "choice": "left-win",
+        "stakeUnits": 50,
+        "sha256": "d97e151dca0e6e733429a80af2e6f4a0f41c0279c24faba081cf947b7c72b693"
+      },
+      {
+        "choice": "left-win",
+        "stakeUnits": 100,
+        "sha256": "0051f9bb972c6cf6c810ea97471bf1f4e98b4d6139b1548155e473f911bf9394"
+      },
+      {
+        "choice": "left-win",
+        "stakeUnits": 200,
+        "sha256": "59a64bf72721982a1dd76051950f4c1f1263f6ef6260b68dee76302464310253"
+      },
+      {
+        "choice": "left-win",
+        "stakeUnits": 500,
+        "sha256": "ad56a7043c9dc48475b5ca2bc70af8a66250f62f3bd750b23726e365a2e35de5"
+      },
+      {
+        "choice": "left-win",
+        "stakeUnits": 1000,
+        "sha256": "69451052ad21e26059840b46ba7cadc7c74e00b6060fd88d79e03020e71d10b5"
+      },
+      {
+        "choice": "left-win",
+        "stakeUnits": 2000,
+        "sha256": "6c0dc603820dba2c71ddd35a94d68b50add50223b113d89e7172e12255f476f8"
+      },
+      {
+        "choice": "left-win",
+        "stakeUnits": 5000,
+        "sha256": "6057cceee5ae46ca2251ec9db69ec88d9444ca7eab913c1d5f98de8b5e6c26b8"
+      },
+      {
+        "choice": "right-win",
+        "stakeUnits": 10,
+        "sha256": "90b767ace2b4fd63117925c4692638ed5dec56c4ecfb8dd10c045dbbc622c280"
+      },
+      {
+        "choice": "right-win",
+        "stakeUnits": 20,
+        "sha256": "8c6c2e02fdd4c74eab4b456b85e1258889b74c07b479af740b1fb81875525a97"
+      },
+      {
+        "choice": "right-win",
+        "stakeUnits": 50,
+        "sha256": "68d8d4fad8a0b225bd1477c195edb642b23aa764e790c82cc577e5e7f1bb4bf6"
+      },
+      {
+        "choice": "right-win",
+        "stakeUnits": 100,
+        "sha256": "b0316109ae91ecb4e0d15c0a54efc2ea67d515bf9ba2a9a28920cc9b0a07e0cc"
+      },
+      {
+        "choice": "right-win",
+        "stakeUnits": 200,
+        "sha256": "8f3074e98434ef88efcaff99c1a67b0449687a569ecffc637091f2ebb1f88200"
+      },
+      {
+        "choice": "right-win",
+        "stakeUnits": 500,
+        "sha256": "255e95c909a889b314980c30c0dc0112b7221c785eb80057b6cfd9f3073ee1bb"
+      },
+      {
+        "choice": "right-win",
+        "stakeUnits": 1000,
+        "sha256": "4b3ed902fca09114c5ad62c9a3268ae12d50ca8c70a8aa314a1334a2f8c7e647"
+      },
+      {
+        "choice": "right-win",
+        "stakeUnits": 2000,
+        "sha256": "9e215f2b94d01719771a99419f655350e2b877118480b15d324459f693b3865a"
+      },
+      {
+        "choice": "right-win",
+        "stakeUnits": 5000,
+        "sha256": "05bd90d05a4e289df17c3d331296497959024be144ef56daa0ddb60840b14796"
+      },
+      {
+        "choice": "draw",
+        "stakeUnits": 10,
+        "sha256": "9694b8f09e1397ed041d6bd473ee5f53a12410bac4d543d389afbe6710798257"
+      },
+      {
+        "choice": "draw",
+        "stakeUnits": 20,
+        "sha256": "fc572cd0f5d13c7cfe87d8abac259d00f68786fe72715a17830244e9033508de"
+      },
+      {
+        "choice": "draw",
+        "stakeUnits": 50,
+        "sha256": "10d04f6354628106c6936fc10140f54947389ea3130d553eca1188a52f5aa1e0"
+      },
+      {
+        "choice": "draw",
+        "stakeUnits": 100,
+        "sha256": "3392a8789ba5e7ede20d7dd28007130ec109975ffe0f4a3513064ba3e275e8e2"
+      },
+      {
+        "choice": "draw",
+        "stakeUnits": 200,
+        "sha256": "8641e5ef51636c23b618e232d7a45b1c17b7c85881d3c01d28a6b703d1e5490f"
+      },
+      {
+        "choice": "draw",
+        "stakeUnits": 500,
+        "sha256": "e2ccb95af41cbd455ff07dc3b33a84c965cb8bd7d251c6fe9c4e32a189ebb44e"
+      },
+      {
+        "choice": "draw",
+        "stakeUnits": 1000,
+        "sha256": "57d0f1e72397b9fd9df38639daab21a51cc81d30caaf21e89c4b070d103fc681"
+      },
+      {
+        "choice": "draw",
+        "stakeUnits": 2000,
+        "sha256": "8a055206a9d555aa6b26007d1505a4df35bd86bc0c78a9eea5d243d8c4db8a95"
+      },
+      {
+        "choice": "draw",
+        "stakeUnits": 5000,
+        "sha256": "31562ce338389f317b0485abd79adaf7a3f6022817ea56f35b7f1d6a9125732c"
+      },
+      {
+        "choice": "cancel",
+        "stakeUnits": 10,
+        "sha256": "d1852c6d563d3eddcb2e85dd0c3a31791ebe3329e04306b0038a2dc2c2c6a96b"
+      },
+      {
+        "choice": "cancel",
+        "stakeUnits": 20,
+        "sha256": "0803aaf89d3035fe3709cb28fd4933cde3f49c1a1c23a350269c792aa843f941"
+      },
+      {
+        "choice": "cancel",
+        "stakeUnits": 50,
+        "sha256": "3ec15f24d56d9d79061b9eda2875b6b06b33b0ebd379e664d0d6c097ea5b6cc7"
+      },
+      {
+        "choice": "cancel",
+        "stakeUnits": 100,
+        "sha256": "560b6b0bd4eaaf62b28afdc97f62f2df7c6bc842e7b6060e939d0c8241db7fb2"
+      },
+      {
+        "choice": "cancel",
+        "stakeUnits": 200,
+        "sha256": "1f442038bcfd796d1a35be023d9835e707a9e2ac567a55500458ce7ecea03a54"
+      },
+      {
+        "choice": "cancel",
+        "stakeUnits": 500,
+        "sha256": "af09f003e8b420ec1803c41779c634ab8ab46148b3474b3bc6fe5d3625091718"
+      },
+      {
+        "choice": "cancel",
+        "stakeUnits": 1000,
+        "sha256": "fb2c58ab6411aa8eea10cc372134759c43017abef4b1648e02c1077cf74809d6"
+      },
+      {
+        "choice": "cancel",
+        "stakeUnits": 2000,
+        "sha256": "18f1f6d400bc0b81bb4daa358c23c14b7f864cedf7e7f691a3e7eaddc624cb7e"
+      },
+      {
+        "choice": "cancel",
+        "stakeUnits": 5000,
+        "sha256": "fa8a08a81e47a3cf5bff0977a3b3562c3bd2075ea70f8c331aba38a481c21d9b"
+      },
+      {
+        "choice": "disconnect-left",
+        "stakeUnits": 10,
+        "sha256": "bad757d919e19510c93d4df7b36503eb77f399963d1059d1c9a0e507a8db0860"
+      },
+      {
+        "choice": "disconnect-left",
+        "stakeUnits": 20,
+        "sha256": "d79bcb8bafe146713c946b48b038bd369372f5fb15e001c7c4f97ea505e55fa7"
+      },
+      {
+        "choice": "disconnect-left",
+        "stakeUnits": 50,
+        "sha256": "c32378b91674f70541966e34a5123a84d7b47a1d7b302c7af55261623417a196"
+      },
+      {
+        "choice": "disconnect-left",
+        "stakeUnits": 100,
+        "sha256": "e1e0872c52545af72bb35168244ac839630b30354c7e1abbb7a52ff63cb8591b"
+      },
+      {
+        "choice": "disconnect-left",
+        "stakeUnits": 200,
+        "sha256": "87ef5a7684c0efdef6f6477ce851dbe072716bc018c39f75c4bfe5e21af927fb"
+      },
+      {
+        "choice": "disconnect-left",
+        "stakeUnits": 500,
+        "sha256": "e346c2991d1e5382c247663f6f5e627473e05d33be988b4984680cc4e00f022f"
+      },
+      {
+        "choice": "disconnect-left",
+        "stakeUnits": 1000,
+        "sha256": "4abfd30f2acfb33b2ad6809ebdc4addeee7ab8df3f896fffc93a3cb108d50d4a"
+      },
+      {
+        "choice": "disconnect-left",
+        "stakeUnits": 2000,
+        "sha256": "1e23a1b2c4f43e2245289bd12e0baa1995061dbfd67847aa73386517da42c451"
+      },
+      {
+        "choice": "disconnect-left",
+        "stakeUnits": 5000,
+        "sha256": "2550d9c7c739495ce3a259885c1d90a7ffafff9f8f2a8dcccacd2e126740df55"
+      },
+      {
+        "choice": "disconnect-right",
+        "stakeUnits": 10,
+        "sha256": "c47da851eabb3da6d6153c4dd59f64ff25f952908a5040fcaf8963601f4a1fc6"
+      },
+      {
+        "choice": "disconnect-right",
+        "stakeUnits": 20,
+        "sha256": "49b208b2f342d9908990e6113c6fa78883d2c20df67f168b591139e46478a468"
+      },
+      {
+        "choice": "disconnect-right",
+        "stakeUnits": 50,
+        "sha256": "dd62cb11225f5f8228e573300842a51081091cdc9a1aa4452d1463b8546a3fb9"
+      },
+      {
+        "choice": "disconnect-right",
+        "stakeUnits": 100,
+        "sha256": "5296b1ee1b55e89c80a2a3f80d9c2eb77c07e015f15c07c2e215519b692ef79d"
+      },
+      {
+        "choice": "disconnect-right",
+        "stakeUnits": 200,
+        "sha256": "952718d765c514979c87b31614f6adad165727d92a4b74d8dd1c160afa1e14fa"
+      },
+      {
+        "choice": "disconnect-right",
+        "stakeUnits": 500,
+        "sha256": "9040ec59948e8904c156799fdfcdb270c77b372f4f06e84bbe229186f05fb4c6"
+      },
+      {
+        "choice": "disconnect-right",
+        "stakeUnits": 1000,
+        "sha256": "b9da3fa41aeaed7666091a769c5a5691edf84ec5c947dc4e032cd0f17d524593"
+      },
+      {
+        "choice": "disconnect-right",
+        "stakeUnits": 2000,
+        "sha256": "830b3132ff59f2114bbc67a810a6998dc5b132ab87c5dba1d4a306b6801a0953"
+      },
+      {
+        "choice": "disconnect-right",
+        "stakeUnits": 5000,
+        "sha256": "4d3e12d8dea0d91f1cf3c5f91813084c2c11691ac1b0e388db14d36c483aaf0f"
+      },
+      {
+        "choice": "expired",
+        "stakeUnits": 10,
+        "sha256": "fd105fca4812f190896900d9fd19f0fc1ea6daa9d46ef9acdda53e1004fe64ce"
+      },
+      {
+        "choice": "expired",
+        "stakeUnits": 20,
+        "sha256": "a5c444e8530f93e2d0cd57a1ef2428eb69fbaa294922427f1919cc56cb7a395d"
+      },
+      {
+        "choice": "expired",
+        "stakeUnits": 50,
+        "sha256": "de59311c672c0d949fbe384b61b618d9b1f395ddde1100761e13ceb2ead599fe"
+      },
+      {
+        "choice": "expired",
+        "stakeUnits": 100,
+        "sha256": "e85ebb75e2eef7fb027a2b43854a4a06f4e70cd88096ca48620179c395b3348f"
+      },
+      {
+        "choice": "expired",
+        "stakeUnits": 200,
+        "sha256": "fe0de790b3bb7e3aadbc95356afaef0940b648bce87cc9080890a005900f5764"
+      },
+      {
+        "choice": "expired",
+        "stakeUnits": 500,
+        "sha256": "fb5df0e27fd213e79257ece1b0cf2a899ceeec0ea73f699a6e62106065c57c64"
+      },
+      {
+        "choice": "expired",
+        "stakeUnits": 1000,
+        "sha256": "4965b104d35a970dd4078ba7b9be41549b794d311443b1811fd00cc3d725e6ec"
+      },
+      {
+        "choice": "expired",
+        "stakeUnits": 2000,
+        "sha256": "32a1c86efd029fc69071696b07b87afb99ef4ec8e97a179d4895cf04384fb455"
+      },
+      {
+        "choice": "expired",
+        "stakeUnits": 5000,
+        "sha256": "9dccb2c39c23172103fb817c93504eb4d2f50bc9a62d51100a4a3c747f73888c"
+      },
+      {
+        "choice": "server",
+        "stakeUnits": 10,
+        "sha256": "b2af6b0b733d657f6a11cd333f4e2e848b1365e939ce7b01807b1f429925c52e"
+      },
+      {
+        "choice": "server",
+        "stakeUnits": 20,
+        "sha256": "72aa01b422de33137b4828dd28c3e95c0d9d11e9319a4f4c4224977de40d4d3c"
+      },
+      {
+        "choice": "server",
+        "stakeUnits": 50,
+        "sha256": "c361e1ead5c787f440b02bd1e8875e01af3c8ae62be8e8d1fb3177cd938d58b4"
+      },
+      {
+        "choice": "server",
+        "stakeUnits": 100,
+        "sha256": "3f15d0f5f5c6c09eb60324ab42761cf4f56e8dc0ff8f321dc5d84845ab900dbb"
+      },
+      {
+        "choice": "server",
+        "stakeUnits": 200,
+        "sha256": "7124f380ad4535fb471a9b052bb71c3d5d4cb77a51d588a627b7f6b56d87a090"
+      },
+      {
+        "choice": "server",
+        "stakeUnits": 500,
+        "sha256": "3ec5d18cc54d395c282f099407a5bbf1a55e1b8510f90b0ce56faa5969f8f6fe"
+      },
+      {
+        "choice": "server",
+        "stakeUnits": 1000,
+        "sha256": "3a3fdcb64da4fa12068f132089f3786e759221f74b7b9ad13f53dc33f52c9702"
+      },
+      {
+        "choice": "server",
+        "stakeUnits": 2000,
+        "sha256": "2dcbf6a4e6d4c3597a3cc3e174fa53ac97323be0963e6d38f8748fa455fd1fe1"
+      },
+      {
+        "choice": "server",
+        "stakeUnits": 5000,
+        "sha256": "3684a62016cd276c268d5410af094c481af4e12d73606c6a99ee99b686c0ed8d"
+      },
+      {
+        "choice": "resign-left",
+        "stakeUnits": 10,
+        "sha256": "5875e945a3e557cac36f3b561fef5d7678e575e5feadf17d80e230f2eb6de5ea"
+      },
+      {
+        "choice": "resign-left",
+        "stakeUnits": 20,
+        "sha256": "95c50ef0381da1e5ddafd1669746b930f7d0e0745256a385a4565e3fd4839ef6"
+      },
+      {
+        "choice": "resign-left",
+        "stakeUnits": 50,
+        "sha256": "078eab7059708da62ec203418bd4d011924357f7afdcfde79af24a69ad7d0438"
+      },
+      {
+        "choice": "resign-left",
+        "stakeUnits": 100,
+        "sha256": "4cef6d4c89f3aceffeeca38c2c5fc21ec7c0f3f881c82fb5ee89eba3d2144094"
+      },
+      {
+        "choice": "resign-left",
+        "stakeUnits": 200,
+        "sha256": "441aa49c43fb11d4385db009d5fdebba210d889154c04a819ebc3ff626759d50"
+      },
+      {
+        "choice": "resign-left",
+        "stakeUnits": 500,
+        "sha256": "73bc02cd331b3bd8ab8d4b5456f8a47085c28bb1dbfd3fe6124f4a6f88f16baf"
+      },
+      {
+        "choice": "resign-left",
+        "stakeUnits": 1000,
+        "sha256": "60d7650c873c51fc1e66a0d82e2d00439d9e02fc6d90db0b0b489781aca81f16"
+      },
+      {
+        "choice": "resign-left",
+        "stakeUnits": 2000,
+        "sha256": "95f5450a15374b51ba45619bf8d6167c0f76a2fef5482ee86d9241580d2bf705"
+      },
+      {
+        "choice": "resign-left",
+        "stakeUnits": 5000,
+        "sha256": "d8b09eac2b76c2ed560f4263204598440733960dda1f614e2dcfd335c97c3a9d"
+      },
+      {
+        "choice": "resign-right",
+        "stakeUnits": 10,
+        "sha256": "b52d989cdd94f408920790bcd6713253fa108ace7f0eaf7e50ff212a72c72244"
+      },
+      {
+        "choice": "resign-right",
+        "stakeUnits": 20,
+        "sha256": "909883e388e42a39d7d2cc7c018af1d1a98a74ba9e164d463ccb5c41086bcfe3"
+      },
+      {
+        "choice": "resign-right",
+        "stakeUnits": 50,
+        "sha256": "f8535d6b4c92c68f3791af5b9e704f46c912ccfc5c4ac4ac4cf5123301f5ce3a"
+      },
+      {
+        "choice": "resign-right",
+        "stakeUnits": 100,
+        "sha256": "1576e1f5887864cf4e6c9175a4c31b44ffb539e8cbbc8c42b7dec97dca7fc7f3"
+      },
+      {
+        "choice": "resign-right",
+        "stakeUnits": 200,
+        "sha256": "1e029f6cdd221d22e56a790ae3001a490edff6f55ea0d38e2a8b46f853185174"
+      },
+      {
+        "choice": "resign-right",
+        "stakeUnits": 500,
+        "sha256": "033fa22514ab35a79890b2512030c34291bf100ee708cede80be509555181be5"
+      },
+      {
+        "choice": "resign-right",
+        "stakeUnits": 1000,
+        "sha256": "84cb474a0a8ad4040c4cab30603485941cd7e8cb3345bf7e7ea8c829b5406752"
+      },
+      {
+        "choice": "resign-right",
+        "stakeUnits": 2000,
+        "sha256": "791c917b8ac570bbe4b8a5f3ca30a3a482cdfadcc72d9e5aa347e922abaaf3e6"
+      },
+      {
+        "choice": "resign-right",
+        "stakeUnits": 5000,
+        "sha256": "a146d087684ca16f2ab18e1d51062b4313fe48fb7e344911ec80b112359bf908"
+      },
+      {
+        "choice": "timeout-left",
+        "stakeUnits": 10,
+        "sha256": "3cbb834d38e5a2084153b4617ce8301fe989d2d97919b0d6b8e6c41ceb124341"
+      },
+      {
+        "choice": "timeout-left",
+        "stakeUnits": 20,
+        "sha256": "f7d8a826644cbb078b62eed82f997914d65667d5ae1e1d549533900dfb1af6b8"
+      },
+      {
+        "choice": "timeout-left",
+        "stakeUnits": 50,
+        "sha256": "96c1d35582c08b03fed0692737b54db20939ff2f54193a6a52f2c37d67a77f08"
+      },
+      {
+        "choice": "timeout-left",
+        "stakeUnits": 100,
+        "sha256": "2425312067acf05721961751357b07ad614b2964bbadf94fadc1b88313e9f639"
+      },
+      {
+        "choice": "timeout-left",
+        "stakeUnits": 200,
+        "sha256": "928f2405ca3b2a22d66471b73679f9b8096f1d26aebfe1f8ea150ef2b8b9457d"
+      },
+      {
+        "choice": "timeout-left",
+        "stakeUnits": 500,
+        "sha256": "d73c5a12e6934c2cc44236f3324c654856de1288035c2087c0414fe8e5553c8e"
+      },
+      {
+        "choice": "timeout-left",
+        "stakeUnits": 1000,
+        "sha256": "aacd74b51d5016e20534a222cab2bb50c76395f7911afe0b81fa728a12707864"
+      },
+      {
+        "choice": "timeout-left",
+        "stakeUnits": 2000,
+        "sha256": "645ceccd11af5db04beba9dc5499857a046087ff6ff6a692cd9b54b3b19f9d26"
+      },
+      {
+        "choice": "timeout-left",
+        "stakeUnits": 5000,
+        "sha256": "9b8dcf21df9f5529d0c6fe6bfcf12dcb9fc1d0f871a214756261a84fe7a255a4"
+      },
+      {
+        "choice": "timeout-right",
+        "stakeUnits": 10,
+        "sha256": "4da531a0107ab2f74a6be82660a622396590d2e9364432591a9e62f2a47e21f1"
+      },
+      {
+        "choice": "timeout-right",
+        "stakeUnits": 20,
+        "sha256": "0c3c7ab9f89ebf71995e11f357c1726bd6c1b574d6f5c2326dbdd3e33ecb4467"
+      },
+      {
+        "choice": "timeout-right",
+        "stakeUnits": 50,
+        "sha256": "68f2edefa415b53efcdff6ca6acbb77c58b533f188af3a5e2da317ba3ac7b391"
+      },
+      {
+        "choice": "timeout-right",
+        "stakeUnits": 100,
+        "sha256": "95b369e8161553ee603b03d64444eab5750f2377ad349a64805eb8ffd65c3aed"
+      },
+      {
+        "choice": "timeout-right",
+        "stakeUnits": 200,
+        "sha256": "c87ad00462a8d2191ea72555b29ffda60d0d0284b834e48d60c762af4d142e15"
+      },
+      {
+        "choice": "timeout-right",
+        "stakeUnits": 500,
+        "sha256": "3e86de28f1587b70a81207929a4d0b0d492697277a590bc275c70600ccc1b700"
+      },
+      {
+        "choice": "timeout-right",
+        "stakeUnits": 1000,
+        "sha256": "887a842ebdd9cb9213dce8e255976dabdd299df04f35dfa974049173a5da3ae1"
+      },
+      {
+        "choice": "timeout-right",
+        "stakeUnits": 2000,
+        "sha256": "6434a43c3e462dfa350113023cd9b59829de6d655f33919b5298f9eabcb14d0e"
+      },
+      {
+        "choice": "timeout-right",
+        "stakeUnits": 5000,
+        "sha256": "1ab6ef671f92fda3c43745ddb563270e7cb5f8e5b7846777b96b285544fc8984"
+      }
+    ]
+  },
+  "interpretation": "Exact aggregate pot return: 95% on a decisive match, 100% on refund. Individual return depends on both players. No probability or statistical RTP estimate is claimed."
+}

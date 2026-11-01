@@ -161,7 +161,7 @@ export class PvpStore {
         const challenge: PvpChallenge = { id: randomUUID(), gameId: op.gameId, creatorId: actor.accountId, creatorName: cleanName(actor.name),
           targetId: op.targetId, opponentId: null, opponentName: '', stakeUnits: negotiated?TSU_DUEL_DEFAULT_STAKE:op.stakeUnits,
           ...(negotiated?tsuDuelPayout(TSU_DUEL_DEFAULT_STAKE):pvpPayout(op.stakeUnits)),
-          ...(negotiated?{rulesVersion:3 as const,mode:'stake' as const,targetWins:3 as const,termsRevision:0}:{}),
+          ...(negotiated?{rulesVersion:4 as const,mode:'stake' as const,targetWins:2 as const,termsRevision:0}:{}),
           status: 'open', createdAt: now, expiresAt: now + PVP_INVITE_MS, ready: [], winnerId: null, reason: '', revision: 0, disconnected: [] };
         s = { challenge, cards: null, roomId: actor.roomId, lastMoveAt: now, roomSeenAt: now };
         if (!negotiated) await this.ledger.pvpHold(actor.accountId, { matchId: challenge.id, gameId: op.gameId, stakeUnits: op.stakeUnits }, now);
@@ -177,7 +177,7 @@ export class PvpStore {
           if (!this.rooms.get(actor.roomId)?.people.some(p => p.accountId === c.creatorId && p.connected && p.available)) return fail('Автор вызова сейчас недоступен.');
           if (!isFreePvp(c)&&!isNegotiatedPvp(c)) await this.ledger.pvpHold(actor.accountId, { matchId: c.id, gameId: c.gameId, stakeUnits: c.stakeUnits }, now);
           c.opponentId = actor.accountId; c.opponentName = cleanName(actor.name); c.status = 'arriving'; c.expiresAt = now + PVP_ARRIVAL_MS;
-          if(isNegotiatedPvp(c))s.duel=createTsuDuel(now);
+          if(isNegotiatedPvp(c))s.duel=createTsuDuel(now,c.rulesVersion===4?4:3);
         } else if (op.action === 'cancel') {
           if (c.status === 'playing' || !participant(c, actor.accountId) && c.targetId !== actor.accountId) return fail('Партию можно завершить только сдачей.');
           await this.finish(s, null, 'cancel', now);
@@ -193,7 +193,7 @@ export class PvpStore {
               if(!members(c).every(id=>this.rooms.get(actor.roomId)?.people.some(p=>p.accountId===id&&p.connected)))return fail('Соперник временно не в сети.');
               // Both holds and the phase transition share one outer transaction. A failed second hold rolls back everything.
               for(const id of [...members(c)].sort())await this.ledger.pvpHold(id,{matchId:c.id,gameId:c.gameId,stakeUnits:c.stakeUnits},now);
-              s.funded=true;c.status='playing';s.duel=createTsuDuel(now);c.expiresAt=s.duel.endsAt;
+              s.funded=true;c.status='playing';s.duel=createTsuDuel(now,c.rulesVersion===4?4:3);c.expiresAt=s.duel.endsAt;
             }
           }
         } else if (op.action === 'ready') {

@@ -8,7 +8,7 @@ const root=resolve(import.meta.dirname,'../../..'),task=resolve(root,'../publish
 const read=p=>JSON.parse(readFileSync(p,'utf8'));
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const sha=p=>hash(readFileSync(p));
-const git=(...args)=>execFileSync(process.env.ROYAL_GIT_BINARY||'git',args,{cwd:root});
+const git=(...args)=>execFileSync(process.env.ROYAL_GIT_BINARY||'git',args,{cwd:root,maxBuffer:64*1024**2});
 const before=read(resolve(task,'before.json')),scope=read(resolve(import.meta.dirname,'scope.json'));
 const release=read(resolve(root,'module-build/release-manifest.json')),receipt=read(resolve(root,'module-build/release-github.json'));
 assert.equal(git('status','--porcelain').toString().trim(),'');

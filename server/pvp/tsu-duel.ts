@@ -1,9 +1,9 @@
 import { createTsuEFa, playTsuEFa, publicTsuEFa, type TsuEFaState } from './tsu-e-fa';
 import { isTsuEFaChoice, type TsuEFaView } from '../../src/shared/tsuEFa';
 import { TSU_DUEL_SELECT_MS, TSU_DUEL_BEAT_MS, TSU_DUEL_CHANT, TSU_DUEL_REVEAL_MS } from '../../src/shared/tsuDuel';
-export type TsuDuelState=TsuEFaState & {rulesVersion:3;stage:'select'|'countdown'|'reveal';startsAt:number;endsAt:number};
-export function createTsuDuel(now:number):TsuDuelState {
-  return {...createTsuEFa(3,2),rulesVersion:3,stage:'select',startsAt:now,endsAt:now+TSU_DUEL_SELECT_MS};
+export type TsuDuelState=TsuEFaState & {rulesVersion:3|4;stage:'select'|'countdown'|'reveal';startsAt:number;endsAt:number};
+export function createTsuDuel(now:number,rulesVersion:3|4=4):TsuDuelState {
+  return {...createTsuEFa(rulesVersion===4?2:3,rulesVersion===4?1:2),rulesVersion,stage:'select',startsAt:now,endsAt:now+TSU_DUEL_SELECT_MS};
 }
 export function lockTsuDuel(state:TsuDuelState,side:0|1,value:unknown,now:number):TsuDuelState {
   const move=value as Record<string,unknown>|null;
@@ -19,9 +19,9 @@ export function advanceTsuDuel(state:TsuDuelState,now:number):TsuDuelState {
   if(state.stage==='select')return state; // The match store adjudicates missing choices.
   if(state.stage==='reveal')return {...state,stage:'select',startsAt:now,endsAt:now+TSU_DUEL_SELECT_MS,revision:state.revision+1};
   // Use the historically qualified signs and scoring, but reveal only on the server's final beat.
-  let resolved=createTsuEFa(3,2);resolved.score=[...state.score];resolved.round=state.round;resolved.revision=state.revision;
+  let resolved=createTsuEFa(state.target,state.target===2?1:2);resolved.score=[...state.score];resolved.round=state.round;resolved.revision=state.revision;
   for(const side of [0,1] as const)resolved=playTsuEFa(resolved,side,{kind:'choose',round:state.round,choice:state.choices[side]});
-  return {...resolved,rulesVersion:3,stage:'reveal',startsAt:now,endsAt:now+TSU_DUEL_REVEAL_MS};
+  return {...resolved,rulesVersion:state.rulesVersion,stage:'reveal',startsAt:now,endsAt:now+TSU_DUEL_REVEAL_MS};
 }
 export function publicTsuDuel(state:TsuDuelState,side:0|1,paused:boolean):TsuEFaView {
   return {...publicTsuEFa(state,side),duel:{stage:state.stage,startsAt:state.startsAt,endsAt:state.endsAt,paused}};

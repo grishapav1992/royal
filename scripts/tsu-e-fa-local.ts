@@ -43,7 +43,7 @@ function act() {
   }
   const active = snapshot.active;
   if (active?.gameId === 'tsu-e-fa' && active.status === 'arriving') {
-    if (!active.ready.includes(botAccount.account.id)) send(active.rulesVersion===3?{id:randomUUID(),action:'duel-ready',challengeId:active.id,termsRevision:active.termsRevision??0}:{ id: randomUUID(), action: 'ready', challengeId: active.id });
+    if (!active.ready.includes(botAccount.account.id)) send(active.rulesVersion===3||active.rulesVersion===4?{id:randomUUID(),action:'duel-ready',challengeId:active.id,termsRevision:active.termsRevision??0}:{ id: randomUUID(), action: 'ready', challengeId: active.id });
     return;
   }
   if (active?.gameId === 'tsu-e-fa' && active.status === 'playing') {
@@ -139,5 +139,5 @@ try {
   });
   await vite.listen();
   console.log(`Tsu-e-fa local: http://127.0.0.1:${webPort}/__local/tsu-e-fa/start`);
-  console.log('Random algorithm, negotiated first-to-three match from 0.10 synthetic USDT. Type stop to remove the temporary database.');
+  console.log('Random algorithm, negotiated best-of-three match from 0.10 synthetic USDT. Type stop to remove the temporary database.');
 } catch (error) { await stop(); throw error; }
