@@ -1,0 +1,219 @@
+{
+  "format": 1,
+  "productionCommit": "482669357da32c69b1a96803e45f671b9aaa19a6",
+  "moduleGames": [
+    "forest-heart"
+  ],
+  "moduleContracts": {
+    "studio-forest-heart": {
+      "apiVersion": 1,
+      "rulesVersion": 1,
+      "progressVersion": 1
+    }
+  },
+  "changedSources": [
+    "games/forest-heart/ForestCharacter.ts",
+    "games/forest-heart/ForestIdleMotion.ts",
+    "games/forest-heart/ForestLayout.ts",
+    "games/forest-heart/ForestVideo.ts",
+    "games/forest-heart/styles.ts",
+    "games/forest-heart/package.json",
+    "games/forest-heart/README.md"
+  ],
+  "files": {
+    "games/forest-heart/ForestAudio.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "games/forest-heart/ForestAudio.ts",
+      "baseSha256": "45cfe78f20c3e986879d1a2d847023a88972b2f0128896e57c93604edd291210",
+      "sha256": "45cfe78f20c3e986879d1a2d847023a88972b2f0128896e57c93604edd291210"
+    },
+    "games/forest-heart/ForestCharacter.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "games/forest-heart/ForestCharacter.ts",
+      "baseSha256": "0b94c6459e7a24cbaeb52651bec6f24b02a4b85dcbba5c655ca9c76eb1228114",
+      "sha256": "0b94c6459e7a24cbaeb52651bec6f24b02a4b85dcbba5c655ca9c76eb1228114"
+    },
+    "games/forest-heart/ForestHeartUI.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "games/forest-heart/ForestHeartUI.ts",
+      "baseSha256": "592cc767aa24ed628b5e257a1b214d2e7b4b2064f2c4da2344556f825a6cfcf1",
+      "sha256": "592cc767aa24ed628b5e257a1b214d2e7b4b2064f2c4da2344556f825a6cfcf1"
+    },
+    "games/forest-heart/ForestIdleMotion.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "games/forest-heart/ForestIdleMotion.ts",
+      "baseSha256": "97b45978a5c0ede6e7be6e9d1d7fa1a7be3acfa5b71a4879d4feaed589ff83e1",
+      "sha256": "97b45978a5c0ede6e7be6e9d1d7fa1a7be3acfa5b71a4879d4feaed589ff83e1"
+    },
+    "games/forest-heart/ForestLayout.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "games/forest-heart/ForestLayout.ts",
+      "baseSha256": "02f43d3485b73f7d8040008485b48e3550de07e3111e04b63ba6326a1faf0068",
+      "sha256": "02f43d3485b73f7d8040008485b48e3550de07e3111e04b63ba6326a1faf0068"
+    },
+    "games/forest-heart/ForestMusic.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "games/forest-heart/ForestMusic.ts",
+      "baseSha256": "f92d5e187353dfa18a0f927bb6dbdd7751489419d1e9fb932dae5375ae00d615",
+      "sha256": "f92d5e187353dfa18a0f927bb6dbdd7751489419d1e9fb932dae5375ae00d615"
+    },
+    "games/forest-heart/ForestScore.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "games/forest-heart/ForestScore.ts",
+      "baseSha256": "ad249e30e099a4be139a9b8eb8c9845f1f4b99a96c97a4b9c76dfd4acb2bae52",
+      "sha256": "ad249e30e099a4be139a9b8eb8c9845f1f4b99a96c97a4b9c76dfd4acb2bae52"
+    },
+    "games/forest-heart/ForestVideo.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "games/forest-heart/ForestVideo.ts",
+      "baseSha256": "1a2fe40f79ea4b8aa2f7cf457d3965b6858bf121c00c1c331bcf63d36da02626",
+      "sha256": "1a2fe40f79ea4b8aa2f7cf457d3965b6858bf121c00c1c331bcf63d36da02626"
+    },
+    "games/forest-heart/RootArtwork.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "games/forest-heart/RootArtwork.ts",
+      "baseSha256": "b7e27259f0fe62994da1b03739158563d6dbbe411c43550ef57db76cf79bdef6",
+      "sha256": "b7e27259f0fe62994da1b03739158563d6dbbe411c43550ef57db76cf79bdef6"
+    },
+    "games/forest-heart/copy.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "games/forest-heart/copy.ts",
+      "baseSha256": "7ea1838250d1822130a2f91c623cefbcbfd75cd6bd5d95414e959d497ecdabbe",
+      "sha256": "7ea1838250d1822130a2f91c623cefbcbfd75cd6bd5d95414e959d497ecdabbe"
+    },
+    "games/forest-heart/entry.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "games/forest-heart/entry.ts",
+      "baseSha256": "90010bbcf736c472ea599600dc996c0ca1bfa5a0e0f984f72faae59f454e7536",
+      "sha256": "90010bbcf736c472ea599600dc996c0ca1bfa5a0e0f984f72faae59f454e7536"
+    },
+    "games/forest-heart/presentation.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "games/forest-heart/presentation.ts",
+      "baseSha256": "f722a510ed699cecb172b064e2b44a98f79d19f59039ead1c796e6c779e2e24f",
+      "sha256": "f722a510ed699cecb172b064e2b44a98f79d19f59039ead1c796e6c779e2e24f"
+    },
+    "games/forest-heart/shell.css": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "games/forest-heart/shell.css",
+      "baseSha256": "8cdacebad1a48ab4075a184b4989be8bff9dbb72def988c5d84b1d36a155ff95",
+      "sha256": "8cdacebad1a48ab4075a184b4989be8bff9dbb72def988c5d84b1d36a155ff95"
+    },
+    "games/forest-heart/styles.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "games/forest-heart/styles.ts",
+      "baseSha256": "ffb2874d6e29b5163357e483f0ef6a1fc3bd63cdedb23e6d0c2f90de00f1bf08",
+      "sha256": "ffb2874d6e29b5163357e483f0ef6a1fc3bd63cdedb23e6d0c2f90de00f1bf08"
+    },
+    "src/modules/GameHostContract.ts": {
+      "commit": "60b13bb8dde910919057835ed056a98257b78857",
+      "path": "src/modules/GameHostContract.ts",
+      "baseSha256": "6600ce1f6cb8ca3402a9760d8e83dab29e73cd1b0045a0bb1684967527e6f7a3",
+      "sha256": "8207926c234eeb52901591d5f1913c59aa296f6a880ee6a8985501756e8b0bf7",
+      "patches": [
+        {
+          "from": "import type { IndependentGameId } from './GameModuleCatalog';\nimport type { expansionClient } from '../wallet/ExpansionClient';\nimport type { demoWallet, coins } from '../wallet/WalletClient';\nimport type { gameAudio } from '../game/GameAudio';\nimport type * as i18n from '../i18n/index';\nimport type * as reactions from '../ui/gameReactions';\nimport type * as demoGames from '../game/demoGames';\nimport type { minesClient } from '../wallet/MinesClient';\nimport type { casinoClients } from '../wallet/CasinoClient';\nimport type { nilePlay } from '../wallet/NilePlayClient';\nimport type { usdtWallet } from '../wallet/UsdtClient';\nimport type { cryptoWallet } from '../wallet/CryptoClient';\nimport type { flightClient } from '../wallet/FlightClient';\nimport type Phaser from 'phaser';\nimport type { RoomScene } from '../game/RoomScene';\nimport type { BreakerStatus } from '../game/breaker';\nimport type { ActivitiesState, PianoNote } from '../shared/activities';\nimport type { PlayerView } from '../shared/world';\nimport type { ActivityHostContext } from './ActivityHostContract';\nimport type { PvpMove, PvpSnapshot } from '../shared/pvp';\nimport type { progression } from '../wallet/ProgressionClient';\n\nexport const GAME_HOST_KEY = Symbol.for('royal.game-host.v1');\nexport interface GameHostV1 {\n readonly apiVersion: 1;\n readonly expansionClient: typeof expansionClient;\n readonly demoWallet: typeof demoWallet;\n readonly progression: typeof progression;\n readonly walletCoins: typeof coins;\n readonly gameAudio: typeof gameAudio;\n readonly i18n: typeof i18n;\n readonly reactions: typeof reactions;\n readonly demoGames: typeof demoGames;\n readonly minesClient: typeof minesClient;\n readonly casinoClients: typeof casinoClients;\n readonly nilePlay: typeof nilePlay;\n readonly usdtWallet: typeof usdtWallet;\n readonly cryptoWallet: typeof cryptoWallet;\n readonly flightClient: typeof flightClient;\n readonly Phaser: typeof Phaser;\n}\nexport interface GameModuleInstance {\n destroy(): void;\n start?(): void;\n restart?(): void;\n load?(): void | Promise<void>;\n open?(atCabinet?: boolean): void;\n pause?(): void;\n resume?(): void;\n getState?(): unknown;\n update?(state: ActivitiesState): void;\n updatePlayers?(players: PlayerView[], self: string): void;\n receive?(note: PianoNote): void;\n hallChanged?(): void;\n connected?(): void;\n disconnected?(): void;\n}\nexport interface GameModuleContextV1 {\n readonly onStatus?: (state: BreakerStatus) => void;\n readonly setTitle?: (title: string) => void;\n readonly scene?: Pick<RoomScene, 'setLocked' | 'approach'>;\n readonly onPlaying?: (playing: boolean) => void;\n readonly onClosed?: () => void;\n readonly onMounted?: (instance: GameModuleInstance) => void;\n readonly provider?: { readonly embedded: boolean; readonly gameId?: string; readonly gameName?: string; readonly onCatalogue: () => void };\n readonly activity?: ActivityHostContext;\n readonly pvp?: {get():PvpSnapshot|undefined;busy():boolean;subscribe(callback:()=>void):()=>void;move(value:PvpMove):void};\n}\nexport interface GameModuleV1 {\n readonly gameId: IndependentGameId;\n readonly apiVersion: 1;\n readonly rulesVersion: number;\n readonly progressVersion: number;\n mount(host: HTMLElement, context?: GameModuleContextV1): { destroy(): void };\n}\n\nexport function readGameHost(): GameHostV1 {\n const value = (globalThis as unknown as Record<symbol, GameHostV1>)[GAME_HOST_KEY];\n if (!value || value.apiVersion !== 1) throw Error('Game host version is incompatible');\n return value;\n}\n",
+          "to": "import type { IndependentGameId } from './GameModuleCatalog';\nimport type { expansionClient } from '../wallet/ExpansionClient';\nimport type { demoWallet, coins } from '../wallet/WalletClient';\nimport type { gameAudio } from '../game/GameAudio';\nimport type * as i18n from '../i18n/index';\nimport type * as reactions from '../ui/gameReactions';\nimport type * as demoGames from '../game/demoGames';\nimport type { minesClient } from '../wallet/MinesClient';\nimport type { casinoClients } from '../wallet/CasinoClient';\nimport type { nilePlay } from '../wallet/NilePlayClient';\nimport type { usdtWallet } from '../wallet/UsdtClient';\nimport type { cryptoWallet } from '../wallet/CryptoClient';\nimport type { flightClient } from '../wallet/FlightClient';\nimport type Phaser from 'phaser';\nimport type { RoomScene } from '../game/RoomScene';\nimport type { BreakerStatus } from '../game/breaker';\nimport type { ActivitiesState, PianoNote } from '../shared/activities';\nimport type { PlayerView } from '../shared/world';\nimport type { ActivityHostContext } from './ActivityHostContract';\nimport type { PvpCardMove, PvpSnapshot } from '../shared/pvp';\nimport type { progression } from '../wallet/ProgressionClient';\n\nexport const GAME_HOST_KEY = Symbol.for('royal.game-host.v1');\nexport interface GameHostV1 {\n readonly apiVersion: 1;\n readonly expansionClient: typeof expansionClient;\n readonly demoWallet: typeof demoWallet;\n readonly progression: typeof progression;\n readonly walletCoins: typeof coins;\n readonly gameAudio: typeof gameAudio;\n readonly i18n: typeof i18n;\n readonly reactions: typeof reactions;\n readonly demoGames: typeof demoGames;\n readonly minesClient: typeof minesClient;\n readonly casinoClients: typeof casinoClients;\n readonly nilePlay: typeof nilePlay;\n readonly usdtWallet: typeof usdtWallet;\n readonly cryptoWallet: typeof cryptoWallet;\n readonly flightClient: typeof flightClient;\n readonly Phaser: typeof Phaser;\n}\nexport interface GameModuleInstance {\n destroy(): void;\n start?(): void;\n restart?(): void;\n load?(): void | Promise<void>;\n open?(atCabinet?: boolean): void;\n pause?(): void;\n resume?(): void;\n getState?(): unknown;\n update?(state: ActivitiesState): void;\n updatePlayers?(players: PlayerView[], self: string): void;\n receive?(note: PianoNote): void;\n hallChanged?(): void;\n connected?(): void;\n disconnected?(): void;\n}\nexport interface GameModuleContextV1 {\n readonly onStatus?: (state: BreakerStatus) => void;\n readonly setTitle?: (title: string) => void;\n readonly scene?: Pick<RoomScene, 'setLocked' | 'approach'>;\n readonly onPlaying?: (playing: boolean) => void;\n readonly onClosed?: () => void;\n readonly onMounted?: (instance: GameModuleInstance) => void;\n readonly provider?: { readonly embedded: boolean; readonly gameId?: string; readonly gameName?: string; readonly onCatalogue: () => void };\n readonly activity?: ActivityHostContext;\n readonly pvp?: {get():PvpSnapshot|undefined;busy():boolean;subscribe(callback:()=>void):()=>void;move(value:PvpCardMove):void};\n}\nexport interface GameModuleV1 {\n readonly gameId: IndependentGameId;\n readonly apiVersion: 1;\n readonly rulesVersion: number;\n readonly progressVersion: number;\n mount(host: HTMLElement, context?: GameModuleContextV1): { destroy(): void };\n}\n\nexport function readGameHost(): GameHostV1 {\n const value = (globalThis as unknown as Record<symbol, GameHostV1>)[GAME_HOST_KEY];\n if (!value || value.apiVersion !== 1) throw Error('Game host version is incompatible');\n return value;\n}\n"
+        }
+      ]
+    },
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "src/shared/caribbeanTreasuresMath.ts",
+      "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+      "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+    },
+    "src/shared/forestHeart.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "src/shared/forestHeart.ts",
+      "baseSha256": "1ada448ed03adb04bfb510f489bed9703a07fab982e063a4e7068bbbbf71272b",
+      "sha256": "1ada448ed03adb04bfb510f489bed9703a07fab982e063a4e7068bbbbf71272b"
+    },
+    "src/shared/forestHeartMath.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "src/shared/forestHeartMath.ts",
+      "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+      "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
+    },
+    "src/shared/gameStakes.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "src/shared/gameStakes.ts",
+      "baseSha256": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
+      "sha256": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637"
+    },
+    "src/shared/neopolisMath.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "src/shared/neopolisMath.ts",
+      "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+    },
+    "src/shared/neopolisStakePayouts.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "src/shared/neopolisStakePayouts.ts",
+      "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+      "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+    },
+    "src/shared/roundPrecision.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "src/shared/roundPrecision.ts",
+      "baseSha256": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
+      "sha256": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307"
+    },
+    "src/ui/stakeRules.ts": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "src/ui/stakeRules.ts",
+      "baseSha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df",
+      "sha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df"
+    },
+    "games/forest-heart/package.json": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "games/forest-heart/package.json",
+      "baseSha256": "9ffd18ed94e3efe2f9d5fe184c4f4e13deeff396dbe2b85392f9d789a6164ddc",
+      "sha256": "9ffd18ed94e3efe2f9d5fe184c4f4e13deeff396dbe2b85392f9d789a6164ddc"
+    },
+    "games/forest-heart/README.md": {
+      "commit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+      "path": "games/forest-heart/README.md",
+      "baseSha256": "cce48fad0186b7d5245ff9a89a60ad4500b78f8cee8482053279c72ea1134181",
+      "sha256": "cce48fad0186b7d5245ff9a89a60ad4500b78f8cee8482053279c72ea1134181"
+    },
+    "src/modules/GameModuleCatalog.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/modules/GameModuleCatalog.ts",
+      "baseSha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82",
+      "sha256": "4b12060cc42d2e5f2ef7968a9badc15d4ee479b1eac3ff9926693f0f2291fa78",
+      "patches": [
+        {
+          "from": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },",
+          "to": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },"
+        }
+      ]
+    },
+    "tsconfig.json": {
+      "commit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+      "path": "tsconfig.json",
+      "baseSha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+      "sha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b"
+    }
+  },
+  "moduleAssets": {
+    "public/assets/forest-heart/v1/background.webp": "48e85194b3904c0aa7186dfd94d08ceb33a6308cad4430e38c81ac1924258777",
+    "public/assets/forest-heart/v1/flower.webp": "c50a172c767eaba4335deeaf591229959c5be62db24fadb4acd79d2f9c0088f9",
+    "public/assets/forest-heart/v2/crystal.webp": "4b0bf9707207611030f16aa9ce2bb05b928956f3247445498776c843debce5b4",
+    "public/assets/forest-heart/v2/frame.webp": "6f3e2b40c31cf8b5a7c9be7a3553d71aeebf53c8c5c5b5aaeb1cc769400ffefb",
+    "public/assets/forest-heart/v2/title.webp": "0c990049844c3d1158acef91feb8431126d5e88947ba7138679931cb20b645ae",
+    "public/assets/forest-heart/v3/elf-big.webp": "18be015c682ade2f54f9856a1d1bc6dab4496014c373ce059646d333d6eddb5d",
+    "public/assets/forest-heart/v3/elf-blink.webp": "3cdf82c0ac64ed8e0a736373d20b27d14595150c321deeee9aa88d02625afa4f",
+    "public/assets/forest-heart/v3/elf-bonus.webp": "1f7b6895647674ecd579409b0ddb03f0e24b7e06d8b178db73717f07f4aa18cc",
+    "public/assets/forest-heart/v3/elf-channel.webp": "13e5a57ea08e28f4836febbcee14d43f9de48051b241c64f76d6496320f5a02c",
+    "public/assets/forest-heart/v3/elf-choice.webp": "ef0266937f395956464027c1a8bdd8776ddd46f58f50cb71fa728dd248b1c754",
+    "public/assets/forest-heart/v3/elf-flower.webp": "19b979424e6805494d5d8ce54868a3bdce9962da3f21127bba5e296a292b007f",
+    "public/assets/forest-heart/v3/elf-idle.webp": "180c90f9c6850bada1ce9a6a346dea4dcf4881f4325b394240f0d3defedb601b",
+    "public/assets/forest-heart/v3/elf-win.webp": "f0a6137cf5869244221f654f86a0a2c2e9931d10873a64c69a51c0456c97df64",
+    "public/assets/forest-heart/v4/roots.webp": "46c2cf9a554590b10ae3aa2d554125dcf7f03e5f869d51731926bcf7db1e4636",
+    "public/assets/forest-heart/v4/tile.webp": "6482a3612b938f0d587412bf42336bbd507dfd16ed05f21d6d45d2f8be919e13",
+    "public/assets/forest-heart/video-v3/focus.mp4": "d4c711a1b356833c5712d8ec2198cafd210cbebade661a387938dc8a2082615e",
+    "public/assets/forest-heart/video-v3/look.mp4": "efc70fb92dfd71971b912765490fcbc848048465fb2356b254e49e7da47bf1ca",
+    "public/assets/forest-heart/video-v3/magic.mp4": "7ed3b8b1e42b3ad4e8e4cff392e19712d5567fd8b8886c6067621f06ff593701"
+  }
+}
