@@ -60,6 +60,7 @@ def execute(root, last_result):
                        'retainedHistoryReasons': plan['retainedHistoryReasons']})
         applied = cleanup.apply(plan, state)
         result.update({k: applied[k] for k in ['removedEntries', 'removedImageTags', 'dockerRetainedImages', 'freeAfter', 'containersUnchanged', 'healthOk']})
+        result.update({k: applied[k] for k in ['verificationPasses', 'rollbackImageProof'] if k in applied})
         cleanup.require(result['freeAfter'] >= 5 * 1024**3, 'Cleanup completed but free space remains below five GiB; inspect retained data')
         result['status'] = 'completed'; code = 0
     except BlockingIOError:

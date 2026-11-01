@@ -34,6 +34,7 @@ export async function verifyModuleProjection(root,report,slugs){
  same([...slugs].sort(),[...reader.metadata.moduleGames].sort());
  const catalog=await moduleProjectionCatalog(reader),builder=digest(await readFile(await regularPath(root,'scripts/build-game-module.mjs')));
  same(report.builderSha256,builder);
+ reader.preload(Object.keys(report.inputs));
  for(const [name,hash]of Object.entries(report.inputs)){same(digest(reader.read(name)),hash);same(reader.origins[name],report.origins[name]);}
  for(const [name,hash]of Object.entries(report.assets)){same(digest(await readFile(await regularPath(root,name))),hash);same(reader.metadata.moduleAssets[name],hash);}
  const expected={};

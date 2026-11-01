@@ -25,6 +25,7 @@ ARCHIVES = ('.tar', '.tgz', '.tar.gz', '.tar.xz', '.tar.bz2')
 CODE_SUFFIXES = ('.ts', '.tsx', '.js', '.mjs', '.cjs', '.go', '.rs', '.py', '.md')
 PERIODIC_NAMES = {'/royal-nile-account-views-once', '/royal-nile-reconcile-once'}
 CONTENT = Path('/var/lib/containerd/io.containerd.content.v1.content/blobs/sha256')
+PROGRAM_PROOFS = Path('/opt/royal-maintenance/image-program-proofs')
 
 
 def require(condition, message):
@@ -104,6 +105,70 @@ def verify_program(image, program):
         require(state['Config'].get('Labels',{}).get('royal.retention.verify')==owner, 'Verification container ownership changed')
         if state['State']['Running']: engine('POST',path+'/stop?t=5')
         engine('DELETE',path)
+
+
+def program_proof_identity(image, program, expected):
+    """The immutable image, exact hash reader and complete expected inventory bind reuse."""
+    require(IMAGE_RE.fullmatch(image or ''), 'Exact image ID required')
+    require(isinstance(program, str) and program and isinstance(expected, dict) and expected,
+            'Complete image program evidence required')
+    require(all(isinstance(name, str) and name and not PurePosixPath(name).is_absolute()
+                and '..' not in PurePosixPath(name).parts and isinstance(value, str)
+                and re.fullmatch('[a-f0-9]{64}', value) for name, value in expected.items()), 'Invalid image program inventory')
+    return {'format': 1, 'image': image, 'readerSha256': hashlib.sha256(program.encode()).hexdigest(),
+            'inventorySha256': hashlib.sha256(json.dumps(expected, sort_keys=True, separators=(',', ':')).encode()).hexdigest(),
+            'files': len(expected)}
+
+
+def program_proof_path(identity, root):
+    root = Path(root)
+    require(root.is_absolute() and root.resolve() == root, 'Unsafe image proof directory')
+    root.mkdir(mode=0o700, parents=True, exist_ok=True)
+    info = root.lstat()
+    require(stat.S_ISDIR(info.st_mode) and info.st_uid == os.geteuid() and not info.st_mode & 0o077,
+            'Image proof directory must be private to the operator')
+    key = hashlib.sha256(json.dumps(identity, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+    return root / (key + '.json')
+
+
+def remember_program(image, program, actual, expected, root=PROGRAM_PROOFS):
+    """Called only after reading a read-only, unmounted immutable image in full."""
+    identity = program_proof_identity(image, program, expected)
+    require(actual == expected, 'Image program bytes differ')
+    require(image_metadata(image) is not None, 'Verification image is missing')
+    path = program_proof_path(identity, root)
+    require(not path.is_symlink(), 'Image proof symlink rejected')
+    partial = path.with_name(path.name + '.' + uuid.uuid4().hex + '.next')
+    try:
+        with partial.open('x') as output:
+            os.fchmod(output.fileno(), 0o600)
+            json.dump({**identity, 'verifiedAt': now()}, output, sort_keys=True)
+            output.flush(); os.fsync(output.fileno())
+        partial.replace(path)
+    finally:
+        if partial.exists(): partial.unlink()
+    return identity
+
+
+def verify_image_program(image, program, expected, root=PROGRAM_PROOFS):
+    """Reuse only operator-private proof for the same content-addressed image and reader."""
+    identity = program_proof_identity(image, program, expected)
+    require(image_metadata(image) is not None, 'Verification image is missing')
+    path = program_proof_path(identity, root)
+    require(not path.is_symlink(), 'Image proof symlink rejected')
+    if path.exists():
+        info = path.lstat()
+        require(stat.S_ISREG(info.st_mode) and info.st_uid == os.geteuid() and not info.st_mode & 0o077
+                and info.st_size <= 4096, 'Unsafe image program proof')
+        try:
+            proof = json.loads(path.read_text())
+            if set(proof) == set(identity) | {'verifiedAt'} and isinstance(proof['verifiedAt'], str) \
+                    and {key: proof[key] for key in identity} == identity:
+                return {'reused': True, **identity}
+        except (ValueError, KeyError, TypeError): pass
+    actual = verify_program(image, program)
+    remember_program(image, program, actual, expected, root)
+    return {'reused': False, **identity}
 
 
 def sha(path):
