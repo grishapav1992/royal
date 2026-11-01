@@ -47,7 +47,7 @@ export class PlayerDuelMenu {
       :target.hall!==this.scene.hall?copy('Игрок находится на другом этаже.','Player is on another floor.')
       :!near?copy('Подойди ближе, чтобы предложить сыграть.','Walk closer to invite this player.')
       :!person?.available?copy('Игрок сейчас занят.','Player is busy.')
-      :copy('Выбери бесплатную игру или ставку и отправь приглашение.','Choose free play or a stake and send an invitation.');
+      :copy('Пригласи игрока. Ставку вы согласуете в окне дуэли.','Invite this player. Agree the stake inside the duel.');
   }
   reset(){this.approaching='';this.menu.close();}
   destroy(){this.reset();this.menu.remove();if(this.scene.onPlayer===this.handler)this.scene.onPlayer=this.prior;}

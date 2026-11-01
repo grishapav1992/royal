@@ -350,6 +350,9 @@ export class RoomScene extends Phaser.Scene {
   }
   interact() {
     if (this.locked || this.typing) return;
+    const nearbyPlayer=[...this.remotePlayers.values()].map(p=>p.target).filter(p=>p.connected&&p.hall===this.hall&&!p.playing&&!p.activity)
+      .sort((a,b)=>Math.hypot(a.x-this.player.x,a.y-this.player.y)-Math.hypot(b.x-this.player.x,b.y-this.player.y))[0];
+    if(nearbyPlayer&&Math.hypot(nearbyPlayer.x-this.player.x,nearbyPlayer.y-this.player.y)<110&&!this.isHuggingCat()) {this.onPlayer(nearbyPlayer.id);return;}
     if (this.hall==='arcade' && Math.hypot(this.player.x-ATELIER.entry.x,this.player.y-ATELIER.entry.y)<ATELIER.interactionRadius) { this.onAtelier(); return; }
     if (this.isHuggingCat()) { this.onCatOpen(); return; }
     const cat=this.catInfo();

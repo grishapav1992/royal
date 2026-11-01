@@ -29,8 +29,8 @@ export function validateStakeAdmission(catalog, legacyGames, registry, runtime) 
   const nonWagered = id => !registry.profiles[id] && typeof registry.nonWagered[id] === 'string'
     && registry.nonWagered[id].trim().length >= 20;
   const required = new Set(runtime.ROYAL_PLATFORM_GAMES.filter(id => !nonWagered(id)));
-  for (const {gameId} of catalog) {
-    if (!legacy.has(gameId) && !priorSeparateStakeDefinitions.has(gameId) && !nonWagered(gameId)) required.add(gameId);
+  for (const {gameId,rulesVersion} of catalog) {
+    if (gameId==='tsu-e-fa'&&rulesVersion>=3 || !legacy.has(gameId) && !priorSeparateStakeDefinitions.has(gameId) && !nonWagered(gameId)) required.add(gameId);
   }
   for (const id of required) {
     assert(modules.has(id), 'Playable game has no independent module: ' + id);

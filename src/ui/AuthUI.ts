@@ -1,6 +1,7 @@
 import { translateMessage } from '../i18n/index';
 import { isUserMessage, t as translateText, installLanguageSwitcher } from '../i18n/index';
 import { gameAudio } from '../game/GameAudio';
+import {forgetSession} from '../network/sessionRecovery';
 import { appearanceFromLegacy, normalizeAppearance } from '../shared/appearance';
 import { CharacterEditor } from './CharacterEditor';
 import { SkinStudioUI } from './SkinStudioUI';
@@ -103,6 +104,7 @@ export class AuthUI {
     }); });
     this.dialog.querySelector('#new-room')!.addEventListener('click', () => {
       if (this.busy) return;
+      forgetSession();
       const url = new URL(location.href); url.searchParams.delete('room'); history.replaceState(null,'',url);
       this.error.hidden = true; this.dialog.querySelector<HTMLElement>('#new-room')!.hidden = true;
       void this.perform(() => this.continueEntry());
