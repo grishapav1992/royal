@@ -1462,10 +1462,10 @@
       "sha256": "ed6ff6f636ec5942a28da91075e3d7625a39af53146008ea1b1b6596542b1327"
     },
     "src/ui/active-game-viewport.css": {
-      "commit": "c3d8cf628eb002f344458f646fb30c473c2573a6",
+      "commit": "95d848a1f4375ad97c9f89a96cd66ae3db6d7a6f",
       "path": "src/ui/active-game-viewport.css",
-      "baseSha256": "ab6c257c336eb8491d88cf49ac85dfb4605e39ff36d8f0bf962388b9f4721350",
-      "sha256": "ab6c257c336eb8491d88cf49ac85dfb4605e39ff36d8f0bf962388b9f4721350"
+      "baseSha256": "5de5f5fb66e03e10895e80c1b3e05ef16c8094713194ef9caf55e6cdf7531346",
+      "sha256": "5de5f5fb66e03e10895e80c1b3e05ef16c8094713194ef9caf55e6cdf7531346"
     },
     "games/dracona/compactStyles.ts": {
       "commit": "c3d8cf628eb002f344458f646fb30c473c2573a6",
