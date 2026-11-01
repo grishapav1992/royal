@@ -62,4 +62,14 @@ export const compactStyles = String.raw`@media (max-width:700px),(max-height:700
  .spin-button { grid-column:2; grid-row:2; }
  .playback-controls { grid-row:3/5; flex-direction:column; gap:4px; }
 }
+@media (min-width:701px) and (min-height:401px) and (max-height:700px) {
+ .play-area { grid-template-columns:minmax(120px,.65fr) minmax(0,1.35fr) 110px; }
+ .character-area { display:flex; flex-direction:column; min-width:0; min-height:0; width:100%; height:100%; margin:0; }
+ .hero { flex:1; min-height:0; width:100%; height:auto; }
+ .hero-layer { width:100%; height:100%; object-fit:contain; }
+ .hero-caption { flex:none; font-size:9px; padding:3px; }
+ .portal-area { width:110px; }
+ .portal-card h2 { font-size:14px; line-height:16px; }
+ .portal-card p { font-size:10px; line-height:12px; }
+}
 `;

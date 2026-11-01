@@ -28,6 +28,23 @@ class Guards(unittest.TestCase):
   changed=copy.deepcopy(before);changed['moduleFiles'][str(p.MODULES/next(iter(p.GAMES.values()))/'active.json')]='a-newer-release'
   with self.assertRaises(RuntimeError):p.validate_scope(release,changed,operator)
 
+ def test_published_package_inputs_do_not_hide_an_intervening_source_change(self):
+  release,before,operator=fixture()
+  for name,row in p.PUBLISHED_INPUTS.items():
+   release['moduleProjection']['inputs'][name]=row['sha256']
+   if row['serverSourceSha256'] is not None:before['sourceLF'][name]=row['serverSourceSha256']
+  p.validate_scope(release,before,operator)
+  name=next(iter(p.PUBLISHED_INPUTS));before['sourceLF'][name]='unreviewed'
+  with self.assertRaises(RuntimeError):p.validate_scope(release,before,operator)
+
+ def test_program_receipt_binds_both_immutable_entries(self):
+  before={'entry':'old.js','files':{'old.js':'old'}};after={'entry':'new.js','files':{'new.js':'new'}}
+  for game in p.GAMES.values():
+   kind='style-composition-only' if game=='studio-dracona' else 'coordinate-only' if game in {'studio-cosmic-escape','studio-velvet-reign'} else 'alpha-equal'
+   row={'kind':kind,'passed':True,'beforeManifest':'a','afterManifest':'b','beforeEntry':'old','afterEntry':'new','coordinateTableSha256':'0f00e5a6178c774f48bd3eb03588acc7edd4c46e87545df35f3316bbdde91582','onlyImportedValue':'LINES'}
+   p.validate_program(game,row,before,after,'a','b')
+   for change in [{'afterEntry':'wrong'},{'beforeEntry':'wrong'},{'passed':False},{'kind':'unreviewed'}]:
+    with self.assertRaises(RuntimeError):p.validate_program(game,{**row,**change},before,after,'a','b')
  def test_image_metadata_requires_exact_running_identity_and_tag(self):
   digest='sha256:'+'a'*64
   with patch.object(p,'command',return_value=digest):
