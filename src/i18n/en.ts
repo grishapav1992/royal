@@ -61,6 +61,7 @@ export const english: Record<string, string> = {
   "Громкость игры": "Game volume",
   "Изменения звука сохраняются сразу.": "Sound settings are saved automatically.",
   "Настройки": "Settings",
+  "Профиль и настройки": "Profile and settings",
   "Открыть настройки": "Open settings",
   ".profile [aria-label=\"Настройки игрока\"]": ".profile [aria-label=\"Player settings\"]",
   "Вы": "You",

@@ -24,6 +24,8 @@ Flooded Temple (`studio-flooded-temple`, `games/flooded-temple/`) had qualified 
 
 ## Shared services and saved rounds
 
+Every new wagered module uses the [common stake mechanics](game-stakes.md). Its initial stake is $0.10 for the complete ordinary round, including all selected slot lines. Register the shared stake runtime and qualify every common denomination before building or publishing the module. Optional purchases disclose their complete price separately; accepted rounds retain their original rules and recovery identity. This requirement also applies when an existing unpublished definition is first authorized for production. Historical package and protocol descriptions below do not waive it.
+
 Flooded Temple has a staged redesign approved on 28 October 2026: [original Gonzo's Quest style cascades](game-design/flooded-temple-cascades.md), preserving its explorer, temple and shared services. Stage 1 specified rules/progress 2/2; at that stage the module contract remained 1/1/1 and package 0.7.1 until implementation and qualification. Accepted room-based rounds must finish under their original rules before a new cascade round starts. Existing v1 evidence is not qualification for v2.
 
 Stage 2 introduced a separately [qualified cascade engine and backend](game-math/flooded-temple-v2.md), gated by explicit `X-Royal-Temple-Rules: 2`. Its rules/progress 2/2 policy was checked alongside the former rules 1 module policy. `ExpansionClient(2)` supports both versions; the host singleton stayed at 1 during stage 2, before the new renderer was ready. Shared wallet settlement, recovery and the financial journal cover both versions.

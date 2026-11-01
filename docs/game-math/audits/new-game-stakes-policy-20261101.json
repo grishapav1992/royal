@@ -1,0 +1,35 @@
+{
+  "sourceCommit": "6135d683603dc136553ed2909b6cb3b43f7cc5ec",
+  "featureCommit": "3a6ebadb",
+  "baseCommit": "a8ef70c308b68daa75e516caf6ef52049073d832",
+  "scope": "Project instructions, new-game documentation and mandatory build admission checks. No application runtime, game mathematics, paytables, catalogue availability or production programs changed.",
+  "checks": {
+    "verified": 35,
+    "stakePoliciesVerified": 18,
+    "stakeAdmissionVerified": 18,
+    "legacyNotQualified": 114
+  },
+  "gateTests": {
+    "passed": 41,
+    "failed": 0
+  },
+  "cleanup": {
+    "owner": "new-game-stakes-policy-20261101",
+    "removedFolder": "/Users/grigory_pavlenko/Documents/ChatGPT/\u0420\u043e\u044f\u043b\u044c/artifacts/work/new-game-stakes-policy-20261101",
+    "logicalBytes": 463709536,
+    "removedArchives": [],
+    "freeBefore": 47269445632,
+    "preservedRemoteCommit": "6135d683603dc136553ed2909b6cb3b43f7cc5ec",
+    "dependencyCopiesRemoved": false,
+    "sharedDependencyTargetPreserved": true,
+    "unrelatedUntrackedFilesPreserved": true,
+    "otherChatWorktreesPreserved": true,
+    "otherWorkCleanupCondition": "Their owners finish their own tasks and verify GitHub preservation.",
+    "freeAfter": 47741046784,
+    "spaceNote": "Logical sizes are not a claim of physical reclamation. Free space was measured before and after.",
+    "preservedOtherWorktrees": [
+      "/Users/grigory_pavlenko/Documents/ChatGPT/\u0420\u043e\u044f\u043b\u044c/artifacts/work/active-games-responsive-20261101/checkout",
+      "/Users/grigory_pavlenko/Documents/ChatGPT/\u0420\u043e\u044f\u043b\u044c/artifacts/work/forest-heart-kling-20261031/checkout"
+    ]
+  }
+}
