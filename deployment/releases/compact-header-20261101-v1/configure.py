@@ -50,5 +50,5 @@ for field in ['moduleGames', 'moduleContracts', 'moduleAssets']: prior.pop(field
 projection = {**prior, 'productionCommit':before['sourceCommit'], 'files':files, 'changedSources':changes}
 folder = ROOT / 'deployment/releases/compact-header-20261101-v1'
 (folder / 'host-projection.json').write_text(json.dumps(projection, ensure_ascii=False, indent=2) + '\n')
-(folder / 'scope.json').write_text(json.dumps(dict(release='compact-header-20261101-v2', productionCommit=before['sourceCommit'], featureCommit=FEATURE, changedSources=changes, addedGames=[], restoredGames=[], backendChanges=[], moduleChanges=[]), indent=2)+'\n')
+(folder / 'scope.json').write_text(json.dumps(dict(release='compact-header-20261101-v3', productionCommit=before['sourceCommit'], featureCommit=FEATURE, changedSources=changes, addedGames=[], restoredGames=[], backendChanges=[], moduleChanges=[]), indent=2)+'\n')
 print(json.dumps(dict(sourceCommit=before['sourceCommit'], sourceCount=len(before['source']), runtimeCount=len(before['program']), changedSources=changes)))
