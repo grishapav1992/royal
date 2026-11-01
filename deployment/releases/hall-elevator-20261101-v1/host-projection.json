@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "productionCommit": "455e48100e833bee9f8d79f38f1ee7214dad8e32",
+  "productionCommit": "4eb47d5d7b29622453616888d24f62db9e26245b",
   "changedSources": [
     "server/LobbyRoom.ts",
     "src/game/ElevatorAudio.ts",
@@ -633,8 +633,12 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/network/LobbyClient.ts",
       "baseSha256": "c9c323aab32731f835b99be35b83541c4d18c45e48c80feb0dc1008643e6db3a",
-      "sha256": "ec55808be314aaf4bf8af6f5958d05dbecedd10aafa668945344af6152e4f712",
+      "sha256": "8ec364aab7c32b4fd02e793bb60c3bbc5391eb0bfbb60514dc83f8d7816fe16e",
       "patches": [
+        {
+          "from": "if(code===4003) this.events.ejected(banUntil || Date.now()+600000)",
+          "to": "if(code===4003 && banUntil > Date.now()) this.events.ejected(banUntil)"
+        },
         {
           "from": "});\n  }\n  send(t",
           "to": "});\n  }\n  private finishElevator(accepted: boolean) {\n    const pending = this.pendingElevator;\n    if (!pending) return;\n    this.pendingElevator = undefined;clearTimeout(pending.timer);pending.finish(accepted);\n  }\n  private confirmElevator() {\n    const pending = this.pendingElevator;\n    if (pending?.revision !== undefined && this.hall === pending.target && this.revision >= pending.revision) this.finishElevator(true);\n  }\n  travelByElevator(target: HallId): Promise<boolean> {\n    if (this.status !== 'connected' || !this.room || this.pendingElevator) return Promise.resolve(false);\n    return new Promise(resolve => {\n      const requestId = ++this.elevatorRequest;\n      const timer = setTimeout(() => {\n        this.events.notice(translateText('Не удалось подтвердить поездку. Проверь подключение и попробуй ещё раз.'));\n        this.finishElevator(false);\n      }, 8000);\n      this.pendingElevator = { target, requestId, finish: resolve, timer };\n      this.send('elevator', { target, requestId, revision: this.revision });\n    });\n  }\n  send(t"
