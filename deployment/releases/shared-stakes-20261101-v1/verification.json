@@ -861,11 +861,18 @@
       "stage": "forward image switch",
       "reason": "The unused financial candidate had an external npm dependency absent from its production base and failed readiness. The main host was healthy.",
       "resolution": "Restored the exact original financial program through a guarded Native-schema lease. The old financial APIs are retired (410) and active games use the host wallet. No new Native stake-policy rounds were adopted, no database restore. Operator helper df9d0020 was committed in main before execution."
+    },
+    {
+      "stage": "unused Native candidate retirement",
+      "reason": "Replacing its last alias let containerd retire the candidate before an explicit Docker inspection; inspection returned 404.",
+      "resolution": "Finalization checks the absent candidate manifest and relies on daemon retirement. No forced image deletion or volume cleanup."
     }
   ],
   "operatorSourceCommits": [
     "78117fc2",
-    "df9d0020"
+    "df9d0020",
+    "b433fea760f8782b7e74f00286298a0ec94e8776",
+    "5acc565fd98a5850c48d24bae79ad23739387c74"
   ],
   "publicBrowser": {
     "sourceCommit": "db07429000d2116d257f0735f4916e661ce9efa8",
@@ -1146,5 +1153,165 @@
     "/api/demo-wallet/expansion": 401,
     "/api/game-wallet": 410,
     "/api/nile-play/wallet": 410
+  },
+  "maintenance": {
+    "startedAt": 1793523106.657922,
+    "status": "completed",
+    "freeBefore": 12341612544,
+    "release": "shared-stakes-20261101-v2",
+    "sourceCommit": "db07429000d2116d257f0735f4916e661ce9efa8",
+    "currentImage": "sha256:774c1423bc48a4743517714769856b1a2dd1906d69ff336e3790150f78cf2ccf",
+    "rollbackImage": "sha256:06da11bea5d5b8c1c167339ff12a32952c67dcad85eb1293f56aa4b939e47bb8",
+    "plannedEntries": 30,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 94,
+    "retainedHistoryReasons": {
+      "/opt/royal-releases/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/forest-heart-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-compact.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/royal-roulette-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-delta.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-snapshot.py": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v3.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/character-motion-20261027-v1.failed.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-ui-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/girlhub-feedback-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v2.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before-final.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-card-scale-20261023": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub"
+    },
+    "removedEntries": 30,
+    "removedImageTags": 4,
+    "dockerRetainedImages": [],
+    "freeAfter": 12350455808,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "finishedAt": 1793523934.152788,
+    "durationSeconds": 827.49
+  },
+  "unrelatedLocalFiles": {
+    "count": 335,
+    "logicalBytes": 86320672,
+    "aggregateSha256": "3852061d36ba97304e76505072fb9fb70c1e9d6468935ba0db49c87bce555b5e",
+    "preservedUnrelatedFiles": true
+  },
+  "postFinalization": {
+    "finalization": {
+      "sourceCommit": "db07429000d2116d257f0735f4916e661ce9efa8",
+      "nativeAliasBefore": "sha256:f5fedb95bb0d295e839110ce263d48e2b6a4cc58295130268f731bcae6805ea2",
+      "nativeAliasAfter": "sha256:f5fedb95bb0d295e839110ce263d48e2b6a4cc58295130268f731bcae6805ea2",
+      "runningProgramsUnchanged": true,
+      "databaseRestored": false,
+      "operatorSha256": "51461b1c5f3698f9fcfeac2d9f8a32434f4fd11ecc979a8515e8421a5fe61699",
+      "freeBefore": 12320616448,
+      "removedArchives": [
+        {
+          "path": "/opt/royal-releases/shared-stakes-20261101-v2/final.tgz",
+          "bytes": 4795845
+        },
+        {
+          "path": "/opt/royal-releases/shared-stakes-20261101-v2/engine-update.tgz",
+          "bytes": 1384585
+        }
+      ],
+      "unusedNativeCandidateRetiredByDaemon": "sha256:a4b6e1077b0605c0adb1dddd5c9e4d66a04e2c06066bae7b8a903b7184a40cb7",
+      "freeAfter": 12326805504
+    },
+    "retention": {
+      "startedAt": 1793523106.657922,
+      "status": "completed",
+      "freeBefore": 12341612544,
+      "release": "shared-stakes-20261101-v2",
+      "sourceCommit": "db07429000d2116d257f0735f4916e661ce9efa8",
+      "currentImage": "sha256:774c1423bc48a4743517714769856b1a2dd1906d69ff336e3790150f78cf2ccf",
+      "rollbackImage": "sha256:06da11bea5d5b8c1c167339ff12a32952c67dcad85eb1293f56aa4b939e47bb8",
+      "plannedEntries": 30,
+      "plannedImages": 1,
+      "preservedFinancialFiles": 94,
+      "retainedHistoryReasons": {
+        "/opt/royal-releases/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/forest-heart-20261029-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/pvp-usdt-20261023-v2-compact.tgz": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-source-refresh.tgz": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/royal-roulette-20261029-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-production-before.json": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/pvp-usdt-20261023-v2-delta.tgz": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-snapshot.py": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-dracona-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-source-refresh-v3.tgz": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/character-motion-20261027-v1.failed.json": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-ui-20261028-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/girlhub-feedback-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-source-refresh-v2.tgz": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-production-before-final.json": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/pvp-card-scale-20261023": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/atelier-20261023-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/pvp-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub"
+      },
+      "removedEntries": 30,
+      "removedImageTags": 4,
+      "dockerRetainedImages": [],
+      "freeAfter": 12350455808,
+      "containersUnchanged": true,
+      "healthOk": true,
+      "finishedAt": 1793523934.152788,
+      "durationSeconds": 827.49
+    },
+    "timer": "enabled",
+    "services": {
+      "royal-game-1": {
+        "image": "sha256:774c1423bc48a4743517714769856b1a2dd1906d69ff336e3790150f78cf2ccf",
+        "healthy": true
+      },
+      "royal-nile-play": {
+        "image": "sha256:f5fedb95bb0d295e839110ce263d48e2b6a4cc58295130268f731bcae6805ea2",
+        "healthy": true
+      }
+    },
+    "availableBytes": 12307804160
+  },
+  "localCleanup": {
+    "status": "pending",
+    "owner": "unified-stakes-20261031",
+    "condition": "Remove only this task checkout and artifacts after this exact source and report are verified in GitHub. Preserve 335 unrelated untracked files and the worktrees owned by other chats."
   }
 }
