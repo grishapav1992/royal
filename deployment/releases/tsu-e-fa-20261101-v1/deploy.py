@@ -60,7 +60,7 @@ def configure():
     for name,digest in m['support'].items():require(sha(ROOT/name)==digest,'Guarded helper changed: '+name)
     guard=load('tsu_application_overlay',ROOT/'application-overlay.py')
     guard.NAME,guard.ROOT=NAME,ROOT;guard.payload=payload
-    b=guard.configure(ROOT);b.tsu_staged=False
+    b=guard.configure(ROOT);b.tsu_staged=False;b.tsu_rolling_back=False
     original_settings=b.settings
     def settings(state,recovery=False):
         expected=expected_modules(m) if b.tsu_staged else m['before']['moduleFiles']
@@ -71,7 +71,7 @@ def configure():
     b.settings=settings
     original_compose=b.compose
     def compose(gate=None):
-        if not b.tsu_staged:
+        if not b.tsu_staged and not b.tsu_rolling_back:
             require(gate is not None,'Financial gate required for module activation')
             gate.check();require(sha(b.HOST)==m['before']['moduleHostContract'],'Later host prevents activation')
             require(not (Path('/opt/royal-game-modules/tsu-e-fa')/'active.json').exists(),'Duel already published')
@@ -85,7 +85,9 @@ def configure():
     original_rollback=b.rollback
     def rollback():
         # The inherited financial drain refuses replacement while any PvP hold remains.
-        result=original_rollback()
+        b.tsu_rolling_back=True
+        try:result=original_rollback()
+        finally:b.tsu_rolling_back=False
         if b.tsu_staged:
             pointer=Path('/opt/royal-game-modules/tsu-e-fa/active.json')
             require(sha(pointer)==m['package']['pointerSha256'] and sha(b.HOST)==m['hostContractSha256'],'Later publication prevents recovery')
