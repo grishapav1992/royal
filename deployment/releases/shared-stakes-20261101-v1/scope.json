@@ -1,7 +1,7 @@
 {
   "release": "shared-stakes-20261101-v1",
   "productionCommit": "fb599494fbee9accff92c8a30126a071ebcceb5c",
-  "featureCommit": "a32dd2f6bdee32fdc8bccf362fb258d96314d645",
+  "featureCommit": "ac5cf1aa4d617455663f897feac68f14cdc50f37",
   "activeGames": [
     "studio-caramel-carnival",
     "studio-last-convoy",
@@ -95,6 +95,8 @@
     "src/shared/afterglow.ts",
     "server/games/afterglow.ts",
     "scripts/game-math/rtp-afterglow.mjs",
+    "deployment/releases/shared-stakes-20261101-v1/production-round-compatibility.json",
+    "deployment/releases/shared-stakes-20261101-v1/accepted-rounds.test.ts",
     "src/shared/dracona.ts",
     "src/shared/draconaMath.ts",
     "server/games/dracona.ts",
