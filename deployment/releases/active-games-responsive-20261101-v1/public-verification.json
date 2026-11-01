@@ -1,0 +1,43 @@
+{
+  "checkedAtUtc": "2026-11-01T09:25:55.512Z",
+  "sourceCommit": "91365aa7af95f08fbb36d0391353384c967fd614",
+  "verifiedFiles": 276,
+  "verifiedBytes": 86545222,
+  "unchangedPointers": 9,
+  "catalogue": [
+    "studio-cosmic-escape",
+    "studio-caramel-carnival",
+    "studio-velvet-reign",
+    "studio-last-convoy",
+    "studio-nitro-run",
+    "studio-afterglow",
+    "studio-meme-overload",
+    "studio-dracona",
+    "studio-neopolis",
+    "studio-forest-heart",
+    "github-crash",
+    "royal-plinko",
+    "original-cr-vs-leo",
+    "original-jackie-chan",
+    "studio-caribbean-treasures",
+    "studio-flooded-temple",
+    "royal-roulette",
+    "flag-battle"
+  ],
+  "cardTables": [
+    "variant-blackjack-target",
+    "variant-duel",
+    "variant-triple-poker",
+    "variant-war"
+  ],
+  "routes": {
+    "/healthz": 200,
+    "/api/demo-wallet": 401,
+    "/api/game-wallet": 410,
+    "/api/caribbean-crew": 401
+  },
+  "errors": [],
+  "mutations": [],
+  "productionAccountsCreated": false,
+  "productionWagersPlaced": false
+}

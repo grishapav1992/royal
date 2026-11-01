@@ -33,6 +33,7 @@ import './style.css';
 import './paper-theme.css';
 import './own-cabinets.css';
 import './mira-dialog.css';
+import './ui/compact-header.css';
 import { DRINKS, HALLS, hallLinks, activityHall, type HallId } from './shared/world';
 import type { BreakerStatus } from './game/breaker';
 import { SocialUI } from './ui/SocialUI';
@@ -63,10 +64,11 @@ app.innerHTML = tr`
   <header class="header">
     <a class="brand" href="/" aria-label="Рояль, игровой зал"><span class="brand-mark">${icon('crown')}</span><span>РОЯЛЬ<small>ARCADE SOCIAL CLUB</small></span></a>
     <div class="header-center">${icon('game')}<span>Игровой зал</span></div>
-    <div class="profile"><span class="demo-badge">ДЕМО</span><span class="avatar">${icon('person')}</span><span class="profile-name">Гость<small>Приятно познакомиться</small></span></div>
+    <div class="room-heading"><div><h1>Казино и бар <span>01</span></h1></div><div class="room-tools"><nav id="floor-links" class="floor-links" aria-label="Лестницы между этажами"></nav><span class="local-label"><i></i>Локальная игра</span><button class="icon-button" id="help" aria-label="Как играть" title="Как играть">${icon('help')}</button><button class="icon-button" id="fullscreen" aria-label="Полный экран" title="Полный экран">${icon('expand')}</button></div></div>
+    <button type="button" class="profile-toggle icon-button" popovertarget="profile-menu" aria-label="Профиль и настройки" title="Профиль и настройки">${icon('person')}</button>
+    <div class="profile" id="profile-menu" popover><span class="demo-badge">ДЕМО</span><span class="avatar">${icon('person')}</span><span class="profile-name">Гость<small>Приятно познакомиться</small></span></div>
   </header>
   <main>
-    <div class="room-heading"><div><h1>Казино и бар <span>01</span></h1></div><div class="room-tools"><nav id="floor-links" class="floor-links" aria-label="Лестницы между этажами"></nav><span class="local-label"><i></i>Локальная игра</span><button class="icon-button" id="help" aria-label="Как играть" title="Как играть">${icon('help')}</button><button class="icon-button" id="fullscreen" aria-label="Полный экран" title="Полный экран">${icon('expand')}</button></div></div>
     <div class="workspace">
       <section class="room-panel" aria-label="Игровой зал">
         <div class="room-overlay"><span class="room-intoxication" id="room-intoxication" role="status" hidden></span><span class="npc-count"></span></div>
@@ -90,6 +92,14 @@ app.innerHTML = tr`
   <div id="toast" class="toast" role="status" hidden></div>
 `;
 installLanguageSwitcher(document.querySelector<HTMLElement>('.profile')!);
+const profileMenu = document.querySelector<HTMLElement>('#profile-menu')!;
+const compactHeader = window.matchMedia('(max-width:1400px)');
+compactHeader.addEventListener('change', () => {
+  if (!compactHeader.matches && profileMenu.matches(':popover-open')) profileMenu.hidePopover();
+});
+profileMenu.addEventListener('click', event => {
+  if ((event.target as Element).closest('button') && profileMenu.matches(':popover-open')) profileMenu.hidePopover();
+});
 gameAudio.install();gameAudio.addSettingsButton(document.querySelector<HTMLElement>('.mini-top')!);
 const layout=new RoomLayout();
 const $ = <T extends HTMLElement = HTMLElement>(selector: string) => document.querySelector<T>(selector)!;

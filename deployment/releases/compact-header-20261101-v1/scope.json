@@ -1,0 +1,15 @@
+{
+  "release": "compact-header-20261101-v3",
+  "productionCommit": "db07429000d2116d257f0735f4916e661ce9efa8",
+  "featureCommit": "a8ef70c308b68daa75e516caf6ef52049073d832",
+  "changedSources": [
+    "src/main.ts",
+    "src/ui/SocialUI.ts",
+    "src/i18n/en.ts",
+    "src/ui/compact-header.css"
+  ],
+  "addedGames": [],
+  "restoredGames": [],
+  "backendChanges": [],
+  "moduleChanges": []
+}

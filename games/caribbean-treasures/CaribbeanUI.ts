@@ -1,6 +1,6 @@
 import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {confirmedPayout} from '../../src/shared/roundPrecision';
-import {GAME_STAKE_UNITS as CARIBBEAN_LINE_STAKES} from '../../src/shared/gameStakes';
+import {DEFAULT_GAME_STAKE, GAME_STAKE_UNITS as CARIBBEAN_LINE_STAKES} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import {
   CARIBBEAN_GAME, caribbeanInitialCost, validCaribbeanStake,
@@ -53,7 +53,7 @@ export class CaribbeanUI {
   private crewFeedback='';
   private disposed = false;
   private lines: CaribbeanLineCount = 20;
-  private lineStake = '10';
+  private lineStake = DEFAULT_GAME_STAKE;
   private sessionKey = '';
   private account: string | null = null;
   private showLines = false;
@@ -84,7 +84,7 @@ export class CaribbeanUI {
   private get english() { return this.services.i18n.language === 'en'; }
   private text(ru: string, en: string) { return this.english ? en : ru; }
   get title() { return this.text('Карибские сокровища','Caribbean Treasures'); }
-  private money(units: string) { return this.services.walletCoins(Number(units) / 100); }
+  private money(units: string) { return (Number(units) / 100).toLocaleString(this.services.i18n.locale,{minimumFractionDigits:2,maximumFractionDigits:2}); }
   private symbolName(symbol: number) { return this.english ? namesEn[symbol] : CARIBBEAN_SYMBOLS[symbol].name; }
   private get session() { return this.client.sessions.find(session => session.gameId === CARIBBEAN_GAME); }
   private get view() { return this.session?.view.caribbean; }
@@ -197,7 +197,7 @@ export class CaribbeanUI {
     if (this.disposed) return;
     if (this.account !== this.client.accountId) {
       this.stopAuto('account',false);
-      this.stopPresentation();this.captain.reset(true);this.account = this.client.accountId; this.sessionKey = ''; this.lines = 20; this.lineStake = '10';this.actionError='';this.lastBalance=undefined; this.closeDialog();
+      this.stopPresentation();this.captain.reset(true);this.account = this.client.accountId; this.sessionKey = ''; this.lines = 20; this.lineStake = DEFAULT_GAME_STAKE;this.actionError='';this.lastBalance=undefined; this.closeDialog();
       this.crewAbort.abort();this.crewAbort=new AbortController();this.crewLoad++;this.crewProfile=undefined;this.crewMessage='';this.crewBusy=false;this.crewPendingCaptain=undefined;
       void this.captain.select(DEFAULT_CAPTAIN).then(()=>{if(!this.disposed)this.render();});
       void this.loadCrew();
@@ -206,8 +206,10 @@ export class CaribbeanUI {
     const session = this.session, view = this.view, key = session && view ? session.id + ':' + view.revision : '';
     if (view && key !== this.sessionKey) {
       this.lines = view.settings.lines;
-      const recovered = view.version===1 && session?.state==='settled' ? String(BigInt(view.lineStakeUnits)*BigInt(view.settings.lines)) : view.lineStakeUnits;
-      this.lineStake = session?.state==='active' || CARIBBEAN_LINE_STAKES.includes(recovered) ? recovered : '10'; this.sessionKey = key;
+      const recovered = view.lineStakeUnits;
+      this.lineStake = session?.state==='active' ? recovered : view.version===1 ? DEFAULT_GAME_STAKE
+        : CARIBBEAN_LINE_STAKES.includes(recovered) ? recovered : DEFAULT_GAME_STAKE;
+      this.sessionKey = key;
     }
     if (this.dialogKind === 'buy' && this.blocked) this.closeDialog();
     this.render();
@@ -289,6 +291,7 @@ export class CaribbeanUI {
       : this.autoRunning ? (view?.phase==='choice'?this.text('Выбери тактику. Автокрутка ждёт.','Choose your tactic. Autoplay is waiting.'):this.text('Автокрутка: осталось раундов ','Autoplay: rounds remaining ')+this.autoRemaining)
       : this.autoNote ? this.autoLabel()
       : view?.phase==='complete' ? this.outcomeLabel(view)
+      : this.active && view?.version===1 ? this.text('Прежний раунд уже оплачен, продолжение бесплатно. Следующее полное вращение от ','The previous round is already paid; continuation is free. The next complete spin starts at ')+this.money(DEFAULT_GAME_STAKE)+' USDT.'
       : this.active ? this.text('Продолжение бесплатно. Выплата начисляется в конце раунда.','Free continuation. The complete round is credited at the end.')
       : this.text('Гигантский символ занимает несколько клеток. Выплаты считаются по активным линиям.','A giant symbol fills several cells. Active lines determine the payouts.'));
     const choice = this.element('.ct-choice');

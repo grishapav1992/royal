@@ -166,7 +166,7 @@ test('priority layout keeps the field and actions visible across phone orientati
  await page.locator('[data-ct-lines]').selectOption('5');await page.locator('[data-ct-stake]').selectOption('200');
  await page.locator('[data-ct-auto-count]').selectOption('25');await page.locator('[data-ct-action=lines]').click();
  await page.keyboard.press('Escape');await expect(page.locator('[data-ct-action=settings]')).toBeFocused();
- await expect(page.locator('.ct-play')).toContainText('2 USDT');await expect(page.locator('[data-ct-cost]')).toHaveText('2');
+ await expect(page.locator('.ct-play')).toContainText('2,00 USDT');await expect(page.locator('[data-ct-cost]')).toHaveText('2,00');
  await expect(page.locator('.ct-paths polyline')).toHaveCount(5);
  await page.setViewportSize({width:852,height:393});await priorityLayout(page);
  await page.locator('[data-ct-action=settings]').click();await expect(page.locator('[data-ct-auto-count]')).toHaveValue('25');

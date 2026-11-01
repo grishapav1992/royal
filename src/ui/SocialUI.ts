@@ -84,7 +84,7 @@ export class SocialUI {
     this.media = new ChatMedia(chat, this.input, text => {
       return this.sendChat(text);
     }, value => this.scene.setTyping(value));
-    this.invite = document.createElement('button'); this.invite.className = 'invite-button'; this.invite.id='invite'; this.invite.textContent = translateText('Пригласить'); this.invite.disabled = true;
+    this.invite = document.createElement('button'); this.invite.className = 'invite-button'; this.invite.id='invite'; this.invite.textContent = translateText('Пригласить'); this.invite.title = this.invite.textContent; this.invite.disabled = true;
     document.querySelector('.room-tools')!.prepend(this.invite);
     this.invite.addEventListener('click', async () => {
       const url = new URL(location.href); url.search = ''; url.searchParams.set('room', this.roomId);
