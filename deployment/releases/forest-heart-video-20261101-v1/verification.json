@@ -1,0 +1,318 @@
+{
+  "release": "forest-heart-video-20261101-v1",
+  "status": "published-and-verified",
+  "date": "2026-11-01",
+  "sourceCommit": "ea03b6a22bc409319272ca25a20cd71f3d175dda",
+  "hostSourceCommit": "482669357da32c69b1a96803e45f671b9aaa19a6",
+  "version": "1.15.0-5a5fe7377287",
+  "publication": {
+    "published": true,
+    "release": "forest-heart-video-20261101-v1",
+    "sourceCommit": "ea03b6a22bc409319272ca25a20cd71f3d175dda",
+    "baseCommit": "482669357da32c69b1a96803e45f671b9aaa19a6",
+    "module": {
+      "verified": true,
+      "gameId": "studio-forest-heart",
+      "version": "1.15.0-5a5fe7377287",
+      "bytes": 6369721,
+      "files": 20,
+      "beforeSha256": "eac0b50aff938d3bcc1df0ed83bb44f8564469b8ce8b3ed50e538300b1f74a55",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "install",
+      "activeSha256": "f5da0f68999a850a50ad7113a0685cfdc130f6355c46c0166b2456ac7f2a8a6d",
+      "history": "/opt/royal-game-modules-state/history/20261101T132853-9193b60a17d04c24b6dca6e2f96622fb.json"
+    },
+    "backup": {
+      "sourceArchive": "/opt/royal-backups/forest-heart-video-20261101-v1/source.tgz",
+      "bytes": 22833,
+      "sha256": "5c3d31adede05cbaf09d67cc0e6878cb6b63b5b3ab8500ce20013f94e219265e",
+      "oldVersion": "1.8.1-864e17e94ac5",
+      "oldPackageHardlinked": true,
+      "imageTag": "royal-game:before-forest-heart-video-20261101-v1",
+      "image": "sha256:ff3b316cc3163cc1c6b8a09531061b78b5e0d0127203550603b9c8d989cbc250"
+    },
+    "freeBefore": 11877232640,
+    "freeAfter": 11867598848,
+    "hostRestarted": false,
+    "databaseTouched": false,
+    "otherModulesPreserved": true,
+    "sourceFilesPreserved": 2564,
+    "runtimeFilesPreserved": 8580,
+    "servicesPreserved": 14
+  },
+  "approvedComparison": {
+    "approvedModule": "1.15.0-86350699f878",
+    "programEqualAfterNormalizingOnlyImmutableVersionUrlPrefixes": true,
+    "all18MediaHashesEqual": true,
+    "sourceVideoProcessing": "Fixed UV coordinates, existing video-v3 files; no endpoint morph or added video motion.",
+    "newGenerationRequests": 0
+  },
+  "scope": {
+    "sourcePaths": [
+      "games/forest-heart/ForestCharacter.ts",
+      "games/forest-heart/ForestIdleMotion.ts",
+      "games/forest-heart/ForestLayout.ts",
+      "games/forest-heart/ForestVideo.ts",
+      "games/forest-heart/styles.ts",
+      "games/forest-heart/package.json",
+      "games/forest-heart/README.md",
+      "public/assets/forest-heart/video-v3/focus.mp4",
+      "public/assets/forest-heart/video-v3/look.mp4",
+      "public/assets/forest-heart/video-v3/magic.mp4"
+    ],
+    "addedGames": [],
+    "restoredGames": [],
+    "productionCatalogue": [
+      "studio-cosmic-escape",
+      "studio-caramel-carnival",
+      "studio-velvet-reign",
+      "studio-last-convoy",
+      "studio-nitro-run",
+      "studio-afterglow",
+      "studio-meme-overload",
+      "studio-dracona",
+      "studio-neopolis",
+      "studio-forest-heart",
+      "github-crash",
+      "royal-plinko",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "studio-caribbean-treasures",
+      "studio-flooded-temple",
+      "royal-roulette",
+      "flag-battle"
+    ],
+    "otherPointerHashesPreserved": 121,
+    "backendProgramsPreserved": 8580,
+    "otherSourceFilesPreserved": 2564,
+    "persistentServicesPreserved": 14,
+    "hostRestarted": false,
+    "databaseTouched": false,
+    "playerAccess": "The catalogue remains 18 games. The host, complete backend program bytes, runtime profiles, configuration hashes and all other module pointers are preserved, so direct-launch and new-round acceptance rules are unchanged. Accepted rules-1 rounds keep their existing wallet/session protocol and old immutable package."
+  },
+  "validation": {
+    "typecheck": "passed",
+    "rtp": {
+      "qualified": 36,
+      "stakePolicies": 19,
+      "stakeAdmissions": 19,
+      "unchangedLegacyNotQualified": 114
+    },
+    "publisherUnitTests": 11,
+    "scopedGuardUnitTests": 3,
+    "priorApprovedSourceChecks": "stability-v15-review.json records 9 mathematics tests, 8 server/wallet tests, 4 full-host UI checks and the fixed-frame pixel stability regression for the identical approved program.",
+    "finalCandidateFullHost": {
+      "passed": 2,
+      "scenarios": [
+        "Choice, bonus, exact settlement, connected chat, desktop/mobile and reopen",
+        "Lost accepted response uses the same UUID without another debit or award"
+      ],
+      "durationSeconds": 25.7
+    },
+    "public": {
+      "httpIntegrityChecks": 148,
+      "allThreeGestures": [
+        {
+          "clip": "look",
+          "startMs": 6599.8,
+          "endMs": 9599.7
+        },
+        {
+          "clip": "focus",
+          "startMs": 16166.099999999999,
+          "endMs": 19166
+        },
+        {
+          "clip": "magic",
+          "startMs": 25765.7,
+          "endMs": 28765.6
+        }
+      ],
+      "mediaErrors": [],
+      "errors": [],
+      "viewports": [
+        {
+          "requestedViewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "gameFrame": {
+            "width": 1214,
+            "height": 889
+          },
+          "internalArtWidth": 1265,
+          "rootOverflow": "hidden",
+          "documentOverflow": false,
+          "layout": "wide"
+        },
+        {
+          "requestedViewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "gameFrame": {
+            "width": 1214,
+            "height": 609
+          },
+          "internalArtWidth": 1214,
+          "rootOverflow": "hidden",
+          "documentOverflow": false,
+          "layout": "wide"
+        },
+        {
+          "requestedViewport": {
+            "width": 390,
+            "height": 844
+          },
+          "gameFrame": {
+            "width": 368,
+            "height": 735
+          },
+          "internalArtWidth": 372,
+          "rootOverflow": "hidden",
+          "documentOverflow": false,
+          "layout": "mobile"
+        }
+      ],
+      "passed": true,
+      "productionAccounts": 0,
+      "productionStakes": 0,
+      "productionMessages": 0,
+      "chatMode": "Not mounted in read-only offline guest mode; connected chat verified in the two local complete-host scenarios.",
+      "limitations": [
+        "Public checks use a read-only offline guest. Connected chat and paid-flow recovery were tested locally with disposable accounts.",
+        "Physical mobile devices and subjective long-session comfort were not measured.",
+        "Source posture mismatch and the existing blend remain as approved. No claim of perfectly seamless source motion is made."
+      ]
+    }
+  },
+  "retention": {
+    "startedAt": 1793539939.629141,
+    "status": "completed",
+    "freeBefore": 11863511040,
+    "release": "compact-header-20261101-v3",
+    "sourceCommit": "482669357da32c69b1a96803e45f671b9aaa19a6",
+    "currentImage": "sha256:ff3b316cc3163cc1c6b8a09531061b78b5e0d0127203550603b9c8d989cbc250",
+    "rollbackImage": "sha256:774c1423bc48a4743517714769856b1a2dd1906d69ff336e3790150f78cf2ccf",
+    "plannedEntries": 0,
+    "plannedImages": 0,
+    "preservedFinancialFiles": 97,
+    "retainedHistoryReasons": {
+      "/opt/royal-releases/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/forest-heart-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-compact.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/royal-roulette-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/forest-heart-video-20261101-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-delta.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-snapshot.py": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v3.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/character-motion-20261027-v1.failed.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-ui-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/girlhub-feedback-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v2.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before-final.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-card-scale-20261023": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/forest-heart-video-20261101-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub"
+    },
+    "removedEntries": 0,
+    "removedImageTags": 0,
+    "dockerRetainedImages": [],
+    "freeAfter": 11861639168,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "finishedAt": 1793540742.2816267,
+    "durationSeconds": 802.65
+  },
+  "serverCleanup": {
+    "removed": [
+      {
+        "path": "/opt/royal-releases/forest-heart-video-20261101-v1/source",
+        "bytes": 3282055
+      },
+      {
+        "path": "/opt/royal-releases/forest-heart-video-20261101-v1/package",
+        "bytes": 6372881
+      },
+      {
+        "path": "/opt/royal-releases/forest-heart-video-20261101-v1/transport.tgz",
+        "bytes": 10586128
+      },
+      {
+        "path": "/opt/royal-releases/forest-heart-video-20261101-v1/before.json",
+        "bytes": 3497296
+      },
+      {
+        "path": "/opt/royal-releases/forest-heart-video-20261101-v1/after.json",
+        "bytes": 3612569
+      },
+      {
+        "path": "/opt/royal-releases/forest-heart-video-20261101-v1/publisher.py",
+        "bytes": 10767
+      },
+      {
+        "path": "/opt/royal-releases/forest-heart-video-20261101-v1/publish.py",
+        "bytes": 9784
+      }
+    ],
+    "logicalBytesRemoved": 27371480,
+    "freeBeforeBytes": 11862024192,
+    "freeAfterBytes": 11889528832,
+    "oldPackageVerified": true,
+    "newPackageVerified": true,
+    "backupPreserved": "/opt/royal-backups/forest-heart-video-20261101-v1",
+    "health": "healthy",
+    "timer": "enabled",
+    "measurementNote": "Logical file bytes and filesystem availability are reported separately; concurrent activity can affect free space."
+  },
+  "preservedUnrelatedMedia": {
+    "branch": "wip/forest-heart-sync-media-20261101",
+    "commit": "a75e8a133b3ab957c6a5ecccab8e7eaf2db65e4e",
+    "sha256": [
+      "97c8ac4f1bf61af6af95d2339a2bfdc0984a0f872acd62a649424a9777c586fc",
+      "c52fbce76ef498252bf43204740373ad85228af1d57ab2f857d316c2319dfb2c",
+      "bddbaa2b05fa369c8946dbfad36c3bb3d779cd76ab9c892d61a3b695c0a6aed1"
+    ],
+    "note": "Three distinct untracked synchronization variants were preserved in a separate WIP branch and are excluded from main and the release."
+  },
+  "verificationDiagnostics": [
+    "Broad experimental branch integration was rejected by automatic approval review; a new branch from fresh main contains only 21 scoped release paths, excluding rejected media, generation tooling and mathematical-model changes.",
+    "An initial preparation read exceeded the default process buffer. A committed one-line buffer correction was pushed before rebuilding and verifying the exact release.",
+    "The installer rejected AppleDouble transport metadata before changing sources or the active pointer. All declared bytes were verified unchanged; 53 metadata sidecars totaling 8639 bytes were removed from the task-owned stage before the unchanged guarded installer succeeded.",
+    "Public layout verification was corrected to reflect deliberately offline guest mode and clipped internal illustration bounds. Final checks wait for full image decoding and measure actual document overflow."
+  ],
+  "artifacts": {
+    "desktop.webp": {
+      "sha256": "a4a8b7982e4f73f21ea8b87ef8ad57dc122334f49f3914b8e656fef2d3e0076b",
+      "bytes": 247722
+    },
+    "mobile.webp": {
+      "sha256": "aa3ab3d1f5d70a55b1f6fcb6b79a9e8dec56e1d1e3077c7a109b575507591b68",
+      "bytes": 58982
+    }
+  }
+}
