@@ -675,10 +675,10 @@
       "sha256": "3380fce5ee723cea9a07d8b098c933e0465300fcc19fa727ef30ccbf7303244b"
     },
     "src/shared/neopolisMath.ts": {
-      "commit": "d3e4f9c0ef50a4d1ab63f0862696e288125fd740",
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
       "path": "src/shared/neopolisMath.ts",
-      "baseSha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
-      "sha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820"
+      "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
     },
     "src/shared/nitroRun.ts": {
       "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
@@ -1401,10 +1401,10 @@
       "sha256": "237f6c0af7aa56f0116d70900e2c0ef2fc32f4c1ee3498b9c37486add4bb67c0"
     },
     "games/dracona/compactStyles.ts": {
-      "commit": "7dcc7c42a9f0de429328571b0df70acfbf2f29c3",
+      "commit": "eaaa2e625d07138514aaf358630f18768e1472ea",
       "path": "games/dracona/compactStyles.ts",
-      "baseSha256": "17ba011af62c01d4137f93f8fc40b98475dee702c2270069c201d461d3a522cd",
-      "sha256": "17ba011af62c01d4137f93f8fc40b98475dee702c2270069c201d461d3a522cd"
+      "baseSha256": "f81fce5819d237455bad06f2ef78288668df6257d4b36f2a884bb22cab5f3951",
+      "sha256": "f81fce5819d237455bad06f2ef78288668df6257d4b36f2a884bb22cab5f3951"
     },
     "src/ui/LastExitAssets.ts": {
       "commit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
@@ -1721,12 +1721,6 @@
       "serverSourceSha256": null,
       "publishedSourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
       "gameId": "github-crash"
-    },
-    "src/shared/neopolisMath.ts": {
-      "sha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
-      "serverSourceSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
-      "publishedSourceCommit": "d3e4f9c0ef50a4d1ab63f0862696e288125fd740",
-      "gameId": "studio-cosmic-escape"
     }
   }
 }
