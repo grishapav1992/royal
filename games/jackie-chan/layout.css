@@ -32,3 +32,5 @@
 .jc-fit[data-compact=true] .jc-risk-options button { min-height:44px; padding:4px 2px; gap:3px; }
 .jc-fit[data-compact=true] .jc-risk-options b { font-size:10px; }
 .jc-fit[data-compact=true] .jc-controls { padding:6px 10px; gap:6px; }
+
+.jc-fit[data-layout=stack][data-compact=true] { grid-template-rows:auto auto minmax(60px,1fr) auto minmax(174px,1fr); }

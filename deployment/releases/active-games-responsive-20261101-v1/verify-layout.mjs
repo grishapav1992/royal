@@ -108,11 +108,11 @@ try{
     await page.locator('.mini-stage').evaluate(e=>e.scrollTop=0);
     const frames=[];for(const f of page.frames())frames.push(await geometry(f));
     const checks=[];
-    for(const selector of mainControls[id]||[]){let boxes=await fullyVisible(page.mainFrame(),selector);const scrolled=boxes.some(b=>b.clipped>2);if(scrolled){await page.locator(selector).first().scrollIntoViewIfNeeded();boxes=await fullyVisible(page.mainFrame(),selector);}expect(boxes.length,id+' '+selector).toBeGreaterThan(0);for(const b of boxes){expect(b.hidden,id+' '+selector).toBe(false);expect(b.clipped,id+' '+selector+' '+width+'x'+height).toBeLessThanOrEqual(2);expect(b.width).toBeGreaterThan(15);expect(b.height).toBeGreaterThan(15);}checks.push({selector,boxes,scrolled});}
+    for(const selector of mainControls[id]||[]){let boxes=await fullyVisible(page.mainFrame(),selector);const scrolled=boxes.some(b=>b.clipped>2);if(scrolled){await page.locator(selector).first().evaluate(e=>e.scrollIntoView({block:'nearest',inline:'nearest'}));boxes=await fullyVisible(page.mainFrame(),selector);}expect(boxes.length,id+' '+selector).toBeGreaterThan(0);for(const b of boxes){expect(b.hidden,id+' '+selector).toBe(false);expect(b.clipped,id+' '+selector+' '+width+'x'+height).toBeLessThanOrEqual(2);expect(b.width).toBeGreaterThan(15);expect(b.height).toBeGreaterThan(15);}checks.push({selector,boxes,scrolled});}
     if(id==='studio-dracona'||id==='studio-forest-heart'||id==='studio-flooded-temple'){
      const child=page.frames().find(f=>f!==page.mainFrame());expect(child).toBeTruthy();
      const selector=id==='studio-dracona'?'#spin':id==='studio-forest-heart'?'[data-fh="spin"]':'[data-ft="primary"]';
-     let boxes=await fullyVisible(child,selector);const scrolled=boxes.some(b=>b.clipped>2);if(scrolled){await child.locator(selector).scrollIntoViewIfNeeded();boxes=await fullyVisible(child,selector);}expect(boxes.length,id+' primary action').toBeGreaterThan(0);for(const b of boxes)expect(b.clipped,id+' '+width+'x'+height).toBeLessThanOrEqual(2);checks.push({selector,boxes,scrolled});
+     let boxes=await fullyVisible(child,selector);const scrolled=boxes.some(b=>b.clipped>2);if(scrolled){await child.locator(selector).evaluate(e=>e.scrollIntoView({block:'nearest',inline:'nearest'}));boxes=await fullyVisible(child,selector);}expect(boxes.length,id+' primary action').toBeGreaterThan(0);for(const b of boxes)expect(b.clipped,id+' '+width+'x'+height).toBeLessThanOrEqual(2);checks.push({selector,boxes,scrolled});
     }
     expect(frames.every(f=>f.pageOverflowX<=1),id+' horizontal overflow').toBe(true);
     await expect(page.locator('#mini-dialog #chat-input')).toBeInViewport();
