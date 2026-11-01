@@ -1,0 +1,719 @@
+{
+  "release": "a6api-ssh-20261101-v1",
+  "kind": "independent-operator-tool",
+  "date": "2026-11-01",
+  "sourceCommit": "4ea50d01bcf453739abbedd8151f59ed094e4cc7",
+  "requestSha256": "c1a13b2b06296f82a24c395184fde0b66d2d60466c982c9a05febb8afbaebbe0",
+  "server": {
+    "program": "/opt/royal-a6api/request.py",
+    "manifest": "/opt/royal-a6api/manifest.json",
+    "credential": "/etc/royal-a6api/key",
+    "credentialMode": "0600",
+    "publicListener": false
+  },
+  "tests": {
+    "client": 6,
+    "server": 11,
+    "passed": 17
+  },
+  "liveChecks": {
+    "sshHttp": 200,
+    "localGatewayHttp": 200,
+    "browserOriginHttp": 403,
+    "models": 151,
+    "npmAfterLocalKeyRemoval": "passed",
+    "billableGenerations": 0
+  },
+  "game": {
+    "installationChangedGame": false,
+    "imageAtInstallation": "sha256:774c1423bc48a4743517714769856b1a2dd1906d69ff336e3790150f78cf2ccf",
+    "addedGames": [],
+    "restoredGames": []
+  },
+  "installation": {
+    "status": "installed",
+    "installedAt": 1793527063.369344,
+    "sourceSha256": "c1a13b2b06296f82a24c395184fde0b66d2d60466c982c9a05febb8afbaebbe0",
+    "freeBefore": 12224417792,
+    "freeAfter": 12224393216,
+    "gameUnchanged": true
+  },
+  "maintenance": {
+    "startedAt": 1793529528.1881895,
+    "status": "completed",
+    "freeBefore": 12214571008,
+    "release": "compact-header-20261101-v3",
+    "sourceCommit": "482669357da32c69b1a96803e45f671b9aaa19a6",
+    "currentImage": "sha256:ff3b316cc3163cc1c6b8a09531061b78b5e0d0127203550603b9c8d989cbc250",
+    "rollbackImage": "sha256:774c1423bc48a4743517714769856b1a2dd1906d69ff336e3790150f78cf2ccf",
+    "plannedEntries": 76,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 97,
+    "retainedHistoryReasons": {
+      "/opt/royal-releases/caribbean-stakes-recovery-20261101-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/forest-heart-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-compact.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/royal-roulette-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-delta.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/caribbean-stakes-recovery-20261101-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-snapshot.py": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v3.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/caribbean-stakes-recovery-20261101-v1-current.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/character-motion-20261027-v1.failed.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-ui-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/girlhub-feedback-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v2.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before-final.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/caribbean-stakes-recovery-20261101-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-card-scale-20261023": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub"
+    },
+    "removedEntries": 76,
+    "removedImageTags": 6,
+    "dockerRetainedImages": [],
+    "freeAfter": 12240404480,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "finishedAt": 1793530428.0032008,
+    "durationSeconds": 899.82,
+    "previousAttempts": [
+      {
+        "startedAt": 1793527085.676849,
+        "finishedAt": 1793527446.6211524,
+        "status": "error",
+        "reason": "Recent history entry may be in use: /opt/royal-releases/compact-header-20261101-v1/build.log"
+      },
+      {
+        "startedAt": 1793528631.1563663,
+        "finishedAt": 1793529259.5252287,
+        "status": "error",
+        "reason": "History entry changed after review: /opt/royal-releases/caribbean-stakes-recovery-20261101-v1"
+      }
+    ],
+    "partialRemovedHistory": [
+      {
+        "path": "/opt/royal-releases/active-games-responsive-20261101-v1",
+        "reviewedAllocatedBytes": 7794688
+      }
+    ],
+    "reviewedRemovedHistory": [
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/__pycache__/deploy.cpython-312.pyc",
+        "reviewedAllocatedBytes": 49152,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/__pycache__/dual_gate.cpython-312.pyc",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/__pycache__/engine_build.cpython-312.pyc",
+        "reviewedAllocatedBytes": 12288,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/__pycache__/forward-recovery.cpython-312.pyc",
+        "reviewedAllocatedBytes": 20480,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/__pycache__/image_metadata.cpython-312.pyc",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/__pycache__/publisher.cpython-312.pyc",
+        "reviewedAllocatedBytes": 20480,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/__pycache__/retention-runtime.cpython-312.pyc",
+        "reviewedAllocatedBytes": 36864,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/__pycache__/snapshot-base.cpython-312.pyc",
+        "reviewedAllocatedBytes": 24576,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/after.json",
+        "reviewedAllocatedBytes": 3538944,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/backup-repair.json",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/backup.json",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/build-result.json",
+        "reviewedAllocatedBytes": 1171456,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/deploy.py",
+        "reviewedAllocatedBytes": 24576,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/dist-delta",
+        "reviewedAllocatedBytes": 2744320,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/draft-retirement.json",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/dual_gate.py",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/engine_build.py",
+        "reviewedAllocatedBytes": 8192,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/finalization.json",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/finalize.py",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/forward-host-gate.log",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/forward-native-gate.log",
+        "reviewedAllocatedBytes": 0,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/forward-recovery.py",
+        "reviewedAllocatedBytes": 12288,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/game-build.log",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/host-gate.log",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/host.json",
+        "reviewedAllocatedBytes": 16384,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/hydrate-map.json",
+        "reviewedAllocatedBytes": 114688,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/image_metadata.py",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/install-manifest.json",
+        "reviewedAllocatedBytes": 3657728,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/module-publication.json",
+        "reviewedAllocatedBytes": 12288,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/native",
+        "reviewedAllocatedBytes": 3080192,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/native-build.json",
+        "reviewedAllocatedBytes": 73728,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/native-gate.log",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/native-restoration-gate.log",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/native-restoration.json",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/packages",
+        "reviewedAllocatedBytes": 122761216,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/pointers",
+        "reviewedAllocatedBytes": 77824,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/production-round-compatibility.json",
+        "reviewedAllocatedBytes": 24576,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/published.json",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/publisher.py",
+        "reviewedAllocatedBytes": 12288,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/quiesce-base.cjs",
+        "reviewedAllocatedBytes": 12288,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/quiesce.cjs",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/recovery-required.json",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/release-github.json",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/release-manifest.json",
+        "reviewedAllocatedBytes": 1220608,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/restore-native.py",
+        "reviewedAllocatedBytes": 8192,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/retention-runtime.py",
+        "reviewedAllocatedBytes": 20480,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/runtime-inventory.cjs",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/scope.json",
+        "reviewedAllocatedBytes": 12288,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/server-delta",
+        "reviewedAllocatedBytes": 2367488,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/service-facts.json",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/snapshot-base.py",
+        "reviewedAllocatedBytes": 16384,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/snapshot.py",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/source",
+        "reviewedAllocatedBytes": 5226496,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-releases/shared-stakes-20261101-v2/unused-native-candidate.json",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/active-games-responsive-20261101-v1",
+        "reviewedAllocatedBytes": 87240704,
+        "sourceCommits": [
+          "91365aa7af95f08fbb36d0391353384c967fd614"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/flag-battle",
+        "reviewedAllocatedBytes": 487424,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/github-crash",
+        "reviewedAllocatedBytes": 22011904,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/host.json",
+        "reviewedAllocatedBytes": 16384,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/index.html",
+        "reviewedAllocatedBytes": 4096,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/original-cr-vs-leo",
+        "reviewedAllocatedBytes": 7979008,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/original-jackie-chan",
+        "reviewedAllocatedBytes": 21676032,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/royal-plinko",
+        "reviewedAllocatedBytes": 2682880,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/royal-roulette",
+        "reviewedAllocatedBytes": 86016,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/source.tgz",
+        "reviewedAllocatedBytes": 471040,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/studio-afterglow",
+        "reviewedAllocatedBytes": 3317760,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/studio-caramel-carnival",
+        "reviewedAllocatedBytes": 3194880,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/studio-caribbean-treasures",
+        "reviewedAllocatedBytes": 15171584,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/studio-cosmic-escape",
+        "reviewedAllocatedBytes": 3891200,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/studio-dracona",
+        "reviewedAllocatedBytes": 5136384,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/studio-flooded-temple",
+        "reviewedAllocatedBytes": 21004288,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/studio-forest-heart",
+        "reviewedAllocatedBytes": 3223552,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/studio-last-convoy",
+        "reviewedAllocatedBytes": 6381568,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/studio-meme-overload",
+        "reviewedAllocatedBytes": 3575808,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/studio-neopolis",
+        "reviewedAllocatedBytes": 6086656,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/studio-nitro-run",
+        "reviewedAllocatedBytes": 2588672,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      },
+      {
+        "path": "/opt/royal-backups/shared-stakes-20261101-v2/studio-velvet-reign",
+        "reviewedAllocatedBytes": 4337664,
+        "sourceCommits": [
+          "db07429000d2116d257f0735f4916e661ce9efa8"
+        ]
+      }
+    ],
+    "reviewedRemovedImages": [
+      {
+        "id": "sha256:06da11bea5d5b8c1c167339ff12a32952c67dcad85eb1293f56aa4b939e47bb8",
+        "tags": [
+          "royal-game:before-caribbean-responsive-20261031-v1",
+          "royal-game:before-cascade-size-20261031-v1",
+          "royal-game:before-shared-stakes-20261101-v2",
+          "royal-game:before-shared-stakes-20261101-v2-prepared",
+          "royal-game:before-temple-layout-20261031-v1",
+          "royal-game:remove-reward-games-catalog-20261031-v1"
+        ]
+      }
+    ],
+    "activeHistoryPreserved": "fresh, pending, or source not verified in GitHub",
+    "guardsUnchanged": true,
+    "timerEnabled": true
+  },
+  "secondPC": {
+    "verified": false,
+    "accessMode": "Local .env token; no new SSH authorization requested"
+  },
+  "storage": {
+    "archivesCreated": 0,
+    "archivesRemoved": 0,
+    "unrelatedUntrackedFilesVerifiedBySha256": 335,
+    "cleanup": "Remove temporary sparse checkout after report is preserved in GitHub; retain compact completion report only"
+  },
+  "toolingSourceCommit": "5e0bd0670d40d97a31816e6dc1a6707ed3977883",
+  "serverOnlyUpdatesTested": true,
+  "finalServerChecks": {
+    "sourceHashVerified": true,
+    "keyMode": "0o600",
+    "gameHealth": "healthy",
+    "currentGameImage": "sha256:ff3b316cc3163cc1c6b8a09531061b78b5e0d0127203550603b9c8d989cbc250",
+    "freeBytes": 12239884288
+  },
+  "localToken": {
+    "file": ".env.a6api",
+    "permissions": "0600",
+    "gitIgnored": true,
+    "purpose": "User-requested transfer to the second PC; only A6API_KEY and A6API_BASE_URL",
+    "secondPCSetup": "Local token instead of new SSH access"
+  },
+  "concurrentTokenCheck": {
+    "sameTokenConcurrentChecks": [
+      {
+        "device": "PC",
+        "http": 200,
+        "models": 151
+      },
+      {
+        "device": "server",
+        "http": 200,
+        "models": 151
+      }
+    ],
+    "billableGenerations": 0
+  },
+  "originalLocalEnvKeyRemoved": true,
+  "credentialDestinationReview": {
+    "rejectedDomain": "api.a6api.vip",
+    "reason": "Automatic approval review rejected sending the token to an unverified new destination",
+    "safeAlternative": "Previously verified https://api.a6api.com/v1; concurrent PC and server model checks both returned 200"
+  }
+}
