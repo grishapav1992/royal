@@ -5,6 +5,7 @@ on:
     branches: [main]
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: release-build-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -25,6 +26,7 @@ jobs:
         env:
           RELEASE_PR_BASE: ${{ github.event.pull_request.base.sha }}
           RELEASE_PUSH_BEFORE: ${{ github.event.before }}
+          RELEASE_ACTIONS_TOKEN: ${{ github.token }}
   release-records:
     needs: scope
     if: needs.scope.outputs.profile == 'records'

@@ -1,5 +1,15 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {ciScope,ciScopeFromGit,ciResult} from '../scripts/release-ci-scope.mjs';
+import {ciScope,ciScopeFromGit,ciResult,qualifiedCiBase} from '../scripts/release-ci-scope.mjs';
+
+test('a release note cannot bypass a pending or unverified preceding code commit',async()=>{
+ const base='a'.repeat(40),run={head_sha:base,status:'completed',conclusion:'success',event:'push',head_branch:'main',path:'.github/workflows/game-rtp.yml'};
+ const response=value=>async()=>({ok:true,json:async()=>({workflow_runs:[value]})});
+ assert(await qualifiedCiBase(base,'owner/repo','fixture',response(run)));
+ for(const change of [{head_sha:'b'.repeat(40)},{status:'in_progress'},{conclusion:'failure'},{event:'pull_request'},{path:'.github/workflows/other.yml'},{head_branch:'feature/fix'}])assert(!await qualifiedCiBase(base,'owner/repo','fixture',response({...run,...change})));
+ assert(!await qualifiedCiBase(base,'owner/repo','',()=>{throw Error('Must not request without authentication');}));
+ assert(!await qualifiedCiBase(base,'owner/repo','fixture',async()=>({ok:false})));
+ assert(!await qualifiedCiBase(base,'owner/repo','fixture',async()=>{throw Error('Unavailable');}));
+});
 
 test('the required result cannot pass a failed classifier, skipped required suite or unknown profile',()=>{
  assert(ciResult('full','success','success','skipped'));assert(ciResult('records','success','skipped','success'));assert(ciResult('docs','success','skipped','skipped'));
