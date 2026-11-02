@@ -1,0 +1,171 @@
+{
+  "status": "verified",
+  "task": "release-fast-20261102",
+  "sourceCommit": "f5b67558011e78cb22b249c6730447ee60a4ad45",
+  "installedMaintenanceCommit": "6a816ee34c2a76ea8d16a76323a9234d783f96eb",
+  "applicationSourcePreserved": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
+  "applicationImagePreserved": "sha256:e53a4a3fe0152d8b8034800ccdf2c0c43f49d580ad37326c003e74e619e06e1d",
+  "applicationContainerAndStartTimePreserved": true,
+  "modulePointersPreserved": 123,
+  "addedGames": [],
+  "restoredGames": [],
+  "checks": {
+    "releaseTooling": 34,
+    "maintenance": 44,
+    "wallet": 19,
+    "rtpProfiles": 37,
+    "stakePolicies": 19,
+    "typecheck": true,
+    "workflowYamlSyntax": true,
+    "ciQualificationAndFailureFallback": true
+  },
+  "projectionBenchmark": {
+    "baselineCommit": "2e20c03b",
+    "rows": [
+      {
+        "kind": "hostProjection",
+        "inputs": 248,
+        "oldMs": 1921,
+        "newMs": 163,
+        "oldGitCommands": 265,
+        "newGitCommands": 18,
+        "identicalInputsAndOrigins": true
+      },
+      {
+        "kind": "backendProjection",
+        "inputs": 254,
+        "oldMs": 3846,
+        "newMs": 393,
+        "oldGitCommands": 524,
+        "newGitCommands": 32,
+        "identicalInputsAndOrigins": true
+      }
+    ]
+  },
+  "imageProofBenchmark": {
+    "sourceCommit": "6a816ee34c2a76ea8d16a76323a9234d783f96eb",
+    "applicationSource": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
+    "release": "lobby-connection-20261101-v1",
+    "checks": [
+      {
+        "role": "current",
+        "image": "sha256:e53a4a3fe0152d8b8034800ccdf2c0c43f49d580ad37326c003e74e619e06e1d",
+        "files": 8589,
+        "checks": [
+          {
+            "durationMs": 120146,
+            "reused": false
+          },
+          {
+            "durationMs": 307,
+            "reused": true
+          }
+        ]
+      },
+      {
+        "role": "rollback",
+        "image": "sha256:9cc50121ed98cb289318e430d773a586e5dadd2856842da5e8389e298e15fa31",
+        "files": 8588,
+        "checks": [
+          {
+            "durationMs": 105701,
+            "reused": false
+          },
+          {
+            "durationMs": 726,
+            "reused": true
+          }
+        ]
+      }
+    ],
+    "runningContainerUnchanged": true,
+    "walletOperations": 0
+  },
+  "maintenance": {
+    "status": "completed",
+    "startedAt": 1793588451.3806427,
+    "durationSeconds": 444.81,
+    "sourceCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
+    "currentImage": "sha256:e53a4a3fe0152d8b8034800ccdf2c0c43f49d580ad37326c003e74e619e06e1d",
+    "rollbackImage": "sha256:9cc50121ed98cb289318e430d773a586e5dadd2856842da5e8389e298e15fa31",
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:9cc50121ed98cb289318e430d773a586e5dadd2856842da5e8389e298e15fa31",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "970c2ab64c9ad2d716a0a26318b90fd6ed17e6396589875e88184f574c6c447d",
+      "files": 8588
+    },
+    "preservedFinancialFiles": 109,
+    "freeAfter": 11875500032,
+    "healthOk": true
+  },
+  "installedFiles": {
+    "automatic-retention.py": "3ea208f646ba9fddf8b62312490b98f8ee8dff64e94964ce173d359cd5361a09",
+    "cleanup-release-history.py": "64e3c3071e856ef94658aee6d16077a13e0bcc707933dbc009f119a960865c3f",
+    "retention-runtime.py": "f54f29ab3a659d6be5c8b28628643afddfabd713ed0d3e45b5a83fe68f64de71",
+    "royal-dev-app-retention.service": "5fc869fcc77f20b4abb4b35f6d00c81b1e170e2ef67f195f863be2dc8a879107",
+    "royal-dev-app-retention.timer": "e94fefc752774b5f78bec8877bd8324c278ac92fb45527a9d6c7a38dabf44472",
+    "install-retention.py": "4328b42c6939f1f85d38fcc85e859232981ae86320ab2b24728df858735ecfef"
+  },
+  "timerEnabled": "enabled",
+  "availableBytes": 11865153536,
+  "changes": [
+    "Identical prepared artifacts are verified and reused; --fresh explicitly rebuilds.",
+    "One release verification pass after fetch; one output inventory instead of duplicate hashing.",
+    "Binary-safe batched Git reads retain exact ancestry, file mode, patch and digest checks.",
+    "A guarded release retains a baseline before image build and another before financial quiescence.",
+    "Immutable image proof binds exact image, platform, reader and complete expected inventory.",
+    "Mutable runtime, wallet quiescence, rollback source archive and production settings remain freshly checked.",
+    "History deletion keeps fresh checkpoints immediately before and after deletion.",
+    "Short notes/records CI requires a successful predecessor qualification; all code/unknown changes and failures retain full checks.",
+    "The required rtp-gate result fails closed if classification or the required suite fails."
+  ],
+  "serverCleanup": {
+    "status": "completed",
+    "removed": [
+      {
+        "path": "/opt/royal-maintenance/updates/release-fast-20261102/source",
+        "logicalBytes": 70416
+      },
+      {
+        "path": "/opt/royal-maintenance/updates/release-fast-20261102/benchmark-program-proof.py",
+        "logicalBytes": 3449
+      },
+      {
+        "path": "/opt/royal-maintenance/updates/release-fast-20261102/install-run.log",
+        "logicalBytes": 157
+      },
+      {
+        "path": "/opt/royal-maintenance/updates/release-fast-20261102/benchmark-error.log",
+        "logicalBytes": 0
+      }
+    ],
+    "logicalBytesRemoved": 74022,
+    "freeBefore": 11857715200,
+    "freeAfter": 11857813504,
+    "retained": [
+      "original",
+      "receipt.json",
+      "benchmark.json"
+    ],
+    "condition": "Keep the previous maintenance files and policy as rollback until superseded by a verified maintenance update; image proofs remain valid only for their exact bindings."
+  },
+  "localCleanup": {
+    "completionReport": "artifacts/work/release-fast-20261102/completion.json",
+    "condition": "Remove own worktree, upload payload, test outputs and logs after the record is verified in GitHub. Preserve other active work."
+  },
+  "retainedRollback": {
+    "maintenance": "/opt/royal-maintenance/updates/release-fast-20261102/original",
+    "application": "sha256:9cc50121ed98cb289318e430d773a586e5dadd2856842da5e8389e298e15fa31",
+    "financialFiles": 109
+  },
+  "limits": [
+    "Component benchmark timings do not guarantee an end-to-end deadline under hosting CPU starvation or another publication lock.",
+    "The 444.81-second service run included different history and load than earlier runs; it is not a controlled overall speed ratio.",
+    "CI profile behavior is covered by local fixtures; unavailable or pending prior GitHub qualification selects the full matrix.",
+    "Wallet tests used a disposable local database, with no production financial operations."
+  ]
+}
