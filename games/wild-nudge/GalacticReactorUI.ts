@@ -98,7 +98,7 @@ export class GalacticReactorUI {
     if(!this.busy&&!this.presenting&&this.view){const key=this.session!.id+':'+this.view.revision;if(key!==this.shownKey){this.markShown(this.view);this.stake=this.session!.rulesVersion===1&&this.view.stage==='settled'?DEFAULT_GAME_STAKE:this.view.stakeUnits;this.drawFrame(this.view.spins.at(-1)!);this.note=this.view.stage==='bonus'?this.text('Бонус восстановлен. Продолжение бесплатно.','Bonus restored. Continue without another stake.'):this.resultText(this.view);}}
     this.collection.sync(this.client.accountId??'');this.render();
   }
-  private markShown(view:WildNudgeView){this.shown=structuredClone(view);this.shownKey=this.session!.id+':'+view.revision;this.shownPayout=view.stage==='settled'?this.session!.returnedUnits:view.totalPayoutUnits;}
+  private markShown(view:WildNudgeView){this.shown=structuredClone(view);this.shownKey=this.session!.id+':'+view.revision;this.shownPayout=view.stage==='settled'?this.session!.returnedUnits:view.totalPayoutUnits;if(view.stage==='settled'&&this.session!.rulesVersion===1)this.stake=DEFAULT_GAME_STAKE;}
   private payout(view:WildNudgeView){if(view===this.shown)return this.shownPayout;return view.stage==='settled'&&view.revision===this.view?.revision?this.session!.returnedUnits:view.totalPayoutUnits;}
   private resultText(view:WildNudgeView){const paid=BigInt(this.payout(view)),net=paid-BigInt(view.stakeUnits);return net>0n?this.text('Положительный итог раунда.','Net-positive round.'):net===0n?this.text('Стоимость раунда возвращена.','Round cost returned.'):paid>0n?this.text('Частичный возврат. Выплата меньше ставки.','Partial return. Payout is below the stake.'):this.text('Раунд завершён без выплаты.','Round ended without a payout.');}
   private render(){
