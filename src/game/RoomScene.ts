@@ -37,7 +37,7 @@ import { advanceCharacterMotion, characterRestScale, createCharacterMotion, type
 import { Bar } from './Bar';
 import { drawActivities } from './activityArt';
 import { ACTIVITIES, type ActivityId } from '../shared/activities';
-import { movementFacing } from '../shared/movement';
+import { applyMovementInput,movementFacing } from '../shared/movement';
 import { addDrink, getIntoxication, intoxicatedMovement, MAX_SOBER_TIME_MS } from '../shared/intoxication';
 import { MovementPrediction, advanceClickMovement } from '../network/MovementPrediction';
 import { ClickTargetScheduler } from '../network/ClickTargetScheduler';
@@ -46,7 +46,7 @@ import { NpcTimeline } from '../network/NpcTimeline';
 import { RoomDetails } from './roomDetails';
 import { StreetView, streetDirection, type StreetSide } from './streetView';
 import { StreetRenderer } from './StreetRenderer';
-import { ROOF, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_SPEED_SCALE, advanceRoofStairStep } from '../shared/rooftop';
+import { ROOF, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_SPEED_SCALE,advanceRoofStairStep,moveRoofStairs } from '../shared/rooftop';
 import { RooftopRenderer } from './RooftopRenderer';
 import { STREET } from '../shared/street';
 import { CardTablesRenderer } from './CardTablesRenderer';
@@ -122,7 +122,6 @@ export class RoomScene extends Phaser.Scene {
   private pendingLounge: string | null = null;
   private streetApproach?:{id:StreetResidentId;point:Point};
   private streetApproachCompleting=false;
-  private roofClimbing=false;
   private elevatorApproachAt = 0;
   private overview=false;
   onBar: () => void = () => {};
@@ -161,7 +160,7 @@ export class RoomScene extends Phaser.Scene {
     for(const hall of Object.keys(HALLS) as HallId[]){
       const before=new Set(this.children.list);this.hall=hall;
       if(hall==='street'){
-        this.street=new StreetRenderer(this,()=>this.approachFloor('arcade'),id=>this.approachStreetResident(id),()=>this.approachFloor('roof'),this.streetView);
+        this.street=new StreetRenderer(this,()=>this.approachFloor('arcade'),id=>this.approachStreetResident(id),point=>this.useRoofStairs(point),this.streetView);
         this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
         continue;
       }
@@ -257,7 +256,6 @@ export class RoomScene extends Phaser.Scene {
   private showHall(hall:HallId){
     this.clickTargets.reset();
     for(const effect of this.pianoEffects){this.tweens.killTweensOf(effect);effect.destroy();}this.pianoEffects.clear();
-    this.roofClimbing=false;
     this.hall=hall;this.obstacles=hallObstacles(hall);this.details=this.hallDetails.get(hall)!;
     document.querySelector<HTMLElement>('.room-panel')!.dataset.location=hall;
     for(const [id,objects] of this.hallObjects)for(const object of objects){
@@ -279,9 +277,10 @@ export class RoomScene extends Phaser.Scene {
     const fit=Math.min(width/(frame.width-40),height/(frame.height-HALL_WALL.viewTop-50));
     const zoom=this.overview?fit:Math.max(fit,Phaser.Math.Clamp(Math.min(width/1000,height/760),.8,1.3));
     const viewWidth=width/zoom,viewHeight=height/zoom;
+    const top=this.hall==='street'&&!this.overview&&this.streetView.side==='rear'?Math.min(HALL_WALL.viewTop,this.streetView.roofEdge-320):HALL_WALL.viewTop;
     const camera=this.cameras.main.setSize(width,height).setZoom(zoom).setBounds(
-      Math.min(0,(frame.width-viewWidth)/2),Math.min(HALL_WALL.viewTop,(frame.height+HALL_WALL.viewTop-viewHeight)/2),
-      Math.max(frame.width,viewWidth),Math.max(frame.height-HALL_WALL.viewTop,viewHeight));
+      Math.min(0,(frame.width-viewWidth)/2),Math.min(top,(frame.height+top-viewHeight)/2),
+      Math.max(frame.width,viewWidth),Math.max(frame.height-top,viewHeight));
     if(this.overview){camera.stopFollow();camera.centerOn(frame.width/2,(frame.height+HALL_WALL.viewTop)/2);}
     else if(this.player)camera.startFollow(this.player.sprite,false,1,1,0,this.hall==='street'?Math.min(140,Math.max(60,viewHeight*.18)):0);
   }
@@ -356,7 +355,8 @@ export class RoomScene extends Phaser.Scene {
     return { hall:this.hall, x, y, sprite, shadow, blush, label, path: [], phase: (x * 7 + y * 11 + skin * 17 + Array.from(name ?? '').reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) % 997, 0)) % 100, nextMove: 0, facing: 'down', skin, appearance, soberAt, moving: false, lastStep: 0, motion: createCharacterMotion(), visualAt: 0, visualX: x, visualY: y, seat: '', action: 'idle', drink: '', actionUntil: 0, cabinet: '', gameReaction: '', gameReactionUntil: 0, visualSeat: '', seatedAt: 0 };
   }
   goTo(point: Point, obstacles=this.obstacles) {
-    this.roofClimbing=false;this.movementTarget={...point};
+    if(this.hall==='street'&&(this.player.stairStep??0)>0){this.player.path=[];this.marker.setVisible(false);this.endPrediction();return;}
+    this.movementTarget={...point};
     this.approachingCat = false;
     if (this.locked || this.isHuggingCat() || this.typing || this.switching || this.player.cabinet || this.networkSelf?.playing) return;
     if (this.network) {
@@ -397,6 +397,7 @@ export class RoomScene extends Phaser.Scene {
     const link = hallLinks(this.hall).find(candidate => candidate.target === target); if (!link) return;
     this.pendingCabinet = null; this.pendingLounge = null;
     if(this.hall==='street'&&target==='roof'){
+      if((this.player.stairStep??0)>0)return;
       const stairs=STREET_ROOF_STAIRS;
       this.pendingLounge='roof-stairs';
       // Approach the bottom from either side before walking up the steps.
@@ -405,13 +406,18 @@ export class RoomScene extends Phaser.Scene {
     }
     this.goTo(link.door.entry);
   }
-  private followRoofStairs(){
+  private useRoofStairs(point:Point){
     if(this.hall!=='street'||this.locked||this.typing||this.isHuggingCat())return;
+    const step=this.player.stairStep??0;
+    if(!step){this.approachFloor('roof');return;}
     this.pendingCabinet=null;this.pendingLounge=null;this.player.path=[];this.marker.setVisible(false);
+    const target=ROOF_STAIR_ROUTE[step];if(!target)return;
+    const here=this.streetView.point(this.player,true),next=this.streetView.point(target,true);
+    const ahead=Math.abs(next.x-here.x)>1?(point.x-here.x)*Math.sign(next.x-here.x):(point.y-here.y)*Math.sign(next.y-here.y);
+    if(ahead<8){this.endPrediction();return;}
     this.finishMovement(()=>{
       if(this.hall!=='street')return;
-      const step=Math.max(1,this.player.stairStep??0);
-      this.roofClimbing=true;this.player.path=ROOF_STAIR_ROUTE.slice(step).map(p=>({...p}));
+      this.player.path=[{...target}];
     });
   }
   approachStreetResident(id:StreetResidentId){
@@ -452,7 +458,7 @@ export class RoomScene extends Phaser.Scene {
   }
   interact() {
     if (this.locked || this.typing) return;
-    if(this.hall==='street'&&(this.player.stairStep??0)>0&&!this.isHuggingCat()){this.followRoofStairs();return;}
+    if(this.hall==='street'&&(this.player.stairStep??0)>0)return;
     if(this.hall==='street'&&!this.isHuggingCat()&&Math.hypot(this.player.x-STREET_ROOF_STAIRS.foot.x,this.player.y-STREET_ROOF_STAIRS.foot.y)<55){this.approachFloor('roof');return;}
     if(this.hall==='street'&&!this.isHuggingCat()&&this.street?.interact(this.player)){this.pendingLounge=null;this.finishMovement(()=>this.network?.stop());return;}
     if (!this.isHuggingCat() && atElevator(this.player)) { this.openElevator(); return; }
@@ -843,15 +849,11 @@ export class RoomScene extends Phaser.Scene {
     if (!this.locked && !this.isHuggingCat() && !this.typing && !this.switching && !this.player.cabinet && !this.networkSelf?.playing) {
       let dx = Number(this.keys.D!.isDown || this.keys.RIGHT!.isDown) - Number(this.keys.A!.isDown || this.keys.LEFT!.isDown);
       let dy = Number(this.keys.S!.isDown || this.keys.DOWN!.isDown) - Number(this.keys.W!.isDown || this.keys.UP!.isDown);
-      if(this.hall==='street'&&!this.overview&&this.streetView.side==='rear'&&!dx&&dy<0&&
-        (this.roofClimbing||(this.player.stairStep??0)>0||Math.hypot(this.player.x-STREET_ROOF_STAIRS.foot.x,this.player.y-STREET_ROOF_STAIRS.foot.y)<55)){
-        if(!this.roofClimbing&&this.pendingLounge!=='roof-stairs'){
-          if((this.player.stairStep??0)>0)this.followRoofStairs();else this.approachFloor('roof');
-        }
-        dx=dy=0;
-      }
-      if(dx||dy)this.roofClimbing=false;
-      if(this.hall==='street'){
+      const onStairs=this.hall==='street'&&(this.player.stairStep??0)>0;
+      if(onStairs){
+        if(this.streetView.orientation==='rear')dx=-dx;
+        this.streetKeyboardSide=undefined;this.lastStreetKeys='';
+      }else if(this.hall==='street'){
         const signature=dx+','+dy;
         if(!dx&&!dy){this.streetKeyboardSide=undefined;this.lastStreetKeys='';}
         else{
@@ -873,7 +875,7 @@ export class RoomScene extends Phaser.Scene {
         const input = String(dx) + ',' + String(dy) + (sprint && (dx || dy) ? ',sprint' : '');
         const previousInput = this.lastInput;
         if (this.networkSelf && !dx && !dy && this.player.path.length) {
-          advanceClickMovement(this.player, this.player.path, inputMs*(this.roofClimbing?ROOF_STAIR_SPEED_SCALE:1), this.prediction, this.guard.getState());
+          advanceClickMovement(this.player, this.player.path, inputMs, this.prediction, this.guard.getState());
           this.lastInput = 'route';
           if (!this.player.path.length) this.endPrediction();
         } else if (this.networkSelf && (dx || dy || input !== this.lastInput)) {
@@ -887,10 +889,16 @@ export class RoomScene extends Phaser.Scene {
       } else if (dx || dy) {
         this.stand(); this.pendingLounge = null;
         this.player.path = []; this.pendingCabinet = null; this.marker.setVisible(false);
-        const impaired = intoxicatedMovement(this.player.soberAt, { x: dx, y: dy, ms: dt * 1000 }, Math.floor(time / 50));
-        const speed = (sprint ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * impaired.speedMultiplier * dt;
-        moving = this.move(this.player, impaired.x * speed, impaired.y * speed);
-      } else if (!this.player.seat && this.player.action!=='drink') moving = this.follow(this.player, dt, PLAYER_SPRINT_SPEED*(this.roofClimbing?ROOF_STAIR_SPEED_SCALE:1));
+        if(onStairs){
+          const before={x:this.player.x,y:this.player.y};
+          applyMovementInput(this.player,{seq:0,x:dx,y:dy,ms:dt*1000,sprint});
+          moving=Math.hypot(this.player.x-before.x,this.player.y-before.y)>.001;
+        }else{
+          const impaired = intoxicatedMovement(this.player.soberAt, { x: dx, y: dy, ms: dt * 1000 }, Math.floor(time / 50));
+          const speed = (sprint ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * impaired.speedMultiplier * dt;
+          moving = this.move(this.player, impaired.x * speed, impaired.y * speed);
+        }
+      } else if (!this.player.seat && this.player.action!=='drink') moving = this.follow(this.player, dt, onStairs?PLAYER_SPEED*ROOF_STAIR_SPEED_SCALE:PLAYER_SPRINT_SPEED);
       if (!this.network) this.animateActor(this.player, time, moving);
       this.halo.setPosition(this.player.sprite.x,this.player.sprite.y).setDepth(this.player.sprite.depth-2);
       if(this.pendingLounge) {
@@ -898,7 +906,7 @@ export class RoomScene extends Phaser.Scene {
           if(this.hall!=='street')this.pendingLounge=null;
           else if(Math.hypot(this.player.x-STREET_ROOF_STAIRS.foot.x,this.player.y-STREET_ROOF_STAIRS.foot.y)<5){
             this.pendingLounge=null;
-            this.followRoofStairs();
+            this.player.path=[];this.marker.setVisible(false);this.endPrediction();
           }
         }
         else if(this.pendingLounge==='elevator') {
@@ -969,9 +977,12 @@ export class RoomScene extends Phaser.Scene {
   }
   private move(actor: Actor, dx: number, dy: number) {
     const before = { x: actor.x, y: actor.y };
-    if (walkable(actor.x + dx, actor.y, this.obstacles)) actor.x += dx;
-    if (walkable(actor.x, actor.y + dy, this.obstacles)) actor.y += dy;
-    actor.stairStep=actor.hall==='street'?advanceRoofStairStep(actor.stairStep??0,actor):0;
+    if(!(actor.hall==='street'&&moveRoofStairs(actor,{x:dx,y:dy,route:true},Math.hypot(dx,dy)))){
+      if (walkable(actor.x + dx, actor.y, this.obstacles)) actor.x += dx;
+      if (walkable(actor.x, actor.y + dy, this.obstacles)) actor.y += dy;
+      const previous=actor.stairStep??0;actor.stairStep=actor.hall==='street'?advanceRoofStairStep(previous,actor):0;
+      if(!previous&&actor.stairStep===1){actor.x=STREET_ROOF_STAIRS.foot.x;actor.y=STREET_ROOF_STAIRS.foot.y;}
+    }
     const movedX = actor.x - before.x, movedY = actor.y - before.y;
     const moved = Math.hypot(movedX, movedY) > .05;
     if (moved) actor.facing = movementFacing(movedX, movedY, actor.facing);
@@ -996,7 +1007,8 @@ export class RoomScene extends Phaser.Scene {
   }
   private animateActor(actor: Actor, time: number, moving: boolean) {
     const exterior=this.hall==='street';
-    const facing=exterior&&(actor.stairStep??0)>0&&actor.facing==='up'&&!this.overview?'up':exterior?this.streetView.facing(actor.facing):actor.facing;
+    const verticalClimb=exterior&&(actor.stairStep??0)>0&&(actor.facing==='up'||actor.facing==='down')&&!this.overview;
+    const facing=verticalClimb?actor.facing:exterior?this.streetView.facing(actor.facing):actor.facing;
     actor.sprite.setAngle(0); actor.label?.setVisible(true); actor.shadow.setScale(1);
     actor.moving = moving;
     const gameReaction = actor.gameReactionUntil > Date.now() ? actor.gameReaction : '';

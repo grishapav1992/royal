@@ -1,7 +1,7 @@
 import type { Point } from './navigation';
 import type { Facing } from '../shared/movement';
 import { STREET } from '../shared/street';
-import { STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE } from '../shared/rooftop';
+import { STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE,ROOF_STAIR_DRAW } from '../shared/rooftop';
 
 export type StreetSide = 'front' | 'rear';
 export function streetSide(point: Point, previous: StreetSide = 'front'): StreetSide {
@@ -45,10 +45,18 @@ export class StreetView {
     const result=projectStreetPoint(point,this.orientation);
     if(climbing&&!this.overview&&this.side==='rear'){
       const foot=projectStreetPoint(STREET_ROOF_STAIRS.foot,'rear');
-      result.x=foot.x+(result.x-foot.x)*1.65;
-      let rise=STREET_ROOF_STAIRS.foot.y-point.y;
-      for(const [from,to] of [[2,3],[4,5],[6,7]])rise-=Math.max(0,Math.min(ROOF_STAIR_ROUTE[from].y-point.y,ROOF_STAIR_ROUTE[from].y-ROOF_STAIR_ROUTE[to].y));
-      result.y=foot.y-rise*2.6;
+      let closest=Infinity;
+      for(let index=1;index<ROOF_STAIR_ROUTE.length;index++){
+        const a=ROOF_STAIR_ROUTE[index-1],b=ROOF_STAIR_ROUTE[index],dx=b.x-a.x,dy=b.y-a.y;
+        const t=Math.max(0,Math.min(1,((point.x-a.x)*dx+(point.y-a.y)*dy)/(dx*dx+dy*dy)));
+        const x=a.x+dx*t,y=a.y+dy*t,distance=(point.x-x)**2+(point.y-y)**2;
+        if(distance>=closest)continue;
+        closest=distance;const projected=projectStreetPoint({x,y},'rear');
+        const fromRise=index===1?0:ROOF_STAIR_DRAW.ladderRise+(index-2)*ROOF_STAIR_DRAW.flightRise;
+        const toRise=ROOF_STAIR_DRAW.ladderRise+(index-1)*ROOF_STAIR_DRAW.flightRise;
+        result.x=foot.x+(projected.x-foot.x)*ROOF_STAIR_DRAW.widthScale;
+        result.y=foot.y-fromRise-(toRise-fromRise)*t;
+      }
     }
     return result;
   }
@@ -76,4 +84,5 @@ export class StreetView {
     const left=Math.min(...points.map(p=>p.x)),right=Math.max(...points.map(p=>p.x));
     return {left,right,width:right-left,base:Math.max(...points.map(p=>p.y))};
   }
+  get roofEdge(){return projectStreetPoint(STREET_ROOF_STAIRS.foot,'rear').y-ROOF_STAIR_DRAW.ladderRise-(ROOF_STAIR_ROUTE.length-2)*ROOF_STAIR_DRAW.flightRise;}
 }

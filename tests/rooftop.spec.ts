@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE } from '../src/shared/rooftop';
-import { projectStreetPoint } from '../src/game/streetView';
+import { projectStreetPoint,StreetView } from '../src/game/streetView';
 
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
 async function overview(page: Page, on: boolean) {
@@ -29,7 +29,39 @@ async function walk(page: Page, x: number, y: number) {
   await expect.poll(async () => { const p = await state(page); return Math.hypot(p.serverX - p.x, p.serverY - p.y); }).toBeLessThan(3);
 }
 
-test('climb rear stairs, explore roof, reconnect and return with chat and wallet intact', async ({ page }, info) => {
+async function flight(page:Page,mobile:boolean){
+  const before=await state(page),step=before.stairStep,target=ROOF_STAIR_ROUTE[step],from=ROOF_STAIR_ROUTE[step-1];
+  if(mobile){
+    const view=new StreetView();view.side=before.street.view.side;view.overview=before.view.overview;
+    const a=view.point(before,true),b=view.point(target,true);
+    await clickViewPoint(page,{x:(a.x+b.x)/2,y:(a.y+b.y)/2-8});
+  }else{
+    const key=target.x===from.x?'ArrowUp':(target.x>from.x)===(before.street.view.orientation==='rear')?'ArrowLeft':'ArrowRight';
+    await page.keyboard.down(key);
+    try{await expect.poll(async()=>{const s=await state(page);return s.hall==='roof'||s.stairStep>step;},{timeout:10000}).toBe(true);}
+    finally{await page.keyboard.up(key);}
+  }
+  await expect.poll(async()=>{const s=await state(page);return s.hall==='roof'||s.stairStep>step;},{timeout:10000}).toBe(true);
+  if(step===ROOF_STAIR_ROUTE.length-1)await expect.poll(async()=>(await state(page)).hall,{timeout:10000}).toBe('roof');
+  await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.serverX-s.x,s.serverY-s.y);}).toBeLessThan(1);
+}
+
+async function staysOnStep(page:Page){
+  await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.serverX-s.x,s.serverY-s.y);}).toBeLessThan(.1);
+  const before=await state(page);
+  await page.keyboard.press('ArrowUp',{delay:250});
+  await page.keyboard.press('Space');
+  const box=(await page.locator('#game canvas').boundingBox())!;
+  if(page.viewportSize()!.width<600)await page.touchscreen.tap(box.x+18,box.y+box.height*.5);
+  else await page.mouse.click(box.x+18,box.y+box.height*.5);
+  await page.waitForTimeout(250);
+  const after=await state(page);
+  expect(after.hall).toBe('street');expect(after.stairStep).toBe(before.stairStep);
+  expect(Math.hypot(after.x-before.x,after.y-before.y)).toBeLessThan(.1);
+  expect(Math.hypot(after.serverX-before.serverX,after.serverY-before.serverY)).toBeLessThan(.1);
+}
+
+test('manually climb each switchback without falling, reach the roof edge and return with chat intact', async ({ page }, info) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
   await page.getByLabel('Почта', { exact: true }).fill(`roof-${crypto.randomUUID()}@example.test`);
@@ -48,7 +80,7 @@ test('climb rear stairs, explore roof, reconnect and return with chat and wallet
   expect((await state(page)).hall).toBe('street');
   await overview(page, false);
   await page.screenshot({ path: `../roof-${info.project.name}-stairs.png` });
-  // Click a visible rung above the foot, rather than the old narrow ground hotspot.
+  // A rung click approaches the foot only; every later flight requires its own input.
   await page.evaluate(() => {
     (window as any).__roofClimb = [];
     const record = () => { const s = (window as any).royalDemo.getState(); (window as any).__roofClimb.push({ hall:s.hall, x:s.x, y:s.y }); if(s.hall==='street')requestAnimationFrame(record); };
@@ -56,7 +88,17 @@ test('climb rear stairs, explore roof, reconnect and return with chat and wallet
   });
   const foot=projectStreetPoint(STREET_ROOF_STAIRS.foot,(await state(page)).street.view.orientation);
   await clickViewPoint(page,{x:foot.x,y:foot.y-80});
-  await expect.poll(async () => (await state(page)).stairStep,{timeout:10000}).toBeGreaterThanOrEqual(3);
+  await expect.poll(async () => (await state(page)).stairStep,{timeout:10000}).toBe(1);
+  await page.waitForTimeout(400);expect((await state(page)).stairStep).toBe(1);
+  const mobile=info.project.name==='mobile';
+  await flight(page,mobile);await flight(page,mobile);
+  expect((await state(page)).stairStep).toBe(3);
+  if(!mobile){
+    await page.keyboard.down('ArrowRight');await page.waitForTimeout(220);await page.keyboard.up('ArrowRight');
+    expect((await state(page)).stairStep).toBe(3);
+    expect(Math.hypot((await state(page)).x-ROOF_STAIR_ROUTE[2].x,(await state(page)).y-ROOF_STAIR_ROUTE[2].y)).toBeGreaterThan(5);
+  }
+  await staysOnStep(page);
   expect((await state(page)).renderDepth).toBeGreaterThan(620);
   expect((await state(page)).street.frontRoadVisible).toBe(false);
   {const s=await state(page);expect(s.renderVisible).toBe(true);expect(Math.hypot(s.halo.x-s.renderX,s.halo.y-s.renderY)).toBeLessThan(.1);}
@@ -65,13 +107,25 @@ test('climb rear stairs, explore roof, reconnect and return with chat and wallet
   await page.reload();
   await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
   await expect.poll(async ()=>(await state(page)).hall).toBe('street');
-  expect((await state(page)).stairStep).toBeGreaterThan(0);
+  expect((await state(page)).stairStep).toBe(3);
+  await staysOnStep(page);
   await page.evaluate(()=>{
     (window as any).__roofClimb=[];
     const record=()=>{const s=(window as any).royalDemo.getState();(window as any).__roofClimb.push({hall:s.hall,x:s.x,y:s.y});if(s.hall==='street')requestAnimationFrame(record);};requestAnimationFrame(record);
   });
-  await page.keyboard.press('ArrowUp',{delay:100});
-  await expect.poll(async () => (await state(page)).hall, { timeout: 15000 }).toBe('roof');
+  while((await state(page)).hall==='street'){
+    const s=await state(page);
+    if(s.stairStep===ROOF_STAIR_ROUTE.length-1){
+      const view=new StreetView();view.side='rear';
+      expect(view.roofEdge).toBeGreaterThan(s.view.y);expect(view.roofEdge).toBeLessThan(s.view.y+s.view.height/s.view.zoom);
+      await page.screenshot({path:`../roof-${info.project.name}-top.png`});
+    }
+    await flight(page,mobile);
+    if((await state(page)).hall==='street'){
+      const paused=await state(page);await page.waitForTimeout(120);
+      const still=await state(page);expect(still.stairStep).toBe(paused.stairStep);expect(Math.hypot(still.x-paused.x,still.y-paused.y)).toBeLessThan(.1);
+    }
+  }
   const continuation = await page.evaluate(() => (window as any).__roofClimb as {hall:string;x:number;y:number}[]);
   const climb=[...prefix,...continuation];
   for(const waypoint of ROOF_STAIR_ROUTE.slice(1,-1))expect(climb.some(p=>p.hall==='street'&&Math.hypot(p.x-waypoint.x,p.y-waypoint.y)<10)).toBe(true);
@@ -103,11 +157,14 @@ test('climb rear stairs, explore roof, reconnect and return with chat and wallet
   await clickWorld(page, ROOF_STAIRS.click.x, ROOF_STAIRS.click.y);
   await expect.poll(async () => (await state(page)).hall, { timeout: 15000 }).toBe('street');
   await expect.poll(async () => (await state(page)).y).toBe(STREET_ROOF_STAIRS.arrival.y);
-  // Up at the foot starts ascent without needing to know the interaction key.
+  // The lower ladder can be entered with Up and backed down safely.
   await overview(page,false);
-  await page.keyboard.press('ArrowUp',{delay:100});
-  await expect.poll(async()=>(await state(page)).stairStep,{timeout:10000}).toBeGreaterThanOrEqual(3);
-  await page.keyboard.press('ArrowRight');
+  await page.keyboard.down('ArrowUp');
+  try{await expect.poll(async()=>(await state(page)).stairStep,{timeout:10000}).toBe(1);}
+  finally{await page.keyboard.up('ArrowUp');}
+  await page.keyboard.down('ArrowDown');
+  try{await expect.poll(async()=>(await state(page)).stairStep,{timeout:10000}).toBe(0);}
+  finally{await page.keyboard.up('ArrowDown');}
   await overview(page,true);
   // The narrow strip is outside the normal rear circulation route.
   for (const p of [{ x: 1760, y: 470 }, { x: 2320, y: 360 }, { x: 2320, y: 1050 }]) await walk(page, p.x, p.y);

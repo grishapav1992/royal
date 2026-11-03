@@ -1,4 +1,4 @@
-import { advanceRoofStairStep, ROOF_STAIR_ROUTE } from '../src/shared/rooftop';
+import { advanceRoofStairStep, ROOF_STAIR_ROUTE,STREET_ROOF_STAIRS } from '../src/shared/rooftop';
 import { LOBBY_RECONNECT_GRACE_SECONDS } from '../src/shared/lobbyConnection';
 import { CommonCombatWallet } from './commonCombatWallet';
 import { virtualPvpCommand } from './pvp/virtual-service';
@@ -20,7 +20,7 @@ import { randomUUID } from 'node:crypto';
 import { accounts, allowedOrigin, cookieToken, type Account } from './accounts';
 type RoomAuth = { account: Account; hash: string };
 import { LobbyState, Player } from './state';
-import { movementFacing, type Facing } from '../src/shared/movement';
+import { applyMovementInput,movementFacing, type Facing } from '../src/shared/movement';
 import { MovementInputs } from './movementInputs';
 import { Activities } from './activities';
 import { PvpRoom } from './pvp/room';
@@ -207,6 +207,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (!p || (data as {revision?:number})?.revision!==p.hallRevision || !control || !data || typeof data !== 'object' || p.playing || Date.now() - control.lastTarget < 150) return;
       const { x, y } = data as { x?: unknown; y?: unknown };
       if (typeof x !== 'number' || typeof y !== 'number' || !Number.isFinite(x) || !Number.isFinite(y)) return;
+      if(p.hall==='street'&&p.stairStep>0){this.stop(client.sessionId);return;}
       this.stop(client.sessionId);
       this.stand(client.sessionId);
       control.predicted = false;
@@ -598,7 +599,9 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     const p=this.state.players.get(id),c=this.controls.get(id);
     if(!p?.connected||!c)return false;
     if(p.security||this.cat.isHugging(id)||p.playing||p.seat||p.action==='drink'){p.stairStep=0;return false;}
+    const previous=p.stairStep;
     p.stairStep=p.hall==='street'?advanceRoofStairStep(p.stairStep,p):0;
+    if(!previous&&p.stairStep===1){p.x=STREET_ROOF_STAIRS.foot.x;p.y=STREET_ROOF_STAIRS.foot.y;}
     const link=hallLinkAt(p);if(!link)return false;
     if(link.target==='roof'&&p.stairStep!==ROOF_STAIR_ROUTE.length)return false;
     this.activities.leave(id);this.releaseCabinet(id);this.stop(id);this.stand(id);
@@ -629,6 +632,11 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       let dx = c.dx, dy = c.dy;
       if (Date.now() - c.at > 450) dx = dy = 0;
       if (!dx && !dy && !c.path.length) { p.moving = false; continue; }
+      if(p.hall==='street'&&p.stairStep>0){
+        c.path=[];
+        applyMovementInput(p,{seq:0,x:dx,y:dy,ms:c.inputs.sequence?c.inputs.takeDuration(dt*1000):dt*1000});
+        this.enterDoor(id);continue;
+      }
       let remaining = (c.path.length ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * (c.inputs.sequence ? c.inputs.takeDuration(dt*1000)/1000 : dt)
         * intoxicatedMovement(p.soberAt, { x: dx, y: dy, ms: dt * 1000 }, Date.now() / 50).speedMultiplier;
       const beforeX = p.x, beforeY = p.y;

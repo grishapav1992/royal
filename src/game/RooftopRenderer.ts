@@ -110,7 +110,7 @@ function antenna(c: Paint) {
   line(c, 19, 138, 50, 83, ink, 4); line(c, 81, 138, 50, 83, ink, 4);
 }
 
-/** Unmarked flat fire escape with three flights and real switchback landings. */
+/** Unmarked flat fire escape with a landing at every switchback and at the roof edge. */
 export class StreetRoofStairs {
   private close: Phaser.GameObjects.Graphics;
   private plan: Phaser.GameObjects.Graphics;
@@ -119,7 +119,7 @@ export class StreetRoofStairs {
   private hitRoute:{x:number;y:number}[]=[];
   private overview=false;
   private paint:(g:Phaser.GameObjects.Graphics,plan:boolean,view:StreetView)=>void;
-  constructor(scene: Phaser.Scene, enter: () => void) {
+  constructor(scene: Phaser.Scene, enter: (point:{x:number;y:number}) => void) {
     this.paint=(g,plan,view)=>{
       g.clear();
       const route=ROOF_STAIR_ROUTE.map(p=>view.point(p,!plan));
@@ -133,8 +133,8 @@ export class StreetRoofStairs {
         const base=route[0],landing=route[1];
         for(const dx of [-22,22]){g.lineStyle(7,ink).lineBetween(base.x+dx,base.y,landing.x+dx,landing.y-48);g.lineStyle(3,steel).lineBetween(base.x+dx,base.y,landing.x+dx,landing.y-48);}
         for(let y=base.y-8;y>landing.y;y-=14){g.lineStyle(5,ink).lineBetween(base.x-21,y,base.x+21,y);g.lineStyle(2,light).lineBetween(base.x-21,y-1,base.x+21,y-1);}
-        for(const [start,end] of [[1,2],[3,4],[5,6]]){
-          const a=route[start],b=route[end],count=Math.ceil(Math.abs(b.x-a.x)/16),points=[{x:a.x,y:a.y}];
+        for(let start=1;start<route.length-1;start++){
+          const a=route[start],b=route[start+1],count=Math.ceil(Math.abs(b.x-a.x)/16),points=[{x:a.x,y:a.y}];
           for(let n=1;n<=count;n++){const x=a.x+(b.x-a.x)*n/count,y=a.y+(b.y-a.y)*n/count;points.push({x,y:a.y+(b.y-a.y)*(n-1)/count},{x,y});}
           points.push({x:b.x,y:b.y+18},{x:a.x,y:a.y+18});
           g.fillStyle(steel).fillPoints(points,true);g.lineStyle(3,ink).strokePoints(points,true);
@@ -142,7 +142,7 @@ export class StreetRoofStairs {
           for(let n=1;n<count;n+=3){const t=n/count,x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t;g.fillStyle(0x95654e).fillEllipse(x,y+11,8,3);}
           rail(a,b);
         }
-        for(const index of [1,3,5,7]){
+        for(let index=1;index<route.length;index++){
           const p=route[index];
           g.fillStyle(0x465056).fillTriangle(p.x-30,p.y+13,p.x-30,p.y+49,p.x+27,p.y+13);
           g.lineStyle(3,ink).strokeTriangle(p.x-30,p.y+13,p.x-30,p.y+49,p.x+27,p.y+13);
@@ -151,7 +151,6 @@ export class StreetRoofStairs {
           rail({x:p.x-32,y:p.y},{x:p.x+32,y:p.y});
           g.fillStyle(0xf1f5f4).fillEllipse(p.x-7,p.y-52,49,6).fillEllipse(p.x+9,p.y-54,22,6);
         }
-        const top=route[7],exit=route[8];g.lineStyle(14,steel).lineBetween(top.x,top.y+7,exit.x,exit.y+7);rail(top,exit);
         return;
       }
       // Thin supports leave the street lane visible through the open structure.
@@ -180,7 +179,7 @@ export class StreetRoofStairs {
           for(let t=0;t<=1;t+=.25){const x=from.x+dx*t+nx*side,y=from.y+dy*t+ny*side;g.lineStyle(1.5,0x485b60).lineBetween(x,y,x,y-10);}
         }
       });
-      for(const index of [1,3,5,7,8]){
+      for(let index=1;index<route.length;index++){
         const p=route[index];g.fillStyle(0x53696c).fillRect(p.x-23,p.y-12,46,24);
         g.lineStyle(2,0x35474e).strokeRect(p.x-23,p.y-12,46,24);
         for(let x=p.x-16;x<p.x+20;x+=7)g.lineStyle(1,0x8c9c98).lineBetween(x,p.y-9,x,p.y+9);
@@ -192,7 +191,7 @@ export class StreetRoofStairs {
     // Rungs, flights and landings accept input in their painted positions.
     this.hitZone=scene.add.zone(0,0,STREET.width,STREET.height).setOrigin(0).setInteractive({
       hitArea:{},hitAreaCallback:(_area:unknown,x:number,y:number)=>roofStairContains({x,y},this.hitRoute,this.overview),
-    }).on('pointerdown',enter);
+    }).on('pointerdown',(pointer:Phaser.Input.Pointer)=>enter({x:pointer.worldX,y:pointer.worldY}));
   }
   update(overview:boolean,view:StreetView){
     this.overview=overview;

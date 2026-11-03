@@ -24,8 +24,9 @@ export class StreetRenderer {
   private sparkle: Phaser.GameObjects.Graphics;
   private residents:StreetResidents;
   private roofStairs:StreetRoofStairs;
+  private rearSky:Phaser.GameObjects.Graphics;
   readonly mapCanvas: HTMLCanvasElement;
-  constructor(scene: Phaser.Scene, enter: () => void,approach:(id:StreetResidentId)=>void,climb:()=>void,readonly view:StreetView) {
+  constructor(scene: Phaser.Scene, enter: () => void,approach:(id:StreetResidentId)=>void,climb:(point:Point)=>void,readonly view:StreetView) {
     this.mapCanvas=createStreetArt(scene);
     const b=STREET.building,front=b.y+b.h;
     const base=scene.add.graphics();
@@ -83,10 +84,15 @@ export class StreetRenderer {
     this.sparkle=scene.add.graphics().setPosition(signX,signY);sections.push(this.sparkle);
     this.facade=scene.add.container(0,0,sections).setDepth(front);
     this.walls.set('front',this.facade);
+    this.rearSky=scene.add.graphics().setDepth(0).fillStyle(0xe6edf2).fillRect(0,-2600,STREET.width,2600);
     for(const side of ['rear'] as const){
       const test=new StreetView();test.side=side;const wall=test.wall,g=scene.add.graphics();
-      g.fillStyle(side==='rear'?0x65303f:0x681a32).fillRect(wall.left,-2400,wall.width,wall.base+2400);
-      for(let x=wall.left;x<wall.right;x+=160)g.lineStyle(1,0x532836).lineBetween(x,-2400,x,wall.base);
+      const top=test.roofEdge;
+      g.fillStyle(0x65303f).fillRect(wall.left,top,wall.width,wall.base-top);
+      for(let x=wall.left;x<wall.right;x+=160)g.lineStyle(1,0x532836).lineBetween(x,top,x,wall.base);
+      g.fillStyle(0xbca98d).fillRect(wall.left-5,top,wall.width+10,18);
+      g.lineStyle(3,0x302d35).strokeRect(wall.left-5,top,wall.width+10,18);
+      g.fillStyle(0xf4f8fc).fillRoundedRect(wall.left-6,top-7,wall.width+12,10,4);
       const pieces:Phaser.GameObjects.GameObject[]=[g];
       pieces.push(scene.add.image(wall.left,wall.base-350,createStreetWall(scene,side)).setOrigin(0).setDisplaySize(wall.width,350));
       this.walls.set(side,scene.add.container(0,0,pieces).setDepth(wall.base));
@@ -101,6 +107,7 @@ export class StreetRenderer {
     this.roofStairs.update(overview,this.view);
     for(const [side,wall] of this.walls)wall.setVisible(!overview&&side===this.view.side).setAlpha(1);
     this.plan.setVisible(overview);this.ground.setVisible(!overview);
+    this.rearSky.setVisible(!overview&&this.view.side==='rear');
     this.frontGround.setVisible(this.view.side==='front');
     const origin=this.view.point({x:0,y:0});this.ground.setPosition(origin.x,origin.y).setRotation(this.view.angle);
     for(const {image,point} of this.anchors){const p=this.view.point(point);image.setPosition(p.x,p.y).setDepth(p.y).setVisible(!overview&&this.view.visible(point));}

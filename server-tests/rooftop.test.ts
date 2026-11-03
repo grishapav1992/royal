@@ -11,6 +11,8 @@ import { Guards } from '../server/guards';
 import { LobbyState, Player } from '../server/state';
 import { StreetView } from '../src/game/streetView';
 import { roofStairContains } from '../src/game/roofStairInput';
+import { applyMovementInput,type MovementBody } from '../src/shared/movement';
+import { MovementPrediction } from '../src/network/MovementPrediction';
 
 test('visible ladder rungs, flights and landings accept input without capturing the rear pavement',()=>{
   const view=new StreetView();view.configure({x:1660,y:360},false);
@@ -107,6 +109,13 @@ test('server controls roof ascent and return, blocks busy visitors and ignores o
     const revision = p.hallRevision;
     assert.equal(enter(),false);
     assert.equal(p.stairStep,1);
+    Object.assign(p,{x:(ROOF_STAIR_ROUTE[1].x+ROOF_STAIR_ROUTE[2].x)/2,y:(ROOF_STAIR_ROUTE[1].y+ROOF_STAIR_ROUTE[2].y)/2,stairStep:2});
+    const held={x:p.x,y:p.y,step:p.stairStep};
+    handlers.get('target')!(client,{revision,x:2300,y:1000});Reflect.get(room,'tick').call(room,.05);
+    assert.deepEqual({x:p.x,y:p.y,step:p.stairStep},held,'a legacy ground target cannot pull a person off a flight');
+    handlers.get('move')!(client,{revision,x:-1,y:0});Reflect.get(room,'tick').call(room,.05);
+    assert.deepEqual({x:p.x,y:p.y,step:p.stairStep},held,'a wrong legacy direction remains on the flight');
+    handlers.get('stop')!(client,{});Object.assign(p,{...STREET_ROOF_STAIRS.foot,stairStep:1});
     for(let segment=1;segment<ROOF_STAIR_ROUTE.length&&p.hall==='street';segment++){
       const from=ROOF_STAIR_ROUTE[segment-1],to=ROOF_STAIR_ROUTE[segment],steps=Math.ceil(Math.hypot(to.x-from.x,to.y-from.y)/3);
       for(let step=1;step<=steps&&p.hall==='street';step++){
@@ -124,7 +133,7 @@ test('server controls roof ascent and return, blocks busy visitors and ignores o
 });
 
 
-test('switchback progress requires every flight, stays walkable and resets on leaving the stairs',()=>{
+test('switchback qualification requires every flight and rejects positions off its route',()=>{
   const obstacles=hallObstacles('street');let progress=0;const reached=new Set<number>();
   for(let segment=1;segment<ROOF_STAIR_ROUTE.length;segment++){
     const from=ROOF_STAIR_ROUTE[segment-1],to=ROOF_STAIR_ROUTE[segment],steps=Math.ceil(Math.hypot(to.x-from.x,to.y-from.y)/3);
@@ -141,4 +150,70 @@ test('switchback progress requires every flight, stays walkable and resets on le
   assert.equal(advanceRoofStairStep(3,{x:1660,y:360}),0,'the normal underpass does not earn a landing');
   assert.equal(advanceRoofStairStep(2,{x:1900,y:700}),0);
   assert.equal(advanceRoofStairStep(999,STREET_ROOF_STAIRS.entry),0);
+});
+
+function stairBody():MovementBody {
+  return {hall:'street',...STREET_ROOF_STAIRS.foot,stairStep:1,facing:'up',moving:false,seat:'',action:'idle',drink:'',actionUntil:0};
+}
+
+test('manual stair input follows every flight, stops at turns and never falls for other keys',()=>{
+  const body=stairBody();let sequence=0;
+  for(let step=1;step<ROOF_STAIR_ROUTE.length;step++){
+    assert.equal(body.stairStep,step);
+    const a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step];
+    const correct={x:Math.sign(b.x-a.x),y:b.x===a.x?-1:0};
+    for(const input of [{x:-1,y:0},{x:1,y:0},{x:0,y:-1},{x:0,y:1},{x:1,y:1}]){
+      if(input.x===correct.x&&input.y===correct.y||step===1&&input.y===1&&input.x===0)continue;
+      const before={x:body.x,y:body.y,step:body.stairStep};
+      for(let frame=0;frame<8;frame++)applyMovementInput(body,{seq:++sequence,...input,ms:50});
+      assert.deepEqual({x:body.x,y:body.y,step:body.stairStep},before,'wrong direction leaves feet on the same step');
+    }
+    applyMovementInput(body,{seq:++sequence,...correct,ms:100});
+    const midway={x:body.x,y:body.y,step:body.stairStep};
+    applyMovementInput(body,{seq:++sequence,x:1,y:1,ms:50});
+    assert.deepEqual({x:body.x,y:body.y,step:body.stairStep},midway,'a different key during movement does not leave the flight');
+    for(let frame=0;body.stairStep===step&&frame<100;frame++)applyMovementInput(body,{seq:++sequence,...correct,ms:50});
+    assert.equal(body.stairStep,step+1);assert.deepEqual({x:body.x,y:body.y},b,'landing is reached exactly');
+    const before={x:body.x,y:body.y,step:body.stairStep};
+    applyMovementInput(body,{seq:++sequence,x:0,y:0,ms:50});
+    assert.deepEqual({x:body.x,y:body.y,step:body.stairStep},before,'releasing a key stops ascent');
+  }
+  assert.equal(body.stairStep,ROOF_STAIR_ROUTE.length);
+});
+
+test('the lower ladder can be backed down safely onto the pavement',()=>{
+  const body=stairBody();
+  for(let n=0;n<6;n++)applyMovementInput(body,{seq:n+1,x:0,y:-1,ms:50});
+  assert.equal(body.stairStep,1);assert(body.y<STREET_ROOF_STAIRS.foot.y);
+  for(let n=0;n<10&&body.stairStep;n++)applyMovementInput(body,{seq:n+7,x:0,y:1,ms:50});
+  assert.equal(body.stairStep,0);assert(body.y<STREET_ROOF_STAIRS.foot.y-7);
+  assert(walkable(body.x,body.y,hallObstacles('street'),16));
+});
+
+test('prediction and replay keep paused and moving stair positions on the same flight',()=>{
+  const prediction=new MovementPrediction(),local=stairBody(),server=stairBody();let acknowledged=0;
+  for(let frame=0;frame<500&&local.stairStep!<ROOF_STAIR_ROUTE.length;frame++){
+    const step=local.stairStep!,a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step];
+    const correct={x:Math.sign(b.x-a.x),y:b.x===a.x?-1:0};
+    const input=frame%4===0?{x:0,y:0}:frame%7===0?{x:1,y:1}:correct;
+    prediction.step(local,input.x,input.y,16);
+    if(frame%3===0){
+      prediction.flush(batch=>{for(const input of batch){applyMovementInput(server,input);acknowledged=input.seq;}});
+      const replay=prediction.reconcile(server,acknowledged);
+      assert(Math.hypot(replay.x-local.x,replay.y-local.y)<1e-8);assert.equal(replay.stairStep,local.stairStep);
+    }
+  }
+  assert(local.stairStep!>2);
+});
+
+test('all long escape flights align with their drawn treads and the final roof edge',()=>{
+  const view=new StreetView();view.configure({x:1660,y:360},false);
+  const route=ROOF_STAIR_ROUTE.map(p=>view.point(p,true));
+  assert(route.length>=12);assert(route[0].y-route.at(-1)!.y>1500);
+  assert.equal(route.at(-1)!.y,view.roofEdge);
+  for(let step=1;step<route.length;step++)for(let sample=0;sample<=20;sample++){
+    const t=sample/20,a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step];
+    const p=view.point({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t},true);
+    assert(Math.hypot(p.x-route[step-1].x-(route[step].x-route[step-1].x)*t,p.y-route[step-1].y-(route[step].y-route[step-1].y)*t)<1e-8);
+  }
 });

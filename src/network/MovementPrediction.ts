@@ -1,5 +1,6 @@
 import { getIntoxication } from '../shared/intoxication';
-import { PLAYER_SPRINT_SPEED } from '../shared/world';
+import { PLAYER_SPEED,PLAYER_SPRINT_SPEED } from '../shared/world';
+import { ROOF_STAIR_SPEED_SCALE } from '../shared/rooftop';
 import type { Point } from '../game/navigation';
 import { applyMovementInput, type MovementBody, type MovementInput } from '../shared/movement';
 import type { GuardCollider } from '../shared/guardCollision';
@@ -62,7 +63,7 @@ export function advanceClickMovement(body: MovementBody, path: Point[], ms: numb
     prediction.step(body, 1, 0, 0, true, guards, true);
     if (prediction.pendingCount === count) return;
   }
-  const speed = PLAYER_SPRINT_SPEED * (1 - getIntoxication(body.soberAt ?? 0).level * .28);
+  const speed = (body.hall==='street'&&(body.stairStep??0)>0?PLAYER_SPEED*ROOF_STAIR_SPEED_SCALE:PLAYER_SPRINT_SPEED) * (1 - getIntoxication(body.soberAt ?? 0).level * .28);
   for (let steps = 0; path.length && remaining > 1e-6 && steps < 32; steps++) {
     const target = path[0], dx = target.x - body.x, dy = target.y - body.y;
     const distance = Math.hypot(dx, dy);
