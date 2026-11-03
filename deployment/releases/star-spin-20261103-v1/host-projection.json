@@ -1823,6 +1823,12 @@
       "baseSha256": "4cd112040e2d4dbefefab9c882b176c9ee0944d4b167c4c9280a594e5eb2dbac",
       "sha256": "4cd112040e2d4dbefefab9c882b176c9ee0944d4b167c4c9280a594e5eb2dbac"
     },
+    "tsconfig.json": {
+      "commit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+      "path": "tsconfig.json",
+      "baseSha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+      "sha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b"
+    },
     "games/wild-nudge/GalacticAudio.ts": {
       "commit": "776366499b9e3d6c6789da1bf5eac6711605128a",
       "path": "games/wild-nudge/GalacticAudio.ts",

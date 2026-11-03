@@ -1,7 +1,7 @@
 {
   "release": "star-spin-20261103-v1",
   "productionCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
-  "featureCommit": "c2c4e6a42a2147eda4cda72b7a35647122ac8913",
+  "featureCommit": "399191cc6e92d11b947845955585230ac3005800",
   "expectedSources": {
     "games/wild-nudge/GalacticAudio.ts": "da9dd8e60ad6fe9d164241ce3fa700607064df22424fa93a0c7daa98dd4799e0",
     "games/wild-nudge/GalacticReactorUI.ts": "dedca2cfb1866c526f8dca2416e6b9f671f5353ed08c558d1de5b0abb0cd577a",

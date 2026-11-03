@@ -22,6 +22,9 @@ helper=importlib.util.module_from_spec(spec);spec.loader.exec_module(helper)
 def main():
     before=json.loads(Path(sys.argv[1]).read_text(encoding='utf-8-sig'));feature=git('rev-parse',sys.argv[2]).decode().strip();base=git('rev-parse','44b12afd').decode().strip()
     configs={kind:json.loads((HERE.parent/'lobby-connection-20261101-v1'/(kind+'-projection.json')).read_text()) for kind in ['host','backend']}
+    # Independent modules also consume the root TypeScript configuration.
+    # The production backend already pins these exact unchanged bytes.
+    configs['host']['files']['tsconfig.json']=copy.deepcopy(configs['backend']['files']['tsconfig.json'])
     # This adapter is compiled only for local accepted-round qualification.
     # Production uses the main host wallet; the retired native service is preserved.
     original_backend=copy.deepcopy(configs['backend']['files'])
