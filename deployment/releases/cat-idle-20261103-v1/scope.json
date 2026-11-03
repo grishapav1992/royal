@@ -1,0 +1,10 @@
+{
+  "productionCommit": "24cce094af9b39e008a31c3e5803436174e95a36",
+  "animationCommit": "e5ac32618bb0d645bef98e05b658bb5bc9a4ced3",
+  "expectedSources": {
+    "src/game/CatRenderer.ts": "970f0e4fc0b8ab4408f2dd1f98772da491566c19ef8d5c3ee6a2c8787fa3c1e6",
+    "src/game/CatIdleMotion.ts": "c8a1f6cbfa8ce0476670e17caf4f6db69939d0a1ce8d3f460a9fadd890182d91"
+  },
+  "addedGames": [],
+  "restoredGames": []
+}
