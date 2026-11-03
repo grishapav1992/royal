@@ -70,7 +70,7 @@ test('climb rear stairs, explore roof, reconnect and return with chat and wallet
     (window as any).__roofClimb=[];
     const record=()=>{const s=(window as any).royalDemo.getState();(window as any).__roofClimb.push({hall:s.hall,x:s.x,y:s.y});if(s.hall==='street')requestAnimationFrame(record);};requestAnimationFrame(record);
   });
-  await page.keyboard.press('ArrowUp');
+  await page.keyboard.press('ArrowUp',{delay:100});
   await expect.poll(async () => (await state(page)).hall, { timeout: 15000 }).toBe('roof');
   const continuation = await page.evaluate(() => (window as any).__roofClimb as {hall:string;x:number;y:number}[]);
   const climb=[...prefix,...continuation];
@@ -104,7 +104,8 @@ test('climb rear stairs, explore roof, reconnect and return with chat and wallet
   await expect.poll(async () => (await state(page)).hall, { timeout: 15000 }).toBe('street');
   await expect.poll(async () => (await state(page)).y).toBe(STREET_ROOF_STAIRS.arrival.y);
   // Up at the foot starts ascent without needing to know the interaction key.
-  await page.keyboard.press('ArrowUp');
+  await overview(page,false);
+  await page.keyboard.press('ArrowUp',{delay:100});
   await expect.poll(async()=>(await state(page)).stairStep,{timeout:10000}).toBeGreaterThanOrEqual(3);
   await page.keyboard.press('ArrowRight');
   await overview(page,true);
