@@ -17,6 +17,7 @@ const capped=(a:ExactAward,cap:bigint)=>a.numerator>cap*a.denominator?exactAward
 /** Exact pre-cent reward from the consumed, server-validated complete transcript. */
 export function expansionExactAward(s:{gameId:string;stakeUnits:string;returnedUnits:string;multiplier?:number;view:any}):ExactAward {
  const stake=BigInt(s.stakeUnits),v=s.view;
+ if(v.wildNudge)return exactAward(stake*v.wildNudge.spins.reduce((sum:bigint,spin:any)=>sum+BigInt(spin.points),0n),100n);
  if(v.forestHeart){
   const f=v.forestHeart,b=f.base,base=forestHeartBase(b.bits,b.ability,b.rotation);
   const points=BigInt(base.flowers*b.energy)+f.bonus.reduce((n:bigint,spin:any)=>n+BigInt(forestHeartPopcount(spin.receiverMask)*spin.energy),0n);

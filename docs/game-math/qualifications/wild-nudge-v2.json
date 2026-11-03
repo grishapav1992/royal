@@ -1,0 +1,266 @@
+{
+  "schemaVersion": 1,
+  "gameId": "studio-wild-nudge",
+  "rulesVersion": 2,
+  "progressVersion": 1,
+  "startedAt": "2026-11-03T14:46:57.197Z",
+  "completedAt": "2026-11-03T14:47:08.744Z",
+  "sourceHashes": {
+    "src/shared/wildNudgeData.json": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8",
+    "src/shared/wildNudgeMath.ts": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74",
+    "scripts/game-math/wild-nudge-reference.mjs": "93c3e272abe11523ddd77985c9d733b76b06089a054aac5cf5a9ce4e762e7bb5",
+    "scripts/game-math/rational.mjs": "18e762bcf6b3790f0e191f2f774cbdb1ba94b7f4674c5c7caec8fd3257a85d62",
+    "src/shared/wildNudge.ts": "de36b83b823d2fd48f69bb2aa0c383a44ffbb80ec287e759dd1115db23775624",
+    "server/games/wildNudge.ts": "7d66b6ba4c76045de00b34a780ce26103d4367f6f39143930ee8f0fe6f12aa9e",
+    "scripts/game-math/wild-nudge-model.mjs": "da28188057c963500975637c3ebaaa763f31089445701049d85af0d1073e1ef8",
+    "scripts/game-math/wild-nudge-wallet.ts": "64711f88c1c225d1e09cc2ca149c7c308e2c94df499c10932fb49f3fc92b27ec",
+    "src/shared/casinoExpansion.ts": "ad1474233c750035eecbf54544c9c6f3a6eb9ae47bbe6319703b2383c211100d",
+    "server/demoExpansion.ts": "edaa12803beca8288d3595ebb21063ceb9f0bb030fd949adda56f8b78ad53297",
+    "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+    "server/gameWalletRoutes.ts": "72ff61a04ad69685baeb63c41abfa70268fe3aa751ade69006043183243ae5af",
+    "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
+    "server/demoWallet.ts": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63",
+    "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
+    "server/database.ts": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8",
+    "src/wallet/ExpansionClient.ts": "bfc97155743dbc78fe9d0e5beb0cb9eb9f3fe7828ec45da13d43d58c86933a36",
+    "src/shared/arcadeCatalog.ts": "946d05c1c450086d48efa318d7d65df6bdd5641f2edcd05599b67f7499a0a55a",
+    "src/shared/gameStakes.ts": "ed37796de3dfbee550b1705a6a3d55e5c400de78a17ffa0e38d9010e2054b039",
+    "src/shared/roundPrecision.ts": "38713d4db338dabf7ebaf09135d6ed0de015ddf5bea13501893d3a793e3cf581",
+    "src/shared/wildNudgeStakes.ts": "b038121718a674dd88578b9ace2c219e6f226a05372919a87e87b2dcc5afb54f",
+    "scripts/game-math/rtp-stakes.mjs": "11f11b0604b5e2d7eacb2da89066d700da97bd136478274523edb002986770e7",
+    "scripts/game-math/stake-runtime.mjs": "47d762e18c698ab4241a6499497b8f58087132da2489494a2172f60dd0fede61",
+    "scripts/game-math/stakes-wallet.ts": "8871b28142cb30d6848873a676e190f8b55dbaf18c75c3b959c4cd3c85cb0784",
+    "server-tests/star-spin-stakes.test.ts": "758af7057bb9a42f62031058662ddb7bac09a855ed0c844cdbc1a6429cf49d74",
+    "docs/game-math/qualifications/wild-nudge-v1.json": "71c69d9335de70d10c4099d882014af9a7696fe745d36518963ec6db887a6302"
+  },
+  "policySha256": "120ae9152907cd90fe261a8364bc090f1b7c3b0387c4babb9ede47f53677d621",
+  "method": "full-round-unbiased-cent-policy-v1",
+  "precisionLaw": {
+    "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
+    "identity": "For exact reward n/d, let q=floor(n/d), r=n mod d and uniform U in {0,...,d-1}. Pay q+1 if U<r, otherwise q. The sum over all tickets is q*d+r=n.",
+    "stopping": "The ticket is drawn only after the final player choice and every free continuation. No future rounding ticket is exposed to adaptive choices.",
+    "preservation": "Every intermediate discarded fraction is restored before the final ticket. For a fixed consumed path the expected credit equals its capped exact reward, and the actual credit never falls below the original sum of floors.",
+    "caps": "Nonnegative rewards couple every denomination to the same latent capped paid round. Stopping a presentation after its floor reaches the cap does not change that round reward.",
+    "compatibility": "Only starts pinned to stakePolicyVersion=1 use this receipt. Accepted historical rounds and UUID replays retain their original rules and committed credit.",
+    "confidence": "Exact analytical bounds and statistical intervals are labelled separately. A statistical estimate is not an exact RTP. Conditional estimates are per case, not simultaneous confidence guarantees."
+  },
+  "results": [
+    {
+      "choice": "normal",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.96137192293385,
+      "rtpBounds": [
+        0.96137192293385,
+        0.96137192293385
+      ],
+      "fraction": "10824085584723361/11258999068426240",
+      "reason": "Unchanged five independent reel laws, deterministic WILD alignment and all eight free continuations. Exact full-round rational award is settled once with the common unbiased cent ticket."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.96137192293385,
+      "rtpBounds": [
+        0.96137192293385,
+        0.96137192293385
+      ],
+      "fraction": "10824085584723361/11258999068426240",
+      "reason": "Unchanged five independent reel laws, deterministic WILD alignment and all eight free continuations. Exact full-round rational award is settled once with the common unbiased cent ticket."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.96137192293385,
+      "rtpBounds": [
+        0.96137192293385,
+        0.96137192293385
+      ],
+      "fraction": "10824085584723361/11258999068426240",
+      "reason": "Unchanged five independent reel laws, deterministic WILD alignment and all eight free continuations. Exact full-round rational award is settled once with the common unbiased cent ticket."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.96137192293385,
+      "rtpBounds": [
+        0.96137192293385,
+        0.96137192293385
+      ],
+      "fraction": "10824085584723361/11258999068426240",
+      "reason": "Unchanged five independent reel laws, deterministic WILD alignment and all eight free continuations. Exact full-round rational award is settled once with the common unbiased cent ticket."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.96137192293385,
+      "rtpBounds": [
+        0.96137192293385,
+        0.96137192293385
+      ],
+      "fraction": "10824085584723361/11258999068426240",
+      "reason": "Unchanged five independent reel laws, deterministic WILD alignment and all eight free continuations. Exact full-round rational award is settled once with the common unbiased cent ticket."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.96137192293385,
+      "rtpBounds": [
+        0.96137192293385,
+        0.96137192293385
+      ],
+      "fraction": "10824085584723361/11258999068426240",
+      "reason": "Unchanged five independent reel laws, deterministic WILD alignment and all eight free continuations. Exact full-round rational award is settled once with the common unbiased cent ticket."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.96137192293385,
+      "rtpBounds": [
+        0.96137192293385,
+        0.96137192293385
+      ],
+      "fraction": "10824085584723361/11258999068426240",
+      "reason": "Unchanged five independent reel laws, deterministic WILD alignment and all eight free continuations. Exact full-round rational award is settled once with the common unbiased cent ticket."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.96137192293385,
+      "rtpBounds": [
+        0.96137192293385,
+        0.96137192293385
+      ],
+      "fraction": "10824085584723361/11258999068426240",
+      "reason": "Unchanged five independent reel laws, deterministic WILD alignment and all eight free continuations. Exact full-round rational award is settled once with the common unbiased cent ticket."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.96137192293385,
+      "rtpBounds": [
+        0.96137192293385,
+        0.96137192293385
+      ],
+      "fraction": "10824085584723361/11258999068426240",
+      "reason": "Unchanged five independent reel laws, deterministic WILD alignment and all eight free continuations. Exact full-round rational award is settled once with the common unbiased cent ticket."
+    }
+  ],
+  "evidence": {
+    "reference": {
+      "path": "docs/game-math/qualifications/wild-nudge-v1.json",
+      "sha256": "71c69d9335de70d10c4099d882014af9a7696fe745d36518963ec6db887a6302"
+    }
+  },
+  "replay": {
+    "coverage": [
+      {
+        "choice": "normal",
+        "stakeUnits": 10,
+        "paidRounds": 256,
+        "spins": 256,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "0b925225b2c2af2bd7dded070b0f21d55b86e0b7eb697205a23faba82cf4d641"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 20,
+        "paidRounds": 256,
+        "spins": 256,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "3fb2bd6e0b4ea79fbacc20011cf3e572015f245dd4ebf9bef3b567bea5cacf17"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 50,
+        "paidRounds": 256,
+        "spins": 256,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "010cf3a6bdcf84bb318c2ee75bfe0a97b6790886a6cd434323ca81c3ee3acaea"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 100,
+        "paidRounds": 256,
+        "spins": 256,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "92fd38f4202ea5165a24018d23029cdc29e990d85ff96a1f0c9173e9f9f23a8d"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 200,
+        "paidRounds": 256,
+        "spins": 256,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "713a1618751104a583da46e4c8426193f1a8cfd1bb5fdf24cde4c22612ca708f"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 500,
+        "paidRounds": 256,
+        "spins": 256,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "d4dc8a2d5005bb82aefa95922b37f58b0448d66465135ca08efcaee7915bf296"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 1000,
+        "paidRounds": 256,
+        "spins": 256,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "6823f74214360b32cc8e049655fb974edd10766b236747ee2b73ffcdb3f38b67"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 2000,
+        "paidRounds": 256,
+        "spins": 256,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "c43372bc17df97386512850aa26274fb1182443015e685d194aac5a7ce8a9d90"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 5000,
+        "paidRounds": 256,
+        "spins": 256,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "36655c0b19ac816ff3bc27025c0b3c96c9b2f77aa839542bf323c075d2b6426f"
+      }
+    ]
+  },
+  "serverReplayChecks": 2304,
+  "walletEvidence": {
+    "passed": true,
+    "native": {
+      "passed": true,
+      "minimumStakeUnits": "10",
+      "replayPreserved": true,
+      "reservationReleased": true,
+      "journalBalanced": true
+    },
+    "gameId": "studio-wild-nudge",
+    "cases": 9,
+    "freeContinuationChecks": 0,
+    "replayAndRestartCases": 9,
+    "oneDebitAndCredit": true,
+    "clientVerified": true,
+    "sha256": "f3d668ed35382acf74c71a2197157703cf2fa5be08a153e19aceb00e7aa046ad"
+  }
+}

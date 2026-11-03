@@ -1,0 +1,49 @@
+{
+  "game": "Star Spin",
+  "tool": "Built-in image_gen",
+  "version": 2,
+  "note": "Four original adult companions, two per side. Source images retained; runtime assets only resized and converted to WebP. No figure cropping.",
+  "characters": [
+    {
+      "id": "lyra",
+      "prompt": "Use case: stylized-concept. Production transparent character sprite for the game Star Spin, a cinematic space fantasy inspired by Jedi and Sith. Single original clearly adult woman aged 30. Beautiful mature expressive face, elegant heroic proportions, confident charismatic pose. Polished premium semi-realistic 3D game illustration with detailed costume materials. Fully clothed in an elegant fitted futuristic combat uniform, opaque fabric covering chest and legs. Portrait composition from top of head to mid thighs, front three-quarter stance facing slightly viewer's left with face toward camera. Entire hair, hands and weapon inside frame, generous transparent margins. Truly transparent background. No scenery, no text, no logos, no grid, no other person. Lyra Voss: human female Light side Jedi, olive skin, Mediterranean features, hazel eyes, long flowing chestnut waves. Ivory wrap tunic and champagne gold armor accents with brown belt over dark leggings, graceful blue-white fabric drape behind shoulder. Holds a cyan lightsaber upright close to her right side, full blade inside frame. Noble welcoming expression, soft cyan and warm gold rim lighting.",
+      "output": "public/assets/wild-nudge/characters/lyra.webp",
+      "width": 640,
+      "height": 960,
+      "hasAlpha": true,
+      "bytes": 163696,
+      "sha256": "bd61ed5a356ed4a64a5777bf3cd75dd8f3867d0c7ff11399e1107ab7040d63ea"
+    },
+    {
+      "id": "aeliri",
+      "prompt": "Use case: stylized-concept. Production transparent character sprite for the game Star Spin, a cinematic space fantasy inspired by Jedi and Sith. Single original clearly adult woman aged 30. Beautiful mature expressive face, elegant heroic proportions, confident charismatic pose. Polished premium semi-realistic 3D game illustration with detailed costume materials. Fully clothed in an elegant fitted futuristic combat uniform, opaque fabric covering chest and legs. Portrait composition from top of head to mid thighs, front three-quarter stance facing slightly viewer's left with face toward camera. Entire hair, hands and weapon inside frame, generous transparent margins. Truly transparent background. No scenery, no text, no logos, no grid, no other person. Aeliri: female Light side alien Jedi. Turquoise-blue skin, luminous amber eyes, ridged alien temples with two long smooth head-tendrils curling behind shoulders, no human hair. Pearl-white facial markings. Emerald fitted tunic with ivory draped shoulder and elegant gold shoulder ornaments, dark leggings. Holds green lightsaber upright close to left side, full blade inside frame. Serene knowing mature expression, green and white rim lighting.",
+      "output": "public/assets/wild-nudge/characters/aeliri.webp",
+      "width": 640,
+      "height": 960,
+      "hasAlpha": true,
+      "bytes": 185542,
+      "sha256": "1db152e1e067a5545480c17857ac6fae9edf6d2877a154a0d7aecaa02b68207e"
+    },
+    {
+      "id": "vespera",
+      "prompt": "Use case: stylized-concept. Production transparent character sprite for the game Star Spin, a cinematic space fantasy inspired by Jedi and Sith. Single original clearly adult woman aged 30. Beautiful mature expressive face, elegant heroic proportions, confident charismatic pose. Polished premium semi-realistic 3D game illustration with detailed costume materials. Fully clothed in an elegant fitted futuristic combat uniform, opaque fabric covering chest and legs. Portrait composition from top of head to mid thighs, front three-quarter stance facing slightly viewer's left with face toward camera. Entire hair, hands and weapon inside frame, generous transparent margins. Truly transparent background. No scenery, no text, no logos, no grid, no other person. Darth Vespera: human female Dark side Sith. Dark brown Black African skin, striking sculpted cheekbones, amber eyes, silver white high ponytail. Fitted obsidian black and burgundy armored uniform, crimson cape over one shoulder, black trousers, silver bracers. Holds red lightsaber upright close to right side with full blade inside frame. Commanding confident mature expression, red and violet rim lighting.",
+      "output": "public/assets/wild-nudge/characters/vespera.webp",
+      "width": 640,
+      "height": 960,
+      "hasAlpha": true,
+      "bytes": 183822,
+      "sha256": "aca132497d65fcd5edd71e880e13377a8b8066d138ee881193f320cf7ea52fa9"
+    },
+    {
+      "id": "nyxara",
+      "prompt": "Use case: stylized-concept. Production transparent character sprite for the game Star Spin, a cinematic space fantasy inspired by Jedi and Sith. Single original clearly adult woman aged 30. Beautiful mature expressive face, elegant heroic proportions, confident charismatic pose. Polished premium semi-realistic 3D game illustration with detailed costume materials. Fully clothed in an elegant fitted futuristic combat uniform, opaque fabric covering chest and legs. Portrait composition from top of head to mid thighs, front three-quarter stance facing slightly viewer's left with face toward camera. Entire hair, hands and weapon inside frame, generous transparent margins. Truly transparent background. No scenery, no text, no logos, no grid, no other person. Darth Nyxara: female Dark side alien Sith. Rich violet skin, gold eyes, four short glossy black horns around hairline, sleek long black hair with magenta streaks. Angular alien cheekbones with subtle silver face markings. Elegant obsidian and purple fitted combat uniform with high collar, silver waist armor, black trousers. Holds magenta red lightsaber upright close to left side with full blade inside frame. Confident mischievous mature expression, magenta rim lighting.",
+      "output": "public/assets/wild-nudge/characters/nyxara.webp",
+      "width": 640,
+      "height": 960,
+      "hasAlpha": true,
+      "bytes": 199262,
+      "sha256": "0bd85ec325898d6653cd965ffdc45661b7c246b9e5db63b84fb17b6745b0cf2f"
+    }
+  ],
+  "poseManifest": "games/wild-nudge/assets/characters/poses.json"
+}

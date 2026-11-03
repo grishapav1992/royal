@@ -1,0 +1,496 @@
+{
+  "date": "2026-11-01",
+  "task": "Star Spin Rive character animation",
+  "status": "local prototype verified, unpublished",
+  "sourceCommit": "db8c0947c10cc359981017eea5d86f27238c5798",
+  "mainBaseline": "3a1e4a26a888a28bc34920eebe38bf6e609af4cb",
+  "package": {
+    "version": "1.3.0-a31e81ac3349",
+    "sourceSha256": "a31e81ac33493d0f23565cf7ad2f34ec8a7ed06d4b8296b47e3abff1476898f7",
+    "manifestSha256": "672d6a758203eb715c2d3de7f68a768caf94b86f6306dc0054d91c5c0324cd7a",
+    "api": 1,
+    "rules": 1,
+    "progress": 1
+  },
+  "tooling": {
+    "cli": "1.7.0",
+    "runtime": "@rive-app/webgl2@2.49.0",
+    "runtimeSha256": "82f763d767447c97c76321d978c4bbbbe7908adc5d7a83a2c408251ebd82aa77",
+    "cli180OnThisPC": "Official Windows executable exits 0xC0000005 before startup. Verified 1.7.0 invoked by its direct path.",
+    "cloudUpload": false,
+    "subscriptionPurchased": false,
+    "scriptsInRive": false
+  },
+  "implementation": {
+    "characters": [
+      "lyra",
+      "aeliri",
+      "vespera",
+      "nyxara"
+    ],
+    "nativeModes": [
+      "idle",
+      "spin_wait",
+      "wild_align",
+      "bonus_enter",
+      "bonus_idle",
+      "round_win",
+      "select"
+    ],
+    "bonesEach": 5,
+    "textureMeshesEach": 5,
+    "verticesPerMesh": 651,
+    "independentPoseRegions": true,
+    "eyelidReferences": "games/wild-nudge/animation/prompts.json",
+    "sourceAndCommands": "games/wild-nudge/animation/README.md",
+    "oneLiveInstance": true,
+    "staticFallback": true,
+    "sharedWalletAndAudio": true
+  },
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-01T12:21:08.954Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 14241
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 44048
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 103150
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 16445
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 91
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 45
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 32
+        }
+      ],
+      "passed": true,
+      "durationMs": 178051
+    },
+    "rtp": {
+      "verified": 36,
+      "stakePoliciesVerified": 19,
+      "stakeAdmissionVerified": 19,
+      "legacyNotQualified": 114,
+      "mathematicalChanges": false
+    },
+    "assetIntegrityAndNormalizedWeights": {
+      "passed": 2
+    },
+    "nativeStates": {
+      "passed": 28,
+      "method": "Rive CLI frames with bound mode values and pixel changes versus idle",
+      "characters": [
+        {
+          "id": "lyra",
+          "samples": [
+            {
+              "mode": "idle",
+              "boundMode": 0,
+              "changedComponentsFromIdle": 0
+            },
+            {
+              "mode": "spin_wait",
+              "boundMode": 1,
+              "changedComponentsFromIdle": 328549
+            },
+            {
+              "mode": "wild_align",
+              "boundMode": 2,
+              "changedComponentsFromIdle": 582578
+            },
+            {
+              "mode": "bonus_enter",
+              "boundMode": 3,
+              "changedComponentsFromIdle": 607149
+            },
+            {
+              "mode": "bonus_idle",
+              "boundMode": 4,
+              "changedComponentsFromIdle": 274003
+            },
+            {
+              "mode": "round_win",
+              "boundMode": 5,
+              "changedComponentsFromIdle": 593347
+            },
+            {
+              "mode": "select",
+              "boundMode": 6,
+              "changedComponentsFromIdle": 564753
+            }
+          ]
+        },
+        {
+          "id": "aeliri",
+          "samples": [
+            {
+              "mode": "idle",
+              "boundMode": 0,
+              "changedComponentsFromIdle": 0
+            },
+            {
+              "mode": "spin_wait",
+              "boundMode": 1,
+              "changedComponentsFromIdle": 221480
+            },
+            {
+              "mode": "wild_align",
+              "boundMode": 2,
+              "changedComponentsFromIdle": 538590
+            },
+            {
+              "mode": "bonus_enter",
+              "boundMode": 3,
+              "changedComponentsFromIdle": 555323
+            },
+            {
+              "mode": "bonus_idle",
+              "boundMode": 4,
+              "changedComponentsFromIdle": 177198
+            },
+            {
+              "mode": "round_win",
+              "boundMode": 5,
+              "changedComponentsFromIdle": 545678
+            },
+            {
+              "mode": "select",
+              "boundMode": 6,
+              "changedComponentsFromIdle": 525325
+            }
+          ]
+        },
+        {
+          "id": "vespera",
+          "samples": [
+            {
+              "mode": "idle",
+              "boundMode": 0,
+              "changedComponentsFromIdle": 0
+            },
+            {
+              "mode": "spin_wait",
+              "boundMode": 1,
+              "changedComponentsFromIdle": 260430
+            },
+            {
+              "mode": "wild_align",
+              "boundMode": 2,
+              "changedComponentsFromIdle": 618900
+            },
+            {
+              "mode": "bonus_enter",
+              "boundMode": 3,
+              "changedComponentsFromIdle": 654925
+            },
+            {
+              "mode": "bonus_idle",
+              "boundMode": 4,
+              "changedComponentsFromIdle": 198813
+            },
+            {
+              "mode": "round_win",
+              "boundMode": 5,
+              "changedComponentsFromIdle": 635041
+            },
+            {
+              "mode": "select",
+              "boundMode": 6,
+              "changedComponentsFromIdle": 597371
+            }
+          ]
+        },
+        {
+          "id": "nyxara",
+          "samples": [
+            {
+              "mode": "idle",
+              "boundMode": 0,
+              "changedComponentsFromIdle": 0
+            },
+            {
+              "mode": "spin_wait",
+              "boundMode": 1,
+              "changedComponentsFromIdle": 401717
+            },
+            {
+              "mode": "wild_align",
+              "boundMode": 2,
+              "changedComponentsFromIdle": 698242
+            },
+            {
+              "mode": "bonus_enter",
+              "boundMode": 3,
+              "changedComponentsFromIdle": 723611
+            },
+            {
+              "mode": "bonus_idle",
+              "boundMode": 4,
+              "changedComponentsFromIdle": 338689
+            },
+            {
+              "mode": "round_win",
+              "boundMode": 5,
+              "changedComponentsFromIdle": 709257
+            },
+            {
+              "mode": "select",
+              "boundMode": 6,
+              "changedComponentsFromIdle": 679726
+            }
+          ]
+        }
+      ]
+    },
+    "hostFullSuite": {
+      "startTime": "2026-11-01T12:12:53.624Z",
+      "duration": 417025.29,
+      "expected": 15,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0,
+      "moduleVersion": "1.3.0-02a10eebc975",
+      "note": "Full 15-case run before the greeting-only loading correction."
+    },
+    "hostRiveAfterGreetingCorrection": {
+      "startTime": "2026-11-01T12:24:35.861Z",
+      "duration": 152627.658,
+      "expected": 3,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0,
+      "moduleVersion": "1.3.0-a31e81ac3349"
+    },
+    "collectionAndCommonWallet": {
+      "passed": 9
+    },
+    "nativeWallet": {
+      "passed": 1,
+      "assertions": [
+        "new unpublished game starts reject without entropy or debit",
+        "historical accepted round replays and recovers",
+        "eight continuations settle once in the exact ledger"
+      ],
+      "fixtureCorrection": "Old test tried to start the unpublished game. A historical accepted round is now seeded through the real engine and journal without opening the production boundary."
+    },
+    "math": {
+      "passed": 11
+    },
+    "moduleCompatibility": {
+      "passed": 7,
+      "note": "All built manifests and inventoried byte digests verified; final greeting correction preserves contracts."
+    },
+    "characters": {
+      "characters": [
+        {
+          "engine": "Rive",
+          "character": "lyra",
+          "ready": true,
+          "bound": true,
+          "loading": false,
+          "fallback": false,
+          "playing": true,
+          "mode": "idle",
+          "reactions": {
+            "select": 1,
+            "wild_align": 16,
+            "round_win": 2
+          }
+        },
+        {
+          "engine": "Rive",
+          "character": "aeliri",
+          "ready": true,
+          "bound": true,
+          "loading": false,
+          "fallback": false,
+          "playing": true,
+          "mode": "idle",
+          "reactions": {
+            "select": 1,
+            "wild_align": 16,
+            "round_win": 2
+          }
+        },
+        {
+          "engine": "Rive",
+          "character": "vespera",
+          "ready": true,
+          "bound": true,
+          "loading": false,
+          "fallback": false,
+          "playing": true,
+          "mode": "idle",
+          "reactions": {
+            "select": 1,
+            "wild_align": 16,
+            "round_win": 2
+          }
+        },
+        {
+          "engine": "Rive",
+          "character": "nyxara",
+          "ready": true,
+          "bound": true,
+          "loading": false,
+          "fallback": false,
+          "playing": true,
+          "mode": "idle",
+          "reactions": {
+            "select": 1,
+            "wild_align": 16,
+            "round_win": 2
+          }
+        }
+      ],
+      "mobileHiddenStops": true,
+      "mobileCollectionResumes": true,
+      "savedBonusRestoresQuietly": true
+    },
+    "layout": {
+      "measurements": [
+        {
+          "width": 1440,
+          "height": 1000,
+          "overflow": 0,
+          "stageHeight": 497,
+          "machineHeight": 543,
+          "boardWidth": 781
+        },
+        {
+          "width": 1280,
+          "height": 720,
+          "overflow": 0,
+          "stageHeight": 324,
+          "machineHeight": 358,
+          "boardWidth": 513
+        },
+        {
+          "width": 1024,
+          "height": 768,
+          "overflow": 0,
+          "stageHeight": 372,
+          "machineHeight": 406,
+          "boardWidth": 508
+        },
+        {
+          "width": 800,
+          "height": 600,
+          "overflow": 0,
+          "stageHeight": 204,
+          "machineHeight": 238,
+          "boardWidth": 313
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "overflow": 0,
+          "stageHeight": 88,
+          "machineHeight": 122,
+          "boardWidth": 120
+        },
+        {
+          "width": 500,
+          "height": 760,
+          "overflow": 0,
+          "stageHeight": 163,
+          "machineHeight": 197,
+          "boardWidth": 245
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "overflow": 0,
+          "stageHeight": 227,
+          "machineHeight": 261,
+          "boardWidth": 336
+        },
+        {
+          "width": 320,
+          "height": 568,
+          "overflow": 0,
+          "stageHeight": 92,
+          "machineHeight": 112,
+          "boardWidth": 140
+        },
+        {
+          "width": 844,
+          "height": 390,
+          "overflow": 0,
+          "stageHeight": 88,
+          "machineHeight": 108,
+          "boardWidth": 133
+        }
+      ],
+      "spinPanelDrift": 0
+    }
+  },
+  "review": {
+    "environment": "Windows, installed Google Chrome in headless mode, real Royal host with connected chat",
+    "browserVersion": "156.0.8078.74",
+    "mobile": "Viewport emulation only; nine sizes from 320x568 to 1440x1000 including landscape.",
+    "visual": "Native idle, closed-eyelid and action frames reviewed for all four. Real host desktop and mobile collection captures inspected.",
+    "quality": "Technical correctness verified. Expressiveness and pleasantness await user feedback; no audience study or listening test was performed.",
+    "limits": [
+      "First 2D image-mesh rig with separate local deformation regions and eyelid textures. No full head turns or new mouth expressions.",
+      "No measurement of the character gesture peak against acoustic output. Main reel feedback retains the existing audio timeline.",
+      "No actual iOS/Android device, Bluetooth or long-duration performance test."
+    ]
+  },
+  "catalogue": {
+    "productionChanged": false,
+    "commonTenCentMigration": "Separate outstanding prerequisite for first publication; historical six-stake prototype remains unpublished."
+  },
+  "media": [
+    {
+      "id": "lyra",
+      "file": "docs/concepts/wild-nudge/rive-lyra.webm",
+      "bytes": 453191,
+      "sha256": "6ccd0f64093a3c9443b5cc288885818d68bb438f1241607547a499fed60591b3"
+    },
+    {
+      "id": "aeliri",
+      "file": "docs/concepts/wild-nudge/rive-aeliri.webm",
+      "bytes": 940894,
+      "sha256": "c4bda7d4c01b596f6c5f912cc485a42a11affb37c73df1f8c17b74fe7c3d8513"
+    },
+    {
+      "id": "vespera",
+      "file": "docs/concepts/wild-nudge/rive-vespera.webm",
+      "bytes": 793024,
+      "sha256": "66485533c7a4f693918620ec45e1e271389b3a1b23b8cc8f22dd0dfd86962b1d"
+    },
+    {
+      "id": "nyxara",
+      "file": "docs/concepts/wild-nudge/rive-nyxara.webm",
+      "bytes": 1104519,
+      "sha256": "cbd388893b1de27e00631b7e27d3eeab9db030c473cb91468aa36d1add1b0375"
+    }
+  ]
+}

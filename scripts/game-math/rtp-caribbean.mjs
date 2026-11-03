@@ -20,13 +20,16 @@ export const CARIBBEAN_QUALIFICATION_METHOD = 'exact-caribbean-giant-round-v1';
 // Caribbean inputs, pricing, entropy, flag position and settlement are unchanged.
 // Reviewed 2026-10-31: historical engines, entropy and accepted-round settlement remain unchanged.
 // New stake-policy receipts are qualified separately over exact complete-round rewards.
+// Reviewed 2026-11-03: Star Spin rules 2 are confined to the WILD game branch.
+// Caribbean dispatch, parameters, capability positions and settlement are unchanged.
+// See docs/game-math/star-spin-v2-source-review.md and regenerated full replay evidence.
 export const CARIBBEAN_REVIEWED_SOURCES = {
   "src/shared/caribbeanTreasuresMath.ts": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
   "src/shared/caribbeanTreasures.ts": "8e987b2de8799b444dd01fe2fcb3a567dd7921a8c1dee4b139e00e13ee3e03bb",
   "server/games/caribbeanTreasures.ts": "bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99",
   "src/shared/caribbeanTransport.ts": "8623c8e5f4f7eef28997a3b9630873e86c4c7fa7f1ff1b790490802d9fd9415a",
-  "src/shared/casinoExpansion.ts": "c89133d0c011baa56241b09e56913e315534ac3e52871308238e234cb8c75f74",
-  "server/demoExpansion.ts": "a94d6436cf35550c10f3e395eb06ae11f4895fc215345f2d069042f25f135118",
+  "src/shared/casinoExpansion.ts": "ad1474233c750035eecbf54544c9c6f3a6eb9ae47bbe6319703b2383c211100d",
+  "server/demoExpansion.ts": "edaa12803beca8288d3595ebb21063ceb9f0bb030fd949adda56f8b78ad53297",
   "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96"
 };
 const WEIGHTS = [30,24,18,13,9,6];

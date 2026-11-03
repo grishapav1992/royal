@@ -1,6 +1,6 @@
 import {expansionExactAward,makeRoundPrecision} from '../src/shared/roundPrecision';
 import {validGameStake, usesGameStakes} from '../src/shared/gameStakes';
-import {WILD_NUDGE_GAME,WILD_NUDGE_RESERVE_MULTIPLIER,validWildNudgeStake,validWildNudgeSession,wildNudgeExpansionView,WildNudgeMoveError,type WildNudgeResult} from '../src/shared/wildNudge';
+import {WILD_NUDGE_GAME,WILD_NUDGE_RESERVE_MULTIPLIER,validWildNudgeStake,validWildNudgeSession,wildNudgeExpansionView,WildNudgeMoveError,startStarSpin,moveStarSpin,type WildNudgeResult} from '../src/shared/wildNudgeStakes';
 import {startWildNudge,moveWildNudge} from './games/wildNudge';
 import { JACKIE_GAME, JACKIE_LEGACY_COLLECTION_MAX, supportsJackie, costumeUnlocked, validJackieSettings, validJackieSession, type JackieView } from '../src/shared/jackieChan';
 import { startJackie, moveJackie } from './games/jackieChan';
@@ -302,7 +302,7 @@ export class DemoExpansionStore {
         const createdAt=Math.max(this.now(),Number(last!.created_at??-1)+1);
         if(!Number.isSafeInteger(createdAt)||createdAt<0)throw Error('Invalid casino session order');
         s={id:op.id,gameId:op.gameId,rulesVersion:op.gameId===CARIBBEAN_GAME&&validCaribbeanTransportSettings(op.settings)?(op.settings.caribbean.stakeBasis==='total'?2:1):op.gameId===TEMPLE_GAME&&validCascadeSettings(op.settings)?2:expansionRulesVersion(op.gameId),state:'active',stakeUnits:op.stakeUnits,spentUnits:'0',returnedUnits:'0',createdAt,stakePolicyVersion:op.stakePolicyVersion,settings:op.settings,view:emptyView(),...(op.gameId==='studio-cosmic-escape'?{mathProfileVersion:COSMIC_MATH_PROFILE_VERSION}:{})};debit=cost;
-        if(op.gameId===WILD_NUDGE_GAME){credit=this.applyWildNudge(s,startWildNudge(op.settings,op.stakeUnits,this.draw)).credit;}
+        if(op.gameId===WILD_NUDGE_GAME){if(op.stakePolicyVersion===1)s.rulesVersion=2;credit=this.applyWildNudge(s,op.stakePolicyVersion===1?startStarSpin(op.settings,op.stakeUnits,this.draw):startWildNudge(op.settings,op.stakeUnits,this.draw)).credit;}
         else if(op.gameId===TEMPLE_GAME){credit=validCascadeSettings(op.settings)?this.applyTempleCascade(s,startTempleCascade(op.settings,op.stakeUnits,this.draw)).credit:this.applyTemple(s,startTemple(op.settings,op.stakeUnits,this.draw)).credit;}
         else if(op.gameId===FLAG_GAME){
           const flags=startFlagBattle(op.settings as FlagSettings,op.stakeUnits,this.draw);
@@ -369,7 +369,7 @@ export class DemoExpansionStore {
         if(!isVariantGame(s.gameId)&&!isStudioGame(s.gameId)&&offered?.maxPicks!==undefined&&(count<(offered.minPicks??0)||count>offered.maxPicks||(op.picks??[]).some(i=>i>=s.view.player.length)))throw new WalletError(409,'Выбери допустимое количество карт.');
         const required=(offered?.cost??0)+(offered?.perPick??0)*count;if(await demoBalanceUnits(this.db,account)<required)throw new WalletError(409,'Недостаточно демомонет для этого хода.');
         if(s.gameId===WILD_NUDGE_GAME){
-          try{({debit,credit}=this.applyWildNudge(s,moveWildNudge(s.view.wildNudge!,s.stakeUnits,op.revision,op.move,this.draw)));}
+          try{({debit,credit}=this.applyWildNudge(s,s.rulesVersion===2?moveStarSpin(s.view.wildNudge!,s.stakeUnits,op.revision,op.move,this.draw):moveWildNudge(s.view.wildNudge!,s.stakeUnits,op.revision,op.move,this.draw)));}
           catch(error){if(error instanceof WildNudgeMoveError)throw new WalletError(409,error.message);throw error;}
           if(debit!==0||required!==0)throw Error('Galactic Reactor continuation must be free');
         }else if(s.gameId===TEMPLE_GAME){

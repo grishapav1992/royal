@@ -5,6 +5,7 @@ import { dirname, resolve, relative, extname, basename, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { git } from './sync-work.mjs';
 import { BRAIN_SCHEMA, knowledgeSeed, mathPolicy, collectBrain, formatBrainQuery, brainReport } from './project-brain.mjs';
+import { parseSharedCommand, requestSharedBrain, formatSharedResponse } from './shared-brain-client.mjs';
 
 export const GRAPHIFY_VERSION = '0.9.101';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -138,34 +139,54 @@ async function build(directory) {
   }
 }
 
-async function main() {
-  const [command = 'status', ...args] = process.argv.slice(2);
-  if (command === 'build') return build(root);
+export async function runGraphCommand(argv, { directory = root, remoteRequest = requestSharedBrain,
+  localBuild = build, localStatus = status, localGraphify = runUv,
+  readBrain = async directory => JSON.parse(await readFile(resolve(directory, 'graphify-out/project-brain.json'), 'utf8')),
+  readCommit = directory => git(directory, ['rev-parse', 'HEAD']), write = value => console.log(value) } = {}) {
+  if (!Array.isArray(argv) || argv.some(value => typeof value !== 'string')) throw Error('Invalid graph command.');
+  const localFlags = argv.filter(value => value === '--local').length;
+  if (localFlags > 1) throw Error('Supply --local only once.');
+  const local = localFlags === 1;
+  const [command = 'status', ...args] = argv.filter(value => value !== '--local');
+  if (command === 'build') {
+    if (!local || args.length) throw Error('Use build --local for a temporary working-copy map. The shared production graph is refreshed by the verified server release.');
+    await localBuild(directory); return 0;
+  }
+  if (!local) {
+    const request = parseSharedCommand(command, args);
+    let commit;
+    try { commit = await readCommit(directory); } catch { /* The server snapshot is still readable without a local Git executable. */ }
+    if (commit) request.clientCommit = commit;
+    const result = await remoteRequest(request);
+    write(formatSharedResponse(result.envelope, commit));
+    return result.exitCode;
+  }
   if (command === 'status') {
-    const result = await status(root); console.log(JSON.stringify(result, null, 2));
-    if (result.state !== 'current') process.exitCode = 1;
-    return;
+    if (args.length) throw Error('Local status does not accept additional arguments.');
+    const result = await localStatus(directory); write(JSON.stringify({ ...result, scope: 'local-working-copy' }, null, 2));
+    return result.state === 'current' ? 0 : 1;
   }
   if (command === 'brain') {
     if (!args.length) throw Error('Supply a project topic or game ID. See docs/project-brain.md.');
-    if ((await status(root)).state !== 'current') await build(root);
-    const index = JSON.parse(await readFile(resolve(root, 'graphify-out/project-brain.json'), 'utf8'));
+    if ((await localStatus(directory)).state !== 'current') await localBuild(directory);
+    const index = await readBrain(directory);
     const result = formatBrainQuery(index, args.join(' '));
-    console.log(result.text);
-    if (!result.found) process.exitCode = 4;
-    return;
+    write('Локальная карта рабочей копии. Она не публикует изменения в общий граф.\n' + result.text);
+    return result.found ? 0 : 4;
   }
   if (!['query', 'explain', 'path', 'affected', 'god-nodes'].includes(command)
     || args.some(arg => arg === '--graph' || arg.startsWith('--graph='))) {
     throw Error('Use build, status, brain, query, explain, path, affected or god-nodes. See docs/graphify.md.');
   }
   if (!args.length && command !== 'god-nodes') throw Error('Supply a question, symbol or path. See docs/graphify.md.');
-  if ((await status(root)).state !== 'current') await build(root);
-  process.exitCode = await runUv(root, ['python', '-c',
+  if ((await localStatus(directory)).state !== 'current') await localBuild(directory);
+  write('Локальная карта рабочей копии. Она не публикует изменения в общий граф.');
+  return localGraphify(directory, ['python', '-c',
     'import sys; from graphify.cli import dispatch_command; dispatch_command(sys.argv[1])', command, ...args,
-    '--graph', resolve(root, 'graphify-out/graph.json')]);
+    '--graph', resolve(directory, 'graphify-out/graph.json')]);
 }
 
 if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
-  main().catch(error => { console.error(clean(error.message)); process.exitCode = 1; });
+  runGraphCommand(process.argv.slice(2)).then(code => { process.exitCode = code; })
+    .catch(error => { console.error(clean(error.message)); process.exitCode = 1; });
 }

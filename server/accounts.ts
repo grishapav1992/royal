@@ -1,5 +1,6 @@
 import { DemoWalletStore } from './demoWallet';
 import {CaribbeanCrewStore} from './caribbeanCrew';
+import {StarSpinCollectionStore} from './starSpinCollection';
 import { CasinoApiProWallet } from './casinoApiProWallet';
 import { ModerationStore } from './moderation';
 import { IntoxicationStore } from './intoxicationStore';
@@ -52,6 +53,7 @@ export class AccountStore {
   readonly progression: ProgressionStore;
   readonly rewardSpins: LiveFreeSpinService;
   readonly caribbeanCrew:CaribbeanCrewStore;
+  readonly starSpinCollection:StarSpinCollectionStore;
   readonly pvp: PvpStore;
   readonly combat: NileCombatEscrow;
   readonly casinoApiProWallet: CasinoApiProWallet;
@@ -81,6 +83,7 @@ export class AccountStore {
     this.wallet = instrumentProgressionWallet(this.db,commonWallet,this.progression);
     this.rewardSpins = new LiveFreeSpinService(this.db,this.wallet,this.progression,undefined,undefined,id=>this.financeAdmin.assertAllowed(id));
     this.caribbeanCrew=new CaribbeanCrewStore(this.db,schemaReady);
+    this.starSpinCollection=new StarSpinCollectionStore(this.db,schemaReady);
     const sandbox = sandboxConfig();
     this.sandboxPayments = new SandboxPaymentStore(this.db, sandbox, new SandboxNowPayments(sandbox), this.wallet.ready);
     const virtualWallet=instrumentProgressionPvpLedger(this.db,new VirtualPvpLedger(this.db,this.wallet),this.progression);
@@ -101,7 +104,7 @@ export class AccountStore {
       return (job?.reward_grant_id?this.skinRewards:job?.payment_source==='nile'?legacySkins:commonSkins).skinPurchase(account,id,action);
     }}, new CodexSkinImages(), () => true,
       (id, appearance) => this.events.emit('appearance', id, appearance), Promise.all([this.wallet.ready,this.skinRewards.ready]).then(()=>{}), Date.now, new CodexSkinDescriptions(),this.skinRewards);
-    this.ready = Promise.all([schemaReady, this.wallet.ready, this.progression.ready, this.rewardSpins.ready, this.caribbeanCrew.ready, this.sandboxPayments.ready, this.pvp.ready, this.combat.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready, this.skinStudio.ready, this.financeAdmin.ready]).then(() => {
+    this.ready = Promise.all([schemaReady, this.wallet.ready, this.progression.ready, this.rewardSpins.ready, this.caribbeanCrew.ready, this.starSpinCollection.ready, this.sandboxPayments.ready, this.pvp.ready, this.combat.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready, this.skinStudio.ready, this.financeAdmin.ready]).then(() => {
       this.wagerSweep=setInterval(()=>{if(!this.sweeping)this.sweeping=Promise.allSettled([this.pvp.sweep(),this.combat.recoverExpired(),this.progression.processPending()]).finally(()=>{this.sweeping=undefined;});},1000);
       this.wagerSweep.unref();
     });

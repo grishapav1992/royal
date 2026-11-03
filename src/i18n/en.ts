@@ -34,7 +34,7 @@ export const english: Record<string, string> = {
   'Закрыть чат': 'Close chat',
   'Свернуть чат': 'Collapse chat',
   ...progressionEnglish,
-  'Галактический реактор':'Galactic Reactor',
+  'Галактический реактор':'Star Spin',
   'Гонконгский воин':'Hong Kong Warrior',
   'Кунг-фу кино · Коллекция костюмов':'Kung fu cinema · Costume collection',
   'Выбери игру в каталоге':'Choose a game from the catalogue',

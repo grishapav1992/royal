@@ -1,25 +1,29 @@
 import {readGameHost} from '../../src/modules/GameHostContract';
-import {WILD_NUDGE_GAME,type WildNudgeView} from '../../src/shared/wildNudge';
-import {WILD_NUDGE_DATA as R,WILD_NUDGE_STAKES,wildNudgeSpin,type NudgeSpin} from '../../src/shared/wildNudgeMath';
+import {WILD_NUDGE_GAME,STAR_SPIN_STAKES as WILD_NUDGE_STAKES,type WildNudgeView} from '../../src/shared/wildNudgeStakes';
+import {WILD_NUDGE_DATA as R,wildNudgeSpin,type NudgeSpin} from '../../src/shared/wildNudgeMath';
+import {DEFAULT_GAME_STAKE} from '../../src/shared/gameStakes';
 import {GalacticAudio,type GalacticCue} from './GalacticAudio';
+import {StarSpinCollection} from './StarSpinCollection';
+import {StarSpinCharacter} from './StarSpinCharacter';
 const image=(symbol:number)=>`/assets/wild-nudge/symbol-${symbol}.webp`;
 const escape=(value:string)=>value.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
-const symbolNames=['Кристалл','Дроид','Шлем','Истребитель','Энергокапсула','Знак флота','Реактор WILD','Портал SCATTER'];
-const symbolNamesEn=['Crystal','Droid','Helmet','Starfighter','Power capsule','Fleet insignia','WILD reactor','SCATTER portal'];
+const symbolNames=['Энергетический клинок','Куб знаний','Звёздный компас','Реликтовая маска','Космический кристалл','Медальон','Реактор WILD','Портал SCATTER'];
+const symbolNamesEn=['Energy blade','Knowledge cube','Star compass','Relic mask','Cosmic crystal','Medallion','WILD reactor','SCATTER portal'];
 export class GalacticReactorUI {
   private services=readGameHost();private client=this.services.expansionClient;
   private root:HTMLElement;private modal:HTMLDialogElement;private priorFocus?:HTMLElement;
+  private collection:StarSpinCollection;private character:StarSpinCharacter;
   private lifetime=new AbortController();private motion=new AbortController();private resize:ResizeObserver;
   private audio=new GalacticAudio();private animations=new Set<Animation>();private timers=new Set<ReturnType<typeof setTimeout>>();
   private media=window.matchMedia('(prefers-reduced-motion: reduce)');
   private owner=this.client.accountId;private epoch=0;private dead=false;private paused=false;private busy=false;private presenting=false;
-  private shown?:WildNudgeView;private shownKey='';private note='';private error='';private stake='100';private fast=false;private forceReduced=false;
+  private shown?:WildNudgeView;private shownKey='';private shownPayout='0';private note='';private error='';private stake=DEFAULT_GAME_STAKE;private fast=false;private forceReduced=false;
   private auto=false;private autoLeft=0;private autoCount=10;private autoEpoch=0;private lastBalance?:number;
   private skew:{cue:string;mode:string;skewMs:number}[]=[];private unsubscribe:()=>void;
   private changed=()=>this.sync();
   private hidden=()=>{if(document.hidden)this.pause();else this.resume();};
   private blurred=()=>{this.stopAuto();};
-  get title(){return this.text('Галактический реактор','Galactic Reactor');}
+  get title(){return 'Star Spin';}
   private text(ru:string,en:string){return this.services.i18n.language==='en'?en:ru;}
   private get reduced(){return this.media.matches||this.forceReduced;}
   private money(value:string){return this.services.walletCoins(Number(value)/100);}
@@ -27,25 +31,28 @@ export class GalacticReactorUI {
   private get view(){return this.session?.view.wildNudge;}
   private get active(){return this.session?.state==='active';}
   private get wallet(){return this.services.demoWallet.accountId===this.client.accountId?this.services.demoWallet.wallet??this.client.wallet:undefined;}
-  private get blocked(){return this.dead||this.paused||this.busy||this.presenting||this.modal.open||!this.client.accountId||!this.client.wallet||this.client.busy||this.client.loading||!!this.client.pending||this.services.demoWallet.busy||!!this.services.demoWallet.pending||this.services.demoWallet.hasExternalBusy('expansion');}
+  private get blocked(){return this.dead||this.paused||this.busy||this.presenting||this.modal.open||this.collection?.open||this.collection?.locksPlay||!this.client.accountId||!this.client.wallet||this.client.busy||this.client.loading||!!this.client.pending||this.services.demoWallet.busy||!!this.services.demoWallet.pending||this.services.demoWallet.hasExternalBusy('expansion');}
   private afford(){return !!this.wallet&&Math.round(this.wallet.balance*100)>=Number(this.stake);}
   private el<T extends HTMLElement=HTMLElement>(name:string){return this.root.querySelector<T>(`[data-gn="${name}"]`)!;}
   constructor(host:HTMLElement){
     try{this.fast=localStorage.getItem('gn-fast')==='1';this.forceReduced=localStorage.getItem('gn-reduced')==='1';}catch{}
     this.root=document.createElement('section');this.root.className='gn';this.root.tabIndex=0;this.root.setAttribute('aria-label',this.title);
-    this.root.innerHTML=`<header class="gn-header"><div class="gn-brand">R<span>ROYAL<br>SPACE DIVISION</span></div><div class="gn-title"><small>${this.text('ОРБИТАЛЬНАЯ СТАНЦИЯ · СЕКТОР 07','ORBITAL STATION · SECTOR 07')}</small><h2>${this.title}</h2></div><nav class="gn-tools" aria-label="${this.text('Настройки игры','Game settings')}"><button data-gn="sound" aria-label="${this.text('Общий звук','Shared sound')}">♪</button><button data-gn="rules" aria-label="${this.text('Правила','Rules')}">?</button><button data-gn="settings" aria-label="${this.text('Настройки','Settings')}">⚙</button></nav></header>
+    this.root.innerHTML=`<header class="gn-header"><div class="gn-brand">R<span>ROYAL<br>SPACE DIVISION</span></div><div class="gn-title"><small>${this.text('ВЫБЕРИ СВОЮ СТОРОНУ','CHOOSE YOUR SIDE')}</small><h2>${this.title}</h2></div><nav class="gn-tools" aria-label="${this.text('Настройки игры','Game settings')}"><button data-gn="crew" class="ss-open" aria-label="${this.text('Героини и выбор стороны','Companions and side selection')}">✦</button><button data-gn="sound" aria-label="${this.text('Общий звук','Shared sound')}">♪</button><button data-gn="rules" aria-label="${this.text('Правила','Rules')}">?</button><button data-gn="settings" aria-label="${this.text('Настройки','Settings')}">⚙</button></nav></header>
     <main class="gn-world"><div class="gn-machine"><div class="gn-machine-label"><span>REACTOR CONTROL</span><b>5 × 3 · 20 ${this.text('ЛИНИЙ','LINES')}</b></div><div class="gn-stage" data-gn="stage"><div class="gn-board" data-gn="board" role="group" aria-label="${this.text('Игровое поле','Slot field')}">${Array.from({length:5},(_,i)=>`<div class="gn-reel" data-reel="${i}" role="img"><div class="gn-track"></div><div class="gn-roll" aria-hidden="true">${Array.from({length:12},(_,j)=>`<div class="gn-cell"><img src="${image(j%6)}" alt="" draggable="false"></div>`).join('')}</div><span class="gn-multiplier" hidden></span></div>`).join('')}<svg class="gn-payline" data-gn="payline" viewBox="0 0 500 300" aria-hidden="true"></svg><div class="gn-bonus-overlay" data-gn="bonus-overlay" hidden><strong>${this.text('ПЕРЕГРУЗКА РЕАКТОРА','REACTOR OVERDRIVE')}</strong><span>8 ${this.text('БЕСПЛАТНЫХ ВРАЩЕНИЙ','FREE SPINS')}</span></div></div></div><div class="gn-field-caption"><span data-gn="field-note">${this.text('Доводка повышает заряд WILD','Dovetail raises the WILD charge')}</span><span>RTP 96,14%</span></div></div>
-    <aside class="gn-telemetry"><div class="gn-orbit">◉</div><small>ENERGY ARRAY</small><h3>${this.text('Пробуждение реактора','Awaken the reactor')}</h3><p>${this.text('Совмести секции. Усиль WILD.','Align the chambers. Power up WILD.')}</p><div class="gn-reactor-bars" data-gn="bars">${Array.from({length:5},(_,i)=>`<span><i data-bar="${i}"></i><b>0${i+1}</b></span>`).join('')}</div><div class="gn-charge"><span>${this.text('ОБЫЧНЫЙ РЕЖИМ','NORMAL MODE')}</span><strong>×1 <i>→</i> ×2 <i>→</i> ×3</strong><span>${this.text('БОНУСНЫЙ РЕЖИМ','BONUS MODE')}</span><strong>×1 <i>→</i> ×3 <i>→</i> ×5</strong></div><div class="gn-bonus-meter"><span>${this.text('БЕСПЛАТНЫХ ВРАЩЕНИЙ','FREE SPINS')}</span><strong data-gn="remaining">0</strong><div data-gn="bonus-dots">${Array(8).fill('<i></i>').join('')}</div></div></aside></main>
+    <aside class="gn-telemetry"><div class="ss-companion"><div class="ss-neutral" aria-hidden="true">✦<span>LIGHT / DARK</span></div><img data-ss-portrait hidden alt=""></div><div class="ss-identity"><small data-ss-label></small><strong data-ss-name></strong></div><div class="ss-side-picker"><button data-ss="side:light">${this.text('Свет','Light')}</button><button data-ss="side:dark">${this.text('Тьма','Dark')}</button><button data-ss="open" aria-label="${this.text('Открыть героинь','Open companions')}">✦</button></div><div class="ss-old-telemetry"><small>ENERGY ARRAY</small><h3>${this.text('Пробуждение реактора','Awaken the reactor')}</h3><p>${this.text('Совмести секции. Усиль WILD.','Align the chambers. Power up WILD.')}</p><div class="gn-reactor-bars" data-gn="bars">${Array.from({length:5},(_,i)=>`<span><i data-bar="${i}"></i><b>0${i+1}</b></span>`).join('')}</div><div class="gn-charge"><span>${this.text('ОБЫЧНЫЙ РЕЖИМ','NORMAL MODE')}</span><strong>×1 <i>→</i> ×2 <i>→</i> ×3</strong><span>${this.text('БОНУСНЫЙ РЕЖИМ','BONUS MODE')}</span><strong>×1 <i>→</i> ×3 <i>→</i> ×5</strong></div></div><div class="gn-bonus-meter"><span>${this.text('БЕСПЛАТНЫХ ВРАЩЕНИЙ','FREE SPINS')}</span><strong data-gn="remaining">0</strong><div data-gn="bonus-dots">${Array(8).fill('<i></i>').join('')}</div></div></aside></main>
     <section class="gn-money" data-gn="money" aria-label="${this.text('Баланс и итог раунда','Balance and round result')}"><div><span>${this.text('Баланс','Balance')} · USDT</span><strong data-gn="balance">…</strong><button data-gn="wallet" aria-label="${this.text('Открыть кошелёк','Open wallet')}">+</button></div><div><span>${this.text('Ставка раунда','Round stake')}</span><strong data-gn="cost">1</strong></div><div><span>${this.text('Выплата раунда','Round payout')}</span><strong data-gn="payout">0</strong></div><div><span>${this.text('Чистый итог','Net result')}</span><strong data-gn="net">…</strong></div></section>
     <div class="gn-controls" data-gn="controls"><label class="gn-stake"><span>${this.text('Общая ставка','Total stake')} · USDT</span><select data-gn="stake" aria-label="${this.text('Общая ставка','Total stake')}">${WILD_NUDGE_STAKES.map(stake=>`<option value="${stake}">${this.money(stake)}</option>`).join('')}</select></label><button data-gn="spin" class="gn-spin"><span aria-hidden="true">⟳</span><b>${this.text('Вращать','Spin')}</b><small>USDT</small></button><button data-gn="lines" class="gn-lines-button">20 ${this.text('линий','lines')}<small>${this.text('Показать маршруты','Show routes')}</small></button></div>
     <div class="gn-playback" data-gn="playback"><label><span>${this.text('Автокрутка','Autoplay')}</span><select data-gn="count" aria-label="${this.text('Число платных раундов','Number of paid rounds')}">${[10,25,50,100].map(n=>`<option>${n}</option>`).join('')}</select></label><button data-gn="auto" aria-pressed="false">${this.text('Авто','Auto')}</button><button data-gn="skip" hidden>${this.text('Показать итог','Show result')}</button><button data-gn="retry" hidden>${this.text('Повторить запрос','Retry request')}</button><button data-gn="refresh" hidden>${this.text('Обновить','Refresh')}</button></div><p class="gn-status" data-gn="status" role="status" aria-live="polite"></p>
     <dialog class="gn-modal" data-gn="modal" aria-labelledby="gn-modal-title"><header><h3 id="gn-modal-title" data-gn="modal-title"></h3><button data-gn="close" aria-label="${this.text('Закрыть','Close')}">×</button></header><div data-gn="modal-body"></div></dialog>`;
     host.replaceChildren(this.root);this.modal=this.el<HTMLDialogElement>('modal');
+    this.collection=new StarSpinCollection(this.root,()=>this.services.i18n.language,()=>!this.busy&&!this.presenting&&!this.active&&!this.auto&&!this.client.busy&&!this.client.pending&&!this.modal.open,()=>this.render(),()=>{this.stopAuto();this.cancelPresentation();});
+    this.character=new StarSpinCharacter(this.root);
+    this.root.addEventListener('star-spin-selected',()=>this.character.selected(),{signal:this.lifetime.signal});
     this.root.addEventListener('pointerdown',()=>void this.audio.unlock(),{signal:this.lifetime.signal});
     this.root.addEventListener('click',event=>{const button=(event.target as Element).closest<HTMLButtonElement>('button[data-gn]');if(button&&!button.disabled)this.click(button.dataset.gn!);},{signal:this.lifetime.signal});
     this.el('stake').addEventListener('change',()=>{if(this.blocked||this.auto||this.active){this.render();return;}this.stake=this.el<HTMLSelectElement>('stake').value;this.error='';this.note='';this.render();},{signal:this.lifetime.signal});
     this.el('count').addEventListener('change',()=>{if(!this.auto)this.autoCount=Number(this.el<HTMLSelectElement>('count').value);},{signal:this.lifetime.signal});
-    this.root.addEventListener('keydown',event=>{const target=event.target as HTMLElement;if(this.modal.open&&event.key==='Escape')event.stopPropagation();if(event.code==='Space'&&!event.repeat&&!this.modal.open&&target===this.root){event.preventDefault();if(!this.el<HTMLButtonElement>('spin').disabled)void this.perform();}},{signal:this.lifetime.signal});
+    this.root.addEventListener('keydown',event=>{const target=event.target as HTMLElement;if((this.modal.open||this.collection.open)&&event.key==='Escape')event.stopPropagation();if(event.code==='Space'&&!event.repeat&&!this.modal.open&&target===this.root){event.preventDefault();if(!this.el<HTMLButtonElement>('spin').disabled)void this.perform();}},{signal:this.lifetime.signal});
     this.modal.addEventListener('close',()=>{this.priorFocus?.focus();this.render();},{signal:this.lifetime.signal});
     document.addEventListener('visibilitychange',this.hidden,{signal:this.lifetime.signal});window.addEventListener('blur',this.blurred,{signal:this.lifetime.signal});window.addEventListener('offline',this.blurred,{signal:this.lifetime.signal});
     this.media.addEventListener('change',()=>{this.cancelPresentation();this.sync();},{signal:this.lifetime.signal});
@@ -55,7 +62,8 @@ export class GalacticReactorUI {
     this.drawPreview();this.sync();this.fit();
   }
   private click(action:string){
-    if(action==='spin')void this.perform();
+    if(action==='crew')this.collection.show();
+    else if(action==='spin')void this.perform();
     else if(action==='auto'){if(this.auto)this.stopAuto();else this.beginAuto();}
     else if(action==='skip')this.cancelPresentation();
     else if(action==='retry')void this.perform(true);
@@ -87,14 +95,18 @@ export class GalacticReactorUI {
     if(this.dead)return;
     if(this.owner!==this.client.accountId){this.owner=this.client.accountId;this.epoch++;this.busy=false;this.presenting=false;this.stopAuto(false);this.cancelPresentation();this.shown=undefined;this.shownKey='';this.error='';this.note='';this.audio.cancel();this.drawPreview();this.root.dataset.phase='idle';}
     if(this.wallet?.balance!==this.lastBalance){this.error='';this.lastBalance=this.wallet?.balance;}
-    if(!this.busy&&!this.presenting&&this.view){const key=this.session!.id+':'+this.view.revision;if(key!==this.shownKey){this.shown=structuredClone(this.view);this.shownKey=key;this.stake=this.view.stakeUnits;this.drawFrame(this.view.spins.at(-1)!);this.note=this.view.stage==='bonus'?this.text('Бонус восстановлен. Продолжение бесплатно.','Bonus restored. Continue without another stake.'):this.resultText(this.view);}}
-    this.render();
+    if(!this.busy&&!this.presenting&&this.view){const key=this.session!.id+':'+this.view.revision;if(key!==this.shownKey){this.markShown(this.view);this.stake=this.session!.rulesVersion===1&&this.view.stage==='settled'?DEFAULT_GAME_STAKE:this.view.stakeUnits;this.drawFrame(this.view.spins.at(-1)!);this.note=this.view.stage==='bonus'?this.text('Бонус восстановлен. Продолжение бесплатно.','Bonus restored. Continue without another stake.'):this.resultText(this.view);}}
+    this.collection.sync(this.client.accountId??'');this.render();
   }
-  private resultText(view:WildNudgeView){const net=BigInt(view.totalPayoutUnits)-BigInt(view.stakeUnits);return net>0n?this.text('Положительный итог раунда.','Net-positive round.'):net===0n?this.text('Стоимость раунда возвращена.','Round cost returned.'):BigInt(view.totalPayoutUnits)>0n?this.text('Частичный возврат. Выплата меньше ставки.','Partial return. Payout is below the stake.'):this.text('Раунд завершён без выплаты.','Round ended without a payout.');}
+  private markShown(view:WildNudgeView){this.shown=structuredClone(view);this.shownKey=this.session!.id+':'+view.revision;this.shownPayout=view.stage==='settled'?this.session!.returnedUnits:view.totalPayoutUnits;if(view.stage==='settled'&&this.session!.rulesVersion===1)this.stake=DEFAULT_GAME_STAKE;}
+  private payout(view:WildNudgeView){if(view===this.shown)return this.shownPayout;return view.stage==='settled'&&view.revision===this.view?.revision?this.session!.returnedUnits:view.totalPayoutUnits;}
+  private resultText(view:WildNudgeView){const paid=BigInt(this.payout(view)),net=paid-BigInt(view.stakeUnits);return net>0n?this.text('Положительный итог раунда.','Net-positive round.'):net===0n?this.text('Стоимость раунда возвращена.','Round cost returned.'):paid>0n?this.text('Частичный возврат. Выплата меньше ставки.','Partial return. Payout is below the stake.'):this.text('Раунд завершён без выплаты.','Round ended without a payout.');}
   private render(){
     if(this.dead)return;const shown=this.shown,active=this.active,blocked=this.blocked;
+    this.collection?.sync(this.client.accountId??'');
+    this.character?.sync(this.client.accountId??'',this.root.dataset.character??'',this.collection.open?'idle':this.root.dataset.phase??'idle',this.shown?.stage==='bonus',this.paused||this.modal.open,this.reduced);
     this.el('balance').textContent=this.wallet?this.services.walletCoins(this.wallet.balance):'…';this.el('cost').textContent=this.money(active?this.view!.stakeUnits:this.stake);
-    this.el('payout').textContent=this.money(shown?.totalPayoutUnits??'0');this.el('net').textContent=shown?.stage==='settled'?this.money(String(BigInt(shown.totalPayoutUnits)-BigInt(shown.stakeUnits))):'…';
+    this.el('payout').textContent=this.money(shown?this.payout(shown):'0');this.el('net').textContent=shown?.stage==='settled'?this.money(String(BigInt(this.payout(shown))-BigInt(shown.stakeUnits))):'…';
     this.el<HTMLSelectElement>('stake').value=this.stake;this.el<HTMLSelectElement>('stake').disabled=blocked||this.auto||active;
     const spin=this.el<HTMLButtonElement>('spin');spin.disabled=blocked||this.auto||!active&&!this.afford();spin.querySelector('b')!.textContent=active?this.text('Бесплатно','Free spin'):this.text('Вращать','Spin');spin.querySelector('small')!.textContent=active?this.text('Осталось: ','Remaining: ')+(this.view?.remaining??0):this.money(this.stake)+' USDT';
     const auto=this.el<HTMLButtonElement>('auto');auto.disabled=!this.auto&&(blocked||active||!this.afford()||!!this.client.error||!!this.error);auto.textContent=this.auto?this.text('Стоп · ','Stop · ')+this.autoLeft:this.text('Авто','Auto');auto.setAttribute('aria-pressed',String(this.auto));auto.setAttribute('aria-label',this.auto?this.text('Остановить автокрутку','Stop autoplay'):this.text('Начать автокрутку','Start autoplay'));
@@ -108,7 +120,7 @@ export class GalacticReactorUI {
   private wait(ms:number,signal=this.motion.signal){return new Promise<void>(resolve=>{if(signal.aborted){resolve();return;}const done=()=>{clearTimeout(timer);this.timers.delete(timer);signal.removeEventListener('abort',done);resolve();};const timer=setTimeout(done,Math.max(0,ms));this.timers.add(timer);signal.addEventListener('abort',done,{once:true});});}
   private async accent(cue:GalacticCue,action:()=>void,signal:AbortSignal){if(signal.aborted||this.dead)return;const sync=this.audio.schedule(cue);await this.wait(sync.delayMs,signal);if(signal.aborted||this.dead)return;action();this.skew.push({cue,mode:sync.mode,skewMs:performance.now()-sync.target});if(this.skew.length>60)this.skew.shift();}
   private async animate(element:HTMLElement,frames:Keyframe[],duration:number,signal:AbortSignal){if(this.reduced||signal.aborted)return;const animation=element.animate(frames,{duration,easing:'cubic-bezier(.2,.75,.3,1)'});this.animations.add(animation);const cancel=()=>animation.cancel();signal.addEventListener('abort',cancel,{once:true});await animation.finished.catch(()=>{});signal.removeEventListener('abort',cancel);this.animations.delete(animation);}
-  private cancelPresentation(){this.motion.abort();for(const animation of this.animations)animation.cancel();this.animations.clear();this.audio.cancel();this.root.querySelectorAll('.gn-spinning,.gn-charging').forEach(el=>el.classList.remove('gn-spinning','gn-charging'));}
+  private cancelPresentation(){this.character?.cancelReaction();this.motion.abort();for(const animation of this.animations)animation.cancel();this.animations.clear();this.audio.cancel();this.root.querySelectorAll('.gn-spinning,.gn-charging').forEach(el=>el.classList.remove('gn-spinning','gn-charging'));}
   private async show(view:WildNudgeView){
     this.motion.abort();this.motion=new AbortController();const signal=this.motion.signal,frame=view.spins.at(-1)!,epoch=this.epoch,owner=this.owner;this.presenting=true;this.root.dataset.phase='reveal';this.el('payline').replaceChildren();this.render();
     for(let c=0;c<5&&!signal.aborted;c++){
@@ -121,17 +133,17 @@ export class GalacticReactorUI {
       for(let i=1;i<reel.path.length&&!signal.aborted;i++){
         this.root.dataset.phase='nudge';const track=column.querySelector<HTMLElement>('.gn-track')!,cell=this.el('board').clientWidth/5;
         const shifted=-cell-reel.direction*cell;
-        await this.accent('nudge',()=>column.classList.add('gn-charging'),signal);
+        await this.accent('nudge',()=>{column.classList.add('gn-charging');this.character.react('wild_align');},signal);
         await this.animate(track,[{transform:`translateY(${-cell}px)`},{transform:`translateY(${shifted}px)`}],this.fast?90:230,signal);
         if(signal.aborted)break;
         this.column(c,reel.path[i].stop,reel.path[i].multiplier);column.classList.remove('gn-charging');
       }
     }
     if(this.dead||epoch!==this.epoch||owner!==this.client.accountId)return;
-    if(!this.dead){this.root.querySelectorAll('.gn-spinning').forEach(el=>el.classList.remove('gn-spinning'));this.drawFrame(frame);this.shown=structuredClone(view);this.shownKey=this.session!.id+':'+view.revision;this.note=view.stage==='bonus'?this.text('Режим перегрузки. Продолжение бесплатно.','Overdrive mode. Continue without another stake.'):this.resultText(view);this.root.dataset.phase=view.stage==='bonus'?'bonus':'result';
-      if(!signal.aborted&&!this.paused&&!this.modal.open){
-        if(frame.awardedSpins){await this.accent('bonus',()=>{this.el('bonus-overlay').hidden=false;},signal);await this.wait(this.reduced?0:this.fast?180:650,signal);}
-        else if(view.stage==='settled'){const total=BigInt(view.totalPayoutUnits),stake=BigInt(view.stakeUnits);this.audio.schedule(total>stake?'win':total===stake?'return':'partial');}
+    if(!this.dead){this.root.querySelectorAll('.gn-spinning').forEach(el=>el.classList.remove('gn-spinning'));this.drawFrame(frame);this.markShown(view);this.note=view.stage==='bonus'?this.text('Режим перегрузки. Продолжение бесплатно.','Overdrive mode. Continue without another stake.'):this.resultText(view);this.root.dataset.phase=view.stage==='bonus'?'bonus':'result';
+      if(!signal.aborted&&!this.paused&&!this.modal.open&&!this.collection.open){
+        if(frame.awardedSpins){await this.accent('bonus',()=>{this.el('bonus-overlay').hidden=false;this.character.react('bonus_enter');},signal);await this.wait(this.reduced?0:this.fast?180:650,signal);}
+        else if(view.stage==='settled'){const total=BigInt(this.payout(view)),stake=BigInt(view.stakeUnits);if(total>stake)await this.accent('win',()=>this.character.react('round_win'),signal);else this.audio.schedule(total===stake?'return':'partial');}
       }
       this.el('bonus-overlay').hidden=true;
     }
@@ -149,7 +161,7 @@ export class GalacticReactorUI {
       if(retry)await this.client.retry();else if(this.active)await this.client.act({gameId:WILD_NUDGE_GAME,action:'move',sessionId:this.session!.id,move:'wild-nudge-spin',revision:this.view!.revision});else await this.client.act({gameId:WILD_NUDGE_GAME,action:'start',stakeUnits:this.stake,settings:{wildNudge:{mode:'normal'}}});
       if(this.dead||epoch!==this.epoch||owner!==this.client.accountId)return false;
       const view=this.view;if(!view||this.client.pending)throw Error(this.text('Раунд не подтверждён. Повтори запрос.','Round not confirmed. Retry the request.'));
-      if(this.paused||this.modal.open){this.shown=structuredClone(view);this.shownKey=this.session!.id+':'+view.revision;this.drawFrame(view.spins.at(-1)!);this.note=view.stage==='bonus'?this.text('Бонус сохранён. Продолжение бесплатно.','Bonus saved. Continue without another stake.'):this.resultText(view);}else await this.show(view);
+      if(this.paused||this.modal.open||this.collection.open){this.markShown(view);this.drawFrame(view.spins.at(-1)!);this.note=view.stage==='bonus'?this.text('Бонус сохранён. Продолжение бесплатно.','Bonus saved. Continue without another stake.'):this.resultText(view);}else await this.show(view);
       return true;
     }catch(error){if(!this.dead&&epoch===this.epoch){this.error=error instanceof Error?error.message:String(error);this.stopAuto(false);this.cancelPresentation();}return false;}
     finally{if(!this.dead&&epoch===this.epoch){this.busy=false;this.root.querySelectorAll('.gn-spinning').forEach(el=>el.classList.remove('gn-spinning'));this.sync();}}
@@ -166,7 +178,7 @@ export class GalacticReactorUI {
   }
   private stopAuto(notify=true){const running=this.auto;this.auto=false;this.autoLeft=0;this.autoEpoch++;if(running&&notify){this.note=this.text('Автокрутка остановлена. Принятый ход сохраняется.','Autoplay stopped. Accepted moves are preserved.');this.render();}}
   private openModal(kind:string){
-    this.stopAuto();this.cancelPresentation();this.priorFocus=document.activeElement as HTMLElement;this.el('modal-title').textContent=kind==='settings'?this.text('Настройки','Settings'):kind==='lines'?this.text('20 активных линий','20 active paylines'):this.text('Правила реактора','Reactor rules');
+    if(this.collection.open)return;this.stopAuto();this.cancelPresentation();this.priorFocus=document.activeElement as HTMLElement;this.el('modal-title').textContent=kind==='settings'?this.text('Настройки','Settings'):kind==='lines'?this.text('20 активных линий','20 active paylines'):this.text('Правила Star Spin','Star Spin rules');
     const body=this.el('modal-body');
     if(kind==='settings'){
       body.innerHTML=`<label>${this.text('Музыка','Music')}<input type="checkbox" data-setting="music" ${this.audio.music?'checked':''}></label><label>${this.text('Звуковые эффекты','Sound effects')}<input type="checkbox" data-setting="effects" ${this.audio.effects?'checked':''}></label><label>${this.text('Общая громкость','Shared volume')}<input type="range" min="0" max="1" step="0.05" data-setting="volume" value="${this.services.gameAudio.getPreferences().volume}"></label><label>${this.text('Быстрый режим','Quick play')}<input type="checkbox" data-setting="fast" ${this.fast?'checked':''}></label><label>${this.text('Уменьшенное движение','Reduced motion')}<input type="checkbox" data-setting="reduced" ${this.forceReduced?'checked':''}></label>`;
@@ -178,6 +190,6 @@ export class GalacticReactorUI {
   }
   pause(){if(this.dead)return;this.paused=true;this.stopAuto();this.cancelPresentation();this.audio.pause();this.render();}
   resume(){if(this.dead||document.hidden)return;this.paused=false;this.audio.resume();this.sync();}
-  getState(){return {gameId:WILD_NUDGE_GAME,title:this.title,phase:this.root.dataset.phase,revision:this.view?.revision,remaining:this.view?.remaining,busy:this.busy,presenting:this.presenting,autoplay:{running:this.auto,remaining:this.autoLeft,count:this.autoCount},ownedTimers:this.timers.size,animations:this.animations.size,audio:this.audio.getState(),synchronization:this.skew.slice(),shownRevision:this.shown?.revision};}
-  destroy(){if(this.dead)return;this.dead=true;this.stopAuto(false);this.epoch++;this.cancelPresentation();this.lifetime.abort();this.resize.disconnect();this.client.removeEventListener('change',this.changed);this.services.demoWallet.removeEventListener('change',this.changed);this.unsubscribe();this.audio.destroy();if(this.modal.open)this.modal.close();this.root.remove();}
+  getState(){return {character:this.character.state,collection:this.collection.state,gameId:WILD_NUDGE_GAME,title:this.title,phase:this.root.dataset.phase,revision:this.view?.revision,remaining:this.view?.remaining,busy:this.busy,presenting:this.presenting,autoplay:{running:this.auto,remaining:this.autoLeft,count:this.autoCount},ownedTimers:this.timers.size,animations:this.animations.size,audio:this.audio.getState(),synchronization:this.skew.slice(),shownRevision:this.shown?.revision};}
+  destroy(){if(this.dead)return;this.dead=true;this.stopAuto(false);this.epoch++;this.cancelPresentation();this.lifetime.abort();this.resize.disconnect();this.client.removeEventListener('change',this.changed);this.services.demoWallet.removeEventListener('change',this.changed);this.unsubscribe();this.collection.destroy();this.character.destroy();this.audio.destroy();if(this.modal.open)this.modal.close();this.root.remove();}
 }

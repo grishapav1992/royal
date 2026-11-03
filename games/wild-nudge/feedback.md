@@ -1,4 +1,4 @@
-# Galactic Reactor v1 feedback
+# Star Spin v1 feedback
 
 Uses docs/game-feedback.md. Every reel stop, nudge and amount comes from the accepted server spin. The displayed stack is one three-cell tower whose position follows the recorded cyclic stop path. No decorative event changes a wager or future result.
 

@@ -13,6 +13,12 @@ export function projectedMediaBytes(name,bytes,expected){
  assert.equal(digest(bytes),expected,'Unreviewed projected module media: '+name);
  return bytes;
 }
+/** Installed dependency code has explicit byte hashes, separate from Git sources. */
+export function projectedDependencyBytes(name,bytes,expected){
+ assert(/^node_modules\/(?:@[a-zA-Z0-9_-]+\/)?[a-zA-Z0-9_-]+\/.+\.(?:js|mjs|cjs|json)$/.test(name)&&!name.split('/').some(part=>part==='.'||part==='..')&&!name.includes('\\'),'Unsafe projected dependency');
+ assert.equal(digest(bytes),expected,'Unreviewed projected module dependency: '+name);
+ return bytes;
+}
 export function projectedModuleContract(current,projected,contracts){
  assert(current&&projected&&current.slug===projected.slug&&current.gameId===projected.gameId,'Projected module identity differs');
  if(keys.every(key=>current[key]===projected[key]))return projected;
@@ -37,13 +43,14 @@ export async function verifyModuleProjection(root,report,slugs){
  reader.preload(Object.keys(report.inputs));
  for(const [name,hash]of Object.entries(report.inputs)){same(digest(reader.read(name)),hash);same(reader.origins[name],report.origins[name]);}
  for(const [name,hash]of Object.entries(report.assets)){same(digest(await readFile(await regularPath(root,name))),hash);same(reader.metadata.moduleAssets[name],hash);}
+ for(const [name,hash]of Object.entries(report.dependencies??{}))projectedDependencyBytes(name,await readFile(await regularPath(root,name)),reader.metadata.moduleDependencies?.[name]===hash?hash:undefined);
  const expected={};
  for(const slug of slugs){
   const config=JSON.parse(reader.read(`games/${slug}/package.json`)),contract=catalog.find(game=>game.slug===slug),game=config.gameId;
   for(const key of ['gameId',...keys])same(config[key],contract[key]);
   const proof=JSON.parse(await readFile(await regularPath(root,`module-build/${slug}-proof.json`),'utf8'));
   const row=report.modules[game];assert(row,'Missing projected module proof');same(proof.sourceFiles,row.sourceFiles);
-  for(const [name,hash]of Object.entries(row.sourceFiles))same(hash,report.inputs[name]);
+  for(const [name,hash]of Object.entries(row.sourceFiles))same(hash,name.startsWith('node_modules/')?report.dependencies?.[name]:report.inputs[name]);
   const pointer=JSON.parse(await readFile(await regularPath(root,`module-dist/${game}/active.json`),'utf8'));
   same(row.manifestPath,pointer.manifest.replace('/game-modules/','module-dist/'));
   const bytes=await readFile(await regularPath(root,row.manifestPath)),manifest=JSON.parse(bytes);

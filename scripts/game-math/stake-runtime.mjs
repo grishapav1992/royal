@@ -15,10 +15,12 @@ import {startPenalty,movePenalty} from '../../server/games/crLeo.ts';
 import {startFlagBattle} from '../../server/games/flagBattle.ts';
 import {flagPayout,flagViewMode} from '../../src/shared/flagBattle.ts';
 import {prepareGame} from '../../server/games/core.ts';
+import {startStarSpin,moveStarSpin} from '../../src/shared/wildNudgeStakes.ts';
 import {expansionExactAward,coreExactAward,makeRoundPrecision} from '../../src/shared/roundPrecision.ts';
 import {cascadeRandom} from './rtp-temple-cascade-model.mjs';
 
 export function settingsFor(game,choice){
+ if(game==='studio-wild-nudge')return {wildNudge:{mode:'normal'}};
  if(game==='studio-caramel-carnival')return {caramel:{mode:choice}};
  if(game==='studio-last-convoy')return {convoy:{mode:'normal'}};
  if(game==='studio-nitro-run'||game==='studio-meme-overload')return {nitro:{mode:'normal'}};
@@ -42,7 +44,8 @@ export function runtimeRound(game,choice,stakeUnits,seed){
   const round=prepareGame(game,1,input).play(BigInt(stakeUnits),draw),a=coreExactAward(round),precision=makeRoundPrecision(a,round.payoutUnits,max=>Math.floor((cascadeRandom(seed+710107)(4294967296)/4294967296)*max));
   return {exact:a,base:round.payoutUnits,precision,tape,spins:1,round,settings};
  }
- if(game==='studio-caramel-carnival'){result=startCaramel(settings,stakeUnits,draw);key='caramel';move=r=>moveCaramel(r.view,stakeUnits,r.view.revision,draw);}
+ if(game==='studio-wild-nudge'){result=startStarSpin(settings,stakeUnits,draw);key='wildNudge';move=r=>moveStarSpin(r.view,stakeUnits,r.view.revision,'wild-nudge-spin',draw);}
+ else if(game==='studio-caramel-carnival'){result=startCaramel(settings,stakeUnits,draw);key='caramel';move=r=>moveCaramel(r.view,stakeUnits,r.view.revision,draw);}
  else if(game==='studio-last-convoy'){result=startConvoy(settings,stakeUnits,draw);key='convoy';move=r=>moveConvoy(r.view,stakeUnits,r.view.revision,draw);}
  else if(game==='studio-nitro-run'||game==='studio-meme-overload'){result=startNitro(settings,stakeUnits,draw);key='nitro';move=r=>moveNitro(r.view,stakeUnits,r.view.revision,draw);}
  else if(game==='studio-afterglow'){result=startAfter(settings,stakeUnits,0,draw);key='afterglow';move=r=>moveAfter(r.view,stakeUnits,r.view.revision,draw);}
