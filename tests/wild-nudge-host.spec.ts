@@ -23,11 +23,16 @@ async function open(page:Page){
  if(await page.locator('#room-overview').getAttribute('aria-pressed')!=='true')await page.locator('#room-overview').click();
  await page.locator('#games-tab').click();
  await expect.poll(async()=>{if(await page.locator('#mini-dialog').isVisible())return true;try{const cabinet=page.locator('[data-cabinet="studio-cosmic-escape"]');if(!await cabinet.isVisible())await page.locator('#games-tab').click({timeout:500});await cabinet.click({timeout:500});}catch(error){if(!(error instanceof Error&&error.name==='TimeoutError'))throw error;}return page.locator('#mini-dialog').isVisible();},{timeout:30000,intervals:[700,1500]}).toBe(true);
- await page.locator(`[data-platform-game="${game}"]`).click();await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id',game,{timeout:30000});await expect(page.locator('.gn')).toBeVisible();await expect.poll(()=>page.locator('[data-gn=board]').evaluate(el=>el.clientWidth)).toBeGreaterThan(200);await expect(page.locator('#mini-dialog #club-chat-dock')).toBeVisible();await expect(page.locator('#chat-input')).toBeInViewport();
+ await page.locator(`[data-platform-game="${game}"]`).click();await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id',game,{timeout:30000});await expect(page.locator('.gn')).toBeVisible();await expect.poll(()=>page.locator('[data-gn=board]').evaluate(el=>el.clientWidth)).toBeGreaterThan(200);await chat(page);
 }
-async function topup(page:Page){const r=await page.request.post('/__test/nudge/topup',{data:{amount:1000}});expect(r.ok()).toBe(true);await page.evaluate(async()=>{const url='/src/wallet/WalletClient.ts';await(await import(/* @vite-ignore */url)).demoWallet.refresh();});}
+async function chat(page:Page,closeOverlay=true){
+ if(!await page.locator('#chat-input').isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
+ await expect(page.locator('#mini-dialog #club-chat-dock')).toBeVisible();await expect(page.locator('#chat-input')).toBeInViewport();
+ if(closeOverlay&&await page.locator('#mini-dialog').getAttribute('data-game-chat')==='overlay')await page.locator('#club-chat-dock .game-chat-close').click();
+}
+async function topup(page:Page){if(!await page.evaluate(()=>!!(globalThis as any)[Symbol.for('royal.game-host.v1')]))await open(page);const r=await page.request.post('/__test/nudge/topup',{data:{amount:1000}});expect(r.ok()).toBe(true);await page.evaluate(async()=>{await (globalThis as any)[Symbol.for('royal.game-host.v1')].demoWallet.refresh();});}
 async function scenario(page:Page,name:string){expect((await page.request.post('/__test/nudge/scenario',{data:{name}})).ok()).toBe(true);}
-async function session(page:Page){return page.evaluate(async()=>{const url='/src/wallet/ExpansionClient.ts';return(await import(/* @vite-ignore */url)).expansionClient.sessions.find((s:any)=>s.gameId==='studio-wild-nudge');});}
+async function session(page:Page){return page.evaluate(async()=>{return(globalThis as any)[Symbol.for('royal.game-host.v1')].expansionClient.sessions.find((s:any)=>s.gameId==='studio-wild-nudge');});}
 async function spin(page:Page){await page.locator('[data-gn=spin]').click();await expect.poll(async()=>(await mini(page))?.busy).toBe(false);await expect.poll(async()=>(await mini(page))?.presenting).toBe(false);expect(await page.locator('[data-gn=status]').textContent()).not.toContain('не подтвержд');}
 async function fast(page:Page){await page.locator('[data-gn=settings]').click();await page.locator('[data-setting=fast]').check();await page.locator('[data-setting=music]').uncheck();await page.locator('[data-gn=close]').click();await expect(page.locator('[data-gn=modal]')).toBeHidden();}
 
@@ -58,7 +63,7 @@ test('all four Rive companions retain their identity, react to paid outcomes and
   }
   await page.locator('[data-ss=close]').click();await scenario(page,'nudge');await spin(page);expect((await mini(page)).character.reactions.wild_align).toBeGreaterThan(0);await scenario(page,'win');await spin(page);const wins=(await mini(page)).character.reactions.round_win;expect(wins).toBeGreaterThan(0);await scenario(page,'loss');await spin(page);expect((await mini(page)).character.reactions.round_win).toBe(wins);observed.push((await mini(page)).character);await page.locator('[data-gn=crew]').click();
  }
- await page.locator('[data-ss=close]').click();await page.setViewportSize({width:390,height:844});await expect.poll(async()=>(await mini(page)).character.playing).toBe(false);await expect(page.locator('#chat-input')).toBeInViewport();await expect(page.locator('[data-gn=spin]')).toBeInViewport();
+ await page.locator('[data-ss=close]').click();await page.setViewportSize({width:390,height:844});await expect.poll(async()=>(await mini(page)).character.playing).toBe(false);await chat(page);await expect(page.locator('[data-gn=spin]')).toBeInViewport();
  await page.locator('[data-gn=crew]').click();await expect(page.locator('[data-ss-card=nyxara] .ss-rive-canvas')).toBeVisible();await expect.poll(async()=>(await mini(page)).character.playing).toBe(true);await page.screenshot({path:output+'/rive-mobile.png'});
  await page.locator('[data-ss="tab:light"]').click();await expect.poll(async()=>(await mini(page)).character.playing).toBe(false);await page.locator('[data-ss="tab:dark"]').click();await expect.poll(async()=>(await mini(page)).character.playing).toBe(true);
  await page.locator('[data-ss=close]').click();await page.setViewportSize({width:1440,height:1000});await expect.poll(async()=>(await mini(page)).character.playing).toBe(true);await scenario(page,'bonus');await spin(page);expect((await mini(page)).character.reactions.bonus_enter).toBe(1);await expect.poll(async()=>(await mini(page)).character.mode).toBe('bonus_idle');
@@ -73,7 +78,7 @@ test('Star Spin side choice, free challenges and permanent companions use the re
  await page.locator('[data-ss="tab:dark"]').click();await page.locator('[data-ss="unlock:nyxara"]').click();await expect(page.locator('[data-ss-tokens]')).toHaveText('0');await page.locator('[data-ss="select:nyxara"]').click();await expect(page.locator('.gn')).toHaveAttribute('data-character','nyxara');await page.locator('[data-ss=close]').click();
  await page.screenshot({path:output+'/star-spin-dark.png'});await page.locator('#mini-dialog .mini-top [data-close]').click();await open(page);await expect(page.locator('.gn')).toHaveAttribute('data-character','nyxara');await expect(page.locator('[data-gn=spin]')).toBeDisabled();
  await page.locator('[data-ss="side:light"]').click();await expect(page.locator('.gn')).toHaveAttribute('data-character','aeliri');await page.screenshot({path:output+'/star-spin-light.png'});expect(await session(page)).toBeUndefined();
- await page.setViewportSize({width:390,height:844});await page.locator('[data-gn=crew]').click();await expect(page.locator('[data-ss-card=aeliri]')).toBeInViewport();await page.screenshot({path:output+'/star-spin-mobile-collection.png'});await page.keyboard.press('Escape');await expect(page.locator('.ss-dialog')).toBeHidden();await expect(page.locator('#chat-input')).toBeInViewport();
+ await page.setViewportSize({width:390,height:844});await page.locator('[data-gn=crew]').click();await expect(page.locator('[data-ss-card=aeliri]')).toBeInViewport();await page.screenshot({path:output+'/star-spin-mobile-collection.png'});await page.keyboard.press('Escape');await expect(page.locator('.ss-dialog')).toBeHidden();await chat(page);
 });
 test('companion selection is locked during an accepted bonus and pending cosmetic replies recover with the same UUID',async({page,roomPath})=>{
  await enter(page,roomPath);await topup(page);await open(page);await fast(page);await expect(page.locator('[data-ss="side:light"]')).toBeEnabled();const ids:string[]=[];let drop=true;
@@ -83,9 +88,28 @@ test('companion selection is locked during an accepted bonus and pending cosmeti
 });
 test('ordinary paid spin and all eight free continuations use the real host and common wallet',async({page,roomPath})=>{
  await enter(page,roomPath);await topup(page);await open(page);await fast(page);await scenario(page,'bonus');await spin(page);
- let saved=await session(page);expect(saved.view.wildNudge.remaining).toBe(8);expect(saved.spentUnits).toBe('100');expect(saved.returnedUnits).toBe('0');await expect(page.locator('[data-gn=stake]')).toBeDisabled();
- for(let i=0;i<8;i++){await spin(page);saved=await session(page);expect(saved.view.wildNudge.remaining).toBe(7-i);expect(saved.spentUnits).toBe('100');}
+ let saved=await session(page);expect(saved.view.wildNudge.remaining).toBe(8);expect(saved.spentUnits).toBe('10');expect(saved.returnedUnits).toBe('0');await expect(page.locator('[data-gn=stake]')).toBeDisabled();
+ for(let i=0;i<8;i++){await spin(page);saved=await session(page);expect(saved.view.wildNudge.remaining).toBe(7-i);expect(saved.spentUnits).toBe('10');}
  expect(saved.state).toBe('settled');expect(saved.view.wildNudge.spins).toHaveLength(9);await expect(page.locator('[data-gn=auto]')).toBeEnabled();await page.screenshot({path:output+'/bonus-complete.png'});
+});
+test('all twenty lines cost ten cents and the displayed payout matches the committed fractional receipt',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await open(page);await fast(page);
+ await expect(page.locator('[data-gn=stake]')).toHaveValue('10');expect(await page.locator('[data-gn=stake] option').evaluateAll(options=>options.map(o=>(o as HTMLOptionElement).value))).toEqual(['10','20','50','100','200','500','1000','2000','5000']);
+ const before=await page.evaluate(()=>(globalThis as any)[Symbol.for('royal.game-host.v1')].demoWallet.wallet.balance);
+ await scenario(page,'fraction');await spin(page);const saved=await session(page);expect(saved.rulesVersion).toBe(2);expect(saved.spentUnits).toBe('10');expect(saved.returnedUnits).toBe('34');expect(saved.view.wildNudge.totalPayoutUnits).toBe('33');
+ await expect(page.locator('[data-gn=payout]')).toContainText(/0[.,]34/);await expect(page.locator('[data-gn=net]')).toContainText(/0[.,]24/);
+ await expect.poll(()=>page.evaluate(()=>(globalThis as any)[Symbol.for('royal.game-host.v1')].demoWallet.wallet.balance)).toBeCloseTo(before+.24,5);
+ await page.locator('#mini-dialog .mini-top [data-close]').click();await open(page);expect(await session(page)).toEqual(saved);await expect(page.locator('[data-gn=payout]')).toContainText(/0[.,]34/);
+ await page.emulateMedia({reducedMotion:'no-preference'});await scenario(page,'loss');await page.locator('[data-gn=spin]').click();await expect(page.locator('.gn')).toHaveAttribute('data-phase','reveal');await expect(page.locator('[data-gn=payout]')).toContainText(/0[.,]34/);
+ await expect.poll(async()=>(await mini(page)).busy).toBe(false);await expect(page.locator('[data-gn=payout]')).toHaveText('0');expect((await session(page)).spentUnits).toBe('10');
+});
+test('a saved historical bonus keeps its original stake and the next paid round returns to ten cents',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await scenario(page,'bonus');
+ const response=await page.request.post('/api/demo-wallet/expansion',{headers:{'X-Royal-Wild-Nudge':'1'},data:{id:crypto.randomUUID(),gameId:game,action:'start',stakeUnits:'100',settings:{wildNudge:{mode:'normal'}}}});expect(response.ok()).toBe(true);const old=(await response.json()).session;expect(old.rulesVersion).toBe(1);expect(old.state).toBe('active');
+ await page.evaluate(async()=>{await (globalThis as any)[Symbol.for('royal.game-host.v1')].expansionClient.refresh();});await open(page);await fast(page);await expect(page.locator('[data-gn=stake]')).toHaveValue('100');
+ for(let i=0;i<8;i++){await spin(page);expect((await session(page)).spentUnits).toBe('100');}
+ expect((await session(page)).rulesVersion).toBe(1);expect((await session(page)).state).toBe('settled');await expect(page.locator('[data-gn=stake]')).toHaveValue('10');
+ await scenario(page,'loss');await spin(page);expect((await session(page)).rulesVersion).toBe(2);expect((await session(page)).spentUnits).toBe('10');
 });
 test('finite autoplay makes ten paid starts, completes their bonuses and never runs an eleventh',async({page,roomPath})=>{
  test.setTimeout(120000);await enter(page,roomPath);await topup(page);await open(page);await fast(page);const starts:string[]=[],moves:string[]=[];
@@ -101,16 +125,16 @@ test('Stop during an accepted request preserves that round and prevents another 
 test('a committed reply lost on the wire recovers the same UUID once',async({page,roomPath})=>{
  await enter(page,roomPath);await topup(page);await open(page);await fast(page);await scenario(page,'nudge');const ids:string[]=[];let drop=true;
  await page.route('**/api/demo-wallet/expansion',async route=>{if(route.request().method()==='POST'){ids.push(route.request().postDataJSON().id);if(drop){drop=false;await route.fetch();await route.abort('failed');return;}}await route.continue();});
- await page.locator('[data-gn=spin]').click();await expect(page.locator('[data-gn=retry]')).toBeVisible();await expect(page.locator('[data-gn=auto]')).toBeDisabled();await page.locator('[data-gn=retry]').click();await expect(page.locator('[data-gn=retry]')).toBeHidden();await expect.poll(async()=>(await mini(page))?.busy).toBe(false);expect(ids).toHaveLength(2);expect(ids[0]).toBe(ids[1]);expect((await session(page)).spentUnits).toBe('100');
+ await page.locator('[data-gn=spin]').click();await expect(page.locator('[data-gn=retry]')).toBeVisible();await expect(page.locator('[data-gn=auto]')).toBeDisabled();await page.locator('[data-gn=retry]').click();await expect(page.locator('[data-gn=retry]')).toBeHidden();await expect.poll(async()=>(await mini(page))?.busy).toBe(false);expect(ids).toHaveLength(2);expect(ids[0]).toBe(ids[1]);expect((await session(page)).spentUnits).toBe('10');
 });
 test('closing a saved bonus restores it quietly and never restarts autoplay',async({page,roomPath})=>{
  await enter(page,roomPath);await topup(page);await open(page);await fast(page);await scenario(page,'bonus');await spin(page);await spin(page);const saved=await session(page);
- await page.locator('#mini-dialog .mini-top [data-close]').click();await expect(page.locator('.gn')).toHaveCount(0);await open(page);const recovered=await session(page);expect(recovered).toEqual(saved);expect((await mini(page)).autoplay.running).toBe(false);expect((await mini(page)).audio.counts).toEqual({});await expect(page.locator('[data-gn=status]')).toContainText('восстановлен');await expect(page.locator('#chat-input')).toBeInViewport();
+ await page.locator('#mini-dialog .mini-top [data-close]').click();await expect(page.locator('.gn')).toHaveCount(0);await open(page);const recovered=await session(page);expect(recovered).toEqual(saved);expect((await mini(page)).autoplay.running).toBe(false);expect((await mini(page)).audio.counts).toEqual({});await expect(page.locator('[data-gn=status]')).toContainText('восстановлен');await chat(page);
 });
 test('responsive host keeps chat, settings and controls reachable without moving the lower panels',async({page,roomPath})=>{
  test.setTimeout(120000);await enter(page,roomPath);await topup(page);await open(page);await fast(page);const measurements=[];
  for(const [width,height]of [[1440,1000],[1280,720],[1024,768],[800,600],[640,480],[500,760],[390,844],[320,568],[844,390]]){
-  await page.setViewportSize({width,height});await page.waitForTimeout(100);for(const selector of ['[data-gn=spin]','[data-gn=auto]','[data-gn=stake]','[data-gn=settings]','#chat-input'])await expect(page.locator(selector)).toBeInViewport();
+  await page.setViewportSize({width,height});await page.waitForTimeout(100);await chat(page);for(const selector of ['[data-gn=spin]','[data-gn=auto]','[data-gn=stake]','[data-gn=settings]'])await expect(page.locator(selector)).toBeInViewport();
   const overflow=await page.locator('.gn').evaluate(el=>el.scrollWidth-el.clientWidth);expect(overflow).toBeLessThanOrEqual(1);
   if(width===1440||width===390)await page.screenshot({path:output+`/host-${width}.png`});
   const geometry=await page.locator('[data-gn=stage]').evaluate(el=>({stageHeight:el.clientHeight,machineHeight:el.parentElement!.clientHeight,boardWidth:el.querySelector('.gn-board')!.clientWidth}));expect(geometry.stageHeight+46).toBeGreaterThanOrEqual(geometry.machineHeight-1);expect(geometry.boardWidth).toBeGreaterThan(60);measurements.push({width,height,overflow,...geometry});
@@ -121,12 +145,12 @@ test('responsive host keeps chat, settings and controls reachable without moving
 });
 test('settings persist, Escape closes only the inner panel and typing in chat cannot start a spin',async({page,roomPath})=>{
  await enter(page,roomPath);await topup(page);await open(page);await fast(page);await page.locator('[data-gn=settings]').click();await page.locator('[data-setting=effects]').uncheck();await page.locator('[data-setting=reduced]').check();await page.keyboard.press('Escape');await expect(page.locator('[data-gn=modal]')).toBeHidden();await expect(page.locator('.gn')).toBeVisible();
- const before=await session(page);await page.locator('#chat-input').fill('Проверка пробела');await page.locator('#chat-input').press('Space');await expect(page.locator('#chat-input')).toHaveValue('Проверка пробела ');expect(await session(page)).toEqual(before);
+ const before=await session(page);await chat(page,false);await page.locator('#chat-input').fill('Проверка пробела');await page.locator('#chat-input').press('Space');await expect(page.locator('#chat-input')).toHaveValue('Проверка пробела ');expect(await session(page)).toEqual(before);
  await page.locator('#mini-dialog .mini-top [data-close]').click();await open(page);await page.locator('[data-gn=settings]').click();await expect(page.locator('[data-setting=music]')).not.toBeChecked();await expect(page.locator('[data-setting=effects]')).not.toBeChecked();await expect(page.locator('[data-setting=fast]')).toBeChecked();await expect(page.locator('[data-setting=reduced]')).toBeChecked();
 });
 test('a real-server spin has a validated response and the account guard rejects a forged owner',async({page,roomPath})=>{
- await enter(page,roomPath);await topup(page);await open(page);await fast(page);await spin(page);const saved=await session(page);expect(saved.gameId).toBe(game);expect(saved.spentUnits).toBe('100');
- const result=await page.request.post('/api/demo-wallet/expansion',{headers:{'X-Royal-Account-Id':crypto.randomUUID(),'X-Royal-Wild-Nudge':'1'},data:{id:crypto.randomUUID(),gameId:game,action:'start',stakeUnits:'100',settings:{wildNudge:{mode:'normal'}}}});expect(result.status()).toBe(401);
+ await enter(page,roomPath);await topup(page);await open(page);await fast(page);await spin(page);const saved=await session(page);expect(saved.gameId).toBe(game);expect(saved.spentUnits).toBe('10');
+ const result=await page.request.post('/api/demo-wallet/expansion',{headers:{'X-Royal-Account-Id':crypto.randomUUID(),'X-Royal-Wild-Nudge':'1'},data:{id:crypto.randomUUID(),gameId:game,action:'start',stakeUnits:'10',stakePolicyVersion:1,settings:{wildNudge:{mode:'normal'}}}});expect(result.status()).toBe(401);
 });
 
 test('animated nudge follows the accepted steps, supports skip and cancels owned motion',async({page,roomPath})=>{

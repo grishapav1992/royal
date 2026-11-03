@@ -29,13 +29,16 @@ assert(!fs.existsSync(out),'Payload already exists');fs.mkdirSync(out,{recursive
 function write(file,bytes){assert(!path.isAbsolute(file)&&!file.split('/').some(p=>!p||p==='.'||p==='..'||p.startsWith('.env')));const target=path.join(out,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,bytes,{flag:'wx'});return payload[file]=digest(bytes);}
 const committed=file=>execFileSync('git',['show',release.sourceCommit+':'+file],{cwd:root,maxBuffer:64*1024**2});
 const changed={},delta={},serverDelta={};
+const posters=Object.entries(release.files).filter(([file,hash])=>/^dist\/assets\/catalog-cover-[\w-]+\.webp$/.test(file)&&hash===scope.hostPosterSha256);
+assert.equal(posters.length,1,'The approved Star Spin poster must be an immutable host asset');
+const poster=posters[0][0].slice(5);assert(!before.program['dist/'+poster],'Poster URL must be new');
 for(const [file,hash]of Object.entries(scope.expectedSources)){
   const bytes=file.startsWith('public/')?committed(file):host.read(file);assert.equal(digest(bytes),hash);
   changed[file]=write('source/'+file,bytes);
 }
 for(const [file,hash]of Object.entries(release.files)){
   if(!file.startsWith('dist/')||before.program[file]===hash)continue;
-  const n=file.slice(5);assert(n==='index.html'||/^assets\/[\w-]+\.(js|css)$/.test(n),'Foreign host artifact');
+  const n=file.slice(5);assert(n==='index.html'||n===poster||/^assets\/[\w-]+\.(js|css)$/.test(n),'Foreign host artifact');
   assert(n==='index.html'||!before.program[file],'Immutable URL collision');
   const bytes=fs.readFileSync(file);assert.equal(digest(bytes),hash);delta[n]=write('dist-delta/'+n,bytes);
 }
@@ -73,6 +76,6 @@ const releaseFolder=path.relative(root,folder).replaceAll('\\','/');
 const helperSha256=write('deploy.py',committed(releaseFolder+'/deploy.py')),snapshotSha256=write('snapshot.py',committed(releaseFolder+'/snapshot.py'));
 write('scope.json',committed(releaseFolder+'/scope.json'));
 const manifest={release:name,sourceCommit:release.sourceCommit,baseCommit:before.sourceCommit,before,changed,delta,serverDelta,support,helperSha256,snapshotSha256,payload,package:packageInfo,hostContractSha256,
-  releaseManifestSha256:payload['release-manifest.json'],receiptSha256:payload['release-github.json'],addedGames:['studio-wild-nudge'],restoredGames:[],activeGames:scope.activeGames};
+  releaseManifestSha256:payload['release-manifest.json'],receiptSha256:payload['release-github.json'],addedGames:['studio-wild-nudge'],restoredGames:[],activeGames:scope.activeGames,poster:{file:poster,sha256:scope.hostPosterSha256}};
 write('install-manifest.json',Buffer.from(JSON.stringify(manifest,null,2)+'\n'));
 console.log(JSON.stringify({sourceCommit:release.sourceCommit,sourceFiles:Object.keys(changed).length,clientFiles:Object.keys(delta).length,package:meta.version,out}));

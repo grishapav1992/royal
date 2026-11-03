@@ -1,5 +1,6 @@
 import test from'node:test';import assert from'node:assert/strict';import{readFileSync,writeFileSync}from'node:fs';import{randomUUID,createHash}from'node:crypto';import{resolve}from'node:path';import{pathToFileURL}from'node:url';
 import{pvpFixture}from'../../../server-tests/finance/helpers/nile-pvp-fixture';import{block}from'../../../server-tests/finance/helpers/nile-play-fixture';import{seededRandom}from'../../../src/shared/draconaMath';import{ExpansionClient}from'../../../src/wallet/ExpansionClient';import{verifyGameRound}from'../../../server/games/core';
+import '../../../server/demoWallet';
 // @ts-ignore Checked paid-round case matrix.
 import{settingsFor}from'../../../scripts/game-math/stake-runtime.mjs';
 const root=process.cwd(),folder='deployment/releases/star-spin-20261103-v1';
@@ -29,7 +30,7 @@ async function accepted(runtime:any,ledger:any,account:string,command:any){
  });
  return runtime.run(account,command);
 }
-test('actual production rounds resume and replay unchanged through the projected USDT release, then accept a ten-cent total round',{timeout:360000},async()=>{
+test('actual production rounds resume and replay unchanged through the projected common-money graph, then accept a ten-cent total round',{timeout:360000},async()=>{
  const realNow=Date.now;let clock=realNow(),index=0,continuations=0,legacyBonuses=0;const digest=createHash('sha256'),rows:any[]=[],client=new ExpansionClient(2),verify=(s:any)=>Reflect.get(client,'checkedSession').call(client,s);
  const cases=Object.entries(policies).filter(([game])=>game!=='tsu-e-fa'&&game!=='studio-wild-nudge').map(([game,p]:any)=>({game,choice:p.choices[0]}));cases.push({game:'studio-caramel-carnival',choice:'festival'},{game:'studio-velvet-reign',choice:'super-encore'},{game:'studio-cosmic-escape',choice:'cosmic-chaos'},{game:'studio-caribbean-treasures',choice:'lines-20-buy-raid'},{game:'studio-flooded-temple',choice:'legacy-map'});
  Date.now=()=>clock;

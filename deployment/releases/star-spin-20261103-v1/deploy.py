@@ -1,4 +1,4 @@
-"""Install the authorized hand duel through the existing guarded host and module publishers."""
+"""Install Star Spin through the existing guarded host and module publishers."""
 import sys
 sys.dont_write_bytecode=True
 import copy,fcntl,hashlib,importlib.util,json,re,signal,types
@@ -23,6 +23,13 @@ def validate_graph(graph,m,scope,backend=False):
         selected=selected or scope['expectedSources'].get(name)
         allowed=[selected] if selected else [m['before']['source'].get(name),m['before']['sourceLF'].get(name)]
         require(digest in [v for v in allowed if v],'Unreviewed source input: '+name)
+
+def validate_client_delta(m,scope):
+    require('index.html' in m['delta'],'Missing client index')
+    require(re.fullmatch(r'assets/catalog-cover-[\w-]+\.webp',m['poster']['file']) and m['poster']['sha256']==scope['hostPosterSha256'] and m['delta'].get(m['poster']['file'])==scope['hostPosterSha256'],'Unreviewed catalogue poster')
+    for name,digest in m['delta'].items():
+        require(name=='index.html' or name==m['poster']['file'] or re.fullmatch(r'assets/[a-zA-Z0-9_-]+\.(?:js|css)',name),'Foreign client artifact')
+        require(name=='index.html' or 'dist/'+name not in m['before']['program'],'Immutable client URL collision')
 def payload(b):
     m=b.M;scope=read(ROOT/'scope.json')
     require(ROOT==Path('/opt/royal-releases')/NAME and m['release']==NAME,'Unexpected release path')
@@ -32,10 +39,7 @@ def payload(b):
     for name,digest in m['payload'].items():
         b.safe_name(name);require(not (ROOT/name).is_symlink() and sha(ROOT/name)==digest,'Payload changed: '+name)
     require(b.inventory(ROOT/'source')==m['changed'] and b.inventory(ROOT/'dist-delta')==m['delta'] and b.inventory(ROOT/'server-delta')==m['serverDelta'],'Payload inventories differ')
-    require('index.html' in m['delta'],'Missing client index')
-    for name,digest in m['delta'].items():
-        require(name=='index.html' or re.fullmatch(r'assets/[a-zA-Z0-9_-]+\.(?:js|css)',name),'Foreign client artifact')
-        require(name=='index.html' or 'dist/'+name not in m['before']['program'],'Immutable client URL collision')
+    validate_client_delta(m,scope)
     release=read(ROOT/'release-manifest.json');receipt=read(ROOT/'release-github.json')
     require(release['sourceCommit']==receipt['sourceCommit']==m['sourceCommit'] and release['baseCommit']==m['baseCommit']==m['before']['sourceCommit'],'Unverified source')
     require(release['scope']=='application' and release['clean'] and release['build']['passed'],'Committed verified release required')
@@ -46,8 +50,8 @@ def payload(b):
     require(release['backendProjection']['output']['sha256']==m['serverDelta']['index.js']==release['files']['dist-server/index.js'],'Unverified backend bytes')
     module=release['build']['moduleProjection'];require(set(module['modules'])=={'studio-wild-nudge'},'Unrequested module publication')
     validate_graph(module,m,scope)
-    p=m['package'];require(p['contract']=={'apiVersion':1,'rulesVersion':2,'progressVersion':1},'Wrong duel contract')
-    require('studio-wild-nudge' not in m['before']['moduleHost']['games'],'Unexpected existing duel interface')
+    p=m['package'];require(p['contract']=={'apiVersion':1,'rulesVersion':2,'progressVersion':1},'Wrong Star Spin contract')
+    require('studio-wild-nudge' not in m['before']['moduleHost']['games'],'Unexpected existing Star Spin interface')
     host=copy.deepcopy(m['before']['moduleHost']);host['games']['studio-wild-nudge']=p['contract']
     require(read(ROOT/'host.json')==host and sha(ROOT/'host.json')==m['hostContractSha256'],'Other host contracts changed')
     require(b.inventory(ROOT/'package')==p['files'] and sha(ROOT/'active.json')==p['pointerSha256'],'Package differs')
@@ -74,7 +78,7 @@ def configure():
         if not b.star_staged and not b.star_rolling_back:
             require(gate is not None,'Financial gate required for module activation')
             gate.check();require(sha(b.HOST)==m['before']['moduleHostContract'],'Later host prevents activation')
-            require(not (Path('/opt/royal-game-modules/studio-wild-nudge')/'active.json').exists(),'Duel already published')
+            require(not (Path('/opt/royal-game-modules/studio-wild-nudge')/'active.json').exists(),'Star Spin already published')
             b.atomic(b.HOST,b.BACKUP/'host.json');b.atomic(ROOT/'host.json',b.HOST)
             publisher=load('star_publisher',ROOT/'publisher.py')
             result=publisher.run(types.SimpleNamespace(operation='install',package=str(ROOT/'package'),game='studio-wild-nudge',root='/opt/royal-game-modules',state=str(b.STATE),expected_sha='none'))
