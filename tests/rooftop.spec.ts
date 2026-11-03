@@ -14,8 +14,9 @@ async function clickWorld(page: Page, x: number, y: number) {
   await page.mouse.click(box.x + (x - view.x) * view.zoom * box.width / view.width, box.y + (y - view.y) * view.zoom * box.height / view.height);
 }
 async function walk(page: Page, x: number, y: number) {
+  const tolerance = Math.max(5, 2 / (await state(page)).view.zoom);
   await clickWorld(page, x, y);
-  await expect.poll(async () => { const p = await state(page); return Math.hypot(p.x - x, p.y - y); }, { timeout: 25000 }).toBeLessThan(6);
+  await expect.poll(async () => { const p = await state(page); return Math.hypot(p.x - x, p.y - y); }, { timeout: 25000 }).toBeLessThan(tolerance);
   await expect.poll(async () => { const p = await state(page); return Math.hypot(p.serverX - p.x, p.serverY - p.y); }).toBeLessThan(3);
 }
 
