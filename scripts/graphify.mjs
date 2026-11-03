@@ -1,13 +1,14 @@
 import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
-import { lstat, readFile, mkdir, open, rename, rm, realpath } from 'node:fs/promises';
+import { lstat, readFile, writeFile, mkdir, open, rename, rm, realpath } from 'node:fs/promises';
 import { dirname, resolve, relative, extname, basename, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { git } from './sync-work.mjs';
+import { BRAIN_SCHEMA, knowledgeSeed, mathPolicy, collectBrain, formatBrainQuery, brainReport } from './project-brain.mjs';
 
 export const GRAPHIFY_VERSION = '0.9.101';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const extensions = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.py', '.go', '.sh', '.md']);
+const extensions = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.py', '.go', '.sh', '.md', '.yaml', '.yml']);
 const excluded = /(^|\/)(?:node_modules|artifacts|data|dist(?:-[^/]*)?|module-dist|module-build|\.git|\.venv|\.state|secrets?|credentials?|__pycache__)(\/|$)/i;
 const digest = value => createHash('sha256').update(value).digest('hex');
 const clean = value => value.replaceAll('\u2014', '-');
@@ -17,6 +18,7 @@ export function inputKind(path) {
     || path.startsWith('deployment/releases/') || path.startsWith('public/assets/')
     || path.startsWith('ai-factory/project-knowledge/references/')) return null;
   if (extensions.has(extname(path))) return 'source';
+  if ([knowledgeSeed, mathPolicy].includes(path) || /^docs\/game-math\/qualifications\/[^/]+\.json$/.test(path)) return 'config';
   if (basename(path) === 'package.json' || /^tsconfig[^/]*\.json$/.test(basename(path))) return 'config';
   return null;
 }
@@ -70,17 +72,21 @@ export async function status(directory, current = null) {
   let manifest;
   try { manifest = JSON.parse(await readFile(resolve(output, 'royal-manifest.json'), 'utf8')); }
   catch (error) { if (error.code === 'ENOENT' || error instanceof SyntaxError) return { state: 'missing', files: input.sources.length }; throw error; }
-  if (manifest?.schemaVersion !== 1 || manifest.graphifyVersion !== GRAPHIFY_VERSION
-    || !['commit', 'sourceHash', 'graphHash'].every(key => typeof manifest[key] === 'string')) {
+  if (manifest?.schemaVersion !== 1 || manifest.graphifyVersion !== GRAPHIFY_VERSION || manifest.brainSchema !== BRAIN_SCHEMA
+    || !['commit', 'sourceHash', 'graphHash', 'brainHash'].every(key => typeof manifest[key] === 'string')) {
     return { state: 'stale', files: input.sources.length };
   }
   let graphHash;
   try { graphHash = digest(await readFile(resolve(output, 'graph.json'))); }
   catch (error) { if (error.code !== 'ENOENT') throw error; }
+  let brainHash;
+  try { brainHash = digest(await readFile(resolve(output, 'project-brain.json'))); }
+  catch (error) { if (error.code !== 'ENOENT') throw error; }
   const commit = await git(directory, ['rev-parse', 'HEAD']);
-  const fresh = manifest.sourceHash === input.sourceHash && manifest.commit === commit && manifest.graphHash === graphHash;
+  const fresh = manifest.sourceHash === input.sourceHash && manifest.commit === commit && manifest.graphHash === graphHash && manifest.brainHash === brainHash;
   return { state: fresh ? 'current' : 'stale', files: input.sources.length,
-    commit: manifest.commit, builtAt: manifest.builtAt, nodes: manifest.nodes, edges: manifest.edges };
+    commit: manifest.commit, builtAt: manifest.builtAt, nodes: manifest.nodes, edges: manifest.edges,
+    brain: manifest.brain, knowledgeNeedingReview: manifest.knowledgeNeedingReview };
 }
 
 async function build(directory) {
@@ -90,13 +96,17 @@ async function build(directory) {
   let lock;
   try { lock = await open(lockPath, 'wx'); }
   catch (error) { if (error.code === 'EEXIST') throw Error('Graph build is locked. Check the PID in graphify-out/build.lock before removing an abandoned lock.'); throw error; }
-  const pending = ['graph.next.json', 'GRAPH_REPORT.next.md', 'royal-manifest.next.json'];
+  const pending = ['graph.next.json', 'GRAPH_REPORT.next.md', 'royal-manifest.next.json', 'project-brain.next.json', 'PROJECT_BRAIN.next.md'];
   try {
     await lock.writeFile(String(process.pid));
     const input = await inventory(directory);
     const commit = await git(directory, ['rev-parse', 'HEAD']);
     const started = Date.now();
-    const code = await runUv(directory, ['python', resolve(directory, 'scripts/graphify-build.py')], { ...input, commit });
+    const brain = await collectBrain(directory, input, { commit, tree: await git(directory, ['rev-parse', 'HEAD^{tree}']),
+      workingTreeModified: Boolean(await git(directory, ['status', '--porcelain', '--untracked-files=no'])) });
+    const brainBody = clean(JSON.stringify(brain.index, null, 2)) + '\n';
+    const code = await runUv(directory, ['python', resolve(directory, 'scripts/graphify-build.py')],
+      { ...input, commit, brain: { nodes: brain.nodes, edges: brain.edges, fileLinks: brain.fileLinks } });
     if (code) throw Error('Graphify build failed. The previous graph was preserved.');
     const after = await inventory(directory);
     if (after.sourceHash !== input.sourceHash || await git(directory, ['rev-parse', 'HEAD']) !== commit) {
@@ -106,14 +116,19 @@ async function build(directory) {
     const data = JSON.parse(graph);
     const manifest = { schemaVersion: 1, graphifyVersion: GRAPHIFY_VERSION, commit, sourceHash: input.sourceHash,
       graphHash: digest(graph), builtAt: new Date().toISOString(), durationMs: Date.now() - started,
-      files: input.sources.length, nodes: data.nodes.length, edges: (data.links ?? data.edges).length, inputs: input.inputs };
+      files: input.sources.length, nodes: data.nodes.length, edges: (data.links ?? data.edges).length, inputs: input.inputs,
+      brainSchema: BRAIN_SCHEMA, brainHash: digest(brainBody), brain: brain.index.counts, knowledgeNeedingReview: brain.index.knowledgeNeedingReview };
+    await writeFile(resolve(output, 'project-brain.next.json'), brainBody);
+    await writeFile(resolve(output, 'PROJECT_BRAIN.next.md'), brainReport(brain.index));
     const next = await open(resolve(output, 'royal-manifest.next.json'), 'w');
     try { await next.writeFile(JSON.stringify(manifest, null, 2) + '\n'); } finally { await next.close(); }
     await rename(resolve(output, 'graph.next.json'), resolve(output, 'graph.json'));
     await rename(resolve(output, 'GRAPH_REPORT.next.md'), resolve(output, 'GRAPH_REPORT.md'));
+    await rename(resolve(output, 'project-brain.next.json'), resolve(output, 'project-brain.json'));
+    await rename(resolve(output, 'PROJECT_BRAIN.next.md'), resolve(output, 'PROJECT_BRAIN.md'));
     await rename(resolve(output, 'royal-manifest.next.json'), resolve(output, 'royal-manifest.json'));
     console.log(JSON.stringify({ state: 'current', files: manifest.files, nodes: manifest.nodes,
-      edges: manifest.edges, durationMs: manifest.durationMs, commit }));
+      edges: manifest.edges, durationMs: manifest.durationMs, commit, brain: manifest.brain, knowledgeNeedingReview: manifest.knowledgeNeedingReview }));
   } finally {
     await lock.close();
     await rm(lockPath, { force: true });
@@ -129,9 +144,18 @@ async function main() {
     if (result.state !== 'current') process.exitCode = 1;
     return;
   }
+  if (command === 'brain') {
+    if (!args.length) throw Error('Supply a project topic or game ID. See docs/project-brain.md.');
+    if ((await status(root)).state !== 'current') await build(root);
+    const index = JSON.parse(await readFile(resolve(root, 'graphify-out/project-brain.json'), 'utf8'));
+    const result = formatBrainQuery(index, args.join(' '));
+    console.log(result.text);
+    if (!result.found) process.exitCode = 4;
+    return;
+  }
   if (!['query', 'explain', 'path', 'affected', 'god-nodes'].includes(command)
     || args.some(arg => arg === '--graph' || arg.startsWith('--graph='))) {
-    throw Error('Use build, status, query, explain, path, affected or god-nodes. See docs/graphify.md.');
+    throw Error('Use build, status, brain, query, explain, path, affected or god-nodes. See docs/graphify.md.');
   }
   if (!args.length && command !== 'god-nodes') throw Error('Supply a question, symbol or path. See docs/graphify.md.');
   if ((await status(root)).state !== 'current') await build(root);

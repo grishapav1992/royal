@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { git } from '../scripts/sync-work.mjs';
 import { inventory, inputKind, localEnvironment, status, GRAPHIFY_VERSION } from '../scripts/graphify.mjs';
+import { BRAIN_SCHEMA, knowledgeSeed, mathPolicy } from '../scripts/project-brain.mjs';
 
 const output = fileURLToPath(new URL('../graphify-out/', import.meta.url));
 async function fixture(callback) {
@@ -39,6 +40,10 @@ test('only tracked inputs enter the map; changes, staged additions, renames and 
 test('secrets, state, archives and symlinks are excluded; resolver settings affect freshness', async () => fixture(async directory => {
   for (const path of ['.env', '.env.local', 'data/user.py', 'secrets/private.ts', 'ai-factory/knowledge-graph/.state/snapshot.md',
     'deployment/releases/old/install.py', 'public/assets/vendor.js', 'artifacts/work/other/main.ts']) assert.equal(inputKind(path), null, path);
+  assert.equal(inputKind(knowledgeSeed), 'config');
+  assert.equal(inputKind(mathPolicy), 'config');
+  assert.equal(inputKind('docs/game-math/qualifications/game.json'), 'config');
+  assert.equal(inputKind('compose.yaml'), 'source');
   const before = await inventory(directory);
   await writeFile(resolve(directory, 'tsconfig.json'), '{"compilerOptions":{}}');
   await git(directory, ['add', 'tsconfig.json']);
@@ -56,7 +61,10 @@ test('status detects source edits, a changed commit and corrupted graph bytes wi
   await mkdir(resolve(directory, 'graphify-out'));
   const graph = '{"nodes":[],"links":[]}\n';
   await writeFile(resolve(directory, 'graphify-out/graph.json'), graph);
-  const manifest = { schemaVersion: 1, commit, sourceHash: input.sourceHash, graphHash: createHash('sha256').update(graph).digest('hex'), graphifyVersion: GRAPHIFY_VERSION };
+  const brain = '{}\n';
+  await writeFile(resolve(directory, 'graphify-out/project-brain.json'), brain);
+  const manifest = { schemaVersion: 1, brainSchema: BRAIN_SCHEMA, commit, sourceHash: input.sourceHash,
+    graphHash: createHash('sha256').update(graph).digest('hex'), brainHash: createHash('sha256').update(brain).digest('hex'), graphifyVersion: GRAPHIFY_VERSION };
   await writeFile(resolve(directory, 'graphify-out/royal-manifest.json'), JSON.stringify(manifest));
   assert.equal((await status(directory)).state, 'current');
   await writeFile(resolve(directory, 'src/main.ts'), 'export const ready = false;');
@@ -71,6 +79,10 @@ test('status detects source edits, a changed commit and corrupted graph bytes wi
   assert.equal((await status(directory)).state, 'stale');
   assert.equal(await readFile(resolve(directory, 'graphify-out/graph.json'), 'utf8'), graph + ' ');
   await writeFile(resolve(directory, 'graphify-out/royal-manifest.json'), 'null');
+  assert.equal((await status(directory)).state, 'stale');
+  await writeFile(resolve(directory, 'graphify-out/royal-manifest.json'), JSON.stringify(manifest));
+  await writeFile(resolve(directory, 'graphify-out/graph.json'), graph);
+  await writeFile(resolve(directory, 'graphify-out/project-brain.json'), brain + ' ');
   assert.equal((await status(directory)).state, 'stale');
 }));
 

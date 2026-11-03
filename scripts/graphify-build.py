@@ -2,6 +2,7 @@
 import json
 import os
 import sys
+from hashlib import sha256
 from collections import Counter
 from pathlib import Path
 
@@ -24,6 +25,23 @@ def main():
         raise RuntimeError("Graphify could not extract these files: " + ", ".join(failed[:20]))
     source_nodes = Counter(node.get("source_file") for node in extraction["nodes"])
     file_only = sum(Path(name).suffix != ".md" and source_nodes[name] == 1 for name in request["sources"])
+    file_ids = {}
+    for node in extraction["nodes"]:
+        source = node.get("source_file", "")
+        if node.get("source_location") == "L1" and node.get("label") in (source, Path(source).name):
+            file_ids.setdefault(source, node["id"])
+    brain = request["brain"]
+    extraction["nodes"].extend(brain["nodes"])
+    extraction["edges"].extend(brain["edges"])
+    for link in brain["fileLinks"]:
+        source = link["path"]
+        if source not in file_ids:
+            file_ids[source] = "royal_source_" + sha256(source.encode()).hexdigest()[:24]
+            extraction["nodes"].append({"id": file_ids[source], "label": source, "file_type": "document",
+                                        "source_file": source, "source_location": "L1", "_origin": "ast"})
+        extraction["edges"].append({"source": link["source"], "target": file_ids[source],
+                                    "relation": link["relation"], "confidence": "EXTRACTED",
+                                    "source_file": link["evidence"], "source_location": "L1", "_origin": "ast"})
     graph = build_from_json(extraction, directed=True, root=root, dedup=False)
     communities = cluster(graph)
     labels = label_communities_by_hub(graph, communities)
@@ -40,6 +58,7 @@ def main():
              "Markdown contributes headings, links and resolvable code references.",
              f"Code files with only a file node (no extracted symbols): {file_only}. Their bodies need direct inspection.",
              "This map describes source relationships, not the production game catalogue or verified owner decisions.", "",
+             "See PROJECT_BRAIN.md for package, command, policy and recorded-knowledge relationships.", "",
              "## Relationship evidence", ""]
     lines += [f"- {kind}: {count}." for kind, count in sorted(confidence.items())]
     lines += ["", "INFERRED and AMBIGUOUS relationships need source verification. A missing path does not prove no dependency.",
