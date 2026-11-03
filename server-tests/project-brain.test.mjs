@@ -39,7 +39,8 @@ async function fixture(callback) {
       nonWagered: { cosmetics: 'Declared free cosmetics' } });
     const current = [{ path: 'docs/current.md', sha256: sha('# Recorded source\n') }];
     const changed = [{ path: 'docs/changed.md', sha256: '0'.repeat(64) }];
-    await put(knowledgeSeed, { schema_version: 1, version: '2026-10-10.1', nodes: [
+    await put(knowledgeSeed, { schema_version: 1, version: '2026-11-03.1', legacy_record_version: '2026-10-10.1',
+      record_reviews: { 'service:old_wallet': { version: '2026-11-03.1', checked_at: '2026-11-03', source_commit: provenance.commit } }, nodes: [
       { id: 'mechanic:wallet', name: 'Кошелёк', summary: 'Записанное утверждение', entity_type: 'mechanic', status: 'verified', environment: 'production', evidence: current },
       { id: 'service:old_wallet', name: 'Старый кошелёк', summary: 'Историческое утверждение', entity_type: 'service', status: 'verified', environment: 'sandbox', evidence: changed },
     ], edges: [{ id: 'relation:wallet', source: 'mechanic:wallet', target: 'service:old_wallet', predicate: 'uses',
@@ -86,6 +87,11 @@ test('historical knowledge retains its status and hashes while changed evidence 
   const current = index.records.find(item => item.key === 'knowledge:mechanic:wallet');
   assert.equal(current.evidenceState, 'matches_recorded_hash');
   assert.equal(current.liveProductionState, 'not_checked');
+  assert.equal(current.seedVersion, '2026-10-10.1');
+  assert.equal(current.reviewedAt, undefined);
+  assert.equal(old.seedVersion, '2026-11-03.1');
+  assert.equal(old.reviewedSourceCommit, provenance.commit);
+  assert.equal(index.reviewedKnowledge, 1);
   const relation = index.records.find(item => item.key === 'knowledge:relation:wallet');
   assert.equal(relation.evidenceState, 'needs_review');
   assert.ok(edges.some(edge => edge.source === relation.id && edge.relation === 'recorded_object' && edge.target === old.id));
@@ -94,7 +100,8 @@ test('historical knowledge retains its status and hashes while changed evidence 
   assert.equal(result.found, true);
   assert.match(result.text, /требует пересмотра/);
   assert.match(result.text, /docs\/changed\.md \[changed\]/);
-  assert.match(result.text, /2026-10-10\.1/);
+  assert.match(result.text, /Пересмотр по исходникам: 2026-11-03/);
+  assert.ok(result.text.includes(provenance.commit));
   const report = brainReport(index);
   assert.ok(report.includes(provenance.commit));
   assert.match(report, /docs\/changed\.md/);
