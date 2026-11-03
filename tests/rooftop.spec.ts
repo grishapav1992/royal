@@ -95,14 +95,16 @@ async function verifyRearWindows(page:Page,project:string){
   const hiddenTime=(await state(page)).street.rearWindows.time;await page.waitForTimeout(250);
   expect((await state(page)).street.rearWindows.time).toBe(hiddenTime);
   await overview(page,false);
-  await page.emulateMedia({reducedMotion:'reduce'});
+  await expect.poll(async()=>(await state(page)).street.rearWindows.motion).toBe(true);
+}
+
+async function verifyFrozenRearWindows(page:Page){
+  // The host reads the motion preference when the scene is created after reload.
   await expect.poll(async()=>(await state(page)).reducedMotion).toBe(true);
   await expect.poll(async()=>(await state(page)).street.rearWindows.motion).toBe(false);
   const frozen=(await state(page)).street.rearWindows;await page.waitForTimeout(250);
   const still=(await state(page)).street.rearWindows;
   expect(still.time).toBe(frozen.time);expect(still.people.map((p:any)=>[p.x,p.y,p.frame])).toEqual(frozen.people.map((p:any)=>[p.x,p.y,p.frame]));
-  await page.emulateMedia({reducedMotion:'no-preference'});
-  await expect.poll(async()=>(await state(page)).street.rearWindows.motion).toBe(true);
 }
 
 async function keyUntil(page:Page,key:string,condition:()=>Promise<boolean>,timeout=15000){
@@ -268,6 +270,7 @@ test('manually climb each switchback without falling, reach the roof edge and re
   expect((await state(page)).hall).toBe('street');
   expect((await state(page)).street.view.side).toBe('rear');
   await noGroundConversation(page);
+  await verifyFrozenRearWindows(page);
   await page.screenshot({path:`../roof-${info.project.name}-return-top.png`});
   await page.reload();
   await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
