@@ -2101,6 +2101,22 @@
       "baseSha256": "87d1d4184b69a229a8ad7c9b7b0f3d12220305e28983525ce7aebbb0a77af473",
       "sha256": "87d1d4184b69a229a8ad7c9b7b0f3d12220305e28983525ce7aebbb0a77af473"
     },
+    "src/ui/GameViewport.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/GameViewport.ts",
+      "baseSha256": "f8c04794966da9c2299ae8119b33068b46d6ec793caeb7d8c2170230a4d0501c",
+      "sha256": "c33be122ffde7bc9126bcf5e699a8cdabdc923937e2114633dadc54931495749",
+      "patches": [
+        {
+          "from": " && (nativeSlot.classList.contai",
+          "to": " && (nativeSlot.hasAttribute('data-slot-priority') || nativeSlot.classList.contai"
+        },
+        {
+          "from": ".temple-frame, .ct-root, .rr-root'",
+          "to": ".temple-frame, .ct-root, .rr-root, .gn'"
+        }
+      ]
+    },
     "src/ui/RoyalCatalogArtwork.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/ui/RoyalCatalogArtwork.ts",

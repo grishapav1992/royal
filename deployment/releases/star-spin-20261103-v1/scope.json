@@ -1,7 +1,7 @@
 {
   "release": "star-spin-20261103-v1",
   "productionCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
-  "featureCommit": "2fe9505f3f96fdaa7446c0cc70623814546b05d4",
+  "featureCommit": "5e9d60abc5323abab6facb7f4291158c00b16822",
   "expectedSources": {
     "games/wild-nudge/GalacticAudio.ts": "da9dd8e60ad6fe9d164241ce3fa700607064df22424fa93a0c7daa98dd4799e0",
     "games/wild-nudge/GalacticReactorUI.ts": "dedca2cfb1866c526f8dca2416e6b9f671f5353ed08c558d1de5b0abb0cd577a",
@@ -94,6 +94,7 @@
     "src/shared/starSpinCollection.ts": "b58b4347a5b447080b07ec30282a369bb36315071533c0fcdc95c58b8f3e48d1",
     "src/shared/wildNudgeStakes.ts": "b038121718a674dd88578b9ace2c219e6f226a05372919a87e87b2dcc5afb54f",
     "src/ui/DemoWalletUI.ts": "87d1d4184b69a229a8ad7c9b7b0f3d12220305e28983525ce7aebbb0a77af473",
+    "src/ui/GameViewport.ts": "c33be122ffde7bc9126bcf5e699a8cdabdc923937e2114633dadc54931495749",
     "src/ui/RoyalCatalogArtwork.ts": "36a2f80b67fd3fe078c93a214f195d86169fd8be4cc0f1c3986b3f98c7fc1417",
     "src/ui/RoyalGameArtwork.ts": "4eacd4bad5fbd8b3f02b8e5991df69fd31baf3e961fd31b153045492975d0aca",
     "src/wallet/ExpansionClient.ts": "bfc97155743dbc78fe9d0e5beb0cb9eb9f3fe7828ec45da13d43d58c86933a36"

@@ -2,7 +2,8 @@
 import {spawn} from 'node:child_process';
 import {randomUUID,randomInt} from 'node:crypto';
 import {mkdir,writeFile} from 'node:fs/promises';
-import {createServer,type Plugin} from 'vite';
+import {createServer,preview,type Plugin,type ViteDevServer,type PreviewServer} from 'vite';
+import express from 'express';
 import {temporaryDatabase} from './database-test';
 import {PostgresDatabase,databaseConfig} from '../server/database';
 import {DemoWalletStore,WalletError} from '../server/demoWallet';
@@ -15,7 +16,9 @@ let logs='',stopping=false,db:PostgresDatabase|undefined,wallet:DemoWalletStore;
 const forced=new Map<string,number[]>();
 backend.stdout.on('data',v=>logs=(logs+v).slice(-6000));backend.stderr.on('data',v=>logs=(logs+v).slice(-6000));
 const scenarios:Record<string,number[]>={fraction:[0,0,30,30,30],loss:[30,30,30,30,30],nudge:[1,2,62,63,30],bonus:[2,45,2,16,14,...Array(40).fill(30)],maximum:[2,45,2,16,14,...Array(40).fill(2)],win:[2,2,2,2,2]};
-const plugin:Plugin={name:'wild-nudge-local-fixture',configureServer(server){server.middlewares.use(async(req,res,next)=>{
+const configure=(server:ViteDevServer|PreviewServer)=>{
+ if(compiled){const retained=express.static(process.cwd()+'/public');server.middlewares.use((req,res,next)=>req.url?.startsWith('/assets/wild-nudge/')?next():retained(req,res,next));}
+ server.middlewares.use(async(req,res,next)=>{
  const path=new URL(req.url||'/',api).pathname;
  if(path==='/__test/nudge/stop'&&req.method==='POST'){res.end('stopping');void stop().then(()=>process.exit(0));return;}
  const fixture=path.startsWith('/__test/nudge/');
@@ -37,10 +40,12 @@ const plugin:Plugin={name:'wild-nudge-local-fixture',configureServer(server){ser
   }else throw new WalletError(404,'Unknown fixture');
   res.setHeader('Content-Type','application/json');res.end(JSON.stringify(reply));
  }catch(error){res.statusCode=error instanceof WalletError?error.status:400;res.setHeader('Content-Type','application/json');res.end(JSON.stringify({error:error instanceof Error?error.message:String(error)}));}
-});}};
-const vite=await createServer({configFile:false,root:compiled?process.cwd()+'/dist':process.cwd(),plugins:[plugin],optimizeDeps:{entries:compiled?[]:['index.html'],noDiscovery:compiled},server:{host:'127.0.0.1',port:webPort,strictPort:true,watch:{ignored:['**/module-dist/**','**/module-build/**','**/artifacts/**','**/dist/**','**/dist-server/**']},proxy:{'/api':api,'/game-modules':api,'/multiplayer':{target:api,ws:true,rewrite:path=>path.replace(/^\/multiplayer/,'')}}}});
+});};
+const plugin:Plugin={name:'wild-nudge-local-fixture',configureServer:configure,configurePreviewServer:configure};
+const proxy={'/api':api,'/game-modules':api,...(compiled?{'/matchmake':api,'^/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+(?:\\?|$)':{target:api,ws:true}}:{'/multiplayer':{target:api,ws:true,rewrite:(path:string)=>path.replace(/^\/multiplayer/,'')}})};
+const vite=compiled?await preview({configFile:false,root:process.cwd(),plugins:[plugin],build:{outDir:'dist'},preview:{host:'127.0.0.1',port:webPort,strictPort:true,proxy}}):await createServer({configFile:false,root:process.cwd(),plugins:[plugin],optimizeDeps:{entries:['index.html']},server:{host:'127.0.0.1',port:webPort,strictPort:true,watch:{ignored:['**/module-dist/**','**/module-build/**','**/artifacts/**','**/dist/**','**/dist-server/**']},proxy}});
 async function stop(){if(stopping)return;stopping=true;await vite.close();await db?.close();backend.kill();if(backend.exitCode===null)await new Promise<void>(resolve=>{const timer=setTimeout(resolve,3000);backend.once('exit',()=>{clearTimeout(timer);resolve();});});await database.cleanup();}
 process.once('SIGINT',()=>{void stop().then(()=>process.exit(0));});process.once('SIGTERM',()=>{void stop().then(()=>process.exit(0));});
-try{let ready=false;for(let i=0;i<200;i++){if(backend.exitCode!==null)throw Error(logs);ready=await fetch(api+'/healthz').then(r=>r.ok).catch(()=>false);if(ready)break;await new Promise(r=>setTimeout(r,200));}if(!ready)throw Error(logs);await vite.listen();
+try{let ready=false;for(let i=0;i<200;i++){if(backend.exitCode!==null)throw Error(logs);ready=await fetch(api+'/healthz').then(r=>r.ok).catch(()=>false);if(ready)break;await new Promise(r=>setTimeout(r,200));}if(!ready)throw Error(logs);if(!compiled)await (vite as ViteDevServer).listen();
  const output=process.env.NUDGE_ARTIFACT_DIR||'artifacts/work/wild-nudge-v1-20261030';await mkdir(output,{recursive:true});await writeFile(output+'/runtime.json',JSON.stringify({owner:process.env.NUDGE_TASK_ID||'wild-nudge-v1-20261030',webPort,apiPort,pid:process.pid,backendPid:backend.pid,temporaryDatabase:database.directory,cleanupCondition:'Stop this owned preview and remove its temporary database after verification'},null,2)+'\n');console.log('Galactic Reactor full host ready: http://127.0.0.1:'+webPort);
 }catch(error){await stop();throw error;}

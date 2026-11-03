@@ -35,7 +35,7 @@ def main():
     old_native['files']['package.json']=row(feature,'package.json')
     origins={name:value for config in configs.values() for name,value in config['files'].items() if value['sha256']==before['sourceLF'].get(name)}
     paths=git('diff','--name-only',base,feature,'--','src','server','games/wild-nudge','public/assets/wild-nudge','package.json','package-lock.json').decode().splitlines()
-    paths=sorted(set(paths)|set(git('ls-tree','-r','--name-only',feature,'--','games/wild-nudge','public/assets/wild-nudge').decode().splitlines()))
+    paths=sorted(set(paths)|{'src/ui/GameViewport.ts'}|set(git('ls-tree','-r','--name-only',feature,'--','games/wild-nudge','public/assets/wild-nudge').decode().splitlines()))
     selected={}
     for name in paths:
         target=row(feature,name)
@@ -50,7 +50,10 @@ def main():
         live=content(prior)
         if live==blob(base,name):selected[name]=target
         else:
-            if name=='src/modules/GameModuleCatalog.ts' and "gameId: 'studio-wild-nudge'" not in live.decode():
+            if name=='src/ui/GameViewport.ts':
+                old=".temple-frame, .ct-root, .rr-root'";new=".temple-frame, .ct-root, .rr-root, .gn'"
+                assert live.decode().count(old)==1;value=live.decode().replace(old,new);patches=[{'from':old,'to':new}]
+            elif name=='src/modules/GameModuleCatalog.ts' and "gameId: 'studio-wild-nudge'" not in live.decode():
                 old='export const STUDIO_GAME_MODULES = [\n';addition=next(line for line in blob(feature,name).decode().splitlines(True) if "gameId: 'studio-wild-nudge'" in line)
                 assert live.decode().count(old)==1;value=live.decode().replace(old,old+addition);patches=[{'from':old,'to':old+addition}]
             elif name in ['src/shared/cabinets.ts','src/ui/RoyalGameArtwork.ts','src/ui/RoyalCatalogArtwork.ts'] and 'studio-wild-nudge' not in live.decode():
