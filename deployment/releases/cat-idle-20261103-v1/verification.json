@@ -1,0 +1,323 @@
+{
+  "release": "cat-idle-20261103-v1",
+  "sourceCommit": "8616f86d5c31ee81abdcd18484de0d4c1a2446e4",
+  "animationCommit": "e5ac32618bb0d645bef98e05b658bb5bc9a4ced3",
+  "baseCommit": "24cce094af9b39e008a31c3e5803436174e95a36",
+  "image": "sha256:4909ae3df61c17398afcfe9903e7acbc5e0e551e4baa3822e3810c801f719371",
+  "rollbackImage": "sha256:9b8fe392d42c67c086883ff09222b48b27268f78ff7e8ef6be66c423244d2660",
+  "sourceBackupSha256": "ad70b5e7acecb0c948519c14463df71cde680a6fe33623d91527e87b96344dad",
+  "backup": "/opt/royal-backups/cat-idle-20261103-v1",
+  "backupBytes": 4015,
+  "transportSha256": "9c74a2d79b4f9c6de586428cfb7447f23cd1247bb8e866023624955e2db9f477",
+  "transportBytes": 2108178,
+  "status": "verified",
+  "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "authorization": "The user requested publication of the cat's sleeping breathing and gentle seated animation.",
+  "scope": {
+    "changedSources": [
+      "src/game/CatRenderer.ts",
+      "src/game/CatIdleMotion.ts"
+    ],
+    "clientDeltaFiles": 2,
+    "backendDeltaFiles": 0,
+    "preservedHostInputs": 248,
+    "hostInputs": 250,
+    "externalModuleFilesPreserved": 4213,
+    "otherPersistentServicesPreserved": 13,
+    "activeCatalogueGames": 20,
+    "addedGames": [],
+    "restoredGames": [],
+    "settingsAndVolumesPreserved": true
+  },
+  "checks": {
+    "guardScopeTests": 5,
+    "mandatoryWalletTests": 19,
+    "rtpProfiles": 38,
+    "stakePolicies": 20,
+    "stakeAdmissionPolicies": 20,
+    "releasePrepare": true,
+    "releaseVerifyGithub": true,
+    "compiledConnectedHost": {
+      "variants": [
+        {
+          "width": 1440,
+          "height": 1000
+        },
+        {
+          "width": 390,
+          "height": 844
+        }
+      ],
+      "sleepingMotion": true,
+      "seatedMotion": true,
+      "reducedMotion": true,
+      "pageErrors": 0
+    },
+    "public": {
+      "exactClientFiles": 2,
+      "guestBrowserVariants": 2,
+      "healthOk": true,
+      "pageErrors": 0
+    },
+    "immutableCandidateProgramProof": true,
+    "fullPostPublicationInventory": true
+  },
+  "limitations": [
+    "Mobile checks use browser emulation; physical mobile hardware was not tested.",
+    "The shared project graph was unavailable during preparation; direct source and byte verification were used.",
+    "A temporary HTTP 502 was observed during container replacement; health and public browser checks recovered successfully.",
+    "The backend projection is for local verification only. No backend output, module pointer, dependency, money rule or catalogue entry was installed."
+  ],
+  "maintenance": {
+    "status": "completed",
+    "run": "run-a4af5ee1d97b466097ef6fc2feac53da",
+    "durationSeconds": 800.16,
+    "freeBefore": 10763685888,
+    "freeAfter": 10848473088,
+    "applyFreedBytes": 89157632,
+    "plannedAllocatedBytes": 90255360,
+    "removedEntries": 46,
+    "removedImageTags": 3,
+    "preservedFinancialFiles": 114,
+    "verificationPasses": 2,
+    "currentAndRollbackPreserved": true,
+    "timerEnabled": true,
+    "timerActive": true,
+    "healthOk": true,
+    "containersUnchanged": true,
+    "configurationUnchanged": true,
+    "externalModulesUnchanged": true,
+    "databaseRestored": false,
+    "volumesDeleted": false,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:9b8fe392d42c67c086883ff09222b48b27268f78ff7e8ef6be66c423244d2660",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "66118d7a2e094e6bfe2feb41945f48e152ea711d0dd348988f366f7f12bb7353",
+      "files": 8591
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "d18c4d4069b4c422edfcb32734673fad2e65be658d6a44154688d78ea35b51ec",
+      "receipt": "/var/lib/royal-project-brain/receipts/d18c4d4069b4c422edfcb32734673fad2e65be658d6a44154688d78ea35b51ec.json",
+      "queued": true
+    },
+    "removedPaths": [
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/active.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/after.json",
+        "allocatedBytes": 3735552
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/application-overlay.py",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/backup.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/build-result.json",
+        "allocatedBytes": 1171456
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/build.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/cleanup.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/cleanup.py",
+        "allocatedBytes": 8192
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/deploy.py",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/dist-delta",
+        "allocatedBytes": 2895872
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/engine-build.py",
+        "allocatedBytes": 8192
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/host.json",
+        "allocatedBytes": 16384
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/image_metadata.py",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/install-manifest.json",
+        "allocatedBytes": 3801088
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/install.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/module-publication.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/overlay-base.py",
+        "allocatedBytes": 28672
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/package",
+        "allocatedBytes": 12656640
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/published.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/publisher.py",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/quiesce.cjs",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/release-github.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/release-manifest.json",
+        "allocatedBytes": 962560
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/runtime-inventory.cjs",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/scope.json",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/server-delta",
+        "allocatedBytes": 2408448
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/snapshot-base.py",
+        "allocatedBytes": 16384
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/snapshot.py",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/source",
+        "allocatedBytes": 45735936
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-20261103-v1/staging-refresh.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/active.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/before.json",
+        "allocatedBytes": 3620864
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/game-module-release.py",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/input-equivalence.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/install.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/module-proof.json",
+        "allocatedBytes": 8192
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/operator.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/package",
+        "allocatedBytes": 12656640
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/publish.py",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/publisher.py",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/release-github.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/release-manifest.json",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/source",
+        "allocatedBytes": 86016
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/test_publish.py",
+        "allocatedBytes": 8192
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/tests",
+        "allocatedBytes": 16384
+      },
+      {
+        "path": "/opt/royal-backups/star-spin-20261103-v1",
+        "allocatedBytes": 233472
+      }
+    ],
+    "retiredArchive": {
+      "path": "/opt/royal-backups/star-spin-20261103-v1/source.tgz",
+      "bytes": 206398,
+      "evidence": "deployment/releases/star-spin-20261103-v1/verification.json",
+      "removedWithParentFolder": true
+    }
+  },
+  "localStorage": {
+    "currentManagedCheckoutRetained": true,
+    "reason": "The app treats this checkout as this chat's primary workspace. Earlier archive and deletion attempts were rejected; those actions were not repeated.",
+    "temporaryDatabaseStoppedAndRemoved": true,
+    "cleanupCondition": "Keep this active primary workspace and normal dependencies; remove only task-owned obsolete outputs when the app permits cleanup, preserving the shared dependency target.",
+    "freeBeforePreparation": 319138508800,
+    "freeAfterVerification": 317647769600,
+    "spaceReclaimedClaimed": false,
+    "removedArchives": 0,
+    "inactiveModuleCleanup": {
+      "status": "blocked_by_automatic_approval_review",
+      "reason": "blocked by policy",
+      "path": "C:/Users/Aorus/.codex/worktrees/cat-idle-animation/royal/module-dist/studio-wild-nudge/versions/1.5.0-0164a52ab09d",
+      "retainedBytes": 12597112,
+      "attempts": 1,
+      "sourcePreservedInGitHub": "8616f86d5c31ee81abdcd18484de0d4c1a2446e4",
+      "cleanupCondition": "Use an approved cleanup mechanism only after the policy permits removal; keep the active module version and shared dependencies."
+    }
+  },
+  "clientFiles": {
+    "assets/index-BW6UFByS.js": "1f6f6e19406c74580e26ee04d600408df99617acc603a0b4d9b46c3c0f92d477",
+    "index.html": "6cb4858f193fa2db8eece3c37486d1e94f712ae45a90799ebb6455c95540fd04"
+  }
+}
