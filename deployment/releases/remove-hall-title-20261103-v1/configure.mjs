@@ -1,0 +1,23 @@
+import fs from 'node:fs';
+import {execFileSync} from 'node:child_process';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {projectHostSource} from '../../../scripts/build-host-projection.mjs';
+const folder='deployment/releases/remove-hall-title-20261103-v1';
+const before=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+const config=JSON.parse(fs.readFileSync('deployment/releases/star-spin-20261103-v1/host-projection.json','utf8'));
+const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+const source='src/game/interiorArt.ts';
+for(const [name,row]of Object.entries(config.files))assert([before.source[name],before.sourceLF[name]].includes(row.sha256),'Published origin differs: '+name);
+const row=config.files[source],bytes=execFileSync('git',['show',row.commit+':'+row.path],{maxBuffer:32*1024**2});
+let value=projectHostSource(row,bytes).toString();
+const removed=value.split('\n').filter(line=>line.includes("translateText('КАЗИНО И БАР')")||line.includes("translateText('НОВЫЕ ИГРЫ · GITHUB · ДЕМОКАТАЛОГИ')"));
+assert.equal(removed.length,2);
+const patches=removed.map(line=>({from:line+'\n',to:''}));
+for(const patch of patches){assert.equal(value.split(patch.from).length,2);value=value.replace(patch.from,patch.to);}
+config.files[source]={...row,patches:[...(row.patches??[]),...patches],sha256:sha(Buffer.from(value))};
+config.productionCommit=before.sourceCommit;
+delete config.moduleGames;
+fs.writeFileSync(folder+'/host-projection.json',JSON.stringify(config,null,2)+'\n');
+fs.writeFileSync(folder+'/scope.json',JSON.stringify({expectedSources:{[source]:sha(Buffer.from(value))},addedGames:[],restoredGames:[]},null,2)+'\n');
+console.log(JSON.stringify({base:before.sourceCommit,changedSource:source,sha256:config.files[source].sha256}));
