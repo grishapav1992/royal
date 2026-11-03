@@ -135,7 +135,8 @@ async function main() {
   }
   if (!args.length && command !== 'god-nodes') throw Error('Supply a question, symbol or path. See docs/graphify.md.');
   if ((await status(root)).state !== 'current') await build(root);
-  process.exitCode = await runUv(root, ['python', '-m', 'graphify', command, ...args,
+  process.exitCode = await runUv(root, ['python', '-c',
+    'import sys; from graphify.cli import dispatch_command; dispatch_command(sys.argv[1])', command, ...args,
     '--graph', resolve(root, 'graphify-out/graph.json')]);
 }
 

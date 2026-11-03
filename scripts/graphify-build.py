@@ -22,6 +22,8 @@ def main():
     if extraction.get("failed_sources"):
         failed = [str(Path(path).relative_to(root)) for path in extraction["failed_sources"]]
         raise RuntimeError("Graphify could not extract these files: " + ", ".join(failed[:20]))
+    source_nodes = Counter(node.get("source_file") for node in extraction["nodes"])
+    file_only = sum(Path(name).suffix != ".md" and source_nodes[name] == 1 for name in request["sources"])
     graph = build_from_json(extraction, directed=True, root=root, dedup=False)
     communities = cluster(graph)
     labels = label_communities_by_hub(graph, communities)
@@ -36,6 +38,7 @@ def main():
              f"Indexed files: {len(paths)}. Nodes: {len(data['nodes'])}. Edges: {len(data.get('links', []))}.", "",
              "Local AST and Markdown extraction. No model requests or semantic document summaries.",
              "Markdown contributes headings, links and resolvable code references.",
+             f"Code files with only a file node (no extracted symbols): {file_only}. Their bodies need direct inspection.",
              "This map describes source relationships, not the production game catalogue or verified owner decisions.", "",
              "## Relationship evidence", ""]
     lines += [f"- {kind}: {count}." for kind, count in sorted(confidence.items())]
