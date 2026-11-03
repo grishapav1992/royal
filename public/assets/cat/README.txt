@@ -19,6 +19,18 @@ Interaction UI: approach the cat and press E. A contextual key hint replaces the
 permanent Cat button. Esc closes the panel or releases a hug, and walking away
 closes the panel. Clicking the sprite cannot open a remote interaction menu.
 
+Idle motion, 3 November 2026:
+- CatIdleMotion.ts animates the approved sleeping and seated paintings in place.
+- Sleeping: a 3.6-second breath lifts the back; the face and resting paws stay still.
+- Seated, resting and purring: a 3.2-second chest breath, gentle upper-body sway
+  and an occasional alternating head lean. The lower paws stay anchored.
+- These timings and amplitudes are artistic choices for this cat, not research
+  thresholds. No new audio, network state or interaction rules are introduced.
+- A single small canvas is reused and refreshed at most 30 times per second.
+  Hidden cats stop updating it; reduced motion uses the original still painting.
+  The texture is released on scene shutdown. Canvas and WebGL are supported.
+- Verification: npx playwright test --config playwright.cat.config.ts.
+
 Additional habits, generated with the built-in imagegen tool:
 - zverochka-habits.png: rolling belly-up, drinking and eating animations.
   Exact prompt: habits-prompt.txt. Only rows 1, 3 and 4 are used.
