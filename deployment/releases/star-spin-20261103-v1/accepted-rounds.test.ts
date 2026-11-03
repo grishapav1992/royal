@@ -68,3 +68,13 @@ test('actual production rounds resume and replay unchanged through the projected
  const report={passed:true,productionSource:oldProof.productionCommit,oldRuntimeSha256:oldProof.outputs['runtime.mjs'].sha256,newRuntimeSha256:newProof.outputs['runtime.mjs'].sha256,legacyCases:rows.length,legacyBonuses,continuations,preservedWardrobeVersion:3,progress3QualifiedStakes:policies['studio-afterglow'].stakes,monetarySourceHashes:newProof.inputs,qualificationScriptSha256:createHash('sha256').update(readFileSync(folder+'/accepted-rounds.test.ts').toString('utf8').replace(/\r\n/g,'\n')).digest('hex'),productionBalancesChanged:false,sha256:digest.digest('hex'),cases:rows};assert(rows.length===23&&legacyBonuses>=4);writeFileSync(process.env.ROYAL_STAKE_TEST_REPORT!,JSON.stringify(report,null,2)+'\n');
  }finally{Date.now=realNow;}
 });
+test('the new catalogue game accepts one ten-cent round through the projected common-money implementation',async()=>{
+ const c=await pvpFixture();try{
+  await c.source.ingest(block(102,'1000000000000',c.config.source.addresses.find(x=>x.userId==='reserve')!.address));await c.ledger.sync(c.source,await c.reconciliation());
+  let calls=0;const stops=[0,0,30,30,30],draw=(max:number)=>{calls++;return max===64?stops.shift()!:0;};
+  const op={id:randomUUID(),gameId:'studio-wild-nudge',action:'start',stakeUnits:'10',stakePolicyVersion:1,settings:{wildNudge:{mode:'normal'}}},command:any={path:'/expansion',method:'POST',body:op,query:{},flags:[true,true,true,true,true,true,true,true,2],rules:2,wildNudgeRules:1};
+  const old=new Old(c.ledger,draw);await assert.rejects(old.run(c.a,command));assert.equal(calls,0);
+  const current=new Current(c.ledger,draw),before:any=await c.ledger.wallet(c.a),r:any=await current.run(c.a,command);assert.equal(r.session.rulesVersion,2);assert.equal(r.session.spentUnits,'10');assert.equal(r.session.returnedUnits,'34');assert.equal(r.session.view.wildNudge.totalPayoutUnits,'33');assert.equal(r.wallet.balanceUnits,String(BigInt(before.balanceUnits)+240000n));assert.equal(calls,6);assert((await current.run(c.a,command) as any).replayed);assert.equal(calls,6);await c.ledger.audit();
+  const file=process.env.ROYAL_STAKE_TEST_REPORT!,report=JSON.parse(readFileSync(file,'utf8'));report.newGameMinimum={gameId:'studio-wild-nudge',stakeUnits:'10',allTwentyLines:true,exactFinalCredit:'34',replayUnchanged:true,ledgerBalanced:true};report.retiredNativeServicePublished=false;writeFileSync(file,JSON.stringify(report,null,2)+'\n');
+ }finally{await c.close();}
+});

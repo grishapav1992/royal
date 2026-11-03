@@ -22,7 +22,14 @@ helper=importlib.util.module_from_spec(spec);spec.loader.exec_module(helper)
 def main():
     before=json.loads(Path(sys.argv[1]).read_text(encoding='utf-8-sig'));feature=git('rev-parse',sys.argv[2]).decode().strip();base=git('rev-parse','44b12afd').decode().strip()
     configs={kind:json.loads((HERE.parent/'lobby-connection-20261101-v1'/(kind+'-projection.json')).read_text()) for kind in ['host','backend']}
-    old_native=json.loads((HERE.parent/'shared-stakes-20261101-v1/native-projection.json').read_text());old_native['productionCommit']=before['sourceCommit'];old_native['files']['package.json']=row(feature,'package.json')
+    # This adapter is compiled only for local accepted-round qualification.
+    # Production uses the main host wallet; the retired native service is preserved.
+    original_backend=copy.deepcopy(configs['backend']['files'])
+    old_native=dict(format=1,productionCommit=before['sourceCommit'],entries=['server/finance/nile-game-runtime.ts'],files=copy.deepcopy(original_backend))
+    name='server/finance/nile-game-runtime.ts';candidate=row(feature,name)
+    assert candidate['sha256']==before['sourceLF'].get(name),'Native test adapter changed from its reviewed source'
+    old_native['files'][name]=candidate
+    old_native['files']['package.json']=row(feature,'package.json')
     origins={name:value for config in configs.values() for name,value in config['files'].items() if value['sha256']==before['sourceLF'].get(name)}
     paths=git('diff','--name-only',base,feature,'--','src','server','games/wild-nudge','public/assets/wild-nudge','package.json','package-lock.json').decode().splitlines()
     selected={}

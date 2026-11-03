@@ -1,7 +1,7 @@
 {
   "release": "star-spin-20261103-v1",
   "productionCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
-  "featureCommit": "e71086b251b22a76aaea5f3e7e810b65435241c0",
+  "featureCommit": "21539d270dec6c1ea1aea9f9ea9274e04eac4d25",
   "expectedSources": {
     "games/wild-nudge/GalacticReactorUI.ts": "dedca2cfb1866c526f8dca2416e6b9f671f5353ed08c558d1de5b0abb0cd577a",
     "games/wild-nudge/StarSpinCharacter.ts": "af665a3bf2b89c5727773868656fd5513022bc81993d4423a1c098689408b773",
