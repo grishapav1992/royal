@@ -1,0 +1,326 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-11-03T18:15:49Z",
+  "scope": "Shared production development map, with explicit partial source provenance",
+  "source": {
+    "program": "608b395c5a2d33ae5561c30c9fcb10ac735e69de",
+    "maintenance": "07d90d9022600ecb124f21066879b695dd63ea8f",
+    "application": "24cce094af9b39e008a31c3e5803436174e95a36"
+  },
+  "graph": {
+    "snapshotId": "fe15d4588b8812964b1432094776f1aed20bd1268dc2c52b7dfccc0a52082e31",
+    "runtimeFingerprint": "ba2c0964f202c1654527f73302cd3e51d642e03ac4860f3e7333a12446f8ed30",
+    "releaseId": "star-spin-20261103-v1",
+    "publishedAt": "2026-11-03T17:58:40.159Z",
+    "nodes": 8065,
+    "edges": 25678,
+    "bytes": 12959094,
+    "counts": {
+      "repository": 4,
+      "module": 124,
+      "command": 83,
+      "math_policy": 0,
+      "knowledge": 77
+    },
+    "coverage": {
+      "components": 126,
+      "liveOnlySources": 546,
+      "partialComponents": 123,
+      "provenSources": 526
+    },
+    "recordedKnowledge": 77,
+    "reviewedKnowledge": 19,
+    "knowledgeNeedingReview": 19,
+    "files": {
+      "project-brain.json": "d7e810b53993f43dd5bb6c0910f5bcce1d3ebb25419d5442b079adf7969e901b",
+      "graph.json": "386c7779e8aff0de023c21e627ce5a52927a16414fd57895b6be2902246c3838",
+      "manifest.json": "0e770d7621ca81eabb08dddac25a6e7003d8d0fe441ec9034ce00eb013ee8f91",
+      "production.json": "bdbd22467cfe30e3fe31295383504042833449bd506fd4ffa7c3d1adafb5f819",
+      "PROJECT_BRAIN.md": "4b6ba59234475674fbc275eaa9e8f62c5090a2618c38ffa17136a5e58ab9ed68"
+    }
+  },
+  "operation": {
+    "store": "/var/lib/royal-project-brain",
+    "program": "/opt/royal-project-brain/current",
+    "trigger": "Completed verified maintenance after publication, with hourly reconciliation",
+    "readTransport": "Fixed read-only SSH JSON reader",
+    "readCheck": "Selected deployment identities before and after each request; never a fresh program-byte or financial proof",
+    "fullChecks": "Fresh full program checks during maintenance, indexing and both promotion checks",
+    "snapshotRetention": "Current and one previous completed snapshot; previous is null for the first snapshot",
+    "modelBackend": "none",
+    "localDevelopment": "Explicit --local only; never uploads a production snapshot"
+  },
+  "verification": {
+    "selectedTests": {
+      "sharedNode": 41,
+      "localMapNode": 7,
+      "maintenancePython": 74,
+      "installerPython": 5,
+      "total": 127
+    },
+    "primaryNpmStatus": "ready",
+    "independentClientContexts": [
+      {
+        "clientCommit": "07d90d9022600ecb124f21066879b695dd63ea8f",
+        "exitCode": 0,
+        "ok": true,
+        "state": "ready",
+        "seconds": 15.28,
+        "snapshotId": "fe15d4588b8812964b1432094776f1aed20bd1268dc2c52b7dfccc0a52082e31",
+        "runtimeFingerprint": "ba2c0964f202c1654527f73302cd3e51d642e03ac4860f3e7333a12446f8ed30",
+        "releaseId": "star-spin-20261103-v1",
+        "check": {
+          "scope": "deployment-identity",
+          "checkedAt": "2026-11-03T18:09:38Z",
+          "lastProgramVerificationAt": "2026-11-03T17:34:38Z"
+        },
+        "warnings": {
+          "mixed_source_provenance": {
+            "components": 126
+          },
+          "partial_source_coverage": {
+            "components": 123
+          },
+          "local_checkout_differs_from_production": {
+            "components": 1
+          }
+        }
+      },
+      {
+        "clientCommit": "608b395c5a2d33ae5561c30c9fcb10ac735e69de",
+        "exitCode": 0,
+        "ok": true,
+        "state": "ready",
+        "seconds": 19.01,
+        "snapshotId": "fe15d4588b8812964b1432094776f1aed20bd1268dc2c52b7dfccc0a52082e31",
+        "runtimeFingerprint": "ba2c0964f202c1654527f73302cd3e51d642e03ac4860f3e7333a12446f8ed30",
+        "releaseId": "star-spin-20261103-v1",
+        "check": {
+          "scope": "deployment-identity",
+          "checkedAt": "2026-11-03T18:09:41Z",
+          "lastProgramVerificationAt": "2026-11-03T17:34:38Z"
+        },
+        "warnings": {
+          "mixed_source_provenance": {
+            "components": 126
+          },
+          "partial_source_coverage": {
+            "components": 123
+          },
+          "local_checkout_differs_from_production": {
+            "components": 1
+          }
+        }
+      }
+    ],
+    "physicalSecondPcTested": false,
+    "queries": [
+      {
+        "operation": "brain",
+        "question": "wallet",
+        "exitCode": 0,
+        "ok": true,
+        "seconds": 20.67,
+        "snapshotId": "fe15d4588b8812964b1432094776f1aed20bd1268dc2c52b7dfccc0a52082e31",
+        "check": {
+          "scope": "deployment-identity",
+          "checkedAt": "2026-11-03T18:10:57Z",
+          "lastProgramVerificationAt": "2026-11-03T17:34:38Z"
+        },
+        "textSha256": "57d75338403930792bc8257143eedeb9ffc8a98a05f2d65e5e92f28035f990f1",
+        "knowledgeWarning": {
+          "code": "knowledge_needs_review",
+          "count": 19
+        }
+      },
+      {
+        "operation": "query",
+        "question": "DemoWalletStore",
+        "budget": 512,
+        "exitCode": 0,
+        "ok": true,
+        "seconds": 23.75,
+        "snapshotId": "fe15d4588b8812964b1432094776f1aed20bd1268dc2c52b7dfccc0a52082e31",
+        "check": {
+          "scope": "deployment-identity",
+          "checkedAt": "2026-11-03T18:11:21Z",
+          "lastProgramVerificationAt": "2026-11-03T17:34:38Z"
+        },
+        "textSha256": "577663bd075fbdd2266b603efbc25fe85c0d613c7ba2ed8ae8900df36112a6a9",
+        "knowledgeWarning": {
+          "code": "knowledge_needs_review",
+          "count": 19
+        }
+      },
+      {
+        "operation": "explain",
+        "subject": "DemoWalletStore",
+        "exitCode": 0,
+        "ok": true,
+        "seconds": 20.92,
+        "snapshotId": "fe15d4588b8812964b1432094776f1aed20bd1268dc2c52b7dfccc0a52082e31",
+        "check": {
+          "scope": "deployment-identity",
+          "checkedAt": "2026-11-03T18:11:42Z",
+          "lastProgramVerificationAt": "2026-11-03T17:34:38Z"
+        },
+        "textSha256": "6cf70fdc6cd0c3450fe18adb8ab5aaef1ba2c33d6ad9682bc5a6b004f2149903",
+        "knowledgeWarning": {
+          "code": "knowledge_needs_review",
+          "count": 19
+        }
+      }
+    ],
+    "readOnlySnapshotUnchanged": true,
+    "serviceResult": "Result=success;ExecMainStatus=0;ActiveState=inactive;SubState=dead",
+    "maintenance": {
+      "status": "completed",
+      "startedAt": 1793728167.4707484,
+      "finishedAt": 1793729077.4202397,
+      "durationSeconds": 909.95,
+      "freeAfter": 10871803904,
+      "verificationPasses": 2,
+      "containersUnchanged": true,
+      "healthOk": true,
+      "preservedFinancialFiles": 111,
+      "projectBrain": {
+        "status": "pending",
+        "runtimeFingerprint": "ba2c0964f202c1654527f73302cd3e51d642e03ac4860f3e7333a12446f8ed30",
+        "receipt": "/var/lib/royal-project-brain/receipts/ba2c0964f202c1654527f73302cd3e51d642e03ac4860f3e7333a12446f8ed30.json",
+        "queued": true
+      }
+    },
+    "timerEnabled": "enabled",
+    "timerActive": "active",
+    "health": "healthy",
+    "image": "sha256:9b8fe392d42c67c086883ff09222b48b27268f78ff7e8ef6be66c423244d2660",
+    "serverFreeBytes": 10867318784,
+    "workFolders": [],
+    "concurrentApplicationPublication": {
+      "initialImage": "sha256:e53a4a3fe0152d8b8034800ccdf2c0c43f49d580ad37326c003e74e619e06e1d",
+      "initialModulePointerCount": 123,
+      "currentImage": "sha256:9b8fe392d42c67c086883ff09222b48b27268f78ff7e8ef6be66c423244d2660",
+      "currentPublishedPackages": 124,
+      "applicationSource": "24cce094af9b39e008a31c3e5803436174e95a36",
+      "record": "deployment/releases/star-spin-20261103-v1/verification.json",
+      "applicationChangedByGraphInstallers": false
+    }
+  },
+  "limits": [
+    "Partial components are hash-bound source references, not a claim of complete compiled source coverage.",
+    "An installed game package does not approve catalogue access or new rounds.",
+    "Matching knowledge evidence hashes are not a new semantic verification; 19 records require review against available production evidence.",
+    "Query identity checks do not detect arbitrary file edits made outside the guarded publication process; full maintenance checks detect such drift.",
+    "Approved knowledge documents have the installed service Git version; semantic facts are not rewritten automatically.",
+    "Clients with different Git HEADs were tested from this PC; the physical second PC needs its own authorized SSH access."
+  ],
+  "cleanup": {
+    "localInitialFreeBytes": 39189483520,
+    "localWorkingCheckout": {
+      "removedFolder": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/shared-brain-20261103/checkout",
+      "allocatedBytesBefore": 561430528,
+      "preservedGitHubCommit": "608b395c5a2d33ae5561c30c9fcb10ac735e69de",
+      "freeBytesBefore": 37950218240,
+      "freeBytesAfter": 38529638400
+    },
+    "localSparseValidation": {
+      "synced": true,
+      "commit": "73c06172ed88979b4a6cad96addbad14dc1f8dda",
+      "removedFolder": "artifacts/work/shared-brain-20261103/sync-check",
+      "allocatedBytesBefore": 49152,
+      "freeBytesBefore": 41280598016,
+      "freeBytesAfter": 41281236992
+    },
+    "localRemovedArchiveBatches": [
+      {
+        "sourceCommit": "0d93c965495ba6a4dd829d9c3f6b337984fcb7c1",
+        "bytes": 563200
+      },
+      {
+        "sourceCommit": "608b395c5a2d33ae5561c30c9fcb10ac735e69de",
+        "bytes": 583680
+      },
+      {
+        "sourceCommit": "07d90d9022600ecb124f21066879b695dd63ea8f",
+        "bytes": 112640
+      }
+    ],
+    "serverArchiveCleanup": [
+      {
+        "removed": [
+          {
+            "path": "/opt/royal-project-brain/transfers/shared-brain-0d93c965/brain-program.tar",
+            "bytes": 460800
+          },
+          {
+            "path": "/opt/royal-project-brain/transfers/shared-brain-0d93c965/brain-maintenance.tar",
+            "bytes": 102400
+          }
+        ],
+        "freeBefore": 10905047040,
+        "freeAfter": 10905612288
+      },
+      {
+        "removed": [
+          {
+            "path": "/opt/royal-project-brain/transfers/shared-brain-0d93c965/brain-program.tar",
+            "bytes": 471040
+          },
+          {
+            "path": "/opt/royal-project-brain/transfers/shared-brain-0d93c965/brain-maintenance.tar",
+            "bytes": 112640
+          }
+        ],
+        "freeBefore": 10833854464,
+        "freeAfter": 10834440192
+      },
+      {
+        "removedPath": "/opt/royal-project-brain/transfers/shared-brain-0d93c965/brain-maintenance-final.tar",
+        "bytes": 112640,
+        "freeBefore": 10871058432,
+        "freeAfter": 10871173120
+      }
+    ],
+    "serverRetiredHelpers": {
+      "removed": [
+        {
+          "path": "/opt/royal-maintenance/updates/shared-brain-0d93c965",
+          "logicalBytes": 172331,
+          "allocatedFileBytes": 208896
+        },
+        {
+          "path": "/opt/royal-maintenance/updates/shared-brain-608b395c/original",
+          "logicalBytes": 101109,
+          "allocatedFileBytes": 118784
+        }
+      ],
+      "freeBefore": 10866372608,
+      "freeAfter": 10866716672,
+      "currentCommit": "07d90d9022600ecb124f21066879b695dd63ea8f",
+      "verifiedRollbackCommit": "608b395c5a2d33ae5561c30c9fcb10ac735e69de",
+      "retainedRollback": "/opt/royal-maintenance/updates/shared-brain-608b395c/source"
+    },
+    "localFreeBytesAfterWorktreeRemoval": 41195835392,
+    "otherActiveWork": {
+      "untrackedFiles": 335,
+      "action": "Preserved without deletion or overwrite",
+      "cleanupCondition": "Their owner verifies unique source and required assets are preserved in GitHub before any separate cleanup"
+    },
+    "spaceAttribution": "Other chats worked concurrently; free-space changes are measurements, not an attribution of every changed byte to this task.",
+    "localTaskMetadata": {
+      "removedFolder": "artifacts/work/shared-brain-20261103",
+      "logicalBytes": 28921,
+      "fileCount": 18,
+      "freeBytesBefore": 41213169664,
+      "freeBytesAfter": 41213149184,
+      "preservation": "Relevant compact verification and cleanup data are in this tracked report; source commits are verified in GitHub."
+    },
+    "serverTaskMetadata": {
+      "removedFolder": "/opt/royal-project-brain/transfers/shared-brain-0d93c965",
+      "logicalBytes": 16881,
+      "fileCount": 8,
+      "freeBefore": 10866520064,
+      "freeAfter": 10866569216
+    }
+  }
+}

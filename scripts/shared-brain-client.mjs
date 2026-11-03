@@ -173,7 +173,7 @@ export function formatSharedResponse(envelope, clientCommit) {
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(warning);
   }
-  const labels = { partial_source_coverage: 'Частичное покрытие исходников', mixed_source_provenance: 'Несколько исходных версий',
+  const labels = { partial_source_coverage: 'Частичное покрытие исходников', mixed_source_provenance: 'Смешанное или неполное происхождение исходников',
     knowledge_needs_review: 'Записи знаний требуют пересмотра', local_checkout_differs_from_production: 'Рабочая копия отличается от опубликованной версии' };
   for (const group of groups.values()) {
     const warning = group[0];
