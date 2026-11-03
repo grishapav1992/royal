@@ -17,7 +17,7 @@ export class GalacticReactorUI {
   private audio=new GalacticAudio();private animations=new Set<Animation>();private timers=new Set<ReturnType<typeof setTimeout>>();
   private media=window.matchMedia('(prefers-reduced-motion: reduce)');
   private owner=this.client.accountId;private epoch=0;private dead=false;private paused=false;private busy=false;private presenting=false;
-  private shown?:WildNudgeView;private shownKey='';private note='';private error='';private stake=DEFAULT_GAME_STAKE;private fast=false;private forceReduced=false;
+  private shown?:WildNudgeView;private shownKey='';private shownPayout='0';private note='';private error='';private stake=DEFAULT_GAME_STAKE;private fast=false;private forceReduced=false;
   private auto=false;private autoLeft=0;private autoCount=10;private autoEpoch=0;private lastBalance?:number;
   private skew:{cue:string;mode:string;skewMs:number}[]=[];private unsubscribe:()=>void;
   private changed=()=>this.sync();
@@ -95,10 +95,11 @@ export class GalacticReactorUI {
     if(this.dead)return;
     if(this.owner!==this.client.accountId){this.owner=this.client.accountId;this.epoch++;this.busy=false;this.presenting=false;this.stopAuto(false);this.cancelPresentation();this.shown=undefined;this.shownKey='';this.error='';this.note='';this.audio.cancel();this.drawPreview();this.root.dataset.phase='idle';}
     if(this.wallet?.balance!==this.lastBalance){this.error='';this.lastBalance=this.wallet?.balance;}
-    if(!this.busy&&!this.presenting&&this.view){const key=this.session!.id+':'+this.view.revision;if(key!==this.shownKey){this.shown=structuredClone(this.view);this.shownKey=key;this.stake=this.view.stakeUnits;this.drawFrame(this.view.spins.at(-1)!);this.note=this.view.stage==='bonus'?this.text('Бонус восстановлен. Продолжение бесплатно.','Bonus restored. Continue without another stake.'):this.resultText(this.view);}}
+    if(!this.busy&&!this.presenting&&this.view){const key=this.session!.id+':'+this.view.revision;if(key!==this.shownKey){this.markShown(this.view);this.stake=this.session!.rulesVersion===1&&this.view.stage==='settled'?DEFAULT_GAME_STAKE:this.view.stakeUnits;this.drawFrame(this.view.spins.at(-1)!);this.note=this.view.stage==='bonus'?this.text('Бонус восстановлен. Продолжение бесплатно.','Bonus restored. Continue without another stake.'):this.resultText(this.view);}}
     this.collection.sync(this.client.accountId??'');this.render();
   }
-  private payout(view:WildNudgeView){return view.stage==='settled'&&view.revision===this.view?.revision?this.session!.returnedUnits:view.totalPayoutUnits;}
+  private markShown(view:WildNudgeView){this.shown=structuredClone(view);this.shownKey=this.session!.id+':'+view.revision;this.shownPayout=view.stage==='settled'?this.session!.returnedUnits:view.totalPayoutUnits;}
+  private payout(view:WildNudgeView){if(view===this.shown)return this.shownPayout;return view.stage==='settled'&&view.revision===this.view?.revision?this.session!.returnedUnits:view.totalPayoutUnits;}
   private resultText(view:WildNudgeView){const paid=BigInt(this.payout(view)),net=paid-BigInt(view.stakeUnits);return net>0n?this.text('Положительный итог раунда.','Net-positive round.'):net===0n?this.text('Стоимость раунда возвращена.','Round cost returned.'):paid>0n?this.text('Частичный возврат. Выплата меньше ставки.','Partial return. Payout is below the stake.'):this.text('Раунд завершён без выплаты.','Round ended without a payout.');}
   private render(){
     if(this.dead)return;const shown=this.shown,active=this.active,blocked=this.blocked;
@@ -139,7 +140,7 @@ export class GalacticReactorUI {
       }
     }
     if(this.dead||epoch!==this.epoch||owner!==this.client.accountId)return;
-    if(!this.dead){this.root.querySelectorAll('.gn-spinning').forEach(el=>el.classList.remove('gn-spinning'));this.drawFrame(frame);this.shown=structuredClone(view);this.shownKey=this.session!.id+':'+view.revision;this.note=view.stage==='bonus'?this.text('Режим перегрузки. Продолжение бесплатно.','Overdrive mode. Continue without another stake.'):this.resultText(view);this.root.dataset.phase=view.stage==='bonus'?'bonus':'result';
+    if(!this.dead){this.root.querySelectorAll('.gn-spinning').forEach(el=>el.classList.remove('gn-spinning'));this.drawFrame(frame);this.markShown(view);this.note=view.stage==='bonus'?this.text('Режим перегрузки. Продолжение бесплатно.','Overdrive mode. Continue without another stake.'):this.resultText(view);this.root.dataset.phase=view.stage==='bonus'?'bonus':'result';
       if(!signal.aborted&&!this.paused&&!this.modal.open&&!this.collection.open){
         if(frame.awardedSpins){await this.accent('bonus',()=>{this.el('bonus-overlay').hidden=false;this.character.react('bonus_enter');},signal);await this.wait(this.reduced?0:this.fast?180:650,signal);}
         else if(view.stage==='settled'){const total=BigInt(this.payout(view)),stake=BigInt(view.stakeUnits);if(total>stake)await this.accent('win',()=>this.character.react('round_win'),signal);else this.audio.schedule(total===stake?'return':'partial');}
@@ -160,7 +161,7 @@ export class GalacticReactorUI {
       if(retry)await this.client.retry();else if(this.active)await this.client.act({gameId:WILD_NUDGE_GAME,action:'move',sessionId:this.session!.id,move:'wild-nudge-spin',revision:this.view!.revision});else await this.client.act({gameId:WILD_NUDGE_GAME,action:'start',stakeUnits:this.stake,settings:{wildNudge:{mode:'normal'}}});
       if(this.dead||epoch!==this.epoch||owner!==this.client.accountId)return false;
       const view=this.view;if(!view||this.client.pending)throw Error(this.text('Раунд не подтверждён. Повтори запрос.','Round not confirmed. Retry the request.'));
-      if(this.paused||this.modal.open||this.collection.open){this.shown=structuredClone(view);this.shownKey=this.session!.id+':'+view.revision;this.drawFrame(view.spins.at(-1)!);this.note=view.stage==='bonus'?this.text('Бонус сохранён. Продолжение бесплатно.','Bonus saved. Continue without another stake.'):this.resultText(view);}else await this.show(view);
+      if(this.paused||this.modal.open||this.collection.open){this.markShown(view);this.drawFrame(view.spins.at(-1)!);this.note=view.stage==='bonus'?this.text('Бонус сохранён. Продолжение бесплатно.','Bonus saved. Continue without another stake.'):this.resultText(view);}else await this.show(view);
       return true;
     }catch(error){if(!this.dead&&epoch===this.epoch){this.error=error instanceof Error?error.message:String(error);this.stopAuto(false);this.cancelPresentation();}return false;}
     finally{if(!this.dead&&epoch===this.epoch){this.busy=false;this.root.querySelectorAll('.gn-spinning').forEach(el=>el.classList.remove('gn-spinning'));this.sync();}}

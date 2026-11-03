@@ -10,7 +10,7 @@ import {STAR_CHARACTERS,type StarCollection,type StarRequest} from '../src/share
 import {WILD_NUDGE_STAKES} from '../src/shared/wildNudgeMath';
 import {startWildNudge,moveWildNudge} from '../server/games/wildNudge';
 import {WALLET_ACCOUNT_HEADER} from '../src/shared/walletAccount';
-async function fixture(){const db=new PostgresDatabase(':memory:');await db.exec("CREATE TABLE accounts(id TEXT PRIMARY KEY);INSERT INTO accounts(id) VALUES('alice'),('bob')");let now=Date.parse('2026-11-01T20:59:00Z');const store=new StarSpinCollectionStore(db,undefined,()=>now);await store.ready;return{db,store,midnight:()=>now+=60000};}
+async function fixture(){const db=new PostgresDatabase(':memory:');await db.exec("CREATE TABLE accounts(id TEXT PRIMARY KEY);INSERT INTO accounts(id) VALUES('alice'),('bob')");let now=Date.parse('2026-11-01T20:59:00Z');const clock=()=>now,store=new StarSpinCollectionStore(db,undefined,clock);await store.ready;return{db,store,clock,midnight:()=>now+=60000};}
 const op=(body:Omit<StarRequest,'id'>|Record<string,unknown>)=>({id:randomUUID(),...body});
 async function complete(store:StarSpinCollectionStore){let s=await store.snapshot('alice');for(const q of s.challenges.filter(q=>!q.completed)){for(const answer of q.options){try{s=await store.operate('alice',op({action:'answer',challengeId:q.id,day:s.day,answer:answer.id}));break;}catch(e){if(!(e instanceof StarCollectionError&&e.code==='incorrect-answer'))throw e;}}}return s;}
 test('both factions, four unique adult companions and all unlocks work without a wager or wallet change',async()=>{
@@ -20,7 +20,7 @@ test('both factions, four unique adult companions and all unlocks work without a
   assert.equal((await complete(f.store)).tokens,200);
   for(const c of STAR_CHARACTERS.filter(c=>c.cost>0)){const r=op({action:'unlock',characterId:c.id});const first=await f.store.operate('alice',r),repeat=await f.store.operate('alice',r);assert.equal(first.tokens,repeat.tokens);assert.equal(first.receipt?.unlocked,c.id);assert.equal(repeat.receipt,undefined);await f.store.operate('alice',op({action:'select',characterId:c.id}));}
   let selected=await f.store.operate('alice',op({action:'side',side:'light'}));assert.equal(selected.selected,'aeliri');selected=await f.store.operate('alice',op({action:'side',side:'dark'}));assert.equal(selected.selected,'nyxara');assert.equal(selected.tokens,0);assert.deepEqual(selected.owned,STAR_CHARACTERS.map(c=>c.id));
-  const restored=await new StarSpinCollectionStore(f.db).snapshot('alice');assert.deepEqual(restored,await f.store.snapshot('alice'));assert.deepEqual(await wallet.snapshot('alice'),before);assert.deepEqual((await f.store.snapshot('bob')).owned,['lyra','vespera']);
+  const restored=await new StarSpinCollectionStore(f.db,undefined,f.clock).snapshot('alice');assert.deepEqual(restored,await f.store.snapshot('alice'));assert.deepEqual(await wallet.snapshot('alice'),before);assert.deepEqual((await f.store.snapshot('bob')).owned,['lyra','vespera']);
  }finally{await f.db.close();}
 });
 test('concurrent rewards and unlocks are serialized and UUIDs cannot change meaning',async()=>{
