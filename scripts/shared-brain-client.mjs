@@ -84,7 +84,7 @@ function transportEnvironment(environment) {
 function validateResponse(envelope, operation) {
   if (!envelope || typeof envelope !== 'object' || Array.isArray(envelope) || envelope.schemaVersion !== 1
     || typeof envelope.ok !== 'boolean' || !envelope.result || typeof envelope.result.text !== 'string'
-    || !Array.isArray(envelope.warnings) || envelope.warnings.length > 100
+    || !Array.isArray(envelope.warnings) || envelope.warnings.length > 4096
     || envelope.warnings.some(value => !value || typeof value !== 'object' || typeof value.code !== 'string'
       || value.code.length > 128 || value.message !== undefined && (typeof value.message !== 'string' || Buffer.byteLength(value.message) > 4096))) {
     throw fail('invalid_response', 'The shared graph server returned an invalid response.');
@@ -102,11 +102,16 @@ function validateResponse(envelope, operation) {
   }
   if (!envelope.ok && (!envelope.error || typeof envelope.error.code !== 'string'
     || typeof envelope.error.message !== 'string')) throw fail('invalid_response', 'The shared graph server returned an invalid error.');
+  if (envelope.result.check !== undefined) {
+    const check = envelope.result.check;
+    if (!check || check.scope !== 'deployment-identity' || !Number.isFinite(Date.parse(check.checkedAt))
+      || !Number.isFinite(Date.parse(check.lastProgramVerificationAt))) throw fail('invalid_response', 'The graph response has an invalid publication check.');
+  }
   return envelope;
 }
 
 /** Send JSON through a fixed SSH command. No local graph is used after an error. */
-export async function requestSharedBrain(request, { spawnImpl = spawn, env = process.env, timeoutMs = 90000 } = {}) {
+export async function requestSharedBrain(request, { spawnImpl = spawn, env = process.env, timeoutMs = 480000 } = {}) {
   const body = validateRequest(request);
   const target = env.ROYAL_BRAIN_SSH_TARGET || 'root@45.192.12.242';
   const identity = env.ROYAL_BRAIN_SSH_KEY || join(homedir(), '.ssh', 'royal_server_ed25519');
@@ -159,9 +164,24 @@ export async function requestSharedBrain(request, { spawnImpl = spawn, env = pro
 export function formatSharedResponse(envelope, clientCommit) {
   const proof = envelope.provenance;
   const lines = [proof ? 'Общий серверный граф: выпуск ' + proof.releaseId + '.' : 'Общий серверный граф.'];
-  if (proof) lines.push('Снимок: ' + proof.snapshotId + '. Runtime: ' + proof.runtimeFingerprint + '.', 'Подтверждение: ' + proof.verifiedAt + '.');
+  if (proof) lines.push('Снимок: ' + proof.snapshotId + '. Runtime: ' + proof.runtimeFingerprint + '.', 'Полная проверка файлов снимка: ' + proof.verifiedAt + '.');
+  if (envelope.result.check) lines.push('Текущий выпуск сверен: ' + envelope.result.check.checkedAt + '. Чтение проверяет выбранную публикацию.');
   if (clientCommit) lines.push('Рабочий коммит этого ПК: ' + clientCommit + '.');
-  for (const warning of envelope.warnings ?? []) lines.push('Предупреждение: ' + (warning.message || warning.code));
+  const groups = new Map();
+  for (const warning of envelope.warnings ?? []) {
+    const key = warning.code + ':' + (warning.message ?? '');
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(warning);
+  }
+  const labels = { partial_source_coverage: 'Частичное покрытие исходников', mixed_source_provenance: 'Несколько исходных версий',
+    knowledge_needs_review: 'Записи знаний требуют пересмотра', local_checkout_differs_from_production: 'Рабочая копия отличается от опубликованной версии' };
+  for (const group of groups.values()) {
+    const warning = group[0];
+    const label = warning.message || (labels[warning.code] ? labels[warning.code] + ' [' + warning.code + ']' : warning.code);
+    const count = group.length > 1 ? ' (' + group.length + ' компонентов)' : warning.count ? ' (' + warning.count + ')' : '';
+    const examples = group.map(item => item.component).filter(Boolean).slice(0, 3);
+    lines.push('Предупреждение: ' + label + count + (examples.length ? ': ' + examples.join(', ') + (group.length > examples.length ? ', ...' : '') : ''));
+  }
   if (!envelope.ok) lines.push('Ошибка: ' + envelope.error.message);
   if (envelope.result.text) lines.push('', envelope.result.text);
   return clean(lines.join('\n'));

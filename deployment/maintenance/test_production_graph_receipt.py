@@ -1,6 +1,7 @@
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
 from types import SimpleNamespace
 import tempfile
@@ -65,19 +66,28 @@ class Fixture:
                                                'runningImage': 'sha256:' + 'c' * 64})
         self.cleanup = SimpleNamespace(RELEASES=root / 'releases', LIVE=self.live, MODULES=self.modules,
                                        MODULE_STATE=self.state, module_source_proof=Mock(return_value=None))
+        self.modules.mkdir(exist_ok=True)
+        self.current = {'Image':'sha256:'+'c'*64, 'Id':'d'*64,
+                        'Config':{'Labels':{'org.opencontainers.image.revision':self.commit}},
+                        'State':{'Status':'running','Running':True,'Health':{'Status':'healthy'},'StartedAt':'2026-11-01T00:00:00.000000000Z'}}
+        self.cleanup.healthy = Mock(return_value=self.current)
         self.plan = {'release': 'current', 'sourceCommit': self.commit, 'currentImage': 'sha256:' + 'c' * 64,
                      'moduleHostContract': self.host_contract, 'independentModuleProofs': [],
-                     'programHashCommand': 'console.log(JSON.stringify({"verified":"reader"}))'}
+                     'programHashCommand': 'console.log(JSON.stringify({"verified":"reader"}))',
+                     'services':{'/royal-game-1':{'id':self.current['Id'],'started':self.current['State']['StartedAt']}}}
         self.refresh()
 
     def prepare_check(self, receipt):
-        current = {'Image': receipt['image'], 'Id': 'running-container',
-                   'Config': {'Labels': {'org.opencontainers.image.revision': self.commit}},
-                   'State': {'Status': 'running', 'Health': {'Status': 'healthy'}, 'StartedAt': 'before'}}
+        current = self.current
         self.cleanup.healthy = Mock(return_value=current)
         self.cleanup.select_current_release = Mock(return_value='current')
         self.cleanup.run = Mock(return_value=json.dumps(receipt['runtimeInventory']))
         self.cleanup.docker_object = Mock(return_value=current)
+
+    def publication_locks(self):
+        paths = [self.cleanup.RELEASES/'themed-publish.lock', self.live/'.client-presentation-deploy.lock', self.state/'module.lock']
+        for path in paths: path.touch(mode=0o600)
+        return paths
 
     def projection(self, files):
         inputs = {name: sha(raw) for name, raw in files.items()}
@@ -112,6 +122,7 @@ class ProductionGraphReceiptTest(unittest.TestCase):
             self.assertTrue(all(row['coverage'] == 'complete' for row in components.values()))
             self.assertEqual(result['modules'][0]['availability'], 'published-package-only')
             self.assertEqual(result['runtimeFingerprint'], graph.digest(graph.identity_payload(result)))
+            self.assertEqual(result['containerIdentity'], {'id':'d'*64,'startedAt':'2026-11-01T00:00:00.000000000Z'})
 
     def test_missing_origins_stay_partial_and_are_never_inferred_from_source_commit(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -172,6 +183,23 @@ class ProductionGraphReceiptTest(unittest.TestCase):
             graph.origin(row, sha(b'other'))
         for name in ['../outside', '.env', 'server/.env.local', '.ssh/key', 'a\nname', '/etc/file']:
             with self.subTest(name=name), self.assertRaises(RuntimeError): graph.safe_source(name)
+
+    def test_sealed_phaser_runtime_data_paths_are_not_graph_source_paths(self):
+        with tempfile.TemporaryDirectory() as temp:
+            fixture = Fixture(Path(temp))
+            file = fixture.release/'build-result.json'
+            built = json.loads(file.read_text())
+            paths = ['dist-server/runtime/node_modules/phaser/src/data/DataManager.js',
+                     'dist-server/runtime/node_modules/phaser/src/data/DataManagerPlugin.js',
+                     'dist-server/runtime/node_modules/phaser/src/data/events/CHANGE_DATA_EVENT.js']
+            for name in paths: built['program'][name] = sha(b'compiled dependency')
+            write(file, built); fixture.refresh()
+            receipt = graph.collect_verified(fixture.plan, fixture.cleanup)
+            for name in paths:
+                self.assertEqual(receipt['runtimeInventory'][name], sha(b'compiled dependency'))
+                with self.assertRaisesRegex(RuntimeError, 'Sensitive graph source path'): graph.safe_source(name)
+            for name in ['../data/file', '/app/data/file', 'data/../file', 'data\\file', 'data\nfile']:
+                with self.subTest(name=name), self.assertRaises(RuntimeError): graph.safe_inventory_path(name)
 
     def test_emit_is_immutable_atomic_and_failed_recollection_preserves_latest(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -249,6 +277,104 @@ class ProductionGraphReceiptTest(unittest.TestCase):
             fixture.cleanup.run.side_effect = read_runtime
             with self.assertRaisesRegex(RuntimeError, 'Production module differs'):
                 graph.verify_live_receipt(receipt, fixture.cleanup)
+
+    def test_publication_check_is_identity_only_and_holds_all_shared_locks(self):
+        with tempfile.TemporaryDirectory() as temp:
+            fixture = Fixture(Path(temp)); receipt = graph.collect_verified(fixture.plan, fixture.cleanup)
+            fixture.prepare_check(receipt); fixture.publication_locks(); handles=[]; passes=[]
+            (fixture.live/'server/index.ts').write_bytes(b'unsupported in-place edit')
+            (fixture.modules/'example/versions/1.0.0/main.js').write_bytes(b'unsupported asset edit')
+            original = graph.verify_publication_identities
+            def identities(value, cleanup):
+                self.assertEqual(len(handles),3)
+                for handle in handles: os.fstat(handle)
+                passes.append(True); return original(value,cleanup)
+            with patch.object(graph.fcntl,'flock',side_effect=lambda handle,flags:handles.append(handle)) as locks, patch.object(graph,'verify_publication_identities',side_effect=identities):
+                result = graph.verify_publication_receipt(receipt,fixture.cleanup,owner_uid=os.getuid())
+            self.assertEqual(result['checkScope'],'deployment-identity')
+            self.assertEqual(result['lastProgramVerificationAt'],receipt['collectedAt'])
+            self.assertEqual(result['runtimeFingerprint'],receipt['runtimeFingerprint']);self.assertEqual(len(passes),2)
+            self.assertTrue(all(call.args[1] == graph.fcntl.LOCK_SH|graph.fcntl.LOCK_NB for call in locks.call_args_list))
+            for handle in handles:
+                with self.assertRaises(OSError): os.fstat(handle)
+            fixture.cleanup.run.assert_not_called()
+            fixture.cleanup.healthy.assert_not_called()
+            self.assertEqual(fixture.cleanup.docker_object.call_args_list,[unittest.mock.call('container','royal-game-1')]*2)
+            with self.assertRaisesRegex(RuntimeError,'Production source differs'): graph.verify_live_receipt(receipt,fixture.cleanup)
+
+    def test_publication_check_requires_recorded_docker_running_and_health_without_health_api(self):
+        for field in ['status','running','health','missing-health']:
+            with self.subTest(field=field),tempfile.TemporaryDirectory() as temp:
+                fixture=Fixture(Path(temp));receipt=graph.collect_verified(fixture.plan,fixture.cleanup)
+                fixture.prepare_check(receipt);fixture.publication_locks()
+                if field=='status':fixture.current['State']['Status']='exited'
+                if field=='running':fixture.current['State']['Running']=False
+                if field=='health':fixture.current['State']['Health']['Status']='unhealthy'
+                if field=='missing-health':fixture.current['State'].pop('Health')
+                with self.assertRaisesRegex(RuntimeError,'not running and healthy'):
+                    graph.verify_publication_receipt(receipt,fixture.cleanup,owner_uid=os.getuid())
+                fixture.cleanup.healthy.assert_not_called();fixture.cleanup.run.assert_not_called()
+
+    def test_publication_check_fails_closed_on_container_and_selected_release_changes(self):
+        for field in ['image','source','id','started','release','missing-recorded','missing-fresh']:
+            with self.subTest(field=field),tempfile.TemporaryDirectory() as temp:
+                fixture=Fixture(Path(temp));receipt=graph.collect_verified(fixture.plan,fixture.cleanup)
+                fixture.prepare_check(receipt);fixture.publication_locks()
+                if field=='image':fixture.current['Image']='sha256:'+'e'*64
+                if field=='source':fixture.current['Config']['Labels']['org.opencontainers.image.revision']='e'*40
+                if field=='id':fixture.current['Id']='e'*64
+                if field=='started':fixture.current['State']['StartedAt']='2026-11-02T00:00:00Z'
+                if field=='release':fixture.cleanup.select_current_release.return_value='other'
+                if field=='missing-recorded':
+                    receipt.pop('containerIdentity');receipt['runtimeFingerprint']=graph.digest(graph.identity_payload(receipt))
+                if field=='missing-fresh':fixture.current['State'].pop('StartedAt')
+                with self.assertRaises(RuntimeError):graph.verify_publication_receipt(receipt,fixture.cleanup,owner_uid=os.getuid())
+                fixture.cleanup.run.assert_not_called()
+
+    def test_publication_check_fails_closed_on_pointers_manifests_and_host_contract(self):
+        for field in ['pointer','added-pointer','manifest','contract']:
+            with self.subTest(field=field),tempfile.TemporaryDirectory() as temp:
+                fixture=Fixture(Path(temp));receipt=graph.collect_verified(fixture.plan,fixture.cleanup)
+                fixture.prepare_check(receipt);fixture.publication_locks()
+                if field=='pointer':fixture.module('1.0.1')
+                if field=='added-pointer':write(fixture.modules/'other/active.json',{})
+                if field=='manifest':write(fixture.modules/'example/versions/1.0.0/manifest.json',{'changed':True})
+                if field=='contract':write(fixture.state/'host.json',{'changed':True})
+                with self.assertRaises(RuntimeError):graph.verify_publication_receipt(receipt,fixture.cleanup,owner_uid=os.getuid())
+                fixture.cleanup.run.assert_not_called()
+
+    def test_publication_check_lock_contention_and_missing_lock_never_scan_program(self):
+        with tempfile.TemporaryDirectory() as temp:
+            fixture=Fixture(Path(temp));receipt=graph.collect_verified(fixture.plan,fixture.cleanup)
+            fixture.prepare_check(receipt);paths=fixture.publication_locks();fixture.cleanup.healthy.reset_mock()
+            with patch.object(graph.fcntl,'flock',side_effect=BlockingIOError):
+                with self.assertRaises(BlockingIOError):graph.verify_publication_receipt(receipt,fixture.cleanup,owner_uid=os.getuid())
+            fixture.cleanup.healthy.assert_not_called();fixture.cleanup.run.assert_not_called()
+            fixture.cleanup.docker_object.assert_not_called()
+            paths[-1].unlink()
+            with self.assertRaises(FileNotFoundError):graph.verify_publication_receipt(receipt,fixture.cleanup,owner_uid=os.getuid())
+            fixture.cleanup.healthy.assert_not_called();fixture.cleanup.run.assert_not_called()
+            fixture.cleanup.docker_object.assert_not_called()
+
+    def test_publication_check_repeats_mutable_identities_before_unlock(self):
+        with tempfile.TemporaryDirectory() as temp:
+            fixture=Fixture(Path(temp));receipt=graph.collect_verified(fixture.plan,fixture.cleanup)
+            fixture.prepare_check(receipt);fixture.publication_locks();original=graph.verify_publication_identities;passes=[]
+            def identities(value,cleanup):
+                original(value,cleanup);passes.append(True)
+                if len(passes)==1:fixture.module('1.0.1')
+            with patch.object(graph,'verify_publication_identities',side_effect=identities):
+                with self.assertRaisesRegex(RuntimeError,'pointer differs'):graph.verify_publication_receipt(receipt,fixture.cleanup,owner_uid=os.getuid())
+            self.assertEqual(len(passes),1)
+
+    def test_collector_and_full_check_require_fresh_recorded_container_identity(self):
+        with tempfile.TemporaryDirectory() as temp:
+            fixture=Fixture(Path(temp));receipt=graph.collect_verified(fixture.plan,fixture.cleanup)
+            fixture.prepare_check(receipt)
+            fixture.current['Id']='e'*64
+            with self.assertRaisesRegex(RuntimeError,'container differs'):graph.verify_live_receipt(receipt,fixture.cleanup)
+            fixture.cleanup.run.assert_not_called()
+            with self.assertRaisesRegex(RuntimeError,'maintenance container identity changed'):graph.collect_verified(fixture.plan,fixture.cleanup)
 
 
 if __name__ == '__main__': unittest.main()

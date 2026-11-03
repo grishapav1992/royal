@@ -187,3 +187,22 @@ test('explicit local mode preserves local status, build and queries without a se
   await assert.rejects(runGraphCommand(['status', '--local', '--local'], options), /only once/);
   await assert.rejects(runGraphCommand(['query', '--local', 'Wallet', '--graph', '/private'], options), /Use build/);
 });
+
+test('large published catalogues produce compact warnings while preserving coverage and review counts', async () => {
+  const warnings = Array.from({ length: 123 }, (_, i) => ({ code: 'partial_source_coverage', component: 'module:game-' + i }));
+  warnings.push({ code: 'knowledge_needs_review', count: 19 });
+  const text = formatSharedResponse(response({ warnings }));
+  assert.equal(text.split('partial_source_coverage').length - 1, 1);
+  assert.match(text, /123 компонентов/);
+  assert.match(text, /module:game-0/);
+  assert.match(text, /knowledge_needs_review\] \(19\)/);
+  assert.ok(text.length < 2000);
+  assert.equal(warnings.length, 124);
+  const transport = fakeSsh(call => reply(call, response({ warnings, result: { text: 'Answer', check: {
+    scope: 'deployment-identity', checkedAt: '2026-11-03T12:00:00Z', lastProgramVerificationAt: '2026-11-03T11:00:00Z' } } })));
+  const result = await requestSharedBrain(parseSharedCommand('brain', ['Wallet']), { spawnImpl: transport.spawnImpl, env: {} });
+  assert.equal(result.envelope.warnings.length, 124);
+  assert.equal(result.envelope.result.check.scope, 'deployment-identity');
+  const invalid = fakeSsh(call => reply(call, response({ result: { text: 'Answer', check: { scope: 'all-files-fresh', checkedAt: 'now' } } })));
+  await assert.rejects(requestSharedBrain(parseSharedCommand('brain', ['Wallet']), { spawnImpl: invalid.spawnImpl, env: {} }), { code: 'invalid_response' });
+});

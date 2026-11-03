@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Describe the exact already-verified production state for the shared code graph."""
 import argparse
+import fcntl
 import hashlib
 import importlib.util
 import json
@@ -32,10 +33,17 @@ def digest(value):
     return hashlib.sha256(canonical(value)).hexdigest()
 
 
-def safe_source(name):
+def safe_inventory_path(name):
+    """Validate an opaque path in an already-verified sealed program inventory."""
     require(isinstance(name, str) and name and not re.search(r'[\\\x00\r\n]', name), 'Invalid graph source path')
     path = PurePosixPath(name)
     require(not path.is_absolute() and all(part not in {'', '.', '..'} for part in name.split('/')), 'Unsafe graph source path')
+    return name
+
+
+def safe_source(name):
+    safe_inventory_path(name)
+    path = PurePosixPath(name)
     require(not any(re.match(r'^(?:\.env(?:\..*)?|\.git|\.ssh|secrets?|credentials?|data)$', part, re.I) for part in path.parts), 'Sensitive graph source path')
     require(path.suffix.lower() not in {'.db', '.sqlite', '.sqlite3', '.pem', '.key', '.dump'}, 'Private graph source path')
     return name
@@ -107,6 +115,13 @@ def identity_payload(receipt):
     return {key: value for key, value in receipt.items() if key not in {'collectedAt', 'runtimeFingerprint'}}
 
 
+def container_identity(current):
+    identity = {'id': current.get('Id'), 'startedAt': current.get('State', {}).get('StartedAt')}
+    require(SHA.fullmatch(str(identity['id'])) and isinstance(identity['startedAt'], str)
+            and re.fullmatch(r'\d{4}-\d{2}-\d{2}T[^\s\x00-\x1f]{1,96}', identity['startedAt']), 'Missing fresh production container identity')
+    return identity
+
+
 def collect_verified(plan, cleanup):
     """Call only after cleanup.apply succeeded, while the existing publication locks remain held."""
     release = plan['release']
@@ -118,10 +133,18 @@ def collect_verified(plan, cleanup):
     require(install['sourceCommit'] == plan['sourceCommit'] and COMMIT.fullmatch(plan['sourceCommit']), 'Verified production commit changed')
     require(plan['currentImage'] == built['image'] == published.get('runningImage', published.get('image'))
             and published.get('published') is True, 'Verified running release changed')
+    current = cleanup.healthy()
+    require(current['Image'] == plan['currentImage']
+            and current['Config'].get('Labels', {}).get('org.opencontainers.image.revision') == plan['sourceCommit'],
+            'Verified running container changed')
+    identity = container_identity(current)
+    services = [row for name, row in plan.get('services', {}).items() if name.lstrip('/') == 'royal-game-1']
+    require(len(services) == 1 and services[0].get('id') == identity['id'] and services[0].get('started') == identity['startedAt'],
+            'Verified maintenance container identity changed')
     require(isinstance(built.get('program'), dict) and built['program'], 'Verified runtime inventory missing')
     command = plan['programHashCommand']
     require(isinstance(command, str) and command and len(command.encode()) <= 1024**2, 'Verified runtime reader missing')
-    runtime = {safe_source(name): value for name, value in sorted(built['program'].items())}
+    runtime = {safe_inventory_path(name): value for name, value in sorted(built['program'].items())}
     require(all(SHA.fullmatch(str(value)) for value in runtime.values()), 'Invalid runtime hash')
     proof_hashes = {row['path']: row['sha256'] for row in plan['proofs']}
     for name in ['install-manifest.json', 'build-result.json', 'published.json', 'release-github.json']:
@@ -213,7 +236,7 @@ def collect_verified(plan, cleanup):
         components.append(projected or live_component('module:' + game + ':' + version, 'module', source_inventory,
             lambda name, directory=directory: bool(directory) and name.startswith(directory + '/'), gameId=game, version=version))
     receipt = {'schemaVersion': 1, 'verified': True, 'release': release, 'sourceCommit': plan['sourceCommit'],
-               'image': plan['currentImage'], 'runtimeInventory': runtime, 'sourceInventory': source_inventory,
+               'image': plan['currentImage'], 'containerIdentity': identity, 'runtimeInventory': runtime, 'sourceInventory': source_inventory,
                'runtimeReader': {'command': command, 'sha256': hashlib.sha256(command.encode()).hexdigest()},
                'moduleInventory': module_inventory, 'moduleHostContractSha256': plan['moduleHostContract'],
                'modules': modules, 'components': components, 'evidence': evidence,
@@ -263,6 +286,7 @@ def verify_live_receipt(receipt, cleanup):
     require(isinstance(command, str) and command and len(command.encode()) <= 1024**2
             and hashlib.sha256(command.encode()).hexdigest() == reader['sha256'], 'Graph runtime reader differs')
     current = cleanup.healthy()
+    require(container_identity(current) == receipt.get('containerIdentity'), 'Production container differs from graph target')
     require(current['Image'] == receipt['image']
             and current['Config'].get('Labels', {}).get('org.opencontainers.image.revision') == receipt['sourceCommit'],
             'Production image differs from graph target')
@@ -278,6 +302,77 @@ def verify_live_receipt(receipt, cleanup):
             and final.get('State', {}).get('Status') == 'running'
             and final.get('State', {}).get('Health', {}).get('Status') == 'healthy', 'Production changed during graph verification')
     return {'runtimeFingerprint': receipt['runtimeFingerprint']}
+
+
+def verify_publication_identities(receipt, cleanup):
+    # Query identity checks use Docker's recorded health status, without a fresh health API call.
+    # Full maintenance and verify_live_receipt retain their stronger healthy() checks.
+    current = cleanup.docker_object('container', 'royal-game-1')
+    state = current.get('State', {})
+    require(state.get('Status') == 'running' and state.get('Running') is True
+            and state.get('Health', {}).get('Status') == 'healthy', 'Published game container is not running and healthy')
+    require(container_identity(current) == receipt.get('containerIdentity'), 'Production container differs from graph target')
+    require(current['Image'] == receipt['image']
+            and current['Config'].get('Labels', {}).get('org.opencontainers.image.revision') == receipt['sourceCommit'],
+            'Production image differs from graph target')
+    require(cleanup.select_current_release(current['Image'], receipt['sourceCommit']) == receipt['release'],
+            'Production release differs from graph target')
+    modules = receipt.get('modules')
+    require(isinstance(modules, list) and len(modules) <= 512, 'Missing publication module identities')
+    names = set()
+    for row in modules:
+        game, version = row.get('gameId'), row.get('version')
+        require(isinstance(game, str) and re.fullmatch(r'[a-z0-9-]+', game) and isinstance(version, str)
+                and re.fullmatch(r'[A-Za-z0-9._-]+', version) and version not in {'.', '..'} and game not in names,
+                'Invalid publication module identity')
+        names.add(game)
+        directory = cleanup.MODULES/game
+        require(directory.is_dir() and not directory.is_symlink(), 'Unsafe active module directory')
+        pointer_path = directory/'active.json'
+        require(SHA.fullmatch(str(row.get('pointerSha256', ''))) and sha_file(pointer_path) == row['pointerSha256'],
+                'Production module pointer differs from graph target')
+        pointer = read_json(pointer_path)
+        manifest_path = '/game-modules/' + game + '/versions/' + version + '/manifest.json'
+        require(pointer.get('manifest') == manifest_path and pointer.get('sha256') == row.get('manifestSha256')
+                and SHA.fullmatch(str(row.get('manifestSha256', ''))), 'Production module manifest pointer changed')
+        package = directory/'versions'/version
+        require(package.is_dir() and not package.is_symlink() and not package.parent.is_symlink(), 'Unsafe active module package')
+        manifest_file = package/'manifest.json'
+        require(sha_file(manifest_file) == row['manifestSha256'], 'Production module manifest differs from graph target')
+        manifest = read_json(manifest_file)
+        require(manifest.get('gameId') == game and manifest.get('version') == version, 'Production module version differs from graph target')
+    pointers = {str(path.relative_to(cleanup.MODULES)) for path in cleanup.MODULES.glob('*/active.json')}
+    require(pointers == {game+'/active.json' for game in names}, 'Production active module set changed')
+    require(SHA.fullmatch(str(receipt.get('moduleHostContractSha256', '')))
+            and sha_file(cleanup.MODULE_STATE/'host.json') == receipt['moduleHostContractSha256'],
+            'Production module host contract changed')
+
+
+def verify_publication_receipt(receipt, cleanup, owner_uid=0):
+    """Check selected deployment identities for queries, never a fresh program-byte proof."""
+    require(receipt.get('schemaVersion') == 1 and receipt.get('verified') is True
+            and SHA.fullmatch(str(receipt.get('runtimeFingerprint', '')))
+            and digest(identity_payload(receipt)) == receipt['runtimeFingerprint'], 'Invalid graph receipt identity')
+    require(isinstance(receipt.get('containerIdentity'), dict)
+            and isinstance(receipt.get('collectedAt'), str) and re.fullmatch(r'\d{4}-\d{2}-\d{2}T[^\s\x00-\x1f]{1,96}', receipt['collectedAt']),
+            'Missing recorded production verification identity')
+    locks = []
+    try:
+        for path in [cleanup.RELEASES/'themed-publish.lock', cleanup.LIVE/'.client-presentation-deploy.lock', cleanup.MODULE_STATE/'module.lock']:
+            lock = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+            locks.append(lock)
+            info = os.fstat(lock)
+            require(stat.S_ISREG(info.st_mode) and info.st_uid == owner_uid and info.st_nlink == 1
+                    and not info.st_mode & 0o022, 'Untrusted publication lock')
+            fcntl.flock(lock, fcntl.LOCK_SH | fcntl.LOCK_NB)
+        verify_publication_identities(receipt, cleanup)
+        # Repeat all mutable publication identities while the shared locks still exclude publishers.
+        verify_publication_identities(receipt, cleanup)
+        return {'runtimeFingerprint':receipt['runtimeFingerprint'], 'checkScope':'deployment-identity',
+                'checkedAt':time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+                'lastProgramVerificationAt':receipt['collectedAt']}
+    finally:
+        for lock in reversed(locks): os.close(lock)
 
 
 def atomic_json(path, value, immutable=False):
@@ -322,15 +417,19 @@ def emit_verified(plan, cleanup, output_root=None):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--check', required=True, type=Path, help='Recheck an existing trusted production receipt')
+    operation = parser.add_mutually_exclusive_group(required=True)
+    operation.add_argument('--check', type=Path, help='Recheck every program byte for a trusted production receipt')
+    operation.add_argument('--check-publication', type=Path, help='Query-only deployment identity check; does not verify program bytes')
     args = parser.parse_args()
     try:
-        info = args.check.lstat()
+        path = args.check or args.check_publication
+        info = path.lstat()
         require(info.st_uid == 0 and not info.st_mode & 0o022, 'Untrusted graph receipt permissions')
         spec = importlib.util.spec_from_file_location('graph_check_cleanup', Path(__file__).with_name('cleanup-release-history.py'))
         cleanup = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(cleanup)
-        print(json.dumps(verify_live_receipt(read_json(args.check), cleanup)), flush=True)
+        checker = verify_live_receipt if args.check else verify_publication_receipt
+        print(json.dumps(checker(read_json(path), cleanup)), flush=True)
     except Exception as error:
         print(str(error), file=sys.stderr)
         raise SystemExit(1)

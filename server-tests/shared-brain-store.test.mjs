@@ -9,7 +9,8 @@ import { ARTIFACT_NAMES, loadActiveSnapshot, publishSnapshot, readStatus, record
 import { graphQueryEnvironment, handleSharedRequest as rawSharedRequest, validateSharedRequest } from '../scripts/shared-brain-reader.mjs';
 
 const handleSharedRequest = (request, options) => rawSharedRequest(request, {
-  verifyRuntime: async (path, value) => value.runtimeFingerprint, ...options,
+  verifyIdentity: async (path, value) => ({ runtimeFingerprint: value.runtimeFingerprint, checkScope: 'deployment-identity',
+    checkedAt: '2026-11-03T12:00:00.000Z', lastProgramVerificationAt: '2026-11-03T10:00:00.000Z' }), ...options,
 });
 
 const output = fileURLToPath(new URL('../graphify-out/', import.meta.url));
@@ -102,20 +103,53 @@ test('read-only operations do not create state or mutate an installed snapshot',
   assert.deepEqual(await inventory(root), before);
 }));
 
-test('missing status needs no live runtime, while failed live checks never report an existing graph as current', async () => fixture(async root => {
+test('missing status needs no publication verifier, while failed identity checks never report an existing graph as current', async () => fixture(async root => {
   let checks = 0;
   const unavailable = async () => { checks++; throw new Error('private system detail'); };
-  const missing = await rawSharedRequest({ schemaVersion: 1, operation: 'status' }, { storeRoot: root, verifyRuntime: unavailable });
+  const missing = await rawSharedRequest({ schemaVersion: 1, operation: 'status' }, { storeRoot: root, verifyIdentity: unavailable });
   assert.equal(missing.exitCode, 0); assert.equal(missing.envelope.result.state, 'missing'); assert.equal(checks, 0);
   await publishSnapshot(root, candidate('a'));
   for (const request of [{ schemaVersion: 1, operation: 'status' }, { schemaVersion: 1, operation: 'brain', question: 'кошелёк' }]) {
-    const response = await rawSharedRequest(request, { storeRoot: root, verifyRuntime: unavailable });
+    const response = await rawSharedRequest(request, { storeRoot: root, verifyIdentity: unavailable });
     assert.equal(response.exitCode, 4); assert.equal(response.envelope.ok, false);
     assert.equal(response.envelope.provenance, null); assert.equal(response.envelope.result.state, 'unverified');
-    assert.equal(response.envelope.error.code, 'runtime_unverified');
+    assert.equal(response.envelope.error.code, 'publication_unverified');
     assert.doesNotMatch(JSON.stringify(response), /private system detail/);
   }
   assert.equal(checks, 2);
+}));
+
+test('publication identity is freshly checked before and after every status and graph answer', async () => fixture(async root => {
+  await publishSnapshot(root, candidate('a'));
+  for (const request of [{ schemaVersion: 1, operation: 'status' }, { schemaVersion: 1, operation: 'brain', question: 'кошелёк' }]) {
+    let checks = 0;
+    const response = await handleSharedRequest(request, { storeRoot: root, verifyIdentity: async (path, value) => {
+      assert.equal(path, join(root, 'receipts', fingerprint('a') + '.json'));
+      checks++;
+      return { runtimeFingerprint: value.runtimeFingerprint, checkScope: 'deployment-identity',
+        checkedAt: '2026-11-03T12:00:0' + checks + '.000Z', lastProgramVerificationAt: '2026-11-03T10:00:00.000Z' };
+    } });
+    assert.equal(response.exitCode, 0); assert.equal(checks, 2);
+    assert.deepEqual(response.envelope.result.check, { scope: 'deployment-identity', checkedAt: '2026-11-03T12:00:02.000Z', lastProgramVerificationAt: '2026-11-03T10:00:00.000Z' });
+    assert.match(response.envelope.result.text, /только идентификаторы выбранной публикации/);
+    assert.match(response.envelope.result.text, /Сохранённая полная проверка файлов программы: 2026-11-03T10:00:00.000Z/);
+  }
+}));
+
+test('a changed publication after the graph calculation discards its result and a wrong check scope fails closed', async () => fixture(async root => {
+  await publishSnapshot(root, candidate('a'));
+  let checks = 0, queries = 0;
+  const response = await handleSharedRequest({ schemaVersion: 1, operation: 'query', question: 'wallet' }, { storeRoot: root,
+    verifyIdentity: async (path, value) => { if (++checks === 2) throw new Error('publication changed');
+      return { runtimeFingerprint: value.runtimeFingerprint, checkScope: 'deployment-identity',
+        checkedAt: '2026-11-03T12:00:00.000Z', lastProgramVerificationAt: '2026-11-03T10:00:00.000Z' };
+    }, runGraphify: async () => { queries++; return { exitCode: 0, text: 'discard this answer' }; } });
+  assert.equal(checks, 2); assert.equal(queries, 1); assert.equal(response.exitCode, 4);
+  assert.equal(response.envelope.error.code, 'publication_unverified'); assert.equal(response.envelope.result.text, '');
+  const wrongScope = await handleSharedRequest({ schemaVersion: 1, operation: 'status' }, { storeRoot: root,
+    verifyIdentity: async (path, value) => ({ runtimeFingerprint: value.runtimeFingerprint, checkScope: 'full-program',
+      checkedAt: '2026-11-03T12:00:00.000Z', lastProgramVerificationAt: '2026-11-03T10:00:00.000Z' }) });
+  assert.equal(wrongScope.exitCode, 4); assert.equal(wrongScope.envelope.error.code, 'publication_unverified');
 }));
 
 test('a new receipt during a running query prevents a stale production answer', async () => fixture(async root => {

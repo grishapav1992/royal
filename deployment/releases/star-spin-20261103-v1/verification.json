@@ -1,0 +1,513 @@
+{
+  "release": "star-spin-20261103-v1",
+  "status": "verified; temporary material cleanup pending",
+  "sourceCommit": "24cce094af9b39e008a31c3e5803436174e95a36",
+  "baseCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
+  "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "package": "1.4.0-cb27b33abd7a",
+  "catalogue": {
+    "before": 19,
+    "after": 20,
+    "added": [
+      "studio-wild-nudge"
+    ],
+    "restored": [],
+    "authorization": "The user asked to leave the existing Star Spin content and publish it to production."
+  },
+  "rules": {
+    "version": 2,
+    "initialStakeUnits": "10",
+    "ordinaryRoundIncludesLines": 20,
+    "freeContinuations": 8,
+    "collectionCompanions": 4,
+    "exactModelRtp": 0.96137192293385
+  },
+  "qualification": {
+    "profiles": 38,
+    "stakePolicies": 20,
+    "admissionPolicies": 20,
+    "legacyUnqualifiedUnchanged": 114
+  },
+  "tests": {
+    "commonStakeUnit": 4,
+    "collection": 6,
+    "riveAssets": 2,
+    "moduleProjection": 8,
+    "installScope": 12,
+    "acceptedRoundTests": 2,
+    "legacyCases": 23,
+    "legacyBonuses": 7,
+    "legacyContinuations": 47,
+    "preservedWardrobeVersion": 3,
+    "releaseTooling": {
+      "passed": 33,
+      "failed": 1,
+      "limitation": "Existing synthetic Git observer uses a Unix executable script and fails with spawn EFTYPE on Windows. Actual release:verify --github passed against Git for Windows."
+    },
+    "cleanupBoundaries": 4,
+    "mandatoryWallet": {
+      "passed": true,
+      "command": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts",
+      "execution": "Executed with the two native Star Spin tests and six collection tests. Every mandatory wallet case passed. The aggregate run had one collection clock-fixture failure; that fixture was fixed and all six collection tests then passed.",
+      "monetaryInputsUnchangedSinceRun": true
+    }
+  },
+  "artifact": {
+    "releaseManifestSha256": "266bded41d3106431637adf2968db1cdacc97c2a6175f5d88dafa8e81b37dbf9",
+    "backend": {
+      "path": "dist-server/index.js",
+      "sha256": "7b11acb06fdbc5ff43a9cd18f9bdf5a687ca11ccd086562508150a48a9d6684a"
+    },
+    "client": {
+      "dist/assets/catalog-cover-BtVlY3hb.webp": "51c6b39a839fb3abbdebc3bba8bc105a2ba92ae764f4943454bed614405d9bc7",
+      "dist/assets/index-S4-fg_wP.js": "90a2e703e1670f2f943db0ad8596d90872d7c510b9b5b3eacacba4d158e673ba",
+      "dist/assets/index-V4GHKrLV.css": "e21ee49745a1903e8fe694615407d4d07053f0e5254c935aef70f5b5166c10e2",
+      "dist/index.html": "b323db95a3f1afedc4f90ff9146b4fe23f19257ff8c1daf7c81718f6a89b64b2"
+    }
+  },
+  "preserved": {
+    "separateFinancialImage": "sha256:f5fedb95bb0d295e839110ce263d48e2b6a4cc58295130268f731bcae6805ea2",
+    "retiredRoutes": [
+      "/api/game-wallet",
+      "/api/nile-play/wallet"
+    ],
+    "databaseRestored": false
+  },
+  "limitations": {
+    "physicalMobileDeviceTested": false,
+    "subjectiveAudioListeningTested": false,
+    "productionTestAccountsCreated": 0,
+    "productionTestWagers": 0,
+    "productionTestChatMessages": 0
+  },
+  "browser": {
+    "passedScenarios": 17,
+    "unchangedFinalRuntime": true,
+    "firstRunPassed": 6,
+    "remainingRunPassed": 11,
+    "expectationCorrection": {
+      "sourceCommit": "24cce094af9b39e008a31c3e5803436174e95a36",
+      "runtimeArtifactChanged": false,
+      "passedBeforeCorrection": 6,
+      "correction": "The loss fixture has a positive exact fraction. Its final ticket 0 legitimately credits one cent. Assert that committed cent rather than zero.",
+      "testSha256": "87b0a703a63176914436fd94da4ef6a10aaebe9120bb5540e2587ea5fbcdfa29",
+      "trackedTestUpdateAfterPublication": true
+    },
+    "layout": {
+      "measurements": [
+        {
+          "width": 1440,
+          "height": 1000,
+          "overflow": 0,
+          "stageHeight": 539,
+          "machineHeight": 585,
+          "boardWidth": 781
+        },
+        {
+          "width": 1280,
+          "height": 720,
+          "overflow": 0,
+          "stageHeight": 366,
+          "machineHeight": 400,
+          "boardWidth": 583
+        },
+        {
+          "width": 1024,
+          "height": 768,
+          "overflow": 0,
+          "stageHeight": 307,
+          "machineHeight": 353,
+          "boardWidth": 485
+        },
+        {
+          "width": 800,
+          "height": 600,
+          "overflow": 0,
+          "stageHeight": 246,
+          "machineHeight": 280,
+          "boardWidth": 383
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "overflow": 0,
+          "stageHeight": 129,
+          "machineHeight": 163,
+          "boardWidth": 188
+        },
+        {
+          "width": 500,
+          "height": 760,
+          "overflow": 0,
+          "stageHeight": 345,
+          "machineHeight": 391,
+          "boardWidth": 450
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "overflow": 0,
+          "stageHeight": 429,
+          "machineHeight": 475,
+          "boardWidth": 340
+        },
+        {
+          "width": 320,
+          "height": 568,
+          "overflow": 0,
+          "stageHeight": 216,
+          "machineHeight": 250,
+          "boardWidth": 266
+        },
+        {
+          "width": 844,
+          "height": 390,
+          "overflow": 0,
+          "stageHeight": 130,
+          "machineHeight": 150,
+          "boardWidth": 203
+        }
+      ],
+      "spinPanelDrift": 0
+    },
+    "characters": {
+      "characters": [
+        {
+          "engine": "Rive",
+          "character": "lyra",
+          "ready": true,
+          "bound": true,
+          "loading": false,
+          "fallback": false,
+          "playing": true,
+          "mode": "idle",
+          "reactions": {
+            "select": 1,
+            "wild_align": 16,
+            "round_win": 2
+          }
+        },
+        {
+          "engine": "Rive",
+          "character": "aeliri",
+          "ready": true,
+          "bound": true,
+          "loading": false,
+          "fallback": false,
+          "playing": true,
+          "mode": "idle",
+          "reactions": {
+            "select": 1,
+            "wild_align": 16,
+            "round_win": 2
+          }
+        },
+        {
+          "engine": "Rive",
+          "character": "vespera",
+          "ready": true,
+          "bound": true,
+          "loading": false,
+          "fallback": false,
+          "playing": true,
+          "mode": "idle",
+          "reactions": {
+            "select": 1,
+            "wild_align": 16,
+            "round_win": 2
+          }
+        },
+        {
+          "engine": "Rive",
+          "character": "nyxara",
+          "ready": true,
+          "bound": true,
+          "loading": false,
+          "fallback": false,
+          "playing": true,
+          "mode": "idle",
+          "reactions": {
+            "select": 1,
+            "wild_align": 16,
+            "round_win": 2
+          }
+        }
+      ],
+      "mobileHiddenStops": true,
+      "mobileCollectionResumes": true,
+      "savedBonusRestoresQuietly": true
+    }
+  },
+  "actualBackend": {
+    "passed": true,
+    "actualBackendPort": 2637,
+    "forcedOutcomes": false,
+    "productionAccountsCreated": 0,
+    "productionWagers": 0,
+    "stakes": [
+      {
+        "units": "10",
+        "spentUnits": "10",
+        "creditUnits": "0",
+        "freeContinuations": 0,
+        "replayAndRecoveryUnchanged": true
+      },
+      {
+        "units": "20",
+        "spentUnits": "20",
+        "creditUnits": "6",
+        "freeContinuations": 0,
+        "replayAndRecoveryUnchanged": true
+      },
+      {
+        "units": "50",
+        "spentUnits": "50",
+        "creditUnits": "0",
+        "freeContinuations": 0,
+        "replayAndRecoveryUnchanged": true
+      },
+      {
+        "units": "100",
+        "spentUnits": "100",
+        "creditUnits": "0",
+        "freeContinuations": 0,
+        "replayAndRecoveryUnchanged": true
+      },
+      {
+        "units": "200",
+        "spentUnits": "200",
+        "creditUnits": "0",
+        "freeContinuations": 0,
+        "replayAndRecoveryUnchanged": true
+      },
+      {
+        "units": "500",
+        "spentUnits": "500",
+        "creditUnits": "0",
+        "freeContinuations": 0,
+        "replayAndRecoveryUnchanged": true
+      },
+      {
+        "units": "1000",
+        "spentUnits": "1000",
+        "creditUnits": "7600",
+        "freeContinuations": 0,
+        "replayAndRecoveryUnchanged": true
+      },
+      {
+        "units": "2000",
+        "spentUnits": "2000",
+        "creditUnits": "0",
+        "freeContinuations": 0,
+        "replayAndRecoveryUnchanged": true
+      },
+      {
+        "units": "5000",
+        "spentUnits": "5000",
+        "creditUnits": "5100",
+        "freeContinuations": 0,
+        "replayAndRecoveryUnchanged": true
+      }
+    ],
+    "continuations": 0,
+    "rejectedRequestsDidNotDebit": true
+  },
+  "compiledFixture": {
+    "path": "scripts/wild-nudge-preview.ts",
+    "sha256": "a4d5481b00171910066f6c72226f32769eb67356e0a1bc8ffdd91860dcf042bb",
+    "mode": "NUDGE_COMPILED=1, untransformed Vite preview and compiled backend"
+  },
+  "verifiedAt": "2026-11-03T17:37:45.245300+00:00",
+  "production": {
+    "release": "star-spin-20261103-v1",
+    "sourceCommit": "24cce094af9b39e008a31c3e5803436174e95a36",
+    "baseCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
+    "published": true,
+    "package": "1.4.0-cb27b33abd7a",
+    "publication": {
+      "published": true,
+      "preparedImage": "sha256:9b8fe392d42c67c086883ff09222b48b27268f78ff7e8ef6be66c423244d2660",
+      "runningImage": "sha256:9b8fe392d42c67c086883ff09222b48b27268f78ff7e8ef6be66c423244d2660",
+      "containerRestarted": true,
+      "sourceCommit": "24cce094af9b39e008a31c3e5803436174e95a36",
+      "changedSources": 95,
+      "clientDeltaFiles": 3,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 1,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 13,
+      "addedGames": [
+        "studio-wild-nudge"
+      ],
+      "restoredGames": [],
+      "activeGames": [
+        "studio-caramel-carnival",
+        "studio-last-convoy",
+        "studio-nitro-run",
+        "studio-meme-overload",
+        "studio-velvet-reign",
+        "original-cr-vs-leo",
+        "original-jackie-chan",
+        "royal-plinko",
+        "royal-roulette",
+        "github-crash",
+        "flag-battle",
+        "studio-forest-heart",
+        "studio-caribbean-treasures",
+        "studio-cosmic-escape",
+        "studio-flooded-temple",
+        "studio-afterglow",
+        "studio-dracona",
+        "studio-neopolis",
+        "tsu-e-fa",
+        "studio-wild-nudge"
+      ],
+      "package": "1.4.0-cb27b33abd7a"
+    },
+    "beforeImage": "sha256:e53a4a3fe0152d8b8034800ccdf2c0c43f49d580ad37326c003e74e619e06e1d",
+    "currentImage": "sha256:9b8fe392d42c67c086883ff09222b48b27268f78ff7e8ef6be66c423244d2660",
+    "health": "healthy",
+    "availableBytes": 10837041152,
+    "sourcePathsBefore": 2617,
+    "sourcePathsAfter": 2695,
+    "changedSourcePaths": 95,
+    "externalModuleFilesBefore": 4189,
+    "externalModuleFilesAfter": 4213,
+    "addedModuleGames": [
+      "studio-wild-nudge"
+    ],
+    "retainedGameContractsUnchanged": true,
+    "retainedModuleFilesUnchanged": true,
+    "protectedProgramsUnchanged": true,
+    "configurationUnchanged": true,
+    "mountsUnchanged": true,
+    "otherServicesUnchanged": true,
+    "backup": {
+      "path": "/opt/royal-backups/star-spin-20261103-v1/source.tgz",
+      "bytes": 206398,
+      "sha256": "0ef3ac4ffaa47ac0f504ec73aad28121872c43ea4c895a0e9ee73c58e860e722"
+    }
+  },
+  "public": {
+    "release": "star-spin-20261103-v1",
+    "sourceCommit": "24cce094af9b39e008a31c3e5803436174e95a36",
+    "baseCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
+    "manifestSha256": "266bded41d3106431637adf2968db1cdacc97c2a6175f5d88dafa8e81b37dbf9",
+    "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "at": "2026-11-03T17:17:26.975Z",
+    "passed": true,
+    "httpFiles": 3,
+    "endpoints": {
+      "GET /healthz": 200,
+      "GET /api/progression": 401,
+      "POST /api/progression/spins": 401,
+      "GET /api/demo-wallet": 401,
+      "GET /api/demo-wallet/expansion": 401,
+      "GET /api/game-wallet": 410,
+      "GET /api/nile-play/wallet": 410,
+      "GET /api/auth/me": 200,
+      "GET /api/star-spin/collection": 401
+    },
+    "errors": [],
+    "productionAccountsCreated": 0,
+    "productionStakes": 0,
+    "productionMessages": 0,
+    "deniedGuestPosts": 1,
+    "viewports": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "geometry": {
+          "documentWidth": 1440,
+          "viewportWidth": 1440,
+          "appWidth": 1440,
+          "appScrollWidth": 1440
+        },
+        "errors": []
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "geometry": {
+          "documentWidth": 390,
+          "viewportWidth": 390,
+          "appWidth": 390,
+          "appScrollWidth": 390
+        },
+        "errors": []
+      }
+    ],
+    "module": {
+      "gameId": "studio-wild-nudge",
+      "version": "1.4.0-cb27b33abd7a",
+      "rulesVersion": 2,
+      "progressVersion": 1,
+      "verifiedFiles": 24
+    },
+    "browserScope": "Public compiled offline guest host. Authenticated gameplay, connected chat and wallet recovery verified on the exact compiled local artifact. Browser writes, external requests and WebSockets blocked."
+  },
+  "maintenance": {
+    "status": "completed",
+    "release": "star-spin-20261103-v1",
+    "sourceCommit": "24cce094af9b39e008a31c3e5803436174e95a36",
+    "currentImage": "sha256:9b8fe392d42c67c086883ff09222b48b27268f78ff7e8ef6be66c423244d2660",
+    "rollbackImage": "sha256:e53a4a3fe0152d8b8034800ccdf2c0c43f49d580ad37326c003e74e619e06e1d",
+    "durationSeconds": 739.82,
+    "freeBefore": 10830266368,
+    "freeAfter": 10839662592,
+    "preservedFinancialFiles": 111,
+    "removedEntries": 22,
+    "removedImageTags": 3,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:e53a4a3fe0152d8b8034800ccdf2c0c43f49d580ad37326c003e74e619e06e1d",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "0a73266959bd95a0b054cea905419d45ca55d91dd9512b7455b37293251dd99c",
+      "files": 8589
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "ba2c0964f202c1654527f73302cd3e51d642e03ac4860f3e7333a12446f8ed30",
+      "receipt": "/var/lib/royal-project-brain/receipts/ba2c0964f202c1654527f73302cd3e51d642e03ac4860f3e7333a12446f8ed30.json",
+      "queued": true
+    },
+    "timerEnabled": true
+  },
+  "codeMap": {
+    "available": false,
+    "automaticFallbackUsed": false,
+    "evidence": "Direct verified production inventories, committed source origins and qualification artifacts."
+  },
+  "cleanup": {
+    "status": "ready after evidence is pushed to main",
+    "localObsoletePayloads": [
+      {
+        "beforeFree": 318846586880,
+        "afterFree": 318915092480,
+        "files": 138,
+        "bytes": 68189215.0,
+        "folder": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-release-20261103\\payload",
+        "sourceCommit": "a3ee8208f7a57545ec79f539d6cf4dceeac6f634"
+      },
+      {
+        "files": 138,
+        "bytes": 68189247.0,
+        "beforeFree": 320045621248,
+        "sourceCommit": "5e9d60abc5323abab6facb7f4291158c00b16822",
+        "folder": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-release-20261103\\payload",
+        "afterFree": 320114126848
+      }
+    ]
+  }
+}

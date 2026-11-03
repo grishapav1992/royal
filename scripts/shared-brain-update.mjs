@@ -99,27 +99,40 @@ async function updateLock(root, ownerUid, callback) {
   finally { await lock.close(); await rm(path, { force: true }); }
 }
 
-export async function verifyReceiptRuntime(receiptPath) {
+async function runReceiptVerification(receiptPath, publicationOnly) {
   return new Promise((accept, reject) => {
     const allowed = ['PATH', 'HOME', 'LANG', 'LC_ALL'];
     const env = Object.fromEntries(allowed.filter(key => process.env[key]).map(key => [key, process.env[key]]));
     env.PATH = '/opt/royal-project-brain/runtime/bin:' + (env.PATH || '/usr/local/bin:/usr/bin:/bin');
-    const child = spawn('python3', ['/opt/royal-maintenance/bin/production-graph-receipt.py', '--check', receiptPath],
+    const child = spawn('python3', ['/opt/royal-maintenance/bin/production-graph-receipt.py', publicationOnly ? '--check-publication' : '--check', receiptPath],
       { env, stdio: ['ignore', 'pipe', 'pipe'] });
     let body = '', overflow = false;
     child.stdout.on('data', chunk => { body += chunk.toString('utf8'); if (Buffer.byteLength(body) > 8192) { overflow = true; child.kill(); } });
     child.stderr.resume();
-    const timer = setTimeout(() => child.kill(), 5 * 60 * 1000); timer.unref();
-    const unavailable = () => new SharedBrainError('runtime_unverified', 'The deployed program no longer matches the verified graph receipt.', 4);
+    const timer = setTimeout(() => child.kill(), publicationOnly ? 20_000 : 5 * 60 * 1000); timer.unref();
+    const unavailable = () => new SharedBrainError(publicationOnly ? 'publication_unverified' : 'runtime_unverified', publicationOnly
+      ? 'The selected production publication cannot be verified against the graph receipt.'
+      : 'The deployed program no longer matches the verified graph receipt.', 4);
     child.once('error', () => { clearTimeout(timer); reject(unavailable()); });
     child.once('close', code => {
       clearTimeout(timer);
       if (overflow || code !== 0) return reject(unavailable());
-      try { const result = JSON.parse(body); if (!HASH.test(result?.runtimeFingerprint)) throw Error(); accept(result); }
+      try {
+        const result = JSON.parse(body);
+        if (!HASH.test(result?.runtimeFingerprint)) throw Error();
+        if (publicationOnly && (result.checkScope !== 'deployment-identity'
+          || !Number.isFinite(Date.parse(result.checkedAt)) || !Number.isFinite(Date.parse(result.lastProgramVerificationAt)))) throw Error();
+        accept(result);
+      }
       catch { reject(unavailable()); }
     });
   });
 }
+
+// Publication selection is a separate read contract. It never substitutes for
+// the complete mutable-program verification used by the updater and publisher.
+export const verifyReceiptRuntime = receiptPath => runReceiptVerification(receiptPath, false);
+export const verifyPublicationIdentity = receiptPath => runReceiptVerification(receiptPath, true);
 
 async function pruneReceipts(root, ownerUid, latestFingerprint) {
   const keep = new Set([latestFingerprint]), warnings = [];
