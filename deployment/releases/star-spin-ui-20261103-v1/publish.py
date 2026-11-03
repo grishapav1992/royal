@@ -10,6 +10,7 @@ ADDED={'games/wild-nudge/StarSpinLayout.ts','games/wild-nudge/README.md'}
 IMAGE_HELPER=Path('/opt/royal-maintenance/bin/retention-runtime.py')
 CONTRACT={'apiVersion':1,'rulesVersion':2,'progressVersion':1};MIN_FREE=5*1024**3
 EXPECTED_MANIFEST='1ddebb56a1b8331c1e488bff0075a8d5c75a9a005442cd170062fa6155fbbbe6'
+EXPECTED_HOST_RUNTIME='ef882d0cbdee73d9377a151331b160fc4c2e4e3fb613144e341628444b9b2df6'
 IGNORED={'at','availableBytes'}
 sys.dont_write_bytecode=True
 def require(value,message):
@@ -40,14 +41,21 @@ def validate_scope(release,before,operator):
  require(len(release['packages'])==1 and release['packages'][0]['gameId']==GAME,'Foreign package')
  require(set(operator['source'])==set(SOURCES),'Foreign source patch')
  require(release['packages'][0]['version']=='1.5.0-dfaacbc6bb0f','Not the visually verified package')
-def validate_inputs(before,operator,proof):
+def validate_inputs(before,operator,proof,equivalence=None):
  require(proof['version']=='1.5.0-dfaacbc6bb0f' and proof['sourceSha256']=='dfaacbc6bb0fd204ad71935485c12c645c3d36a5c18fdfa296bf91a443bb55ef','Different UI implementation')
  require(proof['hostSingletonsExternalized'] and not proof['serverImplementationIncluded'],'Module boundary differs')
  for name,digest in proof['sourceFiles'].items():
   if name.startswith('node_modules/'):
    require(name=='node_modules/@rive-app/webgl2/rive.js' and digest=='abe9dda86ab90382f565ce3cc6fbd458be549dbfcd26df1218480db5bb48793f','Unreviewed dependency')
   elif name in SOURCES:require(operator['source'][name]==digest,'Source differs from module')
-  else:require(digest in [before['source'].get(name),before['sourceLF'].get(name)],'Unchanged dependency differs from production: '+name)
+  elif digest not in [before['source'].get(name),before['sourceLF'].get(name)]:
+   row=(equivalence or {}).get('rows',{}).get(name)
+   require(row and row['inputSha256']==digest and row['productionLFSha256']==before['sourceLF'].get(name),'Unreviewed source equivalence: '+name)
+   if row['kind']=='line-endings-only':
+    canonical=(LIVE/name).read_bytes().replace(b'\r\n',b'\n')
+    require(hashlib.sha256(canonical).hexdigest()==row['productionLFSha256'] and hashlib.sha256(canonical.replace(b'\n',b'\r\n')).hexdigest()==digest,'Source differs beyond line endings')
+   else:
+    require(name=='src/modules/GameHostContract.ts' and row['kind']=='type-only-runtime-equal' and row['passed'] is True and row['runtimeSha256']==EXPECTED_HOST_RUNTIME and digest=='ead24006bf5e273d25c80f1077f910c905002e7a185ce8767044c845e57fe9e3' and row['productionLFSha256']=='328b39ef96f8cd544e892234c68dd3662bf1cca29d74b890e95c409aa285416b','Unverified host runtime equivalence')
 
 def validate_after(before,after,source,files,pointer,version):
  expected=dict(before);expected['source']={**before['source'],**source};expected['sourceLF']={**before['sourceLF'],**source}
@@ -75,7 +83,8 @@ def main():
   require(sha(path)==op[key],'Publication input changed')
  require(sha(BASE_HELPER)==op['snapshotSha256'] and sha(IMAGE_HELPER)==op['imageHelperSha256'] and sha(ROOT/'publisher.py')==before['source']['scripts/game-module-release.py'],'Unreviewed helper')
  require(receipt['sourceCommit']==release['sourceCommit'],'Unverified source receipt')
- require(sha(ROOT/'module-proof.json')==op['moduleProofSha256'],'Module proof changed');proof=read(ROOT/'module-proof.json');validate_inputs(before,op,proof)
+ require(sha(ROOT/'module-proof.json')==op['moduleProofSha256'] and sha(ROOT/'input-equivalence.json')==op['inputEquivalenceSha256'],'Module proof changed');proof=read(ROOT/'module-proof.json');equivalence=read(ROOT/'input-equivalence.json')
+ require(equivalence['productionCommit']==before['sourceCommit'] and equivalence['package']==proof['version'],'Wrong source equivalence baseline');validate_inputs(before,op,proof,equivalence)
  for name,digest in op['source'].items():require(sha(ROOT/'source'/name)==digest,'Source payload changed')
  current=snapshot();require(stable(current)==stable(before),'Production changed since review');require(current['container']['health']=='healthy','Unhealthy host')
  require(read(STATE/'host.json')['games'][GAME]==CONTRACT,'Incompatible host')
