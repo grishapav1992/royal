@@ -19,6 +19,7 @@ export const ROOF_STAIR_ROUTE:readonly Point[] = [
   ...Array.from({length:ROOF_STAIR_FLIGHTS},(_,index)=>({x:index%2===0?1750:1580,y:408-index*20})),
 ];
 export const ROOF_STAIR_SPEED_SCALE = .65;
+export const ROOF_STAIR_EPSILON = 1e-6;
 export const ROOF_STAIR_DRAW = { ladderRise:160, flightRise:144, widthScale:1.65 } as const;
 const roofEntry=ROOF_STAIR_ROUTE[ROOF_STAIR_ROUTE.length-1];
 export const STREET_ROOF_STAIRS = {
@@ -36,7 +37,7 @@ export function advanceRoofStairStep(step: number, point: Point&{stairDirection?
   const dx = to.x - from.x, dy = to.y - from.y;
   const t = Math.max(0, Math.min(1, ((point.x - from.x) * dx + (point.y - from.y) * dy) / (dx * dx + dy * dy)));
   if (Math.hypot(point.x - from.x - dx * t, point.y - from.y - dy * t) > 20) return 0;
-  return point.stairDirection!==-1&&Math.hypot(point.x - to.x, point.y - to.y) <= 1e-6 ? step + 1 : step;
+  return point.stairDirection!==-1&&Math.hypot(point.x - to.x, point.y - to.y) <= ROOF_STAIR_EPSILON ? step + 1 : step;
 }
 
 type StairPosition=Point&{stairStep?:number;stairDirection?:number};
@@ -55,8 +56,8 @@ export function roofStairOptions(body:StairPosition):RoofStairOption[]{
     const from=ROOF_STAIR_ROUTE[index-1],to=ROOF_STAIR_ROUTE[index];
     result.push({step:index,direction,target:direction===1?to:from,from,to});
   };
-  if(along<length-1e-6)add(segment,1);else add(segment+1,1);
-  if(along>1e-6)add(segment,-1);else add(Math.max(1,segment-1),-1);
+  if(along<length-ROOF_STAIR_EPSILON)add(segment,1);else add(segment+1,1);
+  if(along>ROOF_STAIR_EPSILON)add(segment,-1);else add(Math.max(1,segment-1),-1);
   return result;
 }
 
@@ -75,7 +76,9 @@ export function moveRoofStairs(body:StairPosition&{moving:boolean},input:{x:numb
   if(!option)return true;
   const {from,to,step,direction}=option,dx=to.x-from.x,dy=to.y-from.y,length=Math.hypot(dx,dy);
   const along=Math.max(0,Math.min(length,((body.x-from.x)*dx+(body.y-from.y)*dy)/length));
-  const next=Math.max(0,Math.min(length,along+distance*direction)),before={x:body.x,y:body.y};
+  let next=Math.max(0,Math.min(length,along+distance*direction));
+  if(next<=ROOF_STAIR_EPSILON)next=0;else if(length-next<=ROOF_STAIR_EPSILON)next=length;
+  const before={x:body.x,y:body.y};
   body.x=from.x+dx*next/length;body.y=from.y+dy*next/length;
   body.stairStep=step;body.stairDirection=direction;
   if(direction===1&&next===length)body.stairStep=step+1;

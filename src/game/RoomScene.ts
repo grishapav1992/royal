@@ -46,7 +46,7 @@ import { NpcTimeline } from '../network/NpcTimeline';
 import { RoomDetails } from './roomDetails';
 import { StreetView, streetDirection, type StreetSide } from './streetView';
 import { StreetRenderer } from './StreetRenderer';
-import { ROOF, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_SPEED_SCALE,advanceRoofStairStep,moveRoofStairs,roofStairOptions,nearRoofStairBase } from '../shared/rooftop';
+import { ROOF, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_SPEED_SCALE,ROOF_STAIR_EPSILON,advanceRoofStairStep,moveRoofStairs,roofStairOptions,nearRoofStairBase } from '../shared/rooftop';
 import { RooftopRenderer } from './RooftopRenderer';
 import { STREET } from '../shared/street';
 import { CardTablesRenderer } from './CardTablesRenderer';
@@ -1004,7 +1004,8 @@ export class RoomScene extends Phaser.Scene {
     while (actor.path.length && remaining > 0) {
       const target = actor.path[0];
       const dx = target.x - actor.x, dy = target.y - actor.y, distance = Math.hypot(dx, dy);
-      if (distance < .05) { actor.path.shift(); continue; }
+      const tolerance=actor.hall==='street'&&(actor.stairStep??0)>0?ROOF_STAIR_EPSILON:.05;
+      if (distance <= tolerance) { actor.path.shift(); continue; }
       const step = Math.min(remaining, distance);
       const beforeX = actor.x, beforeY = actor.y;
       const wasOnStairs=actor.hall==='street'&&(actor.stairStep??0)>0;
@@ -1013,7 +1014,7 @@ export class RoomScene extends Phaser.Scene {
       // A tiny remainder between path segments is still progress, even below the animation threshold.
       if (Math.hypot(actor.x-beforeX, actor.y-beforeY) < .000001) { actor.path = []; break; }
       moved = true; remaining -= step;
-      if (Math.hypot(target.x - actor.x, target.y - actor.y) < .05) actor.path.shift();
+      if (Math.hypot(target.x - actor.x, target.y - actor.y) <= tolerance) actor.path.shift();
     }
     return moved;
   }

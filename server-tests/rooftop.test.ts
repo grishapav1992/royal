@@ -12,7 +12,7 @@ import { LobbyState, Player } from '../server/state';
 import { StreetView } from '../src/game/streetView';
 import { roofStairContains } from '../src/game/roofStairInput';
 import { applyMovementInput,type MovementBody } from '../src/shared/movement';
-import { MovementPrediction } from '../src/network/MovementPrediction';
+import { MovementPrediction,advanceClickMovement } from '../src/network/MovementPrediction';
 
 test('visible ladder rungs, flights and landings accept input without capturing the rear pavement',()=>{
   const view=new StreetView();view.configure({x:1660,y:360},false);
@@ -240,6 +240,27 @@ test('prediction and acknowledgement replay retain descending direction across s
     }
   }
   assert.equal(local.stairStep,0);
+});
+
+test('touch click routes reach exact landings in both directions and stop after leaving the lower ladder',()=>{
+  const body=stairBody(),prediction=new MovementPrediction();let acknowledged=0;
+  const walkTo=(target:{x:number;y:number})=>{
+    const path=[{...target}];
+    for(let frame=0;frame<300&&path.length;frame++){
+      advanceClickMovement(body,path,16,prediction);
+      prediction.flush(batch=>{acknowledged=batch[batch.length-1].seq;});
+      prediction.reconcile(body,acknowledged);
+    }
+    assert.equal(path.length,0,'the clicked flight completes');
+  };
+  for(let step=1;step<ROOF_STAIR_ROUTE.length;step++){
+    walkTo(ROOF_STAIR_ROUTE[step]);assert.equal(body.stairStep,step+1);assert.deepEqual({x:body.x,y:body.y},ROOF_STAIR_ROUTE[step]);
+  }
+  for(let index=ROOF_STAIR_ROUTE.length-2;index>=0;index--){
+    walkTo(ROOF_STAIR_ROUTE[index]);
+    if(index){assert.equal(body.stairDirection,-1);assert.deepEqual({x:body.x,y:body.y},ROOF_STAIR_ROUTE[index]);}
+  }
+  assert.equal(body.stairStep,0);assert.equal(body.stairDirection,1);assert(body.y<STREET_ROOF_STAIRS.foot.y-7);
 });
 
 test('the lower ladder can be backed down safely onto the pavement',()=>{

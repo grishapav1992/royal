@@ -1,6 +1,6 @@
 import { getIntoxication } from '../shared/intoxication';
 import { PLAYER_SPEED,PLAYER_SPRINT_SPEED } from '../shared/world';
-import { ROOF_STAIR_SPEED_SCALE } from '../shared/rooftop';
+import { ROOF_STAIR_SPEED_SCALE,ROOF_STAIR_EPSILON } from '../shared/rooftop';
 import type { Point } from '../game/navigation';
 import { applyMovementInput, type MovementBody, type MovementInput } from '../shared/movement';
 import type { GuardCollider } from '../shared/guardCollision';
@@ -67,7 +67,8 @@ export function advanceClickMovement(body: MovementBody, path: Point[], ms: numb
   for (let steps = 0; path.length && remaining > 1e-6 && steps < 32; steps++) {
     const target = path[0], dx = target.x - body.x, dy = target.y - body.y;
     const distance = Math.hypot(dx, dy);
-    if (distance < .05) { path.shift(); continue; }
+    const tolerance=body.hall==='street'&&(body.stairStep??0)>0?ROOF_STAIR_EPSILON:.05;
+    if (distance <= tolerance) { path.shift(); continue; }
     const duration = Math.min(remaining, distance / speed * 1000);
     const beforeX = body.x, beforeY = body.y, count = prediction.pendingCount;
     const wasOnStairs=body.hall==='street'&&(body.stairStep??0)>0;
@@ -76,6 +77,6 @@ export function advanceClickMovement(body: MovementBody, path: Point[], ms: numb
     remaining -= duration;
     if(wasOnStairs&&!body.stairStep){path.length=0;break;}
     if (Math.hypot(body.x - beforeX, body.y - beforeY) < 1e-6) { path.length = 0; break; }
-    if (Math.hypot(target.x - body.x, target.y - body.y) < .05) path.shift();
+    if (Math.hypot(target.x - body.x, target.y - body.y) <= tolerance) path.shift();
   }
 }
