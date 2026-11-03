@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { createHash, randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 import { checkGameRtp } from './game-math/rtp-gate.mjs';
-import { moduleFingerprinter, cachedModule, regularPath } from './module-build-cache.mjs';
+import { moduleFingerprinter, cachedModule, moduleSourcePath, normalizeModuleInput } from './module-build-cache.mjs';
 import { readHostProjection } from './build-host-projection.mjs';
 import {projectedModuleContract,moduleProjectionCatalog,projectedMediaBytes,projectedDependencyBytes} from './module-source-projection.mjs';
 
@@ -26,7 +26,7 @@ async function sourceBytes(path){
  if(!projection)return readFile(path);
  const name=relative(root,resolve(path)).replaceAll('\\','/');
  if(!name.startsWith('node_modules/'))return projection.read(name);
- const bytes=projectedDependencyBytes(name,await readFile(await regularPath(root,name)),projection.metadata.moduleDependencies?.[name]);projectedDependencies[name]=sha(bytes);return bytes;
+ const bytes=projectedDependencyBytes(name,await readFile(await moduleSourcePath(root,name)),projection.metadata.moduleDependencies?.[name]);projectedDependencies[name]=sha(bytes);return bytes;
 }
 async function mediaBytes(path){let bytes=await readFile(path);if(projection){const name=relative(root,path).replaceAll('\\','/');bytes=projectedMediaBytes(name,bytes,projection.metadata.moduleAssets?.[name]);projectedAssets[name]=sha(bytes);}return bytes;}
 const force = args.includes('--force');
@@ -185,7 +185,7 @@ async function buildGame(slug) {
    builder.onResolve({ filter: /^__ROYAL_MODULE_MEDIA_/ }, args => ({ path: args.path, external: true }));
   } }],
  });
- const inputs = Object.keys(result.metafile.inputs).filter(name => !name.startsWith('royal-host:')).sort();
+ const inputs = (await Promise.all(Object.keys(result.metafile.inputs).filter(name => !name.startsWith('royal-host:')).map(name=>normalizeModuleInput(root,name)))).sort();
  const ownNative = nativeEntries.filter(name => inputs.includes(`src/ui/${name}.ts`));
  if (inputs.some(name => backendImplementation(name) || bridgeModules.has(name.replace(/\.ts$/, '')) || /^src\/modules\/(?:GameHostRuntime|IndependentGameUI)\.ts$/.test(name)) || ownNative.length > 1) throw Error('Module imported a forbidden host or unrelated native game implementation: ' + slug);
  const remainingAssets = result.outputFiles.flatMap(output => [...output.text.matchAll(/\/assets\/([a-zA-Z0-9_./-]+)/g)].map(match => match[1]));

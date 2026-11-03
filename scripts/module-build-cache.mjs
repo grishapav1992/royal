@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { lstat, readdir, readFile } from 'node:fs/promises';
+import { lstat, readdir, readFile, realpath } from 'node:fs/promises';
 import { dirname, resolve, relative } from 'node:path';
 
 export const digest = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -14,6 +14,23 @@ export async function regularPath(root, name) {
     path = dirname(path);
   }
   return resolve(root, name);
+}
+
+// A managed checkout can reuse one installed dependency tree through its outer link.
+// Repository sources, nested dependency links, media and output guards stay strict.
+export async function moduleSourcePath(root, name) {
+  if(name==='node_modules')return realpath(resolve(root,name));
+  if (!name.startsWith('node_modules/')) return regularPath(root, name);
+  const dependencies = await realpath(resolve(root, 'node_modules'));
+  return regularPath(dependencies, name.slice('node_modules/'.length));
+}
+
+export async function normalizeModuleInput(root, name) {
+  if (!name.startsWith('../')) return name;
+  const dependencies = await realpath(resolve(root, 'node_modules'));
+  const inside = relative(dependencies, resolve(await realpath(root), name)).replaceAll('\\', '/');
+  await regularPath(dependencies, inside);
+  return 'node_modules/' + inside;
 }
 
 export async function inventory(root, prefix = '') {
@@ -36,7 +53,7 @@ export function moduleFingerprinter(root, toolchain) {
     return memo.get(key);
   };
   const file = name => once('file:' + name, async () => {
-    try { return digest(await readFile(await regularPath(root, name))); }
+    try { return digest(await readFile(await moduleSourcePath(root, name))); }
     catch (error) { if (error.code === 'ENOENT') return null; throw error; }
   });
   const resources = name => once('media:' + name, async () => {
@@ -54,6 +71,7 @@ export function moduleFingerprinter(root, toolchain) {
     return rows;
   });
   return async (config, contract, inputs) => {
+    inputs = await Promise.all(inputs.map(name => normalizeModuleInput(root, name)));
     const files = new Set(['package.json', 'package-lock.json', 'tsconfig.json',
       'scripts/build-game-module.mjs', 'scripts/module-build-cache.mjs',
       'src/modules/GameModuleCatalog.ts', `games/${contract.slug}/package.json`,
@@ -73,7 +91,7 @@ export function moduleFingerprinter(root, toolchain) {
     const entries = {};
     // Catch new import-resolution candidates (for example foo.ts shadowing foo/index.ts).
     for (const name of [...directories].sort()) entries[name] = await once('dir:' + name, async () => {
-      try { return (await readdir(await regularPath(root, name))).sort(); }
+      try { return (await readdir(await moduleSourcePath(root, name))).sort(); }
       catch (error) { if (error.code === 'ENOENT') return null; throw error; }
     });
     const assets = {};
