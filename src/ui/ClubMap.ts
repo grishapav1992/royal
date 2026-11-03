@@ -3,11 +3,12 @@ import type { RoomScene } from '../game/RoomScene';
 import { CLUB_ZONES, ARCADE_OVERVIEW_SIZE, LOUNGES } from '../shared/clubLayout';
 import { BAR_SOLID } from '../shared/furniture';
 import { ACTIVITIES } from '../shared/activities';
-import { HALLS, hallLinks } from '../shared/world';
+import { HALLS, hallLinks, isExteriorHall } from '../shared/world';
 import { elevatorDock } from '../shared/elevator';
 import { cabinetsInHall } from '../shared/cabinets';
 import { isCardGame } from '../shared/cardTables';
 import { WORLD, FLOOR } from '../shared/clubGeometry';
+import { ROOF } from '../shared/rooftop';
 import { STREET } from '../shared/street';
 import './club-map.css';
 
@@ -30,17 +31,20 @@ export class ClubMap {
     const timer=window.setInterval(update,200);scene.events.once('shutdown',()=>{clearInterval(timer);this.root.remove();});update();
   }
   private draw(){
-    const state=this.scene.getState(),size=state.hall==='street'?STREET:state.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
+    const state=this.scene.getState(),size=state.hall==='roof'?ROOF:state.hall==='street'?STREET:state.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
     const height=Math.round(this.canvas.width*size.height/size.width);
     if(this.canvas.height!==height)this.canvas.height=height;
     const ctx=this.canvas.getContext('2d')!,sx=this.canvas.width/size.width,sy=this.canvas.height/size.height;
-    const definition=HALLS[state.hall];this.title.textContent=state.hall==='street'?definition.name:translateText('Этаж ')+definition.floor+' · '+definition.number;
-    this.root.setAttribute('aria-label',translateText(state.hall==='street'?'Карта улицы':'Карта этажа'));
-    this.root.querySelector('button')!.textContent=translateText(state.hall==='street'?'Карта улицы':'Карта зала');
-    this.canvas.setAttribute('aria-label',translateText(state.hall==='street'?'Открыть всю улицу':'Открыть весь этаж'));
-    this.canvas.title=translateText(state.hall==='street'?'Нажми, чтобы посмотреть всю улицу':'Нажми, чтобы посмотреть весь этаж');
+    const definition=HALLS[state.hall];this.title.textContent=isExteriorHall(state.hall)?definition.name:translateText('Этаж ')+definition.floor+' · '+definition.number;
+    this.root.setAttribute('aria-label',translateText(state.hall==='roof'?'Карта крыши':state.hall==='street'?'Карта улицы':'Карта этажа'));
+    this.root.querySelector('button')!.textContent=translateText(state.hall==='roof'?'Карта крыши':state.hall==='street'?'Карта улицы':'Карта зала');
+    this.canvas.setAttribute('aria-label',translateText(state.hall==='roof'?'Открыть всю крышу':state.hall==='street'?'Открыть всю улицу':'Открыть весь этаж'));
+    this.canvas.title=translateText(state.hall==='roof'?'Нажми, чтобы посмотреть всю крышу':state.hall==='street'?'Нажми, чтобы посмотреть всю улицу':'Нажми, чтобы посмотреть весь этаж');
     ctx.clearRect(0,0,this.canvas.width,this.canvas.height);ctx.save();ctx.scale(sx,sy);
-    if(state.hall==='street'){
+    if(state.hall==='roof'){
+      const art=this.scene.getRoofMapArt();
+      if(art)ctx.drawImage(art,0,0,ROOF.width,ROOF.height);
+    }else if(state.hall==='street'){
       const art=this.scene.getStreetMapArt();
       if(art)ctx.drawImage(art,0,0,STREET.width,STREET.height);
     }else{
@@ -72,7 +76,7 @@ export class ClubMap {
     }
     }
     for(const link of hallLinks(state.hall)){ctx.fillStyle='#73d4ca';ctx.fillRect(link.door.entry.x-35,link.door.entry.y-12,70,24);}
-    if(state.hall!=='street'){const lift=elevatorDock(state.hall);ctx.fillStyle='#e2c17c';ctx.fillRect(lift.entry.x-40,lift.entry.y-20,80,40);}
+    if(!isExteriorHall(state.hall)){const lift=elevatorDock(state.hall);ctx.fillStyle='#e2c17c';ctx.fillRect(lift.entry.x-40,lift.entry.y-20,80,40);}
     for(const guest of state.guests){ctx.fillStyle='#8da49b';ctx.beginPath();ctx.arc(guest.x,guest.y,10,0,Math.PI*2);ctx.fill();}
     for(const person of state.street?.pedestrians??[]){ctx.fillStyle='#8da49b';ctx.beginPath();ctx.arc(person.x,person.y,10,0,Math.PI*2);ctx.fill();}
     for(const person of state.street?.residents.people??[]){ctx.fillStyle='#f0ca78';ctx.beginPath();ctx.arc(person.x,person.y,13,0,Math.PI*2);ctx.fill();}

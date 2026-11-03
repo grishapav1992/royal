@@ -19,7 +19,7 @@ import { SecurityGuard } from './SecurityGuard';
 import type { GuardView } from '../shared/security';
 import { addDemoCabinetArt } from './demoCabinetArt';
 import { gameAudio } from './GameAudio';
-import { atElevator, canTravelByElevator, elevatorDock, elevatorFloors } from '../shared/elevator';
+import { atElevator, canTravelByElevator, elevatorDock } from '../shared/elevator';
 import { drawElevator } from './elevatorArt';
 import Phaser from 'phaser';
 import { COLORS } from './art';
@@ -45,10 +45,12 @@ import { NpcMotion } from '../network/NpcMotion';
 import { NpcTimeline } from '../network/NpcTimeline';
 import { RoomDetails } from './roomDetails';
 import { StreetRenderer } from './StreetRenderer';
+import { ROOF, STREET_ROOF_STAIRS } from '../shared/rooftop';
+import { RooftopRenderer } from './RooftopRenderer';
 import { STREET } from '../shared/street';
 import { CardTablesRenderer } from './CardTablesRenderer';
 import { isCardGame, type DealerAction } from '../shared/cardTables';
-import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, hallObstacles, HALLS, hallLinks, hallLinkAt, inHallDoor, type HallLink, activityHall, type HallId, SEATS, BAR_APPROACH, DRINKS, atBar, type PlayerAction, type PlayerView, type NetworkCommands } from '../shared/world';
+import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, hallObstacles, HALLS, hallLinks, hallLinkAt, inHallDoor, isExteriorHall, type HallLink, activityHall, type HallId, SEATS, BAR_APPROACH, DRINKS, atBar, type PlayerAction, type PlayerView, type NetworkCommands } from '../shared/world';
 import { findPath, walkable, WORLD, type Point, type Obstacle } from './navigation';
 
 import { CABINETS, cabinetsInHall, type Cabinet } from '../shared/cabinets';
@@ -61,6 +63,7 @@ export class RoomScene extends Phaser.Scene {
   private hallObjects = new Map<HallId, Phaser.GameObjects.GameObject[]>();
   private hallDetails = new Map<HallId, RoomDetails>();
   private street?: StreetRenderer;
+  private rooftop?: RooftopRenderer;
   private cardTables?: CardTablesRenderer;
   private cabinetStools = new Map<string, ReturnType<typeof drawCabinetStool>>();
   private switching=false;
@@ -149,10 +152,15 @@ export class RoomScene extends Phaser.Scene {
   create() {
     createDetailedArt(this);
     createCharacters(this);
-    for(const hall of [...elevatorFloors(),'street' as const]){
+    for(const hall of Object.keys(HALLS) as HallId[]){
       const before=new Set(this.children.list);this.hall=hall;
       if(hall==='street'){
-        this.street=new StreetRenderer(this,()=>this.approachFloor('arcade'),id=>this.approachStreetResident(id));
+        this.street=new StreetRenderer(this,()=>this.approachFloor('arcade'),id=>this.approachStreetResident(id),()=>this.approachFloor('roof'));
+        this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
+        continue;
+      }
+      if(hall==='roof'){
+        this.rooftop=new RooftopRenderer(this,()=>this.approachFloor('street'));
         this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
         continue;
       }
@@ -254,11 +262,12 @@ export class RoomScene extends Phaser.Scene {
   }
   getTailorState() { return this.atelier?.getState() ?? null; }
   getStreetMapArt() { return this.street?.mapCanvas; }
+  getRoofMapArt() { return this.rooftop?.mapCanvas; }
   setOverview(value:boolean){this.overview=value;document.querySelector<HTMLElement>('.room-panel')!.dataset.overview=String(value);this.resizeView();}
   setDealerAction(gameId: string, action: DealerAction) { this.cardTables?.setAction(gameId, action); }
   private resizeView(){
     const width=this.scale.gameSize.width,height=this.scale.gameSize.height;
-    const frame=this.hall==='street'?STREET:this.overview&&this.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
+    const frame=this.hall==='roof'?ROOF:this.hall==='street'?STREET:this.overview&&this.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
     const fit=Math.min(width/(frame.width-40),height/(frame.height-HALL_WALL.viewTop-50));
     const zoom=this.overview?fit:Math.max(fit,Phaser.Math.Clamp(Math.min(width/1000,height/760),.8,1.3));
     const viewWidth=width/zoom,viewHeight=height/zoom;
@@ -338,19 +347,19 @@ export class RoomScene extends Phaser.Scene {
     if (isPlayer) try { soberAt = Math.min(Date.now() + MAX_SOBER_TIME_MS, Number(localStorage.getItem('royal-offline-sober-at')) || 0); } catch { /* The demo can run without browser storage. */ }
     return { hall:this.hall, x, y, sprite, shadow, blush, label, path: [], phase: (x * 7 + y * 11 + skin * 17 + Array.from(name ?? '').reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) % 997, 0)) % 100, nextMove: 0, facing: 'down', skin, appearance, soberAt, moving: false, lastStep: 0, motion: createCharacterMotion(), visualAt: 0, visualX: x, visualY: y, seat: '', action: 'idle', drink: '', actionUntil: 0, cabinet: '', gameReaction: '', gameReactionUntil: 0, visualSeat: '', seatedAt: 0 };
   }
-  goTo(point: Point) {
+  goTo(point: Point, obstacles=this.obstacles) {
     this.approachingCat = false;
     if (this.locked || this.isHuggingCat() || this.typing || this.switching || this.player.cabinet || this.networkSelf?.playing) return;
     if (this.network) {
       this.clickTargets.cancel(); this.afterMovement=undefined; this.endPrediction();
       if (!this.networkSelf) return;
       const origin = SEATS.find(seat => seat.id === this.player.seat)?.entry ?? this.player;
-      this.player.path = findPath(origin, point, this.obstacles);
+      this.player.path = findPath(origin, point, obstacles);
       this.marker.setPosition(point.x, point.y).setVisible(this.player.path.length > 0);
       return;
     }
     this.stand();
-    const path = findPath(this.player, point, this.obstacles);
+    const path = findPath(this.player, point, obstacles);
     if (!path.length) return;
     this.player.path = path; this.marker.setPosition(point.x, point.y).setVisible(true);
   }
@@ -377,7 +386,15 @@ export class RoomScene extends Phaser.Scene {
   approachFloor(target: HallId) {
     if (this.locked || this.isHuggingCat() || this.typing || this.switching) return;
     const link = hallLinks(this.hall).find(candidate => candidate.target === target); if (!link) return;
-    this.pendingCabinet = null; this.pendingLounge = null; this.goTo(link.door.entry);
+    this.pendingCabinet = null; this.pendingLounge = null;
+    if(this.hall==='street'&&target==='roof'){
+      const stairs=STREET_ROOF_STAIRS;
+      this.pendingLounge='roof-stairs';
+      // Approach the bottom from either side before walking up the steps.
+      this.goTo(stairs.foot,[...this.obstacles,{x:stairs.left,y:stairs.top,w:stairs.right-stairs.left,h:stairs.bottom-stairs.top}]);
+      return;
+    }
+    this.goTo(link.door.entry);
   }
   approachStreetResident(id:StreetResidentId){
     if(this.hall!=='street'||this.locked||this.typing||this.switching||this.isHuggingCat()||this.player.cabinet||this.networkSelf?.playing)return;
@@ -386,7 +403,7 @@ export class RoomScene extends Phaser.Scene {
     this.pendingCabinet=null;this.pendingLounge='street:'+id;this.goTo(point);
   }
   approachElevator() {
-    if(this.hall==='street')return;
+    if(isExteriorHall(this.hall))return;
     if (this.locked || this.isHuggingCat() || this.typing || this.switching || this.player.cabinet || this.networkSelf?.playing || this.player.action === 'drink') return;
     this.pendingCabinet = null;
     this.pendingLounge = 'elevator';
@@ -834,7 +851,14 @@ export class RoomScene extends Phaser.Scene {
       if (!this.network) this.animateActor(this.player, time, moving);
       this.halo.setPosition(this.player.x, this.player.y).setDepth(this.player.y - 2);
       if(this.pendingLounge) {
-        if(this.pendingLounge==='elevator') {
+        if(this.pendingLounge==='roof-stairs'){
+          if(this.hall!=='street')this.pendingLounge=null;
+          else if(Math.hypot(this.player.x-STREET_ROOF_STAIRS.foot.x,this.player.y-STREET_ROOF_STAIRS.foot.y)<5){
+            this.pendingLounge=null;
+            this.finishMovement(()=>{if(this.hall==='street')this.goTo(STREET_ROOF_STAIRS.entry);});
+          }
+        }
+        else if(this.pendingLounge==='elevator') {
           const {entry}=elevatorDock(this.hall);
           if(Math.hypot(this.player.x-entry.x,this.player.y-entry.y)<18)this.openElevator();
           else if(!this.player.path.length&&!this.prediction.active&&time>=this.elevatorApproachAt) {

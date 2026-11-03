@@ -22,7 +22,7 @@ export class CasinoAudio {
 
   update(hall: string, game: string, enabled: boolean, duck = 1) {
     // Embedded games own their audio. Leave their soundtrack unobstructed.
-    const running = enabled && game !== 'demo' && hall !== 'street';
+    const running = enabled && game !== 'demo' && hall !== 'street' && hall !== 'roof';
     const mode = `${hall}:${game}:${running}:${duck}`;
     if (mode === this.mode) return;
     this.mode = mode;

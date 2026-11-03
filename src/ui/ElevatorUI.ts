@@ -1,7 +1,7 @@
 import { t, tr } from '../i18n';
 import type { RoomScene } from '../game/RoomScene';
 import { ElevatorAudio, type ElevatorCue } from '../game/ElevatorAudio';
-import { HALLS, type HallId } from '../shared/world';
+import { HALLS, isExteriorHall, type HallId } from '../shared/world';
 import { elevatorDock, elevatorFloors } from '../shared/elevator';
 import './elevator.css';
 
@@ -32,7 +32,7 @@ export class ElevatorUI {
     this.doors = Array.from(this.dialog.querySelectorAll<HTMLElement>('.elevator-door'));
     document.body.append(this.dialog);
     this.shortcut.type = 'button';this.shortcut.id = 'elevator-shortcut';this.shortcut.className = 'elevator-shortcut';
-    this.shortcut.hidden=this.scene.hall==='street';
+    this.shortcut.hidden=isExteriorHall(this.scene.hall);
     this.shortcut.textContent = `↕ ${t('Лифт')}`;this.shortcut.setAttribute('aria-label', t('Подойти к лифту'));
     document.querySelector('#floor-links')!.before(this.shortcut);
     this.shortcut.onclick = () => this.scene.approachElevator();

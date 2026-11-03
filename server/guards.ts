@@ -1,11 +1,12 @@
 import { Guard, type LobbyState, type Player as PlayerBody } from './state';
 import { findPath, walkable, type Point } from '../src/game/navigation';
-import { hallObstacles, HALL_DOORS, hallLinks, otherHall, type ConnectedHallDoor, type HallId } from '../src/shared/world';
+import { hallObstacles, HALL_DOORS, hallLinks, hallLinkToward, otherHall, type ConnectedHallDoor, type HallId } from '../src/shared/world';
 import { GUARD_EXIT, GUARD_HOME, type SecurityDecision } from '../src/shared/security';
 import { movementFacing, type Facing } from '../src/shared/movement';
 import { guardPath } from './guardNavigation';
 import { GUARD_STOPS, GUARD_BAR_TALKS, type GuardStop } from './guardRoutine';
 import { GUARD_CONTACT_RADIUS } from '../src/shared/guardCollision';
+import { ROOF } from '../src/shared/rooftop';
 import { STREET } from '../src/shared/street';
 
 type Job = { id: string; decision: SecurityDecision };
@@ -19,7 +20,7 @@ export class Guards {
     // The map key identifies the person, while hall changes only at a doorway.
     state.guards.set('security', guard);
     this.duties.push({ guard, queue: [], path: [], elapsed: 0,
-      stops:{arcade:[...GUARD_STOPS.arcade],tables:[...GUARD_STOPS.tables],github:[...GUARD_STOPS.github],street:[...GUARD_STOPS.street]}, remaining:3,
+      stops:{arcade:[...GUARD_STOPS.arcade],tables:[...GUARD_STOPS.tables],github:[...GUARD_STOPS.github],street:[...GUARD_STOPS.street],roof:[...GUARD_STOPS.roof]}, remaining:3,
       duration:0, conversation:0, lastConversation:-1 });
   }
 
@@ -83,6 +84,7 @@ export class Guards {
   private phase(d: Duty, phase: string) { d.guard.phase = phase; d.guard.progress = 0; d.guard.reply = ''; d.elapsed = 0; }
   private route(d: Duty, goal: Point) {
     if(d.guard.hall==='street'&&(goal===GUARD_EXIT||goal===GUARD_HOME))goal=STREET.spawn;
+    if(d.guard.hall==='roof'&&(goal===GUARD_EXIT||goal===GUARD_HOME))goal=ROOF.spawn;
     d.path = guardPath(d.guard, goal, hallObstacles(d.guard.hall));
   }
   private nextVisit(d: Duty) {
@@ -123,7 +125,7 @@ export class Guards {
     if(d.elapsed>=d.duration)this.nextVisit(d);
   }
   private transfer(d: Duty, hall: HallId) {
-    const links=hallLinks(d.guard.hall as HallId);const link=links.find(link=>link.target===hall)??links.find(link=>link.target==='tables')??links[0];
+    const links=hallLinks(d.guard.hall as HallId);const link=hallLinkToward(d.guard.hall as HallId,hall)??links[0];
     d.transferFrom=d.guard.hall as HallId;d.transfer=link.target;d.transferArrival=link.arrival;d.guard.routine='door';d.guard.speech='';
     this.route(d,link.door.entry);this.phase(d,'transit');
   }

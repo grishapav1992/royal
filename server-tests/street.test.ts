@@ -35,14 +35,14 @@ test('the front, both sides and rear form a completely walkable exterior loop', 
   assert(!walkable(1000, 1240, obstacles), 'the road is outside the pedestrian area');
 });
 
-test('the street connects only to the lower left of the first floor with safe arrivals', () => {
-  assert.deepEqual(hallLinks('street').map(link => link.target), ['arcade']);
+test('the street connects to the lower left of the first floor and the rear roof stairs with safe arrivals', () => {
+  assert.deepEqual(hallLinks('street').map(link => link.target), ['arcade', 'roof']);
   assert.equal(hallLinkAt({ hall: 'arcade', ...CASINO_EXIT.entry })?.target, 'street');
   assert.equal(hallLinkAt({ hall: 'street', ...STREET_DOOR.entry })?.target, 'arcade');
   assert.equal(hallLinkAt({ hall: 'tables', ...CASINO_EXIT.entry }), undefined);
   assert.equal(hallLinkAt({ hall: 'github', ...CASINO_EXIT.entry }), undefined);
   assert(CASINO_EXIT.entry.x < 250 && CASINO_EXIT.entry.y >= 1290);
-  for (const hall of ['street', 'arcade'] as const) {
+  for (const hall of ['street', 'arcade', 'roof'] as const) {
     for (const link of hallLinks(hall)) {
       assert(findPath(HALLS[hall].spawn, link.door.entry, hallObstacles(hall)).length);
       assert(walkable(link.arrival.arrival.x, link.arrival.arrival.y, hallObstacles(link.target), 16));

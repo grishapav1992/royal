@@ -35,7 +35,7 @@ import './paper-theme.css';
 import './own-cabinets.css';
 import './mira-dialog.css';
 import './ui/compact-header.css';
-import { DRINKS, HALLS, hallLinks, activityHall, type HallId } from './shared/world';
+import { DRINKS, HALLS, hallLinks, isExteriorHall, activityHall, type HallId } from './shared/world';
 import type { BreakerStatus } from './game/breaker';
 import { SocialUI } from './ui/SocialUI';
 import { CatUI } from './ui/CatUI';
@@ -374,7 +374,7 @@ document.addEventListener(GAME_REACTION_EVENT, event => {
   if (reaction === 'win' || reaction === 'lose') room.reactToGame(reaction);
 });
 function updateHall(hall:HallId){
-  const elevatorShortcut=document.querySelector<HTMLButtonElement>('#elevator-shortcut');if(elevatorShortcut)elevatorShortcut.hidden=hall==='street';
+  const elevatorShortcut=document.querySelector<HTMLButtonElement>('#elevator-shortcut');if(elevatorShortcut)elevatorShortcut.hidden=isExteriorHall(hall);
   document.querySelector('h1')!.innerHTML=HALLS[hall].name+' <span>'+HALLS[hall].number+'</span>';
   document.querySelectorAll<HTMLElement>('[data-activity]').forEach(b=>b.hidden=b.dataset.activity==='piano'||activityHall(b.dataset.activity!)!==hall);
   const sharedCards=document.querySelector<HTMLElement>('.shared-cards');if(sharedCards)sharedCards.hidden=hall!=='tables'&&hall!=='github';
@@ -382,18 +382,20 @@ function updateHall(hall:HallId){
   $('#card-tables-catalog').hidden=hall!=='github';
   $('#floor-links').innerHTML=hallLinks(hall).map(link=>{
     const target=HALLS[link.target];
+    if(link.target==='roof')return tr`<button type="button" data-floor-target="roof"><span aria-hidden="true">↑</span> На крышу</button>`;
+    if(hall==='roof')return tr`<button type="button" data-floor-target="street"><span aria-hidden="true">↓</span> Во двор</button>`;
     if(link.target==='street')return tr`<button type="button" data-floor-target="street"><span aria-hidden="true">↗</span> На улицу</button>`;
     if(hall==='street')return tr`<button type="button" data-floor-target="arcade"><span aria-hidden="true">↳</span> В казино</button>`;
     return tr`<button type="button" data-floor-target="${link.target}" aria-label="На ${target.floor} этаж: ${target.name}"><span aria-hidden="true">${target.floor>HALLS[hall].floor?'↑':'↓'}</span> Этаж ${target.floor}</button>`;
   }).join('');
   const overview=$<HTMLButtonElement>('#room-overview');
-  overview.textContent=overview.getAttribute('aria-pressed')==='true'?translateText('Вернуться к игроку'):translateText(hall==='street'?'Вся улица':'Весь этаж');
+  overview.textContent=overview.getAttribute('aria-pressed')==='true'?translateText('Вернуться к игроку'):translateText(hall==='roof'?'Вся крыша':hall==='street'?'Вся улица':'Весь этаж');
   document.querySelectorAll<HTMLElement>('[data-cabinet]').forEach(card=>card.hidden=card.dataset.hall!==hall);
   $('.lounge-controls').hidden=hall!=='arcade';
   const gameCount=hallGameCount(hall);
   $('.sidebar-heading span').textContent=String(gameCount).padStart(2,'0');
-  const gamesTab=document.querySelector<HTMLButtonElement>('#games-tab');if(gamesTab){gamesTab.textContent=translateText('Игры · ')+String(gameCount);gamesTab.hidden=hall==='street';}
-  if(hall==='street')layout.closePanels();
+  const gamesTab=document.querySelector<HTMLButtonElement>('#games-tab');if(gamesTab){gamesTab.textContent=translateText('Игры · ')+String(gameCount);gamesTab.hidden=isExteriorHall(hall);}
+  if(isExteriorHall(hall))layout.closePanels();
   social?.activities.hallChanged();
 }
 room.onHall=updateHall;

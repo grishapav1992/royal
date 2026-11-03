@@ -4,6 +4,7 @@ import { createStreetArt, STREET_ART, STREET_SIGN } from './streetArt';
 import { StreetAmbience } from './StreetAmbience';
 import type { Point } from './navigation';
 import { STREET_SERVICE_PROPS, type StreetResidentId } from './streetDetails';
+import { StreetRoofStairs } from './RooftopRenderer';
 import { StreetResidents } from './StreetResidents';
 
 /** Reusable facade sections keep the close view independent of total floor count. */
@@ -18,8 +19,9 @@ export class StreetRenderer {
   private sparkle: Phaser.GameObjects.Graphics;
   private rear:Phaser.GameObjects.Image;
   private residents:StreetResidents;
+  private roofStairs:StreetRoofStairs;
   readonly mapCanvas: HTMLCanvasElement;
-  constructor(scene: Phaser.Scene, enter: () => void,approach:(id:StreetResidentId)=>void) {
+  constructor(scene: Phaser.Scene, enter: () => void,approach:(id:StreetResidentId)=>void,climb:()=>void) {
     this.mapCanvas=createStreetArt(scene);
     const b=STREET.building,front=b.y+b.h;
     const base=scene.add.graphics();
@@ -79,9 +81,11 @@ export class StreetRenderer {
     this.facade=scene.add.container(0,0,sections).setDepth(front);
     this.ambience=new StreetAmbience(scene);
     this.residents=new StreetResidents(scene,approach);
+    this.roofStairs=new StreetRoofStairs(scene,climb);
     scene.add.zone(STREET.entrance.x,front-82,170,200).setDepth(front+1).setInteractive({useHandCursor:true}).on('pointerdown',enter);
   }
   update(player: Point, overview: boolean,delta=0,reducedMotion=false,approaching?:StreetResidentId) {
+    this.roofStairs.update(overview);
     const alpha=streetFacadeAlpha(player);
     this.facade.setVisible(!overview&&player.y>=STREET.building.y).setAlpha(alpha);
     this.rear.setVisible(!overview&&player.y<STREET.building.y);
