@@ -18,6 +18,7 @@ export function inputKind(path) {
     || path.startsWith('deployment/releases/') || path.startsWith('public/assets/')
     || path.startsWith('ai-factory/project-knowledge/references/')) return null;
   if (extensions.has(extname(path))) return 'source';
+  if (extname(path) === '.json' && /^(?:src|server|docs\/game-math|deployment\/qualifications)\//.test(path)) return 'config';
   if ([knowledgeSeed, mathPolicy].includes(path) || /^docs\/game-math\/qualifications\/[^/]+\.json$/.test(path)) return 'config';
   if (basename(path) === 'package.json' || /^tsconfig[^/]*\.json$/.test(basename(path))) return 'config';
   return null;

@@ -43,6 +43,9 @@ test('secrets, state, archives and symlinks are excluded; resolver settings affe
   assert.equal(inputKind(knowledgeSeed), 'config');
   assert.equal(inputKind(mathPolicy), 'config');
   assert.equal(inputKind('docs/game-math/qualifications/game.json'), 'config');
+  assert.equal(inputKind('src/shared/floodedTempleData.json'), 'config');
+  assert.equal(inputKind('docs/game-math/neopolis-v4-calibration.json'), 'config');
+  assert.equal(inputKind('deployment/qualifications/tsu-duel-v3/afterglow-compatibility.json'), 'config');
   assert.equal(inputKind('compose.yaml'), 'source');
   const before = await inventory(directory);
   await writeFile(resolve(directory, 'tsconfig.json'), '{"compilerOptions":{}}');
