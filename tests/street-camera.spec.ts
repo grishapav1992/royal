@@ -12,7 +12,10 @@ async function walk(page:Page,x:number,y:number,plan=false){
   if(plan)await overview(page,true);
   await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));
   const box=(await page.locator('#game canvas').boundingBox())!,s=await state(page),v=s.view,p=projectStreetPoint({x,y},s.street.view.orientation);
-  await page.mouse.click(box.x+(p.x-v.x)*v.zoom*box.width/v.width,box.y+(p.y-v.y)*v.zoom*box.height/v.height);
+  const screenX=box.x+(p.x-v.x)*v.zoom*box.width/v.width,screenY=box.y+(p.y-v.y)*v.zoom*box.height/v.height;
+  expect(screenX).toBeGreaterThanOrEqual(box.x);expect(screenX).toBeLessThanOrEqual(box.x+box.width);
+  expect(screenY).toBeGreaterThanOrEqual(box.y);expect(screenY).toBeLessThanOrEqual(box.y+box.height);
+  await page.mouse.click(screenX,screenY);
   await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.x-x,s.y-y);},{timeout:25000}).toBeLessThan(Math.max(5,3/v.zoom));
   await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.serverX-s.x,s.serverY-s.y);}).toBeLessThan(3);
   await expect.poll(async()=>{const s=await state(page),p=projectStreetPoint(s,s.street.view.orientation);return Math.hypot(s.renderX-p.x,s.renderY-p.y);}).toBeLessThan(.6);
@@ -26,7 +29,7 @@ test('building covers people before the view changes behind either rear corner',
   await expect.poll(async()=>(await state(page)).online).toBe(true);
   const balance=await page.locator('#wallet-balance').textContent();
   await page.locator('[data-floor-target="street"]').click();await expect.poll(async()=>(await state(page)).hall,{timeout:25000}).toBe('street');
-  await walk(page,600,1050,true);await overview(page,false);await walk(page,600,360);
+  await walk(page,600,1050,true);await overview(page,false);await walk(page,600,700);await walk(page,600,470);await walk(page,600,360);
 
   await page.evaluate(()=>{
     (window as any).__layerViolations=[];(window as any).__layerFrames=0;(window as any).__recordLayers=true;
