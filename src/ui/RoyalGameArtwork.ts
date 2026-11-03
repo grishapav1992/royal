@@ -2,9 +2,10 @@ import { isStudioGame, STUDIO_INFO } from '../shared/studioGames';
 import { FIRST_FLOOR_ART, FIRST_FLOOR_GAME_THEMES } from './FirstFloorGameArt';
 import previews from '../game/startupPreviews.json';
 import { STUDIO_ART } from './StudioArtwork';
+import starSpinCover from '../../games/wild-nudge/assets/catalog-cover.webp';
 
 const covers: Record<string, string> = {
-  'studio-wild-nudge':'/assets/wild-nudge/cover.webp?v=relics-1',
+  'studio-wild-nudge':starSpinCover,
   'studio-forest-heart':'/assets/forest-heart/v1/catalog.webp',
   'royal-roulette':'/assets/royal-roulette/cover.svg',
   'studio-neopolis':'/assets/neopolis/cover-cabinet-v2.webp',
@@ -24,5 +25,6 @@ for (const [id, key] of Object.entries(FIRST_FLOOR_GAME_THEMES)) {
 }
 Object.assign(covers, previews.cabinets, previews.catalog);
 export function royalGameArtwork(id: string): string {
+  if(id==='studio-wild-nudge')return starSpinCover;
   return covers[id] ?? (isStudioGame(id) ? STUDIO_ART[STUDIO_INFO[id].theme] : '');
 }
