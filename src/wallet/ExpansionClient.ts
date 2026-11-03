@@ -1,6 +1,6 @@
 import {precisionBaseSession} from '../shared/roundPrecision';
 import {usesGameStakes} from '../shared/gameStakes';
-import {WILD_NUDGE_GAME,WILD_NUDGE_CLIENT_HEADER,validWildNudgeSession,validWildNudgeReply} from '../shared/wildNudge';
+import {WILD_NUDGE_GAME,WILD_NUDGE_CLIENT_HEADER,validWildNudgeSession,validWildNudgeReply} from '../shared/wildNudgeStakes';
 import { JACKIE_GAME, JACKIE_HEADER, validJackieSession, validJackieReply } from '../shared/jackieChan';
 import { FLAG_GAME, FLAG_HEADER, flagViewMode, validFlagSettings, validFlagSession } from '../shared/flagBattle';
 import {validCascadeSession,validCascadeSettings,cascadeResult} from '../shared/floodedTempleCascade';

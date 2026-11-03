@@ -21,6 +21,7 @@ const refs={
  'studio-afterglow':'docs/game-math/qualifications/girlhub-progress-v4.json',
  'studio-dracona':'docs/game-math/qualifications/dracona-v3.json',
  'studio-neopolis':'docs/game-math/qualifications/neopolis-v4.json',
+ 'studio-wild-nudge':'docs/game-math/qualifications/wild-nudge-v1.json',
 };
 export const referencePath=id=>refs[id];
 function reference(id){const path=refs[id];assert(path,'Missing reference model');const bytes=readFileSync(resolve(root,path)),digest=textHash(bytes);if(referenceCache.get(id)?.digest===digest)return referenceCache.get(id);const record={path,digest,proof:JSON.parse(bytes)};referenceCache.set(id,record);return record;}
@@ -86,6 +87,9 @@ function models(game,p,evidence){
   assert(evidence.samples);for(const choice of p.choices){const stats=checkSample(p,evidence.samples.find(r=>r.choice===choice),choice);push(choice,{kind:'statistical-estimate',...stats,estimator:'Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap.'});}return rows;
  }
  const ref=reference(game);assert.equal(evidence.reference?.path,ref.path);assert.equal(evidence.reference?.sha256,ref.digest);
+ if(p.kind==='wild-nudge'){
+  const r=ref.proof.analysis.exactRtp;assert(Math.abs(r.value-p.target)<=p.tolerance);push('normal',{kind:'exact',rtp:r.value,rtpBounds:[r.value,r.value],fraction:r.fraction,reason:'Unchanged five independent reel laws, deterministic WILD alignment and all eight free continuations. Exact full-round rational award is settled once with the common unbiased cent ticket.'});return rows;
+ }
  if(p.kind==='cosmic'){
   for(const choice of p.choices){const r=ref.proof.results.find(row=>row.choice===choice);assert(r);assert(r.rtpBounds[0]>=p.target-p.tolerance&&r.rtpBounds[1]<=p.target+p.tolerance);push(choice,{kind:'deterministic-model-bounds',rtp:null,rtpBounds:r.rtpBounds,reason:'The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake.'});}return rows;
  }

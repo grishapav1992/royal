@@ -9,7 +9,7 @@ const games = new Set(['studio-cosmic-escape', 'studio-caramel-carnival', 'studi
   'studio-last-convoy', 'studio-nitro-run', 'studio-afterglow', 'studio-meme-overload',
   'studio-dracona', 'studio-neopolis', 'studio-forest-heart', 'github-crash', 'royal-plinko',
   'original-cr-vs-leo', 'original-jackie-chan', 'studio-caribbean-treasures', 'studio-flooded-temple',
-  'royal-roulette', 'flag-battle', 'tsu-e-fa']);
+  'royal-roulette', 'flag-battle', 'tsu-e-fa', 'studio-wild-nudge']);
 export const usesGameStakes = (game: string): boolean => games.has(game);
 export const validGameStake = (value: unknown): value is string => typeof value === 'string' && GAME_STAKE_UNITS.includes(value);
 export const validGameBet = (value: unknown): value is number => typeof value === 'number' && GAME_BETS.includes(value);

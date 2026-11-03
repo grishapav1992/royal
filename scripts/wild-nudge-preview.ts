@@ -13,7 +13,7 @@ const backend=spawn(process.execPath,['--import','tsx','server/index.ts'],{cwd:p
 let logs='',stopping=false,db:PostgresDatabase|undefined,wallet:DemoWalletStore;
 const forced=new Map<string,number[]>();
 backend.stdout.on('data',v=>logs=(logs+v).slice(-6000));backend.stderr.on('data',v=>logs=(logs+v).slice(-6000));
-const scenarios:Record<string,number[]>={loss:[30,30,30,30,30],nudge:[1,2,62,63,30],bonus:[2,45,2,16,14,...Array(40).fill(30)],maximum:[2,45,2,16,14,...Array(40).fill(2)],win:[2,2,2,2,2]};
+const scenarios:Record<string,number[]>={fraction:[0,0,30,30,30],loss:[30,30,30,30,30],nudge:[1,2,62,63,30],bonus:[2,45,2,16,14,...Array(40).fill(30)],maximum:[2,45,2,16,14,...Array(40).fill(2)],win:[2,2,2,2,2]};
 // Local-only opt-in for the user's unpublished module. Production catalogue and
 // its ten-cent admission gate remain unchanged until the monetary migration.
 const plugin:Plugin={name:'wild-nudge-local-fixture',enforce:'pre',transform(code,id){
@@ -35,7 +35,7 @@ const plugin:Plugin={name:'wild-nudge-local-fixture',enforce:'pre',transform(cod
   else if(path==='/__test/nudge/scenario'&&req.method==='POST'){const tickets=scenarios[body.name];if(!tickets)throw Error('Unknown scenario');forced.set(account,tickets.slice());reply={ready:true};}
   else if(path==='/api/demo-wallet/expansion'&&req.method==='POST'){
    if(body.gameId!==WILD_NUDGE_GAME){const response=await fetch(api+path,{method:'POST',headers:{...Object.fromEntries(Object.entries(req.headers).filter(([key,value])=>!['host','content-length','connection'].includes(key)&&typeof value==='string')),'Content-Type':'application/json'},body:JSON.stringify(body)});res.statusCode=response.status;res.setHeader('Content-Type','application/json');res.end(await response.text());return;}const tickets=forced.get(account);
-   const local=new DemoWalletStore(db,max=>{const ticket=tickets?(tickets.length?tickets.shift()!:30):randomInt(max);if(ticket>=max)throw Error('Fixture entropy mismatch');return ticket;});await local.ready;
+   const local=new DemoWalletStore(db,max=>{if(tickets&&max!==64)return 0;const ticket=tickets?(tickets.length?tickets.shift()!:30):randomInt(max);if(ticket>=max)throw Error('Fixture entropy mismatch');return ticket;});await local.ready;
    reply=await local.expansion.operate(account,body,2,true,true,true,true,true,true,true,true,2,4,true,true,2,2,2,req.headers[WILD_NUDGE_CLIENT_HEADER.toLowerCase()]==='1');
    if((reply as any).session?.state==='settled')forced.delete(account);
   }else throw new WalletError(404,'Unknown fixture');

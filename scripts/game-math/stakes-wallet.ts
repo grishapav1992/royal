@@ -23,7 +23,7 @@ function nextAction(s:any,choice:string){
  }
  if(v.caribbean?.phase==='choice')name=choice.endsWith('-flagship')?'caribbean-choose-flagship':'caribbean-choose-raid';
  const action=name??v.actions.find((a:any)=>a.cost===0)?.move;assert(action,'A continuation cannot create another paid stake');
- const revision=v.templeCascade?.revision??v.caribbean?.revision??v.forestHeart?.revision??v.neopolis?.revision??v.dracona?.revision??v.afterglow?.revision??v.nitro?.revision??v.convoy?.revision??v.caramel?.revision??v.luelon?.revision??v.penalty?.revision??v.jackie?.combat.revision;
+ const revision=v.wildNudge?.revision??v.templeCascade?.revision??v.caribbean?.revision??v.forestHeart?.revision??v.neopolis?.revision??v.dracona?.revision??v.afterglow?.revision??v.nitro?.revision??v.convoy?.revision??v.caramel?.revision??v.luelon?.revision??v.penalty?.revision??v.jackie?.combat.revision;
  return {id:randomUUID(),gameId:s.gameId,action:'move',sessionId:s.id,move:action,...(revision===undefined?{}:{revision})};
 }
 async function nativeProof(gameId:string,p:any){
@@ -37,7 +37,7 @@ async function nativeProof(gameId:string,p:any){
   const games=new NileGameRuntime(c.ledger,draw,()=>time),choice=p.choices[0];
   const core=gameId==='royal-roulette'||gameId==='royal-plinko',parts=choice.split(':');
   const op=core?{id:randomUUID(),kind:'play',gameId,rulesVersion:1,amount:.1,stakePolicyVersion:1,input:gameId==='royal-plinko'?{rows:Number(parts[0]),risk:parts[1]}:{bet:'number',number:7}}:{id:randomUUID(),action:'start',gameId,stakeUnits:'10',stakePolicyVersion:1,settings:settingsFor(gameId,choice)};
-  const command=(body:unknown=null):any=>({path:core?'/operations':'/expansion',body,method:body===null?'GET':'POST',flags:[true,true,true,true,true,true,true,true,2],rules:2,query:{},neopolisRules:4,caribbeanRules:1,forestHeartRules:1,flagRules:2,jackieRules:2,templeRules:2});
+  const command=(body:unknown=null):any=>({path:core?'/operations':'/expansion',body,method:body===null?'GET':'POST',flags:[true,true,true,true,true,true,true,true,2],rules:2,query:{},neopolisRules:4,caribbeanRules:1,forestHeartRules:1,flagRules:2,jackieRules:2,templeRules:2,wildNudgeRules:1});
   const before=BigInt((await c.ledger.wallet(c.a)as any).balanceUnits);let reply:any=await games.run(c.a,command(op));
   while(!core&&reply.session.state==='active'){
    if(gameId==='github-crash'){time+=100000;const snapshot:any=await games.run(c.a,command());reply={wallet:snapshot.wallet,session:snapshot.sessions.find((s:any)=>s.id===op.id)};}
@@ -58,7 +58,7 @@ async function runWallet(gameId:string,p:any){
   let wallet=new DemoWalletStore(db,draw,()=>clock);await wallet.ready;
   const create=()=>new DemoExpansionStore(db,id=>wallet.snapshot(id),wallet.ready,async()=>{},draw,()=>clock,undefined,()=>2);
   let store=create();await store.ready;
-  const operate=(account:string,op:unknown)=>store.operate(account,op,2,true,true,true,true,true,true,true,true,2,4,true,true,2,2,2);
+  const operate=(account:string,op:unknown)=>store.operate(account,op,2,true,true,true,true,true,true,true,true,2,4,true,true,2,2,2,true);
   let index=0;
   for(const choice of p.choices)for(const stake of p.stakes){
    const account='precision-'+index++;await db.prepare('INSERT INTO accounts(id) VALUES(?)').run(account);
@@ -78,7 +78,7 @@ async function runWallet(gameId:string,p:any){
    const op={id,gameId,action:'start',stakeUnits:String(stake),stakePolicyVersion:1,settings:settingsFor(gameId,choice)};
    let reply=await operate(account,op);assert(verify(reply.session),'Real client verification of accepted start');assert.equal(reply.session.stakeUnits,String(stake));last=op;
    const count=draws,repeated=await operate(account,op);assert.equal(draws,count);assert(repeated.replayed);assert.equal(repeated.wallet.balance,reply.wallet.balance);
-   store=create();await store.ready;const recovered=await store.active(account,true,true,true,true,true,true,true,2,4,true,true,2,2,2);assert.deepEqual(recovered.sessions.find(s=>s.id===id),reply.session);
+   store=create();await store.ready;const recovered=await store.active(account,true,true,true,true,true,true,true,2,4,true,true,2,2,2,true);assert.deepEqual(recovered.sessions.find(s=>s.id===id),reply.session);
    let continuations=0;
    while(reply.session.state==='active'){
     assert(continuations++<10000);const prior=await demoBalanceUnits(db,account);assert(!reply.session.precision,'No future precision ticket may be exposed');

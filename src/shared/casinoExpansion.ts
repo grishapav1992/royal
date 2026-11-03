@@ -1,6 +1,6 @@
 import {usesGameStakes} from './gameStakes';
 import type {RoundPrecision} from './roundPrecision';
-import {WILD_NUDGE_GAME,validWildNudgeSettings,type WildNudgeSettings,type WildNudgeView} from './wildNudge';
+import {WILD_NUDGE_GAME,validWildNudgeSettings,type WildNudgeSettings,type WildNudgeView} from './wildNudgeStakes';
 import { FLAG_GAME, validFlagSettings, type FlagSettings, type FlagView } from './flagBattle';
 import { NEOPOLIS_GAME, validNeopolisSettings, type NeopolisSettings, type NeopolisView } from './neopolis';
 import {validCascadeSettings,type TempleCascadeSettings,type TempleCascadeView} from './floodedTempleCascade';
@@ -95,7 +95,7 @@ export const EXPANSION_RULES: Record<ExpansionGameId,string> = {
 export const isExpansionGame = (value:unknown): value is ExpansionGameId => (EXPANSION_GAMES as readonly unknown[]).includes(value);
 export const REVISED_CARD_GAMES = ['github-free-bet','github-crazy-four','github-pai-gow','github-holdem-bonus','github-rummy'] as const;
 export const expansionRulesVersion = (game:ExpansionGameId):1|2|3|4 => game===CARIBBEAN_GAME?2:game===NEOPOLIS_GAME?4:game===DRACONA_GAME?3:game===FLAG_GAME||game===AFTER_GAME||isNitroFamily(game)||game===CONVOY_GAME||game===CARAMEL_GAME||isLuelonSlotGame(game)||(REVISED_CARD_GAMES as readonly string[]).includes(game)?2:1;
-export const validExpansionRulesVersion = (game:ExpansionGameId,version:unknown):version is 1|2|3|4 => version===1||version===2&&(game===TEMPLE_GAME||expansionRulesVersion(game)>=2)||version===3&&(game===NEOPOLIS_GAME||game===DRACONA_GAME)||version===4&&game===NEOPOLIS_GAME;
+export const validExpansionRulesVersion = (game:ExpansionGameId,version:unknown):version is 1|2|3|4 => version===1||version===2&&(game===WILD_NUDGE_GAME||game===TEMPLE_GAME||expansionRulesVersion(game)>=2)||version===3&&(game===NEOPOLIS_GAME||game===DRACONA_GAME)||version===4&&game===NEOPOLIS_GAME;
 export const LEGACY_CARD_RULES:Partial<Record<ExpansionGameId,string>> = {
   'github-free-bet':translateText('Одна начальная ставка. Бесплатное удвоение на жёстких 9, 10 или 11; бесплатное разделение пар, кроме карт стоимостью 10. Блэкджек платит 3:2, 22 у дилера возвращает ставки. Бесплатные действия не списывают демомонеты.'),
   'github-crazy-four':translateText('Начало: Ante + Super Bonus. Play стоит одну Ante; с парой тузов или выше доступно 2-3 Ante. Дилеру нужен король или выше. Выплата обязательной Super Bonus зависит от комбинации. Queens Up выключен.'),

@@ -1,6 +1,7 @@
 import {readGameHost} from '../../src/modules/GameHostContract';
-import {WILD_NUDGE_GAME,type WildNudgeView} from '../../src/shared/wildNudge';
-import {WILD_NUDGE_DATA as R,WILD_NUDGE_STAKES,wildNudgeSpin,type NudgeSpin} from '../../src/shared/wildNudgeMath';
+import {WILD_NUDGE_GAME,STAR_SPIN_STAKES as WILD_NUDGE_STAKES,type WildNudgeView} from '../../src/shared/wildNudgeStakes';
+import {WILD_NUDGE_DATA as R,wildNudgeSpin,type NudgeSpin} from '../../src/shared/wildNudgeMath';
+import {DEFAULT_GAME_STAKE} from '../../src/shared/gameStakes';
 import {GalacticAudio,type GalacticCue} from './GalacticAudio';
 import {StarSpinCollection} from './StarSpinCollection';
 import {StarSpinCharacter} from './StarSpinCharacter';
@@ -16,7 +17,7 @@ export class GalacticReactorUI {
   private audio=new GalacticAudio();private animations=new Set<Animation>();private timers=new Set<ReturnType<typeof setTimeout>>();
   private media=window.matchMedia('(prefers-reduced-motion: reduce)');
   private owner=this.client.accountId;private epoch=0;private dead=false;private paused=false;private busy=false;private presenting=false;
-  private shown?:WildNudgeView;private shownKey='';private note='';private error='';private stake='100';private fast=false;private forceReduced=false;
+  private shown?:WildNudgeView;private shownKey='';private note='';private error='';private stake=DEFAULT_GAME_STAKE;private fast=false;private forceReduced=false;
   private auto=false;private autoLeft=0;private autoCount=10;private autoEpoch=0;private lastBalance?:number;
   private skew:{cue:string;mode:string;skewMs:number}[]=[];private unsubscribe:()=>void;
   private changed=()=>this.sync();
@@ -97,13 +98,14 @@ export class GalacticReactorUI {
     if(!this.busy&&!this.presenting&&this.view){const key=this.session!.id+':'+this.view.revision;if(key!==this.shownKey){this.shown=structuredClone(this.view);this.shownKey=key;this.stake=this.view.stakeUnits;this.drawFrame(this.view.spins.at(-1)!);this.note=this.view.stage==='bonus'?this.text('Бонус восстановлен. Продолжение бесплатно.','Bonus restored. Continue without another stake.'):this.resultText(this.view);}}
     this.collection.sync(this.client.accountId??'');this.render();
   }
-  private resultText(view:WildNudgeView){const net=BigInt(view.totalPayoutUnits)-BigInt(view.stakeUnits);return net>0n?this.text('Положительный итог раунда.','Net-positive round.'):net===0n?this.text('Стоимость раунда возвращена.','Round cost returned.'):BigInt(view.totalPayoutUnits)>0n?this.text('Частичный возврат. Выплата меньше ставки.','Partial return. Payout is below the stake.'):this.text('Раунд завершён без выплаты.','Round ended without a payout.');}
+  private payout(view:WildNudgeView){return view.stage==='settled'&&view.revision===this.view?.revision?this.session!.returnedUnits:view.totalPayoutUnits;}
+  private resultText(view:WildNudgeView){const paid=BigInt(this.payout(view)),net=paid-BigInt(view.stakeUnits);return net>0n?this.text('Положительный итог раунда.','Net-positive round.'):net===0n?this.text('Стоимость раунда возвращена.','Round cost returned.'):paid>0n?this.text('Частичный возврат. Выплата меньше ставки.','Partial return. Payout is below the stake.'):this.text('Раунд завершён без выплаты.','Round ended without a payout.');}
   private render(){
     if(this.dead)return;const shown=this.shown,active=this.active,blocked=this.blocked;
     this.collection?.sync(this.client.accountId??'');
     this.character?.sync(this.client.accountId??'',this.root.dataset.character??'',this.collection.open?'idle':this.root.dataset.phase??'idle',this.shown?.stage==='bonus',this.paused||this.modal.open,this.reduced);
     this.el('balance').textContent=this.wallet?this.services.walletCoins(this.wallet.balance):'…';this.el('cost').textContent=this.money(active?this.view!.stakeUnits:this.stake);
-    this.el('payout').textContent=this.money(shown?.totalPayoutUnits??'0');this.el('net').textContent=shown?.stage==='settled'?this.money(String(BigInt(shown.totalPayoutUnits)-BigInt(shown.stakeUnits))):'…';
+    this.el('payout').textContent=this.money(shown?this.payout(shown):'0');this.el('net').textContent=shown?.stage==='settled'?this.money(String(BigInt(this.payout(shown))-BigInt(shown.stakeUnits))):'…';
     this.el<HTMLSelectElement>('stake').value=this.stake;this.el<HTMLSelectElement>('stake').disabled=blocked||this.auto||active;
     const spin=this.el<HTMLButtonElement>('spin');spin.disabled=blocked||this.auto||!active&&!this.afford();spin.querySelector('b')!.textContent=active?this.text('Бесплатно','Free spin'):this.text('Вращать','Spin');spin.querySelector('small')!.textContent=active?this.text('Осталось: ','Remaining: ')+(this.view?.remaining??0):this.money(this.stake)+' USDT';
     const auto=this.el<HTMLButtonElement>('auto');auto.disabled=!this.auto&&(blocked||active||!this.afford()||!!this.client.error||!!this.error);auto.textContent=this.auto?this.text('Стоп · ','Stop · ')+this.autoLeft:this.text('Авто','Auto');auto.setAttribute('aria-pressed',String(this.auto));auto.setAttribute('aria-label',this.auto?this.text('Остановить автокрутку','Stop autoplay'):this.text('Начать автокрутку','Start autoplay'));
@@ -140,7 +142,7 @@ export class GalacticReactorUI {
     if(!this.dead){this.root.querySelectorAll('.gn-spinning').forEach(el=>el.classList.remove('gn-spinning'));this.drawFrame(frame);this.shown=structuredClone(view);this.shownKey=this.session!.id+':'+view.revision;this.note=view.stage==='bonus'?this.text('Режим перегрузки. Продолжение бесплатно.','Overdrive mode. Continue without another stake.'):this.resultText(view);this.root.dataset.phase=view.stage==='bonus'?'bonus':'result';
       if(!signal.aborted&&!this.paused&&!this.modal.open&&!this.collection.open){
         if(frame.awardedSpins){await this.accent('bonus',()=>{this.el('bonus-overlay').hidden=false;this.character.react('bonus_enter');},signal);await this.wait(this.reduced?0:this.fast?180:650,signal);}
-        else if(view.stage==='settled'){const total=BigInt(view.totalPayoutUnits),stake=BigInt(view.stakeUnits);if(total>stake)await this.accent('win',()=>this.character.react('round_win'),signal);else this.audio.schedule(total===stake?'return':'partial');}
+        else if(view.stage==='settled'){const total=BigInt(this.payout(view)),stake=BigInt(view.stakeUnits);if(total>stake)await this.accent('win',()=>this.character.react('round_win'),signal);else this.audio.schedule(total===stake?'return':'partial');}
       }
       this.el('bonus-overlay').hidden=true;
     }
