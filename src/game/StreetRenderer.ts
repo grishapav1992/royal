@@ -17,6 +17,7 @@ export class StreetRenderer {
   private anchors:{image:Phaser.GameObjects.Image;point:Point}[]=[];
   private door:Phaser.GameObjects.Zone;
   private ground: Phaser.GameObjects.Container;
+  private frontGround:Phaser.GameObjects.Container;
   private props: Phaser.GameObjects.Image[]=[];
   private ambience: StreetAmbience;
   private sheen: Phaser.GameObjects.Image[]=[];
@@ -29,20 +30,22 @@ export class StreetRenderer {
     const b=STREET.building,front=b.y+b.h;
     const base=scene.add.graphics();
     base.fillStyle(0xe6edf2).fillRect(0,-200,STREET.width,STREET.height+200);
-    base.fillStyle(0x303d50).fillRect(0,1210,STREET.width,170);
-    base.fillStyle(0xf6cf58);
-    for(let x=25;x<STREET.width;x+=140)base.fillRect(x,1295,68,6);
+    const road=scene.add.graphics();
+    road.fillStyle(0x303d50).fillRect(0,1210,STREET.width,170);
+    road.fillStyle(0xf6cf58);
+    for(let x=25;x<STREET.width;x+=140)road.fillRect(x,1295,68,6);
     const paving=scene.add.tileSprite(320,240,2180,960,STREET_ART.paving).setOrigin(0).setTileScale(.5);
     const edges=scene.add.graphics();
     edges.lineStyle(3,0xa7afbc).strokeRect(320,240,2180,960);
-    edges.fillStyle(0xf8fbff).fillRect(0,1198,STREET.width,12);
+    road.fillStyle(0xf8fbff).fillRect(0,1198,STREET.width,12);
     // Snow stays at the edges of the same unobstructed circulation lane.
     for(const [x,y,w] of [[270,265,90],[2515,520,95],[300,955,78],[2550,1140,120],[680,225,130],[1980,225,115],[100,1185,145],[2610,1185,130]]){
       edges.fillStyle(0xf8fbff).fillEllipse(x,y,w,25).fillEllipse(x-w*.2,y-9,w*.45,28).fillEllipse(x+w*.2,y-5,w*.4,23);
     }
     const details=scene.add.graphics();
-    details.fillStyle(0xacb5bf).fillRect(2498,988,169,198);
-    details.lineStyle(3,0xe9cf78).strokePoints([{x:2503,y:997},{x:2503,y:1182},{x:2662,y:1182},{x:2662,y:997}]);
+    const bay=scene.add.graphics();
+    bay.fillStyle(0xacb5bf).fillRect(2498,988,169,198);
+    bay.lineStyle(3,0xe9cf78).strokePoints([{x:2503,y:997},{x:2503,y:1182},{x:2662,y:1182},{x:2662,y:997}]);
     for(const [x,y] of [[675,1176],[2060,1176],[1000,304],[1650,304]]){
       details.fillStyle(0x6d7981).fillRoundedRect(x,y,53,13,2);
       for(let dx=5;dx<50;dx+=7)details.lineStyle(2,0x394953).lineBetween(x+dx,y+3,x+dx,y+10);
@@ -55,7 +58,8 @@ export class StreetRenderer {
       for(let dx=6;dx<86;dx+=17)details.lineBetween(x+dx,y+29,x+dx+14,y+7);
     }
     const carpet=scene.add.image(STREET.entrance.x-120,928,STREET_ART.carpet).setOrigin(0).setDisplaySize(240,120);
-    this.ground=scene.add.container(0,0,[base,paving,edges,details,carpet]).setDepth(0);
+    this.frontGround=scene.add.container(0,0,[road,bay,carpet]);
+    this.ground=scene.add.container(0,0,[base,paving,edges,details,this.frontGround]).setDepth(0);
     for(const p of STREET.benches.filter(p=>p.y>500))this.props.push(scene.add.image(p.x,p.y+14,STREET_ART.bench).setOrigin(.5,1).setDisplaySize(144,84).setDepth(p.y));
     for(const p of STREET.trees.filter(p=>!(p.x===2580&&p.y===1100)))this.props.push(scene.add.image(p.x,p.y+20,STREET_ART.pine).setOrigin(.5,1).setDisplaySize(128,184).setDepth(p.y));
     for(const p of STREET.lamps)this.props.push(scene.add.image(p.x,p.y+9,STREET_ART.lamp).setOrigin(.5,1).setDisplaySize(66,160).setDepth(p.y));
@@ -79,12 +83,11 @@ export class StreetRenderer {
     this.sparkle=scene.add.graphics().setPosition(signX,signY);sections.push(this.sparkle);
     this.facade=scene.add.container(0,0,sections).setDepth(front);
     this.walls.set('front',this.facade);
-    for(const side of ['right','rear','left'] as const){
+    for(const side of ['rear'] as const){
       const test=new StreetView();test.side=side;const wall=test.wall,g=scene.add.graphics();
       g.fillStyle(side==='rear'?0x65303f:0x681a32).fillRect(wall.left,-2400,wall.width,wall.base+2400);
       for(let x=wall.left;x<wall.right;x+=160)g.lineStyle(1,0x532836).lineBetween(x,-2400,x,wall.base);
       const pieces:Phaser.GameObjects.GameObject[]=[g];
-      if(side!=='rear')for(let y=wall.base-350;y>-2200;y-=250)for(let x=wall.left;x<wall.right-20;x+=246)pieces.push(scene.add.image(x,y,STREET_ART.floor).setOrigin(0,1).setDisplaySize(Math.min(246,wall.right-x),250));
       pieces.push(scene.add.image(wall.left,wall.base-350,createStreetWall(scene,side)).setOrigin(0).setDisplaySize(wall.width,350));
       this.walls.set(side,scene.add.container(0,0,pieces).setDepth(wall.base));
     }
@@ -98,6 +101,7 @@ export class StreetRenderer {
     this.roofStairs.update(overview,this.view);
     for(const [side,wall] of this.walls)wall.setVisible(!overview&&side===this.view.side).setAlpha(1);
     this.plan.setVisible(overview);this.ground.setVisible(!overview);
+    this.frontGround.setVisible(this.view.side==='front');
     const origin=this.view.point({x:0,y:0});this.ground.setPosition(origin.x,origin.y).setRotation(this.view.angle);
     for(const {image,point} of this.anchors){const p=this.view.point(point);image.setPosition(p.x,p.y).setDepth(p.y).setVisible(!overview&&this.view.visible(point));}
     this.door.setVisible(!overview&&this.view.side==='front');if(this.door.input)this.door.input.enabled=!overview&&this.view.side==='front';
@@ -119,6 +123,6 @@ export class StreetRenderer {
   prepareApproach(id:StreetResidentId,player:Point){return this.residents.prepareApproach(id,player);}
   get pedestrianCount(){return this.ambience.count+this.residents.count;}
   get characterTextureKeys(){return this.residents.textureKeys;}
-  getState(){return {view:{side:this.view.side,orientation:this.view.orientation,overview:this.view.overview},props:this.anchors.map(({image,point})=>({world:{...point},x:image.x,y:image.y,visible:image.visible,texture:image.texture.key})),...this.ambience.getState(),residents:this.residents.getState()};}
+  getState(){return {view:{side:this.view.side,orientation:this.view.orientation,overview:this.view.overview,wall:{...this.view.wall},angle:this.view.angle},frontRoadVisible:!this.view.overview&&this.frontGround.visible,props:this.anchors.map(({image,point})=>({world:{...point},x:image.x,y:image.y,visible:image.visible,texture:image.texture.key})),...this.ambience.getState(),carRender:this.ambience.carRender,residents:this.residents.getState()};}
   get alpha() { return this.facade.alpha; }
 }

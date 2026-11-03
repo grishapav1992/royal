@@ -119,6 +119,37 @@ export class StreetRoofStairs {
     this.paint=(g,plan,view)=>{
       g.clear();
       const route=ROOF_STAIR_ROUTE.map(p=>view.point(p,!plan));
+      if(!plan){
+        const ink=0x302d35,steel=0x695554,light=0x9b8274;
+        const rail=(a:{x:number;y:number},b:{x:number;y:number})=>{
+          for(const offset of [-50,-30]){g.lineStyle(6,ink).lineBetween(a.x,a.y+offset,b.x,b.y+offset);g.lineStyle(2,light).lineBetween(a.x,a.y+offset-1,b.x,b.y+offset-1);}
+          const count=Math.ceil(Math.abs(b.x-a.x)/29);
+          for(let n=0;n<=count;n++){const t=n/count,x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t;g.lineStyle(3,ink).lineBetween(x,y-50,x,y+4);g.lineStyle(1,light).lineBetween(x-1,y-48,x-1,y+3);}
+        };
+        const base=route[0],landing=route[1];
+        for(const dx of [-22,22]){g.lineStyle(7,ink).lineBetween(base.x+dx,base.y,landing.x+dx,landing.y-48);g.lineStyle(3,steel).lineBetween(base.x+dx,base.y,landing.x+dx,landing.y-48);}
+        for(let y=base.y-8;y>landing.y;y-=14){g.lineStyle(5,ink).lineBetween(base.x-21,y,base.x+21,y);g.lineStyle(2,light).lineBetween(base.x-21,y-1,base.x+21,y-1);}
+        for(const [start,end] of [[1,2],[3,4],[5,6]]){
+          const a=route[start],b=route[end],count=Math.ceil(Math.abs(b.x-a.x)/16),points=[{x:a.x,y:a.y}];
+          for(let n=1;n<=count;n++){const x=a.x+(b.x-a.x)*n/count,y=a.y+(b.y-a.y)*n/count;points.push({x,y:a.y+(b.y-a.y)*(n-1)/count},{x,y});}
+          points.push({x:b.x,y:b.y+18},{x:a.x,y:a.y+18});
+          g.fillStyle(steel).fillPoints(points,true);g.lineStyle(3,ink).strokePoints(points,true);
+          g.lineStyle(2,light).lineBetween(a.x,a.y+14,b.x,b.y+14);
+          for(let n=1;n<count;n+=3){const t=n/count,x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t;g.fillStyle(0x95654e).fillEllipse(x,y+11,8,3);}
+          rail(a,b);
+        }
+        for(const index of [1,3,5,7]){
+          const p=route[index];
+          g.fillStyle(0x465056).fillTriangle(p.x-30,p.y+13,p.x-30,p.y+49,p.x+27,p.y+13);
+          g.lineStyle(3,ink).strokeTriangle(p.x-30,p.y+13,p.x-30,p.y+49,p.x+27,p.y+13);
+          for(const y of [25,38])g.fillStyle(0xadb2ac).fillCircle(p.x-24,p.y+y,1.7);
+          g.fillStyle(steel).fillRect(p.x-34,p.y,68,16);g.lineStyle(3,ink).strokeRect(p.x-34,p.y,68,16);
+          rail({x:p.x-32,y:p.y},{x:p.x+32,y:p.y});
+          g.fillStyle(0xf1f5f4).fillEllipse(p.x-7,p.y-52,49,6).fillEllipse(p.x+9,p.y-54,22,6);
+        }
+        const top=route[7],exit=route[8];g.lineStyle(14,steel).lineBetween(top.x,top.y+7,exit.x,exit.y+7);rail(top,exit);
+        return;
+      }
       // Thin supports leave the street lane visible through the open structure.
       for(const worldX of [1560,1770]){
         const base=view.point({x:worldX,y:500}),top=view.point({x:worldX,y:255},!plan),x=top.x;

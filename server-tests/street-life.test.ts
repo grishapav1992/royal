@@ -150,16 +150,28 @@ test('the mascot greets a nearby passer with a pause and a bounded greeting rate
 test('all street viewpoints keep the same world anchors and invert clicks and directions',async()=>{
   const {projectStreetPoint,unprojectStreetPoint,streetDirection}=await import('../src/game/streetView');
   const points=[STREET.spawn,...STREET.loop,...STREET_RESIDENTS];
-  for(const side of ['front','right','rear','left'] as const){
+  for(const side of ['front','rear'] as const){
     for(const point of points)assert.deepEqual(unprojectStreetPoint(projectStreetPoint(point,side),side),{x:point.x,y:point.y});
     for(const point of [{x:1,y:0},{x:0,y:-1},{x:1,y:1}])assert.deepEqual(streetDirection(streetDirection(point,side),side,true),point);
   }
 });
 
-test('the taxi stays at its real front-right bay and never appears behind the opposite wall',async()=>{
+test('the street keeps its front orientation along either side and hides traffic in the rear courtyard',async()=>{
   const {StreetView}=await import('../src/game/streetView');
-  const taxi={x:2580,y:1120},views=[{point:{x:840,y:1030},side:'front',taxi:true},{point:{x:2320,y:710},side:'right',taxi:true},{point:{x:1370,y:360},side:'rear',taxi:false},{point:{x:480,y:710},side:'left',taxi:false}] as const;
+  const taxi={x:2580,y:1120},views=[{point:{x:840,y:1030},side:'front',taxi:true},{point:{x:2320,y:710},side:'front',taxi:true},{point:{x:1370,y:360},side:'rear',taxi:false},{point:{x:480,y:710},side:'front',taxi:true}] as const;
   for(const expected of views){const view=new StreetView();view.configure(expected.point,false);assert.equal(view.side,expected.side);assert.equal(view.visible(taxi),expected.taxi);assert.deepEqual(view.world(view.point(taxi)),taxi);}
+});
+
+test('the courtyard opens only after clearing a rear corner, with a full-width rear wall',async()=>{
+  const {StreetView}=await import('../src/game/streetView');
+  for(const direction of [-1,1]){
+    const view=new StreetView(),edge=direction<0?STREET.building.x:STREET.building.x+STREET.building.w,outside=edge+direction*140,inside=edge-direction*60;
+    for(const y of [1050,710,500,360]){view.configure({x:outside,y},false);assert.equal(view.side,'front');assert.equal(view.angle,0);}
+    view.configure({x:edge,y:360},false);assert.equal(view.side,'front','touching the corner does not turn the map');
+    view.configure({x:inside,y:360},false);assert.equal(view.side,'rear');assert.equal(view.wall.width,STREET.building.w);
+    view.configure({x:outside,y:360},false);assert.equal(view.side,'rear','leaving the courtyard has its own complete corner crossing');
+    view.configure({x:outside,y:600},false);assert.equal(view.side,'front');
+  }
 });
 
 test('the rear escape rises on the exterior wall while overview retains the actual map path',async()=>{

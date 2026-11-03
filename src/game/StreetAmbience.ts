@@ -29,10 +29,11 @@ export class StreetAmbience {
     });
     this.state.cars.forEach((car,index)=>{
       const p=view.point(car);
-      this.cars[index].setDepth(p.y).setTexture((overview?'street-car-plan-':'street-car-')+car.id).setPosition(p.x,p.y).setVisible(car.visible&&view.visible(car));
+      this.cars[index].setDepth(p.y).setTexture((overview?'street-car-plan-':'street-car-')+car.id).setPosition(p.x,p.y).setRotation(0).setVisible(car.visible&&(overview||view.side==='front'));
     });
     return this.state.sign;
   }
   get count(){return this.pedestrians.length;}
+  get carRender(){return this.cars.map(image=>({x:image.x,y:image.y,angle:image.angle,visible:image.visible}));}
   getState(){return this.state;}
 }

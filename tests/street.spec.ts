@@ -114,18 +114,20 @@ test('walk outside, circle the casino, reconnect and return through the same ent
   await expect(dialogue).toBeHidden();
   await page.screenshot({ path: `../street-${info.project.name}-overview.png` });
   for (const p of STREET.loop) await walk(page, p.x, p.y);
-  for(const expected of [{x:480,y:710,side:'left',taxi:false},{x:1370,y:365,side:'rear',taxi:false},{x:2320,y:710,side:'right',taxi:true}] as const){
+  for(const expected of [{x:480,y:710,side:'front',label:'left-pass',taxi:true},{x:1370,y:365,side:'rear',label:'rear-courtyard',taxi:false},{x:2320,y:710,side:'front',label:'right-pass',taxi:true}] as const){
     await overview(page,true);
     if(expected.side==='rear')await walk(page,480,360);
-    if(expected.side==='right')await walk(page,2320,360);
+    if(expected.label==='right-pass')await walk(page,2320,360);
     await walk(page,expected.x,expected.y);
     await overview(page,false);
     await expect.poll(async ()=>(await state(page)).street.view.side).toBe(expected.side);
+    expect((await state(page)).street.view.wall.width).toBe(STREET.building.w);
+    expect((await state(page)).street.carRender.every((car:any)=>expected.side==='rear'?!car.visible:car.angle===0&&car.y>=1210)).toBe(true);
     const props=(await state(page)).street.props;
     const taxi=props.find((p:any)=>p.texture==='street-detail-parked-taxi');
     expect(taxi).toBeTruthy();expect(taxi.visible).toBe(expected.taxi);
     expect(taxi.world).toEqual({x:2580,y:1120});
-    await page.screenshot({path:`../street-${info.project.name}-${expected.side}-view.png`});
+    await page.screenshot({path:`../street-${info.project.name}-${expected.label}.png`});
     // Screen controls use the current wall orientation.
     const before=await state(page);
     await page.keyboard.down('ArrowRight');await page.waitForTimeout(300);await page.keyboard.up('ArrowRight');

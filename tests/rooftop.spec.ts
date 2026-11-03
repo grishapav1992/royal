@@ -50,6 +50,7 @@ test('climb rear stairs, explore roof, reconnect and return with chat and wallet
   await clickWorld(page, STREET_ROOF_STAIRS.click.x, STREET_ROOF_STAIRS.click.y);
   await expect.poll(async () => (await state(page)).stairStep,{timeout:10000}).toBeGreaterThanOrEqual(3);
   expect((await state(page)).renderDepth).toBeGreaterThan(620);
+  expect((await state(page)).street.frontRoadVisible).toBe(false);
   await page.screenshot({path:`../roof-${info.project.name}-climb.png`});
   const prefix=await page.evaluate(()=>(window as any).__roofClimb as {hall:string;x:number;y:number}[]);
   await page.reload();

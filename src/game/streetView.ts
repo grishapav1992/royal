@@ -1,41 +1,34 @@
 import type { Point } from './navigation';
 import type { Facing } from '../shared/movement';
 import { STREET } from '../shared/street';
-import { STREET_ROOF_STAIRS } from '../shared/rooftop';
+import { STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE } from '../shared/rooftop';
 
-export type StreetSide = 'front' | 'right' | 'rear' | 'left';
+export type StreetSide = 'front' | 'rear';
 export function streetSide(point: Point, previous: StreetSide = 'front'): StreetSide {
-  const b=STREET.building,margin=24;
-  if(point.y>b.y+b.h+margin)return 'front';
-  if(point.y<b.y-margin)return 'rear';
-  if(point.x<b.x-margin)return 'left';
-  if(point.x>b.x+b.w+margin)return 'right';
-  return previous;
+  const b=STREET.building;
+  if(previous==='rear'){
+    const outside=point.x<b.x-32||point.x>b.x+b.w+32;
+    return point.y>b.y+b.h+24||outside&&point.y>b.y+48?'front':'rear';
+  }
+  // Enter the courtyard only after the whole character clears the rear corner.
+  return point.y<b.y-48&&point.x>b.x+32&&point.x<b.x+b.w-32?'rear':'front';
 }
 export function projectStreetPoint(point: Point, side: StreetSide): Point {
-  if(side==='right')return {x:STREET.height-point.y,y:point.x};
   if(side==='rear')return {x:STREET.width-point.x,y:STREET.height-point.y};
-  if(side==='left')return {x:point.y,y:STREET.width-point.x};
   return {x:point.x,y:point.y};
 }
 export function unprojectStreetPoint(point: Point, side: StreetSide): Point {
-  if(side==='right')return {x:point.y,y:STREET.height-point.x};
   if(side==='rear')return {x:STREET.width-point.x,y:STREET.height-point.y};
-  if(side==='left')return {x:STREET.width-point.y,y:point.x};
   return {x:point.x,y:point.y};
 }
-export function streetDirection(point: Point, side: StreetSide, inverse=false): Point {
+export function streetDirection(point: Point, side: StreetSide, _inverse=false): Point {
   if(side==='rear')return {x:-point.x,y:-point.y};
-  if(side==='right')return inverse?{x:point.y,y:-point.x}:{x:-point.y,y:point.x};
-  if(side==='left')return inverse?{x:-point.y,y:point.x}:{x:point.y,y:-point.x};
   return {...point};
 }
 export function streetPointVisible(point: Point, side: StreetSide): boolean {
   const b=STREET.building,margin=36;
   if(side==='rear')return point.y<=b.y+margin;
-  if(side==='right')return point.x>=b.x+b.w-margin;
-  if(side==='left')return point.x<=b.x+margin;
-  return point.y>=b.y+b.h-margin;
+  return point.y>=b.y+b.h-margin||point.x<b.x-margin||point.x>b.x+b.w+margin;
 }
 export class StreetView {
   side: StreetSide='front';
@@ -46,11 +39,17 @@ export class StreetView {
     return old!==this.side||overview!==oldOverview;
   }
   get orientation():StreetSide{return this.overview?'front':this.side;}
-  get size(){return this.orientation==='left'||this.orientation==='right'?{width:STREET.height,height:STREET.width}:{width:STREET.width,height:STREET.height};}
-  get angle(){return ({front:0,right:Math.PI/2,rear:Math.PI,left:-Math.PI/2})[this.orientation];}
+  get size(){return {width:STREET.width,height:STREET.height};}
+  get angle(){return this.orientation==='rear'?Math.PI:0;}
   point(point:Point,climbing=false){
     const result=projectStreetPoint(point,this.orientation);
-    if(climbing&&!this.overview&&this.side==='rear')result.y-=2*(STREET_ROOF_STAIRS.foot.y-point.y);
+    if(climbing&&!this.overview&&this.side==='rear'){
+      const foot=projectStreetPoint(STREET_ROOF_STAIRS.foot,'rear');
+      result.x=foot.x+(result.x-foot.x)*1.65;
+      let rise=STREET_ROOF_STAIRS.foot.y-point.y;
+      for(const [from,to] of [[2,3],[4,5],[6,7]])rise-=Math.max(0,Math.min(ROOF_STAIR_ROUTE[from].y-point.y,ROOF_STAIR_ROUTE[from].y-ROOF_STAIR_ROUTE[to].y));
+      result.y=foot.y-rise*2.6;
+    }
     return result;
   }
   world(point:Point){return unprojectStreetPoint(point,this.orientation);}

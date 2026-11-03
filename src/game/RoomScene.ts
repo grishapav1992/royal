@@ -988,7 +988,7 @@ export class RoomScene extends Phaser.Scene {
   }
   private animateActor(actor: Actor, time: number, moving: boolean) {
     const exterior=this.hall==='street';
-    const facing=exterior?this.streetView.facing(actor.facing):actor.facing;
+    const facing=exterior&&(actor.stairStep??0)>0&&actor.facing==='up'&&!this.overview?'up':exterior?this.streetView.facing(actor.facing):actor.facing;
     actor.sprite.setAngle(0); actor.label?.setVisible(true); actor.shadow.setScale(1);
     actor.moving = moving;
     const gameReaction = actor.gameReactionUntil > Date.now() ? actor.gameReaction : '';
