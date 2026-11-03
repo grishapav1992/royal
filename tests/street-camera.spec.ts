@@ -62,7 +62,7 @@ test('keep the road in front and enter the full-width courtyard only after clear
   await walk(page,1370,365);await overview(page,false);
   await page.screenshot({path:`../courtyard-${info.project.name}-rear.png`});
   await walk(page,600,360);await overview(page,false);
-  await closeWalk(page,600,547);expect((await state(page)).street.view.side).toBe('rear');
+  await closeWalk(page,600,536);expect((await state(page)).street.view.side).toBe('rear');
   await closeWalk(page,600,570);expect((await state(page)).street.view.side).toBe('front');
   await page.screenshot({path:`../courtyard-${info.project.name}-left-tight-exit.png`});
   await closeWalk(page,600,360);
@@ -75,7 +75,7 @@ test('keep the road in front and enter the full-width courtyard only after clear
   await closeWalk(page,2120,360);
   await page.keyboard.down('ArrowLeft');
   try{await expect.poll(async()=>(await state(page)).street.view.side,{timeout:8000,intervals:[50]}).toBe('rear');}finally{await page.keyboard.up('ArrowLeft');}
-  await closeWalk(page,2120,547);expect((await state(page)).street.view.side).toBe('rear');
+  await closeWalk(page,2120,536);expect((await state(page)).street.view.side).toBe('rear');
   await closeWalk(page,2120,570);expect((await state(page)).street.view.side).toBe('front');
   await page.screenshot({path:`../courtyard-${info.project.name}-right-tight-exit.png`});
   await page.evaluate(()=>(window as any).__recordEdges=false);

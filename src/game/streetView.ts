@@ -7,7 +7,7 @@ export type StreetSide = 'front' | 'rear';
 export function streetSide(point: Point, previous: StreetSide = 'front'): StreetSide {
   const b=STREET.building;
   if(previous==='rear'){
-    const outside=point.x<b.x-16||point.x>b.x+b.w+16;
+    const outside=point.x<=b.x||point.x>=b.x+b.w;
     return point.y>b.y+b.h+24||outside&&point.y>b.y+48?'front':'rear';
   }
   // Enter the courtyard only after the whole character clears the rear corner.

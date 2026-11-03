@@ -185,7 +185,7 @@ test('the rear escape rises on the exterior wall while overview retains the actu
 
 test('narrow walkable wall edges and delayed corner transitions never hide a person',async()=>{
   const {StreetView}=await import('../src/game/streetView');
-  for(const x of [600,2120]){
+  for(const x of [600,608,2112,2120]){
     const view=new StreetView();
     for(const y of [920,700,500,460,360]){const p={x,y};view.configure(p,false);assert.equal(view.side,'front');assert(view.visible(p));if(y<920)assert(view.depth(p)>view.wall.base);}
     view.configure({x:1370,y:360},false);
