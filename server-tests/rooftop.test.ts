@@ -109,6 +109,8 @@ test('server controls roof ascent and return, blocks busy visitors and ignores o
     const revision = p.hallRevision;
     assert.equal(enter(),false);
     assert.equal(p.stairStep,1);
+    Object.assign(p,{...ROOF_STAIR_ROUTE[1],y:ROOF_STAIR_ROUTE[1].y+.000009,moving:false});
+    assert.equal(enter(),false);assert.equal(p.stairStep,2);assert.equal(p.y,ROOF_STAIR_ROUTE[1].y,'idle admission recovers a rounded final position');
     Object.assign(p,{x:(ROOF_STAIR_ROUTE[1].x+ROOF_STAIR_ROUTE[2].x)/2,y:(ROOF_STAIR_ROUTE[1].y+ROOF_STAIR_ROUTE[2].y)/2,stairStep:2});
     const held={x:p.x,y:p.y,step:p.stairStep};
     handlers.get('target')!(client,{revision,x:2300,y:1000});Reflect.get(room,'tick').call(room,.05);
@@ -261,6 +263,17 @@ test('touch click routes reach exact landings in both directions and stop after 
     if(index){assert.equal(body.stairDirection,-1);assert.deepEqual({x:body.x,y:body.y},ROOF_STAIR_ROUTE[index]);}
   }
   assert.equal(body.stairStep,0);assert.equal(body.stairDirection,1);assert(body.y<STREET_ROOF_STAIRS.foot.y-7);
+});
+
+test('release confirms a landing when the authoritative position differs from its rounded network snapshot',()=>{
+  const body={...stairBody(),y:ROOF_STAIR_ROUTE[1].y+.000009};
+  assert.equal(Math.fround(body.y),ROOF_STAIR_ROUTE[1].y,'the snapshot can look exactly at the landing');
+  applyMovementInput(body,{seq:1,x:0,y:0,ms:0});assert.equal(body.stairStep,2);assert.equal(body.y,ROOF_STAIR_ROUTE[1].y);
+  Object.assign(body,{stairStep:1,stairDirection:-1,y:STREET_ROOF_STAIRS.foot.y-.000009});
+  applyMovementInput(body,{seq:2,x:0,y:0,ms:0});assert.equal(body.stairStep,0);assert(body.y<STREET_ROOF_STAIRS.foot.y-7);
+  Object.assign(body,{stairStep:3,stairDirection:1,x:ROOF_STAIR_ROUTE[2].x,y:ROOF_STAIR_ROUTE[2].y});
+  const before={x:body.x,y:body.y};applyMovementInput(body,{seq:3,x:0,y:0,ms:0});
+  assert.deepEqual({x:body.x,y:body.y},before,'a pause away from the next landing does not move');assert.equal(body.stairStep,3);
 });
 
 test('the lower ladder can be backed down safely onto the pavement',()=>{

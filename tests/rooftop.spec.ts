@@ -31,17 +31,20 @@ async function walk(page: Page, x: number, y: number) {
 
 async function flight(page:Page,mobile:boolean){
   const before=await state(page),step=before.stairStep,target=ROOF_STAIR_ROUTE[step],from=ROOF_STAIR_ROUTE[step-1];
+  let clicked:{x:number;y:number}|undefined;
   if(mobile){
     const view=new StreetView();view.side=before.street.view.side;view.overview=before.view.overview;
     const a=view.point(before,true),b=view.point(target,true);
-    await clickViewPoint(page,{x:(a.x+b.x)/2,y:(a.y+b.y)/2-8});
+    clicked={x:(a.x+b.x)/2,y:(a.y+b.y)/2-8};await clickViewPoint(page,clicked);
   }else{
     const key=target.x===from.x?'ArrowUp':(target.x>from.x)===(before.street.view.orientation==='rear')?'ArrowLeft':'ArrowRight';
     await page.keyboard.down(key);
     try{await expect.poll(async()=>{const s=await state(page);return s.hall==='roof'||s.stairStep>step;},{timeout:10000}).toBe(true);}
     finally{await page.keyboard.up(key);}
   }
-  await expect.poll(async()=>{const s=await state(page);return s.hall==='roof'||s.stairStep>step;},{timeout:10000}).toBe(true);
+  await expect.poll(async()=>{const s=await state(page);return s.hall==='roof'||s.stairStep>step;},{timeout:10000}).toBe(true).catch(async error=>{
+    const s=await state(page);console.log('Stair input diagnostic',JSON.stringify({before:{step,x:before.x,y:before.y,dir:before.stairDirection,view:before.view},clicked,after:{step:s.stairStep,x:s.x,y:s.y,dir:s.stairDirection,serverX:s.serverX,serverY:s.serverY,moving:s.moving,predicted:s.predicted,pending:s.pendingInputs,renderX:s.renderX,renderY:s.renderY,view:s.view}}));throw error;
+  });
   if(step===ROOF_STAIR_ROUTE.length-1)await expect.poll(async()=>(await state(page)).hall,{timeout:10000}).toBe('roof');
   await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.serverX-s.x,s.serverY-s.y);}).toBeLessThan(1);
 }

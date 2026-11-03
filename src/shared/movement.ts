@@ -1,4 +1,4 @@
-import { advanceRoofStairStep,moveRoofStairs,roofStairApproach,ROOF_STAIR_SPEED_SCALE,STREET_ROOF_STAIRS } from './rooftop';
+import { advanceRoofStairStep,moveRoofStairs,settleRoofStairLanding,roofStairApproach,ROOF_STAIR_SPEED_SCALE,STREET_ROOF_STAIRS } from './rooftop';
 export type Facing = 'down' | 'left' | 'right' | 'up';
 import { walkable } from '../game/navigation';
 import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, hallObstacles, SEATS } from './world';
@@ -13,7 +13,7 @@ export function applyMovementInput(body: MovementBody, input: MovementInput, gua
   let contact=false;
   const length = Math.hypot(input.x, input.y);
   body.moving = false;
-  if (!length) return;
+  if (!length) {if(body.hall==='street')settleRoofStairLanding(body);return;}
   const seat = SEATS.find(s => s.id === body.seat);
   if (seat) { body.x = seat.entry.x; body.y = seat.entry.y; }
   body.seat = ''; body.action = 'idle'; body.drink = ''; body.actionUntil = 0;

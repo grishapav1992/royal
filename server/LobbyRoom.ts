@@ -1,4 +1,4 @@
-import { advanceRoofStairStep,nearRoofStairBase, ROOF_STAIR_ROUTE,STREET_ROOF_STAIRS } from '../src/shared/rooftop';
+import { advanceRoofStairStep,settleRoofStairLanding,nearRoofStairBase, ROOF_STAIR_ROUTE,STREET_ROOF_STAIRS } from '../src/shared/rooftop';
 import { LOBBY_RECONNECT_GRACE_SECONDS } from '../src/shared/lobbyConnection';
 import { CommonCombatWallet } from './commonCombatWallet';
 import { virtualPvpCommand } from './pvp/virtual-service';
@@ -542,7 +542,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   private publish(message: ChatMessage) { this.history.push(message); if (this.history.length > 60) this.history.shift(); this.broadcast('chat', message); }
   private stop(id: string) {
     const c = this.controls.get(id); if (c) { c.dx = c.dy = 0; c.path = []; c.predicted = false; c.afterMovement = undefined; c.inputs.cancel(); }
-    const p = this.state.players.get(id); if (p) { p.moving = false; if (c) p.inputSeq = c.inputs.sequence; }
+    const p = this.state.players.get(id); if (p) { p.moving = false; if(p.hall==='street'&&p.stairStep>0)applyMovementInput(p,{seq:0,x:0,y:0,ms:0}); if (c) p.inputSeq = c.inputs.sequence; }
   }
   private cabinetDistance(player: Player, cabinet: Cabinet) {
     const { entry } = cabinetSeat(cabinet);
@@ -599,6 +599,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     const p=this.state.players.get(id),c=this.controls.get(id);
     if(!p?.connected||!c)return false;
     if(p.security||this.cat.isHugging(id)||p.playing||p.seat||p.action==='drink'){p.stairStep=0;return false;}
+    if(p.hall==='street'&&p.stairStep>0&&!p.moving)settleRoofStairLanding(p);
     const previous=p.stairStep;
     p.stairStep=p.hall==='street'?advanceRoofStairStep(p.stairStep,p):0;
     if(!previous&&p.stairStep===1){p.x=STREET_ROOF_STAIRS.foot.x;p.y=STREET_ROOF_STAIRS.foot.y;p.stairDirection=1;}

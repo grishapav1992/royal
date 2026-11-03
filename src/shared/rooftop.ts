@@ -90,6 +90,18 @@ export function moveRoofStairs(body:StairPosition&{moving:boolean},input:{x:numb
   return true;
 }
 
+/** Finish a released step despite the position rounding in network snapshots. */
+export function settleRoofStairLanding(body:StairPosition&{moving:boolean}){
+  const step=body.stairStep??0;
+  if(step<1||step>=ROOF_STAIR_ROUTE.length)return;
+  const direction=body.stairDirection===-1?-1:1,target=ROOF_STAIR_ROUTE[direction===1?step:step-1];
+  if(Math.hypot(body.x-target.x,body.y-target.y)>.2)return;
+  body.x=target.x;body.y=target.y;body.moving=false;
+  if(direction===1)body.stairStep=step+1;
+  else if(step===1){body.stairStep=0;body.stairDirection=1;body.y=target.y-16;}
+  else body.stairStep=step-1;
+}
+
 export function nearRoofStairBase(point:Point){
   const foot=STREET_ROOF_STAIRS.foot;
   return Math.abs(point.x-foot.x)<=64&&Math.abs(point.y-foot.y)<=36;
