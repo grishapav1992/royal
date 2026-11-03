@@ -47,6 +47,7 @@ test('secrets, state, archives and symlinks are excluded; resolver settings affe
   assert.equal(inputKind('docs/game-math/neopolis-v4-calibration.json'), 'config');
   assert.equal(inputKind('deployment/qualifications/tsu-duel-v3/afterglow-compatibility.json'), 'config');
   assert.equal(inputKind('compose.yaml'), 'source');
+  assert.equal(inputKind('deployment/finance/haproxy.cfg'), 'config');
   const before = await inventory(directory);
   await writeFile(resolve(directory, 'tsconfig.json'), '{"compilerOptions":{}}');
   await git(directory, ['add', 'tsconfig.json']);

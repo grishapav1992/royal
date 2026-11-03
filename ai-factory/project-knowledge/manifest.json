@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "version": "2026-10-10.1",
-  "updated_at": "2026-10-10T00:22:00.000Z",
+  "version": "2026-11-03.1",
+  "updated_at": "2026-11-03T14:16:22.528Z",
   "summary": "PROJECT.md",
   "documents": [
     "deployment/CASINOAPIPRO.md",
@@ -11,6 +11,8 @@
     "docs/game-core.md",
     "docs/github-games.md",
     "docs/game-security-audit.md",
-    "docs/financial-core-implementation.md"
+    "docs/financial-core-implementation.md",
+    "docs/payment-methods.md",
+    "docs/project-knowledge-review-20261103.md"
   ]
 }
