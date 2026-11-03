@@ -13,6 +13,33 @@ import { StreetView } from '../src/game/streetView';
 import { roofStairContains } from '../src/game/roofStairInput';
 import { applyMovementInput,type MovementBody } from '../src/shared/movement';
 import { MovementPrediction,advanceClickMovement } from '../src/network/MovementPrediction';
+import { REAR_WINDOW,RearWindowLife,rearWindowLayout } from '../src/game/rearWindowLife';
+
+test('rear windows fill only the upper wall and grow with it without occupying the service band',()=>{
+  const view=new StreetView();view.side='rear';
+  const windows=rearWindowLayout(view.wall,view.roofEdge),taller=rearWindowLayout(view.wall,view.roofEdge-REAR_WINDOW.rowPitch);
+  assert(windows.length>=20);assert.equal(taller.length,windows.length+5);
+  for(const w of windows){
+    assert(w.x>=view.wall.left&&w.x+REAR_WINDOW.width<=view.wall.right);
+    assert(w.y>view.roofEdge&&w.y+REAR_WINDOW.height<=view.wall.base-350);
+  }
+  assert.equal(new Set(windows.map(w=>w.id)).size,windows.length);
+  assert.deepEqual([...new Set(windows.map(w=>w.kind))].sort(),[0,1,2]);
+});
+
+test('window visitors walk both ways, pause at the glass and freeze while hidden or reduced',()=>{
+  const view=new StreetView();view.side='rear';const w=rearWindowLayout(view.wall,view.roofEdge)[0],life=new RearWindowLife();
+  const facings=new Set<string>(),positions=new Set<number>();let paused=false;
+  for(let n=0;n<1000;n++){
+    life.advance(50,true,false);const p=life.person(w,0);facings.add(p.facing);positions.add(Math.round(p.x));paused||=!p.moving;
+    assert(p.x>=w.x+REAR_WINDOW.glass.x-30&&p.x<=w.x+REAR_WINDOW.glass.x+REAR_WINDOW.glass.w+30);
+    assert(p.y<w.y+REAR_WINDOW.glass.y+REAR_WINDOW.glass.h);
+  }
+  assert(facings.has('left')&&facings.has('right')&&facings.has('down'));assert(positions.size>100&&paused);
+  const before={...life.person(w,0)},time=life.time;
+  for(const args of [[true,true,false],[false,false,false],[true,false,true]] as const){life.advance(5000,...args);assert.equal(life.time,time);assert.equal(life.person(w,0).x,before.x);assert.equal(life.person(w,0).moving,false);}
+  life.advance(10000,true,false);assert.equal(life.time,time+50,'background gaps never create a catch-up jump');
+});
 
 test('visible ladder rungs, flights and landings accept input without capturing the rear pavement',()=>{
   const view=new StreetView();view.configure({x:1660,y:360},false);

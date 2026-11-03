@@ -78,6 +78,33 @@ async function noGroundConversation(page:Page){
   await expect(page.locator('.street-conversation')).toBeHidden();
 }
 
+async function verifyRearWindows(page:Page,project:string){
+  const before=(await state(page)).street.rearWindows;
+  expect(before.visible).toBe(true);expect(before.maskApplied).toBe(true);
+  expect(before.windows.length).toBeGreaterThanOrEqual(20);
+  expect(new Set(before.windows.map((w:any)=>w.kind)).size).toBe(3);
+  expect(before.windows.some((w:any)=>w.onscreen)).toBe(true);
+  expect(before.people.some((p:any)=>p.visible&&p.moving)).toBe(true);
+  expect(before.people.every((p:any)=>!p.interactive)).toBe(true);
+  await page.waitForTimeout(400);
+  const after=(await state(page)).street.rearWindows;
+  expect(after.people.some((p:any,i:number)=>Math.abs(p.x-before.people[i].x)>3)).toBe(true);
+  await page.screenshot({path:`../rear-windows-${project}-lower.png`});
+  await overview(page,true);
+  await expect.poll(async()=>(await state(page)).street.rearWindows.visible).toBe(false);
+  const hiddenTime=(await state(page)).street.rearWindows.time;await page.waitForTimeout(250);
+  expect((await state(page)).street.rearWindows.time).toBe(hiddenTime);
+  await overview(page,false);
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await expect.poll(async()=>(await state(page)).reducedMotion).toBe(true);
+  await expect.poll(async()=>(await state(page)).street.rearWindows.motion).toBe(false);
+  const frozen=(await state(page)).street.rearWindows;await page.waitForTimeout(250);
+  const still=(await state(page)).street.rearWindows;
+  expect(still.time).toBe(frozen.time);expect(still.people.map((p:any)=>[p.x,p.y,p.frame])).toEqual(frozen.people.map((p:any)=>[p.x,p.y,p.frame]));
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await expect.poll(async()=>(await state(page)).street.rearWindows.motion).toBe(true);
+}
+
 async function keyUntil(page:Page,key:string,condition:()=>Promise<boolean>,timeout=15000){
   await page.keyboard.down(key);
   try{await expect.poll(condition,{timeout,intervals:[16,32,50]}).toBe(true);}
@@ -98,6 +125,7 @@ test('manually climb each switchback without falling, reach the roof edge and re
   const network = await page.evaluate(() => (window as any).royalDemo.getNetworkState());
   await page.locator('[data-floor-target="street"]').click();
   await expect.poll(async () => (await state(page)).hall, { timeout: 25000 }).toBe('street');
+  expect((await state(page)).street.rearWindows.visible).toBe(false);
   await expect(page.locator('[data-floor-target="roof"]')).toHaveCount(0);
   await overview(page, true);
   for (const p of [{ x: 480, y: 1050 }, { x: 480, y: 360 }, { x: 1660, y: 360 }]) await walk(page, p.x, p.y);
@@ -165,6 +193,7 @@ test('manually climb each switchback without falling, reach the roof edge and re
   await staysOnStep(page);
   expect((await state(page)).stairDirection).toBe(-1);
   await noGroundConversation(page);
+  await verifyRearWindows(page,info.project.name);
   expect((await state(page)).renderDepth).toBeGreaterThan(620);
   expect((await state(page)).street.frontRoadVisible).toBe(false);
   {const s=await state(page);expect(s.renderVisible).toBe(true);expect(Math.hypot(s.halo.x-s.renderX,s.halo.y-s.renderY)).toBeLessThan(.1);}

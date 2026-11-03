@@ -8,6 +8,7 @@ import { StreetView, type StreetSide } from './streetView';
 import { createStreetWall } from './streetWalls';
 import { StreetRoofStairs } from './RooftopRenderer';
 import { StreetResidents } from './StreetResidents';
+import { RearCasinoWindows } from './RearCasinoWindows';
 
 /** Reusable facade sections keep the close view independent of total floor count. */
 export class StreetRenderer {
@@ -25,6 +26,7 @@ export class StreetRenderer {
   private residents:StreetResidents;
   private roofStairs:StreetRoofStairs;
   private rearSky:Phaser.GameObjects.Graphics;
+  private rearWindows!:RearCasinoWindows;
   readonly mapCanvas: HTMLCanvasElement;
   constructor(scene: Phaser.Scene, enter: () => void,approach:(id:StreetResidentId)=>void,climb:(point:Point)=>void,readonly view:StreetView) {
     this.mapCanvas=createStreetArt(scene);
@@ -95,6 +97,7 @@ export class StreetRenderer {
       g.fillStyle(0xf4f8fc).fillRoundedRect(wall.left-6,top-7,wall.width+12,10,4);
       const pieces:Phaser.GameObjects.GameObject[]=[g];
       pieces.push(scene.add.image(wall.left,wall.base-350,createStreetWall(scene,side)).setOrigin(0).setDisplaySize(wall.width,350));
+      this.rearWindows=new RearCasinoWindows(scene,test);pieces.push(this.rearWindows.root);
       this.walls.set(side,scene.add.container(0,0,pieces).setDepth(wall.base));
     }
     this.anchors=this.props.map(image=>({image,point:{x:image.x,y:image.y}}));
@@ -108,6 +111,7 @@ export class StreetRenderer {
     for(const [side,wall] of this.walls)wall.setVisible(!overview&&side===this.view.side).setAlpha(1);
     this.plan.setVisible(overview);this.ground.setVisible(!overview);
     this.rearSky.setVisible(!overview&&this.view.side==='rear');
+    this.rearWindows.update(delta,!overview&&this.view.side==='rear',reducedMotion);
     this.frontGround.setVisible(this.view.side==='front');
     const origin=this.view.point({x:0,y:0});this.ground.setPosition(origin.x,origin.y).setRotation(this.view.angle);
     for(const {image,point} of this.anchors){const p=this.view.point(point);image.setPosition(p.x,p.y).setDepth(p.y).setVisible(!overview&&this.view.visible(point));}
@@ -125,11 +129,11 @@ export class StreetRenderer {
       this.sparkle.fillStyle(0xfff2c7,sign.sparkle).fillPoints([{x:x-r,y},{x:x-1,y:y-1},{x,y:y-r},{x:x+1,y:y-1},{x:x+r,y},{x:x+1,y:y+1},{x,y:y+r},{x:x-1,y:y+1}],true);
     }
   }
-  setActive(active:boolean){this.residents.setActive(active);}
+  setActive(active:boolean){this.residents.setActive(active);this.rearWindows.setActive(active);}
   interact(player:StreetVisitor,id?:StreetResidentId){return this.residents.interact(player,id);}
   prepareApproach(id:StreetResidentId,player:StreetVisitor){return this.residents.prepareApproach(id,player);}
   get pedestrianCount(){return this.ambience.count+this.residents.count;}
   get characterTextureKeys(){return this.residents.textureKeys;}
-  getState(){return {view:{side:this.view.side,orientation:this.view.orientation,overview:this.view.overview,wall:{...this.view.wall},angle:this.view.angle},frontRoadVisible:!this.view.overview&&this.frontGround.visible,props:this.anchors.map(({image,point})=>({world:{...point},x:image.x,y:image.y,visible:image.visible,texture:image.texture.key})),...this.ambience.getState(),carRender:this.ambience.carRender,characterBounds:[...this.ambience.characterBounds,...this.residents.characterBounds],residents:this.residents.getState()};}
+  getState(){return {view:{side:this.view.side,orientation:this.view.orientation,overview:this.view.overview,wall:{...this.view.wall},angle:this.view.angle},rearWindows:this.rearWindows.getState(),frontRoadVisible:!this.view.overview&&this.frontGround.visible,props:this.anchors.map(({image,point})=>({world:{...point},x:image.x,y:image.y,visible:image.visible,texture:image.texture.key})),...this.ambience.getState(),carRender:this.ambience.carRender,characterBounds:[...this.ambience.characterBounds,...this.residents.characterBounds],residents:this.residents.getState()};}
   get alpha() { return this.facade.alpha; }
 }
