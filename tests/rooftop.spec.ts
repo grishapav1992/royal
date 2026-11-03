@@ -49,7 +49,7 @@ async function flight(page:Page,mobile:boolean){
 async function staysOnStep(page:Page){
   await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.serverX-s.x,s.serverY-s.y);}).toBeLessThan(.1);
   const before=await state(page);
-  await page.keyboard.press('ArrowUp',{delay:250});
+  await page.keyboard.press('e',{delay:250});
   await page.keyboard.press('Space');
   const box=(await page.locator('#game canvas').boundingBox())!;
   if(page.viewportSize()!.width<600)await page.touchscreen.tap(box.x+18,box.y+box.height*.5);
@@ -66,6 +66,13 @@ async function noGroundConversation(page:Page){
   const residents=(await state(page)).street.residents;
   expect(residents.nearby).toBeNull();expect(residents.conversation).toBeNull();expect(residents.approaching).toBeNull();
   await expect(page.locator('.street-conversation')).toBeHidden();
+}
+
+async function keyUntil(page:Page,key:string,condition:()=>Promise<boolean>){
+  await page.keyboard.down(key);
+  try{await expect.poll(condition,{timeout:15000}).toBe(true);}
+  finally{await page.keyboard.up(key);}
+  await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.serverX-s.x,s.serverY-s.y);}).toBeLessThan(.1);
 }
 
 test('manually climb each switchback without falling, reach the roof edge and return with chat intact', async ({ page }, info) => {
@@ -94,19 +101,50 @@ test('manually climb each switchback without falling, reach the roof edge and re
     requestAnimationFrame(record);
   });
   const foot=projectStreetPoint(STREET_ROOF_STAIRS.foot,(await state(page)).street.view.orientation);
-  await clickViewPoint(page,{x:foot.x,y:foot.y-80});
+  const mobile=info.project.name==='mobile';
+  if(!mobile){
+    for(const side of [-1,1]){
+      await walk(page,STREET_ROOF_STAIRS.foot.x+side*54,STREET_ROOF_STAIRS.foot.y-20);
+      await keyUntil(page,side<0?'ArrowLeft':'ArrowRight',async()=>(await state(page)).stairStep===1);
+      expect(Math.abs((await state(page)).x-STREET_ROOF_STAIRS.foot.x)).toBeLessThan(.1);
+      await page.screenshot({path:`../roof-flex-${info.project.name}-side-${side}.png`});
+      await keyUntil(page,'ArrowDown',async()=>(await state(page)).stairStep===0);
+    }
+    await walk(page,STREET_ROOF_STAIRS.foot.x-54,STREET_ROOF_STAIRS.foot.y-20);
+    await keyUntil(page,'ArrowUp',async()=>(await state(page)).stairStep===1);
+  }else{
+    await walk(page,STREET_ROOF_STAIRS.foot.x+54,STREET_ROOF_STAIRS.foot.y-20);
+    await clickViewPoint(page,{x:foot.x,y:foot.y-80});
+  }
   await expect.poll(async () => (await state(page)).stairStep,{timeout:10000}).toBe(1);
   await page.waitForTimeout(400);expect((await state(page)).stairStep).toBe(1);
   await noGroundConversation(page);
-  const mobile=info.project.name==='mobile';
   await flight(page,mobile);await flight(page,mobile);
   expect((await state(page)).stairStep).toBe(3);
+  // Descend through a landing, leave safely and re-enter without aligning by hand.
+  await keyUntil(page,'ArrowDown',async()=>(await state(page)).stairStep===0);
+  await walk(page,STREET_ROOF_STAIRS.foot.x-45,STREET_ROOF_STAIRS.foot.y-22);
+  await keyUntil(page,'ArrowUp',async()=>(await state(page)).stairStep===1);
+  await flight(page,mobile);await flight(page,mobile);
   if(!mobile){
-    await page.keyboard.down('ArrowRight');await page.waitForTimeout(220);await page.keyboard.up('ArrowRight');
+    await page.keyboard.down('ArrowRight');await page.waitForTimeout(450);await page.keyboard.up('ArrowRight');
+    const forward=await state(page);
+    await page.keyboard.down('ArrowLeft');await page.waitForTimeout(180);await page.keyboard.up('ArrowLeft');
+    expect((await state(page)).x).toBeGreaterThan(forward.x);
     expect((await state(page)).stairStep).toBe(3);
-    expect(Math.hypot((await state(page)).x-ROOF_STAIR_ROUTE[2].x,(await state(page)).y-ROOF_STAIR_ROUTE[2].y)).toBeGreaterThan(5);
+  }else{
+    const view=new StreetView();view.side='rear';
+    const here=view.point(await state(page),true),next=view.point(ROOF_STAIR_ROUTE[3],true);
+    await clickViewPoint(page,{x:(here.x+next.x)/2,y:(here.y+next.y)/2-8});
+    await page.waitForTimeout(450);const forward=await state(page);
+    const now=view.point(forward,true),back=view.point(ROOF_STAIR_ROUTE[2],true);
+    await clickViewPoint(page,{x:(now.x+back.x)/2,y:(now.y+back.y)/2-8});
+    await page.waitForTimeout(160);
+    const box=(await page.locator('#game canvas').boundingBox())!;await page.touchscreen.tap(box.x+18,box.y+box.height*.5);
+    await expect.poll(async()=>(await state(page)).x).toBeGreaterThan(forward.x);
   }
   await staysOnStep(page);
+  expect((await state(page)).stairDirection).toBe(-1);
   await noGroundConversation(page);
   expect((await state(page)).renderDepth).toBeGreaterThan(620);
   expect((await state(page)).street.frontRoadVisible).toBe(false);
@@ -117,6 +155,7 @@ test('manually climb each switchback without falling, reach the roof edge and re
   await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
   await expect.poll(async ()=>(await state(page)).hall).toBe('street');
   expect((await state(page)).stairStep).toBe(3);
+  expect((await state(page)).stairDirection).toBe(-1);
   await staysOnStep(page);
   await noGroundConversation(page);
   await page.evaluate(()=>{

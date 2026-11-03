@@ -1,4 +1,4 @@
-import { advanceRoofStairStep,moveRoofStairs,ROOF_STAIR_SPEED_SCALE,STREET_ROOF_STAIRS } from './rooftop';
+import { advanceRoofStairStep,moveRoofStairs,roofStairApproach,ROOF_STAIR_SPEED_SCALE,STREET_ROOF_STAIRS } from './rooftop';
 export type Facing = 'down' | 'left' | 'right' | 'up';
 import { walkable } from '../game/navigation';
 import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, hallObstacles, SEATS } from './world';
@@ -6,7 +6,7 @@ import { blockedByGuard, type GuardCollider } from './guardCollision';
 import { intoxicatedMovement } from './intoxication';
 
 export type MovementInput = { seq: number; x: number; y: number; ms: number; sprint?: boolean; route?: boolean };
-export type MovementBody = { hall?: string; stairStep?: number; soberAt?: number; x: number; y: number; facing: string; moving: boolean; seat: string; action: string; drink: string; actionUntil: number };
+export type MovementBody = { hall?: string; stairStep?: number; stairDirection?:number; soberAt?: number; x: number; y: number; facing: string; moving: boolean; seat: string; action: string; drink: string; actionUntil: number };
 
 /** Shared collision integration for local prediction, server validation and replay. */
 export function applyMovementInput(body: MovementBody, input: MovementInput, guards:readonly GuardCollider[] = []) {
@@ -23,6 +23,19 @@ export function applyMovementInput(body: MovementBody, input: MovementInput, gua
     if(body.moving)body.facing=movementFacing(body.x-beforeX,body.y-beforeY,body.facing as Facing);
     return;
   }
+  const approach=body.hall==='street'?roofStairApproach(body,input,(input.sprint?PLAYER_SPRINT_SPEED:PLAYER_SPEED)*impaired.speedMultiplier*input.ms/1000):null;
+  if(approach){
+    if(walkable(approach.x,approach.y,hallObstacles('street'))){
+      if(blockedByGuard(body,approach.x,approach.y,guards))contact=true;
+      else{
+        body.x=approach.x;body.y=approach.y;
+        if(Math.hypot(body.x-STREET_ROOF_STAIRS.foot.x,body.y-STREET_ROOF_STAIRS.foot.y)<.1){body.stairStep=1;body.stairDirection=1;}
+      }
+    }
+    body.moving=Math.hypot(body.x-beforeX,body.y-beforeY)>.001;
+    if(body.moving)body.facing=movementFacing(body.x-beforeX,body.y-beforeY,body.facing as Facing);
+    return contact;
+  }
   // Click routes retain their checked direction while keeping the same speed impairment.
   if (input.route === true) { impaired.x = input.x / length; impaired.y = input.y / length; }
   const distance = (input.sprint === true ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * impaired.speedMultiplier * input.ms / 1000 / 3;
@@ -37,7 +50,7 @@ export function applyMovementInput(body: MovementBody, input: MovementInput, gua
   }
   if(body.hall==='street'){
     const previous=body.stairStep??0;body.stairStep=advanceRoofStairStep(previous,body);
-    if(!previous&&body.stairStep===1){body.x=STREET_ROOF_STAIRS.foot.x;body.y=STREET_ROOF_STAIRS.foot.y;}
+    if(!previous&&body.stairStep===1){body.x=STREET_ROOF_STAIRS.foot.x;body.y=STREET_ROOF_STAIRS.foot.y;body.stairDirection=1;}
   }
   else if(body.stairStep)body.stairStep=0;
   const dx = body.x-beforeX, dy = body.y-beforeY;

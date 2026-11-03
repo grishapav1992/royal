@@ -1,4 +1,4 @@
-import { advanceRoofStairStep, ROOF_STAIR_ROUTE,STREET_ROOF_STAIRS } from '../src/shared/rooftop';
+import { advanceRoofStairStep,nearRoofStairBase, ROOF_STAIR_ROUTE,STREET_ROOF_STAIRS } from '../src/shared/rooftop';
 import { LOBBY_RECONNECT_GRACE_SECONDS } from '../src/shared/lobbyConnection';
 import { CommonCombatWallet } from './commonCombatWallet';
 import { virtualPvpCommand } from './pvp/virtual-service';
@@ -601,12 +601,12 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     if(p.security||this.cat.isHugging(id)||p.playing||p.seat||p.action==='drink'){p.stairStep=0;return false;}
     const previous=p.stairStep;
     p.stairStep=p.hall==='street'?advanceRoofStairStep(p.stairStep,p):0;
-    if(!previous&&p.stairStep===1){p.x=STREET_ROOF_STAIRS.foot.x;p.y=STREET_ROOF_STAIRS.foot.y;}
+    if(!previous&&p.stairStep===1){p.x=STREET_ROOF_STAIRS.foot.x;p.y=STREET_ROOF_STAIRS.foot.y;p.stairDirection=1;}
     const link=hallLinkAt(p);if(!link)return false;
     if(link.target==='roof'&&p.stairStep!==ROOF_STAIR_ROUTE.length)return false;
     this.activities.leave(id);this.releaseCabinet(id);this.stop(id);this.stand(id);
     const hall=link.target,door=link.arrival;
-    p.stairStep=0;
+    p.stairStep=0;p.stairDirection=1;
     p.hall=hall;p.hallRevision++;p.x=door.arrival.x;p.y=door.arrival.y;p.facing=door.facing;c.lastTarget=0;
     this.clients.find(client=>client.sessionId===id)?.send('activities',this.activities.snapshot(id));
     return true;
@@ -632,9 +632,9 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       let dx = c.dx, dy = c.dy;
       if (Date.now() - c.at > 450) dx = dy = 0;
       if (!dx && !dy && !c.path.length) { p.moving = false; continue; }
-      if(p.hall==='street'&&p.stairStep>0){
+      if(p.hall==='street'&&(p.stairStep>0||!c.path.length&&nearRoofStairBase(p))){
         c.path=[];
-        applyMovementInput(p,{seq:0,x:dx,y:dy,ms:c.inputs.sequence?c.inputs.takeDuration(dt*1000):dt*1000});
+        if(applyMovementInput(p,{seq:0,x:dx,y:dy,ms:c.inputs.sequence?c.inputs.takeDuration(dt*1000):dt*1000},[...this.state.guards.values()]))this.guards.contact(id);
         this.enterDoor(id);continue;
       }
       let remaining = (c.path.length ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * (c.inputs.sequence ? c.inputs.takeDuration(dt*1000)/1000 : dt)

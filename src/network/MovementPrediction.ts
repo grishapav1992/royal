@@ -70,9 +70,11 @@ export function advanceClickMovement(body: MovementBody, path: Point[], ms: numb
     if (distance < .05) { path.shift(); continue; }
     const duration = Math.min(remaining, distance / speed * 1000);
     const beforeX = body.x, beforeY = body.y, count = prediction.pendingCount;
+    const wasOnStairs=body.hall==='street'&&(body.stairStep??0)>0;
     prediction.step(body, dx / distance, dy / distance, duration, true, guards, true);
     if (prediction.pendingCount === count) break;
     remaining -= duration;
+    if(wasOnStairs&&!body.stairStep){path.length=0;break;}
     if (Math.hypot(body.x - beforeX, body.y - beforeY) < 1e-6) { path.length = 0; break; }
     if (Math.hypot(target.x - body.x, target.y - body.y) < .05) path.shift();
   }

@@ -46,7 +46,7 @@ import { NpcTimeline } from '../network/NpcTimeline';
 import { RoomDetails } from './roomDetails';
 import { StreetView, streetDirection, type StreetSide } from './streetView';
 import { StreetRenderer } from './StreetRenderer';
-import { ROOF, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_SPEED_SCALE,advanceRoofStairStep,moveRoofStairs } from '../shared/rooftop';
+import { ROOF, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_SPEED_SCALE,advanceRoofStairStep,moveRoofStairs,roofStairOptions,nearRoofStairBase } from '../shared/rooftop';
 import { RooftopRenderer } from './RooftopRenderer';
 import { STREET } from '../shared/street';
 import { CardTablesRenderer } from './CardTablesRenderer';
@@ -56,7 +56,7 @@ import { findPath, walkable, WORLD, type Point, type Obstacle } from './navigati
 
 import { CABINETS, cabinetsInHall, type Cabinet } from '../shared/cabinets';
 export { CABINETS, type Cabinet };
-type Actor = { stairStep?:number; hall: HallId; sprite: Phaser.GameObjects.Sprite; shadow: Phaser.GameObjects.Ellipse; blush: Phaser.GameObjects.Graphics; label?: Phaser.GameObjects.Text; x: number; y: number; path: Point[]; phase: number; nextMove: number; facing: Facing; skin: number; appearance: string; soberAt: number; moving: boolean; lastStep: number; motion: CharacterMotion; visualAt: number; visualX: number; visualY: number; seat: string; action: PlayerAction; drink: string; actionUntil: number; cabinet: string; gameReaction: string; gameReactionUntil: number; visualSeat: string; seatedAt: number };
+type Actor = { stairStep?:number;stairDirection?:number; hall: HallId; sprite: Phaser.GameObjects.Sprite; shadow: Phaser.GameObjects.Ellipse; blush: Phaser.GameObjects.Graphics; label?: Phaser.GameObjects.Text; x: number; y: number; path: Point[]; phase: number; nextMove: number; facing: Facing; skin: number; appearance: string; soberAt: number; moving: boolean; lastStep: number; motion: CharacterMotion; visualAt: number; visualX: number; visualY: number; seat: string; action: PlayerAction; drink: string; actionUntil: number; cabinet: string; gameReaction: string; gameReactionUntil: number; visualSeat: string; seatedAt: number };
 export class RoomScene extends Phaser.Scene {
   player!: Actor;
   hall: HallId = 'arcade';
@@ -208,7 +208,7 @@ export class RoomScene extends Phaser.Scene {
     if(link.target==='roof'&&this.player.stairStep!==ROOF_STAIR_ROUTE.length)return;
     const door=link.arrival;
     if(hall==='street')this.streetView.arrive(door.arrival);
-    this.showHall(hall);Object.assign(this.player,door.arrival,{hall,seat:'',action:'idle',drink:'',actionUntil:0,moving:false,facing:door.facing});
+    this.showHall(hall);Object.assign(this.player,door.arrival,{hall,stairStep:0,stairDirection:1,seat:'',action:'idle',drink:'',actionUntil:0,moving:false,facing:door.facing});
     this.syncGuests(this.guestViews);
   }
   private drawDoor(link:HallLink){
@@ -412,10 +412,15 @@ export class RoomScene extends Phaser.Scene {
     const step=this.player.stairStep??0;
     if(!step){this.approachFloor('roof');return;}
     this.pendingCabinet=null;this.pendingLounge=null;this.player.path=[];this.marker.setVisible(false);
-    const target=ROOF_STAIR_ROUTE[step];if(!target)return;
-    const here=this.streetView.point(this.player,true),next=this.streetView.point(target,true);
-    const ahead=Math.abs(next.x-here.x)>1?(point.x-here.x)*Math.sign(next.x-here.x):(point.y-here.y)*Math.sign(next.y-here.y);
-    if(ahead<8){this.endPrediction();return;}
+    const here=this.streetView.point(this.player,true);
+    const choice=roofStairOptions(this.player).map(option=>{
+      const next=this.streetView.point(option.target,true),dx=next.x-here.x,dy=next.y-here.y,length=dx*dx+dy*dy;
+      const progress=length?((point.x-here.x)*dx+(point.y-here.y)*dy)/length:0;
+      const t=Math.max(0,Math.min(1,progress));
+      return {option,progress,distance:(point.x-here.x-dx*t)**2+(point.y-here.y-dy*t)**2};
+    }).filter(p=>p.progress>.03).sort((a,b)=>a.distance-b.distance)[0];
+    if(!choice){this.endPrediction();return;}
+    const target=choice.option.target;
     this.finishMovement(()=>{
       if(this.hall!=='street')return;
       this.player.path=[{...target}];
@@ -728,7 +733,7 @@ export class RoomScene extends Phaser.Scene {
       }
       if (!this.networkSelf) { this.player.x = self.x; this.player.y = self.y; }
       this.networkSelf = self;
-      if(!this.prediction.active)this.player.stairStep=self.stairStep??0;
+      if(!this.prediction.active){this.player.stairStep=self.stairStep??0;this.player.stairDirection=self.stairDirection??1;}
       this.player.soberAt = self.soberAt;
       this.player.cabinet = self.cabinet ?? ''; this.player.gameReaction = self.gameReaction ?? ''; this.player.gameReactionUntil = self.gameReactionUntil ?? 0;
       if (this.prediction.active) {
@@ -736,7 +741,7 @@ export class RoomScene extends Phaser.Scene {
         const errorX = this.player.x-next.x, errorY = this.player.y-next.y;
         if (Math.hypot(errorX, errorY) < 60) { this.correction.x += errorX; this.correction.y += errorY; }
         else this.correction = { x: 0, y: 0 };
-        this.player.x = next.x; this.player.y = next.y; this.player.facing = next.facing; this.player.stairStep=next.stairStep??0;
+        this.player.x = next.x; this.player.y = next.y; this.player.facing = next.facing; this.player.stairStep=next.stairStep??0;this.player.stairDirection=next.stairDirection??1;
         this.player.seat = next.seat; this.player.action = next.action; this.player.drink = next.drink; this.player.actionUntil = next.actionUntil;
         // Refill the send window even when keys are released or a dialog has focus.
         this.flushPrediction();
@@ -780,7 +785,7 @@ export class RoomScene extends Phaser.Scene {
     }
     const factor = Math.min(1, dt * 18);
     actor.x += (target.x - actor.x) * factor; actor.y += (target.y - actor.y) * factor;
-    actor.stairStep=target.stairStep??0;
+    actor.stairStep=target.stairStep??0;actor.stairDirection=target.stairDirection??1;
     actor.facing = target.facing; actor.seat = target.seat; actor.action = target.action; actor.drink = target.drink; actor.actionUntil = target.actionUntil; actor.soberAt = target.soberAt;
     actor.cabinet = target.cabinet ?? ''; actor.gameReaction = target.gameReaction ?? ''; actor.gameReactionUntil = target.gameReactionUntil ?? 0;
     this.animateActor(actor, time, target.moving && target.connected);
@@ -810,7 +815,7 @@ export class RoomScene extends Phaser.Scene {
     else { this.afterMovement = undefined; action(); }
   }
   getReducedMotion() { return this.reducedMotion; }
-  getState() { const c=this.cameras.main;return { stairStep:this.networkSelf?.stairStep??this.player.stairStep??0, cat: this.catView, street:this.hall==='street'?this.street?.getState():null, world:{...WORLD,bounds:BOUNDS},guests:this.guestViews.filter(v=>v.hall===this.hall).map(v=>({...v})), playing:this.networkSelf?.playing??Boolean(this.player.cabinet), cabinet:this.player.cabinet, gameReaction:this.player.gameReactionUntil>Date.now()?this.player.gameReaction:'', gameReactionUntil:this.player.gameReactionUntil, stools:[...this.cabinetStools.keys()], mira:this.bar?.getState(), guards:this.guard?.getState(), security:this.networkSelf?.security, hall:this.hall,switching:this.switching, view:{width:c.width,height:c.height,zoom:c.zoom,x:c.worldView.x,y:c.worldView.y,overview:this.overview}, x: this.player.x, y: this.player.y, moving: this.player.moving, seat: this.player.seat, action: this.player.action, drink: this.player.drink, actionUntil: this.player.actionUntil, soberAt: this.player.soberAt, intoxication: getIntoxication(this.player.soberAt), near: this.near?.id ?? null, locked: this.locked, online: !!this.network, npcTiming:this.npcTimeline.getState(), guestRenderPositions:[...this.guests].map(([id,actor])=>({id,x:actor.x,y:actor.y,spriteX:actor.sprite.x,spriteY:actor.sprite.y,moving:actor.moving})), predicted: this.prediction.active, pendingInputs: this.prediction.pendingCount, serverX: this.networkSelf?.x, serverY: this.networkSelf?.y, buildingOccluded:this.hall==='street'&&(this.player.stairStep??0)===0&&this.streetView.occluded(this.player), labelVisible:this.player.label?.visible, renderVisible:this.player.sprite.visible, renderBounds:this.player.sprite.getBounds(), halo:{x:this.halo.x,y:this.halo.y,depth:this.halo.depth,visible:this.halo.visible}, renderDepth:this.player.sprite.depth, renderX: this.player.sprite.x, renderY: this.player.sprite.y, renderScaleX: this.player.sprite.scaleX, renderScaleY: this.player.sprite.scaleY, skin: this.player.skin, appearance: this.player.appearance, texture: this.player.sprite.texture.key, remotes: this.remotePlayers.size, remotePositions: [...this.remotePlayers].map(([id, { actor }]) => ({ id, skin: actor.skin, appearance: actor.appearance, texture: actor.sprite.texture.key, x: actor.x, y: actor.y, seat: actor.seat, cabinet: actor.cabinet, gameReaction:actor.gameReactionUntil>Date.now()?actor.gameReaction:'', gameReactionUntil:actor.gameReactionUntil, action: actor.action, soberAt: actor.soberAt, angle: actor.sprite.angle, frame: actor.sprite.frame.name })), facing: this.player.facing, animation: this.player.sprite.anims.currentAnim?.key, frame: this.player.sprite.frame.name, reducedMotion: this.reducedMotion }; }
+  getState() { const c=this.cameras.main;return { stairStep:this.networkSelf?.stairStep??this.player.stairStep??0,stairDirection:this.networkSelf?.stairDirection??this.player.stairDirection??1, cat: this.catView, street:this.hall==='street'?this.street?.getState():null, world:{...WORLD,bounds:BOUNDS},guests:this.guestViews.filter(v=>v.hall===this.hall).map(v=>({...v})), playing:this.networkSelf?.playing??Boolean(this.player.cabinet), cabinet:this.player.cabinet, gameReaction:this.player.gameReactionUntil>Date.now()?this.player.gameReaction:'', gameReactionUntil:this.player.gameReactionUntil, stools:[...this.cabinetStools.keys()], mira:this.bar?.getState(), guards:this.guard?.getState(), security:this.networkSelf?.security, hall:this.hall,switching:this.switching, view:{width:c.width,height:c.height,zoom:c.zoom,x:c.worldView.x,y:c.worldView.y,overview:this.overview}, x: this.player.x, y: this.player.y, moving: this.player.moving, seat: this.player.seat, action: this.player.action, drink: this.player.drink, actionUntil: this.player.actionUntil, soberAt: this.player.soberAt, intoxication: getIntoxication(this.player.soberAt), near: this.near?.id ?? null, locked: this.locked, online: !!this.network, npcTiming:this.npcTimeline.getState(), guestRenderPositions:[...this.guests].map(([id,actor])=>({id,x:actor.x,y:actor.y,spriteX:actor.sprite.x,spriteY:actor.sprite.y,moving:actor.moving})), predicted: this.prediction.active, pendingInputs: this.prediction.pendingCount, serverX: this.networkSelf?.x, serverY: this.networkSelf?.y, buildingOccluded:this.hall==='street'&&(this.player.stairStep??0)===0&&this.streetView.occluded(this.player), labelVisible:this.player.label?.visible, renderVisible:this.player.sprite.visible, renderBounds:this.player.sprite.getBounds(), halo:{x:this.halo.x,y:this.halo.y,depth:this.halo.depth,visible:this.halo.visible}, renderDepth:this.player.sprite.depth, renderX: this.player.sprite.x, renderY: this.player.sprite.y, renderScaleX: this.player.sprite.scaleX, renderScaleY: this.player.sprite.scaleY, skin: this.player.skin, appearance: this.player.appearance, texture: this.player.sprite.texture.key, remotes: this.remotePlayers.size, remotePositions: [...this.remotePlayers].map(([id, { actor }]) => ({ id, skin: actor.skin, appearance: actor.appearance, texture: actor.sprite.texture.key, x: actor.x, y: actor.y, seat: actor.seat, cabinet: actor.cabinet, gameReaction:actor.gameReactionUntil>Date.now()?actor.gameReaction:'', gameReactionUntil:actor.gameReactionUntil, action: actor.action, soberAt: actor.soberAt, angle: actor.sprite.angle, frame: actor.sprite.frame.name })), facing: this.player.facing, animation: this.player.sprite.anims.currentAnim?.key, frame: this.player.sprite.frame.name, reducedMotion: this.reducedMotion }; }
   update(time: number, delta: number) {
     if (!this.player) return;
     if(this.hall==='street'&&this.streetView.configure(this.player,this.overview))this.resizeView();
@@ -894,7 +899,7 @@ export class RoomScene extends Phaser.Scene {
       } else if (dx || dy) {
         this.stand(); this.pendingLounge = null;
         this.player.path = []; this.pendingCabinet = null; this.marker.setVisible(false);
-        if(onStairs){
+        if(onStairs||this.hall==='street'&&nearRoofStairBase(this.player)){
           const before={x:this.player.x,y:this.player.y};
           applyMovementInput(this.player,{seq:0,x:dx,y:dy,ms:dt*1000,sprint});
           moving=Math.hypot(this.player.x-before.x,this.player.y-before.y)>.001;
@@ -986,7 +991,7 @@ export class RoomScene extends Phaser.Scene {
       if (walkable(actor.x + dx, actor.y, this.obstacles)) actor.x += dx;
       if (walkable(actor.x, actor.y + dy, this.obstacles)) actor.y += dy;
       const previous=actor.stairStep??0;actor.stairStep=actor.hall==='street'?advanceRoofStairStep(previous,actor):0;
-      if(!previous&&actor.stairStep===1){actor.x=STREET_ROOF_STAIRS.foot.x;actor.y=STREET_ROOF_STAIRS.foot.y;}
+      if(!previous&&actor.stairStep===1){actor.x=STREET_ROOF_STAIRS.foot.x;actor.y=STREET_ROOF_STAIRS.foot.y;actor.stairDirection=1;}
     }
     const movedX = actor.x - before.x, movedY = actor.y - before.y;
     const moved = Math.hypot(movedX, movedY) > .05;
@@ -1002,7 +1007,9 @@ export class RoomScene extends Phaser.Scene {
       if (distance < .05) { actor.path.shift(); continue; }
       const step = Math.min(remaining, distance);
       const beforeX = actor.x, beforeY = actor.y;
+      const wasOnStairs=actor.hall==='street'&&(actor.stairStep??0)>0;
       this.move(actor, dx / distance * step, dy / distance * step);
+      if(wasOnStairs&&!actor.stairStep){actor.path=[];moved=true;break;}
       // A tiny remainder between path segments is still progress, even below the animation threshold.
       if (Math.hypot(actor.x-beforeX, actor.y-beforeY) < .000001) { actor.path = []; break; }
       moved = true; remaining -= step;

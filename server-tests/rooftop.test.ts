@@ -114,8 +114,9 @@ test('server controls roof ascent and return, blocks busy visitors and ignores o
     handlers.get('target')!(client,{revision,x:2300,y:1000});Reflect.get(room,'tick').call(room,.05);
     assert.deepEqual({x:p.x,y:p.y,step:p.stairStep},held,'a legacy ground target cannot pull a person off a flight');
     handlers.get('move')!(client,{revision,x:-1,y:0});Reflect.get(room,'tick').call(room,.05);
-    assert.deepEqual({x:p.x,y:p.y,step:p.stairStep},held,'a wrong legacy direction remains on the flight');
-    handlers.get('stop')!(client,{});Object.assign(p,{...STREET_ROOF_STAIRS.foot,stairStep:1});
+    assert(p.x<held.x&&p.y>held.y,'a reverse legacy direction walks back along the flight');
+    assert.equal(p.stairStep,held.step);assert.equal(p.stairDirection,-1);
+    handlers.get('stop')!(client,{});Object.assign(p,{...STREET_ROOF_STAIRS.foot,stairStep:1,stairDirection:1});
     for(let segment=1;segment<ROOF_STAIR_ROUTE.length&&p.hall==='street';segment++){
       const from=ROOF_STAIR_ROUTE[segment-1],to=ROOF_STAIR_ROUTE[segment],steps=Math.ceil(Math.hypot(to.x-from.x,to.y-from.y)/3);
       for(let step=1;step<=steps&&p.hall==='street';step++){
@@ -153,25 +154,15 @@ test('switchback qualification requires every flight and rejects positions off i
 });
 
 function stairBody():MovementBody {
-  return {hall:'street',...STREET_ROOF_STAIRS.foot,stairStep:1,facing:'up',moving:false,seat:'',action:'idle',drink:'',actionUntil:0};
+  return {hall:'street',...STREET_ROOF_STAIRS.foot,stairStep:1,stairDirection:1,facing:'up',moving:false,seat:'',action:'idle',drink:'',actionUntil:0};
 }
 
-test('manual stair input follows every flight, stops at turns and never falls for other keys',()=>{
+test('manual horizontal stair input follows every flight and stops on release at its exact landing',()=>{
   const body=stairBody();let sequence=0;
   for(let step=1;step<ROOF_STAIR_ROUTE.length;step++){
     assert.equal(body.stairStep,step);
     const a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step];
     const correct={x:Math.sign(b.x-a.x),y:b.x===a.x?-1:0};
-    for(const input of [{x:-1,y:0},{x:1,y:0},{x:0,y:-1},{x:0,y:1},{x:1,y:1}]){
-      if(input.x===correct.x&&input.y===correct.y||step===1&&input.y===1&&input.x===0)continue;
-      const before={x:body.x,y:body.y,step:body.stairStep};
-      for(let frame=0;frame<8;frame++)applyMovementInput(body,{seq:++sequence,...input,ms:50});
-      assert.deepEqual({x:body.x,y:body.y,step:body.stairStep},before,'wrong direction leaves feet on the same step');
-    }
-    applyMovementInput(body,{seq:++sequence,...correct,ms:100});
-    const midway={x:body.x,y:body.y,step:body.stairStep};
-    applyMovementInput(body,{seq:++sequence,x:1,y:1,ms:50});
-    assert.deepEqual({x:body.x,y:body.y,step:body.stairStep},midway,'a different key during movement does not leave the flight');
     for(let frame=0;body.stairStep===step&&frame<100;frame++)applyMovementInput(body,{seq:++sequence,...correct,ms:50});
     assert.equal(body.stairStep,step+1);assert.deepEqual({x:body.x,y:body.y},b,'landing is reached exactly');
     const before={x:body.x,y:body.y,step:body.stairStep};
@@ -179,6 +170,64 @@ test('manual stair input follows every flight, stops at turns and never falls fo
     assert.deepEqual({x:body.x,y:body.y,step:body.stairStep},before,'releasing a key stops ascent');
   }
   assert.equal(body.stairStep,ROOF_STAIR_ROUTE.length);
+});
+
+test('approaching the lower ladder from either side guides into it without a precision alignment',()=>{
+  for(const side of [-1,1])for(const upward of [false,true]){
+    const body={...stairBody(),stairStep:0,x:STREET_ROOF_STAIRS.foot.x+side*54,y:STREET_ROOF_STAIRS.foot.y-20};
+    const input=upward?{x:0,y:1}:{x:-side,y:0};
+    for(let frame=0;frame<100&&!body.stairStep;frame++)applyMovementInput(body,{seq:frame+1,...input,ms:16});
+    assert.equal(body.stairStep,1);assert.equal(body.x,STREET_ROOF_STAIRS.foot.x);assert.equal(body.y,STREET_ROOF_STAIRS.foot.y);
+  }
+});
+
+test('ordinary rear circulation, walking away and clicks beside the ladder do not capture it',()=>{
+  const body={...stairBody(),stairStep:0,x:1550,y:360};
+  for(let frame=0;frame<100;frame++)applyMovementInput(body,{seq:frame+1,x:1,y:0,ms:16});
+  assert.equal(body.stairStep,0);assert(body.x>1750);
+  Object.assign(body,{x:STREET_ROOF_STAIRS.foot.x+40,y:STREET_ROOF_STAIRS.foot.y-20});
+  applyMovementInput(body,{seq:101,x:1,y:0,ms:50});assert(body.x>STREET_ROOF_STAIRS.foot.x+40);assert.equal(body.stairStep,0);
+  Object.assign(body,{x:1660,y:360});const target={x:1608,y:464};
+  for(let frame=0;frame<200;frame++){
+    const dx=target.x-body.x,dy=target.y-body.y,length=Math.hypot(dx,dy);if(length<.01)break;
+    applyMovementInput(body,{seq:frame+102,x:dx/length,y:dy/length,route:true,ms:Math.min(16,length/155*1000)});
+  }
+  assert.equal(body.stairStep,0);assert(Math.hypot(body.x-target.x,body.y-target.y)<.01);
+});
+
+test('every flight permits an immediate reverse and a complete descent through all lower landings',()=>{
+  for(let step=1;step<ROOF_STAIR_ROUTE.length;step++){
+    const a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step];
+    const body={...stairBody(),stairStep:step,x:(a.x+b.x)/2,y:(a.y+b.y)/2};
+    const reverse={x:b.x===a.x?0:-Math.sign(b.x-a.x),y:b.x===a.x?1:0};
+    const start={x:body.x,y:body.y};applyMovementInput(body,{seq:1,...reverse,ms:16});
+    assert.equal(body.stairDirection,-1);assert(Math.hypot(body.x-a.x,body.y-a.y)<Math.hypot(start.x-a.x,start.y-a.y));
+    assert.equal(advanceRoofStairStep(body.stairStep,body),body.stairStep,'validation retains reverse progress');
+    applyMovementInput(body,{seq:2,x:-reverse.x,y:-reverse.y,ms:16});
+    assert(Math.hypot(body.x-start.x,body.y-start.y)<1e-8);assert.equal(body.stairDirection,1);
+  }
+  const last=ROOF_STAIR_ROUTE.length-1,a=ROOF_STAIR_ROUTE[last-1],b=ROOF_STAIR_ROUTE[last];
+  const body={...stairBody(),stairStep:last,x:(a.x+b.x)/2,y:(a.y+b.y)/2},visited=new Set<number>();
+  for(let frame=0;frame<1000&&body.stairStep;frame++){
+    const previous=body.stairStep;visited.add(previous);applyMovementInput(body,{seq:frame+1,x:0,y:1,ms:50});
+    assert(body.stairStep<=previous);assert.equal(advanceRoofStairStep(body.stairStep,body),body.stairStep);
+  }
+  assert.equal(body.stairStep,0);for(let step=1;step<=last;step++)assert(visited.has(step));
+  assert(walkable(body.x,body.y,hallObstacles('street'),16));
+});
+
+test('prediction and acknowledgement replay retain descending direction across switchback landings',()=>{
+  const step=8,a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step];
+  const local={...stairBody(),stairStep:step,x:(a.x+b.x)/2,y:(a.y+b.y)/2},server={...local},prediction=new MovementPrediction();let acknowledged=0;
+  for(let frame=0;frame<1000&&local.stairStep;frame++){
+    prediction.step(local,0,1,16);
+    if(frame%3===0){
+      prediction.flush(batch=>{for(const input of batch){applyMovementInput(server,input);acknowledged=input.seq;}});
+      const replay=prediction.reconcile(server,acknowledged);
+      assert(Math.hypot(replay.x-local.x,replay.y-local.y)<1e-8);assert.equal(replay.stairStep,local.stairStep);assert.equal(replay.stairDirection,local.stairDirection);
+    }
+  }
+  assert.equal(local.stairStep,0);
 });
 
 test('the lower ladder can be backed down safely onto the pavement',()=>{

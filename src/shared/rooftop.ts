@@ -28,7 +28,7 @@ export const STREET_ROOF_STAIRS = {
 } as const;
 
 /** Ordered, continuous progress, shared by authoritative movement and prediction. */
-export function advanceRoofStairStep(step: number, point: Point): number {
+export function advanceRoofStairStep(step: number, point: Point&{stairDirection?:number}): number {
   if (!Number.isInteger(step) || step < 0 || step > ROOF_STAIR_ROUTE.length) return 0;
   if (!step) return Math.hypot(point.x - STREET_ROOF_STAIRS.foot.x, point.y - STREET_ROOF_STAIRS.foot.y) <= 7 ? 1 : 0;
   if (step === ROOF_STAIR_ROUTE.length) return Math.hypot(point.x - STREET_ROOF_STAIRS.entry.x, point.y - STREET_ROOF_STAIRS.entry.y) <= 16 ? step : 0;
@@ -36,28 +36,72 @@ export function advanceRoofStairStep(step: number, point: Point): number {
   const dx = to.x - from.x, dy = to.y - from.y;
   const t = Math.max(0, Math.min(1, ((point.x - from.x) * dx + (point.y - from.y) * dy) / (dx * dx + dy * dy)));
   if (Math.hypot(point.x - from.x - dx * t, point.y - from.y - dy * t) > 20) return 0;
-  return Math.hypot(point.x - to.x, point.y - to.y) <= .1 ? step + 1 : step;
+  return point.stairDirection!==-1&&Math.hypot(point.x - to.x, point.y - to.y) <= .1 ? step + 1 : step;
 }
 
-/** A direction advances one flight only. Other input leaves the person on its steps. */
-export function moveRoofStairs(body:Point&{stairStep?:number;moving:boolean},input:{x:number;y:number;route?:boolean},distance:number):boolean {
-  const step=body.stairStep??0;
-  if(step<=0||step>ROOF_STAIR_ROUTE.length)return false;
-  body.moving=false;
-  if(step===ROOF_STAIR_ROUTE.length||distance<=0)return true;
-  const from=ROOF_STAIR_ROUTE[step-1],to=ROOF_STAIR_ROUTE[step],dx=to.x-from.x,dy=to.y-from.y,length=Math.hypot(dx,dy);
+type StairPosition=Point&{stairStep?:number;stairDirection?:number};
+export type RoofStairOption={step:number;direction:1|-1;target:Point;from:Point;to:Point};
+
+/** At a landing both connected flights stay available, including the way back. */
+export function roofStairOptions(body:StairPosition):RoofStairOption[]{
+  const step=body.stairStep??0,last=ROOF_STAIR_ROUTE.length-1;
+  if(step<=0||step>last+1)return [];
+  const segment=Math.min(step,last),from=ROOF_STAIR_ROUTE[segment-1],to=ROOF_STAIR_ROUTE[segment];
+  const dx=to.x-from.x,dy=to.y-from.y,length=Math.hypot(dx,dy);
   const along=Math.max(0,Math.min(length,((body.x-from.x)*dx+(body.y-from.y)*dy)/length));
-  const backingDown=step===1&&!input.route&&input.x===0&&input.y>0;
-  const forward=input.route
-    ? (input.x*dx+input.y*dy)/Math.hypot(input.x,input.y)/length>.99
-    : dx===0?input.x===0&&input.y<0:input.y===0&&Math.sign(input.x)===Math.sign(dx);
-  if(!forward&&!backingDown)return true;
-  const next=backingDown?Math.max(0,along-distance):Math.min(length,along+distance);
-  const before={x:body.x,y:body.y};body.x=from.x+dx*next/length;body.y=from.y+dy*next/length;
-  if(backingDown&&next===0){body.stairStep=0;body.y=from.y-12;}
-  else if(next===length)body.stairStep=step+1;
+  const result:RoofStairOption[]=[];
+  const add=(index:number,direction:1|-1)=>{
+    if(index<1||index>last)return;
+    const from=ROOF_STAIR_ROUTE[index-1],to=ROOF_STAIR_ROUTE[index];
+    result.push({step:index,direction,target:direction===1?to:from,from,to});
+  };
+  if(along<length-.1)add(segment,1);else add(segment+1,1);
+  if(along>.1)add(segment,-1);else add(Math.max(1,segment-1),-1);
+  return result;
+}
+
+/** Input can reverse on the same rail; vertical input resolves a landing's two branches. */
+export function moveRoofStairs(body:StairPosition&{moving:boolean},input:{x:number;y:number;route?:boolean},distance:number):boolean {
+  if((body.stairStep??0)<=0||(body.stairStep??0)>ROOF_STAIR_ROUTE.length)return false;
+  body.moving=false;if(distance<=0||!Math.hypot(input.x,input.y))return true;
+  const options=roofStairOptions(body);
+  const candidates=options.filter(option=>{
+    const dx=(option.to.x-option.from.x)*option.direction,dy=(option.to.y-option.from.y)*option.direction;
+    if(input.route)return (input.x*dx+input.y*dy)/Math.hypot(input.x,input.y)/Math.hypot(dx,dy)>.99;
+    if(input.y)return option.direction===(input.y<0?1:-1);
+    return dx!==0&&Math.sign(input.x)===Math.sign(dx);
+  });
+  const option=candidates.find(p=>p.direction===(body.stairDirection??1))??candidates[0];
+  if(!option)return true;
+  const {from,to,step,direction}=option,dx=to.x-from.x,dy=to.y-from.y,length=Math.hypot(dx,dy);
+  const along=Math.max(0,Math.min(length,((body.x-from.x)*dx+(body.y-from.y)*dy)/length));
+  const next=Math.max(0,Math.min(length,along+distance*direction)),before={x:body.x,y:body.y};
+  body.x=from.x+dx*next/length;body.y=from.y+dy*next/length;
+  body.stairStep=step;body.stairDirection=direction;
+  if(direction===1&&next===length)body.stairStep=step+1;
+  else if(direction===-1&&next===0){
+    if(step===1){body.stairStep=0;body.stairDirection=1;body.y=from.y-16;}
+    else body.stairStep=step-1;
+  }
   body.moving=Math.hypot(body.x-before.x,body.y-before.y)>.001;
   return true;
+}
+
+export function nearRoofStairBase(point:Point){
+  const foot=STREET_ROOF_STAIRS.foot;
+  return Math.abs(point.x-foot.x)<=64&&Math.abs(point.y-foot.y)<=36;
+}
+
+/** Guide an intentional side or front approach onto the bottom without a precision aim. */
+export function roofStairApproach(point:Point,input:{x:number;y:number;route?:boolean},distance:number):Point|null {
+  if(!nearRoofStairBase(point)||distance<=0)return null;
+  const foot=STREET_ROOF_STAIRS.foot,dx=foot.x-point.x,dy=foot.y-point.y,length=Math.hypot(dx,dy);
+  if(input.route&&length>.1&&(input.x*dx+input.y*dy)/Math.hypot(input.x,input.y)/length<.98)return null;
+  if(!input.route&&input.y<0)return null;
+  if(input.y<=0&&(input.x*dx+input.y*dy)<=0)return null;
+  if(length<.1)return {...foot};
+  const fraction=Math.min(1,distance/length);
+  return {x:point.x+dx*fraction,y:point.y+dy*fraction};
 }
 export const ROOF_STAIRS = {
   entry: { x: 530, y: 620 }, arrival: ROOF.spawn, facing: 'down', click: { x: 530, y: 515 },
