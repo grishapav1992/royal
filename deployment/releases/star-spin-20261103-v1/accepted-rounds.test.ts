@@ -15,6 +15,20 @@ function continuation(s:any){const v=s.view;
  const revision=v.temple?.revision??v.templeCascade?.revision??v.caribbean?.revision??v.forestHeart?.revision??v.neopolis?.revision??v.dracona?.revision??v.afterglow?.revision??v.nitro?.revision??v.convoy?.revision??v.caramel?.revision??v.luelon?.revision??v.penalty?.revision??v.jackie?.combat.revision;
  return{id:randomUUID(),gameId:s.gameId,action:'move',sessionId:s.id,move,...(revision===undefined?{}:{revision})};
 }
+// The current production boundary already rejects new starts without a stake
+// policy. Seed accepted historical requests using its exact compiled engine and
+// journal, then exercise only ordinary replay/recovery through that boundary.
+async function accepted(runtime:any,ledger:any,account:string,command:any){
+ const{saveDemoUnits,demoBalanceUnits,demoReservedUnits}=await import('../../../server/demoWalletAmounts');
+ await runtime.ready;const store=Reflect.get(runtime,'store'),projection=Reflect.get(runtime,'projection'),op=command.body;
+ await ledger.nativeTransaction(account,async(context:any)=>{
+  await ledger.db.prepare('INSERT INTO accounts(id) VALUES(?) ON CONFLICT DO NOTHING').run(account);await saveDemoUnits(projection,account,Number(context.available/10000n));
+  if(command.path==='/operations')await store.operate(account,op);
+  else await store.expansion.operate(account,op,2,true,true,true,true,true,true,true,true,2,4,true,true,2,2,command.templeRules,true);
+  await context.post(BigInt(await demoBalanceUnits(ledger.db,account))*10000n,BigInt(await demoReservedUnits(ledger.db,account))*10000n,createHash('sha256').update('accepted-round-fixture:'+JSON.stringify(command)).digest('hex'));
+ });
+ return runtime.run(account,command);
+}
 test('actual production rounds resume and replay unchanged through the projected USDT release, then accept a ten-cent total round',{timeout:360000},async()=>{
  const realNow=Date.now;let clock=realNow(),index=0,continuations=0,legacyBonuses=0;const digest=createHash('sha256'),rows:any[]=[],client=new ExpansionClient(2),verify=(s:any)=>Reflect.get(client,'checkedSession').call(client,s);
  const cases=Object.entries(policies).filter(([game])=>game!=='tsu-e-fa'&&game!=='studio-wild-nudge').map(([game,p]:any)=>({game,choice:p.choices[0]}));cases.push({game:'studio-caramel-carnival',choice:'festival'},{game:'studio-velvet-reign',choice:'super-encore'},{game:'studio-cosmic-escape',choice:'cosmic-chaos'},{game:'studio-caribbean-treasures',choice:'lines-20-buy-raid'},{game:'studio-flooded-temple',choice:'legacy-map'});
@@ -27,7 +41,7 @@ test('actual production rounds resume and replay unchanged through the projected
    const command=(body:any=null):any=>({path:core?(body?'/operations':'/'):'/expansion',body,method:body?'POST':'GET',flags:[true,true,true,true,true,true,true,true,2],rules:2,query:{},neopolisRules:4,caribbeanRules:1,forestHeartRules:1,flagRules:2,jackieRules:2,templeRules:map?1:2});
    const settings=map?{temple:{mode:'normal'}}:settingsFor(game,choice);if(settings.caribbean)delete settings.caribbean.stakeBasis;
    const start:any=core?{id:randomUUID(),kind:'play',gameId:game,rulesVersion:1,amount:10,input:game==='royal-plinko'?{rows:12,risk:'hard'}:{bet:'red'}}:{id:randomUUID(),gameId:game,action:'start',stakeUnits:'1000',settings};
-   let actual:any=await candidate.run(a.a,command(start)),expected:any=await reference.run(b.a,command(start));assert.deepEqual(stable(actual.session??actual.gameRound),stable(expected.session??expected.gameRound));assert.equal(actual.wallet.balanceUnits,expected.wallet.balanceUnits);
+   let actual:any=await accepted(candidate,a.ledger,a.a,command(start)),expected:any=await accepted(reference,b.ledger,b.a,command(start));assert.deepEqual(stable(actual.session??actual.gameRound),stable(expected.session??expected.gameRound));assert.equal(actual.wallet.balanceUnits,expected.wallet.balanceUnits);
    legacyBonuses+=Number(actual.session?.state==='active');candidate=new Current(a.ledger,drawA,()=>clock);await candidate.ready;
    const replay:any=await candidate.run(a.a,command(start));assert.deepEqual(stable(replay.session??replay.gameRound),stable(actual.session??actual.gameRound));assert.equal(replay.wallet.balanceUnits,actual.wallet.balanceUnits);
    let last=start,moves=0;

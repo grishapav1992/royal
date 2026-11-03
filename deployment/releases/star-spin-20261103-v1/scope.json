@@ -1,8 +1,9 @@
 {
   "release": "star-spin-20261103-v1",
   "productionCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
-  "featureCommit": "21539d270dec6c1ea1aea9f9ea9274e04eac4d25",
+  "featureCommit": "c2c4e6a42a2147eda4cda72b7a35647122ac8913",
   "expectedSources": {
+    "games/wild-nudge/GalacticAudio.ts": "da9dd8e60ad6fe9d164241ce3fa700607064df22424fa93a0c7daa98dd4799e0",
     "games/wild-nudge/GalacticReactorUI.ts": "dedca2cfb1866c526f8dca2416e6b9f671f5353ed08c558d1de5b0abb0cd577a",
     "games/wild-nudge/StarSpinCharacter.ts": "af665a3bf2b89c5727773868656fd5513022bc81993d4423a1c098689408b773",
     "games/wild-nudge/StarSpinCollection.ts": "121986376eee9b315e05ab106671984db62b43baa3045e5c380ff6e579f698b3",
@@ -39,6 +40,7 @@
     "games/wild-nudge/animation/vespera/rive.yaml": "83dfbac34e9fca4b22f7d33cf69b811e49268c4ffae93b1d4fdd8f609767564a",
     "games/wild-nudge/animation/vespera/scene.rml": "0a9b339eff599df193a14f22b0660dd30731110d587ba73394bf25fe98d2b203",
     "games/wild-nudge/assets.json": "ce237ab325758a453ec9c50c637579e53c955517605b30e4a73778e7fcf985a5",
+    "games/wild-nudge/assets/catalog-cover.webp": "51c6b39a839fb3abbdebc3bba8bc105a2ba92ae764f4943454bed614405d9bc7",
     "games/wild-nudge/assets/characters/aeliri.png": "68bd1d064983e3346f99e4c5cb6044964a1531f8ba7681ec7d41e464d1b0f08d",
     "games/wild-nudge/assets/characters/lyra.png": "4a808454c1595b4ff684c9a4a58c0da637edd9d413337631410eb3bdd3c69e87",
     "games/wild-nudge/assets/characters/nyxara.png": "e729ed6a446f87e4523ca189f2accb2506442d4b93c559c32220be21b387d42f",
@@ -50,11 +52,14 @@
     "games/wild-nudge/assets/source/relics-symbols.png": "d1a02484693750e980d71d6f311f2b502537f6516eeda40fbed5535b58e407f0",
     "games/wild-nudge/assets/source/relics-wild.png": "11c9cf338c9b93b31d5161d55ecc899954c70f4b7217117db9884d28d3f879d2",
     "games/wild-nudge/character-animation-plan.md": "8301b0561e48b45e8494ad1fd237528ee0d26ebd79630b3c3db226f637995aff",
+    "games/wild-nudge/entry.ts": "9b1174700d209b41e01d6361b9f3ed123dd22dbc486d95414c31101ed71617bf",
     "games/wild-nudge/feedback.md": "2eb7b44a96ef10884f2d56b10f1d8c1756412aa3a8ba0c28c4f61e80fc956009",
     "games/wild-nudge/package.json": "0955b4fa7d11a2c7c9664470a6d2703d8fe3fa1f475e13e11d3a025083dab892",
     "games/wild-nudge/reactor.css": "a2390003b0a14223d6bbf3431fca90b4c70da53403b610e95c489a99d80f481a",
+    "games/wild-nudge/tsconfig.json": "f742eff5a2a4d98532ce33a3f9a0ac0bcf1a8eb52a27a00df95baa74c33993ff",
     "package-lock.json": "0c8b578f90303ee2d910537bb39016df30b4bddadb9049c3526d9ee2e203aeca",
     "package.json": "a5d1f48b1b3c7192c571b49d400387e04fc9cccc905b21ba87b1f069509b9919",
+    "public/assets/wild-nudge/background.webp": "08da069a40ecd93db5ea3698f561b31fc6478f92f139f8117a5fa9aff89171fb",
     "public/assets/wild-nudge/characters/aeliri-rive.json": "724e1eb07f4f3ee77177452996e2b3b78c2a2a202ac797c5c1c969eed8ad8513",
     "public/assets/wild-nudge/characters/aeliri.webp": "1db152e1e067a5545480c17857ac6fae9edf6d2877a154a0d7aecaa02b68207e",
     "public/assets/wild-nudge/characters/lyra-rive.json": "81fd593a16528bf689529082c88f37f2a5fc88dd61a52d0ed4ae8cf71c464e18",
@@ -65,6 +70,7 @@
     "public/assets/wild-nudge/characters/vespera-rive.json": "28241de579fe5d6f94d24e36d665e64138994004668ab7223309adc68a13c6a4",
     "public/assets/wild-nudge/characters/vespera.webp": "aca132497d65fcd5edd71e880e13377a8b8066d138ee881193f320cf7ea52fa9",
     "public/assets/wild-nudge/cover.webp": "51c6b39a839fb3abbdebc3bba8bc105a2ba92ae764f4943454bed614405d9bc7",
+    "public/assets/wild-nudge/score.wav": "282b5a2b358905645e3741d7d6ec198f07e391262f57430ac8ebc4d27cd875d2",
     "public/assets/wild-nudge/symbol-0.webp": "4818486e2fcfa37fd7eec9804026fa4336e45821f95611d1fb4cd9152e143065",
     "public/assets/wild-nudge/symbol-1.webp": "9df6f55cdc45fe27152099d1e093bc103bb4c8d89472d53c7da0cfdbee08b275",
     "public/assets/wild-nudge/symbol-2.webp": "41043b4d4b7c82948db8557921e6681dd88ae656101b30a4dd567583be446cb9",
@@ -88,8 +94,8 @@
     "src/shared/starSpinCollection.ts": "b58b4347a5b447080b07ec30282a369bb36315071533c0fcdc95c58b8f3e48d1",
     "src/shared/wildNudgeStakes.ts": "b038121718a674dd88578b9ace2c219e6f226a05372919a87e87b2dcc5afb54f",
     "src/ui/DemoWalletUI.ts": "87d1d4184b69a229a8ad7c9b7b0f3d12220305e28983525ce7aebbb0a77af473",
-    "src/ui/RoyalCatalogArtwork.ts": "c92dfbd047dd7f250b65164d204cb732e954ffa447974c5807f1052e1e65775b",
-    "src/ui/RoyalGameArtwork.ts": "4e38f2f618f16073ab2337a68a3cdbb48b597e811e837b16dbe540fdcec49f00",
+    "src/ui/RoyalCatalogArtwork.ts": "36a2f80b67fd3fe078c93a214f195d86169fd8be4cc0f1c3986b3f98c7fc1417",
+    "src/ui/RoyalGameArtwork.ts": "4eacd4bad5fbd8b3f02b8e5991df69fd31baf3e961fd31b153045492975d0aca",
     "src/wallet/ExpansionClient.ts": "bfc97155743dbc78fe9d0e5beb0cb9eb9f3fe7828ec45da13d43d58c86933a36"
   },
   "preservedBackendInputs": {
@@ -123,5 +129,7 @@
   "restoredGames": [],
   "moduleGames": [
     "wild-nudge"
-  ]
+  ],
+  "hostPosterSource": "games/wild-nudge/assets/catalog-cover.webp",
+  "hostPosterSha256": "51c6b39a839fb3abbdebc3bba8bc105a2ba92ae764f4943454bed614405d9bc7"
 }

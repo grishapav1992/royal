@@ -32,6 +32,7 @@ def main():
     old_native['files']['package.json']=row(feature,'package.json')
     origins={name:value for config in configs.values() for name,value in config['files'].items() if value['sha256']==before['sourceLF'].get(name)}
     paths=git('diff','--name-only',base,feature,'--','src','server','games/wild-nudge','public/assets/wild-nudge','package.json','package-lock.json').decode().splitlines()
+    paths=sorted(set(paths)|set(git('ls-tree','-r','--name-only',feature,'--','games/wild-nudge','public/assets/wild-nudge').decode().splitlines()))
     selected={}
     for name in paths:
         target=row(feature,name)
@@ -51,9 +52,11 @@ def main():
                 assert live.decode().count(old)==1;value=live.decode().replace(old,old+addition);patches=[{'from':old,'to':old+addition}]
             elif name in ['src/shared/cabinets.ts','src/ui/RoyalGameArtwork.ts','src/ui/RoyalCatalogArtwork.ts'] and 'studio-wild-nudge' not in live.decode():
                 if name=='src/shared/cabinets.ts':old='export const GAME_CABINETS: readonly Cabinet[] = CABINETS.map(c=>({...c}));\n';addition=next(line for line in blob(feature,name).decode().splitlines(True) if "CABINETS.push({id:'studio-wild-nudge'" in line);new=addition+old
-                elif name=='src/ui/RoyalGameArtwork.ts':old='const covers: Record<string, string> = {\n';addition=next(line for line in blob(feature,name).decode().splitlines(True) if "'studio-wild-nudge':" in line);new=old+addition
-                else:old='export function royalCatalogArtwork(id: string): string {\n';addition=next(line for line in blob(feature,name).decode().splitlines(True) if "if(id==='studio-wild-nudge')" in line);new=old+addition
+                elif name=='src/ui/RoyalGameArtwork.ts':old='const covers: Record<string, string> = {\n';addition=next(line for line in blob(base,name).decode().splitlines(True) if "'studio-wild-nudge':" in line);new=old+addition
+                else:old='export function royalCatalogArtwork(id: string): string {\n';addition=next(line for line in blob(base,name).decode().splitlines(True) if "if(id==='studio-wild-nudge')" in line);new=old+addition
                 assert live.decode().count(old)==1;value=live.decode().replace(old,new);patches=[{'from':old,'to':new}]
+                if name!='src/shared/cabinets.ts':
+                    value,extra=helper.overlay(blob(base,name).decode(),blob(feature,name).decode(),value);patches+=extra
             elif name=='src/i18n/en.ts' and "'Галактический реактор':" not in live.decode():
                 old='\n};\n';new="\n  'Галактический реактор':'Star Spin',\n};\n";assert live.decode().count(old)==1
                 value=live.decode().replace(old,new);patches=[{'from':old,'to':new}]
@@ -86,6 +89,6 @@ def main():
     for kind,config in [('native-before',old_native),('native',new_native)]:
         (HERE/(kind+'-projection.json')).write_text(json.dumps(config,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     active=json.loads((HERE.parent/'shared-stakes-20261101-v1/scope.json').read_text())['activeGames']+['tsu-e-fa','studio-wild-nudge']
-    scope=dict(release=HERE.name,productionCommit=before['sourceCommit'],featureCommit=feature,expectedSources=expected,preservedBackendInputs=backend_preserved,activeGames=active,addedGames=['studio-wild-nudge'],restoredGames=[],moduleGames=['wild-nudge'])
+    scope=dict(release=HERE.name,productionCommit=before['sourceCommit'],featureCommit=feature,expectedSources=expected,preservedBackendInputs=backend_preserved,activeGames=active,addedGames=['studio-wild-nudge'],restoredGames=[],moduleGames=['wild-nudge'],hostPosterSource='games/wild-nudge/assets/catalog-cover.webp',hostPosterSha256=sha(blob(feature,'games/wild-nudge/assets/catalog-cover.webp')))
     (HERE/'scope.json').write_text(json.dumps(scope,ensure_ascii=False,indent=2)+'\n',encoding='utf-8');print(json.dumps(dict(sources=len(expected),activeGames=len(active),base=before['sourceCommit'])))
 if __name__=='__main__':main()

@@ -1589,6 +1589,12 @@
       "baseSha256": "4cd112040e2d4dbefefab9c882b176c9ee0944d4b167c4c9280a594e5eb2dbac",
       "sha256": "4cd112040e2d4dbefefab9c882b176c9ee0944d4b167c4c9280a594e5eb2dbac"
     },
+    "games/wild-nudge/GalacticAudio.ts": {
+      "commit": "776366499b9e3d6c6789da1bf5eac6711605128a",
+      "path": "games/wild-nudge/GalacticAudio.ts",
+      "baseSha256": "da9dd8e60ad6fe9d164241ce3fa700607064df22424fa93a0c7daa98dd4799e0",
+      "sha256": "da9dd8e60ad6fe9d164241ce3fa700607064df22424fa93a0c7daa98dd4799e0"
+    },
     "games/wild-nudge/GalacticReactorUI.ts": {
       "commit": "e71086b251b22a76aaea5f3e7e810b65435241c0",
       "path": "games/wild-nudge/GalacticReactorUI.ts",
@@ -1805,6 +1811,12 @@
       "baseSha256": "ce237ab325758a453ec9c50c637579e53c955517605b30e4a73778e7fcf985a5",
       "sha256": "ce237ab325758a453ec9c50c637579e53c955517605b30e4a73778e7fcf985a5"
     },
+    "games/wild-nudge/assets/catalog-cover.webp": {
+      "commit": "c2c4e6a42a2147eda4cda72b7a35647122ac8913",
+      "path": "games/wild-nudge/assets/catalog-cover.webp",
+      "baseSha256": "51c6b39a839fb3abbdebc3bba8bc105a2ba92ae764f4943454bed614405d9bc7",
+      "sha256": "51c6b39a839fb3abbdebc3bba8bc105a2ba92ae764f4943454bed614405d9bc7"
+    },
     "games/wild-nudge/assets/characters/aeliri.png": {
       "commit": "9b4ee008495f4ea65f3974f113834010cb48ed0f",
       "path": "games/wild-nudge/assets/characters/aeliri.png",
@@ -1871,6 +1883,12 @@
       "baseSha256": "8301b0561e48b45e8494ad1fd237528ee0d26ebd79630b3c3db226f637995aff",
       "sha256": "8301b0561e48b45e8494ad1fd237528ee0d26ebd79630b3c3db226f637995aff"
     },
+    "games/wild-nudge/entry.ts": {
+      "commit": "776366499b9e3d6c6789da1bf5eac6711605128a",
+      "path": "games/wild-nudge/entry.ts",
+      "baseSha256": "9b1174700d209b41e01d6361b9f3ed123dd22dbc486d95414c31101ed71617bf",
+      "sha256": "9b1174700d209b41e01d6361b9f3ed123dd22dbc486d95414c31101ed71617bf"
+    },
     "games/wild-nudge/feedback.md": {
       "commit": "9b4ee008495f4ea65f3974f113834010cb48ed0f",
       "path": "games/wild-nudge/feedback.md",
@@ -1889,11 +1907,23 @@
       "baseSha256": "a2390003b0a14223d6bbf3431fca90b4c70da53403b610e95c489a99d80f481a",
       "sha256": "a2390003b0a14223d6bbf3431fca90b4c70da53403b610e95c489a99d80f481a"
     },
+    "games/wild-nudge/tsconfig.json": {
+      "commit": "776366499b9e3d6c6789da1bf5eac6711605128a",
+      "path": "games/wild-nudge/tsconfig.json",
+      "baseSha256": "f742eff5a2a4d98532ce33a3f9a0ac0bcf1a8eb52a27a00df95baa74c33993ff",
+      "sha256": "f742eff5a2a4d98532ce33a3f9a0ac0bcf1a8eb52a27a00df95baa74c33993ff"
+    },
     "package-lock.json": {
       "commit": "f0ea4d13fe985a9fc3e6dc7bb75e3f2f93652195",
       "path": "package-lock.json",
       "baseSha256": "0c8b578f90303ee2d910537bb39016df30b4bddadb9049c3526d9ee2e203aeca",
       "sha256": "0c8b578f90303ee2d910537bb39016df30b4bddadb9049c3526d9ee2e203aeca"
+    },
+    "public/assets/wild-nudge/background.webp": {
+      "commit": "776366499b9e3d6c6789da1bf5eac6711605128a",
+      "path": "public/assets/wild-nudge/background.webp",
+      "baseSha256": "08da069a40ecd93db5ea3698f561b31fc6478f92f139f8117a5fa9aff89171fb",
+      "sha256": "08da069a40ecd93db5ea3698f561b31fc6478f92f139f8117a5fa9aff89171fb"
     },
     "public/assets/wild-nudge/characters/aeliri-rive.json": {
       "commit": "f0ea4d13fe985a9fc3e6dc7bb75e3f2f93652195",
@@ -1954,6 +1984,12 @@
       "path": "public/assets/wild-nudge/cover.webp",
       "baseSha256": "51c6b39a839fb3abbdebc3bba8bc105a2ba92ae764f4943454bed614405d9bc7",
       "sha256": "51c6b39a839fb3abbdebc3bba8bc105a2ba92ae764f4943454bed614405d9bc7"
+    },
+    "public/assets/wild-nudge/score.wav": {
+      "commit": "776366499b9e3d6c6789da1bf5eac6711605128a",
+      "path": "public/assets/wild-nudge/score.wav",
+      "baseSha256": "282b5a2b358905645e3741d7d6ec198f07e391262f57430ac8ebc4d27cd875d2",
+      "sha256": "282b5a2b358905645e3741d7d6ec198f07e391262f57430ac8ebc4d27cd875d2"
     },
     "public/assets/wild-nudge/symbol-0.webp": {
       "commit": "fcf749f1e8a4a11e852c7fc15749ce805b958413",
@@ -2069,11 +2105,15 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/ui/RoyalCatalogArtwork.ts",
       "baseSha256": "aa3cb48f6b5391b1d6d86aa943af5defd8de2ce28c46825a79bec13fad5e073c",
-      "sha256": "c92dfbd047dd7f250b65164d204cb732e954ffa447974c5807f1052e1e65775b",
+      "sha256": "36a2f80b67fd3fe078c93a214f195d86169fd8be4cc0f1c3986b3f98c7fc1417",
       "patches": [
         {
           "from": "export function royalCatalogArtwork(id: string): string {\n",
-          "to": "export function royalCatalogArtwork(id: string): string {\n  if(id==='studio-wild-nudge')return '/assets/wild-nudge/cover.webp?v=relics-1';\n"
+          "to": "export function royalCatalogArtwork(id: string): string {\n  if(id==='studio-wild-nudge')return '/assets/wild-nudge/cover.webp';\n"
+        },
+        {
+          "from": "'/assets/wild-nudge/cover.webp'",
+          "to": "royalGameArtwork(id)"
         }
       ]
     },
@@ -2081,11 +2121,23 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/ui/RoyalGameArtwork.ts",
       "baseSha256": "a9cd2ace39a0fc8af73b6a12c32d40d1ff8b52837d1042b238eb31ee0d2e473f",
-      "sha256": "4e38f2f618f16073ab2337a68a3cdbb48b597e811e837b16dbe540fdcec49f00",
+      "sha256": "4eacd4bad5fbd8b3f02b8e5991df69fd31baf3e961fd31b153045492975d0aca",
       "patches": [
         {
           "from": "const covers: Record<string, string> = {\n",
-          "to": "const covers: Record<string, string> = {\n  'studio-wild-nudge':'/assets/wild-nudge/cover.webp?v=relics-1',\n"
+          "to": "const covers: Record<string, string> = {\n  'studio-wild-nudge':'/assets/wild-nudge/cover.webp',\n"
+        },
+        {
+          "from": "tring {\n  return",
+          "to": "tring {\n  if(id==='studio-wild-nudge')return starSpinCover;\n  return"
+        },
+        {
+          "from": "'/assets/wild-nudge/cover.webp'",
+          "to": "starSpinCover"
+        },
+        {
+          "from": "\n\n",
+          "to": "\nimport starSpinCover from '../../games/wild-nudge/assets/catalog-cover.webp';\n\n"
         }
       ]
     },
