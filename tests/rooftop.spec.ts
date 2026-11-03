@@ -70,7 +70,7 @@ async function noGroundConversation(page:Page){
 
 async function keyUntil(page:Page,key:string,condition:()=>Promise<boolean>){
   await page.keyboard.down(key);
-  try{await expect.poll(condition,{timeout:15000}).toBe(true);}
+  try{await expect.poll(condition,{timeout:15000,intervals:[16,32,50]}).toBe(true);}
   finally{await page.keyboard.up(key);}
   await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.serverX-s.x,s.serverY-s.y);}).toBeLessThan(.1);
 }

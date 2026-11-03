@@ -36,7 +36,7 @@ export function advanceRoofStairStep(step: number, point: Point&{stairDirection?
   const dx = to.x - from.x, dy = to.y - from.y;
   const t = Math.max(0, Math.min(1, ((point.x - from.x) * dx + (point.y - from.y) * dy) / (dx * dx + dy * dy)));
   if (Math.hypot(point.x - from.x - dx * t, point.y - from.y - dy * t) > 20) return 0;
-  return point.stairDirection!==-1&&Math.hypot(point.x - to.x, point.y - to.y) <= .1 ? step + 1 : step;
+  return point.stairDirection!==-1&&Math.hypot(point.x - to.x, point.y - to.y) <= 1e-6 ? step + 1 : step;
 }
 
 type StairPosition=Point&{stairStep?:number;stairDirection?:number};
@@ -55,8 +55,8 @@ export function roofStairOptions(body:StairPosition):RoofStairOption[]{
     const from=ROOF_STAIR_ROUTE[index-1],to=ROOF_STAIR_ROUTE[index];
     result.push({step:index,direction,target:direction===1?to:from,from,to});
   };
-  if(along<length-.1)add(segment,1);else add(segment+1,1);
-  if(along>.1)add(segment,-1);else add(Math.max(1,segment-1),-1);
+  if(along<length-1e-6)add(segment,1);else add(segment+1,1);
+  if(along>1e-6)add(segment,-1);else add(Math.max(1,segment-1),-1);
   return result;
 }
 

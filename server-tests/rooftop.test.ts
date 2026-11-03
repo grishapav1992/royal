@@ -181,6 +181,18 @@ test('approaching the lower ladder from either side guides into it without a pre
   }
 });
 
+test('a held side-entry Up input captures the ladder at the same point before and after server validation',()=>{
+  const local={...stairBody(),stairStep:0,x:1606,y:460},server={...local};
+  for(let frame=0;frame<90;frame++){
+    const input={seq:frame+1,x:0,y:local.stairStep? -1:1,ms:16};
+    applyMovementInput(local,input);applyMovementInput(server,input);
+    const before=server.stairStep;server.stairStep=advanceRoofStairStep(before,server);
+    if(!before&&server.stairStep===1){server.x=STREET_ROOF_STAIRS.foot.x;server.y=STREET_ROOF_STAIRS.foot.y;server.stairDirection=1;}
+    assert(Math.hypot(local.x-server.x,local.y-server.y)<1e-8);assert.equal(local.stairStep,server.stairStep);
+  }
+  assert(local.stairStep>1);
+});
+
 test('ordinary rear circulation, walking away and clicks beside the ladder do not capture it',()=>{
   const body={...stairBody(),stairStep:0,x:1550,y:360};
   for(let frame=0;frame<100;frame++)applyMovementInput(body,{seq:frame+1,x:1,y:0,ms:16});

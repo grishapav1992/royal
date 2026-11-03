@@ -29,7 +29,7 @@ export function applyMovementInput(body: MovementBody, input: MovementInput, gua
       if(blockedByGuard(body,approach.x,approach.y,guards))contact=true;
       else{
         body.x=approach.x;body.y=approach.y;
-        if(Math.hypot(body.x-STREET_ROOF_STAIRS.foot.x,body.y-STREET_ROOF_STAIRS.foot.y)<.1){body.stairStep=1;body.stairDirection=1;}
+        if(Math.hypot(body.x-STREET_ROOF_STAIRS.foot.x,body.y-STREET_ROOF_STAIRS.foot.y)<=7){body.x=STREET_ROOF_STAIRS.foot.x;body.y=STREET_ROOF_STAIRS.foot.y;body.stairStep=1;body.stairDirection=1;}
       }
     }
     body.moving=Math.hypot(body.x-beforeX,body.y-beforeY)>.001;
