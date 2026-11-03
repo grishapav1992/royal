@@ -50,6 +50,8 @@ Production-сервер на http://localhost:2567 раздаёт `dist` и об
 
 Для установки на VPS подготовлены Dockerfile, `compose.yaml`, Caddy с HTTPS и [инструкция](deployment/README.md). Аккаунты и другие сохраняемые данные хранятся в единой PostgreSQL. Redis не требуется.
 
+Для навигации по исходникам и документации доступна [локальная карта Graphify](docs/graphify.md): `npm run graph:query -- "DemoWalletStore"`. Карта обновляется перед поиском при изменении исходников и не требует платных запросов.
+
 ## Управление
 
 - WASD или стрелки: движение.

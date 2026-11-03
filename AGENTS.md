@@ -2,6 +2,13 @@
 
 - Never use the em dash character (Unicode U+2014) in generated text.
 
+## Development code map
+
+- For questions about architecture, dependencies or the impact of a change, use `npm run graph:query -- "<question or symbol>"` to locate relevant sources, then verify the indicated source files. Prefer symbol names and repository paths for precise queries. `graph:explain`, `graph:path` and `graph:affected` inspect symbols, paths and dependants. Follow `docs/graphify.md`.
+- These commands build or refresh the local Graphify map when tracked input contents or HEAD change. The first use needs uv and downloads the pinned tool. If unavailable, continue with direct source inspection and state that the map was unavailable. Graph setup must not block ordinary development.
+- The map contains local structural code and Markdown relationships. Inferred relationships require verification; missing relationships do not prove independence. Source presence does not mean a game is active or a feature is deployed. Use the production catalogue and release records for availability and the existing Graphiti graph for verified decisions.
+- Use the project commands, which disable model backends, query logging and automatic global skill changes. Do not run generic Graphify installation, hooks or semantic extraction for this integration. Generated data stays in ignored `graphify-out/`. New files enter the map after `git add`; stage only files belonging to the current task.
+
 ## A6API access
 
 - The owner permits using the same A6API token locally on their two PCs. Direct tools can read `A6API_KEY` and `A6API_BASE_URL=https://api.a6api.com/v1` from the local `.env`. Keep actual tokens outside Git and logs; `.env.example` contains empty placeholders only.
