@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import time
@@ -104,12 +105,74 @@ def execute(root, last_result):
     return code, result
 
 
+def retry_project_brain(run, root, last_result, owner_uid=0):
+    """Complete only the graph handoff of a successful cleanup, after fresh verification."""
+    cleanup.require(os.geteuid() == 0, 'Run as the deployment operator')
+    root, run, last_result = Path(root).absolute(), Path(run).absolute(), Path(last_result)
+    cleanup.require(run.parent == root and re.fullmatch(r'run-[a-f0-9]{32}', run.name), 'Unexpected completed maintenance run')
+    for path in [root, run]:
+        info = path.lstat()
+        cleanup.require(stat.S_ISDIR(info.st_mode) and not path.is_symlink() and info.st_uid == owner_uid
+                        and not info.st_mode & 0o022 and path.resolve() == path, 'Untrusted completed maintenance directory')
+    for name in ['plan.json', 'result.json', 'summary.json']:
+        path = run/name; info = path.lstat()
+        cleanup.require(stat.S_ISREG(info.st_mode) and not path.is_symlink() and info.st_uid == owner_uid
+                        and not info.st_mode & 0o022 and info.st_size <= 64*1024**2, 'Untrusted completed maintenance evidence')
+    plan, applied, summary = [cleanup.read(run/name) for name in ['plan.json', 'result.json', 'summary.json']]
+    cleanup.require(summary.get('status') == 'completed' and applied.get('ok') is True, 'Only a completed verified maintenance run can retry graph indexing')
+    for field in ['release', 'sourceCommit', 'currentImage', 'rollbackImage', 'rollbackImageProof']:
+        cleanup.require(field in plan and plan[field] == applied.get(field) == summary.get(field), 'Completed maintenance evidence is not bound: ' + field)
+    cleanup.require(applied.get('verificationPasses') == summary.get('verificationPasses') == 2
+                    and all(applied.get(field) is True for field in ['containersUnchanged','configurationUnchanged','externalModulesUnchanged','healthOk'])
+                    and summary.get('containersUnchanged') is True and summary.get('healthOk') is True
+                    and applied.get('databaseRestored') is False and applied.get('volumesDeleted') is False
+                    and applied.get('retainedHistory') == plan.get('keep'), 'Incomplete successful maintenance proof')
+    cleanup.require(applied.get('freeAfter', 0) >= 5*1024**3 and summary.get('freeAfter', 0) >= 5*1024**3,
+                    'Completed maintenance did not meet the free-space floor')
+    original = dict(summary)
+    locks = []; code = 1
+    report = {'status': 'error', 'maintenanceStatus': 'completed', 'run': str(run)}
+    try:
+        for path in [cleanup.RELEASES/'themed-publish.lock', cleanup.LIVE/'.client-presentation-deploy.lock', cleanup.MODULE_STATE/'module.lock']:
+            cleanup.require(not path.is_symlink(), 'Unsafe deployment lock')
+            lock = path.open('a'); locks.append(lock); fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        cleanup.require(cleanup.read(cleanup.RETENTION/'policy.json') == plan['policy'], 'A different maintenance policy has superseded this run')
+        current = cleanup.healthy()
+        source = current['Config'].get('Labels', {}).get('org.opencontainers.image.revision')
+        cleanup.require(current['Image'] == plan['currentImage'] and source == plan['sourceCommit']
+                        and select_release(current['Image'], source) == plan['release'], 'Production has changed since the completed run')
+        cleanup.verify(plan)
+        cleanup.require(shutil.disk_usage(cleanup.LIVE).free >= 5*1024**3, 'Graph retry needs at least five GiB free')
+        brain = project_brain_receipt(plan)
+        cleanup.require(brain.get('status') == 'pending', 'Shared graph indexing is not enabled')
+        summary['projectBrain'] = brain
+        code = 0
+    except Exception as error:
+        summary['projectBrain'] = {'status':'error','reason':str(error),'queued':False}
+        report['reason'] = str(error)
+    finally:
+        for lock in reversed(locks): lock.close()
+    queue_project_brain(summary)
+    if not summary['projectBrain'].get('queued'):
+        code = 1
+    summary['projectBrainRetry'] = {'at':time.time(), 'status':'queued' if code == 0 else 'error',
+                                  'planSha256':cleanup.sha(run/'plan.json')}
+    cleanup.write(run/'summary.json', summary)
+    # Another later maintenance result must never be replaced by this old run's retry.
+    if last_result.exists() and not last_result.is_symlink() and cleanup.read(last_result) == original:
+        cleanup.write(last_result, summary)
+    report.update({'status':'queued' if code == 0 else 'error', 'projectBrain':summary['projectBrain'],
+                   'planSha256':summary['projectBrainRetry']['planSha256']})
+    return code, report
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--state-root', type=Path, default=Path('/opt/royal-maintenance/automatic-runs'))
     parser.add_argument('--result', type=Path, default=Path('/opt/royal-maintenance/last-result.json'))
+    parser.add_argument('--retry-project-brain', type=Path, help='Retry graph indexing from one completed verified run without running cleanup again')
     args = parser.parse_args()
-    code, result = execute(args.state_root, args.result)
+    code, result = retry_project_brain(args.retry_project_brain, args.state_root, args.result) if args.retry_project_brain else execute(args.state_root, args.result)
     print(json.dumps(result), flush=True)
     raise SystemExit(code)
 

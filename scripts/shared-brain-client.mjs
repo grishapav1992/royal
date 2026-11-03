@@ -106,7 +106,7 @@ function validateResponse(envelope, operation) {
 }
 
 /** Send JSON through a fixed SSH command. No local graph is used after an error. */
-export async function requestSharedBrain(request, { spawnImpl = spawn, env = process.env, timeoutMs = 90000 } = {}) {
+export async function requestSharedBrain(request, { spawnImpl = spawn, env = process.env, timeoutMs = 480000 } = {}) {
   const body = validateRequest(request);
   const target = env.ROYAL_BRAIN_SSH_TARGET || 'root@45.192.12.242';
   const identity = env.ROYAL_BRAIN_SSH_KEY || join(homedir(), '.ssh', 'royal_server_ed25519');

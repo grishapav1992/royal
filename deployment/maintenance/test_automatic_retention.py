@@ -163,6 +163,73 @@ class AutomaticRetentionTest(unittest.TestCase):
             self.assertEqual(code, 0); self.assertFalse(result['projectBrain']['queued'])
             self.assertIn('queueError', result['projectBrain'])
 
+    def retry_fixture(self, root):
+        runs=root/'runs'; run=runs/('run-'+'a'*32); run.mkdir(parents=True,mode=0o700); runs.chmod(0o700)
+        plan={'release':'current','sourceCommit':'a'*40,'currentImage':'active','rollbackImage':'rollback',
+              'rollbackImageProof':{'image':'rollback','verified':True},'keep':['current','previous'],'policy':{'verified':True}}
+        summary={key:plan[key] for key in ['release','sourceCommit','currentImage','rollbackImage','rollbackImageProof']}
+        summary.update({'status':'completed','containersUnchanged':True,'healthOk':True,'verificationPasses':2,
+                        'freeAfter':6*1024**3,'projectBrain':{'status':'error','reason':'Sensitive graph source path','queued':False}})
+        applied={**summary,'ok':True,'configurationUnchanged':True,'externalModulesUnchanged':True,
+                 'databaseRestored':False,'volumesDeleted':False,'retainedHistory':plan['keep']}
+        for name,value in [('plan.json',plan),('result.json',applied),('summary.json',summary)]:
+            cleanup.write(run/name,value)
+        cleanup.write(root/'last.json',summary)
+        retention=root/'retention';retention.mkdir();cleanup.write(retention/'policy.json',plan['policy'])
+        return runs,run,plan,summary,retention
+
+    def run_brain_retry(self, root, fixture, emitter=None, launcher=None, verifier=None):
+        runs,run,plan,summary,retention=fixture
+        with patch.object(cleanup,'LIVE',root),patch.object(cleanup,'RELEASES',root),patch.object(cleanup,'MODULE_STATE',root),patch.object(cleanup,'RETENTION',retention),patch.object(cleanup,'healthy',return_value={'Image':'active','Config':{'Labels':{'org.opencontainers.image.revision':'a'*40}}}),patch.object(automatic,'select_release',return_value='current'),patch.object(cleanup,'verify',side_effect=verifier) as verify,patch.object(cleanup,'apply') as apply,patch.object(cleanup,'prepare_plan') as prepare,patch.object(automatic.os,'geteuid',return_value=0),patch.object(automatic,'project_brain_receipt',side_effect=emitter or (lambda plan:{'status':'pending','runtimeFingerprint':'f'*64})),patch.object(automatic.subprocess,'run',side_effect=launcher):
+            result=automatic.retry_project_brain(run,runs,root/'last.json',owner_uid=os.getuid())
+        apply.assert_not_called();prepare.assert_not_called()
+        return result,verify
+
+    def test_completed_run_graph_retry_reverifies_under_locks_and_never_repeats_cleanup(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp).resolve(); fixture=self.retry_fixture(root);locks=[];events=[]
+            def verify(plan):
+                self.assertTrue(all(not lock.closed for lock in locks));events.append('verify')
+            def emit(plan):
+                self.assertTrue(all(not lock.closed for lock in locks));events.append('receipt')
+                return {'status':'pending','runtimeFingerprint':'f'*64}
+            def launch(command,**options):
+                self.assertTrue(all(lock.closed for lock in locks));events.append('queue')
+            with patch.object(automatic.fcntl,'flock',side_effect=lambda handle,flags:locks.append(handle)):
+                (code,result),verified=self.run_brain_retry(root,fixture,emit,launch,verify)
+            self.assertEqual(code,0);self.assertEqual(events,['verify','receipt','queue'])
+            verified.assert_called_once_with(fixture[2]);self.assertEqual(result['status'],'queued')
+            saved=cleanup.read(fixture[1]/'summary.json')
+            self.assertEqual(saved['status'],'completed');self.assertEqual(saved['projectBrainRetry']['status'],'queued')
+            self.assertEqual(saved,cleanup.read(root/'last.json'))
+
+    def test_failed_or_mismatched_completed_proofs_cannot_retry_graph(self):
+        for field in ['status','sourceCommit','verificationPasses']:
+            with self.subTest(field=field),tempfile.TemporaryDirectory() as temp:
+                root=Path(temp).resolve();fixture=self.retry_fixture(root);summary=fixture[3]
+                summary[field]='error' if field=='status' else 'different'
+                cleanup.write(fixture[1]/'summary.json',summary)
+                with self.assertRaises(RuntimeError):self.run_brain_retry(root,fixture)
+
+    def test_graph_retry_fresh_failure_is_explicit_and_later_result_is_preserved(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp).resolve();fixture=self.retry_fixture(root)
+            later={'status':'retry','reason':'A later run owns this result'};cleanup.write(root/'last.json',later)
+            emitter=unittest.mock.Mock();launcher=unittest.mock.Mock()
+            (code,result),verified=self.run_brain_retry(root,fixture,emitter,launcher,RuntimeError('Current program changed'))
+            self.assertEqual(code,1);self.assertEqual(result['status'],'error')
+            self.assertEqual(result['projectBrain']['reason'],'Current program changed')
+            emitter.assert_not_called();launcher.assert_not_called();self.assertEqual(cleanup.read(root/'last.json'),later)
+
+    def test_graph_retry_does_not_queue_when_space_falls_below_floor(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp).resolve();fixture=self.retry_fixture(root)
+            emitter=unittest.mock.Mock();launcher=unittest.mock.Mock()
+            with patch.object(automatic.shutil,'disk_usage',return_value=unittest.mock.Mock(free=1)):
+                (code,result),verified=self.run_brain_retry(root,fixture,emitter,launcher)
+            self.assertEqual(code,1);self.assertIn('five GiB',result['reason'])
+            verified.assert_called_once();emitter.assert_not_called();launcher.assert_not_called()
+
     def test_oci_metadata_is_hash_verified_without_size_inspection(self):
         runtime=cleanup.native_retention()
         with tempfile.TemporaryDirectory() as temp:

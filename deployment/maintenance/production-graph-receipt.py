@@ -32,10 +32,17 @@ def digest(value):
     return hashlib.sha256(canonical(value)).hexdigest()
 
 
-def safe_source(name):
+def safe_inventory_path(name):
+    """Validate an opaque path in an already-verified sealed program inventory."""
     require(isinstance(name, str) and name and not re.search(r'[\\\x00\r\n]', name), 'Invalid graph source path')
     path = PurePosixPath(name)
     require(not path.is_absolute() and all(part not in {'', '.', '..'} for part in name.split('/')), 'Unsafe graph source path')
+    return name
+
+
+def safe_source(name):
+    safe_inventory_path(name)
+    path = PurePosixPath(name)
     require(not any(re.match(r'^(?:\.env(?:\..*)?|\.git|\.ssh|secrets?|credentials?|data)$', part, re.I) for part in path.parts), 'Sensitive graph source path')
     require(path.suffix.lower() not in {'.db', '.sqlite', '.sqlite3', '.pem', '.key', '.dump'}, 'Private graph source path')
     return name
@@ -121,7 +128,7 @@ def collect_verified(plan, cleanup):
     require(isinstance(built.get('program'), dict) and built['program'], 'Verified runtime inventory missing')
     command = plan['programHashCommand']
     require(isinstance(command, str) and command and len(command.encode()) <= 1024**2, 'Verified runtime reader missing')
-    runtime = {safe_source(name): value for name, value in sorted(built['program'].items())}
+    runtime = {safe_inventory_path(name): value for name, value in sorted(built['program'].items())}
     require(all(SHA.fullmatch(str(value)) for value in runtime.values()), 'Invalid runtime hash')
     proof_hashes = {row['path']: row['sha256'] for row in plan['proofs']}
     for name in ['install-manifest.json', 'build-result.json', 'published.json', 'release-github.json']:

@@ -173,6 +173,23 @@ class ProductionGraphReceiptTest(unittest.TestCase):
         for name in ['../outside', '.env', 'server/.env.local', '.ssh/key', 'a\nname', '/etc/file']:
             with self.subTest(name=name), self.assertRaises(RuntimeError): graph.safe_source(name)
 
+    def test_sealed_phaser_runtime_data_paths_are_not_graph_source_paths(self):
+        with tempfile.TemporaryDirectory() as temp:
+            fixture = Fixture(Path(temp))
+            file = fixture.release/'build-result.json'
+            built = json.loads(file.read_text())
+            paths = ['dist-server/runtime/node_modules/phaser/src/data/DataManager.js',
+                     'dist-server/runtime/node_modules/phaser/src/data/DataManagerPlugin.js',
+                     'dist-server/runtime/node_modules/phaser/src/data/events/CHANGE_DATA_EVENT.js']
+            for name in paths: built['program'][name] = sha(b'compiled dependency')
+            write(file, built); fixture.refresh()
+            receipt = graph.collect_verified(fixture.plan, fixture.cleanup)
+            for name in paths:
+                self.assertEqual(receipt['runtimeInventory'][name], sha(b'compiled dependency'))
+                with self.assertRaisesRegex(RuntimeError, 'Sensitive graph source path'): graph.safe_source(name)
+            for name in ['../data/file', '/app/data/file', 'data/../file', 'data\\file', 'data\nfile']:
+                with self.subTest(name=name), self.assertRaises(RuntimeError): graph.safe_inventory_path(name)
+
     def test_emit_is_immutable_atomic_and_failed_recollection_preserves_latest(self):
         with tempfile.TemporaryDirectory() as temp:
             fixture = Fixture(Path(temp))
