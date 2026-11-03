@@ -2382,5 +2382,8 @@
     "public/assets/wild-nudge/characters/rive-runtime.json": "53d7a6fde857630ef2368df86afa57a1c53e98a7ee633d8b878703ba3ea2b809",
     "public/assets/wild-nudge/characters/vespera-rive.json": "28241de579fe5d6f94d24e36d665e64138994004668ab7223309adc68a13c6a4",
     "public/assets/wild-nudge/characters/vespera.webp": "aca132497d65fcd5edd71e880e13377a8b8066d138ee881193f320cf7ea52fa9"
+  },
+  "moduleDependencies": {
+    "node_modules/@rive-app/webgl2/rive.js": "abe9dda86ab90382f565ce3cc6fbd458be549dbfcd26df1218480db5bb48793f"
   }
 }

@@ -5,9 +5,9 @@ import { fileURLToPath } from 'node:url';
 import { createHash, randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 import { checkGameRtp } from './game-math/rtp-gate.mjs';
-import { moduleFingerprinter, cachedModule } from './module-build-cache.mjs';
+import { moduleFingerprinter, cachedModule, regularPath } from './module-build-cache.mjs';
 import { readHostProjection } from './build-host-projection.mjs';
-import {projectedModuleContract,moduleProjectionCatalog,projectedMediaBytes} from './module-source-projection.mjs';
+import {projectedModuleContract,moduleProjectionCatalog,projectedMediaBytes,projectedDependencyBytes} from './module-source-projection.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const sha = value => createHash('sha256').update(value).digest('hex');
@@ -21,8 +21,13 @@ const args = process.argv.slice(2);
 const projectionFlag=args.indexOf('--source-projection');
 let projection;
 if(projectionFlag>=0){const name=args[projectionFlag+1];if(!name)throw Error('Missing module source projection');args.splice(projectionFlag,2);projection=await readHostProjection(root,name,{strictOrigins:true});}
-const projectedAssets={};
-async function sourceBytes(path){return projection?projection.read(relative(root,resolve(path)).replaceAll('\\','/')):readFile(path);}
+const projectedAssets={},projectedDependencies={};
+async function sourceBytes(path){
+ if(!projection)return readFile(path);
+ const name=relative(root,resolve(path)).replaceAll('\\','/');
+ if(!name.startsWith('node_modules/'))return projection.read(name);
+ const bytes=projectedDependencyBytes(name,await readFile(await regularPath(root,name)),projection.metadata.moduleDependencies?.[name]);projectedDependencies[name]=sha(bytes);return bytes;
+}
 async function mediaBytes(path){let bytes=await readFile(path);if(projection){const name=relative(root,path).replaceAll('\\','/');bytes=projectedMediaBytes(name,bytes,projection.metadata.moduleAssets?.[name]);projectedAssets[name]=sha(bytes);}return bytes;}
 const force = args.includes('--force');
 if (force) args.splice(args.indexOf('--force'), 1);
@@ -248,7 +253,7 @@ async function buildGame(slug) {
   assetRoots: config.assetRoots, assetFiles, mediaReferences, dynamicMediaDirectories: dynamicDirectories,
   startupImages: manifest.preload ?? [],
   bytes: totalBytes, files: Object.keys(files).length,
-  ...(projection?{sourceProjection:{config:projection.config,sha256:projection.sha256,productionCommit:projection.metadata.productionCommit,inputs:{...projection.inputs},origins:{...projection.origins},assets:{...projectedAssets}}}:{}),
+  ...(projection?{sourceProjection:{config:projection.config,sha256:projection.sha256,productionCommit:projection.metadata.productionCommit,inputs:{...projection.inputs},origins:{...projection.origins},assets:{...projectedAssets},dependencies:{...projectedDependencies}}}:{}),
   cache: { format: projection ? 0 : 1, fingerprint: await fingerprint(config, registered, inputs),
    outputs: Object.fromEntries([...outputs].map(([name, bytes]) => [name, sha(bytes)])) } }, null, 2) + '\n');
  const resultRow = { gameId: config.gameId, version, directory: destination, files: Object.keys(files).length,
@@ -259,7 +264,7 @@ async function buildGame(slug) {
 for (const slug of selected) await buildGame(slug);
 if(projection){
  const modules={};for(const slug of selected){const proof=JSON.parse(await readFile(resolve(root,'module-build',slug+'-proof.json'),'utf8'));const pointer=JSON.parse(await readFile(resolve(root,'module-dist',proof.gameId,'active.json'),'utf8'));const manifestPath=pointer.manifest.replace('/game-modules/','module-dist/');const bytes=await readFile(resolve(root,manifestPath));modules[proof.gameId]={version:proof.version,sourceFiles:proof.sourceFiles,hostBridges:proof.hostBridges,manifestPath,manifestSha256:sha(bytes),files:JSON.parse(bytes).files};}
- await atomicFile(resolve(root,'module-build/source-projection-report.json'),JSON.stringify({config:projection.config,sha256:projection.sha256,productionCommit:projection.metadata.productionCommit,inputs:projection.inputs,origins:projection.origins,assets:projectedAssets,builderSha256:sha(buildScript),modules},null,2)+'\n');
+ await atomicFile(resolve(root,'module-build/source-projection-report.json'),JSON.stringify({config:projection.config,sha256:projection.sha256,productionCommit:projection.metadata.productionCommit,inputs:projection.inputs,origins:projection.origins,assets:projectedAssets,dependencies:projectedDependencies,builderSha256:sha(buildScript),modules},null,2)+'\n');
 }
 await mkdir(resolve(root, 'module-dist'), { recursive: true });
 await atomicFile(resolve(root, 'module-dist/host-contracts.json'), JSON.stringify({ format: 1, games: Object.fromEntries(GAME_MODULES.map(({ gameId, apiVersion, rulesVersion, progressVersion }) => [gameId, { apiVersion, rulesVersion, progressVersion }])) }, null, 2) + '\n');

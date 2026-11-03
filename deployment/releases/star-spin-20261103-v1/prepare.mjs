@@ -33,7 +33,7 @@ const posters=Object.entries(release.files).filter(([file,hash])=>/^dist\/assets
 assert.equal(posters.length,1,'The approved Star Spin poster must be an immutable host asset');
 const poster=posters[0][0].slice(5);assert(!before.program['dist/'+poster],'Poster URL must be new');
 for(const [file,hash]of Object.entries(scope.expectedSources)){
-  const bytes=file.startsWith('public/')?committed(file):host.read(file);assert.equal(digest(bytes),hash);
+  const bytes=file.startsWith('public/')||/\.(?:png|jpe?g|webp|wav|mp3|ogg|webm|mp4|riv)$/.test(file)?committed(file):host.read(file);assert.equal(digest(bytes),hash);
   changed[file]=write('source/'+file,bytes);
 }
 for(const [file,hash]of Object.entries(release.files)){

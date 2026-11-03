@@ -74,7 +74,7 @@ def main():
     expected={name:value['sha256'] for name,value in selected.items() if value['sha256']!=before['sourceLF'].get(name)}
     backend_preserved={}
     for kind,config in configs.items():
-        for name in ['moduleGames','moduleContracts','moduleAssets']:config.pop(name,None)
+        for name in ['moduleGames','moduleContracts','moduleAssets','moduleDependencies']:config.pop(name,None)
         for name,value in config['files'].items():
             if value['sha256']!=before['sourceLF'].get(name):
                 assert kind=='backend' and name=='src/i18n/en.ts';backend_preserved[name]=value['sha256']
@@ -83,7 +83,8 @@ def main():
             for name in backend_preserved:config['files'][name]=configs['backend']['files'][name] if name not in selected else json.loads((HERE.parent/'lobby-connection-20261101-v1/backend-projection.json').read_text())['files'][name]
         if kind=='host':
             media={p.as_posix():sha(p.read_bytes()) for p in Path('public/assets/wild-nudge').rglob('*') if p.is_file()}
-            config.update(moduleGames=['wild-nudge'],moduleContracts={'studio-wild-nudge':dict(apiVersion=1,rulesVersion=2,progressVersion=1)},moduleAssets=media)
+            dependency='node_modules/@rive-app/webgl2/rive.js'
+            config.update(moduleGames=['wild-nudge'],moduleContracts={'studio-wild-nudge':dict(apiVersion=1,rulesVersion=2,progressVersion=1)},moduleAssets=media,moduleDependencies={dependency:sha(Path(dependency).read_bytes())})
         (HERE/(kind+'-projection.json')).write_text(json.dumps(config,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     new_native=copy.deepcopy(old_native);new_native['files'].update({name:copy.deepcopy(value) for name,value in selected.items() if name in old_native['files'] or name.startswith(('server/','src/shared/'))})
     # Preserve the native service's original translator, protocol and financial configuration.
