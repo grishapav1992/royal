@@ -1,7 +1,7 @@
 {
   "release": "star-spin-20261103-v1",
   "productionCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
-  "featureCommit": "3a22c849df4bc70621f9f6f0ff23d35b41725a24",
+  "featureCommit": "2fe9505f3f96fdaa7446c0cc70623814546b05d4",
   "expectedSources": {
     "games/wild-nudge/GalacticAudio.ts": "da9dd8e60ad6fe9d164241ce3fa700607064df22424fa93a0c7daa98dd4799e0",
     "games/wild-nudge/GalacticReactorUI.ts": "dedca2cfb1866c526f8dca2416e6b9f671f5353ed08c558d1de5b0abb0cd577a",
@@ -52,7 +52,7 @@
     "games/wild-nudge/assets/source/relics-symbols.png": "d1a02484693750e980d71d6f311f2b502537f6516eeda40fbed5535b58e407f0",
     "games/wild-nudge/assets/source/relics-wild.png": "11c9cf338c9b93b31d5161d55ecc899954c70f4b7217117db9884d28d3f879d2",
     "games/wild-nudge/character-animation-plan.md": "8301b0561e48b45e8494ad1fd237528ee0d26ebd79630b3c3db226f637995aff",
-    "games/wild-nudge/entry.ts": "9b1174700d209b41e01d6361b9f3ed123dd22dbc486d95414c31101ed71617bf",
+    "games/wild-nudge/entry.ts": "cc7a4613bb668d8425f4fcb516207523e6a917da4e6ab64148ee1312462535bb",
     "games/wild-nudge/feedback.md": "2eb7b44a96ef10884f2d56b10f1d8c1756412aa3a8ba0c28c4f61e80fc956009",
     "games/wild-nudge/package.json": "0955b4fa7d11a2c7c9664470a6d2703d8fe3fa1f475e13e11d3a025083dab892",
     "games/wild-nudge/reactor.css": "a2390003b0a14223d6bbf3431fca90b4c70da53403b610e95c489a99d80f481a",

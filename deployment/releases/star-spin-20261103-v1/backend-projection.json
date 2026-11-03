@@ -1884,10 +1884,10 @@
       "sha256": "8301b0561e48b45e8494ad1fd237528ee0d26ebd79630b3c3db226f637995aff"
     },
     "games/wild-nudge/entry.ts": {
-      "commit": "776366499b9e3d6c6789da1bf5eac6711605128a",
+      "commit": "2fe9505f3f96fdaa7446c0cc70623814546b05d4",
       "path": "games/wild-nudge/entry.ts",
-      "baseSha256": "9b1174700d209b41e01d6361b9f3ed123dd22dbc486d95414c31101ed71617bf",
-      "sha256": "9b1174700d209b41e01d6361b9f3ed123dd22dbc486d95414c31101ed71617bf"
+      "baseSha256": "cc7a4613bb668d8425f4fcb516207523e6a917da4e6ab64148ee1312462535bb",
+      "sha256": "cc7a4613bb668d8425f4fcb516207523e6a917da4e6ab64148ee1312462535bb"
     },
     "games/wild-nudge/feedback.md": {
       "commit": "9b4ee008495f4ea65f3974f113834010cb48ed0f",
