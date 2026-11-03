@@ -1,0 +1,167 @@
+{
+  "feature": "casino-roof-return",
+  "dateLocal": "2026-11-04",
+  "timezone": "Europe/Moscow",
+  "testedRuntimeSourceCommit": "870c511765dc2fec84ed104bc979e0ebb48e6cec",
+  "scenarioSourceCommit": "ef745f8954e38cddae6685d91b17ea74688d269d",
+  "mainBaseline": "30b95e951ba71f8ac1b340152c8a9f3ee66edc51",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "sourceFiles": {
+    "src/shared/rooftop.ts": "f4d2d5d9b461f6b1c021be6f057ae6444b491a30a78b78d08840a2f5d7500baf",
+    "src/shared/world.ts": "e2a43a155783c5fa0baff1967a5cc2df02b2eb0aef4cb43b6632639a0f0d82e3",
+    "server/LobbyRoom.ts": "bee306520108af4960a68e490e67cee68e5ded22deb69a0db9bdf9f0198c3e3e",
+    "src/game/RoomScene.ts": "c605d558b4d5ee2582f138bb495f2ddd2724ef4b6b2a4af25067caa64941cd5e",
+    "src/shared/movement.ts": "3edacbff3999d960b793ec06832efe8babf13519f1d1409010d8bad8d93dc1ba",
+    "src/game/streetView.ts": "c1d2bf5acc6759ade24d833ae76cca08e8b3c1642999f7699c9ca85573ae2471",
+    "server-tests/rooftop.test.ts": "abd58e5afc44c3504135d1cb75a1fb553509da729e7565bc24965a17dbb623f5",
+    "tests/rooftop.spec.ts": "b77e7dddc62eaeb9840caea07544269a6a5b963a40acc7a9c3b41afea8b274ba"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "affc75305a9a12e02d5a451814eb6c1ac3689f26c05876ca666520599393fd95"
+    },
+    "dist-server/index.js": {
+      "bytes": 2429314,
+      "sha256": "ab00dc054e28153f8d26108d7f7b91ee7e1d81b3bc2d03e5738ae92065de184a"
+    },
+    "dist/assets/main-BMEPmyDq.js": {
+      "bytes": 2862291,
+      "sha256": "cbb299fd84cd2c37572ff8b56d693168bd08941adc48cd77bf20816c198de5c0"
+    },
+    "dist/assets/main-afxgM5_-.css": {
+      "bytes": 155912,
+      "sha256": "1b42cc1fbf3619b16fc7b8bfbe961d50c17754359895f71520ca8268d8906543"
+    }
+  },
+  "change": "Return from the roof hatch onto the upper outside landing with descent selected. Keep the stair rail active, allow manual descent or intentional ascent, and avoid an automatic bounce back to the roof. Both authoritative and offline player transitions use the shared arrival. Ground arrivals for roaming actors remain unchanged.",
+  "arrival": {
+    "routeSegment": 11,
+    "direction": -1,
+    "insetWorldUnits": 1,
+    "reason": "A position just inside the last flight allows both directions without a special terminal input state."
+  },
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-03T22:12:13.524Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 4863
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 6351
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 5141
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 5474
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 59
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 17
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 24
+        }
+      ],
+      "passed": true,
+      "durationMs": 21930
+    },
+    "streetUnit": {
+      "passed": 63,
+      "failed": 0,
+      "coverage": [
+        "Upper stair arrival and retained descent state",
+        "No automatic roof reentry",
+        "Intentional Up returns to the roof",
+        "Down descends from the upper flight",
+        "Existing bidirectional stair movement, entry guidance, actors, guards, wallet and hall transitions"
+      ]
+    },
+    "connectedHost": {
+      "test": "tests/rooftop.spec.ts",
+      "desktop": {
+        "viewport": [
+          1440,
+          1000
+        ],
+        "passed": 1,
+        "reportedDuration": "2.0m",
+        "testSourceCommit": "ef745f8954e38cddae6685d91b17ea74688d269d"
+      },
+      "mobile": {
+        "viewport": [
+          390,
+          844
+        ],
+        "touchEnabled": true,
+        "passed": 1,
+        "reportedDuration": "2.1m",
+        "testSourceCommit": "870c511765dc2fec84ed104bc979e0ebb48e6cec"
+      },
+      "upperLandingAfterRoof": true,
+      "correctRearCamera": true,
+      "noAutomaticBounce": true,
+      "reloadRetainsUpperStepAndDirection": true,
+      "completeManualDescent": true,
+      "noGroundNpcConversationOnStairs": true,
+      "groundNpcConversationAfterDescent": true,
+      "chatEnabled": true,
+      "balancePreserved": true,
+      "noPageErrors": true,
+      "noHorizontalOverflow": true
+    },
+    "localCodeMap": {
+      "query": "hallLinks",
+      "passed": true,
+      "productionAudit": false
+    },
+    "manualVisualReview": [
+      "desktop-return-top.png",
+      "mobile-return-top.png"
+    ]
+  },
+  "verificationNotes": [
+    "The unchanged application artifact was reused after test-only changes. The desktop polling budget allows the complete ladder descent. Its exit assertion permits ordinary pavement movement while the key is being released. The completed mobile path was unchanged by those desktop-only corrections.",
+    "An initial desktop run was interrupted to correct the complete-descent polling budget; a later desktop run reached the ground but failed an overly strict final-distance assertion. The final desktop scenario passed. No application changes were required after the initial build."
+  ],
+  "scope": {
+    "roofGeometryChanged": false,
+    "facadeCornerRulesChanged": false,
+    "streetObstaclesChanged": false,
+    "npcRoutesChanged": false,
+    "npcStairConversationGatePreserved": true,
+    "walletChanged": false,
+    "gameMathematicsChanged": false,
+    "gameCatalogueChanged": false
+  },
+  "limitations": [
+    "Mobile uses touch-enabled browser emulation, not a physical phone.",
+    "No production publication or live production audit.",
+    "Historical verification reports retain their original results and limitations."
+  ],
+  "screenshots": {
+    "desktop-return-top.png": "52ba61856cb8fe49aecbf06f1bcb90428ef9e56525b70b3af5a2c7087726b842",
+    "mobile-return-top.png": "0bcdaa15d22d12767a76386579b0c94e965d6d89909415e6d0069890e613f74d"
+  }
+}
