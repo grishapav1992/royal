@@ -1,6 +1,6 @@
 {
   "release": "star-spin-20261103-v1",
-  "status": "published; mandatory retention running",
+  "status": "verified; temporary material cleanup pending",
   "sourceCommit": "24cce094af9b39e008a31c3e5803436174e95a36",
   "baseCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
   "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
@@ -317,7 +317,7 @@
     "sha256": "a4d5481b00171910066f6c72226f32769eb67356e0a1bc8ffdd91860dcf042bb",
     "mode": "NUDGE_COMPILED=1, untransformed Vite preview and compiled backend"
   },
-  "verifiedAt": "2026-11-03T17:31:12.808417+00:00",
+  "verifiedAt": "2026-11-03T17:37:45.245300+00:00",
   "production": {
     "release": "star-spin-20261103-v1",
     "sourceCommit": "24cce094af9b39e008a31c3e5803436174e95a36",
@@ -453,7 +453,35 @@
     "browserScope": "Public compiled offline guest host. Authenticated gameplay, connected chat and wallet recovery verified on the exact compiled local artifact. Browser writes, external requests and WebSockets blocked."
   },
   "maintenance": {
-    "status": "running",
+    "status": "completed",
+    "release": "star-spin-20261103-v1",
+    "sourceCommit": "24cce094af9b39e008a31c3e5803436174e95a36",
+    "currentImage": "sha256:9b8fe392d42c67c086883ff09222b48b27268f78ff7e8ef6be66c423244d2660",
+    "rollbackImage": "sha256:e53a4a3fe0152d8b8034800ccdf2c0c43f49d580ad37326c003e74e619e06e1d",
+    "durationSeconds": 739.82,
+    "freeBefore": 10830266368,
+    "freeAfter": 10839662592,
+    "preservedFinancialFiles": 111,
+    "removedEntries": 22,
+    "removedImageTags": 3,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:e53a4a3fe0152d8b8034800ccdf2c0c43f49d580ad37326c003e74e619e06e1d",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "0a73266959bd95a0b054cea905419d45ca55d91dd9512b7455b37293251dd99c",
+      "files": 8589
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "ba2c0964f202c1654527f73302cd3e51d642e03ac4860f3e7333a12446f8ed30",
+      "receipt": "/var/lib/royal-project-brain/receipts/ba2c0964f202c1654527f73302cd3e51d642e03ac4860f3e7333a12446f8ed30.json",
+      "queued": true
+    },
     "timerEnabled": true
   },
   "codeMap": {
@@ -462,7 +490,7 @@
     "evidence": "Direct verified production inventories, committed source origins and qualification artifacts."
   },
   "cleanup": {
-    "status": "pending completed retention and pushed evidence",
+    "status": "ready after evidence is pushed to main",
     "localObsoletePayloads": [
       {
         "beforeFree": 318846586880,
