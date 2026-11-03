@@ -1,6 +1,6 @@
 {
   "release": "star-spin-20261103-v1",
-  "status": "verified; temporary material cleanup pending",
+  "status": "verified",
   "sourceCommit": "24cce094af9b39e008a31c3e5803436174e95a36",
   "baseCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
   "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
@@ -317,7 +317,7 @@
     "sha256": "a4d5481b00171910066f6c72226f32769eb67356e0a1bc8ffdd91860dcf042bb",
     "mode": "NUDGE_COMPILED=1, untransformed Vite preview and compiled backend"
   },
-  "verifiedAt": "2026-11-03T17:37:45.245300+00:00",
+  "verifiedAt": "2026-11-03T18:03:56.807983+00:00",
   "production": {
     "release": "star-spin-20261103-v1",
     "sourceCommit": "24cce094af9b39e008a31c3e5803436174e95a36",
@@ -490,7 +490,7 @@
     "evidence": "Direct verified production inventories, committed source origins and qualification artifacts."
   },
   "cleanup": {
-    "status": "ready after evidence is pushed to main",
+    "status": "permitted cleanup completed; one stopped disposable database retained after automatic policy rejection",
     "localObsoletePayloads": [
       {
         "beforeFree": 318846586880,
@@ -508,6 +508,686 @@
         "folder": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-release-20261103\\payload",
         "afterFree": 320114126848
       }
-    ]
+    ],
+    "server": {
+      "removed": [
+        {
+          "path": "/opt/royal-releases/star-spin-20261103-v1/runtime-context",
+          "directory": true,
+          "logicalBytes": 5285754
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-20261103-v1/payload.tgz",
+          "directory": false,
+          "logicalBytes": 51613519
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-20261103-v1/baseline-play.js",
+          "directory": false,
+          "logicalBytes": 1910654
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-20261103-v1/baseline-proof.js",
+          "directory": false,
+          "logicalBytes": 77835
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-20261103-v1/next-install-manifest.json",
+          "directory": false,
+          "logicalBytes": 3797906
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-20261103-v1/transport.json",
+          "directory": false,
+          "logicalBytes": 108
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-20261103-v1/stage-refresh.py",
+          "directory": false,
+          "logicalBytes": 1834
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-20261103-v1/read-release-facts.py",
+          "directory": false,
+          "logicalBytes": 1887
+        }
+      ],
+      "removedLogicalBytes": 62689497,
+      "freeBefore": 10835308544,
+      "freeAfter": 10892759040,
+      "preservedInGitHub": "886f9a745cd0647f5d77f7d0ac5569c7f632010a",
+      "sourceCommit": "24cce094af9b39e008a31c3e5803436174e95a36",
+      "image": "sha256:9b8fe392d42c67c086883ff09222b48b27268f78ff7e8ef6be66c423244d2660",
+      "protectedCurrentRelease": "star-spin-20261103-v1",
+      "healthyCurrentImage": "sha256:9b8fe392d42c67c086883ff09222b48b27268f78ff7e8ef6be66c423244d2660",
+      "protectedRollbackBackup": "/opt/royal-backups/star-spin-20261103-v1",
+      "backupPreserved": true,
+      "databaseRestored": false
+    },
+    "localPackages": {
+      "activePackagesPreserved": true,
+      "freeAfter": 319946043392,
+      "freeBefore": 319625752576,
+      "preExistingPackagesNotRetried": true,
+      "logicalBytesRemoved": 316780042.0,
+      "packageCount": 127,
+      "foldersRemoved": [
+        {
+          "bytes": 5290.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\breaker\\versions\\1.0.0-172b175e97b5"
+        },
+        {
+          "bytes": 25063.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\casinoapipro\\versions\\1.0.0-572f0097c3c7"
+        },
+        {
+          "bytes": 46159.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\chess\\versions\\1.0.0-0f1ac6790c59"
+        },
+        {
+          "bytes": 16807.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\crazy-eights\\versions\\1.0.0-b09974b0d245"
+        },
+        {
+          "bytes": 11026.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\drift\\versions\\1.0.0-307a28a84ffe"
+        },
+        {
+          "bytes": 16793.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\durak\\versions\\1.0.0-cea0ca152de4"
+        },
+        {
+          "bytes": 345263.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\flag-battle\\versions\\2.1.0-247e63913c23"
+        },
+        {
+          "bytes": 332988.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\flag-tote\\versions\\1.0.0-8dbaeb1d2223"
+        },
+        {
+          "bytes": 237868.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-andar-bahar\\versions\\1.0.0-2c473fcbfee3"
+        },
+        {
+          "bytes": 8548617.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-baccarat\\versions\\1.0.0-682d67f8a298"
+        },
+        {
+          "bytes": 8548620.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-blackjack\\versions\\1.0.0-491927fe7f60"
+        },
+        {
+          "bytes": 237864.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-caribbean\\versions\\1.0.0-7fd1a129d5ad"
+        },
+        {
+          "bytes": 237874.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-caribbean-draw\\versions\\1.0.0-aa24c2c0c98e"
+        },
+        {
+          "bytes": 8726432.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-craps\\versions\\1.0.0-dfcd2565165f"
+        },
+        {
+          "bytes": 21957129.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-crash\\versions\\1.1.0-5c37a5a83cf7"
+        },
+        {
+          "bytes": 237866.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-crazy-four\\versions\\1.0.0-9bdd46cbff0a"
+        },
+        {
+          "bytes": 237858.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-deuces\\versions\\1.0.0-3fd05a3e77cd"
+        },
+        {
+          "bytes": 586350.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-diamonds\\versions\\1.0.0-ca71e13360eb"
+        },
+        {
+          "bytes": 237870.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-dragon-tiger\\versions\\1.0.0-f45a8315d058"
+        },
+        {
+          "bytes": 237862.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-exposure\\versions\\1.0.0-566a142007da"
+        },
+        {
+          "bytes": 237856.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-flush\\versions\\1.0.0-462262111d0d"
+        },
+        {
+          "bytes": 237864.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-four-card\\versions\\1.0.0-42ae7fb6aea2"
+        },
+        {
+          "bytes": 237862.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-free-bet\\versions\\1.0.0-bff8e81d3ae2"
+        },
+        {
+          "bytes": 154429.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-hilo\\versions\\1.0.0-cf410352a9f3"
+        },
+        {
+          "bytes": 237870.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-holdem-bonus\\versions\\1.0.0-ccf0d1a4e569"
+        },
+        {
+          "bytes": 237868.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-let-it-ride\\versions\\1.0.0-588db7b38b3a"
+        },
+        {
+          "bytes": 237868.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-mississippi\\versions\\1.0.0-064ad0a514cb"
+        },
+        {
+          "bytes": 237856.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-oasis\\versions\\1.0.0-187308e9ba40"
+        },
+        {
+          "bytes": 237860.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-pai-gow\\versions\\1.0.0-4874e2cf1d86"
+        },
+        {
+          "bytes": 8548608.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-poker\\versions\\1.0.0-0db3825e8229"
+        },
+        {
+          "bytes": 237860.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-red-dog\\versions\\1.0.0-c649bc7e65d3"
+        },
+        {
+          "bytes": 237856.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-rummy\\versions\\1.0.0-4d42f05c8e2b"
+        },
+        {
+          "bytes": 237860.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-russian\\versions\\1.0.0-138f1b44db4a"
+        },
+        {
+          "bytes": 507662.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-sic-bo\\versions\\1.0.0-dd3b27c4cd70"
+        },
+        {
+          "bytes": 237860.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-spanish\\versions\\1.0.0-2882ea4ef113"
+        },
+        {
+          "bytes": 237858.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-switch\\versions\\1.0.0-ee6924d39458"
+        },
+        {
+          "bytes": 237866.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-three-card\\versions\\1.0.0-9d4affbd7b75"
+        },
+        {
+          "bytes": 237862.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-ultimate\\versions\\1.0.0-8ff627c56aef"
+        },
+        {
+          "bytes": 8548626.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-video-poker\\versions\\1.0.0-4b8234ae760f"
+        },
+        {
+          "bytes": 237852.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\github-war\\versions\\1.0.0-b50b57dfb6cf"
+        },
+        {
+          "bytes": 48719.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\hockey\\versions\\1.0.0-44f687b179d9"
+        },
+        {
+          "bytes": 11152.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\luelon\\versions\\1.0.0-5fdb7a2a1f1d"
+        },
+        {
+          "bytes": 372575.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\mortal-kombat\\versions\\1.0.0-47b30943a9bc"
+        },
+        {
+          "bytes": 11026.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\orbit\\versions\\1.0.0-02c552601e16"
+        },
+        {
+          "bytes": 7909343.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\original-cr-vs-leo\\versions\\1.1.0-0c0cdb75b207"
+        },
+        {
+          "bytes": 21599321.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\original-jackie-chan\\versions\\1.2.0-8b8d1a8e3ebd"
+        },
+        {
+          "bytes": 39460.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\piano\\versions\\1.0.0-7fc4a0d24742"
+        },
+        {
+          "bytes": 11026.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\pixel\\versions\\1.0.0-05efaddcefbe"
+        },
+        {
+          "bytes": 48715.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\pool\\versions\\1.0.0-6220fade526a"
+        },
+        {
+          "bytes": 38925.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\royal-coins\\versions\\1.0.0-672c87d89149"
+        },
+        {
+          "bytes": 481917.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\royal-dice\\versions\\1.0.0-5a5168b18bc7"
+        },
+        {
+          "bytes": 195472.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\royal-flight\\versions\\1.0.0-e1e2bc7aceb8"
+        },
+        {
+          "bytes": 521461.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\royal-fruits\\versions\\1.0.0-f9822d7d2ffd"
+        },
+        {
+          "bytes": 552890.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\royal-keno\\versions\\1.0.0-0f9ab278de3a"
+        },
+        {
+          "bytes": 455757.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\royal-limbo\\versions\\1.0.0-3f5b524aa0e3"
+        },
+        {
+          "bytes": 508266.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\royal-mines\\versions\\1.0.0-0755a9224934"
+        },
+        {
+          "bytes": 2652041.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\royal-plinko\\versions\\1.1.0-f866cb73ac30"
+        },
+        {
+          "bytes": 82108.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\royal-roulette\\versions\\1.6.0-70fbcc2cd3cc"
+        },
+        {
+          "bytes": 195469.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\royal-wheel\\versions\\1.0.0-824e210cc3cd"
+        },
+        {
+          "bytes": 3260334.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-afterglow\\versions\\1.3.0-5f4586693c77"
+        },
+        {
+          "bytes": 4093744.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-aurora-lift\\versions\\1.0.0-01b982f8eccb"
+        },
+        {
+          "bytes": 2110057.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-beacon-bay\\versions\\1.0.0-191457890869"
+        },
+        {
+          "bytes": 1632833.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-blazing-orchard\\versions\\1.0.0-1bfb18018c70"
+        },
+        {
+          "bytes": 4093776.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-canopy-crossing\\versions\\1.0.0-082ad7ade80b"
+        },
+        {
+          "bytes": 3187025.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-caramel-carnival\\versions\\1.1.0-e5bf6195c30a"
+        },
+        {
+          "bytes": 14881763.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-caribbean-treasures\\versions\\1.7.0-d874de1246c0"
+        },
+        {
+          "bytes": 1637871.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-copperline-express\\versions\\1.0.0-7b1f81f8801c"
+        },
+        {
+          "bytes": 3869420.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-cosmic-escape\\versions\\1.1.0-3f2071a4cd0e"
+        },
+        {
+          "bytes": 1632824.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-deep-current\\versions\\1.0.0-4cd3032ea642"
+        },
+        {
+          "bytes": 5065037.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-dracona\\versions\\1.2.0-b748bfcc0b1d"
+        },
+        {
+          "bytes": 4093744.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-dune-hopper\\versions\\1.0.0-97c71d616c72"
+        },
+        {
+          "bytes": 1639312.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-ember-vault\\versions\\1.0.0-4cc6fc8cf147"
+        },
+        {
+          "bytes": 20903862.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-flooded-temple\\versions\\0.10.0-a8eca3e1fa49"
+        },
+        {
+          "bytes": 6382675.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-forest-heart\\versions\\1.16.0-1e202b94dba4"
+        },
+        {
+          "bytes": 4093752.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-fossil-trail\\versions\\1.0.0-143299632da7"
+        },
+        {
+          "bytes": 1631365.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-frostline-courier\\versions\\1.0.0-e0b54f777d57"
+        },
+        {
+          "bytes": 4093744.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-gale-riders\\versions\\1.0.0-0b0465d98fd1"
+        },
+        {
+          "bytes": 1637841.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-jade-koi\\versions\\1.0.0-fceda6c2852d"
+        },
+        {
+          "bytes": 6345618.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-last-convoy\\versions\\1.1.0-add2ed7fa76e"
+        },
+        {
+          "bytes": 1577922.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-lucky-spotlight\\versions\\1.0.0-66a3c691d88d"
+        },
+        {
+          "bytes": 1622737.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-lumen-grove\\versions\\1.0.0-27d60700e6cd"
+        },
+        {
+          "bytes": 3539368.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-meme-overload\\versions\\1.1.0-95373ec3f10b"
+        },
+        {
+          "bytes": 1639324.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-midnight-market\\versions\\1.0.0-12bd8ec319c8"
+        },
+        {
+          "bytes": 1639315.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-moonlit-mint\\versions\\1.0.0-5075fcae9390"
+        },
+        {
+          "bytes": 4093744.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-mosaic-muse\\versions\\1.0.0-bc49ad193775"
+        },
+        {
+          "bytes": 1587946.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-neon-crown\\versions\\1.0.0-7e75c07562a4"
+        },
+        {
+          "bytes": 6052155.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-neopolis\\versions\\0.6.0-9dbc1bced35b"
+        },
+        {
+          "bytes": 2580065.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-nitro-run\\versions\\1.1.0-ca4daa971571"
+        },
+        {
+          "bytes": 1608506.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-obsidian-drop\\versions\\1.0.0-3e9d3d2ca9dc"
+        },
+        {
+          "bytes": 4093696.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-orbit\\versions\\1.0.0-35a9eb6b463f"
+        },
+        {
+          "bytes": 1642047.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-petal-parlor\\versions\\1.0.0-92b2cabb2da0"
+        },
+        {
+          "bytes": 1622743.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-prism-atelier\\versions\\1.0.0-fbbf0730e1cf"
+        },
+        {
+          "bytes": 1637859.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-pulse-district\\versions\\1.0.0-7471a3890636"
+        },
+        {
+          "bytes": 1631347.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-rivet-rally\\versions\\1.0.0-8a193bfd0223"
+        },
+        {
+          "bytes": 2110073.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-saffron-cipher\\versions\\1.0.0-90e38e0b479c"
+        },
+        {
+          "bytes": 1577913.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-saffron-spin\\versions\\1.0.0-061f3cffc379"
+        },
+        {
+          "bytes": 1686889.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-signal-fox\\versions\\1.0.0-baecd8f28eaa"
+        },
+        {
+          "bytes": 1631350.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-sky-lanterns\\versions\\1.0.0-87422ae53c9f"
+        },
+        {
+          "bytes": 2445694.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-starfall-oracle\\versions\\1.0.0-e0ff0ccaa296"
+        },
+        {
+          "bytes": 2110077.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-stormforge-duel\\versions\\1.0.0-2687b5ef1afc"
+        },
+        {
+          "bytes": 1642053.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-sunbird-trails\\versions\\1.0.0-3f5401cacfca"
+        },
+        {
+          "bytes": 4093744.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-tidal-relay\\versions\\1.0.0-bba8b2a57633"
+        },
+        {
+          "bytes": 4306261.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-velvet-reign\\versions\\1.1.0-d6503ad54b31"
+        },
+        {
+          "bytes": 12596370.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-wild-nudge\\versions\\1.4.0-61b79c88a7f6"
+        },
+        {
+          "bytes": 12596357.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-wild-nudge\\versions\\1.4.0-7d5694d107e7"
+        },
+        {
+          "bytes": 12596357.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-wild-nudge\\versions\\1.4.0-bdf60b88420e"
+        },
+        {
+          "bytes": 12596357.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-wild-nudge\\versions\\1.4.0-edf78e25cc5d"
+        },
+        {
+          "bytes": 16811.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\transfer-durak\\versions\\1.0.0-dad22dadfed4"
+        },
+        {
+          "bytes": 1459526.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\tsu-e-fa\\versions\\1.3.2-6ccf1b728c74"
+        },
+        {
+          "bytes": 126983.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-blackjack-target\\versions\\1.0.0-3d47b7fbdb5a"
+        },
+        {
+          "bytes": 127677.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-color\\versions\\1.0.0-da9e8ca1f257"
+        },
+        {
+          "bytes": 107137.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-diamonds\\versions\\1.0.0-873b42091034"
+        },
+        {
+          "bytes": 183206.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-dice\\versions\\1.0.0-7df255b08a89"
+        },
+        {
+          "bytes": 126973.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-dice-streak\\versions\\1.0.0-78b7f66ea468"
+        },
+        {
+          "bytes": 126975.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-double-mines\\versions\\1.0.0-3c96382efd19"
+        },
+        {
+          "bytes": 127675.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-duel\\versions\\1.0.0-91f17fa1fafe"
+        },
+        {
+          "bytes": 195111.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-fruits\\versions\\1.0.0-1e08069bdc25"
+        },
+        {
+          "bytes": 126979.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-gem-collection\\versions\\1.0.0-a7d426f0adab"
+        },
+        {
+          "bytes": 127675.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-keno\\versions\\1.0.0-af32f769d2e9"
+        },
+        {
+          "bytes": 127675.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-keys\\versions\\1.0.0-0127a8a145c2"
+        },
+        {
+          "bytes": 186849.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-limbo\\versions\\1.0.0-7d62b1fa8503"
+        },
+        {
+          "bytes": 107131.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-mines\\versions\\1.0.0-64677b75f9da"
+        },
+        {
+          "bytes": 61835.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-plinko\\versions\\1.0.0-f9ad88a8042b"
+        },
+        {
+          "bytes": 107133.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-sic-bo\\versions\\1.0.0-49fe35a946d6"
+        },
+        {
+          "bytes": 104832.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-target-plinko\\versions\\1.0.0-44f676d54cae"
+        },
+        {
+          "bytes": 126975.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-triple-poker\\versions\\1.0.0-c1c71718bcc0"
+        },
+        {
+          "bytes": 127673.0,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\variant-war\\versions\\1.0.0-b00398934e55"
+        }
+      ],
+      "owner": "star-spin-release-20261103",
+      "preservedInGitHub": "886f9a745cd0647f5d77f7d0ac5569c7f632010a"
+    },
+    "blockedDisposableDatabase": {
+      "removedFiles": 0,
+      "retainedFiles": 1578,
+      "retainedBytes": 52194107.0,
+      "status": "blocked by policy",
+      "cleanupCondition": "A future permitted cleanup after verifying this exact stopped disposable database; this turn will not retry the rejected deletion",
+      "action": "Remove the stopped disposable test database directory",
+      "owner": "star-spin-release-20261103",
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-SKNlIC",
+      "freeBytes": 319944376320
+    },
+    "taskDiagnostics": {
+      "owner": "star-spin-release-20261103",
+      "preservedInGitHub": "886f9a745cd0647f5d77f7d0ac5569c7f632010a",
+      "root": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-release-20261103",
+      "logicalBytesRemoved": 1188116956.0,
+      "filesRemoved": 10611.0,
+      "freeBefore": 319950733312,
+      "freeAfter": 321163681792,
+      "retained": [
+        "owner.json",
+        "final-cleanup.json"
+      ],
+      "databaseOutsideThisDirectoryNotTouched": true,
+      "reportSha256": "4f5c11382a0ff39c4ed578746fc91376a0d0fc7496099b9ae7dfdc045acd998f",
+      "removedFolders": [
+        {
+          "directory": true,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-release-20261103\\__pycache__",
+          "files": 1,
+          "bytes": 14031.0
+        },
+        {
+          "directory": true,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-release-20261103\\native",
+          "files": 4,
+          "bytes": 4982252.0
+        },
+        {
+          "directory": true,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-release-20261103\\native-before",
+          "files": 4,
+          "bytes": 4971816.0
+        },
+        {
+          "directory": true,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-release-20261103\\payload",
+          "files": 139,
+          "bytes": 68199142.0
+        },
+        {
+          "directory": true,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-release-20261103\\playwright-results",
+          "files": 10332,
+          "bytes": 1036965613.0
+        },
+        {
+          "directory": true,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-release-20261103\\qa",
+          "files": 4,
+          "bytes": 45885.0
+        },
+        {
+          "directory": true,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-release-20261103\\qualifications",
+          "files": 7,
+          "bytes": 451559.0
+        },
+        {
+          "directory": true,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-release-20261103\\samples",
+          "files": 9,
+          "bytes": 26224.0
+        }
+      ],
+      "removedArchives": [
+        {
+          "directory": false,
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-release-20261103\\payload.tgz",
+          "files": 1,
+          "bytes": 51613519.0
+        }
+      ],
+      "removedGroups": 119
+    },
+    "preExistingExclusions": "Pre-existing checkouts and package history, including earlier rejected cleanup targets, were not retried. Only inactive package folders created by this task after 2026-11-03 16:05 UTC were removed."
+  },
+  "postCleanupHost": {
+    "image": "sha256:9b8fe392d42c67c086883ff09222b48b27268f78ff7e8ef6be66c423244d2660",
+    "health": "healthy",
+    "retentionTimer": "enabled",
+    "serverFreeBytes": 10860118016
+  },
+  "separateTestServiceObservation": {
+    "service": "royal-nile-play",
+    "imageUnchanged": true,
+    "testOnly": true,
+    "auditOk": true,
+    "health": "unhealthy",
+    "reason": "play_source_not_ready",
+    "sourceAgeSecondsObserved": 844.6,
+    "scheduledReconciliation": "running",
+    "serviceRestartedByThisTask": false,
+    "relevance": "Separate retired game-money endpoints remain 410. Star Spin wagers use the active common host wallet.",
+    "lastScheduledJobResult": "success; next scheduled reconciliation running"
   }
 }
