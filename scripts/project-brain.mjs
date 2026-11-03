@@ -149,7 +149,10 @@ export function formatBrainQuery(index, question) {
   const normalize = value => clean(value).toLowerCase().replaceAll('ё', 'е');
   const ignored = new Set(['что', 'как', 'где', 'для', 'или', 'это', 'есть', 'проекта', 'проект', 'the', 'how', 'what', 'does', 'with']);
   const words = [...new Set(normalize(question).match(/[\p{L}\p{N}_-]{2,}/gu) ?? [])].filter(word => !ignored.has(word));
-  const ranked = index.records.map(item => {
+  const exact = normalize(question).trim();
+  const precise = exact ? index.records.filter(item => normalize(item.title + ' ' + item.key).includes(exact)) : [];
+  const candidates = precise.length ? precise : index.records;
+  const ranked = candidates.map(item => {
     const title = normalize(item.title + ' ' + item.key), body = normalize(item.summary ?? '');
     const score = words.reduce((sum, word) => sum + (title.includes(word) ? 10 : body.includes(word) ? 1 : 0), 0);
     return { item, score };

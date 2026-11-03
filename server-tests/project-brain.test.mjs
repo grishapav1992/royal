@@ -61,6 +61,9 @@ test('the project layer connects declared modules, commands, policy sources and 
   assert.ok(command.links.some(link => link.path === 'server-tests/wallet.test.ts'));
   const all = brain.index.records.find(item => item.key === 'command:package.json:test:all');
   assert.ok(all.links.some(link => link.record === command.key));
+  const query = formatBrainQuery(brain.index, 'test:wallet');
+  assert.match(query.text, /\[command\] npm test:wallet/);
+  assert.doesNotMatch(query.text, /\[command\] npm test:all/);
   const policy = brain.index.records.find(item => item.key === 'math:profiles:studio-test');
   assert.equal(policy.qualificationState, 'not_evaluated');
   assert.ok(policy.links.some(link => link.path === 'docs/game-math/qualifications/test.json'));
