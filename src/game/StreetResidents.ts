@@ -87,10 +87,11 @@ export class StreetResidents {
       actor.sprite.setPosition(p.x,p.y).setDepth(depth).setFrame(mascot?position.moving?walking.frame:6:facing+'-'+pose.frame).setVisible(visible);
       actor.shadow.setPosition(p.x,p.y-1).setDepth(depth-1).setVisible(visible);
       actor.tool.setPosition(p.x,p.y).setDepth(depth+.1).setVisible(visible);
-      actor.zone.setPosition(p.x,p.y-(mascot?53:40)).setDepth(depth+3).setVisible(visible);
-      if(actor.zone.input)actor.zone.input.enabled=visible;
-      actor.label.setPosition(p.x,p.y-(mascot?113:91)).setVisible(visible&&!overview&&Math.hypot(player.x-position.x,player.y-position.y)<195);
-      actor.greeting?.setPosition(p.x,p.y-131).setVisible(visible&&!overview&&position.greeting&&Math.hypot(player.x-position.x,player.y-position.y)<500);
+      const exposed=visible&&!view.occluded(position,mascot?50:30);
+      actor.zone.setPosition(p.x,p.y-(mascot?53:40)).setDepth(depth+3).setVisible(exposed);
+      if(actor.zone.input)actor.zone.input.enabled=exposed;
+      actor.label.setPosition(p.x,p.y-(mascot?113:91)).setDepth(depth+2).setVisible(exposed&&!overview&&Math.hypot(player.x-position.x,player.y-position.y)<195);
+      actor.greeting?.setPosition(p.x,p.y-131).setDepth(depth+3).setVisible(exposed&&!overview&&position.greeting&&Math.hypot(player.x-position.x,player.y-position.y)<500);
       pose={...pose,facing};
       actor.x=position.x;actor.y=position.y;
       actor.tool.clear();
@@ -140,7 +141,7 @@ export class StreetResidents {
     this.talkButton.hidden=Boolean(state.conversation);this.nextButton.hidden=!state.conversation;
   }
   get count(){return STREET_RESIDENTS.length;}
-  get characterBounds(){return this.actors.map(({sprite})=>{const b=sprite.getBounds();return {x:sprite.x,y:sprite.y,visible:sprite.visible,left:b.left,right:b.right,top:b.top,bottom:b.bottom};});}
+  get characterBounds(){return this.actors.map(({sprite})=>{const b=sprite.getBounds();return {x:sprite.x,y:sprite.y,depth:sprite.depth,visible:sprite.visible,left:b.left,right:b.right,top:b.top,bottom:b.bottom};});}
   get textureKeys(){return this.actors.map(actor=>actor.sprite.texture.key);}
   getState(){return {...this.conversations.snapshot(),approaching:this.prepared,people:this.locations.map(p=>({...p,activity:this.poses.get(p.id)?.action??'idle',progress:this.poses.get(p.id)?.progress??0}))};}
 }

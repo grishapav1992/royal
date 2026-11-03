@@ -180,7 +180,7 @@ export class SecurityGuard {
     if(['idle','watch','chat'].includes(g.phase)&&time%5100<130)frame=22;
     this.sprite.setFrame(`${view?view.facing(g.facing as Facing):g.facing}-${frame}`).setPosition(x,y).setDepth(depth+.2);
     this.shadow.setPosition(x,y-2).setDepth(depth-1);
-    this.speech.setText(translateText(g.speech)).setPosition(Phaser.Math.Clamp(x,160,WORLD.width-160),y-116).setDepth(1500).setVisible(Boolean(g.speech));
+    this.speech.setText(translateText(g.speech)).setPosition(Phaser.Math.Clamp(x,160,WORLD.width-160),y-116).setDepth(view?depth+1:1500).setVisible(Boolean(g.speech)&&(!view||!view.occluded(g)));
     this.reply.setText(translateText(g.reply || '')).setVisible(hall==='arcade'&&Boolean(g.reply));
     const person = getPerson(g.target);
     if (person && ['grab','carry','throw'].includes(g.phase)) {

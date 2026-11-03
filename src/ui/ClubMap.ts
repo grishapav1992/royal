@@ -9,7 +9,7 @@ import { cabinetsInHall } from '../shared/cabinets';
 import { isCardGame } from '../shared/cardTables';
 import { WORLD, FLOOR } from '../shared/clubGeometry';
 import { ROOF } from '../shared/rooftop';
-import { unprojectStreetPoint,unprojectStreetGround } from '../game/streetView';
+import { unprojectStreetPoint } from '../game/streetView';
 import { STREET } from '../shared/street';
 import './club-map.css';
 
@@ -83,7 +83,7 @@ export class ClubMap {
     for(const person of state.street?.residents.people??[]){ctx.fillStyle='#f0ca78';ctx.beginPath();ctx.arc(person.x,person.y,13,0,Math.PI*2);ctx.fill();}
     for(const car of state.street?.cars??[]){if(car.visible){ctx.fillStyle=car.color;ctx.fillRect(car.x-75,car.y-45,150,45);}}
     const view=state.view,orientation=state.street?.view?.orientation??'front';
-    const corners=[{x:view.x,y:view.y},{x:view.x+view.width/view.zoom,y:view.y},{x:view.x,y:view.y+view.height/view.zoom},{x:view.x+view.width/view.zoom,y:view.y+view.height/view.zoom}].map(p=>state.hall==='street'?(view.overview?unprojectStreetPoint:unprojectStreetGround)(p,orientation):p);
+    const corners=[{x:view.x,y:view.y},{x:view.x+view.width/view.zoom,y:view.y},{x:view.x,y:view.y+view.height/view.zoom},{x:view.x+view.width/view.zoom,y:view.y+view.height/view.zoom}].map(p=>state.hall==='street'?unprojectStreetPoint(p,orientation):p);
     const left=Math.min(...corners.map(p=>p.x)),top=Math.min(...corners.map(p=>p.y));
     ctx.strokeStyle='#ece2c280';ctx.lineWidth=6;ctx.strokeRect(left,top,Math.max(...corners.map(p=>p.x))-left,Math.max(...corners.map(p=>p.y))-top);
     ctx.fillStyle='#f7d26a';ctx.beginPath();ctx.arc(state.x,state.y,18,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#332936';ctx.lineWidth=5;ctx.stroke();ctx.restore();

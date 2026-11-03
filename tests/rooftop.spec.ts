@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE } from '../src/shared/rooftop';
-import { projectStreetPoint,projectStreetGround } from '../src/game/streetView';
+import { projectStreetPoint } from '../src/game/streetView';
 
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
 async function overview(page: Page, on: boolean) {
@@ -12,7 +12,7 @@ async function clickWorld(page: Page, x: number, y: number) {
   await page.bringToFront();
   await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
   const box = (await page.locator('#game canvas').boundingBox())!, current=await state(page), { view } = current;
-  const point=current.hall==='street'?(view.overview?projectStreetPoint:projectStreetGround)({x,y},current.street.view.orientation):{x,y};
+  const point=current.hall==='street'?projectStreetPoint({x,y},current.street.view.orientation):{x,y};
   await page.mouse.click(box.x + (point.x - view.x) * view.zoom * box.width / view.width, box.y + (point.y - view.y) * view.zoom * box.height / view.height);
 }
 async function walk(page: Page, x: number, y: number) {
