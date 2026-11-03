@@ -110,6 +110,7 @@ export async function collectBrain(root, input, provenance) {
     const seed = await json(knowledgeSeed);
     const entries = await readGraphSeed(resolve(root, knowledgeSeed));
     for (const entry of entries) {
+      const review = seed.record_reviews?.[entry.id];
       const evidence = entry.evidence.map(proof => {
         const path = proof.path.startsWith('project-knowledge/') ? 'ai-factory/' + proof.path : proof.path;
         const actual = files.get(path)?.sha256 ?? null;
@@ -122,7 +123,9 @@ export async function collectBrain(root, input, provenance) {
       const title = entry.kind === 'entity' ? entry.name : entry.source + ' ' + entry.predicate + ' ' + entry.target;
       const item = record('knowledge', 'knowledge:' + entry.id, title + (state === 'needs_review' ? ' [требует пересмотра]' : ''), knowledgeSeed,
         { summary: entry.summary ?? entry.text, recordedStatus: entry.status, recordedEnvironment: entry.environment,
-          seedVersion: seed.version, evidenceState: state, evidence,
+          seedVersion: review?.version ?? seed.legacy_record_version ?? seed.version,
+          knowledgeSetVersion: seed.version, reviewedAt: review?.checked_at, reviewedSourceCommit: review?.source_commit,
+          evidenceState: state, evidence,
           liveProductionState: 'not_checked', originalId: entry.id, originalKind: entry.kind });
       connect(project, item, 'records_knowledge', knowledgeSeed);
       for (const proof of evidence) linkFile(item, proof.path, 'cites_evidence', knowledgeSeed);
@@ -137,6 +140,7 @@ export async function collectBrain(root, input, provenance) {
     .map(kind => [kind, records.filter(item => item.kind === kind).length]));
   const index = { schemaVersion: BRAIN_SCHEMA, provenance, counts, records,
     evidenceDrift: [...evidenceDrift.values()], unresolvedReferences: unresolved,
+    reviewedKnowledge: records.filter(item => item.reviewedAt).length,
     knowledgeNeedingReview: records.filter(item => item.evidenceState === 'needs_review').length };
   const nodes = records.map(item => ({ id: item.id,
     label: item.title + (item.kind === 'knowledge' ? ' [запись ' + item.seedVersion + '; ' + item.evidenceState + ']' : ''), file_type: 'concept',
@@ -164,6 +168,7 @@ export function formatBrainQuery(index, question) {
     lines.push('[' + item.kind + '] ' + item.title, 'Источник: ' + item.source, item.summary ?? '');
     if (item.evidence) {
       lines.push('Зафиксированный статус: ' + item.recordedStatus + ', окружение: ' + item.recordedEnvironment + ', версия знаний: ' + item.seedVersion + '.');
+      if (item.reviewedAt) lines.push('Пересмотр по исходникам: ' + item.reviewedAt + ', коммит ' + item.reviewedSourceCommit + '.');
       for (const proof of item.evidence) lines.push('  Доказательство: ' + proof.path + ' [' + proof.state + ']');
     }
     if (item.kind === 'module') lines.push('Версия пакета: ' + item.version + ', правила: ' + item.rulesVersion + ', прогресс: ' + item.progressVersion + '.');
@@ -189,6 +194,7 @@ export function brainReport(index) {
     '  Knowledge["Сохранённые факты"] --> Evidence["Источники и хеши"]', '  Evidence --> Sources',
     '  Structure --> Queries["Поиск и проверка связей"]', '```', '', '## Что требует внимания', '',
     'Записей знаний, чьи источники требуют пересмотра: ' + index.knowledgeNeedingReview + '.',
+    'Записей с отдельной датой и коммитом проверки по исходникам: ' + index.reviewedKnowledge + '.',
     'Ссылок на исключённые или отсутствующие в выбранной карте файлы: ' + index.unresolvedReferences.length + '.', ''];
   for (const proof of index.evidenceDrift) lines.push('- `' + proof.path + '`: ' + proof.state + '. Старый хеш сохранён, запись не обновлялась автоматически.');
   lines.push('', 'Совпадение хеша означает только совпадение текста с зафиксированным источником. Это не новая проверка утверждения или работающего сервера.',

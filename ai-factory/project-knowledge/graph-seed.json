@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "version": "2026-10-10.1",
+  "version": "2026-11-03.1",
   "nodes": [
     {
       "id": "project:royal",
@@ -12,7 +12,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -26,7 +26,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -48,13 +48,33 @@
       "id": "service:finance_gateway",
       "name": "finance-gateway",
       "entity_type": "service",
-      "summary": "Внутренний интеграционный шлюз finance-gateway: развернутый HAProxy распределяет запросы между двумя API симулятора USDT_SIM, включая списания, зачисления и операции баланса. Публичных финансовых портов нет; это не криптообменник.",
+      "summary": "По main 44b12afd, 3 ноября 2026: сохранён внутренний интеграционный шлюз finance-gateway (HAProxy) для двух API симулятора USDT_SIM: списания, зачисления и баланс. Это историческая инфраструктура sandbox без публикации портов, а не действующий способ пополнения клуба. Работа VPS заново не проверялась.",
       "status": "verified",
-      "environment": "production",
+      "environment": "sandbox",
       "evidence": [
         {
           "path": "deployment/finance/README.md",
-          "sha256": "13e8d7e58d8f4e6f85f23781f5dbec51b7bc5fc4f346d00f3f78ec2d605f3cf2"
+          "sha256": "9b468662041ed2653525bdfe1c4b08586d33b1543956586dd280e141febf9532"
+        },
+        {
+          "path": "docs/payment-methods.md",
+          "sha256": "449428e2da088d8d8c5752b69ffb613235bdbc1e7b68b040b7f472e80f6a6fb1"
+        },
+        {
+          "path": "compose.finance.yaml",
+          "sha256": "63f58158a81a16c922f515e0248567c37db1d361af0c8631d369eda6ab27342b"
+        },
+        {
+          "path": "deployment/finance/haproxy.cfg",
+          "sha256": "c32fcf8fbb8af9eef618bc80216e230547c894aeba26876c89a8776c6271271d"
+        },
+        {
+          "path": "server/finance/config.ts",
+          "sha256": "89d867d57f1fee2a3864e2f947390c5f275a98072f7bc970da2e86ecf69cf4b8"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -62,17 +82,33 @@
       "id": "service:finance_api",
       "name": "Две финансовые API-реплики",
       "entity_type": "service",
-      "summary": "Установлены на одном VPS, обслуживают сервисный API симуляции USDT_SIM с общей PostgreSQL. Не подключены автоматически к игровому балансу.",
+      "summary": "По main 44b12afd, 3 ноября 2026: Compose объявляет две API-реплики симулятора USDT_SIM с общей PostgreSQL. Код допускает только явно включённую simulation и отклоняет NODE_ENV=production. Конфигурация не подтверждает запущенные реплики на VPS или связь с текущим игровым балансом.",
       "status": "verified",
       "environment": "sandbox",
       "evidence": [
         {
           "path": "deployment/finance/README.md",
-          "sha256": "13e8d7e58d8f4e6f85f23781f5dbec51b7bc5fc4f346d00f3f78ec2d605f3cf2"
+          "sha256": "9b468662041ed2653525bdfe1c4b08586d33b1543956586dd280e141febf9532"
         },
         {
           "path": "docs/financial-core-implementation.md",
           "sha256": "cafe5519770a4a906819b30b76b61601f347befaf297b7d0b8f190c52a637134"
+        },
+        {
+          "path": "docs/payment-methods.md",
+          "sha256": "449428e2da088d8d8c5752b69ffb613235bdbc1e7b68b040b7f472e80f6a6fb1"
+        },
+        {
+          "path": "compose.finance.yaml",
+          "sha256": "63f58158a81a16c922f515e0248567c37db1d361af0c8631d369eda6ab27342b"
+        },
+        {
+          "path": "server/finance/config.ts",
+          "sha256": "89d867d57f1fee2a3864e2f947390c5f275a98072f7bc970da2e86ecf69cf4b8"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -146,7 +182,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -154,17 +190,37 @@
       "id": "mechanic:own_games",
       "name": "Собственные серверные игры",
       "entity_type": "mechanic",
-      "summary": "Coins, Fruits, Dice, Mines, Plinko, Limbo, Keno, Orbit и Fortune существуют. Mines и Orbit сохраняют серверную партию; большинство игр доступны на демомонетах.",
+      "summary": "По main 44b12afd, 3 ноября 2026: в исходниках есть серверные движки и общий DemoWalletStore с журналом операций и сохранённых раундов. Старый перечень Coins/Fruits/Dice/Mines/Plinko/Limbo/Keno/Orbit/Fortune не является списком доступных игр. Наличие движка не разрешает новые ставки; текущий production-каталог здесь не проверялся.",
       "status": "verified",
-      "environment": "production",
+      "environment": "project",
       "evidence": [
         {
-          "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "path": "docs/game-core.md",
+          "sha256": "705a480de46bb1d09663daefc7625d28e14179c5ca626a7377348d5b6b55a179"
         },
         {
           "path": "docs/github-games.md",
-          "sha256": "3d6b882c34f4987244596bcdfbeb4e6c229867e7f6baa494535aa2981678c5c8"
+          "sha256": "ad6996bee221993c6c44769182911c0ce79a61d11415bfb4586b026cd33fe21a"
+        },
+        {
+          "path": "server/games/core.ts",
+          "sha256": "e7120245e02b5777eb6aff660c5f1f154a8e0f6b14ae80fbfed09656c9c425b9"
+        },
+        {
+          "path": "server/demoWallet.ts",
+          "sha256": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63"
+        },
+        {
+          "path": "server/demoWalletRoutes.ts",
+          "sha256": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82"
+        },
+        {
+          "path": "src/shared/arcadeCatalog.ts",
+          "sha256": "f6a46d3ee4d427068c87af6a4289fed6e1ac7e00ca3a60da9849cb319e475dc6"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -172,13 +228,33 @@
       "id": "integration:tron_nile",
       "name": "Тестовая криптоинтеграция TRON Nile",
       "entity_type": "integration",
-      "summary": "Развернуты подтвержденные поступления USDT_NILE_TEST, автоматические адреса, игровые проводки Royal Coins и сверка. Это тестовые токены, не настоящий USDT.",
+      "summary": "По main 44b12afd, 3 ноября 2026: код наблюдателя, тестовых журналов и старых Nile-адаптеров сохранён для истории и прежних обязательств. Публичные /api/nile-wallet, /api/nile-play и /api/game-wallet возвращают 410; Nile не является текущим способом пополнения. Тестовые токены не являются настоящим USDT.",
       "status": "verified",
       "environment": "testnet",
       "evidence": [
         {
+          "path": "docs/payment-methods.md",
+          "sha256": "449428e2da088d8d8c5752b69ffb613235bdbc1e7b68b040b7f472e80f6a6fb1"
+        },
+        {
+          "path": "server/payments/methods.ts",
+          "sha256": "9a6245876361ea92b9cdfb24f5de98f0c43581754c1f328393db65e58fa7d99b"
+        },
+        {
+          "path": "server/index.ts",
+          "sha256": "1c8bce12b62b92bee9f2712ac4b982e13ac93c8b50d15999240c557d6c37e860"
+        },
+        {
+          "path": "server/finance/nile-test-ledger.ts",
+          "sha256": "e0ea16b70d0ca3e83587dd31b22186e4e64f5788b4c84afe2e15969118e2f830"
+        },
+        {
           "path": "deployment/finance/NILE-PLAY.md",
           "sha256": "00cfa619c29840b38657ff0c96858b885aa6267f81c4f9865a6b98b51a11752c"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -186,17 +262,37 @@
       "id": "service:tron_reader",
       "name": "Наблюдатель TRON Nile",
       "entity_type": "service",
-      "summary": "Watch-only reader согласует два RPC, сеть, контракт, подтвержденные блоки и события. Не имеет ключей подписи или полномочий выплаты.",
+      "summary": "По main 44b12afd, 3 ноября 2026: исторический watch-only наблюдатель Nile сверяет два независимых RPC, genesis сети и подтверждённые блоки. Конфигурация не содержит ключей подписи; публичные платёжные маршруты Nile закрыты. Это наличие сохранённого кода, не проверка работающей службы.",
       "status": "verified",
       "environment": "testnet",
       "evidence": [
         {
           "path": "deployment/finance/README.md",
-          "sha256": "13e8d7e58d8f4e6f85f23781f5dbec51b7bc5fc4f346d00f3f78ec2d605f3cf2"
+          "sha256": "9b468662041ed2653525bdfe1c4b08586d33b1543956586dd280e141febf9532"
         },
         {
-          "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "path": "docs/payment-methods.md",
+          "sha256": "449428e2da088d8d8c5752b69ffb613235bdbc1e7b68b040b7f472e80f6a6fb1"
+        },
+        {
+          "path": "server/finance/tron-reader.ts",
+          "sha256": "e19c89b58b2c58d4e036e907b58e98c7cfd12b7848cebcf4220f90db900de7ff"
+        },
+        {
+          "path": "server/finance/tron-protocol.ts",
+          "sha256": "002659ddf7e65461a0bbc59e77f31a4438a71b7e3479cd732975ca2d196f3766"
+        },
+        {
+          "path": "deployment/finance/compose.tron-reader.yaml",
+          "sha256": "84988b134ba029b83b64fc3a15468f1851f7c33e941bc68b7aec8bb4d558401c"
+        },
+        {
+          "path": "server/payments/methods.ts",
+          "sha256": "9a6245876361ea92b9cdfb24f5de98f0c43581754c1f328393db65e58fa7d99b"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -204,17 +300,33 @@
       "id": "service:nile_creditor",
       "name": "Обработчик поступлений Nile",
       "entity_type": "service",
-      "summary": "Ведет отдельный неизменяемый журнал подтвержденных USDT_NILE_TEST, проверяет повторы и не смешивает их с USDT_SIM.",
+      "summary": "По main 44b12afd, 3 ноября 2026: сохранённый обработчик читает схему наблюдателя в read-only транзакции, проверяет целостность и свежесть событий и ведёт отдельный USDT_NILE_TEST. Он не подписывает выплаты и не открывает старые способы пополнения; работа VPS не проверялась.",
       "status": "verified",
       "environment": "testnet",
       "evidence": [
         {
           "path": "deployment/finance/README.md",
-          "sha256": "13e8d7e58d8f4e6f85f23781f5dbec51b7bc5fc4f346d00f3f78ec2d605f3cf2"
+          "sha256": "9b468662041ed2653525bdfe1c4b08586d33b1543956586dd280e141febf9532"
         },
         {
-          "path": "deployment/finance/NILE-PLAY.md",
-          "sha256": "00cfa619c29840b38657ff0c96858b885aa6267f81c4f9865a6b98b51a11752c"
+          "path": "docs/payment-methods.md",
+          "sha256": "449428e2da088d8d8c5752b69ffb613235bdbc1e7b68b040b7f472e80f6a6fb1"
+        },
+        {
+          "path": "server/finance/nile-test-creditor.ts",
+          "sha256": "33662a0375e4979de2e38bce908d54e010568ea7e8dfadf73efc90f0c5bfe32a"
+        },
+        {
+          "path": "server/finance/nile-test-ledger.ts",
+          "sha256": "e0ea16b70d0ca3e83587dd31b22186e4e64f5788b4c84afe2e15969118e2f830"
+        },
+        {
+          "path": "deployment/finance/compose.nile-creditor.yaml",
+          "sha256": "fc00632789ccd6c211c689431f0fdf3632fb26e5991e76b1abcf83d1df8122db"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -222,13 +334,33 @@
       "id": "service:nile_play",
       "name": "Игровой журнал Nile",
       "entity_type": "service",
-      "summary": "Импортирует подтвержденные поступления, атомарно проводит Royal Coins и возвращает сохраненный результат через Unix socket. Владельца определяет серверная сессия.",
+      "summary": "По main 44b12afd, 3 ноября 2026: исторический игровой журнал и Unix-socket код Nile сохранены, но основной сервер не устанавливает старые Nile/game-wallet адаптеры. Публичные /api/nile-play и /api/game-wallet закрыты HTTP 410. Наличие файлов не подтверждает действующий игровой денежный путь.",
       "status": "verified",
       "environment": "testnet",
       "evidence": [
         {
+          "path": "docs/payment-methods.md",
+          "sha256": "449428e2da088d8d8c5752b69ffb613235bdbc1e7b68b040b7f472e80f6a6fb1"
+        },
+        {
+          "path": "server/payments/methods.ts",
+          "sha256": "9a6245876361ea92b9cdfb24f5de98f0c43581754c1f328393db65e58fa7d99b"
+        },
+        {
+          "path": "server/index.ts",
+          "sha256": "1c8bce12b62b92bee9f2712ac4b982e13ac93c8b50d15999240c557d6c37e860"
+        },
+        {
+          "path": "server/finance/nile-play-service.ts",
+          "sha256": "8f767312e08901872ab159265537f0522e71f2b571aca7206b3f0b2dac2cdf02"
+        },
+        {
           "path": "deployment/finance/NILE-PLAY.md",
           "sha256": "00cfa619c29840b38657ff0c96858b885aa6267f81c4f9865a6b98b51a11752c"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -236,13 +368,33 @@
       "id": "mechanic:nile_auto_deposit",
       "name": "Автоматические адреса Nile",
       "entity_type": "mechanic",
-      "summary": "Кнопка пополнения назначает постоянный адрес вошедшему аккаунту. Первый пул 16 адресов; повтор сохраняет адрес, клиент не задает сумму начисления.",
+      "summary": "По main 44b12afd, 3 ноября 2026: назначение постоянного Nile-адреса есть в историческом коде. Утверждение о действующей кнопке пополнения устарело: публичные Nile URL закрыты HTTP 410, основной сервер не устанавливает адаптер. Нынешний размер пула и работа VPS не проверялись.",
       "status": "verified",
       "environment": "testnet",
       "evidence": [
         {
+          "path": "docs/payment-methods.md",
+          "sha256": "449428e2da088d8d8c5752b69ffb613235bdbc1e7b68b040b7f472e80f6a6fb1"
+        },
+        {
+          "path": "server/payments/methods.ts",
+          "sha256": "9a6245876361ea92b9cdfb24f5de98f0c43581754c1f328393db65e58fa7d99b"
+        },
+        {
+          "path": "server/index.ts",
+          "sha256": "1c8bce12b62b92bee9f2712ac4b982e13ac93c8b50d15999240c557d6c37e860"
+        },
+        {
+          "path": "server/nilePlayRoutes.ts",
+          "sha256": "3a2a07178abfd57475c8eacd849243ad0718101e03e9eec685844a806ff8c84f"
+        },
+        {
           "path": "deployment/finance/NILE-PLAY.md",
           "sha256": "00cfa619c29840b38657ff0c96858b885aa6267f81c4f9865a6b98b51a11752c"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -264,13 +416,29 @@
       "id": "integration:tron_mainnet_pilot",
       "name": "Пилот USDT TRON Mainnet",
       "entity_type": "integration",
-      "summary": "Локально подготовлены scanner, ledger, сервис и API для выбранного аккаунта/адреса. На VPS не включен; настоящий депозит и ставка не выполнены. Допускает Coins и рулетку.",
+      "summary": "По main 44b12afd, 3 ноября 2026: исторический пилот TRON Mainnet остаётся кандидатом и сохранённым кодом. Публичный /api/usdt-wallet закрыт HTTP 410; основной сервер не устанавливает старый адаптер. Проверка исходников не подтверждает живой депозит, ставку, состояние VPS или разрешение включить пилот.",
       "status": "candidate",
       "environment": "candidate",
       "evidence": [
         {
-          "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "path": "docs/payment-methods.md",
+          "sha256": "449428e2da088d8d8c5752b69ffb613235bdbc1e7b68b040b7f472e80f6a6fb1"
+        },
+        {
+          "path": "server/payments/methods.ts",
+          "sha256": "9a6245876361ea92b9cdfb24f5de98f0c43581754c1f328393db65e58fa7d99b"
+        },
+        {
+          "path": "server/index.ts",
+          "sha256": "1c8bce12b62b92bee9f2712ac4b982e13ac93c8b50d15999240c557d6c37e860"
+        },
+        {
+          "path": "server/usdtWalletRoutes.ts",
+          "sha256": "7ac8b10a6abbffe8394771ba71e186c4a49a7e92da4d561e9c8fce630fbfee6b"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -284,7 +452,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         },
         {
           "path": "docs/financial-core-implementation.md",
@@ -302,7 +470,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -316,7 +484,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -330,7 +498,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -344,7 +512,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -358,7 +526,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -372,7 +540,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -386,7 +554,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -400,7 +568,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -414,7 +582,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         },
         {
           "path": "docs/game-core.md",
@@ -464,7 +632,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         },
         {
           "path": "docs/financial-core-implementation.md",
@@ -482,7 +650,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -496,7 +664,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         },
         {
           "path": "docs/game-security-audit.md",
@@ -514,7 +682,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         },
         {
           "path": "docs/game-core.md",
@@ -536,7 +704,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     }
@@ -553,7 +721,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -577,13 +745,29 @@
       "source": "service:finance_gateway",
       "target": "service:finance_api",
       "predicate": "routes_to",
-      "text": "Gateway распределяет внутренние запросы между двумя репликами API на одном VPS.",
+      "text": "По main 44b12afd, 3 ноября 2026: HAProxy и Compose объявляют внутреннюю маршрутизацию к двум finance-api на порту 2570. Это подтверждённая конфигурация симулятора sandbox, а не новый замер развёртывания на VPS.",
       "status": "verified",
-      "environment": "production",
+      "environment": "sandbox",
       "evidence": [
         {
           "path": "deployment/finance/README.md",
-          "sha256": "13e8d7e58d8f4e6f85f23781f5dbec51b7bc5fc4f346d00f3f78ec2d605f3cf2"
+          "sha256": "9b468662041ed2653525bdfe1c4b08586d33b1543956586dd280e141febf9532"
+        },
+        {
+          "path": "compose.finance.yaml",
+          "sha256": "63f58158a81a16c922f515e0248567c37db1d361af0c8631d369eda6ab27342b"
+        },
+        {
+          "path": "deployment/finance/haproxy.cfg",
+          "sha256": "c32fcf8fbb8af9eef618bc80216e230547c894aeba26876c89a8776c6271271d"
+        },
+        {
+          "path": "server/finance/config.ts",
+          "sha256": "89d867d57f1fee2a3864e2f947390c5f275a98072f7bc970da2e86ecf69cf4b8"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -707,7 +891,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -731,9 +915,9 @@
       "source": "mechanic:own_games",
       "target": "mechanic:demo_wallet",
       "predicate": "uses",
-      "text": "Собственные игры используют серверное проведение демораунда и историю.",
+      "text": "По main 44b12afd, 3 ноября 2026: серверные хранилища собственных игр используют общий DemoWalletStore и журнал операций. Эта связь описывает код и сохранённые раунды, не возвращает неактивные игры и не подтверждает перечень открытых новых ставок.",
       "status": "verified",
-      "environment": "production",
+      "environment": "project",
       "evidence": [
         {
           "path": "docs/game-core.md",
@@ -741,7 +925,23 @@
         },
         {
           "path": "docs/github-games.md",
-          "sha256": "3d6b882c34f4987244596bcdfbeb4e6c229867e7f6baa494535aa2981678c5c8"
+          "sha256": "ad6996bee221993c6c44769182911c0ce79a61d11415bfb4586b026cd33fe21a"
+        },
+        {
+          "path": "server/demoWallet.ts",
+          "sha256": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63"
+        },
+        {
+          "path": "server/demoWalletRoutes.ts",
+          "sha256": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82"
+        },
+        {
+          "path": "src/shared/arcadeCatalog.ts",
+          "sha256": "f6a46d3ee4d427068c87af6a4289fed6e1ac7e00ca3a60da9849cb319e475dc6"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -750,17 +950,29 @@
       "source": "service:game",
       "target": "mechanic:own_games",
       "predicate": "contains",
-      "text": "Игровые исходы вычисляет сервер; часть игр имеет постоянную партию.",
+      "text": "По main 44b12afd, 3 ноября 2026: main содержит серверные движки и проведение раундов через общий кошелёк. Связь подтверждает устройство исходников; доступность отдельных игр на production определяется отдельно.",
       "status": "verified",
-      "environment": "production",
+      "environment": "project",
       "evidence": [
-        {
-          "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
-        },
         {
           "path": "docs/game-core.md",
           "sha256": "705a480de46bb1d09663daefc7625d28e14179c5ca626a7377348d5b6b55a179"
+        },
+        {
+          "path": "server/games/core.ts",
+          "sha256": "e7120245e02b5777eb6aff660c5f1f154a8e0f6b14ae80fbfed09656c9c425b9"
+        },
+        {
+          "path": "server/demoWallet.ts",
+          "sha256": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63"
+        },
+        {
+          "path": "src/shared/arcadeCatalog.ts",
+          "sha256": "f6a46d3ee4d427068c87af6a4289fed6e1ac7e00ca3a60da9849cb319e475dc6"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -769,13 +981,33 @@
       "source": "integration:tron_nile",
       "target": "service:tron_reader",
       "predicate": "contains",
-      "text": "Наблюдатель читает подтвержденные события тестовой сети без полномочий подписи.",
+      "text": "По main 44b12afd, 3 ноября 2026: в сохранённом тестовом контуре Nile есть watch-only наблюдатель с проверкой двух RPC. Связь относится к историческому модулю; текущие публичные Nile URL перехвачены HTTP 410.",
       "status": "verified",
       "environment": "testnet",
       "evidence": [
         {
           "path": "deployment/finance/README.md",
-          "sha256": "13e8d7e58d8f4e6f85f23781f5dbec51b7bc5fc4f346d00f3f78ec2d605f3cf2"
+          "sha256": "9b468662041ed2653525bdfe1c4b08586d33b1543956586dd280e141febf9532"
+        },
+        {
+          "path": "docs/payment-methods.md",
+          "sha256": "449428e2da088d8d8c5752b69ffb613235bdbc1e7b68b040b7f472e80f6a6fb1"
+        },
+        {
+          "path": "server/finance/tron-reader.ts",
+          "sha256": "e19c89b58b2c58d4e036e907b58e98c7cfd12b7848cebcf4220f90db900de7ff"
+        },
+        {
+          "path": "deployment/finance/compose.tron-reader.yaml",
+          "sha256": "84988b134ba029b83b64fc3a15468f1851f7c33e941bc68b7aec8bb4d558401c"
+        },
+        {
+          "path": "server/payments/methods.ts",
+          "sha256": "9a6245876361ea92b9cdfb24f5de98f0c43581754c1f328393db65e58fa7d99b"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -784,13 +1016,33 @@
       "source": "service:nile_creditor",
       "target": "service:tron_reader",
       "predicate": "reads_from",
-      "text": "Обработчик импортирует проверенные события наблюдателя в отдельный журнал.",
+      "text": "По main 44b12afd, 3 ноября 2026: сохранённый creditor читает проверенные события reader, проверяет курсор, свежесть и целостность и импортирует их в отдельный тестовый журнал. Это не действующий публичный маршрут пополнения.",
       "status": "verified",
       "environment": "testnet",
       "evidence": [
         {
           "path": "deployment/finance/README.md",
-          "sha256": "13e8d7e58d8f4e6f85f23781f5dbec51b7bc5fc4f346d00f3f78ec2d605f3cf2"
+          "sha256": "9b468662041ed2653525bdfe1c4b08586d33b1543956586dd280e141febf9532"
+        },
+        {
+          "path": "docs/payment-methods.md",
+          "sha256": "449428e2da088d8d8c5752b69ffb613235bdbc1e7b68b040b7f472e80f6a6fb1"
+        },
+        {
+          "path": "server/finance/nile-test-creditor.ts",
+          "sha256": "33662a0375e4979de2e38bce908d54e010568ea7e8dfadf73efc90f0c5bfe32a"
+        },
+        {
+          "path": "deployment/finance/compose.nile-creditor.yaml",
+          "sha256": "fc00632789ccd6c211c689431f0fdf3632fb26e5991e76b1abcf83d1df8122db"
+        },
+        {
+          "path": "server/payments/methods.ts",
+          "sha256": "9a6245876361ea92b9cdfb24f5de98f0c43581754c1f328393db65e58fa7d99b"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -814,13 +1066,29 @@
       "source": "service:game",
       "target": "service:nile_play",
       "predicate": "calls",
-      "text": "Игровой сервер подтверждает аккаунт и обращается к Nile через Unix socket.",
+      "text": "По main 44b12afd, 3 ноября 2026: прежняя связь игрового сервера с Nile через Unix socket является исторической. Текущий server/index.ts не устанавливает старый адаптер, а /api/nile-play и /api/game-wallet возвращают 410.",
       "status": "verified",
       "environment": "testnet",
       "evidence": [
         {
-          "path": "deployment/finance/NILE-PLAY.md",
-          "sha256": "00cfa619c29840b38657ff0c96858b885aa6267f81c4f9865a6b98b51a11752c"
+          "path": "docs/payment-methods.md",
+          "sha256": "449428e2da088d8d8c5752b69ffb613235bdbc1e7b68b040b7f472e80f6a6fb1"
+        },
+        {
+          "path": "server/payments/methods.ts",
+          "sha256": "9a6245876361ea92b9cdfb24f5de98f0c43581754c1f328393db65e58fa7d99b"
+        },
+        {
+          "path": "server/index.ts",
+          "sha256": "1c8bce12b62b92bee9f2712ac4b982e13ac93c8b50d15999240c557d6c37e860"
+        },
+        {
+          "path": "server/nilePlayRoutes.ts",
+          "sha256": "3a2a07178abfd57475c8eacd849243ad0718101e03e9eec685844a806ff8c84f"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -829,13 +1097,29 @@
       "source": "integration:tron_nile",
       "target": "mechanic:nile_auto_deposit",
       "predicate": "supports",
-      "text": "Автоматическое назначение адреса опубликовано 7 октября, обычный сценарий без личного кода.",
+      "text": "По main 44b12afd, 3 ноября 2026: публикация кнопки назначения Nile-адреса 7 октября является историческим этапом. В текущем main соответствующие публичные URL закрыты 410; это не доступная кнопка пополнения.",
       "status": "verified",
       "environment": "testnet",
       "evidence": [
         {
+          "path": "docs/payment-methods.md",
+          "sha256": "449428e2da088d8d8c5752b69ffb613235bdbc1e7b68b040b7f472e80f6a6fb1"
+        },
+        {
+          "path": "server/payments/methods.ts",
+          "sha256": "9a6245876361ea92b9cdfb24f5de98f0c43581754c1f328393db65e58fa7d99b"
+        },
+        {
+          "path": "server/index.ts",
+          "sha256": "1c8bce12b62b92bee9f2712ac4b982e13ac93c8b50d15999240c557d6c37e860"
+        },
+        {
           "path": "deployment/finance/NILE-PLAY.md",
           "sha256": "00cfa619c29840b38657ff0c96858b885aa6267f81c4f9865a6b98b51a11752c"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -874,17 +1158,29 @@
       "source": "service:nile_play",
       "target": "mechanic:own_games",
       "predicate": "restricts_to",
-      "text": "Тестовый Nile подключен только к Royal Coins, остальные демоигры не получают его баланс автоматически.",
+      "text": "По main 44b12afd, 3 ноября 2026: ограничение старого Nile игрового журнала отдельными играми относится к сохранённому тестовому коду. Оно не подключает Nile к нынешним собственным играм: публичный /api/game-wallet закрыт HTTP 410.",
       "status": "verified",
       "environment": "testnet",
       "evidence": [
         {
-          "path": "docs/game-core.md",
-          "sha256": "705a480de46bb1d09663daefc7625d28e14179c5ca626a7377348d5b6b55a179"
+          "path": "docs/payment-methods.md",
+          "sha256": "449428e2da088d8d8c5752b69ffb613235bdbc1e7b68b040b7f472e80f6a6fb1"
         },
         {
-          "path": "deployment/finance/NILE-PLAY.md",
-          "sha256": "00cfa619c29840b38657ff0c96858b885aa6267f81c4f9865a6b98b51a11752c"
+          "path": "server/payments/methods.ts",
+          "sha256": "9a6245876361ea92b9cdfb24f5de98f0c43581754c1f328393db65e58fa7d99b"
+        },
+        {
+          "path": "server/index.ts",
+          "sha256": "1c8bce12b62b92bee9f2712ac4b982e13ac93c8b50d15999240c557d6c37e860"
+        },
+        {
+          "path": "server/finance/nile-play-ledger.ts",
+          "sha256": "387ca012d2b23e9e404654fb3dcd9f48bf226d134e75333a7c4dc06a66b012d3"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -893,13 +1189,29 @@
       "source": "integration:tron_mainnet_pilot",
       "target": "service:game",
       "predicate": "has_candidate_adapter",
-      "text": "Локальный /api/usdt-wallet адаптер подготовлен, но mainnet не включен на VPS.",
+      "text": "По main 44b12afd, 3 ноября 2026: старый /api/usdt-wallet адаптер остаётся историческим кодом кандидата и закрыт HTTP 410 в основном приложении. Наличие файлов не означает подключение mainnet к игрокам.",
       "status": "candidate",
       "environment": "candidate",
       "evidence": [
         {
-          "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "path": "docs/payment-methods.md",
+          "sha256": "449428e2da088d8d8c5752b69ffb613235bdbc1e7b68b040b7f472e80f6a6fb1"
+        },
+        {
+          "path": "server/payments/methods.ts",
+          "sha256": "9a6245876361ea92b9cdfb24f5de98f0c43581754c1f328393db65e58fa7d99b"
+        },
+        {
+          "path": "server/index.ts",
+          "sha256": "1c8bce12b62b92bee9f2712ac4b982e13ac93c8b50d15999240c557d6c37e860"
+        },
+        {
+          "path": "server/usdtWalletRoutes.ts",
+          "sha256": "7ac8b10a6abbffe8394771ba71e186c4a49a7e92da4d561e9c8fce630fbfee6b"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -914,7 +1226,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -929,7 +1241,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -944,7 +1256,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -953,13 +1265,33 @@
       "source": "integration:tron_nile",
       "target": "mechanic:finance_sim_ledger",
       "predicate": "is_separate_from",
-      "text": "USDT_NILE_TEST и USDT_SIM принадлежат разным финансовым журналам.",
+      "text": "По main 44b12afd, 3 ноября 2026: USDT_NILE_TEST и USDT_SIM остаются разными журналами и типами средств. Исторические Nile-адаптеры и симулятор не являются текущими способами оплаты; сохранение данных нужно для прежних обязательств и сверки.",
       "status": "verified",
       "environment": "testnet",
       "evidence": [
         {
           "path": "deployment/finance/README.md",
-          "sha256": "13e8d7e58d8f4e6f85f23781f5dbec51b7bc5fc4f346d00f3f78ec2d605f3cf2"
+          "sha256": "9b468662041ed2653525bdfe1c4b08586d33b1543956586dd280e141febf9532"
+        },
+        {
+          "path": "docs/payment-methods.md",
+          "sha256": "449428e2da088d8d8c5752b69ffb613235bdbc1e7b68b040b7f472e80f6a6fb1"
+        },
+        {
+          "path": "docs/financial-core-implementation.md",
+          "sha256": "cafe5519770a4a906819b30b76b61601f347befaf297b7d0b8f190c52a637134"
+        },
+        {
+          "path": "server/finance/nile-test-ledger.ts",
+          "sha256": "e0ea16b70d0ca3e83587dd31b22186e4e64f5788b4c84afe2e15969118e2f830"
+        },
+        {
+          "path": "server/finance/config.ts",
+          "sha256": "89d867d57f1fee2a3864e2f947390c5f275a98072f7bc970da2e86ecf69cf4b8"
+        },
+        {
+          "path": "docs/project-knowledge-review-20261103.md",
+          "sha256": "47013b7a2622644aef47f070c5d5cec77f0d72bade4dd1f96a4fef7af2df7a86"
         }
       ]
     },
@@ -1019,7 +1351,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         },
         {
           "path": "docs/game-security-audit.md",
@@ -1038,7 +1370,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -1053,7 +1385,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -1068,7 +1400,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -1083,7 +1415,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -1098,7 +1430,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -1113,7 +1445,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -1128,7 +1460,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         },
         {
           "path": "docs/financial-core-implementation.md",
@@ -1147,7 +1479,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         }
       ]
     },
@@ -1162,7 +1494,7 @@
       "evidence": [
         {
           "path": "project-knowledge/PROJECT.md",
-          "sha256": "89ef10a29212a667263894baf789484710adaa19d8f48d8eb3ebbc3c394425dc"
+          "sha256": "47d948af3da54e3566d741da6a247233f98e2210c42170895e40402beeb18141"
         },
         {
           "path": "docs/game-security-audit.md",
@@ -1200,5 +1532,149 @@
         }
       ]
     }
+  ],
+  "legacy_record_version": "2026-10-10.1",
+  "record_reviews": {
+    "service:finance_gateway": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "service:finance_api": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "mechanic:own_games": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "service:tron_reader": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "service:nile_creditor": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "edge:gateway_api": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "edge:own_games_demo": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "edge:nile_reader": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "edge:creditor_reader": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "edge:separate_nile_sim": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "integration:tron_nile": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "service:nile_play": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "mechanic:nile_auto_deposit": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "integration:tron_mainnet_pilot": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "edge:game_own_games": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "edge:game_nile_play": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "edge:nile_auto_deposit": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "edge:nile_whitelist": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    },
+    "edge:mainnet_game_candidate": {
+      "version": "2026-11-03.1",
+      "checked_at": "2026-11-03",
+      "source_commit": "44b12afd5f3707f49b0d435dfa526ba59d346db4"
+    }
+  },
+  "review_scope": {
+    "requested_ids": [
+      "service:finance_gateway",
+      "service:finance_api",
+      "mechanic:own_games",
+      "service:tron_reader",
+      "service:nile_creditor",
+      "edge:gateway_api",
+      "edge:own_games_demo",
+      "edge:nile_reader",
+      "edge:creditor_reader",
+      "edge:separate_nile_sim"
+    ],
+    "related_ids": [
+      "integration:tron_nile",
+      "service:nile_play",
+      "mechanic:nile_auto_deposit",
+      "integration:tron_mainnet_pilot",
+      "edge:game_own_games",
+      "edge:game_nile_play",
+      "edge:nile_auto_deposit",
+      "edge:nile_whitelist",
+      "edge:mainnet_game_candidate"
+    ]
+  },
+  "source_files": [
+    "compose.finance.yaml",
+    "deployment/finance/compose.nile-creditor.yaml",
+    "deployment/finance/compose.tron-reader.yaml",
+    "deployment/finance/haproxy.cfg",
+    "server/demoWallet.ts",
+    "server/demoWalletRoutes.ts",
+    "server/finance/config.ts",
+    "server/finance/nile-play-ledger.ts",
+    "server/finance/nile-play-service.ts",
+    "server/finance/nile-test-creditor.ts",
+    "server/finance/nile-test-ledger.ts",
+    "server/finance/tron-protocol.ts",
+    "server/finance/tron-reader.ts",
+    "server/games/core.ts",
+    "server/index.ts",
+    "server/nilePlayRoutes.ts",
+    "server/payments/methods.ts",
+    "server/usdtWalletRoutes.ts",
+    "src/shared/arcadeCatalog.ts"
   ]
 }
