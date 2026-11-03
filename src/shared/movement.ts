@@ -19,7 +19,7 @@ export function applyMovementInput(body: MovementBody, input: MovementInput, gua
   body.seat = ''; body.action = 'idle'; body.drink = ''; body.actionUntil = 0;
   const beforeX = body.x, beforeY = body.y;
   const impaired = intoxicatedMovement(body.soberAt ?? 0, input);
-  if(body.hall==='street'&&moveRoofStairs(body,input,PLAYER_SPEED*ROOF_STAIR_SPEED_SCALE*impaired.speedMultiplier*input.ms/1000)){
+  if(body.hall==='street'&&moveRoofStairs(body,input,(input.sprint===true?PLAYER_SPRINT_SPEED:PLAYER_SPEED)*ROOF_STAIR_SPEED_SCALE*impaired.speedMultiplier*input.ms/1000)){
     if(body.moving)body.facing=movementFacing(body.x-beforeX,body.y-beforeY,body.facing as Facing);
     return;
   }

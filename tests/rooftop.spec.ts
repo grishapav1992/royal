@@ -29,7 +29,7 @@ async function walk(page: Page, x: number, y: number) {
   await expect.poll(async () => { const p = await state(page); return Math.hypot(p.serverX - p.x, p.serverY - p.y); }).toBeLessThan(3);
 }
 
-async function flight(page:Page,mobile:boolean){
+async function flight(page:Page,mobile:boolean,sprint=false){
   const before=await state(page),step=before.stairStep,target=ROOF_STAIR_ROUTE[step],from=ROOF_STAIR_ROUTE[step-1];
   let clicked:{x:number;y:number}|undefined;
   if(mobile){
@@ -38,9 +38,10 @@ async function flight(page:Page,mobile:boolean){
     clicked={x:(a.x+b.x)/2,y:(a.y+b.y)/2-8};await clickViewPoint(page,clicked);
   }else{
     const key=target.x===from.x?'ArrowUp':(target.x>from.x)===(before.street.view.orientation==='rear')?'ArrowLeft':'ArrowRight';
+    if(sprint)await page.keyboard.down('Shift');
     await page.keyboard.down(key);
     try{await expect.poll(async()=>{const s=await state(page);return s.hall==='roof'||s.stairStep>step;},{timeout:10000}).toBe(true);}
-    finally{await page.keyboard.up(key);}
+    finally{await page.keyboard.up(key);if(sprint)await page.keyboard.up('Shift');}
   }
   await expect.poll(async()=>{const s=await state(page);return s.hall==='roof'||s.stairStep>step;},{timeout:10000}).toBe(true).catch(async error=>{
     const s=await state(page);console.log('Stair input diagnostic',JSON.stringify({before:{step,x:before.x,y:before.y,dir:before.stairDirection,view:before.view},clicked,after:{step:s.stairStep,x:s.x,y:s.y,dir:s.stairDirection,serverX:s.serverX,serverY:s.serverY,moving:s.moving,predicted:s.predicted,pending:s.pendingInputs,renderX:s.renderX,renderY:s.renderY,view:s.view}}));throw error;
@@ -48,6 +49,12 @@ async function flight(page:Page,mobile:boolean){
   if(step===ROOF_STAIR_ROUTE.length-1)await expect.poll(async()=>(await state(page)).hall,{timeout:10000}).toBe('roof');
   await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.serverX-s.x,s.serverY-s.y);}).toBeLessThan(1);
 }
+
+const stairSpeed=(page:Page)=>page.evaluate(()=>new Promise<number>(resolve=>{
+  const start=performance.now();let previous=(window as any).royalDemo.getState(),distance=0;
+  const sample=()=>{const now=performance.now(),s=(window as any).royalDemo.getState();distance+=Math.hypot(s.x-previous.x,s.y-previous.y);previous=s;
+    if(now-start<180)requestAnimationFrame(sample);else resolve(distance*1000/(now-start));};requestAnimationFrame(sample);
+}));
 
 async function staysOnStep(page:Page){
   await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.serverX-s.x,s.serverY-s.y);}).toBeLessThan(.1);
@@ -130,7 +137,16 @@ test('manually climb each switchback without falling, reach the roof edge and re
   await keyUntil(page,'ArrowUp',async()=>(await state(page)).stairStep===1);
   await flight(page,mobile);await flight(page,mobile);
   if(!mobile){
-    await page.keyboard.down('ArrowRight');await page.waitForTimeout(450);await page.keyboard.up('ArrowRight');
+    await page.keyboard.down('ArrowRight');
+    let walking=0,running=0,released=0;
+    try{
+      await expect.poll(async()=>(await state(page)).moving).toBe(true);
+      walking=await stairSpeed(page);await page.keyboard.down('Shift');running=await stairSpeed(page);
+      await page.keyboard.up('Shift');released=await stairSpeed(page);
+    }finally{await page.keyboard.up('ArrowRight');await page.keyboard.up('Shift');}
+    expect(running/walking).toBeGreaterThan(1.4);expect(running/walking).toBeLessThan(2.1);
+    expect(released/walking).toBeGreaterThan(.8);expect(released/walking).toBeLessThan(1.2);
+    console.log('Stair sprint speeds',JSON.stringify({walking,running,released}));
     const forward=await state(page);
     await page.keyboard.down('ArrowLeft');await page.waitForTimeout(180);await page.keyboard.up('ArrowLeft');
     expect((await state(page)).x).toBeGreaterThan(forward.x);
@@ -178,7 +194,7 @@ test('manually climb each switchback without falling, reach the roof edge and re
       expect(view.roofEdge).toBeGreaterThan(s.view.y);expect(view.roofEdge).toBeLessThan(s.view.y+s.view.height/s.view.zoom);
       await page.screenshot({path:`../roof-${info.project.name}-top.png`});
     }
-    await flight(page,mobile);
+    await flight(page,mobile,!mobile);
     if((await state(page)).hall==='street'){
       const paused=await state(page);await page.waitForTimeout(120);
       const still=await state(page);expect(still.stairStep).toBe(paused.stairStep);expect(Math.hypot(still.x-paused.x,still.y-paused.y)).toBeLessThan(.1);
@@ -240,7 +256,11 @@ test('manually climb each switchback without falling, reach the roof edge and re
       await expect.poll(async()=>(await state(page)).stairStep,{timeout:10000}).toBeLessThan(step);
       await expect.poll(async()=>{const p=await state(page);return Math.hypot(p.serverX-p.x,p.serverY-p.y);}).toBeLessThan(.1);
     }
-  }else await keyUntil(page,'ArrowDown',async()=>(await state(page)).stairStep===0,30000);
+  }else{
+    await page.keyboard.down('Shift');
+    try{await keyUntil(page,'ArrowDown',async()=>(await state(page)).stairStep===0,30000);}
+    finally{await page.keyboard.up('Shift');}
+  }
   expect((await state(page)).hall).toBe('street');
   if(mobile)expect(Math.hypot((await state(page)).x-STREET_ROOF_STAIRS.foot.x,(await state(page)).y-STREET_ROOF_STAIRS.foot.y)).toBeLessThan(20);
   else{

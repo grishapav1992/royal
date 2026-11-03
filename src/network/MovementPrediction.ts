@@ -55,7 +55,7 @@ export class MovementPrediction {
 }
 
 /** Follow a checked click path using the same acknowledged inputs as keyboard movement. */
-export function advanceClickMovement(body: MovementBody, path: Point[], ms: number, prediction: MovementPrediction, guards: readonly GuardCollider[] = []) {
+export function advanceClickMovement(body: MovementBody, path: Point[], ms: number, prediction: MovementPrediction, guards: readonly GuardCollider[] = [], sprint = false) {
   let remaining = Math.min(50, Math.max(0, ms));
   if (!path.length || !remaining) return;
   if (body.seat || body.action === 'drink') {
@@ -63,16 +63,18 @@ export function advanceClickMovement(body: MovementBody, path: Point[], ms: numb
     prediction.step(body, 1, 0, 0, true, guards, true);
     if (prediction.pendingCount === count) return;
   }
-  const speed = (body.hall==='street'&&(body.stairStep??0)>0?PLAYER_SPEED*ROOF_STAIR_SPEED_SCALE:PLAYER_SPRINT_SPEED) * (1 - getIntoxication(body.soberAt ?? 0).level * .28);
+  const impairment = 1 - getIntoxication(body.soberAt ?? 0).level * .28;
   for (let steps = 0; path.length && remaining > 1e-6 && steps < 32; steps++) {
     const target = path[0], dx = target.x - body.x, dy = target.y - body.y;
     const distance = Math.hypot(dx, dy);
     const tolerance=body.hall==='street'&&(body.stairStep??0)>0?ROOF_STAIR_EPSILON:.05;
     if (distance <= tolerance) { path.shift(); continue; }
+    const onStairs=body.hall==='street'&&(body.stairStep??0)>0,sprinting=!onStairs||sprint;
+    const speed=(onStairs?(sprinting?PLAYER_SPRINT_SPEED:PLAYER_SPEED)*ROOF_STAIR_SPEED_SCALE:PLAYER_SPRINT_SPEED)*impairment;
     const duration = Math.min(remaining, distance / speed * 1000);
     const beforeX = body.x, beforeY = body.y, count = prediction.pendingCount;
     const wasOnStairs=body.hall==='street'&&(body.stairStep??0)>0;
-    prediction.step(body, dx / distance, dy / distance, duration, true, guards, true);
+    prediction.step(body, dx / distance, dy / distance, duration, sprinting, guards, true);
     if (prediction.pendingCount === count) break;
     remaining -= duration;
     if(wasOnStairs&&!body.stairStep){path.length=0;break;}

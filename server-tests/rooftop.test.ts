@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { findPath, walkable } from '../src/game/navigation';
-import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_RETURN, advanceRoofStairStep } from '../src/shared/rooftop';
-import { HALLS, hallLinkAt, hallLinks, hallLinkToward, hallObstacles, type HallId } from '../src/shared/world';
+import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_RETURN, ROOF_STAIR_SPEED_SCALE, advanceRoofStairStep } from '../src/shared/rooftop';
+import { HALLS, PLAYER_SPEED, PLAYER_SPRINT_SPEED, hallLinkAt, hallLinks, hallLinkToward, hallObstacles, type HallId } from '../src/shared/world';
 import { atElevator, canTravelByElevator, elevatorFloors } from '../src/shared/elevator';
 import { cabinetsInHall } from '../src/shared/cabinets';
 import { LobbyRoom } from '../server/LobbyRoom';
@@ -169,6 +169,25 @@ function stairBody():MovementBody {
   return {hall:'street',...STREET_ROOF_STAIRS.foot,stairStep:1,stairDirection:1,facing:'up',moving:false,seat:'',action:'idle',drink:'',actionUntil:0};
 }
 
+test('Shift accelerates both directions on every flight and click routes walk until Shift is held',()=>{
+  for(let step=1;step<ROOF_STAIR_ROUTE.length;step++)for(const direction of [-1,1]){
+    const a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step];
+    const start={...stairBody(),stairStep:step,x:(a.x+b.x)/2,y:(a.y+b.y)/2},normal={...start},fast={...start};
+    applyMovementInput(normal,{seq:1,x:0,y:-direction,ms:50});
+    applyMovementInput(fast,{seq:1,x:0,y:-direction,ms:50,sprint:true});
+    const distance=(p:MovementBody)=>Math.hypot(p.x-start.x,p.y-start.y);
+    assert(Math.abs(distance(fast)/distance(normal)-PLAYER_SPRINT_SPEED/PLAYER_SPEED)<1e-8);
+    const before={...fast};applyMovementInput(fast,{seq:2,x:0,y:-direction,ms:50,sprint:false});
+    assert(Math.abs(Math.hypot(fast.x-before.x,fast.y-before.y)-distance(normal))<1e-8,'release restores normal speed immediately');
+    assert.equal(fast.stairStep,step);assert.equal(fast.stairDirection,direction);
+    const target=direction===1?b:a,walkClick={...start},sprintClick={...start};
+    advanceClickMovement(walkClick,[{...target}],50,new MovementPrediction());
+    advanceClickMovement(sprintClick,[{...target}],50,new MovementPrediction(),[],true);
+    assert(Math.abs(distance(walkClick)-PLAYER_SPEED*ROOF_STAIR_SPEED_SCALE*.05)<1e-8,'ordinary touch and click retain walking speed');
+    assert(Math.abs(distance(sprintClick)/distance(walkClick)-PLAYER_SPRINT_SPEED/PLAYER_SPEED)<1e-8);
+  }
+});
+
 test('manual horizontal stair input follows every flight and stops on release at its exact landing',()=>{
   const body=stairBody();let sequence=0;
   for(let step=1;step<ROOF_STAIR_ROUTE.length;step++){
@@ -244,7 +263,7 @@ test('prediction and acknowledgement replay retain descending direction across s
   const step=8,a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step];
   const local={...stairBody(),stairStep:step,x:(a.x+b.x)/2,y:(a.y+b.y)/2},server={...local},prediction=new MovementPrediction();let acknowledged=0;
   for(let frame=0;frame<1000&&local.stairStep;frame++){
-    prediction.step(local,0,1,16);
+    prediction.step(local,0,1,16,frame%9<5);
     if(frame%3===0){
       prediction.flush(batch=>{for(const input of batch){applyMovementInput(server,input);acknowledged=input.seq;}});
       const replay=prediction.reconcile(server,acknowledged);
@@ -256,20 +275,20 @@ test('prediction and acknowledgement replay retain descending direction across s
 
 test('touch click routes reach exact landings in both directions and stop after leaving the lower ladder',()=>{
   const body=stairBody(),prediction=new MovementPrediction();let acknowledged=0;
-  const walkTo=(target:{x:number;y:number})=>{
+  const walkTo=(target:{x:number;y:number},sprint=false)=>{
     const path=[{...target}];
     for(let frame=0;frame<300&&path.length;frame++){
-      advanceClickMovement(body,path,16,prediction);
+      advanceClickMovement(body,path,16,prediction,[],sprint);
       prediction.flush(batch=>{acknowledged=batch[batch.length-1].seq;});
       prediction.reconcile(body,acknowledged);
     }
     assert.equal(path.length,0,'the clicked flight completes');
   };
   for(let step=1;step<ROOF_STAIR_ROUTE.length;step++){
-    walkTo(ROOF_STAIR_ROUTE[step]);assert.equal(body.stairStep,step+1);assert.deepEqual({x:body.x,y:body.y},ROOF_STAIR_ROUTE[step]);
+    walkTo(ROOF_STAIR_ROUTE[step],step%2===0);assert.equal(body.stairStep,step+1);assert.deepEqual({x:body.x,y:body.y},ROOF_STAIR_ROUTE[step]);
   }
   for(let index=ROOF_STAIR_ROUTE.length-2;index>=0;index--){
-    walkTo(ROOF_STAIR_ROUTE[index]);
+    walkTo(ROOF_STAIR_ROUTE[index],index%2===0);
     if(index){assert.equal(body.stairDirection,-1);assert.deepEqual({x:body.x,y:body.y},ROOF_STAIR_ROUTE[index]);}
   }
   assert.equal(body.stairStep,0);assert.equal(body.stairDirection,1);assert(body.y<STREET_ROOF_STAIRS.foot.y-7);
@@ -301,7 +320,7 @@ test('prediction and replay keep paused and moving stair positions on the same f
     const step=local.stairStep!,a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step];
     const correct={x:Math.sign(b.x-a.x),y:b.x===a.x?-1:0};
     const input=frame%4===0?{x:0,y:0}:frame%7===0?{x:1,y:1}:correct;
-    prediction.step(local,input.x,input.y,16);
+    prediction.step(local,input.x,input.y,16,frame%7<4);
     if(frame%3===0){
       prediction.flush(batch=>{for(const input of batch){applyMovementInput(server,input);acknowledged=input.seq;}});
       const replay=prediction.reconcile(server,acknowledged);

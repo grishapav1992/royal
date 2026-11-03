@@ -885,7 +885,7 @@ export class RoomScene extends Phaser.Scene {
         const input = String(dx) + ',' + String(dy) + (sprint && (dx || dy) ? ',sprint' : '');
         const previousInput = this.lastInput;
         if (this.networkSelf && !dx && !dy && this.player.path.length) {
-          advanceClickMovement(this.player, this.player.path, inputMs, this.prediction, this.guard.getState());
+          advanceClickMovement(this.player, this.player.path, inputMs, this.prediction, this.guard.getState(),sprint);
           this.lastInput = 'route';
           if (!this.player.path.length) this.endPrediction();
         } else if (this.networkSelf && (dx || dy || input !== this.lastInput)) {
@@ -908,7 +908,7 @@ export class RoomScene extends Phaser.Scene {
           const speed = (sprint ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * impaired.speedMultiplier * dt;
           moving = this.move(this.player, impaired.x * speed, impaired.y * speed);
         }
-      } else if (!this.player.seat && this.player.action!=='drink') moving = this.follow(this.player, dt, onStairs?PLAYER_SPEED*ROOF_STAIR_SPEED_SCALE:PLAYER_SPRINT_SPEED);
+      } else if (!this.player.seat && this.player.action!=='drink') moving = this.follow(this.player, dt, onStairs?(sprint?PLAYER_SPRINT_SPEED:PLAYER_SPEED)*ROOF_STAIR_SPEED_SCALE:PLAYER_SPRINT_SPEED);
       if (!this.network) this.animateActor(this.player, time, moving);
       this.halo.setPosition(this.player.sprite.x,this.player.sprite.y).setDepth(this.player.sprite.depth-2);
       if(this.pendingLounge) {
