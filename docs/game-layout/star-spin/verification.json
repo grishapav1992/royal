@@ -1,0 +1,637 @@
+{
+  "date": "2026-11-03",
+  "gameId": "studio-wild-nudge",
+  "status": "verified-local-only",
+  "productionPublished": false,
+  "sourceBaseline": "73c06172ed88979b4a6cad96addbad14dc1f8dda",
+  "package": "1.5.0-dfaacbc6bb0f",
+  "packageSourceSha256": "dfaacbc6bb0fd204ad71935485c12c645c3d36a5c18fdfa296bf91a443bb55ef",
+  "manifestSha256": "1ddebb56a1b8331c1e488bff0075a8d5c75a9a005442cd170062fa6155fbbbe6",
+  "sourceFiles": {
+    "games/wild-nudge/GalacticAudio.ts": "da9dd8e60ad6fe9d164241ce3fa700607064df22424fa93a0c7daa98dd4799e0",
+    "games/wild-nudge/GalacticReactorUI.ts": "64eca6bb38e139520ea97cc62468b294f7d6b13baf26330fee2b38147c9cc06b",
+    "games/wild-nudge/StarSpinCharacter.ts": "af665a3bf2b89c5727773868656fd5513022bc81993d4423a1c098689408b773",
+    "games/wild-nudge/StarSpinCollection.ts": "121986376eee9b315e05ab106671984db62b43baa3045e5c380ff6e579f698b3",
+    "games/wild-nudge/StarSpinLayout.ts": "be6fde645112de9d089166bf5122f201c0a50dd3f1b9c181b483ae6d36241d9a",
+    "games/wild-nudge/entry.ts": "cc7a4613bb668d8425f4fcb516207523e6a917da4e6ab64148ee1312462535bb",
+    "games/wild-nudge/reactor.css": "e588f6f98346df4052d4544dd39ba5da22fbdd38a04f587fef9266c1cc6706d2",
+    "src/modules/GameHostContract.ts": "ead24006bf5e273d25c80f1077f910c905002e7a185ce8767044c845e57fe9e3",
+    "src/shared/caribbeanTreasuresMath.ts": "816ec08e3f6f6e1c40c19d6f4ec831cb126419e5fc6a98aa85acfa256965fe5a",
+    "src/shared/forestHeartMath.ts": "40b7a564bd4e501dcbbcebe6f3e452558b635bdeb0578b56aaa72b14a6a77d10",
+    "src/shared/gameStakes.ts": "92465316e0c40809ded5766a4859580b90f172fbe75309b33fc2c1b51573f343",
+    "src/shared/neopolisMath.ts": "cc11d30b13b9e6208bdbcde6af7a04d8d565583ddf88bd11347fbffb55373e29",
+    "src/shared/neopolisStakePayouts.ts": "1faf717d2225d499a080f001c4fbab6030276280ced163bb66ef65c88d0ad499",
+    "src/shared/roundPrecision.ts": "7c6e2f779af22150a1881ba597cdad36752f1da232ef0c40e43fb7db0a86c02b",
+    "src/shared/starSpinCollection.ts": "b58b4347a5b447080b07ec30282a369bb36315071533c0fcdc95c58b8f3e48d1",
+    "src/shared/walletAccount.ts": "de458b6a0a4c4f6a21ef3b4c21b14ccdd60587f032993176d08d0e2acf1f3615",
+    "src/shared/wildNudge.ts": "de36b83b823d2fd48f69bb2aa0c383a44ffbb80ec287e759dd1115db23775624",
+    "src/shared/wildNudgeData.json": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8",
+    "src/shared/wildNudgeMath.ts": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74",
+    "src/shared/wildNudgeStakes.ts": "b038121718a674dd88578b9ace2c219e6f226a05372919a87e87b2dcc5afb54f",
+    "src/ui/GameLayoutPolicy.ts": "f92017a5e09a9af72e86328af46e323c2f0ac24161dde1d7ac90244d3eabfea3"
+  },
+  "scope": {
+    "mathematicsChanged": false,
+    "walletOrTransportChanged": false,
+    "collectionProgressChanged": false,
+    "animationOrAudioAssetsChanged": false,
+    "catalogueChanged": false,
+    "sharedHostChanged": false
+  },
+  "layout": {
+    "connectedHost": true,
+    "measurements": [
+      {
+        "width": 2206,
+        "height": 1291,
+        "profile": "full",
+        "root": {
+          "x": 3,
+          "y": 51,
+          "width": 1840,
+          "height": 1237,
+          "right": 1843,
+          "bottom": 1288
+        },
+        "board": {
+          "x": 234,
+          "y": 342.5,
+          "width": 1000,
+          "height": 600,
+          "right": 1234,
+          "bottom": 942.5
+        },
+        "stage": {
+          "x": 213,
+          "y": 161,
+          "width": 1042,
+          "height": 963,
+          "right": 1255,
+          "bottom": 1124
+        },
+        "failures": []
+      },
+      {
+        "width": 1440,
+        "height": 1000,
+        "profile": "full",
+        "root": {
+          "x": 3,
+          "y": 51,
+          "width": 1102.8125,
+          "height": 946,
+          "right": 1105.8125,
+          "bottom": 997
+        },
+        "board": {
+          "x": 49.984375,
+          "y": 278,
+          "width": 730,
+          "height": 438,
+          "right": 779.984375,
+          "bottom": 716
+        },
+        "stage": {
+          "x": 41.796875,
+          "y": 161,
+          "width": 746.375,
+          "height": 672,
+          "right": 788.171875,
+          "bottom": 833
+        },
+        "failures": []
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "profile": "full",
+        "root": {
+          "x": 3,
+          "y": 51,
+          "width": 979.609375,
+          "height": 666,
+          "right": 982.609375,
+          "bottom": 717
+        },
+        "board": {
+          "x": 46.796875,
+          "y": 169.796875,
+          "width": 624,
+          "height": 374.390625,
+          "right": 670.796875,
+          "bottom": 544.1875
+        },
+        "stage": {
+          "x": 38.59375,
+          "y": 161,
+          "width": 640.421875,
+          "height": 392,
+          "right": 679.015625,
+          "bottom": 553
+        },
+        "failures": []
+      },
+      {
+        "width": 1024,
+        "height": 768,
+        "profile": "full",
+        "root": {
+          "x": 3,
+          "y": 51,
+          "width": 1018,
+          "height": 714,
+          "right": 1021,
+          "bottom": 765
+        },
+        "board": {
+          "x": 41.5,
+          "y": 179.09375,
+          "width": 673,
+          "height": 403.796875,
+          "right": 714.5,
+          "bottom": 582.890625
+        },
+        "stage": {
+          "x": 33.46875,
+          "y": 161,
+          "width": 689.0625,
+          "height": 440,
+          "right": 722.53125,
+          "bottom": 601
+        },
+        "failures": []
+      },
+      {
+        "width": 768,
+        "height": 1024,
+        "profile": "portrait",
+        "root": {
+          "x": 3,
+          "y": 51,
+          "width": 762,
+          "height": 970,
+          "right": 765,
+          "bottom": 1021
+        },
+        "board": {
+          "x": 29,
+          "y": 385,
+          "width": 710,
+          "height": 426,
+          "right": 739,
+          "bottom": 811
+        },
+        "stage": {
+          "x": 21,
+          "y": 371,
+          "width": 726,
+          "height": 454,
+          "right": 747,
+          "bottom": 825
+        },
+        "failures": []
+      },
+      {
+        "width": 800,
+        "height": 600,
+        "profile": "landscape",
+        "root": {
+          "x": 3,
+          "y": 51,
+          "width": 794,
+          "height": 546,
+          "right": 797,
+          "bottom": 597
+        },
+        "board": {
+          "x": 31,
+          "y": 191.203125,
+          "width": 536,
+          "height": 321.59375,
+          "right": 567,
+          "bottom": 512.796875
+        },
+        "stage": {
+          "x": 23,
+          "y": 133,
+          "width": 552,
+          "height": 438,
+          "right": 575,
+          "bottom": 571
+        },
+        "failures": []
+      },
+      {
+        "width": 707,
+        "height": 447,
+        "profile": "landscape",
+        "root": {
+          "x": 3,
+          "y": 51,
+          "width": 701,
+          "height": 393,
+          "right": 704,
+          "bottom": 444
+        },
+        "board": {
+          "x": 31,
+          "y": 141.09375,
+          "width": 443,
+          "height": 265.796875,
+          "right": 474,
+          "bottom": 406.890625
+        },
+        "stage": {
+          "x": 23,
+          "y": 130,
+          "width": 459,
+          "height": 288,
+          "right": 482,
+          "bottom": 418
+        },
+        "failures": []
+      },
+      {
+        "width": 640,
+        "height": 480,
+        "profile": "landscape",
+        "root": {
+          "x": 3,
+          "y": 51,
+          "width": 634,
+          "height": 426,
+          "right": 637,
+          "bottom": 477
+        },
+        "board": {
+          "x": 31,
+          "y": 177.703125,
+          "width": 376,
+          "height": 225.59375,
+          "right": 407,
+          "bottom": 403.296875
+        },
+        "stage": {
+          "x": 23,
+          "y": 130,
+          "width": 392,
+          "height": 321,
+          "right": 415,
+          "bottom": 451
+        },
+        "failures": []
+      },
+      {
+        "width": 500,
+        "height": 760,
+        "profile": "portrait",
+        "root": {
+          "x": 3,
+          "y": 51,
+          "width": 494,
+          "height": 706,
+          "right": 497,
+          "bottom": 757
+        },
+        "board": {
+          "x": 23,
+          "y": 278.203125,
+          "width": 454,
+          "height": 272.390625,
+          "right": 477,
+          "bottom": 550.59375
+        },
+        "stage": {
+          "x": 15,
+          "y": 267.8125,
+          "width": 470,
+          "height": 293.1875,
+          "right": 485,
+          "bottom": 561
+        },
+        "failures": []
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "profile": "portrait",
+        "root": {
+          "x": 3,
+          "y": 51,
+          "width": 384,
+          "height": 790,
+          "right": 387,
+          "bottom": 841
+        },
+        "board": {
+          "x": 23,
+          "y": 428.203125,
+          "width": 344,
+          "height": 206.390625,
+          "right": 367,
+          "bottom": 634.59375
+        },
+        "stage": {
+          "x": 15,
+          "y": 417.8125,
+          "width": 360,
+          "height": 227.1875,
+          "right": 375,
+          "bottom": 645
+        },
+        "failures": []
+      },
+      {
+        "width": 320,
+        "height": 568,
+        "profile": "portrait",
+        "root": {
+          "x": 3,
+          "y": 51,
+          "width": 314,
+          "height": 514,
+          "right": 317,
+          "bottom": 565
+        },
+        "board": {
+          "x": 43.5,
+          "y": 221.09375,
+          "width": 233,
+          "height": 139.796875,
+          "right": 276.5,
+          "bottom": 360.890625
+        },
+        "stage": {
+          "x": 15,
+          "y": 213,
+          "width": 290,
+          "height": 156,
+          "right": 305,
+          "bottom": 369
+        },
+        "failures": []
+      },
+      {
+        "width": 844,
+        "height": 390,
+        "profile": "landscape",
+        "root": {
+          "x": 3,
+          "y": 51,
+          "width": 838,
+          "height": 336,
+          "right": 841,
+          "bottom": 387
+        },
+        "board": {
+          "x": 142,
+          "y": 138.09375,
+          "width": 358,
+          "height": 214.796875,
+          "right": 500,
+          "bottom": 352.890625
+        },
+        "stage": {
+          "x": 23,
+          "y": 130,
+          "width": 596,
+          "height": 231,
+          "right": 619,
+          "bottom": 361
+        },
+        "failures": []
+      },
+      {
+        "width": 568,
+        "height": 320,
+        "profile": "landscape",
+        "root": {
+          "x": 3,
+          "y": 51,
+          "width": 562,
+          "height": 266,
+          "right": 565,
+          "bottom": 317
+        },
+        "board": {
+          "x": 62.5,
+          "y": 138.203125,
+          "width": 241,
+          "height": 144.59375,
+          "right": 303.5,
+          "bottom": 282.796875
+        },
+        "stage": {
+          "x": 17,
+          "y": 130,
+          "width": 332,
+          "height": 161,
+          "right": 349,
+          "bottom": 291
+        },
+        "failures": []
+      }
+    ]
+  },
+  "panelDriftCssPx": 0,
+  "browserRuns": [
+    {
+      "run": "main",
+      "cases": [
+        {
+          "name": "ordinary paid spin and all eight free continuations use the real host and common wallet",
+          "passed": true,
+          "tests": [
+            {
+              "status": "expected",
+              "results": [
+                "passed"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "all twenty lines cost ten cents and the displayed payout matches the committed fractional receipt",
+          "passed": true,
+          "tests": [
+            {
+              "status": "expected",
+              "results": [
+                "passed"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Stop during an accepted request preserves that round and prevents another paid start",
+          "passed": true,
+          "tests": [
+            {
+              "status": "expected",
+              "results": [
+                "passed"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "a committed reply lost on the wire recovers the same UUID once",
+          "passed": true,
+          "tests": [
+            {
+              "status": "expected",
+              "results": [
+                "passed"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "closing a saved bonus restores it quietly and never restarts autoplay",
+          "passed": false,
+          "tests": [
+            {
+              "status": "unexpected",
+              "results": [
+                "failed"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "priority layout gives reels readable space, full touch controls and connected chat",
+          "passed": true,
+          "tests": [
+            {
+              "status": "expected",
+              "results": [
+                "passed"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "responsive host keeps chat, settings and controls reachable without moving the lower panels",
+          "passed": true,
+          "tests": [
+            {
+              "status": "expected",
+              "results": [
+                "passed"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "settings persist, Escape closes only the inner panel and typing in chat cannot start a spin",
+          "passed": true,
+          "tests": [
+            {
+              "status": "expected",
+              "results": [
+                "passed"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "run": "final-flow",
+      "cases": [
+        {
+          "name": "Rive Lyra renders moving parts, reacts to confirmed nudges and supports reduced motion",
+          "passed": true,
+          "tests": [
+            {
+              "status": "expected",
+              "results": [
+                "passed"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "all four Rive companions retain their identity, react to paid outcomes and stop when hidden on mobile",
+          "passed": true,
+          "tests": [
+            {
+              "status": "expected",
+              "results": [
+                "passed"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "finite autoplay makes ten paid starts, completes their bonuses and never runs an eleventh",
+          "passed": true,
+          "tests": [
+            {
+              "status": "expected",
+              "results": [
+                "passed"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "closing a saved bonus restores it quietly and never restarts autoplay",
+          "passed": true,
+          "tests": [
+            {
+              "status": "expected",
+              "results": [
+                "passed"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "rotation preserves an accepted spin, bonus counters and the chosen autoplay budget",
+          "passed": true,
+          "tests": [
+            {
+              "status": "expected",
+              "results": [
+                "passed"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "checks": {
+    "typecheck": "passed, root and independent module",
+    "independentModuleBuild": "passed",
+    "rtpGate": {
+      "profiles": 38,
+      "stakePolicies": 20,
+      "admissions": 20,
+      "unchangedUnqualifiedLegacy": 114
+    },
+    "mandatoryWalletSuite": {
+      "passed": 19,
+      "failed": 0
+    },
+    "moduleValidation": {
+      "passed": 6,
+      "initialHostBundleFailure": "Existing fixture lacked a WebP loader for the already published catalogue poster. Added the real dataurl loader; same renderer boundary check passed.",
+      "correctedHostBundlePassed": true
+    }
+  },
+  "limitations": [
+    "Chrome browser viewport emulation, no physical phone or tablet.",
+    "Existing audio and Rive assets preserved. Subjective listening quality was not retested.",
+    "Shared project brain and graph queries were unavailable; local sources and recorded UI policy inspected directly.",
+    "Two Playwright processes briefly shared an output directory and caused trace ENOENT and an invalid video capture. Stopped the second owned process and reran the affected flow tests sequentially in final-flow: five passed.",
+    "The unchanged Linux publisher test cannot run on native Windows because fcntl is unavailable: ten import failures and one pass. No publisher code was changed and no production publication was attempted."
+  ],
+  "screenshots": {
+    "desktop.png": "bde6f0481de2bf2ba6788bb6856e9cfb28ec9b356a8f30b48eb32d4353f425e3",
+    "portrait.png": "4050f40bc6e4864c591c762710c0070a6e53c2519ce8daef91d38f57947fb652",
+    "landscape.png": "b258793f788748bf026fe86de9ace9e4c3b33b8639d27807329ba1cd4ffaf793",
+    "small-portrait.png": "b3aaa97f04cc68896dade1b30a9c73c50ef62d4d8885fe978d35a22073a3ffc8"
+  }
+}

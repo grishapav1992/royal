@@ -132,7 +132,7 @@ test('the hall bundle contains host services without importing any independent g
   for (const match of source.matchAll(/from\s+['"]\.\.\/\.\.\/(src\/(?:ui|game)\/[^'"]+)['"]/g)) implementations.add(match[1].endsWith('.ts') ? match[1] : match[1] + '.ts');
  }
  assert.ok(implementations.size > 20, 'The inventory must identify actual renderer boundaries');
- const result = await build({ entryPoints: ['src/main.ts'], bundle: true, write: false, metafile: true, packages: 'external', platform: 'browser', format: 'esm', loader: { '.css': 'empty' }, logLevel: 'silent' });
+ const result = await build({ entryPoints: ['src/main.ts'], bundle: true, write: false, metafile: true, packages: 'external', platform: 'browser', format: 'esm', loader: { '.css': 'empty', '.webp': 'dataurl' }, logLevel: 'silent' });
  const eager = Object.keys(result.metafile!.inputs).filter(name => implementations.has(name));
  assert.deepEqual(eager, [], 'Independent game implementations must enter through their versioned packages');
 });
