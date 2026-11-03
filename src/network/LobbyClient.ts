@@ -5,21 +5,31 @@ import type { MiraView } from '../shared/miraRoutine';
 import type { AmbientGuestView } from '../shared/ambientGuests';
 import { Client, ErrorCode, type Room } from '@colyseus/sdk';
 import type { LobbyState } from '../../server/state';
-import type { PlayerView, ChatMessage } from '../shared/world';
+import type { PlayerView, ChatMessage, HallId } from '../shared/world';
+import type { ElevatorResult } from '../shared/elevator';
 import { mergeActivities, mergePianoNote, type ActivitiesMessage, type ActivitiesState, type PianoNote } from '../shared/activities';
 import { savedSession, savedRoom, rememberSession, forgetSession } from './sessionRecovery';
+import { configureReconnection, lobbyMatchmakingFetch } from './reconnection';
+import { LOBBY_RECOVERY_WINDOW_MS } from '../shared/lobbyConnection';
 import type { CabinetPlayResult } from '../shared/cabinetSeating';
 import type { ChatRequest, ChatResult } from '../shared/chat';
 import type { PvpSnapshot } from '../shared/pvp';
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
 export class LobbyClient {
-  private client = new Client(import.meta.env.VITE_SERVER_URL || `${location.origin}${import.meta.env.DEV ? '/multiplayer' : ''}`);
+  private client = new Client(import.meta.env.VITE_SERVER_URL || `${location.origin}${import.meta.env.DEV ? '/multiplayer' : ''}`, { fetchFn: lobbyMatchmakingFetch });
   private room?: Room<LobbyState>;
   private revision=0;
   private joining?: Promise<void>;
   private generation = 0;
+  private recovery?: Promise<void>;
+  private recoveryWait?: { timer: ReturnType<typeof setTimeout>; cancel: () => void };
+  private lastCloseCode?: number;
+  private recoveryAttempts = 0;
   private activities?:ActivitiesState;
   private cabinetRequest = 0;
+  private elevatorRequest = 0;
+  private hall?: HallId;
+  private pendingElevator?: { target: HallId; requestId: number; revision?: number; finish: (accepted: boolean) => void; timer: ReturnType<typeof setTimeout> };
   private releaseCabinetWhenConnected = false;
   private pendingCabinet?: { id: string; requestId: number; finish: (accepted: boolean) => void; timer: ReturnType<typeof setTimeout> };
   status: ConnectionStatus = 'disconnected';
@@ -33,7 +43,7 @@ export class LobbyClient {
     ejected: (until: number) => void;
     checking: (value: boolean) => void;
     status: (status: ConnectionStatus) => void;
-    joined: (roomId: string, sessionId: string) => void;
+    joined: (roomId: string, sessionId: string, recovering?: boolean) => void;
     players: (players: PlayerView[], selfId: string) => void;
     chat: (message: ChatMessage) => void;
     delivery?: (result: ChatResult) => void;
@@ -45,6 +55,7 @@ export class LobbyClient {
     note: (note: PianoNote) => void;
   }) {}
   join(roomId?: string, returningToRoom = false, accountId?: string): Promise<void> {
+    if (this.recovery) return this.recovery;
     if (this.joining) return this.joining;
     if (this.room) return Promise.resolve();
     const generation = ++this.generation;
@@ -54,10 +65,10 @@ export class LobbyClient {
     this.joining = joining;
     return joining;
   }
-  private async joinRoom(roomId: string | undefined, returningToRoom: boolean, accountId: string | undefined, generation: number) {
-    this.releaseCabinetWhenConnected = false;
+  private async joinRoom(roomId: string | undefined, returningToRoom: boolean, accountId: string | undefined, generation: number, recovering = false) {
+    if (!recovering) this.releaseCabinetWhenConnected = false;
     this.activities=undefined;
-    this.setStatus('connecting');
+    this.setStatus(recovering ? 'reconnecting' : 'connecting');
     try {
       const explicitRoom=!!roomId;roomId??=savedRoom(accountId);
       let room: Room<LobbyState> | undefined;
@@ -100,8 +111,9 @@ export class LobbyClient {
         if (current()) callback(message);
       });
       // Recover even when the connection drops just after entering the room.
-      room.reconnection.minUptime = 0;
+      configureReconnection(room.reconnection);
       let banUntil = 0;
+      let denied = false;
       onMessage('security', (decision: SecurityDecision) => { if(decision.kind === 'ejecting') banUntil = decision.until; this.events.security(decision); });
       onMessage('ejected', (value: {until: number}) => { banUntil = value.until; this.events.ejected(value.until); });
       onMessage('chat-check', value => this.events.checking(Boolean(value)));
@@ -121,6 +133,17 @@ export class LobbyClient {
         clearTimeout(pending.timer); this.pendingCabinet = undefined;
         if (!result.accepted && result.reason) this.events.notice(translateText(result.reason));
         pending.finish(result.accepted);
+      });
+      onMessage('elevator-result', (result: ElevatorResult) => {
+        const pending = this.pendingElevator;
+        if (!pending || result.requestId !== pending.requestId || result.target !== pending.target) return;
+        if (!result.accepted) {
+          if (result.reason) this.events.notice(translateText(result.reason));
+          this.finishElevator(false);
+        } else if (Number.isSafeInteger(result.revision)) {
+          pending.revision = result.revision;
+          this.confirmElevator();
+        }
       });
       onMessage('activities', (message:ActivitiesMessage) => {
         // Patches received before the initial snapshot cannot establish a baseline.
@@ -142,10 +165,12 @@ export class LobbyClient {
         const players: PlayerView[] = [];
         const serverNow = state.serverNow || Date.now(), localNow = Date.now();
         state.players?.forEach((p, id) => players.push({ id, security: p.security, hall: p.hall as PlayerView['hall'], hallRevision: p.hallRevision, name: p.name, x: p.x, y: p.y, skin: p.skin, appearance: p.appearance, facing: p.facing as PlayerView['facing'], moving: p.moving, connected: p.connected, playing: p.playing, cabinet: p.cabinet, gameReaction: p.gameReaction, gameReactionUntil: p.gameReactionUntil > serverNow ? localNow + p.gameReactionUntil - serverNow : 0, activity: p.activity, ears: p.ears, seat: p.seat, action: p.action as PlayerView['action'], drink: p.drink, actionUntil: p.actionUntil, soberAt: p.soberAt > serverNow ? localNow + p.soberAt - serverNow : 0, inputSeq: p.inputSeq }));
-        this.revision=players.find(p=>p.id===room.sessionId)?.hallRevision??0;
+        const self=players.find(p=>p.id===room.sessionId);
+        this.revision=self?.hallRevision??0;this.hall=self?.hall;
         const guards: GuardView[] = []; state.guards?.forEach(g => guards.push({hall:g.hall as GuardView['hall'],x:g.x,y:g.y,facing:g.facing,phase:g.phase,target:g.target,progress:g.progress,speech:g.speech,routine:g.routine,reply:g.reply}));
         this.events.guards(guards);
         this.events.players(players, room.sessionId);
+        this.confirmElevator();
         const guests:AmbientGuestView[]=[];
         state.guests?.forEach(guest=>guests.push({id:guest.id,name:guest.name,hall:guest.hall as AmbientGuestView['hall'],x:guest.x,y:guest.y,skin:guest.skin,facing:guest.facing as AmbientGuestView['facing'],moving:guest.moving,mood:guest.mood as AmbientGuestView['mood'],drink:guest.drink,seat:guest.seat,destination:guest.destination}));
         this.events.guests(guests);
@@ -154,22 +179,64 @@ export class LobbyClient {
       });
       room.onDrop(() => { if (current()) this.setStatus('reconnecting'); });
       room.onReconnect(() => { if (!current()) return; queueMicrotask(() => { if (current()) rememberSession(room, accountId); }); this.events.checking(false); this.events.npcTime(0,0);this.activities=undefined; this.setStatus('connected'); room.send('stop'); room.send('history'); room.send('activities'); });
-      room.onLeave(code => { if (!current()) return; if(code===4000||code===4003)forgetSession(accountId,room.roomId,room.reconnectionToken); if(code===4003) this.events.ejected(banUntil || Date.now()+600000); if (this.room === room) { this.room = undefined; this.setStatus('disconnected'); } });
-      room.onError((_code, message) => { if (current()) this.events.notice(translateText(message || translateText('Ошибка подключения к залу.'))); });
-      if (recovered) { room.send('stop'); room.send('playing', false); }
-      this.events.joined(room.roomId, room.sessionId);
+      room.onLeave(code => {
+        if (!current()) return;
+        this.lastCloseCode = code;
+        if (code === 4000 || banUntil > Date.now()) forgetSession(accountId, room.roomId, room.reconnectionToken);
+        // The SDK also uses 4003 when reconnection fails. Only a server sanction supplies a ban deadline.
+        if (code === 4003 && banUntil > Date.now()) this.events.ejected(banUntil);
+        this.room = undefined;
+        if (!denied && banUntil <= Date.now() && [1001, 1006, 4001, 4003].includes(code)) {
+          this.recoverRoom(room.roomId, accountId);
+        } else this.setStatus('disconnected');
+      });
+      room.onError((code, message) => {
+        if (!current()) return;
+        if (code === 401 || code === 403) denied = true;
+        if (this.status !== 'reconnecting' || denied) this.events.notice(translateText(message || translateText('Ошибка подключения к залу.')));
+      });
+      if (recovered) { room.send('stop'); if (!recovering) room.send('playing', false); }
+      this.events.joined(room.roomId, room.sessionId, recovering);
       this.setStatus('connected');
       room.send('history');
       room.send('activities');
     } catch (error) {
       if (generation !== this.generation) return;
-      this.setStatus('disconnected');
+      if (!recovering) this.setStatus('disconnected');
       throw error;
     }
+  }
+  private recoverRoom(roomId: string, accountId: string | undefined) {
+    const generation = ++this.generation, deadline = Date.now() + LOBBY_RECOVERY_WINDOW_MS;
+    this.setStatus('reconnecting');
+    const recovery = (async () => {
+      while (generation === this.generation && Date.now() < deadline) {
+        try {
+          this.recoveryAttempts++;
+          await this.joinRoom(roomId, true, accountId, generation, true);
+          return;
+        } catch (error) {
+          if (generation !== this.generation) return;
+          const code = (error as { code?: unknown })?.code;
+          if (code === 401 || code === 403) {
+            this.events.notice(translateText(error instanceof Error ? error.message : 'Ошибка подключения к залу.'));
+            break;
+          }
+        }
+        await new Promise<void>(resolve => {
+          const cancel = () => { this.recoveryWait = undefined; resolve(); };
+          const timer = setTimeout(cancel, Math.min(1000 + Math.random() * 2000, Math.max(0, deadline - Date.now())));
+          this.recoveryWait = { timer, cancel };
+        });
+      }
+      if (generation === this.generation) this.setStatus('disconnected');
+    })().finally(() => { if (this.recovery === recovery) this.recovery = undefined; });
+    this.recovery = recovery;
   }
   private setStatus(status: ConnectionStatus) {
     this.status = status;
     if (status !== 'connected') this.events.checking(false);
+    if (status !== 'connected') this.finishElevator(false);
     if (status !== 'connected' && this.pendingCabinet) {
       this.releaseCabinetWhenConnected = true;
       const pending = this.pendingCabinet; this.pendingCabinet = undefined;
@@ -196,16 +263,39 @@ export class LobbyClient {
       this.send('cabinet-play', { id, requestId });
     });
   }
+  private finishElevator(accepted: boolean) {
+    const pending = this.pendingElevator;
+    if (!pending) return;
+    this.pendingElevator = undefined;clearTimeout(pending.timer);pending.finish(accepted);
+  }
+  private confirmElevator() {
+    const pending = this.pendingElevator;
+    if (pending?.revision !== undefined && this.hall === pending.target && this.revision >= pending.revision) this.finishElevator(true);
+  }
+  travelByElevator(target: HallId): Promise<boolean> {
+    if (this.status !== 'connected' || !this.room || this.pendingElevator) return Promise.resolve(false);
+    return new Promise(resolve => {
+      const requestId = ++this.elevatorRequest;
+      const timer = setTimeout(() => {
+        this.events.notice(translateText('Не удалось подтвердить поездку. Проверь подключение и попробуй ещё раз.'));
+        this.finishElevator(false);
+      }, 8000);
+      this.pendingElevator = { target, requestId, finish: resolve, timer };
+      this.send('elevator', { target, requestId, revision: this.revision });
+    });
+  }
   send(type: string, data?: unknown): boolean {
     if (this.status !== 'connected' || !this.room) return false;
     this.room.send(type, type==='inputs'?{revision:this.revision,inputs:data}:type==='target'||type==='move'?{...data as object,revision:this.revision}:data);
     return true;
   }
   sendChat(request: ChatRequest): boolean { return this.send('chat', request); }
-  getState() { return { status: this.status, roomId: this.room?.roomId, selfId: this.room?.sessionId }; }
+  getState() { return { status: this.status, roomId: this.room?.roomId, selfId: this.room?.sessionId, lastCloseCode: this.lastCloseCode, recoveryAttempts: this.recoveryAttempts }; }
   leave() {
     this.generation++;
     this.joining = undefined;
+    this.recovery = undefined;
+    if (this.recoveryWait) { clearTimeout(this.recoveryWait.timer); this.recoveryWait.cancel(); }
     forgetSession();
     const room = this.room; this.room = undefined;
     this.setStatus('disconnected');

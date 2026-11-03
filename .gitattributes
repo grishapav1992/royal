@@ -1,2 +1,2 @@
-# Qualification references bind exact JSON bytes on Windows and Linux.
+# Qualification evidence includes hashes of exact reference JSON bytes.
 docs/game-math/qualifications/*.json text eol=lf

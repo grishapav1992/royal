@@ -1,23 +1,23 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { Client, MatchMakeError, Room } from '@colyseus/sdk';
-import { configureReconnection, matchmakingError } from '../src/network/reconnection';
+import { configureReconnection, matchmakingError, lobbyMatchmakingFetch } from '../src/network/reconnection';
 
-test('reconnection retry timers fit within the 20 second seat reservation and keep SDK state', () => {
+test('reconnection retry timers fit within the 90 second seat reservation and keep SDK state', () => {
   const room = new Room('lobby'), settings = room.reconnection;
   const queue = settings.enqueuedMessages;
   settings.enabled = false;
   configureReconnection(settings, () => 1);
   let maximumWait = 0;
   assert.equal(settings.minUptime, 0);
-  assert(settings.maxRetries > 0 && settings.maxRetries <= 8);
+  assert(settings.maxRetries > 0 && settings.maxRetries <= 20);
   for (let attempt = 1; attempt <= settings.maxRetries; attempt++) {
     const backoff = settings.backoff(attempt, settings.delay);
     const scheduled = Math.min(settings.maxDelay, Math.max(settings.minDelay, backoff));
-    assert(scheduled >= 150 && scheduled <= 3000);
+    assert(scheduled >= 250 && scheduled <= 3000);
     maximumWait += scheduled;
   }
-  assert(maximumWait < 20000, 'Retry timers must leave room for handshake time');
+  assert(maximumWait < 60000, 'Retry timers must leave room for handshake time');
   assert.equal(settings.enabled, false);
   assert.equal(settings.enqueuedMessages, queue);
 });
@@ -59,4 +59,37 @@ test('authorization, bans, missing rooms and network errors preserve the origina
     assert.equal(matchmakingError(error), error);
   }
   for (const error of [undefined, null, 'failure']) assert.equal(matchmakingError(error), error);
+});
+
+test('a stalled matchmaking request is aborted once without changing credentials or retrying', async context => {
+  context.mock.timers.enable({ apis: ['setTimeout'] });
+  let calls = 0;
+  context.mock.method(globalThis, 'fetch', (_input: unknown, init: RequestInit) => {
+    calls++; assert.equal(init.credentials, 'include'); assert.equal(init.method, 'POST');
+    return new Promise((_resolve, reject) => init.signal!.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), { once: true }));
+  });
+  const pending = assert.rejects(lobbyMatchmakingFetch('http://fixture/matchmake', { method: 'POST', credentials: 'include' }), { name: 'AbortError' });
+  context.mock.timers.tick(10000); await pending; assert.equal(calls, 1);
+});
+
+test('an external cancellation stops matchmaking promptly and cancels its deadline timer', async context => {
+  context.mock.timers.enable({ apis: ['setTimeout'] });
+  const controller = new AbortController(); let aborts = 0;
+  context.mock.method(globalThis, 'fetch', (_input: unknown, init: RequestInit) => new Promise((_resolve, reject) => {
+    init.signal!.addEventListener('abort', () => { aborts++; reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
+  }));
+  const pending = assert.rejects(lobbyMatchmakingFetch('http://fixture/matchmake', { signal: controller.signal }), { name: 'AbortError' });
+  controller.abort(); await pending; context.mock.timers.tick(10000); assert.equal(aborts, 1);
+});
+
+test('the matchmaking deadline also covers a response body that stalls after headers', async context => {
+  context.mock.timers.enable({ apis: ['setTimeout'] });
+  context.mock.method(globalThis, 'fetch', async (_input: unknown, init: RequestInit) => {
+    const stream = new ReadableStream({ start(controller) {
+      init.signal!.addEventListener('abort', () => controller.error(new DOMException('Aborted', 'AbortError')), { once: true });
+    } });
+    return new Response(stream, { headers: { 'Content-Type': 'application/json' } });
+  });
+  const pending = assert.rejects(lobbyMatchmakingFetch('http://fixture/matchmake'), { name: 'AbortError' });
+  await Promise.resolve(); context.mock.timers.tick(10000); await pending;
 });

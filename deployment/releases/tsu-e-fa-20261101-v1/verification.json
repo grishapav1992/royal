@@ -1,0 +1,418 @@
+{
+  "release": "tsu-e-fa-20261101-v1",
+  "published": true,
+  "publishedDateUtc": "2026-11-01",
+  "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "f2be9fd0c951c4fb5c380207bcf2308d0ba1dbe4",
+  "baselineCommit": "7beace3ee7c3450e37b8609dad241308e33640a8",
+  "image": "sha256:9cc50121ed98cb289318e430d773a586e5dadd2856842da5e8389e298e15fa31",
+  "previousImage": "sha256:13e5249bdd9efe6611944be94eb4f39d78de945283b20e04ec620f17e5c05f18",
+  "package": "1.3.2-878d142cb99b",
+  "publication": {
+    "published": true,
+    "preparedImage": "sha256:9cc50121ed98cb289318e430d773a586e5dadd2856842da5e8389e298e15fa31",
+    "runningImage": "sha256:9cc50121ed98cb289318e430d773a586e5dadd2856842da5e8389e298e15fa31",
+    "containerRestarted": true,
+    "sourceCommit": "f2be9fd0c951c4fb5c380207bcf2308d0ba1dbe4",
+    "changedSources": 39,
+    "clientDeltaFiles": 3,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 1,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 13,
+    "addedGames": [
+      "tsu-e-fa"
+    ],
+    "restoredGames": [],
+    "activeGames": [
+      "studio-caramel-carnival",
+      "studio-last-convoy",
+      "studio-nitro-run",
+      "studio-meme-overload",
+      "studio-velvet-reign",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "royal-plinko",
+      "royal-roulette",
+      "github-crash",
+      "flag-battle",
+      "studio-forest-heart",
+      "studio-caribbean-treasures",
+      "studio-cosmic-escape",
+      "studio-flooded-temple",
+      "studio-afterglow",
+      "studio-dracona",
+      "studio-neopolis"
+    ],
+    "package": "1.3.2-878d142cb99b"
+  },
+  "backup": {
+    "backup": "/opt/royal-backups/tsu-e-fa-20261101-v1",
+    "sourceArchive": "/opt/royal-backups/tsu-e-fa-20261101-v1/source.tgz",
+    "sourceArchiveSha256": "5190a02961ec95ff81b1224f935565f04245293a0a33ad836bd07192f7793e8a",
+    "bytes": 74267,
+    "previousImage": "sha256:13e5249bdd9efe6611944be94eb4f39d78de945283b20e04ec620f17e5c05f18",
+    "hostContractSha256": "107b251fa409c6e6d85d69a1a02650bcb808481e44aaa821e6788b7afab11d17",
+    "databaseRestored": false,
+    "status": "Historical original backup verified at publication, then retired by completed retention after the immediate successor; current complete rollback now preserves our application image in /opt/royal-backups/lobby-connection-20261101-v1"
+  },
+  "module": {
+    "verified": true,
+    "gameId": "tsu-e-fa",
+    "version": "1.3.2-878d142cb99b",
+    "bytes": 1458820,
+    "files": 3,
+    "beforeSha256": "none",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "03ff5ab3fb697596abe39718d826fecde226898abf2cd35a0280b499e50a5cd7",
+    "history": "/opt/royal-game-modules-state/history/20261101T203745-774a18936dae4e2abc56aa486fc090c4.json"
+  },
+  "rules": {
+    "minimumStakeCents": 10,
+    "freeNewGames": false,
+    "winsRequired": 2,
+    "maximumDecisiveRounds": 3,
+    "ties": "replay without extra debit",
+    "potFeePercent": 5,
+    "choice": "server-held immutable private choice before chant; reveal on three",
+    "reconnectBudgetSecondsPerPlayer": 60,
+    "wallet": "common integer virtual USDT wallet, UUID recovery",
+    "acceptedHistoricalRules": [
+      1,
+      2,
+      3
+    ]
+  },
+  "reviewFixes": [
+    "Observed disconnection pauses deadlines before global timeout settlement",
+    "Stale acknowledgments cannot roll displayed wallet or snapshot backwards",
+    "Paused chant preserves remaining audio beats",
+    "Finished match clears surrender confirmation"
+  ],
+  "validation": {
+    "serverWalletClientAudioTests": 37,
+    "builtHostBrowserTests": 5,
+    "installerAndCleanupTests": 11,
+    "sharedDockerBuilderTests": 7,
+    "rtpProfiles": 37,
+    "stakePolicies": 19,
+    "stakeAdmissions": 19,
+    "unchangedUnqualifiedLegacyProfiles": 114,
+    "releasePlanPrepareVerifyAndGitHub": true,
+    "publicBeforeChecks": 26,
+    "publicAfterChecks": 30,
+    "publicAfterPassed": true,
+    "publicGuestBrowser": {
+      "mode": "after",
+      "passed": true,
+      "rows": [
+        {
+          "width": 1440,
+          "height": 1000,
+          "overflow": 0,
+          "canvas": 1,
+          "hall": "arcade",
+          "offlineGuest": true
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "overflow": 0,
+          "canvas": 1,
+          "hall": "arcade",
+          "offlineGuest": true
+        }
+      ],
+      "errors": [],
+      "failedAssets": [],
+      "productionAccountsCreated": false,
+      "productionWagersCreated": false,
+      "scope": "Guest rendering; connected multiplayer and wallet flow verified on the isolated actual build."
+    },
+    "audio": {
+      "beats": 5,
+      "reveals": 1,
+      "estimatedRevealSkewMs": 1.2360000119206234,
+      "masterOutputVerified": true,
+      "muteAndReopenQuiet": true,
+      "scope": "Browser output-clock estimate and rendered frame, not acoustic latency or subjective listening quality."
+    },
+    "actualBuiltHostScenarios": [
+      "invitation, refusal, terms revision and withdrawing readiness",
+      "private signs, full best-of-three match, reconnect/reload and exact wallet credit",
+      "real offline pause/recover and surrender",
+      "finished match dismisses surrender overlay",
+      "output-clock sound, mute and close/reopen"
+    ],
+    "productionAccountsWagersMessagesCreated": false,
+    "limitations": [
+      "No physical phone test",
+      "Audio clock and frame estimates do not establish acoustic latency or subjective quality",
+      "Not a full penetration test"
+    ]
+  },
+  "maintenance": [
+    {
+      "path": "/opt/royal-maintenance/automatic-runs/run-80f3bcba6a6b4ac681a13398b33ddcd1/summary.json",
+      "result": {
+        "startedAt": 1793565806.7413723,
+        "status": "completed",
+        "freeBefore": 11664097280,
+        "release": "tsu-e-fa-20261101-v1",
+        "sourceCommit": "f2be9fd0c951c4fb5c380207bcf2308d0ba1dbe4",
+        "currentImage": "sha256:9cc50121ed98cb289318e430d773a586e5dadd2856842da5e8389e298e15fa31",
+        "rollbackImage": "sha256:13e5249bdd9efe6611944be94eb4f39d78de945283b20e04ec620f17e5c05f18",
+        "plannedEntries": 0,
+        "plannedImages": 1,
+        "preservedFinancialFiles": 105,
+        "removedEntries": 0,
+        "removedImageTags": 3,
+        "dockerRetainedImages": [],
+        "freeAfter": 11662897152,
+        "containersUnchanged": true,
+        "healthOk": true,
+        "finishedAt": 1793566187.4435225,
+        "durationSeconds": 380.7
+      }
+    }
+  ],
+  "hourlyRetentionTimer": "enabled",
+  "serverCleanup": {
+    "status": "completed",
+    "removed": [
+      {
+        "path": "/opt/royal-releases/tsu-e-fa-20261101-v1/runtime-context",
+        "directory": true,
+        "logicalBytes": 5299251
+      },
+      {
+        "path": "/opt/royal-releases/tsu-e-fa-20261101-v1/transport.tgz",
+        "directory": false,
+        "logicalBytes": 5330476
+      },
+      {
+        "path": "/opt/royal-releases/tsu-e-fa-20261101-v1/transport-ready.tgz",
+        "directory": false,
+        "logicalBytes": 5330119
+      },
+      {
+        "path": "/opt/royal-releases/tsu-e-fa-20261101-v1/transport-current.tgz",
+        "directory": false,
+        "logicalBytes": 5335873
+      }
+    ],
+    "removedLogicalBytes": 21295719,
+    "freeBefore": 11792642048,
+    "freeAfter": 11808669696,
+    "preservedInGitHub": "fb1355588ff0cb71a7ab158e90590559ccd6e854",
+    "sourceCommit": "f2be9fd0c951c4fb5c380207bcf2308d0ba1dbe4",
+    "image": "sha256:9cc50121ed98cb289318e430d773a586e5dadd2856842da5e8389e298e15fa31",
+    "protectedCurrentRelease": "lobby-connection-20261101-v1",
+    "healthyCurrentImage": "sha256:e53a4a3fe0152d8b8034800ccdf2c0c43f49d580ad37326c003e74e619e06e1d",
+    "protectedRollbackBackup": "/opt/royal-backups/lobby-connection-20261101-v1",
+    "backupPreserved": true,
+    "databaseRestored": false,
+    "earlierAttempts": "Stopped before deletion while publication locks were held and while older rollback evidence had been retired; current successor and its unchanged module contract were then explicitly validated"
+  },
+  "localCleanup": {
+    "Status": "blocked",
+    "Reason": "Automatic approval review rejected local temporary build/archive removal: blocked by policy",
+    "RemovedLogicalBytes": 0,
+    "TaskLogicalBytes": 97798386.0,
+    "FreeMeasured": 319670870016,
+    "PreservationMain": "8f353a639ec408b0c83a63fe8c8c1e3053c192eb",
+    "ActiveStandPreserved": true,
+    "CleanupCondition": "Approval policy must permit removal, then re-inventory task-owned files and preserve any subsequent changes before removing obsolete outputs"
+  },
+  "activeLocalWorkException": {
+    "path": "artifacts/work/tsu-e-fa-local/royal",
+    "reason": "User local demonstration stand is still running on ports 5194 and 2694",
+    "cleanupCondition": "Stop the demonstration stand, preserve any subsequent unique changes in GitHub, then remove the extra managed worktree and its build outputs"
+  },
+  "recordedAt": "2026-11-01T21:17:01.761448+00:00",
+  "latestCurrentApplication": {
+    "image": "sha256:e53a4a3fe0152d8b8034800ccdf2c0c43f49d580ad37326c003e74e619e06e1d",
+    "sourceCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
+    "health": "healthy",
+    "release": "lobby-connection-20261101-v1",
+    "containsThisRelease": true
+  },
+  "maintenanceAfterSuccessor": {
+    "startedAt": 1793566622.791423,
+    "status": "completed",
+    "freeBefore": 11635355648,
+    "release": "lobby-connection-20261101-v1",
+    "sourceCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
+    "currentImage": "sha256:e53a4a3fe0152d8b8034800ccdf2c0c43f49d580ad37326c003e74e619e06e1d",
+    "rollbackImage": "sha256:9cc50121ed98cb289318e430d773a586e5dadd2856842da5e8389e298e15fa31",
+    "plannedEntries": 42,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 110,
+    "removedEntries": 42,
+    "removedImageTags": 3,
+    "dockerRetainedImages": [],
+    "freeAfter": 11789811712,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "finishedAt": 1793567168.8426266,
+    "durationSeconds": 546.05
+  },
+  "finalHealth": {
+    "healthy": true,
+    "timerEnabled": true,
+    "serverFreeBytesAfterCleanup": 11808669696,
+    "minimumRequiredBytes": 5368709120
+  },
+  "finalPublicContinuity": {
+    "at": "2026-11-01T21:16:10.127Z",
+    "passed": true,
+    "health": 200,
+    "modulePointersAndAssetsUnchanged": [
+      {
+        "path": "/game-modules/studio-caramel-carnival/active.json",
+        "status": 200,
+        "sha256": "cf13ee32fb3cf858c183c4517afc82936e52fc73e2b0f5222a6ff70e45a76874",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-last-convoy/active.json",
+        "status": 200,
+        "sha256": "f7cdf5a8a32ab6fd57ec54c28f91f359bbff6a6044ebd155629360e3ba63d6b5",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-nitro-run/active.json",
+        "status": 200,
+        "sha256": "b7291d4290685ad8cb33c1ebda9a0f9161d887b3a2923866821ce13fadb28765",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-meme-overload/active.json",
+        "status": 200,
+        "sha256": "7162e4438a4c3e73053714c0a8cdffa670009684ac7a662ecbe0cc792a100ed4",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-velvet-reign/active.json",
+        "status": 200,
+        "sha256": "bbf0ab7f37be8c2a6e71c640ddb60fc890b6d77084d377e031df5d8d76c7109d",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/original-cr-vs-leo/active.json",
+        "status": 200,
+        "sha256": "ecf5dd8bf35137f4ca66982501e20a5c687d1abe6c63e5344cbc66131e36a05e",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/original-jackie-chan/active.json",
+        "status": 200,
+        "sha256": "7ce6f3a09f27195a1ce3b637680030f3b417c713416261690edd070426b9ba7b",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/royal-plinko/active.json",
+        "status": 200,
+        "sha256": "142d2ba7903ca72564c00625421de022521e2564e6477a1a7ec5d6461ae416a6",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/royal-roulette/active.json",
+        "status": 200,
+        "sha256": "ca9865eb25e3278c7e2565a76c9cd138577d009962417ea7ae8e6d78e0c9eada",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/github-crash/active.json",
+        "status": 200,
+        "sha256": "b07441c71edba6eb3f4cbd9b1d66d62e213d65876726e04f2cf8a71454c1bcda",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/flag-battle/active.json",
+        "status": 200,
+        "sha256": "0ac4166814d3d04ecd24112fc62dd22740d1f80d8a83b7a0309b69950084ac26",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-forest-heart/active.json",
+        "status": 200,
+        "sha256": "4ca458eb41d0a1373feb0cfa230179a64c106a4adaff4bad42431498e2f05f70",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-caribbean-treasures/active.json",
+        "status": 200,
+        "sha256": "9a3e51ed9df04543af4c5e972f77afee53c1094cf35b7cc1a655299f768c37a2",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-cosmic-escape/active.json",
+        "status": 200,
+        "sha256": "2150a2e8c668bdc9a6aceba86f2529813230d0227fd58d837ae09cadbeb6db74",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-flooded-temple/active.json",
+        "status": 200,
+        "sha256": "31eda23dbb9ec8fb6c1fb42f6904a882490604f6bd6bbc79529671cac18e5021",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-afterglow/active.json",
+        "status": 200,
+        "sha256": "31b8b858b145ac91d0965a37007421b66d05582ea1f79d70970575f656c9aff6",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-dracona/active.json",
+        "status": 200,
+        "sha256": "d826bb5f133f60d813ef9ede625d2c94e012d485cbe9f9ffa375bba0c93bb223",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-neopolis/active.json",
+        "status": 200,
+        "sha256": "ec29e45b53236a77441a83f3590eb3686c1008d97da330b1ffffc975946cbbf9",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/active.json",
+        "status": 200,
+        "sha256": "03ff5ab3fb697596abe39718d826fecde226898abf2cd35a0280b499e50a5cd7",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/versions/1.3.2-878d142cb99b/manifest.json",
+        "status": 200,
+        "sha256": "435c67d9923bbe9f68ef2640ecffe34608ab36d370e907c0ce43f220adff685e",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/versions/1.3.2-878d142cb99b/entry-39d3f02e6d3c7937.js",
+        "status": 200,
+        "sha256": "39d3f02e6d3c7937c314d80a588fec3ff754b2919b354f61fdc80f4d86c9196f",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/versions/1.3.2-878d142cb99b/media/tsu-e-fa/v2/hand-poses.png",
+        "status": 200,
+        "sha256": "6028d7f4bd0ba3069657866edd51f6219ffce78036af05bd58b4cff27aef13cc",
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/versions/1.3.2-878d142cb99b/style-fafbbf053a81944e.css",
+        "status": 200,
+        "sha256": "fafbbf053a81944e6811c7e03b1f5fc756c20322fffc39a17523ad3a43627779",
+        "unchanged": true
+      }
+    ],
+    "productionAccountsWagersMessagesCreated": false
+  }
+}

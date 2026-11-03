@@ -1,11 +1,13 @@
 import { t as translateText } from '../../i18n/index';
 import './slot-settings.css';
+import { SlotPriorityLayout } from './SlotPriorityLayout';
 
 /** Keeps occasional controls out of the cabinet while preserving their existing bindings. */
 export class SlotSettings {
   private readonly dialog = document.createElement('dialog');
   private readonly button = document.createElement('button');
   private readonly placeholder = document.createComment('slot settings');
+  private readonly layout: SlotPriorityLayout;
 
   constructor(root: HTMLElement, private readonly footer: HTMLElement, tools: HTMLElement, onOpen: () => void) {
     footer.before(this.placeholder);
@@ -20,10 +22,12 @@ export class SlotSettings {
     this.dialog.append(footer);
     root.append(this.dialog);
     tools.append(this.button);
+    this.layout = new SlotPriorityLayout(root,this.dialog,footer,()=>this.close());
     this.button.onclick = () => {
       if (this.dialog.open) return;
       onOpen();
       this.dialog.showModal();
+      this.button.setAttribute('aria-expanded','true');
     };
     this.dialog.querySelector('header button')!.addEventListener('click', () => this.close());
     // The topmost modal owns Escape, Tab and Space, including the club's keyboard shortcuts.
@@ -43,7 +47,12 @@ export class SlotSettings {
         first.focus();
       }
     });
-    this.dialog.addEventListener('cancel', event => event.stopPropagation());
+    this.dialog.addEventListener('cancel', event => { event.preventDefault();event.stopPropagation();this.close(); });
+    this.dialog.addEventListener('close',()=>this.button.setAttribute('aria-expanded','false'));
+    // Existing rule, purchase and album dialogs own the next interaction.
+    this.dialog.addEventListener('click',event=>{
+      if ((event.target as Element).closest('[data-cc-info],[data-lg-info],[data-cc-history],[data-lg-history],[data-cc-buy],[data-cosmic-missions],[data-velvet-missions],[data-ag-album],[data-ag-photo],[data-mo-menu]')) this.close();
+    },true);
     this.dialog.addEventListener('click', event => {
       if (event.target !== this.dialog) return;
       const rect = this.dialog.getBoundingClientRect();
@@ -56,10 +65,11 @@ export class SlotSettings {
     }
   }
 
-  close() { if (this.dialog.open) this.dialog.close(); }
+  close() { if (this.dialog.open) {this.dialog.close();if(this.button.isConnected)this.button.focus({preventScroll:true});} }
 
   destroy() {
     this.close();
+    this.layout.destroy();
     this.button.onclick = null;
     this.button.remove();
     this.placeholder.replaceWith(this.footer);

@@ -1,0 +1,730 @@
+{
+  "status": "blocked-by-automatic-review",
+  "reason": "blocked by policy",
+  "attemptedAction": "Remove obsolete generated module packages within this checkout after stopping the owned stand",
+  "removedFolders": [],
+  "removedBytes": 0,
+  "pendingModuleFolders": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\breaker\\versions\\1.0.0-91d2b0fb6825",
+      "bytes": 5290,
+      "game": "breaker"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\casinoapipro\\versions\\1.0.0-44a071439265",
+      "bytes": 25063,
+      "game": "casinoapipro"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\chess\\versions\\1.0.0-7e94e2daf2a5",
+      "bytes": 46159,
+      "game": "chess"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\crazy-eights\\versions\\1.0.0-6b2621e6537a",
+      "bytes": 15760,
+      "game": "crazy-eights"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\drift\\versions\\1.0.0-d6ce09f33e25",
+      "bytes": 11026,
+      "game": "drift"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\durak\\versions\\1.0.0-3c8d4c97fca9",
+      "bytes": 15746,
+      "game": "durak"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\flag-battle\\versions\\2.0.0-261530a3302c",
+      "bytes": 359693,
+      "game": "flag-battle"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\flag-battle\\versions\\2.0.0-86ecf15f1057",
+      "bytes": 355794,
+      "game": "flag-battle"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\flag-battle\\versions\\2.0.0-a615f727fd04",
+      "bytes": 360204,
+      "game": "flag-battle"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\flag-battle\\versions\\2.1.0-5266dfddc14e",
+      "bytes": 360224,
+      "game": "flag-battle"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\flag-tote\\versions\\1.0.0-00205bbd69cd",
+      "bytes": 332988,
+      "game": "flag-tote"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-andar-bahar\\versions\\1.0.0-73ab330287c4",
+      "bytes": 237852,
+      "game": "github-andar-bahar"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-baccarat\\versions\\1.0.0-673fff8912e0",
+      "bytes": 8548820,
+      "game": "github-baccarat"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-blackjack\\versions\\1.0.0-efb83a039e1a",
+      "bytes": 8548823,
+      "game": "github-blackjack"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-caribbean\\versions\\1.0.0-80a4c5f5a321",
+      "bytes": 237848,
+      "game": "github-caribbean"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-caribbean-draw\\versions\\1.0.0-c670d54a833b",
+      "bytes": 237858,
+      "game": "github-caribbean-draw"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-craps\\versions\\1.0.0-b38d8ea927ad",
+      "bytes": 8726635,
+      "game": "github-craps"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-crash\\versions\\1.0.0-361ada60ace1",
+      "bytes": 21962984,
+      "game": "github-crash"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-crash\\versions\\1.0.0-4f39575b38a2",
+      "bytes": 21970580,
+      "game": "github-crash"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-crazy-four\\versions\\1.0.0-231dee2de466",
+      "bytes": 237850,
+      "game": "github-crazy-four"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-deuces\\versions\\1.0.0-33433c942ec9",
+      "bytes": 237842,
+      "game": "github-deuces"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-diamonds\\versions\\1.0.0-cdc3e56cbf19",
+      "bytes": 586330,
+      "game": "github-diamonds"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-dragon-tiger\\versions\\1.0.0-b3168b92ada2",
+      "bytes": 237854,
+      "game": "github-dragon-tiger"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-exposure\\versions\\1.0.0-62958e0d9f0c",
+      "bytes": 237846,
+      "game": "github-exposure"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-flush\\versions\\1.0.0-dbe58a58aebb",
+      "bytes": 237840,
+      "game": "github-flush"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-four-card\\versions\\1.0.0-ab39aa34c83d",
+      "bytes": 237848,
+      "game": "github-four-card"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-free-bet\\versions\\1.0.0-3245df1ebd46",
+      "bytes": 237846,
+      "game": "github-free-bet"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-hilo\\versions\\1.0.0-b835f60e94cd",
+      "bytes": 154409,
+      "game": "github-hilo"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-holdem-bonus\\versions\\1.0.0-83e0b60940da",
+      "bytes": 237854,
+      "game": "github-holdem-bonus"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-let-it-ride\\versions\\1.0.0-924ddbf7c952",
+      "bytes": 237852,
+      "game": "github-let-it-ride"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-mississippi\\versions\\1.0.0-de6707740499",
+      "bytes": 237852,
+      "game": "github-mississippi"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-oasis\\versions\\1.0.0-b5a00f332165",
+      "bytes": 237840,
+      "game": "github-oasis"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-pai-gow\\versions\\1.0.0-206ef5c6b225",
+      "bytes": 237844,
+      "game": "github-pai-gow"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-poker\\versions\\1.0.0-c75cc1c26c3f",
+      "bytes": 8548811,
+      "game": "github-poker"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-red-dog\\versions\\1.0.0-7bb2202f4250",
+      "bytes": 237844,
+      "game": "github-red-dog"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-rummy\\versions\\1.0.0-1fff9e1d2ba8",
+      "bytes": 237840,
+      "game": "github-rummy"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-russian\\versions\\1.0.0-7276e5f557b4",
+      "bytes": 237844,
+      "game": "github-russian"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-sic-bo\\versions\\1.0.0-8e13d01c167a",
+      "bytes": 507642,
+      "game": "github-sic-bo"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-spanish\\versions\\1.0.0-12b4ae4da6e3",
+      "bytes": 237844,
+      "game": "github-spanish"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-switch\\versions\\1.0.0-de01af35996c",
+      "bytes": 237842,
+      "game": "github-switch"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-three-card\\versions\\1.0.0-108627d29a62",
+      "bytes": 237850,
+      "game": "github-three-card"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-ultimate\\versions\\1.0.0-a99dd0db509e",
+      "bytes": 237846,
+      "game": "github-ultimate"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-video-poker\\versions\\1.0.0-ec91e2c2f719",
+      "bytes": 8548829,
+      "game": "github-video-poker"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-war\\versions\\1.0.0-93ed14a68912",
+      "bytes": 237836,
+      "game": "github-war"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\hockey\\versions\\1.0.0-68ee7c86b113",
+      "bytes": 48719,
+      "game": "hockey"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\luelon\\versions\\1.0.0-0793962d4d0e",
+      "bytes": 11152,
+      "game": "luelon"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\mortal-kombat\\versions\\1.0.0-22d0226379c5",
+      "bytes": 372575,
+      "game": "mortal-kombat"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\orbit\\versions\\1.0.0-1ae835cbba10",
+      "bytes": 11026,
+      "game": "orbit"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\original-cr-vs-leo\\versions\\1.0.0-37e6cecc3d90",
+      "bytes": 7921018,
+      "game": "original-cr-vs-leo"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\original-cr-vs-leo\\versions\\1.0.0-756b48e144e6",
+      "bytes": 7913420,
+      "game": "original-cr-vs-leo"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\original-jackie-chan\\versions\\1.1.0-554b76fd769f",
+      "bytes": 21587293,
+      "game": "original-jackie-chan"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\piano\\versions\\1.0.0-41900c7e21c2",
+      "bytes": 39460,
+      "game": "piano"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\pixel\\versions\\1.0.0-bdaec9dd8433",
+      "bytes": 11026,
+      "game": "pixel"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\pool\\versions\\1.0.0-896aea23beef",
+      "bytes": 48715,
+      "game": "pool"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-coins\\versions\\1.0.0-12141c9eabcf",
+      "bytes": 38925,
+      "game": "royal-coins"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-dice\\versions\\1.0.0-cdfb23734848",
+      "bytes": 481897,
+      "game": "royal-dice"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-flight\\versions\\1.0.0-162ae899900b",
+      "bytes": 195472,
+      "game": "royal-flight"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-fruits\\versions\\1.0.0-549b578034de",
+      "bytes": 521441,
+      "game": "royal-fruits"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-keno\\versions\\1.0.0-98320bc61ae1",
+      "bytes": 552870,
+      "game": "royal-keno"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-limbo\\versions\\1.0.0-bf9e5bdd7e82",
+      "bytes": 455737,
+      "game": "royal-limbo"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-mines\\versions\\1.0.0-c533abaabd97",
+      "bytes": 508246,
+      "game": "royal-mines"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-plinko\\versions\\1.0.0-28dab6602d9d",
+      "bytes": 2666932,
+      "game": "royal-plinko"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-plinko\\versions\\1.0.0-5d68ab8c4a2b",
+      "bytes": 2662786,
+      "game": "royal-plinko"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-plinko\\versions\\1.0.0-d583ea679b62",
+      "bytes": 2666982,
+      "game": "royal-plinko"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-plinko\\versions\\1.1.0-8b3de06293d6",
+      "bytes": 2667002,
+      "game": "royal-plinko"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-roulette\\versions\\1.5.0-af49cc9c00b7",
+      "bytes": 68242,
+      "game": "royal-roulette"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-wheel\\versions\\1.0.0-ea3e034b8282",
+      "bytes": 195469,
+      "game": "royal-wheel"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-afterglow\\versions\\1.2.0-2419938d28e3",
+      "bytes": 3247375,
+      "game": "studio-afterglow"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-afterglow\\versions\\1.2.0-ff256503237e",
+      "bytes": 3239777,
+      "game": "studio-afterglow"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-aurora-lift\\versions\\1.0.0-5d1190bffa6c",
+      "bytes": 4093744,
+      "game": "studio-aurora-lift"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-beacon-bay\\versions\\1.0.0-6574724ccbcb",
+      "bytes": 2110057,
+      "game": "studio-beacon-bay"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-blazing-orchard\\versions\\1.0.0-7dc217103f26",
+      "bytes": 1632833,
+      "game": "studio-blazing-orchard"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-canopy-crossing\\versions\\1.0.0-9f51a9b33650",
+      "bytes": 4093776,
+      "game": "studio-canopy-crossing"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-caramel-carnival\\versions\\1.0.0-125409a88c42",
+      "bytes": 3166468,
+      "game": "studio-caramel-carnival"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-caramel-carnival\\versions\\1.0.0-13e373dd493c",
+      "bytes": 3174066,
+      "game": "studio-caramel-carnival"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-copperline-express\\versions\\1.0.0-29398d20c954",
+      "bytes": 1637871,
+      "game": "studio-copperline-express"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-cosmic-escape\\versions\\1.0.0-5a91edeeaa80",
+      "bytes": 3853203,
+      "game": "studio-cosmic-escape"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-cosmic-escape\\versions\\1.0.0-af7d6bd85655",
+      "bytes": 3860801,
+      "game": "studio-cosmic-escape"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-deep-current\\versions\\1.0.0-0fef72ce53d4",
+      "bytes": 1632824,
+      "game": "studio-deep-current"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-dracona\\versions\\1.1.0-50f1089d1b37",
+      "bytes": 5057497,
+      "game": "studio-dracona"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-dune-hopper\\versions\\1.0.0-d54105c372db",
+      "bytes": 4093744,
+      "game": "studio-dune-hopper"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-ember-vault\\versions\\1.0.0-80926ee37cc9",
+      "bytes": 1639312,
+      "game": "studio-ember-vault"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-flooded-temple\\versions\\0.9.7-fd2fde671543",
+      "bytes": 20882530,
+      "game": "studio-flooded-temple"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-forest-heart\\versions\\1.8.1-b69713bf22a7",
+      "bytes": 3150019,
+      "game": "studio-forest-heart"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-fossil-trail\\versions\\1.0.0-ea9c801aa575",
+      "bytes": 4093752,
+      "game": "studio-fossil-trail"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-frostline-courier\\versions\\1.0.0-58ff088e7ccd",
+      "bytes": 1631365,
+      "game": "studio-frostline-courier"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-gale-riders\\versions\\1.0.0-0b701c1bedcb",
+      "bytes": 4093744,
+      "game": "studio-gale-riders"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-jade-koi\\versions\\1.0.0-4c070d426b16",
+      "bytes": 1637841,
+      "game": "studio-jade-koi"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-last-convoy\\versions\\1.0.0-5d6e55a23a4e",
+      "bytes": 6325060,
+      "game": "studio-last-convoy"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-last-convoy\\versions\\1.0.0-e5361358f8e6",
+      "bytes": 6332658,
+      "game": "studio-last-convoy"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-lucky-spotlight\\versions\\1.0.0-d09f4c334984",
+      "bytes": 1577922,
+      "game": "studio-lucky-spotlight"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-lumen-grove\\versions\\1.0.0-86d9f338ea9b",
+      "bytes": 1622737,
+      "game": "studio-lumen-grove"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-meme-overload\\versions\\1.0.0-45b02964d765",
+      "bytes": 3526409,
+      "game": "studio-meme-overload"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-meme-overload\\versions\\1.0.0-a29bed64dd95",
+      "bytes": 3518811,
+      "game": "studio-meme-overload"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-midnight-market\\versions\\1.0.0-e0c8b2117154",
+      "bytes": 1639324,
+      "game": "studio-midnight-market"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-moonlit-mint\\versions\\1.0.0-53a5380c63b9",
+      "bytes": 1639315,
+      "game": "studio-moonlit-mint"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-mosaic-muse\\versions\\1.0.0-2aed5033d93a",
+      "bytes": 4093744,
+      "game": "studio-mosaic-muse"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-neon-crown\\versions\\1.0.0-f79781e4929f",
+      "bytes": 1587946,
+      "game": "studio-neon-crown"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-neopolis\\versions\\0.5.0-7675d5022577",
+      "bytes": 6052035,
+      "game": "studio-neopolis"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-neopolis\\versions\\0.5.0-a5651798d034",
+      "bytes": 6039178,
+      "game": "studio-neopolis"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-neopolis\\versions\\0.5.0-d4888f18f02a",
+      "bytes": 6051985,
+      "game": "studio-neopolis"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-neopolis\\versions\\0.6.0-c351db3af752",
+      "bytes": 6052055,
+      "game": "studio-neopolis"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-neopolis\\versions\\0.6.0-e46a9bf08199",
+      "bytes": 6052055,
+      "game": "studio-neopolis"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-nitro-run\\versions\\1.0.0-94d4b7fd4144",
+      "bytes": 2559508,
+      "game": "studio-nitro-run"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-nitro-run\\versions\\1.0.0-96ee1a42de0a",
+      "bytes": 2567106,
+      "game": "studio-nitro-run"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-obsidian-drop\\versions\\1.0.0-4c0dfa4269a3",
+      "bytes": 1608506,
+      "game": "studio-obsidian-drop"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-orbit\\versions\\1.0.0-9787db9940dd",
+      "bytes": 4093696,
+      "game": "studio-orbit"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-petal-parlor\\versions\\1.0.0-d256c5a73938",
+      "bytes": 1642047,
+      "game": "studio-petal-parlor"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-prism-atelier\\versions\\1.0.0-a7b02a0abff8",
+      "bytes": 1622743,
+      "game": "studio-prism-atelier"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-pulse-district\\versions\\1.0.0-92496d314297",
+      "bytes": 1637859,
+      "game": "studio-pulse-district"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-rivet-rally\\versions\\1.0.0-e5f85597968b",
+      "bytes": 1631347,
+      "game": "studio-rivet-rally"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-saffron-cipher\\versions\\1.0.0-bb58b6965453",
+      "bytes": 2110073,
+      "game": "studio-saffron-cipher"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-saffron-spin\\versions\\1.0.0-ffd7073483c2",
+      "bytes": 1577913,
+      "game": "studio-saffron-spin"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-signal-fox\\versions\\1.0.0-396005c43918",
+      "bytes": 1686869,
+      "game": "studio-signal-fox"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-sky-lanterns\\versions\\1.0.0-436ddeb64753",
+      "bytes": 1631350,
+      "game": "studio-sky-lanterns"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-starfall-oracle\\versions\\1.0.0-92b0644c1ea3",
+      "bytes": 2445694,
+      "game": "studio-starfall-oracle"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-stormforge-duel\\versions\\1.0.0-06f89e9724e4",
+      "bytes": 2110077,
+      "game": "studio-stormforge-duel"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-sunbird-trails\\versions\\1.0.0-47cb4160f8aa",
+      "bytes": 1642053,
+      "game": "studio-sunbird-trails"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-tidal-relay\\versions\\1.0.0-20f7f3aec11a",
+      "bytes": 4093744,
+      "game": "studio-tidal-relay"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-velvet-reign\\versions\\1.0.0-974ccb54a55d",
+      "bytes": 4285704,
+      "game": "studio-velvet-reign"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-velvet-reign\\versions\\1.0.0-f043a74ec1fb",
+      "bytes": 4293302,
+      "game": "studio-velvet-reign"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-wild-nudge\\versions\\1.0.0-baa373269d6b",
+      "bytes": 6594801,
+      "game": "studio-wild-nudge"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\transfer-durak\\versions\\1.0.0-c146b5b4e868",
+      "bytes": 15764,
+      "game": "transfer-durak"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\tsu-e-fa\\versions\\1.1.0-0aef00615a31",
+      "bytes": 15709,
+      "game": "tsu-e-fa"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-blackjack-target\\versions\\1.0.0-27557e871f15",
+      "bytes": 126983,
+      "game": "variant-blackjack-target"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-color\\versions\\1.0.0-481285d6b6f6",
+      "bytes": 127677,
+      "game": "variant-color"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-diamonds\\versions\\1.0.0-41413877b776",
+      "bytes": 107137,
+      "game": "variant-diamonds"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-dice\\versions\\1.0.0-98f650001b7c",
+      "bytes": 183186,
+      "game": "variant-dice"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-dice-streak\\versions\\1.0.0-73f8e651dd17",
+      "bytes": 126973,
+      "game": "variant-dice-streak"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-double-mines\\versions\\1.0.0-3b974e6581a8",
+      "bytes": 126975,
+      "game": "variant-double-mines"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-duel\\versions\\1.0.0-729105872cc9",
+      "bytes": 127675,
+      "game": "variant-duel"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-fruits\\versions\\1.0.0-4445e4975306",
+      "bytes": 195091,
+      "game": "variant-fruits"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-gem-collection\\versions\\1.0.0-1ff48aee9d86",
+      "bytes": 126979,
+      "game": "variant-gem-collection"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-keno\\versions\\1.0.0-353852c84f9c",
+      "bytes": 127675,
+      "game": "variant-keno"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-keys\\versions\\1.0.0-de75a6b15097",
+      "bytes": 127675,
+      "game": "variant-keys"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-limbo\\versions\\1.0.0-12e93056e4dd",
+      "bytes": 186829,
+      "game": "variant-limbo"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-mines\\versions\\1.0.0-4abc2cbd7936",
+      "bytes": 107131,
+      "game": "variant-mines"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-plinko\\versions\\1.0.0-0d6582353b99",
+      "bytes": 61835,
+      "game": "variant-plinko"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-sic-bo\\versions\\1.0.0-715b2fc85c26",
+      "bytes": 107133,
+      "game": "variant-sic-bo"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-target-plinko\\versions\\1.0.0-1d8b7854d460",
+      "bytes": 104832,
+      "game": "variant-target-plinko"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-triple-poker\\versions\\1.0.0-93450e03a49b",
+      "bytes": 126975,
+      "game": "variant-triple-poker"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\variant-war\\versions\\1.0.0-8e4c12f6068e",
+      "bytes": 127673,
+      "game": "variant-war"
+    }
+  ],
+  "pendingModuleBytes": 343434819.0,
+  "stage2ArtifactsBytes": 49553636.0,
+  "archivesRemoved": 0,
+  "archivesRemovedBytes": 0,
+  "freeBytesAtInventory": 322962235392,
+  "freeBytesAfterStandStopped": 330629148672,
+  "diskReclamationClaimed": false,
+  "preservedGitCommit": "e47ce7e59b0a36931b84832f210e1ec2bd6bd8b5",
+  "standStopped": true,
+  "temporaryDatabasesRemoved": true,
+  "exception": "Generated packages and redundant screenshots remain after automatic review rejection. Do not delete active outputs or source. Cleanup condition: permitted removal of the inventoried obsolete output paths."
+}

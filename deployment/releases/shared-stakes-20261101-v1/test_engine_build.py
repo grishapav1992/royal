@@ -1,4 +1,5 @@
 import hashlib, importlib.util, io, json, tempfile, tarfile, unittest
+from unittest.mock import patch
 from pathlib import Path
 spec=importlib.util.spec_from_file_location('engine_builder',Path(__file__).with_name('engine_build.py'));builder=importlib.util.module_from_spec(spec);spec.loader.exec_module(builder)
 
@@ -32,5 +33,20 @@ class EngineBuildTests(unittest.TestCase):
             root=Path(t).resolve();(root/'input.js').write_text('bytes');(root/'link.js').symlink_to(root/'input.js')
             for source,dest in [('input.js','../escape'),('link.js','play.js')]:
                 with self.assertRaises(RuntimeError):builder.archive(root,{source:dest})
+    def test_only_layer_export_gets_the_longer_deadline(self):
+        calls=[];owner=None
+        def exchange(method,path,body=None,binary=False,timeout=300):
+            nonlocal owner
+            calls.append((method,path,timeout))
+            if path.startswith('/containers/create'):
+                owner=body['Labels']['royal.stake.build'];return json.dumps({'Id':'a'*64}).encode()
+            if path.startswith('/commit?'):return json.dumps({'Id':'sha256:'+'b'*64}).encode()
+            if method=='GET':return json.dumps({'Config':{'Labels':{'royal.stake.build':owner}},'State':{'Running':False}}).encode()
+            return b''
+        with patch.object(builder,'metadata',return_value={'Config':{}}),patch.object(builder,'archive',return_value=b'reviewed overlay'),patch.object(builder,'engine',side_effect=exchange):
+            self.assertEqual(builder.build(Path('/reviewed'),'sha256:'+'c'*64,'royal-game','checked-release','d'*40,{}),'sha256:'+'b'*64)
+        self.assertEqual([timeout for _,path,timeout in calls if path.startswith('/commit?')],[900])
+        self.assertTrue(all(timeout==300 for _,path,timeout in calls if not path.startswith('/commit?')))
+        self.assertFalse(any('/start' in path for _,path,_ in calls))
 
 if __name__=='__main__':unittest.main()

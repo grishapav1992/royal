@@ -1,0 +1,52 @@
+.jackie.jc-fit[data-priority-layout] .jc-actions button,
+.jackie.jc-fit[data-priority-layout] [data-stake] { min-height:44px }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) { grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(0,1fr) auto 28px auto; grid-template-areas:"scene" "result" "path" "console" }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full])>.jc-header,
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-scroll>.jc-settings,
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-risk>.jc-risk-note,
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-risk>.jc-lineup,
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-scroll>.jc-footer { display:none }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full])>.jc-console { border-left:0; min-width:0; overflow:hidden }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-scroll { flex:0 0 auto; overflow:hidden }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-controls { grid-template-columns:minmax(0,1fr); padding:5px 6px; gap:5px }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-risk>.jc-label { display:none }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-risk-options { margin:0; gap:4px }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-risk-options button { min-height:44px; padding:3px 1px; gap:2px }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-risk-options :is(.jc-people,.jc-risk-count) { display:none }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-risk-options b { font-size:11px }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-risk-options small { font-size:10px }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-bank { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) 44px; align-items:center; gap:4px }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-bank label { gap:0; font-size:8px; line-height:1 }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-bank>span { font-size:8px; line-height:1; min-width:0 }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-bank>span>b { font-size:16px; line-height:1.1 }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-bank>span>small { display:none }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-bank select { width:100%; padding:4px; font-size:14px }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) [data-options] { border:1px solid #b98c55; border-radius:5px; color:#ffe7bb; background:#37291e; font-size:21px }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-collection-line { display:grid; grid-template-columns:auto minmax(20px,1fr) auto; align-items:center; gap:4px; padding:0 6px; height:25px }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-collection-line>span { font-size:8px }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-collection-line button { grid-column:auto; grid-row:auto; min-height:24px; font-size:9px; padding:2px }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-actions { display:flex; padding:5px 6px; gap:4px; min-height:54px }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) .jc-actions button { padding:5px; font-size:11px; min-width:0 }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full])>.jc-path { padding:3px 6px; gap:3px; height:28px; min-height:0 }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full])>.jc-path small { font-size:7px }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full])>.jc-path b { font-size:11px }
+.jackie.jc-fit[data-priority-layout] .jc-recovery { padding:4px; gap:4px; font-size:10px }
+.jackie.jc-fit[data-priority-layout] .jc-recovery button { min-height:44px }
+.jackie.jc-fit[data-priority-layout=landscape][data-priority-layout] { grid-template-columns:minmax(0,1fr) 204px; grid-template-rows:auto minmax(0,1fr) 28px; grid-template-areas:"result console" "scene console" "path console" }
+.jackie.jc-fit[data-priority-layout=landscape][data-priority-layout]>.jc-console { justify-content:center; border-left:1px solid #a7733f40 }
+.jackie.jc-fit[data-priority-layout=landscape][data-priority-layout] .jc-actions { flex-direction:column }
+.jackie.jc-fit[data-priority-layout=landscape][data-priority-layout] .jc-bank { grid-template-columns:minmax(0,1fr) 44px }
+.jackie.jc-fit[data-priority-layout=landscape][data-priority-layout] .jc-bank>span { grid-column:1/-1; grid-row:1; display:flex; align-items:center; justify-content:space-between }
+.jackie.jc-fit[data-priority-layout=landscape][data-priority-layout] [data-options] { grid-column:2; grid-row:2 }
+.jackie.jc-fit[data-priority-layout=landscape][data-priority-layout] .jc-collection-line { grid-template-columns:minmax(0,1fr) auto; height:24px }
+.jackie.jc-fit[data-priority-layout=landscape][data-priority-layout] .jc-collection-line progress { display:none }
+.jackie .game-options-content .jc-header-actions { display:flex; gap:10px }
+.jackie .game-options-content .jc-settings { margin:0; padding:0 }
+
+/* An unresolved operation has one available action: checking that same request. */
+.jackie.jc-fit[data-priority-layout] { grid-template-rows:auto auto minmax(0,1fr) auto auto auto; grid-template-areas:"heading console" "result console" "scene console" "path console" "recovery recovery" "error error" }
+.jackie.jc-fit[data-priority-layout]>.jc-recovery { grid-area:recovery; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; min-width:0; padding:4px 6px }
+.jackie.jc-fit[data-priority-layout]>[data-error] { grid-area:error; margin:0; padding:0 6px; font-size:11px; line-height:14px }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]) { grid-template-rows:minmax(0,1fr) auto 28px auto auto auto; grid-template-areas:"scene" "result" "path" "console" "recovery" "error" }
+.jackie.jc-fit[data-priority-layout=landscape][data-priority-layout] { grid-template-rows:auto minmax(0,1fr) 28px auto auto; grid-template-areas:"result console" "scene console" "path console" "recovery recovery" "error error" }
+.jackie.jc-fit[data-priority-layout]:not([data-priority-layout=full]):has(>[data-recovery]:not([hidden])) :is(.jc-risk,.jc-actions) { display:none }

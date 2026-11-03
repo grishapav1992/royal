@@ -1,20 +1,27 @@
 import { test, expect, type Page } from '@playwright/test';
 import { Client } from '@colyseus/sdk';
+import {walletSnapshot,walletHeaders} from './wallet-snapshot';
+import {NEOPOLIS_HEADER} from '../src/shared/neopolis';
 
 const api = 'http://127.0.0.1:' + (process.env.NEOPOLIS_API_PORT || '2676');
-const out = 'test-results/neopolis-host/review';
+const out = process.env.LAYOUT_ARTIFACTS_DIR ? process.env.LAYOUT_ARTIFACTS_DIR + '/neopolis-host' : 'test-results/neopolis-host/review';
+async function checkChat(page: Page) {
+  await expect(page.locator('#mini-dialog .game-chat-toggle')).toBeVisible();
+  if (await page.locator('#mini-dialog').getAttribute('data-game-chat') === 'column') await expect(page.locator('#chat-input')).toBeInViewport();
+  else await expect(page.locator('#chat-input')).toBeHidden();
+}
 
 async function open(page: Page) {
   if (await page.locator('#room-overview').getAttribute('aria-pressed') !== 'true') await page.locator('#room-overview').click();
   await page.locator('#games-tab').click();
-  await page.locator('[data-cabinet="studio-neopolis"]').click();
+  await page.locator('[data-cabinet="studio-cosmic-escape"]').click();
   await expect(page.locator('.royal-platform')).toBeVisible({ timeout: 30000 });
   await page.locator('[data-platform-game="studio-neopolis"]').click();
   await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id', 'studio-neopolis');
   await expect(page.locator('[data-np=spin]')).toBeEnabled();
 }
 
-test('Neopolis uses the real host area, keeps controls and chat visible, and restores the paid round', async ({ page, request }) => {
+test('Neopolis fits the real host, prioritizes the field over chat, and restores the paid round', async ({ page, request }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   const host = await request.post('/api/auth/login', { data: { email: 'np-host-' + crypto.randomUUID() + '@example.test', password: 'Neopolis-test-123!' } });
   const cookie = host.headers()['set-cookie'].split(';')[0];
@@ -36,7 +43,8 @@ test('Neopolis uses the real host area, keeps controls and chat visible, and res
     await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();
     await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});
     await expect.poll(() => page.evaluate(() => { try { return (window as any).royalDemo?.getState().online ?? false; } catch { return false; } }), {timeout:30000}).toBe(true);
-    const deposit = await page.request.post('/api/demo-wallet/operations', { data: { id: crypto.randomUUID(), kind: 'deposit', amount: 10000 } });
+    const deposit = process.env.LAYOUT_HOST_REGRESSION === '1' ? await page.request.post('/__test/layout/topup')
+      : await page.request.post('/api/demo-wallet/operations', { headers: await walletHeaders(page), data: { id: crypto.randomUUID(), kind: 'deposit', amount: 10000 } });
     expect(deposit.ok()).toBe(true);
     if (process.env.NEOPOLIS_REVIEW_DIST === '1') {
       await page.reload(); await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});
@@ -63,20 +71,20 @@ test('Neopolis uses the real host area, keeps controls and chat visible, and res
       expect(geometry.rootOverflow).toBeLessThanOrEqual(1);
       expect(geometry.stageOverflow).toBeLessThanOrEqual(1);
       expect(geometry.controlsInside).toBe(true);
-      expect(geometry.transform).toBe('none'); expect(geometry.titleDisplay).toBe('block');
+      expect(geometry.transform).toBe('none');
       await expect(page.locator('[data-np=spin]')).toBeInViewport();
       await expect(page.locator('[data-np=bet]')).toBeInViewport();
-      await expect(page.locator('#mini-dialog #chat-input')).toBeInViewport();
+      await checkChat(page);
       if (width === 390) {
-        await page.locator('.np-board').scrollIntoViewIfNeeded();
+        await expect(page.locator('.np-board')).toBeInViewport({ratio:1});
         const effects = await page.locator('.np-effects').evaluate(canvas => {
           const scene = canvas.parentElement!, scroll = scene.parentElement!;
           const bounds = canvas.getBoundingClientRect(), sceneBounds = scene.getBoundingClientRect();
           return { moved: scroll.scrollTop > 0, offset: Math.abs(bounds.top - sceneBounds.top),
             height: Math.abs(bounds.height - sceneBounds.height), coversScene: scene.clientHeight > scroll.clientHeight };
         });
-        expect(effects.moved).toBe(true); expect(effects.offset).toBeLessThan(1);
-        expect(effects.height).toBeLessThan(1); expect(effects.coversScene).toBe(true);
+        expect(effects.moved).toBe(false); expect(effects.offset).toBeLessThan(1);
+        expect(effects.height).toBeLessThan(1); expect(effects.coversScene).toBe(false);
         await expect(page.locator('[data-np=spin]')).toBeInViewport();
       }
       await page.screenshot({ path: out + '/' + width + 'x' + height + '.png' });
@@ -99,18 +107,19 @@ test('Neopolis uses the real host area, keeps controls and chat visible, and res
     for (const [width,height] of [[1440,1000],[390,844]]) {
       await page.setViewportSize({width,height});
       await expect(page.locator('[data-np=bet]')).toHaveValue('20');
-      await expect(page.locator('#chat-input')).toBeInViewport();
+      await checkChat(page);
       await page.screenshot({path:out+'/stake-20-'+width+'.png'});
     }
-    const before = await (await page.request.get('/api/demo-wallet')).json();
+    const before = await walletSnapshot(page);
     await page.locator('#mini-dialog .mini-top [data-close]').click();
     await expect(page.locator('#mini-dialog')).toBeHidden();
     await open(page);
-    const restored = (await (await page.request.get('/api/demo-wallet/expansion')).json()).sessions.find((s: any) => s.gameId === 'studio-neopolis');
+    const snapshot = await page.request.get('/api/demo-wallet/expansion',{headers:{...await walletHeaders(page),[NEOPOLIS_HEADER]:'4'}}); expect(snapshot.ok()).toBe(true);
+    const restored = (await snapshot.json()).sessions.find((s: any) => s.gameId === 'studio-neopolis');
     expect(restored.id).toBe(changed.id); expect(restored.stakeUnits).toBe(changed.stakeUnits);
-    expect((await (await page.request.get('/api/demo-wallet')).json()).balance).toBe(before.balance);
+    expect((await walletSnapshot(page)).balance).toBe(before.balance);
     await expect(page.locator('[data-hero=prism]')).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('#chat-input')).toBeInViewport();
+    await checkChat(page);
     expect(errors).toEqual([]);
   } finally { await Promise.race([room.leave(), new Promise(resolve => setTimeout(resolve, 1500))]); }
 });

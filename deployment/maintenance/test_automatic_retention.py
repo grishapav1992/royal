@@ -179,7 +179,36 @@ class AutomaticRetentionTest(unittest.TestCase):
             self.assertTrue(cleanup.pending_is_active(path,metadata,set(),set(),100))
             self.assertTrue(cleanup.pending_is_active(path,metadata,{str(path)},set(),90000))
             self.assertTrue(cleanup.pending_is_active(path,metadata,set(),{'candidate'},90000))
+            os.utime(path/'build-result.json',(time.time()-90001,)*2)
             self.assertFalse(cleanup.pending_is_active(path,metadata,set(),set(),90000))
+
+    def test_unbuilt_preparation_has_the_same_grace_as_a_candidate(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path=Path(temp);manifest=path/'install-manifest.json';manifest.write_text('{}')
+            self.assertTrue(cleanup.pending_is_active(path,[],set(),set(),3600))
+            os.utime(manifest,(time.time()-90001,)*2)
+            self.assertFalse(cleanup.pending_is_active(path,[],set(),set(),90000))
+
+    def test_fresh_metadata_protects_a_resumed_old_preparation(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path=Path(temp);(path/'install-manifest.json').write_text('{}')
+            self.assertTrue(cleanup.pending_is_active(path,[],set(),set(),90000))
+            (path/'published.json').write_text('{}')
+            self.assertFalse(cleanup.pending_is_active(path,[],set(),set(),90000))
+
+    def test_process_working_directory_protects_a_relative_deploy_command(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp).resolve();releases=root/'releases';release=releases/'preparing';release.mkdir(parents=True)
+            proc=root/'proc';process=proc/'123';process.mkdir(parents=True)
+            (process/'cmdline').write_bytes(b'python3\0deploy.py\0release\0')
+            (process/'cwd').symlink_to(release,target_is_directory=True)
+            with patch.object(cleanup,'RELEASES',releases):
+                self.assertEqual(cleanup.active_release_paths(proc),{str(release)})
+
+    def test_a_receipt_alone_does_not_revive_partially_cleaned_history(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path=Path(temp);(path/'release-github.json').write_text('{}')
+            self.assertFalse(cleanup.pending_is_active(path,[],set(),set(),90000))
 
     def test_host_release_proof_can_omit_redundant_build_commit(self):
         with tempfile.TemporaryDirectory() as temp:

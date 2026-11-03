@@ -4,6 +4,7 @@ dist-server/
 dist-admin/
 module-dist/
 module-build/
+graphify-out/
 .env
 .env.*
 !.env.example

@@ -27,6 +27,9 @@ verification records. Shared source files are checked by content, so removing on
 hardlink cannot invalidate its unchanged siblings. A ten-minute staging grace,
 all publication locks, active-process detection and a 24-hour pending-build grace
 protect ongoing work. Financial backups retain their own policy.
+The preparation grace also covers uploaded manifests before an image is built.
+It uses the latest preparation metadata when an older folder is reused. Relative
+deployment commands are recognized through their process working directory.
 
 OCI manifests and configuration blobs are read with digest verification. Quiet
 containerd reference queries avoid size traversal, as implemented in its
@@ -52,5 +55,19 @@ Run `plan --release <current-release> --state /opt/royal-maintenance/<operation>
 Deletion is limited to reviewed direct entries under `/opt/royal-backups` and `/opt/royal-releases`, plus unreferenced images tagged only as `royal-game`. Fresh entries, mounted subtrees, changed inventories and image references stop cleanup. There is no forced image removal, volume deletion, database restore or application restart. Docker may retain parent images and layers required by the retained releases.
 
 The live application, configuration, external modules, database volumes, financial backup directory and other services remain outside the deletion scope. Private plans and progress stay on the server. Record the verified public result in `deployment/SERVER.md` after completion.
+
+Immutable image program checks have a small operator-private cache in
+`/opt/royal-maintenance/image-program-proofs`. A proof binds the exact content-addressed
+image ID and platform, SHA-256 of the hash reader and SHA-256 of the complete expected file map.
+The guarded application builder records it only after a full read-only candidate
+check. Older installers still work: a missing proof triggers the full isolated read.
+Wrong or corrupt evidence never passes as a cache hit; unsafe permissions and
+symlinks stop verification. Mutable running files and the financial publication
+barrier are never accepted from this cache. History cleanup checks the running
+application, configuration, services, module pointers and retained recovery files
+immediately before deletion and again after deletion. Its previous adjacent third
+checkpoint has been removed. Install these maintenance files through the existing
+GitHub-bound installer; never rewrite the helpers inside an already published
+release or its retained rollback bundle.
 
 Local scope checks: `python3 -m unittest discover -s deployment/maintenance -p 'test_*.py'`.

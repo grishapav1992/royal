@@ -58,7 +58,7 @@ export type PvpCardView = {
   winner: number | null; message: string; moves: PvpCardMove[];
 };
 export type PvpChallenge = {
-  rulesVersion?: 1 | 2 | 3; mode?: 'free' | 'stake'; targetWins?: TsuEFaTarget; termsRevision?:number;
+  rulesVersion?: 1 | 2 | 3 | 4; mode?: 'free' | 'stake'; targetWins?: 2 | TsuEFaTarget; termsRevision?:number;
   id: string; gameId: PvpGameId; creatorId: string; creatorName: string;
   targetId: string | null; opponentId: string | null; opponentName: string;
   stakeUnits: string; potUnits: string; feeUnits: string; payoutUnits: string;
@@ -72,8 +72,8 @@ export type PvpRequest = ({ id: string; action: 'create'; gameId: PvpGameId; sta
   | {id:string;action:'duel-ready'|'unready';challengeId:string;termsRevision:number}
   | { id: string; action: 'accept' | 'cancel' | 'ready' | 'resign'; challengeId: string }
   | { id: string; action: 'move'; challengeId: string; revision: number; move: PvpMove }) & { walletScope?:typeof VIRTUAL_PVP_SCOPE; mode?:'free'|'stake'; targetWins?:TsuEFaTarget };
-export const isDirectPvp = (match: Pick<PvpChallenge, 'gameId' | 'rulesVersion'>) => match.gameId === 'tsu-e-fa' && (match.rulesVersion === 2||match.rulesVersion===3);
-export const isNegotiatedPvp = (match: Pick<PvpChallenge, 'gameId' | 'rulesVersion'>) => match.gameId==='tsu-e-fa'&&match.rulesVersion===3;
+export const isDirectPvp = (match: Pick<PvpChallenge, 'gameId' | 'rulesVersion'>) => match.gameId === 'tsu-e-fa' && (match.rulesVersion === 2||match.rulesVersion===3||match.rulesVersion===4);
+export const isNegotiatedPvp = (match: Pick<PvpChallenge, 'gameId' | 'rulesVersion'>) => match.gameId==='tsu-e-fa'&&(match.rulesVersion===3||match.rulesVersion===4);
 export const isFreePvp = (match: Pick<PvpChallenge, 'gameId' | 'mode' | 'stakeUnits'>) => match.gameId === 'tsu-e-fa' && match.mode === 'free' && match.stakeUnits === '0';
 export type PvpPerson = { accountId: string; name: string; available: boolean; sessionId?: string };
 export type PvpSnapshot = { challenges: PvpChallenge[]; active: PvpChallenge | null; cards: PvpCardView | null;

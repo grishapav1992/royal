@@ -1,4 +1,5 @@
 import {syncStakeSelect} from '../../src/ui/stakeSelection';
+import { GamePriorityPanel } from '../../src/ui/GamePriorityPanel';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
 import {GAME_STAKE_UNITS as FLAG_BETS} from '../../src/shared/gameStakes';
 import { FLAG_GAME, FLAG_COUNTRIES, FLAG_MODES, flagCountries, flagModeInfo, flagViewMode, flagPayout, validFlagSettings, type FlagMode, type FlagCountry, type FlagView } from '../../src/shared/flagBattle';
@@ -14,6 +15,7 @@ const name = (id: string) => { const c = FLAG_COUNTRIES.find(c => c.id === id)!;
 const money = (v: string) => (Number(v) / 100).toLocaleString(en ? 'en-US' : 'ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const flags = (n: number) => en ? `${n} flags` : `${n} ${n % 10 === 1 && n % 100 !== 11 ? 'флаг' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'флага' : 'флагов'}`;
 export class FlagBattleUI {
+  private priorityPanel: GamePriorityPanel;
   private root = document.createElement('section');
   private arena: FlagArena;
   private audio = new FlagAudio();
@@ -42,6 +44,18 @@ export class FlagBattleUI {
 <div class="fb-bet"><label for="fb-stake">02 &nbsp; ${text('Твоя ставка', 'Your stake')}</label><select id="fb-stake">${FLAG_BETS.map(s => `<option value="${s}">${money(s)} USDT</option>`).join('')}</select></div><div class="fb-quote"><span>${text('Выплата за победу', 'Return on a win')}</span><b data-fb="quote"></b><small data-fb="multiplier"></small></div><button type="button" data-fb="play" class="fb-play"></button><button type="button" data-fb="skip" class="fb-skip" hidden>${text('Показать результат', 'Show result')}</button><button type="button" data-fb="retry" class="fb-retry" hidden>${text('Проверить ту же ставку', 'Check the same bet')}</button><p class="fb-status" data-fb="status" role="status" aria-live="polite"></p><p class="fb-fair">${text('Равные шансы для каждой страны', 'Equal odds for every country')}<span>RTP 96% · USDT ${text('Демо', 'Demo')}</span></p></aside></div>
 <dialog class="fb-rules"><h3>${text('Как играть', 'How to play')}</h3><p>${text('Выбери режим, страну и ставку. В битве участвуют 12, 24 или 48 разных стран. Флаги покидают арену один за другим. Если твоя страна остаётся последней, ты получаешь выплату, иначе выплата равна нулю.', 'Choose a mode, country and stake. The battle has 12, 24 or 48 different countries. Flags leave the arena one by one. If your country is last, you receive the return. Otherwise the return is zero.')}</p><table><thead><tr><th>${text('Страны', 'Countries')}</th><th>${text('Шанс', 'Chance')}</th><th>${text('Выплата', 'Return')}</th></tr></thead><tbody>${FLAG_MODES.map(m => `<tr><td>${m.count}</td><td>1 / ${m.count}</td><td>${(m.multiplier / 100).toLocaleString(en ? 'en-US' : 'ru-RU')}×</td></tr>`).join('')}</tbody></table><p>${text('Выплата включает ставку. RTP каждого режима: 96%. Ставки от 1 до 50 USDT на общем демобалансе. Ускорение показа не меняет исход. Принятый результат сохраняется при закрытии и потере связи. Дополнительных списаний нет.', 'The return includes the stake. Every mode has 96% RTP. Stakes from 1 to 50 USDT use the shared demo wallet. Skipping the animation does not change the outcome. Accepted results survive closing and lost connections. There are no additional charges.')}</p><button type="button" data-fb="close-rules">${text('Понятно', 'Got it')}</button>${stakeRulesHtml(en)}</dialog>`;
     host.replaceChildren(this.root);
+    const controls = this.find<HTMLElement>('.fb-controls'), bet = this.find('.fb-bet');
+    const selection = document.createElement('section'); selection.className = 'fb-selection';
+    for (const child of Array.from(controls.children)) { if (child === bet) break; selection.append(child); }
+    controls.prepend(selection);
+    const rules = document.createElement('button'); rules.type = 'button'; rules.className = 'fb-selection-rules';
+    rules.dataset.fb = 'rules'; rules.textContent = text('Правила и выплаты', 'Rules and returns'); selection.append(rules);
+    const summary = document.createElement('button'); summary.type = 'button'; summary.className = 'fb-selection-summary'; summary.dataset.fb = 'selection';
+    controls.prepend(summary);
+    const balance = document.createElement('div'); balance.className = 'fb-wallet';
+    balance.innerHTML = '<span>' + text('Баланс · USDT', 'Balance · USDT') + '</span><strong data-fb="balance"></strong>';
+    bet.before(balance);
+    this.priorityPanel = new GamePriorityPanel(this.root, summary, text('Режим и страна', 'Mode and country'), text('Закрыть панель', 'Close panel'), [selection]);
     this.arena = new FlagArena(this.find('canvas'));
     const signal = this.lifetime.signal;
     this.root.addEventListener('pointerdown', () => { void this.audio.unlock(); }, { signal });
@@ -113,7 +127,10 @@ export class FlagBattleUI {
   }
   private render() {
     const blocked = this.blocked(), pending = client.pending?.gameId === FLAG_GAME;
-    this.root.dataset.presenting = String(this.running); this.root.dataset.mode = this.mode;
+    this.root.dataset.presenting = String(this.running); this.root.dataset.mode = this.mode; this.root.dataset.pending = String(!!pending);
+    this.put('selection', name(this.selected) + ' · ' + this.count + text(' стран', ' countries') + ' · 1/' + this.count + ' ▾');
+    this.find('[data-fb="selection"]').setAttribute('aria-label', text('Режим и страна. ', 'Mode and country. ') + name(this.selected) + ', ' + this.count);
+    this.put('balance', money(String(Math.round((demoWallet.wallet?.balance ?? 0) * 100))));
     const grid = this.find('.fb-countries');
     if (grid.getAttribute('data-mode') !== this.mode) {
       grid.setAttribute('data-mode', this.mode);
@@ -175,5 +192,5 @@ export class FlagBattleUI {
   pause() { this.audio.silence(); this.finish(false); }
   resume() {}
   getState() { return { gameId: FLAG_GAME, sessionId: this.seen, presenting: this.running, mode: this.mode, count: this.count, country: this.selected, eliminated: this.eliminated, returnedUnits: this.returned, physics: this.arena.getState(), audio: this.audio.state() }; }
-  destroy() { this.audio.destroy(); this.lifetime.abort(); cancelAnimationFrame(this.frame); this.find<HTMLDialogElement>('dialog').close(); this.root.remove(); }
+  destroy() { this.audio.destroy(); this.lifetime.abort(); this.priorityPanel.destroy(); cancelAnimationFrame(this.frame); this.find<HTMLDialogElement>('dialog').close(); this.root.remove(); }
 }

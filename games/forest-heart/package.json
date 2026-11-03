@@ -1,6 +1,6 @@
 {
   "name": "@royal/forest-heart",
-  "version": "1.8.1",
+  "version": "1.16.0",
   "private": true,
   "gameId": "studio-forest-heart",
   "apiVersion": 1,
@@ -18,7 +18,6 @@
     "forest-heart/v2/title.webp",
     "forest-heart/v2/crystal.webp",
     "forest-heart/v3/elf-idle.webp",
-    "forest-heart/v3/elf-blink.webp",
     "forest-heart/v3/elf-choice.webp",
     "forest-heart/v3/elf-channel.webp",
     "forest-heart/v3/elf-flower.webp",

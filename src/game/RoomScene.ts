@@ -18,6 +18,8 @@ import { SecurityGuard } from './SecurityGuard';
 import type { GuardView } from '../shared/security';
 import { addDemoCabinetArt } from './demoCabinetArt';
 import { gameAudio } from './GameAudio';
+import { atElevator, canTravelByElevator, elevatorDock, elevatorFloors } from '../shared/elevator';
+import { drawElevator } from './elevatorArt';
 import Phaser from 'phaser';
 import { COLORS } from './art';
 import { createDetailedArt } from './materials';
@@ -60,6 +62,8 @@ export class RoomScene extends Phaser.Scene {
   private switching=false;
   private pianoEffects=new Set<Phaser.GameObjects.GameObject>();
   onHall: (hall: HallId) => void = () => {};
+  onElevator: () => void = () => {};
+  onElevatorCancel: () => void = () => {};
   private guestRoutine=new AmbientGuests();
   private catRoutine = new CatRoutine();
   private catView = this.catRoutine.snapshot();
@@ -104,6 +108,7 @@ export class RoomScene extends Phaser.Scene {
   private bar!: Bar;
   private atelier?: TailorRenderer;
   private pendingLounge: string | null = null;
+  private elevatorApproachAt = 0;
   private overview=false;
   onBar: () => void = () => {};
   onAtelier: () => void = () => { this.onNotice('Войди в аккаунт, чтобы заказать образ в ателье.'); };
@@ -138,12 +143,13 @@ export class RoomScene extends Phaser.Scene {
   create() {
     createDetailedArt(this);
     createCharacters(this);
-    for(const hall of ['arcade','tables','github'] as const){
+    for(const hall of elevatorFloors()){
       const before=new Set(this.children.list);this.hall=hall;this.drawRoom();
       this.hallDetails.set(hall,new RoomDetails(this,cabinetsInHall(hall).filter(cabinet=>!isCardGame(cabinet.id)),hall));
       if(hall==='arcade'){this.bar=new Bar(this,id=>this.approachSeat(id),()=>this.approachBar());drawCatCare(this);this.atelier=drawAtelier(this,()=>this.approachAtelier());}
       drawActivities(this,id=>this.approachActivity(id),hall);
       for (const link of hallLinks(hall)) this.drawDoor(link);
+      drawElevator(this, hall, () => this.approachElevator());
       this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
     }
     this.showHall('arcade');
@@ -152,7 +158,7 @@ export class RoomScene extends Phaser.Scene {
     this.player = this.actor(540, 570, 0, translateText('Вы'), true);
     this.cameras.main.setBounds(0,HALL_WALL.viewTop,WORLD.width,WORLD.height-HALL_WALL.viewTop).startFollow(this.player.sprite,false,1,1);
     this.scale.on(Phaser.Scale.Events.RESIZE,this.resizeView,this);
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>{this.clickTargets.cancel();this.afterMovement=undefined;this.scale.off(Phaser.Scale.Events.RESIZE,this.resizeView,this);});
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>{this.onElevatorCancel();this.clickTargets.cancel();this.afterMovement=undefined;this.scale.off(Phaser.Scale.Events.RESIZE,this.resizeView,this);});
     this.resizeView();
     this.syncGuests(this.guestViews);
     this.keys = this.input.keyboard!.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE,SHIFT') as Record<string, Phaser.Input.Keyboard.Key>;
@@ -348,8 +354,38 @@ export class RoomScene extends Phaser.Scene {
     const link = hallLinks(this.hall).find(candidate => candidate.target === target); if (!link) return;
     this.pendingCabinet = null; this.pendingLounge = null; this.goTo(link.door.entry);
   }
+  approachElevator() {
+    if (this.locked || this.isHuggingCat() || this.typing || this.switching || this.player.cabinet || this.networkSelf?.playing || this.player.action === 'drink') return;
+    this.pendingCabinet = null;
+    this.pendingLounge = 'elevator';
+    this.elevatorApproachAt = this.time.now + 800;
+    this.goTo(elevatorDock(this.hall).entry);
+  }
+  private openElevator() {
+    const hall = this.hall;
+    this.pendingLounge = null; this.player.path = [];
+    this.finishMovement(() => {
+      if (this.hall !== hall || this.locked || this.isHuggingCat() || !atElevator(this.player)) return;
+      this.player.facing = elevatorDock(hall).facing === 'down' ? 'up' : 'down';
+      this.network?.stop();
+      this.onElevator();
+    });
+  }
+  async travelByElevator(target: HallId): Promise<boolean> {
+    const player = this.networkSelf ?? this.player;
+    if (this.securityLocked || this.isHuggingCat() || !canTravelByElevator(player, target)) return false;
+    if (this.network) return await this.network.elevator?.(target) ?? false;
+    this.cancelMovement();
+    const dock = elevatorDock(target);
+    this.showHall(target);
+    Object.assign(this.player, dock.arrival, { hall: target, facing: dock.facing, moving: false });
+    this.animateActor(this.player, this.time.now, false);
+    this.syncGuests(this.guestViews);
+    return true;
+  }
   interact() {
     if (this.locked || this.typing) return;
+    if (!this.isHuggingCat() && atElevator(this.player)) { this.openElevator(); return; }
     const nearbyPlayer=[...this.remotePlayers.values()].map(p=>p.target).filter(p=>p.connected&&p.hall===this.hall&&!p.playing&&!p.activity)
       .sort((a,b)=>Math.hypot(a.x-this.player.x,a.y-this.player.y)-Math.hypot(b.x-this.player.x,b.y-this.player.y))[0];
     if(nearbyPlayer&&Math.hypot(nearbyPlayer.x-this.player.x,nearbyPlayer.y-this.player.y)<110&&!this.isHuggingCat()) {this.onPlayer(nearbyPlayer.id);return;}
@@ -553,7 +589,7 @@ export class RoomScene extends Phaser.Scene {
   }
   private catPerson(): CatPerson { return {id:'local-player',hall:this.hall,x:this.player.x,y:this.player.y,connected:true,playing:Boolean(this.player.cabinet),cabinet:this.player.cabinet,security:this.securityLocked?'locked':'',seat:this.player.seat,action:this.player.action}; }
   catPortrait() { return catImages.portrait; }
-  setSecurity(locked: boolean) { this.securityLocked = locked; this.setLocked(locked || Boolean(document.querySelector('dialog[open]'))); }
+  setSecurity(locked: boolean) { this.securityLocked = locked; if(locked)this.onElevatorCancel(); this.setLocked(locked || Boolean(document.querySelector('dialog[open]'))); }
   setLocked(locked: boolean) {
     locked ||= this.securityLocked;
     this.clickTargets.cancel();
@@ -579,6 +615,7 @@ export class RoomScene extends Phaser.Scene {
     if (typing) { this.marker.setVisible(false); this.player.path = []; this.pendingCabinet = null; this.pendingLounge = null; this.network?.stop(); this.lastInput = '0,0'; }
   }
   enableOnline(commands: NetworkCommands) {
+    this.onElevatorCancel();
     this.resetNpcMotion();
     this.clickTargets.reset();
     this.prediction = new MovementPrediction(); this.correction = { x: 0, y: 0 };
@@ -591,7 +628,7 @@ export class RoomScene extends Phaser.Scene {
       sit: seat => { this.clickTargets.cancel(); this.finishMovement(() => commands.sit(seat)); },
       stand: () => { this.clickTargets.cancel(); this.finishMovement(commands.stand); },
       drink: drink => { this.clickTargets.cancel(); this.finishMovement(() => commands.drink(drink)); },
-      cat: commands.cat, cabinetPlay: commands.cabinetPlay, cabinetLeave: commands.cabinetLeave, cabinetReaction: commands.cabinetReaction,
+      elevator: commands.elevator, cat: commands.cat, cabinetPlay: commands.cabinetPlay, cabinetLeave: commands.cabinetLeave, cabinetReaction: commands.cabinetReaction,
     };
     this.networkSelf = undefined;
     this.player.path = []; this.lastInput = '0,0';
@@ -759,7 +796,16 @@ export class RoomScene extends Phaser.Scene {
       if (!this.network) this.animateActor(this.player, time, moving);
       this.halo.setPosition(this.player.x, this.player.y).setDepth(this.player.y - 2);
       if(this.pendingLounge) {
-        if(this.pendingLounge.startsWith('activity:')){
+        if(this.pendingLounge==='elevator') {
+          const {entry}=elevatorDock(this.hall);
+          if(Math.hypot(this.player.x-entry.x,this.player.y-entry.y)<18)this.openElevator();
+          else if(!this.player.path.length&&!this.prediction.active&&time>=this.elevatorApproachAt) {
+            this.elevatorApproachAt=time+800;
+            const nearPatrol=this.guard.getState().some(guard=>guard.hall===this.hall&&guard.phase!=='door'&&Math.hypot(guard.x-this.player.x,guard.y-this.player.y)<110);
+            if(!nearPatrol)this.goTo(entry);
+          }
+        }
+        else if(this.pendingLounge.startsWith('activity:')){
           const id=this.pendingLounge.slice(9) as ActivityId,entry=ACTIVITIES[id].entry;
           if(Math.hypot(this.player.x-entry.x,this.player.y-entry.y)<20){this.pendingLounge=null;this.player.path=[];this.network?.stop();this.onActivity(id);}
         }

@@ -907,7 +907,7 @@
     "tsu-e-fa": {
       "method": "full-round-unbiased-cent-policy-v1",
       "kind": "pvp",
-      "rulesVersion": 3,
+      "rulesVersion": 4,
       "progressVersion": 1,
       "stakePolicyVersion": 1,
       "ordinaryStakeBasis": "total-round",
@@ -939,7 +939,7 @@
         "timeout-left",
         "timeout-right"
       ],
-      "proof": "docs/game-math/qualifications/tsu-e-fa-v3.json",
+      "proof": "docs/game-math/qualifications/tsu-e-fa-v4.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
         "src/shared/pvp.ts",
@@ -2121,6 +2121,62 @@
           3,
           5,
           7
+        ]
+      },
+      "3": {
+        "method": "full-round-unbiased-cent-policy-v1",
+        "kind": "pvp",
+        "rulesVersion": 3,
+        "progressVersion": 1,
+        "stakePolicyVersion": 1,
+        "ordinaryStakeBasis": "total-round",
+        "target": 0.95,
+        "refundReturn": 1,
+        "commissionBasisPoints": 500,
+        "stakes": [
+          10,
+          20,
+          50,
+          100,
+          200,
+          500,
+          1000,
+          2000,
+          5000
+        ],
+        "choices": [
+          "left-win",
+          "right-win",
+          "draw",
+          "cancel",
+          "disconnect-left",
+          "disconnect-right",
+          "expired",
+          "server",
+          "resign-left",
+          "resign-right",
+          "timeout-left",
+          "timeout-right"
+        ],
+        "proof": "docs/game-math/qualifications/tsu-e-fa-v3.json",
+        "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+        "sources": [
+          "src/shared/pvp.ts",
+          "src/shared/tsuEFa.ts",
+          "src/shared/tsuDuel.ts",
+          "src/shared/gameStakes.ts",
+          "src/shared/roundPrecision.ts",
+          "server/pvp/tsu-e-fa.ts",
+          "server/pvp/tsu-duel.ts",
+          "server/pvp/store.ts",
+          "server/pvp/room.ts",
+          "server/pvp/virtual-wallet.ts",
+          "server/finance/pvp-money.ts",
+          "scripts/game-math/rtp-tsu-duel-stakes.mjs",
+          "scripts/game-math/tsu-duel-wallet.ts",
+          "server/demoWallet.ts",
+          "server/demoWalletAmounts.ts",
+          "server/database.ts"
         ]
       }
     },
@@ -3518,7 +3574,7 @@
     "tsu-e-fa": {
       "method": "full-round-unbiased-cent-policy-v1",
       "kind": "pvp",
-      "rulesVersion": 3,
+      "rulesVersion": 4,
       "progressVersion": 1,
       "stakePolicyVersion": 1,
       "ordinaryStakeBasis": "total-round",
@@ -3550,7 +3606,7 @@
         "timeout-left",
         "timeout-right"
       ],
-      "proof": "docs/game-math/qualifications/tsu-e-fa-v3.json",
+      "proof": "docs/game-math/qualifications/tsu-e-fa-v4.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
         "src/shared/pvp.ts",

@@ -1,0 +1,439 @@
+{
+  "release": "guard-counter-20261101-v1",
+  "status": "published-and-verified",
+  "date": "2026-11-01",
+  "sourceCommit": "455e48100e833bee9f8d79f38f1ee7214dad8e32",
+  "baseCommit": "482669357da32c69b1a96803e45f671b9aaa19a6",
+  "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "changedSources": [
+    "server/guards.ts",
+    "src/i18n/en.ts"
+  ],
+  "publication": {
+    "published": true,
+    "preparedImage": "sha256:f7766eabb92360c3e788a5406bc8786ae9a3eeb416c4e0b6d7ef3c1ed21ae10f",
+    "runningImage": "sha256:f7766eabb92360c3e788a5406bc8786ae9a3eeb416c4e0b6d7ef3c1ed21ae10f",
+    "containerRestarted": true,
+    "sourceCommit": "455e48100e833bee9f8d79f38f1ee7214dad8e32",
+    "changedSources": 2,
+    "clientDeltaFiles": 2,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 1,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 13
+  },
+  "backendComparison": {
+    "passed": true,
+    "executableLinesChanged": 1,
+    "metadataHeadersChanged": 1,
+    "allOtherBackendBytesPreserved": true,
+    "guardCounterRemoved": true
+  },
+  "checks": {
+    "typecheck": "passed",
+    "releasePrepare": "passed",
+    "releaseVerifyGithub": "passed",
+    "qualifiedRtpProfiles": 37,
+    "stakePolicies": 19,
+    "stakeAdmission": 19,
+    "legacyUnchangedNotQualified": 114,
+    "targetedGuardTests": 2,
+    "installerGuards": 6
+  },
+  "sourcePreservation": {
+    "totalBefore": 2574,
+    "unrelatedPathsPreserved": 2572,
+    "otherRuntimeFilesPreserved": true,
+    "moduleFilesPreserved": true,
+    "otherServicesPreserved": 13,
+    "configurationsAndMountsPreserved": true,
+    "persistentDataPreserved": true
+  },
+  "preservedBackendDictionary": {
+    "reason": "The published client has newer translation entries than the running backend. Exact executable-byte comparison preserves the backend dictionary and all other code outside the requested guard speech.",
+    "sha256": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68"
+  },
+  "publicBefore": {
+    "mode": "before",
+    "at": "2026-11-01T16:12:31.121Z",
+    "checks": [
+      {
+        "path": "/healthz",
+        "status": 200
+      },
+      {
+        "path": "/api/demo-wallet",
+        "status": 401
+      },
+      {
+        "path": "/api/game-wallet",
+        "status": 410
+      },
+      {
+        "path": "/api/nile-play",
+        "status": 410
+      },
+      {
+        "path": "/?guard-counter-release=before",
+        "status": 200,
+        "sha256": "94ad79e1a73d4c7d92ed5f1d2e2629f1c980eafec1e02d5fe7d0a724c12b6225"
+      },
+      {
+        "path": "/game-modules/studio-last-convoy/active.json",
+        "status": 200,
+        "sha256": "69946ea68712d64beac408eb61b47799601f526d86ccdc04f144e255e8faed8e"
+      },
+      {
+        "path": "/game-modules/studio-caramel-carnival/active.json",
+        "status": 200,
+        "sha256": "77263ed8401071863eb5a4feabf7a03e91feea6bbed18740c0bdb44b612cd7a4"
+      },
+      {
+        "path": "/game-modules/studio-nitro-run/active.json",
+        "status": 200,
+        "sha256": "e5aef46681488697de310edd382eff0307977f49bc6a91893d6b990750dce980"
+      },
+      {
+        "path": "/game-modules/studio-velvet-reign/active.json",
+        "status": 200,
+        "sha256": "e5e7e8df568dfac25275ac0b158ef5522ebcc486989a4a3342d9050865fa7c69"
+      },
+      {
+        "path": "/game-modules/studio-meme-overload/active.json",
+        "status": 200,
+        "sha256": "815e361e74bfcf8a55329d2de5a6c9afc2c0dd91f489fba26fd5aa48ce295391"
+      },
+      {
+        "path": "/game-modules/original-cr-vs-leo/active.json",
+        "status": 200,
+        "sha256": "becdc763703591cf95d9212b819a601fb0f498426d5eede95f87ab624e9eba3a"
+      },
+      {
+        "path": "/game-modules/royal-plinko/active.json",
+        "status": 200,
+        "sha256": "76e5dfb3670ffa03e15d7e097ec9d70be0f0b8299798b46ffb0e3ffa24d130a5"
+      },
+      {
+        "path": "/game-modules/royal-roulette/active.json",
+        "status": 200,
+        "sha256": "620df5f0de51fffd36de900cd664bf127d878daa84fd288886d334ee342dc8ad"
+      },
+      {
+        "path": "/game-modules/original-jackie-chan/active.json",
+        "status": 200,
+        "sha256": "a1607db4c45305c99fa7a996e739a009d3d008be444f576d460be2d391116147"
+      },
+      {
+        "path": "/game-modules/studio-forest-heart/active.json",
+        "status": 200,
+        "sha256": "f5da0f68999a850a50ad7113a0685cfdc130f6355c46c0166b2456ac7f2a8a6d"
+      },
+      {
+        "path": "/game-modules/flag-battle/active.json",
+        "status": 200,
+        "sha256": "dd68787a386773d57241d8c0aa79d1d04cb143290e475899447d09b4ecab8d37"
+      },
+      {
+        "path": "/game-modules/github-crash/active.json",
+        "status": 200,
+        "sha256": "4f725d42b683d966c66fa4605c9a940e578221e0fea999bc1591cbd2d7972231"
+      },
+      {
+        "path": "/game-modules/studio-flooded-temple/active.json",
+        "status": 200,
+        "sha256": "8d4572ab1b1eae5f7f7ea6c1129fc4fb1498649c685cf12f16f4965fed59b827"
+      },
+      {
+        "path": "/game-modules/studio-cosmic-escape/active.json",
+        "status": 200,
+        "sha256": "90ade379b4dcb1dd2eac099db0e2546ae1c243f5cc83547d3468a4d6150b1e35"
+      },
+      {
+        "path": "/game-modules/studio-caribbean-treasures/active.json",
+        "status": 200,
+        "sha256": "8b052615f0d797f6b84a83a153a06e89650ce50adb4d54ea482c01f79f1f5a92"
+      },
+      {
+        "path": "/game-modules/studio-afterglow/active.json",
+        "status": 200,
+        "sha256": "ba4dbe2264b70a49a3b0efd2572ed746402a0a91d58615c8179b0bdfbb405d86"
+      },
+      {
+        "path": "/game-modules/studio-neopolis/active.json",
+        "status": 200,
+        "sha256": "61fc159b3effb730d45036a55bffd52fc0c410c327adbe1b34b9c0c2e69897ca"
+      },
+      {
+        "path": "/game-modules/studio-dracona/active.json",
+        "status": 200,
+        "sha256": "79a1f25eac921f8ba20d870bcbd0db7bd4954f636d6964dbfc5a3429d376b55e"
+      }
+    ],
+    "addedGames": [],
+    "restoredGames": [],
+    "productionAccountsCreated": false,
+    "productionWagersCreated": false,
+    "passed": true
+  },
+  "publicAfter": {
+    "mode": "after",
+    "at": "2026-11-01T16:36:46.656Z",
+    "checks": [
+      {
+        "path": "/healthz",
+        "status": 200
+      },
+      {
+        "path": "/api/demo-wallet",
+        "status": 401
+      },
+      {
+        "path": "/api/game-wallet",
+        "status": 410
+      },
+      {
+        "path": "/api/nile-play",
+        "status": 410
+      },
+      {
+        "path": "/?guard-counter-release=after",
+        "status": 200,
+        "sha256": "2a484ef0d239d558e8f48e4e6bda2faa43c4e1773dae867a6011ac782fdd5811"
+      },
+      {
+        "path": "/assets/index-Ctjck0k4.js",
+        "status": 200,
+        "sha256": "93b183c815a347b59c27ba6d169667665645cdcc03b029df37bf66d456862133"
+      },
+      {
+        "path": "/game-modules/studio-caramel-carnival/active.json",
+        "status": 200,
+        "sha256": "77263ed8401071863eb5a4feabf7a03e91feea6bbed18740c0bdb44b612cd7a4"
+      },
+      {
+        "path": "/game-modules/studio-last-convoy/active.json",
+        "status": 200,
+        "sha256": "69946ea68712d64beac408eb61b47799601f526d86ccdc04f144e255e8faed8e"
+      },
+      {
+        "path": "/game-modules/studio-nitro-run/active.json",
+        "status": 200,
+        "sha256": "e5aef46681488697de310edd382eff0307977f49bc6a91893d6b990750dce980"
+      },
+      {
+        "path": "/game-modules/studio-meme-overload/active.json",
+        "status": 200,
+        "sha256": "815e361e74bfcf8a55329d2de5a6c9afc2c0dd91f489fba26fd5aa48ce295391"
+      },
+      {
+        "path": "/game-modules/studio-velvet-reign/active.json",
+        "status": 200,
+        "sha256": "e5e7e8df568dfac25275ac0b158ef5522ebcc486989a4a3342d9050865fa7c69"
+      },
+      {
+        "path": "/game-modules/original-cr-vs-leo/active.json",
+        "status": 200,
+        "sha256": "becdc763703591cf95d9212b819a601fb0f498426d5eede95f87ab624e9eba3a"
+      },
+      {
+        "path": "/game-modules/original-jackie-chan/active.json",
+        "status": 200,
+        "sha256": "a1607db4c45305c99fa7a996e739a009d3d008be444f576d460be2d391116147"
+      },
+      {
+        "path": "/game-modules/royal-roulette/active.json",
+        "status": 200,
+        "sha256": "620df5f0de51fffd36de900cd664bf127d878daa84fd288886d334ee342dc8ad"
+      },
+      {
+        "path": "/game-modules/royal-plinko/active.json",
+        "status": 200,
+        "sha256": "76e5dfb3670ffa03e15d7e097ec9d70be0f0b8299798b46ffb0e3ffa24d130a5"
+      },
+      {
+        "path": "/game-modules/github-crash/active.json",
+        "status": 200,
+        "sha256": "4f725d42b683d966c66fa4605c9a940e578221e0fea999bc1591cbd2d7972231"
+      },
+      {
+        "path": "/game-modules/flag-battle/active.json",
+        "status": 200,
+        "sha256": "dd68787a386773d57241d8c0aa79d1d04cb143290e475899447d09b4ecab8d37"
+      },
+      {
+        "path": "/game-modules/studio-forest-heart/active.json",
+        "status": 200,
+        "sha256": "f5da0f68999a850a50ad7113a0685cfdc130f6355c46c0166b2456ac7f2a8a6d"
+      },
+      {
+        "path": "/game-modules/studio-caribbean-treasures/active.json",
+        "status": 200,
+        "sha256": "8b052615f0d797f6b84a83a153a06e89650ce50adb4d54ea482c01f79f1f5a92"
+      },
+      {
+        "path": "/game-modules/studio-cosmic-escape/active.json",
+        "status": 200,
+        "sha256": "90ade379b4dcb1dd2eac099db0e2546ae1c243f5cc83547d3468a4d6150b1e35"
+      },
+      {
+        "path": "/game-modules/studio-flooded-temple/active.json",
+        "status": 200,
+        "sha256": "8d4572ab1b1eae5f7f7ea6c1129fc4fb1498649c685cf12f16f4965fed59b827"
+      },
+      {
+        "path": "/game-modules/studio-dracona/active.json",
+        "status": 200,
+        "sha256": "79a1f25eac921f8ba20d870bcbd0db7bd4954f636d6964dbfc5a3429d376b55e"
+      },
+      {
+        "path": "/game-modules/studio-afterglow/active.json",
+        "status": 200,
+        "sha256": "ba4dbe2264b70a49a3b0efd2572ed746402a0a91d58615c8179b0bdfbb405d86"
+      },
+      {
+        "path": "/game-modules/studio-neopolis/active.json",
+        "status": 200,
+        "sha256": "61fc159b3effb730d45036a55bffd52fc0c410c327adbe1b34b9c0c2e69897ca"
+      }
+    ],
+    "addedGames": [],
+    "restoredGames": [],
+    "productionAccountsCreated": false,
+    "productionWagersCreated": false,
+    "passed": true
+  },
+  "browser": {
+    "passed": true,
+    "screens": [
+      {
+        "width": 1440,
+        "height": 1000,
+        "language": "ru",
+        "overflow": false,
+        "canvas": {
+          "width": 1414,
+          "height": 891
+        },
+        "online": false
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "language": "en",
+        "overflow": false,
+        "canvas": {
+          "width": 378,
+          "height": 739
+        },
+        "online": false
+      }
+    ],
+    "errors": [],
+    "mode": "public-offline-guest",
+    "physicalPhoneTested": false,
+    "productionWritesBlocked": true
+  },
+  "rollback": {
+    "path": "/opt/royal-backups/guard-counter-20261101-v1/source.tgz",
+    "bytes": 132547,
+    "sha256": "0d30ce0c291062c256c97b832972ff9911e35a66fef3d85933cd1ea6e66b5bcb"
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 193.55,
+    "removedEntries": 23,
+    "removedImageTags": 4,
+    "preservedFinancialFiles": 99,
+    "freeBefore": 12177338368,
+    "freeAfter": 12189245440,
+    "healthOk": true,
+    "timerEnabled": true
+  },
+  "addedGames": [],
+  "restoredGames": [],
+  "limits": {
+    "productionAccountsCreated": false,
+    "productionWagersCreated": false,
+    "physicalPhoneTested": false,
+    "connectedProductionChatTested": false
+  },
+  "cleanup": {
+    "release": "guard-counter-20261101-v1",
+    "preservedSourceCommit": "455e48100e833bee9f8d79f38f1ee7214dad8e32",
+    "verifiedRemoteRecordCommit": "fc2436a0a31cda9cab28b3ade0d8d911f9e0066e",
+    "server": {
+      "at": 1793551324.9500253,
+      "removed": [
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/runtime-context",
+          "logicalBytes": 5094464,
+          "files": 5
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/transport.tgz",
+          "logicalBytes": 2646982,
+          "files": 1
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/transport-final.tgz",
+          "logicalBytes": 3107945,
+          "files": 1
+        }
+      ],
+      "freeBefore": 12189483008,
+      "freeAfter": 12195266560,
+      "health": "healthy",
+      "rollbackSourcePreserved": true,
+      "applicationSourceAndSettingsUntouched": true
+    },
+    "local": {
+      "status": "blocked-before-execution",
+      "reason": "Automatic approval review rejected local temporary build and archive cleanup: blocked by policy",
+      "removedFiles": 0,
+      "preservedFolders": [
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-counter-release\\royal\\dist",
+          "logicalBytes": 2897967
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-counter-release\\royal\\dist-server",
+          "logicalBytes": 4660707
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-counter-release\\royal\\module-dist",
+          "logicalBytes": 272898912
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-counter-release\\royal\\module-build",
+          "logicalBytes": 2051337
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-counter-release\\royal\\artifacts\\work\\guard-counter-release",
+          "logicalBytes": 39182485
+        }
+      ],
+      "preservedArchives": [
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-counter-release\\royal\\artifacts\\work\\guard-counter-release\\transport-final.tgz",
+          "bytes": 3107945
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-counter-release\\royal\\artifacts\\work\\guard-counter-release\\transport.tgz",
+          "bytes": 2646982
+        }
+      ],
+      "freeBefore": 326755753984,
+      "freeAfter": 326755196928,
+      "activeWorkExceptions": [
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-counter-release\\royal",
+          "reason": "Primary checkout attached to this chat; original checkout contains unrelated active changes",
+          "cleanupCondition": "Archive when the desktop attachment is no longer needed and cleanup restrictions are resolved"
+        }
+      ],
+      "spaceNote": "No local deletion ran and no local reclaimed space is claimed."
+    }
+  }
+}

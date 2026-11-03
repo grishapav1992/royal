@@ -2,6 +2,15 @@
 
 - Never use the em dash character (Unicode U+2014) in generated text.
 
+## Development code map
+
+- For project topics, game packages, verification commands, mathematical-policy references and recorded knowledge, start with `npm run brain:query -- "<topic or game ID>"`. This uses the same local graph plus a compact source-backed project index. Read `docs/project-brain.md`. It uses the current checkout prepared by the Git synchronization workflow, not unmerged branches or old commit contents.
+- Knowledge records retain their original status, environment and seed version. A matching evidence hash is not a new verification of the claim. Records marked `needs_review` must not be treated as current confirmed facts; inspect their changed sources. Do not update evidence hashes simply to remove a warning. The project brain does not alter the existing Graphiti journal or check live production state.
+- For questions about architecture, dependencies or the impact of a change, use `npm run graph:query -- "<question or symbol>"` to locate relevant sources, then verify the indicated source files. Prefer symbol names and repository paths for precise queries. `graph:explain`, `graph:path` and `graph:affected` inspect symbols, paths and dependants. Follow `docs/graphify.md`.
+- These commands build or refresh the local Graphify map when tracked input contents or HEAD change. The first use needs uv and downloads the pinned tool. If unavailable, continue with direct source inspection and state that the map was unavailable. Graph setup must not block ordinary development.
+- The map contains local structural code and Markdown relationships. Inferred relationships require verification; missing relationships do not prove independence. Source presence does not mean a game is active or a feature is deployed. Use the production catalogue and release records for availability and the existing Graphiti graph for verified decisions.
+- Use the project commands, which disable model backends, query logging and automatic global skill changes. Do not run generic Graphify installation, hooks or semantic extraction for this integration. Generated data stays in ignored `graphify-out/`. New files enter the map after `git add`; stage only files belonging to the current task.
+
 ## A6API access
 
 - The owner permits using the same A6API token locally on their two PCs. Direct tools can read `A6API_KEY` and `A6API_BASE_URL=https://api.a6api.com/v1` from the local `.env`. Keep actual tokens outside Git and logs; `.env.example` contains empty placeholders only.
@@ -74,6 +83,8 @@
 - Back up source and tag the previous image before publishing. Preserve the existing game_data volume.
 
 ## Production changes and GitHub
+
+- For small fixes, follow the single-package workflow in `docs/release-process.md`. Build once, keep the prepared source commit fixed, fetch without merging unrelated release records into a verified checkout, and reuse the same validated artifact. Run each affected scenario and the mandatory wallet recovery checks once per unchanged input/artifact set. Repeat them only after relevant changes, failures or unresolved concerns. A guarded installer's `release` operation already includes its baseline checks; do not add a duplicate full `check` immediately before it. Never cache financial quiescence or the mutable running application. Exact immutable image program proofs may be reused only under the documented image, reader and inventory binding. Preserve all rollback, catalogue, RTP, GitHub and completed-maintenance requirements below.
 
 - Server release history is maintained by `deployment/maintenance/automatic-retention.py`. Follow `deployment/maintenance/README.md`: retain the healthy current application and one complete verified rollback, preserve financial backups and persistent data, and remove only verified retired program history. After publication releases its locks, run the retention service and verify a completed result, enabled hourly timer, healthy host and at least 5 GiB free. A failed or skipped maintenance run is unresolved work, not successful cleanup. Do not disable its guards or leave a stale policy after a release.
 

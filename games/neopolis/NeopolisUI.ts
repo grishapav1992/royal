@@ -1,4 +1,5 @@
 import {syncStakeSelect} from '../../src/ui/stakeSelection';
+import { GamePriorityPanel } from '../../src/ui/GamePriorityPanel';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
 import {confirmedPayout} from '../../src/shared/roundPrecision';
 import {GAME_BETS as NEOPOLIS_BETS} from '../../src/shared/gameStakes';
@@ -18,6 +19,7 @@ const initialGrid = [0,1,2,3,4, 2,3,4,5,0, 4,5,0,1,2, 1,2,3,4,5];
 const escape = (text: string) => text.replace(/[&<>"']/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[character]!);
 
 export class NeopolisUI {
+  private priorityPanel: GamePriorityPanel;
   private services = readGameHost();
   private client = this.services.expansionClient;
   private wallet = this.services.demoWallet;
@@ -77,6 +79,13 @@ export class NeopolisUI {
       + '<footer class="np-controls"><div class="np-value"><span>' + c.balance + '</span><strong data-np="balance">0</strong><small>' + c.coins + '</small></div><label class="np-stake"><span>' + c.bet + '</span><select data-np="bet" aria-label="' + c.bet + '">' + NEOPOLIS_BETS.map(bet => '<option value="' + bet + '"' + (bet === this.bet ? ' selected' : '') + '>' + bet + '</option>').join('') + '</select></label><div class="np-value np-win"><span data-np="win-label">' + c.win + '</span><strong data-np="win">0</strong><small data-np="credit">' + c.coins + '</small></div><button class="np-spin" data-np="spin"><span>' + c.spin + '</span><b aria-hidden="true">↻</b></button><div class="np-auto"><label><span>' + c.autoSpins + '</span><select data-np="auto-count" aria-label="' + c.autoSpins + '" title="' + c.autoHelp + '">' + AUTO_COUNTS.map(count => '<option value="' + count + '">' + count + '</option>').join('') + '</select></label><button data-np="auto" aria-pressed="false">' + c.autoplay + '</button></div></footer>'
       + '<p class="np-cycle-lock" data-np="lock"></p><dialog class="np-dialog" data-np="dialog"><button data-np="close" class="np-close" aria-label="' + c.close + '">×</button><div data-np="dialog-body"></div></dialog>';
     host.replaceChildren(this.root); this.dialog = this.find<HTMLDialogElement>('dialog');
+    const optionsButton = doc.createElement('button'); optionsButton.type = 'button';
+    optionsButton.className = 'np-options'; optionsButton.textContent = this.services.i18n.language === 'en' ? 'Team' : 'Команда';
+    this.root.querySelector('.np-tools')!.prepend(optionsButton);
+    const autoSettings = this.root.querySelector<HTMLElement>('.np-auto label')!; autoSettings.classList.add('np-auto-settings');
+    this.priorityPanel = new GamePriorityPanel(this.root, optionsButton,
+      this.services.i18n.language === 'en' ? 'Team and settings' : 'Команда и настройки', c.close,
+      [this.root.querySelector('.np-team')!, this.root.querySelector('.np-fast')!, autoSettings]);
     this.effects = new NeopolisEffects(this.root.querySelector('.np-layout')!, () => this.motionOptions(this.animation.signal).paused(), () => this.reducedMotion);
     this.audio = new NeopolisAudio(this.services.gameAudio,doc);
     this.feedback = new NeopolisFeedback(this.root,this.copy,n=>this.number(n),units=>{
@@ -143,6 +152,10 @@ export class NeopolisUI {
       button.querySelectorAll('.np-pips i').forEach((pip, i) => (pip as HTMLElement).dataset.filled = String(i < team.charges[index]));
     });
     this.find('team-hint').textContent = this.collectionLocked ? this.copy.collect : this.copy.choose;
+    const summary = this.root.querySelector<HTMLButtonElement>('.np-options')!;
+    summary.textContent = this.copy[team.starter] + ' · ' + team.charges.join('/');
+    summary.setAttribute('aria-label', (this.services.i18n.language === 'en' ? 'Team and settings. ' : 'Команда и настройки. ')
+      + HEROES.map((hero, index) => this.copy[hero] + ': ' + team.charges[index] + '/3').join(', '));
   }
   private controls() {
     if (!this.alive) return;
@@ -420,6 +433,7 @@ export class NeopolisUI {
     this.effects.destroy();
     this.audio.destroy();
     this.feedback.destroy();
+    this.priorityPanel.destroy();
     this.client.removeEventListener('change', this.changed); this.wallet.removeEventListener('change', this.changed);
     if (this.dialog.open) this.dialog.close(); this.root.remove();
   }

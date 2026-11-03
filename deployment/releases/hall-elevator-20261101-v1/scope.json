@@ -1,0 +1,71 @@
+{
+  "release": "hall-elevator-20261101-v1",
+  "productionCommit": "4eb47d5d7b29622453616888d24f62db9e26245b",
+  "featureCommit": "6cfda58a288a5589b07b91e7e78357c753268009",
+  "audioFixCommit": "047ac2505a3a693d8960d72ba8ed8f96e15f2bd2",
+  "approachFixCommit": "00cfc352dfe627cdafd88df07b7752ef0b100412",
+  "changedSources": [
+    "server/LobbyRoom.ts",
+    "src/game/ElevatorAudio.ts",
+    "src/game/RoomScene.ts",
+    "src/game/elevatorArt.ts",
+    "src/i18n/en.ts",
+    "src/main.ts",
+    "src/network/LobbyClient.ts",
+    "src/shared/elevator.ts",
+    "src/shared/world.ts",
+    "src/ui/ClubMap.ts",
+    "src/ui/ElevatorUI.ts",
+    "src/ui/SocialUI.ts",
+    "src/ui/elevator.css"
+  ],
+  "expectedSources": {
+    "server/LobbyRoom.ts": "514e2a7c2349f209a02d9e86505565d44f6212bae249e381adb24b22b3954483",
+    "src/game/ElevatorAudio.ts": "68462baf51d1a0e77a4f854cfce1d7cdfdd68fd2a1f6177c306c70190d3d4a13",
+    "src/game/RoomScene.ts": "416fd0747442a5d0187cb7ea667423ab6ce37ae4341a80984cda3f6776ae8419",
+    "src/game/elevatorArt.ts": "db70c995c544355fb43bf493a816227eeb5b68a03f68042aa8406d3c2945e148",
+    "src/i18n/en.ts": "c54e57fbd9cf17d1009f039dc6b1190c09121f932be1ba2ce1fe62e0dec31944",
+    "src/main.ts": "5649893e410461246a4b3b9f60c29dd621fd9b5df495e34d615548cca4fa64ba",
+    "src/network/LobbyClient.ts": "8ec364aab7c32b4fd02e793bb60c3bbc5391eb0bfbb60514dc83f8d7816fe16e",
+    "src/shared/elevator.ts": "d7f4f8da997be7e9f9c35e79e5398aec50d1e3f7af1afcc0efaa6f61f466e9ca",
+    "src/shared/world.ts": "1e8fae4df029be9f570b19f26c244b148421999904b5e13436668cc52e17b801",
+    "src/ui/ClubMap.ts": "47687c40ea3745d04a541bb330bf6ae5b0162bd6a1c1a6efe68107f676aca160",
+    "src/ui/ElevatorUI.ts": "0ebd6b03ea34d309c6a258557adaca781a1c95d9626f41ee34578a0a7bdfdba4",
+    "src/ui/SocialUI.ts": "1670264ec45a46a7fa2cdc9fc6a80fe4da29467710c3f56c6f94d112566bd6b7",
+    "src/ui/elevator.css": "c976e81ccc1ea9aa99fd63a46dd89effe078c39e4abff656ded484615e7a61e6"
+  },
+  "backendSources": [
+    "server/LobbyRoom.ts",
+    "src/shared/world.ts",
+    "src/shared/elevator.ts"
+  ],
+  "preservedBackendInputs": {
+    "src/i18n/en.ts": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68"
+  },
+  "backendChanges": [
+    "dist-server/index.js"
+  ],
+  "moduleChanges": [],
+  "activeGames": [
+    "flag-battle",
+    "github-crash",
+    "original-cr-vs-leo",
+    "original-jackie-chan",
+    "royal-plinko",
+    "royal-roulette",
+    "studio-afterglow",
+    "studio-caramel-carnival",
+    "studio-caribbean-treasures",
+    "studio-cosmic-escape",
+    "studio-dracona",
+    "studio-flooded-temple",
+    "studio-forest-heart",
+    "studio-last-convoy",
+    "studio-meme-overload",
+    "studio-neopolis",
+    "studio-nitro-run",
+    "studio-velvet-reign"
+  ],
+  "addedGames": [],
+  "restoredGames": []
+}

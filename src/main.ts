@@ -11,6 +11,7 @@ import { CardTablesCatalog } from './ui/CardTablesCatalog';
 import { CardDealerStage } from './ui/CardDealerStage';
 import { isCardGame, dealerForGame } from './shared/cardTables';
 import './ui/floor-navigation.css';
+import { ElevatorUI } from './ui/ElevatorUI';
 import { isStudioGame } from './shared/studioGames';
 import { isVariantGame } from './shared/casinoVariants';
 import { ROYAL_PLATFORM_GAMES, isCollectionGame, isRetiredArcadeGame } from './shared/arcadeCatalog';
@@ -86,7 +87,7 @@ app.innerHTML = tr`
     </div>
     <footer class="footer room-dock"><nav class="panel-tabs" aria-label="Панели зала"></nav><button id="panel-close" type="button" hidden>Закрыть панель ×</button><span class="dock-hint">WASD · стрелки · Shift: бег</span><button id="room-overview" type="button" aria-pressed="false">Весь этаж</button></footer>
   </main>
-  <dialog id="help-dialog" class="help-dialog"><button class="dialog-close icon-button" data-close aria-label="Закрыть">${icon('close')}</button><h2>Как играть</h2><div class="help-steps"><p><span>01</span>WASD или стрелки: идти. Shift: бежать. Нажатие на пол: бежать к точке.</p><p><span>02</span>Нажми на автомат, стол или его карточку, чтобы подойти. Рядом нажми E, чтобы играть.</p><p><span>03</span>Первый этаж: автоматы и казино-игры. Второй этаж: шахматы, бильярд и аэрохоккей. Третий этаж: карточные столы с крупье. Поднимайся по светящимся лестницам или нажимай кнопки этажей наверху. Кнопка «Игры» открывает список текущего этажа.</p></div><button class="primary-button" data-close>Понятно ${icon('game')}</button></dialog>
+  <dialog id="help-dialog" class="help-dialog"><button class="dialog-close icon-button" data-close aria-label="Закрыть">${icon('close')}</button><h2>Как играть</h2><div class="help-steps"><p><span>01</span>WASD или стрелки: идти. Shift: бежать. Нажатие на пол: бежать к точке.</p><p><span>02</span>Нажми на автомат, стол или его карточку, чтобы подойти. Рядом нажми E, чтобы играть.</p><p><span>03</span>Первый этаж: автоматы и казино-игры. Второй этаж: шахматы, бильярд и аэрохоккей. Третий этаж: карточные столы с крупье. Поднимайся по светящимся лестницам или нажимай кнопки этажей наверху. Лифт рядом с лестницей позволяет сразу выбрать любой этаж. Кнопка «Игры» открывает список текущего этажа.</p></div><button class="primary-button" data-close>Понятно ${icon('game')}</button></dialog>
   <dialog id="mini-dialog" class="mini-dialog" aria-labelledby="mini-title"><div class="mini-top"><div><span class="eyebrow">ROYAL ORIGINALS / 01</span><h2 id="mini-title">Neon Breaker</h2></div><button type="button" id="studio-game-list" hidden>Все игры</button><button class="icon-button" data-close aria-label="Вернуться в зал">${icon('close')}</button></div><div class="mini-stats"><span>ОЧКИ <strong id="score">0000</strong></span><span>РЕКОРД <strong id="best">0000</strong></span><span>ЖИЗНИ <strong id="lives">● ● ●</strong></span></div><div class="mini-stage"><div id="card-dealer-stage" hidden></div><div id="mini-game"></div><div id="mini-message" class="mini-message"><h3 id="mini-message-title">Разбей все блоки</h3><p id="mini-message-copy">Лови мяч платформой. У тебя три жизни.</p><button class="primary-button" id="start-game">Начать игру</button></div></div><div class="demo-footer" hidden><span>Кредиты Luelon · Отдельно от кошелька клуба · Баланс сбрасывается при открытии</span><button type="button" class="text-button" id="retry-demo">Перезагрузить игру</button></div><div class="mini-bottom"><span>Мышь, палец или ← →</span><button class="text-button" data-close>Вернуться в зал <kbd>Esc</kbd></button></div></dialog>
   <dialog id="bar-dialog" class="bar-dialog"><button class="dialog-close icon-button" data-close aria-label="Вернуться в зал">×</button><span class="eyebrow">MIRA’S BAR</span><h2>Сделаем паузу?</h2><p>Угощение за счёт клуба.</p><div class="drink-list">${DRINKS.map(d=>`<button data-drink="${d.id}" style="--drink-color:${d.color}"><span class="drink-glass" aria-hidden="true">▰</span><span><strong>${d.name}</strong><small>${d.description}</small></span><span>↗</span></button>`).join('')}</div></dialog>
   <div id="toast" class="toast" role="status" hidden></div>
@@ -100,7 +101,7 @@ compactHeader.addEventListener('change', () => {
 profileMenu.addEventListener('click', event => {
   if ((event.target as Element).closest('button') && profileMenu.matches(':popover-open')) profileMenu.hidePopover();
 });
-gameAudio.install();gameAudio.addSettingsButton(document.querySelector<HTMLElement>('.mini-bottom')!);
+gameAudio.install();gameAudio.addSettingsButton(document.querySelector<HTMLElement>('.mini-top')!);
 const layout=new RoomLayout();
 const $ = <T extends HTMLElement = HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
 const miniDialog = $<HTMLDialogElement>('#mini-dialog');
@@ -144,7 +145,7 @@ function showPlatformCatalog() {
   $('.mini-stats').hidden = true; $('.demo-footer').hidden = true;
   $('#mini-message').hidden = true; $('#card-dealer-stage').hidden = true;
   $('.mini-bottom>span').textContent = translateText('Общий тестовый кошелёк клуба');
-  $('.mini-bottom .settings-shortcut').hidden = false; $('.mini-bottom kbd').hidden = false;
+  $('.mini-top .settings-shortcut').hidden = false; $('.mini-bottom kbd').hidden = false;
   room.setLocked(true);
   if (!miniDialog.open) miniDialog.showModal();
   platformSelection = new RoyalPlatformCatalog($('#mini-game'), choice => { void selectPlatformGame(choice); }, platformCabinet.collection, selected);
@@ -199,7 +200,7 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound, 
   $('.mini-stats').hidden = !!(platformCabinet || cabinet.demo || cabinet.wallet || cabinet.github);
   $('.demo-footer').hidden = !cabinet.demo;
   $('.mini-top .eyebrow').textContent = cabinet.demo ? translateText('LUELON PLAY / ДЕМО') : 'ROYAL ORIGINALS / 01';
-  $('.mini-bottom .settings-shortcut').hidden = !!cabinet.demo;
+  $('.mini-top .settings-shortcut').hidden = !!cabinet.demo;
   $('.mini-bottom kbd').hidden = !!cabinet.demo;
   try { best = Number(localStorage.getItem('royal-'+activeGameId+'-best')) || 0; } catch { best=0; }
   $('#mini-title').textContent = cabinet.name;
@@ -257,6 +258,7 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound, 
     setTitle: name => { if (miniDialog.open && version === openVersion) $('#mini-title').textContent = name; },
   });
 }
+let elevator: ElevatorUI | undefined;
 const room = new RoomScene({
   onNear: cabinet => {
     $('#interaction').hidden = !cabinet;
@@ -273,6 +275,7 @@ const room = new RoomScene({
   },
   onPlay: cabinet => { void play(cabinet); },
   onReady: () => { new ClubMap(room);
+    elevator = new ElevatorUI(room, () => room.setLocked(Boolean(document.querySelector('dialog[open]')) || Boolean(social && social.client.status !== 'connected')));
     if (!offline) new FlagToteAnnouncement($('.room-panel'), () => {
       if (openingCabinet || document.querySelector('dialog[open]')) return;
       const cabinet = GAME_CABINETS.find(c => c.id === 'flag-tote');
@@ -415,4 +418,4 @@ document.addEventListener('visibilitychange', () => { if (document.hidden && min
 if (import.meta.env.DEV && import.meta.env.VITE_LOCAL_ATELIER === '1') {
   document.querySelector('.header-center')!.textContent = 'Локальное ателье · тестовый баланс';
 }
-Object.assign(window, { royalDemo: { getState: () => room.getState(), getTailor: () => room.getTailorState(), getMiniState: () => mini?.getState() ?? null, getNetworkState: () => social?.client.getState() ?? null, getAudio: () => gameAudio.getState(), getActivities: () => social?.activities.getState() ?? null } });
+Object.assign(window, { royalDemo: { getState: () => room.getState(), getElevator: () => elevator?.getState() ?? null, getTailor: () => room.getTailorState(), getMiniState: () => mini?.getState() ?? null, getNetworkState: () => social?.client.getState() ?? null, getAudio: () => gameAudio.getState(), getActivities: () => social?.activities.getState() ?? null } });

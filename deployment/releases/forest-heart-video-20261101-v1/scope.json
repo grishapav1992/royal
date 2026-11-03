@@ -1,0 +1,40 @@
+{
+  "release": "forest-heart-video-20261101-v1",
+  "approvedCommit": "be0c982eefd657e57bc0e3d0c9096af9c8c502e1",
+  "approvedModule": "1.15.0-86350699f878",
+  "productionCommit": "482669357da32c69b1a96803e45f671b9aaa19a6",
+  "sources": [
+    "games/forest-heart/ForestCharacter.ts",
+    "games/forest-heart/ForestIdleMotion.ts",
+    "games/forest-heart/ForestLayout.ts",
+    "games/forest-heart/ForestVideo.ts",
+    "games/forest-heart/styles.ts",
+    "games/forest-heart/package.json",
+    "games/forest-heart/README.md",
+    "public/assets/forest-heart/video-v3/focus.mp4",
+    "public/assets/forest-heart/video-v3/look.mp4",
+    "public/assets/forest-heart/video-v3/magic.mp4"
+  ],
+  "added": [
+    "games/forest-heart/ForestIdleMotion.ts",
+    "games/forest-heart/ForestVideo.ts",
+    "public/assets/forest-heart/video-v3/focus.mp4",
+    "public/assets/forest-heart/video-v3/look.mp4",
+    "public/assets/forest-heart/video-v3/magic.mp4"
+  ],
+  "games": [
+    "studio-forest-heart"
+  ],
+  "addedGames": [],
+  "restoredGames": [],
+  "unchanged": [
+    "host",
+    "backend",
+    "wallet",
+    "mathematics",
+    "catalogue",
+    "other game modules"
+  ],
+  "finalSourceCommit": "2c81212737d2f9cb012eab067f1bc1e0a8b051e0",
+  "experimentalHistoryPreserved": "3fbd66caef434c48166ba65abb0e3a149a65d4f7"
+}

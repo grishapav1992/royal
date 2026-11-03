@@ -1,0 +1,60 @@
+.fb-root[data-priority-layout] { min-height:0; overflow:hidden; padding:12px; gap:10px }
+.fb-root[data-priority-layout] .fb-layout { flex:1; display:grid; grid-template-columns:minmax(0,1fr) 280px; grid-template-rows:minmax(0,1fr); min-height:0; gap:16px }
+.fb-root[data-priority-layout] .fb-stage { min-width:0; min-height:0; height:100% }
+.fb-root[data-priority-layout] .fb-stage canvas { min-height:0 }
+.fb-root[data-priority-layout] .fb-controls { display:flex; flex-direction:column; min-height:0; gap:8px; overflow:hidden }
+.fb-root[data-priority-layout] .fb-selection { display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:auto auto auto auto auto minmax(44px,1fr) auto; min-height:0; flex:1; gap:6px }
+.fb-root[data-priority-layout] .fb-countries { grid-template-columns:repeat(3,minmax(0,1fr)); min-height:0; max-height:none; overflow:auto }
+.fb-root[data-priority-layout] .fb-mode-odds { margin:0 }
+.fb-root[data-priority-layout] .fb-modes button { min-height:44px }
+.fb-root[data-priority-layout] .fb-bet { padding:0; border:0 }
+.fb-root[data-priority-layout] .fb-bet select { min-height:44px; font-size:16px; max-width:100%; min-width:0 }
+.fb-root[data-priority-layout] :is(.fb-play,.fb-skip,.fb-retry) { min-height:44px; height:44px; padding:6px }
+.fb-root[data-priority-layout] .fb-help { width:44px; height:44px; min-height:44px; flex:none }
+.fb-root[data-priority-layout] .fb-wallet { display:flex; align-items:center; justify-content:space-between; gap:6px; font-size:11px; flex:none }
+.fb-root[data-priority-layout] .fb-wallet>span { color:var(--fb-muted); font-size:9px }
+.fb-root[data-priority-layout] .fb-wallet>strong { font-size:18px }
+.fb-root[data-presenting=true] .fb-play,.fb-root[data-pending=true] .fb-play { display:none }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) { display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:44px minmax(0,1fr) auto; padding:6px; gap:4px }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-header { grid-column:1; grid-row:1; min-width:0 }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-header h2 { font-size:20px; margin:0 }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) :is(.fb-kicker,.fb-header h2 span) { display:none }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-layout { display:contents }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-stage { grid-column:1; grid-row:2; height:100%; min-height:0 }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-stage-top { padding:5px 8px; min-height:26px }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-badge { font-size:8px; letter-spacing:1px }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-moment { flex:none; gap:2px; padding:3px 8px }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-moment strong { font-size:19px; line-height:22px }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-moment>span:last-child { font-size:10px; line-height:13px }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-ticker { flex:none; min-height:0; height:18px; max-height:18px; padding:0 4px; gap:3px; overflow:hidden }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-controls { grid-column:1; grid-row:3; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); grid-template-rows:44px 44px 24px 44px auto; gap:4px 8px; overflow:hidden }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-controls>.fb-selection { display:none }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-selection-summary { grid-column:1/-1; grid-row:1; border:1px solid #789588; border-radius:6px; background:#203d3d; color:var(--fb-ink); width:100%; font-size:13px; padding:4px 8px }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-wallet { grid-column:1; grid-row:2; display:flex; flex-direction:column; align-items:start; justify-content:center; gap:0 }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-bet { grid-column:2; grid-row:2; display:flex; min-width:0; gap:4px }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-bet label { font-size:8px }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-quote { grid-column:1/-1; grid-row:3; flex-wrap:nowrap; min-width:0; gap:6px }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-quote span { font-size:9px }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-quote b { font-size:16px; white-space:nowrap }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) :is(.fb-play,.fb-skip,.fb-retry) { grid-column:1/-1; grid-row:4; width:100%; min-height:44px; height:44px; padding:6px; font-size:13px!important }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-status { grid-column:1/-1; grid-row:5; font-size:10px; min-height:13px; line-height:13px }
+.fb-root[data-priority-layout]:where(:not([data-priority-layout=full])) .fb-fair { display:none }
+.fb-root[data-priority-layout=landscape] { grid-template-columns:minmax(0,1fr) 214px; grid-template-rows:minmax(0,1fr); padding:6px; gap:4px 8px }
+.fb-root[data-priority-layout=landscape] .fb-header { display:none }
+.fb-root[data-priority-layout=landscape] .fb-header h2 { font-size:17px }
+.fb-root[data-priority-layout=landscape] .fb-stage { grid-column:1; grid-row:1 }
+.fb-root[data-priority-layout=landscape] .fb-controls { grid-column:2; grid-row:1; align-content:center; grid-template-columns:minmax(0,1fr); grid-template-rows:44px 24px 44px 24px 44px auto; gap:4px }
+.fb-root[data-priority-layout=landscape] .fb-wallet { grid-column:1; grid-row:2; flex-direction:row; align-items:center; justify-content:space-between }
+.fb-root[data-priority-layout=landscape] .fb-bet { grid-column:1; grid-row:3 }
+.fb-root[data-priority-layout=landscape] .fb-quote { grid-column:1; grid-row:4 }
+.fb-root[data-priority-layout=landscape] .fb-quote span { max-width:70px; line-height:11px }
+.fb-root[data-priority-layout=landscape] :is(.fb-play,.fb-skip,.fb-retry) { grid-column:1; grid-row:5 }
+.fb-root[data-priority-layout=landscape] .fb-status { grid-column:1; grid-row:6 }
+.fb-root .game-options-content>.fb-selection { display:flex; flex-direction:column; height:auto; max-height:none; overflow:visible; gap:10px }
+.fb-root .game-options-content .fb-modes button { min-height:52px; padding:6px; font-size:12px }
+.fb-root .game-options-content .fb-countries { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); height:auto; max-height:none; overflow:visible }
+.fb-root .game-options-content .fb-countries button { min-height:64px; padding:8px 3px }
+.fb-root .game-options-content .fb-countries button span { font-size:11px }
+.fb-root .game-options-content .fb-search { width:100%; min-height:44px; font-size:16px }
+.fb-root .fb-selection>.fb-selection-rules { display:none }
+.fb-root .game-options-content .fb-selection>.fb-selection-rules { display:block; min-height:44px; border:1px solid #789588; border-radius:6px; color:inherit; background:#203d3d }

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdir, writeFile, readFile, rm, mkdtemp, symlink } from 'node:fs/promises';
+import { mkdir, writeFile, readFile, rm, mkdtemp, symlink, chmod } from 'node:fs/promises';
 import { resolve, dirname } from 'node:path';
 import { moduleFingerprinter, cachedModule, digest, inventory, regularPath } from '../scripts/module-build-cache.mjs';
 import { releasePlan, assertClean, git, releaseFiles, verifyRelease, prepareRelease } from '../scripts/release.mjs';
@@ -153,4 +153,36 @@ test('application release includes payment build metadata and rejects missing or
   await f.put(metadataPath, metadataBytes); await verifyRelease(f.root);
   const workflow = await readFile(resolve('.github/workflows/game-rtp.yml'), 'utf8');
   assert(workflow.split(/\r?\n/).some(line => line.trim() === metadataPath));
+});
+
+async function reusableRelease(t){
+ const f=await committedFixture(t),version='1.0.0-aaaaaaaaaaaa',folder=`module-dist/test-a/versions/${version}`;
+ await f.put(folder+'/manifest.json','{}');await f.put(folder+'/entry.js','entry');
+ await f.put('module-dist/test-a/active.json',JSON.stringify({manifest:`/game-modules/test-a/versions/${version}/manifest.json`,sha256:digest('{}')}));
+ await f.put('module-build/build-report.json',JSON.stringify({games:[{gameId:'test-a',version}]}));
+ const manifest={...releasePlan(f.root,f.base),scope:'modules',modules:['a'],build:{passed:true},...await releaseFiles(f.root,['a'])};
+ await f.put('module-build/release-manifest.json',JSON.stringify(manifest));return{...f,manifest,folder};
+}
+test('preparing the identical verified selection reuses bytes without running another build',async t=>{
+ const f=await reusableRelease(t),result=await prepareRelease(f.root,{base:f.base,local:true,modules:['a']});
+ assert.equal(result.reused,true);assert.equal(result.sourceCommit,f.manifest.sourceCommit);
+ const timings=JSON.parse(await readFile(resolve(f.root,'module-build/release-timings.json')));assert.equal(timings.reused,true);assert.deepEqual(timings.steps.map(s=>s.name),['reuse-verified-build']);
+ assert.equal(await readFile(resolve(f.root,f.folder+'/entry.js'),'utf8'),'entry');
+});
+test('a damaged reusable build fails and invalidates stale success evidence',async t=>{
+ const f=await reusableRelease(t);await f.put(f.folder+'/entry.js','damaged');await f.put('module-build/release-github.json','stale');
+ await assert.rejects(prepareRelease(f.root,{base:f.base,local:true,modules:['a']}),/output changed/);
+ for(const name of ['release-manifest.json','release-github.json'])await assert.rejects(readFile(resolve(f.root,'module-build',name)),{code:'ENOENT'});
+});
+test('GitHub verification performs one full pass after fetch and binds the exact manifest',async t=>{
+ const f=await reusableRelease(t),remote=await mkdtemp(resolve(parent,'remote-'));t.after(()=>rm(remote,{recursive:true,force:true}));git(remote,['init','--bare','-q']);
+ git(f.root,['remote','add','origin',remote]);git(f.root,['push','-q','origin','HEAD:main']);
+ const {verifyGithub}=await import('../scripts/release.mjs');
+ const previous=process.env.ROYAL_GIT_BINARY,wrapper=resolve(f.root,'.git','git-observer.mjs'),log=resolve(f.root,'.git','calls.jsonl'),mutate=resolve(f.root,'.git','mutate');
+ await writeFile(wrapper,`#!${process.execPath}\nimport fs from 'node:fs';import {spawnSync} from 'node:child_process';const args=process.argv.slice(2);fs.appendFileSync(${JSON.stringify(log)},JSON.stringify(args)+'\\n');if(args[0]==='fetch'&&fs.existsSync(${JSON.stringify(mutate)}))fs.writeFileSync(${JSON.stringify(resolve(f.root,f.folder+'/entry.js'))},'changed during fetch');const result=spawnSync(${JSON.stringify(previous||'git')},args,{stdio:'inherit'});process.exit(result.status??1);`);await chmod(wrapper,0o755);
+ try{process.env.ROYAL_GIT_BINARY=wrapper;
+  const receipt=await verifyGithub(f.root);assert.equal(receipt.manifestSha256,digest(await readFile(resolve(f.root,'module-build/release-manifest.json'))));assert.equal(receipt.sourceCommit,f.manifest.sourceCommit);
+  const calls=(await readFile(log,'utf8')).trim().split('\n').map(JSON.parse);assert.equal(calls.filter(a=>a.join(' ')==='rev-parse HEAD^{tree}').length,1);
+  await writeFile(mutate,'yes');await assert.rejects(verifyGithub(f.root),/output changed/);await assert.rejects(readFile(resolve(f.root,'module-build/release-github.json')),{code:'ENOENT'});
+ }finally{if(previous===undefined)delete process.env.ROYAL_GIT_BINARY;else process.env.ROYAL_GIT_BINARY=previous;}
 });

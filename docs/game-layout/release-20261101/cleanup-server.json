@@ -1,0 +1,25 @@
+{
+  "preservationCommit": "6f6a1067a8100a58e1711b014ea4f27029f07e06",
+  "maintenanceProof": "/opt/royal-maintenance/code-updates/layout-preparations-20261101.json",
+  "removed": [
+    {
+      "path": "/opt/royal-releases/layout-priorities-20261101-v1/transport.tgz",
+      "logicalBytes": 132656042,
+      "archive": true
+    },
+    {
+      "path": "/opt/royal-releases/layout-priorities-20261101-v1/helper-checks.tgz",
+      "logicalBytes": 15143,
+      "archive": true
+    },
+    {
+      "path": "/opt/royal-releases/layout-priorities-20261101-v1/maintenance-tests.tgz",
+      "logicalBytes": 25596,
+      "archive": true
+    }
+  ],
+  "logicalBytes": 132696781,
+  "freeBefore": 11807789056,
+  "freeAfter": 11940495360,
+  "applicationAndDataChanged": false
+}

@@ -30,7 +30,7 @@ export class Guards {
     if(count>=10||d.job)return;
     if(!d.resume)d.resume={elapsed:d.elapsed,phase:g.phase,progress:g.progress,facing:g.facing,target:g.target,speech:g.speech,reply:g.reply,routine:g.routine};
     this.phase(d,'bump');g.target=id;g.routine='';g.facing=movementFacing(p.x-g.x,p.y-g.y,g.facing as Facing);
-    g.speech=count===9?'Ещё один толчок, и на выход. 9/10.':`Не толкайся. ${count}/10.`;
+    g.speech=count===9?'Ещё один толчок, и на выход.':'Не толкайся.';
   }
 
   // A heavy guard displaces a standing guest, but never pushes anyone into furniture.

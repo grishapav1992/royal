@@ -1,0 +1,11 @@
+.game-options-trigger { display:none }
+[data-priority-layout=full] .game-options-trigger { display:none }
+[data-priority-layout]:not([data-priority-layout=full]) .game-options-trigger { display:inline-flex; align-items:center; justify-content:center; min-width:44px; min-height:44px; touch-action:manipulation }
+dialog.game-options-panel { box-sizing:border-box; width:min(620px,calc(100vw - 24px)); max-width:none; max-height:calc(100dvh - 24px); margin:auto; padding:12px; overflow:auto; overscroll-behavior:contain; border:1px solid #c9b78c; border-radius:12px; color:#f8efdd; background:#13232f; font:14px/1.4 Arial,sans-serif }
+.game-options-panel::backdrop { background:#050b13c9 }
+.game-options-panel>header { position:sticky; top:-12px; z-index:5; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 0; background:#13232f }
+.game-options-panel h2 { margin:0; font-size:18px }
+.game-options-panel>header>button { flex:none; width:44px; height:44px; min-height:44px; border:1px solid #c9b78c; border-radius:6px; color:inherit; background:#293845; font:26px Arial,sans-serif; cursor:pointer }
+.game-options-content { display:grid; gap:16px; min-width:0 }
+.game-options-panel :is(button,select,input) { touch-action:manipulation }
+.game-options-panel :focus-visible { outline:2px solid #f3d490; outline-offset:2px }

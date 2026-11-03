@@ -7,6 +7,8 @@ import {PvpStore} from '../../server/pvp/store';
 import {validVirtualPvpWallet} from '../../src/shared/pvp';
 import {TSU_DUEL_STAKES} from '../../src/shared/tsuDuel';
 const db=new PostgresDatabase(':memory:'),hash=createHash('sha256');let cases=0;
+const rulesIndex=process.argv.indexOf('--rules'),rulesVersion=rulesIndex<0?4:Number(process.argv[rulesIndex+1]);assert([3,4].includes(rulesVersion));
+const target=rulesVersion===3?3:2;
 try{
   await db.exec('CREATE TABLE accounts(id TEXT PRIMARY KEY)');const common=new DemoWalletStore(db);await common.ready;
   const ledger=new VirtualPvpLedger(db,common),store=new PvpStore(ledger);await store.ready;
@@ -16,6 +18,12 @@ try{
     const people=actors.map(a=>({...a,connected:true,available:true}));await store.syncRoom(roomId,people,now);
     const command=(side:number,op:any)=>store.command(actors[side],{...op,id:op.id??randomUUID()},now);
     const created=await command(0,{action:'invite',gameId:'tsu-e-fa',targetId:ids[1]}),id=created.active!.id;
+    if(rulesVersion===3){
+      // Replay an already accepted historical invitation in this synthetic DB.
+      const row=await db.prepare('SELECT payload FROM pvp_matches WHERE id=?').get(id),saved=JSON.parse(String(row!.payload));
+      saved.challenge.rulesVersion=3;saved.challenge.targetWins=3;
+      await db.prepare('UPDATE pvp_matches SET payload=? WHERE id=?').run(JSON.stringify(saved),id);
+    }
     const step=async(ms:number)=>{const end=now+ms;while(now<end){now=Math.min(end,now+10000);await store.syncRoom(roomId,people,now);}};
     let funded=false,last:any;
     if(choice==='expired'){await step(120001);}
@@ -30,13 +38,13 @@ try{
         for(const actor of actors)assert.equal((await common.snapshot(actor.accountId)).balance,1000-Number(stakeUnits)/1000000);
         if(choice.endsWith('win')){
           const left=choice==='left-win';
-          for(let round=1;round<=3;round++){
+          for(let round=1;round<=target;round++){
             last={id:randomUUID(),action:'move',challengeId:id,revision:0,move:{kind:'choose',round,choice:left?'rock':'scissors'}};
             await command(0,last);const restored=new PvpStore(ledger);await restored.ready;
             assert.equal((await restored.snapshot(actors[0],now)).tsuEFa!.choice,last.move.choice);
             assert.equal((await restored.snapshot(actors[1],now)).tsuEFa!.choice,null);
             await command(1,{action:'move',challengeId:id,revision:0,move:{kind:'choose',round,choice:left?'scissors':'rock'}});
-            await step(4000);if(round<3)await step(1600);
+            await step(4000);if(round<target)await step(1600);
           }
           await command(0,last);
         }else if(choice.startsWith('disconnect')){people[choice==='disconnect-left'?1:0].connected=false;await step(1);await step(60001);}
@@ -55,5 +63,5 @@ try{
     const bank=await db.prepare('SELECT * FROM virtual_pvp_banks WHERE match_id=?').get(id);assert.equal(Number(bank?.fee_units??0),decisive?Number(stakeUnits)/100000:0);
     hash.update(JSON.stringify({choice,stakeUnits,balances,bets,fee:Number(bank?.fee_units??0)})+'\n');cases++;
   }
-  console.log('TSU_WALLET_JSON '+JSON.stringify({passed:true,gameId:'tsu-e-fa',cases,replayAndRestartCases:cases,clientVerified:true,oneDebitAndCredit:true,sha256:hash.digest('hex')}));
+  console.log('TSU_WALLET_JSON '+JSON.stringify({passed:true,gameId:'tsu-e-fa',rulesVersion,cases,replayAndRestartCases:cases,clientVerified:true,oneDebitAndCredit:true,sha256:hash.digest('hex')}));
 }finally{await db.close();}

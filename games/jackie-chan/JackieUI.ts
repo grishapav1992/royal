@@ -1,3 +1,4 @@
+import {ActionGameLayout} from '../../src/ui/ActionGameLayout';
 import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
 import {GAME_STAKE_UNITS as JACKIE_BETS} from '../../src/shared/gameStakes';
@@ -13,6 +14,7 @@ import { OPPONENT_DIFFICULTIES, opponentLineup } from './JackieOpponents';
 import { JackieLayout } from './JackieLayout';
 import './jackie.css';
 import './layout.css';
+import './priorities.css';
 import musicTracks from './music-sources.json';
 
 const en = language === 'en';
@@ -23,6 +25,7 @@ const difficultyLabel = (risk:PenaltyRisk) => en ? OPPONENT_DIFFICULTIES[risk].e
 const filmName = (index:number) => en ? ['Drunken Master','Project A','Police Story','Armour of God','Rush Hour','Who Am I?','The Tuxedo','The Karate Kid'][index] : JACKIE_COSTUMES[index].film;
 const locationName = (index:number) => en ? ['Tea House','Old Harbor','Night Market'][index] : JACKIE_LOCATIONS[index].name;
 export class JackieUI {
+  private priorities: ActionGameLayout;
   private root = document.createElement('section');
   readonly audio = new JackieAudio();
   readonly scene: JackieScene;
@@ -58,9 +61,12 @@ export class JackieUI {
     const consolePanel=document.createElement('div'),scroll=document.createElement('div');consolePanel.className='jc-console';scroll.className='jc-scroll';
     const actions=this.find('.jc-actions');
     for(const selector of ['.jc-controls','.jc-settings','.jc-collection-line','.jc-footer','[data-recovery]','[data-error]','[data-unlock]'])scroll.append(this.find(selector));
-    consolePanel.append(scroll,actions);this.root.append(consolePanel);
+    consolePanel.append(scroll,actions);this.root.append(consolePanel);this.root.append(this.find('[data-recovery]'),this.find('[data-error]'));
     this.find('.jc-stage').after(this.find('[data-result]'));
-    host.replaceChildren(this.root);this.layout=new JackieLayout(host,this.root);this.scene=new JackieScene(this.find('canvas'),this.audio);
+    host.replaceChildren(this.root);
+    const priorityButton=document.createElement('button');priorityButton.type='button';priorityButton.dataset.options='';priorityButton.textContent='⚙';priorityButton.setAttribute('aria-label',t('Настройки игры','Game settings'));
+    this.find('.jc-bank').append(priorityButton);
+    this.priorities=new ActionGameLayout(host,this.root,priorityButton,['.jc-settings','.jc-header-actions','.jc-risk-note','.jc-lineup','.jc-footer'].map(selector=>this.find(selector)),t('Настройки игры','Game settings'),t('Закрыть','Close'));this.layout=new JackieLayout(host,this.root);this.scene=new JackieScene(this.find('canvas'),this.audio);
     try{if(localStorage.getItem('royal-kungfu-speed')==='2')this.scene.setSpeed(2);}catch{}
     this.find('[data-speed]').onclick=()=>{const speed:FightSpeed=this.scene.state().speed===1?2:1;this.scene.setSpeed(speed);try{localStorage.setItem('royal-kungfu-speed',String(speed));}catch{}this.renderKey='';this.render();};
     const gesture=(event:Event)=>{if(!(event.target as Element).closest('[data-music]'))void this.audio.unlock();};
@@ -170,5 +176,5 @@ export class JackieUI {
     this.root.querySelectorAll<HTMLButtonElement>('[data-costume]').forEach(b=>{b.disabled=locked||!costumeUnlocked(b.dataset.costume as JackieCostume,units);b.onclick=()=>{if(this.active()||this.blocked())return;this.costume=b.dataset.costume as JackieCostume;this.preview=true;this.scene.select(this.costume,this.location,this.risk);this.find<HTMLDialogElement>('[data-dialog]').close();this.renderKey='';this.render();};});
     this.find<HTMLDialogElement>('[data-dialog]').showModal();
   }
-  destroy(){this.alive=false;this.epoch++;cancelAnimationFrame(this.frame);document.removeEventListener('visibilitychange',this.onVisibility);client.removeEventListener('change',this.onChange);demoWallet.removeEventListener('change',this.onChange);this.find<HTMLDialogElement>('[data-dialog]').close();this.layout.destroy();this.scene.destroy();this.audio.destroy();this.root.remove();}
+  destroy(){this.alive=false;this.epoch++;cancelAnimationFrame(this.frame);document.removeEventListener('visibilitychange',this.onVisibility);client.removeEventListener('change',this.onChange);demoWallet.removeEventListener('change',this.onChange);this.find<HTMLDialogElement>('[data-dialog]').close();this.layout.destroy();this.scene.destroy();this.audio.destroy();this.priorities.destroy();this.root.remove();}
 }

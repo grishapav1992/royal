@@ -27,10 +27,11 @@ const next=(s:any)=>{
 test.after(async()=>{await accounts.close();});
 for(const native of [false,true])test(`${native?'USDT financial socket':'common demo wallet'} accepts ten-cent total rounds in all 18 games and never duplicates money`,{timeout:240000},async()=>{
  const client=new ExpansionClient(2),verify=(s:any)=>Reflect.get(client,'checkedSession').call(client,s);
- for(const [game,p]of Object.entries(policies)as [string,any][]){
+ // Negotiated Tsu-e-fa rounds use the PvP transport and its dedicated stake tests.
+ for(const [game,p]of Object.entries(policies).filter(([game])=>game!=='tsu-e-fa')as [string,any][]){
   const login=await accounts.login('shared-http-'+randomUUID()+'@example.test','Royal-shared-stakes-42!');
   const c=native?await pvpFixture([login.account.id,randomUUID()]):undefined;
-  const socket=join(tmpdir(),'royal-stakes-'+randomUUID()+'.sock');let finance:ReturnType<typeof createNilePlayServer>|undefined;
+  const socket=process.platform==='win32'?'\\\\.\\pipe\\royal-stakes-'+randomUUID():join(tmpdir(),'royal-stakes-'+randomUUID()+'.sock');let finance:ReturnType<typeof createNilePlayServer>|undefined;
   if(c){await c.source.ingest(block(102,'1000000000000',c.config.source.addresses.find(a=>a.userId==='reserve')!.address));await c.ledger.sync(c.source,await c.reconciliation());finance=createNilePlayServer(c.ledger);await new Promise<void>(r=>finance!.listen(socket,r));}
   else await accounts.wallet.operate(login.account.id,{id:randomUUID(),kind:'deposit',amount:100000});
   const app=express();native?installGameWallet(app,socket):installDemoWallet(app);const server=app.listen(0,'127.0.0.1');await once(server,'listening');

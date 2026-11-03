@@ -77,27 +77,32 @@ export async function verifyRelease(root, path = defaultManifest) {
   }else if(manifest.scope==='modules'&&manifest.build.moduleProjection)throw Error('Module projection evidence missing');
   for (const [name, hash] of Object.entries(manifest.files)) {
     if (!name.startsWith('dist/') && !name.startsWith('dist-server/') && !name.startsWith('module-dist/')) throw Error('Unexpected release output');
-    if (digest(await readFile(await regularPath(root, name))) !== hash) throw Error('Release output changed: ' + name);
   }
-  // Also reject extra files in package directories and dist, not just changed bytes.
+  // Hash each output once, including extra-file and symlink detection.
   const actual = await releaseFiles(root, manifest.scope === 'modules' ? manifest.modules : null);
+  for (const [name, hash] of Object.entries(manifest.files)) {
+    if (actual.files[name] !== hash) throw Error('Release output changed: ' + name);
+  }
   if (JSON.stringify(Object.entries(actual.files).sort()) !== JSON.stringify(Object.entries(manifest.files).sort())) throw Error('Release inventory changed');
   return manifest;
 }
 
 export async function verifyGithub(root) {
   await rm(resolve(root, 'module-build/release-github.json'), { force: true });
-  const manifest = await verifyRelease(root);
   await run(process.env.ROYAL_GIT_BINARY || 'git', ['fetch', '--no-tags', 'origin', 'main'], root);
+  const manifest = await verifyRelease(root);
   git(root, ['merge-base', '--is-ancestor', manifest.sourceCommit, 'origin/main']);
-  await verifyRelease(root);
+  const bytes = await readFile(await regularPath(root, defaultManifest));
+  if (JSON.stringify(JSON.parse(bytes)) !== JSON.stringify(manifest)) throw Error('Release manifest changed during verification');
+  assertClean(root);
+  if (git(root, ['rev-parse', 'HEAD']) !== manifest.sourceCommit) throw Error('Release source changed during verification');
   const receipt = { format: 1, sourceCommit: manifest.sourceCommit,
-    remoteMain: git(root, ['rev-parse', 'origin/main']), checkedAt: new Date().toISOString() };
+    manifestSha256: digest(bytes), remoteMain: git(root, ['rev-parse', 'origin/main']), checkedAt: new Date().toISOString() };
   await saveJson(resolve(root, 'module-build/release-github.json'), receipt);
   return receipt;
 }
 
-export async function prepareRelease(root, { base, local = false, modules = null, hostProjection = null, backendProjection = null, moduleProjection = null } = {}) {
+export async function prepareRelease(root, { base, local = false, modules = null, hostProjection = null, backendProjection = null, moduleProjection = null, reuse = true } = {}) {
   await mkdir(resolve(root, 'module-build'), { recursive: true });
   const lock = resolve(root, 'module-build/release.lock');
   await mkdir(lock); // Never remove another process's lock or build into its outputs.
@@ -110,14 +115,28 @@ export async function prepareRelease(root, { base, local = false, modules = null
   };
   try {
     await saveJson(resolve(lock, 'owner.json'), { pid: process.pid, purpose: 'Release preparation', cleanupCondition: 'Remove after this process exits' });
+    assertClean(root);
+    const plan = releasePlan(root, base);
+    let previous;
+    try { if (reuse) previous = JSON.parse(await readFile(resolve(root, defaultManifest), 'utf8')); }
+    catch (error) { if (error.code !== 'ENOENT') throw error; }
+    const selection = value => JSON.stringify(value ? [...value].sort() : null);
+    if (reuse && previous?.sourceCommit === plan.sourceCommit && previous.baseCommit === plan.baseCommit
+        && selection(previous.modules) === selection(modules)
+        && (previous.hostProjection?.config ?? null) === hostProjection
+        && (previous.backendProjection?.config ?? null) === backendProjection
+        && (previous.moduleProjection?.config ?? null) === moduleProjection) {
+      await step('reuse-verified-build', () => local ? verifyRelease(root) : verifyGithub(root));
+      timings.passed = true;
+      timings.reused = true;
+      return { ...previous, reused: true, githubVerified: !local || previous.githubVerified };
+    }
     await rm(resolve(root, defaultManifest), { force: true });
     await rm(resolve(root, 'module-build/release-github.json'), { force: true });
-    assertClean(root);
     if (!local) await step('github', async () => {
       await run(process.env.ROYAL_GIT_BINARY || 'git', ['fetch', '--no-tags', 'origin', 'main'], root);
       git(root, ['merge-base', '--is-ancestor', 'HEAD', 'origin/main']);
     });
-    const plan = releasePlan(root, base);
     const disk = await statfs(root);
     if (disk.bavail * disk.bsize < 11 * 1024 ** 3) throw Error('Need at least 11 GiB free before a build (10 GiB reserve plus build headroom).');
     const build = await step('build', () => buildApplication({ root, modules, hostProjection, backendProjection, moduleProjection }));
@@ -134,6 +153,10 @@ export async function prepareRelease(root, { base, local = false, modules = null
     await saveJson(resolve(root, defaultManifest), manifest);
     timings.passed = true;
     return manifest;
+  } catch (error) {
+    await rm(resolve(root, defaultManifest), { force: true });
+    await rm(resolve(root, 'module-build/release-github.json'), { force: true });
+    throw error;
   } finally {
     timings.durationMs = Math.round(performance.now() - started);
     await saveJson(resolve(root, 'module-build/release-timings.json'), timings);
@@ -143,11 +166,12 @@ export async function prepareRelease(root, { base, local = false, modules = null
 
 async function main() {
   const [operation, ...args] = process.argv.slice(2);
-  let base, local = false, modules = null, github = false, hostProjection = null, backendProjection = null, moduleProjection = null;
+  let base, local = false, modules = null, github = false, hostProjection = null, backendProjection = null, moduleProjection = null, reuse = true;
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--base' && args[i + 1]) base = args[++i];
     else if (args[i] === '--local') local = true;
     else if (args[i] === '--github') github = true;
+    else if (args[i] === '--fresh') reuse = false;
     else if (args[i] === '--host-projection' && args[i + 1]) hostProjection = args[++i];
     else if (args[i] === '--module-projection' && args[i + 1]) moduleProjection = args[++i];
     else if (args[i] === '--backend-projection' && args[i + 1]) backendProjection = args[++i];
@@ -158,13 +182,12 @@ async function main() {
   }
   if (operation === 'plan') console.log(JSON.stringify(releasePlan(projectRoot, base), null, 2));
   else if (operation === 'prepare') {
-    const manifest = await prepareRelease(projectRoot, { base, local, modules, hostProjection, backendProjection, moduleProjection });
+    const manifest = await prepareRelease(projectRoot, { base, local, modules, hostProjection, backendProjection, moduleProjection, reuse });
     console.log(JSON.stringify({ prepared: true, sourceCommit: manifest.sourceCommit, scope: manifest.scope,
-      githubVerified: manifest.githubVerified, manifest: defaultManifest, files: Object.keys(manifest.files).length }));
+      reused: manifest.reused ?? false, githubVerified: manifest.githubVerified, manifest: defaultManifest, files: Object.keys(manifest.files).length }));
   } else if (operation === 'verify') {
-    const manifest = await verifyRelease(projectRoot);
-    if (github) await verifyGithub(projectRoot);
-    console.log(JSON.stringify({ verified: true, sourceCommit: manifest.sourceCommit, githubVerified: github || manifest.githubVerified }));
+    const evidence = await (github ? verifyGithub(projectRoot) : verifyRelease(projectRoot));
+    console.log(JSON.stringify({ verified: true, sourceCommit: evidence.sourceCommit, githubVerified: github || evidence.githubVerified }));
   } else throw Error('Use plan, prepare or verify');
 }
 

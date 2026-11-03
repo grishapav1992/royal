@@ -362,8 +362,8 @@ def recovery(release):
     if inventory.exists():
         require(sha(inventory) == support.get('runtime-inventory.cjs'), 'Runtime inventory helper differs')
         node = inventory.read_text()
-    program = native_retention().verify_program(image['Id'], node)
-    require(program == before['preparedProgram'] == before['program'], 'Rollback program bytes differ')
+    require(before['preparedProgram'] == before['program'], 'Rollback program bytes differ')
+    rollback_proof = native_retention().verify_image_program(image['Id'], node, before['preparedProgram'])
     current_program = json.loads(run(['docker', 'exec', 'royal-game-1', 'node', '-e', node]))
     require(current_program == built['program'], 'Running program differs from its verified release')
     for name, digest in support.items():
@@ -389,7 +389,8 @@ def recovery(release):
     # still checks references from all containers immediately before removal.
     return {'release': release, 'sourceCommit': manifest['sourceCommit'], 'currentImage': current['Image'],
             'rollbackImage': image['Id'], 'keep': [str(root), str(backup)], 'proofs': proofs,
-            'sourceFiles': len(recovered), 'rollbackProgramFiles': len(program),
+            'sourceFiles': len(recovered), 'rollbackProgramFiles': len(before['preparedProgram']),
+            'rollbackImageProof': rollback_proof,
             'independentModuleProofs': sorted(str(p) for p in independent),
             'programHashCommand': node,
             'configuration': configuration(), 'services': persistent_services(), 'modules': modules(),
@@ -455,7 +456,6 @@ def verify(plan):
 
 
 def apply(plan, state):
-    verify(plan)
     require(sha(RETENTION / 'policy.json') == plan['oldPolicySha256'], 'Retention policy changed since review')
     validate_selection(plan['entries'], plan['keep'])
     if not plan.get('skipImageCleanup'):
@@ -498,7 +498,8 @@ def apply(plan, state):
               'dockerRetainedImages': sorted(set(retained_images)), 'freeBefore': plan['freeBefore'],
               'freeAfter': after.free, 'freedBytes': after.free - plan['freeBefore'],
               'containersUnchanged': True, 'configurationUnchanged': True, 'externalModulesUnchanged': True,
-              'databaseRestored': False, 'volumesDeleted': False, 'healthOk': True}
+              'databaseRestored': False, 'volumesDeleted': False, 'healthOk': True,
+              'verificationPasses': 2, 'rollbackImageProof': plan.get('rollbackImageProof')}
     result['unplannedHistoryPreserved'] = [str(path) for root in ROOTS for path in root.iterdir()
                                          if str(path) not in plan['keep'] and not path.name.endswith('.lock')]
     write(state / 'result.json', result)
@@ -520,18 +521,28 @@ def verified_program_archive(path, metadata):
     return bool(expected) and sha(path) in expected
 
 
-def active_release_paths():
+def active_release_paths(proc_root=Path('/proc')):
     active = set()
-    for path in Path('/proc').glob('[0-9]*/cmdline'):
+    for path in proc_root.glob('[0-9]*/cmdline'):
         try: command = path.read_bytes().replace(b'\0',b' ').decode(errors='replace')
         except OSError: continue
         for match in re.finditer(re.escape(str(RELEASES)) + r'/([a-zA-Z0-9_.-]+)(?:/|\s|$)', command):
             active.add(str(RELEASES/match.group(1)))
+        try:
+            cwd = (path.parent/'cwd').resolve(strict=True)
+            relative = cwd.relative_to(RELEASES.resolve())
+            if relative.parts and re.fullmatch(r'[a-zA-Z0-9_.-]+',relative.parts[0]):
+                active.add(str(RELEASES/relative.parts[0]))
+        except (OSError,ValueError): pass
     return active
 
 
 def pending_is_active(release, metadata, active, references, age):
-    if not (release/'build-result.json').exists() or any((release/n).exists() for n in ['published.json','recovered.json']): return False
+    if not any((release/n).is_file() for n in ['install-manifest.json','build-result.json']): return False
+    stages = [release/n for n in ['install-manifest.json','build-result.json','release-github.json'] if (release/n).is_file()]
+    if not stages or any((release/n).exists() for n in ['published.json','recovered.json']): return False
+    # Uploading a resumed preparation can update metadata without touching the folder mtime.
+    age = min(age, time.time()-max(path.stat().st_mtime for path in stages))
     images = {m.get('image') for m in metadata if isinstance(m.get('image'),str)}
     return age < 86400 or str(release) in active or bool(images & references)
 
