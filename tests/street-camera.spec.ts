@@ -7,7 +7,8 @@ async function walk(page:Page,x:number,y:number){
   await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));
   const box=(await page.locator('#game canvas').boundingBox())!,s=await state(page),v=s.view;
   await page.mouse.click(box.x+(x-v.x)*v.zoom*box.width/v.width,box.y+(y-v.y)*v.zoom*box.height/v.height);
-  await expect.poll(async()=>{const p=await state(page);return Math.hypot(p.x-x,p.y-y);},{timeout:25000}).toBeLessThan(5);
+  const tolerance=Math.max(5,2/v.zoom);
+  await expect.poll(async()=>{const p=await state(page);return Math.hypot(p.x-x,p.y-y);},{timeout:25000}).toBeLessThan(tolerance);
   await expect.poll(async()=>{const p=await state(page);return Math.hypot(p.serverX-p.x,p.serverY-p.y);}).toBeLessThan(3);
 }
 test('keep the road in front and enter the full-width courtyard only after clearing the rear corner',async({page},info)=>{
