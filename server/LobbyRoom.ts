@@ -1,3 +1,4 @@
+import { advanceRoofStairStep, ROOF_STAIR_ROUTE } from '../src/shared/rooftop';
 import { LOBBY_RECONNECT_GRACE_SECONDS } from '../src/shared/lobbyConnection';
 import { CommonCombatWallet } from './commonCombatWallet';
 import { virtualPvpCommand } from './pvp/virtual-service';
@@ -595,9 +596,14 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   }
   private enterDoor(id:string){
     const p=this.state.players.get(id),c=this.controls.get(id);
-    if(!p?.connected||p.security||!c||this.cat.isHugging(id)||p.playing||p.seat||p.action==='drink'||!inHallDoor(p))return false;
+    if(!p?.connected||!c)return false;
+    if(p.security||this.cat.isHugging(id)||p.playing||p.seat||p.action==='drink'){p.stairStep=0;return false;}
+    p.stairStep=p.hall==='street'?advanceRoofStairStep(p.stairStep,p):0;
+    const link=hallLinkAt(p);if(!link)return false;
+    if(link.target==='roof'&&p.stairStep!==ROOF_STAIR_ROUTE.length)return false;
     this.activities.leave(id);this.releaseCabinet(id);this.stop(id);this.stand(id);
-    const link=hallLinkAt(p)!;const hall=link.target,door=link.arrival;
+    const hall=link.target,door=link.arrival;
+    p.stairStep=0;
     p.hall=hall;p.hallRevision++;p.x=door.arrival.x;p.y=door.arrival.y;p.facing=door.facing;c.lastTarget=0;
     this.clients.find(client=>client.sessionId===id)?.send('activities',this.activities.snapshot(id));
     return true;

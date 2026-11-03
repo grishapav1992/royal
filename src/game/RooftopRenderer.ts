@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
 import { t } from '../i18n';
-import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS } from '../shared/rooftop';
+import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE } from '../shared/rooftop';
 import { paintStreetCrown } from './streetArt';
 
 type Paint = CanvasRenderingContext2D;
@@ -107,27 +107,51 @@ function antenna(c: Paint) {
   line(c, 19, 138, 50, 83, ink, 4); line(c, 81, 138, 50, 83, ink, 4);
 }
 
-/** Flat service stairs: the foot is approached before the upper transition strip. */
+/** Unmarked flat fire escape with three flights and real switchback landings. */
 export class StreetRoofStairs {
-  private close: Phaser.GameObjects.Container;
+  private close: Phaser.GameObjects.Graphics;
   private plan: Phaser.GameObjects.Graphics;
   constructor(scene: Phaser.Scene, enter: () => void) {
-    const { x } = STREET_ROOF_STAIRS.entry, g = scene.add.graphics();
-    g.fillStyle(0x485b66).fillRect(x - 48, 405, 96, 79);
-    g.fillStyle(0x485b66).fillRect(x - 57, 480, 114, 20);
-    g.fillStyle(0x899c9d).fillRect(x - 42, 408, 84, 72);
-    for (let y = 415; y <= 477; y += 10) g.lineStyle(4, 0xc7d0c3).lineBetween(x - 40, y, x + 40, y);
-    for (const dx of [-49, 49]) { g.lineStyle(7, 0x2b3944).lineBetween(x + dx, 380, x + dx, 482); g.lineStyle(3, 0xadbdbb).lineBetween(x + dx, 381, x + dx, 481); }
-    g.fillStyle(0x293b4c).fillRect(x - 42, 380, 84, 27); g.lineStyle(3, 0xd7bd80).strokeRect(x - 42, 380, 84, 27);
-    g.fillStyle(0xf4f8fc).fillEllipse(x - 22, 379, 50, 9).fillEllipse(x + 23, 379, 43, 8);
-    const text = scene.add.text(x, 351, t('НА КРЫШУ') + ' ↑', { fontFamily: 'Arial', fontStyle: 'bold', fontSize: '18px', color: '#f3d58f', backgroundColor: '#3b3446', padding: { x: 10, y: 6 } }).setOrigin(.5);
-    this.close = scene.add.container(0, 0, [g, text]).setDepth(.15);
-    this.plan = scene.add.graphics().setDepth(.15);
-    this.plan.fillStyle(0x809b9d).fillRect(x - 48, 385, 96, 98).lineStyle(3, 0xf0d18a).strokeRect(x - 48, 385, 96, 98);
-    for (let y = 395; y < 480; y += 12) this.plan.lineStyle(3, 0xd7e4de).lineBetween(x - 42, y, x + 42, y);
-    scene.add.zone(x, 435, 126, 94).setDepth(700).setInteractive({ useHandCursor: true }).on('pointerdown', enter);
+    const paint=(g:Phaser.GameObjects.Graphics,plan:boolean)=>{
+      // Thin supports leave the street lane visible through the open structure.
+      for(const x of [1560,1770]){
+        g.lineStyle(plan?2:5,0x36464d).lineBetween(x,255,x,499);
+        if(!plan)g.lineStyle(2,0x85918f).lineBetween(x+1,256,x+1,498);
+        g.fillStyle(0x435359).fillRect(x-10,493,20,7);
+      }
+      ROOF_STAIR_ROUTE.slice(1).forEach((to,index)=>{
+        const from=ROOF_STAIR_ROUTE[index],dx=to.x-from.x,dy=to.y-from.y,length=Math.hypot(dx,dy);
+        const nx=-dy/length*18,ny=dx/length*18;
+        const points=[{x:from.x+nx,y:from.y+ny},{x:to.x+nx,y:to.y+ny},{x:to.x-nx,y:to.y-ny},{x:from.x-nx,y:from.y-ny}];
+        g.fillStyle(0x627575).fillPoints(points,true);
+        g.lineStyle(2,0x303e45).strokePoints(points,true);
+        for(let distance=5;distance<length;distance+=9){
+          const t=distance/length,x=from.x+dx*t,y=from.y+dy*t;
+          g.lineStyle(plan?1:2,0x9aa8a3).lineBetween(x+nx*.85,y+ny*.85,x-nx*.85,y-ny*.85);
+          if(!plan)g.lineStyle(1,0x45585b).lineBetween(x+nx*.65-2,y+ny*.65,x-nx*.65-2,y-ny*.65);
+        }
+        // Flat parallel rails, never an isometric staircase or a facade sign.
+        for(const side of [-1,1]){
+          const ax=from.x+nx*side,ay=from.y+ny*side-10,bx=to.x+nx*side,by=to.y+ny*side-10;
+          g.lineStyle(plan?2:4,0x35474e).lineBetween(ax,ay,bx,by);
+          if(!plan)g.lineStyle(1.5,0x9eaba5).lineBetween(ax,ay-1,bx,by-1);
+          for(let t=0;t<=1;t+=.25){const x=from.x+dx*t+nx*side,y=from.y+dy*t+ny*side;g.lineStyle(1.5,0x485b60).lineBetween(x,y,x,y-10);}
+        }
+      });
+      for(const index of [0,2,4,6,7]){
+        const p=ROOF_STAIR_ROUTE[index];g.fillStyle(0x53696c).fillRect(p.x-23,p.y-12,46,24);
+        g.lineStyle(2,0x35474e).strokeRect(p.x-23,p.y-12,46,24);
+        for(let x=p.x-16;x<p.x+20;x+=7)g.lineStyle(1,0x8c9c98).lineBetween(x,p.y-9,x,p.y+9);
+        if(!plan){g.fillStyle(0xe5edf0).fillEllipse(p.x-8,p.y-14,26,4);g.fillStyle(0x9b7759).fillRect(p.x+19,p.y+5,3,4);}
+      }
+    };
+    this.close=scene.add.graphics().setDepth(620);paint(this.close,false);
+    this.plan=scene.add.graphics().setDepth(.15);paint(this.plan,true);
+    // Only the bottom platform accepts a click; the circulation lane has no hitbox.
+    const foot=STREET_ROOF_STAIRS.foot;
+    scene.add.zone(foot.x,foot.y-2,76,32).setDepth(700).setInteractive().on('pointerdown',enter);
   }
-  update(overview: boolean) { this.close.setVisible(!overview); this.plan.setVisible(overview); }
+  update(overview:boolean){this.close.setVisible(!overview);this.plan.setVisible(overview);}
 }
 
 export class RooftopRenderer {

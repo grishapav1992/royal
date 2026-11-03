@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS } from '../src/shared/rooftop';
+import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE } from '../src/shared/rooftop';
 
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
 async function overview(page: Page, on: boolean) {
@@ -33,6 +33,7 @@ test('climb rear stairs, explore roof, reconnect and return with chat and wallet
   const network = await page.evaluate(() => (window as any).royalDemo.getNetworkState());
   await page.locator('[data-floor-target="street"]').click();
   await expect.poll(async () => (await state(page)).hall, { timeout: 25000 }).toBe('street');
+  await expect(page.locator('[data-floor-target="roof"]')).toHaveCount(0);
   await overview(page, true);
   for (const p of [{ x: 480, y: 1050 }, { x: 480, y: 360 }, { x: 1660, y: 360 }]) await walk(page, p.x, p.y);
   expect((await state(page)).hall).toBe('street');
@@ -46,8 +47,23 @@ test('climb rear stairs, explore roof, reconnect and return with chat and wallet
   });
   await clickWorld(page, STREET_ROOF_STAIRS.click.x, STREET_ROOF_STAIRS.click.y);
   await expect.poll(async () => (await state(page)).y, { timeout: 10000 }).toBeGreaterThan(465);
-  await expect.poll(async () => (await state(page)).hall, { timeout: 12000 }).toBe('roof');
-  const climb = await page.evaluate(() => (window as any).__roofClimb as {hall:string;x:number;y:number}[]);
+  await expect.poll(async () => (await state(page)).stairStep,{timeout:10000}).toBeGreaterThanOrEqual(3);
+  expect((await state(page)).renderDepth).toBeGreaterThan(620);
+  await page.screenshot({path:`../roof-${info.project.name}-climb.png`});
+  const prefix=await page.evaluate(()=>(window as any).__roofClimb as {hall:string;x:number;y:number}[]);
+  await page.reload();
+  await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
+  await expect.poll(async ()=>(await state(page)).hall).toBe('street');
+  expect((await state(page)).stairStep).toBeGreaterThan(0);
+  await page.evaluate(()=>{
+    (window as any).__roofClimb=[];
+    const record=()=>{const s=(window as any).royalDemo.getState();(window as any).__roofClimb.push({hall:s.hall,x:s.x,y:s.y});if(s.hall==='street')requestAnimationFrame(record);};requestAnimationFrame(record);
+  });
+  await page.keyboard.press('e');
+  await expect.poll(async () => (await state(page)).hall, { timeout: 15000 }).toBe('roof');
+  const continuation = await page.evaluate(() => (window as any).__roofClimb as {hall:string;x:number;y:number}[]);
+  const climb=[...prefix,...continuation];
+  for(const waypoint of ROOF_STAIR_ROUTE.slice(1,-1))expect(climb.some(p=>p.hall==='street'&&Math.hypot(p.x-waypoint.x,p.y-waypoint.y)<10)).toBe(true);
   const bottom = climb.findIndex(p => p.hall==='street' && Math.abs(p.x-STREET_ROOF_STAIRS.foot.x)<5 && p.y>475);
   expect(bottom).toBeGreaterThan(-1);
   expect(climb.slice(bottom).some(p=>p.hall==='street'&&p.y<430)).toBe(true);

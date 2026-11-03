@@ -1,3 +1,4 @@
+import { advanceRoofStairStep } from './rooftop';
 export type Facing = 'down' | 'left' | 'right' | 'up';
 import { walkable } from '../game/navigation';
 import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, hallObstacles, SEATS } from './world';
@@ -5,7 +6,7 @@ import { blockedByGuard, type GuardCollider } from './guardCollision';
 import { intoxicatedMovement } from './intoxication';
 
 export type MovementInput = { seq: number; x: number; y: number; ms: number; sprint?: boolean; route?: boolean };
-export type MovementBody = { hall?: string; soberAt?: number; x: number; y: number; facing: string; moving: boolean; seat: string; action: string; drink: string; actionUntil: number };
+export type MovementBody = { hall?: string; stairStep?: number; soberAt?: number; x: number; y: number; facing: string; moving: boolean; seat: string; action: string; drink: string; actionUntil: number };
 
 /** Shared collision integration for local prediction, server validation and replay. */
 export function applyMovementInput(body: MovementBody, input: MovementInput, guards:readonly GuardCollider[] = []) {
@@ -30,6 +31,8 @@ export function applyMovementInput(body: MovementBody, input: MovementInput, gua
       if(blockedByGuard(body,body.x,body.y+y,guards))contact=true;else body.y+=y;
     }
   }
+  if(body.hall==='street')body.stairStep=advanceRoofStairStep(body.stairStep??0,body);
+  else if(body.stairStep)body.stairStep=0;
   const dx = body.x-beforeX, dy = body.y-beforeY;
   body.moving = Math.hypot(dx, dy) > .01;
   if (body.moving) body.facing = movementFacing(dx, dy, body.facing as Facing);

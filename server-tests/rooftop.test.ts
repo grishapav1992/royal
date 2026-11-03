@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { findPath, walkable } from '../src/game/navigation';
-import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS } from '../src/shared/rooftop';
+import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, advanceRoofStairStep } from '../src/shared/rooftop';
 import { HALLS, hallLinkAt, hallLinks, hallLinkToward, hallObstacles, type HallId } from '../src/shared/world';
 import { atElevator, canTravelByElevator, elevatorFloors } from '../src/shared/elevator';
 import { cabinetsInHall } from '../src/shared/cabinets';
@@ -79,13 +79,22 @@ test('server controls roof ascent and return, blocks busy visitors and ignores o
   try {
     const p = room.state.players.get(client.sessionId)!;
     Object.assign(p, { hall: 'street', ...STREET_ROOF_STAIRS.foot }); assert.equal(enter(), false);
-    Object.assign(p, STREET_ROOF_STAIRS.entry);
+    Object.assign(p, STREET_ROOF_STAIRS.entry); assert.equal(enter(),false,'walking straight to the top does not bypass the flights');
+    Object.assign(p, STREET_ROOF_STAIRS.foot);
     for (const state of [{ playing: true }, { security: 'ejecting' }, { seat: 'occupied' }, { action: 'drink' }, { connected: false }]) {
       const saved = Object.fromEntries(Object.keys(state).map(key => [key, Reflect.get(p, key)]));
       Object.assign(p, state); assert.equal(enter(), false); Object.assign(p, saved);
     }
     const revision = p.hallRevision;
-    assert.equal(enter(), true); assert.equal(p.hall, 'roof'); assert.equal(p.hallRevision, revision + 1);
+    assert.equal(enter(),false);
+    assert.equal(p.stairStep,1);
+    for(let segment=1;segment<ROOF_STAIR_ROUTE.length&&p.hall==='street';segment++){
+      const from=ROOF_STAIR_ROUTE[segment-1],to=ROOF_STAIR_ROUTE[segment],steps=Math.ceil(Math.hypot(to.x-from.x,to.y-from.y)/3);
+      for(let step=1;step<=steps&&p.hall==='street';step++){
+        Object.assign(p,{x:from.x+(to.x-from.x)*step/steps,y:from.y+(to.y-from.y)*step/steps});
+        enter();
+      }
+    } assert.equal(p.hall, 'roof'); assert.equal(p.hallRevision, revision + 1);
     assert.equal(p.x, ROOF.spawn.x); assert.equal(p.y, ROOF.spawn.y); assert.equal(enter(), false);
     handlers.get('inputs')!(client, { revision, inputs: [{ seq: 1, x: 1, y: 0, ms: 50 }] });
     Reflect.get(room, 'tick').call(room, .05); assert.equal(p.x, ROOF.spawn.x);
@@ -93,4 +102,24 @@ test('server controls roof ascent and return, blocks busy visitors and ignores o
     assert.equal(p.hall, 'street'); assert.equal(p.hallRevision, revision + 2);
     assert.equal(p.x, STREET_ROOF_STAIRS.arrival.x); assert.equal(p.y, STREET_ROOF_STAIRS.arrival.y); assert.equal(enter(), false);
   } finally { room.onDispose(); room.clock.clear(); await accounts.logout(session.token); }
+});
+
+
+test('switchback progress requires every flight, stays walkable and resets on leaving the stairs',()=>{
+  const obstacles=hallObstacles('street');let progress=0;const reached=new Set<number>();
+  for(let segment=1;segment<ROOF_STAIR_ROUTE.length;segment++){
+    const from=ROOF_STAIR_ROUTE[segment-1],to=ROOF_STAIR_ROUTE[segment],steps=Math.ceil(Math.hypot(to.x-from.x,to.y-from.y)/3);
+    for(let step=0;step<=steps;step++){
+      const point={x:from.x+(to.x-from.x)*step/steps,y:from.y+(to.y-from.y)*step/steps};
+      assert(walkable(point.x,point.y,obstacles,16));
+      progress=advanceRoofStairStep(progress,point);reached.add(progress);
+    }
+  }
+  assert.equal(progress,ROOF_STAIR_ROUTE.length);
+  for(let step=1;step<=ROOF_STAIR_ROUTE.length;step++)assert(reached.has(step));
+  assert.equal(advanceRoofStairStep(0,STREET_ROOF_STAIRS.entry),0);
+  assert.equal(advanceRoofStairStep(1,ROOF_STAIR_ROUTE[5]),0,'cannot jump to a later flight');
+  assert.equal(advanceRoofStairStep(3,{x:1660,y:360}),0,'the normal underpass does not earn a landing');
+  assert.equal(advanceRoofStairStep(2,{x:1900,y:700}),0);
+  assert.equal(advanceRoofStairStep(999,STREET_ROOF_STAIRS.entry),0);
 });

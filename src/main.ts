@@ -380,9 +380,8 @@ function updateHall(hall:HallId){
   const sharedCards=document.querySelector<HTMLElement>('.shared-cards');if(sharedCards)sharedCards.hidden=hall!=='tables'&&hall!=='github';
   document.querySelectorAll<HTMLElement>('[data-arcade-catalog]').forEach(section => section.hidden = hall !== 'arcade');
   $('#card-tables-catalog').hidden=hall!=='github';
-  $('#floor-links').innerHTML=hallLinks(hall).map(link=>{
+  $('#floor-links').innerHTML=hallLinks(hall).filter(link=>link.target!=='roof').map(link=>{
     const target=HALLS[link.target];
-    if(link.target==='roof')return tr`<button type="button" data-floor-target="roof"><span aria-hidden="true">↑</span> На крышу</button>`;
     if(hall==='roof')return tr`<button type="button" data-floor-target="street"><span aria-hidden="true">↓</span> Во двор</button>`;
     if(link.target==='street')return tr`<button type="button" data-floor-target="street"><span aria-hidden="true">↗</span> На улицу</button>`;
     if(hall==='street')return tr`<button type="button" data-floor-target="arcade"><span aria-hidden="true">↳</span> В казино</button>`;

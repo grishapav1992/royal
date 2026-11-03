@@ -1,4 +1,4 @@
-import type { Obstacle } from '../game/navigation';
+import type { Obstacle, Point } from '../game/navigation';
 import { WORLD } from './clubGeometry';
 
 // Roof access is a location, independent of the casino's numbered floors.
@@ -13,11 +13,31 @@ export const ROOF = {
   loop: [{ x: 320, y: 700 }, { x: 320, y: 1080 }, { x: 1920, y: 1080 }, { x: 1920, y: 700 }, { x: 1740, y: 360 }, { x: 750, y: 360 }],
 } as const;
 
+export const ROOF_STAIR_ROUTE = [
+  { x: 1660, y: 480 },
+  { x: 1750, y: 448 }, { x: 1750, y: 430 },
+  { x: 1580, y: 366 }, { x: 1580, y: 348 },
+  { x: 1750, y: 284 }, { x: 1750, y: 266 },
+  { x: 1710, y: 250 },
+] as const;
+export const ROOF_STAIR_SPEED_SCALE = .42;
 export const STREET_ROOF_STAIRS = {
-  foot: { x: 1660, y: 480 },
-  entry: { x: 1660, y: 400 }, arrival: { x: 1660, y: 470 }, facing: 'up', click: { x: 1660, y: 392 },
-  left: 1638, right: 1682, top: 390, bottom: 410,
+  foot: ROOF_STAIR_ROUTE[0],
+  entry: ROOF_STAIR_ROUTE[7], arrival: { x: 1660, y: 462 }, facing: 'down', click: { x: 1660, y: 477 },
+  left: 1695, right: 1725, top: 239, bottom: 261,
 } as const;
+
+/** Ordered, continuous progress, shared by authoritative movement and prediction. */
+export function advanceRoofStairStep(step: number, point: Point): number {
+  if (!Number.isInteger(step) || step < 0 || step > ROOF_STAIR_ROUTE.length) return 0;
+  if (!step) return Math.hypot(point.x - STREET_ROOF_STAIRS.foot.x, point.y - STREET_ROOF_STAIRS.foot.y) <= 7 ? 1 : 0;
+  if (step === ROOF_STAIR_ROUTE.length) return Math.hypot(point.x - STREET_ROOF_STAIRS.entry.x, point.y - STREET_ROOF_STAIRS.entry.y) <= 16 ? step : 0;
+  const from = ROOF_STAIR_ROUTE[step - 1], to = ROOF_STAIR_ROUTE[step];
+  const dx = to.x - from.x, dy = to.y - from.y;
+  const t = Math.max(0, Math.min(1, ((point.x - from.x) * dx + (point.y - from.y) * dy) / (dx * dx + dy * dy)));
+  if (Math.hypot(point.x - from.x - dx * t, point.y - from.y - dy * t) > 20) return 0;
+  return Math.hypot(point.x - to.x, point.y - to.y) <= 7 ? step + 1 : step;
+}
 export const ROOF_STAIRS = {
   entry: { x: 530, y: 620 }, arrival: ROOF.spawn, facing: 'down', click: { x: 530, y: 515 },
   left: 502, right: 558, top: 608, bottom: 632,
