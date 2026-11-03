@@ -9,6 +9,25 @@ import { LobbyRoom } from '../server/LobbyRoom';
 import { accounts } from '../server/accounts';
 import { Guards } from '../server/guards';
 import { LobbyState, Player } from '../server/state';
+import { StreetView } from '../src/game/streetView';
+import { roofStairContains } from '../src/game/roofStairInput';
+
+test('visible ladder rungs, flights and landings accept input without capturing the rear pavement',()=>{
+  const view=new StreetView();view.configure({x:1660,y:360},false);
+  const route=ROOF_STAIR_ROUTE.map(p=>view.point(p,true)),foot=route[0];
+  assert(roofStairContains({x:foot.x,y:foot.y-80},route,false),'middle rung is clickable');
+  for(const index of [1,3,5,7])assert(roofStairContains({x:route[index].x,y:route[index].y-35},route,false),'landing rail is clickable');
+  for(const [start,end] of [[1,2],[3,4],[5,6]]){
+    const a=route[start],b=route[end];
+    assert(roofStairContains({x:(a.x+b.x)/2,y:(a.y+b.y)/2-20},route,false),'flight accepts a click between tread and rail');
+  }
+  for(let x=320;x<=2500;x+=10)assert(!roofStairContains(view.point({x,y:360}),route,false),'rear circulation lane stays free');
+  assert(!roofStairContains({x:foot.x+100,y:foot.y-80},route,false),'wall beside the ladder is not interactive');
+  view.configure({x:1660,y:360},true);
+  const plan=ROOF_STAIR_ROUTE.map(p=>view.point(p,true));
+  assert(roofStairContains(STREET_ROOF_STAIRS.click,plan,true));
+  assert(!roofStairContains({x:1660,y:360},plan,true),'overview retains the pavement route');
+});
 
 test('roof has a safe complete walking loop, solid equipment and guarded edges', () => {
   const obstacles = hallObstacles('roof'), points = [ROOF.spawn, ...ROOF.loop, ROOF.spawn, ROOF_STAIRS.entry];

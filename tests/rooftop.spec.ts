@@ -8,12 +8,19 @@ async function overview(page: Page, on: boolean) {
   if ((await button.getAttribute('aria-pressed') === 'true') !== on) await button.click();
   await expect.poll(async () => (await state(page)).view.overview).toBe(on);
 }
-async function clickWorld(page: Page, x: number, y: number) {
+async function clickViewPoint(page:Page, point:{x:number;y:number}) {
   await page.bringToFront();
   await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
   const box = (await page.locator('#game canvas').boundingBox())!, current=await state(page), { view } = current;
+  const x=box.x+(point.x-view.x)*view.zoom*box.width/view.width,y=box.y+(point.y-view.y)*view.zoom*box.height/view.height;
+  expect(x).toBeGreaterThanOrEqual(box.x);expect(x).toBeLessThanOrEqual(box.x+box.width);
+  expect(y).toBeGreaterThanOrEqual(box.y);expect(y).toBeLessThanOrEqual(box.y+box.height);
+  if(page.viewportSize()!.width<600)await page.touchscreen.tap(x,y);else await page.mouse.click(x,y);
+}
+async function clickWorld(page: Page, x: number, y: number) {
+  const current=await state(page);
   const point=current.hall==='street'?projectStreetPoint({x,y},current.street.view.orientation):{x,y};
-  await page.mouse.click(box.x + (point.x - view.x) * view.zoom * box.width / view.width, box.y + (point.y - view.y) * view.zoom * box.height / view.height);
+  await clickViewPoint(page,point);
 }
 async function walk(page: Page, x: number, y: number) {
   const tolerance = Math.max(5, 2 / (await state(page)).view.zoom);
@@ -41,13 +48,14 @@ test('climb rear stairs, explore roof, reconnect and return with chat and wallet
   expect((await state(page)).hall).toBe('street');
   await overview(page, false);
   await page.screenshot({ path: `../roof-${info.project.name}-stairs.png` });
-  // A real click on the staircase approaches its bottom, then walks up.
+  // Click a visible rung above the foot, rather than the old narrow ground hotspot.
   await page.evaluate(() => {
     (window as any).__roofClimb = [];
     const record = () => { const s = (window as any).royalDemo.getState(); (window as any).__roofClimb.push({ hall:s.hall, x:s.x, y:s.y }); if(s.hall==='street')requestAnimationFrame(record); };
     requestAnimationFrame(record);
   });
-  await clickWorld(page, STREET_ROOF_STAIRS.click.x, STREET_ROOF_STAIRS.click.y);
+  const foot=projectStreetPoint(STREET_ROOF_STAIRS.foot,(await state(page)).street.view.orientation);
+  await clickViewPoint(page,{x:foot.x,y:foot.y-80});
   await expect.poll(async () => (await state(page)).stairStep,{timeout:10000}).toBeGreaterThanOrEqual(3);
   expect((await state(page)).renderDepth).toBeGreaterThan(620);
   expect((await state(page)).street.frontRoadVisible).toBe(false);
@@ -62,7 +70,7 @@ test('climb rear stairs, explore roof, reconnect and return with chat and wallet
     (window as any).__roofClimb=[];
     const record=()=>{const s=(window as any).royalDemo.getState();(window as any).__roofClimb.push({hall:s.hall,x:s.x,y:s.y});if(s.hall==='street')requestAnimationFrame(record);};requestAnimationFrame(record);
   });
-  await page.keyboard.press('e');
+  await page.keyboard.press('ArrowUp');
   await expect.poll(async () => (await state(page)).hall, { timeout: 15000 }).toBe('roof');
   const continuation = await page.evaluate(() => (window as any).__roofClimb as {hall:string;x:number;y:number}[]);
   const climb=[...prefix,...continuation];
@@ -95,6 +103,11 @@ test('climb rear stairs, explore roof, reconnect and return with chat and wallet
   await clickWorld(page, ROOF_STAIRS.click.x, ROOF_STAIRS.click.y);
   await expect.poll(async () => (await state(page)).hall, { timeout: 15000 }).toBe('street');
   await expect.poll(async () => (await state(page)).y).toBe(STREET_ROOF_STAIRS.arrival.y);
+  // Up at the foot starts ascent without needing to know the interaction key.
+  await page.keyboard.press('ArrowUp');
+  await expect.poll(async()=>(await state(page)).stairStep,{timeout:10000}).toBeGreaterThanOrEqual(3);
+  await page.keyboard.press('ArrowRight');
+  await overview(page,true);
   // The narrow strip is outside the normal rear circulation route.
   for (const p of [{ x: 1760, y: 470 }, { x: 2320, y: 360 }, { x: 2320, y: 1050 }]) await walk(page, p.x, p.y);
   await page.locator('[data-floor-target="arcade"]').click();

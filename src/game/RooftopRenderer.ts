@@ -1,8 +1,10 @@
 import { StreetView } from './streetView';
 import type Phaser from 'phaser';
 import { t } from '../i18n';
-import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE } from '../shared/rooftop';
+import { ROOF, ROOF_STAIRS, ROOF_STAIR_ROUTE } from '../shared/rooftop';
 import { paintStreetCrown } from './streetArt';
+import { STREET } from '../shared/street';
+import { roofStairContains } from './roofStairInput';
 
 type Paint = CanvasRenderingContext2D;
 const ink = '#292b36', snow = '#f4f8fc', gold = '#edc566';
@@ -113,7 +115,9 @@ export class StreetRoofStairs {
   private close: Phaser.GameObjects.Graphics;
   private plan: Phaser.GameObjects.Graphics;
   private key='';
-  private baseZone:Phaser.GameObjects.Zone;
+  private hitZone:Phaser.GameObjects.Zone;
+  private hitRoute:{x:number;y:number}[]=[];
+  private overview=false;
   private paint:(g:Phaser.GameObjects.Graphics,plan:boolean,view:StreetView)=>void;
   constructor(scene: Phaser.Scene, enter: () => void) {
     this.paint=(g,plan,view)=>{
@@ -185,14 +189,16 @@ export class StreetRoofStairs {
     };
     this.close=scene.add.graphics();
     this.plan=scene.add.graphics().setDepth(.15);
-    // Only the bottom platform accepts a click; the circulation lane has no hitbox.
-    const foot=STREET_ROOF_STAIRS.foot;
-    this.baseZone=scene.add.zone(foot.x,foot.y-2,76,32).setDepth(700).setInteractive().on('pointerdown',enter);
+    // Rungs, flights and landings accept input in their painted positions.
+    this.hitZone=scene.add.zone(0,0,STREET.width,STREET.height).setOrigin(0).setInteractive({
+      hitArea:{},hitAreaCallback:(_area:unknown,x:number,y:number)=>roofStairContains({x,y},this.hitRoute,this.overview),
+    }).on('pointerdown',enter);
   }
   update(overview:boolean,view:StreetView){
-    const base=view.point(STREET_ROOF_STAIRS.foot);this.baseZone.setPosition(base.x,base.y-2).setVisible(overview||view.side==='rear');if(this.baseZone.input)this.baseZone.input.enabled=overview||view.side==='rear';
+    this.overview=overview;
+    this.hitZone.setDepth(overview?700:view.wall.base+6).setVisible(overview||view.side==='rear');if(this.hitZone.input)this.hitZone.input.enabled=overview||view.side==='rear';
     const key=view.orientation+':'+overview;
-    if(key!==this.key){this.key=key;this.paint(overview?this.plan:this.close,overview,view);}
+    if(key!==this.key){this.key=key;this.hitRoute=ROOF_STAIR_ROUTE.map(p=>view.point(p,!overview));this.paint(overview?this.plan:this.close,overview,view);}
     this.close.setDepth(view.wall.base+5).setVisible(!overview&&view.side==='rear');this.plan.setVisible(overview);
   }
 }

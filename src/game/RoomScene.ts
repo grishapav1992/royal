@@ -843,6 +843,14 @@ export class RoomScene extends Phaser.Scene {
     if (!this.locked && !this.isHuggingCat() && !this.typing && !this.switching && !this.player.cabinet && !this.networkSelf?.playing) {
       let dx = Number(this.keys.D!.isDown || this.keys.RIGHT!.isDown) - Number(this.keys.A!.isDown || this.keys.LEFT!.isDown);
       let dy = Number(this.keys.S!.isDown || this.keys.DOWN!.isDown) - Number(this.keys.W!.isDown || this.keys.UP!.isDown);
+      if(this.hall==='street'&&!this.overview&&this.streetView.side==='rear'&&!dx&&dy<0&&
+        (this.roofClimbing||(this.player.stairStep??0)>0||Math.hypot(this.player.x-STREET_ROOF_STAIRS.foot.x,this.player.y-STREET_ROOF_STAIRS.foot.y)<55)){
+        if(!this.roofClimbing&&this.pendingLounge!=='roof-stairs'){
+          if((this.player.stairStep??0)>0)this.followRoofStairs();else this.approachFloor('roof');
+        }
+        dx=dy=0;
+      }
+      if(dx||dy)this.roofClimbing=false;
       if(this.hall==='street'){
         const signature=dx+','+dy;
         if(!dx&&!dy){this.streetKeyboardSide=undefined;this.lastStreetKeys='';}
