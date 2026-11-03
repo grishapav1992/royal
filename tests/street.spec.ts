@@ -109,6 +109,7 @@ test('walk outside, circle the casino, reconnect and return through the same ent
   await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
   await expect.poll(async ()=>(await state(page)).street.residents.people.find((p:any)=>p.id==='mascot').moving,{timeout:18000}).toBe(true);
   await overview(page,true);
+  await expect(dialogue).toBeHidden();
   await page.screenshot({ path: `../street-${info.project.name}-overview.png` });
   for (const p of STREET.loop) await walk(page, p.x, p.y);
   await walk(page, 1370, 365);

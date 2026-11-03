@@ -9,3 +9,5 @@
 .street-conversation button:last-child:not(:first-child){background:#463a46;color:#f5dfba}
 .street-conversation button:focus-visible{outline:3px solid #fff2b9;outline-offset:3px}
 @media(max-width:600px){.street-conversation{left:10px;bottom:10px;max-width:calc(100% - 20px);padding:11px 12px}.street-conversation p{font-size:13px}}
+
+.room-panel[data-overview=true] .street-conversation[data-speaking=false]{display:none}
