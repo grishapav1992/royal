@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-03",
+  "owner": "codex/star-spin-ui-priorities",
+  "status": "blocked_by_automatic_review",
+  "reason": "blocked by policy",
+  "sourcePreservedInMain": "7077355ae6513215e11167b11d3a78aeae1333af",
+  "remoteCommitVerified": true,
+  "operationExecuted": false,
+  "removedFiles": 0,
+  "removedBytes": 0,
+  "retained": [
+    {"path": "artifacts/work/star-spin-ui-20261103", "bytes": 17646597},
+    {"path": "module-dist/studio-wild-nudge/versions/1.5.0-78f9cd4749e6", "bytes": 12596868},
+    {"path": "module-dist/studio-wild-nudge/versions/1.5.0-f771c612f7b6", "bytes": 12596934},
+    {"path": "module-dist/studio-wild-nudge/versions/1.5.0-153e8fd9fb14", "bytes": 12597591}
+  ],
+  "retainedBytes": 55437990,
+  "inventoryFreeBytesBeforeAttempt": 320003899392,
+  "freeBytesAfterRejection": 320003264512,
+  "physicalSpaceReclaimedClaimed": false,
+  "ownedPreviewStopped": true,
+  "temporaryDatabase": "royal-pg-SPA6Gw",
+  "temporaryDatabaseRemovedByNormalPreviewShutdown": true,
+  "currentPackagePreserved": "1.5.0-dfaacbc6bb0f",
+  "productionChanged": false,
+  "previouslyRejectedTargetsRetried": false,
+  "cleanupCondition": "A future permitted cleanup must freshly verify exact ownership, inactive processes, GitHub preservation and the current pointer; do not retry this denied deletion through a bypass."
+}
