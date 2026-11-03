@@ -2,6 +2,17 @@ import importlib.util,unittest,copy
 from pathlib import Path
 spec=importlib.util.spec_from_file_location('publication',Path(__file__).with_name('publish.py'));p=importlib.util.module_from_spec(spec);spec.loader.exec_module(p)
 class Guards(unittest.TestCase):
+ def test_line_endings_exception_reconstructs_exact_bytes_and_rejects_code_changes(self):
+  import tempfile,hashlib
+  from unittest.mock import patch
+  name='src/shared/wildNudgeMath.ts';content=b'export const value=1;\n';lf=hashlib.sha256(content).hexdigest();crlf=hashlib.sha256(content.replace(b'\n',b'\r\n')).hexdigest()
+  proof={'version':'1.5.0-dfaacbc6bb0f','sourceSha256':'dfaacbc6bb0fd204ad71935485c12c645c3d36a5c18fdfa296bf91a443bb55ef','hostSingletonsExternalized':True,'serverImplementationIncluded':False,'sourceFiles':{name:crlf}}
+  before={'source':{name:lf},'sourceLF':{name:lf}};equivalence={'rows':{name:{'kind':'line-endings-only','inputSha256':crlf,'productionLFSha256':lf}}}
+  with tempfile.TemporaryDirectory() as directory,patch.object(p,'LIVE',Path(directory)):
+   target=Path(directory)/name;target.parent.mkdir(parents=True);target.write_bytes(content)
+   p.validate_inputs(before,{},proof,equivalence)
+   target.write_bytes(b'export const value=2;\n')
+   with self.assertRaises(RuntimeError):p.validate_inputs(before,{},proof,equivalence)
  def test_unchanged_mathematics_and_dependencies_must_match_the_live_sources(self):
   before={'source':{'src/shared/wildNudgeMath.ts':'math'},'sourceLF':{'src/shared/wildNudgeMath.ts':'math'}}
   op={'source':{p.SOURCES[0]:'ui'}}
