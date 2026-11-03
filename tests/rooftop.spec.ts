@@ -242,7 +242,12 @@ test('manually climb each switchback without falling, reach the roof edge and re
     }
   }else await keyUntil(page,'ArrowDown',async()=>(await state(page)).stairStep===0,30000);
   expect((await state(page)).hall).toBe('street');
-  expect(Math.hypot((await state(page)).x-STREET_ROOF_STAIRS.foot.x,(await state(page)).y-STREET_ROOF_STAIRS.foot.y)).toBeLessThan(20);
+  if(mobile)expect(Math.hypot((await state(page)).x-STREET_ROOF_STAIRS.foot.x,(await state(page)).y-STREET_ROOF_STAIRS.foot.y)).toBeLessThan(20);
+  else{
+    // A held key resumes ordinary pavement movement after leaving the lower ladder.
+    expect(Math.abs((await state(page)).x-STREET_ROOF_STAIRS.foot.x)).toBeLessThan(.1);
+    expect((await state(page)).y).toBeLessThan(STREET_ROOF_STAIRS.foot.y-7);
+  }
   await overview(page,true);
   // The narrow strip is outside the normal rear circulation route.
   for (const p of [{ x: 1760, y: 470 }, { x: 2320, y: 360 }, { x: 2320, y: 1050 }]) await walk(page, p.x, p.y);
