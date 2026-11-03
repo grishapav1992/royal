@@ -2,7 +2,7 @@ import type { StreetView } from './streetView';
 import type Phaser from 'phaser';
 import { t } from '../i18n';
 import { CHARACTER_SCALE, characterTexture } from './characters';
-import { STREET_RESIDENTS, StreetConversations, type StreetResidentId, type StreetVisitor } from './streetDetails';
+import { STREET_RESIDENTS, StreetConversations,canTalkToStreetResidents, type StreetResidentId, type StreetVisitor } from './streetDetails';
 import './street-residents.css';
 import { streetResidentPose, type StreetResidentPose } from './StreetResidentActions';
 import { createStreetMascotTexture, drawMascotArms, drawResidentShovel, drawTaxiHabit, drawTouristCamera } from './streetResidentArt';
@@ -65,7 +65,8 @@ export class StreetResidents {
   }
   setActive(active:boolean){if(!active)this.prepared=null;this.conversations.update({x:0,y:0},active,this.locations);this.render();}
   update(player:StreetVisitor,time:number,motion:boolean,overview:boolean,passers:readonly Point[],approaching:StreetResidentId|undefined,view:StreetView){
-    this.prepared=approaching??null;
+    const canTalk=canTalkToStreetResidents(player);
+    this.prepared=canTalk?approaching??null:null;
     this.conversations.update(player,true,this.locations);
     const talkingId=this.conversations.snapshot().conversation;
     const frozen=[this.prepared,talkingId].filter((id):id is StreetResidentId=>Boolean(id));
@@ -89,7 +90,7 @@ export class StreetResidents {
       actor.tool.setPosition(p.x,p.y).setDepth(depth+.1).setVisible(visible);
       const exposed=visible&&!view.occluded(position,mascot?50:30);
       actor.zone.setPosition(p.x,p.y-(mascot?53:40)).setDepth(depth+3).setVisible(exposed);
-      if(actor.zone.input)actor.zone.input.enabled=exposed;
+      if(actor.zone.input)actor.zone.input.enabled=exposed&&canTalk;
       actor.label.setPosition(p.x,p.y-(mascot?113:91)).setDepth(depth+2).setVisible(exposed&&!overview&&Math.hypot(player.x-position.x,player.y-position.y)<195);
       actor.greeting?.setPosition(p.x,p.y-131).setDepth(depth+3).setVisible(exposed&&!overview&&position.greeting&&Math.hypot(player.x-position.x,player.y-position.y)<500);
       pose={...pose,facing};
@@ -116,7 +117,10 @@ export class StreetResidents {
     });
     this.render();
   }
-  prepareApproach(id:StreetResidentId,player:Point){
+  prepareApproach(id:StreetResidentId,player:StreetVisitor){
+    if(!canTalkToStreetResidents(player)){
+      this.prepared=null;this.conversations.update(player,true,this.locations);this.render();return null;
+    }
     const point=this.patrols.approach(id,player);
     if(point){this.conversations.close();this.prepared=id;this.render();}
     return point;

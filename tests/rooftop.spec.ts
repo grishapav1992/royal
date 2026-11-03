@@ -61,6 +61,13 @@ async function staysOnStep(page:Page){
   expect(Math.hypot(after.serverX-before.serverX,after.serverY-before.serverY)).toBeLessThan(.1);
 }
 
+async function noGroundConversation(page:Page){
+  await expect.poll(async()=>(await state(page)).street.residents.active).toBe(false);
+  const residents=(await state(page)).street.residents;
+  expect(residents.nearby).toBeNull();expect(residents.conversation).toBeNull();expect(residents.approaching).toBeNull();
+  await expect(page.locator('.street-conversation')).toBeHidden();
+}
+
 test('manually climb each switchback without falling, reach the roof edge and return with chat intact', async ({ page }, info) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
@@ -90,6 +97,7 @@ test('manually climb each switchback without falling, reach the roof edge and re
   await clickViewPoint(page,{x:foot.x,y:foot.y-80});
   await expect.poll(async () => (await state(page)).stairStep,{timeout:10000}).toBe(1);
   await page.waitForTimeout(400);expect((await state(page)).stairStep).toBe(1);
+  await noGroundConversation(page);
   const mobile=info.project.name==='mobile';
   await flight(page,mobile);await flight(page,mobile);
   expect((await state(page)).stairStep).toBe(3);
@@ -99,6 +107,7 @@ test('manually climb each switchback without falling, reach the roof edge and re
     expect(Math.hypot((await state(page)).x-ROOF_STAIR_ROUTE[2].x,(await state(page)).y-ROOF_STAIR_ROUTE[2].y)).toBeGreaterThan(5);
   }
   await staysOnStep(page);
+  await noGroundConversation(page);
   expect((await state(page)).renderDepth).toBeGreaterThan(620);
   expect((await state(page)).street.frontRoadVisible).toBe(false);
   {const s=await state(page);expect(s.renderVisible).toBe(true);expect(Math.hypot(s.halo.x-s.renderX,s.halo.y-s.renderY)).toBeLessThan(.1);}
@@ -109,6 +118,7 @@ test('manually climb each switchback without falling, reach the roof edge and re
   await expect.poll(async ()=>(await state(page)).hall).toBe('street');
   expect((await state(page)).stairStep).toBe(3);
   await staysOnStep(page);
+  await noGroundConversation(page);
   await page.evaluate(()=>{
     (window as any).__roofClimb=[];
     const record=()=>{const s=(window as any).royalDemo.getState();(window as any).__roofClimb.push({hall:s.hall,x:s.x,y:s.y});if(s.hall==='street')requestAnimationFrame(record);};requestAnimationFrame(record);
@@ -116,6 +126,12 @@ test('manually climb each switchback without falling, reach the roof edge and re
   while((await state(page)).hall==='street'){
     const s=await state(page);
     if(s.stairStep===ROOF_STAIR_ROUTE.length-1){
+      // A nearby map position must not make a ground resident reachable from this height.
+      await expect.poll(async()=>{
+        const p=await state(page);return p.street.residents.people.some((npc:any)=>Math.hypot(npc.x-p.x,npc.y-p.y)<=112);
+      },{timeout:20000}).toBe(true);
+      await noGroundConversation(page);
+      await page.screenshot({path:`../stair-npc-${info.project.name}.png`});
       const view=new StreetView();view.side='rear';
       expect(view.roofEdge).toBeGreaterThan(s.view.y);expect(view.roofEdge).toBeLessThan(s.view.y+s.view.height/s.view.zoom);
       await page.screenshot({path:`../roof-${info.project.name}-top.png`});
@@ -124,6 +140,7 @@ test('manually climb each switchback without falling, reach the roof edge and re
     if((await state(page)).hall==='street'){
       const paused=await state(page);await page.waitForTimeout(120);
       const still=await state(page);expect(still.stairStep).toBe(paused.stairStep);expect(Math.hypot(still.x-paused.x,still.y-paused.y)).toBeLessThan(.1);
+      await noGroundConversation(page);
     }
   }
   const continuation = await page.evaluate(() => (window as any).__roofClimb as {hall:string;x:number;y:number}[]);
@@ -168,6 +185,12 @@ test('manually climb each switchback without falling, reach the roof edge and re
   await overview(page,true);
   // The narrow strip is outside the normal rear circulation route.
   for (const p of [{ x: 1760, y: 470 }, { x: 2320, y: 360 }, { x: 2320, y: 1050 }]) await walk(page, p.x, p.y);
+  const doorman=(await state(page)).street.residents.people.find((p:any)=>p.id==='doorman');
+  await clickWorld(page,doorman.x,doorman.y-35);
+  await expect.poll(async()=>(await state(page)).street.residents.conversation,{timeout:25000}).toBe('doorman');
+  await expect(page.locator('.street-conversation')).toBeVisible();
+  await page.screenshot({path:`../stair-npc-ground-${info.project.name}.png`});
+  await page.locator('.street-conversation').getByRole('button',{name:'Закрыть',exact:true}).click();
   await page.locator('[data-floor-target="arcade"]').click();
   await expect.poll(async () => (await state(page)).hall, { timeout: 25000 }).toBe('arcade');
   await expect(page.locator('#wallet-balance')).toHaveText(balance!);

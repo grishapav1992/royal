@@ -67,6 +67,18 @@ test('resident conversations require proximity and close on walking away or ente
   dialogue.update(person.approach,false);assert.equal(dialogue.snapshot().conversation,null);assert.equal(dialogue.snapshot().nearby,null);
 });
 
+test('a ladder visitor cannot talk to ground residents at the same map coordinates and can talk after returning',()=>{
+  const dialogue=new StreetConversations(),people=[{id:'janitor' as const,x:1750,y:320}],point={x:1750,y:408};
+  dialogue.update(point,true,people);assert(dialogue.talk('janitor'),'the ground conversation is in range');
+  for(let stairStep=1;stairStep<=12;stairStep++){
+    const state=dialogue.update({...point,stairStep},true,people);
+    assert.equal(state.active,false);assert.equal(state.nearby,null);assert.equal(state.conversation,null);
+    assert.equal(dialogue.talk('janitor'),false,'a matching map radius does not allow a conversation above ground');
+  }
+  dialogue.update({...point,stairStep:0},true,people);
+  assert(dialogue.talk('janitor'),'conversation becomes available again on the ground');
+});
+
 test('the rear camera frames the service area without a jump at either corner',()=>{
   for(const height of [500,806]){
     assert(streetViewOffset(1030,height)>=0);

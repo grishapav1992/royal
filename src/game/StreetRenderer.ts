@@ -3,7 +3,7 @@ import { STREET } from '../shared/street';
 import { createStreetArt, STREET_ART, STREET_SIGN } from './streetArt';
 import { StreetAmbience } from './StreetAmbience';
 import type { Point } from './navigation';
-import { STREET_SERVICE_PROPS, type StreetResidentId } from './streetDetails';
+import { STREET_SERVICE_PROPS,canTalkToStreetResidents, type StreetResidentId,type StreetVisitor } from './streetDetails';
 import { StreetView, type StreetSide } from './streetView';
 import { createStreetWall } from './streetWalls';
 import { StreetRoofStairs } from './RooftopRenderer';
@@ -103,7 +103,7 @@ export class StreetRenderer {
     this.roofStairs=new StreetRoofStairs(scene,climb);
     this.door=scene.add.zone(STREET.entrance.x,front-82,170,200).setDepth(front+1).setInteractive({useHandCursor:true}).on('pointerdown',enter);
   }
-  update(player: Point, overview: boolean,delta=0,reducedMotion=false,approaching?:StreetResidentId) {
+  update(player: StreetVisitor, overview: boolean,delta=0,reducedMotion=false,approaching?:StreetResidentId) {
     this.roofStairs.update(overview,this.view);
     for(const [side,wall] of this.walls)wall.setVisible(!overview&&side===this.view.side).setAlpha(1);
     this.plan.setVisible(overview);this.ground.setVisible(!overview);
@@ -113,7 +113,7 @@ export class StreetRenderer {
     for(const {image,point} of this.anchors){const p=this.view.point(point);image.setPosition(p.x,p.y).setDepth(p.y).setVisible(!overview&&this.view.visible(point));}
     this.door.setVisible(!overview&&this.view.side==='front');if(this.door.input)this.door.input.enabled=!overview&&this.view.side==='front';
     const sign=this.ambience.update(delta,overview,reducedMotion,this.view);
-    const state=this.ambience.getState();this.residents.update(player,state.time,state.motion,overview,[player,...state.pedestrians],approaching,this.view);
+    const state=this.ambience.getState();this.residents.update(player,state.time,state.motion,overview,[...(canTalkToStreetResidents(player)?[player]:[]),...state.pedestrians],approaching,this.view);
     this.sheen.forEach((image,index)=>{
       const width=[48,28,10][index],left=Math.max(0,sign.sweep-width/2),right=Math.min(STREET_SIGN.width,sign.sweep+width/2);
       image.setVisible(right>left&&sign.sheen>0&&!overview).setAlpha(sign.sheen*[.25,.45,.7][index]);
@@ -126,8 +126,8 @@ export class StreetRenderer {
     }
   }
   setActive(active:boolean){this.residents.setActive(active);}
-  interact(player:Point,id?:StreetResidentId){return this.residents.interact(player,id);}
-  prepareApproach(id:StreetResidentId,player:Point){return this.residents.prepareApproach(id,player);}
+  interact(player:StreetVisitor,id?:StreetResidentId){return this.residents.interact(player,id);}
+  prepareApproach(id:StreetResidentId,player:StreetVisitor){return this.residents.prepareApproach(id,player);}
   get pedestrianCount(){return this.ambience.count+this.residents.count;}
   get characterTextureKeys(){return this.residents.textureKeys;}
   getState(){return {view:{side:this.view.side,orientation:this.view.orientation,overview:this.view.overview,wall:{...this.view.wall},angle:this.view.angle},frontRoadVisible:!this.view.overview&&this.frontGround.visible,props:this.anchors.map(({image,point})=>({world:{...point},x:image.x,y:image.y,visible:image.visible,texture:image.texture.key})),...this.ambience.getState(),carRender:this.ambience.carRender,characterBounds:[...this.ambience.characterBounds,...this.residents.characterBounds],residents:this.residents.getState()};}

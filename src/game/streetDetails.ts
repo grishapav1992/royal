@@ -24,8 +24,9 @@ export const STREET_RESIDENTS=[
     lines:['Я Золотик. Фишка большая, карманы маленькие.','Для фото у меня три позы. Четвёртая называется «перерыв».','Под костюмом жарко. Снаружи зима. Почти идеальный климат.']},
 ] as const;
 export type StreetResidentId=typeof STREET_RESIDENTS[number]['id'];
-export type StreetVisitor={x:number;y:number};
+export type StreetVisitor={x:number;y:number;stairStep?:number};
 export type StreetResidentPosition=StreetVisitor&{id:StreetResidentId};
+export const canTalkToStreetResidents=(visitor:StreetVisitor)=>(visitor.stairStep??0)===0;
 
 // Frame the rear service area as the player walks around either corner.
 export function streetViewOffset(y:number,viewHeight:number){
@@ -43,9 +44,9 @@ export class StreetConversations {
   private line=0;
   private people:readonly StreetResidentPosition[]=STREET_RESIDENTS;
   update(visitor:StreetVisitor,active:boolean,people:readonly StreetResidentPosition[]=STREET_RESIDENTS){
-    this.visitor=visitor;this.active=active;this.people=people;
+    this.visitor=visitor;this.active=active&&canTalkToStreetResidents(visitor);this.people=people;
     const person=this.people.find(p=>p.id===this.current);
-    if(!active||(person&&Math.hypot(person.x-visitor.x,person.y-visitor.y)>140))this.close();
+    if(!this.active||(person&&Math.hypot(person.x-visitor.x,person.y-visitor.y)>140))this.close();
     return this.snapshot();
   }
   talk(id:StreetResidentId){

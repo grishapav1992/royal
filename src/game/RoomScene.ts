@@ -422,7 +422,7 @@ export class RoomScene extends Phaser.Scene {
     });
   }
   approachStreetResident(id:StreetResidentId){
-    if(this.hall!=='street'||this.locked||this.typing||this.switching||this.isHuggingCat()||this.player.cabinet||this.networkSelf?.playing)return;
+    if(this.hall!=='street'||(this.player.stairStep??0)>0||this.locked||this.typing||this.switching||this.isHuggingCat()||this.player.cabinet||this.networkSelf?.playing)return;
     const point=this.street?.prepareApproach(id,this.player);if(!point)return;
     this.streetApproach={id,point};this.streetApproachCompleting=false;
     this.pendingCabinet=null;this.pendingLounge='street:'+id;this.goTo(point);
@@ -830,6 +830,7 @@ export class RoomScene extends Phaser.Scene {
     }
     if(!this.network&&!this.locked&&!this.isHuggingCat()&&!this.typing&&inHallDoor(this.player))this.changeHall(hallLinkAt(this.player)!.target);
     this.details?.update(time);
+    if(this.hall==='street'&&(this.player.stairStep??0)>0&&this.pendingLounge?.startsWith('street:'))this.pendingLounge=null;
     const streetTarget=this.hall==='street'&&this.pendingLounge?.startsWith('street:')?this.pendingLounge.slice(7) as StreetResidentId:undefined;
     if(this.streetApproach?.id!==streetTarget){this.streetApproach=undefined;this.streetApproachCompleting=false;}
     if(this.hall==='street')this.street?.update(this.player,this.overview,delta,this.reducedMotion,streetTarget);
