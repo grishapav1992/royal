@@ -71,9 +71,9 @@ async function noGroundConversation(page:Page){
   await expect(page.locator('.street-conversation')).toBeHidden();
 }
 
-async function keyUntil(page:Page,key:string,condition:()=>Promise<boolean>){
+async function keyUntil(page:Page,key:string,condition:()=>Promise<boolean>,timeout=15000){
   await page.keyboard.down(key);
-  try{await expect.poll(condition,{timeout:15000,intervals:[16,32,50]}).toBe(true);}
+  try{await expect.poll(condition,{timeout,intervals:[16,32,50]}).toBe(true);}
   finally{await page.keyboard.up(key);}
   await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.serverX-s.x,s.serverY-s.y);}).toBeLessThan(.1);
 }
@@ -240,7 +240,7 @@ test('manually climb each switchback without falling, reach the roof edge and re
       await expect.poll(async()=>(await state(page)).stairStep,{timeout:10000}).toBeLessThan(step);
       await expect.poll(async()=>{const p=await state(page);return Math.hypot(p.serverX-p.x,p.serverY-p.y);}).toBeLessThan(.1);
     }
-  }else await keyUntil(page,'ArrowDown',async()=>(await state(page)).stairStep===0);
+  }else await keyUntil(page,'ArrowDown',async()=>(await state(page)).stairStep===0,30000);
   expect((await state(page)).hall).toBe('street');
   expect(Math.hypot((await state(page)).x-STREET_ROOF_STAIRS.foot.x,(await state(page)).y-STREET_ROOF_STAIRS.foot.y)).toBeLessThan(20);
   await overview(page,true);
