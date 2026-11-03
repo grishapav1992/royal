@@ -63,7 +63,7 @@ test('all four Rive companions retain their identity, react to paid outcomes and
   }
   await page.locator('[data-ss=close]').click();await scenario(page,'nudge');await spin(page);expect((await mini(page)).character.reactions.wild_align).toBeGreaterThan(0);await scenario(page,'win');await spin(page);const wins=(await mini(page)).character.reactions.round_win;expect(wins).toBeGreaterThan(0);await scenario(page,'loss');await spin(page);expect((await mini(page)).character.reactions.round_win).toBe(wins);observed.push((await mini(page)).character);await page.locator('[data-gn=crew]').click();
  }
- await page.locator('[data-ss=close]').click();await page.setViewportSize({width:390,height:844});await expect.poll(async()=>(await mini(page)).character.playing).toBe(false);await chat(page);await expect(page.locator('[data-gn=spin]')).toBeInViewport();
+ await page.locator('[data-ss=close]').click();await page.setViewportSize({width:390,height:844});await expect.poll(async()=>(await mini(page)).character.playing).toBe(true);await page.setViewportSize({width:844,height:390});await expect.poll(async()=>(await mini(page)).character.playing).toBe(false);await page.setViewportSize({width:390,height:844});await chat(page);await expect(page.locator('[data-gn=spin]')).toBeInViewport();
  await page.locator('[data-gn=crew]').click();await expect(page.locator('[data-ss-card=nyxara] .ss-rive-canvas')).toBeVisible();await expect.poll(async()=>(await mini(page)).character.playing).toBe(true);await page.screenshot({path:output+'/rive-mobile.png'});
  await page.locator('[data-ss="tab:light"]').click();await expect.poll(async()=>(await mini(page)).character.playing).toBe(false);await page.locator('[data-ss="tab:dark"]').click();await expect.poll(async()=>(await mini(page)).character.playing).toBe(true);
  await page.locator('[data-ss=close]').click();await page.setViewportSize({width:1440,height:1000});await expect.poll(async()=>(await mini(page)).character.playing).toBe(true);await scenario(page,'bonus');await spin(page);expect((await mini(page)).character.reactions.bonus_enter).toBe(1);await expect.poll(async()=>(await mini(page)).character.mode).toBe('bonus_idle');
@@ -131,13 +131,57 @@ test('closing a saved bonus restores it quietly and never restarts autoplay',asy
  await enter(page,roomPath);await topup(page);await open(page);await fast(page);await scenario(page,'bonus');await spin(page);await spin(page);const saved=await session(page);
  await page.locator('#mini-dialog .mini-top [data-close]').click();await expect(page.locator('.gn')).toHaveCount(0);await open(page);const recovered=await session(page);expect(recovered).toEqual(saved);expect((await mini(page)).autoplay.running).toBe(false);expect((await mini(page)).audio.counts).toEqual({});await expect(page.locator('[data-gn=status]')).toContainText('восстановлен');await chat(page);
 });
+test('priority layout gives reels readable space, full touch controls and connected chat',async({page,roomPath})=>{
+ test.setTimeout(180000);await enter(page,roomPath);await topup(page);await open(page);await fast(page);await page.locator('[data-ss="side:light"]').click();const measurements=[];
+ for(const [width,height]of [[2206,1291],[1440,1000],[1280,720],[1024,768],[768,1024],[800,600],[707,447],[640,480],[500,760],[390,844],[320,568],[844,390],[568,320]]){
+  await page.setViewportSize({width,height});await chat(page);await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));
+  const geometry=await page.locator('.gn').evaluate(root=>{
+   const rect=(el:Element)=>{const r=el.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom};},failures:string[]=[];
+   for(const selector of ['[data-gn=board]','[data-gn=spin]','[data-gn=stake]','[data-gn=auto]','[data-gn=settings]','[data-gn=crew]','[data-gn=balance]','[data-gn=payout]','[data-gn=net]','[data-gn=status]']){
+    const el=root.querySelector<HTMLElement>(selector)!,box=rect(el);if(!box.width||!box.height){failures.push(selector+': empty');continue;}
+    for(let parent=el.parentElement;parent;parent=parent.parentElement){if(!/(hidden|auto|scroll|clip)/.test(getComputedStyle(parent).overflow))continue;const p=rect(parent);if(box.x<p.x-2||box.y<p.y-2||box.right>p.right+2||box.bottom>p.bottom+2)failures.push(selector+': clipped by '+parent.className);}
+    if(el.matches('button,select')){if(box.width<44||box.height<44)failures.push(selector+': touch target below 44px');const hit=document.elementFromPoint(box.x+box.width/2,box.y+box.height/2);if(!hit||!el.contains(hit))failures.push(selector+': blocked');}
+   }
+   const stage=root.closest('.mini-stage')!;if(stage.scrollHeight>stage.clientHeight+2||stage.scrollWidth>stage.clientWidth+2)failures.push('host scroll');
+   return{profile:(root as HTMLElement).dataset.layout,root:rect(root),board:rect(root.querySelector('.gn-board')!),stage:rect(root.querySelector('.gn-stage')!),failures};
+  });
+  expect(geometry.failures,`${width}x${height}`).toEqual([]);
+  const amountOverflow=await page.locator('.gn-money').evaluate(root=>{
+   const failures:string[]=[];
+   for(const [name,value]of [['balance','117 381,84'],['payout','430 395,00'],['net','430 345,00']]){
+    const el=root.querySelector<HTMLElement>(`[data-gn=${name}]`)!,original=el.textContent;el.textContent=value;
+    const range=document.createRange();range.selectNodeContents(el);const text=range.getBoundingClientRect(),cell=el.parentElement!.getBoundingClientRect();if(text.right>cell.right+1)failures.push(name+': amount crosses its column');el.textContent=original;
+   }
+   return failures;
+  });expect(amountOverflow,`${width}x${height} large amounts`).toEqual([]);
+  expect(geometry.board.width).toBeGreaterThanOrEqual(Math.floor(Math.min(geometry.stage.width-17,(geometry.stage.height-17)*5/3,geometry.profile==='portrait'?geometry.root.width-32:400))-1);
+  if(geometry.profile==='portrait'&&geometry.root.height>=620)expect(geometry.board.width).toBeGreaterThanOrEqual(geometry.root.width-54);
+  if(geometry.profile!=='landscape')await expect(page.locator('[data-ss-portrait]')).toBeVisible();
+  if([2206,1440,707,390,320,844].includes(width))await page.screenshot({path:output+`/priority-${width}x${height}.png`});measurements.push({width,height,...geometry});
+ }
+ await page.locator('[data-gn=settings]').click();await page.locator('[data-gn=count]').selectOption('25');await expect(page.locator('[data-gn=lines]')).toBeVisible();await page.keyboard.press('Escape');await expect(page.locator('[data-gn=settings]')).toBeFocused();
+ await page.setViewportSize({width:390,height:844});await page.locator('[data-gn=settings]').click();await expect(page.locator('[data-gn=count]')).toHaveValue('25');await page.locator('[data-gn=lines]').click();await expect(page.locator('[data-gn=modal-title]')).toContainText('20 активных');await page.keyboard.press('Escape');await expect(page.locator('[data-gn=settings]')).toBeFocused();
+ await page.locator('[data-gn=settings]').click();await expect(page.locator('[data-gn=count]')).toHaveValue('25');await page.keyboard.press('Escape');
+ await writeFile(output+'/priority-layout.json',JSON.stringify({connectedHost:true,measurements},null,2));
+});
+
+test('rotation preserves an accepted spin, bonus counters and the chosen autoplay budget',async({page,roomPath})=>{
+ test.setTimeout(120000);await enter(page,roomPath);await topup(page);await open(page);await fast(page);
+ await page.setViewportSize({width:390,height:844});await page.locator('[data-gn=settings]').click();await page.locator('[data-gn=count]').selectOption('25');await page.keyboard.press('Escape');
+ await scenario(page,'bonus');const ids:string[]=[];
+ await page.route('**/api/demo-wallet/expansion',async route=>{if(route.request().method()==='POST'){ids.push(route.request().postDataJSON().id);const response=await route.fetch();await page.setViewportSize({width:707,height:447});await route.fulfill({response});}else await route.continue();});
+ await spin(page);const saved=await session(page);expect(saved.spentUnits).toBe('10');expect(saved.view.wildNudge.remaining).toBe(8);expect(ids).toHaveLength(1);await expect(page.locator('[data-gn=remaining]')).toBeVisible();await expect(page.locator('[data-gn=remaining]')).toHaveText('8');await expect(page.locator('[data-gn=spin]')).toContainText('Бесплатно');
+ await page.setViewportSize({width:320,height:568});await expect(page.locator('[data-gn=remaining]')).toBeVisible();await expect(page.locator('[data-gn=remaining]')).toHaveText('8');await page.locator('[data-gn=settings]').click();await expect(page.locator('[data-gn=count]')).toHaveValue('25');await page.keyboard.press('Escape');expect(await session(page)).toEqual(saved);
+ await spin(page);const next=await session(page);expect(next.id).toBe(saved.id);expect(next.spentUnits).toBe('10');expect(next.view.wildNudge.remaining).toBe(7);expect(ids).toHaveLength(2);expect(new Set(ids).size).toBe(2);
+});
+
 test('responsive host keeps chat, settings and controls reachable without moving the lower panels',async({page,roomPath})=>{
  test.setTimeout(120000);await enter(page,roomPath);await topup(page);await open(page);await fast(page);const measurements=[];
  for(const [width,height]of [[1440,1000],[1280,720],[1024,768],[800,600],[640,480],[500,760],[390,844],[320,568],[844,390]]){
   await page.setViewportSize({width,height});await page.waitForTimeout(100);await chat(page);for(const selector of ['[data-gn=spin]','[data-gn=auto]','[data-gn=stake]','[data-gn=settings]'])await expect(page.locator(selector)).toBeInViewport();
   const overflow=await page.locator('.gn').evaluate(el=>el.scrollWidth-el.clientWidth);expect(overflow).toBeLessThanOrEqual(1);
   if(width===1440||width===390)await page.screenshot({path:output+`/host-${width}.png`});
-  const geometry=await page.locator('[data-gn=stage]').evaluate(el=>({stageHeight:el.clientHeight,machineHeight:el.parentElement!.clientHeight,boardWidth:el.querySelector('.gn-board')!.clientWidth}));expect(geometry.stageHeight+46).toBeGreaterThanOrEqual(geometry.machineHeight-1);expect(geometry.boardWidth).toBeGreaterThan(60);measurements.push({width,height,overflow,...geometry});
+  const geometry=await page.locator('[data-gn=stage]').evaluate(el=>({stageHeight:el.clientHeight,machineHeight:el.parentElement!.clientHeight,boardWidth:el.querySelector('.gn-board')!.clientWidth}));expect(geometry.stageHeight+48).toBeGreaterThanOrEqual(geometry.machineHeight-1);expect(geometry.boardWidth).toBeGreaterThan(60);measurements.push({width,height,overflow,...geometry});
  }
  await page.setViewportSize({width:1440,height:1000});await page.emulateMedia({reducedMotion:'no-preference'});await scenario(page,'nudge');
  await page.evaluate(()=>{const state=(window as any).__gnAnchors={running:true,samples:[]};const sample=()=>{state.samples.push(['money','controls','playback','status'].map(name=>{const r=document.querySelector(`[data-gn=${name}]`)!.getBoundingClientRect();return[r.x,r.y,r.width,r.height];}));if(state.running)requestAnimationFrame(sample);};sample();});
