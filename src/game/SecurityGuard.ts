@@ -1,3 +1,5 @@
+import type { StreetView } from './streetView';
+import type { Facing } from '../shared/movement';
 import { t as translateText } from '../i18n/index';
 import Phaser from 'phaser';
 import { MIRA_HOME } from '../shared/miraRoutine';
@@ -155,13 +157,15 @@ export class SecurityGuard {
   resetMotion() { this.motion.reset(); }
   getState() { return this.guards; }
   barConversation() { const g=this.guards.find(g=>g.hall==='arcade');return { active:g?.phase==='chat', speaking:Boolean(g?.reply) }; }
-  update(hall: HallId, time: number, dt: number, getPerson: (id: string) => Person | undefined, renderAt=performance.now()) {
+  update(hall: HallId, time: number, dt: number, getPerson: (id: string) => Person | undefined, renderAt=performance.now(),view?:StreetView) {
     const latest = this.guards.find(guard => guard.hall === hall);
     const buffered=this.motion.sample(renderAt);
-    const g=latest&&buffered?.hall===hall?buffered:latest;
+    const sample=latest&&buffered?.hall===hall?buffered:latest;
+    const g=sample&&(!view||view.visible(sample))?sample:undefined;
     this.sprite.setVisible(Boolean(g)); this.shadow.setVisible(Boolean(g));
     if (!g) { this.speech.setVisible(false); this.reply.setVisible(false); return; }
-    const x = g.x, y = g.y;
+    const point=view?view.point(g):g;
+    const x=point.x,y=point.y;
     const moved=Math.hypot(x-this.sprite.x,y-this.sprite.y)>.001;
     const moving = moved&&['approach','return','carry','patrol','transit','enter'].includes(g.phase);
     const opacity = g.phase==='door' ? 1-g.progress : g.phase==='enter' ? g.progress : 1;
@@ -174,7 +178,7 @@ export class SecurityGuard {
     if(g.phase==='watch')frame=g.progress>.7?25:Math.floor(g.progress*9)%2?23:24;
     if(g.phase==='bump')frame=26+Math.floor(g.progress*8)%2;
     if(['idle','watch','chat'].includes(g.phase)&&time%5100<130)frame=22;
-    this.sprite.setFrame(`${g.facing}-${frame}`).setPosition(x,y).setDepth(y+.2);
+    this.sprite.setFrame(`${view?view.facing(g.facing as Facing):g.facing}-${frame}`).setPosition(x,y).setDepth(y+.2);
     this.shadow.setPosition(x,y-2).setDepth(y-1);
     this.speech.setText(translateText(g.speech)).setPosition(Phaser.Math.Clamp(x,160,WORLD.width-160),y-116).setDepth(1500).setVisible(Boolean(g.speech));
     this.reply.setText(translateText(g.reply || '')).setVisible(hall==='arcade'&&Boolean(g.reply));

@@ -1,3 +1,4 @@
+import type { StreetView } from './streetView';
 import type Phaser from 'phaser';
 import { t } from '../i18n';
 import { CHARACTER_SCALE, characterTexture } from './characters';
@@ -63,7 +64,7 @@ export class StreetResidents {
     scene.events.once('shutdown',()=>{document.removeEventListener('keydown',this.escape);this.root.remove();});
   }
   setActive(active:boolean){if(!active)this.prepared=null;this.conversations.update({x:0,y:0},active,this.locations);this.render();}
-  update(player:StreetVisitor,time:number,motion:boolean,overview:boolean,passers:readonly Point[],approaching?:StreetResidentId){
+  update(player:StreetVisitor,time:number,motion:boolean,overview:boolean,passers:readonly Point[],approaching:StreetResidentId|undefined,view:StreetView){
     this.prepared=approaching??null;
     this.conversations.update(player,true,this.locations);
     const talkingId=this.conversations.snapshot().conversation;
@@ -81,12 +82,16 @@ export class StreetResidents {
       else if(mascot&&canAct&&!position.moving)pose={action:'pose',progress:pose.progress,frame:6};
       if(person.id==='tourist'&&(pose.action==='frame-photo'||pose.action==='take-photo'))pose.facing=position.facing;
       this.poses.set(person.id,pose);
-      actor.sprite.setPosition(position.x,position.y).setDepth(position.y).setFrame(mascot?position.moving?walking.frame:6:(talking?'down':pose.facing??position.facing)+'-'+pose.frame);
-      actor.shadow.setPosition(position.x,position.y-1).setDepth(position.y-1);
-      actor.tool.setPosition(position.x,position.y).setDepth(position.y+.1);
-      actor.zone.setPosition(position.x,position.y-(mascot?53:40)).setDepth(position.y+3);
-      actor.label.setPosition(position.x,position.y-(mascot?113:91)).setVisible(!overview&&Math.hypot(player.x-position.x,player.y-position.y)<195);
-      actor.greeting?.setPosition(position.x,position.y-131).setVisible(!overview&&position.greeting&&Math.hypot(player.x-position.x,player.y-position.y)<500);
+      const p=view.point(position),visible=view.visible(position);
+      const facing=view.facing(talking?'down':pose.facing??position.facing);
+      actor.sprite.setPosition(p.x,p.y).setDepth(p.y).setFrame(mascot?position.moving?walking.frame:6:facing+'-'+pose.frame).setVisible(visible);
+      actor.shadow.setPosition(p.x,p.y-1).setDepth(p.y-1).setVisible(visible);
+      actor.tool.setPosition(p.x,p.y).setDepth(p.y+.1).setVisible(visible);
+      actor.zone.setPosition(p.x,p.y-(mascot?53:40)).setDepth(p.y+3).setVisible(visible);
+      if(actor.zone.input)actor.zone.input.enabled=visible;
+      actor.label.setPosition(p.x,p.y-(mascot?113:91)).setVisible(visible&&!overview&&Math.hypot(player.x-position.x,player.y-position.y)<195);
+      actor.greeting?.setPosition(p.x,p.y-131).setVisible(visible&&!overview&&position.greeting&&Math.hypot(player.x-position.x,player.y-position.y)<500);
+      pose={...pose,facing};
       actor.x=position.x;actor.y=position.y;
       actor.tool.clear();
       if(person.id==='doorman'){
@@ -104,8 +109,9 @@ export class StreetResidents {
     if(motion&&!worker.moving)this.cleared.set(worker.stop,Math.max(this.cleared.get(worker.stop)??0,Math.min(1,worker.workTime/9000)));
     this.snow.clear();
     STREET_WORK_PATCHES.forEach((patch,index)=>{
-      const cleared=this.cleared.get(index)??0;
-      this.snow.fillStyle(0xf8fbff).fillEllipse(patch.x,patch.y,48-cleared*36,15-cleared*7).fillEllipse(patch.x-10,patch.y-4,22-cleared*16,10-cleared*5);
+      if(!view.visible(patch))return;
+      const p=view.point(patch),cleared=this.cleared.get(index)??0;
+      this.snow.fillStyle(0xf8fbff).fillEllipse(p.x,p.y,48-cleared*36,15-cleared*7).fillEllipse(p.x-10,p.y-4,22-cleared*16,10-cleared*5);
     });
     this.render();
   }

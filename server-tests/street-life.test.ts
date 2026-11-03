@@ -146,3 +146,27 @@ test('the mascot greets a nearby passer with a pause and a bounded greeting rate
   for(let n=0;n<200;n++){const current=patrols.advance(50,{passers}).find(p=>p.id==='mascot')!.greeting;if(current&&!previous)starts++;previous=current;}
   assert(starts<=2,'a nearby passer cannot queue greetings each frame');
 });
+
+test('all street viewpoints keep the same world anchors and invert clicks and directions',async()=>{
+  const {projectStreetPoint,unprojectStreetPoint,streetDirection}=await import('../src/game/streetView');
+  const points=[STREET.spawn,...STREET.loop,...STREET_RESIDENTS];
+  for(const side of ['front','right','rear','left'] as const){
+    for(const point of points)assert.deepEqual(unprojectStreetPoint(projectStreetPoint(point,side),side),{x:point.x,y:point.y});
+    for(const point of [{x:1,y:0},{x:0,y:-1},{x:1,y:1}])assert.deepEqual(streetDirection(streetDirection(point,side),side,true),point);
+  }
+});
+
+test('the taxi stays at its real front-right bay and never appears behind the opposite wall',async()=>{
+  const {StreetView}=await import('../src/game/streetView');
+  const taxi={x:2580,y:1120},views=[{point:{x:840,y:1030},side:'front',taxi:true},{point:{x:2320,y:710},side:'right',taxi:true},{point:{x:1370,y:360},side:'rear',taxi:false},{point:{x:480,y:710},side:'left',taxi:false}] as const;
+  for(const expected of views){const view=new StreetView();view.configure(expected.point,false);assert.equal(view.side,expected.side);assert.equal(view.visible(taxi),expected.taxi);assert.deepEqual(view.world(view.point(taxi)),taxi);}
+});
+
+test('the rear escape rises on the exterior wall while overview retains the actual map path',async()=>{
+  const {StreetView}=await import('../src/game/streetView');const {ROOF_STAIR_ROUTE}=await import('../src/shared/rooftop');
+  const view=new StreetView();view.configure({x:1660,y:360},false);
+  assert(view.point(ROOF_STAIR_ROUTE[0],true).y>view.wall.base);
+  assert(view.point(ROOF_STAIR_ROUTE.at(-1)!,true).y<view.wall.base);
+  view.configure({x:1660,y:360},true);assert.equal(view.orientation,'front');
+  for(const point of ROOF_STAIR_ROUTE)assert.deepEqual(view.point(point,true),point);
+});

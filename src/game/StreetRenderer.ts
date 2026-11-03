@@ -1,9 +1,11 @@
 import Phaser from 'phaser';
-import { STREET, streetFacadeAlpha } from '../shared/street';
+import { STREET } from '../shared/street';
 import { createStreetArt, STREET_ART, STREET_SIGN } from './streetArt';
 import { StreetAmbience } from './StreetAmbience';
 import type { Point } from './navigation';
 import { STREET_SERVICE_PROPS, type StreetResidentId } from './streetDetails';
+import { StreetView, type StreetSide } from './streetView';
+import { createStreetWall } from './streetWalls';
 import { StreetRoofStairs } from './RooftopRenderer';
 import { StreetResidents } from './StreetResidents';
 
@@ -11,17 +13,18 @@ import { StreetResidents } from './StreetResidents';
 export class StreetRenderer {
   private facade: Phaser.GameObjects.Container;
   private plan: Phaser.GameObjects.Image;
-  private footprint: Phaser.GameObjects.Graphics;
+  private walls=new Map<StreetSide,Phaser.GameObjects.Container>();
+  private anchors:{image:Phaser.GameObjects.Image;point:Point}[]=[];
+  private door:Phaser.GameObjects.Zone;
   private ground: Phaser.GameObjects.Container;
   private props: Phaser.GameObjects.Image[]=[];
   private ambience: StreetAmbience;
   private sheen: Phaser.GameObjects.Image[]=[];
   private sparkle: Phaser.GameObjects.Graphics;
-  private rear:Phaser.GameObjects.Image;
   private residents:StreetResidents;
   private roofStairs:StreetRoofStairs;
   readonly mapCanvas: HTMLCanvasElement;
-  constructor(scene: Phaser.Scene, enter: () => void,approach:(id:StreetResidentId)=>void,climb:()=>void) {
+  constructor(scene: Phaser.Scene, enter: () => void,approach:(id:StreetResidentId)=>void,climb:()=>void,readonly view:StreetView) {
     this.mapCanvas=createStreetArt(scene);
     const b=STREET.building,front=b.y+b.h;
     const base=scene.add.graphics();
@@ -59,10 +62,6 @@ export class StreetRenderer {
     for(const prop of STREET_SERVICE_PROPS)this.props.push(scene.add.image(prop.x,prop.y,'street-detail-'+prop.id).setOrigin(.5,1).setDisplaySize(prop.width,prop.height).setDepth(prop.y));
     this.props.push(scene.add.image(2660,1060,STREET_ART.taxiSign).setOrigin(.5,1).setDisplaySize(70,123).setDepth(1060));
     this.plan=scene.add.image(0,0,STREET_ART.map).setOrigin(0).setDisplaySize(STREET.width,STREET.height).setDepth(.1);
-    this.footprint=scene.add.graphics().setDepth(.05);
-    this.footprint.fillStyle(0x681a32).fillRect(b.x,b.y,b.w,b.h);
-    this.footprint.lineStyle(3,0xcdb78e).strokeRect(b.x,b.y,b.w,b.h);
-    this.rear=scene.add.image(b.x,b.y,STREET_ART.rear).setOrigin(0).setDisplaySize(b.w,150).setDepth(.08).setVisible(false);
     const background=scene.add.graphics();
     background.fillStyle(0x681a32).fillRect(b.x,-2300,b.w,front+2300);
     const sections: Phaser.GameObjects.GameObject[]=[background];
@@ -79,22 +78,31 @@ export class StreetRenderer {
     }
     this.sparkle=scene.add.graphics().setPosition(signX,signY);sections.push(this.sparkle);
     this.facade=scene.add.container(0,0,sections).setDepth(front);
+    this.walls.set('front',this.facade);
+    for(const side of ['right','rear','left'] as const){
+      const test=new StreetView();test.side=side;const wall=test.wall,g=scene.add.graphics();
+      g.fillStyle(side==='rear'?0x65303f:0x681a32).fillRect(wall.left,-2400,wall.width,wall.base+2400);
+      for(let x=wall.left;x<wall.right;x+=160)g.lineStyle(1,0x532836).lineBetween(x,-2400,x,wall.base);
+      const pieces:Phaser.GameObjects.GameObject[]=[g];
+      if(side!=='rear')for(let y=wall.base-350;y>-2200;y-=250)for(let x=wall.left;x<wall.right-20;x+=246)pieces.push(scene.add.image(x,y,STREET_ART.floor).setOrigin(0,1).setDisplaySize(Math.min(246,wall.right-x),250));
+      pieces.push(scene.add.image(wall.left,wall.base-350,createStreetWall(scene,side)).setOrigin(0).setDisplaySize(wall.width,350));
+      this.walls.set(side,scene.add.container(0,0,pieces).setDepth(wall.base));
+    }
+    this.anchors=this.props.map(image=>({image,point:{x:image.x,y:image.y}}));
     this.ambience=new StreetAmbience(scene);
     this.residents=new StreetResidents(scene,approach);
     this.roofStairs=new StreetRoofStairs(scene,climb);
-    scene.add.zone(STREET.entrance.x,front-82,170,200).setDepth(front+1).setInteractive({useHandCursor:true}).on('pointerdown',enter);
+    this.door=scene.add.zone(STREET.entrance.x,front-82,170,200).setDepth(front+1).setInteractive({useHandCursor:true}).on('pointerdown',enter);
   }
   update(player: Point, overview: boolean,delta=0,reducedMotion=false,approaching?:StreetResidentId) {
-    this.roofStairs.update(overview);
-    const alpha=streetFacadeAlpha(player);
-    this.facade.setVisible(!overview&&player.y>=STREET.building.y).setAlpha(alpha);
-    this.rear.setVisible(!overview&&player.y<STREET.building.y);
-    this.plan.setVisible(overview);
-    this.footprint.setVisible(!overview&&alpha<1);
-    this.ground.setVisible(!overview);
-    for(const prop of this.props)prop.setVisible(!overview);
-    const sign=this.ambience.update(delta,overview,reducedMotion);
-    const state=this.ambience.getState();this.residents.update(player,state.time,state.motion,overview,[player,...state.pedestrians],approaching);
+    this.roofStairs.update(overview,this.view);
+    for(const [side,wall] of this.walls)wall.setVisible(!overview&&side===this.view.side).setAlpha(1);
+    this.plan.setVisible(overview);this.ground.setVisible(!overview);
+    const origin=this.view.point({x:0,y:0});this.ground.setPosition(origin.x,origin.y).setRotation(this.view.angle);
+    for(const {image,point} of this.anchors){const p=this.view.point(point);image.setPosition(p.x,p.y).setDepth(p.y).setVisible(!overview&&this.view.visible(point));}
+    this.door.setVisible(!overview&&this.view.side==='front');if(this.door.input)this.door.input.enabled=!overview&&this.view.side==='front';
+    const sign=this.ambience.update(delta,overview,reducedMotion,this.view);
+    const state=this.ambience.getState();this.residents.update(player,state.time,state.motion,overview,[player,...state.pedestrians],approaching,this.view);
     this.sheen.forEach((image,index)=>{
       const width=[48,28,10][index],left=Math.max(0,sign.sweep-width/2),right=Math.min(STREET_SIGN.width,sign.sweep+width/2);
       image.setVisible(right>left&&sign.sheen>0&&!overview).setAlpha(sign.sheen*[.25,.45,.7][index]);
@@ -111,6 +119,6 @@ export class StreetRenderer {
   prepareApproach(id:StreetResidentId,player:Point){return this.residents.prepareApproach(id,player);}
   get pedestrianCount(){return this.ambience.count+this.residents.count;}
   get characterTextureKeys(){return this.residents.textureKeys;}
-  getState(){return {...this.ambience.getState(),residents:this.residents.getState()};}
+  getState(){return {view:{side:this.view.side,orientation:this.view.orientation,overview:this.view.overview},props:this.anchors.map(({image,point})=>({world:{...point},x:image.x,y:image.y,visible:image.visible,texture:image.texture.key})),...this.ambience.getState(),residents:this.residents.getState()};}
   get alpha() { return this.facade.alpha; }
 }

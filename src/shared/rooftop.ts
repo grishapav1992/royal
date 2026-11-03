@@ -14,17 +14,17 @@ export const ROOF = {
 } as const;
 
 export const ROOF_STAIR_ROUTE = [
-  { x: 1660, y: 480 },
-  { x: 1750, y: 448 }, { x: 1750, y: 430 },
-  { x: 1580, y: 366 }, { x: 1580, y: 348 },
-  { x: 1750, y: 284 }, { x: 1750, y: 266 },
-  { x: 1710, y: 250 },
+  { x: 1660, y: 480 }, { x: 1660, y: 430 },
+  { x: 1750, y: 403 }, { x: 1750, y: 387 },
+  { x: 1580, y: 329 }, { x: 1580, y: 313 },
+  { x: 1750, y: 255 }, { x: 1750, y: 239 },
+  { x: 1710, y: 239 },
 ] as const;
 export const ROOF_STAIR_SPEED_SCALE = .42;
 export const STREET_ROOF_STAIRS = {
   foot: ROOF_STAIR_ROUTE[0],
-  entry: ROOF_STAIR_ROUTE[7], arrival: { x: 1660, y: 462 }, facing: 'down', click: { x: 1660, y: 477 },
-  left: 1695, right: 1725, top: 239, bottom: 261,
+  entry: ROOF_STAIR_ROUTE[8], arrival: { x: 1660, y: 462 }, facing: 'down', click: { x: 1660, y: 477 },
+  left: 1695, right: 1725, top: 228, bottom: 250,
 } as const;
 
 /** Ordered, continuous progress, shared by authoritative movement and prediction. */

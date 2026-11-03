@@ -1,3 +1,4 @@
+import { StreetView } from './streetView';
 import type Phaser from 'phaser';
 import { t } from '../i18n';
 import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE } from '../shared/rooftop';
@@ -111,16 +112,22 @@ function antenna(c: Paint) {
 export class StreetRoofStairs {
   private close: Phaser.GameObjects.Graphics;
   private plan: Phaser.GameObjects.Graphics;
+  private key='';
+  private baseZone:Phaser.GameObjects.Zone;
+  private paint:(g:Phaser.GameObjects.Graphics,plan:boolean,view:StreetView)=>void;
   constructor(scene: Phaser.Scene, enter: () => void) {
-    const paint=(g:Phaser.GameObjects.Graphics,plan:boolean)=>{
+    this.paint=(g,plan,view)=>{
+      g.clear();
+      const route=ROOF_STAIR_ROUTE.map(p=>view.point(p,!plan));
       // Thin supports leave the street lane visible through the open structure.
-      for(const x of [1560,1770]){
-        g.lineStyle(plan?2:5,0x36464d).lineBetween(x,255,x,499);
-        if(!plan)g.lineStyle(2,0x85918f).lineBetween(x+1,256,x+1,498);
-        g.fillStyle(0x435359).fillRect(x-10,493,20,7);
+      for(const worldX of [1560,1770]){
+        const base=view.point({x:worldX,y:500}),top=view.point({x:worldX,y:255},!plan),x=top.x;
+        g.lineStyle(plan?2:5,0x36464d).lineBetween(x,top.y,x,base.y);
+        if(!plan)g.lineStyle(2,0x85918f).lineBetween(x+1,top.y+1,x+1,base.y-1);
+        g.fillStyle(0x435359).fillRect(x-10,base.y-7,20,7);
       }
-      ROOF_STAIR_ROUTE.slice(1).forEach((to,index)=>{
-        const from=ROOF_STAIR_ROUTE[index],dx=to.x-from.x,dy=to.y-from.y,length=Math.hypot(dx,dy);
+      route.slice(1).forEach((to,index)=>{
+        const from=route[index],dx=to.x-from.x,dy=to.y-from.y,length=Math.hypot(dx,dy);
         const nx=-dy/length*18,ny=dx/length*18;
         const points=[{x:from.x+nx,y:from.y+ny},{x:to.x+nx,y:to.y+ny},{x:to.x-nx,y:to.y-ny},{x:from.x-nx,y:from.y-ny}];
         g.fillStyle(0x627575).fillPoints(points,true);
@@ -138,20 +145,25 @@ export class StreetRoofStairs {
           for(let t=0;t<=1;t+=.25){const x=from.x+dx*t+nx*side,y=from.y+dy*t+ny*side;g.lineStyle(1.5,0x485b60).lineBetween(x,y,x,y-10);}
         }
       });
-      for(const index of [0,2,4,6,7]){
-        const p=ROOF_STAIR_ROUTE[index];g.fillStyle(0x53696c).fillRect(p.x-23,p.y-12,46,24);
+      for(const index of [1,3,5,7,8]){
+        const p=route[index];g.fillStyle(0x53696c).fillRect(p.x-23,p.y-12,46,24);
         g.lineStyle(2,0x35474e).strokeRect(p.x-23,p.y-12,46,24);
         for(let x=p.x-16;x<p.x+20;x+=7)g.lineStyle(1,0x8c9c98).lineBetween(x,p.y-9,x,p.y+9);
         if(!plan){g.fillStyle(0xe5edf0).fillEllipse(p.x-8,p.y-14,26,4);g.fillStyle(0x9b7759).fillRect(p.x+19,p.y+5,3,4);}
       }
     };
-    this.close=scene.add.graphics().setDepth(620);paint(this.close,false);
-    this.plan=scene.add.graphics().setDepth(.15);paint(this.plan,true);
+    this.close=scene.add.graphics();
+    this.plan=scene.add.graphics().setDepth(.15);
     // Only the bottom platform accepts a click; the circulation lane has no hitbox.
     const foot=STREET_ROOF_STAIRS.foot;
-    scene.add.zone(foot.x,foot.y-2,76,32).setDepth(700).setInteractive().on('pointerdown',enter);
+    this.baseZone=scene.add.zone(foot.x,foot.y-2,76,32).setDepth(700).setInteractive().on('pointerdown',enter);
   }
-  update(overview:boolean){this.close.setVisible(!overview);this.plan.setVisible(overview);}
+  update(overview:boolean,view:StreetView){
+    const base=view.point(STREET_ROOF_STAIRS.foot);this.baseZone.setPosition(base.x,base.y-2).setVisible(overview||view.side==='rear');if(this.baseZone.input)this.baseZone.input.enabled=overview||view.side==='rear';
+    const key=view.orientation+':'+overview;
+    if(key!==this.key){this.key=key;this.paint(overview?this.plan:this.close,overview,view);}
+    this.close.setDepth(view.wall.base+5).setVisible(!overview&&view.side==='rear');this.plan.setVisible(overview);
+  }
 }
 
 export class RooftopRenderer {

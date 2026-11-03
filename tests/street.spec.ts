@@ -1,14 +1,16 @@
 import { test, expect, type Page } from '@playwright/test';
 import { STREET } from '../src/shared/street';
 import type { StreetResidentId } from '../src/game/streetDetails';
+import { projectStreetPoint } from '../src/game/streetView';
 
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
 async function worldPoint(page: Page, x: number, y: number) {
   await page.bringToFront();
   await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
   const box = (await page.locator('#game canvas').boundingBox())!;
-  const { view } = await state(page);
-  return { x: box.x + (x - view.x) * view.zoom * box.width / view.width, y: box.y + (y - view.y) * view.zoom * box.height / view.height };
+  const current = await state(page), { view } = current;
+  const point=current.hall==='street'?projectStreetPoint({x,y},current.street.view.orientation):{x,y};
+  return { x: box.x + (point.x - view.x) * view.zoom * box.width / view.width, y: box.y + (point.y - view.y) * view.zoom * box.height / view.height };
 }
 async function overview(page: Page, on: boolean) {
   const button = page.locator('#room-overview');
@@ -112,6 +114,26 @@ test('walk outside, circle the casino, reconnect and return through the same ent
   await expect(dialogue).toBeHidden();
   await page.screenshot({ path: `../street-${info.project.name}-overview.png` });
   for (const p of STREET.loop) await walk(page, p.x, p.y);
+  for(const expected of [{x:480,y:710,side:'left',taxi:false},{x:1370,y:365,side:'rear',taxi:false},{x:2320,y:710,side:'right',taxi:true}] as const){
+    await overview(page,true);
+    if(expected.side==='rear')await walk(page,480,360);
+    if(expected.side==='right')await walk(page,2320,360);
+    await walk(page,expected.x,expected.y);
+    await overview(page,false);
+    await expect.poll(async ()=>(await state(page)).street.view.side).toBe(expected.side);
+    const props=(await state(page)).street.props;
+    const taxi=props.find((p:any)=>p.texture==='street-detail-parked-taxi');
+    expect(taxi).toBeTruthy();expect(taxi.visible).toBe(expected.taxi);
+    expect(taxi.world).toEqual({x:2580,y:1120});
+    await page.screenshot({path:`../street-${info.project.name}-${expected.side}-view.png`});
+    // Screen controls use the current wall orientation.
+    const before=await state(page);
+    await page.keyboard.down('ArrowRight');await page.waitForTimeout(300);await page.keyboard.up('ArrowRight');
+    await expect.poll(async ()=>{const p=await state(page);return Math.hypot(p.serverX-p.x,p.serverY-p.y);}).toBeLessThan(3);
+    const after=await state(page),a=projectStreetPoint(before,expected.side),b=projectStreetPoint(after,expected.side);
+    expect(b.x-a.x).toBeGreaterThan(12);expect(Math.abs(b.y-a.y)).toBeLessThan(4);
+  }
+  await overview(page,true);await walk(page,2320,360);
   await walk(page, 1370, 365);
   const worker=(await state(page)).street.residents.people.find((p:any)=>p.id==='janitor');
   expect(worker.stop).not.toBe(0);

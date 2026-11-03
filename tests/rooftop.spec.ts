@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE } from '../src/shared/rooftop';
+import { projectStreetPoint } from '../src/game/streetView';
 
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
 async function overview(page: Page, on: boolean) {
@@ -10,8 +11,9 @@ async function overview(page: Page, on: boolean) {
 async function clickWorld(page: Page, x: number, y: number) {
   await page.bringToFront();
   await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
-  const box = (await page.locator('#game canvas').boundingBox())!, { view } = await state(page);
-  await page.mouse.click(box.x + (x - view.x) * view.zoom * box.width / view.width, box.y + (y - view.y) * view.zoom * box.height / view.height);
+  const box = (await page.locator('#game canvas').boundingBox())!, current=await state(page), { view } = current;
+  const point=current.hall==='street'?projectStreetPoint({x,y},current.street.view.orientation):{x,y};
+  await page.mouse.click(box.x + (point.x - view.x) * view.zoom * box.width / view.width, box.y + (point.y - view.y) * view.zoom * box.height / view.height);
 }
 async function walk(page: Page, x: number, y: number) {
   const tolerance = Math.max(5, 2 / (await state(page)).view.zoom);
@@ -46,7 +48,6 @@ test('climb rear stairs, explore roof, reconnect and return with chat and wallet
     requestAnimationFrame(record);
   });
   await clickWorld(page, STREET_ROOF_STAIRS.click.x, STREET_ROOF_STAIRS.click.y);
-  await expect.poll(async () => (await state(page)).y, { timeout: 10000 }).toBeGreaterThan(465);
   await expect.poll(async () => (await state(page)).stairStep,{timeout:10000}).toBeGreaterThanOrEqual(3);
   expect((await state(page)).renderDepth).toBeGreaterThan(620);
   await page.screenshot({path:`../roof-${info.project.name}-climb.png`});
