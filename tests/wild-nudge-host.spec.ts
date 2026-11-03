@@ -101,7 +101,7 @@ test('all twenty lines cost ten cents and the displayed payout matches the commi
  await expect.poll(()=>page.evaluate(()=>(globalThis as any)[Symbol.for('royal.game-host.v1')].demoWallet.wallet.balance)).toBeCloseTo(before+.24,5);
  await page.locator('#mini-dialog .mini-top [data-close]').click();await open(page);expect(await session(page)).toEqual(saved);await expect(page.locator('[data-gn=payout]')).toContainText(/0[.,]34/);
  await page.emulateMedia({reducedMotion:'no-preference'});await scenario(page,'loss');await page.locator('[data-gn=spin]').click();await expect(page.locator('.gn')).toHaveAttribute('data-phase','reveal');await expect(page.locator('[data-gn=payout]')).toContainText(/0[.,]34/);
- await expect.poll(async()=>(await mini(page)).busy).toBe(false);await expect(page.locator('[data-gn=payout]')).toHaveText('0');expect((await session(page)).spentUnits).toBe('10');
+ await expect.poll(async()=>(await mini(page)).busy).toBe(false);await expect(page.locator('[data-gn=payout]')).toContainText(/0[.,]01/);expect((await session(page)).returnedUnits).toBe('1');expect((await session(page)).spentUnits).toBe('10');
 });
 test('a saved historical bonus keeps its original stake and the next paid round returns to ten cents',async({page,roomPath})=>{
  await enter(page,roomPath);await topup(page);await scenario(page,'bonus');
