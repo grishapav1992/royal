@@ -6,7 +6,7 @@ import {isBuiltin} from 'node:module';
 import {digest,regularPath} from './module-build-cache.mjs';
 
 const canonical=bytes=>Buffer.from(bytes.toString('utf8').replace(/\r\n/g,'\n'));
-function safe(name){assert(typeof name==='string'&&!name.includes('\\')&&!name.startsWith('/')&&!name.split('/').some(p=>!p||p==='.'||p==='..'),'Unsafe projection path');}
+function safe(name){assert(typeof name==='string'&&!/[\0\r\n]/.test(name)&&!name.includes('\\')&&!name.startsWith('/')&&!name.split('/').some(p=>!p||p==='.'||p==='..'),'Unsafe projection path');}
 export function projectHostSource(row,bytes){
  assert.match(row.commit,/^[a-f0-9]{40}$/);safe(row.path);assert.match(row.sha256,/^[a-f0-9]{64}$/);
  let value=canonical(bytes);assert.equal(digest(value),row.baseSha256,'Projection origin differs');
@@ -19,26 +19,52 @@ export function projectHostSource(row,bytes){
 export async function readHostProjection(root,name,{strictOrigins=false}={}){
  const file=await regularPath(root,name),raw=await readFile(file),metadata=JSON.parse(raw);
  assert.equal(metadata.format,1);assert(metadata.files&&Object.keys(metadata.files).length);assert.match(metadata.productionCommit,/^[a-f0-9]{40}$/);
- const git=(...args)=>execFileSync(process.env.ROYAL_GIT_BINARY||'git',args,{cwd:root,maxBuffer:32*1024**2,stdio:['ignore','pipe','ignore']});
- const committed=git('show','HEAD:'+name);assert.equal(digest(canonical(raw)),digest(committed),'Projection configuration is not the committed source');
- const cache=new Map(),commits=new Set(),inputs={},origins={};
+ const metrics={gitCommands:0,batchedBlobs:0};
+ const git=(args,input)=>{metrics.gitCommands++;return execFileSync(process.env.ROYAL_GIT_BINARY||'git',args,{cwd:root,input,maxBuffer:256*1024**2,stdio:[input===undefined?'ignore':'pipe','pipe','ignore']});};
+ const committed=git(['show','HEAD:'+name]);assert.equal(digest(canonical(raw)),digest(committed),'Projection configuration is not the committed source');
+ const cache=new Map(),blobs=new Map(),trees=new Map(),commits=new Set(),inputs={},origins={};
+ function origin(input){
+  safe(input);const row=metadata.files[input];assert(row,'Unreviewed projected host input: '+input);
+  assert.match(row.commit,/^[a-f0-9]{40}$/);safe(row.path);
+  if(!commits.has(row.commit)){git(['merge-base','--is-ancestor',row.commit,'HEAD']);commits.add(row.commit);}
+  if(strictOrigins){
+   assert(!row.path.split('/').some(p=>p.startsWith('.env')||['.git','node_modules','data','secrets','.ssh'].includes(p)),'Unsafe projection origin');
+   if(!trees.has(row.commit)){
+    const tree=new Map();
+    for(const entry of git(['ls-tree','-rz','--full-tree',row.commit]).toString().split('\0').filter(Boolean)){
+     const match=entry.match(/^(\d+) (?:blob|commit) [a-f0-9]{40}\t(.+)$/s);assert(match,'Malformed Git tree');tree.set(match[2],match[1]);
+    }
+    trees.set(row.commit,tree);
+   }
+   assert(['100644','100755'].includes(trees.get(row.commit).get(row.path)),'Projection origin is not a regular Git file');
+  }
+  return row;
+ }
+ // A verification reads immutable Git objects in one binary-safe batch. Each invocation
+ // still checks ancestry, regular-file modes, exact hashes and one-use patches afresh.
+ function preload(names){
+  const requests=new Map();
+  for(const input of names){if(cache.has(input)||blobs.has(input))continue;const row=origin(input),query=row.commit+':'+row.path;requests.set(query,[...(requests.get(query)??[]),input]);}
+  if(!requests.size)return;
+  const output=git(['cat-file','--batch'],Buffer.from([...requests.keys()].join('\n')+'\n'));let offset=0;
+  for(const [query,names]of requests){
+   const end=output.indexOf(10,offset);assert(end>=offset,'Truncated Git batch header');
+   const header=output.subarray(offset,end).toString().match(/^([a-f0-9]{40}) blob ([0-9]+)$/);assert(header,'Projection origin is not a Git blob: '+query);
+   const size=Number(header[2]);assert(Number.isSafeInteger(size)&&size<=32*1024**2,'Projection origin is too large');offset=end+1;
+   assert(output.length>=offset+size+1&&output[offset+size]===10,'Truncated Git batch object');
+   const bytes=output.subarray(offset,offset+size);for(const input of names)blobs.set(input,bytes);offset+=size+1;metrics.batchedBlobs++;
+  }
+  assert.equal(offset,output.length,'Unexpected Git batch output');
+ }
  function read(input){
   safe(input);const row=metadata.files[input];assert(row,'Unreviewed projected host input: '+input);
   if(!cache.has(input)){
-   assert.match(row.commit,/^[a-f0-9]{40}$/);safe(row.path);
-   if(!commits.has(row.commit)){git('merge-base','--is-ancestor',row.commit,'HEAD');commits.add(row.commit);}
-   if(strictOrigins){
-    assert(!row.path.split('/').some(p=>p.startsWith('.env')||['.git','node_modules','data','secrets','.ssh'].includes(p)),'Unsafe projection origin');
-    const entry=git('ls-tree','-z',row.commit,'--',row.path).toString().split('\0').filter(Boolean);
-    assert.equal(entry.length,1,'Projection origin is not a regular Git file');
-    const match=entry[0].match(/^(100644|100755) blob [a-f0-9]{40}\t(.+)$/s);
-    assert(match&&match[2]===row.path,'Projection origin is not a regular Git file');
-   }
-   const bytes=projectHostSource(row,git('show',row.commit+':'+row.path));cache.set(input,bytes);inputs[input]=digest(bytes);origins[input]=row;
+   origin(input);
+   const bytes=projectHostSource(row,blobs.get(input)??git(['show',row.commit+':'+row.path]));cache.set(input,bytes);inputs[input]=digest(bytes);origins[input]=row;
   }
   return cache.get(input);
  }
- return{read,metadata,inputs,origins,config:name,sha256:digest(canonical(raw))};
+ return{read,preload,metrics,metadata,inputs,origins,config:name,sha256:digest(canonical(raw))};
 }
 
 const backendEntry='server/index.ts',backendOutput='dist-server/index.js';
@@ -135,6 +161,7 @@ export async function verifyBackendProjection(root,report){
  assert.deepEqual(reader.metadata.entries,[backendEntry]);assert.deepEqual(report.entries,[backendEntry]);
  assert.deepEqual(Object.keys(report.inputs).sort(),Object.keys(report.origins).sort(),'Backend projection origin evidence differs');
  for(const file of ['package.json','tsconfig.json',backendEntry])assert(Object.hasOwn(report.inputs,file),'Required backend projection input missing: '+file);
+ reader.preload(Object.keys(report.inputs));
  for(const [file,hash]of Object.entries(report.inputs)){
   assert(backendSource(file),'Unexpected backend projection input');await regularPath(root,file);
   assert.equal(digest(reader.read(file)),hash,'Backend projection input changed: '+file);assert.deepEqual(reader.origins[file],report.origins[file]);
@@ -160,6 +187,7 @@ export async function buildProjectedHost(root,name){
 export async function verifyHostProjection(root,report){
  const reader=await readHostProjection(root,report.config);assert.equal(reader.sha256,report.sha256,'Projection configuration changed');
  assert.equal(reader.metadata.productionCommit,report.productionCommit);assert(Object.keys(report.inputs).length>0);
+ reader.preload(Object.keys(report.inputs));
  for(const [file,hash] of Object.entries(report.inputs)){assert.equal(digest(reader.read(file)),hash,'Projection input changed: '+file);assert.deepEqual(reader.origins[file],report.origins[file]);}
  return reader;
 }

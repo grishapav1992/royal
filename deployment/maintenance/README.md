@@ -56,4 +56,18 @@ Deletion is limited to reviewed direct entries under `/opt/royal-backups` and `/
 
 The live application, configuration, external modules, database volumes, financial backup directory and other services remain outside the deletion scope. Private plans and progress stay on the server. Record the verified public result in `deployment/SERVER.md` after completion.
 
+Immutable image program checks have a small operator-private cache in
+`/opt/royal-maintenance/image-program-proofs`. A proof binds the exact content-addressed
+image ID and platform, SHA-256 of the hash reader and SHA-256 of the complete expected file map.
+The guarded application builder records it only after a full read-only candidate
+check. Older installers still work: a missing proof triggers the full isolated read.
+Wrong or corrupt evidence never passes as a cache hit; unsafe permissions and
+symlinks stop verification. Mutable running files and the financial publication
+barrier are never accepted from this cache. History cleanup checks the running
+application, configuration, services, module pointers and retained recovery files
+immediately before deletion and again after deletion. Its previous adjacent third
+checkpoint has been removed. Install these maintenance files through the existing
+GitHub-bound installer; never rewrite the helpers inside an already published
+release or its retained rollback bundle.
+
 Local scope checks: `python3 -m unittest discover -s deployment/maintenance -p 'test_*.py'`.

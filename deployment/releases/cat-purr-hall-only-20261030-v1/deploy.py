@@ -12,6 +12,7 @@ import sys
 import tarfile
 import time
 import uuid
+import importlib.util
 
 ROOT = Path(__file__).resolve().parent
 LIVE = Path('/opt/royal')
@@ -111,6 +112,18 @@ def baseline():
 def expected_program():
     return {**OLD['program'], **{'dist/' + name: digest for name, digest in DELTA.items()},
             **{'dist-server/' + name: digest for name, digest in SERVER_DELTA.items()}}
+
+
+def remember_candidate_program(candidate, actual, expected):
+    require(actual == expected, 'Candidate program differs')
+    helper = Path('/opt/royal-maintenance/bin/retention-runtime.py')
+    if not helper.is_file(): return False
+    require(not helper.is_symlink(), 'Maintenance helper symlink rejected')
+    spec = importlib.util.spec_from_file_location('royal_candidate_program_proof', helper)
+    module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+    if not hasattr(module, 'remember_program'): return False
+    module.remember_program(candidate, PROGRAM, actual, expected)
+    return True
 
 
 def recovery_guard(current, built):
@@ -265,7 +278,8 @@ def build():
         'COPY --chown=node:node dist-delta/ /app/dist/\n'
         'LABEL org.opencontainers.image.revision="' + M['sourceCommit'] + '"\n')
     (context / '.dockerignore').write_text('**\n!Dockerfile\n!.dockerignore\n!dist-delta\n!dist-delta/**\n!server-delta\n!server-delta/index.js\n')
-    baseline()
+    # Live files are unchanged during image construction. The next full baseline
+    # check is mandatory in publish(), immediately before the financial gate.
     require(shutil.disk_usage(LIVE).free > reserve, 'Disk reserve consumed before build')
     with (ROOT / 'build.log').open('w') as log:
         subprocess.run(['docker', 'build', '--pull=false', '-t', 'royal-game:' + NAME, '.'], cwd=context,
@@ -283,8 +297,10 @@ def build():
         require(parent['Config'].get(key) == child['Config'].get(key), 'Image configuration changed: ' + key)
     require(child['RootFS']['Layers'][:len(parent['RootFS']['Layers'])] == parent['RootFS']['Layers'],
             'Baseline image layers changed')
+    immutable_proof = remember_candidate_program(candidate, program, expected)
     result = {'image': candidate, 'program': expected, 'sourceCommit': M['sourceCommit'],
-              'sourceBackupSha256': sha(BACKUP / 'source.tgz'), 'backup': str(BACKUP)}
+              'sourceBackupSha256': sha(BACKUP / 'source.tgz'), 'backup': str(BACKUP),
+              'immutableProgramProofRecorded': immutable_proof}
     write('build-result.json', result)
     return {'built': True, 'image': candidate, 'clientDeltaFiles': len(DELTA), 'backendDeltaFiles': len(SERVER_DELTA),
             'otherBackendProgramsAndModulesPreserved': True}
