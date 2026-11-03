@@ -7,7 +7,7 @@ export type StreetSide = 'front' | 'rear';
 export function streetSide(point: Point, previous: StreetSide = 'front'): StreetSide {
   const b=STREET.building;
   if(previous==='rear'){
-    const outside=point.x<b.x-32||point.x>b.x+b.w+32;
+    const outside=point.x<b.x-16||point.x>b.x+b.w+16;
     return point.y>b.y+b.h+24||outside&&point.y>b.y+48?'front':'rear';
   }
   // Enter the courtyard only after the whole character clears the rear corner.
@@ -27,8 +27,8 @@ export function streetDirection(point: Point, side: StreetSide, _inverse=false):
 }
 export function streetPointVisible(point: Point, side: StreetSide): boolean {
   const b=STREET.building,margin=36;
-  if(side==='rear')return point.y<=b.y+margin;
-  return point.y>=b.y+b.h-margin||point.x<b.x-margin||point.x>b.x+b.w+margin;
+  if(side==='rear')return point.y<=b.y+64;
+  return point.y>=b.y+b.h-margin||point.x<=b.x+margin||point.x>=b.x+b.w-margin;
 }
 export class StreetView {
   side: StreetSide='front';
@@ -59,6 +59,13 @@ export class StreetView {
     return p.x<0?'left':p.x>0?'right':p.y<0?'up':'down';
   }
   visible(point:Point){return this.overview||streetPointVisible(point,this.side);}
+  depth(point:Point,climbing=false){
+    const y=this.point(point,climbing).y;
+    if(this.overview)return y;
+    if(climbing)return this.wall.base+10;
+    // Walkable side paths must stay in front of the facade's flat screen edge.
+    return y<this.wall.base?this.wall.base+6+y/1000:y;
+  }
   get wall(){
     const b=STREET.building;
     const points=[{x:b.x,y:b.y},{x:b.x+b.w,y:b.y},{x:b.x,y:b.y+b.h},{x:b.x+b.w,y:b.y+b.h}].map(p=>this.point(p));

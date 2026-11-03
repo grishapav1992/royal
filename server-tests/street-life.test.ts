@@ -182,3 +182,14 @@ test('the rear escape rises on the exterior wall while overview retains the actu
   view.configure({x:1660,y:360},true);assert.equal(view.orientation,'front');
   for(const point of ROOF_STAIR_ROUTE)assert.deepEqual(view.point(point,true),point);
 });
+
+test('narrow walkable wall edges and delayed corner transitions never hide a person',async()=>{
+  const {StreetView}=await import('../src/game/streetView');
+  for(const x of [600,2120]){
+    const view=new StreetView();
+    for(const y of [920,700,500,460,360]){const p={x,y};view.configure(p,false);assert.equal(view.side,'front');assert(view.visible(p));if(y<920)assert(view.depth(p)>view.wall.base);}
+    view.configure({x:1370,y:360},false);
+    for(const y of [500,536,547]){const p={x,y};view.configure(p,false);assert.equal(view.side,'rear');assert(view.visible(p));assert(view.depth(p)>=view.wall.base);}
+    view.configure({x,y:560},false);assert.equal(view.side,'front');
+  }
+});

@@ -82,12 +82,12 @@ export class StreetResidents {
       else if(mascot&&canAct&&!position.moving)pose={action:'pose',progress:pose.progress,frame:6};
       if(person.id==='tourist'&&(pose.action==='frame-photo'||pose.action==='take-photo'))pose.facing=position.facing;
       this.poses.set(person.id,pose);
-      const p=view.point(position),visible=view.visible(position);
+      const p=view.point(position),visible=view.visible(position),depth=view.depth(position);
       const facing=view.facing(talking?'down':pose.facing??position.facing);
-      actor.sprite.setPosition(p.x,p.y).setDepth(p.y).setFrame(mascot?position.moving?walking.frame:6:facing+'-'+pose.frame).setVisible(visible);
-      actor.shadow.setPosition(p.x,p.y-1).setDepth(p.y-1).setVisible(visible);
-      actor.tool.setPosition(p.x,p.y).setDepth(p.y+.1).setVisible(visible);
-      actor.zone.setPosition(p.x,p.y-(mascot?53:40)).setDepth(p.y+3).setVisible(visible);
+      actor.sprite.setPosition(p.x,p.y).setDepth(depth).setFrame(mascot?position.moving?walking.frame:6:facing+'-'+pose.frame).setVisible(visible);
+      actor.shadow.setPosition(p.x,p.y-1).setDepth(depth-1).setVisible(visible);
+      actor.tool.setPosition(p.x,p.y).setDepth(depth+.1).setVisible(visible);
+      actor.zone.setPosition(p.x,p.y-(mascot?53:40)).setDepth(depth+3).setVisible(visible);
       if(actor.zone.input)actor.zone.input.enabled=visible;
       actor.label.setPosition(p.x,p.y-(mascot?113:91)).setVisible(visible&&!overview&&Math.hypot(player.x-position.x,player.y-position.y)<195);
       actor.greeting?.setPosition(p.x,p.y-131).setVisible(visible&&!overview&&position.greeting&&Math.hypot(player.x-position.x,player.y-position.y)<500);

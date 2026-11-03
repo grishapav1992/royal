@@ -165,7 +165,7 @@ export class SecurityGuard {
     this.sprite.setVisible(Boolean(g)); this.shadow.setVisible(Boolean(g));
     if (!g) { this.speech.setVisible(false); this.reply.setVisible(false); return; }
     const point=view?view.point(g):g;
-    const x=point.x,y=point.y;
+    const x=point.x,y=point.y,depth=view?view.depth(g):y;
     const moved=Math.hypot(x-this.sprite.x,y-this.sprite.y)>.001;
     const moving = moved&&['approach','return','carry','patrol','transit','enter'].includes(g.phase);
     const opacity = g.phase==='door' ? 1-g.progress : g.phase==='enter' ? g.progress : 1;
@@ -178,8 +178,8 @@ export class SecurityGuard {
     if(g.phase==='watch')frame=g.progress>.7?25:Math.floor(g.progress*9)%2?23:24;
     if(g.phase==='bump')frame=26+Math.floor(g.progress*8)%2;
     if(['idle','watch','chat'].includes(g.phase)&&time%5100<130)frame=22;
-    this.sprite.setFrame(`${view?view.facing(g.facing as Facing):g.facing}-${frame}`).setPosition(x,y).setDepth(y+.2);
-    this.shadow.setPosition(x,y-2).setDepth(y-1);
+    this.sprite.setFrame(`${view?view.facing(g.facing as Facing):g.facing}-${frame}`).setPosition(x,y).setDepth(depth+.2);
+    this.shadow.setPosition(x,y-2).setDepth(depth-1);
     this.speech.setText(translateText(g.speech)).setPosition(Phaser.Math.Clamp(x,160,WORLD.width-160),y-116).setDepth(1500).setVisible(Boolean(g.speech));
     this.reply.setText(translateText(g.reply || '')).setVisible(hall==='arcade'&&Boolean(g.reply));
     const person = getPerson(g.target);
@@ -187,8 +187,8 @@ export class SecurityGuard {
       const lift = g.phase==='grab'?g.progress:1;
       const flight = g.phase==='throw'?g.progress:0;
       const py = y - 60*lift + flight*135 - Math.sin(flight*Math.PI)*55;
-      person.sprite.setPosition(x+12*lift+flight*18,py).setAngle(80*lift+flight*200).setDepth(y+1);
-      person.shadow.setPosition(x+flight*18,y+flight*80).setScale(1-flight*.5).setDepth(y-1);
+      person.sprite.setPosition(x+12*lift+flight*18,py).setAngle(80*lift+flight*200).setDepth(depth+1);
+      person.shadow.setPosition(x+flight*18,y+flight*80).setScale(1-flight*.5).setDepth(depth-1);
       person.label?.setVisible(false);
     }
   }

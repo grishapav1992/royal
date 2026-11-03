@@ -1,5 +1,6 @@
 import {test,expect,type Page} from '@playwright/test';
 import {STREET} from '../src/shared/street';
+import {projectStreetPoint} from '../src/game/streetView';
 const state=(page:Page)=>page.evaluate(()=>(window as any).royalDemo.getState());
 async function overview(page:Page,on:boolean){const b=page.locator('#room-overview');if((await b.getAttribute('aria-pressed')==='true')!==on)await b.click();await expect.poll(async()=>(await state(page)).view.overview).toBe(on);}
 async function walk(page:Page,x:number,y:number){
@@ -10,6 +11,12 @@ async function walk(page:Page,x:number,y:number){
   const tolerance=Math.max(5,2/v.zoom);
   await expect.poll(async()=>{const p=await state(page);return Math.hypot(p.x-x,p.y-y);},{timeout:25000}).toBeLessThan(tolerance);
   await expect.poll(async()=>{const p=await state(page);return Math.hypot(p.serverX-p.x,p.serverY-p.y);}).toBeLessThan(3);
+}
+async function closeWalk(page:Page,x:number,y:number){
+  await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));
+  const box=(await page.locator('#game canvas').boundingBox())!,s=await state(page),v=s.view,p=projectStreetPoint({x,y},s.street.view.orientation);
+  await page.mouse.click(box.x+(p.x-v.x)*v.zoom*box.width/v.width,box.y+(p.y-v.y)*v.zoom*box.height/v.height);
+  await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.x-x,s.y-y);},{timeout:15000}).toBeLessThan(5);
 }
 test('keep the road in front and enter the full-width courtyard only after clearing the rear corner',async({page},info)=>{
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
@@ -26,11 +33,18 @@ test('keep the road in front and enter the full-width courtyard only after clear
   const after=(await state(page)).street.carRender;
   expect(after.every((car:any,index:number)=>car.y===cars[index].y&&car.angle===0&&car.y>=1210)).toBe(true);
   await page.screenshot({path:`../courtyard-${info.project.name}-front-road.png`});
-  await walk(page,480,1050);await walk(page,480,710);await overview(page,false);
+  await walk(page,600,1050);await overview(page,false);
+  await page.evaluate(()=>{
+    (window as any).__edgeViolations=[];(window as any).__recordEdges=true;
+    const record=()=>{const s=(window as any).royalDemo.getState();if(s.hall==='street'&&!s.view.overview){const bad=!s.renderVisible||!s.halo.visible||Math.hypot(s.halo.x-s.renderX,s.halo.y-s.renderY)>.1||(s.renderY<s.street.view.wall.base&&s.renderDepth<=s.street.view.wall.base);if(bad)(window as any).__edgeViolations.push({x:s.x,y:s.y,side:s.street.view.side,visible:s.renderVisible,depth:s.renderDepth,halo:s.halo,renderX:s.renderX,renderY:s.renderY});}if((window as any).__recordEdges)requestAnimationFrame(record);};requestAnimationFrame(record);
+  });
+  await closeWalk(page,600,700);
   expect((await state(page)).street.view.orientation).toBe('front');
   expect((await state(page)).street.view.angle).toBe(0);
   await page.screenshot({path:`../courtyard-${info.project.name}-side-pass.png`});
-  await walk(page,480,360);await overview(page,false);
+  await closeWalk(page,600,470);
+  await page.screenshot({path:`../courtyard-${info.project.name}-left-tight.png`});
+  await closeWalk(page,600,360);
   expect((await state(page)).street.view.side).toBe('front');
   await page.screenshot({path:`../courtyard-${info.project.name}-before-corner.png`});
   await page.evaluate(()=>{
@@ -47,10 +61,27 @@ test('keep the road in front and enter the full-width courtyard only after clear
   expect(rear.street.props.find((p:any)=>p.texture==='street-detail-parked-taxi').visible).toBe(false);
   await walk(page,1370,365);await overview(page,false);
   await page.screenshot({path:`../courtyard-${info.project.name}-rear.png`});
-  await page.reload();await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});await expect.poll(async()=>(await state(page)).street?.view.side).toBe('rear');
+  await walk(page,600,360);await overview(page,false);
+  await closeWalk(page,600,547);expect((await state(page)).street.view.side).toBe('rear');
+  await closeWalk(page,600,570);expect((await state(page)).street.view.side).toBe('front');
+  await page.screenshot({path:`../courtyard-${info.project.name}-left-tight-exit.png`});
+  await closeWalk(page,600,360);
+  await page.keyboard.down('ArrowRight');
+  try{await expect.poll(async()=>(await state(page)).street.view.side,{timeout:8000,intervals:[50]}).toBe('rear');}finally{await page.keyboard.up('ArrowRight');}
   await walk(page,2320,360);expect((await state(page)).street.view.side).toBe('rear');
   await walk(page,2320,710);await overview(page,false);expect((await state(page)).street.view.orientation).toBe('front');
+  await closeWalk(page,2120,700);await closeWalk(page,2120,470);
+  await page.screenshot({path:`../courtyard-${info.project.name}-right-tight.png`});
+  await closeWalk(page,2120,360);
+  await page.keyboard.down('ArrowLeft');
+  try{await expect.poll(async()=>(await state(page)).street.view.side,{timeout:8000,intervals:[50]}).toBe('rear');}finally{await page.keyboard.up('ArrowLeft');}
+  await closeWalk(page,2120,547);expect((await state(page)).street.view.side).toBe('rear');
+  await closeWalk(page,2120,570);expect((await state(page)).street.view.side).toBe('front');
+  await page.screenshot({path:`../courtyard-${info.project.name}-right-tight-exit.png`});
+  await page.evaluate(()=>(window as any).__recordEdges=false);
+  expect(await page.evaluate(()=>(window as any).__edgeViolations)).toEqual([]);
   await page.screenshot({path:`../courtyard-${info.project.name}-right-pass.png`});
+  await page.reload();await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});await expect.poll(async()=>(await state(page)).street?.view.side).toBe('front');
   await expect(page.locator('#chat-input')).toBeEnabled();await expect(page.locator('#wallet-balance')).toHaveText(balance!);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);expect(errors).toEqual([]);
 });

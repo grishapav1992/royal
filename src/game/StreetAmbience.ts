@@ -22,9 +22,9 @@ export class StreetAmbience {
     this.state.pedestrians.forEach((person,index)=>{
       const actor=this.pedestrians[index],distance=Math.hypot(person.x-actor.x,person.y-actor.y);
       const motion=advanceCharacterMotion(actor.motion,{mode:person.moving?'walk':'rest',distance,time:this.state.time,normalSpeed:155});
-      const p=view.point(person),visible=view.visible(person);
-      actor.sprite.setPosition(p.x,p.y).setFrame(view.facing(person.facing)+'-'+motion.frame).setDepth(p.y).setVisible(visible);
-      actor.shadow.setPosition(p.x,p.y-1).setDepth(p.y-1).setVisible(visible);
+      const p=view.point(person),visible=view.visible(person),depth=view.depth(person);
+      actor.sprite.setPosition(p.x,p.y).setFrame(view.facing(person.facing)+'-'+motion.frame).setDepth(depth).setVisible(visible);
+      actor.shadow.setPosition(p.x,p.y-1).setDepth(depth-1).setVisible(visible);
       actor.x=person.x;actor.y=person.y;
     });
     this.state.cars.forEach((car,index)=>{

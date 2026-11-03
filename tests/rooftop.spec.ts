@@ -51,6 +51,7 @@ test('climb rear stairs, explore roof, reconnect and return with chat and wallet
   await expect.poll(async () => (await state(page)).stairStep,{timeout:10000}).toBeGreaterThanOrEqual(3);
   expect((await state(page)).renderDepth).toBeGreaterThan(620);
   expect((await state(page)).street.frontRoadVisible).toBe(false);
+  {const s=await state(page);expect(s.renderVisible).toBe(true);expect(Math.hypot(s.halo.x-s.renderX,s.halo.y-s.renderY)).toBeLessThan(.1);}
   await page.screenshot({path:`../roof-${info.project.name}-climb.png`});
   const prefix=await page.evaluate(()=>(window as any).__roofClimb as {hall:string;x:number;y:number}[]);
   await page.reload();
