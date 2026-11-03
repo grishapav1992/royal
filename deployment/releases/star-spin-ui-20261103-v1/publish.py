@@ -4,13 +4,16 @@ from types import SimpleNamespace
 import fcntl,hashlib,importlib.util,json,os,re,shutil,subprocess,sys,tarfile
 NAME='star-spin-ui-20261103-v1';GAME='studio-wild-nudge'
 ROOT=Path('/opt/royal-releases')/NAME;LIVE=Path('/opt/royal');MODULES=Path('/opt/royal-game-modules');STATE=Path('/opt/royal-game-modules-state');BACKUP=Path('/opt/royal-backups')/NAME
-BASE_HELPER=Path('/opt/royal-releases/star-spin-20261103-v1/snapshot-base.py')
+BASE_HELPER=Path('/opt/royal-releases/cat-idle-20261103-v1/snapshot-base.py')
 SOURCES=['games/wild-nudge/'+n for n in ['GalacticReactorUI.ts','StarSpinLayout.ts','reactor.css','package.json','tsconfig.json','README.md']]
 ADDED={'games/wild-nudge/StarSpinLayout.ts','games/wild-nudge/README.md'}
 IMAGE_HELPER=Path('/opt/royal-maintenance/bin/retention-runtime.py')
 CONTRACT={'apiVersion':1,'rulesVersion':2,'progressVersion':1};MIN_FREE=5*1024**3
 EXPECTED_MANIFEST='1ddebb56a1b8331c1e488bff0075a8d5c75a9a005442cd170062fa6155fbbbe6'
 EXPECTED_HOST_RUNTIME='ef882d0cbdee73d9377a151331b160fc4c2e4e3fb613144e341628444b9b2df6'
+SNAPSHOT_SHA='a9f801e4dfa5da4520eb39803fae1726a59effb901ac7f9fa4b0f681d839afa4'
+ALLOWED_HOST_SOURCES={'8616f86d5c31ee81abdcd18484de0d4c1a2446e4','5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e'}
+ALLOWED_HALL_SOURCE={'src/game/interiorArt.ts':'5febab40df98bae347c821cfd912fbde3a3ea7834f0ad76244ff3eb60a96debf'}
 IGNORED={'at','availableBytes'}
 sys.dont_write_bytecode=True
 def require(value,message):
@@ -27,7 +30,15 @@ def image(name):
  require(metadata and metadata['Id']==identity and name in metadata['RepoTags'],'Expected tag does not identify the running image')
  return identity
 def snapshot():
- helper=load('reviewed_snapshot',BASE_HELPER);helper.ROOT=BASE_HELPER.parent;original=helper.run
+ identity=command(['docker','container','inspect','royal-game-1','--format','{{.Image}}'])
+ candidates=[]
+ for folder in [BASE_HELPER.parent,Path('/opt/royal-releases/remove-hall-title-20261103-v1')]:
+  if not (folder/'published.json').is_file():continue
+  published=read(folder/'published.json')
+  if published.get('published') is True and published.get('runningImage')==identity and published.get('sourceCommit') in ALLOWED_HOST_SOURCES:candidates.append(folder)
+ require(len(candidates)==1,'Need one verified compatible host publication')
+ path=candidates[0]/'snapshot-base.py';require(sha(path)==SNAPSHOT_SHA,'Snapshot helper changed')
+ helper=load('reviewed_snapshot',path);helper.ROOT=candidates[0];original=helper.run
  # Containerd metadata proves the exact target without Docker's slow layer-size traversal.
  def run(args):
   if args==['docker','image','inspect','royal-game:latest','--format','{{.Id}}']:return image('royal-game:latest')
@@ -62,6 +73,21 @@ def validate_after(before,after,source,files,pointer,version):
  prefix=str(MODULES/GAME/'versions'/version)+'/'
  expected['moduleFiles']={**before['moduleFiles'],**{prefix+n:h for n,h in files.items()},str(MODULES/GAME/'active.json'):pointer}
  require(stable(after)==stable(expected),'Host, services, other sources or immutable modules changed')
+
+def validate_compatible_host(before,current,operator,proof,equivalence):
+ require(current['sourceCommit'] in ALLOWED_HOST_SOURCES and current['container']['health']=='healthy','Unreviewed or unhealthy host')
+ differences={n:current['source'].get(n) for n in set(before['source'])|set(current['source']) if current['source'].get(n)!=before['source'].get(n)}
+ require(all(ALLOWED_HALL_SOURCE.get(n)==h and h is not None for n,h in differences.items()),'Concurrent source change is outside the exact hall-label scope')
+ for key in ['configHashes','protectedPrograms','realMoneyFlags','moduleFiles','moduleHostContract','moduleHost']:
+  require(current[key]==before[key],'Concurrent host changed protected '+key)
+ backend={n:h for n,h in before['program'].items() if n.startswith('dist-server/')}
+ require(backend and {n:h for n,h in current['program'].items() if n.startswith('dist-server/')}==backend,'Backend program bytes changed')
+ for key in ['services','serviceProfiles']:
+  original={n:v for n,v in before[key].items() if n.lstrip('/')!='royal-game-1'}
+  actual={n:v for n,v in current[key].items() if n.lstrip('/')!='royal-game-1'}
+  require(actual==original,'A different persistent service changed')
+ require(current['moduleHost']['games'][GAME]==CONTRACT,'Incompatible current host')
+ validate_inputs(current,operator,proof,equivalence)
 def atomic(origin,target):
  require(not any(p.is_symlink() for p in [origin,target,*target.parents]),'Unsafe source path')
  partial=target.with_name(target.name+'.'+NAME+'.partial');require(not partial.exists(),'Partial source exists')
@@ -73,7 +99,7 @@ def main():
  for path in [ROOT,LIVE,MODULES,STATE]:require(path.is_dir() and not any(p.is_symlink() for p in [path,*path.parents]),'Unsafe root')
  locks=[]
  for path in [Path('/opt/royal-releases/themed-publish.lock'),LIVE/'.client-presentation-deploy.lock',STATE/'module.lock']:
-  require(not path.is_symlink(),'Unsafe lock');handle=path.open('a');fcntl.flock(handle,fcntl.LOCK_EX|fcntl.LOCK_NB);locks.append(handle)
+  require(not path.is_symlink(),'Unsafe lock');handle=path.open('a');fcntl.flock(handle,fcntl.LOCK_EX);locks.append(handle)
  if sys.argv[1:]==['snapshot']:
   require(not (ROOT/'before.json').exists(),'Baseline already saved');before=snapshot();save('before.json',before)
   print(json.dumps({'sourceCommit':before['sourceCommit'],'sourceFiles':len(before['source']),'runtimeFiles':len(before['program']),'services':len(before['services']),'freeBytes':before['availableBytes']}));return
@@ -86,7 +112,7 @@ def main():
  require(sha(ROOT/'module-proof.json')==op['moduleProofSha256'] and sha(ROOT/'input-equivalence.json')==op['inputEquivalenceSha256'],'Module proof changed');proof=read(ROOT/'module-proof.json');equivalence=read(ROOT/'input-equivalence.json')
  require(equivalence['productionCommit']==before['sourceCommit'] and equivalence['package']==proof['version'],'Wrong source equivalence baseline');validate_inputs(before,op,proof,equivalence)
  for name,digest in op['source'].items():require(sha(ROOT/'source'/name)==digest,'Source payload changed')
- current=snapshot();require(stable(current)==stable(before),'Production changed since review');require(current['container']['health']=='healthy','Unhealthy host')
+ current=snapshot();validate_compatible_host(before,current,op,proof,equivalence);save('deployment-before.json',current)
  require(read(STATE/'host.json')['games'][GAME]==CONTRACT,'Incompatible host')
  command(['docker','tag',current['container']['image'],'royal-game:before-'+NAME])
  require(image('royal-game:before-'+NAME)==current['container']['image'],'Missing exact rollback image tag')
@@ -114,7 +140,7 @@ def main():
  options.operation='install';mask=os.umask(0o022)
  try:result=publisher.run(options)
  finally:os.umask(mask)
- after=snapshot();save('after.json',after);validate_after(before,after,op['source'],files,op['pointerSha256'],version)
+ after=snapshot();save('after.json',after);validate_after(current,after,op['source'],files,op['pointerSha256'],version)
  require(shutil.disk_usage(LIVE).free>MIN_FREE,'Five GiB reserve crossed')
- record={'published':True,'release':NAME,'sourceCommit':release['sourceCommit'],'baseCommit':release['baseCommit'],'module':result,'backup':backup,'freeBefore':current['availableBytes'],'freeAfter':after['availableBytes'],'hostRestarted':False,'databaseTouched':False,'otherModulesPreserved':True,'sourceFilesPreserved':len(before['source'])-len(SOURCES)+len(ADDED),'runtimeFilesPreserved':len(before['program']),'servicesPreserved':len(before['services'])};save('published.json',record);print(json.dumps(record))
+ record={'published':True,'release':NAME,'sourceCommit':release['sourceCommit'],'baseCommit':current['sourceCommit'],'buildBaseCommit':release['baseCommit'],'module':result,'backup':backup,'freeBefore':current['availableBytes'],'freeAfter':after['availableBytes'],'hostRestarted':False,'databaseTouched':False,'otherModulesPreserved':True,'sourceFilesPreserved':len(current['source'])-len(SOURCES)+len(ADDED),'runtimeFilesPreserved':len(current['program']),'servicesPreserved':len(current['services'])};save('published.json',record);print(json.dumps(record))
 if __name__=='__main__':main()

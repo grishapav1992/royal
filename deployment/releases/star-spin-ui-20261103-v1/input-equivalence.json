@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "productionCommit": "24cce094af9b39e008a31c3e5803436174e95a36",
+  "productionCommit": "8616f86d5c31ee81abdcd18484de0d4c1a2446e4",
   "package": "1.5.0-dfaacbc6bb0f",
   "rows": {
     "src/modules/GameHostContract.ts": {

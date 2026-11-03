@@ -2,6 +2,24 @@ import importlib.util,unittest,copy
 from pathlib import Path
 spec=importlib.util.spec_from_file_location('publication',Path(__file__).with_name('publish.py'));p=importlib.util.module_from_spec(spec);spec.loader.exec_module(p)
 class Guards(unittest.TestCase):
+ def test_only_exact_committed_hall_labels_may_advance_the_prepared_host(self):
+  contract={'games':{p.GAME:p.CONTRACT}}
+  before={'sourceCommit':'8616f86d5c31ee81abdcd18484de0d4c1a2446e4','container':{'health':'healthy'},'source':{'src/game/interiorArt.ts':'old','games/wild-nudge/GalacticReactorUI.ts':'old-ui'},'sourceLF':{},'configHashes':{},'protectedPrograms':{},'realMoneyFlags':{},'moduleFiles':{},'moduleHostContract':'contract','moduleHost':contract,'services':{'/royal-game-1':'old','/finance':'retained'},'serviceProfiles':{'royal-game-1':'old','finance':'retained'}}
+  proof={'version':'1.5.0-dfaacbc6bb0f','sourceSha256':'dfaacbc6bb0fd204ad71935485c12c645c3d36a5c18fdfa296bf91a443bb55ef','hostSingletonsExternalized':True,'serverImplementationIncluded':False,'sourceFiles':{}}
+  before['program']={'dist-server/index.js':'backend','dist/index.html':'old-page'}
+  p.validate_compatible_host(before,before,{},proof,{})
+  current=copy.deepcopy(before);current['sourceCommit']='5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e';current['source'].update(p.ALLOWED_HALL_SOURCE);current['services']['/royal-game-1']='new';current['serviceProfiles']['royal-game-1']='new'
+  p.validate_compatible_host(before,current,{},proof,{})
+  wrong=copy.deepcopy(current);wrong['program']['dist-server/index.js']='changed'
+  with self.assertRaises(RuntimeError):p.validate_compatible_host(before,wrong,{},proof,{})
+  for key in ['configHashes','protectedPrograms','realMoneyFlags','moduleFiles','moduleHost','services','serviceProfiles']:
+   wrong=copy.deepcopy(current);wrong[key]['foreign']='changed'
+   with self.assertRaises(RuntimeError):p.validate_compatible_host(before,wrong,{},proof,{})
+  for name in ['games/wild-nudge/GalacticReactorUI.ts','src/shared/wildNudgeMath.ts','src/game/interiorArt.ts']:
+   wrong=copy.deepcopy(current);wrong['source'][name]='unreviewed'
+   with self.assertRaises(RuntimeError):p.validate_compatible_host(before,wrong,{},proof,{})
+  wrong=copy.deepcopy(current);wrong['sourceCommit']='a'*40
+  with self.assertRaises(RuntimeError):p.validate_compatible_host(before,wrong,{},proof,{})
  def test_line_endings_exception_reconstructs_exact_bytes_and_rejects_code_changes(self):
   import tempfile,hashlib
   from unittest.mock import patch
