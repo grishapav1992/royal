@@ -4,7 +4,7 @@ import { resolve, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { formatBrainQuery } from './project-brain.mjs';
 import { loadActiveSnapshot, readStatus, SharedBrainError } from './shared-brain-store.mjs';
-import { verifyReceiptRuntime } from './shared-brain-update.mjs';
+import { verifyPublicationIdentity } from './shared-brain-update.mjs';
 
 export const SHARED_GRAPHIFY_VERSION = '0.9.101';
 const MAX_REQUEST = 16 * 1024, MAX_RESPONSE = 256 * 1024, MAX_TEXT = 64 * 1024;
@@ -117,10 +117,11 @@ function warningsFor(provenance, index, request) {
   return warnings;
 }
 
-function productionHeader(provenance) {
+function productionHeader(provenance, check) {
   const lines = ['Общий граф production: выпуск ' + provenance.releaseId + '.',
-    'Runtime fingerprint: ' + provenance.runtimeFingerprint + '.',
-    'Проверка опубликованной версии: ' + provenance.verifiedAt + '.',
+    'Сохранённый runtime fingerprint: ' + provenance.runtimeFingerprint + '.',
+    'Сохранённая полная проверка файлов программы: ' + check.lastProgramVerificationAt + '.',
+    'В этом запросе проверены только идентификаторы выбранной публикации: ' + check.checkedAt + '.',
     'Компоненты могут происходить из разных коммитов; идентификатор выпуска не является единым деревом Git.'];
   for (const component of provenance.components.filter(component => component.scope === 'knowledge')) {
     const commits = [component.sourceCommit, ...component.sourceCommits].filter(Boolean);
@@ -137,27 +138,36 @@ function boundedText(value) {
   return result + '\nРезультат сокращён. Уточни запрос.';
 }
 
-export async function handleSharedRequest(request, { storeRoot, runGraphify = runPinnedGraphify, verifyRuntime = verifyReceiptRuntime, productionRuntime = false } = {}) {
+export async function handleSharedRequest(request, { storeRoot, runGraphify = runPinnedGraphify, verifyIdentity = verifyPublicationIdentity, productionRuntime = false } = {}) {
   let snapshot;
   try {
     validateSharedRequest(request);
     if (typeof storeRoot !== 'string' || !storeRoot) throw new SharedBrainError('graph_unavailable', 'The shared graph store is not configured.');
     const initialStatus = await readStatus(storeRoot);
     const expectedFingerprint = initialStatus.target?.runtimeFingerprint ?? initialStatus.provenance?.runtimeFingerprint;
-    if (expectedFingerprint) {
+    const checkIdentity = async () => {
       try {
-        const result = await verifyRuntime(join(resolve(storeRoot), 'receipts', expectedFingerprint + '.json'), { runtimeFingerprint: expectedFingerprint });
-        if ((typeof result === 'string' ? result : result?.runtimeFingerprint) !== expectedFingerprint) throw Error();
-      } catch { throw new SharedBrainError('runtime_unverified', 'The shared graph cannot verify the current deployed program.', 4); }
-    }
+        const result = await verifyIdentity(join(resolve(storeRoot), 'receipts', expectedFingerprint + '.json'), { runtimeFingerprint: expectedFingerprint });
+        const timestamp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/;
+        if (result?.runtimeFingerprint !== expectedFingerprint || result.checkScope !== 'deployment-identity'
+          || !timestamp.test(result.checkedAt) || !timestamp.test(result.lastProgramVerificationAt)
+          || !Number.isFinite(Date.parse(result.checkedAt)) || !Number.isFinite(Date.parse(result.lastProgramVerificationAt))
+          || Date.parse(result.lastProgramVerificationAt) > Date.parse(result.checkedAt)) throw Error();
+        return { scope: 'deployment-identity', checkedAt: result.checkedAt, lastProgramVerificationAt: result.lastProgramVerificationAt };
+      } catch { throw new SharedBrainError('publication_unverified', 'The shared graph cannot verify the currently selected publication.', 4); }
+    };
+    if (expectedFingerprint) await checkIdentity();
     if (request.operation === 'status') {
+      const check = expectedFingerprint ? await checkIdentity() : undefined;
       const status = await readStatus(storeRoot);
       if (status.current !== initialStatus.current || status.target?.runtimeFingerprint !== initialStatus.target?.runtimeFingerprint
         || status.state !== initialStatus.state) throw new SharedBrainError('graph_changed', 'The production graph changed while the status was being checked. Retry the request.', 4);
       return { envelope: { schemaVersion: 1, ok: true, provenance: status.provenance ?? null,
         result: { state: status.state, current: status.current, previous: status.previous,
           desired: status.target ? { runtimeFingerprint: status.target.runtimeFingerprint, releaseId: status.target.releaseId } : null,
-          text: 'Состояние общего production-графа: ' + status.state + '.' },
+          ...(check ? { check } : {}), text: 'Состояние общего production-графа: ' + status.state + '.'
+            + (check ? '\nПроверены только идентификаторы выбранной публикации: ' + check.checkedAt
+              + '. Сохранённая полная проверка файлов программы: ' + check.lastProgramVerificationAt + '.' : '') },
         warnings: status.state === 'ready' ? warningsFor(status.provenance, null, request) : [{ code: 'production_graph_' + status.state }] }, exitCode: 0 };
     }
     snapshot = await loadActiveSnapshot(storeRoot);
@@ -166,7 +176,7 @@ export async function handleSharedRequest(request, { storeRoot, runGraphify = ru
     if (request.operation === 'brain') {
       const result = formatBrainQuery(snapshot.index, request.question);
       const separator = result.text.indexOf('\n\n');
-      text = productionHeader(snapshot.provenance) + '\n\n' + (separator >= 0 ? result.text.slice(separator + 2) : result.text);
+      text = separator >= 0 ? result.text.slice(separator + 2) : result.text;
       exitCode = result.found ? 0 : 4;
     } else {
       // The Linux SSH reader keeps the verified inode open even if two later
@@ -175,21 +185,22 @@ export async function handleSharedRequest(request, { storeRoot, runGraphify = ru
         ? '/proc/' + process.pid + '/fd/' + snapshot.graphHandle.fd : '/dev/fd/3') : join(snapshot.directory, 'graph.json');
       const result = await runGraphify(graphArguments(request, graphPath), { ...snapshot, queryDirectory: resolve(storeRoot), productionRuntime });
       if (!result || ![0, 3, 4].includes(result.exitCode) || typeof result.text !== 'string') throw new SharedBrainError('query_failed', 'Invalid graph query response.');
-      text = productionHeader(snapshot.provenance) + '\n\n' + result.text; exitCode = result.exitCode;
+      text = result.text; exitCode = result.exitCode;
     }
+    const check = await checkIdentity();
     const finalStatus = await readStatus(storeRoot);
     if (finalStatus.state !== 'ready' || finalStatus.current !== snapshot.snapshotId
       || finalStatus.provenance.runtimeFingerprint !== snapshot.provenance.runtimeFingerprint) {
       throw new SharedBrainError('graph_changed', 'The production graph changed while the query was running. Retry the request.', 4);
     }
     const envelope = { schemaVersion: 1, ok: exitCode === 0, provenance: snapshot.provenance,
-      result: { text: boundedText(text) }, warnings };
+      result: { text: boundedText(productionHeader(snapshot.provenance, check) + '\n\n' + text), check }, warnings };
     if (exitCode) envelope.error = { code: exitCode === 3 ? 'ambiguous' : 'not_found', message: exitCode === 3 ? 'The graph subject is ambiguous.' : 'No matching graph subject was found.' };
     if (Buffer.byteLength(JSON.stringify(envelope)) > MAX_RESPONSE) throw new SharedBrainError('query_failed', 'The shared graph response exceeds its bound.');
     return { envelope, exitCode };
   } catch (error) {
     const safe = error instanceof SharedBrainError ? error : new SharedBrainError('graph_unavailable', 'The production graph is unavailable or failed integrity verification.');
-    return { envelope: { schemaVersion: 1, ok: false, provenance: null, result: { text: '', ...(safe.code === 'runtime_unverified' ? { state: 'unverified' } : {}) }, warnings: [],
+    return { envelope: { schemaVersion: 1, ok: false, provenance: null, result: { text: '', ...(safe.code === 'publication_unverified' ? { state: 'unverified' } : {}) }, warnings: [],
       error: { code: safe.code, message: safe.message.replaceAll('\u2014', '-') } }, exitCode: safe.exitCode };
   } finally { await snapshot?.close(); }
 }

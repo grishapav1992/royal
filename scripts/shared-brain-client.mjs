@@ -84,7 +84,7 @@ function transportEnvironment(environment) {
 function validateResponse(envelope, operation) {
   if (!envelope || typeof envelope !== 'object' || Array.isArray(envelope) || envelope.schemaVersion !== 1
     || typeof envelope.ok !== 'boolean' || !envelope.result || typeof envelope.result.text !== 'string'
-    || !Array.isArray(envelope.warnings) || envelope.warnings.length > 100
+    || !Array.isArray(envelope.warnings) || envelope.warnings.length > 4096
     || envelope.warnings.some(value => !value || typeof value !== 'object' || typeof value.code !== 'string'
       || value.code.length > 128 || value.message !== undefined && (typeof value.message !== 'string' || Buffer.byteLength(value.message) > 4096))) {
     throw fail('invalid_response', 'The shared graph server returned an invalid response.');
@@ -102,6 +102,11 @@ function validateResponse(envelope, operation) {
   }
   if (!envelope.ok && (!envelope.error || typeof envelope.error.code !== 'string'
     || typeof envelope.error.message !== 'string')) throw fail('invalid_response', 'The shared graph server returned an invalid error.');
+  if (envelope.result.check !== undefined) {
+    const check = envelope.result.check;
+    if (!check || check.scope !== 'deployment-identity' || !Number.isFinite(Date.parse(check.checkedAt))
+      || !Number.isFinite(Date.parse(check.lastProgramVerificationAt))) throw fail('invalid_response', 'The graph response has an invalid publication check.');
+  }
   return envelope;
 }
 
@@ -159,7 +164,8 @@ export async function requestSharedBrain(request, { spawnImpl = spawn, env = pro
 export function formatSharedResponse(envelope, clientCommit) {
   const proof = envelope.provenance;
   const lines = [proof ? 'Общий серверный граф: выпуск ' + proof.releaseId + '.' : 'Общий серверный граф.'];
-  if (proof) lines.push('Снимок: ' + proof.snapshotId + '. Runtime: ' + proof.runtimeFingerprint + '.', 'Подтверждение: ' + proof.verifiedAt + '.');
+  if (proof) lines.push('Снимок: ' + proof.snapshotId + '. Runtime: ' + proof.runtimeFingerprint + '.', 'Полная проверка файлов снимка: ' + proof.verifiedAt + '.');
+  if (envelope.result.check) lines.push('Текущий выпуск сверен: ' + envelope.result.check.checkedAt + '. Чтение проверяет выбранную публикацию.');
   if (clientCommit) lines.push('Рабочий коммит этого ПК: ' + clientCommit + '.');
   const groups = new Map();
   for (const warning of envelope.warnings ?? []) {
