@@ -38,18 +38,34 @@ export function createStreetMascotTexture(scene:Phaser.Scene){
   texture.refresh();return key;
 }
 
-export function drawResidentShovel(g:Graphics,pose:StreetResidentPose){
+export function streetShovelPose(pose:StreetResidentPose){
   const {action,progress:p}=pose;
+  const side=pose.facing==='left'||pose.facing==='right';
+  const step=action==='walk'?[0,1,.55,0,-1,-.55][pose.frame]??0:0;
+  const bounce=action==='walk'?[0,-1.2,-.5,0,-1.2,-.5][pose.frame]??0:0;
+  // Follow the janitor's near wrist in the shared fat-body avatar, including its walking swing.
+  const arm=step*(side?20:9)*Math.PI/180,body=step*(side?2.8:1.2)*Math.PI/180;
+  const ax=(side?26:54)+.2*Math.cos(arm)-21*Math.sin(arm),ay=47+.2*Math.sin(arm)+21*Math.cos(arm);
+  const dx=ax-32,dy=ay-64;
+  const nativeX=32+(dx*Math.cos(body)-dy*Math.sin(body))*.94;
+  const nativeY=76+(64+dx*Math.sin(body)+dy*Math.cos(body)+bounce-76)*.94;
+  const handX=(nativeX-32)*.9*(pose.facing==='left'?-1:1),handY=nativeY*.9-72;
   const push=action==='clear-snow'?Math.sin(p*Math.PI*4)*8:0;
   const tap=action==='tap-shovel'?Math.sin(p*Math.PI*8)*3:0;
   const lean=action==='rest'||action==='look-around'?10:0;
-  const bladeX=30+push+lean,bladeY=-5+tap;
-  g.lineStyle(3,ink).lineBetween(13,-41,bladeX,bladeY);
-  g.lineStyle(1.4,0xa8794b).lineBetween(13,-41,bladeX,bladeY);
-  g.lineStyle(2,0x463b34).strokeRoundedRect(8,-48,11,8,2);
+  return {handX,handY,bladeX:handX+(pose.facing==='left'?-1:1)*((side?42:22)+push+lean),bladeY:-5+tap};
+}
+
+export function drawResidentShovel(g:Graphics,pose:StreetResidentPose){
+  const {handX,handY,bladeX,bladeY}=streetShovelPose(pose),{action,progress:p}=pose;
+  g.lineStyle(3,ink).lineBetween(handX,handY,bladeX,bladeY);
+  g.lineStyle(1.4,0xa8794b).lineBetween(handX,handY,bladeX,bladeY);
+  g.lineStyle(2,0x463b34).strokeRoundedRect(handX-4,handY-6,8,7,2);
   g.fillStyle(0x8e9a9e).fillRoundedRect(bladeX-8,bladeY-4,21,11,3);
   g.lineStyle(1.5,0x364148).strokeRoundedRect(bladeX-8,bladeY-4,21,11,3);
   g.fillStyle(0xf8fbff).fillEllipse(bladeX+5,bladeY+6,23,5);
+  g.fillStyle(0xedc2a2).fillEllipse(handX,handY,5.5,6);
+  g.lineStyle(.8,ink).strokeEllipse(handX,handY,5.5,6);
   if(action==='tap-shovel'){
     for(let n=0;n<3;n++){const t=(p*3+n/3)%1;g.fillStyle(0xf8fbff,1-t).fillEllipse(bladeX+12+t*9,bladeY+4+t*12,3,2);}
   }
