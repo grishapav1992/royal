@@ -1,0 +1,27 @@
+[Unit]
+Description=Refresh the shared graph from verified Royal production
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+UMask=0077
+Environment=PATH=/opt/royal-project-brain/runtime/bin:/usr/local/bin:/usr/bin:/bin
+Environment=UV_CACHE_DIR=/var/cache/royal-project-brain/uv
+Environment=UV_PYTHON_INSTALL_DIR=/var/cache/royal-project-brain/python
+Environment=UV_NO_ENV_FILE=1
+ExecStart=/opt/royal-project-brain/runtime/bin/node /opt/royal-project-brain/current/scripts/shared-brain-update.mjs
+Nice=15
+CPUQuota=50%
+MemoryMax=1G
+IOSchedulingClass=idle
+TimeoutStartSec=30min
+Restart=on-failure
+RestartSec=5min
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

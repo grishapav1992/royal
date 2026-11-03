@@ -10,7 +10,7 @@ import re
 import shutil
 import subprocess
 
-FILES = {'automatic-retention.py', 'cleanup-release-history.py', 'retention-runtime.py',
+FILES = {'automatic-retention.py', 'cleanup-release-history.py', 'retention-runtime.py', 'production-graph-receipt.py',
          'royal-dev-app-retention.service', 'royal-dev-app-retention.timer'}
 ROOT = Path('/opt/royal-maintenance')
 

@@ -67,16 +67,18 @@ class AutomaticRetentionTest(unittest.TestCase):
     def test_busy_lock_has_nonzero_retry_status_and_persistent_result(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            with patch.object(cleanup, 'LIVE', root), patch.object(cleanup, 'RELEASES', root), patch.object(cleanup, 'MODULE_STATE', root), patch.object(automatic.fcntl, 'flock', side_effect=BlockingIOError), patch.object(automatic.os, 'geteuid', return_value=0):
+            with patch.object(cleanup, 'LIVE', root), patch.object(cleanup, 'RELEASES', root), patch.object(cleanup, 'MODULE_STATE', root), patch.object(automatic.fcntl, 'flock', side_effect=BlockingIOError), patch.object(automatic.os, 'geteuid', return_value=0), patch.object(automatic, 'project_brain_receipt') as graph, patch.object(automatic.subprocess, 'run') as queue:
                 code, result = automatic.execute(root/'runs', root/'last.json')
+            graph.assert_not_called(); queue.assert_not_called()
             self.assertEqual(code, 75); self.assertEqual(result['status'], 'retry')
             self.assertEqual(json.loads((root/'last.json').read_text())['status'], 'retry')
 
     def test_invalid_proof_is_an_error_instead_of_a_successful_skip(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            with patch.object(cleanup, 'LIVE', root), patch.object(cleanup, 'RELEASES', root), patch.object(cleanup, 'MODULE_STATE', root), patch.object(cleanup, 'healthy', side_effect=RuntimeError('Missing proof')), patch.object(automatic.os, 'geteuid', return_value=0):
+            with patch.object(cleanup, 'LIVE', root), patch.object(cleanup, 'RELEASES', root), patch.object(cleanup, 'MODULE_STATE', root), patch.object(cleanup, 'healthy', side_effect=RuntimeError('Missing proof')), patch.object(automatic.os, 'geteuid', return_value=0), patch.object(automatic, 'project_brain_receipt') as graph, patch.object(automatic.subprocess, 'run') as queue:
                 code, result = automatic.execute(root/'runs', root/'last.json')
+            graph.assert_not_called(); queue.assert_not_called()
             self.assertEqual(code, 1); self.assertEqual(result['reason'], 'Missing proof')
 
     def test_audit_retention_is_bounded_and_preserves_unknown_folders(self):
@@ -109,10 +111,57 @@ class AutomaticRetentionTest(unittest.TestCase):
             root = Path(temp)
             plan = {'currentImage':'active','rollbackImage':'old','entries':[],'images':[], 'preservedFinancialFiles':[], 'retainedHistoryReasons':{}}
             applied = {'removedEntries':0,'removedImageTags':0,'dockerRetainedImages':[], 'freeAfter':1,'containersUnchanged':True,'healthOk':True}
-            with patch.object(cleanup,'LIVE',root), patch.object(cleanup,'RELEASES',root), patch.object(cleanup,'MODULE_STATE',root), patch.object(cleanup,'healthy',return_value={'Image':'active','Config':{'Labels':{}}}), patch.object(automatic,'select_release',return_value='current'), patch.object(cleanup,'prepare_plan',return_value=plan), patch.object(cleanup,'apply',return_value=applied), patch.object(automatic.os,'geteuid',return_value=0):
+            with patch.object(cleanup,'LIVE',root), patch.object(cleanup,'RELEASES',root), patch.object(cleanup,'MODULE_STATE',root), patch.object(cleanup,'healthy',return_value={'Image':'active','Config':{'Labels':{}}}), patch.object(automatic,'select_release',return_value='current'), patch.object(cleanup,'prepare_plan',return_value=plan), patch.object(cleanup,'apply',return_value=applied), patch.object(automatic.os,'geteuid',return_value=0), patch.object(automatic,'project_brain_receipt') as graph, patch.object(automatic.subprocess,'run') as queue:
                 code, result = automatic.execute(root/'runs',root/'last.json')
+            graph.assert_not_called(); queue.assert_not_called()
             self.assertEqual(code,1);self.assertEqual(result['status'],'error')
             self.assertIn('five GiB',result['reason'])
+
+    def completed_with_brain(self, root, emitter, launcher):
+        plan = {'currentImage':'active','rollbackImage':'old','entries':[],'images':[],
+                'preservedFinancialFiles':[], 'retainedHistoryReasons':{}}
+        applied = {'removedEntries':0,'removedImageTags':0,'dockerRetainedImages':[], 'freeAfter':6*1024**3,
+                   'containersUnchanged':True,'healthOk':True}
+        with patch.object(cleanup,'LIVE',root), patch.object(cleanup,'RELEASES',root), patch.object(cleanup,'MODULE_STATE',root), patch.object(cleanup,'healthy',return_value={'Image':'active','Config':{'Labels':{}}}), patch.object(automatic,'select_release',return_value='current'), patch.object(cleanup,'prepare_plan',return_value=plan), patch.object(cleanup,'apply',return_value=applied), patch.object(automatic.os,'geteuid',return_value=0), patch.object(automatic,'project_brain_receipt',side_effect=emitter), patch.object(automatic.subprocess,'run',side_effect=launcher):
+            return automatic.execute(root/'runs',root/'last.json')
+
+    def test_graph_receipt_is_collected_under_lock_and_queued_only_after_unlock(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp); locks = []; events = []
+            def emitter(plan):
+                self.assertEqual(len(locks), 3)
+                self.assertTrue(all(not lock.closed for lock in locks))
+                events.append('receipt')
+                return {'status':'pending','runtimeFingerprint':'f'*64,'receipt':'/trusted/receipt.json'}
+            def launch(command, **options):
+                self.assertTrue(all(lock.closed for lock in locks))
+                self.assertEqual(command, ['systemctl','start','--no-block','royal-project-brain-update.service'])
+                events.append('queue')
+            with patch.object(automatic.fcntl,'flock',side_effect=lambda handle, flags: locks.append(handle)):
+                code, result = self.completed_with_brain(root, emitter, launch)
+            self.assertEqual(code, 0); self.assertEqual(events, ['receipt','queue'])
+            self.assertTrue(result['projectBrain']['queued'])
+            self.assertTrue(json.loads((root/'last.json').read_text())['projectBrain']['queued'])
+
+    def test_graph_failure_is_explicit_without_claiming_graph_updated(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp); launch = unittest.mock.Mock()
+            def invalid(plan): raise RuntimeError('Unbound projection')
+            code, result = self.completed_with_brain(root, invalid, launch)
+            self.assertEqual(code, 0); self.assertEqual(result['status'], 'completed')
+            self.assertEqual(result['projectBrain'], {'status':'error','reason':'Unbound projection','queued':False})
+            launch.assert_not_called()
+
+    def test_unconfigured_graph_is_not_queued_and_queue_failure_is_recorded(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp); launch = unittest.mock.Mock()
+            code, result = self.completed_with_brain(root, lambda plan: {'status':'not_configured'}, launch)
+            self.assertEqual(code, 0); self.assertEqual(result['projectBrain']['status'], 'not_configured')
+            launch.assert_not_called()
+            def failed(*args, **kwargs): raise subprocess.CalledProcessError(1, args[0])
+            code, result = self.completed_with_brain(root, lambda plan: {'status':'pending'}, failed)
+            self.assertEqual(code, 0); self.assertFalse(result['projectBrain']['queued'])
+            self.assertIn('queueError', result['projectBrain'])
 
     def test_oci_metadata_is_hash_verified_without_size_inspection(self):
         runtime=cleanup.native_retention()

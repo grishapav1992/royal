@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import subprocess
 import sys
 import time
 import uuid
@@ -15,6 +16,25 @@ import uuid
 spec = importlib.util.spec_from_file_location('history_cleanup', Path(__file__).with_name('cleanup-release-history.py'))
 cleanup = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(cleanup)
+
+
+def project_brain_receipt(plan):
+    spec = importlib.util.spec_from_file_location('production_graph_receipt', Path(__file__).with_name('production-graph-receipt.py'))
+    collector = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(collector)
+    return collector.emit_verified(plan, cleanup) if collector.enabled() else {'status': 'not_configured'}
+
+
+def queue_project_brain(result):
+    brain = result.get('projectBrain', {})
+    if result['status'] != 'completed' or brain.get('status') != 'pending':
+        return
+    try:
+        subprocess.run(['systemctl', 'start', '--no-block', 'royal-project-brain-update.service'],
+                       check=True, capture_output=True, text=True, timeout=15)
+        brain['queued'] = True
+    except Exception as error:
+        brain.update({'queued': False, 'queueError': str(error)})
 
 
 def select_release(image, source_commit, root=None):
@@ -63,6 +83,10 @@ def execute(root, last_result):
         result.update({k: applied[k] for k in ['verificationPasses', 'rollbackImageProof'] if k in applied})
         cleanup.require(result['freeAfter'] >= 5 * 1024**3, 'Cleanup completed but free space remains below five GiB; inspect retained data')
         result['status'] = 'completed'; code = 0
+        try:
+            result['projectBrain'] = project_brain_receipt(plan)
+        except Exception as error:
+            result['projectBrain'] = {'status': 'error', 'reason': str(error), 'queued': False}
     except BlockingIOError:
         result.update({'status': 'retry', 'reason': 'Deployment lock busy; systemd retries in five minutes'}); code = 75
     except Exception as error:
@@ -73,6 +97,9 @@ def execute(root, last_result):
         cleanup.write(state / 'summary.json', result)
         cleanup.write(last_result, result)
         for lock in reversed(locks): lock.close()
+    queue_project_brain(result)
+    cleanup.write(state / 'summary.json', result)
+    cleanup.write(last_result, result)
     rotate_audits(root, state)
     return code, result
 
