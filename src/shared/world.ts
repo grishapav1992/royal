@@ -9,7 +9,7 @@ import type { GameReaction } from './cabinetSeating';
 import type { CatAction } from './cat';
 import { CAT_CARE } from './catCare';
 import { STREET, STREET_DOOR, CASINO_EXIT, STREET_OBSTACLES } from './street';
-import { ROOF, ROOF_OBSTACLES, ROOF_STAIRS, STREET_ROOF_STAIRS } from './rooftop';
+import { ROOF, ROOF_OBSTACLES, ROOF_STAIRS, ROOF_STAIR_RETURN, STREET_ROOF_STAIRS } from './rooftop';
 export const PLAYER_SPEED = 155;
 export const PLAYER_SPRINT_SPEED = PLAYER_SPEED * 1.75;
 export const ROOM_CAPACITY = 30;
@@ -65,6 +65,12 @@ export function hallLinks(hall: HallId): HallLink[] {
   ];
 }
 export const isExteriorHall = (hall: string) => hall === 'street' || hall === 'roof';
+
+/** Player stair state is separate from the ground arrivals used by roaming actors. */
+export function playerHallArrival(from:string,link:HallLink){
+  if(from==='roof'&&link.target==='street')return ROOF_STAIR_RETURN;
+  return {...link.arrival.arrival,facing:link.arrival.facing,stairStep:0,stairDirection:1};
+}
 
 /** First real doorway on a shortest route, also used by security and the cat. */
 export function hallLinkToward(from: HallId, target: HallId): HallLink | undefined {

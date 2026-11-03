@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE } from '../src/shared/rooftop';
+import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_RETURN } from '../src/shared/rooftop';
 import { projectStreetPoint,StreetView } from '../src/game/streetView';
 
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
@@ -215,15 +215,34 @@ test('manually climb each switchback without falling, reach the roof edge and re
   await overview(page, true);
   await clickWorld(page, ROOF_STAIRS.click.x, ROOF_STAIRS.click.y);
   await expect.poll(async () => (await state(page)).hall, { timeout: 15000 }).toBe('street');
-  await expect.poll(async () => (await state(page)).y).toBe(STREET_ROOF_STAIRS.arrival.y);
-  // The lower ladder can be entered with Up and backed down safely.
+  await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.x-ROOF_STAIR_RETURN.x,s.y-ROOF_STAIR_RETURN.y);}).toBeLessThan(.02);
+  expect((await state(page)).stairStep).toBe(ROOF_STAIR_RETURN.stairStep);
+  expect((await state(page)).stairDirection).toBe(-1);
   await overview(page,false);
-  await page.keyboard.down('ArrowUp');
-  try{await expect.poll(async()=>(await state(page)).stairStep,{timeout:10000}).toBe(1);}
-  finally{await page.keyboard.up('ArrowUp');}
-  await page.keyboard.down('ArrowDown');
-  try{await expect.poll(async()=>(await state(page)).stairStep,{timeout:10000}).toBe(0);}
-  finally{await page.keyboard.up('ArrowDown');}
+  await page.waitForTimeout(300);
+  expect((await state(page)).hall).toBe('street');
+  expect((await state(page)).street.view.side).toBe('rear');
+  await noGroundConversation(page);
+  await page.screenshot({path:`../roof-${info.project.name}-return-top.png`});
+  await page.reload();
+  await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
+  await expect.poll(async()=>(await state(page)).online).toBe(true);
+  expect((await state(page)).hall).toBe('street');
+  expect((await state(page)).stairStep).toBe(ROOF_STAIR_RETURN.stairStep);
+  expect((await state(page)).stairDirection).toBe(-1);
+  await noGroundConversation(page);
+  if(mobile){
+    while((await state(page)).stairStep>0){
+      const s=await state(page),step=s.stairStep,target=ROOF_STAIR_ROUTE[step-1];
+      const view=new StreetView();view.side='rear';
+      const a=view.point(s,true),b=view.point(target,true);
+      await clickViewPoint(page,{x:(a.x+b.x)/2,y:(a.y+b.y)/2-8});
+      await expect.poll(async()=>(await state(page)).stairStep,{timeout:10000}).toBeLessThan(step);
+      await expect.poll(async()=>{const p=await state(page);return Math.hypot(p.serverX-p.x,p.serverY-p.y);}).toBeLessThan(.1);
+    }
+  }else await keyUntil(page,'ArrowDown',async()=>(await state(page)).stairStep===0);
+  expect((await state(page)).hall).toBe('street');
+  expect(Math.hypot((await state(page)).x-STREET_ROOF_STAIRS.foot.x,(await state(page)).y-STREET_ROOF_STAIRS.foot.y)).toBeLessThan(20);
   await overview(page,true);
   // The narrow strip is outside the normal rear circulation route.
   for (const p of [{ x: 1760, y: 470 }, { x: 2320, y: 360 }, { x: 2320, y: 1050 }]) await walk(page, p.x, p.y);

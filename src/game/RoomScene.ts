@@ -51,7 +51,7 @@ import { RooftopRenderer } from './RooftopRenderer';
 import { STREET } from '../shared/street';
 import { CardTablesRenderer } from './CardTablesRenderer';
 import { isCardGame, type DealerAction } from '../shared/cardTables';
-import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, hallObstacles, HALLS, hallLinks, hallLinkAt, inHallDoor, isExteriorHall, type HallLink, activityHall, type HallId, SEATS, BAR_APPROACH, DRINKS, atBar, type PlayerAction, type PlayerView, type NetworkCommands } from '../shared/world';
+import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, hallObstacles, HALLS, hallLinks, hallLinkAt, playerHallArrival, inHallDoor, isExteriorHall, type HallLink, activityHall, type HallId, SEATS, BAR_APPROACH, DRINKS, atBar, type PlayerAction, type PlayerView, type NetworkCommands } from '../shared/world';
 import { findPath, walkable, WORLD, type Point, type Obstacle } from './navigation';
 
 import { CABINETS, cabinetsInHall, type Cabinet } from '../shared/cabinets';
@@ -206,9 +206,9 @@ export class RoomScene extends Phaser.Scene {
     this.endPrediction();this.pendingCabinet=null;this.pendingLounge=null;this.player.path=[];this.marker.setVisible(false);
     const link=hallLinkAt(this.player);if(!link||link.target!==hall)return;
     if(link.target==='roof'&&this.player.stairStep!==ROOF_STAIR_ROUTE.length)return;
-    const door=link.arrival;
-    if(hall==='street')this.streetView.arrive(door.arrival);
-    this.showHall(hall);Object.assign(this.player,door.arrival,{hall,stairStep:0,stairDirection:1,seat:'',action:'idle',drink:'',actionUntil:0,moving:false,facing:door.facing});
+    const arrival=playerHallArrival(this.hall,link);
+    if(hall==='street')this.streetView.arrive(arrival);
+    this.showHall(hall);Object.assign(this.player,arrival,{hall,seat:'',action:'idle',drink:'',actionUntil:0,moving:false});
     this.syncGuests(this.guestViews);
   }
   private drawDoor(link:HallLink){

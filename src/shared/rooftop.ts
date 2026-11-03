@@ -22,6 +22,14 @@ export const ROOF_STAIR_SPEED_SCALE = .65;
 export const ROOF_STAIR_EPSILON = 1e-6;
 export const ROOF_STAIR_DRAW = { ladderRise:160, flightRise:144, widthScale:1.65 } as const;
 const roofEntry=ROOF_STAIR_ROUTE[ROOF_STAIR_ROUTE.length-1];
+const previousRoofLanding=ROOF_STAIR_ROUTE[ROOF_STAIR_ROUTE.length-2];
+const roofReturnLength=Math.hypot(previousRoofLanding.x-roofEntry.x,previousRoofLanding.y-roofEntry.y);
+// Return just inside the last flight, with descent selected and ascent still available.
+export const ROOF_STAIR_RETURN = {
+  x:roofEntry.x+(previousRoofLanding.x-roofEntry.x)/roofReturnLength,
+  y:roofEntry.y+(previousRoofLanding.y-roofEntry.y)/roofReturnLength,
+  stairStep:ROOF_STAIR_ROUTE.length-1,stairDirection:-1,facing:'right',
+} as const;
 export const STREET_ROOF_STAIRS = {
   foot: ROOF_STAIR_ROUTE[0],
   entry: roofEntry, arrival: { x: 1660, y: 462 }, facing: 'down', click: { x: 1660, y: 477 },

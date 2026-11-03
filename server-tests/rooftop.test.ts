@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { findPath, walkable } from '../src/game/navigation';
-import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, advanceRoofStairStep } from '../src/shared/rooftop';
+import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_RETURN, advanceRoofStairStep } from '../src/shared/rooftop';
 import { HALLS, hallLinkAt, hallLinks, hallLinkToward, hallObstacles, type HallId } from '../src/shared/world';
 import { atElevator, canTravelByElevator, elevatorFloors } from '../src/shared/elevator';
 import { cabinetsInHall } from '../src/shared/cabinets';
@@ -131,7 +131,17 @@ test('server controls roof ascent and return, blocks busy visitors and ignores o
     Reflect.get(room, 'tick').call(room, .05); assert.equal(p.x, ROOF.spawn.x);
     Object.assign(p, ROOF_STAIRS.entry); assert.equal(enter(), true);
     assert.equal(p.hall, 'street'); assert.equal(p.hallRevision, revision + 2);
-    assert.equal(p.x, STREET_ROOF_STAIRS.arrival.x); assert.equal(p.y, STREET_ROOF_STAIRS.arrival.y); assert.equal(enter(), false);
+    assert.equal(p.x,ROOF_STAIR_RETURN.x);assert.equal(p.y,ROOF_STAIR_RETURN.y);
+    assert.equal(p.stairStep,ROOF_STAIR_ROUTE.length-1);assert.equal(p.stairDirection,-1);
+    assert.equal(enter(),false,'return does not immediately trigger the roof again');
+    Reflect.get(room,'tick').call(room,.05);assert.equal(p.hall,'street');
+    handlers.get('inputs')!(client,{revision:p.hallRevision,inputs:[{seq:2,x:0,y:-1,ms:50}]});
+    Reflect.get(room,'tick').call(room,.05);assert.equal(p.hall,'roof','Up can intentionally return to the roof');
+    Object.assign(p,ROOF_STAIRS.entry);assert.equal(enter(),true);
+    const returnY=p.y;
+    handlers.get('inputs')!(client,{revision:p.hallRevision,inputs:[{seq:3,x:0,y:1,ms:50}]});
+    Reflect.get(room,'tick').call(room,.05);assert(p.y>returnY,'Down descends from the upper landing');
+    assert.equal(p.stairDirection,-1);assert(p.stairStep>0);
   } finally { room.onDispose(); room.clock.clear(); await accounts.logout(session.token); }
 });
 

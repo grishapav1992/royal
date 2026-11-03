@@ -27,7 +27,7 @@ import { PvpRoom } from './pvp/room';
 import { cabinetHall, cabinetsInHall, type Cabinet } from '../src/shared/cabinets';
 import { cabinetSeat } from '../src/shared/cabinetSeating';
 import { findPath, walkable, type Point } from '../src/game/navigation';
-import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLinkAt, inHallDoor, SEATS, DRINKS, atBar, type ChatMessage, type HallId } from '../src/shared/world';
+import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLinkAt, playerHallArrival, inHallDoor, SEATS, DRINKS, atBar, type ChatMessage, type HallId } from '../src/shared/world';
 import { canTravelByElevator, elevatorDock } from '../src/shared/elevator';
 import { intoxicatedMovement } from '../src/shared/intoxication';
 import type { DrinkingState } from './intoxicationStore';
@@ -606,9 +606,8 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     const link=hallLinkAt(p);if(!link)return false;
     if(link.target==='roof'&&p.stairStep!==ROOF_STAIR_ROUTE.length)return false;
     this.activities.leave(id);this.releaseCabinet(id);this.stop(id);this.stand(id);
-    const hall=link.target,door=link.arrival;
-    p.stairStep=0;p.stairDirection=1;
-    p.hall=hall;p.hallRevision++;p.x=door.arrival.x;p.y=door.arrival.y;p.facing=door.facing;c.lastTarget=0;
+    const hall=link.target,arrival=playerHallArrival(p.hall,link);
+    p.hall=hall;p.hallRevision++;Object.assign(p,arrival);c.lastTarget=0;
     this.clients.find(client=>client.sessionId===id)?.send('activities',this.activities.snapshot(id));
     return true;
   }
