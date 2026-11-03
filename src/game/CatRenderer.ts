@@ -6,6 +6,7 @@ import { CAT_CARE } from '../shared/catCare';
 import { characterHugColors } from './characters';
 import { catSurface } from '../shared/catSurfaces';
 import { CatWalkCycle } from './CatWalkCycle';
+import { CatIdleMotion } from './CatIdleMotion';
 import walkFrames from '../../public/assets/cat/walk-v3-frames.json';
 
 export const CAT_TEXTURE = 'zverochka';
@@ -51,6 +52,7 @@ export class CatRenderer {
   private mood = '';
   private purrAt = -Infinity;
   private walkCycle = new CatWalkCycle();
+  private idleMotion: CatIdleMotion;
   constructor(private scene: Phaser.Scene) {
     const texture = scene.textures.get(CAT_TEXTURE), source = texture.getSourceImage() as HTMLImageElement;
     FRAMES.forEach(([left,top,right,bottom], index) => {
@@ -58,6 +60,7 @@ export class CatRenderer {
       const x = Math.max(0,left-8), y = Math.max(0,top-8);
       texture.add(String(index),0,x,y,Math.min(source.width,right+8)-x,Math.min(source.height,bottom+8)-y);
     });
+    this.idleMotion = new CatIdleMotion(scene, CAT_TEXTURE);
     addFrames(scene,CAT_HABITS_TEXTURE,HABIT_FRAMES,2);
     addFrames(scene,CAT_CLIMB_TEXTURE,{
       '0':[147,161,738,462], '1':[917,24,1441,519],
@@ -84,7 +87,7 @@ export class CatRenderer {
     const visible = view.hall === hall;
     this.sprite.setVisible(visible); this.shadow.setVisible(visible && view.mood !== 'carried');
     this.bubble.setVisible(false); this.treat.setVisible(false);this.hugArms.setVisible(false);
-    if (!visible) { if(this.hall)stopCatPurr();this.hall = undefined;this.walkCycle.update(view,false,true); return; }
+    if (!visible) { if(this.hall)stopCatPurr();this.hall = undefined;this.walkCycle.update(view,false,true);this.idleMotion.frame(undefined,0); return; }
     if (!audible) stopCatPurr();
     const enteringMood=this.mood!==view.mood;
     if(enteringMood) {
@@ -130,13 +133,16 @@ export class CatRenderer {
       textureKey=CAT_WALK_TEXTURE;scale=.26;
       frame=view.facing+'-'+(view.moving&&!reducedMotion?walkFrame:0);
     }
+    const idlePose = !reducedMotion && textureKey === CAT_TEXTURE ? frame === '16' ? 'sleeping' : frame === '17' ? 'seated' : undefined : undefined;
+    const idleFrame = this.idleMotion.frame(idlePose, dt);
+    if (idleFrame) { textureKey = idleFrame.key; frame = idleFrame.frame; }
     if (this.sprite.texture.key !== textureKey || this.sprite.frame.name !== frame) this.sprite.setTexture(textureKey,frame);
     if (textureKey===CAT_WALK_TEXTURE) {
       const registration=walkFrames[view.facing][view.moving&&!reducedMotion?walkFrame:0];
       const [left,top,right,bottom]=registration.bounds;
       this.sprite.setOrigin((registration.anchorX-left)/(right-left),(registration.groundY-top)/(bottom-top));
     } else this.sprite.setOrigin(.5,1);
-    const breathe = !reducedMotion && ['sleeping','belly-up','perched','purring'].includes(view.mood) ? Math.sin(time/950)*.015 : 0;
+    const breathe = !reducedMotion && view.mood === 'belly-up' ? Math.sin(time/950)*.015 : 0;
     const stretch=view.mood==='stretching'&&!reducedMotion?Math.sin(view.progress*Math.PI):0;
     const depth = surface?.depth ?? (carried ? view.y+5 : view.y+1);
     const footY=this.y+(surface?0:view.mood==='eating-bowl'?-5:7)-jump;
