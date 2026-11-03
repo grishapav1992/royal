@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { STREET } from '../src/shared/street';
 import type { StreetResidentId } from '../src/game/streetDetails';
-import { projectStreetPoint } from '../src/game/streetView';
+import { projectStreetPoint,projectStreetGround } from '../src/game/streetView';
 
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
 async function worldPoint(page: Page, x: number, y: number) {
@@ -9,7 +9,7 @@ async function worldPoint(page: Page, x: number, y: number) {
   await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
   const box = (await page.locator('#game canvas').boundingBox())!;
   const current = await state(page), { view } = current;
-  const point=current.hall==='street'?projectStreetPoint({x,y},current.street.view.orientation):{x,y};
+  const point=current.hall==='street'?(view.overview?projectStreetPoint:projectStreetGround)({x,y},current.street.view.orientation):{x,y};
   return { x: box.x + (point.x - view.x) * view.zoom * box.width / view.width, y: box.y + (point.y - view.y) * view.zoom * box.height / view.height };
 }
 async function overview(page: Page, on: boolean) {

@@ -11,7 +11,7 @@ export function streetSide(point: Point, previous: StreetSide = 'front'): Street
     return point.y>b.y+b.h+24||outside&&point.y>b.y+48?'front':'rear';
   }
   // Enter the courtyard only after the whole character clears the rear corner.
-  return point.y<b.y-48&&point.x>b.x+32&&point.x<b.x+b.w-32?'rear':'front';
+  return point.y<=b.y-12&&point.x>b.x+32&&point.x<b.x+b.w-32?'rear':'front';
 }
 export function projectStreetPoint(point: Point, side: StreetSide): Point {
   if(side==='rear')return {x:STREET.width-point.x,y:STREET.height-point.y};
@@ -20,6 +20,28 @@ export function projectStreetPoint(point: Point, side: StreetSide): Point {
 export function unprojectStreetPoint(point: Point, side: StreetSide): Point {
   if(side==='rear')return {x:STREET.width-point.x,y:STREET.height-point.y};
   return {x:point.x,y:point.y};
+}
+const clearance=64;
+const clamp=(n:number)=>Math.max(0,Math.min(1,n));
+function interpolate(x:number,knots:readonly (readonly [number,number])[]){
+  if(x<=knots[0][0])return x+knots[0][1]-knots[0][0];
+  for(let i=1;i<knots.length;i++)if(x<=knots[i][0]){const a=knots[i-1],b=knots[i];return a[1]+(x-a[0])*(b[1]-a[1])/(b[0]-a[0]);}
+  const last=knots[knots.length-1];return x+last[1]-last[0];
+}
+function sidewalkKnots(y:number,side:StreetSide):[number,number][]{
+  const b=STREET.building,left=side==='front'?b.x:STREET.width-b.x-b.w,right=left+b.w,base=side==='front'?b.y+b.h:STREET.height-b.y;
+  const edge:[number,number][]=[[320,320],[left-12,left-clearance],[left,left],[right,right],[right+12,right+clearance],[2500,2500]];
+  const north:[number,number][]=[[320,320],[left+32,left-clearance],[(left+right)/2,(left+right)/2],[right-32,right+clearance],[2500,2500]];
+  const turn=side==='front'?clamp((b.y+60-y)/72):0,fade=clamp((base+120-y)/120);
+  // Strictly increasing ground coordinates preserve click inversion while leaving room for the whole figure.
+  const xs=[...new Set([0,STREET.width,...edge.map(p=>p[0]),...north.map(p=>p[0])])].sort((a,b)=>a-b);
+  return xs.map(x=>{const a=interpolate(x,edge),z=a+(interpolate(x,north)-a)*turn;return [x,x+(z-x)*fade];});
+}
+export function projectStreetGround(point:Point,side:StreetSide):Point{
+  const p=projectStreetPoint(point,side);return {x:interpolate(p.x,sidewalkKnots(p.y,side)),y:p.y};
+}
+export function unprojectStreetGround(point:Point,side:StreetSide):Point{
+  return unprojectStreetPoint({x:interpolate(point.x,sidewalkKnots(point.y,side).map(([x,y])=>[y,x])),y:point.y},side);
 }
 export function streetDirection(point: Point, side: StreetSide, _inverse=false): Point {
   if(side==='rear')return {x:-point.x,y:-point.y};
@@ -42,7 +64,7 @@ export class StreetView {
   get size(){return {width:STREET.width,height:STREET.height};}
   get angle(){return this.orientation==='rear'?Math.PI:0;}
   point(point:Point,climbing=false){
-    const result=projectStreetPoint(point,this.orientation);
+    const result=this.overview||climbing?projectStreetPoint(point,this.orientation):projectStreetGround(point,this.orientation);
     if(climbing&&!this.overview&&this.side==='rear'){
       const foot=projectStreetPoint(STREET_ROOF_STAIRS.foot,'rear');
       result.x=foot.x+(result.x-foot.x)*1.65;
@@ -52,7 +74,7 @@ export class StreetView {
     }
     return result;
   }
-  world(point:Point){return unprojectStreetPoint(point,this.orientation);}
+  world(point:Point){return this.overview?unprojectStreetPoint(point,this.orientation):unprojectStreetGround(point,this.orientation);}
   facing(facing:Facing):Facing{
     const directions={up:{x:0,y:-1},down:{x:0,y:1},left:{x:-1,y:0},right:{x:1,y:0}};
     const p=streetDirection(directions[facing],this.orientation);
@@ -63,12 +85,11 @@ export class StreetView {
     const y=this.point(point,climbing).y;
     if(this.overview)return y;
     if(climbing)return this.wall.base+10;
-    // Walkable side paths must stay in front of the facade's flat screen edge.
-    return y<this.wall.base?this.wall.base+6+y/1000:y;
+    return y;
   }
   get wall(){
     const b=STREET.building;
-    const points=[{x:b.x,y:b.y},{x:b.x+b.w,y:b.y},{x:b.x,y:b.y+b.h},{x:b.x+b.w,y:b.y+b.h}].map(p=>this.point(p));
+    const points=[{x:b.x,y:b.y},{x:b.x+b.w,y:b.y},{x:b.x,y:b.y+b.h},{x:b.x+b.w,y:b.y+b.h}].map(p=>projectStreetPoint(p,this.orientation));
     const left=Math.min(...points.map(p=>p.x)),right=Math.max(...points.map(p=>p.x));
     return {left,right,width:right-left,base:Math.max(...points.map(p=>p.y))};
   }

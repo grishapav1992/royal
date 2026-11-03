@@ -1,6 +1,6 @@
 import {test,expect,type Page} from '@playwright/test';
 import {STREET} from '../src/shared/street';
-import {projectStreetPoint} from '../src/game/streetView';
+import {projectStreetGround} from '../src/game/streetView';
 const state=(page:Page)=>page.evaluate(()=>(window as any).royalDemo.getState());
 async function overview(page:Page,on:boolean){const b=page.locator('#room-overview');if((await b.getAttribute('aria-pressed')==='true')!==on)await b.click();await expect.poll(async()=>(await state(page)).view.overview).toBe(on);}
 async function walk(page:Page,x:number,y:number){
@@ -14,7 +14,7 @@ async function walk(page:Page,x:number,y:number){
 }
 async function closeWalk(page:Page,x:number,y:number){
   await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));
-  const box=(await page.locator('#game canvas').boundingBox())!,s=await state(page),v=s.view,p=projectStreetPoint({x,y},s.street.view.orientation);
+  const box=(await page.locator('#game canvas').boundingBox())!,s=await state(page),v=s.view,p=projectStreetGround({x,y},s.street.view.orientation);
   await page.mouse.click(box.x+(p.x-v.x)*v.zoom*box.width/v.width,box.y+(p.y-v.y)*v.zoom*box.height/v.height);
   await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.x-x,s.y-y);},{timeout:15000}).toBeLessThan(5);
 }
@@ -35,8 +35,19 @@ test('keep the road in front and enter the full-width courtyard only after clear
   await page.screenshot({path:`../courtyard-${info.project.name}-front-road.png`});
   await walk(page,600,1050);await overview(page,false);
   await page.evaluate(()=>{
-    (window as any).__edgeViolations=[];(window as any).__recordEdges=true;
-    const record=()=>{const s=(window as any).royalDemo.getState();if(s.hall==='street'&&!s.view.overview){const bad=!s.renderVisible||!s.halo.visible||Math.hypot(s.halo.x-s.renderX,s.halo.y-s.renderY)>.1||(s.renderY<s.street.view.wall.base&&s.renderDepth<=s.street.view.wall.base);if(bad)(window as any).__edgeViolations.push({x:s.x,y:s.y,side:s.street.view.side,visible:s.renderVisible,depth:s.renderDepth,halo:s.halo,renderX:s.renderX,renderY:s.renderY});}if((window as any).__recordEdges)requestAnimationFrame(record);};requestAnimationFrame(record);
+    (window as any).__edgeViolations=[];(window as any).__recordEdges=true;(window as any).__clearanceFrames=0;
+    const record=()=>{
+      const s=(window as any).royalDemo.getState();
+      if(s.hall==='street'&&!s.view.overview){
+        const wall=s.street.view.wall,body=s.renderBounds;
+        const bodyOnWall=s.renderY<wall.base&&body.x+body.width>wall.left&&body.x<wall.right;
+        const npcOnWall=s.street.characterBounds.some((p:any)=>p.visible&&p.y<wall.base&&p.right>wall.left&&p.left<wall.right);
+        const bad=!s.renderVisible||!s.halo.visible||Math.hypot(s.halo.x-s.renderX,s.halo.y-s.renderY)>.1||bodyOnWall||npcOnWall;
+        (window as any).__clearanceFrames++;
+        if(bad)(window as any).__edgeViolations.push({x:s.x,y:s.y,side:s.street.view.side,bodyOnWall,npcOnWall,body,halo:s.halo});
+      }
+      if((window as any).__recordEdges)requestAnimationFrame(record);
+    };requestAnimationFrame(record);
   });
   await closeWalk(page,600,700);
   expect((await state(page)).street.view.orientation).toBe('front');
@@ -80,6 +91,7 @@ test('keep the road in front and enter the full-width courtyard only after clear
   await page.screenshot({path:`../courtyard-${info.project.name}-right-tight-exit.png`});
   await page.evaluate(()=>(window as any).__recordEdges=false);
   expect(await page.evaluate(()=>(window as any).__edgeViolations)).toEqual([]);
+  expect(await page.evaluate(()=>(window as any).__clearanceFrames)).toBeGreaterThan(100);
   await page.screenshot({path:`../courtyard-${info.project.name}-right-pass.png`});
   await page.reload();await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});await expect.poll(async()=>(await state(page)).street?.view.side).toBe('front');
   await expect(page.locator('#chat-input')).toBeEnabled();await expect(page.locator('#wallet-balance')).toHaveText(balance!);

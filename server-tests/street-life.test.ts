@@ -187,9 +187,29 @@ test('narrow walkable wall edges and delayed corner transitions never hide a per
   const {StreetView}=await import('../src/game/streetView');
   for(const x of [600,608,2112,2120]){
     const view=new StreetView();
-    for(const y of [920,700,500,460,360]){const p={x,y};view.configure(p,false);assert.equal(view.side,'front');assert(view.visible(p));if(y<920)assert(view.depth(p)>view.wall.base);}
+    for(const y of [920,700,500,460,360]){const p={x,y};view.configure(p,false);assert.equal(view.side,'front');assert(view.visible(p));const q=view.point(p);assert(q.x+50<=view.wall.left||q.x-50>=view.wall.right);assert.equal(view.depth(p),q.y);}
     view.configure({x:1370,y:360},false);
-    for(const y of [500,536,547]){const p={x,y};view.configure(p,false);assert.equal(view.side,'rear');assert(view.visible(p));assert(view.depth(p)>=view.wall.base);}
+    for(const y of [500,536,547]){const p={x,y};view.configure(p,false);assert.equal(view.side,'rear');assert(view.visible(p));const q=view.point(p);assert(q.x+50<=view.wall.left||q.x-50>=view.wall.right);}
     view.configure({x,y:560},false);assert.equal(view.side,'front');
+  }
+});
+
+test('sidewalk presentation preserves inverse clicks and clears complete figures at the turn',async()=>{
+  const {StreetView,projectStreetGround,unprojectStreetGround}=await import('../src/game/streetView');
+  for(const side of ['front','rear'] as const)for(const y of [360,470,488,500,560,700,920,970,1040]){
+    let previous=-Infinity;
+    for(let x=300;x<=2550;x+=5){const p={x,y},q=projectStreetGround(p,side),back=unprojectStreetGround(q,side);assert(Math.hypot(back.x-x,back.y-y)<1e-8);if(side==='front'){assert(q.x>previous);previous=q.x;}}
+  }
+  for(const x of [653,2067]){const view=new StreetView();view.side='front';for(const y of [488,470,360]){const p=view.point({x,y});assert(p.x+50<=view.wall.left||p.x-50>=view.wall.right);view.configure({x,y},false);assert.equal(view.side,'rear');view.side='front';}}
+});
+
+test('resident patrol figures stay clear of either displayed wall throughout their routes',async()=>{
+  const {StreetView}=await import('../src/game/streetView');
+  const patrols=new StreetResidentPatrols();
+  const views=(['front','rear'] as const).map(side=>{const view=new StreetView();view.side=side;return view;});
+  for(let step=0;step<6000;step++)for(const person of patrols.advance(50))for(const view of views){
+    if(!view.visible(person))continue;
+    const p=view.point(person),wall=view.wall;
+    if(p.y<wall.base)assert(p.x+50<=wall.left||p.x-50>=wall.right,person.id+' stays on the displayed pavement');
   }
 });

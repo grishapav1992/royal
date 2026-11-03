@@ -140,6 +140,7 @@ export class StreetResidents {
     this.talkButton.hidden=Boolean(state.conversation);this.nextButton.hidden=!state.conversation;
   }
   get count(){return STREET_RESIDENTS.length;}
+  get characterBounds(){return this.actors.map(({sprite})=>{const b=sprite.getBounds();return {x:sprite.x,y:sprite.y,visible:sprite.visible,left:b.left,right:b.right,top:b.top,bottom:b.bottom};});}
   get textureKeys(){return this.actors.map(actor=>actor.sprite.texture.key);}
   getState(){return {...this.conversations.snapshot(),approaching:this.prepared,people:this.locations.map(p=>({...p,activity:this.poses.get(p.id)?.action??'idle',progress:this.poses.get(p.id)?.progress??0}))};}
 }

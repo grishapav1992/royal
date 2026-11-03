@@ -34,6 +34,7 @@ export class StreetAmbience {
     return this.state.sign;
   }
   get count(){return this.pedestrians.length;}
+  get characterBounds(){return this.pedestrians.map(({sprite})=>{const b=sprite.getBounds();return {x:sprite.x,y:sprite.y,visible:sprite.visible,left:b.left,right:b.right,top:b.top,bottom:b.bottom};});}
   get carRender(){return this.cars.map(image=>({x:image.x,y:image.y,angle:image.angle,visible:image.visible}));}
   getState(){return this.state;}
 }
