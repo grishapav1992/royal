@@ -5,7 +5,9 @@ import {createHash} from 'node:crypto';
 import {projectHostSource} from '../../../scripts/build-host-projection.mjs';
 const folder='deployment/releases/remove-hall-title-20261103-v1';
 const before=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
-const config=JSON.parse(fs.readFileSync('deployment/releases/star-spin-20261103-v1/host-projection.json','utf8'));
+const production=process.argv[3]?JSON.parse(fs.readFileSync(process.argv[3],'utf8')):null;
+const config=production?{format:1,productionCommit:before.sourceCommit,entries:['index.html'],files:structuredClone(production.hostProjection.origins)}
+ :JSON.parse(fs.readFileSync('deployment/releases/star-spin-20261103-v1/host-projection.json','utf8'));
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const source='src/game/interiorArt.ts';
 for(const [name,row]of Object.entries(config.files))assert([before.source[name],before.sourceLF[name]].includes(row.sha256),'Published origin differs: '+name);
