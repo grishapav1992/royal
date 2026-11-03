@@ -305,7 +305,12 @@ def verify_live_receipt(receipt, cleanup):
 
 
 def verify_publication_identities(receipt, cleanup):
-    current = cleanup.healthy()
+    # Query identity checks use Docker's recorded health status, without a fresh health API call.
+    # Full maintenance and verify_live_receipt retain their stronger healthy() checks.
+    current = cleanup.docker_object('container', 'royal-game-1')
+    state = current.get('State', {})
+    require(state.get('Status') == 'running' and state.get('Running') is True
+            and state.get('Health', {}).get('Status') == 'healthy', 'Published game container is not running and healthy')
     require(container_identity(current) == receipt.get('containerIdentity'), 'Production container differs from graph target')
     require(current['Image'] == receipt['image']
             and current['Config'].get('Labels', {}).get('org.opencontainers.image.revision') == receipt['sourceCommit'],

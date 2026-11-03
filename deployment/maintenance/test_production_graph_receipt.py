@@ -69,7 +69,7 @@ class Fixture:
         self.modules.mkdir(exist_ok=True)
         self.current = {'Image':'sha256:'+'c'*64, 'Id':'d'*64,
                         'Config':{'Labels':{'org.opencontainers.image.revision':self.commit}},
-                        'State':{'Status':'running','Health':{'Status':'healthy'},'StartedAt':'2026-11-01T00:00:00.000000000Z'}}
+                        'State':{'Status':'running','Running':True,'Health':{'Status':'healthy'},'StartedAt':'2026-11-01T00:00:00.000000000Z'}}
         self.cleanup.healthy = Mock(return_value=self.current)
         self.plan = {'release': 'current', 'sourceCommit': self.commit, 'currentImage': 'sha256:' + 'c' * 64,
                      'moduleHostContract': self.host_contract, 'independentModuleProofs': [],
@@ -298,7 +298,22 @@ class ProductionGraphReceiptTest(unittest.TestCase):
             for handle in handles:
                 with self.assertRaises(OSError): os.fstat(handle)
             fixture.cleanup.run.assert_not_called()
+            fixture.cleanup.healthy.assert_not_called()
+            self.assertEqual(fixture.cleanup.docker_object.call_args_list,[unittest.mock.call('container','royal-game-1')]*2)
             with self.assertRaisesRegex(RuntimeError,'Production source differs'): graph.verify_live_receipt(receipt,fixture.cleanup)
+
+    def test_publication_check_requires_recorded_docker_running_and_health_without_health_api(self):
+        for field in ['status','running','health','missing-health']:
+            with self.subTest(field=field),tempfile.TemporaryDirectory() as temp:
+                fixture=Fixture(Path(temp));receipt=graph.collect_verified(fixture.plan,fixture.cleanup)
+                fixture.prepare_check(receipt);fixture.publication_locks()
+                if field=='status':fixture.current['State']['Status']='exited'
+                if field=='running':fixture.current['State']['Running']=False
+                if field=='health':fixture.current['State']['Health']['Status']='unhealthy'
+                if field=='missing-health':fixture.current['State'].pop('Health')
+                with self.assertRaisesRegex(RuntimeError,'not running and healthy'):
+                    graph.verify_publication_receipt(receipt,fixture.cleanup,owner_uid=os.getuid())
+                fixture.cleanup.healthy.assert_not_called();fixture.cleanup.run.assert_not_called()
 
     def test_publication_check_fails_closed_on_container_and_selected_release_changes(self):
         for field in ['image','source','id','started','release','missing-recorded','missing-fresh']:
@@ -335,9 +350,11 @@ class ProductionGraphReceiptTest(unittest.TestCase):
             with patch.object(graph.fcntl,'flock',side_effect=BlockingIOError):
                 with self.assertRaises(BlockingIOError):graph.verify_publication_receipt(receipt,fixture.cleanup,owner_uid=os.getuid())
             fixture.cleanup.healthy.assert_not_called();fixture.cleanup.run.assert_not_called()
+            fixture.cleanup.docker_object.assert_not_called()
             paths[-1].unlink()
             with self.assertRaises(FileNotFoundError):graph.verify_publication_receipt(receipt,fixture.cleanup,owner_uid=os.getuid())
             fixture.cleanup.healthy.assert_not_called();fixture.cleanup.run.assert_not_called()
+            fixture.cleanup.docker_object.assert_not_called()
 
     def test_publication_check_repeats_mutable_identities_before_unlock(self):
         with tempfile.TemporaryDirectory() as temp:
