@@ -33,6 +33,10 @@ export function streetPointVisible(point: Point, side: StreetSide): boolean {
 export class StreetView {
   side: StreetSide='front';
   overview=false;
+  arrive(point:Point){
+    const b=STREET.building;
+    this.side=point.y<b.y&&point.x>b.x+48&&point.x<b.x+b.w-48?'rear':'front';
+  }
   configure(point:Point,overview:boolean){
     const old=this.side,oldOverview=this.overview;
     this.side=streetSide(point,this.side);this.overview=overview;

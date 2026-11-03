@@ -217,3 +217,11 @@ test('all long escape flights align with their drawn treads and the final roof e
     assert(Math.hypot(p.x-route[step-1].x-(route[step].x-route[step-1].x)*t,p.y-route[step-1].y-(route[step].y-route[step-1].y)*t)<1e-8);
   }
 });
+
+test('returning from the roof or reconnecting at the ladder restores the rear view without an early corner cut',()=>{
+  const view=new StreetView();view.arrive(STREET_ROOF_STAIRS.arrival);view.configure(STREET_ROOF_STAIRS.arrival,false);
+  assert.equal(view.side,'rear');
+  view.arrive(ROOF_STAIR_ROUTE[4]);assert.equal(view.side,'rear');
+  view.arrive({x:840,y:1030});assert.equal(view.side,'front');
+  view.configure({x:636,y:360},false);assert.equal(view.side,'front');
+});

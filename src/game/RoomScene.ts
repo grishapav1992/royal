@@ -207,6 +207,7 @@ export class RoomScene extends Phaser.Scene {
     const link=hallLinkAt(this.player);if(!link||link.target!==hall)return;
     if(link.target==='roof'&&this.player.stairStep!==ROOF_STAIR_ROUTE.length)return;
     const door=link.arrival;
+    if(hall==='street')this.streetView.arrive(door.arrival);
     this.showHall(hall);Object.assign(this.player,door.arrival,{hall,seat:'',action:'idle',drink:'',actionUntil:0,moving:false,facing:door.facing});
     this.syncGuests(this.guestViews);
   }
@@ -716,6 +717,9 @@ export class RoomScene extends Phaser.Scene {
     const self = players.find(p => p.id === selfId);
     if (self) {
       if (Boolean(self.security) !== this.securityLocked) this.setSecurity(Boolean(self.security));
+      if(self.hall==='street'&&(!this.networkSelf||self.hall!==this.hall||self.hallRevision!==this.networkSelf.hallRevision)){
+        this.streetView.arrive(self);this.streetKeyboardSide=undefined;this.lastStreetKeys='';
+      }
       if(self.hall!==this.hall||(this.networkSelf&&self.hallRevision!==this.networkSelf.hallRevision)){
         this.clickTargets.reset();
         this.prediction.reset();this.afterMovement=undefined;this.correction={x:0,y:0};this.showHall(self.hall);this.switching=false;
