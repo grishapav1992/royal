@@ -1,5 +1,6 @@
 import { CLOTHING_COLORS, HAIR_COLORS, MAKEUP_COLORS, SKIN_COLORS, type Appearance } from '../shared/appearance';
 import type { Facing } from '../shared/movement';
+import { drawProfileArm, drawProfileLimb, profileArmPose, profileBodyPoint, profileBodyPose, profileLegPose } from './profileWalk';
 
 const ink = '#39332c';
 export function characterGamePose(frame: number) {
@@ -67,8 +68,10 @@ export function drawAvatar(c: CanvasRenderingContext2D, a: Appearance, facing: F
   if (facing === 'left') { c.translate(64, 0); c.scale(-1, 1); }
   c.translate(32, 76); c.scale(.94, .94); c.translate(-32, -76);
   const side = facing === 'left' || facing === 'right', back = facing === 'up';
+  const profile = side && !seated && sip < 0;
+  const profileBody = profile ? profileBodyPose(frame) : null;
   const walking = frame < 6, step = walking ? [0, 1, .55, 0, -1, -.55][frame] : 0;
-  const bounce = walking ? [0, -1.2, -.5, 0, -1.2, -.5][frame] : 0;
+  const bounce = profileBody?.y ?? (walking ? [0, -1.2, -.5, 0, -1.2, -.5][frame] : 0);
   const tall = a.body === 2, fat = a.body === 1;
   const lashes = a.makeup === 1 || a.makeup === 4 || a.makeup === 5;
   const lipstick = a.makeup === 2 || a.makeup === 4 || a.makeup === 5;
@@ -109,6 +112,24 @@ export function drawAvatar(c: CanvasRenderingContext2D, a: Appearance, facing: F
   };
   c.lineJoin = 'round'; c.lineCap = 'round';
   for (const leg of [-1, 1]) {
+    if (profileBody) {
+      const far = leg === -1;
+      const pose = profileLegPose(frame, far, profileBodyPoint({ x: far ? 34 : 30.5, y: 61 }, 64, profileBody));
+      const bareLeg = a.bottom === 1 || a.bottom === 2;
+      drawProfileLimb(c, pose.hip, pose.knee, pose.ankle, 9, 7.5, bareLeg ? skin : bottom, ink);
+      if (a.bottom === 1) {
+        // Shorts follow the thigh above a bare calf instead of exposing the hip.
+        const hem = { x: pose.knee.x, y: pose.knee.y + 1 };
+        drawProfileLimb(c, pose.hip, { x: (pose.hip.x + hem.x) / 2, y: (pose.hip.y + hem.y) / 2 }, hem, 10, 9, bottom, ink);
+      }
+      c.save(); c.translate(pose.foot.x + 2, pose.foot.y); c.rotate(pose.angle);
+      if (a.shoes === 1) box(-4.5, -5, 9, 5, shoe, 1);
+      oval(0, 0, 8.5, a.shoes === 2 ? 2.6 : 3, shoe);
+      if (a.shoes === 0) { line(-5, 1.6, 5, 1.6, '#f2e9d1', 1.1); line(-1, -1, 2, -1, '#f2e9d1', .8); }
+      if (a.shoes === 2) oval(4, -1, 3, 1.6, shade(shoe, 28));
+      c.restore();
+      continue;
+    }
     const swing = step * leg, x = 32 + leg * (side ? 3 : fat ? 13 : 9) + (side ? swing * 5 : swing);
     const y = 76 - Math.max(0, swing) * 2.3, width = side ? 9 : fat ? 17 : 13;
     const knee = game ? 64 : seated ? 67 : a.bottom === 1 ? 70 : 65;
@@ -127,12 +148,18 @@ export function drawAvatar(c: CanvasRenderingContext2D, a: Appearance, facing: F
   }
   const gameLift = game ? -8 + (game.action === 'win' ? -game.pulse : game.action === 'lose' ? 3 + game.pulse * .5 : game.pulse * .3) : 0;
   c.save(); c.translate(0, bounce + (game ? gameLift : seated ? 2 : 0));
-  c.translate(32, 64); c.rotate((game ? game.sway * (game.action === 'lose' ? 3.5 : 1.6) : step * (side ? 2.8 : 1.2)) * Math.PI / 180); c.translate(-32, -64);
+  c.translate(32, 64); c.rotate((profileBody?.angle ?? (game ? game.sway * (game.action === 'lose' ? 3.5 : 1.6) : step * (side ? 2.8 : 1.2))) * Math.PI / 180); c.translate(-32, -64);
   // Long hair sits behind the clothing, independently of the selected top.
   if (a.hair === 2 || a.hair === 1) box(side ? 13 : 10, headY - 10, side ? 25 : 44, a.hair === 2 ? 42 : 29, hair, 10);
   if (a.hair === 6) oval(side ? 12 : back ? 44 : 54, headY + 8, 7, 13, hair);
   const sleeve = a.top !== 0, sleeveColor = a.top === 5 ? '#efe0bd' : top;
   const arm = (far: boolean) => {
+    if (profile) {
+      const pose = profileArmPose(frame, far, { x: far ? 35.5 : 29, y: shoulderY + 2 }, 67 - shoulderY);
+      drawProfileArm(c, pose, far ? shade(sleeveColor, -18) : sleeveColor, skin, ink, !sleeve);
+      if (!far && (a.tattoo === 3 || a.tattoo === 4)) tattoo(pose.hand.x, sleeve ? pose.hand.y : pose.elbow.y + 2, a.tattoo);
+      return;
+    }
     const shoulder = side ? (far ? 39 : 26) : 32 + (far ? -1 : 1) * (half - 5);
     if (game) {
       drawSeatedGameArm(c, game, shoulder, shoulderY + 2, side, far, far && side ? shade(sleeveColor, -28) : sleeveColor, skin, !sleeve);
@@ -201,6 +228,7 @@ export function drawAvatar(c: CanvasRenderingContext2D, a: Appearance, facing: F
   if (a.scarf) { box(side ? 25 : 16, shoulderY - 3, side ? 21 : 32, 6, accent, 1); box(back ? 20 : 40, shoulderY + 1, 6, 15, accent, 1); line(back ? 20 : 40, shoulderY + 12, back ? 26 : 46, shoulderY + 12, shade(accent, -25)); }
   if (!side) arm(true);
   if (back && !game) arm(false);
+  if (profile) arm(false);
 
   c.save(); c.translate(32, headY); c.rotate((game ? game.sway * (game.action === 'lose' ? 5 : 1.5) : walking ? -step * 1.2 : frame === 9 ? 1 : 0) * Math.PI / 180); c.translate(-32, -27);
   if (side && tall) { c.translate(32, 27); c.scale(.84, .9); c.translate(-32, -27); }
@@ -325,6 +353,6 @@ export function drawAvatar(c: CanvasRenderingContext2D, a: Appearance, facing: F
     c.restore();
   }
   c.restore();
-  if (!back || game) arm(false);
+  if ((!back || game) && !profile) arm(false);
   c.restore(); c.restore();
 }
