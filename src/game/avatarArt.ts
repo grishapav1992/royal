@@ -4,6 +4,13 @@ import { drawProfileArm, drawProfileLimb, profileArmPose, profileBodyPoint, prof
 import { drawFrontalArmSkin, frontalArmPose, frontalBodyPose, frontalLegPose, traceFrontalTop } from './frontalWalk';
 
 const ink = '#39332c';
+export type AvatarDrawingParts={
+  arm?:(c:CanvasRenderingContext2D,joint:{x:number;y:number;far:boolean;side:boolean;back:boolean})=>void;
+  beforeBody?:(c:CanvasRenderingContext2D)=>void;
+  beforeHead?:(c:CanvasRenderingContext2D)=>void;
+  afterHead?:(c:CanvasRenderingContext2D)=>void;
+  gazeY?:number;
+};
 export function characterGamePose(frame: number) {
   if (frame < 28 || frame > 45) return null;
   const phase = (frame - 28) % 6;
@@ -62,16 +69,16 @@ function shade(hex: string, amount: number) {
 }
 
 /** Separate paper pieces share the same foot anchor and animation poses as club visitors. */
-export function drawAvatar(c: CanvasRenderingContext2D, a: Appearance, facing: Facing, frame: number, seated = false, sip = -1) {
+export function drawAvatar(c: CanvasRenderingContext2D, a: Appearance, facing: Facing, frame: number, seated = false, sip = -1, parts?:AvatarDrawingParts) {
   const game = characterGamePose(frame);
   seated ||= !!game;
   c.save(); c.beginPath(); c.rect(0, -8, 32, 48); c.clip(); c.scale(.5, .5);
   if (facing === 'left') { c.translate(64, 0); c.scale(-1, 1); }
   c.translate(32, 76); c.scale(.94, .94); c.translate(-32, -76);
   const side = facing === 'left' || facing === 'right', back = facing === 'up';
-  const profile = side && !seated && sip < 0;
+  const profile = side && !seated && sip < 0 && !parts?.arm;
   const profileBody = profile ? profileBodyPose(frame) : null;
-  const frontal = !side && !seated && sip < 0;
+  const frontal = !side && !seated && sip < 0 && !parts?.arm;
   const frontalBody = frontal ? frontalBodyPose(frame) : null;
   const walking = frame < 6, step = walking ? [0, 1, .55, 0, -1, -.55][frame] : 0;
   const bounce = profileBody?.y ?? frontalBody?.y ?? (walking ? [0, -1.2, -.5, 0, -1.2, -.5][frame] : 0);
@@ -188,6 +195,7 @@ export function drawAvatar(c: CanvasRenderingContext2D, a: Appearance, facing: F
       return;
     }
     const shoulder = side ? (far ? 39 : 26) : 32 + (far ? -1 : 1) * (half - 5);
+    if(parts?.arm){parts.arm(c,{x:shoulder,y:shoulderY+2,far,side,back});return;}
     if (game) {
       drawSeatedGameArm(c, game, shoulder, shoulderY + 2, side, far, far && side ? shade(sleeveColor, -28) : sleeveColor, skin, !sleeve);
       return;
@@ -209,6 +217,7 @@ export function drawAvatar(c: CanvasRenderingContext2D, a: Appearance, facing: F
   };
   if (frontal) { arm(true); arm(false); }
   if (side) arm(true);
+  parts?.beforeBody?.(c);
   const traceTorso = () => {
     c.beginPath();
     if (frontalArms) {
@@ -266,6 +275,7 @@ export function drawAvatar(c: CanvasRenderingContext2D, a: Appearance, facing: F
   if (!side && !frontal) arm(true);
   if (back && !game && !frontal) arm(false);
   if (profile) arm(false);
+  parts?.beforeHead?.(c);
 
   c.save(); c.translate(32, headY); c.rotate((game ? game.sway * (game.action === 'lose' ? 5 : 1.5) : walking ? -step * 1.2 : frame === 9 ? 1 : 0) * Math.PI / 180); c.translate(-32, -27);
   if (side && tall) { c.translate(32, 27); c.scale(.84, .9); c.translate(-32, -27); }
@@ -318,7 +328,7 @@ export function drawAvatar(c: CanvasRenderingContext2D, a: Appearance, facing: F
       }
       else {
         oval(x, 27, side ? eyeR - 1 : eyeR, a.eyes === 2 ? 10 : tall ? 8.3 : 9, '#fffdf5', .3);
-        oval(x + (side ? 1 : frame === 7 ? -1.5 : frame === 9 ? 1.5 : 0), 28, 1.35, 1.65, ink, 0);
+        oval(x + (side ? 1 : frame === 7 ? -1.5 : frame === 9 ? 1.5 : 0), 28+(parts?.gazeY??0), 1.35, 1.65, ink, 0);
         if (a.eyes === 1 || frame === 24) {
           c.save(); c.beginPath(); c.ellipse(x, 27, side ? eyeR - 1 : eyeR, tall ? 8.3 : 9, 0, 0, Math.PI * 2); c.clip(); c.fillStyle = skin; c.fillRect(x - 10, 16, 20, 12); line(x - 9, 28, x + 9, 28, ink, .6); c.restore();
         }
@@ -390,6 +400,7 @@ export function drawAvatar(c: CanvasRenderingContext2D, a: Appearance, facing: F
     c.restore();
   }
   c.restore();
+  parts?.afterHead?.(c);
   if ((!back || game) && !profile && !frontal) arm(false);
   c.restore(); c.restore();
 }

@@ -1,0 +1,209 @@
+{
+  "feature": "casino-manual-stairs",
+  "dateLocal": "2026-11-04",
+  "timezone": "Europe/Moscow",
+  "testedRuntimeSourceCommit": "eb7a1b41b5ec03f43d5e346644cee7299bdc2a4c",
+  "backendProgramSourceCommit": "8e65c472e32247a7382f71f557283edf9d81dd9d",
+  "mainBaseline": "35ac4214e127d477db4d8de419cf71a49dd14a35",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "sourceFiles": {
+    "src/shared/rooftop.ts": "2e7f4f288e4d2d7a53deda5da0031fb1102a53b5b14c493b8b4f3d5c7ae99a0d",
+    "src/shared/movement.ts": "0362ba706cbb2851d33e00dc086cebda84c9d7f5844c8efdc8c4c39ad3c303ed",
+    "src/network/MovementPrediction.ts": "f4ca10ca5b5c6f0476bfce24e90c7c0fe853f8f07e114057f50d3043b935273a",
+    "server/LobbyRoom.ts": "37cecb6aeeed918f3bc09c73aa24ca95d14f915055991e01ff36b3480f390513",
+    "server/state.ts": "4b1fbf238a22e4cea66320031b795673a8d64eb7cebabb5e592be83fd1ed3782",
+    "src/game/RoomScene.ts": "4ee91991e69927009e09ebb4601f8ecbc31f48a390ea81ec426fbe2ec702f1f5",
+    "src/game/streetView.ts": "c1d2bf5acc6759ade24d833ae76cca08e8b3c1642999f7699c9ca85573ae2471",
+    "src/game/RooftopRenderer.ts": "1abce614fe678a8a96390181c0465c825dbf1ffe34db1a0164dc7ecdcaa8bb8b",
+    "src/game/StreetRenderer.ts": "6af688e580bf061bd6028a790ea49e91992c228d30fc06a33186fadad3120a89",
+    "src/game/roofStairInput.ts": "c99a173951fbb1e96d81f954fb3455e81a9c43f02207829114bbc278736acd54",
+    "server-tests/rooftop.test.ts": "ad71923fdd3afe49a5eb665669d971d185f37c555eb2ccd041e48d6eb225a71f",
+    "tests/rooftop.spec.ts": "3218142e7e2ebf649d8e07b4d3db5f4184024dd28ff07121abaa9411f059f333",
+    "tests/street-camera.spec.ts": "f2998f21f851ad11467742402bf234917a04da78f8ee173b77ae8260e7bda66d"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "08ba86b83135a7c2db0656612a45ad2f5ddab99997665453c0e11351f60cd25f"
+    },
+    "dist-server/index.js": {
+      "bytes": 2424403,
+      "sha256": "4c0a46c6a478264ae763294459ce827ce37f804623b6e4a8cbf7bb7ec8fc286a"
+    },
+    "dist/assets/main-X290wafw.js": {
+      "bytes": 2859214,
+      "sha256": "0e86ebf78e1839f3ceb854e0eed98fb03a3946b07fdf83b9360f9f8c3e2a868b"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    },
+    "dist/assets/main-afxgM5_-.css": {
+      "bytes": 155912,
+      "sha256": "1b42cc1fbf3619b16fc7b8bfbe961d50c17754359895f71520ca8268d8906543"
+    }
+  },
+  "change": "Replace whole-route automatic climbing with manual, rail-constrained movement. Up/W on the vertical section, then alternating Left/A and Right/D on ascending flights. Each flight ends exactly at its landing and requires new input. Wrong directions, release, Space and ground clicks leave the person on the steps. Touch requests only the next landing. Extend ten flights to the visible rear roof edge and follow with the camera.",
+  "geometry": {
+    "flights": 10,
+    "verticalDrawRise": 160,
+    "flightDrawRise": 144,
+    "totalDrawRise": 1600,
+    "topLandingEqualsRoofEdge": true,
+    "frontFacadeFloorCountFixed": false,
+    "physicalStreetObstaclesChanged": false
+  },
+  "controls": {
+    "keyboard": "Up/W, Left/A, Right/D alternately; release pauses.",
+    "wrongDirection": "No movement on a flight.",
+    "touch": "Tap ahead on the currently available flight; walk to its next landing only.",
+    "groundClickWhileClimbing": "Stops current motion without moving to the ground.",
+    "lowerLadderDown": "Back down onto the pavement safely.",
+    "reload": "Retains manual position and progress, no automatic continuation."
+  },
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-03T21:02:14.969Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 4766
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 5856
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 5397
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 4909
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 54
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 18
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 21
+        }
+      ],
+      "passed": true,
+      "durationMs": 21021
+    },
+    "streetUnit": {
+      "command": "npm run test:street",
+      "passed": 55,
+      "failed": 0
+    },
+    "browser": {
+      "roof": {
+        "desktop": {
+          "passed": 1,
+          "reportedDuration": "1.5m"
+        },
+        "mobile": {
+          "passed": 1,
+          "reportedDuration": "1.5m"
+        },
+        "shared": {
+          "everyFlightVisited": true,
+          "manualPauseAtLandings": true,
+          "wrongInputAndGroundClickStayOnSteps": true,
+          "midFlightDesktopPauseAndReconnect": true,
+          "roofEdgeVisible": true,
+          "roofReloadAndReturn": true,
+          "backDownLowerLadder": true,
+          "chatEnabled": true,
+          "balancePreserved": true,
+          "noPageErrors": true,
+          "noHorizontalOverflow": true
+        }
+      },
+      "corners": {
+        "desktop": {
+          "passed": 1,
+          "durationSeconds": 30
+        },
+        "mobile": {
+          "passed": 1,
+          "durationSeconds": 29.6
+        },
+        "bothCorners": true,
+        "partialThenHiddenThenRear": true,
+        "noObservedLayerViolations": true
+      },
+      "passed": 4,
+      "failed": 0
+    },
+    "manualVisualReview": [
+      "desktop-top.png",
+      "mobile-top.png"
+    ],
+    "localCodeMap": {
+      "query": "moveRoofStairs",
+      "passed": true,
+      "runtimeCodeCommit": "eb7a1b41b5ec03f43d5e346644cee7299bdc2a4c",
+      "workingCopyIncludesDocumentationEdits": true,
+      "productionAudit": false
+    }
+  },
+  "story": "Approach the ladder foot -> supply a separate direction or touch for every flight -> pause without leaving its track -> reconnect at the same progress -> reach the roof edge -> shared location transition -> return to rear view -> back down the lower section and leave on the free pavement.",
+  "boundaries": {
+    "input": "Connected-host tests use real canvas pointer/touch events and real keyboard input; no direct player-state mutation.",
+    "movement": "Client prediction, replay and server use moveRoofStairs through shared movement. Unit tests check every flight, wrong input midway and at landings, exact endpoint positions, release and replay consistency.",
+    "server": "Ground target commands cannot detach a player on a flight. Legacy movement is also constrained. Existing revision and full-route qualification are preserved.",
+    "data": "Isolated PostgreSQL/auth used by tests. Mid-flight reload, roof reconnect and return preserve room, chat and balance.",
+    "render": "One logical route drives feet and stairs. Native screenshots show the long escape and snow-covered roof edge. Rear-arrival initialization fixes returning after a roof reconnect."
+  },
+  "regressionFoundDuringVerification": "The first connected-host run completed all ten flights and reached the roof on desktop/mobile, then exposed a front-view initialization error on descending after a roof reload. Arrival handling was fixed in the tested runtime commit; final full-flow scenarios pass.",
+  "localPreview": {
+    "url": "http://127.0.0.1:5191/",
+    "backendRestartedForSharedMovementRules": true,
+    "existingIsolatedDatabaseRetained": true,
+    "productionTouched": false
+  },
+  "scope": {
+    "roofLocationRulesChanged": "Manual progression and current-flight constraint only; full route and existing transition limits remain required.",
+    "walletChanged": false,
+    "gameCatalogueChanged": false,
+    "gameMathematicsChanged": false,
+    "npcRoutesChanged": false,
+    "shovelGripChanged": false,
+    "facadeCornerThresholdsChanged": false,
+    "logicalStairRouteChanged": true
+  },
+  "limitations": [
+    "Mobile is a touch-enabled 390x844 browser emulation, not a physical-device test.",
+    "Current ascending flights accept their designated direction; other directions stop. The bottom vertical section also supports returning to ground.",
+    "Visual height is an art parameter independent of the casino numbered floor count.",
+    "Historical automatic-climb reports retain their original observations and are not current manual-control evidence.",
+    "No production publication or live production audit."
+  ],
+  "screenshots": {
+    "desktop-stairs.png": "095368b2e122a478c8d59d2fdd45872feb5547aadac50054f6f793cf061e8116",
+    "desktop-climb.png": "f5ffe5a650bd0158188eeffeafa1bb2377337bd8afe29c3ad9519265fa80d133",
+    "desktop-top.png": "607d82ce1f6f0d7878b335f18abbc1681b87f9fb249b1a1070e401d60353e265",
+    "desktop-arrival.png": "10069b7060188638e23ffb1d48c1f9607a3c40adb4821930326803ee52f997cf",
+    "mobile-stairs.png": "aa9cdbfc5be90dd8054e5c55ce1974c0fe7dbdf4c1c30b5c423093489cd19242",
+    "mobile-climb.png": "fdf2a82f25ff9dc140e848de0703c98e54f40bdf32fb188a01a51625bcc318f6",
+    "mobile-top.png": "6bfe403eeb506fe97584df8f4b91bc578835bb5f96a6499e552d20b7b1b5e936",
+    "mobile-arrival.png": "42d68dad0ba8bb59393b142133da5fd2326324e210b5a5a91ae15182b61a8e65"
+  }
+}

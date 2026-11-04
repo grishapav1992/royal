@@ -4,7 +4,7 @@ export const Player = schema({
   name: t.string().default('Гость'), x: t.number().default(540), y: t.number().default(570),
   skin: t.uint8().default(0), facing: t.string().default('down'), moving: t.boolean().default(false),
   hall: t.string().default('arcade'), hallRevision: t.number().default(0),
-  inputSeq: t.number().default(0),
+  inputSeq: t.number().default(0), stairStep: t.uint8().default(0), stairDirection:t.number().default(1),
   connected: t.boolean().default(true), playing: t.boolean().default(false),
   cabinet: t.string().default(''), gameReaction: t.string().default(''), gameReactionUntil: t.number().default(0),
   activity: t.string().default(''), ears: t.boolean().default(false),

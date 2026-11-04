@@ -1,0 +1,187 @@
+{
+  "feature": "casino-exterior-views",
+  "visualVersion": "exterior-v8",
+  "date": "2026-11-03",
+  "testedSourceCommit": "1d9d34143f834a4707102f4bde9839dcd64347bf",
+  "mainBaseline": "07d90d9022600ecb124f21066879b695dd63ea8f",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "sourceFiles": {
+    "src/game/streetView.ts": "a0d46f4edd46182d35cfa6e7b5787efb7efc74fc45f328b80eebcebc38b29ea1",
+    "src/game/streetWalls.ts": "7c891005873a9f5a114fdc3d9bdf84fe566e937b5e734d8f22eab061ccd5a25a",
+    "src/game/RoomScene.ts": "a1f3934acc5dae3a53a20d231c40160a355acddf3736a30efcbe4a77c8109d89",
+    "src/game/StreetRenderer.ts": "c9b557b3023bf9791dea26dcad9873c318612c67171113f7b56cb57622a660cd",
+    "src/game/RooftopRenderer.ts": "0e4fccc321662d4c0a338a9f839d93ea369cd0d80e97c645b7d6d0ee22cfdb62",
+    "src/game/StreetAmbience.ts": "38ba13817630c16b2269c4cc743a377d0f0f02719feff2d246db2a264f1b7070",
+    "src/game/StreetResidents.ts": "b85f2e9ce787c64d4b5e3b69fc0fb5f44623c0ef205e786144ec127d243b06cd",
+    "src/game/SecurityGuard.ts": "d143b2743a94f2538937b934c6f1adbf5916a3284e16260f2fca9bbc01c1fa69",
+    "src/ui/ClubMap.ts": "aebdfd84bbe5ad434192db1b548562a5cd3ab9f9cc47443230762d184cc441b7",
+    "src/main.ts": "041d1c93d3d0fff767ea92fbd6c5d80303c70de2c0f628bd228c7ac6c3d23cd1",
+    "src/shared/rooftop.ts": "d830e2bf8298f20383cc639b926dcc3aab2d70122e40665b8bd41bf099d7a2ab",
+    "src/shared/movement.ts": "32335437b4b640c7aa08dfcfdbd2fea65df2694f95a4b0ec5ee4652a6336b486",
+    "src/network/LobbyClient.ts": "47b38e0b797e5b84da50fa307136722ea20f5783811b622ad31dd8d4ff030117",
+    "server/LobbyRoom.ts": "a1d32de8ea039c51dca3dff0613facfc8492d7e4442dd741f9d360623db34e05",
+    "server/state.ts": "4b1fbf238a22e4cea66320031b795673a8d64eb7cebabb5e592be83fd1ed3782",
+    "scripts/build-game-module.mjs": "6b5b9c4fe709aa07c478ec46ac4d83728dc4abffbcca2f8e52412033b052e9e3",
+    "scripts/module-build-cache.mjs": "984c051063ed09e03105f69fe6e703b0a5d22d4135f4e9dd1c5ec715927c6067",
+    "tests/street.spec.ts": "a26118d9931669113956c0bd49a4bee69081abbc9a21f5e8f2ca567f0618d8ee",
+    "tests/rooftop.spec.ts": "b0991e822d3b052782f35acdb545f03f0c43c76e1e3135910aca1732c216e2ab",
+    "server-tests/street-life.test.ts": "6a40e21f9a3aa1c337d07111dceabdd4d2ceecd8b6686f7f32e4490f6001d33e",
+    "server-tests/rooftop.test.ts": "c13abcf8127683b1e777b595779db156b7cedddd9678571f683ad654fd6bf288",
+    "server-tests/module-resource-fingerprint.test.mjs": "d1d922a14b5041b7d7733c881e52dc41031ef7352eee2520331f7eee05226a16"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "38f80aafb5df18075476519214313c361f7aaa0ba30b1619b4f074c286a6d99b"
+    },
+    "dist-server/index.js": {
+      "bytes": 2422024,
+      "sha256": "ce62f0c309dcbf3e2d17bd714e69b3bc6afab68b212857ed85f01d42b93c0fd5"
+    },
+    "dist/assets/main-L36kbDZP.js": {
+      "bytes": 2851030,
+      "sha256": "7aca326686feb062494440b073a5b56b53c52c5fba3f46e0a360cc8999ae475e"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    },
+    "dist/assets/main-afxgM5_-.css": {
+      "bytes": 155912,
+      "sha256": "1b42cc1fbf3619b16fc7b8bfbe961d50c17754359895f71520ca8268d8906543"
+    }
+  },
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-03T18:03:49.691Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 4359
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 6585
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 5179
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 5597
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 74
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 18
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 22
+        }
+      ],
+      "passed": true,
+      "durationMs": 21834
+    },
+    "profile": {
+      "command": "npm run test:street",
+      "passed": 45,
+      "failed": 0
+    },
+    "sharedDependencyFingerprint": {
+      "command": "node --test server-tests/module-resource-fingerprint.test.mjs",
+      "passed": 2,
+      "failed": 0
+    },
+    "browser": {
+      "passed": 4,
+      "failed": 0,
+      "viewports": [
+        "1440x1000",
+        "390x844"
+      ],
+      "hostWithChat": true,
+      "scenarios": [
+        "Street: exit, four perimeter viewpoints, real taxi anchor and visibility, screen controls, NPC conversations, reload, reduced motion, unchanged balance",
+        "Roof: bottom approach, every zigzag checkpoint, reload during climb, resume, roof circulation, reload, descent and return"
+      ],
+      "initialHarnessIssue": "An early assertion polled a brief bottom y-coordinate and could observe the completed roof instead. Removed it because the recorded full route already checks the bottom; ordered stair progress is observed directly. Only the two affected roof scenarios were repeated, both passed.",
+      "physicalPhoneTested": false
+    },
+    "localPreview": {
+      "passed": true,
+      "url": "http://127.0.0.1:5191/",
+      "corner": {
+        "before": {
+          "x": 476.6153869628906,
+          "y": 966.8076782226562,
+          "side": "front"
+        },
+        "after": {
+          "x": 476.6153869628906,
+          "y": 824.6261596679688,
+          "side": "left"
+        }
+      },
+      "chatEnabled": true,
+      "backendReload": "SIGUSR2 reload retained the same isolated PostgreSQL and auth schema"
+    },
+    "projectMap": {
+      "mode": "local",
+      "query": "streetView",
+      "completed": true
+    }
+  },
+  "design": {
+    "sameLogicalMap": true,
+    "opaqueWalls": true,
+    "fixedFloorCount": false,
+    "unmarkedZigzagStairs": true,
+    "taxiWorld": {
+      "x": 2580,
+      "y": 1120
+    },
+    "taxiVisibleFrom": [
+      "front",
+      "right"
+    ],
+    "taxiHiddenFrom": [
+      "left",
+      "rear"
+    ],
+    "unchangedStreetObstacles": true
+  },
+  "limitations": [
+    "Mobile layout verified through browser emulation; no physical phone used.",
+    "No production release or live production catalogue audit in this task.",
+    "Historical broader cat/security test failures remain documented in casino-rooftop/verification.json; those tests were not reclassified as passing."
+  ],
+  "screenshots": {
+    "desktop-entrance.png": "9469529628dcef26811daf419bc639f79efdc72b4b4657aa3612a0c999fa6747",
+    "desktop-left-view.png": "b8cf44b2ae3fd7e2b428e6bf77f5ab841b62c1819d7010539f9d5d3aef72ed29",
+    "desktop-rear-view.png": "e3179d44f21ca18320b8d6db05176e3532b5ab5f42daef4410aa6a718479bbde",
+    "desktop-right-view.png": "13c3c736d1ee2b7f9af89f51d9d55e2be28d8bcdddded354d39e13ddf2aa65d3",
+    "desktop-climb.png": "9e4da50e84211add66269337f423be61a4770161381f94f0c9d73cb3af09b6f6",
+    "desktop-arrival.png": "18eafd5679f5fad94fb51da09d59b57b118e1d6cb4c399884f418a65087b6b40",
+    "mobile-entrance.png": "c1e39f311cfbedff9b4c1757cab5cabbc5d52b12dc40a2d5b121425aef204865",
+    "mobile-left-view.png": "39f4c0e6d592b496c7f659ea8ae25fb329b61308ddd65101977207e476ecd043",
+    "mobile-rear-view.png": "84183312d29f761d86dc7c33e76ded5e48bb049886e39dc4724e8e89668cf0b6",
+    "mobile-right-view.png": "42964cf62d05af43d355c619e12ecbee1c2e83b4b21dd7fbf03e854e1aec31a7",
+    "mobile-climb.png": "327eea2f36814665344edfd0bfc76420fc40e435fd964425d476d6e5249e55c5",
+    "mobile-arrival.png": "1dcaf685ed2b2aeb74a1910379cbcf1f7989927985995a4f46c4d841b66fbaf5"
+  }
+}

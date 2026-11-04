@@ -1,0 +1,92 @@
+{
+  "checkedAt": "2026-11-04T17:46:38.374Z",
+  "story": "Walk from the casino around the street, climb to the middle balcony, turn to the window, enter and return, approach again from both adjoining flights, then descend to ground.",
+  "environment": {
+    "url": "http://127.0.0.1:5191/",
+    "backend": "http://127.0.0.1:2591/",
+    "launcherPid": 72964,
+    "backendPidBefore": 9007,
+    "backendPidAfter": 9007,
+    "servedScript": "/assets/main-1RwRLPQk.js",
+    "frontendStatus": 200,
+    "backendHealthStatus": 200,
+    "existingPreview": true,
+    "serverStartedForCheck": false,
+    "serverRestarted": false,
+    "rebuilt": false,
+    "originalDatabaseRetained": true,
+    "freshBrowserSessions": true,
+    "userTabReloaded": false,
+    "userAccountModified": false,
+    "fixtureAccount": "One disposable local test account remains in the preview database until that preview is stopped."
+  },
+  "source": {
+    "savedFeatureCommit": "c8df41ec973fe7e95ca029ad269660f78b95ccdf",
+    "runtimeCommit": "54bc0d7416b5d38846510268f434c809538129c5",
+    "gameplayChangesForThisCheck": false,
+    "previousSourceAndArtifactHashesMatched": 13
+  },
+  "method": {
+    "command": "node node_modules/@playwright/test/cli.js test --config=playwright.live-stairs.config.ts tests/stair-simple.spec.ts",
+    "controls": "Real browser keyboard and mouse input. Diagnostic state is read only.",
+    "positionsInjected": false,
+    "locationsInjected": false,
+    "teleportOrRecoveryUsed": false,
+    "separateTestServer": false
+  },
+  "result": {
+    "passed": 2,
+    "failed": 0,
+    "modes": [
+      "solo",
+      "connected"
+    ],
+    "duration": "2.1m",
+    "pageErrors": 0,
+    "observedStalls": 0,
+    "coverage": [
+      "casino exit and street path to the ladder",
+      "early turn from the lower flight more than 120 units before the junction",
+      "whole horizontal platform to the window",
+      "window entry and return",
+      "held-input return protection",
+      "click routing from each adjoining flight",
+      "climb above the balcony and turn back from the upper flight more than 110 units before its junction",
+      "simultaneous side and vertical input with sprint",
+      "return along the platform and full descent to ground",
+      "connected chat remains available"
+    ]
+  },
+  "boundaries": {
+    "browser": "Passed against the already running local page.",
+    "clientToServer": "Connected movement and window actions used the existing WebSocket room.",
+    "serverState": "The authoritative hall, stair progress and movement snapshots reached the expected destinations.",
+    "renderedResponse": "The route, window round trip and final ground return completed with no page errors."
+  },
+  "limits": {
+    "physicalMobileTested": false,
+    "automatedBrowserInput": true,
+    "manualFrameByFrameViewing": false,
+    "visualReview": "A nine-frame contact sheet of the solo route and the final window screenshot were inspected; the full connected route is retained with its original timing.",
+    "unitTests": "No unit or financial test was rerun in this verification-only task. Historical results retain their earlier status.",
+    "projectMap": "The local index refresh was unavailable because the test configuration changed during indexing. The previous map was preserved; movement, client transport and server handlers were inspected directly."
+  },
+  "evidence": {
+    "logSha256": "ce3886566af8402e7be9252b186cfc0555654587fb0b36e79cc9dca4ccc20fb0",
+    "configSha256": "d0b3c0de1e8ed70a51ce2599471c07bf83e3583ba8daacd905e6da9985d0d66f",
+    "scenarioSha256": "5ff3f74aa83b32568af3f4195b39ec11931426af4400d8190e3b556be7ca7fee",
+    "video": {
+      "file": "connected-route.mp4",
+      "sha256": "15ddc27cc3070222522f980cedf13739e93bd342da1fdf08f7d4b5d2a0315cd4",
+      "durationSeconds": 59,
+      "timingChanged": false
+    },
+    "screenshot": {
+      "file": "window.png",
+      "sha256": "640dfbf079f0ca2e9854707321bb6ed4b9f7ea2d76e57bf9f798a9f58b0e8616"
+    }
+  },
+  "productionChanged": false,
+  "catalogueChanged": false,
+  "mathematicsChanged": false
+}

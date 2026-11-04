@@ -1,3 +1,4 @@
+import { advanceRoofStairStep,moveRoofStairs,settleRoofStairLanding,roofStairApproach,ROOF_STAIR_SPEED_SCALE,STREET_ROOF_STAIRS } from './rooftop';
 export type Facing = 'down' | 'left' | 'right' | 'up';
 import { walkable } from '../game/navigation';
 import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, hallObstacles, SEATS } from './world';
@@ -5,19 +6,36 @@ import { blockedByGuard, type GuardCollider } from './guardCollision';
 import { intoxicatedMovement } from './intoxication';
 
 export type MovementInput = { seq: number; x: number; y: number; ms: number; sprint?: boolean; route?: boolean };
-export type MovementBody = { hall?: string; soberAt?: number; x: number; y: number; facing: string; moving: boolean; seat: string; action: string; drink: string; actionUntil: number };
+export type MovementBody = { hall?: string; stairStep?: number; stairDirection?:number; soberAt?: number; x: number; y: number; facing: string; moving: boolean; seat: string; action: string; drink: string; actionUntil: number };
 
 /** Shared collision integration for local prediction, server validation and replay. */
 export function applyMovementInput(body: MovementBody, input: MovementInput, guards:readonly GuardCollider[] = []) {
   let contact=false;
   const length = Math.hypot(input.x, input.y);
   body.moving = false;
-  if (!length) return;
+  if (!length) {if(body.hall==='street')settleRoofStairLanding(body);return;}
   const seat = SEATS.find(s => s.id === body.seat);
   if (seat) { body.x = seat.entry.x; body.y = seat.entry.y; }
   body.seat = ''; body.action = 'idle'; body.drink = ''; body.actionUntil = 0;
   const beforeX = body.x, beforeY = body.y;
   const impaired = intoxicatedMovement(body.soberAt ?? 0, input);
+  if(body.hall==='street'&&moveRoofStairs(body,input,(input.sprint===true?PLAYER_SPRINT_SPEED:PLAYER_SPEED)*ROOF_STAIR_SPEED_SCALE*impaired.speedMultiplier*input.ms/1000)){
+    if(body.moving)body.facing=movementFacing(body.x-beforeX,body.y-beforeY,body.facing as Facing);
+    return;
+  }
+  const approach=body.hall==='street'?roofStairApproach(body,input,(input.sprint?PLAYER_SPRINT_SPEED:PLAYER_SPEED)*impaired.speedMultiplier*input.ms/1000):null;
+  if(approach){
+    if(walkable(approach.x,approach.y,hallObstacles('street'))){
+      if(blockedByGuard(body,approach.x,approach.y,guards))contact=true;
+      else{
+        body.x=approach.x;body.y=approach.y;
+        if(Math.hypot(body.x-STREET_ROOF_STAIRS.foot.x,body.y-STREET_ROOF_STAIRS.foot.y)<=7){body.x=STREET_ROOF_STAIRS.foot.x;body.y=STREET_ROOF_STAIRS.foot.y;body.stairStep=1;body.stairDirection=1;}
+      }
+    }
+    body.moving=Math.hypot(body.x-beforeX,body.y-beforeY)>.001;
+    if(body.moving)body.facing=movementFacing(body.x-beforeX,body.y-beforeY,body.facing as Facing);
+    return contact;
+  }
   // Click routes retain their checked direction while keeping the same speed impairment.
   if (input.route === true) { impaired.x = input.x / length; impaired.y = input.y / length; }
   const distance = (input.sprint === true ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * impaired.speedMultiplier * input.ms / 1000 / 3;
@@ -30,6 +48,11 @@ export function applyMovementInput(body: MovementBody, input: MovementInput, gua
       if(blockedByGuard(body,body.x,body.y+y,guards))contact=true;else body.y+=y;
     }
   }
+  if(body.hall==='street'){
+    const previous=body.stairStep??0;body.stairStep=advanceRoofStairStep(previous,body);
+    if(!previous&&body.stairStep===1){body.x=STREET_ROOF_STAIRS.foot.x;body.y=STREET_ROOF_STAIRS.foot.y;body.stairDirection=1;}
+  }
+  else if(body.stairStep)body.stairStep=0;
   const dx = body.x-beforeX, dy = body.y-beforeY;
   body.moving = Math.hypot(dx, dy) > .01;
   if (body.moving) body.facing = movementFacing(dx, dy, body.facing as Facing);

@@ -1,7 +1,18 @@
 import {  volcanicPlinkoEnglish } from './volcanicPlinkoEn';
 import { progressionEnglish } from './progressionEn';
+import { streetEnglish } from './streetEn';
 
 export const english: Record<string, string> = {
+  ...streetEnglish,
+  'Улица казино':'Casino street',
+  'ВХОД':'ENTRANCE',
+  'НА УЛИЦУ':'TO THE STREET',
+  'На улицу':'Go outside',
+  'В казино':'Enter casino',
+  'Вся улица':'Entire street',
+  'Карта улицы':'Street map',
+  'Открыть всю улицу':'Show the whole street',
+  'Нажми, чтобы посмотреть всю улицу':'Click to see the whole street',
   "Помощь": "Help",
   "Персонаж застрял": "Character stuck",
   "Вернуться ко входу на этаж. Игровой прогресс сохранится.": "Return to the floor entrance. Your game progress will be saved.",

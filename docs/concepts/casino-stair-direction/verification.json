@@ -1,0 +1,162 @@
+{
+  "checkedAt": "2026-11-04T18:00:44.915Z",
+  "scope": "Prevent a side turn from reversing an ascent or descent after passing the middle balcony.",
+  "repository": "https://github.com/grishapav1992/royal",
+  "branch": "feature/casino-street",
+  "runtimeSourceCommit": "55defd31265a41f417894c2474c2797141f961ef",
+  "rootCause": {
+    "previousBehavior": "The side-turn guide always returned to the middle junction, even when it was behind the chosen vertical direction.",
+    "reproduced": [
+      {
+        "step": 7,
+        "beforeY": 318,
+        "inputY": -1,
+        "afterY": 319.4020949708088
+      },
+      {
+        "step": 6,
+        "beforeY": 338,
+        "inputY": 1,
+        "afterY": 336.5979050291912
+      }
+    ],
+    "previousCoverageGap": "Earlier route tests checked approaches toward the balcony and explicit clicks back to it, but not side input after passing it.",
+    "regressionBeforeFix": {
+      "passed": 87,
+      "failed": 1
+    }
+  },
+  "change": {
+    "onFlights": "A side turn is accepted only when the junction is ahead along the explicit vertical input or the last chosen vertical direction.",
+    "afterPassing": "Side input alone stops on the flight; side plus vertical input continues in the chosen vertical direction.",
+    "onApproach": "Turning remains available along either whole connecting flight while approaching the balcony.",
+    "onPlatform": "Horizontal movement continues along the flat platform.",
+    "clickRoutes": "Explicit clicked routes retain their selected destination."
+  },
+  "verification": {
+    "unit": {
+      "command": "npm run test:street",
+      "passed": 88,
+      "failed": 0,
+      "cases": {
+        "approachMatrix": 40,
+        "sideOnlyAfterPassing": 20,
+        "diagonalAfterPassing": 40
+      }
+    },
+    "typecheck": {
+      "command": "node node_modules/typescript/bin/tsc --noEmit",
+      "passed": true
+    },
+    "build": {
+      "frontend": "vite build",
+      "backend": "buildServer",
+      "passed": true,
+      "scope": "Host and backend only. Existing game module packages are retained."
+    },
+    "browser": {
+      "command": "node node_modules/@playwright/test/cli.js test --config=playwright.live-stairs.config.ts tests/stair-simple.spec.ts",
+      "url": "http://127.0.0.1:5191/",
+      "existingPreview": true,
+      "passed": 2,
+      "failed": 0,
+      "modes": [
+        "solo",
+        "connected"
+      ],
+      "duration": "2.2m",
+      "pageErrors": 0,
+      "controls": "Actual browser keyboard and mouse input. Position diagnostics are read only.",
+      "positionsInjected": false,
+      "coverage": [
+        "full street approach and climb",
+        "early turn toward the window",
+        "window round trip",
+        "explicit clicked routes from both adjoining flights",
+        "side input after passing the balcony above and below",
+        "held side plus vertical input in both directions",
+        "sprint approach from above",
+        "full return to ground",
+        "connected chat remains available"
+      ],
+      "directionSamples": [
+        {
+          "online": false,
+          "y": 1,
+          "progress": 9.613404286210937,
+          "maxReverse": 0,
+          "samples": 50
+        },
+        {
+          "online": false,
+          "y": -1,
+          "progress": 9.613404286210823,
+          "maxReverse": 0,
+          "samples": 50
+        },
+        {
+          "online": true,
+          "y": 1,
+          "progress": 9.62458572478647,
+          "maxReverse": 0,
+          "samples": 50
+        },
+        {
+          "online": true,
+          "y": -1,
+          "progress": 9.623400178619761,
+          "maxReverse": 0,
+          "samples": 50
+        }
+      ],
+      "measurement": "Four 800 ms samples, about 50 rendered frames each. Measured reverse movement was zero in all four cases. The assertion tolerates 0.3 world units for network corrections."
+    },
+    "preview": {
+      "frontendStatus": 200,
+      "backendHealthStatus": 200,
+      "servedScript": "/assets/main-DeuzFah7.js",
+      "launcherPid": 72964,
+      "backendPid": 15079,
+      "originalDatabaseRetained": true,
+      "oneAdditionalDisposableFixtureAccount": true
+    },
+    "map": {
+      "status": "unavailable",
+      "reason": "The local index refresh overlapped source synchronization. The previous map was preserved; the shared movement, scene and test sources were inspected directly."
+    },
+    "limits": {
+      "physicalMobileTested": false,
+      "financialQualificationRerun": false
+    }
+  },
+  "sourceHashes": {
+    "src/shared/rooftop.ts": "fe32902b5474e7c9600d67aeb3afd976985e794f65ec651195993ea5c0b0badc",
+    "src/shared/stairWindow.ts": "67b2561c1be14bac242523acbcb0605ce440b318c47846c607658b9a0aacabe3",
+    "src/shared/movement.ts": "bb815fd40edeacc421806041fb64585897b44d447d7cb1c7021004d36b9904f8",
+    "src/game/RoomScene.ts": "d2080d9305ef489041dd11007b1e248d6438d4b3b5a63b3badf4dc653ad0dab8",
+    "src/network/MovementPrediction.ts": "a8d69798320c2e698c92d6db5d6354aca6c0f7c42474b4a0ec32b49cd500cef7",
+    "server-tests/stair-window.test.ts": "11e7496473b41bfeb2fee2cde5f3a7cba4b0769721954444f77653f1908b8fb1",
+    "tests/stair-simple.spec.ts": "dec18d18bad5f3f9c7e7f75a11933a4cd6f789c60584a6a39a29e56ed5e18a54",
+    "playwright.live-stairs.config.ts": "d0b3c0de1e8ed70a51ce2599471c07bf83e3583ba8daacd905e6da9985d0d66f"
+  },
+  "artifactHashes": {
+    "dist/index.html": "db8fb91acd2d4cfe0178f953c64f2222457aecd1507689e106525c0fc072472d",
+    "dist-server/index.js": "780a61f47c65f514db87fcc5c451c4263fde7f58459217331563cc871638e994",
+    "dist/assets/main-DeuzFah7.js": "629e1c9f2ad51484f2d4b5ce5553be8608a6ca776e59d7b3198874bd507d73f0",
+    "dist/assets/main-c0rveKga.css": "5b6c304fa752ed89c2f730876a74fee17a0085e53cc7bf3428ca57097df8e582",
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+  },
+  "evidenceLogHashes": {
+    "before": "6bb982c2154d3d8367ba8bc72346007052b9df308b8f7b1a15e85f165fd614b3",
+    "unit": "742f7db861bb293283cccf3d02bd8bcd16c40f37b92894aafa4816cfce866b08",
+    "build": "0bf0273c398ae7bbee7b126ead76e69052ca31d7aebd9fbfaaa90dc63e195c7d",
+    "ui": "ea6ea6c843c8e38d6152bb37cbf8830f195e05852c17d875f60d6e979b0a9f0d"
+  },
+  "screenshot": {
+    "file": "window.png",
+    "sha256": "bc2d60cdb34eca0efa58101a9f30b49918056b007ac56d4af78d345cd84ce78e"
+  },
+  "productionChanged": false,
+  "catalogueChanged": false,
+  "mathematicsChanged": false
+}

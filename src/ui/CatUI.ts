@@ -66,7 +66,7 @@ export class CatUI {
     this.wasHugging=mine;
     this.keyHint.hidden = !this.panel.hidden || !near || busy;
     this.root.parentElement?.classList.toggle('cat-nearby',near&&!busy||mine);
-    this.location.textContent = HALLS[cat.hall].name + ' · Этаж ' + HALLS[cat.hall].floor;
+    this.location.textContent = HALLS[cat.hall].name + (HALLS[cat.hall].floor ? ' · Этаж ' + HALLS[cat.hall].floor : '');
     const occupied = ['drinking','eating-bowl','scratching','jumping','stretching'].includes(cat.mood);
     const surface=catSurface(cat.surfaceId);
     this.status.textContent = cat.mood === 'carried' && !mine ? 'На руках у другого игрока' : cat.mood==='jumping' ? cat.jumpingDown?'Мягко спрыгивает на пол':cat.onBar?'Залезает на барную стойку':'Запрыгивает на своё место' : cat.mood==='perched'&&surface?surface.label:cat.mood==='walking'&&cat.targetId?'Идёт побыть рядом с человеком':MOODS[cat.mood];

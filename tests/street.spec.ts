@@ -1,0 +1,205 @@
+import { test, expect, type Page } from '@playwright/test';
+import { STREET } from '../src/shared/street';
+import type { StreetResidentId } from '../src/game/streetDetails';
+import { projectStreetPoint } from '../src/game/streetView';
+
+const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
+async function worldPoint(page: Page, x: number, y: number) {
+  await page.bringToFront();
+  await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+  const box = (await page.locator('#game canvas').boundingBox())!;
+  const current = await state(page), { view } = current;
+  const point=current.hall==='street'?projectStreetPoint({x,y},current.street.view.orientation):{x,y};
+  return { x: box.x + (point.x - view.x) * view.zoom * box.width / view.width, y: box.y + (point.y - view.y) * view.zoom * box.height / view.height };
+}
+async function overview(page: Page, on: boolean) {
+  const button = page.locator('#room-overview');
+  if ((await button.getAttribute('aria-pressed') === 'true') !== on) await button.click();
+  await expect.poll(async () => (await state(page)).view.overview).toBe(on);
+}
+async function walk(page: Page, x: number, y: number) {
+  const point = await worldPoint(page, x, y);
+  const tolerance = Math.max(5, 2 / (await state(page)).view.zoom);
+  await page.mouse.click(point.x, point.y);
+  await expect.poll(async () => { const p = await state(page); return Math.hypot(p.x - x, p.y - y); }, { timeout: 20000 }).toBeLessThan(tolerance);
+  await expect.poll(async () => { const p = await state(page); return Math.hypot(p.serverX - p.x, p.serverY - p.y); }).toBeLessThan(3);
+}
+
+async function talkToResident(page:Page,id:StreetResidentId){
+  await overview(page,true);
+  const person=(await state(page)).street.residents.people.find((p:any)=>p.id===id);
+  const hit=await worldPoint(page,person.x,person.y-(id==='mascot'?53:35));
+  await page.mouse.click(hit.x,hit.y);
+  await expect.poll(async ()=>(await state(page)).street.residents.conversation,{timeout:25000}).toBe(id);
+  await expect.poll(async ()=>(await state(page)).street.residents.people.find((p:any)=>p.id===id).moving).toBe(false);
+}
+
+test('walk outside, circle the casino, reconnect and return through the same entrance with chat', async ({ page }, info) => {
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/');
+  await page.getByLabel('Почта', { exact: true }).fill(`street-${crypto.randomUUID()}@example.test`);
+  await page.getByLabel('Пароль', { exact: true }).fill('Street-browser-test!');
+  await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
+  await expect(page.locator('#character-step')).toBeVisible({timeout:15000});
+  await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();
+  await expect.poll(async () => (await state(page)).online).toBe(true);
+  await expect(page.locator('#chat-panel')).toBeVisible();
+  await expect(page.locator('#chat-input')).toBeEnabled();
+  const balance = await page.locator('#wallet-balance').textContent();
+  const network = await page.evaluate(() => (window as any).royalDemo.getNetworkState());
+  expect(network.roomId).toBeTruthy();
+  await overview(page,true);
+  await page.screenshot({path:`../street-${info.project.name}-first-floor.png`});
+  await page.locator('[data-floor-target="street"]').click();
+  await expect.poll(async () => (await state(page)).hall, { timeout: 25000 }).toBe('street');
+  await overview(page, false);
+  await expect(page.locator('h1')).toContainText('Улица казино');
+  await expect(page.locator('#elevator-shortcut')).toBeHidden();
+  expect(await page.evaluate(() => (window as any).royalDemo.getElevator().floors)).not.toContain('street');
+  await expect(page.locator('#chat-input')).toBeEnabled();
+  const streetBefore=(await state(page)).street;
+  expect(streetBefore.pedestrians).toHaveLength(5);
+  await expect.poll(async () => (await state(page)).street.pedestrians[0].x).not.toBe(streetBefore.pedestrians[0].x);
+  await expect.poll(async () => (await state(page)).street.cars[0].x).not.toBe(streetBefore.cars[0].x);
+  await expect.poll(async () => (await state(page)).street.sign.sheen,{timeout:10000}).toBeGreaterThan(0);
+  await page.screenshot({ path: `../street-${info.project.name}-entrance.png` });
+  await overview(page, true);
+  const residents=(await state(page)).street.residents.people;
+  expect(residents.map((p:any)=>p.id)).toEqual(['doorman','janitor','taxi-driver','tourist','mascot']);
+  await talkToResident(page,'doorman');
+  const dialogue=page.locator('.street-conversation');
+  await expect(dialogue.locator('p')).toContainText('Добро пожаловать');
+  await dialogue.getByRole('button',{name:'Ещё',exact:true}).click();
+  await expect(dialogue.locator('p')).toContainText('Ковёр красный');
+  await overview(page,false);
+  await page.screenshot({path:`../street-${info.project.name}-doorman.png`});
+  await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
+  await overview(page,true);
+  await expect.poll(async ()=>(await state(page)).street.residents.people.find((p:any)=>p.id==='tourist').moving,{timeout:16000}).toBe(true);
+  const roaming=(await state(page)).street.residents.people.find((p:any)=>p.id==='tourist');
+  expect(roaming.camera.stage).toBe('carry');expect(roaming.camera.grip).toBe(0);
+  expect(roaming.camera.texture).toBe('street-tourist-camera-v2');
+  const movingHit=await worldPoint(page,roaming.x,roaming.y-35);
+  await page.mouse.click(movingHit.x,movingHit.y);
+  await expect.poll(async ()=>(await state(page)).street.residents.approaching).toBe('tourist');
+  const pinned=(await state(page)).street.residents.people.find((p:any)=>p.id==='tourist');
+  await page.waitForTimeout(200);
+  const waiting=(await state(page)).street.residents.people.find((p:any)=>p.id==='tourist');
+  expect([waiting.x,waiting.y]).toEqual([pinned.x,pinned.y]);
+  const cancel=await worldPoint(page,840,1062);await page.mouse.click(cancel.x,cancel.y);
+  await expect.poll(async ()=>(await state(page)).street.residents.approaching).toBeNull();
+  await expect.poll(async ()=>(await state(page)).street.residents.people.find((p:any)=>p.id==='tourist').moving).toBe(true);
+  await talkToResident(page,'tourist');
+  await expect(dialogue.locator('p')).toContainText('Корону в кадр');
+  await dialogue.getByRole('button',{name:'Ещё',exact:true}).click();
+  await expect(dialogue.locator('p')).toContainText('Я снимаю архитектуру');
+  await overview(page,false);
+  await page.screenshot({path:`../tourist-camera-${info.project.name}-carry.png`});
+  await overview(page,true);
+  await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
+  await walk(page,1760,1055);
+  await expect.poll(async ()=>{
+    const person=(await state(page)).street.residents.people.find((p:any)=>p.id==='tourist');
+    return person.stop===1&&person.activity==='take-photo';
+  },{timeout:25000}).toBe(true);
+  await overview(page,false);
+  const shooting=(await state(page)).street.residents.people.find((p:any)=>p.id==='tourist');
+  expect(shooting.camera.lift).toBe(1);expect(shooting.camera.grip).toBe(1);
+  expect(shooting.camera.frame).toBeGreaterThanOrEqual(20);expect(shooting.camera.frame).toBeLessThanOrEqual(21);
+  await page.screenshot({path:`../street-${info.project.name}-tourist.png`});
+  await page.evaluate(()=>{
+    (window as any).__touristCameraSequence=[];const start=performance.now();
+    const record=()=>{const p=(window as any).royalDemo.getState().street.residents.people.find((p:any)=>p.id==='tourist');
+      (window as any).__touristCameraSequence.push({...p.camera,action:p.activity});
+      if(performance.now()-start<8500&&!p.moving)requestAnimationFrame(record);};requestAnimationFrame(record);
+  });
+  await expect.poll(async()=>(await state(page)).street.residents.people.find((p:any)=>p.id==='tourist').camera.stage,{timeout:8000}).toBe('review');
+  await page.screenshot({path:`../tourist-camera-${info.project.name}-review.png`});
+  await expect.poll(async()=>(await state(page)).street.residents.people.find((p:any)=>p.id==='tourist').camera.stage,{timeout:8000}).toBe('carry');
+  const sequence=await page.evaluate(()=>(window as any).__touristCameraSequence as {stage:string;lift:number;grip:number}[]);
+  for(const stage of ['lower','review','stow'])expect(sequence.some(p=>p.stage===stage)).toBe(true);
+  expect(sequence.some(p=>p.lift===0&&p.grip===0)).toBe(true);
+  await talkToResident(page,'mascot');
+  await expect(dialogue.locator('p')).toContainText('Я Золотик');
+  await dialogue.getByRole('button',{name:'Ещё',exact:true}).click();
+  await expect(dialogue.locator('p')).toContainText('три позы');
+  await overview(page,false);
+  await page.screenshot({path:`../street-${info.project.name}-mascot.png`});
+  const mascotBefore=(await state(page)).street.residents.people.find((p:any)=>p.id==='mascot');
+  expect(mascotBefore.greetings).toBeGreaterThan(0);
+  await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
+  await expect.poll(async ()=>(await state(page)).street.residents.people.find((p:any)=>p.id==='mascot').moving,{timeout:18000}).toBe(true);
+  await overview(page,true);
+  await expect(dialogue).toBeHidden();
+  await page.screenshot({ path: `../street-${info.project.name}-overview.png` });
+  for (const p of STREET.loop) await walk(page, p.x, p.y);
+  for(const expected of [{x:480,y:710,side:'front',label:'left-pass',taxi:true},{x:1370,y:365,side:'rear',label:'rear-courtyard',taxi:false},{x:2320,y:710,side:'front',label:'right-pass',taxi:true}] as const){
+    await overview(page,true);
+    if(expected.side==='rear')await walk(page,480,360);
+    if(expected.label==='right-pass')await walk(page,2320,360);
+    await walk(page,expected.x,expected.y);
+    await overview(page,false);
+    await expect.poll(async ()=>(await state(page)).street.view.side).toBe(expected.side);
+    expect((await state(page)).street.view.wall.width).toBe(STREET.building.w);
+    expect((await state(page)).street.carRender.every((car:any)=>expected.side==='rear'?!car.visible:car.angle===0&&car.y>=1210)).toBe(true);
+    const props=(await state(page)).street.props;
+    const taxi=props.find((p:any)=>p.texture==='street-detail-parked-taxi');
+    expect(taxi).toBeTruthy();expect(taxi.visible).toBe(expected.taxi);
+    expect(taxi.world).toEqual({x:2580,y:1120});
+    await page.screenshot({path:`../street-${info.project.name}-${expected.label}.png`});
+    // Screen controls use the current wall orientation.
+    const before=await state(page);
+    await page.keyboard.down('ArrowRight');await page.waitForTimeout(300);await page.keyboard.up('ArrowRight');
+    await expect.poll(async ()=>{const p=await state(page);return Math.hypot(p.serverX-p.x,p.serverY-p.y);}).toBeLessThan(3);
+    const after=await state(page),a=projectStreetPoint(before,expected.side),b=projectStreetPoint(after,expected.side);
+    expect(b.x-a.x).toBeGreaterThan(12);expect(Math.abs(b.y-a.y)).toBeLessThan(4);
+  }
+  await overview(page,true);await walk(page,2320,360);
+  await walk(page, 1370, 365);
+  const worker=(await state(page)).street.residents.people.find((p:any)=>p.id==='janitor');
+  expect(worker.stop).not.toBe(0);
+  await overview(page,false);
+  await page.screenshot({ path: `../street-${info.project.name}-rear.png` });
+  await talkToResident(page,'janitor');
+  await expect(dialogue.locator('p')).toContainText('Осторожнее');
+  await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
+  await overview(page,true);
+  await walk(page,2320,360);await walk(page,2320,1050);await walk(page,2360,1150);
+  await expect(dialogue).toHaveAttribute('data-resident','taxi-driver');
+  await overview(page,false);
+  await expect.poll(async ()=>{
+    const taxi=(await state(page)).street.residents.people.find((p:any)=>p.id==='taxi-driver');
+    return taxi.activity==='smoke'&&taxi.progress>.4;
+  },{timeout:18000}).toBe(true);
+  await page.screenshot({path:`../street-${info.project.name}-taxi.png`});
+  await dialogue.getByRole('button',{name:'Поговорить',exact:true}).click();
+  await expect(dialogue).toHaveAttribute('data-speaking','true');
+  await expect(dialogue.locator('p')).toContainText('Я жду пассажира');
+  await expect.poll(async ()=>(await state(page)).street.residents.people.find((p:any)=>p.id==='taxi-driver').activity).toBe('idle');
+  await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
+  // Reload while outdoors must recover the room and location, rather than spawning indoors.
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.reload();
+  await expect(page.locator('#chat-input')).toBeEnabled();
+  await expect.poll(async () => (await state(page)).hall, { timeout: 25000 }).toBe('street');
+  const recovered = await page.evaluate(() => (window as any).royalDemo.getNetworkState());
+  expect(recovered.roomId).toBe(network.roomId);
+  await expect.poll(async () => (await state(page)).street.motion).toBe(false);
+  const frozen=(await state(page)).street;
+  await page.waitForTimeout(400);
+  const still=(await state(page)).street;
+  expect(still.time).toBe(frozen.time);
+  expect(still.cars).toEqual(frozen.cars);
+  expect(still.pedestrians.every((p:any)=>!p.moving)).toBe(true);
+  expect(still.residents.people.every((p:any)=>p.activity==='idle'&&p.progress===0)).toBe(true);
+  expect(still.sign.sheen).toBe(0);
+  expect(still.sign.sparkle).toBe(0);
+  await page.locator('[data-floor-target="arcade"]').click();
+  await expect.poll(async () => (await state(page)).hall, { timeout: 25000 }).toBe('arcade');
+  await expect(dialogue).toBeHidden();
+  await expect(page.locator('#chat-input')).toBeEnabled();
+  expect(await page.locator('#wallet-balance').textContent()).toBe(balance);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  expect(errors).toEqual([]);
+});
