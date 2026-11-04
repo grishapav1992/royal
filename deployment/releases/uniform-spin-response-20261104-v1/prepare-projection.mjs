@@ -37,8 +37,13 @@ for(const name of changed){
  }
  sources[name]=files[name].sha256;
 }
+const motionCommit=git('rev-parse','e3cfad45').toString().trim();
+for(const name of ['games/dracona/entry.ts','games/dracona/requestStyles.ts']){
+ const digest=hash(canonical(git('show',motionCommit+':'+name)));
+ files[name]={commit:motionCommit,path:name,baseSha256:digest,sha256:digest};sources[name]=digest;
+}
 const moduleGames=['cosmic-escape','caramel-carnival','velvet-reign','last-convoy','nitro-run','girlhub','meme-overload','dracona','forest-heart','caribbean-treasures','flooded-temple','wild-nudge','flag-battle','royal-plinko','cr-vs-leo','jackie-chan','last-exit'];
 const projection={format:1,productionCommit:before.sourceCommit,moduleGames,moduleContracts:before.moduleHost.games,files:Object.fromEntries(Object.entries(files).filter(([n])=>/\.(ts|js|mjs|cjs|css|json|html)$/.test(n))),moduleAssets:config.moduleAssets,moduleDependencies:config.moduleDependencies};
 fs.writeFileSync(folder+'/module-projection.json',JSON.stringify(projection,null,2)+'\n');
-fs.writeFileSync(folder+'/scope.json',JSON.stringify({release:'uniform-spin-response-20261104-v1',featureCommit:commit,productionCommit:before.sourceCommit,moduleGames,sources,added:['src/ui/operationFeedback.ts'],addedGames:[],restoredGames:[]},null,2)+'\n');
+fs.writeFileSync(folder+'/scope.json',JSON.stringify({release:'uniform-spin-response-20261104-v1',featureCommit:commit,motionCommit,productionCommit:before.sourceCommit,moduleGames,sources,added:['src/ui/operationFeedback.ts','games/dracona/requestStyles.ts'],addedGames:[],restoredGames:[]},null,2)+'\n');
 console.log(JSON.stringify({productionCommit:before.sourceCommit,modules:moduleGames.length,changedSources:Object.keys(sources).length,preservedSourceVariants:Object.keys(special)}));

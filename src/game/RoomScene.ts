@@ -633,7 +633,7 @@ export class RoomScene extends Phaser.Scene {
   }
   async recoverPlayer(): Promise<boolean> {
     if (this.securityLocked || this.switching) return false;
-    if (this.network) return await this.network.recover?.() ?? false;
+    if (this.network) { this.cancelCabinetAdmission?.(); return await this.network.recover?.() ?? false; }
     const point = playerRecoveryPoint(this.hall);
     if (!point) return false;
     this.cancelCabinetAdmission?.(); this.clickTargets.reset(); this.prediction.reset(); this.afterMovement = undefined;

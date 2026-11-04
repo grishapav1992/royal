@@ -46,6 +46,38 @@ class ProfileScopeTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaises(TimeoutError): deploy.wait_for_ready(Path(directory), 'current', 0)
 
+class StartupHealthTest(unittest.TestCase):
+    def fixture(self, ready_after=0, endpoint=True, running=True):
+        clock, calls = [0], []
+        def run(args):
+            calls.append(args)
+            if args[:2] == ['docker', 'inspect']:
+                return json.dumps([{'State': {'Running': running, 'Health': {'Status': 'healthy' if clock[0] >= ready_after else 'starting'}}}])
+            self.assertEqual(args[:3], ['docker', 'exec', 'royal-game-1'])
+            return json.dumps({'ok': endpoint})
+        return types.SimpleNamespace(run=run), clock, calls
+
+    def test_slow_start_waits_for_docker_and_a_fresh_health_endpoint(self):
+        base, clock, calls = self.fixture(ready_after=120)
+        deploy.wait_for_healthy(base, now=lambda: clock[0], pause=lambda seconds: clock.__setitem__(0, clock[0] + seconds))
+        self.assertEqual(clock[0], 120)
+        self.assertEqual(calls[-1][:3], ['docker', 'exec', 'royal-game-1'])
+
+    def test_docker_healthy_without_ready_endpoint_is_rejected(self):
+        base, _, _ = self.fixture(endpoint=False)
+        with self.assertRaises(RuntimeError): deploy.wait_for_healthy(base)
+
+    def test_startup_wait_is_bounded(self):
+        base, clock, calls = self.fixture(ready_after=999)
+        with self.assertRaises(RuntimeError):
+            deploy.wait_for_healthy(base, timeout=3, now=lambda: clock[0], pause=lambda seconds: clock.__setitem__(0, clock[0] + seconds))
+        self.assertEqual(clock[0], 3)
+        self.assertTrue(all(args[:2] == ['docker', 'inspect'] for args in calls))
+
+    def test_exited_game_is_rejected(self):
+        base, _, _ = self.fixture(running=False)
+        with self.assertRaises(RuntimeError): deploy.wait_for_healthy(base)
+
 if __name__ == '__main__': unittest.main()
 
 

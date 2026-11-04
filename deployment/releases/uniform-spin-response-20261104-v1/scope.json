@@ -1,6 +1,7 @@
 {
   "release": "uniform-spin-response-20261104-v1",
   "featureCommit": "cf412e52339462c26191242069916a735a99739e",
+  "motionCommit": "e3cfad45abb0960433fa941b9692699cb024fe14",
   "productionCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
   "moduleGames": [
     "cosmic-escape",
@@ -45,10 +46,13 @@
     "src/ui/VelvetReignUI.ts": "05020885ac02e52de47a977f9bfda0394fe282ee5be0ae250e00741ac8df5ddb",
     "src/ui/VolcanicPlinkoUI.ts": "01fa6b1d01e0bf0bef32726887dbd0372dcb00ab1865af9e619a6a1501114d63",
     "src/ui/operationFeedback.ts": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17",
-    "src/ui/slotKit/SlotControls.ts": "9ed5c3c6830d500441bba90888f0a693f6a342909ff6886f3c00eaef6b1c297a"
+    "src/ui/slotKit/SlotControls.ts": "9ed5c3c6830d500441bba90888f0a693f6a342909ff6886f3c00eaef6b1c297a",
+    "games/dracona/entry.ts": "c5ba0433140701f1b171538b6707910f7cbe7cb1171fb14d9cb2f55a81a2235c",
+    "games/dracona/requestStyles.ts": "35e092afde5e01a263cca3be3bfb5c7ce695876ca51dc0713b4596a2fe906c59"
   },
   "added": [
-    "src/ui/operationFeedback.ts"
+    "src/ui/operationFeedback.ts",
+    "games/dracona/requestStyles.ts"
   ],
   "addedGames": [],
   "restoredGames": []
