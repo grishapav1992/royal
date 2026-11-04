@@ -101,15 +101,22 @@ function createGuard(scene: Phaser.Scene) {
       }
       c.restore();
       arm(true);
-      // A round paper-disc head, oversized white eyes and tiny pupils match the other club characters.
-      const headX=side?3:0;
-      oval(side?-25:-31,42,5,7,skin);if(!side)oval(31,42,5,7,skin);
-      oval(headX,38,side?30:32,32,skin);
+      // The profile has its own forehead, nose and jaw instead of a front-facing disc.
+      if(side) {
+        c.beginPath();c.moveTo(-19,14);c.quadraticCurveTo(-6,4,10,11);
+        c.quadraticCurveTo(26,15,26,30);c.lineTo(25,35);c.lineTo(34,43);
+        c.quadraticCurveTo(36,46,27,47);c.lineTo(27,51);
+        c.quadraticCurveTo(30,53,26,55);c.quadraticCurveTo(24,65,12,69);
+        c.quadraticCurveTo(-5,74,-19,61);c.quadraticCurveTo(-30,50,-27,32);
+        c.quadraticCurveTo(-26,20,-19,14);c.closePath();fill(skin);
+      } else {
+        oval(-31,42,5,7,skin);oval(31,42,5,7,skin);
+        oval(0,38,32,32,skin);
+      }
       if(!back) {
         if(side) {
-          if(blink)line(7,39,27,39);else {oval(17,39,11,14,'#fffdf3',-.05);oval(21+glance*.5,frame===25?44:40,2.1,2.7,'#17191e');}
-          poly([30,44,35,48,29,49],skin);
-          line(8,24,25,27,ink,2.3);if(frame===19)oval(21,58,4,3,'#301e23');else line(14,58,26,58,ink,1.7);
+          if(blink)line(12.5,38,25.5,38);else {oval(19,37.5,6.5,9,'#fffdf3',-.05);oval(22+glance*.35,frame===25?41:38.5,1.7,2.3,'#17191e');}
+          line(11,26,25,29,ink,2.3);if(frame===19)oval(22,55,3.5,2.5,'#301e23');else line(17,56,26,56,ink,1.7);
         } else {
           if(blink){line(-22,39,-2,39);line(2,39,22,39);}else{
             oval(-11,39,11,14,'#fffdf3',.08);oval(11,39,11,14,'#fffdf3',-.08);
@@ -120,7 +127,11 @@ function createGuard(scene: Phaser.Scene) {
         }
       }
       // The flat top is a single compact black cutout with tapered sides, never a fan.
-      poly([-30,34,-30,10,-25,4,25,4,30,10,30,34,24,26,24,21,-24,21,-24,27],'#171a22');
+      if(side) {
+        poly([-28,37,-29,13,-24,4,20,4,26,10,26,23,7,21,-7,22,-8,37,-15,40,-22,39],'#171a22');
+        oval(-10,43,5,7,skin);
+        c.beginPath();c.moveTo(-11,40);c.quadraticCurveTo(-6,40,-9,46);c.strokeStyle='#633d31';c.lineWidth=1;c.stroke();
+      } else poly([-30,34,-30,10,-25,4,25,4,30,10,30,34,24,26,24,21,-24,21,-24,27],'#171a22');
       if(back) {
         c.beginPath();c.moveTo(-30,19);c.lineTo(30,19);c.lineTo(28,43);
         c.quadraticCurveTo(0,55,-28,43);c.closePath();fill('#171a22');
