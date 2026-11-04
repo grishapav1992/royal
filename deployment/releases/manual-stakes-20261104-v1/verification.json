@@ -2142,7 +2142,8 @@
     "compatibleWalletRequiredAfterCandidateAttempt": true,
     "sourceBackup": {
       "path": "/opt/royal-backups/manual-stakes-20261104-v1/source.tgz",
-      "bytes": 302729
+      "bytes": 302729,
+      "sha256": "455c06f439c2ce4e0b554358e81cc13f36ab1172380299fb0c65ad7cda5d76f8"
     }
   },
   "limits": {
@@ -2160,12 +2161,965 @@
     "publicFileEvidence": "e07420415c81d83a97d076d0fb241a5e72d8cdfc44443c49c68a7c06b0b6e445"
   },
   "maintenance": {
-    "status": "pending",
-    "reason": "Publication locks held by a concurrent update; mandatory service requested, retries every five minutes."
+    "status": "completed",
+    "startedAt": 1793811578.10196,
+    "finishedAt": 1793812606.030837,
+    "durationSeconds": 1027.93,
+    "release": "manual-stakes-20261104-v1",
+    "sourceCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
+    "currentImage": "sha256:4e7d6f2257b33fabc3227402c45692bc175ba064e61a445fadcc18a97fda113b",
+    "rollbackImage": "sha256:aeda26e738681e618e607fa3909ccb62d7e5b20b199b6c63885edc64ded804d3",
+    "plannedEntries": 96,
+    "plannedImages": 3,
+    "preservedFinancialFiles": 135,
+    "removedEntries": 96,
+    "removedImageTags": 7,
+    "dockerRetainedImages": [],
+    "freeBefore": 9879605248,
+    "freeAfter": 9643024384,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:aeda26e738681e618e607fa3909ccb62d7e5b20b199b6c63885edc64ded804d3",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "6252f4af34ef46b56c707cafb7f6569b9a294cc3e7875cc15b0d37804f22ff4b",
+      "files": 8595
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "a385e6b77d769f40a59b0dc4643e606c3aca59d9eb73b2c60e7f2d87a4d1ea37",
+      "receipt": "/var/lib/royal-project-brain/receipts/a385e6b77d769f40a59b0dc4643e606c3aca59d9eb73b2c60e7f2d87a4d1ea37.json",
+      "queued": true
+    },
+    "timer": {
+      "enabled": true,
+      "active": true
+    },
+    "previousAttempt": {
+      "status": "error",
+      "reason": "Recent health-retry.log was inside its 600-second protection interval; the interval elapsed and the unchanged normal service completed. No guard was bypassed."
+    },
+    "sameImageAndSourceAsPublished": true
   },
   "cleanup": {
-    "status": "pending",
-    "condition": "Preserve source and final reports in GitHub before removing task-owned artifacts."
+    "status": "completed",
+    "details": "deployment/releases/manual-stakes-20261104-v1/storage-cleanup.json",
+    "server": {
+      "owner": "manual-stakes-20261104",
+      "at": 1793812608.1676283,
+      "removed": [
+        {
+          "path": "/opt/royal-releases/manual-stakes-20261104-v1/payload.tgz",
+          "logicalBytes": 142342315,
+          "kind": "transport-archive"
+        },
+        {
+          "path": "/opt/royal-releases/manual-stakes-20261104-v1/runtime-context",
+          "logicalBytes": 5180338,
+          "kind": "temporary-build-context"
+        }
+      ],
+      "freeBefore": 9642991616,
+      "freeAfter": 9785364480,
+      "currentImage": "sha256:4e7d6f2257b33fabc3227402c45692bc175ba064e61a445fadcc18a97fda113b",
+      "sourceCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
+      "healthy": true,
+      "programFilesRemoved": false,
+      "financialDataTouched": false,
+      "runningContainerUnchanged": true,
+      "spaceInterpretation": "Observed free-space change; hardlinks and concurrent data writes prevent attributing the entire change to these deletions."
+    },
+    "localBuilds": {
+      "owner": "manual-stakes-20261104",
+      "removed": [
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/checkout/module-dist",
+          "logicalBytes": 1398546174,
+          "files": 5678
+        }
+      ],
+      "availableBefore": 31874727936,
+      "availableAfter": 33138331648,
+      "preservationCommits": [
+        "64275feff275c9049a82e7b095dd89c4b71677da",
+        "c902883bab1581cba589f52f2a893036e02d2524",
+        "e9abffd0ebace832937743bdcb9fadebf5f8cc42"
+      ],
+      "physicalSpaceInterpretation": "Observed free-space change; concurrent work and hardlinks prevent attribution of the entire difference to this operation.",
+      "remaining": "Task checkout and compact records remain until maintenance completes and final evidence is pushed."
+    },
+    "localFinal": {
+      "removed": [
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/checkout",
+          "logicalBytes": 574574432,
+          "files": 5270
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104",
+          "logicalBytes": 337812616,
+          "entries": [
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/tsu-legacy-qualification.log",
+              "logicalBytes": 246,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/financial-gate-tests.log",
+              "logicalBytes": 126,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/release-prepare.log",
+              "logicalBytes": 395,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/ui-host-preview-tests.log",
+              "logicalBytes": 1139,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/types.log",
+              "logicalBytes": 0,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/public-verification.log",
+              "logicalBytes": 262,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/root-preservation-before.json",
+              "logicalBytes": 1211,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/work-sync.log",
+              "logicalBytes": 401,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/control-tests-focus.log",
+              "logicalBytes": 319,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/ui-host-focus-tests.log",
+              "logicalBytes": 1152,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/build-path-correction.json",
+              "logicalBytes": 761,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/work-sync-reserved.log",
+              "logicalBytes": 400,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/maintenance-watch.log",
+              "logicalBytes": 3181,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/release-plan-current.log",
+              "logicalBytes": 5254,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/forward-completed.json",
+              "logicalBytes": 267,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/ui-host-complete-tests.log",
+              "logicalBytes": 1181,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/star-spin-base-qualification.log",
+              "logicalBytes": 1134,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualification-results.json",
+              "logicalBytes": 1067,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/forward-guard-tests.log",
+              "logicalBytes": 107,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/forward-tool-receipt.json",
+              "logicalBytes": 318,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/projection-free-baseline.log",
+              "logicalBytes": 384,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-studio-caribbean-treasures.log",
+              "logicalBytes": 232,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/ui-host-tests.log",
+              "logicalBytes": 1407,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/release-prepare-final-window.log",
+              "logicalBytes": 395,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/work-sync-chat-focus.log",
+              "logicalBytes": 400,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/release-prepare-reserved.log",
+              "logicalBytes": 395315,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/state.json",
+              "logicalBytes": 6620,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/compatibility.log",
+              "logicalBytes": 2443,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/release-prepare-current.log",
+              "logicalBytes": 3286,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/financial-backup.json",
+              "logicalBytes": 206,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/flag-tote-base-qualification.log",
+              "logicalBytes": 1450,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/ui-start.png",
+              "logicalBytes": 162889,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/forest-base-qualification.log",
+              "logicalBytes": 5932,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/published-modules-final.json",
+              "logicalBytes": 73736,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-studio-velvet-reign.log",
+              "logicalBytes": 214,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/projection-preparation.log",
+              "logicalBytes": 384,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/work-sync-dependencies.log",
+              "logicalBytes": 400,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/cleanup-inventory-before.json",
+              "logicalBytes": 13125,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/release-prepare-complete.log",
+              "logicalBytes": 395,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/origins-known.json",
+              "logicalBytes": 207505,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/rtp-gate-tests.log",
+              "logicalBytes": 5858,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-studio-meme-overload.log",
+              "logicalBytes": 215,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/formal-samples",
+              "logicalBytes": 30877,
+              "files": 9
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/work-sync-roulette.log",
+              "logicalBytes": 400,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/projection-current.log",
+              "logicalBytes": 384,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/native-before",
+              "logicalBytes": 1890947,
+              "files": 2
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/release-prepare-live-final.log",
+              "logicalBytes": 394490,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/work-sync-final.log",
+              "logicalBytes": 401,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/watch-release.py",
+              "logicalBytes": 687,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/installer-tests-final.log",
+              "logicalBytes": 104,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/origins-missing.json",
+              "logicalBytes": 40086,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/work-sync-focus.log",
+              "logicalBytes": 400,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-royal-roulette.log",
+              "logicalBytes": 203,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/manual-tests.log",
+              "logicalBytes": 486,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/owner.json",
+              "logicalBytes": 198,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/manual-star-touch.png",
+              "logicalBytes": 13983,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/production-free-application.json",
+              "logicalBytes": 3744261,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/admission-tests.log",
+              "logicalBytes": 683,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/afterglow-base-qualification.log",
+              "logicalBytes": 2979,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/ui-failure.png",
+              "logicalBytes": 1039267,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/payload-sha256.txt",
+              "logicalBytes": 81,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/complete-maintenance-record.mjs",
+              "logicalBytes": 5738,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/ui-star-preflight-tests.log",
+              "logicalBytes": 589,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-studio-forest-heart.log",
+              "logicalBytes": 218,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/projection-preparation-final.log",
+              "logicalBytes": 384,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/projection-reserved.log",
+              "logicalBytes": 384,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-studio-wild-nudge.log",
+              "logicalBytes": 209,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-flag-battle.log",
+              "logicalBytes": 198,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/launch-resume.py",
+              "logicalBytes": 525,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/work-sync-publish.log",
+              "logicalBytes": 400,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/module-build-tests-final.log",
+              "logicalBytes": 1257,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-github-crash.log",
+              "logicalBytes": 199,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-studio-cosmic-escape.log",
+              "logicalBytes": 216,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/payload",
+              "logicalBytes": 160461836,
+              "files": 621
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/finalize-evidence.mjs",
+              "logicalBytes": 3216,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/published-entry-initial.md",
+              "logicalBytes": 7623,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/projection-focus.log",
+              "logicalBytes": 384,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/ui-verification.json",
+              "logicalBytes": 53516,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/forward-handoff.py",
+              "logicalBytes": 621,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-studio-nitro-run.log",
+              "logicalBytes": 207,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/manual-star-1440.png",
+              "logicalBytes": 932689,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/ui-final-tests.log",
+              "logicalBytes": 1434,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/after.json",
+              "logicalBytes": 3840482,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/yield-reservations.py",
+              "logicalBytes": 3170,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/write-published-record.mjs",
+              "logicalBytes": 3465,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-royal-plinko.log",
+              "logicalBytes": 204,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/control-tests-chat-final.log",
+              "logicalBytes": 417,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/focus-fixture.js",
+              "logicalBytes": 12238,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/launch-forward.py",
+              "logicalBytes": 399,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/tsu-current-qualification.log",
+              "logicalBytes": 246,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/reserve.py",
+              "logicalBytes": 635,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/stake-use.txt",
+              "logicalBytes": 17032,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/rtp-check.log",
+              "logicalBytes": 168,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/collect-verification.mjs",
+              "logicalBytes": 4538,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/refresh-published.mjs",
+              "logicalBytes": 1785,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/bulk-cleanup.json",
+              "logicalBytes": 792,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-original-cr-vs-leo.log",
+              "logicalBytes": 211,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/module-dependency-tests-final.log",
+              "logicalBytes": 1158,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/projection-dependencies.log",
+              "logicalBytes": 384,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-tsu-e-fa.log",
+              "logicalBytes": 117,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/control-tests.log",
+              "logicalBytes": 229,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/release-prepare-final.log",
+              "logicalBytes": 41252,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/ui-host.log",
+              "logicalBytes": 1243,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/run-maintenance.py",
+              "logicalBytes": 1239,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/ui-first-ten-preflight.log",
+              "logicalBytes": 969,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-studio-caramel-carnival.log",
+              "logicalBytes": 222,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/published-modules.json",
+              "logicalBytes": 73736,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/wallet-after.ts",
+              "logicalBytes": 12899,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/release-prepare-focus.log",
+              "logicalBytes": 394488,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/native-current",
+              "logicalBytes": 1892464,
+              "files": 2
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/game-stakes-tests.log",
+              "logicalBytes": 4347,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/force-entropy.cjs",
+              "logicalBytes": 670,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/make-ui-harness.py",
+              "logicalBytes": 3238,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-original-jackie-chan.log",
+              "logicalBytes": 215,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/roulette-base-qualification.log",
+              "logicalBytes": 19101,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/production-final-before.json",
+              "logicalBytes": 3748382,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/production-profile-after.json",
+              "logicalBytes": 3743561,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-studio-afterglow.log",
+              "logicalBytes": 349,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/publication-handoff.py",
+              "logicalBytes": 673,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/deployment-entry.md",
+              "logicalBytes": 5064,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/wallet-tests.log",
+              "logicalBytes": 2222,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/production-current.json",
+              "logicalBytes": 3629787,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qa-notes.md",
+              "logicalBytes": 2585,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/module-package-paths.json",
+              "logicalBytes": 636,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/rtp",
+              "logicalBytes": 238079,
+              "files": 5
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/server-watch.log",
+              "logicalBytes": 414,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/root-sync-preservation.json",
+              "logicalBytes": 335,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/projection-compiler.log",
+              "logicalBytes": 384,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/forward-watch.log",
+              "logicalBytes": 2043,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/module-dependency-tests.log",
+              "logicalBytes": 2404,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-studio-dracona.log",
+              "logicalBytes": 203,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/cleanup-server-transfer.py",
+              "logicalBytes": 4004,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/root-untracked-before.json",
+              "logicalBytes": 54720,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/public-verification.json",
+              "logicalBytes": 119363,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/work-sync-free-baseline.log",
+              "logicalBytes": 390,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/production-reserved.json",
+              "logicalBytes": 3629988,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/release-prepare-compiler.log",
+              "logicalBytes": 395,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/watch-maintenance.py",
+              "logicalBytes": 814,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/manual-star-390.png",
+              "logicalBytes": 260961,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/production-before.json",
+              "logicalBytes": 3629394,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/watch-forward.py",
+              "logicalBytes": 944,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/check-focus.mjs",
+              "logicalBytes": 1669,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/verify-public.mjs",
+              "logicalBytes": 1978,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/work-sync-integration.log",
+              "logicalBytes": 392,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/maintenance-final.json",
+              "logicalBytes": 5924,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/release-plan.log",
+              "logicalBytes": 8018,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/payload-prepare.log",
+              "logicalBytes": 106,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-studio-last-convoy.log",
+              "logicalBytes": 211,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/artifact-inputs.json",
+              "logicalBytes": 562,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/wallet-before.ts",
+              "logicalBytes": 12753,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/production-prebuild.json",
+              "logicalBytes": 0,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/payload.tgz",
+              "logicalBytes": 142342315,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/release-prepare-reviewed.log",
+              "logicalBytes": 394600,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/verification-draft.json",
+              "logicalBytes": 72518,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/published.json",
+              "logicalBytes": 1126,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/reservation-yield.json",
+              "logicalBytes": 531,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/control-tests-focus-final.log",
+              "logicalBytes": 317,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-studio-flooded-temple.log",
+              "logicalBytes": 217,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/qualify-studio-neopolis.log",
+              "logicalBytes": 206,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/release-verify-final.log",
+              "logicalBytes": 325,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/http-tests.log",
+              "logicalBytes": 358,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/projection-chat-focus.log",
+              "logicalBytes": 384,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/work-sync-compiler.log",
+              "logicalBytes": 401,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/transfer-cleanup.json",
+              "logicalBytes": 887,
+              "files": 1
+            },
+            {
+              "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/host-fixture.test.mjs",
+              "logicalBytes": 20499,
+              "files": 1
+            }
+          ]
+        }
+      ],
+      "availableBefore": 32859910144,
+      "availableAfterCheckout": 33351430144,
+      "availableAfter": 33359613952,
+      "preservationCommit": "5975075822d5f8165b1ae8ef490eba6b0eaf3be3",
+      "sourceCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
+      "rootSynchronization": {
+        "rootBefore": "0526725cf5db8382c9ad38fd6b910f4b1d968775",
+        "rootAfter": "5975075822d5f8165b1ae8ef490eba6b0eaf3be3",
+        "trackedChangesBefore": 0,
+        "untrackedFilesPreserved": 335,
+        "untrackedContentUnchanged": true,
+        "operation": "Fast-forward after explicit collision and content checks; no stash, reset, clean or overwrite."
+      },
+      "rootUntrackedFilesPreserved": 335,
+      "rootUntrackedContentUnchanged": true,
+      "activeWorkExceptions": [
+        "worktree /Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/casino-street-20261101/checkout",
+        "worktree /Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/forest-heart-kling-20261031/checkout"
+      ],
+      "exceptionCleanupCondition": "Other owners preserve unique work in GitHub before removing their active checkouts. Root untracked work is retained in place.",
+      "spaceInterpretation": "Observed free-space measurements; concurrent changes and hardlinks prevent attributing the entire difference to this operation.",
+      "otherWorktreeMetadataPreserved": [
+        {
+          "path": "/private/tmp/royal-nowpayments-site-20261027/checkout",
+          "folderPresent": false,
+          "registrationPreserved": true
+        }
+      ]
+    }
   },
   "installedPackageVersions": {
     "studio-caramel-carnival": "1.1.1-03a1cb173377",
@@ -2215,5 +3169,27 @@
       "after": "b7972b1cc71e497ad7952e1b8b4cd593b22bc30954483c78a524a304f711ab77",
       "productionBefore": "99736bdf47c78ef4dc08246fad9dc7df11fec1c922bc9d7e438570a8fb2fd54c"
     }
+  },
+  "authorizedReservationYield": {
+    "authorizedByUser": true,
+    "at": 1793811101.4895155,
+    "stoppedReservations": [
+      {
+        "pid": 2098755,
+        "program": "/opt/royal-releases/front-back-walk-20261104-v3/deploy.py",
+        "phase": "waiting_for_locks"
+      },
+      {
+        "pid": 2004017,
+        "program": "/opt/royal-releases/player-recovery-20261104-v2/reservation.py",
+        "phase": "waiting_for_preparation"
+      }
+    ],
+    "filesDeleted": 0,
+    "buildsDeleted": 0,
+    "directoriesPreserved": true,
+    "ownRetryStopped": 2072154,
+    "maintenancePid": 2113305,
+    "stoppedSourcesStillPresentAfterMaintenance": true
   }
 }

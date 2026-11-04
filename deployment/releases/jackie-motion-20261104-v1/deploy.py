@@ -2,6 +2,7 @@
 import hashlib, importlib.util, json, os, re, shutil, subprocess, sys, tarfile
 from pathlib import Path
 from types import SimpleNamespace
+from contextlib import contextmanager
 
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parent
@@ -54,20 +55,39 @@ def atomic(source, target):
         shutil.copyfileobj(inp, out); os.fchmod(out.fileno(), 0o644); out.flush(); os.fsync(out.fileno())
     os.replace(temporary, target)
 
-def main():
+class PublicationBusy(RuntimeError): pass
+
+LOCKS = ['/opt/royal-releases/themed-publish.lock', '/opt/royal/.client-presentation-deploy.lock', '/opt/royal-game-modules-state/module.lock']
+
+@contextmanager
+def publication_locks():
     import fcntl
-    require(sys.argv[1:] == ['release'] and ROOT == Path('/opt/royal-releases')/NAME, 'Unexpected operation or directory')
-    m, release, receipt, scope = [read(ROOT/n) for n in ['install-manifest.json', 'release-manifest.json', 'release-github.json', 'scope.json']]
-    validate(m, release, receipt, scope)
-    require(sha(ROOT/'release-manifest.json') == receipt['manifestSha256'], 'Verified release manifest changed')
-    for name, digest in m['support'].items():
-        require('/' not in name and not (ROOT/name).is_symlink() and sha(ROOT/name) == digest, 'Support bytes changed: '+name)
-    require(sha(MAINTENANCE) == m['maintenanceSha256'], 'Installed maintenance verifier changed')
-    require(not (ROOT/'attempt.json').exists(), 'Inspect the previous attempt before repeating publication')
-    locks = []
-    for name in ['/opt/royal-releases/themed-publish.lock', '/opt/royal/.client-presentation-deploy.lock', '/opt/royal-game-modules-state/module.lock']:
-        require(not Path(name).is_symlink(), 'Unsafe publication lock')
-        handle = open(name, 'a'); fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB); locks.append(handle)
+    handles = []
+    try:
+        for name in LOCKS:
+            require(not Path(name).is_symlink(), 'Unsafe publication lock')
+            handle = open(name, 'a'); handles.append(handle)
+            try: fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError as error: raise PublicationBusy('Publication lock busy: '+name) from error
+        yield
+    finally:
+        for handle in reversed(handles):
+            try: fcntl.flock(handle, fcntl.LOCK_UN)
+            finally: handle.close()
+
+def guarded_publication(action):
+    try:
+        with publication_locks(): return action()
+    except PublicationBusy as error:
+        print(json.dumps({'status':'publication_busy','reason':str(error),'publicationLocksHeld':False,'preparedPackagePreserved':True,'retry':'Explicit retry after an agreed window'}), flush=True)
+        return 75
+
+def validate_installer_receipt(receipt, application_commit, helper_sha):
+    require(receipt.get('applicationSourceCommit') == application_commit, 'Installer targets another application artifact')
+    require(re.fullmatch('[a-f0-9]{40}', str(receipt.get('installerSourceCommit',''))), 'Invalid installer commit')
+    require(receipt.get('githubMainContainsInstaller') is True and receipt.get('sha256') == helper_sha, 'Installer GitHub receipt differs')
+
+def publish_locked(m, scope):
     cleanup = load('jackie_existing_maintenance', MAINTENANCE)
     current = cleanup.healthy()
     host_release = cleanup.select_current_release(current['Image'], current['Config']['Labels']['org.opencontainers.image.revision'])
@@ -125,5 +145,18 @@ def main():
     require(shutil.disk_usage(LIVE).free > MIN_FREE, 'Five GiB reserve was crossed')
     save('verification.json', {'verified': True, 'sourceCommit': m['sourceCommit'], 'hostRelease': host_release, 'runningImage': current['Image'], 'module': result, 'backup': backup_info, 'preservedServices': len(before['services']), 'addedGames': [], 'restoredGames': [], 'restartRequired': False, 'databaseTouched': False})
     print(json.dumps(result), flush=True)
+    return 0
 
-if __name__ == '__main__': main()
+def main():
+    require(sys.argv[1:] == ['release'] and ROOT == Path('/opt/royal-releases')/NAME, 'Unexpected operation or directory')
+    m, release, receipt, scope = [read(ROOT/n) for n in ['install-manifest.json', 'release-manifest.json', 'release-github.json', 'scope.json']]
+    validate(m, release, receipt, scope)
+    require(sha(ROOT/'release-manifest.json') == receipt['manifestSha256'], 'Verified release manifest changed')
+    for name, digest in m['support'].items():
+        require('/' not in name and not (ROOT/name).is_symlink() and sha(ROOT/name) == digest, 'Support bytes changed: '+name)
+    require(sha(MAINTENANCE) == m['maintenanceSha256'], 'Installed maintenance verifier changed')
+    require(not (ROOT/'attempt.json').exists(), 'Inspect the previous attempt before repeating publication')
+    validate_installer_receipt(read(ROOT/'installer-source.json'), m['sourceCommit'], sha(__file__))
+    return guarded_publication(lambda: publish_locked(m, scope))
+
+if __name__ == '__main__': raise SystemExit(main())

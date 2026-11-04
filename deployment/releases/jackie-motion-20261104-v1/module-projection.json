@@ -149,6 +149,12 @@
       "baseSha256": "967053591211dbc3eab1fa2bbf89b86b5f62df7240d7fff23588d1b94558f70d",
       "sha256": "967053591211dbc3eab1fa2bbf89b86b5f62df7240d7fff23588d1b94558f70d"
     },
+    "games/jackie-chan/package.json": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/jackie-chan/package.json",
+      "baseSha256": "5609013d5981c7bf30e93ff4b5f46793526d3624558e9bf86fad91b2cb71fe7f",
+      "sha256": "5609013d5981c7bf30e93ff4b5f46793526d3624558e9bf86fad91b2cb71fe7f"
+    },
     "games/jackie-chan/priorities.css": {
       "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
       "path": "games/jackie-chan/priorities.css",
