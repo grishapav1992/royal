@@ -13,7 +13,7 @@ HOST_REQUIRED = set(["src/game/Bar.ts","src/game/RoomScene.ts","src/game/MiraRig
 BACKEND_REQUIRED = set(["server/LobbyRoom.ts","server/bartender.ts","src/shared/clubLayout.ts","src/shared/miraRoutine.ts","src/shared/world.ts"])
 PRESERVED_BACKEND_INPUTS = {"src/i18n/en.ts":"e6a39483750df92467b584e98319ce679f2a3489669e4b0d3f64a2d7ba0a762c"}
 
-MEDIA = set(["assets/royal-bar/v2/bar-assembly.png","assets/royal-bar/v2/bar-stool.png","assets/royal-bar/v3/mira-walk.png","assets/royal-bar/v3/mira-seat.png","assets/royal-bar/v3/mira-work-corrected.png","assets/royal-bar/v3/mira-react.png","assets/royal-bar/v3/mira-serve.png"])
+MEDIA = {"assets/royal-bar/v2/bar-assembly.png":"b12993e64c7a6dfe5a684e5f5a5179e62aa306dbde6d8d227b76534c7a274728","assets/royal-bar/v2/bar-stool.png":"ccd274b255adaf4837380799828c622a930457bda3d18a643df47b4f947d8b0b","assets/royal-bar/v3/mira-walk.png":"4c0e118f7fba39834153fac6a35c518747c1b1f527bbce30e0d62cd4fe819e42","assets/royal-bar/v3/mira-seat.png":"2613a2ce5b6e1c45137a3de86bf0a1dd8687729ab74a3fb4088a41d6c0257820","assets/royal-bar/v3/mira-work-corrected.png":"fc9b72468d854a6c902376bac8cd0ee602bd3b5f4583cdcf5778628bf8c244a8","assets/royal-bar/v3/mira-react.png":"8373c40cff647a68e01ea693e558557282a623fe853e05d4589204e36e3ec8c1","assets/royal-bar/v3/mira-serve.png":"b9a4b7065e239682f69652b1b3432fcd360eb2b0c267f52a0f3ad0c64cda9490"}
 
 LOCKS = ['/opt/royal-releases/themed-publish.lock', '/opt/royal/.client-presentation-deploy.lock', '/opt/royal-game-modules-state/module.lock']
 
@@ -60,7 +60,7 @@ def validate_inputs(changes, projection, before, required, preserved=None):
     require(all(projection['inputs'].get(name) == changes[name] for name in required), 'Street source is not bound to the build')
 
 def validate_media(changes, delta):
-    require(all(delta.get(name) == changes.get('public/' + name) for name in MEDIA), 'Mira media differs from committed source')
+    require(all(delta.get(name) == changes.get('public/' + name) == digest for name,digest in MEDIA.items()), 'Mira media differs from committed source')
     for name in delta:
         require(name == 'index.html' or name in MEDIA or re.fullmatch(r'assets/[a-zA-Z0-9_-]+\.(?:js|css)', name), 'Foreign client artifact')
 
@@ -134,7 +134,10 @@ def payload(b):
     require(helper['changedOnlyReleaseTooling'] and all(name.startswith('deployment/releases/' + NAME + '/') for name in helper['changedOnlyReleaseTooling']), 'Installer changed application sources')
     require(release['sourceCommit'] == receipt['sourceCommit'] == m['sourceCommit'] and release['baseCommit'] == m['baseCommit'] == old['sourceCommit'], 'Unverified source')
     require(release['scope'] == 'application' and release['clean'] and release['build']['passed'], 'Release verification missing')
-    require(all(release['files'].get('dist/' + n) == h for n, h in b.DELTA.items()), 'Client differs from verified build')
+    media = json.loads((b.ROOT / 'media-github.json').read_text())
+    require(sha(b.ROOT / 'media-github.json') == m['mediaReceiptSha256'], 'Media receipt changed')
+    require(media['sourceCommit'] == m['sourceCommit'] and media['assets'] == {'public/'+n:h for n,h in MEDIA.items()}, 'Media is not bound to the application source')
+    require(all((MEDIA.get(n) if n in MEDIA else release['files'].get('dist/' + n)) == h for n, h in b.DELTA.items()), 'Client differs from verified build or source media')
     projection = release['hostProjection']
     require(projection == release['build']['hostProjection'] and projection['productionCommit'] == m['baseCommit'], 'Host evidence differs')
     validate_inputs(b.CHANGES, projection, old, HOST_REQUIRED)
