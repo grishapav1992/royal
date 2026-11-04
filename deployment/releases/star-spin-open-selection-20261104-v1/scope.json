@@ -23,14 +23,14 @@
   },
   "module": {
     "gameId": "studio-wild-nudge",
-    "version": "1.6.0-fc64a94c4137",
+    "version": "1.6.0-f5f4b043e981",
     "contract": {
       "apiVersion": 1,
       "rulesVersion": 2,
       "progressVersion": 1
     },
-    "manifestSha256": "83bd11c79babe7043631f6fcf0961ca95ce72fcbefe00360c254c3b1c5f4f25c",
-    "pointerSha256": "3bf9dd19c17762a47794b64bf1e97062696add0529a4b6dedee55effa93dde14"
+    "manifestSha256": "58103b06ed2270c7d24450f12d2658f02475e729fa6acf9c6097dec2d2e01db4",
+    "pointerSha256": "27ebe6606039ebcdc6232c26834996bb6bd8e28641640686b54d69589026804e"
   },
   "preservedBackendInputs": {
     "src/i18n/en.ts": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68"
