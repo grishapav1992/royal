@@ -41,6 +41,8 @@ test('new games inherit the whole-round default and must bind the common money s
     f => { f.registry.stakePolicies[id].sources = ['src/shared/gameStakes.ts']; },
     f => { f.registry.stakePolicies[id].stakePolicyVersion = 0; },
     f => { f.registry.stakePolicies[id].method = 'unqualified-rounding'; },
+    f => { delete f.registry.stakePolicies[id].manualStakeRange; },
+    f => { f.registry.stakePolicies[id].manualStakeRange.stepCents = 10; },
     f => { f.runtime.usesGameStakes = () => false; },
     f => { f.runtime.DEFAULT_GAME_STAKE = '100'; },
     f => { f.runtime.DEFAULT_GAME_BET = 1; },

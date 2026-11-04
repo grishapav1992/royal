@@ -2,6 +2,7 @@ import {readGameHost} from '../../src/modules/GameHostContract';
 import {WILD_NUDGE_GAME,STAR_SPIN_STAKES as WILD_NUDGE_STAKES,type WildNudgeView} from '../../src/shared/wildNudgeStakes';
 import {WILD_NUDGE_DATA as R,wildNudgeSpin,type NudgeSpin} from '../../src/shared/wildNudgeMath';
 import {DEFAULT_GAME_STAKE} from '../../src/shared/gameStakes';
+import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {GalacticAudio,type GalacticCue} from './GalacticAudio';
 import {StarSpinCollection} from './StarSpinCollection';
 import {StarSpinCharacter} from './StarSpinCharacter';
@@ -115,7 +116,7 @@ export class GalacticReactorUI {
     this.character?.sync(this.client.accountId??'',this.root.dataset.character??'',this.collection.open?'idle':this.root.dataset.phase??'idle',this.shown?.stage==='bonus',this.paused||this.modal.open,this.reduced);
     this.el('balance').textContent=this.wallet?this.services.walletCoins(this.wallet.balance):'…';this.el('cost').textContent=this.money(active?this.view!.stakeUnits:this.stake);
     this.el('payout').textContent=this.money(shown?this.payout(shown):'0');this.el('net').textContent=shown?.stage==='settled'?this.money(String(BigInt(this.payout(shown))-BigInt(shown.stakeUnits))):'…';
-    this.el<HTMLSelectElement>('stake').value=this.stake;this.el<HTMLSelectElement>('stake').disabled=blocked||this.auto||active;
+    this.stake=syncStakeSelect(this.el<HTMLSelectElement>('stake'),this.stake,WILD_NUDGE_STAKES,blocked||this.auto||active);
     const spin=this.el<HTMLButtonElement>('spin');spin.disabled=blocked||this.auto||!active&&!this.afford();spin.querySelector('b')!.textContent=active?this.text('Бесплатно','Free spin'):this.text('Вращать','Spin');spin.querySelector('small')!.textContent=active?this.text('Осталось: ','Remaining: ')+(this.view?.remaining??0):this.money(this.stake)+' USDT';
     const auto=this.el<HTMLButtonElement>('auto');auto.disabled=!this.auto&&(blocked||active||!this.afford()||!!this.client.error||!!this.error);auto.textContent=this.auto?this.text('Стоп · ','Stop · ')+this.autoLeft:this.text('Авто','Auto');auto.setAttribute('aria-pressed',String(this.auto));auto.setAttribute('aria-label',this.auto?this.text('Остановить автокрутку','Stop autoplay'):this.text('Начать автокрутку','Start autoplay'));
     this.el<HTMLSelectElement>('count').disabled=this.auto||this.busy||this.presenting||this.client.busy||!!this.client.pending;this.el<HTMLSelectElement>('count').value=String(this.autoCount);

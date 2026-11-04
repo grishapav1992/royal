@@ -1,5 +1,5 @@
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
-import {GAME_BETS as DRACONA_BETS} from '../../src/shared/gameStakes';
+import {GAME_BETS as DRACONA_BETS, validGameBet, gameBetCents} from '../../src/shared/gameStakes';
 import { COLS, CREST, PORTAL, SIZE, SYMBOLS, DRACONA_MATH, type Grid, type Movement, type Step } from '../../src/shared/draconaMath';
 import { CharacterDirector } from './character';
 import { MagicEffects } from './effects';
@@ -143,7 +143,10 @@ export class Dracona {
   private bind() {
     this.find('#spin').addEventListener('click', () => void this.spin());
     this.find('#bet-down').addEventListener('click', () => this.changeBet(-1));
-    this.find('#bet-select').addEventListener('change', () => this.changeBet(this.bets.indexOf(Number(this.find<HTMLSelectElement>('#bet-select').value))-this.bets.indexOf(this.bet)));
+    this.find('#bet-select').addEventListener('change', () => {
+      const value=Number(this.find<HTMLSelectElement>('#bet-select').value);
+      if(!this.busy&&!this.autoplay.state.active&&!this.bonusRemaining&&validGameBet(value)){this.bet=value;this.controls();}
+    });
     this.find('#bet-up').addEventListener('click', () => this.changeBet(1));
     this.find('#rules').addEventListener('click', () => this.showRules());
     this.find('#sound').addEventListener('click', () => {
@@ -169,7 +172,7 @@ export class Dracona {
     this.window.addEventListener('pagehide', () => { this.destroy(); }, { once: true, signal: this.controller.signal });
   }
 
-  private changeBet(direction: number) { if (this.busy || this.autoplay.state.active || this.bonusRemaining > 0) return; const index = this.bets.indexOf(this.bet); this.bet = this.bets[Math.max(0, Math.min(this.bets.length - 1, index + direction))]; this.controls(); }
+  private changeBet(direction: number) { if (this.busy || this.autoplay.state.active || this.bonusRemaining > 0) return; const next=direction>0?this.bets.find(value=>value>this.bet):[...this.bets].reverse().find(value=>value<this.bet);if(next!==undefined)this.bet=next;this.controls(); }
 
   private controls() {
     const free = this.bonusRemaining > 0;
@@ -279,7 +282,7 @@ export class Dracona {
       } else if (wasFree) {
         await this.client.act({ gameId: DRACONA_GAME, action: 'move', sessionId: before.id, move: 'dracona-spin', revision: before.view.dracona!.revision });
       } else {
-        await this.client.act({ gameId: DRACONA_GAME, action: 'start', stakeUnits: String(this.bet * 100), settings: { dracona: { mode: 'normal' } } });
+        await this.client.act({ gameId: DRACONA_GAME, action: 'start', stakeUnits: String(gameBetCents(this.bet)), settings: { dracona: { mode: 'normal' } } });
       }
       if (!this.alive || account !== this.client.accountId) return false;
       const session = this.session, view = session?.view.dracona;

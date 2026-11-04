@@ -191,9 +191,15 @@
         "scripts/game-math/rtp-caribbean.mjs",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
-      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "studio-neopolis": {
       "rulesVersion": 4,
@@ -1021,9 +1027,15 @@
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
         "server-tests/star-spin-stakes.test.ts",
-        "docs/game-math/qualifications/wild-nudge-v1.json"
+        "docs/game-math/qualifications/wild-nudge-v1.json",
+        "scripts/game-math/manual-stakes.mjs"
       ],
-      "note": "Same independent reels, deterministic WILD multipliers and eight free continuations as historical rules 1. Every common stake funds all 20 lines. Rules 2 accumulate rational rewards through the complete paid round, then use the shared unbiased final cent settlement. Historical rules and UUID replays retain their original credit."
+      "note": "Same independent reels, deterministic WILD multipliers and eight free continuations as historical rules 1. Every common stake funds all 20 lines. Rules 2 accumulate rational rewards through the complete paid round, then use the shared unbiased final cent settlement. Historical rules and UUID replays retain their original credit.",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "royal-coins": {
       "method": "exact-paid-and-reward-slots-v1",
@@ -1417,7 +1429,8 @@
         "server/games/caramelCarnival.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -1428,7 +1441,12 @@
       "maxHalfWidth95": 0.01,
       "maxUpper95": 0.98,
       "minPaidRounds": 2000000,
-      "samplerGame": "studio-caramel-carnival"
+      "samplerGame": "studio-caramel-carnival",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "studio-last-convoy": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -1486,7 +1504,8 @@
         "server/games/lastConvoy.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -1497,7 +1516,12 @@
       "maxHalfWidth95": 0.01,
       "maxUpper95": 0.98,
       "minPaidRounds": 2000000,
-      "samplerGame": "studio-last-convoy"
+      "samplerGame": "studio-last-convoy",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "studio-nitro-run": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -1555,7 +1579,8 @@
         "server/games/nitroRun.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -1566,7 +1591,12 @@
       "maxHalfWidth95": 0.01,
       "maxUpper95": 0.98,
       "minPaidRounds": 2000000,
-      "samplerGame": "studio-nitro-run"
+      "samplerGame": "studio-nitro-run",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "studio-meme-overload": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -1625,7 +1655,8 @@
         "server/games/nitroRun.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -1636,7 +1667,12 @@
       "maxHalfWidth95": 0.01,
       "maxUpper95": 0.98,
       "minPaidRounds": 2000000,
-      "samplerGame": "studio-nitro-run"
+      "samplerGame": "studio-nitro-run",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "studio-velvet-reign": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -1701,7 +1737,8 @@
         "server/games/velvetMath.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -1712,7 +1749,12 @@
       "maxHalfWidth95": 0.01,
       "maxUpper95": 0.98,
       "minPaidRounds": 2000000,
-      "samplerGame": "studio-velvet-reign"
+      "samplerGame": "studio-velvet-reign",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "original-cr-vs-leo": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -1770,9 +1812,15 @@
         "server/games/crLeo.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
-      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "royal-plinko": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -1868,7 +1916,8 @@
         "src/ui/volcanicPlinkoModel.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "targetsByChoice": {
@@ -1946,6 +1995,11 @@
         "16:medium": "48b03711fb7c274783b6fd2bb88d955b504d497388aa3b69fa6e01dc84237549",
         "16:hard": "bdc47a043aafa600b4437a90ee1ad7f025e6cbe24102ee5dba876e67aa074e1c",
         "16:expert": "cbcc2a7ca1727445c0a22951208770610ee337f4d5e6863d769b3a4f78e0d44d"
+      },
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
       }
     },
     "github-crash": {
@@ -2003,9 +2057,15 @@
         "server/games/rush/crash.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
-      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     }
   },
   "nonWagered": {
@@ -2020,7 +2080,7 @@
         "progressVersion": 1,
         "target": 0.96,
         "minimumReturn": 0.9,
-        "tolerance": 1e-06,
+        "tolerance": 0.000001,
         "stakes": [
           1000,
           2000,
@@ -2367,7 +2427,8 @@
         "server/games/caramelCarnival.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -2378,7 +2439,12 @@
       "maxHalfWidth95": 0.01,
       "maxUpper95": 0.98,
       "minPaidRounds": 2000000,
-      "samplerGame": "studio-caramel-carnival"
+      "samplerGame": "studio-caramel-carnival",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "studio-last-convoy": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -2436,7 +2502,8 @@
         "server/games/lastConvoy.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -2447,7 +2514,12 @@
       "maxHalfWidth95": 0.01,
       "maxUpper95": 0.98,
       "minPaidRounds": 2000000,
-      "samplerGame": "studio-last-convoy"
+      "samplerGame": "studio-last-convoy",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "studio-nitro-run": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -2505,7 +2577,8 @@
         "server/games/nitroRun.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -2516,7 +2589,12 @@
       "maxHalfWidth95": 0.01,
       "maxUpper95": 0.98,
       "minPaidRounds": 2000000,
-      "samplerGame": "studio-nitro-run"
+      "samplerGame": "studio-nitro-run",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "studio-meme-overload": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -2575,7 +2653,8 @@
         "server/games/nitroRun.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -2586,7 +2665,12 @@
       "maxHalfWidth95": 0.01,
       "maxUpper95": 0.98,
       "minPaidRounds": 2000000,
-      "samplerGame": "studio-nitro-run"
+      "samplerGame": "studio-nitro-run",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "studio-velvet-reign": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -2651,7 +2735,8 @@
         "server/games/velvetMath.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -2662,7 +2747,12 @@
       "maxHalfWidth95": 0.01,
       "maxUpper95": 0.98,
       "minPaidRounds": 2000000,
-      "samplerGame": "studio-velvet-reign"
+      "samplerGame": "studio-velvet-reign",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "original-cr-vs-leo": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -2720,9 +2810,15 @@
         "server/games/crLeo.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
-      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "original-jackie-chan": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -2782,9 +2878,15 @@
         "server/games/crLeo.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
-      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "royal-plinko": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -2880,7 +2982,8 @@
         "src/ui/volcanicPlinkoModel.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "targetsByChoice": {
@@ -2958,6 +3061,11 @@
         "16:medium": "48b03711fb7c274783b6fd2bb88d955b504d497388aa3b69fa6e01dc84237549",
         "16:hard": "bdc47a043aafa600b4437a90ee1ad7f025e6cbe24102ee5dba876e67aa074e1c",
         "16:expert": "cbcc2a7ca1727445c0a22951208770610ee337f4d5e6863d769b3a4f78e0d44d"
+      },
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
       }
     },
     "royal-roulette": {
@@ -3017,9 +3125,15 @@
         "src/shared/gameCore.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
-      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "github-crash": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -3076,9 +3190,15 @@
         "server/games/rush/crash.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
-      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "flag-battle": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -3138,9 +3258,15 @@
         "server/games/flagBattle.ts",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
-      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "studio-forest-heart": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -3213,7 +3339,8 @@
         "scripts/game-math/forest-heart-reference.mjs",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "targetsByChoice": {
@@ -3231,6 +3358,11 @@
         "rotate-9": 0.9356444924396597,
         "rotate-10": 0.9349178064350211,
         "rotate-11": 0.9367172193988883
+      },
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
       }
     },
     "studio-caribbean-treasures": {
@@ -3307,9 +3439,15 @@
         "scripts/game-math/rtp-caribbean.mjs",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
-      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "studio-cosmic-escape": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -3374,9 +3512,15 @@
         "scripts/game-math/stake-runtime.mjs",
         "src/shared/luelonSlotsLines.ts",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
-      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "studio-flooded-temple": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -3437,9 +3581,15 @@
         "scripts/game-math/rtp-temple-cascade-model.mjs",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
-      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "studio-afterglow": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -3503,7 +3653,8 @@
         "deployment/releases/shared-stakes-20261101-v1/accepted-rounds.test.ts",
         "deployment/releases/star-spin-20261103-v1/production-round-compatibility.json",
         "deployment/releases/star-spin-20261103-v1/accepted-rounds.test.ts",
-        "deployment/releases/star-spin-20261103-v1/native-projection.json"
+        "deployment/releases/star-spin-20261103-v1/native-projection.json",
+        "scripts/game-math/manual-stakes.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "compatibleProgressVersions": [
@@ -3511,7 +3662,12 @@
         4
       ],
       "compatibilityEvidence": "deployment/releases/star-spin-20261103-v1/production-round-compatibility.json",
-      "compatibilityQualificationSource": "deployment/releases/star-spin-20261103-v1/accepted-rounds.test.ts"
+      "compatibilityQualificationSource": "deployment/releases/star-spin-20261103-v1/accepted-rounds.test.ts",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "studio-dracona": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -3571,9 +3727,15 @@
         "scripts/game-math/rtp-simulation.mjs",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
-      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "studio-neopolis": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -3634,9 +3796,15 @@
         "scripts/game-math/rtp-neopolis-v4.mjs",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "scripts/game-math/manual-stakes.mjs"
       ],
-      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     },
     "tsu-e-fa": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -3755,9 +3923,15 @@
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
         "server-tests/star-spin-stakes.test.ts",
-        "docs/game-math/qualifications/wild-nudge-v1.json"
+        "docs/game-math/qualifications/wild-nudge-v1.json",
+        "scripts/game-math/manual-stakes.mjs"
       ],
-      "note": "Same independent reels, deterministic WILD multipliers and eight free continuations as historical rules 1. Every common stake funds all 20 lines. Rules 2 accumulate rational rewards through the complete paid round, then use the shared unbiased final cent settlement. Historical rules and UUID replays retain their original credit."
+      "note": "Same independent reels, deterministic WILD multipliers and eight free continuations as historical rules 1. Every common stake funds all 20 lines. Rules 2 accumulate rational rewards through the complete paid round, then use the shared unbiased final cent settlement. Historical rules and UUID replays retain their original credit.",
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 5000,
+        "stepCents": 1
+      }
     }
   }
 }
