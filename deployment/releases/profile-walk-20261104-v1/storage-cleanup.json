@@ -1,0 +1,305 @@
+{
+  "sourcePreservedInGithub": [
+    "820e1c4e92eeb54b85915c483dc4e59829679c71",
+    "6664f374937a397914ba56d02adcd403c3be4ea2"
+  ],
+  "local": {
+    "status": "blocked_by_automatic_review",
+    "reason": "blocked by policy",
+    "commandExecuted": false,
+    "removedBytes": 0,
+    "pending": [
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\before.json",
+        "files": 1,
+        "bytes": 3629395
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\cleanup-transport.py",
+        "files": 1,
+        "bytes": 2098
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\host-avatar-1440.png",
+        "files": 1,
+        "bytes": 213553
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\host-avatar-390.png",
+        "files": 1,
+        "bytes": 67726
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\host-npc-1440.png",
+        "files": 1,
+        "bytes": 208149
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\host-npc-390.png",
+        "files": 1,
+        "bytes": 74089
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\host-review.ts",
+        "files": 1,
+        "bytes": 5339
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\maintenance-evidence.py",
+        "files": 1,
+        "bytes": 1086
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\maintenance-status.py",
+        "files": 1,
+        "bytes": 1082
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\payload.tgz",
+        "files": 1,
+        "bytes": 2056104
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\production-backend.js",
+        "files": 1,
+        "bytes": 2403047
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\production-manifest.json",
+        "files": 1,
+        "bytes": 638450
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\public-1440-right.png",
+        "files": 1,
+        "bytes": 260391
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\public-390-right.png",
+        "files": 1,
+        "bytes": 84680
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\public-review.mjs",
+        "files": 1,
+        "bytes": 4096
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\record-release.mjs",
+        "files": 1,
+        "bytes": 7095
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\release-plan.log",
+        "files": 1,
+        "bytes": 3353
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\release-prepare.log",
+        "files": 1,
+        "bytes": 32521
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\release-verify.log",
+        "files": 1,
+        "bytes": 283
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\runtime-status.py",
+        "files": 1,
+        "bytes": 498
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\summarize.py",
+        "files": 1,
+        "bytes": 2046
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\natural-side-walk\\payload",
+        "files": 18,
+        "bytes": 7367095
+      }
+    ],
+    "pendingFiles": 39,
+    "pendingBytes": 17062176,
+    "lastObservedFreeBeforeRejectedAttempt": 313713963008,
+    "freeAfterRejectedAttempt": 313831170048,
+    "physicalSpaceReclaimedClaimed": false,
+    "cleanupCondition": "Await permitted cleanup; do not retry the rejected deletion without resolving the policy block"
+  },
+  "serverTransport": {
+    "removed": [
+      {
+        "path": "/opt/royal-releases/profile-walk-20261104-v1/payload.tgz",
+        "bytes": 2056104,
+        "sha256": "37e4ca21c68289442452e750662a5449f7a392d1f0e40b6ca8a03fc426efd43f"
+      },
+      {
+        "path": "/opt/royal-releases/profile-walk-20261104-v1/production-backend.js",
+        "bytes": 2403047,
+        "sha256": "7b11acb06fdbc5ff43a9cd18f9bdf5a687ca11ccd086562508150a48a9d6684a"
+      }
+    ],
+    "freeBefore": 10630434816,
+    "freeAfter": 10634895360,
+    "retained": [
+      "source backup",
+      "previous image",
+      "current and rollback release proofs"
+    ],
+    "sourceCommit": "820e1c4e92eeb54b85915c483dc4e59829679c71"
+  },
+  "serverMaintenance": {
+    "auditRun": "/opt/royal-maintenance/automatic-runs/run-7e0a3d16ae434c8c8c086c72310d92fe",
+    "removed": [
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/__pycache__",
+        "allocatedBytes": 8192
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/after.json",
+        "allocatedBytes": 3735552
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/application-overlay.py",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/build-result.json",
+        "allocatedBytes": 1171456
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/build.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/deploy.py",
+        "allocatedBytes": 8192
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/dist-delta",
+        "allocatedBytes": 2785280
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/engine-build.py",
+        "allocatedBytes": 8192
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/image_metadata.py",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/install-manifest.json",
+        "allocatedBytes": 3792896
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/operation.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/overlay-base.py",
+        "allocatedBytes": 28672
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/published.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/quiesce.cjs",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/release-github.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/release-manifest.json",
+        "allocatedBytes": 638976
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/replace-staging.py",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/runtime-context",
+        "allocatedBytes": 2801664
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/runtime-inventory.cjs",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/server-delta",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/snapshot-base.py",
+        "allocatedBytes": 16384
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/snapshot.py",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/remove-hall-title-20261103-v1/source",
+        "allocatedBytes": 32768
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1",
+        "allocatedBytes": 16384
+      },
+      {
+        "path": "/opt/royal-backups/remove-hall-title-20261103-v1",
+        "allocatedBytes": 16384
+      }
+    ],
+    "removedImageTags": 3,
+    "freeBefore": 10633326592,
+    "freeAfter": 10641563648,
+    "retainedHistoryReasons": {
+      "/opt/royal-releases/hall-elevator-20261101-v1-final.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/forest-heart-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-compact.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/royal-roulette-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/star-spin-open-selection-20261104-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/hall-elevator-20261101-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-delta.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-snapshot.py": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v3.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/character-motion-20261027-v1.failed.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-ui-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/girlhub-feedback-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v2.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before-final.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-card-scale-20261023": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub"
+    }
+  },
+  "activeWorkException": {
+    "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal",
+    "reason": "Current primary checkout protected by the app; dependencies and normal build outputs retained",
+    "cleanupCondition": "After switching the primary checkout and ending concurrent work, verify all commits in GitHub before archiving this checkout"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "release": "profile-walk-20261104-v1",
-  "status": "published_verified_maintenance_pending",
+  "status": "published_verified",
   "sourceCommit": "820e1c4e92eeb54b85915c483dc4e59829679c71",
   "baseCommit": "5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e",
   "image": "sha256:f19d318e66f2c223c072eadac81a20b27b3ccde3a45a46052518193f2f527ed1",
@@ -379,11 +379,99 @@
     },
     "immutableProgramProofRecorded": true,
     "freeBeforeBytes": 10675134464,
-    "freeAfterBytes": 10639892480
+    "freeAfterBytes": 10639892480,
+    "finalPublicHealth": {
+      "ok": true,
+      "checkedAt": "2026-11-04T13:12:25.950Z"
+    }
   },
   "maintenance": {
-    "status": "pending",
-    "reason": "Awaiting the required completed post-publication maintenance run"
+    "startedAt": 1793796528.7433846,
+    "status": "completed",
+    "freeBefore": 10633326592,
+    "release": "profile-walk-20261104-v1",
+    "sourceCommit": "820e1c4e92eeb54b85915c483dc4e59829679c71",
+    "currentImage": "sha256:f19d318e66f2c223c072eadac81a20b27b3ccde3a45a46052518193f2f527ed1",
+    "rollbackImage": "sha256:08d83a2095974b1baaad62e376149e38f74c31f9319da9c6dbefbc1f49859713",
+    "plannedEntries": 25,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 120,
+    "retainedHistoryReasons": {
+      "/opt/royal-releases/hall-elevator-20261101-v1-final.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/forest-heart-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-compact.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/royal-roulette-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/star-spin-open-selection-20261104-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/hall-elevator-20261101-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-delta.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-snapshot.py": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v3.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/character-motion-20261027-v1.failed.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-ui-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/girlhub-feedback-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v2.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before-final.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-card-scale-20261023": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub"
+    },
+    "removedEntries": 25,
+    "removedImageTags": 3,
+    "dockerRetainedImages": [],
+    "freeAfter": 10641563648,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:08d83a2095974b1baaad62e376149e38f74c31f9319da9c6dbefbc1f49859713",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "544f13c4c9ba88eec3793647cb98bbba709094243635db5af35e4b897bf59cc8",
+      "files": 8593
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "4645b1b8e2a7ffdcab795d264527f135827a184d7ee6c3aeff2668c472e294c3",
+      "receipt": "/var/lib/royal-project-brain/receipts/4645b1b8e2a7ffdcab795d264527f135827a184d7ee6c3aeff2668c472e294c3.json",
+      "queued": true
+    },
+    "finishedAt": 1793797336.4607272,
+    "durationSeconds": 807.72,
+    "auditRun": "/opt/royal-maintenance/automatic-runs/run-7e0a3d16ae434c8c8c086c72310d92fe",
+    "timerEnabled": true,
+    "timerActive": true,
+    "laterGlobalAttempt": {
+      "startedAt": 1793797487.5354204,
+      "status": "retry",
+      "freeBefore": 10642042880,
+      "reason": "Deployment lock busy; systemd retries in five minutes",
+      "finishedAt": 1793797487.5355873,
+      "durationSeconds": 0,
+      "freeAfter": 10642042880
+    }
   },
   "limitations": {
     "physicalMobileDeviceTested": false,
@@ -393,5 +481,13 @@
     "productionTestMessages": 0,
     "sharedCodeMapUnavailable": true,
     "directSourceAndByteVerificationUsed": true
+  },
+  "cleanup": {
+    "status": "local_cleanup_blocked",
+    "serverTransportCompleted": true,
+    "localRemovedBytes": 0,
+    "reason": "Automatic approval review rejected local temporary-file and payload cleanup: blocked by policy",
+    "record": "storage-cleanup.json",
+    "primaryCheckoutRetained": true
   }
 }
