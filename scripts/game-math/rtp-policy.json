@@ -3654,15 +3654,17 @@
         "deployment/releases/star-spin-20261103-v1/production-round-compatibility.json",
         "deployment/releases/star-spin-20261103-v1/accepted-rounds.test.ts",
         "deployment/releases/star-spin-20261103-v1/native-projection.json",
-        "scripts/game-math/manual-stakes.mjs"
+        "scripts/game-math/manual-stakes.mjs",
+        "deployment/releases/manual-stakes-20261104-v1/production-round-compatibility.json",
+        "deployment/releases/manual-stakes-20261104-v1/accepted-rounds.test.ts"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "compatibleProgressVersions": [
         3,
         4
       ],
-      "compatibilityEvidence": "deployment/releases/star-spin-20261103-v1/production-round-compatibility.json",
-      "compatibilityQualificationSource": "deployment/releases/star-spin-20261103-v1/accepted-rounds.test.ts",
+      "compatibilityEvidence": "deployment/releases/manual-stakes-20261104-v1/production-round-compatibility.json",
+      "compatibilityQualificationSource": "deployment/releases/manual-stakes-20261104-v1/accepted-rounds.test.ts",
       "manualStakeRange": {
         "minimumCents": 10,
         "maximumCents": 5000,

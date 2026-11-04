@@ -5,6 +5,7 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 const folder='deployment/releases/manual-stakes-20261104-v1';
 const snapshot=JSON.parse(fs.readFileSync(process.argv[2]));
+const published=JSON.parse(fs.readFileSync(process.argv[3]));
 const current=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
 const git=(...args)=>execFileSync('git',args,{maxBuffer:128*1024**2,stdio:['ignore','pipe','ignore']});
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
@@ -45,6 +46,14 @@ const assets={};
 for(const [name,hash]of Object.entries(snapshot.source))if(/^(?:public\/assets\/|games\/.*\/assets\/)/.test(name)&&fs.existsSync(name)){
   const bytes=fs.readFileSync(name),actual=digest(bytes);
   if(actual===hash||digest(canonical(bytes))===hash)assets[name]=hash;
+}
+for(const id of ids){
+  const record=published[id];assert(record,'Missing published game manifest: '+id);
+  assert.equal(record.pointerSha256,snapshot.moduleFiles['/opt/royal-game-modules/'+id+'/active.json']);
+  for(const [name,hash]of Object.entries(record.manifest.files))if(name.startsWith('media/')){
+    const source='public/assets/'+name.slice(6);assert(fs.existsSync(source),'Published media missing locally: '+source);
+    const bytes=fs.readFileSync(source);assert(digest(bytes)===hash||digest(canonical(bytes))===hash,'Published media differs locally: '+source);assets[source]=hash;
+  }
 }
 const base={format:1,productionCommit:snapshot.sourceCommit,files};
 fs.writeFileSync(folder+'/host-projection.json',JSON.stringify({...base,entries:['index.html'],moduleGames:games,moduleAssets:assets,moduleContracts:snapshot.moduleHost.games},null,2)+'\n');
