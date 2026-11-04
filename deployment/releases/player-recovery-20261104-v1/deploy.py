@@ -7,7 +7,7 @@ from image_metadata import image, inspect
 
 NAME = 'player-recovery-20261104-v1'
 ROOT = Path(__file__).resolve().parent
-SOURCES = set(["server/LobbyRoom.ts","src/game/RoomScene.ts","src/i18n/en.ts","src/main.ts","src/network/LobbyClient.ts","src/shared/arcadeCatalog.ts","src/shared/playerRecovery.ts","src/shared/world.ts","src/ui/PlayerRecoverySettings.ts","src/ui/SocialUI.ts","src/ui/player-recovery.css"])
+SOURCES = set(["server/LobbyRoom.ts","src/game/RoomScene.ts","src/i18n/en.ts","src/main.ts","src/network/LobbyClient.ts","src/shared/cabinetSeating.ts","src/shared/playerRecovery.ts","src/shared/world.ts","src/ui/PlayerRecoverySettings.ts","src/ui/SocialUI.ts","src/ui/player-recovery.css"])
 PRESERVED_BACKEND_INPUTS = {'src/i18n/en.ts': '8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68'}
 
 def require(value, reason):
@@ -91,7 +91,7 @@ def payload(b):
     require(backend == release['build']['backendProjection'] and backend['productionCommit'] == m['baseCommit'], 'Backend evidence differs')
     require(backend['entries'] == ['server/index.ts'] and backend['output']['path'] == 'dist-server/index.js', 'Unexpected backend entry')
     require(backend['output']['sha256'] == b.SERVER_DELTA['index.js'] == release['files']['dist-server/index.js'], 'Backend differs from verified build')
-    validate_inputs(b.CHANGES, backend, old, {'server/LobbyRoom.ts', 'src/shared/playerRecovery.ts', 'src/shared/arcadeCatalog.ts', 'src/shared/world.ts'}, PRESERVED_BACKEND_INPUTS)
+    validate_inputs(b.CHANGES, backend, old, {'server/LobbyRoom.ts', 'src/shared/playerRecovery.ts', 'src/shared/cabinetSeating.ts', 'src/shared/world.ts'}, PRESERVED_BACKEND_INPUTS)
 
 def main():
     require(len(sys.argv) == 2 and sys.argv[1] in ['check','build','publish','release','rollback'], 'Unexpected operation')

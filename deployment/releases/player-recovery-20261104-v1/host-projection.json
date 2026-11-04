@@ -227,17 +227,7 @@
       "commit": "86ef7ad0df4006cce620c0042e38dd02eedbe5de",
       "path": "src/shared/arcadeCatalog.ts",
       "baseSha256": "946d05c1c450086d48efa318d7d65df6bdd5641f2edcd05599b67f7499a0a55a",
-      "sha256": "c591254dc92d39f27a5807d21200322d9a32a169c40f95f1582c2869c6c933ae",
-      "patches": [
-        {
-          "from": "import {STUDIO_GAMES, type StudioGameId} from './studioGames';\nimport {VARIANT_GAMES} from './casinoVariants';\nimport {isCardGame} from './cardTables';\n\nexport const ACTIVE_STUDIO_GAMES = [\n  'studio-cosmic-escape', 'studio-caramel-carnival',\n",
-          "to": "import {STUDIO_GAMES, type StudioGameId} from './studioGames';\nimport {VARIANT_GAMES} from './casinoVariants';\nimport {isCardGame} from './cardTables';\nimport {BOUNDS} from './clubGeometry';\n\nexport const ACTIVE_STUDIO_GAMES = [\n  'studio-cosmic-escape', 'studio-caramel-carnival',\n"
-        },
-        {
-          "from": "// Physical seats and game identities are independent. Each seat exposes one collection.\nexport const ARCADE_CABINET_SPECS: readonly ArcadeCabinetSpec[] = [\n  // Forest Heart is a catalogue choice in the existing twelve physical seats.\n  ...ARCADE_HOUSE_GAMES.filter(id=>id!==FOREST_HEART_GAME).map((id,index) => ({id,collection:'royal' as const,defaultGameId:id,x:1200+index%4*165,y:430+Math.floor(index/4)*270})),\n];\nexport const ACTIVE_ARCADE_GAMES: readonly string[] = ARCADE_CABINET_SPECS.map(c=>c.id);\nexport const ROYAL_CABINET_IDS = ARCADE_CABINET_SPECS.filter(c=>c.collection==='royal').map(c=>c.id);\n",
-          "to": "// Physical seats and game identities are independent. Each seat exposes one collection.\nexport const ARCADE_CABINET_SPECS: readonly ArcadeCabinetSpec[] = [\n  // Forest Heart is a catalogue choice in the existing twelve physical seats.\n  ...ARCADE_HOUSE_GAMES.filter(id=>id!==FOREST_HEART_GAME).map((id,index) => ({id,collection:'royal' as const,defaultGameId:id,x:1200+index%4*165,y:Math.min(430+Math.floor(index/4)*270,BOUNDS.bottom-100)})),\n];\nexport const ACTIVE_ARCADE_GAMES: readonly string[] = ARCADE_CABINET_SPECS.map(c=>c.id);\nexport const ROYAL_CABINET_IDS = ARCADE_CABINET_SPECS.filter(c=>c.collection==='royal').map(c=>c.id);\n"
-        }
-      ]
+      "sha256": "946d05c1c450086d48efa318d7d65df6bdd5641f2edcd05599b67f7499a0a55a"
     },
     "src/ui/RetiredArcadeRounds.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1129,7 +1119,17 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/shared/cabinetSeating.ts",
       "baseSha256": "79306f90ae0607f6f3b60bf4868816027bb023af454a1b95f09b1163815c4a8c",
-      "sha256": "79306f90ae0607f6f3b60bf4868816027bb023af454a1b95f09b1163815c4a8c"
+      "sha256": "087040ee4788247488c7b2445bffde6816214ec0279209acc7fb41f3a052aebd",
+      "patches": [
+        {
+          "from": "import type { Cabinet } from './cabinets';\nimport { isCardGame, cardTableSeat, cardTableApproach } from './cardTables';\n\nexport type GameReaction = 'win' | 'lose';\nexport type CabinetPlayResult = { id: string; requestId: number; accepted: boolean; reason?: string };\n",
+          "to": "import type { Cabinet } from './cabinets';\nimport { isCardGame, cardTableSeat, cardTableApproach } from './cardTables';\nimport { BOUNDS } from './clubGeometry';\n\nexport type GameReaction = 'win' | 'lose';\nexport type CabinetPlayResult = { id: string; requestId: number; accepted: boolean; reason?: string };\n"
+        },
+        {
+          "from": "  return {\n    x: cabinet.x, y: cabinet.y + 43,\n    // The Diamonds aisle has a planter in front, so approach its stool from the right.\n    entry: { x: cabinet.x + (cabinet.id === 'github-diamonds' ? 48 : 0), y: cabinet.y + 65 },\n  };\n};\n",
+          "to": "  return {\n    x: cabinet.x, y: cabinet.y + 43,\n    // The Diamonds aisle has a planter in front, so approach its stool from the right.\n    entry: { x: cabinet.x + (cabinet.id === 'github-diamonds' ? 48 : 0), y: Math.min(cabinet.y + 65, BOUNDS.bottom) },\n  };\n};\n"
+        }
+      ]
     },
     "src/game/cabinetStoolArt.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1940,19 +1940,19 @@
       "sha256": "caa92b92343afa04889b13ef484f6d1598aac196ffe1f7e2e789dbf77c4f25bc"
     },
     "src/shared/playerRecovery.ts": {
-      "commit": "97604f3bf94cdf9500e915b31366e4de7d0369ce",
+      "commit": "60834b76153ece2f4fc0ce4c03c6a8ff7e929e56",
       "path": "src/shared/playerRecovery.ts",
       "baseSha256": "27e80e4e6b4b0a43b838e9bb567fbd2125011d26480496391cf6787439c4f905",
       "sha256": "27e80e4e6b4b0a43b838e9bb567fbd2125011d26480496391cf6787439c4f905"
     },
     "src/ui/PlayerRecoverySettings.ts": {
-      "commit": "97604f3bf94cdf9500e915b31366e4de7d0369ce",
+      "commit": "60834b76153ece2f4fc0ce4c03c6a8ff7e929e56",
       "path": "src/ui/PlayerRecoverySettings.ts",
       "baseSha256": "66c58a1dcfb265aa358a36e7e3948e055d3c8e1a68dd68f898467706802e1e3c",
       "sha256": "66c58a1dcfb265aa358a36e7e3948e055d3c8e1a68dd68f898467706802e1e3c"
     },
     "src/ui/player-recovery.css": {
-      "commit": "97604f3bf94cdf9500e915b31366e4de7d0369ce",
+      "commit": "60834b76153ece2f4fc0ce4c03c6a8ff7e929e56",
       "path": "src/ui/player-recovery.css",
       "baseSha256": "ed93886bc99f3cd536f0d82f1d85ca6997a42515c9ec00f71c03e37f82b595c2",
       "sha256": "ed93886bc99f3cd536f0d82f1d85ca6997a42515c9ec00f71c03e37f82b595c2"

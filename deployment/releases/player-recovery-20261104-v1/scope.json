@@ -1,6 +1,6 @@
 {
   "release": "player-recovery-20261104-v1",
-  "featureCommit": "97604f3bf94cdf9500e915b31366e4de7d0369ce",
+  "featureCommit": "60834b76153ece2f4fc0ce4c03c6a8ff7e929e56",
   "productionCommit": "320d60725984c5cbd46829e9dc545f59cf9cd162",
   "changedSources": [
     "server/LobbyRoom.ts",
@@ -8,7 +8,7 @@
     "src/i18n/en.ts",
     "src/main.ts",
     "src/network/LobbyClient.ts",
-    "src/shared/arcadeCatalog.ts",
+    "src/shared/cabinetSeating.ts",
     "src/shared/playerRecovery.ts",
     "src/shared/world.ts",
     "src/ui/PlayerRecoverySettings.ts",
@@ -20,7 +20,7 @@
     "src/i18n/en.ts": "84203044eb334f6c53953acc5b300db8c26e541eccf6955d608fc66e5e4e0082",
     "src/main.ts": "93bd794d7947202d2b6cb48be84eeadcb1e7b8401ea0e50fb24de7023f6df251",
     "src/network/LobbyClient.ts": "5704cac3ea3e62075d6bdfa019764eedcc262f896602463fbb0c4832883c174d",
-    "src/shared/arcadeCatalog.ts": "c591254dc92d39f27a5807d21200322d9a32a169c40f95f1582c2869c6c933ae",
+    "src/shared/cabinetSeating.ts": "087040ee4788247488c7b2445bffde6816214ec0279209acc7fb41f3a052aebd",
     "src/shared/playerRecovery.ts": "27e80e4e6b4b0a43b838e9bb567fbd2125011d26480496391cf6787439c4f905",
     "src/shared/world.ts": "3c9b6a418a473a093f2af478d83ae893807a2809dde8ab468269df4c4a2d8e87",
     "src/ui/PlayerRecoverySettings.ts": "66c58a1dcfb265aa358a36e7e3948e055d3c8e1a68dd68f898467706802e1e3c",
