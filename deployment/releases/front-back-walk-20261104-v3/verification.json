@@ -1,6 +1,6 @@
 {
   "release": "front-back-walk-20261104-v3",
-  "status": "published_verified_maintenance_pending",
+  "status": "published_verified_maintenance_completed",
   "publishedOnMoscow": "2026-11-04",
   "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
   "sourceCommit": "315fda47301591b5b1ed05806781fcc603cffdcb",
@@ -509,10 +509,54 @@
     },
     "immutableProgramProofRecorded": true,
     "freeBeforeBytes": 9757159424,
-    "freeAfterBytes": 9896099840
+    "freeAfterBytes": 9896099840,
+    "freshFinalChecks": {
+      "image": "sha256:d35fb87807807cf91d0c51181f70de1260892689de21d222bf88ef07a7481b4c",
+      "sourceCommit": "315fda47301591b5b1ed05806781fcc603cffdcb",
+      "health": "healthy",
+      "freeBytes": 9906614272,
+      "public": [
+        {
+          "path": "/healthz",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "path": "/",
+          "status": 200,
+          "expectedClientLinked": true
+        }
+      ],
+      "timerEnabled": "enabled",
+      "timerActive": "active"
+    }
   },
   "maintenance": {
-    "status": "pending"
+    "status": "completed",
+    "release": "front-back-walk-20261104-v3",
+    "sourceCommit": "315fda47301591b5b1ed05806781fcc603cffdcb",
+    "currentImage": "sha256:d35fb87807807cf91d0c51181f70de1260892689de21d222bf88ef07a7481b4c",
+    "rollbackImage": "sha256:8697bf1f68ebef8c53506839eec9839f6192275e64ade689a786a173a21957f3",
+    "startedAt": 1793818964.9552894,
+    "finishedAt": 1793819926.157834,
+    "durationSeconds": 961.2,
+    "freeBefore": 9889419264,
+    "freeAfter": 9907093504,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "removedEntries": 32,
+    "removedImageTags": 5,
+    "preservedFinancialFiles": 143,
+    "timerEnabled": "enabled",
+    "timerActive": "active",
+    "namedResults": [
+      {
+        "path": "/opt/royal-maintenance/automatic-runs/run-d56b3305381345178eebf52e5e799ed3/summary.json",
+        "sha256": "f884b74efbd92e7fa6e209a6624723ef8781d39901ca7e70129d87e74488e20e"
+      }
+    ],
+    "resultSha256": "f884b74efbd92e7fa6e209a6624723ef8781d39901ca7e70129d87e74488e20e"
   },
   "limitations": {
     "physicalMobileDeviceTested": false,
@@ -601,5 +645,13 @@
     "flagVersion": "2.1.2-1d07daea0fa9",
     "preparationWithoutPublicationLocks": true,
     "helperSourceCommit": "315fda47301591b5b1ed05806781fcc603cffdcb"
+  },
+  "storageCleanup": {
+    "report": "storage-cleanup.json",
+    "localRemovedLogicalBytes": 648445933,
+    "removedModuleVersions": 171,
+    "unclassifiedModuleVersionsRetained": 20,
+    "earlierRejectedTargetsPreserved": true,
+    "serverTransportRemovedBytes": 2073700
   }
 }
