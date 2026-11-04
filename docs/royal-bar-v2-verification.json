@@ -1,12 +1,12 @@
 {
   "status": "implemented-and-locally-verified",
-  "sourceCommit": "968199bc0986a80b2742d87bcd0fde2fe9b2f6ea",
-  "checkedAt": "2026-11-04T18:43:30.340Z",
+  "sourceCommit": "da1598c667e92325de6b5d16909181615d872b07",
+  "checkedAt": "2026-11-04T19:13:51.055Z",
   "featureBranch": "codex/royal-bar-art-v2",
   "sources": {
     "src/game/Bar.ts": "c5d03c989da3b73fc8552331f557f96998aec73b2843607f4ca763c01152a158",
     "src/game/MiraRig.ts": "c130b0c7541198ce0e6d4629679e3173e25c1afaa0c8c9979d5b99f630ac8c58",
-    "src/game/miraPose.ts": "8ff4e75718b4ee8c51d93814f85e5ae145cce8b5ed6fdf146830d3ccd25a58b1",
+    "src/game/miraPose.ts": "82663ac83981c29acf91bab33c64c8e3acf9e98afd8bf3bd731f5dbc3229118b",
     "src/game/royalBarArt.ts": "dd76e4df6c9fb7b6b4a0ffddf85ba9bf349cec4ff2a841c5df42b13f2528368a",
     "src/shared/miraRoutine.ts": "1edf1b32dec6a1d9646f23c0907ec5458aa311a35121633d9fdd5a8ac1470300",
     "src/shared/catCare.ts": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8",
@@ -40,7 +40,23 @@
       "disposablePostgres": true,
       "host": "reviewed host base with current bar renderer",
       "providerRepliesStubbed": true,
-      "physicalDevicesTested": false
+      "physicalDevicesTested": false,
+      "combinedChecks": true,
+      "runs": [
+        {
+          "sourceCommit": "0e4d57a4",
+          "passed": 9,
+          "failed": 1,
+          "notRun": 1,
+          "failedScenario": "third visitor initialization exceeded the default five-second connection poll",
+          "scope": "same final Mira renderer; repeat both royal-bar scenarios after waiting for join-dialog to close",
+          "role": "nine unchanged scenarios passed before the third-visitor startup timeout"
+        },
+        {
+          "passed": 2,
+          "role": "both bar scenarios repeated after explicit join completion"
+        }
+      ]
     },
     "visualReview": {
       "passed": true,
@@ -185,7 +201,7 @@
   },
   "recording": {
     "file": "mira-v2-actions.webm",
-    "sha256": "f88e01f915b442a446d7445c65ea6158e501396425d2eb48559814742076ae9c"
+    "sha256": "a208ba235b205ec2206a9ad9d296115b49661e6e89bae11a782289c156ec11d6"
   },
   "artwork": {
     "tool": "built-in imagegen",
