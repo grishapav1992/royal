@@ -1,5 +1,6 @@
 import {STAKE_PRECISION_METHOD,qualifyStakes,validateStakeProof} from './game-math/rtp-stakes.mjs';
 import {stakeInputs} from './game-math/rtp-gate.mjs';
+import {prepareManualStakeChecks} from './game-math/manual-stakes.mjs';
 import {qualifyFlagTote} from './game-math/rtp-flag-tote.mjs';
 import {qualifyKeys} from './game-math/rtp-keys.mjs';
 import {qualifyHilo} from './game-math/rtp-hilo.mjs';
@@ -36,6 +37,7 @@ const selectedPolicy=selectedRules===undefined||selectedRules===registry.profile
 const useStakePolicy=args.includes('--stake-policy'),primaryStake=selectedPolicy?.method===STAKE_PRECISION_METHOD;
 if(useStakePolicy||primaryStake){
  const inputs=useStakePolicy?await stakeInputs(root,gameId):await rtpInputs(root,gameId,selectedRules),startedAt=new Date().toISOString();
+ if(inputs.policy.manualStakeRange)await prepareManualStakeChecks([{game:gameId,policy:inputs.policy}],{onProgress:value=>console.log(JSON.stringify(value))});
  const index=args.indexOf('--sample-dir'),sample=await qualifyStakes(gameId,inputs,{sampleDirectory:index<0?undefined:args[index+1]},value=>console.log(JSON.stringify(value)));
  assert.deepEqual(useStakePolicy?await stakeInputs(root,gameId):await rtpInputs(root,gameId,selectedRules),inputs,'Sources changed during qualification');
  const proof={schemaVersion:1,gameId,rulesVersion:inputs.policy.rulesVersion,progressVersion:inputs.policy.progressVersion,startedAt,completedAt:new Date().toISOString(),sourceHashes:inputs.sourceHashes,policySha256:inputs.policySha256,...sample};

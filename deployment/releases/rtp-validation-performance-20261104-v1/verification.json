@@ -1,0 +1,447 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-11-04T19:59:48.459Z",
+  "environment": "Local Windows development checkout",
+  "baselineSourceCommit": "f653c9c69b899d42b6f8f1685267abb1574944db",
+  "reconciledMainCommit": "59c1202b466e4f3507e82c5f016240af95dbf5d2",
+  "implementation": "Bounded Node.js worker pool for independent exhaustive manual-stake modes; deterministic ordered evidence; existing validators retained",
+  "defaultWorkers": 4,
+  "sourceHashes": {
+    "scripts/game-math/manual-stakes.mjs": "10cd9f2e0edcd8412a91d99ac1716efe33710b49f401e14f4815e404a473bae1",
+    "scripts/game-math/manual-stake-case.mjs": "d1b6ed70273ff173bb6d01ae50580658b210fe564318f5925e8218a6d0712b62",
+    "scripts/game-math/manual-stake-pool.mjs": "162b9fdfc7e5e0552240a029b29635c25c6a822fa394e34f1d68f28927e34728",
+    "scripts/game-math/manual-stake-worker.mjs": "54d7257363c6d1cd4ff071197e42a99f9e6a644344a58708d66f11a59ddad5c4",
+    "scripts/game-math/rtp-gate.mjs": "3c288c26fb9396a3fe488728fd7772efeb64a47e1339afde91b3c1f2abb73949",
+    "scripts/qualify-game-rtp.mjs": "db5d7fec5c0886363bae6af218f1b68ad5f2d8b3de6b62a0ee669559d1c842ec",
+    "scripts/check-game-rtp.mjs": "f63d4549c8db29e325a2cafc0a577fa8f7c9a44250b55d8bc5c4971506b17e13",
+    "scripts/game-math/rtp-policy.json": "4e5049a2b1b93da880e0a48b28d37d62cf08e89f79251e53946282bd884f3406",
+    "scripts/game-math/rtp-legacy-baseline.json": "9484abfa50c174f05654bc1d2c6e223afc42aac8870ec47f9926ec4fadd314ba"
+  },
+  "benchmark": {
+    "format": 1,
+    "command": "npm run check:rtp -- --progress",
+    "mode": "fresh parallel exhaustive manual-cent replays; unchanged validators",
+    "timing": "Full npm command, including Node startup; baseline measured the gate after startup. One observed run per implementation, not a controlled-load benchmark.",
+    "otherRtpChecksRunningAtStart": 2,
+    "workers": 4,
+    "node": "v24.22.0",
+    "availableProcessors": 16,
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13620H",
+    "gateSha256": "3b051aadacf812b1cdc0fda23672a868994a7d64ad8c38e903a14be5555eb8e8",
+    "policySha256": "4e5049a2b1b93da880e0a48b28d37d62cf08e89f79251e53946282bd884f3406",
+    "result": {
+      "verified": 38,
+      "stakePoliciesVerified": 20,
+      "stakeAdmissionVerified": 20,
+      "legacyNotQualified": 114
+    },
+    "durationMs": 283357,
+    "baselineMs": 655759,
+    "speedup": 2.3142502214520904,
+    "reductionPercent": 56.78946076226175
+  },
+  "coverage": {
+    "gate": {
+      "verified": 38,
+      "stakePoliciesVerified": 20,
+      "stakeAdmissionVerified": 20,
+      "legacyNotQualified": 114
+    },
+    "requalifiedPolicies": 19,
+    "manualChoices": 94,
+    "manualCentChecks": 469154,
+    "serverReplayChecks": 109440,
+    "walletReplayAndRestartCases": 1598
+  },
+  "policyChanges": "Only dependency bindings for three qualifier helper files; every other mathematical policy field equals the baseline",
+  "qualification": {
+    "fullSupportedCliRuns": 19,
+    "allNumericalWalletAndReplayEvidenceEqual": true,
+    "newMonteCarloSamples": false,
+    "preservedIndependentSamplerEvidence": [
+      {
+        "game": "studio-caramel-carnival",
+        "choice": "normal",
+        "sourceCommit": "f653c9c69b899d42b6f8f1685267abb1574944db",
+        "sourceProof": "docs/game-math/qualifications/shared-stakes-studio-caramel-carnival.json",
+        "look": 1,
+        "seeds": [
+          4139817,
+          6371291
+        ],
+        "paidRounds": 2000000
+      },
+      {
+        "game": "studio-caramel-carnival",
+        "choice": "festival",
+        "sourceCommit": "f653c9c69b899d42b6f8f1685267abb1574944db",
+        "sourceProof": "docs/game-math/qualifications/shared-stakes-studio-caramel-carnival.json",
+        "look": 1,
+        "seeds": [
+          4139817,
+          6371291
+        ],
+        "paidRounds": 2000000
+      },
+      {
+        "game": "studio-last-convoy",
+        "choice": "normal",
+        "sourceCommit": "f653c9c69b899d42b6f8f1685267abb1574944db",
+        "sourceProof": "docs/game-math/qualifications/shared-stakes-studio-last-convoy.json",
+        "look": 1,
+        "seeds": [
+          4139817,
+          6371291
+        ],
+        "paidRounds": 2000000
+      },
+      {
+        "game": "studio-nitro-run",
+        "choice": "normal",
+        "sourceCommit": "f653c9c69b899d42b6f8f1685267abb1574944db",
+        "sourceProof": "docs/game-math/qualifications/shared-stakes-studio-nitro-run.json",
+        "look": 1,
+        "seeds": [
+          4139817,
+          6371291
+        ],
+        "paidRounds": 2000000
+      },
+      {
+        "game": "studio-meme-overload",
+        "choice": "normal",
+        "sourceCommit": "f653c9c69b899d42b6f8f1685267abb1574944db",
+        "sourceProof": "docs/game-math/qualifications/shared-stakes-studio-meme-overload.json",
+        "look": 1,
+        "seeds": [
+          4139817,
+          6371291
+        ],
+        "paidRounds": 2000000
+      },
+      {
+        "game": "studio-velvet-reign",
+        "choice": "normal",
+        "sourceCommit": "f653c9c69b899d42b6f8f1685267abb1574944db",
+        "sourceProof": "docs/game-math/qualifications/shared-stakes-studio-velvet-reign.json",
+        "look": 2,
+        "seeds": [
+          4139817,
+          6371291
+        ],
+        "paidRounds": 50000000
+      },
+      {
+        "game": "studio-velvet-reign",
+        "choice": "booster",
+        "sourceCommit": "f653c9c69b899d42b6f8f1685267abb1574944db",
+        "sourceProof": "docs/game-math/qualifications/shared-stakes-studio-velvet-reign.json",
+        "look": 2,
+        "seeds": [
+          4139817,
+          6371291
+        ],
+        "paidRounds": 50000000
+      },
+      {
+        "game": "studio-velvet-reign",
+        "choice": "hyper",
+        "sourceCommit": "f653c9c69b899d42b6f8f1685267abb1574944db",
+        "sourceProof": "docs/game-math/qualifications/shared-stakes-studio-velvet-reign.json",
+        "look": 2,
+        "seeds": [
+          4139817,
+          6371291
+        ],
+        "paidRounds": 50000000
+      },
+      {
+        "game": "studio-velvet-reign",
+        "choice": "spotlight",
+        "sourceCommit": "f653c9c69b899d42b6f8f1685267abb1574944db",
+        "sourceProof": "docs/game-math/qualifications/shared-stakes-studio-velvet-reign.json",
+        "look": 1,
+        "seeds": [
+          4139817,
+          6371291
+        ],
+        "paidRounds": 2000000
+      },
+      {
+        "game": "studio-velvet-reign",
+        "choice": "super-encore",
+        "sourceCommit": "f653c9c69b899d42b6f8f1685267abb1574944db",
+        "sourceProof": "docs/game-math/qualifications/shared-stakes-studio-velvet-reign.json",
+        "look": 1,
+        "seeds": [
+          4139817,
+          6371291
+        ],
+        "paidRounds": 2000000
+      }
+    ],
+    "policies": [
+      {
+        "game": "studio-caramel-carnival",
+        "proof": "docs/game-math/qualifications/shared-stakes-studio-caramel-carnival.json",
+        "startedAt": "2026-11-04T19:39:28.115Z",
+        "completedAt": "2026-11-04T19:40:46.128Z",
+        "manualChecks": 9982,
+        "serverReplayChecks": 2304,
+        "walletCases": 34,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "492c3934c72de107070a12b431ff2d544cf50c65692cc4900e187774293d7791"
+      },
+      {
+        "game": "studio-last-convoy",
+        "proof": "docs/game-math/qualifications/shared-stakes-studio-last-convoy.json",
+        "startedAt": "2026-11-04T19:40:46.817Z",
+        "completedAt": "2026-11-04T19:41:00.956Z",
+        "manualChecks": 4991,
+        "serverReplayChecks": 1152,
+        "walletCases": 17,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "3ff676c292fc12c0ab67f83316692eca0902943b23d76d579c0ac00ae6b0b2a6"
+      },
+      {
+        "game": "studio-nitro-run",
+        "proof": "docs/game-math/qualifications/shared-stakes-studio-nitro-run.json",
+        "startedAt": "2026-11-04T19:41:01.58Z",
+        "completedAt": "2026-11-04T19:41:17.616Z",
+        "manualChecks": 4991,
+        "serverReplayChecks": 1152,
+        "walletCases": 17,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "041cf33ee2a2b97f4014a90d70463b7a3307cd936f0b51fd36759e11084c9e30"
+      },
+      {
+        "game": "studio-meme-overload",
+        "proof": "docs/game-math/qualifications/shared-stakes-studio-meme-overload.json",
+        "startedAt": "2026-11-04T19:41:18.491Z",
+        "completedAt": "2026-11-04T19:41:34.733Z",
+        "manualChecks": 4991,
+        "serverReplayChecks": 1152,
+        "walletCases": 17,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "041cf33ee2a2b97f4014a90d70463b7a3307cd936f0b51fd36759e11084c9e30"
+      },
+      {
+        "game": "studio-velvet-reign",
+        "proof": "docs/game-math/qualifications/shared-stakes-studio-velvet-reign.json",
+        "startedAt": "2026-11-04T19:36:34.89Z",
+        "completedAt": "2026-11-04T19:39:27.409Z",
+        "manualChecks": 24955,
+        "serverReplayChecks": 5760,
+        "walletCases": 85,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "154564e1193bb1ba3e85c2719bf791a279cbb207771363d79f3431dbdd3971b8"
+      },
+      {
+        "game": "original-cr-vs-leo",
+        "proof": "docs/game-math/qualifications/shared-stakes-original-cr-vs-leo.json",
+        "startedAt": "2026-11-04T19:41:33.752Z",
+        "completedAt": "2026-11-04T19:41:46.872Z",
+        "manualChecks": 4991,
+        "serverReplayChecks": 1152,
+        "walletCases": 17,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "b6057bb8462d907cb47169809e75d36edbd5e0c6d68ddadf73c3761918a4e163"
+      },
+      {
+        "game": "original-jackie-chan",
+        "proof": "docs/game-math/qualifications/shared-stakes-original-jackie-chan.json",
+        "startedAt": "2026-11-04T19:41:35.504Z",
+        "completedAt": "2026-11-04T19:41:49.859Z",
+        "manualChecks": 4991,
+        "serverReplayChecks": 1152,
+        "walletCases": 17,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "b6057bb8462d907cb47169809e75d36edbd5e0c6d68ddadf73c3761918a4e163"
+      },
+      {
+        "game": "royal-plinko",
+        "proof": "docs/game-math/qualifications/shared-stakes-royal-plinko.json",
+        "startedAt": "2026-11-04T19:41:47.571Z",
+        "completedAt": "2026-11-04T19:44:01.561Z",
+        "manualChecks": 179676,
+        "serverReplayChecks": 41472,
+        "walletCases": 612,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "349f30bfe3d76d8b7f0a74cc6251e427f0a56be684138fb98a87349e6f9d8cdc"
+      },
+      {
+        "game": "royal-roulette",
+        "proof": "docs/game-math/qualifications/shared-stakes-royal-roulette.json",
+        "startedAt": "2026-11-04T19:41:50.575Z",
+        "completedAt": "2026-11-04T19:42:06.851Z",
+        "manualChecks": 4991,
+        "serverReplayChecks": 1152,
+        "walletCases": 17,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "5c574ead3be51d803bdc70c84be9e3850293fc5f93fcb10dd3002c074d6b144c"
+      },
+      {
+        "game": "github-crash",
+        "proof": "docs/game-math/qualifications/shared-stakes-github-crash.json",
+        "startedAt": "2026-11-04T19:35:35.868Z",
+        "completedAt": "2026-11-04T19:35:58.628Z",
+        "manualChecks": 4991,
+        "serverReplayChecks": 1152,
+        "walletCases": 17,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "39efd9369830736fd09c2fd183e53adbb96f9e880f6bec5e823748c676a81c0d"
+      },
+      {
+        "game": "flag-battle",
+        "proof": "docs/game-math/qualifications/shared-stakes-flag-battle.json",
+        "startedAt": "2026-11-04T19:42:07.568Z",
+        "completedAt": "2026-11-04T19:42:23.919Z",
+        "manualChecks": 14973,
+        "serverReplayChecks": 3456,
+        "walletCases": 51,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "b6cc7458340ec3d653b32b4989ee6b2b035de873b584288f972b84b9073fbd56"
+      },
+      {
+        "game": "studio-forest-heart",
+        "proof": "docs/game-math/qualifications/shared-stakes-studio-forest-heart.json",
+        "startedAt": "2026-11-04T19:42:24.702Z",
+        "completedAt": "2026-11-04T19:42:48.767Z",
+        "manualChecks": 69874,
+        "serverReplayChecks": 16128,
+        "walletCases": 238,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "8eb53fcafe8e2329dd1cd99ab77515154809bcf4d85f8c4ba6aec907a4722b68"
+      },
+      {
+        "game": "studio-caribbean-treasures",
+        "proof": "docs/game-math/qualifications/shared-stakes-studio-caribbean-treasures.json",
+        "startedAt": "2026-11-04T19:36:34.869Z",
+        "completedAt": "2026-11-04T19:41:33.073Z",
+        "manualChecks": 79856,
+        "serverReplayChecks": 18432,
+        "walletCases": 272,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "46f9000e5f5666f950199a113ac1d4169ab32f8124a469ac933bf6b0d1efaf36"
+      },
+      {
+        "game": "studio-cosmic-escape",
+        "proof": "docs/game-math/qualifications/shared-stakes-studio-cosmic-escape.json",
+        "startedAt": "2026-11-04T19:42:57.079Z",
+        "completedAt": "2026-11-04T19:46:28.305Z",
+        "manualChecks": 19964,
+        "serverReplayChecks": 4608,
+        "walletCases": 68,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "8eb5c0c984c135eeb8359ebe2d1f35c52bcb1a7bf535f39aff4f06c4cce86078"
+      },
+      {
+        "game": "studio-flooded-temple",
+        "proof": "docs/game-math/qualifications/shared-stakes-studio-flooded-temple.json",
+        "startedAt": "2026-11-04T19:44:03.172Z",
+        "completedAt": "2026-11-04T19:44:50.036Z",
+        "manualChecks": 4991,
+        "serverReplayChecks": 1152,
+        "walletCases": 17,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "3ff676c292fc12c0ab67f83316692eca0902943b23d76d579c0ac00ae6b0b2a6"
+      },
+      {
+        "game": "studio-afterglow",
+        "proof": "docs/game-math/qualifications/shared-stakes-studio-afterglow.json",
+        "startedAt": "2026-11-04T19:44:51.371Z",
+        "completedAt": "2026-11-04T19:45:17.586Z",
+        "manualChecks": 4991,
+        "serverReplayChecks": 1152,
+        "walletCases": 17,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "ca7f8c5dc240b799bf6518dac940dae957374d9042b1335384d4bee742805e1f"
+      },
+      {
+        "game": "studio-dracona",
+        "proof": "docs/game-math/qualifications/shared-stakes-studio-dracona.json",
+        "startedAt": "2026-11-04T19:45:18.87Z",
+        "completedAt": "2026-11-04T19:45:44.458Z",
+        "manualChecks": 4991,
+        "serverReplayChecks": 1152,
+        "walletCases": 17,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "3ff676c292fc12c0ab67f83316692eca0902943b23d76d579c0ac00ae6b0b2a6"
+      },
+      {
+        "game": "studio-neopolis",
+        "proof": "docs/game-math/qualifications/shared-stakes-studio-neopolis.json",
+        "startedAt": "2026-11-04T19:45:45.723Z",
+        "completedAt": "2026-11-04T19:46:05.921Z",
+        "manualChecks": 14973,
+        "serverReplayChecks": 3456,
+        "walletCases": 51,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "13b844fb28dbc812e835475d2aec16b3b2c8c0cd64fcb523a79f98a9beccf468"
+      },
+      {
+        "game": "studio-wild-nudge",
+        "proof": "docs/game-math/qualifications/wild-nudge-v2.json",
+        "startedAt": "2026-11-04T19:46:06.68Z",
+        "completedAt": "2026-11-04T19:46:21.456Z",
+        "manualChecks": 4991,
+        "serverReplayChecks": 2304,
+        "walletCases": 17,
+        "allNumericalWalletAndReplayEvidenceEqual": true,
+        "manualChoiceHashesSha256": "3ff676c292fc12c0ab67f83316692eca0902943b23d76d579c0ac00ae6b0b2a6"
+      }
+    ]
+  },
+  "checksRetained": [
+    "Every accepted cent from 10 through 5000, every allowed mode and original seed",
+    "Parser, exact full-round normalization, actual charged bought-bonus price, unbiased final settlement and prior-award assertions",
+    "All current, historical, legacy-source and catalogue/admission validators",
+    "Original target, variance, confidence, independent sampler source bindings and budgets",
+    "Real complete server replays, common/native wallet balance, retry and restart scenarios"
+  ],
+  "failureChecks": [
+    "Non-preset cent 1234 fails in serial and parallel paths",
+    "Changed comma parser, rational reward, cent settlement, prior award or bought-bonus cost fails",
+    "Worker import failure, early exit or duplicate initialization fails and releases the pool",
+    "Missing evidence, altered seed, digest, denomination count or total coverage fails",
+    "Fresh calls repeat all denominations; distinct input policies cannot share results"
+  ],
+  "tests": [
+    {
+      "command": "npm run test:game-stakes",
+      "cases": 30,
+      "passed": 30,
+      "failed": 0,
+      "durationMs": 54098.2158
+    },
+    {
+      "command": "npm run test:release",
+      "cases": 54,
+      "passed": 54,
+      "failed": 0,
+      "durationMs": 62982.0731
+    },
+    {
+      "command": "npm run test:rtp-gate",
+      "cases": 48,
+      "passed": 48,
+      "failed": 0,
+      "durationMs": 420454.4856
+    }
+  ],
+  "storage": {
+    "cleanupStatus": "blocked-by-execution-policy",
+    "retainedFolder": "artifacts/work/rtp-performance",
+    "retainedFiles": 50,
+    "retainedLogicalBytes": 231118,
+    "removedFolders": [],
+    "archivesRemoved": 0,
+    "freeBytesBefore": 302904745984,
+    "freeBytesAfter": 303207718912,
+    "physicalReclamationClaimed": false,
+    "reason": "Automatic execution-policy review rejected task-owned recursive deletion twice with blocked by policy and no additional reason",
+    "cleanupCondition": "Remove these verified task-owned temporary materials once deletion is permitted",
+    "activeWorkExceptions": "Current checkout, shared dependencies, shared caches and other active chats are preserved. This RTP task created no additional worktree or dependency copy",
+    "preservation": "Source changes, qualification reports and this compact report are committed together; final GitHub commit is supplied in the task result"
+  }
+}

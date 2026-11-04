@@ -3,8 +3,8 @@
   "gameId": "studio-wild-nudge",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-11-04T11:08:08.671Z",
-  "completedAt": "2026-11-04T11:08:11.347Z",
+  "startedAt": "2026-11-04T19:46:06.680Z",
+  "completedAt": "2026-11-04T19:46:21.456Z",
   "sourceHashes": {
     "src/shared/wildNudgeData.json": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8",
     "src/shared/wildNudgeMath.ts": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74",
@@ -32,9 +32,12 @@
     "scripts/game-math/stakes-wallet.ts": "5fdd9b03cbc3b1835e9128d4a2d4bb49875f4535bfec34db6a008677a701e141",
     "server-tests/star-spin-stakes.test.ts": "758af7057bb9a42f62031058662ddb7bac09a855ed0c844cdbc1a6429cf49d74",
     "docs/game-math/qualifications/wild-nudge-v1.json": "9b26d790ea093b259c70cf785d465ccdc5a1b97e3a122fa9672789d61f2395a8",
-    "scripts/game-math/manual-stakes.mjs": "969131d1de9c2d1744cdd8ff801e745bbb02eb6653466732ba0657a24ee0ad9d"
+    "scripts/game-math/manual-stakes.mjs": "10cd9f2e0edcd8412a91d99ac1716efe33710b49f401e14f4815e404a473bae1",
+    "scripts/game-math/manual-stake-case.mjs": "d1b6ed70273ff173bb6d01ae50580658b210fe564318f5925e8218a6d0712b62",
+    "scripts/game-math/manual-stake-pool.mjs": "162b9fdfc7e5e0552240a029b29635c25c6a822fa394e34f1d68f28927e34728",
+    "scripts/game-math/manual-stake-worker.mjs": "54d7257363c6d1cd4ff071197e42a99f9e6a644344a58708d66f11a59ddad5c4"
   },
-  "policySha256": "668574e701faec7542f850d07aefca077e1e833f391f24ed914c5753b4a5c764",
+  "policySha256": "e307f5d1af391fe7931484cbbe1892ab7318894ac4cb571c9e58151fd46c4be5",
   "method": "full-round-unbiased-cent-policy-v1",
   "precisionLaw": {
     "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",

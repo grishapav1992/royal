@@ -16,6 +16,7 @@ import {FOREST_QUALIFICATION_METHOD,FOREST_SERVER_STATUS,validateForestRuntimePr
 import { caribbeanQualificationEvidence, CARIBBEAN_QUALIFICATION_METHOD, CARIBBEAN_REVIEWED_SOURCES } from './rtp-caribbean.mjs';
 import { JACKIE_METHOD, jackieEvidence } from './rtp-jackie.mjs';
 import {stakeAdmissionRuntime, validateStakeAdmission} from './game-stakes-admission.mjs';
+import {prepareManualStakeChecks} from './manual-stakes.mjs';
 
 const digest = value => createHash('sha256').update(value).digest('hex');
 // Git checkouts use CRLF on Windows and LF in Linux CI. Hash canonical text.
@@ -276,8 +277,32 @@ export async function checkGameRtp(root, catalog, selected = catalog.map(game =>
     try { const result = action(); passed = true; return result; }
     finally { options.onProgress?.({ phase, gameId, rulesVersion, status: passed ? 'passed' : 'failed', durationMs: Math.round(performance.now() - started) }); }
   };
-  const registry = JSON.parse(await readFile(resolve(root, 'scripts/game-math/rtp-policy.json'), 'utf8'));
-  const baseline = JSON.parse(await readFile(resolve(root, 'scripts/game-math/rtp-legacy-baseline.json'), 'utf8'));
+  const registryFile='scripts/game-math/rtp-policy.json',baselineFile='scripts/game-math/rtp-legacy-baseline.json';
+  const [registryBytes,baselineBytes]=await Promise.all([readFile(resolve(root,registryFile)),readFile(resolve(root,baselineFile))]);
+  const registry=JSON.parse(registryBytes),baseline=JSON.parse(baselineBytes);
+  const fixedFiles=new Map([[registryFile,digest(registryBytes)],[baselineFile,digest(baselineBytes)]]),sourceHashes=new Map(),jobs=[];
+  const enqueue=async(phase,gameId,inputs,missing)=>{
+    const bytes=await readFile(resolve(root,inputs.policy.proof)).catch(()=>{throw Error(missing);}),proof=JSON.parse(bytes);
+    const previous=fixedFiles.get(inputs.policy.proof),hash=digest(bytes);
+    if(previous)assert.equal(hash,previous,'RTP proof changed during verification: '+inputs.policy.proof);
+    fixedFiles.set(inputs.policy.proof,hash);
+    for(const [file,hash]of Object.entries(inputs.sourceHashes)){
+      if(sourceHashes.has(file))assert.equal(hash,sourceHashes.get(file),'RTP source changed during verification: '+file);
+      sourceHashes.set(file,hash);
+    }
+    // Fail stale manual-range proofs before scheduling their exhaustive replays.
+    if(inputs.policy.manualStakeRange){
+      assert.equal(proof.schemaVersion,1);assert.equal(proof.gameId,gameId);
+      assert.equal(proof.rulesVersion,inputs.policy.rulesVersion);assert.equal(proof.progressVersion,inputs.policy.progressVersion);
+      assert.equal(proof.policySha256,inputs.policySha256,'RTP policy changed: rerun qualification');
+      assert.deepEqual(proof.sourceHashes,inputs.sourceHashes,'RTP source changed: rerun qualification');
+    }
+    jobs.push({phase,gameId,inputs,proof});
+  };
+  const unchanged=async()=>{
+    await Promise.all([...fixedFiles].map(async([file,hash])=>assert.equal(digest(await readFile(resolve(root,file))),hash,'RTP input changed during verification: '+file)));
+    await Promise.all([...sourceHashes].map(async([file,hash])=>assert.equal(sourceDigest(await readFile(resolve(root,file))),hash,'RTP source changed during verification: '+file)));
+  };
   assert.equal(digest(JSON.stringify(baseline.games)), '71deee54464329fbc5a76c9c964797caad78620ff8d206bc4bf9105de760a160', 'The frozen legacy list cannot absorb new unqualified games');
   assert.equal(digest(JSON.stringify(baseline.sourceHashes)), '5f9993f8027063d149ba433a00ccf930827a42d4438ec9cfabc9207e184dfdf8', 'The frozen math baseline cannot be rewritten to bypass qualification');
   const changedProfiles=await changedLegacyProfiles(root,baseline.sourceHashes,registry.profiles);
@@ -291,27 +316,36 @@ export async function checkGameRtp(root, catalog, selected = catalog.map(game =>
   }
   const stakeAdmissionVerified = validateStakeAdmission(catalog, baseline.games, registry, await stakeAdmissionRuntime(root));
   if(registry.profiles['studio-flooded-temple'])assert(registry.versionProfiles?.['studio-flooded-temple']?.['2']?.method===CASCADE_METHOD||registry.profiles['studio-flooded-temple'].rulesVersion===2,'Temple cascade rules require their own qualification profile');
-  let verified = 0;
   const serverOnly=Object.entries(registry.profiles).filter(([,p])=>p.releaseStatus===FOREST_SERVER_STATUS).map(([id])=>id);
   for (const gameId of new Set([...selected,...changedProfiles,...serverOnly])) {
     if (!registry.profiles[gameId]) continue;
     const inputs = await rtpInputs(root, gameId), contract = catalog.find(game => game.gameId === gameId);
+    assert.deepEqual(inputs.policy,registry.profiles[gameId],'RTP registry changed during verification');
     if(inputs.policy.releaseStatus===FOREST_SERVER_STATUS)assert(gameId==='studio-forest-heart'&&!contract,'Only the reviewed Forest Heart server may precede its client');
     else assert(contract && contract.rulesVersion === inputs.policy.rulesVersion && contract.progressVersion === inputs.policy.progressVersion);
-    const proof = JSON.parse(await readFile(resolve(root, inputs.policy.proof), 'utf8').catch(() => { throw Error('Missing RTP qualification for ' + gameId + '; run npm run qualify:rtp -- --game ' + gameId + ' --write-proof'); }));
-    verify('profile', gameId, inputs.policy.rulesVersion, () => validateRtpProof(gameId, inputs, proof)); verified++;
+    await enqueue('profile',gameId,inputs,'Missing RTP qualification for ' + gameId + '; run npm run qualify:rtp -- --game ' + gameId + ' --write-proof');
   }
   for(const gameId of new Set([...selected,...changedProfiles]))for(const [version,p]of Object.entries(registry.versionProfiles?.[gameId]??{})){
     const contract=catalog.find(game=>game.gameId===gameId);assert(contract&&Number(version)===p.rulesVersion);
     assert(p.rulesVersion<=contract.rulesVersion||p.availability==='server-opt-in','Future rules must be explicitly opt-in');
     const inputs=await rtpInputs(root,gameId,Number(version));
-    const proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8').catch(()=>{throw Error('Missing versioned RTP qualification for '+gameId+' rules '+version);}));
-    verify('versioned-profile', gameId, inputs.policy.rulesVersion, () => validateRtpProof(gameId,inputs,proof));verified++;
+    assert.deepEqual(inputs.policy,p,'RTP registry changed during verification');
+    await enqueue('versioned-profile',gameId,inputs,'Missing versioned RTP qualification for '+gameId+' rules '+version);
   }
-  let stakePoliciesVerified=0;
   for(const gameId of new Set([...selected,...changedProfiles]))if(registry.stakePolicies?.[gameId]){
-   const inputs=await stakeInputs(root,gameId),proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8').catch(()=>{throw Error('Missing shared-stake qualification: '+gameId);}));
-   verify('stake-policy', gameId, inputs.policy.rulesVersion, () => validateStakeProof(gameId,inputs,proof));stakePoliciesVerified++;
+    const inputs=await stakeInputs(root,gameId);
+    assert.deepEqual(inputs.policy,registry.stakePolicies[gameId],'RTP registry changed during verification');
+    await enqueue('stake-policy',gameId,inputs,'Missing shared-stake qualification: '+gameId);
   }
+  await unchanged();
+  const manual=jobs.filter(job=>job.inputs.policy.manualStakeRange).map(({gameId,inputs})=>({game:gameId,policy:inputs.policy}));
+  if(manual.length)await prepareManualStakeChecks(manual,{workers:options.workers,onProgress:options.onProgress});
+  await unchanged();
+  let verified=0,stakePoliciesVerified=0;
+  for(const{phase,gameId,inputs,proof}of jobs){
+    verify(phase,gameId,inputs.policy.rulesVersion,()=>phase==='stake-policy'?validateStakeProof(gameId,inputs,proof):validateRtpProof(gameId,inputs,proof));
+    if(phase==='stake-policy')stakePoliciesVerified++;else verified++;
+  }
+  await unchanged();
   return { verified, stakePoliciesVerified, stakeAdmissionVerified, legacyNotQualified: baseline.games.length,...(serverOnly.length?{serverQualifiedClientPending:serverOnly}:{}) };
 }
