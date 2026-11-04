@@ -37,7 +37,7 @@ export class PvpUI {
     this.client=new PvpClient(transport);
     this.button.id='pvp-button';this.button.type='button';this.button.hidden=true;this.button.className='wallet-button';this.button.textContent='Поединки';
     this.button.onclick=()=>this.show();document.querySelector('.profile')!.prepend(this.button);
-    this.dialog.id='pvp-dialog';this.dialog.className='pvp-dialog';this.dialog.setAttribute('aria-labelledby','pvp-title');
+    this.dialog.id='pvp-dialog';this.dialog.className='pvp-dialog';this.dialog.setAttribute('aria-labelledby','pvp-title');this.dialog.setAttribute('data-game-chat-suspended','');
     this.body.className='pvp-content';this.body.innerHTML=`<header class="pvp-heading"><div><small>ROYAL · 1 НА 1</small><h2 id="pvp-title">Поединки</h2></div><button type="button" data-close aria-label="Вернуться в зал">×</button></header>
       <div class="pvp-balance"><span>Общий баланс</span><strong data-balance>…</strong><small data-reserved></small><button type="button" data-wallet>Пополнить USDT</button></div>
       <p class="pvp-message" role="status" data-message></p><button type="button" class="primary-button" data-retry hidden>Проверить отправленное действие</button>
@@ -141,6 +141,7 @@ export class PvpUI {
     if(c&&['finished','cancelled'].includes(c.status)&&!isPvpSnapshotGame(c.gameId)&&this.openedId===c.id){this.openedId='';this.activities.closeWager();this.show();return;}
     const hasView=!!(snapshot?.cards||snapshot?.tsuEFa);
     const showModule=!this.composing&&!!c&&hasView&&(c.status==='playing'||negotiated&&!c.offeredStake&&c.status==='arriving'||c.gameId==='tsu-e-fa'&&['finished','cancelled'].includes(c.status));
+    this.dialog.toggleAttribute('data-game-chat-suspended',!showModule);
     this.dialog.dataset.phase=c?.status??'lobby';this.dialog.dataset.cards=String(showModule);
     this.moduleRoot.hidden=!showModule;
     this.button.hidden=!self;
