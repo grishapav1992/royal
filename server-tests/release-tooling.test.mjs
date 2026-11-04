@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdir, writeFile, readFile, rm, mkdtemp, symlink, chmod } from 'node:fs/promises';
+import { mkdir, writeFile, readFile, rm, mkdtemp, symlink } from 'node:fs/promises';
+import { writeFileSync } from 'node:fs';
+import childProcess from 'node:child_process';
+import { syncBuiltinESMExports } from 'node:module';
 import { resolve, dirname } from 'node:path';
 import { moduleFingerprinter, cachedModule, digest, inventory, regularPath } from '../scripts/module-build-cache.mjs';
 import { releasePlan, assertClean, git, releaseFiles, verifyRelease, prepareRelease } from '../scripts/release.mjs';
@@ -51,7 +54,7 @@ test('cache validates every immutable output, rejects extras and restores a poin
   const f = await fixture(t), version = '1.0.0-aaaaaaaaaaaa';
   const folder = `module-dist/test-a/versions/${version}`;
   await f.put(folder + '/entry.js', 'entry'); await f.put(folder + '/manifest.json', '{}');
-  const proof = { gameId: f.contract.gameId, version, files: 1, sourceFiles: { 'src/ui/A.ts': 'hash' },
+  const proof = { gameId: f.contract.gameId, version, files: 1, sourceFiles: { 'src/ui/A.ts': digest('export const value = 1;') },
     cache: { format: 1, fingerprint: await f.fingerprint()(f.config, f.contract, ['src/ui/A.ts']),
       outputs: await inventory(resolve(f.root, folder)) } };
   await f.put('module-build/a-proof.json', JSON.stringify(proof));
@@ -178,11 +181,20 @@ test('GitHub verification performs one full pass after fetch and binds the exact
  const f=await reusableRelease(t),remote=await mkdtemp(resolve(parent,'remote-'));t.after(()=>rm(remote,{recursive:true,force:true}));git(remote,['init','--bare','-q']);
  git(f.root,['remote','add','origin',remote]);git(f.root,['push','-q','origin','HEAD:main']);
  const {verifyGithub}=await import('../scripts/release.mjs');
- const previous=process.env.ROYAL_GIT_BINARY,wrapper=resolve(f.root,'.git','git-observer.mjs'),log=resolve(f.root,'.git','calls.jsonl'),mutate=resolve(f.root,'.git','mutate');
- await writeFile(wrapper,`#!${process.execPath}\nimport fs from 'node:fs';import {spawnSync} from 'node:child_process';const args=process.argv.slice(2);fs.appendFileSync(${JSON.stringify(log)},JSON.stringify(args)+'\\n');if(args[0]==='fetch'&&fs.existsSync(${JSON.stringify(mutate)}))fs.writeFileSync(${JSON.stringify(resolve(f.root,f.folder+'/entry.js'))},'changed during fetch');const result=spawnSync(${JSON.stringify(previous||'git')},args,{stdio:'inherit'});process.exit(result.status??1);`);await chmod(wrapper,0o755);
- try{process.env.ROYAL_GIT_BINARY=wrapper;
+ // Observe real Git without executing a POSIX shebang file on Windows.
+ const binary=process.env.ROYAL_GIT_BINARY||'git',calls=[],originalSpawn=childProcess.spawn,originalExec=childProcess.execFileSync;
+ let mutate=false;
+ childProcess.execFileSync=function(file,args,options){if(file===binary)calls.push([...args]);return originalExec(file,args,options);};
+ childProcess.spawn=function(file,args,options){
+  if(file===binary)calls.push([...args]);
+  const child=originalSpawn(file,args,options);
+  if(file===binary&&args[0]==='fetch'&&mutate)child.once('exit',code=>{if(code===0)writeFileSync(resolve(f.root,f.folder+'/entry.js'),'changed during fetch');});
+  return child;
+ };
+ syncBuiltinESMExports();
+ try{
   const receipt=await verifyGithub(f.root);assert.equal(receipt.manifestSha256,digest(await readFile(resolve(f.root,'module-build/release-manifest.json'))));assert.equal(receipt.sourceCommit,f.manifest.sourceCommit);
-  const calls=(await readFile(log,'utf8')).trim().split('\n').map(JSON.parse);assert.equal(calls.filter(a=>a.join(' ')==='rev-parse HEAD^{tree}').length,1);
-  await writeFile(mutate,'yes');await assert.rejects(verifyGithub(f.root),/output changed/);await assert.rejects(readFile(resolve(f.root,'module-build/release-github.json')),{code:'ENOENT'});
- }finally{if(previous===undefined)delete process.env.ROYAL_GIT_BINARY;else process.env.ROYAL_GIT_BINARY=previous;}
+  assert.equal(calls.filter(a=>a.join(' ')==='rev-parse HEAD^{tree}').length,1);
+  mutate=true;await assert.rejects(verifyGithub(f.root),/output changed/);await assert.rejects(readFile(resolve(f.root,'module-build/release-github.json')),{code:'ENOENT'});
+ }finally{childProcess.spawn=originalSpawn;childProcess.execFileSync=originalExec;syncBuiltinESMExports();}
 });

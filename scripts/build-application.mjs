@@ -56,7 +56,13 @@ export async function buildApplication({ root = projectRoot, modules = null, hos
         const replacements=new Map(projectedModules.games.map(game=>[game.gameId,game]));
         const mergedGames=initialModules.games.map(game=>replacements.get(game.gameId)??game);
         if(replacements.size!==games.length||mergedGames.length!==initialModules.games.length)throw Error('Projected module inventory changed');
+        const sumMetric = name => (initialModules.timings?.[name] ?? 0) + (projectedModules.timings?.[name] ?? 0);
+        const writeStatuses = new Set([...Object.keys(initialModules.cache?.writes ?? {}), ...Object.keys(projectedModules.cache?.writes ?? {})]);
         await saveJson(resolve(root,'module-build/build-report.json'),{...initialModules,durationMs:initialModules.durationMs+projectedModules.durationMs,
+          timings:{rtpDurationMs:sumMetric('rtpDurationMs'),packagesDurationMs:sumMetric('packagesDurationMs')},
+          cache:{sharedEnabled:!!(initialModules.cache?.sharedEnabled||projectedModules.cache?.sharedEnabled),
+            localHits:(initialModules.cache?.localHits??0)+(projectedModules.cache?.localHits??0),sharedHits:(initialModules.cache?.sharedHits??0)+(projectedModules.cache?.sharedHits??0),
+            writes:Object.fromEntries([...writeStatuses].map(name=>[name,(initialModules.cache?.writes?.[name]??0)+(projectedModules.cache?.writes?.[name]??0)]))},
           games:mergedGames,built:mergedGames.filter(game=>!game.reused).length,reused:mergedGames.filter(game=>game.reused).length});}}
     if (!modules) {
       await step('host', hostProjection ? async () => { report.hostProjection = await buildProjectedHost(root, hostProjection); }
