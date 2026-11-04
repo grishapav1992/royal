@@ -1,37 +1,58 @@
 {
-  "format": 1,
   "release": "front-back-walk-20261104-v3",
-  "status": "preparing_after_user_resumed_publication",
-  "recordedAt": "2026-11-04T17:53:14.149Z",
-  "published": false,
-  "renderingSourceCommit": "769f83e77b792d02fc86e6e716008076fd3821d5",
-  "helperSourceCommit": "0f24c1b6293466b7b4cf3287f9b36efa3d096a5b",
-  "helperSha256": "78114df6589fc51afa3e978de7b006f8a61cd4dacd023c1fb0c55bbb652cea81",
-  "sourceChanges": {
-    "src/game/characters.ts": "872b632f477978c4fd192c66331c239e97d861bdaebf31e25e9dbacfc37d1058",
-    "src/game/avatarArt.ts": "a840954125334525669d7b2d23afbb636106b376848d4c40f9c1d1157cd8f98c",
-    "src/game/frontalWalk.ts": "42fa869b222c823576fc158525fac3b05707c9dfcca9185124ae80771511b091"
-  },
-  "behavior": "For ordinary NPCs and default avatars, front and rear garment and sleeves share one outline from the shoulders. Upper sleeves are visible beside the chest, armpits separate the arms above the waist, and hands remain beside the waist. Idle and walking poses use the same attachment.",
-  "unaffected": "Side views, sitting, drinking, special actions, generated skins and the separate Mira renderer retain their existing drawings.",
-  "addedGames": [],
-  "restoredGames": [],
-  "tests": {
-    "poseUnits": 8,
-    "browserTests": 3,
-    "browserFrames": 8352,
-    "shoulderConnectionAndVisibleUpperSleeves": true,
-    "protectedPoseComparisons": 4960,
-    "protectedPoseMismatches": 0,
-    "currentHelperScopeAndStartupTests": {
-      "passed": 12,
-      "command": "python deployment/releases/front-back-walk-20261104-v3/test_deploy.py",
-      "environment": "Windows, 2026-11-04"
+  "status": "published_verified_maintenance_pending",
+  "publishedOnMoscow": "2026-11-04",
+  "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "315fda47301591b5b1ed05806781fcc603cffdcb",
+  "baseCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+  "image": "sha256:d35fb87807807cf91d0c51181f70de1260892689de21d222bf88ef07a7481b4c",
+  "scope": {
+    "sourceChanges": [
+      "src/game/avatarArt.ts",
+      "src/game/characters.ts",
+      "src/game/frontalWalk.ts"
+    ],
+    "programDelta": {
+      "assets/index-C9Y7DQXY.js": "a3a789d1256726055572ec0351024239f539b3019ae706e7266724537393fefc",
+      "index.html": "f9909145ef22f94c621312797a5e91ab40a40e70b4eecc9a4de6a046e9339a8f"
     },
-    "mandatoryWalletTests": {
-      "passed": 19,
-      "sourceCommit": "7995cc8756b9a9803e13c26660cb1b4ae4e1044c",
-      "backendSha256": "28cc991f9dd63ad6a9b0c900950a2344ab8211bea171ecee1998bd0dde7f419c"
+    "hostInputs": 255,
+    "backendFilesChanged": 0,
+    "addedGames": [],
+    "restoredGames": [],
+    "publishedGuardArtworkPreserved": true,
+    "publishedManualStakeControlsPreserved": true,
+    "unrelatedMainChangesNotPublished": true,
+    "renderingSourceCommit": "769f83e77b792d02fc86e6e716008076fd3821d5"
+  },
+  "tests": {
+    "unitTests": 8,
+    "browserTests": 3,
+    "connectivityFrames": 8352,
+    "shirtJoinPixelChecks": true,
+    "visibleUpperSleeves": true,
+    "unchangedPosesCompared": 4960,
+    "unchangedPoseMismatches": 0,
+    "installScopeGuards": 12,
+    "typecheck": true,
+    "releasePrepare": true,
+    "releaseVerifyGithub": true,
+    "mandatoryWalletTests": 19,
+    "mandatoryWalletCommand": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts",
+    "walletVerificationContext": "The mandatory source tests passed and their monetary inputs remained unchanged. Five core wallet source hashes match the verified production snapshot. Separate four connected-host scenarios used the exact production backend and SHA-256 verified published roulette package, a local isolated database, a lost accepted response, close/reopen, the original UUID and exactly one ten-cent debit.",
+    "walletInputsMatchProduction": [
+      "server/demoWallet.ts",
+      "server/demoWalletAmounts.ts",
+      "server/database.ts",
+      "src/shared/walletAccount.ts",
+      "src/shared/gameStakes.ts"
+    ],
+    "qualification": {
+      "rtpProfiles": 38,
+      "stakePolicies": 20,
+      "stakeAdmissions": 20,
+      "legacyNotQualifiedUnchanged": 114,
+      "context": "Preparation gates against the pinned source commit. Installed backend, mathematics and module bytes preserved from the verified production baseline."
     },
     "connectedLocalHost": [
       {
@@ -95,7 +116,6 @@
           {
             "facing": "right",
             "frames": [
-              "right-0",
               "right-1",
               "right-2"
             ]
@@ -145,7 +165,6 @@
           {
             "facing": "right",
             "frames": [
-              "right-0",
               "right-1",
               "right-2"
             ]
@@ -233,64 +252,276 @@
         }
       }
     ],
+    "localBackendSha256": "cb4a974f09c318a416c89ee06cf6dec658810b322e21356e8c742eb1ecf5b70f",
+    "publicReview": {
+      "checks": [
+        {
+          "url": "/game-modules/studio-caramel-carnival/active.json",
+          "status": 200,
+          "sha256": "56b9ebc549b3d38c805f6a389f34c400b4f461a49a580f64563aecd6ca00c434"
+        },
+        {
+          "url": "/game-modules/studio-nitro-run/active.json",
+          "status": 200,
+          "sha256": "5cd1a33560d819cc3845cf30ef76f14cef4cf733f7d8d51820db3f0e6662ddb8"
+        },
+        {
+          "url": "/game-modules/studio-last-convoy/active.json",
+          "status": 200,
+          "sha256": "e827564bfdf130c9e8a3e7fd782298c1bb89e4f53daeeb1ae28bb27362b84b03"
+        },
+        {
+          "url": "/game-modules/studio-velvet-reign/active.json",
+          "status": 200,
+          "sha256": "072b400950266278d2bbfd3c754cfeef9c756147bec49dc8877522eb123b5609"
+        },
+        {
+          "url": "/game-modules/studio-meme-overload/active.json",
+          "status": 200,
+          "sha256": "09ce8e6063f7affb0efeb2259e8a3516fe637fa0331a09c801e271eceb80d0ee"
+        },
+        {
+          "url": "/game-modules/original-jackie-chan/active.json",
+          "status": 200,
+          "sha256": "ec0317d4e24ae79e3a2b4adcbc34b7492755eaf6650686f5ab018acebf44f8b1"
+        },
+        {
+          "url": "/game-modules/original-cr-vs-leo/active.json",
+          "status": 200,
+          "sha256": "2175043448f0532f0e387dfde76daeda95e2ecc40993c3d3c8e8f2e47443dbf7"
+        },
+        {
+          "url": "/game-modules/royal-plinko/active.json",
+          "status": 200,
+          "sha256": "cc5525e48e83e92c6ddb4333f3a0a90cbe8666109e3de60bfd52e41f98942d0d"
+        },
+        {
+          "url": "/game-modules/github-crash/active.json",
+          "status": 200,
+          "sha256": "9ed2219ecc948848754ae234a460db45b7742fed54aef2945a3b3bdd4a21991f"
+        },
+        {
+          "url": "/game-modules/royal-roulette/active.json",
+          "status": 200,
+          "sha256": "bf447112f8481cab90a5a15967b1c6f4a590b7c6e337f982614789d29bfae940"
+        },
+        {
+          "url": "/game-modules/flag-battle/active.json",
+          "status": 200,
+          "sha256": "382131b22082ee49bb34ab6f01686be84fbb85feaa31e0b350e60d08ef4aa7d6"
+        },
+        {
+          "url": "/game-modules/studio-caribbean-treasures/active.json",
+          "status": 200,
+          "sha256": "56279558d738177b665a9590938baac61b8b41f6be3a8190bfeab19e6def38bd"
+        },
+        {
+          "url": "/game-modules/studio-forest-heart/active.json",
+          "status": 200,
+          "sha256": "7ee18ce51e96504e0350bac5d18c0b53571fbd110941ce1bc4a38fbb57ac6fd4"
+        },
+        {
+          "url": "/game-modules/studio-cosmic-escape/active.json",
+          "status": 200,
+          "sha256": "affdb42fd0bca0bc846f98177ff675a400728c0be494437100ab11e5282d302d"
+        },
+        {
+          "url": "/game-modules/studio-afterglow/active.json",
+          "status": 200,
+          "sha256": "7724886d83c6e22ba8982d36ecada861735fa233cfe2f300874484d5a192daa2"
+        },
+        {
+          "url": "/game-modules/studio-dracona/active.json",
+          "status": 200,
+          "sha256": "c803e011a360411828e0bfe88afa2afc86259a08ac3f4236015bfb59fbc009df"
+        },
+        {
+          "url": "/game-modules/studio-flooded-temple/active.json",
+          "status": 200,
+          "sha256": "d596855744c3469eb9f82e31e8e4268ded1dd6af98d905f47f8e3c3270df3d98"
+        },
+        {
+          "url": "/game-modules/tsu-e-fa/active.json",
+          "status": 200,
+          "sha256": "03ff5ab3fb697596abe39718d826fecde226898abf2cd35a0280b499e50a5cd7"
+        },
+        {
+          "url": "/game-modules/studio-neopolis/active.json",
+          "status": 200,
+          "sha256": "b4922363b9af39c9196de85fa02c06f59ca8a11fea928732a32864ea0714e358"
+        },
+        {
+          "url": "/game-modules/studio-wild-nudge/active.json",
+          "status": 200,
+          "sha256": "9c63a382b983e4b10ed9c8edb4eebc304ebe328a7b795e3c129065bee1ac3889"
+        },
+        {
+          "url": "/healthz",
+          "status": 200
+        },
+        {
+          "url": "/api/game-wallet",
+          "status": 410
+        },
+        {
+          "url": "/api/nile-play/wallet",
+          "status": 410
+        },
+        {
+          "url": "/assets/index-C9Y7DQXY.js",
+          "status": 200,
+          "sha256": "a3a789d1256726055572ec0351024239f539b3019ae706e7266724537393fefc"
+        },
+        {
+          "url": "/index.html",
+          "status": 200,
+          "sha256": "f9909145ef22f94c621312797a5e91ab40a40e70b4eecc9a4de6a046e9339a8f"
+        }
+      ],
+      "browsers": [
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "directions": [
+            {
+              "facing": "right",
+              "frames": [
+                "right-2",
+                "right-3",
+                "right-4"
+              ]
+            },
+            {
+              "facing": "left",
+              "frames": [
+                "left-0",
+                "left-1"
+              ]
+            },
+            {
+              "facing": "up",
+              "frames": [
+                "up-0",
+                "up-1"
+              ]
+            },
+            {
+              "facing": "down",
+              "frames": [
+                "down-0",
+                "down-1"
+              ]
+            }
+          ],
+          "overflow": false,
+          "errors": [],
+          "productionChatConnected": false
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "directions": [
+            {
+              "facing": "right",
+              "frames": [
+                "right-0",
+                "right-1",
+                "right-2",
+                "right-3"
+              ]
+            },
+            {
+              "facing": "left",
+              "frames": [
+                "left-0",
+                "left-1"
+              ]
+            },
+            {
+              "facing": "up",
+              "frames": [
+                "up-0",
+                "up-1"
+              ]
+            },
+            {
+              "facing": "down",
+              "frames": [
+                "down-0",
+                "down-1"
+              ]
+            }
+          ],
+          "overflow": false,
+          "errors": [],
+          "productionChatConnected": false
+        }
+      ],
+      "accountsCreated": 0,
+      "wagers": 0,
+      "messages": 0
+    },
+    "harnessCorrections": [
+      "Explicit isolated PostgreSQL search path",
+      "Fetch Response.ok property",
+      "Debit ledger assertion uses negative amount",
+      "Mobile game chat is opened through its existing toggle"
+    ],
+    "preparationRetry": "Concurrent releases advanced the verified production baseline. Final preparation, testing and transfer ran without shared publication locks. All three nonblocking locks were acquired only for the ready guarded installation. The mutable production baseline and financial gate were checked freshly during guarded installation."
+  },
+  "preserved": {
+    "sourceFilesBefore": 2712,
+    "sourceFilesAfter": 2713,
+    "runtimeFilesBefore": 8598,
+    "runtimeFilesAfter": 8599,
+    "externalModuleFiles": 4824,
+    "otherServices": 13,
+    "backendSha256": "cb4a974f09c318a416c89ee06cf6dec658810b322e21356e8c742eb1ecf5b70f",
+    "configurationAndMounts": true,
+    "persistentVolumes": true,
+    "databaseRestored": false
+  },
+  "backup": {
+    "path": "/opt/royal-backups/front-back-walk-20261104-v3/source.tgz",
+    "bytes": 16020,
+    "sha256": "b2627a5f9c105370d1605576e54714bd5c7a3e1309b9ad1fef834f71ae7cb323",
+    "previousImage": "sha256:8697bf1f68ebef8c53506839eec9839f6192275e64ade689a786a173a21957f3"
+  },
+  "verification": {
+    "guardedInstaller": {
+      "published": true,
+      "preparedImage": "sha256:d35fb87807807cf91d0c51181f70de1260892689de21d222bf88ef07a7481b4c",
+      "runningImage": "sha256:d35fb87807807cf91d0c51181f70de1260892689de21d222bf88ef07a7481b4c",
+      "containerRestarted": true,
+      "sourceCommit": "315fda47301591b5b1ed05806781fcc603cffdcb",
+      "changedSources": 3,
+      "clientDeltaFiles": 2,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 0,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 13
+    },
+    "immutableProgramProofRecorded": true,
+    "freeBeforeBytes": 9757159424,
+    "freeAfterBytes": 9896099840
+  },
+  "maintenance": {
+    "status": "pending"
+  },
+  "limitations": {
     "physicalMobileDeviceTested": false,
+    "productionChatConnected": false,
     "productionTestAccounts": 0,
     "productionTestWagers": 0,
     "productionTestMessages": 0,
-    "linuxInstallerChecksReportedByAudit": {
-      "reportedPassed": 29,
-      "sourceCommit": "b5eba82a6b0aa91b4548abc7c9385c9d1b798f60",
-      "environment": "Linux",
-      "evidence": "Reported by the deployment audit chat; not rerun by this chat."
-    }
-  },
-  "lastPreparedArtifact": {
-    "sourceCommit": "7995cc8756b9a9803e13c26660cb1b4ae4e1044c",
-    "baseCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
-    "files": 1458,
-    "buildPassed": true,
-    "buildDurationMs": 778056,
-    "releaseVerifyGithubPassed": true,
-    "rtpProfilesVerified": 38,
-    "stakePoliciesVerified": 20,
-    "stakeAdmissionsVerified": 20,
-    "unchangedLegacyNotQualified": 114,
-    "limit": "These checks bind the previous prepared artifact and production base. They are not evidence for a later production composition or a completed V3 publication. A changed host base requires reconciliation and a newly prepared artifact."
-  },
-  "failedV2": {
-    "release": "front-back-walk-20261104-v2",
-    "candidateImage": "sha256:a72b90a198d905c9fbb87157fcd7915e428ade7a89c704fdf823c1f47e1bde05",
-    "reason": "The inherited health startup deadline expired.",
-    "automaticRollbackObserved": true,
-    "rollbackByteVerificationPassed": true,
-    "databaseRestored": false,
-    "externalModulesPreserved": true,
-    "publishedSuccessfully": false,
-    "limit": "Observed before automatic retention retired the failed stage. Do not assume its server paths remain."
-  },
-  "publicationHold": {
-    "sourceThreadId": "01a1a777-3a8b-7d22-9add-748e77317cdb",
-    "directHumanTurnId": "01a1a799-79c2-7652-a0a9-b096cf2d2a32",
-    "directHumanAuthorizationVerified": true,
-    "instruction": "Continue preparation and tests. Do not begin new publications or reserve production. Finish an already started installation or maintenance normally.",
-    "ownActivePublishers": 0,
-    "ownActiveWaiters": 0,
-    "nextPublicationRequiresSeparateUserAgreement": false,
-    "active": false,
-    "liftedByDirectHumanTurnId": "01a1a7ad-9c2d-7950-b21b-1f66f961e20e",
-    "resumedInstruction": "Continue the previously agreed publication using preparation without shared locks and a ready guarded installation."
-  },
-  "pending": [
-    "After the already started concurrent installation finishes, read its verified full production inventory and matching host origins without reserving production.",
-    "Preserve concurrent changes and update the V3 scope and projection if the production base changed. Keep the renderer unchanged unless source reconciliation requires changes.",
-    "Prepare and verify the final application artifact without publication locks. Reuse it if only installer tooling changes; use the separate installer commit and new verified installation metadata.",
-    "After the user lifts the publication hold, explicitly run the ready guarded release. Take all locks nonblockingly, fail with code 75 on contention, and retain the package. Do not start a background retry queue.",
-    "Under the installer locks, recheck the full actual production base and fresh financial gate. After installation, verify public bytes and behavior, push the deployment record, and complete required retention."
-  ],
-  "limitations": {
-    "sharedBrainUnavailable": true,
-    "directSourceInspectionUsed": true,
-    "finalProductionVerificationCompleted": false
+    "sharedCodeMapUnavailable": true,
+    "directSourceAndByteVerificationUsed": true
   },
   "cleanup": {
     "status": "blocked_by_automatic_approval_review",
@@ -354,12 +585,21 @@
     ],
     "retainedAfterRejection": "All attempted targets remain. Do not retry these paths or previously rejected natural-side-walk cleanup by another method."
   },
-  "currentPreparation": {
-    "productionRelease": "player-recovery-20261104-v2",
-    "publishedSourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
-    "publishedImage": "sha256:8697bf1f68ebef8c53506839eec9839f6192275e64ade689a786a173a21957f3",
-    "inputStatus": "Reading the completed release inventory and host origins, then checking the container identity. These preparation inputs do not replace the fresh guarded production baseline check.",
-    "publicationLocksHeld": false,
-    "installOrder": "Player recovery, Flag, completed maintenance, then this renderer release."
+  "supersededFailedRelease": {
+    "release": "front-back-walk-20261104-v2",
+    "candidateImage": "sha256:a72b90a198d905c9fbb87157fcd7915e428ade7a89c704fdf823c1f47e1bde05",
+    "reason": "The inherited health startup deadline expired.",
+    "automaticRollbackObserved": true,
+    "rollbackByteVerificationPassed": true,
+    "databaseRestored": false,
+    "externalModulesPreserved": true,
+    "publishedSuccessfully": false,
+    "limit": "Observed before automatic retention retired the failed stage. Do not assume its server paths remain."
+  },
+  "preservationContext": {
+    "playerRecoverySource": "97d9eac8e811db0389002ce697865782f9707f41",
+    "flagVersion": "2.1.2-1d07daea0fa9",
+    "preparationWithoutPublicationLocks": true,
+    "helperSourceCommit": "315fda47301591b5b1ed05806781fcc603cffdcb"
   }
 }

@@ -74,6 +74,7 @@ export function moduleFingerprinter(root, toolchain) {
   return async (config, contract, inputs) => {
     const files = new Set(['package.json', 'package-lock.json', 'tsconfig.json',
       'scripts/build-game-module.mjs', 'scripts/module-build-cache.mjs', 'scripts/module-source-projection.mjs',
+      'scripts/shared-module-cache.mjs',
       'src/modules/GameModuleCatalog.ts', `games/${contract.slug}/package.json`,
       `games/${contract.slug}/tsconfig.json`, ...inputs]);
     const directories = new Set();
@@ -102,23 +103,36 @@ export function moduleFingerprinter(root, toolchain) {
   };
 }
 
-export async function cachedModule(root, config, contract, fingerprint) {
-  let proof;
-  try { proof = JSON.parse(await readFile(resolve(root, 'module-build', contract.slug + '-proof.json'), 'utf8')); }
-  catch (error) { if (error.code === 'ENOENT' || error instanceof SyntaxError) return null; throw error; }
+export async function verifyCachedModule(root, config, contract, fingerprint, proof, readOutputs) {
   if (proof.cache?.format !== 1 || !proof.sourceFiles || proof.gameId !== contract.gameId) return null;
   if (await fingerprint(config, contract, Object.keys(proof.sourceFiles)) !== proof.cache.fingerprint) return null;
   if (!/^\d+\.\d+\.\d+-[a-f0-9]{12}$/.test(proof.version)) throw Error('Invalid cached module version');
-  const name = `module-dist/${contract.gameId}/versions/${proof.version}`;
-  let folder;
-  try { folder = await regularPath(root, name); }
-  catch (error) { if (error.code === 'ENOENT') return null; throw error; }
-  const actual = await inventory(folder);
+  // A shared proof must describe the current source bytes, including dependencies.
+  // This also detects source edits after an invocation's fingerprint memo was populated.
+  for (const [name, expected] of Object.entries(proof.sourceFiles)) {
+    try {
+      const path = name.startsWith('node_modules/') ? await dependencyPath(root, name) : await regularPath(root, name);
+      if (digest(await readFile(path)) !== expected) return null;
+    } catch (error) { if (error.code === 'ENOENT') return null; throw error; }
+  }
+  const actual = await readOutputs();
   if (!proof.cache.outputs || Object.keys(actual).length !== Object.keys(proof.cache.outputs).length
       || Object.entries(actual).some(([name, hash]) => proof.cache.outputs[name] !== hash)) {
     throw Error('Cached immutable module is damaged: ' + contract.slug);
   }
-  return { proof, folder, pointer: { format: 1, gameId: contract.gameId,
+  return { proof, outputs: actual, pointer: { format: 1, gameId: contract.gameId,
     manifest: `/game-modules/${contract.gameId}/versions/${proof.version}/manifest.json`,
     sha256: actual['manifest.json'] } };
+}
+
+export async function cachedModule(root, config, contract, fingerprint) {
+  let proof;
+  try { proof = JSON.parse(await readFile(resolve(root, 'module-build', contract.slug + '-proof.json'), 'utf8')); }
+  catch (error) { if (error.code === 'ENOENT' || error instanceof SyntaxError) return null; throw error; }
+  let folder;
+  const hit = await verifyCachedModule(root, config, contract, fingerprint, proof, async () => {
+    folder = await regularPath(root, `module-dist/${contract.gameId}/versions/${proof.version}`);
+    return inventory(folder);
+  }).catch(error => { if (error.code === 'ENOENT') return null; throw error; });
+  return hit ? { ...hit, folder } : null;
 }
