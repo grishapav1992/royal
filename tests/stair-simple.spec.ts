@@ -29,7 +29,7 @@ for(const online of [false,true])test('simple stair movement and unlabelled wind
   await expect(page.locator('#game canvas')).toBeVisible();
   await page.locator('[data-floor-target="street"]').click();await expect.poll(async()=>(await state(page)).hall,{timeout:25000}).toBe('street');
   await overview(page,true);for(const p of [{x:480,y:1050},{x:480,y:360},{x:1660,y:360}])await walk(page,p.x,p.y);await overview(page,false);
-  await keyUntil(page,'w',async()=>{const s=await state(page);return s.stairStep===6&&Math.hypot(s.x-STAIR_WINDOW.landing.x,s.y-STAIR_WINDOW.landing.y)<42;});
+  await keyUntil(page,'w',async()=>{const s=await state(page);return s.stairStep===6&&Math.hypot(s.x-STAIR_WINDOW.landing.x,s.y-STAIR_WINDOW.landing.y)>120;});
   await keyUntil(page,'d',async()=>roofWindowPlatformOffset(await state(page))>=ROOF_WINDOW_PLATFORM.length-.1);
   const edge=await state(page);expect(edge.y).toBe(STAIR_WINDOW.landing.y);expect(edge.street.landingControlsVisible).toBe(false);
   await page.keyboard.press('e');await page.waitForTimeout(200);expect((await state(page)).hall).toBe('street');
@@ -48,8 +48,10 @@ for(const online of [false,true])test('simple stair movement and unlabelled wind
   await keyUntil(page,'w',async()=>(await state(page)).stairStep>=8);
   await settled(page,online);const stopped=await state(page);await page.keyboard.press('d',{delay:250});await page.keyboard.press('a',{delay:250});await settled(page,online);
   expect(Math.hypot((await state(page)).x-stopped.x,(await state(page)).y-stopped.y)).toBeLessThan(.2);
-  await keyUntil(page,'s',async()=>{const s=await state(page);return s.stairStep===7&&Math.hypot(s.x-STAIR_WINDOW.landing.x,s.y-STAIR_WINDOW.landing.y)<42;});
-  await keyUntil(page,'d',async()=>onRoofWindowPlatform(await state(page))&&roofWindowPlatformOffset(await state(page))>80);
+  await keyUntil(page,'s',async()=>{const s=await state(page);return s.stairStep===7&&Math.hypot(s.x-STAIR_WINDOW.landing.x,s.y-STAIR_WINDOW.landing.y)>110;});
+  await page.keyboard.down('s');await page.keyboard.down('Shift');
+  try{await keyUntil(page,'d',async()=>onRoofWindowPlatform(await state(page))&&roofWindowPlatformOffset(await state(page))>200);}
+  finally{await page.keyboard.up('s');await page.keyboard.up('Shift');}
   await keyUntil(page,'a',async()=>roofWindowPlatformOffset(await state(page))<.1);
   await page.screenshot({path:'../stair-simple-'+(online?'online':'offline')+'-return.png'});
   await keyUntil(page,'s',async()=>(await state(page)).stairStep===0);

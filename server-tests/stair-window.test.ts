@@ -82,10 +82,13 @@ test('a clicked flight returns through the junction despite a rounded platform p
   }
 });
 
-test('horizontal keys cannot climb a flight; vertical keys follow either switchback direction',()=>{
+test('horizontal keys leave ordinary flights unchanged; vertical keys follow either switchback direction',()=>{
   for(let step=1;step<ROOF_STAIR_ROUTE.length;step++){
     const a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step],start={x:(a.x+b.x)/2,y:(a.y+b.y)/2,stairStep:step,stairDirection:1,moving:false};
-    for(const x of [-1,1]){const p={...start};moveRoofStairs(p,{x,y:0},10);assert.equal(p.x,start.x);assert.equal(p.y,start.y);}
+    for(const x of [-1,1]){
+      if([ROOF_WINDOW_PLATFORM.index,ROOF_WINDOW_PLATFORM.index+1].includes(step)&&x===ROOF_WINDOW_PLATFORM.direction)continue;
+      const p={...start};moveRoofStairs(p,{x,y:0},10);assert.equal(p.x,start.x);assert.equal(p.y,start.y);
+    }
     for(const y of [-1,1]){const p={...start};moveRoofStairs(p,{x:0,y},10);assert.equal(Math.sign(p.y-start.y),y);}
   }
 });
@@ -98,11 +101,17 @@ test('walking through the window accepts its full glass width without granting a
   assert(canWalkThroughStairWindow({hall:'github',...STAIR_WINDOW.entry}));
 });
 test('turning toward the balcony guides from either adjoining flight without a precision stop',()=>{
-  const j=ROOF_WINDOW_PLATFORM.junction;
-  for(const y of [-4,4]){
-    const p={x:j.x-34,y:j.y+y,stairStep:y>0?6:7,stairDirection:1,moving:false};
-    for(let i=0;i<20;i++)moveRoofStairs(p,{x:-1,y:0},5);
-    assert(onRoofWindowPlatform(p));assert(p.x<j.x-40);assert.equal(p.y,j.y);
+  const platform=ROOF_WINDOW_PLATFORM,j=platform.junction;
+  for(const step of [platform.index,platform.index+1])for(const fraction of [.02,.25,.5,.8,.98])for(const y of [-1,0,1])for(const distance of [3,12]){
+    const a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step];
+    const p={x:a.x+(b.x-a.x)*fraction,y:a.y+(b.y-a.y)*fraction,stairStep:step,stairDirection:1,moving:false};
+    const start={...p};
+    moveRoofStairs(p,{x:platform.direction,y},distance);
+    assert(Math.hypot(p.x-start.x,p.y-start.y)>0,'the turn responds anywhere on either connected flight');
+    for(let i=0;i<200&&!onRoofWindowPlatform(p);i++)moveRoofStairs(p,{x:platform.direction,y},distance);
+    for(let i=0;i<20;i++)moveRoofStairs(p,{x:platform.direction,y},distance);
+    assert(onRoofWindowPlatform(p),JSON.stringify({step,fraction,y,distance,p}));
+    assert(p.x<j.x-40);assert.equal(p.y,j.y);
   }
 });
 
