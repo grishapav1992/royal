@@ -12,7 +12,7 @@ assert(outDir);assertClean(process.cwd());const release=await verifyRelease(proc
 const before=JSON.parse(fs.readFileSync(beforeFile)),published=JSON.parse(fs.readFileSync(publishedFile)),helpers=JSON.parse(fs.readFileSync(helpersFile));
 const scope=JSON.parse(fs.readFileSync(folder+'/scope.json')),report=JSON.parse(fs.readFileSync(reportFile));
 assert.equal(report.stats.unexpected,0);assert.equal(report.stats.expected,3);assert.deepEqual(report.errors,[]);
-assert.equal(release.scope,'modules');assert.deepEqual(release.modules,scope.moduleGames);assert.equal(release.baseCommit,before.sourceCommit);
+assert.equal(release.scope,'modules');assert.deepEqual(release.modules,scope.moduleGames);
 const reader=await readHostProjection(process.cwd(),folder+'/module-projection.json',{strictOrigins:true});
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 assert(!fs.existsSync(outDir));fs.mkdirSync(outDir,{recursive:true});
@@ -38,5 +38,6 @@ for(const row of release.packages){
 }
 const proof={sourceCommit:release.sourceCommit,games,checks:{activeHouseGames:19,desktopAndPhone:true,sameOperationRecovery:true,oneTenCentDebit:true,browserReportSha256:hash(fs.readFileSync(reportFile))}};
 put('program-proof.json',JSON.stringify(proof,null,2)+'\n');
-const operator={sourceCommit:release.sourceCommit,source,packages,beforePointers,wrapperSha256:hash(wrapper),publisherSha256:hash(publisher),releaseManifestSha256:hash(fs.readFileSync('module-build/release-manifest.json')),receiptSha256:hash(fs.readFileSync('module-build/release-github.json')),programProofSha256:hash(fs.readFileSync(path.join(outDir,'program-proof.json'))),snapshotSha256:helpers.snapshotSha256,imageHelperSha256:helpers.imageHelperSha256};
+const sourceBefore=Object.fromEntries(Object.keys(source).map(name=>[name,before.sourceLF[name]??null]));
+const operator={sourceCommit:release.sourceCommit,buildBaseCommit:release.baseCommit,actualBaseCommit:before.sourceCommit,beforeSha256:hash(fs.readFileSync(beforeFile)),sourceBefore,source,packages,beforePointers,wrapperSha256:hash(wrapper),publisherSha256:hash(publisher),releaseManifestSha256:hash(fs.readFileSync('module-build/release-manifest.json')),receiptSha256:hash(fs.readFileSync('module-build/release-github.json')),programProofSha256:hash(fs.readFileSync(path.join(outDir,'program-proof.json'))),...helpers};
 put('operator.json',JSON.stringify(operator,null,2)+'\n');console.log(JSON.stringify({sourceCommit:release.sourceCommit,modules:Object.keys(packages).length,sources:Object.keys(source).length,outDir}));

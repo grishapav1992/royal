@@ -1,0 +1,427 @@
+{
+  "release": "flag-collision-audio-20261104-v1",
+  "sourceCommit": "88a99af8c49ac43530c2fb9ae93a8abb4576c60d",
+  "installerSourceCommit": "1a87fd4c8dfee952ba9e6bc7f0f3a641534a57c8",
+  "actualProductionBase": "97d9eac8e811db0389002ce697865782f9707f41",
+  "buildBaseCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
+  "manifestSha256": "36f6fb415cfadba002e1e33b9363d3b135b0a4c8a714e47d2d5cd5daaeb17854",
+  "published": {
+    "published": true,
+    "release": "flag-collision-audio-20261104-v1",
+    "sourceCommit": "88a99af8c49ac43530c2fb9ae93a8abb4576c60d",
+    "baseCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+    "buildBaseCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
+    "installerSourceCommit": "1a87fd4c8dfee952ba9e6bc7f0f3a641534a57c8",
+    "module": {
+      "verified": true,
+      "gameId": "flag-battle",
+      "version": "2.1.2-1d07daea0fa9",
+      "bytes": 343562,
+      "files": 50,
+      "beforeSha256": "4af4e2fabfe872a1d278ea580d57ee8a10a740d0f54ff22e8e196790d896ed22",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "install",
+      "activeSha256": "382131b22082ee49bb34ab6f01686be84fbb85feaa31e0b350e60d08ef4aa7d6",
+      "history": "/opt/royal-game-modules-state/history/20261104T180322-44f10a21cbd14a94a6d3c0155ef4010c.json"
+    },
+    "backup": {
+      "sourceArchive": "/opt/royal-backups/flag-collision-audio-20261104-v1/source.tgz",
+      "bytes": 4800,
+      "sha256": "186e749d51403ccd67239f55553c521c88dd6b780a8a002a1913ceca54e1ba5d",
+      "oldVersion": "2.1.1-f46d7dfea3df",
+      "oldPackageHardlinked": true,
+      "imageTag": "royal-game:before-flag-collision-audio-20261104-v1",
+      "image": "sha256:8697bf1f68ebef8c53506839eec9839f6192275e64ade689a786a173a21957f3"
+    },
+    "freeBefore": 9758478336,
+    "freeAfter": 9757159424,
+    "hostRestarted": false,
+    "databaseTouched": false,
+    "otherModulesPreserved": true,
+    "sourceFilesPreserved": 2709,
+    "runtimeFilesPreserved": 8598,
+    "servicesPreserved": 14
+  },
+  "public": {
+    "version": "2.1.2-1d07daea0fa9",
+    "sourceCommit": "88a99af8c49ac43530c2fb9ae93a8abb4576c60d",
+    "files": [
+      {
+        "name": "entry-3da5681044cdad06.js",
+        "bytes": 52144,
+        "sha256": "3da5681044cdad06c0e92003477475fec5d110dd0d204d676bd5efcae95eb0a1"
+      },
+      {
+        "name": "media/flag-battle/flags/ae.svg",
+        "bytes": 1362,
+        "sha256": "3e77f069b29dddad5cbd9bc94f1fb832923d8340dd2d4853b69763e40989bd1f"
+      },
+      {
+        "name": "media/flag-battle/flags/ar.svg",
+        "bytes": 283,
+        "sha256": "d7d7579673eb63fb654d1e9f751eab4192f141d25cd3cd30cd1d0a920497adb7"
+      },
+      {
+        "name": "media/flag-battle/flags/at.svg",
+        "bytes": 1291,
+        "sha256": "6c7bcf244743bc3efd060da58673b31758b52dad26c623ebae86eea22d9c4f6a"
+      },
+      {
+        "name": "media/flag-battle/flags/au.svg",
+        "bytes": 2392,
+        "sha256": "e6b1a5ec32723983952e5ffc6494f31b2defb43f872f1684cb2494139909ebf5"
+      },
+      {
+        "name": "media/flag-battle/flags/be.svg",
+        "bytes": 1398,
+        "sha256": "bc258ba2d89e763c87e76e87c348d122715cbec0350186975506e9ff503ae7dc"
+      },
+      {
+        "name": "media/flag-battle/flags/br.svg",
+        "bytes": 295,
+        "sha256": "c24a033e7b925411426f36b6ca39cfdebe1018f7b357cc49d72a682fa313df20"
+      },
+      {
+        "name": "media/flag-battle/flags/ca.svg",
+        "bytes": 339,
+        "sha256": "b57e0e676c15f425dc4a503b3d0d483aea3381595b87fb67742bd0d74ab46584"
+      },
+      {
+        "name": "media/flag-battle/flags/ch.svg",
+        "bytes": 1386,
+        "sha256": "dcfe633092700aa67bac30673c6051ffbe48fc3986ed3ac8894c3cd6134b9c23"
+      },
+      {
+        "name": "media/flag-battle/flags/cl.svg",
+        "bytes": 1648,
+        "sha256": "28f462fb327086e28be4f5f241f42cc3c743cb688a4673fe40e2fddd2091a867"
+      },
+      {
+        "name": "media/flag-battle/flags/cn.svg",
+        "bytes": 1843,
+        "sha256": "ec6a7ede8ffacc03693a9e0ff8c571b9e73ed7af2a9266e09c02e243a43db161"
+      },
+      {
+        "name": "media/flag-battle/flags/co.svg",
+        "bytes": 1382,
+        "sha256": "bf7fce464f61c5f8f48079cba3117fdff5d82966c9e4e45b4f73997934da8999"
+      },
+      {
+        "name": "media/flag-battle/flags/cz.svg",
+        "bytes": 1321,
+        "sha256": "115266ee1ba2f1c0359ac7020b3586d9f39802c4eda8433b7392dfe623f04c5d"
+      },
+      {
+        "name": "media/flag-battle/flags/de.svg",
+        "bytes": 240,
+        "sha256": "69924308d664bbc97e65dd664c1953b57807875a38f07b8ff1ecaca715f86e4d"
+      },
+      {
+        "name": "media/flag-battle/flags/dk.svg",
+        "bytes": 1332,
+        "sha256": "36ba2d58bba9df297f3675a5353f07d24719485b1110aecfd47888018f989a62"
+      },
+      {
+        "name": "media/flag-battle/flags/eg.svg",
+        "bytes": 9813,
+        "sha256": "5a9ca1417a38e1b177ac80223db4084882ee7859d72fc9225b871e7478e5ae38"
+      },
+      {
+        "name": "media/flag-battle/flags/es.svg",
+        "bytes": 82054,
+        "sha256": "dfd34880aaee2c08306262229cc7dceb6466e58c982f6eba13aa986a71c21b4d"
+      },
+      {
+        "name": "media/flag-battle/flags/fi.svg",
+        "bytes": 1330,
+        "sha256": "8da7b6b8f3e0299581df1215f568e72e73ee6a6b9a766de3898045b59375d992"
+      },
+      {
+        "name": "media/flag-battle/flags/fr.svg",
+        "bytes": 237,
+        "sha256": "076cff2ef32ef58d5e36d713c1579cb48eedc3954656a84b2f953a5d547e6dbb"
+      },
+      {
+        "name": "media/flag-battle/flags/gb.svg",
+        "bytes": 377,
+        "sha256": "c668d1567dfa5f5916ed69baaeb79e509612905f4f949d8df3284279cf542bd0"
+      },
+      {
+        "name": "media/flag-battle/flags/gr.svg",
+        "bytes": 1964,
+        "sha256": "d599f46bd6c1131a2a1581e17b3acbc8ba36a6b94cc4efb3768389590fd7683e"
+      },
+      {
+        "name": "media/flag-battle/flags/hu.svg",
+        "bytes": 1360,
+        "sha256": "e73ccb7094cb46ab09c013969ffc3231a09a8c304d2c23486f18b82d3798f9f3"
+      },
+      {
+        "name": "media/flag-battle/flags/id.svg",
+        "bytes": 1274,
+        "sha256": "fe5282c3643a9a7e5427df6cc4c7cfcba71b054eefccbd6026af3213b7d50e00"
+      },
+      {
+        "name": "media/flag-battle/flags/ie.svg",
+        "bytes": 1385,
+        "sha256": "966d5a94872ba2ea3a97b6423f2685e6475eb1ef5166f9929e5bae4b34913195"
+      },
+      {
+        "name": "media/flag-battle/flags/in.svg",
+        "bytes": 2306,
+        "sha256": "43763592e528d43aeb57b4ba4a6fbcca81b2fbca3ae3f1157f483086b1816200"
+      },
+      {
+        "name": "media/flag-battle/flags/it.svg",
+        "bytes": 1385,
+        "sha256": "d365181dc1b733c620a8df9decf8af5523a73fb5dc668a413c1acc7cd1f89480"
+      },
+      {
+        "name": "media/flag-battle/flags/jp.svg",
+        "bytes": 168,
+        "sha256": "88446293c801188349a9a972fa982a870e80e873339ddba1fbeaef4fc0e75af0"
+      },
+      {
+        "name": "media/flag-battle/flags/ke.svg",
+        "bytes": 2517,
+        "sha256": "1dd623af24f9423f507bcdc7cdf27f906a764fbd91bb54bdb4a502fec65fd5ea"
+      },
+      {
+        "name": "media/flag-battle/flags/kr.svg",
+        "bytes": 2157,
+        "sha256": "488d302b4c296b1d983a82e53c403d0fb816997cea663f08cc2b1283a18ff7a6"
+      },
+      {
+        "name": "media/flag-battle/flags/ma.svg",
+        "bytes": 1343,
+        "sha256": "2cd2ed374331896bcbbee1e7001142ddcf7433d63bbfc6c1201cda37be3ff7e3"
+      },
+      {
+        "name": "media/flag-battle/flags/mx.svg",
+        "bytes": 85849,
+        "sha256": "b65b9037b35fb64c7fb83bd034d8bd68f83f7d08109c2fcf117090a89ca212db"
+      },
+      {
+        "name": "media/flag-battle/flags/ng.svg",
+        "bytes": 1353,
+        "sha256": "98b3fab4eee8b5ccc81b6052502189271b0bf892470137171d4543bed17679ac"
+      },
+      {
+        "name": "media/flag-battle/flags/nl.svg",
+        "bytes": 1321,
+        "sha256": "8f73fd4103b57685404779930942ea30eaa86d7e55f888d8821c0ad81a2b484d"
+      },
+      {
+        "name": "media/flag-battle/flags/no.svg",
+        "bytes": 1414,
+        "sha256": "adb5d645cf923038ceb3dacc1262f4962e010b1bdedc88fab2d5d01ded0d14d2"
+      },
+      {
+        "name": "media/flag-battle/flags/nz.svg",
+        "bytes": 3268,
+        "sha256": "f7a8f7d407ecf461beddf87059af05e658cc323fa63ec3a40c7ee16c55b55295"
+      },
+      {
+        "name": "media/flag-battle/flags/pe.svg",
+        "bytes": 1282,
+        "sha256": "9d6dad86d092c4cfbe59b25da7b1c338e0d323590f9f5f9d20a5927960b9679f"
+      },
+      {
+        "name": "media/flag-battle/flags/pl.svg",
+        "bytes": 1311,
+        "sha256": "af9cd05ce0197021f58f4a223de583d2f66d63a2cbb337cb99454c026dd93903"
+      },
+      {
+        "name": "media/flag-battle/flags/pt.svg",
+        "bytes": 9097,
+        "sha256": "8323d7b7d8b2fa4c4250ca93bbcbf9e45bd231a0f2a5f96ea20e04237d3017ab"
+      },
+      {
+        "name": "media/flag-battle/flags/ro.svg",
+        "bytes": 1398,
+        "sha256": "e0da35bab74ef19091afa7007c52d8bab7cbfc043504d767bc4c33a3cbe5175a"
+      },
+      {
+        "name": "media/flag-battle/flags/ru.svg",
+        "bytes": 237,
+        "sha256": "bc34a467eb6d9b8b226aeaeffae723a80e70a2e2c9ecc5d6d485cf51c590f329"
+      },
+      {
+        "name": "media/flag-battle/flags/sa.svg",
+        "bytes": 11064,
+        "sha256": "06234edeab7b471cfb4d7da2d9015d1b9199a62d0ffad738fde3967cb189d7c0"
+      },
+      {
+        "name": "media/flag-battle/flags/se.svg",
+        "bytes": 1305,
+        "sha256": "f7f990328522bb8315b18c87cbf3c5cf5737a204a252e53a3dc0ed444f0f62fc"
+      },
+      {
+        "name": "media/flag-battle/flags/th.svg",
+        "bytes": 1380,
+        "sha256": "b486eddc92558ab63b1584f19b8e7dcb85ff1cb526dac363b63f5aa935ed3b0d"
+      },
+      {
+        "name": "media/flag-battle/flags/tr.svg",
+        "bytes": 554,
+        "sha256": "fb8d48a248ebce90487ffb1030a001ab219e0c607673d5d156213c8d297ab015"
+      },
+      {
+        "name": "media/flag-battle/flags/ua.svg",
+        "bytes": 1330,
+        "sha256": "730905d52617000364815fd6f3b6b95af07146290edb6fce15e9ebf37501e5e4"
+      },
+      {
+        "name": "media/flag-battle/flags/us.svg",
+        "bytes": 19099,
+        "sha256": "6213476c7dc9d85ab039b5b8443b1e129d2eed06a3928a82d3729dee2ffb5341"
+      },
+      {
+        "name": "media/flag-battle/flags/uy.svg",
+        "bytes": 2820,
+        "sha256": "c2364cd4e23bfd00e4e734b191acced623fd8d83575c2d651989be7358e49a2a"
+      },
+      {
+        "name": "media/flag-battle/flags/vn.svg",
+        "bytes": 1586,
+        "sha256": "e29cb8f49baa576810506ee33f460000251d8e44b14340369b0f3995bbd9b01e"
+      },
+      {
+        "name": "media/flag-battle/flags/za.svg",
+        "bytes": 1956,
+        "sha256": "d11c888a4b0803993fce6a63f36a3f842a53e12ea2d20b4ee66922202a99187b"
+      },
+      {
+        "name": "style-ea92a413e57d7685.css",
+        "bytes": 17612,
+        "sha256": "ea92a413e57d7685e5c409fd327b9ba24ee58b8008cb6f84c8761ce882521c77"
+      }
+    ],
+    "api": [
+      {
+        "url": "/healthz",
+        "status": 200
+      },
+      {
+        "url": "/api/demo-wallet",
+        "status": 401
+      },
+      {
+        "url": "/api/demo-wallet/expansion",
+        "status": 401
+      },
+      {
+        "url": "/api/game-wallet",
+        "status": 410
+      },
+      {
+        "url": "/api/nile-play",
+        "status": 410
+      }
+    ],
+    "browser": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "title": "Рояль • Аркадный клуб",
+        "errors": []
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "title": "Рояль • Аркадный клуб",
+        "errors": []
+      }
+    ],
+    "productionAccountsCreated": 0,
+    "activeCacheControl": "no-store",
+    "manifestSha256": "36f6fb415cfadba002e1e33b9363d3b135b0a4c8a714e47d2d5cd5daaeb17854",
+    "passed": true,
+    "checkedAt": "2026-11-04T18:04:18.322Z"
+  },
+  "preparation": "prepared-validation.json",
+  "scope": {
+    "selectedSources": [
+      "games/flag-battle/FlagAudio.ts",
+      "games/flag-battle/package.json",
+      "games/flag-battle/tsconfig.json"
+    ],
+    "catalogueChanged": false,
+    "newOrRestoredGames": [],
+    "wagerRulesChanged": false,
+    "otherModulesPreserved": true
+  },
+  "sharedBrain": {
+    "available": false,
+    "fallback": "Direct sources and complete production inventories"
+  },
+  "maintenance": {
+    "status": "completed",
+    "startedAt": 1793815962.1396399,
+    "finishedAt": 1793816904.7412262,
+    "durationSeconds": 942.6,
+    "release": "player-recovery-20261104-v2",
+    "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+    "currentImage": "sha256:8697bf1f68ebef8c53506839eec9839f6192275e64ade689a786a173a21957f3",
+    "rollbackImage": "sha256:4e7d6f2257b33fabc3227402c45692bc175ba064e61a445fadcc18a97fda113b",
+    "plannedEntries": 104,
+    "plannedImages": 1,
+    "removedEntries": 104,
+    "removedImageTags": 3,
+    "freeBefore": 9751556096,
+    "freeAfter": 10079834112,
+    "preservedFinancialFiles": 140,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:4e7d6f2257b33fabc3227402c45692bc175ba064e61a445fadcc18a97fda113b",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "44493dc4173f593f6c8a1b61f0e57ef717080a4c778b23c2b525f58f192b725e",
+      "files": 8596
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "43b568111a27822bc6c693254ade29083eeb6520ce7f956fa7d07f3ac0cc3ced",
+      "receipt": "/var/lib/royal-project-brain/receipts/43b568111a27822bc6c693254ade29083eeb6520ce7f956fa7d07f3ac0cc3ced.json",
+      "queued": true
+    },
+    "coordinatedWithPlayerRecovery": true,
+    "namedResult": "/opt/royal-maintenance/automatic-runs/run-a3892f46a8ef4c75b599be4496345526/summary.json",
+    "namedResultSha256": "e5058655dee3bc22d38c273c3310cdd3fbdeb3fe4060215105bad4317564d77a",
+    "timer": "enabled",
+    "postChecks": {
+      "checkedAt": "2026-11-04T18:29:57.221Z",
+      "image": "sha256:8697bf1f68ebef8c53506839eec9839f6192275e64ade689a786a173a21957f3",
+      "health": "healthy",
+      "freeBytes": 10071334912,
+      "publicHealthStatus": 200,
+      "activePointerSha256": "382131b22082ee49bb34ab6f01686be84fbb85feaa31e0b350e60d08ef4aa7d6"
+    }
+  },
+  "inventoryEvidence": {
+    "beforeSha256": "5487cd5c7a8b698bf9fca7aa2a8640565dd45275b538b85e6473ecbd4fb0ef4a",
+    "afterSha256": "ec26122d7a5fba0a6b646a28efdf35eecade4487f739edfb94e4104d0c70d26b",
+    "publishedSha256": "05cb4407e8a15e0c33ade29fe70be79e6d228dc30ba8199fda08f2799c5f22ca"
+  },
+  "installationMetadata": {
+    "sourceCommit": "1a87fd4c8dfee952ba9e6bc7f0f3a641534a57c8",
+    "applicationSourceCommit": "88a99af8c49ac43530c2fb9ae93a8abb4576c60d",
+    "includedInMain": true,
+    "remoteMain": "1a87fd4c8dfee952ba9e6bc7f0f3a641534a57c8",
+    "files": {
+      "deployment/releases/flag-collision-audio-20261104-v1/publish.py": "de0a6f7b311489b94536047d90880508440866fdb768139ac7cc3277755bd3b3",
+      "deployment/releases/flag-collision-audio-20261104-v1/bind-current.py": "1328129fa802cf9b2daf0d315c86517650f17b4f5405ee012e22be2765825548"
+    }
+  }
+}
