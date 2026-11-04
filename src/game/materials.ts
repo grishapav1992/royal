@@ -3,6 +3,7 @@ import { CABINETS } from '../shared/cabinets';
 import { CABINET_SIZE, paintCabinet } from './cabinetArt';
 import { paintCabinetArtwork } from './cabinetArtwork';
 import { createInteriorArt } from './interiorArt';
+import { createBarArt } from './barArt';
 import { isCardGame } from '../shared/cardTables';
 import { createCardTableArt } from './CardTablesRenderer';
 
@@ -66,35 +67,5 @@ export function createDetailedArt(scene: Phaser.Scene) {
   });
   createCardTableArt(scene, CABINETS.filter(cabinet => isCardGame(cabinet.id)));
   createInteriorArt(scene, ART_RESOLUTION);
-  make('bar-back',248,99,c=>{
-    box(c,1,1,246,97,'#b59057');box(c,6,5,236,90,'#273e48');
-    for(let x=12;x<240;x+=46)box(c,x,9,39,79,'#334e59');
-    for(const y of [34,72]){
-      for(let n=0;n<10;n++){
-        const x=15+n*23,col=['#689a87','#d2a75b','#a36a74','#7198a7'][n%4]!;
-        if(n%5===3){
-          box(c,x,y-16,10,15,'#9caeb0',2);box(c,x+2,y-9,6,7,col,1);
-          line(c,x+2,y-13,x+2,y-5,'#e1e3cf',1);
-        }else{
-          const h=17+(n*7+y)%7,w=n%5===4?12:8;
-          box(c,x,y-h,w,h,col,n%5===4?4:2);box(c,x+w/2-2,y-h-6,4,8,col,1);
-          box(c,x+1,y-11,w-2,5,n%2?'#ecddbf':'#3d5a5e',1);
-          line(c,x+2,y-h+5,x+2,y-14,'#c9d4bd',.8);
-        }
-      }
-      box(c,7,y,234,5,'#bd965b');line(c,9,y+5,239,y+5,'#90c0af',1.5);
-    }
-  });
-  make('bar-front',262,72,c=>{
-    box(c,7,27,248,43,'#523941');
-    for(let x=17;x<250;x+=47){box(c,x,33,41,31,'#66484c',2);line(c,x+5,38,x+36,38,'#ad8961',1);}
-    box(c,1,12,260,17,'#303446',2);line(c,3,29,259,29,'#e7bd72',3);line(c,18,66,244,66,'#f0c55d',3);
-    oval(c,44,16,8,2,'#cfb890');box(c,40,3,8,13,'#dfddbe');box(c,41,9,6,6,'#e0b265');
-    oval(c,127,16,8,2,'#cfb890');box(c,122,6,10,9,'#eddfc0',2);oval(c,134,10,3,3,'#eddfc0');oval(c,127,6,5,2,'#624a3f');
-    box(c,175,3,8,13,'#c8d4c6');box(c,176,10,6,5,'#b06f83');line(c,181,0,179,9,'#e6d5aa',1);
-  });
-  make('bar-stool',48,44,c=>{
-    box(c,22,12,4,26,'#656863');oval(c,24,38,15,3,'#7c7c70');
-    oval(c,24,11,18,7,'#603147');oval(c,24,7,18,6,'#ad526d');
-  });
+  createBarArt(make);
 }

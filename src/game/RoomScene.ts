@@ -14,7 +14,7 @@ import { ATELIER } from '../shared/atelier';
 import { drawAtelier, ATELIER_TEXTURE, ATELIER_SPRITE } from './atelierArt';
 import { TailorRenderer, ATELIER_EMPTY_TEXTURE, ATELIER_EMPTY_SPRITE, TAILOR_TEXTURE, TAILOR_SPRITE } from './TailorRenderer';
 import { AmbientGuests, type AmbientGuestView } from '../shared/ambientGuests';
-import type { MiraView } from '../shared/miraRoutine';
+import type { MiraAttention, MiraView } from '../shared/miraRoutine';
 import { SecurityGuard } from './SecurityGuard';
 import type { GuardView } from '../shared/security';
 import { addDemoCabinetArt } from './demoCabinetArt';
@@ -209,6 +209,10 @@ export class RoomScene extends Phaser.Scene {
     this.input.mouse?.disableContextMenu();
     this.game.events.on(Phaser.Core.Events.BLUR, () => { this.input.keyboard?.resetKeys(); this.player.path = []; this.marker.setVisible(false); this.endPrediction(); this.network?.stop(); });
     if (this.reducedMotion) this.tweens.pauseAll();
+    const motionPreference=window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updateMotion=()=>{this.reducedMotion=motionPreference.matches;if(this.reducedMotion)this.tweens.pauseAll();else this.tweens.resumeAll();};
+    motionPreference.addEventListener('change',updateMotion);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>motionPreference.removeEventListener('change',updateMotion));
     this.guard = new SecurityGuard(this);
     this.onReady();
     this.time.delayedCall(0, () => this.loadCatArtwork());
@@ -663,6 +667,10 @@ export class RoomScene extends Phaser.Scene {
     if(Number.isFinite(guestsAt)&&guestsAt>0)this.guestsAt=guestsAt;
   }
   syncMira(mira: MiraView) { this.bar?.sync(mira,this.npcSimulationAt||performance.now()); }
+  setMiraAttention(phase: MiraAttention) {
+    this.bar?.setAttention(phase);
+    this.network?.miraAttention?.(phase);
+  }
   syncGuards(guards: GuardView[]) { this.guard.sync(guards,this.npcSimulationAt||performance.now()); }
   private resetNpcMotion() {
     this.npcTimeline.reset();this.npcSimulationAt=0;this.guestsAt=0;this.guestMotion.clear();this.bar?.resetMotion();this.guard?.resetMotion();
@@ -759,7 +767,7 @@ export class RoomScene extends Phaser.Scene {
       sit: seat => { this.clickTargets.cancel(); this.finishMovement(() => commands.sit(seat)); },
       stand: () => { this.clickTargets.cancel(); this.finishMovement(commands.stand); },
       drink: drink => { this.clickTargets.cancel(); this.finishMovement(() => commands.drink(drink)); },
-      stairWindow: commands.stairWindow, elevator: commands.elevator, cat: commands.cat, cabinetPlay: commands.cabinetPlay, cabinetLeave: commands.cabinetLeave, cabinetReaction: commands.cabinetReaction,
+      stairWindow: commands.stairWindow, elevator: commands.elevator, cat: commands.cat, miraAttention: commands.miraAttention, cabinetPlay: commands.cabinetPlay, cabinetLeave: commands.cabinetLeave, cabinetReaction: commands.cabinetReaction,
     };
     this.networkSelf = undefined;
     this.player.path = []; this.lastInput = '0,0';
@@ -781,9 +789,11 @@ export class RoomScene extends Phaser.Scene {
         this.player.path=[];this.pendingCabinet=null;this.pendingLounge=null;
         this.beginWindowArrival(previousHall,self.hall);
       }
-      if (!this.networkSelf) { this.player.x = self.x; this.player.y = self.y; }
+      const firstState = !this.networkSelf;
+      if (firstState) { this.player.x = self.x; this.player.y = self.y; }
       this.networkSelf = self;
       if(!this.prediction.active){this.player.stairStep=self.stairStep??0;this.player.stairDirection=self.stairDirection??1;}
+      if (firstState && this.pendingLounge === 'bar') this.goTo(BAR_APPROACH);
       this.player.soberAt = self.soberAt;
       this.player.cabinet = self.cabinet ?? ''; this.player.gameReaction = self.gameReaction ?? ''; this.player.gameReactionUntil = self.gameReactionUntil ?? 0;
       if (this.prediction.active) {

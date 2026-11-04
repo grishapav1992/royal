@@ -7,6 +7,7 @@ import { ACTIVITIES } from './activities';
 import { CABINETS, cabinetsInHall, cabinetBounds } from './cabinets';
 import type { GameReaction } from './cabinetSeating';
 import type { CatAction } from './cat';
+import type { MiraAttention } from './miraRoutine';
 import { CAT_CARE } from './catCare';
 import { STREET, STREET_DOOR, CASINO_EXIT, STREET_OBSTACLES } from './street';
 import { ROOF, ROOF_OBSTACLES, ROOF_STAIRS, ROOF_STAIR_RETURN, STREET_ROOF_STAIRS } from './rooftop';
@@ -132,4 +133,4 @@ export const atBar = (p: { x: number; y: number }) => p.x >= BAR_SERVICE.x && p.
 export type PlayerAction = 'idle' | 'sit' | 'drink';
 export type PlayerView = { stairStep?: number;stairDirection?:number; security?: string; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; inputSeq: number };
 export type ChatMessage = { id: string; senderId: string; name: string; text: string; time: number; system?: boolean; requestId?: string };
-export type NetworkCommands = { stairWindow?: () => void; elevator?: (target: HallId) => Promise<boolean>; cat?: (action: CatAction) => void; inputs: (inputs: MovementInput[]) => void; move: (x: number, y: number) => void; target: (x: number, y: number) => void; stop: () => void; sit: (seat: string) => void; stand: () => void; drink: (drink: string) => void; cabinetPlay?: (id: string) => Promise<boolean>; cabinetLeave?: () => void; cabinetReaction?: (id: string, reaction: GameReaction) => void };
+export type NetworkCommands = { miraAttention?: (phase: MiraAttention) => void; stairWindow?: () => void; elevator?: (target: HallId) => Promise<boolean>; cat?: (action: CatAction) => void; inputs: (inputs: MovementInput[]) => void; move: (x: number, y: number) => void; target: (x: number, y: number) => void; stop: () => void; sit: (seat: string) => void; stand: () => void; drink: (drink: string) => void; cabinetPlay?: (id: string) => Promise<boolean>; cabinetLeave?: () => void; cabinetReaction?: (id: string, reaction: GameReaction) => void };

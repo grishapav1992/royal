@@ -104,7 +104,7 @@ function fieldFor(select: HTMLSelectElement, scale: number, locked: boolean): St
   const previous = drafts.get(doc);
   if (previous && !previous.input.isConnected) {
     drafts.delete(doc);
-    if (!locked && previous.key === key && doc.activeElement === doc.body) {
+    if (!locked && previous.key === key && doc.hasFocus() && doc.activeElement === doc.body) {
       input.value = previous.input.value;
       input.setCustomValidity(previous.input.validationMessage);
       input.setAttribute('aria-invalid',previous.input.getAttribute('aria-invalid') ?? 'false');

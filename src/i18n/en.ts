@@ -578,6 +578,7 @@ export const english: Record<string, string> = {
   "Клоун": "Clown",
   "МУЗЫКАЛЬНЫЙ САЛОН": "MUSIC LOUNGE",
   "БАР МИРЫ": "MIRA'S BAR",
+  "Роял Бар": "Royal Bar",
   "ГАЛЕРЕЯ АВТОМАТОВ": "ARCADE GALLERY",
   "ГОСТИНАЯ": "LOUNGE",
   "КАРТЫ И КОСТИ": "CARDS AND DICE",
