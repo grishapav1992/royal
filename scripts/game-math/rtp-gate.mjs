@@ -268,7 +268,14 @@ function validatePvpProof(gameId,p,proof){
   assert.equal(proof.serverReplayChecks,proof.results.length*3);
   return true;
 }
-export async function checkGameRtp(root, catalog, selected = catalog.map(game => game.gameId)) {
+export async function checkGameRtp(root, catalog, selected = catalog.map(game => game.gameId), options = {}) {
+  const verify = (phase, gameId, rulesVersion, action) => {
+    const started = performance.now();
+    options.onProgress?.({ phase, gameId, rulesVersion, status: 'started' });
+    let passed = false;
+    try { const result = action(); passed = true; return result; }
+    finally { options.onProgress?.({ phase, gameId, rulesVersion, status: passed ? 'passed' : 'failed', durationMs: Math.round(performance.now() - started) }); }
+  };
   const registry = JSON.parse(await readFile(resolve(root, 'scripts/game-math/rtp-policy.json'), 'utf8'));
   const baseline = JSON.parse(await readFile(resolve(root, 'scripts/game-math/rtp-legacy-baseline.json'), 'utf8'));
   assert.equal(digest(JSON.stringify(baseline.games)), '71deee54464329fbc5a76c9c964797caad78620ff8d206bc4bf9105de760a160', 'The frozen legacy list cannot absorb new unqualified games');
@@ -292,19 +299,19 @@ export async function checkGameRtp(root, catalog, selected = catalog.map(game =>
     if(inputs.policy.releaseStatus===FOREST_SERVER_STATUS)assert(gameId==='studio-forest-heart'&&!contract,'Only the reviewed Forest Heart server may precede its client');
     else assert(contract && contract.rulesVersion === inputs.policy.rulesVersion && contract.progressVersion === inputs.policy.progressVersion);
     const proof = JSON.parse(await readFile(resolve(root, inputs.policy.proof), 'utf8').catch(() => { throw Error('Missing RTP qualification for ' + gameId + '; run npm run qualify:rtp -- --game ' + gameId + ' --write-proof'); }));
-    validateRtpProof(gameId, inputs, proof); verified++;
+    verify('profile', gameId, inputs.policy.rulesVersion, () => validateRtpProof(gameId, inputs, proof)); verified++;
   }
   for(const gameId of new Set([...selected,...changedProfiles]))for(const [version,p]of Object.entries(registry.versionProfiles?.[gameId]??{})){
     const contract=catalog.find(game=>game.gameId===gameId);assert(contract&&Number(version)===p.rulesVersion);
     assert(p.rulesVersion<=contract.rulesVersion||p.availability==='server-opt-in','Future rules must be explicitly opt-in');
     const inputs=await rtpInputs(root,gameId,Number(version));
     const proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8').catch(()=>{throw Error('Missing versioned RTP qualification for '+gameId+' rules '+version);}));
-    validateRtpProof(gameId,inputs,proof);verified++;
+    verify('versioned-profile', gameId, inputs.policy.rulesVersion, () => validateRtpProof(gameId,inputs,proof));verified++;
   }
   let stakePoliciesVerified=0;
   for(const gameId of new Set([...selected,...changedProfiles]))if(registry.stakePolicies?.[gameId]){
    const inputs=await stakeInputs(root,gameId),proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8').catch(()=>{throw Error('Missing shared-stake qualification: '+gameId);}));
-   validateStakeProof(gameId,inputs,proof);stakePoliciesVerified++;
+   verify('stake-policy', gameId, inputs.policy.rulesVersion, () => validateStakeProof(gameId,inputs,proof));stakePoliciesVerified++;
   }
   return { verified, stakePoliciesVerified, stakeAdmissionVerified, legacyNotQualified: baseline.games.length,...(serverOnly.length?{serverQualifiedClientPending:serverOnly}:{}) };
 }
