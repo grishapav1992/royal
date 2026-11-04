@@ -1,8 +1,8 @@
 {
   "format": 1,
   "release": "front-back-walk-20261104-v3",
-  "status": "publication_on_hold_by_user",
-  "recordedAt": "2026-11-04T17:48:43.731Z",
+  "status": "preparing_after_user_resumed_publication",
+  "recordedAt": "2026-11-04T17:53:14.149Z",
   "published": false,
   "renderingSourceCommit": "769f83e77b792d02fc86e6e716008076fd3821d5",
   "helperSourceCommit": "0f24c1b6293466b7b4cf3287f9b36efa3d096a5b",
@@ -275,7 +275,10 @@
     "instruction": "Continue preparation and tests. Do not begin new publications or reserve production. Finish an already started installation or maintenance normally.",
     "ownActivePublishers": 0,
     "ownActiveWaiters": 0,
-    "nextPublicationRequiresSeparateUserAgreement": true
+    "nextPublicationRequiresSeparateUserAgreement": false,
+    "active": false,
+    "liftedByDirectHumanTurnId": "01a1a7ad-9c2d-7950-b21b-1f66f961e20e",
+    "resumedInstruction": "Continue the previously agreed publication using preparation without shared locks and a ready guarded installation."
   },
   "pending": [
     "After the already started concurrent installation finishes, read its verified full production inventory and matching host origins without reserving production.",
@@ -350,5 +353,13 @@
       "verification scripts and reports"
     ],
     "retainedAfterRejection": "All attempted targets remain. Do not retry these paths or previously rejected natural-side-walk cleanup by another method."
+  },
+  "currentPreparation": {
+    "productionRelease": "player-recovery-20261104-v2",
+    "publishedSourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+    "publishedImage": "sha256:8697bf1f68ebef8c53506839eec9839f6192275e64ade689a786a173a21957f3",
+    "inputStatus": "Reading the completed release inventory and host origins, then checking the container identity. These preparation inputs do not replace the fresh guarded production baseline check.",
+    "publicationLocksHeld": false,
+    "installOrder": "Player recovery, Flag, completed maintenance, then this renderer release."
   }
 }
