@@ -1,0 +1,30 @@
+{
+  "owner": "codex/star-spin-character-fit",
+  "recordedAt": "2026-11-04T10:56:59.642Z",
+  "preservedSourceCommit": "a26bad2378dbccdb61c9539d34a4b240037059af",
+  "preservedReportCommit": "7f6f8ccfa11a8809104fc9444ac22f89b4c95c82",
+  "local": {
+    "status": "blocked-by-automatic-review",
+    "target": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-character-fit-20261104",
+    "reason": "blocked by policy",
+    "commandExecuted": false,
+    "attempts": 1,
+    "removedFiles": 0,
+    "removedBytes": 0,
+    "preservedFiles": 80,
+    "preservedBytes": 51835602,
+    "freeObservedBeforeAttempt": 314285809664,
+    "freeObservedAfterAttempt": 314282450944,
+    "physicalDiskReclamationClaimed": false,
+    "previouslyRejectedTargetsRetried": false,
+    "activePackage": "1.5.1-a6511d3f697d",
+    "cleanupCondition": "Retain the rejected task-owned folder until a permitted cleanup can be performed. Do not retry during this task."
+  },
+  "server": {
+    "status": "queued-after-active-maintenance",
+    "archive": "/opt/royal-releases/star-spin-character-fit-20261104-v1/payload.tgz",
+    "bytes": 13900552,
+    "sha256": "eaa936ee85ddd367f095e31eb94818875d280bed5ea295ba3eede5dc494fb654",
+    "cleanupCondition": "Wait for the active maintenance pass to release publication locks; require completed maintenance and unchanged module/host, then remove the exact transport hash."
+  }
+}
