@@ -1,0 +1,365 @@
+{
+  "format": 1,
+  "release": "front-back-walk-20261104-v3",
+  "status": "preparing_after_user_resumed_publication",
+  "recordedAt": "2026-11-04T17:53:14.149Z",
+  "published": false,
+  "renderingSourceCommit": "769f83e77b792d02fc86e6e716008076fd3821d5",
+  "helperSourceCommit": "0f24c1b6293466b7b4cf3287f9b36efa3d096a5b",
+  "helperSha256": "78114df6589fc51afa3e978de7b006f8a61cd4dacd023c1fb0c55bbb652cea81",
+  "sourceChanges": {
+    "src/game/characters.ts": "872b632f477978c4fd192c66331c239e97d861bdaebf31e25e9dbacfc37d1058",
+    "src/game/avatarArt.ts": "a840954125334525669d7b2d23afbb636106b376848d4c40f9c1d1157cd8f98c",
+    "src/game/frontalWalk.ts": "42fa869b222c823576fc158525fac3b05707c9dfcca9185124ae80771511b091"
+  },
+  "behavior": "For ordinary NPCs and default avatars, front and rear garment and sleeves share one outline from the shoulders. Upper sleeves are visible beside the chest, armpits separate the arms above the waist, and hands remain beside the waist. Idle and walking poses use the same attachment.",
+  "unaffected": "Side views, sitting, drinking, special actions, generated skins and the separate Mira renderer retain their existing drawings.",
+  "addedGames": [],
+  "restoredGames": [],
+  "tests": {
+    "poseUnits": 8,
+    "browserTests": 3,
+    "browserFrames": 8352,
+    "shoulderConnectionAndVisibleUpperSleeves": true,
+    "protectedPoseComparisons": 4960,
+    "protectedPoseMismatches": 0,
+    "currentHelperScopeAndStartupTests": {
+      "passed": 12,
+      "command": "python deployment/releases/front-back-walk-20261104-v3/test_deploy.py",
+      "environment": "Windows, 2026-11-04"
+    },
+    "mandatoryWalletTests": {
+      "passed": 19,
+      "sourceCommit": "7995cc8756b9a9803e13c26660cb1b4ae4e1044c",
+      "backendSha256": "28cc991f9dd63ad6a9b0c900950a2344ab8211bea171ecee1998bd0dde7f419c"
+    },
+    "connectedLocalHost": [
+      {
+        "appearance": "npc",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "online": true,
+        "chatVisible": true,
+        "directions": [
+          {
+            "facing": "right",
+            "frames": [
+              "right-0",
+              "right-1"
+            ]
+          },
+          {
+            "facing": "left",
+            "frames": [
+              "left-0",
+              "left-1"
+            ]
+          },
+          {
+            "facing": "up",
+            "frames": [
+              "up-0",
+              "up-1"
+            ]
+          },
+          {
+            "facing": "down",
+            "frames": [
+              "down-0",
+              "down-1"
+            ]
+          }
+        ],
+        "overflow": false,
+        "errors": [],
+        "wallet": {
+          "acceptedStake": 0.1,
+          "uniqueOperationIds": 1,
+          "requests": 2,
+          "betEntries": 1,
+          "lostResponseRecoveredAfterCloseReopen": true,
+          "productionModuleBytesVerified": 4
+        }
+      },
+      {
+        "appearance": "npc",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "online": true,
+        "chatVisible": true,
+        "directions": [
+          {
+            "facing": "right",
+            "frames": [
+              "right-0",
+              "right-1",
+              "right-2"
+            ]
+          },
+          {
+            "facing": "left",
+            "frames": [
+              "left-0",
+              "left-1"
+            ]
+          },
+          {
+            "facing": "up",
+            "frames": [
+              "up-0",
+              "up-1"
+            ]
+          },
+          {
+            "facing": "down",
+            "frames": [
+              "down-0",
+              "down-1"
+            ]
+          }
+        ],
+        "overflow": false,
+        "errors": [],
+        "wallet": {
+          "acceptedStake": 0.1,
+          "uniqueOperationIds": 1,
+          "requests": 2,
+          "betEntries": 1,
+          "lostResponseRecoveredAfterCloseReopen": true,
+          "productionModuleBytesVerified": 4
+        }
+      },
+      {
+        "appearance": "avatar",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "online": true,
+        "chatVisible": true,
+        "directions": [
+          {
+            "facing": "right",
+            "frames": [
+              "right-0",
+              "right-1",
+              "right-2"
+            ]
+          },
+          {
+            "facing": "left",
+            "frames": [
+              "left-0",
+              "left-1"
+            ]
+          },
+          {
+            "facing": "up",
+            "frames": [
+              "up-0",
+              "up-1"
+            ]
+          },
+          {
+            "facing": "down",
+            "frames": [
+              "down-0",
+              "down-1"
+            ]
+          }
+        ],
+        "overflow": false,
+        "errors": [],
+        "wallet": {
+          "acceptedStake": 0.1,
+          "uniqueOperationIds": 1,
+          "requests": 2,
+          "betEntries": 1,
+          "lostResponseRecoveredAfterCloseReopen": true,
+          "productionModuleBytesVerified": 4
+        }
+      },
+      {
+        "appearance": "avatar",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "online": true,
+        "chatVisible": true,
+        "directions": [
+          {
+            "facing": "right",
+            "frames": [
+              "right-1",
+              "right-2"
+            ]
+          },
+          {
+            "facing": "left",
+            "frames": [
+              "left-0",
+              "left-1"
+            ]
+          },
+          {
+            "facing": "up",
+            "frames": [
+              "up-0",
+              "up-1"
+            ]
+          },
+          {
+            "facing": "down",
+            "frames": [
+              "down-0",
+              "down-1"
+            ]
+          }
+        ],
+        "overflow": false,
+        "errors": [],
+        "wallet": {
+          "acceptedStake": 0.1,
+          "uniqueOperationIds": 1,
+          "requests": 2,
+          "betEntries": 1,
+          "lostResponseRecoveredAfterCloseReopen": true,
+          "productionModuleBytesVerified": 4
+        }
+      }
+    ],
+    "physicalMobileDeviceTested": false,
+    "productionTestAccounts": 0,
+    "productionTestWagers": 0,
+    "productionTestMessages": 0,
+    "linuxInstallerChecksReportedByAudit": {
+      "reportedPassed": 29,
+      "sourceCommit": "b5eba82a6b0aa91b4548abc7c9385c9d1b798f60",
+      "environment": "Linux",
+      "evidence": "Reported by the deployment audit chat; not rerun by this chat."
+    }
+  },
+  "lastPreparedArtifact": {
+    "sourceCommit": "7995cc8756b9a9803e13c26660cb1b4ae4e1044c",
+    "baseCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
+    "files": 1458,
+    "buildPassed": true,
+    "buildDurationMs": 778056,
+    "releaseVerifyGithubPassed": true,
+    "rtpProfilesVerified": 38,
+    "stakePoliciesVerified": 20,
+    "stakeAdmissionsVerified": 20,
+    "unchangedLegacyNotQualified": 114,
+    "limit": "These checks bind the previous prepared artifact and production base. They are not evidence for a later production composition or a completed V3 publication. A changed host base requires reconciliation and a newly prepared artifact."
+  },
+  "failedV2": {
+    "release": "front-back-walk-20261104-v2",
+    "candidateImage": "sha256:a72b90a198d905c9fbb87157fcd7915e428ade7a89c704fdf823c1f47e1bde05",
+    "reason": "The inherited health startup deadline expired.",
+    "automaticRollbackObserved": true,
+    "rollbackByteVerificationPassed": true,
+    "databaseRestored": false,
+    "externalModulesPreserved": true,
+    "publishedSuccessfully": false,
+    "limit": "Observed before automatic retention retired the failed stage. Do not assume its server paths remain."
+  },
+  "publicationHold": {
+    "sourceThreadId": "01a1a777-3a8b-7d22-9add-748e77317cdb",
+    "directHumanTurnId": "01a1a799-79c2-7652-a0a9-b096cf2d2a32",
+    "directHumanAuthorizationVerified": true,
+    "instruction": "Continue preparation and tests. Do not begin new publications or reserve production. Finish an already started installation or maintenance normally.",
+    "ownActivePublishers": 0,
+    "ownActiveWaiters": 0,
+    "nextPublicationRequiresSeparateUserAgreement": false,
+    "active": false,
+    "liftedByDirectHumanTurnId": "01a1a7ad-9c2d-7950-b21b-1f66f961e20e",
+    "resumedInstruction": "Continue the previously agreed publication using preparation without shared locks and a ready guarded installation."
+  },
+  "pending": [
+    "After the already started concurrent installation finishes, read its verified full production inventory and matching host origins without reserving production.",
+    "Preserve concurrent changes and update the V3 scope and projection if the production base changed. Keep the renderer unchanged unless source reconciliation requires changes.",
+    "Prepare and verify the final application artifact without publication locks. Reuse it if only installer tooling changes; use the separate installer commit and new verified installation metadata.",
+    "After the user lifts the publication hold, explicitly run the ready guarded release. Take all locks nonblockingly, fail with code 75 on contention, and retain the package. Do not start a background retry queue.",
+    "Under the installer locks, recheck the full actual production base and fresh financial gate. After installation, verify public bytes and behavior, push the deployment record, and complete required retention."
+  ],
+  "limitations": {
+    "sharedBrainUnavailable": true,
+    "directSourceInspectionUsed": true,
+    "finalProductionVerificationCompleted": false
+  },
+  "cleanup": {
+    "status": "blocked_by_automatic_approval_review",
+    "reason": "blocked by policy",
+    "commandExecuted": false,
+    "removedBytes": 0,
+    "removedFolders": [],
+    "attemptedTargets": [
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\front-back-walk\\payload",
+        "bytes": 7373509,
+        "files": 18,
+        "directory": true
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\front-back-walk\\payload-final",
+        "bytes": 7384100,
+        "files": 18,
+        "directory": true
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\front-back-walk\\payload-reserved",
+        "bytes": 7461977,
+        "files": 19,
+        "directory": true
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\front-back-walk\\payload.tgz",
+        "bytes": 2058516,
+        "files": 1,
+        "directory": false
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\front-back-walk\\payload-final.tgz",
+        "bytes": 2060552,
+        "files": 1,
+        "directory": false
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\front-back-walk\\payload-reserved.tgz",
+        "bytes": 2060438,
+        "files": 1,
+        "directory": false
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\front-back-walk\\comparison.gif",
+        "bytes": 306573,
+        "files": 1,
+        "directory": false
+      }
+    ],
+    "attemptedLogicalBytes": 28705665,
+    "freeBeforeBytes": 305602842624,
+    "freeAfterBytes": 305601236992,
+    "physicalSpaceReclaimedClaimed": false,
+    "sourcePreservedInMain": "769f83e77b792d02fc86e6e716008076fd3821d5",
+    "retainedForPendingTask": [
+      "normal build outputs and manifests",
+      "final previews",
+      "verification scripts and reports"
+    ],
+    "retainedAfterRejection": "All attempted targets remain. Do not retry these paths or previously rejected natural-side-walk cleanup by another method."
+  },
+  "currentPreparation": {
+    "productionRelease": "player-recovery-20261104-v2",
+    "publishedSourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+    "publishedImage": "sha256:8697bf1f68ebef8c53506839eec9839f6192275e64ade689a786a173a21957f3",
+    "inputStatus": "Reading the completed release inventory and host origins, then checking the container identity. These preparation inputs do not replace the fresh guarded production baseline check.",
+    "publicationLocksHeld": false,
+    "installOrder": "Player recovery, Flag, completed maintenance, then this renderer release."
+  }
+}
