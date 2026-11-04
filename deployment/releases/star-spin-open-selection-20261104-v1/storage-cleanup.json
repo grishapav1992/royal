@@ -1,0 +1,68 @@
+{
+  "status": "planned",
+  "owner": "codex/star-spin-collection-clarity",
+  "preservationCommits": [
+    "320d60725984c5cbd46829e9dc545f59cf9cd162",
+    "a905506b1a8f7dd26637b58e3f3cedfc470cc511",
+    "9349227bb45d5fb29e128dab2ca26815032b9235"
+  ],
+  "freeBeforeBytes": 305727021056,
+  "targets": [
+    {
+      "path": "artifacts/work/star-spin-open-selection-20261104",
+      "files": 275,
+      "bytes": 167172483
+    },
+    {
+      "path": "module-dist/studio-wild-nudge/versions/1.5.2-4fbd0ec2cd75",
+      "files": 23,
+      "bytes": 12547845
+    },
+    {
+      "path": "module-dist/studio-wild-nudge/versions/1.6.0-7befe683d686",
+      "files": 23,
+      "bytes": 12536448
+    },
+    {
+      "path": "module-dist/studio-wild-nudge/versions/1.6.0-fc64a94c4137",
+      "files": 23,
+      "bytes": 12536538
+    },
+    {
+      "path": "module-dist/studio-wild-nudge/versions/1.6.0-f5f4b043e981",
+      "files": 23,
+      "bytes": 12536551
+    },
+    {
+      "path": "module-dist/studio-wild-nudge/versions/1.6.0-17ba3cca5445",
+      "files": 23,
+      "bytes": 12542496
+    }
+  ],
+  "totalPlannedBytes": 229872361,
+  "activeLocalPackagePreserved": "1.6.0-7c4da60c30bd",
+  "localServersOn5234And5237": 0,
+  "previouslyRejectedTargetsExcluded": true,
+  "serverPending": {
+    "release": "star-spin-open-selection-20261104-v1",
+    "transportArchives": [
+      {
+        "name": "payload.tgz",
+        "bytes": 10861285
+      },
+      {
+        "name": "payload-v2.tgz",
+        "bytes": 10862297
+      },
+      {
+        "name": "payload-v3.tgz",
+        "bytes": 11916049
+      },
+      {
+        "name": "payload-v4.tgz",
+        "bytes": 11916091
+      }
+    ],
+    "cleanupCondition": "After shared publication reservation ends and a completed maintenance run verifies the current application and rollback. Do not interrupt player-recovery-20261104-v2."
+  }
+}
