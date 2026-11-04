@@ -110,10 +110,10 @@
       "sha256": "a2aa480fb575113bcfdc41f519f2f418bf34105c7d18471bf35ce4eb96258415"
     },
     "server/LobbyRoom.ts": {
-      "commit": "9c093138239595b98b5174383bc0896fc37845c0",
+      "commit": "ae0a5d0c020ecf92c39738aba2a2653c30393786",
       "path": "server/LobbyRoom.ts",
-      "baseSha256": "b1fd6ed479c33339ac5d82fab9cd638a15d421920185c9691eda31c8a1a62ada",
-      "sha256": "b1fd6ed479c33339ac5d82fab9cd638a15d421920185c9691eda31c8a1a62ada"
+      "baseSha256": "1db6d4deb0e1f3601916d21ca37719400cf7710c4179b86db1e67e2afd796b7f",
+      "sha256": "1db6d4deb0e1f3601916d21ca37719400cf7710c4179b86db1e67e2afd796b7f"
     },
     "server/authRoutes.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",

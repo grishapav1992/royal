@@ -2,7 +2,7 @@
   "productionCommit": "39b34944ee46074517c59065bdcf7454789875a4",
   "featureCommit": "9c093138239595b98b5174383bc0896fc37845c0",
   "expectedSources": {
-    "server/LobbyRoom.ts": "b1fd6ed479c33339ac5d82fab9cd638a15d421920185c9691eda31c8a1a62ada",
+    "server/LobbyRoom.ts": "1db6d4deb0e1f3601916d21ca37719400cf7710c4179b86db1e67e2afd796b7f",
     "server/bartender.ts": "d669db795f60d965c0ca5617b54661fc15407a83800fd47a246827317920d63f",
     "src/game/Bar.ts": "39abaf543b87794694f6e2d1c5c4e3f9e0b26c99055765b9c505d20628f42153",
     "src/game/RoomScene.ts": "2d8d40c68747c5c32e0aa0dacf6f9cf5a8c9121743fa7e6779957d1fd8e00521",
@@ -44,5 +44,6 @@
     "src/i18n/en.ts": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68"
   },
   "addedGames": [],
-  "restoredGames": []
+  "restoredGames": [],
+  "confirmationCommit": "ae0a5d0c020ecf92c39738aba2a2653c30393786"
 }
