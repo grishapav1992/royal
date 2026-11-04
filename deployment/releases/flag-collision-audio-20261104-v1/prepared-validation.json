@@ -1,0 +1,88 @@
+{
+  "sourceCommit": "88a99af8c49ac43530c2fb9ae93a8abb4576c60d",
+  "buildBaseCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
+  "package": "2.1.2-1d07daea0fa9",
+  "manifestSha256": "36f6fb415cfadba002e1e33b9363d3b135b0a4c8a714e47d2d5cd5daaeb17854",
+  "tests": {
+    "audioAndPhysics": 16,
+    "commonWallet": 19,
+    "publisherLinux": 8,
+    "host": {
+      "cases": [
+        {
+          "desktop": {
+            "width": 1440,
+            "height": 1000
+          },
+          "audio": {
+            "ready": true,
+            "audible": true,
+            "voices": 1,
+            "maxVoices": 3,
+            "scheduled": {
+              "select": 1,
+              "start": 1,
+              "collision": 1
+            },
+            "outputDelayMs": 50.986000002233745,
+            "maxScheduleErrorMs": 102.41999999999862,
+            "timing": "output-timestamp",
+            "timeline": true
+          },
+          "skipVoices": 0
+        },
+        {
+          "mobile": {
+            "width": 390,
+            "height": 844
+          },
+          "betEntries": 2,
+          "reopenDebits": 0,
+          "sameUuidRecovered": true
+        }
+      ],
+      "productionBalancesChanged": false,
+      "passed": true,
+      "errors": []
+    },
+    "generalPublicationLocksLinux": 13
+  },
+  "codeComparison": {
+    "beforeSha256": "17b4aaa7ac6211f3b425075aa648e86048833623f314495b072abaff17c140fd",
+    "afterSha256": "3da5681044cdad06c0e92003477475fec5d110dd0d204d676bd5efcae95eb0a1",
+    "oldCue": "case\"collision\":this.pop(185+t.variant*13,95+t.variant*7,.06,.065*n,e,t.pan);break;case\"wall\":this.pop(310+t.variant*17,145+t.variant*9,.05,.052*n,e,t.pan);break;case\"eliminate\":this.air(e,t.pan,.",
+    "newCue": "case\"collision\":this.pop(185+t.variant*13,95+t.variant*7,.06,.16*n,e,t.pan);break;case\"wall\":this.pop(310+t.variant*17,145+t.variant*9,.05,.052*n,e,t.pan);break;case\"eliminate\":this.air(e,t.pan,.1",
+    "identicalApartFromContactGain": true
+  },
+  "testScriptSha256": "bedaf1e8f553df40a3d9f7251732d597153653ad79aa6eb563eac0a2bf30acd7",
+  "testScriptCanonicalSha256": "bedaf1e8f553df40a3d9f7251732d597153653ad79aa6eb563eac0a2bf30acd7",
+  "boundHostFiles": {
+    "dist/index.html": "e3e06fe0da86c24e0bb652cb29a7fcb0bc8583b8ba23c00a245d5d0615989a91",
+    "dist/assets/index-BZyJIyY8.js": "6b73b2f0657f65d2d4278e22216152ed06430ce69c4c794a1f2d0e1a53c7ee9a",
+    "dist/assets/index-V4GHKrLV.css": "e21ee49745a1903e8fe694615407d4d07053f0e5254c935aef70f5b5166c10e2",
+    "dist-server/index.js": "28cc991f9dd63ad6a9b0c900950a2344ab8211bea171ecee1998bd0dde7f419c"
+  },
+  "limits": [
+    "The headless scheduling diagnostic is not an acoustic synchronization measurement; physical speakers, headphones and Bluetooth were not assessed.",
+    "The real-host contact check uses the supported skip action after a physical contact, then verifies lost-response replay and close/reopen."
+  ],
+  "productionPublished": true,
+  "publicationStatus": "published_maintenance_pending",
+  "pauseEvidence": {
+    "threadId": "01a1a777-3a8b-7d22-9add-748e77317cdb",
+    "title": "Найти причину долгой установки",
+    "instruction": "Continue preparation and tests; do not start new publications or reserve production until separately agreed.",
+    "userAnswer": "Да, передай чатам"
+  },
+  "deliveryArchive": {
+    "bytes": 112665,
+    "sha256": "4ddb04f83d79ce657ab41d79ec2a99340782e7fe4fb513737ca174832a0f16d3"
+  },
+  "currentMainHasLaterFlagBattleUIChanges": true,
+  "installerNeedsNewLockProtocolAndSeparateGitProvenance": false,
+  "resumeEvidence": {
+    "threadId": "01a1a777-3a8b-7d22-9add-748e77317cdb",
+    "userInstruction": "Теперь сними паузу и передай чатам, чтобы продолжали выкладку по новому процессу."
+  },
+  "installerProtocol": "nonblocking_all_locks_partial_close_exit75"
+}

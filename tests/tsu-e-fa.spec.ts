@@ -29,23 +29,26 @@ async function players(browser:Browser,audioTrace=false){
   for(const p of[a,b]){p.on('pageerror',e=>errors.push(e.message));await p.context().route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.continue():route.abort());}
   const seed=await browser.newContext(),login=await seed.request.post(base+'/api/auth/login',{data:{email:`tsu-room-${crypto.randomUUID()}@example.test`,password:'test-password!'}});
   await seed.request.post(base+'/api/auth/character',{data:{skin:0}});
-  const room=await new Client(base,{headers:{Cookie:login.headers()['set-cookie'].split(';')[0]}}).create('lobby');room.onMessage('*',()=>{});
+  const room=await new Client(process.env.PVP_TEST_API_URL||base,{headers:{Cookie:login.headers()['set-cookie'].split(';')[0]}}).create('lobby');room.onMessage('*',()=>{});
   try{for(const[i,p]of[a,b].entries()){
     expect((await p.context().request.post(base+'/api/auth/login',{data:{email:`pvp-local-${i?'b':'a'}@example.test`,password:'test-password!'}})).ok()).toBe(true);
     await p.goto(base+'/?room='+room.roomId);await connected(p);
   }}catch(e){await Promise.all(contexts.map(c=>c.close()));throw e;}finally{await room.leave();await seed.close();}
   return{a,b,errors,close:()=>Promise.all(contexts.map(c=>c.close()))};
 }
-async function offer(p:Page,key=false){
+async function offer(p:Page,key=false,submit=true,stake='100000'){
   await expect.poll(()=>p.evaluate(()=>(window as any).royalDemo.getState().remotePositions.length)).toBe(1);
   if(key)await p.keyboard.press('e');else{
     const remote=await p.evaluate(()=>(window as any).royalDemo.getState().remotePositions[0]),view=await p.evaluate(()=>(window as any).royalDemo.getState().view),box=(await p.locator('#game canvas').boundingBox())!;
     await p.mouse.click(box.x+(remote.x-view.x)*view.zoom*box.width/view.width,box.y+(remote.y-24-view.y)*view.zoom*box.height/view.height,{button:'right'});
   }
   await expect(p.locator('#player-actions')).toBeVisible();await p.locator('[data-player-invite]').click();
+  await expect(p.locator('[data-create]')).toBeVisible();
+  await p.locator(`[data-stake-preset="${stake}"]`).click();
+  if(submit)await p.locator('[data-create-button]').click();
 }
-async function accept(a:Page,b:Page,key=false){await offer(a,key);await expect(b.locator('#pvp-incoming')).toBeVisible();await b.locator('#pvp-incoming [data-accept]').click();for(const p of[a,b])await expect(p.locator('.td-terms')).toBeVisible({timeout:25000});}
-async function ready(a:Page,b:Page){await a.locator('[data-ready]').click();await expect(a.locator('[data-ready]')).toHaveText('Снять готовность');await expect(a.locator('.td-choices')).toHaveCount(0);await b.locator('[data-ready]').click();for(const p of[a,b])await expect(sign(p)).toBeEnabled();}
+async function accept(a:Page,b:Page,key=false){await offer(a,key);await expect(b.locator('#pvp-incoming')).toBeVisible();await b.locator('#pvp-incoming [data-accept]').click();for(const p of[a,b])await expect(sign(p)).toBeEnabled({timeout:25000});}
+async function ready(a:Page,b:Page){for(const p of[a,b]){await expect(p.locator('.td-terms')).toHaveCount(0);await expect(sign(p)).toBeEnabled({timeout:25000});}}
 async function winRound(a:Page,b:Page,wins:number){await expect(sign(a)).toBeEnabled();await sign(a).click();await expect(sign(b,'rock')).toBeEnabled();await sign(b,'rock').click();await expect(a.locator('.td-stage')).toHaveAttribute('data-stage','countdown');await expect(a.locator('.td-score')).toHaveText(`${wins-1} : 0`);await expect(a.locator('.td-score')).toHaveText(`${wins} : 0`,{timeout:10000});}
 async function mobileChat(p:Page){
   const dialog=p.locator('#pvp-dialog'),chat=dialog.locator('.game-chat-dock');
@@ -56,25 +59,58 @@ async function mobileChat(p:Page){
   await dialog.locator('.game-chat-toggle').click();await expect(chat).toBeVisible();await expect(chat.locator('.chat-heading')).toContainText('Общий чат');
   await chat.locator('.game-chat-close').click();await expect(chat).toBeHidden();
 }
+async function compactOffer(p:Page){
+  const dialog=p.locator('#pvp-dialog');
+  await expect(dialog).toHaveAttribute('data-game-chat-suspended','');
+  await expect(dialog.locator('.game-chat-toggle')).toBeHidden();
+  await expect(dialog.locator('#club-chat-dock')).toHaveCount(0);
+  await expect(p.locator('#club-chat-dock')).toBeAttached();
+  const box=(await dialog.boundingBox())!,viewport=p.viewportSize()!;
+  expect(box.width).toBeLessThanOrEqual(520);expect(box.height).toBeLessThan(viewport.height-20);
+  expect(box.x).toBeGreaterThanOrEqual(10);expect(box.y).toBeGreaterThanOrEqual(10);
+  expect(Math.abs(box.x+box.width/2-viewport.width/2)).toBeLessThan(2);
+  expect(Math.abs(box.y+box.height/2-viewport.height/2)).toBeLessThan(2);
+}
 
-test('right-click and E open a consent invitation; decline, revised terms and readiness withdrawal never charge',async({browser})=>{
+test('player menu opens one priced offer with a fixed recipient; waiting, decline and mobile chat stay simple',async({browser})=>{
   const c=await players(browser),{a,b}=c;try{
-    await offer(a);await expect(b.locator('#pvp-incoming')).toContainText('Деньги списываются только');await b.locator('#pvp-incoming [data-decline]').click();await expect(a.locator('[data-active]')).toContainText('Деньги не списаны');await expect(a.locator('[data-balance]')).toContainText('200 USDT');await a.locator('#pvp-dialog [data-close]').click();
-    await accept(a,b,true);expect(await balance(a)).toBe(20000);expect(await balance(b)).toBe(20000);
-    await expect(a.locator('[data-stake]')).toHaveValue('100000');await expect(a.locator('[name=mode]')).toHaveCount(0);await expect(a.locator('.td-active-hand')).toHaveCount(2);
-    await a.locator('[data-ready]').click();await expect(b.locator('[data-peer-ready]')).toContainText('Соперник готов');await b.locator('[data-stake]').selectOption('200000');await expect(a.locator('[data-ready]')).toHaveText('Готово');await expect(a.locator('[data-stake]')).toHaveValue('200000');
-    await a.locator('[data-ready]').click();await a.locator('[data-ready]').click();await expect(a.locator('[data-ready]')).toHaveText('Готово');expect(await balance(a)).toBe(20000);
+    await offer(a,false,false,'200000');await expect(b.locator('#pvp-incoming')).not.toBeVisible();
+    await expect(a.locator('#pvp-title')).toHaveText('Предложить игру');await expect(a.locator('[data-recipient]')).toContainText('Борис');await expect(a.locator('[name=target]')).toBeHidden();
+    await a.locator('[name=game]').selectOption('chess');await expect(a.locator('[data-duel-stakes]')).toBeHidden();await expect(a.locator('#pvp-title')).toHaveText('Предложить игру');
+    await a.locator('[name=game]').selectOption('tsu-e-fa');await expect(a.locator('[data-stake-preset="200000"]')).toHaveAttribute('aria-pressed','true');
     await a.setViewportSize({width:1280,height:720});
-    for(const control of ['[data-ready]','[data-exit]']){const box=(await a.locator(control).boundingBox())!;expect(box.y).toBeGreaterThanOrEqual(0);expect(box.y+box.height).toBeLessThanOrEqual(720);}
-    await a.screenshot({path:'artifacts/work/tsu-refined-short-desktop.png'});
-    await a.setViewportSize({width:1366,height:900});
-    await a.screenshot({path:'artifacts/work/tsu-v3-terms.png'});await a.setViewportSize({width:390,height:844});await mobileChat(a);const readyBox=(await a.locator('[data-ready]').boundingBox())!;expect(readyBox.y+readyBox.height).toBeLessThanOrEqual(844);await expect(a.locator('[data-sound]')).toBeVisible();await a.screenshot({path:'artifacts/work/tsu-v3-terms-mobile.png'});await b.locator('[data-exit]').click();await expect(a.locator('.td-status')).toContainText('Деньги не списаны');expect(await balance(b)).toBe(20000);expect(c.errors).toEqual([]);
+    await compactOffer(a);
+    await a.screenshot({path:'artifacts/work/pvp-invite-simplify/offer-desktop.png'});
+    await a.setViewportSize({width:390,height:844});await compactOffer(a);
+    const sendBox=(await a.locator('[data-create-button]').boundingBox())!;expect(sendBox.y+sendBox.height).toBeLessThanOrEqual(844);
+    await a.screenshot({path:'artifacts/work/pvp-invite-simplify/offer-mobile.png'});
+    await a.locator('[data-create-button]').click();await expect(a.locator('[data-active]')).toContainText('Ждём ответа');await expect(a.locator('[data-create]')).toBeHidden();await expect(a.locator('[data-invites]')).toBeHidden();
+    await compactOffer(a);
+    await expect(b.locator('#pvp-incoming')).toContainText('0,2 USDT');await expect(b.locator('#pvp-incoming [data-accept]')).toHaveText('Играть за 0,2 USDT');
+    await a.screenshot({path:'artifacts/work/pvp-invite-simplify/waiting-mobile.png'});
+    expect(await balance(a)).toBe(20000);await b.locator('#pvp-incoming [data-decline]').click();await expect(a.locator('[data-active]')).toContainText('Деньги не списаны');expect(await balance(a)).toBe(20000);
+    await a.locator('#pvp-dialog [data-close]').click();await offer(a,true);await expect(b.locator('#pvp-incoming')).toBeVisible();
+    await a.locator('[data-pvp-action="cancel"]').click();await expect(b.locator('#pvp-incoming')).toBeHidden();expect(await balance(a)).toBe(20000);expect(c.errors).toEqual([]);
+    await a.keyboard.press('Escape');await expect(a.locator('#pvp-dialog')).toBeHidden();
+  }finally{await c.close();}
+});
+
+test('another game uses the same fixed recipient and its own name in the outgoing and incoming offer',async({browser})=>{
+  const c=await players(browser),{a,b}=c;try{
+    await offer(a,false,false);const before=await balance(a);
+    await a.locator('[name=game]').selectOption('chess');await a.locator('[name=stake]').fill('1');
+    await expect(a.locator('[name=target]')).toBeHidden();await a.locator('[data-create-button]').click();
+    await expect(a.locator('[data-active]')).toContainText('Шахматы');await expect(a.locator('[data-create]')).toBeHidden();
+    await expect(b.locator('#pvp-incoming-title')).toHaveText('Шахматы');await expect(b.locator('#pvp-incoming')).toContainText('1 USDT');
+    expect(await balance(a)).toBe(before-100);await b.locator('#pvp-incoming [data-decline]').click();
+    await expect(a.locator('[data-active]')).toContainText('Средства возвращены');expect(await balance(a)).toBe(before);expect(c.errors).toEqual([]);
   }finally{await c.close();}
 });
 
 test('ten-cent best-of-three match uses secret choices, synchronized reveal, two wins, exact single credit, mobile chat and recovery',async({browser})=>{
   const c=await players(browser),{a,b}=c;try{
-    await accept(a,b);const beforeA=await balance(a),beforeB=await balance(b);await ready(a,b);expect(await balance(a)).toBe(beforeA-10);expect(await balance(b)).toBe(beforeB-10);
+    await offer(a,false,false);const beforeA=await balance(a);await a.locator('[data-create-button]').click();await expect(b.locator('#pvp-incoming')).toBeVisible();await b.locator('#pvp-incoming [data-accept]').click();await ready(a,b);const beforeB=(await balance(b))+10;expect(await balance(a)).toBe(beforeA-10);
+    for(const p of[a,b]){await expect(p.locator('#pvp-dialog')).not.toHaveAttribute('data-game-chat-suspended');await expect(p.locator('#pvp-dialog #club-chat-dock')).toBeVisible();}
     await sign(a).click();await expect(a.locator('.td-status')).toContainText('Твой знак закрыт');await expect(b.locator('.td-stage')).toHaveAttribute('data-stage','select');await expect(b.locator('.td-score')).toHaveText('0 : 0');
     await a.reload();await connected(a);await expect(a.locator('#pvp-dialog')).toBeVisible();await expect(sign(a)).toHaveAttribute('aria-pressed','true');await expect(sign(b,'rock')).toBeEnabled();await sign(b,'rock').click();await expect(a.locator('.td-stage')).toHaveAttribute('data-stage','countdown');await expect(a.locator('.td-score')).toHaveText('1 : 0',{timeout:10000});
     await a.screenshot({path:'artifacts/work/tsu-v3-desktop.png'});await a.setViewportSize({width:390,height:844});
@@ -87,7 +123,7 @@ test('ten-cent best-of-three match uses secret choices, synchronized reveal, two
 
 test('real lost connection freezes selection and countdown; reconnect resumes the locked choice and surrender confirms once',async({browser})=>{
   const c=await players(browser),b=c.b;let a=c.a;try{
-    await accept(a,b);const beforeA=await balance(a),beforeB=await balance(b);await ready(a,b);await sign(a).click();await expect(sign(a)).toHaveAttribute('aria-pressed','true');const url=a.url();
+    await accept(a,b);const beforeA=(await balance(a))+10,beforeB=(await balance(b))+10;await ready(a,b);await sign(a).click();await expect(sign(a)).toHaveAttribute('aria-pressed','true');const url=a.url();
     await a.context().setOffline(true);await a.reload().catch(()=>{});await expect(b.locator('.td-pause')).toBeVisible({timeout:15000});await expect(sign(b)).toBeDisabled();
     await a.context().setOffline(false);const recovered=await a.context().newPage();recovered.on('pageerror',e=>c.errors.push(e.message));await a.close();a=recovered;await a.goto(base+'/');await connected(a);await expect(sign(a)).toHaveAttribute('aria-pressed','true');await expect(sign(b,'rock')).toBeEnabled();await sign(b,'rock').click();await expect(b.locator('.td-stage')).toHaveAttribute('data-stage','countdown');
     await a.context().setOffline(true);await a.reload().catch(()=>{});await expect(b.locator('.td-pause')).toBeVisible({timeout:15000});await b.waitForTimeout(4500);await expect(b.locator('.td-score')).toHaveText('0 : 0');

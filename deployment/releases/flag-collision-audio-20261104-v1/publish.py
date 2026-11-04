@@ -1,6 +1,7 @@
 """Publish only the Flag Battle contact level with a complete preserved-host inventory."""
 from pathlib import Path
 from types import SimpleNamespace
+from contextlib import ExitStack,contextmanager
 import fcntl,hashlib,importlib.util,json,os,re,shutil,subprocess,sys,tarfile
 NAME='flag-collision-audio-20261104-v1';GAME='flag-battle'
 ROOT=Path('/opt/royal-releases')/NAME;LIVE=Path('/opt/royal');MODULES=Path('/opt/royal-game-modules');STATE=Path('/opt/royal-game-modules-state');BACKUP=Path('/opt/royal-backups')/NAME
@@ -8,7 +9,20 @@ BASE_HELPER=Path(os.environ.get('ROYAL_CONTACT_SNAPSHOT_READER','/opt/royal-rele
 SOURCES=['games/flag-battle/'+n for n in ['FlagAudio.ts','package.json','tsconfig.json']]
 CONTRACT={'apiVersion':1,'rulesVersion':2,'progressVersion':1};MIN_FREE=5*1024**3
 IGNORED={'at','availableBytes'}
+LOCKS=[Path('/opt/royal-releases/themed-publish.lock'),LIVE/'.client-presentation-deploy.lock',STATE/'module.lock']
 sys.dont_write_bytecode=True
+
+class PublicationBusy(RuntimeError):pass
+
+@contextmanager
+def publication_locks():
+ with ExitStack() as stack:
+  for path in LOCKS:
+   require(not Path(path).is_symlink(),'Deployment lock symlink rejected')
+   handle=stack.enter_context(open(path,'a'))
+   try:fcntl.flock(handle,fcntl.LOCK_EX|fcntl.LOCK_NB)
+   except BlockingIOError as error:raise PublicationBusy('Publication busy; prepared package preserved; retry explicitly later') from error
+  yield
 def require(value,message):
  if not value:raise RuntimeError(message)
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -50,14 +64,18 @@ def atomic(origin,target):
 def main():
  require(Path(__file__).resolve()==ROOT/'publish.py','Wrong publication root')
  for path in [ROOT,LIVE,MODULES,STATE]:require(path.is_dir() and not any(p.is_symlink() for p in [path,*path.parents]),'Unsafe root')
- locks=[]
- for path in [Path('/opt/royal-releases/themed-publish.lock'),LIVE/'.client-presentation-deploy.lock',STATE/'module.lock']:
-  require(not path.is_symlink(),'Unsafe lock');handle=path.open('a');fcntl.flock(handle,fcntl.LOCK_EX|fcntl.LOCK_NB);locks.append(handle)
  if sys.argv[1:]==['snapshot']:
   require(not (ROOT/'before.json').exists(),'Baseline already saved');before=snapshot();save('before.json',before)
   print(json.dumps({'sourceCommit':before['sourceCommit'],'sourceFiles':len(before['source']),'runtimeFiles':len(before['program']),'services':len(before['services']),'freeBytes':before['availableBytes']}));return
+ with publication_locks():publish_locked()
+
+def publish_locked():
  require(not sys.argv[1:] and not (ROOT/'published.json').exists() and not BACKUP.exists(),'Publication already attempted or unexpected command')
  before=read(ROOT/'before.json');release=read(ROOT/'release-manifest.json');receipt=read(ROOT/'release-github.json');op=read(ROOT/'operator.json');validate_scope(release,before,op)
+ installer=read(ROOT/'installer-github.json')
+ require(sha(ROOT/'installer-github.json')==op['installerReceiptSha256'],'Installer receipt changed')
+ require(installer['sourceCommit']==op['installerSourceCommit'] and installer['includedInMain'] is True,'Unverified installer source')
+ require(installer['files']['deployment/releases/'+NAME+'/publish.py']==sha(ROOT/'publish.py'),'Installer differs from verified Git source')
  for path,key in [(ROOT/'publish.py','wrapperSha256'),(ROOT/'publisher.py','publisherSha256'),(ROOT/'release-manifest.json','releaseManifestSha256'),(ROOT/'release-github.json','receiptSha256')]:
   require(sha(path)==op[key],'Publication input changed')
  for name,digest in op['helpers'].items():require(sha(Path(name))==digest,'Unreviewed helper')
@@ -95,5 +113,9 @@ def main():
  finally:os.umask(mask)
  after=snapshot();save('after.json',after);validate_after(before,after,op['source'],files,op['pointerSha256'],version)
  require(shutil.disk_usage(LIVE).free>MIN_FREE,'Five GiB reserve crossed')
- record={'published':True,'release':NAME,'sourceCommit':release['sourceCommit'],'baseCommit':release['baseCommit'],'module':result,'backup':backup,'freeBefore':current['availableBytes'],'freeAfter':after['availableBytes'],'hostRestarted':False,'databaseTouched':False,'otherModulesPreserved':True,'sourceFilesPreserved':len(before['source'])-len(SOURCES),'runtimeFilesPreserved':len(before['program']),'servicesPreserved':len(before['services'])};save('published.json',record);print(json.dumps(record))
-if __name__=='__main__':main()
+ record={'published':True,'release':NAME,'sourceCommit':release['sourceCommit'],'baseCommit':before['sourceCommit'],'buildBaseCommit':release['baseCommit'],'installerSourceCommit':op['installerSourceCommit'],'module':result,'backup':backup,'freeBefore':current['availableBytes'],'freeAfter':after['availableBytes'],'hostRestarted':False,'databaseTouched':False,'otherModulesPreserved':True,'sourceFilesPreserved':len(before['source'])-len(SOURCES),'runtimeFilesPreserved':len(before['program']),'servicesPreserved':len(before['services'])};save('published.json',record);print(json.dumps(record))
+def cli():
+ try:main();return 0
+ except PublicationBusy as error:
+  print(str(error),file=sys.stderr);return 75
+if __name__=='__main__':sys.exit(cli())
