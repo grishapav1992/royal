@@ -1,5 +1,5 @@
 {
-  "status": "published_verified_maintenance_pending_external_reservation",
+  "status": "published_verified_postpublication_maintenance_completed",
   "applicationSourceCommit": "320d60725984c5cbd46829e9dc545f59cf9cd162",
   "installerSourceCommit": "a905506b1a8f7dd26637b58e3f3cedfc470cc511",
   "featureSourceCommit": "d666a6aa11b47e3a4a3d474e38ae0f7d448dddb4",
@@ -410,16 +410,72 @@
     "productionChatMessages": 0
   },
   "maintenance": {
-    "status": "pending_after_reviewed_concurrent_recovery",
-    "initialFailure": "Prepared image differs",
-    "concurrentRecovery": {
-      "release": "manual-stakes-20261104-v1",
-      "sourceCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
-      "image": "sha256:4e7d6f2257b33fabc3227402c45692bc175ba064e61a445fadcc18a97fda113b",
-      "completed": true
+    "status": "completed",
+    "startedAt": 1793811578.10196,
+    "finishedAt": 1793812606.030837,
+    "durationSeconds": 1027.93,
+    "release": "manual-stakes-20261104-v1",
+    "sourceCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
+    "currentImage": "sha256:4e7d6f2257b33fabc3227402c45692bc175ba064e61a445fadcc18a97fda113b",
+    "rollbackImage": "sha256:aeda26e738681e618e607fa3909ccb62d7e5b20b199b6c63885edc64ded804d3",
+    "plannedEntries": 96,
+    "plannedImages": 3,
+    "preservedFinancialFiles": 135,
+    "removedEntries": 96,
+    "removedImageTags": 7,
+    "dockerRetainedImages": [],
+    "freeBefore": 9879605248,
+    "freeAfter": 9643024384,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:aeda26e738681e618e607fa3909ccb62d7e5b20b199b6c63885edc64ded804d3",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "6252f4af34ef46b56c707cafb7f6569b9a294cc3e7875cc15b0d37804f22ff4b",
+      "files": 8595
     },
-    "pendingReason": "Shared publication locks are reserved by player-recovery-20261104-v2; hourly service retries.",
-    "waitObservation": "A one-hour wait observed no completed run; player-recovery-20261104-v2 still reserves publication locks. The enabled service retries automatically."
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "a385e6b77d769f40a59b0dc4643e606c3aca59d9eb73b2c60e7f2d87a4d1ea37",
+      "receipt": "/var/lib/royal-project-brain/receipts/a385e6b77d769f40a59b0dc4643e606c3aca59d9eb73b2c60e7f2d87a4d1ea37.json",
+      "queued": true
+    },
+    "timer": {
+      "enabled": true,
+      "active": true
+    },
+    "previousAttempt": {
+      "status": "error",
+      "reason": "Recent health-retry.log was inside its 600-second protection interval; the interval elapsed and the unchanged normal service completed. No guard was bypassed."
+    },
+    "sameImageAndSourceAsPublished": true,
+    "scope": "Completed after this publication on the compatible manual-stakes host, with the original Star Spin application verified as the complete rollback.",
+    "previousStarSpinObservation": {
+      "status": "pending_after_reviewed_concurrent_recovery",
+      "initialFailure": "Prepared image differs",
+      "concurrentRecovery": {
+        "release": "manual-stakes-20261104-v1",
+        "sourceCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
+        "image": "sha256:4e7d6f2257b33fabc3227402c45692bc175ba064e61a445fadcc18a97fda113b",
+        "completed": true
+      },
+      "pendingReason": "Shared publication locks are reserved by player-recovery-20261104-v2; hourly service retries.",
+      "waitObservation": "A one-hour wait observed no completed run; player-recovery-20261104-v2 still reserves publication locks. The enabled service retries automatically."
+    },
+    "currentHostFollowup": {
+      "observedAt": "2026-11-04T17:56:51Z",
+      "release": "player-recovery-20261104-v2",
+      "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+      "image": "sha256:8697bf1f68ebef8c53506839eec9839f6192275e64ade689a786a173a21957f3",
+      "health": "healthy",
+      "maintenanceRequested": true,
+      "lastObservedStatus": "retry",
+      "reason": "Deployment lock busy during jackie-motion-20261104-v1. Later SSH observations timed out during banner exchange; no current maintenance completion is claimed."
+    }
   },
   "checkedAt": "2026-11-04T14:55:51.377Z",
   "currentCompatiblePublication": {
@@ -711,5 +767,22 @@
     "removedLogicalBytes": 0,
     "preservedBytes": 229872361,
     "report": "storage-cleanup.json"
+  },
+  "latestCompatibleHostPublication": {
+    "observedAt": "2026-11-04T17:56:51Z",
+    "release": "player-recovery-20261104-v2",
+    "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+    "image": "sha256:8697bf1f68ebef8c53506839eec9839f6192275e64ade689a786a173a21957f3",
+    "health": "healthy",
+    "backendProgramSha256": "cb4a974f09c318a416c89ee06cf6dec658810b322e21356e8c742eb1ecf5b70f",
+    "backendBinding": "release-manifest.backendProjection.output equals build-result.program and running /app/dist-server/index.js; backend input retains the free collection store.",
+    "freeCollectionBackendSource": "7321c7441112d32dc09668f447694d1ae1fb75c1720bbb126f2d42b1d65013fe",
+    "freeCollectionClientSource": "6d62280c9b659beade713bba8ec5528c87438b530a3c906e3a25abc39faff206",
+    "sharedCharacterRegistrySource": "b58b4347a5b447080b07ec30282a369bb36315071533c0fcdc95c58b8f3e48d1",
+    "moduleVersion": "1.6.0-0078da3cc0a2",
+    "moduleManifestSha256": "0890eb324bd27933f75b684b6df5f8309a357bc4ec48f2a29c20a0da6414f1f7",
+    "moduleBuildBinding": "manual-stakes-20261104-v1/release-manifest.json build.moduleProjection.modules.studio-wild-nudge sourceFiles, version and manifest match active immutable module.",
+    "newBrowserOrFinancialVerification": false,
+    "publicFollowup": "followup-public-verification.json"
   }
 }
