@@ -5,7 +5,8 @@ import fcntl,hashlib,importlib.util,json,os,re,shutil,subprocess,sys,tarfile
 NAME='star-spin-character-fit-20261104-v1';GAME='studio-wild-nudge'
 ROOT=Path('/opt/royal-releases')/NAME;LIVE=Path('/opt/royal');MODULES=Path('/opt/royal-game-modules');STATE=Path('/opt/royal-game-modules-state');BACKUP=Path('/opt/royal-backups')/NAME
 BASE_HELPER=Path('/opt/royal-releases/remove-hall-title-20261103-v1/snapshot-base.py')
-SOURCES=["games/wild-nudge/README.md","games/wild-nudge/animation/rigs.json","games/wild-nudge/animation/vespera/blink-reference.png","games/wild-nudge/animation/vespera/eyelids.png","games/wild-nudge/animation/vespera/scene.rml","games/wild-nudge/assets/characters/prompts.json","games/wild-nudge/assets/characters/vespera.png","games/wild-nudge/assets/characters/framing-repair.json","games/wild-nudge/package.json","public/assets/wild-nudge/characters/aeliri-rive.json","public/assets/wild-nudge/characters/lyra-rive.json","public/assets/wild-nudge/characters/nyxara-rive.json","public/assets/wild-nudge/characters/vespera-rive.json","public/assets/wild-nudge/characters/vespera.webp"]
+SOURCES=["games/wild-nudge/README.md","games/wild-nudge/animation/rigs.json","games/wild-nudge/animation/vespera/blink-reference.png","games/wild-nudge/animation/vespera/eyelids.png","games/wild-nudge/animation/vespera/scene.rml","games/wild-nudge/assets/characters/prompts.json","games/wild-nudge/assets/characters/vespera.png","games/wild-nudge/assets/characters/framing-repair.json","games/wild-nudge/package.json"]
+MEDIA_SOURCES=["public/assets/wild-nudge/characters/aeliri-rive.json","public/assets/wild-nudge/characters/lyra-rive.json","public/assets/wild-nudge/characters/nyxara-rive.json","public/assets/wild-nudge/characters/vespera-rive.json","public/assets/wild-nudge/characters/vespera.webp"]
 ADDED={'games/wild-nudge/assets/characters/framing-repair.json'}
 IMAGE_HELPER=Path('/opt/royal-maintenance/bin/retention-runtime.py')
 CONTRACT={'apiVersion':1,'rulesVersion':2,'progressVersion':1};MIN_FREE=5*1024**3
@@ -51,6 +52,7 @@ def validate_scope(release,before,operator):
  require(release['sourceCommit']==operator['sourceCommit'] and release['baseCommit']==before['sourceCommit'],'Wrong source/base commit')
  require(len(release['packages'])==1 and release['packages'][0]['gameId']==GAME,'Foreign package')
  require(set(operator['source'])==set(SOURCES),'Foreign source patch')
+ require(set(operator['media'])==set(MEDIA_SOURCES),'Foreign media source')
  require(release['packages'][0]['version']=='1.5.1-a6511d3f697d','Not the visually verified package')
 def validate_inputs(before,operator,proof,equivalence=None):
  require(proof['version']=='1.5.1-a6511d3f697d' and proof['sourceSha256']=='a6511d3f697d1e0ef55267bdcaf58e96dfe6213d60d99dcf69284fbd22a84ff7','Different UI implementation')
@@ -120,7 +122,7 @@ def main():
  require(metadata['version']==version and metadata['gameId']==GAME and metadata['sourceSha256']==proof['sourceSha256'] and sha(ROOT/'package/manifest.json')==EXPECTED_MANIFEST,'Wrong package identity')
  for name,digest in metadata['files'].items():
   if name.startswith('media/'):
-   source='public/assets/'+name.removeprefix('media/');require(digest==op['source'].get(source,before['source'].get(source)),'Media source differs from the reviewed live/patch bytes: '+source)
+   source='public/assets/'+name.removeprefix('media/');require(digest==op['media'].get(source,before['source'].get(source)),'Media source differs from the reviewed live/patch bytes: '+source)
  files={'manifest.json':sha(ROOT/'package/manifest.json'),**metadata['files']};folder='module-dist/'+GAME+'/versions/'+version+'/'
  require(release['files']=={**{folder+n:h for n,h in files.items()},'module-dist/'+GAME+'/active.json':op['pointerSha256']},'Prepared package differs')
  options=SimpleNamespace(operation='check',package=str(ROOT/'package'),game=GAME,root=str(MODULES),state=str(STATE),expected_sha=before['moduleFiles'][str(MODULES/GAME/'active.json')])

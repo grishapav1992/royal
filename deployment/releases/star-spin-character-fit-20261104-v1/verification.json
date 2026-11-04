@@ -85,5 +85,11 @@
     "mandatoryTestsReused": 19,
     "fromRelease": "star-spin-ui-20261103-v1",
     "reason": "No wallet, transport, backend or mathematical code changed; compiled local test backend equals the verified production byte hash."
+  },
+  "deploymentSourceScope": {
+    "gameSources": 9,
+    "moduleMediaInputs": 5,
+    "hostPublicSourcesPreserved": true,
+    "reason": "Independent module loader serves immutable package media. Current retention supports scoped games source receipts; host public source bytes remain tied to the host release."
   }
 }
