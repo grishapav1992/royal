@@ -11,8 +11,15 @@ const git=(...args)=>execFileSync('git',args,{maxBuffer:64*1024**2});
 assert.equal(git('status','--porcelain').toString().trim(),'');
 const release=JSON.parse(fs.readFileSync('module-build/release-manifest.json'));
 const receipt=JSON.parse(fs.readFileSync('module-build/release-github.json'));
-assert.equal(release.sourceCommit,git('rev-parse','HEAD').toString().trim());
-assert.equal(release.sourceCommit,receipt.sourceCommit);assert.equal(receipt.remoteMain,git('rev-parse','origin/main').toString().trim());
+const installerCommit=process.argv[4]||release.sourceCommit;
+assert(/^[a-f0-9]{40}$/.test(installerCommit));
+assert.equal(release.sourceCommit,receipt.sourceCommit);
+for(const commit of [release.sourceCommit,receipt.remoteMain,installerCommit])git('merge-base','--is-ancestor',commit,'origin/main');
+const installerParent=git('rev-parse',installerCommit+'^').toString().trim();
+const installerChanges=git('diff','--name-only',installerParent,installerCommit).toString().trim().split('\n').filter(Boolean);
+if(installerCommit!==release.sourceCommit)assert(installerChanges.length&&installerChanges.every(name=>name.startsWith(folder+'/')),'Installer revision changed application sources');
+assert.equal(sha(git('show',installerCommit+':'+folder+'/host-projection.json')),release.hostProjection.sha256,'Build projection changed after preparation');
+for(const [file,hash]of Object.entries(release.files))assert.equal(sha(fs.readFileSync(file)),hash,'Prepared artifact changed: '+file);
 assert.equal(sha(fs.readFileSync('module-build/release-manifest.json')),receipt.manifestSha256);
 assert.equal(release.baseCommit,before.sourceCommit);assert(release.clean&&release.build.passed);
 assert.equal(before.container.health,'healthy');assert.equal(before.container.image,before.preparedImage);assert.deepEqual(before.program,before.preparedProgram);
@@ -42,8 +49,11 @@ const references={
 const committed=file=>git('show',release.sourceCommit+':'+file);
 const support={};for(const [file,source]of Object.entries(references))support[file]=write(file,committed(source));
 for(const file of ['release-manifest.json','release-github.json'])write(file,fs.readFileSync('module-build/'+file));
-const helperSha256=write('deploy.py',committed(folder+'/deploy.py')),snapshotSha256=write('snapshot.py',committed(folder+'/snapshot.py'));
-const manifest={release:name,sourceCommit:release.sourceCommit,baseCommit:before.sourceCommit,before,changed,delta,serverDelta:{},support,helperSha256,snapshotSha256,
+const installerSource=file=>git('show',installerCommit+':'+file);
+const helperReceipt={format:1,sourceCommit:installerCommit,parentCommit:installerParent,applicationSourceCommit:release.sourceCommit,packagerSourceCommit:git('rev-parse','HEAD').toString().trim(),remoteMain:git('rev-parse','origin/main').toString().trim(),checkedAt:new Date().toISOString(),changedOnlyReleaseTooling:installerChanges};
+const helperReceiptSha256=write('installer-github.json',Buffer.from(JSON.stringify(helperReceipt,null,2)+'\n'));
+const helperSha256=write('deploy.py',installerSource(folder+'/deploy.py')),snapshotSha256=write('snapshot.py',installerSource(folder+'/snapshot.py'));
+const manifest={release:name,sourceCommit:release.sourceCommit,helperSourceCommit:installerCommit,helperReceiptSha256,baseCommit:before.sourceCommit,before,changed,delta,serverDelta:{},support,helperSha256,snapshotSha256,
  releaseManifestSha256:sha(fs.readFileSync('module-build/release-manifest.json')),receiptSha256:sha(fs.readFileSync('module-build/release-github.json')),addedGames:[],restoredGames:[]};
 write('install-manifest.json',Buffer.from(JSON.stringify(manifest,null,2)+'\n'));
 console.log(JSON.stringify({out,sourceFiles:Object.keys(changed).length,clientFiles:Object.keys(delta).length,backendFiles:0}));
