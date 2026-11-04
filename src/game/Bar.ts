@@ -14,6 +14,8 @@ export class Bar {
   private motion=new NpcMotion<MiraView>({delayMs:0,isMoving:view=>view.action==='walk'});
   private view: MiraView = { ...this.routine.state };
   private work: Phaser.Textures.CanvasTexture;
+  private handsWork: Phaser.Textures.CanvasTexture;
+  private hands: Phaser.GameObjects.Sprite;
   private lastDraw = -Infinity;
   private attention: MiraAttention = 'closed';
   private steam: Phaser.GameObjects.Graphics;
@@ -26,6 +28,8 @@ export class Bar {
     this.mira.play('citizen-6-idle-down');
     this.work = scene.textures.createCanvas('mira-work', 32 * CHARACTER_RESOLUTION, 40 * CHARACTER_RESOLUTION)!;
     this.mira.anims.stop(); this.mira.setTexture('mira-work');
+    this.handsWork=scene.textures.createCanvas('mira-hands',32*CHARACTER_RESOLUTION,40*CHARACTER_RESOLUTION)!;
+    this.hands=scene.add.sprite(x+125,y+158,'mira-hands').setOrigin(.5,1).setScale(2.65/CHARACTER_RESOLUTION).setDepth(y+169).setVisible(false);
     this.contact = scene.add.ellipse(x+51,y+111,27,5,0x241922,.4).setDepth(y+169).setVisible(false);
     this.steam = scene.add.graphics().setDepth(y+169);
     scene.add.image(x,y+94,'bar-front').setOrigin(0).setDisplaySize(262,72).setDepth(y+166);
@@ -45,7 +49,9 @@ export class Bar {
     const target = online ? this.motion.sample(renderAt) ?? this.target ?? this.routine.state : this.target ?? this.routine.state;
     Object.assign(this.view, target);
     const seat = miraSeatAmount(target.action,target.progress);
-    this.mira.setPosition(target.x,target.y+32*seat).setDepth(BAR_POSITION.y+(seat>.001?170:117));
+    // Keep her waist at the counter; seated legs belong in front of its fascia.
+    this.mira.setPosition(target.x,target.y+42-10*seat).setDepth(BAR_POSITION.y+(seat>.001?170:117));
+    this.hands.setPosition(this.mira.x,this.mira.y).setVisible(target.action==='wipe'||target.action==='serve');
     this.contact.setVisible(seat>.01).setAlpha(seat*.4);
     const time = this.mira.scene.time.now;
     if (time - this.lastDraw < 40) return;
@@ -56,6 +62,10 @@ export class Bar {
     const listeningToGuard=target.action==='chat'&&target.facing==='left'&&conversation.active&&!conversation.speaking;
     const action=listeningToGuard||reducedMotion&&target.action==='greet'?'listen':target.action;
     drawMira(c,target.facing,frame,-1,action,phase,target.progress); c.restore(); this.work.refresh();
+    if(this.hands.visible){
+      const foreground=this.handsWork.context;foreground.clearRect(0,0,this.handsWork.width,this.handsWork.height);foreground.save();foreground.scale(CHARACTER_RESOLUTION,CHARACTER_RESOLUTION);
+      drawMira(foreground,target.facing,frame,-1,action,phase,target.progress,true);foreground.restore();this.handsWork.refresh();
+    }
     this.steam.clear();
     if (!reducedMotion) {
       const {x,y}=BAR_POSITION;

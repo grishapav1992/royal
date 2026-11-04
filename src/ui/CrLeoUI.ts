@@ -1,3 +1,4 @@
+import {canRecoverOperation} from './operationFeedback';
 import {ActionGameLayout} from './ActionGameLayout';
 import {syncStakeSelect} from './stakeSelection';
 import {stakeRulesHtml} from './stakeRules';
@@ -102,7 +103,7 @@ export class CrLeoUI {
     const confirmed = (this.scene.state().reveal ? shots : shots.slice(0, -1)).filter(s => s.goal).map(s => s.risk ?? v!.risk);
     this.find('[data-progress]').innerHTML = Array.from({ length: 5 }, (_, i) => { const count = i + 1, path = confirmed.slice(0, count); while (path.length < count) path.push(this.risk); return `<div data-step="${count}"><span>${count} ГОЛ${i ? i < 4 ? 'А' : 'ОВ' : ''}</span><b>${multiplier(path)}</b></div>`; }).join('');
     this.text('[data-hint]', !this.scene.state().reveal ? 'Мяч в игре. Дождись завершения удара.' : active ? PENALTY_RISKS[this.risk].chance + '% на следующий гол. Риск можно менять перед ударом.' : 'Игрок на всю серию. Риск выбирается перед каждым ударом.');
-    this.find('[data-recovery]').hidden = !client.pending || client.busy;
+    this.find('[data-recovery]').hidden = !canRecoverOperation(client);
     this.find<HTMLButtonElement>('[data-retry]').disabled = client.busy || client.loading;
     this.text('.cl-error', this.error || client.error);
   }
