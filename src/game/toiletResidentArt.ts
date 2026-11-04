@@ -14,7 +14,8 @@ let rig:CanvasImageSource|undefined;
 
 export function preloadToiletResident(scene:Phaser.Scene){scene.load.image(TOILET_RESIDENT_RIG_KEY,TOILET_RESIDENT_RIG_URL);}
 export function prepareToiletResident(scene:Phaser.Scene){
-  rig=scene.textures.exists(TOILET_RESIDENT_RIG_KEY)?scene.textures.get(TOILET_RESIDENT_RIG_KEY).getSourceImage():undefined;
+  const image=scene.textures.exists(TOILET_RESIDENT_RIG_KEY)?scene.textures.get(TOILET_RESIDENT_RIG_KEY).getSourceImage():undefined;
+  rig=image instanceof HTMLImageElement||image instanceof HTMLCanvasElement?image:undefined;
 }
 export function toiletResidentRigReady(){return !!rig;}
 const onBody=(x:number,y:number):Point=>({x:50+(x-centerX)*scale,y:top+y*scale});
@@ -30,8 +31,9 @@ function paper(c:Paint,p:Point){
 /** Each forearm pivots at its cuff; the body retains the reference's uniform scale. */
 function arm(c:Paint,part:Part,pivot:Point,target:Point):Point{
   const sx=part.hand.x-part.pivot.x,sy=part.hand.y-part.pivot.y,dx=target.x-pivot.x,dy=target.y-pivot.y;
-  const angle=Math.atan2(dy,dx)-Math.atan2(sy,sx),length=Math.hypot(sx,sy)*scale;
+  const length=Math.hypot(sx,sy)*scale;
   const stretch=Math.max(.62,Math.min(1.45,Math.hypot(dx,dy)/length));
+  const angle=Math.atan2(dy,dx)-Math.atan2(sy*stretch,sx);
   c.save();c.translate(pivot.x,pivot.y);c.rotate(angle);c.scale(scale,scale*stretch);
   c.drawImage(rig!,part.x,part.y,part.w,part.h,part.x-part.pivot.x,part.y-part.pivot.y,part.w,part.h);c.restore();
   return {x:pivot.x+scale*(sx*Math.cos(angle)-sy*stretch*Math.sin(angle)),y:pivot.y+scale*(sx*Math.sin(angle)+sy*stretch*Math.cos(angle))};
