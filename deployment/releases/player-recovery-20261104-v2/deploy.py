@@ -8,7 +8,7 @@ from image_metadata import image, inspect
 NAME = 'player-recovery-20261104-v2'
 ROOT = Path(__file__).resolve().parent
 SOURCES = set(["server/LobbyRoom.ts","src/game/RoomScene.ts","src/i18n/en.ts","src/main.ts","src/network/LobbyClient.ts","src/shared/cabinetSeating.ts","src/shared/playerRecovery.ts","src/shared/world.ts","src/ui/PlayerRecoverySettings.ts","src/ui/SocialUI.ts","src/ui/player-recovery.css"])
-PRESERVED_BACKEND_INPUTS = {'src/i18n/en.ts': '8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68'}
+PRESERVED_BACKEND_INPUTS = {"src/i18n/en.ts":"e6a39483750df92467b584e98319ce679f2a3489669e4b0d3f64a2d7ba0a762c"}
 
 def require(value, reason):
     if not value: raise RuntimeError(reason)
