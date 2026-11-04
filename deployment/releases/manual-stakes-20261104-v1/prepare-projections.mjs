@@ -64,8 +64,11 @@ for(const id of ids){
     const bytes=fs.readFileSync(source);assert(digest(bytes)===hash||digest(canonical(bytes))===hash,'Published media differs locally: '+source);assets[source]=hash;
   }
 }
+const moduleDependencies=Object.fromEntries(['node_modules/@rive-app/webgl2/rive.js'].map(name=>[name,digest(fs.readFileSync(name))]));
+const lock=JSON.parse(fs.readFileSync('package-lock.json'));assert.equal(lock.packages['node_modules/@rive-app/webgl2'].version,'2.49.0');
+assert.equal(JSON.parse(fs.readFileSync('node_modules/@rive-app/webgl2/package.json')).version,'2.49.0');
 const base={format:1,productionCommit:snapshot.sourceCommit,files};
-fs.writeFileSync(folder+'/host-projection.json',JSON.stringify({...base,entries:['index.html'],moduleGames:games,moduleAssets:assets,moduleContracts:snapshot.moduleHost.games},null,2)+'\n');
+fs.writeFileSync(folder+'/host-projection.json',JSON.stringify({...base,entries:['index.html'],moduleGames:games,moduleAssets:assets,moduleDependencies,moduleContracts:snapshot.moduleHost.games},null,2)+'\n');
 fs.writeFileSync(folder+'/backend-projection.json',JSON.stringify({...base,entries:['server/index.ts']},null,2)+'\n');
 const beforeFiles={...files};
 for(const name of changed){if(!snapshot.source[name]||!beforeFiles[name])continue;
