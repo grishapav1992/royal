@@ -24,7 +24,7 @@ test('rear windows fill only the upper wall and grow with it without occupying t
     assert(w.y>view.roofEdge&&w.y+REAR_WINDOW.height<=view.wall.base-350);
   }
   assert.equal(new Set(windows.map(w=>w.id)).size,windows.length);
-  assert.deepEqual([...new Set(windows.map(w=>w.kind))].sort(),[0,1,2]);
+  assert.equal(new Set(windows.map(w=>w.column)).size,5);
 });
 
 test('window visitors walk both ways, pause at the glass and freeze while hidden or reduced',()=>{

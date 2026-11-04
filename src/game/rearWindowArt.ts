@@ -6,33 +6,10 @@ const ink='#382e32',cream='#f3dcb1',gold='#d4ae64';
 function box(c:Paint,x:number,y:number,w:number,h:number,color:string,stroke=ink,line=1.5){c.fillStyle=color;c.fillRect(x,y,w,h);if(line){c.strokeStyle=stroke;c.lineWidth=line;c.strokeRect(x,y,w,h);}}
 function line(c:Paint,x:number,y:number,x2:number,y2:number,color:string,width=2){c.beginPath();c.moveTo(x,y);c.lineTo(x2,y2);c.strokeStyle=color;c.lineWidth=width;c.stroke();}
 function oval(c:Paint,x:number,y:number,rx:number,ry:number,color:string){c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fillStyle=color;c.fill();}
-function room(c:Paint,kind:number){
-  const {w,h}=REAR_WINDOW.glass;
-  box(c,0,0,w,h,'#ddb982',ink,0);box(c,0,90,w,h-90,'#713947',ink,0);
-  line(c,0,12,w,12,'#f5d998',5);line(c,0,88,w,88,gold,3);
-  for(let x=10;x<w;x+=27){c.beginPath();c.moveTo(x,29);c.lineTo(x+4,36);c.lineTo(x,43);c.lineTo(x-4,36);c.closePath();c.fillStyle='#bd915f';c.fill();}
-  box(c,0,h-24,w,24,'#8e4b51',ink,0);line(c,0,h-22,w,h-22,'#d4aa6b',2);
-  if(kind===0){
-    for(const x of [10,106]){
-      box(c,x,67,39,74,'#413d48');box(c,x+3,70,33,9,gold);box(c,x+5,82,29,35,'#3a6063');
-      box(c,x+8,89,23,18,'#e3c98a',ink,1);
-      for(let n=0;n<3;n++){box(c,x+9+n*7,91,5,13,'#f5e8bc',ink,.6);oval(c,x+11+n*7,97,1.7,2.5,n%2?'#a7454d':'#4d7d73');}
-      box(c,x+3,121,33,8,'#ae8756');oval(c,x+28,125,2,2,'#f5dc8f');box(c,x+5,133,29,7,'#272e3a');
-    }
-  }else if(kind===1){
-    box(c,9,104,105,31,'#542c3c');box(c,14,99,95,28,'#a75d62');
-    for(const x of [16,62])box(c,x,122,45,12,'#b36a6e');
-    for(const x of [18,100])box(c,x,137,5,10,'#44343b');
-    line(c,133,53,133,139,'#70533d',4);box(c,122,134,22,5,'#715340');
-    c.beginPath();c.moveTo(123,45);c.lineTo(143,45);c.lineTo(151,66);c.lineTo(115,66);c.closePath();c.fillStyle='#f5d78f';c.fill();c.strokeStyle=ink;c.stroke();
-  }else{
-    box(c,28,30,100,56,gold);box(c,33,35,90,46,'#678485');
-    line(c,43,75,76,42,'#b5c6b4',2);line(c,85,75,112,48,'#9cb7ad',2);
-    box(c,0,117,w,30,'#916449');box(c,0,111,w,8,'#dfba78');
-    for(const x of [15,40,105,131]){box(c,x,94,7,16,x%2?'#4c7b65':'#a4644e');box(c,x+2,88,3,7,'#c8b884',ink,.7);}
-    for(const x of [30,111]){line(c,x,140,x,159,'#3c383d',4);box(c,x-10,135,20,7,'#563746');}
-  }
-  line(c,76,0,76,26,'#76573c',2);oval(c,76,30,12,7,'#ffe4a1');oval(c,76,28,5,4,'#fff1c3');
+function closed(c:Paint){
+  const {w,h}=REAR_WINDOW.glass;box(c,0,0,w,h,'#39414b',ink,0);
+  for(let y=4;y<h;y+=11){box(c,0,y,w,8,'#545660',ink,0);line(c,0,y+8,w,y+8,'#2f3440',1);}
+  line(c,23,0,23,h,'#8b8279',1);line(c,w-23,0,w-23,h,'#8b8279',1);
 }
 function frame(c:Paint){
   const {glass:g}=REAR_WINDOW;
@@ -54,5 +31,5 @@ export function rearWindowArt(scene:Phaser.Scene){
   const make=(key:string,w:number,h:number,paint:(c:Paint)=>void)=>{
     if(!scene.textures.exists(key)){const canvas=document.createElement('canvas');canvas.width=w*2;canvas.height=h*2;const c=canvas.getContext('2d')!;c.scale(2,2);paint(c);scene.textures.addCanvas(key,canvas);}return key;
   };
-  return {frame:make('casino-rear-window-frame',REAR_WINDOW.width,REAR_WINDOW.height,frame),rooms:[0,1,2].map(kind=>make('casino-rear-window-room-'+kind,REAR_WINDOW.glass.w,REAR_WINDOW.glass.h,c=>room(c,kind)))};
+  return {frame:make('casino-rear-window-frame',REAR_WINDOW.width,REAR_WINDOW.height,frame),closed:make('casino-rear-window-closed-v2',REAR_WINDOW.glass.w,REAR_WINDOW.glass.h,closed)};
 }

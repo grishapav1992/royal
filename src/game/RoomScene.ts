@@ -164,7 +164,7 @@ export class RoomScene extends Phaser.Scene {
     for(const hall of Object.keys(HALLS) as HallId[]){
       const before=new Set(this.children.list);this.hall=hall;
       if(hall==='street'){
-        this.street=new StreetRenderer(this,()=>this.approachFloor('arcade'),id=>this.approachStreetResident(id),point=>this.useRoofStairs(point),this.streetView);
+        this.street=new StreetRenderer(this,()=>this.approachFloor('arcade'),id=>this.approachStreetResident(id),point=>this.useRoofStairs(point),this.streetView,this.hallObjects);
         this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
         continue;
       }

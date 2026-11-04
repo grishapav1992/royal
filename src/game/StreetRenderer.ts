@@ -9,6 +9,7 @@ import { createStreetWall } from './streetWalls';
 import { StreetRoofStairs } from './RooftopRenderer';
 import { StreetResidents } from './StreetResidents';
 import { RearCasinoWindows } from './RearCasinoWindows';
+import type { HallId } from '../shared/world';
 
 /** Reusable facade sections keep the close view independent of total floor count. */
 export class StreetRenderer {
@@ -28,7 +29,7 @@ export class StreetRenderer {
   private rearSky:Phaser.GameObjects.Graphics;
   private rearWindows!:RearCasinoWindows;
   readonly mapCanvas: HTMLCanvasElement;
-  constructor(scene: Phaser.Scene, enter: () => void,approach:(id:StreetResidentId)=>void,climb:(point:Point)=>void,readonly view:StreetView) {
+  constructor(scene: Phaser.Scene, enter: () => void,approach:(id:StreetResidentId)=>void,climb:(point:Point)=>void,readonly view:StreetView,floorObjects?:ReadonlyMap<HallId,readonly Phaser.GameObjects.GameObject[]>) {
     this.mapCanvas=createStreetArt(scene);
     const b=STREET.building,front=b.y+b.h;
     const base=scene.add.graphics();
@@ -97,7 +98,7 @@ export class StreetRenderer {
       g.fillStyle(0xf4f8fc).fillRoundedRect(wall.left-6,top-7,wall.width+12,10,4);
       const pieces:Phaser.GameObjects.GameObject[]=[g];
       pieces.push(scene.add.image(wall.left,wall.base-350,createStreetWall(scene,side)).setOrigin(0).setDisplaySize(wall.width,350));
-      this.rearWindows=new RearCasinoWindows(scene,test);pieces.push(this.rearWindows.root);
+      this.rearWindows=new RearCasinoWindows(scene,test,floorObjects);pieces.push(this.rearWindows.root);
       this.walls.set(side,scene.add.container(0,0,pieces).setDepth(wall.base));
     }
     this.anchors=this.props.map(image=>({image,point:{x:image.x,y:image.y}}));

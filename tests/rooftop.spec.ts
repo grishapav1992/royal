@@ -83,7 +83,11 @@ async function verifyRearWindows(page:Page,project:string){
   const before=(await state(page)).street.rearWindows;
   expect(before.visible).toBe(true);expect(before.maskApplied).toBe(true);
   expect(before.windows.length).toBeGreaterThanOrEqual(20);
-  expect(new Set(before.windows.map((w:any)=>w.kind)).size).toBe(3);
+  const lit=before.windows.filter((w:any)=>w.room);
+  expect([...new Set(lit.map((w:any)=>w.room.hall))].sort()).toEqual(['arcade','github','tables']);
+  expect(new Set(lit.map((w:any)=>w.room.id)).size).toBe(15);
+  expect(before.windows.filter((w:any)=>w.onscreen&&w.room).every((w:any)=>w.captured)).toBe(true);
+  expect(before.people.every((p:any)=>lit.some((w:any)=>w.id===p.windowId))).toBe(true);
   expect(before.windows.some((w:any)=>w.onscreen)).toBe(true);
   expect(before.people.some((p:any)=>p.visible&&p.moving)).toBe(true);
   expect(before.people.every((p:any)=>!p.interactive)).toBe(true);
@@ -106,6 +110,19 @@ async function verifyFrozenRearWindows(page:Page){
   const frozen=(await state(page)).street.rearWindows;await page.waitForTimeout(250);
   const still=(await state(page)).street.rearWindows;
   expect(still.time).toBe(frozen.time);expect(still.people.map((p:any)=>[p.x,p.y,p.frame])).toEqual(frozen.people.map((p:any)=>[p.x,p.y,p.frame]));
+}
+
+async function allRearInteriors(page:Page){
+  const viewport=page.viewportSize()!;
+  try{
+    await page.setViewportSize({width:3000,height:2250});
+    await expect.poll(async()=>{
+      const windows=(await state(page)).street.rearWindows.windows;
+      return windows.filter((w:any)=>w.onscreen&&w.room&&w.captured).length;
+    }).toBe(15);
+    await page.locator('#game canvas').screenshot({path:'../rear-views-all-floors.png'});
+    await expect(page.locator('#chat-input')).toBeEnabled();
+  }finally{await page.setViewportSize(viewport);}
 }
 
 async function keyUntil(page:Page,key:string,condition:()=>Promise<boolean>,timeout=15000){
@@ -229,6 +246,7 @@ test('manually climb each switchback without falling, reach the roof edge and re
     }
     await flight(page,mobile,!mobile);
     if((await state(page)).hall==='street'){
+      if(!mobile&&(await state(page)).stairStep===6)await allRearInteriors(page);
       const paused=await state(page);await page.waitForTimeout(120);
       const still=await state(page);expect(still.stairStep).toBe(paused.stairStep);expect(Math.hypot(still.x-paused.x,still.y-paused.y)).toBeLessThan(.1);
       await noGroundConversation(page);
