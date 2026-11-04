@@ -3,10 +3,11 @@ import { STREET } from '../shared/street';
 import { STREET_CARS } from './StreetLife';
 import { STREET_SERVICE_PROPS } from './streetDetails';
 import { t } from '../i18n';
+import {FRONT_FACADE} from './frontWindowLife';
 
 type Paint = CanvasRenderingContext2D;
 const ink = '#29232a', wall = '#681a32', cream = '#f3dcb1', gold = '#f6cf58', snow = '#f8fbff';
-export const STREET_ART = { paving:'street-v2-paving', floor:'street-v2-floor', front:'street-v4-front', pine:'street-v2-pine', lamp:'street-v2-lamp', bench:'street-v2-bench', map:'street-v4-map', sign:'street-sign', sheen:'street-sign-sheen',carpet:'street-carpet',rear:'street-service-wall',taxiSign:'street-taxi-sign' } as const;
+export const STREET_ART = { paving:'street-v2-paving', floor:'street-v3-live-floor', front:'street-v5-live-front', pine:'street-v2-pine', lamp:'street-v2-lamp', bench:'street-v2-bench', map:'street-v4-map', sign:'street-sign', sheen:'street-sign-sheen',carpet:'street-carpet',rear:'street-service-wall',taxiSign:'street-taxi-sign' } as const;
 export const STREET_SIGN={center:(442+772)/2,width:300,height:216,baseline:156,baselineOffset:-113} as const;
 
 function box(c:Paint,x:number,y:number,w:number,h:number,fill:string,stroke=ink,width=1.5,radius=0){
@@ -50,10 +51,11 @@ function pilaster(c:Paint,x:number,top:number,height:number,width=34){
   for(let y=top+height-90;y>top+35;y-=100)line(c,x-width/2+1,y,x+width/2-1,y,'#c8a979',.8);
   if(height>220)shape(c,[[x,top+47],[x+6,top+58],[x,top+69],[x-6,top+58]],gold,'#8c6532',1);
 }
-function window(c:Paint,x:number,y:number,w:number,h:number){
+function window(c:Paint,x:number,y:number,w:number,h:number,clear=false){
   box(c,x-3,y-3,w+6,h+6,'#b99b64',ink,2);box(c,x,y,w,h,'#ffdf79',ink,3);
   c.fillStyle='#ffe89a';c.fillRect(x+5,y+5,w/2-8,h/2-8);
   c.fillStyle='#f8d16b';c.fillRect(x+w/2+3,y+h/2+3,w/2-8,h/2-8);
+  if(clear){c.clearRect(x+3,y+3,w-6,h-6);c.fillStyle='#ffdc8812';c.fillRect(x+3,y+3,w-6,h-6);line(c,x+w*.67,y+13,x+w*.84,y+6,'#fff2cd66',2);}
   line(c,x+w/2,y+1,x+w/2,y+h-1,ink,3.5);line(c,x+1,y+h/2,x+w-1,y+h/2,ink,3.5);
   box(c,x-5,y+h+2,w+10,7,cream,'#66513b',1);
 }
@@ -123,7 +125,8 @@ function paving(c:Paint){
   line(c,149,119,162,116,'#b0b6c0',.7);line(c,80,62,91,61,'#d1d5db',1);
 }
 function paintUpperFloor(c:Paint){
-  box(c,0,0,246,250,wall,ink,0);window(c,85,48,78,130);pilaster(c,16,0,236,28);
+  const w=FRONT_FACADE.upper;
+  box(c,0,0,246,250,wall,ink,0);window(c,w.x,w.y,w.width,w.height,true);pilaster(c,16,0,236,28);
   box(c,0,235,246,15,cream,'#665039',1);line(c,0,238,246,238,'#fff0ce',2);
 }
 function paintFront(c:Paint){
@@ -131,7 +134,7 @@ function paintFront(c:Paint){
   box(c,0,0,w,base,wall,ink,2);
   for(const x of [20,442,772,1114,w-20])pilaster(c,x,0,base,38);
   box(c,0,0,w,15,cream,'#665039',1.5);line(c,0,3,w,3,'#ffefcc',3);box(c,0,base-14,w,14,cream,'#665039',1);
-  for(const x of [930,1280]){window(c,x-85,base-179,170,133);canopy(c,x,base-184,210,55);planter(c,x,base-36,220);}
+  for(const x of FRONT_FACADE.lower.centers){window(c,x-85,base-179,170,133,true);canopy(c,x,base-184,210,55);planter(c,x,base-36,220);}
   planter(c,STREET_SIGN.center,base-36,218);
   box(c,door-79,base-197,158,197,'#392b28',ink,2.5);box(c,door-73,base-191,146,191,'#a47140','#79542f',1.5);
   for(const side of [-1,1]){

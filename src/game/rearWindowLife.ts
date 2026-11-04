@@ -19,19 +19,19 @@ export class RearWindowLife {
     this.motion=visible&&!reducedMotion&&!hidden;
     if(this.motion&&Number.isFinite(delta))this.time+=Math.max(0,Math.min(50,delta));
   }
-  person(window:RearWindow,index:number,scale=.54){
+  person(window:RearWindow,index:number,scale=.54,glass:{x:number;y:number;w:number;h:number}=REAR_WINDOW.glass){
     const seed=window.row*17+window.column*7+index*11,speed=28+seed%5*4;
-    const half=(REAR_WINDOW.glass.w/2+30)/speed*1000,rest=1100+seed%4*380;
+    const half=(glass.w/2+30)/speed*1000,rest=1100+seed%4*380;
     const durations=[half,rest,half,700,half,rest*.8,half,900],cycle=durations.reduce((a,b)=>a+b,0);
     let phase=(this.time+seed*953+index*cycle*.47)%cycle;
-    const stops=[-30,REAR_WINDOW.glass.w/2,REAR_WINDOW.glass.w+30,REAR_WINDOW.glass.w/2,-30];
+    const stops=[-30,glass.w/2,glass.w+30,glass.w/2,-30];
     let segment=0;
     for(let part=0;part<durations.length;part++){
       const duration=durations[part],walking=part%2===0;
       if(phase<duration||part===durations.length-1){
         const from=stops[segment],to=stops[segment+1],x=walking?from+(to-from)*phase/duration:to;
         const facing=walking?(to>from?'right':'left'):'down';
-        return {id:window.id+'-guest-'+index,windowId:window.id,x:window.x+REAR_WINDOW.glass.x+x,y:window.y+REAR_WINDOW.glass.y+REAR_WINDOW.glass.h-9-index*12,skin:7+seed%6,scale:scale*(index?.85:1),facing,moving:this.motion&&walking,speed} as const;
+        return {id:window.id+'-guest-'+index,windowId:window.id,x:window.x+glass.x+x,y:window.y+glass.y+glass.h-9-index*12,skin:7+seed%6,scale:scale*(index?.85:1),facing,moving:this.motion&&walking,speed} as const;
       }
       phase-=duration;if(!walking)segment++;
     }
