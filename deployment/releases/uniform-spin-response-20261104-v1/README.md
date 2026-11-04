@@ -14,6 +14,8 @@ The initial prepared application source `44d534b987d6e648d856f84afd350b43f308381
 
 The installer separately binds the build baseline and the explicitly reviewed actual production baseline. All unchanged module inputs, every previous presentation source, active pointer and host contract must match. A complete before inventory is bound by SHA-256 and rechecked under nonblocking publication locks. The snapshot reader and all four of its code dependencies are pinned. Other host, backend, services, configuration and source files are preserved by the complete after comparison. No preparation or tests hold production locks; contention exits 75 for an explicit retry. A further production change requires a new review and relevant verification before retrying. Maintenance of a previous release does not complete maintenance of this one.
 
+The final compiled application is fixed at `aecb24d3706444d0a7050784cd692e3fe8ef3120`. Companion publication tooling is committed separately and passed as the sixth argument to `prepare.mjs`; a GitHub receipt binds its exact publisher to that unchanged artifact. In addition to 26 feedback sources, the operator rebinds the three unchanged published Flag audio/configuration sources to their new active package. All 29 hashes are verified against the compiled projection. This preserves source provenance when the previous Flag pointer is replaced and allows normal retention verification. No game rebuild is required for this tooling-only binding.
+
 With the exact verified production host/backend and prepared module outputs in the normal build directories, the committed host gateway reproduces the successful built-artifact browser run:
 
 ```powershell

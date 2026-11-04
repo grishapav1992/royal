@@ -83,4 +83,11 @@ class Guards(unittest.TestCase):
    changed=copy.deepcopy(after);changed[key]='changed'
    with self.assertRaises(RuntimeError):p.validate_after(before,changed,source,packages)
 
+ def test_publication_tooling_is_bound_to_fixed_application(self):
+  release={'sourceCommit':'a'*40};op={'wrapperSourceCommit':'b'*40,'wrapperSha256':'reviewed'}
+  receipt={'sourceCommit':'b'*40,'applicationSourceCommit':'a'*40,'publisherSha256':'reviewed','remoteMain':'c'*40}
+  p.validate_tool_receipt(receipt,release,op)
+  for changed in [{'sourceCommit':'d'*40},{'applicationSourceCommit':'d'*40},{'publisherSha256':'changed'},{'remoteMain':'unknown'}]:
+   with self.assertRaises(RuntimeError):p.validate_tool_receipt({**receipt,**changed},release,op)
+
 if __name__=='__main__':unittest.main()
