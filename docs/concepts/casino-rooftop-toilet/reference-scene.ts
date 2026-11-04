@@ -11,12 +11,19 @@ export const TOILET_ENTRY={x:760,y:410,w:180,h:160,kind:'open-service-window',st
 export const TOILET_ROOM={width:740,height:610,floor:{...FLOOR,width:630,height:375},bounds:{...BOUNDS,right:670,bottom:530},spawn:{x:150,y:260},exit:{x:150,y:260},window:{x:110,y:46,w:104,h:92},step:{x:120,y:185,w:60,h:35}};
 const ink=0x302b35,cream=0xf3dcb1,gold=0xd4ae64,burgundy=0x713046,teal=0x315c64;
 const sinks=[{x:100,y:350,w:84,h:80},{x:230,y:350,w:84,h:80}];
-const stalls=[355,460,565].map(x=>({x,y:220,w:87,h:94}));
+const stalls=[355,460,565].map((x,i)=>({x,y:220,w:87,h:94,open:i===2}));
+const stallWalls:Obstacle[]=stalls.flatMap(p=>[
+  {x:p.x,y:p.y,w:p.w,h:6},
+  {x:p.x,y:p.y,w:6,h:p.h},{x:p.x+p.w-6,y:p.y,w:6,h:p.h},
+  {x:p.x,y:p.y+p.h-6,w:19,h:6},{x:p.x+p.w-19,y:p.y+p.h-6,w:19,h:6},
+  p.open?{x:p.x+7,y:p.y+p.h-36,w:3,h:30}:{x:p.x+19,y:p.y+p.h-5,w:p.w-38,h:4},
+  {x:p.x+28,y:p.y+15,w:31,h:52},
+]);
 const bin={x:590,y:450,w:42,h:48},radiator={x:85,y:465,w:32,h:55};
 const roomObstacles:Obstacle[]=[
   {x:0,y:0,w:TOILET_ROOM.width,h:BOUNDS.top-1},{x:0,y:0,w:BOUNDS.left-1,h:TOILET_ROOM.height},
   {x:TOILET_ROOM.bounds.right+1,y:0,w:5000,h:TOILET_ROOM.height},
-  {x:0,y:TOILET_ROOM.bounds.bottom+1,w:TOILET_ROOM.width,h:100},...sinks,...stalls,
+  {x:0,y:TOILET_ROOM.bounds.bottom+1,w:TOILET_ROOM.width,h:100},...sinks,...stallWalls,
   bin,radiator,TOILET_ROOM.step,
 ];
 
@@ -25,11 +32,11 @@ export function geometryChecks(){
   const overlap=[TOILET_ENTRY,TOILET_ENTRY.step].some(p=>ROOF_OBSTACLES.some(o=>p.x<o.x+o.w&&p.x+p.w>o.x&&p.y<o.y+o.h&&p.y+p.h>o.y));
   const roofPath=findPath(ROOF.spawn,TOILET_ENTRY.approach,roofObstacles);
   const perimeter=ROOF.loop.every((p,i)=>findPath(p,ROOF.loop[(i+1)%ROOF.loop.length],roofObstacles).length>0);
-  const targets=[...sinks.map(p=>({x:p.x+p.w/2,y:p.y+p.h+50})),...stalls.map(p=>({x:p.x+p.w/2,y:p.y+p.h+50})),TOILET_ROOM.exit];
+  const targets=[...sinks.map(p=>({x:p.x+p.w/2,y:p.y+p.h+50})),...stalls.map(p=>({x:p.x+p.w/2,y:p.y+p.h+50})),...stalls.filter(p=>p.open).map(p=>({x:p.x+p.w/2,y:p.y+p.h-4})),TOILET_ROOM.exit];
   const approaches=targets.map(p=>({point:p,walkable:walkable(p.x,p.y,roomObstacles,16),path:findPath(TOILET_ROOM.spawn,p,roomObstacles).length>0}));
   const roofApproaches=[TOILET_ENTRY.approach,TOILET_ENTRY.trigger].every(p=>walkable(p.x,p.y,roofObstacles,16)&&findPath(ROOF.spawn,p,roofObstacles).length>0);
   if(overlap||!roofPath.length||!roofApproaches||!perimeter||approaches.some(p=>!p.walkable||!p.path))throw Error('Reference geometry has an obstructed approach: '+JSON.stringify({overlap,roofApproaches,perimeter,approaches}));
-  return {roof:{width:ROOF.width,height:ROOF.height,deck:ROOF.deck,entry:TOILET_ENTRY,existingPropsUnmoved:true,noOverlap:!overlap,approachReachable:roofApproaches,perimeterReachable:perimeter},room:{...TOILET_ROOM,proposed:true,stalls,sinks,approaches,obstacles:roomObstacles,floorArea:TOILET_ROOM.floor.width*TOILET_ROOM.floor.height,previousFloorArea:1210*1145},projection:'Same camera fit and upright sprites as RoomScene.resizeView',character:{scale:CHARACTER_SCALE,width:96*CHARACTER_SCALE,height:144*CHARACTER_SCALE}};
+  return {roof:{width:ROOF.width,height:ROOF.height,deck:ROOF.deck,entry:TOILET_ENTRY,existingPropsUnmoved:true,noOverlap:!overlap,approachReachable:roofApproaches,perimeterReachable:perimeter},room:{...TOILET_ROOM,proposed:true,stalls,stallView:'Top-down floor plan with visible fixtures in every cubicle and thin partition caps',sinks,approaches,obstacles:roomObstacles,floorArea:TOILET_ROOM.floor.width*TOILET_ROOM.floor.height,previousFloorArea:1210*1145},projection:'Same camera fit and upright sprites as RoomScene.resizeView',character:{scale:CHARACTER_SCALE,width:96*CHARACTER_SCALE,height:144*CHARACTER_SCALE}};
 }
 
 export function startReference(mode:'roof'|'room',close:boolean){
@@ -85,7 +92,7 @@ export function startReference(mode:'roof'|'room',close:boolean){
       const step=this.add.graphics().setDepth(TOILET_ROOM.step.y+TOILET_ROOM.step.h);
       this.box(step,120,185,60,10,0xb4a18a);for(const x of [124,168])this.box(step,x,195,8,25,0x7e7768);
       for(const p of sinks)this.sink(p.x,p.y);
-      stalls.forEach((p,i)=>this.stall(p.x,p.y,i===2));
+      stalls.forEach(p=>this.stall(p));
       const trash=this.add.graphics().setDepth(bin.y+bin.h);this.box(trash,bin.x,bin.y,bin.w,bin.h,0x485251);this.box(trash,bin.x-3,bin.y-3,bin.w+6,7,0x303b3c);trash.lineStyle(2,0x8d9892).lineBetween(bin.x+12,bin.y+10,bin.x+12,bin.y+37);
       const heat=this.add.graphics().setDepth(radiator.y+radiator.h);this.box(heat,radiator.x,radiator.y+6,radiator.w,radiator.h-6,0xb8c0b8);for(let x=radiator.x+4;x<radiator.x+radiator.w-3;x+=9)this.box(heat,x,radiator.y,6,radiator.h-5,0xe2e0ca,0x687e7d,1);heat.lineStyle(3,0x627c78).lineBetween(105,450,105,465);
       const vent=this.add.graphics().setDepth(1);this.box(vent,590,-20,66,40,0x647f7c);for(let y=-13;y<16;y+=6)vent.lineStyle(2,0x354e56).lineBetween(596,y,650,y);
@@ -102,22 +109,35 @@ export function startReference(mode:'roof'|'room',close:boolean){
       this.box(g,x-28,y+13,22,43,0xeee5cd,ink,2);g.fillStyle(0x7da9a6).fillEllipse(x-17,y+34,9,14);
       this.box(g,x+132,y+18,31,48,0xd2cbb8,ink,2);this.box(g,x+136,y+59,23,15,0xf8f0d5,ink,1);
     }
-    stall(x:number,y:number,open:boolean){
-      const g=this.add.graphics().setDepth(y+94).setPosition(x,y).setScale(.48,.36);
-      x=0;y=0;
-      this.box(g,x,y,180,250,0x444b47,ink,4);this.box(g,x+7,y+7,166,236,0xd3d6c3,ink,0);
-      if(open){
-        this.box(g,x+14,y+16,152,223,0x9aa69d,ink,0);
-        this.box(g,x+70,y+125,40,40,0xf0e8ce,ink,3);this.box(g,x+70,y+120,40,6,0xfff2d8);
-        this.box(g,x+77,y+189,26,30,0xe2e1c9,ink,2);g.fillStyle(0xf3efd9).fillEllipse(x+90,y+175,64,32);g.lineStyle(3,ink).strokeEllipse(x+90,y+175,64,32);g.fillStyle(0x829d9b).fillEllipse(x+90,y+172,41,17);
-        this.box(g,x+20,y+168,17,8,gold,ink,1);g.fillStyle(0xf4edda).fillEllipse(x+28,y+168,22,27);
-      }else{
-        this.box(g,x+13,y+12,154,221,burgundy,ink,3);this.box(g,x+24,y+22,132,185,0x843d50,ink,1);
-        this.box(g,x+29,y+92,32,23,cream,ink,1);
-        this.label(g.x+45*.48,g.y+104*.36,'WC',8,'#302b35',g.depth+1);
-        g.fillStyle(gold).fillCircle(x+143,y+142,6);g.fillStyle(0x8db191).fillCircle(x+143,y+122,3);
+    stall(p:typeof stalls[number]){
+      const {x,y,w,h,open}=p,g=this.add.graphics().setDepth(y+h);
+      // Cutaway floor plan: the near door never covers the contents from above.
+      this.box(g,x+6,y+6,w-12,h-12,0xd5d3c4,ink,0);
+      for(let dy=6;dy<h-6;dy+=22)for(let dx=6;dx<w-6;dx+=25){
+        this.box(g,x+dx,y+dy,Math.min(25,w-6-dx),Math.min(22,h-6-dy),((Math.floor(dx/25)+Math.floor(dy/22))%2)?0xc2ccc3:0xd5d3c4,0xadb9af,.7);
       }
-      for(const dx of [0,172])this.box(g,x+dx,y+248,8,12,0x8b9991,ink,1);
+      this.box(g,x+28,y+15,31,14,0xf3eed9,ink,1.5);this.box(g,x+29,y+15,29,4,0xfff6df,ink,1);
+      this.box(g,x+48,y+21,5,2,0x7d9391,ink,0);
+      g.fillStyle(0xe6e5d1).fillEllipse(x+43.5,y+50,31,36);
+      g.lineStyle(1.5,ink).strokeEllipse(x+43.5,y+50,31,36);
+      g.fillStyle(0x809f9d).fillEllipse(x+43.5,y+49,19,24);
+      g.lineStyle(3,0xf7f1dc).strokeEllipse(x+43.5,y+49,24,29);
+      g.lineStyle(1,0xc4d5ca).lineBetween(x+39,y+49,x+46,y+49);
+      this.box(g,x+76,y+43,4,15,0x697e77,ink,1);
+      this.box(g,x+70,y+44,8,13,0xf3edda,ink,1);g.lineStyle(1,0x9c9d90).lineBetween(x+71,y+47,x+77,y+47);
+      this.box(g,x+72,y+56,6,6,0xfff6e2,ink,.7);
+      g.fillStyle(0x617a70).fillEllipse(x+15,y+60,10,12);g.lineStyle(1,ink).strokeEllipse(x+15,y+60,10,12);
+      for(const [dx,dy,dw,dh]of [[0,0,w,6],[0,0,6,h],[w-6,0,6,h],[0,h-6,19,6],[w-19,h-6,19,6]]){
+        this.box(g,x+dx,y+dy,dw,dh,0x7b9388,ink,1.5);
+      }
+      if(open){
+        this.box(g,x+7,y+h-36,3,30,burgundy,ink,1);
+        g.fillStyle(gold).fillCircle(x+11,y+h-31,1.5);
+      }else{
+        this.box(g,x+19,y+h-5,w-38,4,burgundy,ink,1);
+        this.box(g,x+w-27,y+h-5,5,2,gold,ink,0);
+        g.fillStyle(0x8db191).fillCircle(x+w-16,y+h-3,1.5);
+      }
     }
   }
   (window as any).__referenceReady=false;
