@@ -26,7 +26,7 @@ assert(!fs.existsSync(out),'Payload already exists');fs.mkdirSync(out,{recursive
 function write(file,bytes){assert(!path.isAbsolute(file)&&!file.split('/').some(p=>!p||p==='.'||p==='..'||p.startsWith('.env')));const target=path.join(out,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,bytes,{flag:'wx'});return sha(bytes);}
 const committed=file=>git('show',release.sourceCommit+':'+file);
 const changed={};
-for(const [file,hash]of Object.entries(scope.expectedSources)){const bytes=committed(file);assert.equal(sha(bytes),hash);changed[file]=write('source/'+file,bytes);}
+for(const [file,hash]of Object.entries(scope.expectedSources)){const bytes=git('show',scope.selectionSourceCommit+':'+file);assert.equal(sha(bytes),hash);changed[file]=write('source/'+file,bytes);}
 assert.equal(release.backendProjection.inputs['server/starSpinCollection.ts'],changed['server/starSpinCollection.ts']);
 const backend=fs.readFileSync('dist-server/index.js');assert.equal(sha(backend),release.files['dist-server/index.js']);
 const serverDelta={'index.js':write('server-delta/index.js',backend)};

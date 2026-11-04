@@ -1,6 +1,6 @@
 {
   "name": "star-spin-open-selection-20261104-v1",
-  "baseCommit": "5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e",
+  "baseCommit": "820e1c4e92eeb54b85915c483dc4e59829679c71",
   "sourceNames": [
     "server/starSpinCollection.ts",
     "games/wild-nudge/StarSpinCollection.ts",
@@ -35,5 +35,6 @@
   "preservedBackendInputs": {
     "src/i18n/en.ts": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68"
   },
-  "baselineBackendSha256": "7b11acb06fdbc5ff43a9cd18f9bdf5a687ca11ccd086562508150a48a9d6684a"
+  "baselineBackendSha256": "7b11acb06fdbc5ff43a9cd18f9bdf5a687ca11ccd086562508150a48a9d6684a",
+  "selectionSourceCommit": "d666a6aa11b47e3a4a3d474e38ae0f7d448dddb4"
 }

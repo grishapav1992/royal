@@ -71,6 +71,9 @@ def payload(b):
     backend = release['backendProjection']
     require(backend['entries'] == ['server/index.ts'] and backend['inputs']['server/starSpinCollection.ts'] == b.CHANGES['server/starSpinCollection.ts'], 'Wrong backend input')
     require(backend['output']['path'] == 'dist-server/index.js' and backend['output']['sha256'] == b.SERVER_DELTA['index.js'] == release['files']['dist-server/index.js'], 'Unverified backend bytes')
+    module = release['build']['moduleProjection']
+    require(set(module['modules']) == {GAME} and module['productionCommit'] == m['baseCommit'], 'Unrequested module projection')
+    validate_inputs(module, old, b.CHANGES)
     for name, digest in release['files'].items():
         if name.startswith('dist/'):
             require(old['program'].get(name) == digest, 'Client host would change: ' + name)
