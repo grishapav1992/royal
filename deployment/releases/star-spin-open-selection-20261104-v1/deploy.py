@@ -1,7 +1,7 @@
 """Publish free companion selection without changing financial or client host programs."""
 import sys
 sys.dont_write_bytecode = True
-import copy, fcntl, hashlib, importlib.util, json, signal, types
+import copy, fcntl, hashlib, importlib.util, json, re, signal, types
 from pathlib import Path
 
 NAME = 'star-spin-open-selection-20261104-v1'
@@ -54,6 +54,10 @@ def payload(b):
     require(old['program'] == old['preparedProgram'] and old['container']['image'] == old['preparedImage'], 'Baseline runtime differs')
     require(old['program']['dist-server/index.js'] == scope['baselineBackendSha256'], 'Backend baseline differs')
     require(sha(ROOT / 'deploy.py') == m['helperSha256'] and sha(ROOT / 'snapshot.py') == m['snapshotSha256'], 'Installer changed')
+    require(sha(ROOT / 'scope.json') == m['scopeSha256'] and sha(ROOT / 'installer-github.json') == m['helperReceiptSha256'], 'Installer evidence changed')
+    helper = read(ROOT / 'installer-github.json')
+    require(re.fullmatch(r'[a-f0-9]{40}', m['helperSourceCommit']) and helper['sourceCommit'] == m['helperSourceCommit'] and helper['applicationSourceCommit'] == m['sourceCommit'], 'Installer source is unverified')
+    require(all(n.startswith('deployment/releases/' + NAME + '/') for n in helper['changedOnlyReleaseTooling']), 'Installer changed application sources')
     expected_support = {'application-overlay.py','overlay-base.py','snapshot-base.py','image_metadata.py','runtime-inventory.cjs','quiesce.cjs','financial_gate.py','engine-build.py','publisher.py'}
     require(set(m['support']) == expected_support, 'Unexpected helper scope')
     for name, digest in m['support'].items():
