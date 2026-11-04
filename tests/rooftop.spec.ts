@@ -147,13 +147,13 @@ async function thirdFloorWindow(page:Page,project:string){
   };
   const leave=async()=>{
     if(mobile)await clickViewPoint(page,{x:STAIR_WINDOW.interior.x,y:STAIR_WINDOW.interior.top+70});
-    else{await walk(page,STAIR_WINDOW.entry.x,STAIR_WINDOW.entry.y);await page.keyboard.down('e');}
+    else{await walk(page,STAIR_WINDOW.entry.x,STAIR_WINDOW.entry.y);await page.keyboard.down('w');await page.keyboard.down('e');}
     try{
       await expect.poll(async()=>(await state(page)).hall).toBe('street');
       await expect.poll(async()=>(await state(page)).switching).toBe(false);
-      if(!mobile)await page.keyboard.down('e');
+      if(!mobile){await page.keyboard.down('e');await page.keyboard.down('w');}
       await page.waitForTimeout(250);expect((await state(page)).hall).toBe('street');
-    }finally{if(!mobile)await page.keyboard.up('e');}
+    }finally{if(!mobile){await page.keyboard.up('e');await page.keyboard.up('w');}}
     const returned=await state(page);expect(onRoofWindowPlatform(returned)).toBe(true);
     expect(Math.hypot(returned.x-STAIR_WINDOW.return.x,returned.y-STAIR_WINDOW.return.y)).toBeLessThan(.1);
     await noGroundConversation(page);
@@ -168,9 +168,13 @@ async function thirdFloorWindow(page:Page,project:string){
       const target=view.point(ROOF_STAIR_ROUTE[STAIR_WINDOW.landingIndex+(direction<0?1:-1)],true);
       await clickViewPoint(page,{x:(junction.x+target.x)/2,y:(junction.y+target.y)/2-8});
       await expect.poll(async()=>Math.sign((await state(page)).y-STAIR_WINDOW.landing.y)).toBe(direction);
-    }else await page.keyboard.press(direction<0?'ArrowUp':'ArrowDown',{delay:800});
+    }else{await page.keyboard.down(direction<0?'ArrowUp':'ArrowDown');await page.waitForTimeout(800);}
     const selected=await state(page);expect(selected.hall).toBe('street');expect(Math.sign(selected.y-STAIR_WINDOW.landing.y)).toBe(direction);
-    await enter();await leave();
+    try{
+      await enter();
+      if(!mobile){await page.keyboard.down(direction<0?'ArrowUp':'ArrowDown');await page.waitForTimeout(150);const stopped=await state(page);expect(Math.hypot(stopped.x-STAIR_WINDOW.arrival.x,stopped.y-STAIR_WINDOW.arrival.y)).toBeLessThan(.1);}
+    }finally{if(!mobile)await page.keyboard.up(direction<0?'ArrowUp':'ArrowDown');}
+    await leave();
   }
   await page.screenshot({path:'../landing-controls-'+project+'-return.png'});
   await page.evaluate((climb)=>{

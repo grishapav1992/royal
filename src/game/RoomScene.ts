@@ -76,6 +76,7 @@ export class RoomScene extends Phaser.Scene {
   private rooftop?: RooftopRenderer;
   private toilet?:ToiletRenderer;
   private windowArrival?:{from:Point;until:number;render?:boolean};
+  private heldWindowKeys=new Set<number>();
   private cardTables?: CardTablesRenderer;
   private cabinetStools = new Map<string, ReturnType<typeof drawCabinetStool>>();
   private switching=false;
@@ -200,6 +201,8 @@ export class RoomScene extends Phaser.Scene {
     this.resizeView();
     this.syncGuests(this.guestViews);
     this.keys = this.input.keyboard!.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE,SHIFT') as Record<string, Phaser.Input.Keyboard.Key>;
+    this.input.keyboard!.on('keyup',(event:KeyboardEvent)=>this.heldWindowKeys.delete(event.keyCode));
+    this.input.keyboard!.on('keydown',(event:KeyboardEvent)=>{if(!event.repeat)this.heldWindowKeys.delete(event.keyCode);});
     this.input.keyboard!.on('keydown-E', (event:KeyboardEvent) => {if(!event.repeat)this.interact();});
     this.input.keyboard!.on('keydown-SPACE', (event:KeyboardEvent) => {if(!event.repeat)this.interact();});
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer, objects: Phaser.GameObjects.GameObject[]) => {
@@ -291,7 +294,7 @@ export class RoomScene extends Phaser.Scene {
   getRoofMapArt() { return this.rooftop?.mapCanvas; }
   getToiletMapArt(){return this.toilet?.mapCanvas;}
   private beginWindowArrival(from:HallId,to:HallId){
-    if(from==='github'&&to==='street')this.input.keyboard?.resetKeys();
+    if(from==='github'&&to==='street')this.releaseWindowMovement();
     if(this.reducedMotion)return;
     if(from==='street'&&to==='github'){
       this.windowArrival={from:{x:STAIR_WINDOW.interior.x,y:177},until:this.time.now+500};this.switching=true;return;
@@ -471,14 +474,16 @@ export class RoomScene extends Phaser.Scene {
   private useStairWindow(approach=false){
     if(this.locked||this.typing||this.switching||this.isHuggingCat()||this.player.cabinet||this.networkSelf?.playing||this.player.seat||this.player.action==='drink')return;
     if(!stairWindowLink(this.player)){
-      if(approach&&this.hall==='github'){this.pendingCabinet=null;this.pendingLounge='stair-window';this.goTo(STAIR_WINDOW.entry);}
+      if(approach&&this.hall==='github'){this.releaseWindowMovement();this.pendingCabinet=null;this.pendingLounge='stair-window';this.goTo(STAIR_WINDOW.entry);}
       else if(approach&&canApproachStairWindow(this.player)){
+        this.releaseWindowMovement();
         this.pendingCabinet=null;this.pendingLounge='stair-window';
         const path=onRoofWindowPlatform(this.player)?[{...STAIR_WINDOW.outside}]:[{...STAIR_WINDOW.landing},{...STAIR_WINDOW.outside}];
         this.finishMovement(()=>{if(this.hall==='street')this.player.path=path;});
       }
       return;
     }
+    this.releaseWindowMovement();
     this.pendingCabinet=null;this.pendingLounge=null;this.marker.setVisible(false);
     this.finishMovement(()=>{
       if(this.network){this.network.stairWindow?.();return;}
@@ -488,6 +493,11 @@ export class RoomScene extends Phaser.Scene {
       this.showHall(link.target);Object.assign(this.player,arrival,{hall:link.target,moving:false});
       this.beginWindowArrival(previous,link.target);this.syncGuests(this.guestViews);
     });
+  }
+  private releaseWindowMovement(){
+    for(const name of ['W','A','S','D','UP','DOWN','LEFT','RIGHT']){
+      const key=this.keys?.[name];if(key?.isDown){this.heldWindowKeys.add(key.keyCode);key.reset();}
+    }
   }
   approachStreetResident(id:StreetResidentId){
     if(this.hall!=='street'||(this.player.stairStep??0)>0||this.locked||this.typing||this.switching||this.isHuggingCat()||this.player.cabinet||this.networkSelf?.playing)return;
@@ -932,8 +942,9 @@ export class RoomScene extends Phaser.Scene {
     const now = performance.now(), inputMs = Math.min(50, now-this.predictionClock); this.predictionClock = now;
     this.correction.x *= Math.exp(-dt*18); this.correction.y *= Math.exp(-dt*18);
     if (!this.locked && !this.isHuggingCat() && !this.typing && !this.switching && !this.player.cabinet && !this.networkSelf?.playing) {
-      let dx = Number(this.keys.D!.isDown || this.keys.RIGHT!.isDown) - Number(this.keys.A!.isDown || this.keys.LEFT!.isDown);
-      let dy = Number(this.keys.S!.isDown || this.keys.DOWN!.isDown) - Number(this.keys.W!.isDown || this.keys.UP!.isDown);
+      const pressed=(key:Phaser.Input.Keyboard.Key)=>key.isDown&&!this.heldWindowKeys.has(key.keyCode);
+      let dx = Number(pressed(this.keys.D!) || pressed(this.keys.RIGHT!)) - Number(pressed(this.keys.A!) || pressed(this.keys.LEFT!));
+      let dy = Number(pressed(this.keys.S!) || pressed(this.keys.DOWN!)) - Number(pressed(this.keys.W!) || pressed(this.keys.UP!));
       const onStairs=this.hall==='street'&&(this.player.stairStep??0)>0;
       if(onStairs){
         if(this.streetView.orientation==='rear')dx=-dx;
