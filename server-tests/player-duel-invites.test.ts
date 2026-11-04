@@ -9,12 +9,14 @@ import { PvpRoom } from '../server/pvp/room';
 import { virtualPvpCommand } from '../server/pvp/virtual-service';
 import { VIRTUAL_PVP_SCOPE, validPvpRequest } from '../src/shared/pvp';
 
-test('historical terms remain parseable for operation recovery; new invitation carries no stake options',()=>{
+test('historical invitations remain parseable; upfront offers accept only qualified stakes',()=>{
   const base={id:randomUUID(),action:'create',gameId:'tsu-e-fa',mode:'free',targetWins:3,stakeUnits:'0',targetId:randomUUID()};
   assert(validPvpRequest(base));
   for(const change of [{targetWins:2},{targetWins:4},{targetWins:100},{mode:'free',stakeUnits:'1000000'},{mode:'stake',stakeUnits:'0'},{gameId:'chess'},{mode:'free',amount:100}])assert(!validPvpRequest({...base,...change}));
   for(const targetWins of [3,5,7])assert(validPvpRequest({...base,targetWins}));
   const invite={id:randomUUID(),action:'invite',gameId:'tsu-e-fa',targetId:randomUUID()};assert(validPvpRequest(invite));assert(!validPvpRequest({...invite,mode:'free'}));assert(!validPvpRequest({...invite,stakeUnits:'0'}));
+  for(const stakeUnits of ['100000','200000','500000','1000000','2000000','5000000','10000000','20000000','50000000'])assert(validPvpRequest({...invite,stakeUnits}));
+  for(const stakeUnits of ['150000','-100000','500000000','NaN',100000,null])assert(!validPvpRequest({...invite,stakeUnits}));
 });
 
 test('trusted room enforces nearby invitations, gates money at readiness, and runs separate concurrent duels',async()=>{

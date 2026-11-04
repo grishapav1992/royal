@@ -14,6 +14,7 @@ import { registerGameChatDialog } from './GameChat';
 import './pvp.css';
 import {pvpSeat} from '../shared/pvpSeats';
 import {prepareGameModule} from '../modules/GameModulePreparation';
+import { TSU_DUEL_STAKES, TSU_DUEL_DEFAULT_STAKE, tsuDuelPayout } from '../shared/tsuDuel';
 
 const escape=(value:unknown)=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
 const money=(units:string)=>formatNileUnits(units)+' USDT';
@@ -30,6 +31,7 @@ export class PvpUI {
   private playerMenu:PlayerDuelMenu;
   private incoming=document.createElement('dialog');private seenInvites=new Set<string>();
   private autoOpened='';private autoReady=new Set<string>();private composing=false;
+  private boundTarget='';
   private tick:ReturnType<typeof setInterval>;
   constructor(private scene:RoomScene,private activities:ActivitiesUI,transport:(value:PvpRequest)=>boolean){
     this.client=new PvpClient(transport);
@@ -40,10 +42,12 @@ export class PvpUI {
       <div class="pvp-balance"><span>Общий баланс</span><strong data-balance>…</strong><small data-reserved></small><button type="button" data-wallet>Пополнить USDT</button></div>
       <p class="pvp-message" role="status" data-message></p><button type="button" class="primary-button" data-retry hidden>Проверить отправленное действие</button>
       <section class="pvp-active" data-active hidden></section><div data-card-module></div>
-      <form class="pvp-create" data-create><h3>Новый вызов</h3><label>Игра<select name="game">${Object.entries(PVP_GAMES).map(([id,name])=>`<option value="${id}">${name}</option>`).join('')}</select></label>
-      <label data-stake-field>Твоя ставка, USDT<input name="stake" inputmode="decimal" type="text" value="50" required autocomplete="off"></label>
-      <label>Соперник<select name="target"><option value="">Открытый стол для любого игрока</option></select></label>
-      <p class="pvp-preview" data-preview></p><button type="submit" class="primary-button" data-create-button>Создать вызов</button></form>
+      <form class="pvp-create" data-create><p class="pvp-recipient" data-recipient hidden></p><label>Игра<select name="game">${Object.entries(PVP_GAMES).map(([id,name])=>`<option value="${id}" ${id==='tsu-e-fa'?'selected':''}>${name}</option>`).join('')}</select></label>
+      <label data-stake-field>Ставка с каждого, USDT<input name="stake" inputmode="decimal" type="text" value="1" required autocomplete="off"></label>
+      <fieldset class="pvp-stakes" data-duel-stakes><legend>Ставка с каждого, USDT</legend><input type="hidden" name="duelStake" value="${TSU_DUEL_DEFAULT_STAKE}"><div>${TSU_DUEL_STAKES.map(v=>`<button type="button" data-stake-preset="${v}" aria-pressed="${v===TSU_DUEL_DEFAULT_STAKE}">${formatNileUnits(v)}</button>`).join('')}</div></fieldset>
+      <label data-target-field>С кем играем<select name="target"><option value="">Выбери игрока</option></select></label>
+      <p class="pvp-preview" data-preview></p><button type="submit" class="primary-button" data-create-button>Отправить предложение</button></form>
+      <button type="button" class="primary-button pvp-new" data-new hidden>Предложить ещё игру</button>
       <section data-invites><h3>Открытые столы и приглашения</h3><div class="pvp-challenges" data-list></div></section>
       <p class="pvp-note">Ставка автора резервируется сразу, ставка соперника при принятии. Комиссия казино: 5% от общего банка. При ничьей или отмене до начала обе ставки возвращаются. После разрыва связи есть 60 секунд на возвращение.</p>`;
     this.dialog.append(this.body);document.body.append(this.dialog);this.moduleRoot=this.body.querySelector('[data-card-module]')!;
@@ -53,23 +57,27 @@ export class PvpUI {
     this.body.querySelector<HTMLButtonElement>('[data-retry]')!.onclick=()=>this.client.retry();
     this.dialog.addEventListener('close',()=>{this.module?.destroy();this.module=undefined;this.moduleId='';this.scene.setLocked(!!document.querySelector('dialog[open]'));});
     const form=this.body.querySelector<HTMLFormElement>('[data-create]')!;
-    form.addEventListener('input',()=>this.preview());
+    const newOffer=()=>{this.boundTarget='';this.composing=true;this.update();};
+    this.body.querySelector<HTMLButtonElement>('[data-new]')!.onclick=newOffer;
+    form.addEventListener('input',()=>{this.preview();this.update();});
+    form.querySelectorAll<HTMLButtonElement>('[data-stake-preset]').forEach(button=>button.onclick=()=>{(form.elements.namedItem('duelStake')as HTMLInputElement).value=button.dataset.stakePreset!;this.preview();});
     form.onsubmit=event=>{event.preventDefault();this.run(()=>{
       const gameId=(form.elements.namedItem('game')as HTMLSelectElement).value as PvpGameId;
+      const targetId=this.boundTarget||(form.elements.namedItem('target')as HTMLSelectElement).value;
+      if(targetId&&!this.client.snapshot?.people.some(p=>p.accountId===targetId&&p.available))throw Error('Игрок сейчас недоступен. Отправь предложение, когда он вернётся.');
       if(gameId==='tsu-e-fa'){
-        const targetId=(form.elements.namedItem('target')as HTMLSelectElement).value;
         if(!targetId)throw Error('Выбери игрока для приглашения.');
-        this.client.send({id:crypto.randomUUID(),action:'invite',gameId,targetId});return;
+        this.client.send({id:crypto.randomUUID(),action:'invite',gameId,targetId,stakeUnits:(form.elements.namedItem('duelStake')as HTMLInputElement).value});return;
       }
       this.client.send({id:crypto.randomUUID(),action:'create',gameId,
         stakeUnits:usdtUnits((form.elements.namedItem('stake')as HTMLInputElement).value.trim().replace(',','.')),
-        targetId:(form.elements.namedItem('target')as HTMLSelectElement).value||null});
+        targetId:targetId||null});
     });};
     this.playerMenu=new PlayerDuelMenu(scene,this.client,account=>{
-      this.composing=false;this.run(()=>this.client.send({id:crypto.randomUUID(),action:'invite',gameId:'tsu-e-fa',targetId:account}));this.show();
+      this.boundTarget=account;this.composing=true;
       (form.elements.namedItem('game')as HTMLSelectElement).value='tsu-e-fa';
-      (form.elements.namedItem('target')as HTMLSelectElement).value=account;
-      this.preview();this.update();
+      (form.elements.namedItem('duelStake')as HTMLInputElement).value=TSU_DUEL_DEFAULT_STAKE;
+      this.preview();this.show();
     });
     this.incoming.id='pvp-incoming';this.incoming.className='pvp-incoming';this.incoming.setAttribute('aria-labelledby','pvp-incoming-title');document.body.append(this.incoming);
     this.incoming.addEventListener('close',()=>this.scene.setLocked(!!document.querySelector('dialog[open]')));
@@ -77,24 +85,24 @@ export class PvpUI {
     window.addEventListener('royal-account',event=>{
       const account=(event as CustomEvent<string|null>).detail;
       if(account===this.client.accountId)return;
-      this.playerMenu.reset();this.incoming.close();this.seenInvites.clear();this.autoOpened='';this.autoReady.clear();this.dialog.close();this.travelId='';this.openedId='';this.client.setAccount(account);
+      this.playerMenu.reset();this.incoming.close();this.seenInvites.clear();this.autoOpened='';this.autoReady.clear();this.boundTarget='';this.composing=false;this.dialog.close();this.travelId='';this.openedId='';this.client.setAccount(account);
     });
     activities.pvpOpen=id=>{
       if(id==='piano')return false;
       const active=this.client.snapshot?.active;
       if(active?.status==='playing'&&active.gameId===id&&!isPvpSnapshotGame(id)){this.openPhysics(active);return true;}
-      (form.elements.namedItem('game')as HTMLSelectElement).value=id;this.show();return true;
+      this.boundTarget='';this.composing=true;(form.elements.namedItem('game')as HTMLSelectElement).value=id;this.preview();this.show();return true;
     };
     this.tick=setInterval(()=>{this.playerMenu.tick();this.route();this.renderCountdown();this.offerIncoming();},250);this.preview();
   }
   updatePlayers(players:PlayerView[],self:string){this.playerMenu.update(players,self);}
   openPlayer(id:string){this.playerMenu.open(id);}
   private offerIncoming(){
-    const invitation=this.client.snapshot?.challenges.find(c=>c.status==='open'&&isDirectPvp(c)&&c.targetId===this.client.accountId&&!this.seenInvites.has(c.id));
+    const invitation=this.client.snapshot?.challenges.find(c=>c.status==='open'&&c.targetId===this.client.accountId&&!this.seenInvites.has(c.id));
     if(this.incoming.open){const id=this.incoming.dataset.match;if(!this.client.snapshot?.challenges.some(c=>c.id===id&&c.status==='open'))this.incoming.close();return;}
     if(!invitation||document.querySelector('dialog[open]')||!this.client.connected)return;
     this.seenInvites.add(invitation.id);this.incoming.dataset.match=invitation.id;
-    this.incoming.innerHTML=`<h2 id="pvp-incoming-title">Приглашение в «Цу-е-фа»</h2><p>${escape(invitation.creatorName)} предлагает сыграть до ${invitation.targetWins??3} побед.</p><p>${isNegotiatedPvp(invitation)?'Ставку от 0,10 USDT вы выберете вместе в окне дуэли. Деньги списываются только после двух подтверждений «Готово».':isFreePvp(invitation)?'Бесплатная игра. Без списаний и комиссии.':`Твоя ставка ${money(invitation.stakeUnits)}. Победителю ${money(invitation.payoutUnits)}. Комиссия ${money(invitation.feeUnits)} (5%).`}</p><button type="button" data-accept>Принять приглашение</button><button type="button" data-decline>Отклонить</button><button type="button" data-later>Позже</button>`;
+    this.incoming.innerHTML=`<small>ПРЕДЛОЖЕНИЕ ИГРЫ</small><h2 id="pvp-incoming-title">${escape(PVP_GAMES[invitation.gameId])}</h2><p>${escape(invitation.creatorName)} приглашает тебя сыграть${isDirectPvp(invitation)?` до ${invitation.targetWins??3} побед`:''}.</p><p>${isNegotiatedPvp(invitation)&&!invitation.offeredStake?'Ставку от 0,10 USDT вы выберете вместе в окне дуэли. Деньги списываются только после двух подтверждений «Готово».':isFreePvp(invitation)?'Бесплатная игра. Без списаний и комиссии.':`Ставка с каждого <strong>${money(invitation.stakeUnits)}</strong>.<br>Победителю ${money(invitation.payoutUnits)} · Комиссия ${money(invitation.feeUnits)} (5%).`}</p>${invitation.offeredStake?'<p>Принимая предложение, ты подтверждаешь эту ставку на весь матч. Списание после загрузки игры у обоих.</p>':''}<button type="button" data-accept>${invitation.offeredStake?`Играть за ${money(invitation.stakeUnits)}`:'Принять приглашение'}</button><button type="button" data-decline>Отклонить</button><button type="button" data-later>Позже</button>`;
     this.incoming.querySelector<HTMLButtonElement>('[data-accept]')!.onclick=()=>{this.incoming.close();this.show();this.action('accept',invitation.id);};
     this.incoming.querySelector<HTMLButtonElement>('[data-decline]')!.onclick=()=>{this.incoming.close();this.action('cancel',invitation.id);};
     this.incoming.querySelector<HTMLButtonElement>('[data-later]')!.onclick=()=>this.incoming.close();
@@ -106,7 +114,11 @@ export class PvpUI {
     const tsu=this.body.querySelector<HTMLSelectElement>('[name=game]')!.value==='tsu-e-fa';
     const input=this.body.querySelector<HTMLInputElement>('[name=stake]')!;input.disabled=tsu;input.required=!tsu;
     this.body.querySelector<HTMLElement>('[data-stake-field]')!.hidden=tsu;
-    if(tsu){this.body.querySelector('[data-preview]')!.textContent='Пригласи игрока. Ставку от 0,10 USDT вы согласуете после принятия приглашения. Матч до 2 побед: 2:0 или 2:1. Ничьи переигрываются.';return;}
+    this.body.querySelector<HTMLElement>('[data-duel-stakes]')!.hidden=!tsu;
+    const first=this.body.querySelector<HTMLOptionElement>('[name=target] option')!;first.textContent=tsu?'Выбери игрока':'Открытый стол для любого игрока';
+    const stake=this.body.querySelector<HTMLInputElement>('[name=duelStake]')!.value;
+    this.body.querySelectorAll<HTMLButtonElement>('[data-stake-preset]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.stakePreset===stake)));
+    if(tsu){const payout=tsuDuelPayout(stake);this.body.querySelector('[data-preview]')!.innerHTML=`Победителю <strong>${money(payout.payoutUnits)}</strong> · Комиссия ${money(payout.feeUnits)} (5%).<br>До 2 побед. Одна ставка на матч. Списание после принятия.`;return;}
     try{const stake=usdtUnits(this.body.querySelector<HTMLInputElement>('[name=stake]')!.value.trim().replace(',','.')),payout=pvpPayout(stake);
       if(!validVirtualPvpStake(stake))throw Error();
       this.body.querySelector('[data-preview]')!.textContent=`Оба ставят по ${money(stake)}. Банк ${money(payout.potUnits)}. Победителю ${money(payout.payoutUnits)}, казино ${money(payout.feeUnits)}.`;
@@ -115,19 +127,20 @@ export class PvpUI {
   private action(action:'accept'|'cancel'|'ready'|'resign',id:string){this.run(()=>this.client.send({id:crypto.randomUUID(),action,challengeId:id}));}
   private update(){
     const snapshot=this.client.snapshot,c=snapshot?.active,self=this.client.accountId,busy=!!this.client.pending;
+    if(c?.offeredStake&&(!this.client.connected||c.disconnected.length))this.autoReady.delete(c.id);
     if(c&&['open','arriving','playing'].includes(c.status))this.composing=false;
     const direct=!!c&&isDirectPvp(c);
     const negotiated=!!c&&isNegotiatedPvp(c);this.dialog.dataset.negotiated=String(negotiated);
-    const directView=direct||this.composing||(!c||!['open','arriving','playing'].includes(c.status))&&this.body.querySelector<HTMLSelectElement>('[name=game]')!.value==='tsu-e-fa';
+    const directView=direct&&!this.composing;
     this.dialog.dataset.direct=String(directView);
-    this.body.querySelector('#pvp-title')!.textContent=directView?'Цу-е-фа':'Поединки';
+    this.body.querySelector('#pvp-title')!.textContent=this.composing||!c?'Предложить игру':PVP_GAMES[c.gameId];
     if(c&&direct&&['arriving','playing'].includes(c.status)&&this.autoOpened!==c.id){this.autoOpened=c.id;this.incoming.close();this.show();return;}
     if(c?.status==='arriving'&&!this.packages.has(c.id)){
       const id=c.id;this.packages.set(id,'loading');void prepareGameModule(c.gameId).then(ready=>{this.packages.set(id,ready?'ready':'failed');this.update();});
     }
     if(c&&['finished','cancelled'].includes(c.status)&&!isPvpSnapshotGame(c.gameId)&&this.openedId===c.id){this.openedId='';this.activities.closeWager();this.show();return;}
     const hasView=!!(snapshot?.cards||snapshot?.tsuEFa);
-    const showModule=!this.composing&&!!c&&hasView&&(c.status==='playing'||negotiated&&c.status==='arriving'||c.gameId==='tsu-e-fa'&&['finished','cancelled'].includes(c.status));
+    const showModule=!this.composing&&!!c&&hasView&&(c.status==='playing'||negotiated&&!c.offeredStake&&c.status==='arriving'||c.gameId==='tsu-e-fa'&&['finished','cancelled'].includes(c.status));
     this.dialog.dataset.phase=c?.status??'lobby';this.dialog.dataset.cards=String(showModule);
     this.moduleRoot.hidden=!showModule;
     this.button.hidden=!self;
@@ -139,10 +152,16 @@ export class PvpUI {
     this.body.querySelector('[data-message]')!.textContent=this.message||this.client.error||(!this.client.connected?'Нет связи с залом. Действия сохраняются до повторной проверки.':busy?'Действие отправлено. Дождись подтверждения.':'');
     this.body.querySelector<HTMLButtonElement>('[data-retry]')!.hidden=!busy;
     const form=this.body.querySelector<HTMLFormElement>('[data-create]')!,active=!!c&&['open','arriving','playing'].includes(c.status);
-    form.hidden=active||negotiated&&showModule;this.body.querySelector<HTMLElement>('[data-invites]')!.hidden=active||negotiated&&showModule;
-    form.querySelector<HTMLButtonElement>('[data-create-button]')!.disabled=busy||!this.client.connected||wallet?.state!=='assigned'||!wallet.ready;
+    form.hidden=active||!this.composing&&!!c;this.body.querySelector<HTMLElement>('[data-invites]')!.hidden=active||!!this.boundTarget||showModule;
+    this.body.querySelector<HTMLElement>('[data-new]')!.hidden=active||this.composing||!c;
+    this.body.querySelector<HTMLElement>('.pvp-note')!.hidden=active||!!this.boundTarget||showModule||(form.elements.namedItem('game')as HTMLSelectElement).value==='tsu-e-fa';
+    const target=this.boundTarget||(form.elements.namedItem('target')as HTMLSelectElement).value;
+    const person=snapshot?.people.find(p=>p.accountId===this.boundTarget);
+    this.body.querySelector<HTMLElement>('[data-target-field]')!.hidden=!!this.boundTarget;
+    const recipient=this.body.querySelector<HTMLElement>('[data-recipient]')!;recipient.hidden=!this.boundTarget;recipient.textContent=person?`Соперник: ${person.name}${person.available?'':' · сейчас занят'}`:'Игрок сейчас недоступен';
+    form.querySelector<HTMLButtonElement>('[data-create-button]')!.disabled=busy||!this.client.connected||wallet?.state!=='assigned'||!wallet.ready||!!this.boundTarget&&!person?.available||!target&&(form.elements.namedItem('game')as HTMLSelectElement).value==='tsu-e-fa';
     const select=form.elements.namedItem('target')as HTMLSelectElement,selected=select.value;
-    const options='<option value="">Открытый стол для любого игрока</option>'+(snapshot?.people??[]).map(p=>`<option value="${escape(p.accountId)}" ${!p.available?'disabled':''}>${escape(p.name)}${!p.available?' · занят':''}</option>`).join('');
+    const options=`<option value="">${(form.elements.namedItem('game')as HTMLSelectElement).value==='tsu-e-fa'?'Выбери игрока':'Открытый стол для любого игрока'}</option>`+(snapshot?.people??[]).map(p=>`<option value="${escape(p.accountId)}" ${!p.available?'disabled':''}>${escape(p.name)}${!p.available?' · занят':''}</option>`).join('');
     if(select.innerHTML!==options){select.innerHTML=options;select.value=Array.from(select.options).some(o=>o.value===selected)?selected:'';}
     const panel=this.body.querySelector<HTMLElement>('[data-active]')!;panel.hidden=!c||this.composing;
     if(c){
@@ -154,11 +173,14 @@ export class PvpUI {
         ${c.status==='open'||c.status==='arriving'?`<button type="button" data-pvp-action="cancel" data-id="${c.id}" ${busy?'disabled':''}>Отменить вызов</button>`:''}
         ${c.status==='arriving'?`${direct?'':`<button type="button" data-route>Идти к столу</button><button type="button" class="primary-button" data-pvp-action="ready" data-id="${c.id}" ${busy||c.ready.includes(self!)||this.packages.get(c.id)!=='ready'?'disabled':''}>${c.ready.includes(self!)?'Готовность подтверждена':this.packages.get(c.id)==='ready'?'Я готов за столом':'Подготавливаем игру…'}</button>`}${this.packages.get(c.id)==='failed'?'<button type="button" data-prepare>Повторить загрузку игры</button>':''}`:''}
         ${c.status==='playing'?`${!isPvpSnapshotGame(c.gameId)?'<button type="button" class="primary-button" data-open-table>Открыть стол</button>':''}<button type="button" data-pvp-action="resign" data-id="${c.id}" ${busy?'disabled':''}>Сдаться</button>`:''}</div>`;
-      const panelHtml=negotiated&&c.status==='open'?`<h3>Приглашение отправлено</h3><p>Ждём согласия игрока. Условия вы выберете вместе в окне с руками. Деньги не списаны.</p><p data-countdown></p><button type="button" data-pvp-action="cancel" data-id="${c.id}" ${busy?'disabled':''}>Отозвать приглашение</button>`:html;
+      const panelHtml=c.offeredStake&&c.status==='arriving'?`<h3>Предложение принято</h3><p>Подготавливаем игру у обоих игроков. Ставка с каждого ${money(c.stakeUnits)}.</p><p data-countdown></p>${this.client.error||this.packages.get(c.id)==='failed'?'<button type="button" data-prepare>Повторить подготовку</button>':''}<button type="button" data-pvp-action="cancel" data-id="${c.id}" ${busy?'disabled':''}>Отменить игру</button>`:c.status==='open'?`<small>ПРЕДЛОЖЕНИЕ ОТПРАВЛЕНО</small><h3>Ждём ответа${c.targetId?` · ${escape(snapshot?.people.find(p=>p.accountId===c.targetId)?.name??'соперника')}`:''}</h3><p><strong>${escape(PVP_GAMES[c.gameId])} · ${money(c.stakeUnits)} с каждого</strong></p><p>${negotiated&&!c.offeredStake?'Условия вы выберете вместе в окне игры.':`Победителю ${money(c.payoutUnits)} · Комиссия ${money(c.feeUnits)} (5%).`}${negotiated?' Деньги пока не списаны.':''}</p><p data-countdown></p><button type="button" data-pvp-action="cancel" data-id="${c.id}" ${busy?'disabled':''}>Отозвать предложение</button>`:html;
       if(panel.dataset.render!==panelHtml){panel.innerHTML=panelHtml;panel.dataset.render=panelHtml;}
       const route=panel.querySelector<HTMLButtonElement>('[data-route]');if(route)route.onclick=()=>{this.travelId=c.id;this.routeHall='';this.dialog.close();this.route();};
       const open=panel.querySelector<HTMLButtonElement>('[data-open-table]');if(open)open.onclick=()=>this.openPhysics(c);
       const prepare=panel.querySelector<HTMLButtonElement>('[data-prepare]');if(prepare)prepare.onclick=()=>{this.packages.delete(c.id);this.autoReady.delete(c.id);this.update();};
+      if(c.offeredStake&&c.status==='arriving'&&!c.disconnected.length&&this.packages.get(c.id)==='ready'&&!busy&&this.client.connected&&!c.ready.includes(self!)&&!this.autoReady.has(c.id)){
+        this.autoReady.add(c.id);queueMicrotask(()=>{if(this.client.snapshot?.active?.id===c.id&&this.client.snapshot.active.status==='arriving'&&!this.client.pending)this.run(()=>this.client.send({id:crypto.randomUUID(),action:'duel-ready',challengeId:c.id,termsRevision:c.termsRevision??0}));else this.autoReady.delete(c.id);});
+      }
       if(c.status==='arriving'&&!direct&&this.travelId!==c.id){this.travelId=c.id;this.routeHall='';this.dialog.close();}
       if(c.status==='arriving'&&direct&&!negotiated&&this.packages.get(c.id)==='ready'&&!busy&&this.client.connected&&!c.ready.includes(self!)&&!this.autoReady.has(c.id)){
         this.autoReady.add(c.id);queueMicrotask(()=>{if(this.client.snapshot?.active?.id===c.id&&this.client.snapshot.active.status==='arriving'&&!this.client.pending)this.action('ready',c.id);else this.autoReady.delete(c.id);});
