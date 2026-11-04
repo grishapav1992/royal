@@ -6,7 +6,7 @@ import { drawGeneratedSkin, hasSkinSheet, loadSkinSheet } from './generatedSkinA
 import { drawMira } from './miraArt';
 import { CHARACTER_WALK_FRAMES, CHARACTER_WALK_FRAME_RATE } from './characterAnimation';
 import { drawProfileArm, drawProfileLimb, profileArmPose, profileBodyPoint, profileBodyPose, profileLegPose } from './profileWalk';
-import { frontalArmPose, frontalBodyPose, frontalLegPose } from './frontalWalk';
+import { drawFrontalArmSkin, frontalArmPose, frontalBodyPose, frontalLegPose, traceFrontalTop } from './frontalWalk';
 
 import type { Facing } from '../shared/movement';
 export type { Facing } from '../shared/movement';
@@ -225,9 +225,10 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
     c.translate(-32, -66);
     const left = side ? 19 - width * .3 : 11 - width;
     const right = side ? 45 + width * .3 : 53 + width;
+    const frontalArms = frontal ? ([-1, 1] as const).map(sign => frontalArmPose(frame, sign, 44.5, 32 - left, 21, back)) : null;
     const arm = (far: boolean) => {
-      if (frontal) {
-        drawProfileArm(c, frontalArmPose(frame, far ? -1 : 1, 48, 32 - left, 21, back), p.shirt, p.skin, ink);
+      if (frontalArms) {
+        drawFrontalArmSkin(c, frontalArms[far ? 0 : 1], p.skin, ink);
         return;
       }
       if (profile) {
@@ -254,15 +255,19 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         c.strokeStyle = p.shade; c.lineWidth = .55; c.stroke();
       });
     };
-    // The torso covers both sleeve roots instead of outlining separate shoulder caps.
+    // The hands sit below one continuous shirt-and-sleeve contour.
     if (frontal) { arm(true); arm(false); }
     if (side) arm(true);
     if (p.style === 'long') oval(side ? 23 : 31, 36, side ? 12 : 24, 25, p.hair);
-    c.beginPath(); c.moveTo(side ? 28 : 20, 42);
-    c.quadraticCurveTo(side ? 20 : 10, 43, left, 57);
-    c.lineTo(left - 1, 66); c.quadraticCurveTo(side ? 34 : 31, 72, right + 1, 66);
-    c.lineTo(right, 55); c.quadraticCurveTo(side ? 44 : 51, 43, side ? 39 : 43, 42);
-    c.closePath(); fill(p.shirt);
+    if (frontalArms) traceFrontalTop(c, frontalArms[0], frontalArms[1], 32 - left, 20, 43, 42, 66);
+    else {
+      c.beginPath(); c.moveTo(side ? 28 : 20, 42);
+      c.quadraticCurveTo(side ? 20 : 10, 43, left, 57);
+      c.lineTo(left - 1, 66); c.quadraticCurveTo(side ? 34 : 31, 72, right + 1, 66);
+      c.lineTo(right, 55); c.quadraticCurveTo(side ? 44 : 51, 43, side ? 39 : 43, 42);
+      c.closePath();
+    }
+    fill(p.shirt);
     if (!back) {
       const seam = side ? 43 : 32;
       line(seam, 48, seam, 68);
@@ -303,7 +308,7 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         c.lineTo(42, 51); c.quadraticCurveTo(32, 56, 22, 51); c.closePath(); fill(p.dark, .4);
       }
       line(32, 57, 32, 67, p.dark, .6);
-      line(left + 5, 66, right - 5, 66, p.dark, .7);
+      line(left + (frontal ? 9 : 5), 66, right - (frontal ? 9 : 5), 66, p.dark, .7);
       if (p.bartender) {
         line(left + 3, 62, right - 3, 62, '#e3e9cc', 2);
         c.beginPath(); c.moveTo(32, 62); c.lineTo(26, 59); c.lineTo(26, 65); c.closePath(); fill('#e3e9cc');

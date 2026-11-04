@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "productionCommit": "39b34944ee46074517c59065bdcf7454789875a4",
+  "productionCommit": "320d60725984c5cbd46829e9dc545f59cf9cd162",
   "entries": [
     "index.html"
   ],
@@ -15,7 +15,7 @@
       "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "src/main.ts",
       "baseSha256": "bb582cbad07f6d1e03a990f36c312057619e60a2037faf616c46b62feeceb80b",
-      "sha256": "1c954dd3d23cbe253c4f2e8bbee86dcc332ae689d11774b581bd9286e176b234",
+      "sha256": "93bd794d7947202d2b6cb48be84eeadcb1e7b8401ea0e50fb24de7023f6df251",
       "patches": [
         {
           "from": "import './own-cabinets.css';\nimport './mira-dialog.css';\nimport { DRINKS, HALLS, hallLinks, activityHall, type HallId } from './shared/world';\nimport type { BreakerStatus } from './game/breaker';\n",
@@ -64,6 +64,30 @@
         {
           "from": "Element>('.mini-bottom')!);\nconst layo",
           "to": "Element>('.mini-top')!);\nconst layo"
+        },
+        {
+          "from": "import './i18n/paymentMethodsEn';",
+          "to": "import { installPlayerRecoverySettings } from './ui/PlayerRecoverySettings';\nimport './i18n/paymentMethodsEn';"
+        },
+        {
+          "from": "\n$('#studio-game-list').addEventListener('click', showPlatformCatalog);\nasync function play(cabinet: Cabinet) {\n  if (openingCabinet || document.querySelector('dialog[open]')) return;\n  if (!cabinet.playable) { toast(tr`${cabinet.name} пока недоступен.`); return; }\n  const physical = CABINETS.find(c => c.id === cabinet.id);\n",
+          "to": "\n$('#studio-game-list').addEventListener('click', showPlatformCatalog);\nasync function play(cabinet: Cabinet) {\n  const recoveryVersion = playerRecoveryVersion;\n  if (openingCabinet || document.querySelector('dialog[open]')) return;\n  if (!cabinet.playable) { toast(tr`${cabinet.name} пока недоступен.`); return; }\n  const physical = CABINETS.find(c => c.id === cabinet.id);\n"
+        },
+        {
+          "from": "      return;\n    }\n    await new Promise(resolve => setTimeout(resolve, room.getState().reducedMotion ? 0 : 420));\n    if (room.getState().security || (social && social.client.status !== 'connected')) { room.endCabinet(); return; }\n    if (cabinet.collection && cabinet.collection!=='luelon') {\n      platformCabinet = cabinet;\n      selectedPlatformGame = undefined;\n",
+          "to": "      return;\n    }\n    await new Promise(resolve => setTimeout(resolve, room.getState().reducedMotion ? 0 : 420));\n    if (recoveryVersion !== playerRecoveryVersion || room.getState().security || (social && social.client.status !== 'connected')) { room.endCabinet(); return; }\n    if (cabinet.collection && cabinet.collection!=='luelon') {\n      platformCabinet = cabinet;\n      selectedPlatformGame = undefined;\n"
+        },
+        {
+          "from": "  $('.mini-stats').hidden = !!(platformCabinet || cabinet.demo || cabinet.wallet || cabinet.github);\n  $('.demo-footer').hidden = !cabinet.demo;\n  $('.mini-top .eyebrow').textContent = cabinet.demo ? translateText('LUELON PLAY / ДЕМО') : 'ROYAL ORIGINALS / 01';\n  $('.mini-top .settings-shortcut').hidden = !!cabinet.demo;\n  $('.mini-bottom kbd').hidden = !!cabinet.demo;\n  try { best = Number(localStorage.getItem('royal-'+activeGameId+'-best')) || 0; } catch { best=0; }\n  $('#mini-title').textContent = cabinet.name;\n",
+          "to": "  $('.mini-stats').hidden = !!(platformCabinet || cabinet.demo || cabinet.wallet || cabinet.github);\n  $('.demo-footer').hidden = !cabinet.demo;\n  $('.mini-top .eyebrow').textContent = cabinet.demo ? translateText('LUELON PLAY / ДЕМО') : 'ROYAL ORIGINALS / 01';\n  $('.mini-top .settings-shortcut').hidden = false;\n  $('.mini-bottom kbd').hidden = !!cabinet.demo;\n  try { best = Number(localStorage.getItem('royal-'+activeGameId+'-best')) || 0; } catch { best=0; }\n  $('#mini-title').textContent = cabinet.name;\n"
+        },
+        {
+          "from": "  });\n}\nlet elevator: ElevatorUI | undefined;\nconst room = new RoomScene({\n  onNear: cabinet => {\n    $('#interaction').hidden = !cabinet;\n",
+          "to": "  });\n}\nlet elevator: ElevatorUI | undefined;\nlet playerRecoveryVersion = 0;\nconst room = new RoomScene({\n  onNear: cabinet => {\n    $('#interaction').hidden = !cabinet;\n"
+        },
+        {
+          "from": "      settings.querySelector('#close-settings')!.addEventListener('click',()=>settings.close());\n      settings.addEventListener('close',()=>room.setLocked(Boolean(document.querySelector('dialog[open]'))));\n    }\n    layout.attach(room);\n    updateHall(room.hall);\n  },\n",
+          "to": "      settings.querySelector('#close-settings')!.addEventListener('click',()=>settings.close());\n      settings.addEventListener('close',()=>room.setLocked(Boolean(document.querySelector('dialog[open]'))));\n    }\n    installPlayerRecoverySettings($<HTMLDialogElement>('#name-dialog'), async () => {\n      playerRecoveryVersion++;\n      if (!await room.recoverPlayer()) return false;\n      document.querySelectorAll<HTMLDialogElement>('dialog[open]').forEach(dialog => dialog.close());\n      room.setLocked(Boolean(social && social.client.status !== 'connected'));\n      $('#game').focus({ preventScroll: true });\n      toast(translateText('Персонаж вернулся ко входу на этаж.'));\n      return true;\n    });\n    layout.attach(room);\n    updateHall(room.hall);\n  },\n"
         }
       ]
     },
@@ -285,7 +309,7 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/game/RoomScene.ts",
       "baseSha256": "d7e1b0f05eb6be5dcf594ef0ea96e0edf902515b493bafa4f9ac3113745730a2",
-      "sha256": "5529abb634e9a81f58c29ee21726c44555adfbff7f07ef20a9c64e28e3cc7831",
+      "sha256": "99c20b4d4c9e2c7f8684a4a9fdd340a61575f9258324b1933a893f26fc199a16",
       "patches": [
         {
           "from": "ngLounge.startsW",
@@ -354,6 +378,18 @@
         {
           "from": "    if (this.hall==='arc",
           "to": "    const nearbyPlayer=[...this.remotePlayers.values()].map(p=>p.target).filter(p=>p.connected&&p.hall===this.hall&&!p.playing&&!p.activity)\n      .sort((a,b)=>Math.hypot(a.x-this.player.x,a.y-this.player.y)-Math.hypot(b.x-this.player.x,b.y-this.player.y))[0];\n    if(nearbyPlayer&&Math.hypot(nearbyPlayer.x-this.player.x,nearbyPlayer.y-this.player.y)<110&&!this.isHuggingCat()) {this.onPlayer(nearbyPlayer.id);return;}\n    if (this.hall==='arc"
+        },
+        {
+          "from": "import { t as translateText, tr } from '../i18n/index';\nimport { cabinetSeat, type GameReaction } from '../shared/cabinetSeating';\nimport { drawCabinetStool } from './cabinetStoolArt';\nimport { drawClubFloor } from './clubArt';\nimport { LUELON_NEW_ZONE, ARCADE_OVERVIEW_SIZE } from '../shared/clubLayout';\n",
+          "to": "import { t as translateText, tr } from '../i18n/index';\nimport { cabinetSeat, type GameReaction } from '../shared/cabinetSeating';\nimport { playerRecoveryPoint } from '../shared/playerRecovery';\nimport { drawCabinetStool } from './cabinetStoolArt';\nimport { drawClubFloor } from './clubArt';\nimport { LUELON_NEW_ZONE, ARCADE_OVERVIEW_SIZE } from '../shared/clubLayout';\n"
+        },
+        {
+          "from": "    if (cabinet) { Object.assign(this.player, cabinetSeat(cabinet).entry); this.cabinetStools.get(cabinet.id)?.setOccupied(false); }\n    Object.assign(this.player, { cabinet: '', seat: '', action: 'idle', gameReaction: '', gameReactionUntil: 0 });\n  }\n  reactToGame(reaction: GameReaction) {\n    const id = this.networkSelf?.cabinet || this.player.cabinet;\n    if (!id || this.securityLocked) return;\n",
+          "to": "    if (cabinet) { Object.assign(this.player, cabinetSeat(cabinet).entry); this.cabinetStools.get(cabinet.id)?.setOccupied(false); }\n    Object.assign(this.player, { cabinet: '', seat: '', action: 'idle', gameReaction: '', gameReactionUntil: 0 });\n  }\n  async recoverPlayer(): Promise<boolean> {\n    if (this.securityLocked || this.switching) return false;\n    if (this.network) return await this.network.recover?.() ?? false;\n    const point = playerRecoveryPoint(this.hall);\n    if (!point) return false;\n    this.cancelCabinetAdmission?.(); this.clickTargets.reset(); this.prediction.reset(); this.afterMovement = undefined;\n    this.pendingCabinet = null; this.pendingLounge = null;\n    this.catRoutine.interact('release', this.catPerson());\n    this.endCabinet();\n    Object.assign(this.player, point, { path: [], seat: '', action: 'idle', drink: '', actionUntil: 0, moving: false, facing: 'down' });\n    return true;\n  }\n  reactToGame(reaction: GameReaction) {\n    const id = this.networkSelf?.cabinet || this.player.cabinet;\n    if (!id || this.securityLocked) return;\n"
+        },
+        {
+          "from": "elevator: commands.elevator, cat: comman",
+          "to": "recover: commands.recover, elevator: commands.elevator, cat: comman"
         }
       ]
     },
@@ -413,7 +449,7 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/shared/world.ts",
       "baseSha256": "88c5b4473a23d396e12dc699174caa764ede9257dfea2df5361eaef14ea8e45d",
-      "sha256": "f739222b97caf367355fede3d921a180b1a317be3ecdab974d624a669a69062f",
+      "sha256": "3c9b6a418a473a093f2af478d83ae893807a2809dde8ab468269df4c4a2d8e87",
       "patches": [
         {
           "from": "nds = { cat?: (a",
@@ -422,6 +458,10 @@
         {
           "from": "bounds, ...PLANT",
           "to": "bounds, ACTIVITIES['tsu-e-fa'].bounds, ...PLANT"
+        },
+        {
+          "from": "export type NetworkCommands = { ",
+          "to": "export type NetworkCommands = { recover?: () => Promise<boolean>; "
         }
       ]
     },
@@ -429,7 +469,7 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/ui/SocialUI.ts",
       "baseSha256": "80453ad682038acf65e9b2696a399430e5829e94eabaefd6c2f0a6479175d100",
-      "sha256": "4302321e1a408dd6cfc34c37247def752bcdd110100b184913d73ff9d0ff777e",
+      "sha256": "7bf92f4a6efd818029d3dc00efe8d070c923972abfc8a85bf36660176ca06518",
       "patches": [
         {
           "from": "      return this.sendChat(text);\n    }, value => this.scene.setTyping(value));\n    this.invite = document.createElement('button'); this.invite.className = 'invite-button'; this.invite.id='invite'; this.invite.textContent = translateText('Пригласить'); this.invite.disabled = true;\n    document.querySelector('.room-tools')!.prepend(this.invite);\n    this.invite.addEventListener('click', async () => {\n",
@@ -494,6 +534,10 @@
         {
           "from": ", selfId) => {\n ",
           "to": ", selfId, recovering) => {\n "
+        },
+        {
+          "from": "        this.scene.enableOnline({ ",
+          "to": "        this.scene.enableOnline({ recover: () => this.client.recoverPlayer(), "
         }
       ]
     },
@@ -627,7 +671,7 @@
       "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "src/i18n/en.ts",
       "baseSha256": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68",
-      "sha256": "e6a39483750df92467b584e98319ce679f2a3489669e4b0d3f64a2d7ba0a762c",
+      "sha256": "84203044eb334f6c53953acc5b300db8c26e541eccf6955d608fc66e5e4e0082",
       "patches": [
         {
           "from": "  \"Изменения звука сохраняются сразу.\": \"Sound settings are saved automatically.\",\n  \"Настройки\": \"Settings\",\n  \"Открыть настройки\": \"Open settings\",\n  \".profile [aria-label=\\\"Настройки игрока\\\"]\": \".profile [aria-label=\\\"Player settings\\\"]\",\n",
@@ -656,6 +700,10 @@
         {
           "from": "\n};\n",
           "to": "\n  'Галактический реактор':'Star Spin',\n};\n"
+        },
+        {
+          "from": "  'ЛИФТ': 'ELEVATOR',\n  'Лифт': 'Elevator',\n  'Выйти из лифта': 'Leave the elevator',\n",
+          "to": "  \"Помощь\": \"Help\",\n  \"Персонаж застрял\": \"Character stuck\",\n  \"Вернуться ко входу на этаж. Игровой прогресс сохранится.\": \"Return to the floor entrance. Your game progress will be saved.\",\n  \"Возвращаем персонажа ко входу…\": \"Returning your character to the entrance…\",\n  \"Возврат не подтверждён. Проверь подключение или заверши совместную игру и попробуй ещё раз.\": \"Return was not confirmed. Check your connection or leave the multiplayer game and try again.\",\n  \"Не удалось вернуть персонажа. Проверь подключение и попробуй ещё раз.\": \"Could not return your character. Check your connection and try again.\",\n  \"Персонаж вернулся ко входу на этаж.\": \"Your character returned to the floor entrance.\",\n  \"Сейчас возврат недоступен. Проверь подключение и дождись окончания текущего действия.\": \"Return is unavailable. Check your connection and wait for the current action to finish.\",\n  \"Положение персонажа изменилось. Попробуй ещё раз.\": \"Your character position has changed. Please try again.\",\n  \"Сначала выйди из совместной игры через её меню.\": \"Leave the multiplayer game through its menu first.\",\n  \"Дождись завершения заказа и попробуй ещё раз.\": \"Wait for your order to finish and try again.\",\n  \"Не удалось найти свободное место у входа. Попробуй ещё раз.\": \"Could not find a clear spot near the entrance. Please try again.\",\n\n  'ЛИФТ': 'ELEVATOR',\n  'Лифт': 'Elevator',\n  'Выйти из лифта': 'Leave the elevator',\n"
         }
       ]
     },
@@ -1027,7 +1075,33 @@
       "commit": "ee5ca86fb0545fe4ba6d410872c48c5d80288621",
       "path": "src/network/LobbyClient.ts",
       "baseSha256": "1a2115cdf842acc39498aa557724dfb7ceefe1b390032a469d8c508e67ece240",
-      "sha256": "1a2115cdf842acc39498aa557724dfb7ceefe1b390032a469d8c508e67ece240"
+      "sha256": "5704cac3ea3e62075d6bdfa019764eedcc262f896602463fbb0c4832883c174d",
+      "patches": [
+        {
+          "from": "import type { CabinetPlayResult } from '../shared/cabinetSeating';\nimport type { ChatRequest, ChatResult } from '../shared/chat';\nimport type { PvpSnapshot } from '../shared/pvp';\nexport type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';\nexport class LobbyClient {\n  private client = new Client(import.meta.env.VITE_SERVER_URL || `${location.origin}${import.meta.env.DEV ? '/multiplayer' : ''}`, { fetchFn: lobbyMatchmakingFetch });\n",
+          "to": "import type { CabinetPlayResult } from '../shared/cabinetSeating';\nimport type { ChatRequest, ChatResult } from '../shared/chat';\nimport type { PvpSnapshot } from '../shared/pvp';\nimport type { PlayerRecoveryResult } from '../shared/playerRecovery';\nexport type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';\nexport class LobbyClient {\n  private client = new Client(import.meta.env.VITE_SERVER_URL || `${location.origin}${import.meta.env.DEV ? '/multiplayer' : ''}`, { fetchFn: lobbyMatchmakingFetch });\n"
+        },
+        {
+          "from": "  private activities?:ActivitiesState;\n  private cabinetRequest = 0;\n  private elevatorRequest = 0;\n  private hall?: HallId;\n  private pendingElevator?: { target: HallId; requestId: number; revision?: number; finish: (accepted: boolean) => void; timer: ReturnType<typeof setTimeout> };\n  private releaseCabinetWhenConnected = false;\n",
+          "to": "  private activities?:ActivitiesState;\n  private cabinetRequest = 0;\n  private elevatorRequest = 0;\n  private recoveryRequest = 0;\n  private pendingPlayerRecovery?: { requestId: number; hall?: HallId; revision?: number; finish: (accepted: boolean) => void; timer: ReturnType<typeof setTimeout> };\n  private hall?: HallId;\n  private pendingElevator?: { target: HallId; requestId: number; revision?: number; finish: (accepted: boolean) => void; timer: ReturnType<typeof setTimeout> };\n  private releaseCabinetWhenConnected = false;\n"
+        },
+        {
+          "from": "          this.confirmElevator();\n        }\n      });\n      onMessage('activities', (message:ActivitiesMessage) => {\n        // Patches received before the initial snapshot cannot establish a baseline.\n        if('patch' in message&&!this.activities)return;\n",
+          "to": "          this.confirmElevator();\n        }\n      });\n      onMessage('unstuck-result', (result: PlayerRecoveryResult) => {\n        const pending = this.pendingPlayerRecovery;\n        if (!pending || result.requestId !== pending.requestId) return;\n        if (!result.accepted) {\n          if (result.reason) this.events.notice(translateText(result.reason));\n          this.finishPlayerRecovery(false);\n        } else if (Number.isSafeInteger(result.revision)) {\n          pending.revision = result.revision;\n          this.confirmPlayerRecovery();\n        }\n      });\n      onMessage('activities', (message:ActivitiesMessage) => {\n        // Patches received before the initial snapshot cannot establish a baseline.\n        if('patch' in message&&!this.activities)return;\n"
+        },
+        {
+          "from": "        this.events.guards(guards);\n        this.events.players(players, room.sessionId);\n        this.confirmElevator();\n        const guests:AmbientGuestView[]=[];\n        state.guests?.forEach(guest=>guests.push({id:guest.id,name:guest.name,hall:guest.hall as AmbientGuestView['hall'],x:guest.x,y:guest.y,skin:guest.skin,facing:guest.facing as AmbientGuestView['facing'],moving:guest.moving,mood:guest.mood as AmbientGuestView['mood'],drink:guest.drink,seat:guest.seat,destination:guest.destination}));\n        this.events.guests(guests);\n",
+          "to": "        this.events.guards(guards);\n        this.events.players(players, room.sessionId);\n        this.confirmElevator();\n        this.confirmPlayerRecovery();\n        const guests:AmbientGuestView[]=[];\n        state.guests?.forEach(guest=>guests.push({id:guest.id,name:guest.name,hall:guest.hall as AmbientGuestView['hall'],x:guest.x,y:guest.y,skin:guest.skin,facing:guest.facing as AmbientGuestView['facing'],moving:guest.moving,mood:guest.mood as AmbientGuestView['mood'],drink:guest.drink,seat:guest.seat,destination:guest.destination}));\n        this.events.guests(guests);\n"
+        },
+        {
+          "from": "    this.status = status;\n    if (status !== 'connected') this.events.checking(false);\n    if (status !== 'connected') this.finishElevator(false);\n    if (status !== 'connected' && this.pendingCabinet) {\n      this.releaseCabinetWhenConnected = true;\n      const pending = this.pendingCabinet; this.pendingCabinet = undefined;\n",
+          "to": "    this.status = status;\n    if (status !== 'connected') this.events.checking(false);\n    if (status !== 'connected') this.finishElevator(false);\n    if (status !== 'connected') this.finishPlayerRecovery(false);\n    if (status !== 'connected' && this.pendingCabinet) {\n      this.releaseCabinetWhenConnected = true;\n      const pending = this.pendingCabinet; this.pendingCabinet = undefined;\n"
+        },
+        {
+          "from": "    this.releaseCabinetWhenConnected = this.status !== 'connected';\n    if (!this.releaseCabinetWhenConnected) this.room?.send('playing', false);\n  }\n  claimCabinet(id: string): Promise<boolean> {\n    if (this.status !== 'connected' || !this.room || this.pendingCabinet) return Promise.resolve(false);\n    return new Promise(resolve => {\n",
+          "to": "    this.releaseCabinetWhenConnected = this.status !== 'connected';\n    if (!this.releaseCabinetWhenConnected) this.room?.send('playing', false);\n  }\n  private finishPlayerRecovery(accepted: boolean) {\n    const pending = this.pendingPlayerRecovery;\n    if (!pending) return;\n    this.pendingPlayerRecovery = undefined; clearTimeout(pending.timer); pending.finish(accepted);\n  }\n  private confirmPlayerRecovery() {\n    const pending = this.pendingPlayerRecovery;\n    if (pending?.revision !== undefined && this.hall === pending.hall && this.revision >= pending.revision) this.finishPlayerRecovery(true);\n  }\n  recoverPlayer(): Promise<boolean> {\n    if (this.status !== 'connected' || !this.room || this.pendingPlayerRecovery) return Promise.resolve(false);\n    return new Promise(resolve => {\n      const requestId = ++this.recoveryRequest;\n      const timer = setTimeout(() => this.finishPlayerRecovery(false), 8000);\n      this.pendingPlayerRecovery = { requestId, hall: this.hall, finish: resolve, timer };\n      this.send('unstuck', { requestId, revision: this.revision });\n    });\n  }\n  claimCabinet(id: string): Promise<boolean> {\n    if (this.status !== 'connected' || !this.room || this.pendingCabinet) return Promise.resolve(false);\n    return new Promise(resolve => {\n"
+        }
+      ]
     },
     "src/shared/chat.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1045,7 +1119,17 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/shared/cabinetSeating.ts",
       "baseSha256": "79306f90ae0607f6f3b60bf4868816027bb023af454a1b95f09b1163815c4a8c",
-      "sha256": "79306f90ae0607f6f3b60bf4868816027bb023af454a1b95f09b1163815c4a8c"
+      "sha256": "087040ee4788247488c7b2445bffde6816214ec0279209acc7fb41f3a052aebd",
+      "patches": [
+        {
+          "from": "import type { Cabinet } from './cabinets';\nimport { isCardGame, cardTableSeat, cardTableApproach } from './cardTables';\n\nexport type GameReaction = 'win' | 'lose';\nexport type CabinetPlayResult = { id: string; requestId: number; accepted: boolean; reason?: string };\n",
+          "to": "import type { Cabinet } from './cabinets';\nimport { isCardGame, cardTableSeat, cardTableApproach } from './cardTables';\nimport { BOUNDS } from './clubGeometry';\n\nexport type GameReaction = 'win' | 'lose';\nexport type CabinetPlayResult = { id: string; requestId: number; accepted: boolean; reason?: string };\n"
+        },
+        {
+          "from": "  return {\n    x: cabinet.x, y: cabinet.y + 43,\n    // The Diamonds aisle has a planter in front, so approach its stool from the right.\n    entry: { x: cabinet.x + (cabinet.id === 'github-diamonds' ? 48 : 0), y: cabinet.y + 65 },\n  };\n};\n",
+          "to": "  return {\n    x: cabinet.x, y: cabinet.y + 43,\n    // The Diamonds aisle has a planter in front, so approach its stool from the right.\n    entry: { x: cabinet.x + (cabinet.id === 'github-diamonds' ? 48 : 0), y: Math.min(cabinet.y + 65, BOUNDS.bottom) },\n  };\n};\n"
+        }
+      ]
     },
     "src/game/cabinetStoolArt.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1172,10 +1256,10 @@
       ]
     },
     "src/game/characters.ts": {
-      "commit": "9b6f6f03550eb9d38d66afb827b73165a672a339",
+      "commit": "384a045e52783f1a7eac48dc8a6422adbada30c9",
       "path": "src/game/characters.ts",
-      "baseSha256": "b8b5349d729185b4d366dfc0ffa0dd35b284226b664be84364d5c35bb2214125",
-      "sha256": "b8b5349d729185b4d366dfc0ffa0dd35b284226b664be84364d5c35bb2214125"
+      "baseSha256": "788ebf9718e14790ff0425798a02c129d28956351d2a72c4d7ecfff72ee0d46d",
+      "sha256": "788ebf9718e14790ff0425798a02c129d28956351d2a72c4d7ecfff72ee0d46d"
     },
     "src/game/characterAnimation.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1586,10 +1670,10 @@
       "sha256": "5fbc000ee9939e486fd27bf5a6b584522262b8d165697280427aa133ed085039"
     },
     "src/game/avatarArt.ts": {
-      "commit": "9b6f6f03550eb9d38d66afb827b73165a672a339",
+      "commit": "384a045e52783f1a7eac48dc8a6422adbada30c9",
       "path": "src/game/avatarArt.ts",
-      "baseSha256": "62f432d6295e6d5ecff3d25f088dae6cb737843b0cd558d10c343f64ac601043",
-      "sha256": "62f432d6295e6d5ecff3d25f088dae6cb737843b0cd558d10c343f64ac601043"
+      "baseSha256": "2e61c730a72d1bf3201f7b7994677c33baa0865efa032abd853c080a6e320e60",
+      "sha256": "2e61c730a72d1bf3201f7b7994677c33baa0865efa032abd853c080a6e320e60"
     },
     "src/game/miraArt.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1855,11 +1939,23 @@
       "baseSha256": "caa92b92343afa04889b13ef484f6d1598aac196ffe1f7e2e789dbf77c4f25bc",
       "sha256": "caa92b92343afa04889b13ef484f6d1598aac196ffe1f7e2e789dbf77c4f25bc"
     },
-    "src/game/frontalWalk.ts": {
-      "commit": "9b6f6f03550eb9d38d66afb827b73165a672a339",
-      "path": "src/game/frontalWalk.ts",
-      "baseSha256": "d151fed1f4113e77ba897998e9bd2cfc99ba4373bb3df34051388c838323ff3a",
-      "sha256": "d151fed1f4113e77ba897998e9bd2cfc99ba4373bb3df34051388c838323ff3a"
+    "src/shared/playerRecovery.ts": {
+      "commit": "60834b76153ece2f4fc0ce4c03c6a8ff7e929e56",
+      "path": "src/shared/playerRecovery.ts",
+      "baseSha256": "27e80e4e6b4b0a43b838e9bb567fbd2125011d26480496391cf6787439c4f905",
+      "sha256": "27e80e4e6b4b0a43b838e9bb567fbd2125011d26480496391cf6787439c4f905"
+    },
+    "src/ui/PlayerRecoverySettings.ts": {
+      "commit": "60834b76153ece2f4fc0ce4c03c6a8ff7e929e56",
+      "path": "src/ui/PlayerRecoverySettings.ts",
+      "baseSha256": "66c58a1dcfb265aa358a36e7e3948e055d3c8e1a68dd68f898467706802e1e3c",
+      "sha256": "66c58a1dcfb265aa358a36e7e3948e055d3c8e1a68dd68f898467706802e1e3c"
+    },
+    "src/ui/player-recovery.css": {
+      "commit": "60834b76153ece2f4fc0ce4c03c6a8ff7e929e56",
+      "path": "src/ui/player-recovery.css",
+      "baseSha256": "ed93886bc99f3cd536f0d82f1d85ca6997a42515c9ec00f71c03e37f82b595c2",
+      "sha256": "ed93886bc99f3cd536f0d82f1d85ca6997a42515c9ec00f71c03e37f82b595c2"
     }
   }
 }
