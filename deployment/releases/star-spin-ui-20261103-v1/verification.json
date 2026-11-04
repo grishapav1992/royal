@@ -1,0 +1,438 @@
+{
+  "release": "star-spin-ui-20261103-v1",
+  "gameId": "studio-wild-nudge",
+  "dateMoscow": "2026-11-04",
+  "status": "published-verified",
+  "sourceCommit": "5a4833d71210e68747d07ef4d6300392e154a2b5",
+  "buildBaseCommit": "8616f86d5c31ee81abdcd18484de0d4c1a2446e4",
+  "deploymentBaseCommit": "5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e",
+  "package": "1.5.0-dfaacbc6bb0f",
+  "manifestSha256": "1ddebb56a1b8331c1e488bff0075a8d5c75a9a005442cd170062fa6155fbbbe6",
+  "activePointerSha256": "b382400b9f264177ec16c6454c783a4de002488cc745e14774d5459dd88223f3",
+  "image": "sha256:08d83a2095974b1baaad62e376149e38f74c31f9319da9c6dbefbc1f49859713",
+  "published": {
+    "published": true,
+    "release": "star-spin-ui-20261103-v1",
+    "sourceCommit": "5a4833d71210e68747d07ef4d6300392e154a2b5",
+    "baseCommit": "5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e",
+    "buildBaseCommit": "8616f86d5c31ee81abdcd18484de0d4c1a2446e4",
+    "module": {
+      "verified": true,
+      "gameId": "studio-wild-nudge",
+      "version": "1.5.0-dfaacbc6bb0f",
+      "bytes": 12593981,
+      "files": 22,
+      "beforeSha256": "91a1eabd9fd0b7ffeee15c0f5a8bd74806beb67e59cea8be303af36ef4f66ba5",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "install",
+      "activeSha256": "b382400b9f264177ec16c6454c783a4de002488cc745e14774d5459dd88223f3",
+      "history": "/opt/royal-game-modules-state/history/20261103T211427-ef2ce1bef32f438d8d7772388498e598.json"
+    },
+    "backup": {
+      "sourceArchive": "/opt/royal-backups/star-spin-ui-20261103-v1/source.tgz",
+      "bytes": 17963,
+      "sha256": "b59ae6655f0af03ddf3cdfb97d2ec8be7ccabda37611d291ff140e43bdfb9a3e",
+      "oldVersion": "1.4.0-cb27b33abd7a",
+      "oldPackageHardlinked": true,
+      "imageTag": "royal-game:before-star-spin-ui-20261103-v1",
+      "image": "sha256:08d83a2095974b1baaad62e376149e38f74c31f9319da9c6dbefbc1f49859713"
+    },
+    "freeBefore": 10818031616,
+    "freeAfter": 10801098752,
+    "hostRestarted": false,
+    "databaseTouched": false,
+    "otherModulesPreserved": true,
+    "sourceFilesPreserved": 2692,
+    "runtimeFilesPreserved": 8593,
+    "servicesPreserved": 14
+  },
+  "scope": {
+    "sourceFilesChanged": {
+      "games/wild-nudge/reactor.css": "e588f6f98346df4052d4544dd39ba5da22fbdd38a04f587fef9266c1cc6706d2",
+      "games/wild-nudge/README.md": "2e39b1f667f1d9166a43a2656a9ab0fd4754da48ad500eb22dc011f378d4b5cd",
+      "games/wild-nudge/GalacticReactorUI.ts": "64eca6bb38e139520ea97cc62468b294f7d6b13baf26330fee2b38147c9cc06b",
+      "games/wild-nudge/package.json": "fc76a69c439857509a2d63062929ffa9d03b7c99a956d18c459721a979774cb8",
+      "games/wild-nudge/StarSpinLayout.ts": "be6fde645112de9d089166bf5122f201c0a50dd3f1b9c181b483ae6d36241d9a",
+      "games/wild-nudge/tsconfig.json": "4e89d09f5ce0bfda80d9b75a0a79916e55e831ddfca6c86037d68b3ae2b6eb21"
+    },
+    "onlyStarSpinPublished": true,
+    "newGames": [],
+    "restoredGames": [],
+    "activeCatalogueCount": 20,
+    "backendChanged": false,
+    "mathematicsChanged": false,
+    "walletTransportChanged": false,
+    "collectionProgressChanged": false,
+    "animationAndAudioAssetsChanged": false
+  },
+  "preserved": {
+    "runtimeFiles": 8593,
+    "services": 14,
+    "otherSources": 2692,
+    "otherModuleFilesBefore": 4213,
+    "moduleFilesAfter": 4236,
+    "configurationHashesEqual": true,
+    "financialProgramHashesEqual": true,
+    "hostContractEqual": true,
+    "acceptedRulesVersions": [
+      1,
+      2
+    ]
+  },
+  "adoptedOtherChatSourceChanges": {
+    "src/game/CatRenderer.ts": "970f0e4fc0b8ab4408f2dd1f98772da491566c19ef8d5c3ee6a2c8787fa3c1e6",
+    "src/game/interiorArt.ts": "5febab40df98bae347c821cfd912fbde3a3ea7834f0ad76244ff3eb60a96debf",
+    "src/game/CatIdleMotion.ts": "c8a1f6cbfa8ce0476670e17caf4f6db69939d0a1ce8d3f460a9fadd890182d91"
+  },
+  "verification": {
+    "releaseGithubReceipt": {
+      "format": 1,
+      "sourceCommit": "5a4833d71210e68747d07ef4d6300392e154a2b5",
+      "manifestSha256": "a5dacfd6cc5df84953579a49dea08cda10c6d9bf2ba8a2fa90bd37aca56735f0",
+      "remoteMain": "5a4833d71210e68747d07ef4d6300392e154a2b5",
+      "checkedAt": "2026-11-03T20:52:58.941Z"
+    },
+    "rtpProfiles": 38,
+    "stakePolicies": 20,
+    "stakeAdmissions": 20,
+    "unchangedLegacyNotQualified": 114,
+    "linuxPublisherTests": 11,
+    "scopeTests": 6,
+    "mandatoryWalletTestsReused": 19,
+    "localChromeViewports": 13,
+    "localUniqueBrowserScenarios": 12,
+    "exactCompiledHostScenarios": 4,
+    "compiledHostSource": "24cce094af9b39e008a31c3e5803436174e95a36",
+    "compiledHostFilesBound": 5,
+    "panelDriftCssPx": 0,
+    "public": {
+      "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
+      "version": "1.5.0-dfaacbc6bb0f",
+      "checkedAt": "2026-11-03T21:15:59.039Z",
+      "passed": true,
+      "files": [
+        {
+          "file": "active.json",
+          "sha256": "b382400b9f264177ec16c6454c783a4de002488cc745e14774d5459dd88223f3",
+          "cache": "no-store"
+        },
+        {
+          "file": "manifest.json",
+          "sha256": "1ddebb56a1b8331c1e488bff0075a8d5c75a9a005442cd170062fa6155fbbbe6"
+        },
+        {
+          "file": "entry-01aead87a18c8afa.js",
+          "sha256": "01aead87a18c8afaa58380054c6e514bc9f9ab3a2ec662908b91ae3975c6973c",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/background.webp",
+          "sha256": "08da069a40ecd93db5ea3698f561b31fc6478f92f139f8117a5fa9aff89171fb",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/aeliri-rive.json",
+          "sha256": "724e1eb07f4f3ee77177452996e2b3b78c2a2a202ac797c5c1c969eed8ad8513",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/lyra.webp",
+          "sha256": "bd61ed5a356ed4a64a5777bf3cd75dd8f3867d0c7ff11399e1107ab7040d63ea",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/aeliri.webp",
+          "sha256": "1db152e1e067a5545480c17857ac6fae9edf6d2877a154a0d7aecaa02b68207e",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/lyra-rive.json",
+          "sha256": "81fd593a16528bf689529082c88f37f2a5fc88dd61a52d0ed4ae8cf71c464e18",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/nyxara.webp",
+          "sha256": "0bd85ec325898d6653cd965ffdc45661b7c246b9e5db63b84fb17b6745b0cf2f",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/nyxara-rive.json",
+          "sha256": "83f7965051e620b683db24d42a0009a026a161a14e7e1d233e7226620e28087e",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/rive-runtime.json",
+          "sha256": "53d7a6fde857630ef2368df86afa57a1c53e98a7ee633d8b878703ba3ea2b809",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/cover.webp",
+          "sha256": "51c6b39a839fb3abbdebc3bba8bc105a2ba92ae764f4943454bed614405d9bc7",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/vespera.webp",
+          "sha256": "aca132497d65fcd5edd71e880e13377a8b8066d138ee881193f320cf7ea52fa9",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/vespera-rive.json",
+          "sha256": "28241de579fe5d6f94d24e36d665e64138994004668ab7223309adc68a13c6a4",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/symbol-0.webp",
+          "sha256": "4818486e2fcfa37fd7eec9804026fa4336e45821f95611d1fb4cd9152e143065",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/symbol-1.webp",
+          "sha256": "9df6f55cdc45fe27152099d1e093bc103bb4c8d89472d53c7da0cfdbee08b275",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/score.wav",
+          "sha256": "282b5a2b358905645e3741d7d6ec198f07e391262f57430ac8ebc4d27cd875d2",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/symbol-2.webp",
+          "sha256": "41043b4d4b7c82948db8557921e6681dd88ae656101b30a4dd567583be446cb9",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/symbol-4.webp",
+          "sha256": "47983bd14981cd900c542370c6c2ad3438a6ccdbbce0831c307078414103caf2",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/symbol-3.webp",
+          "sha256": "40e59f13410534a6cff7fe468e75e64e1f84f0a7b636c7def5cff7ec90d2b929",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/symbol-5.webp",
+          "sha256": "012e71be56c422c1b3ccef61d1cb27de356ad3ecb84fcf98dd4dd0ec27467ff6",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/symbol-6.webp",
+          "sha256": "733ee68cc2704841d1ec941d11de5d8d6e051661d203582279a403327fc406d1",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/symbol-7.webp",
+          "sha256": "fe2d129f02f2b3cd7559b0a0f1eb074f13a17910637163632164b0ba9ebfc70b",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "style-9d0cbcc3c137bf10.css",
+          "sha256": "9d0cbcc3c137bf100095893c78f386e6278698ffd25e58e57171a9ccaec795dd",
+          "cache": "public, max-age=31536000, immutable"
+        }
+      ],
+      "boundaries": [
+        {
+          "path": "/healthz",
+          "status": 200
+        },
+        {
+          "path": "/api/demo-wallet",
+          "status": 401
+        },
+        {
+          "path": "/api/star-spin/collection",
+          "status": 401
+        },
+        {
+          "path": "/api/game-wallet",
+          "status": 410
+        },
+        {
+          "path": "/api/nile-play/wallet",
+          "status": 410
+        }
+      ],
+      "productionAccountsCreated": 0,
+      "productionWagers": 0
+    },
+    "finalPointer": {
+      "sha256": "b382400b9f264177ec16c6454c783a4de002488cc745e14774d5459dd88223f3",
+      "pointer": {
+        "format": 1,
+        "gameId": "studio-wild-nudge",
+        "manifest": "/game-modules/studio-wild-nudge/versions/1.5.0-dfaacbc6bb0f/manifest.json",
+        "sha256": "1ddebb56a1b8331c1e488bff0075a8d5c75a9a005442cd170062fa6155fbbbe6"
+      }
+    },
+    "compiledHostReport": {
+      "stats": {
+        "startTime": "2026-11-03T20:03:15.345Z",
+        "duration": 80804.504,
+        "expected": 4,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "sha256": "26feca08aa2159b071e588bfa1e4073aad4c0679ea642c73d8ba04f0f1eb72c9",
+      "layout": {
+        "sha256": "edd5a8a57a8bd5eee0898e4b71da92695e395099f8de2e8ab9cbbb395e8d07a4",
+        "connectedHost": true,
+        "viewports": [
+          {
+            "width": 2206,
+            "height": 1291,
+            "profile": "full"
+          },
+          {
+            "width": 1440,
+            "height": 1000,
+            "profile": "full"
+          },
+          {
+            "width": 1280,
+            "height": 720,
+            "profile": "full"
+          },
+          {
+            "width": 1024,
+            "height": 768,
+            "profile": "full"
+          },
+          {
+            "width": 768,
+            "height": 1024,
+            "profile": "portrait"
+          },
+          {
+            "width": 800,
+            "height": 600,
+            "profile": "landscape"
+          },
+          {
+            "width": 707,
+            "height": 447,
+            "profile": "landscape"
+          },
+          {
+            "width": 640,
+            "height": 480,
+            "profile": "landscape"
+          },
+          {
+            "width": 500,
+            "height": 760,
+            "profile": "portrait"
+          },
+          {
+            "width": 390,
+            "height": 844,
+            "profile": "portrait"
+          },
+          {
+            "width": 320,
+            "height": 568,
+            "profile": "portrait"
+          },
+          {
+            "width": 844,
+            "height": 390,
+            "profile": "landscape"
+          },
+          {
+            "width": 568,
+            "height": 320,
+            "profile": "landscape"
+          }
+        ]
+      }
+    }
+  },
+  "limitations": [
+    "No authenticated production wagers, test accounts or chat messages were created.",
+    "Physical phones and tablets were not connected; layout was checked with Chrome viewports.",
+    "Existing Rive and audio content was preserved; subjective audio listening was not repeated.",
+    "The shared graph query failed at task start; direct source and complete production inventories were used."
+  ],
+  "temporaryData": {
+    "owner": "codex/star-spin-ui-priorities",
+    "previouslyRejectedCleanupTargetsRetried": false,
+    "compiledPreviewStopped": true,
+    "compiledPreviewTemporaryDatabaseRemoved": true,
+    "cleanup": {
+      "status": "pending-after-report-preservation",
+      "scope": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-ui-release-20261103",
+      "condition": "Remove only this task directory after verification of this report on GitHub; keep active module and every previously rejected cleanup target."
+    }
+  },
+  "recordedAt": "2026-11-04T09:27:47.441Z",
+  "maintenance": {
+    "startedAt": 1793782974.9369433,
+    "finishedAt": 1793783722.124913,
+    "status": "completed",
+    "release": "remove-hall-title-20261103-v1",
+    "sourceCommit": "5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e",
+    "durationSeconds": 747.19,
+    "currentImage": "sha256:08d83a2095974b1baaad62e376149e38f74c31f9319da9c6dbefbc1f49859713",
+    "rollbackImage": "sha256:4909ae3df61c17398afcfe9903e7acbc5e0e551e4baa3822e3810c801f719371",
+    "freeBefore": 10722504704,
+    "freeAfter": 10729832448,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:4909ae3df61c17398afcfe9903e7acbc5e0e551e4baa3822e3810c801f719371",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "2abe9099b8592562f41aa203bd0c85ab970606acea1d061f2430d9fb6e47e171",
+      "files": 8592
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "67c239775e64bac836d7fe87101394a6047ccdcf2d25f29a215bf6643836421a",
+      "receipt": "/var/lib/royal-project-brain/receipts/67c239775e64bac836d7fe87101394a6047ccdcf2d25f29a215bf6643836421a.json",
+      "queued": true
+    },
+    "plannedEntriesCount": 0,
+    "plannedImagesCount": 0,
+    "preservedFinancialFilesCount": 117,
+    "removedEntriesCount": 0,
+    "removedImageTagsCount": 0,
+    "dockerRetainedImagesCount": 0,
+    "freeNow": 10729447424,
+    "timerEnabled": "enabled",
+    "timerActive": "active"
+  },
+  "postMaintenanceStorage": {
+    "originalScopedBackupRetiredByAutomaticRetention": true,
+    "oldModulePackage": {
+      "version": "1.4.0-cb27b33abd7a",
+      "verified": true,
+      "files": 22,
+      "manifestSha256": "a991fafc198a94927b6140d703ecff9bdbf1528d7d0c15399612c3837dc46044"
+    },
+    "retainedFullHostRollbackDirectories": [
+      "/opt/royal-releases/remove-hall-title-20261103-v1",
+      "/opt/royal-backups/remove-hall-title-20261103-v1"
+    ],
+    "currentModuleProofs": [
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/operator.json",
+        "sha256": "02332c55ab372e654d2454b2a7a3d96329d5e553a39a74275fe16c36e07af859"
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/published.json",
+        "sha256": "d879f543db9146e4aacc5f33d5a6a7d5a6027f9a63e529c201d3510d8ee3e2f6"
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-ui-20261103-v1/release-github.json",
+        "sha256": "f96688202017f984057f3e26475023121ba0446707dc9f09a3127f0e80800856"
+      }
+    ]
+  }
+}
