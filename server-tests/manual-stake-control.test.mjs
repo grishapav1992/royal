@@ -42,3 +42,11 @@ test('typing and partial drafts survive the actual cascade control renderer',asy
   await page.evaluate(()=>{window.locked=true;window.render();});assert(await input.isDisabled());assert.equal(await input.inputValue(),'0.15');await page.evaluate(()=>{window.locked=false;window.render();});assert.equal(await input.inputValue(),'0.15');
  }finally{await browser?.close();await new Promise(r=>server.close(r));}
 });
+
+test('an updating framed game does not steal keyboard focus from the connected chat',async()=>{
+ const built=await build({stdin:{contents:"export {syncStakeSelect} from './src/ui/stakeSelection.ts';export {updateCascadeDOM} from './games/flooded-temple/cascadeDOM.ts';",resolveDir:process.cwd()},bundle:true,write:false,format:'esm',logLevel:'silent'});
+ const frame=`<html><body><div id="game"></div><script type="module">import{syncStakeSelect,updateCascadeDOM}from'/control.js';const root=document.querySelector('#game');window.render=()=>{updateCascadeDOM(root,'<select data-ft="stake"><option value="10">0.10</option></select>');syncStakeSelect(root.querySelector('select'),'10',['10'],false);};window.render();</script></body></html>`;
+ const server=http.createServer((req,res)=>{res.setHeader('Content-Type',req.url==='/control.js'?'text/javascript':'text/html');res.end(req.url==='/control.js'?built.outputFiles[0].text:req.url==='/frame'?frame:'<html><body><iframe src="/frame"></iframe><input id="chat" aria-label="Chat"></body></html>');});await new Promise(r=>server.listen(0,'127.0.0.1',r));let browser;
+ try{browser=await chromium.launch({channel:'chrome',headless:true});const page=await browser.newPage();await page.goto('http://127.0.0.1:'+server.address().port);const game=page.frameLocator('iframe'),input=game.locator('[data-manual-stake]');await input.fill('0.15');await page.locator('#chat').fill('message');const inner=page.frames().find(f=>f.url().endsWith('/frame'));assert(inner);await inner.evaluate(()=>window.render());assert(await page.locator('#chat').evaluate(n=>n===document.activeElement));assert.equal(await page.locator('#chat').inputValue(),'message');}
+ finally{await browser?.close();await new Promise(r=>server.close(r));}
+});
