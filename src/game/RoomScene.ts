@@ -53,6 +53,7 @@ import { RooftopRenderer } from './RooftopRenderer';
 import { STREET } from '../shared/street';
 import { TOILET,TOILET_WINDOW,ROOF_TOILET } from '../shared/toilet';
 import { ToiletRenderer } from './ToiletRenderer';
+import {preloadToiletResident,prepareToiletResident} from './toiletResidentArt';
 import {STAIR_WINDOW,atStairWindow,canApproachStairWindow,canWalkThroughStairWindow} from '../shared/stairWindow';
 import {onRoofWindowPlatform,ROOF_WINDOW_PLATFORM,ROOF_STAIR_DRAW,roofWindowPlatformPosition,roofWindowPlatformPoint} from '../shared/rooftop';
 import {drawCardStairWindow,stairWindowFrame} from './StairWindowRenderer';
@@ -153,6 +154,7 @@ export class RoomScene extends Phaser.Scene {
     super('room'); this.onNear = options.onNear; this.onPlay = options.onPlay; this.onReady = options.onReady;
   }
   preload() {
+    preloadToiletResident(this);
     preloadRoyalBarArt(this);
     this.load.image(ATELIER_TEXTURE, ATELIER_SPRITE);
     this.load.image(ATELIER_EMPTY_TEXTURE, ATELIER_EMPTY_SPRITE);
@@ -169,6 +171,7 @@ export class RoomScene extends Phaser.Scene {
   }
   deferDecorations(ms = 12000) { this.decorationResumeAt = Math.max(this.decorationResumeAt, performance.now() + ms); this.catArtwork?.pause(ms); }
   create() {
+    prepareToiletResident(this);
     createDetailedArt(this);
     createCharacters(this);
     for(const hall of Object.keys(HALLS) as HallId[]){

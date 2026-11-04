@@ -42,6 +42,7 @@ test('occupied toilet visitor animates behind a locked door and leaves the other
     await clickWorld(page,ROOF_TOILET.click.x,ROOF_TOILET.click.y);await expect.poll(async()=>(await state(page)).hall,{timeout:20000}).toBe('toilet');
     await expect.poll(async()=>(await state(page)).switching).toBe(false);await overview(page);
     await expect(page.locator('.npc-count')).toContainText('НПС: 1');
+    expect((await state(page)).toilet.resident.artVersion).toBe(2);expect((await state(page)).toilet.resident.artLoaded).toBe(true);
     const p=TOILET.cubicles[OCCUPIED_TOILET_CUBICLE];await walk(page,p.x+50,430);
     await clickWorld(page,p.x+50,p.y+110);await page.waitForTimeout(500);
     expect((await state(page)).y).toBeGreaterThan(425);expect((await state(page)).toilet.openDoors[p.id]).toBe(false);
