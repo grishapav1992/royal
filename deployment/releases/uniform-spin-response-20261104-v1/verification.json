@@ -1,0 +1,214 @@
+{
+  "format": 1,
+  "status": "ready_pending_publication",
+  "release": "uniform-spin-response-20261104-v1",
+  "sourceCommit": "44d534b987d6e648d856f84afd350b43f3083812",
+  "productionBase": "64275feff275c9049a82e7b095dd89c4b71677da",
+  "sourcePreservedInMain": true,
+  "prepared": {
+    "manifestSha256": "69ceb7ca87c512ddd5fdfe6e06d4ce34aea25d10ef6ccdc13d71e787f43a2882",
+    "files": 491,
+    "modules": [
+      {
+        "gameId": "studio-cosmic-escape",
+        "version": "1.1.1-2274f1d3bf58"
+      },
+      {
+        "gameId": "studio-caramel-carnival",
+        "version": "1.1.1-faefb8ca47ca"
+      },
+      {
+        "gameId": "studio-velvet-reign",
+        "version": "1.1.1-286b92f7fe2a"
+      },
+      {
+        "gameId": "studio-last-convoy",
+        "version": "1.1.1-e534a8770a8d"
+      },
+      {
+        "gameId": "studio-nitro-run",
+        "version": "1.1.1-732024019c85"
+      },
+      {
+        "gameId": "studio-afterglow",
+        "version": "1.3.1-94e8ac1362c4"
+      },
+      {
+        "gameId": "studio-meme-overload",
+        "version": "1.1.1-8b70e1333efb"
+      },
+      {
+        "gameId": "studio-dracona",
+        "version": "1.2.1-d1d4e589229e"
+      },
+      {
+        "gameId": "studio-forest-heart",
+        "version": "1.16.1-bda322fdbdfd"
+      },
+      {
+        "gameId": "studio-caribbean-treasures",
+        "version": "1.7.1-a78e99ebf8e2"
+      },
+      {
+        "gameId": "studio-flooded-temple",
+        "version": "0.10.1-e8c2cd4af5f8"
+      },
+      {
+        "gameId": "studio-wild-nudge",
+        "version": "1.6.0-cf68e8a8b2b2"
+      },
+      {
+        "gameId": "flag-battle",
+        "version": "2.1.1-05c39fb398da"
+      },
+      {
+        "gameId": "royal-plinko",
+        "version": "1.1.1-f5fdc9a645bc"
+      },
+      {
+        "gameId": "original-cr-vs-leo",
+        "version": "1.1.1-fcfffa623d83"
+      },
+      {
+        "gameId": "original-jackie-chan",
+        "version": "1.2.1-53d19f3131cb"
+      },
+      {
+        "gameId": "github-crash",
+        "version": "1.1.1-878ddc306d18"
+      }
+    ],
+    "sourceFiles": 26
+  },
+  "checks": {
+    "typescript": "passed",
+    "math": {
+      "verifiedProfiles": 38,
+      "stakePolicies": 20,
+      "stakeAdmissions": 20,
+      "unqualifiedLegacyExceptions": 114,
+      "mathematicsChanged": false
+    },
+    "wallet": {
+      "mandatoryCommonTests": 19,
+      "status": "passed",
+      "templeClientAndCascade": "passed",
+      "initialCombinedRun": "29/30: obsolete exhaustive manual-cent cascade test hit the 120/min operation guard; narrowed to all nine common and three historical presets, all three cases passed"
+    },
+    "browser": {
+      "status": "passed",
+      "stats": {
+        "startTime": "2026-11-04T16:49:58.889Z",
+        "duration": 80035.653,
+        "expected": 3,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "errors": [],
+      "reportSha256": "c6b7043d6a421a793fecdde145aa8203ef3e9b720e87a2eb50dfc495828c2800",
+      "activeHouseGames": 19,
+      "templeViewports": [
+        {
+          "width": 1440,
+          "height": 1000
+        },
+        {
+          "width": 390,
+          "height": 844
+        }
+      ],
+      "requestFeedback": true,
+      "draconaWaitingAnimations": 20,
+      "templeWaitingAnimations": 15,
+      "reducedMotion": true,
+      "lostAcceptedReply": true,
+      "sameOperationUuid": true,
+      "closeReopen": true,
+      "betEntries": [
+        -0.1
+      ],
+      "exactProductionHostAndBackend": true,
+      "hostFiles": {
+        "sourceCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
+        "files": [
+          {
+            "path": "dist/index.html",
+            "sha256": "e3e06fe0da86c24e0bb652cb29a7fcb0bc8583b8ba23c00a245d5d0615989a91",
+            "bytes": 708
+          },
+          {
+            "path": "dist/assets/index-BZyJIyY8.js",
+            "sha256": "6b73b2f0657f65d2d4278e22216152ed06430ce69c4c794a1f2d0e1a53c7ee9a",
+            "bytes": 2776443
+          },
+          {
+            "path": "dist/assets/index-V4GHKrLV.css",
+            "sha256": "e21ee49745a1903e8fe694615407d4d07053f0e5254c935aef70f5b5166c10e2",
+            "bytes": 153554
+          }
+        ]
+      },
+      "backendSha256": "28cc991f9dd63ad6a9b0c900950a2344ab8211bea171ecee1998bd0dde7f419c",
+      "productionPlayerAccountsOrBetsCreated": false,
+      "physicalPhone": false
+    },
+    "linuxPublisherGuards": {
+      "passed": 5
+    },
+    "githubReceipt": {
+      "format": 1,
+      "sourceCommit": "44d534b987d6e648d856f84afd350b43f3083812",
+      "manifestSha256": "69ceb7ca87c512ddd5fdfe6e06d4ce34aea25d10ef6ccdc13d71e787f43a2882",
+      "remoteMain": "a34ccbedb7f41165d0a257c0d5a54ee17d11dc4c",
+      "checkedAt": "2026-11-04T17:12:28.262Z"
+    },
+    "serverPayload": {
+      "packageFilesVerified": 474,
+      "sourcesVerified": 26,
+      "transportSha256": "650055e163c95c67b6e92ecad154301fd60afe3469e674e3c9fa8970da27b1aa"
+    }
+  },
+  "deployment": {
+    "published": false,
+    "backupCreated": false,
+    "liveFilesChanged": false,
+    "reason": "The guarded installer and a five-minute retry stopped on busy publication locks before mutations. Manual-stakes retention completed; player-recovery-20261104-v2 then reserved all three locks.",
+    "stage": "/opt/royal-releases/uniform-spin-response-20261104-v1",
+    "baselineMustBeReconciledAfterOtherReleases": true,
+    "requiredMaintenanceAfterPublication": "pending",
+    "waitEndedAt": "2026-11-04T17:21:23Z",
+    "previousHostMaintenance": {
+      "status": "completed",
+      "release": "manual-stakes-20261104-v1",
+      "durationSeconds": 1027.93,
+      "freeAfter": 9643024384,
+      "ownReleasePublished": false
+    },
+    "next": [
+      "Use fixed prepared source 44d534b987d6e648d856f84afd350b43f3083812; preserve this status record separately.",
+      "Fetch main and reconcile the actual current production sources, inputs and module pointers. A newer host or module is not covered by the old baseline.",
+      "Refresh the GitHub receipt for the unchanged artifact; do not rebuild or change manifest hashes to bypass a guard.",
+      "After safe installation verify public bytes, health and catalogue, complete required retention, push the final deployment record, then clean task-owned outputs and worktree."
+    ]
+  },
+  "limitations": [
+    "Shared production code graph unavailable; inspected sources and byte inventories directly.",
+    "600ms decorative loops are design choices, not latency guarantees or measured scientific thresholds.",
+    "Server result latency is unchanged; normal preparation and stopped unconfirmed recovery are separated."
+  ],
+  "storage": {
+    "path": "C:\\Users\\Aorus\\.codex\\worktrees\\uniform-spin-response\\royal\\artifacts\\work\\uniform-spin-response\\transport.tgz",
+    "removedBytes": 134725575,
+    "freeBefore": 305301561344,
+    "freeAfter": 305436286976,
+    "reason": "Extracted server payload verified by checksum and 474 package files plus 26 sources; verified local artifact retained for pending publication",
+    "preservedSourceCommit": "44d534b987d6e648d856f84afd350b43f3083812",
+    "activeWorkExceptions": [
+      "Temporary worktree and verified package retained only until safe publication and required maintenance finish.",
+      "node_modules is a junction to another active worktree; never remove its target.",
+      "Server extracted package retained for guarded publication; production rollback and player data untouched."
+    ]
+  },
+  "checkedAt": "2026-11-04T17:21:23Z"
+}
