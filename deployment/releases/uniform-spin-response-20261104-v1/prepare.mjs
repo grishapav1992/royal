@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import {verifyRelease,assertClean} from '../../../scripts/release.mjs';
 import {readHostProjection} from '../../../scripts/build-host-projection.mjs';
 
@@ -16,8 +17,9 @@ const reader=await readHostProjection(process.cwd(),folder+'/module-projection.j
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 assert(!fs.existsSync(outDir));fs.mkdirSync(outDir,{recursive:true});
 const put=(name,bytes)=>{assert(!path.isAbsolute(name)&&!name.split('/').some(p=>p==='..'||p.startsWith('.env')));const target=path.join(outDir,name);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,bytes,{flag:'wx'});return hash(bytes);};
-const copy=name=>put(name,fs.readFileSync(name));
-put('before.json',fs.readFileSync(beforeFile));put('publish.py',fs.readFileSync(folder+'/publish.py'));put('publisher.py',fs.readFileSync('scripts/game-module-release.py'));
+const committed=name=>execFileSync('git',['show',release.sourceCommit+':'+name],{maxBuffer:16*1024**2});
+const wrapper=committed(folder+'/publish.py'),publisher=committed('scripts/game-module-release.py');
+put('before.json',fs.readFileSync(beforeFile));put('publish.py',wrapper);put('publisher.py',publisher);
 put('release-manifest.json',fs.readFileSync('module-build/release-manifest.json'));put('release-github.json',fs.readFileSync('module-build/release-github.json'));
 const receipt=JSON.parse(fs.readFileSync('module-build/release-github.json'));assert.equal(receipt.sourceCommit,release.sourceCommit);
 const source={};for(const [name,digest]of Object.entries(scope.sources)){const bytes=reader.read(name);assert.equal(hash(bytes),digest);source[name]=put('source/'+name,bytes);}
@@ -36,5 +38,5 @@ for(const row of release.packages){
 }
 const proof={sourceCommit:release.sourceCommit,games,checks:{activeHouseGames:19,desktopAndPhone:true,sameOperationRecovery:true,oneTenCentDebit:true,browserReportSha256:hash(fs.readFileSync(reportFile))}};
 put('program-proof.json',JSON.stringify(proof,null,2)+'\n');
-const operator={sourceCommit:release.sourceCommit,source,packages,beforePointers,wrapperSha256:hash(fs.readFileSync(folder+'/publish.py')),publisherSha256:hash(fs.readFileSync('scripts/game-module-release.py')),releaseManifestSha256:hash(fs.readFileSync('module-build/release-manifest.json')),receiptSha256:hash(fs.readFileSync('module-build/release-github.json')),programProofSha256:hash(fs.readFileSync(path.join(outDir,'program-proof.json'))),snapshotSha256:helpers.snapshotSha256,imageHelperSha256:helpers.imageHelperSha256};
+const operator={sourceCommit:release.sourceCommit,source,packages,beforePointers,wrapperSha256:hash(wrapper),publisherSha256:hash(publisher),releaseManifestSha256:hash(fs.readFileSync('module-build/release-manifest.json')),receiptSha256:hash(fs.readFileSync('module-build/release-github.json')),programProofSha256:hash(fs.readFileSync(path.join(outDir,'program-proof.json'))),snapshotSha256:helpers.snapshotSha256,imageHelperSha256:helpers.imageHelperSha256};
 put('operator.json',JSON.stringify(operator,null,2)+'\n');console.log(JSON.stringify({sourceCommit:release.sourceCommit,modules:Object.keys(packages).length,sources:Object.keys(source).length,outDir}));

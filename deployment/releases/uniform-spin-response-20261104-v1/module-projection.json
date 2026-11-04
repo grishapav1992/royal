@@ -9958,10 +9958,10 @@
       "sha256": "a68cf57a8d866a3a799da3e196aff7685dd87f79d6a36bf8efd805b99c77dc6e"
     },
     "games/dracona/entry.ts": {
-      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "commit": "e3cfad45abb0960433fa941b9692699cb024fe14",
       "path": "games/dracona/entry.ts",
-      "baseSha256": "ca5ecb25f701915124f619f1136107ba59ea744636ef0e5f668a546d56a85dc4",
-      "sha256": "ca5ecb25f701915124f619f1136107ba59ea744636ef0e5f668a546d56a85dc4"
+      "baseSha256": "c5ba0433140701f1b171538b6707910f7cbe7cb1171fb14d9cb2f55a81a2235c",
+      "sha256": "c5ba0433140701f1b171538b6707910f7cbe7cb1171fb14d9cb2f55a81a2235c"
     },
     "games/dracona/package.json": {
       "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
@@ -10580,6 +10580,12 @@
       "path": "src/ui/operationFeedback.ts",
       "baseSha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17",
       "sha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17"
+    },
+    "games/dracona/requestStyles.ts": {
+      "commit": "e3cfad45abb0960433fa941b9692699cb024fe14",
+      "path": "games/dracona/requestStyles.ts",
+      "baseSha256": "35e092afde5e01a263cca3be3bfb5c7ce695876ca51dc0713b4596a2fe906c59",
+      "sha256": "35e092afde5e01a263cca3be3bfb5c7ce695876ca51dc0713b4596a2fe906c59"
     }
   },
   "moduleAssets": {
