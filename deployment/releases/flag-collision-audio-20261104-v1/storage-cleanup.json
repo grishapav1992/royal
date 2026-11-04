@@ -55,5 +55,52 @@
     "status": "preserved",
     "sourceArchiveBytes": 4800,
     "persistentDataTouched": false
+  },
+  "serverAutomaticMaintenance": {
+    "status": "completed",
+    "startedAt": 1793815962.1396399,
+    "finishedAt": 1793816904.7412262,
+    "durationSeconds": 942.6,
+    "release": "player-recovery-20261104-v2",
+    "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+    "currentImage": "sha256:8697bf1f68ebef8c53506839eec9839f6192275e64ade689a786a173a21957f3",
+    "rollbackImage": "sha256:4e7d6f2257b33fabc3227402c45692bc175ba064e61a445fadcc18a97fda113b",
+    "plannedEntries": 104,
+    "plannedImages": 1,
+    "removedEntries": 104,
+    "removedImageTags": 3,
+    "freeBefore": 9751556096,
+    "freeAfter": 10079834112,
+    "preservedFinancialFiles": 140,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:4e7d6f2257b33fabc3227402c45692bc175ba064e61a445fadcc18a97fda113b",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "44493dc4173f593f6c8a1b61f0e57ef717080a4c778b23c2b525f58f192b725e",
+      "files": 8596
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "43b568111a27822bc6c693254ade29083eeb6520ce7f956fa7d07f3ac0cc3ced",
+      "receipt": "/var/lib/royal-project-brain/receipts/43b568111a27822bc6c693254ade29083eeb6520ce7f956fa7d07f3ac0cc3ced.json",
+      "queued": true
+    },
+    "coordinatedWithPlayerRecovery": true,
+    "namedResult": "/opt/royal-maintenance/automatic-runs/run-a3892f46a8ef4c75b599be4496345526/summary.json",
+    "namedResultSha256": "e5058655dee3bc22d38c273c3310cdd3fbdeb3fe4060215105bad4317564d77a",
+    "timer": "enabled",
+    "postChecks": {
+      "checkedAt": "2026-11-04T18:29:57.221Z",
+      "image": "sha256:8697bf1f68ebef8c53506839eec9839f6192275e64ade689a786a173a21957f3",
+      "health": "healthy",
+      "freeBytes": 10071334912,
+      "publicHealthStatus": 200,
+      "activePointerSha256": "382131b22082ee49bb34ab6f01686be84fbb85feaa31e0b350e60d08ef4aa7d6"
+    }
   }
 }

@@ -67,7 +67,7 @@
     "The real-host contact check uses the supported skip action after a physical contact, then verifies lost-response replay and close/reopen."
   ],
   "productionPublished": true,
-  "publicationStatus": "published_maintenance_pending",
+  "publicationStatus": "completed",
   "pauseEvidence": {
     "threadId": "01a1a777-3a8b-7d22-9add-748e77317cdb",
     "title": "Найти причину долгой установки",
