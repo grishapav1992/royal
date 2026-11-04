@@ -1,7 +1,7 @@
 {
   "release": "pvp-invites-20261104-v1",
   "featureCommit": "f39d48910bb7189cb721256b48effc67f0477cbd",
-  "productionCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+  "productionCommit": "315fda47301591b5b1ed05806781fcc603cffdcb",
   "runtimeSources": [
     "server/pvp/store.ts",
     "src/shared/pvp.ts",
