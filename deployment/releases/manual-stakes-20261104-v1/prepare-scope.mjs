@@ -12,7 +12,9 @@ assert.equal(reader.metadata.productionCommit,before.sourceCommit);
 assert.equal(reader.metadata.files['src/shared/arcadeCatalog.ts'].sha256,before.sourceLF['src/shared/arcadeCatalog.ts']);
 const compiled=await build({entryPoints:['src/shared/arcadeCatalog.ts'],bundle:true,write:false,format:'esm',platform:'node',logLevel:'silent',plugins:[{name:'verified-catalogue',setup(b){b.onLoad({filter:/\.(?:ts|json)$/},args=>({contents:reader.read(path.relative(process.cwd(),args.path).replaceAll('\\','/')),loader:args.path.endsWith('.json')?'json':'ts',resolveDir:path.dirname(args.path)}));}}]});
 const {ROYAL_PLATFORM_GAMES}=await import('data:text/javascript;base64,'+Buffer.from(compiled.outputFiles[0].contents).toString('base64'));
-assert.equal(ROYAL_PLATFORM_GAMES.length,20);scope.activeGames=[...ROYAL_PLATFORM_GAMES];
+assert.equal(ROYAL_PLATFORM_GAMES.length,19);
+// Tsu-e-fa retains its existing separate PvP launch and qualified presets.
+scope.activeGames=[...ROYAL_PLATFORM_GAMES,'tsu-e-fa'];
 assert.deepEqual([...scope.activeGames].sort(),Object.keys(registry.stakePolicies).sort());
 const evidence=new Set(['scripts/game-math/rtp-policy.json']);
 for(const p of [...Object.values(registry.profiles),...Object.values(registry.stakePolicies),...Object.values(registry.versionProfiles??{}).flatMap(Object.values)]){
