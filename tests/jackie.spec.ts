@@ -35,6 +35,29 @@ async function enter(page:Page,lang='ru'){
 async function act(page:Page,selector='[data-fight]'){
   const reply=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');await page.locator('.jackie '+selector).click();const r=await reply;expect(r.ok()).toBe(true);const body=await r.json();await expect(page.locator('.jackie [data-fight]')).toBeEnabled({timeout:15000});return body.session;
 }
+
+test('fight requests and results keep the canvas fixed in the host with chat',async({page})=>{
+  test.setTimeout(180000);await page.emulateMedia({reducedMotion:'no-preference'});await outcome('win');await enter(page);
+  const game=page.locator('.jackie');await game.locator('[data-speed]').click();
+  await page.route('**/api/demo-wallet/expansion',async route=>{if(route.request().method()==='POST')await new Promise(resolve=>setTimeout(resolve,150));await route.continue();});
+  for(const [width,height]of [[1440,1000],[390,844],[844,390]]){
+    await page.setViewportSize({width,height});
+    await expect(game.locator('[data-fight]')).toBeInViewport();
+    await page.waitForTimeout(150);
+    await page.evaluate(()=>{
+      const rows:any[]=[];(window as any).jackieGeometry=rows;
+      const sample=()=>{const canvas=document.querySelector('.jackie canvas')!;const rect=canvas.getBoundingClientRect();rows.push({x:rect.x,y:rect.y,width:rect.width,height:rect.height,phase:(canvas as HTMLElement).dataset.phase,scrollY});(window as any).jackieGeometryFrame=requestAnimationFrame(sample);};sample();
+    });
+    await act(page);await act(page);await act(page,'[data-cashout]');
+    await outcome('lose');await act(page);await outcome('win');
+    if(width===1440)for(let fight=0;fight<5;fight++)await act(page);
+    const samples=await page.evaluate(()=>{cancelAnimationFrame((window as any).jackieGeometryFrame);return(window as any).jackieGeometry as Array<Record<string,number>>;});
+    await writeFile(out+`/geometry-${width}.json`,JSON.stringify(samples));
+    for(const field of ['x','y','width','height','scrollY'])expect(Math.max(...samples.map(row=>row[field]))-Math.min(...samples.map(row=>row[field])),`${width}px ${field}`).toBeLessThanOrEqual(1);
+    await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
+    await page.screenshot({path:out+`/stable-scene-${width}.png`});
+  }
+});
 test('location themes, independent switches and shared audio lifecycle work in the real host',async({page})=>{
   test.setTimeout(180000);const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
   await page.addInitScript(()=>{const original=AudioContext.prototype.createMediaElementSource;(window as any).musicElements=[];AudioContext.prototype.createMediaElementSource=function(audio){if(audio.src.includes('/jackie-chan/audio/'))(window as any).musicElements.push(audio);return original.call(this,audio);};});

@@ -26,6 +26,7 @@ import { Activities } from './activities';
 import { PvpRoom } from './pvp/room';
 import { cabinetHall, cabinetsInHall, type Cabinet } from '../src/shared/cabinets';
 import { cabinetSeat } from '../src/shared/cabinetSeating';
+import { playerRecoveryPoint } from '../src/shared/playerRecovery';
 import { findPath, walkable, type Point } from '../src/game/navigation';
 import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLinkAt, stairWindowLink, playerHallArrival, inHallDoor, SEATS, DRINKS, atBar, type ChatMessage, type HallId } from '../src/shared/world';
 import { canTravelByElevator, elevatorDock } from '../src/shared/elevator';
@@ -223,6 +224,19 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       this.activities.leave(client.sessionId);this.releaseCabinet(client.sessionId);this.stop(client.sessionId);this.stand(client.sessionId);
       const arrival=playerHallArrival(p.hall,link);p.hall=link.target;p.hallRevision++;Object.assign(p,arrival);c.lastTarget=0;
       client.send('activities',this.activities.snapshot(client.sessionId));
+    });
+    // Recovery bypasses queued movement, but never an access restriction or a live shared game.
+    this.onMessage('unstuck', (client, value: unknown) => {
+      const request = value as { requestId?: number; revision?: number };
+      if (!request || !Number.isSafeInteger(request.requestId) || request.requestId! < 0) return;
+      const p = this.state.players.get(client.sessionId);
+      let reason: string | undefined;
+      if (!p?.connected || !this.accessAllowed(client) || p.security) reason = 'Сейчас возврат недоступен. Проверь подключение и дождись окончания текущего действия.';
+      else if (request.revision !== p.hallRevision) reason = 'Положение персонажа изменилось. Попробуй ещё раз.';
+      else if (p.activity) reason = 'Сначала выйди из совместной игры через её меню.';
+      else if (this.access.get(client.sessionId)?.pendingDrink) reason = 'Дождись завершения заказа и попробуй ещё раз.';
+      else if (!this.recoverPlayer(client.sessionId)) reason = 'Не удалось найти свободное место у входа. Попробуй ещё раз.';
+      client.send('unstuck-result', { requestId: request.requestId, accepted: !reason, ...(reason ? { reason } : { revision: p!.hallRevision }) });
     });
     listen('elevator', (client, value: unknown) => {
       if (!value || typeof value !== 'object') return;
@@ -595,6 +609,20 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     if (seat) { p.x = seat.entry.x; p.y = seat.entry.y; }
     p.seat = ''; p.action = 'idle'; p.drink = ''; p.actionUntil = 0;
   }
+  private recoverPlayer(id: string): boolean {
+    const p = this.state.players.get(id);
+    if (!p) return false;
+    const occupied: Point[] = [...this.state.players].filter(([other, player]) => other !== id && player.hall === p.hall).map(([, player]) => player);
+    occupied.push(...[...this.state.guards.values()].filter(guard => guard.hall === p.hall));
+    const point = playerRecoveryPoint(p.hall as HallId, occupied);
+    if (!point) return false;
+    this.cat.handle(id, 'release');
+    this.releaseCabinet(id); this.stop(id);
+    Object.assign(p, point, { playing: false, cabinet: '', seat: '', action: 'idle', drink: '', actionUntil: 0, facing: 'down', moving: false });
+    p.hallRevision++;
+    const control = this.controls.get(id); if (control) control.lastTarget = 0;
+    return true;
+  }
   private broadcastActivity(type:string,value:unknown,hall:HallId){
     const listeners=this.clients.filter(client=>{
       const player=this.state.players.get(client.sessionId);
@@ -631,6 +659,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (p.gameReaction && Date.now() >= p.gameReactionUntil) { p.gameReaction = ''; p.gameReactionUntil = 0; }
       if (p.action === 'drink' && Date.now() >= p.actionUntil) { p.action = p.seat ? 'sit' : 'idle'; p.drink = ''; p.actionUntil = 0; }
       if (p.security || !p.connected || p.playing || this.cat.isHugging(id)) { p.moving = false; continue; }
+      if (!p.seat && !p.activity && !walkable(p.x, p.y, hallObstacles(p.hall)) && this.recoverPlayer(id)) continue;
       if (c.predicted) {
         c.inputs.advance(p, Date.now(), [...this.state.guards.values()], () => this.guards.contact(id));
         p.inputSeq = c.inputs.sequence;

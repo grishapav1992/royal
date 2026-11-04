@@ -1,6 +1,7 @@
 import { t as translateText, tr } from '../i18n/index';
 import { type StreetResidentId } from './streetDetails';
 import { cabinetSeat, type GameReaction } from '../shared/cabinetSeating';
+import { playerRecoveryPoint } from '../shared/playerRecovery';
 import { drawCabinetStool } from './cabinetStoolArt';
 import { drawClubFloor } from './clubArt';
 import { LUELON_NEW_ZONE, ARCADE_OVERVIEW_SIZE } from '../shared/clubLayout';
@@ -628,6 +629,18 @@ export class RoomScene extends Phaser.Scene {
     if (cabinet) { Object.assign(this.player, cabinetSeat(cabinet).entry); this.cabinetStools.get(cabinet.id)?.setOccupied(false); }
     Object.assign(this.player, { cabinet: '', seat: '', action: 'idle', gameReaction: '', gameReactionUntil: 0 });
   }
+  async recoverPlayer(): Promise<boolean> {
+    if (this.securityLocked || this.switching) return false;
+    if (this.network) return await this.network.recover?.() ?? false;
+    const point = playerRecoveryPoint(this.hall);
+    if (!point) return false;
+    this.cancelCabinetAdmission?.(); this.clickTargets.reset(); this.prediction.reset(); this.afterMovement = undefined;
+    this.pendingCabinet = null; this.pendingLounge = null;
+    this.catRoutine.interact('release', this.catPerson());
+    this.endCabinet();
+    Object.assign(this.player, point, { path: [], seat: '', action: 'idle', drink: '', actionUntil: 0, moving: false, facing: 'down' });
+    return true;
+  }
   reactToGame(reaction: GameReaction) {
     const id = this.networkSelf?.cabinet || this.player.cabinet;
     if (!id || this.securityLocked) return;
@@ -791,7 +804,7 @@ export class RoomScene extends Phaser.Scene {
       sit: seat => { this.clickTargets.cancel(); this.finishMovement(() => commands.sit(seat)); },
       stand: () => { this.clickTargets.cancel(); this.finishMovement(commands.stand); },
       drink: drink => { this.clickTargets.cancel(); this.finishMovement(() => commands.drink(drink)); },
-      stairWindow: commands.stairWindow, elevator: commands.elevator, cat: commands.cat, miraAttention: commands.miraAttention, cabinetPlay: commands.cabinetPlay, cabinetLeave: commands.cabinetLeave, cabinetReaction: commands.cabinetReaction,
+      recover: commands.recover, stairWindow: commands.stairWindow, elevator: commands.elevator, cat: commands.cat, miraAttention: commands.miraAttention, cabinetPlay: commands.cabinetPlay, cabinetLeave: commands.cabinetLeave, cabinetReaction: commands.cabinetReaction,
     };
     this.networkSelf = undefined;
     this.player.path = []; this.lastInput = '0,0';
