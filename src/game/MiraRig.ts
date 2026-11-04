@@ -70,7 +70,7 @@ export class MiraRig {
         if(fullBody&&sample.seat>.01)c.rect(0,BAR_POSITION.y+106-originY,SIZE.width,8+sample.seat*55);
         else if(sample.atlas==='work'&&sample.frame<8){
           // Only the two tabletop contacts pass over the counter. The apron stays behind it.
-          const clothOffsets=[4,11,20,20,17,9,-6,4];
+          const clothOffsets=[11,13,16,21,21,12,5,5];
           c.rect(SIZE.width/2+clothOffsets[sample.frame]-7,BAR_POSITION.y+108-originY,14,7);
           c.rect(SIZE.width/2-27,BAR_POSITION.y+108-originY,12,7);
         }

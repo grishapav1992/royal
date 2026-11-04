@@ -1,0 +1,18 @@
+{
+  "file": "mira-work-corrected.png",
+  "tool": "built-in imagegen edit",
+  "editTarget": "mira-work.png from commit ce346e0f (superseded and removed)",
+  "reason": "User identified malformed crossed shoulders and three hands in wiping frames 3 and 4; all eight wiping cells redrawn",
+  "prompt": "EDIT TARGET: the first attached image is the 4x4 Mira work atlas. Preserve the grid, character identity, painting, costume, scale, lighting, transparent background, and the bottom two rows of glass polishing and stocking poses. CRITICAL ANATOMY REPAIR in the TOP TWO ROWS ONLY: current wiping poses include grotesque extra third arms and crossed duplicated forearms. Remove those errors completely and redraw all 8 wiping cells with EXACTLY TWO arms, TWO elbows and TWO hands per woman. Reference image 2 is identity reference only. In every wiping frame, the woman's anatomical RIGHT arm (on VIEWER LEFT) is one single continuous relaxed arm from her RIGHT shoulder down to its supporting palm on viewer LEFT of the waist. The woman's anatomical LEFT arm (on VIEWER RIGHT) is one single continuous arm from her LEFT shoulder through one bent elbow to the hand pressing a cream cloth on VIEWER RIGHT of her waist. The cloth and wiping hand STAY TO THE RIGHT OF HER BODY CENTERLINE IN ALL FRAMES. NEVER cross either forearm over her chest or belly. Do not draw a diagonal third arm. Both shoulders must each connect to exactly one arm. Change the cloth position only a small distance to the right and back: eight sequential phases of a subtle circular polishing motion confined to the right side of her body, relaxed elbow. Her support hand does not duplicate or move. Keep torso upright with just a slight natural lean, stable calm head, shoulders level. All wrists and hands anatomically normal and connected. Bottom two rows remain polishing glass and stocking shelf with two arms each. NO background, text, borders or glow. Genuine RGBA alpha. Preserve a uniform EXACT 4 columns by 4 rows sprite grid, 16 complete waist-up women, no fragments. Check every cell for two arms and two hands before finalizing. This edit must eliminate all duplicated arms and impossible crossed elbows.",
+  "visuallyReviewedFrames": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "inspection": "Both support and wiping arms remain on their own sides of the body; no crossed diagonal third arm in the replacement wiping cells. A visual inspection, not an automated anatomical guarantee."
+}
