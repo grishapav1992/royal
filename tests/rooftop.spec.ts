@@ -146,7 +146,11 @@ async function thirdFloorWindow(page:Page,project:string){
   };
   await expect.poll(async()=>(await state(page)).street.landingControlsVisible).toBe(true);
   if(mobile)await platformWalk(160);
-  else await page.keyboard.press('ArrowRight',{delay:700});
+  else{
+    await page.keyboard.down('ArrowRight');
+    try{await expect.poll(async()=>roofWindowPlatformOffset(await state(page)),{timeout:6000}).toBeGreaterThan(160);}
+    finally{await page.keyboard.up('ArrowRight');}
+  }
   await expect.poll(async()=>{const s=await state(page);return onRoofWindowPlatform(s)&&roofWindowPlatformOffset(s)>90;}).toBe(true);
   expect((await state(page)).y).toBe(STAIR_WINDOW.landing.y);
   await page.screenshot({path:'../landing-controls-'+project+'-platform.png'});
