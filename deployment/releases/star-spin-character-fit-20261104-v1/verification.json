@@ -1,7 +1,7 @@
 {
   "gameId": "studio-wild-nudge",
   "version": "1.5.1-a6511d3f697d",
-  "status": "published-maintenance-pending",
+  "status": "published-verified",
   "date": "2026-11-04",
   "cause": "Original Vespera artwork ended at the shins; CSS and Rive displayed all source pixels.",
   "repair": "Generated full-body transparent sprite and blink reference; adjusted only Vespera rig geometry; rebuilt all four exports to bind the shared rig source hash.",
@@ -59,7 +59,8 @@
   },
   "limitations": [
     "Shared project graph unavailable; direct source inspection used.",
-    "Only Chrome viewports were used; no physical device connected."
+    "Only Chrome viewports were used; no physical device connected.",
+    "Automatic approval review rejected deletion of this task-owned local temporary folder before execution with reason blocked by policy. No deletion was retried. Exact retained bytes are in storage-cleanup.json."
   ],
   "productionBaseline": {
     "sourceCommit": "5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e",
@@ -331,7 +332,203 @@
   "temporaryData": {
     "root": "artifacts/work/star-spin-character-fit-20261104",
     "owner": "codex/star-spin-character-fit",
-    "cleanup": "pending-after-report-preservation",
+    "cleanup": {
+      "owner": "codex/star-spin-character-fit",
+      "recordedAt": "2026-11-04T11:24:28.211Z",
+      "preservedSourceCommit": "a26bad2378dbccdb61c9539d34a4b240037059af",
+      "preservedReportCommit": "7f6f8ccfa11a8809104fc9444ac22f89b4c95c82",
+      "local": {
+        "status": "blocked-by-automatic-review",
+        "target": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-character-fit-20261104",
+        "reason": "blocked by policy",
+        "commandExecuted": false,
+        "attempts": 1,
+        "removedFiles": 0,
+        "removedBytes": 0,
+        "preservedFiles": 80,
+        "preservedBytes": 51835602,
+        "freeObservedBeforeAttempt": 314285809664,
+        "freeObservedAfterAttempt": 314282450944,
+        "physicalDiskReclamationClaimed": false,
+        "previouslyRejectedTargetsRetried": false,
+        "activePackage": "1.5.1-a6511d3f697d",
+        "cleanupCondition": "Retain the rejected task-owned folder until a permitted cleanup can be performed. Do not retry during this task.",
+        "preservedFilesAtFinal": 83,
+        "preservedBytesAtFinal": 51840795,
+        "freeObservedAtFinal": 314930941952
+      },
+      "server": {
+        "status": "completed",
+        "checkedAtEpoch": 1793791045.9913151,
+        "removedArchive": "/opt/royal-releases/star-spin-character-fit-20261104-v1/payload.tgz",
+        "removedBytes": 13900552,
+        "freeBefore": 10683215872,
+        "freeAfter": 10697117696,
+        "measuredFreeDelta": 13901824,
+        "sourceCommit": "a26bad2378dbccdb61c9539d34a4b240037059af",
+        "preservedReportCommit": "7f6f8ccfa11a8809104fc9444ac22f89b4c95c82",
+        "requiredRecoveryProofsPreserved": true,
+        "activePointerPreserved": true,
+        "hostRestarted": false
+      },
+      "automaticRetentionHistory": [
+        {
+          "startedAt": 1793789538.4342167,
+          "removedEntries": 1,
+          "entries": [
+            {
+              "path": "/opt/royal-releases/star-spin-ui-20261103-v1"
+            }
+          ]
+        },
+        {
+          "startedAt": 1793790212.8865933,
+          "removedEntries": 14,
+          "entries": [
+            {
+              "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/after.json"
+            },
+            {
+              "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/backup.json"
+            },
+            {
+              "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/before.json"
+            },
+            {
+              "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/deployment-before.json"
+            },
+            {
+              "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/input-equivalence.json"
+            },
+            {
+              "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/install.log"
+            },
+            {
+              "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/module-proof.json"
+            },
+            {
+              "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/package"
+            },
+            {
+              "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/publish.py"
+            },
+            {
+              "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/publisher.py"
+            },
+            {
+              "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/release-manifest.json"
+            },
+            {
+              "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/source"
+            },
+            {
+              "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/test_publish.py"
+            },
+            {
+              "path": "/opt/royal-backups/star-spin-character-fit-20261104-v1"
+            }
+          ]
+        }
+      ],
+      "retiredScopedSourceBackup": {
+        "path": "/opt/royal-backups/star-spin-character-fit-20261104-v1/source.tgz",
+        "bytes": 5042074,
+        "sha256": "350028dc9aefc86b92b75525c07bade6a0dfe1fb61b188a7f1e873f302e737da",
+        "retiredByAutomaticRetention": true,
+        "oldModulePreserved": true
+      }
+    },
     "previouslyRejectedTargetsRetried": false
+  },
+  "maintenance": {
+    "startedAt": 1793789538.4342167,
+    "finishedAt": 1793790208.9520319,
+    "status": "completed",
+    "release": "remove-hall-title-20261103-v1",
+    "sourceCommit": "5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e",
+    "durationSeconds": 670.52,
+    "currentImage": "sha256:08d83a2095974b1baaad62e376149e38f74c31f9319da9c6dbefbc1f49859713",
+    "rollbackImage": "sha256:4909ae3df61c17398afcfe9903e7acbc5e0e551e4baa3822e3810c801f719371",
+    "freeBefore": 10660864000,
+    "freeAfter": 10656743424,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:4909ae3df61c17398afcfe9903e7acbc5e0e551e4baa3822e3810c801f719371",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "2abe9099b8592562f41aa203bd0c85ab970606acea1d061f2430d9fb6e47e171",
+      "files": 8592
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "3465513c066d55b01c8c7a5b9ef2073395481fb1ec40f7f6fb8f2327e4c0fdc6",
+      "receipt": "/var/lib/royal-project-brain/receipts/3465513c066d55b01c8c7a5b9ef2073395481fb1ec40f7f6fb8f2327e4c0fdc6.json",
+      "queued": true
+    },
+    "plannedEntriesCount": 1,
+    "plannedImagesCount": 0,
+    "preservedFinancialFilesCount": 116,
+    "removedEntriesCount": 1,
+    "removedImageTagsCount": 0,
+    "dockerRetainedImagesCount": 0,
+    "freeNow": 10657275904,
+    "timerEnabled": "enabled",
+    "timerActive": "active",
+    "activePointerSha256": "d10d279193c0955179df0326378d420414ede509750f0de1be9854c2f5768d80",
+    "scopedSourceBackupExists": true
+  },
+  "completedAt": "2026-11-04T11:24:28.213Z",
+  "followupMaintenance": {
+    "startedAt": 1793790212.8865933,
+    "finishedAt": 1793791042.9365838,
+    "status": "completed",
+    "release": "remove-hall-title-20261103-v1",
+    "sourceCommit": "5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e",
+    "durationSeconds": 830.05,
+    "currentImage": "sha256:08d83a2095974b1baaad62e376149e38f74c31f9319da9c6dbefbc1f49859713",
+    "rollbackImage": "sha256:4909ae3df61c17398afcfe9903e7acbc5e0e551e4baa3822e3810c801f719371",
+    "freeBefore": 10657476608,
+    "freeAfter": 10682466304,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "3465513c066d55b01c8c7a5b9ef2073395481fb1ec40f7f6fb8f2327e4c0fdc6",
+      "receipt": "/var/lib/royal-project-brain/receipts/3465513c066d55b01c8c7a5b9ef2073395481fb1ec40f7f6fb8f2327e4c0fdc6.json",
+      "queued": true
+    },
+    "plannedEntriesCount": 14,
+    "plannedImagesCount": 0,
+    "preservedFinancialFilesCount": 117,
+    "removedEntriesCount": 14,
+    "removedImageTagsCount": 0,
+    "freeNow": 10689691648,
+    "timerEnabled": "enabled",
+    "timerActive": "active"
+  },
+  "postMaintenance": {
+    "activePointerSha256": "d10d279193c0955179df0326378d420414ede509750f0de1be9854c2f5768d80",
+    "host": "sha256:08d83a2095974b1baaad62e376149e38f74c31f9319da9c6dbefbc1f49859713 healthy",
+    "currentModuleProofsVerified": [
+      {
+        "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/operator.json",
+        "sha256": "c0589cd99ea269451d57f473e7457c273e9132426fff05eccb46d3b8180cb24a"
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/published.json",
+        "sha256": "07903b15ff33cca8f6b90c7d26b0e6affcc2729356e642665a1d55ef641c93a1"
+      },
+      {
+        "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/release-github.json",
+        "sha256": "908cdfdd90c79470886a91a19593fef7e1128ca5aee71eb11d565607d2ffa8bd"
+      }
+    ],
+    "oldModuleManifestVerified": true,
+    "scopedSourceBackupRetiredByAutomaticRetention": true
   }
 }

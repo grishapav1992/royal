@@ -1,0 +1,106 @@
+{
+  "owner": "codex/star-spin-character-fit",
+  "recordedAt": "2026-11-04T11:24:28.211Z",
+  "preservedSourceCommit": "a26bad2378dbccdb61c9539d34a4b240037059af",
+  "preservedReportCommit": "7f6f8ccfa11a8809104fc9444ac22f89b4c95c82",
+  "local": {
+    "status": "blocked-by-automatic-review",
+    "target": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-character-fit-20261104",
+    "reason": "blocked by policy",
+    "commandExecuted": false,
+    "attempts": 1,
+    "removedFiles": 0,
+    "removedBytes": 0,
+    "preservedFiles": 80,
+    "preservedBytes": 51835602,
+    "freeObservedBeforeAttempt": 314285809664,
+    "freeObservedAfterAttempt": 314282450944,
+    "physicalDiskReclamationClaimed": false,
+    "previouslyRejectedTargetsRetried": false,
+    "activePackage": "1.5.1-a6511d3f697d",
+    "cleanupCondition": "Retain the rejected task-owned folder until a permitted cleanup can be performed. Do not retry during this task.",
+    "preservedFilesAtFinal": 83,
+    "preservedBytesAtFinal": 51840795,
+    "freeObservedAtFinal": 314930941952
+  },
+  "server": {
+    "status": "completed",
+    "checkedAtEpoch": 1793791045.9913151,
+    "removedArchive": "/opt/royal-releases/star-spin-character-fit-20261104-v1/payload.tgz",
+    "removedBytes": 13900552,
+    "freeBefore": 10683215872,
+    "freeAfter": 10697117696,
+    "measuredFreeDelta": 13901824,
+    "sourceCommit": "a26bad2378dbccdb61c9539d34a4b240037059af",
+    "preservedReportCommit": "7f6f8ccfa11a8809104fc9444ac22f89b4c95c82",
+    "requiredRecoveryProofsPreserved": true,
+    "activePointerPreserved": true,
+    "hostRestarted": false
+  },
+  "automaticRetentionHistory": [
+    {
+      "startedAt": 1793789538.4342167,
+      "removedEntries": 1,
+      "entries": [
+        {
+          "path": "/opt/royal-releases/star-spin-ui-20261103-v1"
+        }
+      ]
+    },
+    {
+      "startedAt": 1793790212.8865933,
+      "removedEntries": 14,
+      "entries": [
+        {
+          "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/after.json"
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/backup.json"
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/before.json"
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/deployment-before.json"
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/input-equivalence.json"
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/install.log"
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/module-proof.json"
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/package"
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/publish.py"
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/publisher.py"
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/release-manifest.json"
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/source"
+        },
+        {
+          "path": "/opt/royal-releases/star-spin-character-fit-20261104-v1/test_publish.py"
+        },
+        {
+          "path": "/opt/royal-backups/star-spin-character-fit-20261104-v1"
+        }
+      ]
+    }
+  ],
+  "retiredScopedSourceBackup": {
+    "path": "/opt/royal-backups/star-spin-character-fit-20261104-v1/source.tgz",
+    "bytes": 5042074,
+    "sha256": "350028dc9aefc86b92b75525c07bade6a0dfe1fb61b188a7f1e873f302e737da",
+    "retiredByAutomaticRetention": true,
+    "oldModulePreserved": true
+  }
+}
