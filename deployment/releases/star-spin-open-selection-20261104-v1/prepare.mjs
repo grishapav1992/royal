@@ -31,6 +31,10 @@ assert.equal(release.backendProjection.inputs['server/starSpinCollection.ts'],ch
 const backend=fs.readFileSync('dist-server/index.js');assert.equal(sha(backend),release.files['dist-server/index.js']);
 const serverDelta={'index.js':write('server-delta/index.js',backend)};
 const target=scope.module,prefix='module-dist/'+target.gameId+'/versions/'+target.version+'/';
+const previous=JSON.parse(fs.readFileSync('artifacts/work/star-spin-open-selection-20261104/previous-active.json'));
+assert.equal(sha(fs.readFileSync('artifacts/work/star-spin-open-selection-20261104/previous-active.json')),before.moduleFiles['/opt/royal-game-modules/'+target.gameId+'/active.json']);
+const previousVersion=previous.manifest.split('/').at(-2);assert(/^[a-zA-Z0-9_.-]+$/.test(previousVersion));
+assert.equal(previous.sha256,before.moduleFiles['/opt/royal-game-modules/'+target.gameId+'/versions/'+previousVersion+'/manifest.json']);
 const files={};for(const [file,hash]of Object.entries(release.files))if(file.startsWith(prefix)){
  const bytes=fs.readFileSync(file);assert.equal(sha(bytes),hash);files[file.slice(prefix.length)]=write('package/'+file.slice(prefix.length),bytes);
 }
@@ -52,7 +56,7 @@ const support={};for(const [file,source]of Object.entries(references))support[fi
 for(const file of ['release-manifest.json','release-github.json'])write(file,fs.readFileSync('module-build/'+file));
 write('scope.json',committed(folder+'/scope.json'));
 const helperSha256=write('deploy.py',committed(folder+'/deploy.py')),snapshotSha256=write('snapshot.py',committed(folder+'/snapshot.py'));
-const manifest={release:scope.name,sourceCommit:release.sourceCommit,baseCommit:before.sourceCommit,before,changed,delta:{},serverDelta,support,helperSha256,snapshotSha256,
+const manifest={release:scope.name,sourceCommit:release.sourceCommit,baseCommit:before.sourceCommit,before,changed,delta:{},serverDelta,support,helperSha256,snapshotSha256,previousVersion,
  package:{version:target.version,contract:target.contract,files,manifestSha256:target.manifestSha256,pointerSha256:target.pointerSha256},
  releaseManifestSha256:sha(fs.readFileSync('module-build/release-manifest.json')),receiptSha256:sha(fs.readFileSync('module-build/release-github.json')),addedGames:[],restoredGames:[]};
 write('install-manifest.json',Buffer.from(JSON.stringify(manifest,null,2)+'\n'));

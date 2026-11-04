@@ -1914,6 +1914,18 @@
       "path": "games/wild-nudge/tsconfig.json",
       "baseSha256": "4e89d09f5ce0bfda80d9b75a0a79916e55e831ddfca6c86037d68b3ae2b6eb21",
       "sha256": "4e89d09f5ce0bfda80d9b75a0a79916e55e831ddfca6c86037d68b3ae2b6eb21"
+    },
+    "tsconfig.json": {
+      "commit": "d666a6aa11b47e3a4a3d474e38ae0f7d448dddb4",
+      "path": "tsconfig.json",
+      "baseSha256": "ac92a48aa49e6d4a13a2ce4191379133d7156d219b8b3f10723921ad695f8888",
+      "sha256": "ac92a48aa49e6d4a13a2ce4191379133d7156d219b8b3f10723921ad695f8888"
+    },
+    "package.json": {
+      "commit": "d666a6aa11b47e3a4a3d474e38ae0f7d448dddb4",
+      "path": "package.json",
+      "baseSha256": "490850f191cb20e333323951bd432e5a2b9bca6a15a7f724464b14371ecdf510",
+      "sha256": "490850f191cb20e333323951bd432e5a2b9bca6a15a7f724464b14371ecdf510"
     }
   },
   "moduleGames": [
