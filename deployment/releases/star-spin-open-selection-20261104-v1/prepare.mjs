@@ -34,6 +34,14 @@ assert(!fs.existsSync(out),'Payload already exists');fs.mkdirSync(out,{recursive
 function write(file,bytes){assert(!path.isAbsolute(file)&&!file.split('/').some(p=>!p||p==='.'||p==='..'||p.startsWith('.env')));const target=path.join(out,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,bytes,{flag:'wx'});return sha(bytes);}
 const committed=file=>git('show',release.sourceCommit+':'+file);
 const installerSource=file=>git('show',installerCommit+':'+file);
+const moduleConfig=git('show',scope.selectionSourceCommit+':tsconfig.json');
+const baselineOrigin=release.backendProjection.origins['tsconfig.json'];
+assert(!baselineOrigin.patches?.length);
+const baselineConfig=git('show',baselineOrigin.commit+':'+baselineOrigin.path);
+const expectedConfig=JSON.parse(baselineConfig);expectedConfig.compilerOptions.resolveJsonModule=true;
+assert.deepEqual(JSON.parse(moduleConfig),expectedConfig);
+assert.equal(sha(baselineConfig),before.sourceLF['tsconfig.json']);assert.equal(sha(moduleConfig),scope.moduleBuildInputs['tsconfig.json']);
+const moduleBuildConfiguration={baselineSha256:write('baseline-tsconfig.json',baselineConfig),selectedSha256:write('module-tsconfig.json',moduleConfig)};
 const changed={};
 for(const [file,hash]of Object.entries(scope.expectedSources)){const bytes=git('show',scope.selectionSourceCommit+':'+file);assert.equal(sha(bytes),hash);changed[file]=write('source/'+file,bytes);}
 assert.equal(release.backendProjection.inputs['server/starSpinCollection.ts'],changed['server/starSpinCollection.ts']);
@@ -67,7 +75,7 @@ const scopeSha256=write('scope.json',installerSource(folder+'/scope.json'));
 const helperReceipt={format:1,sourceCommit:installerCommit,parentCommit:installerParent,applicationSourceCommit:release.sourceCommit,remoteMain:git('rev-parse','origin/main').toString().trim(),checkedAt:new Date().toISOString(),changedOnlyReleaseTooling:installerChanges};
 const helperReceiptSha256=write('installer-github.json',Buffer.from(JSON.stringify(helperReceipt,null,2)+'\n'));
 const helperSha256=write('deploy.py',installerSource(folder+'/deploy.py')),snapshotSha256=write('snapshot.py',installerSource(folder+'/snapshot.py'));
-const manifest={release:scope.name,sourceCommit:release.sourceCommit,helperSourceCommit:installerCommit,helperReceiptSha256,scopeSha256,baseCommit:before.sourceCommit,before,changed,delta:{},serverDelta,support,helperSha256,snapshotSha256,previousVersion,
+const manifest={release:scope.name,sourceCommit:release.sourceCommit,helperSourceCommit:installerCommit,helperReceiptSha256,scopeSha256,moduleBuildConfiguration,baseCommit:before.sourceCommit,before,changed,delta:{},serverDelta,support,helperSha256,snapshotSha256,previousVersion,
  package:{version:target.version,contract:target.contract,files,manifestSha256:target.manifestSha256,pointerSha256:target.pointerSha256},
  releaseManifestSha256:sha(fs.readFileSync('module-build/release-manifest.json')),receiptSha256:sha(fs.readFileSync('module-build/release-github.json')),addedGames:[],restoredGames:[]};
 write('install-manifest.json',Buffer.from(JSON.stringify(manifest,null,2)+'\n'));

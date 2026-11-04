@@ -6,6 +6,16 @@ p = importlib.util.module_from_spec(spec); spec.loader.exec_module(p)
 
 
 class Guards(unittest.TestCase):
+    def test_compiler_review_allows_only_json_type_resolution(self):
+        baseline = {'compilerOptions': {'target':'ES2022','module':'ESNext'}, 'include':['src','server','games']}
+        selected = copy.deepcopy(baseline); selected['compilerOptions']['resolveJsonModule'] = True
+        p.validate_module_config(baseline, selected)
+        for name, value in [('paths', {'*':['foreign/*']}), ('target','ES5'), ('resolveJsonModule',False)]:
+            wrong = copy.deepcopy(selected); wrong['compilerOptions'][name] = value
+            with self.assertRaises(RuntimeError): p.validate_module_config(baseline, wrong)
+        wrong = copy.deepcopy(selected); wrong['extends'] = 'foreign'
+        with self.assertRaises(RuntimeError): p.validate_module_config(baseline, wrong)
+
     def test_backend_inputs_must_match_live_except_exact_selection_and_preserved_dictionary(self):
         before = {'source': {'server/starSpinCollection.ts':'old', 'server/demoWallet.ts':'money', 'src/i18n/en.ts':'new-dictionary'}, 'sourceLF': {}}
         graph = {'inputs': {'server/starSpinCollection.ts':'free', 'server/demoWallet.ts':'money', 'src/i18n/en.ts':'old-dictionary'}}
