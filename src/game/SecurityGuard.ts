@@ -79,16 +79,27 @@ function createGuard(scene: Phaser.Scene) {
             if(looking){elbowX=37;elbowY=-10;handX=39;handY=-47;}
           } else c.rotate(sign*step*24*Math.PI/180);
           const armSkin=near?skin:'#754a38',length=Math.hypot(elbowX,elbowY);
-          const nx=elbowY/length,ny=-elbowX/length,sleeveLength=Math.min(14,length*.72);
+          const sleeveLength=Math.min(14,length*.72);
           const sleeveX=elbowX/length*sleeveLength,sleeveY=elbowY/length*sleeveLength;
-          // A continuous forearm joins the sleeve, elbow and palm in every gesture.
-          c.beginPath();c.moveTo(sleeveX,sleeveY);c.lineTo(elbowX,elbowY);c.lineTo(handX,handY);
-          c.strokeStyle=ink;c.lineWidth=16;c.stroke();c.strokeStyle=armSkin;c.lineWidth=14;c.stroke();
-          poly([nx*11,ny*11,-nx*11,-ny*11,sleeveX-nx*9,sleeveY-ny*9,sleeveX+nx*9,sleeveY+ny*9],near?shirt:'#1b1d25');
-          oval(handX,handY,looking&&near?9:7.5,7.5,armSkin);
+          const handAngle=Math.atan2(handY-elbowY,handX-elbowX)-Math.PI/2;
+          // Paint the whole outer contour before the skin, leaving no seam at the wrist.
+          for(const outline of [true,false]) {
+            const edge=outline?.8:0,color=outline?ink:armSkin;
+            c.beginPath();c.moveTo(sleeveX,sleeveY);c.lineTo(elbowX,elbowY);c.lineTo(handX,handY);
+            c.strokeStyle=color;c.lineWidth=outline?15:13;c.stroke();
+            c.beginPath();c.ellipse(handX,handY,(fist&&near?7:6)+edge,(fist&&near?7:8.5)+edge,handAngle,0,Math.PI*2);
+            c.fillStyle=color;c.fill();
+            if(pointing&&near){c.beginPath();c.roundRect(handX-2-edge,handY-20-edge,5+edge*2,17+edge*2,2.5+edge);c.fill();}
+          }
+          // The rounded sleeve merges into the shirt; only its cuff has a visible edge.
+          c.save();c.rotate(Math.atan2(elbowY,elbowX)-Math.PI/2);
+          c.beginPath();c.moveTo(-10,-2);c.bezierCurveTo(-9,-10,5,-11,10,-3);
+          c.quadraticCurveTo(12,5,8,sleeveLength+1);c.quadraticCurveTo(0,sleeveLength+3,-8,sleeveLength+1);
+          c.quadraticCurveTo(-11,7,-10,-2);c.closePath();c.fillStyle=near?shirt:'#1b1d25';c.fill();
+          c.beginPath();c.moveTo(-8,sleeveLength);c.quadraticCurveTo(0,sleeveLength+2,8,sleeveLength);
+          c.strokeStyle='#151720';c.lineWidth=.8;c.stroke();c.restore();
           if(fist&&near){for(let i=-1;i<=1;i++)line(handX+i*3,handY-4,handX+i*3,handY-1,'#563729',1);line(handX-5,handY+3,handX+4,handY+3,'#563729',1);}
           else {line(handX+4,handY,handX+2,handY+3,'#634033',1);line(handX-2,handY+3,handX-2,handY+5,'#634033',.8);}
-          if(pointing&&near){c.beginPath();c.roundRect(handX-2,handY-20,5,17,2.5);fill(skin);}
           c.restore();return;
         }
         if(near && (holding||pointing||throwing||talking||looking||frame===25||fist)) {
