@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "productionCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
+  "productionCommit": "97d9eac8e811db0389002ce697865782f9707f41",
   "moduleGames": [
     "cosmic-escape",
     "caramel-carnival",
@@ -1652,10 +1652,10 @@
       "sha256": "4123cfa11fcd5e2ca4e7e2f831ede3cbef88c7694c5b78f5679e9c2026f38570"
     },
     "games/flag-battle/FlagAudio.ts": {
-      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "commit": "88a99af8c49ac43530c2fb9ae93a8abb4576c60d",
       "path": "games/flag-battle/FlagAudio.ts",
-      "baseSha256": "45316e89e621eed3b0276c1038cd0dfea4f4801d8840d6c2020c5f66333883bf",
-      "sha256": "45316e89e621eed3b0276c1038cd0dfea4f4801d8840d6c2020c5f66333883bf"
+      "baseSha256": "e7bfa6c926f11816598cea05baba4b0e26339d5f2bac111d2a8564d2173fd6b4",
+      "sha256": "e7bfa6c926f11816598cea05baba4b0e26339d5f2bac111d2a8564d2173fd6b4"
     },
     "games/flag-battle/FlagPhysics.ts": {
       "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
@@ -1676,10 +1676,10 @@
       "sha256": "d7cd70e6faff320b81ef814df13bb4853891211d388d26e8c8821fb766ad0594"
     },
     "games/flag-battle/tsconfig.json": {
-      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "commit": "88a99af8c49ac43530c2fb9ae93a8abb4576c60d",
       "path": "games/flag-battle/tsconfig.json",
-      "baseSha256": "8c853be9f2b69ec71f4a989a382c2019a41838a8fe8227fe069a865e3b3a0ad2",
-      "sha256": "8c853be9f2b69ec71f4a989a382c2019a41838a8fe8227fe069a865e3b3a0ad2"
+      "baseSha256": "71b119246484c04f8b0be9137eb1cf1f56ba2edd4af1652914517166ac98adc3",
+      "sha256": "71b119246484c04f8b0be9137eb1cf1f56ba2edd4af1652914517166ac98adc3"
     },
     "games/girlhub/tsconfig.json": {
       "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
@@ -9988,10 +9988,10 @@
       "sha256": "96fb2482b2c82e78940e8f27aeb74456290298a3ec4f1bd084f447589374d85e"
     },
     "games/flag-battle/package.json": {
-      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "commit": "88a99af8c49ac43530c2fb9ae93a8abb4576c60d",
       "path": "games/flag-battle/package.json",
-      "baseSha256": "c3320c93332095d70b32aa7946e852b028c5e3d7bf70659ecee3ec2ce0ae4a3c",
-      "sha256": "c3320c93332095d70b32aa7946e852b028c5e3d7bf70659ecee3ec2ce0ae4a3c"
+      "baseSha256": "abac21886b92fa711a6e0eb510320c9c6dcb0f3f7044254bf38ce82832ca9b28",
+      "sha256": "abac21886b92fa711a6e0eb510320c9c6dcb0f3f7044254bf38ce82832ca9b28"
     },
     "games/flooded-temple/CascadeUI.ts": {
       "commit": "cf412e52339462c26191242069916a735a99739e",
