@@ -29,3 +29,16 @@ test('manual field preserves drafts, validates before play, locks accepted stake
     for(const width of [320,390,1440]){await page.setViewportSize({width,height:844});const b=await input.boundingBox();assert(b&&b.width>=36&&b.x>=0&&b.x+b.width<=width);}
   }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}
 });
+
+test('typing and partial drafts survive the actual cascade control renderer',async()=>{
+ const built=await build({stdin:{contents:"export {syncStakeSelect} from './src/ui/stakeSelection.ts';export {updateCascadeDOM} from './games/flooded-temple/cascadeDOM.ts';",resolveDir:process.cwd()},bundle:true,write:false,format:'esm',logLevel:'silent'});
+ const html=`<html lang="ru"><body><div id="game" data-game-module-id="fixture"></div><script type="module">import{syncStakeSelect,updateCascadeDOM}from'/control.js';const root=document.querySelector('#game');window.value='10';window.locked=false;window.clicks=0;window.render=()=>{updateCascadeDOM(root,'<label>Stake<select data-ft="stake"><option value="10">0.10</option><option value="20">0.20</option><option value="5000">50</option></select></label><button data-ft="primary">Spin</button>');syncStakeSelect(root.querySelector('select'),window.value,['10','20','5000'],window.locked);};root.addEventListener('change',e=>{if(e.target.tagName==='SELECT'){window.value=e.target.value;window.render();}});root.addEventListener('click',e=>{if(e.target.closest('button'))window.clicks++;});window.render();</script></body></html>`;
+ const server=http.createServer((req,res)=>{res.setHeader('Content-Type',req.url==='/control.js'?'text/javascript':'text/html');res.end(req.url==='/control.js'?built.outputFiles[0].text:html);});await new Promise(r=>server.listen(0,'127.0.0.1',r));let browser;
+ try{
+  browser=await chromium.launch({channel:'chrome',headless:true});const page=await browser.newPage();await page.goto('http://127.0.0.1:'+server.address().port);const input=page.locator('[data-manual-stake]');
+  await input.fill('');await input.pressSequentially('2,35',{delay:25});assert.equal(await input.inputValue(),'2,35');assert.equal(await page.evaluate(()=>window.value),'235');assert(await input.evaluate(n=>n===document.activeElement));
+  await input.fill('2.');await page.evaluate(()=>window.render());assert.equal(await input.inputValue(),'2.');assert(await input.evaluate(n=>n===document.activeElement));await page.locator('button').click();assert.equal(await page.evaluate(()=>window.clicks),0);
+  await input.fill('');await input.pressSequentially('0.15',{delay:25});await page.locator('button').click();assert.equal(await page.evaluate(()=>window.value),'15');assert.equal(await page.evaluate(()=>window.clicks),1);
+  await page.evaluate(()=>{window.locked=true;window.render();});assert(await input.isDisabled());assert.equal(await input.inputValue(),'0.15');await page.evaluate(()=>{window.locked=false;window.render();});assert.equal(await input.inputValue(),'0.15');
+ }finally{await browser?.close();await new Promise(r=>server.close(r));}
+});
