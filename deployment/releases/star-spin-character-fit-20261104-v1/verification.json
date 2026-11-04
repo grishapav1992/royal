@@ -1,0 +1,337 @@
+{
+  "gameId": "studio-wild-nudge",
+  "version": "1.5.1-a6511d3f697d",
+  "status": "published-maintenance-pending",
+  "date": "2026-11-04",
+  "cause": "Original Vespera artwork ended at the shins; CSS and Rive displayed all source pixels.",
+  "repair": "Generated full-body transparent sprite and blink reference; adjusted only Vespera rig geometry; rebuilt all four exports to bind the shared rig source hash.",
+  "asset": {
+    "file": "public/assets/wild-nudge/characters/vespera.webp",
+    "width": 640,
+    "height": 960,
+    "alphaBounds": {
+      "xmin": 30,
+      "xmax": 618,
+      "ymin": 9,
+      "ymax": 943
+    },
+    "bottomMarginPx": 16
+  },
+  "source": "games/wild-nudge/assets/characters/vespera.png",
+  "prompts": "games/wild-nudge/assets/characters/framing-repair.json",
+  "rive": {
+    "cli": "1.7.0",
+    "verifyProblems": 0,
+    "inspectProblems": 0,
+    "bones": 5,
+    "meshes": 5,
+    "reactions": 7,
+    "sourceAndWeightsTestsPassed": 2,
+    "nativeBlinkFrameInspectedAtSeconds": 2.6
+  },
+  "host": {
+    "stats": {
+      "startTime": "2026-11-04T10:26:51.933Z",
+      "duration": 135710.897,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "compiled": true,
+    "connectedChat": true,
+    "viewports": 13,
+    "allFourCharactersInspected": true,
+    "staticAndAnimatedVesperaInspected": true,
+    "vesperaPortraitInspected": true,
+    "physicalDevices": false,
+    "backendSha256": "7b11acb06fdbc5ff43a9cd18f9bdf5a687ca11ccd086562508150a48a9d6684a",
+    "backendEqualsProduction": true,
+    "previewStopped": true,
+    "temporaryDatabaseRemoved": true
+  },
+  "scope": {
+    "mathematicsChanged": false,
+    "walletChanged": false,
+    "collectionProgressChanged": false,
+    "audioChanged": false,
+    "hostCodeChanged": false
+  },
+  "limitations": [
+    "Shared project graph unavailable; direct source inspection used.",
+    "Only Chrome viewports were used; no physical device connected."
+  ],
+  "productionBaseline": {
+    "sourceCommit": "5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e",
+    "image": "sha256:08d83a2095974b1baaad62e376149e38f74c31f9319da9c6dbefbc1f49859713",
+    "sourceFiles": 2698,
+    "runtimeFiles": 8593,
+    "services": 14,
+    "moduleFiles": 4236,
+    "freeBytes": 10723659776
+  },
+  "sourceEquivalence": {
+    "lineEndings": 8,
+    "typeOnly": 1,
+    "record": "input-equivalence.json"
+  },
+  "linuxGuardTests": 6,
+  "unchangedOtherCharacterBinaries": [
+    "lyra",
+    "aeliri",
+    "nyxara"
+  ],
+  "walletVerification": {
+    "mandatoryTestsReused": 19,
+    "fromRelease": "star-spin-ui-20261103-v1",
+    "reason": "No wallet, transport, backend or mathematical code changed; compiled local test backend equals the verified production byte hash."
+  },
+  "deploymentSourceScope": {
+    "gameSources": 9,
+    "moduleMediaInputs": 5,
+    "hostPublicSourcesPreserved": true,
+    "reason": "Independent module loader serves immutable package media. Current retention supports scoped games source receipts; host public source bytes remain tied to the host release.",
+    "adoptedUnchangedPriorUiSources": 4
+  },
+  "sourceCommit": "a26bad2378dbccdb61c9539d34a4b240037059af",
+  "manifestSha256": "288d2c1d84a4c28573d29d64e23ad6f25eda088f9c603ae4334a573f853b537d",
+  "activePointerSha256": "d10d279193c0955179df0326378d420414ede509750f0de1be9854c2f5768d80",
+  "published": {
+    "published": true,
+    "release": "star-spin-character-fit-20261104-v1",
+    "sourceCommit": "a26bad2378dbccdb61c9539d34a4b240037059af",
+    "baseCommit": "5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e",
+    "buildBaseCommit": "5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e",
+    "module": {
+      "verified": true,
+      "gameId": "studio-wild-nudge",
+      "version": "1.5.1-a6511d3f697d",
+      "bytes": 12539555,
+      "files": 22,
+      "beforeSha256": "b382400b9f264177ec16c6454c783a4de002488cc745e14774d5459dd88223f3",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "install",
+      "activeSha256": "d10d279193c0955179df0326378d420414ede509750f0de1be9854c2f5768d80",
+      "history": "/opt/royal-game-modules-state/history/20261104T104803-4027e686d6c249c1b9a608b511599603.json"
+    },
+    "backup": {
+      "sourceArchive": "/opt/royal-backups/star-spin-character-fit-20261104-v1/source.tgz",
+      "bytes": 5042074,
+      "sha256": "350028dc9aefc86b92b75525c07bade6a0dfe1fb61b188a7f1e873f302e737da",
+      "oldVersion": "1.5.0-dfaacbc6bb0f",
+      "oldPackageHardlinked": true,
+      "imageTag": "royal-game:before-star-spin-character-fit-20261104-v1",
+      "image": "sha256:08d83a2095974b1baaad62e376149e38f74c31f9319da9c6dbefbc1f49859713"
+    },
+    "freeBefore": 10686386176,
+    "freeAfter": 10664607744,
+    "hostRestarted": false,
+    "databaseTouched": false,
+    "otherModulesPreserved": true,
+    "sourceFilesPreserved": 2690,
+    "runtimeFilesPreserved": 8593,
+    "servicesPreserved": 14
+  },
+  "verification": {
+    "rtpProfiles": 38,
+    "stakePolicies": 20,
+    "stakeAdmissions": 20,
+    "unchangedLegacyNotQualified": 114,
+    "linuxGuardTests": 6,
+    "releaseGithubReceipt": {
+      "format": 1,
+      "sourceCommit": "a26bad2378dbccdb61c9539d34a4b240037059af",
+      "manifestSha256": "7492f2eb0afc0a7cfe4b3b7a6d527a15db4ed574dc0012b9b586f5d3ecd998cf",
+      "remoteMain": "a26bad2378dbccdb61c9539d34a4b240037059af",
+      "checkedAt": "2026-11-04T10:41:55.188Z"
+    },
+    "public": {
+      "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
+      "version": "1.5.1-a6511d3f697d",
+      "checkedAt": "2026-11-04T10:49:14.593Z",
+      "passed": true,
+      "files": [
+        {
+          "file": "active.json",
+          "sha256": "d10d279193c0955179df0326378d420414ede509750f0de1be9854c2f5768d80",
+          "cache": "no-store"
+        },
+        {
+          "file": "manifest.json",
+          "sha256": "288d2c1d84a4c28573d29d64e23ad6f25eda088f9c603ae4334a573f853b537d"
+        },
+        {
+          "file": "media/wild-nudge/background.webp",
+          "sha256": "08da069a40ecd93db5ea3698f561b31fc6478f92f139f8117a5fa9aff89171fb",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "entry-40b3fc4b49e51124.js",
+          "sha256": "40b3fc4b49e511245cfeb60cfb6625418040783fe207ea36fe6d7bc0829a58cc",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/aeliri-rive.json",
+          "sha256": "fa036e2a1fecf47875b1f361143daa23b0b60cb6624074480b98be49f2ed8dbb",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/lyra.webp",
+          "sha256": "bd61ed5a356ed4a64a5777bf3cd75dd8f3867d0c7ff11399e1107ab7040d63ea",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/lyra-rive.json",
+          "sha256": "f4c917291389f3ab712133e0da4176ccee435feea88e9e136e36217264fe199a",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/aeliri.webp",
+          "sha256": "1db152e1e067a5545480c17857ac6fae9edf6d2877a154a0d7aecaa02b68207e",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/nyxara.webp",
+          "sha256": "0bd85ec325898d6653cd965ffdc45661b7c246b9e5db63b84fb17b6745b0cf2f",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/nyxara-rive.json",
+          "sha256": "f1eff64dc71669616892c069637704ae96bec69908ea3e2fa764773273489718",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/rive-runtime.json",
+          "sha256": "53d7a6fde857630ef2368df86afa57a1c53e98a7ee633d8b878703ba3ea2b809",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/cover.webp",
+          "sha256": "51c6b39a839fb3abbdebc3bba8bc105a2ba92ae764f4943454bed614405d9bc7",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/vespera.webp",
+          "sha256": "ce383b93698909c9cb9205811976033326abfec1d0713f6b65ee00b85f5bda2e",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/characters/vespera-rive.json",
+          "sha256": "e43390097d90e245efa477a4e626a95defd7a142f9281dadeb076bdb83b8b0b1",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/symbol-1.webp",
+          "sha256": "9df6f55cdc45fe27152099d1e093bc103bb4c8d89472d53c7da0cfdbee08b275",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/symbol-0.webp",
+          "sha256": "4818486e2fcfa37fd7eec9804026fa4336e45821f95611d1fb4cd9152e143065",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/score.wav",
+          "sha256": "282b5a2b358905645e3741d7d6ec198f07e391262f57430ac8ebc4d27cd875d2",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/symbol-4.webp",
+          "sha256": "47983bd14981cd900c542370c6c2ad3438a6ccdbbce0831c307078414103caf2",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/symbol-3.webp",
+          "sha256": "40e59f13410534a6cff7fe468e75e64e1f84f0a7b636c7def5cff7ec90d2b929",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/symbol-2.webp",
+          "sha256": "41043b4d4b7c82948db8557921e6681dd88ae656101b30a4dd567583be446cb9",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/symbol-5.webp",
+          "sha256": "012e71be56c422c1b3ccef61d1cb27de356ad3ecb84fcf98dd4dd0ec27467ff6",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/symbol-7.webp",
+          "sha256": "fe2d129f02f2b3cd7559b0a0f1eb074f13a17910637163632164b0ba9ebfc70b",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "media/wild-nudge/symbol-6.webp",
+          "sha256": "733ee68cc2704841d1ec941d11de5d8d6e051661d203582279a403327fc406d1",
+          "cache": "public, max-age=31536000, immutable"
+        },
+        {
+          "file": "style-770e6562c629fe25.css",
+          "sha256": "770e6562c629fe257ce5bcacde225bde5f52335c10d1da569014e66d34723c2f",
+          "cache": "public, max-age=31536000, immutable"
+        }
+      ],
+      "boundaries": [
+        {
+          "path": "/healthz",
+          "status": 200
+        },
+        {
+          "path": "/api/demo-wallet",
+          "status": 401
+        },
+        {
+          "path": "/api/star-spin/collection",
+          "status": 401
+        },
+        {
+          "path": "/api/game-wallet",
+          "status": 410
+        },
+        {
+          "path": "/api/nile-play/wallet",
+          "status": 410
+        }
+      ],
+      "productionAccountsCreated": 0,
+      "productionWagers": 0
+    },
+    "independentFullInventoryComparisonPassed": true,
+    "actualSourceChanges": {
+      "games/wild-nudge/README.md": "dcb740ab226686a0e4c2212bff7c259e3b1c8d298bac548166cd04e864752f49",
+      "games/wild-nudge/animation/rigs.json": "0740be5ea8f772d9763befa0cc25d94b3b39828d7c347b6d01f1c462c776256a",
+      "games/wild-nudge/animation/vespera/blink-reference.png": "cdd21e167d501fd8a07a8b22d8f636f77aea46d9c45d95a1d6b89a9da5bd4c57",
+      "games/wild-nudge/animation/vespera/eyelids.png": "285f1831b86b742d6434565b2c92678e3ceccec443ab1fcda04a054eaa9a6c26",
+      "games/wild-nudge/animation/vespera/scene.rml": "0665efebc19dfd8c4ae0ac8af10aeb17e6ad58854a18f1aaa426d8b02c9878cd",
+      "games/wild-nudge/assets/characters/framing-repair.json": "6c82c9cf0a71c03151c62c96c94dad60d572844ba47fe0cc693e56aba321d4cd",
+      "games/wild-nudge/assets/characters/prompts.json": "2c991e35e4e2db515c03320ff18b0bc23a411724aedf9a8178e6c000ea08904d",
+      "games/wild-nudge/assets/characters/vespera.png": "5c1c8eedc4616fea4215c09303c81830318233aab7dea47efd8eec024a63d8e4",
+      "games/wild-nudge/package.json": "83caa3cf82b9ba69262195a85b9aba6953850c2ebd7db0d50117ecf616ba9a34"
+    },
+    "sourceFilesBefore": 2698,
+    "sourceFilesAfter": 2699,
+    "runtimeFilesPreserved": 8593,
+    "servicesPreserved": 14,
+    "moduleFilesBefore": 4236,
+    "moduleFilesAfter": 4259,
+    "hostContainerUnchanged": true,
+    "configurationHashesUnchanged": true,
+    "protectedProgramsUnchanged": true,
+    "otherModuleFilesUnchanged": true
+  },
+  "catalogue": {
+    "activeCount": 20,
+    "newGames": [],
+    "restoredGames": [],
+    "hostAndSettingsUnchanged": true
+  },
+  "temporaryData": {
+    "root": "artifacts/work/star-spin-character-fit-20261104",
+    "owner": "codex/star-spin-character-fit",
+    "cleanup": "pending-after-report-preservation",
+    "previouslyRejectedTargetsRetried": false
+  }
+}

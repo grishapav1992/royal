@@ -31,8 +31,10 @@
       "width": 640,
       "height": 960,
       "hasAlpha": true,
-      "bytes": 183822,
-      "sha256": "aca132497d65fcd5edd71e880e13377a8b8066d138ee881193f320cf7ea52fa9"
+      "bytes": 161288,
+      "sha256": "ce383b93698909c9cb9205811976033326abfec1d0713f6b65ee00b85f5bda2e",
+      "framing": "Full body including both armored boots and full cape, transparent safety margin below feet. Repaired 2026-11-04.",
+      "framingRepair": "framing-repair.json"
     },
     {
       "id": "nyxara",

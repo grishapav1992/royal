@@ -61,7 +61,17 @@ test('all four Rive companions retain their identity, react to paid outcomes and
   if(id!=='lyra'){
    const bytes=await page.locator('.ss-rive-canvas').evaluate(async(canvas:HTMLCanvasElement)=>{const stream=canvas.captureStream(30),chunks:Blob[]=[];const recorder=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp9'});recorder.ondataavailable=e=>chunks.push(e.data);const done=new Promise<void>(resolve=>recorder.onstop=()=>resolve());recorder.start();await new Promise(r=>setTimeout(r,7500));recorder.stop();await done;stream.getTracks().forEach(track=>track.stop());return Array.from(new Uint8Array(await new Blob(chunks,{type:'video/webm'}).arrayBuffer()));});expect(bytes.length).toBeGreaterThan(5000);await writeFile(output+`/${id}-rive-preview.webm`,Buffer.from(bytes));
   }
-  await page.locator('[data-ss=close]').click();await scenario(page,'nudge');await spin(page);expect((await mini(page)).character.reactions.wild_align).toBeGreaterThan(0);await scenario(page,'win');await spin(page);const wins=(await mini(page)).character.reactions.round_win;expect(wins).toBeGreaterThan(0);await scenario(page,'loss');await spin(page);expect((await mini(page)).character.reactions.round_win).toBe(wins);observed.push((await mini(page)).character);await page.locator('[data-gn=crew]').click();
+  await page.locator('[data-ss=close]').click();await scenario(page,'nudge');await spin(page);expect((await mini(page)).character.reactions.wild_align).toBeGreaterThan(0);await scenario(page,'win');await spin(page);const wins=(await mini(page)).character.reactions.round_win;expect(wins).toBeGreaterThan(0);await scenario(page,'loss');await spin(page);expect((await mini(page)).character.reactions.round_win).toBe(wins);observed.push((await mini(page)).character);
+  await page.screenshot({path:output+`/${id}-full-body.png`});
+  if(id==='vespera'){
+   await page.locator('.ss-companion').screenshot({path:output+'/vespera-animated-silhouette.png'});
+   await page.emulateMedia({reducedMotion:'reduce'});await expect(page.locator('.ss-companion .ss-rive-canvas')).toBeHidden();await page.locator('.ss-companion').screenshot({path:output+'/vespera-static-silhouette.png'});
+   await page.emulateMedia({reducedMotion:'no-preference'});
+   await page.setViewportSize({width:390,height:844});await expect.poll(async()=>(await mini(page)).character.playing).toBe(true);await chat(page);await page.screenshot({path:output+'/vespera-portrait.png'});
+   await page.setViewportSize({width:707,height:447});await expect.poll(async()=>(await mini(page)).character.playing).toBe(false);await page.screenshot({path:output+'/vespera-landscape.png'});
+   await page.setViewportSize({width:1440,height:1000});await expect.poll(async()=>(await mini(page)).character.playing).toBe(true);
+  }
+  await page.locator('[data-gn=crew]').click();
  }
  await page.locator('[data-ss=close]').click();await page.setViewportSize({width:390,height:844});await expect.poll(async()=>(await mini(page)).character.playing).toBe(true);await page.setViewportSize({width:844,height:390});await expect.poll(async()=>(await mini(page)).character.playing).toBe(false);await page.setViewportSize({width:390,height:844});await chat(page);await expect(page.locator('[data-gn=spin]')).toBeInViewport();
  await page.locator('[data-gn=crew]').click();await expect(page.locator('[data-ss-card=nyxara] .ss-rive-canvas')).toBeVisible();await expect.poll(async()=>(await mini(page)).character.playing).toBe(true);await page.screenshot({path:output+'/rive-mobile.png'});
