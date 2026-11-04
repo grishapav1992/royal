@@ -44,7 +44,8 @@
       "productionBalancesChanged": false,
       "passed": true,
       "errors": []
-    }
+    },
+    "generalPublicationLocksLinux": 13
   },
   "codeComparison": {
     "beforeSha256": "17b4aaa7ac6211f3b425075aa648e86048833623f314495b072abaff17c140fd",
@@ -65,8 +66,8 @@
     "The headless scheduling diagnostic is not an acoustic synchronization measurement; physical speakers, headphones and Bluetooth were not assessed.",
     "The real-host contact check uses the supported skip action after a physical contact, then verifies lost-response replay and close/reopen."
   ],
-  "productionPublished": false,
-  "publicationStatus": "authorized_awaiting_guarded_install",
+  "productionPublished": true,
+  "publicationStatus": "published_maintenance_pending",
   "pauseEvidence": {
     "threadId": "01a1a777-3a8b-7d22-9add-748e77317cdb",
     "title": "Найти причину долгой установки",
