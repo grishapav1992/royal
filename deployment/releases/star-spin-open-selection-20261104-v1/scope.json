@@ -23,18 +23,21 @@
   },
   "module": {
     "gameId": "studio-wild-nudge",
-    "version": "1.6.0-f5f4b043e981",
+    "version": "1.6.0-7c4da60c30bd",
     "contract": {
       "apiVersion": 1,
       "rulesVersion": 2,
       "progressVersion": 1
     },
-    "manifestSha256": "58103b06ed2270c7d24450f12d2658f02475e729fa6acf9c6097dec2d2e01db4",
-    "pointerSha256": "27ebe6606039ebcdc6232c26834996bb6bd8e28641640686b54d69589026804e"
+    "manifestSha256": "438749bb5721c9bbc4c0a91fb1ed5b49ebd0e93e9f345de462c69db72cd82012",
+    "pointerSha256": "8c4f81bb13b219398505fb6b550a795381c1b61726ccb9ebb7c31d68e2e4761a"
   },
   "preservedBackendInputs": {
     "src/i18n/en.ts": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68"
   },
   "baselineBackendSha256": "7b11acb06fdbc5ff43a9cd18f9bdf5a687ca11ccd086562508150a48a9d6684a",
-  "selectionSourceCommit": "d666a6aa11b47e3a4a3d474e38ae0f7d448dddb4"
+  "selectionSourceCommit": "d666a6aa11b47e3a4a3d474e38ae0f7d448dddb4",
+  "moduleBuildInputs": {
+    "tsconfig.json": "ac92a48aa49e6d4a13a2ce4191379133d7156d219b8b3f10723921ad695f8888"
+  }
 }

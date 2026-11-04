@@ -6,6 +6,7 @@ import { drawGeneratedSkin, hasSkinSheet, loadSkinSheet } from './generatedSkinA
 import { drawMira } from './miraArt';
 import { CHARACTER_WALK_FRAMES, CHARACTER_WALK_FRAME_RATE } from './characterAnimation';
 import { drawProfileArm, drawProfileLimb, profileArmPose, profileBodyPoint, profileBodyPose, profileLegPose } from './profileWalk';
+import { frontalArmPose, frontalBodyPose, frontalLegPose } from './frontalWalk';
 
 import type { Facing } from '../shared/movement';
 export type { Facing } from '../shared/movement';
@@ -163,10 +164,12 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
   const side = facing === 'left' || facing === 'right', back = facing === 'up';
   const profile = side && !seated && sip < 0;
   const profileBody = profile ? profileBodyPose(frame) : null;
+  const frontal = !side && !seated && sip < 0;
+  const frontalBody = frontal ? frontalBodyPose(frame) : null;
   const walking = frame < 6;
   const step = walking ? [0, 1, .55, 0, -1, -.55][frame] : 0;
-  const bounce = profileBody?.y ?? (walking ? [0, -1.4, -.6, 0, -1.4, -.6][frame] : 0);
-  const lean = profileBody?.angle ?? (walking ? [-1.8, 1.8, 2.8, 1.8, -1.8, -2.8][frame] : 0);
+  const bounce = profileBody?.y ?? frontalBody?.y ?? (walking ? [0, -1.4, -.6, 0, -1.4, -.6][frame] : 0);
+  const lean = profileBody?.angle ?? frontalBody?.angle ?? (walking ? [-1.8, 1.8, 2.8, 1.8, -1.8, -2.8][frame] : 0);
   const blink = frame === 8;
   const glance = frame === 7 ? -1.7 : frame === 9 ? 1.7 : 0;
   const width = p.width ?? [3, -1, 1, 0, -2, 2, -1][person] ?? 0;
@@ -202,6 +205,13 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
       oval(0, 0, 9 + width * .2, 2.7, '#272823'); c.restore();
       continue;
     }
+    if (frontalBody) {
+      const sign = leg as -1 | 1;
+      const pose = frontalLegPose(frame, sign, profileBodyPoint({ x: 32 + sign * 8.5, y: 61 }, 66, frontalBody), 10, back);
+      drawProfileLimb(c, pose.hip, pose.knee, pose.ankle, 14, 11.5 * pose.scale, p.pants, ink);
+      oval(pose.foot.x, pose.foot.y, (10 + width * .2) * pose.scale, 2.7 * pose.scale, '#272823');
+      continue;
+    }
     const swing = step * leg;
     const x = 32 + leg * (side ? 3 : 10) + (side ? swing * 5.5 : swing * 1.3) + (seated ? (side ? 7 : leg * 2) : 0);
     const y = 76 - Math.max(0, swing) * 2.5;
@@ -216,6 +226,10 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
     const left = side ? 19 - width * .3 : 11 - width;
     const right = side ? 45 + width * .3 : 53 + width;
     const arm = (far: boolean) => {
+      if (frontal) {
+        drawProfileArm(c, frontalArmPose(frame, far ? -1 : 1, 48, 32 - left, 21, back), p.shirt, p.skin, ink);
+        return;
+      }
       if (profile) {
         drawProfileArm(c, profileArmPose(frame, far, { x: far ? 35.5 : 29, y: 48 }, 21), p.shirt, p.skin, ink);
         return;
@@ -240,6 +254,8 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         c.strokeStyle = p.shade; c.lineWidth = .55; c.stroke();
       });
     };
+    // The torso covers both sleeve roots instead of outlining separate shoulder caps.
+    if (frontal) { arm(true); arm(false); }
     if (side) arm(true);
     if (p.style === 'long') oval(side ? 23 : 31, 36, side ? 12 : 24, 25, p.hair);
     c.beginPath(); c.moveTo(side ? 28 : 20, 42);
@@ -299,7 +315,7 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
       line(back?22:40,56,back?25:43,56,p.dark,.8);
     }
     if(back&&p.look==='buns')for(const y of [56,63])line(17,y,48,y,p.light,3);
-    if (!side) arm(true);
+    if (!side && !frontal) arm(true);
     const drawNearArm = () => {
       if (sip >= 0) {
         const raise = [0, 6, 17, 18, 8, 0][sip];
@@ -312,7 +328,7 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         });
       } else arm(false);
     };
-    if (back && !game) drawNearArm();
+    if (back && !game && !frontal) drawNearArm();
     // In profile the head covers the sleeve root, as it covers the torso neckline.
     if (profile) drawNearArm();
     // The head is a rigid paper disc. Eyes and mouth switch independently of the torso.
@@ -568,6 +584,6 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         }
       }
     });
-    if ((!back || game) && !profile) drawNearArm();
+    if ((!back || game) && !profile && !frontal) drawNearArm();
   });
 }

@@ -1,7 +1,7 @@
 """Publish free companion selection without changing financial or client host programs."""
 import sys
 sys.dont_write_bytecode = True
-import copy, fcntl, hashlib, importlib.util, json, signal, types
+import copy, fcntl, hashlib, importlib.util, json, re, signal, types
 from pathlib import Path
 
 NAME = 'star-spin-open-selection-20261104-v1'
@@ -46,6 +46,12 @@ def validate_after(app, after, modules):
     require(compared == expected, 'Unrelated production change during module activation')
 
 
+def validate_module_config(baseline, selected):
+    expected = copy.deepcopy(baseline)
+    expected['compilerOptions']['resolveJsonModule'] = True
+    require(selected == expected, 'Unreviewed module compiler configuration')
+
+
 def payload(b):
     m, old, scope = b.M, b.OLD, read(ROOT / 'scope.json')
     require(ROOT == Path('/opt/royal-releases') / NAME and m['release'] == NAME, 'Unexpected release path')
@@ -54,6 +60,10 @@ def payload(b):
     require(old['program'] == old['preparedProgram'] and old['container']['image'] == old['preparedImage'], 'Baseline runtime differs')
     require(old['program']['dist-server/index.js'] == scope['baselineBackendSha256'], 'Backend baseline differs')
     require(sha(ROOT / 'deploy.py') == m['helperSha256'] and sha(ROOT / 'snapshot.py') == m['snapshotSha256'], 'Installer changed')
+    require(sha(ROOT / 'scope.json') == m['scopeSha256'] and sha(ROOT / 'installer-github.json') == m['helperReceiptSha256'], 'Installer evidence changed')
+    helper = read(ROOT / 'installer-github.json')
+    require(re.fullmatch(r'[a-f0-9]{40}', m['helperSourceCommit']) and helper['sourceCommit'] == m['helperSourceCommit'] and helper['applicationSourceCommit'] == m['sourceCommit'], 'Installer source is unverified')
+    require(all(n.startswith('deployment/releases/' + NAME + '/') for n in helper['changedOnlyReleaseTooling']), 'Installer changed application sources')
     expected_support = {'application-overlay.py','overlay-base.py','snapshot-base.py','image_metadata.py','runtime-inventory.cjs','quiesce.cjs','financial_gate.py','engine-build.py','publisher.py'}
     require(set(m['support']) == expected_support, 'Unexpected helper scope')
     for name, digest in m['support'].items():
@@ -73,7 +83,11 @@ def payload(b):
     require(backend['output']['path'] == 'dist-server/index.js' and backend['output']['sha256'] == b.SERVER_DELTA['index.js'] == release['files']['dist-server/index.js'], 'Unverified backend bytes')
     module = release['build']['moduleProjection']
     require(set(module['modules']) == {GAME} and module['productionCommit'] == m['baseCommit'], 'Unrequested module projection')
-    validate_inputs(module, old, b.CHANGES)
+    config = m['moduleBuildConfiguration']
+    require(config['baselineSha256'] == old['sourceLF']['tsconfig.json'] and sha(ROOT / 'baseline-tsconfig.json') == config['baselineSha256'], 'Baseline compiler source differs')
+    require(config['selectedSha256'] == scope['moduleBuildInputs']['tsconfig.json'] and sha(ROOT / 'module-tsconfig.json') == config['selectedSha256'], 'Module compiler source differs')
+    validate_module_config(read(ROOT / 'baseline-tsconfig.json'), read(ROOT / 'module-tsconfig.json'))
+    validate_inputs(module, old, b.CHANGES, scope['moduleBuildInputs'])
     for name, digest in release['files'].items():
         if name.startswith('dist/'):
             require(old['program'].get(name) == digest, 'Client host would change: ' + name)
