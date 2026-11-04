@@ -9,7 +9,7 @@ import {createTsuDuel,lockTsuDuel,advanceTsuDuel,publicTsuDuel} from '../server/
 import {TSU_DUEL_STAKES,tsuDuelPayout} from '../src/shared/tsuDuel';
 import {type PvpRequest,validPvpRequest} from '../src/shared/pvp';
 
-export async function duelFixture(amounts=[200,200],rulesVersion:3|4=4){
+export async function duelFixture(amounts=[200,200],rulesVersion:3|4=4,stakeUnits?:string){
   const db=new PostgresDatabase(':memory:');await db.exec('CREATE TABLE accounts(id TEXT PRIMARY KEY)');
   const ids=[randomUUID(),randomUUID()];for(const id of ids)await db.prepare('INSERT INTO accounts VALUES(?)').run(id);
   const common=new DemoWalletStore(db);await common.ready;for(const [i,id]of ids.entries())if(amounts[i])await common.operate(id,{id:randomUUID(),kind:'deposit',amount:amounts[i]});
@@ -17,7 +17,7 @@ export async function duelFixture(amounts=[200,200],rulesVersion:3|4=4){
   const actors=ids.map((accountId,i)=>({accountId,name:['Анна','Борис'][i],roomId:'duel-test'}));
   const people=actors.map(a=>({...a,connected:true,available:true}));let now=Date.now();await store.syncRoom('duel-test',people,now);
   const command=(i:number,op:Omit<PvpRequest,'id'>|any)=>store.command(actors[i],{...op,id:op.id??randomUUID()},now);
-  const invite=await command(0,{action:'invite',gameId:'tsu-e-fa',targetId:ids[1]}),id=invite.active!.id;
+  const invite=await command(0,{action:'invite',gameId:'tsu-e-fa',targetId:ids[1],...(stakeUnits?{stakeUnits}:{})}),id=invite.active!.id;
   if(rulesVersion===3){
     const row=await db.prepare('SELECT payload FROM pvp_matches WHERE id=?').get(id),saved=JSON.parse(String(row!.payload));
     saved.challenge.rulesVersion=3;saved.challenge.targetWins=3;
@@ -32,7 +32,7 @@ export async function duelFixture(amounts=[200,200],rulesVersion:3|4=4){
   return {db,common,ledger,store,actors,people,id,command,step,accept,ready,snapshot,start,choose,now:()=>now};
 }
 
-test('new invitations are unpriced consent, historical free creation is unavailable, all common stakes settle in exact cents',async()=>{
+test('legacy unpriced consent remains compatible, historical free creation is unavailable, all common stakes settle in exact cents',async()=>{
   for(const units of TSU_DUEL_STAKES){const payout=tsuDuelPayout(units);assert.equal(BigInt(payout.payoutUnits)+BigInt(payout.feeUnits),BigInt(units)*2n);assert.equal(BigInt(payout.payoutUnits)%10000n,0n);}
   assert.deepEqual(tsuDuelPayout('100000'),{potUnits:'200000',payoutUnits:'190000',feeUnits:'10000'});
   const invitation={id:randomUUID(),action:'invite',gameId:'tsu-e-fa',targetId:randomUUID()};assert(validPvpRequest(invitation));assert(!validPvpRequest({...invitation,mode:'free'}));
@@ -42,6 +42,29 @@ test('new invitations are unpriced consent, historical free creation is unavaila
     assert.equal(Number((await c.db.prepare('SELECT count(*) AS n FROM virtual_pvp_holds').get())!.n),0);
     await c.command(1,{action:'cancel',challengeId:c.id});assert.equal((await c.snapshot()).active!.status,'cancelled');
     for(const a of c.actors)assert.equal((await c.common.snapshot(a.accountId)).balance,200);
+  }finally{await c.db.close();}
+});
+
+test('priced offers pin the consent amount through restart and retry atomic funding without a partial debit',async()=>{
+  const c=await duelFixture([200,0],4,'200000');try{
+    assert.equal((await c.snapshot()).active!.offeredStake,true);
+    assert.equal((await c.snapshot()).active!.stakeUnits,'200000');
+    assert.equal((await c.common.snapshot(c.actors[0].accountId)).balance,200);
+    await c.accept();
+    await assert.rejects(c.command(1,{action:'terms',challengeId:c.id,termsRevision:0,stakeUnits:'500000'}),/указана в приглашении/);
+    await c.ready(0);
+    const ready={id:randomUUID(),action:'duel-ready',challengeId:c.id,termsRevision:0};
+    await assert.rejects(c.command(1,ready),/insufficient/);
+    assert.equal((await c.common.snapshot(c.actors[0].accountId)).balance,200);
+    assert.equal((await c.snapshot()).active!.status,'arriving');
+    const restarted=new PvpStore(c.ledger);await restarted.ready;
+    assert.equal((await restarted.snapshot(c.actors[1],c.now())).active!.stakeUnits,'200000');
+    await c.common.operate(c.actors[1].accountId,{id:randomUUID(),kind:'deposit',amount:1});
+    await c.command(1,ready);await c.command(1,ready);
+    assert.equal((await c.snapshot()).active!.status,'playing');
+    assert.equal((await c.common.snapshot(c.actors[0].accountId)).balance,199.8);
+    assert.equal((await c.common.snapshot(c.actors[1].accountId)).balance,.8);
+    assert.equal(Number((await c.db.prepare('SELECT count(*) AS n FROM virtual_pvp_holds').get())!.n),2);
   }finally{await c.db.close();}
 });
 

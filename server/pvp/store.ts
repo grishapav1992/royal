@@ -160,6 +160,7 @@ export class PvpStore {
       let s: StoredMatch;
       if (op.action === 'create'||op.action==='invite') {
         const negotiated=op.action==='invite';
+        const stakeUnits=negotiated?(op.stakeUnits??TSU_DUEL_DEFAULT_STAKE):op.stakeUnits;
         if(op.action==='create'&&op.gameId==='tsu-e-fa')return fail('Для новой дуэли сначала пригласи игрока.');
         if (await this.current(actor.accountId)) return fail('Сначала заверши текущий вызов или поединок.');
         if (op.targetId === actor.accountId) return fail('Нельзя вызвать самого себя.');
@@ -167,8 +168,9 @@ export class PvpStore {
         if (!room || now - room.at > 10_000 || !room.people.some(p => p.accountId === actor.accountId && p.connected && p.available)) return fail('Сначала вернись в зал и заверши текущую игру.');
         if (op.targetId && !room.people.some(p => p.accountId === op.targetId && p.connected && p.available)) return fail('Соперник сейчас недоступен.');
         const challenge: PvpChallenge = { id: randomUUID(), gameId: op.gameId, creatorId: actor.accountId, creatorName: cleanName(actor.name),
-          targetId: op.targetId, opponentId: null, opponentName: '', stakeUnits: negotiated?TSU_DUEL_DEFAULT_STAKE:op.stakeUnits,
-          ...(negotiated?tsuDuelPayout(TSU_DUEL_DEFAULT_STAKE):pvpPayout(op.stakeUnits)),
+          targetId: op.targetId, opponentId: null, opponentName: '', stakeUnits,
+          ...(negotiated?tsuDuelPayout(stakeUnits):pvpPayout(stakeUnits)),
+          ...(negotiated&&op.stakeUnits!==undefined?{offeredStake:true as const}:{}),
           ...(negotiated?{rulesVersion:4 as const,mode:'stake' as const,targetWins:2 as const,termsRevision:0}:{}),
           status: 'open', createdAt: now, expiresAt: now + PVP_INVITE_MS, ready: [], winnerId: null, reason: '', revision: 0, disconnected: [] };
         s = { challenge, cards: null, roomId: actor.roomId, lastMoveAt: now, roomSeenAt: now };
@@ -192,6 +194,7 @@ export class PvpStore {
         } else if(op.action==='terms'||op.action==='duel-ready'||op.action==='unready'){
           if(!isNegotiatedPvp(c)||c.status!=='arriving'||!participant(c,actor.accountId)||c.disconnected.length)return fail('Условия сейчас недоступны.');
           if(op.termsRevision!==c.termsRevision)return fail('Условия изменились. Проверь ставку и нажми «Готово» ещё раз.');
+          if(c.offeredStake&&op.action==='terms')return fail('Ставка уже указана в приглашении. Для другой суммы отправь новое предложение.');
           if(op.action==='terms'){
             if(c.stakeUnits!==op.stakeUnits){c.stakeUnits=op.stakeUnits;Object.assign(c,tsuDuelPayout(op.stakeUnits));c.termsRevision!++;c.ready=[];}
           }else if(op.action==='unready')c.ready=c.ready.filter(id=>id!==actor.accountId);

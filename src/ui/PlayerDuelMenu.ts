@@ -16,7 +16,7 @@ export class PlayerDuelMenu {
     this.prior=scene.onPlayer;scene.onPlayer=this.handler;
     this.menu.id='player-actions';this.menu.className='player-duel-menu';this.title.id='player-actions-title';this.menu.setAttribute('aria-labelledby',this.title.id);
     this.invite.type=this.approach.type='button';this.invite.dataset.playerInvite='';this.approach.dataset.playerApproach='';
-    this.invite.textContent=copy('Предложить «Цу-е-фа»','Invite to Rock Paper Scissors');this.approach.textContent=copy('Подойти к игроку','Walk to player');
+    this.invite.textContent=copy('Предложить игру','Invite to play');this.approach.textContent=copy('Подойти к игроку','Walk to player');
     this.invite.onclick=()=>{const person=this.client.snapshot?.people.find(p=>p.sessionId===this.selected);if(!person||this.invite.disabled)return;this.menu.close();offer(person.accountId);};
     this.approach.onclick=()=>{const target=this.players.find(p=>p.id===this.selected);if(!target)return;this.approaching=target.id;this.approachUntil=Date.now()+20000;this.menu.close();this.scene.goTo({x:target.x,y:target.y+35});};
     const close=document.createElement('button');close.type='button';close.textContent=copy('Закрыть','Close');close.onclick=()=>this.menu.close();
@@ -47,7 +47,7 @@ export class PlayerDuelMenu {
       :target.hall!==this.scene.hall?copy('Игрок находится на другом этаже.','Player is on another floor.')
       :!near?copy('Подойди ближе, чтобы предложить сыграть.','Walk closer to invite this player.')
       :!person?.available?copy('Игрок сейчас занят.','Player is busy.')
-      :copy('Пригласи игрока. Ставку вы согласуете в окне дуэли.','Invite this player. Agree the stake inside the duel.');
+      :copy('Выбери игру и ставку, затем отправь предложение.','Choose a game and stake, then send an invitation.');
   }
   reset(){this.approaching='';this.menu.close();}
   destroy(){this.reset();this.menu.remove();if(this.scene.onPlayer===this.handler)this.scene.onPlayer=this.prior;}
