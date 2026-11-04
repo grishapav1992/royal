@@ -90,7 +90,7 @@ class PublicationLockTest(unittest.TestCase):
 
 class MediaScopeTest(unittest.TestCase):
     def fixture(self):
-        changes = {'public/' + name: 'png-' + name for name in deploy.MEDIA}
+        changes = {'public/' + name: digest for name,digest in deploy.MEDIA.items()}
         delta = {name: changes['public/' + name] for name in deploy.MEDIA}
         delta['index.html'] = 'html'
         return changes, delta
@@ -101,6 +101,9 @@ class MediaScopeTest(unittest.TestCase):
             if missing: delta.pop(name)
             else: delta[name] = 'unreviewed'
             with self.assertRaises(RuntimeError): deploy.validate_media(changes,delta)
+    def test_mutually_changed_source_and_image_rejected(self):
+        changes, delta=self.fixture();name=sorted(deploy.MEDIA)[0];changes['public/'+name]='wrong';delta[name]='wrong'
+        with self.assertRaises(RuntimeError): deploy.validate_media(changes,delta)
     def test_foreign_image_rejected(self):
         changes, delta=self.fixture();delta['assets/unrequested.png']='foreign'
         with self.assertRaises(RuntimeError): deploy.validate_media(changes,delta)

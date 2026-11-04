@@ -26,8 +26,9 @@ const reader=await readHostProjection(root,path.relative(root,path.join(folder,'
 const backend=await readHostProjection(root,path.relative(root,path.join(folder,'backend-projection.json')).replaceAll('\\','/'),{strictOrigins:true});
 const preservedBackendInputs=scope.preservedBackendInputs;
 for(const projection of [release.hostProjection,release.backendProjection])for(const [file,hash]of Object.entries(projection.inputs))assert(projection===release.backendProjection&&preservedBackendInputs[file]===hash||scope.expectedSources[file]===hash||[before.source[file],before.sourceLF[file]].includes(hash),'Unrelated build input: '+file);
-assert(!fs.existsSync(out),'Payload already exists');fs.mkdirSync(out,{recursive:true});
-function write(name,bytes){const p=path.join(out,name);fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,bytes,{flag:'wx'});return digest(bytes);}
+if(fs.existsSync(out))assert(!fs.existsSync(path.join(out,'install-manifest.json')),'Complete payload is immutable');
+fs.mkdirSync(out,{recursive:true});
+function write(name,bytes){const p=path.join(out,name);fs.mkdirSync(path.dirname(p),{recursive:true});if(fs.existsSync(p)){assert(fs.lstatSync(p).isFile()&&!fs.lstatSync(p).isSymbolicLink());assert.equal(digest(fs.readFileSync(p)),digest(bytes),'Partial payload bytes changed');}else fs.writeFileSync(p,bytes,{flag:'wx'});return digest(bytes);}
 const changed={},delta={},serverDelta={};
 for(const source of sources){
  const media=source.startsWith('public/'),selected=source.startsWith('server/')?backend:reader,projection=source.startsWith('server/')?release.backendProjection:release.hostProjection;
@@ -38,7 +39,18 @@ for(const [file,hash]of Object.entries(release.files)){
  const n=file.slice(5);if(!scope.mediaSources.includes('public/'+n)&&n!=='index.html'&&!/^assets\/[\w-]+\.(js|css)$/.test(n))continue;
  assert(n==='index.html'||!before.program[file],'Immutable asset collision');const bytes=fs.readFileSync(file);assert.equal(digest(bytes),hash);delta[n]=write('dist-delta/'+n,bytes);
 }
-assert(delta['index.html']);for(const name of scope.mediaSources)assert.equal(delta[name.slice(7)],changed[name],'Unbound media file');
+assert(delta['index.html']);
+// Projected Vite builds deliberately disable publicDir. PNG files are uncompiled
+// Git source bytes, bound separately to this same pushed application commit.
+const mediaOrigins={};
+for(const name of scope.mediaSources){
+ const bytes=committed(release.sourceCommit,name),hash=digest(bytes);
+ assert.equal(hash,scope.expectedSources[name]);assert.equal(hash,changed[name]);
+ assert.equal(execFileSync('git',['ls-tree',release.sourceCommit,'--',name],{encoding:'utf8'}).split(' ')[0],'100644');
+ delta[name.slice(7)]=write('dist-delta/'+name.slice(7),bytes);mediaOrigins[name]=hash;
+}
+const mediaReceipt={sourceCommit:release.sourceCommit,remoteMain:git(root,['rev-parse','origin/main']),assets:mediaOrigins};
+const mediaReceiptSha256=write('media-github.json',Buffer.from(JSON.stringify(mediaReceipt,null,2)+'\n'));
 const serverBytes=fs.readFileSync('dist-server/index.js');serverDelta['index.js']=write('server-delta/index.js',serverBytes);assert.equal(serverDelta['index.js'],release.backendProjection.output.sha256);assert.equal(serverDelta['index.js'],release.files['dist-server/index.js']);
 const references={
  'engine-build.py':'deployment/releases/shared-stakes-20261101-v1/engine_build.py',
@@ -54,7 +66,7 @@ for(const file of ['release-manifest.json','release-github.json'])write(file,fs.
 const helperReceipt={format:1,sourceCommit:installerCommit,parentCommit:installerParent,applicationSourceCommit:release.sourceCommit,packagerSourceCommit:git(root,['rev-parse','HEAD']),remoteMain:git(root,['rev-parse','origin/main']),checkedAt:new Date().toISOString(),changedOnlyReleaseTooling:installerChanges};
 const helperReceiptSha256=write('installer-github.json',Buffer.from(JSON.stringify(helperReceipt,null,2)+'\n'));
 const helperSha256=write('deploy.py',committed(installerCommit,folder+'/deploy.py')),snapshotSha256=write('snapshot.py',committed(installerCommit,folder+'/snapshot.py'));
-const manifest={release:name,sourceCommit:release.sourceCommit,helperSourceCommit:installerCommit,helperReceiptSha256,baseCommit:before.sourceCommit,before,changed,delta,serverDelta,support,helperSha256,snapshotSha256,
+const manifest={release:name,sourceCommit:release.sourceCommit,helperSourceCommit:installerCommit,helperReceiptSha256,mediaReceiptSha256,baseCommit:before.sourceCommit,before,changed,delta,serverDelta,support,helperSha256,snapshotSha256,
  releaseManifestSha256:digest(fs.readFileSync('module-build/release-manifest.json')),receiptSha256:digest(fs.readFileSync('module-build/release-github.json')),addedGames:[],restoredGames:[]};
 write('install-manifest.json',Buffer.from(JSON.stringify(manifest,null,2)+'\n'));
 console.log(JSON.stringify({sourceCommit:release.sourceCommit,sourceFiles:sources.length,clientFiles:Object.keys(delta).length,clientBytes:Object.keys(delta).reduce((n,f)=>n+fs.statSync(path.join(out,'dist-delta',f)).size,0),out}));

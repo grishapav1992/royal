@@ -10,6 +10,7 @@ import {temporaryDatabase} from '../../../scripts/database-test.ts';
 const root=process.cwd(),task=path.resolve('artifacts/work/royal-bar-mira');
 const before=JSON.parse(fs.readFileSync(path.join(task,'production-before.json')));
 const release=JSON.parse(fs.readFileSync('module-build/release-manifest.json'));
+const scope=JSON.parse(fs.readFileSync('deployment/releases/royal-bar-mira-20261104-v3/scope.json'));
 const published=JSON.parse(fs.readFileSync(path.join(task,'published-package.json')));
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 for(const file of ['dist/index.html','dist-server/index.js'])assert.equal(sha(fs.readFileSync(file)),release.files[file]);
@@ -42,6 +43,9 @@ try{
   try{
    const url=new URL(req.url,'http://127.0.0.1'),name=decodeURIComponent(url.pathname).slice(1);
    assert(!name.split('/').some(part=>part==='..'||part==='.'),'Unsafe stand URL');
+   if(req.method==='GET'&&scope.mediaSources.includes('public/'+name)){
+    const bytes=fs.readFileSync(path.join(root,'public',name));assert.equal(sha(bytes),scope.expectedSources['public/'+name],'Mira source media differs');respond(res,bytes,name);return;
+   }
    if(req.method==='POST'&&url.pathname==='/__test/recovery/fund'){
     const identity=await fetch(api+'/api/auth/me',{headers:{Cookie:req.headers.cookie||''}}).then(r=>r.json());
     assert(identity.account,'Only isolated test accounts may be funded');
