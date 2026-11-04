@@ -1,5 +1,7 @@
 # Royal Bar visual rework
 
+The user subsequently rejected the motion quality of this revision. Its cutout renderer has been replaced by the [complete painted pose sequences in revision 3](royal-bar-v3-motion-review.md). The checks below describe the earlier implementation, not current visual acceptance.
+
 The v1 functional implementation passed its technical checks but failed the user's visual review. Its flat Canvas scenery and character proportions did not match the approved rich illustrated reference. Technical readiness must not be recorded as visual acceptance.
 
 The reference-based composition is now animated in the actual room. `Bar` retains the room-owned `MiraRoutine` and `NpcMotion`; `MiraRig` renders the detailed character parts using continuous joints from `miraPose`. `RoomScene` preloads the versioned scenery and character atlases. The single localized title, bar interaction bounds and seats retain their existing roles.
