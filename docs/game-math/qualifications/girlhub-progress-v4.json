@@ -3,8 +3,8 @@
   "gameId": "studio-afterglow",
   "rulesVersion": 2,
   "progressVersion": 4,
-  "startedAt": "2026-10-31T21:05:33.305Z",
-  "completedAt": "2026-10-31T21:09:57.063Z",
+  "startedAt": "2026-11-04T11:02:26.838Z",
+  "completedAt": "2026-11-04T11:03:56.747Z",
   "sourceHashes": {
     "src/shared/afterglow.ts": "eedcc278d149ae66b59d79afeef85d17a3fa5eb7f8d80bf5b5caf73c77b18035",
     "src/shared/nitroRun.ts": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
@@ -12,7 +12,7 @@
     "server/games/afterglow.ts": "732c928d299e6a6adb501d1682e80ec2ea02e510884812771c757f5173013258",
     "src/shared/afterglowWardrobe.ts": "a70b0f4c6c8ca76c7906ea6d9c2062f57cc5e5dc8c13ffc6546667e261ad8e61",
     "server/afterglowWardrobe.ts": "7238862c96022cf56ed4730449e0eb1b48ff224b7982017b141b15f568911fad",
-    "server/afterglowProgress.ts": "cf38081a14f88c034f1a32af9e99ca7bbd7f56590decd419867469cb2f753a42",
+    "server/afterglowProgress.ts": "4a7f5d07ca6be6afbcec0c5ff2c7d91bb4da82f81438aa35c8a418cc939134b9",
     "scripts/game-math/rtp-afterglow.mjs": "ee746dc39e86dbf7834c114f8fbcc25e12749985da319fb2e448b91d98d06494"
   },
   "policySha256": "74a1a0d004e59048667e398e1cf3ac6360a962a95911ae44ec1a965297d37d5a",

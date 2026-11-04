@@ -5,6 +5,7 @@ import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {analyzeForestHeart} from './forest-heart-model.mjs';
 import {qualifyTsuDuelStakes,validateTsuDuelStakes} from './rtp-tsu-duel-stakes.mjs';
+import {qualifyManualStakes,validateManualStakes,walletStakes} from './manual-stakes.mjs';
 export const STAKE_PRECISION_METHOD='full-round-unbiased-cent-policy-v1';
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const hash=value=>createHash('sha256').update(value).digest('hex');
@@ -126,7 +127,9 @@ export function validateStakeProof(game,inputs,proof){
  }
  assert.equal(proof.replay.coverage.length,p.choices.length*stakes.length);let checks=0;
  for(const choice of p.choices)for(const stake of stakes){const r=proof.replay.coverage.find(r=>r.choice===choice&&r.stakeUnits===stake);assert(r);assert.equal(r.paidRounds,p.seeds.length*p.serverReplayRoundsPerSeed);assert(r.spins>=r.paidRounds);assert.match(r.sha256,/^[a-f0-9]{64}$/);assert(r.minimumExtraUnits>=0);checks+=r.paidRounds;}
- assert.equal(proof.serverReplayChecks,checks);assert(proof.walletEvidence?.passed&&proof.walletEvidence.gameId===game,'Fresh common-wallet precision evidence is required');assert.match(proof.walletEvidence.sha256,/^[a-f0-9]{64}$/);assert.equal(proof.walletEvidence.cases,p.choices.length*stakes.length);assert.equal(proof.walletEvidence.replayAndRestartCases,proof.walletEvidence.cases);assert(proof.walletEvidence.oneDebitAndCredit&&proof.walletEvidence.clientVerified&&proof.walletEvidence.native?.passed&&proof.walletEvidence.native.journalBalanced);return true;
+ assert.equal(proof.serverReplayChecks,checks);assert(proof.walletEvidence?.passed&&proof.walletEvidence.gameId===game,'Fresh common-wallet precision evidence is required');assert.match(proof.walletEvidence.sha256,/^[a-f0-9]{64}$/);assert.equal(proof.walletEvidence.cases,p.choices.length*walletStakes(p).length);assert.equal(proof.walletEvidence.replayAndRestartCases,proof.walletEvidence.cases);assert(proof.walletEvidence.oneDebitAndCredit&&proof.walletEvidence.clientVerified&&proof.walletEvidence.native?.passed&&proof.walletEvidence.native.journalBalanced);
+ if(p.manualStakeRange)validateManualStakes(game,p,proof.manualStakes);
+ return true;
 }
 export async function qualifyStakes(game,inputs,options={},progress=()=>{}){
  if(inputs.policy.kind==='pvp'){assert.equal(game,'tsu-e-fa');return qualifyTsuDuelStakes(inputs.policy,precisionLaw());}
@@ -155,5 +158,6 @@ export async function qualifyStakes(game,inputs,options={},progress=()=>{}){
  }
  progress({phase:'complete-round-precision-replay',game,checks});
  const {qualifyStakeWallet}=await import('./stakes-wallet.ts');const walletEvidence=await qualifyStakeWallet(game,p);
- return {method:STAKE_PRECISION_METHOD,precisionLaw:precisionLaw(),results,evidence,replay:{coverage},serverReplayChecks:checks,walletEvidence};
+ const manualStakes=p.manualStakeRange?qualifyManualStakes(game,p):undefined;
+ return {method:STAKE_PRECISION_METHOD,precisionLaw:precisionLaw(),results,evidence,replay:{coverage},serverReplayChecks:checks,walletEvidence,...(manualStakes?{manualStakes}:{})};
 }

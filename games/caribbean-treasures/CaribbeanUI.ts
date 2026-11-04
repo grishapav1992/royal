@@ -1,6 +1,6 @@
 import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {confirmedPayout} from '../../src/shared/roundPrecision';
-import {DEFAULT_GAME_STAKE, GAME_STAKE_UNITS as CARIBBEAN_LINE_STAKES} from '../../src/shared/gameStakes';
+import {DEFAULT_GAME_STAKE, GAME_STAKE_UNITS as CARIBBEAN_LINE_STAKES, validGameStake} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import {
   CARIBBEAN_GAME, caribbeanInitialCost, validCaribbeanStake,
@@ -154,7 +154,7 @@ export class CaribbeanUI {
         this.actionError='';
         const direction=action.endsWith('up')?1:-1;
         if(action.startsWith('lines-'))this.lines=CARIBBEAN_LINE_COUNTS[Math.max(0,Math.min(3,CARIBBEAN_LINE_COUNTS.indexOf(this.lines)+direction))];
-        else this.lineStake=CARIBBEAN_LINE_STAKES[Math.max(0,Math.min(CARIBBEAN_LINE_STAKES.length-1,CARIBBEAN_LINE_STAKES.findIndex(stake=>stake===this.lineStake)+direction))];
+        else this.lineStake=(direction>0?CARIBBEAN_LINE_STAKES.find(stake=>Number(stake)>Number(this.lineStake)):[...CARIBBEAN_LINE_STAKES].reverse().find(stake=>Number(stake)<Number(this.lineStake)))??this.lineStake;
         this.audio.cue('click');this.render();
       }
       else if (action === 'buy') { if (!this.blocked && !this.active) this.openDialog('buy',button); }
@@ -208,7 +208,7 @@ export class CaribbeanUI {
       this.lines = view.settings.lines;
       const recovered = view.lineStakeUnits;
       this.lineStake = session?.state==='active' ? recovered : view.version===1 ? DEFAULT_GAME_STAKE
-        : CARIBBEAN_LINE_STAKES.includes(recovered) ? recovered : DEFAULT_GAME_STAKE;
+        : validGameStake(recovered) ? recovered : DEFAULT_GAME_STAKE;
       this.sessionKey = key;
     }
     if (this.dialogKind === 'buy' && this.blocked) this.closeDialog();

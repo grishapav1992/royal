@@ -1,5 +1,5 @@
 import {coreExactAward,makeRoundPrecision} from '../src/shared/roundPrecision';
-import {validGameBet, usesGameStakes} from '../src/shared/gameStakes';
+import {gameBetCents, validGameBet, usesGameStakes} from '../src/shared/gameStakes';
 import { FlagToteStore } from './flagTote';
 import { randomInt } from 'node:crypto';
 import type { PostgresDatabase } from './database';
@@ -84,6 +84,8 @@ export class DemoWalletStore {
       try { game = op.kind === 'play' ? prepareGame(op.gameId,op.rulesVersion,op.input) : prepareGame('royal-coins',1,{}); }
       catch { throw new WalletError(400, 'Неизвестная игра, версия правил или недопустимая ставка.'); }
     }
+    const amountCents = gameBetCents(op.amount);
+    if (amountCents === undefined) throw new WalletError(400, 'Недопустимая сумма.');
     const requestKey = JSON.stringify([op.kind,op.amount,game?.gameId ?? null,game?.rulesVersion ?? null,game?.input ?? null,...(op.kind==='play'&&op.stakePolicyVersion===1?[1]:[])]);
     await this.flight.settleDue(accountId);
     return this.db.transaction(async () => {
@@ -92,11 +94,11 @@ export class DemoWalletStore {
       if ((await this.db.prepare('SELECT 1 FROM demo_flight_requests WHERE account_id=? AND id=?').get(accountId, op.id))) throw new WalletError(409, 'Этот идентификатор уже использован в Royal Orbit.');
       const previous = (await this.db.prepare('SELECT kind,amount,amount_units,result,request_key FROM demo_operations WHERE account_id=? AND operation_id=?').get(accountId, op.id));
       if (previous) {
-        if (previous.kind !== op.kind || (previous.amount_units === null ? previous.amount * 100 : Number(previous.amount_units)) !== op.amount * 100 || (previous.request_key !== null && previous.request_key !== requestKey)
+        if (previous.kind !== op.kind || (previous.amount_units === null ? previous.amount * 100 : Number(previous.amount_units)) !== amountCents || (previous.request_key !== null && previous.request_key !== requestKey)
           || (previous.request_key === null && op.kind === 'play')) throw new WalletError(409, 'Нельзя изменить уже отправленную операцию.');
         const saved = JSON.parse(String(previous.result));
         if (previous.request_key !== null && game && (!verifyGameRound(saved.gameRound) || saved.gameRound.gameId !== game.gameId
-          || saved.gameRound.rulesVersion !== game.rulesVersion || saved.gameRound.stakeUnits !== String(op.amount * 100)
+          || saved.gameRound.rulesVersion !== game.rulesVersion || saved.gameRound.stakeUnits !== String(amountCents)
           || JSON.stringify(saved.gameRound.input) !== JSON.stringify(game.input))) throw new Error('Invalid saved game round');
         const result = { ...saved, wallet: await this.rawSnapshot(accountId) };
         return result;
@@ -114,9 +116,9 @@ export class DemoWalletStore {
       };
       let round: DemoRound | undefined;
       let gameRound: GameRound | undefined;
-      if (op.kind === 'deposit') await record('deposit', op.amount * 100);
+      if (op.kind === 'deposit') await record('deposit', amountCents);
       else {
-        const stakeUnits = op.amount * 100;
+        const stakeUnits = amountCents;
         if (balance < stakeUnits) throw new WalletError(400, 'Недостаточно монет. Пополни демобаланс или уменьши ставку.');
         // Reject before drawing if any valid payout would exceed the wallet limit.
         if (balance - stakeUnits + stakeUnits * game!.maxMultiplier + reservedUnits > MAX_DEMO_UNITS) throw new WalletError(400, 'Недостаточно места на демобалансе для возможного выигрыша.');
@@ -133,7 +135,7 @@ export class DemoWalletStore {
       }
       await saveDemoUnits(this.db,accountId,balance);
       const settled = { ...(round ? { round } : {}), ...(gameRound ? { gameRound } : {}) };
-      (await this.db.prepare('INSERT INTO demo_operations(account_id,operation_id,kind,amount,result,request_key,amount_units) VALUES (?,?,?,?,?,?,?)').run(accountId,op.id,op.kind,Math.trunc(op.amount),JSON.stringify(settled),requestKey,op.amount * 100));
+      (await this.db.prepare('INSERT INTO demo_operations(account_id,operation_id,kind,amount,result,request_key,amount_units) VALUES (?,?,?,?,?,?,?)').run(accountId,op.id,op.kind,Math.trunc(op.amount),JSON.stringify(settled),requestKey,amountCents));
       const result = { wallet: await this.rawSnapshot(accountId), ...settled };
       return result;
     }, { lockKey: 'account:' + accountId });

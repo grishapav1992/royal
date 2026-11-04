@@ -1,5 +1,7 @@
 import { t as translateText, tr } from '../../i18n/index';
 import {gameAudio} from '../../game/GameAudio';
+import {validGameStake} from '../../shared/gameStakes';
+import {syncStakeSelect} from '../stakeSelection';
 
 interface StakeOptions {
   values: readonly string[];
@@ -13,7 +15,9 @@ interface StakeOptions {
 
 export function slotStakeStep(values: readonly string[], current: string, direction: number) {
   const at = values.indexOf(current);
-  return at >= 0 && (direction === 1 || direction === -1) ? values[at + direction] : undefined;
+  if (direction !== 1 && direction !== -1) return undefined;
+  return at >= 0 ? values[at + direction] : direction === 1
+    ? values.find(value => Number(value) > Number(current)) : [...values].reverse().find(value => Number(value) < Number(current));
 }
 
 /** UI changes never create a wager. Only the existing session driver submits one. */
@@ -31,7 +35,7 @@ export class SlotStakeControls {
 
   private select(value: string | undefined) {
     const {values, locked, changed} = this.options;
-    if (this.disposed || locked() || value === undefined || !values.includes(value)) {
+    if (this.disposed || locked() || value === undefined || !validGameStake(value)) {
       this.update();
       return false;
     }
@@ -42,22 +46,11 @@ export class SlotStakeControls {
   update() {
     if (this.disposed) return;
     const {select, steps, values, current, direction, locked} = this.options;
-    select.querySelector('[data-historical-stake]')?.remove();
-    if (!values.includes(current()) && !locked()) {
-      this.options.changed(values[0]);
-      return;
-    }
-    if (!values.includes(current())) {
-      const option = select.ownerDocument.createElement('option');
-      option.value = current(); option.textContent = (Number(current()) / 100).toFixed(2) + ' USDT';
-      option.disabled = true; option.dataset.historicalStake = 'true'; select.append(option);
-    }
-    select.value = current();
-    select.disabled = locked();
-    const at = values.indexOf(current());
+    const value = syncStakeSelect(select, current(), values, locked());
+    if (value !== current()) { this.options.changed(value); return; }
     for (const button of steps) {
       const delta = direction(button);
-      button.disabled = select.disabled || at < 0 || (delta !== 1 && delta !== -1) || values[at + delta] === undefined;
+      button.disabled = select.disabled || slotStakeStep(values, value, delta) === undefined;
     }
   }
 

@@ -1,6 +1,6 @@
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
 import {syncStakeSelect} from '../../src/ui/stakeSelection';
-import {GAME_STAKE_CENTS as FOREST_HEART_STAKES} from '../../src/shared/gameStakes';
+import {GAME_STAKE_CENTS as FOREST_HEART_STAKES, validGameStake} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import { FOREST_HEART_GAME, validForestHeartSession, type ForestHeartView } from '../../src/shared/forestHeart';
 import { FOREST_HEART_ROTORS, forestHeartFlowerPayout } from '../../src/shared/forestHeartMath';
@@ -82,7 +82,10 @@ export class ForestHeartUI {
     const bind = (name: string, callback: () => void) => this.find(name).addEventListener('click', callback, { signal: this.controller.signal });
     bind('spin', () => void this.act()); bind('pass', () => void this.act('forest-pass'));
     bind('retry', () => void this.act('retry')); bind('refresh', () => void this.client.refresh());
-    this.find('stake-select').addEventListener('change',()=>this.changeStake((FOREST_HEART_STAKES as readonly number[]).indexOf(Number(this.find<HTMLSelectElement>('stake-select').value))-(FOREST_HEART_STAKES as readonly number[]).indexOf(this.stake)),{signal:this.controller.signal});
+    this.find('stake-select').addEventListener('change',()=>{
+      const value=this.find<HTMLSelectElement>('stake-select').value;
+      if(!this.blocked()&&this.snapshot()?.state!=='active'&&validGameStake(value)){this.stake=Number(value);this.controls();}
+    },{signal:this.controller.signal});
     bind('skip', () => this.cancel()); bind('lower', () => this.changeStake(-1)); bind('higher', () => this.changeStake(1));
     bind('sound', () => { this.services.gameAudio.setMuted(!this.services.gameAudio.getPreferences().muted); void this.audio.unlock(); });
     bind('rules', () => this.openPanel('rules')); bind('settings', () => this.openPanel('settings')); bind('close', () => this.dialog.close());
@@ -133,8 +136,8 @@ export class ForestHeartUI {
   private snapshot() { return this.client.sessions.find(s => s.gameId === FOREST_HEART_GAME); }
   private changeStake(delta: number) {
     if (this.blocked() || this.view?.stage === 'choice' || this.view?.stage === 'bonus') return;
-    const index = FOREST_HEART_STAKES.indexOf(this.stake as typeof FOREST_HEART_STAKES[number]);
-    this.stake = FOREST_HEART_STAKES[Math.max(0, Math.min(FOREST_HEART_STAKES.length - 1, index + delta))]; this.controls();
+    const next=delta>0?FOREST_HEART_STAKES.find(value=>value>this.stake):[...FOREST_HEART_STAKES].reverse().find(value=>value<this.stake);
+    if(next!==undefined)this.stake=next;this.controls();
   }
   private blocked() { return this.busy || this.paused || this.doc.hidden || this.client.busy || this.client.loading || !!this.client.pending || this.wallet.busy || !!this.wallet.pending || !this.owner; }
   private sync() {
@@ -206,7 +209,7 @@ export class ForestHeartUI {
     this.root.setAttribute('aria-busy', String(this.busy || this.client.busy || this.client.loading));
     const blocked = this.blocked(), stage = this.view?.stage, active = stage === 'choice' || stage === 'bonus';
     if (active && this.shown) this.stake = Number(this.shown.stakeUnits);
-    else if (!FOREST_HEART_STAKES.includes(this.stake)) this.stake = FOREST_HEART_STAKES[0];
+    else if (!validGameStake(String(this.stake))) this.stake = FOREST_HEART_STAKES[0];
     const balance = this.wallet.accountId === this.owner ? this.wallet.wallet?.balance ?? this.client.wallet?.balance : undefined;
     this.find('balance').textContent = balance === undefined ? '…' : balance.toLocaleString(this.services.i18n.locale, { maximumFractionDigits: 2 });
     this.find('stake').textContent = this.number(this.stake);
