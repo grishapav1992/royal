@@ -1,5 +1,7 @@
 import type Phaser from 'phaser';
-import { TOILET,TOILET_WINDOW } from '../shared/toilet';
+import { TOILET,TOILET_WINDOW,OCCUPIED_TOILET_CUBICLE,toiletCubicleOpen } from '../shared/toilet';
+import {paintToiletResident} from './toiletResidentArt';
+import {toiletResidentPose} from './toiletResidentPose';
 
 type Paint=CanvasRenderingContext2D;
 const ink='#302f35',cream='#f2ead3',gold='#c9aa70';
@@ -27,6 +29,7 @@ export function paintRoofToilet(c:Paint){
   if(!toiletWindowView){
     toiletWindowView=document.createElement('canvas');toiletWindowView.width=TOILET.width;toiletWindowView.height=TOILET.height;
     const interior=toiletWindowView.getContext('2d')!;paintToilet(interior);TOILET.cubicles.forEach(p=>paintDoor(interior,p,false));
+    const resident=TOILET.cubicles[OCCUPIED_TOILET_CUBICLE];interior.save();interior.translate(resident.x,resident.y);paintToiletResident(interior,toiletResidentPose(0,true));interior.restore();
   }
   paintServiceWindow(c,38,28,{image:toiletWindowView,x:350,y:100,w:370,h:370*78/90});
   line(c,19,135,40,135,'#543b46');line(c,146,56,159,68,'#543b46');
@@ -73,7 +76,7 @@ function paintToilet(c:Paint,roofView?:HTMLCanvasElement){
 }
 function paintDoor(c:Paint,p:typeof TOILET.cubicles[number],open:boolean){
   if(open){box(c,p.x+9,p.y+72,4,64,'#713c4c',1);box(c,p.x+13,p.y+77,3,2,gold,0);}
-  else{box(c,p.x+18,p.y+134,64,4,'#713c4c',1);box(c,p.x+71,p.y+134,6,2,gold,0);oval(c,p.x+88,p.y+136,3.6,3.6,'#a7bc90');}
+  else{box(c,p.x+18,p.y+134,64,4,'#713c4c',1);box(c,p.x+71,p.y+134,6,2,gold,0);oval(c,p.x+88,p.y+136,3.6,3.6,p.id===OCCUPIED_TOILET_CUBICLE?'#c95b51':'#a7bc90');}
 }
 
 export class ToiletRenderer{
@@ -81,28 +84,47 @@ export class ToiletRenderer{
   private base:HTMLCanvasElement;
   private doors:Phaser.GameObjects.Graphics;
   private open=[false,false,false];
+  private resident:Phaser.Textures.CanvasTexture;
+  private elapsed=0;
+  private lastFrame=-1;
+  private reducedMotion=false;
+  private pose=toiletResidentPose(0,true);
   constructor(scene:Phaser.Scene,leave:()=>void,roofView?:HTMLCanvasElement){
     this.base=document.createElement('canvas');this.base.width=TOILET.width;this.base.height=TOILET.height;
     paintToilet(this.base.getContext('2d')!,roofView);
     const key='casino-toilet-rectangle-v2';if(!scene.textures.exists(key))scene.textures.addCanvas(key,this.base);
     scene.add.image(0,0,key).setOrigin(0).setDepth(0);
     this.mapCanvas=document.createElement('canvas');this.mapCanvas.width=TOILET.width;this.mapCanvas.height=TOILET.height;
+    const residentKey='casino-toilet-resident-v1',p=TOILET.cubicles[OCCUPIED_TOILET_CUBICLE];
+    this.resident=scene.textures.exists(residentKey)?scene.textures.get(residentKey) as Phaser.Textures.CanvasTexture:scene.textures.createCanvas(residentKey,300,420)!;
+    this.drawResident();scene.add.image(p.x,p.y,residentKey).setOrigin(0).setDisplaySize(100,140).setDepth(14);
     this.doors=scene.add.graphics().setDepth(15);this.drawDoors();
     scene.add.zone(TOILET_WINDOW.click.x,TOILET_WINDOW.click.y,120,110).setDepth(700).setInteractive({useHandCursor:true}).on('pointerdown',leave);
   }
   private drawDoors(){
-    const g=this.doors;g.clear();const c=this.mapCanvas.getContext('2d')!;c.drawImage(this.base,0,0);
+    const g=this.doors;g.clear();
     TOILET.cubicles.forEach((p,i)=>{
-      const open=this.open[i];paintDoor(c,p,open);
+      const open=this.open[i];
       g.fillStyle(0x713c4c).lineStyle(1,0x302f35);
       if(open){g.fillRect(p.x+9,p.y+72,4,64).strokeRect(p.x+9,p.y+72,4,64);g.fillStyle(0xc9aa70).fillRect(p.x+13,p.y+77,3,2);}
-      else{g.fillRect(p.x+18,p.y+134,64,4).strokeRect(p.x+18,p.y+134,64,4);g.fillStyle(0xc9aa70).fillRect(p.x+71,p.y+134,6,2);g.fillStyle(0xa7bc90).fillCircle(p.x+88,p.y+136,1.8);}
+      else{g.fillRect(p.x+18,p.y+134,64,4).strokeRect(p.x+18,p.y+134,64,4);g.fillStyle(0xc9aa70).fillRect(p.x+71,p.y+134,6,2);g.fillStyle(p.id===OCCUPIED_TOILET_CUBICLE?0xc95b51:0xa7bc90).fillCircle(p.x+88,p.y+136,1.8);}
     });
+    this.drawMap();
   }
-  update(people:readonly {x:number;y:number}[]){
-    const open=TOILET.cubicles.map(p=>people.some(person=>
-      Math.hypot(person.x-p.x-50,person.y-p.y-140)<82||person.x>p.x&&person.x<p.x+p.w&&person.y>p.y&&person.y<p.y+p.h));
+  private drawMap(){
+    const c=this.mapCanvas.getContext('2d')!,p=TOILET.cubicles[OCCUPIED_TOILET_CUBICLE];c.drawImage(this.base,0,0);
+    TOILET.cubicles.forEach((p,i)=>paintDoor(c,p,this.open[i]));c.drawImage(this.resident.canvas,p.x,p.y,100,140);
+  }
+  private drawResident(){
+    const c=this.resident.context;c.clearRect(0,0,300,420);c.save();c.scale(3,3);paintToiletResident(c,this.pose);c.restore();this.resident.refresh();this.drawMap();
+  }
+  update(people:readonly {x:number;y:number}[],delta=0,reducedMotion=false){
+    const open=TOILET.cubicles.map(p=>toiletCubicleOpen(p.id,people));
     if(open.some((value,i)=>value!==this.open[i])){this.open=open;this.drawDoors();}
+    if(reducedMotion!==this.reducedMotion){this.reducedMotion=reducedMotion;if(reducedMotion)this.elapsed=0;this.lastFrame=-1;}
+    if(!reducedMotion)this.elapsed+=Math.min(100,Math.max(0,delta));
+    const frame=reducedMotion?0:Math.floor(this.elapsed*12/1000);
+    if(frame!==this.lastFrame){this.lastFrame=frame;this.pose=toiletResidentPose(this.elapsed,reducedMotion);this.drawResident();}
   }
-  getState(){return {variant:1,openDoors:[...this.open],floor:TOILET.floor};}
+  getState(){const p=TOILET.cubicles[OCCUPIED_TOILET_CUBICLE];return {variant:1,openDoors:[...this.open],occupiedCubicle:p.id,floor:TOILET.floor,resident:{...this.pose,elapsedMs:this.elapsed,frame:this.lastFrame,cubicle:p.id,interactive:false,reducedMotion:this.reducedMotion,bounds:{x:p.x+9,y:p.y+9,w:82,h:123}}};}
 }

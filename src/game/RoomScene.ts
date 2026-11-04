@@ -696,7 +696,7 @@ export class RoomScene extends Phaser.Scene {
     this.guestViews=views;
     const active=new Set(views.filter(v=>v.hall===this.hall).map(v=>v.id));
     const counter=document.querySelector<HTMLElement>('.npc-count');
-    const count=active.size+(this.hall==='street'?(this.street?.pedestrianCount??0):0);
+    const count=active.size+(this.hall==='street'?(this.street?.pedestrianCount??0):this.hall==='toilet'?1:0);
     if(counter){const label=(this.network?translateText('Игроки: ')+(counter.dataset.players??'0')+' · ':'')+translateText('НПС: ')+count;if(counter.textContent!==label)counter.textContent=label;}
     for(const [id,actor] of this.guests)if(!active.has(id)){actor.sprite.destroy();actor.shadow.destroy();actor.blush.destroy();actor.label?.destroy();this.guests.delete(id);this.guestMotion.delete(id);}
     for(const view of views){
@@ -944,7 +944,7 @@ export class RoomScene extends Phaser.Scene {
     }
     if(!this.network&&!this.locked&&!this.isHuggingCat()&&!this.typing&&inHallDoor(this.player))this.changeHall(hallLinkAt(this.player)!.target);
     this.details?.update(time);
-    if(this.hall==='toilet')this.toilet?.update([this.player,...[...this.remotePlayers.values()].map(p=>p.actor)]);
+    if(this.hall==='toilet')this.toilet?.update([this.player,...[...this.remotePlayers.values()].map(p=>p.actor)],delta,this.reducedMotion);
     if(this.hall==='street'&&(this.player.stairStep??0)>0&&this.pendingLounge?.startsWith('street:'))this.pendingLounge=null;
     const streetTarget=this.hall==='street'&&this.pendingLounge?.startsWith('street:')?this.pendingLounge.slice(7) as StreetResidentId:undefined;
     if(this.streetApproach?.id!==streetTarget){this.streetApproach=undefined;this.streetApproachCompleting=false;}

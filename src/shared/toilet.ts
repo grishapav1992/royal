@@ -1,5 +1,7 @@
 import type { Obstacle } from '../game/navigation';
 
+export const OCCUPIED_TOILET_CUBICLE = 1;
+
 /** Selected rectangular floor plan. Dimensions are shared by the server and renderer. */
 export const TOILET = {
   width:800,height:620,viewTop:80,
@@ -33,8 +35,15 @@ export const TOILET_OBSTACLES:Obstacle[]=[
     {x:p.x+9,y:p.y+p.h-68,w:4,h:64},
     {x:p.x+33,y:p.y+18,w:34,h:58},
   ]),
+  ...TOILET.cubicles.filter(p=>p.id===OCCUPIED_TOILET_CUBICLE).map(p=>({x:p.x+8,y:p.y+8,w:p.w-16,h:p.h-8})),
 ];
 
 export const toiletSinkApproaches=[0,1].map(i=>({x:TOILET.counter.x+TOILET.counter.w*(i+.5)/2,y:334}));
 export const toiletCubicleApproaches=TOILET.cubicles.map(p=>({x:p.x+p.w/2,y:p.y+p.h+42}));
-export const toiletCubicleStanding=TOILET.cubicles.map(p=>({x:p.x+p.w/2,y:p.y+p.h-24}));
+export const toiletCubicleStanding=TOILET.cubicles.filter(p=>p.id!==OCCUPIED_TOILET_CUBICLE).map(p=>({id:p.id,x:p.x+p.w/2,y:p.y+p.h-24}));
+
+export function toiletCubicleOpen(id:number,people:readonly {x:number;y:number}[]){
+  const p=TOILET.cubicles.find(p=>p.id===id);
+  return !!p&&id!==OCCUPIED_TOILET_CUBICLE&&people.some(person=>
+    Math.hypot(person.x-p.x-50,person.y-p.y-140)<82||person.x>p.x&&person.x<p.x+p.w&&person.y>p.y&&person.y<p.y+p.h);
+}

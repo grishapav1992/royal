@@ -377,7 +377,7 @@ test('manually climb each switchback without falling, reach the roof edge and re
   expect((await state(page)).toilet.variant).toBe(1);
   for(let i=0;i<toiletCubicleStanding.length;i++){
     const point=toiletCubicleStanding[i];await walk(page,point.x,point.y);
-    await expect.poll(async()=>(await state(page)).toilet.openDoors[i]).toBe(true);
+    await expect.poll(async()=>(await state(page)).toilet.openDoors[point.id]).toBe(true);
     await walk(page,point.x,430);
   }
   for(const point of toiletSinkApproaches)await walk(page,point.x,point.y);

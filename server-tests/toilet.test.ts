@@ -1,6 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {TOILET,TOILET_WINDOW,ROOF_TOILET,toiletSinkApproaches,toiletCubicleApproaches,toiletCubicleStanding} from '../src/shared/toilet';
+import {TOILET,TOILET_WINDOW,ROOF_TOILET,OCCUPIED_TOILET_CUBICLE,toiletCubicleOpen,toiletSinkApproaches,toiletCubicleApproaches,toiletCubicleStanding} from '../src/shared/toilet';
+import {toiletResidentPose,TOILET_RESIDENT_CYCLE_MS} from '../src/game/toiletResidentPose';
 import {ROOF} from '../src/shared/rooftop';
 import {hallLinks,hallLinkAt,hallLinkToward,hallObstacles,HALLS} from '../src/shared/world';
 import {findPath,walkable} from '../src/game/navigation';
@@ -12,7 +13,7 @@ import {accounts} from '../server/accounts';
 import {Guards} from '../server/guards';
 import {LobbyState,Player} from '../server/state';
 
-test('selected compact plan has clear routes into all cubicles, sinks and the raised window',()=>{
+test('compact plan keeps the empty cubicles, all approaches, sinks and window reachable',()=>{
   const obstacles=hallObstacles('toilet');
   assert.equal(TOILET.floor.w,640);assert.equal(TOILET.floor.h,300);assert.equal(TOILET.cubicles.length,3);
   for(const target of [TOILET_WINDOW.entry,...toiletSinkApproaches,...toiletCubicleApproaches,...toiletCubicleStanding]){
@@ -24,6 +25,33 @@ test('selected compact plan has clear routes into all cubicles, sinks and the ra
   assert.equal(cabinetsInHall('toilet').length,0);assert(!elevatorFloors().includes('toilet'));
   assert(!atElevator({hall:'toilet',...TOILET.spawn}));
   assert(!canTravelByElevator({hall:'arcade',x:1060,y:290},'toilet'));
+});
+
+test('the occupied cubicle stays closed and blocks click routes, walking and sprinting through its door',()=>{
+  const p=TOILET.cubicles[OCCUPIED_TOILET_CUBICLE],obstacles=hallObstacles('toilet'),inside={x:p.x+50,y:p.y+110};
+  assert.equal(toiletCubicleStanding.length,2);assert(!walkable(inside.x,inside.y,obstacles));assert.deepEqual(findPath(TOILET.spawn,inside,obstacles),[]);
+  const near=[inside,{x:p.x+50,y:p.y+165}];
+  assert.equal(toiletCubicleOpen(p.id,near),false);
+  for(const other of TOILET.cubicles.filter(q=>q.id!==p.id))assert(toiletCubicleOpen(other.id,[{x:other.x+50,y:other.y+160}]));
+  for(const sprint of [false,true]){
+    const body={hall:'toilet',x:p.x+50,y:430,facing:'up',moving:false,seat:'',action:'idle',drink:'',actionUntil:0};
+    for(let i=0;i<120;i++)applyMovementInput(body,{seq:i+1,x:0,y:-1,ms:50,sprint});
+    assert(body.y>=p.y+p.h+12);assert(walkable(body.x,body.y,obstacles));
+  }
+});
+
+test('the seated paper loop is bounded, continuous at phase changes and static with reduced motion',()=>{
+  const stages=new Set<string>();
+  for(let time=0;time<TOILET_RESIDENT_CYCLE_MS;time+=20){
+    const pose=toiletResidentPose(time),next=toiletResidentPose(time+20);stages.add(pose.stage);
+    for(const hand of [pose.left,pose.right])assert(hand.x>=20&&hand.x<=89&&hand.y>=50&&hand.y<=90);
+    assert(Math.hypot(next.right.x-pose.right.x,next.right.y-pose.right.y)<1.5);
+    assert(Math.abs(next.lean-pose.lean)<.15);
+    if(pose.behindShirt)assert(pose.paper);
+    assert.deepEqual(toiletResidentPose(time,true),toiletResidentPose(0,true));
+  }
+  assert.deepEqual([...stages],['idle','take-paper','tear-paper','wipe','settle']);
+  assert(toiletResidentPose(7000).behindShirt);
 });
 
 test('roof window keeps the perimeter open, has reciprocal links and safe offset arrivals',()=>{
