@@ -9,15 +9,19 @@ const folder='deployment/releases/manual-stakes-20261104-v1',before=JSON.parse(f
 const scope=JSON.parse(fs.readFileSync(folder+'/scope.json')),registry=JSON.parse(fs.readFileSync('scripts/game-math/rtp-policy.json'));
 const git=(...args)=>execFileSync('git',args,{maxBuffer:64*1024**2,stdio:['ignore','pipe','ignore']});
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
-const policyPath='scripts/game-math/rtp-policy.json',policyHistory=git('log','--all','--format=%H','--',policyPath).toString().trim().split('\n');
-const baselinePolicy=policyHistory.map(commit=>({commit,bytes:git('show',commit+':'+policyPath)}))
-  .find(row=>hash(Buffer.from(row.bytes.toString().replace(/\r\n/g,'\n')))===before.sourceLF[policyPath]);
-assert(baselinePolicy,'Production policy has no verified Git origin');
-// Keep unrelated unpublished collection descriptions outside this monetary release.
-registry.nonWagered=JSON.parse(baselinePolicy.bytes).nonWagered;
-const policyBytes=Buffer.from(JSON.stringify(registry,null,2)+'\n');
-const policyOrigin=policyHistory.find(commit=>hash(git('show',commit+':'+policyPath))===hash(policyBytes));
-assert(policyOrigin,'Selected monetary policy must already exist exactly in Git');
+const policyPath='scripts/game-math/rtp-policy.json',collectionPath='server/starSpinCollection.ts';
+const priorCommit=git('rev-parse','1f1bfade').toString().trim(),priorBytes=git('show',priorCommit+':'+policyPath),priorPolicy=JSON.parse(priorBytes);
+const money=policy=>{const{nonWagered,...rest}=policy;return rest;};
+assert.deepEqual(money(registry),money(priorPolicy),'Unreviewed monetary policy changes');
+const priorCollection=git('show',priorCommit+':'+collectionPath);
+let policyOrigin,policyBytes;
+if(hash(priorCollection)===before.sourceLF[collectionPath]){
+  // The published collection still uses its original free challenge model.
+  registry.nonWagered=priorPolicy.nonWagered;policyOrigin=priorCommit;policyBytes=priorBytes;
+}else{
+  assert.equal(hash(git('show','HEAD:'+collectionPath)),before.sourceLF[collectionPath],'Unreviewed published collection source');
+  policyOrigin=git('rev-parse','HEAD').toString().trim();policyBytes=git('show','HEAD:'+policyPath);
+}
 const reader=await readHostProjection(process.cwd(),folder+'/host-projection.json',{strictOrigins:true});
 assert.equal(reader.metadata.productionCommit,before.sourceCommit);
 assert.equal(reader.metadata.files['src/shared/arcadeCatalog.ts'].sha256,before.sourceLF['src/shared/arcadeCatalog.ts']);
