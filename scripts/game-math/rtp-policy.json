@@ -2070,7 +2070,7 @@
   },
   "nonWagered": {
     "caribbean-crew-collection": "Free educational challenges and cosmetic character ownership in the common account profile. No wager, paid cost, wallet conversion, random outcome, payout or paid-round bonus progress. The qualified studio-caribbean-treasures rules/progress 1 profile remains unchanged. See docs/concepts/caribbean-treasures/collection-policy.md.",
-    "star-spin-collection": "Free educational challenges and cosmetic side/companion selection in the common account database. No wagers, purchase, wallet conversion, random rewards or paid-round progress. All factions and companions use the same qualified studio-wild-nudge rules/progress 1. See docs/concepts/wild-nudge/collection-policy.md."
+    "star-spin-collection": "All four cosmetic companions are immediately available at zero cost in the common account profile. Challenges and new token rewards are paused; historical token and request records remain compatible. No wagers, wallet conversion, random rewards or paid-round progress. Every companion uses the same qualified studio-wild-nudge rules 2/progress 1 and preserved historical rules 1. See docs/concepts/wild-nudge/collection-policy.md."
   },
   "versionProfiles": {
     "studio-flooded-temple": {

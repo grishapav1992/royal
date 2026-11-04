@@ -20,7 +20,7 @@ function futureGame() {
 const check = fixture => validateStakeAdmission(fixture.catalog, [], fixture.registry, fixture.runtime);
 
 test('all playable games use the actual common runtime and qualified stake denominations', () => {
-  assert.equal(validateStakeAdmission(GAME_MODULES, baseline.games, registry, runtime), runtime.ROYAL_PLATFORM_GAMES.length);
+  assert.equal(validateStakeAdmission(GAME_MODULES, baseline.games, registry, runtime), new Set([...runtime.ROYAL_PLATFORM_GAMES,'tsu-e-fa']).size);
   const missing = structuredClone(registry);
   delete missing.stakePolicies['royal-roulette'];
   assert.throws(() => validateStakeAdmission(GAME_MODULES, baseline.games, missing, runtime), /common ten-cent stake policy/);

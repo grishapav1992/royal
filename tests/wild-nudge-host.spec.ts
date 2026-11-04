@@ -51,12 +51,10 @@ test('invalid Rive assets keep the static companion and common-wallet play avail
 });
 test('all four Rive companions retain their identity, react to paid outcomes and stop when hidden on mobile',async({page,roomPath})=>{
  test.setTimeout(180000);await enter(page,roomPath);await topup(page);await open(page);await fast(page);await page.emulateMedia({reducedMotion:'no-preference'});
- await page.locator('[data-ss="side:light"]').click();await page.locator('[data-gn=crew]').click();await page.getByRole('button',{name:'Задания',exact:true}).click();
- for(const [id,answer]of [['lesson-side','0'],['lesson-wild','1'],['lesson-bonus','2'],['daily-archive','0']]){await page.locator(`[data-ss="answer:${id}:${answer}"]`).click();await expect(page.locator(`[data-ss="answer:${id}:${answer}"]`)).toHaveCount(0);}
- for(const [side,id]of [['light','aeliri'],['dark','nyxara']]){await page.locator(`[data-ss="tab:${side}"]`).click();await page.locator(`[data-ss="unlock:${id}"]`).click();await expect(page.locator(`[data-ss="select:${id}"]`)).toBeEnabled();}
+ await page.locator('[data-ss="side:light"]').click();await page.locator('[data-gn=crew]').click();
  const observed=[];
  for(const [side,id]of [['light','lyra'],['light','aeliri'],['dark','vespera'],['dark','nyxara']]){
-  await page.locator(`[data-ss="tab:${side}"]`).click();if(await page.locator(`[data-ss="select:${id}"]`).isEnabled())await page.locator(`[data-ss="select:${id}"]`).click();
+  if(await page.locator(`[data-ss="select:${id}"]`).isEnabled())await page.locator(`[data-ss="select:${id}"]`).click();
   await expect(page.locator('.gn')).toHaveAttribute('data-character',id);await expect.poll(async()=>(await mini(page)).character.ready,{timeout:30000}).toBe(true);expect((await mini(page)).character.bound).toBe(true);if(id!=='lyra')expect((await mini(page)).character.reactions.select).toBe(1);await expect(page.locator(`[data-ss-card=${id}] .ss-rive-canvas`)).toBeVisible();await expect(page.locator('.ss-rive-canvas')).toHaveCount(1);
   if(id!=='lyra'){
    const bytes=await page.locator('.ss-rive-canvas').evaluate(async(canvas:HTMLCanvasElement)=>{const stream=canvas.captureStream(30),chunks:Blob[]=[];const recorder=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp9'});recorder.ondataavailable=e=>chunks.push(e.data);const done=new Promise<void>(resolve=>recorder.onstop=()=>resolve());recorder.start();await new Promise(r=>setTimeout(r,7500));recorder.stop();await done;stream.getTracks().forEach(track=>track.stop());return Array.from(new Uint8Array(await new Blob(chunks,{type:'video/webm'}).arrayBuffer()));});expect(bytes.length).toBeGreaterThan(5000);await writeFile(output+`/${id}-rive-preview.webm`,Buffer.from(bytes));
@@ -75,26 +73,34 @@ test('all four Rive companions retain their identity, react to paid outcomes and
  }
  await page.locator('[data-ss=close]').click();await page.setViewportSize({width:390,height:844});await expect.poll(async()=>(await mini(page)).character.playing).toBe(true);await page.setViewportSize({width:844,height:390});await expect.poll(async()=>(await mini(page)).character.playing).toBe(false);await page.setViewportSize({width:390,height:844});await chat(page);await expect(page.locator('[data-gn=spin]')).toBeInViewport();
  await page.locator('[data-gn=crew]').click();await expect(page.locator('[data-ss-card=nyxara] .ss-rive-canvas')).toBeVisible();await expect.poll(async()=>(await mini(page)).character.playing).toBe(true);await page.screenshot({path:output+'/rive-mobile.png'});
- await page.locator('[data-ss="tab:light"]').click();await expect.poll(async()=>(await mini(page)).character.playing).toBe(false);await page.locator('[data-ss="tab:dark"]').click();await expect.poll(async()=>(await mini(page)).character.playing).toBe(true);
+ await page.locator('[data-ss="select:lyra"]').click();await expect(page.locator('.gn')).toHaveAttribute('data-character','lyra');await page.locator('[data-ss="select:nyxara"]').click();await expect.poll(async()=>(await mini(page)).character.playing).toBe(true);
  await page.locator('[data-ss=close]').click();await page.setViewportSize({width:1440,height:1000});await expect.poll(async()=>(await mini(page)).character.playing).toBe(true);await scenario(page,'bonus');await spin(page);expect((await mini(page)).character.reactions.bonus_enter).toBe(1);await expect.poll(async()=>(await mini(page)).character.mode).toBe('bonus_idle');
  await page.locator('#mini-dialog .mini-top [data-close]').click();await open(page);await expect.poll(async()=>(await mini(page)).character.ready).toBe(true);expect((await mini(page)).character.reactions).toEqual({});expect((await mini(page)).character.mode).toBe('bonus_idle');await writeFile(output+'/rive-character-verification.json',JSON.stringify({characters:observed,mobileHiddenStops:true,mobileCollectionResumes:true,savedBonusRestoresQuietly:true},null,2));
 });
-test('Star Spin side choice, free challenges and permanent companions use the real host account',async({page,roomPath})=>{
- await enter(page,roomPath);await open(page);await expect(page.locator('.gn-title h2')).toHaveText('Star Spin');await expect(page.locator('[data-ss="side:light"]')).toBeEnabled();
- await page.locator('[data-ss="side:light"]').click();await expect(page.locator('.gn')).toHaveAttribute('data-character','lyra');await expect(page.locator('[data-ss-portrait]')).toBeVisible();
- await page.locator('[data-gn=crew]').click();await expect(page.locator('.ss-dialog')).toBeVisible();await page.getByRole('button',{name:'Задания',exact:true}).click();
- for(const [id,answer]of [['lesson-side','0'],['lesson-wild','1'],['lesson-bonus','2'],['daily-archive','0']]){await page.locator(`[data-ss="answer:${id}:${answer}"]`).click();await expect(page.locator(`[data-ss="answer:${id}:${answer}"]`)).toHaveCount(0);}
- await expect(page.locator('[data-ss-tokens]')).toHaveText('200');await page.locator('[data-ss="tab:light"]').click();await page.locator('[data-ss="unlock:aeliri"]').click();await expect(page.locator('[data-ss="select:aeliri"]')).toBeEnabled();await page.locator('[data-ss="select:aeliri"]').click();await expect(page.locator('.gn')).toHaveAttribute('data-character','aeliri');
- await page.locator('[data-ss="tab:dark"]').click();await page.locator('[data-ss="unlock:nyxara"]').click();await expect(page.locator('[data-ss-tokens]')).toHaveText('0');await page.locator('[data-ss="select:nyxara"]').click();await expect(page.locator('.gn')).toHaveAttribute('data-character','nyxara');await page.locator('[data-ss=close]').click();
- await page.screenshot({path:output+'/star-spin-dark.png'});await page.locator('#mini-dialog .mini-top [data-close]').click();await open(page);await expect(page.locator('.gn')).toHaveAttribute('data-character','nyxara');await expect(page.locator('[data-gn=spin]')).toBeDisabled();
- await page.locator('[data-ss="side:light"]').click();await expect(page.locator('.gn')).toHaveAttribute('data-character','aeliri');await page.screenshot({path:output+'/star-spin-light.png'});expect(await session(page)).toBeUndefined();
- await page.setViewportSize({width:390,height:844});await page.locator('[data-gn=crew]').click();await expect(page.locator('[data-ss-card=aeliri]')).toBeInViewport();await page.screenshot({path:output+'/star-spin-mobile-collection.png'});await page.keyboard.press('Escape');await expect(page.locator('.ss-dialog')).toBeHidden();await chat(page);
+test('all companions are immediately selectable without token or challenge UI and favorites persist',async({page,roomPath})=>{
+ await enter(page,roomPath);await open(page);await page.locator('[data-gn=crew]').click();
+ const dialog=page.locator('.ss-dialog');await expect(dialog.locator('h3')).toHaveText('Выбери героиню');await expect(dialog.locator('[data-ss-card]')).toHaveCount(4);
+ await expect.poll(async()=>(await mini(page)).collection.owned.length).toBe(4);
+ await expect(dialog.locator('[data-ss^="answer:"],[data-ss^="unlock:"],[data-ss-tokens],.ss-tabs')).toHaveCount(0);
+ expect(await dialog.innerText()).not.toMatch(/жетон|задани|RTP|USDT|открыть/i);
+ const actions:string[]=[];page.on('request',request=>{if(request.url().endsWith('/api/star-spin/collection')&&request.method()==='POST')actions.push(request.postDataJSON().action);});
+ const balance=await page.locator('[data-gn=balance]').textContent();
+ for(const id of ['lyra','aeliri','vespera','nyxara']){await expect(dialog.locator('[data-ss="select:'+id+'"]')).toBeEnabled();await dialog.locator('[data-ss="select:'+id+'"]').click();await expect(page.locator('.gn')).toHaveAttribute('data-character',id);await expect(dialog.locator('[data-ss="select:'+id+'"]')).toHaveAttribute('aria-pressed','true');}
+ expect(actions).toEqual(['select','select','select','select']);expect(await session(page)).toBeUndefined();await expect(page.locator('[data-gn=balance]')).toHaveText(balance!);
+ for(const [width,height] of [[1440,1000],[390,844],[320,568],[707,447]]){
+  await page.setViewportSize({width,height});await expect(dialog).toBeInViewport();
+  for(const id of ['lyra','aeliri','vespera','nyxara']){const button=dialog.locator('[data-ss="select:'+id+'"]');await expect(button).toBeInViewport();const box=await button.boundingBox();expect(box!.width).toBeGreaterThanOrEqual(44);expect(box!.height).toBeGreaterThanOrEqual(44);}
+  const overflow=await dialog.evaluate(el=>el.scrollWidth>el.clientWidth);expect(overflow).toBe(false);await page.screenshot({path:output+'/all-companions-'+width+'x'+height+'.png'});
+ }
+ await page.setViewportSize({width:1440,height:1000});await dialog.locator('[data-ss=close]').click();await page.locator('[data-ss="side:light"]').click();await expect(page.locator('.gn')).toHaveAttribute('data-character','aeliri');await page.locator('[data-ss="side:dark"]').click();await expect(page.locator('.gn')).toHaveAttribute('data-character','nyxara');
+ await page.locator('#mini-dialog .mini-top [data-close]').click();await open(page);await expect(page.locator('.gn')).toHaveAttribute('data-character','nyxara');await page.locator('[data-gn=crew]').click();await expect(dialog.locator('[data-ss="select:nyxara"]')).toHaveAttribute('aria-pressed','true');
 });
+
 test('companion selection is locked during an accepted bonus and pending cosmetic replies recover with the same UUID',async({page,roomPath})=>{
  await enter(page,roomPath);await topup(page);await open(page);await fast(page);await expect(page.locator('[data-ss="side:light"]')).toBeEnabled();const ids:string[]=[];let drop=true;
  await page.route('**/api/star-spin/collection',async route=>{if(route.request().method()==='POST'){ids.push(route.request().postDataJSON().id);if(drop){drop=false;await route.fetch();await route.abort('failed');return;}}await route.continue();});
  await page.locator('[data-ss="side:light"]').click();await expect.poll(async()=>(await mini(page)).collection.pending).toBe(true);await expect(page.locator('[data-gn=spin]')).toBeDisabled();await page.locator('[data-gn=crew]').click();await page.locator('[data-ss=retry]').click();await expect(page.locator('.gn')).toHaveAttribute('data-character','lyra');expect(ids).toHaveLength(2);expect(ids[0]).toBe(ids[1]);await page.locator('[data-ss=close]').click();
- await scenario(page,'bonus');await spin(page);await expect(page.locator('[data-ss="side:dark"]')).toBeDisabled();await page.locator('[data-gn=crew]').click();await page.locator('[data-ss="tab:dark"]').click();await expect(page.locator('[data-ss="select:vespera"]')).toBeDisabled();await page.locator('[data-ss=close]').click();for(let i=0;i<8;i++)await spin(page);await expect(page.locator('[data-ss="side:dark"]')).toBeEnabled();
+ await scenario(page,'bonus');await spin(page);await expect(page.locator('[data-ss="side:dark"]')).toBeDisabled();await page.locator('[data-gn=crew]').click();await expect(page.locator('[data-ss="select:vespera"]')).toBeDisabled();await page.locator('[data-ss=close]').click();for(let i=0;i<8;i++)await spin(page);await expect(page.locator('[data-ss="side:dark"]')).toBeEnabled();
 });
 test('ordinary paid spin and all eight free continuations use the real host and common wallet',async({page,roomPath})=>{
  await enter(page,roomPath);await topup(page);await open(page);await fast(page);await scenario(page,'bonus');await spin(page);

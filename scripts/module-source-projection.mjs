@@ -3,7 +3,7 @@ import {readFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {build,version as esbuildVersion} from 'esbuild';
 import {readHostProjection} from './build-host-projection.mjs';
-import {digest,regularPath} from './module-build-cache.mjs';
+import {digest,regularPath,dependencyPath} from './module-build-cache.mjs';
 
 const keys=['apiVersion','rulesVersion','progressVersion'];
 const same=(a,b)=>assert.deepEqual(a,b);
@@ -43,7 +43,7 @@ export async function verifyModuleProjection(root,report,slugs){
  reader.preload(Object.keys(report.inputs));
  for(const [name,hash]of Object.entries(report.inputs)){same(digest(reader.read(name)),hash);same(reader.origins[name],report.origins[name]);}
  for(const [name,hash]of Object.entries(report.assets)){same(digest(await readFile(await regularPath(root,name))),hash);same(reader.metadata.moduleAssets[name],hash);}
- for(const [name,hash]of Object.entries(report.dependencies??{}))projectedDependencyBytes(name,await readFile(await regularPath(root,name)),reader.metadata.moduleDependencies?.[name]===hash?hash:undefined);
+ for(const [name,hash]of Object.entries(report.dependencies??{}))projectedDependencyBytes(name,await readFile(await dependencyPath(root,name)),reader.metadata.moduleDependencies?.[name]===hash?hash:undefined);
  const expected={};
  for(const slug of slugs){
   const config=JSON.parse(reader.read(`games/${slug}/package.json`)),contract=catalog.find(game=>game.slug===slug),game=config.gameId;

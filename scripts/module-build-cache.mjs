@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { lstat, readdir, readFile } from 'node:fs/promises';
+import { lstat, readdir, readFile, realpath } from 'node:fs/promises';
 import { dirname, resolve, relative } from 'node:path';
 
 export const digest = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -14,6 +14,23 @@ export async function regularPath(root, name) {
     path = dirname(path);
   }
   return resolve(root, name);
+}
+
+/** A worktree can share one installed dependency tree. Source and output guards stay strict. */
+export async function dependencyPath(root, name) {
+  if (!/^node_modules(?:\/|$)/.test(name) || name.includes('\\')
+      || name.split('/').some(part => !part || part === '.' || part === '..')) throw Error('Unsafe dependency path: ' + name);
+  const installed = await realpath(resolve(root, 'node_modules'));
+  const suffix = name.slice('node_modules'.length + 1);
+  let path = resolve(installed, suffix);
+  if (relative(installed, path).replaceAll('\\', '/') !== suffix) throw Error('Unsafe dependency path: ' + name);
+  const target = path;
+  while (path !== installed) {
+    if ((await lstat(path)).isSymbolicLink()) throw Error('Dependency symlink rejected: ' + name);
+    path = dirname(path);
+  }
+  if (!(await lstat(installed)).isDirectory()) throw Error('Dependency root must be a directory');
+  return target;
 }
 
 export async function inventory(root, prefix = '') {
@@ -35,8 +52,9 @@ export function moduleFingerprinter(root, toolchain) {
     if (!memo.has(key)) memo.set(key, fn());
     return memo.get(key);
   };
+  const inputPath = name => name.startsWith('node_modules/') ? dependencyPath(root, name) : name === 'node_modules' ? dependencyPath(root, name) : regularPath(root, name);
   const file = name => once('file:' + name, async () => {
-    try { return digest(await readFile(await regularPath(root, name))); }
+    try { return digest(await readFile(await inputPath(name))); }
     catch (error) { if (error.code === 'ENOENT') return null; throw error; }
   });
   const resources = name => once('media:' + name, async () => {
@@ -73,7 +91,7 @@ export function moduleFingerprinter(root, toolchain) {
     const entries = {};
     // Catch new import-resolution candidates (for example foo.ts shadowing foo/index.ts).
     for (const name of [...directories].sort()) entries[name] = await once('dir:' + name, async () => {
-      try { return (await readdir(await regularPath(root, name))).sort(); }
+      try { return (await readdir(await inputPath(name))).sort(); }
       catch (error) { if (error.code === 'ENOENT') return null; throw error; }
     });
     const assets = {};
