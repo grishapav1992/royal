@@ -310,6 +310,7 @@ const miraChat = new MiraChat(barDialog, {
   portraitFrame: (action, frame) => room.getPortraitFrame(action, frame),
   playerState: () => room.getDialoguePlayer(),
   onDrink: id => room.orderDrink(id),
+  onAttention: phase => room.setMiraAttention(phase),
 });
 room.onApproach = prepareCabinet;
 let intentTimer: ReturnType<typeof setTimeout>;
@@ -367,7 +368,7 @@ $('#interact').addEventListener('click', () => room.interact());
 $('#help').addEventListener('click', () => { room.setLocked(true); helpDialog.showModal(); });
 $('#start-game').addEventListener('click', () => mini?.start());
 $('#retry-demo').addEventListener('click', () => { void mini?.load(); });
-room.onBar = () => { room.setLocked(true); miraChat.open(); if (!barDialog.open) barDialog.show(); };
+room.onBar = () => { room.setLocked(true); if (!barDialog.open) barDialog.show(); miraChat.open(); };
 room.onNotice = toast;
 document.addEventListener(GAME_REACTION_EVENT, event => {
   const reaction = (event as CustomEvent<{reaction?:string}>).detail?.reaction;

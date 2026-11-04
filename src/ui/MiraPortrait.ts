@@ -48,9 +48,13 @@ export class MiraPortrait {
     this.speakingUntil = Date.now() + Math.min(8400, Math.max(1500, message.length * 42));
   }
 
+  stop() { this.speakingUntil = 0; this.reactionUntil = 0; this.lastFrame = -1; this.tick(Date.now()); }
+  isSpeaking(now: number) { return now < this.speakingUntil; }
+
   tick(now: number) {
     const reduced = this.reducedMotion.matches;
     const speaking = now < this.speakingUntil;
+    this.element.dataset.activity = speaking ? 'speak' : 'listen';
     this.element.classList.toggle('mira-speaking', speaking);
     this.element.classList.toggle('mira-motion-reduced', reduced);
     const cycle = now % 5200;
@@ -58,7 +62,6 @@ export class MiraPortrait {
     if (speaking) frame = reduced ? 2 : [2, 0, 2, 2, 0, 2][Math.floor(now / 140) % 6];
     else if (!reduced && cycle > 4950 && cycle < 5120) frame = 1;
     else if (!reduced && this.emotion === 'tease' && now < this.reactionUntil) frame = 5;
-    else if (!reduced && cycle > 3850 && cycle < 4550) frame = 5;
     if (frame === this.lastFrame) return;
     this.lastFrame = frame;
     this.context.clearRect(0, 0, 600, 900);

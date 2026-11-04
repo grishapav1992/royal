@@ -166,6 +166,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (movementActions.has(type) && control?.inputs.pendingCount) control.afterMovement = () => { void apply(); };
       else return apply();
     });
+    listen('mira-attention',(client,value:unknown)=>this.bartender.attend(client.sessionId,value));
     listen('activity', (client,value:unknown)=>this.activities.handle(client.sessionId,value));
     listen('pvp',async(client,value:unknown)=>{await this.pvp.command(client.sessionId,value);});
     listen('cat', (client, value: unknown) => {
@@ -280,12 +281,14 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
         if (!valid()) return;
         const current = await accounts.drinking.read(accountId);
         if (!valid() || Date.now() < current.lastDrinkAt + 3200) return;
-        // Reserve the accepted sip before its persisted dose completes.
-        this.stop(client.sessionId); p.action = 'drink'; p.drink = id as string; p.actionUntil = Date.now()+3200;
-        if (!p.seat) p.facing = 'down';
+        // Reserve the command, then publish sip and dose together after persistence.
+        this.stop(client.sessionId);
         const drinking = await accounts.drinking.consume(accountId, id as string, Date.now());
         if (!this.currentAction(client, p, control, chatRevision, hallRevision)) return;
+        this.stop(client.sessionId);
         access.drinking = drinking; p.soberAt = drinking.soberAt;
+        p.action = 'drink'; p.drink = id as string; p.actionUntil = Date.now()+3200;
+        if (!p.seat) p.facing = 'down';
       } catch (error) {
         if (this.currentAction(client, p, control, chatRevision, hallRevision) && p.action === 'drink' && p.drink === id) {
           p.action = p.seat ? 'sit' : 'idle'; p.drink = ''; p.actionUntil = 0;
@@ -428,6 +431,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     finally { this.joiningAccounts.delete(auth.account.id); }
   }
   onDrop(client: Client, code?: number) {
+    this.bartender.forget(client.sessionId);
     console.info(JSON.stringify({ event: 'lobby-connection', phase: 'drop', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));
     this.cancelChat(client);
     this.activities.disconnect(client.sessionId);
@@ -480,6 +484,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     };
   }
   onLeave(client: Client, code?: number) {
+    this.bartender.forget(client.sessionId);
     console.info(JSON.stringify({ event: 'lobby-connection', phase: 'left', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));
     this.cancelChat(client);
     const chatControl = this.controls.get(client.sessionId);
