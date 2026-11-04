@@ -43,21 +43,69 @@ function createGuard(scene: Phaser.Scene) {
       c.lineJoin='round'; c.lineCap='round';
       // Short denim legs and flat shoes move as separate paper pieces.
       for(const leg of [-1,1]) {
-        const swing=step*leg, x=leg*(side?11:16)+(side?swing*4:0), y=139-Math.max(0,swing)*3;
+        if(side) {
+          // Both hips overlap in profile; the feet separate along the direction of travel.
+          const near=leg===1,swing=step*leg,hip=near?-5:3;
+          const knee=hip+swing*6,ankle=hip+swing*12+(near?0:3);
+          const ground=139-(near?0:1)-Math.max(0,swing)*3;
+          poly([hip-9,110,hip+9,110,knee+8,124,ankle+7,ground-5,ankle-8,ground-5,knee-8,124],near?'#282934':'#22232d');
+          c.beginPath();c.moveTo(ankle-9,ground-6);c.lineTo(ankle+7,ground-6);
+          c.quadraticCurveTo(ankle+10,ground-3,ankle+16,ground-3);
+          c.quadraticCurveTo(ankle+22,ground-2,ankle+22,ground+1);
+          c.quadraticCurveTo(ankle+16,ground+4,ankle-9,ground+3);
+          c.closePath();fill(near?'#161920':'#1b1e27');
+          continue;
+        }
+        const swing=step*leg, x=leg*16, y=139-Math.max(0,swing)*3;
         poly([x-11,110,x+11,110,x+11,y,x-11,y],'#282934');
-        oval(x+(side?2:0),y,16,4,'#161920');
+        oval(x,y,16,4,'#161920');
       }
       c.save(); c.translate(0,bounce);
       if(frame===21)c.rotate((side?4:-2)*Math.PI/180);
       if(talking)c.translate(0,frame===19?-1:0);
-      const bodyWidth=side?30:38;
+      const bodyWidth=side?25:38,shoulderWidth=side?14:20;
       const arm = (near: boolean) => {
-        const x=side?(near?27:-23):(near?38:-38), sign=near?1:-1;
+        const x=side?(near?-5:7):(near?38:-38), sign=near?1:-1;
         c.save(); c.translate(x,76);
+        if(side) {
+          const active=near&&(holding||pointing||throwing||talking||looking||frame===25||fist);
+          let elbowX=0,elbowY=19,handX=0,handY=32;
+          if(active) {
+            elbowX=18;elbowY=18;handX=36;handY=-6;
+            if(pointing){handX=43;handY=-12;}
+            if(fist){handX=39;handY=-10;c.rotate((frame===26?-12:8)*Math.PI/180);}
+            if(throwing){elbowX=frame===11?22:10;elbowY=frame===11?12:7;handX=frame===11?44:19;handY=frame===11?5:-13;}
+            if(talking||frame===25){elbowX=12;elbowY=19;handX=frame===19?28:24;handY=frame===19?24:29;}
+            if(looking){elbowX=37;elbowY=-10;handX=39;handY=-47;}
+          } else c.rotate(sign*step*24*Math.PI/180);
+          const armSkin=near?skin:'#754a38',length=Math.hypot(elbowX,elbowY);
+          const sleeveLength=Math.min(14,length*.72);
+          const sleeveX=elbowX/length*sleeveLength,sleeveY=elbowY/length*sleeveLength;
+          const handAngle=Math.atan2(handY-elbowY,handX-elbowX)-Math.PI/2;
+          // Paint the whole outer contour before the skin, leaving no seam at the wrist.
+          for(const outline of [true,false]) {
+            const edge=outline?.8:0,color=outline?ink:armSkin;
+            c.beginPath();c.moveTo(sleeveX,sleeveY);c.lineTo(elbowX,elbowY);c.lineTo(handX,handY);
+            c.strokeStyle=color;c.lineWidth=outline?15:13;c.stroke();
+            c.beginPath();c.ellipse(handX,handY,(fist&&near?7:6)+edge,(fist&&near?7:8.5)+edge,handAngle,0,Math.PI*2);
+            c.fillStyle=color;c.fill();
+            if(pointing&&near){c.beginPath();c.roundRect(handX-2-edge,handY-20-edge,5+edge*2,17+edge*2,2.5+edge);c.fill();}
+          }
+          // The rounded sleeve merges into the shirt; only its cuff has a visible edge.
+          c.save();c.rotate(Math.atan2(elbowY,elbowX)-Math.PI/2);
+          c.beginPath();c.moveTo(-10,-2);c.bezierCurveTo(-9,-10,5,-11,10,-3);
+          c.quadraticCurveTo(12,5,8,sleeveLength+1);c.quadraticCurveTo(0,sleeveLength+3,-8,sleeveLength+1);
+          c.quadraticCurveTo(-11,7,-10,-2);c.closePath();c.fillStyle=near?shirt:'#1b1d25';c.fill();
+          c.beginPath();c.moveTo(-8,sleeveLength);c.quadraticCurveTo(0,sleeveLength+2,8,sleeveLength);
+          c.strokeStyle='#151720';c.lineWidth=.8;c.stroke();c.restore();
+          if(fist&&near){for(let i=-1;i<=1;i++)line(handX+i*3,handY-4,handX+i*3,handY-1,'#563729',1);line(handX-5,handY+3,handX+4,handY+3,'#563729',1);}
+          else {line(handX+4,handY,handX+2,handY+3,'#634033',1);line(handX-2,handY+3,handX-2,handY+5,'#634033',.8);}
+          c.restore();return;
+        }
         if(near && (holding||pointing||throwing||talking||looking||frame===25||fist)) {
           if(fist)c.rotate((frame===26?-12:8)*Math.PI/180);
           const raised=holding||pointing||fist, handY=looking?-47:raised?-25:talking?8:15;
-          const handX=looking?-12:side?10:fist&&frame===27?4:7;
+          const handX=looking?-12:fist&&frame===27?4:7;
           poly([-9,-3,8,-3,13,15,-5,21,-12,11],shirt);
           oval(3,16,10,11,skin);
           poly([-2,17,handX-8,handY+2,handX+7,handY+2,11,19],skin);
@@ -67,7 +115,7 @@ function createGuard(scene: Phaser.Scene) {
             c.beginPath();c.roundRect(handX-2,handY-20,6,17,3);fill(skin);
           }
         } else {
-          c.rotate(sign*step*(side?12:7)*Math.PI/180);
+          c.rotate(sign*step*7*Math.PI/180);
           // A tapered forearm flows into a small relaxed palm without a second skin disc.
           c.beginPath();c.moveTo(-8,12);c.lineTo(8,12);c.lineTo(6,27);
           c.quadraticCurveTo(10,29,8,34);c.quadraticCurveTo(6,38,0,38);
@@ -79,16 +127,19 @@ function createGuard(scene: Phaser.Scene) {
       };
       arm(false);
       // Broad, simple shapes replace anatomical shading and angular superhero proportions.
-      c.beginPath();c.moveTo(-20,66);c.quadraticCurveTo(-bodyWidth,67,-bodyWidth,87);
+      c.beginPath();c.moveTo(-shoulderWidth,66);c.quadraticCurveTo(-bodyWidth,67,-bodyWidth,87);
       c.lineTo(-bodyWidth+3,116);c.quadraticCurveTo(0,123,bodyWidth-3,116);
-      c.lineTo(bodyWidth,87);c.quadraticCurveTo(bodyWidth,67,20,66);c.closePath();fill(shirt);
+      c.lineTo(bodyWidth,87);c.quadraticCurveTo(bodyWidth,67,shoulderWidth,66);c.closePath();fill(shirt);
       if(!back) {
-        poly([-15,70,-2,81,-10,88,-22,73],'#34343f');
-        poly([15,70,2,81,10,88,22,73],'#34343f');
+        if(side)poly([9,69,18,74,12,87,5,77],'#34343f');
+        else {
+          poly([-15,70,-2,81,-10,88,-22,73],'#34343f');
+          poly([15,70,2,81,10,88,22,73],'#34343f');
+        }
         line(side?14:0,80,side?14:0,111,'#46434a',.8);
       }
       c.fillStyle='#131620';c.fillRect(-bodyWidth+3,111,bodyWidth*2-6,8);
-      c.fillStyle='#d9ba61';c.fillRect(-6,111,12,9);c.fillStyle='#171a23';c.fillRect(-3,113,6,5);
+      c.fillStyle='#d9ba61';c.fillRect(side?17:-6,111,side?7:12,9);c.fillStyle='#171a23';c.fillRect(side?19:-3,113,side?3:6,5);
       // Linked gold chain follows the collar, with a narrow perspective in profile.
       c.save();if(side){c.translate(10,0);c.scale(.62,1);}
       c.beginPath();c.moveTo(-20,69);c.quadraticCurveTo(0,back?80:119,20,69);
@@ -100,7 +151,7 @@ function createGuard(scene: Phaser.Scene) {
         c.strokeStyle=i%2?'#fff0a1':'#ae7420';c.lineWidth=1.1;c.stroke();
       }
       c.restore();
-      arm(true);
+      if(!side)arm(true);
       // The profile has its own forehead, nose and jaw instead of a front-facing disc.
       if(side) {
         c.beginPath();c.moveTo(-19,14);c.quadraticCurveTo(-6,4,10,11);
@@ -136,7 +187,9 @@ function createGuard(scene: Phaser.Scene) {
         c.beginPath();c.moveTo(-30,19);c.lineTo(30,19);c.lineTo(28,43);
         c.quadraticCurveTo(0,55,-28,43);c.closePath();fill('#171a22');
       }
-      if(looking)oval(side?20:27,27,8,5,skin);
+      // The near arm can pass in front of the jaw and forehead without disappearing.
+      if(side)arm(true);
+      else if(looking)oval(27,27,8,5,skin);
       c.restore();c.restore();
       texture.add(`${direction}-${frame}`,0,col*WIDTH*2,atlasRow*HEIGHT*2,WIDTH*2,HEIGHT*2);
     }
