@@ -17,3 +17,5 @@
 Профильные проверки: `npm run test:street` включает `server-tests/toilet.test.ts`. Браузерный маршрут в `tests/rooftop.spec.ts` проходит настоящую пожарную лестницу, окно, все кабинки и раковины, перезагрузку внутри и возвращение на крышу на desktop/mobile с подключённым чатом.
 
 Итоговая проверка: [отчёт](concepts/casino-rooftop-toilet/implementation-verification.json), [игра на компьютере](concepts/casino-rooftop-toilet/runtime-desktop.png), [игра на телефоне](concepts/casino-rooftop-toilet/runtime-mobile.png). Во время согласования с main сохранена новая боковая походка обычных персонажей. У туриста позы с удерживаемой камерой используют его собственные руки: 132 таких кадра совпадают с прежней версией по пикселям.
+
+Изображения в окнах и текущая проверка: [вид в туалет](concepts/casino-rooftop-toilet/window-into-toilet.png), [вид на крышу](concepts/casino-rooftop-toilet/window-out-to-roof.png), [отчёт](concepts/casino-rooftop-toilet/window-view-verification.json).
