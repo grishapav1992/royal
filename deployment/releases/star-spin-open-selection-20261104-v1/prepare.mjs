@@ -15,10 +15,11 @@ const installerCommit=process.argv[4]||git('rev-parse','HEAD').toString().trim()
 assert(/^[a-f0-9]{40}$/.test(installerCommit));
 assert.equal(release.sourceCommit,receipt.sourceCommit);
 for(const commit of [release.sourceCommit,installerCommit,receipt.remoteMain])git('merge-base','--is-ancestor',commit,'origin/main');
-const installerChanges=git('diff','--name-only',release.sourceCommit,installerCommit).toString().trim().split('\n').filter(Boolean);
+const installerParent=git('rev-parse',installerCommit+'^').toString().trim();
+const installerChanges=git('diff','--name-only',installerParent,installerCommit).toString().trim().split('\n').filter(Boolean);
 assert(installerChanges.every(n=>n.startsWith(folder+'/')),'Installer revision may change only its own release tooling');
 for(const n of ['host-projection.json','backend-projection.json'])assert.equal(sha(git('show',installerCommit+':'+folder+'/'+n)),release[n==='host-projection.json'?'hostProjection':'backendProjection'].sha256,'Build projection changed after preparation');
-for(const n of ['prepare.mjs','scope.json','deploy.py','snapshot.py'])assert.equal(sha(fs.readFileSync(folder+'/'+n)),sha(git('show',installerCommit+':'+folder+'/'+n)),'Installer working source differs');
+for(const n of ['prepare.mjs','scope.json','deploy.py','snapshot.py'])assert.equal(sha(git('show','HEAD:'+folder+'/'+n)),sha(git('show',installerCommit+':'+folder+'/'+n)),'Installer working source differs');
 for(const [file,hash]of Object.entries(release.files))assert.equal(sha(fs.readFileSync(file)),hash,'Prepared artifact changed: '+file);
 assert.equal(sha(fs.readFileSync('module-build/release-manifest.json')),receipt.manifestSha256);
 assert.equal(release.baseCommit,before.sourceCommit);assert(release.clean&&release.build.passed);
@@ -63,7 +64,7 @@ const references={
 const support={};for(const [file,source]of Object.entries(references))support[file]=write(file,committed(source));
 for(const file of ['release-manifest.json','release-github.json'])write(file,fs.readFileSync('module-build/'+file));
 const scopeSha256=write('scope.json',installerSource(folder+'/scope.json'));
-const helperReceipt={format:1,sourceCommit:installerCommit,applicationSourceCommit:release.sourceCommit,remoteMain:git('rev-parse','origin/main').toString().trim(),checkedAt:new Date().toISOString(),changedOnlyReleaseTooling:installerChanges};
+const helperReceipt={format:1,sourceCommit:installerCommit,parentCommit:installerParent,applicationSourceCommit:release.sourceCommit,remoteMain:git('rev-parse','origin/main').toString().trim(),checkedAt:new Date().toISOString(),changedOnlyReleaseTooling:installerChanges};
 const helperReceiptSha256=write('installer-github.json',Buffer.from(JSON.stringify(helperReceipt,null,2)+'\n'));
 const helperSha256=write('deploy.py',installerSource(folder+'/deploy.py')),snapshotSha256=write('snapshot.py',installerSource(folder+'/snapshot.py'));
 const manifest={release:scope.name,sourceCommit:release.sourceCommit,helperSourceCommit:installerCommit,helperReceiptSha256,scopeSha256,baseCommit:before.sourceCommit,before,changed,delta:{},serverDelta,support,helperSha256,snapshotSha256,previousVersion,
