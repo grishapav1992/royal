@@ -50,11 +50,27 @@ def payload(base):
     require(graph == release['build']['hostProjection'] and graph['productionCommit'] == m['baseCommit'], 'Host evidence differs')
     validate_scope(m['changed'], m['serverDelta'], graph, old)
 
+def wait_for_healthy(base, timeout=300, now=None, pause=None):
+    now, pause = now or time.monotonic, pause or time.sleep
+    deadline = now() + timeout
+    while now() < deadline:
+        state = json.loads(base.run(['docker', 'inspect', 'royal-game-1']))[0]['State']
+        require(state.get('Running') is True, 'Game exited during startup')
+        if state.get('Health', {}).get('Status') == 'healthy':
+            result = json.loads(base.run(['docker', 'exec', 'royal-game-1', 'node', '-e',
+                "fetch('http://127.0.0.1:2567/healthz').then(async r=>{if(!r.ok)process.exit(1);const d=await r.json();if(d.ok!==true)process.exit(1);console.log(JSON.stringify({ok:true}));}).catch(()=>process.exit(1))"]))
+            require(result.get('ok') is True, 'Game health endpoint failed')
+            return
+        pause(1)
+    raise RuntimeError('Game did not become healthy within the startup deadline')
+
 def configure():
     spec = importlib.util.spec_from_file_location('profile_walk_application', ROOT / 'application-overlay.py')
     application = importlib.util.module_from_spec(spec); spec.loader.exec_module(application)
     application.NAME, application.SOURCES, application.payload = NAME, SOURCES, payload
-    return application.configure(ROOT)
+    base = application.configure(ROOT)
+    base.healthy = lambda: wait_for_healthy(base)
+    return base
 
 def wait_for_ready(root, nonce, timeout=3600):
     deadline = time.monotonic() + timeout
@@ -69,10 +85,10 @@ def wait_for_ready(root, nonce, timeout=3600):
         time.sleep(2)
     raise TimeoutError('Reserved preparation exceeded its deadline')
 
-def reserve_release(locks):
+def reserve_release(locks, reuse_candidate=False):
     require(ROOT == Path('/opt/royal-releases') / NAME and not ROOT.is_symlink(), 'Unexpected reservation root')
-    require(not (ROOT / 'published.json').exists() and not (ROOT / 'build-result.json').exists(), 'Release already started')
-    require(not (ROOT / 'reservation-ready.json').exists(), 'Old ready marker exists')
+    require(not (ROOT / 'published.json').exists() and (ROOT / 'build-result.json').exists() == reuse_candidate, 'Unexpected release stage')
+    require(reuse_candidate or not (ROOT / 'reservation-ready.json').exists(), 'Old ready marker exists')
     nonce, bootstrap, removed = uuid.uuid4().hex, sha(ROOT / 'deploy.py'), []
     def status(stage, **extra):
         state = {'reservation': nonce, 'pid': os.getpid(), 'stage': stage, 'at': time.time(), 'bootstrapSha256': bootstrap, 'removedSupersededClientFiles': removed, **extra}
@@ -82,9 +98,25 @@ def reserve_release(locks):
     for name in ['/opt/royal-releases/themed-publish.lock', '/opt/royal/.client-presentation-deploy.lock', '/opt/royal-game-modules-state/module.lock']:
         require(not Path(name).is_symlink(), 'Deployment lock symlink rejected')
         handle = open(name, 'a'); fcntl.flock(handle, fcntl.LOCK_EX); locks.append(handle)
-    require(not (ROOT / 'published.json').exists() and not (ROOT / 'build-result.json').exists(), 'Release already started while waiting')
+    require(not (ROOT / 'published.json').exists() and (ROOT / 'build-result.json').exists() == reuse_candidate, 'Release stage changed while waiting')
     old = json.loads((ROOT / 'install-manifest.json').read_text())
     require(old['release'] == NAME, 'Foreign staged payload')
+    if reuse_candidate:
+        failure = json.loads((ROOT / 'publication-failed.json').read_text())
+        recovered = json.loads((ROOT / 'recovered.json').read_text())
+        require(failure == {'errorType': 'RuntimeError', 'reason': 'Game did not become healthy', 'daemonOutcomeUnknown': False, 'mutationStarted': True, 'databaseRestored': False}, 'Unexpected failed publication')
+        require(recovered == {'restored': True, 'containerRestarted': True, 'databaseTouched': False, 'externalModulesPreserved': True}, 'Rollback was not verified')
+        ready = ROOT / 'reservation-ready.json'
+        marker = json.loads(ready.read_text())
+        require(not ready.is_symlink() and marker['installManifestSha256'] == sha(ROOT / 'install-manifest.json'), 'Old marker is not bound to the previous payload')
+        ready.unlink()
+        status('reserved_for_republication')
+        wait_for_ready(ROOT, nonce)
+        require(sha(ROOT / 'deploy.py') == bootstrap, 'Reserved installer changed')
+        base = configure(); base.payload()
+        status('publishing_existing_candidate')
+        print(json.dumps(base.publish()), flush=True)
+        status('published'); return
     require('index.html' in old['delta'] and not (ROOT / 'dist-delta').is_symlink(), 'Unexpected staged client directory')
     for name, digest in old['delta'].items():
         require(name == 'index.html' or re.fullmatch(r'assets/[a-zA-Z0-9_-]+\.(?:js|css)', name), 'Foreign staged client file')
@@ -101,12 +133,12 @@ def reserve_release(locks):
     status('published')
 
 def main():
-    require(len(sys.argv) == 2 and sys.argv[1] in ['check', 'build', 'publish', 'release', 'rollback', 'reserve-release'], 'Unexpected operation')
-    if sys.argv[1] == 'reserve-release':
+    require(len(sys.argv) == 2 and sys.argv[1] in ['check', 'build', 'publish', 'release', 'rollback', 'reserve-release', 'reserve-publish'], 'Unexpected operation')
+    if sys.argv[1] in ['reserve-release', 'reserve-publish']:
         locks = []
         def interrupted(number, frame): raise InterruptedError('Reserved deployment interrupted: ' + str(number))
         for number in [signal.SIGTERM, signal.SIGHUP, signal.SIGINT]: signal.signal(number, interrupted)
-        reserve_release(locks); return
+        reserve_release(locks, sys.argv[1] == 'reserve-publish'); return
     base = configure(); base.payload()
     locks = []
     for name in ['/opt/royal-releases/themed-publish.lock', '/opt/royal/.client-presentation-deploy.lock', '/opt/royal-game-modules-state/module.lock']:
