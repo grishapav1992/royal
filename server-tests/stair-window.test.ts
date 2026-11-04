@@ -63,6 +63,8 @@ test('manual window admission verifies height, revision and busy state, then pre
     use();assert.equal(p.hall,'street');assert.equal(p.stairStep,STAIR_WINDOW.return.stairStep);assert.equal(p.stairDirection,-1);assert.equal(p.hallRevision,identity.revision+2);
     assert.deepEqual({x:p.x,y:p.y},STAIR_WINDOW.landing);
     assert.equal(Reflect.get(room,'enterDoor').call(room,client.sessionId),false,'return never auto-enters the roof or card room');
+    assert.equal(p.stairStep,STAIR_WINDOW.landingIndex,'idle settling selects the descending side of the same landing');
+    assert.deepEqual({x:p.x,y:p.y},STAIR_WINDOW.landing);
     handlers.get('inputs')!(client,{revision:identity.revision+1,inputs:[{seq:1,x:0,y:-1,ms:50}]});
     assert.deepEqual({x:p.x,y:p.y},STAIR_WINDOW.landing,'old indoor movement cannot move the return on the stairs');
   }finally{room.onDispose();room.clock.clear();await accounts.logout(session.token);}

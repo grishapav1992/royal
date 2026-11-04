@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_RETURN } from '../src/shared/rooftop';
 import {TOILET,ROOF_TOILET,TOILET_WINDOW,toiletSinkApproaches,toiletCubicleStanding} from '../src/shared/toilet';
 import { projectStreetPoint,StreetView } from '../src/game/streetView';
-import {STAIR_WINDOW} from '../src/shared/stairWindow';
+import {STAIR_WINDOW,atStairWindow} from '../src/shared/stairWindow';
 
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
 async function overview(page: Page, on: boolean) {
@@ -128,6 +128,7 @@ async function allRearInteriors(page:Page){
 
 async function thirdFloorWindow(page:Page,project:string){
   const before=await state(page),balance=await page.locator('#wallet-balance').textContent();
+  const climb=await page.evaluate(()=>(window as any).__roofClimb??[]);
   expect(before.stairStep).toBe(STAIR_WINDOW.landingIndex+1);
   await expect.poll(async()=>(await state(page)).street.rearWindows.entry.available).toBe(true);
   await page.screenshot({path:`../stair-window-${project}-landing.png`});
@@ -152,15 +153,26 @@ async function thirdFloorWindow(page:Page,project:string){
     if(project!=='mobile')await page.keyboard.down('e');
     await page.waitForTimeout(450);expect((await state(page)).hall).toBe('street');
   }finally{if(project!=='mobile')await page.keyboard.up('e');}
-  expect((await state(page)).stairStep).toBe(STAIR_WINDOW.return.stairStep);
+  expect((await state(page)).stairStep).toBe(STAIR_WINDOW.landingIndex);
   expect((await state(page)).stairDirection).toBe(-1);
   expect(Math.hypot((await state(page)).x-STAIR_WINDOW.landing.x,(await state(page)).y-STAIR_WINDOW.landing.y)).toBeLessThan(.1);
   await page.screenshot({path:`../stair-window-${project}-return.png`});
   await page.reload();await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
   await expect.poll(async()=>(await state(page)).online).toBe(true);
-  expect((await state(page)).hall).toBe('street');expect((await state(page)).stairStep).toBe(STAIR_WINDOW.return.stairStep);
+  expect((await state(page)).hall).toBe('street');expect(atStairWindow(await state(page))).toBe(true);
   await expect(page.locator('#wallet-balance')).toHaveText(balance!);
   await noGroundConversation(page);
+  await page.evaluate((climb)=>{
+    (window as any).__roofClimb=climb;
+    const record=()=>{const s=(window as any).royalDemo.getState();(window as any).__roofClimb.push({hall:s.hall,x:s.x,y:s.y});if(s.hall==='street')requestAnimationFrame(record);};requestAnimationFrame(record);
+  },climb);
+  // An idle return belongs to the lower segment. Explicit ascent selects the upper flight.
+  const next=ROOF_STAIR_ROUTE[STAIR_WINDOW.landingIndex+1];
+  if(project==='mobile'){
+    const view=new StreetView();view.side='rear';const a=view.point(await state(page),true),b=view.point(next,true);
+    await clickViewPoint(page,{x:(a.x+b.x)/2,y:(a.y+b.y)/2-8});
+    await expect.poll(async()=>(await state(page)).stairStep,{timeout:10000}).toBe(STAIR_WINDOW.landingIndex+2);
+  }else await keyUntil(page,'ArrowUp',async()=>(await state(page)).stairStep===STAIR_WINDOW.landingIndex+2);
 }
 
 async function keyUntil(page:Page,key:string,condition:()=>Promise<boolean>,timeout=15000){
