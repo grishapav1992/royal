@@ -1,0 +1,59 @@
+{
+  "preservedMainCommit": "6d5ec4e1f9099eae1bb8d4a38d5fc8d1ab4e244f",
+  "measuredAt": "2026-11-04T18:12:58.9884575Z",
+  "exceptions": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flag-collision-audio\\royal",
+      "cleanupCondition": "Use a permitted workspace lifecycle when the primary checkout can be retired.",
+      "reason": "Codex archive_worktree rejected removal because this is the primary checkout. No alternative removal attempted."
+    },
+    {
+      "paths": [
+        "module-dist",
+        "module-build",
+        "artifacts/work/flag-battle",
+        "artifacts/work/flag-collision-audio"
+      ],
+      "cleanupCondition": "Preserve current outputs and rejected targets until permitted cleanup.",
+      "reason": "Earlier automatic approval review rejected recursive cleanup. No retry was made for those targets."
+    }
+  ],
+  "localCleanup": {
+    "files": 95,
+    "target": "C:\\Users\\Aorus\\.codex\\worktrees\\flag-collision-audio\\royal\\artifacts\\work\\flag-collision-audio-release",
+    "removedBytes": 0,
+    "status": "blocked_by_automatic_approval_review",
+    "physicalSpaceReclaimedClaimed": false,
+    "reason": "blocked by policy",
+    "freeAfter": 304955088896,
+    "archives": [
+      {
+        "removed": false,
+        "bytes": 40960,
+        "name": "lock-tests.tar"
+      },
+      {
+        "removed": false,
+        "bytes": 112665,
+        "name": "payload.tgz"
+      }
+    ],
+    "retainedBytes": 12173172,
+    "freeBefore": 305447022592
+  },
+  "serverTemporaryCleanup": {
+    "path": "/tmp/royal-flag-lock-tests-20261104",
+    "status": "removed",
+    "measuredApparentBytes": 88890,
+    "freeBefore": 9751375872,
+    "freeAfter": 9751420928,
+    "physicalFreeSpaceDelta": 45056,
+    "preservedSourceCommit": "1a87fd4c8dfee952ba9e6bc7f0f3a641534a57c8"
+  },
+  "serverRollback": {
+    "path": "/opt/royal-backups/flag-collision-audio-20261104-v1",
+    "status": "preserved",
+    "sourceArchiveBytes": 4800,
+    "persistentDataTouched": false
+  }
+}
