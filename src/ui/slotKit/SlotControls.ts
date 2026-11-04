@@ -1,3 +1,4 @@
+import {canRecoverOperation} from '../operationFeedback';
 import { t as translateText, tr } from '../../i18n/index';
 import {gameAudio} from '../../game/GameAudio';
 import {validGameStake} from '../../shared/gameStakes';
@@ -120,7 +121,7 @@ export class SlotAudioControls {
 export interface SlotTransportState {
   blocked: boolean; active: boolean; live: boolean; dialog: boolean; entered: boolean;
   fast: boolean; autoRemaining: number; bonusRunning: boolean; paidBonus: boolean;
-  pending: boolean; busy: boolean; hidden: boolean; ready: boolean;
+  pending: boolean; busy: boolean; loading?: boolean; hidden: boolean; ready: boolean;
 }
 
 export function updateSlotTransport(root: HTMLElement, prefix: 'lg' | 'cc', state: SlotTransportState) {
@@ -141,6 +142,6 @@ export function updateSlotTransport(root: HTMLElement, prefix: 'lg' | 'cc', stat
   if (prefix === 'cc') pause.hidden = !active;
   for (const id of ['info', 'history', 'refresh']) button(id).disabled = live || state.busy;
   const retry = button('retry');
-  retry.hidden = !state.pending;
+  retry.hidden = !canRecoverOperation(state);
   retry.disabled = !state.ready || live || state.busy || state.hidden;
 }

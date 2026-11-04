@@ -1,4 +1,5 @@
 import {syncStakeSelect} from '../../src/ui/stakeSelection';
+import {canRecoverOperation} from '../../src/ui/operationFeedback';
 import {confirmedPayout} from '../../src/shared/roundPrecision';
 import {DEFAULT_GAME_STAKE, GAME_STAKE_UNITS as CARIBBEAN_LINE_STAKES, validGameStake} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
@@ -281,7 +282,7 @@ export class CaribbeanUI {
     count.setAttribute('aria-label',this.text('Количество автовращений','Autoplay spin count'));
     this.element('.ct-playback').setAttribute('aria-label',this.text('Автокрутка и показ результата','Autoplay and result playback'));
     const retry = this.element<HTMLButtonElement>('[data-ct-action=retry]');
-    retry.hidden = !this.client.pending; retry.disabled = this.client.busy;
+    retry.hidden = !canRecoverOperation(this.client); retry.disabled = this.client.busy;
     retry.textContent = this.text('Проверить тот же ход','Check the same operation');
     this.element('.ct-status').textContent = this.client.error || this.actionError || (!this.client.accountId ? this.text('Войди в зал, чтобы играть.','Sign in to play.')
       : this.client.busy ? this.text('Подтверждаем ход...','Confirming...')
