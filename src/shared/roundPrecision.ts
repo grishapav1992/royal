@@ -32,9 +32,12 @@ export function expansionExactAward(s:{gameId:string;stakeUnits:string;returnedU
  if(v.flags){const f=v.flags;if(f.order.at(-1)!==f.country)return exactAward(0n);const count=f.version===1||f.mode==='classic'?12:f.mode==='expanded'?24:48;return exactAward(stake*BigInt(count)*24n,25n);}
  if(v.templeCascade)return exactAward(stake*BigInt(v.templeCascade.state.totalPoints),20n);
  if(v.caribbean){
-  // Every allowed total stake and paytable factor settles exactly across 1/5/10/20 lines.
   const c=v.caribbean;
-  if(c.version===2&&c.settings.mode!=='normal')return exactAward(BigInt(c.totalPayoutUnits)*BigInt(c.costUnits)*1000000n,stake*BigInt(CARIBBEAN_PROFILE[c.settings.lines as 1|5|10|20].bonusCostPerMillion));
+  if(c.version===2){
+   const points=c.spins.reduce((sum:bigint,spin:any)=>sum+BigInt(spin.frame.factorSum),0n),lines=BigInt(c.settings.lines);
+   if(c.settings.mode!=='normal')return exactAward(points*BigInt(c.costUnits)*1000000n,lines*BigInt(CARIBBEAN_PROFILE[c.settings.lines as 1|5|10|20].bonusCostPerMillion));
+   return exactAward(stake*points,lines);
+  }
   return exactAward(BigInt(c.totalPayoutUnits));
  }
  if(v.neopolis){

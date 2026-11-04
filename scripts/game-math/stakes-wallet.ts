@@ -13,6 +13,8 @@ import {seededRandom} from '../../src/shared/draconaMath';
 // The qualification driver and this child share case names, not wallet accounting.
 // @ts-expect-error The runtime case matrix is a checked JavaScript qualification module.
 import {settingsFor} from './stake-runtime.mjs';
+// @ts-expect-error The qualification case list is checked by the RTP gate.
+import {walletStakes} from './manual-stakes.mjs';
 
 const root=fileURLToPath(new URL('../../',import.meta.url));
 function nextAction(s:any,choice:string){
@@ -60,7 +62,7 @@ async function runWallet(gameId:string,p:any){
   let store=create();await store.ready;
   const operate=(account:string,op:unknown)=>store.operate(account,op,2,true,true,true,true,true,true,true,true,2,4,true,true,2,2,2,true);
   let index=0;
-  for(const choice of p.choices)for(const stake of p.stakes){
+  for(const choice of p.choices)for(const stake of walletStakes(p)){
    const account='precision-'+index++;await db.prepare('INSERT INTO accounts(id) VALUES(?)').run(account);
    await wallet.operate(account,{id:randomUUID(),kind:'deposit',amount:100000});
    const before=await demoBalanceUnits(db,account),id=randomUUID();let last:any;

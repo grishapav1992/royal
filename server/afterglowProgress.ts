@@ -42,6 +42,10 @@ export async function migrateAfterglowProgress(db: PostgresDatabase) {
     'ALTER TABLE demo_afterglow_stake_rounds DROP CONSTRAINT demo_afterglow_stake_rounds_credited_units_check',
     `ALTER TABLE demo_afterglow_stake_rounds ADD CONSTRAINT demo_afterglow_stake_rounds_credited_units_check CHECK(credited_units IN (${allowed.join(',')}))`,
   ]});
+  await applySchemaMigration(db,{id:'afterglow-manual-stakes-v5',statements:[
+    'ALTER TABLE demo_afterglow_stake_rounds DROP CONSTRAINT demo_afterglow_stake_rounds_credited_units_check',
+    `ALTER TABLE demo_afterglow_stake_rounds ADD CONSTRAINT demo_afterglow_stake_rounds_credited_units_check CHECK(credited_units BETWEEN 10 AND 5000 OR credited_units IN (${AFTER_BETS.join(',')}))`,
+  ]});
 }
 
 /** Called only after server settlement validation, in the wallet account transaction. */

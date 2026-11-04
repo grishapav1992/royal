@@ -3,26 +3,26 @@
   "gameId": "royal-plinko",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-11-03T14:48:59.195Z",
-  "completedAt": "2026-11-03T14:49:56.650Z",
+  "startedAt": "2026-11-04T11:05:44.303Z",
+  "completedAt": "2026-11-04T11:06:37.595Z",
   "sourceHashes": {
-    "src/shared/gameStakes.ts": "ed37796de3dfbee550b1705a6a3d55e5c400de78a17ffa0e38d9010e2054b039",
-    "src/shared/roundPrecision.ts": "38713d4db338dabf7ebaf09135d6ed0de015ddf5bea13501893d3a793e3cf581",
+    "src/shared/gameStakes.ts": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b",
+    "src/shared/roundPrecision.ts": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
     "src/shared/casinoExpansion.ts": "ad1474233c750035eecbf54544c9c6f3a6eb9ae47bbe6319703b2383c211100d",
     "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
     "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
     "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
     "server/demoExpansion.ts": "edaa12803beca8288d3595ebb21063ceb9f0bb030fd949adda56f8b78ad53297",
-    "server/demoWallet.ts": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63",
+    "server/demoWallet.ts": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
     "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
     "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
     "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
-    "server/afterglowProgress.ts": "cf38081a14f88c034f1a32af9e99ca7bbd7f56590decd419867469cb2f753a42",
+    "server/afterglowProgress.ts": "4a7f5d07ca6be6afbcec0c5ff2c7d91bb4da82f81438aa35c8a418cc939134b9",
     "src/wallet/ExpansionClient.ts": "bfc97155743dbc78fe9d0e5beb0cb9eb9f3fe7828ec45da13d43d58c86933a36",
     "src/wallet/WalletClient.ts": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
     "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d",
     "scripts/game-math/rtp-stakes-worker.mjs": "f5db2c6be7cc4c68bb07c719eea5ba3db3f0d237d7bf8cd75736c891f91a218d",
-    "server-tests/game-stakes.test.ts": "810c0f42c5137ed0e49b94a796808c6753ab4e204408c773c12176eefc896031",
+    "server-tests/game-stakes.test.ts": "d8fb3859601228535ac49ba2876865f139bf59549d4b77b1f4fb9e3c7a7b8fe1",
     "server-tests/round-precision.test.ts": "d48a631f198636a97db8e70952c600a47b9cb1d04b20ebc6d08cbfa2cd452abb",
     "src/shared/originalGames.ts": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
     "server/games/originals.ts": "a40c038406cf6a7ffbb0fa7b92af2937c40a7012626bc2ab06a232d03c152d45",
@@ -30,11 +30,12 @@
     "src/shared/plinkoPresentation.ts": "7376991045206b1c8e1f35603e0f7984b2a1f50575acfdd90d9c553f4cea8f70",
     "src/ui/volcanicPlinkoModel.ts": "4288d353a9ee0843be86e85a289842b1c6736541eeea14d8428d5bed7bab854a",
     "scripts/game-math/stake-runtime.mjs": "47d762e18c698ab4241a6499497b8f58087132da2489494a2172f60dd0fede61",
-    "scripts/game-math/stakes-wallet.ts": "8871b28142cb30d6848873a676e190f8b55dbaf18c75c3b959c4cd3c85cb0784",
+    "scripts/game-math/stakes-wallet.ts": "5fdd9b03cbc3b1835e9128d4a2d4bb49875f4535bfec34db6a008677a701e141",
     "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
-    "scripts/game-math/rtp-stakes.mjs": "11f11b0604b5e2d7eacb2da89066d700da97bd136478274523edb002986770e7"
+    "scripts/game-math/manual-stakes.mjs": "969131d1de9c2d1744cdd8ff801e745bbb02eb6653466732ba0657a24ee0ad9d",
+    "scripts/game-math/rtp-stakes.mjs": "a885087bc907189f46a1a1dcc54f807733fcf8cbfae818a64a9fe9f2aed6de52"
   },
-  "policySha256": "c43655b13196ccad62fe144eb33bfaadf63f886806f9d03683fb3928d86f3e9f",
+  "policySha256": "97ea8087c0c9769df43f635939818491dc71f611e521c93f3e97d50cc2db2253",
   "method": "full-round-unbiased-cent-policy-v1",
   "precisionLaw": {
     "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
@@ -8382,11 +8383,238 @@
       "journalBalanced": true
     },
     "gameId": "royal-plinko",
-    "cases": 324,
+    "cases": 612,
     "freeContinuationChecks": 0,
-    "replayAndRestartCases": 324,
+    "replayAndRestartCases": 612,
     "oneDebitAndCredit": true,
     "clientVerified": true,
-    "sha256": "48d2029e7883b44c6b13f390e0d3ab7d87866d22e2dcae3750ad37309a8c4a51"
+    "sha256": "ed75fd18178cbc1aa8623eeed27c22d22308d5e419e413ba0dc6b1844e8ad8b3"
+  },
+  "manualStakes": {
+    "range": {
+      "minimumCents": 10,
+      "maximumCents": 5000,
+      "stepCents": 1
+    },
+    "checks": 179676,
+    "cases": [
+      {
+        "choice": "8:easy",
+        "seed": 6371291,
+        "denominations": 4991,
+        "sha256": "0b89097c03b4175c09f64566f1925a4cf3a170dd2d7d0e82410a796dfd6faad0"
+      },
+      {
+        "choice": "8:medium",
+        "seed": 6379210,
+        "denominations": 4991,
+        "sha256": "e59d1de6c80ce00a2dd8e8ee6c480f1ac4cb998916c6ea3f1dcc43d19ca4b904"
+      },
+      {
+        "choice": "8:hard",
+        "seed": 6387129,
+        "denominations": 4991,
+        "sha256": "f4750b74c149a31976ca11d3e5ac228501878bd241f2216dd3d4595e8e46d85e"
+      },
+      {
+        "choice": "8:expert",
+        "seed": 6395048,
+        "denominations": 4991,
+        "sha256": "612754533d7d1ca1779937572b002b5a552918953c8403440ffeb9c309ecfdd8"
+      },
+      {
+        "choice": "9:easy",
+        "seed": 6402967,
+        "denominations": 4991,
+        "sha256": "7a2c3dbc9ea62904820012788035ea46a636c867b05f0319cba066628c9a0f22"
+      },
+      {
+        "choice": "9:medium",
+        "seed": 6410886,
+        "denominations": 4991,
+        "sha256": "0b89097c03b4175c09f64566f1925a4cf3a170dd2d7d0e82410a796dfd6faad0"
+      },
+      {
+        "choice": "9:hard",
+        "seed": 6418805,
+        "denominations": 4991,
+        "sha256": "f4750b74c149a31976ca11d3e5ac228501878bd241f2216dd3d4595e8e46d85e"
+      },
+      {
+        "choice": "9:expert",
+        "seed": 6426724,
+        "denominations": 4991,
+        "sha256": "5cb22f957695fb2e6b10ba59b8f6cb4dd491d8f19e79a5d889316186f4870440"
+      },
+      {
+        "choice": "10:easy",
+        "seed": 6434643,
+        "denominations": 4991,
+        "sha256": "638667ae92625380777925dd70d43ebf3811a05f8250d05e7b7989a3113aad9d"
+      },
+      {
+        "choice": "10:medium",
+        "seed": 6442562,
+        "denominations": 4991,
+        "sha256": "8e77f3f7c1dc6deb181da7131f55415647fe9b4b7851c2f51ecd124251b1e3e0"
+      },
+      {
+        "choice": "10:hard",
+        "seed": 6450481,
+        "denominations": 4991,
+        "sha256": "67ee099c49d42b62c676a974972ee82763e26487157b90b0726e6c1851d2471a"
+      },
+      {
+        "choice": "10:expert",
+        "seed": 6458400,
+        "denominations": 4991,
+        "sha256": "e17dc98eda11502c3ef3d36b941ac1e3396f11bea993d260819689103a257186"
+      },
+      {
+        "choice": "11:easy",
+        "seed": 6466319,
+        "denominations": 4991,
+        "sha256": "8e9fc8428279176dcd45ac1d63f1c2bfc0dc71ffe35feda95f0c91e396169ffa"
+      },
+      {
+        "choice": "11:medium",
+        "seed": 6474238,
+        "denominations": 4991,
+        "sha256": "baeebfe6722c1d94cb9d6464a3fb451c5dba0c26237c2e1fdda5309c90a7dea5"
+      },
+      {
+        "choice": "11:hard",
+        "seed": 6482157,
+        "denominations": 4991,
+        "sha256": "29b5b75db9e1b1d6edab949faefd8a846c1706a6b123e32c0ae19842852271b7"
+      },
+      {
+        "choice": "11:expert",
+        "seed": 6490076,
+        "denominations": 4991,
+        "sha256": "9edafa7b05b6ae0c2dcb66ea2f16f4f2ba1964c3c7826401296b0fcc09396fcf"
+      },
+      {
+        "choice": "12:easy",
+        "seed": 6497995,
+        "denominations": 4991,
+        "sha256": "638667ae92625380777925dd70d43ebf3811a05f8250d05e7b7989a3113aad9d"
+      },
+      {
+        "choice": "12:medium",
+        "seed": 6505914,
+        "denominations": 4991,
+        "sha256": "fbab3bb0d5d77debe8df15133c9aaa9924fc72f5e40b11d0d53cc96f7594f663"
+      },
+      {
+        "choice": "12:hard",
+        "seed": 6513833,
+        "denominations": 4991,
+        "sha256": "dd1f6ab8f74b445444c195cdf423d72785135233af77eea5077a3aad889a596f"
+      },
+      {
+        "choice": "12:expert",
+        "seed": 6521752,
+        "denominations": 4991,
+        "sha256": "f44d4e3c8273800cde773d86bf7b0659ae51a2dd1914dbc622b15925401324e6"
+      },
+      {
+        "choice": "13:easy",
+        "seed": 6529671,
+        "denominations": 4991,
+        "sha256": "19b1a2b72fbd0585501ad0910ea6d0e7ef8a2b46e59b3926821fc39286835738"
+      },
+      {
+        "choice": "13:medium",
+        "seed": 6537590,
+        "denominations": 4991,
+        "sha256": "99449fffd0036057bec39fd7f4814caea00570993a10beeecb3f463ab65c27c8"
+      },
+      {
+        "choice": "13:hard",
+        "seed": 6545509,
+        "denominations": 4991,
+        "sha256": "cb3adf8cc239ab56295b0dad71a9a20b17acc8400ce1bb7714ffe7a0e707a2e0"
+      },
+      {
+        "choice": "13:expert",
+        "seed": 6553428,
+        "denominations": 4991,
+        "sha256": "e7bb1d67e783e40875584a23ccf004333abf1dd7b54ecbe8fd61040e00ca0632"
+      },
+      {
+        "choice": "14:easy",
+        "seed": 6561347,
+        "denominations": 4991,
+        "sha256": "638667ae92625380777925dd70d43ebf3811a05f8250d05e7b7989a3113aad9d"
+      },
+      {
+        "choice": "14:medium",
+        "seed": 6569266,
+        "denominations": 4991,
+        "sha256": "638667ae92625380777925dd70d43ebf3811a05f8250d05e7b7989a3113aad9d"
+      },
+      {
+        "choice": "14:hard",
+        "seed": 6577185,
+        "denominations": 4991,
+        "sha256": "5ba1d53050462399b845141bb8c8328ba1bfac3fc3b1106562c1533a5a1af177"
+      },
+      {
+        "choice": "14:expert",
+        "seed": 6585104,
+        "denominations": 4991,
+        "sha256": "cb3adf8cc239ab56295b0dad71a9a20b17acc8400ce1bb7714ffe7a0e707a2e0"
+      },
+      {
+        "choice": "15:easy",
+        "seed": 6593023,
+        "denominations": 4991,
+        "sha256": "19b1a2b72fbd0585501ad0910ea6d0e7ef8a2b46e59b3926821fc39286835738"
+      },
+      {
+        "choice": "15:medium",
+        "seed": 6600942,
+        "denominations": 4991,
+        "sha256": "cd8f7882f080765dae576970b3903e6f1770dd84ae15b0a49ea13842f733a8ab"
+      },
+      {
+        "choice": "15:hard",
+        "seed": 6608861,
+        "denominations": 4991,
+        "sha256": "44a9710f1543effa28faa7b31bb1292b7500bc55a35ce25fed226793560c0c84"
+      },
+      {
+        "choice": "15:expert",
+        "seed": 6616780,
+        "denominations": 4991,
+        "sha256": "9edafa7b05b6ae0c2dcb66ea2f16f4f2ba1964c3c7826401296b0fcc09396fcf"
+      },
+      {
+        "choice": "16:easy",
+        "seed": 6624699,
+        "denominations": 4991,
+        "sha256": "ce66c0fec89d6b8b9aaebd4ab402a92899ebbc1a9437dfb51ea2ebae521d726d"
+      },
+      {
+        "choice": "16:medium",
+        "seed": 6632618,
+        "denominations": 4991,
+        "sha256": "0b89097c03b4175c09f64566f1925a4cf3a170dd2d7d0e82410a796dfd6faad0"
+      },
+      {
+        "choice": "16:hard",
+        "seed": 6640537,
+        "denominations": 4991,
+        "sha256": "950b988280142966f347ac99ecfb8858ae12786fc24f603cc61b766e13d440c6"
+      },
+      {
+        "choice": "16:expert",
+        "seed": 6648456,
+        "denominations": 4991,
+        "sha256": "8c076af12c6bf3bb0b363803ea6ef9791301244ebc8d3ad37fa0f6b819652384"
+      }
+    ],
+    "interpretation": "Exhaustive accepted-cent runtime replay per allowed mode or choice. The reviewed stake-independent latent full-round model and exact rational final-ticket identity apply to every accepted cent. Bought Caribbean rounds normalize to the actual charged integer price. These replays are compatibility and scaling checks, not a statistical RTP estimate."
   }
 }

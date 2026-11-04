@@ -14,7 +14,8 @@ test('one exact denomination list starts at ten cents and rejects malformed mone
  }
  for(const v of [null,0,10,NaN,'0','1','9','10.0','010','1e1','10000'])assert(!validGameStake(v));
  for(const v of [null,'0.1',0,0.01,0.09,0.1000000001,NaN,Infinity,100])assert(!validGameBet(v));
- for(const id of ['royal-coins','royal-fruits','studio-wild-nudge','flag-tote','github-tower','not-a-game'])assert(!usesGameStakes(id));
+ for(const id of ['royal-coins','royal-fruits','flag-tote','github-tower','not-a-game'])assert(!usesGameStakes(id));
+ assert(usesGameStakes('studio-wild-nudge'));
 });
 
 test('roulette and plinko settle the minimum stake in integer cents',()=>{

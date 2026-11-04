@@ -79,16 +79,27 @@ function createGuard(scene: Phaser.Scene) {
             if(looking){elbowX=37;elbowY=-10;handX=39;handY=-47;}
           } else c.rotate(sign*step*24*Math.PI/180);
           const armSkin=near?skin:'#754a38',length=Math.hypot(elbowX,elbowY);
-          const nx=elbowY/length,ny=-elbowX/length,sleeveLength=Math.min(14,length*.72);
+          const sleeveLength=Math.min(14,length*.72);
           const sleeveX=elbowX/length*sleeveLength,sleeveY=elbowY/length*sleeveLength;
-          // A continuous forearm joins the sleeve, elbow and palm in every gesture.
-          c.beginPath();c.moveTo(sleeveX,sleeveY);c.lineTo(elbowX,elbowY);c.lineTo(handX,handY);
-          c.strokeStyle=ink;c.lineWidth=16;c.stroke();c.strokeStyle=armSkin;c.lineWidth=14;c.stroke();
-          poly([nx*11,ny*11,-nx*11,-ny*11,sleeveX-nx*9,sleeveY-ny*9,sleeveX+nx*9,sleeveY+ny*9],near?shirt:'#1b1d25');
-          oval(handX,handY,looking&&near?9:7.5,7.5,armSkin);
+          const handAngle=Math.atan2(handY-elbowY,handX-elbowX)-Math.PI/2;
+          // Paint the whole outer contour before the skin, leaving no seam at the wrist.
+          for(const outline of [true,false]) {
+            const edge=outline?.8:0,color=outline?ink:armSkin;
+            c.beginPath();c.moveTo(sleeveX,sleeveY);c.lineTo(elbowX,elbowY);c.lineTo(handX,handY);
+            c.strokeStyle=color;c.lineWidth=outline?15:13;c.stroke();
+            c.beginPath();c.ellipse(handX,handY,(fist&&near?7:6)+edge,(fist&&near?7:8.5)+edge,handAngle,0,Math.PI*2);
+            c.fillStyle=color;c.fill();
+            if(pointing&&near){c.beginPath();c.roundRect(handX-2-edge,handY-20-edge,5+edge*2,17+edge*2,2.5+edge);c.fill();}
+          }
+          // The rounded sleeve merges into the shirt; only its cuff has a visible edge.
+          c.save();c.rotate(Math.atan2(elbowY,elbowX)-Math.PI/2);
+          c.beginPath();c.moveTo(-10,-2);c.bezierCurveTo(-9,-10,5,-11,10,-3);
+          c.quadraticCurveTo(12,5,8,sleeveLength+1);c.quadraticCurveTo(0,sleeveLength+3,-8,sleeveLength+1);
+          c.quadraticCurveTo(-11,7,-10,-2);c.closePath();c.fillStyle=near?shirt:'#1b1d25';c.fill();
+          c.beginPath();c.moveTo(-8,sleeveLength);c.quadraticCurveTo(0,sleeveLength+2,8,sleeveLength);
+          c.strokeStyle='#151720';c.lineWidth=.8;c.stroke();c.restore();
           if(fist&&near){for(let i=-1;i<=1;i++)line(handX+i*3,handY-4,handX+i*3,handY-1,'#563729',1);line(handX-5,handY+3,handX+4,handY+3,'#563729',1);}
           else {line(handX+4,handY,handX+2,handY+3,'#634033',1);line(handX-2,handY+3,handX-2,handY+5,'#634033',.8);}
-          if(pointing&&near){c.beginPath();c.roundRect(handX-2,handY-20,5,17,2.5);fill(skin);}
           c.restore();return;
         }
         if(near && (holding||pointing||throwing||talking||looking||frame===25||fist)) {
@@ -129,15 +140,44 @@ function createGuard(scene: Phaser.Scene) {
       }
       c.fillStyle='#131620';c.fillRect(-bodyWidth+3,111,bodyWidth*2-6,8);
       c.fillStyle='#d9ba61';c.fillRect(side?17:-6,111,side?7:12,9);c.fillStyle='#171a23';c.fillRect(side?19:-3,113,side?3:6,5);
-      // Linked gold chain follows the collar, with a narrow perspective in profile.
-      c.save();if(side){c.translate(10,0);c.scale(.62,1);}
-      c.beginPath();c.moveTo(-20,69);c.quadraticCurveTo(0,back?80:119,20,69);
-      c.strokeStyle='#72501c';c.lineWidth=7;c.stroke();
-      c.strokeStyle='#eeb52f';c.lineWidth=4.5;c.stroke();
-      for(let i=0;i<=14;i++){
-        const t=i/14,x=-20+40*t,y=69+2*t*(1-t)*(back?11:50);
-        c.beginPath();c.ellipse(x,y,2.5,1.5,Math.atan2(2*(1-2*t)*(back?11:50),40),0,Math.PI*2);
-        c.strokeStyle=i%2?'#fff0a1':'#ae7420';c.lineWidth=1.1;c.stroke();
+      c.save();
+      if(side) {
+        // The chain wraps behind the neck and shoulder before draping over the chest.
+        const points: {x:number;y:number;rear:boolean}[]=[];
+        for(const [curve,[x0,y0,cx,cy,x1,y1]] of [[-12,61,-10,81,15,89],[15,89,21,92,22,86],[22,86,24,77,15,69]].entries()) {
+          for(let i=points.length?1:0;i<=24;i++) {
+            const t=i/24,s=1-t;
+            points.push({x:s*s*x0+2*s*t*cx+t*t*x1,y:s*s*y0+2*s*t*cy+t*t*y1,rear:curve===2});
+          }
+        }
+        c.beginPath();c.moveTo(points[0].x,points[0].y);
+        for(const p of points.slice(1))c.lineTo(p.x,p.y);
+        c.strokeStyle='#67461f';c.lineWidth=1.5;c.stroke();
+        // Even spacing keeps the links distinct around the bottom of the loop.
+        let next=0,link=0;
+        for(let i=1;i<points.length;i++) {
+          const a=points[i-1],b=points[i],dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy);
+          while(next<=length) {
+            const t=next/length,minor=b.rear ? .6 : link%2 ? .75 : 1.2;
+            c.save();c.translate(a.x+dx*t,a.y+dy*t);c.rotate(Math.atan2(dy,dx));
+            c.beginPath();c.ellipse(0,0,2.25,minor,0,0,Math.PI*2);
+            c.strokeStyle='#80551f';c.lineWidth=b.rear?1.3:1.6;c.stroke();
+            c.strokeStyle=b.rear?'#af7c2f':link%2?'#c18b30':'#e0af4d';c.lineWidth=b.rear?.85:1;c.stroke();
+            c.beginPath();c.ellipse(0,0,2.25,minor,0,Math.PI*1.08,Math.PI*1.7);
+            c.strokeStyle=b.rear?'#d0aa61':'#f0d483';c.lineWidth=.6;c.stroke();c.restore();
+            next+=3.6;link++;
+          }
+          next-=length;
+        }
+      } else {
+        c.beginPath();c.moveTo(-20,69);c.quadraticCurveTo(0,back?80:119,20,69);
+        c.strokeStyle='#72501c';c.lineWidth=7;c.stroke();
+        c.strokeStyle='#eeb52f';c.lineWidth=4.5;c.stroke();
+        for(let i=0;i<=14;i++){
+          const t=i/14,x=-20+40*t,y=69+2*t*(1-t)*(back?11:50);
+          c.beginPath();c.ellipse(x,y,2.5,1.5,Math.atan2(2*(1-2*t)*(back?11:50),40),0,Math.PI*2);
+          c.strokeStyle=i%2?'#fff0a1':'#ae7420';c.lineWidth=1.1;c.stroke();
+        }
       }
       c.restore();
       if(!side)arm(true);

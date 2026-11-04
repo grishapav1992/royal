@@ -3,13 +3,13 @@
   "gameId": "flag-tote",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-10-31T21:11:45.306Z",
-  "completedAt": "2026-10-31T21:11:49.820Z",
+  "startedAt": "2026-11-04T11:04:51.930Z",
+  "completedAt": "2026-11-04T11:04:55.089Z",
   "sourceHashes": {
     "src/shared/flagTote.ts": "98c84c8e3de49e97fde4097939fb2b42acc1ea912b09e875af80cd9597322619",
     "server/flagTote.ts": "3484afadaa02475db78d57dc540e405e87412063eed2b35bb7ff1c81ec891707",
     "server/flagToteRoutes.ts": "a2c478f90b8c4ebbf155fca224965bc1b5b3c119bcc5324bc4958bab77f81b58",
-    "server/demoWallet.ts": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63",
+    "server/demoWallet.ts": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
     "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
     "server/database.ts": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8",
     "src/wallet/FlagToteClient.ts": "676ad2de6288d1d3e713e267d74d9a96faa8b3238900287661553032356e90ad",
@@ -269,7 +269,7 @@
     "tests": 9,
     "passed": 9,
     "failed": 0,
-    "sha256": "ff32741010aee39af2c18a5cd6c77ef9bfa1e84ae9a4d611fb096ec53fda4722",
+    "sha256": "f680bef63a3a93f627e9aec4bc4308fe41ea415e809108bb0aa54b5d036bc401",
     "scope": "Real common wallet: acceptance, fee, conservation, proportional return, rounding, refunds, ownership, replay, cutoff after lock, restart, capacity, invalid entropy rollback."
   }
 }
