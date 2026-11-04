@@ -22,7 +22,10 @@ for(const [file,digest]of Object.entries(scope.expectedSources)){
   const bytes=(host.metadata.files[file]?host:backend).read(file);assert.equal(hash(bytes),digest);changed[file]=write('source/'+file,bytes);
 }
 for(const [file,digest]of Object.entries(scope.evidenceSources)){
-  const bytes=execFileSync('git',['show',release.sourceCommit+':'+file],{maxBuffer:64*1024**2});assert.equal(hash(bytes),digest);changed[file]=write('source/'+file,bytes);
+  const origin=scope.evidenceOrigins?.[file]??{commit:release.sourceCommit,path:file};
+  assert.equal(origin.path,file);assert(/^[a-f0-9]{40}$/.test(origin.commit));
+  execFileSync('git',['merge-base','--is-ancestor',origin.commit,release.sourceCommit]);
+  const bytes=execFileSync('git',['show',origin.commit+':'+origin.path],{maxBuffer:64*1024**2});assert.equal(hash(bytes),digest);changed[file]=write('source/'+file,bytes);
 }
 const delta={},serverDelta={};
 for(const [file,digest]of Object.entries(release.files))if(file.startsWith('dist/')&&before.program[file]!==digest){const relative=file.slice(5);assert(relative==='index.html'||/^assets\/[\w-]+\.(js|css)$/.test(relative));delta[relative]=write('dist-delta/'+relative,fs.readFileSync(file));assert.equal(delta[relative],digest);}

@@ -77,6 +77,9 @@ def payload(b):
     require(sha(ROOT/'production-round-compatibility.json')==m['compatibilitySha256'],'Compatibility evidence changed')
     require(m['support']['publisher.py']==m['before']['source']['scripts/game-module-release.py'],'Publisher differs from production')
 
+def compatible_recovery_required(candidate_attempted, public_open):
+    return bool(candidate_attempted or public_open)
+
 def financial_backup(b):
     target=b.BACKUP/'financial.dump'
     proof_path=ROOT/'financial-backup.json'
@@ -97,7 +100,7 @@ def configure():
     for name,digest in m['support'].items():require(not (ROOT/name).is_symlink() and sha(ROOT/name)==digest,'Support changed: '+name)
     guard=load('manual_application_overlay',ROOT/'application-overlay.py')
     guard.NAME,guard.ROOT,guard.payload=NAME,ROOT,payload
-    b=guard.configure(ROOT);b.manual_installed=[];b.manual_restored=False;b.manual_rolling_back=False;b.manual_public_open=False
+    b=guard.configure(ROOT);b.manual_installed=[];b.manual_restored=False;b.manual_rolling_back=False;b.manual_public_open=False;b.manual_candidate_attempted=False
     original_gate=b.quiet_gate
     def quiet_gate(minimum=None):
         gate=original_gate(minimum);release=gate.release
@@ -134,6 +137,7 @@ def configure():
                     root='/opt/royal-game-modules',state=str(b.STATE),expected_sha=package['previousPointerSha256']))
                 require(result['verified'] and result['activeSha256']==package['pointerSha256'],'Published pointer differs')
                 b.manual_installed.append(game);b.write('module-publication.json',{'installed':b.manual_installed,'verified':True})
+        if not b.manual_rolling_back:b.manual_candidate_attempted=True
         return original_compose(gate)
     b.compose=compose
     original_publish=b.publish
@@ -144,7 +148,7 @@ def configure():
     original_rollback=b.rollback
     def rollback():
         # New accepted amounts need the compatible wallet even during recovery.
-        require(not b.manual_public_open,'Public traffic has opened; preserve the compatible wallet and perform reviewed recovery')
+        require(not compatible_recovery_required(b.manual_candidate_attempted,b.manual_public_open),'Candidate startup was attempted; preserve the compatible wallet and perform reviewed recovery')
         b.manual_rolling_back=True
         try:
             result=original_rollback()
