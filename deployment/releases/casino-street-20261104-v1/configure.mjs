@@ -6,7 +6,7 @@ import {createHash} from 'node:crypto';
 import {projectHostSource} from '../../../scripts/build-host-projection.mjs';
 
 const folder='deployment/releases/casino-street-20261104-v1';
-const [beforeFile,productionFile,featureRevision='HEAD',baseRevision='origin/main',reviewFolder]=process.argv.slice(2);
+const [beforeFile,productionFile,featureRevision='HEAD',baseRevision='origin/main',reviewFolder,backendManifestFile]=process.argv.slice(2);
 assert(beforeFile&&productionFile&&reviewFolder,'Specify baseline, production manifest, feature, base and task-owned review folder');
 const gitBinary=process.env.ROYAL_GIT_BINARY||'git';
 const git=(...args)=>execFileSync(gitBinary,args,{maxBuffer:64*1024**2});
@@ -15,6 +15,13 @@ const canonical=b=>Buffer.from(b.toString().replace(/\r\n/g,'\n'));
 const before=JSON.parse(fs.readFileSync(beforeFile)),production=JSON.parse(fs.readFileSync(productionFile));
 assert.equal(production.sourceCommit,before.sourceCommit);
 assert.deepEqual(before.program,before.preparedProgram);assert.equal(before.container.image,before.preparedImage);assert.equal(before.container.health,'healthy');
+if(!production.backendProjection){
+  assert(backendManifestFile,'The retained compiled backend needs its original manifest');
+  const retained=JSON.parse(fs.readFileSync(backendManifestFile));
+  assert.equal(retained.files['dist-server/index.js'],before.program['dist-server/index.js'],'Retained backend is no longer published');
+  assert.equal(retained.backendProjection.output.sha256,before.program['dist-server/index.js']);
+  production.backendProjection=retained.backendProjection;
+}
 const feature=git('rev-parse',featureRevision).toString().trim(),base=git('rev-parse',baseRevision).toString().trim();
 git('merge-base','--is-ancestor',base,feature);
 const sources=git('diff','--name-only',base,feature,'--','src','server').toString().trim().split('\n').filter(Boolean);

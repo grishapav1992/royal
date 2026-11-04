@@ -1,8 +1,8 @@
 {
   "release": "casino-street-20261104-v1",
-  "productionCommit": "97d9eac8e811db0389002ce697865782f9707f41",
-  "featureCommit": "e187fdb928185622bb8793efa7ea269c8c067a85",
-  "featureBase": "dd60ce5ddb54bffb45de8165432fc43649d948d7",
+  "productionCommit": "315fda47301591b5b1ed05806781fcc603cffdcb",
+  "featureCommit": "64cc6a77ccc5f6de6a81c79c51958f010f9efb37",
+  "featureBase": "6f7cae90e75e8897c41ade8b5339f4100788e9a1",
   "changedSources": [
     "server/LobbyRoom.ts",
     "server/guardRoutine.ts",
@@ -71,7 +71,7 @@
     "src/game/StreetResidentPatrols.ts": "a1e31f7052d2abf6ad20b3df9d6861f6a17de5b74bcf6d83162ee10ed85e4bec",
     "src/game/StreetResidents.ts": "4797526eac834cc13065cec19b031e624bdad93a01236ab02c0ecfbb421c7b3f",
     "src/game/ToiletRenderer.ts": "4082e1bb397687b94398f687c39612095c1d83fd7989d5be04e29a2f207f7207",
-    "src/game/avatarArt.ts": "23e3d8fbd3949e35fc5e0871db74c7f7010d3619250c48a4fab815bac359cb8c",
+    "src/game/avatarArt.ts": "b35ca3f762e107409a051481b16bbbabc787d0bd48a9634733254c64cac694a5",
     "src/game/frontWindowInteriors.ts": "e8837d2cc1ac40433702525cf00637c4b46d7041d27084e4104edea75221c4cf",
     "src/game/frontWindowLife.ts": "4701fcc3131680c0ae8b2e568d5832b61b0c8cc5fe21b315abbafbfcb7e2673c",
     "src/game/rearWindowArt.ts": "7a783c13fc989f0c48a3ae0d860767713a1e1543c3beb5aabe8fa4df24a50c82",
@@ -124,16 +124,6 @@
       "kind": "host",
       "path": "src/game/RoomScene.ts",
       "reason": "Restore stair progress without adding the unpublished bar-attention approach."
-    },
-    {
-      "kind": "host",
-      "path": "src/game/avatarArt.ts",
-      "reason": "Keep the published frontal drawing; its separate animation release is outside this scope."
-    },
-    {
-      "kind": "host",
-      "path": "src/game/avatarArt.ts",
-      "reason": "Add the tourist camera grip layer while retaining the published arm drawing."
     },
     {
       "kind": "host",

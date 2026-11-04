@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "productionCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+  "productionCommit": "315fda47301591b5b1ed05806781fcc603cffdcb",
   "entries": [
     "server/index.ts"
   ],
@@ -1806,25 +1806,25 @@
       "sha256": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f"
     },
     "src/shared/rooftop.ts": {
-      "commit": "e187fdb928185622bb8793efa7ea269c8c067a85",
+      "commit": "64cc6a77ccc5f6de6a81c79c51958f010f9efb37",
       "path": "src/shared/rooftop.ts",
       "baseSha256": "fe32902b5474e7c9600d67aeb3afd976985e794f65ec651195993ea5c0b0badc",
       "sha256": "fe32902b5474e7c9600d67aeb3afd976985e794f65ec651195993ea5c0b0badc"
     },
     "src/shared/stairWindow.ts": {
-      "commit": "e187fdb928185622bb8793efa7ea269c8c067a85",
+      "commit": "64cc6a77ccc5f6de6a81c79c51958f010f9efb37",
       "path": "src/shared/stairWindow.ts",
       "baseSha256": "67b2561c1be14bac242523acbcb0605ce440b318c47846c607658b9a0aacabe3",
       "sha256": "67b2561c1be14bac242523acbcb0605ce440b318c47846c607658b9a0aacabe3"
     },
     "src/shared/street.ts": {
-      "commit": "e187fdb928185622bb8793efa7ea269c8c067a85",
+      "commit": "64cc6a77ccc5f6de6a81c79c51958f010f9efb37",
       "path": "src/shared/street.ts",
       "baseSha256": "15112fd6f1fd4abc5483f042f6a11d1fd555040b17f92966d56bf49c764cea51",
       "sha256": "15112fd6f1fd4abc5483f042f6a11d1fd555040b17f92966d56bf49c764cea51"
     },
     "src/shared/toilet.ts": {
-      "commit": "e187fdb928185622bb8793efa7ea269c8c067a85",
+      "commit": "64cc6a77ccc5f6de6a81c79c51958f010f9efb37",
       "path": "src/shared/toilet.ts",
       "baseSha256": "aa95e3e05639d9e447b66d0dea92d05410335b8774af9c383105548b23afec37",
       "sha256": "aa95e3e05639d9e447b66d0dea92d05410335b8774af9c383105548b23afec37"
