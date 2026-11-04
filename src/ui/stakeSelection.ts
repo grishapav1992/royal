@@ -25,7 +25,7 @@ function fieldFor(select: HTMLSelectElement, scale: number): StakeField {
   const existing = fields.get(select);
   if (existing) return existing;
   const doc = select.ownerDocument, en = doc.documentElement.lang.startsWith('en');
-  const wrapper = doc.createElement('span'), input = doc.createElement('input');
+  const wrapper = doc.createElement('span'), input = doc.createElement('input'), caret = doc.createElement('span');
   wrapper.dataset.stakeField = 'true';
   wrapper.style.cssText = 'display:inline-flex;align-items:stretch;min-width:76px;max-width:100%;position:relative;vertical-align:middle;';
   const style = doc.defaultView!.getComputedStyle(select);
@@ -39,12 +39,15 @@ function fieldFor(select: HTMLSelectElement, scale: number): StakeField {
   input.autocomplete = 'off'; input.spellcheck = false; input.dataset.manualStake = 'true';
   input.setAttribute('aria-label', select.getAttribute('aria-label') || (en ? 'Total stake, USDT' : 'Общая ставка, USDT'));
   input.title = en ? '0.10 to 50.00 USDT, in steps of 0.01' : 'От 0,10 до 50,00 USDT с шагом 0,01';
-  input.style.cssText = 'box-sizing:border-box;flex:1 1 0;min-width:0;width:0;margin:0;padding:4px 6px;color:inherit;background:transparent;border:1px solid transparent;border-radius:inherit;';
+  input.style.cssText = 'box-sizing:border-box;flex:1 1 0;min-width:0;width:0;margin:0;padding:4px 2px;color:inherit;background:transparent;border:1px solid transparent;border-radius:inherit;';
   input.style.font = style.font; input.style.color = style.color;
-  select.before(wrapper); wrapper.append(input, select);
+  if(select.id){input.id=select.id+'-manual';for(const label of Array.from(select.labels??[]))if(label.htmlFor===select.id)label.htmlFor=input.id;}
+  caret.textContent='▾';caret.setAttribute('aria-hidden','true');
+  caret.style.cssText='position:absolute;right:2px;top:50%;transform:translateY(-50%);width:20px;text-align:center;pointer-events:none;border-radius:3px;';caret.style.color=style.color;
+  select.before(wrapper); wrapper.append(input, select, caret);
   select.style.setProperty('flex', '0 0 24px'); select.style.setProperty('width', '24px');
   select.style.setProperty('min-width', '0'); select.style.setProperty('padding-inline', '0');
-  select.style.setProperty('position','static');select.style.setProperty('opacity','1');
+  select.style.setProperty('position','static');select.style.setProperty('opacity','0');
   select.style.setProperty('inset','auto');select.style.setProperty('height','auto');
   select.setAttribute('aria-label', en ? 'Quick stakes' : 'Быстрый выбор ставки');
   const field: StakeField = {input, current: ''}; fields.set(select, field);
@@ -66,8 +69,11 @@ function fieldFor(select: HTMLSelectElement, scale: number): StakeField {
     input.setCustomValidity(''); input.setAttribute('aria-invalid', 'false'); input.style.borderColor = 'transparent';
     input.value = (Number(select.value) / scale).toFixed(2);
   });
+  select.addEventListener('focus',()=>{caret.style.outline='2px solid currentColor';});
+  select.addEventListener('blur',()=>{caret.style.outline='';});
   input.addEventListener('blur', () => { if (input.checkValidity()) input.value = (Number(select.value) / scale).toFixed(2); });
-  const root = select.closest<HTMLElement>('#mini-game') ?? doc.body;
+  // A game can move this control into a settings dialog in the same document.
+  const root = doc.body;
   if (!guarded.has(root)) {
     guarded.add(root);
     root.addEventListener('click', event => {
@@ -76,7 +82,8 @@ function fieldFor(select: HTMLSelectElement, scale: number): StakeField {
       }
     }, true);
     root.addEventListener('keydown', event => {
-      if (event.code === 'Space' && !(event.target instanceof doc.defaultView!.HTMLInputElement) && !validStakeDraft(root, true)) {
+      if (event.code === 'Space' && !(event.target instanceof doc.defaultView!.HTMLInputElement)
+        && !(event.target instanceof doc.defaultView!.HTMLSelectElement) && !validStakeDraft(root, true)) {
         event.preventDefault(); event.stopImmediatePropagation();
       }
     }, true);

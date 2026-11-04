@@ -20,6 +20,7 @@ test('manual field preserves drafts, validates before play, locks accepted stake
     await page.locator('button').click();assert.equal(await page.evaluate(()=>window.clicks),0);
     await input.fill('2,35');assert.equal(await page.evaluate(()=>window.value),'235');
     await page.locator('button').click();assert.equal(await page.evaluate(()=>window.clicks),1);
+    await page.evaluate(()=>document.body.append(document.querySelector('[data-stake-field]')));
     for(const invalid of ['','0.09','50.01','1e1','1.001']){await input.fill(invalid);await page.locator('button').click();assert.equal(await page.evaluate(()=>window.clicks),1,invalid);}
     await page.locator('select').focus();await page.locator('select').selectOption('20');assert.equal(await input.inputValue(),'0.20');
     await input.fill('0.15');await page.locator('button').click();assert.equal(await page.evaluate(()=>window.value),'15');

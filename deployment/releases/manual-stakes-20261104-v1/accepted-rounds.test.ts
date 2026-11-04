@@ -86,9 +86,9 @@ test('actual production rounds resume and replay unchanged through the projected
 test('Star Spin accepts a manually entered amount and recovers the same operation',async()=>{
  const c=await pvpFixture();try{
   await c.source.ingest(block(102,'1000000000000',c.config.source.addresses.find(x=>x.userId==='reserve')!.address));await c.ledger.sync(c.source,await c.reconciliation());
-  const op={id:randomUUID(),gameId:'studio-wild-nudge',action:'start',stakeUnits:'15',stakePolicyVersion:1,settings:{wildNudge:{mode:'normal'}}},command:any={path:'/expansion',method:'POST',body:op,query:{},flags:[true,true,true,true,true,true,true,true,2],rules:2,neopolisRules:4,caribbeanRules:2,forestHeartRules:1,flagRules:2,jackieRules:2,templeRules:2,wildNudgeRules:2};
+  const op={id:randomUUID(),gameId:'studio-wild-nudge',action:'start',stakeUnits:'15',stakePolicyVersion:1,settings:{wildNudge:{mode:'normal'}}},command:any={path:'/expansion',method:'POST',body:op,query:{},flags:[true,true,true,true,true,true,true,true,2],rules:2,neopolisRules:4,caribbeanRules:1,forestHeartRules:1,flagRules:2,jackieRules:2,templeRules:2,wildNudgeRules:1};
   let calls=0;const stops=[0,0,30,30,30],draw=(max:number)=>{calls++;return max===64?stops.shift()!:0;};
-  const current=new Current(c.ledger,draw),before:any=await c.ledger.wallet(c.a),r:any=await current.run(c.a,command);assert.equal(r.session.rulesVersion,2);assert.equal(r.session.spentUnits,'15');assert.equal(r.session.returnedUnits,'50');assert(Reflect.get(new ExpansionClient(2),'checkedSession').call(new ExpansionClient(2),r.session));
+  const current=new Current(c.ledger,draw);await current.ready;const before:any=await c.ledger.wallet(c.a),r:any=await current.run(c.a,command);assert.equal(r.session.rulesVersion,2);assert.equal(r.session.spentUnits,'15');assert.equal(r.session.returnedUnits,'50');assert(Reflect.get(new ExpansionClient(2),'checkedSession').call(new ExpansionClient(2),r.session));
   const count=calls,again:any=await new Current(c.ledger,()=>{throw Error('Replay cannot draw');}).run(c.a,command);assert(again.replayed);assert.equal(calls,count);assert.deepEqual(again.session,r.session);assert.equal(again.wallet.balanceUnits,r.wallet.balanceUnits);await c.ledger.audit();
   const file=process.env.ROYAL_STAKE_TEST_REPORT!,report=JSON.parse(readFileSync(file,'utf8'));report.manualStarSpin={stakeUnits:'15',allTwentyLines:true,exactFinalCredit:'50',replayed:true,oneDebit:true};writeFileSync(file,JSON.stringify(report,null,2)+'\n');
  }finally{await c.close();}
@@ -96,23 +96,28 @@ test('Star Spin accepts a manually entered amount and recovers the same operatio
 
 test('already accepted common-policy rounds keep every preset, paid mode and continuation',{timeout:900000},async()=>{
  const realNow=Date.now;let clock=realNow(),checks=0,moves=0;const digest=createHash('sha256');Date.now=()=>clock;
- try{for(const[game,p]of Object.entries(policies)as any){
+ const matrix=Object.entries(policies).flatMap(([game,p]:any)=>game==='studio-neopolis'?p.choices.map((choice:string)=>[game,{...p,choices:[choice]}]):[[game,p]]);
+ try{for(const[game,p]of matrix as any){
   if(game==='tsu-e-fa')continue;
+  clock=realNow();
   const a=await pvpFixture(),b=await pvpFixture();
   try{
-   for(const c of[a,b]){await c.source.ingest(block(102,'100000000000000',c.config.source.addresses.find(x=>x.userId==='reserve')!.address));await c.source.ingest(block(103,'1000000000000',c.config.source.addresses.find(x=>x.userId===c.a)!.address));await c.ledger.sync(c.source,await c.reconciliation());}
+   for(const c of[a,b]){await c.source.ingest(block(102,'100000000000000',c.config.source.addresses.find(x=>x.userId==='reserve')!.address));await c.source.ingest(block(103,'1000000000000',c.config.source.addresses.find(x=>x.userId==='player')!.address));await c.ledger.sync(c.source,await c.reconciliation());}
+   let height=103,lastSync=clock;
+   const refresh=async()=>{if(clock-lastSync<15000)return;height++;for(const c of[a,b]){await c.source.ingest(block(height));await c.ledger.sync(c.source,{...await c.reconciliation(),checked_at:new Date(clock).toISOString()},clock);}lastSync=clock;};
    for(const choice of p.choices)for(const stake of p.stakes){
+    await refresh();
     const seed=(9192731+checks*7919)>>>0,r1=seededRandom(seed),r2=seededRandom(seed),drawA=(max:number)=>Math.floor(r1()*max),drawB=(max:number)=>Math.floor(r2()*max);
     let candidate=new Old(a.ledger,drawA,()=>clock),reference=new Old(b.ledger,drawB,()=>clock);await candidate.ready;await reference.ready;
     if(game==='github-crash')for(const runtime of[candidate,reference])Reflect.set(Reflect.get(runtime,'store').expansion,'crashRoll',()=>1.5);
     const core=game==='royal-plinko'||game==='royal-roulette',parts=choice.split(':'),op:any=core?{id:randomUUID(),kind:'play',gameId:game,rulesVersion:1,amount:stake/100,stakePolicyVersion:1,input:game==='royal-plinko'?{rows:Number(parts[0]),risk:parts[1]}:{bet:'number',number:7}}:{id:randomUUID(),gameId:game,action:'start',stakeUnits:String(stake),stakePolicyVersion:1,settings:settingsFor(game,choice)};
-    const command=(body:any=null):any=>({path:core?(body?'/operations':'/'):'/expansion',body,method:body?'POST':'GET',flags:[true,true,true,true,true,true,true,true,2],rules:2,query:{},neopolisRules:4,caribbeanRules:2,forestHeartRules:1,flagRules:2,jackieRules:2,templeRules:2,wildNudgeRules:2});
+    const command=(body:any=null):any=>({path:core?(body?'/operations':'/'):'/expansion',body,method:body?'POST':'GET',flags:[true,true,true,true,true,true,true,true,2],rules:2,query:{},neopolisRules:4,caribbeanRules:1,forestHeartRules:1,flagRules:2,jackieRules:2,templeRules:2,wildNudgeRules:1});
     let actual:any=await candidate.run(a.a,command(op)),expected:any=await reference.run(b.a,command(op));assert.deepEqual(stable(actual.session??actual.gameRound),stable(expected.session??expected.gameRound));
     const accepted=structuredClone(actual.session??actual.gameRound);candidate=new Current(a.ledger,drawA,()=>clock);await candidate.ready;
     actual=await candidate.run(a.a,command(op));assert.deepEqual(stable(actual.session??actual.gameRound),stable(accepted));
     let last=op,roundMoves=0;
     while(actual.session?.state==='active'){
-     assert(roundMoves++<10000);clock=Math.max(clock+100,(actual.session.startedAt??0)+1000);
+     assert(roundMoves++<10000);clock=Math.max(clock+1000,(actual.session.startedAt??0)+1000);await refresh();
      if(game==='github-crash'){
       const aa:any=await candidate.run(a.a,command()),bb:any=await reference.run(b.a,command());actual={wallet:aa.wallet,session:aa.sessions.find((s:any)=>s.id===op.id)};expected={wallet:bb.wallet,session:bb.sessions.find((s:any)=>s.id===op.id)};
       assert.deepEqual(stable(actual.session),stable(expected.session));if(actual.session.state==='settled'){last=op;break;}
@@ -124,9 +129,10 @@ test('already accepted common-policy rounds keep every preset, paid mode and con
     }
     const replay:any=await new Current(a.ledger,()=>{throw Error('A replay cannot draw');},()=>clock).run(a.a,command(last));
     assert.deepEqual(stable(replay.session??replay.gameRound),stable(actual.session??actual.gameRound));assert.equal(replay.wallet.balanceUnits,actual.wallet.balanceUnits);
-    digest.update(JSON.stringify([game,choice,stake,roundMoves,actual.session??actual.gameRound])+'\n');checks++;clock+=1000;
+    digest.update(JSON.stringify([game,choice,stake,roundMoves,actual.session??actual.gameRound])+'\n');checks++;clock+=2000;
    }
    await a.ledger.audit();await b.ledger.audit();console.log('accepted common policy',game,checks);
+   const file=process.env.ROYAL_STAKE_TEST_REPORT!,report=JSON.parse(readFileSync(file,'utf8'));report.acceptedCommonPolicy={passed:false,cases:checks,continuations:moves,allPresetsAndPaidChoices:false,sha256:digest.copy().digest('hex')};writeFileSync(file,JSON.stringify(report,null,2)+'\n');
   }finally{await a.close();await b.close();}
  }
  const file=process.env.ROYAL_STAKE_TEST_REPORT!,report=JSON.parse(readFileSync(file,'utf8'));report.acceptedCommonPolicy={passed:true,cases:checks,continuations:moves,allPresetsAndPaidChoices:true,sha256:digest.digest('hex')};writeFileSync(file,JSON.stringify(report,null,2)+'\n');
