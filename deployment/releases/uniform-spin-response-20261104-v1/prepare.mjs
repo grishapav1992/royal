@@ -23,7 +23,10 @@ const put=(name,bytes)=>{assert(!path.isAbsolute(name)&&!name.split('/').some(p=
 const committed=name=>execFileSync('git',['show',release.sourceCommit+':'+name],{maxBuffer:16*1024**2});
 const wrapper=toolFile(folder+'/publish.py'),publisher=committed('scripts/game-module-release.py');
 put('before.json',fs.readFileSync(beforeFile));put('publish.py',wrapper);put('publisher.py',publisher);
-put('release-manifest.json',fs.readFileSync('module-build/release-manifest.json'));put('release-github.json',fs.readFileSync('module-build/release-github.json'));
+put('release-manifest.json',fs.readFileSync('module-build/release-manifest.json'));
+// The real prepared module manifest also protects unfinished delivery during retention.
+put('install-manifest.json',fs.readFileSync('module-build/release-manifest.json'));
+put('release-github.json',fs.readFileSync('module-build/release-github.json'));
 const receipt=JSON.parse(fs.readFileSync('module-build/release-github.json'));assert.equal(receipt.sourceCommit,release.sourceCommit);
 const source={};for(const [name,digest]of Object.entries(scope.sources)){const bytes=reader.read(name);assert.equal(hash(bytes),digest);source[name]=put('source/'+name,bytes);}
 const packages={},beforePointers={},games={};
