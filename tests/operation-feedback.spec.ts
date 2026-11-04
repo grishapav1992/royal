@@ -21,11 +21,11 @@ async function surface(p:Page,id:string):Promise<Page|Frame>{
 }
 async function ready(p:Page,id:string){
  await chooseGame(p,id);const view=await surface(p,id);
- const intro=view.locator('[data-cc-action=enter],[data-lg-dialog-action=enter],[data-vp=enter]');
- if(await intro.count()){
-  await expect(intro.first()).toBeEnabled({timeout:60000});
-  if(await intro.first().isVisible())await intro.first().click();
- }
+ const entries=['[data-cc-action=enter]','[data-lg-dialog-action=enter]','[data-vp=enter]'];
+ const intro=view.locator(entries.join(',')).filter({visible:true});
+ const readyControls=view.locator([...entries.map(selector=>selector+':enabled'),games[id][0]+':enabled'].join(',')).filter({visible:true});
+ await expect(readyControls.first()).toBeVisible({timeout:60000});
+ if(await intro.count())await intro.first().click();
  await expect(view.locator(games[id][0])).toBeEnabled({timeout:60000});return view;
 }
 function requestFor(route:Route,id:string){
