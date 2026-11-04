@@ -6,7 +6,7 @@ import {digest} from '../../../scripts/module-build-cache.mjs';
 import {readHostProjection} from '../../../scripts/build-host-projection.mjs';
 import {verifyRelease,assertClean,git} from '../../../scripts/release.mjs';
 const root=process.cwd(),folder=path.dirname(fileURLToPath(import.meta.url));
-const name='player-recovery-20261104-v1',sources=["server/LobbyRoom.ts","src/game/RoomScene.ts","src/i18n/en.ts","src/main.ts","src/network/LobbyClient.ts","src/shared/arcadeCatalog.ts","src/shared/playerRecovery.ts","src/shared/world.ts","src/ui/PlayerRecoverySettings.ts","src/ui/SocialUI.ts","src/ui/player-recovery.css"];
+const name='player-recovery-20261104-v1',sources=["server/LobbyRoom.ts","src/game/RoomScene.ts","src/i18n/en.ts","src/main.ts","src/network/LobbyClient.ts","src/shared/cabinetSeating.ts","src/shared/playerRecovery.ts","src/shared/world.ts","src/ui/PlayerRecoverySettings.ts","src/ui/SocialUI.ts","src/ui/player-recovery.css"];
 const before=JSON.parse(fs.readFileSync(process.argv[2])),out=path.resolve(process.argv[3]);
 const scope=JSON.parse(fs.readFileSync(path.join(folder,'scope.json')));
 await assertClean(root);const release=await verifyRelease(root),receipt=JSON.parse(fs.readFileSync('module-build/release-github.json'));
