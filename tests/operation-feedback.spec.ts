@@ -37,6 +37,7 @@ test('all active house games keep normal requests separate from recovery',async(
  await enterGameHall(page,roomPath);
  for(const id of Object.keys(games))await test.step(id,async()=>{
   const view=await ready(page,id);let held:Route|undefined,release!:()=>void;
+  if(id==='studio-dracona')await page.emulateMedia({reducedMotion:'no-preference'});
   const gate=new Promise<void>(r=>release=r);
   const handler=async(route:Route)=>{if(!held&&requestFor(route,id)){held=route;await gate;}await route.continue();};
   await page.route('**/api/*-wallet/**',handler);
@@ -45,11 +46,13 @@ test('all active house games keep normal requests separate from recovery',async(
    await expect(view.locator(games[id][0])).toBeDisabled();
    expect(await view.locator(games[id][0]).innerText()).not.toMatch(/проверить|проверь|check (?:round|move|result)/i);
    await expect(view.locator(recovery).filter({visible:true})).toHaveCount(0);
+   if(id==='studio-dracona')expect(await view.locator('.board').evaluate(e=>e.getAnimations({subtree:true}).filter(a=>a instanceof CSSAnimation&&a.animationName==='dracona-request-fall'&&a.playState==='running').length)).toBe(20);
   }finally{release();}
   await expect.poll(()=>page.evaluate(()=>{
    const h=(window as any)[Symbol.for('royal.game-host.v1')];return !h.expansionClient.busy&&!h.expansionClient.pending&&!h.demoWallet.busy&&!h.demoWallet.pending;
   }),{timeout:30000}).toBe(true);
   await page.unroute('**/api/*-wallet/**',handler);
+  await page.emulateMedia({reducedMotion:'reduce'});
  });
 });
 

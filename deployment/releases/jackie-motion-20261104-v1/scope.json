@@ -1,0 +1,19 @@
+{
+  "release": "jackie-motion-20261104-v1",
+  "gameId": "original-jackie-chan",
+  "preparedBase": "64275feff275c9049a82e7b095dd89c4b71677da",
+  "previousVersion": "1.2.1-4905c636acb8",
+  "previousPointerSha256": "ec0317d4e24ae79e3a2b4adcbc34b7492755eaf6650686f5ab018acebf44f8b1",
+  "sourceBefore": {
+    "games/jackie-chan/JackieScene.ts": "7eaee3b617c3e6225b2c35b0eb505f6d7757ee1c8cc02e1d8806459c45d20702",
+    "games/jackie-chan/layout.css": "d1009d0b6d0a59d0ddb5e167cb236fe5aa17c5d654179b1184876a6782c756d3",
+    "games/jackie-chan/JackieUI.ts": "c42f04757331ebfddba968fb5ffaffd6e32fd62505f8d73b1de4f44f767d6a58"
+  },
+  "sourceAfter": {
+    "games/jackie-chan/JackieScene.ts": "c53abe172f86e53a0b797257f4b52a8d250b98cc18c36ca8428f8091905f2a3c",
+    "games/jackie-chan/layout.css": "8be5a8995caa11f83f744c56177f42857a7b4357526198bf641ef78b9f908d6a",
+    "games/jackie-chan/JackieUI.ts": "dc86439cb7093cd799edaf8cda284f4c7da8d3ce5ccf7a7aadafc079f6374abc"
+  },
+  "addedGames": [],
+  "restoredGames": []
+}
