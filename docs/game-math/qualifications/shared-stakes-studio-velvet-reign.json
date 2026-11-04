@@ -3,26 +3,26 @@
   "gameId": "studio-velvet-reign",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-11-03T14:48:08.260Z",
-  "completedAt": "2026-11-03T14:48:45.096Z",
+  "startedAt": "2026-11-04T11:05:26.268Z",
+  "completedAt": "2026-11-04T11:06:13.188Z",
   "sourceHashes": {
-    "src/shared/gameStakes.ts": "ed37796de3dfbee550b1705a6a3d55e5c400de78a17ffa0e38d9010e2054b039",
-    "src/shared/roundPrecision.ts": "38713d4db338dabf7ebaf09135d6ed0de015ddf5bea13501893d3a793e3cf581",
+    "src/shared/gameStakes.ts": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b",
+    "src/shared/roundPrecision.ts": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
     "src/shared/casinoExpansion.ts": "ad1474233c750035eecbf54544c9c6f3a6eb9ae47bbe6319703b2383c211100d",
     "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
     "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
     "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
     "server/demoExpansion.ts": "edaa12803beca8288d3595ebb21063ceb9f0bb030fd949adda56f8b78ad53297",
-    "server/demoWallet.ts": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63",
+    "server/demoWallet.ts": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
     "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
     "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
     "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
-    "server/afterglowProgress.ts": "cf38081a14f88c034f1a32af9e99ca7bbd7f56590decd419867469cb2f753a42",
+    "server/afterglowProgress.ts": "4a7f5d07ca6be6afbcec0c5ff2c7d91bb4da82f81438aa35c8a418cc939134b9",
     "src/wallet/ExpansionClient.ts": "bfc97155743dbc78fe9d0e5beb0cb9eb9f3fe7828ec45da13d43d58c86933a36",
     "src/wallet/WalletClient.ts": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
     "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d",
     "scripts/game-math/rtp-stakes-worker.mjs": "f5db2c6be7cc4c68bb07c719eea5ba3db3f0d237d7bf8cd75736c891f91a218d",
-    "server-tests/game-stakes.test.ts": "810c0f42c5137ed0e49b94a796808c6753ab4e204408c773c12176eefc896031",
+    "server-tests/game-stakes.test.ts": "d8fb3859601228535ac49ba2876865f139bf59549d4b77b1f4fb9e3c7a7b8fe1",
     "server-tests/round-precision.test.ts": "d48a631f198636a97db8e70952c600a47b9cb1d04b20ebc6d08cbfa2cd452abb",
     "src/shared/luelonSlots.ts": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
     "src/shared/velvetReign.ts": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
@@ -30,11 +30,12 @@
     "server/games/velvetReign.ts": "2de78bed621067021920d9ad742986a60034f975647a227a11bcc87869ff45a7",
     "server/games/velvetMath.ts": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
     "scripts/game-math/stake-runtime.mjs": "47d762e18c698ab4241a6499497b8f58087132da2489494a2172f60dd0fede61",
-    "scripts/game-math/stakes-wallet.ts": "8871b28142cb30d6848873a676e190f8b55dbaf18c75c3b959c4cd3c85cb0784",
+    "scripts/game-math/stakes-wallet.ts": "5fdd9b03cbc3b1835e9128d4a2d4bb49875f4535bfec34db6a008677a701e141",
     "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
-    "scripts/game-math/rtp-stakes.mjs": "11f11b0604b5e2d7eacb2da89066d700da97bd136478274523edb002986770e7"
+    "scripts/game-math/manual-stakes.mjs": "969131d1de9c2d1744cdd8ff801e745bbb02eb6653466732ba0657a24ee0ad9d",
+    "scripts/game-math/rtp-stakes.mjs": "a885087bc907189f46a1a1dcc54f807733fcf8cbfae818a64a9fe9f2aed6de52"
   },
-  "policySha256": "11d65a35b486e18bd8e97b00aaf480142b94cfe35fa93fc37ffd6b86c3839377",
+  "policySha256": "f77da423d7d1f18bb343878278d7762aa13a96a4a496c29816aaf5faee6dec99",
   "method": "full-round-unbiased-cent-policy-v1",
   "precisionLaw": {
     "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
@@ -1492,11 +1493,52 @@
       "journalBalanced": true
     },
     "gameId": "studio-velvet-reign",
-    "cases": 45,
-    "freeContinuationChecks": 218,
-    "replayAndRestartCases": 45,
+    "cases": 85,
+    "freeContinuationChecks": 444,
+    "replayAndRestartCases": 85,
     "oneDebitAndCredit": true,
     "clientVerified": true,
-    "sha256": "9029157d1feabf2d1504ceb9611b6339b2d3f70d6b969cf8b3d76a97ecb8b21c"
+    "sha256": "6e2140611745b15627b83ad3b32852a0c80ce08586e604c1b742cdc07ebafb37"
+  },
+  "manualStakes": {
+    "range": {
+      "minimumCents": 10,
+      "maximumCents": 5000,
+      "stepCents": 1
+    },
+    "checks": 24955,
+    "cases": [
+      {
+        "choice": "normal",
+        "seed": 6371291,
+        "denominations": 4991,
+        "sha256": "d66b4513025446b07aff63e2b70e4c9aa796eb9de5fab8421e4a905e4b115fb0"
+      },
+      {
+        "choice": "booster",
+        "seed": 6379210,
+        "denominations": 4991,
+        "sha256": "ade92528b41162f1a8345a7733c3b742d556a105b7f315183d2b7f8f5be23693"
+      },
+      {
+        "choice": "hyper",
+        "seed": 6387129,
+        "denominations": 4991,
+        "sha256": "ade92528b41162f1a8345a7733c3b742d556a105b7f315183d2b7f8f5be23693"
+      },
+      {
+        "choice": "spotlight",
+        "seed": 6395048,
+        "denominations": 4991,
+        "sha256": "aaa10691f7a878323a22c0bad4add67314a4b2226732363ccd9b36e4d6d2267d"
+      },
+      {
+        "choice": "super-encore",
+        "seed": 6402967,
+        "denominations": 4991,
+        "sha256": "9a22da341c6438c02cc9b8208e166dc86a1ac604e759985604fe582a566ecbcc"
+      }
+    ],
+    "interpretation": "Exhaustive accepted-cent runtime replay per allowed mode or choice. The reviewed stake-independent latent full-round model and exact rational final-ticket identity apply to every accepted cent. Bought Caribbean rounds normalize to the actual charged integer price. These replays are compatibility and scaling checks, not a statistical RTP estimate."
   }
 }
