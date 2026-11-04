@@ -7,6 +7,17 @@ import {build} from 'esbuild';
 import {readHostProjection} from '../../../scripts/build-host-projection.mjs';
 const folder='deployment/releases/manual-stakes-20261104-v1',before=JSON.parse(fs.readFileSync(process.argv[2]));
 const scope=JSON.parse(fs.readFileSync(folder+'/scope.json')),registry=JSON.parse(fs.readFileSync('scripts/game-math/rtp-policy.json'));
+const git=(...args)=>execFileSync('git',args,{maxBuffer:64*1024**2,stdio:['ignore','pipe','ignore']});
+const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+const policyPath='scripts/game-math/rtp-policy.json',policyHistory=git('log','--all','--format=%H','--',policyPath).toString().trim().split('\n');
+const baselinePolicy=policyHistory.map(commit=>({commit,bytes:git('show',commit+':'+policyPath)}))
+  .find(row=>hash(Buffer.from(row.bytes.toString().replace(/\r\n/g,'\n')))===before.sourceLF[policyPath]);
+assert(baselinePolicy,'Production policy has no verified Git origin');
+// Keep unrelated unpublished collection descriptions outside this monetary release.
+registry.nonWagered=JSON.parse(baselinePolicy.bytes).nonWagered;
+const policyBytes=Buffer.from(JSON.stringify(registry,null,2)+'\n');
+const policyOrigin=policyHistory.find(commit=>hash(git('show',commit+':'+policyPath))===hash(policyBytes));
+assert(policyOrigin,'Selected monetary policy must already exist exactly in Git');
 const reader=await readHostProjection(process.cwd(),folder+'/host-projection.json',{strictOrigins:true});
 assert.equal(reader.metadata.productionCommit,before.sourceCommit);
 assert.equal(reader.metadata.files['src/shared/arcadeCatalog.ts'].sha256,before.sourceLF['src/shared/arcadeCatalog.ts']);
@@ -22,11 +33,14 @@ for(const p of [...Object.values(registry.profiles),...Object.values(registry.st
 }
 for(const name of execFileSync('git',['diff','--name-only','b730f386','HEAD'],{encoding:'utf8'}).trim().split('\n'))if(name.startsWith('scripts/game-math/'))evidence.add(name);
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
-scope.evidenceSources={};
+scope.evidenceSources={};scope.evidenceOrigins={};
 for(const file of [...evidence].sort()){
   assert(!path.isAbsolute(file)&&!file.split('/').some(p=>p==='..'||p.startsWith('.env')));
-  const bytes=fs.readFileSync(file),hash=digest(bytes);
-  if(before.source[file]!==hash&&!scope.expectedSources[file])scope.evidenceSources[file]=hash;
+  const bytes=file===policyPath?policyBytes:fs.readFileSync(file),hash=digest(bytes);
+  if(before.source[file]!==hash&&!scope.expectedSources[file]){
+    scope.evidenceSources[file]=hash;
+    if(file===policyPath)scope.evidenceOrigins[file]={commit:policyOrigin,path:file};
+  }
 }
 fs.writeFileSync(folder+'/scope.json',JSON.stringify(scope,null,2)+'\n');
 console.log(JSON.stringify({catalogue:scope.activeGames.length,compiledChanges:Object.keys(scope.expectedSources).length,evidenceChanges:Object.keys(scope.evidenceSources).length}));
