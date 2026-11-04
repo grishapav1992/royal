@@ -17,7 +17,10 @@ try{
     for(const id of ids){await db.prepare('INSERT INTO accounts VALUES(?)').run(id);await common.operate(id,{id:randomUUID(),kind:'deposit',amount:1000});}
     const people=actors.map(a=>({...a,connected:true,available:true}));await store.syncRoom(roomId,people,now);
     const command=(side:number,op:any)=>store.command(actors[side],{...op,id:op.id??randomUUID()},now);
-    const created=await command(0,{action:'invite',gameId:'tsu-e-fa',targetId:ids[1]}),id=created.active!.id;
+    const offer={id:randomUUID(),action:'invite',gameId:'tsu-e-fa',targetId:ids[1],...(rulesVersion===4?{stakeUnits}:{})};
+    const created=await command(0,offer),id=created.active!.id;
+    assert.equal((await command(0,offer)).active!.id,id);
+    for(const actor of actors)assert.equal((await common.snapshot(actor.accountId)).balance,1000);
     if(rulesVersion===3){
       // Replay an already accepted historical invitation in this synthetic DB.
       const row=await db.prepare('SELECT payload FROM pvp_matches WHERE id=?').get(id),saved=JSON.parse(String(row!.payload));
@@ -29,7 +32,8 @@ try{
     if(choice==='expired'){await step(120001);}
     else{
       await command(1,{action:'accept',challengeId:id});
-      await command(0,{action:'terms',challengeId:id,stakeUnits,termsRevision:0});
+      if(rulesVersion===3)await command(0,{action:'terms',challengeId:id,stakeUnits,termsRevision:0});
+      else await assert.rejects(command(0,{action:'terms',challengeId:id,stakeUnits,termsRevision:0}),/указана в приглашении/);
       const termsRevision=(await store.snapshot(actors[0],now)).active!.termsRevision!;
       if(choice==='cancel')await command(1,{action:'cancel',challengeId:id});
       else{
