@@ -40,6 +40,7 @@ jobs:
       - run: npm ci
       - run: npm run test:release
       - run: python3 -m unittest discover -s deployment/maintenance -p 'test_*.py'
+      - run: python3 -m unittest discover -s deployment/tests -p 'test_*.py'
   application-checks:
     needs: scope
     if: needs.scope.outputs.profile == 'full'
@@ -73,6 +74,7 @@ jobs:
       - run: npm run test:caribbean
       - run: npm run test:release
       - run: python3 -m unittest discover -s deployment/maintenance -p 'test_*.py'
+      - run: python3 -m unittest discover -s deployment/tests -p 'test_*.py'
       - run: npm run test:work-sync
       - run: npm run release:prepare -- --local --base HEAD^
       - run: node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts

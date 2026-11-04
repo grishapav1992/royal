@@ -1,0 +1,179 @@
+{
+  "status": "prepared-and-locally-verified-not-deployed",
+  "checkedAt": "2026-11-04T16:13:46.107Z",
+  "sourceCommit": "cfc55a0878a5072403645980fedc6e2c9ad44523",
+  "baselineCommit": "39b34944ee46074517c59065bdcf7454789875a4",
+  "baselineSnapshotAt": 1793802748.808544,
+  "featureCommit": "9c093138239595b98b5174383bc0896fc37845c0",
+  "confirmationCommit": "ae0a5d0c020ecf92c39738aba2a2653c30393786",
+  "counterAlignmentCommit": "bc846407d593a8abae0c62e119a1f0db6e86fd01",
+  "completedStages": [
+    "portrait-derived room character",
+    "layered Royal Bar artwork and single localized title",
+    "seated rest and reversible transitions",
+    "work, greeting, listening, reply and service gestures",
+    "authoritative room events and lifecycle cleanup",
+    "prepared artifact and real-host verification"
+  ],
+  "manifestSha256": "c5385ef927b5d94ec0f00cd51009993cc3b1554fb1b826fe49142936609d7837",
+  "receipt": {
+    "format": 1,
+    "sourceCommit": "cfc55a0878a5072403645980fedc6e2c9ad44523",
+    "manifestSha256": "c5385ef927b5d94ec0f00cd51009993cc3b1554fb1b826fe49142936609d7837",
+    "remoteMain": "88a99af8c49ac43530c2fb9ae93a8abb4576c60d",
+    "checkedAt": "2026-11-04T16:07:26.698Z"
+  },
+  "outputs": {
+    "dist/assets/index-DNBaRQoJ.js": "b680aa7e260d5e7cbdb83a7788741b9b5ccc84f2a782a013fd9c840064634a71",
+    "dist/assets/index-V4GHKrLV.css": "e21ee49745a1903e8fe694615407d4d07053f0e5254c935aef70f5b5166c10e2",
+    "dist/index.html": "3ca7071430e3b5ddbc27142d62c48ff01e24734e45aaa458075f91914d827284",
+    "dist-server/index.js": "f144e11d2b52aeb661bb187abdd07f01ae5fecbc04d23f639e4f9687f7672455"
+  },
+  "projections": {
+    "host": {
+      "sha256": "668f44069bf2ed3ebedd4e33567e671483d88c449ab81d2986b93ae764b69e93",
+      "inputCount": 253
+    },
+    "backend": {
+      "sha256": "cdc1f7861e7cbd9d7be88d9a42e9225b567c07f890b615e17727c226ddb6aad0",
+      "inputCount": 258,
+      "graphSha256": "cca1f3ece7dbc0bbbf6f6226576f8516558732cead6f418435c48da108c836ca"
+    }
+  },
+  "build": {
+    "passed": true,
+    "startedAt": "2026-11-04T15:51:41.648Z",
+    "durationMs": 829095,
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 364051
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 9951
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 418215
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 23392
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 13341
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 55
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 30
+      }
+    ]
+  },
+  "checks": {
+    "githubReleaseVerify": {
+      "command": "npm run release:verify -- --github",
+      "passed": true
+    },
+    "finalPreparedHost": {
+      "command": "node --import tsx scripts/database-test.ts --import tsx artifacts/work/royal-bar-mira/verify-final.mjs",
+      "driverSha256": "2fe9d8d0da2a5a17461e830d9ea6b07cc5c0325b148fcf1ad1db79648a4849e4",
+      "passed": true,
+      "preparedBytes": true,
+      "results": [
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "online": true,
+          "chatAccessible": true,
+          "mobileChatClosedBeforeSpin": false,
+          "barListening": true,
+          "defaultBet": 0.1,
+          "requests": 2,
+          "uniqueOperationIds": 1,
+          "debitEntries": 1,
+          "closedAndReopened": true,
+          "errors": []
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "online": true,
+          "chatAccessible": true,
+          "mobileChatClosedBeforeSpin": true,
+          "barListening": true,
+          "defaultBet": 0.1,
+          "requests": 2,
+          "uniqueOperationIds": 1,
+          "debitEntries": 1,
+          "closedAndReopened": true,
+          "errors": []
+        }
+      ],
+      "browserTests": 11,
+      "physicalDevicesTested": false,
+      "providerReplyStubbed": true
+    },
+    "mandatoryWallet": {
+      "tests": [
+        "server-tests/game-wallet.test.ts",
+        "server-tests/wallet-account.test.ts",
+        "server-tests/round-precision.test.ts"
+      ],
+      "passed": 19,
+      "projectionInputs": 195,
+      "allInputsMatchFinalBackend": true,
+      "inputManifestSha256": "54ebbd6f063ebd4fb4b113d8ca7c7b435edd88451808d37312f1d0b106540d4e",
+      "bundleSha256": "8b9a1f7cabe7443985cd4bf151c7db73288d63d04f56a2ca52cda20d6872de19",
+      "reusedUnchangedVerification": true,
+      "backendSha256": "f144e11d2b52aeb661bb187abdd07f01ae5fecbc04d23f639e4f9687f7672455"
+    },
+    "installScope": {
+      "command": "python deployment/releases/royal-bar-mira-20261104-v1/test_deploy.py",
+      "passed": 6
+    },
+    "rtp": {
+      "qualifiedProfiles": 38,
+      "stakePolicies": 20,
+      "stakeAdmissionPolicies": 20,
+      "legacyUnqualifiedUnchanged": 114
+    },
+    "visualObservations": [
+      "Standing Mira is behind the counter with her waist at the tabletop.",
+      "Foreground hands and cloth contact the tabletop.",
+      "Resting pose retains connected legs and counter contact.",
+      "One venue title is visible."
+    ]
+  },
+  "testEnvironment": {
+    "temporaryLocalPostgres": true,
+    "productionAccountsCreated": false,
+    "realMiraProviderUsed": false,
+    "physicalDevicesTested": false,
+    "roulettePointer": "pinned to the exact baseline hash after production changed during verification",
+    "roulettePointerSha256": "ca9865eb25e3278c7e2565a76c9cd138577d009962417ea7ae8e6d78e0c9eada",
+    "catalogueExpanded": false
+  },
+  "publication": {
+    "performed": false,
+    "reason": "The agreed sixth stage prepares reviewed source for release. A production installation is a separate operation.",
+    "baselineMustBeRechecked": true,
+    "concurrentProductionModuleChangeDetected": true
+  }
+}

@@ -1,3 +1,4 @@
+import {canRecoverOperation} from '../../src/ui/operationFeedback';
 import {ActionGameLayout} from '../../src/ui/ActionGameLayout';
 import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
@@ -145,7 +146,7 @@ export class JackieUI {
     this.text('[data-status]',client.busy?t('Подтверждаем действие…','Confirming action…'):!ready?t('Загружаем рисунки…','Loading artwork…'):state.busy?complete?t('Победа! Пять боёв пройдены, выплата подтверждена.','Victory! All five fights complete, payout confirmed.'):t('Камера, мотор!','Camera, action!'):active?t('Забери выплату или выбери следующую группу. Таймера нет.','Cash out or choose the next group. There is no timer.'):t('Выбери число противников. Первая кнопка принимает одну ставку.','Choose the group size. The first action accepts one stake.'));
     this.text('[data-sound]',this.audio.enabled?t('Звуки: вкл.','Effects: on'):t('Звуки: выкл.','Effects: off'));this.find('[data-sound]').setAttribute('aria-pressed',String(this.audio.enabled));this.find('[data-sound]').setAttribute('aria-label',t('Звуки боя','Fight effects'));
     this.text('[data-music]',this.audio.music.enabled?'♫ '+t('Музыка: вкл.','Music: on'):'♫ '+t('Музыка: выкл.','Music: off'));this.find('[data-music]').setAttribute('aria-pressed',String(this.audio.music.enabled));this.find('[data-music]').setAttribute('aria-label',t('Музыка локации','Location music'));this.find('[data-music]').title=this.audio.music.getState().title;
-    this.find('[data-recovery]').hidden=!client.pending||client.busy;this.find<HTMLButtonElement>('[data-retry]').disabled=client.busy||client.loading;this.text('[data-error]',this.error||client.error);
+    this.find('[data-recovery]').hidden=!canRecoverOperation(client);this.find<HTMLButtonElement>('[data-retry]').disabled=client.busy||client.loading;this.text('[data-error]',this.error||client.error);
     if(this.unlocks.length&&!state.busy){this.find('[data-unlock]').hidden=false;this.text('[data-unlock]',t('Новый костюм в гардеробе: ','New costume in your wardrobe: ')+this.unlocks.map(id=>filmName(JACKIE_COSTUMES.findIndex(c=>c.id===id))).join(', '));}
   }
   getState(){return {costume:this.costume,location:this.location,risk:this.risk,collectionUnits:this.units(),assets:{...this.scene.loading},...this.scene.state(),audio:this.audio.state()};}

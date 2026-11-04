@@ -1,4 +1,5 @@
 import {syncStakeSelect} from './stakeSelection';
+import {canRecoverOperation} from './operationFeedback';
 import {stakeRulesHtml} from './stakeRules';
 import { GamePriorityPanel } from './GamePriorityPanel';
 import './volcanic-plinko-priorities.css';
@@ -109,7 +110,7 @@ export class VolcanicPlinkoUI {
     drop.disabled = !this.entered || this.submitting || this.animating || this.wallet.busy || this.wallet.externalBusy || !this.account || !!this.wallet.pending && !ownPending || this.failedVerification || !ownPending && (!wallet || wallet.balance < this.stake);
     this.el('[data-vp="result"]').textContent = this.animating ? translateText('Сфера проходит сквозь завесу…') : this.submitting ? translateText('Пробуждаем заклинание…') : this.message;
     const note = this.el('[data-vp="wallet-note"]');
-    note.textContent = !this.account ? translateText('Войди в аккаунт клуба, чтобы играть') : translateText(this.wallet.error).replace(translateText('Проверить операцию'), translateText('Проверить результат')) || (ownPending ? translateText('Проверь прежний запрос. Повторного списания не будет.') : wallet && wallet.balance < this.stake ? translateText('Пополни баланс USDT в кошельке клуба') : '');
+    note.textContent = !this.account ? translateText('Войди в аккаунт клуба, чтобы играть') : translateText(this.wallet.error).replace(translateText('Проверить операцию'), translateText('Проверить результат')) || (ownPending && canRecoverOperation(this.wallet) ? translateText('Проверь прежний запрос. Повторного списания не будет.') : wallet && wallet.balance < this.stake ? translateText('Пополни баланс USDT в кошельке клуба') : '');
     note.hidden = !note.textContent;
     for (const selector of ['.vp-header', '.vp-field', '.vp-result', '.vp-controls']) this.el(selector).inert = !this.entered;
     this.updatePocketInfo();
