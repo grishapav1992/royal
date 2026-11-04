@@ -155,9 +155,14 @@ async function thirdFloorWindow(page:Page,project:string){
   expect((await state(page)).y).toBe(STAIR_WINDOW.landing.y);
   await page.screenshot({path:'../landing-controls-'+project+'-platform.png'});
   const enter=async()=>{
+    const before=await state(page);
     if(mobile){await platformWalk(STAIR_WINDOW.platformLength-38);await clickViewPoint(page,(await state(page)).street.rearWindows.entry);}
     else await page.keyboard.press('e');
-    await expect.poll(async()=>(await state(page)).hall,{timeout:12000}).toBe('github');
+    await expect.poll(async()=>(await state(page)).hall,{timeout:12000}).toBe('github').catch(async error=>{
+      const after=await state(page),compact=(s:any)=>({hall:s.hall,x:s.x,y:s.y,step:s.stairStep,direction:s.stairDirection,predicted:s.predicted,pending:s.pendingInputs,serverX:s.serverX,serverY:s.serverY,switching:s.switching,locked:s.locked,view:s.view,navigation:s.stairNavigation});
+      console.log('Balcony entry diagnostic',JSON.stringify({project,before:compact(before),after:compact(after)}));
+      await page.screenshot({path:'../right-balcony-'+project+'-entry-diagnostic.png'});throw error;
+    });
     await expect.poll(async()=>(await state(page)).switching).toBe(false);
     expect((await state(page)).stairStep).toBe(0);
     await expect(page.locator('#chat-input')).toBeEnabled();await expect(page.locator('#wallet-balance')).toHaveText(balance!);
@@ -185,7 +190,10 @@ async function thirdFloorWindow(page:Page,project:string){
       await platformWalk(0);
       const target=view.point(ROOF_STAIR_ROUTE[STAIR_WINDOW.landingIndex+(direction<0?1:-1)],true);
       await clickViewPoint(page,{x:(junction.x+target.x)/2,y:(junction.y+target.y)/2-8});
-      await expect.poll(async()=>Math.sign((await state(page)).y-STAIR_WINDOW.landing.y)).toBe(direction);
+      await expect.poll(async()=>Math.sign((await state(page)).y-STAIR_WINDOW.landing.y)).toBe(direction).catch(async error=>{
+        console.log('Balcony branch diagnostic',JSON.stringify({direction,junction,target,state:await state(page)}));
+        await page.screenshot({path:'../right-balcony-mobile-branch-diagnostic.png'});throw error;
+      });
     }else{await page.keyboard.down(direction<0?'ArrowUp':'ArrowDown');await expect.poll(async()=>Math.sign((await state(page)).y-STAIR_WINDOW.landing.y),{timeout:6000}).toBe(direction);}
     const selected=await state(page);expect(selected.hall).toBe('street');expect(Math.sign(selected.y-STAIR_WINDOW.landing.y)).toBe(direction);
     try{
