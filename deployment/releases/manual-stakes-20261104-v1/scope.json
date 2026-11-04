@@ -38,7 +38,7 @@
     "games/velvet-reign/package.json": "4ce996c972e7b48aad56048fc4a3861e22b9c05f177fe0230120770697668fc0",
     "src/ui/VolcanicPlinkoUI.ts": "ba0266886fdf338d8254b66e1e09858a5eff11e5dc2f7ac8ef619629bad13d4e",
     "games/wild-nudge/GalacticReactorUI.ts": "5840dc55626da324fe5771dfb16e2159191500733aee458c5902cccb15081302",
-    "games/wild-nudge/package.json": "10610bd013f1e1aa2dfe1bc1ec3d47a14345654a09d55c39beaa2eda3e32826d"
+    "games/wild-nudge/package.json": "4db1019492a12e80d99cc7195b0ce4a51de5914e1707767bd8b62c975ad25897"
   },
   "moduleGames": [
     "caramel-carnival",
@@ -128,7 +128,7 @@
     "docs/game-math/qualifications/tsu-e-fa-v4.json": "a5c4f79776d00f90ba97e8b2fa99ae5dfb00c5328c8e15ae955f3904f88cdf4f",
     "docs/game-math/qualifications/wild-nudge-v1.json": "9b26d790ea093b259c70cf785d465ccdc5a1b97e3a122fa9672789d61f2395a8",
     "docs/game-math/qualifications/wild-nudge-v2.json": "6ea5af1e1f13b9950de421e53a55cbb8f252ee4808182ac68e63adbb84d71361",
-    "scripts/build-game-module.mjs": "c7fedfaf55d8563cf053983a0bbc695088021bc66fd21a1a673bdd0da34d8de3",
+    "scripts/build-game-module.mjs": "63b06662d0405aa4d67876a9f3a577f3d2d3e6cf962d9842cf88d0b63b95ce09",
     "scripts/game-math/game-stakes-admission.mjs": "4cb0c4fc41fbdf73e68f67c7b76a155a5dfbba85d9107b58508de4c80a7e3ed4",
     "scripts/game-math/manual-stakes.mjs": "969131d1de9c2d1744cdd8ff801e745bbb02eb6653466732ba0657a24ee0ad9d",
     "scripts/game-math/rtp-caribbean.mjs": "a47c371ab000a9644a092bf4be2afa498251f90f72b2c307f67715942c280c47",
@@ -138,7 +138,13 @@
     "scripts/game-math/stake-runtime.mjs": "47d762e18c698ab4241a6499497b8f58087132da2489494a2172f60dd0fede61",
     "scripts/game-math/stakes-wallet.ts": "5fdd9b03cbc3b1835e9128d4a2d4bb49875f4535bfec34db6a008677a701e141",
     "scripts/game-math/tsu-duel-wallet.ts": "e1dc5cd60b9be0e55c2074a368244d7f1c52acde667ffb1a046bc6ce0edd3efb",
-    "scripts/module-build-cache.mjs": "4116a020c39cb7855c6716e8ee129b4742d2c9654241f2f561346676e7cb7a35",
-    "scripts/module-source-projection.mjs": "bed173298afe4af9a207dcabccbda0bbdfcec15050e27222b7d97f7eeb6b6c76"
+    "scripts/module-build-cache.mjs": "75e53d12d7454908936156ab14c8816a761781035c9be375b1e5ce516462eb27",
+    "scripts/module-source-projection.mjs": "544c1d2583d0f3abad37a54012a98a4f9b46d4763f65c842116e67cc012d9f28"
+  },
+  "evidenceOrigins": {
+    "scripts/game-math/rtp-policy.json": {
+      "commit": "1f1bfade90430975f445ff957dc93df95d896679",
+      "path": "scripts/game-math/rtp-policy.json"
+    }
   }
 }

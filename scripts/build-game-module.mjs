@@ -7,7 +7,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { checkGameRtp } from './game-math/rtp-gate.mjs';
 import { moduleFingerprinter, cachedModule, regularPath, dependencyPath, normalizeModuleInput } from './module-build-cache.mjs';
 import { readHostProjection } from './build-host-projection.mjs';
-import {projectedModuleContract,moduleProjectionCatalog,projectedMediaBytes,projectedDependencyBytes} from './module-source-projection.mjs';
+import {projectedModuleContract,moduleProjectionCatalog,projectedMediaBytes,projectedDependencyBytes,moduleSourceSha256} from './module-source-projection.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const sha = value => createHash('sha256').update(value).digest('hex');
@@ -191,14 +191,17 @@ async function buildGame(slug) {
  if (inputs.some(name => backendImplementation(name) || bridgeModules.has(name.replace(/\.ts$/, '')) || /^src\/modules\/(?:GameHostRuntime|IndependentGameUI)\.ts$/.test(name)) || ownNative.length > 1) throw Error('Module imported a forbidden host or unrelated native game implementation: ' + slug);
  const remainingAssets = result.outputFiles.flatMap(output => [...output.text.matchAll(/\/assets\/([a-zA-Z0-9_./-]+)/g)].map(match => match[1]));
  if (remainingAssets.length) throw Error('Module references media outside its declared asset roots: ' + slug + ': ' + [...new Set(remainingAssets)].join(', '));
- const sourceFiles = Object.fromEntries(await Promise.all(inputs.map(async name => [name, sha(await sourceBytes(resolve(root, name)))])));
+ const configurationFiles = ['tsconfig.json', `games/${slug}/tsconfig.json`];
+ const sourceFiles = Object.fromEntries(await Promise.all([...new Set([...inputs,...configurationFiles])].sort().map(async name => [name, sha(await sourceBytes(resolve(root, name)))])));
+ // Projected builds pass tsconfigRaw; ordinary builds resolve the entry's tsconfig chain.
+ const compilation = {format:1, projected:!!projection, configurations:Object.fromEntries(configurationFiles.map(name=>[name,sourceFiles[name]])),helperSha256:sha(await readFile(await regularPath(root,'scripts/module-source-projection.mjs')))};
  const { media, references: mediaReferences, dynamicDirectories } = await referencedMedia(result.outputFiles, sentinel, config.assetRoots, assetFiles);
  const mediaHashes = Object.fromEntries(media.map(([name, bytes]) => ['media/' + name, sha(bytes)]));
  const preload = config.preload;
  if (preload !== undefined && (!Array.isArray(preload) || preload.length > 16 || new Set(preload).size !== preload.length
   || !preload.every(name => typeof name === 'string' && /\.(?:webp|png|jpe?g|avif|gif|svg)$/.test(name)
    && Object.hasOwn(mediaHashes, 'media/' + name)))) throw Error('Invalid startup image hints: ' + slug);
- const sourceSha256 = sha(JSON.stringify({ config, contract: registered, esbuildVersion, script: sha(buildScript), sourceFiles, media: mediaHashes }));
+ const sourceSha256 = moduleSourceSha256({config,contract:registered,esbuildVersion,builderSha256:sha(buildScript),sourceFiles,media:mediaHashes,compilation});
  const version = config.version + '-' + sourceSha256.slice(0, 12);
  const urlRoot = `/game-modules/${config.gameId}/versions/${version}/`;
  const outputs = new Map();
@@ -246,7 +249,7 @@ async function buildGame(slug) {
  }
  await atomicFile(resolve(root, 'module-dist', config.gameId, 'active.json'), JSON.stringify({ format: 1, gameId: config.gameId, manifest: urlRoot + 'manifest.json', sha256: sha(json) }, null, 2) + '\n');
  await mkdir(resolve(root, 'module-build'), { recursive: true });
- await atomicFile(resolve(root, 'module-build', slug + '-proof.json'), JSON.stringify({ gameId: config.gameId, version, sourceSha256, sourceFiles,
+ await atomicFile(resolve(root, 'module-build', slug + '-proof.json'), JSON.stringify({ gameId: config.gameId, version, sourceSha256, sourceFiles, compilation,
   hostSingletonsExternalized: [...bridgeModules.keys()].every(name => !inputs.includes(name + '.ts')),
   hostBridges: Object.keys(result.metafile.inputs).filter(name => name.startsWith('royal-host:')).sort(),
   nativeImplementations: ownNative, serverImplementationIncluded: inputs.some(backendImplementation),

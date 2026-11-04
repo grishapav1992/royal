@@ -85,7 +85,7 @@ export function moduleFingerprinter(root, toolchain) {
   return async (config, contract, inputs) => {
     inputs=await Promise.all(inputs.map(name=>normalizeModuleInput(root,name)));
     const files = new Set(['package.json', 'package-lock.json', 'tsconfig.json',
-      'scripts/build-game-module.mjs', 'scripts/module-build-cache.mjs',
+      'scripts/build-game-module.mjs', 'scripts/module-build-cache.mjs', 'scripts/module-source-projection.mjs',
       'src/modules/GameModuleCatalog.ts', `games/${contract.slug}/package.json`,
       `games/${contract.slug}/tsconfig.json`, ...inputs]);
     const directories = new Set();

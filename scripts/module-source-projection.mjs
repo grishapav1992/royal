@@ -7,6 +7,11 @@ import {digest,regularPath,dependencyPath} from './module-build-cache.mjs';
 
 const keys=['apiVersion','rulesVersion','progressVersion'];
 const same=(a,b)=>assert.deepEqual(a,b);
+export function moduleSourceSha256({config,contract,esbuildVersion,builderSha256,sourceFiles,media,compilation}){
+ assert(compilation?.format===1&&typeof compilation.projected==='boolean'&&/^[a-f0-9]{64}$/.test(compilation.helperSha256),'Missing compiler identity');
+ for(const[name,hash]of Object.entries(compilation.configurations))same(sourceFiles[name],hash);
+ return digest(JSON.stringify({config,contract,esbuildVersion,script:builderSha256,sourceFiles,media,compilation}));
+}
 /** Match reviewed production text bytes across Windows checkouts; never relax the digest. */
 export function projectedMediaBytes(name,bytes,expected){
  if(digest(bytes)!==expected&&/\.(svg|json)$/.test(name))bytes=Buffer.from(bytes.toString('utf8').replace(/\r\n/g,'\n'));
@@ -56,7 +61,9 @@ export async function verifyModuleProjection(root,report,slugs){
   const bytes=await readFile(await regularPath(root,row.manifestPath)),manifest=JSON.parse(bytes);
   same(row.manifestSha256,digest(bytes));same(pointer.sha256,digest(bytes));same(row.files,manifest.files);same(row.version,manifest.version);
   const media=Object.fromEntries(Object.entries(manifest.files).filter(([name])=>name.startsWith('media/')));
-  const sourceSha=digest(JSON.stringify({config,contract,esbuildVersion,script:builder,sourceFiles:row.sourceFiles,media}));
+  const configurations=Object.fromEntries(['tsconfig.json',`games/${slug}/tsconfig.json`].map(name=>[name,digest(reader.read(name))]));
+  const compilation={format:1,projected:true,configurations,helperSha256:digest(await readFile(await regularPath(root,'scripts/module-source-projection.mjs')))};same(proof.compilation,compilation);
+  const sourceSha=moduleSourceSha256({config,contract,esbuildVersion,builderSha256:builder,sourceFiles:row.sourceFiles,media,compilation});
   same(manifest.sourceSha256,sourceSha);same(proof.sourceSha256,sourceSha);same(manifest.version,config.version+'-'+sourceSha.slice(0,12));
   expected[game]=row;
  }
