@@ -7,6 +7,7 @@ import { guardPath } from './guardNavigation';
 import { GUARD_STOPS, GUARD_BAR_TALKS, type GuardStop } from './guardRoutine';
 import { GUARD_CONTACT_RADIUS } from '../src/shared/guardCollision';
 import { ROOF } from '../src/shared/rooftop';
+import { TOILET } from '../src/shared/toilet';
 import { STREET } from '../src/shared/street';
 
 type Job = { id: string; decision: SecurityDecision };
@@ -20,7 +21,7 @@ export class Guards {
     // The map key identifies the person, while hall changes only at a doorway.
     state.guards.set('security', guard);
     this.duties.push({ guard, queue: [], path: [], elapsed: 0,
-      stops:{arcade:[...GUARD_STOPS.arcade],tables:[...GUARD_STOPS.tables],github:[...GUARD_STOPS.github],street:[...GUARD_STOPS.street],roof:[...GUARD_STOPS.roof]}, remaining:3,
+      stops:{arcade:[...GUARD_STOPS.arcade],tables:[...GUARD_STOPS.tables],github:[...GUARD_STOPS.github],street:[...GUARD_STOPS.street],roof:[...GUARD_STOPS.roof],toilet:[...GUARD_STOPS.toilet]}, remaining:3,
       duration:0, conversation:0, lastConversation:-1 });
   }
 
@@ -85,6 +86,7 @@ export class Guards {
   private route(d: Duty, goal: Point) {
     if(d.guard.hall==='street'&&(goal===GUARD_EXIT||goal===GUARD_HOME))goal=STREET.spawn;
     if(d.guard.hall==='roof'&&(goal===GUARD_EXIT||goal===GUARD_HOME))goal=ROOF.spawn;
+    if(d.guard.hall==='toilet'&&(goal===GUARD_EXIT||goal===GUARD_HOME))goal=TOILET.spawn;
     d.path = guardPath(d.guard, goal, hallObstacles(d.guard.hall));
   }
   private nextVisit(d: Duty) {

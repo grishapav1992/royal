@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { HALLS, hallLinks, hallObstacles, isExteriorHall, type HallId } from '../src/shared/world';
+import { HALLS, hallLinks, hallObstacles, isCasinoFloor, type HallId } from '../src/shared/world';
 import { atElevator, canTravelByElevator, elevatorDock, elevatorFloors } from '../src/shared/elevator';
 import { findPath, walkable } from '../src/game/navigation';
 import { LobbyRoom } from '../server/LobbyRoom';
@@ -8,7 +8,7 @@ import { accounts } from '../server/accounts';
 
 test('every registered floor has a reachable independent elevator approach and exit', () => {
   const floors = elevatorFloors();
-  assert.deepEqual(new Set(floors), new Set(Object.keys(HALLS).filter(hall=>!isExteriorHall(hall))));
+  assert.deepEqual(new Set(floors), new Set(Object.keys(HALLS).filter(isCasinoFloor)));
   assert.deepEqual(floors.map(hall => HALLS[hall].floor), [...floors.map(hall => HALLS[hall].floor)].sort((a, b) => a - b));
   for (const hall of floors) {
     const dock = elevatorDock(hall), obstacles = hallObstacles(hall);

@@ -1,4 +1,9 @@
 export const streetEnglish:Record<string,string>={
+  'Туалет':'Restroom',
+  'Весь туалет':'Whole restroom',
+  'Карта туалета':'Restroom map',
+  'Открыть весь туалет':'Show the whole restroom',
+  'Нажми, чтобы посмотреть весь туалет':'Click to see the whole restroom',
   'Крыша казино':'Casino rooftop',
   'КРЫША КАЗИНО':'CASINO ROOFTOP',
   'НА КРЫШУ':'ROOFTOP',

@@ -77,8 +77,8 @@ test('roof has a safe complete walking loop, solid equipment and guarded edges',
   assert(!canTravelByElevator({ hall: 'arcade', x: 1060, y: 290 }, 'roof'));
 });
 
-test('roof uses only the rear street stairs, with safe arrivals and real multi-door navigation', () => {
-  assert.deepEqual(hallLinks('roof').map(link => link.target), ['street']);
+test('roof connects the rear street stairs and discreet restroom window with safe arrivals', () => {
+  assert.deepEqual(hallLinks('roof').map(link => link.target), ['street','toilet']);
   assert.equal(hallLinkAt({ hall: 'street', ...STREET_ROOF_STAIRS.entry })?.target, 'roof');
   assert.equal(hallLinkAt({ hall: 'roof', ...ROOF_STAIRS.entry })?.target, 'street');
   for (const hall of ['street', 'roof'] as const) for (const link of hallLinks(hall)) {

@@ -5,6 +5,7 @@ import type { HallId } from '../src/shared/world';
 
 export type GuardStop = { id: string; x: number; y: number; facing: Facing; activity: 'chat' | 'window' | 'inspect' | 'watch' };
 export const GUARD_STOPS: Record<HallId, GuardStop[]> = {
+  toilet:[{id:'toilet-window',x:205,y:330,facing:'up',activity:'inspect'}],
   roof: [
     { id:'roof-hatch', x:700, y:700, facing:'left', activity:'inspect' },
     { id:'roof-terrace', x:1700, y:1060, facing:'down', activity:'watch' },

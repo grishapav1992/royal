@@ -5,6 +5,8 @@ import { ROOF, ROOF_STAIRS, ROOF_STAIR_ROUTE } from '../shared/rooftop';
 import { paintStreetCrown } from './streetArt';
 import { STREET } from '../shared/street';
 import { roofStairContains } from './roofStairInput';
+import { ROOF_TOILET } from '../shared/toilet';
+import { paintRoofToilet,paintRoofToiletStep } from './ToiletRenderer';
 
 type Paint = CanvasRenderingContext2D;
 const ink = '#292b36', snow = '#f4f8fc', gold = '#edc566';
@@ -204,7 +206,7 @@ export class StreetRoofStairs {
 
 export class RooftopRenderer {
   readonly mapCanvas: HTMLCanvasElement;
-  constructor(scene: Phaser.Scene, leave: () => void) {
+  constructor(scene: Phaser.Scene, leave: () => void,enterToilet:()=>void=()=>{}) {
     const lang = t('КРЫША КАЗИНО'), groundKey = 'casino-roof-ground-' + lang;
     const base = texture(scene, groundKey, ROOF.width, ROOF.height, ground);
     scene.add.image(0, 0, groundKey).setOrigin(0).setDepth(0);
@@ -215,6 +217,10 @@ export class RooftopRenderer {
       scene.add.image(x, y, key).setOrigin(0, 1).setDepth(y); map.drawImage(art, x, y - h, w, h);
     };
     prop('casino-roof-hatch-' + lang, ROOF.hatch.x, 580, 180, 170, hatch);
+    const toilet=ROOF_TOILET;
+    prop('casino-roof-toilet-window-v1',toilet.body.x,toilet.body.y+toilet.body.h,180,160,paintRoofToilet);
+    prop('casino-roof-toilet-step-v1',toilet.step.x,toilet.step.y+toilet.step.h,60,24,paintRoofToiletStep);
+    scene.add.zone(toilet.click.x,toilet.click.y,120,110).setDepth(700).setInteractive({useHandCursor:true}).on('pointerdown',enterToilet);
     for (const v of ROOF.vents) prop('casino-roof-vent-' + v.w, v.x, v.y + v.h, v.w, v.h + 32, c => vent(c, v.w, v.h));
     for (const b of ROOF.benches) prop('casino-roof-bench', b.x, b.y + b.h, 190, 74, bench);
     prop('casino-roof-antenna', ROOF.antenna.x, ROOF.antenna.y + ROOF.antenna.h, 100, 148, antenna);

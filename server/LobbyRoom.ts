@@ -604,7 +604,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     p.stairStep=p.hall==='street'?advanceRoofStairStep(p.stairStep,p):0;
     if(!previous&&p.stairStep===1){p.x=STREET_ROOF_STAIRS.foot.x;p.y=STREET_ROOF_STAIRS.foot.y;p.stairDirection=1;}
     const link=hallLinkAt(p);if(!link)return false;
-    if(link.target==='roof'&&p.stairStep!==ROOF_STAIR_ROUTE.length)return false;
+    if(p.hall==='street'&&link.target==='roof'&&p.stairStep!==ROOF_STAIR_ROUTE.length)return false;
     this.activities.leave(id);this.releaseCabinet(id);this.stop(id);this.stand(id);
     const hall=link.target,arrival=playerHallArrival(p.hall,link);
     p.hall=hall;p.hallRevision++;Object.assign(p,arrival);c.lastTarget=0;

@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_RETURN } from '../src/shared/rooftop';
+import {TOILET,ROOF_TOILET,TOILET_WINDOW,toiletSinkApproaches,toiletCubicleStanding} from '../src/shared/toilet';
 import { projectStreetPoint,StreetView } from '../src/game/streetView';
 
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
@@ -115,6 +116,7 @@ async function keyUntil(page:Page,key:string,condition:()=>Promise<boolean>,time
 }
 
 test('manually climb each switchback without falling, reach the roof edge and return with chat intact', async ({ page }, info) => {
+  test.setTimeout(270000);
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
   await page.getByLabel('Почта', { exact: true }).fill(`roof-${crypto.randomUUID()}@example.test`);
@@ -249,6 +251,34 @@ test('manually climb each switchback without falling, reach the roof edge and re
   await overview(page, true);
   await page.screenshot({ path: `../roof-${info.project.name}-overview.png` });
   for (const p of ROOF.loop) await walk(page, p.x, p.y);
+  await expect(page.locator('[data-floor-target="toilet"]')).toHaveCount(0);
+  await clickWorld(page,ROOF_TOILET.click.x,ROOF_TOILET.click.y);
+  await expect.poll(async()=>(await state(page)).hall,{timeout:20000}).toBe('toilet');
+  await expect.poll(async()=>(await state(page)).switching).toBe(false);
+  await expect(page.locator('h1')).toContainText('Туалет');
+  await expect(page.locator('#elevator-shortcut')).toBeHidden();await expect(page.locator('#games-tab')).toBeHidden();
+  await expect(page.locator('#chat-input')).toBeEnabled();await expect(page.locator('#wallet-balance')).toHaveText(balance!);
+  await overview(page,true);
+  expect((await state(page)).toilet.variant).toBe(1);
+  for(let i=0;i<toiletCubicleStanding.length;i++){
+    const point=toiletCubicleStanding[i];await walk(page,point.x,point.y);
+    await expect.poll(async()=>(await state(page)).toilet.openDoors[i]).toBe(true);
+    await walk(page,point.x,430);
+  }
+  for(const point of toiletSinkApproaches)await walk(page,point.x,point.y);
+  await walk(page,400,470);
+  await page.screenshot({path:`../toilet-impl-${info.project.name}-interior.png`});
+  const toiletRoomId=(await page.evaluate(()=>(window as any).royalDemo.getNetworkState())).roomId;
+  await page.reload();await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
+  await expect.poll(async()=>(await state(page)).online).toBe(true);expect((await state(page)).hall).toBe('toilet');
+  expect((await page.evaluate(()=>(window as any).royalDemo.getNetworkState())).roomId).toBe(toiletRoomId);
+  await overview(page,true);
+  if(info.project.name==='mobile')await clickWorld(page,TOILET_WINDOW.click.x,TOILET_WINDOW.click.y);
+  else{await walk(page,TOILET_WINDOW.entry.x,330);await page.keyboard.down('w');}
+  try{await expect.poll(async()=>(await state(page)).hall,{timeout:20000}).toBe('roof');await expect.poll(async()=>(await state(page)).switching).toBe(false);await page.waitForTimeout(250);expect((await state(page)).hall).toBe('roof');}
+  finally{if(info.project.name!=='mobile')await page.keyboard.up('w');}
+  await expect(page.locator('#wallet-balance')).toHaveText(balance!);
+  await page.screenshot({path:`../toilet-impl-${info.project.name}-roof-return.png`});
   await walk(page, 960, 1050); await overview(page, false);
   await page.screenshot({ path: `../roof-${info.project.name}-terrace.png` });
   const before = await state(page); await page.emulateMedia({reducedMotion:'reduce'}); await page.reload();

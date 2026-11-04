@@ -19,6 +19,7 @@ export const LUELON_NEW_ZONE_OBSTACLES: Obstacle[] = [];
 export const CLUB_ZONES: Record<HallId, ClubZone[]> = {
   street: [],
   roof: [],
+  toilet: [],
   arcade: [
     {name:translateText('БАР МИРЫ'),x:100,y:285,w:350,h:360,color:0x352b38},
     {name:translateText('МУЗЫКАЛЬНЫЙ САЛОН'),x:620,y:285,w:400,h:360,color:0x443042},

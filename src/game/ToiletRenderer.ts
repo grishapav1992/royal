@@ -1,0 +1,94 @@
+import type Phaser from 'phaser';
+import { TOILET,TOILET_WINDOW,ROOF_TOILET } from '../shared/toilet';
+
+type Paint=CanvasRenderingContext2D;
+const ink='#302f35',cream='#f2ead3',gold='#c9aa70';
+function box(c:Paint,x:number,y:number,w:number,h:number,color:string,line=1.5,edge=ink){c.fillStyle=color;c.fillRect(x,y,w,h);if(line){c.lineWidth=line;c.strokeStyle=edge;c.strokeRect(x,y,w,h);}}
+function line(c:Paint,x:number,y:number,x2:number,y2:number,color:string,width=2){c.beginPath();c.moveTo(x,y);c.lineTo(x2,y2);c.strokeStyle=color;c.lineWidth=width;c.stroke();}
+function oval(c:Paint,x:number,y:number,w:number,h:number,color:string,stroke='',width=1.5){c.beginPath();c.ellipse(x,y,w/2,h/2,0,0,Math.PI*2);c.fillStyle=color;c.fill();if(stroke){c.strokeStyle=stroke;c.lineWidth=width;c.stroke();}}
+
+export function paintServiceWindow(c:Paint,x:number,y:number){
+  box(c,x,y,104,92,'#c1c9ba',2.5);box(c,x+7,y+7,90,78,'#273139',1);
+  box(c,x+8,y+8,88,34,'#87a5a3',2);line(c,x+24,y+30,x+45,y+14,'#c5d7cd');
+  box(c,x+6,y+40,92,7,'#b3bdac',2);box(c,x+45,y+41,14,3,'#6e7b74',0);
+  box(c,x-8,y+89,120,8,cream,1.5);line(c,x+20,y+94,x+33,y+94,'#a89d86',1.5);
+}
+export function paintRoofToilet(c:Paint){
+  box(c,0,0,180,160,'#684550',3);box(c,0,0,180,14,'#b2b9ac',2);
+  paintServiceWindow(c,38,28);line(c,19,135,40,135,'#543b46');line(c,146,56,159,68,'#543b46');
+  oval(c,48,1,88,10,'#f4f8fc');oval(c,131,2,92,9,'#f4f8fc');
+}
+export function paintRoofToiletStep(c:Paint){
+  box(c,0,0,60,24,'#8d826b',2);box(c,0,0,60,5,'#b1a38b',1);
+  for(const x of [8,48])box(c,x,6,4,16,'#6c675a',0);
+  line(c,17,18,42,18,'#d1c2a1');
+}
+function paintCubicle(c:Paint,p:typeof TOILET.cubicles[number]){
+  c.save();c.translate(p.x,p.y);
+  for(let y=8;y<132;y+=40)for(let x=8;x<92;x+=40)box(c,x,y,Math.min(40,92-x),Math.min(40,132-y),['#d8d7c8','#becac1'][(Math.floor(x/40)+Math.floor(y/40))%2],.7,'#9da99e');
+  box(c,33,18,34,16,cream,1.5);box(c,34,18,32,4,'#fff6df',1);box(c,55,25,5,2,'#7d9391',0);
+  oval(c,50,55,34,42,'#e6e5d1',ink);oval(c,50,54,26,34,'#f7f1dc');oval(c,50,54,21,28,'#8ba7a2');
+  box(c,88,49,4,18,'#657b75',1);box(c,80,50,10,16,cream,1);box(c,82,65,7,9,'#fff6df',1);line(c,81,54,89,54,'#aaa89a',1);
+  oval(c,20,74,12,14,'#657e73',ink,1);
+  for(const [x,y,w,h]of [[0,0,100,8],[0,0,8,140],[92,0,8,140],[0,132,18,8],[82,132,18,8]])box(c,x,y,w,h,'#81958a');
+  c.restore();
+}
+function paintToilet(c:Paint){
+  box(c,0,0,TOILET.width,TOILET.height,'#202536',0);
+  const f=TOILET.floor;
+  for(let y=f.y;y<f.y+f.h;y+=40)for(let x=f.x;x<f.x+f.w;x+=40)box(c,x,y,Math.min(40,f.x+f.w-x),Math.min(40,f.y+f.h-y),['#d8d7c8','#becac1'][((x-f.x)/40+(y-f.y)/40)%2],.8,'#9da99e');
+  for(let y=120;y<240;y+=30)for(let x=f.x;x<f.x+f.w;x+=40)box(c,x,y,40,30,'#e8dfc9',.7,'#c4c6b7');
+  box(c,f.x,213,f.w,27,'#54776e',0);box(c,f.x,210,f.w,3,gold,0);box(c,f.x-4,116,f.w+8,8,'#b6bcae',2);
+  for(const [x,y,w,h]of [[76,236,648,8],[76,236,8,308],[716,236,8,308],[76,536,648,8]])box(c,x,y,w,h,'#81958a');
+  paintServiceWindow(c,TOILET.window.x,TOILET.window.y);
+  const s=TOILET.step;box(c,s.x,s.y,s.w,s.h,'#9b8d76');box(c,s.x-2,s.y,s.w+4,5,'#c3b49a',1);
+  const p=TOILET.counter;box(c,p.x,p.y,p.w,p.h,'#a7ada0',2);box(c,p.x,p.y+p.h-5,p.w,5,'#747e75',1);
+  for(let i=0;i<2;i++){
+    const cx=p.x+(i+.5)*p.w/2;
+    box(c,cx-31,152,62,75,gold,2);box(c,cx-27,156,54,67,'#8eaaa8',1);line(c,cx-18,204,cx+14,165,'#d0ded3');
+    oval(c,cx,p.y+23,55,29,cream,ink);oval(c,cx,p.y+23,39,17,'#9cb5ae');oval(c,cx,p.y+23,4,4,'#536f70');
+    box(c,cx-3,p.y+6,6,8,'#b9c8bf',1);line(c,cx,p.y+8,cx,p.y+16,'#526d71',3);
+    box(c,cx+32,p.y+12,8,15,'#e4dfcb',1);box(c,cx+34,p.y+9,5,3,'#6e8982',0);
+  }
+  box(c,p.x+p.w+6,180,19,31,'#c7c7b6',1);box(c,p.x+p.w+9,205,13,12,cream,1);
+  TOILET.cubicles.forEach(p=>paintCubicle(c,p));
+  const r=TOILET.radiator,b=TOILET.bin;
+  box(c,r.x,r.y,r.w,r.h,'#788d81',1);for(let y=r.y+4;y<r.y+r.h-3;y+=8)box(c,r.x+2,y,r.w-4,4,'#d6d8c4',1);
+  box(c,b.x,b.y,b.w,b.h,'#536a60');box(c,b.x-2,b.y-2,b.w+4,6,'#344d45',1);line(c,b.x+7,b.y+9,b.x+7,b.y+b.h-5,'#91a394',1.5);
+  box(c,320,486,38,15,'#8b9b91',1);for(let x=325;x<355;x+=6)line(c,x,489,x,498,'#4b6260',1.5);
+}
+function paintDoor(c:Paint,p:typeof TOILET.cubicles[number],open:boolean){
+  if(open){box(c,p.x+9,p.y+72,4,64,'#713c4c',1);box(c,p.x+13,p.y+77,3,2,gold,0);}
+  else{box(c,p.x+18,p.y+134,64,4,'#713c4c',1);box(c,p.x+71,p.y+134,6,2,gold,0);oval(c,p.x+88,p.y+136,3.6,3.6,'#a7bc90');}
+}
+
+export class ToiletRenderer{
+  readonly mapCanvas:HTMLCanvasElement;
+  private base:HTMLCanvasElement;
+  private doors:Phaser.GameObjects.Graphics;
+  private open=[false,false,false];
+  constructor(scene:Phaser.Scene,leave:()=>void){
+    this.base=document.createElement('canvas');this.base.width=TOILET.width;this.base.height=TOILET.height;
+    paintToilet(this.base.getContext('2d')!);
+    const key='casino-toilet-rectangle-v1';if(!scene.textures.exists(key))scene.textures.addCanvas(key,this.base);
+    scene.add.image(0,0,key).setOrigin(0).setDepth(0);
+    this.mapCanvas=document.createElement('canvas');this.mapCanvas.width=TOILET.width;this.mapCanvas.height=TOILET.height;
+    this.doors=scene.add.graphics().setDepth(15);this.drawDoors();
+    scene.add.zone(TOILET_WINDOW.click.x,TOILET_WINDOW.click.y,120,110).setDepth(700).setInteractive({useHandCursor:true}).on('pointerdown',leave);
+  }
+  private drawDoors(){
+    const g=this.doors;g.clear();const c=this.mapCanvas.getContext('2d')!;c.drawImage(this.base,0,0);
+    TOILET.cubicles.forEach((p,i)=>{
+      const open=this.open[i];paintDoor(c,p,open);
+      g.fillStyle(0x713c4c).lineStyle(1,0x302f35);
+      if(open){g.fillRect(p.x+9,p.y+72,4,64).strokeRect(p.x+9,p.y+72,4,64);g.fillStyle(0xc9aa70).fillRect(p.x+13,p.y+77,3,2);}
+      else{g.fillRect(p.x+18,p.y+134,64,4).strokeRect(p.x+18,p.y+134,64,4);g.fillStyle(0xc9aa70).fillRect(p.x+71,p.y+134,6,2);g.fillStyle(0xa7bc90).fillCircle(p.x+88,p.y+136,1.8);}
+    });
+  }
+  update(people:readonly {x:number;y:number}[]){
+    const open=TOILET.cubicles.map(p=>people.some(person=>
+      Math.hypot(person.x-p.x-50,person.y-p.y-140)<82||person.x>p.x&&person.x<p.x+p.w&&person.y>p.y&&person.y<p.y+p.h));
+    if(open.some((value,i)=>value!==this.open[i])){this.open=open;this.drawDoors();}
+  }
+  getState(){return {variant:1,openDoors:[...this.open],floor:TOILET.floor};}
+}
