@@ -46,6 +46,12 @@ def validate_after(app, after, modules):
     require(compared == expected, 'Unrelated production change during module activation')
 
 
+def validate_module_config(baseline, selected):
+    expected = copy.deepcopy(baseline)
+    expected['compilerOptions']['resolveJsonModule'] = True
+    require(selected == expected, 'Unreviewed module compiler configuration')
+
+
 def payload(b):
     m, old, scope = b.M, b.OLD, read(ROOT / 'scope.json')
     require(ROOT == Path('/opt/royal-releases') / NAME and m['release'] == NAME, 'Unexpected release path')
@@ -77,7 +83,11 @@ def payload(b):
     require(backend['output']['path'] == 'dist-server/index.js' and backend['output']['sha256'] == b.SERVER_DELTA['index.js'] == release['files']['dist-server/index.js'], 'Unverified backend bytes')
     module = release['build']['moduleProjection']
     require(set(module['modules']) == {GAME} and module['productionCommit'] == m['baseCommit'], 'Unrequested module projection')
-    validate_inputs(module, old, b.CHANGES)
+    config = m['moduleBuildConfiguration']
+    require(config['baselineSha256'] == old['sourceLF']['tsconfig.json'] and sha(ROOT / 'baseline-tsconfig.json') == config['baselineSha256'], 'Baseline compiler source differs')
+    require(config['selectedSha256'] == scope['moduleBuildInputs']['tsconfig.json'] and sha(ROOT / 'module-tsconfig.json') == config['selectedSha256'], 'Module compiler source differs')
+    validate_module_config(read(ROOT / 'baseline-tsconfig.json'), read(ROOT / 'module-tsconfig.json'))
+    validate_inputs(module, old, b.CHANGES, scope['moduleBuildInputs'])
     for name, digest in release['files'].items():
         if name.startswith('dist/'):
             require(old['program'].get(name) == digest, 'Client host would change: ' + name)
