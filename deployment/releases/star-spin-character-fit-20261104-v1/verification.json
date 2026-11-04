@@ -44,7 +44,11 @@
     "allFourCharactersInspected": true,
     "staticAndAnimatedVesperaInspected": true,
     "vesperaPortraitInspected": true,
-    "physicalDevices": false
+    "physicalDevices": false,
+    "backendSha256": "7b11acb06fdbc5ff43a9cd18f9bdf5a687ca11ccd086562508150a48a9d6684a",
+    "backendEqualsProduction": true,
+    "previewStopped": true,
+    "temporaryDatabaseRemoved": true
   },
   "scope": {
     "mathematicsChanged": false,
@@ -56,5 +60,30 @@
   "limitations": [
     "Shared project graph unavailable; direct source inspection used.",
     "Only Chrome viewports were used; no physical device connected."
-  ]
+  ],
+  "productionBaseline": {
+    "sourceCommit": "5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e",
+    "image": "sha256:08d83a2095974b1baaad62e376149e38f74c31f9319da9c6dbefbc1f49859713",
+    "sourceFiles": 2698,
+    "runtimeFiles": 8593,
+    "services": 14,
+    "moduleFiles": 4236,
+    "freeBytes": 10723659776
+  },
+  "sourceEquivalence": {
+    "lineEndings": 8,
+    "typeOnly": 1,
+    "record": "input-equivalence.json"
+  },
+  "linuxGuardTests": 6,
+  "unchangedOtherCharacterBinaries": [
+    "lyra",
+    "aeliri",
+    "nyxara"
+  ],
+  "walletVerification": {
+    "mandatoryTestsReused": 19,
+    "fromRelease": "star-spin-ui-20261103-v1",
+    "reason": "No wallet, transport, backend or mathematical code changed; compiled local test backend equals the verified production byte hash."
+  }
 }

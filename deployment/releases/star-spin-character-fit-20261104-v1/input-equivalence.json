@@ -1,0 +1,56 @@
+{
+  "format": 1,
+  "productionCommit": "5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e",
+  "package": "1.5.1-a6511d3f697d",
+  "rows": {
+    "src/modules/GameHostContract.ts": {
+      "kind": "type-only-runtime-equal",
+      "inputSha256": "ead24006bf5e273d25c80f1077f910c905002e7a185ce8767044c845e57fe9e3",
+      "canonicalSha256": "006975e6d1dd642145f0b3a97e6fa151833e3412c83166eb03efbf6b47854303",
+      "productionLFSha256": "328b39ef96f8cd544e892234c68dd3662bf1cca29d74b890e95c409aa285416b",
+      "runtimeSha256": "ef882d0cbdee73d9377a151331b160fc4c2e4e3fb613144e341628444b9b2df6",
+      "esbuildVersion": "0.28.2",
+      "passed": true
+    },
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "kind": "line-endings-only",
+      "inputSha256": "816ec08e3f6f6e1c40c19d6f4ec831cb126419e5fc6a98aa85acfa256965fe5a",
+      "productionLFSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+    },
+    "src/shared/forestHeartMath.ts": {
+      "kind": "line-endings-only",
+      "inputSha256": "40b7a564bd4e501dcbbcebe6f3e452558b635bdeb0578b56aaa72b14a6a77d10",
+      "productionLFSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
+    },
+    "src/shared/gameStakes.ts": {
+      "kind": "line-endings-only",
+      "inputSha256": "92465316e0c40809ded5766a4859580b90f172fbe75309b33fc2c1b51573f343",
+      "productionLFSha256": "ed37796de3dfbee550b1705a6a3d55e5c400de78a17ffa0e38d9010e2054b039"
+    },
+    "src/shared/neopolisMath.ts": {
+      "kind": "line-endings-only",
+      "inputSha256": "cc11d30b13b9e6208bdbcde6af7a04d8d565583ddf88bd11347fbffb55373e29",
+      "productionLFSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+    },
+    "src/shared/neopolisStakePayouts.ts": {
+      "kind": "line-endings-only",
+      "inputSha256": "1faf717d2225d499a080f001c4fbab6030276280ced163bb66ef65c88d0ad499",
+      "productionLFSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+    },
+    "src/shared/roundPrecision.ts": {
+      "kind": "line-endings-only",
+      "inputSha256": "7c6e2f779af22150a1881ba597cdad36752f1da232ef0c40e43fb7db0a86c02b",
+      "productionLFSha256": "38713d4db338dabf7ebaf09135d6ed0de015ddf5bea13501893d3a793e3cf581"
+    },
+    "src/shared/walletAccount.ts": {
+      "kind": "line-endings-only",
+      "inputSha256": "de458b6a0a4c4f6a21ef3b4c21b14ccdd60587f032993176d08d0e2acf1f3615",
+      "productionLFSha256": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560"
+    },
+    "src/ui/GameLayoutPolicy.ts": {
+      "kind": "line-endings-only",
+      "inputSha256": "f92017a5e09a9af72e86328af46e323c2f0ac24161dde1d7ac90244d3eabfea3",
+      "productionLFSha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c"
+    }
+  }
+}
