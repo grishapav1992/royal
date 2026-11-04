@@ -1,0 +1,33 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
+import {projectHostSource} from '../../../scripts/build-host-projection.mjs';
+const work='artifacts/work/royal-bar-mira/',folder='deployment/releases/royal-bar-mira-20261104-v3/';
+const old=JSON.parse(fs.readFileSync(work+'production-before.json')),fresh=JSON.parse(fs.readFileSync(work+'production-refreshed.json'));
+const payload=JSON.parse(fs.readFileSync(work+'payload-v3/install-manifest.json'));
+const release=JSON.parse(fs.readFileSync('module-build/release-manifest.json'));
+const projection=JSON.parse(fs.readFileSync('deployment/releases/jackie-motion-20261104-v4/module-projection.json'));
+const git=(...args)=>execFileSync('git',args,{maxBuffer:32*1024**2});
+const sha=b=>createHash('sha256').update(b).digest('hex');
+for(const key of ['sourceCommit','program','preparedProgram','preparedImage','container','moduleHostContract','moduleHost','configHashes','services','serviceProfiles','protectedPrograms','realMoneyFlags'])assert.deepEqual(fresh[key],old[key],'Unreviewed baseline change: '+key);
+assert.equal(fresh.sourceCommit,release.baseCommit);
+const names=['games/jackie-chan/JackieScene.ts','games/jackie-chan/JackieUI.ts','games/jackie-chan/layout.css'];
+const sourceChanges=Object.keys(fresh.source).filter(n=>fresh.source[n]!==old.source[n]);assert.deepEqual(sourceChanges.toSorted(),names.toSorted());assert.deepEqual(Object.keys(fresh.source).sort(),Object.keys(old.source).sort());
+for(const name of names){
+ assert(!release.hostProjection.inputs[name]&&!release.backendProjection.inputs[name],'Compiled application input changed');
+ const row=projection.files[name];assert(row);git('merge-base','--is-ancestor',row.commit,'origin/main');
+ const bytes=projectHostSource(row,git('show',row.commit+':'+row.path));assert.equal(sha(bytes),fresh.source[name],'Independent module source differs from its committed projection');
+}
+for(const graph of [release.hostProjection,release.backendProjection])for(const name of Object.keys(graph.inputs))assert.equal(fresh.source[name],old.source[name],'Compiled input changed: '+name);
+const moduleNames=[...new Set([...Object.keys(old.moduleFiles),...Object.keys(fresh.moduleFiles)])];
+const changed=moduleNames.filter(n=>old.moduleFiles[n]!==fresh.moduleFiles[n]);assert.equal(changed.length,41);
+assert(changed.every(n=>n.startsWith('/opt/royal-game-modules/original-jackie-chan/')));
+assert(changed.every(n=>fresh.moduleFiles[n]));
+const pointer='/opt/royal-game-modules/original-jackie-chan/active.json';
+assert.equal(fresh.moduleFiles[pointer],'ca36ab41e1f8b0dfffe070688dcdc0eec38c7135cafd710a918824019d450b95');
+const record={reason:'Independent Jackie module publication between initial capture and the guarded install; first attempt stopped before mutation',applicationSourceCommit:release.sourceCommit,installerSourceCommit:payload.helperSourceCommit,productionCommit:fresh.sourceCommit,unchangedImage:fresh.container.image,firstManifestSha256:sha(fs.readFileSync(work+'payload-v3/install-manifest.json')),freshSnapshotSha256:sha(fs.readFileSync(work+'production-refreshed.json')),independentSourceProjection:'deployment/releases/jackie-motion-20261104-v4/module-projection.json',sourceChanges:names.map(name=>({path:name,before:old.source[name],after:fresh.source[name]})),moduleChanges:changed.map(name=>({path:name,before:old.moduleFiles[name]??null,after:fresh.moduleFiles[name]})),preservedModule:{gameId:'original-jackie-chan',version:'1.2.1-e9b60e76ef5e',pointerSha256:fresh.moduleFiles[pointer],manifestSha256:'eb7acc4ac043c37b4c4be05115823d6f020eb1884fafce003f311795c06a5fc3',apiVersion:1,rulesVersion:1,progressVersion:2},compiledInputsUnchanged:true,programsUnchanged:true,servicesAndConfigurationUnchanged:true,addedGames:[],restoredGames:[]};
+fs.writeFileSync(folder+'baseline-reconciliation.json',JSON.stringify(record,null,2)+'\n');
+payload.before=fresh;
+fs.writeFileSync(work+'rebound-install-manifest.json',JSON.stringify(payload,null,2)+'\n');
+console.log(JSON.stringify({sourceChanges:sourceChanges.length,moduleChanges:changed.length,compiledInputsUnchanged:true,newManifestSha256:sha(fs.readFileSync(work+'rebound-install-manifest.json'))}));
