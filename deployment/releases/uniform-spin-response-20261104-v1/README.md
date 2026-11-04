@@ -12,6 +12,8 @@ Publish only the 17 changed compatible modules and the 26 declared presentation 
 
 The fixed prepared application source is `44d534b987d6e648d856f84afd350b43f3083812`, retained in `codex/uniform-spin-response`. The status record and reproducible test harness were committed separately after preparation. They do not identify a new application artifact. Publication is pending because another release holds the locks. Do not install against an outdated production snapshot or treat the maintenance of the previous release as maintenance of this one.
 
+`continuation.py` preserves the subsequently published lobby recovery release from `97d9eac8e811db0389002ce697865782f9707f41`. Its committed review binds the eleven lobby source changes, four program paths, exact current image and snapshot reader. Every game input, presentation origin, module pointer, host contract, setting and other service must still match. A separate GitHub receipt binds this tooling to the unchanged application artifact. The original guarded publisher performs a fresh inventory under nonblocking publication locks and preserves the newer host/backend without restarting them. No preparation or tests hold production locks; contention exits 75 for an explicit retry. A further production change requires another review.
+
 With the exact verified production host/backend and prepared module outputs in the normal build directories, the committed host gateway reproduces the successful built-artifact browser run:
 
 ```powershell
