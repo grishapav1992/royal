@@ -289,7 +289,7 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/game/RoomScene.ts",
       "baseSha256": "d7e1b0f05eb6be5dcf594ef0ea96e0edf902515b493bafa4f9ac3113745730a2",
-      "sha256": "99c20b4d4c9e2c7f8684a4a9fdd340a61575f9258324b1933a893f26fc199a16",
+      "sha256": "a655030b4fa8d62709680d3e3d5c98ad7a915300b6d24fda43adc950384f7cdb",
       "patches": [
         {
           "from": "ngLounge.startsW",
@@ -370,6 +370,10 @@
         {
           "from": "elevator: commands.elevator, cat: comman",
           "to": "recover: commands.recover, elevator: commands.elevator, cat: comman"
+        },
+        {
+          "from": "    if (this.network) return await this.network.recover?.() ?? false;\n",
+          "to": "    if (this.network) { this.cancelCabinetAdmission?.(); return await this.network.recover?.() ?? false; }\n"
         }
       ]
     },
