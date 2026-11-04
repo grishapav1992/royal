@@ -218,7 +218,7 @@ export class RooftopRenderer {
     };
     prop('casino-roof-hatch-' + lang, ROOF.hatch.x, 580, 180, 170, hatch);
     const toilet=ROOF_TOILET;
-    prop('casino-roof-toilet-window-v1',toilet.body.x,toilet.body.y+toilet.body.h,180,160,paintRoofToilet);
+    prop('casino-roof-toilet-window-v2',toilet.body.x,toilet.body.y+toilet.body.h,180,160,paintRoofToilet);
     prop('casino-roof-toilet-step-v1',toilet.step.x,toilet.step.y+toilet.step.h,60,24,paintRoofToiletStep);
     scene.add.zone(toilet.click.x,toilet.click.y,120,110).setDepth(700).setInteractive({useHandCursor:true}).on('pointerdown',enterToilet);
     for (const v of ROOF.vents) prop('casino-roof-vent-' + v.w, v.x, v.y + v.h, v.w, v.h + 32, c => vent(c, v.w, v.h));

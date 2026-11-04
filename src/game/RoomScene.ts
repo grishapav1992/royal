@@ -174,7 +174,7 @@ export class RoomScene extends Phaser.Scene {
         continue;
       }
       if(hall==='toilet'){
-        this.toilet=new ToiletRenderer(this,()=>this.approachFloor('roof'));
+        this.toilet=new ToiletRenderer(this,()=>this.approachFloor('roof'),this.rooftop?.mapCanvas);
         this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
         continue;
       }

@@ -1,21 +1,35 @@
 import type Phaser from 'phaser';
-import { TOILET,TOILET_WINDOW,ROOF_TOILET } from '../shared/toilet';
+import { TOILET,TOILET_WINDOW } from '../shared/toilet';
 
 type Paint=CanvasRenderingContext2D;
 const ink='#302f35',cream='#f2ead3',gold='#c9aa70';
+type WindowView={image:HTMLCanvasElement;x:number;y:number;w:number;h:number};
+let toiletWindowView:HTMLCanvasElement|undefined;
 function box(c:Paint,x:number,y:number,w:number,h:number,color:string,line=1.5,edge=ink){c.fillStyle=color;c.fillRect(x,y,w,h);if(line){c.lineWidth=line;c.strokeStyle=edge;c.strokeRect(x,y,w,h);}}
 function line(c:Paint,x:number,y:number,x2:number,y2:number,color:string,width=2){c.beginPath();c.moveTo(x,y);c.lineTo(x2,y2);c.strokeStyle=color;c.lineWidth=width;c.stroke();}
 function oval(c:Paint,x:number,y:number,w:number,h:number,color:string,stroke='',width=1.5){c.beginPath();c.ellipse(x,y,w/2,h/2,0,0,Math.PI*2);c.fillStyle=color;c.fill();if(stroke){c.strokeStyle=stroke;c.lineWidth=width;c.stroke();}}
 
-export function paintServiceWindow(c:Paint,x:number,y:number){
+export function paintServiceWindow(c:Paint,x:number,y:number,view?:WindowView){
   box(c,x,y,104,92,'#c1c9ba',2.5);box(c,x+7,y+7,90,78,'#273139',1);
-  box(c,x+8,y+8,88,34,'#87a5a3',2);line(c,x+24,y+30,x+45,y+14,'#c5d7cd');
+  if(view){
+    c.save();c.beginPath();c.rect(x+7,y+7,90,78);c.clip();
+    c.drawImage(view.image,view.x,view.y,view.w,view.h,x+7,y+7,90,78);
+    c.restore();
+  }
+  // The raised glazed sash stays translucent; the lower opening has no glass tint.
+  c.save();c.globalAlpha=.24;c.fillStyle='#87a5a3';c.fillRect(x+8,y+8,88,34);c.restore();
+  c.lineWidth=2;c.strokeStyle=ink;c.strokeRect(x+8,y+8,88,34);line(c,x+24,y+30,x+45,y+14,'#c5d7cd');
   box(c,x+6,y+40,92,7,'#b3bdac',2);box(c,x+45,y+41,14,3,'#6e7b74',0);
   box(c,x-8,y+89,120,8,cream,1.5);line(c,x+20,y+94,x+33,y+94,'#a89d86',1.5);
 }
 export function paintRoofToilet(c:Paint){
   box(c,0,0,180,160,'#684550',3);box(c,0,0,180,14,'#b2b9ac',2);
-  paintServiceWindow(c,38,28);line(c,19,135,40,135,'#543b46');line(c,146,56,159,68,'#543b46');
+  if(!toiletWindowView){
+    toiletWindowView=document.createElement('canvas');toiletWindowView.width=TOILET.width;toiletWindowView.height=TOILET.height;
+    const interior=toiletWindowView.getContext('2d')!;paintToilet(interior);TOILET.cubicles.forEach(p=>paintDoor(interior,p,false));
+  }
+  paintServiceWindow(c,38,28,{image:toiletWindowView,x:350,y:100,w:370,h:370*78/90});
+  line(c,19,135,40,135,'#543b46');line(c,146,56,159,68,'#543b46');
   oval(c,48,1,88,10,'#f4f8fc');oval(c,131,2,92,9,'#f4f8fc');
 }
 export function paintRoofToiletStep(c:Paint){
@@ -33,14 +47,14 @@ function paintCubicle(c:Paint,p:typeof TOILET.cubicles[number]){
   for(const [x,y,w,h]of [[0,0,100,8],[0,0,8,140],[92,0,8,140],[0,132,18,8],[82,132,18,8]])box(c,x,y,w,h,'#81958a');
   c.restore();
 }
-function paintToilet(c:Paint){
+function paintToilet(c:Paint,roofView?:HTMLCanvasElement){
   box(c,0,0,TOILET.width,TOILET.height,'#202536',0);
   const f=TOILET.floor;
   for(let y=f.y;y<f.y+f.h;y+=40)for(let x=f.x;x<f.x+f.w;x+=40)box(c,x,y,Math.min(40,f.x+f.w-x),Math.min(40,f.y+f.h-y),['#d8d7c8','#becac1'][((x-f.x)/40+(y-f.y)/40)%2],.8,'#9da99e');
   for(let y=120;y<240;y+=30)for(let x=f.x;x<f.x+f.w;x+=40)box(c,x,y,40,30,'#e8dfc9',.7,'#c4c6b7');
   box(c,f.x,213,f.w,27,'#54776e',0);box(c,f.x,210,f.w,3,gold,0);box(c,f.x-4,116,f.w+8,8,'#b6bcae',2);
   for(const [x,y,w,h]of [[76,236,648,8],[76,236,8,308],[716,236,8,308],[76,536,648,8]])box(c,x,y,w,h,'#81958a');
-  paintServiceWindow(c,TOILET.window.x,TOILET.window.y);
+  paintServiceWindow(c,TOILET.window.x,TOILET.window.y,roofView?{image:roofView,x:1040,y:150,w:680,h:680*78/90}:undefined);
   const s=TOILET.step;box(c,s.x,s.y,s.w,s.h,'#9b8d76');box(c,s.x-2,s.y,s.w+4,5,'#c3b49a',1);
   const p=TOILET.counter;box(c,p.x,p.y,p.w,p.h,'#a7ada0',2);box(c,p.x,p.y+p.h-5,p.w,5,'#747e75',1);
   for(let i=0;i<2;i++){
@@ -67,10 +81,10 @@ export class ToiletRenderer{
   private base:HTMLCanvasElement;
   private doors:Phaser.GameObjects.Graphics;
   private open=[false,false,false];
-  constructor(scene:Phaser.Scene,leave:()=>void){
+  constructor(scene:Phaser.Scene,leave:()=>void,roofView?:HTMLCanvasElement){
     this.base=document.createElement('canvas');this.base.width=TOILET.width;this.base.height=TOILET.height;
-    paintToilet(this.base.getContext('2d')!);
-    const key='casino-toilet-rectangle-v1';if(!scene.textures.exists(key))scene.textures.addCanvas(key,this.base);
+    paintToilet(this.base.getContext('2d')!,roofView);
+    const key='casino-toilet-rectangle-v2';if(!scene.textures.exists(key))scene.textures.addCanvas(key,this.base);
     scene.add.image(0,0,key).setOrigin(0).setDepth(0);
     this.mapCanvas=document.createElement('canvas');this.mapCanvas.width=TOILET.width;this.mapCanvas.height=TOILET.height;
     this.doors=scene.add.graphics().setDepth(15);this.drawDoors();
