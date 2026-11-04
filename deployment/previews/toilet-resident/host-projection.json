@@ -2390,10 +2390,10 @@
       "sha256": "ef88e0386a347a5d31f94bf7979606909ca9ce1a44c76f34008893d3dacc6b38"
     },
     "src/game/toiletResidentArt.ts": {
-      "commit": "6e06bf45a07134f2cc6e276e5d961593ad1ed5f6",
+      "commit": "7d0124da353f9922b313d24de6b473ce3e82d957",
       "path": "src/game/toiletResidentArt.ts",
-      "baseSha256": "0c03d703cfbc7c309e3512495144b9c44602582d0bc19bb96edf6e35b42261f7",
-      "sha256": "0c03d703cfbc7c309e3512495144b9c44602582d0bc19bb96edf6e35b42261f7"
+      "baseSha256": "98756da567211157fa3c449a2f2688e8093d88412567139c7c5de3b725816ac1",
+      "sha256": "98756da567211157fa3c449a2f2688e8093d88412567139c7c5de3b725816ac1"
     },
     "src/game/toiletResidentPose.ts": {
       "commit": "8977776211bbeccbd856ed146e1873ac4bb172df",
