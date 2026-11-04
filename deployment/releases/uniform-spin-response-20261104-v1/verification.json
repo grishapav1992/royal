@@ -1,214 +1,610 @@
 {
   "format": 1,
-  "status": "ready_pending_publication",
+  "status": "published",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
   "release": "uniform-spin-response-20261104-v1",
-  "sourceCommit": "44d534b987d6e648d856f84afd350b43f3083812",
-  "productionBase": "64275feff275c9049a82e7b095dd89c4b71677da",
-  "sourcePreservedInMain": true,
-  "prepared": {
-    "manifestSha256": "69ceb7ca87c512ddd5fdfe6e06d4ce34aea25d10ef6ccdc13d71e787f43a2882",
-    "files": 491,
-    "modules": [
-      {
-        "gameId": "studio-cosmic-escape",
-        "version": "1.1.1-2274f1d3bf58"
-      },
-      {
-        "gameId": "studio-caramel-carnival",
-        "version": "1.1.1-faefb8ca47ca"
-      },
-      {
-        "gameId": "studio-velvet-reign",
-        "version": "1.1.1-286b92f7fe2a"
-      },
-      {
-        "gameId": "studio-last-convoy",
-        "version": "1.1.1-e534a8770a8d"
-      },
-      {
-        "gameId": "studio-nitro-run",
-        "version": "1.1.1-732024019c85"
-      },
-      {
-        "gameId": "studio-afterglow",
-        "version": "1.3.1-94e8ac1362c4"
-      },
-      {
-        "gameId": "studio-meme-overload",
-        "version": "1.1.1-8b70e1333efb"
-      },
-      {
-        "gameId": "studio-dracona",
-        "version": "1.2.1-d1d4e589229e"
-      },
-      {
-        "gameId": "studio-forest-heart",
-        "version": "1.16.1-bda322fdbdfd"
-      },
-      {
-        "gameId": "studio-caribbean-treasures",
-        "version": "1.7.1-a78e99ebf8e2"
-      },
-      {
-        "gameId": "studio-flooded-temple",
-        "version": "0.10.1-e8c2cd4af5f8"
-      },
-      {
-        "gameId": "studio-wild-nudge",
-        "version": "1.6.0-cf68e8a8b2b2"
-      },
-      {
-        "gameId": "flag-battle",
-        "version": "2.1.1-05c39fb398da"
-      },
-      {
-        "gameId": "royal-plinko",
-        "version": "1.1.1-f5fdc9a645bc"
-      },
-      {
-        "gameId": "original-cr-vs-leo",
-        "version": "1.1.1-fcfffa623d83"
-      },
-      {
-        "gameId": "original-jackie-chan",
-        "version": "1.2.1-53d19f3131cb"
-      },
-      {
-        "gameId": "github-crash",
-        "version": "1.1.1-878ddc306d18"
-      }
+  "sourceCommit": "aecb24d3706444d0a7050784cd692e3fe8ef3120",
+  "buildBaseCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+  "actualBaseCommit": "315fda47301591b5b1ed05806781fcc603cffdcb",
+  "toolSourceCommit": "e158e5416763f47dfd9e08d24bc889f43fc32a66",
+  "hostSourceCommit": "315fda47301591b5b1ed05806781fcc603cffdcb",
+  "runningImage": "sha256:d35fb87807807cf91d0c51181f70de1260892689de21d222bf88ef07a7481b4c",
+  "manifestSha256": "199aa72ce8f52fa3adca3a66b504b4a7f24e742efe3aa4e75bbeafbf375ac72b",
+  "modules": [
+    {
+      "gameId": "studio-cosmic-escape",
+      "version": "1.1.1-2274f1d3bf58"
+    },
+    {
+      "gameId": "studio-caramel-carnival",
+      "version": "1.1.1-faefb8ca47ca"
+    },
+    {
+      "gameId": "studio-velvet-reign",
+      "version": "1.1.1-286b92f7fe2a"
+    },
+    {
+      "gameId": "studio-last-convoy",
+      "version": "1.1.1-e534a8770a8d"
+    },
+    {
+      "gameId": "studio-nitro-run",
+      "version": "1.1.1-732024019c85"
+    },
+    {
+      "gameId": "studio-afterglow",
+      "version": "1.3.1-94e8ac1362c4"
+    },
+    {
+      "gameId": "studio-meme-overload",
+      "version": "1.1.1-8b70e1333efb"
+    },
+    {
+      "gameId": "studio-dracona",
+      "version": "1.2.1-d1d4e589229e"
+    },
+    {
+      "gameId": "studio-forest-heart",
+      "version": "1.16.1-bda322fdbdfd"
+    },
+    {
+      "gameId": "studio-caribbean-treasures",
+      "version": "1.7.1-a78e99ebf8e2"
+    },
+    {
+      "gameId": "studio-flooded-temple",
+      "version": "0.10.1-e8c2cd4af5f8"
+    },
+    {
+      "gameId": "studio-wild-nudge",
+      "version": "1.6.0-cf68e8a8b2b2"
+    },
+    {
+      "gameId": "flag-battle",
+      "version": "2.1.2-da5e20d1015f"
+    },
+    {
+      "gameId": "royal-plinko",
+      "version": "1.1.1-f5fdc9a645bc"
+    },
+    {
+      "gameId": "original-cr-vs-leo",
+      "version": "1.1.1-fcfffa623d83"
+    },
+    {
+      "gameId": "original-jackie-chan",
+      "version": "1.2.1-53d19f3131cb"
+    },
+    {
+      "gameId": "github-crash",
+      "version": "1.1.1-878ddc306d18"
+    }
+  ],
+  "source": {
+    "boundPaths": 28,
+    "changedPaths": [
+      "src/ui/AfterglowUI.ts",
+      "src/ui/CaramelCarnivalUI.ts",
+      "src/ui/CascadeSlotUI.ts",
+      "src/ui/CosmicEscapeUI.ts",
+      "src/ui/CrLeoUI.ts",
+      "src/ui/LastConvoyUI.ts",
+      "src/ui/LastExitUI.ts",
+      "src/ui/MemeOverloadUI.ts",
+      "src/ui/NitroRunUI.ts",
+      "src/ui/StudioSlotUI.ts",
+      "src/ui/VelvetReignUI.ts",
+      "src/ui/VolcanicPlinkoUI.ts",
+      "src/ui/slotKit/SlotControls.ts",
+      "games/caribbean-treasures/CaribbeanUI.ts",
+      "games/dracona/DraconaUI.ts",
+      "games/dracona/entry.ts",
+      "games/flag-battle/FlagBattleUI.ts",
+      "games/flooded-temple/CascadeUI.ts",
+      "games/flooded-temple/TempleUI.ts",
+      "games/flooded-temple/cascadeFeedbackStyles.ts",
+      "games/forest-heart/ForestHeartUI.ts",
+      "games/jackie-chan/JackieUI.ts",
+      "games/wild-nudge/GalacticReactorUI.ts",
+      "src/ui/operationFeedback.ts",
+      "games/dracona/requestStyles.ts"
     ],
-    "sourceFiles": 26
+    "changedCount": 25,
+    "reboundUnchanged": [
+      "games/flag-battle/FlagAudio.ts",
+      "games/flag-battle/package.json",
+      "games/flag-battle/tsconfig.json"
+    ],
+    "added": [
+      "src/ui/operationFeedback.ts",
+      "games/dracona/requestStyles.ts"
+    ],
+    "legacyClusterAdapter": "The committed generic adapter is outside the selected active-module dependency graph and was excluded before production changes."
   },
   "checks": {
-    "typescript": "passed",
-    "math": {
+    "typescript": true,
+    "rtp": {
       "verifiedProfiles": 38,
       "stakePolicies": 20,
       "stakeAdmissions": 20,
-      "unqualifiedLegacyExceptions": 114,
+      "unqualifiedLegacy": 114,
       "mathematicsChanged": false
     },
     "wallet": {
       "mandatoryCommonTests": 19,
-      "status": "passed",
+      "result": "passed; reused for unchanged monetary components",
       "templeClientAndCascade": "passed",
-      "initialCombinedRun": "29/30: obsolete exhaustive manual-cent cascade test hit the 120/min operation guard; narrowed to all nine common and three historical presets, all three cases passed"
+      "obsoleteTestCorrection": "The initial combined run was 29/30: an obsolete exhaustive-cent wallet test hit its operation rate guard. All nine common and three historical presets then passed all three cascade cases; the full manual range remains covered by its mathematical qualification."
     },
     "browser": {
-      "status": "passed",
+      "passed": true,
       "stats": {
-        "startTime": "2026-11-04T16:49:58.889Z",
-        "duration": 80035.653,
+        "startTime": "2026-11-04T18:57:40.195Z",
+        "duration": 197483.43,
         "expected": 3,
         "skipped": 0,
         "unexpected": 0,
         "flaky": 0
       },
       "errors": [],
-      "reportSha256": "c6b7043d6a421a793fecdde145aa8203ef3e9b720e87a2eb50dfc495828c2800",
+      "reportSha256": "468de791a5bc80ed9cb1f6e9eef1bed859bba96837c0529895ca6bb42142000b",
+      "fixtureSourceCommit": "3e193e80",
       "activeHouseGames": 19,
-      "templeViewports": [
-        {
-          "width": 1440,
-          "height": 1000
-        },
-        {
-          "width": 390,
-          "height": 844
-        }
+      "templeWidths": [
+        1440,
+        390
       ],
-      "requestFeedback": true,
+      "reducedMotion": true,
       "draconaWaitingAnimations": 20,
       "templeWaitingAnimations": 15,
-      "reducedMotion": true,
       "lostAcceptedReply": true,
-      "sameOperationUuid": true,
+      "sameUuid": true,
       "closeReopen": true,
       "betEntries": [
         -0.1
       ],
-      "exactProductionHostAndBackend": true,
-      "hostFiles": {
-        "sourceCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
-        "files": [
-          {
-            "path": "dist/index.html",
-            "sha256": "e3e06fe0da86c24e0bb652cb29a7fcb0bc8583b8ba23c00a245d5d0615989a91",
-            "bytes": 708
-          },
-          {
-            "path": "dist/assets/index-BZyJIyY8.js",
-            "sha256": "6b73b2f0657f65d2d4278e22216152ed06430ce69c4c794a1f2d0e1a53c7ee9a",
-            "bytes": 2776443
-          },
-          {
-            "path": "dist/assets/index-V4GHKrLV.css",
-            "sha256": "e21ee49745a1903e8fe694615407d4d07053f0e5254c935aef70f5b5166c10e2",
-            "bytes": 153554
-          }
-        ]
-      },
-      "backendSha256": "28cc991f9dd63ad6a9b0c900950a2344ab8211bea171ecee1998bd0dde7f419c",
-      "productionPlayerAccountsOrBetsCreated": false,
+      "hostAndBackend": [
+        {
+          "name": "dist/index.html",
+          "bytes": 708,
+          "sha256": "f9909145ef22f94c621312797a5e91ab40a40e70b4eecc9a4de6a046e9339a8f"
+        },
+        {
+          "name": "dist/assets/index-C9Y7DQXY.js",
+          "bytes": 2785217,
+          "sha256": "a3a789d1256726055572ec0351024239f539b3019ae706e7266724537393fefc"
+        },
+        {
+          "name": "dist/assets/index-KiNW8Wk8.css",
+          "bytes": 153888,
+          "sha256": "0d2dc8a5f90021762fc703e9afa06ecbf95fd74525e15a82967a50cab5e21918"
+        },
+        {
+          "name": "dist-server/index.js",
+          "bytes": 2406681,
+          "sha256": "cb4a974f09c318a416c89ee06cf6dec658810b322e21356e8c742eb1ecf5b70f"
+        }
+      ],
+      "initialCandidateFixtureFailure": "A late asynchronous Caramel intro was skipped by the readiness helper. The helper now waits for an enabled entry or spin control, and the unchanged game artifact passed all three scenarios.",
       "physicalPhone": false
     },
-    "linuxPublisherGuards": {
-      "passed": 5
+    "publisherGuards": {
+      "linuxPassed": 8,
+      "actualCompiledScopeValidated": true,
+      "unusedSourceRejectedBeforeMutation": true
     },
-    "githubReceipt": {
-      "format": 1,
-      "sourceCommit": "44d534b987d6e648d856f84afd350b43f3083812",
-      "manifestSha256": "69ceb7ca87c512ddd5fdfe6e06d4ce34aea25d10ef6ccdc13d71e787f43a2882",
-      "remoteMain": "a34ccbedb7f41165d0a257c0d5a54ee17d11dc4c",
-      "checkedAt": "2026-11-04T17:12:28.262Z"
+    "public": {
+      "passed": true,
+      "checkedAt": "2026-11-04T19:48:10.316Z",
+      "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+      "sourceCommit": "aecb24d3706444d0a7050784cd692e3fe8ef3120",
+      "files": 496,
+      "expectedFiles": 496,
+      "bytes": 144364367,
+      "durationMs": 94928,
+      "api": [
+        {
+          "path": "/healthz",
+          "status": 200
+        },
+        {
+          "path": "/api/game-wallet",
+          "status": 410
+        },
+        {
+          "path": "/api/nile-play",
+          "status": 410
+        },
+        {
+          "path": "/api/demo-wallet",
+          "status": 401
+        },
+        {
+          "path": "/api/demo-wallet/expansion",
+          "status": 401
+        }
+      ],
+      "errors": [],
+      "hostAndBackendRestarted": false,
+      "productionPlayerAccountsBetsOrMessagesCreated": false,
+      "initialErrors": [
+        {
+          "path": "/game-modules/studio-cosmic-escape/active.json",
+          "error": "TypeError: fetch failed"
+        }
+      ],
+      "retries": [
+        {
+          "path": "/game-modules/studio-cosmic-escape/active.json",
+          "status": 200,
+          "sha256": "e317da3d53d59a77d041f017c6f4c64e2de9c5320e30d6b5bcc28416e322fd5a",
+          "bytes": 228,
+          "checkedAt": "2026-11-04T19:48:10.315Z"
+        }
+      ],
+      "retryDurationMs": 3746
     },
-    "serverPayload": {
-      "packageFilesVerified": 474,
-      "sourcesVerified": 26,
-      "transportSha256": "650055e163c95c67b6e92ecad154301fd60afe3469e674e3c9fa8970da27b1aa"
+    "productionInventory": {
+      "passed": true,
+      "sourceBeforeSha256": "83b9c3714171fbc2fe44625e85e566967d03d2358d7208460533fd8c37354c34",
+      "sourceAfterSha256": "425b6c1d4f05bb606383a465456f5e8fb95219be5e04981759ed59845276f74e",
+      "programFiles": 8599,
+      "moduleFilesBefore": 4824,
+      "moduleFilesAfter": 5298,
+      "services": 14,
+      "hostAndBackendPreserved": true,
+      "configurationAndProtectedProgramsPreserved": true
     }
   },
-  "deployment": {
-    "published": false,
-    "backupCreated": false,
-    "liveFilesChanged": false,
-    "reason": "The guarded installer and a five-minute retry stopped on busy publication locks before mutations. Manual-stakes retention completed; player-recovery-20261104-v2 then reserved all three locks.",
-    "stage": "/opt/royal-releases/uniform-spin-response-20261104-v1",
-    "baselineMustBeReconciledAfterOtherReleases": true,
-    "requiredMaintenanceAfterPublication": "pending",
-    "waitEndedAt": "2026-11-04T17:21:23Z",
-    "previousHostMaintenance": {
-      "status": "completed",
-      "release": "manual-stakes-20261104-v1",
-      "durationSeconds": 1027.93,
-      "freeAfter": 9643024384,
-      "ownReleasePublished": false
+  "catalogue": {
+    "activeGames": 20,
+    "houseGames": 19,
+    "pvpPreserved": true,
+    "addedGames": [],
+    "restoredGames": [],
+    "accessPreservedByExactUnchangedHostBackendAndNonScopedSources": true
+  },
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/uniform-spin-response-20261104-v1/source.tgz",
+    "bytes": 212074,
+    "sha256": "f3ce24d41a3e2920c7223d589a472a15a73f8c589d3bacceed97f53c093184f9",
+    "oldVersions": {
+      "studio-cosmic-escape": "1.1.1-b1812ffc79cf",
+      "studio-caramel-carnival": "1.1.1-03a1cb173377",
+      "studio-velvet-reign": "1.1.1-6c4cfab2548f",
+      "studio-last-convoy": "1.1.1-ec8555614426",
+      "studio-nitro-run": "1.1.1-e2d35b3ab119",
+      "studio-afterglow": "1.3.1-4d39b9ad5a35",
+      "studio-meme-overload": "1.1.1-62fb49008d52",
+      "studio-dracona": "1.2.1-c9bf2b6ab8bb",
+      "studio-forest-heart": "1.16.1-82b599c84ba5",
+      "studio-caribbean-treasures": "1.7.1-84bc3fc09a92",
+      "studio-flooded-temple": "0.10.1-6d91363e971b",
+      "studio-wild-nudge": "1.6.0-0078da3cc0a2",
+      "flag-battle": "2.1.2-1d07daea0fa9",
+      "royal-plinko": "1.1.1-705af0df637b",
+      "original-cr-vs-leo": "1.1.1-53f280a128ec",
+      "original-jackie-chan": "1.2.1-4905c636acb8",
+      "github-crash": "1.1.1-6e40ce729439"
     },
-    "next": [
-      "Use fixed prepared source 44d534b987d6e648d856f84afd350b43f3083812; preserve this status record separately.",
-      "Fetch main and reconcile the actual current production sources, inputs and module pointers. A newer host or module is not covered by the old baseline.",
-      "Refresh the GitHub receipt for the unchanged artifact; do not rebuild or change manifest hashes to bypass a guard.",
-      "After safe installation verify public bytes, health and catalogue, complete required retention, push the final deployment record, then clean task-owned outputs and worktree."
+    "oldPackagesHardlinked": true,
+    "imageTag": "royal-game:before-uniform-spin-response-20261104-v1",
+    "image": "sha256:d35fb87807807cf91d0c51181f70de1260892689de21d222bf88ef07a7481b4c"
+  },
+  "publication": {
+    "published": true,
+    "release": "uniform-spin-response-20261104-v1",
+    "sourceCommit": "aecb24d3706444d0a7050784cd692e3fe8ef3120",
+    "baseCommit": "315fda47301591b5b1ed05806781fcc603cffdcb",
+    "buildBaseCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+    "modules": [
+      {
+        "gameId": "studio-cosmic-escape",
+        "version": "1.1.1-2274f1d3bf58",
+        "verified": true,
+        "activeSha256": "e317da3d53d59a77d041f017c6f4c64e2de9c5320e30d6b5bcc28416e322fd5a"
+      },
+      {
+        "gameId": "studio-caramel-carnival",
+        "version": "1.1.1-faefb8ca47ca",
+        "verified": true,
+        "activeSha256": "1f1bfb68a97246dc5e01f0a348e0274106b8f47d811ef44e728231ad69239728"
+      },
+      {
+        "gameId": "studio-velvet-reign",
+        "version": "1.1.1-286b92f7fe2a",
+        "verified": true,
+        "activeSha256": "7d68db73639b57de7a64bccf15c5d2dd28df393600a969773c7916b1baee5ecd"
+      },
+      {
+        "gameId": "studio-last-convoy",
+        "version": "1.1.1-e534a8770a8d",
+        "verified": true,
+        "activeSha256": "4719d29d0fc020473dd88b6c4820d9e158b4782acfb6ccf722a1b274388a6491"
+      },
+      {
+        "gameId": "studio-nitro-run",
+        "version": "1.1.1-732024019c85",
+        "verified": true,
+        "activeSha256": "2f1db276d4e4fc80b04d7ca208c55ea8e0d6d67905eeeae1158e8e1de1b1a45e"
+      },
+      {
+        "gameId": "studio-afterglow",
+        "version": "1.3.1-94e8ac1362c4",
+        "verified": true,
+        "activeSha256": "48d928e8147918acdd69422c30c0bac1dc3d906ab3e0efdb967bb332d79a808f"
+      },
+      {
+        "gameId": "studio-meme-overload",
+        "version": "1.1.1-8b70e1333efb",
+        "verified": true,
+        "activeSha256": "35e183b47cd02dde634043691b015f777aef38e670ce17ca054928b1209b99ba"
+      },
+      {
+        "gameId": "studio-dracona",
+        "version": "1.2.1-d1d4e589229e",
+        "verified": true,
+        "activeSha256": "c10e0d66ac72313bb9e3c5b36e00c12093bbc891dab1eec462b070bb39baeca0"
+      },
+      {
+        "gameId": "studio-forest-heart",
+        "version": "1.16.1-bda322fdbdfd",
+        "verified": true,
+        "activeSha256": "241693e84688d259e4116fada2384987ee53b8cce65e08efc5a066592bd29462"
+      },
+      {
+        "gameId": "studio-caribbean-treasures",
+        "version": "1.7.1-a78e99ebf8e2",
+        "verified": true,
+        "activeSha256": "cc502ab15de4752e6d632062d29073adc4a3110dca076f7b17042fa130fa6d85"
+      },
+      {
+        "gameId": "studio-flooded-temple",
+        "version": "0.10.1-e8c2cd4af5f8",
+        "verified": true,
+        "activeSha256": "272e43214f4c4f2911033118819ee970d0f2a43a38a8611f4862e311d0a49fe5"
+      },
+      {
+        "gameId": "studio-wild-nudge",
+        "version": "1.6.0-cf68e8a8b2b2",
+        "verified": true,
+        "activeSha256": "45f58382424e564dc0aae819214ddd91ce8d9e0a7083c49e960947417d54ec2c"
+      },
+      {
+        "gameId": "flag-battle",
+        "version": "2.1.2-da5e20d1015f",
+        "verified": true,
+        "activeSha256": "94b77b64c374f469c0289d9c0b0db2a8e1fab1088f97946748cd30b3fc07d788"
+      },
+      {
+        "gameId": "royal-plinko",
+        "version": "1.1.1-f5fdc9a645bc",
+        "verified": true,
+        "activeSha256": "726bab895825baeb53f0b3b3119ed7af7ae249eae2682d281c7fb62b59f42558"
+      },
+      {
+        "gameId": "original-cr-vs-leo",
+        "version": "1.1.1-fcfffa623d83",
+        "verified": true,
+        "activeSha256": "7c8c0df5a2d8d94c17a0d018fb0b7e30f8f854c7e4032ad3e4fd180e5116fcc3"
+      },
+      {
+        "gameId": "original-jackie-chan",
+        "version": "1.2.1-53d19f3131cb",
+        "verified": true,
+        "activeSha256": "25df5d8aff44ed97d0e4de5fbcaab8f5191c575707fe5b8d2294d6f64df2a106"
+      },
+      {
+        "gameId": "github-crash",
+        "version": "1.1.1-878ddc306d18",
+        "verified": true,
+        "activeSha256": "deef44e1e5d1a3ae7610f3a846067fef3549216ebcab1a556dd08affb5a8858e"
+      }
+    ],
+    "backup": {
+      "sourceArchive": "/opt/royal-backups/uniform-spin-response-20261104-v1/source.tgz",
+      "bytes": 212074,
+      "sha256": "f3ce24d41a3e2920c7223d589a472a15a73f8c589d3bacceed97f53c093184f9",
+      "oldVersions": {
+        "studio-cosmic-escape": "1.1.1-b1812ffc79cf",
+        "studio-caramel-carnival": "1.1.1-03a1cb173377",
+        "studio-velvet-reign": "1.1.1-6c4cfab2548f",
+        "studio-last-convoy": "1.1.1-ec8555614426",
+        "studio-nitro-run": "1.1.1-e2d35b3ab119",
+        "studio-afterglow": "1.3.1-4d39b9ad5a35",
+        "studio-meme-overload": "1.1.1-62fb49008d52",
+        "studio-dracona": "1.2.1-c9bf2b6ab8bb",
+        "studio-forest-heart": "1.16.1-82b599c84ba5",
+        "studio-caribbean-treasures": "1.7.1-84bc3fc09a92",
+        "studio-flooded-temple": "0.10.1-6d91363e971b",
+        "studio-wild-nudge": "1.6.0-0078da3cc0a2",
+        "flag-battle": "2.1.2-1d07daea0fa9",
+        "royal-plinko": "1.1.1-705af0df637b",
+        "original-cr-vs-leo": "1.1.1-53f280a128ec",
+        "original-jackie-chan": "1.2.1-4905c636acb8",
+        "github-crash": "1.1.1-6e40ce729439"
+      },
+      "oldPackagesHardlinked": true,
+      "imageTag": "royal-game:before-uniform-spin-response-20261104-v1",
+      "image": "sha256:d35fb87807807cf91d0c51181f70de1260892689de21d222bf88ef07a7481b4c"
+    },
+    "freeBefore": 9894887424,
+    "freeAfter": 9763909632,
+    "hostRestarted": false,
+    "databaseTouched": false,
+    "otherModulesPreserved": true,
+    "sourceFilesPreserved": 2687,
+    "runtimeFilesPreserved": 8599,
+    "servicesPreserved": 14,
+    "publishedAt": "2026-11-04T19:36:31.735Z"
+  },
+  "maintenance": {
+    "status": "completed",
+    "release": "front-back-walk-20261104-v3",
+    "sourceCommit": "315fda47301591b5b1ed05806781fcc603cffdcb",
+    "currentImage": "sha256:d35fb87807807cf91d0c51181f70de1260892689de21d222bf88ef07a7481b4c",
+    "rollbackImage": "sha256:8697bf1f68ebef8c53506839eec9839f6192275e64ade689a786a173a21957f3",
+    "durationSeconds": 837.63,
+    "startedAt": 1793821347.8342893,
+    "finishedAt": 1793822185.4649234,
+    "verificationPasses": 2,
+    "preservedFinancialFiles": 145,
+    "removedEntries": 18,
+    "removedImageTags": 0,
+    "freeBefore": 9747341312,
+    "freeAfter": 9900830720,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:8697bf1f68ebef8c53506839eec9839f6192275e64ade689a786a173a21957f3",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "6776541ea84653e8f17b7a146e30a521e044be30bcf00418d612d87b6e3c6bf0",
+      "files": 8598
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "d5048573a093a0c89c8df75b0885405e85549629b2724c70d84b53bebe67ddc5",
+      "receipt": "/var/lib/royal-project-brain/receipts/d5048573a093a0c89c8df75b0885405e85549629b2724c70d84b53bebe67ddc5.json",
+      "queued": true
+    },
+    "afterThisPublication": true,
+    "timerEnabled": true,
+    "timerActive": true,
+    "finalCheck": {
+      "checkedAt": 1793822480.8048806,
+      "imageAndHealth": "sha256:d35fb87807807cf91d0c51181f70de1260892689de21d222bf88ef07a7481b4c healthy",
+      "pointersVerified": 17,
+      "timerEnabled": "enabled",
+      "timerActive": "active",
+      "publishedAt": 1793820991.7358391,
+      "maintenanceStartedAt": 1793821347.8342893,
+      "maintenanceFinishedAt": 1793822185.4649234,
+      "freeBytes": 9901514752,
+      "stageFiles": [
+        [
+          "transport-current.tgz",
+          1637904
+        ],
+        [
+          "operator.json",
+          66972
+        ],
+        [
+          "published.json",
+          12025
+        ],
+        [
+          "program-proof.json",
+          10559
+        ],
+        [
+          "transport-ready.tgz",
+          134732465
+        ],
+        [
+          "release-manifest.json",
+          857904
+        ],
+        [
+          "release-github.json",
+          271
+        ]
+      ]
+    }
+  },
+  "storage": {
+    "removedLocalInitialTransport": {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\uniform-spin-response\\royal\\artifacts\\work\\uniform-spin-response\\transport.tgz",
+      "removedBytes": 134725575,
+      "freeBefore": 305301561344,
+      "freeAfter": 305436286976,
+      "reason": "Extracted server payload verified by checksum and 474 package files plus 26 sources; verified local artifact retained for pending publication"
+    },
+    "blockedLocalCleanup": {
+      "status": "blocked_by_automatic_approval_review",
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\uniform-spin-response\\royal\\artifacts\\work\\uniform-spin-response\\payload",
+      "reason": "blocked by policy",
+      "commandExecuted": false,
+      "filesDeleted": 0,
+      "bytesDeleted": 0,
+      "retainedFiles": 507,
+      "retainedLogicalBytes": 147011577,
+      "freeAfterObservation": 302615154688,
+      "cleanupCondition": "A permitted cleanup after GitHub preservation. Do not retry this target through a broader parent deletion or another tool.",
+      "worktreeRetainedBecauseItContainsBlockedTarget": true
+    },
+    "stageRecovery": "The initial uninstalled module delivery was retired during long preparation because it lacked the pending-installation manifest name. All 474 package files and 28 consumed source bindings were restored and verified. The real prepared manifest now protects the pending delivery; preparation acquired no production locks.",
+    "serverCleanupPending": false,
+    "worktreeRetainedBecauseBlockedTargetCannotBeRemovedThroughParent": true,
+    "serverCleanupCompleted": {
+      "checkedAt": 1793822956.6910782,
+      "removed": [
+        {
+          "path": "/opt/royal-releases/uniform-spin-response-20261104-v1/transport-current.tgz",
+          "bytes": 1637904
+        },
+        {
+          "path": "/opt/royal-releases/uniform-spin-response-20261104-v1/transport-ready.tgz",
+          "bytes": 134732465
+        }
+      ],
+      "logicalRemovedBytes": 136370369,
+      "freeBefore": 9870553088,
+      "freeAfter": 10006929408,
+      "sourceCommit": "aecb24d3706444d0a7050784cd692e3fe8ef3120",
+      "requiredProofsAndRollbackPreserved": true
+    },
+    "localArchiveCleanupCompleted": {
+      "removed": [
+        {
+          "Name": "transport-current.tgz",
+          "Bytes": 1637904,
+          "Sha": "e3c9514b7e82eec0e052147db09869a172df73e3e9364ef129a12474db5ca7b6"
+        },
+        {
+          "Name": "transport-ready.tgz",
+          "Bytes": 134732465,
+          "Sha": "a07e3d5b31842ca2045dc39ce3d8b7181d455e2d4f99cd0e6580a18d2a264fa2"
+        }
+      ],
+      "logicalRemovedBytes": 136370369,
+      "freeBefore": 296041730048,
+      "freeAfter": 296177463296,
+      "preservedSource": "aecb24d3706444d0a7050784cd692e3fe8ef3120",
+      "blockedPayloadUntouched": true
+    },
+    "sourcePreservationCommits": [
+      "44d534b987d6e648d856f84afd350b43f3083812",
+      "aecb24d3706444d0a7050784cd692e3fe8ef3120",
+      "e158e5416763f47dfd9e08d24bc889f43fc32a66",
+      "3e193e80"
     ]
   },
   "limitations": [
-    "Shared production code graph unavailable; inspected sources and byte inventories directly.",
-    "600ms decorative loops are design choices, not latency guarantees or measured scientific thresholds.",
-    "Server result latency is unchanged; normal preparation and stopped unconfirmed recovery are separated."
+    "Shared production graph unavailable; used direct source review and complete byte inventories.",
+    "Decorative 600ms loops are design choices and do not reduce server result latency.",
+    "No physical phone or subjective listening test was performed."
   ],
-  "storage": {
-    "path": "C:\\Users\\Aorus\\.codex\\worktrees\\uniform-spin-response\\royal\\artifacts\\work\\uniform-spin-response\\transport.tgz",
-    "removedBytes": 134725575,
-    "freeBefore": 305301561344,
-    "freeAfter": 305436286976,
-    "reason": "Extracted server payload verified by checksum and 474 package files plus 26 sources; verified local artifact retained for pending publication",
-    "preservedSourceCommit": "44d534b987d6e648d856f84afd350b43f3083812",
-    "activeWorkExceptions": [
-      "Temporary worktree and verified package retained only until safe publication and required maintenance finish.",
-      "node_modules is a junction to another active worktree; never remove its target.",
-      "Server extracted package retained for guarded publication; production rollback and player data untouched."
-    ]
+  "checkedAt": "2026-11-04T20:13:12.405Z",
+  "receipts": {
+    "application": {
+      "format": 1,
+      "sourceCommit": "aecb24d3706444d0a7050784cd692e3fe8ef3120",
+      "manifestSha256": "199aa72ce8f52fa3adca3a66b504b4a7f24e742efe3aa4e75bbeafbf375ac72b",
+      "remoteMain": "6f7cae90e75e8897c41ade8b5339f4100788e9a1",
+      "checkedAt": "2026-11-04T19:12:22.587Z"
+    },
+    "publicationTool": {
+      "format": 1,
+      "sourceCommit": "e158e5416763f47dfd9e08d24bc889f43fc32a66",
+      "applicationSourceCommit": "aecb24d3706444d0a7050784cd692e3fe8ef3120",
+      "publisherSha256": "668cd5643aa1e4add0ea2b0a10fcc472292c9e7df042e5ea92e4c708ff51e629",
+      "remoteMain": "21d09c04fea87b34d5e03429f91fc728b38c69b1",
+      "checkedAt": "2026-11-04T19:29:05.911Z"
+    }
   },
-  "checkedAt": "2026-11-04T17:21:23Z"
+  "productionPlayerAccountsBetsOrGameChatMessagesCreated": false
 }
