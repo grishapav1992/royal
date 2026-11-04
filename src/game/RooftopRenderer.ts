@@ -7,6 +7,7 @@ import { STREET } from '../shared/street';
 import { roofStairContains } from './roofStairInput';
 import { ROOF_TOILET } from '../shared/toilet';
 import {STAIR_WINDOW} from '../shared/stairWindow';
+import {stairWindowPlatform} from './StairWindowRenderer';
 import { paintRoofToilet,paintRoofToiletStep } from './ToiletRenderer';
 
 type Paint = CanvasRenderingContext2D;
@@ -148,11 +149,16 @@ export class StreetRoofStairs {
         for(let index=1;index<route.length;index++){
           const p=route[index];
           if(index===STAIR_WINDOW.landingIndex){
-            // A wider side platform reaches the open window without changing either flight.
-            g.fillStyle(steel).fillRect(p.x-166,p.y,200,16).lineStyle(3,ink).strokeRect(p.x-166,p.y,200,16);
-            for(const dx of [-157,-75]){g.fillStyle(0x465056).fillTriangle(p.x+dx,p.y+16,p.x+dx,p.y+54,p.x+dx+48,p.y+16);g.lineStyle(3,ink).strokeTriangle(p.x+dx,p.y+16,p.x+dx,p.y+54,p.x+dx+48,p.y+16);}
-            rail({x:p.x-164,y:p.y},{x:p.x-139,y:p.y});
-            g.fillStyle(0xf1f5f4).fillEllipse(p.x-151,p.y-52,28,6);
+            // The long flat balcony reaches a distant window to the right of the stairs.
+            const platform=stairWindowPlatform(view);
+            g.fillStyle(steel).fillRect(platform.left,p.y,platform.right-platform.left,16).lineStyle(3,ink).strokeRect(platform.left,p.y,platform.right-platform.left,16);
+            for(let x=platform.left+10;x<platform.right-48;x+=112){
+              g.fillStyle(0x465056).fillTriangle(x,p.y+16,x,p.y+54,x+48,p.y+16);g.lineStyle(3,ink).strokeTriangle(x,p.y+16,x,p.y+54,x+48,p.y+16);
+              g.fillStyle(0xadb2ac).fillCircle(x+6,p.y+25,1.7);
+            }
+            for(let x=platform.left+14;x<platform.right-10;x+=22)g.lineStyle(1,light).lineBetween(x,p.y+3,x,p.y+12);
+            for(const [left,right]of platform.rails)rail({x:left,y:p.y},{x:right,y:p.y});
+            g.fillStyle(0xf1f5f4).fillEllipse(platform.right-17,p.y-52,28,6).fillEllipse(platform.left+56,p.y-52,34,5);
           }
           g.fillStyle(0x465056).fillTriangle(p.x-30,p.y+13,p.x-30,p.y+49,p.x+27,p.y+13);
           g.lineStyle(3,ink).strokeTriangle(p.x-30,p.y+13,p.x-30,p.y+49,p.x+27,p.y+13);

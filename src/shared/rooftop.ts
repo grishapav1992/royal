@@ -23,10 +23,18 @@ export const ROOF_STAIR_SPEED_SCALE = .65;
 export const ROOF_STAIR_EPSILON = 1e-6;
 export const ROOF_STAIR_DRAW = { ladderRise:160, flightRise:144, widthScale:1.65 } as const;
 const windowLandingIndex=Math.floor(ROOF_STAIR_ROUTE.length/2);
-export const ROOF_WINDOW_PLATFORM={index:windowLandingIndex,junction:ROOF_STAIR_ROUTE[windowLandingIndex],length:92,windowOffset:68} as const;
-export function roofWindowPlatformPoint(point:Point){
+export const ROOF_WINDOW_PLATFORM={index:windowLandingIndex,junction:ROOF_STAIR_ROUTE[windowLandingIndex],direction:-1,length:310,windowOffset:272} as const;
+export function roofWindowPlatformPosition(offset:number){
   const p=ROOF_WINDOW_PLATFORM;
-  return Math.abs(point.y-p.junction.y)<=.2&&point.x>=p.junction.x-1e-6&&point.x<=p.junction.x+p.length+1e-6;
+  return {x:p.junction.x+p.direction*offset,y:p.junction.y};
+}
+export function roofWindowPlatformOffset(point:Point){
+  const p=ROOF_WINDOW_PLATFORM;
+  return (point.x-p.junction.x)*p.direction;
+}
+export function roofWindowPlatformPoint(point:Point){
+  const p=ROOF_WINDOW_PLATFORM,offset=roofWindowPlatformOffset(point);
+  return Math.abs(point.y-p.junction.y)<=ROOF_STAIR_EPSILON&&offset>=-ROOF_STAIR_EPSILON&&offset<=p.length+ROOF_STAIR_EPSILON;
 }
 export function onRoofWindowPlatform(point:Point&{stairStep?:number}){
   return [windowLandingIndex,windowLandingIndex+1].includes(point.stairStep??0)&&roofWindowPlatformPoint(point);
@@ -49,7 +57,7 @@ export const STREET_ROOF_STAIRS = {
 export function advanceRoofStairStep(step: number, point: Point&{stairDirection?:number}): number {
   if (!Number.isInteger(step) || step < 0 || step > ROOF_STAIR_ROUTE.length) return 0;
   if (!step) return Math.hypot(point.x - STREET_ROOF_STAIRS.foot.x, point.y - STREET_ROOF_STAIRS.foot.y) <= 7 ? 1 : 0;
-  if(point.x>ROOF_WINDOW_PLATFORM.junction.x+ROOF_STAIR_EPSILON&&onRoofWindowPlatform({x:point.x,y:point.y,stairStep:step}))return step;
+  if(roofWindowPlatformOffset(point)>ROOF_STAIR_EPSILON&&onRoofWindowPlatform({x:point.x,y:point.y,stairStep:step}))return step;
   if (step === ROOF_STAIR_ROUTE.length) return Math.hypot(point.x - STREET_ROOF_STAIRS.entry.x, point.y - STREET_ROOF_STAIRS.entry.y) <= 16 ? step : 0;
   const from = ROOF_STAIR_ROUTE[step - 1], to = ROOF_STAIR_ROUTE[step];
   const dx = to.x - from.x, dy = to.y - from.y;
@@ -86,9 +94,9 @@ export function moveRoofStairs(body:StairPosition&{moving:boolean},input:{x:numb
   if(onRoofWindowPlatform(body)){
     const p=ROOF_WINDOW_PLATFORM;
     // Horizontal input stays on the platform. Only explicit up/down can select a flight.
-    if(!input.y||body.x>p.junction.x+ROOF_STAIR_EPSILON){
-      const before=body.x,dx=input.y?-1:Math.sign(input.x);
-      body.x=Math.max(p.junction.x,Math.min(p.junction.x+p.length,body.x+dx*distance));
+    if(!input.y||roofWindowPlatformOffset(body)>ROOF_STAIR_EPSILON){
+      const before=body.x,dx=input.y?-p.direction:Math.sign(input.x),end=roofWindowPlatformPosition(p.length).x;
+      body.x=Math.max(Math.min(p.junction.x,end),Math.min(Math.max(p.junction.x,end),body.x+dx*distance));
       body.y=p.junction.y;body.moving=Math.abs(body.x-before)>.001;
       return true;
     }
@@ -120,7 +128,7 @@ export function moveRoofStairs(body:StairPosition&{moving:boolean},input:{x:numb
 
 /** Finish a released step despite the position rounding in network snapshots. */
 export function settleRoofStairLanding(body:StairPosition&{moving:boolean}){
-  if(onRoofWindowPlatform(body)&&body.x>ROOF_WINDOW_PLATFORM.junction.x+ROOF_STAIR_EPSILON){body.moving=false;return;}
+  if(onRoofWindowPlatform(body)&&roofWindowPlatformOffset(body)>ROOF_STAIR_EPSILON){body.moving=false;return;}
   const step=body.stairStep??0;
   if(step<1||step>=ROOF_STAIR_ROUTE.length)return;
   const direction=body.stairDirection===-1?-1:1,target=ROOF_STAIR_ROUTE[direction===1?step:step-1];

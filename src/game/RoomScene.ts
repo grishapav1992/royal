@@ -53,7 +53,7 @@ import { STREET } from '../shared/street';
 import { TOILET,TOILET_WINDOW,ROOF_TOILET } from '../shared/toilet';
 import { ToiletRenderer } from './ToiletRenderer';
 import {STAIR_WINDOW,atCardWindow,atStairWindow,canApproachStairWindow} from '../shared/stairWindow';
-import {onRoofWindowPlatform,ROOF_WINDOW_PLATFORM,ROOF_STAIR_DRAW} from '../shared/rooftop';
+import {onRoofWindowPlatform,ROOF_WINDOW_PLATFORM,ROOF_STAIR_DRAW,roofWindowPlatformPosition} from '../shared/rooftop';
 import {drawCardStairWindow,stairWindowFrame} from './StairWindowRenderer';
 import { CardTablesRenderer } from './CardTablesRenderer';
 import { isCardGame, type DealerAction } from '../shared/cardTables';
@@ -452,9 +452,10 @@ export class RoomScene extends Phaser.Scene {
     if(!step){this.approachFloor('roof');return;}
     this.pendingCabinet=null;this.pendingLounge=null;this.player.path=[];this.marker.setVisible(false);
     if(onRoofWindowPlatform(this.player)){
-      const p=ROOF_WINDOW_PLATFORM,junction=this.streetView.point(p.junction,true);
-      const platform=point.x<=junction.x+32&&point.y>=junction.y-18&&point.y<=junction.y+24;
-      const target=platform?{x:Math.max(p.junction.x,Math.min(p.junction.x+p.length,p.junction.x+(junction.x-point.x)/ROOF_STAIR_DRAW.widthScale)),y:p.junction.y}:ROOF_STAIR_ROUTE[p.index+(point.y<junction.y?1:-1)];
+      const p=ROOF_WINDOW_PLATFORM,junction=this.streetView.point(p.junction,true),end=roofWindowPlatformPosition(p.length);
+      const projectedEnd=this.streetView.point(end,true);
+      const platform=point.x>=Math.min(junction.x,projectedEnd.x)-32&&point.x<=Math.max(junction.x,projectedEnd.x)+32&&point.y>=junction.y-18&&point.y<=junction.y+24;
+      const target=platform?{x:Math.max(Math.min(p.junction.x,end.x),Math.min(Math.max(p.junction.x,end.x),p.junction.x+(junction.x-point.x)/ROOF_STAIR_DRAW.widthScale)),y:p.junction.y}:ROOF_STAIR_ROUTE[p.index+(point.y<junction.y?1:-1)];
       const path=platform?[target]:[{...p.junction},{...target}];
       this.finishMovement(()=>{if(this.hall==='street')this.player.path=path;});return;
     }

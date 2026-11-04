@@ -2,9 +2,10 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {STAIR_WINDOW,atStairWindow,atCardWindow} from '../src/shared/stairWindow';
 import {stairWindowLink,playerHallArrival,hallLinkAt,hallLinks,hallObstacles,HALLS} from '../src/shared/world';
-import {ROOF_STAIR_ROUTE,ROOF_WINDOW_PLATFORM,onRoofWindowPlatform,moveRoofStairs,advanceRoofStairStep,settleRoofStairLanding} from '../src/shared/rooftop';
+import {ROOF_STAIR_ROUTE,ROOF_WINDOW_PLATFORM,onRoofWindowPlatform,moveRoofStairs,advanceRoofStairStep,settleRoofStairLanding,roofWindowPlatformPosition} from '../src/shared/rooftop';
 import {StreetView} from '../src/game/streetView';
-import {stairWindowFrame} from '../src/game/StairWindowRenderer';
+import {stairWindowFrame,stairWindowPlatform} from '../src/game/StairWindowRenderer';
+import {roofStairContains} from '../src/game/roofStairInput';
 import {REAR_WINDOW} from '../src/game/rearWindowLife';
 import {findPath,walkable} from '../src/game/navigation';
 import {applyMovementInput} from '../src/shared/movement';
@@ -13,9 +14,16 @@ import {accounts} from '../server/accounts';
 
 test('middle platform meets the third-floor sill and keeps the ordinary stairs continuous',()=>{
   const view=new StreetView();view.side='rear';const frame=stairWindowFrame(view),landing=view.point(STAIR_WINDOW.landing,true);
-  assert.equal(STAIR_WINDOW.landingIndex,6);assert.equal(frame.column,0);
+  const platform=stairWindowPlatform(view),route=ROOF_STAIR_ROUTE.map(p=>view.point(p,true));
+  assert.equal(STAIR_WINDOW.landingIndex,6);assert.equal(frame.column,2);
   assert.equal(frame.y+REAR_WINDOW.glass.y+REAR_WINDOW.glass.h,landing.y);
-  assert(frame.x+98>landing.x-166&&frame.x+98<landing.x+34);
+  assert(frame.x+98>landing.x+400,'the window is well to the right of the stair junction');
+  assert(frame.x+98>platform.left&&frame.x+98<platform.right);
+  for(let offset=0;offset<=ROOF_WINDOW_PLATFORM.length;offset+=10){
+    const p=view.point(roofWindowPlatformPosition(offset),true);
+    assert.equal(p.y,landing.y);assert(roofStairContains({x:p.x,y:p.y+6},route,false));
+  }
+  assert(!roofStairContains({x:platform.right+50,y:landing.y+6},route,false),'the extended walkway hit area ends with the balcony');
   for(const step of [6,7])assert(atStairWindow({hall:'street',...STAIR_WINDOW.outside,stairStep:step}));
   assert(!atStairWindow({hall:'street',...STAIR_WINDOW.landing,stairStep:7}),'the stair junction is not the window sill');
   assert(Math.abs(view.point(STAIR_WINDOW.outside,true).x-frame.x-98)<3);
@@ -46,19 +54,19 @@ test('horizontal platform movement stays flat and never inherits an up/down choi
   const p=ROOF_WINDOW_PLATFORM,view=new StreetView();view.side='rear';
   for(const step of [6,7])for(const direction of [-1,1]){
     const body={...STAIR_WINDOW.landing,stairStep:step,stairDirection:direction,moving:false};
-    for(let i=0;i<35;i++){moveRoofStairs(body,{x:1,y:0},5);assert.equal(body.y,p.junction.y);assert(onRoofWindowPlatform(body));assert.equal(view.point(body,true).y,20);}
-    assert.equal(body.x,p.junction.x+p.length);const stopped={...body};settleRoofStairLanding(body);assert.equal(body.x,stopped.x);
+    for(let i=0;i<80;i++){moveRoofStairs(body,{x:p.direction,y:0},5);assert.equal(body.y,p.junction.y);assert(onRoofWindowPlatform(body));assert.equal(view.point(body,true).y,20);}
+    assert.equal(body.x,roofWindowPlatformPosition(p.length).x);const stopped={...body};settleRoofStairLanding(body);assert.equal(body.x,stopped.x);
     assert.equal(advanceRoofStairStep(body.stairStep,body),step);
-    for(let i=0;i<40;i++)moveRoofStairs(body,{x:-1,y:0},5);
+    for(let i=0;i<80;i++)moveRoofStairs(body,{x:-p.direction,y:0},5);
     assert.deepEqual({x:body.x,y:body.y},p.junction);assert.equal(body.stairStep,step);
   }
 });
 
 test('explicit up and down select the intended flight from every platform position',()=>{
   const p=ROOF_WINDOW_PLATFORM;
-  for(const offset of [0,20,40,68,92])for(const previous of [-1,1])for(const input of [-1,1]){
-    const body={x:p.junction.x+offset,y:p.junction.y,stairStep:6,stairDirection:previous,moving:false};
-    for(let i=0;i<40&&body.y===p.junction.y;i++)moveRoofStairs(body,{x:0,y:input},5);
+  for(const offset of [0,40,155,p.windowOffset,p.length])for(const previous of [-1,1])for(const input of [-1,1]){
+    const body={...roofWindowPlatformPosition(offset),stairStep:6,stairDirection:previous,moving:false};
+    for(let i=0;i<80&&body.y===p.junction.y;i++)moveRoofStairs(body,{x:0,y:input},5);
     assert.equal(Math.sign(body.y-p.junction.y),input,JSON.stringify({offset,previous,input,body}));
     assert.equal(body.stairDirection,input<0?1:-1);
   }

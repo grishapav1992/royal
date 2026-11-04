@@ -3,7 +3,7 @@ import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_RET
 import {TOILET,ROOF_TOILET,TOILET_WINDOW,toiletSinkApproaches,toiletCubicleStanding} from '../src/shared/toilet';
 import { projectStreetPoint,StreetView } from '../src/game/streetView';
 import {STAIR_WINDOW} from '../src/shared/stairWindow';
-import {onRoofWindowPlatform} from '../src/shared/rooftop';
+import {onRoofWindowPlatform,roofWindowPlatformOffset,roofWindowPlatformPosition} from '../src/shared/rooftop';
 
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
 async function overview(page: Page, on: boolean) {
@@ -131,14 +131,27 @@ async function thirdFloorWindow(page:Page,project:string){
   const balance=await page.locator('#wallet-balance').textContent(),mobile=project==='mobile';
   const climb=await page.evaluate(()=>(window as any).__roofClimb??[]);
   const view=new StreetView();view.side='rear';const junction=view.point(STAIR_WINDOW.landing,true);
+  const platformWalk=async(offset:number)=>{
+    if(!onRoofWindowPlatform(await state(page))){
+      await clickViewPoint(page,{x:junction.x,y:junction.y+6});
+      await expect.poll(async()=>onRoofWindowPlatform(await state(page)),{timeout:5000}).toBe(true);
+    }
+    const target=roofWindowPlatformPosition(offset);
+    while(Math.abs((await state(page)).x-target.x)>3){
+      const current=await state(page),here=view.point(current,true),end=view.point(target,true);
+      const step={x:here.x+Math.max(-120,Math.min(120,end.x-here.x)),y:here.y+6};
+      await clickViewPoint(page,step);
+      await expect.poll(async()=>Math.abs(view.point(await state(page),true).x-step.x),{timeout:5000}).toBeLessThan(3);
+    }
+  };
   await expect.poll(async()=>(await state(page)).street.landingControlsVisible).toBe(true);
-  if(mobile){const point=view.point(STAIR_WINDOW.return,true);await clickViewPoint(page,{x:point.x,y:point.y+6});}
-  else await page.keyboard.press('ArrowLeft',{delay:220});
-  await expect.poll(async()=>{const s=await state(page);return onRoofWindowPlatform(s)&&s.x>STAIR_WINDOW.landing.x+12;}).toBe(true);
+  if(mobile)await platformWalk(160);
+  else await page.keyboard.press('ArrowRight',{delay:700});
+  await expect.poll(async()=>{const s=await state(page);return onRoofWindowPlatform(s)&&roofWindowPlatformOffset(s)>90;}).toBe(true);
   expect((await state(page)).y).toBe(STAIR_WINDOW.landing.y);
   await page.screenshot({path:'../landing-controls-'+project+'-platform.png'});
   const enter=async()=>{
-    if(mobile)await clickViewPoint(page,(await state(page)).street.rearWindows.entry);
+    if(mobile){await platformWalk(STAIR_WINDOW.platformLength-38);await clickViewPoint(page,(await state(page)).street.rearWindows.entry);}
     else await page.keyboard.press('e');
     await expect.poll(async()=>(await state(page)).hall,{timeout:12000}).toBe('github');
     await expect.poll(async()=>(await state(page)).switching).toBe(false);
@@ -165,10 +178,11 @@ async function thirdFloorWindow(page:Page,project:string){
   // Each explicit direction works from the platform and then E can approach from that flight.
   for(const direction of [-1,1]){
     if(mobile){
+      await platformWalk(0);
       const target=view.point(ROOF_STAIR_ROUTE[STAIR_WINDOW.landingIndex+(direction<0?1:-1)],true);
       await clickViewPoint(page,{x:(junction.x+target.x)/2,y:(junction.y+target.y)/2-8});
       await expect.poll(async()=>Math.sign((await state(page)).y-STAIR_WINDOW.landing.y)).toBe(direction);
-    }else{await page.keyboard.down(direction<0?'ArrowUp':'ArrowDown');await page.waitForTimeout(800);}
+    }else{await page.keyboard.down(direction<0?'ArrowUp':'ArrowDown');await expect.poll(async()=>Math.sign((await state(page)).y-STAIR_WINDOW.landing.y),{timeout:6000}).toBe(direction);}
     const selected=await state(page);expect(selected.hall).toBe('street');expect(Math.sign(selected.y-STAIR_WINDOW.landing.y)).toBe(direction);
     try{
       await enter();
@@ -181,9 +195,12 @@ async function thirdFloorWindow(page:Page,project:string){
     (window as any).__roofClimb=climb;
     const record=()=>{const s=(window as any).royalDemo.getState();(window as any).__roofClimb.push({hall:s.hall,x:s.x,y:s.y});if(s.hall==='street')requestAnimationFrame(record);};requestAnimationFrame(record);
   },climb);
+  if(mobile)await platformWalk(0);
   const next=view.point(ROOF_STAIR_ROUTE[STAIR_WINDOW.landingIndex+1],true);
-  await clickViewPoint(page,{x:(junction.x+next.x)/2,y:(junction.y+next.y)/2-8});
-  await expect.poll(async()=>(await state(page)).stairStep,{timeout:10000}).toBe(STAIR_WINDOW.landingIndex+2);
+  if(mobile)await clickViewPoint(page,{x:(junction.x+next.x)/2,y:(junction.y+next.y)/2-8});
+  else await page.keyboard.down('ArrowUp');
+  try{await expect.poll(async()=>(await state(page)).stairStep,{timeout:10000}).toBe(STAIR_WINDOW.landingIndex+2);}
+  finally{if(!mobile)await page.keyboard.up('ArrowUp');}
 }
 
 async function keyUntil(page:Page,key:string,condition:()=>Promise<boolean>,timeout=15000){

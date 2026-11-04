@@ -1,12 +1,12 @@
-import {ROOF_WINDOW_PLATFORM} from './rooftop';
+import {ROOF_WINDOW_PLATFORM,roofWindowPlatformPosition} from './rooftop';
 
 /** A manual side entrance at the middle landing, separate from ground-level doorways. */
 const {index:landingIndex,junction,length,windowOffset}=ROOF_WINDOW_PLATFORM;
 export const STAIR_WINDOW={
-  landingIndex,landing:junction,platformLength:length,outside:{x:junction.x+windowOffset,y:junction.y},floor:3,column:0,
+  landingIndex,landing:junction,platformLength:length,outside:roofWindowPlatformPosition(windowOffset),floor:3,column:2,
   interior:{x:3230,top:-26,width:200,height:128},
   entry:{x:3230,y:240},arrival:{x:3230,y:330},
-  return:{x:junction.x+40,y:junction.y,stairStep:landingIndex,stairDirection:-1,facing:'left'},
+  return:{...roofWindowPlatformPosition(windowOffset-28),stairStep:landingIndex,stairDirection:-1,facing:'right'},
 } as const;
 
 export function atStairWindow(p:{hall:string;x:number;y:number;stairStep?:number}){
