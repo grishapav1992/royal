@@ -1,0 +1,68 @@
+{
+  "format": 1,
+  "release": "shared-module-cache-20261104-v1",
+  "verifiedAt": "2026-11-04T18:47:09.828619+00:00",
+  "scope": "local build tooling only; no production application publication",
+  "benchmarkSourceCommit": "e4ff979fba98380fc6c1b74c229e073c55f5d928",
+  "benchmarkInputSha256": {
+    "scripts/build-game-module.mjs": "791d5d84627231fad41c3345ddcd52452c1e6799eb87a63a43c7ae974d930fa4",
+    "scripts/module-build-cache.mjs": "e44c1c5e2b929bbb354eeb790e30fcd05296fb9549c92773d0cc401e64ee901a",
+    "scripts/shared-module-cache.mjs": "cfea6a7326ad2fb96f746b0caac89b02a6e3077e3f3602fff4e3de73e8c9332f",
+    "package.json": "6eb6877969142f61f5a951252a4f921b00353f8ab16f8150f06bb62c1b33df5c",
+    "package-lock.json": "e285a63e257d5251bd5a890b026577d31fb85f9fa5a0f78a2aac1a29ac36e8f8"
+  },
+  "cold": {
+    "invocation": "node scripts/build-game-module.mjs --all",
+    "durationMs": 673609,
+    "timings": {
+      "rtpDurationMs": 631863,
+      "packagesDurationMs": 41635
+    },
+    "built": 124,
+    "reused": 0,
+    "cache": {
+      "sharedEnabled": true,
+      "localHits": 0,
+      "sharedHits": 0,
+      "writes": {
+        "stored": 124
+      }
+    }
+  },
+  "warm": {
+    "qualificationRepeated": false,
+    "reason": "This benchmark measures only package restoration after verifying identical sources and output bytes; normal builder invocations still run RTP.",
+    "packagesDurationMs": 33560,
+    "sharedHits": 124,
+    "rebuilt": 0
+  },
+  "coldPackageTimingIncludesCachePopulation": true,
+  "comparisonIsPackageWorkOnly": true,
+  "samples": 1,
+  "allRestoredBytesMatchCold": true,
+  "restoredInventorySha256": "f933c25ea70448ef3ec3331401404d6cfc80f68dafccb7790ccd9e08c15e9674",
+  "cache": {
+    "location": "<git-common-dir>/royal-module-cache/v1",
+    "slots": 124,
+    "logicalBytes": 280007015,
+    "maxBytes": 2147483648,
+    "oneSlotPerGame": true,
+    "hardlinksUsed": false
+  },
+  "tests": [
+    {
+      "command": "npm run test:release",
+      "passed": 52,
+      "note": "Before adding two additional integration cases; no skipped tests"
+    },
+    {
+      "command": "node --test server-tests/projection-batch.test.mjs server-tests/shared-module-cache.test.mjs server-tests/shared-module-dependencies.test.mjs server-tests/module-resource-fingerprint.test.mjs server-tests/module-compilation-identity.test.mjs",
+      "passed": 27,
+      "note": "Includes the two additional cases, real linked Git worktrees and the real builder with an explicitly synthetic qualification recorder"
+    }
+  ],
+  "mandatoryRtpGateRemovedOrCached": false,
+  "qualificationBypassAddedToBuilder": false,
+  "projectionBuildsUseSharedCache": false,
+  "productionApplicationChanged": false
+}
