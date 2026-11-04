@@ -1,0 +1,173 @@
+{
+  "feature": "casino-sidewalk-clearance",
+  "visualVersion": "sidewalk-v11",
+  "date": "2026-11-03",
+  "testedSourceCommit": "af9a8fc12035ab66113c0a734ee08776d2733d78",
+  "mainBaseline": "67c7dda7029f609d4658664a37f868cb22171e79",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "sourceFiles": {
+    "src/game/streetView.ts": "9a5a5076c2ae8e3ab90075fd20b31c1ce30ea85d14fcdbfbcb36f5956b730707",
+    "src/game/streetWalls.ts": "048ba163824138efa3319b85ec07cc10c99d5ffa8f2504c302dd9f22d11407fd",
+    "src/game/RoomScene.ts": "61849b162e0e23bed8d76963b083360d7e0673b0db10aedb943712109f154588",
+    "src/game/StreetRenderer.ts": "f4235c76f168fc2fed906329fd3a7c79bc1d225ac57cd66af25138e5fb3363a5",
+    "src/game/RooftopRenderer.ts": "a1934aa6cdd779a9743ef71ed96b348f9e58d97115999013aa00c6459cd56750",
+    "src/game/StreetAmbience.ts": "a05db73637fd0db98ea96d323e83172e2b400c636293a021ad4a3864015c37e3",
+    "src/game/StreetResidents.ts": "129e5b6a73e55fed384118bd0703fadbb81bc47ca1e125ee112af0a3d8a292da",
+    "src/game/SecurityGuard.ts": "0f22a72a302d722a26ce8a6f9073a4e57c1cc3cbbd3096dafe40d924596879dc",
+    "src/ui/ClubMap.ts": "b3dcc07d1bf940567f7713749c0acd2f8e437d0ff58e9b16bc6c3fe315244720",
+    "src/main.ts": "041d1c93d3d0fff767ea92fbd6c5d80303c70de2c0f628bd228c7ac6c3d23cd1",
+    "src/shared/rooftop.ts": "d830e2bf8298f20383cc639b926dcc3aab2d70122e40665b8bd41bf099d7a2ab",
+    "src/shared/movement.ts": "32335437b4b640c7aa08dfcfdbd2fea65df2694f95a4b0ec5ee4652a6336b486",
+    "src/network/LobbyClient.ts": "47b38e0b797e5b84da50fa307136722ea20f5783811b622ad31dd8d4ff030117",
+    "server/LobbyRoom.ts": "a1d32de8ea039c51dca3dff0613facfc8492d7e4442dd741f9d360623db34e05",
+    "server/state.ts": "4b1fbf238a22e4cea66320031b795673a8d64eb7cebabb5e592be83fd1ed3782",
+    "scripts/build-game-module.mjs": "6b5b9c4fe709aa07c478ec46ac4d83728dc4abffbcca2f8e52412033b052e9e3",
+    "scripts/module-build-cache.mjs": "984c051063ed09e03105f69fe6e703b0a5d22d4135f4e9dd1c5ec715927c6067",
+    "tests/street-camera.spec.ts": "f1070b972b6352285126458a8f6f6e74e5d7e7560de4b01844fb0d85f2e88a97",
+    "tests/rooftop.spec.ts": "6d5bd8d36a01b9e01ca55f7c8dd46498ce667753872c00a69ad49fbcf1f144d8",
+    "server-tests/street-life.test.ts": "2a8393808ecb97fe252dc12590dd6b628414dc24163df10035514b37d1d287ee",
+    "tests/street.spec.ts": "e818f662fc460f1a30069be8f112004949a52ae08709272e7449122e987db292"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "63476484eb1c83ec01bcd10477e3637e018d4a7588e0eb3c883cbfa1b0d4458f"
+    },
+    "dist-server/index.js": {
+      "bytes": 2422024,
+      "sha256": "ce62f0c309dcbf3e2d17bd714e69b3bc6afab68b212857ed85f01d42b93c0fd5"
+    },
+    "dist/assets/main-Dexi5eq2.js": {
+      "bytes": 2854409,
+      "sha256": "282c8d1ec0dbd37e2ff4d7de60ed58228c54502af7030fcb8aaa7bae4590642f"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    },
+    "dist/assets/main-afxgM5_-.css": {
+      "bytes": 155912,
+      "sha256": "1b42cc1fbf3619b16fc7b8bfbe961d50c17754359895f71520ca8268d8906543"
+    }
+  },
+  "regression": {
+    "reported": "Player and NPC figures overlap the casino facade while rounding a corner.",
+    "cause": "Foot-point collision was safe, but the flat front facade occupies different screen space. The earlier foreground-depth correction preserved visibility while allowing complete figures to paint over the facade.",
+    "fix": "Strictly monotonic sidewalk presentation leaves space for the complete figure, uses a tested inverse for clicks, and restores ordinary depth sorting. Rear view begins at the physically cleared north edge with horizontal inset retained."
+  },
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-03T18:58:18.952Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 5240
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 7249
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 5585
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 5135
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 54
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 16
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 20
+        }
+      ],
+      "passed": true,
+      "durationMs": 23299
+    },
+    "profile": {
+      "command": "npm run test:street",
+      "passed": 49,
+      "failed": 0
+    },
+    "geometry": {
+      "clickRoundTripMaxError": 1e-8,
+      "monotonicGroundCoordinates": true,
+      "figureHalfWidthChecked": 50,
+      "npcRouteSimulationMs": 300000,
+      "physicalMovementAndObstaclesPreserved": true
+    },
+    "browser": {
+      "passed": 3,
+      "failed": 0,
+      "hostWithChat": true,
+      "viewports": [
+        "1440x1000",
+        "390x844"
+      ],
+      "perFrameChecks": [
+        "Full sprite rectangle for player does not overlap facade when feet are alongside it",
+        "Full sprite rectangles for every visible street NPC do not overlap facade when feet are alongside it",
+        "Player and ring remain visible and aligned",
+        "At least 100 close-view frames observed per corner scenario"
+      ],
+      "scenarios": [
+        "Walk along both walls and round both rear corners in both directions on desktop",
+        "Same passage on mobile emulation, with floor clicks, traffic, reload and unchanged balance",
+        "Rear stair climb, ring alignment, reload during climb, resume, roof and return on desktop"
+      ],
+      "physicalPhoneTested": false
+    },
+    "manualVisualReview": [
+      "desktop-right-tight.png",
+      "mobile-left-tight.png",
+      "mobile-right-tight-exit.png"
+    ],
+    "preview": {
+      "url": "http://127.0.0.1:5191/",
+      "isolatedRuntimePreserved": true,
+      "backendBytesUnchanged": true
+    }
+  },
+  "presentation": {
+    "sideClearance": 64,
+    "maximumCostumeWidth": 100,
+    "rearEntryNorthClearance": 12,
+    "rearEntryHorizontalInset": 32,
+    "overviewUsesOriginalWorldMap": true,
+    "entranceAndStairAnchorsPreserved": true,
+    "normalFigureDepthRestored": true
+  },
+  "limitations": [
+    "Earlier corner visibility checks did not establish complete-figure clearance. Historical reports retain their original versions.",
+    "Mobile layout verified through browser emulation.",
+    "No production changes."
+  ],
+  "screenshots": {
+    "desktop-left-tight.png": "f92eaeb844a17ee28c8224bbb60afe6e4248e9d23c3c9580143c0f3605542ce3",
+    "desktop-right-tight.png": "2bee239ea68d21b6e5f3e53f7d5a0f52052637d74ed6c01c6774c27dac9c2ce1",
+    "desktop-left-tight-exit.png": "4bb78fe557f61dad1f6b70a743af32d40cb3aad584baba7f3dd588e20c49269f",
+    "desktop-right-tight-exit.png": "3a41ea350b1150e8cc6aa20508ae7d71bbcfaf9590a734e88da4ee6654509ba7",
+    "mobile-left-tight.png": "84ecc3ee361939527f6fe7a89c9622d42705120cfc67f029fda3dc02c10efd10",
+    "mobile-right-tight.png": "4df242943e2970cb7713e2f1a9d776e79b795dea4436cfe0b0a4248eb49992d9",
+    "mobile-left-tight-exit.png": "56c94663724154eb4240d073aa77d8d09e79872652e91f63254c502680dfb799",
+    "mobile-right-tight-exit.png": "2888e70b7271300f20bcc1e124e7c1ec36f56c9e273262675c4ce67f94f28cb1",
+    "desktop-climb.png": "3291187fa6173017dd7b67ef166316c46b4d5867557a364c9aa55e6a97dad5e7"
+  }
+}

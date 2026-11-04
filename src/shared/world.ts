@@ -9,6 +9,10 @@ import type { GameReaction } from './cabinetSeating';
 import type { CatAction } from './cat';
 import type { MiraAttention } from './miraRoutine';
 import { CAT_CARE } from './catCare';
+import { STREET, STREET_DOOR, CASINO_EXIT, STREET_OBSTACLES } from './street';
+import { ROOF, ROOF_OBSTACLES, ROOF_STAIRS, ROOF_STAIR_RETURN, STREET_ROOF_STAIRS } from './rooftop';
+import { TOILET,TOILET_OBSTACLES,ROOF_TOILET,TOILET_WINDOW } from './toilet';
+import {STAIR_WINDOW,atStairWindow,atCardWindow} from './stairWindow';
 export const PLAYER_SPEED = 155;
 export const PLAYER_SPRINT_SPEED = PLAYER_SPEED * 1.75;
 export const ROOM_CAPACITY = 30;
@@ -28,29 +32,73 @@ export const ROOM_OBSTACLES: Obstacle[] = [
   ACTIVITIES.hockey.bounds, ACTIVITIES.piano.bounds,
   ...SEATS.filter(s => s.kind === 'bar').map(s => ({x:s.x-18,y:s.y-15,w:36,h:30})),
 ];
-export type HallId = 'arcade' | 'tables' | 'github';
+export type HallId = 'arcade' | 'tables' | 'github' | 'street' | 'roof' | 'toilet';
 export const HALLS = {
   arcade: { floor:1, name: translateText('Казино и бар'), number: '01', spawn: { x: 540, y: 590 } },
   tables: { floor:2, name: translateText('Игры на двоих'), number: '02', spawn: { x: 540, y: 590 } },
   github: { floor:3, name: translateText('Карточный салон'), number: '03', spawn: { x: 540, y: 590 } },
+  roof: { floor:0, name: translateText('Крыша казино'), number: 'R', spawn: ROOF.spawn },
+  toilet: { floor:0, name: translateText('Туалет'), number:'WC',spawn:TOILET.spawn },
+  street: { floor:0, name: translateText('Улица казино'), number: '↗', spawn: STREET.spawn },
 } as const;
 export const HALL_DOORS = {
+  street: STREET_DOOR,
+  roof: ROOF_STAIRS,
+  toilet: TOILET_WINDOW,
   arcade: { entry: { x: 900, y: 240 }, arrival: { x: 900, y: 290 }, facing: 'down', click: { x: 900, y: 107 }, left: 860, right: 940, top: 225, bottom: 247 },
   tables: { entry: { x: 900, y: 1300 }, arrival: { x: 900, y: 1250 }, facing: 'up', click: { x: 900, y: 1307 }, left: 860, right: 940, top: 1293, bottom: 1310 },
   github: { entry: { x: 900, y: 1300 }, arrival: { x: 900, y: 1250 }, facing: 'up', click: { x: 900, y: 1307 }, left: 860, right: 940, top: 1293, bottom: 1310 },
 } as const;
 export type HallDoor = typeof HALL_DOORS[HallId];
 export const GITHUB_ROOM_DOOR = { entry: { x: 800, y: 240 }, arrival: { x: 800, y: 290 }, facing: 'down', click: { x: 800, y: 107 }, left: 760, right: 840, top: 225, bottom: 247 } as const;
-export type ConnectedHallDoor = HallDoor | typeof GITHUB_ROOM_DOOR;
+export type ConnectedHallDoor = HallDoor | typeof GITHUB_ROOM_DOOR | typeof CASINO_EXIT | typeof STREET_ROOF_STAIRS | typeof ROOF_TOILET;
 export type HallLink = { target: HallId; door: ConnectedHallDoor; arrival: ConnectedHallDoor };
 export function hallLinks(hall: HallId): HallLink[] {
-  if (hall === 'arcade') return [{ target: 'tables', door: HALL_DOORS.arcade, arrival: HALL_DOORS.tables }];
+  if (hall === 'roof') return [{ target: 'street', door: ROOF_STAIRS, arrival: STREET_ROOF_STAIRS },{target:'toilet',door:ROOF_TOILET,arrival:TOILET_WINDOW}];
+  if (hall === 'toilet') return [{target:'roof',door:TOILET_WINDOW,arrival:ROOF_TOILET}];
+  if (hall === 'street') return [
+    { target: 'arcade', door: STREET_DOOR, arrival: CASINO_EXIT },
+    { target: 'roof', door: STREET_ROOF_STAIRS, arrival: ROOF_STAIRS },
+  ];
+  if (hall === 'arcade') return [
+    { target: 'tables', door: HALL_DOORS.arcade, arrival: HALL_DOORS.tables },
+    { target: 'street', door: CASINO_EXIT, arrival: STREET_DOOR },
+  ];
   if (hall === 'github') return [{ target: 'tables', door: HALL_DOORS.github, arrival: GITHUB_ROOM_DOOR }];
   return [
     { target: 'arcade', door: HALL_DOORS.tables, arrival: HALL_DOORS.arcade },
     { target: 'github', door: GITHUB_ROOM_DOOR, arrival: HALL_DOORS.github },
   ];
 }
+export const isExteriorHall = (hall: string) => hall === 'street' || hall === 'roof';
+export const isCasinoFloor = (hall:string) => hall === 'arcade' || hall === 'tables' || hall === 'github';
+
+/** Player stair state is separate from the ground arrivals used by roaming actors. */
+export function playerHallArrival(from:string,link:{target:HallId;arrival:{arrival:{x:number;y:number};facing:Facing}}){
+  if(from==='github'&&link.target==='street')return STAIR_WINDOW.return;
+  if(from==='roof'&&link.target==='street')return ROOF_STAIR_RETURN;
+  return {...link.arrival.arrival,facing:link.arrival.facing,stairStep:0,stairDirection:1};
+}
+
+/** Explicit window interaction never turns ordinary stair movement into a floor change. */
+export function stairWindowLink(p:{hall:string;x:number;y:number;stairStep?:number}):{target:HallId;arrival:{arrival:{x:number;y:number};facing:Facing}}|undefined{
+  if(atStairWindow(p))return {target:'github',arrival:{arrival:STAIR_WINDOW.arrival,facing:'down'}};
+  if(atCardWindow(p))return {target:'street',arrival:{arrival:STAIR_WINDOW.landing,facing:'down'}};
+}
+
+/** First real doorway on a shortest route, also used by security and the cat. */
+export function hallLinkToward(from: HallId, target: HallId): HallLink | undefined {
+  const queue = hallLinks(from).map(first => ({ hall: first.target, first }));
+  const seen = new Set<HallId>([from]);
+  for (let i = 0; i < queue.length; i++) {
+    const step = queue[i];
+    if (step.hall === target) return step.first;
+    if (seen.has(step.hall)) continue;
+    seen.add(step.hall);
+    for (const link of hallLinks(step.hall)) if (!seen.has(link.target)) queue.push({ hall: link.target, first: step.first });
+  }
+}
+
 export function hallLinkAt(p: { x: number; y: number; hall: string }): HallLink | undefined {
   if (!Object.hasOwn(HALLS, p.hall)) return;
   return hallLinks(p.hall as HallId).find(({ door }) => p.x >= door.left && p.x <= door.right && p.y >= door.top && p.y <= door.bottom);
@@ -58,9 +106,9 @@ export function hallLinkAt(p: { x: number; y: number; hall: string }): HallLink 
 export const inHallDoor = (p: {x:number;y:number;hall:string}) => {
   return Boolean(hallLinkAt(p));
 };
-export const otherHall = (hall:string): HallId => hall==='arcade'||hall==='github'?'tables':'arcade';
+export const otherHall = (hall:string): HallId => hall==='toilet'?'roof':hall==='roof'?'street':hall==='arcade'||hall==='github'?'tables':'arcade';
 export const activityHall = (id: string): HallId => id === 'piano' ? 'arcade' : ['durak','transfer-durak','crazy-eights'].includes(id) ? 'github' : 'tables';
-export const hallObstacles = (hall?: string): Obstacle[] => hall === 'arcade' ? ARCADE_OBSTACLES : hall === 'tables' ? TABLE_OBSTACLES : hall === 'github' ? GITHUB_OBSTACLES : ROOM_OBSTACLES;
+export const hallObstacles = (hall?: string): Obstacle[] => hall === 'toilet' ? TOILET_OBSTACLES : hall === 'roof' ? ROOF_OBSTACLES : hall === 'street' ? STREET_OBSTACLES : hall === 'arcade' ? ARCADE_OBSTACLES : hall === 'tables' ? TABLE_OBSTACLES : hall === 'github' ? GITHUB_OBSTACLES : ROOM_OBSTACLES;
 const GITHUB_OBSTACLES = [...clubObstacles('github'), ...cabinetsInHall('github').map(cabinetBounds), ACTIVITIES.durak.bounds, ACTIVITIES['transfer-durak'].bounds, ACTIVITIES['crazy-eights'].bounds];
 const ARCADE_OBSTACLES = [
   ...clubObstacles('arcade'),
@@ -83,6 +131,6 @@ export const DRINKS = [
 ] as const;
 export const atBar = (p: { x: number; y: number }) => p.x >= BAR_SERVICE.x && p.x <= BAR_SERVICE.x+BAR_SERVICE.w && p.y >= BAR_SERVICE.y && p.y <= BAR_SERVICE.y+BAR_SERVICE.h;
 export type PlayerAction = 'idle' | 'sit' | 'drink';
-export type PlayerView = { security?: string; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; inputSeq: number };
+export type PlayerView = { stairStep?: number;stairDirection?:number; security?: string; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; inputSeq: number };
 export type ChatMessage = { id: string; senderId: string; name: string; text: string; time: number; system?: boolean; requestId?: string };
-export type NetworkCommands = { recover?: () => Promise<boolean>; miraAttention?: (phase: MiraAttention) => void; elevator?: (target: HallId) => Promise<boolean>; cat?: (action: CatAction) => void; inputs: (inputs: MovementInput[]) => void; move: (x: number, y: number) => void; target: (x: number, y: number) => void; stop: () => void; sit: (seat: string) => void; stand: () => void; drink: (drink: string) => void; cabinetPlay?: (id: string) => Promise<boolean>; cabinetLeave?: () => void; cabinetReaction?: (id: string, reaction: GameReaction) => void };
+export type NetworkCommands = { recover?: () => Promise<boolean>; miraAttention?: (phase: MiraAttention) => void; stairWindow?: () => void; elevator?: (target: HallId) => Promise<boolean>; cat?: (action: CatAction) => void; inputs: (inputs: MovementInput[]) => void; move: (x: number, y: number) => void; target: (x: number, y: number) => void; stop: () => void; sit: (seat: string) => void; stand: () => void; drink: (drink: string) => void; cabinetPlay?: (id: string) => Promise<boolean>; cabinetLeave?: () => void; cabinetReaction?: (id: string, reaction: GameReaction) => void };

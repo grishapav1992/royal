@@ -1,3 +1,4 @@
+import { advanceRoofStairStep,settleRoofStairLanding,nearRoofStairBase, ROOF_STAIR_ROUTE,STREET_ROOF_STAIRS } from '../src/shared/rooftop';
 import { LOBBY_RECONNECT_GRACE_SECONDS } from '../src/shared/lobbyConnection';
 import { CommonCombatWallet } from './commonCombatWallet';
 import { virtualPvpCommand } from './pvp/virtual-service';
@@ -19,7 +20,7 @@ import { randomUUID } from 'node:crypto';
 import { accounts, allowedOrigin, cookieToken, type Account } from './accounts';
 type RoomAuth = { account: Account; hash: string };
 import { LobbyState, Player } from './state';
-import { movementFacing, type Facing } from '../src/shared/movement';
+import { applyMovementInput,movementFacing, type Facing } from '../src/shared/movement';
 import { MovementInputs } from './movementInputs';
 import { Activities } from './activities';
 import { PvpRoom } from './pvp/room';
@@ -27,7 +28,7 @@ import { cabinetHall, cabinetsInHall, type Cabinet } from '../src/shared/cabinet
 import { cabinetSeat } from '../src/shared/cabinetSeating';
 import { playerRecoveryPoint } from '../src/shared/playerRecovery';
 import { findPath, walkable, type Point } from '../src/game/navigation';
-import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLinkAt, inHallDoor, SEATS, DRINKS, atBar, type ChatMessage, type HallId } from '../src/shared/world';
+import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLinkAt, stairWindowLink, playerHallArrival, inHallDoor, SEATS, DRINKS, atBar, type ChatMessage, type HallId } from '../src/shared/world';
 import { canTravelByElevator, elevatorDock } from '../src/shared/elevator';
 import { intoxicatedMovement } from '../src/shared/intoxication';
 import type { DrinkingState } from './intoxicationStore';
@@ -144,7 +145,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       this.activities.tick(dt);this.guards.tick(dt);this.bartender.tick(dt);this.guests.tick(dt);this.cat.tick(dt);hallElapsed+=dt;
       while(hallElapsed>=.05){this.tick(.05);hallElapsed-=.05;}
     }, 1000/60);
-    const movementActions = new Set(['move', 'target', 'stop', 'playing', 'cabinet-play', 'stand', 'sit', 'drink', 'activity', 'cat', 'elevator']);
+    const movementActions = new Set(['move', 'target', 'stop', 'playing', 'cabinet-play', 'stand', 'sit', 'drink', 'activity', 'cat', 'elevator','stair-window']);
     const hugBlockedActions = new Set([...movementActions,'inputs','cabinet-reaction']);
     const listen = (type: string, handler: (client: Client, value: any) => void | Promise<void>) => this.onMessage(type, (client, value) => {
       const apply = () => {
@@ -208,6 +209,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (!p || (data as {revision?:number})?.revision!==p.hallRevision || !control || !data || typeof data !== 'object' || p.playing || Date.now() - control.lastTarget < 150) return;
       const { x, y } = data as { x?: unknown; y?: unknown };
       if (typeof x !== 'number' || typeof y !== 'number' || !Number.isFinite(x) || !Number.isFinite(y)) return;
+      if(p.hall==='street'&&p.stairStep>0){this.stop(client.sessionId);return;}
       this.stop(client.sessionId);
       this.stand(client.sessionId);
       control.predicted = false;
@@ -215,6 +217,14 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       control.path = findPath(p, { x, y }, hallObstacles(p.hall));
     });
     listen('stop', client => this.stop(client.sessionId));
+    listen('stair-window',(client,value:unknown)=>{
+      const p=this.state.players.get(client.sessionId),c=this.controls.get(client.sessionId);
+      if(!p||!c||(value as {revision?:number})?.revision!==p.hallRevision||p.playing||p.seat||p.action==='drink')return;
+      const link=stairWindowLink(p);if(!link)return;
+      this.activities.leave(client.sessionId);this.releaseCabinet(client.sessionId);this.stop(client.sessionId);this.stand(client.sessionId);
+      const arrival=playerHallArrival(p.hall,link);p.hall=link.target;p.hallRevision++;Object.assign(p,arrival);c.lastTarget=0;
+      client.send('activities',this.activities.snapshot(client.sessionId));
+    });
     // Recovery bypasses queued movement, but never an access restriction or a live shared game.
     this.onMessage('unstuck', (client, value: unknown) => {
       const request = value as { requestId?: number; revision?: number };
@@ -559,7 +569,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   private publish(message: ChatMessage) { this.history.push(message); if (this.history.length > 60) this.history.shift(); this.broadcast('chat', message); }
   private stop(id: string) {
     const c = this.controls.get(id); if (c) { c.dx = c.dy = 0; c.path = []; c.predicted = false; c.afterMovement = undefined; c.inputs.cancel(); }
-    const p = this.state.players.get(id); if (p) { p.moving = false; if (c) p.inputSeq = c.inputs.sequence; }
+    const p = this.state.players.get(id); if (p) { p.moving = false; if(p.hall==='street'&&p.stairStep>0)applyMovementInput(p,{seq:0,x:0,y:0,ms:0}); if (c) p.inputSeq = c.inputs.sequence; }
   }
   private cabinetDistance(player: Player, cabinet: Cabinet) {
     const { entry } = cabinetSeat(cabinet);
@@ -628,10 +638,17 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   }
   private enterDoor(id:string){
     const p=this.state.players.get(id),c=this.controls.get(id);
-    if(!p?.connected||p.security||!c||this.cat.isHugging(id)||p.playing||p.seat||p.action==='drink'||!inHallDoor(p))return false;
+    if(!p?.connected||!c)return false;
+    if(p.security||this.cat.isHugging(id)||p.playing||p.seat||p.action==='drink'){p.stairStep=0;return false;}
+    if(p.hall==='street'&&p.stairStep>0&&!p.moving)settleRoofStairLanding(p);
+    const previous=p.stairStep;
+    p.stairStep=p.hall==='street'?advanceRoofStairStep(p.stairStep,p):0;
+    if(!previous&&p.stairStep===1){p.x=STREET_ROOF_STAIRS.foot.x;p.y=STREET_ROOF_STAIRS.foot.y;p.stairDirection=1;}
+    const link=hallLinkAt(p);if(!link)return false;
+    if(p.hall==='street'&&link.target==='roof'&&p.stairStep!==ROOF_STAIR_ROUTE.length)return false;
     this.activities.leave(id);this.releaseCabinet(id);this.stop(id);this.stand(id);
-    const link=hallLinkAt(p)!;const hall=link.target,door=link.arrival;
-    p.hall=hall;p.hallRevision++;p.x=door.arrival.x;p.y=door.arrival.y;p.facing=door.facing;c.lastTarget=0;
+    const hall=link.target,arrival=playerHallArrival(p.hall,link);
+    p.hall=hall;p.hallRevision++;Object.assign(p,arrival);c.lastTarget=0;
     this.clients.find(client=>client.sessionId===id)?.send('activities',this.activities.snapshot(id));
     return true;
   }
@@ -657,6 +674,11 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       let dx = c.dx, dy = c.dy;
       if (Date.now() - c.at > 450) dx = dy = 0;
       if (!dx && !dy && !c.path.length) { p.moving = false; continue; }
+      if(p.hall==='street'&&(p.stairStep>0||!c.path.length&&nearRoofStairBase(p))){
+        c.path=[];
+        if(applyMovementInput(p,{seq:0,x:dx,y:dy,ms:c.inputs.sequence?c.inputs.takeDuration(dt*1000):dt*1000},[...this.state.guards.values()]))this.guards.contact(id);
+        this.enterDoor(id);continue;
+      }
       let remaining = (c.path.length ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * (c.inputs.sequence ? c.inputs.takeDuration(dt*1000)/1000 : dt)
         * intoxicatedMovement(p.soberAt, { x: dx, y: dy, ms: dt * 1000 }, Date.now() / 50).speedMultiplier;
       const beforeX = p.x, beforeY = p.y;

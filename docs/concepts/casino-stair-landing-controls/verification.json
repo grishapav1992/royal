@@ -1,0 +1,261 @@
+{
+  "feature": "casino-stair-landing-controls",
+  "dateLocal": "2026-11-04",
+  "timezone": "Europe/Moscow",
+  "testedRuntimeSourceCommit": "0d41e0fd7bc9f02564e67c949f4fdc6e79b49aae",
+  "initialApplicationBuildSourceCommit": "988cef4b79cc275f7d0e3ce3cbcf2b1d6dc201da",
+  "reconciledSourceCommit": "afadcaa8ee6e754a1d83e5a2ad30bad418f6ac4c",
+  "buildMainBaseline": "717b56b789236414064b639a6cb516a4d2f441fa",
+  "latestFetchedMain": "62a4aa66dd77e7e96ecc13fab2266d72748141d9",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "problem": "The widened platform was decorative. Movement stayed on the stair rail, while window admission required proximity to a single junction. Horizontal stair selection could reuse the previous vertical direction.",
+  "change": "The middle platform is a real horizontal movement branch. Left/right remain on it; explicit Up/Down walk to the junction and select the corresponding flight. E, Space, the window or its hint approach the sill before entering, including from either adjacent flight.",
+  "sourceFiles": {
+    "src/shared/rooftop.ts": "b0eddcb9202c6e8b5e0ad45108815f5e9bb360f5c4b5cee37e1870cad5c49e47",
+    "src/shared/stairWindow.ts": "64160d78280b53feca2fd9e80f4c4a9d4d63812d4d967be2308562ee3daa508c",
+    "src/game/streetView.ts": "140b9468a9c5027d97e20ad2f8c3d549b7647217998783bdc045466c7289a9b5",
+    "src/game/roofStairInput.ts": "20fc7ef2b88e935e6c456e71d525151c34134d3cbfbda267a5e95fb5964a50a1",
+    "src/game/RoomScene.ts": "b29fee4e439e9f57c84e3e796c2781427f2bf872da8a083d05a8f04dc364d13f",
+    "src/game/StreetRenderer.ts": "ba31018a38184d2fc4220ddcadfaed95ef313d0243eb390cd6c210bf0a511362",
+    "src/game/StairWindowRenderer.ts": "da5ccb1e1191a42fe87f20625d08bf899a385565803f36d4d842e3b49ec9b613",
+    "src/i18n/streetEn.ts": "0aca5441ccd4763a423ba4680e2988f566fbf009e37ad1ac0856dbbd547f3a37",
+    "server/LobbyRoom.ts": "855d1b0403a7614d756677e1e9f122caaa4251410a0def42daeb81e0dffa9c70",
+    "src/shared/world.ts": "77c15ba6998afcf8c72e085fdfac0c222c717918cf4aee56afa6c1043f4d737f"
+  },
+  "testFiles": {
+    "server-tests/stair-window.test.ts": "a9f0a866f87cd544991299fef856d5b2df5e9cf5c0d74639937005f020ee80bd",
+    "server-tests/rooftop.test.ts": "873893e632407ee7fd03294198ec970fdf43d2c11393804696612249d807e0e6",
+    "tests/rooftop.spec.ts": "fd744d63b6af40142b78ba6c454d473c1e6b4bb13490c416ddb8c1cf8044838a"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "98cf7bfbc847723942f7e7aee410d6b401468847171f7ce69cb05b68ff7ada65"
+    },
+    "dist-server/index.js": {
+      "bytes": 2436196,
+      "sha256": "7cb00a25aef00bf9be3ce2a539188992c36318eb821f9e353ca4aa589c56f1db"
+    },
+    "dist/assets/main-kXlBAWWe.js": {
+      "bytes": 2916233,
+      "sha256": "fa6e834a9555a4b7f60579392985317895bf61db54fb18ab4655c42c6061a2f8"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    },
+    "dist/assets/main-BVwNdpG_.css": {
+      "bytes": 155970,
+      "sha256": "92f1b83d6c0c978a0156dae804a3b74bbcdbaf278a5bb609fed2742ae86af1dc"
+    }
+  },
+  "controls": {
+    "leftRight": "Walk along the platform and stop at its ends without selecting a flight.",
+    "upDown": "First walk to the junction, then take the explicitly selected upper or lower flight.",
+    "click": "Platform selects a flat target; upper/lower flight selects that branch through the junction.",
+    "window": "Automatic checked approach before the existing manual transition.",
+    "heldMovement": "Old held movement is ignored until key release or a fresh non-repeat keydown; E can override it during approach and after return.",
+    "prompts": [
+      "E: пролезть",
+      "W / ↑",
+      "S / ↓"
+    ],
+    "return": "Stand on the platform near the sill, with no automatic continuation from previously held keys."
+  },
+  "geometry": {
+    "junction": {
+      "x": 1750,
+      "y": 328
+    },
+    "platformLength": 92,
+    "windowPoint": {
+      "x": 1818,
+      "y": 328
+    },
+    "returnPoint": {
+      "x": 1790,
+      "y": 328
+    },
+    "projectedHeight": 20,
+    "stepStates": [
+      6,
+      7
+    ],
+    "newNetworkFields": false,
+    "groundLoopChanged": false,
+    "stairsOutsidePlatformChanged": false,
+    "insideOutlook": "Shows the same platform rails and snowy edge using the exterior projection."
+  },
+  "checks": {
+    "initialFullApplicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-04T14:54:57.766Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 225988
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 6094
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 295644
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 92316
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 79
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 19
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 24
+        }
+      ],
+      "passed": true,
+      "durationMs": 620163
+    },
+    "finalScopedBuild": {
+      "frontend": "Vite production build passed after the final correction.",
+      "backend": "Rebuilt with the same buildServer function used by the application build.",
+      "typecheckPassed": true,
+      "moduleInputsReferencingChangedHostAndRoofFiles": [],
+      "gamePackagesAndMathInputsUnchanged": true,
+      "note": "The full build passed before the last input-latch and stable-progress corrections. Final host/backend builds and native checks verify those corrections; mathematical qualification inputs and game package inputs were unchanged, so those checks and packages were retained."
+    },
+    "streetUnit": {
+      "passed": 79,
+      "failed": 0,
+      "coverage": [
+        "Platform stays level at both ends and preserves either valid progress state.",
+        "Explicit Up/Down from five platform positions and either prior direction.",
+        "Schema-backed server admits only the actual sill and preserves height after return.",
+        "Existing movement, prediction, stairs, street circulation, guards, wallet, roof and restroom."
+      ]
+    },
+    "connectedHost": {
+      "scenario": "tests/rooftop.spec.ts",
+      "passed": 2,
+      "failed": 0,
+      "desktop": {
+        "viewport": [
+          1440,
+          1000
+        ],
+        "duration": "2.4m"
+      },
+      "mobile": {
+        "viewport": [
+          390,
+          844
+        ],
+        "touchEmulation": true,
+        "duration": "2.5m"
+      },
+      "platformWalkAndPrompts": true,
+      "bothFlightChoices": true,
+      "windowApproachFromEitherAdjacentFlight": true,
+      "heldMovementOverrides": true,
+      "repeatedHeldEAndWDoNotMoveReturn": true,
+      "reconnectPreservesPlatformPosition": true,
+      "continueUpToRoofAndDownToStreet": true,
+      "restroomLoop": true,
+      "ShiftPreserved": true,
+      "chatEnabled": true,
+      "balanceAndRoomIdentityPreserved": true,
+      "noPageErrors": true,
+      "noHorizontalOverflow": true
+    },
+    "mergeChecks": {
+      "passed": 16,
+      "failed": 0,
+      "coverage": [
+        "Bar route and delayed drink confirmation",
+        "Mira service presentation",
+        "Frontal and profile walking",
+        "Character cadence"
+      ],
+      "typecheckPassed": true,
+      "tourist": {
+        "checked": 132,
+        "mismatch": [],
+        "pixelIdentical": true
+      }
+    },
+    "localMap": {
+      "sourceCommit": "988cef4b79cc275f7d0e3ce3cbcf2b1d6dc201da",
+      "brainQuery": "moveRoofStairs stairWindowLink",
+      "graphQuery": "moveRoofStairs",
+      "explicitLocal": true,
+      "productionAudit": false
+    },
+    "localPreview": {
+      "url": "http://127.0.0.1:5191/",
+      "runtimeSourceCommit": "0d41e0fd7bc9f02564e67c949f4fdc6e79b49aae",
+      "backendRestarted": true,
+      "existingIsolatedDatabaseRetained": true,
+      "separateTestDatabaseRemoved": true
+    }
+  },
+  "verificationNotes": [
+    "An initial native attempt exposed a transient reassignment from the upper arrival progress state to the lower one during flat movement. The correction preserves the validated step while walking on the platform. Tests now cover both progress states.",
+    "Server platform checks copy Schema x/y explicitly, because spreading a Schema object does not expose its decorated fields.",
+    "The final browser rerun passed both complete routes on the exact final artifacts. A transient WebSocket ECONNRESET occurred during the reconnect scenario; room identity, position, chat and balance checks passed.",
+    "Later main drink-confirmation and garment updates are reconciled in Git and checked separately. The local preview retains the exact tested source artifacts rather than claiming to run those later source changes."
+  ],
+  "scope": {
+    "newGames": false,
+    "walletChanges": false,
+    "mathChanges": false,
+    "catalogueChanges": false,
+    "newServerRooms": false,
+    "newNetworkSchemaFields": false,
+    "newAudio": false,
+    "newFlashes": false
+  },
+  "limitations": [
+    "Mobile uses touch emulation, not a physical device.",
+    "The small interior outlook is decorative, not a live stream of other players.",
+    "No production publication or production byte audit.",
+    "Historical window checks retain their original narrower coverage and are not evidence for the new walkable platform."
+  ],
+  "screenshots": {
+    "desktop-platform.png": {
+      "bytes": 175974,
+      "sha256": "9d16233da4434e394ff2526fb10f80dfd704af83fededcb30ca3b44291fae72e"
+    },
+    "desktop-return.png": {
+      "bytes": 199376,
+      "sha256": "19494d15a7dbe8e6a7f2faae1cf2f1d0c56dfc0b0c0ba57464e465fa3b5d6624"
+    },
+    "desktop-inside.png": {
+      "bytes": 171307,
+      "sha256": "985db2efc5384afc2644bf61b750a37abd87b68f388169c2cf5cccbbbf08f88b"
+    },
+    "mobile-platform.png": {
+      "bytes": 77117,
+      "sha256": "3b9d65f11bc183fba3f88815426c106c9be0ded93a9ed519b6c2cb99e7963807"
+    },
+    "mobile-return.png": {
+      "bytes": 77177,
+      "sha256": "393518cd0781503342f4f2257c4b48e0cb76a76657a93d0018728393563d3c0b"
+    }
+  }
+}

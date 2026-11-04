@@ -1,0 +1,186 @@
+{
+  "feature": "casino-street-corners",
+  "visualVersion": "corners-v10",
+  "date": "2026-11-03",
+  "testedSourceCommit": "01a499254c71a44e25fba560fd535fbf047301f3",
+  "mainBaseline": "0526725cf5db8382c9ad38fd6b910f4b1d968775",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "sourceFiles": {
+    "src/game/streetView.ts": "67f3cc80eb738015457262e60d39b093cdcbfe0479fc515039ca27993bba346f",
+    "src/game/streetWalls.ts": "048ba163824138efa3319b85ec07cc10c99d5ffa8f2504c302dd9f22d11407fd",
+    "src/game/RoomScene.ts": "e268d2620fe939d910c631932315ad2250261f97b71f25eb2bfb6c894e84fd2f",
+    "src/game/StreetRenderer.ts": "862f36bbb3cf56756c6d886589b81d7ab5138811f34dc76d4be6c56d091a71f5",
+    "src/game/RooftopRenderer.ts": "a1934aa6cdd779a9743ef71ed96b348f9e58d97115999013aa00c6459cd56750",
+    "src/game/StreetAmbience.ts": "c54b6c8d119a6572c55bbb3025f479f8faa57d7fc1307a415267c2706f84f4d8",
+    "src/game/StreetResidents.ts": "6673c35b9960e4263a9c27e4ca2f478b0ec4ef2ff31509d3436735ffeee3310b",
+    "src/game/SecurityGuard.ts": "0f22a72a302d722a26ce8a6f9073a4e57c1cc3cbbd3096dafe40d924596879dc",
+    "src/ui/ClubMap.ts": "aebdfd84bbe5ad434192db1b548562a5cd3ab9f9cc47443230762d184cc441b7",
+    "src/main.ts": "041d1c93d3d0fff767ea92fbd6c5d80303c70de2c0f628bd228c7ac6c3d23cd1",
+    "src/shared/rooftop.ts": "d830e2bf8298f20383cc639b926dcc3aab2d70122e40665b8bd41bf099d7a2ab",
+    "src/shared/movement.ts": "32335437b4b640c7aa08dfcfdbd2fea65df2694f95a4b0ec5ee4652a6336b486",
+    "src/network/LobbyClient.ts": "47b38e0b797e5b84da50fa307136722ea20f5783811b622ad31dd8d4ff030117",
+    "server/LobbyRoom.ts": "a1d32de8ea039c51dca3dff0613facfc8492d7e4442dd741f9d360623db34e05",
+    "server/state.ts": "4b1fbf238a22e4cea66320031b795673a8d64eb7cebabb5e592be83fd1ed3782",
+    "scripts/build-game-module.mjs": "6b5b9c4fe709aa07c478ec46ac4d83728dc4abffbcca2f8e52412033b052e9e3",
+    "scripts/module-build-cache.mjs": "984c051063ed09e03105f69fe6e703b0a5d22d4135f4e9dd1c5ec715927c6067",
+    "tests/street-camera.spec.ts": "ddb3621e717b3100e142a1744f5a87a5ecb07ea7beaf9c415c6dfc469d5c1a3a",
+    "tests/rooftop.spec.ts": "b0dcd87c10851cddef2bf548e541f8a4982b1dacbc960e3573794d1331b9c11d",
+    "server-tests/street-life.test.ts": "90eaeb4c01df476b9c68d1242c480d90773c2881769b446526030d8d58491cf0"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "de876b16fb8862e0be4f973dd4cc1f55e1bdeeabc9817b53551f35e18e6a9b48"
+    },
+    "dist-server/index.js": {
+      "bytes": 2422024,
+      "sha256": "ce62f0c309dcbf3e2d17bd714e69b3bc6afab68b212857ed85f01d42b93c0fd5"
+    },
+    "dist/assets/main-CsLyBcLV.js": {
+      "bytes": 2852958,
+      "sha256": "3e15f828d5ec585657831c387b4216fc7df7443b9279219b0ee0fd61886a64ff"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    },
+    "dist/assets/main-afxgM5_-.css": {
+      "bytes": 155912,
+      "sha256": "1b42cc1fbf3619b16fc7b8bfbe961d50c17754359895f71520ca8268d8906543"
+    }
+  },
+  "regression": {
+    "reported": "Own character disappears near a casino corner while its ring remains visible.",
+    "before": {
+      "points": [
+        {
+          "x": 600,
+          "y": 700
+        },
+        {
+          "x": 2120,
+          "y": 700
+        },
+        {
+          "x": 600,
+          "y": 460
+        },
+        {
+          "x": 2120,
+          "y": 460
+        }
+      ],
+      "visible": false,
+      "wallDepth": 920,
+      "cause": "The visibility margin excluded walkable ground beside both walls; ordinary ground depth also put people under the flat facade. A late halo update used unprojected world coordinates. The rear exit required an unnecessary extra sideways offset."
+    },
+    "fixes": [
+      "Visible side band includes every walkable edge",
+      "People, shadows and tools use consistent foreground depth near facade edges",
+      "Own character stays visible across the corner frame",
+      "Selection ring follows final rendered coordinates and depth",
+      "Rear exit accepts the actual footprint edge; rear entry still requires full corner clearance"
+    ]
+  },
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-03T18:44:37.710Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 4669
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 5768
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 4974
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 5067
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 57
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 20
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 22
+        }
+      ],
+      "passed": true,
+      "durationMs": 20577
+    },
+    "profile": {
+      "command": "npm run test:street",
+      "passed": 47,
+      "failed": 0
+    },
+    "browser": {
+      "passed": 3,
+      "failed": 0,
+      "viewports": [
+        "1440x1000",
+        "390x844"
+      ],
+      "hostWithChat": true,
+      "scenarios": [
+        "Close walks at x=600 and x=2120, both rear entries and exits, per-frame sprite visibility and depth, per-frame ring alignment, reload and unchanged balance on both viewports",
+        "Rear stair climb, ring alignment, reload during climb, resume, roof exploration and return on desktop"
+      ],
+      "unitBoundaryPoints": [
+        600,
+        608,
+        2112,
+        2120
+      ],
+      "physicalPhoneTested": false
+    },
+    "manualVisualReview": {
+      "passed": true,
+      "images": [
+        "desktop-right-tight.png",
+        "desktop-left-tight-exit.png",
+        "mobile-right-tight-exit.png"
+      ]
+    },
+    "preview": {
+      "url": "http://127.0.0.1:5191/",
+      "isolatedRuntimePreserved": true,
+      "backendBytesUnchanged": true
+    }
+  },
+  "limitations": [
+    "Mobile layout verified by browser emulation.",
+    "Historical wider-route checks did not cover the narrow wall-edge regression; earlier records retain their original scope.",
+    "No production changes in this task."
+  ],
+  "screenshots": {
+    "desktop-left-tight.png": "1395b2f114a497ce485f819383c3a769833155c5a5c9fa5df24b9ac01b6230ef",
+    "desktop-right-tight.png": "94cba6b511fec160a937d3d36543142f283b21aa212a5aae5d2ad7a41ed82477",
+    "desktop-left-tight-exit.png": "788b0f12c91690fe5d0e011f61d6ec3a994750525621d0d3c84e7333d1e1c86a",
+    "desktop-right-tight-exit.png": "fc7aa90b18877ec5421165d7d7b5e560c5015bd2844366e5f571bf216dc76164",
+    "mobile-left-tight.png": "a97df7a25fe51e059527f4a874582840fe773c6d5dc11c33e20655be85b9b456",
+    "mobile-right-tight.png": "2256ec1ee6cc21d483356f5b5d0333a23a5141dba4d57b1df8a2885d7edb7c27",
+    "mobile-left-tight-exit.png": "2977f6f7a011df0a20f6ca5c483a64f8673791bcb53f354262119a32f2bdc1be",
+    "mobile-right-tight-exit.png": "fecc132c5fbca39275b87abc45b34c42526625015afc1c1fb612e199aa411cfb",
+    "desktop-climb.png": "b3070c6fc19e90cdc52b4d95b965b2039135873cb70c5694510af3100c95b7d6"
+  }
+}

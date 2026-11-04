@@ -1,4 +1,5 @@
 import { t as translateText, tr } from '../i18n/index';
+import { type StreetResidentId } from './streetDetails';
 import { cabinetSeat, type GameReaction } from '../shared/cabinetSeating';
 import { playerRecoveryPoint } from '../shared/playerRecovery';
 import { drawCabinetStool } from './cabinetStoolArt';
@@ -19,7 +20,7 @@ import { SecurityGuard } from './SecurityGuard';
 import type { GuardView } from '../shared/security';
 import { addDemoCabinetArt } from './demoCabinetArt';
 import { gameAudio } from './GameAudio';
-import { atElevator, canTravelByElevator, elevatorDock, elevatorFloors } from '../shared/elevator';
+import { atElevator, canTravelByElevator, elevatorDock } from '../shared/elevator';
 import { drawElevator } from './elevatorArt';
 import Phaser from 'phaser';
 import { COLORS } from './art';
@@ -38,27 +39,49 @@ import { Bar } from './Bar';
 import { preloadRoyalBarArt } from './royalBarArt';
 import { drawActivities } from './activityArt';
 import { ACTIVITIES, type ActivityId } from '../shared/activities';
-import { movementFacing } from '../shared/movement';
+import { applyMovementInput,movementFacing } from '../shared/movement';
 import { addDrink, getIntoxication, intoxicatedMovement, MAX_SOBER_TIME_MS } from '../shared/intoxication';
 import { MovementPrediction, advanceClickMovement } from '../network/MovementPrediction';
 import { ClickTargetScheduler } from '../network/ClickTargetScheduler';
 import { NpcMotion } from '../network/NpcMotion';
 import { NpcTimeline } from '../network/NpcTimeline';
 import { RoomDetails } from './roomDetails';
+import { StreetView, streetDirection, type StreetSide } from './streetView';
+import { StreetRenderer } from './StreetRenderer';
+import { ROOF, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_SPEED_SCALE,ROOF_STAIR_EPSILON,advanceRoofStairStep,moveRoofStairs,roofStairOptions,nearRoofStairBase } from '../shared/rooftop';
+import { RooftopRenderer } from './RooftopRenderer';
+import { STREET } from '../shared/street';
+import { TOILET,TOILET_WINDOW,ROOF_TOILET } from '../shared/toilet';
+import { ToiletRenderer } from './ToiletRenderer';
+import {STAIR_WINDOW,atStairWindow,canApproachStairWindow,canWalkThroughStairWindow} from '../shared/stairWindow';
+import {onRoofWindowPlatform,ROOF_WINDOW_PLATFORM,ROOF_STAIR_DRAW,roofWindowPlatformPosition,roofWindowPlatformPoint} from '../shared/rooftop';
+import {drawCardStairWindow,stairWindowFrame} from './StairWindowRenderer';
 import { CardTablesRenderer } from './CardTablesRenderer';
 import { isCardGame, type DealerAction } from '../shared/cardTables';
-import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, hallObstacles, HALLS, hallLinks, hallLinkAt, inHallDoor, type HallLink, activityHall, type HallId, SEATS, BAR_APPROACH, DRINKS, atBar, type PlayerAction, type PlayerView, type NetworkCommands } from '../shared/world';
+import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, hallObstacles, HALLS, hallLinks, hallLinkAt, stairWindowLink, playerHallArrival, inHallDoor, isExteriorHall, isCasinoFloor, type HallLink, activityHall, type HallId, SEATS, BAR_APPROACH, DRINKS, atBar, type PlayerAction, type PlayerView, type NetworkCommands } from '../shared/world';
 import { findPath, walkable, WORLD, type Point, type Obstacle } from './navigation';
 
 import { CABINETS, cabinetsInHall, type Cabinet } from '../shared/cabinets';
 export { CABINETS, type Cabinet };
-type Actor = { hall: HallId; sprite: Phaser.GameObjects.Sprite; shadow: Phaser.GameObjects.Ellipse; blush: Phaser.GameObjects.Graphics; label?: Phaser.GameObjects.Text; x: number; y: number; path: Point[]; phase: number; nextMove: number; facing: Facing; skin: number; appearance: string; soberAt: number; moving: boolean; lastStep: number; motion: CharacterMotion; visualAt: number; visualX: number; visualY: number; seat: string; action: PlayerAction; drink: string; actionUntil: number; cabinet: string; gameReaction: string; gameReactionUntil: number; visualSeat: string; seatedAt: number };
+type Actor = { stairStep?:number;stairDirection?:number; hall: HallId; sprite: Phaser.GameObjects.Sprite; shadow: Phaser.GameObjects.Ellipse; blush: Phaser.GameObjects.Graphics; label?: Phaser.GameObjects.Text; x: number; y: number; path: Point[]; phase: number; nextMove: number; facing: Facing; skin: number; appearance: string; soberAt: number; moving: boolean; lastStep: number; motion: CharacterMotion; visualAt: number; visualX: number; visualY: number; seat: string; action: PlayerAction; drink: string; actionUntil: number; cabinet: string; gameReaction: string; gameReactionUntil: number; visualSeat: string; seatedAt: number };
 export class RoomScene extends Phaser.Scene {
   player!: Actor;
   hall: HallId = 'arcade';
   obstacles: Obstacle[] = hallObstacles('arcade');
   private hallObjects = new Map<HallId, Phaser.GameObjects.GameObject[]>();
   private hallDetails = new Map<HallId, RoomDetails>();
+  private street?: StreetRenderer;
+  private streetView=new StreetView();
+  private streetKeyboardSide?:StreetSide;
+  private lastStreetKeys='';
+  private movementTarget?:Point;
+  private rooftop?: RooftopRenderer;
+  private toilet?:ToiletRenderer;
+  private windowArrival?:{from:Point;until:number;render?:boolean};
+  private heldWindowKeys=new Set<number>();
+  private stairWindowApproachAt=0;
+  private roofClickTarget?:Point;
+  private roofClickRetryAt=0;
   private cardTables?: CardTablesRenderer;
   private cabinetStools = new Map<string, ReturnType<typeof drawCabinetStool>>();
   private switching=false;
@@ -106,10 +129,12 @@ export class RoomScene extends Phaser.Scene {
   private cancelCabinetAdmission?: () => void;
   private predictionClock = performance.now();
   private correction = { x: 0, y: 0 };
-  private details!: RoomDetails;
+  private details?: RoomDetails;
   private bar!: Bar;
   private atelier?: TailorRenderer;
   private pendingLounge: string | null = null;
+  private streetApproach?:{id:StreetResidentId;point:Point};
+  private streetApproachCompleting=false;
   private elevatorApproachAt = 0;
   private overview=false;
   onBar: () => void = () => {};
@@ -146,12 +171,29 @@ export class RoomScene extends Phaser.Scene {
   create() {
     createDetailedArt(this);
     createCharacters(this);
-    for(const hall of elevatorFloors()){
-      const before=new Set(this.children.list);this.hall=hall;this.drawRoom();
+    for(const hall of Object.keys(HALLS) as HallId[]){
+      const before=new Set(this.children.list);this.hall=hall;
+      if(hall==='street'){
+        this.street=new StreetRenderer(this,()=>this.approachFloor('arcade'),id=>this.approachStreetResident(id),point=>this.useRoofStairs(point),this.streetView,this.hallObjects,()=>this.useStairWindow(true));
+        this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
+        continue;
+      }
+      if(hall==='roof'){
+        this.rooftop=new RooftopRenderer(this,()=>this.approachFloor('street'),()=>this.approachFloor('toilet'));
+        this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
+        continue;
+      }
+      if(hall==='toilet'){
+        this.toilet=new ToiletRenderer(this,()=>this.approachFloor('roof'),this.rooftop?.mapCanvas);
+        this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
+        continue;
+      }
+      this.drawRoom();
       this.hallDetails.set(hall,new RoomDetails(this,cabinetsInHall(hall).filter(cabinet=>!isCardGame(cabinet.id)),hall));
       if(hall==='arcade'){this.bar=new Bar(this,id=>this.approachSeat(id),()=>this.approachBar());drawCatCare(this);this.atelier=drawAtelier(this,()=>this.approachAtelier());}
       drawActivities(this,id=>this.approachActivity(id),hall);
       for (const link of hallLinks(hall)) this.drawDoor(link);
+      if(hall==='github')drawCardStairWindow(this,()=>this.useStairWindow(true));
       drawElevator(this, hall, () => this.approachElevator());
       this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
     }
@@ -165,12 +207,14 @@ export class RoomScene extends Phaser.Scene {
     this.resizeView();
     this.syncGuests(this.guestViews);
     this.keys = this.input.keyboard!.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE,SHIFT') as Record<string, Phaser.Input.Keyboard.Key>;
-    this.input.keyboard!.on('keydown-E', () => this.interact());
-    this.input.keyboard!.on('keydown-SPACE', () => this.interact());
+    this.input.keyboard!.on('keyup',(event:KeyboardEvent)=>this.heldWindowKeys.delete(event.keyCode));
+    this.input.keyboard!.on('keydown',(event:KeyboardEvent)=>{if(!event.repeat)this.heldWindowKeys.delete(event.keyCode);});
+    this.input.keyboard!.on('keydown-E', (event:KeyboardEvent) => {if(!event.repeat)this.interact();});
+    this.input.keyboard!.on('keydown-SPACE', (event:KeyboardEvent) => {if(!event.repeat)this.interact();});
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer, objects: Phaser.GameObjects.GameObject[]) => {
       if (this.locked || this.typing || objects.length || pointer.rightButtonDown()) return;
       this.pendingCabinet = null; this.pendingLounge = null;
-      this.goTo({ x: pointer.worldX, y: pointer.worldY });
+      this.goTo(this.hall==='street'?this.streetView.world({x:pointer.worldX,y:pointer.worldY}):{x:pointer.worldX,y:pointer.worldY});
     });
     this.input.mouse?.disableContextMenu();
     this.game.events.on(Phaser.Core.Events.BLUR, () => { this.input.keyboard?.resetKeys(); this.player.path = []; this.marker.setVisible(false); this.endPrediction(); this.network?.stop(); });
@@ -187,11 +231,25 @@ export class RoomScene extends Phaser.Scene {
     if(this.network||this.locked||this.isHuggingCat()||this.switching||hall===this.hall||!inHallDoor(this.player))return;
     this.endPrediction();this.pendingCabinet=null;this.pendingLounge=null;this.player.path=[];this.marker.setVisible(false);
     const link=hallLinkAt(this.player);if(!link||link.target!==hall)return;
-    const door=link.arrival;
-    this.showHall(hall);Object.assign(this.player,door.arrival,{hall,seat:'',action:'idle',drink:'',actionUntil:0,moving:false,facing:door.facing});
+    if(this.hall==='street'&&link.target==='roof'&&this.player.stairStep!==ROOF_STAIR_ROUTE.length)return;
+    const previousHall=this.hall;
+    const arrival=playerHallArrival(this.hall,link);
+    if(hall==='street')this.streetView.arrive(arrival);
+    this.showHall(hall);Object.assign(this.player,arrival,{hall,seat:'',action:'idle',drink:'',actionUntil:0,moving:false});
+    this.beginWindowArrival(previousHall,hall);
     this.syncGuests(this.guestViews);
   }
   private drawDoor(link:HallLink){
+    if(link.target==='street'){
+      const {x,y}=link.door.entry,g=this.add.graphics().setDepth(3);
+      g.fillStyle(0x281d2b).fillRect(x-66,y-38,132,68);
+      g.fillStyle(0x722c42).fillRect(x-57,y-33,114,59);
+      g.lineStyle(3,0xe3c17a).strokeRect(x-61,y-36,122,64);
+      g.fillStyle(0xb34858).fillRect(x-50,y-29,100,18);
+      this.add.text(x,y-66,translateText('НА УЛИЦУ'),{fontFamily:'Arial',fontSize:'17px',fontStyle:'bold',color:'#f5dc9d',backgroundColor:'#432437',padding:{x:12,y:7}}).setOrigin(.5).setDepth(4);
+      this.add.zone(x,y-15,150,100).setDepth(680).setInteractive({useHandCursor:true}).on('pointerdown',()=>this.approachFloor('street'));
+      return;
+    }
     const destination=HALLS[link.target],doorLabel=destination.floor!==HALLS[this.hall].floor?translateText('ЭТАЖ ')+destination.floor:translateText('ЗАЛ ')+destination.number,g=this.add.graphics().setDepth(225);
     if(link.door.facing==='up') {
       // The near wall is cut away so the doorway stays readable from above.
@@ -225,30 +283,52 @@ export class RoomScene extends Phaser.Scene {
     this.add.zone(link.door.entry.x,166+HALL_WALL.doorOffset,116,158).setDepth(230).setInteractive({useHandCursor:true}).on('pointerdown',()=>{this.pendingCabinet=null;this.pendingLounge=null;this.goTo(link.door.entry);});
   }
   private showHall(hall:HallId){
+    this.roofClickTarget=undefined;
     this.clickTargets.reset();
     for(const effect of this.pianoEffects){this.tweens.killTweensOf(effect);effect.destroy();}this.pianoEffects.clear();
     this.hall=hall;this.obstacles=hallObstacles(hall);this.details=this.hallDetails.get(hall)!;
+    document.querySelector<HTMLElement>('.room-panel')!.dataset.location=hall;
     for(const [id,objects] of this.hallObjects)for(const object of objects){
       (object as Phaser.GameObjects.Image).setVisible(id===hall);object.setActive(id===hall);
       if(object.input)object.input.enabled=id===hall;
     }
+    this.street?.setActive(hall==='street');
     this.near=null;this.lastNear='';this.onNear(null);gameAudio.setHall(hall);this.onHall(hall);
     if(this.player)this.resizeView();
   }
   getTailorState() { return this.atelier?.getState() ?? null; }
-  setOverview(value:boolean){this.overview=value;document.querySelector<HTMLElement>('.room-panel')!.dataset.overview=String(value);this.resizeView();}
+  getStreetMapArt() { return this.street?.mapCanvas; }
+  getRoofMapArt() { return this.rooftop?.mapCanvas; }
+  getToiletMapArt(){return this.toilet?.mapCanvas;}
+  private beginWindowArrival(from:HallId,to:HallId){
+    if(from==='github'&&to==='street')this.releaseWindowMovement();
+    if(this.reducedMotion)return;
+    if(from==='street'&&to==='github'){
+      this.windowArrival={from:{x:STAIR_WINDOW.interior.x,y:177},until:this.time.now+500};this.switching=true;return;
+    }
+    if(from==='github'&&to==='street'){
+      const w=stairWindowFrame(this.streetView);
+      this.windowArrival={from:{x:w.x+128,y:w.y+176},until:this.time.now+500,render:true};this.switching=true;return;
+    }
+    if(!(from==='roof'&&to==='toilet'||from==='toilet'&&to==='roof'))return;
+    this.windowArrival={from:to==='toilet'?{x:156,y:244}:{x:850,y:530},until:this.time.now+500};
+    this.switching=true;
+  }
+  setOverview(value:boolean){this.overview=value;if(this.hall==='street')this.streetView.configure(this.player,value);document.querySelector<HTMLElement>('.room-panel')!.dataset.overview=String(value);this.resizeView();}
   setDealerAction(gameId: string, action: DealerAction) { this.cardTables?.setAction(gameId, action); }
   private resizeView(){
     const width=this.scale.gameSize.width,height=this.scale.gameSize.height;
-    const frame=this.overview&&this.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
-    const fit=Math.min(width/(frame.width-40),height/(frame.height-HALL_WALL.viewTop-50));
+    const frame=this.hall==='toilet'?TOILET:this.hall==='roof'?ROOF:this.hall==='street'?this.streetView.size:this.overview&&this.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
+    const viewTop=this.hall==='toilet'?TOILET.viewTop:HALL_WALL.viewTop;
+    const fit=Math.min(width/(frame.width-40),height/(frame.height-viewTop-50));
     const zoom=this.overview?fit:Math.max(fit,Phaser.Math.Clamp(Math.min(width/1000,height/760),.8,1.3));
     const viewWidth=width/zoom,viewHeight=height/zoom;
+    const top=this.hall==='street'&&!this.overview&&this.streetView.side==='rear'?Math.min(HALL_WALL.viewTop,this.streetView.roofEdge-320):viewTop;
     const camera=this.cameras.main.setSize(width,height).setZoom(zoom).setBounds(
-      Math.min(0,(frame.width-viewWidth)/2),Math.min(HALL_WALL.viewTop,(frame.height+HALL_WALL.viewTop-viewHeight)/2),
-      Math.max(frame.width,viewWidth),Math.max(frame.height-HALL_WALL.viewTop,viewHeight));
-    if(this.overview){camera.stopFollow();camera.centerOn(frame.width/2,(frame.height+HALL_WALL.viewTop)/2);}
-    else if(this.player)camera.startFollow(this.player.sprite,false,1,1);
+      Math.min(0,(frame.width-viewWidth)/2),Math.min(top,(frame.height+top-viewHeight)/2),
+      Math.max(frame.width,viewWidth),Math.max(frame.height-top,viewHeight));
+    if(this.overview){camera.stopFollow();camera.centerOn(frame.width/2,(frame.height+viewTop)/2);}
+    else if(this.player)camera.startFollow(this.player.sprite,false,1,1,0,this.hall==='street'?Math.min(140,Math.max(60,viewHeight*.18)):0);
   }
   private drawRoom() {
     const g = this.add.graphics();
@@ -320,19 +400,22 @@ export class RoomScene extends Phaser.Scene {
     if (isPlayer) try { soberAt = Math.min(Date.now() + MAX_SOBER_TIME_MS, Number(localStorage.getItem('royal-offline-sober-at')) || 0); } catch { /* The demo can run without browser storage. */ }
     return { hall:this.hall, x, y, sprite, shadow, blush, label, path: [], phase: (x * 7 + y * 11 + skin * 17 + Array.from(name ?? '').reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) % 997, 0)) % 100, nextMove: 0, facing: 'down', skin, appearance, soberAt, moving: false, lastStep: 0, motion: createCharacterMotion(), visualAt: 0, visualX: x, visualY: y, seat: '', action: 'idle', drink: '', actionUntil: 0, cabinet: '', gameReaction: '', gameReactionUntil: 0, visualSeat: '', seatedAt: 0 };
   }
-  goTo(point: Point) {
+  goTo(point: Point, obstacles=this.obstacles) {
+    this.roofClickTarget=undefined;
+    if(this.hall==='street'&&(this.player.stairStep??0)>0){this.player.path=[];this.marker.setVisible(false);this.endPrediction();return;}
+    this.movementTarget={...point};
     this.approachingCat = false;
     if (this.locked || this.isHuggingCat() || this.typing || this.switching || this.player.cabinet || this.networkSelf?.playing) return;
     if (this.network) {
       this.clickTargets.cancel(); this.afterMovement=undefined; this.endPrediction();
       if (!this.networkSelf) return;
       const origin = SEATS.find(seat => seat.id === this.player.seat)?.entry ?? this.player;
-      this.player.path = findPath(origin, point, this.obstacles);
+      this.player.path = findPath(origin, point, obstacles);
       this.marker.setPosition(point.x, point.y).setVisible(this.player.path.length > 0);
       return;
     }
     this.stand();
-    const path = findPath(this.player, point, this.obstacles);
+    const path = findPath(this.player, point, obstacles);
     if (!path.length) return;
     this.player.path = path; this.marker.setPosition(point.x, point.y).setVisible(true);
   }
@@ -359,9 +442,85 @@ export class RoomScene extends Phaser.Scene {
   approachFloor(target: HallId) {
     if (this.locked || this.isHuggingCat() || this.typing || this.switching) return;
     const link = hallLinks(this.hall).find(candidate => candidate.target === target); if (!link) return;
-    this.pendingCabinet = null; this.pendingLounge = null; this.goTo(link.door.entry);
+    this.pendingCabinet = null; this.pendingLounge = null;
+    if(this.hall==='street'&&target==='roof'){
+      if((this.player.stairStep??0)>0)return;
+      const stairs=STREET_ROOF_STAIRS;
+      this.pendingLounge='roof-stairs';
+      // Approach the bottom from either side before walking up the steps.
+      this.goTo(stairs.foot);
+      return;
+    }
+    this.goTo(link.door.entry);
+  }
+  private useRoofStairs(point:Point){
+    if(this.hall!=='street'||this.locked||this.typing||this.isHuggingCat())return;
+    const step=this.player.stairStep??0;
+    if(!step){this.approachFloor('roof');return;}
+    this.releaseWindowMovement();
+    this.pendingCabinet=null;this.pendingLounge=null;this.player.path=[];this.marker.setVisible(false);
+    if(canApproachStairWindow(this.player)){
+      const p=ROOF_WINDOW_PLATFORM,junction=this.streetView.point(p.junction,true),end=roofWindowPlatformPosition(p.length);
+      const projectedEnd=this.streetView.point(end,true);
+      const platform=point.x>=Math.min(junction.x,projectedEnd.x)-32&&point.x<=Math.max(junction.x,projectedEnd.x)+32&&point.y>=junction.y-18&&point.y<=junction.y+24;
+      if(platform||onRoofWindowPlatform(this.player)){
+        const target=platform?{x:Math.max(Math.min(p.junction.x,end.x),Math.min(Math.max(p.junction.x,end.x),p.junction.x+(junction.x-point.x)/ROOF_STAIR_DRAW.widthScale)),y:p.junction.y}:ROOF_STAIR_ROUTE[p.index+(point.y<junction.y?1:-1)];
+        const path=platform&&onRoofWindowPlatform(this.player)?[target]:[{...p.junction},{...target}];
+        this.roofClickTarget={...target};this.releaseWindowMovement();this.finishMovement(()=>{if(this.hall==='street')this.player.path=path;});return;
+      }
+    }
+    const here=this.streetView.point(this.player,true);
+    const choice=roofStairOptions(this.player).map(option=>{
+      const next=this.streetView.point(option.target,true),dx=next.x-here.x,dy=next.y-here.y,length=dx*dx+dy*dy;
+      const progress=length?((point.x-here.x)*dx+(point.y-here.y)*dy)/length:0;
+      const t=Math.max(0,Math.min(1,progress));
+      return {option,progress,distance:(point.x-here.x-dx*t)**2+(point.y-here.y-dy*t)**2};
+    }).filter(p=>p.progress>.03).sort((a,b)=>a.distance-b.distance)[0];
+    if(!choice){this.endPrediction();return;}
+    const target=choice.option.target;
+    this.roofClickTarget={...target};
+    this.finishMovement(()=>{
+      if(this.hall!=='street')return;
+      this.player.path=[{...target}];
+    });
+  }
+  private useStairWindow(approach=false){
+    this.roofClickTarget=undefined;
+    if(this.locked||this.typing||this.switching||this.isHuggingCat()||this.player.cabinet||this.networkSelf?.playing||this.player.seat||this.player.action==='drink')return;
+    if(!stairWindowLink(this.player)){
+      if(approach&&this.hall==='github'){this.releaseWindowMovement();this.pendingCabinet=null;this.pendingLounge='stair-window';this.goTo(STAIR_WINDOW.entry);}
+      else if(approach&&canApproachStairWindow(this.player)){
+        this.releaseWindowMovement();
+        this.pendingCabinet=null;this.pendingLounge='stair-window';
+        const path=onRoofWindowPlatform(this.player)?[{...STAIR_WINDOW.outside}]:[{...STAIR_WINDOW.landing},{...STAIR_WINDOW.outside}];
+        this.finishMovement(()=>{if(this.hall==='street')this.player.path=path;});
+      }
+      return;
+    }
+    this.releaseWindowMovement();
+    this.pendingCabinet=null;this.pendingLounge=null;this.marker.setVisible(false);
+    this.finishMovement(()=>{
+      if(this.network){this.network.stairWindow?.();return;}
+      const link=stairWindowLink(this.player);if(!link)return;
+      const previous=this.hall,arrival=playerHallArrival(previous,link);
+      if(link.target==='street')this.streetView.arrive(arrival);
+      this.showHall(link.target);Object.assign(this.player,arrival,{hall:link.target,moving:false});
+      this.beginWindowArrival(previous,link.target);this.syncGuests(this.guestViews);
+    });
+  }
+  private releaseWindowMovement(){
+    for(const name of ['W','A','S','D','UP','DOWN','LEFT','RIGHT']){
+      const key=this.keys?.[name];if(key?.isDown){this.heldWindowKeys.add(key.keyCode);key.reset();}
+    }
+  }
+  approachStreetResident(id:StreetResidentId){
+    if(this.hall!=='street'||(this.player.stairStep??0)>0||this.locked||this.typing||this.switching||this.isHuggingCat()||this.player.cabinet||this.networkSelf?.playing)return;
+    const point=this.street?.prepareApproach(id,this.player);if(!point)return;
+    this.streetApproach={id,point};this.streetApproachCompleting=false;
+    this.pendingCabinet=null;this.pendingLounge='street:'+id;this.goTo(point);
   }
   approachElevator() {
+    if(!isCasinoFloor(this.hall))return;
     if (this.locked || this.isHuggingCat() || this.typing || this.switching || this.player.cabinet || this.networkSelf?.playing || this.player.action === 'drink') return;
     this.pendingCabinet = null;
     this.pendingLounge = 'elevator';
@@ -391,7 +550,12 @@ export class RoomScene extends Phaser.Scene {
     return true;
   }
   interact() {
-    if (this.locked || this.typing) return;
+    if (this.locked || this.typing || this.switching) return;
+    if(this.hall==='roof'&&Math.hypot(this.player.x-ROOF_TOILET.entry.x,this.player.y-ROOF_TOILET.entry.y)<110){this.approachFloor('toilet');return;}
+    if(this.hall==='toilet'&&Math.hypot(this.player.x-TOILET_WINDOW.entry.x,this.player.y-TOILET_WINDOW.entry.y)<110){this.approachFloor('roof');return;}
+    if(this.hall==='street'&&(this.player.stairStep??0)>0)return;
+    if(this.hall==='street'&&!this.isHuggingCat()&&Math.hypot(this.player.x-STREET_ROOF_STAIRS.foot.x,this.player.y-STREET_ROOF_STAIRS.foot.y)<55){this.approachFloor('roof');return;}
+    if(this.hall==='street'&&!this.isHuggingCat()&&this.street?.interact(this.player)){this.pendingLounge=null;this.finishMovement(()=>this.network?.stop());return;}
     if (!this.isHuggingCat() && atElevator(this.player)) { this.openElevator(); return; }
     const nearbyPlayer=[...this.remotePlayers.values()].map(p=>p.target).filter(p=>p.connected&&p.hall===this.hall&&!p.playing&&!p.activity)
       .sort((a,b)=>Math.hypot(a.x-this.player.x,a.y-this.player.y)-Math.hypot(b.x-this.player.x,b.y-this.player.y))[0];
@@ -532,7 +696,8 @@ export class RoomScene extends Phaser.Scene {
     this.guestViews=views;
     const active=new Set(views.filter(v=>v.hall===this.hall).map(v=>v.id));
     const counter=document.querySelector<HTMLElement>('.npc-count');
-    if(counter){const label=(this.network?translateText('Игроки: ')+(counter.dataset.players??'0')+' · ':'')+translateText('НПС: ')+active.size;if(counter.textContent!==label)counter.textContent=label;}
+    const count=active.size+(this.hall==='street'?(this.street?.pedestrianCount??0):0);
+    if(counter){const label=(this.network?translateText('Игроки: ')+(counter.dataset.players??'0')+' · ':'')+translateText('НПС: ')+count;if(counter.textContent!==label)counter.textContent=label;}
     for(const [id,actor] of this.guests)if(!active.has(id)){actor.sprite.destroy();actor.shadow.destroy();actor.blush.destroy();actor.label?.destroy();this.guests.delete(id);this.guestMotion.delete(id);}
     for(const view of views){
       if(!active.has(view.id))continue;
@@ -651,7 +816,7 @@ export class RoomScene extends Phaser.Scene {
       sit: seat => { this.clickTargets.cancel(); this.finishMovement(() => commands.sit(seat)); },
       stand: () => { this.clickTargets.cancel(); this.finishMovement(commands.stand); },
       drink: drink => { this.clickTargets.cancel(); this.finishMovement(() => commands.drink(drink)); },
-      recover: commands.recover, elevator: commands.elevator, cat: commands.cat, miraAttention: commands.miraAttention, cabinetPlay: commands.cabinetPlay, cabinetLeave: commands.cabinetLeave, cabinetReaction: commands.cabinetReaction,
+      recover: commands.recover, stairWindow: commands.stairWindow, elevator: commands.elevator, cat: commands.cat, miraAttention: commands.miraAttention, cabinetPlay: commands.cabinetPlay, cabinetLeave: commands.cabinetLeave, cabinetReaction: commands.cabinetReaction,
     };
     this.networkSelf = undefined;
     this.player.path = []; this.lastInput = '0,0';
@@ -662,15 +827,21 @@ export class RoomScene extends Phaser.Scene {
     const self = players.find(p => p.id === selfId);
     if (self) {
       if (Boolean(self.security) !== this.securityLocked) this.setSecurity(Boolean(self.security));
+      if(self.hall==='street'&&(!this.networkSelf||self.hall!==this.hall||self.hallRevision!==this.networkSelf.hallRevision)){
+        this.streetView.arrive(self);this.streetKeyboardSide=undefined;this.lastStreetKeys='';
+      }
       if(self.hall!==this.hall||(this.networkSelf&&self.hallRevision!==this.networkSelf.hallRevision)){
+        const previousHall=this.hall;
         this.clickTargets.reset();
         this.prediction.reset();this.afterMovement=undefined;this.correction={x:0,y:0};this.showHall(self.hall);this.switching=false;
         Object.assign(this.player,{x:self.x,y:self.y,hall:self.hall,seat:self.seat,action:self.action,drink:self.drink,actionUntil:self.actionUntil});
         this.player.path=[];this.pendingCabinet=null;this.pendingLounge=null;
+        this.beginWindowArrival(previousHall,self.hall);
       }
       const firstState = !this.networkSelf;
       if (firstState) { this.player.x = self.x; this.player.y = self.y; }
       this.networkSelf = self;
+      if(!this.prediction.active){this.player.stairStep=self.stairStep??0;this.player.stairDirection=self.stairDirection??1;}
       if (firstState && this.pendingLounge === 'bar') this.goTo(BAR_APPROACH);
       this.player.soberAt = self.soberAt;
       this.player.cabinet = self.cabinet ?? ''; this.player.gameReaction = self.gameReaction ?? ''; this.player.gameReactionUntil = self.gameReactionUntil ?? 0;
@@ -679,7 +850,7 @@ export class RoomScene extends Phaser.Scene {
         const errorX = this.player.x-next.x, errorY = this.player.y-next.y;
         if (Math.hypot(errorX, errorY) < 60) { this.correction.x += errorX; this.correction.y += errorY; }
         else this.correction = { x: 0, y: 0 };
-        this.player.x = next.x; this.player.y = next.y; this.player.facing = next.facing;
+        this.player.x = next.x; this.player.y = next.y; this.player.facing = next.facing; this.player.stairStep=next.stairStep??0;this.player.stairDirection=next.stairDirection??1;
         this.player.seat = next.seat; this.player.action = next.action; this.player.drink = next.drink; this.player.actionUntil = next.actionUntil;
         // Refill the send window even when keys are released or a dialog has focus.
         this.flushPrediction();
@@ -723,6 +894,7 @@ export class RoomScene extends Phaser.Scene {
     }
     const factor = Math.min(1, dt * 18);
     actor.x += (target.x - actor.x) * factor; actor.y += (target.y - actor.y) * factor;
+    actor.stairStep=target.stairStep??0;actor.stairDirection=target.stairDirection??1;
     actor.facing = target.facing; actor.seat = target.seat; actor.action = target.action; actor.drink = target.drink; actor.actionUntil = target.actionUntil; actor.soberAt = target.soberAt;
     actor.cabinet = target.cabinet ?? ''; actor.gameReaction = target.gameReaction ?? ''; actor.gameReactionUntil = target.gameReactionUntil ?? 0;
     this.animateActor(actor, time, target.moving && target.connected);
@@ -752,9 +924,10 @@ export class RoomScene extends Phaser.Scene {
     else { this.afterMovement = undefined; action(); }
   }
   getReducedMotion() { return this.reducedMotion; }
-  getState() { const c=this.cameras.main;return { cat: this.catView, world:{...WORLD,bounds:BOUNDS},guests:this.guestViews.filter(v=>v.hall===this.hall).map(v=>({...v})), playing:this.networkSelf?.playing??Boolean(this.player.cabinet), cabinet:this.player.cabinet, gameReaction:this.player.gameReactionUntil>Date.now()?this.player.gameReaction:'', gameReactionUntil:this.player.gameReactionUntil, stools:[...this.cabinetStools.keys()], mira:this.bar?.getState(), guards:this.guard?.getState(), security:this.networkSelf?.security, hall:this.hall,switching:this.switching, view:{width:c.width,height:c.height,zoom:c.zoom,x:c.worldView.x,y:c.worldView.y,overview:this.overview}, x: this.player.x, y: this.player.y, moving: this.player.moving, seat: this.player.seat, action: this.player.action, drink: this.player.drink, actionUntil: this.player.actionUntil, soberAt: this.player.soberAt, intoxication: getIntoxication(this.player.soberAt), near: this.near?.id ?? null, locked: this.locked, online: !!this.network, npcTiming:this.npcTimeline.getState(), guestRenderPositions:[...this.guests].map(([id,actor])=>({id,x:actor.x,y:actor.y,spriteX:actor.sprite.x,spriteY:actor.sprite.y,moving:actor.moving})), predicted: this.prediction.active, pendingInputs: this.prediction.pendingCount, serverX: this.networkSelf?.x, serverY: this.networkSelf?.y, renderX: this.player.sprite.x, renderY: this.player.sprite.y, renderScaleX: this.player.sprite.scaleX, renderScaleY: this.player.sprite.scaleY, skin: this.player.skin, appearance: this.player.appearance, texture: this.player.sprite.texture.key, remotes: this.remotePlayers.size, remotePositions: [...this.remotePlayers].map(([id, { actor }]) => ({ id, skin: actor.skin, appearance: actor.appearance, texture: actor.sprite.texture.key, x: actor.x, y: actor.y, seat: actor.seat, cabinet: actor.cabinet, gameReaction:actor.gameReactionUntil>Date.now()?actor.gameReaction:'', gameReactionUntil:actor.gameReactionUntil, action: actor.action, soberAt: actor.soberAt, angle: actor.sprite.angle, frame: actor.sprite.frame.name })), facing: this.player.facing, animation: this.player.sprite.anims.currentAnim?.key, frame: this.player.sprite.frame.name, reducedMotion: this.reducedMotion }; }
+  getState() { const c=this.cameras.main;return { stairNavigation:{path:this.player.path.map(p=>({...p})),pending:this.pendingLounge,waiting:!!this.afterMovement,heldKeys:[...this.heldWindowKeys]}, stairStep:this.networkSelf?.stairStep??this.player.stairStep??0,stairDirection:this.networkSelf?.stairDirection??this.player.stairDirection??1, cat: this.catView, street:this.hall==='street'?this.street?.getState():null, world:this.hall==='toilet'?{width:TOILET.width,height:TOILET.height,bounds:TOILET.bounds}:{...WORLD,bounds:BOUNDS},toilet:this.hall==='toilet'?this.toilet?.getState():null,guests:this.guestViews.filter(v=>v.hall===this.hall).map(v=>({...v})), playing:this.networkSelf?.playing??Boolean(this.player.cabinet), cabinet:this.player.cabinet, gameReaction:this.player.gameReactionUntil>Date.now()?this.player.gameReaction:'', gameReactionUntil:this.player.gameReactionUntil, stools:[...this.cabinetStools.keys()], mira:this.bar?.getState(), guards:this.guard?.getState(), security:this.networkSelf?.security, hall:this.hall,switching:this.switching, view:{width:c.width,height:c.height,zoom:c.zoom,x:c.worldView.x,y:c.worldView.y,overview:this.overview}, x: this.player.x, y: this.player.y, moving: this.player.moving, seat: this.player.seat, action: this.player.action, drink: this.player.drink, actionUntil: this.player.actionUntil, soberAt: this.player.soberAt, intoxication: getIntoxication(this.player.soberAt), near: this.near?.id ?? null, locked: this.locked, online: !!this.network, npcTiming:this.npcTimeline.getState(), guestRenderPositions:[...this.guests].map(([id,actor])=>({id,x:actor.x,y:actor.y,spriteX:actor.sprite.x,spriteY:actor.sprite.y,moving:actor.moving})), predicted: this.prediction.active, pendingInputs: this.prediction.pendingCount, serverX: this.networkSelf?.x, serverY: this.networkSelf?.y, buildingOccluded:this.hall==='street'&&(this.player.stairStep??0)===0&&this.streetView.occluded(this.player), labelVisible:this.player.label?.visible, renderVisible:this.player.sprite.visible, renderBounds:this.player.sprite.getBounds(), halo:{x:this.halo.x,y:this.halo.y,depth:this.halo.depth,visible:this.halo.visible}, renderDepth:this.player.sprite.depth, renderX: this.player.sprite.x, renderY: this.player.sprite.y, renderScaleX: this.player.sprite.scaleX, renderScaleY: this.player.sprite.scaleY, skin: this.player.skin, appearance: this.player.appearance, texture: this.player.sprite.texture.key, remotes: this.remotePlayers.size, remotePositions: [...this.remotePlayers].map(([id, { actor }]) => ({ id, skin: actor.skin, appearance: actor.appearance, texture: actor.sprite.texture.key, x: actor.x, y: actor.y, seat: actor.seat, cabinet: actor.cabinet, gameReaction:actor.gameReactionUntil>Date.now()?actor.gameReaction:'', gameReactionUntil:actor.gameReactionUntil, action: actor.action, soberAt: actor.soberAt, angle: actor.sprite.angle, frame: actor.sprite.frame.name })), facing: this.player.facing, animation: this.player.sprite.anims.currentAnim?.key, frame: this.player.sprite.frame.name, reducedMotion: this.reducedMotion }; }
   update(time: number, delta: number) {
     if (!this.player) return;
+    if(this.hall==='street'&&this.streetView.configure(this.player,this.overview))this.resizeView();
     const npcRenderAt=this.npcTimeline.renderTime(performance.now(),this.guestsAt||this.npcSimulationAt||undefined)??performance.now()-300;
     this.atelier?.update(delta, this.hall==='arcade',
       this.hall==='arcade' && Math.hypot(this.player.x-ATELIER.entry.x,this.player.y-ATELIER.entry.y)<90,
@@ -770,7 +943,13 @@ export class RoomScene extends Phaser.Scene {
       }
     }
     if(!this.network&&!this.locked&&!this.isHuggingCat()&&!this.typing&&inHallDoor(this.player))this.changeHall(hallLinkAt(this.player)!.target);
-    this.details.update(time);
+    this.details?.update(time);
+    if(this.hall==='toilet')this.toilet?.update([this.player,...[...this.remotePlayers.values()].map(p=>p.actor)]);
+    if(this.hall==='street'&&(this.player.stairStep??0)>0&&this.pendingLounge?.startsWith('street:'))this.pendingLounge=null;
+    const streetTarget=this.hall==='street'&&this.pendingLounge?.startsWith('street:')?this.pendingLounge.slice(7) as StreetResidentId:undefined;
+    if(this.streetApproach?.id!==streetTarget){this.streetApproach=undefined;this.streetApproachCompleting=false;}
+    if(this.hall==='street')this.street?.update(this.player,this.overview,delta,this.reducedMotion,streetTarget);
+    if(this.hall==='street'&&!this.overview)this.cameras.main.setFollowOffset(0,Math.min(140,Math.max(60,this.cameras.main.height/this.cameras.main.zoom*.18)));
     if (this.hall === 'github') this.cardTables?.update(time);
     if(this.hall==='arcade')this.bar.update(this.player.action==='drink'||[...this.remotePlayers.values()].some(p=>p.target.action==='drink'),this.reducedMotion,this.guard.barConversation(),delta/1000,Boolean(this.network),npcRenderAt);
     if(!this.network && this.player.action==='drink' && Date.now()>=this.player.actionUntil){this.player.action=this.player.seat?'sit':'idle';this.player.drink='';}
@@ -780,13 +959,32 @@ export class RoomScene extends Phaser.Scene {
     const carrier = this.catView.carriedBy === (this.selfId || 'local-player') ? this.player : this.remotePlayers.get(this.catView.carriedBy)?.actor;
     const inCabinet = Boolean(this.player.cabinet || this.networkSelf?.playing || document.getElementById('mini-dialog')?.hasAttribute('open'));
     const catAudible = !inCabinet && canHearCat(this.catView,{hall:this.hall,x:this.player.x,y:this.player.y});
-    this.catRenderer?.update(this.catView,this.hall,time,dt,this.reducedMotion,carrier,catAudible);
+    const streetCat=this.hall==='street'&&this.catView.hall==='street';
+    const catDraw=streetCat?{...this.catView,...this.streetView.point(this.catView),facing:this.streetView.facing(this.catView.facing),hall:(this.streetView.visible(this.catView)?'street':'arcade') as HallId}:this.catView;
+    const carrierDraw=carrier&&streetCat?{...carrier,...this.streetView.point(carrier)}:carrier;
+    this.catRenderer?.update(catDraw,this.hall,time,dt,this.reducedMotion,carrierDraw,catAudible);
     if (time >= this.catUiAt) { this.catUiAt=time+200;this.onCat(); }
     const now = performance.now(), inputMs = Math.min(50, now-this.predictionClock); this.predictionClock = now;
     this.correction.x *= Math.exp(-dt*18); this.correction.y *= Math.exp(-dt*18);
     if (!this.locked && !this.isHuggingCat() && !this.typing && !this.switching && !this.player.cabinet && !this.networkSelf?.playing) {
-      const dx = Number(this.keys.D!.isDown || this.keys.RIGHT!.isDown) - Number(this.keys.A!.isDown || this.keys.LEFT!.isDown);
-      const dy = Number(this.keys.S!.isDown || this.keys.DOWN!.isDown) - Number(this.keys.W!.isDown || this.keys.UP!.isDown);
+      const pressed=(key:Phaser.Input.Keyboard.Key)=>key.isDown&&!this.heldWindowKeys.has(key.keyCode);
+      let dx = Number(pressed(this.keys.D!) || pressed(this.keys.RIGHT!)) - Number(pressed(this.keys.A!) || pressed(this.keys.LEFT!));
+      let dy = Number(pressed(this.keys.S!) || pressed(this.keys.DOWN!)) - Number(pressed(this.keys.W!) || pressed(this.keys.UP!));
+      const onStairs=this.hall==='street'&&(this.player.stairStep??0)>0;
+      if(onStairs){
+        if(this.streetView.orientation==='rear')dx=-dx;
+        this.streetKeyboardSide=undefined;this.lastStreetKeys='';
+      }else if(this.hall==='street'){
+        const signature=dx+','+dy;
+        if(!dx&&!dy){this.streetKeyboardSide=undefined;this.lastStreetKeys='';}
+        else{
+          if(signature!==this.lastStreetKeys||!this.streetKeyboardSide)this.streetKeyboardSide=this.streetView.orientation;
+          this.lastStreetKeys=signature;
+          const direction=streetDirection({x:dx,y:dy},this.streetKeyboardSide,true);dx=direction.x;dy=direction.y;
+        }
+      }
+      if(dy<0&&canWalkThroughStairWindow(this.player)){this.useStairWindow(true);dx=dy=0;}
+      if(dx||dy)this.roofClickTarget=undefined;
       const sprint = this.keys.SHIFT!.isDown;
       if (dx || dy) this.approachingCat=false;
       if (this.approachingCat && time >= this.catApproachAt) {
@@ -800,7 +998,7 @@ export class RoomScene extends Phaser.Scene {
         const input = String(dx) + ',' + String(dy) + (sprint && (dx || dy) ? ',sprint' : '');
         const previousInput = this.lastInput;
         if (this.networkSelf && !dx && !dy && this.player.path.length) {
-          advanceClickMovement(this.player, this.player.path, inputMs, this.prediction, this.guard.getState());
+          advanceClickMovement(this.player, this.player.path, inputMs, this.prediction, this.guard.getState(),sprint);
           this.lastInput = 'route';
           if (!this.player.path.length) this.endPrediction();
         } else if (this.networkSelf && (dx || dy || input !== this.lastInput)) {
@@ -814,20 +1012,59 @@ export class RoomScene extends Phaser.Scene {
       } else if (dx || dy) {
         this.stand(); this.pendingLounge = null;
         this.player.path = []; this.pendingCabinet = null; this.marker.setVisible(false);
-        const impaired = intoxicatedMovement(this.player.soberAt, { x: dx, y: dy, ms: dt * 1000 }, Math.floor(time / 50));
-        const speed = (sprint ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * impaired.speedMultiplier * dt;
-        moving = this.move(this.player, impaired.x * speed, impaired.y * speed);
-      } else if (!this.player.seat && this.player.action!=='drink') moving = this.follow(this.player, dt, PLAYER_SPRINT_SPEED);
+        if(onStairs||this.hall==='street'&&nearRoofStairBase(this.player)){
+          const before={x:this.player.x,y:this.player.y};
+          applyMovementInput(this.player,{seq:0,x:dx,y:dy,ms:dt*1000,sprint});
+          moving=Math.hypot(this.player.x-before.x,this.player.y-before.y)>.001;
+        }else{
+          const impaired = intoxicatedMovement(this.player.soberAt, { x: dx, y: dy, ms: dt * 1000 }, Math.floor(time / 50));
+          const speed = (sprint ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * impaired.speedMultiplier * dt;
+          moving = this.move(this.player, impaired.x * speed, impaired.y * speed);
+        }
+      } else if (!this.player.seat && this.player.action!=='drink') moving = this.follow(this.player, dt, onStairs?(sprint?PLAYER_SPRINT_SPEED:PLAYER_SPEED)*ROOF_STAIR_SPEED_SCALE:PLAYER_SPRINT_SPEED);
       if (!this.network) this.animateActor(this.player, time, moving);
-      this.halo.setPosition(this.player.x, this.player.y).setDepth(this.player.y - 2);
+      this.halo.setPosition(this.player.sprite.x,this.player.sprite.y).setDepth(this.player.sprite.depth-2);
+      if(this.roofClickTarget){
+        const target=this.roofClickTarget;
+        if(this.hall!=='street'||!this.player.stairStep||Math.hypot(this.player.x-target.x,this.player.y-target.y)<.2)this.roofClickTarget=undefined;
+        else if(!this.player.path.length&&!this.prediction.active&&!this.afterMovement&&time>=this.roofClickRetryAt){
+          this.roofClickRetryAt=time+400;
+          const throughJunction=roofWindowPlatformPoint(target)?!onRoofWindowPlatform(this.player):onRoofWindowPlatform(this.player);
+          if(roofWindowPlatformPoint(target)&&!canApproachStairWindow(this.player))this.roofClickTarget=undefined;
+          else this.player.path=throughJunction?[{...ROOF_WINDOW_PLATFORM.junction},{...target}]:[{...target}];
+        }
+      }
       if(this.pendingLounge) {
-        if(this.pendingLounge==='elevator') {
+        if(this.pendingLounge==='stair-window'){
+          if(this.hall==='street'){if(atStairWindow(this.player))this.useStairWindow();}
+          else if(this.hall==='github'){if(Math.hypot(this.player.x-STAIR_WINDOW.entry.x,this.player.y-STAIR_WINDOW.entry.y)<10)this.useStairWindow();}
+          else this.pendingLounge=null;
+          // Resume the chosen approach if a movement handoff stopped the previous path.
+          if(this.pendingLounge==='stair-window'&&!this.player.path.length&&!this.prediction.active&&!this.afterMovement&&time>=this.stairWindowApproachAt){
+            this.stairWindowApproachAt=time+800;this.useStairWindow(true);
+          }
+        }
+        else if(this.pendingLounge==='roof-stairs'){
+          if(this.hall!=='street')this.pendingLounge=null;
+          else if(Math.hypot(this.player.x-STREET_ROOF_STAIRS.foot.x,this.player.y-STREET_ROOF_STAIRS.foot.y)<5){
+            this.pendingLounge=null;
+            this.player.path=[];this.marker.setVisible(false);this.endPrediction();
+          }
+        }
+        else if(this.pendingLounge==='elevator') {
           const {entry}=elevatorDock(this.hall);
           if(Math.hypot(this.player.x-entry.x,this.player.y-entry.y)<18)this.openElevator();
           else if(!this.player.path.length&&!this.prediction.active&&time>=this.elevatorApproachAt) {
             this.elevatorApproachAt=time+800;
             const nearPatrol=this.guard.getState().some(guard=>guard.hall===this.hall&&guard.phase!=='door'&&Math.hypot(guard.x-this.player.x,guard.y-this.player.y)<110);
             if(!nearPatrol)this.goTo(entry);
+          }
+        }
+        else if(this.pendingLounge.startsWith('street:')){
+          const target=this.streetApproach;
+          if(target&&!this.streetApproachCompleting&&Math.hypot(this.player.x-target.point.x,this.player.y-target.point.y)<7){
+            this.streetApproachCompleting=true;
+            this.finishMovement(()=>{this.pendingLounge=null;this.streetApproachCompleting=false;this.network?.stop();if(this.hall==='street')this.street?.interact(this.player,target.id);});
           }
         }
         else if(this.pendingLounge.startsWith('activity:')){
@@ -862,10 +1099,11 @@ export class RoomScene extends Phaser.Scene {
     for (const { actor, target } of this.remotePlayers.values()) this.interpolate(actor, target, dt, time);
     if (time >= this.nextTextureCleanup) {
       this.nextTextureCleanup = time + 1000;
-      pruneCharacterTextures(this, new Set([this.player.sprite.texture.key, ...[...this.remotePlayers.values()].map(remote => remote.actor.sprite.texture.key)]));
+      pruneCharacterTextures(this, new Set([this.player.sprite.texture.key, ...[...this.remotePlayers.values()].map(remote => remote.actor.sprite.texture.key),...(this.street?.characterTextureKeys??[])]));
     }
-    this.halo.setPosition(this.player.x, this.player.y).setDepth(this.player.y - 2);
-    this.guard.update(this.hall, time, dt, id => id===this.selfId ? this.player : this.remotePlayers.get(id)?.actor,npcRenderAt);
+    this.halo.setPosition(this.player.sprite.x,this.player.sprite.y).setDepth(this.player.sprite.depth-2).setVisible(this.player.sprite.visible&&!(this.hall==='street'&&(this.player.stairStep??0)===0&&this.streetView.occluded(this.player)));
+    if(this.marker.visible&&this.movementTarget&&this.hall==='street'){const marker=this.streetView.point(this.movementTarget);this.marker.setPosition(marker.x,marker.y);}
+    this.guard.update(this.hall, time, dt, id => id===this.selfId ? this.player : this.remotePlayers.get(id)?.actor,npcRenderAt,this.hall==='street'?this.streetView:undefined);
     if(!this.network){this.guestRoutine.setOccupiedCabinets([this.player.cabinet]);this.guestRoutine.tick(dt);this.syncGuests(this.guestRoutine.snapshot());}
     for(const latest of this.guestViews){
       const actor=this.guests.get(latest.id);if(!actor||latest.hall!==this.hall)continue;
@@ -881,8 +1119,12 @@ export class RoomScene extends Phaser.Scene {
   }
   private move(actor: Actor, dx: number, dy: number) {
     const before = { x: actor.x, y: actor.y };
-    if (walkable(actor.x + dx, actor.y, this.obstacles)) actor.x += dx;
-    if (walkable(actor.x, actor.y + dy, this.obstacles)) actor.y += dy;
+    if(!(actor.hall==='street'&&moveRoofStairs(actor,{x:dx,y:dy,route:true},Math.hypot(dx,dy)))){
+      if (walkable(actor.x + dx, actor.y, this.obstacles)) actor.x += dx;
+      if (walkable(actor.x, actor.y + dy, this.obstacles)) actor.y += dy;
+      const previous=actor.stairStep??0;actor.stairStep=actor.hall==='street'?advanceRoofStairStep(previous,actor):0;
+      if(!previous&&actor.stairStep===1){actor.x=STREET_ROOF_STAIRS.foot.x;actor.y=STREET_ROOF_STAIRS.foot.y;actor.stairDirection=1;}
+    }
     const movedX = actor.x - before.x, movedY = actor.y - before.y;
     const moved = Math.hypot(movedX, movedY) > .05;
     if (moved) actor.facing = movementFacing(movedX, movedY, actor.facing);
@@ -894,62 +1136,86 @@ export class RoomScene extends Phaser.Scene {
     while (actor.path.length && remaining > 0) {
       const target = actor.path[0];
       const dx = target.x - actor.x, dy = target.y - actor.y, distance = Math.hypot(dx, dy);
-      if (distance < .05) { actor.path.shift(); continue; }
+      const tolerance=actor.hall==='street'&&(actor.stairStep??0)>0?ROOF_STAIR_EPSILON:.05;
+      if (distance <= tolerance) { actor.path.shift(); continue; }
       const step = Math.min(remaining, distance);
       const beforeX = actor.x, beforeY = actor.y;
+      const wasOnStairs=actor.hall==='street'&&(actor.stairStep??0)>0;
       this.move(actor, dx / distance * step, dy / distance * step);
+      if(wasOnStairs&&!actor.stairStep){actor.path=[];moved=true;break;}
       // A tiny remainder between path segments is still progress, even below the animation threshold.
       if (Math.hypot(actor.x-beforeX, actor.y-beforeY) < .000001) { actor.path = []; break; }
       moved = true; remaining -= step;
-      if (Math.hypot(target.x - actor.x, target.y - actor.y) < .05) actor.path.shift();
+      if (Math.hypot(target.x - actor.x, target.y - actor.y) <= tolerance) actor.path.shift();
     }
     return moved;
   }
   private animateActor(actor: Actor, time: number, moving: boolean) {
+    const exterior=this.hall==='street';
+    const verticalClimb=exterior&&(actor.stairStep??0)>0&&(actor.facing==='up'||actor.facing==='down')&&!this.overview;
+    const facing=verticalClimb?actor.facing:exterior?this.streetView.facing(actor.facing):actor.facing;
     actor.sprite.setAngle(0); actor.label?.setVisible(true); actor.shadow.setScale(1);
     actor.moving = moving;
     const gameReaction = actor.gameReactionUntil > Date.now() ? actor.gameReaction : '';
     const gameMode = actor.cabinet ? gameReaction === 'win' ? 'win' : gameReaction === 'lose' ? 'lose' : 'game' : '';
     const mode = gameMode || (actor.action==='drink' ? (actor.seat?'sitdrink':'drink') : actor.seat ? 'sit' : moving ? 'walk' : 'idle');
-    const key = `${actor.sprite.texture.key}-${mode}-${actor.facing}`;
-    const x = actor.x + (actor === this.player ? this.correction.x : 0), y = actor.y + (actor === this.player ? this.correction.y : 0);
+    const key = `${actor.sprite.texture.key}-${mode}-${facing}`;
+    const world={x:actor.x+(actor===this.player?this.correction.x:0),y:actor.y+(actor===this.player?this.correction.y:0)};
+    let windowProgress=1;
+    if(actor===this.player&&this.windowArrival){
+      windowProgress=Phaser.Math.Clamp(1-(this.windowArrival.until-time)/500,0,1);
+      const t=Phaser.Math.Easing.Cubic.Out(windowProgress),from=this.windowArrival.from;
+      if(!this.windowArrival.render){world.x=Phaser.Math.Linear(from.x,world.x,t);world.y=Phaser.Math.Linear(from.y,world.y,t);}
+      if(windowProgress===1){this.windowArrival=undefined;this.switching=false;}
+    }
+    const drawn=exterior?this.streetView.point(world,(actor.stairStep??0)>0,onRoofWindowPlatform(actor)):world;
+    if(actor===this.player&&this.windowArrival?.render){
+      const t=Phaser.Math.Easing.Cubic.Out(windowProgress),from=this.windowArrival.from;
+      drawn.x=Phaser.Math.Linear(from.x,drawn.x,t);drawn.y=Phaser.Math.Linear(from.y,drawn.y,t);
+    }
+    const {x,y}=drawn;
+    const visible=!exterior||actor===this.player||this.streetView.visible(actor);actor.sprite.setVisible(visible);actor.shadow.setVisible(visible);actor.label?.setVisible(visible&&(!exterior||(actor.stairStep??0)>0||!this.streetView.occluded(actor)));
     const distance = Math.hypot(x - actor.visualX, y - actor.visualY);
     const elapsed = time - actor.visualAt;
     const travel = distance < 24 && elapsed > 0 && elapsed < 150 ? distance : 0;
     const motion = advanceCharacterMotion(actor.motion, { mode: mode === 'walk' ? 'walk' : mode === 'idle' || mode === 'sit' ? 'rest' : 'action', distance: travel, time, normalSpeed: PLAYER_SPEED });
     const rest = characterRestScale(actor.motion, time, actor.phase, this.reducedMotion);
     actor.sprite.setScale(CHARACTER_SCALE * rest.x, characterScaleY(actor.appearance) * rest.y);
+    if(windowProgress<1)actor.sprite.setScale(CHARACTER_SCALE,characterScaleY(actor.appearance)*(.72+.28*windowProgress));
     const anim = actor.sprite.anims;
     if (mode === 'walk') {
       if (anim.currentAnim?.key !== key) actor.sprite.play({ key });
       anim.pause(); anim.timeScale = 1;
-      if (motion.frame === 6) actor.sprite.setFrame(`${actor.facing}-6`);
+      if (motion.frame === 6) actor.sprite.setFrame(`${facing}-6`);
       else anim.setCurrentFrame(anim.currentAnim!.frames[motion.frame]);
     } else if (this.reducedMotion && !moving) {
-      anim.stop(); actor.sprite.setFrame(`${actor.facing}-${gameMode === 'win' ? 36 : gameMode === 'lose' ? 42 : gameMode ? 30 : actor.action==='drink'?(actor.seat?19:13):actor.seat?10:6}`);
+      anim.stop(); actor.sprite.setFrame(`${facing}-${gameMode === 'win' ? 36 : gameMode === 'lose' ? 42 : gameMode ? 30 : actor.action==='drink'?(actor.seat?19:13):actor.seat?10:6}`);
     } else {
       const changed = anim.currentAnim?.key !== key || !anim.isPlaying;
       if (changed) {
         actor.sprite.play({key, delay: mode === 'idle' ? actor.phase * 13 : 0});
-        if (mode === 'idle') actor.sprite.setFrame(`${actor.facing}-6`);
+        if (mode === 'idle') actor.sprite.setFrame(`${facing}-6`);
       }
       anim.timeScale = 1;
     }
     actor.visualX = x; actor.visualY = y; actor.visualAt = time;
     if (actor.visualSeat !== actor.seat) { actor.visualSeat = actor.seat; actor.seatedAt = time; }
     const sitting = actor.cabinet && !this.reducedMotion ? Math.max(0, 1 - (time - actor.seatedAt) / 360) : 0;
-    actor.sprite.setPosition(x, y - Math.sin(sitting * Math.PI) * 5).setDepth(y);
+    const onStairs=actor.hall==='street'&&(actor.stairStep??0)>0;
+    const depth=exterior?this.streetView.depth(world,onStairs):y;
+    actor.sprite.setPosition(x, y - Math.sin(sitting * Math.PI) * 5).setDepth(depth);
     const drunk = getIntoxication(actor.soberAt);
     const sway = this.reducedMotion ? 0 : Math.sin(time / (moving ? 190 : 650) + actor.phase) * drunk.level * (moving ? 7 : 3);
     actor.sprite.setAngle(sway);
-    actor.blush.clear().setPosition(x, y).setScale(rest.x, rest.y).setDepth(y + .1).setAngle(sway).setVisible(drunk.stage > 0 && actor.facing !== 'up');
+    actor.blush.clear().setPosition(x, y).setScale(rest.x, rest.y).setDepth(depth + .1).setAngle(sway).setVisible(visible&&drunk.stage > 0 && facing !== 'up');
     if (drunk.stage && actor.facing !== 'up') {
       actor.blush.fillStyle(0xd34140, .12 + drunk.stage * .1);
-      for (const cheek of actor.facing === 'down' ? [-9, 9] : actor.facing === 'left' ? [-5] : [5]) actor.blush.fillEllipse(cheek, -38, 8, 4);
+      for (const cheek of facing === 'down' ? [-9, 9] : facing === 'left' ? [-5] : [5]) actor.blush.fillEllipse(cheek, -38, 8, 4);
     }
     const shadowScale = mode === 'walk' && !this.reducedMotion && /-[1245]$/.test(String(actor.sprite.frame.name)) ? .94 : 1;
-    actor.shadow.setPosition(x, y - 1).setDepth(y - 1).setScale(shadowScale * rest.x, shadowScale);
-    actor.label?.setPosition(x, y - (actor.seat?72:83)).setDepth(y + 1);
+    actor.shadow.setPosition(x, y - 1).setDepth(depth - 1).setScale(shadowScale * rest.x, shadowScale);
+    actor.label?.setPosition(x, y - (actor.seat?72:83)).setDepth(depth+1);
+    if(windowProgress<1){actor.label?.setVisible(false);actor.shadow.setVisible(false);}
     if (motion.landing) {
       actor.lastStep = time;gameAudio.effect('step',Math.max(.08,1-Math.hypot(actor.x-this.player.x,actor.y-this.player.y)/650));
       if(this.reducedMotion)return;

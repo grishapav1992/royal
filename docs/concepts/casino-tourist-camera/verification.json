@@ -1,0 +1,183 @@
+{
+  "dateLocal": "2026-11-04",
+  "timezone": "Europe/Moscow",
+  "testedRuntimeSourceCommit": "1fc997f693e3fda4dbb876b0dac57961e4bedddc",
+  "mainBaseline": "30b95e951ba71f8ac1b340152c8a9f3ee66edc51",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "sourceFiles": {
+    "src/game/avatarArt.ts": "26d8a9f3ad4645859dd27089fff590e77dec66b6e960b22038b1c70f183ff9cb",
+    "src/game/touristCameraArt.ts": "9d7972f8ee8c386f5e9fc6d9881601bafd0bc0e0621725cdc38f26c33b010bc9",
+    "src/game/touristCameraPose.ts": "0b6e5771be7f962b83964c71e153412a8d668ec452ed3ec7071d6387936602d3",
+    "src/game/StreetResidentActions.ts": "4d4816e96ce14098f2e4289bfb64547e3bcea42b3ff807b8e9d4c9ce38566761",
+    "src/game/StreetResidents.ts": "4797526eac834cc13065cec19b031e624bdad93a01236ab02c0ecfbb421c7b3f",
+    "src/game/streetResidentArt.ts": "78f51439ab50a73b7475c8f15ea153d225f9e6c2990178adef547733dc51465c",
+    "src/shared/rooftop.ts": "6a51b42f2f900ec0d114983d9cddadd8a0a23fb54567fc73eb2dfded26623b99",
+    "src/shared/world.ts": "e2a43a155783c5fa0baff1967a5cc2df02b2eb0aef4cb43b6632639a0f0d82e3",
+    "server-tests/street-life.test.ts": "9442c66398b7cccac2208fb1dfa2f4bed0142858b901186e1e81a85284421963",
+    "server-tests/rooftop.test.ts": "9f111cedcaa57ddeb4d414175cc870f22be08f9af15731fcf3feb0890ec729b6",
+    "tests/street.spec.ts": "ddb68ba2678b714e296289a2b242183f43612e74e90f09bb8302c9c8668131bb",
+    "tests/rooftop.spec.ts": "673219205a80aea316cffbc77d7a7dea33cab7caaf9b2508d31e057cea86179b"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "f475bab22f16744353749e1e71b98862621f9cd2e2d32398acbadda2cb9d2706"
+    },
+    "dist-server/index.js": {
+      "bytes": 2429238,
+      "sha256": "5b4251766cf861521d9969ed073ed2f29f844aee421eff1b60c2775d31aa4a13"
+    },
+    "dist/assets/main-CEk-XGcl.js": {
+      "bytes": 2872632,
+      "sha256": "912ef6af7289f44893fa9b74eb985a96abafd12bdc69e5d78821b5d71bddd73b"
+    },
+    "dist/assets/main-afxgM5_-.css": {
+      "bytes": 155912,
+      "sha256": "1b42cc1fbf3619b16fc7b8bfbe961d50c17754359895f71520ca8268d8906543"
+    }
+  },
+  "applicationBuild": {
+    "format": 1,
+    "startedAt": "2026-11-04T07:14:30.047Z",
+    "scope": "application",
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 4863
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 6013
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 5027
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 5547
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 60
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 19
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 21
+      }
+    ],
+    "passed": true,
+    "durationMs": 21550
+  },
+  "streetUnit": {
+    "passed": 68,
+    "failed": 0
+  },
+  "connectedHost": {
+    "tests": [
+      "tests/street.spec.ts",
+      "tests/rooftop.spec.ts"
+    ],
+    "desktop": {
+      "viewport": [
+        1440,
+        1000
+      ],
+      "passed": 2,
+      "reportedDuration": "4.0m"
+    },
+    "mobile": {
+      "viewport": [
+        390,
+        844
+      ],
+      "touchEnabled": true,
+      "passed": 2,
+      "reportedDuration": "4.2m"
+    },
+    "chatEnabled": true,
+    "balancePreserved": true,
+    "noPageErrors": true,
+    "noHorizontalOverflow": true
+  },
+  "scope": {
+    "streetObstaclesChanged": false,
+    "facadeCornerRulesChanged": false,
+    "groundNpcRoutesChanged": false,
+    "walletChanged": false,
+    "gameMathematicsChanged": false,
+    "gameCatalogueChanged": false
+  },
+  "verificationNotes": [
+    "An earlier isolated unit run failed three database-backed scenarios after schema migration lock deadlines. A fresh isolated run of the final combined source passed 68/68 without database or migration source changes.",
+    "The final desktop server proxy logged ECONNRESET during a reload. The scenario reconnected successfully and verified location, chat and balance recovery."
+  ],
+  "limitations": [
+    "Mobile uses browser emulation, not a physical device.",
+    "No production publication or live production audit.",
+    "Historical reports keep their original results and limitations."
+  ],
+  "feature": "casino-tourist-camera",
+  "change": "Replace the separate camera overlay and borrowed drinking pose with a dedicated atlas. Camera, strap, shoulders, elbows, hands and shutter finger share the body drawing transform. The camera hangs during walking, is gripped before lifting, reaches the dominant eye, then lowers for review and is released before the next patrol leg. Profile lens direction follows the figure; back-facing props and arms are occluded by the torso and head.",
+  "atlas": {
+    "key": "street-tourist-camera-v2",
+    "directions": 4,
+    "framesPerDirection": 43,
+    "width": 1536,
+    "height": 1584,
+    "bodyAndCameraTogether": true
+  },
+  "artComparison": {
+    "unchangedDefaultAvatarFrames": 836,
+    "defaultAvatarPixelDifferences": 0,
+    "review": {
+      "directions": 4,
+      "stages": 8,
+      "frames": 32
+    },
+    "baselineCommit": "3c7007db3f4dca95fc6f06474926294b621ae83d",
+    "method": "Render 19 default/legacy/resident appearances, four directions and eleven ordinary/walk/drink frames against the original avatar function. Compare every RGBA pixel. Independently inspect eight tourist poses in each direction.",
+    "scriptSha256": "05a5b13c993165a756ac785512d5945ced34295279b2c9e717cbdb99e9392003"
+  },
+  "storyChecks": {
+    "walkingCameraCarried": true,
+    "bothHandsGripBeforeLift": true,
+    "raisedCameraFrames20And21": true,
+    "lowerReviewAndStowObservedInHost": true,
+    "freeHandsBeforeNextWalk": true,
+    "conversationAndReducedMotionUseCarryPose": true,
+    "flat2DPreserved": true,
+    "noAddedFlashOrSound": true
+  },
+  "timingStatus": "Decorative design choices, not research-derived thresholds.",
+  "manualVisualReview": [
+    "poses.png",
+    "desktop-review.png",
+    "mobile-carry.png"
+  ],
+  "localCodeMap": {
+    "query": "drawAvatar",
+    "passed": true
+  },
+  "screenshots": {
+    "poses.png": "08acb849a8637e6da09a9792fc9aa15d5280e36920abed62fd82ec54f2cdc741",
+    "desktop-carry.png": "b4e813f032c27b734124f7cf313f0534e4e0d60ea4e1551ca90d8c23db805c93",
+    "desktop-review.png": "1f79e6a68d1e143681121c04c387bdd03ee0bf150556256c61485af4b3796fee",
+    "desktop-shoot.png": "b90fc2fbe2cf7d6f923ed35a7c6f07fff9050fe202fe9df2e16112d4f63fba4f",
+    "mobile-carry.png": "b6cfe4175cd5ea5865526699f842e64020c4fa9e1c1ead6c67d96451ff1ba1a4",
+    "mobile-review.png": "e08ae285ce9246c69a65fda3c4e8d075be03fb3190c960e32a7fa5c184d5515d",
+    "mobile-shoot.png": "f7d0735f2e38661edf2a3806427df28a29099d4f7a858eb9cc567dcf07e71f80"
+  }
+}
