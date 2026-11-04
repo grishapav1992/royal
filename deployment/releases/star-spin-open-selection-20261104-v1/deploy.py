@@ -183,17 +183,19 @@ def finish_module(b):
 
 
 def main():
-    require(sys.argv[1:] in [['release'], ['finish-module'], ['rollback']], 'Unexpected operation')
+    require(sys.argv[1:] in [['release'], ['release-wait'], ['finish-module'], ['rollback']], 'Unexpected operation')
     b = configure(); b.payload(); locks = []
+    wait = sys.argv[1] == 'release-wait'
+    if wait: print(json.dumps({'waitingForSharedLocks': True}), flush=True)
     for name in ['/opt/royal-releases/themed-publish.lock','/opt/royal/.client-presentation-deploy.lock','/opt/royal-game-modules-state/module.lock']:
         require(not Path(name).is_symlink(), 'Deployment lock symlink rejected')
-        handle = open(name, 'a'); fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB); locks.append(handle)
+        handle = open(name, 'a'); fcntl.flock(handle, fcntl.LOCK_EX | (0 if wait else fcntl.LOCK_NB)); locks.append(handle)
     def interrupted(number, frame): raise InterruptedError('Deployment interrupted: ' + str(number))
     for number in [signal.SIGTERM, signal.SIGHUP, signal.SIGINT]: signal.signal(number, interrupted)
     if sys.argv[1] == 'rollback':
         print(json.dumps(rollback(b)), flush=True)
         return
-    if sys.argv[1] == 'release':
+    if sys.argv[1] in ['release', 'release-wait']:
         print(json.dumps(b.build()), flush=True)
         print(json.dumps(b.publish()), flush=True)
         b.write('application-after.json', read(ROOT / 'after.json'))
