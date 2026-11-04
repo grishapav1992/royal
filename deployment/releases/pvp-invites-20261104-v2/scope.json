@@ -1,0 +1,40 @@
+{
+  "release": "pvp-invites-20261104-v2",
+  "featureCommit": "f39d48910bb7189cb721256b48effc67f0477cbd",
+  "productionCommit": "59c1202b466e4f3507e82c5f016240af95dbf5d2",
+  "runtimeSources": [
+    "server/pvp/store.ts",
+    "src/shared/pvp.ts",
+    "src/ui/GameChat.ts",
+    "src/ui/PlayerDuelMenu.ts",
+    "src/ui/PvpUI.ts",
+    "src/ui/pvp-invitations.css"
+  ],
+  "expectedSources": {
+    "src/shared/pvp.ts": "bed164a0fcccf208639302aadb7a5f165541c055616440bf0b16248d861ceddc",
+    "src/ui/GameChat.ts": "c8a0912aa1f57fe09f5252b5a1b227cbc2bc6951f8be3702e65f48885075a002",
+    "src/ui/PlayerDuelMenu.ts": "e2d60a97db15db2ad4b7b602f1b30d40200ecc4f79ff62a706ee5f8309575e0c",
+    "src/ui/PvpUI.ts": "220d9c7f5494b9484671726b1755bfc321f04e839c0e37d98717e109777a540a",
+    "src/ui/pvp-invitations.css": "a6702e757e9114a629bb2ebe925477a11cb2a6f8b200c7378ed83e1e7f50ba70",
+    "server/pvp/store.ts": "713ec77918a8f64e5a74ab1b9ba27c9552a9fc6955d5fc07de0bb1c004af63df"
+  },
+  "evidenceSources": {
+    "docs/game-math/qualifications/chess-virtual-v1.json": "27da591cb26e4a2b64bbfa513c453fc0ba237629b7f65cc6f49c68c594ae72b4",
+    "docs/game-math/qualifications/crazy-eights-virtual-v1.json": "12abc97370122d20ae59c8b9a840876315195b3cbed9146810a5a1c29ea6f58e",
+    "docs/game-math/qualifications/durak-virtual-v1.json": "de29ada2f65396b2d25d4db6b1c79c2582bbdd6e342ee4b1ca4a56367fecea18",
+    "docs/game-math/qualifications/hockey-virtual-v1.json": "de62a88a3333bdc4dfc2d1c07e92c097989c2feca3974e6a5ca18b055c3f9874",
+    "docs/game-math/qualifications/mortal-kombat-v2.json": "54ffd99eb78b953012274512895bea8f76c476df96c9d1dda4d243133af076ec",
+    "docs/game-math/qualifications/pool-virtual-v1.json": "1019ab830b4b95a20de09f1458cc4b8b8b9319e2e41b685b15f4879dad510ed5",
+    "docs/game-math/qualifications/transfer-durak-virtual-v1.json": "11e618e84fa3d2ed23498038a86cd1955a3dbc017c42c1feb013b7deaa885ba6",
+    "docs/game-math/qualifications/tsu-e-fa-v1.json": "32757c1c79e5ac35d13b5f7412e86540158eb036337b1cf6f27d7248bc041290",
+    "docs/game-math/qualifications/tsu-e-fa-v2.json": "69ef5cb4bc37f013e4e5a8bbca516efbeb0fac071c8c008ff5a23d09de3ca69e",
+    "docs/game-math/qualifications/tsu-e-fa-v3.json": "f05b89c96fa31a2551f89c642bc66e618b5fc4b6a9e1ba12e431b7af2e84afff",
+    "docs/game-math/qualifications/tsu-e-fa-v4.json": "fb78cb37d14d7653ee6f4452c7cf4ec7be59031479f748563a46ee00b59abfba",
+    "scripts/game-math/tsu-duel-wallet.ts": "a633e2b846155f5e109f0a4009a9e30de2d2f7f7d3b4400dfd806d6e3bded023"
+  },
+  "preservedBackendInputs": {
+    "src/i18n/en.ts": "e6a39483750df92467b584e98319ce679f2a3489669e4b0d3f64a2d7ba0a762c"
+  },
+  "addedGames": [],
+  "restoredGames": []
+}
