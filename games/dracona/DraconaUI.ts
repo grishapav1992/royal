@@ -1,3 +1,4 @@
+import {canRecoverOperation} from '../../src/ui/operationFeedback';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
 import {GAME_BETS as DRACONA_BETS, validGameBet, gameBetCents} from '../../src/shared/gameStakes';
 import { COLS, CREST, PORTAL, SIZE, SYMBOLS, DRACONA_MATH, type Grid, type Movement, type Step } from '../../src/shared/draconaMath';
@@ -259,7 +260,7 @@ export class Dracona {
     if (!this.busy && !view && !this.presented) { this.runes.fill(1); this.draw(initial); this.drawReserve([0, 1, 2, 3]); }
     this.root.querySelector('.balance-value small')!.textContent = this.currency;
     if (!this.client.accountId) this.status('Войди в аккаунт Royal для игры на ' + this.currency);
-    else if (this.client.pending && !this.busy) this.status(this.client.pending.gameId === DRACONA_GAME ? 'Проверь сохраненный ход. Повторного списания не будет.' : 'Сначала проверь незавершенный ход в другой игре.');
+    else if (canRecoverOperation(this.client) && !this.busy) this.status(this.client.pending?.gameId === DRACONA_GAME ? 'Проверь сохраненный ход. Повторного списания не будет.' : 'Сначала проверь незавершенный ход в другой игре.');
     this.controls();
   }
 

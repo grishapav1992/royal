@@ -1,3 +1,4 @@
+import {canRecoverOperation} from '../../src/ui/operationFeedback';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
 import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {GAME_STAKE_CENTS as FOREST_HEART_STAKES, validGameStake} from '../../src/shared/gameStakes';
@@ -217,11 +218,11 @@ export class ForestHeartUI {
     this.find('stake-label').textContent = stage === 'settled' ? this.c.nextStake : this.c.stake;
     this.find<HTMLButtonElement>('lower').disabled = blocked || active || this.stake === FOREST_HEART_STAKES[0];
     this.find<HTMLButtonElement>('higher').disabled = blocked || active || this.stake === FOREST_HEART_STAKES.at(-1);
-    const spin = this.find<HTMLButtonElement>('spin'); spin.hidden = stage === 'choice' || !!this.client.pending;
+    const spin = this.find<HTMLButtonElement>('spin'); spin.hidden = stage === 'choice' || canRecoverOperation(this.client);
     spin.disabled = blocked || !active && (balance === undefined || balance * 100 < this.stake);
     spin.innerHTML = `<span class="fh-button-label">${stage==='bonus'?(this.services.i18n.language==='en'?'CONTINUE':'ПРОДОЛЖИТЬ'):this.c.spin}</span><small>${stage==='bonus'?this.c.free:this.c.cost+' '+this.number(this.stake)+' USDT'}</small><span class="fh-button-icon" aria-hidden="true">↻</span>`;
-    const pass = this.find<HTMLButtonElement>('pass'); pass.hidden = stage !== 'choice' || !!this.client.pending; pass.disabled = blocked;
-    const retry = this.find<HTMLButtonElement>('retry'); retry.hidden = this.client.pending?.gameId !== FOREST_HEART_GAME; retry.disabled = this.client.busy || this.busy || this.paused;
+    const pass = this.find<HTMLButtonElement>('pass'); pass.hidden = stage !== 'choice' || canRecoverOperation(this.client); pass.disabled = blocked;
+    const retry = this.find<HTMLButtonElement>('retry'); retry.hidden = this.client.pending?.gameId !== FOREST_HEART_GAME || !canRecoverOperation(this.client); retry.disabled = this.client.busy || this.busy || this.paused;
     this.find('refresh').hidden = !this.client.error || !!this.client.pending;
     this.find<HTMLButtonElement>('refresh').disabled = this.client.busy || this.client.loading || this.busy;
     this.find('skip').hidden = !this.busy || !this.root.classList.contains('fh-presenting');
@@ -229,7 +230,7 @@ export class ForestHeartUI {
     const tier = this.shown?.state === 'settled' ? forestRoundTier(Number(this.shown.returnedUnits), Number(this.shown.spentUnits)) : undefined;
     this.root.dataset.outcome = tier ?? '';
     this.find('status').textContent = this.client.error || this.status || (!this.owner ? this.c.login : this.client.busy ? this.c.waiting : stage === 'choice' ? this.c.choice : stage === 'bonus' ? this.c.bonus : tier ? this.c[tier] : this.c.ready);
-    this.find('next').textContent = this.client.pending ? this.c.retry : this.busy ? this.c.automatic : stage === 'choice' ? this.c.nextChoice : stage === 'bonus' ? this.c.nextBonus : tier && this.shown ? `${this.c.confirmedStake} ${this.number(Number(this.shown.stakeUnits))} USDT. ${this.c.nextSettled}` : this.c.nextIdle;
+    this.find('next').textContent = canRecoverOperation(this.client) ? this.c.retry : this.busy ? this.c.automatic : stage === 'choice' ? this.c.nextChoice : stage === 'bonus' ? this.c.nextBonus : tier && this.shown ? `${this.c.confirmedStake} ${this.number(Number(this.shown.stakeUnits))} USDT. ${this.c.nextSettled}` : this.c.nextIdle;
   }
   private async act(move?: string) {
     if (!this.alive || this.busy || this.paused) return;

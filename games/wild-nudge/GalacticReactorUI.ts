@@ -1,3 +1,4 @@
+import {canRecoverOperation} from '../../src/ui/operationFeedback';
 import {readGameHost} from '../../src/modules/GameHostContract';
 import {WILD_NUDGE_GAME,STAR_SPIN_STAKES as WILD_NUDGE_STAKES,type WildNudgeView} from '../../src/shared/wildNudgeStakes';
 import {WILD_NUDGE_DATA as R,wildNudgeSpin,type NudgeSpin} from '../../src/shared/wildNudgeMath';
@@ -120,7 +121,7 @@ export class GalacticReactorUI {
     const spin=this.el<HTMLButtonElement>('spin');spin.disabled=blocked||this.auto||!active&&!this.afford();spin.querySelector('b')!.textContent=active?this.text('Бесплатно','Free spin'):this.text('Вращать','Spin');spin.querySelector('small')!.textContent=active?this.text('Осталось: ','Remaining: ')+(this.view?.remaining??0):this.money(this.stake)+' USDT';
     const auto=this.el<HTMLButtonElement>('auto');auto.disabled=!this.auto&&(blocked||active||!this.afford()||!!this.client.error||!!this.error);auto.textContent=this.auto?this.text('Стоп · ','Stop · ')+this.autoLeft:this.text('Авто','Auto');auto.setAttribute('aria-pressed',String(this.auto));auto.setAttribute('aria-label',this.auto?this.text('Остановить автокрутку','Stop autoplay'):this.text('Начать автокрутку','Start autoplay'));
     this.el<HTMLSelectElement>('count').disabled=this.auto||this.busy||this.presenting||this.client.busy||!!this.client.pending;this.el<HTMLSelectElement>('count').value=String(this.autoCount);
-    this.el('skip').hidden=!this.presenting;this.el('retry').hidden=!this.client.pending;this.el<HTMLButtonElement>('retry').disabled=this.busy||this.client.busy||this.client.loading||this.paused;
+    this.el('skip').hidden=!this.presenting;this.el('retry').hidden=!canRecoverOperation(this.client);this.el<HTMLButtonElement>('retry').disabled=this.busy||this.client.busy||this.client.loading||this.paused;
     this.el('refresh').hidden=!!this.client.pending||!(this.error||this.client.error);this.el<HTMLButtonElement>('wallet').disabled=!this.client.accountId;
     this.root.classList.toggle('gn-action-overlay',!this.el('skip').hidden||!this.el('retry').hidden||!this.el('refresh').hidden);
     this.el('remaining').textContent=String(shown?.remaining??0);this.el('bonus-dots').querySelectorAll('i').forEach((dot,i)=>dot.classList.toggle('gn-active',i<(shown?.remaining??0)));this.root.classList.toggle('gn-bonus',shown?.stage==='bonus');

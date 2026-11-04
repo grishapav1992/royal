@@ -1,3 +1,4 @@
+import {canRecoverOperation} from './operationFeedback';
 import {ActionGameLayout} from './ActionGameLayout';
 import {language,locale} from '../i18n/index';
 import {GAME_BETS as DEMO_BETS,GAME_STAKE_UNITS} from '../shared/gameStakes';
@@ -94,7 +95,7 @@ export class LastExitUI {
   const start=this.find<HTMLButtonElement>('[data-start]');start.hidden=!!active;start.disabled=blocked||!ready||Number(this.stake)>(balance??0)*100;
   start.querySelector('span')!.textContent=s?text('ЕЩЁ ОДИН ЗАЕЗД','ONE MORE RUN'):text('НАЧАТЬ ЗАЕЗД','START YOUR RUN');
   const cash=this.find<HTMLButtonElement>('[data-cashout]');cash.hidden=!active;cash.disabled=postBlocked||!ready||!s||!validRaceTime(s)||s.serverNow!<s.startedAt!;
-  this.find('[data-recovery]').hidden=!client.pending||client.busy;this.find<HTMLButtonElement>('[data-retry]').disabled=client.busy||client.loading||document.hidden;
+  this.find('[data-recovery]').hidden=!canRecoverOperation(client);this.find<HTMLButtonElement>('[data-retry]').disabled=client.busy||client.loading||document.hidden;
   this.find<HTMLButtonElement>('[data-refresh]').disabled=client.busy||client.loading||document.hidden;this.find('.le-error').textContent=this.error||client.error;
   if(s?.state==='settled'&&this.resultId!==s.id){this.resultId=s.id;this.restoreEnding=this.wasPresented(s.id);const value=s.returnedUnits==='0'?s.crashAt??1:s.multiplier??1;this.history=[{id:s.id,value,returned:s.returnedUnits,presented:this.restoreEnding},...this.history.filter(v=>v.id!==s.id)].slice(0,10);this.saveHistory();this.renderHistory();}
   observeExpansionOutcome(this.root,'github-crash',s,client.accountId,blocked||!this.follow||document.hidden,this.follow&&client.pending?.gameId==='github-crash');

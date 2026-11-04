@@ -51,14 +51,40 @@ test('front and rear sleeves blend into the shirt without a pasted-on inner outl
       const rgb = kind === 'npc' ? [233, 75, 56] : [217, 84, 68];
       const project = (value: number, pivot: number) => (kind === 'avatar' ? pivot + (value - pivot) * .94 : value) * 1.5;
       let tested = 0, shirt = 0;
-      // The covered shoulder lies outside face, hood, buttons and pockets.
-      for (let y = Math.ceil(project(57, 76) + 24); y < project(60, 76) + 24; y++) {
-        for (let x = Math.ceil(project(16, 32)); x < project(22, 32); x++) {
+      // The shoulder bridge lies above the armpit, outside face, hood and buttons.
+      for (let y = Math.ceil(project(50, 76) + 24); y < project(51, 76) + 24; y++) {
+        for (let x = Math.ceil(project(14, 32)); x < project(20, 32); x++) {
           const index = (y * 96 + x) * 4; tested++;
           if (pixels[index + 3] > 250 && rgb.every((channel, i) => Math.abs(pixels[index + i] - channel) <= 3)) shirt++;
         }
       }
       if (shirt / tested < .97) failures.push(`${kind} ${facing}: ${shirt}/${tested} shirt pixels at sleeve join`);
+    }
+    return failures;
+  });
+  expect(failures).toEqual([]);
+});
+
+test('sleeves remain visible beside the upper body instead of exposing only low hands', async ({ page }) => {
+  await page.goto('/tests/fixtures/profile-walk.html', { waitUntil: 'domcontentloaded' });
+  await page.waitForFunction(() => (window as any).profileWalk?.ready);
+  const failures = await page.evaluate(() => {
+    const failures: string[] = [];
+    const samples = [
+      { sample: { skin: 0 }, x: 10.5, y: 53, rgb: [233, 75, 56], avatar: false },
+      ...[{ body: 0, x: 10.5, y: 54 }, { body: 1, x: 5.5, y: 54 }, { body: 2, x: 15, y: 48 }].map(({ body, x, y }) => ({
+        sample: { appearance: { body, top: 2, topColor: 0, hair: 7, hat: 0 } }, x, y, rgb: [217, 84, 68], avatar: true,
+      })),
+    ];
+    for (const facing of ['down', 'up']) for (const { sample, x, y, rgb, avatar } of samples) {
+      const canvas = (window as any).profileWalk.render(sample, facing, 6), c = canvas.getContext('2d');
+      for (const side of [-1, 1]) {
+        const sourceX = side < 0 ? x : 64 - x;
+        const px = Math.round((avatar ? 32 + (sourceX - 32) * .94 : sourceX) * 1.5);
+        const py = Math.round((avatar ? 76 + (y - 76) * .94 : y) * 1.5 + 24);
+        const pixel = c.getImageData(px, py, 1, 1).data;
+        if (pixel[3] < 250 || rgb.some((value, i) => Math.abs(pixel[i] - value) > 3)) failures.push(`${JSON.stringify(sample)} ${facing} ${side}: upper sleeve is absent`);
+      }
     }
     return failures;
   });

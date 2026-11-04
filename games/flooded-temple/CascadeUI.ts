@@ -18,6 +18,7 @@ import {templeMusic} from './audioCredits';
 import {templeOutcome} from './presentation';
 import {updateCascadeDOM} from './cascadeDOM';
 import {FrameLayout} from '../../src/ui/iframeKit/FrameLayout';
+import {canRecoverOperation} from '../../src/ui/operationFeedback';
 
 const counts=[10,25,50,100];
 const names=[['Идол','Idol'],['Солнце','Sun'],['Ягуар','Jaguar'],['Сокол','Falcon'],['Змея','Serpent'],['Луна','Moon'],['Рыба','Fish'],['Компас WILD','WILD compass'],['Реликвия BONUS','BONUS relic']];
@@ -73,6 +74,8 @@ export class CascadeUI{
   private get connected(){return !!this.owner&&this.wallet.accountId===this.owner&&!!this.wallet.wallet;}
   private get hidden(){return this.doc.hidden||document.hidden;}
   private get pending(){return this.client.pending?.gameId===TEMPLE_GAME;}
+  private get waiting(){return !this.presenting&&(this.sending||this.pending&&this.client.busy);}
+  private get recovery(){return this.pending&&canRecoverOperation(this.client);}
   private get locked(){return this.sending||this.client.busy||this.client.loading||this.wallet.busy||!!this.wallet.pending||this.wallet.hasExternalBusy('expansion');}
   private get suspended(){return this.paused||this.hidden||this.dialog.open;}
   private get affordable(){return !!this.wallet.wallet&&this.wallet.wallet.balance>=Number(this.stake)/100;}
@@ -160,6 +163,7 @@ export class CascadeUI{
   private async operate(kind:'start'|'continue'|'retry'){
     if(this.disposed||this.suspended||this.locked||!this.connected||kind!=='retry'&&this.client.pending||kind==='start'&&(this.playing||!this.affordable)||kind==='continue'&&this.session?.state!=='active')return;
     const epoch=this.epoch,previous=this.view,oldId=this.session?.id,newRound=kind==='start'||kind==='retry'&&this.client.pending?.action==='start';
+    this.cancelFeedback();
     if(newRound){this.beat=undefined;clearTimeout(this.timer);this.timer=0;}
     this.sending=true;this.completed=false;this.localError='';this.inspected=-1;this.render();
     this.lastRequestAt=performance.now();
@@ -185,7 +189,8 @@ export class CascadeUI{
   }
   private status(){
     if(!this.connected)return this.text('Войди в аккаунт Royal, чтобы начать.','Sign in to Royal to begin.');
-    if(this.pending)return this.client.busy?this.text('Подтверждаем ту же операцию…','Confirming the same operation…'):this.text('Ответ не подтверждён. «Проверить раунд» повторит ту же операцию без новой ставки.','Result unconfirmed. “Check round” retries the same operation without a new stake.');
+    if(this.waiting)return this.text('Вращение…','Spinning…');
+    if(this.recovery)return this.text('Ответ не подтверждён. «Проверить раунд» повторит ту же операцию без новой ставки.','Result unconfirmed. “Check round” retries the same operation without a new stake.');
     if(this.localError||this.client.error)return this.localError||this.client.error;
     if(this.sending)return this.text('Подтверждаем выпадение…','Confirming the fall…');
     const f=this.feedback?.frame??this.visual;
@@ -202,6 +207,7 @@ export class CascadeUI{
   }
   private symbolName(symbol:number){return names[symbol][this.en?1:0];}
   private awardLabel(){
+    if(this.waiting)return this.text('ВРАЩЕНИЕ…','SPINNING…');
     const b=this.feedback,outcome=b?.outcome??(this.completed?this.resultOutcome:undefined);
     if(outcome){
       const labels={loss:['БЕЗ ВЫПЛАТЫ','NO PAYOUT'],partial:['ЧАСТИЧНЫЙ ВОЗВРАТ','PARTIAL RETURN'],return:['СТАВКА ВОЗВРАЩЕНА','STAKE RETURNED'],win:['ВЫИГРЫШ','ROUND WIN'],big:['КРУПНЫЙ ВЫИГРЫШ','BIG WIN']};
@@ -223,7 +229,8 @@ export class CascadeUI{
     const highlight=['evaluate','break','bonus'].includes(this.feedback?.kind??''),removeMask=this.feedback?.removeMask??f?.removeMask??0;
     const net=this.view&&(this.completed||this.feedback?.outcome)?BigInt(confirmedPayout(this.session,this.view.totalPayoutUnits))-BigInt(this.roundStake):undefined;
     const disabled=this.locked||!this.connected||this.suspended,active=this.session?.state==='active',pending=!!this.client.pending;
-    const label=this.presenting?this.text('Показать итог','Show result'):this.pending?this.text('Проверить раунд','Check round'):this.sending?this.text('Подтверждаем…','Confirming…'):active?this.text('Продолжить','Continue'):this.text('Вращать','Spin');
+    const label=this.presenting?this.text('Показать итог','Show result'):this.waiting?this.text('Вращение…','Spinning…'):this.recovery?this.text('Проверить раунд','Check round'):active?this.text('Продолжить','Continue'):this.text('Вращать','Spin');
+    this.root.dataset.requesting=String(this.waiting);
     const detail=this.inspected>=0?this.symbolName(grid[this.inspected]):this.text('20 линий · ставка поровну на все линии','20 paylines · stake divided equally among all lines');
     this.root.dataset.phase=f?.mode==='free'?'free':this.completed?'complete':'base';this.root.dataset.motion=this.media.matches?'reduced':'full';this.root.dataset.speed=this.fast?'quick':'normal';this.root.dataset.feedback=this.feedback?.kind??'idle';this.root.dataset.outcome=this.feedback?.outcome??(this.completed?this.resultOutcome??'':'');this.root.dataset.paused=String(this.suspended);this.root.setAttribute('aria-busy',String(this.sending||this.client.busy||this.client.loading));
     updateCascadeDOM(this.root,`<header class="ft-top"><div class="ft-title"><h1>${this.text('Затопленный храм','Flooded Temple')}</h1></div><div class="ft-tools"><button type="button" data-ft="journal" aria-label="${this.text('История раунда','Round history')}">≡</button><button type="button" data-ft="rules" aria-label="${this.text('Правила и выплаты','Rules and payouts')}">?</button><button type="button" data-ft="mute" aria-label="${this.text('Выключить звук','Mute audio')}" aria-pressed="${this.services.gameAudio.getPreferences().muted}">${this.services.gameAudio.getPreferences().muted?'♪̸':'♪'}</button></div></header>
@@ -233,7 +240,7 @@ export class CascadeUI{
     <p class="ft-cascade-detail">${escape(detail)}</p><div class="ft-fall-award" role="status">${escape(this.awardLabel())}</div></div><div data-ft-character-slot></div></div>
     <section class="ft-console" aria-label="${this.text('Управление игрой','Game controls')}"><div class="ft-money"><div><span class="ft-label">${this.text('Общий баланс','Shared balance')}</span><strong data-ft-value="balance">${this.connected?this.wallet.wallet!.balance.toLocaleString(this.en?'en-US':'ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2}):'···'}</strong><small>${this.wallet.wallet?.asset==='USDT_NILE_TEST'?'USDT':this.text('демомонеты','demo coins')}</small></div></div><div class="ft-bet-block"><label class="ft-stake"><span class="ft-label">${this.text('Ставка','Stake')}</span><select data-ft="stake" ${disabled||this.playing||pending||this.autoRunning?'disabled':''}>${GAME_STAKE_CENTS.map(n=>`<option value="${n}" ${this.stake===String(n)?'selected':''}>${this.money(String(n))}</option>`).join('')}</select></label><div class="ft-collected-total"><span class="ft-label">${this.text('Выплата раунда','Round payout')}</span><strong data-ft-value="payout">${this.money(total)}</strong><small class="ft-net" data-empty="${net===undefined}" ${net===undefined?'aria-hidden="true"':'data-ft-value="net"'}>${net===undefined?'':this.text('Итог раунда','Round net')+' '+(net>0n?'+':'')+this.money(String(net))}</small></div></div><div class="ft-action"><button class="ft-primary" type="button" data-ft="primary" ${(this.presenting?this.suspended:disabled||pending&&!this.pending||!active&&!this.pending&&(!this.affordable||this.autoRunning))?'disabled':''}>${art.compass}<span>${label}</span></button></div>
     <div class="ft-playback"><button type="button" data-ft="fast" aria-pressed="${this.fast}" aria-label="${this.text('Быстрая игра','Quick play')}">⚡ ${this.text('Быстро','Quick')}</button><label>${this.text('Автоспины','Autoplay')} <select data-ft="auto-count" aria-label="${this.text('Количество автоспинов','Autoplay count')}" ${this.autoRunning?'disabled':''}>${counts.map(n=>`<option ${n===this.autoCount?'selected':''}>${n}</option>`).join('')}</select></label><button type="button" data-ft="auto" aria-pressed="${this.autoRunning}" ${!this.autoRunning&&(disabled||this.playing||pending||!this.affordable)?'disabled':''}>${this.autoRunning?this.text(`Стоп · осталось ${this.autoRemaining}`,`Stop · ${this.autoRemaining} left`):this.text('Запустить серию','Start autoplay')}</button><span class="ft-auto-note">${escape(this.autoNote)}</span></div>
-    <button type="button" class="ft-options" data-ft="settings" aria-label="${this.text('Настройки игры','Game settings')}">⚙</button><div class="ft-status" data-error="${!!this.localError||!!this.client.error||this.pending}" data-settled="${this.completed}" role="status" aria-live="polite"><p>${escape(this.status())}</p></div></section><footer class="ft-bottom"><span>5 × 3 · 20 ${this.text('ЛИНИЙ','LINES')}</span><span>${this.text('БЕСПЛАТНЫЕ ВРАЩЕНИЯ','FREE SPINS')} ×3 / ×6 / ×9 / ×15</span><span>${this.text('ПРЕДЕЛ','LIMIT')} 500×</span></footer>`);
+    <button type="button" class="ft-options" data-ft="settings" aria-label="${this.text('Настройки игры','Game settings')}">⚙</button><div class="ft-status" data-error="${!!this.localError||!!this.client.error||this.recovery}" data-settled="${this.completed}" role="status" aria-live="polite"><p>${escape(this.status())}</p></div></section><footer class="ft-bottom"><span>5 × 3 · 20 ${this.text('ЛИНИЙ','LINES')}</span><span>${this.text('БЕСПЛАТНЫЕ ВРАЩЕНИЯ','FREE SPINS')} ×3 / ×6 / ×9 / ×15</span><span>${this.text('ПРЕДЕЛ','LIMIT')} 500×</span></footer>`);
     this.root.querySelector('[data-ft-character-slot]')?.replaceWith(this.character.element);
     const stakeSelect=this.root.querySelector<HTMLSelectElement>('[data-ft=stake]');if(stakeSelect)this.stake=syncStakeSelect(stakeSelect,this.stake,GAME_STAKE_CENTS,this.locked||this.playing||this.autoRunning||!!this.client.pending);
     this.character.update({beat:this.beat,key:this.marker,offset:this.timeline.offset,waiting:this.sending,rope:false,selected:false,reduced:this.media.matches,paused:this.suspended,connected:this.connected});
@@ -262,6 +269,6 @@ export class CascadeUI{
   private visibility=()=>{if(this.hidden){this.stopAuto(this.text('Автоспины остановлены: окно скрыто.','Autoplay stopped: window hidden.'));clearTimeout(this.pumpTimer);this.pumpTimer=0;this.settleFeedback();}this.audio.setAllowed(!this.suspended);this.render();if(!this.hidden)this.pump();};
   pause(){this.paused=true;this.stopAuto(this.text('Автоспины остановлены.','Autoplay stopped.'));this.settleFeedback();this.audio.setAllowed(false);this.render();}
   resume(){if(this.disposed)return;this.paused=false;this.audio.setAllowed(!this.suspended);this.render();this.pump();}
-  getState(){return {gameId:TEMPLE_GAME,version:2,owner:this.owner,sessionId:this.session?.id,revision:this.view?.revision,phase:this.view?.phase??'ready',busy:this.locked,presenting:this.presenting,visual:this.visual,framesRemaining:this.timeline.remainingFrames,completed:this.completed,selectedStakeUnits:this.stake,acceptedStakeUnits:this.session?.stakeUnits,decorationsSkipped:this.skippedRound===this.session?.id,fast:this.fast,autoplay:{running:this.autoRunning,remaining:this.autoRemaining,count:this.autoCount,note:this.autoNote},pending:this.pending,paused:this.paused,feedback:{...this.timeline.getState(),effects:this.effects.getState()},character:this.character.getState(),audio:this.audio.getState(),disposed:this.disposed};}
+  getState(){return {gameId:TEMPLE_GAME,version:2,owner:this.owner,sessionId:this.session?.id,revision:this.view?.revision,phase:this.view?.phase??'ready',busy:this.locked,presenting:this.presenting,visual:this.visual,framesRemaining:this.timeline.remainingFrames,completed:this.completed,selectedStakeUnits:this.stake,acceptedStakeUnits:this.session?.stakeUnits,decorationsSkipped:this.skippedRound===this.session?.id,fast:this.fast,autoplay:{running:this.autoRunning,remaining:this.autoRemaining,count:this.autoCount,note:this.autoNote},pending:this.pending,requesting:this.waiting,recovery:this.recovery,paused:this.paused,feedback:{...this.timeline.getState(),effects:this.effects.getState()},character:this.character.getState(),audio:this.audio.getState(),disposed:this.disposed};}
   destroy(){if(this.disposed)return;this.disposed=true;this.epoch++;this.stopAuto('');this.cancelFeedback();this.timeline.destroy();clearTimeout(this.timer);this.unsubscribe();this.media.removeEventListener('change',this.motion);this.doc.removeEventListener('visibilitychange',this.visibility);document.removeEventListener('visibilitychange',this.visibility);this.client.removeEventListener('change',this.changed);this.wallet.removeEventListener('change',this.changed);this.root.removeEventListener('click',this.click);this.root.removeEventListener('change',this.select);this.root.removeEventListener('keydown',this.key);this.dialog.removeEventListener('click',this.click);this.dialog.removeEventListener('close',this.closed);this.layout.destroy();this.dialog.removeEventListener('change',this.select);this.character.destroy();this.audio.destroy();this.dialog.remove();this.root.remove();}
 }

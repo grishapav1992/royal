@@ -5,7 +5,7 @@ type Point = [number, number];
 const mix = (a: number, b: number, p: number) => a + (b - a) * p;
 
 /** Portrait-derived character, in the existing 32x40 room-art coordinate system. */
-export function paintMira(c: CanvasRenderingContext2D, facing: Facing, frame: number, sip: number, action: MiraAction = 'serve', phase = 0, progress = 0) {
+export function paintMira(c: CanvasRenderingContext2D, facing: Facing, frame: number, sip: number, action: MiraAction = 'serve', phase = 0, progress = 0, handsOnly = false) {
   c.save(); c.beginPath(); c.rect(0, 0, 32, 40); c.clip(); c.scale(.5, .5);
   c.lineCap = 'round'; c.lineJoin = 'round';
   if (facing === 'left') { c.translate(64, 0); c.scale(-1, 1); }
@@ -25,7 +25,7 @@ export function paintMira(c: CanvasRenderingContext2D, facing: Facing, frame: nu
     stroke(ink, width + 1, path); stroke(fill, width, path);
     oval(b[0], b[1], width / 2, width / 2, fill, 0);
   };
-  const arm = (a: Point, b: Point, hand: Point) => { limb(a, b, hand, 3.5, skin); oval(hand[0], hand[1], 1.6, 1.25, highlight, .4); };
+  const arm = (a: Point, b: Point, hand: Point) => { limb(handsOnly?b:a, b, hand, 3.5, skin); oval(hand[0], hand[1], 1.6, 1.25, highlight, .4); };
   const drink = (x: number, y: number, fill = '#e0b95e', garnish = true) => {
     shape('#e5ded0', () => { c.moveTo(x, y); c.lineTo(x + 6, y); c.lineTo(x + 5, y + 12); c.lineTo(x + 1, y + 12); c.closePath(); }, .6);
     if (fill) shape(fill, () => c.rect(x + 1.2, y + 4, 3.6, 7), 0);
@@ -36,7 +36,7 @@ export function paintMira(c: CanvasRenderingContext2D, facing: Facing, frame: nu
   };
 
   // Knees stay connected under the skirt; the resting pose crosses the shins.
-  for (let i = 0; i < 2; i++) {
+  if(!handsOnly)for (let i = 0; i < 2; i++) {
     const x = i ? 36 : 28, stride = (i ? -step : step) * 3;
     const knee: Point = [mix(x + stride, i ? 31 : 25, seat), mix(63 - Math.max(0, stride) * .8, i ? 60 : 58, seat)];
     const foot: Point = [mix(x - stride, i ? 23 : 31, seat), mix(75 - Math.max(0, stride) * 1.2, i ? 75 : 72, seat)];
@@ -50,6 +50,7 @@ export function paintMira(c: CanvasRenderingContext2D, facing: Facing, frame: nu
   c.save();
   if (action === 'wipe') c.transform(1, 0, -.15, .82, 8, 13);
   c.translate(action === 'walk' ? step * .15 : 0, action === 'walk' ? -Math.abs(step) * .45 : wave * .12);
+  if(!handsOnly){
   // Deep copper silhouette and a high asymmetric wave echo the dialogue portrait.
   shape(hairDark, () => { c.moveTo(19, 10); c.bezierCurveTo(15, 0, 27, -1, 32, 3); c.bezierCurveTo(44, -1, 47, 9, 44, 19); c.quadraticCurveTo(49, 26, 44, 32); c.quadraticCurveTo(47, 40, 39, 44); c.lineTo(21, 43); c.quadraticCurveTo(11, 40, 17, 33); c.quadraticCurveTo(10, 26, 17, 20); c.quadraticCurveTo(13, 14, 19, 10); c.closePath(); });
   shape(hair, () => { c.moveTo(19, 12); c.bezierCurveTo(16, 3, 28, -1, 32, 4); c.bezierCurveTo(43, 1, 45, 10, 42, 17); c.quadraticCurveTo(46, 23, 42, 29); c.quadraticCurveTo(46, 35, 40, 40); c.lineTo(23, 40); c.quadraticCurveTo(14, 39, 19, 32); c.quadraticCurveTo(13, 25, 19, 20); c.closePath(); });
@@ -69,10 +70,11 @@ export function paintMira(c: CanvasRenderingContext2D, facing: Facing, frame: nu
   else { line([27, 25], [32, 27], gold, .7); line([32, 27], [37, 25], gold, .7); oval(32, 27, .8, 1, gold, 0); }
   // Slipped sleeves remain visibly separate from her bare shoulders.
   line([21, 30], [24, 31], '#782136', 3); line([40, 30], [43, 29], '#782136', 3);
+  }
   const left: Point = [22, 29], right: Point = [41, 29];
   if (action === 'wipe') {
-    const reach = wave * 4; arm(left, [18, 43], [26, 47]); arm(right, [45, 48], [49 + reach, 68]);
-    shape('#e6d6b1', () => c.roundRect(44 + reach, 68, 11, 3, .8), .5);
+    const reach = wave * 4; arm(left, [18, 36], [26, 39]); arm(right, [45, 37], [49 + reach, 39]);
+    shape('#e6d6b1', () => c.roundRect(44 + reach, 39, 11, 3, .8), .5);
   } else if (action === 'polish') {
     arm(left, [20, 39], [31, 40]); arm(right, [43, 37], [36, 36 + wave * 1.4]);
     drink(29, 29, '', false); shape('#eddfbf', () => c.roundRect(33, 35 + wave * 1.4, 6, 4, .8), .4);
@@ -102,11 +104,11 @@ export function paintMira(c: CanvasRenderingContext2D, facing: Facing, frame: nu
     arm(left, [18, 36], [26, 41]); arm(right, [45, 36], [38, 41]);
   }
 
-  if (back) {
+  if (!handsOnly&&back) {
     shape(hair, () => { c.moveTo(20, 8); c.bezierCurveTo(20, -1, 39, 0, 43, 8); c.quadraticCurveTo(46, 18, 40, 25); c.quadraticCurveTo(44, 33, 38, 38); c.quadraticCurveTo(30, 43, 22, 37); c.quadraticCurveTo(16, 32, 20, 25); c.quadraticCurveTo(15, 17, 20, 8); c.closePath(); });
     stroke(hairLight, 1.3, () => { c.moveTo(28, 5); c.quadraticCurveTo(22, 12, 27, 20); c.quadraticCurveTo(31, 28, 24, 34); });
     stroke('#d45525', 1, () => { c.moveTo(38, 7); c.quadraticCurveTo(43, 15, 36, 23); c.quadraticCurveTo(40, 32, 34, 36); });
-  } else {
+  } else if(!handsOnly) {
     c.save(); c.translate(32, 15); c.rotate(action === 'listen' ? -.09 : -.04); c.translate(-32, -15);
     shape(skin, () => { c.moveTo(25, 7); c.bezierCurveTo(29, 3, 39, 5, 40, 11); c.lineTo(side ? 42 : 39, 15); c.quadraticCurveTo(38, 19, 32, 21); c.quadraticCurveTo(26, 19, 25, 13); c.closePath(); });
     shape(highlight, () => { c.moveTo(34, 8); c.quadraticCurveTo(39, 8, 38, 13); c.quadraticCurveTo(36, 17, 33, 17); c.closePath(); }, 0);
