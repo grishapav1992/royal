@@ -1,0 +1,13 @@
+# Royal Bar and corrected Mira animation
+
+Publish the corrected illustrated bar and room-owned Mira timeline over the captured healthy production composition. The scope contains 15 runtime source files and seven versioned PNG files. Production street, character recovery, catalogue, module pointers, independent packages, wallet rules, configuration and persistent data are retained. No games are added or restored.
+
+`configure.mjs` reads the task-owned full production inventory and its matching host/backend manifest. It reconciles the reviewed Mira feature with those exact origins, recording the small reviewed conflicts and keeping the separately pinned backend dictionary. The bar renderer uses the corrected work atlas; the malformed sheet is excluded. The cat mug remains a separate permanent object and the cat modules are outside the source delta.
+
+Commit and push this release folder and the feature to main, then run `release:plan` and `release:prepare` with the tracked host and backend projections. Keep the prepared source commit fixed. The mandatory wallet and relevant Mira tests run through `projection-loader.mjs`. `fetch-package.mjs` verifies the unchanged published roulette package. `stand.mjs` runs the final compiled host/backend with connected chat and disposable PostgreSQL, including lost-response recovery and desktop/mobile checks.
+
+After `release:verify -- --github`, use `prepare.mjs <production-before.json> <task-owned-payload-directory> <installer-source-commit>`. It packages only the exact verified client delta, main backend, 22 allowed source paths and GitHub-bound helper files. Binary source images must match their client delivery hashes. A foreign media path, unbound input, catalogue expansion or immutable URL collision is rejected.
+
+Preparation, tests, uploads and waiting hold no production publication locks. `deploy.py release` acquires all three locks nonblockingly, preserves the source and image rollback, checks the complete live baseline, builds the verified overlay and uses the fresh financial barrier. Contention releases partial acquisitions and exits 75 without automatic retry. A changed baseline requires reconciliation.
+
+After publication, verify the running inventory, public file hashes, health, unchanged catalogue and browser views. Finish mandatory retention with `completed`, healthy host, enabled hourly timer and at least 5 GiB free, then commit and push the deployment record. Physical devices and production player transactions are outside the verification workflow.

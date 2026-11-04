@@ -1,0 +1,143 @@
+{
+  "release": "royal-bar-mira-20261104-v3",
+  "featureCommit": "ba74d39f91bdd0b65eb65f2540be0e9d37345ca2",
+  "productionCommit": "59c1202b466e4f3507e82c5f016240af95dbf5d2",
+  "runtimeSources": [
+    "server/LobbyRoom.ts",
+    "server/bartender.ts",
+    "src/game/Bar.ts",
+    "src/game/RoomScene.ts",
+    "src/game/MiraRig.ts",
+    "src/game/miraAnimation.ts",
+    "src/game/royalBarArt.ts",
+    "src/i18n/en.ts",
+    "src/main.ts",
+    "src/shared/clubLayout.ts",
+    "src/shared/miraRoutine.ts",
+    "src/shared/world.ts",
+    "src/ui/MiraChat.ts",
+    "src/ui/MiraPortrait.ts",
+    "src/ui/SocialUI.ts"
+  ],
+  "mediaSources": [
+    "public/assets/royal-bar/v2/bar-assembly.png",
+    "public/assets/royal-bar/v2/bar-stool.png",
+    "public/assets/royal-bar/v3/mira-walk.png",
+    "public/assets/royal-bar/v3/mira-seat.png",
+    "public/assets/royal-bar/v3/mira-work-corrected.png",
+    "public/assets/royal-bar/v3/mira-react.png",
+    "public/assets/royal-bar/v3/mira-serve.png"
+  ],
+  "expectedSources": {
+    "src/game/Bar.ts": "c5d03c989da3b73fc8552331f557f96998aec73b2843607f4ca763c01152a158",
+    "src/game/RoomScene.ts": "3484580fa5c1355a93936580c047f6a781dd2858fc4a8c6f4db68f747a4aeba2",
+    "src/game/MiraRig.ts": "0a8254bfeddcaec47a3f2468b94d05e65e6531970a057a00b0b0249cfa126931",
+    "src/game/miraAnimation.ts": "93ce2c106cddee6b195df5e4d6b26d55c40e1ba98bc60fb0289ad01a1af094ca",
+    "src/game/royalBarArt.ts": "75eb83aeefa8665575a5a1ad8077b62404862671873fe31be4a3ae4ba38fd530",
+    "src/i18n/en.ts": "fab1cbe6c855da93c011f508b529415d5b806c4ffba484fc8f32bb36a283472b",
+    "src/main.ts": "8bc688a928490c0ba71914962c7f05bd8038b7af99b6e5358cca6b74f5528a25",
+    "src/shared/clubLayout.ts": "a82d184cca7e000476040f3b34be40f24933b7788d09e5f61df91a511e404c3f",
+    "src/shared/miraRoutine.ts": "1edf1b32dec6a1d9646f23c0907ec5458aa311a35121633d9fdd5a8ac1470300",
+    "src/shared/world.ts": "c990f637bfe5f08d1b7dba2620916d61eeae90612f371d71634757e55c42db3b",
+    "src/ui/MiraChat.ts": "059480c1c3081f619c8de9d20aa3061a4a85c5fff18326b30e439e9fffc30c91",
+    "src/ui/MiraPortrait.ts": "6762705758f13efbdfdd9405a29f1dfba732ffc4557c273982d1e7973abbdd88",
+    "src/ui/SocialUI.ts": "64be2f31418b1282b2a6e5ffac86fdcd7b5b6fad1beaffb08ba755c5a33779af",
+    "server/LobbyRoom.ts": "b0df73ff281890743966d84c6ce6924f50a703a21c224f1e59e6a62a69209f9f",
+    "server/bartender.ts": "d669db795f60d965c0ca5617b54661fc15407a83800fd47a246827317920d63f",
+    "public/assets/royal-bar/v2/bar-assembly.png": "b12993e64c7a6dfe5a684e5f5a5179e62aa306dbde6d8d227b76534c7a274728",
+    "public/assets/royal-bar/v2/bar-stool.png": "ccd274b255adaf4837380799828c622a930457bda3d18a643df47b4f947d8b0b",
+    "public/assets/royal-bar/v3/mira-walk.png": "4c0e118f7fba39834153fac6a35c518747c1b1f527bbce30e0d62cd4fe819e42",
+    "public/assets/royal-bar/v3/mira-seat.png": "2613a2ce5b6e1c45137a3de86bf0a1dd8687729ab74a3fb4088a41d6c0257820",
+    "public/assets/royal-bar/v3/mira-work-corrected.png": "fc9b72468d854a6c902376bac8cd0ee602bd3b5f4583cdcf5778628bf8c244a8",
+    "public/assets/royal-bar/v3/mira-react.png": "8373c40cff647a68e01ea693e558557282a623fe853e05d4589204e36e3ec8c1",
+    "public/assets/royal-bar/v3/mira-serve.png": "b9a4b7065e239682f69652b1b3432fcd360eb2b0c267f52a0f3ad0c64cda9490"
+  },
+  "preservedBackendInputs": {
+    "src/i18n/en.ts": "e6a39483750df92467b584e98319ce679f2a3489669e4b0d3f64a2d7ba0a762c"
+  },
+  "addedGames": [],
+  "restoredGames": [],
+  "hostRequired": [
+    "src/game/Bar.ts",
+    "src/game/RoomScene.ts",
+    "src/game/MiraRig.ts",
+    "src/game/miraAnimation.ts",
+    "src/game/royalBarArt.ts",
+    "src/i18n/en.ts",
+    "src/main.ts",
+    "src/shared/clubLayout.ts",
+    "src/shared/miraRoutine.ts",
+    "src/shared/world.ts",
+    "src/ui/MiraChat.ts",
+    "src/ui/MiraPortrait.ts",
+    "src/ui/SocialUI.ts"
+  ],
+  "backendRequired": [
+    "server/LobbyRoom.ts",
+    "server/bartender.ts",
+    "src/shared/clubLayout.ts",
+    "src/shared/miraRoutine.ts",
+    "src/shared/world.ts"
+  ],
+  "changedSources": [
+    "public/assets/royal-bar/v2/bar-assembly.png",
+    "public/assets/royal-bar/v2/bar-stool.png",
+    "public/assets/royal-bar/v3/mira-react.png",
+    "public/assets/royal-bar/v3/mira-seat.png",
+    "public/assets/royal-bar/v3/mira-serve.png",
+    "public/assets/royal-bar/v3/mira-walk.png",
+    "public/assets/royal-bar/v3/mira-work-corrected.png",
+    "server/LobbyRoom.ts",
+    "server/bartender.ts",
+    "src/game/Bar.ts",
+    "src/game/MiraRig.ts",
+    "src/game/RoomScene.ts",
+    "src/game/miraAnimation.ts",
+    "src/game/royalBarArt.ts",
+    "src/i18n/en.ts",
+    "src/main.ts",
+    "src/shared/clubLayout.ts",
+    "src/shared/miraRoutine.ts",
+    "src/shared/world.ts",
+    "src/ui/MiraChat.ts",
+    "src/ui/MiraPortrait.ts",
+    "src/ui/SocialUI.ts"
+  ],
+  "reviewedResolutions": [
+    {
+      "kind": "host",
+      "name": "src/game/RoomScene.ts",
+      "reason": "Preserve recovery and street commands, add Mira attention."
+    },
+    {
+      "kind": "host",
+      "name": "src/game/RoomScene.ts",
+      "reason": "Keep authoritative stair progress and pending bar entry."
+    },
+    {
+      "kind": "host",
+      "name": "src/i18n/en.ts",
+      "reason": "The current dictionary already contains the old header labels; preserve street and recovery translations."
+    },
+    {
+      "kind": "host",
+      "name": "src/main.ts",
+      "reason": "Preserve the published recovery settings import."
+    },
+    {
+      "kind": "host",
+      "name": "src/shared/world.ts",
+      "reason": "Extend the published command set without dropping recovery or stair windows."
+    },
+    {
+      "kind": "host",
+      "name": "src/ui/SocialUI.ts",
+      "reason": "Add Mira attention while preserving the current online command handlers."
+    },
+    {
+      "kind": "backend",
+      "name": "src/shared/world.ts",
+      "reason": "Extend the published command set without dropping recovery or stair windows."
+    }
+  ]
+}
