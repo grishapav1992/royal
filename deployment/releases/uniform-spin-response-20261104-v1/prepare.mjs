@@ -28,7 +28,7 @@ put('release-manifest.json',fs.readFileSync('module-build/release-manifest.json'
 put('install-manifest.json',fs.readFileSync('module-build/release-manifest.json'));
 put('release-github.json',fs.readFileSync('module-build/release-github.json'));
 const receipt=JSON.parse(fs.readFileSync('module-build/release-github.json'));assert.equal(receipt.sourceCommit,release.sourceCommit);
-const source={};for(const [name,digest]of Object.entries(scope.sources)){const bytes=reader.read(name);assert.equal(hash(bytes),digest);source[name]=put('source/'+name,bytes);}
+const source={};for(const [name,digest]of Object.entries(scope.sources)){const bytes=reader.read(name);assert.equal(hash(bytes),digest);assert.equal(release.moduleProjection.inputs[name],digest,'Source absent from selected compiled modules: '+name);source[name]=put('source/'+name,bytes);}
 const packages={},beforePointers={},games={};
 for(const row of release.packages){
  const game=row.gameId,pointer=JSON.parse(fs.readFileSync(row.pointer)),prefix=pointer.manifest.replace('/game-modules/','module-dist/');

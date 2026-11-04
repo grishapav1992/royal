@@ -1,0 +1,124 @@
+{
+  "generatedAt": "2026-11-04T17:21:51.465Z",
+  "scope": "Local stair movement and third-floor window passage. No production publication.",
+  "branch": "feature/casino-street",
+  "repository": "https://github.com/grishapav1992/royal",
+  "runtime": {
+    "frontendSourceCommit": "43688180f985bdc22836b01dc0954d84d091e535",
+    "backendSourceCommit": "43688180f985bdc22836b01dc0954d84d091e535",
+    "reconciledSourceCommit": "242dd2fe295acb4a658d6e89fae0f4eb3ddfa7a0",
+    "integratedMainCommit": "5975075822d5f8165b1ae8ef490eba6b0eaf3be3",
+    "url": "http://127.0.0.1:5191/",
+    "apiUrl": "http://127.0.0.1:2591/",
+    "originalPreviewDatabaseRetained": true,
+    "artifactProvenance": "Frontend and backend were rebuilt together for this change. Later integration only added release records; all pinned source and artifact hashes were checked unchanged."
+  },
+  "behavior": [
+    "Vertical manual movement climbs or reverses along every switchback without a forced landing pause.",
+    "Sideways movement follows the middle platform and guides onto it within 50 world units of either adjoining flight.",
+    "Ordinary forward movement at the full width of the open pane initiates checked approach and window admission. The former interaction action does not enter it.",
+    "No hotkey or landing hints are rendered at the window.",
+    "Movement held during either transition cannot trigger an immediate return.",
+    "Clicked destinations on the platform persist through asynchronous movement handoffs.",
+    "Clicking either flight from the platform always returns through the junction, including after coordinate rounding."
+  ],
+  "verification": {
+    "unit": {
+      "command": "npm run test:street",
+      "passed": 87,
+      "failed": 0
+    },
+    "typecheck": {
+      "command": "node node_modules/typescript/bin/tsc --noEmit",
+      "passed": true
+    },
+    "build": {
+      "frontend": "node node_modules/vite/bin/vite.js build",
+      "backend": "buildServer(process.cwd(), server/index.ts, index.js)",
+      "passed": true,
+      "scope": "Host and backend only. No game module, maths or availability changes. Existing module packages are retained."
+    },
+    "desktop": {
+      "spec": "tests/stair-simple.spec.ts",
+      "passed": 2,
+      "failed": 0,
+      "modes": [
+        "solo",
+        "connected"
+      ],
+      "coverage": [
+        "real walk around the building",
+        "forgiving approach from both adjoining flights",
+        "full platform length",
+        "unlabelled window",
+        "entry and return",
+        "held-input protection",
+        "persistent click routing",
+        "lateral input on ordinary flights",
+        "reverse and full descent",
+        "connected chat"
+      ],
+      "pageErrors": 0
+    },
+    "mobile": {
+      "spec": "tests/rooftop.spec.ts",
+      "passed": 1,
+      "failed": 0,
+      "environment": "Chrome mobile viewport and touch emulation",
+      "coverage": [
+        "touch climb",
+        "both middle platform branches",
+        "window round trips",
+        "reconnect on platform",
+        "roof arrival",
+        "restroom round trip",
+        "return and descent",
+        "chat and unchanged displayed balance"
+      ],
+      "physicalDeviceTested": false
+    },
+    "previewHealth": {
+      "frontendStatus": 200,
+      "backendStatus": 200,
+      "servedScript": "/assets/main-BBLevv1L.js"
+    },
+    "sourceMap": {
+      "status": "unavailable",
+      "reason": "Sources changed during the local index refresh. The previous map was preserved; relevant source files were inspected directly."
+    }
+  },
+  "sourceHashes": {
+    "src/shared/rooftop.ts": "bfed6ff4d4a733d31fe472e720b45a035b854e1d0d5689831cff0c9120e7117c",
+    "src/shared/stairWindow.ts": "67b2561c1be14bac242523acbcb0605ce440b318c47846c607658b9a0aacabe3",
+    "src/game/RoomScene.ts": "d2080d9305ef489041dd11007b1e248d6438d4b3b5a63b3badf4dc653ad0dab8",
+    "src/game/StreetRenderer.ts": "406a60cfd37f284e581c23d4d21d34ee23703908bfcb02b3c01c6a41263ff80a",
+    "src/game/roofStairInput.ts": "f7706e55d2f11117343d199f89097036a467f18bcc2026a5614c4923f908cd46",
+    "src/i18n/streetEn.ts": "7d3f17e862ff1a03f34049cc66095775b71929e812f9757a5f996841ee7bb634",
+    "server-tests/stair-window.test.ts": "87996310a7ea14f42fe5b52e6ff9721bb40d5ccb12bf5989a165e8c2714b054c",
+    "server-tests/rooftop.test.ts": "0a8f8d5820f09ca28259e82e7a31fca337d748a447fa2aa8f49b5d9d31f16c9e",
+    "tests/stair-simple.spec.ts": "2e3b442eefdda6d13e30edcd9ff94943cea24571e5f9829089d66fc4a44db087",
+    "tests/rooftop.spec.ts": "f445d3b1592b9a84f2a96b0af24e2e09175e7d437ff7ba8640b3c12e9200e736",
+    "playwright.street.config.ts": "38790c5993eb0dce4871ea5e0635619e48f6f05595b8a2f1beb8e7cf7e5a8082"
+  },
+  "artifactHashes": {
+    "dist/index.html": "026823fc6801d6680ef76e6e057b2e62bbf5334fc13a0e9fda722e6945ee7d29",
+    "dist-server/index.js": "ec6daefba0db51cee746d2208caa842557e0152efa990a8f6490c0e2fbd5b6d5",
+    "dist/assets/main-BBLevv1L.js": "cac4cb195703b023bc6b2b0f4a4f85509da96a04d46ed4adfd8d754d5fbebc83",
+    "dist/assets/main-c0rveKga.css": "5b6c304fa752ed89c2f730876a74fee17a0085e53cc7bf3428ca57097df8e582",
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+  },
+  "evidenceLogHashes": {
+    "unit": "4e261f3da3190c2c3bb11fa47c4bb079db1506150e731cc49051cf4d6d78b014",
+    "build": "4d21298c9bf5fd73721b2622f9a04f11c14e2d975fb1bd77ee0326a98222205c",
+    "ui": "5d074ced96847ead97b60923fc53a187eb75db453b0b643408942cfc94062e32",
+    "mobile-ui": "30cddb46f1022b6fac88620f52730b462f9fb23ccfbc14c26f2a58caa4a87ef4"
+  },
+  "screenshots": {
+    "desktop-window.png": "37fa1b851908bbc5c25331e81ee23ac668325b3b5920bb16e1159c8ee932195d",
+    "mobile-window-return.png": "a80e69e26dc86df7169f23937327a268daf2ce7b78e9039588216578c4d0fdd9",
+    "mobile-inside.png": "d5b99a92e7cf52b6b8aa1876c28611248bdbad1396f6a7d52fc486d269e787de"
+  },
+  "productionChanged": false,
+  "catalogueChanged": false,
+  "mathematicsChanged": false
+}

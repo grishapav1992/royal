@@ -33,6 +33,17 @@ export async function dependencyPath(root, name) {
   return target;
 }
 
+// Compatibility for fingerprints created before canonical dependency bundle names.
+export async function moduleSourcePath(root,name){
+  return /^node_modules(?:\/|$)/.test(name)?dependencyPath(root,name):regularPath(root,name);
+}
+export async function normalizeModuleInput(root,name){
+  if(!name.startsWith('../'))return name;
+  const installed=await realpath(resolve(root,'node_modules'));
+  const suffix=relative(installed,resolve(await realpath(root),name)).replaceAll('\\','/');
+  const canonical='node_modules/'+suffix;await dependencyPath(root,canonical);return canonical;
+}
+
 export async function inventory(root, prefix = '') {
   const result = {};
   for (const item of (await readdir(resolve(root, prefix), { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name))) {
@@ -72,6 +83,7 @@ export function moduleFingerprinter(root, toolchain) {
     return rows;
   });
   return async (config, contract, inputs) => {
+    inputs=await Promise.all(inputs.map(name=>normalizeModuleInput(root,name)));
     const files = new Set(['package.json', 'package-lock.json', 'tsconfig.json',
       'scripts/build-game-module.mjs', 'scripts/module-build-cache.mjs', 'scripts/module-source-projection.mjs',
       'scripts/shared-module-cache.mjs',

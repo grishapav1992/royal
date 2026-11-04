@@ -1,0 +1,206 @@
+{
+  "feature": "casino-stair-navigation",
+  "dateLocal": "2026-11-04",
+  "timezone": "Europe/Moscow",
+  "testedRuntimeSourceCommit": "81b9cc62251fb071a866f0210a16e7b780a92d74",
+  "mainBaseline": "30b95e951ba71f8ac1b340152c8a9f3ee66edc51",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "sourceFiles": {
+    "src/shared/rooftop.ts": "c0e8cc478659aead6200430f06a632cc051b56eb232aab98f34f9371eb73c1a5",
+    "src/shared/movement.ts": "3edacbff3999d960b793ec06832efe8babf13519f1d1409010d8bad8d93dc1ba",
+    "src/shared/world.ts": "901194a67907b4c62e69c4a15f1237646a16de50222428941754014b5b78932d",
+    "src/network/MovementPrediction.ts": "d67c0976bc7868fd8a78a95b5c272254cd3bba8531ec865ad5527ace894b1c90",
+    "src/network/LobbyClient.ts": "626a9cf46f05a86774805647619ab11efb93d85c72af6e9b8a482c83de24b50a",
+    "server/state.ts": "5a0d35589a963df279066cae23c5c4b26f6b2d31c39a11db1cb44469407aed4f",
+    "server/LobbyRoom.ts": "5d7ab77da9bebb116141bc702d7bfeaa03b3c9aa9774ef1de7e1707d2c431d66",
+    "src/game/RoomScene.ts": "1536f710b25a6f5f65d976a35d811a5fd0283ef9ef82c5b99e295e3362886091",
+    "server-tests/rooftop.test.ts": "249e1aa64c5970a44a782124431cb02e1f8d6f3691a6eb74d6a3fa1045b145f1",
+    "tests/rooftop.spec.ts": "2565a7908189dd787cd2ab42f878a97828db90ba88c66b9715048bfc40f477c0"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "bed739c720bad9b9fe414ba1aeede8914ce87d382c1944c7c2a6c81db6434d11"
+    },
+    "dist-server/index.js": {
+      "bytes": 2428721,
+      "sha256": "d205f7c1c65effe0b3ef248099798238ff5a687c1a25b50b934fbafa049d9047"
+    },
+    "dist/assets/main-CyUQXg4G.js": {
+      "bytes": 2862053,
+      "sha256": "56577444801e3f0be2509e0b3344a3fb68d200c0e5569c891a71cf3871cafe58"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    },
+    "dist/assets/main-afxgM5_-.css": {
+      "bytes": 155912,
+      "sha256": "1b42cc1fbf3619b16fc7b8bfbe961d50c17754359895f71520ca8268d8906543"
+    }
+  },
+  "change": "Guide intentional keyboard entry from either side onto the lower ladder. Allow forward and reverse movement on every flight. Vertical input chooses ascending or descending at a switchback; horizontal input follows the selected height direction when both branches share the same horizontal direction. Preserve direction through state replication and reconnect. Touch can choose the previous as well as next landing.",
+  "controls": {
+    "horizontal": "Move either way on a flight, reverse immediately.",
+    "vertical": "Up/W ascends; Down/S descends and resolves the branch on a landing.",
+    "release": "Pause on the rail; close landings are confirmed within a 0.2 world-unit settlement bound.",
+    "touch": "Tap higher or lower steps to choose an adjacent landing.",
+    "groundExit": "Backward traversal of the lower ladder exits safely onto the pavement."
+  },
+  "entry": {
+    "guideHalfWidth": 64,
+    "guideHalfDepth": 36,
+    "nativeKeyboardStartOffsets": [
+      [
+        -54,
+        -20
+      ],
+      [
+        54,
+        -20
+      ]
+    ],
+    "lateralEntryBothSides": true,
+    "heldUpSideEntry": true,
+    "ordinaryPavementAndAwayMovementNotCaptured": true,
+    "sideClicksRetainTheirGroundTarget": true
+  },
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-03T21:47:58.292Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 4911
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 6538
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 5265
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 5555
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 60
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 19
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 21
+        }
+      ],
+      "passed": true,
+      "durationMs": 22370
+    },
+    "streetUnit": {
+      "passed": 63,
+      "failed": 0,
+      "coverage": [
+        "Side and angled entry from both sides",
+        "Same local/server ladder capture during held Up",
+        "Ordinary circulation and clicks beside the ladder",
+        "Reverse input on every flight and complete descent through all lower landings",
+        "Descending prediction and acknowledgement replay",
+        "Touch route exact endpoints and ground exit",
+        "Rounded network-coordinate landing release and idle recovery",
+        "Existing movement, guards, chat, wallet and transition tests"
+      ]
+    },
+    "connectedHost": {
+      "test": "tests/rooftop.spec.ts",
+      "desktop": {
+        "viewport": [
+          1440,
+          1000
+        ],
+        "passed": 1,
+        "reportedDuration": "1.8m"
+      },
+      "mobile": {
+        "viewport": [
+          390,
+          844
+        ],
+        "touchEnabled": true,
+        "passed": 1,
+        "reportedDuration": "1.8m"
+      },
+      "keyboardSideEntryBothSides": true,
+      "sideHeldUpEntry": true,
+      "backDownAcrossLandingsAndReenter": true,
+      "keyboardAndTouchReverseMidFlight": true,
+      "descendingDirectionSurvivesReload": true,
+      "continueAscendingAfterReverse": true,
+      "completeRoofVisitAndReturn": true,
+      "noGroundNpcConversationOnStairs": true,
+      "groundNpcConversationAfterDescent": true,
+      "chatEnabled": true,
+      "balancePreserved": true,
+      "noPageErrors": true,
+      "noHorizontalOverflow": true
+    },
+    "localCodeMap": {
+      "query": "settleRoofStairLanding",
+      "passed": true,
+      "productionAudit": false
+    },
+    "manualVisualReview": [
+      "desktop-entry-right.png",
+      "mobile-reverse.png"
+    ]
+  },
+  "story": "Approach from either side -> enter without precise alignment -> climb, reverse and descend through a landing -> leave at the bottom and re-enter -> reverse by keys or touch -> reload while descending -> resume ascent to the roof -> return with chat and balance intact.",
+  "regressionsResolvedDuringVerification": [
+    "The local capture boundary was aligned with server admission; a held side-entry Up test now checks matching positions and progress at every step.",
+    "Native touch reached a displayed landing while progress stayed on the previous segment. The installed number encoder may round snapshots to float32, as shown in its source. Exact route completion plus bounded release/idle settlement handle a small authoritative remainder. A dedicated test covers the rounded snapshot case."
+  ],
+  "network": {
+    "additionalReplicatedField": "stairDirection, default +1, derived by authoritative movement",
+    "movementInputPacketChanged": false,
+    "positionEncodingChanged": false,
+    "roundingSource": "node_modules/@colyseus/schema/src/encoding/encode.ts",
+    "roundingSourceSha256": "a659f7f4491aa2f3c4d084926c3eea0f84ec2fcbfa9d31760c94ff1917658ea7"
+  },
+  "scope": {
+    "roofGeometryChanged": false,
+    "facadeCornerRulesChanged": false,
+    "physicalStreetObstaclesChanged": false,
+    "npcRoutesChanged": false,
+    "npcStairConversationGatePreserved": true,
+    "walletChanged": false,
+    "gameMathematicsChanged": false,
+    "gameCatalogueChanged": false
+  },
+  "limitations": [
+    "Mobile is a touch-enabled 390x844 browser emulation, not a physical device.",
+    "On an exactly shared switchback node horizontal input keeps the previous ascent/descent intent; vertical input explicitly chooses the other branch.",
+    "The existing roof location transition and hatch return remain in use.",
+    "Historical reports describe their original control versions; this report does not requalify their claims.",
+    "No production publication or live production audit."
+  ],
+  "screenshots": {
+    "desktop-entry-left.png": "a266e39aceeaaa5d98fb8410309dac315d11f5c7fd09c0acfb5871f6ceaf903e",
+    "desktop-entry-right.png": "0dea045306ba43cc35b87117a46679e41e3da84d6dea202ca71509d8da08202a",
+    "desktop-reverse.png": "e11fb38186b90cd1a8f6c8a86028124d90112bf24bbca8364c5e4917afc061ae",
+    "mobile-reverse.png": "be5ad663bd38546f640c6ae5fb33fc0c59e214951ed93e7093fcb3c1a7e275d6"
+  }
+}

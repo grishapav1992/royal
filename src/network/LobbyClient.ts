@@ -178,7 +178,7 @@ export class LobbyClient {
         this.events.npcTime(state.serverNow, state.guestsAt);
         const players: PlayerView[] = [];
         const serverNow = state.serverNow || Date.now(), localNow = Date.now();
-        state.players?.forEach((p, id) => players.push({ id, security: p.security, hall: p.hall as PlayerView['hall'], hallRevision: p.hallRevision, name: p.name, x: p.x, y: p.y, skin: p.skin, appearance: p.appearance, facing: p.facing as PlayerView['facing'], moving: p.moving, connected: p.connected, playing: p.playing, cabinet: p.cabinet, gameReaction: p.gameReaction, gameReactionUntil: p.gameReactionUntil > serverNow ? localNow + p.gameReactionUntil - serverNow : 0, activity: p.activity, ears: p.ears, seat: p.seat, action: p.action as PlayerView['action'], drink: p.drink, actionUntil: p.actionUntil, soberAt: p.soberAt > serverNow ? localNow + p.soberAt - serverNow : 0, inputSeq: p.inputSeq }));
+        state.players?.forEach((p, id) => players.push({ id, security: p.security, hall: p.hall as PlayerView['hall'], hallRevision: p.hallRevision, name: p.name, x: p.x, y: p.y, skin: p.skin, appearance: p.appearance, facing: p.facing as PlayerView['facing'], moving: p.moving, connected: p.connected, playing: p.playing, cabinet: p.cabinet, gameReaction: p.gameReaction, gameReactionUntil: p.gameReactionUntil > serverNow ? localNow + p.gameReactionUntil - serverNow : 0, activity: p.activity, ears: p.ears, seat: p.seat, action: p.action as PlayerView['action'], drink: p.drink, actionUntil: p.actionUntil, soberAt: p.soberAt > serverNow ? localNow + p.soberAt - serverNow : 0, inputSeq: p.inputSeq, stairStep:p.stairStep ?? 0,stairDirection:p.stairDirection ?? 1 }));
         const self=players.find(p=>p.id===room.sessionId);
         this.revision=self?.hallRevision??0;this.hall=self?.hall;
         const guards: GuardView[] = []; state.guards?.forEach(g => guards.push({hall:g.hall as GuardView['hall'],x:g.x,y:g.y,facing:g.facing,phase:g.phase,target:g.target,progress:g.progress,speech:g.speech,routine:g.routine,reply:g.reply}));
@@ -320,7 +320,7 @@ export class LobbyClient {
   }
   send(type: string, data?: unknown): boolean {
     if (this.status !== 'connected' || !this.room) return false;
-    this.room.send(type, type==='inputs'?{revision:this.revision,inputs:data}:type==='target'||type==='move'?{...data as object,revision:this.revision}:data);
+    this.room.send(type, type==='inputs'?{revision:this.revision,inputs:data}:type==='target'||type==='move'||type==='stair-window'?{...data as object,revision:this.revision}:data);
     return true;
   }
   sendChat(request: ChatRequest): boolean { return this.send('chat', request); }

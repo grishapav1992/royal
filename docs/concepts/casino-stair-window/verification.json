@@ -1,0 +1,257 @@
+{
+  "feature": "casino-stair-window",
+  "dateLocal": "2026-11-04",
+  "testedRuntimeSourceCommit": "59e837890e1137ced34f674288a7968a335ad88a",
+  "scenarioSourceCommit": "11987a265716fec286742a2ed867a44f37507c92",
+  "reconciledCheckoutCommit": "9a1a01d6203685c14a23fb071ab72ec87e506a2b",
+  "buildMainBaseline": "238d49c2d8b48a261ac96511ffc76681ead3dc3d",
+  "latestFetchedMain": "4f1140357909a148b2db58f2dbb54c6a6dd5ac86",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "change": "A widened middle landing reaches an open third-floor window. Explicit E, Space or window click enters the existing card salon; its reciprocal window returns to exactly the same stair height.",
+  "sourceFiles": {
+    "src/shared/stairWindow.ts": "f3b5d829c38b8c500bbd1841d93c25757b396d2b0bee29b30763040011fe731f",
+    "src/shared/world.ts": "a00b0562f25aafac6f7a07c92c562e216d9e80bf202c906c69dfacbfc73c3156",
+    "server/LobbyRoom.ts": "f08e8af9fc8b6d4329e336402a142e91ed9d055964634bbc568af7074b3e0270",
+    "src/network/LobbyClient.ts": "00780cc4c3ca34ec4e1f6626d93fd0c4eab34f68a92fa494e7b37ca4c4850bb3",
+    "src/ui/SocialUI.ts": "4aa7c4eb5c3acf13ea9f1e27b50a362629690e72cc9776b77707f47de99e2a18",
+    "src/game/RoomScene.ts": "ba0fd1f330ac4fb51833aeaac3cedec111adf1b5159ce102996f35cf5198b94a",
+    "src/game/StreetRenderer.ts": "ab94b6576a461e1293e500eadb34b63ea6354b342e8f88a310a1b54bd4228e20",
+    "src/game/RearCasinoWindows.ts": "90d5ee1d144e6672e12e223e8c68ad035dfca05747465699fe8e5daa3cfee7b0",
+    "src/game/RooftopRenderer.ts": "5171f6813a2240d9cc13fb92e635aa3a0314efe5feab9f82cd056e98c8957145",
+    "src/game/rearWindowArt.ts": "7a783c13fc989f0c48a3ae0d860767713a1e1543c3beb5aabe8fa4df24a50c82",
+    "src/game/StairWindowRenderer.ts": "9906e05b5363d20de150fbede426cae9eb9a23623ea6838b49f7ebaacbefaf2c"
+  },
+  "testFiles": {
+    "tests/rooftop.spec.ts": "1f4f4776041a13a3ceea3436c37d7e137581fc880426cbd17fa5cab73d972f91",
+    "server-tests/stair-window.test.ts": "a7e3d77ca20c4bbafe42eb5ef1907449975bdbdc7b5a51fb8f538e823576d0f7"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "1a1a5fb252cc7493b1399b2d02fbc5b4ba5f36f0dd71774a1548f0bb9a9efe16"
+    },
+    "dist-server/index.js": {
+      "bytes": 2430670,
+      "sha256": "0ff198936ec3ac30675ef4ebf7bc80e884a2842ceabab41b08891ce773139eca"
+    },
+    "dist/assets/main-CpLIU1cG.js": {
+      "bytes": 2895444,
+      "sha256": "5b54a0e50269369a3c021e994987eb630d9705cdf14d6b5c5291a981f4a83706"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    },
+    "dist/assets/main-BVwNdpG_.css": {
+      "bytes": 155970,
+      "sha256": "92f1b83d6c0c978a0156dae804a3b74bbcdbaf278a5bb609fed2742ae86af1dc"
+    }
+  },
+  "geometry": {
+    "landingIndex": 6,
+    "logicalLanding": {
+      "x": 1750,
+      "y": 328
+    },
+    "projectedLanding": {
+      "x": 951.5,
+      "y": 20
+    },
+    "thirdFloorOpeningBottom": 20,
+    "platformWidth": 200,
+    "windowColumn": 0,
+    "interiorWindow": {
+      "x": 3230,
+      "top": -26,
+      "width": 200,
+      "height": 128
+    },
+    "interiorArrival": {
+      "x": 3230,
+      "y": 330
+    },
+    "return": {
+      "x": 1750,
+      "y": 328,
+      "initialStep": 7,
+      "settledDescendingStep": 6,
+      "direction": -1
+    },
+    "groundRoutesAndStairFlightsUnchanged": true
+  },
+  "interaction": {
+    "manual": true,
+    "keys": [
+      "E",
+      "Space"
+    ],
+    "clickAndTouch": true,
+    "noAutomaticFloorChangeWhilePassing": true,
+    "groundAndWrongHeightRefused": true,
+    "revisionChecked": true,
+    "acceptedMovementDrained": true,
+    "serverBusyAndSecurityRestrictions": true,
+    "heldKeyRepeatIgnored": true,
+    "reconnectPreservesLanding": true
+  },
+  "animation": {
+    "trigger": "Server-confirmed location revision, or the offline equivalent.",
+    "durationMs": 500,
+    "status": "Existing design duration, not a research-derived threshold.",
+    "reducedMotion": "Immediate appearance without intermediate body motion.",
+    "audio": "None added.",
+    "flashes": "None added."
+  },
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-04T13:49:24.786Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 217547
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 6561
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 226336
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 52966
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 88
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 24
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 27
+        }
+      ],
+      "passed": true,
+      "durationMs": 503549
+    },
+    "streetUnit": {
+      "passed": 77,
+      "failed": 0
+    },
+    "connectedHost": {
+      "scenario": "tests/rooftop.spec.ts",
+      "passed": 2,
+      "failed": 0,
+      "desktop": {
+        "viewport": [
+          1440,
+          1000
+        ],
+        "duration": "2.3m"
+      },
+      "mobile": {
+        "viewport": [
+          390,
+          844
+        ],
+        "touchEmulation": true,
+        "duration": "2.5m"
+      },
+      "windowEntryReturn": true,
+      "keyboardRepeatedEAndTouch": true,
+      "returnPositionAndDirection": true,
+      "midLandingReconnect": true,
+      "continueClimbingAfterWindow": true,
+      "completeRoofToiletAndStreetRoute": true,
+      "chatEnabled": true,
+      "balancePreserved": true,
+      "roomIdentityPreserved": true,
+      "groundNpcConversationsUnavailableOnStairs": true,
+      "windowVisitorsAndMotionPreferencesPreserved": true,
+      "noPageErrors": true,
+      "noHorizontalOverflow": true
+    },
+    "mergeReconciliation": {
+      "testsPassed": 10,
+      "testsFailed": 0,
+      "coverage": [
+        "frontal walking",
+        "profile walking",
+        "character cadence",
+        "manual stake focus and drafts"
+      ],
+      "touristCamera": {
+        "checked": 132,
+        "mismatch": [],
+        "pixelIdentical": true
+      },
+      "typecheckPassed": true,
+      "customArmAndAfterHeadHooksPreserved": true
+    },
+    "localCodeMap": {
+      "brain": "ROOF_STAIR_ROUTE hallLinks playerHallArrival окно третьего этажа",
+      "graph": "hallLinkAt",
+      "mode": "Explicit local working-copy map, no production audit."
+    },
+    "localPreview": {
+      "url": "http://127.0.0.1:5191/",
+      "frontendAndBackendSourceCommit": "59e837890e1137ced34f674288a7968a335ad88a",
+      "backendRestarted": true,
+      "existingIsolatedDatabaseRetained": true,
+      "separateTestDatabaseRemoved": true
+    }
+  },
+  "verificationNotes": [
+    "The first browser scenario expected the initial return segment 7. Idle stair settling correctly selects segment 6 on the exact same platform. The corrected scenario asserts the settled segment, physical coordinates, direction, reconnection and explicit continuation upward. Application artifacts were unchanged for the passing rerun.",
+    "The climb recorder now survives the intentional card-salon transition and reload; its complete path still includes all staircase waypoints.",
+    "Current main front/rear walking and stake-control updates were reconciled after the verified build. A conflict preserved custom tourist hands and the after-head camera layer; all 132 held-camera frames match the tested source by pixels. The preview retains the exact verified artifacts, rather than claiming to run those later source updates."
+  ],
+  "scope": {
+    "newRoom": false,
+    "newGame": false,
+    "catalogueChanged": false,
+    "walletChanged": false,
+    "mathChanged": false,
+    "groundObstacleChanges": false,
+    "npcRouteChanges": false,
+    "roofAndToiletLinksChanged": false
+  },
+  "limitations": [
+    "The extended side platform is accessed through the existing landing interaction. The staircase remains constrained to its established route.",
+    "Interior window scenery is a flat decorative view calculated from the shared exterior stair projection, not a live feed of other players.",
+    "Mobile is touch emulation, not a physical phone.",
+    "No production publication or live production audit."
+  ],
+  "screenshots": {
+    "desktop-outside.png": {
+      "bytes": 214694,
+      "sha256": "88760314a4d54559503186ed20bb2b632d7f10ff1e9c5662a5f664cd68c5a6ec"
+    },
+    "desktop-inside.png": {
+      "bytes": 170208,
+      "sha256": "68ec793eca97688122d42a440d77eff17cacbc7b7233f36e3c1c4494ea44cdf9"
+    },
+    "mobile-outside.png": {
+      "bytes": 89848,
+      "sha256": "9dfa25109903865738e62992e834f0c31984aeeb837a4bf90d49d42a955cca5c"
+    },
+    "mobile-inside.png": {
+      "bytes": 74197,
+      "sha256": "cbcf77ac71526cb29b817c6583924ca95f522f4795b046c6f0fc473f8694ad81"
+    }
+  }
+}

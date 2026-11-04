@@ -1,0 +1,195 @@
+{
+  "feature": "casino-facade-layers",
+  "date": "2026-11-03",
+  "testedRuntimeSourceCommit": "b5f16dd8f5d5c5289b5a224c1c717f5ee2cec05e",
+  "mainBaseline": "e5ac32618bb0d645bef98e05b658bb5bc9a4ced3",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "sourceFiles": {
+    "src/game/streetView.ts": "8a1ae1172313517b8260e228e19b5c04ba653a98269a7ab5ed09e29ef36fcdb2",
+    "src/game/RoomScene.ts": "cd4ea21309eb3c9ea681e9374cbc945154a81e2556ae6b9766265f15a96950dc",
+    "src/game/StreetResidents.ts": "43172af0bb3196380f7c2a24779dd05af227c51bf1f4d973fb6e6abc9b25517c",
+    "src/game/StreetAmbience.ts": "f7de82bb7f3a2c0324dec0d26bed8cf28f161ee370d88fb9560d56c326397a4b",
+    "src/game/SecurityGuard.ts": "f44ccae3424b2c2b797f4a80d473220969578466581fa57bb93d6f510ae405f6",
+    "src/ui/ClubMap.ts": "aebdfd84bbe5ad434192db1b548562a5cd3ab9f9cc47443230762d184cc441b7",
+    "src/shared/street.ts": "15112fd6f1fd4abc5483f042f6a11d1fd555040b17f92966d56bf49c764cea51",
+    "src/shared/rooftop.ts": "d830e2bf8298f20383cc639b926dcc3aab2d70122e40665b8bd41bf099d7a2ab",
+    "src/game/streetResidentArt.ts": "432c7998a5fda4a9a56e165ad971382a1a2406e8b3da1e5de1ea7ab7588a022e",
+    "server-tests/street-life.test.ts": "86590e0580f858cffb08226a711fd3e8fc3784b183bd0ddd9e96156b6180feb9",
+    "tests/street-camera.spec.ts": "f2998f21f851ad11467742402bf234917a04da78f8ee173b77ae8260e7bda66d",
+    "tests/rooftop.spec.ts": "b0dcd87c10851cddef2bf548e541f8a4982b1dacbc960e3573794d1331b9c11d",
+    "tests/street.spec.ts": "f270e96530ff196b3cce0678f505e78c15a7e2dbd1a7c343ecc3a17e2addcd8c"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "9357e2ca9ac15cf5a20481a2e4f75905e52b6adac567daee7caf8e7e7886d215"
+    },
+    "dist-server/index.js": {
+      "bytes": 2422024,
+      "sha256": "ce62f0c309dcbf3e2d17bd714e69b3bc6afab68b212857ed85f01d42b93c0fd5"
+    },
+    "dist/assets/main-Zt4LhuhH.js": {
+      "bytes": 2856415,
+      "sha256": "48c777f6f1009b0adc366378babdf2e7418d8894a1588862f80a2f17dff918e3"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    },
+    "dist/assets/main-afxgM5_-.css": {
+      "bytes": 155912,
+      "sha256": "1b42cc1fbf3619b16fc7b8bfbe961d50c17754359895f71520ca8268d8906543"
+    }
+  },
+  "change": "Remove the rejected sidewalk coordinate warp. Render the opaque facade over player and NPC bodies, held tools, names, speech and halos when they pass behind it. Front view remains through partial and full concealment before the rear view opens. Preserve original walk coordinates and click inverse.",
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-03T19:28:44.985Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 4548
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 6031
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 5133
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 4965
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 57
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 16
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 24
+        }
+      ],
+      "passed": true,
+      "durationMs": 20775
+    },
+    "unit": {
+      "command": "npm run test:street",
+      "passed": 49,
+      "failed": 0
+    },
+    "connectedHost": {
+      "test": "tests/street-camera.spec.ts",
+      "projects": [
+        {
+          "name": "desktop",
+          "viewport": [
+            1440,
+            1000
+          ],
+          "passed": 1,
+          "durationSeconds": 36.6
+        },
+        {
+          "name": "mobile",
+          "viewport": [
+            390,
+            844
+          ],
+          "passed": 1,
+          "durationSeconds": 35.9
+        }
+      ],
+      "corners": [
+        "left",
+        "right"
+      ],
+      "phases": [
+        "front-partial",
+        "front-hidden",
+        "rear-visible"
+      ],
+      "observedFramesPerProjectMoreThan": 100,
+      "layerViolations": 0,
+      "serverRenderPositionSettled": true,
+      "hiddenNameAndHalo": true,
+      "reloadRecoversRearView": true,
+      "chatEnabled": true,
+      "balancePreserved": true,
+      "noPageErrors": true,
+      "noHorizontalOverflow": true,
+      "rearTrafficHidden": true
+    },
+    "roof": {
+      "test": "tests/rooftop.spec.ts",
+      "project": "desktop",
+      "passed": 1,
+      "physicalEscapeTraversal": true,
+      "roofReconnectAndReturn": true,
+      "chatAndWalletPreserved": true,
+      "reportedDuration": "1.2m"
+    },
+    "manualVisualReview": [
+      "desktop-left-partial.png",
+      "desktop-left-hidden.png",
+      "desktop-left-rear.png",
+      "mobile-right-partial.png",
+      "mobile-right-hidden.png"
+    ]
+  },
+  "story": "Click on exterior pavement -> invert view coordinates -> existing shared movement and server validation -> settled player position -> facade occlusion -> delayed rear view -> reload in the same exterior location.",
+  "boundaries": {
+    "ui": "Native connected-host screenshots capture partial occlusion, full concealment and rear arrival at both corners.",
+    "clientServer": "Browser waits for online=true and server position within 3 world units of the client after each clicked waypoint. Rendering must settle within 0.6 units of the original projection.",
+    "server": "Existing LobbyRoom inputs/target validation, hall revision and shared obstacle pathfinding remain unchanged. Street tests include server transitions and movement.",
+    "data": "Isolated PostgreSQL and auth schemas used by the existing test launcher. Reload preserves exterior location and balance; no production database access.",
+    "render": "Every observed close-view frame checks ordinary below-facade depths for overlapping player/NPC bodies and hidden UI for full concealment."
+  },
+  "testHarnessNote": "Initial corner runs attempted a waypoint outside the close viewport and failed to move. The final helper asserts that click targets are on canvas and approaches through visible intermediate waypoints. Only the test helper changed after the application build; final desktop/mobile runs passed on the same unchanged runtime bytes.",
+  "scope": {
+    "physicalObstaclesChanged": false,
+    "movementRulesChanged": false,
+    "npcRoutesChanged": false,
+    "shovelGripChanged": false,
+    "roofRulesChanged": false,
+    "walletChanged": false,
+    "gameCatalogueChanged": false
+  },
+  "limitations": [
+    "Thresholds describe this 2D composition, not physical movement barriers. Full concealment precedes the front-to-rear cut.",
+    "Occlusion assertions cover observed connected-host frames and sampled patrol routes, not all future avatar artwork. Wider future costumes need visual review.",
+    "Previous sidewalk-clearance proof is historical and its visual approach was rejected by the user. This proof does not change that evidence.",
+    "No production deployment or live production audit was performed."
+  ],
+  "screenshots": {
+    "desktop-left-partial.png": "4c8a12a2cd48c98da97a8140404a3a67f3157fd2f64e9770d9832bc899a3b21f",
+    "desktop-left-hidden.png": "1b98cdfd179c6cd3149c3f392e09161bcd2c19385e8cb017ff94973dbc277fb2",
+    "desktop-left-rear.png": "271d5d291c3c6829c849d5498c146e44c48ebf067328e43e15bd2f1bdee00f14",
+    "desktop-right-partial.png": "4467e713e607ae63f3d4926fa88d75d744fe1d1c9159be93a35aa53284d58201",
+    "desktop-right-hidden.png": "db707441e9e9443e3c9bb3dc9c69d63d343028b199c29445332012607ca6bfef",
+    "desktop-right-rear.png": "263943e217aafb1087f40e971bb84e118ba58d9701f9d4e3fd2950fcf74878be",
+    "mobile-left-partial.png": "0689a403cb010fc27021827702242fb91d47b7c48650d473b0c18bb7b65ce02d",
+    "mobile-left-hidden.png": "7f45ace7f370318276d513cfb15a67a1b6a928edb6827f8fac74ffd44d689f51",
+    "mobile-left-rear.png": "9eab59c112bfe75e87ec2998c8619b5be9673c9e702fd4636e8ffc76c7d924d1",
+    "mobile-right-partial.png": "a95455ba12c389419d3d4591351daa5979b0c6a43524de6071af53a3f57920bc",
+    "mobile-right-hidden.png": "35c13739d649fe4e48b83caa753043c254bd76372a245a7ca8645e94a39da1e2",
+    "mobile-right-rear.png": "b17bc619dd787efcded68aaf9d8bf0f6278c378ca1f1fdddd0ebcbcbde35ac16",
+    "desktop-roof-stairs.png": "e01ba0608045d71a8a36e059ebdd8d045e30a308f55eb43ee3eb8a09f815ded6",
+    "desktop-roof-climb.png": "59a8333e6238eb29a0ac7983c545d737a7b84046a21ca300f94cafedda1c50b6"
+  }
+}

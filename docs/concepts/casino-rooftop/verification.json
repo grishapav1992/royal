@@ -1,0 +1,255 @@
+{
+  "feature": "casino-rooftop",
+  "visualVersion": "street-rooftop-v7",
+  "date": "2026-11-03",
+  "baselineCommit": "716bf8bd43ad1aa0df86aca34bc31e3f1dc6e27c",
+  "testedSourceCommit": "94e7baa772166bce551630b7a932df30bf069b65",
+  "mainBaseline": "2022962ec5f46a1e0eaaa859e381558b0b11e5a7",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-03T14:40:59.454Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 3776
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 5947
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 5077
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 5289
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 53
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 20
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 21
+        }
+      ],
+      "passed": true,
+      "durationMs": 20184
+    },
+    "rtp": {
+      "verified": 37,
+      "stakePoliciesVerified": 19,
+      "stakeAdmissionVerified": 19,
+      "legacyNotQualified": 114,
+      "mathematicsChanged": false
+    },
+    "streetSuite": {
+      "command": "npm run test:street",
+      "passed": 41,
+      "failed": 0
+    },
+    "browser": {
+      "command": "STREET_TEST_WEB_PORT=5193 STREET_TEST_API_PORT=2593 node --import tsx scripts/database-test.ts node_modules/@playwright/test/cli.js test --config=playwright.street.config.ts",
+      "passed": 4,
+      "failed": 0,
+      "projects": [
+        {
+          "name": "desktop",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          }
+        },
+        {
+          "name": "mobile",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "emulated": true,
+          "physicalPhoneTested": false
+        }
+      ],
+      "scenarios": [
+        "Rear street lane stays in the street; a click on the stairs approaches the foot before climbing, confirmed by frame-by-frame position samples.",
+        "Separate roof with clear walking loop, solid equipment, minimap and reachable courtyard exit.",
+        "Same room and position after roof reload with reduced motion; connected chat remains enabled.",
+        "Return through courtyard and first floor without changing the wallet balance.",
+        "Street resident patrols, conversations, photo stops, snow work, mascot greetings, taxi smoking, full perimeter and recovery remain functional.",
+        "Nearby conversation prompts do not intercept overview ground clicks; active conversations remain readable."
+      ],
+      "pageErrors": [],
+      "horizontalOverflow": false
+    },
+    "broadCompatibility": {
+      "baselineCommit": "716bf8bd43ad1aa0df86aca34bc31e3f1dc6e27c",
+      "method": "Load six pre-task shared and security modules from Git in memory; keep all other modules at the same checkout. No working source is overwritten.",
+      "tests": 31,
+      "passed": 23,
+      "failed": 8,
+      "sameFailureNames": true,
+      "failures": [
+        "players at all seven card tables can hear their visiting cat beyond interaction range",
+        "cat hearing uses her position and its own bounded radius",
+        "she visits a playing person, jumps onto their cabinet and purrs without moving the player",
+        "a visit ends safely when the player stops, disconnects or changes floors",
+        "a canceled approach never leaves a floating cat and visits include card tables on other floors",
+        "she shares visits between players instead of staying on one cabinet forever",
+        "guard can reach and escort visitors from narrow passages by cabinets and bar stools",
+        "ambient patrol visits bar, windows and games, stays outside furniture and varies its conversation",
+        "players at all seven card tables can hear their visiting cat beyond interaction range",
+        "cat hearing uses her position and its own bounded radius",
+        "she visits a playing person, jumps onto their cabinet and purrs without moving the player",
+        "a visit ends safely when the player stops, disconnects or changes floors",
+        "a canceled approach never leaves a floating cat and visits include card tables on other floors",
+        "she shares visits between players instead of staying on one cabinet forever",
+        "guard can reach and escort visitors from narrow passages by cabinets and bar stools",
+        "ambient patrol visits bar, windows and games, stays outside furniture and varies its conversation"
+      ],
+      "interpretation": "The eight broad-suite failures also occur before the roof change. Six reference absent or retired cabinet surfaces; two assert older security geometry. No catalogue is restored and no assertions are weakened."
+    },
+    "localPreview": {
+      "status": "running",
+      "url": "http://127.0.0.1:5191",
+      "apiPort": 2591,
+      "pid": 21448,
+      "backendPid": 21492,
+      "sourceCommit": "94e7baa772166bce551630b7a932df30bf069b65",
+      "checkout": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/casino-street-20261101/checkout",
+      "cleanup": "Stop this preview process, then remove the task-owned checkout and build outputs. The temporary database is removed on shutdown.",
+      "frontendSourceCommit": "94e7baa772166bce551630b7a932df30bf069b65",
+      "backendSourceCommit": "e1e096e4e7f6e79532dd62ee781ece60a277596d",
+      "terminalSession": 52972,
+      "frontend": "street-rooftop-v7",
+      "frontendAsset": "/assets/main-CAHXwfrc.js",
+      "frontendAssetSha256": "1a940044c3b037cf496550d0d8f68ab4185c4e0ee94a7b4e6e698b761d3b1a93",
+      "frontendUpdatedAt": "2026-11-03T14:46:35.404Z",
+      "httpVerified": {
+        "page": 200,
+        "mainScript": 200,
+        "backendHealth": 200
+      },
+      "liveFlow": {
+        "url": "http://127.0.0.1:5191",
+        "hall": "roof",
+        "chatEnabled": true,
+        "pageErrors": []
+      }
+    }
+  },
+  "knownLimitations": [
+    "Mobile verification uses Chrome viewport emulation, not a physical phone.",
+    "Eight unrelated old cat/security assertions fail identically before and after this change, as documented in broadCompatibility.",
+    "Production is unchanged; this feature is saved on feature/casino-street."
+  ],
+  "sourceHashes": {
+    "docs/casino-rooftop.md": "858928b38d3793c48d7b105b8fc3fc669942d5ad8cfcd4af1511cd9d180e1b19",
+    "docs/casino-street.md": "0e6c838b7a3eb0569c1a3b999c43fb71cd97c91a689ed0174e40bbbf9185ea74",
+    "package.json": "1991065a47a38095070596e4ea9197b92f4ba3ec7ef5b8c1a8af8e21bd0c0e50",
+    "playwright.street.config.ts": "f09ce59a733d8f92e2977739ae75f3ebd19616929462f770e5fa03e774a169c0",
+    "server-tests/elevator.test.ts": "4a27d3eaace44469feab8a4efc74bdf0616ff09b9f55ca2d18a7c14dadf696e2",
+    "server-tests/graphify.test.mjs": "d0db25f3379dee11839026e4e65f2dd3d87966d348ee1bc6a0bf6b4a24a33af1",
+    "server-tests/project-brain.test.mjs": "02b7497f6d8dfc09c90283b919498d8f06a511357068585058bc2262b3a0fb3c",
+    "server-tests/rooftop.test.ts": "7e34349d1a5eb4fab858c6b7e9217a269de2f752d27cecb6dea75280993ec6c6",
+    "server-tests/street.test.ts": "04465acc15b2bdd1a21f1730269d2076c647f220ac6679567b1765aa07bcc95f",
+    "server/guardRoutine.ts": "9679fc2b155326d7dea56b61cece92efe606b44f171d48c2aafbcbd19785dd44",
+    "server/guards.ts": "80d55583d957d28e191455a133dd86f951497c97057b61760ad080d0d20a0755",
+    "src/game/CasinoAudio.ts": "635dfcd62e4c9c5896db3c435dd255c28314acba9ac8bbaa1f2d75774d7f5343",
+    "src/game/RooftopRenderer.ts": "7224beeb56ce63c8c96164c2ece5b752168399cc81298a80d01866d4cf3057c8",
+    "src/game/RoomScene.ts": "b2b7f3c7abb8b9e732faea543cb48023c91f6ebfbd7c86a0a2c04c06da22f220",
+    "src/game/StreetRenderer.ts": "e44a038f0fd92a9263d2b872dbb5dcab8ed9a7349763c68d4c8495a5cbc1f955",
+    "src/game/street-residents.css": "1566884c0832629904e440e4550686d5e8d8b2f9f325ca68b4f5deed909d365a",
+    "src/i18n/streetEn.ts": "6e7e6afd95050029a0618548e248dc3882cc11e4f1e73e5b51aed85f114609d7",
+    "src/main.ts": "908881b89d41c8d95f64c8679026e67c8bb404f85584e79ee514a16e734b46a6",
+    "src/shared/cat.ts": "d44cd0ff7cc10e46ac2730551c2544c2dbcefae415f62036452005169b4d187b",
+    "src/shared/clubLayout.ts": "52c1dd7145d0d05dbed3c40493ec3dcb24dc244612f5d4d02a1cb3c0912ff50d",
+    "src/shared/elevator.ts": "e4b47a83c4a087094dd4f439da2e595bdcbc39bdc41cf96d05059a7e13279a4c",
+    "src/shared/rooftop.ts": "28b1e71a6a96c3f962d1c9ebdbcf38a6fc96c725324d46b8040247105220ebb4",
+    "src/shared/world.ts": "cdb1a96a6a6cfdc2ee2cdc3b9caec3a36eb7bbd2f7e9b57d8e2d5e7a96f8a66d",
+    "src/ui/CatUI.ts": "f81af7fd6f0727190eac89b0d86facc592abe0a164ee786cc84f9cfe93379be4",
+    "src/ui/ClubMap.ts": "a6f6418ba95215ba1bd038e530db4c2484851de30b290000b14987169f2de0b1",
+    "src/ui/ElevatorUI.ts": "2607cb9e045dc19dcbefa429664bad9b8b45904a9042d53560b1264b77199552",
+    "src/ui/RoomLayout.ts": "a9f2d91702a6119f8f583158a0f74c8c48c0f80f43bd90f241c5d0b89debea77",
+    "src/ui/club-map.css": "7bfbdfb78c62700bb65b1cd0c14c28d4499022bebef92bbe1311a43237bb7a9d",
+    "tests/rooftop.spec.ts": "641524690ce0e6f984b3dc2deb834fa6e8381f83da49e0aaf38ddfe534d5db2f",
+    "tests/street.spec.ts": "d28e9799ee9f5232adcb2025edf7a660e842a90507f47d23c8e4589214e4b91b"
+  },
+  "artifacts": {
+    "frontendAsset": "/assets/main-CAHXwfrc.js",
+    "frontendSha256": "1a940044c3b037cf496550d0d8f68ab4185c4e0ee94a7b4e6e698b761d3b1a93",
+    "backendSha256": "33e9d6a48fd7baff226741b1221af0515192a982e95c71293bdd9b7662c79d09"
+  },
+  "screenshots": [
+    {
+      "file": "desktop-stairs.png",
+      "source": "connected-host browser scenario",
+      "sha256": "9dea02c94b7d87c51509e2c5853d67a366874d3b67324d7e58e4ff6e07885b1f"
+    },
+    {
+      "file": "desktop-arrival.png",
+      "source": "connected-host browser scenario",
+      "sha256": "9475f57a023f1ae4e1bd1681a4220bff0238e8e3ef4346bc48f3f3d9628a1e0b"
+    },
+    {
+      "file": "desktop-overview.png",
+      "source": "connected-host browser scenario",
+      "sha256": "6b90ca9bd869b54c4a046f4387773e4a90edc404a21f02fc056ead55c96dfdd6"
+    },
+    {
+      "file": "desktop-terrace.png",
+      "source": "connected-host browser scenario",
+      "sha256": "0fceedc6c84a511d8ecc0bfb5e762d75c7310d8147aab34073895b361503974b"
+    },
+    {
+      "file": "mobile-stairs.png",
+      "source": "connected-host browser scenario",
+      "sha256": "30ff01fcecff2cf79ce15aeb2587f6da501afb26ea0a12fff3097a81e718a350"
+    },
+    {
+      "file": "mobile-arrival.png",
+      "source": "connected-host browser scenario",
+      "sha256": "e84e4a2957efc275b465af53410c676192620b6c2a94cf2c11b2eeea492e0a9c"
+    },
+    {
+      "file": "mobile-overview.png",
+      "source": "connected-host browser scenario",
+      "sha256": "395c02c6eff7ca5b6cb5b8e731ddbccd22bf508f55343d82ee9fb595717823b8"
+    },
+    {
+      "file": "mobile-terrace.png",
+      "source": "connected-host browser scenario",
+      "sha256": "9fe7e6b35334cddbd0cd42067cdfd7fafbd43a4083a751eb6e03d0a23f5e8560"
+    },
+    {
+      "file": "street-desktop-overview.png",
+      "source": "street regression browser scenario",
+      "sha256": "8203dce5ca212b49e1e2d2654213cd3433907b8e30121475057dac877017a415"
+    },
+    {
+      "file": "street-mobile-overview.png",
+      "source": "street regression browser scenario",
+      "sha256": "4fcb628347ab7c640e4519d05a4352121ddfcfd20deaf58e73f5a7a402a0fc7e"
+    },
+    {
+      "file": "local-preview-stairs.png",
+      "source": "actual local preview on port 5191",
+      "sha256": "eba785a405ca4d925d5adc1c70126a8473c727df584a7b17eaaa03f0e7a7aeab"
+    }
+  ]
+}
