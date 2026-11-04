@@ -52,8 +52,10 @@
   "tests": [
     {
       "command": "npm run test:release",
-      "passed": 52,
-      "note": "Before adding two additional integration cases; no skipped tests"
+      "passed": 54,
+      "skipped": 0,
+      "durationMs": 18705.5084,
+      "note": "Final integrated checkout, including both Git-worktree and real-builder integration cases"
     },
     {
       "command": "node --test server-tests/projection-batch.test.mjs server-tests/shared-module-cache.test.mjs server-tests/shared-module-dependencies.test.mjs server-tests/module-resource-fingerprint.test.mjs server-tests/module-compilation-identity.test.mjs",
@@ -64,5 +66,7 @@
   "mandatoryRtpGateRemovedOrCached": false,
   "qualificationBypassAddedToBuilder": false,
   "projectionBuildsUseSharedCache": false,
-  "productionApplicationChanged": false
+  "productionApplicationChanged": false,
+  "implementationCommit": "7f9b698a1ffbd029b9da00bedd427ed41beaf247",
+  "integrationCommit": "f9f4c7073aa794218c3af827cc6edf7a448b89e1"
 }
