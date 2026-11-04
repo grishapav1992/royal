@@ -5,6 +5,7 @@ import { parseGeneratedAppearance } from '../shared/skinStudio';
 import { drawGeneratedSkin, hasSkinSheet, loadSkinSheet } from './generatedSkinArt';
 import { drawMira } from './miraArt';
 import { CHARACTER_WALK_FRAMES, CHARACTER_WALK_FRAME_RATE } from './characterAnimation';
+import { drawProfileArm, drawProfileLimb, profileArmPose, profileBodyPoint, profileBodyPose, profileLegPose } from './profileWalk';
 
 import type { Facing } from '../shared/movement';
 export type { Facing } from '../shared/movement';
@@ -160,10 +161,12 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
   const game = characterGamePose(frame);
   seated ||= !!game;
   const side = facing === 'left' || facing === 'right', back = facing === 'up';
+  const profile = side && !seated && sip < 0;
+  const profileBody = profile ? profileBodyPose(frame) : null;
   const walking = frame < 6;
   const step = walking ? [0, 1, .55, 0, -1, -.55][frame] : 0;
-  const bounce = walking ? [0, -1.4, -.6, 0, -1.4, -.6][frame] : 0;
-  const lean = walking ? [-1.8, 1.8, 2.8, 1.8, -1.8, -2.8][frame] : 0;
+  const bounce = profileBody?.y ?? (walking ? [0, -1.4, -.6, 0, -1.4, -.6][frame] : 0);
+  const lean = profileBody?.angle ?? (walking ? [-1.8, 1.8, 2.8, 1.8, -1.8, -2.8][frame] : 0);
   const blink = frame === 8;
   const glance = frame === 7 ? -1.7 : frame === 9 ? 1.7 : 0;
   const width = p.width ?? [3, -1, 1, 0, -2, 2, -1][person] ?? 0;
@@ -191,6 +194,14 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
   };
   // The planted shoe stays on the ground; the other changes pose in discrete steps.
   for (const leg of [-1, 1]) {
+    if (profileBody) {
+      const far = leg === -1;
+      const pose = profileLegPose(frame, far, profileBodyPoint({ x: far ? 34 : 30.5, y: 61 }, 66, profileBody));
+      drawProfileLimb(c, pose.hip, pose.knee, pose.ankle, 10, 8, p.pants, ink);
+      c.save(); c.translate(pose.foot.x + 2, pose.foot.y); c.rotate(pose.angle);
+      oval(0, 0, 9 + width * .2, 2.7, '#272823'); c.restore();
+      continue;
+    }
     const swing = step * leg;
     const x = 32 + leg * (side ? 3 : 10) + (side ? swing * 5.5 : swing * 1.3) + (seated ? (side ? 7 : leg * 2) : 0);
     const y = 76 - Math.max(0, swing) * 2.5;
@@ -205,6 +216,10 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
     const left = side ? 19 - width * .3 : 11 - width;
     const right = side ? 45 + width * .3 : 53 + width;
     const arm = (far: boolean) => {
+      if (profile) {
+        drawProfileArm(c, profileArmPose(frame, far, { x: far ? 35.5 : 29, y: 48 }, 21), p.shirt, p.skin, ink);
+        return;
+      }
       const shoulder = side ? (far ? 38 : 29) : far ? left + 6 : right - 6;
       if (game) {
         drawSeatedGameArm(c, game, shoulder, 48, side, far, far && side ? p.dark : p.shirt, p.skin);
@@ -298,6 +313,8 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
       } else arm(false);
     };
     if (back && !game) drawNearArm();
+    // In profile the head covers the sleeve root, as it covers the torso neckline.
+    if (profile) drawNearArm();
     // The head is a rigid paper disc. Eyes and mouth switch independently of the torso.
     piece(32, 30, game ? game.sway * (game.action === 'lose' ? 5 : 1.5) : walking ? -lean * .32 : frame === 9 ? 1.2 : 0, () => {
       c.translate(-32, -30);
@@ -551,6 +568,6 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         }
       }
     });
-    if (!back || game) drawNearArm();
+    if ((!back || game) && !profile) drawNearArm();
   });
 }
