@@ -1,0 +1,47 @@
+{
+  "status": "in-progress",
+  "server": {
+    "owner": "manual-stakes-20261104",
+    "at": 1793812608.1676283,
+    "removed": [
+      {
+        "path": "/opt/royal-releases/manual-stakes-20261104-v1/payload.tgz",
+        "logicalBytes": 142342315,
+        "kind": "transport-archive"
+      },
+      {
+        "path": "/opt/royal-releases/manual-stakes-20261104-v1/runtime-context",
+        "logicalBytes": 5180338,
+        "kind": "temporary-build-context"
+      }
+    ],
+    "freeBefore": 9642991616,
+    "freeAfter": 9785364480,
+    "currentImage": "sha256:4e7d6f2257b33fabc3227402c45692bc175ba064e61a445fadcc18a97fda113b",
+    "sourceCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
+    "healthy": true,
+    "programFilesRemoved": false,
+    "financialDataTouched": false,
+    "runningContainerUnchanged": true,
+    "spaceInterpretation": "Observed free-space change; hardlinks and concurrent data writes prevent attributing the entire change to these deletions."
+  },
+  "localBuilds": {
+    "owner": "manual-stakes-20261104",
+    "removed": [
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/manual-stakes-20261104/checkout/module-dist",
+        "logicalBytes": 1398546174,
+        "files": 5678
+      }
+    ],
+    "availableBefore": 31874727936,
+    "availableAfter": 33138331648,
+    "preservationCommits": [
+      "64275feff275c9049a82e7b095dd89c4b71677da",
+      "c902883bab1581cba589f52f2a893036e02d2524",
+      "e9abffd0ebace832937743bdcb9fadebf5f8cc42"
+    ],
+    "physicalSpaceInterpretation": "Observed free-space change; concurrent work and hardlinks prevent attribution of the entire difference to this operation.",
+    "remaining": "Task checkout and compact records remain until maintenance completes and final evidence is pushed."
+  }
+}
