@@ -1,0 +1,39 @@
+{
+  "name": "star-spin-open-selection-20261104-v1",
+  "baseCommit": "5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e",
+  "sourceNames": [
+    "server/starSpinCollection.ts",
+    "games/wild-nudge/StarSpinCollection.ts",
+    "games/wild-nudge/reactor.css",
+    "games/wild-nudge/package.json",
+    "games/wild-nudge/README.md",
+    "scripts/game-math/rtp-policy.json",
+    "docs/game-math/qualifications/wild-nudge-v2.json",
+    "docs/concepts/wild-nudge/collection-policy.md"
+  ],
+  "expectedSources": {
+    "server/starSpinCollection.ts": "7321c7441112d32dc09668f447694d1ae1fb75c1720bbb126f2d42b1d65013fe",
+    "games/wild-nudge/StarSpinCollection.ts": "6d62280c9b659beade713bba8ec5528c87438b530a3c906e3a25abc39faff206",
+    "games/wild-nudge/reactor.css": "c0ba737bb5f15113e38d5909dfc2df0ad064282483e348dbed1786ddc91ee02e",
+    "games/wild-nudge/package.json": "a2c7c616175904883da06ea37d31f76884a36d10fb7dadb83e8d019c3348651e",
+    "games/wild-nudge/README.md": "088665805982e43a52a82183ef7f1c38f6aabc26a6fc8b67002bb238f78b1388",
+    "scripts/game-math/rtp-policy.json": "599d62fd4ab8b38e098675ca534c90384c71177e9868b37bfe3bd2c643734720",
+    "docs/game-math/qualifications/wild-nudge-v2.json": "c46f1f18cd7ed47591ade776bee9ee4dba732d62b5d09b3f8e8ad48a3caa4202",
+    "docs/concepts/wild-nudge/collection-policy.md": "8dd151de38d7d4244f87ffc821acbdd5ef754bdf3c19364d1b917d188512b0f7"
+  },
+  "module": {
+    "gameId": "studio-wild-nudge",
+    "version": "1.6.0-fc64a94c4137",
+    "contract": {
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1
+    },
+    "manifestSha256": "83bd11c79babe7043631f6fcf0961ca95ce72fcbefe00360c254c3b1c5f4f25c",
+    "pointerSha256": "3bf9dd19c17762a47794b64bf1e97062696add0529a4b6dedee55effa93dde14"
+  },
+  "preservedBackendInputs": {
+    "src/i18n/en.ts": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68"
+  },
+  "baselineBackendSha256": "7b11acb06fdbc5ff43a9cd18f9bdf5a687ca11ccd086562508150a48a9d6684a"
+}
