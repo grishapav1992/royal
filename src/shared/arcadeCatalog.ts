@@ -6,6 +6,7 @@ import {CARIBBEAN_GAME} from './caribbeanTreasures';
 import {STUDIO_GAMES, type StudioGameId} from './studioGames';
 import {VARIANT_GAMES} from './casinoVariants';
 import {isCardGame} from './cardTables';
+import {BOUNDS} from './clubGeometry';
 
 export const ACTIVE_STUDIO_GAMES = [
   'studio-cosmic-escape', 'studio-caramel-carnival',
@@ -38,7 +39,7 @@ export type ArcadeCabinetSpec = {id:string; collection:CabinetCollection | 'luel
 // Physical seats and game identities are independent. Each seat exposes one collection.
 export const ARCADE_CABINET_SPECS: readonly ArcadeCabinetSpec[] = [
   // Forest Heart is a catalogue choice in the existing twelve physical seats.
-  ...ARCADE_HOUSE_GAMES.filter(id=>id!==FOREST_HEART_GAME).map((id,index) => ({id,collection:'royal' as const,defaultGameId:id,x:1200+index%4*165,y:430+Math.floor(index/4)*270})),
+  ...ARCADE_HOUSE_GAMES.filter(id=>id!==FOREST_HEART_GAME).map((id,index) => ({id,collection:'royal' as const,defaultGameId:id,x:1200+index%4*165,y:Math.min(430+Math.floor(index/4)*270,BOUNDS.bottom-100)})),
 ];
 export const ACTIVE_ARCADE_GAMES: readonly string[] = ARCADE_CABINET_SPECS.map(c=>c.id);
 export const ROYAL_CABINET_IDS = ARCADE_CABINET_SPECS.filter(c=>c.collection==='royal').map(c=>c.id);
