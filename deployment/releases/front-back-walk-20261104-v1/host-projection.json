@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "productionCommit": "820e1c4e92eeb54b85915c483dc4e59829679c71",
+  "productionCommit": "39b34944ee46074517c59065bdcf7454789875a4",
   "entries": [
     "index.html"
   ],
@@ -509,219 +509,17 @@
       "baseSha256": "14eb9433cc854fb136769a61ad8a38523f0b5aeeb948ff79de25ad623916e7ee",
       "sha256": "14eb9433cc854fb136769a61ad8a38523f0b5aeeb948ff79de25ad623916e7ee"
     },
-    "src/i18n/en.ts": {
-      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
-      "path": "src/i18n/en.ts",
-      "baseSha256": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68",
-      "sha256": "e6a39483750df92467b584e98319ce679f2a3489669e4b0d3f64a2d7ba0a762c",
-      "patches": [
-        {
-          "from": "  \"Изменения звука сохраняются сразу.\": \"Sound settings are saved automatically.\",\n  \"Настройки\": \"Settings\",\n  \"Открыть настройки\": \"Open settings\",\n  \".profile [aria-label=\\\"Настройки игрока\\\"]\": \".profile [aria-label=\\\"Player settings\\\"]\",\n",
-          "to": "  \"Изменения звука сохраняются сразу.\": \"Sound settings are saved automatically.\",\n  \"Настройки\": \"Settings\",\n  \"Профиль и настройки\": \"Profile and settings\",\n  \"Открыть настройки\": \"Open settings\",\n  \".profile [aria-label=\\\"Настройки игрока\\\"]\": \".profile [aria-label=\\\"Player settings\\\"]\",\n"
-        },
-        {
-          "from": "\"Ещё один толчок, и на выход. 9/10.\": \"One more bump and you are out. 9/10.\"",
-          "to": "\"Ещё один толчок, и на выход.\": \"One more bump and you are out.\""
-        },
-        {
-          "from": "Кнопка «Игры» открывает список текущего этажа.\": \"Floor 1: slots and casino games. Floor 2: chess, pool and air hockey. Floor 3: card tables with dealers. Use the glowing stairs or the floor buttons at the top",
-          "to": "Лифт рядом с лестницей позволяет сразу выбрать любой этаж. Кнопка «Игры» открывает список текущего этажа.\": \"Floor 1: slots and casino games. Floor 2: chess, pool and air hockey. Floor 3: card tables with dealers. Use the glowing stairs or the floor buttons at the top. The elevator beside the stairs takes you directly to any floor"
-        },
-        {
-          "from": "ng> = {\n  ...pro",
-          "to": "ng> = {\n  'ЛИФТ': 'ELEVATOR',\n  'Лифт': 'Elevator',\n  'Выйти из лифта': 'Leave the elevator',\n  'Подойти к лифту': 'Walk to the elevator',\n  'Выбери этаж': 'Choose a floor',\n  'Этажи': 'Floors',\n  'Ты здесь': 'You are here',\n  'Можно сразу на любой этаж': 'Go directly to any floor',\n  'Поездка без ожидания других игроков': 'Travel without waiting for other players',\n  'Двери закрываются': 'Doors closing',\n  'Едем на этаж {0}': 'Going to floor {0}',\n  'Этаж {0}: {1}': 'Floor {0}: {1}',\n  'Поездка не подтверждена. Попробуй ещё раз.': 'Travel was not confirmed. Please try again.',\n  'Не удалось подтвердить поездку. Проверь подключение и попробуй ещё раз.': 'Travel could not be confirmed. Check your connection and try again.',\n  'Подойди к лифту и заверши текущее занятие.': 'Walk to the elevator and finish your current activity.',\n  ...pro"
-        },
-        {
-          "from": "export const english: Record<string, string> = {\n",
-          "to": "export const english: Record<string, string> = {\n  'Чат': 'Chat',\n  'Демо': 'Demo',\n  'Открыть чат': 'Open chat',\n  'Закрыть чат': 'Close chat',\n  'Свернуть чат': 'Collapse chat',\n"
-        },
-        {
-          "from": "onds.\",\n  \"Некор",
-          "to": "onds.\",\n  \"Этот аккаунт уже находится в зале. Закрой другую вкладку и попробуй снова.\": \"This account is already in the hall. Close the other tab and try again.\",\n  \"Некор"
-        },
-        {
-          "from": "\n};\n",
-          "to": "\n  'Галактический реактор':'Star Spin',\n};\n"
-        }
-      ]
-    },
-    "src/game/dealerArt.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/game/dealerArt.ts",
-      "baseSha256": "e62324d5ac69571a476a158eaca165c8593022bec1eed8e66c1963e5222111c5",
-      "sha256": "e62324d5ac69571a476a158eaca165c8593022bec1eed8e66c1963e5222111c5"
-    },
-    "src/ui/card-tables.css": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/card-tables.css",
-      "baseSha256": "70f6e1f6dec8a8c4a16afd627b95b5566c4bbb601fcbdcafb3577b7628bcd50f",
-      "sha256": "70f6e1f6dec8a8c4a16afd627b95b5566c4bbb601fcbdcafb3577b7628bcd50f"
-    },
-    "src/shared/catSurfaces.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/catSurfaces.ts",
-      "baseSha256": "57d15054db858053e7bc67910cd361f79aa59053b2641fcb8b8b6e41d063dd47",
-      "sha256": "57d15054db858053e7bc67910cd361f79aa59053b2641fcb8b8b6e41d063dd47"
-    },
-    "src/ui/cat.css": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/cat.css",
-      "baseSha256": "cf2d2d1478b7992bb33829e31d414aa6ff1e8f0f5b96cf3bc3aa171fb91accb1",
-      "sha256": "cf2d2d1478b7992bb33829e31d414aa6ff1e8f0f5b96cf3bc3aa171fb91accb1"
-    },
-    "src/shared/clubLayout.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/clubLayout.ts",
-      "baseSha256": "6df6051ddd013821d78193622fa7c8bc8b765bc8f971a2d30eeb462d0cc86414",
-      "sha256": "6df6051ddd013821d78193622fa7c8bc8b765bc8f971a2d30eeb462d0cc86414"
-    },
-    "src/shared/furniture.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/furniture.ts",
-      "baseSha256": "dbbb212cc84b3c1c5b6bb41b144102e38b974e29a240bca524eedeb8f6f5d5da",
-      "sha256": "dbbb212cc84b3c1c5b6bb41b144102e38b974e29a240bca524eedeb8f6f5d5da"
-    },
-    "src/shared/activities.ts": {
-      "commit": "80694339e4d27a11b9edd8956974513010276b44",
-      "path": "src/shared/activities.ts",
-      "baseSha256": "ef5c6a0cc74b005704682523742bb71f25f0fa83aa25eeabbdeb8cc556c7142b",
-      "sha256": "ef5c6a0cc74b005704682523742bb71f25f0fa83aa25eeabbdeb8cc556c7142b"
-    },
-    "src/shared/elevator.ts": {
-      "commit": "6cfda58a288a5589b07b91e7e78357c753268009",
-      "path": "src/shared/elevator.ts",
-      "baseSha256": "d7f4f8da997be7e9f9c35e79e5398aec50d1e3f7af1afcc0efaa6f61f466e9ca",
-      "sha256": "d7f4f8da997be7e9f9c35e79e5398aec50d1e3f7af1afcc0efaa6f61f466e9ca"
-    },
-    "src/shared/clubGeometry.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/clubGeometry.ts",
-      "baseSha256": "e70216f7cea75cd5f14f868b777431f1f824ee0347e017c3124d213a243d7290",
-      "sha256": "e70216f7cea75cd5f14f868b777431f1f824ee0347e017c3124d213a243d7290"
-    },
-    "src/ui/club-map.css": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/club-map.css",
-      "baseSha256": "61471a07f483a29a3ee032893f5a0e4319456b373453998da9ce7c82cfdb639c",
-      "sha256": "61471a07f483a29a3ee032893f5a0e4319456b373453998da9ce7c82cfdb639c"
-    },
-    "src/game/ElevatorAudio.ts": {
-      "commit": "047ac2505a3a693d8960d72ba8ed8f96e15f2bd2",
-      "path": "src/game/ElevatorAudio.ts",
-      "baseSha256": "68462baf51d1a0e77a4f854cfce1d7cdfdd68fd2a1f6177c306c70190d3d4a13",
-      "sha256": "68462baf51d1a0e77a4f854cfce1d7cdfdd68fd2a1f6177c306c70190d3d4a13"
-    },
-    "src/ui/elevator.css": {
-      "commit": "6cfda58a288a5589b07b91e7e78357c753268009",
-      "path": "src/ui/elevator.css",
-      "baseSha256": "c976e81ccc1ea9aa99fd63a46dd89effe078c39e4abff656ded484615e7a61e6",
-      "sha256": "c976e81ccc1ea9aa99fd63a46dd89effe078c39e4abff656ded484615e7a61e6"
-    },
-    "src/shared/caribbeanTreasures.ts": {
-      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
-      "path": "src/shared/caribbeanTreasures.ts",
-      "baseSha256": "8e987b2de8799b444dd01fe2fcb3a567dd7921a8c1dee4b139e00e13ee3e03bb",
-      "sha256": "8e987b2de8799b444dd01fe2fcb3a567dd7921a8c1dee4b139e00e13ee3e03bb"
-    },
-    "src/wallet/WalletClient.ts": {
-      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
-      "path": "src/wallet/WalletClient.ts",
-      "baseSha256": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
-      "sha256": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9"
-    },
-    "src/ui/FirstFloorGameArt.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/FirstFloorGameArt.ts",
-      "baseSha256": "3b3a1ba969fafaa32517101eee7ae196e756af09030b09473798745b8ac9abc4",
-      "sha256": "3b3a1ba969fafaa32517101eee7ae196e756af09030b09473798745b8ac9abc4"
-    },
-    "src/ui/RoyalCatalogArtwork.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/RoyalCatalogArtwork.ts",
-      "baseSha256": "aa3cb48f6b5391b1d6d86aa943af5defd8de2ce28c46825a79bec13fad5e073c",
-      "sha256": "36a2f80b67fd3fe078c93a214f195d86169fd8be4cc0f1c3986b3f98c7fc1417",
-      "patches": [
-        {
-          "from": "export function royalCatalogArtwork(id: string): string {\n",
-          "to": "export function royalCatalogArtwork(id: string): string {\n  if(id==='studio-wild-nudge')return '/assets/wild-nudge/cover.webp';\n"
-        },
-        {
-          "from": "'/assets/wild-nudge/cover.webp'",
-          "to": "royalGameArtwork(id)"
-        }
-      ]
-    },
-    "src/ui/royal-platform.css": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/royal-platform.css",
-      "baseSha256": "eac8ccad070a358a1dce144ac045a3e499b978462ce26281ff09e005746a31d6",
-      "sha256": "eac8ccad070a358a1dce144ac045a3e499b978462ce26281ff09e005746a31d6"
+    "src/modules/GameHostRuntime.ts": {
+      "commit": "60b13bb8dde910919057835ed056a98257b78857",
+      "path": "src/modules/GameHostRuntime.ts",
+      "baseSha256": "e9a236cdd3fea0cda5b40fa9ac6b288ab0fa3f4b7f6b8bea0e83d6387894c09a",
+      "sha256": "e9a236cdd3fea0cda5b40fa9ac6b288ab0fa3f4b7f6b8bea0e83d6387894c09a"
     },
     "src/modules/GameModuleManifest.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/modules/GameModuleManifest.ts",
       "baseSha256": "3570f80c6c5c76741c61caa766cc437747a1a58ff10f195e3f21dc22bd0ebd22",
       "sha256": "3570f80c6c5c76741c61caa766cc437747a1a58ff10f195e3f21dc22bd0ebd22"
-    },
-    "src/wallet/ExpansionClient.ts": {
-      "commit": "86ef7ad0df4006cce620c0042e38dd02eedbe5de",
-      "path": "src/wallet/ExpansionClient.ts",
-      "baseSha256": "bfc97155743dbc78fe9d0e5beb0cb9eb9f3fe7828ec45da13d43d58c86933a36",
-      "sha256": "bfc97155743dbc78fe9d0e5beb0cb9eb9f3fe7828ec45da13d43d58c86933a36"
-    },
-    "src/wallet/MinesClient.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/wallet/MinesClient.ts",
-      "baseSha256": "45eb0ece3169e28b80fff7d4d746cff4b62666611f9bb8d1af5b82f6d7ec3c69",
-      "sha256": "45eb0ece3169e28b80fff7d4d746cff4b62666611f9bb8d1af5b82f6d7ec3c69"
-    },
-    "src/ui/retired-arcade-rounds.css": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/retired-arcade-rounds.css",
-      "baseSha256": "f6f01f6f0d0b88dbc70f74379e65eb1ea66b9d4342541d0823c3e7fe18a5712b",
-      "sha256": "f6f01f6f0d0b88dbc70f74379e65eb1ea66b9d4342541d0823c3e7fe18a5712b"
-    },
-    "src/vendor/github/blackjack/math.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/vendor/github/blackjack/math.ts",
-      "baseSha256": "08d65e81ed94d2d08359f5a1d9cea2672becf56195999524230cf1881892df02",
-      "sha256": "08d65e81ed94d2d08359f5a1d9cea2672becf56195999524230cf1881892df02"
-    },
-    "src/vendor/github/baccarat/rules.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/vendor/github/baccarat/rules.ts",
-      "baseSha256": "703f8692bd1e1952107093863f1f0790978842c98cc739741e9923c393866722",
-      "sha256": "703f8692bd1e1952107093863f1f0790978842c98cc739741e9923c393866722"
-    },
-    "src/vendor/github/poker/engine.js": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/vendor/github/poker/engine.js",
-      "baseSha256": "30cacb5e42d89d1118e6fdd33f42700dd0abe54f88281130d8f397a7aa002191",
-      "sha256": "30cacb5e42d89d1118e6fdd33f42700dd0abe54f88281130d8f397a7aa002191"
-    },
-    "src/vendor/github/video-poker/math.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/vendor/github/video-poker/math.ts",
-      "baseSha256": "4af8857a0a14958d9a3c20e6b3b19d574bea1d56951dab7b6be106d024444849",
-      "sha256": "4af8857a0a14958d9a3c20e6b3b19d574bea1d56951dab7b6be106d024444849"
-    },
-    "src/ui/game-viewport.css": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/game-viewport.css",
-      "baseSha256": "a9e05fa35afcfebe571aa9aafe8c8d686a2a6d62757187969ac964c7b86e2ac6",
-      "sha256": "a9e05fa35afcfebe571aa9aafe8c8d686a2a6d62757187969ac964c7b86e2ac6"
-    },
-    "src/ui/slot-layout.css": {
-      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
-      "path": "src/ui/slot-layout.css",
-      "baseSha256": "2c210e5aa960ab222af9d1d60de80f98e58c117248a42f0541f8af621e77d787",
-      "sha256": "2c210e5aa960ab222af9d1d60de80f98e58c117248a42f0541f8af621e77d787"
-    },
-    "src/shared/catCare.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/catCare.ts",
-      "baseSha256": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8",
-      "sha256": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8"
     },
     "src/shared/rewardSpinCatalog.ts": {
       "commit": "60b13bb8dde910919057835ed056a98257b78857",
@@ -747,11 +545,17 @@
       "baseSha256": "1ada448ed03adb04bfb510f489bed9703a07fab982e063a4e7068bbbbf71272b",
       "sha256": "1ada448ed03adb04bfb510f489bed9703a07fab982e063a4e7068bbbbf71272b"
     },
-    "src/modules/GameHostRuntime.ts": {
-      "commit": "60b13bb8dde910919057835ed056a98257b78857",
-      "path": "src/modules/GameHostRuntime.ts",
-      "baseSha256": "e9a236cdd3fea0cda5b40fa9ac6b288ab0fa3f4b7f6b8bea0e83d6387894c09a",
-      "sha256": "e9a236cdd3fea0cda5b40fa9ac6b288ab0fa3f4b7f6b8bea0e83d6387894c09a"
+    "src/shared/caribbeanTreasures.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/caribbeanTreasures.ts",
+      "baseSha256": "8e987b2de8799b444dd01fe2fcb3a567dd7921a8c1dee4b139e00e13ee3e03bb",
+      "sha256": "8e987b2de8799b444dd01fe2fcb3a567dd7921a8c1dee4b139e00e13ee3e03bb"
+    },
+    "src/wallet/WalletClient.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/wallet/WalletClient.ts",
+      "baseSha256": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
+      "sha256": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9"
     },
     "src/shared/demoWallet.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -807,65 +611,191 @@
       "baseSha256": "a612c91c6ca81a70474224f25fbd466eac364383a0264c7cbf25bb73884807f3",
       "sha256": "a612c91c6ca81a70474224f25fbd466eac364383a0264c7cbf25bb73884807f3"
     },
-    "src/ui/SecurityUI.ts": {
+    "src/game/dealerArt.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/SecurityUI.ts",
-      "baseSha256": "ff86ee2c130424ecc3908b3facc78c3e5186fc7fd0cf6d8e8e7220a8855b5644",
-      "sha256": "ff86ee2c130424ecc3908b3facc78c3e5186fc7fd0cf6d8e8e7220a8855b5644"
+      "path": "src/game/dealerArt.ts",
+      "baseSha256": "e62324d5ac69571a476a158eaca165c8593022bec1eed8e66c1963e5222111c5",
+      "sha256": "e62324d5ac69571a476a158eaca165c8593022bec1eed8e66c1963e5222111c5"
     },
-    "src/ui/ChatMedia.ts": {
+    "src/ui/card-tables.css": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/ChatMedia.ts",
-      "baseSha256": "c81d2929c11f835e2310e3fe817d042f97837672532ad29a9ba3106c1152a7c8",
-      "sha256": "c81d2929c11f835e2310e3fe817d042f97837672532ad29a9ba3106c1152a7c8"
+      "path": "src/ui/card-tables.css",
+      "baseSha256": "70f6e1f6dec8a8c4a16afd627b95b5566c4bbb601fcbdcafb3577b7628bcd50f",
+      "sha256": "70f6e1f6dec8a8c4a16afd627b95b5566c4bbb601fcbdcafb3577b7628bcd50f"
     },
-    "src/game/demoGames.ts": {
+    "src/i18n/en.ts": {
+      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
+      "path": "src/i18n/en.ts",
+      "baseSha256": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68",
+      "sha256": "e6a39483750df92467b584e98319ce679f2a3489669e4b0d3f64a2d7ba0a762c",
+      "patches": [
+        {
+          "from": "  \"Изменения звука сохраняются сразу.\": \"Sound settings are saved automatically.\",\n  \"Настройки\": \"Settings\",\n  \"Открыть настройки\": \"Open settings\",\n  \".profile [aria-label=\\\"Настройки игрока\\\"]\": \".profile [aria-label=\\\"Player settings\\\"]\",\n",
+          "to": "  \"Изменения звука сохраняются сразу.\": \"Sound settings are saved automatically.\",\n  \"Настройки\": \"Settings\",\n  \"Профиль и настройки\": \"Profile and settings\",\n  \"Открыть настройки\": \"Open settings\",\n  \".profile [aria-label=\\\"Настройки игрока\\\"]\": \".profile [aria-label=\\\"Player settings\\\"]\",\n"
+        },
+        {
+          "from": "\"Ещё один толчок, и на выход. 9/10.\": \"One more bump and you are out. 9/10.\"",
+          "to": "\"Ещё один толчок, и на выход.\": \"One more bump and you are out.\""
+        },
+        {
+          "from": "Кнопка «Игры» открывает список текущего этажа.\": \"Floor 1: slots and casino games. Floor 2: chess, pool and air hockey. Floor 3: card tables with dealers. Use the glowing stairs or the floor buttons at the top",
+          "to": "Лифт рядом с лестницей позволяет сразу выбрать любой этаж. Кнопка «Игры» открывает список текущего этажа.\": \"Floor 1: slots and casino games. Floor 2: chess, pool and air hockey. Floor 3: card tables with dealers. Use the glowing stairs or the floor buttons at the top. The elevator beside the stairs takes you directly to any floor"
+        },
+        {
+          "from": "ng> = {\n  ...pro",
+          "to": "ng> = {\n  'ЛИФТ': 'ELEVATOR',\n  'Лифт': 'Elevator',\n  'Выйти из лифта': 'Leave the elevator',\n  'Подойти к лифту': 'Walk to the elevator',\n  'Выбери этаж': 'Choose a floor',\n  'Этажи': 'Floors',\n  'Ты здесь': 'You are here',\n  'Можно сразу на любой этаж': 'Go directly to any floor',\n  'Поездка без ожидания других игроков': 'Travel without waiting for other players',\n  'Двери закрываются': 'Doors closing',\n  'Едем на этаж {0}': 'Going to floor {0}',\n  'Этаж {0}: {1}': 'Floor {0}: {1}',\n  'Поездка не подтверждена. Попробуй ещё раз.': 'Travel was not confirmed. Please try again.',\n  'Не удалось подтвердить поездку. Проверь подключение и попробуй ещё раз.': 'Travel could not be confirmed. Check your connection and try again.',\n  'Подойди к лифту и заверши текущее занятие.': 'Walk to the elevator and finish your current activity.',\n  ...pro"
+        },
+        {
+          "from": "export const english: Record<string, string> = {\n",
+          "to": "export const english: Record<string, string> = {\n  'Чат': 'Chat',\n  'Демо': 'Demo',\n  'Открыть чат': 'Open chat',\n  'Закрыть чат': 'Close chat',\n  'Свернуть чат': 'Collapse chat',\n"
+        },
+        {
+          "from": "onds.\",\n  \"Некор",
+          "to": "onds.\",\n  \"Этот аккаунт уже находится в зале. Закрой другую вкладку и попробуй снова.\": \"This account is already in the hall. Close the other tab and try again.\",\n  \"Некор"
+        },
+        {
+          "from": "\n};\n",
+          "to": "\n  'Галактический реактор':'Star Spin',\n};\n"
+        }
+      ]
+    },
+    "src/shared/clubGeometry.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/game/demoGames.ts",
-      "baseSha256": "f3d2366ed1d4416b63825e896b9790524d6e2de0216fbb836720212fc7dfe078",
-      "sha256": "f3d2366ed1d4416b63825e896b9790524d6e2de0216fbb836720212fc7dfe078"
+      "path": "src/shared/clubGeometry.ts",
+      "baseSha256": "e70216f7cea75cd5f14f868b777431f1f824ee0347e017c3124d213a243d7290",
+      "sha256": "e70216f7cea75cd5f14f868b777431f1f824ee0347e017c3124d213a243d7290"
     },
-    "src/ui/AuthUI.ts": {
-      "commit": "48e26ff07c96e02a97e62c21ec9d6d9ee13ce3b5",
-      "path": "src/ui/AuthUI.ts",
-      "baseSha256": "18b1f2c295d6b553c00f05b6edebaf93011bbf1723b67213a1736847528689a5",
-      "sha256": "18b1f2c295d6b553c00f05b6edebaf93011bbf1723b67213a1736847528689a5"
+    "src/game/ElevatorAudio.ts": {
+      "commit": "047ac2505a3a693d8960d72ba8ed8f96e15f2bd2",
+      "path": "src/game/ElevatorAudio.ts",
+      "baseSha256": "68462baf51d1a0e77a4f854cfce1d7cdfdd68fd2a1f6177c306c70190d3d4a13",
+      "sha256": "68462baf51d1a0e77a4f854cfce1d7cdfdd68fd2a1f6177c306c70190d3d4a13"
     },
-    "src/ui/ActivitiesUI.ts": {
+    "src/shared/elevator.ts": {
+      "commit": "6cfda58a288a5589b07b91e7e78357c753268009",
+      "path": "src/shared/elevator.ts",
+      "baseSha256": "d7f4f8da997be7e9f9c35e79e5398aec50d1e3f7af1afcc0efaa6f61f466e9ca",
+      "sha256": "d7f4f8da997be7e9f9c35e79e5398aec50d1e3f7af1afcc0efaa6f61f466e9ca"
+    },
+    "src/ui/elevator.css": {
+      "commit": "6cfda58a288a5589b07b91e7e78357c753268009",
+      "path": "src/ui/elevator.css",
+      "baseSha256": "c976e81ccc1ea9aa99fd63a46dd89effe078c39e4abff656ded484615e7a61e6",
+      "sha256": "c976e81ccc1ea9aa99fd63a46dd89effe078c39e4abff656ded484615e7a61e6"
+    },
+    "src/vendor/github/blackjack/math.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/ActivitiesUI.ts",
-      "baseSha256": "431721288ecfcb33043f6d3806f4df5dfc383d2e6fce0d0471436e967e890701",
-      "sha256": "431721288ecfcb33043f6d3806f4df5dfc383d2e6fce0d0471436e967e890701"
+      "path": "src/vendor/github/blackjack/math.ts",
+      "baseSha256": "08d65e81ed94d2d08359f5a1d9cea2672becf56195999524230cf1881892df02",
+      "sha256": "08d65e81ed94d2d08359f5a1d9cea2672becf56195999524230cf1881892df02"
     },
-    "src/ui/PvpUI.ts": {
-      "commit": "cc24e8f02648dbe1848d6e1e53b1ab20519b837c",
-      "path": "src/ui/PvpUI.ts",
-      "baseSha256": "93284e78260b8352f4e1d0f1c4da2a7af66bd7af1679d907e40dbdb2a57e9189",
-      "sha256": "93284e78260b8352f4e1d0f1c4da2a7af66bd7af1679d907e40dbdb2a57e9189"
-    },
-    "src/network/LobbyClient.ts": {
-      "commit": "ee5ca86fb0545fe4ba6d410872c48c5d80288621",
-      "path": "src/network/LobbyClient.ts",
-      "baseSha256": "1a2115cdf842acc39498aa557724dfb7ceefe1b390032a469d8c508e67ece240",
-      "sha256": "1a2115cdf842acc39498aa557724dfb7ceefe1b390032a469d8c508e67ece240"
-    },
-    "src/shared/intoxication.ts": {
+    "src/vendor/github/baccarat/rules.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/intoxication.ts",
-      "baseSha256": "742b40f26c4efe392d9a76895e9287a06c877aeecc5cbbc5d2419e7ff9689e95",
-      "sha256": "742b40f26c4efe392d9a76895e9287a06c877aeecc5cbbc5d2419e7ff9689e95"
+      "path": "src/vendor/github/baccarat/rules.ts",
+      "baseSha256": "703f8692bd1e1952107093863f1f0790978842c98cc739741e9923c393866722",
+      "sha256": "703f8692bd1e1952107093863f1f0790978842c98cc739741e9923c393866722"
     },
-    "src/shared/chat.ts": {
+    "src/vendor/github/poker/engine.js": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/chat.ts",
-      "baseSha256": "1b513fd076d2cfb871b9be0c00bb9218a2ebf296e3b29738ca705c908e9c8d71",
-      "sha256": "1b513fd076d2cfb871b9be0c00bb9218a2ebf296e3b29738ca705c908e9c8d71"
+      "path": "src/vendor/github/poker/engine.js",
+      "baseSha256": "30cacb5e42d89d1118e6fdd33f42700dd0abe54f88281130d8f397a7aa002191",
+      "sha256": "30cacb5e42d89d1118e6fdd33f42700dd0abe54f88281130d8f397a7aa002191"
     },
-    "src/ui/chat-delivery.css": {
+    "src/vendor/github/video-poker/math.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/chat-delivery.css",
-      "baseSha256": "086c476b241afcbe976729fe96f3b5c6099618cb531007d35f8d55894f057a82",
-      "sha256": "086c476b241afcbe976729fe96f3b5c6099618cb531007d35f8d55894f057a82"
+      "path": "src/vendor/github/video-poker/math.ts",
+      "baseSha256": "4af8857a0a14958d9a3c20e6b3b19d574bea1d56951dab7b6be106d024444849",
+      "sha256": "4af8857a0a14958d9a3c20e6b3b19d574bea1d56951dab7b6be106d024444849"
+    },
+    "src/shared/clubLayout.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/clubLayout.ts",
+      "baseSha256": "6df6051ddd013821d78193622fa7c8bc8b765bc8f971a2d30eeb462d0cc86414",
+      "sha256": "6df6051ddd013821d78193622fa7c8bc8b765bc8f971a2d30eeb462d0cc86414"
+    },
+    "src/shared/furniture.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/furniture.ts",
+      "baseSha256": "dbbb212cc84b3c1c5b6bb41b144102e38b974e29a240bca524eedeb8f6f5d5da",
+      "sha256": "dbbb212cc84b3c1c5b6bb41b144102e38b974e29a240bca524eedeb8f6f5d5da"
+    },
+    "src/shared/activities.ts": {
+      "commit": "80694339e4d27a11b9edd8956974513010276b44",
+      "path": "src/shared/activities.ts",
+      "baseSha256": "ef5c6a0cc74b005704682523742bb71f25f0fa83aa25eeabbdeb8cc556c7142b",
+      "sha256": "ef5c6a0cc74b005704682523742bb71f25f0fa83aa25eeabbdeb8cc556c7142b"
+    },
+    "src/shared/catCare.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/catCare.ts",
+      "baseSha256": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8",
+      "sha256": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8"
+    },
+    "src/wallet/ExpansionClient.ts": {
+      "commit": "86ef7ad0df4006cce620c0042e38dd02eedbe5de",
+      "path": "src/wallet/ExpansionClient.ts",
+      "baseSha256": "bfc97155743dbc78fe9d0e5beb0cb9eb9f3fe7828ec45da13d43d58c86933a36",
+      "sha256": "bfc97155743dbc78fe9d0e5beb0cb9eb9f3fe7828ec45da13d43d58c86933a36"
+    },
+    "src/wallet/MinesClient.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/wallet/MinesClient.ts",
+      "baseSha256": "45eb0ece3169e28b80fff7d4d746cff4b62666611f9bb8d1af5b82f6d7ec3c69",
+      "sha256": "45eb0ece3169e28b80fff7d4d746cff4b62666611f9bb8d1af5b82f6d7ec3c69"
+    },
+    "src/ui/retired-arcade-rounds.css": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/retired-arcade-rounds.css",
+      "baseSha256": "f6f01f6f0d0b88dbc70f74379e65eb1ea66b9d4342541d0823c3e7fe18a5712b",
+      "sha256": "f6f01f6f0d0b88dbc70f74379e65eb1ea66b9d4342541d0823c3e7fe18a5712b"
+    },
+    "src/shared/catSurfaces.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/catSurfaces.ts",
+      "baseSha256": "57d15054db858053e7bc67910cd361f79aa59053b2641fcb8b8b6e41d063dd47",
+      "sha256": "57d15054db858053e7bc67910cd361f79aa59053b2641fcb8b8b6e41d063dd47"
+    },
+    "src/ui/cat.css": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/cat.css",
+      "baseSha256": "cf2d2d1478b7992bb33829e31d414aa6ff1e8f0f5b96cf3bc3aa171fb91accb1",
+      "sha256": "cf2d2d1478b7992bb33829e31d414aa6ff1e8f0f5b96cf3bc3aa171fb91accb1"
+    },
+    "src/ui/game-viewport.css": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/game-viewport.css",
+      "baseSha256": "a9e05fa35afcfebe571aa9aafe8c8d686a2a6d62757187969ac964c7b86e2ac6",
+      "sha256": "a9e05fa35afcfebe571aa9aafe8c8d686a2a6d62757187969ac964c7b86e2ac6"
+    },
+    "src/ui/slot-layout.css": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "src/ui/slot-layout.css",
+      "baseSha256": "2c210e5aa960ab222af9d1d60de80f98e58c117248a42f0541f8af621e77d787",
+      "sha256": "2c210e5aa960ab222af9d1d60de80f98e58c117248a42f0541f8af621e77d787"
+    },
+    "src/ui/club-map.css": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/club-map.css",
+      "baseSha256": "61471a07f483a29a3ee032893f5a0e4319456b373453998da9ce7c82cfdb639c",
+      "sha256": "61471a07f483a29a3ee032893f5a0e4319456b373453998da9ce7c82cfdb639c"
+    },
+    "src/shared/originalGames.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/originalGames.ts",
+      "baseSha256": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
+      "sha256": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0"
+    },
+    "src/shared/casinoNextVariants.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/casinoNextVariants.ts",
+      "baseSha256": "6f525322bc640eb29ad7bfc025205686f87214b174a08a92d0f800afe636eaa7",
+      "sha256": "6f525322bc640eb29ad7bfc025205686f87214b174a08a92d0f800afe636eaa7"
+    },
+    "src/shared/casinoBatchVariants.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/casinoBatchVariants.ts",
+      "baseSha256": "e09ea94fdb5929596f610ef7462dc80d50bcf4926335c398fca6c031a0496135",
+      "sha256": "e09ea94fdb5929596f610ef7462dc80d50bcf4926335c398fca6c031a0496135"
     },
     "src/game/CasinoAudio.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -884,54 +814,6 @@
       "path": "src/game/SlotAudio.ts",
       "baseSha256": "db8bd5a92a91cbf4a57ae70166c022d41f3de93a6b893fe331f9bfdfb245cb92",
       "sha256": "db8bd5a92a91cbf4a57ae70166c022d41f3de93a6b893fe331f9bfdfb245cb92"
-    },
-    "src/wallet/CryptoClient.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/wallet/CryptoClient.ts",
-      "baseSha256": "a0a05010eba83a16df2a7f0e2424e155cdd14fd9fd51d1b329d212f0aeccd57d",
-      "sha256": "a0a05010eba83a16df2a7f0e2424e155cdd14fd9fd51d1b329d212f0aeccd57d"
-    },
-    "src/shared/cryptoWallet.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/cryptoWallet.ts",
-      "baseSha256": "4bddde9c8fa664711fd18f66207366c53e810ce9fa09fb9c98775fdd554bc89b",
-      "sha256": "4bddde9c8fa664711fd18f66207366c53e810ce9fa09fb9c98775fdd554bc89b"
-    },
-    "src/wallet/paymentQr.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/wallet/paymentQr.ts",
-      "baseSha256": "e647374f0cd5e1089de51cad09bc1d123c4b4a662a681adeb2684089740184a9",
-      "sha256": "e647374f0cd5e1089de51cad09bc1d123c4b4a662a681adeb2684089740184a9"
-    },
-    "src/shared/cryptoDisplay.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/cryptoDisplay.ts",
-      "baseSha256": "a38f98bbe1d9fbb8c6dd5328195bd606d96144aec7a6bc3489ffee57ce243206",
-      "sha256": "a38f98bbe1d9fbb8c6dd5328195bd606d96144aec7a6bc3489ffee57ce243206"
-    },
-    "src/crypto-wallet.css": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/crypto-wallet.css",
-      "baseSha256": "435caa63aa1a947644d7d2dc1c73ea64e2013e749fe526c82f2881fc45fe4fe4",
-      "sha256": "435caa63aa1a947644d7d2dc1c73ea64e2013e749fe526c82f2881fc45fe4fe4"
-    },
-    "src/ui/MiraPortrait.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/MiraPortrait.ts",
-      "baseSha256": "f4c25a1bdea0dc5205ec33882fa630835ec1130eecc80997a5219f5aaaa39190",
-      "sha256": "f4c25a1bdea0dc5205ec33882fa630835ec1130eecc80997a5219f5aaaa39190"
-    },
-    "src/shared/skinStudio.ts": {
-      "commit": "5120fa89698356a3deb9ee5788f45cd570a18154",
-      "path": "src/shared/skinStudio.ts",
-      "baseSha256": "c6a20b5cdccd89636ac727c261e62ddf52d62ddaeee734a460b213a03952d8f3",
-      "sha256": "c6a20b5cdccd89636ac727c261e62ddf52d62ddaeee734a460b213a03952d8f3"
-    },
-    "src/game/generatedSkinArt.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/game/generatedSkinArt.ts",
-      "baseSha256": "7516637016be257bd0d663c4238b94c1c3dbb1532d7013eee848506a18ef1328",
-      "sha256": "7516637016be257bd0d663c4238b94c1c3dbb1532d7013eee848506a18ef1328"
     },
     "src/shared/gameStakes.ts": {
       "commit": "86ef7ad0df4006cce620c0042e38dd02eedbe5de",
@@ -1023,23 +905,141 @@
       "baseSha256": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
       "sha256": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb"
     },
-    "src/shared/originalGames.ts": {
+    "src/ui/FirstFloorGameArt.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/originalGames.ts",
-      "baseSha256": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
-      "sha256": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0"
+      "path": "src/ui/FirstFloorGameArt.ts",
+      "baseSha256": "3b3a1ba969fafaa32517101eee7ae196e756af09030b09473798745b8ac9abc4",
+      "sha256": "3b3a1ba969fafaa32517101eee7ae196e756af09030b09473798745b8ac9abc4"
     },
-    "src/shared/casinoNextVariants.ts": {
+    "src/ui/RoyalCatalogArtwork.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/casinoNextVariants.ts",
-      "baseSha256": "6f525322bc640eb29ad7bfc025205686f87214b174a08a92d0f800afe636eaa7",
-      "sha256": "6f525322bc640eb29ad7bfc025205686f87214b174a08a92d0f800afe636eaa7"
+      "path": "src/ui/RoyalCatalogArtwork.ts",
+      "baseSha256": "aa3cb48f6b5391b1d6d86aa943af5defd8de2ce28c46825a79bec13fad5e073c",
+      "sha256": "36a2f80b67fd3fe078c93a214f195d86169fd8be4cc0f1c3986b3f98c7fc1417",
+      "patches": [
+        {
+          "from": "export function royalCatalogArtwork(id: string): string {\n",
+          "to": "export function royalCatalogArtwork(id: string): string {\n  if(id==='studio-wild-nudge')return '/assets/wild-nudge/cover.webp';\n"
+        },
+        {
+          "from": "'/assets/wild-nudge/cover.webp'",
+          "to": "royalGameArtwork(id)"
+        }
+      ]
     },
-    "src/shared/casinoBatchVariants.ts": {
+    "src/ui/royal-platform.css": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/casinoBatchVariants.ts",
-      "baseSha256": "e09ea94fdb5929596f610ef7462dc80d50bcf4926335c398fca6c031a0496135",
-      "sha256": "e09ea94fdb5929596f610ef7462dc80d50bcf4926335c398fca6c031a0496135"
+      "path": "src/ui/royal-platform.css",
+      "baseSha256": "eac8ccad070a358a1dce144ac045a3e499b978462ce26281ff09e005746a31d6",
+      "sha256": "eac8ccad070a358a1dce144ac045a3e499b978462ce26281ff09e005746a31d6"
+    },
+    "src/wallet/CryptoClient.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/wallet/CryptoClient.ts",
+      "baseSha256": "a0a05010eba83a16df2a7f0e2424e155cdd14fd9fd51d1b329d212f0aeccd57d",
+      "sha256": "a0a05010eba83a16df2a7f0e2424e155cdd14fd9fd51d1b329d212f0aeccd57d"
+    },
+    "src/shared/cryptoWallet.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/cryptoWallet.ts",
+      "baseSha256": "4bddde9c8fa664711fd18f66207366c53e810ce9fa09fb9c98775fdd554bc89b",
+      "sha256": "4bddde9c8fa664711fd18f66207366c53e810ce9fa09fb9c98775fdd554bc89b"
+    },
+    "src/wallet/paymentQr.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/wallet/paymentQr.ts",
+      "baseSha256": "e647374f0cd5e1089de51cad09bc1d123c4b4a662a681adeb2684089740184a9",
+      "sha256": "e647374f0cd5e1089de51cad09bc1d123c4b4a662a681adeb2684089740184a9"
+    },
+    "src/shared/cryptoDisplay.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/cryptoDisplay.ts",
+      "baseSha256": "a38f98bbe1d9fbb8c6dd5328195bd606d96144aec7a6bc3489ffee57ce243206",
+      "sha256": "a38f98bbe1d9fbb8c6dd5328195bd606d96144aec7a6bc3489ffee57ce243206"
+    },
+    "src/crypto-wallet.css": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/crypto-wallet.css",
+      "baseSha256": "435caa63aa1a947644d7d2dc1c73ea64e2013e749fe526c82f2881fc45fe4fe4",
+      "sha256": "435caa63aa1a947644d7d2dc1c73ea64e2013e749fe526c82f2881fc45fe4fe4"
+    },
+    "src/shared/intoxication.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/intoxication.ts",
+      "baseSha256": "742b40f26c4efe392d9a76895e9287a06c877aeecc5cbbc5d2419e7ff9689e95",
+      "sha256": "742b40f26c4efe392d9a76895e9287a06c877aeecc5cbbc5d2419e7ff9689e95"
+    },
+    "src/ui/MiraPortrait.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/MiraPortrait.ts",
+      "baseSha256": "f4c25a1bdea0dc5205ec33882fa630835ec1130eecc80997a5219f5aaaa39190",
+      "sha256": "f4c25a1bdea0dc5205ec33882fa630835ec1130eecc80997a5219f5aaaa39190"
+    },
+    "src/shared/skinStudio.ts": {
+      "commit": "5120fa89698356a3deb9ee5788f45cd570a18154",
+      "path": "src/shared/skinStudio.ts",
+      "baseSha256": "c6a20b5cdccd89636ac727c261e62ddf52d62ddaeee734a460b213a03952d8f3",
+      "sha256": "c6a20b5cdccd89636ac727c261e62ddf52d62ddaeee734a460b213a03952d8f3"
+    },
+    "src/game/generatedSkinArt.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/game/generatedSkinArt.ts",
+      "baseSha256": "7516637016be257bd0d663c4238b94c1c3dbb1532d7013eee848506a18ef1328",
+      "sha256": "7516637016be257bd0d663c4238b94c1c3dbb1532d7013eee848506a18ef1328"
+    },
+    "src/ui/SecurityUI.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/SecurityUI.ts",
+      "baseSha256": "ff86ee2c130424ecc3908b3facc78c3e5186fc7fd0cf6d8e8e7220a8855b5644",
+      "sha256": "ff86ee2c130424ecc3908b3facc78c3e5186fc7fd0cf6d8e8e7220a8855b5644"
+    },
+    "src/ui/ChatMedia.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/ChatMedia.ts",
+      "baseSha256": "c81d2929c11f835e2310e3fe817d042f97837672532ad29a9ba3106c1152a7c8",
+      "sha256": "c81d2929c11f835e2310e3fe817d042f97837672532ad29a9ba3106c1152a7c8"
+    },
+    "src/game/demoGames.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/game/demoGames.ts",
+      "baseSha256": "f3d2366ed1d4416b63825e896b9790524d6e2de0216fbb836720212fc7dfe078",
+      "sha256": "f3d2366ed1d4416b63825e896b9790524d6e2de0216fbb836720212fc7dfe078"
+    },
+    "src/ui/AuthUI.ts": {
+      "commit": "48e26ff07c96e02a97e62c21ec9d6d9ee13ce3b5",
+      "path": "src/ui/AuthUI.ts",
+      "baseSha256": "18b1f2c295d6b553c00f05b6edebaf93011bbf1723b67213a1736847528689a5",
+      "sha256": "18b1f2c295d6b553c00f05b6edebaf93011bbf1723b67213a1736847528689a5"
+    },
+    "src/ui/ActivitiesUI.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/ActivitiesUI.ts",
+      "baseSha256": "431721288ecfcb33043f6d3806f4df5dfc383d2e6fce0d0471436e967e890701",
+      "sha256": "431721288ecfcb33043f6d3806f4df5dfc383d2e6fce0d0471436e967e890701"
+    },
+    "src/ui/PvpUI.ts": {
+      "commit": "cc24e8f02648dbe1848d6e1e53b1ab20519b837c",
+      "path": "src/ui/PvpUI.ts",
+      "baseSha256": "93284e78260b8352f4e1d0f1c4da2a7af66bd7af1679d907e40dbdb2a57e9189",
+      "sha256": "93284e78260b8352f4e1d0f1c4da2a7af66bd7af1679d907e40dbdb2a57e9189"
+    },
+    "src/network/LobbyClient.ts": {
+      "commit": "ee5ca86fb0545fe4ba6d410872c48c5d80288621",
+      "path": "src/network/LobbyClient.ts",
+      "baseSha256": "1a2115cdf842acc39498aa557724dfb7ceefe1b390032a469d8c508e67ece240",
+      "sha256": "1a2115cdf842acc39498aa557724dfb7ceefe1b390032a469d8c508e67ece240"
+    },
+    "src/shared/chat.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/chat.ts",
+      "baseSha256": "1b513fd076d2cfb871b9be0c00bb9218a2ebf296e3b29738ca705c908e9c8d71",
+      "sha256": "1b513fd076d2cfb871b9be0c00bb9218a2ebf296e3b29738ca705c908e9c8d71"
+    },
+    "src/ui/chat-delivery.css": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/chat-delivery.css",
+      "baseSha256": "086c476b241afcbe976729fe96f3b5c6099618cb531007d35f8d55894f057a82",
+      "sha256": "086c476b241afcbe976729fe96f3b5c6099618cb531007d35f8d55894f057a82"
     },
     "src/shared/cabinetSeating.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1102,10 +1102,10 @@
       "sha256": "6a30d7b77ae830984256dee833ebf5edb57e1c7cdd63d49f6c3d928a91a670fd"
     },
     "src/game/SecurityGuard.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "commit": "9d4d015a788efe4e9aec0481c85284a39da3cf54",
       "path": "src/game/SecurityGuard.ts",
-      "baseSha256": "fba8bb4a6b807fa22667198106034da16b9a2e32e251f66b1abc19cb89a60434",
-      "sha256": "fba8bb4a6b807fa22667198106034da16b9a2e32e251f66b1abc19cb89a60434"
+      "baseSha256": "20df58e2a68615ad7bc41680a38beae1b26f569f6b6fb4a7d7e32446d7499c50",
+      "sha256": "20df58e2a68615ad7bc41680a38beae1b26f569f6b6fb4a7d7e32446d7499c50"
     },
     "src/game/demoCabinetArt.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1237,113 +1237,59 @@
       "baseSha256": "9539673ed053b7a3eba9f8444ba348a79b3f926865684b71681d0ca9b2795a8d",
       "sha256": "9539673ed053b7a3eba9f8444ba348a79b3f926865684b71681d0ca9b2795a8d"
     },
+    "src/wallet/CasinoClient.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/wallet/CasinoClient.ts",
+      "baseSha256": "feb8e2a78c62aa0d9272b1f18f07eb8db38de2ea01b337a1b132f06d702c3633",
+      "sha256": "feb8e2a78c62aa0d9272b1f18f07eb8db38de2ea01b337a1b132f06d702c3633"
+    },
+    "src/wallet/NilePlayClient.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/wallet/NilePlayClient.ts",
+      "baseSha256": "1789e48810dea6a2390265a7ccdfe7853d5f4d8f92d41954def9ab1a20f41db0",
+      "sha256": "1789e48810dea6a2390265a7ccdfe7853d5f4d8f92d41954def9ab1a20f41db0"
+    },
+    "src/wallet/UsdtClient.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/wallet/UsdtClient.ts",
+      "baseSha256": "65585a87cfbde54e0a03ddba4c3ab3190660a54ffb61bbb1f334c3fcab249592",
+      "sha256": "65585a87cfbde54e0a03ddba4c3ab3190660a54ffb61bbb1f334c3fcab249592"
+    },
+    "src/wallet/FlightClient.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/wallet/FlightClient.ts",
+      "baseSha256": "5378317a883a9dbda28394d65e9db4161f5873ac1ea4a3da1264fd37339ae7a6",
+      "sha256": "5378317a883a9dbda28394d65e9db4161f5873ac1ea4a3da1264fd37339ae7a6"
+    },
+    "src/modules/GameHostContract.ts": {
+      "commit": "60b13bb8dde910919057835ed056a98257b78857",
+      "path": "src/modules/GameHostContract.ts",
+      "baseSha256": "6600ce1f6cb8ca3402a9760d8e83dab29e73cd1b0045a0bb1684967527e6f7a3",
+      "sha256": "328b39ef96f8cd544e892234c68dd3662bf1cca29d74b890e95c409aa285416b",
+      "patches": [
+        {
+          "from": "import type { IndependentGameId } from './GameModuleCatalog';\nimport type { expansionClient } from '../wallet/ExpansionClient';\nimport type { demoWallet, coins } from '../wallet/WalletClient';\nimport type { gameAudio } from '../game/GameAudio';\nimport type * as i18n from '../i18n/index';\nimport type * as reactions from '../ui/gameReactions';\nimport type * as demoGames from '../game/demoGames';\nimport type { minesClient } from '../wallet/MinesClient';\nimport type { casinoClients } from '../wallet/CasinoClient';\nimport type { nilePlay } from '../wallet/NilePlayClient';\nimport type { usdtWallet } from '../wallet/UsdtClient';\nimport type { cryptoWallet } from '../wallet/CryptoClient';\nimport type { flightClient } from '../wallet/FlightClient';\nimport type Phaser from 'phaser';\nimport type { RoomScene } from '../game/RoomScene';\nimport type { BreakerStatus } from '../game/breaker';\nimport type { ActivitiesState, PianoNote } from '../shared/activities';\nimport type { PlayerView } from '../shared/world';\nimport type { ActivityHostContext } from './ActivityHostContract';\nimport type { PvpMove, PvpSnapshot } from '../shared/pvp';\nimport type { progression } from '../wallet/ProgressionClient';\n\nexport const GAME_HOST_KEY = Symbol.for('royal.game-host.v1');\nexport interface GameHostV1 {\n readonly apiVersion: 1;\n readonly expansionClient: typeof expansionClient;\n readonly demoWallet: typeof demoWallet;\n readonly progression: typeof progression;\n readonly walletCoins: typeof coins;\n readonly gameAudio: typeof gameAudio;\n readonly i18n: typeof i18n;\n readonly reactions: typeof reactions;\n readonly demoGames: typeof demoGames;\n readonly minesClient: typeof minesClient;\n readonly casinoClients: typeof casinoClients;\n readonly nilePlay: typeof nilePlay;\n readonly usdtWallet: typeof usdtWallet;\n readonly cryptoWallet: typeof cryptoWallet;\n readonly flightClient: typeof flightClient;\n readonly Phaser: typeof Phaser;\n}\nexport interface GameModuleInstance {\n destroy(): void;\n start?(): void;\n restart?(): void;\n load?(): void | Promise<void>;\n open?(atCabinet?: boolean): void;\n pause?(): void;\n resume?(): void;\n getState?(): unknown;\n update?(state: ActivitiesState): void;\n updatePlayers?(players: PlayerView[], self: string): void;\n receive?(note: PianoNote): void;\n hallChanged?(): void;\n connected?(): void;\n disconnected?(): void;\n}\nexport interface GameModuleContextV1 {\n readonly onStatus?: (state: BreakerStatus) => void;\n readonly setTitle?: (title: string) => void;\n readonly scene?: Pick<RoomScene, 'setLocked' | 'approach'>;\n readonly onPlaying?: (playing: boolean) => void;\n readonly onClosed?: () => void;\n readonly onMounted?: (instance: GameModuleInstance) => void;\n readonly provider?: { readonly embedded: boolean; readonly gameId?: string; readonly gameName?: string; readonly onCatalogue: () => void };\n readonly activity?: ActivityHostContext;\n readonly pvp?: {get():PvpSnapshot|undefined;busy():boolean;subscribe(callback:()=>void):()=>void;move(value:PvpMove):void};\n}\nexport interface GameModuleV1 {\n readonly gameId: IndependentGameId;\n readonly apiVersion: 1;\n readonly rulesVersion: number;\n readonly progressVersion: number;\n mount(host: HTMLElement, context?: GameModuleContextV1): { destroy(): void };\n}\n\nexport function readGameHost(): GameHostV1 {\n const value = (globalThis as unknown as Record<symbol, GameHostV1>)[GAME_HOST_KEY];\n if (!value || value.apiVersion !== 1) throw Error('Game host version is incompatible');\n return value;\n}\n",
+          "to": "import type { IndependentGameId } from './GameModuleCatalog';\nimport type { expansionClient } from '../wallet/ExpansionClient';\nimport type { demoWallet, coins } from '../wallet/WalletClient';\nimport type { gameAudio } from '../game/GameAudio';\nimport type * as i18n from '../i18n/index';\nimport type * as reactions from '../ui/gameReactions';\nimport type * as demoGames from '../game/demoGames';\nimport type { minesClient } from '../wallet/MinesClient';\nimport type { casinoClients } from '../wallet/CasinoClient';\nimport type { nilePlay } from '../wallet/NilePlayClient';\nimport type { usdtWallet } from '../wallet/UsdtClient';\nimport type { cryptoWallet } from '../wallet/CryptoClient';\nimport type { flightClient } from '../wallet/FlightClient';\nimport type Phaser from 'phaser';\nimport type { RoomScene } from '../game/RoomScene';\nimport type { BreakerStatus } from '../game/breaker';\nimport type { ActivitiesState, PianoNote } from '../shared/activities';\nimport type { PlayerView } from '../shared/world';\nimport type { ActivityHostContext } from './ActivityHostContract';\nimport type { PvpCardMove, PvpSnapshot } from '../shared/pvp';\nimport type { progression } from '../wallet/ProgressionClient';\n\nexport const GAME_HOST_KEY = Symbol.for('royal.game-host.v1');\nexport interface GameHostV1 {\n readonly apiVersion: 1;\n readonly expansionClient: typeof expansionClient;\n readonly demoWallet: typeof demoWallet;\n readonly progression: typeof progression;\n readonly walletCoins: typeof coins;\n readonly gameAudio: typeof gameAudio;\n readonly i18n: typeof i18n;\n readonly reactions: typeof reactions;\n readonly demoGames: typeof demoGames;\n readonly minesClient: typeof minesClient;\n readonly casinoClients: typeof casinoClients;\n readonly nilePlay: typeof nilePlay;\n readonly usdtWallet: typeof usdtWallet;\n readonly cryptoWallet: typeof cryptoWallet;\n readonly flightClient: typeof flightClient;\n readonly Phaser: typeof Phaser;\n}\nexport interface GameModuleInstance {\n destroy(): void;\n start?(): void;\n restart?(): void;\n load?(): void | Promise<void>;\n open?(atCabinet?: boolean): void;\n pause?(): void;\n resume?(): void;\n getState?(): unknown;\n update?(state: ActivitiesState): void;\n updatePlayers?(players: PlayerView[], self: string): void;\n receive?(note: PianoNote): void;\n hallChanged?(): void;\n connected?(): void;\n disconnected?(): void;\n}\nexport interface GameModuleContextV1 {\n readonly onStatus?: (state: BreakerStatus) => void;\n readonly setTitle?: (title: string) => void;\n readonly scene?: Pick<RoomScene, 'setLocked' | 'approach'>;\n readonly onPlaying?: (playing: boolean) => void;\n readonly onClosed?: () => void;\n readonly onMounted?: (instance: GameModuleInstance) => void;\n readonly provider?: { readonly embedded: boolean; readonly gameId?: string; readonly gameName?: string; readonly onCatalogue: () => void };\n readonly activity?: ActivityHostContext;\n readonly pvp?: {get():PvpSnapshot|undefined;busy():boolean;subscribe(callback:()=>void):()=>void;move(value:PvpCardMove):void};\n}\nexport interface GameModuleV1 {\n readonly gameId: IndependentGameId;\n readonly apiVersion: 1;\n readonly rulesVersion: number;\n readonly progressVersion: number;\n mount(host: HTMLElement, context?: GameModuleContextV1): { destroy(): void };\n}\n\nexport function readGameHost(): GameHostV1 {\n const value = (globalThis as unknown as Record<symbol, GameHostV1>)[GAME_HOST_KEY];\n if (!value || value.apiVersion !== 1) throw Error('Game host version is incompatible');\n return value;\n}\n"
+        },
+        {
+          "from": "alue:PvpCardMove):vo",
+          "to": "alue:PvpMove):vo"
+        },
+        {
+          "from": "Card",
+          "to": ""
+        },
+        {
+          "from": "d}",
+          "to": "d;\n   now?():number;terms?(stakeUnits:string,revision:number):void;ready?(revision:number,ready:boolean):void;cancel?():void}"
+        }
+      ]
+    },
     "src/shared/neopolisMath.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/shared/neopolisMath.ts",
       "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
       "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
-    },
-    "src/shared/cabinetGeometry.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/cabinetGeometry.ts",
-      "baseSha256": "c63adb8bd873e609053ee24384e999eb4fe170b0be536b02f9ec61e848c00118",
-      "sha256": "c63adb8bd873e609053ee24384e999eb4fe170b0be536b02f9ec61e848c00118"
-    },
-    "src/shared/catHome.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/catHome.ts",
-      "baseSha256": "37f33f935166ea7da5beeddd9f4df5c208d483f8b62d3e6d72b4298a09851b10",
-      "sha256": "37f33f935166ea7da5beeddd9f4df5c208d483f8b62d3e6d72b4298a09851b10"
-    },
-    "src/shared/hockey.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/hockey.ts",
-      "baseSha256": "eba673cd220fac7d85a3ba9da53d9cf0b5dfae7ca3732306327ac7a28a7ca320",
-      "sha256": "eba673cd220fac7d85a3ba9da53d9cf0b5dfae7ca3732306327ac7a28a7ca320"
-    },
-    "src/game/PianoAudio.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/game/PianoAudio.ts",
-      "baseSha256": "5fbc000ee9939e486fd27bf5a6b584522262b8d165697280427aa133ed085039",
-      "sha256": "5fbc000ee9939e486fd27bf5a6b584522262b8d165697280427aa133ed085039"
-    },
-    "src/ui/royalCatalogArtwork.json": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/royalCatalogArtwork.json",
-      "baseSha256": "4487d43f5c9925173e456348e9341f7876455244bd03c1c30677687e57b5c812",
-      "sha256": "4487d43f5c9925173e456348e9341f7876455244bd03c1c30677687e57b5c812"
-    },
-    "src/ui/RoyalGameArtwork.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/RoyalGameArtwork.ts",
-      "baseSha256": "a9cd2ace39a0fc8af73b6a12c32d40d1ff8b52837d1042b238eb31ee0d2e473f",
-      "sha256": "4eacd4bad5fbd8b3f02b8e5991df69fd31baf3e961fd31b153045492975d0aca",
-      "patches": [
-        {
-          "from": "const covers: Record<string, string> = {\n",
-          "to": "const covers: Record<string, string> = {\n  'studio-wild-nudge':'/assets/wild-nudge/cover.webp',\n"
-        },
-        {
-          "from": "tring {\n  return",
-          "to": "tring {\n  if(id==='studio-wild-nudge')return starSpinCover;\n  return"
-        },
-        {
-          "from": "'/assets/wild-nudge/cover.webp'",
-          "to": "starSpinCover"
-        },
-        {
-          "from": "\n\n",
-          "to": "\nimport starSpinCover from '../../games/wild-nudge/assets/catalog-cover.webp';\n\n"
-        }
-      ]
-    },
-    "src/i18n/volcanicPlinkoEn.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/i18n/volcanicPlinkoEn.ts",
-      "baseSha256": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8",
-      "sha256": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8"
-    },
-    "src/i18n/progressionEn.ts": {
-      "commit": "60b13bb8dde910919057835ed056a98257b78857",
-      "path": "src/i18n/progressionEn.ts",
-      "baseSha256": "66c68ac05b3b362c4ef1dae60afaeb1c484d6ada0887adefd9954a4de12c1ba4",
-      "sha256": "66c68ac05b3b362c4ef1dae60afaeb1c484d6ada0887adefd9954a4de12c1ba4"
-    },
-    "src/shared/caribbeanTreasuresMath.ts": {
-      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
-      "path": "src/shared/caribbeanTreasuresMath.ts",
-      "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
-      "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
-    },
-    "src/ui/GameLayoutPolicy.ts": {
-      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
-      "path": "src/ui/GameLayoutPolicy.ts",
-      "baseSha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c",
-      "sha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c"
-    },
-    "src/ui/game-chat.css": {
-      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
-      "path": "src/ui/game-chat.css",
-      "baseSha256": "9a95227195d212ec21ea0bcf758663021d3d89d61a4f977acc06fc05f179d7d8",
-      "sha256": "9a95227195d212ec21ea0bcf758663021d3d89d61a4f977acc06fc05f179d7d8"
-    },
-    "src/game/startupPreviews.json": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/game/startupPreviews.json",
-      "baseSha256": "23f6a630ce19f74115999bf53d24d802c967b4829a6886792394a204a62ed45f",
-      "sha256": "23f6a630ce19f74115999bf53d24d802c967b4829a6886792394a204a62ed45f"
-    },
-    "src/shared/roundPrecision.ts": {
-      "commit": "86ef7ad0df4006cce620c0042e38dd02eedbe5de",
-      "path": "src/shared/roundPrecision.ts",
-      "baseSha256": "38713d4db338dabf7ebaf09135d6ed0de015ddf5bea13501893d3a793e3cf581",
-      "sha256": "38713d4db338dabf7ebaf09135d6ed0de015ddf5bea13501893d3a793e3cf581"
-    },
-    "src/shared/floodedTempleCascadeMath.ts": {
-      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
-      "path": "src/shared/floodedTempleCascadeMath.ts",
-      "baseSha256": "cf9b490bb9bb7f96f18f53e8662c9f931b5e308ca9a291acf8e66d483e352604",
-      "sha256": "cf9b490bb9bb7f96f18f53e8662c9f931b5e308ca9a291acf8e66d483e352604"
     },
     "src/shared/gameCore.ts": {
       "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
@@ -1363,17 +1309,41 @@
       "baseSha256": "95df8061741dcf8ea642d1aa80ba7937505d3e1b81e17b1fb5dbb64711e37b43",
       "sha256": "95df8061741dcf8ea642d1aa80ba7937505d3e1b81e17b1fb5dbb64711e37b43"
     },
-    "src/game/miraArt.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/game/miraArt.ts",
-      "baseSha256": "d8d9ca535eb7dc5236c21f988d8270407dcfc0645b6333bebade5731006e4aa3",
-      "sha256": "d8d9ca535eb7dc5236c21f988d8270407dcfc0645b6333bebade5731006e4aa3"
+    "src/shared/roundPrecision.ts": {
+      "commit": "86ef7ad0df4006cce620c0042e38dd02eedbe5de",
+      "path": "src/shared/roundPrecision.ts",
+      "baseSha256": "38713d4db338dabf7ebaf09135d6ed0de015ddf5bea13501893d3a793e3cf581",
+      "sha256": "38713d4db338dabf7ebaf09135d6ed0de015ddf5bea13501893d3a793e3cf581"
     },
-    "src/shared/miraRoutine.ts": {
+    "src/shared/draconaMath.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/draconaMath.ts",
+      "baseSha256": "7b73a84f00df88ebce06e8eca1676b90ca457b36d3db4329b723cc66e9977583",
+      "sha256": "7b73a84f00df88ebce06e8eca1676b90ca457b36d3db4329b723cc66e9977583"
+    },
+    "src/shared/draconaMathV1.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/miraRoutine.ts",
-      "baseSha256": "6c4c54350515d5157afa57edb2a29cad149d1becea98b7fccd3473d20e069c47",
-      "sha256": "6c4c54350515d5157afa57edb2a29cad149d1becea98b7fccd3473d20e069c47"
+      "path": "src/shared/draconaMathV1.ts",
+      "baseSha256": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21",
+      "sha256": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21"
+    },
+    "src/shared/appearance.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/appearance.ts",
+      "baseSha256": "d753df5f08e1c6717c4ba3fdbe1b0202013177859995751296a8a900f6a5f1a1",
+      "sha256": "d753df5f08e1c6717c4ba3fdbe1b0202013177859995751296a8a900f6a5f1a1"
+    },
+    "src/shared/skinAssetUrl.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/skinAssetUrl.ts",
+      "baseSha256": "b683e9a7ea2b7cb39b295c73d5a73b0feaee25ec825e6c1c2cf5d8348d4609c4",
+      "sha256": "b683e9a7ea2b7cb39b295c73d5a73b0feaee25ec825e6c1c2cf5d8348d4609c4"
+    },
+    "src/shared/usdtWallet.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/usdtWallet.ts",
+      "baseSha256": "23b523bb24b84dcdbda636f1b6bd940e3072a5069b9ba8c44c71da29129c484a",
+      "sha256": "23b523bb24b84dcdbda636f1b6bd940e3072a5069b9ba8c44c71da29129c484a"
     },
     "server/games/vfair/dice/dice-math.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1429,11 +1399,29 @@
       "baseSha256": "75476a6be66e77e6830e2bff964b9f4cacb7a89925c9e20a97ebcb7a4dc8946c",
       "sha256": "75476a6be66e77e6830e2bff964b9f4cacb7a89925c9e20a97ebcb7a4dc8946c"
     },
-    "src/shared/usdtWallet.ts": {
+    "src/shared/chatMedia.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/usdtWallet.ts",
-      "baseSha256": "23b523bb24b84dcdbda636f1b6bd940e3072a5069b9ba8c44c71da29129c484a",
-      "sha256": "23b523bb24b84dcdbda636f1b6bd940e3072a5069b9ba8c44c71da29129c484a"
+      "path": "src/shared/chatMedia.ts",
+      "baseSha256": "c16f283c9310455322193a89038bd39a12213d25d777dc37425d502a85e79b78",
+      "sha256": "c16f283c9310455322193a89038bd39a12213d25d777dc37425d502a85e79b78"
+    },
+    "src/ui/chat-media.css": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/chat-media.css",
+      "baseSha256": "9948203720ed42959b34ecb095a458ae5ccc521ddf9ca3d35f5536692c45141c",
+      "sha256": "9948203720ed42959b34ecb095a458ae5ccc521ddf9ca3d35f5536692c45141c"
+    },
+    "src/shared/forestHeartMath.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/forestHeartMath.ts",
+      "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+      "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
+    },
+    "src/shared/catHome.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/catHome.ts",
+      "baseSha256": "37f33f935166ea7da5beeddd9f4df5c208d483f8b62d3e6d72b4298a09851b10",
+      "sha256": "37f33f935166ea7da5beeddd9f4df5c208d483f8b62d3e6d72b4298a09851b10"
     },
     "src/game/catHomeArt.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1447,11 +1435,119 @@
       "baseSha256": "18baf193c3f7304e12291a6fbc7bcb269afe9b9a6170febaa6def395ee903633",
       "sha256": "18baf193c3f7304e12291a6fbc7bcb269afe9b9a6170febaa6def395ee903633"
     },
-    "src/shared/nilePlay.ts": {
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/caribbeanTreasuresMath.ts",
+      "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+      "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+    },
+    "src/shared/floodedTempleMath.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/floodedTempleMath.ts",
+      "baseSha256": "514c0156493f4bfa94b7d4c56dcbc03d9d35e4430216eea359c4e02632fb7ac1",
+      "sha256": "514c0156493f4bfa94b7d4c56dcbc03d9d35e4430216eea359c4e02632fb7ac1"
+    },
+    "src/shared/floodedTempleCascadeMath.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/floodedTempleCascadeMath.ts",
+      "baseSha256": "cf9b490bb9bb7f96f18f53e8662c9f931b5e308ca9a291acf8e66d483e352604",
+      "sha256": "cf9b490bb9bb7f96f18f53e8662c9f931b5e308ca9a291acf8e66d483e352604"
+    },
+    "src/shared/guardCollision.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/nilePlay.ts",
-      "baseSha256": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6",
-      "sha256": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6"
+      "path": "src/shared/guardCollision.ts",
+      "baseSha256": "a050c55ac5d5e9ab9615635de1b64801343d9a9675c1cd1b23d7bc4e9b49a9f2",
+      "sha256": "a050c55ac5d5e9ab9615635de1b64801343d9a9675c1cd1b23d7bc4e9b49a9f2"
+    },
+    "src/game/skinPoseAlignment.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/game/skinPoseAlignment.ts",
+      "baseSha256": "8ee625a4b076a68c992dd3b4c8bb3a2192dbf59837dc4b320ae8edb39fa7e266",
+      "sha256": "8ee625a4b076a68c992dd3b4c8bb3a2192dbf59837dc4b320ae8edb39fa7e266"
+    },
+    "src/shared/cabinetGeometry.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/cabinetGeometry.ts",
+      "baseSha256": "c63adb8bd873e609053ee24384e999eb4fe170b0be536b02f9ec61e848c00118",
+      "sha256": "c63adb8bd873e609053ee24384e999eb4fe170b0be536b02f9ec61e848c00118"
+    },
+    "src/shared/neopolisMathV3.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/neopolisMathV3.ts",
+      "baseSha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
+      "sha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820"
+    },
+    "src/shared/neopolisStakePayouts.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/neopolisStakePayouts.ts",
+      "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+      "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+    },
+    "src/shared/neopolisMathV1.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/neopolisMathV1.ts",
+      "baseSha256": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92",
+      "sha256": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92"
+    },
+    "src/shared/neopolisMathV2.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/neopolisMathV2.ts",
+      "baseSha256": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692",
+      "sha256": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692"
+    },
+    "src/ui/GameLayoutPolicy.ts": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "src/ui/GameLayoutPolicy.ts",
+      "baseSha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c",
+      "sha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c"
+    },
+    "src/ui/game-chat.css": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "src/ui/game-chat.css",
+      "baseSha256": "9a95227195d212ec21ea0bcf758663021d3d89d61a4f977acc06fc05f179d7d8",
+      "sha256": "9a95227195d212ec21ea0bcf758663021d3d89d61a4f977acc06fc05f179d7d8"
+    },
+    "src/shared/wildNudgeMath.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/wildNudgeMath.ts",
+      "baseSha256": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74",
+      "sha256": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74"
+    },
+    "src/shared/wildNudge.ts": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/wildNudge.ts",
+      "baseSha256": "de36b83b823d2fd48f69bb2aa0c383a44ffbb80ec287e759dd1115db23775624",
+      "sha256": "de36b83b823d2fd48f69bb2aa0c383a44ffbb80ec287e759dd1115db23775624"
+    },
+    "src/ui/royalCatalogArtwork.json": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/royalCatalogArtwork.json",
+      "baseSha256": "4487d43f5c9925173e456348e9341f7876455244bd03c1c30677687e57b5c812",
+      "sha256": "4487d43f5c9925173e456348e9341f7876455244bd03c1c30677687e57b5c812"
+    },
+    "src/ui/RoyalGameArtwork.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/RoyalGameArtwork.ts",
+      "baseSha256": "a9cd2ace39a0fc8af73b6a12c32d40d1ff8b52837d1042b238eb31ee0d2e473f",
+      "sha256": "4eacd4bad5fbd8b3f02b8e5991df69fd31baf3e961fd31b153045492975d0aca",
+      "patches": [
+        {
+          "from": "const covers: Record<string, string> = {\n",
+          "to": "const covers: Record<string, string> = {\n  'studio-wild-nudge':'/assets/wild-nudge/cover.webp',\n"
+        },
+        {
+          "from": "tring {\n  return",
+          "to": "tring {\n  if(id==='studio-wild-nudge')return starSpinCover;\n  return"
+        },
+        {
+          "from": "'/assets/wild-nudge/cover.webp'",
+          "to": "starSpinCover"
+        },
+        {
+          "from": "\n\n",
+          "to": "\nimport starSpinCover from '../../games/wild-nudge/assets/catalog-cover.webp';\n\n"
+        }
+      ]
     },
     "src/shared/velvetReignHistory.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1477,107 +1573,17 @@
       "baseSha256": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee",
       "sha256": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee"
     },
-    "src/shared/guardCollision.ts": {
+    "src/shared/hockey.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/guardCollision.ts",
-      "baseSha256": "a050c55ac5d5e9ab9615635de1b64801343d9a9675c1cd1b23d7bc4e9b49a9f2",
-      "sha256": "a050c55ac5d5e9ab9615635de1b64801343d9a9675c1cd1b23d7bc4e9b49a9f2"
+      "path": "src/shared/hockey.ts",
+      "baseSha256": "eba673cd220fac7d85a3ba9da53d9cf0b5dfae7ca3732306327ac7a28a7ca320",
+      "sha256": "eba673cd220fac7d85a3ba9da53d9cf0b5dfae7ca3732306327ac7a28a7ca320"
     },
-    "src/shared/chatMedia.ts": {
+    "src/game/PianoAudio.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/chatMedia.ts",
-      "baseSha256": "c16f283c9310455322193a89038bd39a12213d25d777dc37425d502a85e79b78",
-      "sha256": "c16f283c9310455322193a89038bd39a12213d25d777dc37425d502a85e79b78"
-    },
-    "src/ui/chat-media.css": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/chat-media.css",
-      "baseSha256": "9948203720ed42959b34ecb095a458ae5ccc521ddf9ca3d35f5536692c45141c",
-      "sha256": "9948203720ed42959b34ecb095a458ae5ccc521ddf9ca3d35f5536692c45141c"
-    },
-    "src/wallet/CasinoClient.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/wallet/CasinoClient.ts",
-      "baseSha256": "feb8e2a78c62aa0d9272b1f18f07eb8db38de2ea01b337a1b132f06d702c3633",
-      "sha256": "feb8e2a78c62aa0d9272b1f18f07eb8db38de2ea01b337a1b132f06d702c3633"
-    },
-    "src/wallet/NilePlayClient.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/wallet/NilePlayClient.ts",
-      "baseSha256": "1789e48810dea6a2390265a7ccdfe7853d5f4d8f92d41954def9ab1a20f41db0",
-      "sha256": "1789e48810dea6a2390265a7ccdfe7853d5f4d8f92d41954def9ab1a20f41db0"
-    },
-    "src/wallet/UsdtClient.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/wallet/UsdtClient.ts",
-      "baseSha256": "65585a87cfbde54e0a03ddba4c3ab3190660a54ffb61bbb1f334c3fcab249592",
-      "sha256": "65585a87cfbde54e0a03ddba4c3ab3190660a54ffb61bbb1f334c3fcab249592"
-    },
-    "src/wallet/FlightClient.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/wallet/FlightClient.ts",
-      "baseSha256": "5378317a883a9dbda28394d65e9db4161f5873ac1ea4a3da1264fd37339ae7a6",
-      "sha256": "5378317a883a9dbda28394d65e9db4161f5873ac1ea4a3da1264fd37339ae7a6"
-    },
-    "src/modules/GameHostContract.ts": {
-      "commit": "60b13bb8dde910919057835ed056a98257b78857",
-      "path": "src/modules/GameHostContract.ts",
-      "baseSha256": "6600ce1f6cb8ca3402a9760d8e83dab29e73cd1b0045a0bb1684967527e6f7a3",
-      "sha256": "328b39ef96f8cd544e892234c68dd3662bf1cca29d74b890e95c409aa285416b",
-      "patches": [
-        {
-          "from": "import type { IndependentGameId } from './GameModuleCatalog';\nimport type { expansionClient } from '../wallet/ExpansionClient';\nimport type { demoWallet, coins } from '../wallet/WalletClient';\nimport type { gameAudio } from '../game/GameAudio';\nimport type * as i18n from '../i18n/index';\nimport type * as reactions from '../ui/gameReactions';\nimport type * as demoGames from '../game/demoGames';\nimport type { minesClient } from '../wallet/MinesClient';\nimport type { casinoClients } from '../wallet/CasinoClient';\nimport type { nilePlay } from '../wallet/NilePlayClient';\nimport type { usdtWallet } from '../wallet/UsdtClient';\nimport type { cryptoWallet } from '../wallet/CryptoClient';\nimport type { flightClient } from '../wallet/FlightClient';\nimport type Phaser from 'phaser';\nimport type { RoomScene } from '../game/RoomScene';\nimport type { BreakerStatus } from '../game/breaker';\nimport type { ActivitiesState, PianoNote } from '../shared/activities';\nimport type { PlayerView } from '../shared/world';\nimport type { ActivityHostContext } from './ActivityHostContract';\nimport type { PvpMove, PvpSnapshot } from '../shared/pvp';\nimport type { progression } from '../wallet/ProgressionClient';\n\nexport const GAME_HOST_KEY = Symbol.for('royal.game-host.v1');\nexport interface GameHostV1 {\n readonly apiVersion: 1;\n readonly expansionClient: typeof expansionClient;\n readonly demoWallet: typeof demoWallet;\n readonly progression: typeof progression;\n readonly walletCoins: typeof coins;\n readonly gameAudio: typeof gameAudio;\n readonly i18n: typeof i18n;\n readonly reactions: typeof reactions;\n readonly demoGames: typeof demoGames;\n readonly minesClient: typeof minesClient;\n readonly casinoClients: typeof casinoClients;\n readonly nilePlay: typeof nilePlay;\n readonly usdtWallet: typeof usdtWallet;\n readonly cryptoWallet: typeof cryptoWallet;\n readonly flightClient: typeof flightClient;\n readonly Phaser: typeof Phaser;\n}\nexport interface GameModuleInstance {\n destroy(): void;\n start?(): void;\n restart?(): void;\n load?(): void | Promise<void>;\n open?(atCabinet?: boolean): void;\n pause?(): void;\n resume?(): void;\n getState?(): unknown;\n update?(state: ActivitiesState): void;\n updatePlayers?(players: PlayerView[], self: string): void;\n receive?(note: PianoNote): void;\n hallChanged?(): void;\n connected?(): void;\n disconnected?(): void;\n}\nexport interface GameModuleContextV1 {\n readonly onStatus?: (state: BreakerStatus) => void;\n readonly setTitle?: (title: string) => void;\n readonly scene?: Pick<RoomScene, 'setLocked' | 'approach'>;\n readonly onPlaying?: (playing: boolean) => void;\n readonly onClosed?: () => void;\n readonly onMounted?: (instance: GameModuleInstance) => void;\n readonly provider?: { readonly embedded: boolean; readonly gameId?: string; readonly gameName?: string; readonly onCatalogue: () => void };\n readonly activity?: ActivityHostContext;\n readonly pvp?: {get():PvpSnapshot|undefined;busy():boolean;subscribe(callback:()=>void):()=>void;move(value:PvpMove):void};\n}\nexport interface GameModuleV1 {\n readonly gameId: IndependentGameId;\n readonly apiVersion: 1;\n readonly rulesVersion: number;\n readonly progressVersion: number;\n mount(host: HTMLElement, context?: GameModuleContextV1): { destroy(): void };\n}\n\nexport function readGameHost(): GameHostV1 {\n const value = (globalThis as unknown as Record<symbol, GameHostV1>)[GAME_HOST_KEY];\n if (!value || value.apiVersion !== 1) throw Error('Game host version is incompatible');\n return value;\n}\n",
-          "to": "import type { IndependentGameId } from './GameModuleCatalog';\nimport type { expansionClient } from '../wallet/ExpansionClient';\nimport type { demoWallet, coins } from '../wallet/WalletClient';\nimport type { gameAudio } from '../game/GameAudio';\nimport type * as i18n from '../i18n/index';\nimport type * as reactions from '../ui/gameReactions';\nimport type * as demoGames from '../game/demoGames';\nimport type { minesClient } from '../wallet/MinesClient';\nimport type { casinoClients } from '../wallet/CasinoClient';\nimport type { nilePlay } from '../wallet/NilePlayClient';\nimport type { usdtWallet } from '../wallet/UsdtClient';\nimport type { cryptoWallet } from '../wallet/CryptoClient';\nimport type { flightClient } from '../wallet/FlightClient';\nimport type Phaser from 'phaser';\nimport type { RoomScene } from '../game/RoomScene';\nimport type { BreakerStatus } from '../game/breaker';\nimport type { ActivitiesState, PianoNote } from '../shared/activities';\nimport type { PlayerView } from '../shared/world';\nimport type { ActivityHostContext } from './ActivityHostContract';\nimport type { PvpCardMove, PvpSnapshot } from '../shared/pvp';\nimport type { progression } from '../wallet/ProgressionClient';\n\nexport const GAME_HOST_KEY = Symbol.for('royal.game-host.v1');\nexport interface GameHostV1 {\n readonly apiVersion: 1;\n readonly expansionClient: typeof expansionClient;\n readonly demoWallet: typeof demoWallet;\n readonly progression: typeof progression;\n readonly walletCoins: typeof coins;\n readonly gameAudio: typeof gameAudio;\n readonly i18n: typeof i18n;\n readonly reactions: typeof reactions;\n readonly demoGames: typeof demoGames;\n readonly minesClient: typeof minesClient;\n readonly casinoClients: typeof casinoClients;\n readonly nilePlay: typeof nilePlay;\n readonly usdtWallet: typeof usdtWallet;\n readonly cryptoWallet: typeof cryptoWallet;\n readonly flightClient: typeof flightClient;\n readonly Phaser: typeof Phaser;\n}\nexport interface GameModuleInstance {\n destroy(): void;\n start?(): void;\n restart?(): void;\n load?(): void | Promise<void>;\n open?(atCabinet?: boolean): void;\n pause?(): void;\n resume?(): void;\n getState?(): unknown;\n update?(state: ActivitiesState): void;\n updatePlayers?(players: PlayerView[], self: string): void;\n receive?(note: PianoNote): void;\n hallChanged?(): void;\n connected?(): void;\n disconnected?(): void;\n}\nexport interface GameModuleContextV1 {\n readonly onStatus?: (state: BreakerStatus) => void;\n readonly setTitle?: (title: string) => void;\n readonly scene?: Pick<RoomScene, 'setLocked' | 'approach'>;\n readonly onPlaying?: (playing: boolean) => void;\n readonly onClosed?: () => void;\n readonly onMounted?: (instance: GameModuleInstance) => void;\n readonly provider?: { readonly embedded: boolean; readonly gameId?: string; readonly gameName?: string; readonly onCatalogue: () => void };\n readonly activity?: ActivityHostContext;\n readonly pvp?: {get():PvpSnapshot|undefined;busy():boolean;subscribe(callback:()=>void):()=>void;move(value:PvpCardMove):void};\n}\nexport interface GameModuleV1 {\n readonly gameId: IndependentGameId;\n readonly apiVersion: 1;\n readonly rulesVersion: number;\n readonly progressVersion: number;\n mount(host: HTMLElement, context?: GameModuleContextV1): { destroy(): void };\n}\n\nexport function readGameHost(): GameHostV1 {\n const value = (globalThis as unknown as Record<symbol, GameHostV1>)[GAME_HOST_KEY];\n if (!value || value.apiVersion !== 1) throw Error('Game host version is incompatible');\n return value;\n}\n"
-        },
-        {
-          "from": "alue:PvpCardMove):vo",
-          "to": "alue:PvpMove):vo"
-        },
-        {
-          "from": "Card",
-          "to": ""
-        },
-        {
-          "from": "d}",
-          "to": "d;\n   now?():number;terms?(stakeUnits:string,revision:number):void;ready?(revision:number,ready:boolean):void;cancel?():void}"
-        }
-      ]
-    },
-    "src/game/CatAudio.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/game/CatAudio.ts",
-      "baseSha256": "bae7a38e7772766397097c7e0b0aa920e551c4892543fa47194454766b363f76",
-      "sha256": "bae7a38e7772766397097c7e0b0aa920e551c4892543fa47194454766b363f76"
-    },
-    "src/game/CatWalkCycle.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/game/CatWalkCycle.ts",
-      "baseSha256": "32cd0638c2ccf3394bd23fc3f123584e71798ac257db7adaca606242d7d282b0",
-      "sha256": "32cd0638c2ccf3394bd23fc3f123584e71798ac257db7adaca606242d7d282b0"
-    },
-    "src/game/CatIdleMotion.ts": {
-      "commit": "e5ac32618bb0d645bef98e05b658bb5bc9a4ced3",
-      "path": "src/game/CatIdleMotion.ts",
-      "baseSha256": "c8a1f6cbfa8ce0476670e17caf4f6db69939d0a1ce8d3f460a9fadd890182d91",
-      "sha256": "c8a1f6cbfa8ce0476670e17caf4f6db69939d0a1ce8d3f460a9fadd890182d91"
-    },
-    "public/assets/cat/walk-v3-frames.json": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "public/assets/cat/walk-v3-frames.json",
-      "baseSha256": "e7a8600b80a163e7a3371aab7acdc9b0b29df9c3e52e9e44b099c95c3619beed",
-      "sha256": "e7a8600b80a163e7a3371aab7acdc9b0b29df9c3e52e9e44b099c95c3619beed"
-    },
-    "src/shared/wildNudgeMath.ts": {
-      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
-      "path": "src/shared/wildNudgeMath.ts",
-      "baseSha256": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74",
-      "sha256": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74"
-    },
-    "src/shared/wildNudge.ts": {
-      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
-      "path": "src/shared/wildNudge.ts",
-      "baseSha256": "de36b83b823d2fd48f69bb2aa0c383a44ffbb80ec287e759dd1115db23775624",
-      "sha256": "de36b83b823d2fd48f69bb2aa0c383a44ffbb80ec287e759dd1115db23775624"
+      "path": "src/game/PianoAudio.ts",
+      "baseSha256": "5fbc000ee9939e486fd27bf5a6b584522262b8d165697280427aa133ed085039",
+      "sha256": "5fbc000ee9939e486fd27bf5a6b584522262b8d165697280427aa133ed085039"
     },
     "src/game/avatarArt.ts": {
       "commit": "9b6f6f03550eb9d38d66afb827b73165a672a339",
@@ -1585,11 +1591,11 @@
       "baseSha256": "62f432d6295e6d5ecff3d25f088dae6cb737843b0cd558d10c343f64ac601043",
       "sha256": "62f432d6295e6d5ecff3d25f088dae6cb737843b0cd558d10c343f64ac601043"
     },
-    "src/shared/appearance.ts": {
+    "src/game/miraArt.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/appearance.ts",
-      "baseSha256": "d753df5f08e1c6717c4ba3fdbe1b0202013177859995751296a8a900f6a5f1a1",
-      "sha256": "d753df5f08e1c6717c4ba3fdbe1b0202013177859995751296a8a900f6a5f1a1"
+      "path": "src/game/miraArt.ts",
+      "baseSha256": "d8d9ca535eb7dc5236c21f988d8270407dcfc0645b6333bebade5731006e4aa3",
+      "sha256": "d8d9ca535eb7dc5236c21f988d8270407dcfc0645b6333bebade5731006e4aa3"
     },
     "src/game/profileWalk.ts": {
       "commit": "384a045e52783f1a7eac48dc8a6422adbada30c9",
@@ -1597,11 +1603,29 @@
       "baseSha256": "c48f85c2e3ce0d56b5f4e59fba97c3d5ee82344b4c434491e68634542045e516",
       "sha256": "c48f85c2e3ce0d56b5f4e59fba97c3d5ee82344b4c434491e68634542045e516"
     },
-    "src/shared/skinAssetUrl.ts": {
+    "src/shared/miraRoutine.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/skinAssetUrl.ts",
-      "baseSha256": "b683e9a7ea2b7cb39b295c73d5a73b0feaee25ec825e6c1c2cf5d8348d4609c4",
-      "sha256": "b683e9a7ea2b7cb39b295c73d5a73b0feaee25ec825e6c1c2cf5d8348d4609c4"
+      "path": "src/shared/miraRoutine.ts",
+      "baseSha256": "6c4c54350515d5157afa57edb2a29cad149d1becea98b7fccd3473d20e069c47",
+      "sha256": "6c4c54350515d5157afa57edb2a29cad149d1becea98b7fccd3473d20e069c47"
+    },
+    "src/network/sessionRecovery.ts": {
+      "commit": "48e26ff07c96e02a97e62c21ec9d6d9ee13ce3b5",
+      "path": "src/network/sessionRecovery.ts",
+      "baseSha256": "e8fe3d0b1b2e6f119969bbf63718a09cc9f2c8f8885ff09ab0a6aa0e9b8accb2",
+      "sha256": "e8fe3d0b1b2e6f119969bbf63718a09cc9f2c8f8885ff09ab0a6aa0e9b8accb2"
+    },
+    "src/ui/CharacterEditor.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/CharacterEditor.ts",
+      "baseSha256": "78155e8bdef3723fc0325a0ed6500ea370ee8ab24bcf76d3b0edc9eaaf3baf18",
+      "sha256": "78155e8bdef3723fc0325a0ed6500ea370ee8ab24bcf76d3b0edc9eaaf3baf18"
+    },
+    "src/ui/SkinStudioUI.ts": {
+      "commit": "5120fa89698356a3deb9ee5788f45cd570a18154",
+      "path": "src/ui/SkinStudioUI.ts",
+      "baseSha256": "1ae6715c359f947c36e3c12c7f49a931fd2bc56d12fa32ecfae76a6ccc4f573b",
+      "sha256": "1ae6715c359f947c36e3c12c7f49a931fd2bc56d12fa32ecfae76a6ccc4f573b"
     },
     "src/network/PvpClient.ts": {
       "commit": "0bc95d280f03b0395b7fba4542dd3cb837cae23e",
@@ -1633,41 +1657,53 @@
       "baseSha256": "97bba60d5044f971ac910ece29509ea3df94dd22bea25b6f80eeca56def7a492",
       "sha256": "97bba60d5044f971ac910ece29509ea3df94dd22bea25b6f80eeca56def7a492"
     },
-    "src/shared/floodedTempleMath.ts": {
-      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
-      "path": "src/shared/floodedTempleMath.ts",
-      "baseSha256": "514c0156493f4bfa94b7d4c56dcbc03d9d35e4430216eea359c4e02632fb7ac1",
-      "sha256": "514c0156493f4bfa94b7d4c56dcbc03d9d35e4430216eea359c4e02632fb7ac1"
-    },
-    "src/shared/neopolisMathV3.ts": {
+    "src/game/CatAudio.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/neopolisMathV3.ts",
-      "baseSha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
-      "sha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820"
+      "path": "src/game/CatAudio.ts",
+      "baseSha256": "bae7a38e7772766397097c7e0b0aa920e551c4892543fa47194454766b363f76",
+      "sha256": "bae7a38e7772766397097c7e0b0aa920e551c4892543fa47194454766b363f76"
     },
-    "src/shared/neopolisStakePayouts.ts": {
-      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
-      "path": "src/shared/neopolisStakePayouts.ts",
-      "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
-      "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
-    },
-    "src/shared/neopolisMathV1.ts": {
+    "src/game/CatWalkCycle.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/neopolisMathV1.ts",
-      "baseSha256": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92",
-      "sha256": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92"
+      "path": "src/game/CatWalkCycle.ts",
+      "baseSha256": "32cd0638c2ccf3394bd23fc3f123584e71798ac257db7adaca606242d7d282b0",
+      "sha256": "32cd0638c2ccf3394bd23fc3f123584e71798ac257db7adaca606242d7d282b0"
     },
-    "src/shared/neopolisMathV2.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/neopolisMathV2.ts",
-      "baseSha256": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692",
-      "sha256": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692"
+    "src/game/CatIdleMotion.ts": {
+      "commit": "e5ac32618bb0d645bef98e05b658bb5bc9a4ced3",
+      "path": "src/game/CatIdleMotion.ts",
+      "baseSha256": "c8a1f6cbfa8ce0476670e17caf4f6db69939d0a1ce8d3f460a9fadd890182d91",
+      "sha256": "c8a1f6cbfa8ce0476670e17caf4f6db69939d0a1ce8d3f460a9fadd890182d91"
     },
-    "src/shared/movementLimits.ts": {
+    "public/assets/cat/walk-v3-frames.json": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/movementLimits.ts",
-      "baseSha256": "6d70cf0d47e42fc3dafac122c24f33da7a00946ad4ac22f06a0a07e4dc118d02",
-      "sha256": "6d70cf0d47e42fc3dafac122c24f33da7a00946ad4ac22f06a0a07e4dc118d02"
+      "path": "public/assets/cat/walk-v3-frames.json",
+      "baseSha256": "e7a8600b80a163e7a3371aab7acdc9b0b29df9c3e52e9e44b099c95c3619beed",
+      "sha256": "e7a8600b80a163e7a3371aab7acdc9b0b29df9c3e52e9e44b099c95c3619beed"
+    },
+    "src/shared/nilePlay.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/nilePlay.ts",
+      "baseSha256": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6",
+      "sha256": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6"
+    },
+    "src/game/startupPreviews.json": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/game/startupPreviews.json",
+      "baseSha256": "23f6a630ce19f74115999bf53d24d802c967b4829a6886792394a204a62ed45f",
+      "sha256": "23f6a630ce19f74115999bf53d24d802c967b4829a6886792394a204a62ed45f"
+    },
+    "src/i18n/volcanicPlinkoEn.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/i18n/volcanicPlinkoEn.ts",
+      "baseSha256": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8",
+      "sha256": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8"
+    },
+    "src/i18n/progressionEn.ts": {
+      "commit": "60b13bb8dde910919057835ed056a98257b78857",
+      "path": "src/i18n/progressionEn.ts",
+      "baseSha256": "66c68ac05b3b362c4ef1dae60afaeb1c484d6ada0887adefd9954a4de12c1ba4",
+      "sha256": "66c68ac05b3b362c4ef1dae60afaeb1c484d6ada0887adefd9954a4de12c1ba4"
     },
     "src/shared/velvetReign.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1675,53 +1711,11 @@
       "baseSha256": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
       "sha256": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f"
     },
-    "src/game/skinPoseAlignment.ts": {
+    "src/shared/movementLimits.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/game/skinPoseAlignment.ts",
-      "baseSha256": "8ee625a4b076a68c992dd3b4c8bb3a2192dbf59837dc4b320ae8edb39fa7e266",
-      "sha256": "8ee625a4b076a68c992dd3b4c8bb3a2192dbf59837dc4b320ae8edb39fa7e266"
-    },
-    "src/shared/draconaMath.ts": {
-      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
-      "path": "src/shared/draconaMath.ts",
-      "baseSha256": "7b73a84f00df88ebce06e8eca1676b90ca457b36d3db4329b723cc66e9977583",
-      "sha256": "7b73a84f00df88ebce06e8eca1676b90ca457b36d3db4329b723cc66e9977583"
-    },
-    "src/shared/draconaMathV1.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/draconaMathV1.ts",
-      "baseSha256": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21",
-      "sha256": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21"
-    },
-    "src/shared/forestHeartMath.ts": {
-      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
-      "path": "src/shared/forestHeartMath.ts",
-      "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
-      "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
-    },
-    "src/network/sessionRecovery.ts": {
-      "commit": "48e26ff07c96e02a97e62c21ec9d6d9ee13ce3b5",
-      "path": "src/network/sessionRecovery.ts",
-      "baseSha256": "e8fe3d0b1b2e6f119969bbf63718a09cc9f2c8f8885ff09ab0a6aa0e9b8accb2",
-      "sha256": "e8fe3d0b1b2e6f119969bbf63718a09cc9f2c8f8885ff09ab0a6aa0e9b8accb2"
-    },
-    "src/ui/CharacterEditor.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/CharacterEditor.ts",
-      "baseSha256": "78155e8bdef3723fc0325a0ed6500ea370ee8ab24bcf76d3b0edc9eaaf3baf18",
-      "sha256": "78155e8bdef3723fc0325a0ed6500ea370ee8ab24bcf76d3b0edc9eaaf3baf18"
-    },
-    "src/ui/SkinStudioUI.ts": {
-      "commit": "5120fa89698356a3deb9ee5788f45cd570a18154",
-      "path": "src/ui/SkinStudioUI.ts",
-      "baseSha256": "1ae6715c359f947c36e3c12c7f49a931fd2bc56d12fa32ecfae76a6ccc4f573b",
-      "sha256": "1ae6715c359f947c36e3c12c7f49a931fd2bc56d12fa32ecfae76a6ccc4f573b"
-    },
-    "src/ui/StudioArtwork.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/StudioArtwork.ts",
-      "baseSha256": "17cf6de27f5961a6e7c8522efa60c9aa8b105194f003016d0e939c74ebc2526f",
-      "sha256": "17cf6de27f5961a6e7c8522efa60c9aa8b105194f003016d0e939c74ebc2526f"
+      "path": "src/shared/movementLimits.ts",
+      "baseSha256": "6d70cf0d47e42fc3dafac122c24f33da7a00946ad4ac22f06a0a07e4dc118d02",
+      "sha256": "6d70cf0d47e42fc3dafac122c24f33da7a00946ad4ac22f06a0a07e4dc118d02"
     },
     "src/vendor/github/baccarat/constants.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1729,59 +1723,17 @@
       "baseSha256": "396c5002ef85a8b2d845e57e94e5072d0f064f96dc773ec66eb960dd3ecc54c5",
       "sha256": "396c5002ef85a8b2d845e57e94e5072d0f064f96dc773ec66eb960dd3ecc54c5"
     },
-    "src/shared/floodedTempleCascadeData.json": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/shared/floodedTempleCascadeData.json",
-      "baseSha256": "5aa05b4cca0476f48d84e70402204ec9029949a8da3c8d2c7a95b6a5456fc07a",
-      "sha256": "5aa05b4cca0476f48d84e70402204ec9029949a8da3c8d2c7a95b6a5456fc07a"
-    },
-    "src/shared/tsuEFa.ts": {
-      "commit": "cc24e8f02648dbe1848d6e1e53b1ab20519b837c",
-      "path": "src/shared/tsuEFa.ts",
-      "baseSha256": "907dc4fae7035222cf290bcf99650b3d4945058931a54eb523cf3e3be02e18ed",
-      "sha256": "907dc4fae7035222cf290bcf99650b3d4945058931a54eb523cf3e3be02e18ed"
-    },
-    "src/shared/tsuDuel.ts": {
-      "commit": "48e26ff07c96e02a97e62c21ec9d6d9ee13ce3b5",
-      "path": "src/shared/tsuDuel.ts",
-      "baseSha256": "c6d3f0bc21fdfeea1307a506b3e1238de7af9711ac054fa93c2785eb9a9c6505",
-      "sha256": "c6d3f0bc21fdfeea1307a506b3e1238de7af9711ac054fa93c2785eb9a9c6505"
-    },
-    "src/network/reconnection.ts": {
-      "commit": "ee5ca86fb0545fe4ba6d410872c48c5d80288621",
-      "path": "src/network/reconnection.ts",
-      "baseSha256": "6fa25ffea3e60b9d4e76441c995cdda5dde9e066f9ec23af1fbca020ea15aacb",
-      "sha256": "6fa25ffea3e60b9d4e76441c995cdda5dde9e066f9ec23af1fbca020ea15aacb"
-    },
-    "src/shared/lobbyConnection.ts": {
-      "commit": "ee5ca86fb0545fe4ba6d410872c48c5d80288621",
-      "path": "src/shared/lobbyConnection.ts",
-      "baseSha256": "4cd112040e2d4dbefefab9c882b176c9ee0944d4b167c4c9280a594e5eb2dbac",
-      "sha256": "4cd112040e2d4dbefefab9c882b176c9ee0944d4b167c4c9280a594e5eb2dbac"
-    },
-    "src/shared/wildNudgeData.json": {
-      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
-      "path": "src/shared/wildNudgeData.json",
-      "baseSha256": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8",
-      "sha256": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8"
-    },
     "src/shared/floodedTempleData.json": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/shared/floodedTempleData.json",
       "baseSha256": "0033975e51c12770b84dbe04146ad9f474276e783ee7c2ed2c6179ad3ee437dc",
       "sha256": "0033975e51c12770b84dbe04146ad9f474276e783ee7c2ed2c6179ad3ee437dc"
     },
-    "src/ui/pvp-invitations.css": {
-      "commit": "7d85f4a3419e1fff9e208213853a035cebeba267",
-      "path": "src/ui/pvp-invitations.css",
-      "baseSha256": "5d78c9795f8338a3856f1fe883e60be7d68de13ea4c6b56c030c72d920fb113b",
-      "sha256": "5d78c9795f8338a3856f1fe883e60be7d68de13ea4c6b56c030c72d920fb113b"
-    },
-    "src/ui/character-editor.css": {
+    "src/shared/floodedTempleCascadeData.json": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/character-editor.css",
-      "baseSha256": "5bc5d8b77178d2eb08838eec9eb7a72f58f57731db7bbe655f380ec517e7619c",
-      "sha256": "5bc5d8b77178d2eb08838eec9eb7a72f58f57731db7bbe655f380ec517e7619c"
+      "path": "src/shared/floodedTempleCascadeData.json",
+      "baseSha256": "5aa05b4cca0476f48d84e70402204ec9029949a8da3c8d2c7a95b6a5456fc07a",
+      "sha256": "5aa05b4cca0476f48d84e70402204ec9029949a8da3c8d2c7a95b6a5456fc07a"
     },
     "server/games/vfair/decimal.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1789,35 +1741,17 @@
       "baseSha256": "235cf2ea332f2a635b06e86462809821f9e515e5a73de6c944811f2d3b0f60d7",
       "sha256": "235cf2ea332f2a635b06e86462809821f9e515e5a73de6c944811f2d3b0f60d7"
     },
-    "server/games/vfair/plinko/plinko-multipliers.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "server/games/vfair/plinko/plinko-multipliers.ts",
-      "baseSha256": "4be4d4ccb0dca62ec216edf295d6459075817d5b115e5d28038df2ebaf96f072",
-      "sha256": "4be4d4ccb0dca62ec216edf295d6459075817d5b115e5d28038df2ebaf96f072"
-    },
-    "src/ui/SkinFittingRoom.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/SkinFittingRoom.ts",
-      "baseSha256": "58fac5c92ba998cc6f31b3ae6b3f32c53c0ae8b61b6f415c1bc0589effe6932e",
-      "sha256": "58fac5c92ba998cc6f31b3ae6b3f32c53c0ae8b61b6f415c1bc0589effe6932e"
-    },
-    "src/ui/skin-studio.css": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "src/ui/skin-studio.css",
-      "baseSha256": "fc5b72eb39487b329cab7aa34606a34f656bef746f7db130f34f0be3a79b65d0",
-      "sha256": "fc5b72eb39487b329cab7aa34606a34f656bef746f7db130f34f0be3a79b65d0"
-    },
-    "server/games/vfair/limbo/limbo-constants.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "server/games/vfair/limbo/limbo-constants.ts",
-      "baseSha256": "b5bc95ccd1943068b60bc621354e68a6e53c872d50a34414b52babbd02c3d527",
-      "sha256": "b5bc95ccd1943068b60bc621354e68a6e53c872d50a34414b52babbd02c3d527"
-    },
     "server/games/vfair/game-rtp.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "server/games/vfair/game-rtp.ts",
       "baseSha256": "850598f0b5b9c2c8d9a13a4ff151be5d23467804bc457f35665e95b6008f87c7",
       "sha256": "850598f0b5b9c2c8d9a13a4ff151be5d23467804bc457f35665e95b6008f87c7"
+    },
+    "server/games/vfair/mines/mines-constants.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "server/games/vfair/mines/mines-constants.ts",
+      "baseSha256": "168798b8df86084da0848ef2d4589256a1ad5d8f4c0c30c13960fb0ba47d69db",
+      "sha256": "168798b8df86084da0848ef2d4589256a1ad5d8f4c0c30c13960fb0ba47d69db"
     },
     "server/games/vfair/dice/dice-constants.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1831,23 +1765,89 @@
       "baseSha256": "c4f310051ab1d73b634855897f9d1f14b13452a6bf8b0d2d64e72cbb4d508fc7",
       "sha256": "c4f310051ab1d73b634855897f9d1f14b13452a6bf8b0d2d64e72cbb4d508fc7"
     },
-    "server/games/vfair/keno/keno-multipliers.ts": {
+    "server/games/vfair/limbo/limbo-constants.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "server/games/vfair/keno/keno-multipliers.ts",
-      "baseSha256": "c76e0a9698539ea0f09f3bfc863ed47351a7ac38270078a0fee8ec579fe240b4",
-      "sha256": "c76e0a9698539ea0f09f3bfc863ed47351a7ac38270078a0fee8ec579fe240b4"
-    },
-    "server/games/vfair/mines/mines-constants.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
-      "path": "server/games/vfair/mines/mines-constants.ts",
-      "baseSha256": "168798b8df86084da0848ef2d4589256a1ad5d8f4c0c30c13960fb0ba47d69db",
-      "sha256": "168798b8df86084da0848ef2d4589256a1ad5d8f4c0c30c13960fb0ba47d69db"
+      "path": "server/games/vfair/limbo/limbo-constants.ts",
+      "baseSha256": "b5bc95ccd1943068b60bc621354e68a6e53c872d50a34414b52babbd02c3d527",
+      "sha256": "b5bc95ccd1943068b60bc621354e68a6e53c872d50a34414b52babbd02c3d527"
     },
     "server/games/vfair/limbo/limbo-rtp-bounds.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "server/games/vfair/limbo/limbo-rtp-bounds.ts",
       "baseSha256": "67756ce5182e7fb4ecce1ce9ecc60aba34986929309b3c631f6ba43c58e534ee",
       "sha256": "67756ce5182e7fb4ecce1ce9ecc60aba34986929309b3c631f6ba43c58e534ee"
+    },
+    "src/shared/wildNudgeData.json": {
+      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "path": "src/shared/wildNudgeData.json",
+      "baseSha256": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8",
+      "sha256": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8"
+    },
+    "server/games/vfair/plinko/plinko-multipliers.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "server/games/vfair/plinko/plinko-multipliers.ts",
+      "baseSha256": "4be4d4ccb0dca62ec216edf295d6459075817d5b115e5d28038df2ebaf96f072",
+      "sha256": "4be4d4ccb0dca62ec216edf295d6459075817d5b115e5d28038df2ebaf96f072"
+    },
+    "src/ui/StudioArtwork.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/StudioArtwork.ts",
+      "baseSha256": "17cf6de27f5961a6e7c8522efa60c9aa8b105194f003016d0e939c74ebc2526f",
+      "sha256": "17cf6de27f5961a6e7c8522efa60c9aa8b105194f003016d0e939c74ebc2526f"
+    },
+    "server/games/vfair/keno/keno-multipliers.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "server/games/vfair/keno/keno-multipliers.ts",
+      "baseSha256": "c76e0a9698539ea0f09f3bfc863ed47351a7ac38270078a0fee8ec579fe240b4",
+      "sha256": "c76e0a9698539ea0f09f3bfc863ed47351a7ac38270078a0fee8ec579fe240b4"
+    },
+    "src/shared/tsuEFa.ts": {
+      "commit": "cc24e8f02648dbe1848d6e1e53b1ab20519b837c",
+      "path": "src/shared/tsuEFa.ts",
+      "baseSha256": "907dc4fae7035222cf290bcf99650b3d4945058931a54eb523cf3e3be02e18ed",
+      "sha256": "907dc4fae7035222cf290bcf99650b3d4945058931a54eb523cf3e3be02e18ed"
+    },
+    "src/shared/tsuDuel.ts": {
+      "commit": "48e26ff07c96e02a97e62c21ec9d6d9ee13ce3b5",
+      "path": "src/shared/tsuDuel.ts",
+      "baseSha256": "c6d3f0bc21fdfeea1307a506b3e1238de7af9711ac054fa93c2785eb9a9c6505",
+      "sha256": "c6d3f0bc21fdfeea1307a506b3e1238de7af9711ac054fa93c2785eb9a9c6505"
+    },
+    "src/ui/character-editor.css": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/character-editor.css",
+      "baseSha256": "5bc5d8b77178d2eb08838eec9eb7a72f58f57731db7bbe655f380ec517e7619c",
+      "sha256": "5bc5d8b77178d2eb08838eec9eb7a72f58f57731db7bbe655f380ec517e7619c"
+    },
+    "src/ui/SkinFittingRoom.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/SkinFittingRoom.ts",
+      "baseSha256": "58fac5c92ba998cc6f31b3ae6b3f32c53c0ae8b61b6f415c1bc0589effe6932e",
+      "sha256": "58fac5c92ba998cc6f31b3ae6b3f32c53c0ae8b61b6f415c1bc0589effe6932e"
+    },
+    "src/ui/skin-studio.css": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/ui/skin-studio.css",
+      "baseSha256": "fc5b72eb39487b329cab7aa34606a34f656bef746f7db130f34f0be3a79b65d0",
+      "sha256": "fc5b72eb39487b329cab7aa34606a34f656bef746f7db130f34f0be3a79b65d0"
+    },
+    "src/ui/pvp-invitations.css": {
+      "commit": "7d85f4a3419e1fff9e208213853a035cebeba267",
+      "path": "src/ui/pvp-invitations.css",
+      "baseSha256": "5d78c9795f8338a3856f1fe883e60be7d68de13ea4c6b56c030c72d920fb113b",
+      "sha256": "5d78c9795f8338a3856f1fe883e60be7d68de13ea4c6b56c030c72d920fb113b"
+    },
+    "src/network/reconnection.ts": {
+      "commit": "ee5ca86fb0545fe4ba6d410872c48c5d80288621",
+      "path": "src/network/reconnection.ts",
+      "baseSha256": "6fa25ffea3e60b9d4e76441c995cdda5dde9e066f9ec23af1fbca020ea15aacb",
+      "sha256": "6fa25ffea3e60b9d4e76441c995cdda5dde9e066f9ec23af1fbca020ea15aacb"
+    },
+    "src/shared/lobbyConnection.ts": {
+      "commit": "ee5ca86fb0545fe4ba6d410872c48c5d80288621",
+      "path": "src/shared/lobbyConnection.ts",
+      "baseSha256": "4cd112040e2d4dbefefab9c882b176c9ee0944d4b167c4c9280a594e5eb2dbac",
+      "sha256": "4cd112040e2d4dbefefab9c882b176c9ee0944d4b167c4c9280a594e5eb2dbac"
     },
     "server/games/vfair/keno/keno-reference-paytables.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",

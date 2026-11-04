@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "baseCommit": "820e1c4e92eeb54b85915c483dc4e59829679c71",
+  "baseCommit": "39b34944ee46074517c59065bdcf7454789875a4",
   "expectedSources": {
     "server/afterglowProgress.ts": "4a7f5d07ca6be6afbcec0c5ff2c7d91bb4da82f81438aa35c8a418cc939134b9",
     "server/demoWallet.ts": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
@@ -37,6 +37,7 @@
     "games/royal-roulette/package.json": "5ac9061c1a356c3d493f44fe2e9ab59ee4865e2a146e3e2585c2d4d4b8873492",
     "games/velvet-reign/package.json": "4ce996c972e7b48aad56048fc4a3861e22b9c05f177fe0230120770697668fc0",
     "src/ui/VolcanicPlinkoUI.ts": "ba0266886fdf338d8254b66e1e09858a5eff11e5dc2f7ac8ef619629bad13d4e",
+    "games/royal-roulette/priorities.css": "0ad6b1a290a20efca62d3706ddc1a6bd429de6d5a5da1ec1b5976b12268077e1",
     "games/wild-nudge/GalacticReactorUI.ts": "5840dc55626da324fe5771dfb16e2159191500733aee458c5902cccb15081302",
     "games/wild-nudge/package.json": "4db1019492a12e80d99cc7195b0ce4a51de5914e1707767bd8b62c975ad25897"
   },

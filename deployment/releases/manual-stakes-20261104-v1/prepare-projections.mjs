@@ -11,7 +11,7 @@ const git=(...args)=>execFileSync('git',args,{maxBuffer:128*1024**2,stdio:['igno
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
 const canonical=bytes=>Buffer.from(bytes.toString('utf8').replace(/\r\n/g,'\n'));
 const origin=(name,commit,bytes)=>{const hash=digest(canonical(bytes));return {commit,path:name,baseSha256:hash,sha256:hash};};
-const changed=git('diff','--name-only','b730f386','6f941f5e440f3ef7e86d0582e85a260fcf52ea80').toString().trim().split('\n');
+const changed=[...git('diff','--name-only','b730f386','6f941f5e440f3ef7e86d0582e85a260fcf52ea80').toString().trim().split('\n'),'games/royal-roulette/priorities.css'];
 const files={};
 const candidates=git('ls-files','deployment').toString().trim().split('\n').filter(n=>/(?:projection|origins).*\.json$/.test(n));
 function inspect(value){

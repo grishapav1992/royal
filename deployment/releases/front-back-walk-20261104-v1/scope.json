@@ -1,5 +1,5 @@
 {
-  "productionCommit": "820e1c4e92eeb54b85915c483dc4e59829679c71",
+  "productionCommit": "39b34944ee46074517c59065bdcf7454789875a4",
   "animationCommit": "9b6f6f03550eb9d38d66afb827b73165a672a339",
   "expectedSources": {
     "src/game/characters.ts": "b8b5349d729185b4d366dfc0ffa0dd35b284226b664be84364d5c35bb2214125",
