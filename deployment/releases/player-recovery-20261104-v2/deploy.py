@@ -2,7 +2,7 @@
 import sys
 sys.dont_write_bytecode = True
 from pathlib import Path
-import fcntl, hashlib, json, re, signal, types, subprocess, importlib.util
+import fcntl, hashlib, json, re, signal, time, types, subprocess, importlib.util
 from image_metadata import image, inspect
 
 NAME = 'player-recovery-20261104-v2'
@@ -14,6 +14,20 @@ def require(value, reason):
     if not value: raise RuntimeError(reason)
 
 def sha(path): return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def wait_for_healthy(base, timeout=300, now=None, pause=None):
+    now, pause = now or time.monotonic, pause or time.sleep
+    deadline = now() + timeout
+    while now() < deadline:
+        state = json.loads(base.run(['docker', 'inspect', 'royal-game-1']))[0]['State']
+        require(state.get('Running') is True, 'Game exited during startup')
+        if state.get('Health', {}).get('Status') == 'healthy':
+            result = json.loads(base.run(['docker', 'exec', 'royal-game-1', 'node', '-e',
+                "fetch('http://127.0.0.1:2567/healthz').then(async r=>{if(!r.ok)process.exit(1);const d=await r.json();if(d.ok!==true)process.exit(1);console.log(JSON.stringify({ok:true}));}).catch(()=>process.exit(1))"]))
+            require(result.get('ok') is True, 'Game health endpoint failed')
+            return
+        pause(1)
+    raise RuntimeError('Game did not become healthy within the startup deadline')
 
 def validate_inputs(changes, projection, before, required, preserved=None):
     require(set(changes) == SOURCES, 'Unreviewed lobby recovery source scope')
@@ -66,6 +80,7 @@ def configure(root=ROOT):
         def __getattr__(self, name): return getattr(subprocess, name)
     base.subprocess = StagingProcess()
     base.run, base.image, base.settings = run, image, settings
+    base.healthy = lambda: wait_for_healthy(base)
     base.payload = lambda: payload(base)
     return base
 
@@ -84,6 +99,10 @@ def payload(b):
         require(name == 'index.html' or 'dist/' + name not in old['program'] or old['program']['dist/' + name] == digest, 'Immutable URL collision')
     release = json.loads((b.ROOT / 'release-manifest.json').read_text()); receipt = json.loads((b.ROOT / 'release-github.json').read_text())
     require(sha(b.ROOT / 'release-manifest.json') == m['releaseManifestSha256'] and sha(b.ROOT / 'release-github.json') == m['receiptSha256'], 'Release evidence changed')
+    helper = json.loads((b.ROOT / 'installer-github.json').read_text())
+    require(sha(b.ROOT / 'installer-github.json') == m['helperReceiptSha256'], 'Installer GitHub evidence changed')
+    require(helper['sourceCommit'] == m['helperSourceCommit'] and helper['applicationSourceCommit'] == m['sourceCommit'], 'Installer source differs')
+    require(helper['changedOnlyReleaseTooling'] and all(name.startswith('deployment/releases/' + NAME + '/') for name in helper['changedOnlyReleaseTooling']), 'Installer changed application sources')
     require(release['sourceCommit'] == receipt['sourceCommit'] == m['sourceCommit'] and release['baseCommit'] == m['baseCommit'] == old['sourceCommit'], 'Unverified source')
     require(release['scope'] == 'application' and release['clean'] and release['build']['passed'], 'Release verification missing')
     require(all(release['files'].get('dist/' + n) == h for n, h in b.DELTA.items()), 'Client differs from verified build')
