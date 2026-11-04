@@ -6,7 +6,7 @@
   "tests": {
     "audioAndPhysics": 16,
     "commonWallet": 19,
-    "publisherLinux": 3,
+    "publisherLinux": 8,
     "host": {
       "cases": [
         {
@@ -66,7 +66,7 @@
     "The real-host contact check uses the supported skip action after a physical contact, then verifies lost-response replay and close/reopen."
   ],
   "productionPublished": false,
-  "publicationStatus": "paused_by_user",
+  "publicationStatus": "authorized_awaiting_guarded_install",
   "pauseEvidence": {
     "threadId": "01a1a777-3a8b-7d22-9add-748e77317cdb",
     "title": "Найти причину долгой установки",
@@ -78,5 +78,10 @@
     "sha256": "4ddb04f83d79ce657ab41d79ec2a99340782e7fe4fb513737ca174832a0f16d3"
   },
   "currentMainHasLaterFlagBattleUIChanges": true,
-  "installerNeedsNewLockProtocolAndSeparateGitProvenance": true
+  "installerNeedsNewLockProtocolAndSeparateGitProvenance": false,
+  "resumeEvidence": {
+    "threadId": "01a1a777-3a8b-7d22-9add-748e77317cdb",
+    "userInstruction": "Теперь сними паузу и передай чатам, чтобы продолжали выкладку по новому процессу."
+  },
+  "installerProtocol": "nonblocking_all_locks_partial_close_exit75"
 }

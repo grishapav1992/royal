@@ -26,7 +26,11 @@ assert op['sourceCommit']=='88a99af8c49ac43530c2fb9ae93a8abb4576c60d'
 for name,digest in proof['sourceFiles'].items():
  assert digest==(op['source'].get(name) or before['sourceLF'].get(name)), 'Changed game input: '+name
 for name,digest in op['source'].items():assert sha(root/'source'/name)==digest
-assert sha(root/'publish.py')==op['wrapperSha256']
+installer=read(root/'installer-github.json')
+assert installer['includedInMain'] is True
+assert installer['files']['deployment/releases/flag-collision-audio-20261104-v1/publish.py']==sha(root/'publish.py')
+op['installerSourceCommit']=installer['sourceCommit'];op['installerReceiptSha256']=sha(root/'installer-github.json')
+op['wrapperSha256']=sha(root/'publish.py')
 assert sha(root/'publisher.py')==op['publisherSha256']==before['source']['scripts/game-module-release.py']
 image_helper='/opt/royal-maintenance/bin/retention-runtime.py'
 assert sha(image_helper)==op['helpers'][image_helper]
