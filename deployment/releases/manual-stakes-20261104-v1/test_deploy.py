@@ -35,6 +35,11 @@ class Guards(unittest.TestCase):
         self.assertEqual(current['/opt/royal-game-modules/game/active.json'],'new')
         self.assertEqual(current['/opt/royal-game-modules/game/versions/1-new/manifest.json'],'manifest')
 
+    def test_compatible_wallet_is_preserved_after_any_candidate_start_attempt(self):
+        self.assertFalse(deploy.compatible_recovery_required(False,False))
+        for attempted,opened in [(True,False),(True,True),(False,True)]:
+            self.assertTrue(deploy.compatible_recovery_required(attempted,opened))
+
     def test_recovery_retains_immutable_module_versions(self):
         manifest={'before':{'moduleFiles':{'/opt/royal-game-modules/game/active.json':'old'}},'packages':{'game':{'version':'1-new','files':{'entry.js':'entry'},'pointerSha256':'new'}}}
         restored=deploy.expected_modules(manifest,['game'],True)
