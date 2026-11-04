@@ -46,7 +46,7 @@ const audioCommit=git('rev-parse','88a99af8').toString().trim();
 for(const name of ['games/flag-battle/FlagAudio.ts','games/flag-battle/package.json','games/flag-battle/tsconfig.json']){
  const digest=hash(canonical(git('show',audioCommit+':'+name)));
  assert.equal(digest,before.sourceLF[name],'Published Flag collision audio changed: '+name);
- files[name]={commit:audioCommit,path:name,baseSha256:digest,sha256:digest};
+ files[name]={commit:audioCommit,path:name,baseSha256:digest,sha256:digest};sources[name]=digest;
 }
 const moduleGames=['cosmic-escape','caramel-carnival','velvet-reign','last-convoy','nitro-run','girlhub','meme-overload','dracona','forest-heart','caribbean-treasures','flooded-temple','wild-nudge','flag-battle','royal-plinko','cr-vs-leo','jackie-chan','last-exit'];
 const projection={format:1,productionCommit:before.sourceCommit,moduleGames,moduleContracts:before.moduleHost.games,files:Object.fromEntries(Object.entries(files).filter(([n])=>/\.(ts|js|mjs|cjs|css|json|html)$/.test(n))),moduleAssets:config.moduleAssets,moduleDependencies:config.moduleDependencies};
