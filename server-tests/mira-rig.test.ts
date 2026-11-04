@@ -18,6 +18,9 @@ test('illustrated arms retain their bone lengths and high gestures bend away fro
   }
   const seated=miraPose(view('sit',.5));assert.ok(seated.joints.leftElbow.y>seated.joints.leftShoulder.y);
   const greeting=miraPose(view('greet',.5));assert.ok(greeting.joints.leftElbow.x<greeting.joints.leftShoulder.x);assert.ok(greeting.joints.leftHand.y<greeting.joints.neck.y);
+  const standing=miraPose(view('idle',0));
+  assert.ok(standing.rootY+standing.joints.hip.y>seated.rootY+seated.joints.hip.y+12,'body steps down behind the counter');
+  assert.ok(Math.abs(standing.rootY+standing.joints.rightHand.y-seated.rootY-seated.joints.rightHand.y)<3,'supporting palm stays at the counter');
 });
 
 test('interrupting a partial seat preserves every world contact in the illustrated pose',()=>{
@@ -53,6 +56,8 @@ test('blended props follow their hands, and service settles after its pour',()=>
     assert.ok(Math.abs(prop.point.y-blended.joints[hand].y-original.point.y+next.joints[hand].y)<1e-7);
   }
   assert.ok(next.pour);
+  assert.ok(next.pour.from.y<next.pour.to.y,'the stream falls into the glass');
+  assert.ok(Math.abs(next.pour.from.x-next.pour.to.x)<6,'the bottle mouth stays over the glass');
   const settled=miraPose(view('serve',1));assert.equal(settled.pour,undefined);assert.deepEqual(settled.props.map(p=>p.kind),['glass']);
   const later=miraPose(view('serve',1),false,3500);assert.deepEqual(later.props,settled.props);
 });

@@ -34,7 +34,9 @@ export function miraPose(view:MiraView,reducedMotion=false,time=0):MiraPose {
   const breath=reducedMotion?0:Math.sin(time/1400)*.13;
   const push=view.action==='stand-up'||view.action==='sit-down'?Math.sin(p*Math.PI)*1.2:0;
   const rootY=59-21.8*seat;
-  const hip=point(48,90+21.8*seat-push+breath-(walking&&!reducedMotion?Math.abs(stride)*.8:0));
+  // A counter seat is higher than standing behind it; hands keep their table contacts.
+  const floorDrop=17*(1-seat);
+  const hip=point(48,90+21.8*seat+floorDrop-push+breath-(walking&&!reducedMotion?Math.abs(stride)*.8:0));
   const bodyAngle=working?.13:walking&&!reducedMotion?stride*.025:seat*.02;
   const neck=add(hip,rotate(point(0,-32),bodyAngle));
   const leftShoulder=add(neck,rotate(point(side?1.5:-12.5,4),bodyAngle));
@@ -49,7 +51,7 @@ export function miraPose(view:MiraView,reducedMotion=false,time=0):MiraPose {
     props.push({kind:'glass',point:add(leftHand,point(-1,-5)),angle:0,alpha:clamp(seat*5)});
   }else if(walking){
     const swing=reducedMotion?0:stride*7;
-    leftHand=point((side?48:39)-swing,95);rightHand=point((side?48:58)+swing,95);
+    leftHand=point((side?48:39)-swing,95+floorDrop);rightHand=point((side?48:58)+swing,95+floorDrop);
   }else if(working){
     const settle=clamp((p-.9)/.1);
     const limit=CAT_CARE.bar.perch.x-view.x+48-8;
@@ -74,20 +76,20 @@ export function miraPose(view:MiraView,reducedMotion=false,time=0):MiraPose {
     rightHand=point(62+(reducedMotion?0:wave*1.5),80+(reducedMotion?0:Math.cos(phase)*2));
   }else if(view.action==='serve'){
     const take=clamp(p/.2),handover=clamp((p-.55)/.35);
-    leftHand=point(mix(mix(32,44,take),42,handover),mix(91,97,handover));
+    leftHand=point(mix(mix(32,52,take),42,handover),mix(91,97,handover));
     const lift=clamp((p-.16)/.1)*(1-clamp((p-.5)/.13));
-    rightHand=point(mix(58,55,lift),mix(91,67,lift));
+    rightHand=point(mix(58,66,lift),mix(91,67,lift));
     props.push({kind:'glass',point:add(leftHand,point(0,-5)),angle:0,alpha:clamp(p/.08)});
     if(p<.65){
-      const angle=lift*2.2;
+      const angle=-lift*2.2;
       const bottle=add(rightHand,point(0,-2));
       props.push({kind:'bottle',point:bottle,angle,alpha:clamp((.65-p)/.08)});
       if(p>.28&&p<.51)pour={from:add(bottle,rotate(point(0,-12),angle)),to:add(leftHand,point(0,-12))};
     }
   }
   const leftHip=add(hip,point(-5,0)),rightHip=add(hip,point(5,0));
-  const leftKnee=point(mix(43,38,seat),mix(123,132.8,seat)-push);
-  const rightKnee=point(mix(53,49,seat),mix(123,128.8,seat)-push);
+  const leftKnee=point(mix(43,38,seat),mix(134,132.8,seat)-push);
+  const rightKnee=point(mix(53,49,seat),mix(134,128.8,seat)-push);
   const leftFoot=point(mix(44,53,seat),mix(158,157,seat));
   const rightFoot=point(mix(54,43,seat),mix(158,158,seat));
   if(walking&&!reducedMotion){
@@ -98,7 +100,7 @@ export function miraPose(view:MiraView,reducedMotion=false,time=0):MiraPose {
   }
   return {action:view.action,seat,rootY,bodyAngle,headAngle:bodyAngle+(view.action==='listen'?-.065:view.action==='chat'&&!reducedMotion?wave*.028:-.025),
     facing:view.facing==='up'?'back':side?'side':'front',flipped:view.facing==='left',
-    joints:{hip,neck,leftShoulder,rightShoulder,leftHand,rightHand,leftElbow:miraElbow(leftShoulder,leftHand,seat>.001||['greet','polish','serve'].includes(view.action)?1:-1),rightElbow:miraElbow(rightShoulder,rightHand,stock?-1:1),leftHip,rightHip,leftKnee,rightKnee,leftFoot,rightFoot},props,pour,
+    joints:{hip,neck,leftShoulder,rightShoulder,leftHand,rightHand,leftElbow:miraElbow(leftShoulder,leftHand,seat>.001||view.action==='greet'?1:-1),rightElbow:miraElbow(rightShoulder,rightHand,stock||view.action==='serve'?-1:1),leftHip,rightHip,leftKnee,rightKnee,leftFoot,rightFoot},props,pour,
     mouthOpen:view.action==='chat'&&!reducedMotion&&Math.sin(phase*3)>.05,blink:!reducedMotion&&time%4700>4540};
 }
 
