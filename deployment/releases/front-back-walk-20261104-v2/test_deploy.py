@@ -1,4 +1,4 @@
-import importlib.util, sys, types, unittest
+import importlib.util, json, sys, tempfile, types, unittest
 from pathlib import Path
 sys.dont_write_bytecode = True
 if sys.platform == 'win32': sys.modules.setdefault('fcntl', types.SimpleNamespace())
@@ -28,6 +28,23 @@ class ProfileScopeTest(unittest.TestCase):
     def test_new_unbound_source_is_rejected(self):
         changes, server, graph, before = self.fixture(); graph['inputs'].pop('src/game/frontalWalk.ts')
         with self.assertRaises(RuntimeError): deploy.validate_scope(changes, server, graph, before)
+
+    def test_reserved_ready_marker_is_bound_to_the_exact_manifest(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); (root / 'install-manifest.json').write_text('{}')
+            (root / 'reservation-ready.json').write_text(json.dumps({'reservation': 'current', 'installManifestSha256': deploy.sha(root / 'install-manifest.json')}))
+            deploy.wait_for_ready(root, 'current', 1)
+
+    def test_stale_reservation_or_changed_manifest_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); (root / 'install-manifest.json').write_text('{}')
+            for nonce, digest in [('previous', deploy.sha(root / 'install-manifest.json')), ('current', 'foreign')]:
+                (root / 'reservation-ready.json').write_text(json.dumps({'reservation': nonce, 'installManifestSha256': digest}))
+                with self.assertRaises(RuntimeError): deploy.wait_for_ready(root, 'current', 1)
+
+    def test_reserved_preparation_expires_without_ready_payload(self):
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaises(TimeoutError): deploy.wait_for_ready(Path(directory), 'current', 0)
 
 if __name__ == '__main__': unittest.main()
 
