@@ -1,0 +1,2002 @@
+{
+  "release": "casino-street-20261104-v1",
+  "status": "published_verified_maintenance_completed",
+  "sourceCommit": "59c1202b466e4f3507e82c5f016240af95dbf5d2",
+  "baseCommit": "315fda47301591b5b1ed05806781fcc603cffdcb",
+  "installerCommit": "59c1202b466e4f3507e82c5f016240af95dbf5d2",
+  "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "scope": {
+    "sourceFiles": [
+      "server/LobbyRoom.ts",
+      "server/guardRoutine.ts",
+      "server/guards.ts",
+      "server/state.ts",
+      "src/game/CasinoAudio.ts",
+      "src/game/RearCasinoWindows.ts",
+      "src/game/RooftopRenderer.ts",
+      "src/game/RoomScene.ts",
+      "src/game/SecurityGuard.ts",
+      "src/game/StairWindowRenderer.ts",
+      "src/game/StreetAmbience.ts",
+      "src/game/StreetLife.ts",
+      "src/game/StreetRenderer.ts",
+      "src/game/StreetResidentActions.ts",
+      "src/game/StreetResidentPatrols.ts",
+      "src/game/StreetResidents.ts",
+      "src/game/ToiletRenderer.ts",
+      "src/game/avatarArt.ts",
+      "src/game/frontWindowInteriors.ts",
+      "src/game/frontWindowLife.ts",
+      "src/game/rearWindowArt.ts",
+      "src/game/rearWindowInteriors.ts",
+      "src/game/rearWindowLife.ts",
+      "src/game/roofStairInput.ts",
+      "src/game/street-residents.css",
+      "src/game/streetArt.ts",
+      "src/game/streetDetails.ts",
+      "src/game/streetResidentArt.ts",
+      "src/game/streetView.ts",
+      "src/game/streetWalls.ts",
+      "src/game/touristCameraArt.ts",
+      "src/game/touristCameraPose.ts",
+      "src/i18n/en.ts",
+      "src/i18n/streetEn.ts",
+      "src/main.ts",
+      "src/network/LobbyClient.ts",
+      "src/network/MovementPrediction.ts",
+      "src/shared/cat.ts",
+      "src/shared/clubLayout.ts",
+      "src/shared/elevator.ts",
+      "src/shared/movement.ts",
+      "src/shared/rooftop.ts",
+      "src/shared/stairWindow.ts",
+      "src/shared/street.ts",
+      "src/shared/toilet.ts",
+      "src/shared/world.ts",
+      "src/ui/CatUI.ts",
+      "src/ui/ClubMap.ts",
+      "src/ui/ElevatorUI.ts",
+      "src/ui/RoomLayout.ts",
+      "src/ui/SocialUI.ts",
+      "src/ui/club-map.css"
+    ],
+    "addedGames": [],
+    "restoredGames": [],
+    "activeCasinoGames": [
+      "flag-battle",
+      "github-crash",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "royal-plinko",
+      "royal-roulette",
+      "studio-afterglow",
+      "studio-caramel-carnival",
+      "studio-caribbean-treasures",
+      "studio-cosmic-escape",
+      "studio-dracona",
+      "studio-flooded-temple",
+      "studio-forest-heart",
+      "studio-last-convoy",
+      "studio-meme-overload",
+      "studio-neopolis",
+      "studio-nitro-run",
+      "studio-velvet-reign",
+      "studio-wild-nudge"
+    ],
+    "activePvpGames": [
+      "tsu-e-fa"
+    ],
+    "unchangedMonetaryAndCatalogueInputs": {
+      "mathSources": [
+        {
+          "path": "src/shared/forestHeartMath.ts",
+          "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/forestHeart.ts",
+          "sha256": "1ada448ed03adb04bfb510f489bed9703a07fab982e063a4e7068bbbbf71272b",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/casinoExpansion.ts",
+          "sha256": "ad1474233c750035eecbf54544c9c6f3a6eb9ae47bbe6319703b2383c211100d",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/forestHeart.ts",
+          "sha256": "0c7412ea5438c72d63c7808759e79bb76fa95e12a32a23690dd7b36fcca9a1be",
+          "unchanged": true
+        },
+        {
+          "path": "server/demoExpansion.ts",
+          "sha256": "edaa12803beca8288d3595ebb21063ceb9f0bb030fd949adda56f8b78ad53297",
+          "unchanged": true
+        },
+        {
+          "path": "server/demoWallet.ts",
+          "sha256": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
+          "unchanged": true
+        },
+        {
+          "path": "server/demoWalletAmounts.ts",
+          "sha256": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
+          "unchanged": true
+        },
+        {
+          "path": "server/demoWalletRoutes.ts",
+          "sha256": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+          "unchanged": true
+        },
+        {
+          "path": "server/pvp/virtual-wallet.ts",
+          "sha256": "78b99a9001b544cc089028fd3ef96fbd61f57d6a2ba5c6b53f2ee913c88e6feb",
+          "unchanged": true
+        },
+        {
+          "path": "server/database.ts",
+          "sha256": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/afterglow.ts",
+          "sha256": "eedcc278d149ae66b59d79afeef85d17a3fa5eb7f8d80bf5b5caf73c77b18035",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/nitroRun.ts",
+          "sha256": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/draconaMath.ts",
+          "sha256": "7b73a84f00df88ebce06e8eca1676b90ca457b36d3db4329b723cc66e9977583",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/afterglow.ts",
+          "sha256": "732c928d299e6a6adb501d1682e80ec2ea02e510884812771c757f5173013258",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/afterglowWardrobe.ts",
+          "sha256": "6dace1ede72ee479115b5cbf2d1d512c9e8800fd315be407cea787377362dc1f",
+          "unchanged": true
+        },
+        {
+          "path": "server/afterglowWardrobe.ts",
+          "sha256": "24009dddabe9d73931a3f71065d7a49c890901053cfa22cc7be48a83a48654a9",
+          "unchanged": true
+        },
+        {
+          "path": "server/afterglowProgress.ts",
+          "sha256": "4a7f5d07ca6be6afbcec0c5ff2c7d91bb4da82f81438aa35c8a418cc939134b9",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/gameStakes.ts",
+          "sha256": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/roundPrecision.ts",
+          "sha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/neopolisMath.ts",
+          "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/neopolisStakePayouts.ts",
+          "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/caribbeanTreasures.ts",
+          "sha256": "8e987b2de8799b444dd01fe2fcb3a567dd7921a8c1dee4b139e00e13ee3e03bb",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/caribbeanTreasuresMath.ts",
+          "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/caribbeanTransport.ts",
+          "sha256": "8623c8e5f4f7eef28997a3b9630873e86c4c7fa7f1ff1b790490802d9fd9415a",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/caribbeanTreasures.ts",
+          "sha256": "bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/neopolisMathV1.ts",
+          "sha256": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/neopolisMathV2.ts",
+          "sha256": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/neopolis.ts",
+          "sha256": "2ec8799c72f2038edafcd1f7d6f3031b4866f07f2ecd334728ae77bdb3823488",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/neopolis.ts",
+          "sha256": "d8e3a0ac628636293f3317ac61de6ce83054c8b41985fcc8886e78c71e5dfad3",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/neopolisMathV3.ts",
+          "sha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/draconaMathV1.ts",
+          "sha256": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/dracona.ts",
+          "sha256": "ee182b2547a155c80978ebbbabcc28c9dd2fd88224a7015eb9d03973132e0137",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/dracona.ts",
+          "sha256": "9d7b86aa2db9dd2ebe0d6a6dc09283a33b868b03a1e5c444f722d90822e9fa95",
+          "unchanged": true
+        },
+        {
+          "path": "server/finance/pvp-money.ts",
+          "sha256": "e71a90edf48f23a0479b7b85933aab583263daee14edf59edf301baa92b9115b",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/pvp.ts",
+          "sha256": "a1e4694f9f7102779a256e95820361e40383ea6396cc64af7da25e304d4d134f",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/nileWallet.ts",
+          "sha256": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/combatEscrow.ts",
+          "sha256": "16bd3c5b7a60e35ab946f98bc4a5acbc85f72e683cf913c27a834da0b03a4f44",
+          "unchanged": true
+        },
+        {
+          "path": "server/finance/combat-escrow.ts",
+          "sha256": "302f8caaf4bb20c088e81b08dd514cfe3d0a191385e5d084f5efebe0490c3a8c",
+          "unchanged": true
+        },
+        {
+          "path": "server/combatGame.ts",
+          "sha256": "825bac6da77facf6a81c942282a0605e5eafea8ecda806fc0fb044e905419782",
+          "unchanged": true
+        },
+        {
+          "path": "server/combatRoom.ts",
+          "sha256": "bd92ac1ca5a6d4ff2eae0a6ef0958abf1b68c20f8b893f58061685f6e2ec3294",
+          "unchanged": true
+        },
+        {
+          "path": "server/combatGuard.ts",
+          "sha256": "c0225b2b838cc1b828ce1102a2e012da15287258eed319b5722056f34b06cad9",
+          "unchanged": true
+        },
+        {
+          "path": "server/commonCombatWallet.ts",
+          "sha256": "a4c54488171ad734558f916a45efb9b14a45d4316d784fbe84f25c568d92ae5f",
+          "unchanged": true
+        },
+        {
+          "path": "server/finance/nile-play-error.ts",
+          "sha256": "20a472d05d7517035771156ccd4c778e699cdf3b0e27d3c693e8d4f39c197e57",
+          "unchanged": true
+        },
+        {
+          "path": "server/pvp/store.ts",
+          "sha256": "7069f7ed0e1585e172a52c87e900ddcae36cad519079a20acb492f1634f6ca43",
+          "unchanged": true
+        },
+        {
+          "path": "server/pvp/cards.ts",
+          "sha256": "42db70683726228f6ab2217c7ef48b269cf372368950faa9f4555825880f6cf0",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/pvpSeats.ts",
+          "sha256": "97bba60d5044f971ac910ece29509ea3df94dd22bea25b6f80eeca56def7a492",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/luelonSlotsModels.ts",
+          "sha256": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/luelonSlots.ts",
+          "sha256": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/luelonSlotsLines.ts",
+          "sha256": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/cosmicEscapeBets.ts",
+          "sha256": "a810b0f394e290eae0ccbf2f1745ada20f280bb08bd176eb534d0390871f99c7",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/luelonSlots.ts",
+          "sha256": "be78b2715aa850d3801445edf0f714b89dcb76ed98719e5589fcac71dc7fe3f2",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/floodedTempleCascadeData.json",
+          "sha256": "5aa05b4cca0476f48d84e70402204ec9029949a8da3c8d2c7a95b6a5456fc07a",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/floodedTempleCascadeMath.ts",
+          "sha256": "cf9b490bb9bb7f96f18f53e8662c9f931b5e308ca9a291acf8e66d483e352604",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/floodedTempleCascade.ts",
+          "sha256": "4eeca742538d793bb5efdf79c9b15389ad827716e8728f385e0c9090ec727cde",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/floodedTempleCascade.ts",
+          "sha256": "8d7814d13dd390a72b9e64650e0da025bedc484e2c53f010c8966b8d5b7abe94",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/roulette.ts",
+          "sha256": "b8aba50f88ff2c65b54bef35a056b13d5b470d6b9f955f2610559c101e0390ef",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/core.ts",
+          "sha256": "e7120245e02b5777eb6aff660c5f1f154a8e0f6b14ae80fbfed09656c9c425b9",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/types.ts",
+          "sha256": "c866ed8a8a19a66f4210caae41e25becf8c6d169871da1934a7b152d0f2aedc0",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/gameCore.ts",
+          "sha256": "3e59b987bd47e61137af39aace7717bc7490e3dabf52193de8668fbcca5ca737",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/originalGames.ts",
+          "sha256": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/demoWallet.ts",
+          "sha256": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/jackieChan.ts",
+          "sha256": "a834b1229ee97b500b1e8801f27cb3bf569d6c4bab6ca73eeaf06745747934bf",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/jackieChan.ts",
+          "sha256": "12ad39116f68c9aec96ec49a88d46ff66d9bb75f751d981ebcc35c5eb9974297",
+          "unchanged": true
+        },
+        {
+          "path": "server/jackieCollection.ts",
+          "sha256": "343b64552a0249b240436d717fbd2c9c3f4e9dbe457319126b478ad6cd63f13c",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/crLeo.ts",
+          "sha256": "a4ca6775d722c6c0c2968544086100422e9d77455225e53a108b02c0132f198c",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/crLeo.ts",
+          "sha256": "5bc956040fb008f21a3a5bcaa7b9296f3ef9f049ae32b44654bcef06e6b6e7c1",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/flagBattle.ts",
+          "sha256": "269b48f9367609b2343b732982631f88203fed9fa2b40e6bb08d9f6611b64aa4",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/flagBattle.ts",
+          "sha256": "48adde5247fa57348efecb91f05dec1eb9203e544c3f42407e5ebbcff52c9068",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/tsuEFa.ts",
+          "sha256": "907dc4fae7035222cf290bcf99650b3d4945058931a54eb523cf3e3be02e18ed",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/tsuDuel.ts",
+          "sha256": "d651edfddcf47c347d8aa3e590dc636a5abc5bf8ebedca103db1dbaee963f9f0",
+          "unchanged": true
+        },
+        {
+          "path": "server/pvp/tsu-e-fa.ts",
+          "sha256": "58f0b673419810f425906220b5ff7532d1aef9a1643b011651bd22184ed37ae9",
+          "unchanged": true
+        },
+        {
+          "path": "server/pvp/tsu-duel.ts",
+          "sha256": "2c0cf3c3a12770011c9261b8d185019e4b841334581253278b6a52c8048e4e92",
+          "unchanged": true
+        },
+        {
+          "path": "server/pvp/room.ts",
+          "sha256": "31b7c1aedcd71f4ee52b56c5678ea839f4685c450d8aaeb6f782d1d9b77613b9",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/wildNudgeData.json",
+          "sha256": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/wildNudgeMath.ts",
+          "sha256": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/wildNudge.ts",
+          "sha256": "de36b83b823d2fd48f69bb2aa0c383a44ffbb80ec287e759dd1115db23775624",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/wildNudge.ts",
+          "sha256": "7d66b6ba4c76045de00b34a780ce26103d4367f6f39143930ee8f0fe6f12aa9e",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/arcadeCatalog.ts",
+          "sha256": "946d05c1c450086d48efa318d7d65df6bdd5641f2edcd05599b67f7499a0a55a",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/wildNudgeStakes.ts",
+          "sha256": "b038121718a674dd88578b9ace2c219e6f226a05372919a87e87b2dcc5afb54f",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/progression.ts",
+          "sha256": "5f79d619753062d77aa5a6c15c93a06b9435da241da861bd0308eb6a6982184e",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/coins.ts",
+          "sha256": "727e6a62b098f0591525a4dfd646c78568e3a04ff554364f2c157d41cbbba5da",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/fruits.ts",
+          "sha256": "3880e46cb2cacd41cf855eb69ef2edda956b39209caf7bb4b73fdca16a8aea05",
+          "unchanged": true
+        },
+        {
+          "path": "server/progression/freeSpins.ts",
+          "sha256": "7b7cdda7a23c921071e2a28366f00488f5e31bfc2bad5b178b5a254e235056c4",
+          "unchanged": true
+        },
+        {
+          "path": "server/progression/store.ts",
+          "sha256": "31c2ad735adda4257d6c042330b7fb17a2cb8b5e445ab582bef35219fcc32658",
+          "unchanged": true
+        },
+        {
+          "path": "server/progression/sources.ts",
+          "sha256": "6640ff15833378a077ca7ef19a502414fab6f99bf6ccb63db30f8ceb8cdd9674",
+          "unchanged": true
+        },
+        {
+          "path": "server/accounts.ts",
+          "sha256": "57c32ef74552bbeefb2e0e2320bc71f611ac55fd6a2543a49f32f1acd83c0339",
+          "unchanged": true
+        },
+        {
+          "path": "server/progression/handlers.ts",
+          "sha256": "afed32a614f614ea72e68ad2d87de8025462d42d21bb1d71241379c9d34c4edf",
+          "unchanged": true
+        },
+        {
+          "path": "server/progression/skinGenerations.ts",
+          "sha256": "ae72341e7ea85c8eb8e787ea7f82799548ee146aac152cd09d8ddd847c280390",
+          "unchanged": true
+        },
+        {
+          "path": "server/skinStudio.ts",
+          "sha256": "0abc4ee79b714793dc81bb315cf73c16357086330ce7ee60092473b3af15e9ad",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/rewardSpinCatalog.ts",
+          "sha256": "df633494f99d6fcf81b5c8a0aa87ed69e8fd3d1cb907617007124bbf8ead6429",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/casinoSessions.ts",
+          "sha256": "ffd0232b3a380a4a781cbdd943559e530cbdac5417740fdcf4f862c3fcf98d1f",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/casinoSessions.ts",
+          "sha256": "002e31c3198d885571e78b3fdc714aeed6179cd269f5927de3ad0c23dacbb2dd",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/rush/hilo.ts",
+          "sha256": "1d55a974edac435060aebb0c34b222c0763259476c2b9ddcab22ee69bd9d2803",
+          "unchanged": true
+        },
+        {
+          "path": "server/demoCasino.ts",
+          "sha256": "8cd914d9ca5f78282deae590f1f9f440f3b4fb384e503e9a526bbc2d61f51c9a",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/usdtWallet.ts",
+          "sha256": "23b523bb24b84dcdbda636f1b6bd940e3072a5069b9ba8c44c71da29129c484a",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/casinoNextVariants.ts",
+          "sha256": "f989cee4147e107faf7c4e4df216729025fc2baf6e779dde1a64f9b825ce1e43",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/casinoNextVariants.ts",
+          "sha256": "6f525322bc640eb29ad7bfc025205686f87214b174a08a92d0f800afe636eaa7",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/flagTote.ts",
+          "sha256": "98c84c8e3de49e97fde4097939fb2b42acc1ea912b09e875af80cd9597322619",
+          "unchanged": true
+        },
+        {
+          "path": "server/flagTote.ts",
+          "sha256": "3484afadaa02475db78d57dc540e405e87412063eed2b35bb7ff1c81ec891707",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/caramelCarnival.ts",
+          "sha256": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/caramelCarnival.ts",
+          "sha256": "ba16c7b4b5e51559b05c705c67558ef6f34fef22ceb063ab24dd7a1945e40994",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/lastConvoy.ts",
+          "sha256": "3785225275083c74d12bf61eb5855b8ae544e72eaefadc6f172bc51f305d6978",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/lastConvoy.ts",
+          "sha256": "57545363662a64f1e8a29be7dbab0e6ce183ab4367784ae6bcb68c1bfc9c7dae",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/nitroRun.ts",
+          "sha256": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/memeOverload.ts",
+          "sha256": "3380fce5ee723cea9a07d8b098c933e0465300fcc19fa727ef30ccbf7303244b",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/velvetReign.ts",
+          "sha256": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/velvetReignHistory.ts",
+          "sha256": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/velvetReign.ts",
+          "sha256": "2de78bed621067021920d9ad742986a60034f975647a227a11bcc87869ff45a7",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/velvetMath.ts",
+          "sha256": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/originals.ts",
+          "sha256": "a40c038406cf6a7ffbb0fa7b92af2937c40a7012626bc2ab06a232d03c152d45",
+          "unchanged": true
+        },
+        {
+          "path": "server/games/rush/crash.ts",
+          "sha256": "18182aa65f5babc4bf693b234aeec8a239646c41d33d4c3126b3abefc7b15a94",
+          "unchanged": true
+        }
+      ],
+      "guards": [
+        {
+          "path": "src/shared/arcadeCatalog.ts",
+          "sha256": "946d05c1c450086d48efa318d7d65df6bdd5641f2edcd05599b67f7499a0a55a",
+          "unchanged": true
+        },
+        {
+          "path": "src/modules/GameModuleCatalog.ts",
+          "sha256": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1",
+          "unchanged": true
+        },
+        {
+          "path": "server/demoWalletRoutes.ts",
+          "sha256": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+          "unchanged": true
+        },
+        {
+          "path": "server/demoExpansion.ts",
+          "sha256": "edaa12803beca8288d3595ebb21063ceb9f0bb030fd949adda56f8b78ad53297",
+          "unchanged": true
+        },
+        {
+          "path": "server/demoWallet.ts",
+          "sha256": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
+          "unchanged": true
+        },
+        {
+          "path": "server/database.ts",
+          "sha256": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8",
+          "unchanged": true
+        },
+        {
+          "path": "src/shared/gameStakes.ts",
+          "sha256": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b",
+          "unchanged": true
+        },
+        {
+          "path": "src/wallet/WalletClient.ts",
+          "sha256": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
+          "unchanged": true
+        }
+      ],
+      "addedGames": [],
+      "restoredGames": []
+    },
+    "otherPublicationsPreserved": {
+      "previousAt": 1793819617.0126386,
+      "currentAt": 1793821762.4664361,
+      "sourceChanges": [
+        "src/ui/AfterglowUI.ts",
+        "src/ui/CaramelCarnivalUI.ts",
+        "src/ui/CascadeSlotUI.ts",
+        "src/ui/CosmicEscapeUI.ts",
+        "src/ui/CrLeoUI.ts",
+        "src/ui/LastConvoyUI.ts",
+        "src/ui/LastExitUI.ts",
+        "src/ui/MemeOverloadUI.ts",
+        "src/ui/NitroRunUI.ts",
+        "src/ui/StudioSlotUI.ts",
+        "src/ui/VelvetReignUI.ts",
+        "src/ui/VolcanicPlinkoUI.ts",
+        "src/ui/slotKit/SlotControls.ts",
+        "games/caribbean-treasures/CaribbeanUI.ts",
+        "games/dracona/DraconaUI.ts",
+        "games/dracona/entry.ts",
+        "games/flag-battle/FlagBattleUI.ts",
+        "games/flooded-temple/CascadeUI.ts",
+        "games/flooded-temple/TempleUI.ts",
+        "games/flooded-temple/cascadeFeedbackStyles.ts",
+        "games/forest-heart/ForestHeartUI.ts",
+        "games/jackie-chan/JackieUI.ts",
+        "games/wild-nudge/GalacticReactorUI.ts",
+        "src/ui/operationFeedback.ts",
+        "games/dracona/requestStyles.ts"
+      ],
+      "moduleChanges": [
+        "/opt/royal-game-modules/flag-battle/active.json",
+        "/opt/royal-game-modules/github-crash/active.json",
+        "/opt/royal-game-modules/original-cr-vs-leo/active.json",
+        "/opt/royal-game-modules/original-jackie-chan/active.json",
+        "/opt/royal-game-modules/royal-plinko/active.json",
+        "/opt/royal-game-modules/studio-afterglow/active.json",
+        "/opt/royal-game-modules/studio-caramel-carnival/active.json",
+        "/opt/royal-game-modules/studio-caribbean-treasures/active.json",
+        "/opt/royal-game-modules/studio-cosmic-escape/active.json",
+        "/opt/royal-game-modules/studio-dracona/active.json",
+        "/opt/royal-game-modules/studio-flooded-temple/active.json",
+        "/opt/royal-game-modules/studio-forest-heart/active.json",
+        "/opt/royal-game-modules/studio-last-convoy/active.json",
+        "/opt/royal-game-modules/studio-meme-overload/active.json",
+        "/opt/royal-game-modules/studio-nitro-run/active.json",
+        "/opt/royal-game-modules/studio-velvet-reign/active.json",
+        "/opt/royal-game-modules/studio-wild-nudge/active.json",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/entry-889a1f71421a1c79.js",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/manifest.json",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/ae.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/ar.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/at.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/au.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/be.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/br.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/ca.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/ch.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/cl.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/cn.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/co.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/cz.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/de.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/dk.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/eg.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/es.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/fi.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/fr.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/gb.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/gr.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/hu.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/id.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/ie.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/in.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/it.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/jp.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/ke.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/kr.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/ma.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/mx.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/ng.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/nl.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/no.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/nz.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/pe.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/pl.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/pt.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/ro.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/ru.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/sa.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/se.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/th.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/tr.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/ua.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/us.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/uy.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/vn.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/media/flag-battle/flags/za.svg",
+        "/opt/royal-game-modules/flag-battle/versions/2.1.2-da5e20d1015f/style-ea92a413e57d7685.css",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/entry-94e3d131864992c8.js",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/manifest.json",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/media/last-exit/v1/coupe.webp",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/media/last-exit/v1/explosion.webp",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/media/last-exit/v1/highway.webp",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/media/last-exit/v1/patrol.webp",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/media/last-exit/v2d/cargo-plane.png",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/media/last-exit/v2d/coupe-depth-roll.png",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/media/last-exit/v2d/coupe-side.png",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/media/last-exit/v2d/coupe-yaw.png",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/media/last-exit/v2d/helicopter.png",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/media/last-exit/v2d/patrol-ram.png",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/media/last-exit/v2d/props.png",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/media/last-exit/v2d/route-highway.png",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/media/last-exit/v2d/route-industrial.png",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/media/last-exit/v2d/route-interchange.png",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/media/last-exit/v2d/route-last-exit.png",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/media/last-exit/v2d/route-props.png",
+        "/opt/royal-game-modules/github-crash/versions/1.1.1-878ddc306d18/style-70511eca5bd412b9.css",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/entry-24c9da7f3840c3f4.js",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/manifest.json",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/audio/v1/ankara-messi.mp3",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/audio/v1/goal.mp3",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/audio/v1/kick.mp3",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/audio/v1/miss.mp3",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/audio/v1/siuuu.mp3",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/audio/v1/stadium.mp3",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/v2/ball-ordem-v-atlas.webp",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/v2/cr-white-thumb.webp",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/v2/cr-white.webp",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/v2/keeper-dive.webp",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/v2/keeper-empty.webp",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/v2/keeper-reach.webp",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/v2/leo-thumb.webp",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/v2/leo.webp",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/v2/stadium-free.webp",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/v2/stadium.webp",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/v2/wall-far.webp",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/media/cr-vs-leo/v2/wall.webp",
+        "/opt/royal-game-modules/original-cr-vs-leo/versions/1.1.1-fcfffa623d83/style-f86a91a78eb586f2.css",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/entry-4ecde452129b617b.js",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/manifest.json",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/audio/harbor.mp3",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/audio/market.mp3",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/audio/restaurant.mp3",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/cover.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/foe-agile.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/foe-bruiser.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/foe-enforcer.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/foe-master.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/foes.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/harbor.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/hawk-combat.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/hawk-furniture.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/hawk.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/market.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/master-combat.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/master-furniture.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/master.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/mentor-combat.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/mentor-furniture.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/mentor.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/police-combat.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/police-furniture.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/police.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/props.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/restaurant.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/rush-combat.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/rush-furniture.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/rush.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/sailor-combat.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/sailor-furniture.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/sailor.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/tuxedo-combat.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/tuxedo-furniture.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/tuxedo.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/whoami-combat.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/whoami-furniture.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/media/jackie-chan/whoami.webp",
+        "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb/style-613ab794fa429fe9.css",
+        "/opt/royal-game-modules/royal-plinko/versions/1.1.1-f5fdc9a645bc/entry-3a82c6a35fb4f80f.js",
+        "/opt/royal-game-modules/royal-plinko/versions/1.1.1-f5fdc9a645bc/manifest.json",
+        "/opt/royal-game-modules/royal-plinko/versions/1.1.1-f5fdc9a645bc/media/arcane-plinko/vespera-gesture-desktop-fb5fd347ff2e.mp4",
+        "/opt/royal-game-modules/royal-plinko/versions/1.1.1-f5fdc9a645bc/media/arcane-plinko/vespera-gesture-mobile-537b990a656e.mp4",
+        "/opt/royal-game-modules/royal-plinko/versions/1.1.1-f5fdc9a645bc/media/arcane-plinko/vespera-idle-desktop-da016db2c4a2.mp4",
+        "/opt/royal-game-modules/royal-plinko/versions/1.1.1-f5fdc9a645bc/media/arcane-plinko/vespera-idle-mobile-2f656e82a1c8.mp4",
+        "/opt/royal-game-modules/royal-plinko/versions/1.1.1-f5fdc9a645bc/media/arcane-plinko/vespera-poster-46d5ebf7e7cd.webp",
+        "/opt/royal-game-modules/royal-plinko/versions/1.1.1-f5fdc9a645bc/media/arcane-plinko/world-ef0d9320252e.webp",
+        "/opt/royal-game-modules/royal-plinko/versions/1.1.1-f5fdc9a645bc/style-e65e8c0dc55c1555.css",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/entry-1e79d9b746274fe3.js",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/manifest.json",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/audio/v1/laugh-1.mp3",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/audio/v1/laugh-2.mp3",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/audio/v1/laugh-3.mp3",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/audio/v1/laugh-4.mp3",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/audio/v1/unlock.mp3",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/audio/v2/win-1.mp3",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/audio/v2/win-2.mp3",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/audio/v2/win-3.mp3",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/v1/background-studio-v3.webp",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/v1/symbols.webp",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/v3/base-0.webp",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/v3/base-1.webp",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/v3/base-2.webp",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/v3/base-3.webp",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/v3/look-1-user.webp",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/v3/look-2-user.webp",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/v3/look-3-user.webp",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/afterglow/v4/look-0-legendary.webp",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/media/studio/symbols.webp",
+        "/opt/royal-game-modules/studio-afterglow/versions/1.3.1-94e8ac1362c4/style-d95db4a3f7315913.css",
+        "/opt/royal-game-modules/studio-caramel-carnival/versions/1.1.1-faefb8ca47ca/entry-0048e91ab51d7234.js",
+        "/opt/royal-game-modules/studio-caramel-carnival/versions/1.1.1-faefb8ca47ca/manifest.json",
+        "/opt/royal-game-modules/studio-caramel-carnival/versions/1.1.1-faefb8ca47ca/media/caramel-rebuild/v1/background.webp",
+        "/opt/royal-game-modules/studio-caramel-carnival/versions/1.1.1-faefb8ca47ca/media/caramel-rebuild/v1/symbols.webp",
+        "/opt/royal-game-modules/studio-caramel-carnival/versions/1.1.1-faefb8ca47ca/media/studio/candy-world.webp",
+        "/opt/royal-game-modules/studio-caramel-carnival/versions/1.1.1-faefb8ca47ca/media/studio/space-world.webp",
+        "/opt/royal-game-modules/studio-caramel-carnival/versions/1.1.1-faefb8ca47ca/media/studio/symbols.webp",
+        "/opt/royal-game-modules/studio-caramel-carnival/versions/1.1.1-faefb8ca47ca/style-905c6b406fc24c62.css",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/entry-8e6941826dee1370.js",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/manifest.json",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/audio/cannon.m4a",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/audio/click.m4a",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/audio/coins-small.m4a",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/audio/coins.m4a",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/audio/creak.m4a",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/audio/credits.json",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/audio/latch.m4a",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/audio/manifest.json",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/audio/metal.m4a",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/audio/music.m4a",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/audio/stop-a.m4a",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/audio/stop-b.m4a",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/audio/stop-c.m4a",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/audio/thud.m4a",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/captain-blink.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/captain-bonus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/captain-focus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/captain-laugh.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/captain-soft.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/captain-surprise.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/captain-win.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/captain.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/amara-blink.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/amara-bonus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/amara-focus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/amara-idle.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/amara-laugh.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/amara-soft.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/amara-surprise.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/amara-thumb.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/amara-win.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/catalina-blink.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/catalina-bonus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/catalina-focus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/catalina-idle.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/catalina-laugh.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/catalina-soft.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/catalina-surprise.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/catalina-thumb.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/catalina-win.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/freya-blink.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/freya-bonus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/freya-focus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/freya-idle.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/freya-laugh.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/freya-soft.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/freya-surprise.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/freya-thumb.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/freya-win.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/ines-blink.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/ines-bonus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/ines-focus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/ines-idle.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/ines-laugh.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/ines-soft.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/ines-surprise.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/ines-thumb.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/ines-win.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/isabella-thumb.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/manifest.json",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/mei-blink.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/mei-bonus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/mei-focus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/mei-idle.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/mei-laugh.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/mei-soft.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/mei-surprise.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/mei-thumb.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/mei-win.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/moana-blink.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/moana-bonus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/moana-focus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/moana-idle.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/moana-laugh.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/moana-soft.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/moana-surprise.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/moana-thumb.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/moana-win.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/priya-blink.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/priya-bonus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/priya-focus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/priya-idle.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/priya-laugh.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/priya-soft.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/priya-surprise.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/priya-thumb.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/priya-win.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/rowan-blink.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/rowan-bonus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/rowan-focus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/rowan-idle.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/rowan-laugh.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/rowan-soft.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/rowan-surprise.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/rowan-thumb.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/rowan-win.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/yasmin-blink.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/yasmin-bonus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/yasmin-focus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/yasmin-idle.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/yasmin-laugh.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/yasmin-soft.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/yasmin-surprise.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/yasmin-thumb.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/yasmin-win.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/zahara-blink.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/zahara-bonus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/zahara-focus.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/zahara-idle.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/zahara-laugh.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/zahara-soft.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/zahara-surprise.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/zahara-thumb.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/crew/zahara-win.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/frame.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/harbor.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/symbol-compass.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/symbol-cutlass.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/symbol-map.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/symbol-parrot.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/symbol-pistol.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/media/caribbean-treasures/symbol-ruby.webp",
+        "/opt/royal-game-modules/studio-caribbean-treasures/versions/1.7.1-a78e99ebf8e2/style-3efb475b48f8cc93.css",
+        "/opt/royal-game-modules/studio-cosmic-escape/versions/1.1.1-2274f1d3bf58/entry-b820c07a0f6c54fe.js",
+        "/opt/royal-game-modules/studio-cosmic-escape/versions/1.1.1-2274f1d3bf58/manifest.json",
+        "/opt/royal-game-modules/studio-cosmic-escape/versions/1.1.1-2274f1d3bf58/media/cosmic-guardians/v1/alien.webp",
+        "/opt/royal-game-modules/studio-cosmic-escape/versions/1.1.1-2274f1d3bf58/media/cosmic-guardians/v1/background.webp",
+        "/opt/royal-game-modules/studio-cosmic-escape/versions/1.1.1-2274f1d3bf58/media/cosmic-guardians/v1/symbols-v2.webp",
+        "/opt/royal-game-modules/studio-cosmic-escape/versions/1.1.1-2274f1d3bf58/media/cosmic-rebuild/load-v2/background.webp",
+        "/opt/royal-game-modules/studio-cosmic-escape/versions/1.1.1-2274f1d3bf58/media/studio/space-world.webp",
+        "/opt/royal-game-modules/studio-cosmic-escape/versions/1.1.1-2274f1d3bf58/media/studio/symbols.webp",
+        "/opt/royal-game-modules/studio-cosmic-escape/versions/1.1.1-2274f1d3bf58/style-8a761c52573b98ad.css",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/entry-91c1fb3174adea57.js",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/manifest.json",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/audio/bonus.mp3",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/audio/cascade-quick.mp3",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/audio/cascade.mp3",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/audio/cast-quick.mp3",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/audio/cast.mp3",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/audio/finish.mp3",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/audio/fizzle.mp3",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/audio/palette.json",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/audio/portal-quick.mp3",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/audio/portal.mp3",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/audio/settle.mp3",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/book.webp",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/cabinet.webp",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/crest.webp",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/feather.webp",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/gem.webp",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/hero-cast-b.webp",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/hero-cast.webp",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/hero-idle-a.png",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/hero-idle-b.png",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/hero-stance-ab.webp",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/hero-stance-ba.webp",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/hero-wink.png",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/key.webp",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/manor.webp",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/potion.webp",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/media/dracona/ring.webp",
+        "/opt/royal-game-modules/studio-dracona/versions/1.2.1-d1d4e589229e/style-0e54d5e5431b632b.css",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/entry-c5fc05ff64bb8bfb.js",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/manifest.json",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/ambience.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/big.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/cascadeBonus.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/cascadeBreakA.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/cascadeBreakB.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/cascadeLandA.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/cascadeLandB.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/cascadeLandC.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/cascadeReturn.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/chest.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/lever.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/music.mp3",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/neutral.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/relic.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/return.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/rope.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/scrape.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/step.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/stone.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/audio/win.wav",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/carving.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/cascade-symbols.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/character/brace.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/character/celebrate.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/character/discover.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/character/idle.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/character/observe.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/character/reflect.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/frame.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/props/chest-open.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/props/chest.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/props/compass.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/props/gate.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/props/lever-pulled.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/props/lever.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/props/relic.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/props/rope.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/rooms.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/media/flooded-temple/temple.webp",
+        "/opt/royal-game-modules/studio-flooded-temple/versions/0.10.1-e8c2cd4af5f8/style-2249c727cd227931.css",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/entry-bb9ae47ace48604e.js",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/manifest.json",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/v1/background.webp",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/v1/flower.webp",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/v2/crystal.webp",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/v2/frame.webp",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/v2/title.webp",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/v3/elf-big.webp",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/v3/elf-blink.webp",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/v3/elf-bonus.webp",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/v3/elf-channel.webp",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/v3/elf-choice.webp",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/v3/elf-flower.webp",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/v3/elf-idle.webp",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/v3/elf-win.webp",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/v4/roots.webp",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/v4/tile.webp",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/video-v3/focus.mp4",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/video-v3/look.mp4",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/media/forest-heart/video-v3/magic.mp4",
+        "/opt/royal-game-modules/studio-forest-heart/versions/1.16.1-bda322fdbdfd/style-4d5602b86c8f65ed.css",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/entry-e0939bfb87d25fee.js",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/manifest.json",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/media/last-convoy/v1/background.webp",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/media/last-convoy/v1/heroine.webp",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/media/last-convoy/v1/symbols.webp",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/media/last-convoy/v2/commander.webp",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/media/last-convoy/v2/medic.webp",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/media/last-convoy/v2/pilot.webp",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/media/last-convoy/v2/recon.webp",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/media/last-convoy/v2/urban.webp",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/media/last-convoy/v3/commander-gesture.webp",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/media/last-convoy/v3/medic-gesture.webp",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/media/last-convoy/v3/pilot-gesture.webp",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/media/last-convoy/v3/recon-gesture.webp",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/media/last-convoy/v3/survivor-gesture.webp",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/media/last-convoy/v3/urban-gesture.webp",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/media/studio/symbols.webp",
+        "/opt/royal-game-modules/studio-last-convoy/versions/1.1.1-e534a8770a8d/style-1cf90cfa2d8e9e40.css",
+        "/opt/royal-game-modules/studio-meme-overload/versions/1.1.1-8b70e1333efb/entry-c0bf4f1a58be7a0f.js",
+        "/opt/royal-game-modules/studio-meme-overload/versions/1.1.1-8b70e1333efb/manifest.json",
+        "/opt/royal-game-modules/studio-meme-overload/versions/1.1.1-8b70e1333efb/media/meme-overload/audio/v1/bonus.mp3",
+        "/opt/royal-game-modules/studio-meme-overload/versions/1.1.1-8b70e1333efb/media/meme-overload/audio/v1/boom.mp3",
+        "/opt/royal-game-modules/studio-meme-overload/versions/1.1.1-8b70e1333efb/media/meme-overload/audio/v1/bruh.mp3",
+        "/opt/royal-game-modules/studio-meme-overload/versions/1.1.1-8b70e1333efb/media/meme-overload/audio/v1/error.mp3",
+        "/opt/royal-game-modules/studio-meme-overload/versions/1.1.1-8b70e1333efb/media/meme-overload/audio/v1/nice.mp3",
+        "/opt/royal-game-modules/studio-meme-overload/versions/1.1.1-8b70e1333efb/media/meme-overload/audio/v1/wow.mp3",
+        "/opt/royal-game-modules/studio-meme-overload/versions/1.1.1-8b70e1333efb/media/meme-overload/v1/desktop.svg",
+        "/opt/royal-game-modules/studio-meme-overload/versions/1.1.1-8b70e1333efb/media/meme-overload/v1/doge.jpg",
+        "/opt/royal-game-modules/studio-meme-overload/versions/1.1.1-8b70e1333efb/media/meme-overload/v1/grumpy.jpg",
+        "/opt/royal-game-modules/studio-meme-overload/versions/1.1.1-8b70e1333efb/media/meme-overload/v1/harold.jpg",
+        "/opt/royal-game-modules/studio-meme-overload/versions/1.1.1-8b70e1333efb/media/meme-overload/v1/pepe.jpg",
+        "/opt/royal-game-modules/studio-meme-overload/versions/1.1.1-8b70e1333efb/media/meme-overload/v1/smudge.jpg",
+        "/opt/royal-game-modules/studio-meme-overload/versions/1.1.1-8b70e1333efb/media/meme-overload/v2/stonks-66695dba5cfb.webp",
+        "/opt/royal-game-modules/studio-meme-overload/versions/1.1.1-8b70e1333efb/media/studio/symbols.webp",
+        "/opt/royal-game-modules/studio-meme-overload/versions/1.1.1-8b70e1333efb/style-3d7ac1113fbcb9ad.css",
+        "/opt/royal-game-modules/studio-nitro-run/versions/1.1.1-732024019c85/entry-16b43fd4e705d91f.js",
+        "/opt/royal-game-modules/studio-nitro-run/versions/1.1.1-732024019c85/manifest.json",
+        "/opt/royal-game-modules/studio-nitro-run/versions/1.1.1-732024019c85/media/nitro-run/v1/background.webp",
+        "/opt/royal-game-modules/studio-nitro-run/versions/1.1.1-732024019c85/media/nitro-run/v1/symbols.webp",
+        "/opt/royal-game-modules/studio-nitro-run/versions/1.1.1-732024019c85/media/studio/symbols.webp",
+        "/opt/royal-game-modules/studio-nitro-run/versions/1.1.1-732024019c85/style-584d3a7c13e668be.css",
+        "/opt/royal-game-modules/studio-velvet-reign/versions/1.1.1-286b92f7fe2a/entry-91ac2630d144b899.js",
+        "/opt/royal-game-modules/studio-velvet-reign/versions/1.1.1-286b92f7fe2a/manifest.json",
+        "/opt/royal-game-modules/studio-velvet-reign/versions/1.1.1-286b92f7fe2a/media/cosmic-rebuild/load-v2/background.webp",
+        "/opt/royal-game-modules/studio-velvet-reign/versions/1.1.1-286b92f7fe2a/media/studio/space-world.webp",
+        "/opt/royal-game-modules/studio-velvet-reign/versions/1.1.1-286b92f7fe2a/media/studio/symbols.webp",
+        "/opt/royal-game-modules/studio-velvet-reign/versions/1.1.1-286b92f7fe2a/media/velvet-rebuild/v1/background.webp",
+        "/opt/royal-game-modules/studio-velvet-reign/versions/1.1.1-286b92f7fe2a/media/velvet-rebuild/v1/symbols.webp",
+        "/opt/royal-game-modules/studio-velvet-reign/versions/1.1.1-286b92f7fe2a/media/velvet-rebuild/v3/amira-8ccf12d14391.webp",
+        "/opt/royal-game-modules/studio-velvet-reign/versions/1.1.1-286b92f7fe2a/media/velvet-rebuild/v3/celeste-64244495645f.webp",
+        "/opt/royal-game-modules/studio-velvet-reign/versions/1.1.1-286b92f7fe2a/media/velvet-rebuild/v3/evelyn-bfd25aa2ff76.webp",
+        "/opt/royal-game-modules/studio-velvet-reign/versions/1.1.1-286b92f7fe2a/media/velvet-rebuild/v3/mei-a61178df3114.webp",
+        "/opt/royal-game-modules/studio-velvet-reign/versions/1.1.1-286b92f7fe2a/media/velvet-rebuild/v3/viola-2e5782904937.webp",
+        "/opt/royal-game-modules/studio-velvet-reign/versions/1.1.1-286b92f7fe2a/style-6c3a2c12215cc7e0.css",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/entry-67e19f106cf8c09d.js",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/manifest.json",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/background.webp",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/characters/aeliri-rive.json",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/characters/aeliri.webp",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/characters/lyra-rive.json",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/characters/lyra.webp",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/characters/nyxara-rive.json",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/characters/nyxara.webp",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/characters/rive-runtime.json",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/characters/vespera-rive.json",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/characters/vespera.webp",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/cover.webp",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/score.wav",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/symbol-0.webp",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/symbol-1.webp",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/symbol-2.webp",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/symbol-3.webp",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/symbol-4.webp",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/symbol-5.webp",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/symbol-6.webp",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/media/wild-nudge/symbol-7.webp",
+        "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-cf68e8a8b2b2/style-2c86365e120cc6b8.css"
+      ],
+      "applicationUnchanged": true
+    }
+  },
+  "artifacts": {
+    "sourceCommit": "59c1202b466e4f3507e82c5f016240af95dbf5d2",
+    "hostProjectionSha256": "befb8a522771b94531a57a95d873783f9e70b61ff4c51b7042df546bcffeae50",
+    "files": {
+      "dist/index.html": "0cf5ee776b0d275d31bbd55cfb7d8acecdf8d27d9291fe4a551af1dd135b0c03",
+      "dist/assets/catalog-cover-BtVlY3hb.webp": "51c6b39a839fb3abbdebc3bba8bc105a2ba92ae764f4943454bed614405d9bc7",
+      "dist/assets/index-CKEA6XkH.css": "f56414441583dec72d58dd667f0258eff4b4111d8654d52c2c3b7a756041e9d0",
+      "dist/assets/index-SdaxGhcq.js": "ac391361400889ba001d383d70d84a1e79a16184d2f886c63429f79df0b489f7",
+      "dist-server/index.js": "1f7c1811a49d34355ad90802e9f86858802285fa60489acaf66470cd73dedfa1"
+    },
+    "identicalToNativeTestedBytes": true
+  },
+  "tests": {
+    "streetUnits": 85,
+    "mandatoryWalletUnits": 19,
+    "linuxInstallerGuards": 12,
+    "linuxSharedPreparationLocks": 13,
+    "moduleCacheUnits": 20,
+    "connectedHeldRoute": {
+      "segments": 4,
+      "samples": 2150,
+      "maxReverse": 0,
+      "maxIdleMs": 99.80000001192093
+    },
+    "mobileFullRoofWindowToiletRoute": true,
+    "nativeWalletDesktopAndMobile": {
+      "cases": 2,
+      "stake": 0.1,
+      "lostAcceptedResponse": true,
+      "closeReopen": true,
+      "sameOperationUuid": true,
+      "oneBetEntry": true
+    },
+    "desktopFrontWindowsAndStreetResidents": true,
+    "nativeBrowserViewports": [
+      {
+        "width": 1440,
+        "height": 1000
+      },
+      {
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "physicalMobileDevice": false,
+    "productionAccountsCreated": false,
+    "productionBetsPlaced": false,
+    "productionMessagesSent": false,
+    "driverNotes": [
+      "Every route used a fresh isolated database to avoid retained test avatars intercepting clicks.",
+      "Screenshot paths used task-owned fresh files after a cloud placeholder write timed out.",
+      "The mobile driver waited for observed reverse movement before testing cancellation, replacing a fixed 160 ms delay."
+    ],
+    "fix": "A stair click target remains active until the server confirms arrival; reconciliation can no longer leave the player just short of the landing.",
+    "groundedCasesBeforeStairClickFix": {
+      "sourceCommit": "23989b2775cac612880a0392f9e938d65ed6abd4",
+      "cases": [
+        "front facade",
+        "street residents and complete exterior loop"
+      ],
+      "context": "The later change only retains an active stair-click destination. The final connected stair, mobile roof/window/toilet and wallet cases ran again on the final bytes."
+    }
+  },
+  "qualification": {
+    "rtpProfiles": 38,
+    "stakePolicies": 20,
+    "stakeAdmissions": 20,
+    "legacyNotQualified": 114,
+    "context": "Preparation gates checked the pinned source commit. The 111 projected monetary source hashes remain identical to the production baseline; no wagered rules were changed."
+  },
+  "releasePreparation": {
+    "passed": true,
+    "githubVerified": true,
+    "manifestSha256": "e926b6d4fe8f81e4c67da24461b6ab6b1d47b52198f12cf8be2245430848116c"
+  },
+  "cleanup": {
+    "replacedUnpublishedStage": {
+      "removedUnpublishedStage": "/opt/royal-releases/casino-street-20261104-v1",
+      "logicalBytes": 11846018,
+      "preservedSourceCommit": "23989b2775cac612880a0392f9e938d65ed6abd4",
+      "freeBefore": 9901981696,
+      "freeAfter": 9914023936,
+      "applicationChanged": false
+    },
+    "localPreview": {
+      "url": "http://127.0.0.1:5191",
+      "sourceCommit": "59c1202b466e4f3507e82c5f016240af95dbf5d2",
+      "databasePreserved": true,
+      "retainedActiveWork": true,
+      "cleanupCondition": "Stop the existing preview, preserve any new source in GitHub, then remove its task-owned worktree and outputs.",
+      "resourceLinks": {
+        "created": [
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/afterglow",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/afterglow"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/arcane-plinko",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/arcane-plinko"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/atelier",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/atelier"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/caramel-rebuild",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/caramel-rebuild"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/caribbean-treasures",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/caribbean-treasures"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/cat",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/cat"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/cosmic-guardians",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/cosmic-guardians"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/cosmic-rebuild",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/cosmic-rebuild"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/cr-vs-leo",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/cr-vs-leo"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/dracona",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/dracona"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/flag-battle",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/flag-battle"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/flag-tote",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/flag-tote"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/flooded-temple",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/flooded-temple"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/forest-heart",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/forest-heart"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/github-cards",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/github-cards"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/github-worlds",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/github-worlds"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/jackie-chan",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/jackie-chan"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/last-convoy",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/last-convoy"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/last-exit",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/last-exit"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/meme-overload",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/meme-overload"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/mira",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/mira"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/mortal-kombat",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/mortal-kombat"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/neopolis",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/neopolis"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/nitro-run",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/nitro-run"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/royal-catalog",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/royal-catalog"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/royal-roulette",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/royal-roulette"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/startup-previews",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/startup-previews"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/studio",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/studio"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/tsu-e-fa",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/tsu-e-fa"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/velvet-rebuild",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/velvet-rebuild"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/assets/wild-nudge",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/assets/wild-nudge"
+          },
+          {
+            "path": "artifacts/work/casino-street-20261101/checkout/dist/chat-media",
+            "target": "artifacts/work/casino-street-20261101/checkout/public/chat-media"
+          }
+        ],
+        "purpose": "Retain the existing local preview public resources after the scoped production build. No source or dependency copies were made.",
+        "cleanup": "These normal build-output links may be removed after the preview stops; preserve their public source targets."
+      },
+      "retainedMediaCheck": {
+        "path": "dist/assets/cat/optimized/body-c01b1f4e4402.webp",
+        "sha256": "c01b1f4e4402e7a4d1ab12d7e4f5e2f68e5bab036fde03aa102af6002fcbafd3",
+        "verified": true
+      }
+    },
+    "localReports": {
+      "removed": [
+        {
+          "path": "artifacts/work/casino-street-20261101/release/browser-results",
+          "logicalBytes": 75779429
+        },
+        {
+          "path": "artifacts/work/casino-street-20261101/release/desktop-results-recheck",
+          "logicalBytes": 205482262
+        },
+        {
+          "path": "artifacts/work/casino-street-20261101/release/isolated-results",
+          "logicalBytes": 150326671
+        },
+        {
+          "path": "artifacts/work/casino-street-20261101/release/mobile-isolated-results",
+          "logicalBytes": 112295499
+        },
+        {
+          "path": "artifacts/work/casino-street-20261101/release/case-front-results",
+          "logicalBytes": 45
+        },
+        {
+          "path": "artifacts/work/casino-street-20261101/release/case-held-results",
+          "logicalBytes": 45
+        },
+        {
+          "path": "artifacts/work/casino-street-20261101/release/case-street-results",
+          "logicalBytes": 60823040
+        },
+        {
+          "path": "artifacts/work/casino-street-20261101/release/case-street-final-results",
+          "logicalBytes": 45
+        },
+        {
+          "path": "artifacts/work/casino-street-20261101/release/case-roof-final-results",
+          "logicalBytes": 459602469
+        },
+        {
+          "path": "artifacts/work/casino-street-20261101/release/case-roof-fixed-results",
+          "logicalBytes": 45
+        },
+        {
+          "path": "artifacts/work/casino-street-20261101/release/case-wallet-fixed-results",
+          "logicalBytes": 45
+        },
+        {
+          "path": "artifacts/work/casino-street-20261101/release/case-held-fixed-results",
+          "logicalBytes": 45
+        },
+        {
+          "path": "artifacts/work/casino-street-20261101/release/wallet-results",
+          "logicalBytes": 45
+        }
+      ],
+      "logicalBytes": 1064309685,
+      "freeBefore": 33609306112,
+      "freeAfter": 33641811968,
+      "preservedSourceCommits": [
+        "23989b2775cac612880a0392f9e938d65ed6abd4",
+        "59c1202b466e4f3507e82c5f016240af95dbf5d2"
+      ],
+      "retainedActiveWork": "The existing local preview, current checkout, dependencies and normal build outputs remain active; stop the preview before their guarded cleanup."
+    },
+    "screenshotPathCorrection": {
+      "moved": [
+        {
+          "source": "[local project parent]/%D0%A0%D0%BE%D1%8F%D0%BB%D1%8C/artifacts/work/casino-street-20261101/release/public-street-1440.png",
+          "target": "artifacts/work/casino-street-20261101/release/public-street-1440.png"
+        },
+        {
+          "source": "[local project parent]/%D0%A0%D0%BE%D1%8F%D0%BB%D1%8C/artifacts/work/casino-street-20261101/release/public-street-390.png",
+          "target": "artifacts/work/casino-street-20261101/release/public-street-390.png"
+        }
+      ],
+      "removedEmptyDirectories": [
+        "[local project parent]/%D0%A0%D0%BE%D1%8F%D0%BB%D1%8C/artifacts/work/casino-street-20261101/release"
+      ]
+    },
+    "remainingTemporaryReleaseFiles": {
+      "path": "artifacts/work/casino-street-20261101/release",
+      "logicalBytes": 39432726,
+      "freeBefore": 33677434880,
+      "freeAfter": 33681739776,
+      "preservedSourceCommits": [
+        "23989b2775cac612880a0392f9e938d65ed6abd4",
+        "59c1202b466e4f3507e82c5f016240af95dbf5d2"
+      ]
+    }
+  },
+  "image": "sha256:ad7e8e5b76d8277f00f4714012553efddabfb3c0f27de94ddb575d95b127e84d",
+  "verifiedAt": "2026-11-04T20:38:57.320Z",
+  "installation": {
+    "published": {
+      "published": true,
+      "preparedImage": "sha256:ad7e8e5b76d8277f00f4714012553efddabfb3c0f27de94ddb575d95b127e84d",
+      "runningImage": "sha256:ad7e8e5b76d8277f00f4714012553efddabfb3c0f27de94ddb575d95b127e84d",
+      "containerRestarted": true,
+      "sourceCommit": "59c1202b466e4f3507e82c5f016240af95dbf5d2",
+      "changedSources": 52,
+      "clientDeltaFiles": 3,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 1,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 13
+    },
+    "healthy": true,
+    "sourceFiles": 2744,
+    "programFiles": 8601,
+    "moduleFiles": 5298,
+    "freeBytes": 10015830016,
+    "sourceBackup": {
+      "path": "/opt/royal-backups/casino-street-20261104-v1/source.tgz",
+      "bytes": 220899,
+      "sha256": "b1d0004bff2b8870bd4090ab6c5f46fa205905115e7d6d5c568277c2333d45d5",
+      "rollbackImage": "sha256:d35fb87807807cf91d0c51181f70de1260892689de21d222bf88ef07a7481b4c"
+    },
+    "recordHashes": {
+      "install-manifest.json": "5ae2d9887403f2a6f0efccd4f6e70cbbd8002c205f3b0e7fc71c0e6ea432a400",
+      "build-result.json": "a2baa04a4248264ce64a2aa2c64ed54e95c3ffb25a83743a28ff9c993c4af806",
+      "published.json": "431232e73b06d1fa9cfcc73b7dcbad91f6c4b8d3654b0fe892723bed438f746a",
+      "after.json": "d3a076ce3f72469369afde552ab5f05ea757e005a834bc2de351fb00a2db96b8"
+    }
+  },
+  "publicVerification": {
+    "sourceCommit": "59c1202b466e4f3507e82c5f016240af95dbf5d2",
+    "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "files": [
+      {
+        "path": "assets/index-CKEA6XkH.css",
+        "sha256": "f56414441583dec72d58dd667f0258eff4b4111d8654d52c2c3b7a756041e9d0",
+        "bytes": 155379
+      },
+      {
+        "path": "assets/index-SdaxGhcq.js",
+        "sha256": "ac391361400889ba001d383d70d84a1e79a16184d2f886c63429f79df0b489f7",
+        "bytes": 2898592
+      },
+      {
+        "path": "index.html",
+        "sha256": "0cf5ee776b0d275d31bbd55cfb7d8acecdf8d27d9291fe4a551af1dd135b0c03",
+        "bytes": 708
+      }
+    ],
+    "checks": [
+      {
+        "path": "/game-modules/flag-battle/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/github-crash/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/original-cr-vs-leo/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/original-jackie-chan/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/royal-plinko/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/royal-roulette/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-afterglow/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-caramel-carnival/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-caribbean-treasures/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-cosmic-escape/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-dracona/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-flooded-temple/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-forest-heart/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-last-convoy/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-meme-overload/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-neopolis/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-nitro-run/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-velvet-reign/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/active.json",
+        "status": 200,
+        "unchanged": true
+      },
+      {
+        "path": "/healthz",
+        "status": 200
+      },
+      {
+        "path": "/api/auth/me",
+        "status": 200
+      },
+      {
+        "path": "/api/game-wallet",
+        "status": 410
+      },
+      {
+        "path": "/api/nile-play",
+        "status": 410
+      },
+      {
+        "path": "/api/demo-wallet",
+        "status": 401
+      },
+      {
+        "path": "/api/demo-wallet/expansion",
+        "status": 401
+      },
+      {
+        "path": "/api/demo-wallet/expansion",
+        "gameId": "royal-fruits",
+        "guestRejected": true,
+        "status": 401
+      },
+      {
+        "path": "/api/demo-wallet/expansion",
+        "gameId": "royal-dice",
+        "guestRejected": true,
+        "status": 401
+      },
+      {
+        "path": "/api/demo-wallet/expansion",
+        "gameId": "royal-mines",
+        "guestRejected": true,
+        "status": 401
+      },
+      {
+        "path": "/api/demo-wallet/expansion",
+        "gameId": "studio-neon-crown",
+        "guestRejected": true,
+        "status": 401
+      },
+      {
+        "path": "/api/demo-wallet/expansion",
+        "gameId": "flag-tote",
+        "guestRejected": true,
+        "status": 401
+      }
+    ],
+    "guestBrowsers": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "games": [
+          "flag-battle",
+          "github-crash",
+          "original-cr-vs-leo",
+          "original-jackie-chan",
+          "royal-plinko",
+          "royal-roulette",
+          "studio-afterglow",
+          "studio-caramel-carnival",
+          "studio-caribbean-treasures",
+          "studio-cosmic-escape",
+          "studio-dracona",
+          "studio-flooded-temple",
+          "studio-forest-heart",
+          "studio-last-convoy",
+          "studio-meme-overload",
+          "studio-neopolis",
+          "studio-nitro-run",
+          "studio-velvet-reign",
+          "studio-wild-nudge"
+        ],
+        "street": {
+          "online": false,
+          "people": [
+            "doorman",
+            "janitor",
+            "taxi-driver",
+            "tourist",
+            "mascot"
+          ],
+          "frontRooms": 14
+        },
+        "pageErrors": [],
+        "passed": true
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "games": [
+          "flag-battle",
+          "github-crash",
+          "original-cr-vs-leo",
+          "original-jackie-chan",
+          "royal-plinko",
+          "royal-roulette",
+          "studio-afterglow",
+          "studio-caramel-carnival",
+          "studio-caribbean-treasures",
+          "studio-cosmic-escape",
+          "studio-dracona",
+          "studio-flooded-temple",
+          "studio-forest-heart",
+          "studio-last-convoy",
+          "studio-meme-overload",
+          "studio-neopolis",
+          "studio-nitro-run",
+          "studio-velvet-reign",
+          "studio-wild-nudge"
+        ],
+        "street": {
+          "online": false,
+          "people": [
+            "doorman",
+            "janitor",
+            "taxi-driver",
+            "tourist",
+            "mascot"
+          ],
+          "frontRooms": 14
+        },
+        "pageErrors": [],
+        "passed": true
+      }
+    ],
+    "productionAccountsCreated": false,
+    "productionBetsPlaced": false,
+    "productionMessagesSent": false,
+    "passed": true
+  },
+  "maintenance": {
+    "startedAt": 1793823863.206009,
+    "status": "completed",
+    "freeBefore": 10008608768,
+    "release": "casino-street-20261104-v1",
+    "sourceCommit": "59c1202b466e4f3507e82c5f016240af95dbf5d2",
+    "currentImage": "sha256:ad7e8e5b76d8277f00f4714012553efddabfb3c0f27de94ddb575d95b127e84d",
+    "rollbackImage": "sha256:d35fb87807807cf91d0c51181f70de1260892689de21d222bf88ef07a7481b4c",
+    "plannedEntries": 28,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 145,
+    "removedEntries": 28,
+    "removedImageTags": 5,
+    "dockerRetainedImages": [],
+    "freeAfter": 10018140160,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:d35fb87807807cf91d0c51181f70de1260892689de21d222bf88ef07a7481b4c",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "0640992676eb04234f78cf408afe4d14175ec082968926d5c908aac5e056f78c",
+      "files": 8599
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "49b6c3fbc8f2c1d704e1e1875619fde0def32f62fddaef9b7b97c231e02a5ed9",
+      "receipt": "/var/lib/royal-project-brain/receipts/49b6c3fbc8f2c1d704e1e1875619fde0def32f62fddaef9b7b97c231e02a5ed9.json",
+      "queued": true
+    },
+    "finishedAt": 1793824049.9073591,
+    "durationSeconds": 186.7,
+    "namedResult": {
+      "path": "/opt/royal-maintenance/automatic-runs/run-ad041ade702b49f29a37b35f72a9a7e1/summary.json",
+      "sha256": "36c2e6bebc4d5a28947d924a1b9dd298e5642d4a46846ddb5c06c37705ec0161",
+      "planSha256": "28d72c0a7c6b5385e5b681ce72773c1c3fe5e57c907eccfe9aa124ad9365c8f5"
+    },
+    "removedProgramHistory": [
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/__pycache__",
+        "allocatedBytes": 16384
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/after.json",
+        "allocatedBytes": 3854336
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/application-overlay.py",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/build-result.json",
+        "allocatedBytes": 1171456
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/build.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/deploy.py",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/dist-delta",
+        "allocatedBytes": 2797568
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/engine-build.py",
+        "allocatedBytes": 8192
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/image_metadata.py",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/install-manifest.json",
+        "allocatedBytes": 3911680
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/installer-github.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/operation-v3.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/operation.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/overlay-base.py",
+        "allocatedBytes": 28672
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/published.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/quiesce.cjs",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/release-github.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/release-manifest.json",
+        "allocatedBytes": 663552
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/reservation-status.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/runtime-context",
+        "allocatedBytes": 2813952
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/runtime-inventory.cjs",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/server-delta",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/snapshot-base.py",
+        "allocatedBytes": 16384
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/snapshot.py",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/front-back-walk-20261104-v3/source",
+        "allocatedBytes": 86016
+      },
+      {
+        "path": "/opt/royal-releases/uniform-spin-response-20261104-v1",
+        "allocatedBytes": 966656
+      },
+      {
+        "path": "/opt/royal-backups/front-back-walk-20261104-v3",
+        "allocatedBytes": 24576
+      },
+      {
+        "path": "/opt/royal-backups/uniform-spin-response-20261104-v1",
+        "allocatedBytes": 143089664
+      }
+    ],
+    "timerEnabled": "enabled",
+    "timerActive": "active",
+    "temporaryLinuxTestsCleanup": {
+      "path": "/tmp/royal-casino-street-20261104-tests",
+      "logicalBytes": 93704,
+      "freeBefore": 9996066816,
+      "freeAfter": 9996238848,
+      "preservedSourceCommit": "23989b2775cac612880a0392f9e938d65ed6abd4"
+    },
+    "retainedUnclassifiedHistoryEntries": 44
+  }
+}
