@@ -29,7 +29,7 @@ async function holdCombo(page:Page,y:number,goal:'inside'|'roof'|'window'|'groun
   await page.bringToFront();await page.evaluate(()=>new Promise<void>(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r()))));
   await page.keyboard.down(y<0?'w':'s');await page.keyboard.down('d');
   let trace:{samples:number[][];elapsedMs:number;steps:number[];maxReverse:number;maxIdleMs:number};
-  try{trace=await page.evaluate(({y,goal,landingY,windowOffset,junctionX,index})=>new Promise<any>((resolve,reject)=>{
+  try{trace=await page.evaluate(({y,goal,landingY,windowOffset,junctionX,index,groundRenderY})=>new Promise<any>((resolve,reject)=>{
     const start=performance.now(),samples:number[][]=[],steps=new Set<number>();
     let previous:any,lastMovement=start,maxReverse=0,maxIdleMs=0,bestProgress=-Infinity;
     const sample=()=>{
@@ -43,14 +43,14 @@ async function holdCombo(page:Page,y:number,goal:'inside'|'roof'|'window'|'groun
         maxIdleMs=Math.max(maxIdleMs,now-lastMovement);
       }else lastMovement=now;
       const offset=junctionX-s.x;
-      const done=goal==='inside'?s.hall==='github':goal==='roof'?s.hall==='roof':goal==='ground'?s.hall==='street'&&s.stairStep===0:s.hall==='street'&&Math.abs(s.y-landingY)<.001&&[index,index+1].includes(s.stairStep)&&offset>=windowOffset-12;
+      const done=goal==='inside'?s.hall==='github':goal==='roof'?s.hall==='roof':goal==='ground'?s.hall==='street'&&(s.stairStep===0||s.renderY>=groundRenderY):s.hall==='street'&&Math.abs(s.y-landingY)<.001&&[index,index+1].includes(s.stairStep)&&offset>=windowOffset-12;
       if(done){resolve({samples,elapsedMs:now-start,steps:[...steps].sort((a,b)=>a-b),maxReverse,maxIdleMs});return;}
       if(s.hall!=='street'||!s.stairStep||maxReverse>.3||now-lastMovement>1500||now-start>30000){
         reject(new Error(JSON.stringify({goal,hall:s.hall,x:s.x,y:s.y,step:s.stairStep,maxReverse,maxIdleMs,elapsedMs:now-start})));return;
       }
       previous=s;requestAnimationFrame(sample);
     };sample();
-  }),{y,goal,landingY:STAIR_WINDOW.landing.y,windowOffset:ROOF_WINDOW_PLATFORM.windowOffset,junctionX:ROOF_WINDOW_PLATFORM.junction.x,index:ROOF_WINDOW_PLATFORM.index});}
+  }),{y,goal,landingY:STAIR_WINDOW.landing.y,windowOffset:ROOF_WINDOW_PLATFORM.windowOffset,junctionX:ROOF_WINDOW_PLATFORM.junction.x,index:ROOF_WINDOW_PLATFORM.index,groundRenderY:projectStreetPoint(STREET_ROOF_STAIRS.foot,'rear').y+8});}
   finally{await page.keyboard.up('d');await page.keyboard.up(y<0?'w':'s');}
   expect(trace.elapsedMs).toBeGreaterThan(1000);expect(trace.maxReverse).toBeLessThan(.3);expect(trace.maxIdleMs).toBeLessThan(1500);
   console.log('Held stair route',JSON.stringify({name,y,goal,durationMs:Math.round(trace.elapsedMs),samples:trace.samples.length,steps:trace.steps,maxReverse:trace.maxReverse,maxIdleMs:Math.round(trace.maxIdleMs)}));
@@ -84,6 +84,7 @@ for(const online of [false,true])test('held stair combinations complete every fl
   await keyUntil(page,'a',async()=>roofWindowPlatformOffset(await state(page))<.1);
   await keyUntil(page,'s',async()=>(await state(page)).y>STAIR_WINDOW.landing.y+6);
   traces.push(await holdCombo(page,1,'ground','lower descent past balcony to ground'));
+  await expect.poll(async()=>(await state(page)).stairStep).toBe(0);
   const final=await state(page);
   await writeFile('../held-stair-'+mode+'-trace.json',JSON.stringify({mode,errors,traces,final:{hall:final.hall,x:final.x,y:final.y,stairStep:final.stairStep}}));
   expect(final.hall).toBe('street');expect(final.stairStep).toBe(0);
