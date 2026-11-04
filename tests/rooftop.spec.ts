@@ -149,6 +149,7 @@ async function thirdFloorWindow(page:Page,project:string){
   try{
     await expect.poll(async()=>(await state(page)).hall).toBe('street');
     await expect.poll(async()=>(await state(page)).switching).toBe(false);
+    if(project!=='mobile')await page.keyboard.down('e');
     await page.waitForTimeout(450);expect((await state(page)).hall).toBe('street');
   }finally{if(project!=='mobile')await page.keyboard.up('e');}
   expect((await state(page)).stairStep).toBe(STAIR_WINDOW.return.stairStep);
