@@ -22,6 +22,7 @@ function paper(c:Paint,x:number,y:number){
 /** Drawn inside the existing cubicle. The shirt conceals the wiping gesture. */
 export function paintToiletResident(c:Paint,pose:ToiletResidentPose){
   c.save();c.beginPath();c.rect(9,9,82,123);c.clip();
+  c.translate(0,30);c.scale(1,.65);
   oval(c,51,119,43,9,'#57635b33','');
   for(const x of [39,62]){
     oval(c,x,89,15,21,skin);oval(c,x,101,11,17,skin);
@@ -50,7 +51,7 @@ export function paintToiletResident(c:Paint,pose:ToiletResidentPose){
   path(c,[[58,64],[64,64],[64,70],[58,70]],'#176e75',.65);
   foam(c,34,57,.7);foam(c,65,59,.8);foam(c,42,70,.85);foam(c,61,80,.7);
   arm(false);if(!pose.behindShirt)arm(true);
-  c.save();c.translate(50,38);c.rotate(-.08-pose.lean*.012);c.translate(-50,-38);
+  c.save();c.translate(50,38);c.scale(1,1/.65);c.rotate(-.08-pose.lean*.012);c.translate(-50,-38);
   oval(c,50,34,40,42,'#25252b');
   path(c,[[31,31],[33,20],[38,20],[39,15],[46,17],[50,13],[54,17],[61,17],[68,24],[69,40]],'#25252b',1,true);
   oval(c,50,38,35,37,skin);

@@ -45,7 +45,8 @@ function paintCubicle(c:Paint,p:typeof TOILET.cubicles[number]){
   for(let y=8;y<132;y+=40)for(let x=8;x<92;x+=40)box(c,x,y,Math.min(40,92-x),Math.min(40,132-y),['#d8d7c8','#becac1'][(Math.floor(x/40)+Math.floor(y/40))%2],.7,'#9da99e');
   box(c,33,18,34,16,cream,1.5);box(c,34,18,32,4,'#fff6df',1);box(c,55,25,5,2,'#7d9391',0);
   oval(c,50,55,34,42,'#e6e5d1',ink);oval(c,50,54,26,34,'#f7f1dc');oval(c,50,54,21,28,'#8ba7a2');
-  box(c,88,49,4,18,'#657b75',1);box(c,80,50,10,16,cream,1);box(c,82,65,7,9,'#fff6df',1);line(c,81,54,89,54,'#aaa89a',1);
+  const paperY=p.id===OCCUPIED_TOILET_CUBICLE?9:0;
+  box(c,88,49+paperY,4,18,'#657b75',1);box(c,80,50+paperY,10,16,cream,1);box(c,82,65+paperY,7,9,'#fff6df',1);line(c,81,54+paperY,89,54+paperY,'#aaa89a',1);
   oval(c,20,74,12,14,'#657e73',ink,1);
   for(const [x,y,w,h]of [[0,0,100,8],[0,0,8,140],[92,0,8,140],[0,132,18,8],[82,132,18,8]])box(c,x,y,w,h,'#81958a');
   c.restore();
