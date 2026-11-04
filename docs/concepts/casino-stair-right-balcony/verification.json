@@ -1,0 +1,216 @@
+{
+  "feature": "casino-stair-right-balcony",
+  "dateLocal": "2026-11-04",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "frontendSourceCommit": "4011c542af67ae920b84ccf2a55373081952677a",
+  "backendSourceCommit": "344fc59f5218c944467bb53a24f1958ef3d08fd6",
+  "applicationBuildSourceCommit": "344fc59f5218c944467bb53a24f1958ef3d08fd6",
+  "buildMainBaseline": "28fa316c6f27f0114cdbec4ffc266fb846bcc557",
+  "change": "Long flat balcony extends rightward from the middle stair junction to the third window of floor three. Entry requires actually walking to the distant sill. Up/down select the flights through the unchanged junction. An interrupted selected window approach resumes after movement confirmation.",
+  "geometry": {
+    "platformWorldLength": 310,
+    "projectedTravelLength": 511.5,
+    "sillDistanceFromJunction": 448.8,
+    "directionOnScreen": "right",
+    "exteriorWindowColumn": 2,
+    "returnWorldOffset": 244,
+    "flat2D": true,
+    "groundLoopUnchanged": true
+  },
+  "sourceFiles": {
+    "src/shared/rooftop.ts": "7457a5e494d5105391227a793b846b6e20eeac87bf89f2ea0cb2ee830725ffa9",
+    "src/shared/stairWindow.ts": "b88f6cba044e5aa83a2952ce2bbf690910c6ac150c15355a52cd7bf559794518",
+    "src/game/RoomScene.ts": "9234b6b1460eeed4b92ba22d8e4924d4e8d9f43b5bd54a51ae7c687fe6be34df",
+    "src/game/RooftopRenderer.ts": "3829cc4b627640ce4e39ddc8354502b8cee594a57958fd89c7b32812dd55b976",
+    "src/game/StairWindowRenderer.ts": "4991553834002ab0832003bd005b331563cec09ee3f8c9d4541024354084a496",
+    "src/game/roofStairInput.ts": "f7706e55d2f11117343d199f89097036a467f18bcc2026a5614c4923f908cd46",
+    "src/game/streetView.ts": "140b9468a9c5027d97e20ad2f8c3d549b7647217998783bdc045466c7289a9b5",
+    "src/game/StreetRenderer.ts": "ba31018a38184d2fc4220ddcadfaed95ef313d0243eb390cd6c210bf0a511362",
+    "server/LobbyRoom.ts": "b0df73ff281890743966d84c6ce6924f50a703a21c224f1e59e6a62a69209f9f",
+    "src/shared/world.ts": "4c68158014ad7100f998ecb4e8b29f7974edd99bd64cdc399b3b7937d8139bf1"
+  },
+  "testFiles": {
+    "server-tests/stair-window.test.ts": "628a19fd9f1ef14c804b3cdeedfb1f54a99bb41400bfd4129891c25fcd624e97",
+    "server-tests/rooftop.test.ts": "873893e632407ee7fd03294198ec970fdf43d2c11393804696612249d807e0e6",
+    "tests/rooftop.spec.ts": "60a18f1f79d63a969330a92338ed0399a109fd524b0c615b2b47516a4dae25dd"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "cf0e8770d4b53384ba5cff0e68a92b49c887f0cb160b8349d3f992baab018d3e"
+    },
+    "dist-server/index.js": {
+      "bytes": 2444181,
+      "sha256": "da91dae5ea1f10e0ffc4f2e69ce62ece30f56e7791b0b205b3b61909d5489b68"
+    },
+    "dist/assets/main-44JwsMp4.js": {
+      "bytes": 2924286,
+      "sha256": "2b4316527a760596294a459bb353bf7dd9c0a9e6d3cde9a2d02438ecf828ac81"
+    },
+    "dist/assets/main-DMkxwiDw 2.css": {
+      "bytes": 156273,
+      "sha256": "1cb9d40df51f946507ecdf17192c66601cb54979283d0ec493ae11315a7ffc97"
+    },
+    "dist/assets/main-DMkxwiDw.css": {
+      "bytes": 156273,
+      "sha256": "1cb9d40df51f946507ecdf17192c66601cb54979283d0ec493ae11315a7ffc97"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX 2.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    }
+  },
+  "verification": {
+    "streetUnitCases": {
+      "passed": 79,
+      "failed": 0,
+      "command": "npm run test:street"
+    },
+    "mainMergeCases": {
+      "passed": 17,
+      "failed": 0,
+      "files": [
+        "player-recovery",
+        "lobby-recovery",
+        "bar-route",
+        "bar-confirmation",
+        "mira-presentation",
+        "character-animation"
+      ]
+    },
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-04T15:44:18.350Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 213150
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 6497
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 213503
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 57732
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 68
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 18
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 20
+        }
+      ],
+      "passed": true,
+      "durationMs": 490988
+    },
+    "finalHost": {
+      "typecheckPassed": true,
+      "productionHostBuildPassed": true,
+      "qualificationScope": "Only host approach recovery and read-only navigation diagnostics changed after the complete application build. Mathematical rules, stake policies and independent package inputs remain unchanged."
+    },
+    "browser": {
+      "passed": 2,
+      "failed": 0,
+      "totalSeconds": 324,
+      "frontendSourceCommit": "4011c542af67ae920b84ccf2a55373081952677a",
+      "backendSourceCommit": "344fc59f5218c944467bb53a24f1958ef3d08fd6",
+      "devices": [
+        {
+          "name": "desktop",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "durationSeconds": 150
+        },
+        {
+          "name": "touch emulation",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "durationSeconds": 162
+        }
+      ],
+      "scenarios": [
+        "Actual horizontal walk to the distant right window",
+        "Manual entry and return on the same balcony",
+        "Explicit ascent and descent from the return position",
+        "Entry from either adjoining flight while old movement is held",
+        "Touch walk back to the junction and selection of both flights",
+        "Reconnect on the balcony",
+        "Continue to roof and restroom, return and descend to street",
+        "Connected chat, unchanged balance, identity, no page errors and no overflow"
+      ],
+      "command": "STREET_TEST_WEB_PORT=5193 STREET_TEST_API_PORT=2593 node --import tsx scripts/database-test.ts node_modules/@playwright/test/cli.js test --config=playwright.street.config.ts tests/rooftop.spec.ts"
+    },
+    "initialFindings": [
+      "A fixed desktop key duration assumed a higher walking speed; the test now waits for actual travel distance.",
+      "The reversed platform needed a strict flat-height check to avoid recapturing the first substep of an adjoining flight. Existing stair route tests detected this and pass after the geometry correction.",
+      "Native held-key entry could stop its checked approach after movement confirmation. The selected approach now resumes when idle; the final complete browser run passes.",
+      "One early touch branch tap made no progress. The unchanged tap scenario passed in both later complete mobile runs."
+    ]
+  },
+  "screenshots": [
+    {
+      "file": "desktop-inside.png",
+      "sha256": "cd59afa6b9b6c62d0f61b67c96d093f2e0c3dc5291d40ecdf07d38aaadd06543"
+    },
+    {
+      "file": "desktop-platform.png",
+      "sha256": "e32a4aeb3f9e4bebd75e2b6508bb4e86e44841bc53792dc542a08c5313722e1f"
+    },
+    {
+      "file": "desktop-return.png",
+      "sha256": "056685ae6d1242fb41c85b8a4dfa2b6224bde1e8addf913493c04434d9a92c5e"
+    },
+    {
+      "file": "mobile-platform.png",
+      "sha256": "1133fa06f57c902012881792f3ae99acd5ef5e3c6047b495c6d0808ceee31195"
+    },
+    {
+      "file": "mobile-return.png",
+      "sha256": "bc235872a67f82cc1c89e25d57c82939e88dcf56c9c6af4270d84b086c24d3cf"
+    }
+  ],
+  "preview": "http://127.0.0.1:5191/",
+  "limitations": [
+    "Local preview only; production unchanged.",
+    "Mobile coverage uses browser touch emulation, not a physical phone."
+  ],
+  "reconciledSourceCommit": "95682f369ca8773d24f2310845764d1c4add7f79",
+  "latestFetchedMain": "970c358577d6d966513645fca2af9795009d412a",
+  "reconciliation": {
+    "taskSourceHashesMatchTestedVersion": true,
+    "testedArtifactsRetained": true,
+    "sourceChanges": [
+      "src/game/Bar.ts",
+      "src/game/miraCharacterArt.ts"
+    ],
+    "note": "Later main counter-contact artwork and release records are reconciled in Git. The active preview retains the exact tested host and backend bytes."
+  }
+}

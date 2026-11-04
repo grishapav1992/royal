@@ -1,0 +1,126 @@
+{
+  "generatedAt": "2026-11-04T17:36:16.826Z",
+  "scope": "Local keyboard turning from the two connecting stair flights onto the middle balcony. No publication.",
+  "repository": "https://github.com/grishapav1992/royal",
+  "branch": "feature/casino-street",
+  "runtimeSourceCommit": "54bc0d7416b5d38846510268f434c809538129c5",
+  "integratedMainCommit": "22d6cf99f600aa48ef492448625404a43b0b8510",
+  "rootCause": {
+    "previousGuard": "The side turn was accepted only within 50 world units of the middle junction.",
+    "previousTestGap": "The prior native test stopped within 42 units before turning, so it did not cover an earlier side input.",
+    "reproduced": {
+      "position": {
+        "x": 1665,
+        "y": 338,
+        "stairStep": 6
+      },
+      "input": {
+        "x": -1,
+        "y": 0
+      },
+      "distanceRequested": 12,
+      "distanceMovedBeforeFix": 0
+    },
+    "regressionBeforeFix": {
+      "passed": 86,
+      "failed": 1
+    }
+  },
+  "change": {
+    "behavior": "A side input toward the window follows either entire connected flight to the junction, then continues across the balcony. It takes priority over held vertical movement.",
+    "geometry": "The character follows the existing rail and flat platform. No teleport, new collision layer, trigger label or doorway interaction is introduced.",
+    "limits": "Other flights retain vertical manual movement. Checked click routes are unchanged."
+  },
+  "verification": {
+    "unit": {
+      "command": "npm run test:street",
+      "passed": 87,
+      "failed": 0,
+      "turnMatrix": {
+        "cases": 60,
+        "flights": 2,
+        "positionsPerFlight": 5,
+        "verticalInputs": 3,
+        "frameDistances": 2
+      }
+    },
+    "typecheck": {
+      "command": "node node_modules/typescript/bin/tsc --noEmit",
+      "passed": true
+    },
+    "build": {
+      "frontend": "vite build",
+      "backend": "buildServer",
+      "passed": true,
+      "scope": "Host and backend only; existing game module packages are retained."
+    },
+    "nativeBrowser": {
+      "spec": "tests/stair-simple.spec.ts",
+      "modes": [
+        "solo",
+        "connected"
+      ],
+      "passed": 2,
+      "failed": 0,
+      "duration": "2.1m",
+      "coverage": [
+        "side turn more than 120 world units before the junction from below",
+        "side turn more than 110 world units before the junction from above",
+        "simultaneous side and vertical input with Shift",
+        "whole platform to the open window",
+        "window entry and return without held-input bounce",
+        "click routing from both adjoining flights",
+        "ordinary flights and full descent",
+        "no rendered hints",
+        "connected chat"
+      ],
+      "pageErrors": 0,
+      "physicalMobileTested": false
+    },
+    "preview": {
+      "url": "http://127.0.0.1:5191/",
+      "frontendStatus": 200,
+      "backendStatus": 200,
+      "servedScript": "/assets/main-1RwRLPQk.js",
+      "originalDatabaseRetained": true
+    },
+    "map": {
+      "snapshot": "fba4f11036184d03fc0c51b75198ad155dd4911b",
+      "queries": [
+        "brain:query --local moveRoofStairs",
+        "graph:query --local moveRoofStairs"
+      ],
+      "note": "Local structural map only. Listed shared movement, prediction and scene sources were inspected directly."
+    }
+  },
+  "sourceHashes": {
+    "src/shared/rooftop.ts": "45ea47d08c30299389e58705f3075a5d0a867e1d599b49616cbf24ac9adfde27",
+    "src/shared/stairWindow.ts": "67b2561c1be14bac242523acbcb0605ce440b318c47846c607658b9a0aacabe3",
+    "src/shared/movement.ts": "bb815fd40edeacc421806041fb64585897b44d447d7cb1c7021004d36b9904f8",
+    "src/game/RoomScene.ts": "d2080d9305ef489041dd11007b1e248d6438d4b3b5a63b3badf4dc653ad0dab8",
+    "src/game/streetView.ts": "140b9468a9c5027d97e20ad2f8c3d549b7647217998783bdc045466c7289a9b5",
+    "src/network/MovementPrediction.ts": "a8d69798320c2e698c92d6db5d6354aca6c0f7c42474b4a0ec32b49cd500cef7",
+    "server-tests/stair-window.test.ts": "c53e26e2e9a26fddc076364e4a822f36adc07ae896195cfca86c3df430055c0b",
+    "tests/stair-simple.spec.ts": "5ff3f74aa83b32568af3f4195b39ec11931426af4400d8190e3b556be7ca7fee"
+  },
+  "artifactHashes": {
+    "dist/index.html": "f8850ef43b1f947a59b367d676733b1c6172e7af981ff56608aad8c6f1dca8d1",
+    "dist-server/index.js": "a87e6f5874355ed81f8eada27b4501df4c642c456f8472aad176876474ac73a2",
+    "dist/assets/main-1RwRLPQk.js": "d4f9dca3a0ac676ebe4b7f7b5659cb3ede4803f6961b80398bd4a845db31a3ef",
+    "dist/assets/main-c0rveKga.css": "5b6c304fa752ed89c2f730876a74fee17a0085e53cc7bf3428ca57097df8e582",
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+  },
+  "evidenceLogHashes": {
+    "unit-before": "00fcf4ad93a5808fe6f73704ee4652dc28972992b1b86d6179046149016d85b1",
+    "unit": "b4785bf2326f74e9b2159dd63cf35526b962b3c16e3ac041788298e74a6e748e",
+    "build": "d112b5dea0b92cb838906fa314d72408edc82d00001494c69d828e1ad80200ec",
+    "ui": "88769cab6967d41ee2fdccd8dd24c92d55f47f5726f4fad830fbfec2637ac127"
+  },
+  "screenshots": {
+    "connected-window.png": "f1f86bb615003fd6146a12d3408880518a8d61925a9b9eeecf78bce682a791f4",
+    "solo-window.png": "8ba07c662f570ed969b0988e19b73d378065adb5d2c22e11b4d2364db6070717"
+  },
+  "productionChanged": false,
+  "catalogueChanged": false,
+  "mathematicsChanged": false
+}

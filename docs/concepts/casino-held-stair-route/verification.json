@@ -1,0 +1,305 @@
+{
+  "checkedAt": "2026-11-04T18:34:09.595Z",
+  "scope": "Entire stair route under continuously held W+D or S+D on every stair segment, including the window platform and return.",
+  "application": {
+    "url": "http://127.0.0.1:5191/",
+    "frontendSourceCommit": "4d1b733cf37b3188857de626e6685756210ee269",
+    "backendSourceCommit": "55defd31265a41f417894c2474c2797141f961ef",
+    "launcherPid": 72964,
+    "backendPid": 15079,
+    "servedScript": "/assets/main-BHeoC0dn.js",
+    "frontendStatus": 200,
+    "backendStatus": 200,
+    "originalPreviewDatabaseRetained": true,
+    "backendRestarted": false,
+    "userTabReloaded": false
+  },
+  "fix": {
+    "issue": "Network smoothing could project a character already on the flat platform onto the neighbouring flight, producing a small reverse visual step.",
+    "observedReverseBeforeFix": 1.2373838665948824,
+    "unitReproduction": {
+      "expectedPlatformY": 20,
+      "incorrectY": 17.464027303754264,
+      "before": {
+        "passed": 88,
+        "failed": 1
+      }
+    },
+    "change": "The renderer receives the actor current platform status, keeps its flat height and clamps the corrected position to the platform ends. Stair physics, movement direction and window actions are unchanged."
+  },
+  "verification": {
+    "unit": {
+      "command": "npm run test:street",
+      "passed": 89,
+      "failed": 0
+    },
+    "typecheck": {
+      "command": "node node_modules/typescript/bin/tsc --noEmit",
+      "passed": true
+    },
+    "build": {
+      "frontend": "vite build",
+      "backend": "buildServer",
+      "passed": true,
+      "backendBytesUnchanged": true,
+      "scope": "Host rendering only; existing module packages are retained."
+    },
+    "nativeBrowser": {
+      "verifiedModes": [
+        "solo",
+        "connected"
+      ],
+      "verifiedScenarios": 2,
+      "initialCommand": "node node_modules/@playwright/test/cli.js test --config=playwright.held-stairs.config.ts",
+      "connectedRerun": "node node_modules/@playwright/test/cli.js test --config=playwright.held-stairs.config.ts --grep connected",
+      "soloPassed": true,
+      "connectedPassed": true,
+      "controls": "Physical browser key-down events hold both keys through each complete segment. They are released only at the phase goal. On the balcony the player walks left back to the junction and explicitly selects the next flight.",
+      "positionsInjected": false,
+      "locationsInjected": false,
+      "recoveryUsed": false,
+      "windowRoundTripsPerMode": 2,
+      "coverage": [
+        "all lower flights upwards with W+D, continuing across the balcony into the window",
+        "all upper flights upwards with W+D after choosing the upper branch, reaching the roof",
+        "normal roof return landing below the last flight, then all upper return flights with S+D to the window",
+        "second window round trip and leftward walk back along the balcony",
+        "all lower flights downwards with S+D until rendered ground contact",
+        "server acknowledges ground arrival after releasing keys",
+        "connected chat remains available"
+      ],
+      "inputControllerCorrection": "The first post-fix solo route passed. The connected route also completed all segments with zero backward movement, but a too-late ground endpoint waited for the server stair flag while continuing to walk on the pavement. The controller now detects rendered ground contact, releases the keys, then waits for acknowledgement. Only that failed connected scenario was rerun.",
+      "scenarioHashes": {
+        "solo": "7cbd2a9a6aec5f8e23e1fbd09742d1b85a026a1e16bf91bb7cdadcf7529ae028",
+        "connected": "51c6751ec33c3b43f1ab6e70e8f00fb53b29269b01d9364875ae23fff3c4b62c"
+      },
+      "renderedTrajectorySamples": [
+        {
+          "mode": "solo",
+          "segments": [
+            {
+              "name": "lower ascent to window",
+              "keys": "W+D",
+              "goal": "inside",
+              "durationMs": 10684,
+              "frames": 642,
+              "steps": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "maxIdleMs": 0,
+              "maxBackwardRenderUnits": 0
+            },
+            {
+              "name": "upper ascent past balcony to roof",
+              "keys": "W+D",
+              "goal": "roof",
+              "durationMs": 7944,
+              "frames": 478,
+              "steps": [
+                7,
+                8,
+                9,
+                10,
+                11,
+                12
+              ],
+              "maxIdleMs": 0,
+              "maxBackwardRenderUnits": 0
+            },
+            {
+              "name": "upper descent to window",
+              "keys": "S+D",
+              "goal": "window",
+              "durationMs": 9379,
+              "frames": 564,
+              "steps": [
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              "maxIdleMs": 0,
+              "maxBackwardRenderUnits": 0
+            },
+            {
+              "name": "lower descent past balcony to ground",
+              "keys": "S+D",
+              "goal": "ground",
+              "durationMs": 7629,
+              "frames": 459,
+              "steps": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ],
+              "maxIdleMs": 0,
+              "maxBackwardRenderUnits": 0
+            }
+          ],
+          "final": {
+            "hall": "street",
+            "x": 1658.1729421434313,
+            "y": 462.172942143431,
+            "stairStep": 0
+          }
+        },
+        {
+          "mode": "connected",
+          "segments": [
+            {
+              "name": "lower ascent to window",
+              "keys": "W+D",
+              "goal": "inside",
+              "durationMs": 10805,
+              "frames": 649,
+              "steps": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "maxIdleMs": 50,
+              "maxBackwardRenderUnits": 0
+            },
+            {
+              "name": "upper ascent past balcony to roof",
+              "keys": "W+D",
+              "goal": "roof",
+              "durationMs": 7980,
+              "frames": 480,
+              "steps": [
+                7,
+                8,
+                9,
+                10,
+                11
+              ],
+              "maxIdleMs": 18,
+              "maxBackwardRenderUnits": 0
+            },
+            {
+              "name": "upper descent to window",
+              "keys": "S+D",
+              "goal": "window",
+              "durationMs": 9396,
+              "frames": 565,
+              "steps": [
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              "maxIdleMs": 18,
+              "maxBackwardRenderUnits": 0
+            },
+            {
+              "name": "lower descent past balcony to ground",
+              "keys": "S+D",
+              "goal": "ground",
+              "durationMs": 7646,
+              "frames": 460,
+              "steps": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ],
+              "maxIdleMs": 0,
+              "maxBackwardRenderUnits": 0
+            }
+          ],
+          "final": {
+            "hall": "street",
+            "x": 1658.13671875,
+            "y": 462.13677978515625,
+            "stairStep": 0
+          }
+        }
+      ],
+      "aggregate": {
+        "heldSegments": 8,
+        "frames": 4297,
+        "maxBackwardRenderUnits": 0,
+        "maxObservedIdleMs": 50
+      },
+      "measurement": "Measures accumulated reversal of rendered feet before camera zoom over every sampled frame, rather than just adjacent logical positions. Window and roof location changes are separate phase boundaries. The ground endpoint uses the actual stair geometry because predicted ground contact can precede the authoritative stair flag.",
+      "thresholds": "0.3 render units and a 1500 ms no-progress guard are practical test tolerances, not perceptual or scientific thresholds."
+    },
+    "limits": {
+      "physicalMobileTested": false,
+      "automatedBrowserInput": true,
+      "completeVideoWatchedFrameByFrame": false,
+      "visualReview": "The bottom exit contact sheet and final ground frame were inspected. The complete final connected route is retained at original speed."
+    },
+    "projectMap": {
+      "mode": "local working-copy graph",
+      "brainQuery": "test:street",
+      "graphQuery": "RoomScene animateActor correction",
+      "note": "Queries located the verification command and rendering sources before the change. The indicated files were inspected directly; no production status is inferred."
+    }
+  },
+  "sourceHashes": {
+    "src/game/streetView.ts": "f591ec42ca19f3d625699a143dc65d9743ce8313567a396dc13af39745a96668",
+    "src/game/RoomScene.ts": "d5d7923aa9c81ece64c202448f69acb81a41ba07bfeaedc6b6b72db5b05f8466",
+    "src/shared/rooftop.ts": "fe32902b5474e7c9600d67aeb3afd976985e794f65ec651195993ea5c0b0badc",
+    "src/shared/stairWindow.ts": "67b2561c1be14bac242523acbcb0605ce440b318c47846c607658b9a0aacabe3",
+    "tests/stair-held.spec.ts": "51c6751ec33c3b43f1ab6e70e8f00fb53b29269b01d9364875ae23fff3c4b62c",
+    "playwright.held-stairs.config.ts": "d2522ad2d6a66adfc010e303b8441b695a7d1ec3bdec8ca78463f4fb4e791604",
+    "playwright.live-stairs.config.ts": "d0b3c0de1e8ed70a51ce2599471c07bf83e3583ba8daacd905e6da9985d0d66f",
+    "server-tests/stair-window.test.ts": "b44345eda5bced0e1d4133e423581c61ddb9466ac8e925dd2f05653e2bb32a12"
+  },
+  "artifactHashes": {
+    "dist/index.html": "89ed8f3900044c646d357b391a72afb076987da50196d8a58989ad70c4fc54f3",
+    "dist-server/index.js": "780a61f47c65f514db87fcc5c451c4263fde7f58459217331563cc871638e994",
+    "dist/assets/main-BHeoC0dn.js": "65c83fe4f1b2a52597ba4c40a334d67dbf18ecc386983c36237bfa4b095a2857",
+    "dist/assets/main-c0rveKga.css": "5b6c304fa752ed89c2f730876a74fee17a0085e53cc7bf3428ca57097df8e582",
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+  },
+  "evidence": {
+    "files": {
+      "connected-held-route.mp4": "72308bd0f3fed49c836b4e12a9d092646221ff6542604093ab624ff1e433e40f",
+      "solo.trace.json.gz": "0445b0325001438179421945a663d7a5a134bc8f018c662f72b99849e89a110b",
+      "connected.trace.json.gz": "e7ab07d29c1b0874e2c9ac666a5c2827815b27dc977a8d401577468e3add1a83"
+    },
+    "video": {
+      "file": "connected-held-route.mp4",
+      "seconds": 67.7,
+      "timingChanged": false,
+      "crop": "Game canvas only; browser header and chat are excluded."
+    },
+    "traceSchema": [
+      "elapsedMs",
+      "logicalX",
+      "logicalY",
+      "reportedStairStep",
+      "hallCode (street=0, card salon=1, roof=2)",
+      "renderX",
+      "renderY"
+    ],
+    "logs": {
+      "soloAndInitialConnected": "f503d41205a6365c06081f96db597bbd3a53c141f7ec27aea3c184fa41a1e008",
+      "connectedRerun": "3530c506eda8e4351006c335cc8ff08f4d64de81e77a5dfa76d2abb9403f3aef",
+      "unit": "3f6bfe9010b9e3f6135caed68c02d55298a4d2dd7c1fc278cf986c7b0436f0e0",
+      "build": "e60b08466df6bd9e0b96d34870d912870e0b8dcaee53435d0fb0a1bddacd2c26"
+    }
+  },
+  "productionChanged": false,
+  "catalogueChanged": false,
+  "mathematicsChanged": false
+}

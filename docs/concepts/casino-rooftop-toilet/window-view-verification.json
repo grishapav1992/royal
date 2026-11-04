@@ -1,0 +1,131 @@
+{
+  "dateLocal": "2026-11-04",
+  "testedFrontendSourceCommit": "4a8ab36213b765b648c5b786858f09263a145558",
+  "testedBackendSourceCommit": "767416b9c881b5628650857cd4f5e6ec5c30b45a",
+  "deployed": false,
+  "change": "Actual restroom artwork is visible through the roof window; the reverse side shows the actual snowy roof and city. Both views are clipped under the original frame, sill and translucent raised sash.",
+  "sourceFiles": {
+    "src/game/ToiletRenderer.ts": "4082e1bb397687b94398f687c39612095c1d83fd7989d5be04e29a2f207f7207",
+    "src/game/RooftopRenderer.ts": "5aae318535127cf097a029dc0e76b8160e4b21f3710f06f892957a1e5c874146",
+    "src/game/RoomScene.ts": "5c1ab5553dd4063bd27532e5151557cda07673e02964bbab112af1ee93eece22"
+  },
+  "unchangedGameplaySourceFiles": {
+    "src/shared/toilet.ts": "aa95e3e05639d9e447b66d0dea92d05410335b8774af9c383105548b23afec37",
+    "src/shared/world.ts": "04b51ee7528c88d5d178e407b7506f216310e078b73ae1cc0133b473d3d6e57f",
+    "src/shared/rooftop.ts": "5e2b2e5ec41e1ab9fc020db7ca8d79a7ee37a5edfd3e05b9d0e7a3213e2e4119",
+    "src/shared/movement.ts": "bb815fd40edeacc421806041fb64585897b44d447d7cb1c7021004d36b9904f8",
+    "src/game/navigation.ts": "3c4919cddf664e5a3bcc58095734eb0dfcc3d61787454a306623379787d97e4d",
+    "server/LobbyRoom.ts": "529f20d6d1d7b00b9509ece73a129d1de02a61e9bec7750e89adb5475a6de200"
+  },
+  "backendBytesUnchanged": true,
+  "applicationBuild": {
+    "format": 1,
+    "startedAt": "2026-11-04T12:43:02.509Z",
+    "scope": "application",
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 3822
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 6295
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 9677
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 5223
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 59
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 19
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 42
+      }
+    ],
+    "passed": true,
+    "durationMs": 25137
+  },
+  "browser": {
+    "url": "http://127.0.0.1:5191",
+    "realManualRoofAscent": true,
+    "windowEntryAndReturn": true,
+    "desktop": {
+      "width": 1440,
+      "height": 1000
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844
+    },
+    "chatEnabled": true,
+    "balanceUnchanged": true,
+    "pageErrors": [],
+    "hostIndexSha256": "f4953ae0dea55ae385f72f63265664bd4263e4380fd9f861b6a7e9b3c979a961",
+    "backendSha256": "8745063aaacc337f10707a988a9a3b37d63d8d041a955b3e81d9a70fa5a161b9"
+  },
+  "visualReview": {
+    "roofWindow": "Actual bathroom tile, vanity edge and cubicles",
+    "restroomWindow": "Actual roof equipment, snow, parapet and city",
+    "viewsInspected": [
+      "roof desktop",
+      "restroom desktop",
+      "restroom mobile",
+      "both window details"
+    ],
+    "frameAndSillInFront": true
+  },
+  "artifacts": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "f4953ae0dea55ae385f72f63265664bd4263e4380fd9f861b6a7e9b3c979a961"
+    },
+    "dist-server/index.js": {
+      "bytes": 2432529,
+      "sha256": "8745063aaacc337f10707a988a9a3b37d63d8d041a955b3e81d9a70fa5a161b9"
+    },
+    "dist/assets/main-YoPqQeOP.js": {
+      "bytes": 2887357,
+      "sha256": "acaf83fb856cdba55daea909ffbc4c6c65f85859bcdb3f0f5884019f2c7122b1"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    },
+    "dist/assets/main-BVwNdpG_.css": {
+      "bytes": 155970,
+      "sha256": "92f1b83d6c0c978a0156dae804a3b74bbcdbaf278a5bb609fed2742ae86af1dc"
+    }
+  },
+  "images": {
+    "window-into-toilet.png": {
+      "bytes": 22899,
+      "sha256": "392c6075045431b23b688b29c7c7a5399ce2b9b4d7f10b9ee113c292784bce83"
+    },
+    "window-out-to-roof.png": {
+      "bytes": 29344,
+      "sha256": "f08ec45053c320e6a35659a84063a5ceb20f08bd33a9393a24cc1216a7499bd9"
+    }
+  },
+  "previousGameplayVerification": {
+    "sourceCommit": "767416b9c881b5628650857cd4f5e6ec5c30b45a",
+    "path": "implementation-verification.json",
+    "scope": "Earlier complete desktop/mobile route and all cubicles; not rerun for this visual-only change. Current window entry and return were checked separately in the connected host."
+  }
+}

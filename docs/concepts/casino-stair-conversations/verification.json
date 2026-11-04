@@ -1,0 +1,161 @@
+{
+  "feature": "casino-stair-conversations",
+  "dateLocal": "2026-11-04",
+  "timezone": "Europe/Moscow",
+  "testedRuntimeSourceCommit": "5458e2ba7f48321304ebe3172f110940b8bb3d29",
+  "mainBaseline": "5a4833d71210e68747d07ef4d6300392e154a2b5",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "sourceFiles": {
+    "src/game/streetDetails.ts": "12fe562d0f58484fb2093fe38857c125d01a231e659297763f9cb47b8409635c",
+    "src/game/StreetResidents.ts": "9e2e7d8496867444939a5244898fca920e65181ec72d68cd12106a4905481ce5",
+    "src/game/StreetRenderer.ts": "123685ee4f77f9186bb21bedee654b2c4f636d549f27e0522cb280221ae09caa",
+    "src/game/RoomScene.ts": "83838701131daf316d54b5cb3d55e64d43eff66d313c2b74adaeff67c58ce3ba",
+    "server-tests/street-life.test.ts": "00c64d08c726c6e1a3df0d130cef187f3b0481c18efbe7e144fa0a210d2dc21e",
+    "tests/rooftop.spec.ts": "f19103305926b71295daf19f2806897189b4fbe96fa1bcf978b8981650cd16b9"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "98485568d82653e7358880fd7e28fad2c9a7dd4b6772a9f9173f999bb9fbc195"
+    },
+    "dist-server/index.js": {
+      "bytes": 2424403,
+      "sha256": "4c0a46c6a478264ae763294459ce827ce37f804623b6e4a8cbf7bb7ec8fc286a"
+    },
+    "dist/assets/main-C4g2zNs2.js": {
+      "bytes": 2859549,
+      "sha256": "ffc035c4066f35cb74b4c744bb7e9b576a6d2cf86b6c071df9e1db9afcb7f6ce"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    },
+    "dist/assets/main-afxgM5_-.css": {
+      "bytes": 155912,
+      "sha256": "1b42cc1fbf3619b16fc7b8bfbe961d50c17754359895f71520ca8268d8906543"
+    }
+  },
+  "problem": "Street conversation proximity used only ground-map X/Y. A climbing visitor could remain within 112 map units of a resident on the ground, making a talk prompt available far above that resident.",
+  "change": "A nonzero stairStep makes the visitor ineligible for street resident conversations. The prompt and any current dialogue close, NPC click areas are disabled, pending approaches are cancelled, and the visitor is excluded from ground mascot greeting passers. Returning to ground enables normal interaction.",
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-03T21:13:50.031Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 6252
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 9945
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 5649
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 5285
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 65
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 22
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 22
+        }
+      ],
+      "passed": true,
+      "durationMs": 27241
+    },
+    "streetUnit": {
+      "passed": 56,
+      "failed": 0,
+      "newRegression": "An in-range ground conversation closes for every stair step 1 through 12, cannot restart above ground, and becomes available at step 0."
+    },
+    "connectedHost": {
+      "test": "tests/rooftop.spec.ts",
+      "desktop": {
+        "viewport": [
+          1440,
+          1000
+        ],
+        "passed": 1,
+        "reportedDuration": "1.7m"
+      },
+      "mobile": {
+        "viewport": [
+          390,
+          844
+        ],
+        "touchEnabled": true,
+        "passed": 1,
+        "reportedDuration": "1.7m"
+      },
+      "waitedForGroundResidentWithin112MapUnits": true,
+      "conversationEligibilityFalseOnStairs": true,
+      "nearbyAndConversationAndApproachNull": true,
+      "nativeConversationPanelHidden": true,
+      "reloadOnStairsBlocked": true,
+      "groundDoormanConversationOpenedAfterDescent": true,
+      "manualAscentAndRoofReturnPassed": true,
+      "chatEnabled": true,
+      "balancePreserved": true,
+      "noPageErrors": true,
+      "noHorizontalOverflow": true
+    },
+    "localCodeMap": {
+      "query": "StreetConversations",
+      "passed": true,
+      "productionAudit": false
+    },
+    "livePreview": {
+      "url": "http://127.0.0.1:5191/",
+      "frontendSha256": "98485568d82653e7358880fd7e28fad2c9a7dd4b6772a9f9173f999bb9fbc195",
+      "frontendMatchesTestedArtifact": true,
+      "backendHealth": 200,
+      "backendProgramUnchanged": true
+    },
+    "manualVisualReview": [
+      "desktop-stairs.png",
+      "mobile-ground.png"
+    ]
+  },
+  "story": "Reach the ladder -> climb and reconnect -> wait until a ground resident is nearby on the map -> verify no NPC interaction at height -> descend -> click the doorman and confirm a normal ground conversation.",
+  "scope": {
+    "manualStairMovementChanged": false,
+    "roofGeometryChanged": false,
+    "serverProgramChanged": false,
+    "npcPatrolRoutesChanged": false,
+    "gameCatalogueChanged": false,
+    "gameMathematicsChanged": false,
+    "walletChanged": false
+  },
+  "limitations": [
+    "Mobile is a touch-enabled browser emulation, not a physical device.",
+    "Ground eligibility is defined by the existing stairStep state; no general multi-level proximity service was introduced.",
+    "Current host scenarios verify the stair interaction fix and ground recovery. Corner-layer screenshots and checks remain in the previous manual-stairs report.",
+    "No production publication or live production audit."
+  ],
+  "screenshots": {
+    "desktop-stairs.png": "9b2bb18eeaeb04ad996dd7933ffa324211a7472fe32e935bcbde1f17240b76cd",
+    "desktop-ground.png": "93335616c5df955af9491f4399d6a2b532273f8f51a449f8f0e4cc2937d09077",
+    "mobile-stairs.png": "be25d3c2706929b0a8ded9b771e5b16ac7f3669373eef3e5ca9dcc1b7bc50f57",
+    "mobile-ground.png": "9e34c71dcdf7878b0c6ddc3ba21a384e7be791604fca43ed162d1cd87a47bbec"
+  }
+}

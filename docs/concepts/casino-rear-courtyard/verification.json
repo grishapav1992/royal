@@ -1,0 +1,180 @@
+{
+  "feature": "casino-rear-courtyard",
+  "visualVersion": "courtyard-v9",
+  "date": "2026-11-03",
+  "testedApplicationSourceCommit": "4f6be722a4acfef16fb0358e861d4a761f0f1a66",
+  "mainBaseline": "73c06172ed88979b4a6cad96addbad14dc1f8dda",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "sourceFiles": {
+    "src/game/streetView.ts": "123bf05ceb5a2d0c29631bb1f034186a9f4f9b1f7f77b957037b807140fea8a2",
+    "src/game/streetWalls.ts": "048ba163824138efa3319b85ec07cc10c99d5ffa8f2504c302dd9f22d11407fd",
+    "src/game/RoomScene.ts": "f12ce361ff338e81712ad46dd1f172d6ed07101674f570874a0c7544f7338f0a",
+    "src/game/StreetRenderer.ts": "862f36bbb3cf56756c6d886589b81d7ab5138811f34dc76d4be6c56d091a71f5",
+    "src/game/RooftopRenderer.ts": "a1934aa6cdd779a9743ef71ed96b348f9e58d97115999013aa00c6459cd56750",
+    "src/game/StreetAmbience.ts": "d72dcfeb00fc822f9d2123df7a3653e1d1747ff87209f8c6f93f1302a410964d",
+    "src/game/StreetResidents.ts": "b85f2e9ce787c64d4b5e3b69fc0fb5f44623c0ef205e786144ec127d243b06cd",
+    "src/game/SecurityGuard.ts": "d143b2743a94f2538937b934c6f1adbf5916a3284e16260f2fca9bbc01c1fa69",
+    "src/ui/ClubMap.ts": "aebdfd84bbe5ad434192db1b548562a5cd3ab9f9cc47443230762d184cc441b7",
+    "src/main.ts": "041d1c93d3d0fff767ea92fbd6c5d80303c70de2c0f628bd228c7ac6c3d23cd1",
+    "src/shared/rooftop.ts": "d830e2bf8298f20383cc639b926dcc3aab2d70122e40665b8bd41bf099d7a2ab",
+    "src/shared/movement.ts": "32335437b4b640c7aa08dfcfdbd2fea65df2694f95a4b0ec5ee4652a6336b486",
+    "src/network/LobbyClient.ts": "47b38e0b797e5b84da50fa307136722ea20f5783811b622ad31dd8d4ff030117",
+    "server/LobbyRoom.ts": "a1d32de8ea039c51dca3dff0613facfc8492d7e4442dd741f9d360623db34e05",
+    "server/state.ts": "4b1fbf238a22e4cea66320031b795673a8d64eb7cebabb5e592be83fd1ed3782",
+    "scripts/build-game-module.mjs": "6b5b9c4fe709aa07c478ec46ac4d83728dc4abffbcca2f8e52412033b052e9e3",
+    "scripts/module-build-cache.mjs": "984c051063ed09e03105f69fe6e703b0a5d22d4135f4e9dd1c5ec715927c6067"
+  },
+  "currentHarnessSourceHashes": {
+    "tests/street-camera.spec.ts": "11fac608a560b8a52893bbe7be04373cf4f5f83777ba8306ac576fede8b1b139",
+    "tests/rooftop.spec.ts": "eaf1de3943c8d9348bfa7b9acedb94370a01e8e4cf352cbbed39ab1e94a48e2b",
+    "playwright.street.config.ts": "4b78ad0cc22cbf3b6e2ba5343bd3d36ec35891454bc50ce0a0899e67b9ff29e4"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "1e11d197dff0422f7bd029fef84142090e065fc0406efe220679f8087881ac8e"
+    },
+    "dist-server/index.js": {
+      "bytes": 2422024,
+      "sha256": "ce62f0c309dcbf3e2d17bd714e69b3bc6afab68b212857ed85f01d42b93c0fd5"
+    },
+    "dist/assets/main-ChQw4An0.js": {
+      "bytes": 2852609,
+      "sha256": "bf9ef6e71511446bff7433ddce124a89cc33be54bf6e8bc97bc49da8fa8ae5d2"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    },
+    "dist/assets/main-afxgM5_-.css": {
+      "bytes": 155912,
+      "sha256": "1b42cc1fbf3619b16fc7b8bfbe961d50c17754359895f71520ca8268d8906543"
+    }
+  },
+  "supersedes": {
+    "visualVersion": "exterior-v8",
+    "reason": "User rejected early side camera cuts, narrow side wall and sideways traffic. Earlier runtime tests did not constitute visual approval."
+  },
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-03T18:27:35.003Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 4289
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 8675
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 5984
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 5680
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 64
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 21
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 24
+        }
+      ],
+      "passed": true,
+      "durationMs": 24737
+    },
+    "profile": {
+      "passed": 46,
+      "failed": 0,
+      "command": "npm run test:street"
+    },
+    "browser": {
+      "passedUniqueScenarios": 4,
+      "viewports": [
+        "1440x1000",
+        "390x844"
+      ],
+      "hostWithChat": true,
+      "scenarios": [
+        "Front traffic changes X only; fixed road Y and zero car rotation",
+        "Side pass and rear corner retain original orientation; rear cut requires a complete crossing",
+        "Rear wall width equals the front wall, 1480 units; front road, moving cars and parked taxi are hidden in courtyard and during climbing",
+        "Every stair checkpoint, reload during climbing, resume, roof exploration, return, unchanged balance"
+      ],
+      "harnessAdjustment": "On mobile, an overview click is quantized by screen pixels. The new helper initially demanded 5 world units while 2 pixels represent more than 5. Matched the existing street helper tolerance max(5, 2 / zoom), then repeated only the affected mobile camera scenario successfully.",
+      "desktopRun": {
+        "passed": 2
+      },
+      "mobileRoofRun": {
+        "passed": 1
+      },
+      "correctedMobileCameraRun": {
+        "passed": 1
+      },
+      "physicalPhoneTested": false
+    },
+    "preview": {
+      "url": "http://127.0.0.1:5191/",
+      "backendBytesUnchangedFromPreviousVerifiedPreview": true,
+      "isolatedRuntimePreserved": true
+    }
+  },
+  "design": {
+    "viewStates": [
+      "front",
+      "rear"
+    ],
+    "rearEntry": {
+      "northOfWall": 48,
+      "insetFromCorner": 32
+    },
+    "rearExit": {
+      "outsideWall": 32,
+      "southOfRearWall": 48
+    },
+    "wallWidth": 1480,
+    "frontRoadY": 1210,
+    "sideMapRotations": false,
+    "drawnStairHeight": 502,
+    "drawnStairMainRunWidth": 280.5,
+    "serverStairPathChanged": false,
+    "streetObstaclesChanged": false
+  },
+  "limitations": [
+    "Mobile checked through browser emulation.",
+    "Visual acceptance belongs to the user; tests establish the listed behavior and dimensions.",
+    "No production release or live production access changes."
+  ],
+  "screenshots": {
+    "desktop-front-road.png": "e968471dcc5f16f9fe2013009e2ef4f313933359a3089dd37701c13a7ec287ec",
+    "desktop-side-pass.png": "cb1a21340b6a62a04f0557d71525ba07060b3a8a89c1eef890205eaf3ec9c10d",
+    "desktop-before-corner.png": "d0d85ddd44e89abb13ff50d3bb75a524361ac669c4edb2bf8ef2080e50f8fc74",
+    "desktop-rear.png": "e236afc68286daae6968c0c663f414b66c811d0a00af42328402382dc0789769",
+    "desktop-right-pass.png": "f9af4f2fc533ff7aeb4653758968f8ff9917affa54b8a4ab1c80dc8bae6eb0dc",
+    "desktop-climb.png": "5e2227c6deda9c25cce383dc5d111ef9dfb7b86e9c9c30f95a3a88b77b6cd6c5",
+    "mobile-front-road.png": "be085367f3f73f5089ecd4683b59889f700130caf58511b93d57cb0420801b90",
+    "mobile-side-pass.png": "b22ad3175ad865239f41da6c6076863821429936be5e6a10295190f121305650",
+    "mobile-before-corner.png": "61afa0d737a3dc1be0c7fcb46119ea6c95fa3a04bc9b819b380ec8658f6a3124",
+    "mobile-rear.png": "45a9ab84e73ab447cc88a20fab73bc0b53357062b35ee5431d0d4040729b4758",
+    "mobile-right-pass.png": "cb9ab727869f5939c9af4599ee7ce38f3bce978636cf24859405199af6b858b5",
+    "mobile-climb.png": "6a16a9ed17b2cd3a70e137576a9e88719996ded64212f84e9328e4130ad983b2"
+  }
+}

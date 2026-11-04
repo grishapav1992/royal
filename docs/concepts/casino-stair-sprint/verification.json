@@ -1,0 +1,162 @@
+{
+  "feature": "casino-stair-sprint",
+  "dateLocal": "2026-11-04",
+  "timezone": "Europe/Moscow",
+  "testedRuntimeSourceCommit": "163882dc4fa5d892dbd5a4f45602fb67c7588c49",
+  "mainBaseline": "30b95e951ba71f8ac1b340152c8a9f3ee66edc51",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "sourceFiles": {
+    "src/shared/movement.ts": "bb815fd40edeacc421806041fb64585897b44d447d7cb1c7021004d36b9904f8",
+    "src/network/MovementPrediction.ts": "a8d69798320c2e698c92d6db5d6354aca6c0f7c42474b4a0ec32b49cd500cef7",
+    "src/game/RoomScene.ts": "d4896fbb6bde2cd2d82940d1ad914d10fbc1df935c0e878891f61a73239bd91a",
+    "src/shared/rooftop.ts": "f4d2d5d9b461f6b1c021be6f057ae6444b491a30a78b78d08840a2f5d7500baf",
+    "src/shared/world.ts": "e2a43a155783c5fa0baff1967a5cc2df02b2eb0aef4cb43b6632639a0f0d82e3",
+    "server/LobbyRoom.ts": "bee306520108af4960a68e490e67cee68e5ded22deb69a0db9bdf9f0198c3e3e",
+    "server-tests/rooftop.test.ts": "e6fa6465329a5cb246fc92fda7a127abafebb56f6a2d528b6f9b5e409a032b09",
+    "tests/rooftop.spec.ts": "180e05a6cbdee22b1fcc9be07cb0946ef3a01371c871644628a89597902a155c"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "af19f8659f7dddb1e52ba163f4f5be93326354e91d08f5b9545e105cdd5ba6ed"
+    },
+    "dist-server/index.js": {
+      "bytes": 2429362,
+      "sha256": "fcb7906830bd64c3ee4824bc3e138663383b5e93d3c70a539865d7e7685b368d"
+    },
+    "dist/assets/main-BaUMKOQ8.js": {
+      "bytes": 2862344,
+      "sha256": "67ed391326d4bffbaed3e8c6e464a8e3eec7b0b7b99c8eb8c723091be397aff6"
+    },
+    "dist/assets/main-afxgM5_-.css": {
+      "bytes": 155912,
+      "sha256": "1b42cc1fbf3619b16fc7b8bfbe961d50c17754359895f71520ca8268d8906543"
+    }
+  },
+  "change": "Honor the existing sprint flag on stair rails for both directions. Shift also applies to clicked stair routes online and offline. Default touch and click stair routes retain walking speed; ground pointer routes retain their existing sprint default.",
+  "controls": {
+    "heldShiftMultiplier": 1.75,
+    "ordinaryStairSpeedScale": 0.65,
+    "release": "Restore ordinary speed on the next movement input.",
+    "directions": "Ascending, descending, reversing and the lower vertical ladder.",
+    "clicks": "Normal stair speed by default, accelerated only while Shift is held."
+  },
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-03T22:21:58.744Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 4381
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 6127
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 5048
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 5374
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 55
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 18
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 24
+        }
+      ],
+      "passed": true,
+      "durationMs": 21027
+    },
+    "streetUnit": {
+      "passed": 64,
+      "failed": 0,
+      "coverage": [
+        "Exact sprint ratio and release on every flight in both directions",
+        "Default touch speed and Shift click speed",
+        "Click landings and ground exit with alternating sprint state",
+        "Ascent/descent prediction and acknowledgement replay while toggling sprint",
+        "Existing roof return, NPC conversation gate, movement, guards, transitions and wallet checks"
+      ]
+    },
+    "connectedHost": {
+      "test": "tests/rooftop.spec.ts",
+      "desktop": {
+        "viewport": [
+          1440,
+          1000
+        ],
+        "passed": 1,
+        "reportedDuration": "2.0m",
+        "nativeSpeedSamples": {
+          "walking": 102.18813010574004,
+          "running": 180.00216504453564,
+          "released": 102.33949351345733
+        },
+        "observedRatio": 1.7614782153101036,
+        "measurement": "Distance sampled over requestAnimationFrame intervals of at least 180 ms. These are browser check observations, not perceptual thresholds.",
+        "fullAcceleratedAscent": true,
+        "fullAcceleratedDescent": true,
+        "releaseRestoresWalking": true
+      },
+      "mobile": {
+        "viewport": [
+          390,
+          844
+        ],
+        "touchEnabled": true,
+        "passed": 1,
+        "reportedDuration": "2.1m",
+        "ordinaryTouchAscentAndDescent": true
+      },
+      "roofReturnToUpperLanding": true,
+      "reloadRetainsStairState": true,
+      "noGroundNpcConversationOnStairs": true,
+      "groundConversationAfterDescent": true,
+      "chatEnabled": true,
+      "balancePreserved": true,
+      "noPageErrors": true,
+      "noHorizontalOverflow": true
+    },
+    "localCodeMap": {
+      "brainQuery": "ROOF_STAIR_SPEED_SCALE",
+      "graphQuery": "advanceClickMovement",
+      "passed": true,
+      "productionAudit": false
+    }
+  },
+  "scope": {
+    "movementInputPacketChanged": false,
+    "roofGeometryChanged": false,
+    "facadeCornerRulesChanged": false,
+    "streetObstaclesChanged": false,
+    "npcRoutesChanged": false,
+    "walletChanged": false,
+    "gameMathematicsChanged": false,
+    "gameCatalogueChanged": false
+  },
+  "limitations": [
+    "Mobile is a touch-enabled browser emulation, not a physical device.",
+    "No production publication or live production audit.",
+    "Historical verification reports retain their original results and limits."
+  ]
+}

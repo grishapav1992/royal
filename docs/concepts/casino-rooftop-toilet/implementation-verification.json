@@ -1,0 +1,189 @@
+{
+  "dateLocal": "2026-11-04",
+  "timezone": "Europe/Moscow",
+  "testedRuntimeSourceCommit": "767416b9c881b5628650857cd4f5e6ec5c30b45a",
+  "mainBaseline": "ebb24f4d89b76a8506862d875e59394f81e1bac1",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "selectedVariant": 1,
+  "story": "Real street staircase to the roof, concealed window into the compact restroom, all three cubicles and two sinks, reconnect inside, return through the window and down the original fire escape with connected chat and unchanged balance.",
+  "sourceFiles": {
+    "src/shared/toilet.ts": "aa95e3e05639d9e447b66d0dea92d05410335b8774af9c383105548b23afec37",
+    "src/shared/world.ts": "04b51ee7528c88d5d178e407b7506f216310e078b73ae1cc0133b473d3d6e57f",
+    "src/shared/rooftop.ts": "5e2b2e5ec41e1ab9fc020db7ca8d79a7ee37a5edfd3e05b9d0e7a3213e2e4119",
+    "src/shared/elevator.ts": "7347067a1398ee7c6f315f1ec903d88496ef4c76595aabe339ff3e82760de056",
+    "src/shared/clubLayout.ts": "22a8a28e6b79c5fb06a25215881d59373018405b41efa1c382b8f2569a311388",
+    "src/shared/movement.ts": "bb815fd40edeacc421806041fb64585897b44d447d7cb1c7021004d36b9904f8",
+    "src/game/navigation.ts": "3c4919cddf664e5a3bcc58095734eb0dfcc3d61787454a306623379787d97e4d",
+    "src/game/RoomScene.ts": "6b736605682f399afdfd6b103a1f91740431c3c58e96f605dff282ef2ab4a145",
+    "src/game/ToiletRenderer.ts": "6d5fc6376e0117ba3e69791f81c401deab29ab84ebe99051c32611dc8bb9f2e4",
+    "src/game/RooftopRenderer.ts": "378907fb374b992d66b1c10bb79999b7b3e6975ab29f661dbce5d7582e2cfd35",
+    "src/game/avatarArt.ts": "23e3d8fbd3949e35fc5e0871db74c7f7010d3619250c48a4fab815bac359cb8c",
+    "src/game/characters.ts": "788ebf9718e14790ff0425798a02c129d28956351d2a72c4d7ecfff72ee0d46d",
+    "src/game/profileWalk.ts": "c48f85c2e3ce0d56b5f4e59fba97c3d5ee82344b4c434491e68634542045e516",
+    "src/game/SecurityGuard.ts": "1e9938f70b205438eb194f06f3682a28d8d9530a8ce3da2dd7c9b59ac318a095",
+    "src/game/CasinoAudio.ts": "178094e6ec9cf78b0bde2f516cd12c8dd93cccca903ea8aff03c23a08b512a48",
+    "src/main.ts": "15cc3f4913961fe8d1739f96b6da7766e087264b861030269a8c0b72e15f2210",
+    "src/ui/ClubMap.ts": "8bba318b27255b0f8e58414a0f72200eb4dc1ab3ecfcd2dc21c515c6d1a0810a",
+    "src/ui/ElevatorUI.ts": "5b95520b3df623d785dc510205daffd532d085ce7227720467e4921da97ce326",
+    "src/ui/RoomLayout.ts": "df7cc547b12106bfe565adf6696cd2643923f79e859eff5174dcb14fc8455db3",
+    "src/ui/club-map.css": "0c49bdce4b19d7a4ac96b3c10569f73e60e971763b1d6b0ebbefa6ca0614ceb0",
+    "src/i18n/streetEn.ts": "7d3f17e862ff1a03f34049cc66095775b71929e812f9757a5f996841ee7bb634",
+    "server/LobbyRoom.ts": "529f20d6d1d7b00b9509ece73a129d1de02a61e9bec7750e89adb5475a6de200",
+    "server/guards.ts": "28a683fa3dd20d93582352041eb644e3e36c1be946bb1214887e2758c1aaa659",
+    "server/guardRoutine.ts": "b8d4a804a493ad22a84c086e6c723b905c04d41d6149e573bd94cfc1d54aca85",
+    "server-tests/toilet.test.ts": "bdb8a6f93e94c7c5a18db681980219022a772b9981158ee5bd62b4739c112ab1",
+    "server-tests/rooftop.test.ts": "2e9c4d41dfd90ae5b4820c72e9b6784c3529093ec4fc6523758a7169e73656c6",
+    "server-tests/elevator.test.ts": "ef4e145c643a368d7872aff19be70f4739a97321a50ccf7e53dc100991be8f98",
+    "tests/rooftop.spec.ts": "358d69cb78c4660d53eb2538cbddc8500968d0ca51a0587ccc81b33300518794"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "d19901c77588ec80fb31a275ee323d1812711fd92d7d2063816913eaade91b72"
+    },
+    "dist-server/index.js": {
+      "bytes": 2432529,
+      "sha256": "8745063aaacc337f10707a988a9a3b37d63d8d041a955b3e81d9a70fa5a161b9"
+    },
+    "dist/assets/main-CaiJWrVP.js": {
+      "bytes": 2886840,
+      "sha256": "35bd543137ee4fc2120d3f2534fbfdeaf84831fe0f8306bf6c0c61b4def30556"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    },
+    "dist/assets/main-BVwNdpG_.css": {
+      "bytes": 155970,
+      "sha256": "92f1b83d6c0c978a0156dae804a3b74bbcdbaf278a5bb609fed2742ae86af1dc"
+    }
+  },
+  "applicationBuild": {
+    "format": 1,
+    "startedAt": "2026-11-04T12:30:18.888Z",
+    "scope": "application",
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 5397
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 6143
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 8024
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 5195
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 59
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 18
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 21
+      }
+    ],
+    "passed": true,
+    "durationMs": 24856
+  },
+  "unit": {
+    "command": "npm run test:street",
+    "passed": 72,
+    "failed": 0
+  },
+  "profileCompatibility": {
+    "unitPassed": 6,
+    "browserPassed": 1,
+    "profileFramesInspected": 2436,
+    "touristPhotoPoses": {
+      "photoFramesCompared": 132,
+      "differingPixels": 0,
+      "carryFramesUseNewProfileWalk": true
+    }
+  },
+  "browser": {
+    "command": "STREET_TEST_WEB_PORT=5193 STREET_TEST_API_PORT=2593 node --import tsx scripts/database-test.ts node_modules/@playwright/test/cli.js test --config=playwright.street.config.ts --grep manually",
+    "startTime": "2026-11-04T12:31:02.289Z",
+    "duration": 261187.212,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0,
+    "viewports": [
+      {
+        "name": "desktop",
+        "width": 1440,
+        "height": 1000
+      },
+      {
+        "name": "mobile",
+        "width": 390,
+        "height": 844,
+        "touch": true
+      }
+    ],
+    "checked": [
+      "real manual fire escape in both directions",
+      "roof perimeter",
+      "unlabelled window click and keyboard entry",
+      "all three cubicles and automatic door opening",
+      "both sinks",
+      "reconnect in restroom and retained lobby identity",
+      "held W after roof return without bouncing through window",
+      "chat and unchanged wallet balance",
+      "no horizontal overflow",
+      "no browser page errors"
+    ],
+    "note": "Forced browser reloads can close a Vite WebSocket proxy with ECONNRESET; both scenarios explicitly verify reconnection afterwards and complete successfully."
+  },
+  "localPreview": {
+    "url": "http://127.0.0.1:5191",
+    "hostIndexVerified": true,
+    "assets": [
+      {
+        "path": "/assets/main-CaiJWrVP.js",
+        "sha256": "35bd543137ee4fc2120d3f2534fbfdeaf84831fe0f8306bf6c0c61b4def30556",
+        "bytes": 2886840
+      },
+      {
+        "path": "/assets/modulepreload-polyfill-B5Qt9EMX.js",
+        "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0",
+        "bytes": 711
+      },
+      {
+        "path": "/assets/main-BVwNdpG_.css",
+        "sha256": "92f1b83d6c0c978a0156dae804a3b74bbcdbaf278a5bb609fed2742ae86af1dc",
+        "bytes": 155970
+      }
+    ],
+    "backendHealth": 200
+  },
+  "screenshots": {
+    "runtime-desktop.png": {
+      "bytes": 117997,
+      "sha256": "6bdf59634dc1382f0e2a5e1ef50513fb5cf629ab8ac183359527c70917e6829e"
+    },
+    "runtime-mobile.png": {
+      "bytes": 42942,
+      "sha256": "3f37620b4d2769789e1d2dd8ea03befe92a1ee04644e88e7f854301230a0f1bb"
+    }
+  },
+  "limits": "Local implementation and connected-host validation only. Production has not been published."
+}

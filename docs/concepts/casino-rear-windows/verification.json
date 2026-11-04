@@ -1,0 +1,204 @@
+{
+  "feature": "casino-rear-windows",
+  "dateLocal": "2026-11-04",
+  "timezone": "Europe/Moscow",
+  "testedRuntimeSourceCommit": "761530e03069bb99e8aa5e232925bf6fcb935cc2",
+  "scenarioSourceCommit": "f00ecbe93f7a89dc315598db436ed926372448c4",
+  "mainBaseline": "30b95e951ba71f8ac1b340152c8a9f3ee66edc51",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "sourceFiles": {
+    "src/game/RearCasinoWindows.ts": "5520bc3cf486992940e366582f575cad26e41d8cad71cc21165f6c2323723308",
+    "src/game/rearWindowArt.ts": "1342c717a814c56e6a1d272480f0d77266101a72ce0613d83077b318fae0e79e",
+    "src/game/rearWindowLife.ts": "79153b5e0f93a260522bf7cccdc6d4dad7d40bb83e15a168f244960b3a8f1125",
+    "src/game/StreetRenderer.ts": "e361ce2cb01ad273ee9e8cc2736bdb8a5c8af05a8135edd7519c08cf3a3fbd8b",
+    "src/game/streetView.ts": "c1d2bf5acc6759ade24d833ae76cca08e8b3c1642999f7699c9ca85573ae2471",
+    "src/shared/rooftop.ts": "f4d2d5d9b461f6b1c021be6f057ae6444b491a30a78b78d08840a2f5d7500baf",
+    "server-tests/rooftop.test.ts": "133713971183feefd065c7dcc389ba42e88f3172f52b5b7f9cd357855718490f",
+    "tests/rooftop.spec.ts": "dc670ee398d8dbbc894a913a05557b55db24301d85633c7969b4f986dbc67c4a"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "f3e46f0f79252945e5ff58cb56ca472ba5239f9a3aba37934b277e8850b7be79"
+    },
+    "dist-server/index.js": {
+      "bytes": 2429362,
+      "sha256": "fcb7906830bd64c3ee4824bc3e138663383b5e93d3c70a539865d7e7685b368d"
+    },
+    "dist/assets/main-XYm_2BpB.js": {
+      "bytes": 2869265,
+      "sha256": "aef15e3755481cf19ce4374133c7303eb9d831bb825820dd546ec016abfa9065"
+    },
+    "dist/assets/main-afxgM5_-.css": {
+      "bytes": 155912,
+      "sha256": "1b42cc1fbf3619b16fc7b8bfbe961d50c17754359895f71520ca8268d8906543"
+    }
+  },
+  "change": "Repeat framed, warmly lit casino windows along the rear wall. Three flat room vignettes show generic cabinets, seating and a bar. Two decorative visitors per bay walk in both directions and pause at the glass. A shared geometry mask clips the visitors to the glazing, while curtains, frames and the fire escape remain in front.",
+  "layout": {
+    "windows": 25,
+    "decorativeVisitors": 50,
+    "roomVariants": 3,
+    "rowPitch": 240,
+    "windowSize": [
+      196,
+      206
+    ],
+    "glassSize": [
+      156,
+      164
+    ],
+    "derivedFromAvailableWallHeight": true,
+    "playableFloorCountIndependent": true,
+    "serviceBandHeight": 350
+  },
+  "animation": {
+    "source": "Local visible-scene time, with existing citizen atlases and walking cadence.",
+    "pause": "Hidden rear view, overview, inactive street, hidden document or host reduced-motion preference.",
+    "maxElapsedStepMs": 50,
+    "foregroundRecovery": "No wall-clock catch-up.",
+    "reducedMotion": "Static standing frames with frozen route time. The host reads the media preference at scene creation.",
+    "audio": "None.",
+    "flashes": "None.",
+    "timingStatus": "Decorative design choices, not research-derived thresholds."
+  },
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-03T22:31:28.136Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 5181
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 6362
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 6566
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 5677
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 61
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 24
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 23
+        }
+      ],
+      "passed": true,
+      "durationMs": 23894
+    },
+    "streetUnit": {
+      "passed": 66,
+      "failed": 0,
+      "coverage": [
+        "Windows stay within wall and above service fixtures",
+        "Additional available wall height adds a decorative row",
+        "Both walking directions, window pauses and bounded routes",
+        "Hidden and reduced-motion pause plus bounded elapsed time",
+        "Existing stair controls, Shift, prediction, roof return, actors, guards and wallet checks"
+      ]
+    },
+    "connectedHost": {
+      "test": "tests/rooftop.spec.ts",
+      "desktop": {
+        "viewport": [
+          1440,
+          1000
+        ],
+        "passed": 1,
+        "reportedDuration": "1.9m"
+      },
+      "mobile": {
+        "viewport": [
+          390,
+          844
+        ],
+        "touchEnabled": true,
+        "passed": 1,
+        "reportedDuration": "2.1m"
+      },
+      "rearOnly": true,
+      "allRoomVariantsPresent": true,
+      "onscreenVisitorMovementObserved": true,
+      "maskedVisitorsNotInteractive": true,
+      "overviewFreezesWindowTime": true,
+      "reducedMotionAfterReloadFreezesPositionsAndFrames": true,
+      "completeStairAndRoofLoop": true,
+      "roofReturnUpperLanding": true,
+      "ShiftAccelerationPreserved": true,
+      "noGroundConversationOnStairs": true,
+      "groundConversationAfterDescent": true,
+      "chatEnabled": true,
+      "balancePreserved": true,
+      "noPageErrors": true,
+      "noHorizontalOverflow": true
+    },
+    "manualVisualReview": [
+      "desktop-lower.png",
+      "desktop-upper.png",
+      "mobile-lower.png",
+      "mobile-upper.png"
+    ],
+    "localCodeMap": {
+      "brainQuery": "StreetView задняя стена казино окна",
+      "graphQuery": "StreetRenderer",
+      "passed": true,
+      "productionAudit": false
+    },
+    "localPreview": {
+      "backendBytesUnchanged": true,
+      "backendRestarted": false,
+      "retainedBackendSourceCommit": "163882dc4fa5d892dbd5a4f45602fb67c7588c49",
+      "existingIsolatedDatabaseRetained": true
+    }
+  },
+  "verificationNotes": [
+    "Initial native checks incorrectly expected the existing host to change its reduced-motion preference during an active scene. The scenario now checks the frozen window state after the existing reload under that preference. No application change or rebuild was needed for this test correction.",
+    "The mobile server proxy logged ECONNRESET during the reload scenario. The browser completed reconnection, retained player state, chat and balance, and the final scenario passed."
+  ],
+  "scope": {
+    "newServerActors": false,
+    "newInteractiveRooms": false,
+    "roofGeometryChanged": false,
+    "facadeCornerRulesChanged": false,
+    "streetObstaclesChanged": false,
+    "npcRoutesChanged": false,
+    "walletChanged": false,
+    "gameMathematicsChanged": false,
+    "gameCatalogueChanged": false
+  },
+  "limitations": [
+    "Visitors in the windows are decorative scenes, not synchronized copies of the interior lobby participants.",
+    "Mobile is a touch-enabled browser emulation, not a physical device.",
+    "The host motion preference is read on scene creation, so the browser scenario reloads to apply it.",
+    "No production publication or live production audit.",
+    "Historical reports retain their original results and limitations."
+  ],
+  "screenshots": {
+    "desktop-lower.png": "796d3aecaa8a4abe60dcc8a22c4ebe411b3117614f8bab48310bff3679aebb7c",
+    "desktop-upper.png": "1970146119409c013d12e21ed58b2fb93b73b0b7252b87c10f5e44e8de2f94a5",
+    "mobile-lower.png": "c939f00f414faa3a0b8d7cad5734ca3828328957ddcb216e6661b047aaf7d273",
+    "mobile-upper.png": "1be6afb3ebe3cfedf90623850e00a5315b26b51e48fd025c528b758e0459422f"
+  }
+}

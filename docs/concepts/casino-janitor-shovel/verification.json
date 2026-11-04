@@ -1,0 +1,143 @@
+{
+  "feature": "casino-janitor-shovel",
+  "date": "2026-11-03",
+  "testedSourceCommit": "0686d0dcd99ef5f1b2918e904f1aa86edd68b67c",
+  "mainBaseline": "e5ac32618bb0d645bef98e05b658bb5bc9a4ced3",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "sourceFiles": {
+    "src/game/streetResidentArt.ts": "432c7998a5fda4a9a56e165ad971382a1a2406e8b3da1e5de1ea7ab7588a022e",
+    "src/game/StreetResidents.ts": "129e5b6a73e55fed384118bd0703fadbb81bc47ca1e125ee112af0a3d8a292da",
+    "src/game/avatarArt.ts": "3c949e04c1de843b7959bbeae331c8a6854bac120fb90f1f800b65d3b1848c4e",
+    "src/game/characters.ts": "e2071b019b1d144d97ab89ca2369ddf7076bbc71d3aa3a1e23f1771673d8b971",
+    "src/game/StreetResidentActions.ts": "f599e50ecd9d151f1a0479ab3dc2cc9b5fafa2e72afdedb74d85fadf9a669391",
+    "src/game/streetDetails.ts": "926bdb94fcf9cf1e4240e0565d2dcbc8686c9257fdf692f57a8567173a851858"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "b49258e7f4a3c6789dbd0250311473ec3c3709354fe5bf446a75eaa7bd4e8ec4"
+    },
+    "dist-server/index.js": {
+      "bytes": 2422024,
+      "sha256": "ce62f0c309dcbf3e2d17bd714e69b3bc6afab68b212857ed85f01d42b93c0fd5"
+    },
+    "dist/assets/main-Koenrb1p.js": {
+      "bytes": 2856915,
+      "sha256": "2513f6e9c127299c619ff8a7ccfc3432ef49fe8ffec4d6330e2ef75f89d6d9fa"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    },
+    "dist/assets/main-afxgM5_-.css": {
+      "bytes": 155912,
+      "sha256": "1b42cc1fbf3619b16fc7b8bfbe961d50c17754359895f71520ca8268d8906543"
+    }
+  },
+  "change": "Shovel grip follows the near wrist of the existing janitor fat-body sprite, including walking arm/body swing. The hand is drawn over the shaft. Left/right orientation follows the rendered avatar.",
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-03T19:11:25.638Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 4167
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 7350
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 6765
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 5646
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 64
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 18
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 23
+        }
+      ],
+      "passed": true,
+      "durationMs": 24033
+    },
+    "geometry": {
+      "sampledPoses": 24240,
+      "facings": [
+        "up",
+        "down",
+        "left",
+        "right"
+      ],
+      "actions": [
+        "idle",
+        "walk",
+        "clear-snow",
+        "tap-shovel",
+        "rest",
+        "look-around"
+      ],
+      "framesPerAction": 10,
+      "progressSamples": 101,
+      "handleTopLowerBound": -24,
+      "observedHighestHandleY": -18.936602910378035,
+      "allFinite": true
+    },
+    "nativeVisualGrid": {
+      "poses": 20,
+      "facings": 4,
+      "actions": 5,
+      "sameCharacterTextureAndDrawingFunctions": true
+    },
+    "connectedHost": {
+      "passed": true,
+      "poses": 20,
+      "liveView": "rear",
+      "npcFacing": "down",
+      "npcActivity": "idle",
+      "chatEnabled": true,
+      "url": "http://127.0.0.1:5191/",
+      "renderedFacing": "up",
+      "reducedMotion": true,
+      "backendBytesUnchanged": true
+    },
+    "manualVisualReview": [
+      "poses.png",
+      "live-rear.png"
+    ]
+  },
+  "scope": {
+    "navigationChanged": false,
+    "npcRoutesChanged": false,
+    "actionTimingsChanged": false,
+    "walletChanged": false
+  },
+  "limitations": [
+    "Wrist coordinates target the existing janitor appearance and shared fat-body sprite. Future avatar geometry changes require visual review.",
+    "Live screenshot checks the rear idle view; moving poses and all facings are checked in the native renderer grid and sampled geometry."
+  ],
+  "screenshots": {
+    "poses.png": "22bb51c063adfc35d341e4c184223113f21906a87a10fa1fdf5cd4e109afed1b",
+    "live-rear.png": "b9724bf9650ab2c5db4afa7573bb18ce01944a77573866b99161eb3ca51b7fc4"
+  }
+}

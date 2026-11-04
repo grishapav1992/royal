@@ -1,0 +1,187 @@
+{
+  "feature": "casino-stair-input",
+  "date": "2026-11-03",
+  "testedRuntimeSourceCommit": "321e7b310968101a6d21e8557fbce60a740be496",
+  "mainBaseline": "e50c4133c6a7a3e90af9a463a165ecf239952452",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "sourceFiles": {
+    "src/game/roofStairInput.ts": "c99a173951fbb1e96d81f954fb3455e81a9c43f02207829114bbc278736acd54",
+    "src/game/RooftopRenderer.ts": "34965552420b7b9c3b3695de66327561059119066127319d58608c4f95c20d55",
+    "src/game/RoomScene.ts": "9c8ea619b50aacf3a18586ca5e40d620b71296ab7e90b1c269b328450112fea7",
+    "src/game/streetView.ts": "8a1ae1172313517b8260e228e19b5c04ba653a98269a7ab5ed09e29ef36fcdb2",
+    "src/shared/rooftop.ts": "d830e2bf8298f20383cc639b926dcc3aab2d70122e40665b8bd41bf099d7a2ab",
+    "src/shared/street.ts": "15112fd6f1fd4abc5483f042f6a11d1fd555040b17f92966d56bf49c764cea51",
+    "server-tests/rooftop.test.ts": "8e854d09e71c8ff4e2bd5b6d53a70abede39ddf81898202f4c34ab2484661d4d",
+    "tests/rooftop.spec.ts": "9059c2f3140ec0eef951b0080fd3d6005b49d7dabbe4cddea028544d9df63bfa",
+    "tests/street-camera.spec.ts": "f2998f21f851ad11467742402bf234917a04da78f8ee173b77ae8260e7bda66d"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "bd0291bb09726a5fad4245a3e969eb72e452bbaf6b4783560980b6bce6723f4d"
+    },
+    "dist-server/index.js": {
+      "bytes": 2422024,
+      "sha256": "ce62f0c309dcbf3e2d17bd714e69b3bc6afab68b212857ed85f01d42b93c0fd5"
+    },
+    "dist/assets/main-A8cGVZmm.js": {
+      "bytes": 2856967,
+      "sha256": "54923c34d740b82e26a1d2bade8f2adb03449e4661a61e4631fdc94c8265d357"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    },
+    "dist/assets/main-afxgM5_-.css": {
+      "bytes": 155912,
+      "sha256": "1b42cc1fbf3619b16fc7b8bfbe961d50c17754359895f71520ca8268d8906543"
+    }
+  },
+  "reproduction": {
+    "runtimeSourceCommit": "b5f16dd8f5d5c5289b5a224c1c717f5ee2cec05e",
+    "click": "Visible middle rung, 80 view units above the bottom of the painted ladder.",
+    "result": "stairStep remained 0; expected >=3, timed out at 10000ms.",
+    "cause": "Input zone covered only a 76 by 32 strip at the ground, while visible ladder rungs and flights had no input target."
+  },
+  "change": "Hit testing follows the painted ladder, flights and landing rails in close view. Clicking or tapping approaches the real foot and traverses the server-confirmed route. Up/W near the foot in close rear view starts ascent; Up/W also resumes progress. The overview retains only the foot hit area and ordinary map movement.",
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-03T20:05:10.924Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 4059
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 6912
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 6930
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 5483
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 68
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 17
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 24
+        }
+      ],
+      "passed": true,
+      "durationMs": 23492
+    },
+    "streetUnit": {
+      "passed": 50,
+      "failed": 0
+    },
+    "browser": {
+      "passed": 4,
+      "failed": 0,
+      "artifactRebuiltBetweenRuns": false,
+      "roof": {
+        "desktop": {
+          "passed": 1,
+          "reportedDuration": "1.2m"
+        },
+        "mobile": {
+          "passed": 1,
+          "reportedDuration": "1.2m"
+        },
+        "click": "Middle visible rung, 80 projected units above foot; mouse on desktop and touchscreen tap on mobile.",
+        "walkEveryFlight": true,
+        "reloadMidFlight": true,
+        "resumeWithUp": true,
+        "visitRoofAndReturn": true,
+        "repeatAscentWithUpAtFoot": true,
+        "chatEnabled": true,
+        "balancePreserved": true,
+        "noPageErrors": true,
+        "noHorizontalOverflow": true
+      },
+      "corners": {
+        "desktop": {
+          "passed": 1,
+          "durationSeconds": 32.7
+        },
+        "mobile": {
+          "passed": 1,
+          "durationSeconds": 31.6
+        },
+        "bothRearCorners": true,
+        "partialThenHiddenThenRear": true,
+        "noObservedLayerViolations": true,
+        "chatAndBalancePreserved": true
+      }
+    },
+    "livePreview": {
+      "url": "http://127.0.0.1:5191/",
+      "frontendSha256": "bd0291bb09726a5fad4245a3e969eb72e452bbaf6b4783560980b6bce6723f4d",
+      "backendHealth": 200,
+      "backendBytesUnchanged": true,
+      "existingIsolatedRuntimePreserved": true
+    },
+    "localCodeMap": {
+      "query": "StreetRoofStairs",
+      "passed": true,
+      "sourceCommit": "321e7b310968101a6d21e8557fbce60a740be496",
+      "productionAudit": false
+    },
+    "manualVisualReview": [
+      "desktop-climb.png",
+      "mobile-climb.png"
+    ]
+  },
+  "scope": {
+    "serverRulesChanged": false,
+    "physicalObstaclesChanged": false,
+    "routeChanged": false,
+    "facadeOcclusionChanged": false,
+    "walletChanged": false,
+    "gameCatalogueChanged": false,
+    "shovelGripChanged": false
+  },
+  "limitations": [
+    "Mobile is verified with a 390x844 touch-enabled browser emulation, not a physical device.",
+    "Up/W starts automatic ascent in close rear view; the overview retains map navigation and its clickable staircase foot.",
+    "No production publication or live production audit."
+  ],
+  "screenshots": {
+    "desktop-stairs.png": "45f5d05a2a17555dbb914f7a5ecc68adbfea0d2c45e9ac45df01edb7363605fb",
+    "desktop-climb.png": "03900548b0cb66d725ca5e5dce721bf0003df5de843bd46e15cfa2e6c900541b",
+    "desktop-arrival.png": "4626bdfef35994b583874014240ffc9c5a0cccf6ca50f9b5945666b42aef8038",
+    "mobile-stairs.png": "6ac85dc7c9e0db2608604db339e911d11a22cabad21c09033ecefdb0bdcdd4c6",
+    "mobile-climb.png": "ae0ba61105582b9c662c4ac3fb6994b36847e47b696acff68132c2105b0e9df9",
+    "mobile-arrival.png": "f8f389a24d0cf7566e919d0042dc2e411c82cc7c15974e67305da1bfa7af4084",
+    "desktop-left-hidden.png": "83e177d13d5edc5c32dcc1083f779a278ddbc3da56095dad54b68a2f8bf47ddc",
+    "mobile-right-rear.png": "5193b1964fb35cdae6f54de7c3b5e37e3fe1180d2725ba4bdcb9233ea80481e4"
+  },
+  "story": "Click or tap visible ladder artwork -> approach the physical bottom -> follow every switchback -> server confirms stair progress -> ordinary roof transition -> reload and return with the same account, chat and balance.",
+  "boundaries": {
+    "ui": "Connected host tests use actual canvas mouse/touch coordinates on the painted middle rung. No direct state mutation or shortcut transition.",
+    "movement": "Shared click movement and server position settle within 3 units at route waypoints. Recorded progress visits all intermediate route waypoints.",
+    "server": "Existing stairStep validator and LobbyRoom transition remain unchanged and are covered by street tests. Full route is required.",
+    "recovery": "Mid-ascent reload retains progress, Up resumes. Roof reconnect and descent retain room, chat and balance.",
+    "render": "Native desktop/mobile frames show the player on the existing wall-mounted stairs, followed by roof arrival. Both facade-corner scenarios also pass on the exact same artifact."
+  },
+  "testHarnessNote": "The first expanded roof scenario passed the new rung click and roof arrival, then attempted keyboard start after descent while still in overview. Final scenarios explicitly return to close view and use a 100ms key press, matching the intended keyboard entry. Only test/documentation changes occurred after the successful build; corner results and final roof results use identical application bytes."
+}
