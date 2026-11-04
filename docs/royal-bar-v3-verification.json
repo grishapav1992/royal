@@ -1,0 +1,240 @@
+{
+  "status": "local-motion-revision-awaiting-user-review",
+  "sourceCommit": "c2c499d0a60265e9d8b85e26912e6c5e8562a683",
+  "checkedSourceCommit": "ce346e0fc53ec5f73670dbcf7b58c793f6f3d47b",
+  "checkedAt": "2026-11-04T20:10:04.784Z",
+  "reason": "User rejected revision 2 movement quality. Technical success did not establish visual acceptance.",
+  "method": "56 complete painted poses, no separate limb rotations or per-frame resizing",
+  "sources": {
+    "src/game/Bar.ts": "c5d03c989da3b73fc8552331f557f96998aec73b2843607f4ca763c01152a158",
+    "src/game/MiraRig.ts": "1dd3f253c2884a61ccb5fbb8ead8e94e9b25cc5a093e97eb65013801feefd73b",
+    "src/game/miraAnimation.ts": "743f75d5c899c4e28786c5235176ff665e8a7269272f0ae211e57130800298b2",
+    "src/game/royalBarArt.ts": "75eb83aeefa8665575a5a1ad8077b62404862671873fe31be4a3ae4ba38fd530",
+    "src/shared/miraRoutine.ts": "1edf1b32dec6a1d9646f23c0907ec5458aa311a35121633d9fdd5a8ac1470300",
+    "src/shared/catCare.ts": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8",
+    "src/shared/cat.ts": "d44cd0ff7cc10e46ac2730551c2544c2dbcefae415f62036452005169b4d187b",
+    "src/shared/catSurfaces.ts": "57d15054db858053e7bc67910cd361f79aa59053b2641fcb8b8b6e41d063dd47",
+    "src/game/catCareArt.ts": "5628881698aa9fd3e1bd17a794c64534a5dadf738eb4c3870aad66d671d53ab2",
+    "src/game/CatRenderer.ts": "970f0e4fc0b8ab4408f2dd1f98772da491566c19ef8d5c3ee6a2c8787fa3c1e6",
+    "public/assets/royal-bar/v3/mira-walk.png": "4c0e118f7fba39834153fac6a35c518747c1b1f527bbce30e0d62cd4fe819e42",
+    "public/assets/royal-bar/v3/mira-seat.png": "2613a2ce5b6e1c45137a3de86bf0a1dd8687729ab74a3fb4088a41d6c0257820",
+    "public/assets/royal-bar/v3/mira-work.png": "26c014d43a1fe5e4f62bfdee1075ecd5ccab557d2fc8cb76640d6b644814bc66",
+    "public/assets/royal-bar/v3/mira-react.png": "8373c40cff647a68e01ea693e558557282a623fe853e05d4589204e36e3ec8c1",
+    "public/assets/royal-bar/v3/mira-serve.png": "b9a4b7065e239682f69652b1b3432fcd360eb2b0c267f52a0f3ad0c64cda9490"
+  },
+  "checks": {
+    "typecheck": {
+      "command": "npx tsc --noEmit",
+      "passed": true
+    },
+    "animationAndPresentation": {
+      "command": "node --import tsx --test server-tests/mira-animation.test.ts server-tests/mira-presentation.test.ts",
+      "passed": 9
+    },
+    "catRoute": {
+      "command": "node --import tsx --test --test-name-pattern 'the cat climbs continuously onto the bar' server-tests/cat.test.ts",
+      "passed": 1
+    },
+    "ordinaryHost": {
+      "passed": true,
+      "browserTests": 3,
+      "localRealBackend": true,
+      "disposablePostgres": true,
+      "host": "reviewed host base with current bar renderer",
+      "providerRepliesStubbed": true,
+      "physicalDevicesTested": false
+    },
+    "visualReview": {
+      "passed": true,
+      "captures": [
+        {
+          "action": "sit",
+          "mug": {
+            "present": true,
+            "visible": true,
+            "depth": 513
+          },
+          "atlas": "seat",
+          "frame": 0,
+          "bounds": {
+            "x": 175.12240184757505,
+            "y": 385,
+            "width": 57.413394919168596,
+            "height": 110.00000000000001
+          }
+        },
+        {
+          "action": "transitions",
+          "mug": {
+            "present": true,
+            "visible": true,
+            "depth": 513
+          },
+          "atlas": "react",
+          "frame": 8,
+          "bounds": {
+            "x": 179.2214765100671,
+            "y": 394.4026845637584,
+            "width": 35.63758389261745,
+            "height": 59.59731543624161
+          }
+        },
+        {
+          "action": "walk",
+          "mug": {
+            "present": true,
+            "visible": true,
+            "depth": 513
+          },
+          "atlas": "walk",
+          "frame": 3,
+          "bounds": {
+            "x": 313.52956290453074,
+            "y": 398.2669902912621,
+            "width": 37.11165048543689,
+            "height": 109.73300970873787
+          }
+        },
+        {
+          "action": "wipe",
+          "mug": {
+            "present": true,
+            "visible": true,
+            "depth": 513
+          },
+          "atlas": "work",
+          "frame": 2,
+          "bounds": {
+            "x": 306.6595744680851,
+            "y": 393.1489361702128,
+            "width": 55.74468085106383,
+            "height": 60.851063829787236
+          }
+        },
+        {
+          "action": "serve",
+          "mug": {
+            "present": true,
+            "visible": true,
+            "depth": 513
+          },
+          "atlas": "serve",
+          "frame": 3,
+          "bounds": {
+            "x": 240.79710144927537,
+            "y": 394,
+            "width": 45.507246376811594,
+            "height": 60
+          }
+        },
+        {
+          "action": "greet",
+          "mug": {
+            "present": true,
+            "visible": true,
+            "depth": 513
+          },
+          "atlas": "react",
+          "frame": 4,
+          "bounds": {
+            "x": 245.7718120805369,
+            "y": 393.5973154362416,
+            "width": 44.697986577181204,
+            "height": 60.402684563758385
+          }
+        },
+        {
+          "action": "chat",
+          "mug": {
+            "present": true,
+            "visible": true,
+            "depth": 513
+          },
+          "atlas": "react",
+          "frame": 13,
+          "bounds": {
+            "x": 239.0268456375839,
+            "y": 394.2013422818792,
+            "width": 48.92617449664429,
+            "height": 59.7986577181208
+          }
+        },
+        {
+          "action": "stock",
+          "mug": {
+            "present": true,
+            "visible": true,
+            "depth": 513
+          },
+          "atlas": "work",
+          "frame": 13,
+          "bounds": {
+            "x": 311.27659574468083,
+            "y": 394.4255319148936,
+            "width": 44.680851063829785,
+            "height": 59.57446808510638
+          }
+        }
+      ],
+      "ordinaryDialogue": true,
+      "closedSpeech": true,
+      "mobileViewport": {
+        "width": 390,
+        "height": 844
+      },
+      "assetErrors": [],
+      "javascriptErrors": [],
+      "physicalDevice": false
+    }
+  },
+  "composition": {
+    "hostProjection": "deployment/releases/royal-bar-mira-20261104-v1/host-projection.json",
+    "currentBarSources": [
+      "src/game/Bar.ts",
+      "src/game/MiraRig.ts",
+      "src/game/miraAnimation.ts",
+      "src/game/royalBarArt.ts"
+    ],
+    "backendSource": "cfc55a0878a5072403645980fedc6e2c9ad44523",
+    "backendSha256": "f144e11d2b52aeb661bb187abdd07f01ae5fecbc04d23f639e4f9687f7672455",
+    "reviewControlsDisabledForNetworkTests": true,
+    "disposableDatabase": true,
+    "liveProviderUsed": false,
+    "subsequentSync": "Bar, animation and cat inputs unchanged; unrelated street-roof arrival confirmation merged from main"
+  },
+  "cat": {
+    "bar": {
+      "approach": {
+        "x": 437,
+        "y": 493
+      },
+      "perch": {
+        "x": 364,
+        "y": 452
+      },
+      "mug": {
+        "x": 394,
+        "y": 454
+      },
+      "depth": 511
+    },
+    "object": "cat-water-mug",
+    "depth": 513,
+    "characterForegroundDepth": 510,
+    "featureChangesToRouteOrRenderer": false
+  },
+  "recording": {
+    "file": "mira-animations-v3.webm",
+    "sha256": "b9e2f8908b22818496d1f006e939fcd030a2f0477bdb072cfcc9586bf777db40"
+  },
+  "generation": {
+    "tool": "built-in imagegen",
+    "prompts": "public/assets/royal-bar/v3/generation.json",
+    "alpha": "original RGBA"
+  },
+  "limits": {
+    "productionDeployment": false,
+    "physicalDeviceTested": false,
+    "userVisualAcceptance": false
+  }
+}
