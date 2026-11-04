@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {STAIR_WINDOW,atStairWindow,atCardWindow} from '../src/shared/stairWindow';
 import {stairWindowLink,playerHallArrival,hallLinkAt,hallLinks,hallObstacles,HALLS} from '../src/shared/world';
-import {ROOF_STAIR_ROUTE} from '../src/shared/rooftop';
+import {ROOF_STAIR_ROUTE,ROOF_WINDOW_PLATFORM,onRoofWindowPlatform,moveRoofStairs,advanceRoofStairStep,settleRoofStairLanding} from '../src/shared/rooftop';
 import {StreetView} from '../src/game/streetView';
 import {stairWindowFrame} from '../src/game/StairWindowRenderer';
 import {REAR_WINDOW} from '../src/game/rearWindowLife';
@@ -16,7 +16,9 @@ test('middle platform meets the third-floor sill and keeps the ordinary stairs c
   assert.equal(STAIR_WINDOW.landingIndex,6);assert.equal(frame.column,0);
   assert.equal(frame.y+REAR_WINDOW.glass.y+REAR_WINDOW.glass.h,landing.y);
   assert(frame.x+98>landing.x-166&&frame.x+98<landing.x+34);
-  for(const step of [6,7])assert(atStairWindow({hall:'street',...STAIR_WINDOW.landing,stairStep:step}));
+  for(const step of [6,7])assert(atStairWindow({hall:'street',...STAIR_WINDOW.outside,stairStep:step}));
+  assert(!atStairWindow({hall:'street',...STAIR_WINDOW.landing,stairStep:7}),'the stair junction is not the window sill');
+  assert(Math.abs(view.point(STAIR_WINDOW.outside,true).x-frame.x-98)<3);
   for(const step of [0,1,5,8,11])assert(!atStairWindow({hall:'street',...STAIR_WINDOW.landing,stairStep:step}));
   for(const [i,p]of ROOF_STAIR_ROUTE.entries()){
     if(i!==ROOF_STAIR_ROUTE.length-1)assert(!hallLinkAt({hall:'street',...p}),'passing a landing never automatically enters the card salon');
@@ -40,6 +42,28 @@ test('the interior window has clear approaches and safe arrivals on the correct 
   }
 });
 
+test('horizontal platform movement stays flat and never inherits an up/down choice',()=>{
+  const p=ROOF_WINDOW_PLATFORM,view=new StreetView();view.side='rear';
+  for(const direction of [-1,1]){
+    const body={...STAIR_WINDOW.landing,stairStep:6,stairDirection:direction,moving:false};
+    for(let i=0;i<35;i++){moveRoofStairs(body,{x:1,y:0},5);assert.equal(body.y,p.junction.y);assert(onRoofWindowPlatform(body));assert.equal(view.point(body,true).y,20);}
+    assert.equal(body.x,p.junction.x+p.length);const stopped={...body};settleRoofStairLanding(body);assert.equal(body.x,stopped.x);
+    assert.equal(advanceRoofStairStep(body.stairStep,body),6);
+    for(let i=0;i<40;i++)moveRoofStairs(body,{x:-1,y:0},5);
+    assert.deepEqual({x:body.x,y:body.y},p.junction);assert.equal(body.stairStep,6);
+  }
+});
+
+test('explicit up and down select the intended flight from every platform position',()=>{
+  const p=ROOF_WINDOW_PLATFORM;
+  for(const offset of [0,20,40,68,92])for(const previous of [-1,1])for(const input of [-1,1]){
+    const body={x:p.junction.x+offset,y:p.junction.y,stairStep:6,stairDirection:previous,moving:false};
+    for(let i=0;i<40&&body.y===p.junction.y;i++)moveRoofStairs(body,{x:0,y:input},5);
+    assert.equal(Math.sign(body.y-p.junction.y),input,JSON.stringify({offset,previous,input,body}));
+    assert.equal(body.stairDirection,input<0?1:-1);
+  }
+});
+
 test('manual window admission verifies height, revision and busy state, then preserves progress and identity',async context=>{
   const session=await accounts.login(`stair-window-${crypto.randomUUID()}@example.test`,'Stair-window-test-password!');await accounts.select(session.account.id,0);
   const client:any={sessionId:'stair-window-test',auth:await accounts.session(session.token),send(){},leave(){}};
@@ -50,7 +74,7 @@ test('manual window admission verifies height, revision and busy state, then pre
   const use=(revision?:number)=>handlers.get('stair-window')!(client,{revision:revision??room.state.players.get(client.sessionId)!.hallRevision});
   try{
     const p=room.state.players.get(client.sessionId)!;Object.assign(p,{hall:'street',...STAIR_WINDOW.landing,stairStep:0});use();assert.equal(p.hall,'street');
-    p.stairStep=7;
+    p.stairStep=7;use();assert.equal(p.hall,'street','a landing click must approach the actual sill first');Object.assign(p,STAIR_WINDOW.outside);
     for(const busy of [{playing:true},{security:'ejecting'},{seat:'occupied'},{action:'drink'},{connected:false}]){
       const saved=Object.fromEntries(Object.keys(busy).map(key=>[key,Reflect.get(p,key)]));Object.assign(p,busy);use();assert.equal(p.hall,'street');Object.assign(p,saved);
     }
@@ -61,11 +85,11 @@ test('manual window admission verifies height, revision and busy state, then pre
     use();assert.equal(p.hall,'github');
     Object.assign(p,STAIR_WINDOW.entry);use(identity.revision);assert.equal(p.hall,'github');
     use();assert.equal(p.hall,'street');assert.equal(p.stairStep,STAIR_WINDOW.return.stairStep);assert.equal(p.stairDirection,-1);assert.equal(p.hallRevision,identity.revision+2);
-    assert.deepEqual({x:p.x,y:p.y},STAIR_WINDOW.landing);
+    assert.deepEqual({x:p.x,y:p.y},{x:STAIR_WINDOW.return.x,y:STAIR_WINDOW.return.y});
     assert.equal(Reflect.get(room,'enterDoor').call(room,client.sessionId),false,'return never auto-enters the roof or card room');
     assert.equal(p.stairStep,STAIR_WINDOW.landingIndex,'idle settling selects the descending side of the same landing');
-    assert.deepEqual({x:p.x,y:p.y},STAIR_WINDOW.landing);
+    assert.deepEqual({x:p.x,y:p.y},{x:STAIR_WINDOW.return.x,y:STAIR_WINDOW.return.y});
     handlers.get('inputs')!(client,{revision:identity.revision+1,inputs:[{seq:1,x:0,y:-1,ms:50}]});
-    assert.deepEqual({x:p.x,y:p.y},STAIR_WINDOW.landing,'old indoor movement cannot move the return on the stairs');
+    assert.deepEqual({x:p.x,y:p.y},{x:STAIR_WINDOW.return.x,y:STAIR_WINDOW.return.y},'old indoor movement cannot move the return on the stairs');
   }finally{room.onDispose();room.clock.clear();await accounts.logout(session.token);}
 });

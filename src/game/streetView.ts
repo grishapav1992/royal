@@ -1,7 +1,7 @@
 import type { Point } from './navigation';
 import type { Facing } from '../shared/movement';
 import { STREET } from '../shared/street';
-import { STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE,ROOF_STAIR_DRAW } from '../shared/rooftop';
+import { STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE,ROOF_STAIR_DRAW,ROOF_WINDOW_PLATFORM,roofWindowPlatformPoint } from '../shared/rooftop';
 
 export type StreetSide = 'front' | 'rear';
 export function streetSide(point: Point, previous: StreetSide = 'front'): StreetSide {
@@ -49,6 +49,10 @@ export class StreetView {
     const result=projectStreetPoint(point,this.orientation);
     if(climbing&&!this.overview&&this.side==='rear'){
       const foot=projectStreetPoint(STREET_ROOF_STAIRS.foot,'rear');
+      if(roofWindowPlatformPoint(point)){
+        const p=ROOF_WINDOW_PLATFORM,base=projectStreetPoint(p.junction,'rear');
+        return {x:foot.x+(base.x-foot.x)*ROOF_STAIR_DRAW.widthScale-(point.x-p.junction.x)*ROOF_STAIR_DRAW.widthScale,y:foot.y-ROOF_STAIR_DRAW.ladderRise-(p.index-1)*ROOF_STAIR_DRAW.flightRise};
+      }
       let closest=Infinity;
       for(let index=1;index<ROOF_STAIR_ROUTE.length;index++){
         const a=ROOF_STAIR_ROUTE[index-1],b=ROOF_STAIR_ROUTE[index],dx=b.x-a.x,dy=b.y-a.y;

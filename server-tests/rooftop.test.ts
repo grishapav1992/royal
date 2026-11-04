@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { findPath, walkable } from '../src/game/navigation';
-import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_RETURN, ROOF_STAIR_SPEED_SCALE, advanceRoofStairStep } from '../src/shared/rooftop';
+import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_RETURN, ROOF_STAIR_SPEED_SCALE, advanceRoofStairStep,ROOF_WINDOW_PLATFORM } from '../src/shared/rooftop';
 import { HALLS, PLAYER_SPEED, PLAYER_SPRINT_SPEED, hallLinkAt, hallLinks, hallLinkToward, hallObstacles, type HallId } from '../src/shared/world';
 import { atElevator, canTravelByElevator, elevatorFloors } from '../src/shared/elevator';
 import { cabinetsInHall } from '../src/shared/cabinets';
@@ -221,12 +221,12 @@ test('Shift accelerates both directions on every flight and click routes walk un
   }
 });
 
-test('manual horizontal stair input follows every flight and stops on release at its exact landing',()=>{
+test('manual flights stop on release, with explicit Up departure from the window platform',()=>{
   const body=stairBody();let sequence=0;
   for(let step=1;step<ROOF_STAIR_ROUTE.length;step++){
     assert.equal(body.stairStep,step);
     const a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step];
-    const correct={x:Math.sign(b.x-a.x),y:b.x===a.x?-1:0};
+    const correct=step===ROOF_WINDOW_PLATFORM.index+1?{x:0,y:-1}:{x:Math.sign(b.x-a.x),y:b.x===a.x?-1:0};
     for(let frame=0;body.stairStep===step&&frame<100;frame++)applyMovementInput(body,{seq:++sequence,...correct,ms:50});
     assert.equal(body.stairStep,step+1);assert.deepEqual({x:body.x,y:body.y},b,'landing is reached exactly');
     const before={x:body.x,y:body.y,step:body.stairStep};
