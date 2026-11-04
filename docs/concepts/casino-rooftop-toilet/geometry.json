@@ -1,0 +1,221 @@
+{
+  "format": 1,
+  "referenceOnly": true,
+  "runtimeChanged": false,
+  "method": "Code-native Phaser references. Existing RooftopRenderer, character renderer, camera equations and pathfinding are imported from the project.",
+  "roof": {
+    "width": 2240,
+    "height": 1380,
+    "deck": {
+      "x": 140,
+      "y": 300,
+      "w": 1960,
+      "h": 900
+    },
+    "entry": {
+      "x": 760,
+      "y": 410,
+      "w": 220,
+      "h": 170,
+      "approach": {
+        "x": 870,
+        "y": 650
+      },
+      "trigger": {
+        "x": 870,
+        "y": 620
+      }
+    },
+    "existingPropsUnmoved": true,
+    "noOverlap": true,
+    "approachReachable": true,
+    "perimeterReachable": true
+  },
+  "room": {
+    "width": 1320,
+    "height": 1380,
+    "floor": {
+      "x": 55,
+      "y": 175,
+      "width": 1210,
+      "height": 1145
+    },
+    "bounds": {
+      "left": 70,
+      "right": 1250,
+      "top": 225,
+      "bottom": 1300
+    },
+    "spawn": {
+      "x": 660,
+      "y": 1210
+    },
+    "exit": {
+      "x": 660,
+      "y": 1300
+    },
+    "proposed": true,
+    "approaches": [
+      {
+        "point": {
+          "x": 225,
+          "y": 450
+        },
+        "walkable": true,
+        "path": true
+      },
+      {
+        "point": {
+          "x": 415,
+          "y": 450
+        },
+        "walkable": true,
+        "path": true
+      },
+      {
+        "point": {
+          "x": 740,
+          "y": 475
+        },
+        "walkable": true,
+        "path": true
+      },
+      {
+        "point": {
+          "x": 940,
+          "y": 475
+        },
+        "walkable": true,
+        "path": true
+      },
+      {
+        "point": {
+          "x": 1140,
+          "y": 475
+        },
+        "walkable": true,
+        "path": true
+      },
+      {
+        "point": {
+          "x": 660,
+          "y": 1300
+        },
+        "walkable": true,
+        "path": true
+      }
+    ],
+    "obstacles": [
+      {
+        "x": 0,
+        "y": 0,
+        "w": 1320,
+        "h": 224
+      },
+      {
+        "x": 0,
+        "y": 0,
+        "w": 69,
+        "h": 1380
+      },
+      {
+        "x": 1251,
+        "y": 0,
+        "w": 5000,
+        "h": 1380
+      },
+      {
+        "x": 0,
+        "y": 1301,
+        "w": 590,
+        "h": 100
+      },
+      {
+        "x": 730,
+        "y": 1301,
+        "w": 590,
+        "h": 100
+      },
+      {
+        "x": 160,
+        "y": 265,
+        "w": 130,
+        "h": 125
+      },
+      {
+        "x": 350,
+        "y": 265,
+        "w": 130,
+        "h": 125
+      },
+      {
+        "x": 650,
+        "y": 220,
+        "w": 180,
+        "h": 190
+      },
+      {
+        "x": 850,
+        "y": 220,
+        "w": 180,
+        "h": 190
+      },
+      {
+        "x": 1050,
+        "y": 220,
+        "w": 180,
+        "h": 190
+      },
+      {
+        "x": 130,
+        "y": 920,
+        "w": 200,
+        "h": 60
+      },
+      {
+        "x": 95,
+        "y": 600,
+        "w": 75,
+        "h": 130
+      },
+      {
+        "x": 500,
+        "y": 400,
+        "w": 60,
+        "h": 65
+      }
+    ]
+  },
+  "projection": "Same camera fit and upright sprites as RoomScene.resizeView",
+  "character": {
+    "scale": 0.6,
+    "width": 57.599999999999994,
+    "height": 86.39999999999999
+  },
+  "sourceFiles": {
+    "src/shared/rooftop.ts": "6a51b42f2f900ec0d114983d9cddadd8a0a23fb54567fc73eb2dfded26623b99",
+    "src/shared/clubGeometry.ts": "e70216f7cea75cd5f14f868b777431f1f824ee0347e017c3124d213a243d7290",
+    "src/game/RooftopRenderer.ts": "1abce614fe678a8a96390181c0465c825dbf1ffe34db1a0164dc7ecdcaa8bb8b",
+    "src/game/characters.ts": "e2071b019b1d144d97ab89ca2369ddf7076bbc71d3aa3a1e23f1771673d8b971",
+    "src/game/navigation.ts": "3c4919cddf664e5a3bcc58095734eb0dfcc3d61787454a306623379787d97e4d",
+    "src/game/RoomScene.ts": "d4896fbb6bde2cd2d82940d1ad914d10fbc1df935c0e878891f61a73239bd91a"
+  },
+  "images": {
+    "roof-overview.png": {
+      "bytes": 56909,
+      "sha256": "e98f503d414eecb441687de933bcb26f4098473eb3809c5aa0afc3a108148e04"
+    },
+    "roof-close.png": {
+      "bytes": 51387,
+      "sha256": "8651732adb8f020ae0e56dce14cef49b50cc42c1e220cfe299ff342b635d487a"
+    },
+    "room-overview.png": {
+      "bytes": 31193,
+      "sha256": "11ad185b7b1c7c52fcaf6b8f94a006a4cbfc0dc0f33aac09826e86ed1e522b6d"
+    },
+    "room-close.png": {
+      "bytes": 29950,
+      "sha256": "dbc5e3399274309e5fae17cc474fad5e8b956801a418076a04500db1497c976d"
+    }
+  }
+}
