@@ -2,6 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { ROOF, ROOF_STAIRS, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_RETURN } from '../src/shared/rooftop';
 import {TOILET,ROOF_TOILET,TOILET_WINDOW,toiletSinkApproaches,toiletCubicleStanding} from '../src/shared/toilet';
 import { projectStreetPoint,StreetView } from '../src/game/streetView';
+import {STAIR_WINDOW} from '../src/shared/stairWindow';
 
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
 async function overview(page: Page, on: boolean) {
@@ -123,6 +124,42 @@ async function allRearInteriors(page:Page){
     await page.locator('#game canvas').screenshot({path:'../rear-views-all-floors.png'});
     await expect(page.locator('#chat-input')).toBeEnabled();
   }finally{await page.setViewportSize(viewport);}
+}
+
+async function thirdFloorWindow(page:Page,project:string){
+  const before=await state(page),balance=await page.locator('#wallet-balance').textContent();
+  expect(before.stairStep).toBe(STAIR_WINDOW.landingIndex+1);
+  await expect.poll(async()=>(await state(page)).street.rearWindows.entry.available).toBe(true);
+  await page.screenshot({path:`../stair-window-${project}-landing.png`});
+  if(project==='mobile'){
+    const entry=before.street.rearWindows.entry;await clickViewPoint(page,entry);
+  }else await page.keyboard.press('e');
+  await expect.poll(async()=>(await state(page)).hall).toBe('github');
+  await expect.poll(async()=>(await state(page)).switching).toBe(false);
+  expect((await state(page)).stairStep).toBe(0);
+  await expect(page.locator('h1')).toContainText('Карточный салон');
+  await expect(page.locator('#chat-input')).toBeEnabled();
+  await expect(page.locator('#wallet-balance')).toHaveText(balance!);
+  await page.screenshot({path:`../stair-window-${project}-inside.png`});
+  if(project==='mobile')await clickViewPoint(page,{x:STAIR_WINDOW.interior.x,y:STAIR_WINDOW.interior.top+70});
+  else{
+    await walk(page,STAIR_WINDOW.entry.x,STAIR_WINDOW.entry.y);
+    await page.keyboard.down('e');
+  }
+  try{
+    await expect.poll(async()=>(await state(page)).hall).toBe('street');
+    await expect.poll(async()=>(await state(page)).switching).toBe(false);
+    await page.waitForTimeout(450);expect((await state(page)).hall).toBe('street');
+  }finally{if(project!=='mobile')await page.keyboard.up('e');}
+  expect((await state(page)).stairStep).toBe(STAIR_WINDOW.return.stairStep);
+  expect((await state(page)).stairDirection).toBe(-1);
+  expect(Math.hypot((await state(page)).x-STAIR_WINDOW.landing.x,(await state(page)).y-STAIR_WINDOW.landing.y)).toBeLessThan(.1);
+  await page.screenshot({path:`../stair-window-${project}-return.png`});
+  await page.reload();await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
+  await expect.poll(async()=>(await state(page)).online).toBe(true);
+  expect((await state(page)).hall).toBe('street');expect((await state(page)).stairStep).toBe(STAIR_WINDOW.return.stairStep);
+  await expect(page.locator('#wallet-balance')).toHaveText(balance!);
+  await noGroundConversation(page);
 }
 
 async function keyUntil(page:Page,key:string,condition:()=>Promise<boolean>,timeout=15000){
@@ -247,6 +284,7 @@ test('manually climb each switchback without falling, reach the roof edge and re
     await flight(page,mobile,!mobile);
     if((await state(page)).hall==='street'){
       if(!mobile&&(await state(page)).stairStep===6)await allRearInteriors(page);
+      if((await state(page)).stairStep===STAIR_WINDOW.landingIndex+1)await thirdFloorWindow(page,info.project.name);
       const paused=await state(page);await page.waitForTimeout(120);
       const still=await state(page);expect(still.stairStep).toBe(paused.stairStep);expect(Math.hypot(still.x-paused.x,still.y-paused.y)).toBeLessThan(.1);
       await noGroundConversation(page);

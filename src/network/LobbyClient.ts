@@ -286,7 +286,7 @@ export class LobbyClient {
   }
   send(type: string, data?: unknown): boolean {
     if (this.status !== 'connected' || !this.room) return false;
-    this.room.send(type, type==='inputs'?{revision:this.revision,inputs:data}:type==='target'||type==='move'?{...data as object,revision:this.revision}:data);
+    this.room.send(type, type==='inputs'?{revision:this.revision,inputs:data}:type==='target'||type==='move'||type==='stair-window'?{...data as object,revision:this.revision}:data);
     return true;
   }
   sendChat(request: ChatRequest): boolean { return this.send('chat', request); }

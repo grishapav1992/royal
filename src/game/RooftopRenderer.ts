@@ -6,6 +6,7 @@ import { paintStreetCrown } from './streetArt';
 import { STREET } from '../shared/street';
 import { roofStairContains } from './roofStairInput';
 import { ROOF_TOILET } from '../shared/toilet';
+import {STAIR_WINDOW} from '../shared/stairWindow';
 import { paintRoofToilet,paintRoofToiletStep } from './ToiletRenderer';
 
 type Paint = CanvasRenderingContext2D;
@@ -146,6 +147,13 @@ export class StreetRoofStairs {
         }
         for(let index=1;index<route.length;index++){
           const p=route[index];
+          if(index===STAIR_WINDOW.landingIndex){
+            // A wider side platform reaches the open window without changing either flight.
+            g.fillStyle(steel).fillRect(p.x-166,p.y,200,16).lineStyle(3,ink).strokeRect(p.x-166,p.y,200,16);
+            for(const dx of [-157,-75]){g.fillStyle(0x465056).fillTriangle(p.x+dx,p.y+16,p.x+dx,p.y+54,p.x+dx+48,p.y+16);g.lineStyle(3,ink).strokeTriangle(p.x+dx,p.y+16,p.x+dx,p.y+54,p.x+dx+48,p.y+16);}
+            rail({x:p.x-164,y:p.y},{x:p.x-139,y:p.y});
+            g.fillStyle(0xf1f5f4).fillEllipse(p.x-151,p.y-52,28,6);
+          }
           g.fillStyle(0x465056).fillTriangle(p.x-30,p.y+13,p.x-30,p.y+49,p.x+27,p.y+13);
           g.lineStyle(3,ink).strokeTriangle(p.x-30,p.y+13,p.x-30,p.y+49,p.x+27,p.y+13);
           for(const y of [25,38])g.fillStyle(0xadb2ac).fillCircle(p.x-24,p.y+y,1.7);

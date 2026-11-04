@@ -11,6 +11,7 @@ import { CAT_CARE } from './catCare';
 import { STREET, STREET_DOOR, CASINO_EXIT, STREET_OBSTACLES } from './street';
 import { ROOF, ROOF_OBSTACLES, ROOF_STAIRS, ROOF_STAIR_RETURN, STREET_ROOF_STAIRS } from './rooftop';
 import { TOILET,TOILET_OBSTACLES,ROOF_TOILET,TOILET_WINDOW } from './toilet';
+import {STAIR_WINDOW,atStairWindow,atCardWindow} from './stairWindow';
 export const PLAYER_SPEED = 155;
 export const PLAYER_SPRINT_SPEED = PLAYER_SPEED * 1.75;
 export const ROOM_CAPACITY = 30;
@@ -72,9 +73,16 @@ export const isExteriorHall = (hall: string) => hall === 'street' || hall === 'r
 export const isCasinoFloor = (hall:string) => hall === 'arcade' || hall === 'tables' || hall === 'github';
 
 /** Player stair state is separate from the ground arrivals used by roaming actors. */
-export function playerHallArrival(from:string,link:HallLink){
+export function playerHallArrival(from:string,link:{target:HallId;arrival:{arrival:{x:number;y:number};facing:Facing}}){
+  if(from==='github'&&link.target==='street')return STAIR_WINDOW.return;
   if(from==='roof'&&link.target==='street')return ROOF_STAIR_RETURN;
   return {...link.arrival.arrival,facing:link.arrival.facing,stairStep:0,stairDirection:1};
+}
+
+/** Explicit window interaction never turns ordinary stair movement into a floor change. */
+export function stairWindowLink(p:{hall:string;x:number;y:number;stairStep?:number}):{target:HallId;arrival:{arrival:{x:number;y:number};facing:Facing}}|undefined{
+  if(atStairWindow(p))return {target:'github',arrival:{arrival:STAIR_WINDOW.arrival,facing:'down'}};
+  if(atCardWindow(p))return {target:'street',arrival:{arrival:STAIR_WINDOW.landing,facing:'down'}};
 }
 
 /** First real doorway on a shortest route, also used by security and the cat. */
@@ -124,4 +132,4 @@ export const atBar = (p: { x: number; y: number }) => p.x >= BAR_SERVICE.x && p.
 export type PlayerAction = 'idle' | 'sit' | 'drink';
 export type PlayerView = { stairStep?: number;stairDirection?:number; security?: string; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; inputSeq: number };
 export type ChatMessage = { id: string; senderId: string; name: string; text: string; time: number; system?: boolean; requestId?: string };
-export type NetworkCommands = { elevator?: (target: HallId) => Promise<boolean>; cat?: (action: CatAction) => void; inputs: (inputs: MovementInput[]) => void; move: (x: number, y: number) => void; target: (x: number, y: number) => void; stop: () => void; sit: (seat: string) => void; stand: () => void; drink: (drink: string) => void; cabinetPlay?: (id: string) => Promise<boolean>; cabinetLeave?: () => void; cabinetReaction?: (id: string, reaction: GameReaction) => void };
+export type NetworkCommands = { stairWindow?: () => void; elevator?: (target: HallId) => Promise<boolean>; cat?: (action: CatAction) => void; inputs: (inputs: MovementInput[]) => void; move: (x: number, y: number) => void; target: (x: number, y: number) => void; stop: () => void; sit: (seat: string) => void; stand: () => void; drink: (drink: string) => void; cabinetPlay?: (id: string) => Promise<boolean>; cabinetLeave?: () => void; cabinetReaction?: (id: string, reaction: GameReaction) => void };

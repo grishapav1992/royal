@@ -27,7 +27,7 @@ import { PvpRoom } from './pvp/room';
 import { cabinetHall, cabinetsInHall, type Cabinet } from '../src/shared/cabinets';
 import { cabinetSeat } from '../src/shared/cabinetSeating';
 import { findPath, walkable, type Point } from '../src/game/navigation';
-import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLinkAt, playerHallArrival, inHallDoor, SEATS, DRINKS, atBar, type ChatMessage, type HallId } from '../src/shared/world';
+import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLinkAt, stairWindowLink, playerHallArrival, inHallDoor, SEATS, DRINKS, atBar, type ChatMessage, type HallId } from '../src/shared/world';
 import { canTravelByElevator, elevatorDock } from '../src/shared/elevator';
 import { intoxicatedMovement } from '../src/shared/intoxication';
 import type { DrinkingState } from './intoxicationStore';
@@ -144,7 +144,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       this.activities.tick(dt);this.guards.tick(dt);this.bartender.tick(dt);this.guests.tick(dt);this.cat.tick(dt);hallElapsed+=dt;
       while(hallElapsed>=.05){this.tick(.05);hallElapsed-=.05;}
     }, 1000/60);
-    const movementActions = new Set(['move', 'target', 'stop', 'playing', 'cabinet-play', 'stand', 'sit', 'drink', 'activity', 'cat', 'elevator']);
+    const movementActions = new Set(['move', 'target', 'stop', 'playing', 'cabinet-play', 'stand', 'sit', 'drink', 'activity', 'cat', 'elevator','stair-window']);
     const hugBlockedActions = new Set([...movementActions,'inputs','cabinet-reaction']);
     const listen = (type: string, handler: (client: Client, value: any) => void | Promise<void>) => this.onMessage(type, (client, value) => {
       const apply = () => {
@@ -215,6 +215,14 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       control.path = findPath(p, { x, y }, hallObstacles(p.hall));
     });
     listen('stop', client => this.stop(client.sessionId));
+    listen('stair-window',(client,value:unknown)=>{
+      const p=this.state.players.get(client.sessionId),c=this.controls.get(client.sessionId);
+      if(!p||!c||(value as {revision?:number})?.revision!==p.hallRevision||p.playing||p.seat||p.action==='drink')return;
+      const link=stairWindowLink(p);if(!link)return;
+      this.activities.leave(client.sessionId);this.releaseCabinet(client.sessionId);this.stop(client.sessionId);this.stand(client.sessionId);
+      const arrival=playerHallArrival(p.hall,link);p.hall=link.target;p.hallRevision++;Object.assign(p,arrival);c.lastTarget=0;
+      client.send('activities',this.activities.snapshot(client.sessionId));
+    });
     listen('elevator', (client, value: unknown) => {
       if (!value || typeof value !== 'object') return;
       const { target, requestId, revision } = value as { target?: unknown; requestId?: unknown; revision?: unknown };

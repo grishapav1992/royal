@@ -6,6 +6,7 @@ import { REAR_WINDOW,RearWindowLife,rearWindowLayout } from './rearWindowLife';
 import type { StreetView } from './streetView';
 import type { HallId } from '../shared/world';
 import { rearWindowInterior,type RearInteriorView } from './rearWindowInteriors';
+import {STAIR_WINDOW} from '../shared/stairWindow';
 
 /** Opaque wall surrounds shallow room vignettes, with all visitors clipped behind glass. */
 export class RearCasinoWindows {
@@ -19,7 +20,9 @@ export class RearCasinoWindows {
   private actors:{sprite:Phaser.GameObjects.Sprite;motion:ReturnType<typeof createCharacterMotion>;x:number;y:number;windowIndex:number;personIndex:number;frame:number}[]=[];
   private visible=false;
   private onscreen=new Set<string>();
-  constructor(private scene:Phaser.Scene,view:StreetView,private floorObjects:ReadonlyMap<HallId,readonly Phaser.GameObjects.GameObject[]>=new Map()){
+  private entry:Phaser.GameObjects.Zone;
+  private entryId='';
+  constructor(private scene:Phaser.Scene,view:StreetView,private floorObjects:ReadonlyMap<HallId,readonly Phaser.GameObjects.GameObject[]>=new Map(),enterWindow:()=>void=()=>{}){
     const windows=rearWindowLayout(view.wall,view.roofEdge),rows=Math.max(...windows.map(p=>p.row))+1,columns=Math.max(...windows.map(p=>p.column))+1;
     this.windows=windows.map(window=>({...window,room:rearWindowInterior(window,rows,columns)}));
     const art=rearWindowArt(scene),backgrounds:Phaser.GameObjects.GameObject[]=[],frames:Phaser.GameObjects.GameObject[]=[];
@@ -30,7 +33,9 @@ export class RearCasinoWindows {
       if(!window.column)trim.lineStyle(2,0xb58c64,.65).lineBetween(view.wall.left+10,window.y+212,view.wall.right-10,window.y+212);
       const background=scene.add.image(window.x+g.x,window.y+g.y,art.closed).setOrigin(0).setDisplaySize(g.w,g.h);
       this.backgrounds.set(window.id,background);backgrounds.push(background);
-      frames.push(scene.add.image(window.x,window.y,art.frame).setOrigin(0).setDisplaySize(REAR_WINDOW.width,REAR_WINDOW.height));
+      const open=window.room?.floor===STAIR_WINDOW.floor&&window.column===STAIR_WINDOW.column;
+      frames.push(scene.add.image(window.x,window.y,open?art.openFrame:art.frame).setOrigin(0).setDisplaySize(REAR_WINDOW.width,REAR_WINDOW.height));
+      if(open)this.entryId=window.id;
       clip.fillRect(window.x+g.x,window.y+g.y,g.w,g.h);
       for(let personIndex=0;window.room&&personIndex<2;personIndex++){
         const person=this.person(window,personIndex);
@@ -39,7 +44,10 @@ export class RearCasinoWindows {
       }
     });
     this.mask=clip.createGeometryMask();this.people.setMask(this.mask);
-    this.root=scene.add.container(0,0,[trim,...backgrounds,this.people,...frames]).setVisible(false);
+    const entry=this.windows.find(w=>w.id===this.entryId)!;
+    this.entry=scene.add.zone(entry.x+98,entry.y+119,152,116).setInteractive({useHandCursor:true}).on('pointerdown',enterWindow);
+    this.entry.input!.enabled=false;
+    this.root=scene.add.container(0,0,[trim,...backgrounds,this.people,...frames,this.entry]).setVisible(false);
     scene.events.once('shutdown',()=>{this.mask.destroy();clip.destroy();for(const texture of this.captures.values()){const key=texture.texture.key;texture.destroy();if(scene.textures.exists(key))scene.textures.remove(key);}});
   }
   private person(window:typeof this.windows[number],index:number){
@@ -59,8 +67,9 @@ export class RearCasinoWindows {
     texture.saveTexture('casino-rear-interior-'+room.id);this.captures.set(room.id,texture);
     return texture.texture.key;
   }
-  update(delta:number,visible:boolean,reducedMotion:boolean){
+  update(delta:number,visible:boolean,reducedMotion:boolean,canEnter=false){
     this.visible=visible;this.root.setVisible(visible);
+    this.entry.input!.enabled=visible&&canEnter;
     this.life.advance(delta,visible,reducedMotion,document.hidden);
     if(!visible)return;
     const camera=this.scene.cameras.main.worldView;this.onscreen.clear();
@@ -79,6 +88,6 @@ export class RearCasinoWindows {
       actor.x=person.x;actor.y=person.y;
     }
   }
-  setActive(active:boolean){if(!active){this.visible=false;this.root.setVisible(false);this.life.motion=false;}}
-  getState(){return {visible:this.visible,motion:this.life.motion,time:this.life.time,maskApplied:this.people.mask===this.mask,capturedRooms:this.captures.size,windows:this.windows.map(w=>({...w,captured:Boolean(w.room&&this.captures.has(w.room.id)),width:REAR_WINDOW.width,height:REAR_WINDOW.height,glass:{x:w.x+REAR_WINDOW.glass.x,y:w.y+REAR_WINDOW.glass.y,w:REAR_WINDOW.glass.w,h:REAR_WINDOW.glass.h},onscreen:this.visible&&this.onscreen.has(w.id)})),people:this.actors.map(actor=>{const person=this.person(this.windows[actor.windowIndex],actor.personIndex);return {...person,frame:actor.frame,visible:this.visible&&actor.sprite.visible,interactive:Boolean(actor.sprite.input)};})};}
+  setActive(active:boolean){if(!active){this.visible=false;this.root.setVisible(false);this.life.motion=false;this.entry.input!.enabled=false;}}
+  getState(){return {entry:{id:this.entryId,x:this.entry.x,y:this.entry.y,available:Boolean(this.entry.input?.enabled)},visible:this.visible,motion:this.life.motion,time:this.life.time,maskApplied:this.people.mask===this.mask,capturedRooms:this.captures.size,windows:this.windows.map(w=>({...w,captured:Boolean(w.room&&this.captures.has(w.room.id)),width:REAR_WINDOW.width,height:REAR_WINDOW.height,glass:{x:w.x+REAR_WINDOW.glass.x,y:w.y+REAR_WINDOW.glass.y,w:REAR_WINDOW.glass.w,h:REAR_WINDOW.glass.h},onscreen:this.visible&&this.onscreen.has(w.id)})),people:this.actors.map(actor=>{const person=this.person(this.windows[actor.windowIndex],actor.personIndex);return {...person,frame:actor.frame,visible:this.visible&&actor.sprite.visible,interactive:Boolean(actor.sprite.input)};})};}
 }
