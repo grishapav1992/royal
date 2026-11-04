@@ -279,6 +279,12 @@ test('manually climb each switchback without falling, reach the roof edge and re
   expect((await state(page)).stairStep).toBe(ROOF_STAIR_RETURN.stairStep);
   expect((await state(page)).stairDirection).toBe(-1);
   await noGroundConversation(page);
+  for(const sprint of [false,true]){
+    if(sprint)await page.keyboard.down('Shift');
+    try{await page.keyboard.press('w',{delay:150});}finally{if(sprint)await page.keyboard.up('Shift');}
+    expect((await state(page)).hall).toBe('street');
+    expect(Math.hypot((await state(page)).x-STREET_ROOF_STAIRS.entry.x,(await state(page)).y-STREET_ROOF_STAIRS.entry.y)).toBeGreaterThan(80);
+  }
   if(mobile){
     while((await state(page)).stairStep>0){
       const s=await state(page),step=s.stairStep,target=ROOF_STAIR_ROUTE[step-1];

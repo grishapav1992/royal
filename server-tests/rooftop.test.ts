@@ -159,11 +159,17 @@ test('server controls roof ascent and return, blocks busy visitors and ignores o
     Object.assign(p, ROOF_STAIRS.entry); assert.equal(enter(), true);
     assert.equal(p.hall, 'street'); assert.equal(p.hallRevision, revision + 2);
     assert.equal(p.x,ROOF_STAIR_RETURN.x);assert.equal(p.y,ROOF_STAIR_RETURN.y);
-    assert.equal(p.stairStep,ROOF_STAIR_ROUTE.length-1);assert.equal(p.stairDirection,-1);
+    assert.equal(p.stairStep,ROOF_STAIR_RETURN.stairStep);assert.equal(p.stairDirection,-1);
     assert.equal(enter(),false,'return does not immediately trigger the roof again');
     Reflect.get(room,'tick').call(room,.05);assert.equal(p.hall,'street');
-    handlers.get('inputs')!(client,{revision:p.hallRevision,inputs:[{seq:2,x:0,y:-1,ms:50}]});
-    Reflect.get(room,'tick').call(room,.05);assert.equal(p.hall,'roof','Up can intentionally return to the roof');
+    assert(!hallLinkAt(p),'return landing is outside the roof doorway');
+    for(const sprint of [false,true])for(let n=0;n<3;n++){
+      applyMovementInput(p,{seq:2,x:0,y:-1,ms:50,sprint});enter();
+      assert.equal(p.hall,'street','a short W press cannot bounce back, including Shift');
+      assert.equal(p.hallRevision,revision+2);
+    }
+    for(let n=0;n<100&&p.hall==='street';n++){applyMovementInput(p,{seq:2,x:0,y:-1,ms:50});enter();}
+    assert.equal(p.hall,'roof','deliberately climbing the remaining flight still reaches the roof');
     Object.assign(p,ROOF_STAIRS.entry);assert.equal(enter(),true);
     const returnY=p.y;
     handlers.get('inputs')!(client,{revision:p.hallRevision,inputs:[{seq:3,x:0,y:1,ms:50}]});

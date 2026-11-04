@@ -23,12 +23,11 @@ export const ROOF_STAIR_EPSILON = 1e-6;
 export const ROOF_STAIR_DRAW = { ladderRise:160, flightRise:144, widthScale:1.65 } as const;
 const roofEntry=ROOF_STAIR_ROUTE[ROOF_STAIR_ROUTE.length-1];
 const previousRoofLanding=ROOF_STAIR_ROUTE[ROOF_STAIR_ROUTE.length-2];
-const roofReturnLength=Math.hypot(previousRoofLanding.x-roofEntry.x,previousRoofLanding.y-roofEntry.y);
-// Return just inside the last flight, with descent selected and ascent still available.
+// Leave the roof on the landing below its last flight, outside the doorway's trigger.
 export const ROOF_STAIR_RETURN = {
-  x:roofEntry.x+(previousRoofLanding.x-roofEntry.x)/roofReturnLength,
-  y:roofEntry.y+(previousRoofLanding.y-roofEntry.y)/roofReturnLength,
-  stairStep:ROOF_STAIR_ROUTE.length-1,stairDirection:-1,facing:'right',
+  x:previousRoofLanding.x,y:previousRoofLanding.y,
+  stairStep:ROOF_STAIR_ROUTE.length-2,stairDirection:-1,
+  facing:ROOF_STAIR_ROUTE[ROOF_STAIR_ROUTE.length-3].x<previousRoofLanding.x?'left':'right',
 } as const;
 export const STREET_ROOF_STAIRS = {
   foot: ROOF_STAIR_ROUTE[0],
