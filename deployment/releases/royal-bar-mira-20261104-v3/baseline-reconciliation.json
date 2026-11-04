@@ -1,0 +1,248 @@
+{
+  "reason": "Independent Jackie module publication between initial capture and the guarded install; first attempt stopped before mutation",
+  "applicationSourceCommit": "28d451add41e5af2648442c91959030de8e4eb01",
+  "installerSourceCommit": "c5f660f22b57a27ad56cc1d973e3baf3f24ea353",
+  "productionCommit": "59c1202b466e4f3507e82c5f016240af95dbf5d2",
+  "unchangedImage": "sha256:ad7e8e5b76d8277f00f4714012553efddabfb3c0f27de94ddb575d95b127e84d",
+  "firstManifestSha256": "1a25d03466bbd1e75dfd55ed65e0412e749d7186ed90bcb8d28eec7c3bd4a6a1",
+  "freshSnapshotSha256": "dc07c00c61a634b9ad45c7979ee0ee3b1322c5d535d0294febec575fdfa375bb",
+  "independentSourceProjection": "deployment/releases/jackie-motion-20261104-v4/module-projection.json",
+  "sourceChanges": [
+    {
+      "path": "games/jackie-chan/JackieScene.ts",
+      "before": "f838d10d31ae4d5064b1363b208683a91cd389b7e5de2e3d367fcef25677e091",
+      "after": "c53abe172f86e53a0b797257f4b52a8d250b98cc18c36ca8428f8091905f2a3c"
+    },
+    {
+      "path": "games/jackie-chan/JackieUI.ts",
+      "before": "311d94ab5076f0044d20363bb04e6a2c7a2e9da4f8742a6a2a83538f00a7c35f",
+      "after": "dcbdf627088459628c8c4fed9c2fb2ea15c4043370d39687049694a4206c5efe"
+    },
+    {
+      "path": "games/jackie-chan/layout.css",
+      "before": "d1009d0b6d0a59d0ddb5e167cb236fe5aa17c5d654179b1184876a6782c756d3",
+      "after": "8be5a8995caa11f83f744c56177f42857a7b4357526198bf641ef78b9f908d6a"
+    }
+  ],
+  "moduleChanges": [
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/active.json",
+      "before": "25df5d8aff44ed97d0e4de5fbcaab8f5191c575707fe5b8d2294d6f64df2a106",
+      "after": "ca36ab41e1f8b0dfffe070688dcdc0eec38c7135cafd710a918824019d450b95"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/entry-945d04e4369272a9.js",
+      "before": null,
+      "after": "945d04e4369272a9b380b98cc8c9ee924ea7716d3451d6eb1393f2a2ea161f40"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/manifest.json",
+      "before": null,
+      "after": "eb7acc4ac043c37b4c4be05115823d6f020eb1884fafce003f311795c06a5fc3"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/audio/harbor.mp3",
+      "before": null,
+      "after": "95fece7bf2c28cffa45183ae20ffe55727c236f62c916784e8b3599388326d69"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/audio/market.mp3",
+      "before": null,
+      "after": "ef0a91279aa986857531cf19b78e1928decde21ae768f7dc25ead62a3499c494"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/audio/restaurant.mp3",
+      "before": null,
+      "after": "0c9831e6a8fd15cb78d077e40412fc7939e6992d003c668655bcffcfd843751a"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/cover.webp",
+      "before": null,
+      "after": "bb3032df4f98654275f6aba9538ed51ba0c36b50b2f6930a35b149ba5ff4794f"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/foe-agile.webp",
+      "before": null,
+      "after": "35f85b59e3a51751bd95f9229f24083a7d85abbb4d0e32740d48fe31712fc21a"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/foe-bruiser.webp",
+      "before": null,
+      "after": "ba1f9d67a7d5a4bd36c2cc15b3f1908187dc0e13a9be16643abf0869fb7b0546"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/foe-enforcer.webp",
+      "before": null,
+      "after": "bc564411f472d8e264d92d9d93e0f1bffa1b2d298ee6bc0b395c5a684cbba262"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/foe-master.webp",
+      "before": null,
+      "after": "17ad59ab0f2dd25f0454601ad3337a6927040792c546028c0957f545b5678f0d"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/foes.webp",
+      "before": null,
+      "after": "938d7f6f57a3a6263ea188d8dc57521cceaeb73b146f66b161dc0dd5560fcf0a"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/harbor.webp",
+      "before": null,
+      "after": "90cad03cf703ee4b0329c2c1f0eb8eedc9a5de42e11f5a9066c556fb151cfa0c"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/hawk-combat.webp",
+      "before": null,
+      "after": "4d8685e1682be5cdc3fc4afa71565658cf8eecbc6aea10ea0af8c7aaba815fb0"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/hawk-furniture.webp",
+      "before": null,
+      "after": "c399677dc8d2b5e00eb338fcb96e5a8cf68f92543ca3b1d9cfab13ffba30f1aa"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/hawk.webp",
+      "before": null,
+      "after": "26ebe9b6e4b222ac48326f2c6218867e39a5df975a1dc6ad1b66d457166b94cb"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/market.webp",
+      "before": null,
+      "after": "e021f8c41a7efc5403613090a8d3a77105b25f1abb35b80a4319680ab83c6685"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/master-combat.webp",
+      "before": null,
+      "after": "839e91c528386f8b160c85ee010d8435f37552a8aac556c54db62e64e2e9f05a"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/master-furniture.webp",
+      "before": null,
+      "after": "6f7a4b3cc5d5982bd07e88d91f7921cc6cf860c4ea5338f52de7cf3648fec14d"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/master.webp",
+      "before": null,
+      "after": "bff8aa02ed7ab1a91e8c09a40abd3fee3872581bfe79958598bc0ebf45e92640"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/mentor-combat.webp",
+      "before": null,
+      "after": "0c5de9b69210203eaea592ee3c1927abc68962e404ca2bf1de95e4be51c303b8"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/mentor-furniture.webp",
+      "before": null,
+      "after": "50855f5dd3fd5fd91aa59ddd580c66b4462ec05b5deade26927dc8e7340080fe"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/mentor.webp",
+      "before": null,
+      "after": "ebbc9927f8d5dcdc98f5d6a6778631b25acea366ef5c1b73164deeb5d4ff9885"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/police-combat.webp",
+      "before": null,
+      "after": "b175d7245361d3b7a6d72613fffa74ed7f948369034a501be42ce2ce81d0faba"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/police-furniture.webp",
+      "before": null,
+      "after": "637f4e443460ce1e29b27709635d2d7afff23cd43145a6511c72f2185ad2da61"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/police.webp",
+      "before": null,
+      "after": "57bf487bfb40374b2e453b0a6f2c923ad73a4d083a340ec2ee9af00fe470c082"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/props.webp",
+      "before": null,
+      "after": "29e80c7c05e432a8cb92c5fef5917e0ae7d7742e2dcfe118f4c2db1903026054"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/restaurant.webp",
+      "before": null,
+      "after": "aa4e78827432a34fea5774b7f874063de55d3c20c0897c2570501214e089293a"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/rush-combat.webp",
+      "before": null,
+      "after": "c4cda4428ee1d96ef74fe25130436218a8544511af07fa203b1d1d57ca1c6bda"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/rush-furniture.webp",
+      "before": null,
+      "after": "1c05c2991749707bdc60fed6d0c58a36c24bb2b7ea133cf4483c415ca6a4b2b5"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/rush.webp",
+      "before": null,
+      "after": "6427980eb0d58998fc7f405ab7f3d371bdba46489e24099f3b827157fdf0946e"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/sailor-combat.webp",
+      "before": null,
+      "after": "9a8e438d4feac5d09c83828d307d60db6718ad69c64054b59de874c3256fe82b"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/sailor-furniture.webp",
+      "before": null,
+      "after": "4f21c312d54955a6acd9fd0ccd960ecb2375bc3b1b58df6f3d53bb071a9fca52"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/sailor.webp",
+      "before": null,
+      "after": "69befaa8eabfac47927a33015b1cc3baf0eab218b20f5d5b743820b7bfe1c783"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/tuxedo-combat.webp",
+      "before": null,
+      "after": "a69cb4851182665c141e9b00494dd551226538af7e129a6050a0b0dda5291c5f"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/tuxedo-furniture.webp",
+      "before": null,
+      "after": "54d64a1f5d67c6a5d55468c136995858af0ffe2125ea5c134dacb4fd6797684a"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/tuxedo.webp",
+      "before": null,
+      "after": "e6df670c74d89ef92f4469458f51ed422ed567735241c5bf8402125e87088211"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/whoami-combat.webp",
+      "before": null,
+      "after": "3853c7c39abcf3e2c4abebacbf3248d833eb54bae0f11651a1eaaa2fb1c9906f"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/whoami-furniture.webp",
+      "before": null,
+      "after": "bfce1ab15f416d5adf612154d3b0db2e0799ac9c11a4aa5fdbddb47695eeee38"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/whoami.webp",
+      "before": null,
+      "after": "c5fbec5f80df4eaeca2f356937509add01937e9ab552f8e0f88de9e1b7ceffa5"
+    },
+    {
+      "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/style-ef063b6ee5d779b8.css",
+      "before": null,
+      "after": "ef063b6ee5d779b8c2220996de1b5c7fd2596c7b0c47ed68f60c3cbc3fad2205"
+    }
+  ],
+  "preservedModule": {
+    "gameId": "original-jackie-chan",
+    "version": "1.2.1-e9b60e76ef5e",
+    "pointerSha256": "ca36ab41e1f8b0dfffe070688dcdc0eec38c7135cafd710a918824019d450b95",
+    "manifestSha256": "eb7acc4ac043c37b4c4be05115823d6f020eb1884fafce003f311795c06a5fc3",
+    "apiVersion": 1,
+    "rulesVersion": 1,
+    "progressVersion": 2
+  },
+  "compiledInputsUnchanged": true,
+  "programsUnchanged": true,
+  "servicesAndConfigurationUnchanged": true,
+  "addedGames": [],
+  "restoredGames": []
+}
