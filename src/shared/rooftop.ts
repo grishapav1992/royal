@@ -95,7 +95,8 @@ export function moveRoofStairs(body:StairPosition&{moving:boolean},input:{x:numb
     const p=ROOF_WINDOW_PLATFORM;
     // Horizontal input stays on the platform. Only explicit up/down can select a flight.
     if(!input.y||roofWindowPlatformOffset(body)>ROOF_STAIR_EPSILON||!input.route&&input.x){
-      const before=body.x,dx=input.x?Math.sign(input.x):-p.direction,end=roofWindowPlatformPosition(p.length).x;
+      // A corrected route to a flight must reach the junction before leaving the platform.
+      const before=body.x,dx=input.route&&input.y?-p.direction:input.x?Math.sign(input.x):-p.direction,end=roofWindowPlatformPosition(p.length).x;
       body.x=Math.max(Math.min(p.junction.x,end),Math.min(Math.max(p.junction.x,end),body.x+dx*distance));
       body.y=p.junction.y;body.moving=Math.abs(body.x-before)>.001;
       return true;

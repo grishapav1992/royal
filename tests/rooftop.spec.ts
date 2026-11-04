@@ -133,8 +133,13 @@ async function thirdFloorWindow(page:Page,project:string){
   const view=new StreetView();view.side='rear';const junction=view.point(STAIR_WINDOW.landing,true);
   const platformWalk=async(offset:number)=>{
     if(!onRoofWindowPlatform(await state(page))){
+      const before=await state(page);
       await clickViewPoint(page,{x:junction.x,y:junction.y+6});
-      await expect.poll(async()=>onRoofWindowPlatform(await state(page)),{timeout:5000}).toBe(true);
+      await expect.poll(async()=>onRoofWindowPlatform(await state(page)),{timeout:5000}).toBe(true).catch(async error=>{
+        const after=await state(page),compact=(s:any)=>({x:s.x,y:s.y,step:s.stairStep,direction:s.stairDirection,serverX:s.serverX,serverY:s.serverY,navigation:s.stairNavigation,view:s.view});
+        console.log('Balcony junction diagnostic',JSON.stringify({before:compact(before),after:compact(after),junction}));
+        await page.screenshot({path:'../stair-simple-mobile-junction-diagnostic.png'});throw error;
+      });
     }
     const target=roofWindowPlatformPosition(offset);
     while(Math.abs((await state(page)).x-target.x)>3){

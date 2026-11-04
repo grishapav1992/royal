@@ -72,6 +72,16 @@ test('explicit up and down select the intended flight from every platform positi
   }
 });
 
+test('a clicked flight returns through the junction despite a rounded platform position',()=>{
+  const p=ROOF_WINDOW_PLATFORM;
+  for(const offset of [.001,40,170,p.length])for(const step of [6,7])for(const direction of [-1,1]){
+    const target=ROOF_STAIR_ROUTE[p.index+(direction<0?1:-1)];
+    const body={...roofWindowPlatformPosition(offset),stairStep:step,stairDirection:1,moving:false};
+    for(let i=0;i<100&&body.y===p.junction.y;i++)moveRoofStairs(body,{x:target.x-body.x,y:target.y-body.y,route:true},5);
+    assert.equal(Math.sign(body.y-p.junction.y),direction,JSON.stringify({offset,step,direction,body}));
+  }
+});
+
 test('horizontal keys cannot climb a flight; vertical keys follow either switchback direction',()=>{
   for(let step=1;step<ROOF_STAIR_ROUTE.length;step++){
     const a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step],start={x:(a.x+b.x)/2,y:(a.y+b.y)/2,stairStep:step,stairDirection:1,moving:false};
