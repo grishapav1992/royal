@@ -62,6 +62,17 @@ test('horizontal platform movement stays flat and never inherits an up/down choi
   }
 });
 
+test('a platform actor keeps the same rendered height during network position correction',()=>{
+  const view=new StreetView();view.side='rear';
+  const junction=view.point(STAIR_WINDOW.landing,true),end=view.point(roofWindowPlatformPosition(ROOF_WINDOW_PLATFORM.length),true);
+  for(const offset of [0,.02,1,20,130,272,310])for(const dx of [-3,0,3])for(const dy of [-.3,.3]){
+    const p=roofWindowPlatformPosition(offset),corrected={x:p.x+dx,y:p.y+dy};
+    const drawn=view.point(corrected,true,true);
+    assert.equal(drawn.y,junction.y,'a corrected platform position must not be projected back onto a flight');
+    assert(drawn.x>=Math.min(junction.x,end.x)&&drawn.x<=Math.max(junction.x,end.x));
+  }
+});
+
 test('explicit up and down select the intended flight from every platform position',()=>{
   const p=ROOF_WINDOW_PLATFORM;
   for(const offset of [0,40,155,p.windowOffset,p.length])for(const previous of [-1,1])for(const input of [-1,1]){

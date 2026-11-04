@@ -1166,7 +1166,7 @@ export class RoomScene extends Phaser.Scene {
       if(!this.windowArrival.render){world.x=Phaser.Math.Linear(from.x,world.x,t);world.y=Phaser.Math.Linear(from.y,world.y,t);}
       if(windowProgress===1){this.windowArrival=undefined;this.switching=false;}
     }
-    const drawn=exterior?this.streetView.point(world,(actor.stairStep??0)>0):world;
+    const drawn=exterior?this.streetView.point(world,(actor.stairStep??0)>0,onRoofWindowPlatform(actor)):world;
     if(actor===this.player&&this.windowArrival?.render){
       const t=Phaser.Math.Easing.Cubic.Out(windowProgress),from=this.windowArrival.from;
       drawn.x=Phaser.Math.Linear(from.x,drawn.x,t);drawn.y=Phaser.Math.Linear(from.y,drawn.y,t);

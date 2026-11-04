@@ -45,13 +45,14 @@ export class StreetView {
   get orientation():StreetSide{return this.overview?'front':this.side;}
   get size(){return {width:STREET.width,height:STREET.height};}
   get angle(){return this.orientation==='rear'?Math.PI:0;}
-  point(point:Point,climbing=false){
+  point(point:Point,climbing=false,windowPlatform=false){
     const result=projectStreetPoint(point,this.orientation);
     if(climbing&&!this.overview&&this.side==='rear'){
       const foot=projectStreetPoint(STREET_ROOF_STAIRS.foot,'rear');
-      if(roofWindowPlatformPoint(point)){
+      if(windowPlatform||roofWindowPlatformPoint(point)){
         const p=ROOF_WINDOW_PLATFORM,base=projectStreetPoint(p.junction,'rear');
-        return {x:foot.x+(base.x-foot.x)*ROOF_STAIR_DRAW.widthScale-(point.x-p.junction.x)*ROOF_STAIR_DRAW.widthScale,y:foot.y-ROOF_STAIR_DRAW.ladderRise-(p.index-1)*ROOF_STAIR_DRAW.flightRise};
+        const end=p.junction.x+p.direction*p.length,x=Math.max(Math.min(p.junction.x,end),Math.min(Math.max(p.junction.x,end),point.x));
+        return {x:foot.x+(base.x-foot.x)*ROOF_STAIR_DRAW.widthScale-(x-p.junction.x)*ROOF_STAIR_DRAW.widthScale,y:foot.y-ROOF_STAIR_DRAW.ladderRise-(p.index-1)*ROOF_STAIR_DRAW.flightRise};
       }
       let closest=Infinity;
       for(let index=1;index<ROOF_STAIR_ROUTE.length;index++){
