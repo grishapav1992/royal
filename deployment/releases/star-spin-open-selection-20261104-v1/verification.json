@@ -1,5 +1,5 @@
 {
-  "status": "published_verified_maintenance_pending",
+  "status": "published_verified_maintenance_pending_external_reservation",
   "applicationSourceCommit": "320d60725984c5cbd46829e9dc545f59cf9cd162",
   "installerSourceCommit": "a905506b1a8f7dd26637b58e3f3cedfc470cc511",
   "featureSourceCommit": "d666a6aa11b47e3a4a3d474e38ae0f7d448dddb4",
@@ -418,7 +418,8 @@
       "image": "sha256:4e7d6f2257b33fabc3227402c45692bc175ba064e61a445fadcc18a97fda113b",
       "completed": true
     },
-    "pendingReason": "Shared publication locks are reserved by player-recovery-20261104-v2; hourly service retries."
+    "pendingReason": "Shared publication locks are reserved by player-recovery-20261104-v2; hourly service retries.",
+    "waitObservation": "A one-hour wait observed no completed run; player-recovery-20261104-v2 still reserves publication locks. The enabled service retries automatically."
   },
   "checkedAt": "2026-11-04T14:55:51.377Z",
   "currentCompatiblePublication": {
@@ -703,5 +704,12 @@
     ],
     "productionTestAccounts": 0,
     "productionWagers": 0
+  },
+  "localCleanup": {
+    "status": "blocked_by_automatic_approval_review",
+    "reason": "blocked by policy",
+    "removedLogicalBytes": 0,
+    "preservedBytes": 229872361,
+    "report": "storage-cleanup.json"
   }
 }
