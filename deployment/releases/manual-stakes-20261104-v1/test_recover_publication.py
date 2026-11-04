@@ -1,4 +1,4 @@
-import copy, importlib.util, json, tempfile, types, unittest
+import copy, importlib.util, json, sys, tempfile, types, unittest
 from pathlib import Path
 from unittest.mock import patch
 
@@ -82,5 +82,18 @@ class ForwardGuards(unittest.TestCase):
             with tempfile.TemporaryDirectory() as folder, patch.object(recover, 'ROOT', Path(folder)):
                 (Path(folder) / name).write_text('{}')
                 with self.assertRaises(RuntimeError): recover.resume({})
+
+    def test_real_supervisor_keeps_confirmations_fresh_during_slow_child_io(self):
+        folder = Path(__file__).resolve().parent.parent / 'neopolis-ui-20261028-v1'
+        spec = importlib.util.spec_from_file_location('shared_financial_gate_fixtures', folder / 'test_financial_gate.py')
+        fixtures = importlib.util.module_from_spec(spec); spec.loader.exec_module(fixtures)
+        case = fixtures.FinancialGateTests(); case.setUp()
+        try:
+            gate = case.gate(heartbeat_timeout=.18, command_timeout=2).acquire()
+            first = gate._confirmed_nonce
+            self.assertEqual(gate.run([sys.executable, '-c', 'import time;time.sleep(.7);print("copied")']), 'copied\n')
+            self.assertNotEqual(first, gate._confirmed_nonce)
+            gate.release(); self.assertTrue(gate._released)
+        finally: case.doCleanups()
 
 if __name__ == '__main__': unittest.main()
