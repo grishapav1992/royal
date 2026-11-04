@@ -1,0 +1,60 @@
+{
+  "gameId": "studio-wild-nudge",
+  "version": "1.5.1-a6511d3f697d",
+  "status": "locally-verified-not-yet-published",
+  "date": "2026-11-04",
+  "cause": "Original Vespera artwork ended at the shins; CSS and Rive displayed all source pixels.",
+  "repair": "Generated full-body transparent sprite and blink reference; adjusted only Vespera rig geometry; rebuilt all four exports to bind the shared rig source hash.",
+  "asset": {
+    "file": "public/assets/wild-nudge/characters/vespera.webp",
+    "width": 640,
+    "height": 960,
+    "alphaBounds": {
+      "xmin": 30,
+      "xmax": 618,
+      "ymin": 9,
+      "ymax": 943
+    },
+    "bottomMarginPx": 16
+  },
+  "source": "games/wild-nudge/assets/characters/vespera.png",
+  "prompts": "games/wild-nudge/assets/characters/framing-repair.json",
+  "rive": {
+    "cli": "1.7.0",
+    "verifyProblems": 0,
+    "inspectProblems": 0,
+    "bones": 5,
+    "meshes": 5,
+    "reactions": 7,
+    "sourceAndWeightsTestsPassed": 2,
+    "nativeBlinkFrameInspectedAtSeconds": 2.6
+  },
+  "host": {
+    "stats": {
+      "startTime": "2026-11-04T10:26:51.933Z",
+      "duration": 135710.897,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "compiled": true,
+    "connectedChat": true,
+    "viewports": 13,
+    "allFourCharactersInspected": true,
+    "staticAndAnimatedVesperaInspected": true,
+    "vesperaPortraitInspected": true,
+    "physicalDevices": false
+  },
+  "scope": {
+    "mathematicsChanged": false,
+    "walletChanged": false,
+    "collectionProgressChanged": false,
+    "audioChanged": false,
+    "hostCodeChanged": false
+  },
+  "limitations": [
+    "Shared project graph unavailable; direct source inspection used.",
+    "Only Chrome viewports were used; no physical device connected."
+  ]
+}
