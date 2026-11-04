@@ -18,6 +18,22 @@ async function keyUntil(page:Page,key:string,ready:()=>Promise<boolean>){
   await page.keyboard.down(key);try{await expect.poll(ready,{timeout:20000,intervals:[30,60,100]}).toBe(true);}finally{await page.keyboard.up(key);}
 }
 async function settled(page:Page,online:boolean){if(online)await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.serverX-s.x,s.serverY-s.y);}).toBeLessThan(.1);}
+async function sideDoesNotReverse(page:Page,online:boolean,y:number){
+  await settled(page,online);const before=await state(page);
+  await page.keyboard.press('d',{delay:180});await settled(page,online);
+  const released=await state(page);expect(Math.hypot(released.x-before.x,released.y-before.y)).toBeLessThan(.2);
+  await page.keyboard.down(y<0?'w':'s');await page.keyboard.down('d');
+  let samples:{y:number;step:number}[]=[];
+  try{samples=await page.evaluate(()=>new Promise<{y:number;step:number}[]>(resolve=>{
+    const start=performance.now(),samples:{y:number;step:number}[]=[];
+    const sample=()=>{const s=(window as any).royalDemo.getState();samples.push({y:s.y,step:s.stairStep});
+      if(performance.now()-start<800)requestAnimationFrame(sample);else resolve(samples);};sample();
+  }));}finally{await page.keyboard.up('d');await page.keyboard.up(y<0?'w':'s');}
+  const progress=(samples.at(-1)!.y-samples[0].y)*y;
+  const reverse=Math.max(0,...samples.slice(1).map((s,i)=>(samples[i].y-s.y)*y));
+  console.log('Stair direction check',JSON.stringify({online,y,progress,maxReverse:reverse,samples:samples.length}));
+  expect(progress).toBeGreaterThan(4);expect(reverse).toBeLessThan(.3);
+}
 for(const online of [false,true])test('simple stair movement and unlabelled window in '+(online?'connected':'solo')+' mode',async({page},info)=>{
   test.skip(info.project.name!=='desktop');test.setTimeout(180000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(online?'/':'/?offline=1');
@@ -45,6 +61,13 @@ for(const online of [false,true])test('simple stair movement and unlabelled wind
   await keyUntil(page,'a',async()=>roofWindowPlatformOffset(await state(page))<.1);
   await page.keyboard.down('s');await expect.poll(async()=>(await state(page)).y>STAIR_WINDOW.landing.y+1).toBe(true);await toBalcony();await page.keyboard.up('s');
   await keyUntil(page,'a',async()=>roofWindowPlatformOffset(await state(page))<.1);
+  await keyUntil(page,'s',async()=>(await state(page)).y>STAIR_WINDOW.landing.y+6);
+  await sideDoesNotReverse(page,online,1);
+  await keyUntil(page,'w',async()=>{const s=await state(page);return s.stairStep===6&&s.stairDirection===1&&Math.hypot(s.x-STAIR_WINDOW.landing.x,s.y-STAIR_WINDOW.landing.y)>120;});
+  await keyUntil(page,'d',async()=>onRoofWindowPlatform(await state(page))&&roofWindowPlatformOffset(await state(page))>80);
+  await keyUntil(page,'a',async()=>roofWindowPlatformOffset(await state(page))<.1);
+  await keyUntil(page,'w',async()=>(await state(page)).y<STAIR_WINDOW.landing.y-6);
+  await sideDoesNotReverse(page,online,-1);
   await keyUntil(page,'w',async()=>(await state(page)).stairStep>=8);
   await settled(page,online);const stopped=await state(page);await page.keyboard.press('d',{delay:250});await page.keyboard.press('a',{delay:250});await settled(page,online);
   expect(Math.hypot((await state(page)).x-stopped.x,(await state(page)).y-stopped.y)).toBeLessThan(.2);

@@ -103,9 +103,10 @@ export function moveRoofStairs(body:StairPosition&{moving:boolean},input:{x:numb
     }
   }
   const p=ROOF_WINDOW_PLATFORM,joinDistance=Math.hypot(body.x-p.junction.x,body.y-p.junction.y);
-  // Turning toward the balcony follows the entire connected flight to its junction.
-  if(!input.route&&Math.sign(input.x)===p.direction&&[p.index,p.index+1].includes(body.stairStep??0)&&joinDistance>ROOF_STAIR_EPSILON){
-    const direction=body.y>p.junction.y?1:-1,fraction=Math.min(1,distance/joinDistance);
+  const junctionDirection=body.y>p.junction.y?1:-1,chosenDirection=input.y?(input.y<0?1:-1):(body.stairDirection??1);
+  // A side turn can join a landing ahead, but never reverse the chosen vertical direction.
+  if(!input.route&&Math.sign(input.x)===p.direction&&[p.index,p.index+1].includes(body.stairStep??0)&&chosenDirection===junctionDirection&&joinDistance>ROOF_STAIR_EPSILON){
+    const direction=junctionDirection,fraction=Math.min(1,distance/joinDistance);
     body.x+=(p.junction.x-body.x)*fraction;body.y+=(p.junction.y-body.y)*fraction;
     body.stairDirection=direction;
     if(fraction===1){body.x=p.junction.x;body.y=p.junction.y;body.stairStep=p.index+(direction===1?1:0);}

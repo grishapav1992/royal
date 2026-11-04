@@ -102,9 +102,10 @@ test('walking through the window accepts its full glass width without granting a
 });
 test('turning toward the balcony guides from either adjoining flight without a precision stop',()=>{
   const platform=ROOF_WINDOW_PLATFORM,j=platform.junction;
-  for(const step of [platform.index,platform.index+1])for(const fraction of [.02,.25,.5,.8,.98])for(const y of [-1,0,1])for(const distance of [3,12]){
+  for(const step of [platform.index,platform.index+1])for(const fraction of [.02,.25,.5,.8,.98])for(const vertical of [false,true])for(const distance of [3,12]){
     const a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step];
-    const p={x:a.x+(b.x-a.x)*fraction,y:a.y+(b.y-a.y)*fraction,stairStep:step,stairDirection:1,moving:false};
+    const direction=step===platform.index?1:-1,y=vertical?-direction:0;
+    const p={x:a.x+(b.x-a.x)*fraction,y:a.y+(b.y-a.y)*fraction,stairStep:step,stairDirection:direction,moving:false};
     const start={...p};
     moveRoofStairs(p,{x:platform.direction,y},distance);
     assert(Math.hypot(p.x-start.x,p.y-start.y)>0,'the turn responds anywhere on either connected flight');
@@ -112,6 +113,20 @@ test('turning toward the balcony guides from either adjoining flight without a p
     for(let i=0;i<20;i++)moveRoofStairs(p,{x:platform.direction,y},distance);
     assert(onRoofWindowPlatform(p),JSON.stringify({step,fraction,y,distance,p}));
     assert(p.x<j.x-40);assert.equal(p.y,j.y);
+  }
+});
+
+test('side input never reverses a chosen climb or descent after passing the balcony',()=>{
+  const platform=ROOF_WINDOW_PLATFORM;
+  for(const step of [platform.index,platform.index+1])for(const fraction of [.02,.25,.5,.8,.98])for(const distance of [3,12]){
+    const a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step],y=step===platform.index?1:-1;
+    const start={x:a.x+(b.x-a.x)*fraction,y:a.y+(b.y-a.y)*fraction,stairStep:step,stairDirection:-y,moving:false};
+    const sideways={...start};moveRoofStairs(sideways,{x:platform.direction,y:0},distance);
+    assert.equal(sideways.x,start.x);assert.equal(sideways.y,start.y,'side input alone must not walk back to a passed landing');
+    for(const previous of [-1,1]){
+      const p={...start,stairDirection:previous};moveRoofStairs(p,{x:platform.direction,y},distance);
+      assert.equal(Math.sign(p.y-start.y),y,'held vertical movement always keeps its explicit direction');
+    }
   }
 });
 
