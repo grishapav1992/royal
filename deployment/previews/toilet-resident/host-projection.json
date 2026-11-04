@@ -327,7 +327,7 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/game/RoomScene.ts",
       "baseSha256": "d7e1b0f05eb6be5dcf594ef0ea96e0edf902515b493bafa4f9ac3113745730a2",
-      "sha256": "54ba58653b79a5e2b6f570c1876209204899b5561f95c5f08cf168ab565f2430",
+      "sha256": "c44b661ac25d80ae384d87aa789c301902733c549b9213c8c43dd64f5e5b7858",
       "patches": [
         {
           "from": "ngLounge.startsW",
@@ -524,6 +524,18 @@
         {
           "from": "this.toilet?.update([this.player,...[...this.remotePlayers.values()].map(p=>p.actor)]);",
           "to": "this.toilet?.update([this.player,...[...this.remotePlayers.values()].map(p=>p.actor)],delta,this.reducedMotion);"
+        },
+        {
+          "from": "import { ToiletRenderer } from './ToiletRenderer';",
+          "to": "import { ToiletRenderer } from './ToiletRenderer';\nimport {preloadToiletResident,prepareToiletResident} from './toiletResidentArt';"
+        },
+        {
+          "from": "  preload() {\n",
+          "to": "  preload() {\n    preloadToiletResident(this);\n"
+        },
+        {
+          "from": "  create() {\n    createDetailedArt(this);",
+          "to": "  create() {\n    prepareToiletResident(this);\n    createDetailedArt(this);"
         }
       ]
     },
@@ -2258,10 +2270,10 @@
       "sha256": "4797526eac834cc13065cec19b031e624bdad93a01236ab02c0ecfbb421c7b3f"
     },
     "src/game/ToiletRenderer.ts": {
-      "commit": "bb59ee3423048f8593f3f9567a2ea11060b3afdb",
+      "commit": "6e06bf45a07134f2cc6e276e5d961593ad1ed5f6",
       "path": "src/game/ToiletRenderer.ts",
-      "baseSha256": "b3d4b9f8a0f70c969671563489d7d1e374930bb3f1bc7f67e389993e9d4e7456",
-      "sha256": "b3d4b9f8a0f70c969671563489d7d1e374930bb3f1bc7f67e389993e9d4e7456"
+      "baseSha256": "d695f68ca09b9af85702b9c8548216022d756f6f1413f0fb71330cfcfb5049d1",
+      "sha256": "d695f68ca09b9af85702b9c8548216022d756f6f1413f0fb71330cfcfb5049d1"
     },
     "src/game/frontWindowInteriors.ts": {
       "commit": "64cc6a77ccc5f6de6a81c79c51958f010f9efb37",
@@ -2378,10 +2390,10 @@
       "sha256": "ef88e0386a347a5d31f94bf7979606909ca9ce1a44c76f34008893d3dacc6b38"
     },
     "src/game/toiletResidentArt.ts": {
-      "commit": "bb59ee3423048f8593f3f9567a2ea11060b3afdb",
+      "commit": "6e06bf45a07134f2cc6e276e5d961593ad1ed5f6",
       "path": "src/game/toiletResidentArt.ts",
-      "baseSha256": "09c4b8b72d1e9c39e556dd6e549365ec58487fae06db0d0a09428886d8bdd670",
-      "sha256": "09c4b8b72d1e9c39e556dd6e549365ec58487fae06db0d0a09428886d8bdd670"
+      "baseSha256": "0c03d703cfbc7c309e3512495144b9c44602582d0bc19bb96edf6e35b42261f7",
+      "sha256": "0c03d703cfbc7c309e3512495144b9c44602582d0bc19bb96edf6e35b42261f7"
     },
     "src/game/toiletResidentPose.ts": {
       "commit": "8977776211bbeccbd856ed146e1873ac4bb172df",
