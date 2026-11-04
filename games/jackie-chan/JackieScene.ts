@@ -16,15 +16,18 @@ function load(url:string) {
   return request;
 }
 type Frame={image:HTMLCanvasElement;anchor:number;baseline:number};
-type Sheet={frames:Frame[];height:number};
+type Sheet={frames:Frame[];height:number;unit:number};
 const sheets=new WeakMap<HTMLImageElement,Sheet>();
 function prepare(image:HTMLImageElement,furniture=false,combat=false):Sheet {
   const cached=sheets.get(image);if(cached)return cached;
   const cw=image.naturalWidth/4;
   const frames=extractSpriteFrames(image,4,2,false,undefined,furniture?2:1).map(f=>({image:f.image,anchor:cw*((furniture?.4:.5)-f.x),baseline:f.image.height}));
   const height=Math.max(...(combat?[0,1,4,5,6]:furniture?[1,2,3,7]:[0,2,3,4,6,7]).map(i=>frames[i].image.height));
-  const sheet={frames,height};sheets.set(image,sheet);return sheet;
+  const sheet={frames,height,unit:Math.sqrt(image.naturalWidth*image.naturalHeight/8)};sheets.set(image,sheet);return sheet;
 }
+// All costume atlases use the base body's drawing scale. A held prop, raised arm
+// or crouch must not change the size of the actor when switching sprite sheets.
+const drawingScale=(sheet:Sheet,height:number,reference=sheet)=>height*reference.unit/(reference.height*sheet.unit);
 export class JackieScene {
   readonly images=new Map<string,HTMLImageElement>();
   loading={ready:false,failed:false,loaded:0,total:JACKIE_SCENE_ASSETS.length};
@@ -32,6 +35,8 @@ export class JackieScene {
   private view?:JackieView;
   private plan:FightPlan=FIGHT_PLANS[0];
   private playback=new JackiePlayback();
+  private approachFrom?:number;
+  private paintedX=.28;
   private cashout=false;
   private dead=false;
   private key='';
@@ -49,9 +54,10 @@ export class JackieScene {
     }));
     if(!this.dead){this.loading.ready=this.images.size===JACKIE_SCENE_ASSETS.length;this.key='';}
   }
-  select(costume:JackieCostume,location:JackieLocation,risk:PenaltyRisk){this.costume=costume;this.location=location;this.risk=risk;this.view=undefined;this.plan=FIGHT_PLANS[0];this.playback.settle();this.cashout=false;this.key='';}
+  select(costume:JackieCostume,location:JackieLocation,risk:PenaltyRisk){this.costume=costume;this.location=location;this.risk=risk;this.view=undefined;this.plan=FIGHT_PLANS[0];this.playback.settle();this.approachFrom=undefined;this.paintedX=.28;this.cashout=false;this.key='';}
   chooseRisk(risk:PenaltyRisk){this.risk=risk;this.key='';}
   show(view:JackieView,animate:boolean,cashout=false,seriesId='preview',plan?:FightPlan){
+    this.approachFrom=animate&&!this.motion.matches?this.paintedX:undefined;
     this.view=view;this.costume=view.costume;this.location=view.location;this.risk=view.combat.risk;this.cashout=cashout;
     this.plan=plan??fightPlan(seriesId,Math.max(0,view.combat.shots.length-1),view.location);
     const count=JACKIE_RISKS[this.risk].opponents,won=view.combat.shots.at(-1)!.goal;
@@ -75,12 +81,14 @@ export class JackieScene {
   state(now=performance.now()){
     if(this.motion.matches&&Number.isFinite(this.playback.elapsed(now)))this.settle();
     const elapsed=this.playback.elapsed(now),count=JACKIE_RISKS[this.risk].opponents;
-    return {elapsed,...choreography(elapsed,count,this.view?.combat.status??'idle',this.cashout,this.plan),sequence:this.plan.id,moveSequence:this.plan.moves.join(','),speed:this.playback.speed,reduced:this.motion.matches};
+    const pose=choreography(elapsed,count,this.view?.combat.status??'idle',this.cashout,this.plan);
+    if(this.approachFrom!==undefined&&elapsed<.5)pose.x=this.approachFrom+(pose.x-this.approachFrom)*ease(elapsed/.5);
+    return {elapsed,...pose,sequence:this.plan.id,moveSequence:this.plan.moves.join(','),speed:this.playback.speed,reduced:this.motion.matches};
   }
   paint(now:number){
     if(!this.loading.ready||this.dead)return;
     const state=this.state(now),w=this.canvas.clientWidth,h=this.canvas.clientHeight,dpr=Math.min(2,devicePixelRatio||1);
-    const nextKey=state.busy||!this.view&&!this.motion.matches?String(Math.floor(now/33)):[w,h,this.costume,this.location,this.risk,this.view?.combat.revision].join(':');
+    const nextKey=state.busy?String(now):[w,h,dpr,this.costume,this.location,this.risk,this.view?.combat.revision].join(':');
     if(this.key===nextKey)return;this.key=nextKey;
     if(this.canvas.width!==Math.round(w*dpr)||this.canvas.height!==Math.round(h*dpr)){this.canvas.width=Math.round(w*dpr);this.canvas.height=Math.round(h*dpr);}
     const c=this.canvas.getContext('2d')!;c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,w,h);
@@ -91,12 +99,13 @@ export class JackieScene {
     const complete=combat?.status==='complete',fighting=!!combat&&!state.reveal;
     const wideVictory=!!complete&&state.reveal&&w>600;
     const heroX=w*(state.x+(wideVictory?.14*ease(state.victory/.12):0)),heroY=ground-h*state.lift+(complete&&state.reveal?h*.04:0);
+    if(w>0)this.paintedX=heroX/w;
     if(complete&&state.reveal){
       const glow=c.createRadialGradient(heroX,ground-heroH*.6,0,heroX,ground-heroH*.6,heroH*1.3);glow.addColorStop(0,state.celebrating?'#f9cf6970':'#f9cf692a');glow.addColorStop(1,'#eac26900');c.fillStyle=glow;c.fillRect(0,0,w,h);
       c.strokeStyle='#e9bd6770';c.lineWidth=2;c.strokeRect(8,8,w-16,h-16);
     }
-    const draw=(sheet:Sheet,index:number,x:number,y:number,height:number,angle=0,ownHeight=false,shadow=true)=>{
-      const f=sheet.frames[index],k=height/(ownHeight?f.image.height:sheet.height);c.save();c.translate(x,y);c.rotate(angle);
+    const draw=(sheet:Sheet,index:number,x:number,y:number,height:number,angle=0,ownHeight=false,shadow=true,reference=sheet)=>{
+      const f=sheet.frames[index],k=ownHeight?height/f.image.height:drawingScale(sheet,height,reference);c.save();c.translate(x,y);c.rotate(angle);
       if(shadow){c.fillStyle='#1c110b50';c.beginPath();c.ellipse(0,0,height*.2,height*.035,0,0,Math.PI*2);c.fill();}
       c.drawImage(f.image,-f.anchor*k,-f.baseline*k,f.image.width*k,f.image.height*k);c.restore();
     };
@@ -141,8 +150,9 @@ export class JackieScene {
       foeFrames.push({id:opponent.id,pose,left:x-left,right:x+right,top:y-frame.image.height*k,bottom:y});
     }
     const sheet=prepare(this.images.get(`/assets/jackie-chan/${this.costume}${state.atlas==='base'?'':'-'+state.atlas}.webp`)!,state.atlas==='furniture',state.atlas==='combat');
-    draw(sheet,state.pose,heroX,heroY,heroH,state.angle);
-    const hero=sheet.frames[state.pose],heroScale=heroH/sheet.height;
+    const reference=prepare(this.images.get(`/assets/jackie-chan/${this.costume}.webp`)!);
+    draw(sheet,state.pose,heroX,heroY,heroH,state.angle,false,true,reference);
+    const hero=sheet.frames[state.pose],heroScale=drawingScale(sheet,heroH,reference);
     const corners=[[-hero.anchor,-hero.baseline],[hero.image.width-hero.anchor,-hero.baseline],[-hero.anchor,0],[hero.image.width-hero.anchor,0]].map(([x,y])=>({x:heroX+(x*Math.cos(state.angle)-y*Math.sin(state.angle))*heroScale,y:heroY+(x*Math.sin(state.angle)+y*Math.cos(state.angle))*heroScale}));
     const heroFrame={left:Math.min(...corners.map(p=>p.x)),right:Math.max(...corners.map(p=>p.x)),top:Math.min(...corners.map(p=>p.y)),bottom:Math.max(...corners.map(p=>p.y))};
     for(const impact of impacts(this.plan,count)){
