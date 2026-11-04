@@ -1046,10 +1046,10 @@
       "sha256": "49df70ede6b275b544e43c7858b4a4e92b36b5c06231c3ad001b1c949a25f758"
     },
     "src/game/Bar.ts": {
-      "commit": "9c093138239595b98b5174383bc0896fc37845c0",
+      "commit": "bc846407d593a8abae0c62e119a1f0db6e86fd01",
       "path": "src/game/Bar.ts",
-      "baseSha256": "39abaf543b87794694f6e2d1c5c4e3f9e0b26c99055765b9c505d20628f42153",
-      "sha256": "39abaf543b87794694f6e2d1c5c4e3f9e0b26c99055765b9c505d20628f42153"
+      "baseSha256": "27dca428ab7f5c4f15a98328b2e64ed7fdcfd459c118311469b61253054a88d2",
+      "sha256": "27dca428ab7f5c4f15a98328b2e64ed7fdcfd459c118311469b61253054a88d2"
     },
     "src/game/activityArt.ts": {
       "commit": "80694339e4d27a11b9edd8956974513010276b44",
@@ -1724,10 +1724,10 @@
       "sha256": "89215191c198386910b36b04787cadd93916fb81e35ada353998c3245116a20a"
     },
     "src/game/miraCharacterArt.ts": {
-      "commit": "9c093138239595b98b5174383bc0896fc37845c0",
+      "commit": "bc846407d593a8abae0c62e119a1f0db6e86fd01",
       "path": "src/game/miraCharacterArt.ts",
-      "baseSha256": "e447dadc860bf642ca53481e355193a8db765850c8cf81ebbd0d7f74e3a8c5db",
-      "sha256": "e447dadc860bf642ca53481e355193a8db765850c8cf81ebbd0d7f74e3a8c5db"
+      "baseSha256": "08be60e48e14cf168bdaf014d6d0b0f0fa9a9f97e5e3166af4fb24b4251cb36a",
+      "sha256": "08be60e48e14cf168bdaf014d6d0b0f0fa9a9f97e5e3166af4fb24b4251cb36a"
     }
   }
 }
