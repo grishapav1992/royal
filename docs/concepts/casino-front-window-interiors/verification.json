@@ -149,5 +149,18 @@
     "Local preview only.",
     "Mobile is browser touch emulation, not a physical device.",
     "Furniture is captured from actual hall artwork; visitors behind glass are ambient characters, not a live player feed."
-  ]
+  ],
+  "reconciledSourceCommit": "1635d10a9314bf50eabae89bacd82c890b79cafc",
+  "latestFetchedMain": "2ac1b65d37a29314987236f034360f8431724d06",
+  "reconciliation": {
+    "taskSourceHashesMatch": true,
+    "testedArtifactHashesMatch": true,
+    "upstreamSourceChanges": [
+      "games/dracona/entry.ts",
+      "games/dracona/requestStyles.ts",
+      "src/game/RoomScene.ts",
+      "src/ui/player-recovery.css"
+    ],
+    "note": "Later main request-feedback and recovery source changes are preserved in Git. Preview uses the exact tested frontend and its existing backend and game packages."
+  }
 }
