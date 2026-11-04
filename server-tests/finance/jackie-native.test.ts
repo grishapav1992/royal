@@ -10,7 +10,7 @@ test('Jackie restores and pays mixed groups once through the real Nile journal w
   const c=await pvpFixture();try{
     await c.source.ingest(block(102,'1000000000000',c.config.source.addresses.find(a=>a.userId==='reserve')!.address));await c.ledger.sync(c.source,await c.reconciliation());
     let games=new NileGameRuntime(c.ledger,()=>0);
-    const start={id:randomUUID(),gameId:JACKIE_GAME,action:'start',stakeUnits:'1000',settings:{jackie:{risk:'safe',costume:'master',location:'harbor'}}};
+    const start={id:randomUUID(),gameId:JACKIE_GAME,action:'start',stakePolicyVersion:1,stakeUnits:'1000',settings:{jackie:{risk:'safe',costume:'master',location:'harbor'}}};
     await assert.rejects(games.run(c.a,command(start,false)),/Обнови/);
     let r:any=await games.run(c.a,command(start));assert(validJackieSession(r.session));assert.equal(r.wallet.balanceUnits,'190000000');
     games=new NileGameRuntime(c.ledger,()=>0);

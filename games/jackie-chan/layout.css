@@ -34,3 +34,10 @@
 .jc-fit[data-compact=true] .jc-controls { padding:6px 10px; gap:6px; }
 
 .jc-fit[data-layout=stack][data-compact=true] { grid-template-rows:auto auto minmax(60px,1fr) auto minmax(174px,1fr); }
+
+/* Reserve the result strip in every phase so a new fight never resizes the set. */
+.jackie.jc-fit>.jc-result[data-kind] { height:64px; min-height:64px; align-content:center; padding:6px 10px; gap:3px 10px; }
+.jackie.jc-fit>.jc-result[data-kind][hidden] { display:flex!important; visibility:hidden; }
+.jackie.jc-fit>.jc-result[data-kind]>small:first-child { flex-basis:100%; line-height:12px; }
+.jackie.jc-fit>.jc-result[data-kind] [data-skip-victory] { position:absolute; right:8px; top:2px; min-height:24px; padding:3px 6px; font-size:10px; }
+.jackie.jc-fit>.jc-result[data-kind]:has([data-skip-victory]:not([hidden]))>small:first-child { padding-right:110px; text-align:left; }
