@@ -23,6 +23,9 @@ def validate_inputs(changes, projection, before, required, preserved=None):
     require(all(projection['inputs'].get(name) == changes[name] for name in required), 'Lobby recovery source is not bound to the build')
 
 def configure(root=ROOT):
+    # The reservation enters configure directly while retaining the publication locks.
+    def interrupted(number, frame): raise InterruptedError('Deployment interrupted: ' + str(number))
+    for number in [signal.SIGTERM,signal.SIGHUP,signal.SIGINT]: signal.signal(number,interrupted)
     m = json.loads((root / 'install-manifest.json').read_text())
     for name, digest in m['support'].items():
         require(not (root / name).is_symlink() and sha(root / name) == digest, 'Support helper changed: ' + name)
