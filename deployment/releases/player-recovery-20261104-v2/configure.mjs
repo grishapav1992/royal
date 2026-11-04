@@ -41,6 +41,7 @@ for(const [kind,graph]of [['host',host],['backend',backend]]){
     const bytes=projectHostSource(previous,git('show',previous.commit+':'+previous.path));
     let text=bytes.toString();const changes=patches(name);
     if(name==='src/main.ts')changes[0]={from:"import './i18n/paymentMethodsEn';",to:"import { installPlayerRecoverySettings } from './ui/PlayerRecoverySettings';\nimport './i18n/paymentMethodsEn';"};
+    if(name==='src/game/RoomScene.ts')changes.push({from:'    if (this.network) return await this.network.recover?.() ?? false;\n',to:'    if (this.network) { this.cancelCabinetAdmission?.(); return await this.network.recover?.() ?? false; }\n'});
     for(const patch of changes){
       while(text.split(patch.from).length!==2){
         const from=patch.from.split('\n'),to=patch.to.split('\n');
