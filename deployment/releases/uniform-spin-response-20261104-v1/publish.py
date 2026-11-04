@@ -6,7 +6,7 @@ sys.dont_write_bytecode=True
 NAME='uniform-spin-response-20261104-v1'
 GAMES={"cosmic-escape":"studio-cosmic-escape","caramel-carnival":"studio-caramel-carnival","velvet-reign":"studio-velvet-reign","last-convoy":"studio-last-convoy","nitro-run":"studio-nitro-run","girlhub":"studio-afterglow","meme-overload":"studio-meme-overload","dracona":"studio-dracona","forest-heart":"studio-forest-heart","caribbean-treasures":"studio-caribbean-treasures","flooded-temple":"studio-flooded-temple","wild-nudge":"studio-wild-nudge","flag-battle":"flag-battle","royal-plinko":"royal-plinko","cr-vs-leo":"original-cr-vs-leo","jackie-chan":"original-jackie-chan","last-exit":"github-crash"}
 ROOT=Path('/opt/royal-releases')/NAME;LIVE=Path('/opt/royal');MODULES=Path('/opt/royal-game-modules');STATE=Path('/opt/royal-game-modules-state');BACKUP=Path('/opt/royal-backups')/NAME
-SOURCES=["games/caribbean-treasures/CaribbeanUI.ts","games/dracona/DraconaUI.ts","games/flag-battle/FlagBattleUI.ts","games/flooded-temple/CascadeUI.ts","games/flooded-temple/TempleUI.ts","games/flooded-temple/cascadeFeedbackStyles.ts","games/forest-heart/ForestHeartUI.ts","games/jackie-chan/JackieUI.ts","games/wild-nudge/GalacticReactorUI.ts","src/ui/AfterglowUI.ts","src/ui/CaramelCarnivalUI.ts","src/ui/CascadeSlotUI.ts","src/ui/ClusterSlotUI.ts","src/ui/CosmicEscapeUI.ts","src/ui/CrLeoUI.ts","src/ui/LastConvoyUI.ts","src/ui/LastExitUI.ts","src/ui/MemeOverloadUI.ts","src/ui/NitroRunUI.ts","src/ui/StudioSlotUI.ts","src/ui/VelvetReignUI.ts","src/ui/VolcanicPlinkoUI.ts","src/ui/operationFeedback.ts","src/ui/slotKit/SlotControls.ts","games/dracona/entry.ts","games/dracona/requestStyles.ts"];MIN_FREE=5*1024**3
+SOURCES=["games/caribbean-treasures/CaribbeanUI.ts","games/dracona/DraconaUI.ts","games/flag-battle/FlagBattleUI.ts","games/flooded-temple/CascadeUI.ts","games/flooded-temple/TempleUI.ts","games/flooded-temple/cascadeFeedbackStyles.ts","games/forest-heart/ForestHeartUI.ts","games/jackie-chan/JackieUI.ts","games/wild-nudge/GalacticReactorUI.ts","src/ui/AfterglowUI.ts","src/ui/CaramelCarnivalUI.ts","src/ui/CascadeSlotUI.ts","src/ui/ClusterSlotUI.ts","src/ui/CosmicEscapeUI.ts","src/ui/CrLeoUI.ts","src/ui/LastConvoyUI.ts","src/ui/LastExitUI.ts","src/ui/MemeOverloadUI.ts","src/ui/NitroRunUI.ts","src/ui/StudioSlotUI.ts","src/ui/VelvetReignUI.ts","src/ui/VolcanicPlinkoUI.ts","src/ui/operationFeedback.ts","src/ui/slotKit/SlotControls.ts","games/dracona/entry.ts","games/dracona/requestStyles.ts","games/flag-battle/FlagAudio.ts","games/flag-battle/package.json","games/flag-battle/tsconfig.json"];MIN_FREE=5*1024**3
 ADDED={'src/ui/operationFeedback.ts','games/dracona/requestStyles.ts'}
 IMAGE_HELPER=Path('/opt/royal-maintenance/bin/retention-runtime.py')
 PUBLISHED_INPUTS={}
@@ -68,6 +68,10 @@ def atomic(origin,target,mode=0o644):
  with origin.open('rb') as inp,partial.open('xb') as out:
   shutil.copyfileobj(inp,out);os.fchmod(out.fileno(),mode);out.flush();os.fsync(out.fileno())
  os.replace(partial,target)
+def validate_tool_receipt(receipt,release,operator):
+ require(receipt['sourceCommit']==operator['wrapperSourceCommit'] and receipt['applicationSourceCommit']==release['sourceCommit'],'Wrong publication tooling source')
+ require(receipt['publisherSha256']==operator['wrapperSha256'] and re.fullmatch('[a-f0-9]{40}',receipt.get('remoteMain','')),'Unverified publication tooling')
+
 def main():
  require(Path(__file__).resolve()==ROOT/'publish.py','Wrong publication root')
  for path in [ROOT,LIVE,MODULES,STATE]:require(path.is_dir() and not any(p.is_symlink() for p in [path,*path.parents]),'Unsafe root')
@@ -77,6 +81,7 @@ def main():
  require(not sys.argv[1:] and not (ROOT/'published.json').exists() and not BACKUP.exists(),'Publication already attempted')
  before=read(ROOT/'before.json');release=read(ROOT/'release-manifest.json');receipt=read(ROOT/'release-github.json');op=read(ROOT/'operator.json')
  require(sha(ROOT/'before.json')==op['beforeSha256'],'Reviewed baseline bytes changed');validate_scope(release,before,op)
+ require(sha(ROOT/'tool-source.json')==op['toolReceiptSha256'],'Publication tooling receipt changed');validate_tool_receipt(read(ROOT/'tool-source.json'),release,op)
  proof=read(ROOT/'program-proof.json');require(sha(ROOT/'program-proof.json')==op['programProofSha256'] and proof['sourceCommit']==release['sourceCommit'] and set(proof['games'])==set(GAMES.values()),'Program comparison receipt differs')
  for path,key in [(ROOT/'publish.py','wrapperSha256'),(ROOT/'publisher.py','publisherSha256'),(ROOT/'release-manifest.json','releaseManifestSha256'),(ROOT/'release-github.json','receiptSha256')]:require(sha(path)==op[key],'Publication input changed')
  require(sha(IMAGE_HELPER)==op['imageHelperSha256'] and sha(ROOT/'publisher.py')==before['source']['scripts/game-module-release.py'],'Unreviewed helper')
