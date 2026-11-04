@@ -1,0 +1,201 @@
+{
+  "status": "implemented-and-locally-verified",
+  "sourceCommit": "968199bc0986a80b2742d87bcd0fde2fe9b2f6ea",
+  "checkedAt": "2026-11-04T18:43:30.340Z",
+  "featureBranch": "codex/royal-bar-art-v2",
+  "sources": {
+    "src/game/Bar.ts": "c5d03c989da3b73fc8552331f557f96998aec73b2843607f4ca763c01152a158",
+    "src/game/MiraRig.ts": "c130b0c7541198ce0e6d4629679e3173e25c1afaa0c8c9979d5b99f630ac8c58",
+    "src/game/miraPose.ts": "8ff4e75718b4ee8c51d93814f85e5ae145cce8b5ed6fdf146830d3ccd25a58b1",
+    "src/game/royalBarArt.ts": "dd76e4df6c9fb7b6b4a0ffddf85ba9bf349cec4ff2a841c5df42b13f2528368a",
+    "src/shared/miraRoutine.ts": "1edf1b32dec6a1d9646f23c0907ec5458aa311a35121633d9fdd5a8ac1470300",
+    "src/shared/catCare.ts": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8",
+    "src/shared/cat.ts": "a42a808a4d6e582a2fc7f47c0b1836a6cc1a4157a1a140d425e792c220e070b9",
+    "src/shared/catSurfaces.ts": "57d15054db858053e7bc67910cd361f79aa59053b2641fcb8b8b6e41d063dd47",
+    "src/game/catCareArt.ts": "5628881698aa9fd3e1bd17a794c64534a5dadf738eb4c3870aad66d671d53ab2",
+    "src/game/CatRenderer.ts": "970f0e4fc0b8ab4408f2dd1f98772da491566c19ef8d5c3ee6a2c8787fa3c1e6",
+    "public/assets/royal-bar/v2/bar-assembly.png": "b12993e64c7a6dfe5a684e5f5a5179e62aa306dbde6d8d227b76534c7a274728",
+    "public/assets/royal-bar/v2/bar-stool.png": "ccd274b255adaf4837380799828c622a930457bda3d18a643df47b4f947d8b0b",
+    "public/assets/royal-bar/v2/mira-body-parts.png": "9ce86f3f1c86a4e3359a6f4ef62702cba72709b89d8d24d82ef85b8de7d59013",
+    "public/assets/royal-bar/v2/mira-limb-parts.png": "7626cca9b327c4d3d109373688bb325400116b8a6b965367db855aec1233812d",
+    "public/assets/royal-bar/v2/mira-props.png": "eae6c3b2000d5183e7e8231f79ab9f8cf44a8e072ade56b0105bf74d42fc3600"
+  },
+  "checks": {
+    "typecheck": {
+      "command": "npx tsc --noEmit",
+      "passed": true
+    },
+    "rigTests": {
+      "command": "node --import tsx --test server-tests/mira-rig.test.ts server-tests/mira-presentation.test.ts",
+      "passed": 10
+    },
+    "catRoute": {
+      "command": "node --import tsx --test --test-name-pattern 'the cat climbs continuously onto the bar' server-tests/cat.test.ts",
+      "passed": 1
+    },
+    "ordinaryHost": {
+      "passed": true,
+      "browserTests": 11,
+      "localRealBackend": true,
+      "disposablePostgres": true,
+      "host": "reviewed host base with current bar renderer",
+      "providerRepliesStubbed": true,
+      "physicalDevicesTested": false
+    },
+    "visualReview": {
+      "passed": true,
+      "captures": [
+        {
+          "action": "sit",
+          "mug": {
+            "present": true,
+            "visible": true,
+            "depth": 513
+          },
+          "props": [
+            "glass"
+          ],
+          "mouthOpen": false
+        },
+        {
+          "action": "transitions",
+          "mug": {
+            "present": true,
+            "visible": true,
+            "depth": 513
+          },
+          "props": [
+            "glass"
+          ],
+          "mouthOpen": false
+        },
+        {
+          "action": "walk",
+          "mug": {
+            "present": true,
+            "visible": true,
+            "depth": 513
+          },
+          "props": [],
+          "mouthOpen": false
+        },
+        {
+          "action": "wipe",
+          "mug": {
+            "present": true,
+            "visible": true,
+            "depth": 513
+          },
+          "props": [
+            "cloth"
+          ],
+          "mouthOpen": false
+        },
+        {
+          "action": "serve",
+          "mug": {
+            "present": true,
+            "visible": true,
+            "depth": 513
+          },
+          "props": [
+            "glass",
+            "bottle"
+          ],
+          "mouthOpen": false
+        },
+        {
+          "action": "greet",
+          "mug": {
+            "present": true,
+            "visible": true,
+            "depth": 513
+          },
+          "props": [],
+          "mouthOpen": false
+        },
+        {
+          "action": "chat",
+          "mug": {
+            "present": true,
+            "visible": true,
+            "depth": 513
+          },
+          "props": [],
+          "mouthOpen": false
+        },
+        {
+          "action": "stock",
+          "mug": {
+            "present": true,
+            "visible": true,
+            "depth": 513
+          },
+          "props": [
+            "bottle"
+          ],
+          "mouthOpen": false
+        }
+      ],
+      "ordinaryDialogue": true,
+      "closedSpeech": true,
+      "mobileViewport": {
+        "width": 390,
+        "height": 844
+      },
+      "assetErrors": [],
+      "javascriptErrors": [],
+      "physicalDevice": false
+    }
+  },
+  "testComposition": {
+    "hostBaseConfig": "deployment/releases/royal-bar-mira-20261104-v1/host-projection.json",
+    "currentBarModules": [
+      "src/game/Bar.ts",
+      "src/game/MiraRig.ts",
+      "src/game/miraPose.ts",
+      "src/game/royalBarArt.ts"
+    ],
+    "preload": "Royal Bar art preloaded in the reviewed RoomScene",
+    "compiledBackendSource": "cfc55a0878a5072403645980fedc6e2c9ad44523",
+    "compiledBackendSha256": "f144e11d2b52aeb661bb187abdd07f01ae5fecbc04d23f639e4f9687f7672455",
+    "reviewToolbarDisabledForNormalHostTests": true,
+    "isolatedLocalAccountsOnly": true
+  },
+  "cat": {
+    "bar": {
+      "approach": {
+        "x": 437,
+        "y": 493
+      },
+      "perch": {
+        "x": 364,
+        "y": 452
+      },
+      "mug": {
+        "x": 394,
+        "y": 454
+      },
+      "depth": 511
+    },
+    "separateObject": "cat-water-mug",
+    "observedMugDepth": 513,
+    "characterForegroundDepth": 510,
+    "routeAndRendererFeatureChanges": false
+  },
+  "recording": {
+    "file": "mira-v2-actions.webm",
+    "sha256": "f88e01f915b442a446d7445c65ea6158e501396425d2eb48559814742076ae9c"
+  },
+  "artwork": {
+    "tool": "built-in imagegen",
+    "prompts": "public/assets/royal-bar/v2/animation-generation.json",
+    "alphaPreserved": true
+  },
+  "limits": {
+    "productionDeployment": false,
+    "paidMiraProviderUsed": false,
+    "physicalDevicesTested": false,
+    "manualVisualReviewIsNotUserApproval": true
+  }
+}
