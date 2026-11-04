@@ -19,6 +19,12 @@ async function openGame(page:Page){
     await dock.getByRole('button',{name:'Закрыть чат',exact:true}).click();
   }else await expect(dock).toBeVisible();
 }
+test.afterEach(async({page})=>{
+  if(await page.locator('#mini-dialog').isVisible()){
+    await page.locator('#mini-dialog .mini-top [data-close]').click();
+    await expect.poll(async()=>(await state(page)).cabinet).toBe('');
+  }
+});
 for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
   test(`settings recover an occupied cabinet and preserve a lost paid reply at ${viewport.width}px`,async({page})=>{
     await page.setViewportSize(viewport);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
