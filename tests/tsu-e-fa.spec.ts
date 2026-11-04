@@ -59,6 +59,18 @@ async function mobileChat(p:Page){
   await dialog.locator('.game-chat-toggle').click();await expect(chat).toBeVisible();await expect(chat.locator('.chat-heading')).toContainText('Общий чат');
   await chat.locator('.game-chat-close').click();await expect(chat).toBeHidden();
 }
+async function compactOffer(p:Page){
+  const dialog=p.locator('#pvp-dialog');
+  await expect(dialog).toHaveAttribute('data-game-chat-suspended','');
+  await expect(dialog.locator('.game-chat-toggle')).toBeHidden();
+  await expect(dialog.locator('#club-chat-dock')).toHaveCount(0);
+  await expect(p.locator('#club-chat-dock')).toBeAttached();
+  const box=(await dialog.boundingBox())!,viewport=p.viewportSize()!;
+  expect(box.width).toBeLessThanOrEqual(520);expect(box.height).toBeLessThan(viewport.height-20);
+  expect(box.x).toBeGreaterThanOrEqual(10);expect(box.y).toBeGreaterThanOrEqual(10);
+  expect(Math.abs(box.x+box.width/2-viewport.width/2)).toBeLessThan(2);
+  expect(Math.abs(box.y+box.height/2-viewport.height/2)).toBeLessThan(2);
+}
 
 test('player menu opens one priced offer with a fixed recipient; waiting, decline and mobile chat stay simple',async({browser})=>{
   const c=await players(browser),{a,b}=c;try{
@@ -67,16 +79,19 @@ test('player menu opens one priced offer with a fixed recipient; waiting, declin
     await a.locator('[name=game]').selectOption('chess');await expect(a.locator('[data-duel-stakes]')).toBeHidden();await expect(a.locator('#pvp-title')).toHaveText('Предложить игру');
     await a.locator('[name=game]').selectOption('tsu-e-fa');await expect(a.locator('[data-stake-preset="200000"]')).toHaveAttribute('aria-pressed','true');
     await a.setViewportSize({width:1280,height:720});
+    await compactOffer(a);
     await a.screenshot({path:'artifacts/work/pvp-invite-simplify/offer-desktop.png'});
-    await a.setViewportSize({width:390,height:844});await mobileChat(a);
+    await a.setViewportSize({width:390,height:844});await compactOffer(a);
     const sendBox=(await a.locator('[data-create-button]').boundingBox())!;expect(sendBox.y+sendBox.height).toBeLessThanOrEqual(844);
     await a.screenshot({path:'artifacts/work/pvp-invite-simplify/offer-mobile.png'});
     await a.locator('[data-create-button]').click();await expect(a.locator('[data-active]')).toContainText('Ждём ответа');await expect(a.locator('[data-create]')).toBeHidden();await expect(a.locator('[data-invites]')).toBeHidden();
+    await compactOffer(a);
     await expect(b.locator('#pvp-incoming')).toContainText('0,2 USDT');await expect(b.locator('#pvp-incoming [data-accept]')).toHaveText('Играть за 0,2 USDT');
     await a.screenshot({path:'artifacts/work/pvp-invite-simplify/waiting-mobile.png'});
     expect(await balance(a)).toBe(20000);await b.locator('#pvp-incoming [data-decline]').click();await expect(a.locator('[data-active]')).toContainText('Деньги не списаны');expect(await balance(a)).toBe(20000);
     await a.locator('#pvp-dialog [data-close]').click();await offer(a,true);await expect(b.locator('#pvp-incoming')).toBeVisible();
     await a.locator('[data-pvp-action="cancel"]').click();await expect(b.locator('#pvp-incoming')).toBeHidden();expect(await balance(a)).toBe(20000);expect(c.errors).toEqual([]);
+    await a.keyboard.press('Escape');await expect(a.locator('#pvp-dialog')).toBeHidden();
   }finally{await c.close();}
 });
 
@@ -95,6 +110,7 @@ test('another game uses the same fixed recipient and its own name in the outgoin
 test('ten-cent best-of-three match uses secret choices, synchronized reveal, two wins, exact single credit, mobile chat and recovery',async({browser})=>{
   const c=await players(browser),{a,b}=c;try{
     await offer(a,false,false);const beforeA=await balance(a);await a.locator('[data-create-button]').click();await expect(b.locator('#pvp-incoming')).toBeVisible();await b.locator('#pvp-incoming [data-accept]').click();await ready(a,b);const beforeB=(await balance(b))+10;expect(await balance(a)).toBe(beforeA-10);
+    for(const p of[a,b]){await expect(p.locator('#pvp-dialog')).not.toHaveAttribute('data-game-chat-suspended');await expect(p.locator('#pvp-dialog #club-chat-dock')).toBeVisible();}
     await sign(a).click();await expect(a.locator('.td-status')).toContainText('Твой знак закрыт');await expect(b.locator('.td-stage')).toHaveAttribute('data-stage','select');await expect(b.locator('.td-score')).toHaveText('0 : 0');
     await a.reload();await connected(a);await expect(a.locator('#pvp-dialog')).toBeVisible();await expect(sign(a)).toHaveAttribute('aria-pressed','true');await expect(sign(b,'rock')).toBeEnabled();await sign(b,'rock').click();await expect(a.locator('.td-stage')).toHaveAttribute('data-stage','countdown');await expect(a.locator('.td-score')).toHaveText('1 : 0',{timeout:10000});
     await a.screenshot({path:'artifacts/work/tsu-v3-desktop.png'});await a.setViewportSize({width:390,height:844});

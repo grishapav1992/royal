@@ -19,3 +19,18 @@
 .pvp-new{align-self:center;margin:12px}
 .pvp-dialog button:focus-visible,.pvp-dialog select:focus-visible,.pvp-dialog input:focus-visible{outline:3px solid #bd8b42;outline-offset:3px}
 @media(max-width:600px){.pvp-dialog .pvp-create{margin:16px auto;gap:16px;padding:16px}.pvp-dialog[data-cards=false] .pvp-active{margin:16px auto;padding:20px}.pvp-dialog .pvp-recipient{font-size:14px}}
+
+#pvp-dialog.pvp-dialog.game-chat-layout[data-game-chat-suspended]{width:min(520px,calc(100vw - 24px));height:fit-content;max-width:calc(100vw - 24px);max-height:calc(var(--app-height,100dvh) - 24px);inset:0;margin:auto;padding:0;overflow:auto;border-radius:20px;box-shadow:0 24px 80px #0008}
+#pvp-dialog.pvp-dialog.game-chat-layout[data-game-chat-suspended][open]{display:block}
+#pvp-dialog.pvp-dialog[data-game-chat-suspended]>.game-chat-game{display:block;overflow:visible}
+#pvp-dialog.pvp-dialog[data-game-chat-suspended] .game-chat-toolbar{display:none}
+#pvp-dialog.pvp-dialog[data-game-chat-suspended] .pvp-content{min-height:0;padding:20px;display:block}
+#pvp-dialog.pvp-dialog[data-game-chat-suspended] .pvp-heading{margin-bottom:14px}
+#pvp-dialog.pvp-dialog[data-game-chat-suspended] .pvp-heading small{display:none}
+#pvp-dialog.pvp-dialog[data-game-chat-suspended] .pvp-heading h2{margin:0;font-size:26px}
+#pvp-dialog.pvp-dialog[data-game-chat-suspended] .pvp-balance{margin-bottom:18px;padding:0;background:transparent;font-size:12px}
+#pvp-dialog.pvp-dialog[data-game-chat-suspended] .pvp-balance>button{min-height:34px;font-size:11px;padding:6px 8px}
+#pvp-dialog.pvp-dialog[data-game-chat-suspended] .pvp-create{width:100%;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;gap:14px}
+#pvp-dialog.pvp-dialog[data-game-chat-suspended] .pvp-active{width:100%;margin:0;padding:18px}
+#pvp-dialog.pvp-dialog[data-game-chat-suspended] [data-invites]{margin-top:20px}
+@media(max-width:600px){#pvp-dialog.pvp-dialog[data-game-chat-suspended] .pvp-content{padding:16px}#pvp-dialog.pvp-dialog[data-game-chat-suspended] .pvp-heading h2{font-size:24px}}

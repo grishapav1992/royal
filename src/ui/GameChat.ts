@@ -26,7 +26,8 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
   };
 
   const sync = () => {
-    const next = [...windows.keys()].filter(window => window.isConnected && window.open).at(-1);
+    // Setup modals leave the connected chat in the hall until a game actually opens.
+    const next = [...windows.keys()].filter(window => window.isConnected && window.open && !window.hasAttribute('data-game-chat-suspended')).at(-1);
     if (next !== active) { overlayOpen = false; active = next; }
     for (const [window, entry] of windows) {
       const policy = policyFor(window);
@@ -88,7 +89,7 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
       if (!dock.hidden && overlay) close.focus({ preventScroll: true });
     });
     const observer = new MutationObserver(sync);
-    observer.observe(window, { attributes: true, attributeFilter: ['open'] });
+    observer.observe(window, { attributes: true, attributeFilter: ['open', 'data-game-chat-suspended'] });
     const resize = new ResizeObserver(() => {
       const hadFocus = dock.contains(document.activeElement);
       sync();
