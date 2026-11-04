@@ -1,0 +1,48 @@
+{
+  "format": 1,
+  "release": "deploy-preparation-locks-20261104-v1",
+  "verifiedAt": "2026-11-04T17:43:25.113596+00:00",
+  "scope": "release tooling and workflow only",
+  "installerCommits": {
+    "walk": "0f24c1b6293466b7b4cf3287f9b36efa3d096a5b",
+    "recoveryPreparation": "e6b5bdf959adc0f58f0845746f5275980f6c43f3"
+  },
+  "sourceSha256": {
+    "deployment/releases/front-back-walk-20261104-v3/deploy.py": "2fdc4391c5ff4bfcede4aadeddaa60ca5129d99a1a44705dfffbc1fbeb0d0ddb",
+    "deployment/releases/player-recovery-20261104-v2/reservation.py": "8abb6f0b86cd33ddbb3b7bad4b7799c44ea9177f0992396888ceace678637cc2",
+    "deployment/tests/test_preparation_locks.py": "899c6ff6dba322bac31e0803dd909fce895a515d8224bc4716a0280ca4ff135a"
+  },
+  "linuxVerification": {
+    "environment": "Python 3 on production host, disposable test-source and temporary lock paths; simulated installers; no application or production locks used",
+    "commands": [
+      {
+        "command": "python3 -B -m unittest discover -s deployment/tests -p test_*.py",
+        "passed": 13,
+        "durationSeconds": 0.584
+      },
+      {
+        "command": "python3 -B -m unittest discover -s deployment/releases/front-back-walk-20261104-v3 -p test_deploy.py",
+        "passed": 12,
+        "durationSeconds": 0.081
+      },
+      {
+        "command": "python3 -B -m unittest discover -s deployment/releases/player-recovery-20261104-v2 -p test_reservation.py",
+        "passed": 4,
+        "durationSeconds": 0.001
+      }
+    ]
+  },
+  "checks": [
+    "preparation and ready-marker wait leave all publication locks available",
+    "all locks held during guarded installation",
+    "partial acquisition and exceptions release locks",
+    "busy package can be retried without rebuilding or recapturing its reviewed baseline",
+    "baseline failure prevents publication",
+    "container replacement invalidates optimistic preparation snapshot",
+    "existing candidate is reused for guarded republication"
+  ],
+  "productionApplicationChanged": false,
+  "publishedOrRunningHelpersRewritten": false,
+  "productionPerformanceSpeedupMeasured": false,
+  "adoption": "Use committed installer revisions in newly verified installation metadata. Preserve running releases and retained rollback bundles."
+}
