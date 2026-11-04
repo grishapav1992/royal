@@ -1,10 +1,15 @@
-import copy, importlib.util, unittest
+import copy, importlib.util, json, unittest
 from pathlib import Path
 
 spec=importlib.util.spec_from_file_location('jackie_visual_release',Path(__file__).with_name('deploy.py'))
 deploy=importlib.util.module_from_spec(spec);spec.loader.exec_module(deploy)
 
 class PublicationScope(unittest.TestCase):
+    def test_projection_keeps_the_package_and_compiler_inputs(self):
+        p=json.loads(Path(__file__).with_name('module-projection.json').read_text())
+        required={'games/jackie-chan/package.json','games/jackie-chan/entry.ts','games/jackie-chan/tsconfig.json','tsconfig.json','src/modules/GameModuleCatalog.ts'}
+        self.assertTrue(required.issubset(p['files']))
+
     def fixture(self):
         source={name:'a'*64 for name in deploy.ALLOWED};commit='a'*40;version='1.2.1-0123456789ab'
         prefix='module-dist/'+deploy.GAME+'/versions/'+version+'/'
