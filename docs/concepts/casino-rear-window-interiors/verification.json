@@ -1,0 +1,226 @@
+{
+  "feature": "casino-rear-window-interiors",
+  "dateLocal": "2026-11-04",
+  "timezone": "Europe/Moscow",
+  "testedRuntimeSourceCommit": "304db11560a08d21d44f7c24da1bca501b4e8288",
+  "reconciledCheckoutCommit": "d8a4d1d25992bbcecda888017b85171288218f92",
+  "buildMainBaseline": "320d60725984c5cbd46829e9dc545f59cf9cd162",
+  "latestFetchedMain": "c8aff2793cff04ad2e08f7aff24619570c542c82",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "change": "Replace three repeated invented vignettes with actual rendered crops of the existing floor objects. Fifteen distinct floor areas remain behind the original frames and escape stairs.",
+  "sourceFiles": {
+    "src/game/RearCasinoWindows.ts": "fd8b281ff76a1e93d78c8848812bdf51fd8885cfedd3ba675824c9620254ae44",
+    "src/game/rearWindowInteriors.ts": "a242412959f4f12f6904526bd07f7f2cc3489c883fba31ca4268531b4b996c25",
+    "src/game/rearWindowArt.ts": "c2d1b16158bfb2b73b2e09fb76a8496825e57ac0e9eeccda9c6b04fdb44a8bdc",
+    "src/game/rearWindowLife.ts": "e91edb1f8286aca7c03aaa2336ff747c6300a5913e96b4af1792108ad8284583",
+    "src/game/StreetRenderer.ts": "a4c4c60e32222db6147f569381bda843b6d156bece89edbd0e0394fca09020a5",
+    "src/game/RoomScene.ts": "b22510079b051f935081b2a8acd0c9dce7fbdad1f0d5d526254199bc15c879f4",
+    "server-tests/rear-window-interiors.test.ts": "b50798fe35896c03a719f88ca7bf43de97c16e99c6a37f0f36099251cf418368",
+    "server-tests/rooftop.test.ts": "4a3038cf5b85d54bbbc5b065f2ba656123dee8662f93c18af75ef507e4004e39",
+    "tests/rooftop.spec.ts": "8fc9d92ce6ea9620b840d1898c0b99e06f905d5debbb13b1f2bc3d40c9be20a0"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "c7ef8f1ac78373ef49c688c6c563d4d2edd1942f950b688f42430e4dd8cdfa96"
+    },
+    "dist-server/index.js": {
+      "bytes": 2428809,
+      "sha256": "e0f933c6212513fd5b388a5585a1a4cbc01944ed05cd0d789a617740fb5cdbc6"
+    },
+    "dist/assets/main-BOmWhbvm.js": {
+      "bytes": 2890025,
+      "sha256": "864681e3096c773c554d4642c8d0cca1d4835a58d070fb5f4fe3d671e35953ed"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    },
+    "dist/assets/main-BVwNdpG_.css": {
+      "bytes": 155970,
+      "sha256": "92f1b83d6c0c978a0156dae804a3b74bbcdbaf278a5bb609fed2742ae86af1dc"
+    }
+  },
+  "layout": {
+    "rows": 5,
+    "columns": 5,
+    "realViews": 15,
+    "closedUpperWindows": 10,
+    "decorativeVisitors": 30,
+    "floors": {
+      "arcade": [
+        "Mira bar",
+        "lounge",
+        "piano",
+        "two real cabinet areas"
+      ],
+      "tables": [
+        "billiards",
+        "two lounges",
+        "air hockey",
+        "chess"
+      ],
+      "github": [
+        "lounge",
+        "Triple Poker",
+        "Blackjack Target",
+        "Duel",
+        "War"
+      ]
+    },
+    "unbuiltFloors": "Blinds remain closed until a corresponding numbered hall exists.",
+    "horizontalOrder": "Reverse the actual interior anchors for the rear view.",
+    "capture": {
+      "width": 312,
+      "height": 328,
+      "lazy": true,
+      "onePerDistinctView": true,
+      "sourceVisibilityRestored": true,
+      "uniformScale": true,
+      "destroyedOnSceneShutdown": true
+    }
+  },
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-11-04T13:18:24.456Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 217921
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 6749
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 227844
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 34390
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 83
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 18
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 24
+        }
+      ],
+      "passed": true,
+      "durationMs": 487029
+    },
+    "streetUnit": {
+      "passed": 74,
+      "failed": 0
+    },
+    "buildSupport": {
+      "passed": 5,
+      "failed": 0,
+      "tests": [
+        "shared-module-dependencies",
+        "module-resource-fingerprint",
+        "module-compilation-identity"
+      ]
+    },
+    "connectedHost": {
+      "scenario": "tests/rooftop.spec.ts",
+      "passed": 2,
+      "failed": 0,
+      "desktop": {
+        "viewport": [
+          1440,
+          1000
+        ],
+        "duration": "2.1m"
+      },
+      "mobile": {
+        "viewport": [
+          390,
+          844
+        ],
+        "touchEmulation": true,
+        "duration": "2.3m"
+      },
+      "allFifteenCapturedInLargeViewport": true,
+      "threeRealHallsMapped": true,
+      "closedFloorsHaveNoVisitors": true,
+      "windowMaskPreserved": true,
+      "visitorsMoveAndPause": true,
+      "hiddenAndReducedMotionFreeze": true,
+      "completeStreetStairsRoofToiletReturn": true,
+      "ShiftAccelerationPreserved": true,
+      "stairGroundConversationsSeparated": true,
+      "reconnectPreservesRoomAndProgress": true,
+      "chatEnabled": true,
+      "balancePreserved": true,
+      "noPageErrors": true,
+      "noHorizontalOverflow": true
+    },
+    "manualVisualReview": [
+      "all-floors.png",
+      "desktop.png",
+      "mobile.png"
+    ],
+    "projectBrainAndLocalGraphQueried": true,
+    "localPreview": {
+      "url": "http://127.0.0.1:5191/",
+      "frontendAndBackendSourceCommit": "304db11560a08d21d44f7c24da1bca501b4e8288",
+      "backendRestarted": true,
+      "existingIsolatedDatabaseRetained": true,
+      "testDatabaseSeparateAndRemoved": true
+    }
+  },
+  "verificationNotes": [
+    "Initial crop bounds assertion was corrected to include the real back wall, and lower crops were clamped to the actual floor edge before the passing build and tests.",
+    "Browser reload checks produced transient WebSocket ECONNRESET messages in the Vite proxy. Both complete scenarios passed reconnect, identity, movement, chat and balance checks.",
+    "Later main commits only changed build tooling and release records. Reconciliation kept the tested rendering source hashes unchanged. The local preview retains the exact verified artifacts; it is not a production release."
+  ],
+  "scope": {
+    "streetGeometryChanged": false,
+    "obstaclesChanged": false,
+    "npcRoutesChanged": false,
+    "stairControlsChanged": false,
+    "newServerRooms": false,
+    "mathChanged": false,
+    "walletChanged": false,
+    "catalogueChanged": false,
+    "audioChanged": false
+  },
+  "limitations": [
+    "Window interiors are static captures, with separate decorative visitors. They do not stream actual players, table actions or cabinet animations.",
+    "Mobile verification uses touch emulation, not a physical phone.",
+    "Historical window reports retain their original results and are not evidence for these new captures.",
+    "No live production audit or publication."
+  ],
+  "screenshots": {
+    "all-floors.png": {
+      "bytes": 499570,
+      "sha256": "546cce9a3118b169c26b33d6c6963784932beb64e025c3fe7597c7702a5c1150"
+    },
+    "desktop.png": {
+      "bytes": 185321,
+      "sha256": "513c9669d761f9379e0d8103a82b8cf16287edf9c6022a09677eb94453697b8a"
+    },
+    "mobile.png": {
+      "bytes": 77006,
+      "sha256": "3354f220c069351d41c72513b81597747f233e0b8bed7a71d1e524488fb59a94"
+    }
+  }
+}
