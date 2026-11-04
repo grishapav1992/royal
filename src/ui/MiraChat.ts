@@ -2,6 +2,7 @@ import { language, isUserMessage, t as translateText, tr } from '../i18n/index';
 import { DRINKS } from '../shared/world';
 import { getIntoxication } from '../shared/intoxication';
 import { MiraPortrait } from './MiraPortrait';
+import type { MiraAttention } from '../shared/miraRoutine';
 import { parseGeneratedAppearance } from '../shared/skinStudio';
 import { hasSkinSheet } from '../game/generatedSkinArt';
 
@@ -12,6 +13,7 @@ export type MiraChatOptions = {
   portraitFrame?: (action: 'idle' | 'drink', frame: number) => string;
   playerState?: () => MiraPlayerState;
   onDrink?: (id: string) => boolean;
+  onAttention?: (phase: MiraAttention) => void;
 };
 
 export class MiraChat {
@@ -57,6 +59,10 @@ export class MiraChat {
   private roomWasDrinking = false;
   private heading = document.createElement('h2');
   private reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  private animationTimer?: number;
+  private greetedUntil = 0;
+  private lastAttention: MiraAttention = 'closed';
+  private attentionAt = 0;
 
   constructor(private dialog: HTMLDialogElement, private options: MiraChatOptions = {}) {
     const drinks = dialog.querySelector<HTMLElement>('.drink-list') || document.createElement('div');
@@ -131,10 +137,32 @@ export class MiraChat {
       if (event.key === 'Escape' && !event.defaultPrevented && dialog.open && !document.querySelector('dialog:modal')) { event.preventDefault(); dialog.close(); }
     });
     window.addEventListener('royal-account', () => { this.version++; this.controller?.abort(); this.cooldownUntil = 0; window.clearInterval(this.cooldownTimer); this.setBusy(false); this.turns = []; this.input.value = ''; this.status.textContent = ''; this.drinkPendingUntil = 0; this.drinkFeedback = ''; this.drinkStatusText = ''; this.roomWasDrinking = false; this.lastPortraitKey = ''; this.greet(); this.show('talk'); });
-    window.setInterval(() => { if (dialog.open) this.animate(Date.now()); }, 100);
+    dialog.addEventListener('close', () => {
+      this.version++; this.controller?.abort(); this.setBusy(false);
+      this.releaseAttention(); window.clearInterval(this.cooldownTimer);
+    });
+    window.addEventListener('royal-account', () => this.releaseAttention());
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) this.releaseAttention();
+      else if (dialog.open) this.startAnimation();
+    });
   }
 
-  open() { this.mira.load(); this.show('talk'); this.animate(Date.now()); if (!this.busy) void this.resume(); }
+  open() {
+    this.mira.load(); this.mira.stop(); this.greetedUntil=Date.now()+1200;
+    this.show('talk'); this.startAnimation(); this.setCooldown(this.cooldownUntil);
+    if (!this.busy) void this.resume();
+  }
+  private startAnimation() {
+    window.clearInterval(this.animationTimer);
+    this.animate(Date.now());
+    this.animationTimer=window.setInterval(()=>this.animate(Date.now()),100);
+  }
+  private releaseAttention() {
+    window.clearInterval(this.animationTimer); this.animationTimer=undefined;
+    this.greetedUntil=0; this.mira.stop(); this.lastAttention='closed'; this.attentionAt=0;
+    this.options.onAttention?.('closed');
+  }
 
   private createPlayerPortrait() {
     this.player.className = 'mira-player';
@@ -159,6 +187,11 @@ export class MiraChat {
   }
 
   private animate(now: number) {
+    if (!this.dialog.open || document.hidden) return;
+    const phase: MiraAttention=this.mira.isSpeaking(now)?'speak':now<this.greetedUntil?'greet':'listen';
+    if(phase!==this.lastAttention||now-this.attentionAt>1500) {
+      this.lastAttention=phase;this.attentionAt=now;this.options.onAttention?.(phase);
+    }
     this.mira.tick(now);
     const state = this.playerState(), intoxication = getIntoxication(state.soberAt, now);
     const drinking = state.action === 'drink';
@@ -244,9 +277,10 @@ export class MiraChat {
   }
 
   private greet() { this.turns = [{ who: 'Мира', message: translateText('Ну? Чем удивишь?') }]; this.chosen.textContent = ''; this.offeredDrink = ''; this.updateChoices(); this.updateOffer(); this.mira.react('neutral'); this.renderReply(); }
-  private renderReply() {
+  private renderReply(speak = false) {
     const message = [...this.turns].reverse().find(turn => turn.who === 'Мира')?.message || translateText('Ну? Чем удивишь?');
-    const p = document.createElement('p'); p.textContent = translateText(message); this.log.replaceChildren(p); this.mira.speak(message);
+    const p = document.createElement('p'); p.textContent = translateText(message); this.log.replaceChildren(p);
+    if(speak&&this.dialog.open&&!document.hidden)this.mira.speak(message);
   }
 
   private renderHistory() {
@@ -260,7 +294,7 @@ export class MiraChat {
     this.choices.forEach((button, index) => { button.textContent = `› ${translateText(messages[index])}`; button.title = translateText(messages[index]); button.dataset.message = translateText(messages[index]); });
   }
 
-  private setBusy(value: boolean) { this.busy = value; if (value) this.drinkFeedback = ''; this.availability(); }
+  private setBusy(value: boolean) { this.busy = value; if (value) { this.drinkFeedback = ''; this.mira.stop(); } this.availability(); }
   private availability() {
     const paused = this.cooldownUntil > Date.now();
     this.send.disabled = this.busy || paused; this.reset.disabled = this.busy; this.input.readOnly = this.busy || paused; this.choices.forEach(button => button.disabled = this.busy || paused);
@@ -291,7 +325,7 @@ export class MiraChat {
       if (typeof data.reply !== 'string' || !data.reply.trim()) throw new Error(translateText('Не получилось расслышать Миру. Попробуй ещё раз.'));
       this.turns.push({ who: 'Ты', message }, { who: 'Мира', message: data.reply }); this.turns = this.turns.slice(-65);
       this.chosen.textContent = tr`Ты: ${message}`;
-      this.renderReply(); this.renderHistory(); this.updateChoices(data.choices); this.updateOffer(data.drinkOffer); this.mira.react(data.emotion); this.input.value = ''; this.status.textContent = ''; this.setCooldown(data.cooldownUntil);
+      this.renderReply(true); this.renderHistory(); this.updateChoices(data.choices); this.updateOffer(data.drinkOffer); this.mira.react(data.emotion); this.input.value = ''; this.status.textContent = ''; this.setCooldown(data.cooldownUntil);
     } catch (error) { if (version === this.version) this.status.textContent = error instanceof Error && isUserMessage(error.message) ? translateText(error.message) : translateText('Не получилось связаться с Мирой. Попробуй позже.'); }
     finally { if (version === this.version) this.setBusy(false); }
   }

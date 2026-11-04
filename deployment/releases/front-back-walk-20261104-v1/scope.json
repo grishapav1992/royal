@@ -7,5 +7,48 @@
     "src/game/frontalWalk.ts": "d151fed1f4113e77ba897998e9bd2cfc99ba4373bb3df34051388c838323ff3a"
   },
   "addedGames": [],
-  "restoredGames": []
+  "restoredGames": [],
+  "allowedRuntimeAdvance": {
+    "release": "star-spin-open-selection-20261104-v1",
+    "sourceCommit": "320d60725984c5cbd46829e9dc545f59cf9cd162",
+    "sourceChanges": {
+      "server/starSpinCollection.ts": "7321c7441112d32dc09668f447694d1ae1fb75c1720bbb126f2d42b1d65013fe",
+      "games/wild-nudge/StarSpinCollection.ts": "6d62280c9b659beade713bba8ec5528c87438b530a3c906e3a25abc39faff206",
+      "games/wild-nudge/reactor.css": "c0ba737bb5f15113e38d5909dfc2df0ad064282483e348dbed1786ddc91ee02e",
+      "games/wild-nudge/package.json": "a2c7c616175904883da06ea37d31f76884a36d10fb7dadb83e8d019c3348651e",
+      "games/wild-nudge/README.md": "088665805982e43a52a82183ef7f1c38f6aabc26a6fc8b67002bb238f78b1388",
+      "scripts/game-math/rtp-policy.json": "599d62fd4ab8b38e098675ca534c90384c71177e9868b37bfe3bd2c643734720",
+      "docs/game-math/qualifications/wild-nudge-v2.json": "c46f1f18cd7ed47591ade776bee9ee4dba732d62b5d09b3f8e8ad48a3caa4202",
+      "docs/concepts/wild-nudge/collection-policy.md": "8dd151de38d7d4244f87ffc821acbdd5ef754bdf3c19364d1b917d188512b0f7"
+    },
+    "serverDelta": {
+      "index.js": "e61b277acfd8ccca75ef1ecd1e57d3260032d71da974f337f5778bdcb0932aba"
+    },
+    "moduleFiles": {
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/entry-ebee0895544d820e.js": "ebee0895544d820ec1c25a2c98e405d613e4d7d415759bcbef138091815ee6b9",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/manifest.json": "438749bb5721c9bbc4c0a91fb1ed5b49ebd0e93e9f345de462c69db72cd82012",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/background.webp": "08da069a40ecd93db5ea3698f561b31fc6478f92f139f8117a5fa9aff89171fb",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/aeliri-rive.json": "fa036e2a1fecf47875b1f361143daa23b0b60cb6624074480b98be49f2ed8dbb",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/aeliri.webp": "1db152e1e067a5545480c17857ac6fae9edf6d2877a154a0d7aecaa02b68207e",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/lyra-rive.json": "f4c917291389f3ab712133e0da4176ccee435feea88e9e136e36217264fe199a",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/lyra.webp": "bd61ed5a356ed4a64a5777bf3cd75dd8f3867d0c7ff11399e1107ab7040d63ea",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/nyxara-rive.json": "f1eff64dc71669616892c069637704ae96bec69908ea3e2fa764773273489718",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/nyxara.webp": "0bd85ec325898d6653cd965ffdc45661b7c246b9e5db63b84fb17b6745b0cf2f",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/rive-runtime.json": "53d7a6fde857630ef2368df86afa57a1c53e98a7ee633d8b878703ba3ea2b809",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/vespera-rive.json": "e43390097d90e245efa477a4e626a95defd7a142f9281dadeb076bdb83b8b0b1",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/vespera.webp": "ce383b93698909c9cb9205811976033326abfec1d0713f6b65ee00b85f5bda2e",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/cover.webp": "51c6b39a839fb3abbdebc3bba8bc105a2ba92ae764f4943454bed614405d9bc7",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/score.wav": "282b5a2b358905645e3741d7d6ec198f07e391262f57430ac8ebc4d27cd875d2",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/symbol-0.webp": "4818486e2fcfa37fd7eec9804026fa4336e45821f95611d1fb4cd9152e143065",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/symbol-1.webp": "9df6f55cdc45fe27152099d1e093bc103bb4c8d89472d53c7da0cfdbee08b275",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/symbol-2.webp": "41043b4d4b7c82948db8557921e6681dd88ae656101b30a4dd567583be446cb9",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/symbol-3.webp": "40e59f13410534a6cff7fe468e75e64e1f84f0a7b636c7def5cff7ec90d2b929",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/symbol-4.webp": "47983bd14981cd900c542370c6c2ad3438a6ccdbbce0831c307078414103caf2",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/symbol-5.webp": "012e71be56c422c1b3ccef61d1cb27de356ad3ecb84fcf98dd4dd0ec27467ff6",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/symbol-6.webp": "733ee68cc2704841d1ec941d11de5d8d6e051661d203582279a403327fc406d1",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/symbol-7.webp": "fe2d129f02f2b3cd7559b0a0f1eb074f13a17910637163632164b0ba9ebfc70b",
+      "/opt/royal-game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/style-270816d124e7045a.css": "270816d124e7045a5b0c1d0fb2993278da933de12582ebf7a90dd6f0b71820ed",
+      "/opt/royal-game-modules/studio-wild-nudge/active.json": "8c4f81bb13b219398505fb6b550a795381c1b61726ccb9ebb7c31d68e2e4761a"
+    }
+  }
 }

@@ -1,11 +1,11 @@
 {
   "format": 1,
-  "baseCommit": "39b34944ee46074517c59065bdcf7454789875a4",
+  "baseCommit": "320d60725984c5cbd46829e9dc545f59cf9cd162",
   "expectedSources": {
     "server/afterglowProgress.ts": "4a7f5d07ca6be6afbcec0c5ff2c7d91bb4da82f81438aa35c8a418cc939134b9",
     "server/demoWallet.ts": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
     "src/ui/slotKit/SlotControls.ts": "8b82686efd4e772be18ccdfee111882bcc8a3a1c857e75284a1fa507622de0d6",
-    "src/ui/stakeSelection.ts": "eceb428e3617eb0832b0b4f07b9789d545dd6c926fb8c60da94f3bffaf7d6ade",
+    "src/ui/stakeSelection.ts": "a504e218ad8683f493e68345b26003a33711a07e6231290910054cd31d72c631",
     "src/shared/gameStakes.ts": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b",
     "src/shared/roundPrecision.ts": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
     "src/shared/tsuDuel.ts": "d651edfddcf47c347d8aa3e590dc636a5abc5bf8ebedca103db1dbaee963f9f0",
@@ -133,7 +133,7 @@
     "scripts/game-math/game-stakes-admission.mjs": "4cb0c4fc41fbdf73e68f67c7b76a155a5dfbba85d9107b58508de4c80a7e3ed4",
     "scripts/game-math/manual-stakes.mjs": "969131d1de9c2d1744cdd8ff801e745bbb02eb6653466732ba0657a24ee0ad9d",
     "scripts/game-math/rtp-caribbean.mjs": "a47c371ab000a9644a092bf4be2afa498251f90f72b2c307f67715942c280c47",
-    "scripts/game-math/rtp-policy.json": "9aea3b56b191bb1348e55972d2e653aa3ac9fc3677d4b4391c705461be582c2d",
+    "scripts/game-math/rtp-policy.json": "c39aca8e541eaddbca17eff9e8e2f58fc0c2d61d84c20d1040f975fe21aa0c5a",
     "scripts/game-math/rtp-stakes.mjs": "a885087bc907189f46a1a1dcc54f807733fcf8cbfae818a64a9fe9f2aed6de52",
     "scripts/game-math/rtp-tsu-duel-stakes.mjs": "62e3b7442684f56cdcfd55dc014adc10340ee71c4189b2bff40ee27172e34524",
     "scripts/game-math/stake-runtime.mjs": "47d762e18c698ab4241a6499497b8f58087132da2489494a2172f60dd0fede61",
@@ -144,7 +144,7 @@
   },
   "evidenceOrigins": {
     "scripts/game-math/rtp-policy.json": {
-      "commit": "1f1bfade90430975f445ff957dc93df95d896679",
+      "commit": "b7690cd63b7633ee9fb416aeafb8d45913860c42",
       "path": "scripts/game-math/rtp-policy.json"
     }
   }

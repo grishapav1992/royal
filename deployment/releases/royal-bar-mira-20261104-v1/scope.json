@@ -1,0 +1,49 @@
+{
+  "productionCommit": "39b34944ee46074517c59065bdcf7454789875a4",
+  "featureCommit": "9c093138239595b98b5174383bc0896fc37845c0",
+  "expectedSources": {
+    "server/LobbyRoom.ts": "1db6d4deb0e1f3601916d21ca37719400cf7710c4179b86db1e67e2afd796b7f",
+    "server/bartender.ts": "d669db795f60d965c0ca5617b54661fc15407a83800fd47a246827317920d63f",
+    "src/game/Bar.ts": "39abaf543b87794694f6e2d1c5c4e3f9e0b26c99055765b9c505d20628f42153",
+    "src/game/RoomScene.ts": "2d8d40c68747c5c32e0aa0dacf6f9cf5a8c9121743fa7e6779957d1fd8e00521",
+    "src/game/barArt.ts": "89215191c198386910b36b04787cadd93916fb81e35ada353998c3245116a20a",
+    "src/game/materials.ts": "e0e1a4911884bb56fc2c44780526e4a2db9eced70536c2dcf8afe89871697e64",
+    "src/game/miraCharacterArt.ts": "e447dadc860bf642ca53481e355193a8db765850c8cf81ebbd0d7f74e3a8c5db",
+    "src/i18n/en.ts": "6e8a493cfb8b7acf05d156577d826ac3b1e0f1768fe9451b88409a486b24683b",
+    "src/main.ts": "c77121b9c4a473937beec127618d0eb6e8780d8a691718b6b5735d36db0d7485",
+    "src/shared/clubLayout.ts": "c02a95d6609d817ded1f255b2d3de2dd4ad2fc575e264b957a47885dc5951a4d",
+    "src/shared/miraRoutine.ts": "1edf1b32dec6a1d9646f23c0907ec5458aa311a35121633d9fdd5a8ac1470300",
+    "src/shared/world.ts": "11c8027f2d8fb9feead23a2923a8b0628066c1b3feff8b4f3c9eb8d02b1a8adf",
+    "src/ui/MiraChat.ts": "059480c1c3081f619c8de9d20aa3061a4a85c5fff18326b30e439e9fffc30c91",
+    "src/ui/MiraPortrait.ts": "6762705758f13efbdfdd9405a29f1dfba732ffc4557c273982d1e7973abbdd88",
+    "src/ui/SocialUI.ts": "a0a4d09f5da4bfe467b34acf73a42aad7533b9d04b6aef26ca94c2db958f19e6"
+  },
+  "hostRequired": [
+    "src/game/Bar.ts",
+    "src/game/RoomScene.ts",
+    "src/game/barArt.ts",
+    "src/game/materials.ts",
+    "src/game/miraCharacterArt.ts",
+    "src/i18n/en.ts",
+    "src/main.ts",
+    "src/shared/clubLayout.ts",
+    "src/shared/miraRoutine.ts",
+    "src/shared/world.ts",
+    "src/ui/MiraChat.ts",
+    "src/ui/MiraPortrait.ts",
+    "src/ui/SocialUI.ts"
+  ],
+  "backendRequired": [
+    "server/LobbyRoom.ts",
+    "server/bartender.ts",
+    "src/shared/clubLayout.ts",
+    "src/shared/miraRoutine.ts",
+    "src/shared/world.ts"
+  ],
+  "preservedBackendInputs": {
+    "src/i18n/en.ts": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68"
+  },
+  "addedGames": [],
+  "restoredGames": [],
+  "confirmationCommit": "ae0a5d0c020ecf92c39738aba2a2653c30393786"
+}
