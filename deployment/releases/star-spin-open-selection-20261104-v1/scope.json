@@ -39,5 +39,11 @@
   "selectionSourceCommit": "d666a6aa11b47e3a4a3d474e38ae0f7d448dddb4",
   "moduleBuildInputs": {
     "tsconfig.json": "ac92a48aa49e6d4a13a2ce4191379133d7156d219b8b3f10723921ad695f8888"
+  },
+  "allowedFrontendAdvance": {
+    "release": "guard-profile-20261104-v1",
+    "sourceChanges": {
+      "src/game/SecurityGuard.ts": "20df58e2a68615ad7bc41680a38beae1b26f569f6b6fb4a7d7e32446d7499c50"
+    }
   }
 }
