@@ -6,6 +6,7 @@ NAME='star-spin-character-fit-20261104-v1';GAME='studio-wild-nudge'
 ROOT=Path('/opt/royal-releases')/NAME;LIVE=Path('/opt/royal');MODULES=Path('/opt/royal-game-modules');STATE=Path('/opt/royal-game-modules-state');BACKUP=Path('/opt/royal-backups')/NAME
 BASE_HELPER=Path('/opt/royal-releases/remove-hall-title-20261103-v1/snapshot-base.py')
 SOURCES=["games/wild-nudge/README.md","games/wild-nudge/animation/rigs.json","games/wild-nudge/animation/vespera/blink-reference.png","games/wild-nudge/animation/vespera/eyelids.png","games/wild-nudge/animation/vespera/scene.rml","games/wild-nudge/assets/characters/prompts.json","games/wild-nudge/assets/characters/vespera.png","games/wild-nudge/assets/characters/framing-repair.json","games/wild-nudge/package.json"]
+ADOPTED_SOURCES=["games/wild-nudge/GalacticReactorUI.ts","games/wild-nudge/StarSpinLayout.ts","games/wild-nudge/reactor.css","games/wild-nudge/tsconfig.json"]
 MEDIA_SOURCES=["public/assets/wild-nudge/characters/aeliri-rive.json","public/assets/wild-nudge/characters/lyra-rive.json","public/assets/wild-nudge/characters/nyxara-rive.json","public/assets/wild-nudge/characters/vespera-rive.json","public/assets/wild-nudge/characters/vespera.webp"]
 ADDED={'games/wild-nudge/assets/characters/framing-repair.json'}
 IMAGE_HELPER=Path('/opt/royal-maintenance/bin/retention-runtime.py')
@@ -51,7 +52,8 @@ def validate_scope(release,before,operator):
  require(release['scope']=='modules' and release['modules']==['wild-nudge'] and release['build']['passed'],'Wrong release scope')
  require(release['sourceCommit']==operator['sourceCommit'] and release['baseCommit']==before['sourceCommit'],'Wrong source/base commit')
  require(len(release['packages'])==1 and release['packages'][0]['gameId']==GAME,'Foreign package')
- require(set(operator['source'])==set(SOURCES),'Foreign source patch')
+ require(set(operator['source'])==set(SOURCES)|set(ADOPTED_SOURCES),'Foreign source patch')
+ require(all(operator['source'][n]==before['source'].get(n) for n in ADOPTED_SOURCES),'Previously published UI source changed')
  require(set(operator['media'])==set(MEDIA_SOURCES),'Foreign media source')
  require(release['packages'][0]['version']=='1.5.1-a6511d3f697d','Not the visually verified package')
 def validate_inputs(before,operator,proof,equivalence=None):

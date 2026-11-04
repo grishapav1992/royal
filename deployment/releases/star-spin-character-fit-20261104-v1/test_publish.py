@@ -29,11 +29,12 @@ class Guards(unittest.TestCase):
    changed=copy.deepcopy(proof);changed['sourceFiles'][path]=digest
    with self.assertRaises(RuntimeError):p.validate_inputs(before,op,changed)
  def test_only_star_spin_and_its_exact_source_scope_are_allowed(self):
-  release={'scope':'modules','modules':['wild-nudge'],'build':{'passed':True},'sourceCommit':'a'*40,'baseCommit':'b'*40,'packages':[{'gameId':p.GAME,'version':'1.5.1-a6511d3f697d'}]};before={'sourceCommit':'b'*40};op={'sourceCommit':'a'*40,'source':dict.fromkeys(p.SOURCES,'x'),'media':dict.fromkeys(p.MEDIA_SOURCES,'m')}
+  release={'scope':'modules','modules':['wild-nudge'],'build':{'passed':True},'sourceCommit':'a'*40,'baseCommit':'b'*40,'packages':[{'gameId':p.GAME,'version':'1.5.1-a6511d3f697d'}]};before={'sourceCommit':'b'*40,'source':dict.fromkeys(p.ADOPTED_SOURCES,'x')};op={'sourceCommit':'a'*40,'source':dict.fromkeys(p.SOURCES+p.ADOPTED_SOURCES,'x'),'media':dict.fromkeys(p.MEDIA_SOURCES,'m')}
   p.validate_scope(release,before,op)
   for changed in [{**release,'scope':'application'},{**release,'modules':['girlhub']},{**release,'baseCommit':'c'*40}]:
    with self.assertRaises(RuntimeError):p.validate_scope(changed,before,op)
   with self.assertRaises(RuntimeError):p.validate_scope(release,before,{**op,'source':{**op['source'],'server/index.ts':'x'}})
+  with self.assertRaises(RuntimeError):p.validate_scope(release,before,{**op,'source':{**op['source'],p.ADOPTED_SOURCES[0]:'changed'}})
  def test_image_identity_requires_the_exact_running_tag_without_size_traversal(self):
   from unittest.mock import patch,Mock
   helper=Mock();helper.image_metadata.return_value={'Id':'sha256:'+'a'*64,'RepoTags':['royal-game:latest']}

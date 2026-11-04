@@ -90,6 +90,7 @@
     "gameSources": 9,
     "moduleMediaInputs": 5,
     "hostPublicSourcesPreserved": true,
-    "reason": "Independent module loader serves immutable package media. Current retention supports scoped games source receipts; host public source bytes remain tied to the host release."
+    "reason": "Independent module loader serves immutable package media. Current retention supports scoped games source receipts; host public source bytes remain tied to the host release.",
+    "adoptedUnchangedPriorUiSources": 4
   }
 }
