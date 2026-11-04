@@ -4,8 +4,8 @@
   "deployed": false,
   "addedOrRestoredGames": [],
   "frontendSourceCommit": "4011c542af67ae920b84ccf2a55373081952677a",
-  "backendSourceCommit": "344fc59f",
-  "applicationBuildSourceCommit": "344fc59f",
+  "backendSourceCommit": "344fc59f5218c944467bb53a24f1958ef3d08fd6",
+  "applicationBuildSourceCommit": "344fc59f5218c944467bb53a24f1958ef3d08fd6",
   "buildMainBaseline": "28fa316c6f27f0114cdbec4ffc266fb846bcc557",
   "change": "Long flat balcony extends rightward from the middle stair junction to the third window of floor three. Entry requires actually walking to the distant sill. Up/down select the flights through the unchanged junction. An interrupted selected window approach resumes after movement confirmation.",
   "geometry": {
@@ -137,7 +137,7 @@
       "failed": 0,
       "totalSeconds": 324,
       "frontendSourceCommit": "4011c542af67ae920b84ccf2a55373081952677a",
-      "backendSourceCommit": "344fc59f",
+      "backendSourceCommit": "344fc59f5218c944467bb53a24f1958ef3d08fd6",
       "devices": [
         {
           "name": "desktop",
@@ -201,5 +201,16 @@
   "limitations": [
     "Local preview only; production unchanged.",
     "Mobile coverage uses browser touch emulation, not a physical phone."
-  ]
+  ],
+  "reconciledSourceCommit": "95682f369ca8773d24f2310845764d1c4add7f79",
+  "latestFetchedMain": "970c358577d6d966513645fca2af9795009d412a",
+  "reconciliation": {
+    "taskSourceHashesMatchTestedVersion": true,
+    "testedArtifactsRetained": true,
+    "sourceChanges": [
+      "src/game/Bar.ts",
+      "src/game/miraCharacterArt.ts"
+    ],
+    "note": "Later main counter-contact artwork and release records are reconciled in Git. The active preview retains the exact tested host and backend bytes."
+  }
 }
