@@ -1,8 +1,10 @@
 import test from'node:test';import assert from'node:assert/strict';import{readFile}from'node:fs/promises';import{fileURLToPath}from'node:url';
 import{stakeInputs,sourceDigest}from'../scripts/game-math/rtp-gate.mjs';import{validateStakeProof}from'../scripts/game-math/rtp-stakes.mjs';
+import{prepareManualStakeChecks}from'../scripts/game-math/manual-stakes.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url)),registry=JSON.parse(await readFile(new URL('../scripts/game-math/rtp-policy.json',import.meta.url),'utf8'));
 test('all registered shared-stake games qualify every denomination and every declared paid-round choice',async()=>{
  assert(Object.keys(registry.stakePolicies).length>0);
+ await prepareManualStakeChecks(Object.entries(registry.stakePolicies).filter(([,policy])=>policy.manualStakeRange).map(([game,policy])=>({game,policy})));
  for(const game of Object.keys(registry.stakePolicies)){
   const inputs=await stakeInputs(root,game),proof=JSON.parse(await readFile(new URL('../'+inputs.policy.proof,import.meta.url),'utf8'));
   assert.deepEqual(inputs.policy.stakes,[10,20,50,100,200,500,1000,2000,5000]);assert(validateStakeProof(game,inputs,proof));

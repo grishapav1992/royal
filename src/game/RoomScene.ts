@@ -1026,7 +1026,9 @@ export class RoomScene extends Phaser.Scene {
       this.halo.setPosition(this.player.sprite.x,this.player.sprite.y).setDepth(this.player.sprite.depth-2);
       if(this.roofClickTarget){
         const target=this.roofClickTarget;
-        if(this.hall!=='street'||!this.player.stairStep||Math.hypot(this.player.x-target.x,this.player.y-target.y)<.2)this.roofClickTarget=undefined;
+        const arrived=Math.hypot(this.player.x-target.x,this.player.y-target.y)<.2;
+        const confirmed=!this.network||!!this.networkSelf&&!this.prediction.active&&Math.hypot(this.networkSelf.x-target.x,this.networkSelf.y-target.y)<.2;
+        if(this.hall!=='street'||!this.player.stairStep||arrived&&confirmed)this.roofClickTarget=undefined;
         else if(!this.player.path.length&&!this.prediction.active&&!this.afterMovement&&time>=this.roofClickRetryAt){
           this.roofClickRetryAt=time+400;
           const throughJunction=roofWindowPlatformPoint(target)?!onRoofWindowPlatform(this.player):onRoofWindowPlatform(this.player);

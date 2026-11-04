@@ -1,0 +1,365 @@
+{
+  "format": 1,
+  "productionCommit": "315fda47301591b5b1ed05806781fcc603cffdcb",
+  "moduleGames": [
+    "jackie-chan"
+  ],
+  "files": {
+    "games/jackie-chan/JackieAudio.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/jackie-chan/JackieAudio.ts",
+      "baseSha256": "6eecdf9ec89e6afab3423203617635a960f85e497b512c5f2c92c668079f2789",
+      "sha256": "6eecdf9ec89e6afab3423203617635a960f85e497b512c5f2c92c668079f2789"
+    },
+    "games/jackie-chan/JackieChoreography.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/jackie-chan/JackieChoreography.ts",
+      "baseSha256": "7cd4997741a0b570b61e8673f726ea02608f08ae68b6dd3faf76c7878b0560c1",
+      "sha256": "7cd4997741a0b570b61e8673f726ea02608f08ae68b6dd3faf76c7878b0560c1"
+    },
+    "games/jackie-chan/JackieFightPlans.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/jackie-chan/JackieFightPlans.ts",
+      "baseSha256": "bbd71717f09ecbed92c3ccc1d24f86c24b82419a25e5ef4e992a1e8e135495c7",
+      "sha256": "bbd71717f09ecbed92c3ccc1d24f86c24b82419a25e5ef4e992a1e8e135495c7"
+    },
+    "games/jackie-chan/JackieFightSounds.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/jackie-chan/JackieFightSounds.ts",
+      "baseSha256": "19e7b162fdabaf45cea9efbfa8fe0c1b9388bba5c052b76b9267e7ef9ee24794",
+      "sha256": "19e7b162fdabaf45cea9efbfa8fe0c1b9388bba5c052b76b9267e7ef9ee24794"
+    },
+    "games/jackie-chan/JackieLayout.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/jackie-chan/JackieLayout.ts",
+      "baseSha256": "fddf03776d391cc62290953c8bef6f82e7e1f71f52439ef6196213a693ed996d",
+      "sha256": "fddf03776d391cc62290953c8bef6f82e7e1f71f52439ef6196213a693ed996d"
+    },
+    "games/jackie-chan/JackieMusic.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/jackie-chan/JackieMusic.ts",
+      "baseSha256": "ecd3ba4f6ebaf293fddd15319e79b327a8c57671302a3942afd948e61c3a5006",
+      "sha256": "ecd3ba4f6ebaf293fddd15319e79b327a8c57671302a3942afd948e61c3a5006"
+    },
+    "games/jackie-chan/JackieOpenings.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/jackie-chan/JackieOpenings.ts",
+      "baseSha256": "3c75429a9ade9690de9f5a4af22a14809301909072b7f7af0f7745c7dcf17e73",
+      "sha256": "3c75429a9ade9690de9f5a4af22a14809301909072b7f7af0f7745c7dcf17e73"
+    },
+    "games/jackie-chan/JackieOpponents.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/jackie-chan/JackieOpponents.ts",
+      "baseSha256": "0a3b314f49996c41fa478712da51fadc7882051775a7abcc1625277d4555c863",
+      "sha256": "0a3b314f49996c41fa478712da51fadc7882051775a7abcc1625277d4555c863"
+    },
+    "games/jackie-chan/JackiePlayback.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/jackie-chan/JackiePlayback.ts",
+      "baseSha256": "163fc124d6c5582d7571532d9d4b4bef647a6edd9d4c515d06dd9fd572328f3f",
+      "sha256": "163fc124d6c5582d7571532d9d4b4bef647a6edd9d4c515d06dd9fd572328f3f"
+    },
+    "games/jackie-chan/JackieScene.ts": {
+      "commit": "a6f5d6a40871807a12a1de6faae8e7cdbeb791d2",
+      "path": "games/jackie-chan/JackieScene.ts",
+      "baseSha256": "c53abe172f86e53a0b797257f4b52a8d250b98cc18c36ca8428f8091905f2a3c",
+      "sha256": "c53abe172f86e53a0b797257f4b52a8d250b98cc18c36ca8428f8091905f2a3c"
+    },
+    "games/jackie-chan/JackieUI.ts": {
+      "commit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+      "path": "games/jackie-chan/JackieUI.ts",
+      "baseSha256": "c973814805b4eacd998f0cfa36d2eb218ce3c10bcc5c9e61e81aab3258cccdef",
+      "sha256": "dcbdf627088459628c8c4fed9c2fb2ea15c4043370d39687049694a4206c5efe",
+      "patches": [
+        {
+          "from": "import { expansionClient as client } from '../../src/wallet/ExpansionClient';",
+          "to": "import {GAME_STAKE_UNITS as JACKIE_BETS} from '../../src/shared/gameStakes';\nimport {syncStakeSelect} from '../../src/ui/stakeSelection';\nimport {stakeRulesHtml} from '../../src/ui/stakeRules';\nimport { expansionClient as client } from '../../src/wallet/ExpansionClient';"
+        },
+        {
+          "from": "import { JACKIE_GAME, JACKIE_BETS, JACKIE_RISKS, JACKIE_COSTUMES, JACKIE_LOCATIONS, costumeUnlocked, type JackieCostume, type JackieLocation } from '../../src/shared/jackieChan';",
+          "to": "import { JACKIE_GAME, JACKIE_RISKS, JACKIE_COSTUMES, JACKIE_LOCATIONS, costumeUnlocked, type JackieCostume, type JackieLocation } from '../../src/shared/jackieChan';"
+        },
+        {
+          "from": "  private stake='1000';",
+          "to": "  private stake='10';"
+        },
+        {
+          "from": "    if(this.owner!==client.accountId){this.owner=client.accountId;this.epoch++;this.seen='';this.action='';this.error='';this.costume='master';this.location='restaurant';this.risk='safe';this.stake='1000';this.preview=false;this.unlocks=[];this.audio.cancel();this.audio.music.reset();this.scene.select(this.costume,this.location,this.risk);this.find<HTMLDialogElement>('[data-dialog]').close();}",
+          "to": "    if(this.owner!==client.accountId){this.owner=client.accountId;this.epoch++;this.seen='';this.action='';this.error='';this.costume='master';this.location='restaurant';this.risk='safe';this.stake='10';this.preview=false;this.unlocks=[];this.audio.cancel();this.audio.music.reset();this.scene.select(this.costume,this.location,this.risk);this.find<HTMLDialogElement>('[data-dialog]').close();}"
+        },
+        {
+          "from": "    this.find<HTMLSelectElement>('[data-stake]').value=this.stake;this.find<HTMLSelectElement>('[data-location]').value=this.location;",
+          "to": "    this.stake=syncStakeSelect(this.find<HTMLSelectElement>('[data-stake]'),this.stake,JACKIE_BETS,active||busy);this.find<HTMLSelectElement>('[data-location]').value=this.location;"
+        },
+        {
+          "from": "    this.find('[data-dialog-content]').insertAdjacentHTML('beforeend',`<h3>${t('Музыка локаций','Location music')}</h3><p>${t('Музыка и звуки боя отключаются отдельно. Настройки сохраняются.','Music and fight effects have separate switches. Preferences are saved.')}</p><ul class=\"jc-music-credits\">${musicTracks.map(track=>`<li><a href=\"${track.source}\" target=\"_blank\" rel=\"noopener noreferrer\">${track.title}</a> · Kevin MacLeod (incompetech.com)</li>`).join('')}</ul><p><a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener noreferrer\">Creative Commons Attribution 4.0</a>. ${t('Записи нормализованы по громкости и перекодированы в MP3; полные композиции повторяются в игре.','Recordings are level-normalized and re-encoded to MP3; complete tracks loop in the game.')}</p>`);",
+          "to": "    this.find('[data-dialog-content]').insertAdjacentHTML('beforeend',`${stakeRulesHtml()}<h3>${t('Музыка локаций','Location music')}</h3><p>${t('Музыка и звуки боя отключаются отдельно. Настройки сохраняются.','Music and fight effects have separate switches. Preferences are saved.')}</p><ul class=\"jc-music-credits\">${musicTracks.map(track=>`<li><a href=\"${track.source}\" target=\"_blank\" rel=\"noopener noreferrer\">${track.title}</a> · Kevin MacLeod (incompetech.com)</li>`).join('')}</ul><p><a href=\"https://creativecommons.org/licenses/by/4.0/\" target=\"_blank\" rel=\"noopener noreferrer\">Creative Commons Attribution 4.0</a>. ${t('Записи нормализованы по громкости и перекодированы в MP3; полные композиции повторяются в игре.','Recordings are level-normalized and re-encoded to MP3; complete tracks loop in the game.')}</p>`);"
+        },
+        {
+          "from": ".destroy();this.root.remove();}\n",
+          "to": ".destroy();this.priorities.destroy();this.root.remove();}\n"
+        },
+        {
+          "from": "dren(this.root);this.layout=new ",
+          "to": "dren(this.root);\n    const priorityButton=document.createElement('button');priorityButton.type='button';priorityButton.dataset.options='';priorityButton.textContent='⚙';priorityButton.setAttribute('aria-label',t('Настройки игры','Game settings'));\n    this.find('.jc-bank').append(priorityButton);\n    this.priorities=new ActionGameLayout(host,this.root,priorityButton,['.jc-settings','.jc-header-actions','.jc-risk-note','.jc-lineup','.jc-footer'].map(selector=>this.find(selector)),t('Настройки игры','Game settings'),t('Закрыть','Close'));this.layout=new "
+        },
+        {
+          "from": "d(consolePanel);\n    this.find('",
+          "to": "d(consolePanel);this.root.append(this.find('[data-recovery]'),this.find('[data-error]'));\n    this.find('"
+        },
+        {
+          "from": "lass JackieUI {\n  private root =",
+          "to": "lass JackieUI {\n  private priorities: ActionGameLayout;\n  private root ="
+        },
+        {
+          "from": "'./layout.css';\nimport musicTrac",
+          "to": "'./layout.css';\nimport './priorities.css';\nimport musicTrac"
+        },
+        {
+          "from": "import {syncStak",
+          "to": "import {ActionGameLayout} from '../../src/ui/ActionGameLayout';\nimport {syncStak"
+        },
+        {
+          "from": "import {GAME_STAKE_UNITS as JACKIE_BETS} from '../../src/shared/gameStakes';\n",
+          "to": "import {canRecoverOperation} from '../../src/ui/operationFeedback';\nimport {GAME_STAKE_UNITS as JACKIE_BETS} from '../../src/shared/gameStakes';\n"
+        },
+        {
+          "from": "this.find('[data-recovery]').hidden=!client.pending||client.busy;",
+          "to": "this.find('[data-recovery]').hidden=!canRecoverOperation(client);"
+        },
+        {
+          "from": "    this.find('.jc-stage').scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});\n",
+          "to": ""
+        }
+      ]
+    },
+    "games/jackie-chan/entry.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/jackie-chan/entry.ts",
+      "baseSha256": "19dea8a1a749486f57a58669871ab89d13919c8a7bc1d65a7adca68c81cbade6",
+      "sha256": "19dea8a1a749486f57a58669871ab89d13919c8a7bc1d65a7adca68c81cbade6"
+    },
+    "games/jackie-chan/jackie.css": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/jackie-chan/jackie.css",
+      "baseSha256": "20cb5ca4740359865436db6cffb55f18cd47dc94985a22d238b47a71a2b3c174",
+      "sha256": "20cb5ca4740359865436db6cffb55f18cd47dc94985a22d238b47a71a2b3c174"
+    },
+    "games/jackie-chan/layout.css": {
+      "commit": "a6f5d6a40871807a12a1de6faae8e7cdbeb791d2",
+      "path": "games/jackie-chan/layout.css",
+      "baseSha256": "8be5a8995caa11f83f744c56177f42857a7b4357526198bf641ef78b9f908d6a",
+      "sha256": "8be5a8995caa11f83f744c56177f42857a7b4357526198bf641ef78b9f908d6a"
+    },
+    "games/jackie-chan/music-sources.json": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/jackie-chan/music-sources.json",
+      "baseSha256": "967053591211dbc3eab1fa2bbf89b86b5f62df7240d7fff23588d1b94558f70d",
+      "sha256": "967053591211dbc3eab1fa2bbf89b86b5f62df7240d7fff23588d1b94558f70d"
+    },
+    "games/jackie-chan/package.json": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/jackie-chan/package.json",
+      "baseSha256": "5609013d5981c7bf30e93ff4b5f46793526d3624558e9bf86fad91b2cb71fe7f",
+      "sha256": "5609013d5981c7bf30e93ff4b5f46793526d3624558e9bf86fad91b2cb71fe7f"
+    },
+    "games/jackie-chan/priorities.css": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/jackie-chan/priorities.css",
+      "baseSha256": "225cf41da3b049c8fb7d7f248f54c87c183201b9cd3e37938117d9ac0cee35f8",
+      "sha256": "225cf41da3b049c8fb7d7f248f54c87c183201b9cd3e37938117d9ac0cee35f8"
+    },
+    "games/jackie-chan/tsconfig.json": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/jackie-chan/tsconfig.json",
+      "baseSha256": "ea96070888246e50971256b71e996798fb13e2c5cfacd1e700fc8e3b24dc29d6",
+      "sha256": "ea96070888246e50971256b71e996798fb13e2c5cfacd1e700fc8e3b24dc29d6"
+    },
+    "src/modules/GameHostContract.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/modules/GameHostContract.ts",
+      "baseSha256": "47e6960da87ccab2dcb81c808ad019a82ee587f097754f1ab20a9c4dfcb3631b",
+      "sha256": "47e6960da87ccab2dcb81c808ad019a82ee587f097754f1ab20a9c4dfcb3631b"
+    },
+    "src/modules/GameModuleCatalog.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/modules/GameModuleCatalog.ts",
+      "baseSha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82",
+      "sha256": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1",
+      "patches": [
+        {
+          "from": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },",
+          "to": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },"
+        },
+        {
+          "from": "ion:1},\n] as con",
+          "to": "ion:1},\n {gameId:'tsu-e-fa',slug:'tsu-e-fa',apiVersion:1,rulesVersion:1,progressVersion:1},\n] as con"
+        },
+        {
+          "from": "iVersion:1,rulesVersion:1,progressVersion:1},\n] a",
+          "to": "iVersion:1,rulesVersion:2,progressVersion:1},\n] a"
+        },
+        {
+          "from": ":2,",
+          "to": ":3,"
+        },
+        {
+          "from": ":3,",
+          "to": ":4,"
+        },
+        {
+          "from": "export const STUDIO_GAME_MODULES = [\n",
+          "to": "export const STUDIO_GAME_MODULES = [\n { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },\n"
+        }
+      ]
+    },
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/caribbeanTreasuresMath.ts",
+      "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+      "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+    },
+    "src/shared/crLeo.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/crLeo.ts",
+      "baseSha256": "a4ca6775d722c6c0c2968544086100422e9d77455225e53a108b02c0132f198c",
+      "sha256": "a4ca6775d722c6c0c2968544086100422e9d77455225e53a108b02c0132f198c"
+    },
+    "src/shared/forestHeartMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/forestHeartMath.ts",
+      "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+      "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
+    },
+    "src/shared/gameStakes.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/gameStakes.ts",
+      "baseSha256": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b",
+      "sha256": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b"
+    },
+    "src/shared/jackieChan.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/jackieChan.ts",
+      "baseSha256": "a834b1229ee97b500b1e8801f27cb3bf569d6c4bab6ca73eeaf06745747934bf",
+      "sha256": "a834b1229ee97b500b1e8801f27cb3bf569d6c4bab6ca73eeaf06745747934bf"
+    },
+    "src/shared/neopolisMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/neopolisMath.ts",
+      "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+    },
+    "src/shared/neopolisStakePayouts.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/neopolisStakePayouts.ts",
+      "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+      "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+    },
+    "src/shared/roundPrecision.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/roundPrecision.ts",
+      "baseSha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
+      "sha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8"
+    },
+    "src/ui/ActionGameLayout.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/ui/ActionGameLayout.ts",
+      "baseSha256": "9b4697dee6b29e28cddf3a67d8d691b2eec0f3968daa8eb08c21b576d4fc12ea",
+      "sha256": "9b4697dee6b29e28cddf3a67d8d691b2eec0f3968daa8eb08c21b576d4fc12ea"
+    },
+    "src/ui/GameLayoutPolicy.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/ui/GameLayoutPolicy.ts",
+      "baseSha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c",
+      "sha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c"
+    },
+    "src/ui/GamePriorityPanel.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/ui/GamePriorityPanel.ts",
+      "baseSha256": "e7962834ba950151c3de176899ec3b6e49e1c5175f35ac1e5087787d5e0abd34",
+      "sha256": "e7962834ba950151c3de176899ec3b6e49e1c5175f35ac1e5087787d5e0abd34"
+    },
+    "src/ui/action-game-priorities.css": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/ui/action-game-priorities.css",
+      "baseSha256": "79f5ae4a93349b57a29b6387632923cdcf943b2df4fc35d55f9a997cac0c5f12",
+      "sha256": "79f5ae4a93349b57a29b6387632923cdcf943b2df4fc35d55f9a997cac0c5f12"
+    },
+    "src/ui/crLeoSprites.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/ui/crLeoSprites.ts",
+      "baseSha256": "67013625467f78241d5e0ce9098bc7dd950341b302e3d9fb6317e8addef7e427",
+      "sha256": "67013625467f78241d5e0ce9098bc7dd950341b302e3d9fb6317e8addef7e427"
+    },
+    "src/ui/game-priority-panel.css": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/ui/game-priority-panel.css",
+      "baseSha256": "0894bf423064c5e1de16f1a1c73831e517efadfb3e5757fd506b1f4d49abcfb1",
+      "sha256": "0894bf423064c5e1de16f1a1c73831e517efadfb3e5757fd506b1f4d49abcfb1"
+    },
+    "src/ui/operationFeedback.ts": {
+      "commit": "cf412e52339462c26191242069916a735a99739e",
+      "path": "src/ui/operationFeedback.ts",
+      "baseSha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17",
+      "sha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17"
+    },
+    "src/ui/stakeRules.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/ui/stakeRules.ts",
+      "baseSha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df",
+      "sha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df"
+    },
+    "src/ui/stakeSelection.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/ui/stakeSelection.ts",
+      "baseSha256": "a504e218ad8683f493e68345b26003a33711a07e6231290910054cd31d72c631",
+      "sha256": "a504e218ad8683f493e68345b26003a33711a07e6231290910054cd31d72c631"
+    },
+    "tsconfig.json": {
+      "commit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+      "path": "tsconfig.json",
+      "baseSha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+      "sha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b"
+    }
+  },
+  "moduleAssets": {
+    "public/assets/jackie-chan/foe-agile.webp": "35f85b59e3a51751bd95f9229f24083a7d85abbb4d0e32740d48fe31712fc21a",
+    "public/assets/jackie-chan/foe-bruiser.webp": "ba1f9d67a7d5a4bd36c2cc15b3f1908187dc0e13a9be16643abf0869fb7b0546",
+    "public/assets/jackie-chan/foe-enforcer.webp": "bc564411f472d8e264d92d9d93e0f1bffa1b2d298ee6bc0b395c5a684cbba262",
+    "public/assets/jackie-chan/foe-master.webp": "17ad59ab0f2dd25f0454601ad3337a6927040792c546028c0957f545b5678f0d",
+    "public/assets/jackie-chan/foes.webp": "938d7f6f57a3a6263ea188d8dc57521cceaeb73b146f66b161dc0dd5560fcf0a",
+    "public/assets/jackie-chan/props.webp": "29e80c7c05e432a8cb92c5fef5917e0ae7d7742e2dcfe118f4c2db1903026054",
+    "public/assets/jackie-chan/audio/harbor.mp3": "95fece7bf2c28cffa45183ae20ffe55727c236f62c916784e8b3599388326d69",
+    "public/assets/jackie-chan/audio/market.mp3": "ef0a91279aa986857531cf19b78e1928decde21ae768f7dc25ead62a3499c494",
+    "public/assets/jackie-chan/audio/restaurant.mp3": "0c9831e6a8fd15cb78d077e40412fc7939e6992d003c668655bcffcfd843751a",
+    "public/assets/jackie-chan/cover.webp": "bb3032df4f98654275f6aba9538ed51ba0c36b50b2f6930a35b149ba5ff4794f",
+    "public/assets/jackie-chan/harbor.webp": "90cad03cf703ee4b0329c2c1f0eb8eedc9a5de42e11f5a9066c556fb151cfa0c",
+    "public/assets/jackie-chan/hawk-combat.webp": "4d8685e1682be5cdc3fc4afa71565658cf8eecbc6aea10ea0af8c7aaba815fb0",
+    "public/assets/jackie-chan/hawk-furniture.webp": "c399677dc8d2b5e00eb338fcb96e5a8cf68f92543ca3b1d9cfab13ffba30f1aa",
+    "public/assets/jackie-chan/hawk.webp": "26ebe9b6e4b222ac48326f2c6218867e39a5df975a1dc6ad1b66d457166b94cb",
+    "public/assets/jackie-chan/market.webp": "e021f8c41a7efc5403613090a8d3a77105b25f1abb35b80a4319680ab83c6685",
+    "public/assets/jackie-chan/master-combat.webp": "839e91c528386f8b160c85ee010d8435f37552a8aac556c54db62e64e2e9f05a",
+    "public/assets/jackie-chan/master-furniture.webp": "6f7a4b3cc5d5982bd07e88d91f7921cc6cf860c4ea5338f52de7cf3648fec14d",
+    "public/assets/jackie-chan/master.webp": "bff8aa02ed7ab1a91e8c09a40abd3fee3872581bfe79958598bc0ebf45e92640",
+    "public/assets/jackie-chan/mentor-combat.webp": "0c5de9b69210203eaea592ee3c1927abc68962e404ca2bf1de95e4be51c303b8",
+    "public/assets/jackie-chan/mentor-furniture.webp": "50855f5dd3fd5fd91aa59ddd580c66b4462ec05b5deade26927dc8e7340080fe",
+    "public/assets/jackie-chan/mentor.webp": "ebbc9927f8d5dcdc98f5d6a6778631b25acea366ef5c1b73164deeb5d4ff9885",
+    "public/assets/jackie-chan/police-combat.webp": "b175d7245361d3b7a6d72613fffa74ed7f948369034a501be42ce2ce81d0faba",
+    "public/assets/jackie-chan/police-furniture.webp": "637f4e443460ce1e29b27709635d2d7afff23cd43145a6511c72f2185ad2da61",
+    "public/assets/jackie-chan/police.webp": "57bf487bfb40374b2e453b0a6f2c923ad73a4d083a340ec2ee9af00fe470c082",
+    "public/assets/jackie-chan/restaurant.webp": "aa4e78827432a34fea5774b7f874063de55d3c20c0897c2570501214e089293a",
+    "public/assets/jackie-chan/rush-combat.webp": "c4cda4428ee1d96ef74fe25130436218a8544511af07fa203b1d1d57ca1c6bda",
+    "public/assets/jackie-chan/rush-furniture.webp": "1c05c2991749707bdc60fed6d0c58a36c24bb2b7ea133cf4483c415ca6a4b2b5",
+    "public/assets/jackie-chan/rush.webp": "6427980eb0d58998fc7f405ab7f3d371bdba46489e24099f3b827157fdf0946e",
+    "public/assets/jackie-chan/sailor-combat.webp": "9a8e438d4feac5d09c83828d307d60db6718ad69c64054b59de874c3256fe82b",
+    "public/assets/jackie-chan/sailor-furniture.webp": "4f21c312d54955a6acd9fd0ccd960ecb2375bc3b1b58df6f3d53bb071a9fca52",
+    "public/assets/jackie-chan/sailor.webp": "69befaa8eabfac47927a33015b1cc3baf0eab218b20f5d5b743820b7bfe1c783",
+    "public/assets/jackie-chan/tuxedo-combat.webp": "a69cb4851182665c141e9b00494dd551226538af7e129a6050a0b0dda5291c5f",
+    "public/assets/jackie-chan/tuxedo-furniture.webp": "54d64a1f5d67c6a5d55468c136995858af0ffe2125ea5c134dacb4fd6797684a",
+    "public/assets/jackie-chan/tuxedo.webp": "e6df670c74d89ef92f4469458f51ed422ed567735241c5bf8402125e87088211",
+    "public/assets/jackie-chan/whoami-combat.webp": "3853c7c39abcf3e2c4abebacbf3248d833eb54bae0f11651a1eaaa2fb1c9906f",
+    "public/assets/jackie-chan/whoami-furniture.webp": "bfce1ab15f416d5adf612154d3b0db2e0799ac9c11a4aa5fdbddb47695eeee38",
+    "public/assets/jackie-chan/whoami.webp": "c5fbec5f80df4eaeca2f356937509add01937e9ab552f8e0f88de9e1b7ceffa5"
+  },
+  "moduleDependencies": {}
+}

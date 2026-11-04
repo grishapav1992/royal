@@ -1,7 +1,7 @@
 {
   "release": "casino-street-20261104-v1",
   "productionCommit": "315fda47301591b5b1ed05806781fcc603cffdcb",
-  "featureCommit": "64cc6a77ccc5f6de6a81c79c51958f010f9efb37",
+  "featureCommit": "3fad10a2515f1f14f97c47d36a0b00d0694da7d6",
   "featureBase": "6f7cae90e75e8897c41ade8b5339f4100788e9a1",
   "changedSources": [
     "server/LobbyRoom.ts",
@@ -61,7 +61,7 @@
     "src/game/CasinoAudio.ts": "178094e6ec9cf78b0bde2f516cd12c8dd93cccca903ea8aff03c23a08b512a48",
     "src/game/RearCasinoWindows.ts": "4f656b25375f0bd950a7e05b9c67eeeb83541161d1b57de72dfb115f5241a5a1",
     "src/game/RooftopRenderer.ts": "3829cc4b627640ce4e39ddc8354502b8cee594a57958fd89c7b32812dd55b976",
-    "src/game/RoomScene.ts": "c63f0c6e7ae259ffb9e6504afd9edaf7a2878b049848848256ec8c8b7f289905",
+    "src/game/RoomScene.ts": "6a95ee076e983d1ba0edda37a48c182dbf4c97533109298a33a3b0e94f8de098",
     "src/game/SecurityGuard.ts": "bf65ad6c21b642fa913157761089f43de303260369122b28619f98524c4b8787",
     "src/game/StairWindowRenderer.ts": "4991553834002ab0832003bd005b331563cec09ee3f8c9d4541024354084a496",
     "src/game/StreetAmbience.ts": "f7de82bb7f3a2c0324dec0d26bed8cf28f161ee370d88fb9560d56c326397a4b",
@@ -147,5 +147,9 @@
     }
   ],
   "addedGames": [],
-  "restoredGames": []
+  "restoredGames": [],
+  "stairClickFix": {
+    "path": "src/game/RoomScene.ts",
+    "reason": "Retain the clicked destination until the authoritative arrival is acknowledged; retry only after pending movement finishes."
+  }
 }

@@ -3,8 +3,8 @@
   "gameId": "studio-last-convoy",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-11-04T11:05:15.894Z",
-  "completedAt": "2026-11-04T11:05:18.967Z",
+  "startedAt": "2026-11-04T19:40:46.817Z",
+  "completedAt": "2026-11-04T19:41:00.956Z",
   "sourceHashes": {
     "src/shared/gameStakes.ts": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b",
     "src/shared/roundPrecision.ts": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
@@ -29,10 +29,13 @@
     "scripts/game-math/stake-runtime.mjs": "47d762e18c698ab4241a6499497b8f58087132da2489494a2172f60dd0fede61",
     "scripts/game-math/stakes-wallet.ts": "5fdd9b03cbc3b1835e9128d4a2d4bb49875f4535bfec34db6a008677a701e141",
     "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
-    "scripts/game-math/manual-stakes.mjs": "969131d1de9c2d1744cdd8ff801e745bbb02eb6653466732ba0657a24ee0ad9d",
+    "scripts/game-math/manual-stakes.mjs": "10cd9f2e0edcd8412a91d99ac1716efe33710b49f401e14f4815e404a473bae1",
+    "scripts/game-math/manual-stake-case.mjs": "d1b6ed70273ff173bb6d01ae50580658b210fe564318f5925e8218a6d0712b62",
+    "scripts/game-math/manual-stake-pool.mjs": "162b9fdfc7e5e0552240a029b29635c25c6a822fa394e34f1d68f28927e34728",
+    "scripts/game-math/manual-stake-worker.mjs": "54d7257363c6d1cd4ff071197e42a99f9e6a644344a58708d66f11a59ddad5c4",
     "scripts/game-math/rtp-stakes.mjs": "a885087bc907189f46a1a1dcc54f807733fcf8cbfae818a64a9fe9f2aed6de52"
   },
-  "policySha256": "d7f19f6532b63973eec4527198cb7624885bd2955756f09965fc6a4106db08f9",
+  "policySha256": "04f1000e52c632fac96cfcab403b048a912eb47d63fb6c6a386a9505caa93dd9",
   "method": "full-round-unbiased-cent-policy-v1",
   "precisionLaw": {
     "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
