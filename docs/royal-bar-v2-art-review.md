@@ -14,7 +14,7 @@ Timings and amplitudes are game-specific art choices. The existing 0.8-second se
 
 | Action | Visible phases | Trigger and interruption |
 | --- | --- | --- |
-| Sit / stand | Crossed seated legs, palm supported on the counter, glass lowers as she rises, legs retreat behind the counter | Existing routine; interrupted partial sitting reverses continuously before walking |
+| Sit / stand | Crossed seated legs, palm supported on the counter, the body steps down to the floor behind the counter, glass lowers and legs retreat | Existing routine; interrupted partial sitting reverses continuously before walking |
 | Walk | Profile or rear view, alternating knees and feet, counter-swinging arms, restrained hair and body motion | Existing staff route and shared authoritative position |
 | Wipe | Body leans, one hand supports, the cloth moves along the tabletop, then settles | Wipe job; reach ends before the cat's corner |
 | Polish | One hand holds the glass, the other moves the cloth, then lowers both | Glass job; props remain attached to hands through pose blends |
@@ -34,6 +34,6 @@ The user explicitly requires preserving the cat's water glass and her approach t
 
 TypeScript passed. Five illustrated-rig tests cover bone lengths, the continuous reversal of sitting, cloth contact and the reserved cat corner, props during pose blending, service completion and reduced motion. Five existing presentation/controller tests passed. The cat's complete climb, drink and exit test passed. The cat care, renderer, route and surface files have no feature changes.
 
-Eleven real-host browser tests passed with an isolated PostgreSQL database and a real local backend. They cover entry, account changes, two viewers and late join, actual dialogue presence, reply, confirmed drink, history, close, seated contact and desktop/mobile layouts. A previous run exposed review-toolbar overlap; the final run used the ordinary host without review controls. An existing late-join test was corrected to wait while network state is not initialized rather than dereferencing null.
+Eleven real-host browser scenarios passed with an isolated PostgreSQL database and a real local backend. They cover entry, account changes, two viewers and late join, actual dialogue presence, reply, confirmed drink, history, close, seated contact and desktop/mobile layouts. A previous run exposed review-toolbar overlap; final checks used the ordinary host without review controls. The final renderer passed nine scenarios before the third visitor exceeded the default five-second startup poll. The two bar scenarios were then checked together after waiting for the join dialog to close. An existing late-join test was also corrected to wait while network state is not initialized rather than dereferencing null.
 
 Eight action demonstrations were captured in the real room, followed by a real UI conversation using scripted local responses and a mobile viewport. Their asset requests and JavaScript checks passed. The named water mug stayed present, visible and at depth 513, above the character's foreground layer. The recording includes a clean comparison view with NPCs explicitly hidden by the review control; normal room tests retain NPCs. Physical devices and a paid live Mira provider were not used. This is a local implementation and verification, not a production deployment record.

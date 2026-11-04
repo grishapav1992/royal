@@ -6,6 +6,7 @@ async function guest(browser:Browser,baseURL:string,room?:string) {
   expect((await context.request.post('/api/auth/login',{data:{email:`royal-bar-${crypto.randomUUID()}@example.test`,password:'RoyalBarTest2026!'}})).ok()).toBe(true);
   expect((await context.request.post('/api/auth/character',{data:{skin:0,name:'Гость бара'}})).ok()).toBe(true);
   const page=await context.newPage();await page.goto(room?`/?room=${room}`:'/');
+  await expect(page.locator('#join-dialog')).not.toBeVisible({timeout:20000});
   await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getNetworkState()?.status)).toBe('connected');
   await expect.poll(async()=>(await state(page)).serverX).toBeDefined();
   return {context,page};
