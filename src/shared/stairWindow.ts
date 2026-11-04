@@ -1,4 +1,4 @@
-import {ROOF_WINDOW_PLATFORM,roofWindowPlatformPosition} from './rooftop';
+import {ROOF_WINDOW_PLATFORM,roofWindowPlatformPosition,onRoofWindowPlatform} from './rooftop';
 
 /** A manual side entrance at the middle landing, separate from ground-level doorways. */
 const {index:landingIndex,junction,length,windowOffset}=ROOF_WINDOW_PLATFORM;
@@ -18,4 +18,7 @@ export function canApproachStairWindow(p:{hall:string;x:number;y:number;stairSte
 }
 export function atCardWindow(p:{hall:string;x:number;y:number}){
   return p.hall==='github'&&Math.hypot(p.x-STAIR_WINDOW.entry.x,p.y-STAIR_WINDOW.entry.y)<=62;
+}
+export function canWalkThroughStairWindow(p:{hall:string;x:number;y:number;stairStep?:number}){
+  return p.hall==='street'?onRoofWindowPlatform(p)&&Math.abs(p.x-STAIR_WINDOW.outside.x)<=48:atCardWindow(p);
 }

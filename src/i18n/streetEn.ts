@@ -1,5 +1,4 @@
 export const streetEnglish:Record<string,string>={
-  'E: пролезть':'E: climb through',
   'Туалет':'Restroom',
   'Весь туалет':'Whole restroom',
   'Карта туалета':'Restroom map',

@@ -101,6 +101,7 @@ export function moveRoofStairs(body:StairPosition&{moving:boolean},input:{x:numb
       return true;
     }
   }
+  if(!input.route&&!input.y)return true;
   const options=roofStairOptions(body);
   const candidates=options.filter(option=>{
     const dx=(option.to.x-option.from.x)*option.direction,dy=(option.to.y-option.from.y)*option.direction;

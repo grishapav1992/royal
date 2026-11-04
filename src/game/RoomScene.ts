@@ -52,7 +52,8 @@ import { RooftopRenderer } from './RooftopRenderer';
 import { STREET } from '../shared/street';
 import { TOILET,TOILET_WINDOW,ROOF_TOILET } from '../shared/toilet';
 import { ToiletRenderer } from './ToiletRenderer';
-import {STAIR_WINDOW,atCardWindow,atStairWindow,canApproachStairWindow} from '../shared/stairWindow';
+import {STAIR_WINDOW,atStairWindow,canApproachStairWindow,canWalkThroughStairWindow} from '../shared/stairWindow';
+import {RoofLandingPause} from './roofStairInput';
 import {onRoofWindowPlatform,ROOF_WINDOW_PLATFORM,ROOF_STAIR_DRAW,roofWindowPlatformPosition} from '../shared/rooftop';
 import {drawCardStairWindow,stairWindowFrame} from './StairWindowRenderer';
 import { CardTablesRenderer } from './CardTablesRenderer';
@@ -79,6 +80,7 @@ export class RoomScene extends Phaser.Scene {
   private windowArrival?:{from:Point;until:number;render?:boolean};
   private heldWindowKeys=new Set<number>();
   private stairWindowApproachAt=0;
+  private roofLandingPause=new RoofLandingPause();
   private cardTables?: CardTablesRenderer;
   private cabinetStools = new Map<string, ReturnType<typeof drawCabinetStool>>();
   private switching=false;
@@ -451,14 +453,17 @@ export class RoomScene extends Phaser.Scene {
     if(this.hall!=='street'||this.locked||this.typing||this.isHuggingCat())return;
     const step=this.player.stairStep??0;
     if(!step){this.approachFloor('roof');return;}
+    this.releaseWindowMovement();
     this.pendingCabinet=null;this.pendingLounge=null;this.player.path=[];this.marker.setVisible(false);
-    if(onRoofWindowPlatform(this.player)){
+    if(canApproachStairWindow(this.player)){
       const p=ROOF_WINDOW_PLATFORM,junction=this.streetView.point(p.junction,true),end=roofWindowPlatformPosition(p.length);
       const projectedEnd=this.streetView.point(end,true);
       const platform=point.x>=Math.min(junction.x,projectedEnd.x)-32&&point.x<=Math.max(junction.x,projectedEnd.x)+32&&point.y>=junction.y-18&&point.y<=junction.y+24;
-      const target=platform?{x:Math.max(Math.min(p.junction.x,end.x),Math.min(Math.max(p.junction.x,end.x),p.junction.x+(junction.x-point.x)/ROOF_STAIR_DRAW.widthScale)),y:p.junction.y}:ROOF_STAIR_ROUTE[p.index+(point.y<junction.y?1:-1)];
-      const path=platform?[target]:[{...p.junction},{...target}];
-      this.finishMovement(()=>{if(this.hall==='street')this.player.path=path;});return;
+      if(platform||onRoofWindowPlatform(this.player)){
+        const target=platform?{x:Math.max(Math.min(p.junction.x,end.x),Math.min(Math.max(p.junction.x,end.x),p.junction.x+(junction.x-point.x)/ROOF_STAIR_DRAW.widthScale)),y:p.junction.y}:ROOF_STAIR_ROUTE[p.index+(point.y<junction.y?1:-1)];
+        const path=platform&&onRoofWindowPlatform(this.player)?[target]:[{...p.junction},{...target}];
+        this.releaseWindowMovement();this.finishMovement(()=>{if(this.hall==='street')this.player.path=path;});return;
+      }
     }
     const here=this.streetView.point(this.player,true);
     const choice=roofStairOptions(this.player).map(option=>{
@@ -540,7 +545,6 @@ export class RoomScene extends Phaser.Scene {
   }
   interact() {
     if (this.locked || this.typing || this.switching) return;
-    if(canApproachStairWindow(this.player)||atCardWindow(this.player)){this.useStairWindow(true);return;}
     if(this.hall==='roof'&&Math.hypot(this.player.x-ROOF_TOILET.entry.x,this.player.y-ROOF_TOILET.entry.y)<110){this.approachFloor('toilet');return;}
     if(this.hall==='toilet'&&Math.hypot(this.player.x-TOILET_WINDOW.entry.x,this.player.y-TOILET_WINDOW.entry.y)<110){this.approachFloor('roof');return;}
     if(this.hall==='street'&&(this.player.stairStep??0)>0)return;
@@ -973,6 +977,9 @@ export class RoomScene extends Phaser.Scene {
           const direction=streetDirection({x:dx,y:dy},this.streetKeyboardSide,true);dx=direction.x;dy=direction.y;
         }
       }
+      dy=this.roofLandingPause.input(dy);
+      if(dy<0&&canWalkThroughStairWindow(this.player)){this.useStairWindow(true);dx=dy=0;}
+      const beforeStairs={x:this.player.x,y:this.player.y,stairStep:this.player.stairStep};
       const sprint = this.keys.SHIFT!.isDown;
       if (dx || dy) this.approachingCat=false;
       if (this.approachingCat && time >= this.catApproachAt) {
@@ -1010,6 +1017,7 @@ export class RoomScene extends Phaser.Scene {
           moving = this.move(this.player, impaired.x * speed, impaired.y * speed);
         }
       } else if (!this.player.seat && this.player.action!=='drink') moving = this.follow(this.player, dt, onStairs?(sprint?PLAYER_SPRINT_SPEED:PLAYER_SPEED)*ROOF_STAIR_SPEED_SCALE:PLAYER_SPRINT_SPEED);
+      this.roofLandingPause.arrive(beforeStairs,this.player,dy);
       if (!this.network) this.animateActor(this.player, time, moving);
       this.halo.setPosition(this.player.sprite.x,this.player.sprite.y).setDepth(this.player.sprite.depth-2);
       if(this.pendingLounge) {

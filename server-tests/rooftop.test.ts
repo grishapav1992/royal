@@ -142,7 +142,7 @@ test('server controls roof ascent and return, blocks busy visitors and ignores o
     const held={x:p.x,y:p.y,step:p.stairStep};
     handlers.get('target')!(client,{revision,x:2300,y:1000});Reflect.get(room,'tick').call(room,.05);
     assert.deepEqual({x:p.x,y:p.y,step:p.stairStep},held,'a legacy ground target cannot pull a person off a flight');
-    handlers.get('move')!(client,{revision,x:-1,y:0});Reflect.get(room,'tick').call(room,.05);
+    handlers.get('move')!(client,{revision,x:0,y:1});Reflect.get(room,'tick').call(room,.05);
     assert(p.x<held.x&&p.y>held.y,'a reverse legacy direction walks back along the flight');
     assert.equal(p.stairStep,held.step);assert.equal(p.stairDirection,-1);
     handlers.get('stop')!(client,{});Object.assign(p,{...STREET_ROOF_STAIRS.foot,stairStep:1,stairDirection:1});
@@ -226,7 +226,7 @@ test('manual flights stop on release, with explicit Up departure from the window
   for(let step=1;step<ROOF_STAIR_ROUTE.length;step++){
     assert.equal(body.stairStep,step);
     const a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step];
-    const correct=step===ROOF_WINDOW_PLATFORM.index+1?{x:0,y:-1}:{x:Math.sign(b.x-a.x),y:b.x===a.x?-1:0};
+    const correct={x:0,y:-1};
     for(let frame=0;body.stairStep===step&&frame<100;frame++)applyMovementInput(body,{seq:++sequence,...correct,ms:50});
     assert.equal(body.stairStep,step+1);assert.deepEqual({x:body.x,y:body.y},b,'landing is reached exactly');
     const before={x:body.x,y:body.y,step:body.stairStep};
@@ -275,7 +275,7 @@ test('every flight permits an immediate reverse and a complete descent through a
   for(let step=1;step<ROOF_STAIR_ROUTE.length;step++){
     const a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step];
     const body={...stairBody(),stairStep:step,x:(a.x+b.x)/2,y:(a.y+b.y)/2};
-    const reverse={x:b.x===a.x?0:-Math.sign(b.x-a.x),y:b.x===a.x?1:0};
+    const reverse={x:0,y:1};
     const start={x:body.x,y:body.y};applyMovementInput(body,{seq:1,...reverse,ms:16});
     assert.equal(body.stairDirection,-1);assert(Math.hypot(body.x-a.x,body.y-a.y)<Math.hypot(start.x-a.x,start.y-a.y));
     assert.equal(advanceRoofStairStep(body.stairStep,body),body.stairStep,'validation retains reverse progress');
@@ -351,7 +351,7 @@ test('prediction and replay keep paused and moving stair positions on the same f
   const prediction=new MovementPrediction(),local=stairBody(),server=stairBody();let acknowledged=0;
   for(let frame=0;frame<500&&local.stairStep!<ROOF_STAIR_ROUTE.length;frame++){
     const step=local.stairStep!,a=ROOF_STAIR_ROUTE[step-1],b=ROOF_STAIR_ROUTE[step];
-    const correct={x:Math.sign(b.x-a.x),y:b.x===a.x?-1:0};
+    const correct={x:0,y:-1};
     const input=frame%4===0?{x:0,y:0}:frame%7===0?{x:1,y:1}:correct;
     prediction.step(local,input.x,input.y,16,frame%7<4);
     if(frame%3===0){
