@@ -10,6 +10,7 @@ const before=JSON.parse(fs.readFileSync('artifacts/work/player-unstuck/v2/before
 const host=JSON.parse(fs.readFileSync('artifacts/work/player-unstuck/v2/host-manifest.json')).hostProjection;
 const backend=JSON.parse(fs.readFileSync('artifacts/work/player-unstuck/v2/production-manifest.json')).backendProjection;
 const feature=git('rev-parse',process.argv[2]||'60834b76').toString().trim(),parent=git('rev-parse','8807b3d4^').toString().trim();
+const styleCommit='a23da60dd62d4323f68e3f9809120e73d5106257';
 const sources=git('diff','--name-only',parent,feature).toString().trim().split('\n').filter(p=>p.startsWith('src/')||p.startsWith('server/'));
 function patches(name){
   const lines=git('diff','--unified=3',parent,feature,'--',name).toString().split('\n'),result=[];
@@ -34,8 +35,8 @@ for(const [kind,graph]of [['host',host],['backend',backend]]){
     if(kind==='backend'&&(!files[name]&&!['src/shared/playerRecovery.ts'].includes(name)||name==='src/i18n/en.ts'))continue;
     const previous=files[name];
     if(!previous){
-      const bytes=git('show',feature+':'+name),hash=sha(bytes);
-      files[name]={commit:feature,path:name,baseSha256:hash,sha256:hash};scope.expectedSources[name]=hash;continue;
+      const revision=name==='src/ui/player-recovery.css'?styleCommit:feature,bytes=git('show',revision+':'+name),hash=sha(bytes);
+      files[name]={commit:revision,path:name,baseSha256:hash,sha256:hash};scope.expectedSources[name]=hash;continue;
     }
     const bytes=projectHostSource(previous,git('show',previous.commit+':'+previous.path));
     let text=bytes.toString();const changes=patches(name);
