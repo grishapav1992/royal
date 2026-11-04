@@ -2,6 +2,7 @@
 """Install exact GitHub-verified maintenance files without restarting the game."""
 from pathlib import Path
 import argparse
+from contextlib import contextmanager
 import fcntl
 import hashlib
 import json
@@ -23,6 +24,33 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+
+LOCKS = ['/opt/royal-releases/themed-publish.lock', '/opt/royal/.client-presentation-deploy.lock', '/opt/royal-game-modules-state/module.lock']
+
+class PublicationBusy(RuntimeError): pass
+
+@contextmanager
+def publication_locks():
+    handles = []
+    try:
+        for name in LOCKS:
+            require(not Path(name).is_symlink(), 'Unsafe publication lock')
+            handle = open(name, 'a'); handles.append(handle)
+            try: fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError as error: raise PublicationBusy('Publication lock busy: '+name) from error
+        yield
+    finally:
+        for handle in reversed(handles):
+            try: fcntl.flock(handle, fcntl.LOCK_UN)
+            finally: handle.close()
+
+def guarded_publication(action):
+    try:
+        with publication_locks(): return action()
+    except PublicationBusy as error:
+        print(json.dumps({'status':'publication_busy','reason':str(error),'publicationLocksHeld':False,'preparedPackagePreserved':True}),flush=True)
+        return 75
+
 def main():
     parser = argparse.ArgumentParser(); parser.add_argument('--receipt', type=Path, required=True)
     args = parser.parse_args(); source = Path(__file__).resolve().parent
@@ -33,17 +61,21 @@ def main():
     for name, digest in receipt['files'].items():
         path = source / name
         require(path.is_file() and not path.is_symlink() and sha(path) == digest, 'Unreviewed maintenance file: ' + name)
-    locks = []
-    for path in ['/opt/royal-releases/themed-publish.lock', '/opt/royal/.client-presentation-deploy.lock', '/opt/royal-game-modules-state/module.lock']:
-        file = Path(path); require(not file.is_symlink(), 'Unsafe lock')
-        lock = file.open('a'); locks.append(lock); fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    return guarded_publication(lambda: install(source,receipt))
+
+
+def install(source,receipt):
     active = subprocess.check_output(['systemctl', 'show', 'royal-dev-app-retention.service', '--property=ActiveState', '--value'], text=True).strip()
     require(active in {'inactive', 'failed'}, 'Existing retention job is still active')
+    targets = {name: ROOT/'bin'/name for name in FILES if name.endswith('.py')}
+    targets.update({name: Path('/etc/systemd/system')/name for name in FILES if not name.endswith('.py')})
+    expected = receipt.get('expectedBefore',{})
+    require(set(expected) == FILES and all(re.fullmatch('[a-f0-9]{64}',str(h)) for h in expected.values()), 'Exact installed maintenance baseline required')
+    for name,path in targets.items():
+        require(path.is_file() and not path.is_symlink() and sha(path) == expected[name], 'Installed maintenance changed: '+name)
     subprocess.run(['systemd-analyze', 'verify', str(source/'royal-dev-app-retention.service'), str(source/'royal-dev-app-retention.timer')], check=True)
     original = source.parent / 'original'; require(not original.exists(), 'Maintenance installation already attempted')
     original.mkdir(mode=0o700)
-    targets = {name: ROOT/'bin'/name for name in FILES if name.endswith('.py')}
-    targets.update({name: Path('/etc/systemd/system')/name for name in FILES if not name.endswith('.py')})
     for name, path in targets.items():
         require(not path.is_symlink(), 'Unsafe installed maintenance path')
         if path.exists(): shutil.copyfile(path, original/name)
@@ -63,4 +95,4 @@ def main():
     print(json.dumps({'installed': True, 'sourceCommit': receipt['sourceCommit'], 'original': str(original)}))
 
 
-if __name__ == '__main__': main()
+if __name__ == '__main__': raise SystemExit(main())

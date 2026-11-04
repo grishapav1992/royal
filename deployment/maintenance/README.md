@@ -40,6 +40,15 @@ with explicit ownership and cleanup, rather than the CLI's image-inspect preflig
 Independent game source updates require their committed publication receipt and
 the exact current active pointer. Their compact proofs survive history cleanup.
 
+A later scoped game publication can supersede one member of a published module
+set without invalidating the other members. Each handoff must bind the previous
+pointer and manifest archived with the source backup, the exact previous source
+bytes, the new compiled input map, its GitHub receipt and the current successor.
+Shared inputs used by that game must retain the set's recorded hashes. Every
+original receipt and rollback proof remains immutable and protected. Missing
+handoffs, changed files, other-game sources and unbound pointers fail closed;
+the checker does not infer continuity from matching names or versions.
+
 After every publication, once its locks are released, start
 `royal-dev-app-retention.service` and verify that the last result is `completed`,
 the timer is enabled, the host remains healthy, and at least five GiB is free.
@@ -47,6 +56,11 @@ Failure is unfinished release maintenance and must be resolved, rather than
 recorded as a successful cleanup. Persistent business data and financial-backup
 retention need their own policy; this program does not promise bounded total
 usage for those stores.
+
+Maintenance installation also requires the six exact installed component hashes
+in the receipt's expectedBefore map. The installer checks them under all three
+nonblocking publication locks before touching the timer or installed files.
+Contention closes every partial acquisition and exits 75 for an explicit retry.
 
 `cleanup-release-history.py` keeps the currently healthy application and the complete immediate rollback bundle in the current release directory and its matching source backup. It verifies the rollback source archive and every rollback program byte before planning deletion. Existing application retention is rebound to these two images.
 

@@ -248,6 +248,82 @@ def shared_client_source_proof(name, digest):
 
 
 
+def game_owns_source(game, name):
+    parts = Path(name).parts
+    if (len(parts) < 3 or parts[0] != 'games' or Path(name).is_absolute()
+            or '..' in parts): return False
+    package = LIVE/'games'/parts[1]/'package.json'
+    return package.is_file() and not package.is_symlink() and read(package).get('gameId') == game
+
+
+def scoped_module_successor(game, version, pointer_sha, manifest_sha, source, shared, visited=None):
+    """Verify archived handoffs from a module set to later scoped publications."""
+    if not all(re.fullmatch('[a-f0-9]{64}',str(value)) for value in [pointer_sha,manifest_sha]): return None
+    visited = set() if visited is None else set(visited)
+    if pointer_sha in visited or len(visited) >= 16: return None
+    visited.add(pointer_sha)
+    active = MODULES/game/'active.json'
+    if sha(active) == pointer_sha:
+        pointer = read(active)
+        if (pointer.get('manifest') != '/game-modules/'+game+'/versions/'+version+'/manifest.json'
+                or pointer.get('sha256') != manifest_sha
+                or sha(MODULES/game/'versions'/version/'manifest.json') != manifest_sha
+                or any(not (LIVE/n).is_file() or (LIVE/n).is_symlink() or sha(LIVE/n) != h for n,h in source.items())): return None
+        return {'source':source, 'paths':[]}
+    for path in RELEASES.glob('*/operator.json'):
+        try:
+            operator = read(path); published = read(path.parent/'published.json')
+            receipt = read(path.parent/'release-github.json'); manifest = read(path.parent/'release-manifest.json')
+            module = published.get('module', {}); changed = operator.get('source', {})
+            if not (published.get('published') is True and module.get('verified') is True
+                    and module.get('published') is True and module.get('gameId') == game
+                    and module.get('beforeSha256') == pointer_sha
+                    and operator.get('sourceCommit') == published.get('sourceCommit') == receipt.get('sourceCommit') == manifest.get('sourceCommit')
+                    and re.fullmatch('[a-f0-9]{40}',str(receipt.get('remoteMain','')))
+                    and receipt.get('manifestSha256') == sha(path.parent/'release-manifest.json')
+                    and manifest.get('scope') == 'modules' and manifest.get('build',{}).get('passed') is True
+                    and isinstance(changed,dict) and 1 <= len(changed) <= 64
+                    and all(game_owns_source(game,n) and re.fullmatch('[a-f0-9]{64}',str(h)) for n,h in changed.items())): continue
+            packages = manifest.get('packages', [])
+            if (len(packages) != 1 or packages[0].get('gameId') != game
+                    or packages[0].get('version') != module.get('version')): continue
+            inputs = manifest.get('moduleProjection',{}).get('inputs',{})
+            if (any(inputs.get(n) != h for n,h in changed.items())
+                    or any(inputs.get(n) != changed.get(n,h) for n,h in source.items())
+                    or any(inputs.get(n) != h for n,h in shared.items())): continue
+            next_version = module['version']
+            if not re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+-[a-zA-Z0-9.-]+',str(next_version)): continue
+            next_pointer = operator.get('pointerSha256')
+            prefix = 'module-dist/'+game+'/versions/'+next_version+'/'
+            next_manifest = manifest.get('files',{}).get(prefix+'manifest.json')
+            if (module.get('activeSha256') != next_pointer
+                    or manifest.get('files',{}).get('module-dist/'+game+'/active.json') != next_pointer
+                    or not re.fullmatch('[a-f0-9]{64}',str(next_manifest))): continue
+            immutable = MODULES/game/'versions'/next_version/'manifest.json'
+            if immutable.exists() and (immutable.is_symlink() or sha(immutable) != next_manifest): continue
+            backup = published.get('backup',{}); archive = BACKUPS/path.parent.name/'source.tgz'
+            if (not archive.is_file() or any(p.is_symlink() for p in [archive,*archive.parents])
+                    or backup.get('sourceArchive') != str(archive) or sha(archive) != backup.get('sha256')): continue
+            with tarfile.open(archive,'r:gz') as saved:
+                def member(name):
+                    row = saved.getmember(name)
+                    require(row.isfile() and row.size <= 4*1024**2,'Unsafe scoped source archive member')
+                    return saved.extractfile(row).read()
+                prior_pointer = member('active.json'); prior_manifest = member('prior-manifest.json')
+                previous = json.loads(prior_pointer)
+                if (hashlib.sha256(prior_pointer).hexdigest() != pointer_sha
+                        or hashlib.sha256(prior_manifest).hexdigest() != manifest_sha
+                        or previous.get('manifest') != '/game-modules/'+game+'/versions/'+version+'/manifest.json'
+                        or previous.get('sha256') != manifest_sha
+                        or any(hashlib.sha256(member(n)).hexdigest() != h for n,h in source.items() if n in changed)): continue
+            successor = scoped_module_successor(game,next_version,next_pointer,next_manifest,{**source,**changed},shared,visited)
+            if successor is not None:
+                return {'source':successor['source'],'paths':[path,path.parent/'published.json',path.parent/'release-github.json',
+                        path.parent/'release-manifest.json',archive,*successor['paths']]}
+        except (OSError,ValueError,KeyError,IndexError,TypeError,tarfile.TarError): continue
+    return None
+
+
 def module_set_source_proof(name, digest):
     """Bind a scoped multi-package source update to its exact current pointers."""
     if not (name.startswith('games/') or name.startswith('src/ui/')): return None
@@ -269,19 +345,28 @@ def module_set_source_proof(name, digest):
                     and sha(path.parent/'release-manifest.json')==operator.get('releaseManifestSha256')): continue
             expected={row['gameId']:row['version'] for row in manifest['packages']}
             if len(expected)!=len(modules) or set(expected)!=set(operator.get('packages',{})): continue
-            if any(not (LIVE/n).is_file() or (LIVE/n).is_symlink() or sha(LIVE/n)!=h for n,h in source.items()): continue
+            effective = dict(source); successors = []
             seen=set()
             for module in modules:
                 game=module['gameId']; require(re.fullmatch('[a-z0-9-]+',game),'Unsafe module identity')
                 if game in seen or module.get('verified') is not True or expected.get(game)!=module.get('version'): break
                 seen.add(game); active=MODULES/game/'active.json'; pointer=read(active); row=operator['packages'][game]
                 prefix='module-dist/'+game+'/versions/'+module['version']+'/'
-                if (sha(active)!=row.get('pointerSha256') or pointer['manifest'].split('/')[4]!=module['version']
-                        or manifest['files'].get('module-dist/'+game+'/active.json')!=sha(active)
-                        or manifest['files'].get(prefix+'manifest.json')!=pointer.get('sha256')
+                expected_pointer = row.get('pointerSha256'); expected_manifest = manifest['files'].get(prefix+'manifest.json')
+                if manifest['files'].get('module-dist/'+game+'/active.json') != expected_pointer: break
+                if sha(active) != expected_pointer:
+                    owned = {n:h for n,h in source.items() if game_owns_source(game,n)}
+                    used = manifest.get('moduleProjection',{}).get('modules',{}).get(game,{}).get('sourceFiles',{})
+                    shared = {n:h for n,h in source.items() if n.startswith('src/ui/') and n in used}
+                    successor = scoped_module_successor(game,module['version'],expected_pointer,expected_manifest,owned,shared)
+                    if successor is None: break
+                    effective.update(successor['source']);successors.extend(successor['paths'])
+                elif (pointer['manifest'].split('/')[4]!=module['version']
+                        or expected_manifest!=pointer.get('sha256')
                         or sha(MODULES/game/'versions'/module['version']/'manifest.json')!=pointer.get('sha256')): break
             else:
                 if seen!=set(expected): continue
+                if any(not (LIVE/n).is_file() or (LIVE/n).is_symlink() or sha(LIVE/n)!=h for n,h in effective.items()): continue
                 backup=published.get('backup',{}); archive=BACKUPS/path.parent.name/'source.tgz'
                 if (not archive.is_file() or any(p.is_symlink() for p in [archive,*archive.parents])
                         or backup.get('sourceArchive')!=str(archive) or sha(archive)!=backup.get('sha256')): continue
@@ -291,7 +376,7 @@ def module_set_source_proof(name, digest):
                 if any(row.get('passed') is not True
                         or row.get('afterManifest')!=manifest['files']['module-dist/'+game+'/versions/'+expected[game]+'/manifest.json']
                         or sha(archive.parent/game/'manifest.json')!=row.get('beforeManifest') for game,row in proof['games'].items()): continue
-                return [path,path.parent/'published.json',path.parent/'release-github.json',path.parent/'release-manifest.json',proof_path,
+                return [path,path.parent/'published.json',path.parent/'release-github.json',path.parent/'release-manifest.json',proof_path,*successors,
                         *sorted(p for p in archive.parent.rglob('*') if p.is_file() and not p.is_symlink())]
         except (OSError,ValueError,KeyError,IndexError,TypeError): continue
     return None
