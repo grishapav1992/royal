@@ -1,0 +1,11 @@
+{
+  "productionCommit": "5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e",
+  "animationCommit": "384a045e52783f1a7eac48dc8a6422adbada30c9",
+  "expectedSources": {
+    "src/game/characters.ts": "788ebf9718e14790ff0425798a02c129d28956351d2a72c4d7ecfff72ee0d46d",
+    "src/game/avatarArt.ts": "2e61c730a72d1bf3201f7b7994677c33baa0865efa032abd853c080a6e320e60",
+    "src/game/profileWalk.ts": "c48f85c2e3ce0d56b5f4e59fba97c3d5ee82344b4c434491e68634542045e516"
+  },
+  "addedGames": [],
+  "restoredGames": []
+}
