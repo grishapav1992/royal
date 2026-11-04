@@ -6,6 +6,38 @@ let vite:ViteDevServer,url:string;const out='artifacts/work/jackie-chan';
 test.beforeAll(async()=>{vite=await createServer({configFile:false,root:process.cwd(),cacheDir:'node_modules/.vite-jackie-motion',server:{host:'127.0.0.1',port:0}});await vite.listen();url=`http://127.0.0.1:${(vite.httpServer!.address()as{port:number}).port}`;await mkdir(out,{recursive:true});});
 test.afterAll(async()=>await vite?.close());
 test.beforeEach(async({page})=>{await page.goto(url+'/tests/fixtures/jackie-motion.html');await page.waitForFunction(()=>(window as any).jackieMotion?.ready(),{timeout:30000});});
+test('the next fight starts at the last displayed position and paints consecutive display frames',async({page})=>{
+  const result=await page.evaluate(({end})=>{
+    const h=(window as any).jackieMotion,scene=h.scene,canvas=document.querySelector('canvas')!,context=canvas.getContext('2d')!;
+    h.render({risk:'extreme',time:end+.8});const before=scene.state((end+.8)*1000).x;
+    scene.show(Reflect.get(scene,'view'),true,false,'next-fight');
+    const playback=Reflect.get(scene,'playback'),anchor=Reflect.get(playback,'anchor'),positions=[0,.1,.25,.5].map(t=>scene.state(anchor+t*1000).x);
+    const clear=context.clearRect.bind(context);let paints=0;context.clearRect=(...args)=>{paints++;clear(...args);};
+    try{for(const offset of [1000,1016,1032])scene.paint(anchor+offset);}finally{context.clearRect=clear;}
+    scene.settle();return{before,positions,paints};
+  },{end:resultAt(3)});
+  expect(result.positions[0]).toBeCloseTo(result.before,8);
+  expect(result.positions[1]).toBeLessThan(result.positions[0]);expect(result.positions[1]).toBeGreaterThan(result.positions[2]);
+  expect(result.positions[3]).toBeCloseTo(.34,8);expect(result.paints).toBe(3);
+});
+test('costume atlases retain the same drawing scale through every routine',async({page})=>{
+  for(const width of [1000,360]){
+    await page.setViewportSize({width,height:800});
+    const rows=await page.evaluate(({contacts,end})=>{
+      const h=(window as any).jackieMotion,canvas=document.querySelector('canvas')!,context=canvas.getContext('2d')!,original=context.drawImage.bind(context),rows:any[]=[];
+      let scale=0;context.drawImage=((...args:any[])=>{if(args[0] instanceof HTMLCanvasElement)scale=args[3]/args[0].width;return(original as any)(...args);})as typeof context.drawImage;
+      try{for(const costume of ['master','sailor','police','hawk','rush','whoami','tuxedo','mentor'])for(const plan of [...h.plans,{id:'furniture'}])for(const time of [0,...contacts.flatMap((at:number)=>[at-1.45,at-.95,at-.6,at-.3,at,at+.22]),end+.1]){
+        const frame=h.render({costume,plan:plan.id,risk:'extreme',time}),image=h.scene.images.get(`/assets/jackie-chan/${costume}${frame.atlas==='base'?'':'-'+frame.atlas}.webp`);
+        rows.push({costume,plan:plan.id,time,atlas:frame.atlas,scale:scale*Math.sqrt(image.naturalWidth*image.naturalHeight/8)});
+      }}finally{context.drawImage=original;}
+      return rows;
+    },{contacts:[contactAt(0),contactAt(1),contactAt(2)],end:resultAt(3)});
+    for(const costume of ['master','sailor','police','hawk','rush','whoami','tuxedo','mentor']){
+      const scales=rows.filter(row=>row.costume===costume).map(row=>row.scale);
+      expect(Math.max(...scales)/Math.min(...scales),`${width}px ${costume}`).toBeCloseTo(1,6);
+    }
+  }
+});
 test('all eight costumes grip furniture at every contact without a second item on the floor',async({page})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));let frames=0;
   for(const width of [1000,360]){
