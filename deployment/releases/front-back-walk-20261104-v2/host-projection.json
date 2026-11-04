@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "productionCommit": "39b34944ee46074517c59065bdcf7454789875a4",
+  "productionCommit": "320d60725984c5cbd46829e9dc545f59cf9cd162",
   "entries": [
     "index.html"
   ],
@@ -1172,10 +1172,10 @@
       ]
     },
     "src/game/characters.ts": {
-      "commit": "9b6f6f03550eb9d38d66afb827b73165a672a339",
+      "commit": "769f83e77b792d02fc86e6e716008076fd3821d5",
       "path": "src/game/characters.ts",
-      "baseSha256": "b8b5349d729185b4d366dfc0ffa0dd35b284226b664be84364d5c35bb2214125",
-      "sha256": "b8b5349d729185b4d366dfc0ffa0dd35b284226b664be84364d5c35bb2214125"
+      "baseSha256": "872b632f477978c4fd192c66331c239e97d861bdaebf31e25e9dbacfc37d1058",
+      "sha256": "872b632f477978c4fd192c66331c239e97d861bdaebf31e25e9dbacfc37d1058"
     },
     "src/game/characterAnimation.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1586,10 +1586,10 @@
       "sha256": "5fbc000ee9939e486fd27bf5a6b584522262b8d165697280427aa133ed085039"
     },
     "src/game/avatarArt.ts": {
-      "commit": "9b6f6f03550eb9d38d66afb827b73165a672a339",
+      "commit": "769f83e77b792d02fc86e6e716008076fd3821d5",
       "path": "src/game/avatarArt.ts",
-      "baseSha256": "62f432d6295e6d5ecff3d25f088dae6cb737843b0cd558d10c343f64ac601043",
-      "sha256": "62f432d6295e6d5ecff3d25f088dae6cb737843b0cd558d10c343f64ac601043"
+      "baseSha256": "a840954125334525669d7b2d23afbb636106b376848d4c40f9c1d1157cd8f98c",
+      "sha256": "a840954125334525669d7b2d23afbb636106b376848d4c40f9c1d1157cd8f98c"
     },
     "src/game/miraArt.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -1856,10 +1856,10 @@
       "sha256": "caa92b92343afa04889b13ef484f6d1598aac196ffe1f7e2e789dbf77c4f25bc"
     },
     "src/game/frontalWalk.ts": {
-      "commit": "9b6f6f03550eb9d38d66afb827b73165a672a339",
+      "commit": "769f83e77b792d02fc86e6e716008076fd3821d5",
       "path": "src/game/frontalWalk.ts",
-      "baseSha256": "d151fed1f4113e77ba897998e9bd2cfc99ba4373bb3df34051388c838323ff3a",
-      "sha256": "d151fed1f4113e77ba897998e9bd2cfc99ba4373bb3df34051388c838323ff3a"
+      "baseSha256": "42fa869b222c823576fc158525fac3b05707c9dfcca9185124ae80771511b091",
+      "sha256": "42fa869b222c823576fc158525fac3b05707c9dfcca9185124ae80771511b091"
     }
   }
 }

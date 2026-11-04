@@ -1,7 +1,7 @@
 import { CLOTHING_COLORS, HAIR_COLORS, MAKEUP_COLORS, SKIN_COLORS, type Appearance } from '../shared/appearance';
 import type { Facing } from '../shared/movement';
 import { drawProfileArm, drawProfileLimb, profileArmPose, profileBodyPoint, profileBodyPose, profileLegPose } from './profileWalk';
-import { frontalArmPose, frontalBodyPose, frontalLegPose } from './frontalWalk';
+import { drawFrontalArmSkin, frontalArmPose, frontalBodyPose, frontalLegPose, traceFrontalTop } from './frontalWalk';
 
 const ink = '#39332c';
 export type AvatarDrawingParts={
@@ -180,10 +180,11 @@ export function drawAvatar(c: CanvasRenderingContext2D, a: Appearance, facing: F
   if (a.hair === 2 || a.hair === 1) box(side ? 13 : 10, headY - 10, side ? 25 : 44, a.hair === 2 ? 42 : 29, hair, 10);
   if (a.hair === 6) oval(side ? 12 : back ? 44 : 54, headY + 8, 7, 13, hair);
   const sleeve = a.top !== 0, sleeveColor = a.top === 5 ? '#efe0bd' : top;
+  const frontalArms = frontal ? ([-1, 1] as const).map(sign => frontalArmPose(frame, sign, shoulderY, half, 67 - shoulderY, back)) : null;
   const arm = (far: boolean) => {
-    if (frontal) {
-      const pose = frontalArmPose(frame, far ? -1 : 1, shoulderY + 2, half, 67 - shoulderY, back);
-      drawProfileArm(c, pose, sleeveColor, skin, ink, !sleeve);
+    if (frontalArms) {
+      const pose = frontalArms[far ? 0 : 1];
+      drawFrontalArmSkin(c, pose, skin, ink, !sleeve);
       if (!far && (a.tattoo === 3 || a.tattoo === 4)) tattoo(pose.hand.x, sleeve ? pose.hand.y : pose.elbow.y + 2, a.tattoo);
       return;
     }
@@ -219,11 +220,20 @@ export function drawAvatar(c: CanvasRenderingContext2D, a: Appearance, facing: F
   parts?.beforeBody?.(c);
   const traceTorso = () => {
     c.beginPath();
+    if (frontalArms) {
+      c.moveTo(32 - half + 9, shoulderY - 2); c.quadraticCurveTo(32 - half + 6, shoulderY + 2, frontalArms[0].shoulder.x + 1, shoulderY + 7);
+      c.lineTo(32 - half + 5, bodyBottom - 2); c.quadraticCurveTo(32, bodyBottom + 4, 32 + half - 5, bodyBottom - 2);
+      c.lineTo(frontalArms[1].shoulder.x - 1, shoulderY + 7); c.quadraticCurveTo(32 + half - 6, shoulderY + 2, 32 + half - 9, shoulderY - 2);
+      c.closePath(); return;
+    }
     c.moveTo(32 - half + 9, shoulderY - 2); c.quadraticCurveTo(32 - half, shoulderY, 32 - half, bodyBottom - 2);
     c.quadraticCurveTo(32, bodyBottom + (fat ? 8 : 4), 32 + half, bodyBottom - 2); c.quadraticCurveTo(32 + half, shoulderY, 32 + half - 9, shoulderY - 2);
     c.closePath();
   };
-  traceTorso(); fill(top);
+  if (frontalArms) {
+    traceFrontalTop(c, frontalArms[0], frontalArms[1], half, 32 - half + 9, 32 + half - 9, shoulderY - 2, bodyBottom, !sleeve); fill(sleeveColor);
+    if (sleeveColor !== top) { c.save(); c.clip(); traceTorso(); fill(top, 0); c.restore(); }
+  } else { traceTorso(); fill(top); }
   if (a.bottom === 2) path([[32 - half + 4, 65], [32 + half - 4, 65], [32 + half, 72], [32 - half, 72]], bottom);
   else if (a.top !== 4) box(side ? 22 : 32 - half + 4, 65, side ? 24 : half * 2 - 8, a.bottom === 1 ? 6 : 5, bottom, 1);
   c.save(); traceTorso(); c.clip();
