@@ -1,14 +1,14 @@
 {
   "status": "local-motion-revision-awaiting-user-review",
-  "sourceCommit": "c2c499d0a60265e9d8b85e26912e6c5e8562a683",
-  "checkedSourceCommit": "ce346e0fc53ec5f73670dbcf7b58c793f6f3d47b",
-  "checkedAt": "2026-11-04T20:10:04.784Z",
-  "reason": "User rejected revision 2 movement quality. Technical success did not establish visual acceptance.",
+  "sourceCommit": "a793d3b825dcf17ed55946e2f2c92e096863aa69",
+  "checkedSourceCommit": "b7d36d365dae06e2e0267b6bef8917daa2c6b0af",
+  "checkedAt": "2026-11-04T20:29:09.906Z",
+  "reason": "User rejected revision 2 movement quality and identified malformed shoulders and three arms in wiping cells. The faulty work sheet was removed and replaced. Technical success did not establish visual acceptance.",
   "method": "56 complete painted poses, no separate limb rotations or per-frame resizing",
   "sources": {
     "src/game/Bar.ts": "c5d03c989da3b73fc8552331f557f96998aec73b2843607f4ca763c01152a158",
-    "src/game/MiraRig.ts": "1dd3f253c2884a61ccb5fbb8ead8e94e9b25cc5a093e97eb65013801feefd73b",
-    "src/game/miraAnimation.ts": "743f75d5c899c4e28786c5235176ff665e8a7269272f0ae211e57130800298b2",
+    "src/game/MiraRig.ts": "0a8254bfeddcaec47a3f2468b94d05e65e6531970a057a00b0b0249cfa126931",
+    "src/game/miraAnimation.ts": "93ce2c106cddee6b195df5e4d6b26d55c40e1ba98bc60fb0289ad01a1af094ca",
     "src/game/royalBarArt.ts": "75eb83aeefa8665575a5a1ad8077b62404862671873fe31be4a3ae4ba38fd530",
     "src/shared/miraRoutine.ts": "1edf1b32dec6a1d9646f23c0907ec5458aa311a35121633d9fdd5a8ac1470300",
     "src/shared/catCare.ts": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8",
@@ -18,7 +18,7 @@
     "src/game/CatRenderer.ts": "970f0e4fc0b8ab4408f2dd1f98772da491566c19ef8d5c3ee6a2c8787fa3c1e6",
     "public/assets/royal-bar/v3/mira-walk.png": "4c0e118f7fba39834153fac6a35c518747c1b1f527bbce30e0d62cd4fe819e42",
     "public/assets/royal-bar/v3/mira-seat.png": "2613a2ce5b6e1c45137a3de86bf0a1dd8687729ab74a3fb4088a41d6c0257820",
-    "public/assets/royal-bar/v3/mira-work.png": "26c014d43a1fe5e4f62bfdee1075ecd5ccab557d2fc8cb76640d6b644814bc66",
+    "public/assets/royal-bar/v3/mira-work-corrected.png": "fc9b72468d854a6c902376bac8cd0ee602bd3b5f4583cdcf5778628bf8c244a8",
     "public/assets/royal-bar/v3/mira-react.png": "8373c40cff647a68e01ea693e558557282a623fe853e05d4589204e36e3ec8c1",
     "public/assets/royal-bar/v3/mira-serve.png": "b9a4b7065e239682f69652b1b3432fcd360eb2b0c267f52a0f3ad0c64cda9490"
   },
@@ -42,7 +42,10 @@
       "disposablePostgres": true,
       "host": "reviewed host base with current bar renderer",
       "providerRepliesStubbed": true,
-      "physicalDevicesTested": false
+      "physicalDevicesTested": false,
+      "sourceCommit": "ce346e0f",
+      "verifiedBeforeWorkAtlasRepair": true,
+      "reuseReason": "Room presence and service logic unchanged; corrected wipe artwork and contacts separately rechecked in the current visual capture"
     },
     "visualReview": {
       "passed": true,
@@ -89,7 +92,7 @@
           "atlas": "walk",
           "frame": 3,
           "bounds": {
-            "x": 313.52956290453074,
+            "x": 314.1522087378641,
             "y": 398.2669902912621,
             "width": 37.11165048543689,
             "height": 109.73300970873787
@@ -105,10 +108,10 @@
           "atlas": "work",
           "frame": 2,
           "bounds": {
-            "x": 306.6595744680851,
-            "y": 393.1489361702128,
-            "width": 55.74468085106383,
-            "height": 60.851063829787236
+            "x": 306.29965156794424,
+            "y": 393.79094076655053,
+            "width": 51.21951219512195,
+            "height": 60.20905923344948
           }
         },
         {
@@ -169,10 +172,10 @@
           "atlas": "work",
           "frame": 13,
           "bounds": {
-            "x": 311.27659574468083,
-            "y": 394.4255319148936,
-            "width": 44.680851063829785,
-            "height": 59.57446808510638
+            "x": 310.6445993031359,
+            "y": 395.25435540069685,
+            "width": 46.41114982578397,
+            "height": 58.745644599303134
           }
         }
       ],
@@ -200,7 +203,7 @@
     "reviewControlsDisabledForNetworkTests": true,
     "disposableDatabase": true,
     "liveProviderUsed": false,
-    "subsequentSync": "Bar, animation and cat inputs unchanged; unrelated street-roof arrival confirmation merged from main"
+    "subsequentSync": "Mira and cat inputs unchanged after the corrected artwork checks"
   },
   "cat": {
     "bar": {
@@ -225,7 +228,14 @@
   },
   "recording": {
     "file": "mira-animations-v3.webm",
-    "sha256": "b9e2f8908b22818496d1f006e939fcd030a2f0477bdb072cfcc9586bf777db40"
+    "sha256": "46a55e55245e8dd021f47066a9943c0b9a20bfd2d4f4bf4d072f7da6fe390099"
+  },
+  "anatomyRepair": {
+    "record": "public/assets/royal-bar/v3/work-anatomy-repair.json",
+    "proof": "work-anatomy-corrected.png",
+    "proofSha256": "5d88ebb3f2617902cd8e353dc82d4b8269b7fd99008e6512e4b116449a643621",
+    "manualInspection": true,
+    "automatedAnatomyGuarantee": false
   },
   "generation": {
     "tool": "built-in imagegen",
