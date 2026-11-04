@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { createHash, randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 import { checkGameRtp } from './game-math/rtp-gate.mjs';
-import { moduleFingerprinter, cachedModule, moduleSourcePath, normalizeModuleInput } from './module-build-cache.mjs';
+import { moduleFingerprinter, cachedModule, regularPath, dependencyPath, normalizeModuleInput } from './module-build-cache.mjs';
 import { readHostProjection } from './build-host-projection.mjs';
 import {projectedModuleContract,moduleProjectionCatalog,projectedMediaBytes,projectedDependencyBytes} from './module-source-projection.mjs';
 
@@ -23,10 +23,10 @@ let projection;
 if(projectionFlag>=0){const name=args[projectionFlag+1];if(!name)throw Error('Missing module source projection');args.splice(projectionFlag,2);projection=await readHostProjection(root,name,{strictOrigins:true});}
 const projectedAssets={},projectedDependencies={};
 async function sourceBytes(path){
- if(!projection)return readFile(path);
  const name=relative(root,resolve(path)).replaceAll('\\','/');
+ if(!projection)return readFile(name.startsWith('node_modules/')?await dependencyPath(root,name):path);
  if(!name.startsWith('node_modules/'))return projection.read(name);
- const bytes=projectedDependencyBytes(name,await readFile(await moduleSourcePath(root,name)),projection.metadata.moduleDependencies?.[name]);projectedDependencies[name]=sha(bytes);return bytes;
+ const bytes=projectedDependencyBytes(name,await readFile(await dependencyPath(root,name)),projection.metadata.moduleDependencies?.[name]);projectedDependencies[name]=sha(bytes);return bytes;
 }
 async function mediaBytes(path){let bytes=await readFile(path);if(projection){const name=relative(root,path).replaceAll('\\','/');bytes=projectedMediaBytes(name,bytes,projection.metadata.moduleAssets?.[name]);projectedAssets[name]=sha(bytes);}return bytes;}
 const force = args.includes('--force');
@@ -158,12 +158,13 @@ async function buildGame(slug) {
  const sentinel = '__ROYAL_MODULE_MEDIA_' + sha(config.gameId).slice(0, 16) + '__';
  const result = await build({
   absWorkingDir: root, entryPoints: [resolve(packageRoot, config.entry)],
-  bundle: true, write: false, metafile: true, outfile: 'module.js',
+  bundle: true, write: false, metafile: true, outfile: 'module.js', preserveSymlinks: true,
   format: 'esm', platform: 'browser', target: 'es2022', minify: true, legalComments: 'none',
   ...(projection ? {tsconfigRaw:projection.read('tsconfig.json').toString('utf8')} : {}),
   plugins: [{ name: 'royal-host-and-module-media', setup(builder) {
    builder.onResolve({ filter: /^phaser$/ }, () => ({ path: 'phaser', namespace: 'royal-host' }));
    builder.onResolve({ filter: /^\./ }, args => {
+    if(relative(root,args.resolveDir).replaceAll('\\','/').startsWith('node_modules/'))return;
     const path = relative(root, resolve(args.resolveDir, args.path)).replaceAll('\\', '/').replace(/\.ts$/, '');
     if (bridgeModules.has(path)) return { path, namespace: 'royal-host' };
     if(projection){const name=relative(root,resolve(args.resolveDir,args.path)).replaceAll('\\','/');const candidates=[name,...['.ts','.tsx','.js','.css','.json'].map(ext=>name+ext),name+'/index.ts'];

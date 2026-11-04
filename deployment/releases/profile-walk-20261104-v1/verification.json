@@ -1,0 +1,397 @@
+{
+  "release": "profile-walk-20261104-v1",
+  "status": "published_verified_maintenance_pending",
+  "sourceCommit": "820e1c4e92eeb54b85915c483dc4e59829679c71",
+  "baseCommit": "5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e",
+  "image": "sha256:f19d318e66f2c223c072eadac81a20b27b3ccde3a45a46052518193f2f527ed1",
+  "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "publishedOnMoscow": "2026-11-04",
+  "scope": {
+    "sourceChanges": [
+      "src/game/avatarArt.ts",
+      "src/game/characters.ts",
+      "src/game/profileWalk.ts"
+    ],
+    "programChanges": [
+      "assets/index-Oy--p_71.js",
+      "index.html"
+    ],
+    "hostInputs": 251,
+    "backendFilesChanged": 0,
+    "addedGames": [],
+    "restoredGames": []
+  },
+  "qualification": {
+    "rtpProfiles": 38,
+    "stakePolicies": 20,
+    "stakeAdmissionPolicies": 20,
+    "legacyUnqualifiedUnchanged": 114
+  },
+  "tests": {
+    "unitTests": 6,
+    "profileFrames": 2436,
+    "unchangedPosesCompared": 4960,
+    "unchangedPoseMismatches": 0,
+    "installScopeGuards": 5,
+    "typecheck": true,
+    "releasePrepare": true,
+    "releaseVerifyGithub": true,
+    "mandatoryWalletTests": 19,
+    "mandatoryWalletCommand": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts",
+    "walletInputsMatchProduction": [
+      "server/demoWallet.ts",
+      "server/demoWalletAmounts.ts",
+      "server/database.ts",
+      "src/shared/walletAccount.ts",
+      "src/shared/gameStakes.ts"
+    ],
+    "connectedLocalHost": [
+      {
+        "appearance": "npc",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "online": true,
+        "chatVisible": true,
+        "directions": [
+          {
+            "facing": "right",
+            "frames": [
+              "right-0",
+              "right-1"
+            ]
+          },
+          {
+            "facing": "left",
+            "frames": [
+              "left-0",
+              "left-1"
+            ]
+          }
+        ],
+        "overflow": false,
+        "errors": []
+      },
+      {
+        "appearance": "npc",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "online": true,
+        "chatVisible": true,
+        "directions": [
+          {
+            "facing": "right",
+            "frames": [
+              "right-0",
+              "right-1",
+              "right-2"
+            ]
+          },
+          {
+            "facing": "left",
+            "frames": [
+              "left-0",
+              "left-1"
+            ]
+          }
+        ],
+        "overflow": false,
+        "errors": []
+      },
+      {
+        "appearance": "avatar",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "online": true,
+        "chatVisible": true,
+        "directions": [
+          {
+            "facing": "right",
+            "frames": [
+              "right-0",
+              "right-1",
+              "right-2"
+            ]
+          },
+          {
+            "facing": "left",
+            "frames": [
+              "left-0",
+              "left-1"
+            ]
+          }
+        ],
+        "overflow": false,
+        "errors": []
+      },
+      {
+        "appearance": "avatar",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "online": true,
+        "chatVisible": true,
+        "directions": [
+          {
+            "facing": "right",
+            "frames": [
+              "right-0",
+              "right-1",
+              "right-2"
+            ]
+          },
+          {
+            "facing": "left",
+            "frames": [
+              "left-0",
+              "left-1"
+            ]
+          }
+        ],
+        "overflow": false,
+        "errors": []
+      }
+    ],
+    "localBackendSha256": "7b11acb06fdbc5ff43a9cd18f9bdf5a687ca11ccd086562508150a48a9d6684a",
+    "publicReview": {
+      "checks": [
+        {
+          "url": "/game-modules/studio-caramel-carnival/active.json",
+          "status": 200,
+          "sha256": "cf13ee32fb3cf858c183c4517afc82936e52fc73e2b0f5222a6ff70e45a76874"
+        },
+        {
+          "url": "/game-modules/studio-nitro-run/active.json",
+          "status": 200,
+          "sha256": "b7291d4290685ad8cb33c1ebda9a0f9161d887b3a2923866821ce13fadb28765"
+        },
+        {
+          "url": "/game-modules/studio-last-convoy/active.json",
+          "status": 200,
+          "sha256": "f7cdf5a8a32ab6fd57ec54c28f91f359bbff6a6044ebd155629360e3ba63d6b5"
+        },
+        {
+          "url": "/game-modules/studio-velvet-reign/active.json",
+          "status": 200,
+          "sha256": "bbf0ab7f37be8c2a6e71c640ddb60fc890b6d77084d377e031df5d8d76c7109d"
+        },
+        {
+          "url": "/game-modules/studio-meme-overload/active.json",
+          "status": 200,
+          "sha256": "7162e4438a4c3e73053714c0a8cdffa670009684ac7a662ecbe0cc792a100ed4"
+        },
+        {
+          "url": "/game-modules/original-jackie-chan/active.json",
+          "status": 200,
+          "sha256": "7ce6f3a09f27195a1ce3b637680030f3b417c713416261690edd070426b9ba7b"
+        },
+        {
+          "url": "/game-modules/original-cr-vs-leo/active.json",
+          "status": 200,
+          "sha256": "ecf5dd8bf35137f4ca66982501e20a5c687d1abe6c63e5344cbc66131e36a05e"
+        },
+        {
+          "url": "/game-modules/royal-plinko/active.json",
+          "status": 200,
+          "sha256": "142d2ba7903ca72564c00625421de022521e2564e6477a1a7ec5d6461ae416a6"
+        },
+        {
+          "url": "/game-modules/github-crash/active.json",
+          "status": 200,
+          "sha256": "b07441c71edba6eb3f4cbd9b1d66d62e213d65876726e04f2cf8a71454c1bcda"
+        },
+        {
+          "url": "/game-modules/royal-roulette/active.json",
+          "status": 200,
+          "sha256": "ca9865eb25e3278c7e2565a76c9cd138577d009962417ea7ae8e6d78e0c9eada"
+        },
+        {
+          "url": "/game-modules/flag-battle/active.json",
+          "status": 200,
+          "sha256": "0ac4166814d3d04ecd24112fc62dd22740d1f80d8a83b7a0309b69950084ac26"
+        },
+        {
+          "url": "/game-modules/studio-caribbean-treasures/active.json",
+          "status": 200,
+          "sha256": "9a3e51ed9df04543af4c5e972f77afee53c1094cf35b7cc1a655299f768c37a2"
+        },
+        {
+          "url": "/game-modules/studio-forest-heart/active.json",
+          "status": 200,
+          "sha256": "4ca458eb41d0a1373feb0cfa230179a64c106a4adaff4bad42431498e2f05f70"
+        },
+        {
+          "url": "/game-modules/studio-cosmic-escape/active.json",
+          "status": 200,
+          "sha256": "2150a2e8c668bdc9a6aceba86f2529813230d0227fd58d837ae09cadbeb6db74"
+        },
+        {
+          "url": "/game-modules/studio-afterglow/active.json",
+          "status": 200,
+          "sha256": "31b8b858b145ac91d0965a37007421b66d05582ea1f79d70970575f656c9aff6"
+        },
+        {
+          "url": "/game-modules/studio-dracona/active.json",
+          "status": 200,
+          "sha256": "d826bb5f133f60d813ef9ede625d2c94e012d485cbe9f9ffa375bba0c93bb223"
+        },
+        {
+          "url": "/game-modules/studio-flooded-temple/active.json",
+          "status": 200,
+          "sha256": "31eda23dbb9ec8fb6c1fb42f6904a882490604f6bd6bbc79529671cac18e5021"
+        },
+        {
+          "url": "/game-modules/tsu-e-fa/active.json",
+          "status": 200,
+          "sha256": "03ff5ab3fb697596abe39718d826fecde226898abf2cd35a0280b499e50a5cd7"
+        },
+        {
+          "url": "/game-modules/studio-neopolis/active.json",
+          "status": 200,
+          "sha256": "ec29e45b53236a77441a83f3590eb3686c1008d97da330b1ffffc975946cbbf9"
+        },
+        {
+          "url": "/game-modules/studio-wild-nudge/active.json",
+          "status": 200,
+          "sha256": "d10d279193c0955179df0326378d420414ede509750f0de1be9854c2f5768d80"
+        },
+        {
+          "url": "/healthz",
+          "status": 200
+        },
+        {
+          "url": "/api/game-wallet",
+          "status": 410
+        },
+        {
+          "url": "/api/nile-play/wallet",
+          "status": 410
+        },
+        {
+          "url": "/assets/index-Oy--p_71.js",
+          "status": 200,
+          "sha256": "96a4954a1168afe64db5647d75a80299f05694041754a901ac87c7449dcd4991"
+        },
+        {
+          "url": "/index.html",
+          "status": 200,
+          "sha256": "e845c99bf8d84e9b37fd75099148f25ba4566357426d470147084dc7f2c8dd1e"
+        }
+      ],
+      "browsers": [
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "directions": [
+            {
+              "facing": "right",
+              "frames": [
+                "right-0",
+                "right-1",
+                "right-2"
+              ]
+            },
+            {
+              "facing": "left",
+              "frames": [
+                "left-0",
+                "left-1"
+              ]
+            }
+          ],
+          "overflow": false,
+          "errors": [],
+          "productionChatConnected": false
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "directions": [
+            {
+              "facing": "right",
+              "frames": [
+                "right-0",
+                "right-1",
+                "right-2"
+              ]
+            },
+            {
+              "facing": "left",
+              "frames": [
+                "left-0",
+                "left-1"
+              ]
+            }
+          ],
+          "overflow": false,
+          "errors": [],
+          "productionChatConnected": false
+        }
+      ],
+      "accountsCreated": 0,
+      "wagers": 0,
+      "messages": 0
+    }
+  },
+  "preserved": {
+    "sourceFilesBefore": 2699,
+    "sourceFilesAfter": 2700,
+    "runtimeFilesBefore": 8593,
+    "runtimeFilesAfter": 8594,
+    "externalModuleFiles": 4259,
+    "otherServices": 13,
+    "backendSha256": "7b11acb06fdbc5ff43a9cd18f9bdf5a687ca11ccd086562508150a48a9d6684a",
+    "configurationsAndMounts": true,
+    "persistentVolumes": true,
+    "databaseRestored": false
+  },
+  "backup": {
+    "path": "/opt/royal-backups/profile-walk-20261104-v1/source.tgz",
+    "bytes": 15347,
+    "sha256": "5ac3b4379f60411c261391c0a6a6fc9cee812c0de28935a0c17cb37d9307484e",
+    "previousImage": "sha256:08d83a2095974b1baaad62e376149e38f74c31f9319da9c6dbefbc1f49859713"
+  },
+  "verification": {
+    "guardedInstaller": {
+      "published": true,
+      "preparedImage": "sha256:f19d318e66f2c223c072eadac81a20b27b3ccde3a45a46052518193f2f527ed1",
+      "runningImage": "sha256:f19d318e66f2c223c072eadac81a20b27b3ccde3a45a46052518193f2f527ed1",
+      "containerRestarted": true,
+      "sourceCommit": "820e1c4e92eeb54b85915c483dc4e59829679c71",
+      "changedSources": 3,
+      "clientDeltaFiles": 2,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 0,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 13
+    },
+    "immutableProgramProofRecorded": true,
+    "freeBeforeBytes": 10675134464,
+    "freeAfterBytes": 10639892480
+  },
+  "maintenance": {
+    "status": "pending",
+    "reason": "Awaiting the required completed post-publication maintenance run"
+  },
+  "limitations": {
+    "physicalMobileDeviceTested": false,
+    "productionChatConnected": false,
+    "productionTestAccountsCreated": 0,
+    "productionTestWagers": 0,
+    "productionTestMessages": 0,
+    "sharedCodeMapUnavailable": true,
+    "directSourceAndByteVerificationUsed": true
+  }
+}

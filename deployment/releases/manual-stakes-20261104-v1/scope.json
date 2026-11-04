@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "baseCommit": "5538f71e3c1d61ebdd8e73a43a395dfcaec22a6e",
+  "baseCommit": "820e1c4e92eeb54b85915c483dc4e59829679c71",
   "expectedSources": {
     "server/afterglowProgress.ts": "4a7f5d07ca6be6afbcec0c5ff2c7d91bb4da82f81438aa35c8a418cc939134b9",
     "server/demoWallet.ts": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
@@ -128,6 +128,7 @@
     "docs/game-math/qualifications/tsu-e-fa-v4.json": "a5c4f79776d00f90ba97e8b2fa99ae5dfb00c5328c8e15ae955f3904f88cdf4f",
     "docs/game-math/qualifications/wild-nudge-v1.json": "9b26d790ea093b259c70cf785d465ccdc5a1b97e3a122fa9672789d61f2395a8",
     "docs/game-math/qualifications/wild-nudge-v2.json": "6ea5af1e1f13b9950de421e53a55cbb8f252ee4808182ac68e63adbb84d71361",
+    "scripts/build-game-module.mjs": "c7fedfaf55d8563cf053983a0bbc695088021bc66fd21a1a673bdd0da34d8de3",
     "scripts/game-math/game-stakes-admission.mjs": "4cb0c4fc41fbdf73e68f67c7b76a155a5dfbba85d9107b58508de4c80a7e3ed4",
     "scripts/game-math/manual-stakes.mjs": "969131d1de9c2d1744cdd8ff801e745bbb02eb6653466732ba0657a24ee0ad9d",
     "scripts/game-math/rtp-caribbean.mjs": "a47c371ab000a9644a092bf4be2afa498251f90f72b2c307f67715942c280c47",
@@ -136,6 +137,8 @@
     "scripts/game-math/rtp-tsu-duel-stakes.mjs": "62e3b7442684f56cdcfd55dc014adc10340ee71c4189b2bff40ee27172e34524",
     "scripts/game-math/stake-runtime.mjs": "47d762e18c698ab4241a6499497b8f58087132da2489494a2172f60dd0fede61",
     "scripts/game-math/stakes-wallet.ts": "5fdd9b03cbc3b1835e9128d4a2d4bb49875f4535bfec34db6a008677a701e141",
-    "scripts/game-math/tsu-duel-wallet.ts": "e1dc5cd60b9be0e55c2074a368244d7f1c52acde667ffb1a046bc6ce0edd3efb"
+    "scripts/game-math/tsu-duel-wallet.ts": "e1dc5cd60b9be0e55c2074a368244d7f1c52acde667ffb1a046bc6ce0edd3efb",
+    "scripts/module-build-cache.mjs": "4116a020c39cb7855c6716e8ee129b4742d2c9654241f2f561346676e7cb7a35",
+    "scripts/module-source-projection.mjs": "bed173298afe4af9a207dcabccbda0bbdfcec15050e27222b7d97f7eeb6b6c76"
   }
 }

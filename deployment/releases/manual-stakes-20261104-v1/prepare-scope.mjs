@@ -16,7 +16,7 @@ assert.equal(ROYAL_PLATFORM_GAMES.length,19);
 // Tsu-e-fa retains its existing separate PvP launch and qualified presets.
 scope.activeGames=[...ROYAL_PLATFORM_GAMES,'tsu-e-fa'];
 assert.deepEqual([...scope.activeGames].sort(),Object.keys(registry.stakePolicies).sort());
-const evidence=new Set(['scripts/game-math/rtp-policy.json']);
+const evidence=new Set(['scripts/game-math/rtp-policy.json','scripts/build-game-module.mjs','scripts/module-build-cache.mjs','scripts/module-source-projection.mjs']);
 for(const p of [...Object.values(registry.profiles),...Object.values(registry.stakePolicies),...Object.values(registry.versionProfiles??{}).flatMap(Object.values)]){
   for(const file of [p.proof,p.qualificationSource,...p.sources])if(/^(?:scripts\/game-math\/|docs\/game-math\/)/.test(file))evidence.add(file);
 }

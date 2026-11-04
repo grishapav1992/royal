@@ -16,21 +16,32 @@ export async function regularPath(root, name) {
   return resolve(root, name);
 }
 
-// A managed checkout can reuse one installed dependency tree through its outer link.
-// Repository sources, nested dependency links, media and output guards stay strict.
-export async function moduleSourcePath(root, name) {
-  if(name==='node_modules')return realpath(resolve(root,name));
-  if (!name.startsWith('node_modules/')) return regularPath(root, name);
-  const dependencies = await realpath(resolve(root, 'node_modules'));
-  return regularPath(dependencies, name.slice('node_modules/'.length));
+/** A worktree can share one installed dependency tree. Source and output guards stay strict. */
+export async function dependencyPath(root, name) {
+  if (!/^node_modules(?:\/|$)/.test(name) || name.includes('\\')
+      || name.split('/').some(part => !part || part === '.' || part === '..')) throw Error('Unsafe dependency path: ' + name);
+  const installed = await realpath(resolve(root, 'node_modules'));
+  const suffix = name.slice('node_modules'.length + 1);
+  let path = resolve(installed, suffix);
+  if (relative(installed, path).replaceAll('\\', '/') !== suffix) throw Error('Unsafe dependency path: ' + name);
+  const target = path;
+  while (path !== installed) {
+    if ((await lstat(path)).isSymbolicLink()) throw Error('Dependency symlink rejected: ' + name);
+    path = dirname(path);
+  }
+  if (!(await lstat(installed)).isDirectory()) throw Error('Dependency root must be a directory');
+  return target;
 }
 
-export async function normalizeModuleInput(root, name) {
-  if (!name.startsWith('../')) return name;
-  const dependencies = await realpath(resolve(root, 'node_modules'));
-  const inside = relative(dependencies, resolve(await realpath(root), name)).replaceAll('\\', '/');
-  await regularPath(dependencies, inside);
-  return 'node_modules/' + inside;
+// Compatibility for fingerprints created before canonical dependency bundle names.
+export async function moduleSourcePath(root,name){
+  return /^node_modules(?:\/|$)/.test(name)?dependencyPath(root,name):regularPath(root,name);
+}
+export async function normalizeModuleInput(root,name){
+  if(!name.startsWith('../'))return name;
+  const installed=await realpath(resolve(root,'node_modules'));
+  const suffix=relative(installed,resolve(await realpath(root),name)).replaceAll('\\','/');
+  const canonical='node_modules/'+suffix;await dependencyPath(root,canonical);return canonical;
 }
 
 export async function inventory(root, prefix = '') {
@@ -52,8 +63,9 @@ export function moduleFingerprinter(root, toolchain) {
     if (!memo.has(key)) memo.set(key, fn());
     return memo.get(key);
   };
+  const inputPath = name => name.startsWith('node_modules/') ? dependencyPath(root, name) : name === 'node_modules' ? dependencyPath(root, name) : regularPath(root, name);
   const file = name => once('file:' + name, async () => {
-    try { return digest(await readFile(await moduleSourcePath(root, name))); }
+    try { return digest(await readFile(await inputPath(name))); }
     catch (error) { if (error.code === 'ENOENT') return null; throw error; }
   });
   const resources = name => once('media:' + name, async () => {
@@ -71,7 +83,7 @@ export function moduleFingerprinter(root, toolchain) {
     return rows;
   });
   return async (config, contract, inputs) => {
-    inputs = await Promise.all(inputs.map(name => normalizeModuleInput(root, name)));
+    inputs=await Promise.all(inputs.map(name=>normalizeModuleInput(root,name)));
     const files = new Set(['package.json', 'package-lock.json', 'tsconfig.json',
       'scripts/build-game-module.mjs', 'scripts/module-build-cache.mjs',
       'src/modules/GameModuleCatalog.ts', `games/${contract.slug}/package.json`,
@@ -91,7 +103,7 @@ export function moduleFingerprinter(root, toolchain) {
     const entries = {};
     // Catch new import-resolution candidates (for example foo.ts shadowing foo/index.ts).
     for (const name of [...directories].sort()) entries[name] = await once('dir:' + name, async () => {
-      try { return (await readdir(await moduleSourcePath(root, name))).sort(); }
+      try { return (await readdir(await inputPath(name))).sort(); }
       catch (error) { if (error.code === 'ENOENT') return null; throw error; }
     });
     const assets = {};
