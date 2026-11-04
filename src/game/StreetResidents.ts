@@ -5,7 +5,9 @@ import { CHARACTER_SCALE, characterTexture } from './characters';
 import { STREET_RESIDENTS, StreetConversations,canTalkToStreetResidents, type StreetResidentId, type StreetVisitor } from './streetDetails';
 import './street-residents.css';
 import { streetResidentPose, type StreetResidentPose } from './StreetResidentActions';
-import { createStreetMascotTexture, drawMascotArms, drawResidentShovel, drawTaxiHabit, drawTouristCamera } from './streetResidentArt';
+import { createStreetMascotTexture, drawMascotArms, drawResidentShovel, drawTaxiHabit } from './streetResidentArt';
+import { createTouristTexture } from './touristCameraArt';
+import { touristCameraFrame,touristFramePose } from './touristCameraPose';
 import { StreetResidentPatrols, STREET_WORK_PATCHES } from './StreetResidentPatrols';
 import { advanceCharacterMotion, createCharacterMotion } from './characterAnimation';
 import type { Point } from './navigation';
@@ -40,7 +42,7 @@ export class StreetResidents {
       const mascot=person.id==='mascot';
       const position=this.locations.find(p=>p.id===person.id)!;
       const shadow=scene.add.ellipse(position.x,position.y-1,mascot?46:29,10,0x27202c,.15).setDepth(position.y-1);
-      const sprite=scene.add.sprite(position.x,position.y,mascot?createStreetMascotTexture(scene):characterTexture(scene,0,person.appearance),mascot?6:person.facing+'-6')
+      const sprite=scene.add.sprite(position.x,position.y,mascot?createStreetMascotTexture(scene):person.id==='tourist'?createTouristTexture(scene,person.appearance):characterTexture(scene,0,person.appearance),mascot?6:person.facing+'-6')
         .setOrigin(.5,1).setScale(mascot ? 0.5 : CHARACTER_SCALE).setDepth(position.y);
       const tool=scene.add.graphics().setPosition(position.x,position.y).setDepth(position.y+.1);
       const label=scene.add.text(position.x,position.y-(mascot?113:91),t(person.name),{fontFamily:'Arial',fontSize:'10px',color:'#f5dfaa',backgroundColor:'#302832e8',padding:{x:6,y:4}}).setOrigin(.5,1).setDepth(3000);
@@ -85,7 +87,7 @@ export class StreetResidents {
       this.poses.set(person.id,pose);
       const p=view.point(position),visible=view.visible(position),depth=view.depth(position);
       const facing=view.facing(talking?'down':pose.facing??position.facing);
-      actor.sprite.setPosition(p.x,p.y).setDepth(depth).setFrame(mascot?position.moving?walking.frame:6:facing+'-'+pose.frame).setVisible(visible);
+      actor.sprite.setPosition(p.x,p.y).setDepth(depth).setFrame(mascot?position.moving?walking.frame:6:facing+'-'+(person.id==='tourist'?touristCameraFrame(pose):pose.frame)).setVisible(visible);
       actor.shadow.setPosition(p.x,p.y-1).setDepth(depth-1).setVisible(visible);
       actor.tool.setPosition(p.x,p.y).setDepth(depth+.1).setVisible(visible);
       const exposed=visible&&!view.occluded(position,mascot?50:30);
@@ -104,7 +106,6 @@ export class StreetResidents {
         drawResidentShovel(actor.tool,pose);
       }
       if(person.id==='taxi-driver')drawTaxiHabit(actor.tool,pose);
-      if(person.id==='tourist')drawTouristCamera(actor.tool,pose);
       if(person.id==='mascot')drawMascotArms(actor.tool,pose);
     });
     const worker=this.locations.find(p=>p.id==='janitor')!;
@@ -147,5 +148,8 @@ export class StreetResidents {
   get count(){return STREET_RESIDENTS.length;}
   get characterBounds(){return this.actors.map(({sprite})=>{const b=sprite.getBounds();return {x:sprite.x,y:sprite.y,depth:sprite.depth,visible:sprite.visible,left:b.left,right:b.right,top:b.top,bottom:b.bottom};});}
   get textureKeys(){return this.actors.map(actor=>actor.sprite.texture.key);}
-  getState(){return {...this.conversations.snapshot(),approaching:this.prepared,people:this.locations.map(p=>({...p,activity:this.poses.get(p.id)?.action??'idle',progress:this.poses.get(p.id)?.progress??0}))};}
+  getState(){return {...this.conversations.snapshot(),approaching:this.prepared,people:this.locations.map((p,index)=>{
+    const pose=this.poses.get(p.id)??{action:'idle' as const,progress:0,frame:6},frame=touristCameraFrame(pose),sprite=this.actors[index].sprite;
+    return {...p,activity:pose.action,progress:pose.progress,...(p.id==='tourist'?{camera:{...touristFramePose(frame),frame,texture:sprite.texture.key,renderFrame:sprite.frame.name}}:{})};
+  })};}
 }

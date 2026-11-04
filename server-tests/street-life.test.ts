@@ -9,6 +9,35 @@ import { STREET_RESIDENTS, StreetConversations, streetViewOffset } from '../src/
 import { parseAppearance } from '../src/shared/appearance';
 import { streetResidentPose } from '../src/game/StreetResidentActions';
 import { StreetResidentPatrols, STREET_PATROLS } from '../src/game/StreetResidentPatrols';
+import { touristCameraFrame,touristFramePose,touristCameraRig } from '../src/game/touristCameraPose';
+
+test('tourist camera and both grips connect continuously from the strap through shooting and review',()=>{
+  for(const facing of ['left','right','down','up'] as const){
+    for(const [a,b] of [[6,8],[19,20],[20,21],[20,22],[29,30],[30,31],[42,6]]){
+      const from=touristCameraRig(facing,a),to=touristCameraRig(facing,b);
+      assert.deepEqual(from.camera,to.camera,'the camera never jumps between adjacent actions');
+      assert.equal(from.lift,to.lift);assert.equal(from.grip,to.grip);
+    }
+    const carry=touristCameraRig(facing,6),aim=touristCameraRig(facing,20);
+    assert(aim.camera.y<carry.camera.y-20,'the viewfinder actually rises to the face');
+    assert.equal(aim.grip,1);assert.equal(aim.lift,1);
+    for(let frame=8;frame<=19;frame++)if(touristFramePose(frame).lift>0)assert.equal(touristFramePose(frame).grip,1,'hands grip the camera before lifting it');
+    for(const hand of Object.values(aim.hands))assert(Math.hypot(hand.x-aim.camera.x,hand.y-aim.camera.y)<12);
+  }
+  assert(touristCameraRig('left',20).mirrored);assert(!touristCameraRig('right',20).mirrored);
+  assert(touristCameraRig('right',20).side);assert(touristCameraRig('up',20).back);
+});
+
+test('tourist uses camera-specific action frames and has stowed it before walking to the next stop',()=>{
+  const frames=new Set<number>();
+  for(let time=0;time<12000;time+=20){const pose=streetResidentPose('tourist',time,true);frames.add(touristCameraFrame(pose));assert.notEqual(pose.frame,14,'the tourist never borrows the drinking pose');}
+  for(const frame of [8,19,20,21,22,29,30,31,42,7])assert(frames.has(frame),'camera phase '+frame+' is reachable');
+  const leaving=touristFramePose(touristCameraFrame(streetResidentPose('tourist',12000,true)));
+  assert.equal(leaving.lift,0);assert.equal(leaving.grip,0);
+  for(const state of [{action:'walk' as const,frame:3,progress:.3},{action:'idle' as const,frame:6,progress:0}]){
+    const pose=touristFramePose(touristCameraFrame(state));assert.equal(pose.stage,'carry');assert.equal(pose.grip,0);
+  }
+});
 
 test('street pedestrians stay on the pavement and traffic stays in separate road lanes', () => {
   const life=new StreetLife(),visibility=new Map<string,Set<boolean>>();

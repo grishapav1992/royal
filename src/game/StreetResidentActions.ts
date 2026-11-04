@@ -16,12 +16,11 @@ export type StreetResidentPose={action:Action;progress:number;frame:number;facin
 export function streetResidentPose(id:StreetResidentId,time:number,motion:boolean,talking=false):StreetResidentPose {
   if(!motion||talking)return {action:'idle',progress:0,frame:6};
   const beats=routines[id],duration=beats.reduce((sum,beat)=>sum+beat[1],0);
-  let phase=((Number.isFinite(time)?Math.max(0,time):0)+(id==='tourist'?1400:id==='mascot'?700:0))%duration;
+  let phase=((Number.isFinite(time)?Math.max(0,time):0)+(id==='mascot'?700:0))%duration;
   for(const [action,length] of beats){
     if(phase>=length){phase-=length;continue;}
     const progress=phase/length;
-    const holdsCamera=id==='tourist'&&['frame-photo','take-photo','review-photo'].includes(action);
-    const frame=holdsCamera?14:action==='coffee'?11+Math.min(5,Math.floor(progress*6)):action==='look-around'||action==='greet'?7:action==='rest'?9:6;
+    const frame=action==='coffee'?11+Math.min(5,Math.floor(progress*6)):action==='look-around'||action==='greet'?7:action==='rest'?9:6;
     const facing:Facing|undefined=id==='tourist'?(action==='review-photo'?'down':action==='look-around'?'right':'up'):undefined;
     return {action,progress,frame,facing};
   }
