@@ -51,7 +51,9 @@ test('seated rest, layered contact and localized bar are usable at real desktop 
   test.setTimeout(65000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto('/?offline=1');await page.locator('#loading').waitFor({state:'detached'});
   await expect.poll(async()=>(await state(page)).mira.action,{timeout:50000,intervals:[500]}).toBe('sit');
-  const rest=(await state(page)).mira;expect(rest.seatAmount).toBe(1);expect(rest.renderY-rest.y).toBeCloseTo(32);
+  const rest=(await state(page)).mira;expect(rest.seatAmount).toBe(1);expect(rest.artVersion).toBe(2);
+  expect(rest.joints.hip.y).toBeGreaterThan(440);expect(rest.joints.hip.y).toBeLessThan(454);
+  expect(rest.joints.rightHand.y).toBeGreaterThan(445);expect(rest.joints.rightHand.y).toBeLessThan(464);
   await page.screenshot({path:'artifacts/work/royal-bar-mira/seated-desktop.png'});
   await page.route('**/api/npc/mira',route=>route.fulfill({json:{turns:[{role:'assistant',content:'Ну? Чем удивишь?'}]}}));
   await page.locator('#visit-bar').click();await expect(page.locator('#bar-dialog')).toBeVisible({timeout:20000});

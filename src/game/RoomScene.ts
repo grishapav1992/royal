@@ -35,6 +35,7 @@ import { parseGeneratedAppearance } from '../shared/skinStudio';
 import { hasSkinSheet } from './generatedSkinArt';
 import { advanceCharacterMotion, characterRestScale, createCharacterMotion, type CharacterMotion } from './characterAnimation';
 import { Bar } from './Bar';
+import { preloadRoyalBarArt } from './royalBarArt';
 import { drawActivities } from './activityArt';
 import { ACTIVITIES, type ActivityId } from '../shared/activities';
 import { movementFacing } from '../shared/movement';
@@ -127,6 +128,7 @@ export class RoomScene extends Phaser.Scene {
     super('room'); this.onNear = options.onNear; this.onPlay = options.onPlay; this.onReady = options.onReady;
   }
   preload() {
+    preloadRoyalBarArt(this);
     this.load.image(ATELIER_TEXTURE, ATELIER_SPRITE);
     this.load.image(ATELIER_EMPTY_TEXTURE, ATELIER_EMPTY_SPRITE);
     this.load.spritesheet(TAILOR_TEXTURE, TAILOR_SPRITE, { frameWidth: 256, frameHeight: 384 });
