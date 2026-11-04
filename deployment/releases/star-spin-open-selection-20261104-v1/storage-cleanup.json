@@ -1,5 +1,5 @@
 {
-  "status": "planned",
+  "status": "blocked_by_automatic_approval_review",
   "owner": "codex/star-spin-collection-clarity",
   "preservationCommits": [
     "320d60725984c5cbd46829e9dc545f59cf9cd162",
@@ -64,5 +64,15 @@
       }
     ],
     "cleanupCondition": "After shared publication reservation ends and a completed maintenance run verifies the current application and rollback. Do not interrupt player-recovery-20261104-v2."
-  }
+  },
+  "reason": "blocked by policy",
+  "commandExecuted": false,
+  "removedDirectories": 0,
+  "removedLogicalBytes": 0,
+  "preservedFiles": 390,
+  "preservedBytes": 229872361,
+  "freeAfterBytes": 305478709248,
+  "physicalSpaceReclamationClaimed": false,
+  "noRetry": true,
+  "cleanupCondition": "A later authorized cleanup must preserve the active package and all previously rejected paths. No bypass attempt was made."
 }
