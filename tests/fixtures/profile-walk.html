@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Боковая походка персонажей</title>
+<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Походка персонажей</title>
 <style>
   body { margin: 24px; color: #eee3d4; background: #38283d; font: 16px system-ui; }
   h1 { font-size: 24px; } button, select { padding: 8px 14px; font: inherit; }
@@ -9,8 +9,8 @@
   figcaption { max-width: 128px; font-size: 13px; } #atlas { display: none; }
   #phases { margin-top: 24px; } #phases canvas { width: 768px; max-width: 100%; }
 </style></head><body>
-<h1>Боковая походка персонажей</h1>
+<h1>Походка персонажей</h1>
 <button id="play">Пауза</button> <button id="rest">Стоять</button>
-<select id="direction"><option value="right">Вправо</option><option value="left">Влево</option></select>
+<select id="direction" aria-label="Ракурс"><option value="up">Сзади</option><option value="down">Спереди</option><option value="right">Справа</option><option value="left">Слева</option></select>
 <div id="characters"></div><div id="phases"></div><div id="atlas"></div>
 <script type="module" src="./profile-walk.ts"></script></body></html>

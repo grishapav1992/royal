@@ -6,6 +6,8 @@ import {createHash} from 'node:crypto';
 const folder='deployment/releases/star-spin-open-selection-20261104-v1';
 const before=JSON.parse(fs.readFileSync(process.argv[2],'utf8')),out=path.resolve(process.argv[3]);
 const scope=JSON.parse(fs.readFileSync(folder+'/scope.json'));
+const preparedBefore=process.argv[5]?JSON.parse(fs.readFileSync(process.argv[5],'utf8')):before;
+const frontendAdvance=process.argv[6]?JSON.parse(fs.readFileSync(process.argv[6],'utf8')):null;
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const git=(...args)=>execFileSync('git',args,{maxBuffer:64*1024**2});
 assert.equal(git('status','--porcelain').toString().trim(),'');
@@ -22,18 +24,43 @@ for(const n of ['host-projection.json','backend-projection.json'])assert.equal(s
 for(const n of ['prepare.mjs','scope.json','deploy.py','snapshot.py'])assert.equal(sha(git('show','HEAD:'+folder+'/'+n)),sha(git('show',installerCommit+':'+folder+'/'+n)),'Installer working source differs');
 for(const [file,hash]of Object.entries(release.files))assert.equal(sha(fs.readFileSync(file)),hash,'Prepared artifact changed: '+file);
 assert.equal(sha(fs.readFileSync('module-build/release-manifest.json')),receipt.manifestSha256);
-assert.equal(release.baseCommit,before.sourceCommit);assert(release.clean&&release.build.passed);
+assert.equal(release.baseCommit,preparedBefore.sourceCommit);assert(release.clean&&release.build.passed);
+if(before.sourceCommit!==preparedBefore.sourceCommit){
+ assert(frontendAdvance);assert.equal(frontendAdvance.release,scope.allowedFrontendAdvance.release);assert.deepEqual(frontendAdvance.sourceChanges,scope.allowedFrontendAdvance.sourceChanges);
+ git('merge-base','--is-ancestor',frontendAdvance.sourceCommit,release.sourceCommit);
+ assert.equal(before.sourceCommit,frontendAdvance.sourceCommit);assert.equal(before.sourceRevision,before.sourceCommit);
+ assert.equal(before.preparedImage,frontendAdvance.image);assert.equal(before.container.image,frontendAdvance.image);
+ assert(frontendAdvance.clientDelta['index.html']);
+ for(const n of Object.keys(frontendAdvance.clientDelta))assert(n==='index.html'||/^assets\/[a-zA-Z0-9_-]+\.(?:js|css)$/.test(n));
+ for(const key of ['runtimeHash','mounts','host','composeFiles'])assert.deepEqual(before.container[key],preparedBefore.container[key]);
+ assert.equal(before.serviceProfiles['royal-game-1'].profileSha256,preparedBefore.serviceProfiles['royal-game-1'].profileSha256);
+ const expected=structuredClone(preparedBefore),actual=structuredClone(before);
+ for(const key of ['source','sourceLF'])Object.assign(expected[key],frontendAdvance.sourceChanges);
+ for(const key of ['program','preparedProgram'])Object.assign(expected[key],Object.fromEntries(Object.entries(frontendAdvance.clientDelta).map(([n,h])=>['dist/'+n,h])));
+ for(const key of ['sourceCommit','sourceRevision','container','preparedImage'])expected[key]=actual[key];
+ expected.services['/royal-game-1']=actual.services['/royal-game-1'];expected.serviceProfiles['royal-game-1']=actual.serviceProfiles['royal-game-1'];
+ for(const key of ['at','availableBytes']){delete expected[key];delete actual[key];}
+ assert.deepEqual(actual,expected,'Unrelated production change during frontend advance');
+}
 assert.equal(before.container.health,'healthy');assert.equal(before.container.image,before.preparedImage);assert.deepEqual(before.program,before.preparedProgram);
 assert.equal(before.program['dist-server/index.js'],scope.baselineBackendSha256);
 for(const [key,preserved]of [['hostProjection',{}],['backendProjection',scope.preservedBackendInputs]]){
- const graph=release[key];assert.deepEqual(graph,release.build[key]);assert.equal(graph.productionCommit,before.sourceCommit);
- for(const [file,hash]of Object.entries(graph.inputs))assert((preserved[file]||scope.expectedSources[file]||before.source[file])===hash||before.sourceLF[file]===hash,'Unrelated input: '+file);
+ const graph=release[key],baseline=key==='hostProjection'?preparedBefore:before;assert.deepEqual(graph,release.build[key]);assert.equal(graph.productionCommit,preparedBefore.sourceCommit);
+ for(const [file,hash]of Object.entries(graph.inputs))assert((preserved[file]||scope.expectedSources[file]||baseline.source[file])===hash||baseline.sourceLF[file]===hash,'Unrelated input: '+file);
 }
-for(const [file,hash]of Object.entries(release.files))if(file.startsWith('dist/'))assert.equal(before.program[file],hash,'Host would change: '+file);
+for(const [file,hash]of Object.entries(release.files))if(file.startsWith('dist/'))assert.equal(preparedBefore.program[file],hash,'Prepared host differs: '+file);
 assert(!fs.existsSync(out),'Payload already exists');fs.mkdirSync(out,{recursive:true});fs.mkdirSync(path.join(out,'dist-delta'));
 function write(file,bytes){assert(!path.isAbsolute(file)&&!file.split('/').some(p=>!p||p==='.'||p==='..'||p.startsWith('.env')));const target=path.join(out,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,bytes,{flag:'wx'});return sha(bytes);}
 const committed=file=>git('show',release.sourceCommit+':'+file);
 const installerSource=file=>git('show',installerCommit+':'+file);
+const moduleConfig=git('show',scope.selectionSourceCommit+':tsconfig.json');
+const baselineOrigin=release.backendProjection.origins['tsconfig.json'];
+assert(!baselineOrigin.patches?.length);
+const baselineConfig=git('show',baselineOrigin.commit+':'+baselineOrigin.path);
+const expectedConfig=JSON.parse(baselineConfig);expectedConfig.compilerOptions.resolveJsonModule=true;
+assert.deepEqual(JSON.parse(moduleConfig),expectedConfig);
+assert.equal(sha(baselineConfig),before.sourceLF['tsconfig.json']);assert.equal(sha(moduleConfig),scope.moduleBuildInputs['tsconfig.json']);
+const moduleBuildConfiguration={baselineSha256:write('baseline-tsconfig.json',baselineConfig),selectedSha256:write('module-tsconfig.json',moduleConfig)};
 const changed={};
 for(const [file,hash]of Object.entries(scope.expectedSources)){const bytes=git('show',scope.selectionSourceCommit+':'+file);assert.equal(sha(bytes),hash);changed[file]=write('source/'+file,bytes);}
 assert.equal(release.backendProjection.inputs['server/starSpinCollection.ts'],changed['server/starSpinCollection.ts']);
@@ -67,7 +94,7 @@ const scopeSha256=write('scope.json',installerSource(folder+'/scope.json'));
 const helperReceipt={format:1,sourceCommit:installerCommit,parentCommit:installerParent,applicationSourceCommit:release.sourceCommit,remoteMain:git('rev-parse','origin/main').toString().trim(),checkedAt:new Date().toISOString(),changedOnlyReleaseTooling:installerChanges};
 const helperReceiptSha256=write('installer-github.json',Buffer.from(JSON.stringify(helperReceipt,null,2)+'\n'));
 const helperSha256=write('deploy.py',installerSource(folder+'/deploy.py')),snapshotSha256=write('snapshot.py',installerSource(folder+'/snapshot.py'));
-const manifest={release:scope.name,sourceCommit:release.sourceCommit,helperSourceCommit:installerCommit,helperReceiptSha256,scopeSha256,baseCommit:before.sourceCommit,before,changed,delta:{},serverDelta,support,helperSha256,snapshotSha256,previousVersion,
+const manifest={release:scope.name,sourceCommit:release.sourceCommit,helperSourceCommit:installerCommit,helperReceiptSha256,scopeSha256,moduleBuildConfiguration,baseCommit:before.sourceCommit,before,preparedBefore,frontendAdvance,changed,delta:{},serverDelta,support,helperSha256,snapshotSha256,previousVersion,
  package:{version:target.version,contract:target.contract,files,manifestSha256:target.manifestSha256,pointerSha256:target.pointerSha256},
  releaseManifestSha256:sha(fs.readFileSync('module-build/release-manifest.json')),receiptSha256:sha(fs.readFileSync('module-build/release-github.json')),addedGames:[],restoredGames:[]};
 write('install-manifest.json',Buffer.from(JSON.stringify(manifest,null,2)+'\n'));
