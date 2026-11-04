@@ -1,14 +1,5 @@
 import type { Point } from './navigation';
-import {ROOF_WINDOW_PLATFORM,ROOF_STAIR_DRAW,onRoofWindowPlatform} from '../shared/rooftop';
-
-/** Leave time to choose the balcony before a held vertical key starts its next flight. */
-export class RoofLandingPause {
-  private held=0;
-  input(y:number){if(y!==this.held){this.held=0;return y;}return 0;}
-  arrive(before:Point&{stairStep?:number},after:Point&{stairStep?:number},y:number){
-    if(y&&!onRoofWindowPlatform(before)&&onRoofWindowPlatform(after))this.held=Math.sign(y);
-  }
-}
+import {ROOF_WINDOW_PLATFORM,ROOF_STAIR_DRAW} from '../shared/rooftop';
 
 /** Match the painted escape, keeping the pavement below it outside the hit area. */
 export function roofStairContains(point:Point,route:readonly Point[],overview:boolean):boolean {

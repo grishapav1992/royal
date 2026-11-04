@@ -94,12 +94,20 @@ export function moveRoofStairs(body:StairPosition&{moving:boolean},input:{x:numb
   if(onRoofWindowPlatform(body)){
     const p=ROOF_WINDOW_PLATFORM;
     // Horizontal input stays on the platform. Only explicit up/down can select a flight.
-    if(!input.y||roofWindowPlatformOffset(body)>ROOF_STAIR_EPSILON){
-      const before=body.x,dx=input.y?-p.direction:Math.sign(input.x),end=roofWindowPlatformPosition(p.length).x;
+    if(!input.y||roofWindowPlatformOffset(body)>ROOF_STAIR_EPSILON||!input.route&&input.x){
+      const before=body.x,dx=input.x?Math.sign(input.x):-p.direction,end=roofWindowPlatformPosition(p.length).x;
       body.x=Math.max(Math.min(p.junction.x,end),Math.min(Math.max(p.junction.x,end),body.x+dx*distance));
       body.y=p.junction.y;body.moving=Math.abs(body.x-before)>.001;
       return true;
     }
+  }
+  const p=ROOF_WINDOW_PLATFORM,joinDistance=Math.hypot(body.x-p.junction.x,body.y-p.junction.y);
+  if(!input.route&&Math.sign(input.x)===p.direction&&[p.index,p.index+1].includes(body.stairStep??0)&&joinDistance<=50&&joinDistance>ROOF_STAIR_EPSILON){
+    const direction=body.y>p.junction.y?1:-1,fraction=Math.min(1,distance/joinDistance);
+    body.x+=(p.junction.x-body.x)*fraction;body.y+=(p.junction.y-body.y)*fraction;
+    body.stairDirection=direction;
+    if(fraction===1){body.x=p.junction.x;body.y=p.junction.y;body.stairStep=p.index+(direction===1?1:0);}
+    body.moving=true;return true;
   }
   if(!input.route&&!input.y)return true;
   const options=roofStairOptions(body);

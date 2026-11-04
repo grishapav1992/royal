@@ -6,7 +6,6 @@ import {ROOF_STAIR_ROUTE,ROOF_WINDOW_PLATFORM,onRoofWindowPlatform,moveRoofStair
 import {StreetView} from '../src/game/streetView';
 import {stairWindowFrame,stairWindowPlatform} from '../src/game/StairWindowRenderer';
 import {roofStairContains} from '../src/game/roofStairInput';
-import {RoofLandingPause} from '../src/game/roofStairInput';
 import {REAR_WINDOW} from '../src/game/rearWindowLife';
 import {findPath,walkable} from '../src/game/navigation';
 import {applyMovementInput} from '../src/shared/movement';
@@ -80,16 +79,6 @@ test('horizontal keys cannot climb a flight; vertical keys follow either switchb
     for(const y of [-1,1]){const p={...start};moveRoofStairs(p,{x:0,y},10);assert.equal(Math.sign(p.y-start.y),y);}
   }
 });
-test('a held vertical key rests at the middle balcony until released or reversed',()=>{
-  const p=ROOF_WINDOW_PLATFORM;
-  for(const y of [-1,1]){
-    const pause=new RoofLandingPause(),before={x:p.junction.x-4,y:p.junction.y+y,stairStep:y<0?p.index:p.index+1},after={...p.junction,stairStep:p.index};
-    pause.arrive(before,after,y);assert.equal(pause.input(y),0);
-    assert.equal(pause.input(y),0);assert.equal(pause.input(0),0);assert.equal(pause.input(y),y);
-    pause.arrive(before,after,y);assert.equal(pause.input(-y),-y);
-    const clickPause=new RoofLandingPause();clickPause.arrive(before,after,0);assert.equal(clickPause.input(y),y);
-  }
-});
 test('walking through the window accepts its full glass width without granting access from a flight or ground',()=>{
   for(const offset of [ROOF_WINDOW_PLATFORM.windowOffset-40,ROOF_WINDOW_PLATFORM.windowOffset,ROOF_WINDOW_PLATFORM.length]){
     const p={hall:'street',...roofWindowPlatformPosition(offset),stairStep:7};assert(canWalkThroughStairWindow(p));
@@ -97,6 +86,14 @@ test('walking through the window accepts its full glass width without granting a
   }
   assert(!canWalkThroughStairWindow({hall:'street',...STAIR_WINDOW.landing,stairStep:7}));
   assert(canWalkThroughStairWindow({hall:'github',...STAIR_WINDOW.entry}));
+});
+test('turning toward the balcony guides from either adjoining flight without a precision stop',()=>{
+  const j=ROOF_WINDOW_PLATFORM.junction;
+  for(const y of [-4,4]){
+    const p={x:j.x-34,y:j.y+y,stairStep:y>0?6:7,stairDirection:1,moving:false};
+    for(let i=0;i<20;i++)moveRoofStairs(p,{x:-1,y:0},5);
+    assert(onRoofWindowPlatform(p));assert(p.x<j.x-40);assert.equal(p.y,j.y);
+  }
 });
 
 test('manual window admission verifies height, revision and busy state, then preserves progress and identity',async context=>{
