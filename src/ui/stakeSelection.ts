@@ -7,10 +7,11 @@ function supportedHost() {
   const host=(globalThis as unknown as Record<symbol,{manualStakes?:1}>)[Symbol.for('royal.game-host.v1')];
   return !host||host.manualStakes===1;
 }
-const wagerButtons = '[data-cc-spin],[data-lg-spin],[data-cc-auto],[data-lg-auto],[data-cc-buy],[data-lg-buy],'
-  + '[data-gn="spin"],[data-gn="auto"],[data-ft="primary"],[data-ft="auto"],[data-start],[data-shoot],[data-fight],'
-  + '[data-ct-action="play"],[data-ct-action="buy"],[data-ct-action="auto"],[data-fh="spin"],[data-fh="auto"],'
-  + '[data-np="spin"],[data-np="auto"],[data-fb="play"],[data-rr="spin"],[data-vp="drop"],#spin,#autoplay';
+function wagerButton(target: Element) {
+  const button=target.closest('button');
+  return button&&Array.from(button.attributes).some(attribute=>(attribute.name==='id'||attribute.name.startsWith('data-'))
+    && /(?:^|-)(?:spin|play|fight|shoot|start|auto|autoplay|buy|drop|primary)(?:$|-)/i.test(attribute.name+'-'+attribute.value));
+}
 
 /** Invalid drafts never silently submit the last valid amount. */
 export function validStakeDraft(root: HTMLElement, report = false): boolean {
@@ -70,7 +71,7 @@ function fieldFor(select: HTMLSelectElement, scale: number): StakeField {
   if (!guarded.has(root)) {
     guarded.add(root);
     root.addEventListener('click', event => {
-      if ((event.target as Element).closest(wagerButtons) && !validStakeDraft(root, true)) {
+      if (wagerButton(event.target as Element) && !validStakeDraft(root, true)) {
         event.preventDefault(); event.stopImmediatePropagation();
       }
     }, true);
@@ -88,6 +89,7 @@ function setOption(select: HTMLSelectElement, value: string, historical: boolean
   if (!Array.from(select.options).some(option => option.value === value)) {
     const option = select.ownerDocument.createElement('option'); option.value = value;
     option.textContent = (Number(value) / scale).toFixed(2) + ' USDT'; option.disabled = historical;
+    if(historical)option.dataset.historicalStake='true';
     option.dataset.extraStake = 'true'; select.append(option);
   }
 }

@@ -184,7 +184,8 @@ export class Dracona {
     const locked = this.busy || auto.active || blocked || !!pending;
     this.find('#balance').textContent = amount(this.balance);
     this.find('#bet-value').textContent = amount(free ? this.lockedBet : this.bet);
-    syncStakeSelect(this.find<HTMLSelectElement>('#bet-select'),String(free?this.lockedBet:this.bet),this.bets,locked||free,1);
+    const selected=Number(syncStakeSelect(this.find<HTMLSelectElement>('#bet-select'),String(free?this.lockedBet:this.bet),this.bets,locked||free,1));
+    if(!free)this.bet=selected;
     const spin = this.find<HTMLButtonElement>('#spin'); spin.disabled = !ready || this.busy || auto.active || blocked || (pending ? !retry : !free && this.balance < this.bet);
     spin.querySelector('.spin-label')!.textContent = this.busy || this.client.busy ? 'МАГИЯ…' : retry ? 'ПРОВЕРИТЬ' : free ? 'БЕСПЛАТНО' : 'ВРАЩАТЬ';
     this.find<HTMLButtonElement>('#bet-down').disabled = locked || free || this.bet === this.bets[0];

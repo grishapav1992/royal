@@ -42,6 +42,15 @@ const registry=JSON.parse(fs.readFileSync('scripts/game-math/rtp-policy.json'));
 const ids=new Set(Object.keys(registry.stakePolicies).filter(g=>g!=='tsu-e-fa'));
 const games=fs.readdirSync('games').filter(slug=>{try{return ids.has(JSON.parse(fs.readFileSync('games/'+slug+'/package.json')).gameId);}catch{return false;}});
 assert.equal(games.length,19);
+for(const slug of games){
+  const name='games/'+slug+'/package.json',row=files[name],raw=canonical(git('show',row.commit+':'+row.path)).toString(),config=JSON.parse(raw),target=snapshot.moduleHost.games[config.gameId];
+  assert.equal(config.apiVersion,target.apiVersion);assert.equal(config.rulesVersion,target.rulesVersion);
+  if(config.progressVersion!==target.progressVersion){
+    assert(config.gameId==='studio-afterglow'&&target.progressVersion===3,'Unqualified module progress projection');
+    const from='"progressVersion": '+config.progressVersion,to='"progressVersion": '+target.progressVersion;
+    assert.equal(raw.split(from).length,2);files[name]={...row,patches:[...(row.patches??[]),{from,to}],sha256:digest(Buffer.from(raw.replace(from,to)))};
+  }
+}
 const assets={};
 for(const [name,hash]of Object.entries(snapshot.source))if(/^(?:public\/assets\/|games\/.*\/assets\/)/.test(name)&&fs.existsSync(name)){
   const bytes=fs.readFileSync(name),actual=digest(bytes);
@@ -73,8 +82,10 @@ for(const name of nativeEntries)if(!files[name]){
   const p=JSON.parse(fs.readFileSync('deployment/releases/star-spin-20261103-v1/native-projection.json')).files[name];
   assert(p&&(p.sha256===snapshot.source[name]||p.sha256===snapshot.sourceLF[name]));files[name]=p;beforeFiles[name]=p;
 }
-fs.writeFileSync(folder+'/native-before-projection.json',JSON.stringify({...base,entries:nativeEntries,files:beforeFiles},null,2)+'\n');
-fs.writeFileSync(folder+'/native-projection.json',JSON.stringify({...base,entries:nativeEntries},null,2)+'\n');
+if(!process.argv.includes('--refresh-client')){
+  fs.writeFileSync(folder+'/native-before-projection.json',JSON.stringify({...base,entries:nativeEntries,files:beforeFiles},null,2)+'\n');
+  fs.writeFileSync(folder+'/native-projection.json',JSON.stringify({...base,entries:nativeEntries},null,2)+'\n');
+}
 const expectedSources=Object.fromEntries(Object.entries(files).filter(([n,row])=>snapshot.source[n]&&row.sha256!==snapshot.sourceLF[n]).map(([n,row])=>[n,row.sha256]));
 for(const name of changed)if(/^(src|server|games)\/.+\.(?:ts|json|css)$/.test(name)&&!snapshot.source[name])expectedSources[name]=files[name].sha256;
 fs.writeFileSync(folder+'/scope.json',JSON.stringify({format:1,baseCommit:snapshot.sourceCommit,expectedSources,moduleGames:games,addedGames:[],restoredGames:[]},null,2)+'\n');
