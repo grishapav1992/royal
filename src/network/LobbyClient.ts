@@ -14,6 +14,7 @@ import { LOBBY_RECOVERY_WINDOW_MS } from '../shared/lobbyConnection';
 import type { CabinetPlayResult } from '../shared/cabinetSeating';
 import type { ChatRequest, ChatResult } from '../shared/chat';
 import type { PvpSnapshot } from '../shared/pvp';
+import type { PlayerRecoveryResult } from '../shared/playerRecovery';
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
 export class LobbyClient {
   private client = new Client(import.meta.env.VITE_SERVER_URL || `${location.origin}${import.meta.env.DEV ? '/multiplayer' : ''}`, { fetchFn: lobbyMatchmakingFetch });
@@ -28,6 +29,8 @@ export class LobbyClient {
   private activities?:ActivitiesState;
   private cabinetRequest = 0;
   private elevatorRequest = 0;
+  private recoveryRequest = 0;
+  private pendingPlayerRecovery?: { requestId: number; hall?: HallId; revision?: number; finish: (accepted: boolean) => void; timer: ReturnType<typeof setTimeout> };
   private hall?: HallId;
   private pendingElevator?: { target: HallId; requestId: number; revision?: number; finish: (accepted: boolean) => void; timer: ReturnType<typeof setTimeout> };
   private releaseCabinetWhenConnected = false;
@@ -145,6 +148,17 @@ export class LobbyClient {
           this.confirmElevator();
         }
       });
+      onMessage('unstuck-result', (result: PlayerRecoveryResult) => {
+        const pending = this.pendingPlayerRecovery;
+        if (!pending || result.requestId !== pending.requestId) return;
+        if (!result.accepted) {
+          if (result.reason) this.events.notice(translateText(result.reason));
+          this.finishPlayerRecovery(false);
+        } else if (Number.isSafeInteger(result.revision)) {
+          pending.revision = result.revision;
+          this.confirmPlayerRecovery();
+        }
+      });
       onMessage('activities', (message:ActivitiesMessage) => {
         // Patches received before the initial snapshot cannot establish a baseline.
         if('patch' in message&&!this.activities)return;
@@ -171,6 +185,7 @@ export class LobbyClient {
         this.events.guards(guards);
         this.events.players(players, room.sessionId);
         this.confirmElevator();
+        this.confirmPlayerRecovery();
         const guests:AmbientGuestView[]=[];
         state.guests?.forEach(guest=>guests.push({id:guest.id,name:guest.name,hall:guest.hall as AmbientGuestView['hall'],x:guest.x,y:guest.y,skin:guest.skin,facing:guest.facing as AmbientGuestView['facing'],moving:guest.moving,mood:guest.mood as AmbientGuestView['mood'],drink:guest.drink,seat:guest.seat,destination:guest.destination}));
         this.events.guests(guests);
@@ -237,6 +252,7 @@ export class LobbyClient {
     this.status = status;
     if (status !== 'connected') this.events.checking(false);
     if (status !== 'connected') this.finishElevator(false);
+    if (status !== 'connected') this.finishPlayerRecovery(false);
     if (status !== 'connected' && this.pendingCabinet) {
       this.releaseCabinetWhenConnected = true;
       const pending = this.pendingCabinet; this.pendingCabinet = undefined;
@@ -248,6 +264,24 @@ export class LobbyClient {
   releaseCabinet() {
     this.releaseCabinetWhenConnected = this.status !== 'connected';
     if (!this.releaseCabinetWhenConnected) this.room?.send('playing', false);
+  }
+  private finishPlayerRecovery(accepted: boolean) {
+    const pending = this.pendingPlayerRecovery;
+    if (!pending) return;
+    this.pendingPlayerRecovery = undefined; clearTimeout(pending.timer); pending.finish(accepted);
+  }
+  private confirmPlayerRecovery() {
+    const pending = this.pendingPlayerRecovery;
+    if (pending?.revision !== undefined && this.hall === pending.hall && this.revision >= pending.revision) this.finishPlayerRecovery(true);
+  }
+  recoverPlayer(): Promise<boolean> {
+    if (this.status !== 'connected' || !this.room || this.pendingPlayerRecovery) return Promise.resolve(false);
+    return new Promise(resolve => {
+      const requestId = ++this.recoveryRequest;
+      const timer = setTimeout(() => this.finishPlayerRecovery(false), 8000);
+      this.pendingPlayerRecovery = { requestId, hall: this.hall, finish: resolve, timer };
+      this.send('unstuck', { requestId, revision: this.revision });
+    });
   }
   claimCabinet(id: string): Promise<boolean> {
     if (this.status !== 'connected' || !this.room || this.pendingCabinet) return Promise.resolve(false);

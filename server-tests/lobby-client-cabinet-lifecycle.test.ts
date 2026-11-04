@@ -53,6 +53,19 @@ async function fixture(context: TestContext) {
   return { client, room, notices, ejections, statuses, releases, request, reply };
 }
 
+test('player recovery waits for its matching authoritative state and fails on disconnect', async context => {
+  const f = await fixture(context);
+  (f.client as any).hall='arcade'; (f.client as any).revision=0;
+  const pending=f.client.recoverPlayer(),request=f.room.packets.at(-1)!.value;
+  assert.equal(await f.client.recoverPlayer(),false);
+  f.room.handlers.get('unstuck-result')!({...request,requestId:request.requestId+1,accepted:true,revision:1});
+  assert.equal((f.client as any).pendingPlayerRecovery.revision,undefined);
+  f.room.handlers.get('unstuck-result')!({...request,accepted:true,revision:1});
+  assert((f.client as any).pendingPlayerRecovery,'acknowledgement alone cannot unlock the old position');
+  (f.client as any).revision=1;(f.client as any).confirmPlayerRecovery();assert.equal(await pending,true);
+  const retry=f.client.recoverPlayer();f.room.drop();assert.equal(await retry,false);
+});
+
 test('claim results match both cabinet and request, and a refused request permits a retry', async context => {
   const f = await fixture(context), pending = f.client.claimCabinet('royal-fruits'), firstRequest = f.request();
   assert.equal(await f.client.claimCabinet('royal-dice'), false, 'only one admission request can be in flight');

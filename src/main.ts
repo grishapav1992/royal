@@ -1,3 +1,4 @@
+import { installPlayerRecoverySettings } from './ui/PlayerRecoverySettings';
 import { FlagToteAnnouncement } from './ui/FlagToteAnnouncement';
 import './i18n/paymentMethodsEn';
 import { IndependentGameUI } from './modules/IndependentGameUI';
@@ -158,6 +159,7 @@ async function selectPlatformGame(choice: PlatformChoice) {
 
 $('#studio-game-list').addEventListener('click', showPlatformCatalog);
 async function play(cabinet: Cabinet) {
+  const recoveryVersion = playerRecoveryVersion;
   if (openingCabinet || document.querySelector('dialog[open]')) return;
   if (!cabinet.playable) { toast(tr`${cabinet.name} пока недоступен.`); return; }
   const physical = CABINETS.find(c => c.id === cabinet.id);
@@ -170,7 +172,7 @@ async function play(cabinet: Cabinet) {
       return;
     }
     await new Promise(resolve => setTimeout(resolve, room.getState().reducedMotion ? 0 : 420));
-    if (room.getState().security || (social && social.client.status !== 'connected')) { room.endCabinet(); return; }
+    if (recoveryVersion !== playerRecoveryVersion || room.getState().security || (social && social.client.status !== 'connected')) { room.endCabinet(); return; }
     if (cabinet.collection && cabinet.collection!=='luelon') {
       platformCabinet = cabinet;
       selectedPlatformGame = undefined;
@@ -200,7 +202,7 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound, 
   $('.mini-stats').hidden = !!(platformCabinet || cabinet.demo || cabinet.wallet || cabinet.github);
   $('.demo-footer').hidden = !cabinet.demo;
   $('.mini-top .eyebrow').textContent = cabinet.demo ? translateText('LUELON PLAY / ДЕМО') : 'ROYAL ORIGINALS / 01';
-  $('.mini-top .settings-shortcut').hidden = !!cabinet.demo;
+  $('.mini-top .settings-shortcut').hidden = false;
   $('.mini-bottom kbd').hidden = !!cabinet.demo;
   try { best = Number(localStorage.getItem('royal-'+activeGameId+'-best')) || 0; } catch { best=0; }
   $('#mini-title').textContent = cabinet.name;
@@ -259,6 +261,7 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound, 
   });
 }
 let elevator: ElevatorUI | undefined;
+let playerRecoveryVersion = 0;
 const room = new RoomScene({
   onNear: cabinet => {
     $('#interaction').hidden = !cabinet;
@@ -302,6 +305,15 @@ const room = new RoomScene({
       settings.querySelector('#close-settings')!.addEventListener('click',()=>settings.close());
       settings.addEventListener('close',()=>room.setLocked(Boolean(document.querySelector('dialog[open]'))));
     }
+    installPlayerRecoverySettings($<HTMLDialogElement>('#name-dialog'), async () => {
+      playerRecoveryVersion++;
+      if (!await room.recoverPlayer()) return false;
+      document.querySelectorAll<HTMLDialogElement>('dialog[open]').forEach(dialog => dialog.close());
+      room.setLocked(Boolean(social && social.client.status !== 'connected'));
+      $('#game').focus({ preventScroll: true });
+      toast(translateText('Персонаж вернулся ко входу на этаж.'));
+      return true;
+    });
     layout.attach(room);
     updateHall(room.hall);
   },
