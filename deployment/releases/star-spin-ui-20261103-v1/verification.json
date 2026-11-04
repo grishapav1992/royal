@@ -355,7 +355,8 @@
     "No authenticated production wagers, test accounts or chat messages were created.",
     "Physical phones and tablets were not connected; layout was checked with Chrome viewports.",
     "Existing Rive and audio content was preserved; subjective audio listening was not repeated.",
-    "The shared graph query failed at task start; direct source and complete production inventories were used."
+    "The shared graph query failed at task start; direct source and complete production inventories were used.",
+    "Automatic approval review rejected deletion of the task-owned local temporary folder before execution, with reason blocked by policy. No deletion was retried; the retained data is recorded in storage-cleanup.json."
   ],
   "temporaryData": {
     "owner": "codex/star-spin-ui-priorities",
@@ -363,10 +364,43 @@
     "compiledPreviewStopped": true,
     "compiledPreviewTemporaryDatabaseRemoved": true,
     "cleanup": {
-      "status": "pending-after-report-preservation",
-      "scope": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-ui-release-20261103",
-      "condition": "Remove only this task directory after verification of this report on GitHub; keep active module and every previously rejected cleanup target."
-    }
+      "owner": "codex/star-spin-ui-priorities",
+      "recordedAt": "2026-11-04T09:30:38.195Z",
+      "preservedSourceCommit": "5a4833d71210e68747d07ef4d6300392e154a2b5",
+      "preservedReportCommit": "e91abe92a92135e9c4268b309d3c451c89b184e7",
+      "local": {
+        "status": "blocked-by-automatic-review",
+        "target": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\star-spin-ui-release-20261103",
+        "reason": "blocked by policy",
+        "commandExecuted": false,
+        "attempts": 1,
+        "removedFiles": 0,
+        "removedBytes": 0,
+        "preservedFiles": 70,
+        "preservedBytes": 45278620,
+        "freeObservedBeforeAttempt": 315380248576,
+        "freeObservedAfterAttempt": 315372863488,
+        "physicalDiskReclamationClaimed": false,
+        "previouslyRejectedTargetsRetried": false,
+        "activeModulePreserved": "1.5.0-dfaacbc6bb0f",
+        "cleanupCondition": "Deletion was rejected before execution. Retain the task-owned files until a permitted cleanup can be performed; do not retry during this task."
+      },
+      "server": {
+        "status": "completed",
+        "checkedAtEpoch": 1793784592.3118713,
+        "removedArchive": "/opt/royal-releases/star-spin-ui-20261103-v1/payload.tgz",
+        "removedBytes": 10178393,
+        "freeBefore": 10728751104,
+        "freeAfter": 10738925568,
+        "measuredFreeDelta": 10174464,
+        "sourceCommit": "5a4833d71210e68747d07ef4d6300392e154a2b5",
+        "preservedReportCommit": "e91abe92a92135e9c4268b309d3c451c89b184e7",
+        "activePointerPreserved": true,
+        "requiredRecoveryProofsPreserved": true,
+        "hostRestarted": false
+      }
+    },
+    "activeLocalPackage": "1.5.0-dfaacbc6bb0f"
   },
   "recordedAt": "2026-11-04T09:27:47.441Z",
   "maintenance": {
