@@ -1,0 +1,153 @@
+{
+  "feature": "casino-front-window-interiors",
+  "dateLocal": "2026-11-04",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "frontendSourceCommit": "9f234378a30a9fa944ebbb8ecafea0c00d798554",
+  "backendSourceCommit": "344fc59f5218c944467bb53a24f1958ef3d08fd6",
+  "buildMainBaseline": "970c358577d6d966513645fca2af9795009d412a",
+  "change": "The front facade has fourteen real interior views with ambient walking visitors: bar and cabinets on floor one, six distinct views on each of floors two and three. Future facade rows stay shuttered. Only glass is transparent; native frames, pilasters, canopies, planters, entrance and sign stay above the room layer.",
+  "geometry": {
+    "flat2D": true,
+    "lowerPanes": 2,
+    "upperPanesPerRow": 6,
+    "occupiedFloors": [
+      1,
+      2,
+      3
+    ],
+    "uniqueInteriorViews": 14,
+    "newEntrances": 0,
+    "groundLoopUnchanged": true
+  },
+  "sourceFiles": {
+    "src/game/frontWindowLife.ts": "4701fcc3131680c0ae8b2e568d5832b61b0c8cc5fe21b315abbafbfcb7e2673c",
+    "src/game/frontWindowInteriors.ts": "e8837d2cc1ac40433702525cf00637c4b46d7041d27084e4104edea75221c4cf",
+    "src/game/rearWindowLife.ts": "4c69dd20f4c6075abeccb188d10880c8aaa50221fae043d61338afd7fb88de5a",
+    "src/game/RearCasinoWindows.ts": "4f656b25375f0bd950a7e05b9c67eeeb83541161d1b57de72dfb115f5241a5a1",
+    "src/game/streetArt.ts": "3314e6ee96498d15cd799dcb9c28804bad6a886acc5aef52fd2775b8137903da",
+    "src/game/StreetRenderer.ts": "38e130fe640dcc4737feb1fc126d48ebadc36b1fd08ccc4bfda864ddb923d272"
+  },
+  "testFiles": {
+    "server-tests/front-windows.test.ts": "c4418bbff1f529e164e6b1db4d5d5e5ef0136ebb627a61e0cd898d686339f42b",
+    "server-tests/rear-window-interiors.test.ts": "b50798fe35896c03a719f88ca7bf43de97c16e99c6a37f0f36099251cf418368",
+    "tests/front-windows.spec.ts": "6b51cb3dbbf40f91c645f7016798315c2be1170863332a0b40a8bb3098c8940f",
+    "tests/rooftop.spec.ts": "60a18f1f79d63a969330a92338ed0399a109fd524b0c615b2b47516a4dae25dd",
+    "playwright.street.config.ts": "7312e1335ee74685e56c1ae89762d74ed223809866bb46976b4405e87d7d5ff0",
+    "package.json": "dbfe5dbde49bc13449fd1ca98fb2bca8f9c14745feaefa8eb8bb89af817c1dd5"
+  },
+  "artifactFiles": {
+    "dist/index.html": {
+      "bytes": 799,
+      "sha256": "f79496dc4a26df39ea36ff017bf0b1c50207cbd88eabfddac5f3a9e6f3a1b51c"
+    },
+    "dist-server/index.js": {
+      "bytes": 2444181,
+      "sha256": "da91dae5ea1f10e0ffc4f2e69ce62ece30f56e7791b0b205b3b61909d5489b68"
+    },
+    "dist/assets/main-DMkxwiDw.css": {
+      "bytes": 156273,
+      "sha256": "1cb9d40df51f946507ecdf17192c66601cb54979283d0ec493ae11315a7ffc97"
+    },
+    "dist/assets/main-DR87WHeK.js": {
+      "bytes": 2927022,
+      "sha256": "e6a9fa44534c5f107589d506bbb0b8cd7254d18ec7bb82023f2268e1c47d0680"
+    },
+    "dist/assets/modulepreload-polyfill-B5Qt9EMX.js": {
+      "bytes": 711,
+      "sha256": "d2a32840421496e872ade591618d2fa5c33797605d1aec04301717e5a90757d0"
+    }
+  },
+  "verification": {
+    "typecheckPassed": true,
+    "productionHostBuildPassed": true,
+    "buildScope": "Host graphics only. Server, financial rules, module catalogue and independent game packages are unchanged by this task. Existing backend and module package bytes are retained with their own provenance.",
+    "streetCases": {
+      "passed": 79,
+      "failed": 0,
+      "command": "npm run test:street",
+      "note": "The existing 79 cases passed. The four new front-window cases passed separately after the final view diversity change and are now included in test:street."
+    },
+    "frontCases": {
+      "passed": 4,
+      "failed": 0,
+      "command": "node --import tsx --test server-tests/front-windows.test.ts"
+    },
+    "nativeHost": {
+      "passed": 3,
+      "failed": 0,
+      "frontFacade": [
+        {
+          "device": "desktop",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "durationSeconds": 43.7
+        },
+        {
+          "device": "touch emulation",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "durationSeconds": 43.9
+        }
+      ],
+      "rearRegression": {
+        "device": "touch emulation",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "suite": "tests/rooftop.spec.ts",
+        "totalReported": "2.9m"
+      },
+      "scenarios": [
+        "Actual room captures behind glass with proportionate noninteractive visitors",
+        "Fourteen unique front views from existing halls; no visitors in unbuilt floors",
+        "Walk and pause animation; freeze in overview, rear view, hidden page model and reduced motion",
+        "Opaque wall and original columns, window grids, sign and entrance",
+        "Window click does not enter the building or start an NPC conversation",
+        "Connected chat and unchanged balance while circling the building and returning indoors",
+        "Rear views still capture fifteen actual room sections",
+        "Existing middle-window entry, return, stairs, roof, restroom and descent to the street"
+      ],
+      "frontCommand": "STREET_TEST_WEB_PORT=5193 STREET_TEST_API_PORT=2593 node --import tsx scripts/database-test.ts node_modules/@playwright/test/cli.js test --config=playwright.street.config.ts tests/front-windows.spec.ts",
+      "rearCommand": "STREET_TEST_WEB_PORT=5193 STREET_TEST_API_PORT=2593 node --import tsx scripts/database-test.ts node_modules/@playwright/test/cli.js test --config=playwright.street.config.ts tests/rooftop.spec.ts --project=mobile"
+    },
+    "initialFinding": "At the original ground-level rear test point, a mobile camera did not include any windows. The test now walks closer to the existing rear wall before asserting visible room captures; no camera behavior was changed."
+  },
+  "screenshots": [
+    {
+      "file": "all-floors.png",
+      "sha256": "3cb127761450ccb430a047c7bb00ae3b2d7bb33699282636aa50b2ea4720ff15"
+    },
+    {
+      "file": "desktop-ground.png",
+      "sha256": "c99617b20ebdc41d1c37925f119af2d9800d16ce7ecc20a4e5a9e3bb6eac0eff"
+    },
+    {
+      "file": "desktop-upper.png",
+      "sha256": "e51172a7cfc2d968555d6aa0b4988894f6d9b7986df0981c7c7b1ad9e5887ea4"
+    },
+    {
+      "file": "mobile-ground.png",
+      "sha256": "3c0cdbcb1d5528f44544b104f85da6191be24867cc4987be241c5cde44e68209"
+    },
+    {
+      "file": "mobile-upper.png",
+      "sha256": "fed4beff8fc8c51da75ac5d51c2bf1c55e33f41ba65f7338c1ab14048c033017"
+    },
+    {
+      "file": "rear-window-regression.png",
+      "sha256": "cb44aa81ad165a295c67dde95e91af350dc18ba7d826180b0110562172aac0b0"
+    }
+  ],
+  "preview": "http://127.0.0.1:5191/",
+  "limitations": [
+    "Local preview only.",
+    "Mobile is browser touch emulation, not a physical device.",
+    "Furniture is captured from actual hall artwork; visitors behind glass are ambient characters, not a live player feed."
+  ]
+}
