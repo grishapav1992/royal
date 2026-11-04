@@ -27,7 +27,7 @@ test('front rooms follow actual floors in front-facing order and leave future fl
   for(const floor of [1,2,3]){
     const row=panes.filter(w=>w.floor===floor);assert(row.every(w=>w.room?.floor===floor));
     assert(row.every(w=>HALLS[w.room!.hall].floor===floor));
-    if(floor>1){const xs=row.map(w=>w.room!.anchor.x);assert.deepEqual(xs,[...xs].sort((a,b)=>a-b));assert.equal(new Set(row.map(w=>w.room!.id)).size,5);}
+    if(floor>1){const xs=row.map(w=>w.room!.anchor.x);assert.deepEqual(xs,[...xs].sort((a,b)=>a-b));assert.equal(new Set(row.map(w=>w.room!.id)).size,6);}
   }
   assert(panes.filter(w=>w.floor>3).every(w=>w.room===null));
   assert.deepEqual(panes.filter(w=>w.floor===1).map(w=>w.room!.id),['arcade-mira-bar','arcade-royal-front']);

@@ -49,7 +49,7 @@ test('front facade shows real floors through glass, pauses its visitors and pres
     await expect.poll(async()=>(await state(page)).street.frontWindows.windows.filter((w:any)=>w.onscreen&&w.room&&w.captured).length).toBe(14);
     await page.locator('#game canvas').screenshot({path:'../front-windows-all-floors.png'});await page.setViewportSize(viewport);
   }
-  await overview(page,true);for(const p of [{x:480,y:450},{x:480,y:360},{x:1370,y:360}])await walk(page,p.x,p.y);
+  await overview(page,true);for(const p of [{x:480,y:450},{x:480,y:360},{x:1370,y:360},{x:1370,y:480}])await walk(page,p.x,p.y);
   await overview(page,false);await liveWindows(page,'rear');expect((await state(page)).street.frontWindows.visible).toBe(false);
   const frozen=(await state(page)).street.frontWindows.time;await page.waitForTimeout(250);expect((await state(page)).street.frontWindows.time).toBe(frozen);
   expect((await state(page)).street.rearWindows.entry.available).toBe(false);await page.screenshot({path:'../front-windows-'+info.project.name+'-rear-regression.png'});
