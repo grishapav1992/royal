@@ -63,7 +63,12 @@
         "bytes": 11916091
       }
     ],
-    "cleanupCondition": "After shared publication reservation ends and a completed maintenance run verifies the current application and rollback. Do not interrupt player-recovery-20261104-v2."
+    "cleanupCondition": "After the latest host publication completes maintenance and shared locks are free. Remove only the four exact own transport archives after hash and runtime checks. Do not interrupt other publishers.",
+    "lastObservedAt": "2026-11-04T17:56:51Z",
+    "archivesStillPresent": true,
+    "latestHostRelease": "player-recovery-20261104-v2",
+    "latestPublicationLockOwner": "jackie-motion-20261104-v1",
+    "postStarSpinMaintenanceCompleted": true
   },
   "reason": "blocked by policy",
   "commandExecuted": false,
@@ -74,5 +79,9 @@
   "freeAfterBytes": 305478709248,
   "physicalSpaceReclamationClaimed": false,
   "noRetry": true,
-  "cleanupCondition": "A later authorized cleanup must preserve the active package and all previously rejected paths. No bypass attempt was made."
+  "cleanupCondition": "A later authorized cleanup must preserve the active package and all previously rejected paths. No bypass attempt was made.",
+  "localFollowup": {
+    "removedLogicalBytes": 0,
+    "rejectedTargetsNotRetried": true
+  }
 }

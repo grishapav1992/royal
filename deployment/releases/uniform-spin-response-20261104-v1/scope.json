@@ -2,7 +2,7 @@
   "release": "uniform-spin-response-20261104-v1",
   "featureCommit": "cf412e52339462c26191242069916a735a99739e",
   "motionCommit": "e3cfad45abb0960433fa941b9692699cb024fe14",
-  "productionCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
+  "productionCommit": "97d9eac8e811db0389002ce697865782f9707f41",
   "moduleGames": [
     "cosmic-escape",
     "caramel-carnival",

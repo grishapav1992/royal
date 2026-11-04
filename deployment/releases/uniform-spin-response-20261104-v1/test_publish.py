@@ -14,7 +14,7 @@ def fixture():
  pointers={g:'old-'+g for g in p.GAMES.values()}
  before={'sourceCommit':'b'*40,'sourceLF':{'src/shared/unchanged.ts':'preserved'},'moduleFiles':{str(p.MODULES/g/'active.json'):v for g,v in pointers.items()}}
  release={'scope':'modules','modules':list(p.GAMES),'build':{'passed':True},'sourceCommit':'a'*40,'baseCommit':'b'*40,'packages':[{'gameId':g} for g in p.GAMES.values()],'moduleProjection':{'productionCommit':'b'*40,'inputs':inputs}}
- operator={'sourceCommit':'a'*40,'source':dict.fromkeys(p.SOURCES,'new'),'beforePointers':pointers}
+ operator={'sourceCommit':'a'*40,'buildBaseCommit':'b'*40,'actualBaseCommit':'b'*40,'source':dict.fromkeys(p.SOURCES,'new'),'sourceBefore':dict.fromkeys(p.SOURCES,None),'beforePointers':pointers}
  return release,before,operator
 
 class Guards(unittest.TestCase):
@@ -33,6 +33,22 @@ class Guards(unittest.TestCase):
   changed=copy.deepcopy(before);changed['moduleFiles'][str(p.MODULES/next(iter(p.GAMES.values()))/'active.json')]='a-newer-release'
   with self.assertRaises(RuntimeError):p.validate_scope(release,changed,operator)
 
+ def test_compatible_newer_host_requires_its_explicit_actual_baseline(self):
+  release,before,operator=fixture();before['sourceCommit']='c'*40
+  with self.assertRaises(RuntimeError):p.validate_scope(release,before,operator)
+  operator['actualBaseCommit']='c'*40;p.validate_scope(release,before,operator)
+  changed=copy.deepcopy(before);changed['sourceLF'][p.SOURCES[0]]='concurrent-ui-change'
+  with self.assertRaises(RuntimeError):p.validate_scope(release,changed,operator)
+
+ def test_snapshot_reader_requires_safe_reviewed_dependencies(self):
+  safe='/opt/royal-releases/reviewed/snapshot.py'
+  rows=[{'snapshotReaderPath':'/tmp/unreviewed.py','snapshotSupport':{}},
+        {'snapshotReaderPath':safe,'snapshotSupport':{}},
+        {'snapshotReaderPath':safe,'snapshotSupport':dict.fromkeys(['snapshot.py','snapshot-base.py','image_metadata.py','runtime-inventory.cjs'],'reviewed')}]
+  for op in rows:
+   with patch.object(p,'read',return_value=op),patch.object(p,'sha',return_value='changed'),patch.object(p.subprocess,'check_output') as execute:
+    with self.assertRaises(RuntimeError):p.snapshot()
+    execute.assert_not_called()
  def test_program_receipt_binds_both_immutable_entries(self):
   before={'entry':'old.js','files':{'old.js':'old'}};after={'entry':'new.js','files':{'new.js':'new'}}
   for game in p.GAMES.values():
