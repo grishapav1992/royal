@@ -1,0 +1,39 @@
+{
+  "format": 1,
+  "sourcePreservedInGitHub": "4ea2be9e94c1ba675a0a8069dd5868ca9e07e952",
+  "removedRoot": "<checkout>/artifacts/work/shared-module-cache/cold-output",
+  "removedTemporaryFiles": [
+    "cold.log",
+    "warm.log",
+    "initial-tests.log",
+    "release-tests.log",
+    "final-cache-tests.log",
+    "final-release-tests.log",
+    "builder-integration.log",
+    "worktree-tests.log",
+    "warm-benchmark.mjs",
+    "prepare-warm.ps1",
+    "benchmark-inputs.json",
+    "benchmark-result.json",
+    "cleanup-temporary.ps1"
+  ],
+  "removedFiles": 1588,
+  "removedLogicalBytes": 280203448.0,
+  "freeBefore": 298868228096,
+  "freeAfter": 299150417920,
+  "retainedSharedCache": {
+    "slots": 124,
+    "path": "<git-common-dir>/royal-module-cache/v1",
+    "bytes": 280007015.0,
+    "reason": "Requested bounded cache, one current entry per game"
+  },
+  "retainedCurrentBuild": {
+    "path": "<checkout>/module-dist",
+    "reason": "One verified current version per game, normal build output"
+  },
+  "checkout": {
+    "cleanupCondition": "Retain as current checkout until the app permits archival",
+    "path": "<checkout>",
+    "reason": "Current managed checkout; app rejected archival as primary earlier"
+  }
+}
