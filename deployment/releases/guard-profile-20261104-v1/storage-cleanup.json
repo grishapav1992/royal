@@ -1,0 +1,96 @@
+{
+  "release": "guard-profile-20261104-v1",
+  "sourcePreservedInGithub": [
+    "9d4d015a788efe4e9aec0481c85284a39da3cf54",
+    "39b34944ee46074517c59065bdcf7454789875a4",
+    "4f1140357909a148b2db58f2dbb54c6a6dd5ac86"
+  ],
+  "server": {
+    "maintenanceStatus": "completed",
+    "removedPaths": [
+      "/opt/royal-releases/profile-walk-20261104-v1/__pycache__",
+      "/opt/royal-releases/profile-walk-20261104-v1/after.json",
+      "/opt/royal-releases/profile-walk-20261104-v1/application-overlay.py",
+      "/opt/royal-releases/profile-walk-20261104-v1/before.json",
+      "/opt/royal-releases/profile-walk-20261104-v1/build-result.json",
+      "/opt/royal-releases/profile-walk-20261104-v1/build.log",
+      "/opt/royal-releases/profile-walk-20261104-v1/deploy.py",
+      "/opt/royal-releases/profile-walk-20261104-v1/dist-delta",
+      "/opt/royal-releases/profile-walk-20261104-v1/engine-build.py",
+      "/opt/royal-releases/profile-walk-20261104-v1/image_metadata.py",
+      "/opt/royal-releases/profile-walk-20261104-v1/install-manifest.json",
+      "/opt/royal-releases/profile-walk-20261104-v1/operation.log",
+      "/opt/royal-releases/profile-walk-20261104-v1/overlay-base.py",
+      "/opt/royal-releases/profile-walk-20261104-v1/published.json",
+      "/opt/royal-releases/profile-walk-20261104-v1/quiesce.cjs",
+      "/opt/royal-releases/profile-walk-20261104-v1/release-github.json",
+      "/opt/royal-releases/profile-walk-20261104-v1/release-manifest.json",
+      "/opt/royal-releases/profile-walk-20261104-v1/runtime-context",
+      "/opt/royal-releases/profile-walk-20261104-v1/runtime-inventory.cjs",
+      "/opt/royal-releases/profile-walk-20261104-v1/server-delta",
+      "/opt/royal-releases/profile-walk-20261104-v1/snapshot-base.py",
+      "/opt/royal-releases/profile-walk-20261104-v1/snapshot.py",
+      "/opt/royal-releases/profile-walk-20261104-v1/source",
+      "/opt/royal-backups/profile-walk-20261104-v1"
+    ],
+    "removedImageTags": [
+      "royal-game:before-profile-walk-20261104-v1",
+      "royal-game:before-profile-walk-20261104-v1-prepared",
+      "royal-game:before-star-spin-character-fit-20261104-v1",
+      "royal-game:before-star-spin-ui-20261103-v1",
+      "royal-game:remove-hall-title-20261103-v1"
+    ],
+    "retiredSourceArchive": {
+      "path": "/opt/royal-backups/profile-walk-20261104-v1/source.tgz",
+      "recordedBytes": 15347,
+      "sha256": "5ac3b4379f60411c261391c0a6a6fc9cee812c0de28935a0c17cb37d9307484e",
+      "removedWithDirectory": "/opt/royal-backups/profile-walk-20261104-v1",
+      "sizeEvidence": "Previous verified publication record; history was verified by automatic retention before removal"
+    },
+    "freeBytesBefore": 10571087872,
+    "freeBytesAfter": 10583142400,
+    "freeBytesAtFinalObservation": 10583031808,
+    "retainedCurrentBundle": "/opt/royal-releases/guard-profile-20261104-v1",
+    "retainedRollback": "/opt/royal-backups/guard-profile-20261104-v1",
+    "retainedReason": "Required current release and complete immediate rollback; automatic retention owns later retirement",
+    "databaseContentsCopiedOrRemoved": false
+  },
+  "local": {
+    "workspaceFoldersRemoved": [],
+    "workspaceArchiveBytesRemoved": 0,
+    "freeBytesBeforeDeployment": 313831989248,
+    "freeBytesAtFinalObservation": 307618406400,
+    "retainedFolders": [
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-profile\\royal\\artifacts\\work\\guard-profile",
+        "bytes": 38776435
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-profile\\royal\\dist",
+        "bytes": 3043647
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-profile\\royal\\dist-server",
+        "bytes": 4714251
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-profile\\royal\\module-dist",
+        "bytes": 279087175
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-profile\\royal\\module-build",
+        "bytes": 1729910
+      }
+    ],
+    "retainedDeliveryArchiveBytes": 2047251,
+    "lastDisposableDatabase": {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-vBqXlE",
+      "removed": true,
+      "bytesNotMeasured": true
+    },
+    "reason": "Managed archive of the primary checkout and deletion of its temporary directory were previously rejected. Rejected targets were not retried.",
+    "cleanupCondition": "Archive the verified clean checkout when the app permits removal; normal build outputs remain available for reuse",
+    "physicalSpaceReclaimedClaimed": false
+  },
+  "note": "Free-space measurements include concurrent activity. Logical removal of program history is not a measurement of uniquely reclaimed disk blocks."
+}

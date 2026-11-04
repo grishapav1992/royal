@@ -52,8 +52,31 @@ def validate_module_config(baseline, selected):
     require(selected == expected, 'Unreviewed module compiler configuration')
 
 
+def validate_frontend_advance(prepared, current, evidence, allowed):
+    require(evidence['release'] == allowed['release'] and evidence['sourceChanges'] == allowed['sourceChanges'], 'Unreviewed frontend release')
+    require(current['sourceCommit'] == current['sourceRevision'] == evidence['sourceCommit'], 'Frontend source differs')
+    require(current['container']['image'] == current['preparedImage'] == evidence['image'] and current['container']['health'] == 'healthy', 'Frontend image differs')
+    delta = evidence['clientDelta']
+    require('index.html' in delta and all(n == 'index.html' or re.fullmatch(r'assets/[a-zA-Z0-9_-]+\.(?:js|css)', n) for n in delta), 'Foreign frontend artifact')
+    for key in ['runtimeHash','mounts','host','composeFiles']:
+        require(current['container'][key] == prepared['container'][key], 'Frontend runtime settings changed')
+    require(current['serviceProfiles']['royal-game-1']['profileSha256'] == prepared['serviceProfiles']['royal-game-1']['profileSha256'], 'Frontend service settings changed')
+    expected = copy.deepcopy(prepared)
+    for key in ['source','sourceLF']: expected[key].update(evidence['sourceChanges'])
+    for key in ['program','preparedProgram']: expected[key].update({'dist/' + n: h for n,h in delta.items()})
+    for key in ['sourceCommit','sourceRevision','container','preparedImage']: expected[key] = current[key]
+    expected['services']['/royal-game-1'] = current['services']['/royal-game-1']
+    expected['serviceProfiles']['royal-game-1'] = current['serviceProfiles']['royal-game-1']
+    compared = copy.deepcopy(current)
+    for key in ['at','availableBytes']: expected.pop(key,None); compared.pop(key,None)
+    require(compared == expected, 'Unrelated change during frontend baseline advance')
+
+
 def payload(b):
     m, old, scope = b.M, b.OLD, read(ROOT / 'scope.json')
+    prepared = m.get('preparedBefore', old)
+    if old['sourceCommit'] != prepared['sourceCommit']:
+        validate_frontend_advance(prepared, old, m['frontendAdvance'], scope['allowedFrontendAdvance'])
     require(ROOT == Path('/opt/royal-releases') / NAME and m['release'] == NAME, 'Unexpected release path')
     require(b.CHANGES == scope['expectedSources'] and not b.DELTA and set(b.SERVER_DELTA) == {'index.js'}, 'Unreviewed program or source scope')
     require(m['addedGames'] == [] and m['restoredGames'] == [], 'Catalogue expansion rejected')
@@ -71,18 +94,18 @@ def payload(b):
     require(b.inventory(ROOT / 'source') == b.CHANGES and b.inventory(ROOT / 'dist-delta') == {} and b.inventory(ROOT / 'server-delta') == b.SERVER_DELTA, 'Payload differs')
     release, receipt = read(ROOT / 'release-manifest.json'), read(ROOT / 'release-github.json')
     require(sha(ROOT / 'release-manifest.json') == m['releaseManifestSha256'] and sha(ROOT / 'release-github.json') == m['receiptSha256'], 'Release evidence changed')
-    require(release['sourceCommit'] == receipt['sourceCommit'] == m['sourceCommit'] and release['baseCommit'] == m['baseCommit'] == old['sourceCommit'], 'Unverified source')
+    require(release['sourceCommit'] == receipt['sourceCommit'] == m['sourceCommit'] and release['baseCommit'] == prepared['sourceCommit'] and m['baseCommit'] == old['sourceCommit'], 'Unverified source')
     require(receipt['manifestSha256'] == m['releaseManifestSha256'], 'Receipt is not bound to artifact')
     require(release['scope'] == 'application' and release['clean'] and release['build']['passed'], 'Verified application required')
     for key in ['hostProjection', 'backendProjection']:
-        require(release[key] == release['build'][key] and release[key]['productionCommit'] == m['baseCommit'], 'Projection evidence differs')
-    validate_inputs(release['hostProjection'], old, {})
+        require(release[key] == release['build'][key] and release[key]['productionCommit'] == prepared['sourceCommit'], 'Projection evidence differs')
+    validate_inputs(release['hostProjection'], prepared, {})
     validate_inputs(release['backendProjection'], old, b.CHANGES, scope['preservedBackendInputs'])
     backend = release['backendProjection']
     require(backend['entries'] == ['server/index.ts'] and backend['inputs']['server/starSpinCollection.ts'] == b.CHANGES['server/starSpinCollection.ts'], 'Wrong backend input')
     require(backend['output']['path'] == 'dist-server/index.js' and backend['output']['sha256'] == b.SERVER_DELTA['index.js'] == release['files']['dist-server/index.js'], 'Unverified backend bytes')
     module = release['build']['moduleProjection']
-    require(set(module['modules']) == {GAME} and module['productionCommit'] == m['baseCommit'], 'Unrequested module projection')
+    require(set(module['modules']) == {GAME} and module['productionCommit'] == prepared['sourceCommit'], 'Unrequested module projection')
     config = m['moduleBuildConfiguration']
     require(config['baselineSha256'] == old['sourceLF']['tsconfig.json'] and sha(ROOT / 'baseline-tsconfig.json') == config['baselineSha256'], 'Baseline compiler source differs')
     require(config['selectedSha256'] == scope['moduleBuildInputs']['tsconfig.json'] and sha(ROOT / 'module-tsconfig.json') == config['selectedSha256'], 'Module compiler source differs')
@@ -90,7 +113,7 @@ def payload(b):
     validate_inputs(module, old, b.CHANGES, scope['moduleBuildInputs'])
     for name, digest in release['files'].items():
         if name.startswith('dist/'):
-            require(old['program'].get(name) == digest, 'Client host would change: ' + name)
+            require(prepared['program'].get(name) == digest, 'Prepared client host differs: ' + name)
     p = m['package']; target = scope['module']
     require(p['version'] == target['version'] and p['contract'] == target['contract'] == old['moduleHost']['games'][GAME], 'Incompatible module')
     require(p['manifestSha256'] == target['manifestSha256'] and p['pointerSha256'] == target['pointerSha256'], 'Unreviewed package')
@@ -160,17 +183,19 @@ def finish_module(b):
 
 
 def main():
-    require(sys.argv[1:] in [['release'], ['finish-module'], ['rollback']], 'Unexpected operation')
+    require(sys.argv[1:] in [['release'], ['release-wait'], ['finish-module'], ['rollback']], 'Unexpected operation')
     b = configure(); b.payload(); locks = []
+    wait = sys.argv[1] == 'release-wait'
+    if wait: print(json.dumps({'waitingForSharedLocks': True}), flush=True)
     for name in ['/opt/royal-releases/themed-publish.lock','/opt/royal/.client-presentation-deploy.lock','/opt/royal-game-modules-state/module.lock']:
         require(not Path(name).is_symlink(), 'Deployment lock symlink rejected')
-        handle = open(name, 'a'); fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB); locks.append(handle)
+        handle = open(name, 'a'); fcntl.flock(handle, fcntl.LOCK_EX | (0 if wait else fcntl.LOCK_NB)); locks.append(handle)
     def interrupted(number, frame): raise InterruptedError('Deployment interrupted: ' + str(number))
     for number in [signal.SIGTERM, signal.SIGHUP, signal.SIGINT]: signal.signal(number, interrupted)
     if sys.argv[1] == 'rollback':
         print(json.dumps(rollback(b)), flush=True)
         return
-    if sys.argv[1] == 'release':
+    if sys.argv[1] in ['release', 'release-wait']:
         print(json.dumps(b.build()), flush=True)
         print(json.dumps(b.publish()), flush=True)
         b.write('application-after.json', read(ROOT / 'after.json'))

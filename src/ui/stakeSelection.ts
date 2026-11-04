@@ -3,6 +3,7 @@ import {parseGameStake, validGameStake, gameBetCents} from '../shared/gameStakes
 interface StakeField { input: HTMLInputElement; current: string; }
 const fields = new WeakMap<HTMLSelectElement, StakeField>();
 const guarded = new WeakSet<HTMLElement>();
+const drafts = new WeakMap<Document, {input: HTMLInputElement; key: string}>();
 function supportedHost() {
   const host=(globalThis as unknown as Record<symbol,{manualStakes?:1}>)[Symbol.for('royal.game-host.v1')];
   return !host||host.manualStakes===1;
@@ -21,10 +22,14 @@ export function validStakeDraft(root: HTMLElement, report = false): boolean {
   return !invalid;
 }
 
-function fieldFor(select: HTMLSelectElement, scale: number): StakeField {
+function fieldFor(select: HTMLSelectElement, scale: number, locked: boolean): StakeField {
+  const doc = select.ownerDocument;
+  if (locked) drafts.delete(doc);
   const existing = fields.get(select);
   if (existing) return existing;
-  const doc = select.ownerDocument, en = doc.documentElement.lang.startsWith('en');
+  const en = doc.documentElement.lang.startsWith('en');
+  const identity = select.id || select.name || Array.from(select.attributes).filter(a=>a.name.startsWith('data-')).map(a=>a.name+'='+a.value).join('|') || 'stake';
+  const key = (select.closest('[data-game-module-id]')?.getAttribute('data-game-module-id') ?? doc.title)+':'+scale+':'+identity;
   const wrapper = doc.createElement('span'), input = doc.createElement('input'), caret = doc.createElement('span');
   wrapper.dataset.stakeField = 'true';
   wrapper.style.cssText = 'display:inline-flex;align-items:stretch;min-width:76px;max-width:100%;position:relative;vertical-align:middle;';
@@ -51,6 +56,7 @@ function fieldFor(select: HTMLSelectElement, scale: number): StakeField {
   select.style.setProperty('inset','auto');select.style.setProperty('height','auto');
   select.setAttribute('aria-label', en ? 'Quick stakes' : 'Быстрый выбор ставки');
   const field: StakeField = {input, current: ''}; fields.set(select, field);
+  input.addEventListener('focus',()=>drafts.set(doc,{input,key}));
   input.addEventListener('input', () => {
     if(input.disabled||input.readOnly)return;
     const cents = parseGameStake(input.value), message = en
@@ -71,22 +77,41 @@ function fieldFor(select: HTMLSelectElement, scale: number): StakeField {
   });
   select.addEventListener('focus',()=>{caret.style.outline='2px solid currentColor';});
   select.addEventListener('blur',()=>{caret.style.outline='';});
-  input.addEventListener('blur', () => { if (input.checkValidity()) input.value = (Number(select.value) / scale).toFixed(2); });
+  input.addEventListener('blur', () => queueMicrotask(() => {
+    if (!input.isConnected || doc.activeElement === input) return;
+    if (input.checkValidity()) input.value = (Number(select.value) / scale).toFixed(2);
+    if (drafts.get(doc)?.input === input) drafts.delete(doc);
+  }));
   // A game can move this control into a settings dialog in the same document.
   const root = doc.body;
   if (!guarded.has(root)) {
     guarded.add(root);
+    root.addEventListener('pointerdown',event=>{if(drafts.get(doc)?.input!==event.target)drafts.delete(doc);},true);
     root.addEventListener('click', event => {
       if (wagerButton(event.target as Element) && !validStakeDraft(root, true)) {
         event.preventDefault(); event.stopImmediatePropagation();
       }
     }, true);
     root.addEventListener('keydown', event => {
+      if (event.key === 'Escape') drafts.delete(doc);
       if (event.code === 'Space' && !(event.target instanceof doc.defaultView!.HTMLInputElement)
         && !(event.target instanceof doc.defaultView!.HTMLSelectElement) && !validStakeDraft(root, true)) {
         event.preventDefault(); event.stopImmediatePropagation();
       }
     }, true);
+  }
+  // Some games replace controls during a render, including while a player types.
+  const previous = drafts.get(doc);
+  if (previous && !previous.input.isConnected) {
+    drafts.delete(doc);
+    if (!locked && previous.key === key && doc.hasFocus() && doc.activeElement === doc.body) {
+      input.value = previous.input.value;
+      input.setCustomValidity(previous.input.validationMessage);
+      input.setAttribute('aria-invalid',previous.input.getAttribute('aria-invalid') ?? 'false');
+      input.style.borderColor = previous.input.style.borderColor;
+      input.focus({preventScroll:true});
+      input.setSelectionRange(previous.input.selectionStart,previous.input.selectionEnd);
+    }
   }
   return field;
 }
@@ -106,7 +131,7 @@ export function syncStakeSelect(select: HTMLSelectElement, current: string, valu
   const choices = values.map(String), cents = scale === 100 ? current : String(gameBetCents(Number(current)));
   const allowed = validGameStake(cents), value = !locked && !allowed && !choices.includes(current) ? choices[0] : current;
   setOption(select, value, locked && !allowed, scale); select.value = value; select.disabled = locked;
-  const field = fieldFor(select, scale); field.input.disabled = locked;
+  const field = fieldFor(select, scale, locked); field.input.disabled = locked;
   field.input.readOnly=!supportedHost();
   if(field.input.readOnly)field.input.title='Обнови страницу сайта, чтобы вводить свою ставку. / Refresh the page to enter a custom stake.';
   if (select.ownerDocument.activeElement !== field.input && (field.current !== value || locked)) {

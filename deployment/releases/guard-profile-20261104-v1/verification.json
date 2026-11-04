@@ -1,0 +1,428 @@
+{
+  "release": "guard-profile-20261104-v1",
+  "status": "published_verified_maintenance_completed",
+  "publishedOnMoscow": "2026-11-04",
+  "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "39b34944ee46074517c59065bdcf7454789875a4",
+  "guardSourceCommit": "9d4d015a788efe4e9aec0481c85284a39da3cf54",
+  "baseCommit": "820e1c4e92eeb54b85915c483dc4e59829679c71",
+  "image": "sha256:be0498e78cc0d27deff6555d6987fbf0c5ab40553b072acc094db1d1ed89af18",
+  "scope": {
+    "sourceChanges": [
+      "src/game/SecurityGuard.ts"
+    ],
+    "clientFiles": 2,
+    "backendFilesChanged": 0,
+    "hostInputs": 251,
+    "addedGames": [],
+    "restoredGames": [],
+    "unrelatedMainChangesNotPublished": true
+  },
+  "tests": {
+    "typecheck": true,
+    "rtpProfiles": 38,
+    "stakePolicies": 20,
+    "stakeAdmissions": 20,
+    "legacyNotQualifiedUnchanged": 114,
+    "linuxInstallScopeTests": 5,
+    "mandatoryWalletTests": 19,
+    "mandatoryWalletCommand": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts",
+    "qualificationContext": "Build gates ran against the prepared source commit. Installed mathematics and backend remain byte-for-byte from the production base.",
+    "connectedLocalHost": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "online": true,
+        "chatEnabled": true,
+        "approvedAtlasMatches": true,
+        "atlasSha256": "beedb0e779ae7cbb523009576207417a38d9e59750ce562e6374e96314a57d34",
+        "overflow": false,
+        "wallet": {
+          "acceptedStake": 0.1,
+          "requests": 2,
+          "uniqueOperationIds": 1,
+          "betEntries": 1,
+          "lostResponseRecoveredAfterCloseReopen": true,
+          "balance": 1000.1
+        },
+        "errors": []
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "online": true,
+        "chatEnabled": true,
+        "approvedAtlasMatches": true,
+        "atlasSha256": "beedb0e779ae7cbb523009576207417a38d9e59750ce562e6374e96314a57d34",
+        "overflow": false,
+        "wallet": {
+          "acceptedStake": 0.1,
+          "requests": 2,
+          "uniqueOperationIds": 1,
+          "betEntries": 1,
+          "lostResponseRecoveredAfterCloseReopen": true,
+          "balance": 999.9
+        },
+        "errors": []
+      }
+    ],
+    "public": {
+      "passed": true,
+      "checks": [
+        {
+          "path": "/assets/index-BwaS85dK.js",
+          "status": 200,
+          "sha256": "a9b3ef9d9ac52a6db88deedc54cdcfb6c7be13a43f76340ad5b3a7d808cf7855"
+        },
+        {
+          "path": "/index.html",
+          "status": 200,
+          "sha256": "2d9b7d07566789d2145360f577feb566f84036b349e1e96d1169207ba362b8dd"
+        },
+        {
+          "path": "/game-modules/flag-battle/active.json",
+          "status": 200,
+          "sha256": "0ac4166814d3d04ecd24112fc62dd22740d1f80d8a83b7a0309b69950084ac26"
+        },
+        {
+          "path": "/game-modules/github-crash/active.json",
+          "status": 200,
+          "sha256": "b07441c71edba6eb3f4cbd9b1d66d62e213d65876726e04f2cf8a71454c1bcda"
+        },
+        {
+          "path": "/game-modules/original-cr-vs-leo/active.json",
+          "status": 200,
+          "sha256": "ecf5dd8bf35137f4ca66982501e20a5c687d1abe6c63e5344cbc66131e36a05e"
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/active.json",
+          "status": 200,
+          "sha256": "7ce6f3a09f27195a1ce3b637680030f3b417c713416261690edd070426b9ba7b"
+        },
+        {
+          "path": "/game-modules/royal-plinko/active.json",
+          "status": 200,
+          "sha256": "142d2ba7903ca72564c00625421de022521e2564e6477a1a7ec5d6461ae416a6"
+        },
+        {
+          "path": "/game-modules/royal-roulette/active.json",
+          "status": 200,
+          "sha256": "ca9865eb25e3278c7e2565a76c9cd138577d009962417ea7ae8e6d78e0c9eada"
+        },
+        {
+          "path": "/game-modules/studio-afterglow/active.json",
+          "status": 200,
+          "sha256": "31b8b858b145ac91d0965a37007421b66d05582ea1f79d70970575f656c9aff6"
+        },
+        {
+          "path": "/game-modules/studio-caramel-carnival/active.json",
+          "status": 200,
+          "sha256": "cf13ee32fb3cf858c183c4517afc82936e52fc73e2b0f5222a6ff70e45a76874"
+        },
+        {
+          "path": "/game-modules/studio-caribbean-treasures/active.json",
+          "status": 200,
+          "sha256": "9a3e51ed9df04543af4c5e972f77afee53c1094cf35b7cc1a655299f768c37a2"
+        },
+        {
+          "path": "/game-modules/studio-cosmic-escape/active.json",
+          "status": 200,
+          "sha256": "2150a2e8c668bdc9a6aceba86f2529813230d0227fd58d837ae09cadbeb6db74"
+        },
+        {
+          "path": "/game-modules/studio-dracona/active.json",
+          "status": 200,
+          "sha256": "d826bb5f133f60d813ef9ede625d2c94e012d485cbe9f9ffa375bba0c93bb223"
+        },
+        {
+          "path": "/game-modules/studio-flooded-temple/active.json",
+          "status": 200,
+          "sha256": "31eda23dbb9ec8fb6c1fb42f6904a882490604f6bd6bbc79529671cac18e5021"
+        },
+        {
+          "path": "/game-modules/studio-forest-heart/active.json",
+          "status": 200,
+          "sha256": "4ca458eb41d0a1373feb0cfa230179a64c106a4adaff4bad42431498e2f05f70"
+        },
+        {
+          "path": "/game-modules/studio-last-convoy/active.json",
+          "status": 200,
+          "sha256": "f7cdf5a8a32ab6fd57ec54c28f91f359bbff6a6044ebd155629360e3ba63d6b5"
+        },
+        {
+          "path": "/game-modules/studio-meme-overload/active.json",
+          "status": 200,
+          "sha256": "7162e4438a4c3e73053714c0a8cdffa670009684ac7a662ecbe0cc792a100ed4"
+        },
+        {
+          "path": "/game-modules/studio-neopolis/active.json",
+          "status": 200,
+          "sha256": "ec29e45b53236a77441a83f3590eb3686c1008d97da330b1ffffc975946cbbf9"
+        },
+        {
+          "path": "/game-modules/studio-nitro-run/active.json",
+          "status": 200,
+          "sha256": "b7291d4290685ad8cb33c1ebda9a0f9161d887b3a2923866821ce13fadb28765"
+        },
+        {
+          "path": "/game-modules/studio-velvet-reign/active.json",
+          "status": 200,
+          "sha256": "bbf0ab7f37be8c2a6e71c640ddb60fc890b6d77084d377e031df5d8d76c7109d"
+        },
+        {
+          "path": "/game-modules/studio-wild-nudge/active.json",
+          "status": 200,
+          "sha256": "d10d279193c0955179df0326378d420414ede509750f0de1be9854c2f5768d80"
+        },
+        {
+          "path": "/healthz",
+          "status": 200
+        },
+        {
+          "path": "/api/demo-wallet",
+          "status": 401
+        },
+        {
+          "path": "/api/game-wallet",
+          "status": 410
+        },
+        {
+          "path": "/api/nile-play/wallet",
+          "status": 410
+        }
+      ],
+      "views": [
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "approvedGuardAtlasMatches": true,
+          "atlasSha256": "beedb0e779ae7cbb523009576207417a38d9e59750ce562e6374e96314a57d34",
+          "overflow": false,
+          "errors": [],
+          "guest": true
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "approvedGuardAtlasMatches": true,
+          "atlasSha256": "beedb0e779ae7cbb523009576207417a38d9e59750ce562e6374e96314a57d34",
+          "overflow": false,
+          "errors": [],
+          "guest": true
+        }
+      ],
+      "productionAccountsCreated": 0,
+      "productionWagers": 0,
+      "productionChatMessages": 0,
+      "physicalPhoneTested": false
+    },
+    "sourceOfPublicAtlasComparison": "Approved complete 112-frame guard atlas from the reviewed source"
+  },
+  "preservation": {
+    "sourceFiles": 2700,
+    "programFiles": 8595,
+    "moduleFiles": 4259,
+    "backendSha256": "7b11acb06fdbc5ff43a9cd18f9bdf5a687ca11ccd086562508150a48a9d6684a",
+    "otherServices": 13,
+    "configurationsAndMounts": true,
+    "gameData": true,
+    "externalModuleFilesUnchanged": true
+  },
+  "rollback": {
+    "image": "sha256:f19d318e66f2c223c072eadac81a20b27b3ccde3a45a46052518193f2f527ed1",
+    "tag": "royal-game:before-guard-profile-20261104-v1",
+    "sourceArchive": {
+      "path": "/opt/royal-backups/guard-profile-20261104-v1/source.tgz",
+      "bytes": 4467,
+      "sha256": "e8657fba89babd24762fa3c7d4f7b5461dfa48aee38f4521dbf3b3cb1494922d"
+    }
+  },
+  "build": {
+    "sourceCommit": "39b34944ee46074517c59065bdcf7454789875a4",
+    "manifestSha256": "494bebcb365f81602c192e5d189f2e55041e4ee0571cb780bc00d2a2b1121b70",
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 368004
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 8881
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 432467
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 30453
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 239
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 92
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 90
+      }
+    ],
+    "durationMs": 840311,
+    "artifactRebuiltAfterVerification": false
+  },
+  "maintenance": {
+    "startedAt": 1793800415.8926811,
+    "status": "completed",
+    "freeBefore": 10571087872,
+    "release": "guard-profile-20261104-v1",
+    "sourceCommit": "39b34944ee46074517c59065bdcf7454789875a4",
+    "currentImage": "sha256:be0498e78cc0d27deff6555d6987fbf0c5ab40553b072acc094db1d1ed89af18",
+    "rollbackImage": "sha256:f19d318e66f2c223c072eadac81a20b27b3ccde3a45a46052518193f2f527ed1",
+    "plannedEntries": 24,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 122,
+    "retainedHistoryReasons": {
+      "/opt/royal-releases/hall-elevator-20261101-v1-final.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/forest-heart-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-compact.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/royal-roulette-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/star-spin-open-selection-20261104-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/hall-elevator-20261101-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-delta.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-snapshot.py": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v3.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/character-motion-20261027-v1.failed.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-ui-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/girlhub-feedback-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/front-back-walk-20261104-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v2.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before-final.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-card-scale-20261023": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub"
+    },
+    "removedEntries": 24,
+    "removedImageTags": 5,
+    "dockerRetainedImages": [],
+    "freeAfter": 10583142400,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:f19d318e66f2c223c072eadac81a20b27b3ccde3a45a46052518193f2f527ed1",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "bd2771f9cd6d0a02e015f224e343a64804cdfb23f097feeb86ed8f4313df700b",
+      "files": 8594
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "60c9c30983a9f726b6a50122e7bd05eccd04fce58ce2d6310042bcf334f13b79",
+      "receipt": "/var/lib/royal-project-brain/receipts/60c9c30983a9f726b6a50122e7bd05eccd04fce58ce2d6310042bcf334f13b79.json",
+      "queued": true
+    },
+    "finishedAt": 1793801134.7091768,
+    "durationSeconds": 718.82,
+    "removedPaths": [
+      "/opt/royal-releases/profile-walk-20261104-v1/__pycache__",
+      "/opt/royal-releases/profile-walk-20261104-v1/after.json",
+      "/opt/royal-releases/profile-walk-20261104-v1/application-overlay.py",
+      "/opt/royal-releases/profile-walk-20261104-v1/before.json",
+      "/opt/royal-releases/profile-walk-20261104-v1/build-result.json",
+      "/opt/royal-releases/profile-walk-20261104-v1/build.log",
+      "/opt/royal-releases/profile-walk-20261104-v1/deploy.py",
+      "/opt/royal-releases/profile-walk-20261104-v1/dist-delta",
+      "/opt/royal-releases/profile-walk-20261104-v1/engine-build.py",
+      "/opt/royal-releases/profile-walk-20261104-v1/image_metadata.py",
+      "/opt/royal-releases/profile-walk-20261104-v1/install-manifest.json",
+      "/opt/royal-releases/profile-walk-20261104-v1/operation.log",
+      "/opt/royal-releases/profile-walk-20261104-v1/overlay-base.py",
+      "/opt/royal-releases/profile-walk-20261104-v1/published.json",
+      "/opt/royal-releases/profile-walk-20261104-v1/quiesce.cjs",
+      "/opt/royal-releases/profile-walk-20261104-v1/release-github.json",
+      "/opt/royal-releases/profile-walk-20261104-v1/release-manifest.json",
+      "/opt/royal-releases/profile-walk-20261104-v1/runtime-context",
+      "/opt/royal-releases/profile-walk-20261104-v1/runtime-inventory.cjs",
+      "/opt/royal-releases/profile-walk-20261104-v1/server-delta",
+      "/opt/royal-releases/profile-walk-20261104-v1/snapshot-base.py",
+      "/opt/royal-releases/profile-walk-20261104-v1/snapshot.py",
+      "/opt/royal-releases/profile-walk-20261104-v1/source",
+      "/opt/royal-backups/profile-walk-20261104-v1"
+    ],
+    "imageProgress": {
+      "removedTags": [
+        "royal-game:before-profile-walk-20261104-v1",
+        "royal-game:before-profile-walk-20261104-v1-prepared",
+        "royal-game:before-star-spin-character-fit-20261104-v1",
+        "royal-game:before-star-spin-ui-20261103-v1",
+        "royal-game:remove-hall-title-20261103-v1"
+      ],
+      "dockerRetainedImages": []
+    },
+    "timerEnabled": "enabled",
+    "timerActive": "active",
+    "freeBytesAtFinalCheck": 10583031808
+  },
+  "transport": {
+    "sshConnectionClosedWhileServerOperationContinued": true,
+    "publicationConfirmedFromServerFiles": true,
+    "publicationNotRepeated": true
+  },
+  "limits": {
+    "physicalPhoneTested": false,
+    "productionAccountsCreated": 0,
+    "productionWagers": 0,
+    "productionChatMessages": 0,
+    "productionChatConnected": false
+  },
+  "localStorage": {
+    "removedFolders": [],
+    "removedArchiveBytes": 0,
+    "physicalSpaceReclaimedClaimed": false,
+    "retainedCheckout": "C:/Users/Aorus/.codex/worktrees/guard-profile/royal",
+    "retainedReason": "Managed archiving of this primary checkout and deletion of its temporary directory were previously rejected; rejected cleanup targets were not retried.",
+    "cleanupCondition": "Archive the verified checkout when the app permits removal; preserve the production bundle while it is a required current/rollback proof."
+  },
+  "storageReport": "storage-cleanup.json"
+}
