@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import fcntl,hashlib,importlib.util,json,os,re,shutil,subprocess,sys,tarfile
 NAME='flag-collision-audio-20261104-v1';GAME='flag-battle'
 ROOT=Path('/opt/royal-releases')/NAME;LIVE=Path('/opt/royal');MODULES=Path('/opt/royal-game-modules');STATE=Path('/opt/royal-game-modules-state');BACKUP=Path('/opt/royal-backups')/NAME
-BASE_HELPER=Path('/opt/royal-releases/manual-stakes-20261104-v1/snapshot.py')
+BASE_HELPER=Path(os.environ.get('ROYAL_CONTACT_SNAPSHOT_READER','/opt/royal-releases/manual-stakes-20261104-v1/snapshot.py'))
 SOURCES=['games/flag-battle/'+n for n in ['FlagAudio.ts','package.json','tsconfig.json']]
 CONTRACT={'apiVersion':1,'rulesVersion':2,'progressVersion':1};MIN_FREE=5*1024**3
 IGNORED={'at','availableBytes'}
@@ -28,7 +28,7 @@ def snapshot():
 def stable(value):return {k:v for k,v in value.items() if k not in IGNORED}
 def validate_scope(release,before,operator):
  require(release['scope']=='modules' and release['modules']==[GAME] and release['build']['passed'],'Wrong release scope')
- require(release['sourceCommit']==operator['sourceCommit'] and release['baseCommit']==before['sourceCommit'],'Wrong source/base commit')
+ require(release['sourceCommit']==operator['sourceCommit'] and release['baseCommit']==operator['buildBaseCommit'] and before['sourceCommit']==operator['baseCommit'],'Wrong source/base commit')
  require(len(release['packages'])==1 and release['packages'][0]['gameId']==GAME,'Foreign package')
  require(set(operator['source'])==set(SOURCES),'Foreign source patch')
 
@@ -61,6 +61,7 @@ def main():
  for path,key in [(ROOT/'publish.py','wrapperSha256'),(ROOT/'publisher.py','publisherSha256'),(ROOT/'release-manifest.json','releaseManifestSha256'),(ROOT/'release-github.json','receiptSha256')]:
   require(sha(path)==op[key],'Publication input changed')
  for name,digest in op['helpers'].items():require(sha(Path(name))==digest,'Unreviewed helper')
+ require(str(BASE_HELPER) in op['helpers'],'Unbound snapshot reader')
  require(sha(ROOT/'publisher.py')==before['source']['scripts/game-module-release.py'],'Unreviewed publisher')
  require(receipt['sourceCommit']==release['sourceCommit'],'Unverified source receipt')
  require(receipt['manifestSha256']==sha(ROOT/'release-manifest.json'),'Wrong release receipt')
