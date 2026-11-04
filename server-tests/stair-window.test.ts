@@ -44,13 +44,13 @@ test('the interior window has clear approaches and safe arrivals on the correct 
 
 test('horizontal platform movement stays flat and never inherits an up/down choice',()=>{
   const p=ROOF_WINDOW_PLATFORM,view=new StreetView();view.side='rear';
-  for(const direction of [-1,1]){
-    const body={...STAIR_WINDOW.landing,stairStep:6,stairDirection:direction,moving:false};
+  for(const step of [6,7])for(const direction of [-1,1]){
+    const body={...STAIR_WINDOW.landing,stairStep:step,stairDirection:direction,moving:false};
     for(let i=0;i<35;i++){moveRoofStairs(body,{x:1,y:0},5);assert.equal(body.y,p.junction.y);assert(onRoofWindowPlatform(body));assert.equal(view.point(body,true).y,20);}
     assert.equal(body.x,p.junction.x+p.length);const stopped={...body};settleRoofStairLanding(body);assert.equal(body.x,stopped.x);
-    assert.equal(advanceRoofStairStep(body.stairStep,body),6);
+    assert.equal(advanceRoofStairStep(body.stairStep,body),step);
     for(let i=0;i<40;i++)moveRoofStairs(body,{x:-1,y:0},5);
-    assert.deepEqual({x:body.x,y:body.y},p.junction);assert.equal(body.stairStep,6);
+    assert.deepEqual({x:body.x,y:body.y},p.junction);assert.equal(body.stairStep,step);
   }
 });
 

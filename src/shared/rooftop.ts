@@ -89,7 +89,7 @@ export function moveRoofStairs(body:StairPosition&{moving:boolean},input:{x:numb
     if(!input.y||body.x>p.junction.x+ROOF_STAIR_EPSILON){
       const before=body.x,dx=input.y?-1:Math.sign(input.x);
       body.x=Math.max(p.junction.x,Math.min(p.junction.x+p.length,body.x+dx*distance));
-      body.y=p.junction.y;body.stairStep=p.index;body.moving=Math.abs(body.x-before)>.001;
+      body.y=p.junction.y;body.moving=Math.abs(body.x-before)>.001;
       return true;
     }
   }
