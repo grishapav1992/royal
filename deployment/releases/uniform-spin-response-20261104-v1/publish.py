@@ -6,8 +6,7 @@ sys.dont_write_bytecode=True
 NAME='uniform-spin-response-20261104-v1'
 GAMES={"cosmic-escape":"studio-cosmic-escape","caramel-carnival":"studio-caramel-carnival","velvet-reign":"studio-velvet-reign","last-convoy":"studio-last-convoy","nitro-run":"studio-nitro-run","girlhub":"studio-afterglow","meme-overload":"studio-meme-overload","dracona":"studio-dracona","forest-heart":"studio-forest-heart","caribbean-treasures":"studio-caribbean-treasures","flooded-temple":"studio-flooded-temple","wild-nudge":"studio-wild-nudge","flag-battle":"flag-battle","royal-plinko":"royal-plinko","cr-vs-leo":"original-cr-vs-leo","jackie-chan":"original-jackie-chan","last-exit":"github-crash"}
 ROOT=Path('/opt/royal-releases')/NAME;LIVE=Path('/opt/royal');MODULES=Path('/opt/royal-game-modules');STATE=Path('/opt/royal-game-modules-state');BACKUP=Path('/opt/royal-backups')/NAME
-BASE_HELPER=Path('/opt/royal-releases/manual-stakes-20261104-v1/snapshot-base.py')
-SOURCES=["games/caribbean-treasures/CaribbeanUI.ts","games/dracona/DraconaUI.ts","games/flag-battle/FlagBattleUI.ts","games/flooded-temple/CascadeUI.ts","games/flooded-temple/TempleUI.ts","games/flooded-temple/cascadeFeedbackStyles.ts","games/forest-heart/ForestHeartUI.ts","games/jackie-chan/JackieUI.ts","games/wild-nudge/GalacticReactorUI.ts","src/ui/AfterglowUI.ts","src/ui/CaramelCarnivalUI.ts","src/ui/CascadeSlotUI.ts","src/ui/ClusterSlotUI.ts","src/ui/CosmicEscapeUI.ts","src/ui/CrLeoUI.ts","src/ui/LastConvoyUI.ts","src/ui/LastExitUI.ts","src/ui/MemeOverloadUI.ts","src/ui/NitroRunUI.ts","src/ui/StudioSlotUI.ts","src/ui/VelvetReignUI.ts","src/ui/VolcanicPlinkoUI.ts","src/ui/operationFeedback.ts","src/ui/slotKit/SlotControls.ts","games/dracona/entry.ts","games/dracona/requestStyles.ts"];MIN_FREE=5*1024**3
+SOURCES=["games/caribbean-treasures/CaribbeanUI.ts","games/dracona/DraconaUI.ts","games/flag-battle/FlagBattleUI.ts","games/flooded-temple/CascadeUI.ts","games/flooded-temple/TempleUI.ts","games/flooded-temple/cascadeFeedbackStyles.ts","games/forest-heart/ForestHeartUI.ts","games/jackie-chan/JackieUI.ts","games/wild-nudge/GalacticReactorUI.ts","src/ui/AfterglowUI.ts","src/ui/CaramelCarnivalUI.ts","src/ui/CascadeSlotUI.ts","src/ui/ClusterSlotUI.ts","src/ui/CosmicEscapeUI.ts","src/ui/CrLeoUI.ts","src/ui/LastConvoyUI.ts","src/ui/LastExitUI.ts","src/ui/MemeOverloadUI.ts","src/ui/NitroRunUI.ts","src/ui/StudioSlotUI.ts","src/ui/VelvetReignUI.ts","src/ui/VolcanicPlinkoUI.ts","src/ui/operationFeedback.ts","src/ui/slotKit/SlotControls.ts","games/dracona/entry.ts","games/dracona/requestStyles.ts","games/flag-battle/FlagAudio.ts","games/flag-battle/package.json","games/flag-battle/tsconfig.json"];MIN_FREE=5*1024**3
 ADDED={'src/ui/operationFeedback.ts','games/dracona/requestStyles.ts'}
 IMAGE_HELPER=Path('/opt/royal-maintenance/bin/retention-runtime.py')
 PUBLISHED_INPUTS={}
@@ -26,11 +25,13 @@ def image(name):
  require(metadata and metadata['Id']==identity and name in metadata['RepoTags'],'Expected tag does not identify the running image')
  return identity
 def snapshot():
- helper=load('reviewed_snapshot',BASE_HELPER);helper.ROOT=BASE_HELPER.parent;original=helper.run
- def run(args):
-  if args==['docker','image','inspect','royal-game:latest','--format','{{.Id}}']:return image('royal-game:latest')
-  return original(args)
- helper.run=run;return helper.snapshot()
+ op=read(ROOT/'operator.json');reader=Path(op['snapshotReaderPath'])
+ require(re.fullmatch('/opt/royal-releases/[a-z0-9-]+/snapshot.py',str(reader)),'Unsafe snapshot reader')
+ require(set(op['snapshotSupport'])=={'snapshot.py','snapshot-base.py','image_metadata.py','runtime-inventory.cjs'},'Incomplete snapshot reader binding')
+ for name,digest in op['snapshotSupport'].items():
+  path=reader.parent/name
+  require(not any(p.is_symlink() for p in [path,*path.parents]) and sha(path)==digest,'Snapshot helper changed: '+name)
+ return json.loads(subprocess.check_output(['python3',str(reader)],text=True,timeout=600))
 def stable(value):return {k:v for k,v in value.items() if k not in IGNORED}
 def operator_inputs(release):return release['moduleProjection']['inputs']
 def validate_program(game,row,before,after,before_manifest,after_manifest):
@@ -40,10 +41,13 @@ def validate_program(game,row,before,after,before_manifest,after_manifest):
  require(row['beforeEntry']==before['files'][before['entry']] and row['afterEntry']==after['files'][after['entry']],'Program proof entry differs')
 def validate_scope(release,before,operator):
  require(release['scope']=='modules' and release['modules']==list(GAMES) and release['build']['passed'],'Wrong release scope')
- require(release['sourceCommit']==operator['sourceCommit'] and release['baseCommit']==before['sourceCommit'],'Wrong source/base commit')
+ require(release['sourceCommit']==operator['sourceCommit'] and release['baseCommit']==operator['buildBaseCommit'],'Wrong source/build commit')
+ require(before['sourceCommit']==operator['actualBaseCommit'],'Wrong actual production baseline')
  require([p['gameId'] for p in release['packages']]==list(GAMES.values()),'Foreign package')
  require(set(operator['source'])==set(SOURCES),'Foreign source patch')
- require(release['moduleProjection']['productionCommit']==before['sourceCommit'],'Wrong projection baseline')
+ require(release['moduleProjection']['productionCommit']==release['baseCommit'],'Wrong projection baseline')
+ require(set(operator['sourceBefore'])==set(SOURCES),'Incomplete presentation origin binding')
+ for name,digest in operator['sourceBefore'].items():require(before['sourceLF'].get(name)==digest,'Presentation origin changed: '+name)
  require(set(operator_inputs(release))>=set(SOURCES),'Changed source absent from verified build')
  for name,digest in operator_inputs(release).items():
   if name in SOURCES:valid=operator['source'][name]==digest
@@ -64,21 +68,24 @@ def atomic(origin,target,mode=0o644):
  with origin.open('rb') as inp,partial.open('xb') as out:
   shutil.copyfileobj(inp,out);os.fchmod(out.fileno(),mode);out.flush();os.fsync(out.fileno())
  os.replace(partial,target)
+def validate_tool_receipt(receipt,release,operator):
+ require(receipt['sourceCommit']==operator['wrapperSourceCommit'] and receipt['applicationSourceCommit']==release['sourceCommit'],'Wrong publication tooling source')
+ require(receipt['publisherSha256']==operator['wrapperSha256'] and re.fullmatch('[a-f0-9]{40}',receipt.get('remoteMain','')),'Unverified publication tooling')
+
 def main():
  require(Path(__file__).resolve()==ROOT/'publish.py','Wrong publication root')
  for path in [ROOT,LIVE,MODULES,STATE]:require(path.is_dir() and not any(p.is_symlink() for p in [path,*path.parents]),'Unsafe root')
  locks=[]
  for path in [Path('/opt/royal-releases/themed-publish.lock'),LIVE/'.client-presentation-deploy.lock',STATE/'module.lock']:
   require(not path.is_symlink(),'Unsafe lock');handle=path.open('a');fcntl.flock(handle,fcntl.LOCK_EX|fcntl.LOCK_NB);locks.append(handle)
- if sys.argv[1:]==['snapshot']:
-  require(not (ROOT/'before.json').exists(),'Baseline already saved');before=snapshot();save('before.json',before)
-  print(json.dumps({'sourceCommit':before['sourceCommit'],'sourceFiles':len(before['source']),'runtimeFiles':len(before['program']),'services':len(before['services']),'freeBytes':before['availableBytes']}));return
  require(not sys.argv[1:] and not (ROOT/'published.json').exists() and not BACKUP.exists(),'Publication already attempted')
- before=read(ROOT/'before.json');release=read(ROOT/'release-manifest.json');receipt=read(ROOT/'release-github.json');op=read(ROOT/'operator.json');validate_scope(release,before,op)
+ before=read(ROOT/'before.json');release=read(ROOT/'release-manifest.json');receipt=read(ROOT/'release-github.json');op=read(ROOT/'operator.json')
+ require(sha(ROOT/'before.json')==op['beforeSha256'],'Reviewed baseline bytes changed');validate_scope(release,before,op)
+ require(sha(ROOT/'tool-source.json')==op['toolReceiptSha256'],'Publication tooling receipt changed');validate_tool_receipt(read(ROOT/'tool-source.json'),release,op)
  proof=read(ROOT/'program-proof.json');require(sha(ROOT/'program-proof.json')==op['programProofSha256'] and proof['sourceCommit']==release['sourceCommit'] and set(proof['games'])==set(GAMES.values()),'Program comparison receipt differs')
  for path,key in [(ROOT/'publish.py','wrapperSha256'),(ROOT/'publisher.py','publisherSha256'),(ROOT/'release-manifest.json','releaseManifestSha256'),(ROOT/'release-github.json','receiptSha256')]:require(sha(path)==op[key],'Publication input changed')
- require(sha(BASE_HELPER)==op['snapshotSha256'] and sha(IMAGE_HELPER)==op['imageHelperSha256'] and sha(ROOT/'publisher.py')==before['source']['scripts/game-module-release.py'],'Unreviewed helper')
- require(receipt['sourceCommit']==release['sourceCommit'],'Unverified source receipt')
+ require(sha(IMAGE_HELPER)==op['imageHelperSha256'] and sha(ROOT/'publisher.py')==before['source']['scripts/game-module-release.py'],'Unreviewed helper')
+ require(receipt['sourceCommit']==release['sourceCommit'] and receipt['manifestSha256']==sha(ROOT/'release-manifest.json'),'Unverified source receipt')
  for name,digest in op['source'].items():require(sha(ROOT/'source'/name)==digest,'Source payload changed')
  current=snapshot();require(stable(current)==stable(before),'Production changed since review');require(current['container']['health']=='healthy','Unhealthy host')
  publisher=load('reviewed_publisher',ROOT/'publisher.py');contracts=read(STATE/'host.json')['games'];prepared={};expected_files={};total=0
@@ -114,5 +121,8 @@ def main():
   for game,(options,_,_) in prepared.items():options.operation='install';results.append(publisher.run(options))
  finally:os.umask(mask)
  after=snapshot();save('after.json',after);validate_after(before,after,op['source'],op['packages']);require(shutil.disk_usage(LIVE).free>MIN_FREE,'Five GiB reserve crossed')
- record={'published':True,'release':NAME,'sourceCommit':release['sourceCommit'],'baseCommit':release['baseCommit'],'modules':results,'backup':backup,'freeBefore':current['availableBytes'],'freeAfter':after['availableBytes'],'hostRestarted':False,'databaseTouched':False,'otherModulesPreserved':True,'sourceFilesPreserved':len(before['source'])-len(SOURCES)+len(ADDED),'runtimeFilesPreserved':len(before['program']),'servicesPreserved':len(before['services'])};save('published.json',record);print(json.dumps(record))
-if __name__=='__main__':main()
+ record={'published':True,'release':NAME,'sourceCommit':release['sourceCommit'],'baseCommit':before['sourceCommit'],'buildBaseCommit':release['baseCommit'],'modules':results,'backup':backup,'freeBefore':current['availableBytes'],'freeAfter':after['availableBytes'],'hostRestarted':False,'databaseTouched':False,'otherModulesPreserved':True,'sourceFilesPreserved':len(before['source'])-len(SOURCES)+len(ADDED),'runtimeFilesPreserved':len(before['program']),'servicesPreserved':len(before['services'])};save('published.json',record);print(json.dumps(record))
+if __name__=='__main__':
+ try:main()
+ except BlockingIOError:
+  print('Publication locks busy; retry the ready package explicitly.',file=sys.stderr);sys.exit(75)

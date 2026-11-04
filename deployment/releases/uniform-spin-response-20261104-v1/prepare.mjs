@@ -7,18 +7,21 @@ import {verifyRelease,assertClean} from '../../../scripts/release.mjs';
 import {readHostProjection} from '../../../scripts/build-host-projection.mjs';
 
 const folder='deployment/releases/uniform-spin-response-20261104-v1';
-const [beforeFile,publishedFile,helpersFile,reportFile,outDir]=process.argv.slice(2);
+const [beforeFile,publishedFile,helpersFile,reportFile,outDir,toolRef]=process.argv.slice(2);
 assert(outDir);assertClean(process.cwd());const release=await verifyRelease(process.cwd());
 const before=JSON.parse(fs.readFileSync(beforeFile)),published=JSON.parse(fs.readFileSync(publishedFile)),helpers=JSON.parse(fs.readFileSync(helpersFile));
-const scope=JSON.parse(fs.readFileSync(folder+'/scope.json')),report=JSON.parse(fs.readFileSync(reportFile));
+const toolCommit=execFileSync('git',['rev-parse','--verify',(toolRef??release.sourceCommit)+'^{commit}'],{encoding:'utf8'}).trim();
+execFileSync('git',['merge-base','--is-ancestor',toolCommit,'origin/main']);
+const toolFile=name=>execFileSync('git',['show',toolCommit+':'+name],{maxBuffer:16*1024**2});
+const scope=JSON.parse(toolFile(folder+'/scope.json')),report=JSON.parse(fs.readFileSync(reportFile));
 assert.equal(report.stats.unexpected,0);assert.equal(report.stats.expected,3);assert.deepEqual(report.errors,[]);
-assert.equal(release.scope,'modules');assert.deepEqual(release.modules,scope.moduleGames);assert.equal(release.baseCommit,before.sourceCommit);
+assert.equal(release.scope,'modules');assert.deepEqual(release.modules,scope.moduleGames);
 const reader=await readHostProjection(process.cwd(),folder+'/module-projection.json',{strictOrigins:true});
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 assert(!fs.existsSync(outDir));fs.mkdirSync(outDir,{recursive:true});
 const put=(name,bytes)=>{assert(!path.isAbsolute(name)&&!name.split('/').some(p=>p==='..'||p.startsWith('.env')));const target=path.join(outDir,name);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,bytes,{flag:'wx'});return hash(bytes);};
 const committed=name=>execFileSync('git',['show',release.sourceCommit+':'+name],{maxBuffer:16*1024**2});
-const wrapper=committed(folder+'/publish.py'),publisher=committed('scripts/game-module-release.py');
+const wrapper=toolFile(folder+'/publish.py'),publisher=committed('scripts/game-module-release.py');
 put('before.json',fs.readFileSync(beforeFile));put('publish.py',wrapper);put('publisher.py',publisher);
 put('release-manifest.json',fs.readFileSync('module-build/release-manifest.json'));put('release-github.json',fs.readFileSync('module-build/release-github.json'));
 const receipt=JSON.parse(fs.readFileSync('module-build/release-github.json'));assert.equal(receipt.sourceCommit,release.sourceCommit);
@@ -38,5 +41,7 @@ for(const row of release.packages){
 }
 const proof={sourceCommit:release.sourceCommit,games,checks:{activeHouseGames:19,desktopAndPhone:true,sameOperationRecovery:true,oneTenCentDebit:true,browserReportSha256:hash(fs.readFileSync(reportFile))}};
 put('program-proof.json',JSON.stringify(proof,null,2)+'\n');
-const operator={sourceCommit:release.sourceCommit,source,packages,beforePointers,wrapperSha256:hash(wrapper),publisherSha256:hash(publisher),releaseManifestSha256:hash(fs.readFileSync('module-build/release-manifest.json')),receiptSha256:hash(fs.readFileSync('module-build/release-github.json')),programProofSha256:hash(fs.readFileSync(path.join(outDir,'program-proof.json'))),snapshotSha256:helpers.snapshotSha256,imageHelperSha256:helpers.imageHelperSha256};
+const sourceBefore=Object.fromEntries(Object.keys(source).map(name=>[name,before.sourceLF[name]??null]));
+const toolReceiptSha256=put('tool-source.json',JSON.stringify({format:1,sourceCommit:toolCommit,applicationSourceCommit:release.sourceCommit,publisherSha256:hash(wrapper),remoteMain:execFileSync('git',['rev-parse','origin/main'],{encoding:'utf8'}).trim(),checkedAt:new Date().toISOString()},null,2)+'\n');
+const operator={sourceCommit:release.sourceCommit,wrapperSourceCommit:toolCommit,toolReceiptSha256,buildBaseCommit:release.baseCommit,actualBaseCommit:before.sourceCommit,beforeSha256:hash(fs.readFileSync(beforeFile)),sourceBefore,source,packages,beforePointers,wrapperSha256:hash(wrapper),publisherSha256:hash(publisher),releaseManifestSha256:hash(fs.readFileSync('module-build/release-manifest.json')),receiptSha256:hash(fs.readFileSync('module-build/release-github.json')),programProofSha256:hash(fs.readFileSync(path.join(outDir,'program-proof.json'))),...helpers};
 put('operator.json',JSON.stringify(operator,null,2)+'\n');console.log(JSON.stringify({sourceCommit:release.sourceCommit,modules:Object.keys(packages).length,sources:Object.keys(source).length,outDir}));

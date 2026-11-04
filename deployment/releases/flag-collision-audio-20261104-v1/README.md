@@ -1,66 +1,40 @@
 # Flag contact level
 
-Publish only the compatible Flag Battle contact level. The module projection
-preserves every other production input and media byte. The only installed source
-changes are FlagAudio.ts, the package version and its asset type declarations.
-The active catalogue, wager rules, wallet, host, backend and other games stay at
-their verified production versions.
-
-Use the standard modules-only release preparation and GitHub receipt. Preparation
-does not acquire production publication locks. The guarded installer takes all
-three locks nonblockingly only for installation and rechecks the full live state.
-The publisher rejects any changed source,
-runtime, service, configuration or module outside its three sources and one
-immutable package. It verifies the installed contract and saves source, package
-and image rollback material before switching the package pointer.
-
-Finish public byte checks and the required automatic retention run, then push
-the deployment record. Physical device listening is a separate assessment.
-
-## Prepared, publication authorized on 4 November 2026
-
-The user explicitly suspended new publications and server reservations in the
-chat `Найти причину долгой установки`. No Flag Battle installation or reservation
-was started. The package is staged privately, without changing the active game.
-The user subsequently lifted that pause and authorized continuing in the agreed queue under the new nonblocking process.
-
-The fixed application source is `88a99af8c49ac43530c2fb9ae93a8abb4576c60d`.
-Package `2.1.2-1d07daea0fa9` has manifest SHA-256
+The production module is `2.1.2-1d07daea0fa9`, from application source
+`88a99af8c49ac43530c2fb9ae93a8abb4576c60d`. Its manifest SHA-256 is
 `36f6fb415cfadba002e1e33b9363d3b135b0a4c8a714e47d2d5cd5daaeb17854`.
-The prepared delivery archive is 112665 bytes, SHA-256
-`4ddb04f83d79ce657ab41d79ec2a99340782e7fe4fb513737ca174832a0f16d3`.
-Local outputs remain in the ordinary `module-dist` and `module-build` directories;
-temporary verification inputs are in `artifacts/work/flag-collision-audio-release`.
-The server stage is `/opt/royal-releases/flag-collision-audio-20261104-v1`.
+Collision gain changed from 0.065 to 0.16. The compiled program comparison
+confirmed that only this gain and versioned resource URLs differ from the
+previous production module. Timing, sound design, mathematics and catalogue
+availability retain their reviewed production inputs.
 
-TypeScript and RTP gates passed, along with sixteen audio/physics tests, nineteen
-common-wallet tests, eight Linux publisher checks and desktop/mobile real-host
-contact playback, skip, lost-reply UUID recovery and close/reopen checks. The
-compiled JavaScript differs from production 2.1.1 only in collision gain and
-versioned resource URLs. See `prepared-validation.json` for measured limits.
-Public post-installation checks have not run.
+The artifact was prepared once against manual-stakes source 64275fe, then
+verified without rebuilding against the completed player-recovery host 97d9eac.
+All module inputs matched that production inventory except the three reviewed
+source changes. `release:verify -- --github` passed at the fixed application
+commit immediately before installation.
 
-The tested host-check script fixes readiness polling, bounds cabinet click waits,
-uses the mobile chat's own close button and checks contact playback before the
-supported skip action. It does not require the entire animation to finish under
-software rendering. Physical listening and acoustic synchronization are untested.
+Installer source `1a87fd4c8dfee952ba9e6bc7f0f3a641534a57c8` is separately
+preserved in main. `repack-installer.mjs` binds its Git bytes and provenance to
+the unchanged artifact. Preparation uses no production locks. The installer
+acquires all three locks nonblockingly, closes partial acquisitions on failure,
+returns 75 for contention and rechecks the complete actual server before mutation.
+It saves a verified source archive, old module and exact image rollback tag.
+No running, published or retained rollback helper was modified.
 
-Before resuming, read current `AGENTS.md` and `docs/release-process.md`. Preserve
-the fixed application artifact; do not rebuild solely for installer changes.
-The source-88 application artifact is paired with a separately committed exit-75 installer.
-Prepare any installer correction in a separate Git commit, test partial lock
-release and regenerate its verified installation metadata. Do not edit running,
-published or retained rollback helpers in place, and do not run a waiting queue.
+Sixteen audio/physics tests, nineteen common-wallet tests, eight Linux publisher
+tests and thirteen common preparation-lock tests passed. Desktop and mobile
+real-host tests with connected chat covered contact playback, skip, lost-reply
+UUID recovery and close/reopen without extra debits. Physical device listening
+and acoustic synchronization were not assessed. The headless timing diagnostic
+does not prove physical sound latency.
 
-The stage's existing `before.json` and archived operator binding are preliminary
-manual-stakes inputs, not proof of the current production state. Before installation, bind the completed current host's reviewed reader and after-snapshot,
-then recheck the actual state inside the installer. `bind-current.py` rejects
-changes to the three target sources, the original package or any other module
-input. Current main already has a later `FlagBattleUI.ts` change outside this
-artifact, so reconcile relevant live changes deliberately rather than replacing
-them with this package. Keep completed unrelated publications intact.
+Public checks verified the pointer, manifest, all fifty package resources,
+five API boundaries and two guest browser sizes. No production test accounts,
+wagers or messages were created. The installer preserved the host, backend,
+other modules and services, without restart or database changes.
 
-For verification of the unchanged artifact, use its source commit as HEAD and
-run `release:verify -- --github`. Source fixes and handoff files are preserved on
-`codex/flag-collision-audio`; they are not a second application build. Remove
-task-owned temporary files after verified publication or explicit cancellation.
+See `verification.json` for the publication and mandatory maintenance result,
+and `prepared-validation.json` for measured preparation limits. The original
+transport archive contains preliminary metadata; reuse the verified artifact
+with fresh installation bindings rather than restoring archived operator data.

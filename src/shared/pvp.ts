@@ -58,6 +58,8 @@ export type PvpCardView = {
   winner: number | null; message: string; moves: PvpCardMove[];
 };
 export type PvpChallenge = {
+  /** Fixed terms accepted by sending and accepting the invitation. Absent on historical negotiated matches. */
+  offeredStake?: true;
   rulesVersion?: 1 | 2 | 3 | 4; mode?: 'free' | 'stake'; targetWins?: 2 | TsuEFaTarget; termsRevision?:number;
   id: string; gameId: PvpGameId; creatorId: string; creatorName: string;
   targetId: string | null; opponentId: string | null; opponentName: string;
@@ -67,7 +69,7 @@ export type PvpChallenge = {
   reason: string; revision: number; disconnected: { accountId: string; until: number }[];
 };
 export type PvpRequest = ({ id: string; action: 'create'; gameId: PvpGameId; stakeUnits: string; targetId: string | null }
-  | {id:string;action:'invite';gameId:'tsu-e-fa';targetId:string}
+  | {id:string;action:'invite';gameId:'tsu-e-fa';targetId:string;stakeUnits?:string}
   | {id:string;action:'terms';challengeId:string;stakeUnits:string;termsRevision:number}
   | {id:string;action:'duel-ready'|'unready';challengeId:string;termsRevision:number}
   | { id: string; action: 'accept' | 'cancel' | 'ready' | 'resign'; challengeId: string }
@@ -88,7 +90,7 @@ export function validPvpRequest(value: unknown): value is PvpRequest {
   if (!custom && (row.mode !== undefined || row.targetWins !== undefined)) return false;
   if (custom && (row.mode !== undefined && !['free','stake'].includes(row.mode) || row.targetWins !== undefined && !validTsuEFaTarget(row.targetWins))) return false;
   const keys = Object.keys(row).filter(k=>k!=='walletScope' && (!custom || !['mode','targetWins'].includes(k))).sort().join(',');
-  if(row.action==='invite')return keys==='action,gameId,id,targetId'&&row.gameId==='tsu-e-fa'&&gameAccountId(row.targetId);
+  if(row.action==='invite')return (keys==='action,gameId,id,targetId'||keys==='action,gameId,id,stakeUnits,targetId'&&validTsuDuelStake(row.stakeUnits))&&row.gameId==='tsu-e-fa'&&gameAccountId(row.targetId);
   if (row.action === 'create') return keys === 'action,gameId,id,stakeUnits,targetId' && isPvpGame(row.gameId)
     && (custom && row.mode === 'free' ? row.stakeUnits === '0' : validPvpStake(row.stakeUnits)) && (row.targetId === null || gameAccountId(row.targetId));
   if (!('challengeId' in row) || !gameAccountId(row.challengeId)) return false;

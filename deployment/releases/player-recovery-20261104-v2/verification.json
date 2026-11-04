@@ -1,0 +1,234 @@
+{
+  "release": "player-recovery-20261104-v2",
+  "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+  "installerSourceCommit": "748c56e392fdde340f86e6ce753444e62d9b4dfd",
+  "productionBase": "64275feff275c9049a82e7b095dd89c4b71677da",
+  "runningImage": "sha256:8697bf1f68ebef8c53506839eec9839f6192275e64ade689a786a173a21957f3",
+  "changedSourceSha256": {
+    "server/LobbyRoom.ts": "4247ed62271bfea83b4e67bba32947ec0d74cd8b79c8cc268cf120b6a29a4035",
+    "src/game/RoomScene.ts": "a655030b4fa8d62709680d3e3d5c98ad7a915300b6d24fda43adc950384f7cdb",
+    "src/i18n/en.ts": "84203044eb334f6c53953acc5b300db8c26e541eccf6955d608fc66e5e4e0082",
+    "src/main.ts": "93bd794d7947202d2b6cb48be84eeadcb1e7b8401ea0e50fb24de7023f6df251",
+    "src/network/LobbyClient.ts": "5704cac3ea3e62075d6bdfa019764eedcc262f896602463fbb0c4832883c174d",
+    "src/shared/cabinetSeating.ts": "087040ee4788247488c7b2445bffde6816214ec0279209acc7fb41f3a052aebd",
+    "src/shared/playerRecovery.ts": "27e80e4e6b4b0a43b838e9bb567fbd2125011d26480496391cf6787439c4f905",
+    "src/shared/world.ts": "3c9b6a418a473a093f2af478d83ae893807a2809dde8ab468269df4c4a2d8e87",
+    "src/ui/PlayerRecoverySettings.ts": "66c58a1dcfb265aa358a36e7e3948e055d3c8e1a68dd68f898467706802e1e3c",
+    "src/ui/SocialUI.ts": "7bf92f4a6efd818029d3dc00efe8d070c923972abfc8a85bf36660176ca06518",
+    "src/ui/player-recovery.css": "5d07c05523f5ba35ed68d8fc2b968b79cdc0a2430efb98047bd85c72f2ec8974"
+  },
+  "clientFiles": {
+    "assets/index-BlE5kpQO.js": "9abbd48cc2d0467b5bf19662eb8cecb87b0ffa7f763fcc3bcfc03d7c49c38447",
+    "assets/index-KiNW8Wk8.css": "0d2dc8a5f90021762fc703e9afa06ecbf95fd74525e15a82967a50cab5e21918",
+    "index.html": "a80692f9337750439320415706511f34a9d75c941c45e5af9f27be69b1b09f17"
+  },
+  "backendFiles": {
+    "index.js": "cb4a974f09c318a416c89ee06cf6dec658810b322e21356e8c742eb1ecf5b70f"
+  },
+  "releaseManifestSha256": "f4bd7216c9088a22c6684a1584e3c0e30fbc571f432b843620273f4c4b736f72",
+  "applicationGitHubReceiptSha256": "21fefa2caae8827addac673d5641fc3ffe9bb7e6f5f6efec5c2cf330b960b3fd",
+  "installerGitHubReceiptSha256": "2835f3b9d6a167128b66939c514b876071124c26ecb16c018ebab4a3669b439c",
+  "installerGitHubReceipt": {
+    "format": 1,
+    "sourceCommit": "748c56e392fdde340f86e6ce753444e62d9b4dfd",
+    "parentCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+    "applicationSourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+    "packagerSourceCommit": "a34ccbedb7f41165d0a257c0d5a54ee17d11dc4c",
+    "remoteMain": "5975075822d5f8165b1ae8ef490eba6b0eaf3be3",
+    "checkedAt": "2026-11-04T17:22:34.971Z",
+    "changedOnlyReleaseTooling": [
+      "deployment/releases/player-recovery-20261104-v2/deploy.py",
+      "deployment/releases/player-recovery-20261104-v2/prepare.mjs",
+      "deployment/releases/player-recovery-20261104-v2/test_deploy.py"
+    ]
+  },
+  "checks": {
+    "typescript": true,
+    "rtpProfiles": 38,
+    "stakePolicies": 20,
+    "admissionPolicies": 20,
+    "legacyUnchangedAndUnqualified": 114,
+    "exactProjectedWalletAndRecovery": {
+      "passed": 24,
+      "command": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts server-tests/player-recovery.test.ts",
+      "projectionLoader": "Exact host and backend projection inputs"
+    },
+    "cabinetNavigationPassed": 4,
+    "installerAndReservationGuardsPassed": 13,
+    "builtHost": {
+      "desktop": "1440x1000 passed",
+      "mobile": "390x844 passed",
+      "connectedChat": true,
+      "module": "Published royal-roulette 1.6.1-55882a5e8c75",
+      "lostPaidReply": "Same UUID, round and balance; exactly one bet after recovery and reopening",
+      "unfinishedPaidSeries": "PostgreSQL: recovery and cashout replay preserve exactly one bet and one win"
+    },
+    "public": {
+      "at": "2026-11-04T17:48:23.992Z",
+      "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+      "checks": [
+        {
+          "path": "assets/index-BlE5kpQO.js",
+          "status": 200,
+          "sha256": "9abbd48cc2d0467b5bf19662eb8cecb87b0ffa7f763fcc3bcfc03d7c49c38447"
+        },
+        {
+          "path": "assets/index-KiNW8Wk8.css",
+          "status": 200,
+          "sha256": "0d2dc8a5f90021762fc703e9afa06ecbf95fd74525e15a82967a50cab5e21918"
+        },
+        {
+          "path": "index.html",
+          "status": 200,
+          "sha256": "a80692f9337750439320415706511f34a9d75c941c45e5af9f27be69b1b09f17"
+        },
+        {
+          "path": "/healthz",
+          "status": 200
+        },
+        {
+          "path": "/api/demo-wallet",
+          "status": 401
+        },
+        {
+          "path": "/api/auth/me",
+          "status": 200
+        }
+      ]
+    },
+    "productionAccountsWagersMessagesCreated": false,
+    "physicalPhoneConnected": false
+  },
+  "preserved": {
+    "catalogueGames": 20,
+    "addedGames": [],
+    "restoredGames": [],
+    "manualCasinoStakes": "19 games, 0.10 through 50.00 in 0.01 increments",
+    "independentModules": true,
+    "otherPersistentServices": 13,
+    "configurationAndVolumes": true,
+    "walletAndMathematicsUnchanged": true
+  },
+  "backup": {
+    "directory": "/opt/royal-backups/player-recovery-20261104-v2",
+    "sourceSha256": "a722b91d3db58939e4e817ea1036037d060956561c1c1e5c9f23b1fb34398379",
+    "previousImage": "sha256:4e7d6f2257b33fabc3227402c45692bc175ba064e61a445fadcc18a97fda113b"
+  },
+  "localCleanup": {
+    "taskOwnedDirectory": "C:\\Users\\Aorus\\.codex\\worktrees\\player-unstuck\\royal\\artifacts\\work\\player-unstuck",
+    "logicalBytes": 96846670,
+    "fileCount": 220,
+    "freeBefore": 308222517248,
+    "freeNow": 303867703296,
+    "sharedDependencyLink": "Junction",
+    "sharedDependencyTarget": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\node_modules",
+    "removedBytes": 8429873,
+    "exception": "Automatic approval rejected recursive removal of task-owned ordinary staging directories, even after absolute path and no-reparse validation. Reason: blocked by policy; no further reason. The command did not run. Earlier test-link removal was also rejected. No alternative deletion was attempted. Three ordinary archive files were removed successfully through native Remove-Item without recursion. Remaining task folders/worktree are retained until a separately reviewed cleanup can safely remove only task-owned paths and links, preserving the shared dependency target and unrelated dirty root checkout.",
+    "preservedSourceCommits": [
+      "97d9eac8e811db0389002ce697865782f9707f41",
+      "748c56e392fdde340f86e6ce753444e62d9b4dfd",
+      "730424ee458a5d332d15d40ec089cb6a0c0afe7f"
+    ],
+    "removedDirectories": [],
+    "retainedLinkDirectories": [
+      "C:\\Users\\Aorus\\.codex\\worktrees\\player-unstuck\\royal\\artifacts\\work\\player-unstuck\\test-links-retained",
+      "C:\\Users\\Aorus\\.codex\\worktrees\\player-unstuck\\royal\\artifacts\\work\\player-unstuck\\v2\\test-links-retained"
+    ]
+  },
+  "archiveCleanup": {
+    "freeBefore": 303859621888,
+    "archives": [
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\player-unstuck\\royal\\artifacts\\work\\player-unstuck\\release.tgz",
+        "bytes": 2808672
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\player-unstuck\\royal\\artifacts\\work\\player-unstuck\\v2\\payload.tar.gz",
+        "bytes": 2810606
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\player-unstuck\\royal\\artifacts\\work\\player-unstuck\\v2\\payload-fresh.tar.gz",
+        "bytes": 2810595
+      }
+    ],
+    "preservedGitHubCommits": [
+      "cea35093e1ea61d55a084b613ab2ee97d68ec11b",
+      "97d9eac8e811db0389002ce697865782f9707f41",
+      "748c56e392fdde340f86e6ce753444e62d9b4dfd"
+    ],
+    "deleted": [
+      "C:\\Users\\Aorus\\.codex\\worktrees\\player-unstuck\\royal\\artifacts\\work\\player-unstuck\\release.tgz",
+      "C:\\Users\\Aorus\\.codex\\worktrees\\player-unstuck\\royal\\artifacts\\work\\player-unstuck\\v2\\payload.tar.gz",
+      "C:\\Users\\Aorus\\.codex\\worktrees\\player-unstuck\\royal\\artifacts\\work\\player-unstuck\\v2\\payload-fresh.tar.gz"
+    ],
+    "freeAfter": 303868059648
+  },
+  "stageCleanup": {
+    "status": "blocked_by_automatic_approval",
+    "reason": "blocked by policy; no detailed reason provided",
+    "executed": false,
+    "targets": [
+      "payload",
+      "v2/payload",
+      "v2/payload-fresh",
+      "published-modules",
+      "v2/published-modules",
+      "mobile-results",
+      "test-results",
+      "vite-cache",
+      "v2/mobile-results",
+      "v2/test-results",
+      "v2/vite-cache"
+    ],
+    "boundary": "C:\\Users\\Aorus\\.codex\\worktrees\\player-unstuck\\royal\\artifacts\\work\\player-unstuck",
+    "alternateDeletionAttempted": false
+  },
+  "postMaintenance": {
+    "checkedAt": "2026-11-04T18:29:11.330720+00:00",
+    "currentImage": "sha256:8697bf1f68ebef8c53506839eec9839f6192275e64ade689a786a173a21957f3",
+    "dockerHealth": "healthy",
+    "publicHealth": 200,
+    "maintenanceCompleted": true,
+    "maintenanceResult": "/opt/royal-maintenance/automatic-runs/run-a3892f46a8ef4c75b599be4496345526/summary.json",
+    "maintenanceResultSha256": "e5058655dee3bc22d38c273c3310cdd3fbdeb3fe4060215105bad4317564d77a",
+    "timer": {
+      "is-enabled": "enabled",
+      "is-active": "active"
+    },
+    "freeBytes": 10071461888
+  },
+  "adjacentIndependentPublication": {
+    "release": "flag-collision-audio-20261104-v1",
+    "sourceCommit": "88a99af8c49ac43530c2fb9ae93a8abb4576c60d",
+    "installerSourceCommit": "1a87fd4c8dfee952ba9e6bc7f0f3a641534a57c8",
+    "version": "2.1.2-1d07daea0fa9",
+    "published": true,
+    "hostRestarted": false,
+    "databaseTouched": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "release": "player-recovery-20261104-v2",
+    "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+    "currentImage": "sha256:8697bf1f68ebef8c53506839eec9839f6192275e64ade689a786a173a21957f3",
+    "rollbackImage": "sha256:4e7d6f2257b33fabc3227402c45692bc175ba064e61a445fadcc18a97fda113b",
+    "freeBefore": 9751556096,
+    "freeAfter": 10079834112,
+    "finishedAt": 1793816904.7412262,
+    "verificationPasses": 2,
+    "namedResult": "/opt/royal-maintenance/automatic-runs/run-a3892f46a8ef4c75b599be4496345526/summary.json",
+    "resultSha256": "e5058655dee3bc22d38c273c3310cdd3fbdeb3fe4060215105bad4317564d77a",
+    "removedEntries": 104,
+    "removedImageTags": 3,
+    "preservedFinancialFiles": 140,
+    "containersUnchanged": true,
+    "projectBrainStatus": "pending"
+  },
+  "notes": [
+    "First v1 never mutated production; latest manual-stakes source preserved in v2.",
+    "First reservation ended before handoff; fresh reservation2146856 independently verified the exact current baseline.",
+    "Installer300s startup deadline requires both Docker healthy and a fresh successful health endpoint. Same verified application artifact reused.",
+    "Mobile rerun resolved test fixture cabinet occupancy from desktop reconnect grace; afterEach now closes its own game.",
+    "No database restore."
+  ]
+}

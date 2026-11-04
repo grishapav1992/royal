@@ -2,7 +2,7 @@
   "release": "uniform-spin-response-20261104-v1",
   "featureCommit": "cf412e52339462c26191242069916a735a99739e",
   "motionCommit": "e3cfad45abb0960433fa941b9692699cb024fe14",
-  "productionCommit": "64275feff275c9049a82e7b095dd89c4b71677da",
+  "productionCommit": "97d9eac8e811db0389002ce697865782f9707f41",
   "moduleGames": [
     "cosmic-escape",
     "caramel-carnival",
@@ -48,7 +48,10 @@
     "src/ui/operationFeedback.ts": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17",
     "src/ui/slotKit/SlotControls.ts": "9ed5c3c6830d500441bba90888f0a693f6a342909ff6886f3c00eaef6b1c297a",
     "games/dracona/entry.ts": "c5ba0433140701f1b171538b6707910f7cbe7cb1171fb14d9cb2f55a81a2235c",
-    "games/dracona/requestStyles.ts": "35e092afde5e01a263cca3be3bfb5c7ce695876ca51dc0713b4596a2fe906c59"
+    "games/dracona/requestStyles.ts": "35e092afde5e01a263cca3be3bfb5c7ce695876ca51dc0713b4596a2fe906c59",
+    "games/flag-battle/FlagAudio.ts": "e7bfa6c926f11816598cea05baba4b0e26339d5f2bac111d2a8564d2173fd6b4",
+    "games/flag-battle/package.json": "abac21886b92fa711a6e0eb510320c9c6dcb0f3f7044254bf38ce82832ca9b28",
+    "games/flag-battle/tsconfig.json": "71b119246484c04f8b0be9137eb1cf1f56ba2edd4af1652914517166ac98adc3"
   },
   "added": [
     "src/ui/operationFeedback.ts",
