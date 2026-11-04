@@ -5,7 +5,7 @@ pub=importlib.util.module_from_spec(spec);spec.loader.exec_module(pub)
 
 class ScopeTests(unittest.TestCase):
  def test_scope_rejects_another_game_or_source(self):
-  before={'sourceCommit':'base'};op={'sourceCommit':'source','source':dict.fromkeys(pub.SOURCES,'new')}
+  before={'sourceCommit':'base'};op={'sourceCommit':'source','baseCommit':'base','buildBaseCommit':'base','source':dict.fromkeys(pub.SOURCES,'new')}
   release={'scope':'modules','modules':[pub.GAME],'build':{'passed':True},'sourceCommit':'source','baseCommit':'base','packages':[{'gameId':pub.GAME}]}
   pub.validate_scope(release,before,op)
   for field,value in [('modules',['royal-roulette']),('baseCommit','other')]:

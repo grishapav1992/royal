@@ -18,37 +18,37 @@
       "sha256": "e7bfa6c926f11816598cea05baba4b0e26339d5f2bac111d2a8564d2173fd6b4"
     },
     "games/flag-battle/FlagBattleUI.ts": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "games/flag-battle/FlagBattleUI.ts",
       "baseSha256": "19e7e9643e0949b97477640ea8a62fee21261daa12a7bf31f1441df72d29e4ab",
       "sha256": "19e7e9643e0949b97477640ea8a62fee21261daa12a7bf31f1441df72d29e4ab"
     },
     "games/flag-battle/FlagPhysics.ts": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "games/flag-battle/FlagPhysics.ts",
       "baseSha256": "75ed3208db8f377316dac255059a7c68c52b33db6f0283ba4f4b2e887713f625",
       "sha256": "75ed3208db8f377316dac255059a7c68c52b33db6f0283ba4f4b2e887713f625"
     },
     "games/flag-battle/FlagSoundTimeline.ts": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "games/flag-battle/FlagSoundTimeline.ts",
       "baseSha256": "2dfd78b1f4f05b4bfdf3a9945e4d04c275c6405618b75081ffc9f31ea8a9eabe",
       "sha256": "2dfd78b1f4f05b4bfdf3a9945e4d04c275c6405618b75081ffc9f31ea8a9eabe"
     },
     "games/flag-battle/entry.ts": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "games/flag-battle/entry.ts",
       "baseSha256": "96fb2482b2c82e78940e8f27aeb74456290298a3ec4f1bd084f447589374d85e",
       "sha256": "96fb2482b2c82e78940e8f27aeb74456290298a3ec4f1bd084f447589374d85e"
     },
     "games/flag-battle/priorities.css": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "games/flag-battle/priorities.css",
       "baseSha256": "ad6c2f7daa0bfccae242391a8ba48e27a32360377b91a28e4125fbd89822d919",
       "sha256": "ad6c2f7daa0bfccae242391a8ba48e27a32360377b91a28e4125fbd89822d919"
     },
     "games/flag-battle/style.css": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "games/flag-battle/style.css",
       "baseSha256": "d7cd70e6faff320b81ef814df13bb4853891211d388d26e8c8821fb766ad0594",
       "sha256": "d7cd70e6faff320b81ef814df13bb4853891211d388d26e8c8821fb766ad0594"
@@ -60,85 +60,85 @@
       "sha256": "71b119246484c04f8b0be9137eb1cf1f56ba2edd4af1652914517166ac98adc3"
     },
     "src/modules/GameHostContract.ts": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "src/modules/GameHostContract.ts",
       "baseSha256": "47e6960da87ccab2dcb81c808ad019a82ee587f097754f1ab20a9c4dfcb3631b",
       "sha256": "47e6960da87ccab2dcb81c808ad019a82ee587f097754f1ab20a9c4dfcb3631b"
     },
     "src/shared/caribbeanTreasuresMath.ts": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "src/shared/caribbeanTreasuresMath.ts",
       "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
       "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
     },
     "src/shared/flagBattle.ts": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "src/shared/flagBattle.ts",
       "baseSha256": "269b48f9367609b2343b732982631f88203fed9fa2b40e6bb08d9f6611b64aa4",
       "sha256": "269b48f9367609b2343b732982631f88203fed9fa2b40e6bb08d9f6611b64aa4"
     },
     "src/shared/forestHeartMath.ts": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "src/shared/forestHeartMath.ts",
       "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
       "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
     },
     "src/shared/gameStakes.ts": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "src/shared/gameStakes.ts",
       "baseSha256": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b",
       "sha256": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b"
     },
     "src/shared/neopolisMath.ts": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "src/shared/neopolisMath.ts",
       "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
       "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
     },
     "src/shared/neopolisStakePayouts.ts": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "src/shared/neopolisStakePayouts.ts",
       "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
       "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
     },
     "src/shared/roundPrecision.ts": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "src/shared/roundPrecision.ts",
       "baseSha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
       "sha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8"
     },
     "src/ui/GameLayoutPolicy.ts": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "src/ui/GameLayoutPolicy.ts",
       "baseSha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c",
       "sha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c"
     },
     "src/ui/GamePriorityPanel.ts": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "src/ui/GamePriorityPanel.ts",
       "baseSha256": "e7962834ba950151c3de176899ec3b6e49e1c5175f35ac1e5087787d5e0abd34",
       "sha256": "e7962834ba950151c3de176899ec3b6e49e1c5175f35ac1e5087787d5e0abd34"
     },
     "src/ui/active-game-viewport.css": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "src/ui/active-game-viewport.css",
       "baseSha256": "493e85699b284319a6e0dcaf6aa178c308ef2640bb7dc180625c052a4b6d60c7",
       "sha256": "493e85699b284319a6e0dcaf6aa178c308ef2640bb7dc180625c052a4b6d60c7"
     },
     "src/ui/game-priority-panel.css": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "src/ui/game-priority-panel.css",
       "baseSha256": "0894bf423064c5e1de16f1a1c73831e517efadfb3e5757fd506b1f4d49abcfb1",
       "sha256": "0894bf423064c5e1de16f1a1c73831e517efadfb3e5757fd506b1f4d49abcfb1"
     },
     "src/ui/stakeRules.ts": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "src/ui/stakeRules.ts",
       "baseSha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df",
       "sha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df"
     },
     "src/ui/stakeSelection.ts": {
-      "commit": "99eb27bb9d29658f8df089ad44b0845e67045f17",
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
       "path": "src/ui/stakeSelection.ts",
       "baseSha256": "a504e218ad8683f493e68345b26003a33711a07e6231290910054cd31d72c631",
       "sha256": "a504e218ad8683f493e68345b26003a33711a07e6231290910054cd31d72c631"
@@ -148,6 +148,12 @@
       "path": "tsconfig.json",
       "baseSha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
       "sha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b"
+    },
+    "games/flag-battle/package.json": {
+      "commit": "62a4aa66dd77e7e96ecc13fab2266d72748141d9",
+      "path": "games/flag-battle/package.json",
+      "baseSha256": "abac21886b92fa711a6e0eb510320c9c6dcb0f3f7044254bf38ce82832ca9b28",
+      "sha256": "abac21886b92fa711a6e0eb510320c9c6dcb0f3f7044254bf38ce82832ca9b28"
     },
     "package.json": {
       "commit": "399191cc6e92d11b947845955585230ac3005800",

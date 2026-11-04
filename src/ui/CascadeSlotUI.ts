@@ -1,3 +1,4 @@
+import {canRecoverOperation} from './operationFeedback';
 import { t as translateText, tr, locale } from '../i18n/index';
 import { observeExpansionOutcome, resetGameOutcomes } from './gameReactions';
 import { StudioMotion } from './StudioMotion';
@@ -85,7 +86,7 @@ export class CascadeSlotUI {
       } else if (!client.busy && client.pending && !this.live.accepted) this.cancel();
     }
     if (!this.live && session && this.key(session) !== this.presentedKey) this.static(session);
-    if (!this.live && client.pending) this.phase('uncertain');
+    if (!this.live && canRecoverOperation(client)) this.phase('uncertain');
     if (client.pending?.gameId === this.game && client.pending.action === 'start' && this.stake !== client.pending.stakeUnits) { this.stake = client.pending.stakeUnits; this.stakeChosen = true; this.rules(); }
     this.controls();
   }
@@ -100,7 +101,7 @@ export class CascadeSlotUI {
     spin.toggleAttribute('data-start', !active); if (active) spin.dataset.move = 'studio-spin'; else delete spin.dataset.move;
     this.find('[data-slot-spin-label]').textContent = active ? translateText('КАСКАД') : translateText('ВРАЩАТЬ'); spin.setAttribute('aria-label', active ? tr`Продолжить каскад, осталось ${session.view.studio.remaining}` : translateText('Вращать барабаны'));
     this.find('[data-slot-bonus]').textContent = active ? tr`Каскадов осталось: ${session.view.studio.remaining}` : translateText('Совпадения от восьми');
-    const retry = this.find<HTMLButtonElement>('[data-slot-retry]'); retry.hidden = !client.pending; retry.disabled = !!this.live || client.busy || !ready || document.hidden;
+    const retry = this.find<HTMLButtonElement>('[data-slot-retry]'); retry.hidden = !canRecoverOperation(client); retry.disabled = !!this.live || client.busy || !ready || document.hidden;
     this.find<HTMLButtonElement>('[data-slot-refresh]').disabled = !!this.live || client.busy || client.loading || !client.accountId;
     this.root.setAttribute('aria-busy', String(!!this.live || client.busy));
     let status = translateText('Выбери ставку и вращай барабаны.');

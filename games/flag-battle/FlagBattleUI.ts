@@ -1,3 +1,4 @@
+import {canRecoverOperation} from '../../src/ui/operationFeedback';
 import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import { GamePriorityPanel } from '../../src/ui/GamePriorityPanel';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
@@ -126,7 +127,7 @@ export class FlagBattleUI {
     this.find('[data-fb="empty"]').hidden = visible > 0;
   }
   private render() {
-    const blocked = this.blocked(), pending = client.pending?.gameId === FLAG_GAME;
+    const blocked = this.blocked(), pending = client.pending?.gameId === FLAG_GAME && canRecoverOperation(client);
     this.root.dataset.presenting = String(this.running); this.root.dataset.mode = this.mode; this.root.dataset.pending = String(!!pending);
     this.put('selection', name(this.selected) + ' · ' + this.count + text(' стран', ' countries') + ' · 1/' + this.count + ' ▾');
     this.find('[data-fb="selection"]').setAttribute('aria-label', text('Режим и страна. ', 'Mode and country. ') + name(this.selected) + ', ' + this.count);
@@ -152,7 +153,7 @@ export class FlagBattleUI {
     this.find<HTMLButtonElement>('[data-fb="retry"]').hidden = !pending; this.find<HTMLButtonElement>('[data-fb="retry"]').disabled = client.busy || this.submitting;
     this.put('quote', money(flagPayout(this.stake, this.mode)) + ' USDT');
     this.put('multiplier', (flagModeInfo(this.mode).multiplier / 100).toLocaleString(en ? 'en-US' : 'ru-RU') + '×');
-    this.put('status', this.error || client.error || (!client.accountId ? text('Войди в аккаунт для ставки.', 'Sign in to place a bet.') : pending ? text('Проверь отправленную ставку. Новый запрос не нужен.', 'Check your submitted bet before starting another.') : this.running ? text('Болей за свой флаг.', 'Cheer for your flag.') : text('Выбери страну. Шансы у всех равны.', 'Pick a country. Every flag has equal odds.')));
+    this.put('status', this.error || client.error || (!client.accountId ? text('Войди в аккаунт для ставки.', 'Sign in to place a bet.') : pending ? text('Проверь отправленную ставку. Новый запрос не нужен.', 'Check your submitted bet before starting another.') : this.submitting || client.busy ? text('Принимаем ставку…', 'Confirming bet…') : this.running ? text('Болей за свой флаг.', 'Cheer for your flag.') : text('Выбери страну. Шансы у всех равны.', 'Pick a country. Every flag has equal odds.')));
     this.moment();
   }
   private moment() {
