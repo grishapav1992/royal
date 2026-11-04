@@ -120,6 +120,7 @@ def publish_locked(m, scope):
             out.add(LIVE/name, arcname=name); destination=backup/'source'/name
             destination.parent.mkdir(parents=True, exist_ok=True); shutil.copyfile(LIVE/name, destination)
         out.add(pointer, arcname='active.json')
+        out.add(old/'manifest.json', arcname='prior-manifest.json')
         out.add('/opt/royal-game-modules-state/host.json', arcname='host.json')
     tag = 'royal-game:before-'+NAME
     subprocess.run(['docker', 'tag', current['Image'], tag], check=True, timeout=60)
