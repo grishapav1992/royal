@@ -4,7 +4,7 @@ import { accounts } from '../server/accounts';
 import { LobbyRoom } from '../server/LobbyRoom';
 import { BAR_APPROACH } from '../src/shared/world';
 
-test('sip and service appear only after drink persistence succeeds',async context=>{
+for(const movedOn of [false,true])test(movedOn?'a delayed confirmation cannot replace a later cabinet action':'sip and service appear only after drink persistence succeeds',async context=>{
   const login=await accounts.login(`bar-confirm-${crypto.randomUUID()}@example.test`,'BarConfirmation2026!');
   await accounts.select(login.account.id,0);
   const client:any={sessionId:'bar-confirm',auth:(await accounts.session(login.token))!,send(){},leave(){}};
@@ -21,7 +21,9 @@ test('sip and service appear only after drink persistence succeeds',async contex
     context.mock.method(accounts.drinking,'consume',async(...args:Parameters<typeof consume>)=>{entered();await commit;return consume(...args);});
     const command=handlers.get('drink')(client,'wine');await pending;
     assert.equal(p.action,'idle');assert.equal(p.drink,'');
+    if(movedOn)p.playing=true;
     release();await command;
-    assert.equal(p.action,'drink');assert.equal(p.drink,'wine');assert.ok(p.soberAt>Date.now());
+    if(movedOn){assert.equal(p.action,'idle');assert.equal(p.drink,'');assert.equal(p.playing,true);}
+    else{assert.equal(p.action,'drink');assert.equal(p.drink,'wine');assert.ok(p.soberAt>Date.now());}
   }finally{room.onDispose();room.clock.clear();await accounts.logout(login.token);}
 });

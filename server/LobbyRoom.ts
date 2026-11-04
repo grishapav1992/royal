@@ -284,7 +284,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
         // Reserve the command, then publish sip and dose together after persistence.
         this.stop(client.sessionId);
         const drinking = await accounts.drinking.consume(accountId, id as string, Date.now());
-        if (!this.currentAction(client, p, control, chatRevision, hallRevision)) return;
+        if (!valid()) return;
         this.stop(client.sessionId);
         access.drinking = drinking; p.soberAt = drinking.soberAt;
         p.action = 'drink'; p.drink = id as string; p.actionUntil = Date.now()+3200;

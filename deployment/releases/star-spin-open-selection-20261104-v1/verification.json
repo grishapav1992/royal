@@ -1,0 +1,417 @@
+{
+  "status": "published_verified_maintenance_pending",
+  "applicationSourceCommit": "320d60725984c5cbd46829e9dc545f59cf9cd162",
+  "installerSourceCommit": "a905506b1a8f7dd26637b58e3f3cedfc470cc511",
+  "featureSourceCommit": "d666a6aa11b47e3a4a3d474e38ae0f7d448dddb4",
+  "baselineSourceCommit": "820e1c4e92eeb54b85915c483dc4e59829679c71",
+  "baselineImage": "sha256:f19d318e66f2c223c072eadac81a20b27b3ccde3a45a46052518193f2f527ed1",
+  "module": "1.6.0-7c4da60c30bd",
+  "contract": {
+    "apiVersion": 1,
+    "rulesVersion": 2,
+    "progressVersion": 1
+  },
+  "preparedManifestSha256": "50aef28785791d26699a3770b8c89a9d5fee049c069c0134ab7341fbb81e3cf1",
+  "backend": {
+    "path": "dist-server/index.js",
+    "sha256": "e61b277acfd8ccca75ef1ecd1e57d3260032d71da974f337f5778bdcb0932aba"
+  },
+  "scope": {
+    "sourceFiles": 8,
+    "backendFiles": 1,
+    "hostClientFiles": 0,
+    "addedGames": [],
+    "restoredGames": [],
+    "activeCatalogueCount": 20
+  },
+  "checks": {
+    "serverSuite": {
+      "passed": 26,
+      "collection": 7,
+      "mandatoryWallet": 19
+    },
+    "qualification": {
+      "commonStakes": 9,
+      "fullRoundReplays": 2304,
+      "realWalletCases": 9
+    },
+    "rtpGate": {
+      "profiles": 38,
+      "stakePolicies": 20,
+      "admissions": 20,
+      "legacyNotQualified": 114
+    },
+    "typecheck": true,
+    "officialPreparation": true,
+    "githubArtifactVerification": true,
+    "installerGuards": 5,
+    "compiledHost": {
+      "startTime": "2026-11-04T13:29:58.958Z",
+      "duration": 228154.747,
+      "expected": 6,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0,
+      "packageVersion": "1.6.0-7c4da60c30bd",
+      "connectedChat": true,
+      "viewports": [
+        "1440x1000",
+        "390x844",
+        "707x447",
+        "320x568"
+      ]
+    },
+    "actualProductionHost": {
+      "stats": {
+        "startTime": "2026-11-04T14:10:22.828Z",
+        "duration": 79490.987,
+        "expected": 3,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "files": {
+        "dist/index.html": "2d9b7d07566789d2145360f577feb566f84036b349e1e96d1169207ba362b8dd",
+        "dist/assets/index-BwaS85dK.js": "a9b3ef9d9ac52a6db88deedc54cdcfb6c7be13a43f76340ad5b3a7d808cf7855",
+        "dist/assets/index-V4GHKrLV.css": "e21ee49745a1903e8fe694615407d4d07053f0e5254c935aef70f5b5166c10e2",
+        "dist/assets/catalog-cover-BtVlY3hb.webp": "51c6b39a839fb3abbdebc3bba8bc105a2ba92ae764f4943454bed614405d9bc7"
+      },
+      "connectedChat": true
+    }
+  },
+  "limitations": [
+    "Shared production graph unavailable; direct sources and complete inventories used.",
+    "No physical phone connected.",
+    "No production test accounts, wagers, or chat messages created."
+  ],
+  "publicationAttempts": [
+    {
+      "result": "Rejected before locks and mutation",
+      "reason": "Unreviewed module tsconfig; inspected and bound resolveJsonModule-only difference"
+    },
+    {
+      "result": "No mutation; lock busy",
+      "reason": "Another operation holds the shared publication locks"
+    }
+  ],
+  "installationBaseCommit": "39b34944ee46074517c59065bdcf7454789875a4",
+  "installationBaseImage": "sha256:be0498e78cc0d27deff6555d6987fbf0c5ab40553b072acc094db1d1ed89af18",
+  "preparedBaseCommit": "820e1c4e92eeb54b85915c483dc4e59829679c71",
+  "preservedFrontendAdvance": {
+    "release": "guard-profile-20261104-v1",
+    "sourceCommit": "39b34944ee46074517c59065bdcf7454789875a4",
+    "image": "sha256:be0498e78cc0d27deff6555d6987fbf0c5ab40553b072acc094db1d1ed89af18",
+    "sourceChanges": {
+      "src/game/SecurityGuard.ts": "20df58e2a68615ad7bc41680a38beae1b26f569f6b6fb4a7d7e32446d7499c50"
+    },
+    "clientDelta": {
+      "assets/index-BwaS85dK.js": "a9b3ef9d9ac52a6db88deedc54cdcfb6c7be13a43f76340ad5b3a7d808cf7855",
+      "index.html": "2d9b7d07566789d2145360f577feb566f84036b349e1e96d1169207ba362b8dd"
+    },
+    "guardReleaseManifestSha256": "494bebcb365f81602c192e5d189f2e55041e4ee0571cb780bc00d2a2b1121b70",
+    "guardGitHubReceiptSha256": "42c6d0b23573a93ec028846f901235dcb441398006b91697bea93534fc52cd49"
+  },
+  "publication": {
+    "published": {
+      "published": true,
+      "preparedImage": "sha256:aeda26e738681e618e607fa3909ccb62d7e5b20b199b6c63885edc64ded804d3",
+      "runningImage": "sha256:aeda26e738681e618e607fa3909ccb62d7e5b20b199b6c63885edc64ded804d3",
+      "containerRestarted": true,
+      "sourceCommit": "320d60725984c5cbd46829e9dc545f59cf9cd162",
+      "changedSources": 8,
+      "clientDeltaFiles": 0,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 1,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 13,
+      "package": "1.6.0-7c4da60c30bd",
+      "modulePublished": true,
+      "addedGames": [],
+      "restoredGames": [],
+      "otherModulesPreserved": true
+    },
+    "image": "sha256:aeda26e738681e618e607fa3909ccb62d7e5b20b199b6c63885edc64ded804d3",
+    "sourceCommit": "320d60725984c5cbd46829e9dc545f59cf9cd162",
+    "installerSourceCommit": "a905506b1a8f7dd26637b58e3f3cedfc470cc511",
+    "baseCommit": "39b34944ee46074517c59065bdcf7454789875a4",
+    "baseImage": "sha256:be0498e78cc0d27deff6555d6987fbf0c5ab40553b072acc094db1d1ed89af18",
+    "afterSnapshotSha256": "99736bdf47c78ef4dc08246fad9dc7df11fec1c922bc9d7e438570a8fb2fd54c",
+    "installManifestSha256": "ff9f924aa98a5dade1961d49070358f06495b76422328915692ed242263ae308",
+    "buildResultSha256": "40fae2335334f83f464fda0b7a952f0638fc0f95d0785a99038b31b3e0a955f8",
+    "publishedSha256": "b968da795d83a5c84740c1fc4d4ba3e94462ef86bc63bbb0d402f810cb376f38",
+    "sourceDifferences": [
+      "docs/concepts/wild-nudge/collection-policy.md",
+      "docs/game-math/qualifications/wild-nudge-v2.json",
+      "games/wild-nudge/README.md",
+      "games/wild-nudge/StarSpinCollection.ts",
+      "games/wild-nudge/package.json",
+      "games/wild-nudge/reactor.css",
+      "scripts/game-math/rtp-policy.json",
+      "server/starSpinCollection.ts"
+    ],
+    "programDifferences": [
+      "dist-server/index.js"
+    ],
+    "sourceFiles": 2702,
+    "programFiles": 8595,
+    "externalModuleFilesBefore": 4259,
+    "externalModuleFilesAfter": 4282,
+    "otherServicesPreserved": 13,
+    "module": {
+      "verified": true,
+      "gameId": "studio-wild-nudge",
+      "version": "1.6.0-7c4da60c30bd",
+      "bytes": 12533420,
+      "files": 22,
+      "beforeSha256": "d10d279193c0955179df0326378d420414ede509750f0de1be9854c2f5768d80",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "install",
+      "activeSha256": "8c4f81bb13b219398505fb6b550a795381c1b61726ccb9ebb7c31d68e2e4761a",
+      "history": "/opt/royal-game-modules-state/history/20261104T144256-c6d610b896fd4ee1a44f9c1a084b4407.json"
+    },
+    "backup": {
+      "path": "/opt/royal-backups/star-spin-open-selection-20261104-v1/source.tgz",
+      "bytes": 26120,
+      "sha256": "10da85dbc8fc54dd11497667b6b1309d607b9a32516ecf12a1bfd5b9135b26c6",
+      "previousImage": "sha256:be0498e78cc0d27deff6555d6987fbf0c5ab40553b072acc094db1d1ed89af18",
+      "databaseRestored": false
+    }
+  },
+  "public": {
+    "checkedAt": "2026-11-04T14:45:13.637Z",
+    "package": "1.6.0-7c4da60c30bd",
+    "files": [
+      {
+        "path": "/game-modules/studio-wild-nudge/active.json",
+        "status": 200,
+        "bytes": 222,
+        "sha256": "8c4f81bb13b219398505fb6b550a795381c1b61726ccb9ebb7c31d68e2e4761a",
+        "cache": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/entry-ebee0895544d820e.js",
+        "status": 200,
+        "bytes": 409694,
+        "sha256": "ebee0895544d820ec1c25a2c98e405d613e4d7d415759bcbef138091815ee6b9",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/manifest.json",
+        "status": 200,
+        "bytes": 3131,
+        "sha256": "438749bb5721c9bbc4c0a91fb1ed5b49ebd0e93e9f345de462c69db72cd82012",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/background.webp",
+        "status": 200,
+        "bytes": 221826,
+        "sha256": "08da069a40ecd93db5ea3698f561b31fc6478f92f139f8117a5fa9aff89171fb",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/aeliri-rive.json",
+        "status": 200,
+        "bytes": 440289,
+        "sha256": "fa036e2a1fecf47875b1f361143daa23b0b60cb6624074480b98be49f2ed8dbb",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/aeliri.webp",
+        "status": 200,
+        "bytes": 185542,
+        "sha256": "1db152e1e067a5545480c17857ac6fae9edf6d2877a154a0d7aecaa02b68207e",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/lyra-rive.json",
+        "status": 200,
+        "bytes": 414761,
+        "sha256": "f4c917291389f3ab712133e0da4176ccee435feea88e9e136e36217264fe199a",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/lyra.webp",
+        "status": 200,
+        "bytes": 163696,
+        "sha256": "bd61ed5a356ed4a64a5777bf3cd75dd8f3867d0c7ff11399e1107ab7040d63ea",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/nyxara-rive.json",
+        "status": 200,
+        "bytes": 466721,
+        "sha256": "f1eff64dc71669616892c069637704ae96bec69908ea3e2fa764773273489718",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/nyxara.webp",
+        "status": 200,
+        "bytes": 199262,
+        "sha256": "0bd85ec325898d6653cd965ffdc45661b7c246b9e5db63b84fb17b6745b0cf2f",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/rive-runtime.json",
+        "status": 200,
+        "bytes": 3117589,
+        "sha256": "53d7a6fde857630ef2368df86afa57a1c53e98a7ee633d8b878703ba3ea2b809",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/vespera-rive.json",
+        "status": 200,
+        "bytes": 408143,
+        "sha256": "e43390097d90e245efa477a4e626a95defd7a142f9281dadeb076bdb83b8b0b1",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/characters/vespera.webp",
+        "status": 200,
+        "bytes": 161288,
+        "sha256": "ce383b93698909c9cb9205811976033326abfec1d0713f6b65ee00b85f5bda2e",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/cover.webp",
+        "status": 200,
+        "bytes": 113166,
+        "sha256": "51c6b39a839fb3abbdebc3bba8bc105a2ba92ae764f4943454bed614405d9bc7",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/score.wav",
+        "status": 200,
+        "bytes": 5644844,
+        "sha256": "282b5a2b358905645e3741d7d6ec198f07e391262f57430ac8ebc4d27cd875d2",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/symbol-0.webp",
+        "status": 200,
+        "bytes": 47800,
+        "sha256": "4818486e2fcfa37fd7eec9804026fa4336e45821f95611d1fb4cd9152e143065",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/symbol-1.webp",
+        "status": 200,
+        "bytes": 85310,
+        "sha256": "9df6f55cdc45fe27152099d1e093bc103bb4c8d89472d53c7da0cfdbee08b275",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/symbol-2.webp",
+        "status": 200,
+        "bytes": 71212,
+        "sha256": "41043b4d4b7c82948db8557921e6681dd88ae656101b30a4dd567583be446cb9",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/symbol-3.webp",
+        "status": 200,
+        "bytes": 64154,
+        "sha256": "40e59f13410534a6cff7fe468e75e64e1f84f0a7b636c7def5cff7ec90d2b929",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/symbol-4.webp",
+        "status": 200,
+        "bytes": 70436,
+        "sha256": "47983bd14981cd900c542370c6c2ad3438a6ccdbbce0831c307078414103caf2",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/symbol-5.webp",
+        "status": 200,
+        "bytes": 77224,
+        "sha256": "012e71be56c422c1b3ccef61d1cb27de356ad3ecb84fcf98dd4dd0ec27467ff6",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/symbol-6.webp",
+        "status": 200,
+        "bytes": 63602,
+        "sha256": "733ee68cc2704841d1ec941d11de5d8d6e051661d203582279a403327fc406d1",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/media/wild-nudge/symbol-7.webp",
+        "status": 200,
+        "bytes": 89176,
+        "sha256": "fe2d129f02f2b3cd7559b0a0f1eb074f13a17910637163632164b0ba9ebfc70b",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/studio-wild-nudge/versions/1.6.0-7c4da60c30bd/style-270816d124e7045a.css",
+        "status": 200,
+        "bytes": 17685,
+        "sha256": "270816d124e7045a5b0c1d0fb2993278da933de12582ebf7a90dd6f0b71820ed",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/",
+        "status": 200,
+        "bytes": 708,
+        "sha256": "2d9b7d07566789d2145360f577feb566f84036b349e1e96d1169207ba362b8dd",
+        "cache": "no-store"
+      },
+      {
+        "path": "/assets/index-BwaS85dK.js",
+        "status": 200,
+        "bytes": 2776219,
+        "sha256": "a9b3ef9d9ac52a6db88deedc54cdcfb6c7be13a43f76340ad5b3a7d808cf7855",
+        "cache": "public, max-age=3600"
+      },
+      {
+        "path": "/assets/index-V4GHKrLV.css",
+        "status": 200,
+        "bytes": 153554,
+        "sha256": "e21ee49745a1903e8fe694615407d4d07053f0e5254c935aef70f5b5166c10e2",
+        "cache": "public, max-age=3600"
+      },
+      {
+        "path": "/assets/catalog-cover-BtVlY3hb.webp",
+        "status": 200,
+        "bytes": 113166,
+        "sha256": "51c6b39a839fb3abbdebc3bba8bc105a2ba92ae764f4943454bed614405d9bc7",
+        "cache": "public, max-age=3600"
+      }
+    ],
+    "boundaries": [
+      {
+        "path": "/healthz",
+        "status": 200
+      },
+      {
+        "path": "/api/demo-wallet",
+        "status": 401
+      },
+      {
+        "path": "/api/star-spin/collection",
+        "status": 401
+      },
+      {
+        "path": "/api/game-wallet",
+        "status": 410
+      },
+      {
+        "path": "/api/nile-play/wallet",
+        "status": 410
+      }
+    ],
+    "productionAccountsCreated": 0,
+    "productionWagers": 0,
+    "productionChatMessages": 0
+  },
+  "maintenance": {
+    "status": "pending",
+    "requestedAtEpoch": 1793804006.870715
+  },
+  "checkedAt": "2026-11-04T14:55:51.377Z"
+}
