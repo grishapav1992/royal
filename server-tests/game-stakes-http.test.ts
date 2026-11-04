@@ -18,14 +18,14 @@ const {accounts}=await import('../server/accounts');
 const {installDemoWallet}=await import('../server/demoWalletRoutes');
 const {installGameWallet}=await import('../server/gameWalletRoutes');
 const policies=JSON.parse(readFileSync(new URL('../scripts/game-math/rtp-policy.json',import.meta.url),'utf8')).stakePolicies;
-const capabilities={'X-Royal-Card-Rules':'2','X-Royal-Caramel-Rules':'1','X-Royal-Velvet-Rules':'1','X-Royal-Convoy-Rules':'1','X-Royal-Nitro-Rules':'1','X-Royal-Afterglow-Rules':'1','X-Royal-Afterglow-Progress':'4','X-Royal-Meme-Rules':'1','X-Royal-Cr-Leo':'1','X-Royal-Neopolis-Rules':'4','X-Royal-Dracona-Rules':'2','X-Royal-Flag-Battle':'2','X-Royal-Jackie':'2','X-Royal-Temple-Rules':'2','X-Royal-Forest-Heart-Rules':'1','X-Royal-Caribbean-Treasures':'1'};
+const capabilities={'X-Royal-Wild-Nudge':'1','X-Royal-Card-Rules':'2','X-Royal-Caramel-Rules':'1','X-Royal-Velvet-Rules':'1','X-Royal-Convoy-Rules':'1','X-Royal-Nitro-Rules':'1','X-Royal-Afterglow-Rules':'1','X-Royal-Afterglow-Progress':'4','X-Royal-Meme-Rules':'1','X-Royal-Cr-Leo':'1','X-Royal-Neopolis-Rules':'4','X-Royal-Dracona-Rules':'2','X-Royal-Flag-Battle':'2','X-Royal-Jackie':'2','X-Royal-Temple-Rules':'2','X-Royal-Forest-Heart-Rules':'1','X-Royal-Caribbean-Treasures':'1'};
 const next=(s:any)=>{
  const v=s.view,name=v.forestHeart?.stage==='choice'?'forest-pass':v.caribbean?.phase==='choice'?'caribbean-choose-raid':v.actions.find((a:any)=>a.move==='cashout')?.move??v.actions.find((a:any)=>a.cost===0)?.move;
  assert(name);const revision=v.templeCascade?.revision??v.caribbean?.revision??v.forestHeart?.revision??v.neopolis?.revision??v.dracona?.revision??v.afterglow?.revision??v.nitro?.revision??v.convoy?.revision??v.caramel?.revision??v.luelon?.revision??v.penalty?.revision??v.jackie?.combat.revision;
  return{id:randomUUID(),gameId:s.gameId,action:'move',sessionId:s.id,move:name,...(revision===undefined?{}:{revision})};
 };
 test.after(async()=>{await accounts.close();});
-for(const native of [false,true])test(`${native?'USDT financial socket':'common demo wallet'} accepts ten-cent total rounds in all 18 games and never duplicates money`,{timeout:240000},async()=>{
+for(const native of [false,true])test(`${native?'USDT financial socket':'common demo wallet'} accepts ten-cent total rounds in all 19 casino games and never duplicates money`,{timeout:240000},async()=>{
  const client=new ExpansionClient(2),verify=(s:any)=>Reflect.get(client,'checkedSession').call(client,s);
  // Negotiated Tsu-e-fa rounds use the PvP transport and its dedicated stake tests.
  for(const [game,p]of Object.entries(policies).filter(([game])=>game!=='tsu-e-fa')as [string,any][]){

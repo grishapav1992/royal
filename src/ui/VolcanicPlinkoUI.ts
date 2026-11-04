@@ -1,7 +1,8 @@
+import {syncStakeSelect} from './stakeSelection';
 import {stakeRulesHtml} from './stakeRules';
 import { GamePriorityPanel } from './GamePriorityPanel';
 import './volcanic-plinko-priorities.css';
-import {GAME_BETS as DEMO_BETS} from '../shared/gameStakes';
+import {GAME_BETS as DEMO_BETS, gameBetCents, validGameBet} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import './volcanic-plinko.css';
 import { demoWallet, type WalletClient, type WalletSettlement } from '../wallet/WalletClient';
@@ -29,7 +30,7 @@ export class VolcanicPlinkoUI {
   private portrait: VesperaPortrait;
   private audio = new VolcanicPlinkoAudio();
   private risk: VolcanicRisk = 'easy';
-  private betIndex = 0;
+  private selectedStake = 0.1;
   private fast = false;
   private entered: boolean;
   private submitting = false;
@@ -52,10 +53,11 @@ export class VolcanicPlinkoUI {
     this.root.innerHTML = tr`<header class="vp-header"><div class="vp-wordmark"><span class="vp-brand-seal" aria-hidden="true">☾</span><span>VEIL <i>OF</i> <b>NIGHT</b><small>ЗАВЕСА НОЧИ · ARCANE PLINKO</small></span></div><span class="vp-tagline">Магия любит смелых.</span><nav aria-label="Меню Plinko"><button type="button" data-vp="sound" class="vp-icon" aria-label="Звук" aria-pressed="true">♫</button><button type="button" data-vp="history" class="vp-icon" aria-label="История ставок">↶</button><button type="button" data-vp="rules" class="vp-icon" aria-label="Правила и выплаты">i</button></nav></header>
       <div class="vp-field"><aside class="vp-mage-panel"><div class="vp-chapter"><span>ХРАНИТЕЛЬНИЦА ЗАВЕСЫ</span><i>✦</i></div><figure class="vp-sorceress"><button type="button" class="vp-character" data-vp="portrait" aria-label="Позвать Весперу"><img src="${VESPERA_POSTER}" decoding="async" fetchpriority="high" alt="Взрослая черноволосая магичка в чёрном платье с фиолетовой магией" draggable="false"></button><figcaption><small>THE SORCERESS</small><strong>ВЕСПЕРА</strong><span>«У каждого падения есть своя судьба»</span></figcaption></figure><div class="vp-mage-sigil" aria-hidden="true">☾ <span>✦</span> ☽</div></aside><div class="vp-ritual"><div class="vp-flight-caption"><span>Выбери силу чар. Пробуди магическую сферу.</span><b>12 РУН · 13 ПЕЧАТЕЙ</b></div><div class="vp-profiles" role="group" aria-label="Уровень риска">${VOLCANIC_RISKS.map(risk => tr`<button type="button" data-risk="${risk}" aria-pressed="${risk === this.risk}"><span class="vp-profile-gem">${risk === 'easy' ? '☽' : risk === 'medium' ? '✧' : '☾'}</span><strong>${translateText(VOLCANIC_PROFILES[risk].name)}<small>${translateText(VOLCANIC_PROFILES[risk].risk)} риск</small></strong><span>до ${multi(VOLCANIC_PROFILES[risk].max)}</span></button>`).join('')}</div><div class="vp-board-space"><div class="vp-board"><canvas aria-label="Магический круг, 12 рядов рун" role="img"></canvas><div class="vp-pockets" role="group" aria-label="Множители лунок"></div></div></div><div class="vp-pocket-info"><span data-vp="pocket-info">Коснись печати, чтобы узнать её силу</span><button type="button" data-vp="paytable">КНИГА ЧИСЕЛ ↗</button></div></div></div>
       <div class="vp-result" role="status" aria-live="polite"><strong data-vp="result">Заклинание ждёт тебя.</strong><span data-vp="result-amount"></span><small data-vp="result-detail">Одна сфера · Одна ставка</small></div>
-      <footer class="vp-controls"><div class="vp-balance"><small>USDT · NILE</small><strong data-vp="balance">…</strong><button type="button" data-vp="refresh" aria-label="Обновить баланс">↻</button></div><div class="vp-stake"><small>СТАВКА</small><div><button type="button" data-vp="minus" aria-label="Уменьшить ставку">−</button><output data-vp="stake">50,00</output><button type="button" data-vp="plus" aria-label="Увеличить ставку">+</button></div></div><button type="button" class="vp-drop" data-vp="drop">✧ ПРОБУДИТЬ СФЕРУ</button><button type="button" class="vp-speed" data-vp="speed" aria-pressed="false">ОБЫЧНО<br><b>1×</b></button><p class="vp-wallet-note" data-vp="wallet-note"></p></footer>
+      <footer class="vp-controls"><div class="vp-balance"><small>USDT · NILE</small><strong data-vp="balance">…</strong><button type="button" data-vp="refresh" aria-label="Обновить баланс">↻</button></div><div class="vp-stake"><small>СТАВКА</small><div><button type="button" data-vp="minus" aria-label="Уменьшить ставку">−</button><select data-vp="stake" aria-label="Сумма ставки">${DEMO_BETS.map(value=>`<option value="${value}">${number(value)}</option>`).join('')}</select><button type="button" data-vp="plus" aria-label="Увеличить ставку">+</button></div></div><button type="button" class="vp-drop" data-vp="drop">✧ ПРОБУДИТЬ СФЕРУ</button><button type="button" class="vp-speed" data-vp="speed" aria-pressed="false">ОБЫЧНО<br><b>1×</b></button><p class="vp-wallet-note" data-vp="wallet-note"></p></footer>
       <section class="vp-intro" ${this.entered ? 'hidden' : ''} aria-label="Вход в святилище"><div class="vp-intro-art"><div class="vp-intro-moon" aria-hidden="true">☾</div><button type="button" class="vp-character" data-vp="portrait" aria-label="Позвать Весперу"><img src="${VESPERA_POSTER}" decoding="async" fetchpriority="high" alt="Веспера, хранительница ночной магии" draggable="false"></button></div><div class="vp-intro-copy"><small>ROYAL · ARCANE PLINKO</small><h1>За завесой ночи<br>правит магия.</h1><p>12 рун. 13 печатей.<br>Три силы одного заклинания.</p><button type="button" class="vp-enter" data-vp="enter">ПРИОТКРЫТЬ ЗАВЕСУ <span>↗</span></button><span>Общий баланс USDT клуба</span></div></section>
       <dialog class="vp-modal" aria-label="Правила и выплаты"><button type="button" class="vp-modal-close" data-vp="close" aria-label="Закрыть панель">×</button><div data-vp="modal-content"></div></dialog>`;
     host.replaceChildren(this.root);
+    this.el<HTMLSelectElement>('[data-vp=stake]').addEventListener('change',()=>{const value=Number(this.el<HTMLSelectElement>('[data-vp=stake]').value);if(!this.locked&&validGameBet(value)){this.selectedStake=value;this.update();}},{signal:this.abort.signal});
     const optionsButton = document.createElement('button'); optionsButton.type = 'button'; optionsButton.className = 'vp-icon';
     optionsButton.textContent = '⚙'; optionsButton.setAttribute('aria-label', locale.startsWith('en') ? 'Game settings' : 'Настройки игры');
     this.el('.vp-header nav').prepend(optionsButton);
@@ -75,12 +77,12 @@ export class VolcanicPlinkoUI {
     this.restorePending(); this.renderPockets(); this.update(); void this.wallet.refresh();
   }
   private el<T extends HTMLElement = HTMLElement>(selector: string) { return this.root.querySelector<T>(selector)!; }
-  private get stake() { return this.ownPending?.amount ?? DEMO_BETS[this.betIndex]; }
+  private get stake() { return this.ownPending?.amount ?? this.selectedStake; }
   private get locked() { return this.submitting || this.animating || this.wallet.busy || this.wallet.externalBusy || !!this.wallet.pending; }
   private get ownPending() { const p = this.wallet.pending; return p?.kind === 'play' && p.gameId === 'royal-plinko' ? p : undefined; }
   private restorePending() {
     const pending = this.ownPending; if (!pending) return;
-    const index = DEMO_BETS.findIndex(value => value === pending.amount); if (index >= 0) this.betIndex = index;
+    this.selectedStake = pending.amount;
     const risk = 'risk' in pending.input ? pending.input.risk : undefined;
     if (VOLCANIC_RISKS.includes(risk as VolcanicRisk)) this.risk = risk as VolcanicRisk;
   }
@@ -96,9 +98,9 @@ export class VolcanicPlinkoUI {
     this.restorePending();
     const locked = this.locked, ownPending = !!this.ownPending, wallet = this.wallet.wallet;
     this.root.dataset.state = this.animating ? 'falling' : this.submitting || this.wallet.busy ? 'confirming' : ownPending ? 'pending' : 'ready';
-    this.el('[data-vp="balance"]').textContent = wallet ? number(wallet.balance) : '…'; this.el('[data-vp="stake"]').textContent = number(this.stake);
-    this.el<HTMLButtonElement>('[data-vp="minus"]').disabled = locked || this.betIndex === 0;
-    this.el<HTMLButtonElement>('[data-vp="plus"]').disabled = locked || this.betIndex === DEMO_BETS.length - 1;
+    this.el('[data-vp="balance"]').textContent = wallet ? number(wallet.balance) : '…'; syncStakeSelect(this.el<HTMLSelectElement>('[data-vp=stake]'), String(this.stake), DEMO_BETS, locked, 1);
+    this.el<HTMLButtonElement>('[data-vp="minus"]').disabled = locked || this.stake <= DEMO_BETS[0];
+    this.el<HTMLButtonElement>('[data-vp="plus"]').disabled = locked || this.stake >= DEMO_BETS[DEMO_BETS.length - 1];
     this.el<HTMLButtonElement>('[data-vp="refresh"]').disabled = locked || !this.account;
     this.el<HTMLButtonElement>('[data-vp="speed"]').disabled = locked;
     this.root.querySelectorAll<HTMLButtonElement>('[data-risk]').forEach(button => { button.disabled = locked; button.setAttribute('aria-pressed', String(button.dataset.risk === this.risk)); });
@@ -132,8 +134,8 @@ export class VolcanicPlinkoUI {
       case 'enter': this.entered = true; this.el('.vp-intro').hidden = true; this.portrait.setIntro(false); this.portrait.react('enter'); void this.audio.unlock(); this.update(); this.el('[data-vp="drop"]').focus(); break;
       case 'portrait': this.portrait.react('touch'); break;
       case 'drop': void this.drop(); break;
-      case 'minus': if (!this.locked && this.betIndex > 0) { this.betIndex--; this.update(); } break;
-      case 'plus': if (!this.locked && this.betIndex < DEMO_BETS.length - 1) { this.betIndex++; this.update(); } break;
+      case 'minus': if (!this.locked) { this.selectedStake=[...DEMO_BETS].reverse().find(value=>value<this.stake)??this.stake; this.update(); } break;
+      case 'plus': if (!this.locked) { this.selectedStake=DEMO_BETS.find(value=>value>this.stake)??this.stake; this.update(); } break;
       case 'sound': gameAudio.setMuted(!gameAudio.getPreferences().muted); void this.audio.unlock(); break;
       case 'speed': if (!this.locked) { this.fast = !this.fast; button.setAttribute('aria-pressed', String(this.fast)); button.innerHTML = this.fast ? translateText('БЫСТРО<br><b>2×</b>') : translateText('ОБЫЧНО<br><b>1×</b>'); } break;
       case 'refresh': void this.wallet.refresh(); break;
@@ -153,7 +155,7 @@ export class VolcanicPlinkoUI {
       const result = pending ? await this.wallet.retry() : await this.wallet.play('royal-plinko', { rows: 12, risk: this.risk }, this.stake);
       if (this.dead || revision !== this.revision || account !== this.wallet.accountId) return;
       const round = result.gameRound;
-      if (!validVolcanicRound(round) || Number(round.stakeUnits) !== requested.amount * 100 || !('rows' in requested.input) || !('risk' in requested.input) || round.input.rows !== requested.input.rows || round.input.risk !== requested.input.risk) {
+      if (!validVolcanicRound(round) || Number(round.stakeUnits) !== gameBetCents(requested.amount) || !('rows' in requested.input) || !('risk' in requested.input) || round.input.rows !== requested.input.rows || round.input.risk !== requested.input.risk) {
         this.failedVerification = true; throw new Error(translateText('Не удалось проверить результат. Обнови страницу перед следующей ставкой.'));
       }
       await this.showRound(round, true);

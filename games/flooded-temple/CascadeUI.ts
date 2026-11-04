@@ -1,7 +1,7 @@
 import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
 import {confirmedPayout} from '../../src/shared/roundPrecision';
-import {GAME_STAKE_CENTS} from '../../src/shared/gameStakes';
+import {GAME_STAKE_CENTS, validGameStake} from '../../src/shared/gameStakes';
 import type {GameHostV1} from '../../src/modules/GameHostContract';
 import type {ExpansionSession} from '../../src/shared/casinoExpansion';
 import {TEMPLE_GAME} from '../../src/shared/floodedTemple';
@@ -113,7 +113,7 @@ export class CascadeUI{
   private save(){try{this.doc.defaultView!.localStorage.setItem('royal:temple:fast',this.fast?'1':'0');this.doc.defaultView!.localStorage.setItem('royal:temple:auto-count',String(this.autoCount));}catch{}}
   private select=(event:Event)=>{
     const target=event.target as HTMLSelectElement;
-    if(target.dataset.ft==='stake'&&!this.locked&&!this.playing&&!this.client.pending&&!this.autoRunning&&GAME_STAKE_CENTS.some(s=>String(s)===target.value))this.stake=target.value;
+    if(target.dataset.ft==='stake'&&!this.locked&&!this.playing&&!this.client.pending&&!this.autoRunning&&validGameStake(target.value))this.stake=target.value;
     if(target.dataset.ft==='auto-count'&&!this.autoRunning&&counts.includes(Number(target.value)))this.autoCount=Number(target.value);
     this.save();this.render();
   };
@@ -216,7 +216,7 @@ export class CascadeUI{
   }
   private render(){
     if(this.disposed)return;
-    if(!this.playing&&!this.client.pending&&!GAME_STAKE_CENTS.includes(Number(this.stake)))this.stake='10';
+    if(!this.playing&&!this.client.pending&&!validGameStake(this.stake))this.stake='10';
     const signature=JSON.stringify([this.owner,this.session,this.client.pending,this.client.loading,this.client.busy,this.client.error,this.wallet.wallet?.balance,this.wallet.busy,this.wallet.pending,this.wallet.hasExternalBusy('expansion'),this.sending,this.localError,this.stake,this.visual,this.feedback?.id,this.presenting,this.completed,this.fast,this.autoRunning,this.autoRemaining,this.autoCount,this.autoNote,this.paused,this.hidden,this.dialog.open,this.media.matches,this.inspected,this.beat,this.services.gameAudio.getPreferences()]);if(signature===this.rendered)return;this.rendered=signature;
     const focused=this.doc.activeElement as HTMLElement|null,key=focused&&this.root.contains(focused)?focused.dataset.ft?`[data-ft="${focused.dataset.ft}"]`:focused.dataset.cell!==undefined?`[data-cell="${focused.dataset.cell}"]`:null:null;
     const f=this.feedback?.frame??this.visual,grid=this.feedback?.grid??f?.grid??readyGrid,total=this.feedback?cascadeUnits(this.feedback.fromPoints,this.roundStake):f?cascadeUnits(f.totalPoints,this.roundStake):'0',levels=f?.mode==='free'?CASCADE_DATA.freeMultipliers:CASCADE_DATA.baseMultipliers;

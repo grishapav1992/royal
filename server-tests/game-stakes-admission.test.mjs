@@ -20,7 +20,7 @@ function futureGame() {
 const check = fixture => validateStakeAdmission(fixture.catalog, [], fixture.registry, fixture.runtime);
 
 test('all playable games use the actual common runtime and qualified stake denominations', () => {
-  assert.equal(validateStakeAdmission(GAME_MODULES, baseline.games, registry, runtime), runtime.ROYAL_PLATFORM_GAMES.length);
+  assert.equal(validateStakeAdmission(GAME_MODULES, baseline.games, registry, runtime), new Set([...runtime.ROYAL_PLATFORM_GAMES,'tsu-e-fa']).size);
   const missing = structuredClone(registry);
   delete missing.stakePolicies['royal-roulette'];
   assert.throws(() => validateStakeAdmission(GAME_MODULES, baseline.games, missing, runtime), /common ten-cent stake policy/);
@@ -41,6 +41,8 @@ test('new games inherit the whole-round default and must bind the common money s
     f => { f.registry.stakePolicies[id].sources = ['src/shared/gameStakes.ts']; },
     f => { f.registry.stakePolicies[id].stakePolicyVersion = 0; },
     f => { f.registry.stakePolicies[id].method = 'unqualified-rounding'; },
+    f => { delete f.registry.stakePolicies[id].manualStakeRange; },
+    f => { f.registry.stakePolicies[id].manualStakeRange.stepCents = 10; },
     f => { f.runtime.usesGameStakes = () => false; },
     f => { f.runtime.DEFAULT_GAME_STAKE = '100'; },
     f => { f.runtime.DEFAULT_GAME_BET = 1; },

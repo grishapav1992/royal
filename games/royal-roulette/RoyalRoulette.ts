@@ -1,7 +1,7 @@
 import {ActionGameLayout} from '../../src/ui/ActionGameLayout';
 import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
-import {GAME_BETS as DEMO_BETS} from '../../src/shared/gameStakes';
+import {GAME_BETS as DEMO_BETS, validGameBet, gameBetCents} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import { type WalletResult } from '../../src/shared/demoWallet';
 import { rouletteRedNumbers, type RouletteInput, type RouletteRound } from '../../src/shared/gameCore';
@@ -100,7 +100,7 @@ export class RoyalRoulette {
     }
     const pending=this.pending();
     if(pending){this.input=structuredClone(pending.input) as RouletteInput;this.amount=pending.amount;}
-    else if(!this.busy&&!DEMO_BETS.includes(this.amount))this.amount=0.1;
+    else if(!this.busy&&!validGameBet(this.amount))this.amount=0.1;
     this.root.dataset.busy=String(this.busy);
     this.el('[data-rr-balance]').textContent=this.wallet.wallet?`${this.host.walletCoins(this.wallet.wallet.balance)} USDT`:'…';
     this.root.querySelectorAll<HTMLButtonElement>('[data-rr-amount]').forEach(button => {
@@ -132,7 +132,7 @@ export class RoyalRoulette {
   }
   private checked(result: WalletResult,input: RouletteInput,amount: number): RouletteRound {
     const round=result.gameRound;
-    if(!round||round.gameId!=='royal-roulette'||round.rulesVersion!==1||!('bet'in round.input)||round.input.bet!==input.bet||input.bet==='number'&&(!('number'in round.input)||round.input.number!==input.number)||round.stakeUnits!==String(amount*100)||!('number'in round.outcome))throw Error('Invalid roulette receipt');
+    if(!round||round.gameId!=='royal-roulette'||round.rulesVersion!==1||!('bet'in round.input)||round.input.bet!==input.bet||input.bet==='number'&&(!('number'in round.input)||round.input.number!==input.number)||round.stakeUnits!==String(gameBetCents(amount))||!('number'in round.outcome))throw Error('Invalid roulette receipt');
     const n=round.outcome.number;
     if(!Number.isInteger(n)||n<0||n>36)throw Error('Invalid roulette outcome');
     const won=input.bet==='number'?n===input.number:n!==0&&(input.bet==='red'?reds.has(n):input.bet==='black'?!reds.has(n):input.bet==='even'?n%2===0:n%2===1);

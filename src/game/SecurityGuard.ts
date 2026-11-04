@@ -140,15 +140,44 @@ function createGuard(scene: Phaser.Scene) {
       }
       c.fillStyle='#131620';c.fillRect(-bodyWidth+3,111,bodyWidth*2-6,8);
       c.fillStyle='#d9ba61';c.fillRect(side?17:-6,111,side?7:12,9);c.fillStyle='#171a23';c.fillRect(side?19:-3,113,side?3:6,5);
-      // Linked gold chain follows the collar, with a narrow perspective in profile.
-      c.save();if(side){c.translate(10,0);c.scale(.62,1);}
-      c.beginPath();c.moveTo(-20,69);c.quadraticCurveTo(0,back?80:119,20,69);
-      c.strokeStyle='#72501c';c.lineWidth=7;c.stroke();
-      c.strokeStyle='#eeb52f';c.lineWidth=4.5;c.stroke();
-      for(let i=0;i<=14;i++){
-        const t=i/14,x=-20+40*t,y=69+2*t*(1-t)*(back?11:50);
-        c.beginPath();c.ellipse(x,y,2.5,1.5,Math.atan2(2*(1-2*t)*(back?11:50),40),0,Math.PI*2);
-        c.strokeStyle=i%2?'#fff0a1':'#ae7420';c.lineWidth=1.1;c.stroke();
+      c.save();
+      if(side) {
+        // The chain wraps behind the neck and shoulder before draping over the chest.
+        const points: {x:number;y:number;rear:boolean}[]=[];
+        for(const [curve,[x0,y0,cx,cy,x1,y1]] of [[-12,61,-10,81,15,89],[15,89,21,92,22,86],[22,86,24,77,15,69]].entries()) {
+          for(let i=points.length?1:0;i<=24;i++) {
+            const t=i/24,s=1-t;
+            points.push({x:s*s*x0+2*s*t*cx+t*t*x1,y:s*s*y0+2*s*t*cy+t*t*y1,rear:curve===2});
+          }
+        }
+        c.beginPath();c.moveTo(points[0].x,points[0].y);
+        for(const p of points.slice(1))c.lineTo(p.x,p.y);
+        c.strokeStyle='#67461f';c.lineWidth=1.5;c.stroke();
+        // Even spacing keeps the links distinct around the bottom of the loop.
+        let next=0,link=0;
+        for(let i=1;i<points.length;i++) {
+          const a=points[i-1],b=points[i],dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy);
+          while(next<=length) {
+            const t=next/length,minor=b.rear ? .6 : link%2 ? .75 : 1.2;
+            c.save();c.translate(a.x+dx*t,a.y+dy*t);c.rotate(Math.atan2(dy,dx));
+            c.beginPath();c.ellipse(0,0,2.25,minor,0,0,Math.PI*2);
+            c.strokeStyle='#80551f';c.lineWidth=b.rear?1.3:1.6;c.stroke();
+            c.strokeStyle=b.rear?'#af7c2f':link%2?'#c18b30':'#e0af4d';c.lineWidth=b.rear?.85:1;c.stroke();
+            c.beginPath();c.ellipse(0,0,2.25,minor,0,Math.PI*1.08,Math.PI*1.7);
+            c.strokeStyle=b.rear?'#d0aa61':'#f0d483';c.lineWidth=.6;c.stroke();c.restore();
+            next+=3.6;link++;
+          }
+          next-=length;
+        }
+      } else {
+        c.beginPath();c.moveTo(-20,69);c.quadraticCurveTo(0,back?80:119,20,69);
+        c.strokeStyle='#72501c';c.lineWidth=7;c.stroke();
+        c.strokeStyle='#eeb52f';c.lineWidth=4.5;c.stroke();
+        for(let i=0;i<=14;i++){
+          const t=i/14,x=-20+40*t,y=69+2*t*(1-t)*(back?11:50);
+          c.beginPath();c.ellipse(x,y,2.5,1.5,Math.atan2(2*(1-2*t)*(back?11:50),40),0,Math.PI*2);
+          c.strokeStyle=i%2?'#fff0a1':'#ae7420';c.lineWidth=1.1;c.stroke();
+        }
       }
       c.restore();
       if(!side)arm(true);

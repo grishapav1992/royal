@@ -2,7 +2,7 @@ import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import { GamePriorityPanel } from '../../src/ui/GamePriorityPanel';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
 import {confirmedPayout} from '../../src/shared/roundPrecision';
-import {GAME_BETS as NEOPOLIS_BETS} from '../../src/shared/gameStakes';
+import {GAME_BETS as NEOPOLIS_BETS, gameBetCents} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import { NEOPOLIS_GAME, neopolisPointUnits, neopolisPaytable } from '../../src/shared/neopolis';
 import { BOSSES, HEROES, initialTeam, readyTeam, type Hero, type Team, type Battle, type Frame } from '../../src/shared/neopolisMath';
@@ -358,7 +358,7 @@ export class NeopolisUI {
       const before = this.session;
       if (this.client.pending) await this.client.retry();
       else if (before?.state === 'active') await this.client.act({ gameId: NEOPOLIS_GAME, action: 'move', sessionId: before.id, move: 'neopolis-spin', revision: before.view.neopolis!.revision });
-      else await this.client.act({ gameId: NEOPOLIS_GAME, action: 'start', stakeUnits: String(this.bet * 100), settings: { neopolis: { hero: this.selected } } });
+      else await this.client.act({ gameId: NEOPOLIS_GAME, action: 'start', stakeUnits: String(gameBetCents(this.bet)), settings: { neopolis: { hero: this.selected } } });
       if (!this.alive || owner !== this.client.accountId || animation.signal.aborted) return false;
       const view = this.view;
       if (!view) throw Error(this.copy.error);

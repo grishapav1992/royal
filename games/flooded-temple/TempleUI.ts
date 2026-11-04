@@ -1,4 +1,4 @@
-import {GAME_STAKE_CENTS} from '../../src/shared/gameStakes';
+import {GAME_STAKE_CENTS, validGameStake} from '../../src/shared/gameStakes';
 import type {GameHostV1} from '../../src/modules/GameHostContract';
 import type {ExpansionSession} from '../../src/shared/casinoExpansion';
 import {TEMPLE_GAME,type TempleView} from '../../src/shared/floodedTemple';
@@ -118,7 +118,7 @@ export class TempleUI {
   private changedStake=(event:Event)=>{
     const select=event.target as HTMLSelectElement;
     if(select.matches('[data-ft=auto-count]')&&!this.autoRunning&&!this.blocked&&!this.client.pending&&AUTO_COUNTS.some(n=>String(n)===select.value)){this.autoCount=Number(select.value);this.savePlayback();this.render();return;}
-    if(select.matches('[data-ft=stake]')&&!this.autoRunning&&!this.blocked&&!this.client.pending&&this.session?.state!=='active'&&GAME_STAKE_CENTS.some(n=>String(n)===select.value)){this.stake=select.value;this.render();}
+    if(select.matches('[data-ft=stake]')&&!this.autoRunning&&!this.blocked&&!this.client.pending&&this.session?.state!=='active'&&validGameStake(select.value)){this.stake=select.value;this.render();}
   };
   private render(){
     if(this.disposed)return;
