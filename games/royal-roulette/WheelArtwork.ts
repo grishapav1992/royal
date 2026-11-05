@@ -1,10 +1,13 @@
+import {BALL_RADIUS,DIVIDER_TIP} from './SpinTimeline';
+
 /** Presentation geometry only. The host still settles the existing server rules. */
 export function rouletteWheelSvg(numbers: readonly number[], color: (n: number) => string) {
   const step = 360 / numbers.length;
   const point = (a: number, r: number) => `${200 + Math.sin(a * Math.PI / 180) * r},${200 - Math.cos(a * Math.PI / 180) * r}`;
   const sectors = numbers.map((n, i) => {
     const a = i * step - step / 2, b = i * step + step / 2;
-    return `<path d="M${point(a,176)} A176,176 0 0,1 ${point(b,176)} L${point(b,132)} A132,132 0 0,0 ${point(a,132)} Z" class="rr-sector rr-${color(n)}"/><path d="M${point(a,175)} L${point(a,133)}" stroke="#f5d698" stroke-opacity=".5" stroke-width=".7"/><text x="200" y="42" transform="rotate(${i*step} 200 200)">${n}</text>`;
+    const tip=point(a,DIVIDER_TIP.radius);
+    return `<path d="M${point(a,176)} A176,176 0 0,1 ${point(b,176)} L${point(b,132)} A132,132 0 0,0 ${point(a,132)} Z" class="rr-sector rr-${color(n)}"/><path d="M${tip} L${point(a,133)}" stroke="#f5d698" stroke-opacity=".5" stroke-width=".7"/><circle r="${DIVIDER_TIP.cap}" transform="translate(${tip})" fill="#e7c384"/><text x="200" y="42" transform="rotate(${i*step} 200 200)">${n}</text>`;
   }).join('');
   const grooves = Array.from({length:16},(_,i)=>`<path d="M${point(i*22.5,82)} L${point(i*22.5,117)}" stroke="#dcad65" stroke-opacity=".16"/>`).join('');
   return `<svg class="rr-wheel-svg" viewBox="0 0 400 400" aria-hidden="true">
@@ -39,7 +42,7 @@ export function rouletteWheelSvg(numbers: readonly number[], color: (n: number) 
     <g class="rr-ball-trails"><circle r="2.7" fill="#fff1cd" opacity="0"/><circle r="2" fill="#fff1cd" opacity="0"/><circle r="1.2" fill="#fff1cd" opacity="0"/></g>
     <g class="rr-ball-orbit"><g class="rr-ball-carrier">
       <circle class="rr-ball-shadow" cx="201" cy="54" r="5.8" fill="#000" opacity=".46"/>
-      <circle class="rr-ball" cx="200" cy="52" r="5" fill="url(#rr-pearl)"/>
+      <circle class="rr-ball" cx="200" cy="52" r="${BALL_RADIUS}" fill="url(#rr-pearl)"/>
     </g></g>
     <path d="M187 14 Q200 6 213 14 L200 33 Z" fill="url(#rr-gold)" stroke="#fff1be" stroke-width=".8"/>
   </svg>`;
