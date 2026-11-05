@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import {BAR_POSITION} from '../shared/furniture';
 import type {MiraView} from '../shared/miraRoutine';
 import {MIRA_ATLASES,sampleMiraFrame,type MiraAtlas,type MiraFrame} from './miraAnimation';
+import {ROYAL_BAR_DEPTH} from './royalBarLayers';
 
 type Rect={x:number;y:number;width:number;height:number};
 type PaintedFrame={image:HTMLImageElement|HTMLCanvasElement;rect:Rect;anchorX:number;scale:number};
@@ -43,8 +44,8 @@ export class MiraRig {
     for(const key of ['mira-illustrated-body','mira-illustrated-front'])if(scene.textures.exists(key))scene.textures.remove(key);
     this.bodyTexture=scene.textures.createCanvas('mira-illustrated-body',SIZE.width*SIZE.resolution,SIZE.height*SIZE.resolution)!;
     this.frontTexture=scene.textures.createCanvas('mira-illustrated-front',SIZE.width*SIZE.resolution,SIZE.height*SIZE.resolution)!;
-    this.body=scene.add.image(0,0,this.bodyTexture).setOrigin(.5,1).setDisplaySize(SIZE.width,SIZE.height).setDepth(BAR_POSITION.y+117).setName('mira-painted-body');
-    this.foreground=scene.add.image(0,0,this.frontTexture).setOrigin(.5,1).setDisplaySize(SIZE.width,SIZE.height).setDepth(BAR_POSITION.y+170).setName('mira-painted-front');
+    this.body=scene.add.image(0,0,this.bodyTexture).setOrigin(.5,1).setDisplaySize(SIZE.width,SIZE.height).setDepth(ROYAL_BAR_DEPTH.staff).setName('mira-painted-body');
+    this.foreground=scene.add.image(0,0,this.frontTexture).setOrigin(.5,1).setDisplaySize(SIZE.width,SIZE.height).setDepth(ROYAL_BAR_DEPTH.staffContact).setName('mira-painted-front');
     scene.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>{
       for(const key of ['mira-illustrated-body','mira-illustrated-front'])if(scene.textures.exists(key))scene.textures.remove(key);
     });
