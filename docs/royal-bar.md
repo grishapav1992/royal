@@ -19,17 +19,23 @@ Timings are initial game-specific design choices, not perceptual thresholds. Exi
 
 | Event | Trigger and meaning | Visual phases | Interruption and checks |
 | --- | --- | --- | --- |
-| Rest | Rest job reached | Sit down, relaxed seated hold, stand before leaving | Reverse partial sit continuously; check seat and counter contact |
+| Rest | Second job, after the first glass-polishing task | Walk left, sit down, relaxed seated hold, stand before leaving | First hold starts at about 10.35 s in an uninterrupted new shift; service and conversation take priority. Reverse partial sit continuously; check seat and counter contact |
 | Walk | Staff route changes position | Bent knees/elbows, grounded soles, restrained hair motion | Authoritative stopping position; two viewers and late join |
 | Polish | Glass job | Hold glass, rub with cloth, settle | Pause on service; no duplicate objects |
 | Wipe | Counter job | Bend, move cloth along counter, settle | Cloth touches surface; no hand/body clipping |
 | Stock | Bottle job | Turn toward shelf, lift bottle, return hands | Consistent hand and shelf lane |
 | Greet | Nearby player opens dialogue | Face visitor, brief raised hand, listen | Heartbeat must not repeat greeting |
-| Listen | Player types or awaits response | Attentive pose and occasional blink | No mouth movement before reply |
+| Listen | Player types or awaits response | Four complete attentive poses form a restrained nod | No mouth movement before reply; reduced motion holds the neutral drawing |
 | Reply | New reply displayed | Mouth poses and small hand gesture, listen | Restored history static; close/hidden tab clears transient speech |
 | Service | Confirmed drink action | Take glass, prepare, hand over, hold | Animation never changes drink/financial rules or repeats an accepted action |
 
 No new voice or music. Reduced motion retains informative poses while suppressing repeating gestures and decorative particles. Hidden-tab resumption uses current state without replaying missed events. Scene, dialogue and server keep their existing module boundaries.
+
+Countertop occlusion is explicit: staff body, counter, staff contact poses, complete countertop objects, cat, then the cat mug. `royalBarLayers.ts` contains the five object outlines, including the small left glass and its base. Opaque objects use a small runtime texture crop with solid alpha because the original assembly has alpha 252-253 inside the coffee cup. Source PNGs retain their original bytes and alpha. This prevents the hands from showing over or faintly through solid objects. The cat mug remains at depth 513 and its approach and perch coordinates are unchanged.
+
+The current main removes ambient NPC status captions in a separate change. Preserve that removal so those captions cannot cover Mira's seated pose; this follow-up does not restore them.
+
+`npx playwright test --config=playwright.mira-animation.config.ts` starts the complete current host and a real isolated backend with disposable PostgreSQL. It checks every painted pose against a background reference on desktop/mobile, includes a negative control that reproduces the old glass overlap, then exercises the ordinary shared routine, dialogue, service and late arrival. `node --import tsx scripts/mira-animation-review.mjs` starts the same local room for review at `http://127.0.0.1:5202/?offline=1`; the page begins with the normal routine. The test pose controller is injected by that local Vite stand and is absent from the application build. No paid Mira provider is configured in this stand.
 
 ## Acceptance
 
