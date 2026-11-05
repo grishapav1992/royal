@@ -61,6 +61,13 @@ test('mode switching keeps the same session and chat draft, with live chat acros
   expect((await network(page)).roomId).toBe(initial.roomId);
   await expect(page.locator('#chat-input')).toHaveValue('Сохрани мой черновик');
   await page.screenshot({ path: proof + '/club-desktop.png' });
+  await page.locator('#games-tab').click();
+  await page.locator('[data-cabinet="studio-cosmic-escape"]').click();
+  await expect(page.locator('#mini-dialog')).toHaveAttribute('data-game', 'royal-catalog', { timeout: 30000 });
+  await page.locator('#mini-dialog [data-platform-game="royal-roulette"]').click();
+  await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id', 'royal-roulette', { timeout: 25000 });
+  await page.locator('#mini-dialog .mini-top [data-close]').click();
+  await expect.poll(() => page.evaluate(() => (window as any).royalDemo.getState().cabinet)).toBe('');
   await page.locator('[data-view-mode="casino"]').click();
   await expect(page.locator('body')).toHaveAttribute('data-entry-mode', 'casino');
   await expect(page.locator('#chat-input')).toHaveValue('Сохрани мой черновик');
