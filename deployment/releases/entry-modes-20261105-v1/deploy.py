@@ -14,7 +14,7 @@ SOURCES = {
     'src/modules/IndependentGameUI.ts', 'src/network/AccountClient.ts',
     'src/ui/AuthUI.ts', 'src/ui/CryptoWalletUI.ts', 'src/ui/DemoWalletUI.ts',
     'src/ui/EntryLogin.ts', 'src/ui/EntryModes.ts', 'src/ui/LoginForm.ts',
-    'src/ui/PlayerControls.ts', 'src/ui/RoyalPlatformCatalog.ts', 'src/ui/SecurityUI.ts',
+    'src/ui/RoyalPlatformCatalog.ts', 'src/ui/SecurityUI.ts',
     'src/ui/SkinStudioUI.ts', 'src/ui/SocialUI.ts', 'src/ui/casino-lobby.css',
     'src/ui/entry-modes.css',
 }

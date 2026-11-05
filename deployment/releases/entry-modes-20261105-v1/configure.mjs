@@ -97,7 +97,8 @@ for (const file of sources) {
     const digest = sha(update);
     files[file] = { commit: feature, path: file, baseSha256: digest, sha256: digest };
   }
-  scope.expectedSources[file] = files[file].sha256;
+  // The interface is checked by TypeScript and erased before Vite resolves imports.
+  if (file !== 'src/ui/PlayerControls.ts') scope.expectedSources[file] = files[file].sha256;
 }
 console.log(status.join('\n'));
 assert(!conflicts.length, conflicts.join('\n'));
@@ -118,4 +119,4 @@ for (const [name, value] of Object.entries({
   'host-projection.json': { format: 1, productionCommit: before.sourceCommit, entries: ['index.html'], files },
   'scope.json': scope,
 })) writeFileSync(join(folder, name), JSON.stringify(value, null, 2) + '\n');
-console.log(JSON.stringify({ base: before.sourceCommit, projectedInputs: Object.keys(files).length, changedSources: sources.length }));
+console.log(JSON.stringify({ base: before.sourceCommit, projectedInputs: Object.keys(files).length, changedSources: Object.keys(scope.expectedSources).length }));
