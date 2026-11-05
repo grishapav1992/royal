@@ -3,11 +3,12 @@ import {ROYAL_BAR_PROPS} from '../src/game/royalBarLayers';
 import {sampleMiraFrame} from '../src/game/miraAnimation';
 import type {MiraView} from '../src/shared/miraRoutine';
 
-const work='artifacts/work/royal-bar-mira/animation-check-20261105/';
+const work=process.env.MIRA_AUDIT_WORK??'artifacts/work/royal-bar-mira/animation-check-20261105/';
+const compiledHost=process.env.MIRA_AUDIT_COMPILED==='1';
 const state=(page:Page)=>page.evaluate(()=>(window as any).royalDemo.getState());
 const settle=(page:Page)=>page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));
 async function ready(page:Page){
-  await page.waitForFunction(()=>{try{return (window as any).royalDemo.getState().mira.artVersion===3&&Boolean((window as any).royalMiraAudit);}catch{return false;}},{},{timeout:45000});
+  await page.waitForFunction(requireAudit=>{try{return (window as any).royalDemo.getState().mira.artVersion===3&&(!requireAudit||Boolean((window as any).royalMiraAudit));}catch{return false;}},!compiledHost,{timeout:45000});
   await page.locator('#loading').waitFor({state:'detached'});
 }
 function inside(x:number,y:number,polygon:readonly(readonly number[])[]){
@@ -85,7 +86,7 @@ async function guest(browser:Browser,baseURL:string,viewport:{width:number;heigh
   const page=await context.newPage();await page.route('**/api/npc/mira',route=>route.fulfill({json:route.request().method()==='GET'?{turns:[{role:'assistant',content:'Ну? Чем удивишь?'}]}:{reply:'Я слушаю. Сначала расскажи про свой вечер, а затем я приготовлю тебе что-нибудь освежающее.',emotion:'smile'}}));
   await page.goto(room?'/?room='+room:'/');await ready(page);
   await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getNetworkState()?.status)).toBe('connected');
-  await page.evaluate(()=>(window as any).royalMiraAudit.focus());
+  await page.evaluate(()=>(window as any).royalMiraAudit?.focus());
   return {context,page};
 }
 
