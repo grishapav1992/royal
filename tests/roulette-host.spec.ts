@@ -1,6 +1,6 @@
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
-import {SPIN_TIMING} from '../games/royal-roulette/SpinTimeline';
+import {BALL_RADIUS,POCKET_DIVIDER,SPIN_TIMING} from '../games/royal-roulette/SpinTimeline';
 const settlingTimeout=SPIN_TIMING.launch+SPIN_TIMING.landing+2500;
 const out='artifacts/work/roulette-audio';
 const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
@@ -43,14 +43,30 @@ async function open(page:Page){
  await expect(page.locator('#chat-input')).toBeInViewport();
 }
 async function close(page:Page){await page.locator('#mini-dialog .mini-top [data-close]').click();await expect.poll(async()=>(await state(page)).cabinet).toBe('');}
-async function layout(page:Page,name:string){
- await expect(page.locator('[data-rr-spin]')).toBeInViewport();await expect(page.locator('#chat-input')).toBeInViewport();
- expect(await page.locator('.rr-root').evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
+async function layout(page:Page,name:string,mode:'full'|'portrait',minWheel:number){
+ const root=page.locator('.rr-root');
+ await expect(root).toHaveAttribute('data-priority-layout',mode);
+ await expect(page.locator('[data-rr-spin]')).toBeInViewport();
+ if(mode==='full')await expect(page.locator('#chat-input')).toBeInViewport();
+ expect(await root.evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
  expect(await page.locator('.rr-footer').evaluate(e=>{const b=e.getBoundingClientRect(),p=e.closest('#mini-game')!.getBoundingClientRect();return b.bottom<=p.bottom+1&&b.top>=p.top;})).toBe(true);
- if(await page.locator('.rr-root').evaluate(e=>e.clientWidth)>650){
-  for(const selector of ['.rr-wheel','.rr-numbers'])expect(await page.locator(selector).evaluate(e=>{const box=e.getBoundingClientRect(),area=e.closest('.rr-content')!.getBoundingClientRect();return box.top>=area.top-1&&box.bottom<=area.bottom+1;})).toBe(true);
+ const selectors=mode==='full'?['.rr-wheel','.rr-center','.rr-numbers']:['.rr-wheel','.rr-center'];
+ for(const selector of selectors){
+  await expect.poll(()=>root.locator(selector).evaluate(e=>{
+   const box=e.getBoundingClientRect(),area=e.closest('.rr-content')!.getBoundingClientRect();
+   return box.top>=area.top-1&&box.bottom<=area.bottom+1&&box.left>=area.left-1&&box.right<=area.right+1;
+  })).toBe(true);
  }
+ expect((await root.locator('.rr-wheel').boundingBox())!.width).toBeGreaterThanOrEqual(minWheel);
  await page.screenshot({path:out+'/'+name+'.png'});
+}
+async function phoneBet(page:Page,selector:string,screenshot?:string){
+ await page.locator('.rr-choose-bet').click();
+ const panel=page.locator('.rr-root .game-options-panel');
+ await panel.locator(selector).click();
+ await expect(panel.locator(selector)).toHaveAttribute('aria-pressed','true');
+ if(screenshot)await page.screenshot({path:out+'/'+screenshot+'.png'});
+ await panel.getByRole('button',{name:'Закрыть',exact:true}).click();
 }
 async function play(page:Page){
  const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/operations')&&r.request().method()==='POST');
@@ -59,18 +75,23 @@ async function play(page:Page){
  await expect(page.locator('[data-rr-number]')).toHaveText(String(result.gameRound.outcome.number));return result;
 }
 test('roulette uses real wallet settlement, responsive host chat, history, and catalogue reopening',async({page,roomPath})=>{
- const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));await enter(page,roomPath);await open(page);await layout(page,'desktop');
+ const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));await enter(page,roomPath);await open(page);await layout(page,'desktop','full',450);
  await expect(page.locator('[data-rr-bet]')).toHaveCount(41);
  await page.locator('[data-rr-value="0"]').click();await expect(page.locator('[data-rr-selection]')).toContainText('Число 0 · ×36');
  await page.getByRole('button',{name:'50 USDT',exact:true}).click();const result=await play(page);
  expect(result.gameRound.stakeUnits).toBe('5000');expect(result.gameRound.input).toEqual({bet:'number',number:0});
  const n=result.gameRound.outcome.number;expect(result.gameRound.payoutUnits).toBe(n===0?'180000':'0');
  await expect(page.locator('.rr-history span')).toHaveText(String(n));
- await page.setViewportSize({width:1280,height:720});await layout(page,'laptop');
- await page.setViewportSize({width:390,height:844});await layout(page,'mobile');
- await page.locator('[data-rr-bet="even"]').click();await page.getByRole('button',{name:'10 USDT',exact:true}).click();await play(page);
- await page.locator('[data-rr-value="36"]').click();await expect(page.locator('[data-rr-selection]')).toContainText('Число 36 · ×36');await layout(page,'mobile-number-field');await play(page);
- await page.emulateMedia({reducedMotion:'no-preference'});await page.locator('[data-rr-bet="black"]').click();await play(page);
+ await page.setViewportSize({width:1280,height:720});await layout(page,'laptop','full',305);
+ await page.setViewportSize({width:390,height:844});
+ const chat=page.locator('#mini-dialog #club-chat-dock');
+ if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
+ await expect(page.locator('#chat-input')).toBeInViewport();
+ await chat.getByRole('button',{name:'Закрыть чат',exact:true}).click();
+ await layout(page,'mobile','portrait',370);
+ await phoneBet(page,'[data-rr-bet="even"]');await page.locator('.rr-compact-stake input[data-manual-stake]').fill('10.00');await play(page);
+ await phoneBet(page,'[data-rr-value="36"]','mobile-number-field');await expect(page.locator('[data-rr-selection]')).toContainText('Число 36 · ×36');await play(page);
+ await page.emulateMedia({reducedMotion:'no-preference'});await phoneBet(page,'[data-rr-bet="black"]');await play(page);
  await page.evaluate(async()=>{const path='/src/wallet/WalletClient.ts';const {demoWallet}=await import(/* @vite-ignore */path);(window as any).__rouletteAccount=demoWallet.accountId;demoWallet.setAccount(null);});
  await expect(page.locator('[data-rr-number]')).toHaveText('?');await expect(page.locator('.rr-landed')).toHaveCount(0);await expect(page.locator('[data-rr-net]')).toHaveText('0');
  await page.evaluate(async()=>{const path='/src/wallet/WalletClient.ts';const {demoWallet}=await import(/* @vite-ignore */path);demoWallet.setAccount((window as any).__rouletteAccount);await demoWallet.refresh();});
@@ -129,7 +150,10 @@ test('wheel and ball share a continuous confirmed landing and release their fram
   expect(coast.pose.wheelVelocity).toBeGreaterThan(0);expect(coast.pose.ballVelocity).toBeLessThan(0);await expect(page.locator('[data-rr-number]')).toHaveText('?');
   await expect.poll(async()=>(await motion(page)).phase,{intervals:[30,50,80]}).toBe('drop');const drop=await motion(page);
   await expect.poll(async()=>(await motion(page)).phase,{intervals:[30,50,80]}).toBe('pocket');const pocket=await motion(page);
-  const index=numberOrder.indexOf(receipt.gameRound.outcome.number);expect(angularError(pocket.pose.ball-pocket.pose.wheel-index*360/37)).toBeLessThanOrEqual(2.21);
+  const index=numberOrder.indexOf(receipt.gameRound.outcome.number);
+  const offset=angularError(pocket.pose.ball-pocket.pose.wheel-index*360/37);
+  const wallDistance=pocket.pose.radius*Math.sin((180/37-offset)*Math.PI/180);
+  expect(wallDistance).toBeGreaterThanOrEqual(BALL_RADIUS+POCKET_DIVIDER.width/2-1e-6);
   await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false',{timeout:settlingTimeout});await expect(page.locator('[data-rr-number]')).toHaveText(String(receipt.gameRound.outcome.number));
   await expect.poll(async()=>(await motion(page)).effects).toBe(0);const end=await motion(page);
   expect(end.active).toBe(false);expect(end.scheduledFrames).toBe(0);expect(end.frames).toBeGreaterThan(10);expect(end.pose.radius).toBe(148);

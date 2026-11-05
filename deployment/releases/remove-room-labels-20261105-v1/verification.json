@@ -1,6 +1,6 @@
 {
   "release": "remove-room-labels-20261105-v1",
-  "status": "published_verified_maintenance_pending",
+  "status": "published_verified_maintenance_completed",
   "sourceCommit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
   "baseCommit": "2e5c07509e20ed52820b44c9537ea396000f8a99",
   "image": "sha256:d5f9fee0ea275adeb4f36c8359c426f1dba8604690ea6396ba526d38b1b9416c",
@@ -619,6 +619,61 @@
     "reusedVerifiedPackage": true
   },
   "maintenance": {
-    "status": "in_progress"
+    "status": "completed",
+    "release": "remove-room-labels-20261105-v1",
+    "currentImage": "sha256:d5f9fee0ea275adeb4f36c8359c426f1dba8604690ea6396ba526d38b1b9416c",
+    "rollbackImage": "sha256:5960de68fa1cf1e62e19824224c7008b687dad8cf72a763b7af80b773a08fc84",
+    "sourceCommit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+    "startedAt": 1793897613.69365,
+    "finishedAt": 1793898627.0396845,
+    "durationSeconds": 1013.35,
+    "freeBefore": 9614561280,
+    "freeAfter": 9653764096,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "removedEntries": 26,
+    "removedImageTags": 3,
+    "preservedFinancialFiles": 159,
+    "schemaKeys": [
+      "startedAt",
+      "status",
+      "freeBefore",
+      "release",
+      "sourceCommit",
+      "currentImage",
+      "rollbackImage",
+      "plannedEntries",
+      "plannedImages",
+      "preservedFinancialFiles",
+      "retainedHistoryReasons",
+      "removedEntries",
+      "removedImageTags",
+      "dockerRetainedImages",
+      "freeAfter",
+      "containersUnchanged",
+      "healthOk",
+      "verificationPasses",
+      "rollbackImageProof",
+      "projectBrain",
+      "finishedAt",
+      "durationSeconds"
+    ],
+    "lastResultSha256": "6b70c0b48ec9275aa75425b6a0bdeff11ed92e8deff152718d878842804ce950",
+    "timerEnabled": "enabled",
+    "timerActive": "active",
+    "namedResults": [
+      {
+        "path": "/opt/royal-maintenance/automatic-runs/run-18f26d9cc7ef4e77bac19ad3805f0aa8/summary.json",
+        "sha256": "6b70c0b48ec9275aa75425b6a0bdeff11ed92e8deff152718d878842804ce950"
+      }
+    ],
+    "service": "MainPID=0\nResult=success\nActiveState=inactive\nSubState=dead"
+  },
+  "storageCleanup": {
+    "report": "deployment/releases/remove-room-labels-20261105-v1/storage-cleanup.json",
+    "localTemporaryLogicalBytes": 24376805,
+    "localRetiredModuleLogicalBytes": 273989515,
+    "serverTemporaryLogicalBytes": 5471119
   }
 }

@@ -1,0 +1,524 @@
+{
+  "sourceCommit": "a2a69026c0d85c51a1752dae98d8ca15c1108daa",
+  "baseCommit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+  "featureCommit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
+  "packageSha256": "b2533bb455b734ab8134e188e4402f97f21189c5d97a0e02516ea45844049f41",
+  "manifestSha256": "5c925f16989a65116124d833fd537ed7c9093fc58e28e25263a68b15a59c1d04",
+  "build": [
+    {
+      "name": "rtp",
+      "passed": true,
+      "durationMs": 155639
+    },
+    {
+      "name": "typecheck",
+      "passed": true,
+      "durationMs": 6109
+    },
+    {
+      "name": "modules",
+      "passed": true,
+      "durationMs": 159141
+    },
+    {
+      "name": "host",
+      "passed": true,
+      "durationMs": 8840
+    },
+    {
+      "name": "backend",
+      "passed": true,
+      "durationMs": 5129
+    },
+    {
+      "name": "reconciliation",
+      "passed": true,
+      "durationMs": 21
+    },
+    {
+      "name": "payments",
+      "passed": true,
+      "durationMs": 20
+    }
+  ],
+  "backendSha256": "f261c520406d1c4d01a0359238f5f68392918604414ff4710ed097b623cc9600",
+  "clientIndexSha256": "60d67365fea6e2dabf528ea50d68a2079fe6998863712363a9c1d64dc47b01ad",
+  "installerLinuxTests": 15,
+  "projectedServerTests": 58,
+  "financeGateTests": {
+    "unit": 5,
+    "postgres": 1
+  },
+  "rtp": {
+    "verifiedProfiles": 38,
+    "stakePolicies": 20,
+    "stakeAdmission": 20,
+    "legacyNotQualified": 114
+  },
+  "fixtureRequests": {
+    "count": 6,
+    "externalRequests": 0
+  },
+  "skinOffers": {
+    "atelier": {
+      "priceCents": 100,
+      "variants": 2
+    },
+    "zhora": {
+      "priceCents": 500,
+      "variants": 1
+    },
+    "legacyReservedCents": 1000
+  },
+  "browsers": [
+    {
+      "name": "door",
+      "passed": 2,
+      "viewports": [
+        "1440x1000",
+        "390x844"
+      ],
+      "logSha256": "099d51f650ff87a5f195cf948c213b080a8bcc52c6ec13ab2f158f9f8f39617c"
+    },
+    {
+      "name": "exit",
+      "passed": 2,
+      "viewports": [
+        "1440x1000",
+        "390x844"
+      ],
+      "logSha256": "467bbdeb580aa3cceda374909fa5466099bec91fd047f7abb506a4cfa4691c76"
+    },
+    {
+      "name": "wallet",
+      "passed": 2,
+      "viewports": [
+        "1440x1000",
+        "390x844"
+      ],
+      "logSha256": "26cba3edaeb6f732969089ad8611abdfb80b2f364c48ece9cbe810697d347192"
+    }
+  ],
+  "rouletteModule": "1.6.1-55882a5e8c75",
+  "catalogue": {
+    "sourceCommit": "a2a69026c0d85c51a1752dae98d8ca15c1108daa",
+    "passed": true,
+    "productionAccountsCreated": false,
+    "productionBetsPlaced": false,
+    "royalCatalogue": [
+      "studio-cosmic-escape",
+      "studio-caramel-carnival",
+      "studio-velvet-reign",
+      "studio-last-convoy",
+      "studio-nitro-run",
+      "studio-afterglow",
+      "studio-meme-overload",
+      "studio-dracona",
+      "studio-neopolis",
+      "studio-forest-heart",
+      "github-crash",
+      "royal-plinko",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "studio-caribbean-treasures",
+      "studio-flooded-temple",
+      "royal-roulette",
+      "flag-battle",
+      "studio-wild-nudge"
+    ],
+    "cardCatalogue": [
+      "variant-blackjack-target",
+      "variant-triple-poker",
+      "variant-duel",
+      "variant-war"
+    ],
+    "retiredNewRoundChecks": [
+      {
+        "id": "variant-dice",
+        "status": 409
+      },
+      {
+        "id": "variant-plinko",
+        "status": 409
+      },
+      {
+        "id": "variant-limbo",
+        "status": 409
+      },
+      {
+        "id": "variant-mines",
+        "status": 409
+      },
+      {
+        "id": "variant-sic-bo",
+        "status": 409
+      },
+      {
+        "id": "variant-diamonds",
+        "status": 409
+      },
+      {
+        "id": "variant-keno",
+        "status": 409
+      },
+      {
+        "id": "variant-keys",
+        "status": 409
+      },
+      {
+        "id": "variant-fruits",
+        "status": 409
+      },
+      {
+        "id": "variant-target-plinko",
+        "status": 409
+      },
+      {
+        "id": "variant-gem-collection",
+        "status": 409
+      },
+      {
+        "id": "variant-double-mines",
+        "status": 409
+      },
+      {
+        "id": "variant-dice-streak",
+        "status": 409
+      },
+      {
+        "id": "studio-orbit",
+        "status": 409
+      },
+      {
+        "id": "studio-deep-current",
+        "status": 409
+      },
+      {
+        "id": "studio-ember-vault",
+        "status": 409
+      },
+      {
+        "id": "studio-lumen-grove",
+        "status": 409
+      },
+      {
+        "id": "studio-neon-crown",
+        "status": 409
+      },
+      {
+        "id": "studio-sky-lanterns",
+        "status": 409
+      },
+      {
+        "id": "studio-stormforge-duel",
+        "status": 409
+      },
+      {
+        "id": "studio-copperline-express",
+        "status": 409
+      },
+      {
+        "id": "studio-saffron-cipher",
+        "status": 409
+      },
+      {
+        "id": "studio-prism-atelier",
+        "status": 409
+      },
+      {
+        "id": "studio-midnight-market",
+        "status": 409
+      },
+      {
+        "id": "studio-pulse-district",
+        "status": 409
+      },
+      {
+        "id": "studio-rivet-rally",
+        "status": 409
+      },
+      {
+        "id": "studio-petal-parlor",
+        "status": 409
+      },
+      {
+        "id": "studio-frostline-courier",
+        "status": 409
+      },
+      {
+        "id": "studio-beacon-bay",
+        "status": 409
+      },
+      {
+        "id": "studio-sunbird-trails",
+        "status": 409
+      },
+      {
+        "id": "studio-gale-riders",
+        "status": 409
+      },
+      {
+        "id": "studio-dune-hopper",
+        "status": 409
+      },
+      {
+        "id": "studio-canopy-crossing",
+        "status": 409
+      },
+      {
+        "id": "studio-aurora-lift",
+        "status": 409
+      },
+      {
+        "id": "studio-tidal-relay",
+        "status": 409
+      },
+      {
+        "id": "studio-mosaic-muse",
+        "status": 409
+      },
+      {
+        "id": "studio-obsidian-drop",
+        "status": 409
+      },
+      {
+        "id": "studio-signal-fox",
+        "status": 409
+      },
+      {
+        "id": "studio-saffron-spin",
+        "status": 409
+      },
+      {
+        "id": "studio-fossil-trail",
+        "status": 409
+      },
+      {
+        "id": "studio-blazing-orchard",
+        "status": 409
+      },
+      {
+        "id": "studio-jade-koi",
+        "status": 409
+      },
+      {
+        "id": "studio-moonlit-mint",
+        "status": 409
+      },
+      {
+        "id": "studio-starfall-oracle",
+        "status": 409
+      },
+      {
+        "id": "studio-lucky-spotlight",
+        "status": 409
+      },
+      {
+        "id": "royal-dice",
+        "status": 409
+      },
+      {
+        "id": "royal-limbo",
+        "status": 409
+      },
+      {
+        "id": "royal-mines",
+        "status": 409
+      },
+      {
+        "id": "royal-keno",
+        "status": 409
+      },
+      {
+        "id": "github-craps",
+        "status": 409
+      },
+      {
+        "id": "github-diamonds",
+        "status": 409
+      },
+      {
+        "id": "github-sic-bo",
+        "status": 409
+      }
+    ],
+    "unpublishedFlagToteStatus": 410,
+    "unchangedAdmissionSources": [
+      "src/shared/arcadeCatalog.ts",
+      "src/shared/cardTables.ts",
+      "src/shared/cabinets.ts",
+      "src/modules/GameModuleCatalog.ts",
+      "server/demoWalletRoutes.ts",
+      "server/demoExpansion.ts"
+    ],
+    "unchangedWallet": true,
+    "addedGames": [],
+    "restoredGames": []
+  },
+  "continuity": {
+    "backendOriginsIdentical": true,
+    "externalModuleFilesIdentical": 5338,
+    "catalogueSourcesUnchanged": [
+      "src/shared/arcadeCatalog.ts",
+      "src/shared/cardTables.ts",
+      "src/shared/cabinets.ts",
+      "src/modules/GameModuleCatalog.ts",
+      "server/demoWalletRoutes.ts",
+      "server/demoExpansion.ts"
+    ],
+    "verifiedEarlierServerTests": 58,
+    "rerunCompiledBrowserFlow": true,
+    "backendRuntimeBytesIdentical": true,
+    "backendRuntimeSha256": "5ed3aefee0b121463bc35ba7d44aa438d0ba3aed63558f10d98e3af04d083bb1",
+    "backendDifferences": "Only first-line projection provenance differs"
+  },
+  "published": {
+    "published": true,
+    "preparedImage": "sha256:2a628f08f5ebedfe133278c77e24826aa0c50f88fd95a76b6325045a5a630da8",
+    "runningImage": "sha256:2a628f08f5ebedfe133278c77e24826aa0c50f88fd95a76b6325045a5a630da8",
+    "containerRestarted": true,
+    "sourceCommit": "a2a69026c0d85c51a1752dae98d8ca15c1108daa",
+    "changedSources": 17,
+    "clientDeltaFiles": 4,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 1,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 13
+  },
+  "release": "skin-offers-20261105-v2",
+  "status": "published_verified",
+  "base": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+  "image": "sha256:2a628f08f5ebedfe133278c77e24826aa0c50f88fd95a76b6325045a5a630da8",
+  "rollbackImage": "sha256:d5f9fee0ea275adeb4f36c8359c426f1dba8604690ea6396ba526d38b1b9416c",
+  "backup": {
+    "path": "/opt/royal-backups/skin-offers-20261105-v2/source.tgz",
+    "sha256": "b26e88ea3a3ca634c0834c339feca3b3b464085e7705825f1a913398a6b40b06"
+  },
+  "financialBackup": {
+    "path": "/opt/royal-backups/skin-offers-20261105-v2/financial.dump",
+    "sha256": "1e0ccedc59907dce525affda6a60b31d2d9e763c7eb98a65133a620df3599187",
+    "bytes": 37982996,
+    "databaseRestored": false
+  },
+  "installed": {
+    "sourceFiles": 2762,
+    "programFiles": 8619,
+    "moduleFiles": 5338,
+    "sourceDeltaOnly": true,
+    "programDeltaOnly": true,
+    "runningAndPreparedProgramIdentical": true,
+    "modulesUnchanged": true,
+    "otherPersistentServicesPreserved": 13,
+    "gameDataPreserved": true
+  },
+  "clientDelta": {
+    "assets/index-B_EZJ02x.js": "e859e3da817c89217fc48dc50c66bcde746b92d04f3ab2b696365584dbd455bd",
+    "assets/index-DL7RR8eu.css": "e4cf366c4abed57f05333e46923b97e2f9be9cf0b2b85fead165e185ecc7a582",
+    "index.html": "60d67365fea6e2dabf528ea50d68a2079fe6998863712363a9c1d64dc47b01ad",
+    "assets/toilet/royal-janitor-v1-90a698e1d019.png": "90a698e1d019ab8660ae6641c3b9e69baa83c9251733082df5f68030ccbcb496"
+  },
+  "backendDelta": {
+    "index.js": "f261c520406d1c4d01a0359238f5f68392918604414ff4710ed097b623cc9600"
+  },
+  "publicVerification": {
+    "fileChecks": 9,
+    "apiChecks": 6,
+    "guestBrowsers": 2,
+    "streetRoundTrips": 2,
+    "skinSchemaReadOnly": true
+  },
+  "maintenance": {
+    "startedAt": 1793899918.9782004,
+    "status": "completed",
+    "freeBefore": 9581854720,
+    "release": "skin-offers-20261105-v2",
+    "sourceCommit": "a2a69026c0d85c51a1752dae98d8ca15c1108daa",
+    "currentImage": "sha256:2a628f08f5ebedfe133278c77e24826aa0c50f88fd95a76b6325045a5a630da8",
+    "rollbackImage": "sha256:d5f9fee0ea275adeb4f36c8359c426f1dba8604690ea6396ba526d38b1b9416c",
+    "plannedEntries": 31,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 162,
+    "retainedHistoryReasons": {
+      "/opt/royal-releases/hall-elevator-20261101-v1-final.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/forest-heart-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-compact.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/royal-roulette-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/mira-counter-rest-20261105-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/jackie-motion-20261104-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/hall-elevator-20261101-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/jackie-motion-20261104-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-delta.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-snapshot.py": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/skin-offers-20261105-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/skin-offers-20261105-v2.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/mira-counter-rest-20261105-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/skin-offers-20261105-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v3.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/jackie-motion-20261104-v3": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-invites-20261104-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/character-motion-20261027-v1.failed.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-ui-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/girlhub-feedback-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-invites-20261104-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v2.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before-final.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-card-scale-20261023": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/jackie-motion-20261104-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub"
+    },
+    "removedEntries": 31,
+    "removedImageTags": 3,
+    "dockerRetainedImages": [],
+    "freeAfter": 9592745984,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:d5f9fee0ea275adeb4f36c8359c426f1dba8604690ea6396ba526d38b1b9416c",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "ccd61800beacd5194b998c44322a36ae7ab26a5f432d62ea9c382021bd946435",
+      "files": 8616
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "600ad3a2e04531d894c79d708b8dd3266a9641d4302cb4de52be2a616ef5b0b2",
+      "receipt": "/var/lib/royal-project-brain/receipts/600ad3a2e04531d894c79d708b8dd3266a9641d4302cb4de52be2a616ef5b0b2.json",
+      "queued": true
+    },
+    "finishedAt": 1793900144.1361048,
+    "durationSeconds": 225.16,
+    "timerEnabled": true,
+    "timerActive": true,
+    "evidence": "maintenance.json"
+  },
+  "sourceBackupSha256": "b26e88ea3a3ca634c0834c339feca3b3b464085e7705825f1a913398a6b40b06",
+  "storageCleanup": "storage-cleanup.json",
+  "publicationRecord": "8725d7606a320e034c9c798b063ebbd5d0b69975"
+}
