@@ -270,26 +270,30 @@ test('spin keeps the portrait frame and lower controls anchored throughout confi
   await page.evaluate(()=>{
    const selectors=['.ct-captain','.ct-avatar','.ct-ledger','.ct-controls','.ct-status'];
    const root=document.querySelector<HTMLElement>('.ct-root')!;
-   const state=(window as any).__ctAnchors={samples:[] as any[],reels:[] as any[],running:true};
+   const state=(window as any).__ctAnchors={samples:[] as any[],reels:[] as any[],trail:0,running:true};
    const sample=()=>{
     state.samples.push(Object.fromEntries(selectors.map(selector=>{const r=document.querySelector(selector)!.getBoundingClientRect();return[selector,{x:r.x,y:r.y,width:r.width,height:r.height}];})));
     const phase=root.dataset.ctPhase;
     if(phase==='waiting'||phase==='reels'){
      const rolling=Array.from(root.querySelectorAll<HTMLElement>('.ct-strip'),strip=>!strip.hidden);
      const hidden=Array.from(root.querySelectorAll('.ct-cell'),cell=>getComputedStyle(cell).visibility==='hidden');
-     state.reels.push({phase,rolling,hidden,outcome:root.dataset.outcome,net:root.querySelector('[data-ct-net]')!.textContent});
+     const strip=root.querySelector('.ct-strip:not([hidden])');
+     state.reels.push({phase,rolling,hidden,outcome:root.dataset.outcome,net:root.querySelector('[data-ct-net]')!.textContent,
+      wave:strip?getComputedStyle(strip,'::before').animationName:''});
     }
+    state.trail=Math.max(state.trail,root.querySelectorAll('.ct-treasure-spark').length);
     if(state.running)requestAnimationFrame(sample);
    };sample();
   });
   const round=await action(page,'[data-ct-action=play]');
-  const {samples:sample,reels}=await page.evaluate(()=>{const s=(window as any).__ctAnchors;s.running=false;return s;});
-  expect(reels.some((frame:any)=>frame.phase==='waiting'&&frame.rolling.every(Boolean))).toBe(true);
+  const {samples:sample,reels,trail}=await page.evaluate(()=>{const s=(window as any).__ctAnchors;s.running=false;return s;});
+  expect(reels.some((frame:any)=>frame.phase==='waiting'&&frame.rolling.every(Boolean)&&frame.wave==='ct-sea-glint')).toBe(true);
   expect(reels.some((frame:any)=>frame.phase==='reels'&&frame.rolling.some(Boolean)&&!frame.rolling.every(Boolean))).toBe(true);
   for(const frame of reels){
    expect(frame.hidden).toEqual(Array.from({length:24},(_,index)=>frame.rolling[index%6]));
    expect(frame.outcome).toBe('');expect(frame.net).not.toMatch(/^[+−-]/);
   }
+  expect(trail).toBe(positive?5:0);
   if(positive){
    const net=Number(BigInt(round.returnedUnits)-BigInt(round.spentUnits))/100;
    expect(net).toBeGreaterThan(0);
@@ -694,7 +698,11 @@ test('confirmed animation, cannon, skip, mute, zero volume and close release own
  await enter(page,roomPath);await topup(page);await page.emulateMedia({reducedMotion:'no-preference'});await open(page);
  await page.evaluate(()=>{const c=(globalThis as any)[Symbol.for('royal.game-host.v1')].gameAudio.context;if(!c)throw Error('Shared context missing');const active=(window as any).__ctSources=new Set(),host=(window as any).__ctHostSources=new Map();(window as any).__ctOwnedCreated=0;for(const name of ['createOscillator','createBufferSource']){const create=c[name].bind(c);c[name]=()=>{const node=create(),stack=new Error().stack??'',owned=stack.includes('/game-modules/studio-caribbean-treasures/')||stack.includes('/games/caribbean-treasures/');if(owned){active.add(node);(window as any).__ctOwnedCreated++;}else host.set(node,stack);node.addEventListener('ended',()=>{active.delete(node);host.delete(node);});return node;};}});
  await page.locator('[data-ct-lines]').selectOption('1');await page.request.post('/__test/caribbean/force-bonus');await action(page,'[data-ct-action=play]');
- await action(page,'[data-ct-action=choose-raid]');await page.request.post('/__test/caribbean/force-cannon');await action(page,'[data-ct-action=play]');
+ await action(page,'[data-ct-action=choose-raid]');await page.request.post('/__test/caribbean/force-cannon');
+ await Promise.all([
+  action(page,'[data-ct-action=play]'),
+  page.locator('.ct-cannon-burst').waitFor({state:'visible',timeout:15000}),
+ ]);
  await expect(page.locator('.ct-giant small')).toHaveText('Залп увеличил символ');
  await expect(page.locator('.ct-board')).toHaveAccessibleName(/с 2×2 до 3×3/);
  await page.screenshot({path:out+'/cannon-explained.png'});
@@ -849,12 +857,16 @@ test('saved complete rounds give distinct captain reactions in the real host',as
   await page.emulateMedia({reducedMotion:'reduce'});
   for(let spin=0;spin<5;spin++)await action(page,'[data-ct-action=play]');
   await page.emulateMedia({reducedMotion:'no-preference'});
-  const done=await action(page,'[data-ct-action=play]');expect(done.state).toBe('settled');
+  const [done]=await Promise.all([
+   action(page,'[data-ct-action=play]'),
+   page.locator('.ct-loot-chest').waitFor({state:'visible',timeout:15000}),
+  ]);expect(done.state).toBe('settled');
   history=(await mini()).captain.history;
   const grand=history.at(-1);expect(grand.cue).toBe('bigwin');expect(grand.pose).toBe('laugh');cut('bigwin',grand,grand,1.6);
   await expect(page.locator('.ct-status')).toContainText('Крупный выигрыш!');
   results.push({name:'natural-flagship',costUnits:done.spentUnits,payoutUnits:done.returnedUnits,captain:history.filter((e:any)=>e.key.startsWith(done.id))});
   await page.screenshot({path:out+'/reaction-bigwin.png'});await page.waitForTimeout(1800);
+  await expect(page.locator('.ct-sparks')).toHaveCount(0);
   await page.locator('[data-ct-action=lines]').click();await page.locator('[data-ct-lines]').selectOption('1');
   await page.locator('[data-ct-action=buy]').click();await action(page,'[data-ct-modal=buy-raid]');
   await page.request.post('/__test/caribbean/force-cannon');const cannon=await action(page,'[data-ct-action=play]');history=(await mini()).captain.history;

@@ -329,7 +329,13 @@ export class CaribbeanUI {
     };
     if(signature===this.boardSignature){updateStops();return;}
     this.boardSignature=signature;
-    if(!board.querySelector('.ct-cell'))board.innerHTML=Array.from({length:24},(_,index)=>'<div class="ct-cell" data-ct-cell="'+index+'"></div>').join('')+'<div class="ct-strips" aria-hidden="true">'+Array.from({length:6},(_,column)=>'<div class="ct-strip" style="grid-column:'+(column+1)+';grid-row:1" hidden><div class="ct-strip-track" style="animation-delay:-'+column*.07+'s">'+Array.from({length:12},(_,row)=>caribbeanIcon((column+row%4*2)%6)).join('')+'</div></div>').join('')+'</div><div class="ct-giant" hidden></div><svg class="ct-paths" viewBox="0 0 600 400" aria-hidden="true"></svg><div class="ct-cannon-smoke" aria-hidden="true"></div>';
+    if(!board.querySelector('.ct-cell'))board.innerHTML=Array.from({length:24},(_,index)=>'<div class="ct-cell" data-ct-cell="'+index+'"></div>').join('')
+      +'<div class="ct-strips" aria-hidden="true">'+Array.from({length:6},(_,column)=>
+        '<div class="ct-strip" style="grid-column:'+(column+1)+';grid-row:1;--ct-wave-delay:'+column*45+'ms" hidden>'
+        +'<div class="ct-strip-track" style="animation-delay:-'+column*70+'ms">'
+        +Array.from({length:12},(_,row)=>caribbeanIcon((column+row%4*2)%6)).join('')+'</div></div>').join('')
+      +'</div><div class="ct-giant" hidden></div><svg class="ct-paths" viewBox="0 0 600 400" aria-hidden="true"></svg>'
+      +'<div class="ct-cannon-smoke" aria-hidden="true"></div><div class="ct-cannon-burst" aria-hidden="true"></div>';
     board.querySelectorAll<HTMLElement>('.ct-cell').forEach((cell,index)=>{
       const symbol=grid[index],inside=!!block&&index%6>=block.x&&index%6<block.x+block.size&&Math.floor(index/6)>=block.y&&Math.floor(index/6)<block.y+block.size;
       cell.classList.toggle('ct-covered',inside);cell.dataset.symbol=String(symbol);cell.setAttribute('aria-label',this.symbolName(symbol));
@@ -342,9 +348,8 @@ export class CaribbeanUI {
       if(giant.dataset.symbol!==String(block.symbol)||giant.dataset.language!==String(this.english)){giant.innerHTML=caribbeanIcon(block.symbol)+'<strong></strong><small></small>';giant.dataset.language=String(this.english);}
       giant.dataset.symbol=String(block.symbol);giant.dataset.ctBlock=String(block.size);
       giant.style.cssText=`left:${block.x/6*100}%;top:${block.y/4*100}%;width:${block.size/6*100}%;height:${block.size/4*100}%`;
-      const smoke=board.querySelector<HTMLElement>('.ct-cannon-smoke')!;
-      smoke.style.left=(block.x+block.size/2)/6*100+'%';
-      smoke.style.top=(block.y+block.size/2)/4*100+'%';
+      board.style.setProperty('--ct-shot-x',(block.x+block.size/2)/6*100+'%');
+      board.style.setProperty('--ct-shot-y',(block.y+block.size/2)/4*100+'%');
       giant.querySelector('strong')!.textContent=this.symbolName(block.symbol);
       giant.querySelector('small')!.textContent=frame?.cannon
         ? this.text('Залп увеличил символ','Cannon enlarged the symbol')
