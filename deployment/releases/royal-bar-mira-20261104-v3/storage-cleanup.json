@@ -1,0 +1,161 @@
+{
+  "release": "royal-bar-mira-20261104-v3",
+  "applicationSourceCommit": "28d451add41e5af2648442c91959030de8e4eb01",
+  "preservationCommits": [
+    "28d451add41e5af2648442c91959030de8e4eb01",
+    "c5f660f22b57a27ad56cc1d973e3baf3f24ea353",
+    "f9020b2a69ccd1cf2bedf88696dac55229c12485"
+  ],
+  "remoteMainAndFeatureVerifiedAt": "f9020b2a69ccd1cf2bedf88696dac55229c12485",
+  "local": {
+    "deliveryAndDisposableDatabase": {
+      "preservationCommits": [
+        "28d451add41e5af2648442c91959030de8e4eb01",
+        "c5f660f22b57a27ad56cc1d973e3baf3f24ea353",
+        "f9020b2a69ccd1cf2bedf88696dac55229c12485"
+      ],
+      "freeBeforeBytes": 307384975360,
+      "earlierDeniedTargetsRetried": false,
+      "freeAfterBytes": 307505655808,
+      "removed": [
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\royal-bar-mira\\royal\\artifacts\\work\\royal-bar-mira\\payload-v3.tgz",
+          "logicalBytes": 21908728,
+          "files": 1
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\royal-bar-mira\\royal\\artifacts\\work\\royal-bar-mira\\payload-v3",
+          "logicalBytes": 31129295,
+          "files": 46
+        },
+        {
+          "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-OtZcXg",
+          "stoppedBeforeRemoval": true,
+          "productionData": false,
+          "logicalBytes": 69205989,
+          "files": 1579
+        }
+      ],
+      "sharedDependenciesAndBuildCacheUntouched": true
+    },
+    "evidenceCopies": {
+      "freeAfterBytes": 308040896512,
+      "serverCurrentReleaseEvidencePreserved": true,
+      "removed": [
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\royal-bar-mira\\royal\\artifacts\\work\\royal-bar-mira\\production-before.json",
+          "logicalBytes": 3769097,
+          "files": 1,
+          "sha256": "c84090c16a95465cccf40e3cf04151fe4eacbff5dafb9de2b85e48d677a8ed25"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\royal-bar-mira\\royal\\artifacts\\work\\royal-bar-mira\\production-manifest.json",
+          "logicalBytes": 1275922,
+          "files": 1,
+          "sha256": "b9feda340a18f8207447c637a0f5d6286def84f7dcd29b481ed3c9830e9a3199"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\royal-bar-mira\\royal\\artifacts\\work\\royal-bar-mira\\production-refreshed.json",
+          "logicalBytes": 3833462,
+          "files": 1,
+          "sha256": "dc07c00c61a634b9ad45c7979ee0ee3b1322c5d535d0294febec575fdfa375bb"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\royal-bar-mira\\royal\\artifacts\\work\\royal-bar-mira\\rebound-install-manifest.json",
+          "logicalBytes": 4014704,
+          "files": 1,
+          "sha256": "ac5bd780c14770ba9fe5885d2322352e773c8cbfde8e5be9c620bf3f9354f769"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\royal-bar-mira\\royal\\artifacts\\work\\royal-bar-mira\\final-install-manifest.json",
+          "logicalBytes": 4014704,
+          "files": 1,
+          "sha256": "ac5bd780c14770ba9fe5885d2322352e773c8cbfde8e5be9c620bf3f9354f769"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\royal-bar-mira\\royal\\artifacts\\work\\royal-bar-mira\\server-after.json",
+          "logicalBytes": 3956040,
+          "files": 1,
+          "sha256": "0571ef96c5cb18a04c33595d6f3f0a4e05ea4c10701eb712da5dee55c2ae0775"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\royal-bar-mira\\royal\\artifacts\\work\\royal-bar-mira\\server-build-result.json",
+          "logicalBytes": 1172119,
+          "files": 1,
+          "sha256": "daf36a721cb17bb79eca2123b5d2937aaf3d3965404d430e1d6d662444c99e3a"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\royal-bar-mira\\royal\\artifacts\\work\\royal-bar-mira\\public-1440.png",
+          "logicalBytes": 331110,
+          "files": 1,
+          "sha256": "604d79849dcf95ada06b3a2435f9e51d83c8eb143cb244ff30a4969a1ba3536f"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\royal-bar-mira\\royal\\artifacts\\work\\royal-bar-mira\\public-390.png",
+          "logicalBytes": 120885,
+          "files": 1,
+          "sha256": "6e9a844ca08cf9188811d0bde82ccda0c0d72708d0dee05f619af843f7defefe"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\royal-bar-mira\\royal\\artifacts\\work\\royal-bar-mira\\built-1440.png",
+          "logicalBytes": 330588,
+          "files": 1,
+          "sha256": "f8dea440544d80caf26c0b2780da5712f40478aca991a8a88b71f4e7c8b0ab6b"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\royal-bar-mira\\royal\\artifacts\\work\\royal-bar-mira\\built-390.png",
+          "logicalBytes": 120990,
+          "files": 1,
+          "sha256": "fadc5e7461157968d9f17346f32b3e1fce6bda4b9fd35c129298056585749d68"
+        }
+      ],
+      "earlierDeniedTargetsRetried": false,
+      "freeBeforeBytes": 308017934336,
+      "finalProductionScreenshotsPreservedInVisualizationFolder": true
+    },
+    "totalLogicalBytesRemoved": 145183633
+  },
+  "server": {
+    "removed": [
+      {
+        "path": "/tmp/royal-bar-mira-20261104-v3-payload.tgz",
+        "logicalBytes": 21908728,
+        "files": 1
+      }
+    ],
+    "freeBeforeBytes": 9379725312,
+    "freeAfterBytes": 9401634816,
+    "currentReleaseAndRollbackUntouched": true
+  },
+  "measurementLimit": "Free-space samples include concurrent work. Logical deleted sizes are not a claim that all observed physical free-space change came from this cleanup.",
+  "retained": [
+    {
+      "path": "C:/Users/Aorus/.codex/worktrees/royal-bar-mira/royal",
+      "reason": "Earlier automatic approval review rejected archival/removal of this task worktree. The denied action was not retried. Concurrent work in another dirty checkout is preserved.",
+      "cleanupCondition": "Removal allowed by the approval system after verifying all unique work on GitHub; no automatic bypass."
+    },
+    {
+      "path": "artifacts/work/royal-bar-mira",
+      "reason": "Earlier animation review artifacts and previously review-blocked cleanup scope remain; this run removed only its newly created delivery package, evidence copies and stopped disposable database.",
+      "cleanupCondition": "Previously blocked cleanup must be allowed before deleting those earlier targets; no retries in this release."
+    },
+    {
+      "path": "C:/Users/Aorus/Documents/Codex/royal",
+      "reason": "Unrelated dirty concurrent checkout; untouched.",
+      "cleanupCondition": "Its owner preserves current unique work and completes its own task."
+    },
+    {
+      "path": "normal dist, dist-server, module-build, node_modules and shared royal-module-cache/v1",
+      "reason": "Current build outputs, working dependencies and verified shared cache; untouched.",
+      "cleanupCondition": "Managed by normal current-checkout/build-cache policy."
+    },
+    {
+      "path": "/opt/royal-releases/royal-bar-mira-20261104-v3 and /opt/royal-backups/royal-bar-mira-20261104-v3",
+      "reason": "Healthy current release and complete verified production rollback.",
+      "cleanupCondition": "Only guarded automatic production retention may retire them after a verified successor."
+    }
+  ],
+  "localPreview5198ListeningAtCompletion": false,
+  "productionRollbackAndFinancialDataUntouched": true,
+  "earlierDeniedTargetsRetried": false
+}
