@@ -6,7 +6,7 @@ import { appearanceFromLegacy, normalizeAppearance } from '../shared/appearance'
 import { CharacterEditor } from './CharacterEditor';
 import { SkinStudioUI } from './SkinStudioUI';
 import type { Account } from '../../server/accounts';
-import type { RoomScene } from '../game/RoomScene';
+import type { PlayerControls } from './PlayerControls';
 
 export class AuthUI {
   readonly dialog = document.createElement('dialog');
@@ -29,7 +29,7 @@ export class AuthUI {
   private logoutButton = document.createElement('button');
   private renameButton = document.createElement('button');
   private nameDialog = document.createElement('dialog');
-  constructor(private scene: RoomScene, private enter: () => Promise<void>, private leave: () => void) {
+  constructor(private scene: PlayerControls, private enter: () => Promise<void>, private leave: () => void) {
     this.dialog.id = 'join-dialog'; this.dialog.className = 'join-dialog auth-dialog';
     this.dialog.setAttribute('aria-labelledby', 'join-title');
     this.dialog.innerHTML = translateText(`
@@ -160,7 +160,11 @@ export class AuthUI {
   }
   private async continueEntry() {
     if (!this.account) { this.showLogin(); return; }
-    if (this.account.skin === null) { this.showCharacter(); return; }
+    if (this.account.skin === null && this.scene.presentation === 'casino') {
+      const result = await this.api('/character', { skin: 0, name: this.account.name });
+      this.account = result.account;
+    }
+    if (this.account?.skin === null) { this.showCharacter(); return; }
     this.showConnection();
     await this.enter(); this.inRoom = true;
     this.logoutButton.hidden = false; this.renameButton.hidden = false;

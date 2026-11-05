@@ -22,7 +22,7 @@ export class CryptoWalletUI {
   private working = false;
   private currencies: CryptoCurrency[] = [];
   private qrAddress = '';
-  constructor(private scene: RoomScene) {
+  constructor(private scene: Pick<RoomScene, 'setLocked'>) {
     this.button.id = 'crypto-wallet-button'; this.button.type = 'button'; this.button.className = 'wallet-button'; this.button.hidden = true;
     this.button.textContent = translateText('Денежный баланс'); this.button.onclick = () => this.show(); document.querySelector('.profile')!.prepend(this.button);
     this.dialog.id = 'crypto-wallet-dialog'; this.dialog.className = 'wallet-dialog crypto-wallet'; this.dialog.setAttribute('aria-labelledby', 'crypto-wallet-title');
