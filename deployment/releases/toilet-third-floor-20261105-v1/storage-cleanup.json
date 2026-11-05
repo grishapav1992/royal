@@ -45,13 +45,28 @@
     "productionDataUntouched": true
   },
   "local": {
-    "status": "awaiting-completed-maintenance-and-record-preservation",
-    "planned": {
-      "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/casino-street-20261101/checkout/artifacts/work/toilet-door-release-20261105",
-      "logicalBytes": 28868540,
-      "files": 78
-    },
-    "freeBeforeBytes": 39640563712
+    "status": "completed",
+    "removed": [
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/casino-street-20261101/checkout/artifacts/work/toilet-door-release-20261105",
+        "logicalBytes": 28877928,
+        "files": 79
+      }
+    ],
+    "freeBeforeBytes": 39588945920,
+    "freeAfterBytes": 39589244928,
+    "activeLocalPreviewAndOriginalRuntimeDataPreserved": true,
+    "sharedDependenciesUntouched": true,
+    "nestedArchivesIncludedInRemovedDirectory": [
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/casino-street-20261101/checkout/artifacts/work/toilet-door-release-20261105/payload.tgz",
+        "logicalBytes": 2797369
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/casino-street-20261101/checkout/artifacts/work/toilet-door-release-20261105/linux-tests.tgz",
+        "logicalBytes": 6407
+      }
+    ]
   },
   "retained": [
     {
@@ -201,5 +216,30 @@
     "freeAfterBytes": 9760817152,
     "resultPath": "/opt/royal-maintenance/automatic-runs/run-91f29abdd63145e794df270c298efdf0/summary.json",
     "resultSha256": "5a7067e482a8cafd4debef91cd496050a5784afd1ddc30f022825e01dd3647cd"
-  }
+  },
+  "server": {
+    "removed": [
+      {
+        "path": "/opt/royal-releases/toilet-third-floor-20261105-v1.tgz",
+        "logicalBytes": 2797369,
+        "files": 1
+      },
+      {
+        "path": "/opt/royal-releases/toilet-third-floor-20261105-v1/runtime-context",
+        "logicalBytes": 5354212,
+        "files": 5
+      }
+    ],
+    "freeBeforeBytes": 8777711616,
+    "freeAfterBytes": 8780533760,
+    "currentReleaseAndRollbackPreserved": true,
+    "health": "sha256:5960de68fa1cf1e62e19824224c7008b687dad8cf72a763b7af80b773a08fc84 healthy",
+    "postCleanupVerification": {
+      "health": "sha256:5960de68fa1cf1e62e19824224c7008b687dad8cf72a763b7af80b773a08fc84 healthy",
+      "timerEnabled": "enabled",
+      "timerActive": "active",
+      "freeBytes": 9698648064
+    }
+  },
+  "remoteMainAndFeatureVerifiedAt": "944a2ec06c13ee5e08e5287d5707fdbf7c855e4d"
 }
