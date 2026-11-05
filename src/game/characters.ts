@@ -7,6 +7,7 @@ import { drawMira } from './miraArt';
 import { CHARACTER_WALK_FRAMES, CHARACTER_WALK_FRAME_RATE } from './characterAnimation';
 import { drawProfileArm, drawProfileLimb, profileArmPose, profileBodyPoint, profileBodyPose, profileLegPose } from './profileWalk';
 import { drawFrontalArmSkin, frontalArmPose, frontalBodyPose, frontalLegPose, traceFrontalTop } from './frontalWalk';
+import { drawPresetClothing, drawPresetShoe } from './presetSkinArt';
 
 import type { Facing } from '../shared/movement';
 export type { Facing } from '../shared/movement';
@@ -179,11 +180,11 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
   c.beginPath(); c.rect(0, -TOP_PADDING, W, H); c.clip(); c.scale(.5, .5);
   if (facing === 'left') { c.translate(W * 2, 0); c.scale(-1, 1); }
   c.lineJoin = 'round'; c.lineCap = 'round';
-  const fill = (color: string, edge = .6) => {
+  const fill = (color: string | CanvasGradient, edge = .6) => {
     c.fillStyle = color; c.fill();
     if (edge) { c.strokeStyle = ink; c.lineWidth = edge; c.stroke(); }
   };
-  const oval = (x: number, y: number, rx: number, ry: number, color: string, angle = 0, edge = .6) => {
+  const oval = (x: number, y: number, rx: number, ry: number, color: string | CanvasGradient, angle = 0, edge = .6) => {
     c.beginPath(); c.ellipse(x, y, rx, ry, angle, 0, Math.PI * 2); fill(color, edge);
   };
   const box = (x: number, y: number, w: number, h: number, color: string, r = 0) => {
@@ -195,21 +196,23 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
   const piece = (x: number, y: number, angle: number, draw: () => void) => {
     c.save(); c.translate(x, y); c.rotate(angle * Math.PI / 180); draw(); c.restore();
   };
+  const shoe = (x: number, y: number, rx: number, ry: number, angle = 0) => {
+    drawPresetShoe(c, x, y, rx, ry, angle, p.shoes, ink, side, back, p.look === 'silver' || p.look === 'punk');
+  };
   // The planted shoe stays on the ground; the other changes pose in discrete steps.
   for (const leg of [-1, 1]) {
     if (profileBody) {
       const far = leg === -1;
       const pose = profileLegPose(frame, far, profileBodyPoint({ x: far ? 34 : 30.5, y: 61 }, 66, profileBody));
       drawProfileLimb(c, pose.hip, pose.knee, pose.ankle, 10, 8, p.pants, ink);
-      c.save(); c.translate(pose.foot.x + 2, pose.foot.y); c.rotate(pose.angle);
-      oval(0, 0, 9 + width * .2, 2.7, '#272823'); c.restore();
+      shoe(pose.foot.x + 2, pose.foot.y, 9 + width * .2, 2.7, pose.angle);
       continue;
     }
     if (frontalBody) {
       const sign = leg as -1 | 1;
       const pose = frontalLegPose(frame, sign, profileBodyPoint({ x: 32 + sign * 8.5, y: 61 }, 66, frontalBody), 10, back);
       drawProfileLimb(c, pose.hip, pose.knee, pose.ankle, 14, 11.5 * pose.scale, p.pants, ink);
-      oval(pose.foot.x, pose.foot.y, (10 + width * .2) * pose.scale, 2.7 * pose.scale, '#272823');
+      shoe(pose.foot.x, pose.foot.y, (10 + width * .2) * pose.scale, 2.7 * pose.scale);
       continue;
     }
     const swing = step * leg;
@@ -218,7 +221,7 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
     const legWidth = side ? 10 : 14;
     box(x - legWidth / 2, seated ? 64 : 63 + bounce, legWidth, y - (seated ? 64 : 63 + bounce), p.pants, 1);
     if (game) line(32 + leg * (side ? 3 : 8), 58, x, 65, p.pants, legWidth);
-    oval(x + (side ? 2 : 0), y, (side ? 9 : 10) + width * .2, 2.7, '#272823', swing * (side ? -6 : 3));
+    shoe(x + (side ? 2 : 0), y, (side ? 9 : 10) + width * .2, 2.7, swing * (side ? -6 : 3));
   }
   const bodyY = game ? -8 + (game.action === 'win' ? -game.pulse : game.action === 'lose' ? 3 + game.pulse * .5 : game.pulse * .3) : (seated ? 3 : 0) + bounce;
   piece(32, 66 + bodyY, game ? game.sway * (game.action === 'lose' ? 3.5 : 1.6) : lean, () => {
@@ -268,58 +271,7 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
       c.closePath();
     }
     fill(p.shirt);
-    if (!back) {
-      const seam = side ? 43 : 32;
-      line(seam, 48, seam, 68);
-      for (const y of [52, 58, 64]) oval(seam + 2.6, y, .9, 1, ink, 0, 0);
-      if (p.style === 'jacket') {
-        if (!side) line(19, 53, 26, 53, p.dark);
-        line(side ? 37 : 40, 53, side ? 42 : 47, 53, p.dark);
-        c.beginPath(); c.moveTo(side ? 35 : 22, 44);
-        c.lineTo(side ? 41 : 29, 50); c.lineTo(side ? 43 : 32, 44); fill(p.light);
-      }
-      if (p.look === 'curls' || p.look === 'silver') {
-        c.beginPath();c.moveTo(side?35:24,44);c.lineTo(side?44:40,44);c.lineTo(side?42:32,63);c.closePath();fill(p.light);
-        c.beginPath();c.moveTo(side?40:29,49);c.lineTo(side?44:35,49);c.lineTo(side?43:34,60);c.lineTo(side?41:31,64);c.lineTo(side?40:29,60);c.closePath();fill(p.dark);
-        if(!side)line(21,46,26,60,p.dark,1.2);
-        line(side?34:43,46,38,60,p.dark,1.2);
-      }
-      if (p.look === 'punk') {
-        line(side?30:23,47,side?43:38,67,p.light,1.8);line(side?30:23,47,side?26:19,52,p.light,1.5);
-        for(const x of side?[40]:[18,45])oval(x,48,1.4,1.4,p.light,0,0);
-      }
-      if (p.look === 'baseball') {
-        box(side?34:23,58,side?10:19,8,p.dark,2);
-        if(!side){line(24,60,28,63,p.light);line(27,46,27,53,p.light,1.4);}
-        line(side?43:41,60,side?40:37,63,p.light);
-        line(side?41:38,46,side?41:38,53,p.light,1.4);
-      }
-      if (p.look === 'buns') {
-        for(const y of [54,61])line(side?20:17,y,side?44:48,y,p.light,3);
-      }
-      if (p.bartender) { box(20, 48, 25, 20, '#e3e9cc', 1); box(27, 57, 12, 7, '#628c70', 1); }
-    } else {
-      // Rear clothing has its own construction, without front buttons or pockets.
-      if (p.style === 'hoodie') {
-        oval(32, 50, 11, 7, p.shirt);
-        line(25, 53, 32, 56, p.dark, .8); line(32, 56, 39, 53, p.dark, .8);
-      } else {
-        c.beginPath(); c.moveTo(21, 46); c.quadraticCurveTo(32, 53, 43, 46);
-        c.lineTo(42, 51); c.quadraticCurveTo(32, 56, 22, 51); c.closePath(); fill(p.dark, .4);
-      }
-      line(32, 57, 32, 67, p.dark, .6);
-      line(left + (frontal ? 9 : 5), 66, right - (frontal ? 9 : 5), 66, p.dark, .7);
-      if (p.bartender) {
-        line(left + 3, 62, right - 3, 62, '#e3e9cc', 2);
-        c.beginPath(); c.moveTo(32, 62); c.lineTo(26, 59); c.lineTo(26, 65); c.closePath(); fill('#e3e9cc');
-        c.beginPath(); c.moveTo(32, 62); c.lineTo(38, 59); c.lineTo(38, 65); c.closePath(); fill('#e3e9cc');
-      }
-    }
-    if(p.look==='beanie'){
-      box(side?24:18,43,side?21:29,6,p.light,2);box(back?21:39,47,6,13,p.light,1);
-      line(back?22:40,56,back?25:43,56,p.dark,.8);
-    }
-    if(back&&p.look==='buns')for(const y of [56,63])line(17,y,48,y,p.light,3);
+    drawPresetClothing(c, person, p, side, back);
     if (!side && !frontal) arm(true);
     const drawNearArm = () => {
       if (sip >= 0) {
@@ -339,6 +291,35 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
     // The head is a rigid paper disc. Eyes and mouth switch independently of the torso.
     piece(32, 30, game ? game.sway * (game.action === 'lose' ? 5 : 1.5) : walking ? -lean * .32 : frame === 9 ? 1.2 : 0, () => {
       c.translate(-32, -30);
+      const face = c.createLinearGradient(20, 10, 47, 53);
+      face.addColorStop(0, p.skin);
+      face.addColorStop(.51, p.skin);
+      face.addColorStop(1, p.shade);
+      const hair = c.createLinearGradient(22, 2, 42, 42);
+      hair.addColorStop(0, p.hairLight);
+      hair.addColorStop(.55, p.hair);
+      hair.addColorStop(1, p.hair);
+      const eye = c.createLinearGradient(0, 18, 0, 37);
+      eye.addColorStop(0, '#fffdf5');
+      eye.addColorStop(.62, '#fffdf5');
+      eye.addColorStop(1, '#dfcbc6');
+      const pupil = (x: number) => {
+        oval(x, 28, 1.35, 1.65, '#252724', 0, 0);
+        oval(x - .36, 27.46, .44, .5, '#fff8e8', 0, 0);
+      };
+      const hatCrown = () => {
+        fill(p.dark);
+        c.save(); c.clip();
+        const light = c.createLinearGradient(15, 0, 44, 27);
+        light.addColorStop(0, 'rgba(255, 240, 202, .40)');
+        light.addColorStop(.68, 'rgba(255, 240, 202, 0)');
+        light.addColorStop(1, 'rgba(35, 26, 52, .20)');
+        c.fillStyle = light; c.fillRect(4, -5, 56, 46);
+        c.beginPath(); c.moveTo(side ? 35 : 32, 4);
+        c.quadraticCurveTo(side ? 40 : 27, 12, side ? 39 : 31, back ? 33 : 18);
+        c.globalAlpha = .55; c.strokeStyle = p.light; c.lineWidth = .85; c.stroke();
+        c.restore();
+      };
       if (side) {
         // A single eye, an exposed ear and the nose outline define a true profile.
         c.beginPath(); c.moveTo(20, 14); c.quadraticCurveTo(32, 2, 44, 10);
@@ -346,21 +327,21 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         c.quadraticCurveTo(59, 35.5, 53, 36); c.lineTo(53, 39);
         c.quadraticCurveTo(55, 40, 51, 41); c.quadraticCurveTo(49, 49, 38, 50);
         c.quadraticCurveTo(25, 51, 18, 41); c.quadraticCurveTo(10, 23, 20, 14);
-        c.closePath(); fill(p.skin);
+        c.closePath(); fill(face);
         const hat = p.style === 'hoodie' || p.style === 'cap';
         if (p.style === 'long') {
           c.beginPath(); c.moveTo(14, 26); c.quadraticCurveTo(9, 7, 28, 4);
           c.quadraticCurveTo(48, 1, 52, 18); c.lineTo(46, 20); c.lineTo(39, 13);
           c.lineTo(30, 20); c.quadraticCurveTo(27, 37, 27 + step, 57);
           c.lineTo(20 + step, 61); c.lineTo(13 + step, 57);
-          c.quadraticCurveTo(9, 42, 14, 26); c.closePath(); fill(p.hair);
+          c.quadraticCurveTo(9, 42, 14, 26); c.closePath(); fill(hair);
           line(18, 28, 17 + step, 54, p.hairLight, 1.2);
           line(24, 23, 23 + step, 56, p.hairLight, .8);
         } else if (!hat && p.look !== 'punk') {
           c.beginPath(); c.moveTo(14, 32); c.quadraticCurveTo(7, 17, 19, 7);
           c.quadraticCurveTo(34, -2, 46, 8); c.quadraticCurveTo(53, 13, 53, 23);
           c.lineTo(47, 19); c.lineTo(39, 13); c.lineTo(27, 20);
-          c.lineTo(25, 36); c.lineTo(18, 41); c.closePath(); fill(p.hair);
+          c.lineTo(25, 36); c.lineTo(18, 41); c.closePath(); fill(hair);
           if (p.look === 'silver') {
             line(18, 13, 30, 9, p.hairLight, 2);
             line(30, 9, 43, 13, p.hairLight, 2);
@@ -371,7 +352,7 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         }
         if (p.look === 'curls') {
           for (const [x, y] of [[14, 22], [15, 14], [22, 8], [31, 6], [40, 9], [47, 14]]) {
-            oval(x, y, 5.4, 5.8, p.hair);
+            oval(x, y, 5.4, 5.8, hair);
           }
           for (const [x, y] of [[19, 12], [29, 8], [40, 12]]) line(x, y, x + 2, y + 2, p.hairLight, 1.2);
         }
@@ -388,7 +369,7 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         }
         if (hat) {
           c.beginPath(); c.moveTo(12, 21); c.bezierCurveTo(11, -1, 54, -1, 54, 21);
-          c.closePath(); fill(p.dark);
+          c.closePath(); hatCrown();
           c.beginPath(); c.moveTo(12, 17); c.quadraticCurveTo(33, 14, 54, 17);
           c.lineTo(54, 22); c.quadraticCurveTo(33, 20, 12, 23); c.closePath(); fill(p.light);
           if (p.look === 'baseball') {
@@ -411,8 +392,8 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
           c.beginPath(); c.moveTo(eyeX - 6.2, 28); c.quadraticCurveTo(eyeX, 21, eyeX + 6.2, 28); c.strokeStyle = ink; c.lineWidth = 1; c.stroke();
         } else if (blink) line(eyeX - 6.2, 28, eyeX + 6.2, 28.4, ink, .95);
         else {
-          oval(eyeX, eyeY, 6.7, 9.4, '#fffdf5', -.08, .32);
-          oval(eyeX + 2.5 + glance * .35, 28, 1.35, 1.65, '#252724', 0, 0);
+          oval(eyeX, eyeY, 6.7, 9.4, eye, -.08, .32);
+          pupil(eyeX + 2.5 + glance * .35);
           if (frame === 24) {
             c.save(); c.beginPath(); c.ellipse(eyeX, eyeY, 6.7, 9.4, -.08, 0, Math.PI * 2); c.clip();
             c.fillStyle = p.skin; c.fillRect(eyeX - 8, 16, 16, 12);
@@ -454,14 +435,14 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
       if(p.look==='buns')for(const x of [10,54]){
         oval(x,13,8,9,p.hair);line(x-3,10,x+2,16,p.hairLight,1.4);box(x-5,20,10,3,p.light,1);
       }
-      oval(32, 27, headRadius, 23.1, p.skin);
+      oval(32, 27, headRadius, 23.1, face);
       if (back) {
         if (p.style === 'long') {
           const sway = walking ? step * 1.3 : 0;
           c.beginPath(); c.moveTo(10, 24); c.bezierCurveTo(8, -3, 55, -3, 55, 24);
           c.bezierCurveTo(54, 38, 59 + sway, 48, 51 + sway, 59);
           c.lineTo(43 + sway, 57); c.lineTo(36 + sway, 61); c.lineTo(28 + sway, 58);
-          c.lineTo(19 + sway, 60); c.quadraticCurveTo(6 + sway, 57, 9, 39); c.closePath(); fill(p.hair);
+          c.lineTo(19 + sway, 60); c.quadraticCurveTo(6 + sway, 57, 9, 39); c.closePath(); fill(hair);
           // Broad paper locks keep even the darkest hair readable at room scale.
           c.beginPath(); c.moveTo(17, 17); c.quadraticCurveTo(24, 8, 32, 9);
           c.quadraticCurveTo(23, 27, 24 + sway, 55); c.lineTo(17 + sway, 55);
@@ -474,7 +455,7 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
           c.beginPath(); c.moveTo(10, 29); c.bezierCurveTo(5, 1, 53, -6, 55, 22);
           c.lineTo(53, 39); c.lineTo(47, 37); c.lineTo(45, 42); c.lineTo(38, 39);
           c.lineTo(32, 43); c.lineTo(25, 39); c.lineTo(20, 41); c.lineTo(17, 36);
-          c.lineTo(11, 38); c.closePath(); fill(p.hair);
+          c.lineTo(11, 38); c.closePath(); fill(hair);
           c.beginPath(); c.moveTo(16, 20); c.quadraticCurveTo(27, 8, 44, 16);
           c.lineTo(41, 21); c.quadraticCurveTo(27, 15, 17, 27); c.closePath(); fill(p.hairLight, 0);
           line(20, 31, 24, 34, p.hairLight); line(35, 34, 40, 31, p.hairLight);
@@ -489,21 +470,26 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         if ((p.style === 'long' || p.style === 'jacket') && !p.look) {
           c.beginPath(); c.moveTo(10, 29); c.quadraticCurveTo(3, 9, 22, 4);
           c.quadraticCurveTo(47, -1, 55, 18); c.lineTo(55, 29); c.lineTo(49, 21);
-          c.lineTo(42, 15); c.lineTo(35, 21); c.lineTo(29, 14); c.lineTo(18, 20); c.closePath(); fill(p.hair);
-          if (p.style === 'long') { oval(11, 36, 3.8, 16, p.hair); oval(53, 37, 3.8, 15, p.hair); }
+          c.lineTo(42, 15); c.lineTo(35, 21); c.lineTo(29, 14); c.lineTo(18, 20); c.closePath(); fill(hair);
+          if (p.style === 'long') {
+            oval(11, 36, 3.8, 16, p.hair); oval(53, 37, 3.8, 15, p.hair);
+            c.beginPath(); c.moveTo(10.8, 26); c.quadraticCurveTo(8.5, 36, 11, 48);
+            c.moveTo(53.5, 28); c.quadraticCurveTo(55.1, 39, 52.7, 48);
+            c.strokeStyle = p.hairLight; c.lineWidth = 1.15; c.stroke();
+          }
         }
         if(p.look==='curls'){
-          for(let n=0;n<7;n++)oval(12+n*6.4,15-Math.sin(n/6*Math.PI)*7,5,6,p.hair);
+          for(let n=0;n<7;n++)oval(12+n*6.4,15-Math.sin(n/6*Math.PI)*7,5,6,hair);
           for(const x of [16,28,40])line(x,10,x+2,12,p.hairLight,1.3);
         }
         if(p.look==='buns'){
           c.beginPath();c.moveTo(10,23);c.quadraticCurveTo(9,2,31,4);c.quadraticCurveTo(53,1,55,23);
-          c.lineTo(46,18);c.lineTo(34,10);c.lineTo(24,19);c.closePath();fill(p.hair);
+          c.lineTo(46,18);c.lineTo(34,10);c.lineTo(24,19);c.closePath();fill(hair);
           line(34,8,43,13,p.hairLight,1.2);
         }
         if(p.look==='silver'){
           c.beginPath();c.moveTo(10,27);c.lineTo(10,16);c.quadraticCurveTo(12,1,32,5);
-          c.quadraticCurveTo(51,1,55,18);c.lineTo(53,29);c.lineTo(47,19);c.lineTo(38,15);c.lineTo(23,16);c.closePath();fill(p.hair);
+          c.quadraticCurveTo(51,1,55,18);c.lineTo(53,29);c.lineTo(47,19);c.lineTo(38,15);c.lineTo(23,16);c.closePath();fill(hair);
           line(18,13,32,9,p.hairLight,2);line(32,9,44,13,p.hairLight,2);
         }
         if(p.look==='punk'){
@@ -516,15 +502,18 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
             c.beginPath(); c.moveTo(x - 6.6, 28); c.quadraticCurveTo(x, 21, x + 6.6, 28); c.strokeStyle = ink; c.lineWidth = 1; c.stroke();
           } else if (blink) line(x - 6.6, 28, x + 6.6, 28.4, ink, .95);
           else {
-            oval(x, 27.3, 8.2, 9.4, '#fffdf5', tilt, .32);
+            oval(x, 27.3, 8.2, 9.4, eye, tilt, .32);
             // A shared gaze avoids the cross-eyed expression of the previous sprites.
-            oval(x + glance, 28, 1.35, 1.65, '#252724', 0, 0);
+            pupil(x + glance);
             if (frame === 24) {
               c.save(); c.beginPath(); c.ellipse(x, 27.3, 8.2, 9.4, tilt, 0, Math.PI * 2); c.clip();
               c.fillStyle=p.skin; c.fillRect(x-10,16,20,12); line(x-9,28,x+9,28,ink,.65); c.restore();
             }
           }
         });
+        c.beginPath(); c.moveTo(32, 34);
+        c.quadraticCurveTo(29.5, 37.4, 33.2, 37.2);
+        c.strokeStyle = p.shade; c.lineWidth = .85; c.stroke();
         if(p.glasses){
           c.strokeStyle=p.dark;c.lineWidth=1.5;
           for(const x of eyes){c.beginPath();c.ellipse(x,28,8.7,9.6,0,0,Math.PI*2);c.stroke();}
@@ -562,13 +551,13 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         if (back) {
           // The hat wraps around the skull; its rear brim sits lower than the front.
           c.beginPath(); c.moveTo(8, 34); c.bezierCurveTo(3, -5, 60, -5, 56, 34);
-          c.quadraticCurveTo(33, 41, 8, 34); c.closePath(); fill(p.dark);
+          c.quadraticCurveTo(33, 41, 8, 34); c.closePath(); hatCrown();
           c.beginPath(); c.moveTo(8, 31); c.quadraticCurveTo(32, 38, 56, 31);
           c.lineTo(56, 37); c.quadraticCurveTo(32, 44, 8, 37); c.closePath(); fill(p.light);
           c.beginPath(); c.moveTo(32, 7); c.quadraticCurveTo(28, 19, 32, 34);
           c.strokeStyle=p.light; c.globalAlpha=.35; c.lineWidth=.9; c.stroke(); c.globalAlpha=1;
         } else {
-          c.beginPath(); c.moveTo(8, 21); c.bezierCurveTo(7, -2, 56, -2, 56, 21); c.closePath(); fill(p.dark);
+          c.beginPath(); c.moveTo(8, 21); c.bezierCurveTo(7, -2, 56, -2, 56, 21); c.closePath(); hatCrown();
           c.beginPath(); c.moveTo(8, 17); c.quadraticCurveTo(32, 14, 56, 17); c.lineTo(56, 22);
           c.quadraticCurveTo(31, 19, 8, 22); c.closePath(); fill(p.light);
         }
