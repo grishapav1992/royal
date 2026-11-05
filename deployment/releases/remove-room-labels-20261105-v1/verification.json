@@ -1,0 +1,624 @@
+{
+  "release": "remove-room-labels-20261105-v1",
+  "status": "published_verified_maintenance_pending",
+  "sourceCommit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+  "baseCommit": "2e5c07509e20ed52820b44c9537ea396000f8a99",
+  "image": "sha256:d5f9fee0ea275adeb4f36c8359c426f1dba8604690ea6396ba526d38b1b9416c",
+  "activeGames": [
+    "studio-cosmic-escape",
+    "studio-caramel-carnival",
+    "studio-velvet-reign",
+    "studio-last-convoy",
+    "studio-nitro-run",
+    "studio-afterglow",
+    "studio-meme-overload",
+    "studio-dracona",
+    "studio-neopolis",
+    "studio-forest-heart",
+    "github-crash",
+    "royal-plinko",
+    "original-cr-vs-leo",
+    "original-jackie-chan",
+    "studio-caribbean-treasures",
+    "studio-flooded-temple",
+    "royal-roulette",
+    "flag-battle",
+    "studio-wild-nudge",
+    "tsu-e-fa"
+  ],
+  "accessInputs": {
+    "src/shared/arcadeCatalog.ts": "946d05c1c450086d48efa318d7d65df6bdd5641f2edcd05599b67f7499a0a55a",
+    "src/modules/GameModuleCatalog.ts": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1",
+    "src/ui/ActivitiesUI.ts": "431721288ecfcb33043f6d3806f4df5dfc383d2e6fce0d0471436e967e890701",
+    "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+    "server/pvp/room.ts": "31b7c1aedcd71f4ee52b56c5678ea839f4685c450d8aaeb6f782d1d9b77613b9"
+  },
+  "addedGames": [],
+  "restoredGames": [],
+  "scope": {
+    "published": {
+      "published": true,
+      "preparedImage": "sha256:d5f9fee0ea275adeb4f36c8359c426f1dba8604690ea6396ba526d38b1b9416c",
+      "runningImage": "sha256:d5f9fee0ea275adeb4f36c8359c426f1dba8604690ea6396ba526d38b1b9416c",
+      "containerRestarted": true,
+      "sourceCommit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "changedSources": 4,
+      "clientDeltaFiles": 3,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 0,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 13
+    },
+    "image": "sha256:d5f9fee0ea275adeb4f36c8359c426f1dba8604690ea6396ba526d38b1b9416c",
+    "sourceCommit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+    "baseCommit": "2e5c07509e20ed52820b44c9537ea396000f8a99",
+    "sourceFilesBefore": 2757,
+    "sourceFilesAfter": 2757,
+    "programFilesBefore": 8614,
+    "programFilesAfter": 8616,
+    "changedSources": [
+      "src/game/RoomScene.ts",
+      "src/i18n/en.ts",
+      "src/main.ts",
+      "src/ui/compact-header.css"
+    ],
+    "programDelta": {
+      "assets/index-DnOIWoz8.js": "0ba1e50ece90d59e1681ae753c231578abff7e4dce319402b813d6d55d715ce4",
+      "assets/index-MtAGChhj.css": "4b21294424c47baf514f5d3d175fa97f0bb6cdff48b8e8e95cebdf7a8eb4063d",
+      "index.html": "76ae7d90fa22c7fc031e93a1b7f58955ebcdb27a843739e8e82d06810df8c794"
+    },
+    "externalModuleFilesPreserved": 5338,
+    "persistentServices": 14,
+    "backendSha256": "cef5f50ce99136f46c384b3edf2cec671cb2c40500a33e4f4a0a8bb7d2d6abc0",
+    "backup": {
+      "path": "/opt/royal-backups/remove-room-labels-20261105-v1/source.tgz",
+      "bytes": 164200,
+      "sha256": "cb0e180e808dc25e1de041fa408ae60ff2c3014d5018f938971673801fdb60f4",
+      "previousImage": "sha256:5960de68fa1cf1e62e19824224c7008b687dad8cf72a763b7af80b773a08fc84"
+    },
+    "immutableProgramProofRecorded": true,
+    "freeBeforeBytes": 9667989504,
+    "freeAfterBytes": 9621671936
+  },
+  "build": {
+    "passed": true,
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 186380
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 30510
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 156884
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 30458
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 77
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 36
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 36
+      }
+    ],
+    "durationMs": 404436,
+    "hostProjectionSha256": "6d5ec52c4d4d6e205fb7f8ae74e7724b5534be066bdbaff0565524da02bec402",
+    "hostInputs": 289,
+    "preparedFiles": 1458,
+    "applicationManifestSha256": "6ff24be88e2f4e97cc45b42603fe55e934b2f7c3344d50094ea22ed90385bff2",
+    "rtpProfiles": 38,
+    "stakePolicies": 20,
+    "admissions": 20,
+    "legacyUnqualified": 114
+  },
+  "tests": {
+    "walletCommand": "node --import tsx scripts/database-test.ts --import tsx --import ./deployment/releases/toilet-third-floor-20261105-v1/projection-loader.mjs --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts",
+    "walletPassed": 19,
+    "linuxInstaller": {
+      "scopeAndHealthTests": 12,
+      "nonblockingLockChecks": 2,
+      "passed": true,
+      "temporaryFilesRemovedOnExit": true
+    },
+    "russianHost": {
+      "sourceCommit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "backendSha256": "cef5f50ce99136f46c384b3edf2cec671cb2c40500a33e4f4a0a8bb7d2d6abc0",
+      "scriptSha256": "a299a215cc55e522f24608cdad7d978f7f6e8bec1b32fb5c9e2515be222ac77b",
+      "logSha256": "e13ebe746b03fbf9d0203fe776ee4d23ff72614ca2f7c0784b2100eff9c5109b",
+      "passedScenarios": [
+        {
+          "lang": "ru",
+          "width": 1440,
+          "hiddenCaptions": true,
+          "headerHiddenDuringSwitch": true,
+          "headerRestoredInHall": true,
+          "connectedChat": true,
+          "walletRecoverySingleDebit": true,
+          "pageErrors": []
+        },
+        {
+          "lang": "ru",
+          "width": 390,
+          "hiddenCaptions": true,
+          "headerHiddenDuringSwitch": true,
+          "headerRestoredInHall": true,
+          "connectedChat": true,
+          "walletRecoverySingleDebit": true,
+          "pageErrors": []
+        }
+      ],
+      "interruption": "Static asset connect timeout before the English scenarios completed"
+    },
+    "englishHost": [
+      {
+        "appearance": "avatar",
+        "lang": "en",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "online": true,
+        "headerFramesChecked": 276,
+        "headerFlashes": 0,
+        "hiddenCaptions": true,
+        "chatVisible": true,
+        "directions": [
+          {
+            "facing": "right",
+            "frames": [
+              "right-0",
+              "right-1",
+              "right-2"
+            ]
+          },
+          {
+            "facing": "left",
+            "frames": [
+              "left-0",
+              "left-1"
+            ]
+          },
+          {
+            "facing": "up",
+            "frames": [
+              "up-0",
+              "up-1"
+            ]
+          },
+          {
+            "facing": "down",
+            "frames": [
+              "down-0",
+              "down-1"
+            ]
+          }
+        ],
+        "overflow": false,
+        "errors": [],
+        "wallet": {
+          "acceptedStake": 0.1,
+          "uniqueOperationIds": 1,
+          "requests": 2,
+          "betEntries": 1,
+          "lostResponseRecoveredAfterCloseReopen": true,
+          "productionModuleBytesVerified": 18
+        }
+      },
+      {
+        "appearance": "avatar",
+        "lang": "en",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "online": true,
+        "headerFramesChecked": 52,
+        "headerFlashes": 0,
+        "hiddenCaptions": true,
+        "chatVisible": true,
+        "directions": [
+          {
+            "facing": "right",
+            "frames": [
+              "right-1",
+              "right-2"
+            ]
+          },
+          {
+            "facing": "left",
+            "frames": [
+              "left-0",
+              "left-1"
+            ]
+          },
+          {
+            "facing": "up",
+            "frames": [
+              "up-0",
+              "up-1"
+            ]
+          },
+          {
+            "facing": "down",
+            "frames": [
+              "down-0",
+              "down-1"
+            ]
+          }
+        ],
+        "overflow": false,
+        "errors": [],
+        "wallet": {
+          "acceptedStake": 0.1,
+          "uniqueOperationIds": 1,
+          "requests": 2,
+          "betEntries": 1,
+          "lostResponseRecoveredAfterCloseReopen": true,
+          "productionModuleBytesVerified": 19
+        }
+      }
+    ],
+    "publicBefore": {
+      "checks": [
+        {
+          "path": "/game-modules/studio-cosmic-escape/active.json",
+          "status": 200,
+          "sha256": "e317da3d53d59a77d041f017c6f4c64e2de9c5320e30d6b5bcc28416e322fd5a"
+        },
+        {
+          "path": "/game-modules/studio-caramel-carnival/active.json",
+          "status": 200,
+          "sha256": "1f1bfb68a97246dc5e01f0a348e0274106b8f47d811ef44e728231ad69239728"
+        },
+        {
+          "path": "/game-modules/studio-velvet-reign/active.json",
+          "status": 200,
+          "sha256": "7d68db73639b57de7a64bccf15c5d2dd28df393600a969773c7916b1baee5ecd"
+        },
+        {
+          "path": "/game-modules/studio-last-convoy/active.json",
+          "status": 200,
+          "sha256": "4719d29d0fc020473dd88b6c4820d9e158b4782acfb6ccf722a1b274388a6491"
+        },
+        {
+          "path": "/game-modules/studio-nitro-run/active.json",
+          "status": 200,
+          "sha256": "2f1db276d4e4fc80b04d7ca208c55ea8e0d6d67905eeeae1158e8e1de1b1a45e"
+        },
+        {
+          "path": "/game-modules/studio-afterglow/active.json",
+          "status": 200,
+          "sha256": "48d928e8147918acdd69422c30c0bac1dc3d906ab3e0efdb967bb332d79a808f"
+        },
+        {
+          "path": "/game-modules/studio-meme-overload/active.json",
+          "status": 200,
+          "sha256": "35e183b47cd02dde634043691b015f777aef38e670ce17ca054928b1209b99ba"
+        },
+        {
+          "path": "/game-modules/studio-dracona/active.json",
+          "status": 200,
+          "sha256": "c10e0d66ac72313bb9e3c5b36e00c12093bbc891dab1eec462b070bb39baeca0"
+        },
+        {
+          "path": "/game-modules/studio-neopolis/active.json",
+          "status": 200,
+          "sha256": "b4922363b9af39c9196de85fa02c06f59ca8a11fea928732a32864ea0714e358"
+        },
+        {
+          "path": "/game-modules/studio-forest-heart/active.json",
+          "status": 200,
+          "sha256": "241693e84688d259e4116fada2384987ee53b8cce65e08efc5a066592bd29462"
+        },
+        {
+          "path": "/game-modules/github-crash/active.json",
+          "status": 200,
+          "sha256": "deef44e1e5d1a3ae7610f3a846067fef3549216ebcab1a556dd08affb5a8858e"
+        },
+        {
+          "path": "/game-modules/royal-plinko/active.json",
+          "status": 200,
+          "sha256": "726bab895825baeb53f0b3b3119ed7af7ae249eae2682d281c7fb62b59f42558"
+        },
+        {
+          "path": "/game-modules/original-cr-vs-leo/active.json",
+          "status": 200,
+          "sha256": "7c8c0df5a2d8d94c17a0d018fb0b7e30f8f854c7e4032ad3e4fd180e5116fcc3"
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/active.json",
+          "status": 200,
+          "sha256": "ca36ab41e1f8b0dfffe070688dcdc0eec38c7135cafd710a918824019d450b95"
+        },
+        {
+          "path": "/game-modules/studio-caribbean-treasures/active.json",
+          "status": 200,
+          "sha256": "cc502ab15de4752e6d632062d29073adc4a3110dca076f7b17042fa130fa6d85"
+        },
+        {
+          "path": "/game-modules/studio-flooded-temple/active.json",
+          "status": 200,
+          "sha256": "272e43214f4c4f2911033118819ee970d0f2a43a38a8611f4862e311d0a49fe5"
+        },
+        {
+          "path": "/game-modules/royal-roulette/active.json",
+          "status": 200,
+          "sha256": "bf447112f8481cab90a5a15967b1c6f4a590b7c6e337f982614789d29bfae940"
+        },
+        {
+          "path": "/game-modules/flag-battle/active.json",
+          "status": 200,
+          "sha256": "94b77b64c374f469c0289d9c0b0db2a8e1fab1088f97946748cd30b3fc07d788"
+        },
+        {
+          "path": "/game-modules/studio-wild-nudge/active.json",
+          "status": 200,
+          "sha256": "45f58382424e564dc0aae819214ddd91ce8d9e0a7083c49e960947417d54ec2c"
+        },
+        {
+          "path": "/game-modules/tsu-e-fa/active.json",
+          "status": 200,
+          "sha256": "03ff5ab3fb697596abe39718d826fecde226898abf2cd35a0280b499e50a5cd7"
+        },
+        {
+          "path": "/healthz",
+          "status": 200
+        },
+        {
+          "path": "/api/auth/me",
+          "status": 200
+        },
+        {
+          "path": "/api/demo-wallet",
+          "status": 401
+        },
+        {
+          "path": "/api/game-wallet",
+          "status": 410
+        },
+        {
+          "path": "/api/nile-play/wallet",
+          "status": 410
+        },
+        {
+          "path": "/",
+          "status": 200,
+          "sha256": "bb63f4afd18e9b8bcba33eb0fcf36616add5b3ddfaee7d769e09ecb35d87682e"
+        }
+      ],
+      "browserChecks": [],
+      "productionAccountsCreated": 0,
+      "productionWagers": 0,
+      "productionChatMessages": 0
+    },
+    "publicAfter": {
+      "checks": [
+        {
+          "path": "/game-modules/studio-cosmic-escape/active.json",
+          "status": 200,
+          "sha256": "e317da3d53d59a77d041f017c6f4c64e2de9c5320e30d6b5bcc28416e322fd5a"
+        },
+        {
+          "path": "/game-modules/studio-caramel-carnival/active.json",
+          "status": 200,
+          "sha256": "1f1bfb68a97246dc5e01f0a348e0274106b8f47d811ef44e728231ad69239728"
+        },
+        {
+          "path": "/game-modules/studio-velvet-reign/active.json",
+          "status": 200,
+          "sha256": "7d68db73639b57de7a64bccf15c5d2dd28df393600a969773c7916b1baee5ecd"
+        },
+        {
+          "path": "/game-modules/studio-last-convoy/active.json",
+          "status": 200,
+          "sha256": "4719d29d0fc020473dd88b6c4820d9e158b4782acfb6ccf722a1b274388a6491"
+        },
+        {
+          "path": "/game-modules/studio-nitro-run/active.json",
+          "status": 200,
+          "sha256": "2f1db276d4e4fc80b04d7ca208c55ea8e0d6d67905eeeae1158e8e1de1b1a45e"
+        },
+        {
+          "path": "/game-modules/studio-afterglow/active.json",
+          "status": 200,
+          "sha256": "48d928e8147918acdd69422c30c0bac1dc3d906ab3e0efdb967bb332d79a808f"
+        },
+        {
+          "path": "/game-modules/studio-meme-overload/active.json",
+          "status": 200,
+          "sha256": "35e183b47cd02dde634043691b015f777aef38e670ce17ca054928b1209b99ba"
+        },
+        {
+          "path": "/game-modules/studio-dracona/active.json",
+          "status": 200,
+          "sha256": "c10e0d66ac72313bb9e3c5b36e00c12093bbc891dab1eec462b070bb39baeca0"
+        },
+        {
+          "path": "/game-modules/studio-neopolis/active.json",
+          "status": 200,
+          "sha256": "b4922363b9af39c9196de85fa02c06f59ca8a11fea928732a32864ea0714e358"
+        },
+        {
+          "path": "/game-modules/studio-forest-heart/active.json",
+          "status": 200,
+          "sha256": "241693e84688d259e4116fada2384987ee53b8cce65e08efc5a066592bd29462"
+        },
+        {
+          "path": "/game-modules/github-crash/active.json",
+          "status": 200,
+          "sha256": "deef44e1e5d1a3ae7610f3a846067fef3549216ebcab1a556dd08affb5a8858e"
+        },
+        {
+          "path": "/game-modules/royal-plinko/active.json",
+          "status": 200,
+          "sha256": "726bab895825baeb53f0b3b3119ed7af7ae249eae2682d281c7fb62b59f42558"
+        },
+        {
+          "path": "/game-modules/original-cr-vs-leo/active.json",
+          "status": 200,
+          "sha256": "7c8c0df5a2d8d94c17a0d018fb0b7e30f8f854c7e4032ad3e4fd180e5116fcc3"
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/active.json",
+          "status": 200,
+          "sha256": "ca36ab41e1f8b0dfffe070688dcdc0eec38c7135cafd710a918824019d450b95"
+        },
+        {
+          "path": "/game-modules/studio-caribbean-treasures/active.json",
+          "status": 200,
+          "sha256": "cc502ab15de4752e6d632062d29073adc4a3110dca076f7b17042fa130fa6d85"
+        },
+        {
+          "path": "/game-modules/studio-flooded-temple/active.json",
+          "status": 200,
+          "sha256": "272e43214f4c4f2911033118819ee970d0f2a43a38a8611f4862e311d0a49fe5"
+        },
+        {
+          "path": "/game-modules/royal-roulette/active.json",
+          "status": 200,
+          "sha256": "bf447112f8481cab90a5a15967b1c6f4a590b7c6e337f982614789d29bfae940"
+        },
+        {
+          "path": "/game-modules/flag-battle/active.json",
+          "status": 200,
+          "sha256": "94b77b64c374f469c0289d9c0b0db2a8e1fab1088f97946748cd30b3fc07d788"
+        },
+        {
+          "path": "/game-modules/studio-wild-nudge/active.json",
+          "status": 200,
+          "sha256": "45f58382424e564dc0aae819214ddd91ce8d9e0a7083c49e960947417d54ec2c"
+        },
+        {
+          "path": "/game-modules/tsu-e-fa/active.json",
+          "status": 200,
+          "sha256": "03ff5ab3fb697596abe39718d826fecde226898abf2cd35a0280b499e50a5cd7"
+        },
+        {
+          "path": "/healthz",
+          "status": 200
+        },
+        {
+          "path": "/api/auth/me",
+          "status": 200
+        },
+        {
+          "path": "/api/demo-wallet",
+          "status": 401
+        },
+        {
+          "path": "/api/game-wallet",
+          "status": 410
+        },
+        {
+          "path": "/api/nile-play/wallet",
+          "status": 410
+        },
+        {
+          "path": "/",
+          "status": 200,
+          "sha256": "76ae7d90fa22c7fc031e93a1b7f58955ebcdb27a843739e8e82d06810df8c794"
+        },
+        {
+          "path": "/assets/index-DnOIWoz8.js",
+          "status": 200,
+          "sha256": "0ba1e50ece90d59e1681ae753c231578abff7e4dce319402b813d6d55d715ce4"
+        },
+        {
+          "path": "/assets/index-MtAGChhj.css",
+          "status": 200,
+          "sha256": "4b21294424c47baf514f5d3d175fa97f0bb6cdff48b8e8e95cebdf7a8eb4063d"
+        },
+        {
+          "path": "/index.html",
+          "status": 200,
+          "sha256": "76ae7d90fa22c7fc031e93a1b7f58955ebcdb27a843739e8e82d06810df8c794"
+        }
+      ],
+      "browserChecks": [
+        {
+          "lang": "ru",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "npcStatusCaptions": 0,
+          "entranceCaptions": 0,
+          "headerHiddenInGame": true,
+          "headerRestoredInHall": true,
+          "errors": []
+        },
+        {
+          "lang": "ru",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "npcStatusCaptions": 0,
+          "entranceCaptions": 0,
+          "headerHiddenInGame": true,
+          "headerRestoredInHall": true,
+          "errors": []
+        },
+        {
+          "lang": "en",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "npcStatusCaptions": 0,
+          "entranceCaptions": 0,
+          "headerHiddenInGame": true,
+          "headerRestoredInHall": true,
+          "errors": []
+        },
+        {
+          "lang": "en",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "npcStatusCaptions": 0,
+          "entranceCaptions": 0,
+          "headerHiddenInGame": true,
+          "headerRestoredInHall": true,
+          "errors": []
+        }
+      ],
+      "productionAccountsCreated": 0,
+      "productionWagers": 0,
+      "productionChatMessages": 0
+    },
+    "physicalPhoneTested": false
+  },
+  "installation": {
+    "manifestSha256": "a673b1573ae135f321bc90ea2043d99548987288619c61c0c701b8179a8c6a31",
+    "firstInvocation": "4ee4b22eda564adab0459864c17f4775",
+    "firstExit": 75,
+    "firstMutationStarted": false,
+    "retryInvocation": "6526eea136a64af691145e77f5f7810c",
+    "reusedVerifiedPackage": true
+  },
+  "maintenance": {
+    "status": "in_progress"
+  }
+}
