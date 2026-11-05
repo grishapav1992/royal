@@ -1,0 +1,271 @@
+{
+  "release": "toilet-resident-20261105-v1",
+  "applicationSource": "95222a75a76f9fe52625cadb5fdc4679d32aa25d",
+  "base": "0ea82843a946179c795d96dac913375793367ef3",
+  "sourceFiles": [
+    "src/game/RoomScene.ts",
+    "src/game/ToiletRenderer.ts",
+    "src/game/toiletResidentArt.ts",
+    "src/game/toiletResidentPose.ts",
+    "src/shared/toilet.ts",
+    "public/assets/toilet/visitor-rig-v2-161e9417f4a0.png"
+  ],
+  "clientFiles": {
+    "assets/index-DrEdvFI0.js": "cdecbbd6e6f5ffca267557aa1caa4073146ca73acf18d92abcc3a0086bf3de14",
+    "index.html": "f89f1fefec84aaaba91db017d0f0515376bc82b0b6bd461b918f33dfda5a9bc2",
+    "assets/toilet/visitor-rig-v2-161e9417f4a0.png": "161e9417f4a05d059e1f06b7ff220f1a85d130f7a926b642c9f958bb09dc2a68"
+  },
+  "serverFiles": {
+    "index.js": "5de982d0e4ed6166f02cb72966930d2a284a9eea6ee19235e0c10ce55f17172f"
+  },
+  "activeGames": [
+    "studio-cosmic-escape",
+    "studio-caramel-carnival",
+    "studio-velvet-reign",
+    "studio-last-convoy",
+    "studio-nitro-run",
+    "studio-afterglow",
+    "studio-meme-overload",
+    "studio-dracona",
+    "studio-neopolis",
+    "studio-forest-heart",
+    "github-crash",
+    "royal-plinko",
+    "original-cr-vs-leo",
+    "original-jackie-chan",
+    "studio-caribbean-treasures",
+    "studio-flooded-temple",
+    "royal-roulette",
+    "flag-battle",
+    "studio-wild-nudge",
+    "tsu-e-fa"
+  ],
+  "addedGames": [],
+  "restoredGames": [],
+  "accessInputs": {
+    "src/shared/arcadeCatalog.ts": "946d05c1c450086d48efa318d7d65df6bdd5641f2edcd05599b67f7499a0a55a",
+    "src/modules/GameModuleCatalog.ts": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1",
+    "src/ui/ActivitiesUI.ts": "431721288ecfcb33043f6d3806f4df5dfc383d2e6fce0d0471436e967e890701",
+    "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+    "server/pvp/room.ts": "31b7c1aedcd71f4ee52b56c5678ea839f4685c450d8aaeb6f782d1d9b77613b9"
+  },
+  "archive": {
+    "bytes": 5526378,
+    "sha256": "f4d0e0c5f6017407b83897973251ccfffcadf87c55ac944ffb5197ca9bdc6fd4"
+  },
+  "tests": {
+    "walletAndToilet": 25,
+    "recovery": 5,
+    "installerLinux": 16,
+    "npcBrowsers": 2,
+    "walletBrowsers": 2
+  },
+  "knownInitialRoomIssue": "The first-room click route can stop near bar stools. NPC verification used the existing player recovery setting and ordinary keys to clear the bar before following the complete route. This release does not change bar movement.",
+  "status": "published-and-verified",
+  "applicationSourceCommit": "95222a75a76f9fe52625cadb5fdc4679d32aa25d",
+  "installerCommit": "95222a75a76f9fe52625cadb5fdc4679d32aa25d",
+  "image": "sha256:c3152c8fee44aff46d798cfd61ef09fd96893de991d520c402cee2dffc3bac04",
+  "rollbackImage": "sha256:55e6ab3340bab7d1c1e0041deb3a4f1ebb1558d07a457144c3efd4542f915520",
+  "published": {
+    "published": true,
+    "preparedImage": "sha256:c3152c8fee44aff46d798cfd61ef09fd96893de991d520c402cee2dffc3bac04",
+    "runningImage": "sha256:c3152c8fee44aff46d798cfd61ef09fd96893de991d520c402cee2dffc3bac04",
+    "containerRestarted": true,
+    "sourceCommit": "95222a75a76f9fe52625cadb5fdc4679d32aa25d",
+    "changedSources": 6,
+    "clientDeltaFiles": 3,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 1,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 13
+  },
+  "backup": {
+    "path": "/opt/royal-backups/toilet-resident-20261105-v1/source.tgz",
+    "bytes": 27186,
+    "sha256": "a07bc792b3fade79a735ecb11a574606c9e8dd4dbc3660c180077aacd3e1dbf0"
+  },
+  "installed": {
+    "sources": 2757,
+    "programFiles": 8613,
+    "moduleFiles": 5338,
+    "sourceDeltaOnly": true,
+    "programDeltaOnly": true,
+    "preparedAndRunningProgramIdentical": true,
+    "modulesUnchanged": true,
+    "accessInputsUnchanged": true,
+    "configurationsAndMountsPreserved": true,
+    "otherPersistentServicesPreserved": 13,
+    "gameDataPreserved": true
+  },
+  "proofs": {
+    "releaseManifestSha256": "b41ed633fe9510b231ea3f83564bf399dd43eca4af1aeeb1a0c886a05380035f",
+    "releaseGithubReceiptSha256": "2e6083c01bace5991e94e891ff3193f914156abf7858724a5213f1cf5a766a73",
+    "installManifestSha256": "d5844b193d4b9fb61bcd6b9b356c75c155897e563617f8d7c811dccfeb1c76b9",
+    "mediaReceiptSha256": "8ebb6ce3675bd07e8de90d3841fdead046c7c2c9f343d008234216dc2ed8267a",
+    "publicCheck": "public-check.json",
+    "npcDriver": "npc-auth.spec.ts",
+    "npcConfiguration": "auth.config.mjs",
+    "npcDriverSha256": "9259a1658997e3d94888cccb8f9c2fda05df3556b942951ca4c960fc995eed55",
+    "screenshots": {
+      "screenshots/mobile-resident-wiping.png": "ba3f0423cd135042964143a6edae878f12621d5e3c150610826edca01a9df14d",
+      "screenshots/desktop-resident-wiping.png": "704cebfa6a52beec8d9c009dc4bc5f283c86b050a6985f592829670d3d765016",
+      "screenshots/resident-detail.png": "9abe753c2fa2a528b68ca8836f6d6fe387fc1599c326b8594503bc7953b87c46",
+      "screenshots/desktop-resident-resting.png": "d794f0eebfe995a436d72e19f51cd00df9e9dfb56d75c867361e666f0e7009fb",
+      "screenshots/mobile-resident-resting.png": "a52d06e67c9fd0e907b95858ee203b3b5564b693cf0b739460e450dffaaeb4f5",
+      "screenshots/desktop-occupied-toilet.png": "810c5f303f6dfbe2c2b21c15795227802a96572acb4f5280b136b04c32900ba0",
+      "screenshots/mobile-occupied-toilet.png": "48d0461595edd8c3d2da5f59d72c5d5855b97522e74d1cf492d0c1f07730902c"
+    }
+  },
+  "testDetails": {
+    "serverWalletAndToilet": {
+      "passed": 25,
+      "files": [
+        "server-tests/game-wallet.test.ts",
+        "server-tests/wallet-account.test.ts",
+        "server-tests/round-precision.test.ts",
+        "server-tests/toilet.test.ts"
+      ],
+      "runtimeLoader": "projection-loader.mjs",
+      "isolatedDatabase": true
+    },
+    "serverRecovery": {
+      "passed": 5,
+      "file": "server-tests/player-recovery.test.ts"
+    },
+    "installerLinux": {
+      "passed": 16,
+      "file": "test_deploy.py"
+    },
+    "npcBrowsers": {
+      "passed": 2,
+      "viewports": [
+        "1440x1000",
+        "390x844"
+      ],
+      "connectedChat": true,
+      "scenarios": [
+        "street-stairs-roof-toilet-return",
+        "rig v2 loaded",
+        "take paper and wipe behind shirt",
+        "closed occupied cubicle with click, W and Shift",
+        "other stalls and sinks accessible",
+        "reduced motion",
+        "reload and reconnect",
+        "unchanged balance",
+        "no JavaScript errors"
+      ]
+    },
+    "walletBrowsers": {
+      "passed": 2,
+      "viewports": [
+        "1440x1000",
+        "390x844"
+      ],
+      "connectedChat": true,
+      "scenarios": [
+        "lost accepted response",
+        "same UUID and recovered result",
+        "close and reopen",
+        "one ten-cent debit"
+      ],
+      "isolatedDatabaseAndSyntheticFunds": true
+    },
+    "build": {
+      "typescript": "passed",
+      "rtpProfiles": 38,
+      "stakePolicies": 20,
+      "stakeAdmissions": 20,
+      "unchangedLegacyExceptionsNotQualified": 114,
+      "modulePackagesBuiltOrReused": 124,
+      "modulePackagesPublished": 0
+    },
+    "public": {
+      "filesSha256": 7,
+      "apiChecks": 6,
+      "guestBrowsers": 2,
+      "passed": true,
+      "productionAccountsCreated": false,
+      "productionBetsPlaced": false,
+      "productionMessagesSent": false
+    },
+    "repeatPolicy": "One unchanged validated artifact; financial and route tests were not repeated only because of fetch, deployment records or lock contention."
+  },
+  "publicationAttempts": [
+    {
+      "attempt": 1,
+      "exit": 75,
+      "mutations": false,
+      "reason": "hourly maintenance held publication locks"
+    },
+    {
+      "attempt": 2,
+      "exit": 0,
+      "image": "sha256:c3152c8fee44aff46d798cfd61ef09fd96893de991d520c402cee2dffc3bac04"
+    }
+  ],
+  "maintenance": {
+    "startedAt": 1793864488.154159,
+    "status": "completed",
+    "freeBefore": 9764012032,
+    "release": "toilet-resident-20261105-v1",
+    "sourceCommit": "95222a75a76f9fe52625cadb5fdc4679d32aa25d",
+    "currentImage": "sha256:c3152c8fee44aff46d798cfd61ef09fd96893de991d520c402cee2dffc3bac04",
+    "rollbackImage": "sha256:55e6ab3340bab7d1c1e0041deb3a4f1ebb1558d07a457144c3efd4542f915520",
+    "plannedEntries": 23,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 151,
+    "removedEntries": 23,
+    "removedImageTags": 3,
+    "dockerRetainedImages": [],
+    "freeAfter": 9776087040,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:55e6ab3340bab7d1c1e0041deb3a4f1ebb1558d07a457144c3efd4542f915520",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "9d36b969e068fe503f3182eddb18fddc1d680a0980547fc2543d39b05b10e613",
+      "files": 8611
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "ef58c7bdaec473b9ad8c9c3a96d606e4ab7d7e63aa4a6596227715edf0ea04c6",
+      "receipt": "/var/lib/royal-project-brain/receipts/ef58c7bdaec473b9ad8c9c3a96d606e4ab7d7e63aa4a6596227715edf0ea04c6.json",
+      "queued": true
+    },
+    "finishedAt": 1793865153.9220958,
+    "durationSeconds": 665.77,
+    "operation": "run-20fa200e636b449396ee236787f8fc45",
+    "resultPath": "/opt/royal-maintenance/automatic-runs/run-20fa200e636b449396ee236787f8fc45/summary.json",
+    "resultSha256": "5651accba908e04caa1f3c60659af22276047417d37a644a8db1501368448f7c",
+    "timerEnabled": true,
+    "timerActive": true
+  },
+  "projectBrain": {
+    "releasePreparationUsedReadOnlyQuery": true,
+    "limitation": "The available graph described the preceding mixed-version release. Current publication evidence uses exact captured and verified source and runtime inventories; no current graph readiness is claimed."
+  },
+  "testLogSha256": {
+    "server-tests.log": "421f204f764abb3b97c73fff5d5a3f6a7cf9ee7aebc1b721addc5f7f4d0fc699",
+    "recovery-tests.log": "ed526ee2bebbffeb42fe813ac52d371f0db1c4185886924828b10bc7d932532a",
+    "linux-tests.log": "edffa41b4d281e3fd756558e62355c12123456d4c20e90774081ef808b982f46",
+    "browser-auth.log": "3f644b480987b822981fd54f2c0f9a0373846b458b7c1c03744b2ca4805a5c19",
+    "browser-wallet.log": "cc75c070b0150735d6a43bd068a4ac80ab26ae0b66295c6a550cf8ab61e8a25a",
+    "prepare.log": "3dfe915ad677891f03556fc9c01c227f84401e84cee201d5324600a5fb4c4f7a",
+    "release-verify.log": "9855d501c777e4e06fa1465e45c14d892331da88da3cd1db0ba58ffaf31a23c2",
+    "public-check.log": "b62c50febe28abfeab86059ba663f3416762ca6db70271757dbd9c189dd07c70"
+  },
+  "preview": {
+    "url": "http://127.0.0.1:5191",
+    "statusAtFinalInspection": "already stopped",
+    "launcherAndBackendPidsAbsent": true,
+    "existingLocalDatabasesUntouched": true,
+    "compiledCandidateReady": true,
+    "publicAssetLinksRestoredWithoutChangingCompiledBytes": true
+  }
+}

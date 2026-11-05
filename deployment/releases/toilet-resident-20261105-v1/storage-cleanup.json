@@ -1,0 +1,61 @@
+{
+  "release": "toilet-resident-20261105-v1",
+  "preservationCommits": [
+    "7d0124da353f9922b313d24de6b473ce3e82d957",
+    "95222a75a76f9fe52625cadb5fdc4679d32aa25d"
+  ],
+  "local": {
+    "status": "awaiting-record-preservation-and-completed-retention",
+    "planned": [
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/casino-street-20261101/checkout/artifacts/work/toilet-resident-release-20261105",
+        "files": 93,
+        "logicalBytes": 33592718
+      },
+      {
+        "path": "/var/folders/jf/j4h8s0g91q9fgs6xm6lbhlk80000gp/T/royal-pg-WSKMFP",
+        "files": 1578,
+        "logicalBytes": 51503275,
+        "disposableDatabaseOnly": true,
+        "stopped": true
+      }
+    ],
+    "freeBeforeBytes": 40510222336
+  },
+  "serverFixtureAlreadyRemoved": {
+    "paths": [
+      {
+        "path": "/tmp/toilet-resident-20261105-v1-tests",
+        "logicalBytes": 36624
+      },
+      {
+        "path": "/tmp/toilet-resident-20261105-v1-tests.tgz",
+        "logicalBytes": 7044
+      }
+    ],
+    "productionData": false
+  },
+  "retained": [
+    {
+      "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/casino-street-20261101/checkout",
+      "reason": "Current feature checkout; retained for the newly requested toilet-to-third-floor exit and concurrent dirty primary checkout.",
+      "cleanupCondition": "Save and verify the new feature in GitHub before retiring this checkout; preserve local preview runtime data."
+    },
+    {
+      "path": "normal dist, dist-server, module-dist, module-build and node_modules",
+      "reason": "Current build outputs and shared dependencies reused for the continuing feature.",
+      "cleanupCondition": "Normal current-checkout policy; no dependency copies created."
+    },
+    {
+      "path": "previous local preview database directories",
+      "reason": "Original preview runtime data preserved. Launcher and backend were already stopped at inspection.",
+      "cleanupCondition": "Only clean up after identifying and preserving required current local state; this release does not remove them."
+    },
+    {
+      "path": "/opt/royal-releases/toilet-resident-20261105-v1 and /opt/royal-backups/toilet-resident-20261105-v1",
+      "reason": "Healthy current program and verified complete rollback.",
+      "cleanupCondition": "Only guarded automatic retention after a verified successor."
+    }
+  ],
+  "measurementLimit": "Free-space samples include concurrent work and background filesystem activity. Logical deleted bytes do not prove physical bytes reclaimed."
+}
