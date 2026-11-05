@@ -1,0 +1,29 @@
+{
+  "release": "toilet-resident-20261105-v1",
+  "featureCommit": "7d0124da353f9922b313d24de6b473ce3e82d957",
+  "productionCommit": "0ea82843a946179c795d96dac913375793367ef3",
+  "changedSources": [
+    "src/game/RoomScene.ts",
+    "src/game/ToiletRenderer.ts",
+    "src/game/toiletResidentArt.ts",
+    "src/game/toiletResidentPose.ts",
+    "src/shared/toilet.ts",
+    "public/assets/toilet/visitor-rig-v2-161e9417f4a0.png"
+  ],
+  "mediaSources": [
+    "public/assets/toilet/visitor-rig-v2-161e9417f4a0.png"
+  ],
+  "expectedSources": {
+    "src/game/RoomScene.ts": "42c476efecfab32e2cb0e5fbab0040f3d2d85bda6ce7460f22559e809332846b",
+    "src/game/ToiletRenderer.ts": "d695f68ca09b9af85702b9c8548216022d756f6f1413f0fb71330cfcfb5049d1",
+    "src/game/toiletResidentArt.ts": "98756da567211157fa3c449a2f2688e8093d88412567139c7c5de3b725816ac1",
+    "src/game/toiletResidentPose.ts": "d7c4d7234d6d2c62da2a28d4d83a0d110e55c3e5d94dd3ee5354ab90cf647c4b",
+    "src/shared/toilet.ts": "ef88e0386a347a5d31f94bf7979606909ca9ce1a44c76f34008893d3dacc6b38",
+    "public/assets/toilet/visitor-rig-v2-161e9417f4a0.png": "161e9417f4a05d059e1f06b7ff220f1a85d130f7a926b642c9f958bb09dc2a68"
+  },
+  "preservedBackendInputs": {
+    "src/i18n/en.ts": "e6a39483750df92467b584e98319ce679f2a3489669e4b0d3f64a2d7ba0a762c"
+  },
+  "addedGames": [],
+  "restoredGames": []
+}
