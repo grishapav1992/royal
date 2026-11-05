@@ -1,0 +1,51 @@
+{
+  "release": "mira-counter-rest-20261105-v3",
+  "applicationSource": "0f9ab2adc5951019529ca9ebe1765e4dd684942e",
+  "installerCommit": "fc20102b411e05b0547efbb7d6af3329b8e698c5",
+  "recoveryHelper": "93f929a6db13e6cf8ca40e9031f217e6ee2e7983",
+  "serverRoot": "/opt/royal-releases/mira-counter-rest-20261105-v3",
+  "data": {
+    "operator-summary-1.json": {
+      "exitCode": 1,
+      "finishedAt": 1793902275.7594457,
+      "sourceCommit": "0f9ab2adc5951019529ca9ebe1765e4dd684942e",
+      "build-result.json": {
+        "image": "sha256:7f1a8a09747c6e9a339558cd6ae8f576aeead7596f3c4e8b2e5195e0806e793d",
+        "sourceBackupSha256": "71f6da44c76a30b3112fe31d164251abe32aa72b2cfd0613e6be6f4447f2dcea",
+        "backup": "/opt/royal-backups/mira-counter-rest-20261105-v3",
+        "programFiles": 8620
+      }
+    },
+    "publication-failed.json": {
+      "errorType": "GateError",
+      "reason": "Supervised command deadline exceeded",
+      "daemonOutcomeUnknown": true,
+      "mutationStarted": true,
+      "databaseRestored": false
+    },
+    "operator-recovery-1.json": {
+      "exitCode": 0,
+      "finishedAt": 1793903222.120649,
+      "helperCommit": "93f929a6db13e6cf8ca40e9031f217e6ee2e7983",
+      "helperSha256": "d015482fa5a9e541abb378cde09cfedad520d72bb990b074910067a64dfe8401"
+    },
+    "baseline-recovered.json": {
+      "sourceCommit": "a2a69026c0d85c51a1752dae98d8ca15c1108daa",
+      "runningImage": "sha256:2a628f08f5ebedfe133278c77e24826aa0c50f88fd95a76b6325045a5a630da8",
+      "preparedImage": "sha256:2a628f08f5ebedfe133278c77e24826aa0c50f88fd95a76b6325045a5a630da8",
+      "containerId": "136563dffcf7495fcff16fa7fbddff17538c295c0492cc7f2477800984bb511b",
+      "sourceFiles": 2762,
+      "programFiles": 8619,
+      "moduleFiles": 5338,
+      "containerRestarted": false,
+      "databaseTouched": false,
+      "verifiedAt": 1793903222.018206
+    }
+  },
+  "sha256": {
+    "operator-summary-1.json": "45180202e9234032631a81650b15bc4cda53323af9d30a54e240a8e4194bc8e0",
+    "publication-failed.json": "6ae85376061a64139d55e74d8834aa138c9eb3478612b9cf6ccbe8c6356601d9",
+    "operator-recovery-1.json": "a3557a5be6df2797c49c570ec715e30e16a468d546772549ee0d494a286e8e02",
+    "baseline-recovered.json": "d5682c1d801bb0ead7d287dc1a5fc89d1a76b2d12f3f67d595e8b39e43b2266f"
+  }
+}
