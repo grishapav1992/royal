@@ -1,0 +1,91 @@
+{
+  "sourceCommitsSavedInMain": [
+    "d87c68a0257b43ae51779657a4595f3d236c9e14",
+    "3c6d785b50cbd69b899094c11e90a9c3edbb497e",
+    "0f9ab2adc5951019529ca9ebe1765e4dd684942e",
+    "9bd030b153fc12813ef1cf2ec4275c572fd0b580",
+    "53d96304953307ea06ff6212f8ab342176e21058"
+  ],
+  "local": {
+    "removedDirectory": "artifacts/work/mira-counter-rest-20261105",
+    "bytes": 138836828,
+    "files": 279,
+    "archives": [
+      {
+        "sha256": "b44a6d7cf4b17fc057feafc96a608bd0e03c63964eb4ed779eaf54ad029af272",
+        "bytes": 2766358,
+        "path": "artifacts/work/mira-counter-rest-20261105/payload.tgz"
+      },
+      {
+        "sha256": "78f69a5363a5089c4eaba0ee4988c5441df349d6916405641be4801bf7a09f3d",
+        "bytes": 2767896,
+        "path": "artifacts/work/mira-counter-rest-20261105/v2/payload.tgz"
+      },
+      {
+        "sha256": "e680352d88e14eedf7103a09ad1d0d647332620b927e8ac2eb506138627071fc",
+        "bytes": 2781552,
+        "path": "artifacts/work/mira-counter-rest-20261105/v3/payload.tgz"
+      },
+      {
+        "sha256": "01b22e2a1caf2abdea45dec9b58213e08279c274d143a40ff621dd6bb66eb55d",
+        "bytes": 2782617,
+        "path": "artifacts/work/mira-counter-rest-20261105/v4/payload.tgz"
+      }
+    ],
+    "disposableDatabases": [
+      {
+        "path": "%TEMP%/royal-pg-pruOoU",
+        "bytes": null,
+        "files": 1577,
+        "freeBefore": 305933406208
+      },
+      {
+        "path": "%TEMP%/royal-pg-CP9RMw",
+        "bytes": null,
+        "files": 1575,
+        "freeBefore": 300593475584
+      },
+      {
+        "path": "%TEMP%/royal-pg-TfjCsc",
+        "bytes": 52206349,
+        "files": 1576,
+        "freeBefore": 301602512896
+      }
+    ],
+    "freeBefore": 304182493184,
+    "freeAfter": 304321941504
+  },
+  "server": {
+    "removed": [
+      {
+        "path": "/tmp/mira-counter-rest-20261105-v1-payload.tgz",
+        "bytes": 2766358,
+        "sha256": "b44a6d7cf4b17fc057feafc96a608bd0e03c63964eb4ed779eaf54ad029af272"
+      },
+      {
+        "path": "/tmp/mira-counter-rest-20261105-v2-payload.tgz",
+        "bytes": 2767896,
+        "sha256": "78f69a5363a5089c4eaba0ee4988c5441df349d6916405641be4801bf7a09f3d"
+      },
+      {
+        "path": "/tmp/mira-counter-rest-20261105-v3-payload.tgz",
+        "bytes": 2781552,
+        "sha256": "e680352d88e14eedf7103a09ad1d0d647332620b927e8ac2eb506138627071fc"
+      },
+      {
+        "path": "/tmp/mira-counter-rest-20261105-v4-payload.tgz",
+        "bytes": 2782617,
+        "sha256": "01b22e2a1caf2abdea45dec9b58213e08279c274d143a40ff621dd6bb66eb55d"
+      }
+    ],
+    "freeBefore": 9460793344,
+    "freeAfter": 9471901696
+  },
+  "retained": [
+    "Installed release, verified rollback and financial backups are managed by the automatic retention policy.",
+    "Unpublished v1, v2 and v3 staging directories are superseded and remain under server retention.",
+    "Normal checkout build outputs and shared module cache are retained.",
+    "Earlier rejected cleanup targets are outside this task."
+  ],
+  "freeSpaceDeltaAttributedToCleanup": false
+}
