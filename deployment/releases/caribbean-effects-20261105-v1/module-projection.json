@@ -49,10 +49,10 @@
       "sha256": "3b9bd8d6a74acab35fcb926513f65b2651ffcdb1b3b3c28d45ef5d61992b5ea6"
     },
     "games/caribbean-treasures/caribbean.css": {
-      "commit": "fe4db6e58e26501578f52fcffc077a35a7ffa3d9",
+      "commit": "ab3cf6fba22b638bfab6188d2acf64e1d71bf19e",
       "path": "games/caribbean-treasures/caribbean.css",
-      "baseSha256": "3548dee9e3939c0ee3bfcc19b387ff661d26716b5facd140cc2e7895b835d4e1",
-      "sha256": "3548dee9e3939c0ee3bfcc19b387ff661d26716b5facd140cc2e7895b835d4e1"
+      "baseSha256": "16da262a31dae3a96b564d6525811ff6a680d07cae94248ec73dd24488a6b1b0",
+      "sha256": "16da262a31dae3a96b564d6525811ff6a680d07cae94248ec73dd24488a6b1b0"
     },
     "games/caribbean-treasures/entry.ts": {
       "commit": "0f9ab2adc5951019529ca9ebe1765e4dd684942e",
