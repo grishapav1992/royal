@@ -5,22 +5,23 @@
     "95222a75a76f9fe52625cadb5fdc4679d32aa25d"
   ],
   "local": {
-    "status": "awaiting-record-preservation-and-completed-retention",
-    "planned": [
+    "status": "completed",
+    "freeBeforeBytes": 40478212096,
+    "removed": [
       {
         "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/casino-street-20261101/checkout/artifacts/work/toilet-resident-release-20261105",
-        "files": 93,
-        "logicalBytes": 33592718
+        "logicalBytes": 33601602,
+        "files": 95
       },
       {
         "path": "/var/folders/jf/j4h8s0g91q9fgs6xm6lbhlk80000gp/T/royal-pg-WSKMFP",
-        "files": 1578,
         "logicalBytes": 51503275,
-        "disposableDatabaseOnly": true,
-        "stopped": true
+        "files": 1578
       }
     ],
-    "freeBeforeBytes": 40510222336
+    "freeAfterBytes": 40544620544,
+    "originalPreviewDatabasesUntouched": true,
+    "sharedDependenciesUntouched": true
   },
   "serverFixtureAlreadyRemoved": {
     "paths": [
@@ -57,5 +58,118 @@
       "cleanupCondition": "Only guarded automatic retention after a verified successor."
     }
   ],
-  "measurementLimit": "Free-space samples include concurrent work and background filesystem activity. Logical deleted bytes do not prove physical bytes reclaimed."
+  "measurementLimit": "Free-space samples include concurrent work and background filesystem activity. Logical deleted bytes do not prove physical bytes reclaimed.",
+  "server": {
+    "removed": [
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1.tgz",
+        "logicalBytes": 5526378,
+        "files": 1
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/runtime-context",
+        "logicalBytes": 6718348,
+        "files": 6
+      }
+    ],
+    "freeBeforeBytes": 9776406528,
+    "freeAfterBytes": 9781964800,
+    "currentReleaseAndRollbackPreserved": true,
+    "healthyImage": "sha256:c3152c8fee44aff46d798cfd61ef09fd96893de991d520c402cee2dffc3bac04 healthy"
+  },
+  "automaticRetentionRemoved": [
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/after.json",
+      "allocatedBytes": 3956736
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/build-result.json",
+      "allocatedBytes": 1175552
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/build.log",
+      "allocatedBytes": 4096
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/deploy.py",
+      "allocatedBytes": 12288
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/dist-delta",
+      "allocatedBytes": 3088384
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/engine-build.py",
+      "allocatedBytes": 8192
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/image_metadata.py",
+      "allocatedBytes": 4096
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/install-manifest.json",
+      "allocatedBytes": 4018176
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/install.log",
+      "allocatedBytes": 4096
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/installer-github.json",
+      "allocatedBytes": 4096
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/overlay-base.py",
+      "allocatedBytes": 28672
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/published.json",
+      "allocatedBytes": 4096
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/quiesce.cjs",
+      "allocatedBytes": 12288
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/release-github.json",
+      "allocatedBytes": 4096
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/release-manifest.json",
+      "allocatedBytes": 1503232
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/runtime-context",
+      "allocatedBytes": 5537792
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/runtime-inventory.cjs",
+      "allocatedBytes": 4096
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/scope.json",
+      "allocatedBytes": 4096
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/server-delta",
+      "allocatedBytes": 2437120
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/snapshot-base.py",
+      "allocatedBytes": 16384
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/snapshot.py",
+      "allocatedBytes": 4096
+    },
+    {
+      "path": "/opt/royal-releases/pvp-invites-20261105-v3/source",
+      "allocatedBytes": 294912
+    },
+    {
+      "path": "/opt/royal-backups/pvp-invites-20261105-v3",
+      "allocatedBytes": 53248
+    }
+  ],
+  "remoteMainAndFeatureVerifiedAt": "619c1ddc45377183d4062e31f8c81edaa1db839f"
 }
