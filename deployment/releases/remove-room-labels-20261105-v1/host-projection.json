@@ -678,10 +678,10 @@
       "sha256": "43be372b93d4af6ba10e83fab0e6b9e787dd258412fc04ed9b5478ee046c190a"
     },
     "src/ui/compact-header.css": {
-      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "commit": "0d7c862b",
       "path": "src/ui/compact-header.css",
-      "baseSha256": "87a9c8fcc2332068dd54d861744b0f881e0edfc9d5550ae57a519fd7c46e6c35",
-      "sha256": "87a9c8fcc2332068dd54d861744b0f881e0edfc9d5550ae57a519fd7c46e6c35"
+      "baseSha256": "80fb05ba68f888bbb49fe7a30c1d4870c54df975e37a607ffddd30420a83e662",
+      "sha256": "80fb05ba68f888bbb49fe7a30c1d4870c54df975e37a607ffddd30420a83e662"
     },
     "src/shared/world.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",

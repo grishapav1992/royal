@@ -7,7 +7,7 @@ from pathlib import Path
 
 NAME = 'remove-room-labels-20261105-v1'
 ROOT = Path(__file__).resolve().parent
-SOURCES = {'src/game/RoomScene.ts', 'src/i18n/en.ts', 'src/main.ts'}
+SOURCES = {'src/game/RoomScene.ts', 'src/i18n/en.ts', 'src/main.ts', 'src/ui/compact-header.css'}
 SUPPORT = {'application-overlay.py', 'overlay-base.py', 'snapshot-base.py', 'image_metadata.py',
            'runtime-inventory.cjs', 'quiesce.cjs', 'financial_gate.py', 'engine-build.py'}
 LOCKS = ['/opt/royal-releases/themed-publish.lock', '/opt/royal/.client-presentation-deploy.lock', '/opt/royal-game-modules-state/module.lock']
