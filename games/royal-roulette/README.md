@@ -53,3 +53,7 @@ Original seeded modal/noise samples provide two restrained chip clinks, lower fi
 The 2026-10-31 update adds rolling drag, a longer readable descent, ballistic flights with diminishing duration and height, alternating contact deflections, and a height-following ball shadow. Six shared contact times drive both the visible impacts and the output-clock-aligned taps. All 37 confirmed pockets retain exact alignment. This is presentation kinematics; the server still selects and settles the same European roulette rules.
 
 The original audio is retuned toward lower ceramic/wood resonances, rounded transients, softer rolling noise and restrained warm chimes. Repeated events and the bearing bed are quieter. Pleasantness is a design goal pending device listening review, separate from technical signal and browser checks. See the revision 1.5 sections of the motion and audio specifications for event details.
+
+## Ball motion revision 1.6.2
+
+After rolling along the rim, the ball approaches a raised divider tip on the rotating wheel. The first impact reduces its slip relative to the wheel and sends it inward toward the confirmed pocket. A second impact reverses the remaining slip against the far side of that pocket. The ball then loses height and lateral motion until it rests at the pocket center. The two contacts and subsequent bounces use the existing visual and audio timeline. The server receipt supplies the destination for this presentation model.
