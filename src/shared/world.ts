@@ -1,4 +1,5 @@
 import { t as translateText } from '../i18n/index';
+import { hallRightWall } from './clubGeometry';
 import { clubObstacles, LOUNGES } from './clubLayout';
 import type { Obstacle } from '../game/navigation';
 import type { Facing, MovementInput } from './movement';
@@ -109,13 +110,15 @@ export const inHallDoor = (p: {x:number;y:number;hall:string}) => {
 export const otherHall = (hall:string): HallId => hall==='toilet'?'roof':hall==='roof'?'street':hall==='arcade'||hall==='github'?'tables':'arcade';
 export const activityHall = (id: string): HallId => id === 'piano' ? 'arcade' : ['durak','transfer-durak','crazy-eights'].includes(id) ? 'github' : 'tables';
 export const hallObstacles = (hall?: string): Obstacle[] => hall === 'toilet' ? TOILET_OBSTACLES : hall === 'roof' ? ROOF_OBSTACLES : hall === 'street' ? STREET_OBSTACLES : hall === 'arcade' ? ARCADE_OBSTACLES : hall === 'tables' ? TABLE_OBSTACLES : hall === 'github' ? GITHUB_OBSTACLES : ROOM_OBSTACLES;
-const GITHUB_OBSTACLES = [...clubObstacles('github'), ...cabinetsInHall('github').map(cabinetBounds), ACTIVITIES.durak.bounds, ACTIVITIES['transfer-durak'].bounds, ACTIVITIES['crazy-eights'].bounds];
+const GITHUB_OBSTACLES = [hallRightWall('github'), ...clubObstacles('github'), ...cabinetsInHall('github').map(cabinetBounds), ACTIVITIES.durak.bounds, ACTIVITIES['transfer-durak'].bounds, ACTIVITIES['crazy-eights'].bounds];
 const ARCADE_OBSTACLES = [
+  hallRightWall('arcade'),
   ...clubObstacles('arcade'),
   ...cabinetsInHall('arcade').map(cabinetBounds),
   BAR_SOLID, ACTIVITIES.piano.bounds, CAT_CARE.scratcher.bounds,
 ];
 const TABLE_OBSTACLES = [
+  hallRightWall('tables'),
   ...clubObstacles('tables'),
   ...cabinetsInHall('tables').map(cabinetBounds),
   furnitureBounds(FURNITURE.pool), furnitureBounds(FURNITURE.table), ACTIVITIES.hockey.bounds, ACTIVITIES['mortal-kombat'].bounds, ACTIVITIES['tsu-e-fa'].bounds, ...PLANTS.map(plantBounds),

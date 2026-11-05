@@ -4,10 +4,11 @@ import { ACTIVITIES } from '../shared/activities';
 import { LOUNGES } from '../shared/clubLayout';
 import { cabinetsInHall } from '../shared/cabinets';
 import { REAR_WINDOW,type RearWindow } from './rearWindowLife';
-import { FLOOR,HALL_WALL } from '../shared/clubGeometry';
+import { hallFloor,HALL_WALL } from '../shared/clubGeometry';
 
 export type RearInteriorView={id:string;hall:HallId;floor:number;label:string;anchor:{x:number;y:number};crop:{x:number;y:number;w:number;h:number}};
 function around(hall:HallId,id:string,label:string,x:number,y:number,w=340):RearInteriorView{
+  const FLOOR = hallFloor(hall);
   const h=w*REAR_WINDOW.glass.h/REAR_WINDOW.glass.w;
   return {id:hall+'-'+id,hall,floor:HALLS[hall].floor,label,anchor:{x,y},crop:{x:Math.max(FLOOR.x,Math.min(x-w/2,FLOOR.x+FLOOR.width-w)),y:Math.max(HALL_WALL.top,Math.min(y-h/2,FLOOR.y+FLOOR.height-h)),w,h}};
 }

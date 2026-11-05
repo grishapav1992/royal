@@ -2,13 +2,15 @@ import { t as translateText } from '../i18n/index';
 import Phaser from 'phaser';
 import { CLUB_ZONES, LOUNGES, LUELON_NEW_ZONE, clubPlants, clubColumns } from '../shared/clubLayout';
 import { SEATS, type HallId } from '../shared/world';
-import { WORLD, FLOOR } from '../shared/clubGeometry';
+import { hallSize, hallFloor } from '../shared/clubGeometry';
 import { CAT_HOME } from '../shared/catHome';
 import { drawCatHome } from './catHomeArt';
 import { HALL_WINDOWS, HALL_WINDOW_XS } from './hallWindows';
-import { ROYAL_CABINET_IDS, ARCADE_CABINET_POSITIONS } from '../shared/arcadeCatalog';
+import { cabinetsInHall } from '../shared/cabinets';
 
 export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:string)=>void, onNewZone?:()=>void) {
+  const { width } = hallSize(hall);
+  const FLOOR = hallFloor(hall);
   const g=scene.make.graphics({x:0,y:0},false);
   g.translateCanvas(-FLOOR.x,-FLOOR.y);
   for(const zone of CLUB_ZONES[hall]) {
@@ -18,7 +20,7 @@ export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:str
     scene.add.text(zone.x+zone.w/2,hall==='arcade'?zone.y+23:zone.y+zone.h-30,zone.name,{fontFamily:'Arial',fontSize:'14px',fontStyle:'bold',letterSpacing:hall==='arcade'?1:2,color:'#d9c394'}).setOrigin(.5).setDepth(.04);
   }
   // Wide circulation routes connect distinct destinations rather than a wall of cabinets.
-  if(hall!=='arcade')g.lineStyle(2,0xd0b988,.3).lineBetween(130,700,WORLD.width-140,700);
+  if(hall!=='arcade')g.lineStyle(2,0xd0b988,.3).lineBetween(130,700,width-140,700);
   if(hall==='arcade') drawLuelonWing(scene,onNewZone);
   for(const x of clubColumns(hall)) {
     g.fillStyle(0x775d48).fillRoundedRect(x-19,670,38,63,4);
@@ -58,12 +60,14 @@ export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:str
   for(const seat of SEATS.filter(s=>s.kind==='sofa'&&(s.hall??'arcade')===hall)) {
     scene.add.zone(seat.x,seat.y-28,64,64).setDepth(seat.y+2).setInteractive({useHandCursor:true}).on('pointerdown',()=>onSeat(seat.id));
   }
-  // A quiet row of windows runs around the far side of the enlarged club.
+  // Keep the wall fixtures inside the current floor.
   for(const x of HALL_WINDOW_XS) {
+    if(x-HALL_WINDOWS.width/2<FLOOR.x||x+HALL_WINDOWS.width/2>width-FLOOR.x)continue;
+    if(hall==='github'&&x===1430)continue;
     if (hall === CAT_HOME.hall && x === CAT_HOME.window.x) { drawCatHome(scene); continue; }
     scene.add.image(x,HALL_WINDOWS.top,hall==='arcade'?'window-city':'window-garden').setOrigin(.5,0).setDisplaySize(HALL_WINDOWS.width,HALL_WINDOWS.height).setDepth(2).setName('hall-window-'+hall+'-'+x);
   }
-  scene.add.text(WORLD.width-170,1280,hall==='arcade'?translateText('КАЗИНО И БАР · ЭТАЖ 1'):hall==='tables'?translateText('БАЛКОН · ЭТАЖ 2'):translateText('КАРТОЧНЫЙ САЛОН · ЭТАЖ 3'),{fontFamily:'Arial',fontSize:'13px',color:'#b4a58e',letterSpacing:2}).setOrigin(1,.5).setDepth(.04);
+  scene.add.text(width-170,1280,hall==='arcade'?translateText('КАЗИНО И БАР · ЭТАЖ 1'):hall==='tables'?translateText('БАЛКОН · ЭТАЖ 2'):translateText('КАРТОЧНЫЙ САЛОН · ЭТАЖ 3'),{fontFamily:'Arial',fontSize:'13px',color:'#b4a58e',letterSpacing:2}).setOrigin(1,.5).setDepth(.04);
   const rail=scene.make.graphics({x:0,y:0},false);
   rail.lineStyle(4,0x977b50).lineBetween(1230,FLOOR.y+FLOOR.height-8,FLOOR.x+FLOOR.width-55,FLOOR.y+FLOOR.height-8);
   for(let x=1240;x<FLOOR.x+FLOOR.width-55;x+=42)rail.lineStyle(2,0xbea171).lineBetween(x,1300,x,1320);
@@ -72,8 +76,7 @@ export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:str
 
 function drawLuelonWing(scene:Phaser.Scene,onVisit?:()=>void){
   const zone=LUELON_NEW_ZONE,art=scene.make.graphics({x:0,y:0},false);
-  for(const id of ROYAL_CABINET_IDS){
-    const position=ARCADE_CABINET_POSITIONS[id];
+  for(const position of cabinetsInHall('arcade').filter(cabinet=>cabinet.collection==='royal')){
     art.fillStyle(0x71d9e4,.08).fillEllipse(position.x,position.y+18,128,48);
     art.lineStyle(1,0x8ee7e8,.4).strokeEllipse(position.x,position.y+18,118,42);
   }

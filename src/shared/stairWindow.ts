@@ -4,8 +4,8 @@ import {ROOF_WINDOW_PLATFORM,roofWindowPlatformPosition,onRoofWindowPlatform} fr
 const {index:landingIndex,junction,length,windowOffset}=ROOF_WINDOW_PLATFORM;
 export const STAIR_WINDOW={
   landingIndex,landing:junction,platformLength:length,outside:roofWindowPlatformPosition(windowOffset),floor:3,column:2,
-  interior:{x:3230,top:-26,width:200,height:128},
-  entry:{x:3230,y:240},arrival:{x:3230,y:330},
+  interior:{x:530,top:-26,width:200,height:128},
+  entry:{x:530,y:240},arrival:{x:530,y:330},
   return:{...roofWindowPlatformPosition(windowOffset-28),stairStep:landingIndex,stairDirection:-1,facing:'right'},
 } as const;
 

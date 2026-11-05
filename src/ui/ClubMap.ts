@@ -1,13 +1,13 @@
 import { t as translateText } from '../i18n/index';
 import type { RoomScene } from '../game/RoomScene';
-import { CLUB_ZONES, ARCADE_OVERVIEW_SIZE, LOUNGES } from '../shared/clubLayout';
+import { CLUB_ZONES, LOUNGES } from '../shared/clubLayout';
 import { BAR_SOLID } from '../shared/furniture';
 import { ACTIVITIES } from '../shared/activities';
 import { HALLS, hallLinks, isCasinoFloor } from '../shared/world';
 import { elevatorDock } from '../shared/elevator';
 import { cabinetsInHall } from '../shared/cabinets';
 import { isCardGame } from '../shared/cardTables';
-import { WORLD, FLOOR } from '../shared/clubGeometry';
+import { WORLD, hallSize, hallFloor } from '../shared/clubGeometry';
 import { ROOF } from '../shared/rooftop';
 import { unprojectStreetPoint } from '../game/streetView';
 import { STREET } from '../shared/street';
@@ -33,7 +33,7 @@ export class ClubMap {
     const timer=window.setInterval(update,200);scene.events.once('shutdown',()=>{clearInterval(timer);this.root.remove();});update();
   }
   private draw(){
-    const state=this.scene.getState(),size=state.hall==='toilet'?TOILET:state.hall==='roof'?ROOF:state.hall==='street'?STREET:state.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
+    const state=this.scene.getState(),size=state.hall==='toilet'?TOILET:state.hall==='roof'?ROOF:state.hall==='street'?STREET:hallSize(state.hall);
     const height=Math.round(this.canvas.width*size.height/size.width);
     if(this.canvas.height!==height)this.canvas.height=height;
     const ctx=this.canvas.getContext('2d')!,sx=this.canvas.width/size.width,sy=this.canvas.height/size.height;
@@ -52,7 +52,8 @@ export class ClubMap {
       const art=this.scene.getStreetMapArt();
       if(art)ctx.drawImage(art,0,0,STREET.width,STREET.height);
     }else{
-    ctx.fillStyle='#202b33';ctx.fillRect(0,0,WORLD.width,WORLD.height);
+    const FLOOR = hallFloor(state.hall);
+    ctx.fillStyle='#202b33';ctx.fillRect(0,0,size.width,size.height);
     ctx.fillStyle='#5c5145';ctx.fillRect(FLOOR.x,FLOOR.y,FLOOR.width,FLOOR.height);
     for(const zone of CLUB_ZONES[state.hall]){ctx.fillStyle='#'+zone.color.toString(16).padStart(6,'0');ctx.fillRect(zone.x,zone.y,zone.w,zone.h);}
     for(const lounge of LOUNGES.filter(lounge=>lounge.hall===state.hall)){

@@ -1,4 +1,4 @@
-import {FLOOR,HALL_WALL} from '../shared/clubGeometry';
+import {hallFloor,HALL_WALL} from '../shared/clubGeometry';
 import {HALLS,type HallId} from '../shared/world';
 import {rearInteriorViews,type RearInteriorView} from './rearWindowInteriors';
 import {LOUNGES} from '../shared/clubLayout';
@@ -7,6 +7,7 @@ import type {frontWindowLayout} from './frontWindowLife';
 /** The front follows the interior's left-to-right order and the existing floor catalogue. */
 export function frontWindowInterior(window:ReturnType<typeof frontWindowLayout>[number],columns:number):RearInteriorView|null{
   const hall=(Object.keys(HALLS) as HallId[]).find(id=>HALLS[id].floor===window.floor);if(!hall)return null;
+  const FLOOR = hallFloor(hall);
   const views=rearInteriorViews(hall);
   const loungeIndex=hall==='tables'?0:hall==='github'?1:-1,lounge=LOUNGES.filter(p=>p.hall===hall)[loungeIndex];
   if(lounge){

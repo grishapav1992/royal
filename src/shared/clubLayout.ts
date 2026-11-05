@@ -3,11 +3,9 @@ import type { HallId } from './world';
 import type { Obstacle } from '../game/navigation';
 
 export type ClubZone = { name: string; x: number; y: number; w: number; h: number; color: number };
-// Frame the occupied first-floor area without changing the other floors' world bounds.
-export const ARCADE_OVERVIEW_SIZE = {width:2760,height:1380} as const;
 export const LUELON_NEW_ZONE = {
   name: translateText('ROYAL · НАШИ ИГРЫ'),
-  x: 1100, y: 245, w: 720, h: 855, color: 0x263653,
+  x: 1100, y: 245, w: 840, h: 855, color: 0x263653,
   entrance: {x: 1060, y: 580},
   cosmic: {x: 1200, y: 430},
   caramel: {x: 1365, y: 430},
@@ -35,8 +33,8 @@ export const CLUB_ZONES: Record<HallId, ClubZone[]> = {
   ],
   github: [
     {name:translateText('ПРИВЕТСТВИЕ И ПРАВИЛА'),x:170,y:245,w:650,h:360,color:0x383345},
-    {name:translateText('КАРТОЧНЫЙ САЛОН'),x:980,y:235,w:3120,h:615,color:0x244639},
-    {name:translateText('ПОКЕР И АВТОРСКИЕ РАЗДАЧИ'),x:980,y:875,w:3120,h:435,color:0x293e47},
+    {name:translateText('КАРТОЧНЫЙ САЛОН'),x:980,y:235,w:1030,h:230,color:0x244639},
+    {name:translateText('ПОКЕР И АВТОРСКИЕ РАЗДАЧИ'),x:980,y:505,w:710,h:560,color:0x293e47},
     {name:translateText('ГОСТИНАЯ КАРТОЧНОГО ЭТАЖА'),x:170,y:780,w:640,h:510,color:0x453344},
   ],
 };
@@ -46,11 +44,11 @@ export const LOUNGES: Lounge[] = [
   {hall:'tables',x:350,y:900,color:0x527a70}, {hall:'tables',x:680,y:1010,color:0x527a70}, {hall:'tables',x:1800,y:820,color:0x895064},
   {hall:'github',x:350,y:900,color:0x895064}, {hall:'github',x:670,y:1020,color:0x527a70}, {hall:'github',x:670,y:1190,color:0x527a70},
 ];
-export const CLUB_PLANTS = [ {x:1110,y:440}, {x:2020,y:460}, {x:1080,y:900}, {x:2020,y:1120}, {x:110,y:1180}, {x:2670,y:610}, {x:2670,y:1160}, {x:2810,y:560}, {x:2810,y:1080}, {x:4160,y:520}, {x:4160,y:1050} ];
-const CARD_FLOOR_PLANTS = [{x:110,y:350},{x:110,y:1180},{x:940,y:400},{x:940,y:1100},{x:4160,y:520},{x:4160,y:1050}];
-const ARCADE_PLANTS = [{x:1100,y:850},{x:1780,y:850},{x:2650,y:450},{x:2650,y:1120},{x:110,y:1180}];
+export const CLUB_PLANTS = [ {x:1110,y:440}, {x:2020,y:460}, {x:1080,y:900}, {x:2020,y:1120}, {x:110,y:1180} ];
+const CARD_FLOOR_PLANTS = [{x:110,y:350},{x:110,y:1180},{x:940,y:400},{x:940,y:1100},{x:1950,y:520},{x:1950,y:1050}];
+const ARCADE_PLANTS = [{x:1100,y:850},{x:1780,y:850},{x:1940,y:450},{x:1940,y:1120},{x:110,y:1180}];
 export const clubPlants = (hall: HallId) => hall === 'github' ? CARD_FLOOR_PLANTS : hall === 'arcade' ? ARCADE_PLANTS : CLUB_PLANTS;
-export const clubColumns = (hall: HallId): readonly number[] => hall === 'arcade' ? [220,750] : [220,750,1140,2000];
+export const clubColumns = (hall: HallId): readonly number[] => hall === 'arcade' ? [220,750] : hall === 'tables' ? [220,750,1140,2000] : [220,750];
 export const loungeBounds = (lounge: Lounge): Obstacle => ({x:lounge.x-94,y:lounge.y-80,w:188,h:60});
 export const clubObstacles = (hall: HallId): Obstacle[] => [
   ...(hall==='arcade'?LUELON_NEW_ZONE_OBSTACLES:[]),

@@ -36,8 +36,8 @@ export const TOILET_HALL_DOOR = {
   left:362,right:438,top:506,bottom:524,
 } as const;
 export const CARD_TOILET_DOOR = {
-  entry:{x:2940,y:240},arrival:{x:2940,y:320},facing:'down',click:{x:2940,y:107},
-  left:2902,right:2978,top:225,bottom:247,
+  entry:{x:230,y:240},arrival:{x:230,y:320},facing:'down',click:{x:230,y:107},
+  left:192,right:268,top:225,bottom:247,
 } as const;
 
 /** Doors swing automatically on approach; their open leaves stay along the partition. */

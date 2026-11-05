@@ -6,7 +6,7 @@ import { PENALTY_GAME } from './crLeo';
 import { CARIBBEAN_GAME } from './caribbeanTreasures';
 import { BASE_EXPANSION_GAMES, EXPANSION_NAMES } from './casinoExpansion';
 import { STUDIO_GAMES, STUDIO_INFO } from './studioGames';
-import { CARD_GAME_IDS, CARD_GAME_NAMES, isCardGame, isRetiredCardGame, cardTableBounds } from './cardTables';
+import { ACTIVE_CARD_GAME_IDS, CARD_GAME_NAMES, isCardGame, isRetiredCardGame, cardTableBounds } from './cardTables';
 import type { Obstacle } from '../game/navigation';
 import { LUELON_NEW_ZONE } from './clubLayout';
 import {ARCADE_CABINET_SPECS, type CabinetCollection} from './arcadeCatalog';
@@ -63,10 +63,9 @@ CABINETS.push(
   {id:'variant-duel',name:CARD_GAME_NAMES['variant-duel'],subtitle:translateText('Две карты · Выбери расстояние между рангами'),x:0,y:0,color:0x8ecba2,playable:true,wallet:true,hall:'github'},
   {id:'variant-war',name:CARD_GAME_NAMES['variant-war'],subtitle:translateText('Два фронта · Щит или атака'),x:0,y:0,color:0xc6a0ed,playable:true,wallet:true,hall:'github'},
 );
-const cardRows = [340,540,740,1000,1200];
-CARD_GAME_IDS.forEach((id,index)=>{
+ACTIVE_CARD_GAME_IDS.forEach((id,index)=>{
   const cabinet=CABINETS.find(item=>item.id===id)!;
-  cabinet.hall='github';cabinet.x=1120+index%7*460;cabinet.y=cardRows[Math.floor(index/7)];
+  cabinet.hall='github';cabinet.x=1150+index%2*360;cabinet.y=650+Math.floor(index/2)*285;
 });
 
 for (let index = CABINETS.length - 1; index >= 0; index--) {
@@ -90,7 +89,8 @@ const collectionCounts = {royal:0,github:0,casinoapipro:0,luelon:0};
 for (const spec of ARCADE_CABINET_SPECS) {
   const definition=GAME_CABINETS.find(c=>c.id===(spec.defaultGameId??spec.id))!;
   const number=++collectionCounts[spec.collection];
-  CABINETS.push({...definition,...spec,hall:'arcade',playable:true,
+  const position = spec.id === JACKIE_GAME ? { x: 1860, y: 970 } : spec;
+  CABINETS.push({...definition,...spec,x:position.x,y:position.y,hall:'arcade',playable:true,
     name:spec.collection==='luelon'?'Luelon Play':`${collectionNames[spec.collection]} ${String(number).padStart(2,'0')}`,
     subtitle:spec.collection==='luelon'?translateText('Каталог демоигр · Кредиты Luelon'):translateText('Выбери игру в каталоге'),
     demo:spec.collection==='luelon',provider:spec.collection==='casinoapipro',

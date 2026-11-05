@@ -1,6 +1,5 @@
-import { t as translateText } from '../i18n/index';
-import { FLOOR, HALL_WALL } from '../shared/clubGeometry';
-import { HALL_WINDOWS, HALL_WINDOW_DIVIDERS } from './hallWindows';
+import { hallFloor, HALL_WALL } from '../shared/clubGeometry';
+import { HALL_WINDOW_DIVIDERS } from './hallWindows';
 import type Phaser from 'phaser';
 import { CABINETS } from '../shared/cabinets';
 import type { HallId } from '../shared/world';
@@ -46,9 +45,7 @@ export function drawHallIdentity(scene: Phaser.Scene, hall: HallId) {
   if(hall==='arcade'){
     art('casino-marquee-compact',331,102,190,116);
   }else if(hall==='github'){
-    art('card-salon-sign',540,170,342,106);
-    scene.add.text(2620,HALL_WINDOWS.top-51,translateText('КАРТОЧНЫЙ САЛОН'),{fontFamily:'Georgia',fontSize:'30px',fontStyle:'bold',letterSpacing:3,color:'#e5d5b0'}).setOrigin(.5).setDepth(3);
-    scene.add.text(2620,HALL_WINDOWS.top-22,translateText('33 ИГРЫ · 33 КРУПЬЕ · ЭТАЖ 3'),{fontFamily:'Arial',fontSize:'11px',letterSpacing:2,color:'#c2d0c8'}).setOrigin(.5).setDepth(3);
+    art('card-salon-sign',1430,106,342,106);
   }else{
     art('billiard-sign',540,166,316,98);
     art('billiard-lamp',562,323,156,66,3);
@@ -64,6 +61,7 @@ export function createInteriorArt(scene: Phaser.Scene, resolution: number) {
     t.context.scale(raster.scaleX,raster.scaleY); t.context.lineJoin = 'round'; t.context.lineCap = 'round'; draw(t.context); t.refresh();
   };
   for (const hall of ['arcade', 'tables', 'github'] as const) {
+    const FLOOR = hallFloor(hall);
     make('club-wall-' + hall, FLOOR.width, HALL_WALL.height, c => {
       const h=HALL_WALL.height;
       const casino = hall !== 'tables';

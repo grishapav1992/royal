@@ -16,7 +16,7 @@ export const GUARD_STOPS: Record<HallId, GuardStop[]> = {
   ],
   github: [
     { id:'cards', x:650, y:405, facing:'up', activity:'inspect' },
-    { id:'dice', x:1480, y:875, facing:'up', activity:'watch' },
+    { id:'dice', x:1480, y:765, facing:'up', activity:'watch' },
     { id:'entrance', x:855, y:1250, facing:'right', activity:'watch' },
   ],
   arcade: [
