@@ -123,6 +123,8 @@ test('priority shell keeps phone chat behind a button and preserves messages, dr
  test.setTimeout(120000);
  await page.setViewportSize({width:393,height:852});await enter(page,roomPath);await topup(page);await open(page);
  const dialog=page.locator('#mini-dialog'),toggle=dialog.locator('.game-chat-toggle'),dock=dialog.locator('#club-chat-dock');
+ await expect(dialog.locator('.game-mode-badge')).toBeHidden();
+ await expect(dialog.locator('.mini-bottom > span')).toHaveText('Общий игровой баланс');
  await expect(dialog).toHaveAttribute('data-game-chat','closed');await priorityLayout(page);
  const before=await page.locator('.ct-board').boundingBox(),balance=await wallet(page);
  roomSession.send('Привет из соседнего кресла');
@@ -146,6 +148,7 @@ test('priority shell keeps phone chat behind a button and preserves messages, dr
   await page.setViewportSize(viewport);await expect(dock).toBeHidden();await priorityLayout(page);
  }
  await page.setViewportSize({width:1440,height:900});await expect(dialog).toHaveAttribute('data-game-chat','column');
+ await expect(dialog.locator('.game-mode-badge')).toBeHidden();
  await toggle.click();await expect(dock).toBeHidden();
  await page.setViewportSize({width:852,height:393});await page.setViewportSize({width:1440,height:900});await expect(dock).toBeHidden();
  await toggle.click();await expect(dialog).toHaveAttribute('data-game-chat','column');

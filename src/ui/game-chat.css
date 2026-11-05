@@ -82,6 +82,7 @@
 #mini-dialog.game-chat-layout .mini-top > div { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
 .game-mode-badge { display: none; }
 .wallet-game-mode .game-mode-badge { display: inline; flex: 0 0 auto; font: 10px system-ui,sans-serif; color: #625637; }
+#mini-dialog[data-game="studio-caribbean-treasures"] .game-mode-badge { display: none; }
 #mini-dialog.game-chat-layout .mini-top h2 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #mini-dialog.game-chat-layout .mini-top > button { flex-shrink: 0; min-width: 44px; min-height: 44px; }
 #mini-dialog.game-chat-layout .mini-top .settings-shortcut { min-width: 44px; width: 44px; padding: 0; font-size: 0; }

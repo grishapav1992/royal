@@ -225,6 +225,7 @@ export const english: Record<string, string> = {
   "КЛАССИКА / ЭТАЖ 1": "CLASSIC / FLOOR 1",
   "Бесплатные игры с отдельными учебными фишками": "Free games with separate practice chips",
   "Общий тестовый кошелёк клуба": "Shared club test wallet",
+  "Общий игровой баланс": "Shared game balance",
   "Варианты игры": "Game variants",
   "Классика": "Classic",
   "{0} пока недоступен.": "{0} is currently unavailable.",

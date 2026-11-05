@@ -18,6 +18,7 @@ import { isVariantGame } from './shared/casinoVariants';
 import { ROYAL_PLATFORM_GAMES, isCollectionGame, isRetiredArcadeGame } from './shared/arcadeCatalog';
 import { RetiredArcadeRounds, RetiredArcadeRoundGuard, ownsRetiredArcadeRound, retiredGameName, type RetiredArcadeRound } from './ui/RetiredArcadeRounds';
 import { isExpansionGame, EXPANSION_NAMES } from './shared/casinoExpansion';
+import { CARIBBEAN_GAME } from './shared/caribbeanTreasures';
 import { isSessionGame } from './shared/casinoSessions';
 import { ClubMap } from './ui/ClubMap';
 import { DemoWalletUI } from './ui/DemoWalletUI';
@@ -222,7 +223,7 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound, 
     $('.mini-bottom>span').textContent = translateText('Общий тестовый кошелёк клуба');
   } else if (isVariantGame(cabinet.id) || isExpansionGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / ТЕСТОВЫЙ КОШЕЛЁК');
-    $('.mini-bottom>span').textContent = translateText('Общий игровой баланс · Демо');
+    $('.mini-bottom>span').textContent = translateText(cabinet.id === CARIBBEAN_GAME ? 'Общий игровой баланс' : 'Общий игровой баланс · Демо');
   } else if (isSessionGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / СТАВКИ');
     $('.mini-bottom>span').textContent = translateText('Общий игровой баланс · Демо');
