@@ -1,6 +1,5 @@
 import {isUnpublishedArcadeGame} from '../shared/arcadeCatalog';
 import { t } from '../i18n/index';
-import { installGameHost } from './GameHostRuntime';
 import { GIRLHUB_MODULE } from './GameModuleManifest';
 import { loadGameModule } from './GameModulePreparation';
 import { gameModuleContract, type IndependentGameId } from './GameModuleCatalog';
@@ -50,6 +49,8 @@ export class IndependentGameUI {
   const timeout = setTimeout(() => this.controller?.abort(), 20000);
   try {
    const { metadata, root } = await loadGameModule(this.gameId, this.controller.signal);
+   if (!this.owns()) return;
+   const { installGameHost } = await import('./GameHostRuntime');
    if (!this.owns()) return;
    installGameHost();
    const path = root + metadata.entry + (this.attempt ? `?retry=${this.attempt}` : '');

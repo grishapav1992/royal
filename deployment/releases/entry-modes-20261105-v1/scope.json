@@ -1,0 +1,29 @@
+{
+  "productionCommit": "a2a69026c0d85c51a1752dae98d8ca15c1108daa",
+  "featureCommit": "b560f5a632c15128dc56730b30e901f559b4f303",
+  "expectedSources": {
+    "index.html": "d096192ca1eb40a10fc6c12c105be87cbbc7d64d4402209924e1644327bdd094",
+    "src/ClubHost.ts": "030e067106fb80b734826c5d080739c9dd0347afacadd83ec75c71c8ca2eb73f",
+    "src/entry.ts": "15779ce595763302f8a98593e0acea429e618068d57b78d1aa134abf7c2ad943",
+    "src/game/ClubWorld.ts": "a28443f124db22c48fcab4e0384f1af6217d73006f85ca6855cc2de60cb415c0",
+    "src/i18n/en.ts": "ef4b2e77c2e6c48281af8bc80fe8ee378b98d3914038f0b4c63e3281de59f55c",
+    "src/i18n/entryModesEn.ts": "962e36771bd60a4d2b641eaebf0432392ff4056ca3f52236c58fdfe2817076c3",
+    "src/main.ts": "7e316430554ef716c3e8190b17792b3d4fb94fc16bffc7b20db6484494bdff31",
+    "src/modules/IndependentGameUI.ts": "db65e6d1dd382a727a673ed36c76cc9c83e4cd41f2bca595ca972377445eb302",
+    "src/network/AccountClient.ts": "081c3b946694944c1556db45b27d06266daf9147017bdbc5b4d3abbbfa522667",
+    "src/ui/AuthUI.ts": "3dff9879ae5e8a5063bd822d1620e54766c3a629c471bbaf2409f9d0928aee93",
+    "src/ui/CryptoWalletUI.ts": "fa58c84d43740a999bff5234e94c24c25210b22a0b563a7ad3b999e42248203d",
+    "src/ui/DemoWalletUI.ts": "9630595d77758c9bf564e1d5228ed2f01320af10d39c9cc986b1499cbc4fab9d",
+    "src/ui/EntryLogin.ts": "2a2de597897817898ee630aff63fa59eb887b8f8c44e6bd3b90dbca538a8c4b6",
+    "src/ui/EntryModes.ts": "e79793272b54435df4d4034fdabfa387e6a6daa452345d0c2ad897e259a0935d",
+    "src/ui/LoginForm.ts": "52fb29aa37d921263e32ac37eb56c612f9c610d783a3e9227d74e82e5137e756",
+    "src/ui/RoyalPlatformCatalog.ts": "5222f1a535e2c9cb1564365285521ada6795b010bef38f807440ae24e793696a",
+    "src/ui/SecurityUI.ts": "b2cd6fd56d797687f4087fd76747a4f4e27bcbd1f2837c3267a6570dc7520ade",
+    "src/ui/SkinStudioUI.ts": "30fe44f9450d395221fd27aef1ff9f5d83ec0d146ee5271d62a7c70fbb4d40bd",
+    "src/ui/SocialUI.ts": "d12114d075d2cde01b8ac25e8a1b32c462e129cd10eab90f779b370071b12b56",
+    "src/ui/casino-lobby.css": "b8f3c790cc65288f484b959fed428959dcf8a6037162f07aece4d3667863e645",
+    "src/ui/entry-modes.css": "17a7338f674aa2dbd9371cecc0ff86c4c572a7f81b6094b215dbb6f8972f9e85"
+  },
+  "addedGames": [],
+  "restoredGames": []
+}

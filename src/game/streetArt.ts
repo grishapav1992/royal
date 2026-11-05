@@ -4,10 +4,11 @@ import { STREET_CARS } from './StreetLife';
 import { STREET_SERVICE_PROPS } from './streetDetails';
 import { t } from '../i18n';
 import {FRONT_FACADE} from './frontWindowLife';
+import { paintStreetCity, STREET_CITY_HEIGHT } from './streetCityArt';
 
 type Paint = CanvasRenderingContext2D;
 const ink = '#29232a', wall = '#681a32', cream = '#f3dcb1', gold = '#f6cf58', snow = '#f8fbff';
-export const STREET_ART = { paving:'street-v2-paving', floor:'street-v3-live-floor', front:'street-v5-live-front', pine:'street-v2-pine', lamp:'street-v2-lamp', bench:'street-v2-bench', map:'street-v4-map', sign:'street-sign', sheen:'street-sign-sheen',carpet:'street-carpet',rear:'street-service-wall',taxiSign:'street-taxi-sign' } as const;
+export const STREET_ART = { paving:'street-v2-paving', floor:'street-v3-live-floor', front:'street-v5-live-front', pine:'street-v2-pine', lamp:'street-v2-lamp', bench:'street-v2-bench', map:'street-v4-map', sign:'street-sign', sheen:'street-sign-sheen',carpet:'street-carpet',rear:'street-service-wall',taxiSign:'street-taxi-sign',city:'street-evening-city' } as const;
 export const STREET_SIGN={center:(442+772)/2,width:300,height:216,baseline:156,baselineOffset:-113} as const;
 
 function box(c:Paint,x:number,y:number,w:number,h:number,fill:string,stroke=ink,width=1.5,radius=0){
@@ -289,6 +290,7 @@ export function createStreetArt(scene:Phaser.Scene){
   make(STREET_ART.lamp,66,160,2,c=>lantern(c,33,151));
   make(STREET_ART.bench,144,84,2,c=>bench(c,72,70));
   make(STREET_ART.map,STREET.width,STREET.height,.75,paintStreetMap);
+  make(STREET_ART.city,STREET.width,STREET_CITY_HEIGHT,.75,paintStreetCity);
   for(const car of STREET_CARS){
     make('street-car-'+car.id,190,84,2,c=>paintCar(c,car.color,car.id==='street-gold-car',false));
     make('street-car-plan-'+car.id,190,84,2,c=>paintCar(c,car.color,car.id==='street-gold-car',true));

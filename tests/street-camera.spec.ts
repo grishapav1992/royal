@@ -55,7 +55,18 @@ test('building covers people before the view changes behind either rear corner',
     await page.screenshot({path:`../layers-${info.project.name}-${side}-hidden.png`});
     await walk(page,side==='left'?688:2032,360);
     s=await state(page);expect(s.street.view.side).toBe('rear');expect(s.buildingOccluded).toBe(false);expect(s.halo.visible).toBe(true);expect(s.street.view.wall.width).toBe(STREET.building.w);
-    expect(s.street.carRender.every((p:any)=>!p.visible)).toBe(true);expect(s.street.frontRoadVisible).toBe(false);
+    for(const [index,car] of s.street.cars.entries()){
+      const sprite=s.street.carRender[index];
+      expect(sprite.visible).toBe(car.visible);
+      expect(sprite.x).toBeCloseTo(STREET.width-car.x);
+      expect(sprite.flipX).toBe(car.direction>0);
+      expect(sprite.angle).toBe(0);
+      expect(sprite.depth).toBeLessThan(s.street.view.wall.base);
+      const [laneTop,laneBottom]=car.direction>0?[85,170]:[0,79];
+      expect(sprite.y-sprite.height).toBeGreaterThanOrEqual(laneTop);
+      expect(sprite.y).toBeLessThanOrEqual(laneBottom);
+    }
+    expect(s.street.roadVisible).toBe(true);expect(s.street.rearVistaVisible).toBe(true);
     await page.screenshot({path:`../layers-${info.project.name}-${side}-rear.png`});
   }
   await page.evaluate(()=>(window as any).__recordLayers=false);

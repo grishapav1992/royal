@@ -1,0 +1,329 @@
+{
+  "release": "mira-counter-rest-20261105-v4",
+  "status": "published_verified_maintenance_completed",
+  "applicationSource": "0f9ab2adc5951019529ca9ebe1765e4dd684942e",
+  "installerCommit": "9bd030b153fc12813ef1cf2ec4275c572fd0b580",
+  "base": "a2a69026c0d85c51a1752dae98d8ca15c1108daa",
+  "baseImage": "sha256:2a628f08f5ebedfe133278c77e24826aa0c50f88fd95a76b6325045a5a630da8",
+  "image": "sha256:3e43d4ca8dd4f45278f3517166c8417540188b11c744b42037559db174381fc4",
+  "flagRelease": {
+    "release": "flag-wall-audio-20261105-v1",
+    "serverRoot": "/opt/royal-releases/flag-wall-audio-20261105-v1",
+    "version": "2.1.2-e8311314c888",
+    "sourceCommit": "1e7cd1fd96ea9a852f0cd0c481cf0e1333ef7bcb",
+    "hostSourceCommit": "a2a69026c0d85c51a1752dae98d8ca15c1108daa",
+    "hostImage": "sha256:2a628f08f5ebedfe133278c77e24826aa0c50f88fd95a76b6325045a5a630da8",
+    "pointerSha256": "2dbf07d4069cbaa5a790d79e278a4698a70bae9c150998151f5a5632fbd12f33",
+    "manifestSha256": "8f541daf6e3d7ca817c079ef6d02f441507e98f14f00f56355fb1649f9a2f9b5",
+    "changedSource": {
+      "games/flag-battle/FlagAudio.ts": "caea1e30fa2d49b1eab48d7d89387ca327d9c8cd86bef2c6f62c6582d3948564"
+    },
+    "beforeSha256": "88b434ad86384f5949038da22c8b837d64995586b309690bea66756ab2fd434e",
+    "afterSha256": "bf3bc77e85702498763f1620c7fc4bbad3aed91faf0b294845508c9299ecb506",
+    "publishedSha256": "a8a75852b1c42e621b92e1cf6584a36d8ecc5a097715b1da806c0a46f5716837",
+    "operatorSha256": "e572bf6cd3f7033710b846aa9e792f2ec35707565e8c2aa2500d344fa7a07a80",
+    "maintenance": {
+      "service": "MainPID=0\nResult=success\nActiveState=inactive\nSubState=dead",
+      "minimum": 1793904938.5555708,
+      "complete": true,
+      "recentRuns": [
+        {
+          "run": "run-f1c899df4cdb4d92896463ed1ec04250",
+          "files": [
+            "plan.json",
+            "policy-before.json",
+            "result.json",
+            "summary.json"
+          ]
+        },
+        {
+          "run": "run-e1afd6edcbb64cf0b19dfcf2b977a42d",
+          "files": [
+            "image-progress.json",
+            "plan.json",
+            "policy-before.json",
+            "progress.json",
+            "result.json",
+            "summary.json"
+          ]
+        }
+      ],
+      "path": "/opt/royal-maintenance/automatic-runs/run-f1c899df4cdb4d92896463ed1ec04250/summary.json",
+      "sha256": "ffa4575e768a5e79f2bbe9ee2ba62d80716904a712d1609c5fe9f7cfb5505d2f",
+      "startedAt": 1793904939.5807517,
+      "finishedAt": 1793905793.21713,
+      "durationSeconds": 853.64,
+      "freeAfter": 9515094016,
+      "freeNow": 9515134976,
+      "sourceCommit": "a2a69026c0d85c51a1752dae98d8ca15c1108daa",
+      "currentImage": "sha256:2a628f08f5ebedfe133278c77e24826aa0c50f88fd95a76b6325045a5a630da8",
+      "healthOk": true,
+      "health": "healthy",
+      "runningImage": "sha256:2a628f08f5ebedfe133278c77e24826aa0c50f88fd95a76b6325045a5a630da8",
+      "pointerSha256": "2dbf07d4069cbaa5a790d79e278a4698a70bae9c150998151f5a5632fbd12f33",
+      "timerEnabled": "enabled",
+      "timerActive": "active"
+    }
+  },
+  "recoveryRecord": "53d96304953307ea06ff6212f8ab342176e21058",
+  "sourceFiles": {
+    "src/game/MiraRig.ts": "5b632227fedd525c033a36775f073d32621f5ecd92d1a72506a2ebd4895bc805",
+    "src/game/miraAnimation.ts": "b657618d3850c816ffd8b94999e073ca76cfb67dded2c5d2228eeb90c4575891",
+    "src/game/royalBarArt.ts": "51bf2e34143bdd33728d6be8a349f5ec6cdc9f3108659fbcdaf4c219502ed538",
+    "src/game/royalBarLayers.ts": "6fd30708c1b071916199f57a27df408843e331d5e9e05357f2b26250c16f3e99",
+    "src/shared/miraRoutine.ts": "8ee4fe6f0c12586a488f130cf06b1697047b8d7960dd7028086f122c83fd846d"
+  },
+  "clientFiles": {
+    "assets/index-KjHyWgL9.js": "22e62e93bffa1de4ed1558263605cfb07f62052a5b5b5ad5164652bd18b8028f",
+    "index.html": "e3d90fd100ee2d5d8e1f1b12ce5b6c2771da0da0e4b3127540ac26a07c6b166d"
+  },
+  "serverFiles": {
+    "index.js": "dc6f5f08e2cc9b9a3925c004e1842f6e5b5b6f20106fb3501b78d8312b568b17"
+  },
+  "activeGames": [
+    "studio-cosmic-escape",
+    "studio-caramel-carnival",
+    "studio-velvet-reign",
+    "studio-last-convoy",
+    "studio-nitro-run",
+    "studio-afterglow",
+    "studio-meme-overload",
+    "studio-dracona",
+    "studio-neopolis",
+    "studio-forest-heart",
+    "github-crash",
+    "royal-plinko",
+    "original-cr-vs-leo",
+    "original-jackie-chan",
+    "studio-caribbean-treasures",
+    "studio-flooded-temple",
+    "royal-roulette",
+    "flag-battle",
+    "studio-wild-nudge",
+    "tsu-e-fa"
+  ],
+  "accessInputs": {
+    "src/shared/arcadeCatalog.ts": "946d05c1c450086d48efa318d7d65df6bdd5641f2edcd05599b67f7499a0a55a",
+    "src/modules/GameModuleCatalog.ts": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1",
+    "src/ui/ActivitiesUI.ts": "431721288ecfcb33043f6d3806f4df5dfc383d2e6fce0d0471436e967e890701",
+    "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+    "server/pvp/room.ts": "31b7c1aedcd71f4ee52b56c5678ea839f4685c450d8aaeb6f782d1d9b77613b9"
+  },
+  "addedGames": [],
+  "restoredGames": [],
+  "art": {
+    "paintedPoses": 56,
+    "firstUninterruptedSeatSeconds": 10.35,
+    "barImagesPreserved": 7,
+    "catApproach": {
+      "x": 437,
+      "y": 493
+    },
+    "catMug": {
+      "x": 394,
+      "y": 454,
+      "depth": 513
+    }
+  },
+  "build": {
+    "sourceFixed": true,
+    "compiledFilesReused": true,
+    "compiledArtifactOrigin": "mira-counter-rest-20261105-v3",
+    "manifestSha256": "8f7a670214251ca73d584c6c452eb81e7d7d80a8a220718e4f0243be3c2e2672",
+    "installManifestSha256": "9978dfd9d93b73a8f0c202bc7549199fe1bd3d5654f36b107d8608bc53edf509",
+    "hostProjectionSha256": "e832972bbfbaf550d9107ef7bb0063b09ac420dfcd56b48b79577cd50f608e08",
+    "backendProjectionSha256": "6015019c1792457acacd42815f9f0a174a970fb884ae24102dfaf850c8db4a88",
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 125586
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 30537
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 200348
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 26268
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 15357
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 54
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 34
+      }
+    ],
+    "durationMs": 398250,
+    "rtpProfiles": 38,
+    "stakePolicies": 20,
+    "admissionPolicies": 20,
+    "legacyNotQualified": 114,
+    "modulesBuilt": 50,
+    "modulesReused": 74,
+    "modulesInstalled": 0
+  },
+  "verification": {
+    "projectedServerTestsPassed": 30,
+    "mandatoryWalletTests": 19,
+    "miraTests": 11,
+    "catBarCycleTestsPassed": 1,
+    "linuxInstallerTestsPassed": 15,
+    "compiledBrowserTestsPassed": 3,
+    "shared": {
+      "seatedAfterDesktopReadyMs": 23392,
+      "desktop": {
+        "width": 1280,
+        "height": 900
+      },
+      "mobile": {
+        "width": 390,
+        "height": 844
+      },
+      "lateArrival": true,
+      "observedActions": [
+        "sit",
+        "stand-up",
+        "walk",
+        "greet",
+        "listen"
+      ],
+      "serviceFinalFrame": 7,
+      "reducedMotion": true,
+      "providerStubbed": true,
+      "productionDataUsed": false,
+      "errors": []
+    },
+    "compiledHttpHashedFiles": 13,
+    "compiledBrowserEvidenceSha256": "49525b85e9dcb64e16f7b3ce5cfdfffedccd55c70162141c907298bc65b593d7",
+    "walletRecovery": {
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 1000
+        },
+        {
+          "width": 390,
+          "height": 844
+        }
+      ],
+      "lostAcceptedResponse": true,
+      "closedAndReopened": true,
+      "connectedChat": true,
+      "sameUuid": true,
+      "debitCents": 10,
+      "debits": 1,
+      "rouletteVersion": "1.6.1-55882a5e8c75"
+    },
+    "publicFiles": 13,
+    "publicApiChecks": 6,
+    "publicGuestBrowsers": 2,
+    "afterSourceFiles": 2763,
+    "afterProgramFiles": 8620,
+    "externalModuleFiles": 5389,
+    "otherPersistentServices": 13,
+    "priorAttempts": [
+      {
+        "release": "mira-counter-rest-20261105-v1",
+        "exitCode": 75,
+        "publicationLocksHeld": false,
+        "sourceFilesWritten": 0
+      },
+      {
+        "release": "mira-counter-rest-20261105-v2",
+        "exitCode": 75,
+        "publicationLocksHeld": false,
+        "sourceFilesWritten": 0
+      },
+      {
+        "release": "mira-counter-rest-20261105-v3",
+        "exitCode": 1,
+        "dockerComposeTimeout": true,
+        "sourceWriteStarted": true,
+        "previousVersionRecovered": true
+      }
+    ],
+    "financialBarrier": {
+      "fresh": true,
+      "retainedSkinAndWalletFence": true,
+      "postgresTestPassed": 1,
+      "helperSha256": "cd6d0357c75b8d12eab6ff3e33f55c75c5c0a824d31472c8953ea0d5c9d8c5c8",
+      "leaseSha256": "9a688dc59bb36ba3588fcacd29891055eb6a7eaa0f611a0b89449c8b42d73d51"
+    },
+    "productionAccountsCreated": false,
+    "productionBetsPlaced": false,
+    "productionMessagesSent": false,
+    "physicalPhoneTested": false,
+    "graph": "Shared graph unavailable. Compared direct production inventories and exact Git origins."
+  },
+  "rollback": {
+    "image": "sha256:2a628f08f5ebedfe133278c77e24826aa0c50f88fd95a76b6325045a5a630da8",
+    "path": "/opt/royal-backups/mira-counter-rest-20261105-v4/source.tgz",
+    "bytes": 5783,
+    "sha256": "836f2957da36fece4d226122bf65f34201e30aeb3cbe2de52da1cfa1aabe6d03",
+    "financialBackup": {
+      "path": "/opt/royal-backups/mira-counter-rest-20261105-v4/financial.dump",
+      "sha256": "74b5b1dbac34dc9919db346ef3b25408e3dc875204f952ec6c14baee4972c993",
+      "bytes": 37993689,
+      "databaseRestored": false
+    }
+  },
+  "maintenance": {
+    "summaryPath": "/opt/royal-maintenance/automatic-runs/run-f1c152dc27cd4206889db77b982c2377/summary.json",
+    "summarySha256": "364182fa3a8467eac31483e136b353279e1b4a57634fcf1fa93225fa8b0dde9e",
+    "startedAt": 1793907526.5673506,
+    "status": "completed",
+    "freeBefore": 9446187008,
+    "release": "mira-counter-rest-20261105-v4",
+    "sourceCommit": "0f9ab2adc5951019529ca9ebe1765e4dd684942e",
+    "currentImage": "sha256:3e43d4ca8dd4f45278f3517166c8417540188b11c744b42037559db174381fc4",
+    "rollbackImage": "sha256:2a628f08f5ebedfe133278c77e24826aa0c50f88fd95a76b6325045a5a630da8",
+    "plannedEntries": 27,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 167,
+    "removedEntries": 27,
+    "removedImageTags": 3,
+    "dockerRetainedImages": [],
+    "freeAfter": 9459933184,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:2a628f08f5ebedfe133278c77e24826aa0c50f88fd95a76b6325045a5a630da8",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "375f7cdbe5d689e805f39b3b6ae3c2652450c223b9437b0a5cd6d2cef1a57244",
+      "files": 8619
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "b653803344a640e46b9468dc896791232efb97bf1e51e625f99870df407f9c50",
+      "receipt": "/var/lib/royal-project-brain/receipts/b653803344a640e46b9468dc896791232efb97bf1e51e625f99870df407f9c50.json",
+      "queued": true
+    },
+    "finishedAt": 1793908347.759511,
+    "durationSeconds": 821.19,
+    "timerEnabled": true,
+    "timerActive": true,
+    "observedFreeBytes": 9460805632
+  },
+  "storageReport": "storage-cleanup.json"
+}

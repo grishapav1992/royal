@@ -1,0 +1,56 @@
+{
+  "local": {
+    "freeAfterRejectedAttempt": 304204083200,
+    "retainedFiles": 91,
+    "retainedBytes": 12626537.0,
+    "physicalSpaceReclaimedClaimed": false,
+    "status": "blocked_by_automatic_approval_review",
+    "removedBytes": 0,
+    "archives": [
+      {
+        "bytes": 111984,
+        "name": "payload.tgz"
+      }
+    ],
+    "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flag-collision-audio\\royal\\artifacts\\work\\flag-wall-audio-20261105",
+    "freeAtReleaseStart": 307214757888,
+    "reason": "blocked by policy"
+  },
+  "applicationSourceCommit": "1e7cd1fd96ea9a852f0cd0c481cf0e1333ef7bcb",
+  "server": {
+    "testDirectory": {
+      "path": "/tmp/royal-flag-wall-tests-20261105",
+      "removedFiles": 2,
+      "removedBytes": 15022,
+      "freeBefore": 9518342144,
+      "freeAfter": 9518366720
+    },
+    "publishedEvidencePreserved": true,
+    "rollbackPreserved": true,
+    "deliveryArchive": {
+      "path": "/opt/royal-releases/flag-wall-audio-20261105-v1/payload.tgz",
+      "removedBytes": 111984,
+      "freeBefore": 9498157056,
+      "freeAfter": 9498271744,
+      "publishedEvidencePreserved": true
+    }
+  },
+  "exceptions": [
+    {
+      "condition": "Current normal build outputs and previously protected files. Previously rejected cleanup is not retried.",
+      "paths": [
+        "module-dist",
+        "module-build"
+      ]
+    },
+    {
+      "path": "artifacts/work/flag-impact-options-20261105",
+      "condition": "Preserves audio clips delivered to the user and their compact license reports."
+    },
+    {
+      "path": "artifacts/work/flag-collision-audio-release",
+      "condition": "Earlier automatic approval review blocked removal. No retry of that target."
+    }
+  ],
+  "preservedMainCommit": "430924c3f1ffd6d409dfcc7f99056de7d012f40f"
+}

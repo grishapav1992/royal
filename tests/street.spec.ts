@@ -142,7 +142,7 @@ test('walk outside, circle the casino, reconnect and return through the same ent
     await overview(page,false);
     await expect.poll(async ()=>(await state(page)).street.view.side).toBe(expected.side);
     expect((await state(page)).street.view.wall.width).toBe(STREET.building.w);
-    expect((await state(page)).street.carRender.every((car:any)=>expected.side==='rear'?!car.visible:car.angle===0&&car.y>=1210)).toBe(true);
+    expect((await state(page)).street.carRender.every((car:any)=>car.angle===0&&(expected.side==='rear'?car.y<=170:car.y>=1210))).toBe(true);
     const props=(await state(page)).street.props;
     const taxi=props.find((p:any)=>p.texture==='street-detail-parked-taxi');
     expect(taxi).toBeTruthy();expect(taxi.visible).toBe(expected.taxi);

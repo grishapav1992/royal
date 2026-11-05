@@ -1,0 +1,476 @@
+body[data-entry-mode=casino] {
+  --casino-paper: #f3ecde;
+  --casino-surface: #fcf8f0;
+  --casino-line: #dfd2bd;
+  --casino-ink: #302b2a;
+  --casino-muted: #685d52;
+  --casino-green: #304a3d;
+  --casino-gold: #947041;
+  min-width: 0;
+  background: radial-gradient(ellipse at 18% 0, #e5d6be, transparent 55%), var(--casino-paper);
+}
+
+body[data-entry-mode=casino] #app > .header {
+  min-height: 64px;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  gap: 16px;
+  padding: 8px clamp(12px, 3vw, 48px);
+  border: 0;
+  border-bottom: 1px solid var(--casino-line);
+  background: var(--casino-surface);
+  color: var(--casino-ink);
+}
+
+body[data-entry-mode=casino] .header .brand {
+  color: var(--casino-green);
+  font: 700 18px/1 Georgia, serif;
+  letter-spacing: .14em;
+}
+
+body[data-entry-mode=casino] .header .brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--casino-green);
+  color: #f0d8ad;
+}
+
+body[data-entry-mode=casino] :is(.header .brand small, .header-center, .room-heading > div:first-child, .room-dock, #floor-links, #help) {
+  display: none;
+}
+
+body[data-entry-mode=casino] .entry-mode-switcher {
+  border: 1px solid var(--casino-line);
+  border-radius: 8px;
+  padding: 3px;
+  background: #eee5d5;
+  color: var(--casino-ink);
+}
+
+body[data-entry-mode=casino] .entry-mode-switcher button {
+  min-height: 32px;
+  border-radius: 5px;
+}
+
+body[data-entry-mode=casino] .entry-mode-switcher button[aria-pressed=true] {
+  background: var(--casino-green);
+  color: #fff8e9;
+}
+
+body[data-entry-mode=casino] .header .room-tools {
+  justify-self: end;
+  flex-wrap: nowrap;
+}
+
+body[data-entry-mode=casino] .header .local-label {
+  color: var(--casino-muted);
+}
+
+body[data-entry-mode=casino] .header :is(.icon-button, #invite, .casino-chat-toggle) {
+  min-height: 36px;
+  border: 1px solid var(--casino-line);
+  border-radius: 8px;
+  background: #f8f2e6;
+  color: var(--casino-green);
+  box-shadow: none;
+}
+
+body[data-entry-mode=casino] .header .icon-button {
+  width: 36px;
+  height: 36px;
+}
+
+body[data-entry-mode=casino] .header :is(.icon-button, #invite, .casino-chat-toggle):hover {
+  background: #eae1cf;
+  color: #233b30;
+}
+
+body[data-entry-mode=casino] .header .profile-toggle {
+  display: grid;
+}
+
+body[data-entry-mode=casino] .header .profile:not(:popover-open) {
+  display: none;
+}
+
+body[data-entry-mode=casino] .header .profile:popover-open {
+  position: fixed;
+  inset: 68px clamp(12px, 3vw, 48px) auto auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 8px;
+  width: min(360px, calc(100vw - 24px));
+  max-height: calc(100dvh - 80px);
+  margin: 0;
+  overflow-y: auto;
+  padding: 14px;
+  border: 1px solid var(--casino-line);
+  border-radius: 12px;
+  background: var(--casino-surface);
+  color: var(--casino-ink);
+  box-shadow: 0 12px 32px #3c30202b;
+}
+
+body[data-entry-mode=casino] .header .profile:popover-open .profile-name {
+  display: block;
+  order: -1;
+  flex-basis: 100%;
+  max-width: 100%;
+  color: var(--casino-ink);
+}
+
+body[data-entry-mode=casino] #app > main {
+  max-width: 1620px;
+  margin-inline: auto;
+  padding: clamp(12px, 2.2vw, 32px) clamp(12px, 3vw, 48px);
+}
+
+body[data-entry-mode=casino] .workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(252px, 23vw, 340px);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 18px;
+}
+
+.casino-panel {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #c6b292 transparent;
+  border: 1px solid var(--casino-line);
+  border-radius: 16px;
+  background: var(--casino-surface);
+  box-shadow: 0 8px 28px #553f2210;
+}
+
+.casino-panel[hidden], .room-panel[hidden] {
+  display: none !important;
+}
+
+.casino-panel .royal-platform {
+  height: auto;
+  min-height: 100%;
+  padding: clamp(14px, 2vw, 28px);
+  background: transparent;
+  color: var(--casino-ink);
+}
+
+.casino-panel .rp-heading {
+  align-items: center;
+  min-height: 112px;
+  margin-bottom: 22px;
+  padding: 20px 24px;
+  border: 1px solid #56725a;
+  border-radius: 12px;
+  background:
+    radial-gradient(ellipse at 83% 10%, #bda47b44, transparent 64%),
+    repeating-linear-gradient(118deg, #ffffff08 0 1px, transparent 1px 26px),
+    var(--casino-green);
+  color: #fff8ea;
+}
+
+.casino-panel .rp-heading > div > span {
+  color: #ead3a9;
+  font-size: 10px;
+  letter-spacing: .2em;
+}
+
+.casino-panel .rp-heading h1 {
+  display: block;
+  margin: 6px 0 0;
+  color: inherit;
+  font: 400 clamp(30px, 4vw, 45px)/1.08 Georgia, serif;
+  letter-spacing: -.02em;
+}
+
+.casino-panel .rp-heading [data-platform-wallet] {
+  min-height: 40px;
+  max-width: none;
+  flex: 0 0 auto;
+  padding: 9px 12px;
+  border: 1px solid #cfb88f;
+  border-radius: 8px;
+  background: #f7ecd5;
+  color: #304337;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.casino-panel .rp-tools {
+  grid-template-columns: minmax(0, 1fr) minmax(130px, .36fr);
+  gap: 12px;
+}
+
+.casino-panel .rp-tools label {
+  color: var(--casino-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.casino-panel .rp-tools :is(input, select) {
+  border-color: var(--casino-line);
+  background-color: #fffaf3;
+  color: var(--casino-ink);
+}
+
+.casino-panel .rp-search input {
+  padding-inline-start: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23766b5e' stroke-width='1.6' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='5.5'/%3E%3Cpath d='m15 15 4 4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 10px center;
+  background-size: 18px;
+}
+
+.casino-panel .rp-tools input::placeholder,
+.casino-panel :is(.rp-count, .rp-empty) {
+  color: var(--casino-muted);
+}
+
+.casino-panel .rp-count {
+  margin: 15px 0 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.casino-panel .rp-grid {
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 14px;
+}
+
+.casino-panel .rp-card {
+  border-color: var(--casino-line);
+  background: #fffaf3;
+  color: var(--casino-ink);
+  box-shadow: 0 3px 10px #553f2210;
+}
+
+.casino-panel .rp-card:hover {
+  border-color: var(--casino-gold);
+}
+
+.casino-panel .rp-art {
+  background: #35493f;
+}
+
+.casino-panel .rp-kind {
+  background: #222d24ed;
+  color: #fff2d7;
+}
+
+.casino-panel .rp-copy small {
+  display: none;
+}
+
+.casino-panel .rp-copy strong {
+  color: var(--casino-ink);
+  font-size: 15px;
+}
+
+.casino-panel .rp-copy > span {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--casino-muted);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.casino-panel :is(button, input, select):focus-visible,
+body[data-entry-mode=casino] .header :is(button, a):focus-visible {
+  outline: 2px solid var(--casino-gold);
+  outline-offset: 3px;
+}
+
+body[data-entry-mode=casino] .workspace > .chat-dock {
+  height: 100%;
+  padding: 16px;
+  border: 1px solid var(--casino-line);
+  border-radius: 16px;
+  background: var(--casino-surface);
+  color: var(--casino-ink);
+  box-shadow: 0 8px 28px #553f2210;
+}
+
+body[data-entry-mode=casino] .workspace > .chat-dock .chat-heading {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--casino-line);
+  color: var(--casino-green);
+}
+
+body[data-entry-mode=casino] .workspace > .chat-dock .chat-heading strong {
+  font: 400 22px/1.15 Georgia, serif;
+}
+
+body[data-entry-mode=casino] .workspace > .chat-dock .people-list {
+  border-color: var(--casino-line);
+}
+
+body[data-entry-mode=casino] .workspace > .chat-dock :is(#room-count, .person-tag) {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #ebeede;
+  color: #3b513e;
+  font: 600 11px/1.3 system-ui;
+}
+
+body[data-entry-mode=casino] .workspace > .chat-dock .chat-log {
+  scrollbar-color: #c6b292 transparent;
+}
+
+body[data-entry-mode=casino] .workspace > .chat-dock .chat-message {
+  border-color: #e8dcc8;
+  border-radius: 9px;
+  background: #f2e9d9;
+  color: var(--casino-ink);
+}
+
+body[data-entry-mode=casino] .workspace > .chat-dock .chat-meta strong {
+  color: var(--casino-green);
+}
+
+body[data-entry-mode=casino] .workspace > .chat-dock :is(.chat-meta time, .chat-system p) {
+  color: var(--casino-muted);
+}
+
+body[data-entry-mode=casino] .workspace > .chat-dock .chat-form {
+  padding: 4px;
+  border-color: var(--casino-line);
+  border-radius: 9px;
+  background: #fffaf3;
+}
+
+body[data-entry-mode=casino] .workspace > .chat-dock .chat-form:focus-within {
+  border-color: var(--casino-gold);
+}
+
+body[data-entry-mode=casino] .workspace > .chat-dock .chat-form input {
+  color: var(--casino-ink);
+}
+
+body[data-entry-mode=casino] .workspace > .chat-dock #send-chat {
+  min-height: 38px;
+  border-radius: 6px;
+  background: var(--casino-green);
+  color: #fff8e9;
+}
+
+.casino-chat-toggle, .casino-chat-close {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  body[data-entry-mode=casino] #app > .header {
+    min-height: 52px;
+    gap: 8px;
+    padding: 6px 10px;
+  }
+
+  body[data-entry-mode=casino] .workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body[data-entry-mode=casino] .workspace > .chat-dock {
+    display: none;
+  }
+
+  body[data-entry-mode=casino][data-casino-chat=open] .workspace > .chat-dock {
+    position: fixed;
+    z-index: 80;
+    inset: 12px;
+    display: flex;
+    height: auto;
+    max-height: calc(var(--app-height, 100dvh) - 24px);
+    box-shadow: 0 0 0 100vmax #24241b80;
+  }
+
+  body[data-entry-mode=casino] .header .casino-chat-toggle {
+    display: inline-flex;
+    align-items: center;
+    padding-inline: 10px;
+    font: 600 12px system-ui;
+  }
+
+  body[data-entry-mode=casino] .workspace > .chat-dock .casino-chat-close {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    margin-inline-start: auto;
+    border: 1px solid var(--casino-line);
+    border-radius: 8px;
+    background: #f8f2e6;
+    color: var(--casino-green);
+    font: 22px/1 system-ui;
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 520px) {
+  body[data-entry-mode=casino] #app > main {
+    padding: 8px;
+  }
+
+  .casino-panel .royal-platform {
+    padding: 12px;
+  }
+
+  .casino-panel .rp-heading {
+    min-height: 96px;
+    margin-bottom: 16px;
+    padding: 14px;
+  }
+
+  .casino-panel .rp-heading h1 {
+    font-size: clamp(24px, 6.6vw, 32px);
+  }
+
+  .casino-panel .rp-heading [data-platform-wallet] {
+    padding-inline: 8px;
+    font-size: 11px;
+  }
+
+  .casino-panel .rp-tools {
+    grid-template-columns: minmax(0, 1fr) minmax(100px, .67fr);
+    gap: 8px;
+  }
+
+  .casino-panel .rp-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .casino-panel .rp-copy strong {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 380px) {
+  body[data-entry-mode=casino] #app > .header {
+    gap: 4px;
+    padding-inline: 6px;
+  }
+
+  body[data-entry-mode=casino] .header :is(.brand-mark, .icon-button, #invite) {
+    width: 30px;
+    height: 32px;
+    min-height: 32px;
+  }
+
+  body[data-entry-mode=casino] .header .room-tools {
+    gap: 4px;
+  }
+
+  body[data-entry-mode=casino] .header .casino-chat-toggle {
+    padding-inline: 7px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .casino-panel .rp-card:hover {
+    transform: none;
+  }
+}
