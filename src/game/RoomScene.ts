@@ -12,6 +12,7 @@ import { CAT_HABITS_TEXTURE, CAT_CLIMB_TEXTURE, CAT_SCRATCH_TEXTURE, CAT_WALK_TE
 import { drawCatCare } from './catCareArt';
 import { FLOOR, BOUNDS, HALL_WALL } from '../shared/clubGeometry';
 import { ATELIER } from '../shared/atelier';
+import {drawCasinoStreetExit} from './CasinoStreetExit';
 import { drawAtelier, ATELIER_TEXTURE, ATELIER_SPRITE } from './atelierArt';
 import { TailorRenderer, ATELIER_EMPTY_TEXTURE, ATELIER_EMPTY_SPRITE, TAILOR_TEXTURE, TAILOR_SPRITE } from './TailorRenderer';
 import { AmbientGuests, type AmbientGuestView } from '../shared/ambientGuests';
@@ -251,13 +252,7 @@ export class RoomScene extends Phaser.Scene {
       return;
     }
     if(link.target==='street'){
-      const {x,y}=link.door.entry,g=this.add.graphics().setDepth(3);
-      g.fillStyle(0x281d2b).fillRect(x-66,y-38,132,68);
-      g.fillStyle(0x722c42).fillRect(x-57,y-33,114,59);
-      g.lineStyle(3,0xe3c17a).strokeRect(x-61,y-36,122,64);
-      g.fillStyle(0xb34858).fillRect(x-50,y-29,100,18);
-      this.add.text(x,y-66,translateText('НА УЛИЦУ'),{fontFamily:'Arial',fontSize:'17px',fontStyle:'bold',color:'#f5dc9d',backgroundColor:'#432437',padding:{x:12,y:7}}).setOrigin(.5).setDepth(4);
-      this.add.zone(x,y-15,150,100).setDepth(680).setInteractive({useHandCursor:true}).on('pointerdown',()=>this.approachFloor('street'));
+      drawCasinoStreetExit(this,link.door,()=>this.approachFloor('street'));
       return;
     }
     const destination=HALLS[link.target],doorLabel=destination.floor!==HALLS[this.hall].floor?translateText('ЭТАЖ ')+destination.floor:translateText('ЗАЛ ')+destination.number,g=this.add.graphics().setDepth(225);
