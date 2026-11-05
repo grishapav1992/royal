@@ -17,7 +17,6 @@
     "src/ui/EntryLogin.ts": "2a2de597897817898ee630aff63fa59eb887b8f8c44e6bd3b90dbca538a8c4b6",
     "src/ui/EntryModes.ts": "e79793272b54435df4d4034fdabfa387e6a6daa452345d0c2ad897e259a0935d",
     "src/ui/LoginForm.ts": "52fb29aa37d921263e32ac37eb56c612f9c610d783a3e9227d74e82e5137e756",
-    "src/ui/PlayerControls.ts": "953962f68cb87b146338d910d2be0f6b70ce5b278bf0b7d5e68f9cd58d877889",
     "src/ui/RoyalPlatformCatalog.ts": "5222f1a535e2c9cb1564365285521ada6795b010bef38f807440ae24e793696a",
     "src/ui/SecurityUI.ts": "b2cd6fd56d797687f4087fd76747a4f4e27bcbd1f2837c3267a6570dc7520ade",
     "src/ui/SkinStudioUI.ts": "30fe44f9450d395221fd27aef1ff9f5d83ec0d146ee5271d62a7c70fbb4d40bd",
