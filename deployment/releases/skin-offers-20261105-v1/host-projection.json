@@ -359,7 +359,7 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/game/RoomScene.ts",
       "baseSha256": "d7e1b0f05eb6be5dcf594ef0ea96e0edf902515b493bafa4f9ac3113745730a2",
-      "sha256": "257546ccdc2b0162b4e49868655eb6519242fea82b732f29743b8d88a80cb80a",
+      "sha256": "fc7793f8dda4279e84d4447e0b27b97cfad7fe639a82683331e88abfac0be5b8",
       "patches": [
         {
           "from": "ngLounge.startsW",
@@ -614,6 +614,10 @@
           "to": "    if (this.locked || this.typing || this.switching) return;\n    if(this.hall==='roof'&&Math.hypot(this.player.x-ROOF_TOILET.entry.x,this.player.y-ROOF_TOILET.entry.y)<110){this.approachFloor('toilet');return;}\n    if(this.hall==='toilet'&&Math.hypot(this.player.x-TOILET_WINDOW.entry.x,this.player.y-TOILET_WINDOW.entry.y)<110){this.approachFloor('roof');return;}\n    if(this.hall==='toilet'&&Math.hypot(this.player.x-TOILET_HALL_DOOR.entry.x,this.player.y-TOILET_HALL_DOOR.entry.y)<80){this.approachFloor('github');return;}\n    if(this.hall==='street'&&(this.player.stairStep??0)>0)return;\n    if(this.hall==='street'&&!this.isHuggingCat()&&Math.hypot(this.player.x-STREET_ROOF_STAIRS.foot.x,this.player.y-STREET_ROOF_STAIRS.foot.y)<55){this.approachFloor('roof');return;}\n    if(this.hall==='street'&&!this.isHuggingCat()&&this.street?.interact(this.player)){this.pendingLounge=null;this.finishMovement(()=>this.network?.stop());return;}\n"
         },
         {
+          "from": "import { drawCatCare } from './catCareArt';\nimport { FLOOR, BOUNDS, HALL_WALL } from '../shared/clubGeometry';\nimport { ATELIER } from '../shared/atelier';\nimport { drawAtelier, ATELIER_TEXTURE, ATELIER_SPRITE } from './atelierArt';\nimport { TailorRenderer, ATELIER_EMPTY_TEXTURE, ATELIER_EMPTY_SPRITE, TAILOR_TEXTURE, TAILOR_SPRITE } from './TailorRenderer';\nimport { AmbientGuests, type AmbientGuestView } from '../shared/ambientGuests';\n",
+          "to": "import { drawCatCare } from './catCareArt';\nimport { FLOOR, BOUNDS, HALL_WALL } from '../shared/clubGeometry';\nimport { ATELIER } from '../shared/atelier';\nimport {drawCasinoStreetExit} from './CasinoStreetExit';\nimport { drawAtelier, ATELIER_TEXTURE, ATELIER_SPRITE } from './atelierArt';\nimport { TailorRenderer, ATELIER_EMPTY_TEXTURE, ATELIER_EMPTY_SPRITE, TAILOR_TEXTURE, TAILOR_SPRITE } from './TailorRenderer';\nimport { AmbientGuests, type AmbientGuestView } from '../shared/ambientGuests';\n"
+        },
+        {
           "from": "import { ROOF, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_SPEED_SCALE,ROOF_STAIR_EPSILON,advanceRoofStairStep,moveRoofStairs,roofStairOptions,nearRoofStairBase } from '../shared/rooftop';\nimport { RooftopRenderer } from './RooftopRenderer';\nimport { STREET } from '../shared/street';\nimport { TOILET,TOILET_WINDOW,ROOF_TOILET,TOILET_HALL_DOOR } from '../shared/toilet';\nimport { ToiletRenderer,drawCardToiletDoor } from './ToiletRenderer';\nimport {preloadToiletResident,prepareToiletResident} from './toiletResidentArt';\nimport {STAIR_WINDOW,atStairWindow,canApproachStairWindow,canWalkThroughStairWindow} from '../shared/stairWindow';\nimport {onRoofWindowPlatform,ROOF_WINDOW_PLATFORM,ROOF_STAIR_DRAW,roofWindowPlatformPosition,roofWindowPlatformPoint} from '../shared/rooftop';\nimport {drawCardStairWindow,stairWindowFrame} from './StairWindowRenderer';\n",
           "to": "import { ROOF, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_SPEED_SCALE,ROOF_STAIR_EPSILON,advanceRoofStairStep,moveRoofStairs,roofStairOptions,nearRoofStairBase } from '../shared/rooftop';\nimport { RooftopRenderer } from './RooftopRenderer';\nimport { STREET } from '../shared/street';\nimport { TOILET,TOILET_WINDOW,ROOF_TOILET,TOILET_HALL_DOOR,TOILET_MERCHANT } from '../shared/toilet';\nimport { ToiletRenderer,drawCardToiletDoor } from './ToiletRenderer';\nimport {preloadToiletResident,prepareToiletResident} from './toiletResidentArt';\nimport {preloadToiletMerchant} from './ToiletMerchant';\nimport {STAIR_WINDOW,atStairWindow,canApproachStairWindow,canWalkThroughStairWindow} from '../shared/stairWindow';\nimport {onRoofWindowPlatform,ROOF_WINDOW_PLATFORM,ROOF_STAIR_DRAW,roofWindowPlatformPosition,roofWindowPlatformPoint} from '../shared/rooftop';\nimport {drawCardStairWindow,stairWindowFrame} from './StairWindowRenderer';\n"
         },
@@ -628,6 +632,10 @@
         {
           "from": "        continue;\n      }\n      if(hall==='toilet'){\n        this.toilet=new ToiletRenderer(this,()=>this.approachFloor('roof'),this.rooftop?.mapCanvas,()=>this.approachFloor('github'));\n        this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));\n        continue;\n      }\n",
           "to": "        continue;\n      }\n      if(hall==='toilet'){\n        this.toilet=new ToiletRenderer(this,()=>this.approachFloor('roof'),this.rooftop?.mapCanvas,()=>this.approachFloor('github'),()=>this.approachToiletMerchant());\n        this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));\n        continue;\n      }\n"
+        },
+        {
+          "from": "      return;\n    }\n    if(link.target==='street'){\n      const {x,y}=link.door.entry,g=this.add.graphics().setDepth(3);\n      g.fillStyle(0x281d2b).fillRect(x-66,y-38,132,68);\n      g.fillStyle(0x722c42).fillRect(x-57,y-33,114,59);\n      g.lineStyle(3,0xe3c17a).strokeRect(x-61,y-36,122,64);\n      g.fillStyle(0xb34858).fillRect(x-50,y-29,100,18);\n      this.add.text(x,y-66,translateText('НА УЛИЦУ'),{fontFamily:'Arial',fontSize:'17px',fontStyle:'bold',color:'#f5dc9d',backgroundColor:'#432437',padding:{x:12,y:7}}).setOrigin(.5).setDepth(4);\n      this.add.zone(x,y-15,150,100).setDepth(680).setInteractive({useHandCursor:true}).on('pointerdown',()=>this.approachFloor('street'));\n      return;\n    }\n    const destination=HALLS[link.target],doorLabel=destination.floor!==HALLS[this.hall].floor?translateText('ЭТАЖ ')+destination.floor:translateText('ЗАЛ ')+destination.number,g=this.add.graphics().setDepth(225);\n",
+          "to": "      return;\n    }\n    if(link.target==='street'){\n      drawCasinoStreetExit(this,link.door,()=>this.approachFloor('street'));\n      return;\n    }\n    const destination=HALLS[link.target],doorLabel=destination.floor!==HALLS[this.hall].floor?translateText('ЭТАЖ ')+destination.floor:translateText('ЗАЛ ')+destination.number,g=this.add.graphics().setDepth(225);\n"
         },
         {
           "from": "    if(this.hall==='roof'&&Math.hypot(this.player.x-ROOF_TOILET.entry.x,this.player.y-ROOF_TOILET.entry.y)<110){this.approachFloor('toilet');return;}\n    if(this.hall==='toilet'&&Math.hypot(this.player.x-TOILET_WINDOW.entry.x,this.player.y-TOILET_WINDOW.entry.y)<110){this.approachFloor('roof');return;}\n    if(this.hall==='toilet'&&Math.hypot(this.player.x-TOILET_HALL_DOOR.entry.x,this.player.y-TOILET_HALL_DOOR.entry.y)<80){this.approachFloor('github');return;}\n    if(this.hall==='street'&&(this.player.stairStep??0)>0)return;\n    if(this.hall==='street'&&!this.isHuggingCat()&&Math.hypot(this.player.x-STREET_ROOF_STAIRS.foot.x,this.player.y-STREET_ROOF_STAIRS.foot.y)<55){this.approachFloor('roof');return;}\n    if(this.hall==='street'&&!this.isHuggingCat()&&this.street?.interact(this.player)){this.pendingLounge=null;this.finishMovement(()=>this.network?.stop());return;}\n",
@@ -1012,7 +1020,7 @@
       "sha256": "15112fd6f1fd4abc5483f042f6a11d1fd555040b17f92966d56bf49c764cea51"
     },
     "src/shared/toilet.ts": {
-      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "commit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
       "path": "src/shared/toilet.ts",
       "baseSha256": "7254f1c0da2d0d383e411aad49c948aa2e1ce7b0ec5e5832a967aa946b0f5b07",
       "sha256": "7254f1c0da2d0d383e411aad49c948aa2e1ce7b0ec5e5832a967aa946b0f5b07"
@@ -1316,7 +1324,7 @@
       ]
     },
     "src/shared/skinStudio.ts": {
-      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "commit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
       "path": "src/shared/skinStudio.ts",
       "baseSha256": "628c6763ae3cd6c9f8b209ea669cbbdc168b1b0efd9d452b191147acb3afd4fc",
       "sha256": "628c6763ae3cd6c9f8b209ea669cbbdc168b1b0efd9d452b191147acb3afd4fc"
@@ -1828,7 +1836,7 @@
       "sha256": "3829cc4b627640ce4e39ddc8354502b8cee594a57958fd89c7b32812dd55b976"
     },
     "src/game/ToiletRenderer.ts": {
-      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "commit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
       "path": "src/game/ToiletRenderer.ts",
       "baseSha256": "0b63af086fe947da03956a634ad20c9410d00919f29989f5e9085ebf643753cd",
       "sha256": "0b63af086fe947da03956a634ad20c9410d00919f29989f5e9085ebf643753cd"
@@ -1960,7 +1968,7 @@
       "sha256": "78155e8bdef3723fc0325a0ed6500ea370ee8ab24bcf76d3b0edc9eaaf3baf18"
     },
     "src/ui/SkinStudioUI.ts": {
-      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "commit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
       "path": "src/ui/SkinStudioUI.ts",
       "baseSha256": "0d3a85d6dfa6bf525ea06beabee1b709f7ea9aab3e8c338b71651879bf5d810c",
       "sha256": "0d3a85d6dfa6bf525ea06beabee1b709f7ea9aab3e8c338b71651879bf5d810c"
@@ -2440,7 +2448,7 @@
       "sha256": "58fac5c92ba998cc6f31b3ae6b3f32c53c0ae8b61b6f415c1bc0589effe6932e"
     },
     "src/ui/skin-studio.css": {
-      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "commit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
       "path": "src/ui/skin-studio.css",
       "baseSha256": "b176f15060c07289b29dcf19edafb55cfdc7b127d0535c23ee0d4d53ba647a4b",
       "sha256": "b176f15060c07289b29dcf19edafb55cfdc7b127d0535c23ee0d4d53ba647a4b"
@@ -2590,22 +2598,28 @@
       "sha256": "caa92b92343afa04889b13ef484f6d1598aac196ffe1f7e2e789dbf77c4f25bc"
     },
     "src/game/ToiletMerchant.ts": {
-      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "commit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
       "path": "src/game/ToiletMerchant.ts",
       "baseSha256": "8a8124c9dbd327172fe028f8f54246a61d9217c86b3b08462bb0c979b9b05261",
       "sha256": "8a8124c9dbd327172fe028f8f54246a61d9217c86b3b08462bb0c979b9b05261"
     },
     "src/game/toiletMerchantPose.ts": {
-      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "commit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
       "path": "src/game/toiletMerchantPose.ts",
       "baseSha256": "cb46bd643bbbac81a84b409f5a02bfbdad68b9a8569fb5122c2c269b4a7da514",
       "sha256": "cb46bd643bbbac81a84b409f5a02bfbdad68b9a8569fb5122c2c269b4a7da514"
     },
     "docs/concepts/toilet-janitor-animations/animations-v1.json": {
-      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "commit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
       "path": "docs/concepts/toilet-janitor-animations/animations-v1.json",
       "baseSha256": "1ea1a8777be9959a19049e650082626de494d9a1f6a0b9831e963c2b1d365a7f",
       "sha256": "1ea1a8777be9959a19049e650082626de494d9a1f6a0b9831e963c2b1d365a7f"
+    },
+    "src/game/CasinoStreetExit.ts": {
+      "commit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
+      "path": "src/game/CasinoStreetExit.ts",
+      "baseSha256": "41da1a806a062ec7dfef68d327a69a7c83cedef66dbb122096540ca6cd583aa5",
+      "sha256": "41da1a806a062ec7dfef68d327a69a7c83cedef66dbb122096540ca6cd583aa5"
     }
   }
 }
