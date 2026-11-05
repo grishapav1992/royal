@@ -1,0 +1,526 @@
+{
+  "format": 1,
+  "release": "pvp-invites-20261105-v3",
+  "status": "published_verified",
+  "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+  "installerSourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+  "productionBase": "28d451add41e5af2648442c91959030de8e4eb01",
+  "baseImage": "sha256:d7028d1e23c5a741dd92811b3904c9b2edd64e1f73296cbe059fe84369f90af9",
+  "featureCommit": "f39d48910bb7189cb721256b48effc67f0477cbd",
+  "runtimeSources": {
+    "src/shared/pvp.ts": "bed164a0fcccf208639302aadb7a5f165541c055616440bf0b16248d861ceddc",
+    "src/ui/GameChat.ts": "c8a0912aa1f57fe09f5252b5a1b227cbc2bc6951f8be3702e65f48885075a002",
+    "src/ui/PlayerDuelMenu.ts": "e2d60a97db15db2ad4b7b602f1b30d40200ecc4f79ff62a706ee5f8309575e0c",
+    "src/ui/PvpUI.ts": "220d9c7f5494b9484671726b1755bfc321f04e839c0e37d98717e109777a540a",
+    "src/ui/pvp-invitations.css": "a6702e757e9114a629bb2ebe925477a11cb2a6f8b200c7378ed83e1e7f50ba70",
+    "server/pvp/store.ts": "713ec77918a8f64e5a74ab1b9ba27c9552a9fc6955d5fc07de0bb1c004af63df"
+  },
+  "qualificationEvidenceSources": {
+    "docs/game-math/qualifications/chess-virtual-v1.json": "27da591cb26e4a2b64bbfa513c453fc0ba237629b7f65cc6f49c68c594ae72b4",
+    "docs/game-math/qualifications/crazy-eights-virtual-v1.json": "12abc97370122d20ae59c8b9a840876315195b3cbed9146810a5a1c29ea6f58e",
+    "docs/game-math/qualifications/durak-virtual-v1.json": "de29ada2f65396b2d25d4db6b1c79c2582bbdd6e342ee4b1ca4a56367fecea18",
+    "docs/game-math/qualifications/hockey-virtual-v1.json": "de62a88a3333bdc4dfc2d1c07e92c097989c2feca3974e6a5ca18b055c3f9874",
+    "docs/game-math/qualifications/mortal-kombat-v2.json": "54ffd99eb78b953012274512895bea8f76c476df96c9d1dda4d243133af076ec",
+    "docs/game-math/qualifications/pool-virtual-v1.json": "1019ab830b4b95a20de09f1458cc4b8b8b9319e2e41b685b15f4879dad510ed5",
+    "docs/game-math/qualifications/transfer-durak-virtual-v1.json": "11e618e84fa3d2ed23498038a86cd1955a3dbc017c42c1feb013b7deaa885ba6",
+    "docs/game-math/qualifications/tsu-e-fa-v1.json": "32757c1c79e5ac35d13b5f7412e86540158eb036337b1cf6f27d7248bc041290",
+    "docs/game-math/qualifications/tsu-e-fa-v2.json": "69ef5cb4bc37f013e4e5a8bbca516efbeb0fac071c8c008ff5a23d09de3ca69e",
+    "docs/game-math/qualifications/tsu-e-fa-v3.json": "f05b89c96fa31a2551f89c642bc66e618b5fc4b6a9e1ba12e431b7af2e84afff",
+    "docs/game-math/qualifications/tsu-e-fa-v4.json": "fb78cb37d14d7653ee6f4452c7cf4ec7be59031479f748563a46ee00b59abfba",
+    "scripts/game-math/tsu-duel-wallet.ts": "a633e2b846155f5e109f0a4009a9e30de2d2f7f7d3b4400dfd806d6e3bded023"
+  },
+  "compiledFiles": {
+    "dist/assets/index--cUSd7Ot.css": "5c4c44bad2f4a9367c0da54186408a97567b129c6102805baeb4960adffebcab",
+    "dist/assets/index-B-7j_gtW.js": "85dad1bf62b8478e4924c079891bcaae11443edf63a521ec39fcc617b672ccfb",
+    "dist/index.html": "89b2e59c612aa4fd643a68f310abe7342d34448a65b28e12bed3ec20f4e38d1d",
+    "dist-server/index.js": "43738347eaf574a53e694e81a72b2d332bd09235484ac736bccd3c7529b39ddc"
+  },
+  "projections": {
+    "hostProjection": {
+      "sha256": "2628137be04d72cfe11e28fc2058549ce340008696ca2be6e0dc641beaded3b4",
+      "inputCount": 287
+    },
+    "backendProjection": {
+      "sha256": "716da46df197784e12454d29e9883a9a7f94fab14b8cc984986887756b6a9ff5",
+      "graphSha256": "e3bfcc32585672acbd3b1385d78e0926ed86acc6970f27ea4f1b5182acc98395",
+      "inputCount": 263
+    }
+  },
+  "build": {
+    "passed": true,
+    "durationMs": 484557,
+    "rtp": {
+      "verified": 38,
+      "stakePoliciesVerified": 20,
+      "stakeAdmissionVerified": 20,
+      "legacyNotQualified": 114
+    }
+  },
+  "wallet": {
+    "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+    "productionBase": "28d451add41e5af2648442c91959030de8e4eb01",
+    "mandatoryWalletTestsPassed": 19,
+    "pvpTestsPassed": 23,
+    "totalTestsPassed": 42,
+    "linuxInstallerTestsPassed": 12,
+    "productionDataModified": false
+  },
+  "browser": {
+    "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+    "productionBase": "28d451add41e5af2648442c91959030de8e4eb01",
+    "passed": 4,
+    "failed": 0,
+    "runs": [
+      {
+        "passed": 3,
+        "scenarios": [
+          "Compact desktop/mobile modal, waiting and decline",
+          "Other game uses its own name and bound opponent",
+          "0.10 match, exact settlement, close/reopen"
+        ]
+      },
+      {
+        "passed": 1,
+        "separateDisposableStand": true,
+        "scenarios": [
+          "Real offline, preserved secret, countdown pause, reconnect, single surrender settlement"
+        ]
+      }
+    ],
+    "runtime": "Exact compiled current-production projections with shared chat and unchanged published Tsu 1.3.2-878d142cb99b",
+    "viewports": [
+      {
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "files": {
+      "dist/assets/index--cUSd7Ot.css": "5c4c44bad2f4a9367c0da54186408a97567b129c6102805baeb4960adffebcab",
+      "dist/assets/index-B-7j_gtW.js": "85dad1bf62b8478e4924c079891bcaae11443edf63a521ec39fcc617b672ccfb",
+      "dist/index.html": "89b2e59c612aa4fd643a68f310abe7342d34448a65b28e12bed3ec20f4e38d1d",
+      "dist-server/index.js": "43738347eaf574a53e694e81a72b2d332bd09235484ac736bccd3c7529b39ddc"
+    },
+    "harness": {
+      "applicationBytesChanged": false,
+      "ports": [
+        5913,
+        5915
+      ],
+      "standSourceSha256": "27a84cdaf4dca5f92a885c5d879801c22766347e469eb4b0045dfd9282991fe0",
+      "standSha256": "ad08eb02e64e31c6d6fab7520e4819782da50c1a318a042f429a26cbd0aa88ad",
+      "testSourceSha256": "3042bed6443fcfb3ec3c1691cd3b70160fff8c71b3f885b34c746d39fac198ea",
+      "testSha256": "6b881c723c5299b51e44adfd8e80cc647ae2a331bd11161ded2276137007eca4",
+      "edits": "Only fixture ports/imports and reuse of the one verified published Tsu package directory"
+    },
+    "productionAccountsCreated": false,
+    "productionBetsPlaced": false,
+    "applicationBytesChangedForTests": false
+  },
+  "catalogue": {
+    "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+    "productionBase": "28d451add41e5af2648442c91959030de8e4eb01",
+    "activeGames": [
+      "studio-cosmic-escape",
+      "studio-caramel-carnival",
+      "studio-velvet-reign",
+      "studio-last-convoy",
+      "studio-nitro-run",
+      "studio-afterglow",
+      "studio-meme-overload",
+      "studio-dracona",
+      "studio-neopolis",
+      "studio-forest-heart",
+      "github-crash",
+      "royal-plinko",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "studio-caribbean-treasures",
+      "studio-flooded-temple",
+      "royal-roulette",
+      "flag-battle",
+      "studio-wild-nudge",
+      "tsu-e-fa"
+    ],
+    "unchangedAccessInputs": {
+      "src/shared/arcadeCatalog.ts": "946d05c1c450086d48efa318d7d65df6bdd5641f2edcd05599b67f7499a0a55a",
+      "src/modules/GameModuleCatalog.ts": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1",
+      "src/ui/ActivitiesUI.ts": "431721288ecfcb33043f6d3806f4df5dfc383d2e6fce0d0471436e967e890701",
+      "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+      "server/pvp/room.ts": "31b7c1aedcd71f4ee52b56c5678ea839f4685c450d8aaeb6f782d1d9b77613b9"
+    },
+    "addedGames": [],
+    "restoredGames": []
+  },
+  "transport": {
+    "ArchiveBytes": 2839244,
+    "Files": 36,
+    "ArchiveSha256": "75fe7d71a72f1a1abe7a7822ac02e1938bcbd791c7562827e3344459449703ce",
+    "InventorySha256": "487451904749bcf4781755f9ce479742fcd09a938ddb579a358c8a743e247064",
+    "FreeBytes": 307832147968
+  },
+  "retention": {
+    "startedAt": 1793857578.1988215,
+    "status": "completed",
+    "freeBefore": 9784631296,
+    "release": "pvp-invites-20261105-v3",
+    "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+    "currentImage": "sha256:55e6ab3340bab7d1c1e0041deb3a4f1ebb1558d07a457144c3efd4542f915520",
+    "rollbackImage": "sha256:d7028d1e23c5a741dd92811b3904c9b2edd64e1f73296cbe059fe84369f90af9",
+    "plannedEntries": 28,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 149,
+    "removedEntries": 28,
+    "removedImageTags": 4,
+    "dockerRetainedImages": [],
+    "freeAfter": 9816829952,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:d7028d1e23c5a741dd92811b3904c9b2edd64e1f73296cbe059fe84369f90af9",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "97c46c4405aeae750a88973c1fcf108722dcba90d4ad44cb9c9defe845131ba7",
+      "files": 8609
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "512f75d3d7b10a125ed54f76b922a12b8b28e1f00056f6d26d8daf6937c03dc0",
+      "receipt": "/var/lib/royal-project-brain/receipts/512f75d3d7b10a125ed54f76b922a12b8b28e1f00056f6d26d8daf6937c03dc0.json",
+      "queued": true
+    },
+    "finishedAt": 1793858267.7738307,
+    "durationSeconds": 689.58
+  },
+  "publication": {
+    "published": true,
+    "preparedImage": "sha256:55e6ab3340bab7d1c1e0041deb3a4f1ebb1558d07a457144c3efd4542f915520",
+    "runningImage": "sha256:55e6ab3340bab7d1c1e0041deb3a4f1ebb1558d07a457144c3efd4542f915520",
+    "containerRestarted": true,
+    "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+    "changedSources": 18,
+    "clientDeltaFiles": 3,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 1,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 13
+  },
+  "preparationSnapshotIsFinancialProof": false,
+  "priorVersionsNeverPublished": [
+    "pvp-invites-20261104-v1",
+    "pvp-invites-20261104-v2"
+  ],
+  "postPublication": {
+    "verified": true,
+    "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+    "image": "sha256:55e6ab3340bab7d1c1e0041deb3a4f1ebb1558d07a457144c3efd4542f915520",
+    "programFiles": 8611,
+    "sourceFiles": 2754,
+    "changedSources": 18,
+    "moduleFilesPreserved": 5338,
+    "otherPersistentServicesPreserved": 13,
+    "configurationsPreserved": true,
+    "gameDataPreserved": true,
+    "activeGames": 20,
+    "addedGames": [],
+    "restoredGames": [],
+    "compiledFilesVerified": 4,
+    "preservedJackieVersion": "1.2.1-e9b60e76ef5e",
+    "financialGatePassed": true,
+    "sourceBackup": {
+      "directory": "/opt/royal-backups/pvp-invites-20261105-v3",
+      "sha256": "c50291b3c2aa94cb70a983fb5df0b0a191b669673c1fbbea984b4eeaefa328d7",
+      "bytes": 41791
+    },
+    "fullAfterSha256": "3782ac9a4b10cac468848aac392b0c7a7df79f3b3f6accc43b1c5535cc9844e7",
+    "verificationMeaning": "Independent consistency check of the completed installer full-read report; not a new financial barrier or another read of running bytes"
+  },
+  "public": {
+    "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+    "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "files": [
+      {
+        "path": "/assets/index--cUSd7Ot.css",
+        "sha256": "5c4c44bad2f4a9367c0da54186408a97567b129c6102805baeb4960adffebcab",
+        "bytes": 159094
+      },
+      {
+        "path": "/assets/index-B-7j_gtW.js",
+        "sha256": "85dad1bf62b8478e4924c079891bcaae11443edf63a521ec39fcc617b672ccfb",
+        "bytes": 2913606
+      },
+      {
+        "path": "/index.html",
+        "sha256": "89b2e59c612aa4fd643a68f310abe7342d34448a65b28e12bed3ec20f4e38d1d",
+        "bytes": 708
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/active.json",
+        "sha256": "03ff5ab3fb697596abe39718d826fecde226898abf2cd35a0280b499e50a5cd7",
+        "bytes": 204
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/versions/1.3.2-878d142cb99b/manifest.json",
+        "sha256": "435c67d9923bbe9f68ef2640ecffe34608ab36d370e907c0ce43f220adff685e",
+        "bytes": 706
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/versions/1.3.2-878d142cb99b/entry-39d3f02e6d3c7937.js",
+        "sha256": "39d3f02e6d3c7937c314d80a588fec3ff754b2919b354f61fdc80f4d86c9196f",
+        "bytes": 31001
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/versions/1.3.2-878d142cb99b/media/tsu-e-fa/v2/hand-poses.png",
+        "sha256": "6028d7f4bd0ba3069657866edd51f6219ffce78036af05bd58b4cff27aef13cc",
+        "bytes": 1416729
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/versions/1.3.2-878d142cb99b/style-fafbbf053a81944e.css",
+        "sha256": "fafbbf053a81944e6811c7e03b1f5fc756c20322fffc39a17523ad3a43627779",
+        "bytes": 11090
+      }
+    ],
+    "checks": [
+      {
+        "path": "/healthz",
+        "status": 200
+      },
+      {
+        "path": "/api/auth/me",
+        "status": 200
+      },
+      {
+        "path": "/api/game-wallet",
+        "status": 410
+      },
+      {
+        "path": "/api/nile-play",
+        "status": 410
+      },
+      {
+        "path": "/api/demo-wallet",
+        "status": 401
+      },
+      {
+        "path": "/api/demo-wallet/expansion",
+        "status": 401
+      }
+    ],
+    "guestBrowsers": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "pageErrors": [],
+        "passed": true
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "pageErrors": [],
+        "passed": true
+      }
+    ],
+    "productionAccountsCreated": false,
+    "productionBetsPlaced": false,
+    "productionMessagesSent": false,
+    "passed": true
+  },
+  "sourceMapLimitation": "Shared brain and graph queries unavailable; inspected exact source projections and full production inventories.",
+  "physicalPhoneConnected": false,
+  "postMaintenance": {
+    "checkedAt": "2026-11-05T06:00:33.587682+00:00",
+    "image": "sha256:55e6ab3340bab7d1c1e0041deb3a4f1ebb1558d07a457144c3efd4542f915520",
+    "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+    "containerId": "ed41e2db2912c786e8735fd4474387a91e74a17e028a87944efd401739c4c4ba",
+    "healthy": true,
+    "maintenanceStatus": "completed",
+    "maintenanceSummary": [
+      {
+        "path": "/opt/royal-maintenance/automatic-runs/run-1104eab9607b409aaa2392440db6be9b/summary.json",
+        "sha256": "0344b9f8eacaf84f49818425834295ad63b1d6b37ab23cac3948cd1819b50a13"
+      }
+    ],
+    "lastResultSha256": "0344b9f8eacaf84f49818425834295ad63b1d6b37ab23cac3948cd1819b50a13",
+    "timerEnabled": "enabled",
+    "timerActive": "active",
+    "serviceActive": "inactive",
+    "freeBytes": 9817411584
+  },
+  "serverStorageCleanup": {
+    "entries": [
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/after.json",
+        "identity": "9576aa9e9af144dd3eab353bde705699166470b1038a5d40af5f996aaea59310",
+        "allocatedBytes": 3956736
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/baseline-reconciliation-github.json",
+        "identity": "6d7905e1e528ac283400d3ae5ab56d2c63e4e06ac90167c018944310e9cd3b35",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/baseline-reconciliation.json",
+        "identity": "b8ce2a3d5fc70b251b859fdb50752d17e0e577e8a48878a682a7c8a3d2630579",
+        "allocatedBytes": 16384
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/build-result.json",
+        "identity": "cf165c4bef6e492e30507123a1650f6a304b93467b96c0deb766e9a7caf97381",
+        "allocatedBytes": 1175552
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/build.log",
+        "identity": "4a3f30a709ff4a5948b6dbdb8b968f57e11a4875da18e9191f33af7a0671fc33",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/deploy.py",
+        "identity": "a7e8207265ff9fb2bc7ce5285908ab30d56c46ccbf8689caaa042367eda270c1",
+        "allocatedBytes": 16384
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/dist-delta",
+        "identity": "6fe3f8b41befe453255325a8c1c825ba89f8659dd232d537d9cd7c4347cab7cf",
+        "allocatedBytes": 12677120
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/engine-build.py",
+        "identity": "a161110e1c4db9204a9b8d2d719a1e13f1c7a08c566ac661f2237e32696ba2f3",
+        "allocatedBytes": 8192
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/image_metadata.py",
+        "identity": "831beb1da413c016e95d3bde2984916c425ef4577b02f7473ed9f66a29397f23",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/install-manifest.json",
+        "identity": "295c6acc71c8b8e273233ebafc2918b9210303b354ec224e8ad11e8068818eed",
+        "allocatedBytes": 4018176
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/installer-github.json",
+        "identity": "0c016f89a564549206500356cff8663748fdaf20faf28c91f609ffeafcc183b3",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/media-github.json",
+        "identity": "e86493126ee2ce57713722cfc8b86f43ab19f13c24dbc8ddef8f2b061a80667e",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/operator-release-2.log",
+        "identity": "7445c30233cb964aba66215e2ad2aae4c053aa081e8652fd36142c2466774cfe",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/operator-release.log",
+        "identity": "f3e8bce0a4f32b9e9db62626744ad7d84a098c71bc3b68758122b754123a9efc",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/operator-summary-2.json",
+        "identity": "4f3c78a58b13fe5222217633c214516936859e357381057212e4f42ebf2dae01",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/operator-summary.json",
+        "identity": "847bfc30d665641be77da409be800551ee489123e9d090d0003555d939c0e76d",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/overlay-base.py",
+        "identity": "af4238eb2005d5b9bae197119a520c5cea0d593381b277ea3e7d67256efd9273",
+        "allocatedBytes": 28672
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/published.json",
+        "identity": "4b4db4b679be774548c84c83244dc8b5c77ddbab7cd89bc76ee88c3f2b92df55",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/quiesce.cjs",
+        "identity": "27b0ace93a380fe6598efb7f2ef68a069f8beb8c1bba16fa97e4cc403d53918c",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/release-github.json",
+        "identity": "e51151ec825fb91090174574a741299da983ab1074f8aebc11f2b764b1a82103",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/release-manifest.json",
+        "identity": "bd88976e1fff76ce264110a1645abbf345bbaac74f0a4156a87a41a223af9c18",
+        "allocatedBytes": 1507328
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/runtime-context",
+        "identity": "6c30ed1391110e43250da6125061850c44b3fd1392ffe560d86979e34ec00bc7",
+        "allocatedBytes": 15126528
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/runtime-inventory.cjs",
+        "identity": "e24743217af6ef1d593a041643b9289180f8618eaff513e26b274321550a89d5",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/server-delta",
+        "identity": "c83fc8909e604aebadd457f25cff1eed154a128dcaa0b2a8e1bc8c687b263f76",
+        "allocatedBytes": 2437120
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/snapshot-base.py",
+        "identity": "30ec9850e6196810c1701c41f3b5e997058a8a36eca7f28d7f2444f20cd995af",
+        "allocatedBytes": 16384
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/snapshot.py",
+        "identity": "acd670cf442d6444b450af424918235c25990f6285b4c1810dab0dd38febb37b",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/source",
+        "identity": "10f20474c6318be4ce284b1272f10db228d8743bb9eb4aade5bddeefae21cd45",
+        "allocatedBytes": 10539008
+      },
+      {
+        "path": "/opt/royal-backups/royal-bar-mira-20261104-v3",
+        "identity": "a5f2fdb239dc0cd0033344d44a3285f31b244a3a3d1d5e17ad9d3e7b5fe68487",
+        "allocatedBytes": 204800
+      }
+    ],
+    "images": [
+      {
+        "id": "sha256:ad7e8e5b76d8277f00f4714012553efddabfb3c0f27de94ddb575d95b127e84d",
+        "tags": [
+          "royal-game:before-jackie-motion-20261104-v4",
+          "royal-game:before-royal-bar-mira-20261104-v3",
+          "royal-game:before-royal-bar-mira-20261104-v3-prepared",
+          "royal-game:casino-street-20261104-v1"
+        ],
+        "created": "2026-11-04T20:08:22.98061879Z"
+      }
+    ]
+  },
+  "financialBackupsPreserved": 149,
+  "publicationAttempts": 1,
+  "originalSshSessionClosed": true,
+  "installerContinuedAndCompletedWithLocks": true,
+  "rollback": {
+    "directory": "/opt/royal-backups/pvp-invites-20261105-v3",
+    "sha256": "c50291b3c2aa94cb70a983fb5df0b0a191b669673c1fbbea984b4eeaefa328d7",
+    "bytes": 41791
+  }
+}
