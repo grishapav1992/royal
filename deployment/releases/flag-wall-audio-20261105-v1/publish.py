@@ -1,0 +1,121 @@
+"""Publish only the Flag Battle wall impact cue with a complete preserved-host inventory."""
+from pathlib import Path
+from types import SimpleNamespace
+from contextlib import ExitStack,contextmanager
+import fcntl,hashlib,importlib.util,json,os,re,shutil,subprocess,sys,tarfile
+NAME='flag-wall-audio-20261105-v1';GAME='flag-battle'
+ROOT=Path('/opt/royal-releases')/NAME;LIVE=Path('/opt/royal');MODULES=Path('/opt/royal-game-modules');STATE=Path('/opt/royal-game-modules-state');BACKUP=Path('/opt/royal-backups')/NAME
+BASE_HELPER=Path(os.environ.get('ROYAL_CONTACT_SNAPSHOT_READER','/opt/royal-releases/remove-room-labels-20261105-v1/snapshot.py'))
+SOURCES=['games/flag-battle/FlagAudio.ts']
+CONTRACT={'apiVersion':1,'rulesVersion':2,'progressVersion':1};MIN_FREE=5*1024**3
+IGNORED={'at','availableBytes'}
+LOCKS=[Path('/opt/royal-releases/themed-publish.lock'),LIVE/'.client-presentation-deploy.lock',STATE/'module.lock']
+sys.dont_write_bytecode=True
+
+class PublicationBusy(RuntimeError):pass
+
+@contextmanager
+def publication_locks():
+ with ExitStack() as stack:
+  for path in LOCKS:
+   require(not Path(path).is_symlink(),'Deployment lock symlink rejected')
+   handle=stack.enter_context(open(path,'a'))
+   try:fcntl.flock(handle,fcntl.LOCK_EX|fcntl.LOCK_NB)
+   except BlockingIOError as error:raise PublicationBusy('Publication busy; prepared package preserved; retry explicitly later') from error
+  yield
+def require(value,message):
+ if not value:raise RuntimeError(message)
+def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
+def read(path):require(not path.is_symlink(),'Symlink rejected');return json.loads(path.read_text())
+def save(name,value):(ROOT/name).write_text(json.dumps(value,indent=2)+'\n')
+def command(args):return subprocess.check_output(args,text=True,stderr=subprocess.PIPE,timeout=600).strip()
+def load(name,path):
+ spec=importlib.util.spec_from_file_location(name,path);module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
+def image(name):
+ identity=command(['docker','container','inspect','royal-game-1','--format','{{.Image}}'])
+ helper=load('reviewed_image',Path('/opt/royal-maintenance/bin/retention-runtime.py'))
+ metadata=helper.image_metadata(identity)
+ require(metadata['Id']==identity and name in metadata['RepoTags'],'Wrong running-image tag')
+ return identity
+def snapshot():
+ return json.loads(command(['python3',str(BASE_HELPER)]))
+def stable(value):return {k:v for k,v in value.items() if k not in IGNORED}
+def validate_scope(release,before,operator):
+ require(release['scope']=='modules' and release['modules']==[GAME] and release['build']['passed'],'Wrong release scope')
+ require(release['sourceCommit']==operator['sourceCommit'] and release['baseCommit']==operator['buildBaseCommit'] and before['sourceCommit']==operator['baseCommit'],'Wrong source/base commit')
+ require(len(release['packages'])==1 and release['packages'][0]['gameId']==GAME,'Foreign package')
+ require(set(operator['source'])==set(SOURCES),'Foreign source patch')
+
+def validate_inputs(before,operator,proof):
+ require(proof['hostSingletonsExternalized'] and not proof['serverImplementationIncluded'],'Wrong module boundary')
+ for name,digest in proof['sourceFiles'].items():
+  require(digest==(operator['source'].get(name) or before['sourceLF'].get(name)),'Unreviewed module input: '+name)
+def validate_after(before,after,source,files,pointer,version):
+ expected=dict(before);expected['source']={**before['source'],**source};expected['sourceLF']={**before['sourceLF'],**source}
+ prefix=str(MODULES/GAME/'versions'/version)+'/'
+ expected['moduleFiles']={**before['moduleFiles'],**{prefix+n:h for n,h in files.items()},str(MODULES/GAME/'active.json'):pointer}
+ require(stable(after)==stable(expected),'Host, services, other sources or immutable modules changed')
+def atomic(origin,target):
+ require(not any(p.is_symlink() for p in [origin,target,*target.parents]),'Unsafe source path')
+ partial=target.with_name(target.name+'.'+NAME+'.partial');require(not partial.exists(),'Partial source exists')
+ with origin.open('rb') as inp,partial.open('xb') as out:
+  shutil.copyfileobj(inp,out);os.fchmod(out.fileno(),0o644);out.flush();os.fsync(out.fileno())
+ os.replace(partial,target)
+def main():
+ require(Path(__file__).resolve()==ROOT/'publish.py','Wrong publication root')
+ for path in [ROOT,LIVE,MODULES,STATE]:require(path.is_dir() and not any(p.is_symlink() for p in [path,*path.parents]),'Unsafe root')
+ if sys.argv[1:]==['snapshot']:
+  require(not (ROOT/'before.json').exists(),'Baseline already saved');before=snapshot();save('before.json',before)
+  print(json.dumps({'sourceCommit':before['sourceCommit'],'sourceFiles':len(before['source']),'runtimeFiles':len(before['program']),'services':len(before['services']),'freeBytes':before['availableBytes']}));return
+ with publication_locks():publish_locked()
+
+def publish_locked():
+ require(not sys.argv[1:] and not (ROOT/'published.json').exists() and not BACKUP.exists(),'Publication already attempted or unexpected command')
+ before=read(ROOT/'before.json');release=read(ROOT/'release-manifest.json');receipt=read(ROOT/'release-github.json');op=read(ROOT/'operator.json');validate_scope(release,before,op)
+ installer=read(ROOT/'installer-github.json')
+ require(sha(ROOT/'installer-github.json')==op['installerReceiptSha256'],'Installer receipt changed')
+ require(installer['sourceCommit']==op['installerSourceCommit'] and installer['includedInMain'] is True,'Unverified installer source')
+ require(installer['files']['deployment/releases/'+NAME+'/publish.py']==sha(ROOT/'publish.py'),'Installer differs from verified Git source')
+ for path,key in [(ROOT/'publish.py','wrapperSha256'),(ROOT/'publisher.py','publisherSha256'),(ROOT/'release-manifest.json','releaseManifestSha256'),(ROOT/'release-github.json','receiptSha256')]:
+  require(sha(path)==op[key],'Publication input changed')
+ for name,digest in op['helpers'].items():require(sha(Path(name))==digest,'Unreviewed helper')
+ require(str(BASE_HELPER) in op['helpers'],'Unbound snapshot reader')
+ require(sha(ROOT/'publisher.py')==before['source']['scripts/game-module-release.py'],'Unreviewed publisher')
+ require(receipt['sourceCommit']==release['sourceCommit'],'Unverified source receipt')
+ require(receipt['manifestSha256']==sha(ROOT/'release-manifest.json'),'Wrong release receipt')
+ require(sha(ROOT/'module-proof.json')==op['moduleProofSha256'],'Module proof changed');proof=read(ROOT/'module-proof.json');validate_inputs(before,op,proof)
+ for name,digest in op['source'].items():require(sha(ROOT/'source'/name)==digest,'Source payload changed')
+ current=snapshot();require(stable(current)==stable(before),'Production changed since review');require(current['container']['health']=='healthy','Unhealthy host')
+ require(read(STATE/'host.json')['games'][GAME]==CONTRACT,'Incompatible host')
+ command(['docker','tag',current['container']['image'],'royal-game:before-'+NAME])
+ require(image('royal-game:before-'+NAME)==current['container']['image'],'Missing exact rollback image tag')
+ publisher=load('reviewed_publisher',ROOT/'publisher.py');metadata=read(ROOT/'package/manifest.json');version=release['packages'][0]['version']
+ require(metadata['version']==version and metadata['gameId']==GAME,'Wrong package identity')
+ require(metadata['sourceSha256']==proof['sourceSha256'] and metadata['version']==proof['version'],'Wrong module proof')
+ files={'manifest.json':sha(ROOT/'package/manifest.json'),**metadata['files']};folder='module-dist/'+GAME+'/versions/'+version+'/'
+ require(release['files']=={**{folder+n:h for n,h in files.items()},'module-dist/'+GAME+'/active.json':op['pointerSha256']},'Prepared package differs')
+ options=SimpleNamespace(operation='check',package=str(ROOT/'package'),game=GAME,root=str(MODULES),state=str(STATE),expected_sha=before['moduleFiles'][str(MODULES/GAME/'active.json')])
+ checked=publisher.run(options);require(shutil.disk_usage(LIVE).free>MIN_FREE+checked['bytes']*3+12*1024**2,'Five GiB reserve would be crossed')
+ old_pointer=read(MODULES/GAME/'active.json');old_version=old_pointer['manifest'].split('/')[4];old=MODULES/GAME/'versions'/old_version;publisher.verify(old,CONTRACT,GAME)
+ BACKUP.mkdir(mode=0o700)
+ with tarfile.open(BACKUP/'source.tgz','w:gz') as archive:
+  for name in SOURCES:archive.add(LIVE/name,arcname=name,recursive=False)
+  archive.add(MODULES/GAME/'active.json',arcname='active.json',recursive=False);archive.add(STATE/'host.json',arcname='host.json',recursive=False)
+ (BACKUP/'source.tgz').chmod(0o600)
+ expected={n:before['source'][n] for n in SOURCES};expected.update({'active.json':options.expected_sha,'host.json':before['moduleHostContract']})
+ with tarfile.open(BACKUP/'source.tgz') as archive:require({m.name:hashlib.sha256(archive.extractfile(m).read()).hexdigest() for m in archive.getmembers() if m.isfile()}==expected,'Backup verification failed')
+ shutil.copytree(old,BACKUP/'package',copy_function=os.link);publisher.verify(BACKUP/'package',CONTRACT,GAME)
+ backup={'sourceArchive':str(BACKUP/'source.tgz'),'bytes':(BACKUP/'source.tgz').stat().st_size,'sha256':sha(BACKUP/'source.tgz'),'oldVersion':old_version,'oldPackageHardlinked':True,'imageTag':'royal-game:before-'+NAME,'image':current['container']['image']};save('backup.json',backup)
+ for name in SOURCES:
+  require(sha(LIVE/name)==before['source'][name],'Source changed before replacement');atomic(ROOT/'source'/name,LIVE/name)
+ options.operation='install';mask=os.umask(0o022)
+ try:result=publisher.run(options)
+ finally:os.umask(mask)
+ after=snapshot();save('after.json',after);validate_after(before,after,op['source'],files,op['pointerSha256'],version)
+ require(shutil.disk_usage(LIVE).free>MIN_FREE,'Five GiB reserve crossed')
+ record={'published':True,'release':NAME,'sourceCommit':release['sourceCommit'],'baseCommit':before['sourceCommit'],'buildBaseCommit':release['baseCommit'],'installerSourceCommit':op['installerSourceCommit'],'module':result,'backup':backup,'freeBefore':current['availableBytes'],'freeAfter':after['availableBytes'],'hostRestarted':False,'databaseTouched':False,'otherModulesPreserved':True,'sourceFilesPreserved':len(before['source'])-len(SOURCES),'runtimeFilesPreserved':len(before['program']),'servicesPreserved':len(before['services'])};save('published.json',record);print(json.dumps(record))
+def cli():
+ try:main();return 0
+ except PublicationBusy as error:
+  print(str(error),file=sys.stderr);return 75
+if __name__=='__main__':sys.exit(cli())

@@ -121,7 +121,9 @@ def payload(b):
     require(set(m['support']) == {'overlay-base.py','snapshot-base.py','image_metadata.py','runtime-inventory.cjs','quiesce.cjs','financial_gate.py','engine-build.py'}, 'Unexpected helper scope')
     for name, digest in m['support'].items(): require(sha(b.ROOT / name) == digest, 'Support changed')
     require(b.inventory(b.ROOT / 'source') == b.CHANGES and b.inventory(b.ROOT / 'dist-delta') == b.DELTA and b.inventory(b.ROOT / 'server-delta') == b.SERVER_DELTA, 'Payload differs')
-    require('index.html' in b.DELTA, 'Missing client index')
+    require(len(b.DELTA) == 2 and 'index.html' in b.DELTA
+            and any(re.fullmatch(r'assets/[a-zA-Z0-9_-]+\.js', name) for name in b.DELTA),
+            'Expected one changed client script and the client index')
     validate_media(b.CHANGES,b.DELTA)
     for name, digest in b.DELTA.items():
         require(name == 'index.html' or name in MEDIA or re.fullmatch(r'assets/[a-zA-Z0-9_-]+\.(?:js|css)', name), 'Foreign client artifact')
