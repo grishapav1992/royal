@@ -1,0 +1,16 @@
+{
+  "productionCommit": "a2a69026c0d85c51a1752dae98d8ca15c1108daa",
+  "featureCommits": [
+    "d219ac7db89f1f73f111b96255f9a89edcd54a53",
+    "c520de63c90417d5dd41a44b78539d85d7aeca44"
+  ],
+  "expectedSources": {
+    "src/ui/AuthUI.ts": "a3cd5dfae2a3eaea19a0f8230bbd98f5a6a19fec7df4ff18ee6cb5df1e1b65e2",
+    "src/ui/CharacterSelector.ts": "dd97c75fb044ed451132e164487614335e22aef0803ccb5b801578ba47fad761",
+    "src/ui/character-selector.css": "4903477637cb7baea69536efd586a02a96f360abb76283f5c3a2d59cb9e56715",
+    "src/game/characters.ts": "f174dce5439c68dafba6cce94ea1932e44e875d8766274f74f409ffcc41de96a",
+    "src/game/presetSkinArt.ts": "d00fa82134d66ba29b2849ba9aa9a2d519d4cfa0888c93e680ad3b73ef2400b6"
+  },
+  "addedGames": [],
+  "restoredGames": []
+}
