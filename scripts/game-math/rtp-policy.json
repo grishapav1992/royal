@@ -2110,7 +2110,7 @@
         "progressVersion": 1,
         "target": 0.96,
         "minimumReturn": 0.9,
-        "tolerance": 0.000001,
+        "tolerance": 1e-06,
         "stakes": [
           1000,
           2000,
@@ -3734,15 +3734,18 @@
         "deployment/releases/manual-stakes-20261104-v1/accepted-rounds.test.ts",
         "scripts/game-math/manual-stake-case.mjs",
         "scripts/game-math/manual-stake-pool.mjs",
-        "scripts/game-math/manual-stake-worker.mjs"
+        "scripts/game-math/manual-stake-worker.mjs",
+        "docs/game-math/skin-offers-20261105/round-compatibility.json",
+        "docs/game-math/skin-offers-20261105/accepted-rounds.test.ts",
+        "docs/game-math/skin-offers-20261105/native-projection.json"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "compatibleProgressVersions": [
         3,
         4
       ],
-      "compatibilityEvidence": "deployment/releases/manual-stakes-20261104-v1/production-round-compatibility.json",
-      "compatibilityQualificationSource": "deployment/releases/manual-stakes-20261104-v1/accepted-rounds.test.ts",
+      "compatibilityEvidence": "docs/game-math/skin-offers-20261105/round-compatibility.json",
+      "compatibilityQualificationSource": "docs/game-math/skin-offers-20261105/accepted-rounds.test.ts",
       "manualStakeRange": {
         "minimumCents": 10,
         "maximumCents": 5000,

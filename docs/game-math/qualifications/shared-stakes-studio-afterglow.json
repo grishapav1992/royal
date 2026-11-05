@@ -3,8 +3,8 @@
   "gameId": "studio-afterglow",
   "rulesVersion": 2,
   "progressVersion": 4,
-  "startedAt": "2026-11-04T19:44:51.371Z",
-  "completedAt": "2026-11-04T19:45:17.586Z",
+  "startedAt": "2026-11-05T15:06:56.699Z",
+  "completedAt": "2026-11-05T15:07:00.015Z",
   "sourceHashes": {
     "src/shared/gameStakes.ts": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b",
     "src/shared/roundPrecision.ts": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
@@ -14,7 +14,7 @@
     "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
     "server/demoExpansion.ts": "edaa12803beca8288d3595ebb21063ceb9f0bb030fd949adda56f8b78ad53297",
     "server/demoWallet.ts": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
-    "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
+    "server/demoWalletAmounts.ts": "f1f0a88915a232f134b83203b670e51ea1d5e81273ae0ccdcb4ac1c521b52cce",
     "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
     "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
     "server/afterglowProgress.ts": "4a7f5d07ca6be6afbcec0c5ff2c7d91bb4da82f81438aa35c8a418cc939134b9",
@@ -41,9 +41,12 @@
     "scripts/game-math/manual-stake-case.mjs": "d1b6ed70273ff173bb6d01ae50580658b210fe564318f5925e8218a6d0712b62",
     "scripts/game-math/manual-stake-pool.mjs": "162b9fdfc7e5e0552240a029b29635c25c6a822fa394e34f1d68f28927e34728",
     "scripts/game-math/manual-stake-worker.mjs": "54d7257363c6d1cd4ff071197e42a99f9e6a644344a58708d66f11a59ddad5c4",
+    "docs/game-math/skin-offers-20261105/round-compatibility.json": "6f0cdbdedf482c0fb5e1153b573fc3a14b1a4bfe01b8868b7f0f7c8ab42df4a0",
+    "docs/game-math/skin-offers-20261105/accepted-rounds.test.ts": "6c43a57dbb468ff86cfcdab37c3020d31bd0daa7d34f951bc96ccdb24568d964",
+    "docs/game-math/skin-offers-20261105/native-projection.json": "0375ada52d492774b7d7813327f9564bc4ee7a7c5b0932a66c44c4a1bf0d18f2",
     "scripts/game-math/rtp-stakes.mjs": "a885087bc907189f46a1a1dcc54f807733fcf8cbfae818a64a9fe9f2aed6de52"
   },
-  "policySha256": "4694c1e7d110feadb979da01cd94db5bff924f7e75be24a509d4fe988f3a0d54",
+  "policySha256": "39601ab588eff53313f13106c8499c4b13c18b8626c49ce1b390711538d5f813",
   "method": "full-round-unbiased-cent-policy-v1",
   "precisionLaw": {
     "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",

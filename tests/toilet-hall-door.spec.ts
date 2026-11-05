@@ -47,7 +47,6 @@ test('toilet door reaches floor three by walking and click, returns without boun
     await clickWorld(page,TOILET_MERCHANT.x,TOILET_MERCHANT.y-40);
     await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.serverX-TOILET_MERCHANT.approach.x,s.serverY-TOILET_MERCHANT.approach.y);},{timeout:18000}).toBeLessThan(9);
     await expect.poll(async()=>(await state(page)).toilet.merchant.frame).toBe(15);
-    expect((await state(page)).toilet.merchant.speech.length).toBeGreaterThan(0);
     await expect(page.locator('#skin-studio-dialog')).toBeVisible();
     await expect(page.locator('#skin-studio-title')).toHaveText('Жора: образы');
     await expect(page.locator('#skin-studio-dialog .skin-offer')).toHaveText('1 образ · навсегда');

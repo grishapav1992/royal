@@ -1,3 +1,4 @@
+import {demoWallet} from '../../src/wallet/WalletClient';
 import { SkinStudioUI } from '../../src/ui/SkinStudioUI';
 import type { Account } from '../../server/accounts';
 import type { RoomScene } from '../../src/game/RoomScene';
@@ -8,7 +9,7 @@ import { SKIN_THEME } from '../../src/shared/skinStudio';
 import { createCharacterMotion } from '../../src/game/characterAnimation';
 let account: Account | null = { id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', name: 'Игрок', email: 'skin@example.test', skin: 0, appearance: null };
 const studio = new SkinStudioUI({ setLocked: () => {} } as unknown as RoomScene, () => account, async () => {});
-(window as any).skinPreview = { studio, setAccount(value: Account | null) { account = value; window.dispatchEvent(new Event('royal-account')); },
+(window as any).skinPreview = { studio, wallet:demoWallet, setAccount(value: Account | null) { account = value; window.dispatchEvent(new Event('royal-account')); },
   async miraPortrait(id: string) {
     const [{ RoomScene }, { MiraChat }] = await Promise.all([import('../../src/game/RoomScene'), import('../../src/ui/MiraChat')]);
     const host = document.createElement('section'); host.className = 'room-panel'; host.style.cssText = 'width:640px;height:800px'; document.body.append(host);

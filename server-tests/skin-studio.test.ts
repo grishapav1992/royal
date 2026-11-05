@@ -198,5 +198,15 @@ test('HTTP routes require the visible account, reject cross-site mutations and k
     const asset = await fetch(url + '/api/skin-studio/assets/' + id);
     assert.equal(asset.status, 200); assert.match(asset.headers.get('cache-control')!, /immutable/);
     assert.equal(asset.headers.get('content-type'), 'image/png');
+    const janitor=await (await fetch(url+'/api/skin-studio?offerId=janitor',{headers})).json();
+    assert.equal(janitor.priceUnits,'5000000');assert.equal(janitor.variantCount,1);
+    assert.equal((await fetch(url+'/api/skin-studio?offerId=unknown',{headers})).status,400);
+    f.advance();const single={...f.create(),offerId:'janitor'},before=f.calls();
+    assert.equal((await fetch(url+'/api/skin-studio/generations?offerId=janitor',{method:'POST',headers,body:JSON.stringify(single)})).status,200);
+    await f.store.tick();
+    const singleReady=await (await fetch(url+'/api/skin-studio?offerId=janitor',{headers})).json();
+    assert.equal(singleReady.job.offerId,'janitor');assert.equal(singleReady.job.priceUnits,'5000000');
+    assert.equal(singleReady.job.variants.length,1);assert.equal(f.calls()-before,1);
+
   } finally { await stopWorker(); await new Promise<void>(resolve => server.close(() => resolve())); await f.db.close(); }
 });

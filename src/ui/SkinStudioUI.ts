@@ -206,10 +206,10 @@ export class SkinStudioUI {
     if (this.variants.dataset.cards !== variantKey) {
       this.variants.dataset.cards = variantKey; this.variants.replaceChildren(...(job?.variants ?? []).map((card, i) => this.card(card, i, false)));
     }
+    if(job?.state==='ready'&&job.variantCount===1&&job.variants.length===1&&!this.selected)this.selected=job.variants[0].id;
     this.variants.querySelectorAll<HTMLButtonElement>('[data-select-skin]').forEach(button => {
       button.setAttribute('aria-pressed', String(button.dataset.selectSkin === this.selected)); button.disabled = this.busy;
     });
-    if(job?.state==='ready'&&job.variantCount===1&&job.variants.length===1&&!this.selected)this.selected=job.variants[0].id;
     this.choose.disabled = this.busy || !this.selected;
     const candidates = job?.state === 'ready' ? job.variants : [];
     if (job?.state === 'ready' && this.fittingJob !== job.id) {

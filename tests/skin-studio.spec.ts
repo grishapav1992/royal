@@ -368,8 +368,7 @@ test('the atelier refreshes the same shared wallet as the games after a temporar
   });
   await page.goto('/tests/fixtures/skin-studio.html');
   await page.evaluate(async id => {
-    // @ts-expect-error Vite serves this source import to the test browser.
-    const { demoWallet } = await import('/src/wallet/WalletClient.ts'); demoWallet.setAccount(id); (window as any).testWallet = demoWallet;
+    const demoWallet=(window as any).skinPreview.wallet;demoWallet.setAccount(id);(window as any).testWallet=demoWallet;
   }, user);
   await expect.poll(() => page.evaluate(() => !!(window as any).testWallet.wallet)).toBe(true);
   synchronized = false;
@@ -452,7 +451,7 @@ for(const mobile of [false,true])test('Zhora offers one outfit for $5 and shares
   await page.goto('/tests/fixtures/skin-studio.html');await page.evaluate(()=>(window as any).skinPreview.studio.open('janitor'));
   await expect(page.locator('#skin-studio-title')).toHaveText('Жора: образы');await expect(page.locator('.skin-offer')).toHaveText('1 образ · навсегда');
   await page.getByLabel('Опиши новый образ').fill('Усатый уборщик в плаще Royal');await page.getByRole('button',{name:'Создать за $5',exact:true}).click();
-  await expect(page.locator('.skin-results [data-skin-card]')).toHaveCount(1);await page.getByRole('button',{name:'Примерить вариант 1',exact:true}).click();
+  await expect(page.locator('.skin-results [data-skin-card]')).toHaveCount(1);await expect(page.getByRole('button',{name:'Примерить вариант 1',exact:true})).toHaveAttribute('aria-pressed','true');await expect(page.getByRole('button',{name:'Сохранить образ',exact:true})).toBeEnabled();await page.getByRole('button',{name:'Примерить вариант 1',exact:true}).click();
   await expect(page.getByLabel('Площадка для примерки скина')).toBeVisible();
   await page.screenshot({path:info.outputPath('zhora-single-outfit.png')});
   await page.getByRole('button',{name:'Сохранить образ',exact:true}).click();await expect(page.locator('.skin-wardrobe [data-skin-card]')).toHaveCount(1);

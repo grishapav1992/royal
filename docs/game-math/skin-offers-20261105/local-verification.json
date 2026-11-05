@@ -1,0 +1,86 @@
+{
+  "checkedAt": "2026-11-05T15:14:15.763429+00:00",
+  "environment": "local development preview",
+  "url": "http://127.0.0.1:5191/",
+  "offers": {
+    "atelier": {
+      "dollars": 1,
+      "variants": 2
+    },
+    "janitor": {
+      "dollars": 5,
+      "variants": 1
+    }
+  },
+  "serverScenarios": {
+    "passed": 31,
+    "failed": 0
+  },
+  "typeScript": "pass",
+  "diffWhitespace": "pass",
+  "rtpGate": {
+    "passed": true,
+    "verified": 38,
+    "stakePoliciesVerified": 20,
+    "stakeAdmissionVerified": 20,
+    "legacyNotQualified": 114
+  },
+  "qualification": {
+    "uniqueRegeneratedProofs": 26,
+    "savedIndependentMathSamplesReused": true,
+    "sampleSourceHashesChecked": true,
+    "walletAndManualStakeChecksRunAgain": true,
+    "frozenLegacyBaselineChanged": false,
+    "historicalAndNewCompatibilityScenarios": {
+      "legacyCases": 23,
+      "commonPolicyCases": 846,
+      "continuations": 1389,
+      "legacySkinReservationMigration": true
+    }
+  },
+  "browser": {
+    "hostWithChat": {
+      "desktop": "1440x1000 Chrome",
+      "mobile": "390x844 Chrome touch emulation",
+      "passed": 2
+    },
+    "studioSuite": {
+      "latestFullRunPassed": 20,
+      "latestFullRunFailed": 1,
+      "failedScenario": "Tailor scene was not ready during polling",
+      "isolatedRepeatPassed": 1
+    },
+    "singleVariantAndLostResponseRecheck": {
+      "passed": 3,
+      "failed": 0
+    },
+    "physicalMobileDeviceTested": false,
+    "liveExternalGenerationRequested": false,
+    "configuredProviderEnabledForManualUse": true
+  },
+  "coverage": [
+    "one and five dollar debit, exact refund, no extra capture debit",
+    "one image call for Zhora, two for atelier",
+    "same wardrobe, try-on, save and equip ownership",
+    "immutable accepted offer and rejection of forged price/count",
+    "duplicate UUID, lost capture response, restart and cross-shop HTTP recovery",
+    "old ten dollar orders with three variants",
+    "free level rewards stay at the atelier with two variants",
+    "historical native reservation migrates and refunds the original amount",
+    "all toilet passages remain available"
+  ],
+  "productionPublished": false,
+  "currentPreviewDatabasePreserved": true,
+  "sourceHashes": {
+    "server/accounts.ts": "841b9926833f8613cea2500d368a63c3318f6288ecd9acf0e0ef26b4ef2d3db8",
+    "server/demoWalletAmounts.ts": "f1f0a88915a232f134b83203b670e51ea1d5e81273ae0ccdcb4ac1c521b52cce",
+    "server/skinPayments.ts": "de670656ae84f4c9ce179b73278570a61ad85f9c164985f8f8d73a8feb710456",
+    "server/skinStudio.ts": "67319448db188636b94b28e08bd5527b528e21cd19fea4605c787f7131171c16",
+    "server/skinStudioRoutes.ts": "0a5a8c8eefd1191d8631b9270d7c43e970736f26befb0f2afdd68ba3af2cc1f6",
+    "src/shared/skinStudio.ts": "628c6763ae3cd6c9f8b209ea669cbbdc168b1b0efd9d452b191147acb3afd4fc",
+    "src/ui/SkinStudioUI.ts": "0d3a85d6dfa6bf525ea06beabee1b709f7ea9aab3e8c338b71651879bf5d810c",
+    "src/game/RoomScene.ts": "049b3d198e18a077f90dccd6b914ae8f6d58c41da943793024cdd15c216e6e29",
+    "src/game/ToiletMerchant.ts": "8a8124c9dbd327172fe028f8f54246a61d9217c86b3b08462bb0c979b9b05261",
+    "scripts/game-math/rtp-policy.json": "2f360fdce9867dea58f5f54370551e6d53f00d28e1023d2ffc3b62ac1731800d"
+  }
+}
