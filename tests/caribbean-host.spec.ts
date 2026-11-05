@@ -15,7 +15,7 @@ roomSession:async({request},use)=>{
  }});
  const room=await client.create<any>('lobby');
  for(const name of ['chat','chat-result','activities','piano-note','notice','chat-check','security','ejected','pvp'])room.onMessage(name,()=>{});
- try{await use({path:'/?room='+room.roomId,send:text=>room.send('chat',{id:crypto.randomUUID(),text})});}finally{await Promise.race([room.leave(),new Promise(resolve=>setTimeout(resolve,1500))]);}
+ try{await use({path:'/?room='+room.roomId+'&mode=club',send:text=>room.send('chat',{id:crypto.randomUUID(),text})});}finally{await Promise.race([room.leave(),new Promise(resolve=>setTimeout(resolve,1500))]);}
 }});
 const state=(page:Page)=>page.evaluate(()=>{try{return(window as any).royalDemo?.getState()??{};}catch{return{};}});
 async function enter(page:Page,path:string,email=`ct-player-${crypto.randomUUID()}@example.test`){
@@ -23,7 +23,7 @@ async function enter(page:Page,path:string,email=`ct-player-${crypto.randomUUID(
  await page.emulateMedia({reducedMotion:'reduce'});await page.goto(path);
  await page.getByLabel('Почта',{exact:true}).fill(email);await page.getByLabel('Пароль',{exact:true}).fill('Royal-ct-check-123!');
  await page.getByRole('button',{name:'Продолжить',exact:true}).click();
- await expect.poll(async()=>await page.locator('#character-step').isVisible()||!(await page.locator('#join-dialog').isVisible())).toBe(true);
+ await expect.poll(async()=>await page.locator('#character-step').isVisible()||(await state(page)).online,{timeout:30000}).toBe(true);
  if(await page.locator('#character-step').isVisible())await page.getByRole('button',{name:'Войти в зал',exact:true}).click();
  await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});
  await expect.poll(async()=>(await state(page)).online).toBe(true);
@@ -393,7 +393,7 @@ test('autoplay stops for funds, blur, account change and closing and never resum
 });
 
 test('interrupting a captain reaction preserves its current transform before easing into focus',async({page})=>{
- await page.goto('/?offline=1');await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.goto('/?offline=1&mode=club');await page.emulateMedia({reducedMotion:'no-preference'});
  const continuity=await page.evaluate(async()=>{
   const path='/games/caribbean-treasures/CaribbeanCaptain.ts',module=await import(/* @vite-ignore */path);
   const root=document.createElement('section');root.innerHTML='<span class="ct-portrait-gesture" style="display:block;width:200px;height:300px"><img class="ct-portrait-layer"><img class="ct-portrait-layer"></span><span class="ct-captain-caption" hidden></span>';document.body.append(root);
