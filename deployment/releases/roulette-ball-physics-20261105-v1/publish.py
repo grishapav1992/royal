@@ -93,12 +93,15 @@ def publication_locks():
 def validate_inputs(before, release, operator, proof):
     require(release['scope'] == 'modules' and release['modules'] == [GAME] and release['build']['passed'],
             'Unexpected release scope')
-    require(release['sourceCommit'] == operator['sourceCommit'] and release['baseCommit'] == before['sourceCommit'],
+    require(release['sourceCommit'] == operator['sourceCommit']
+            and release['baseCommit'] == operator['buildBaseCommit']
+            and before['sourceCommit'] == operator['baseCommit'],
             'Unexpected release source or baseline')
     require(len(release['packages']) == 1 and release['packages'][0]['gameId'] == GAME, 'Foreign package')
     require(set(operator['source']) == SOURCES, 'Unexpected source update')
     require(proof['hostSingletonsExternalized'] and not proof['serverImplementationIncluded'], 'Unexpected module boundary')
     projection = release['moduleProjection']
+    require(projection['productionCommit'] == release['baseCommit'], 'Unexpected compilation baseline')
     require(projection['modules'][GAME]['sourceFiles'] == proof['sourceFiles'], 'Compiler input inventory differs')
     inputs = projection['inputs']
     require(SOURCES.issubset(inputs), 'Changed files missing from compilation')
@@ -151,7 +154,8 @@ def publish_locked():
     require(release['githubVerified'] is True and receipt['sourceCommit'] == release['sourceCommit']
             and receipt['manifestSha256'] == operator['manifestSha256']
             and re.fullmatch('[a-f0-9]{40}', receipt['remoteMain']), 'Missing GitHub release receipt')
-    require(installer['sourceCommit'] == release['sourceCommit'] and installer['includedInMain'] is True
+    require(installer['sourceCommit'] == operator['installerSourceCommit'] and installer['includedInMain'] is True
+            and re.fullmatch('[a-f0-9]{40}', installer['remoteMain'])
             and installer['files']['deployment/releases/' + NAME + '/publish.py'] == operator['installerSha256'],
             'Installer differs from the GitHub receipt')
     require(operator['publisherSha256'] == before['source']['scripts/game-module-release.py'], 'Unexpected installer engine')
@@ -233,7 +237,8 @@ def publish_locked():
         raise
     save('after.json', after)
     record = {'published': True, 'release': NAME, 'sourceCommit': release['sourceCommit'],
-              'baseCommit': before['sourceCommit'], 'module': result, 'backup': backup,
+              'baseCommit': before['sourceCommit'], 'buildBaseCommit': release['baseCommit'],
+              'installerSourceCommit': operator['installerSourceCommit'], 'module': result, 'backup': backup,
               'freeBefore': before['availableBytes'], 'freeAfter': after['availableBytes'],
               'hostRestarted': False, 'databaseTouched': False, 'otherModulesPreserved': True,
               'sourceFilesPreserved': len(before['source']) - len(SOURCES),
