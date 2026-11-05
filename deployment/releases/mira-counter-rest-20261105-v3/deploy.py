@@ -64,6 +64,35 @@ def validate_media(changes, delta):
     for name in delta:
         require(name == 'index.html' or name in MEDIA or re.fullmatch(r'assets/[a-zA-Z0-9_-]+\.(?:js|css)', name), 'Foreign client artifact')
 
+def financial_backup(base):
+    target = base.BACKUP / 'financial.dump'
+    proof_path = base.ROOT / 'financial-backup.json'
+    if target.exists():
+        proof = json.loads(proof_path.read_text())
+        require(not target.is_symlink() and sha(target) == proof['sha256'] and target.stat().st_size == proof['bytes'], 'Financial backup differs')
+        return proof
+    require(not proof_path.exists(), 'Incomplete prior financial backup')
+    command = ['docker','exec','royal-finance-sim-finance-db-1','sh','-ec',
+        'export PGPASSWORD="$(cat /run/secrets/finance_admin_password)"; exec pg_dump -h 127.0.0.1 -U finance_schema_owner -d royal_finance_sim --format=custom --schema=royal_game --schema=royal_nile_play']
+    process = subprocess.Popen(command,stdout=subprocess.PIPE)
+    try:
+        with target.open('xb') as output:
+            while chunk := process.stdout.read(65536):
+                require(output.tell() + len(chunk) <= 256 * 1024**2, 'Financial backup exceeds budget')
+                output.write(chunk)
+        require(process.wait(timeout=600) == 0, 'Financial backup failed')
+    except BaseException:
+        if process.poll() is None: process.kill()
+        process.wait();target.unlink(missing_ok=True);raise
+    finally: process.stdout.close()
+    target.chmod(0o600)
+    with target.open('rb') as source:
+        listing = base.run(['docker','exec','-i','royal-finance-sim-finance-db-1','pg_restore','--list'],stdin=source)
+    require('royal_game' in listing and 'royal_nile_play' in listing, 'Financial backup is incomplete')
+    proof = {'path':str(target),'sha256':sha(target),'bytes':target.stat().st_size,'databaseRestored':False}
+    base.write('financial-backup.json',proof)
+    return proof
+
 def configure(root=ROOT):
     def interrupted(number, frame): raise InterruptedError('Deployment interrupted: ' + str(number))
     for number in [signal.SIGTERM,signal.SIGHUP,signal.SIGINT]: signal.signal(number,interrupted)
@@ -109,6 +138,24 @@ def configure(root=ROOT):
     base.run, base.image, base.settings = run, image, settings
     base.healthy = lambda: wait_for_healthy(base)
     base.payload = lambda: payload(base)
+    def quiet_gate(minimum=None):
+        from financial_gate import FinancialGate
+        lease = (root / 'quiesce-base.cjs').read_text()
+        program = 'const reviewedLease={exports:{},parent:{}};\n(function(module,exports){\n' + lease + '\n})(reviewedLease,reviewedLease.exports);\nglobalThis.ROYAL_SKIN_GATE_BASE=reviewedLease.exports;\n' + (root / 'quiesce.cjs').read_text()
+        command = ['docker','compose',*[value for name in base.COMPOSE for value in ['-f',name]],'run','--rm','--no-deps','-T','--entrypoint','node','game','-e',program]
+        gate = FinancialGate(command,cwd=base.LIVE,log_path=root/'financial-gate.log',min_free_bytes=base.publication_min_free() if minimum is None else minimum,disk_paths=(base.LIVE,root,base.BACKUP))
+        try: gate.acquire(); return gate
+        except BaseException: gate.close(); raise
+    base.quiet_gate = quiet_gate
+    original_build, original_backup_guard = base.build, base.backup_guard
+    def checked_build():
+        result = original_build();proof = financial_backup(base)
+        built = json.loads((root / 'build-result.json').read_text());built['financialBackup'] = proof;base.write('build-result.json',built)
+        return {**result,'financialBackup':proof}
+    def backup_guard(built):
+        original_backup_guard(built)
+        require(financial_backup(base) == built['financialBackup'], 'Financial backup evidence changed')
+    base.build, base.backup_guard = checked_build, backup_guard
     return base
 
 def payload(b):
@@ -118,7 +165,7 @@ def payload(b):
     require(set(b.CHANGES) == SOURCES and set(b.SERVER_DELTA) == {'index.js'}, 'Unreviewed source or backend change')
     require(old['program'] == old['preparedProgram'] and old['container']['image'] == old['preparedImage'], 'Baseline runtime differs')
     require(sha(b.ROOT / 'deploy.py') == m['helperSha256'] and sha(b.ROOT / 'snapshot.py') == m['snapshotSha256'], 'Installer changed')
-    require(set(m['support']) == {'overlay-base.py','snapshot-base.py','image_metadata.py','runtime-inventory.cjs','quiesce.cjs','financial_gate.py','engine-build.py'}, 'Unexpected helper scope')
+    require(set(m['support']) == {'overlay-base.py','snapshot-base.py','image_metadata.py','runtime-inventory.cjs','quiesce.cjs','quiesce-base.cjs','financial_gate.py','engine-build.py'}, 'Unexpected helper scope')
     for name, digest in m['support'].items(): require(sha(b.ROOT / name) == digest, 'Support changed')
     require(b.inventory(b.ROOT / 'source') == b.CHANGES and b.inventory(b.ROOT / 'dist-delta') == b.DELTA and b.inventory(b.ROOT / 'server-delta') == b.SERVER_DELTA, 'Payload differs')
     require(len(b.DELTA) == 2 and 'index.html' in b.DELTA
