@@ -2,7 +2,6 @@ import { english } from './en';
 Object.assign(english, {
   'ТВОЙ ВЕЧЕР В ROYAL': 'YOUR EVENING AT ROYAL',
   'Как начнём?': 'How shall we begin?',
-  'Один клуб. Два способа провести время.': 'One club. Two ways to spend your time.',
   'АТМОСФЕРА И ОБЩЕНИЕ': 'ATMOSPHERE AND COMPANY',
   'Войти в клуб': 'Enter the club',
   'Гуляй персонажем, знакомься и находи любимые игры.': 'Explore as your character, meet people and find your favourite games.',
@@ -12,7 +11,6 @@ Object.assign(english, {
   'Выбирай игры в каталоге и общайся в общем чате.': 'Choose games from the catalogue and join the shared chat.',
   'Открыть каталог': 'Open the catalogue',
   'Открывать выбранный режим при следующем входе': 'Open this mode next time',
-  'Переключиться между клубом и казино можно в любой момент.': 'You can switch between the club and casino at any time.',
   'Игры и люди в одном месте': 'Games and people in one place',
   'Режим Royal': 'Royal mode',
   'Клуб': 'Club',
