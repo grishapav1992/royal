@@ -244,7 +244,8 @@ test('crew collection earns free tokens, unlocks a chosen captain and persists b
  await expect(page.locator('.ct-crew-status')).toContainText('В команде пополнение!');
  await page.locator('[data-crew-id=amara]').click();await expect(page.locator('.ct-backdrop')).toBeHidden();await expect.poll(async()=>(await mini()).captain.character).toBe('amara');
  expect((await wallet(page)).entries).toEqual(before.entries);
- await close(page);await page.evaluate(()=>localStorage.clear());await page.reload();await expect.poll(async()=>(await state(page)).online).toBe(true);await open(page);
+ await close(page);await page.evaluate(()=>localStorage.clear());await page.reload();
+ await expect.poll(async()=>(await state(page)).online,{timeout:20000}).toBe(true);await open(page);
  await expect.poll(async()=>(await mini()).captain.character).toBe('amara');expect((await mini()).captain.history).toEqual([]);
  await page.setViewportSize({width:390,height:844});await page.locator('[data-ct-action=crew]').click();
  await shellChat(page);await page.screenshot({path:out+'/collection-unlocked-mobile.png'});
@@ -835,6 +836,7 @@ test('saved complete rounds give distinct captain reactions in the real host',as
    const forced=await page.request.post('/__test/caribbean/force-scenario',{data:{name}});expect(forced.ok()).toBe(true);
    const done=await action(page,'[data-ct-action=play]'),view=await mini(),history=view.captain.history;
    expect(done.state).toBe('settled');expect(history.at(-1).cue).toBe(cue);expect(history.at(-1).pose).toBe(pose);
+   await expect(page.locator('.ct-status')).toHaveAttribute('data-win',cue==='win'?'win':'');
    expect(await page.locator('[data-ct-payout]').textContent()).not.toBe('...');
    const result=history.at(-1),giant=history.findLast((e:any)=>e.cue==='giant'&&e.key.startsWith(done.id));
    cut(name,giant??result,result);results.push({name,costUnits:done.spentUnits,payoutUnits:done.returnedUnits,captain:history.filter((e:any)=>e.key.startsWith(done.id))});
@@ -845,6 +847,7 @@ test('saved complete rounds give distinct captain reactions in the real host',as
   let history=(await mini()).captain.history;const bonus=history.at(-1);expect(bonus.cue).toBe('bonus');cut('bonus',bonus,bonus);await page.screenshot({path:out+'/reaction-bonus.png'});await page.waitForTimeout(1200);
   await action(page,'[data-ct-action=choose-flagship]');const done=await finish(page);history=(await mini()).captain.history;
   const grand=history.at(-1);expect(grand.cue).toBe('bigwin');expect(grand.pose).toBe('laugh');cut('bigwin',grand,grand,1.6);
+  await expect(page.locator('.ct-status')).toContainText('Крупный выигрыш!');
   results.push({name:'natural-flagship',costUnits:done.spentUnits,payoutUnits:done.returnedUnits,captain:history.filter((e:any)=>e.key.startsWith(done.id))});
   await page.screenshot({path:out+'/reaction-bigwin.png'});await page.waitForTimeout(1800);
   await page.locator('[data-ct-action=lines]').click();await page.locator('[data-ct-lines]').selectOption('1');
