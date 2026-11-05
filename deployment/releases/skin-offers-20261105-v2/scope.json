@@ -1,0 +1,51 @@
+{
+  "release": "skin-offers-20261105-v2",
+  "featureCommit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
+  "productionCommit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+  "changedSources": [
+    "src/game/RoomScene.ts",
+    "src/game/ToiletRenderer.ts",
+    "src/game/ToiletMerchant.ts",
+    "src/game/toiletMerchantPose.ts",
+    "src/shared/toilet.ts",
+    "src/shared/skinStudio.ts",
+    "src/ui/SkinStudioUI.ts",
+    "src/ui/skin-studio.css",
+    "src/i18n/en.ts",
+    "docs/concepts/toilet-janitor-animations/animations-v1.json",
+    "server/accounts.ts",
+    "server/demoWalletAmounts.ts",
+    "server/skinPayments.ts",
+    "server/skinStudio.ts",
+    "server/skinStudioRoutes.ts",
+    "src/game/CasinoStreetExit.ts",
+    "public/assets/toilet/royal-janitor-v1-90a698e1d019.png"
+  ],
+  "mediaSources": [
+    "public/assets/toilet/royal-janitor-v1-90a698e1d019.png"
+  ],
+  "expectedSources": {
+    "src/game/RoomScene.ts": "e5fc2ed5b0c730503c1945aa5d1f07c378e881ab063ebaf9020cc574625d6a35",
+    "src/game/ToiletRenderer.ts": "0b63af086fe947da03956a634ad20c9410d00919f29989f5e9085ebf643753cd",
+    "src/game/ToiletMerchant.ts": "8a8124c9dbd327172fe028f8f54246a61d9217c86b3b08462bb0c979b9b05261",
+    "src/game/toiletMerchantPose.ts": "cb46bd643bbbac81a84b409f5a02bfbdad68b9a8569fb5122c2c269b4a7da514",
+    "src/shared/toilet.ts": "7254f1c0da2d0d383e411aad49c948aa2e1ce7b0ec5e5832a967aa946b0f5b07",
+    "src/shared/skinStudio.ts": "628c6763ae3cd6c9f8b209ea669cbbdc168b1b0efd9d452b191147acb3afd4fc",
+    "src/ui/SkinStudioUI.ts": "0d3a85d6dfa6bf525ea06beabee1b709f7ea9aab3e8c338b71651879bf5d810c",
+    "src/ui/skin-studio.css": "b176f15060c07289b29dcf19edafb55cfdc7b127d0535c23ee0d4d53ba647a4b",
+    "src/i18n/en.ts": "0a8603aba8edffd03c9e9ed88892f7fee6380a0428e07eae1137f8e8b116ea8a",
+    "docs/concepts/toilet-janitor-animations/animations-v1.json": "1ea1a8777be9959a19049e650082626de494d9a1f6a0b9831e963c2b1d365a7f",
+    "src/game/CasinoStreetExit.ts": "41da1a806a062ec7dfef68d327a69a7c83cedef66dbb122096540ca6cd583aa5",
+    "server/accounts.ts": "841b9926833f8613cea2500d368a63c3318f6288ecd9acf0e0ef26b4ef2d3db8",
+    "server/demoWalletAmounts.ts": "f1f0a88915a232f134b83203b670e51ea1d5e81273ae0ccdcb4ac1c521b52cce",
+    "server/skinPayments.ts": "de670656ae84f4c9ce179b73278570a61ad85f9c164985f8f8d73a8feb710456",
+    "server/skinStudio.ts": "67319448db188636b94b28e08bd5527b528e21cd19fea4605c787f7131171c16",
+    "server/skinStudioRoutes.ts": "0a5a8c8eefd1191d8631b9270d7c43e970736f26befb0f2afdd68ba3af2cc1f6",
+    "public/assets/toilet/royal-janitor-v1-90a698e1d019.png": "90a698e1d019ab8660ae6641c3b9e69baa83c9251733082df5f68030ccbcb496"
+  },
+  "preservedBackendInputs": {
+    "src/i18n/en.ts": "e6a39483750df92467b584e98319ce679f2a3489669e4b0d3f64a2d7ba0a762c"
+  },
+  "addedGames": [],
+  "restoredGames": []
+}
