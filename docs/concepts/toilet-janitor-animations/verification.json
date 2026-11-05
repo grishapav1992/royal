@@ -1,0 +1,107 @@
+{
+  "selectedCharacter": 3,
+  "character": "Жора, уборщик Royal",
+  "stage": "drawn animation review before gameplay integration",
+  "tool": "built-in image_gen",
+  "prompts": "prompts.json",
+  "frames": 16,
+  "actions": [
+    "idle",
+    "look",
+    "beckon",
+    "trade"
+  ],
+  "atlasSize": [
+    1254,
+    1254
+  ],
+  "alphaExtrema": [
+    0,
+    255
+  ],
+  "frameMetadata": "animations-v1.json",
+  "sharedBootAnchor": true,
+  "rawBootBaselineVariationPx": 1,
+  "allFramesFitTheirSourceRectangle": true,
+  "browser": {
+    "errors": [],
+    "checks": [
+      {
+        "mobile": {
+          "scroll": 390,
+          "viewport": 390
+        },
+        "reducedMotion": "static"
+      },
+      {
+        "playPauseAndReset": true,
+        "embeddedManifestMatches": true
+      }
+    ]
+  },
+  "exports": {
+    "beckon-v1.gif": {
+      "bytes": 199131,
+      "sha256": "4e949ca5616b375e45bd1c04c335f22232d9e4a4e727f94387373f4a1755582f",
+      "width": 360,
+      "height": 403,
+      "duration": "6.000000",
+      "nb_read_frames": "60"
+    },
+    "look-v1.gif": {
+      "bytes": 155724,
+      "sha256": "af4bdab62139919f02a72e7956cb26a122545c4c0e21d9aa1f331ca821b2af8b",
+      "width": 360,
+      "height": 403,
+      "duration": "6.000000",
+      "nb_read_frames": "60"
+    },
+    "trade-v1.gif": {
+      "bytes": 299024,
+      "sha256": "bb39c898654b30a514c61c5b577edda374342fa8ff0005f9abb1a8b956d0dad9",
+      "width": 360,
+      "height": 403,
+      "duration": "6.000000",
+      "nb_read_frames": "60"
+    },
+    "royal-janitor-animations-v1.gif": {
+      "bytes": 809193,
+      "sha256": "f92b96aa00fbe71c60bd2b79c6aabcbf35e3c7d6cf7ed56adc8a93b96e32f68c",
+      "width": 736,
+      "height": 822,
+      "duration": "6.000000",
+      "nb_read_frames": "60"
+    },
+    "idle-v1.gif": {
+      "bytes": 181207,
+      "sha256": "c812669d005b1e4931ef6d286d88c5e523d0b0a58131d68abd09e08a5ab19f9c",
+      "width": 360,
+      "height": 403,
+      "duration": "6.000000",
+      "nb_read_frames": "60"
+    }
+  },
+  "art": {
+    "selected-reference.png": {
+      "bytes": 1876363,
+      "sha256": "399c09e523ac4a3fa53d9525e201f92c14988d817c04fdd97938144ea278c0d4"
+    },
+    "royal-janitor-master-v1.png": {
+      "bytes": 1240166,
+      "sha256": "2c025332398f128a0d40179734a076372ea349da7e095eb69f183eb35455d3f4"
+    },
+    "royal-janitor-atlas-v1.png": {
+      "bytes": 1290880,
+      "sha256": "90a698e1d019ab8660ae6641c3b9e69baa83c9251733082df5f68030ccbcb496"
+    }
+  },
+  "timings": "Provisional six-second visual review loops, not implemented gameplay scheduling.",
+  "export": "Original generated raster frames played in Chrome using source rectangles and boot anchors, then encoded as GIF with FFmpeg.",
+  "gameRuntimeChanged": false,
+  "productionDeploymentPerformed": false,
+  "storage": {
+    "temporaryDirectory": "artifacts/work/toilet-janitor-animation-20261105",
+    "cleanupCondition": "Remove own exported frames and export scripts after art and compact evidence are verified in GitHub. Preserve active local game and database.",
+    "freeBeforeCleanupBytes": 36031750144
+  }
+}
