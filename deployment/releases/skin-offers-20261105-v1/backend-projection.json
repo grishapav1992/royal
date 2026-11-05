@@ -104,7 +104,7 @@
       "sha256": "fa206b27153fc5ca0eb9be756f73e7f2c166cce0476a2b12673fd2b7dda0dd68"
     },
     "server/skinStudioRoutes.ts": {
-      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "commit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
       "path": "server/skinStudioRoutes.ts",
       "baseSha256": "0a5a8c8eefd1191d8631b9270d7c43e970736f26befb0f2afdd68ba3af2cc1f6",
       "sha256": "0a5a8c8eefd1191d8631b9270d7c43e970736f26befb0f2afdd68ba3af2cc1f6"
@@ -216,7 +216,7 @@
       "sha256": "eb980c443089cd96a7710892a53ce6b8a9aa93c3952ea4da5e51c617d7b15b3b"
     },
     "server/accounts.ts": {
-      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "commit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
       "path": "server/accounts.ts",
       "baseSha256": "841b9926833f8613cea2500d368a63c3318f6288ecd9acf0e0ef26b4ef2d3db8",
       "sha256": "841b9926833f8613cea2500d368a63c3318f6288ecd9acf0e0ef26b4ef2d3db8"
@@ -330,7 +330,7 @@
       "sha256": "3a2a07178abfd57475c8eacd849243ad0718101e03e9eec685844a806ff8c84f"
     },
     "server/skinStudio.ts": {
-      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "commit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
       "path": "server/skinStudio.ts",
       "baseSha256": "67319448db188636b94b28e08bd5527b528e21cd19fea4605c787f7131171c16",
       "sha256": "67319448db188636b94b28e08bd5527b528e21cd19fea4605c787f7131171c16"
@@ -408,7 +408,7 @@
       "sha256": "91925b614047a301e24db2274b44704a4866b8e6aa7de981e25f84a3ef67f63f"
     },
     "server/demoWalletAmounts.ts": {
-      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "commit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
       "path": "server/demoWalletAmounts.ts",
       "baseSha256": "f1f0a88915a232f134b83203b670e51ea1d5e81273ae0ccdcb4ac1c521b52cce",
       "sha256": "f1f0a88915a232f134b83203b670e51ea1d5e81273ae0ccdcb4ac1c521b52cce"
@@ -486,7 +486,7 @@
       ]
     },
     "src/shared/skinStudio.ts": {
-      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "commit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
       "path": "src/shared/skinStudio.ts",
       "baseSha256": "628c6763ae3cd6c9f8b209ea669cbbdc168b1b0efd9d452b191147acb3afd4fc",
       "sha256": "628c6763ae3cd6c9f8b209ea669cbbdc168b1b0efd9d452b191147acb3afd4fc"
@@ -940,7 +940,7 @@
       "sha256": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a"
     },
     "server/skinPayments.ts": {
-      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "commit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
       "path": "server/skinPayments.ts",
       "baseSha256": "de670656ae84f4c9ce179b73278570a61ad85f9c164985f8f8d73a8feb710456",
       "sha256": "de670656ae84f4c9ce179b73278570a61ad85f9c164985f8f8d73a8feb710456"
@@ -996,7 +996,7 @@
       "sha256": "edaa12803beca8288d3595ebb21063ceb9f0bb030fd949adda56f8b78ad53297"
     },
     "src/shared/toilet.ts": {
-      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "commit": "72aa2c851bb353f57a8514f599eb7252667aec4d",
       "path": "src/shared/toilet.ts",
       "baseSha256": "7254f1c0da2d0d383e411aad49c948aa2e1ce7b0ec5e5832a967aa946b0f5b07",
       "sha256": "7254f1c0da2d0d383e411aad49c948aa2e1ce7b0ec5e5832a967aa946b0f5b07"
