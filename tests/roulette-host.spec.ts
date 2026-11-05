@@ -39,8 +39,14 @@ async function open(page:Page){
  await expect(page.locator('[data-platform-game="royal-roulette"]')).toBeVisible();
  await page.locator('[data-platform-game="royal-roulette"]').click();
  await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id','royal-roulette',{timeout:20000});
- await expect(page.locator('.rr-root')).toBeVisible();await expect(page.locator('#mini-dialog #club-chat-dock')).toBeVisible();
+ await expect(page.locator('.rr-root')).toBeVisible();
+ const chat=page.locator('#mini-dialog #club-chat-dock');
+ if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
  await expect(page.locator('#chat-input')).toBeInViewport();
+ if(page.viewportSize()!.width<1080){
+  await chat.getByRole('button',{name:'Закрыть чат',exact:true}).click();
+  await expect(chat).toBeHidden();
+ }
 }
 async function close(page:Page){await page.locator('#mini-dialog .mini-top [data-close]').click();await expect.poll(async()=>(await state(page)).cabinet).toBe('');}
 async function layout(page:Page,name:string,mode:'full'|'portrait',minWheel:number){
@@ -291,8 +297,8 @@ test('audio close and blocked unlock discard future sources without closing the 
  await enter(page,roomPath);await open(page);await page.emulateMedia({reducedMotion:'no-preference'});
  await page.evaluate(()=>{const host=(globalThis as any)[Symbol.for('royal.game-host.v1')];host.gameAudio.setMuted(false);host.gameAudio.setVolume(.35);});
  await page.locator('[data-rr-amount="50"]').click();await expect.poll(async()=>(await sound(page)).scheduled.chip??0).toBe(1);
- const receipt=await play(page);expect(receipt.gameRound.stakeUnits).toBe('5000');await layout(page,'release-desktop');
+ const receipt=await play(page);expect(receipt.gameRound.stakeUnits).toBe('5000');await layout(page,'release-desktop','full',450);
  expect((await sound(page)).sharedContext).toBe(true);await expect.poll(async()=>(await sound(page)).activeSources).toBe(0);
- await page.setViewportSize({width:390,height:844});await layout(page,'release-mobile');await close(page);await open(page);
+ await page.setViewportSize({width:390,height:844});await layout(page,'release-mobile','portrait',370);await close(page);await open(page);
  await expect(page.locator('[data-rr-spin]')).toBeEnabled();expect((await sound(page)).scheduled).toEqual({});await close(page);expect(errors).toEqual([]);
  });
