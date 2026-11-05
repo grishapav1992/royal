@@ -6,12 +6,12 @@ import {projectHostSource} from '../../../scripts/build-host-projection.mjs';
 
 const folder='deployment/releases/skin-offers-20261105-v1';
 const capture=JSON.parse(fs.readFileSync(process.argv[2])),{before}=capture;
-const feature='4cdd8b7389e5ec9931eab676688d6969eb8324e9';
+const feature='72aa2c851bb353f57a8514f599eb7252667aec4d';
 const parent='f68a2c008a547fa8e39867cae96a9db919559e02';
 const git=(...args)=>execFileSync('git',args,{maxBuffer:64*1024**2});
 const canonical=bytes=>Buffer.from(bytes.toString('utf8').replace(/\r\n/g,'\n'));
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
-const runtimeSources=["src/game/RoomScene.ts", "src/game/ToiletRenderer.ts", "src/game/ToiletMerchant.ts", "src/game/toiletMerchantPose.ts", "src/shared/toilet.ts", "src/shared/skinStudio.ts", "src/ui/SkinStudioUI.ts", "src/ui/skin-studio.css", "src/i18n/en.ts", "docs/concepts/toilet-janitor-animations/animations-v1.json", "server/accounts.ts", "server/demoWalletAmounts.ts", "server/skinPayments.ts", "server/skinStudio.ts", "server/skinStudioRoutes.ts"];
+const runtimeSources=["src/game/RoomScene.ts", "src/game/ToiletRenderer.ts", "src/game/ToiletMerchant.ts", "src/game/toiletMerchantPose.ts", "src/shared/toilet.ts", "src/shared/skinStudio.ts", "src/ui/SkinStudioUI.ts", "src/ui/skin-studio.css", "src/i18n/en.ts", "docs/concepts/toilet-janitor-animations/animations-v1.json", "server/accounts.ts", "server/demoWalletAmounts.ts", "server/skinPayments.ts", "server/skinStudio.ts", "server/skinStudioRoutes.ts", "src/game/CasinoStreetExit.ts"];
 const mediaSources=["public/assets/toilet/royal-janitor-v1-90a698e1d019.png"];
 const scope={release:'skin-offers-20261105-v1',featureCommit:feature,productionCommit:before.sourceCommit,changedSources:[...runtimeSources,...mediaSources],mediaSources,expectedSources:{},preservedBackendInputs:{},addedGames:[],restoredGames:[]};
 function patches(name){

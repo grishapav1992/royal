@@ -12,6 +12,7 @@ import { CAT_HABITS_TEXTURE, CAT_CLIMB_TEXTURE, CAT_SCRATCH_TEXTURE, CAT_WALK_TE
 import { drawCatCare } from './catCareArt';
 import { FLOOR, BOUNDS, HALL_WALL } from '../shared/clubGeometry';
 import { ATELIER } from '../shared/atelier';
+import {drawCasinoStreetExit} from './CasinoStreetExit';
 import { drawAtelier, ATELIER_TEXTURE, ATELIER_SPRITE } from './atelierArt';
 import { TailorRenderer, ATELIER_EMPTY_TEXTURE, ATELIER_EMPTY_SPRITE, TAILOR_TEXTURE, TAILOR_SPRITE } from './TailorRenderer';
 import { AmbientGuests, type AmbientGuestView } from '../shared/ambientGuests';
@@ -251,13 +252,7 @@ export class RoomScene extends Phaser.Scene {
       return;
     }
     if(link.target==='street'){
-      const {x,y}=link.door.entry,g=this.add.graphics().setDepth(3);
-      g.fillStyle(0x281d2b).fillRect(x-66,y-38,132,68);
-      g.fillStyle(0x722c42).fillRect(x-57,y-33,114,59);
-      g.lineStyle(3,0xe3c17a).strokeRect(x-61,y-36,122,64);
-      g.fillStyle(0xb34858).fillRect(x-50,y-29,100,18);
-      this.add.text(x,y-66,translateText('НА УЛИЦУ'),{fontFamily:'Arial',fontSize:'17px',fontStyle:'bold',color:'#f5dc9d',backgroundColor:'#432437',padding:{x:12,y:7}}).setOrigin(.5).setDepth(4);
-      this.add.zone(x,y-15,150,100).setDepth(680).setInteractive({useHandCursor:true}).on('pointerdown',()=>this.approachFloor('street'));
+      drawCasinoStreetExit(this,link.door,()=>this.approachFloor('street'));
       return;
     }
     const destination=HALLS[link.target],doorLabel=destination.floor!==HALLS[this.hall].floor?translateText('ЭТАЖ ')+destination.floor:translateText('ЗАЛ ')+destination.number,g=this.add.graphics().setDepth(225);
@@ -394,7 +389,6 @@ export class RoomScene extends Phaser.Scene {
     if(this.hall==='tables')this.add.text(ACTIVITIES.chess.entry.x, ACTIVITIES.chess.entry.y+10, translateText('Ш А Х М А Т Ы'), { fontFamily: 'Arial', fontSize: '9px', color: '#d4b880' }).setOrigin(.5).setDepth(2);
     if(this.hall==='tables')this.add.text(562, 516, translateText('Б И Л Ь Я Р Д'), { fontFamily: 'Arial', fontSize: '9px', color: '#d4b880' }).setOrigin(.5).setDepth(2);
     if(this.hall==='tables')PLANTS.forEach((p,i) => this.prop(plantTexture(this.hall,i),p.x,p.y,p.scale));
-    if(this.hall==='arcade')this.add.text(540,650,translateText('ВХОД В КЛУБ'),{fontFamily:'Arial',fontSize:'10px',color:'#cdb887'}).setOrigin(.5).setDepth(.04);
   }
 
   private prop(key: string, x: number, y: number, scale: number) {
@@ -723,7 +717,7 @@ export class RoomScene extends Phaser.Scene {
     for(const view of views){
       if(!active.has(view.id))continue;
       let actor=this.guests.get(view.id);
-      if(!actor){actor=this.actor(view.x,view.y,view.skin);actor.label=this.add.text(view.x,view.y-83,'',{fontFamily:'Arial',fontSize:'10px',color:'#e4d6b9',backgroundColor:'#2a313ccc',padding:{x:5,y:3}}).setOrigin(.5);this.guests.set(view.id,actor);}
+      if(!actor){actor=this.actor(view.x,view.y,view.skin);this.guests.set(view.id,actor);}
       if(this.network){
         let motion=this.guestMotion.get(view.id);
         if(!motion){motion=new NpcMotion<AmbientGuestView>({delayMs:0,isMoving:view=>view.moving});this.guestMotion.set(view.id,motion);}
@@ -1140,8 +1134,6 @@ export class RoomScene extends Phaser.Scene {
       const moved=Math.hypot(view.x-actor.x,view.y-actor.y)>.001;
       actor.x=view.x;actor.y=view.y;
       actor.facing=view.facing;actor.seat=view.seat;actor.action=view.mood==='drinking'?'drink':view.seat?'sit':'idle';actor.drink=view.drink;
-      const status=view.mood==='playing'?translateText('играет'):view.mood==='drinking'?translateText('пьёт'):view.mood==='resting'?translateText('отдыхает'):translateText('гуляет');
-      const label=translateText('НПС · ')+status;if(actor.label?.text!==label)actor.label?.setText(label);
       this.animateActor(actor,time,view.moving&&moved);
       if(view.mood==='playing'&&!view.moving&&!this.reducedMotion)actor.sprite.setAngle(Math.sin(time/400+actor.phase)*1.5);
     }
