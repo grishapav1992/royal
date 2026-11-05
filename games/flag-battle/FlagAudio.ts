@@ -131,8 +131,10 @@ export class FlagAudio {
     switch (e.cue) {
       case 'select': this.pop(360, 180, .065, .06, at); break;
       case 'start': this.pop(150, 280, .13, .075, at); this.air(at, 0, .12, .14, 950); break;
-      case 'collision': this.pop(185 + e.variant * 13, 95 + e.variant * 7, .06, .16 * s, at, e.pan); break;
-      case 'wall': this.pop(310 + e.variant * 17, 145 + e.variant * 9, .05, .052 * s, at, e.pan); break;
+      case 'collision':
+      case 'wall':
+        this.pop(185 + e.variant * 13, 95 + e.variant * 7, .06, .16 * s, at, e.pan);
+        break;
       case 'eliminate': this.air(at, e.pan, .15 * s); this.pop(e.variant < 0 ? 190 : 330 + e.variant * 6, e.variant < 0 ? 92 : 150, .105, .065 * s, at, e.pan); break;
       case 'final-two': this.pop(290, 170, .12, .075, at); this.air(at, 0, .085, .10, 750); break;
       case 'win': this.pop(430, 185, .17, .095, at); this.air(at, 0, .20, .28, 1500); break;

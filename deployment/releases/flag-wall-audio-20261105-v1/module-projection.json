@@ -1,0 +1,255 @@
+{
+  "format": 1,
+  "productionCommit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+  "moduleGames": [
+    "flag-battle"
+  ],
+  "files": {
+    "games/flag-battle/FlagArena.ts": {
+      "commit": "392699baff49427b5a8fbdefb10865ab346151f7",
+      "path": "games/flag-battle/FlagArena.ts",
+      "baseSha256": "4123cfa11fcd5e2ca4e7e2f831ede3cbef88c7694c5b78f5679e9c2026f38570",
+      "sha256": "4123cfa11fcd5e2ca4e7e2f831ede3cbef88c7694c5b78f5679e9c2026f38570"
+    },
+    "games/flag-battle/FlagAudio.ts": {
+      "commit": "5304ad1386865018c66c220f343106b36d2f50d5",
+      "path": "games/flag-battle/FlagAudio.ts",
+      "baseSha256": "caea1e30fa2d49b1eab48d7d89387ca327d9c8cd86bef2c6f62c6582d3948564",
+      "sha256": "caea1e30fa2d49b1eab48d7d89387ca327d9c8cd86bef2c6f62c6582d3948564"
+    },
+    "games/flag-battle/FlagBattleUI.ts": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "games/flag-battle/FlagBattleUI.ts",
+      "baseSha256": "faf0e26c6a3a8ae7839e517c4fb7026ce248195c8b638cef166a9e9d5315506b",
+      "sha256": "faf0e26c6a3a8ae7839e517c4fb7026ce248195c8b638cef166a9e9d5315506b"
+    },
+    "games/flag-battle/FlagPhysics.ts": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "games/flag-battle/FlagPhysics.ts",
+      "baseSha256": "75ed3208db8f377316dac255059a7c68c52b33db6f0283ba4f4b2e887713f625",
+      "sha256": "75ed3208db8f377316dac255059a7c68c52b33db6f0283ba4f4b2e887713f625"
+    },
+    "games/flag-battle/FlagSoundTimeline.ts": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "games/flag-battle/FlagSoundTimeline.ts",
+      "baseSha256": "2dfd78b1f4f05b4bfdf3a9945e4d04c275c6405618b75081ffc9f31ea8a9eabe",
+      "sha256": "2dfd78b1f4f05b4bfdf3a9945e4d04c275c6405618b75081ffc9f31ea8a9eabe"
+    },
+    "games/flag-battle/entry.ts": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "games/flag-battle/entry.ts",
+      "baseSha256": "96fb2482b2c82e78940e8f27aeb74456290298a3ec4f1bd084f447589374d85e",
+      "sha256": "96fb2482b2c82e78940e8f27aeb74456290298a3ec4f1bd084f447589374d85e"
+    },
+    "games/flag-battle/priorities.css": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "games/flag-battle/priorities.css",
+      "baseSha256": "ad6c2f7daa0bfccae242391a8ba48e27a32360377b91a28e4125fbd89822d919",
+      "sha256": "ad6c2f7daa0bfccae242391a8ba48e27a32360377b91a28e4125fbd89822d919"
+    },
+    "games/flag-battle/style.css": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "games/flag-battle/style.css",
+      "baseSha256": "d7cd70e6faff320b81ef814df13bb4853891211d388d26e8c8821fb766ad0594",
+      "sha256": "d7cd70e6faff320b81ef814df13bb4853891211d388d26e8c8821fb766ad0594"
+    },
+    "games/flag-battle/tsconfig.json": {
+      "commit": "62a4aa66dd77e7e96ecc13fab2266d72748141d9",
+      "path": "games/flag-battle/tsconfig.json",
+      "baseSha256": "71b119246484c04f8b0be9137eb1cf1f56ba2edd4af1652914517166ac98adc3",
+      "sha256": "71b119246484c04f8b0be9137eb1cf1f56ba2edd4af1652914517166ac98adc3"
+    },
+    "src/modules/GameHostContract.ts": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "src/modules/GameHostContract.ts",
+      "baseSha256": "47e6960da87ccab2dcb81c808ad019a82ee587f097754f1ab20a9c4dfcb3631b",
+      "sha256": "47e6960da87ccab2dcb81c808ad019a82ee587f097754f1ab20a9c4dfcb3631b"
+    },
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "src/shared/caribbeanTreasuresMath.ts",
+      "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+      "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+    },
+    "src/shared/flagBattle.ts": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "src/shared/flagBattle.ts",
+      "baseSha256": "269b48f9367609b2343b732982631f88203fed9fa2b40e6bb08d9f6611b64aa4",
+      "sha256": "269b48f9367609b2343b732982631f88203fed9fa2b40e6bb08d9f6611b64aa4"
+    },
+    "src/shared/forestHeartMath.ts": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "src/shared/forestHeartMath.ts",
+      "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+      "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
+    },
+    "src/shared/gameStakes.ts": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "src/shared/gameStakes.ts",
+      "baseSha256": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b",
+      "sha256": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b"
+    },
+    "src/shared/neopolisMath.ts": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "src/shared/neopolisMath.ts",
+      "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+    },
+    "src/shared/neopolisStakePayouts.ts": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "src/shared/neopolisStakePayouts.ts",
+      "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+      "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+    },
+    "src/shared/roundPrecision.ts": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "src/shared/roundPrecision.ts",
+      "baseSha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
+      "sha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8"
+    },
+    "src/ui/GameLayoutPolicy.ts": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "src/ui/GameLayoutPolicy.ts",
+      "baseSha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c",
+      "sha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c"
+    },
+    "src/ui/GamePriorityPanel.ts": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "src/ui/GamePriorityPanel.ts",
+      "baseSha256": "e7962834ba950151c3de176899ec3b6e49e1c5175f35ac1e5087787d5e0abd34",
+      "sha256": "e7962834ba950151c3de176899ec3b6e49e1c5175f35ac1e5087787d5e0abd34"
+    },
+    "src/ui/active-game-viewport.css": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "src/ui/active-game-viewport.css",
+      "baseSha256": "493e85699b284319a6e0dcaf6aa178c308ef2640bb7dc180625c052a4b6d60c7",
+      "sha256": "493e85699b284319a6e0dcaf6aa178c308ef2640bb7dc180625c052a4b6d60c7"
+    },
+    "src/ui/game-priority-panel.css": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "src/ui/game-priority-panel.css",
+      "baseSha256": "0894bf423064c5e1de16f1a1c73831e517efadfb3e5757fd506b1f4d49abcfb1",
+      "sha256": "0894bf423064c5e1de16f1a1c73831e517efadfb3e5757fd506b1f4d49abcfb1"
+    },
+    "src/ui/stakeRules.ts": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "src/ui/stakeRules.ts",
+      "baseSha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df",
+      "sha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df"
+    },
+    "src/ui/stakeSelection.ts": {
+      "commit": "7ad6f275ac047bcf68269e20515cf9b0ae021154",
+      "path": "src/ui/stakeSelection.ts",
+      "baseSha256": "a504e218ad8683f493e68345b26003a33711a07e6231290910054cd31d72c631",
+      "sha256": "a504e218ad8683f493e68345b26003a33711a07e6231290910054cd31d72c631"
+    },
+    "tsconfig.json": {
+      "commit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+      "path": "tsconfig.json",
+      "baseSha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+      "sha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b"
+    },
+    "games/flag-battle/package.json": {
+      "commit": "62a4aa66dd77e7e96ecc13fab2266d72748141d9",
+      "path": "games/flag-battle/package.json",
+      "baseSha256": "abac21886b92fa711a6e0eb510320c9c6dcb0f3f7044254bf38ce82832ca9b28",
+      "sha256": "abac21886b92fa711a6e0eb510320c9c6dcb0f3f7044254bf38ce82832ca9b28"
+    },
+    "package.json": {
+      "commit": "399191cc6e92d11b947845955585230ac3005800",
+      "path": "package.json",
+      "baseSha256": "a5d1f48b1b3c7192c571b49d400387e04fc9cccc905b21ba87b1f069509b9919",
+      "sha256": "a5d1f48b1b3c7192c571b49d400387e04fc9cccc905b21ba87b1f069509b9919"
+    },
+    "src/modules/GameModuleCatalog.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/modules/GameModuleCatalog.ts",
+      "baseSha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82",
+      "sha256": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1",
+      "patches": [
+        {
+          "from": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },",
+          "to": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },"
+        },
+        {
+          "from": "ion:1},\n] as con",
+          "to": "ion:1},\n {gameId:'tsu-e-fa',slug:'tsu-e-fa',apiVersion:1,rulesVersion:1,progressVersion:1},\n] as con"
+        },
+        {
+          "from": "iVersion:1,rulesVersion:1,progressVersion:1},\n] a",
+          "to": "iVersion:1,rulesVersion:2,progressVersion:1},\n] a"
+        },
+        {
+          "from": ":2,",
+          "to": ":3,"
+        },
+        {
+          "from": ":3,",
+          "to": ":4,"
+        },
+        {
+          "from": "export const STUDIO_GAME_MODULES = [\n",
+          "to": "export const STUDIO_GAME_MODULES = [\n { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },\n"
+        }
+      ]
+    },
+    "src/ui/operationFeedback.ts": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "src/ui/operationFeedback.ts",
+      "baseSha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17",
+      "sha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17"
+    }
+  },
+  "moduleAssets": {
+    "public/assets/flag-battle/cover.svg": "ecc6c36820e7abff1a3406169dab514350c698854a592708604e7ce17bbff177",
+    "public/assets/flag-battle/cover.webp": "c6a43a55939c33033ca2b24e1f8ff019b1d9ebd4ae1f2dc063c30d2bb9dc9db1",
+    "public/assets/flag-battle/flags/ae.svg": "3e77f069b29dddad5cbd9bc94f1fb832923d8340dd2d4853b69763e40989bd1f",
+    "public/assets/flag-battle/flags/ar.svg": "d7d7579673eb63fb654d1e9f751eab4192f141d25cd3cd30cd1d0a920497adb7",
+    "public/assets/flag-battle/flags/at.svg": "6c7bcf244743bc3efd060da58673b31758b52dad26c623ebae86eea22d9c4f6a",
+    "public/assets/flag-battle/flags/au.svg": "e6b1a5ec32723983952e5ffc6494f31b2defb43f872f1684cb2494139909ebf5",
+    "public/assets/flag-battle/flags/be.svg": "bc258ba2d89e763c87e76e87c348d122715cbec0350186975506e9ff503ae7dc",
+    "public/assets/flag-battle/flags/br.svg": "c24a033e7b925411426f36b6ca39cfdebe1018f7b357cc49d72a682fa313df20",
+    "public/assets/flag-battle/flags/ca.svg": "b57e0e676c15f425dc4a503b3d0d483aea3381595b87fb67742bd0d74ab46584",
+    "public/assets/flag-battle/flags/ch.svg": "dcfe633092700aa67bac30673c6051ffbe48fc3986ed3ac8894c3cd6134b9c23",
+    "public/assets/flag-battle/flags/cl.svg": "28f462fb327086e28be4f5f241f42cc3c743cb688a4673fe40e2fddd2091a867",
+    "public/assets/flag-battle/flags/cn.svg": "ec6a7ede8ffacc03693a9e0ff8c571b9e73ed7af2a9266e09c02e243a43db161",
+    "public/assets/flag-battle/flags/co.svg": "bf7fce464f61c5f8f48079cba3117fdff5d82966c9e4e45b4f73997934da8999",
+    "public/assets/flag-battle/flags/cz.svg": "115266ee1ba2f1c0359ac7020b3586d9f39802c4eda8433b7392dfe623f04c5d",
+    "public/assets/flag-battle/flags/de.svg": "69924308d664bbc97e65dd664c1953b57807875a38f07b8ff1ecaca715f86e4d",
+    "public/assets/flag-battle/flags/dk.svg": "36ba2d58bba9df297f3675a5353f07d24719485b1110aecfd47888018f989a62",
+    "public/assets/flag-battle/flags/eg.svg": "5a9ca1417a38e1b177ac80223db4084882ee7859d72fc9225b871e7478e5ae38",
+    "public/assets/flag-battle/flags/es.svg": "dfd34880aaee2c08306262229cc7dceb6466e58c982f6eba13aa986a71c21b4d",
+    "public/assets/flag-battle/flags/fi.svg": "8da7b6b8f3e0299581df1215f568e72e73ee6a6b9a766de3898045b59375d992",
+    "public/assets/flag-battle/flags/fr.svg": "076cff2ef32ef58d5e36d713c1579cb48eedc3954656a84b2f953a5d547e6dbb",
+    "public/assets/flag-battle/flags/gb.svg": "c668d1567dfa5f5916ed69baaeb79e509612905f4f949d8df3284279cf542bd0",
+    "public/assets/flag-battle/flags/gr.svg": "d599f46bd6c1131a2a1581e17b3acbc8ba36a6b94cc4efb3768389590fd7683e",
+    "public/assets/flag-battle/flags/hu.svg": "e73ccb7094cb46ab09c013969ffc3231a09a8c304d2c23486f18b82d3798f9f3",
+    "public/assets/flag-battle/flags/id.svg": "fe5282c3643a9a7e5427df6cc4c7cfcba71b054eefccbd6026af3213b7d50e00",
+    "public/assets/flag-battle/flags/ie.svg": "966d5a94872ba2ea3a97b6423f2685e6475eb1ef5166f9929e5bae4b34913195",
+    "public/assets/flag-battle/flags/in.svg": "43763592e528d43aeb57b4ba4a6fbcca81b2fbca3ae3f1157f483086b1816200",
+    "public/assets/flag-battle/flags/it.svg": "d365181dc1b733c620a8df9decf8af5523a73fb5dc668a413c1acc7cd1f89480",
+    "public/assets/flag-battle/flags/jp.svg": "88446293c801188349a9a972fa982a870e80e873339ddba1fbeaef4fc0e75af0",
+    "public/assets/flag-battle/flags/ke.svg": "1dd623af24f9423f507bcdc7cdf27f906a764fbd91bb54bdb4a502fec65fd5ea",
+    "public/assets/flag-battle/flags/kr.svg": "488d302b4c296b1d983a82e53c403d0fb816997cea663f08cc2b1283a18ff7a6",
+    "public/assets/flag-battle/flags/ma.svg": "2cd2ed374331896bcbbee1e7001142ddcf7433d63bbfc6c1201cda37be3ff7e3",
+    "public/assets/flag-battle/flags/mx.svg": "b65b9037b35fb64c7fb83bd034d8bd68f83f7d08109c2fcf117090a89ca212db",
+    "public/assets/flag-battle/flags/ng.svg": "98b3fab4eee8b5ccc81b6052502189271b0bf892470137171d4543bed17679ac",
+    "public/assets/flag-battle/flags/nl.svg": "8f73fd4103b57685404779930942ea30eaa86d7e55f888d8821c0ad81a2b484d",
+    "public/assets/flag-battle/flags/no.svg": "adb5d645cf923038ceb3dacc1262f4962e010b1bdedc88fab2d5d01ded0d14d2",
+    "public/assets/flag-battle/flags/nz.svg": "f7a8f7d407ecf461beddf87059af05e658cc323fa63ec3a40c7ee16c55b55295",
+    "public/assets/flag-battle/flags/pe.svg": "9d6dad86d092c4cfbe59b25da7b1c338e0d323590f9f5f9d20a5927960b9679f",
+    "public/assets/flag-battle/flags/pl.svg": "af9cd05ce0197021f58f4a223de583d2f66d63a2cbb337cb99454c026dd93903",
+    "public/assets/flag-battle/flags/pt.svg": "8323d7b7d8b2fa4c4250ca93bbcbf9e45bd231a0f2a5f96ea20e04237d3017ab",
+    "public/assets/flag-battle/flags/ro.svg": "e0da35bab74ef19091afa7007c52d8bab7cbfc043504d767bc4c33a3cbe5175a",
+    "public/assets/flag-battle/flags/ru.svg": "bc34a467eb6d9b8b226aeaeffae723a80e70a2e2c9ecc5d6d485cf51c590f329",
+    "public/assets/flag-battle/flags/sa.svg": "06234edeab7b471cfb4d7da2d9015d1b9199a62d0ffad738fde3967cb189d7c0",
+    "public/assets/flag-battle/flags/se.svg": "f7f990328522bb8315b18c87cbf3c5cf5737a204a252e53a3dc0ed444f0f62fc",
+    "public/assets/flag-battle/flags/th.svg": "b486eddc92558ab63b1584f19b8e7dcb85ff1cb526dac363b63f5aa935ed3b0d",
+    "public/assets/flag-battle/flags/tr.svg": "fb8d48a248ebce90487ffb1030a001ab219e0c607673d5d156213c8d297ab015",
+    "public/assets/flag-battle/flags/ua.svg": "730905d52617000364815fd6f3b6b95af07146290edb6fce15e9ebf37501e5e4",
+    "public/assets/flag-battle/flags/us.svg": "6213476c7dc9d85ab039b5b8443b1e129d2eed06a3928a82d3729dee2ffb5341",
+    "public/assets/flag-battle/flags/uy.svg": "c2364cd4e23bfd00e4e734b191acced623fd8d83575c2d651989be7358e49a2a",
+    "public/assets/flag-battle/flags/vn.svg": "e29cb8f49baa576810506ee33f460000251d8e44b14340369b0f3995bbd9b01e",
+    "public/assets/flag-battle/flags/za.svg": "d11c888a4b0803993fce6a63f36a3f842a53e12ea2d20b4ee66922202a99187b"
+  }
+}
