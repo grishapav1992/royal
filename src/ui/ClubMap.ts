@@ -79,7 +79,7 @@ export class ClubMap {
       }
     }
     }
-    for(const link of hallLinks(state.hall).filter(link=>link.target!=='roof'&&link.target!=='toilet')){ctx.fillStyle='#73d4ca';ctx.fillRect(link.door.entry.x-35,link.door.entry.y-12,70,24);}
+    for(const link of hallLinks(state.hall).filter(link=>link.target!=='roof'&&(link.target!=='toilet'||state.hall==='github'))){ctx.fillStyle='#73d4ca';ctx.fillRect(link.door.entry.x-35,link.door.entry.y-12,70,24);}
     if(isCasinoFloor(state.hall)){const lift=elevatorDock(state.hall);ctx.fillStyle='#e2c17c';ctx.fillRect(lift.entry.x-40,lift.entry.y-20,80,40);}
     for(const guest of state.guests){ctx.fillStyle='#8da49b';ctx.beginPath();ctx.arc(guest.x,guest.y,10,0,Math.PI*2);ctx.fill();}
     for(const person of state.street?.pedestrians??[]){ctx.fillStyle='#8da49b';ctx.beginPath();ctx.arc(person.x,person.y,10,0,Math.PI*2);ctx.fill();}

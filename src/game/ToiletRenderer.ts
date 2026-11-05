@@ -1,5 +1,5 @@
 import type Phaser from 'phaser';
-import { TOILET,TOILET_WINDOW,OCCUPIED_TOILET_CUBICLE,toiletCubicleOpen } from '../shared/toilet';
+import { TOILET,TOILET_WINDOW,TOILET_HALL_DOOR,CARD_TOILET_DOOR,OCCUPIED_TOILET_CUBICLE,toiletCubicleOpen } from '../shared/toilet';
 import {paintToiletResident,toiletResidentRigReady} from './toiletResidentArt';
 import {toiletResidentPose} from './toiletResidentPose';
 
@@ -74,6 +74,39 @@ function paintToilet(c:Paint,roofView?:HTMLCanvasElement){
   box(c,r.x,r.y,r.w,r.h,'#788d81',1);for(let y=r.y+4;y<r.y+r.h-3;y+=8)box(c,r.x+2,y,r.w-4,4,'#d6d8c4',1);
   box(c,b.x,b.y,b.w,b.h,'#536a60');box(c,b.x-2,b.y-2,b.w+4,6,'#344d45',1);line(c,b.x+7,b.y+9,b.x+7,b.y+b.h-5,'#91a394',1.5);
   box(c,320,486,38,15,'#8b9b91',1);for(let x=325;x<355;x+=6)line(c,x,489,x,498,'#4b6260',1.5);
+  paintHallExit(c);
+}
+
+/** A cut-away near wall exposes the threshold and a little of the warm salon. */
+function paintHallExit(c:Paint){
+  const x=TOILET_HALL_DOOR.entry.x;
+  box(c,x-46,529,92,52,'#713c4c',0);
+  box(c,x-36,542,72,36,'#8b4658',0);line(c,x-31,549,x+31,549,gold,1);
+  box(c,x-46,532,92,8,'#e0d0ab',1);line(c,x-40,534,x+40,534,'#fff1d0',1);
+  for(const side of [-1,1]){box(c,x+side*48-5,521,10,25,'#55786d',1.5);box(c,x+side*48-3,522,6,5,cream,1);}
+  box(c,x+38,482,6,49,'#713c4c',1.5);box(c,x+35,490,4,8,gold,1);
+  box(c,x-79,540,24,18,'#bda477',1);c.fillStyle=ink;c.font='bold 11px Arial';c.textAlign='center';c.fillText('03',x-67,553);
+}
+
+/** The matching salon doorway keeps the same upper-wall scale as the floor doors. */
+export function drawCardToiletDoor(scene:Phaser.Scene,enter:()=>void){
+  const key='card-salon-toilet-door-v1';
+  if(!scene.textures.exists(key)){
+    const canvas=document.createElement('canvas');canvas.width=256;canvas.height=348;
+    const c=canvas.getContext('2d')!;c.scale(2,2);
+    box(c,4,8,120,162,'#382630',2);box(c,9,13,110,156,'#c4a56a',2);box(c,16,20,96,146,'#4e6c61',2);
+    c.save();c.beginPath();c.rect(21,25,86,137);c.clip();
+    for(let y=25;y<164;y+=25)for(let x=21;x<109;x+=29)box(c,x,y,29,25,['#d8d7c8','#becac1'][(Math.floor((x-21)/29)+Math.floor((y-25)/25))%2],.6,'#9da99e');
+    box(c,23,42,80,9,'#54776e',0);box(c,24,54,18,35,cream,1);oval(c,33,76,14,12,'#94aaa4',ink,1);
+    box(c,76,25,28,137,'#713c4c',2);box(c,79,31,20,115,'#844658',1);box(c,77,97,7,4,gold,1);
+    c.restore();
+    box(c,10,162,108,8,cream,1.5);line(c,16,164,112,164,'#fff1d0',1);
+    box(c,44,28,34,22,'#d9bf87',1);c.fillStyle=ink;c.font='bold 14px Arial';c.textAlign='center';c.fillText('WC',61,44);
+    scene.textures.addCanvas(key,canvas);
+  }
+  const door=CARD_TOILET_DOOR;
+  scene.add.image(door.entry.x-64,5,key).setOrigin(0).setDisplaySize(128,174).setDepth(225);
+  scene.add.zone(door.click.x,door.click.y,128,180).setDepth(700).setInteractive({useHandCursor:true}).on('pointerdown',enter);
 }
 function paintDoor(c:Paint,p:typeof TOILET.cubicles[number],open:boolean){
   if(open){box(c,p.x+9,p.y+72,4,64,'#713c4c',1);box(c,p.x+13,p.y+77,3,2,gold,0);}
@@ -90,7 +123,7 @@ export class ToiletRenderer{
   private lastFrame=-1;
   private reducedMotion=false;
   private pose=toiletResidentPose(0,true);
-  constructor(scene:Phaser.Scene,leave:()=>void,roofView?:HTMLCanvasElement){
+  constructor(scene:Phaser.Scene,leave:()=>void,roofView?:HTMLCanvasElement,leaveToHall?:()=>void){
     this.base=document.createElement('canvas');this.base.width=TOILET.width;this.base.height=TOILET.height;
     paintToilet(this.base.getContext('2d')!,roofView);
     const key='casino-toilet-rectangle-v2';if(!scene.textures.exists(key))scene.textures.addCanvas(key,this.base);
@@ -101,6 +134,7 @@ export class ToiletRenderer{
     this.drawResident();scene.add.image(p.x,p.y,residentKey).setOrigin(0).setDisplaySize(100,140).setDepth(14);
     this.doors=scene.add.graphics().setDepth(15);this.drawDoors();
     scene.add.zone(TOILET_WINDOW.click.x,TOILET_WINDOW.click.y,120,110).setDepth(700).setInteractive({useHandCursor:true}).on('pointerdown',leave);
+    if(leaveToHall)scene.add.zone(TOILET_HALL_DOOR.click.x,TOILET_HALL_DOOR.click.y,120,80).setDepth(700).setInteractive({useHandCursor:true}).on('pointerdown',leaveToHall);
   }
   private drawDoors(){
     const g=this.doors;g.clear();

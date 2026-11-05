@@ -395,7 +395,7 @@ function updateHall(hall:HallId){
   $('#card-tables-catalog').hidden=hall!=='github';
   $('#floor-links').innerHTML=hallLinks(hall).filter(link=>link.target!=='toilet'&&(link.target!=='roof'||hall==='toilet')).map(link=>{
     const target=HALLS[link.target];
-    if(hall==='toilet')return tr`<button type="button" data-floor-target="roof"><span aria-hidden="true">↗</span> На крышу</button>`;
+    if(hall==='toilet'&&link.target==='roof')return tr`<button type="button" data-floor-target="roof"><span aria-hidden="true">↗</span> На крышу</button>`;
     if(hall==='roof')return tr`<button type="button" data-floor-target="street"><span aria-hidden="true">↓</span> Во двор</button>`;
     if(link.target==='street')return tr`<button type="button" data-floor-target="street"><span aria-hidden="true">↗</span> На улицу</button>`;
     if(hall==='street')return tr`<button type="button" data-floor-target="arcade"><span aria-hidden="true">↳</span> В казино</button>`;

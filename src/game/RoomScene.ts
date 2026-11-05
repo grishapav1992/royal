@@ -51,8 +51,8 @@ import { StreetRenderer } from './StreetRenderer';
 import { ROOF, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_SPEED_SCALE,ROOF_STAIR_EPSILON,advanceRoofStairStep,moveRoofStairs,roofStairOptions,nearRoofStairBase } from '../shared/rooftop';
 import { RooftopRenderer } from './RooftopRenderer';
 import { STREET } from '../shared/street';
-import { TOILET,TOILET_WINDOW,ROOF_TOILET } from '../shared/toilet';
-import { ToiletRenderer } from './ToiletRenderer';
+import { TOILET,TOILET_WINDOW,ROOF_TOILET,TOILET_HALL_DOOR } from '../shared/toilet';
+import { ToiletRenderer,drawCardToiletDoor } from './ToiletRenderer';
 import {preloadToiletResident,prepareToiletResident} from './toiletResidentArt';
 import {STAIR_WINDOW,atStairWindow,canApproachStairWindow,canWalkThroughStairWindow} from '../shared/stairWindow';
 import {onRoofWindowPlatform,ROOF_WINDOW_PLATFORM,ROOF_STAIR_DRAW,roofWindowPlatformPosition,roofWindowPlatformPoint} from '../shared/rooftop';
@@ -187,7 +187,7 @@ export class RoomScene extends Phaser.Scene {
         continue;
       }
       if(hall==='toilet'){
-        this.toilet=new ToiletRenderer(this,()=>this.approachFloor('roof'),this.rooftop?.mapCanvas);
+        this.toilet=new ToiletRenderer(this,()=>this.approachFloor('roof'),this.rooftop?.mapCanvas,()=>this.approachFloor('github'));
         this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
         continue;
       }
@@ -243,6 +243,10 @@ export class RoomScene extends Phaser.Scene {
     this.syncGuests(this.guestViews);
   }
   private drawDoor(link:HallLink){
+    if(link.target==='toilet'){
+      drawCardToiletDoor(this,()=>this.approachFloor('toilet'));
+      return;
+    }
     if(link.target==='street'){
       const {x,y}=link.door.entry,g=this.add.graphics().setDepth(3);
       g.fillStyle(0x281d2b).fillRect(x-66,y-38,132,68);
@@ -556,6 +560,7 @@ export class RoomScene extends Phaser.Scene {
     if (this.locked || this.typing || this.switching) return;
     if(this.hall==='roof'&&Math.hypot(this.player.x-ROOF_TOILET.entry.x,this.player.y-ROOF_TOILET.entry.y)<110){this.approachFloor('toilet');return;}
     if(this.hall==='toilet'&&Math.hypot(this.player.x-TOILET_WINDOW.entry.x,this.player.y-TOILET_WINDOW.entry.y)<110){this.approachFloor('roof');return;}
+    if(this.hall==='toilet'&&Math.hypot(this.player.x-TOILET_HALL_DOOR.entry.x,this.player.y-TOILET_HALL_DOOR.entry.y)<80){this.approachFloor('github');return;}
     if(this.hall==='street'&&(this.player.stairStep??0)>0)return;
     if(this.hall==='street'&&!this.isHuggingCat()&&Math.hypot(this.player.x-STREET_ROOF_STAIRS.foot.x,this.player.y-STREET_ROOF_STAIRS.foot.y)<55){this.approachFloor('roof');return;}
     if(this.hall==='street'&&!this.isHuggingCat()&&this.street?.interact(this.player)){this.pendingLounge=null;this.finishMovement(()=>this.network?.stop());return;}

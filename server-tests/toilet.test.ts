@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {TOILET,TOILET_WINDOW,ROOF_TOILET,OCCUPIED_TOILET_CUBICLE,toiletCubicleOpen,toiletSinkApproaches,toiletCubicleApproaches,toiletCubicleStanding} from '../src/shared/toilet';
+import {TOILET,TOILET_WINDOW,ROOF_TOILET,TOILET_HALL_DOOR,CARD_TOILET_DOOR,OCCUPIED_TOILET_CUBICLE,toiletCubicleOpen,toiletSinkApproaches,toiletCubicleApproaches,toiletCubicleStanding} from '../src/shared/toilet';
 import {toiletResidentPose,TOILET_RESIDENT_CYCLE_MS} from '../src/game/toiletResidentPose';
 import {ROOF} from '../src/shared/rooftop';
 import {hallLinks,hallLinkAt,hallLinkToward,hallObstacles,HALLS} from '../src/shared/world';
@@ -16,7 +16,7 @@ import {LobbyState,Player} from '../server/state';
 test('compact plan keeps the empty cubicles, all approaches, sinks and window reachable',()=>{
   const obstacles=hallObstacles('toilet');
   assert.equal(TOILET.floor.w,640);assert.equal(TOILET.floor.h,300);assert.equal(TOILET.cubicles.length,3);
-  for(const target of [TOILET_WINDOW.entry,...toiletSinkApproaches,...toiletCubicleApproaches,...toiletCubicleStanding]){
+  for(const target of [TOILET_WINDOW.entry,TOILET_HALL_DOOR.entry,...toiletSinkApproaches,...toiletCubicleApproaches,...toiletCubicleStanding]){
     assert(walkable(target.x,target.y,obstacles,16),JSON.stringify(target));
     const path=findPath(TOILET.spawn,target,obstacles);assert(path.length);let before=TOILET.spawn as {x:number;y:number};
     for(const next of path){for(let n=0;n<=20;n++)assert(walkable(before.x+(next.x-before.x)*n/20,before.y+(next.y-before.y)*n/20,obstacles));before=next;}
@@ -60,13 +60,35 @@ test('roof window keeps the perimeter open, has reciprocal links and safe offset
   for(let i=0;i<ROOF.loop.length;i++)assert(findPath(ROOF.loop[i],ROOF.loop[(i+1)%ROOF.loop.length],obstacles).length);
   assert.equal(hallLinkAt({hall:'roof',...ROOF_TOILET.entry})?.target,'toilet');
   assert.equal(hallLinkAt({hall:'toilet',...TOILET_WINDOW.entry})?.target,'roof');
-  assert.deepEqual(hallLinks('toilet').map(p=>p.target),['roof']);
-  for(const hall of ['roof','toilet'] as const)for(const link of hallLinks(hall)){
+  assert.deepEqual(hallLinks('toilet').map(p=>p.target),['roof','github']);
+  for(const hall of ['roof','toilet','github'] as const)for(const link of hallLinks(hall)){
     assert(walkable(link.arrival.arrival.x,link.arrival.arrival.y,hallObstacles(link.target),16));
     assert(!hallLinkAt({hall:link.target,...link.arrival.arrival}));
   }
-  assert.equal(hallLinkToward('arcade','toilet')?.target,'street');
+  assert.equal(hallLinkToward('arcade','toilet')?.target,'tables');
   assert.equal(hallLinkToward('toilet','arcade')?.target,'roof');
+});
+
+test('the salon door transfers to floor three and back without held keys causing a return or accepting stale input',async context=>{
+  const session=await accounts.login(`toilet-door-${crypto.randomUUID()}@example.test`,'Toilet-door-password!');await accounts.select(session.account.id,0);
+  const client:any={sessionId:'toilet-door-test',auth:await accounts.session(session.token),send(){},leave(){}};
+  const room=new LobbyRoom(),handlers=new Map<string,(client:any,data:unknown)=>void>();
+  context.mock.method(room,'onMessage',(name:string,callback:any)=>{handlers.set(name,callback);});
+  context.mock.method(room,'setPatchRate',()=>{});context.mock.method(room,'setSimulationInterval',()=>{});context.mock.method(room,'broadcast',()=>{});context.mock.method(room.clock,'setInterval',()=>({clear(){}}));
+  room.onCreate();await room.onJoin(client,{},client.auth);
+  const enter=()=>Reflect.get(room,'enterDoor').call(room,client.sessionId);
+  try{
+    const p=room.state.players.get(client.sessionId)!;Object.assign(p,{hall:'toilet',...TOILET_HALL_DOOR.entry});
+    const identity={name:p.name,skin:p.skin,appearance:p.appearance},revision=p.hallRevision;
+    assert(enter());assert.equal(p.hall,'github');assert.equal(HALLS[p.hall].floor,3);assert.equal(p.hallRevision,revision+1);
+    assert.deepEqual({x:p.x,y:p.y},CARD_TOILET_DOOR.arrival);assert(!enter());
+    handlers.get('inputs')!(client,{revision,inputs:[{seq:1,x:1,y:0,ms:50}]});Reflect.get(room,'tick').call(room,.05);assert.equal(p.x,CARD_TOILET_DOOR.arrival.x);
+    for(let i=0;i<15;i++){applyMovementInput(p,{seq:i+2,x:0,y:1,ms:50,sprint:true});enter();assert.equal(p.hall,'github');}
+    Object.assign(p,CARD_TOILET_DOOR.entry);assert(enter());assert.equal(p.hall,'toilet');assert.equal(p.hallRevision,revision+2);
+    assert.deepEqual({x:p.x,y:p.y},TOILET_HALL_DOOR.arrival);assert(!enter());
+    for(let i=0;i<15;i++){applyMovementInput(p,{seq:i+20,x:0,y:-1,ms:50,sprint:true});enter();assert.equal(p.hall,'toilet');}
+    assert.deepEqual({name:p.name,skin:p.skin,appearance:p.appearance},identity);
+  }finally{room.onDispose();room.clock.clear();await accounts.logout(session.token);}
 });
 
 test('server transfers through the window, preserves identity and rejects stale movement and busy admission',async context=>{
@@ -93,10 +115,10 @@ test('server transfers through the window, preserves identity and rejects stale 
   }finally{room.onDispose();room.clock.clear();await accounts.logout(session.token);}
 });
 
-test('security can follow a visitor through the roof window without trapping either actor',()=>{
+test('security can follow a visitor through the connected third floor without trapping either actor',()=>{
   const state=new LobbyState(),done:string[]=[],halls=new Set<string>();
   const guards=new Guards(state,(_id,result)=>done.push(result.kind),()=>.5),p=new Player();Object.assign(p,{hall:'toilet',...HALLS.toilet.spawn});state.players.set('visitor',p);
   guards.enqueue('visitor',{kind:'warning',until:1000});
   for(let i=0;i<5000&&!done.length;i++){guards.tick(.05);const g=state.guards.get('security')!;halls.add(g.hall);assert(walkable(g.x,g.y,hallObstacles(g.hall)));}
-  assert(halls.has('roof')&&halls.has('toilet'));assert.deepEqual(done,['warning']);assert.equal(p.hall,'toilet');
+  assert(halls.has('github')&&halls.has('toilet'));assert.deepEqual(done,['warning']);assert.equal(p.hall,'toilet');
 });

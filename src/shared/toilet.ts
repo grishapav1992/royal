@@ -24,6 +24,16 @@ export const TOILET_WINDOW = {
   left:140,right:172,top:278,bottom:286,
 } as const;
 
+/** Ordinary doorway to the card salon, separate from the roof window. */
+export const TOILET_HALL_DOOR = {
+  entry:{x:400,y:514},arrival:{x:400,y:468},facing:'up',click:{x:400,y:531},
+  left:362,right:438,top:506,bottom:524,
+} as const;
+export const CARD_TOILET_DOOR = {
+  entry:{x:2940,y:240},arrival:{x:2940,y:320},facing:'down',click:{x:2940,y:107},
+  left:2902,right:2978,top:225,bottom:247,
+} as const;
+
 /** Doors swing automatically on approach; their open leaves stay along the partition. */
 export const TOILET_OBSTACLES:Obstacle[]=[
   {x:0,y:0,w:5000,h:244},{x:0,y:0,w:84,h:1300},

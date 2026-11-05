@@ -11,7 +11,7 @@ import type { MiraAttention } from './miraRoutine';
 import { CAT_CARE } from './catCare';
 import { STREET, STREET_DOOR, CASINO_EXIT, STREET_OBSTACLES } from './street';
 import { ROOF, ROOF_OBSTACLES, ROOF_STAIRS, ROOF_STAIR_RETURN, STREET_ROOF_STAIRS } from './rooftop';
-import { TOILET,TOILET_OBSTACLES,ROOF_TOILET,TOILET_WINDOW } from './toilet';
+import { TOILET,TOILET_OBSTACLES,ROOF_TOILET,TOILET_WINDOW,TOILET_HALL_DOOR,CARD_TOILET_DOOR } from './toilet';
 import {STAIR_WINDOW,atStairWindow,atCardWindow} from './stairWindow';
 export const PLAYER_SPEED = 155;
 export const PLAYER_SPRINT_SPEED = PLAYER_SPEED * 1.75;
@@ -51,11 +51,11 @@ export const HALL_DOORS = {
 } as const;
 export type HallDoor = typeof HALL_DOORS[HallId];
 export const GITHUB_ROOM_DOOR = { entry: { x: 800, y: 240 }, arrival: { x: 800, y: 290 }, facing: 'down', click: { x: 800, y: 107 }, left: 760, right: 840, top: 225, bottom: 247 } as const;
-export type ConnectedHallDoor = HallDoor | typeof GITHUB_ROOM_DOOR | typeof CASINO_EXIT | typeof STREET_ROOF_STAIRS | typeof ROOF_TOILET;
+export type ConnectedHallDoor = HallDoor | typeof GITHUB_ROOM_DOOR | typeof CASINO_EXIT | typeof STREET_ROOF_STAIRS | typeof ROOF_TOILET | typeof TOILET_HALL_DOOR | typeof CARD_TOILET_DOOR;
 export type HallLink = { target: HallId; door: ConnectedHallDoor; arrival: ConnectedHallDoor };
 export function hallLinks(hall: HallId): HallLink[] {
   if (hall === 'roof') return [{ target: 'street', door: ROOF_STAIRS, arrival: STREET_ROOF_STAIRS },{target:'toilet',door:ROOF_TOILET,arrival:TOILET_WINDOW}];
-  if (hall === 'toilet') return [{target:'roof',door:TOILET_WINDOW,arrival:ROOF_TOILET}];
+  if (hall === 'toilet') return [{target:'roof',door:TOILET_WINDOW,arrival:ROOF_TOILET},{target:'github',door:TOILET_HALL_DOOR,arrival:CARD_TOILET_DOOR}];
   if (hall === 'street') return [
     { target: 'arcade', door: STREET_DOOR, arrival: CASINO_EXIT },
     { target: 'roof', door: STREET_ROOF_STAIRS, arrival: ROOF_STAIRS },
@@ -64,7 +64,7 @@ export function hallLinks(hall: HallId): HallLink[] {
     { target: 'tables', door: HALL_DOORS.arcade, arrival: HALL_DOORS.tables },
     { target: 'street', door: CASINO_EXIT, arrival: STREET_DOOR },
   ];
-  if (hall === 'github') return [{ target: 'tables', door: HALL_DOORS.github, arrival: GITHUB_ROOM_DOOR }];
+  if (hall === 'github') return [{ target: 'tables', door: HALL_DOORS.github, arrival: GITHUB_ROOM_DOOR },{target:'toilet',door:CARD_TOILET_DOOR,arrival:TOILET_HALL_DOOR}];
   return [
     { target: 'arcade', door: HALL_DOORS.tables, arrival: HALL_DOORS.arcade },
     { target: 'github', door: GITHUB_ROOM_DOOR, arrival: HALL_DOORS.github },
