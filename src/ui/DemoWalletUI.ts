@@ -10,7 +10,7 @@ export class DemoWalletUI {
   private dialog = document.createElement('dialog');
   private message = '';
   private sandbox: NowPaymentsSandboxUI;
-  constructor(private scene: RoomScene) {
+  constructor(private scene: Pick<RoomScene, 'setLocked'>) {
     this.button.type = 'button'; this.button.id = 'wallet-button'; this.button.className = 'wallet-button'; this.button.hidden = true;
     this.button.onclick = () => this.open();
     document.querySelector('.profile')!.prepend(this.button);

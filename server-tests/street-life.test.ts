@@ -197,7 +197,7 @@ test('all street viewpoints keep the same world anchors and invert clicks and di
   }
 });
 
-test('the street keeps its front orientation along either side and hides traffic in the rear courtyard',async()=>{
+test('the street keeps its front orientation along either side and hides the parked taxi in the rear courtyard',async()=>{
   const {StreetView}=await import('../src/game/streetView');
   const taxi={x:2580,y:1120},views=[{point:{x:840,y:1030},side:'front',taxi:true},{point:{x:2320,y:710},side:'front',taxi:true},{point:{x:1370,y:360},side:'rear',taxi:false},{point:{x:480,y:710},side:'front',taxi:true}] as const;
   for(const expected of views){const view=new StreetView();view.configure(expected.point,false);assert.equal(view.side,expected.side);assert.equal(view.visible(taxi),expected.taxi);assert.deepEqual(view.world(view.point(taxi)),taxi);}
