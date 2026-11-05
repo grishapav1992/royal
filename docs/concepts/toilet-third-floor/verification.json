@@ -103,6 +103,45 @@
     "previousLocalDatabasesUntouched": true,
     "retainedReason": "Running requested local preview and its current disposable database; original dirty checkout and previous preview data are outside cleanup scope.",
     "cleanupCondition": "After stopping this preview, preserve required current state and remove this task-owned database, launcher and logs. Active worktree may be retired only after unique source is verified in GitHub.",
-    "freeBeforeEvidenceCleanupBytes": 39295217664
+    "freeBeforeEvidenceCleanupBytes": 39333244928,
+    "preservationCommit": "4730ba6dbdda9c1a21044deb683b8a1823420b90",
+    "remoteFeatureVerified": true,
+    "removedDuplicateEvidence": [
+      {
+        "path": "artifacts/work/toilet-third-floor/browser",
+        "logicalBytes": 438062,
+        "files": 5
+      },
+      {
+        "path": "artifacts/work/toilet-third-floor/browser.log",
+        "logicalBytes": 731,
+        "files": 1
+      },
+      {
+        "path": "artifacts/work/toilet-third-floor/server-tests.log",
+        "logicalBytes": 8395,
+        "files": 1
+      },
+      {
+        "path": "artifacts/work/toilet-third-floor/baseline-cat.log",
+        "logicalBytes": 7250,
+        "files": 1
+      },
+      {
+        "path": "artifacts/work/toilet-third-floor/base-loader.mjs",
+        "logicalBytes": 862,
+        "files": 1
+      }
+    ],
+    "freeAfterEvidenceCleanupBytes": 39333150720,
+    "measurementLimit": "Free-space measurements include background activity; deleted logical byte counts do not prove physical space reclaimed.",
+    "retainedTaskFiles": [
+      "OWNER.md",
+      "preview.mjs",
+      "preview-state.json",
+      "preview.log"
+    ],
+    "activeDatabaseDirectory": "/var/folders/jf/j4h8s0g91q9fgs6xm6lbhlk80000gp/T/royal-pg-KjNWKN",
+    "localPreviewStillHealthy": true
   }
 }
