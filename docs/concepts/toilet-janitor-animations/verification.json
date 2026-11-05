@@ -102,6 +102,32 @@
   "storage": {
     "temporaryDirectory": "artifacts/work/toilet-janitor-animation-20261105",
     "cleanupCondition": "Remove own exported frames and export scripts after art and compact evidence are verified in GitHub. Preserve active local game and database.",
-    "freeBeforeCleanupBytes": 36031750144
+    "freeBeforeCleanupBytes": 36022513664,
+    "status": "completed",
+    "preservationCommit": "67b174e5673b17a5de5b20055733eba141e22026",
+    "remoteBranch": "feature/toilet-janitor-animation",
+    "remoteCommitVerified": true,
+    "removed": [
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/casino-street-20261101/checkout/artifacts/work/toilet-janitor-animation-20261105",
+        "files": 82,
+        "logicalBytes": 15741312
+      }
+    ],
+    "freeAfterCleanupBytes": 36022145024,
+    "archivesCreated": 0,
+    "retained": [
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/casino-street-20261101/checkout",
+        "reason": "Current art branch and active local game preview; dirty primary checkout is preserved.",
+        "cleanupCondition": "After stopping the local preview, preserve required current runtime data and verify all unique source on GitHub before retiring this extra checkout."
+      },
+      {
+        "path": "active local preview on 5191, its database, existing runtime data, normal build directories and shared dependencies",
+        "reason": "Active work outside the temporary animation export folder.",
+        "cleanupCondition": "Managed by its owner after the active preview stops; this art task does not delete it."
+      }
+    ],
+    "measurementLimit": "Free-space observations include background work and filesystem effects. Logical deleted bytes do not prove physical space reclaimed."
   }
 }
