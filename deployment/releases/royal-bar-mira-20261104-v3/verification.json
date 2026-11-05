@@ -1,0 +1,386 @@
+{
+  "release": "royal-bar-mira-20261104-v3",
+  "status": "published_verified_maintenance_completed",
+  "sourceCommit": "28d451add41e5af2648442c91959030de8e4eb01",
+  "sourceTree": "fda9c09d00ac85fb205d8c73b12011ec178e09bd",
+  "installerCommit": "c5f660f22b57a27ad56cc1d973e3baf3f24ea353",
+  "reconciliationCommit": "f9020b2a69ccd1cf2bedf88696dac55229c12485",
+  "baseCommit": "59c1202b466e4f3507e82c5f016240af95dbf5d2",
+  "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "runningImage": "sha256:d7028d1e23c5a741dd92811b3904c9b2edd64e1f73296cbe059fe84369f90af9",
+  "scope": {
+    "sourceFiles": [
+      "public/assets/royal-bar/v2/bar-assembly.png",
+      "public/assets/royal-bar/v2/bar-stool.png",
+      "public/assets/royal-bar/v3/mira-react.png",
+      "public/assets/royal-bar/v3/mira-seat.png",
+      "public/assets/royal-bar/v3/mira-serve.png",
+      "public/assets/royal-bar/v3/mira-walk.png",
+      "public/assets/royal-bar/v3/mira-work-corrected.png",
+      "server/LobbyRoom.ts",
+      "server/bartender.ts",
+      "src/game/Bar.ts",
+      "src/game/MiraRig.ts",
+      "src/game/RoomScene.ts",
+      "src/game/miraAnimation.ts",
+      "src/game/royalBarArt.ts",
+      "src/i18n/en.ts",
+      "src/main.ts",
+      "src/shared/clubLayout.ts",
+      "src/shared/miraRoutine.ts",
+      "src/shared/world.ts",
+      "src/ui/MiraChat.ts",
+      "src/ui/MiraPortrait.ts",
+      "src/ui/SocialUI.ts"
+    ],
+    "clientFiles": [
+      "assets/index-CPtCCJVD.js",
+      "index.html",
+      "assets/royal-bar/v2/bar-assembly.png",
+      "assets/royal-bar/v2/bar-stool.png",
+      "assets/royal-bar/v3/mira-walk.png",
+      "assets/royal-bar/v3/mira-seat.png",
+      "assets/royal-bar/v3/mira-work-corrected.png",
+      "assets/royal-bar/v3/mira-react.png",
+      "assets/royal-bar/v3/mira-serve.png"
+    ],
+    "backendFiles": [
+      "index.js"
+    ],
+    "addedGames": [],
+    "restoredGames": [],
+    "activeCasinoGames": 19,
+    "activePvpGames": 1,
+    "mathematicalRulesChanged": false,
+    "walletChanged": false,
+    "paintedAnimationFrames": 56,
+    "singleLocalizedVenueTitle": true,
+    "cat": {
+      "unchangedSources": {
+        "src/shared/catCare.ts": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8",
+        "src/shared/cat.ts": "d44cd0ff7cc10e46ac2730551c2544c2dbcefae415f62036452005169b4d187b",
+        "src/shared/catSurfaces.ts": "57d15054db858053e7bc67910cd361f79aa59053b2641fcb8b8b6e41d063dd47",
+        "src/game/catCareArt.ts": "5628881698aa9fd3e1bd17a794c64534a5dadf738eb4c3870aad66d671d53ab2",
+        "src/game/CatRenderer.ts": "970f0e4fc0b8ab4408f2dd1f98772da491566c19ef8d5c3ee6a2c8787fa3c1e6"
+      },
+      "mug": {
+        "x": 394,
+        "y": 454
+      },
+      "approach": {
+        "x": 437,
+        "y": 493
+      },
+      "perch": {
+        "x": 364,
+        "y": 452
+      },
+      "completeApproachDrinkExitTestPassed": true
+    }
+  },
+  "preparation": {
+    "preparedOnce": true,
+    "reportSha256": "1f5a4873c34e40a13f15e68d9712b8b57eef7034714cb0ceac89940e3c081adb",
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 118522
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 9849
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 148357
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 32154
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 18135
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 53
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 65
+      }
+    ],
+    "durationMs": 327214,
+    "host": {
+      "configSha256": "82c7bbc2ecd417bddba76400eb063976398c7847f49caebede0a8161a5389e4b",
+      "inputs": 287
+    },
+    "backend": {
+      "configSha256": "36452ca7c24cf588fd76145b6f29957d71b7bc7cd249e93f2af423f1ce5ecf9e",
+      "inputs": 263,
+      "outputSha256": "ad10665456f60e8a95931ae6d3dcb97ad8b6a6a5e44836e4a212f54b0767627b"
+    },
+    "releaseManifestSha256": "6fb8b4bb518ccf371fa3d6d23a67091584689be0ea3395878e7ac407367a62c0",
+    "installManifestSha256": "ac5bd780c14770ba9fe5885d2322352e773c8cbfde8e5be9c620bf3f9354f769",
+    "githubBoundBeforeInstall": true,
+    "reverifiedAtFixedApplicationCommit": true,
+    "rtp": {
+      "profilesPassed": 38,
+      "stakePoliciesPassed": 20,
+      "stakeAdmissionPoliciesPassed": 20,
+      "legacyExceptionsUnqualifiedAndUnchanged": 114
+    }
+  },
+  "mediaDelivery": {
+    "pngFiles": 7,
+    "sourceCommit": "28d451add41e5af2648442c91959030de8e4eb01",
+    "receiptSha256": "7b922d05dace93fd55bfa2a4ecf5e164877b32f05b8177c8d3bb39272a6dfeb8",
+    "installerReceiptSha256": "b4e102b12d58daa7391df4f3440cecc671fbcc4e0778e311e8f3ff1dbd96a641",
+    "incident": "Projected Vite publicDir=false omitted the PNGs. Independent HTTP checks caught this before installation. The committed installer and same-commit media receipt add the seven exact original PNGs; compiled application bytes were not rebuilt.",
+    "visualRetest": "Three Mira browser scenarios repeated with actual delivered PNGs, followed by compiled-host HTTP/browser checks and production HTTPS/browser checks. Earlier fallback-texture browser passes are not visual proof."
+  },
+  "baselineReconciliation": {
+    "record": "baseline-reconciliation.json",
+    "recordSha256": "0219e7e90e7880ca569ef23edc572a94534a303e85a7f9e4a3eb0278f3133b9d",
+    "firstAttemptStoppedBeforeMutation": true,
+    "sourceChangesPreserved": 3,
+    "moduleFileChangesPreserved": 41,
+    "independentJackieVersion": "1.2.1-e9b60e76ef5e",
+    "compiledHostAndBackendInputsUnchanged": true,
+    "installBaselineRecheckedUnderAllThreeNonblockingLocks": true,
+    "financialBarrierFresh": true,
+    "preparationTestsUploadAndWaitingHeldNoPublicationLocks": true
+  },
+  "checks": {
+    "projectedServerTests": {
+      "passed": 28,
+      "mandatoryWallet": 19,
+      "miraAnimationAndPresentation": 9,
+      "disposablePostgres": true
+    },
+    "installerLinuxTests": {
+      "passed": 16,
+      "realProductionLocksUsed": false
+    },
+    "compiledHostWithConnectedChat": {
+      "initialBrowserTestsPassed": 5,
+      "miraTestsRepeatedAfterPngDeliveryFix": 3,
+      "walletRecoveryTestsPassed": 2,
+      "walletTestsReusedOnlyForUnchangedFinancialInputs": true,
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 1000
+        },
+        {
+          "width": 390,
+          "height": 844
+        }
+      ],
+      "rouletteVersion": "1.6.1-55882a5e8c75",
+      "roulettePublicFilesHashed": 4,
+      "lostAcceptedReply": true,
+      "closeAndReopen": true,
+      "sameOperationUuid": true,
+      "stakeDebitCents": 10,
+      "debitEntries": 1,
+      "realBackend": true,
+      "disposablePostgres": true,
+      "miraProviderStubbed": true
+    },
+    "catCompleteCycleTestsPassed": 1,
+    "compiledHostHttpAndGuestBrowser": {
+      "filesHashed": 13,
+      "apiChecks": 6,
+      "browsers": 2,
+      "passed": true
+    },
+    "productionHttps": {
+      "filesHashed": 15,
+      "apiChecks": 6,
+      "browsers": 2,
+      "checkSha256": "699556843c36c159b0a383fe52340245e03cd9131f5f408c6730a7f7758f75de",
+      "passed": true
+    },
+    "fullPostInstallInventory": {
+      "sourceFiles": 2754,
+      "unchangedPreexistingSourceFiles": 2732,
+      "programFiles": 8609,
+      "externalModuleFiles": 5338,
+      "otherPersistentServicesPreserved": 13,
+      "sourceAndProgramMatch": true,
+      "configurationsAndVolumesPreserved": true
+    }
+  },
+  "rollback": {
+    "image": "sha256:ad7e8e5b76d8277f00f4714012553efddabfb3c0f27de94ddb575d95b127e84d",
+    "sourceArchive": "/opt/royal-backups/royal-bar-mira-20261104-v3/source.tgz",
+    "sourceArchiveBytes": 195588,
+    "sourceArchiveSha256": "ec4c25fefdffc82829678c73a64b4df96408ea5e4b830d51322cd43772864187",
+    "gameDataPreserved": true,
+    "databaseRestored": false
+  },
+  "maintenance": {
+    "run": "/opt/royal-maintenance/automatic-runs/run-60e6f6dd5abe47b99211588b14a6da8b",
+    "summaryPath": "/opt/royal-maintenance/automatic-runs/history/run-60e6f6dd5abe47b99211588b14a6da8b.json",
+    "summarySha256": "ad9b0186b2301c4acc154299045b2991b026f5780e715912feb05014663fa304",
+    "startedAt": 1793829451.988312,
+    "status": "completed",
+    "freeBefore": 9842618368,
+    "release": "royal-bar-mira-20261104-v3",
+    "sourceCommit": "28d451add41e5af2648442c91959030de8e4eb01",
+    "currentImage": "sha256:d7028d1e23c5a741dd92811b3904c9b2edd64e1f73296cbe059fe84369f90af9",
+    "rollbackImage": "sha256:ad7e8e5b76d8277f00f4714012553efddabfb3c0f27de94ddb575d95b127e84d",
+    "plannedEntries": 22,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 147,
+    "retainedHistoryReasons": {
+      "/opt/royal-releases/hall-elevator-20261101-v1-final.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/forest-heart-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-compact.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/royal-roulette-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/jackie-motion-20261104-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/hall-elevator-20261101-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/jackie-motion-20261104-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-delta.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-snapshot.py": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v3.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/jackie-motion-20261104-v3": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-invites-20261104-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/character-motion-20261027-v1.failed.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-ui-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/girlhub-feedback-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/front-back-walk-20261104-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-invites-20261104-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v2.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/player-recovery-20261104-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before-final.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-card-scale-20261023": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/jackie-motion-20261104-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub"
+    },
+    "removedEntries": 22,
+    "removedImageTags": 4,
+    "dockerRetainedImages": [],
+    "freeAfter": 9856266240,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:ad7e8e5b76d8277f00f4714012553efddabfb3c0f27de94ddb575d95b127e84d",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "56895899df3cc3137d307056aa0a658e68e2654e84d669615ccb424a12554152",
+      "files": 8601
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "8598944792ce04b124cd1d831a06dd71d6e84bf7608f34cbc5f861d236f5c4e8",
+      "receipt": "/var/lib/royal-project-brain/receipts/8598944792ce04b124cd1d831a06dd71d6e84bf7608f34cbc5f861d236f5c4e8.json",
+      "queued": true
+    },
+    "finishedAt": 1793830101.9232924,
+    "durationSeconds": 649.93,
+    "timerEnabled": true,
+    "timerActive": true,
+    "observedFreeBytes": 9477062656
+  },
+  "limits": {
+    "productionAccountsCreated": false,
+    "productionBetsPlaced": false,
+    "productionMessagesSent": false,
+    "physicalDevicesTested": false,
+    "paidMiraProviderCalled": false,
+    "productionBrowserMode": "Guest offline view with browser-local Mira history stub. Connected chat and wallet recovery covered in the exact compiled local host.",
+    "projectGraph": "Unavailable at initial query; sources, immutable artifacts and full production inventories inspected directly. No graph readiness claim."
+  },
+  "storageReport": "storage-cleanup.json",
+  "evidenceCopies": {
+    "production-before.json": {
+      "sha256": "c84090c16a95465cccf40e3cf04151fe4eacbff5dafb9de2b85e48d677a8ed25",
+      "bytes": 3769097
+    },
+    "production-manifest.json": {
+      "sha256": "b9feda340a18f8207447c637a0f5d6286def84f7dcd29b481ed3c9830e9a3199",
+      "bytes": 1275922
+    },
+    "production-refreshed.json": {
+      "sha256": "dc07c00c61a634b9ad45c7979ee0ee3b1322c5d535d0294febec575fdfa375bb",
+      "bytes": 3833462
+    },
+    "rebound-install-manifest.json": {
+      "sha256": "ac5bd780c14770ba9fe5885d2322352e773c8cbfde8e5be9c620bf3f9354f769",
+      "bytes": 4014704
+    },
+    "final-install-manifest.json": {
+      "sha256": "ac5bd780c14770ba9fe5885d2322352e773c8cbfde8e5be9c620bf3f9354f769",
+      "bytes": 4014704
+    },
+    "server-after.json": {
+      "sha256": "0571ef96c5cb18a04c33595d6f3f0a4e05ea4c10701eb712da5dee55c2ae0775",
+      "bytes": 3956040
+    },
+    "server-build-result.json": {
+      "sha256": "daf36a721cb17bb79eca2123b5d2937aaf3d3965404d430e1d6d662444c99e3a",
+      "bytes": 1172119
+    },
+    "public-1440.png": {
+      "sha256": "604d79849dcf95ada06b3a2435f9e51d83c8eb143cb244ff30a4969a1ba3536f",
+      "bytes": 331110
+    },
+    "public-390.png": {
+      "sha256": "6e9a844ca08cf9188811d0bde82ccda0c0d72708d0dee05f619af843f7defefe",
+      "bytes": 120885
+    },
+    "built-1440.png": {
+      "sha256": "f8dea440544d80caf26c0b2780da5712f40478aca991a8a88b71f4e7c8b0ab6b",
+      "bytes": 330588
+    },
+    "built-390.png": {
+      "sha256": "fadc5e7461157968d9f17346f32b3e1fce6bda4b9fd35c129298056585749d68",
+      "bytes": 120990
+    }
+  },
+  "finalProductionScreenshots": [
+    {
+      "path": "C:/Users/Aorus/.codex/visualizations/2026/11/04/01a1a6b6-f62b-7273-835c-9f91bf48a69b/royal-bar-production-desktop.png",
+      "sha256": "604d79849dcf95ada06b3a2435f9e51d83c8eb143cb244ff30a4969a1ba3536f"
+    },
+    {
+      "path": "C:/Users/Aorus/.codex/visualizations/2026/11/04/01a1a6b6-f62b-7273-835c-9f91bf48a69b/royal-bar-production-mobile.png",
+      "sha256": "6e9a844ca08cf9188811d0bde82ccda0c0d72708d0dee05f619af843f7defefe"
+    }
+  ]
+}

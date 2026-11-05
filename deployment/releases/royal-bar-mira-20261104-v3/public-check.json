@@ -1,0 +1,129 @@
+{
+  "sourceCommit": "28d451add41e5af2648442c91959030de8e4eb01",
+  "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "files": [
+    {
+      "path": "/game-modules/original-jackie-chan/active.json",
+      "sha256": "ca36ab41e1f8b0dfffe070688dcdc0eec38c7135cafd710a918824019d450b95",
+      "bytes": 228
+    },
+    {
+      "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/manifest.json",
+      "sha256": "eb7acc4ac043c37b4c4be05115823d6f020eb1884fafce003f311795c06a5fc3",
+      "bytes": 4597
+    },
+    {
+      "path": "/assets/index-CPtCCJVD.js",
+      "sha256": "f71dc3192cc2037d953442bdc4cb6a1f5584173a3b2e2d2816976cc7f0987544",
+      "bytes": 2908483
+    },
+    {
+      "path": "/index.html",
+      "sha256": "d344676f2bf69edcbb885aed58e84f5a9b50b91e7a3563556b973c2a0b590c7f",
+      "bytes": 708
+    },
+    {
+      "path": "/assets/royal-bar/v2/bar-assembly.png",
+      "sha256": "b12993e64c7a6dfe5a684e5f5a5179e62aa306dbde6d8d227b76534c7a274728",
+      "bytes": 1949299
+    },
+    {
+      "path": "/assets/royal-bar/v2/bar-stool.png",
+      "sha256": "ccd274b255adaf4837380799828c622a930457bda3d18a643df47b4f947d8b0b",
+      "bytes": 742414
+    },
+    {
+      "path": "/assets/royal-bar/v3/mira-walk.png",
+      "sha256": "4c0e118f7fba39834153fac6a35c518747c1b1f527bbce30e0d62cd4fe819e42",
+      "bytes": 806104
+    },
+    {
+      "path": "/assets/royal-bar/v3/mira-seat.png",
+      "sha256": "2613a2ce5b6e1c45137a3de86bf0a1dd8687729ab74a3fb4088a41d6c0257820",
+      "bytes": 1032757
+    },
+    {
+      "path": "/assets/royal-bar/v3/mira-work-corrected.png",
+      "sha256": "fc9b72468d854a6c902376bac8cd0ee602bd3b5f4583cdcf5778628bf8c244a8",
+      "bytes": 1814077
+    },
+    {
+      "path": "/assets/royal-bar/v3/mira-react.png",
+      "sha256": "8373c40cff647a68e01ea693e558557282a623fe853e05d4589204e36e3ec8c1",
+      "bytes": 1783867
+    },
+    {
+      "path": "/assets/royal-bar/v3/mira-serve.png",
+      "sha256": "b9a4b7065e239682f69652b1b3432fcd360eb2b0c267f52a0f3ad0c64cda9490",
+      "bytes": 1599333
+    },
+    {
+      "path": "/game-modules/royal-roulette/active.json",
+      "sha256": "bf447112f8481cab90a5a15967b1c6f4a590b7c6e337f982614789d29bfae940",
+      "bytes": 216
+    },
+    {
+      "path": "/game-modules/royal-roulette/versions/1.6.1-55882a5e8c75/manifest.json",
+      "sha256": "57354b1677e0dede076bd0cddff7de47d16ac52374e67c2bdae9400d6e3e7950",
+      "bytes": 545
+    },
+    {
+      "path": "/game-modules/royal-roulette/versions/1.6.1-55882a5e8c75/entry-c8b66ff2a85c5f30.js",
+      "sha256": "c8b66ff2a85c5f30de9f91507c0e20311de08a9e70fd58cb93c774b478b64596",
+      "bytes": 57447
+    },
+    {
+      "path": "/game-modules/royal-roulette/versions/1.6.1-55882a5e8c75/style-f37b7a58207eb673.css",
+      "sha256": "f37b7a58207eb673f66783b13ad27313311f99a0410113876083569922c5ba7a",
+      "bytes": 30820
+    }
+  ],
+  "checks": [
+    {
+      "path": "/healthz",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/game-wallet",
+      "status": 410
+    },
+    {
+      "path": "/api/nile-play",
+      "status": 410
+    },
+    {
+      "path": "/api/demo-wallet",
+      "status": 401
+    },
+    {
+      "path": "/api/demo-wallet/expansion",
+      "status": 401
+    }
+  ],
+  "guestBrowsers": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "pageErrors": [],
+      "passed": true
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "pageErrors": [],
+      "passed": true
+    }
+  ],
+  "productionAccountsCreated": false,
+  "productionBetsPlaced": false,
+  "productionMessagesSent": false,
+  "passed": true
+}
