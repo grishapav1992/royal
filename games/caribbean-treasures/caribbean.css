@@ -207,7 +207,7 @@
  .ct-choice strong{font-size:11px}.ct-choice button{min-height:44px;font-size:12px}
  .ct-root[data-round-phase=choice] .ct-console{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto;grid-template-areas:"ledger" "choice" "playback"}
  .ct-root[data-round-phase=choice] .ct-play,.ct-root[data-round-phase=choice] .ct-settings-open{display:none}
- .ct-root[data-round-phase=choice] .ct-playback:not(:has([data-ct-action=auto][aria-pressed=true])){display:none}
+ .ct-root[data-round-phase=choice] .ct-playback:not(:has([data-ct-action=auto][aria-pressed=true],.ct-retry:not([hidden]))){display:none}
  .ct-waiting{max-width:95%;white-space:normal;text-align:center;font-size:12px;bottom:20px}
  .ct-backdrop{padding:6px}.ct-modal{padding:12px}
 }
