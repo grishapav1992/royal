@@ -241,6 +241,7 @@ test('crew collection earns free tokens, unlocks a chosen captain and persists b
  await crewLessons(page);expect((await crewState(page)).tokens).toBe(100);await page.screenshot({path:out+'/collection-lessons-complete.png'});
  await page.locator('[data-ct-modal=crew-tab]').click();await expect(page.locator('[data-crew-id=amara]')).toContainText('Открыть');
  await page.locator('[data-crew-id=amara]').click();await expect(page.locator('[data-crew-id=amara]')).toHaveAttribute('data-owned','true');expect((await crewState(page)).tokens).toBe(0);
+ await expect(page.locator('.ct-crew-status')).toContainText('В команде пополнение!');
  await page.locator('[data-crew-id=amara]').click();await expect(page.locator('.ct-backdrop')).toBeHidden();await expect.poll(async()=>(await mini()).captain.character).toBe('amara');
  expect((await wallet(page)).entries).toEqual(before.entries);
  await close(page);await page.evaluate(()=>localStorage.clear());await page.reload();await expect.poll(async()=>(await state(page)).online).toBe(true);await open(page);
@@ -263,14 +264,37 @@ test('spin keeps the portrait frame and lower controls anchored throughout confi
  });
  for(const [width,height]of [[1440,1000],[1280,720],[390,844]]){
   await page.setViewportSize({width,height});await page.waitForTimeout(150);
-  await page.request.post('/__test/caribbean/force-scenario',{data:{name:'loss'}});
+  const positive=width===390;
+  await page.request.post('/__test/caribbean/force-scenario',{data:{name:positive?'positive':'loss'}});
   await page.evaluate(()=>{
    const selectors=['.ct-captain','.ct-avatar','.ct-ledger','.ct-controls','.ct-status'];
-   const state=(window as any).__ctAnchors={samples:[] as any[],running:true};
-   const sample=()=>{state.samples.push(Object.fromEntries(selectors.map(selector=>{const r=document.querySelector(selector)!.getBoundingClientRect();return[selector,{x:r.x,y:r.y,width:r.width,height:r.height}];})));if(state.running)requestAnimationFrame(sample);};sample();
+   const root=document.querySelector<HTMLElement>('.ct-root')!;
+   const state=(window as any).__ctAnchors={samples:[] as any[],reels:[] as any[],running:true};
+   const sample=()=>{
+    state.samples.push(Object.fromEntries(selectors.map(selector=>{const r=document.querySelector(selector)!.getBoundingClientRect();return[selector,{x:r.x,y:r.y,width:r.width,height:r.height}];})));
+    const phase=root.dataset.ctPhase;
+    if(phase==='waiting'||phase==='reels'){
+     const rolling=Array.from(root.querySelectorAll<HTMLElement>('.ct-strip'),strip=>!strip.hidden);
+     const hidden=Array.from(root.querySelectorAll('.ct-cell'),cell=>getComputedStyle(cell).visibility==='hidden');
+     state.reels.push({phase,rolling,hidden,outcome:root.dataset.outcome,net:root.querySelector('[data-ct-net]')!.textContent});
+    }
+    if(state.running)requestAnimationFrame(sample);
+   };sample();
   });
-  await action(page,'[data-ct-action=play]');
-  const sample=await page.evaluate(()=>{const s=(window as any).__ctAnchors;s.running=false;return s.samples;});
+  const round=await action(page,'[data-ct-action=play]');
+  const {samples:sample,reels}=await page.evaluate(()=>{const s=(window as any).__ctAnchors;s.running=false;return s;});
+  expect(reels.some((frame:any)=>frame.phase==='waiting'&&frame.rolling.every(Boolean))).toBe(true);
+  expect(reels.some((frame:any)=>frame.phase==='reels'&&frame.rolling.some(Boolean)&&!frame.rolling.every(Boolean))).toBe(true);
+  for(const frame of reels){
+   expect(frame.hidden).toEqual(Array.from({length:24},(_,index)=>frame.rolling[index%6]));
+   expect(frame.outcome).toBe('');expect(frame.net).not.toMatch(/^[+−-]/);
+  }
+  if(positive){
+   const net=Number(BigInt(round.returnedUnits)-BigInt(round.spentUnits))/100;
+   expect(net).toBeGreaterThan(0);
+   await expect(page.locator('.ct-status')).toHaveText('Ты выиграл! +'+net.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2})+' USDT');
+   await page.screenshot({path:out+'/positive-mobile.png'});
+  }else await expect(page.locator('.ct-status')).toHaveText('Раунд завершён без выплаты.');
   const drift=Object.fromEntries(Object.keys(sample[0]).map(selector=>[selector,Math.max(...sample.flatMap((s:any)=>['x','y','width','height'].map(key=>Math.abs(s[selector][key]-sample[0][selector][key]))))]));
   measurements.push({width,height,frames:sample.length,drift});
  }
@@ -670,6 +694,9 @@ test('confirmed animation, cannon, skip, mute, zero volume and close release own
  await page.evaluate(()=>{const c=(globalThis as any)[Symbol.for('royal.game-host.v1')].gameAudio.context;if(!c)throw Error('Shared context missing');const active=(window as any).__ctSources=new Set(),host=(window as any).__ctHostSources=new Map();(window as any).__ctOwnedCreated=0;for(const name of ['createOscillator','createBufferSource']){const create=c[name].bind(c);c[name]=()=>{const node=create(),stack=new Error().stack??'',owned=stack.includes('/game-modules/studio-caribbean-treasures/')||stack.includes('/games/caribbean-treasures/');if(owned){active.add(node);(window as any).__ctOwnedCreated++;}else host.set(node,stack);node.addEventListener('ended',()=>{active.delete(node);host.delete(node);});return node;};}});
  await page.locator('[data-ct-lines]').selectOption('1');await page.request.post('/__test/caribbean/force-bonus');await action(page,'[data-ct-action=play]');
  await action(page,'[data-ct-action=choose-raid]');await page.request.post('/__test/caribbean/force-cannon');await action(page,'[data-ct-action=play]');
+ await expect(page.locator('.ct-giant small')).toHaveText('Залп увеличил символ');
+ await expect(page.locator('.ct-board')).toHaveAccessibleName(/с 2×2 до 3×3/);
+ await page.screenshot({path:out+'/cannon-explained.png'});
  const playback=await page.evaluate(()=>(window as any).royalDemo.getMiniState());expect(playback.audio.counts.cannon).toBe(1);expect(playback.accents.filter((a:any)=>a.cue==='stop')).toHaveLength(12);
  expect(playback.captain.history.filter((e:any)=>e.cue==='cannon')).toHaveLength(1);
  expect(playback.captain.history.find((e:any)=>e.cue==='cannon').pose).toBe('surprise');

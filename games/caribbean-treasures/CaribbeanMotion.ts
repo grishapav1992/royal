@@ -8,7 +8,12 @@ export class CaribbeanMotion{
  }
  land(column:number){
   for(const cell of Array.from(this.root.querySelectorAll<HTMLElement>('.ct-cell')))if(Number(cell.dataset.ctCell)%6===column){
-   this.animate(cell.querySelector('.ct-symbol'),[{transform:'translateY(-13%) scale(.97)',opacity:.7},{transform:'translateY(3%) scale(1.015)',opacity:1,offset:.65},{transform:'none',opacity:1}],{duration:220,easing:'cubic-bezier(.15,.6,.25,1)'});
+   this.animate(cell.querySelector('.ct-symbol'),[
+    {transform:'translateY(-22%) scale(.94,1.06)',opacity:.72},
+    {transform:'translateY(4%) scale(1.04,.96)',opacity:1,offset:.58},
+    {transform:'none',opacity:1},
+   ],{duration:230,easing:'cubic-bezier(.15,.6,.25,1)'});
+   this.animate(cell,[{boxShadow:'inset 0 -5px 16px #85c6d760'},{boxShadow:'inset 0 0 0 transparent'}],{duration:230,easing:'ease-out'});
   }
  }
  giant(){this.animate(this.root.querySelector('.ct-giant>.ct-symbol'),[{transform:'translateY(7%) scale(.82)',opacity:.4},{transform:'translateY(-1%) scale(1.035)',opacity:1,offset:.72},{transform:'none',opacity:1}],{duration:340,easing:'cubic-bezier(.16,.7,.3,1)'});}
@@ -19,6 +24,13 @@ export class CaribbeanMotion{
  }
  outcome(big:boolean){
   if(this.reduced()||document.hidden)return;const board=this.root.querySelector<HTMLElement>('.ct-board');if(!board)return;
+  this.animate(this.root.querySelector('.ct-status'),[
+   {boxShadow:'inset 0 0 0 1px #e1b66b, inset 0 0 16px #e1b66b55'},
+   {boxShadow:'inset 0 0 0 1px #c69b575c'},
+  ],{duration:big?950:580,easing:'ease-out'});
+  this.animate(this.root.querySelector('[data-ct-net]'),[
+   {transform:'scale(.94)'},{transform:big?'scale(1.13)':'scale(1.08)',offset:.38},{transform:'none'},
+  ],{duration:big?700:450,easing:'ease-out'});
   this.clearParticles();const count=big?14:7;
   const layer=document.createElement('span');layer.className='ct-sparks';layer.setAttribute('aria-hidden','true');board.append(layer);this.particleLayer=layer;
   for(let i=0;i<count;i++){

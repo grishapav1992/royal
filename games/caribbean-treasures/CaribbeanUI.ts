@@ -222,9 +222,14 @@ export class CaribbeanUI {
   private render() {
     if (this.disposed) return;
     const view = this.presenting ? this.displayed : this.view, frame = view?.spins.at(-1)?.frame;
+    const resultVisible = !this.presenting || this.visualPhase === 'outcome';
+    const outcome = resultVisible && view?.phase === 'complete' ? this.outcome(view) : '';
+    const choosing = resultVisible && view?.phase === 'choice';
+    const payout = outcome && view ? confirmedPayout(this.session,view.totalPayoutUnits) : view?.totalPayoutUnits ?? '0';
+    const net = outcome && view ? BigInt(payout) - BigInt(view.costUnits) : null;
     this.root.dataset.ctPhase=this.visualPhase;this.root.dataset.motion=this.reduced?'reduced':'full';
-    this.root.dataset.roundPhase=view?.phase ?? 'idle';
-    this.root.dataset.outcome=view?.phase==='complete'?this.outcome(view):'';
+    this.root.dataset.roundPhase=resultVisible ? view?.phase ?? 'idle' : 'revealing';
+    this.root.dataset.outcome=outcome;
     this.captain?.context(!this.paused&&!document.hidden&&!this.dialogKind,this.reduced,this.english);
     this.restoreCrewCaptain();
     const crewButton=this.element<HTMLButtonElement>('[data-ct-action=crew]'),member=crewMember(this.captain.state().character)!;
@@ -259,8 +264,7 @@ export class CaribbeanUI {
     const walletButton=this.element<HTMLButtonElement>('[data-ct-action=wallet]');walletButton.disabled=!this.client.accountId;
     walletButton.setAttribute('aria-label',this.text('Открыть тестовый кошелёк','Open test wallet'));
     this.element('[data-ct-cost]').textContent = this.view && this.active ? this.money(this.view.costUnits) : this.money(caribbeanInitialCost({lines:this.lines,mode:'normal',stakeBasis:'total'},this.lineStake));
-    this.element('[data-ct-payout]').textContent = this.money(this.tally ?? (view?confirmedPayout(this.session,view.totalPayoutUnits):'0'));
-    const net = view && !this.active ? BigInt(confirmedPayout(this.session,view.totalPayoutUnits)) - BigInt(view.costUnits) : null;
+    this.element('[data-ct-payout]').textContent = this.money(this.tally ?? payout);
     this.element('[data-ct-net]').textContent = net === null ? (this.active ? this.text('Серия идёт','Round in progress') : '...') : (net > 0n ? '+' : '') + this.money(String(net));
     this.element('[data-ct-net]').dataset.positive = String(net !== null && net > 0n);
     this.element<HTMLButtonElement>('[data-ct-action=info]').setAttribute('aria-label',this.text('Правила и выплаты','Rules and payouts'));
@@ -270,8 +274,8 @@ export class CaribbeanUI {
     const buy = this.element<HTMLButtonElement>('[data-ct-action=buy]');
     buy.textContent = this.text('Купить бонус','Buy bonus'); buy.disabled = controlsLocked || !this.canAfford('buy-raid');
     const play = this.element<HTMLButtonElement>('[data-ct-action=play]');
-    play.querySelector('b')!.textContent = view?.phase === 'choice' ? this.text('Тактика','Tactic') : this.active ? this.text('Бесплатно','Free spin') : this.text('Вращать','Spin');
-    play.querySelector('small')!.textContent=view?.phase === 'choice' ? this.text('Выбери ниже','Choose below') : this.active ? this.text('Осталось ','Remaining ') + (view?.remaining ?? 0) : this.money(caribbeanInitialCost({lines:this.lines,mode:'normal',stakeBasis:'total'},this.lineStake))+' USDT';
+    play.querySelector('b')!.textContent = choosing ? this.text('Тактика','Tactic') : this.active ? this.text('Бесплатно','Free spin') : this.text('Вращать','Spin');
+    play.querySelector('small')!.textContent=choosing ? this.text('Выбери ниже','Choose below') : this.active ? this.text('Осталось ','Remaining ') + (view?.remaining ?? 0) : this.money(caribbeanInitialCost({lines:this.lines,mode:'normal',stakeBasis:'total'},this.lineStake))+' USDT';
     play.disabled = this.blocked || !!this.dialogKind || this.autoRunning || view?.phase === 'choice' || !this.active&&!this.canAfford('normal');
     const auto=this.element<HTMLButtonElement>('[data-ct-action=auto]'),count=this.element<HTMLSelectElement>('[data-ct-auto-count]');
     auto.textContent=this.autoRunning?this.text('Стоп · ','Stop · ')+this.autoRemaining:this.text('Авто','Auto');
@@ -284,36 +288,51 @@ export class CaribbeanUI {
     const retry = this.element<HTMLButtonElement>('[data-ct-action=retry]');
     retry.hidden = !canRecoverOperation(this.client); retry.disabled = this.client.busy;
     retry.textContent = this.text('Проверить тот же ход','Check the same operation');
-    this.element('.ct-status').textContent = this.client.error || this.actionError || (!this.client.accountId ? this.text('Войди в зал, чтобы играть.','Sign in to play.')
+    const status = this.element('.ct-status');
+    const statusOverride = this.client.error || this.actionError || (!this.client.accountId ? this.text('Войди в зал, чтобы играть.','Sign in to play.')
       : this.client.busy ? this.text('Подтверждаем ход...','Confirming...')
       : this.services.demoWallet.pending ? this.text('Проверь предыдущую операцию общего кошелька.','Check the previous shared wallet operation.')
       : this.presenting && this.visualPhase!=='outcome' ? this.text('Показываем подтверждённый результат...','Revealing the confirmed result...')
+      : '');
+    status.dataset.win = !statusOverride && (outcome==='win'||outcome==='bigwin') ? outcome : '';
+    status.textContent = statusOverride || (outcome==='win'||outcome==='bigwin'
+      ? this.text(outcome==='bigwin'?'Крупный выигрыш!':'Ты выиграл!',outcome==='bigwin'?'Big win!':'You won!')+' +'+this.money(String(net))+' USDT'
       : !this.active && this.wallet && !this.canAfford('normal') ? this.text('Недостаточно средств: нужно ','Not enough funds: need ')+this.money(caribbeanInitialCost({lines:this.lines,mode:'normal',stakeBasis:'total'},this.lineStake))+' USDT. '+this.text('Уменьши ставку или открой кошелёк кнопкой + у баланса.','Lower your stake or open the wallet with + beside the balance.')
       : this.autoRunning ? (view?.phase==='choice'?this.text('Выбери тактику. Автокрутка ждёт.','Choose your tactic. Autoplay is waiting.'):this.text('Автокрутка: осталось раундов ','Autoplay: rounds remaining ')+this.autoRemaining)
       : this.autoNote ? this.autoLabel()
-      : view?.phase==='complete' ? this.outcomeLabel(view)
+      : outcome ? this.outcomeLabel(outcome)
       : this.active && view?.version===1 ? this.text('Прежний раунд уже оплачен, продолжение бесплатно. Следующее полное вращение от ','The previous round is already paid; continuation is free. The next complete spin starts at ')+this.money(DEFAULT_GAME_STAKE)+' USDT.'
       : this.active ? this.text('Продолжение бесплатно. Выплата начисляется в конце раунда.','Free continuation. The complete round is credited at the end.')
       : this.text('Гигантский символ занимает несколько клеток. Выплаты считаются по активным линиям.','A giant symbol fills several cells. Active lines determine the payouts.'));
     const choice = this.element('.ct-choice');
-    choice.hidden = view?.phase !== 'choice';
-    choice.innerHTML = view?.phase === 'choice' ? '<strong>' + this.text('Карта абордажа открыта. Выбери тактику.','Boarding map unlocked. Choose your tactic.') + '</strong>'
+    choice.hidden = !choosing;
+    choice.innerHTML = choosing ? '<strong>' + this.text('Карта абордажа открыта. Выбери тактику.','Boarding map unlocked. Choose your tactic.') + '</strong>'
       + '<button type="button" data-ct-action="choose-raid"' + (this.blocked ? ' disabled' : '') + '>' + this.text('Рейд · 14 вращений','Raid · 14 spins') + '</button>'
       + '<button type="button" data-ct-action="choose-flagship"' + (this.blocked ? ' disabled' : '') + '>' + this.text('Флагман · 6 вращений','Flagship · 6 spins') + '</button>' : '';
-    this.element('.ct-map').textContent = view?.phase === 'choice' ? this.text('КАРТА АБОРДАЖА · 3 / 3','BOARDING MAP · 3 / 3')
-      : this.active ? (view?.tactic === 'raid' ? this.text('РЕЙД','RAID') : this.text('ФЛАГМАН','FLAGSHIP'))
+    this.element('.ct-map').textContent = choosing ? this.text('КАРТА АБОРДАЖА · 3 / 3','BOARDING MAP · 3 / 3')
+      : view?.tactic && this.active ? (view.tactic === 'raid' ? this.text('РЕЙД','RAID') : this.text('ФЛАГМАН','FLAGSHIP'))
       : this.text('КАРИБСКИЕ СОКРОВИЩА','CARIBBEAN TREASURES');
     const grid = frame?.grid ?? Array.from({length:24},(_,index) => (index % 6+Math.floor(index/6)*2) % 6), block = frame?.block;
     const paid = new Set(frame?.wins.flatMap(win => win.positions) ?? []);
-    const board = this.element('.ct-board'); board.setAttribute('aria-label',this.text('Поле 6 барабанов, 4 ряда','6 reel, 4 row field'));
+    const board = this.element('.ct-board');
     const signature=JSON.stringify([grid,block,frame?.cannon,[...paid],this.showLines,this.lines,this.english]);
-    const updateStops=()=>{board.querySelectorAll('.ct-cell').forEach((cell,index)=>cell.classList.toggle('ct-landed',index%6<this.stopped));board.querySelectorAll<HTMLElement>('.ct-strip').forEach((strip,index)=>strip.hidden=!(this.visualPhase==='waiting'||(this.visualPhase==='reels'&&index>=this.stopped)));};
+    const updateStops=()=>{
+      const stopped = this.visualPhase === 'waiting' && !this.reduced ? 0 : this.stopped;
+      board.querySelectorAll('.ct-cell').forEach((cell,index)=>cell.classList.toggle('ct-rolling',index%6>=stopped));
+      board.querySelectorAll<HTMLElement>('.ct-strip').forEach((strip,index)=>{strip.hidden=index<stopped;});
+      board.querySelector<HTMLElement>('.ct-giant')!.hidden=!block||stopped<6;
+      board.querySelector('.ct-paths')!.toggleAttribute('hidden',stopped<6);
+      const field=this.text('Поле: 6 барабанов, 4 ряда','Field: 6 reels, 4 rows');
+      const description=block&&stopped===6 ? this.text('. Гигантский символ: ','. Giant symbol: ')+this.symbolName(block.symbol)
+        +(frame?.cannon?this.text('. Залп увеличил его с 2×2 до 3×3','. The cannon enlarged it from 2×2 to 3×3'):` (${block.size}×${block.size})`) : '';
+      board.setAttribute('aria-label',field+description);
+    };
     if(signature===this.boardSignature){updateStops();return;}
     this.boardSignature=signature;
     if(!board.querySelector('.ct-cell'))board.innerHTML=Array.from({length:24},(_,index)=>'<div class="ct-cell" data-ct-cell="'+index+'"></div>').join('')+'<div class="ct-strips" aria-hidden="true">'+Array.from({length:6},(_,column)=>'<div class="ct-strip" style="grid-column:'+(column+1)+';grid-row:1" hidden><div class="ct-strip-track" style="animation-delay:-'+column*.07+'s">'+Array.from({length:12},(_,row)=>caribbeanIcon((column+row%4*2)%6)).join('')+'</div></div>').join('')+'</div><div class="ct-giant" hidden></div><svg class="ct-paths" viewBox="0 0 600 400" aria-hidden="true"></svg><div class="ct-cannon-smoke" aria-hidden="true"></div>';
     board.querySelectorAll<HTMLElement>('.ct-cell').forEach((cell,index)=>{
       const symbol=grid[index],inside=!!block&&index%6>=block.x&&index%6<block.x+block.size&&Math.floor(index/6)>=block.y&&Math.floor(index/6)<block.y+block.size;
-      cell.classList.toggle('ct-covered',inside);cell.classList.toggle('ct-landed',index%6<this.stopped);cell.dataset.symbol=String(symbol);cell.setAttribute('aria-label',this.symbolName(symbol));
+      cell.classList.toggle('ct-covered',inside);cell.dataset.symbol=String(symbol);cell.setAttribute('aria-label',this.symbolName(symbol));
       const art=symbol+':'+this.english;
       if(!inside&&cell.dataset.art!==art){cell.innerHTML=caribbeanIcon(symbol)+'<span>'+escape(this.symbolName(symbol))+'</span>';cell.dataset.art=art;}
     });
@@ -323,7 +342,13 @@ export class CaribbeanUI {
       if(giant.dataset.symbol!==String(block.symbol)||giant.dataset.language!==String(this.english)){giant.innerHTML=caribbeanIcon(block.symbol)+'<strong></strong><small></small>';giant.dataset.language=String(this.english);}
       giant.dataset.symbol=String(block.symbol);giant.dataset.ctBlock=String(block.size);
       giant.style.cssText=`left:${block.x/6*100}%;top:${block.y/4*100}%;width:${block.size/6*100}%;height:${block.size/4*100}%`;
-      giant.querySelector('strong')!.textContent=this.symbolName(block.symbol);giant.querySelector('small')!.textContent=block.size+'×'+block.size+(frame?.cannon?this.text(' · ЗАЛП',' · CANNON'):'');
+      const smoke=board.querySelector<HTMLElement>('.ct-cannon-smoke')!;
+      smoke.style.left=(block.x+block.size/2)/6*100+'%';
+      smoke.style.top=(block.y+block.size/2)/4*100+'%';
+      giant.querySelector('strong')!.textContent=this.symbolName(block.symbol);
+      giant.querySelector('small')!.textContent=frame?.cannon
+        ? this.text('Залп увеличил символ','Cannon enlarged the symbol')
+        : this.text('Гигантский символ','Giant symbol');
     }
     const paths=board.querySelector<SVGElement>('.ct-paths')!,pathKey=JSON.stringify([[...paid],block,this.showLines,this.lines,frame?.wins[0]?.line]);
     if(paths.dataset.paths!==pathKey){paths.dataset.paths=pathKey;paths.innerHTML=[...paid].filter(position=>!insideBlock(position)).map(position=>'<rect x="'+(position%6*100+4)+'" y="'+(Math.floor(position/6)*100+4)+'" width="92" height="92" rx="6"/>').join('')
@@ -405,10 +430,9 @@ export class CaribbeanUI {
     catch(error) {this.actionError=this.client.pending?'':error instanceof Error?error.message:this.client.error;}
     finally {if(manualAutoChoice&&epoch===this.autoEpoch)this.autoInFlight=false;this.update();}
   }
-  private outcomeLabel(view:CaribbeanView){
-    const kind=this.outcome(view);
-    return this.text({loss:'Раунд завершён без выплаты.',partial:'Частичный возврат. Выплата меньше стоимости раунда.',return:'Стоимость раунда возвращена.',win:'Положительный итог раунда.',bigwin:'Крупный положительный итог раунда.'}[kind],
-      {loss:'Round complete without a payout.',partial:'Partial return. The payout is below the round cost.',return:'The round cost has been returned.',win:'Positive round result.',bigwin:'Large positive round result.'}[kind]);
+  private outcomeLabel(kind:'loss'|'partial'|'return'){
+    return this.text({loss:'Раунд завершён без выплаты.',partial:'Частичный возврат. Выплата меньше стоимости раунда.',return:'Стоимость раунда возвращена.'}[kind],
+      {loss:'Round complete without a payout.',partial:'Partial return. The payout is below the round cost.',return:'The round cost has been returned.'}[kind]);
   }
   private stopPresentation(){
     this.visuals?.cancel();this.captain?.reset();
@@ -434,6 +458,7 @@ export class CaribbeanUI {
     const previous=this.view,priorKey=this.sessionKey,account=this.client.accountId;
     this.motion.abort();const motion=this.motion=new AbortController(),signal=motion.signal;
     this.visuals.cancel();this.captain.begin();
+    this.tally=previous?confirmedPayout(this.session,previous.totalPayoutUnits):'0';
     this.displayed=previous;this.presenting=true;this.visualPhase='waiting';this.render();void this.audio.enter();
     try{
       await action();
@@ -441,9 +466,9 @@ export class CaribbeanUI {
       const confirmed=this.view;if(!confirmed||this.sessionKey===priorKey)return;
       const previousInRound=this.session?.id===priorKey.split(':')[0]?previous:undefined;
       const hasSpin=confirmed.spins.length>(previousInRound?.spins.length??0);
-      if(this.reduced){this.displayed=confirmed;this.visualPhase='outcome';this.render();const cue=confirmed.phase==='complete'?this.outcome(confirmed):confirmed.phase==='choice'||!hasSpin?'bonus':'click';this.audio.cue(cue);this.captain.react(cue,this.sessionKey+':'+cue+':0');return;}
+      if(this.reduced){this.displayed=confirmed;this.tally=undefined;this.visualPhase='outcome';this.render();const cue=confirmed.phase==='complete'?this.outcome(confirmed):confirmed.phase==='choice'||!hasSpin?'bonus':'click';this.audio.cue(cue);this.captain.react(cue,this.sessionKey+':'+cue+':0');return;}
       if(hasSpin){
-        this.displayed=caribbeanBeforeReveal(confirmed,previousInRound);this.stopped=0;this.visualPhase='reels';
+        this.displayed=caribbeanBeforeReveal(confirmed,previousInRound);this.tally=undefined;this.stopped=0;this.visualPhase='reels';
         // The continuous giant is revealed only after every underlying column lands.
         const beforeBlock=this.displayed.spins.at(-1)?.frame.block;
         this.displayed.spins.at(-1)!.frame.block=null;this.render();
@@ -452,25 +477,36 @@ export class CaribbeanUI {
         }
         if(signal.aborted)return;
         await this.wait(140,signal);if(signal.aborted)return;
-        if(beforeBlock){this.displayed.spins.at(-1)!.frame.block=beforeBlock;this.visualPhase='giant';await this.accent('giant',signal,()=>this.render());await this.wait(340,signal);}
+        if(beforeBlock){
+          await this.accent('giant',signal,()=>{
+            this.displayed!.spins.at(-1)!.frame.block=beforeBlock;
+            this.visualPhase='giant';this.render();
+          });
+          await this.wait(340,signal);
+        }
         if(signal.aborted)return;
-        if(confirmed.spins.at(-1)?.frame.cannon){this.visualPhase='cannon';await this.accent('cannon',signal,()=>{
+        if(confirmed.spins.at(-1)?.frame.cannon){await this.accent('cannon',signal,()=>{
           const old=this.root.querySelector('.ct-giant')?.getBoundingClientRect();
-          this.displayed=structuredClone(confirmed);this.displayed.totalPayoutUnits=previousInRound?.totalPayoutUnits??'0';this.displayed.spins.at(-1)!.frame.wins=[];this.render();
+          this.displayed=structuredClone(confirmed);this.displayed.totalPayoutUnits=previousInRound?.totalPayoutUnits??'0';this.displayed.spins.at(-1)!.frame.wins=[];
+          this.visualPhase='cannon';this.render();
           this.visuals.cannon(old);
         });await this.wait(380,signal);}
         if(signal.aborted)return;
-        this.displayed=confirmed;this.visualPhase='wins';
-        this.tally=previousInRound?.totalPayoutUnits??'0';
-        if(confirmed.spins.at(-1)?.frame.wins.length)await this.accent('line',signal,()=>this.render());else this.render();
-        await this.visuals.tally(this.tally,confirmedPayout(this.session,confirmed.totalPayoutUnits),420,signal,units=>{this.tally=units;this.element('[data-ct-payout]').textContent=this.money(units);});
+        const tallyFrom=previousInRound?.totalPayoutUnits??'0';
+        const revealLines=()=>{
+          this.displayed=confirmed;this.visualPhase='wins';
+          this.tally=tallyFrom;this.render();
+        };
+        if(confirmed.spins.at(-1)?.frame.wins.length)await this.accent('line',signal,revealLines);else revealLines();
+        if(signal.aborted)return;
+        await this.visuals.tally(tallyFrom,confirmedPayout(this.session,confirmed.totalPayoutUnits),420,signal,units=>{this.tally=units;this.element('[data-ct-payout]').textContent=this.money(units);});
         this.tally=undefined;
       }
       if(signal.aborted)return;
-      this.displayed=confirmed;this.visualPhase='outcome';
-      if(confirmed.phase==='complete')await this.accent(this.outcome(confirmed),signal,()=>this.render());
-      else if(confirmed.phase==='choice'||!hasSpin)await this.accent('bonus',signal,()=>this.render());
-      else this.render();
+      const revealOutcome=()=>{this.displayed=confirmed;this.tally=undefined;this.visualPhase='outcome';this.render();};
+      if(confirmed.phase==='complete')await this.accent(this.outcome(confirmed),signal,revealOutcome);
+      else if(confirmed.phase==='choice'||!hasSpin)await this.accent('bonus',signal,revealOutcome);
+      else revealOutcome();
       await this.wait(confirmed.phase==='complete'&&this.outcome(confirmed)==='bigwin'?700:180,signal);
     }finally{
       if(this.motion===motion&&!this.disposed){this.tally=undefined;this.presenting=false;this.displayed=undefined;this.visualPhase='idle';this.stopped=6;this.captain.finish();this.render();}
@@ -597,10 +633,14 @@ export class CaribbeanUI {
       const profile=await crewCollection(account,this.crewAbort.signal,request);
       if(this.disposed||account!==this.account)return;
       this.crewProfile=profile;this.crewSuccess=true;
-      if(profile.receipt?.unlocked){this.crewNewlyUnlocked=profile.receipt.unlocked;this.crewMessage=this.text('Героиня открыта навсегда. Теперь её можно выбрать.','The captain is permanently unlocked. You can now select her.');}
+      const member=profile.receipt?.unlocked ? crewMember(profile.receipt.unlocked) : undefined;
+      if(member){
+        if(this.crewDialog&&!document.hidden&&!this.paused)this.crewNewlyUnlocked=member.id;
+        this.crewMessage=this.english ? member.en+' joined your crew!' : 'В команде пополнение! '+member.ru+' доступна для выбора.';
+      }
       else if(profile.receipt?.reward)this.crewMessage=this.text('Задание выполнено: +','Challenge complete: +')+profile.receipt.reward+' '+this.text('жетонов команды.','crew tokens.');
       else this.crewMessage=this.text('Коллекция обновлена.','Collection updated.');
-      this.audio.cue('click');
+      if(this.crewDialog)this.audio.cue('click');
     }catch(error){if(!this.disposed&&account===this.account)this.crewMessage=this.crewError(error);}
     finally{if(!this.disposed&&account===this.account){this.crewBusy=false;this.renderCrewDialog();this.render();}}
   }

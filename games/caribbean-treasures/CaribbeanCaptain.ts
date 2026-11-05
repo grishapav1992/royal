@@ -2,7 +2,7 @@ import type {CaribbeanCue} from './CaribbeanAudio';
 import {CAPTAIN_POSES,DEFAULT_CAPTAIN,crewMember,crewPortrait,type CaptainPose,type CrewId} from './CaribbeanCrew';
 export {CAPTAIN_POSES,type CaptainPose} from './CaribbeanCrew';
 type Beat={pose:CaptainPose;ms:number};
-const phrases:Partial<Record<CaribbeanCue,[string,string]>>={giant:['Вот это размер!','That is a mighty symbol!'],cannon:['Залп!','Cannon fire!'],bonus:['Выбираем курс.','Choose our course.'],loss:['Раунд завершён.','Round complete.'],partial:['Вернулась часть ставки.','Part of the cost returned.'],return:['Стоимость вернулась.','The cost returned.'],win:['Раунд с плюсом!','A positive round!'],bigwin:['Крупная добыча!','A grand haul!']};
+const phrases:Partial<Record<CaribbeanCue,[string,string]>>={giant:['Вот это размер!','That is a mighty symbol!'],cannon:['Залп увеличил символ!','The cannon enlarged the symbol!'],bonus:['Выбираем курс.','Choose our course.'],loss:['Раунд завершён.','Round complete.'],partial:['Вернулась часть ставки.','Part of the cost returned.'],return:['Стоимость вернулась.','The cost returned.'],win:['Добыча твоя!','The loot is yours!'],bigwin:['Вот это сокровище!','What a treasure!']};
 /** Owns character poses, one sequence timer and gesture animations for desktop and mobile. */
 export class CaribbeanCaptain{
  private active=false;private reduced=false;private english=false;private dead=false;private busy=false;
@@ -67,8 +67,9 @@ export class CaribbeanCaptain{
   this.clearMotion();if(!this.active||this.reduced)return;
   const side=[-1,1,-.45][variant%3];
   const frames:Keyframe[]=kind==='cannon'?[{transform:'none'},{transform:'translate(5px, 2px) rotate(1deg)',offset:.2},{transform:'translate(-1px, 0) rotate(-.2deg)',offset:.65},{transform:'none'}]
-   :kind==='bigwin'?[{transform:'none'},{transform:'translateY(-7px) rotate(-.7deg)',offset:.35},{transform:'translateY(-2px) rotate(.3deg)',offset:.7},{transform:'none'}]
-   :kind==='win'||kind==='bonus'?[{transform:'none'},{transform:`translateY(-4px) rotate(${side*.55}deg)`,offset:.45},{transform:'none'}]
+   :kind==='bigwin'?[{transform:'none'},{transform:'translateY(-9px) rotate(-1deg) scale(1.045)',offset:.35},{transform:'translateY(-2px) rotate(.4deg) scale(1.012)',offset:.7},{transform:'none'}]
+   :kind==='win'?[{transform:'none'},{transform:`translateY(-5px) rotate(${side*.65}deg) scale(1.028)`,offset:.42},{transform:'none'}]
+   :kind==='bonus'?[{transform:'none'},{transform:`translateY(-4px) rotate(${side*.55}deg)`,offset:.45},{transform:'none'}]
    :kind==='loss'||kind==='partial'?[{transform:'none'},{transform:'translateY(2px) rotate(-.4deg)',offset:.5},{transform:'none'}]
    :[{transform:'none'},{transform:`translateY(1.4px) rotate(${side*.25}deg)`,offset:.4},{transform:'none'}];
   for(const [index,mount] of this.mounts.entries()){const animation=mount.animate([{transform:starts[index]},...frames.slice(1)],{duration:kind==='stop'?260:kind==='cannon'?520:900,easing:'cubic-bezier(.2,.7,.25,1)'});this.animations.add(animation);void animation.finished.catch(()=>{}).finally(()=>this.animations.delete(animation));}
