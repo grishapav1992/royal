@@ -1,6 +1,7 @@
 // Static names keep the finance page independent of game engines and player translations.
 export const gameNames:Record<string,string>={
   "atelier": "Ателье",
+  "battleship": "Морской бой",
   "chess": "Шахматы",
   "crazy-eights": "Восьмёрки",
   "durak": "Подкидной дурак",

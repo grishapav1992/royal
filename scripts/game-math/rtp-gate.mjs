@@ -1,3 +1,4 @@
+import {BATTLESHIP_METHOD, validateBattleshipProof} from './rtp-battleship.mjs';
 import {STAKE_PRECISION_METHOD,validateStakeProof} from './rtp-stakes.mjs';
 import {TOTE_METHOD,validateToteProof} from './rtp-flag-tote.mjs';
 import {KEYS_METHOD,validateKeysProof} from './rtp-keys.mjs';
@@ -52,6 +53,7 @@ export function validateRtpProof(gameId, inputs, proof) {
   if (gameId==='studio-neopolis' && p.rulesVersion>=4) assert.equal(p.method,'neopolis-variable-stake-conditional-v4','Variable stakes require conditional qualification');
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
+  if(p.method===BATTLESHIP_METHOD)return validateBattleshipProof(inputs,proof);
   if(p.method===STAKE_PRECISION_METHOD)return validateStakeProof(gameId,inputs,proof);
   if(p.method===TOTE_METHOD)return validateToteProof(gameId,inputs,proof);
   if(p.method===KEYS_METHOD){assert.equal(gameId,'variant-keys');return validateKeysProof(p,proof);}
@@ -343,7 +345,7 @@ export async function checkGameRtp(root, catalog, selected = catalog.map(game =>
   await unchanged();
   let verified=0,stakePoliciesVerified=0;
   for(const{phase,gameId,inputs,proof}of jobs){
-    verify(phase,gameId,inputs.policy.rulesVersion,()=>phase==='stake-policy'?validateStakeProof(gameId,inputs,proof):validateRtpProof(gameId,inputs,proof));
+    verify(phase,gameId,inputs.policy.rulesVersion,()=>phase==='stake-policy'&&inputs.policy.method!==BATTLESHIP_METHOD?validateStakeProof(gameId,inputs,proof):validateRtpProof(gameId,inputs,proof));
     if(phase==='stake-policy')stakePoliciesVerified++;else verified++;
   }
   await unchanged();

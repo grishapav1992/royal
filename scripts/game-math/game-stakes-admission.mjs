@@ -1,3 +1,4 @@
+import {BATTLESHIP_METHOD} from './rtp-battleship.mjs';
 import assert from 'node:assert/strict';
 import {build} from 'esbuild';
 import {STAKE_PRECISION_METHOD} from './rtp-stakes.mjs';
@@ -12,7 +13,7 @@ const priorSeparateStakeDefinitions = new Set([
 export async function stakeAdmissionRuntime(root) {
   const result = await build({
     stdin: {
-      contents: "export * from './src/shared/gameStakes.ts'; export {ROYAL_PLATFORM_GAMES} from './src/shared/arcadeCatalog.ts';",
+      contents: "export * from './src/shared/gameStakes.ts'; export {usesCommonPvpStakes} from './src/shared/pvp.ts'; export {ROYAL_PLATFORM_GAMES} from './src/shared/arcadeCatalog.ts';",
       resolveDir: root,
     },
     bundle: true, write: false, format: 'esm', platform: 'node', logLevel: 'silent',
@@ -36,8 +37,8 @@ export function validateStakeAdmission(catalog, legacyGames, registry, runtime) 
     assert(modules.has(id), 'Playable game has no independent module: ' + id);
     const policy = registry.stakePolicies?.[id];
     assert(policy, 'New or playable wagered game requires the common ten-cent stake policy: ' + id);
-    assert(runtime.usesGameStakes(id), 'Register the game in the common stake runtime: ' + id);
-    assert.equal(policy.method, STAKE_PRECISION_METHOD, 'Complete-round precision qualification is required: ' + id);
+    assert(runtime.usesGameStakes(id) || policy.kind==='pvp' && runtime.usesCommonPvpStakes?.(id), 'Register the game in the common stake runtime: ' + id);
+    assert.equal(policy.method, id==='battleship'?BATTLESHIP_METHOD:STAKE_PRECISION_METHOD, 'Complete-round precision qualification is required: ' + id);
     assert.equal(policy.stakePolicyVersion, 1, 'Use the qualified common stake policy: ' + id);
     assert.deepEqual(policy.stakes, runtime.GAME_STAKE_CENTS, 'Every common denomination must be qualified: ' + id);
     if(policy.kind!=='pvp'){

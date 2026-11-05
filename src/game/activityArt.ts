@@ -47,7 +47,7 @@ export function drawActivities(scene:Phaser.Scene,open:(id:ActivityId)=>void,hal
     c.fillStyle='#e8cb7d';c.font='8px sans-serif';c.fillText('PVP  /  5%',31,134);
   });
   if(hall==='tables')scene.add.image(1408,332,combat).setOrigin(0).setDepth(475);
-  for(const id of ['durak','transfer-durak','crazy-eights','tsu-e-fa'] as const){
+  for(const id of ['durak','transfer-durak','crazy-eights','tsu-e-fa','battleship'] as const){
     if(activityHall(id)!==hall)continue;
     const b=ACTIVITIES[id].bounds;
     const texture=make('pvp-table-'+id,232,152,c=>{

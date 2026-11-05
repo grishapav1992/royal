@@ -1,0 +1,46 @@
+.battleship {
+  color: #e7f6ff;
+  background: #0c2333;
+  border: 1px solid #416981;
+  border-radius: 12px;
+  padding: clamp(8px, 2vw, 20px);
+}
+.battleship-turn { margin: 0 0 12px; font-weight: 700; }
+.battleship-boards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  gap: 12px;
+}
+.battleship-board { width: 100%; max-width: 370px; margin-inline: auto; }
+.battleship-board h3 { margin: 0 0 8px; font-size: 0.95rem; }
+.battleship-grid {
+  display: grid;
+  grid-template-columns: repeat(11, minmax(0, 1fr));
+  gap: 2px;
+  text-align: center;
+  align-items: center;
+}
+.battleship-grid > [data-sea],
+.pvp-dialog .battleship-grid > button[data-sea]:not([data-close]) {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  aspect-ratio: 1;
+  background: #163a52;
+  border: 1px solid #46738b;
+  border-radius: 2px;
+  color: #fff;
+  font-weight: bold;
+  opacity: 1;
+}
+.pvp-dialog .battleship-grid > [data-sea="ship"]:is(span, button:not([data-close])) { background: #3a746a; }
+.pvp-dialog .battleship-grid > [data-sea="miss"]:is(span, button:not([data-close])) { background: #1f496b; }
+.pvp-dialog .battleship-grid > [data-sea="hit"]:is(span, button:not([data-close])) { background: #914c22; }
+.pvp-dialog .battleship-grid > [data-sea="sunk"]:is(span, button:not([data-close])) { background: #852d43; }
+.battleship-grid button:enabled { cursor: crosshair; }
+.battleship-grid button:enabled:hover,
+.battleship-grid button:focus-visible { outline: 2px solid #ffe1a4; outline-offset: -2px; }
+.battleship-controls { display: flex; gap: 6px; flex-wrap: wrap; }
+.battleship details { margin-top: 12px; }

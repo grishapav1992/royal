@@ -1,3 +1,4 @@
+import type { BattleshipMove, BattleshipView } from './battleship';
 import { gameAccountId, nileUnits } from './nileWallet';
 import type { NilePlayWallet } from './nilePlay';
 import type { DemoWallet } from './demoWallet';
@@ -20,13 +21,15 @@ export const validVirtualPvpStake = (value:unknown):value is string => validPvpS
 export const PVP_GAMES = {
   hockey: 'Аэрохоккей', pool: 'Бильярд', chess: 'Шахматы',
   durak: 'Подкидной дурак', 'transfer-durak': 'Переводной дурак', 'crazy-eights': 'Восьмёрки',
+  battleship: 'Морской бой',
   'tsu-e-fa': 'Цу-е-фа',
 } as const;
 export type PvpGameId = keyof typeof PVP_GAMES;
 export type PvpCardGameId = Extract<PvpGameId, 'durak' | 'transfer-durak' | 'crazy-eights'>;
 export const isPvpGame = (id: unknown): id is PvpGameId => typeof id === 'string' && Object.hasOwn(PVP_GAMES, id);
 export const isPvpCardGame = (id: unknown): id is PvpCardGameId => ['durak', 'transfer-durak', 'crazy-eights'].includes(String(id));
-export const isPvpSnapshotGame = (id: unknown) => isPvpCardGame(id) || id === 'tsu-e-fa';
+export const isPvpSnapshotGame = (id: unknown) => isPvpCardGame(id) || id === 'tsu-e-fa' || id === 'battleship';
+export const usesCommonPvpStakes = (id: string) => id === 'tsu-e-fa' || id === 'battleship';
 export const PVP_RECONNECT_MS = 60_000;
 export const PVP_INVITE_MS = 120_000;
 export const PVP_ARRIVAL_MS = 180_000;
@@ -49,7 +52,7 @@ export const cardRank = (card: PvpCard) => card % 13 + 2;
 export const cardLabel = (card: PvpCard) => (({ 11: 'В', 12: 'Д', 13: 'К', 14: 'Т' } as Record<number, string>)[cardRank(card)] ?? String(cardRank(card))) + ['♠', '♥', '♦', '♣'][cardSuit(card)];
 export type PvpCardMove = { kind: 'play' | 'attack' | 'defend' | 'transfer'; card: PvpCard; target?: number; suit?: CardSuit }
   | { kind: 'take' | 'done' | 'draw' | 'pass' };
-export type PvpMove = PvpCardMove | TsuEFaMove;
+export type PvpMove = PvpCardMove | TsuEFaMove | BattleshipMove;
 export type PvpCardView = {
   gameId: PvpCardGameId; revision: number; phase: 'playing' | 'finished';
   hand: PvpCard[]; opponentCount: number; stockCount: number; discardCount: number;
@@ -79,6 +82,7 @@ export const isNegotiatedPvp = (match: Pick<PvpChallenge, 'gameId' | 'rulesVersi
 export const isFreePvp = (match: Pick<PvpChallenge, 'gameId' | 'mode' | 'stakeUnits'>) => match.gameId === 'tsu-e-fa' && match.mode === 'free' && match.stakeUnits === '0';
 export type PvpPerson = { accountId: string; name: string; available: boolean; sessionId?: string };
 export type PvpSnapshot = { challenges: PvpChallenge[]; active: PvpChallenge | null; cards: PvpCardView | null;
+  battleship?: BattleshipView;
   tsuEFa?: TsuEFaView | null;
   people: PvpPerson[]; wallet: NilePlayWallet | VirtualPvpWallet; now: number; error?: string; requestId?: string };
 export function validPvpRequest(value: unknown): value is PvpRequest {
@@ -92,7 +96,7 @@ export function validPvpRequest(value: unknown): value is PvpRequest {
   const keys = Object.keys(row).filter(k=>k!=='walletScope' && (!custom || !['mode','targetWins'].includes(k))).sort().join(',');
   if(row.action==='invite')return (keys==='action,gameId,id,targetId'||keys==='action,gameId,id,stakeUnits,targetId'&&validTsuDuelStake(row.stakeUnits))&&row.gameId==='tsu-e-fa'&&gameAccountId(row.targetId);
   if (row.action === 'create') return keys === 'action,gameId,id,stakeUnits,targetId' && isPvpGame(row.gameId)
-    && (custom && row.mode === 'free' ? row.stakeUnits === '0' : validPvpStake(row.stakeUnits)) && (row.targetId === null || gameAccountId(row.targetId));
+    && (custom && row.mode === 'free' ? row.stakeUnits === '0' : row.gameId === 'battleship' ? validTsuDuelStake(row.stakeUnits) : validPvpStake(row.stakeUnits)) && (row.targetId === null || gameAccountId(row.targetId));
   if (!('challengeId' in row) || !gameAccountId(row.challengeId)) return false;
   if(row.action==='terms')return keys==='action,challengeId,id,stakeUnits,termsRevision'&&validTsuDuelStake(row.stakeUnits)&&Number.isSafeInteger(row.termsRevision)&&row.termsRevision>=0;
   if(row.action==='duel-ready'||row.action==='unready')return keys==='action,challengeId,id,termsRevision'&&Number.isSafeInteger(row.termsRevision)&&row.termsRevision>=0;

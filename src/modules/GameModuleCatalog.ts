@@ -118,6 +118,7 @@ export const ACTIVITY_GAME_MODULES = [
  { gameId: 'mortal-kombat', slug: 'mortal-kombat', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },
  { gameId: 'hockey', slug: 'hockey', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'pool', slug: 'pool', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
+ { gameId: 'battleship', slug: 'battleship', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'chess', slug: 'chess', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'piano', slug: 'piano', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
 ] as const;

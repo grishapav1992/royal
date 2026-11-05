@@ -10,6 +10,7 @@ import { COINS_MAX_MULTIPLIER } from '../../src/shared/gameCore';
 import { playRoyalCoins } from '../games/core';
 import { sealNileDepositPool, depositPoolDigest, type NileDepositPool } from './nile-deposit-pool';
 import { applyPvpMoneyEvent, pvpEventId, isPvpMoneyGame, type PvpMoneyEvent, type PvpMoneyMatch } from './pvp-money';
+import { validTsuDuelStake } from '../../src/shared/tsuDuel';
 import { validPvpStake } from '../../src/shared/pvp';
 import {nativeMoneyEntries,type NativeMoneyEvent} from './native-game-money';
 import { adjustmentRequest, requireFinanceAdmin, sameAdjustment } from '../admin/validation';
@@ -375,7 +376,7 @@ export class NilePlayLedger {
     async pvpHold(accountId: string, value: unknown, now = Date.now()) {
         const row = value as { matchId: string; gameId: string; stakeUnits: string };
         if (!gameAccountId(accountId) || !row || Object.keys(row).sort().join(',') !== 'gameId,matchId,stakeUnits'
-            || !gameAccountId(row.matchId) || !isPvpMoneyGame(row.gameId) || !validPvpStake(row.stakeUnits)) return fail('invalid_pvp_request',400);
+            || !gameAccountId(row.matchId) || !isPvpMoneyGame(row.gameId) || !(row.gameId==='battleship'?validTsuDuelStake(row.stakeUnits):validPvpStake(row.stakeUnits))) return fail('invalid_pvp_request',400);
         const gameId = row.gameId;
         return this.transaction(async () => {
             const matches = await this.pvpMatch(row.matchId), match = matches.get(row.matchId);

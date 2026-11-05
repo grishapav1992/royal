@@ -4,7 +4,7 @@ import { demoBalanceUnits, demoReservedUnits, saveDemoUnits, recordDemoUnits, MA
 import { NilePlayError } from '../finance/nile-play-error';
 import { isPvpMoneyGame } from '../finance/pvp-money';
 import { gameAccountId } from '../../src/shared/nileWallet';
-import { PVP_GAMES, pvpPayout, validVirtualPvpStake, VIRTUAL_PVP_SCOPE, type PvpGameId, type VirtualPvpWallet } from '../../src/shared/pvp';
+import { PVP_GAMES, usesCommonPvpStakes, pvpPayout, validVirtualPvpStake, VIRTUAL_PVP_SCOPE, type PvpGameId, type VirtualPvpWallet } from '../../src/shared/pvp';
 import {validTsuDuelStake,tsuDuelPayout} from '../../src/shared/tsuDuel';
 
 const fail=(code:string,status=409):never=>{throw new NilePlayError(code,status);};
@@ -28,14 +28,15 @@ export class VirtualPvpLedger {
   async pvpHold(accountId:string,value:unknown,now=Date.now()){
     const v=value as {matchId:string;gameId:string;stakeUnits:string};
     if(!gameAccountId(accountId)||!v||Object.keys(v).sort().join(',')!=='gameId,matchId,stakeUnits'||!gameAccountId(v.matchId)||!isPvpMoneyGame(v.gameId))return fail('invalid_pvp_request',400);
-    const tsu=v.gameId==='tsu-e-fa'&&validTsuDuelStake(v.stakeUnits);
-    if(!tsu&&!validVirtualPvpStake(v.stakeUnits))return fail('Ставка от 1 до 500 USDT с шагом 0,10 USDT.',400);
+    const commonStake=usesCommonPvpStakes(v.gameId)&&validTsuDuelStake(v.stakeUnits);
+    if(v.gameId==='battleship'&&!commonStake)return fail('Выбери ставку от 0,10 до 50 USDT.',400);
+    if(!commonStake&&!validVirtualPvpStake(v.stakeUnits))return fail('Ставка от 1 до 500 USDT с шагом 0,10 USDT.',400);
     await this.ready;
     return this.db.transaction(async()=>{
       await this.lock([accountId]);
       const bank=await this.db.prepare('SELECT * FROM virtual_pvp_banks WHERE match_id=?').get(v.matchId);
       const hold=await this.db.prepare('SELECT * FROM virtual_pvp_holds WHERE match_id=? AND account_id=?').get(v.matchId,accountId);
-      const stake=cents(v.stakeUnits),capacity=cents((tsu?tsuDuelPayout:pvpPayout)(v.stakeUnits).payoutUnits);
+      const stake=cents(v.stakeUnits),capacity=cents((commonStake?tsuDuelPayout:pvpPayout)(v.stakeUnits).payoutUnits);
       if(bank&&(bank.game_id!==v.gameId||Number(bank.stake_units)!==stake))return fail('play_idempotency_conflict');
       if(hold)return {wallet:await this.wallet(accountId),replayed:true};
       if(bank&&bank.state!=='open')return fail('pvp_unavailable');
@@ -68,7 +69,7 @@ export class VirtualPvpLedger {
       }
       if(v.winnerId!==null&&(holds.length!==2||!holds.some(h=>h.account_id===v.winnerId)))return fail('invalid_pvp_result');
       const units=String(Number(bank.stake_units)*10000);
-      const payout=bank.game_id==='tsu-e-fa'&&validTsuDuelStake(units)?tsuDuelPayout(units):pvpPayout(units);
+      const payout=usesCommonPvpStakes(bank.game_id)&&validTsuDuelStake(units)?tsuDuelPayout(units):pvpPayout(units);
       await this.db.prepare('UPDATE virtual_pvp_banks SET state=?,winner_id=?,reason=?,fee_units=?,updated_at=? WHERE match_id=?')
         .run(v.winnerId?'settled':'refunded',v.winnerId,v.reason,v.winnerId?cents(payout.feeUnits):0,now,v.matchId);
       await this.db.prepare('UPDATE virtual_pvp_holds SET state=? WHERE match_id=?').run(v.winnerId?'settled':'refunded',v.matchId);
