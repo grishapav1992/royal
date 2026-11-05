@@ -244,5 +244,22 @@
   "programsUnchanged": true,
   "servicesAndConfigurationUnchanged": true,
   "addedGames": [],
-  "restoredGames": []
+  "restoredGames": [],
+  "sourceLFChanges": [
+    {
+      "path": "games/jackie-chan/JackieScene.ts",
+      "before": "7eaee3b617c3e6225b2c35b0eb505f6d7757ee1c8cc02e1d8806459c45d20702",
+      "after": "c53abe172f86e53a0b797257f4b52a8d250b98cc18c36ca8428f8091905f2a3c"
+    },
+    {
+      "path": "games/jackie-chan/JackieUI.ts",
+      "before": "311d94ab5076f0044d20363bb04e6a2c7a2e9da4f8742a6a2a83538f00a7c35f",
+      "after": "dcbdf627088459628c8c4fed9c2fb2ea15c4043370d39687049694a4206c5efe"
+    },
+    {
+      "path": "games/jackie-chan/layout.css",
+      "before": "d1009d0b6d0a59d0ddb5e167cb236fe5aa17c5d654179b1184876a6782c756d3",
+      "after": "8be5a8995caa11f83f744c56177f42857a7b4357526198bf641ef78b9f908d6a"
+    }
+  ]
 }
