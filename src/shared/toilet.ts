@@ -2,6 +2,12 @@ import type { Obstacle } from '../game/navigation';
 
 export const OCCUPIED_TOILET_CUBICLE = 1;
 
+/** Only the janitor's feet block movement; the coat is visual artwork. */
+export const TOILET_MERCHANT = {
+  x:650,y:480,approach:{x:587,y:473},interactionRadius:95,
+  body:{x:638,y:470,w:24,h:18},
+} as const;
+
 /** Selected rectangular floor plan. Dimensions are shared by the server and renderer. */
 export const TOILET = {
   width:800,height:620,viewTop:80,
@@ -39,6 +45,7 @@ export const TOILET_OBSTACLES:Obstacle[]=[
   {x:0,y:0,w:5000,h:244},{x:0,y:0,w:84,h:1300},
   {x:716,y:0,w:5000,h:1300},{x:0,y:536,w:5000,h:1300},
   TOILET.step,TOILET.counter,TOILET.bin,TOILET.radiator,
+  TOILET_MERCHANT.body,
   ...TOILET.cubicles.flatMap(p=>[
     {x:p.x,y:p.y,w:p.w,h:8},{x:p.x,y:p.y,w:8,h:p.h},{x:p.x+p.w-8,y:p.y,w:8,h:p.h},
     {x:p.x,y:p.y+p.h-8,w:18,h:8},{x:p.x+p.w-18,y:p.y+p.h-8,w:18,h:8},

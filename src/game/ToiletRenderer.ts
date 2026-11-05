@@ -2,6 +2,7 @@ import type Phaser from 'phaser';
 import { TOILET,TOILET_WINDOW,TOILET_HALL_DOOR,CARD_TOILET_DOOR,OCCUPIED_TOILET_CUBICLE,toiletCubicleOpen } from '../shared/toilet';
 import {paintToiletResident,toiletResidentRigReady} from './toiletResidentArt';
 import {toiletResidentPose} from './toiletResidentPose';
+import {ToiletMerchant} from './ToiletMerchant';
 
 type Paint=CanvasRenderingContext2D;
 const ink='#302f35',cream='#f2ead3',gold='#c9aa70';
@@ -114,6 +115,7 @@ function paintDoor(c:Paint,p:typeof TOILET.cubicles[number],open:boolean){
 }
 
 export class ToiletRenderer{
+  readonly merchant:ToiletMerchant;
   readonly mapCanvas:HTMLCanvasElement;
   private base:HTMLCanvasElement;
   private doors:Phaser.GameObjects.Graphics;
@@ -123,7 +125,7 @@ export class ToiletRenderer{
   private lastFrame=-1;
   private reducedMotion=false;
   private pose=toiletResidentPose(0,true);
-  constructor(scene:Phaser.Scene,leave:()=>void,roofView?:HTMLCanvasElement,leaveToHall?:()=>void){
+  constructor(scene:Phaser.Scene,leave:()=>void,roofView?:HTMLCanvasElement,leaveToHall?:()=>void,approachMerchant:()=>void=()=>{}){
     this.base=document.createElement('canvas');this.base.width=TOILET.width;this.base.height=TOILET.height;
     paintToilet(this.base.getContext('2d')!,roofView);
     const key='casino-toilet-rectangle-v2';if(!scene.textures.exists(key))scene.textures.addCanvas(key,this.base);
@@ -132,7 +134,8 @@ export class ToiletRenderer{
     const residentKey='casino-toilet-resident-v2',p=TOILET.cubicles[OCCUPIED_TOILET_CUBICLE];
     this.resident=scene.textures.exists(residentKey)?scene.textures.get(residentKey) as Phaser.Textures.CanvasTexture:scene.textures.createCanvas(residentKey,300,420)!;
     this.drawResident();scene.add.image(p.x,p.y,residentKey).setOrigin(0).setDisplaySize(100,140).setDepth(14);
-    this.doors=scene.add.graphics().setDepth(15);this.drawDoors();
+    this.doors=scene.add.graphics().setDepth(15);
+    this.merchant=new ToiletMerchant(scene,approachMerchant);this.drawDoors();
     scene.add.zone(TOILET_WINDOW.click.x,TOILET_WINDOW.click.y,120,110).setDepth(700).setInteractive({useHandCursor:true}).on('pointerdown',leave);
     if(leaveToHall)scene.add.zone(TOILET_HALL_DOOR.click.x,TOILET_HALL_DOOR.click.y,120,80).setDepth(700).setInteractive({useHandCursor:true}).on('pointerdown',leaveToHall);
   }
@@ -149,11 +152,13 @@ export class ToiletRenderer{
   private drawMap(){
     const c=this.mapCanvas.getContext('2d')!,p=TOILET.cubicles[OCCUPIED_TOILET_CUBICLE];c.drawImage(this.base,0,0);
     TOILET.cubicles.forEach((p,i)=>paintDoor(c,p,this.open[i]));c.drawImage(this.resident.canvas,p.x,p.y,100,140);
+    this.merchant?.drawMap(c);
   }
   private drawResident(){
     const c=this.resident.context;c.clearRect(0,0,300,420);c.save();c.scale(3,3);paintToiletResident(c,this.pose);c.restore();this.resident.refresh();this.drawMap();
   }
-  update(people:readonly {x:number;y:number}[],delta=0,reducedMotion=false){
+  update(people:readonly {x:number;y:number;moving?:boolean}[],delta=0,reducedMotion=false,available=true){
+    if(people[0]&&this.merchant.update(delta,people[0],reducedMotion,available))this.drawMap();
     const open=TOILET.cubicles.map(p=>toiletCubicleOpen(p.id,people));
     if(open.some((value,i)=>value!==this.open[i])){this.open=open;this.drawDoors();}
     if(reducedMotion!==this.reducedMotion){this.reducedMotion=reducedMotion;if(reducedMotion)this.elapsed=0;this.lastFrame=-1;}
@@ -161,5 +166,5 @@ export class ToiletRenderer{
     const frame=reducedMotion?0:Math.floor(this.elapsed*12/1000);
     if(frame!==this.lastFrame){this.lastFrame=frame;this.pose=toiletResidentPose(this.elapsed,reducedMotion);this.drawResident();}
   }
-  getState(){const p=TOILET.cubicles[OCCUPIED_TOILET_CUBICLE];return {variant:1,openDoors:[...this.open],occupiedCubicle:p.id,floor:TOILET.floor,resident:{...this.pose,artVersion:2,artLoaded:toiletResidentRigReady(),elapsedMs:this.elapsed,frame:this.lastFrame,cubicle:p.id,interactive:false,reducedMotion:this.reducedMotion,bounds:{x:p.x+9,y:p.y+9,w:82,h:123}}};}
+  getState(){const p=TOILET.cubicles[OCCUPIED_TOILET_CUBICLE];return {variant:1,merchant:this.merchant.getState(),openDoors:[...this.open],occupiedCubicle:p.id,floor:TOILET.floor,resident:{...this.pose,artVersion:2,artLoaded:toiletResidentRigReady(),elapsedMs:this.elapsed,frame:this.lastFrame,cubicle:p.id,interactive:false,reducedMotion:this.reducedMotion,bounds:{x:p.x+9,y:p.y+9,w:82,h:123}}};}
 }

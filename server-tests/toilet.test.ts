@@ -1,7 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {TOILET,TOILET_WINDOW,ROOF_TOILET,TOILET_HALL_DOOR,CARD_TOILET_DOOR,OCCUPIED_TOILET_CUBICLE,toiletCubicleOpen,toiletSinkApproaches,toiletCubicleApproaches,toiletCubicleStanding} from '../src/shared/toilet';
+import {TOILET,TOILET_WINDOW,ROOF_TOILET,TOILET_HALL_DOOR,CARD_TOILET_DOOR,TOILET_MERCHANT,OCCUPIED_TOILET_CUBICLE,toiletCubicleOpen,toiletSinkApproaches,toiletCubicleApproaches,toiletCubicleStanding} from '../src/shared/toilet';
 import {toiletResidentPose,TOILET_RESIDENT_CYCLE_MS} from '../src/game/toiletResidentPose';
+import {ToiletMerchantRoutine,merchantFrame} from '../src/game/toiletMerchantPose';
 import {ROOF} from '../src/shared/rooftop';
 import {hallLinks,hallLinkAt,hallLinkToward,hallObstacles,HALLS} from '../src/shared/world';
 import {findPath,walkable} from '../src/game/navigation';
@@ -121,4 +122,38 @@ test('security can follow a visitor through the connected third floor without tr
   guards.enqueue('visitor',{kind:'warning',until:1000});
   for(let i=0;i<5000&&!done.length;i++){guards.tick(.05);const g=state.guards.get('security')!;halls.add(g.hall);assert(walkable(g.x,g.y,hallObstacles(g.hall)));}
   assert(halls.has('github')&&halls.has('toilet'));assert.deepEqual(done,['warning']);assert.equal(p.hall,'toilet');
+});
+
+
+test('the janitor leaves a route around his feet and blocks walking and sprinting',()=>{
+  const obstacles=hallObstacles('toilet'),p=TOILET_MERCHANT;
+  const loop=[{x:590,y:430},{x:690,y:430},{x:690,y:515},{x:590,y:515}];
+  for(let i=0;i<loop.length;i++){
+    const start=loop[i],end=loop[(i+1)%loop.length],path=findPath(start,end,obstacles);assert(path.length);
+    let before=start;for(const next of path){for(let n=0;n<=30;n++)assert(walkable(before.x+(next.x-before.x)*n/30,before.y+(next.y-before.y)*n/30,obstacles,16));before=next;}
+  }
+  for(const end of [TOILET_HALL_DOOR.entry,TOILET_WINDOW.entry,...toiletCubicleStanding,...toiletSinkApproaches])assert(findPath(p.approach,end,obstacles).length);
+  assert(!walkable(p.x,p.y,obstacles));assert.deepEqual(findPath(TOILET.spawn,{x:p.x,y:p.y},obstacles),[]);
+  for(const sprint of [false,true])for(const [x,y,dx,dy] of [[650,515,0,-1],[650,430,0,1],[590,480,1,0],[690,480,-1,0]]){
+    const body={hall:'toilet',x,y,facing:'up',moving:false,seat:'',action:'idle',drink:'',actionUntil:0};
+    for(let i=0;i<40;i++){applyMovementInput(body,{seq:i+1,x:dx,y:dy,ms:50,sprint});assert(walkable(body.x,body.y,obstacles));}
+    if(dx>0)assert(body.x<=p.body.x-12);
+    if(dx<0)assert(body.x>=p.body.x+p.body.w+12);
+    if(dy>0)assert(body.y<=p.body.y-12);
+    if(dy<0)assert(body.y>=p.body.y+p.body.h+12);
+  }
+});
+
+test('the janitor notices a visitor, shows stock once, closes and respects reduced motion',()=>{
+  const routine=new ToiletMerchantRoutine();
+  assert(!routine.show(200));
+  routine.update(50,120,false,false);assert.equal(routine.action,'beckon');assert.equal(routine.speech,'beckon');
+  routine.update(50,65,true,false);assert.equal(routine.action,'trade');
+  const seen=new Set<number>();for(let i=0;i<110;i++)seen.add(routine.update(50,65,true,false));
+  for(const f of [12,13,14,15,0])assert(seen.has(f));assert.equal(routine.action,'idle');
+  for(let i=0;i<100;i++)routine.update(50,65,true,false);assert.equal(routine.action,'idle','proximity does not continually reopen the coat');
+  assert(routine.show(65));assert.equal(merchantFrame(routine.action,routine.elapsed,true),15);
+  const reduced=new ToiletMerchantRoutine();for(let i=0;i<300;i++)assert.equal(reduced.update(50,120,true,true),0);
+  assert.equal(reduced.action,'idle');assert(reduced.show(65));assert.equal(reduced.update(50,65,true,true),15);
+  for(let i=0;i<110;i++)reduced.update(50,Infinity,true,true);assert.equal(reduced.update(50,Infinity,true,true),0);
 });

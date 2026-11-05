@@ -1,5 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
-import {TOILET_HALL_DOOR,CARD_TOILET_DOOR,ROOF_TOILET,TOILET_WINDOW} from '../src/shared/toilet';
+import {TOILET_HALL_DOOR,CARD_TOILET_DOOR,ROOF_TOILET,TOILET_WINDOW,TOILET_MERCHANT,toiletCubicleStanding} from '../src/shared/toilet';
 import {CASINO_EXIT} from '../src/shared/street';
 import {projectStreetPoint} from '../src/game/streetView';
 import {securityRoom} from './security-room';
@@ -43,6 +43,29 @@ test('toilet door reaches floor three by walking and click, returns without boun
     await hall(page,'roof');await overview(page);await clickWorld(page,ROOF_TOILET.click.x,ROOF_TOILET.click.y);await hall(page,'toilet');await overview(page);
     await expect(page.locator('#floor-links [data-floor-target="roof"]')).toHaveCount(1);await expect(page.locator('#floor-links [data-floor-target="github"]')).toHaveCount(1);
     expect((await state(page)).toilet.resident.artLoaded).toBe(true);expect((await state(page)).toilet.openDoors[1]).toBe(false);
+    expect((await state(page)).toilet.merchant.artLoaded).toBe(true);
+    await clickWorld(page,TOILET_MERCHANT.x,TOILET_MERCHANT.y-40);
+    await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.serverX-TOILET_MERCHANT.approach.x,s.serverY-TOILET_MERCHANT.approach.y);},{timeout:18000}).toBeLessThan(9);
+    await expect.poll(async()=>(await state(page)).toilet.merchant.frame).toBe(15);
+    expect((await state(page)).toilet.merchant.speech.length).toBeGreaterThan(0);
+    await page.screenshot({path:info.outputPath('janitor-open.png')});
+    for(const p of [{x:590,y:515},{x:650,y:515}])await walk(page,p.x,p.y);
+    expect((await state(page)).renderDepth).toBeGreaterThan((await state(page)).toilet.merchant.depth);
+    await page.locator('#game').focus();await page.keyboard.down('Shift');await page.keyboard.down('w');
+    try{await page.waitForTimeout(700);}finally{await page.keyboard.up('w');await page.keyboard.up('Shift');}
+    expect((await state(page)).y).toBeGreaterThanOrEqual(499);
+    expect((await state(page)).serverY).toBeGreaterThanOrEqual(499);
+    for(const p of [{x:690,y:515},{x:690,y:430},...toiletCubicleStanding,{x:520,y:430}])await walk(page,p.x,p.y);
+    await page.emulateMedia({reducedMotion:'reduce'});
+    await expect.poll(async()=>(await state(page)).reducedMotion).toBe(true);
+    await clickWorld(page,TOILET_MERCHANT.x,TOILET_MERCHANT.y-40);
+    await expect.poll(async()=>(await state(page)).toilet.merchant.frame,{timeout:18000}).toBe(15);
+    await page.waitForTimeout(400);expect((await state(page)).toilet.merchant.frame).toBe(15);
+    await page.emulateMedia({reducedMotion:'no-preference'});
+    await expect.poll(async()=>(await state(page)).toilet.merchant.action,{timeout:7000}).toBe('idle');
+    await page.locator('#game').focus();await page.keyboard.press('e');
+    await expect.poll(async()=>(await state(page)).toilet.merchant.frame).toBe(15);
+    expect((await state(page)).stairNavigation.path).toEqual([]);
     await walk(page,TOILET_HALL_DOOR.arrival.x,TOILET_HALL_DOOR.arrival.y);await page.screenshot({path:info.outputPath('toilet-exit.png')});
     await page.locator('#game').focus();await page.keyboard.down('s');try{await hall(page,'github');await page.waitForTimeout(650);expect((await state(page)).hall).toBe('github');}finally{await page.keyboard.up('s');}
     await overview(page,false);await walk(page,CARD_TOILET_DOOR.arrival.x,CARD_TOILET_DOOR.arrival.y);await page.screenshot({path:info.outputPath('third-floor-door.png')});

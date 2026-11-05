@@ -51,9 +51,10 @@ import { StreetRenderer } from './StreetRenderer';
 import { ROOF, STREET_ROOF_STAIRS, ROOF_STAIR_ROUTE, ROOF_STAIR_SPEED_SCALE,ROOF_STAIR_EPSILON,advanceRoofStairStep,moveRoofStairs,roofStairOptions,nearRoofStairBase } from '../shared/rooftop';
 import { RooftopRenderer } from './RooftopRenderer';
 import { STREET } from '../shared/street';
-import { TOILET,TOILET_WINDOW,ROOF_TOILET,TOILET_HALL_DOOR } from '../shared/toilet';
+import { TOILET,TOILET_WINDOW,ROOF_TOILET,TOILET_HALL_DOOR,TOILET_MERCHANT } from '../shared/toilet';
 import { ToiletRenderer,drawCardToiletDoor } from './ToiletRenderer';
 import {preloadToiletResident,prepareToiletResident} from './toiletResidentArt';
+import {preloadToiletMerchant} from './ToiletMerchant';
 import {STAIR_WINDOW,atStairWindow,canApproachStairWindow,canWalkThroughStairWindow} from '../shared/stairWindow';
 import {onRoofWindowPlatform,ROOF_WINDOW_PLATFORM,ROOF_STAIR_DRAW,roofWindowPlatformPosition,roofWindowPlatformPoint} from '../shared/rooftop';
 import {drawCardStairWindow,stairWindowFrame} from './StairWindowRenderer';
@@ -155,6 +156,7 @@ export class RoomScene extends Phaser.Scene {
   }
   preload() {
     preloadToiletResident(this);
+    preloadToiletMerchant(this);
     preloadRoyalBarArt(this);
     this.load.image(ATELIER_TEXTURE, ATELIER_SPRITE);
     this.load.image(ATELIER_EMPTY_TEXTURE, ATELIER_EMPTY_SPRITE);
@@ -187,7 +189,7 @@ export class RoomScene extends Phaser.Scene {
         continue;
       }
       if(hall==='toilet'){
-        this.toilet=new ToiletRenderer(this,()=>this.approachFloor('roof'),this.rooftop?.mapCanvas,()=>this.approachFloor('github'));
+        this.toilet=new ToiletRenderer(this,()=>this.approachFloor('roof'),this.rooftop?.mapCanvas,()=>this.approachFloor('github'),()=>this.approachToiletMerchant());
         this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
         continue;
       }
@@ -561,6 +563,7 @@ export class RoomScene extends Phaser.Scene {
     if(this.hall==='roof'&&Math.hypot(this.player.x-ROOF_TOILET.entry.x,this.player.y-ROOF_TOILET.entry.y)<110){this.approachFloor('toilet');return;}
     if(this.hall==='toilet'&&Math.hypot(this.player.x-TOILET_WINDOW.entry.x,this.player.y-TOILET_WINDOW.entry.y)<110){this.approachFloor('roof');return;}
     if(this.hall==='toilet'&&Math.hypot(this.player.x-TOILET_HALL_DOOR.entry.x,this.player.y-TOILET_HALL_DOOR.entry.y)<80){this.approachFloor('github');return;}
+    if(this.hall==='toilet'&&!this.isHuggingCat()&&Math.hypot(this.player.x-TOILET_MERCHANT.x,this.player.y-TOILET_MERCHANT.y)<=TOILET_MERCHANT.interactionRadius){this.approachToiletMerchant();return;}
     if(this.hall==='street'&&(this.player.stairStep??0)>0)return;
     if(this.hall==='street'&&!this.isHuggingCat()&&Math.hypot(this.player.x-STREET_ROOF_STAIRS.foot.x,this.player.y-STREET_ROOF_STAIRS.foot.y)<55){this.approachFloor('roof');return;}
     if(this.hall==='street'&&!this.isHuggingCat()&&this.street?.interact(this.player)){this.pendingLounge=null;this.finishMovement(()=>this.network?.stop());return;}
@@ -584,6 +587,15 @@ export class RoomScene extends Phaser.Scene {
     if (this.locked || this.isHuggingCat() || this.typing) return;
     if (atBar(this.player)) { this.onBar(); return; }
     this.pendingCabinet = null; this.pendingLounge = 'bar'; this.goTo(BAR_APPROACH);
+  }
+  private approachToiletMerchant(){
+    if(this.hall!=='toilet'||this.locked||this.typing||this.switching||this.isHuggingCat())return;
+    if(Math.hypot(this.player.x-TOILET_MERCHANT.x,this.player.y-TOILET_MERCHANT.y)<=TOILET_MERCHANT.interactionRadius){
+      this.pendingCabinet=null;this.pendingLounge=null;this.player.path=[];this.marker.setVisible(false);
+      this.finishMovement(()=>{this.network?.stop();if(this.hall==='toilet'){this.player.facing=this.player.x<TOILET_MERCHANT.x?'right':'left';this.toilet?.merchant.interact(this.player);}});
+      return;
+    }
+    this.pendingCabinet=null;this.pendingLounge='toilet-merchant';this.goTo(TOILET_MERCHANT.approach);
   }
   approachAtelier() {
     if (this.hall!=='arcade' || this.locked || this.isHuggingCat() || this.typing || this.switching) return;
@@ -704,7 +716,7 @@ export class RoomScene extends Phaser.Scene {
     this.guestViews=views;
     const active=new Set(views.filter(v=>v.hall===this.hall).map(v=>v.id));
     const counter=document.querySelector<HTMLElement>('.npc-count');
-    const count=active.size+(this.hall==='street'?(this.street?.pedestrianCount??0):this.hall==='toilet'?1:0);
+    const count=active.size+(this.hall==='street'?(this.street?.pedestrianCount??0):this.hall==='toilet'?2:0);
     if(counter){const label=(this.network?translateText('Игроки: ')+(counter.dataset.players??'0')+' · ':'')+translateText('НПС: ')+count;if(counter.textContent!==label)counter.textContent=label;}
     for(const [id,actor] of this.guests)if(!active.has(id)){actor.sprite.destroy();actor.shadow.destroy();actor.blush.destroy();actor.label?.destroy();this.guests.delete(id);this.guestMotion.delete(id);}
     for(const view of views){
@@ -952,7 +964,7 @@ export class RoomScene extends Phaser.Scene {
     }
     if(!this.network&&!this.locked&&!this.isHuggingCat()&&!this.typing&&inHallDoor(this.player))this.changeHall(hallLinkAt(this.player)!.target);
     this.details?.update(time);
-    if(this.hall==='toilet')this.toilet?.update([this.player,...[...this.remotePlayers.values()].map(p=>p.actor)],delta,this.reducedMotion);
+    if(this.hall==='toilet')this.toilet?.update([this.player,...[...this.remotePlayers.values()].map(p=>p.actor)],delta,this.reducedMotion,!this.locked&&!this.typing&&!this.switching&&!this.isHuggingCat());
     if(this.hall==='street'&&(this.player.stairStep??0)>0&&this.pendingLounge?.startsWith('street:'))this.pendingLounge=null;
     const streetTarget=this.hall==='street'&&this.pendingLounge?.startsWith('street:')?this.pendingLounge.slice(7) as StreetResidentId:undefined;
     if(this.streetApproach?.id!==streetTarget){this.streetApproach=undefined;this.streetApproachCompleting=false;}
@@ -1059,6 +1071,12 @@ export class RoomScene extends Phaser.Scene {
           else if(Math.hypot(this.player.x-STREET_ROOF_STAIRS.foot.x,this.player.y-STREET_ROOF_STAIRS.foot.y)<5){
             this.pendingLounge=null;
             this.player.path=[];this.marker.setVisible(false);this.endPrediction();
+          }
+        }
+        else if(this.pendingLounge==='toilet-merchant'){
+          if(this.hall!=='toilet')this.pendingLounge=null;
+          else if(Math.hypot(this.player.x-TOILET_MERCHANT.approach.x,this.player.y-TOILET_MERCHANT.approach.y)<9){
+            this.approachToiletMerchant();
           }
         }
         else if(this.pendingLounge==='elevator') {

@@ -1,0 +1,44 @@
+{
+  "checkedAt": "2026-11-05T14:01:00.054274+00:00",
+  "scope": "local development preview only",
+  "url": "http://127.0.0.1:5191/",
+  "tests": {
+    "typescript": "pass",
+    "toiletServerScenarios": {
+      "passed": 9,
+      "failed": 0
+    },
+    "browser": {
+      "passed": 2,
+      "failed": 0,
+      "desktop": "1440x1000 Chrome",
+      "mobile": "390x844 Chrome touch emulation",
+      "connectedChat": true,
+      "checks": [
+        "full street-stairs-roof-toilet route",
+        "drawn atlas loaded and full-open frame reached",
+        "click approaches the NPC",
+        "four-sided bypass and both empty cubicles",
+        "sprinting cannot cross NPC feet, client and server agree",
+        "reduced motion static open coat",
+        "E reopens coat and clears the movement path",
+        "floor-three doorway both directions and roof-window return",
+        "unchanged displayed wallet balance",
+        "no page errors"
+      ]
+    }
+  },
+  "atlasSha256": "90a698e1d019ab8660ae6641c3b9e69baa83c9251733082df5f68030ccbcb496",
+  "files": {
+    "src/game/RoomScene.ts": "ab2fd430839ef4360ac2a37fa7e66d412a2cd85065f689008ee14764e4f5c1fb",
+    "src/game/ToiletRenderer.ts": "0b63af086fe947da03956a634ad20c9410d00919f29989f5e9085ebf643753cd",
+    "src/game/ToiletMerchant.ts": "015ea50662aa8cee320d1f80be5b91db91273a5bb4728f215c68f417f369d2d6",
+    "src/game/toiletMerchantPose.ts": "cb46bd643bbbac81a84b409f5a02bfbdad68b9a8569fb5122c2c269b4a7da514",
+    "src/shared/toilet.ts": "7254f1c0da2d0d383e411aad49c948aa2e1ce7b0ec5e5832a967aa946b0f5b07",
+    "server-tests/toilet.test.ts": "d41712d048b6b2eb90c281aa0d0c4da3efa510dd6062027206dec12a603b67dc",
+    "tests/toilet-hall-door.spec.ts": "ff703d3a3ec7c40a608a2be8cf8c645a41f36759fb9ec9eb52e0653d3d4f54ac",
+    "public/assets/toilet/royal-janitor-v1-90a698e1d019.png": "90a698e1d019ab8660ae6641c3b9e69baa83c9251733082df5f68030ccbcb496"
+  },
+  "productionPublished": false,
+  "existingPreviewDatabasePreserved": true
+}
