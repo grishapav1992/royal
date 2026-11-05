@@ -1,0 +1,27 @@
+{
+  "release": "toilet-third-floor-20261105-v1",
+  "featureCommit": "4730ba6dbdda9c1a21044deb683b8a1823420b90",
+  "productionCommit": "95222a75a76f9fe52625cadb5fdc4679d32aa25d",
+  "changedSources": [
+    "src/game/RoomScene.ts",
+    "src/game/ToiletRenderer.ts",
+    "src/shared/toilet.ts",
+    "src/shared/world.ts",
+    "src/main.ts",
+    "src/ui/ClubMap.ts"
+  ],
+  "mediaSources": [],
+  "expectedSources": {
+    "src/game/RoomScene.ts": "068e839c9e4553cf250502de85c038db82672fc5c5cdf7c35784ad9dc972bba4",
+    "src/game/ToiletRenderer.ts": "1dcb39d4c49c84e3991c7e96ff1e0412248325770d33ab706ee0448a024c7864",
+    "src/shared/toilet.ts": "bcf087dd0cbce2d238c67fb77dcb9999e50e71f0e5d67f3d60c17ea50e1bc664",
+    "src/shared/world.ts": "1dc6bbabc09a553ce435a7bbd5c0b07dbcf8bac4defad7b72536bdf69eac1e6a",
+    "src/main.ts": "3376bf33e76416f86ec0154253f0457ebadcd8c3d6608d83c22b4a4b5a61b49c",
+    "src/ui/ClubMap.ts": "3078169c72725a5015b9d46ded3232c3c194a81ae15678d9a817df9180f99bda"
+  },
+  "preservedBackendInputs": {
+    "src/i18n/en.ts": "e6a39483750df92467b584e98319ce679f2a3489669e4b0d3f64a2d7ba0a762c"
+  },
+  "addedGames": [],
+  "restoredGames": []
+}
