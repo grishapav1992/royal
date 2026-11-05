@@ -15,7 +15,7 @@ roomSession:async({request},use)=>{
  }});
  const room=await client.create<any>('lobby');
  for(const name of ['chat','chat-result','activities','piano-note','notice','chat-check','security','ejected','pvp'])room.onMessage(name,()=>{});
- try{await use({path:'/?room='+room.roomId,send:text=>room.send('chat',{id:crypto.randomUUID(),text})});}finally{await Promise.race([room.leave(),new Promise(resolve=>setTimeout(resolve,1500))]);}
+ try{await use({path:'/?room='+room.roomId+'&mode=club',send:text=>room.send('chat',{id:crypto.randomUUID(),text})});}finally{await Promise.race([room.leave(),new Promise(resolve=>setTimeout(resolve,1500))]);}
 }});
 const state=(page:Page)=>page.evaluate(()=>{try{return(window as any).royalDemo?.getState()??{};}catch{return{};}});
 async function enter(page:Page,path:string,email=`ct-player-${crypto.randomUUID()}@example.test`){
@@ -23,7 +23,7 @@ async function enter(page:Page,path:string,email=`ct-player-${crypto.randomUUID(
  await page.emulateMedia({reducedMotion:'reduce'});await page.goto(path);
  await page.getByLabel('Почта',{exact:true}).fill(email);await page.getByLabel('Пароль',{exact:true}).fill('Royal-ct-check-123!');
  await page.getByRole('button',{name:'Продолжить',exact:true}).click();
- await expect.poll(async()=>await page.locator('#character-step').isVisible()||!(await page.locator('#join-dialog').isVisible())).toBe(true);
+ await expect.poll(async()=>await page.locator('#character-step').isVisible()||(await state(page)).online,{timeout:30000}).toBe(true);
  if(await page.locator('#character-step').isVisible())await page.getByRole('button',{name:'Войти в зал',exact:true}).click();
  await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});
  await expect.poll(async()=>(await state(page)).online).toBe(true);
@@ -123,6 +123,8 @@ test('priority shell keeps phone chat behind a button and preserves messages, dr
  test.setTimeout(120000);
  await page.setViewportSize({width:393,height:852});await enter(page,roomPath);await topup(page);await open(page);
  const dialog=page.locator('#mini-dialog'),toggle=dialog.locator('.game-chat-toggle'),dock=dialog.locator('#club-chat-dock');
+ await expect(dialog.locator('.game-mode-badge')).toBeHidden();
+ await expect(dialog.locator('.mini-bottom > span')).toBeHidden();
  await expect(dialog).toHaveAttribute('data-game-chat','closed');await priorityLayout(page);
  const before=await page.locator('.ct-board').boundingBox(),balance=await wallet(page);
  roomSession.send('Привет из соседнего кресла');
@@ -146,6 +148,7 @@ test('priority shell keeps phone chat behind a button and preserves messages, dr
   await page.setViewportSize(viewport);await expect(dock).toBeHidden();await priorityLayout(page);
  }
  await page.setViewportSize({width:1440,height:900});await expect(dialog).toHaveAttribute('data-game-chat','column');
+ await expect(dialog.locator('.game-mode-badge')).toBeHidden();
  await toggle.click();await expect(dock).toBeHidden();
  await page.setViewportSize({width:852,height:393});await page.setViewportSize({width:1440,height:900});await expect(dock).toBeHidden();
  await toggle.click();await expect(dialog).toHaveAttribute('data-game-chat','column');
@@ -238,9 +241,11 @@ test('crew collection earns free tokens, unlocks a chosen captain and persists b
  await crewLessons(page);expect((await crewState(page)).tokens).toBe(100);await page.screenshot({path:out+'/collection-lessons-complete.png'});
  await page.locator('[data-ct-modal=crew-tab]').click();await expect(page.locator('[data-crew-id=amara]')).toContainText('Открыть');
  await page.locator('[data-crew-id=amara]').click();await expect(page.locator('[data-crew-id=amara]')).toHaveAttribute('data-owned','true');expect((await crewState(page)).tokens).toBe(0);
+ await expect(page.locator('.ct-crew-status')).toContainText('В команде пополнение!');
  await page.locator('[data-crew-id=amara]').click();await expect(page.locator('.ct-backdrop')).toBeHidden();await expect.poll(async()=>(await mini()).captain.character).toBe('amara');
  expect((await wallet(page)).entries).toEqual(before.entries);
- await close(page);await page.evaluate(()=>localStorage.clear());await page.reload();await expect.poll(async()=>(await state(page)).online).toBe(true);await open(page);
+ await close(page);await page.evaluate(()=>localStorage.clear());await page.reload();
+ await expect.poll(async()=>(await state(page)).online,{timeout:20000}).toBe(true);await open(page);
  await expect.poll(async()=>(await mini()).captain.character).toBe('amara');expect((await mini()).captain.history).toEqual([]);
  await page.setViewportSize({width:390,height:844});await page.locator('[data-ct-action=crew]').click();
  await shellChat(page);await page.screenshot({path:out+'/collection-unlocked-mobile.png'});
@@ -260,14 +265,41 @@ test('spin keeps the portrait frame and lower controls anchored throughout confi
  });
  for(const [width,height]of [[1440,1000],[1280,720],[390,844]]){
   await page.setViewportSize({width,height});await page.waitForTimeout(150);
-  await page.request.post('/__test/caribbean/force-scenario',{data:{name:'loss'}});
+  const positive=width===390;
+  await page.request.post('/__test/caribbean/force-scenario',{data:{name:positive?'positive':'loss'}});
   await page.evaluate(()=>{
    const selectors=['.ct-captain','.ct-avatar','.ct-ledger','.ct-controls','.ct-status'];
-   const state=(window as any).__ctAnchors={samples:[] as any[],running:true};
-   const sample=()=>{state.samples.push(Object.fromEntries(selectors.map(selector=>{const r=document.querySelector(selector)!.getBoundingClientRect();return[selector,{x:r.x,y:r.y,width:r.width,height:r.height}];})));if(state.running)requestAnimationFrame(sample);};sample();
+   const root=document.querySelector<HTMLElement>('.ct-root')!;
+   const state=(window as any).__ctAnchors={samples:[] as any[],reels:[] as any[],trail:0,running:true};
+   const sample=()=>{
+    state.samples.push(Object.fromEntries(selectors.map(selector=>{const r=document.querySelector(selector)!.getBoundingClientRect();return[selector,{x:r.x,y:r.y,width:r.width,height:r.height}];})));
+    const phase=root.dataset.ctPhase;
+    if(phase==='waiting'||phase==='reels'){
+     const rolling=Array.from(root.querySelectorAll<HTMLElement>('.ct-strip'),strip=>!strip.hidden);
+     const hidden=Array.from(root.querySelectorAll('.ct-cell'),cell=>getComputedStyle(cell).visibility==='hidden');
+     const strip=root.querySelector('.ct-strip:not([hidden])');
+     state.reels.push({phase,rolling,hidden,outcome:root.dataset.outcome,net:root.querySelector('[data-ct-net]')!.textContent,
+      wave:strip?getComputedStyle(strip,'::before').animationName:''});
+    }
+    state.trail=Math.max(state.trail,root.querySelectorAll('.ct-treasure-spark').length);
+    if(state.running)requestAnimationFrame(sample);
+   };sample();
   });
-  await action(page,'[data-ct-action=play]');
-  const sample=await page.evaluate(()=>{const s=(window as any).__ctAnchors;s.running=false;return s.samples;});
+  const round=await action(page,'[data-ct-action=play]');
+  const {samples:sample,reels,trail}=await page.evaluate(()=>{const s=(window as any).__ctAnchors;s.running=false;return s;});
+  expect(reels.some((frame:any)=>frame.phase==='waiting'&&frame.rolling.every(Boolean)&&frame.wave==='ct-sea-glint')).toBe(true);
+  expect(reels.some((frame:any)=>frame.phase==='reels'&&frame.rolling.some(Boolean)&&!frame.rolling.every(Boolean))).toBe(true);
+  for(const frame of reels){
+   expect(frame.hidden).toEqual(Array.from({length:24},(_,index)=>frame.rolling[index%6]));
+   expect(frame.outcome).toBe('');expect(frame.net).not.toMatch(/^[+−-]/);
+  }
+  expect(trail).toBe(positive?5:0);
+  if(positive){
+   const net=Number(BigInt(round.returnedUnits)-BigInt(round.spentUnits))/100;
+   expect(net).toBeGreaterThan(0);
+   await expect(page.locator('.ct-status')).toHaveText('Ты выиграл! +'+net.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2})+' USDT');
+   await page.screenshot({path:out+'/positive-mobile.png'});
+  }else await expect(page.locator('.ct-status')).toHaveText('Раунд завершён без выплаты.');
   const drift=Object.fromEntries(Object.keys(sample[0]).map(selector=>[selector,Math.max(...sample.flatMap((s:any)=>['x','y','width','height'].map(key=>Math.abs(s[selector][key]-sample[0][selector][key]))))]));
   measurements.push({width,height,frames:sample.length,drift});
  }
@@ -361,7 +393,7 @@ test('autoplay stops for funds, blur, account change and closing and never resum
 });
 
 test('interrupting a captain reaction preserves its current transform before easing into focus',async({page})=>{
- await page.goto('/?offline=1');await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.goto('/?offline=1&mode=club');await page.emulateMedia({reducedMotion:'no-preference'});
  const continuity=await page.evaluate(async()=>{
   const path='/games/caribbean-treasures/CaribbeanCaptain.ts',module=await import(/* @vite-ignore */path);
   const root=document.createElement('section');root.innerHTML='<span class="ct-portrait-gesture" style="display:block;width:200px;height:300px"><img class="ct-portrait-layer"><img class="ct-portrait-layer"></span><span class="ct-captain-caption" hidden></span>';document.body.append(root);
@@ -663,10 +695,18 @@ test('switching accounts hides the previous series and restores it only for its 
 });
 
 test('confirmed animation, cannon, skip, mute, zero volume and close release owned audio',async({page,roomPath})=>{
+ test.setTimeout(150000);
  await enter(page,roomPath);await topup(page);await page.emulateMedia({reducedMotion:'no-preference'});await open(page);
  await page.evaluate(()=>{const c=(globalThis as any)[Symbol.for('royal.game-host.v1')].gameAudio.context;if(!c)throw Error('Shared context missing');const active=(window as any).__ctSources=new Set(),host=(window as any).__ctHostSources=new Map();(window as any).__ctOwnedCreated=0;for(const name of ['createOscillator','createBufferSource']){const create=c[name].bind(c);c[name]=()=>{const node=create(),stack=new Error().stack??'',owned=stack.includes('/game-modules/studio-caribbean-treasures/')||stack.includes('/games/caribbean-treasures/');if(owned){active.add(node);(window as any).__ctOwnedCreated++;}else host.set(node,stack);node.addEventListener('ended',()=>{active.delete(node);host.delete(node);});return node;};}});
  await page.locator('[data-ct-lines]').selectOption('1');await page.request.post('/__test/caribbean/force-bonus');await action(page,'[data-ct-action=play]');
- await action(page,'[data-ct-action=choose-raid]');await page.request.post('/__test/caribbean/force-cannon');await action(page,'[data-ct-action=play]');
+ await action(page,'[data-ct-action=choose-raid]');await page.request.post('/__test/caribbean/force-cannon');
+ await Promise.all([
+  action(page,'[data-ct-action=play]'),
+  page.locator('.ct-cannon-burst').waitFor({state:'visible',timeout:15000}),
+ ]);
+ await expect(page.locator('.ct-giant small')).toHaveText('Залп увеличил символ');
+ await expect(page.locator('.ct-board')).toHaveAccessibleName(/с 2×2 до 3×3/);
+ await page.screenshot({path:out+'/cannon-explained.png'});
  const playback=await page.evaluate(()=>(window as any).royalDemo.getMiniState());expect(playback.audio.counts.cannon).toBe(1);expect(playback.accents.filter((a:any)=>a.cue==='stop')).toHaveLength(12);
  expect(playback.captain.history.filter((e:any)=>e.cue==='cannon')).toHaveLength(1);
  expect(playback.captain.history.find((e:any)=>e.cue==='cannon').pose).toBe('surprise');
@@ -805,6 +845,7 @@ test('saved complete rounds give distinct captain reactions in the real host',as
    const forced=await page.request.post('/__test/caribbean/force-scenario',{data:{name}});expect(forced.ok()).toBe(true);
    const done=await action(page,'[data-ct-action=play]'),view=await mini(),history=view.captain.history;
    expect(done.state).toBe('settled');expect(history.at(-1).cue).toBe(cue);expect(history.at(-1).pose).toBe(pose);
+   await expect(page.locator('.ct-status')).toHaveAttribute('data-win',cue==='win'?'win':'');
    expect(await page.locator('[data-ct-payout]').textContent()).not.toBe('...');
    const result=history.at(-1),giant=history.findLast((e:any)=>e.cue==='giant'&&e.key.startsWith(done.id));
    cut(name,giant??result,result);results.push({name,costUnits:done.spentUnits,payoutUnits:done.returnedUnits,captain:history.filter((e:any)=>e.key.startsWith(done.id))});
@@ -813,10 +854,20 @@ test('saved complete rounds give distinct captain reactions in the real host',as
   await page.request.post('/__test/caribbean/force-scenario',{data:{name:'natural-flagship'}});
   const natural=await action(page,'[data-ct-action=play]');expect(natural.view.caribbean.phase).toBe('choice');
   let history=(await mini()).captain.history;const bonus=history.at(-1);expect(bonus.cue).toBe('bonus');cut('bonus',bonus,bonus);await page.screenshot({path:out+'/reaction-bonus.png'});await page.waitForTimeout(1200);
-  await action(page,'[data-ct-action=choose-flagship]');const done=await finish(page);history=(await mini()).captain.history;
+  await action(page,'[data-ct-action=choose-flagship]');
+  await page.emulateMedia({reducedMotion:'reduce'});
+  for(let spin=0;spin<5;spin++)await action(page,'[data-ct-action=play]');
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  const [done]=await Promise.all([
+   action(page,'[data-ct-action=play]'),
+   page.locator('.ct-loot-chest').waitFor({state:'visible',timeout:15000}),
+  ]);expect(done.state).toBe('settled');
+  history=(await mini()).captain.history;
   const grand=history.at(-1);expect(grand.cue).toBe('bigwin');expect(grand.pose).toBe('laugh');cut('bigwin',grand,grand,1.6);
+  await expect(page.locator('.ct-status')).toContainText('Крупный выигрыш!');
   results.push({name:'natural-flagship',costUnits:done.spentUnits,payoutUnits:done.returnedUnits,captain:history.filter((e:any)=>e.key.startsWith(done.id))});
   await page.screenshot({path:out+'/reaction-bigwin.png'});await page.waitForTimeout(1800);
+  await expect(page.locator('.ct-sparks')).toHaveCount(0);
   await page.locator('[data-ct-action=lines]').click();await page.locator('[data-ct-lines]').selectOption('1');
   await page.locator('[data-ct-action=buy]').click();await action(page,'[data-ct-modal=buy-raid]');
   await page.request.post('/__test/caribbean/force-cannon');const cannon=await action(page,'[data-ct-action=play]');history=(await mini()).captain.history;

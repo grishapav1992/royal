@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile,stat} from 'node:fs/promises';
 import sharp from 'sharp';
 import {CARIBBEAN_CREW,DEFAULT_CAPTAIN} from '../games/caribbean-treasures/CaribbeanCrew';
+import {CARIBBEAN_PROGRESS_VERSION,CARIBBEAN_RULES_VERSION} from '../src/shared/caribbeanTreasures';
 test('Caribbean runtime media decodes, preserves prop alpha and fits the reference art budget',async()=>{
  let total=0;
  for(const name of ['harbor','captain','captain-win','captain-blink','captain-focus','captain-surprise','captain-bonus','captain-soft','captain-laugh','frame','symbol-map','symbol-compass','symbol-pistol','symbol-cutlass','symbol-ruby','symbol-parrot']){
@@ -11,7 +12,7 @@ test('Caribbean runtime media decodes, preserves prop alpha and fits the referen
   if(name!=='harbor'){assert(info.hasAlpha);const alpha=(await sharp(path).stats()).channels[3];assert.equal(alpha.min,0);assert(alpha.max>240);}
  }
  assert(total<5*1024*1024);
- const pkg=JSON.parse(await readFile('games/caribbean-treasures/package.json','utf8'));assert.deepEqual(pkg.assetRoots,['caribbean-treasures']);assert.equal(pkg.gameId,'studio-caribbean-treasures');assert.deepEqual([pkg.apiVersion,pkg.rulesVersion,pkg.progressVersion],[1,1,1]);assert.equal(pkg.preload.length,16);
+ const pkg=JSON.parse(await readFile('games/caribbean-treasures/package.json','utf8'));assert.deepEqual(pkg.assetRoots,['caribbean-treasures']);assert.equal(pkg.gameId,'studio-caribbean-treasures');assert.deepEqual([pkg.apiVersion,pkg.rulesVersion,pkg.progressVersion],[1,CARIBBEAN_RULES_VERSION,CARIBBEAN_PROGRESS_VERSION]);assert.equal(pkg.preload.length,16);
 });
 test('ten additional pirate captains have eight complete transparent states and bounded lazy media',async()=>{
  const {createHash}=await import('node:crypto');

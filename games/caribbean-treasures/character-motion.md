@@ -16,11 +16,11 @@ The new collection supersedes 1.4.0 free selection and browser-local persistence
 | --- | --- | --- |
 | Wrong educational answer | Plain text invites another solution; no reward sound or points | No wager, no penalty, no profile credit |
 | Confirmed new completion | Announce the exact 20 or 50 profile points from the server receipt; short existing UI click | Duplicate claim, restore and lost-response refresh do not replay reward feedback |
-| Confirmed new captain unlock | Owned card restores its color and receives a bounded 400 ms warm edge accent | Only a new server receipt animates; reduced motion suppresses the accent |
+| Confirmed new captain unlock | The newly owned card regains its color with a short gold sweep. The gallery status names the captain who joined the crew | Only a new server receipt animates; reduced motion keeps the ownership change and message |
 | Select owned captain | Decode all eight frames, confirm account selection, then switch both portraits together and close gallery | Failure keeps the existing identity. Close cancels the pending visual change; a late accepted response refreshes the same account and waits for any paid presentation to end. Account change invalidates stale callbacks. |
 | Background profile restore meets a spin | Keep the currently visible identity through the confirmed paid presentation | Cancel pending art change at begin, defer restore until presentation finishes |
 
-The 400 ms accent and point amounts are product choices, not scientific thresholds. Free task rewards are profile points, distinct from USDT and paid-round celebrations. Technical checks cover wrong answers, semantic and request deduplication, concurrent unlocks, Moscow midnight, all ten permanent ownerships, account isolation, wallet invariance, accepted bonus recovery and actual host/chat desktop/mobile layout.
+The accent duration and point amounts are product choices, not scientific thresholds. Free task rewards are profile points, distinct from USDT and paid-round celebrations. Technical checks cover wrong answers, semantic and request deduplication, concurrent unlocks, Moscow midnight, all ten permanent ownerships, account isolation, wallet invariance, accepted bonus recovery and actual host/chat desktop/mobile layout.
 
 User request: improve the game animation and give the established adult pirate captain varied movement and event reactions. Preserve the approved character identity, costume, harbor, host/chat layout and recorded soundtrack. No rule, probability, stake, cost or payout change.
 
