@@ -1,6 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
 import {TOILET,ROOF_TOILET,TOILET_WINDOW,OCCUPIED_TOILET_CUBICLE,toiletCubicleStanding,toiletSinkApproaches} from '../src/shared/toilet';
 import {projectStreetPoint} from '../src/game/streetView';
+import {CASINO_EXIT} from '../src/shared/street';
 import {securityRoom} from './security-room';
 
 const state=(page:Page)=>page.evaluate(()=>(window as any).royalDemo.getState());
@@ -17,6 +18,11 @@ async function walk(page:Page,x:number,y:number){
   await expect.poll(async()=>Math.hypot((await state(page)).x-x,(await state(page)).y-y),{timeout:25000}).toBeLessThan(tolerance);
   await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.x-s.serverX,s.y-s.serverY);}).toBeLessThan(1);
 }
+async function cubicleImage(page:Page,path:string){
+  const s=await state(page),b=(await page.locator('#game canvas').boundingBox())!,p=TOILET.cubicles[OCCUPIED_TOILET_CUBICLE];
+  const sx=s.view.zoom*b.width/s.view.width,sy=s.view.zoom*b.height/s.view.height;
+  await page.screenshot({path,clip:{x:b.x+(p.x-5-s.view.x)*sx,y:b.y+(p.y-5-s.view.y)*sy,width:(p.w+10)*sx,height:(p.h+10)*sy}});
+}
 
 test('occupied toilet visitor animates behind a locked door and leaves the other stalls and exit accessible',async({page,request,context},info)=>{
   test.setTimeout(150000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
@@ -32,7 +38,7 @@ test('occupied toilet visitor animates behind a locked door and leaves the other
     await expect(page.locator('#join-dialog')).toBeHidden();
     await page.evaluate(()=>new Promise<void>(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r()))));
     const balance=await page.locator('#wallet-balance').textContent();
-    await page.locator('[data-floor-target="street"]').click();
+    await overview(page);await clickWorld(page,CASINO_EXIT.entry.x,CASINO_EXIT.entry.y);
     await expect.poll(async()=>(await state(page)).hall,{timeout:25000}).toBe('street');
     await overview(page);for(const p of [{x:480,y:1050},{x:480,y:360},{x:1660,y:360}])await walk(page,p.x,p.y);
     await page.locator('#room-overview').click();
@@ -58,6 +64,7 @@ test('occupied toilet visitor animates behind a locked door and leaves the other
     await expect.poll(async()=>(await state(page)).toilet.resident.behindShirt,{timeout:6000,intervals:[80]}).toBe(true);
     expect((await state(page)).toilet.resident.paper).toBe(true);
     await page.screenshot({path:info.outputPath('occupied-toilet.png')});
+    await cubicleImage(page,info.outputPath('resident-wiping.png'));
     await expect.poll(async()=>(await state(page)).toilet.resident.stage,{timeout:6000,intervals:[80]}).toBe('settle');
     for(const q of toiletCubicleStanding){await walk(page,q.x,q.y);expect((await state(page)).toilet.openDoors[q.id]).toBe(true);await walk(page,q.x,430);}
     for(const q of toiletSinkApproaches)await walk(page,q.x,q.y);
@@ -66,6 +73,12 @@ test('occupied toilet visitor animates behind a locked door and leaves the other
     await expect.poll(async()=>{const s=await state(page);return s.hall==='toilet'&&s.online&&!s.locked&&Number.isFinite(s.serverX);}).toBe(true);await overview(page);
     await expect.poll(async()=>(await state(page)).toilet.resident.reducedMotion).toBe(true);
     const still=(await state(page)).toilet.resident;await page.waitForTimeout(300);expect((await state(page)).toilet.resident).toEqual(still);expect(still.stage).toBe('idle');
+    await cubicleImage(page,info.outputPath('resident-resting.png'));
+    if(info.project.name==='desktop'){
+      const viewport=page.viewportSize()!;await page.setViewportSize({width:2400,height:1500});
+      await page.evaluate(()=>new Promise<void>(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r()))));
+      await cubicleImage(page,info.outputPath('resident-detail.png'));await page.setViewportSize(viewport);
+    }
     await page.emulateMedia({reducedMotion:'no-preference'});
     await page.reload();await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
     await expect.poll(async()=>{const s=await state(page);return s.hall==='toilet'&&s.online&&!s.locked&&Number.isFinite(s.serverX);}).toBe(true);await overview(page);
@@ -74,5 +87,5 @@ test('occupied toilet visitor animates behind a locked door and leaves the other
   }catch(error){
     const s=await state(page);console.log('Toilet route failure',JSON.stringify({hall:s.hall,x:s.x,y:s.y,serverX:s.serverX,serverY:s.serverY,locked:s.locked,switching:s.switching,nav:s.stairNavigation,errors}));
     await page.screenshot({path:info.outputPath('route-diagnostic.png')});throw error;
-  }finally{await page.goto('about:blank');await Promise.race([host.room.leave(),new Promise(r=>setTimeout(r,1500))]);}
+  }finally{if(!page.isClosed())await page.goto('about:blank').catch(()=>{});await Promise.race([host.room.leave(),new Promise(r=>setTimeout(r,1500))]);}
 });
