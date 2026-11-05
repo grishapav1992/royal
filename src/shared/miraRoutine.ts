@@ -11,10 +11,10 @@ export const MIRA_TRANSITION_SECONDS = .8;
 export const MIRA_SERVICE_SECONDS = 3.2;
 const jobs: { x: number; y: number; action: MiraAction; duration: number; facing: Facing }[] = [
   { ...MIRA_HOME, action: 'polish', duration: 7, facing: 'down' },
+  { ...MIRA_SEAT, action: 'sit', duration: 10, facing: 'down' },
   { ...barPoint(51,116), action: 'wipe', duration: 6, facing: 'down' },
   { ...barPoint(195,106), action: 'stock', duration: 5, facing: 'up' },
   { ...barPoint(166,116), action: 'polish', duration: 8, facing: 'down' },
-  { ...MIRA_SEAT, action: 'sit', duration: 10, facing: 'down' },
   { ...barPoint(194,116), action: 'wipe', duration: 6, facing: 'down' },
 ];
 
