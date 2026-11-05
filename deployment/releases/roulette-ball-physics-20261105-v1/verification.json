@@ -1,0 +1,321 @@
+{
+  "release": "roulette-ball-physics-20261105-v1",
+  "status": "published_verified_maintenance_completed",
+  "sourceCommit": "8ba081b1dd7be30d0a72577e0e7e513612908488",
+  "installerSourceCommit": "21f7966117c00c8e992cb1fe465cfe65c426fb82",
+  "buildBaseCommit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+  "productionBaseCommit": "0f9ab2adc5951019529ca9ebe1765e4dd684942e",
+  "preparedManifestSha256": "3ae1cdbbda249876e5155158a94f468a63c341d49adca1bf3ccd56d292a90844",
+  "compiledInputs": 24,
+  "changedSources": {
+    "games/royal-roulette/SpinTimeline.ts": "e80561282f59e5109a2a2f6843af1370dfdf0c1f5f2fc8ca1c428ce84405773d",
+    "games/royal-roulette/WheelArtwork.ts": "1acacc95fe5a50641f11489aeaf599937c690f97f298d52824224ebb738c58f8",
+    "games/royal-roulette/package.json": "899b41a219572e9abdf78a6d390dab93a55b74bb17b9095ee1757451c69ddc2e",
+    "games/royal-roulette/priorities.css": "dd3228ed00d13009a86eeed8b27663acc5ce0f8fbe031d6465e5324961ac2538",
+    "games/royal-roulette/roulette.css": "465b182b5309fc8ba19ff6a7ce6ef8cb6ce5362c7ddc2d10bcc28bbed9caac15"
+  },
+  "packageFiles": {
+    "module-dist/royal-roulette/active.json": "d36bb02808434306d12011e835b8e43855979f649dd7e940804a04e45f0db906",
+    "module-dist/royal-roulette/versions/1.6.2-7e7da59084f0/entry-d58547ee288d04cf.js": "d58547ee288d04cf65a7af2cc771d0c76c51020875a8cc66890bc8eb19e6f077",
+    "module-dist/royal-roulette/versions/1.6.2-7e7da59084f0/manifest.json": "66f791606dc4c74a0026f96e4ce84889dedb2e7f7620a768148f8bbfa43d2947",
+    "module-dist/royal-roulette/versions/1.6.2-7e7da59084f0/style-164b9e4d796b50ed.css": "164b9e4d796b50ed6948b3b567d7ae7822aa4b8bdf7b4fcf0c16f50636c02de5"
+  },
+  "published": {
+    "published": true,
+    "release": "roulette-ball-physics-20261105-v1",
+    "sourceCommit": "8ba081b1dd7be30d0a72577e0e7e513612908488",
+    "baseCommit": "0f9ab2adc5951019529ca9ebe1765e4dd684942e",
+    "buildBaseCommit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+    "installerSourceCommit": "21f7966117c00c8e992cb1fe465cfe65c426fb82",
+    "module": {
+      "verified": true,
+      "gameId": "royal-roulette",
+      "version": "1.6.2-7e7da59084f0",
+      "bytes": 93101,
+      "files": 2,
+      "beforeSha256": "bf447112f8481cab90a5a15967b1c6f4a590b7c6e337f982614789d29bfae940",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "install",
+      "activeSha256": "d36bb02808434306d12011e835b8e43855979f649dd7e940804a04e45f0db906",
+      "history": "/opt/royal-game-modules-state/history/20261105T195915-88d0ad6b3990454c8fb510afb252aa4a.json"
+    },
+    "backup": {
+      "sourceArchive": "/opt/royal-backups/roulette-ball-physics-20261105-v1/source.tgz",
+      "bytes": 12172,
+      "sha256": "440798fd46bd292cb60ba6246700b85c1fd4dd9e7b2ba054305b67585e4ae2c0",
+      "oldVersion": "1.6.1-55882a5e8c75",
+      "oldPackageHardlinked": true,
+      "imageTag": "royal-game:before-roulette-ball-physics-20261105-v1",
+      "image": "sha256:3e43d4ca8dd4f45278f3517166c8417540188b11c744b42037559db174381fc4"
+    },
+    "freeBefore": 9453346816,
+    "freeAfter": 9466720256,
+    "hostRestarted": false,
+    "databaseTouched": false,
+    "otherModulesPreserved": true,
+    "sourceFilesPreserved": 2758,
+    "runtimeFilesPreserved": 8620,
+    "servicesPreserved": 14
+  },
+  "verification": {
+    "build": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 132864
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 28020
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 73674
+      }
+    ],
+    "qualifiedRtpProfiles": 38,
+    "stakePolicies": 20,
+    "stakeAdmission": 20,
+    "legacyNotQualified": 114,
+    "walletAndPrecisionTests": 19,
+    "motionAndAudioTests": 12,
+    "installerTests": 4,
+    "productionStand": {
+      "base": "0f9ab2adc5951019529ca9ebe1765e4dd684942e",
+      "release": "8ba081b1dd7be30d0a72577e0e7e513612908488",
+      "package": "1.6.2-7e7da59084f0",
+      "html": "e3d90fd100ee2d5d8e1f1b12ce5b6c2771da0da0e4b3127540ac26a07c6b166d",
+      "backend": "dc6f5f08e2cc9b9a3925c004e1842f6e5b5b6f20106fb3501b78d8312b568b17"
+    },
+    "productionStandChecks": [
+      "desktop and laptop wheel and confirmed landing",
+      "mobile chat and one debit after lost response",
+      "built audio and close/reopen"
+    ],
+    "productionAccountsCreated": false,
+    "productionBetsPlaced": false,
+    "productionMessagesSent": false,
+    "public": {
+      "sourceCommit": "8ba081b1dd7be30d0a72577e0e7e513612908488",
+      "version": "1.6.2-7e7da59084f0",
+      "checkedAt": "2026-11-05T20:00:54.679Z",
+      "files": [
+        {
+          "path": "/",
+          "sha256": "e3d90fd100ee2d5d8e1f1b12ce5b6c2771da0da0e4b3127540ac26a07c6b166d",
+          "bytes": 708
+        },
+        {
+          "path": "/assets/index-KjHyWgL9.js",
+          "sha256": "22e62e93bffa1de4ed1558263605cfb07f62052a5b5b5ad5164652bd18b8028f",
+          "bytes": 2933001
+        },
+        {
+          "path": "/assets/index-DL7RR8eu.css",
+          "sha256": "e4cf366c4abed57f05333e46923b97e2f9be9cf0b2b85fead165e185ecc7a582",
+          "bytes": 159338
+        },
+        {
+          "path": "/game-modules/royal-roulette/active.json",
+          "sha256": "d36bb02808434306d12011e835b8e43855979f649dd7e940804a04e45f0db906",
+          "bytes": 216
+        },
+        {
+          "path": "/game-modules/royal-roulette/versions/1.6.2-7e7da59084f0/entry-d58547ee288d04cf.js",
+          "sha256": "d58547ee288d04cf65a7af2cc771d0c76c51020875a8cc66890bc8eb19e6f077",
+          "bytes": 60280
+        },
+        {
+          "path": "/game-modules/royal-roulette/versions/1.6.2-7e7da59084f0/manifest.json",
+          "sha256": "66f791606dc4c74a0026f96e4ce84889dedb2e7f7620a768148f8bbfa43d2947",
+          "bytes": 545
+        },
+        {
+          "path": "/game-modules/royal-roulette/versions/1.6.2-7e7da59084f0/style-164b9e4d796b50ed.css",
+          "sha256": "164b9e4d796b50ed6948b3b567d7ae7822aa4b8bdf7b4fcf0c16f50636c02de5",
+          "bytes": 32821
+        },
+        {
+          "path": "/game-modules/studio-caramel-carnival/active.json",
+          "sha256": "1f1bfb68a97246dc5e01f0a348e0274106b8f47d811ef44e728231ad69239728",
+          "bytes": 234
+        },
+        {
+          "path": "/game-modules/studio-cosmic-escape/active.json",
+          "sha256": "e317da3d53d59a77d041f017c6f4c64e2de9c5320e30d6b5bcc28416e322fd5a",
+          "bytes": 228
+        },
+        {
+          "path": "/game-modules/studio-last-convoy/active.json",
+          "sha256": "4719d29d0fc020473dd88b6c4820d9e158b4782acfb6ccf722a1b274388a6491",
+          "bytes": 224
+        },
+        {
+          "path": "/game-modules/studio-nitro-run/active.json",
+          "sha256": "2f1db276d4e4fc80b04d7ca208c55ea8e0d6d67905eeeae1158e8e1de1b1a45e",
+          "bytes": 220
+        },
+        {
+          "path": "/game-modules/studio-velvet-reign/active.json",
+          "sha256": "7d68db73639b57de7a64bccf15c5d2dd28df393600a969773c7916b1baee5ecd",
+          "bytes": 226
+        },
+        {
+          "path": "/game-modules/studio-dracona/active.json",
+          "sha256": "c10e0d66ac72313bb9e3c5b36e00c12093bbc891dab1eec462b070bb39baeca0",
+          "bytes": 216
+        },
+        {
+          "path": "/game-modules/studio-afterglow/active.json",
+          "sha256": "48d928e8147918acdd69422c30c0bac1dc3d906ab3e0efdb967bb332d79a808f",
+          "bytes": 220
+        },
+        {
+          "path": "/game-modules/studio-meme-overload/active.json",
+          "sha256": "35e183b47cd02dde634043691b015f777aef38e670ce17ca054928b1209b99ba",
+          "bytes": 228
+        },
+        {
+          "path": "/game-modules/studio-neopolis/active.json",
+          "sha256": "b4922363b9af39c9196de85fa02c06f59ca8a11fea928732a32864ea0714e358",
+          "bytes": 218
+        },
+        {
+          "path": "/game-modules/studio-forest-heart/active.json",
+          "sha256": "241693e84688d259e4116fada2384987ee53b8cce65e08efc5a066592bd29462",
+          "bytes": 227
+        },
+        {
+          "path": "/game-modules/royal-plinko/active.json",
+          "sha256": "726bab895825baeb53f0b3b3119ed7af7ae249eae2682d281c7fb62b59f42558",
+          "bytes": 212
+        },
+        {
+          "path": "/game-modules/studio-caribbean-treasures/active.json",
+          "sha256": "cc502ab15de4752e6d632062d29073adc4a3110dca076f7b17042fa130fa6d85",
+          "bytes": 240
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/active.json",
+          "sha256": "ca36ab41e1f8b0dfffe070688dcdc0eec38c7135cafd710a918824019d450b95",
+          "bytes": 228
+        },
+        {
+          "path": "/game-modules/github-crash/active.json",
+          "sha256": "deef44e1e5d1a3ae7610f3a846067fef3549216ebcab1a556dd08affb5a8858e",
+          "bytes": 212
+        },
+        {
+          "path": "/game-modules/original-cr-vs-leo/active.json",
+          "sha256": "7c8c0df5a2d8d94c17a0d018fb0b7e30f8f854c7e4032ad3e4fd180e5116fcc3",
+          "bytes": 224
+        },
+        {
+          "path": "/game-modules/flag-battle/active.json",
+          "sha256": "2dbf07d4069cbaa5a790d79e278a4698a70bae9c150998151f5a5632fbd12f33",
+          "bytes": 210
+        },
+        {
+          "path": "/game-modules/studio-wild-nudge/active.json",
+          "sha256": "45f58382424e564dc0aae819214ddd91ce8d9e0a7083c49e960947417d54ec2c",
+          "bytes": 222
+        },
+        {
+          "path": "/game-modules/tsu-e-fa/active.json",
+          "sha256": "03ff5ab3fb697596abe39718d826fecde226898abf2cd35a0280b499e50a5cd7",
+          "bytes": 204
+        },
+        {
+          "path": "/game-modules/studio-flooded-temple/active.json",
+          "sha256": "272e43214f4c4f2911033118819ee970d0f2a43a38a8611f4862e311d0a49fe5",
+          "bytes": 231
+        },
+        {
+          "path": "/game-modules/royal-roulette/versions/1.6.1-55882a5e8c75/manifest.json",
+          "sha256": "57354b1677e0dede076bd0cddff7de47d16ac52374e67c2bdae9400d6e3e7950",
+          "bytes": 545
+        }
+      ],
+      "api": [
+        {
+          "path": "/healthz",
+          "status": 200
+        },
+        {
+          "path": "/api/auth/me",
+          "status": 200
+        },
+        {
+          "path": "/api/demo-wallet",
+          "status": 401
+        },
+        {
+          "path": "/api/demo-wallet/expansion",
+          "status": 401
+        },
+        {
+          "path": "/api/game-wallet",
+          "status": 410
+        },
+        {
+          "path": "/api/nile-play",
+          "status": 410
+        }
+      ],
+      "guestViewports": [
+        {
+          "width": 1440,
+          "height": 1000
+        },
+        {
+          "width": 390,
+          "height": 844
+        }
+      ]
+    }
+  },
+  "maintenance": {
+    "status": "completed",
+    "release": "mira-counter-rest-20261105-v4",
+    "currentImage": "sha256:3e43d4ca8dd4f45278f3517166c8417540188b11c744b42037559db174381fc4",
+    "rollbackImage": "sha256:2a628f08f5ebedfe133278c77e24826aa0c50f88fd95a76b6325045a5a630da8",
+    "startedAt": 1793909035.9384828,
+    "finishedAt": 1793909904.99103,
+    "durationSeconds": 869.05,
+    "verificationPasses": 2,
+    "preservedFinancialFiles": 166,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "freeBefore": 9462652928,
+    "freeAfter": 9457319936,
+    "summary": "/opt/royal-maintenance/automatic-runs/run-246b2b4199ed46eda6f162c18434b8bf/summary.json",
+    "summarySha256": "26bb41bc3ba65f825aaa9050371c03935586234be20aeaad64df1a38ff75a599",
+    "timerEnabled": "enabled",
+    "timerActive": "active",
+    "liveFreeBytes": 9458102272
+  },
+  "transportCleanup": {
+    "removed": [
+      {
+        "path": "/opt/royal-releases/roulette-ball-physics-20261105-v1/transport.tgz",
+        "bytes": 1126427
+      },
+      {
+        "path": "/opt/royal-releases/roulette-ball-physics-20261105-v1/baseline.tgz",
+        "bytes": 1074771
+      },
+      {
+        "path": "/var/tmp/royal-roulette-ball-physics-20261105-v1/final-transport.tgz",
+        "bytes": 1126774
+      }
+    ],
+    "removedBytes": 3327972,
+    "freeBefore": 9458200576,
+    "freeAfter": 9461542912
+  }
+}
