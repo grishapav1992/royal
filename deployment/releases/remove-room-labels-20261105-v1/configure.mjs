@@ -6,7 +6,7 @@ import {projectHostSource} from '../../../scripts/build-host-projection.mjs';
 
 const folder='deployment/releases/remove-room-labels-20261105-v1';
 const {before,host}=JSON.parse(fs.readFileSync(process.argv[2]));
-const feature='0d7c862b';
+const feature='0d7c862b9e8edc896cd685c361017bb8840d06c6';
 const parent='920fb6e68df12aadc4d145876d03e36fbe143f5d';
 const sources=['src/game/RoomScene.ts','src/i18n/en.ts','src/main.ts','src/ui/compact-header.css'];
 const git=(...args)=>execFileSync('git',args,{maxBuffer:64*1024**2});

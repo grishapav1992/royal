@@ -678,7 +678,7 @@
       "sha256": "43be372b93d4af6ba10e83fab0e6b9e787dd258412fc04ed9b5478ee046c190a"
     },
     "src/ui/compact-header.css": {
-      "commit": "0d7c862b",
+      "commit": "0d7c862b9e8edc896cd685c361017bb8840d06c6",
       "path": "src/ui/compact-header.css",
       "baseSha256": "80fb05ba68f888bbb49fe7a30c1d4870c54df975e37a607ffddd30420a83e662",
       "sha256": "80fb05ba68f888bbb49fe7a30c1d4870c54df975e37a607ffddd30420a83e662"
