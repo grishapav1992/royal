@@ -4,7 +4,7 @@ import { t as translateText, language } from '../i18n/index';
 export type ActivityId = 'hockey' | 'pool' | 'piano' | 'chess' | 'mortal-kombat' | 'durak' | 'transfer-durak' | 'crazy-eights' | 'tsu-e-fa';
 const pianoBounds = {x:750,y:400,w:110,h:60} as const;
 export const ACTIVITIES = {
-  'mortal-kombat': { name:'Mortal Kombat', entry:{x:1160,y:510}, bounds:{x:1108,y:372,w:104,h:103} },
+  'mortal-kombat': { name:'Mortal Kombat', entry:{x:1160,y:575}, bounds:{x:1108,y:437,w:104,h:103} },
   hockey: { name:translateText('Аэрохоккей'), entry:{x:745,y:510}, bounds:{x:700,y:382,w:90,h:100} },
   pool: { name:translateText('Бильярд'), entry:{x:FURNITURE.pool.x,y:FURNITURE.pool.y+26}, bounds:furnitureBounds(FURNITURE.pool) },
   piano: { name:translateText('Рояль'), bounds:pianoBounds,
