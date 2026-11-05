@@ -40,5 +40,66 @@
     "public/assets/toilet/royal-janitor-v1-90a698e1d019.png": "90a698e1d019ab8660ae6641c3b9e69baa83c9251733082df5f68030ccbcb496"
   },
   "productionPublished": false,
-  "existingPreviewDatabasePreserved": true
+  "existingPreviewDatabasePreserved": true,
+  "sourceCommit": "f4e1b3a643fe2d510ba26ada224ce6bfa0789a4f",
+  "githubVerifiedBranch": "feature/toilet-janitor-animation",
+  "cleanup": {
+    "at": "2026-11-05T14:02:53.599878+00:00",
+    "removed": [
+      {
+        "path": "artifacts/work/toilet-merchant-local-20261105/browser",
+        "files": 7,
+        "bytes": 698163
+      },
+      {
+        "path": "artifacts/work/toilet-merchant-local-20261105/playwright.config.ts",
+        "files": 1,
+        "bytes": 390
+      }
+    ],
+    "removedArchives": [],
+    "taskStartFreeBytes": 36945313792,
+    "freeBytesBeforeCleanup": 35880001536,
+    "freeBytesAfterCleanup": 35879944192,
+    "physicalSpaceAttribution": "Measurements include unrelated filesystem activity; no claim that the apparent file sizes equal reclaimed physical blocks.",
+    "keptActiveRuntimeFiles": [
+      {
+        "path": "artifacts/work/toilet-merchant-local-20261105/backend-supervisor.mjs",
+        "bytes": 3082
+      },
+      {
+        "path": "artifacts/work/toilet-merchant-local-20261105/backend.log",
+        "bytes": 1873
+      },
+      {
+        "path": "artifacts/work/toilet-merchant-local-20261105/OWNER.json",
+        "bytes": 236
+      },
+      {
+        "path": "artifacts/work/toilet-merchant-local-20261105/supervisor.log",
+        "bytes": 0
+      },
+      {
+        "path": "artifacts/work/toilet-merchant-local-20261105/backend-ready.json",
+        "bytes": 192
+      }
+    ],
+    "activeExceptions": [
+      {
+        "path": "artifacts/work/toilet-merchant-local-20261105",
+        "purpose": "Running local backend supervisor and its current logs, credentials are not stored here",
+        "cleanup": "Stop the existing preview launcher first. Its database cleanup and supervisor liveness check stop this backend. Then remove this runtime folder and the inactive extra checkout after preserving newer work in GitHub."
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/casino-street-20261101/checkout",
+        "purpose": "Active local Vite checkout, root checkout contains unrelated concurrent work",
+        "cleanup": "After preview ends and source is integrated or preserved in GitHub, remove the inactive extra worktree according to project policy."
+      },
+      {
+        "path": "/var/folders/jf/j4h8s0g91q9fgs6xm6lbhlk80000gp/T/royal-pg-KjNWKN",
+        "purpose": "Existing preview database, preserved across backend restart",
+        "cleanup": "Owned by original preview launcher; its normal shutdown cleans this disposable database."
+      }
+    ]
+  }
 }
