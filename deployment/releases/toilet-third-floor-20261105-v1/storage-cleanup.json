@@ -1,0 +1,205 @@
+{
+  "release": "toilet-third-floor-20261105-v1",
+  "preservationCommits": [
+    "4730ba6dbdda9c1a21044deb683b8a1823420b90",
+    "2e5c07509e20ed52820b44c9537ea396000f8a99"
+  ],
+  "localVerificationDatabase": {
+    "path": "/var/folders/jf/j4h8s0g91q9fgs6xm6lbhlk80000gp/T/royal-pg-voQoHD",
+    "observedLogicalBytesBeforeShutdown": 51327640,
+    "observedFiles": 1577,
+    "freeBeforeBytes": 39618613248,
+    "pid": 80457,
+    "productionData": false,
+    "originalPreviewUntouched": true,
+    "databaseRemovedByOwnedLauncher": false,
+    "freeAfterBytes": 39617122304,
+    "originalPreviewHealthy": true,
+    "manualCleanup": {
+      "path": "/var/folders/jf/j4h8s0g91q9fgs6xm6lbhlk80000gp/T/royal-pg-voQoHD",
+      "logicalBytes": 51454123,
+      "files": 1577,
+      "freeBeforeBytes": 39588270080,
+      "stoppedVerified": true,
+      "sourcePreservedAt": "2e5c07509e20ed52820b44c9537ea396000f8a99",
+      "freeAfterBytes": 39640834048
+    },
+    "databaseRemoved": true
+  },
+  "serverLinuxFixture": {
+    "removed": [
+      {
+        "path": "/tmp/toilet-third-floor-20261105-v1-tests",
+        "logicalBytes": 33470,
+        "files": 4
+      },
+      {
+        "path": "/tmp/toilet-third-floor-20261105-v1-tests.tgz",
+        "logicalBytes": 6407,
+        "files": 1
+      }
+    ],
+    "freeBeforeBytes": 9778012160,
+    "freeAfterBytes": 9778069504,
+    "preservationCommit": "2e5c07509e20ed52820b44c9537ea396000f8a99",
+    "productionDataUntouched": true
+  },
+  "local": {
+    "status": "awaiting-completed-maintenance-and-record-preservation",
+    "planned": {
+      "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/casino-street-20261101/checkout/artifacts/work/toilet-door-release-20261105",
+      "logicalBytes": 28868540,
+      "files": 78
+    },
+    "freeBeforeBytes": 39640563712
+  },
+  "retained": [
+    {
+      "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/casino-street-20261101/checkout",
+      "reason": "Current checkout for the active local preview; dirty primary checkout and other active work are preserved.",
+      "cleanupCondition": "After stopping the preview and preserving required current runtime data and all unique source on GitHub, retire this extra checkout."
+    },
+    {
+      "path": "artifacts/work/toilet-third-floor and /var/folders/jf/j4h8s0g91q9fgs6xm6lbhlk80000gp/T/royal-pg-KjNWKN",
+      "reason": "Active local preview on 5191 and its current database.",
+      "cleanupCondition": "Stop its owned launcher before disposing of this preview database; previous preview directories remain outside release cleanup."
+    },
+    {
+      "path": "normal dist, dist-server, module-dist, module-build and shared node_modules",
+      "reason": "Current build outputs and dependencies; all 124 module packages were reused, none published.",
+      "cleanupCondition": "Normal active-checkout policy; do not retry previously denied cleanup scopes."
+    },
+    {
+      "path": "/opt/royal-releases/toilet-third-floor-20261105-v1 and /opt/royal-backups/toilet-third-floor-20261105-v1",
+      "reason": "Healthy current application and complete verified rollback.",
+      "cleanupCondition": "Only guarded production retention after a verified successor."
+    }
+  ],
+  "measurementLimit": "Free-space samples include concurrent work and background filesystem activity. Deleted logical byte counts do not prove physical space reclaimed.",
+  "previouslyDeniedCleanupTargetsRetried": false,
+  "productionDataAndOriginalLocalRuntimeDataPreserved": true,
+  "automaticMaintenance": {
+    "removed": [
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/after.json",
+        "allocatedBytes": 3960832
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/build-result.json",
+        "allocatedBytes": 1175552
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/build.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/deploy.py",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/dist-delta",
+        "allocatedBytes": 4304896
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/engine-build.py",
+        "allocatedBytes": 8192
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/image_metadata.py",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/install-manifest.json",
+        "allocatedBytes": 4018176
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/installer-github.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/media-github.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/overlay-base.py",
+        "allocatedBytes": 28672
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/publication-2.exit",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/publication-2.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/publication-2.pid",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/publication.exit",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/publication.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/publication.pid",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/published.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/quiesce.cjs",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/release-github.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/release-manifest.json",
+        "allocatedBytes": 1507328
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/runtime-inventory.cjs",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/server-delta",
+        "allocatedBytes": 2437120
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/snapshot-base.py",
+        "allocatedBytes": 16384
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/snapshot.py",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/toilet-resident-20261105-v1/source",
+        "allocatedBytes": 1511424
+      },
+      {
+        "path": "/opt/royal-backups/toilet-resident-20261105-v1",
+        "allocatedBytes": 36864
+      }
+    ],
+    "imageProgress": {
+      "removedTags": [
+        "royal-game:before-toilet-resident-20261105-v1",
+        "royal-game:before-toilet-resident-20261105-v1-prepared",
+        "royal-game:pvp-invites-20261105-v3"
+      ],
+      "dockerRetainedImages": []
+    },
+    "freeBeforeBytes": 9746100224,
+    "freeAfterBytes": 9760817152,
+    "resultPath": "/opt/royal-maintenance/automatic-runs/run-91f29abdd63145e794df270c298efdf0/summary.json",
+    "resultSha256": "5a7067e482a8cafd4debef91cd496050a5784afd1ddc30f022825e01dd3647cd"
+  }
+}

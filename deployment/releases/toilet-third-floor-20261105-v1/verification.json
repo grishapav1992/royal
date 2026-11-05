@@ -1,0 +1,302 @@
+{
+  "release": "toilet-third-floor-20261105-v1",
+  "applicationSource": "2e5c07509e20ed52820b44c9537ea396000f8a99",
+  "installerCommit": "2e5c07509e20ed52820b44c9537ea396000f8a99",
+  "base": "95222a75a76f9fe52625cadb5fdc4679d32aa25d",
+  "sourceFiles": [
+    "src/game/RoomScene.ts",
+    "src/game/ToiletRenderer.ts",
+    "src/shared/toilet.ts",
+    "src/shared/world.ts",
+    "src/main.ts",
+    "src/ui/ClubMap.ts"
+  ],
+  "clientFiles": {
+    "assets/index-77SFmPLC.js": "e998002c708498fb1de14a876befa9bf2d6d4dd01e1cff91f7ad8668d837791f",
+    "index.html": "bb63f4afd18e9b8bcba33eb0fcf36616add5b3ddfaee7d769e09ecb35d87682e"
+  },
+  "serverFiles": {
+    "index.js": "cef5f50ce99136f46c384b3edf2cec671cb2c40500a33e4f4a0a8bb7d2d6abc0"
+  },
+  "activeGames": [
+    "studio-cosmic-escape",
+    "studio-caramel-carnival",
+    "studio-velvet-reign",
+    "studio-last-convoy",
+    "studio-nitro-run",
+    "studio-afterglow",
+    "studio-meme-overload",
+    "studio-dracona",
+    "studio-neopolis",
+    "studio-forest-heart",
+    "github-crash",
+    "royal-plinko",
+    "original-cr-vs-leo",
+    "original-jackie-chan",
+    "studio-caribbean-treasures",
+    "studio-flooded-temple",
+    "royal-roulette",
+    "flag-battle",
+    "studio-wild-nudge",
+    "tsu-e-fa"
+  ],
+  "addedGames": [],
+  "restoredGames": [],
+  "accessInputs": {
+    "src/shared/arcadeCatalog.ts": "946d05c1c450086d48efa318d7d65df6bdd5641f2edcd05599b67f7499a0a55a",
+    "src/modules/GameModuleCatalog.ts": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1",
+    "src/ui/ActivitiesUI.ts": "431721288ecfcb33043f6d3806f4df5dfc383d2e6fce0d0471436e967e890701",
+    "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+    "server/pvp/room.ts": "31b7c1aedcd71f4ee52b56c5678ea839f4685c450d8aaeb6f782d1d9b77613b9"
+  },
+  "tests": {
+    "server": 34,
+    "installerLinux": 15,
+    "doorBrowsers": 2,
+    "walletBrowsers": 2
+  },
+  "build": {
+    "passed": true,
+    "durationMs": 236888,
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 118402
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 6024
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 96168
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 9962
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 6220
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 34
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 25
+      }
+    ],
+    "rtpProfiles": 38,
+    "stakePolicies": 20,
+    "stakeAdmissions": 20,
+    "legacyNotQualified": 114,
+    "modulePackagesReused": 124,
+    "modulePackagesPublished": 0
+  },
+  "transport": {
+    "release": "toilet-third-floor-20261105-v1",
+    "bytes": 2797369,
+    "sha256": "113ac0ea924cf968f1a73dbeff0e7045c9e9963bd426dc644c2b71cd5cc27120",
+    "files": 23
+  },
+  "graph": {
+    "status": "ready",
+    "release": "toilet-resident-20261105-v1",
+    "snapshot": "016447325a0c1ce3536202ca7b3de2091bf51098cc65142c7e183d42d42c8e6b",
+    "runtimeFingerprint": "ef58c7bdaec473b9ad8c9c3a96d606e4ab7d7e63aa4a6596227715edf0ea04c6",
+    "storedFullVerification": "2026-11-05T07:52:32Z",
+    "identityRead": "2026-11-05T08:25:34Z",
+    "limitations": "Mixed source provenance and partial independent-module coverage; identity reads do not reverify bytes or historical knowledge. A separate full runtime/source inventory was captured for this release."
+  },
+  "sourceCommit": "2e5c07509e20ed52820b44c9537ea396000f8a99",
+  "manifestSha256": "a74cf41e7e99dca4c4bbb4f315c6a3dc984ae144380f8b614d2aea677325507e",
+  "releaseManifestSha256": "d1ada726b0fa940cf0f5225fb6e53746605c7e4597271986b1809a5a2ac64103",
+  "releaseReceiptSha256": "99aa2594fa2134c754f1c813300f4cc6876ac8c8ffa1090d9818a8f7006d6e4c",
+  "helperReceiptSha256": "5ce653651bb4a949f823759ab5c183620b0cd7f4d9da0002d0836575c3a9e9d6",
+  "beforeImage": "sha256:c3152c8fee44aff46d798cfd61ef09fd96893de991d520c402cee2dffc3bac04",
+  "publicationAttempts": [
+    {
+      "attempt": 1,
+      "installerStarted": false,
+      "status": "supervisor-syntax-error",
+      "productionMutations": false
+    },
+    {
+      "attempt": 2,
+      "status": "published",
+      "supervisorPid": 3865598,
+      "exit": 0
+    }
+  ],
+  "fixtureCleanup": {
+    "removed": [
+      {
+        "path": "/tmp/toilet-third-floor-20261105-v1-tests",
+        "logicalBytes": 33470,
+        "files": 4
+      },
+      {
+        "path": "/tmp/toilet-third-floor-20261105-v1-tests.tgz",
+        "logicalBytes": 6407,
+        "files": 1
+      }
+    ],
+    "freeBeforeBytes": 9778012160,
+    "freeAfterBytes": 9778069504,
+    "preservationCommit": "2e5c07509e20ed52820b44c9537ea396000f8a99",
+    "productionDataUntouched": true
+  },
+  "testLogSha256": {
+    "server-tests.log": "5508c39c4e351b501c7afc69f7086715eb6c67d6b7b29ae16c55b1a2c8e888a5",
+    "linux-tests.log": "a296731fbd0eb81e6ae96a93157230fd0891694f0aebe314b59a42f4802519aa",
+    "browser-door.log": "deb160fa9b215d92cb0fd62c0279adf78a56b22f9d64c36ecb50088d0bd2f323",
+    "browser-wallet.log": "e7e117e7c123f012b96485f546fd419836bb7729cc0966da5684ea01cf99d152",
+    "prepare.log": "6107d9cfa75caedb26353bbc1f39fe4ed2cecaeaa8c97592fffcf7467fb1b2dc",
+    "release-verify.log": "5f6ab9a5ddcfffb402b6ab36ea596c303c2b6086829b6aaf980bb9b92c6ad93b"
+  },
+  "browserScreenshots": {
+    "browser-door/door-toilet-door-reaches-f-9798b-g-and-keeps-the-roof-window-mobile/third-floor-door.png": "286e43aee4f2cd1b1acaff5d5b78691145529c2de86e6ad2f23bb2ce78f58107",
+    "browser-door/door-toilet-door-reaches-f-9798b-g-and-keeps-the-roof-window-mobile/toilet-exit.png": "5705bbaf6a18bd73d9b3914c49bb6863889dd334ba88c15f2ea041d67bffebd0",
+    "browser-door/door-toilet-door-reaches-f-9798b-g-and-keeps-the-roof-window-desktop/third-floor-door.png": "0494d121c5d65e5254d0344fdb83873e2a81e87e4d6a512ffb2ea1b92538cbfd",
+    "browser-door/door-toilet-door-reaches-f-9798b-g-and-keeps-the-roof-window-desktop/toilet-exit.png": "787e3c191951d68bda82ddc927713d7a115d2d2bd5b78c901fdfa66445ecabf2"
+  },
+  "publicationDoesNotExpandCatalogue": true,
+  "preservedNpcRigSha256": "161e9417f4a05d059e1f06b7ff220f1a85d130f7a926b642c9f958bb09dc2a68",
+  "localFreeBytes": 39681454080,
+  "status": "published-and-verified",
+  "applicationSourceCommit": "2e5c07509e20ed52820b44c9537ea396000f8a99",
+  "image": "sha256:5960de68fa1cf1e62e19824224c7008b687dad8cf72a763b7af80b773a08fc84",
+  "rollbackImage": "sha256:c3152c8fee44aff46d798cfd61ef09fd96893de991d520c402cee2dffc3bac04",
+  "published": {
+    "published": true,
+    "preparedImage": "sha256:5960de68fa1cf1e62e19824224c7008b687dad8cf72a763b7af80b773a08fc84",
+    "runningImage": "sha256:5960de68fa1cf1e62e19824224c7008b687dad8cf72a763b7af80b773a08fc84",
+    "containerRestarted": true,
+    "sourceCommit": "2e5c07509e20ed52820b44c9537ea396000f8a99",
+    "changedSources": 6,
+    "clientDeltaFiles": 2,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 1,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 13
+  },
+  "backup": {
+    "path": "/opt/royal-backups/toilet-third-floor-20261105-v1/source.tgz",
+    "bytes": 44505,
+    "sha256": "7e79e8b7b0172d61423fa60d5971e72ddf4227470c5a71c8160a5ac102f82f74"
+  },
+  "installed": {
+    "sourceFiles": 2757,
+    "programFiles": 8614,
+    "moduleFiles": 5338,
+    "sourceDeltaOnly": true,
+    "programDeltaOnly": true,
+    "runningAndPreparedProgramIdentical": true,
+    "modulesUnchanged": true,
+    "accessInputsUnchanged": true,
+    "configurationsAndMountsPreserved": true,
+    "otherPersistentServicesPreserved": 13,
+    "gameDataPreserved": true
+  },
+  "immutableImageProgramProofRecorded": true,
+  "maintenance": {
+    "startedAt": 1793869125.488909,
+    "status": "completed",
+    "freeBefore": 9746100224,
+    "release": "toilet-third-floor-20261105-v1",
+    "sourceCommit": "2e5c07509e20ed52820b44c9537ea396000f8a99",
+    "currentImage": "sha256:5960de68fa1cf1e62e19824224c7008b687dad8cf72a763b7af80b773a08fc84",
+    "rollbackImage": "sha256:c3152c8fee44aff46d798cfd61ef09fd96893de991d520c402cee2dffc3bac04",
+    "plannedEntries": 27,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 153,
+    "removedEntries": 27,
+    "removedImageTags": 3,
+    "dockerRetainedImages": [],
+    "freeAfter": 9760817152,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:c3152c8fee44aff46d798cfd61ef09fd96893de991d520c402cee2dffc3bac04",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "49388383fa01ead695ebf4dde3e6fb779a3cd5f9a7fd4d7c12207fa90943ac78",
+      "files": 8613
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "f7f0f210087295ffadb17fd91628e0f60fed5de99791c7037a329597e529e65c",
+      "receipt": "/var/lib/royal-project-brain/receipts/f7f0f210087295ffadb17fd91628e0f60fed5de99791c7037a329597e529e65c.json",
+      "queued": true
+    },
+    "finishedAt": 1793869633.0326777,
+    "durationSeconds": 507.54,
+    "operation": "run-91f29abdd63145e794df270c298efdf0",
+    "resultPath": "/opt/royal-maintenance/automatic-runs/run-91f29abdd63145e794df270c298efdf0/summary.json",
+    "resultSha256": "5a7067e482a8cafd4debef91cd496050a5784afd1ddc30f022825e01dd3647cd",
+    "timerEnabled": "enabled",
+    "timerActive": "active",
+    "postMaintenanceHealth": "sha256:5960de68fa1cf1e62e19824224c7008b687dad8cf72a763b7af80b773a08fc84 healthy",
+    "postMaintenanceFreeBytes": 9455357952
+  },
+  "publicVerification": {
+    "files": 7,
+    "apiChecks": 6,
+    "guestBrowsers": 2,
+    "passed": true,
+    "productionAccountsCreated": false,
+    "productionBetsPlaced": false,
+    "productionMessagesSent": false
+  },
+  "checks": {
+    "serverCommand": "node --import tsx scripts/database-test.ts --import tsx --import ./deployment/releases/toilet-third-floor-20261105-v1/projection-loader.mjs --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts server-tests/toilet.test.ts server-tests/guard-passive.test.ts server-tests/player-recovery.test.ts",
+    "serverPassed": 34,
+    "installerLinuxPassed": 15,
+    "compiledHostDoorDesktopAndMobilePassed": 2,
+    "compiledHostWalletDesktopAndMobilePassed": 2,
+    "connectedChat": true,
+    "physicalPhone": false,
+    "doorScenarios": [
+      "full street-stairs-roof-toilet route",
+      "walk S to third floor and keep holding S",
+      "click WC back to toilet",
+      "keep holding W after arrival",
+      "click toilet exit to third floor",
+      "walk W back to toilet",
+      "roof window return",
+      "separate roof and third-floor shortcuts",
+      "closed occupied cubicle and original rig loaded",
+      "unchanged balance",
+      "no JavaScript errors"
+    ],
+    "walletScenarios": [
+      "one ten-cent debit",
+      "lost accepted response",
+      "same UUID and game result",
+      "close and recover position",
+      "reopen and recover round"
+    ],
+    "isolatedDatabaseAndSyntheticFunds": true
+  },
+  "knownPreconditionsAndLimits": [
+    "The native route uses the existing recovery setting and ordinary keys to clear first-floor bar furniture before walking the complete tested path. No door transfer is simulated or teleported.",
+    "Six legacy cat fixtures requiring missing tables already failed on the feature baseline. The feature verification records that baseline comparison; this release did not restore those games or claim those fixtures passed.",
+    "RTP and required wallet checks passed. The 114 unchanged legacy exceptions are not qualified games.",
+    "Guest production browser checks cover public reachability. Interactive route and wallet cases ran on the exact compiled release with local test accounts."
+  ],
+  "storageCleanup": "storage-cleanup.json"
+}

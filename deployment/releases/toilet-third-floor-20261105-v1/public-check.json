@@ -1,0 +1,89 @@
+{
+  "sourceCommit": "2e5c07509e20ed52820b44c9537ea396000f8a99",
+  "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "files": [
+    {
+      "path": "/assets/index-77SFmPLC.js",
+      "sha256": "e998002c708498fb1de14a876befa9bf2d6d4dd01e1cff91f7ad8668d837791f",
+      "bytes": 2920539
+    },
+    {
+      "path": "/index.html",
+      "sha256": "bb63f4afd18e9b8bcba33eb0fcf36616add5b3ddfaee7d769e09ecb35d87682e",
+      "bytes": 708
+    },
+    {
+      "path": "/game-modules/royal-roulette/active.json",
+      "sha256": "bf447112f8481cab90a5a15967b1c6f4a590b7c6e337f982614789d29bfae940",
+      "bytes": 216
+    },
+    {
+      "path": "/game-modules/royal-roulette/versions/1.6.1-55882a5e8c75/manifest.json",
+      "sha256": "57354b1677e0dede076bd0cddff7de47d16ac52374e67c2bdae9400d6e3e7950",
+      "bytes": 545
+    },
+    {
+      "path": "/game-modules/royal-roulette/versions/1.6.1-55882a5e8c75/entry-c8b66ff2a85c5f30.js",
+      "sha256": "c8b66ff2a85c5f30de9f91507c0e20311de08a9e70fd58cb93c774b478b64596",
+      "bytes": 57447
+    },
+    {
+      "path": "/game-modules/royal-roulette/versions/1.6.1-55882a5e8c75/style-f37b7a58207eb673.css",
+      "sha256": "f37b7a58207eb673f66783b13ad27313311f99a0410113876083569922c5ba7a",
+      "bytes": 30820
+    },
+    {
+      "path": "/assets/toilet/visitor-rig-v2-161e9417f4a0.png",
+      "sha256": "161e9417f4a05d059e1f06b7ff220f1a85d130f7a926b642c9f958bb09dc2a68",
+      "bytes": 1366896
+    }
+  ],
+  "checks": [
+    {
+      "path": "/healthz",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/me",
+      "status": 200
+    },
+    {
+      "path": "/api/game-wallet",
+      "status": 410
+    },
+    {
+      "path": "/api/nile-play",
+      "status": 410
+    },
+    {
+      "path": "/api/demo-wallet",
+      "status": 401
+    },
+    {
+      "path": "/api/demo-wallet/expansion",
+      "status": 401
+    }
+  ],
+  "guestBrowsers": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "pageErrors": [],
+      "passed": true
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "pageErrors": [],
+      "passed": true
+    }
+  ],
+  "productionAccountsCreated": false,
+  "productionBetsPlaced": false,
+  "productionMessagesSent": false,
+  "passed": true
+}
