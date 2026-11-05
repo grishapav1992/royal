@@ -1,0 +1,92 @@
+{
+  "sourcePreservedOnGithub": "a2a69026c0d85c51a1752dae98d8ca15c1108daa",
+  "verificationPreservedOnGithub": "8725d7606a320e034c9c798b063ebbd5d0b69975",
+  "local": {
+    "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/casino-street-20261101/checkout/artifacts/work/skin-offers-release-20261105",
+    "bytes": 74378787,
+    "files": 202,
+    "archives": {
+      "linux-tests.tgz": 7881,
+      "payload-v2.tgz": 5506740,
+      "linux-tests-v2.tgz": 7563,
+      "linux-tests-final.tgz": 7911,
+      "payload.tgz": 5502688
+    },
+    "freeBefore": 34784690176,
+    "temporaryDatabases": [
+      {
+        "path": "/var/folders/jf/j4h8s0g91q9fgs6xm6lbhlk80000gp/T/royal-pg-DTbzQm",
+        "files": 1580,
+        "bytes": 51753624,
+        "freeBefore": 35384262656,
+        "at": 1793895823.748533,
+        "removed": true,
+        "freeAfter": 35406438400,
+        "cleanupFreeBefore": 35356774400,
+        "cleanupBytes": 51881092,
+        "cleanupFreeAfter": 35409846272
+      },
+      {
+        "path": "/var/folders/jf/j4h8s0g91q9fgs6xm6lbhlk80000gp/T/royal-pg-XatpGd",
+        "bytes": 51720856,
+        "files": 1578,
+        "freeBefore": 32486154240,
+        "sourceCommit": "a2a69026c0d85c51a1752dae98d8ca15c1108daa",
+        "providerRequests": 6,
+        "removed": true,
+        "freeAfter": 32525824000
+      }
+    ],
+    "activeException": {
+      "checkout": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/casino-street-20261101/checkout",
+      "preview": "http://127.0.0.1:5191/",
+      "cleanupWhen": "After the active preview and any sessions using its current packages end, with all unique work saved to GitHub."
+    },
+    "removed": true,
+    "freeAfter": 34783227904
+  },
+  "server": {
+    "removed": [
+      {
+        "path": "/opt/royal-releases/skin-offers-20261105-v1",
+        "bytes": 14444611,
+        "files": 37
+      },
+      {
+        "path": "/opt/royal-releases/skin-offers-20261105-v1.tgz",
+        "bytes": 5502688
+      },
+      {
+        "path": "/opt/royal-releases/skin-offers-20261105-v2.tgz",
+        "bytes": 5506740
+      },
+      {
+        "path": "/tmp/royal-skin-offers-linux-tests-20261105.tgz",
+        "bytes": 7911
+      },
+      {
+        "path": "/tmp/royal-skin-offers-linux-tests-20261105",
+        "bytes": 38449,
+        "files": 6
+      },
+      {
+        "path": "/opt/royal-releases/skin-offers-20261105-v2/runtime-context",
+        "bytes": 6820182,
+        "files": 7,
+        "hardlinked": true
+      }
+    ],
+    "freeBefore": 9581768704,
+    "freeAfter": 9607471104,
+    "currentReleasePreserved": "skin-offers-20261105-v2",
+    "rollbackPreserved": "sha256:d5f9fee0ea275adeb4f36c8359c426f1dba8604690ea6396ba526d38b1b9416c",
+    "financialBackupsPreserved": true
+  },
+  "automaticMaintenance": {
+    "freeBefore": 9581854720,
+    "freeAfter": 9592745984,
+    "removedEntries": 31,
+    "removedImageTags": 3,
+    "preservedFinancialFiles": 162
+  }
+}
