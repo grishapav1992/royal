@@ -1,0 +1,1885 @@
+{
+  "format": 1,
+  "productionCommit": "2e5c07509e20ed52820b44c9537ea396000f8a99",
+  "entries": [
+    "server/index.ts"
+  ],
+  "files": {
+    "tsconfig.json": {
+      "commit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+      "path": "tsconfig.json",
+      "baseSha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+      "sha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b"
+    },
+    "package.json": {
+      "commit": "d5b4a28f15a3a6d0050927bcc5fc190e3f4c094a",
+      "path": "package.json",
+      "baseSha256": "a5d1f48b1b3c7192c571b49d400387e04fc9cccc905b21ba87b1f069509b9919",
+      "sha256": "a5d1f48b1b3c7192c571b49d400387e04fc9cccc905b21ba87b1f069509b9919"
+    },
+    "server/index.ts": {
+      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
+      "path": "server/index.ts",
+      "baseSha256": "7cf7ff7de2c422de390dd7140c953c978d0f99dd0574bfe19fd419789016f748",
+      "sha256": "6ec8394ef663efcbd1ec4831ea2973ee341adc9364f876a22702584578599222",
+      "patches": [
+        {
+          "from": "() => { await st",
+          "to": "() => { console.info(JSON.stringify({ event: 'lobby-server-shutdown', uptimeSeconds: Math.floor(process.uptime()) })); await st"
+        },
+        {
+          "from": "w(app);\n    inst",
+          "to": "w(app);\n    installStarSpinCollection(app);\n    inst"
+        },
+        {
+          "from": "./caribbeanCrewRoutes';\nimport { installGameModu",
+          "to": "./caribbeanCrewRoutes';\nimport {installStarSpinCollection} from './starSpinCollectionRoutes';\nimport { installGameModu"
+        }
+      ]
+    },
+    "server/demoWalletRoutes.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/demoWalletRoutes.ts",
+      "baseSha256": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+      "sha256": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82"
+    },
+    "server/progressionRoutes.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/progressionRoutes.ts",
+      "baseSha256": "fd15285d4446ebbc123614655a1ef6edd735a50cc71efbbf8f4fffec98d586fb",
+      "sha256": "fd15285d4446ebbc123614655a1ef6edd735a50cc71efbbf8f4fffec98d586fb"
+    },
+    "server/caribbeanCrewRoutes.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/caribbeanCrewRoutes.ts",
+      "baseSha256": "47e6a323810bfa73705fa8148a37ded86001aa62269d88dd37fd938b7baf22a8",
+      "sha256": "47e6a323810bfa73705fa8148a37ded86001aa62269d88dd37fd938b7baf22a8"
+    },
+    "server/starSpinCollectionRoutes.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/starSpinCollectionRoutes.ts",
+      "baseSha256": "2bc88b931ab8c4d9455690ceea3e20cf6b5930bb4e5249127cb68aeecccb0623",
+      "sha256": "2bc88b931ab8c4d9455690ceea3e20cf6b5930bb4e5249127cb68aeecccb0623"
+    },
+    "server/gameModuleAssets.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/gameModuleAssets.ts",
+      "baseSha256": "9e2bfe8a7078c43d1bebc3a90e10c5d449fda3ce2b319147cbc381d2c8e11a33",
+      "sha256": "9e2bfe8a7078c43d1bebc3a90e10c5d449fda3ce2b319147cbc381d2c8e11a33"
+    },
+    "server/casinoApiProRoutes.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/casinoApiProRoutes.ts",
+      "baseSha256": "f44e5556527d43184fa3175eecb2febdff123367b93a700e5c0e6d60979c3707",
+      "sha256": "f44e5556527d43184fa3175eecb2febdff123367b93a700e5c0e6d60979c3707"
+    },
+    "server/cryptoWalletRoutes.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "server/cryptoWalletRoutes.ts",
+      "baseSha256": "bce306753a9116511b6977183ce6695ea48b8c555f15dc617af939de3b57a7fe",
+      "sha256": "bce306753a9116511b6977183ce6695ea48b8c555f15dc617af939de3b57a7fe"
+    },
+    "server/payments/credits.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/payments/credits.ts",
+      "baseSha256": "b601a52112b82402a3cffecea473106746398fe2234b2139e1c1e4a00eb0390c",
+      "sha256": "b601a52112b82402a3cffecea473106746398fe2234b2139e1c1e4a00eb0390c"
+    },
+    "server/payments/methods.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/payments/methods.ts",
+      "baseSha256": "9a6245876361ea92b9cdfb24f5de98f0c43581754c1f328393db65e58fa7d99b",
+      "sha256": "9a6245876361ea92b9cdfb24f5de98f0c43581754c1f328393db65e58fa7d99b"
+    },
+    "server/payments/sandbox-routes.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/payments/sandbox-routes.ts",
+      "baseSha256": "80bc3a2ca502297c4c905caf432402217a369121bfd476c065a10c8ebeb9e4f6",
+      "sha256": "80bc3a2ca502297c4c905caf432402217a369121bfd476c065a10c8ebeb9e4f6"
+    },
+    "server/miraRoutes.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/miraRoutes.ts",
+      "baseSha256": "fa206b27153fc5ca0eb9be756f73e7f2c166cce0476a2b12673fd2b7dda0dd68",
+      "sha256": "fa206b27153fc5ca0eb9be756f73e7f2c166cce0476a2b12673fd2b7dda0dd68"
+    },
+    "server/skinStudioRoutes.ts": {
+      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "path": "server/skinStudioRoutes.ts",
+      "baseSha256": "0a5a8c8eefd1191d8631b9270d7c43e970736f26befb0f2afdd68ba3af2cc1f6",
+      "sha256": "0a5a8c8eefd1191d8631b9270d7c43e970736f26befb0f2afdd68ba3af2cc1f6"
+    },
+    "server/LobbyRoom.ts": {
+      "commit": "0bc95d280f03b0395b7fba4542dd3cb837cae23e",
+      "path": "server/LobbyRoom.ts",
+      "baseSha256": "29ca9ad2ce2eeef0e1fe72e63760544ba381f2e4f8bfc3659c4f344b13449793",
+      "sha256": "b0df73ff281890743966d84c6ce6924f50a703a21c224f1e59e6a62a69209f9f",
+      "patches": [
+        {
+          "from": "  onLeave(client: Client) {\n    this.cancelChat(cli",
+          "to": "  onLeave(client: Client, code?: number) {\n    console.info(JSON.stringify({ event: 'lobby-connection', phase: 'left', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));\n    this.cancelChat(cli"
+        },
+        {
+          "from": "nect(client.sessionId);\n      const control = th",
+          "to": "nect(client.sessionId);\n      console.info(JSON.stringify({ event: 'lobby-connection', phase: 'reconnected', uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));\n      const control = th"
+        },
+        {
+          "from": ":20)",
+          "to": ":LOBBY_RECONNECT_GRACE_SECONDS)"
+        },
+        {
+          "from": ": Client) {\n    thi",
+          "to": ": Client, code?: number) {\n    console.info(JSON.stringify({ event: 'lobby-connection', phase: 'drop', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));\n    thi"
+        },
+        {
+          "from": "ли подожди 20 секунд",
+          "to": " попробуй снова"
+        },
+        {
+          "from": "import { CommonCombatWal",
+          "to": "import { LOBBY_RECONNECT_GRACE_SECONDS } from '../src/shared/lobbyConnection';\nimport { CommonCombatWal"
+        },
+        {
+          "from": "import { PvpRoom } from './pvp/room';\nimport { cabinetHall, cabinetsInHall, type Cabinet } from '../src/shared/cabinets';\nimport { cabinetSeat } from '../src/shared/cabinetSeating';\nimport { findPath, walkable, type Point } from '../src/game/navigation';\nimport { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLinkAt, inHallDoor, SEATS, DRINKS, atBar, type ChatMessage, type HallId } from '../src/shared/world';\nimport { canTravelByElevator, elevatorDock } from '../src/shared/elevator';\n",
+          "to": "import { PvpRoom } from './pvp/room';\nimport { cabinetHall, cabinetsInHall, type Cabinet } from '../src/shared/cabinets';\nimport { cabinetSeat } from '../src/shared/cabinetSeating';\nimport { playerRecoveryPoint } from '../src/shared/playerRecovery';\nimport { findPath, walkable, type Point } from '../src/game/navigation';\nimport { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLinkAt, inHallDoor, SEATS, DRINKS, atBar, type ChatMessage, type HallId } from '../src/shared/world';\nimport { canTravelByElevator, elevatorDock } from '../src/shared/elevator';\n"
+        },
+        {
+          "from": "      control.path = findPath(p, { x, y }, hallObstacles(p.hall));\n    });\n    listen('stop', client => this.stop(client.sessionId));\n    listen('elevator', (client, value: unknown) => {\n      if (!value || typeof value !== 'object') return;\n      const { target, requestId, revision } = value as { target?: unknown; requestId?: unknown; revision?: unknown };\n",
+          "to": "      control.path = findPath(p, { x, y }, hallObstacles(p.hall));\n    });\n    listen('stop', client => this.stop(client.sessionId));\n    // Recovery bypasses queued movement, but never an access restriction or a live shared game.\n    this.onMessage('unstuck', (client, value: unknown) => {\n      const request = value as { requestId?: number; revision?: number };\n      if (!request || !Number.isSafeInteger(request.requestId) || request.requestId! < 0) return;\n      const p = this.state.players.get(client.sessionId);\n      let reason: string | undefined;\n      if (!p?.connected || !this.accessAllowed(client) || p.security) reason = 'Сейчас возврат недоступен. Проверь подключение и дождись окончания текущего действия.';\n      else if (request.revision !== p.hallRevision) reason = 'Положение персонажа изменилось. Попробуй ещё раз.';\n      else if (p.activity) reason = 'Сначала выйди из совместной игры через её меню.';\n      else if (this.access.get(client.sessionId)?.pendingDrink) reason = 'Дождись завершения заказа и попробуй ещё раз.';\n      else if (!this.recoverPlayer(client.sessionId)) reason = 'Не удалось найти свободное место у входа. Попробуй ещё раз.';\n      client.send('unstuck-result', { requestId: request.requestId, accepted: !reason, ...(reason ? { reason } : { revision: p!.hallRevision }) });\n    });\n    listen('elevator', (client, value: unknown) => {\n      if (!value || typeof value !== 'object') return;\n      const { target, requestId, revision } = value as { target?: unknown; requestId?: unknown; revision?: unknown };\n"
+        },
+        {
+          "from": "    if (seat) { p.x = seat.entry.x; p.y = seat.entry.y; }\n    p.seat = ''; p.action = 'idle'; p.drink = ''; p.actionUntil = 0;\n  }\n  private broadcastActivity(type:string,value:unknown,hall:HallId){\n    const listeners=this.clients.filter(client=>{\n      const player=this.state.players.get(client.sessionId);\n",
+          "to": "    if (seat) { p.x = seat.entry.x; p.y = seat.entry.y; }\n    p.seat = ''; p.action = 'idle'; p.drink = ''; p.actionUntil = 0;\n  }\n  private recoverPlayer(id: string): boolean {\n    const p = this.state.players.get(id);\n    if (!p) return false;\n    const occupied: Point[] = [...this.state.players].filter(([other, player]) => other !== id && player.hall === p.hall).map(([, player]) => player);\n    occupied.push(...[...this.state.guards.values()].filter(guard => guard.hall === p.hall));\n    const point = playerRecoveryPoint(p.hall as HallId, occupied);\n    if (!point) return false;\n    this.cat.handle(id, 'release');\n    this.releaseCabinet(id); this.stop(id);\n    Object.assign(p, point, { playing: false, cabinet: '', seat: '', action: 'idle', drink: '', actionUntil: 0, facing: 'down', moving: false });\n    p.hallRevision++;\n    const control = this.controls.get(id); if (control) control.lastTarget = 0;\n    return true;\n  }\n  private broadcastActivity(type:string,value:unknown,hall:HallId){\n    const listeners=this.clients.filter(client=>{\n      const player=this.state.players.get(client.sessionId);\n"
+        },
+        {
+          "from": "      if (p.gameReaction && Date.now() >= p.gameReactionUntil) { p.gameReaction = ''; p.gameReactionUntil = 0; }\n      if (p.action === 'drink' && Date.now() >= p.actionUntil) { p.action = p.seat ? 'sit' : 'idle'; p.drink = ''; p.actionUntil = 0; }\n      if (p.security || !p.connected || p.playing || this.cat.isHugging(id)) { p.moving = false; continue; }\n      if (c.predicted) {\n        c.inputs.advance(p, Date.now(), [...this.state.guards.values()], () => this.guards.contact(id));\n        p.inputSeq = c.inputs.sequence;\n",
+          "to": "      if (p.gameReaction && Date.now() >= p.gameReactionUntil) { p.gameReaction = ''; p.gameReactionUntil = 0; }\n      if (p.action === 'drink' && Date.now() >= p.actionUntil) { p.action = p.seat ? 'sit' : 'idle'; p.drink = ''; p.actionUntil = 0; }\n      if (p.security || !p.connected || p.playing || this.cat.isHugging(id)) { p.moving = false; continue; }\n      if (!p.seat && !p.activity && !walkable(p.x, p.y, hallObstacles(p.hall)) && this.recoverPlayer(id)) continue;\n      if (c.predicted) {\n        c.inputs.advance(p, Date.now(), [...this.state.guards.values()], () => this.guards.contact(id));\n        p.inputSeq = c.inputs.sequence;\n"
+        },
+        {
+          "from": "import { LOBBY_RECONNECT_GRACE_SECONDS } from '../src/shared/lobbyConnection';\nimport { CommonCombatWallet } from './commonCombatWallet';\nimport { virtualPvpCommand } from './pvp/virtual-service';\n",
+          "to": "import { advanceRoofStairStep,settleRoofStairLanding,nearRoofStairBase, ROOF_STAIR_ROUTE,STREET_ROOF_STAIRS } from '../src/shared/rooftop';\nimport { LOBBY_RECONNECT_GRACE_SECONDS } from '../src/shared/lobbyConnection';\nimport { CommonCombatWallet } from './commonCombatWallet';\nimport { virtualPvpCommand } from './pvp/virtual-service';\n"
+        },
+        {
+          "from": "import { accounts, allowedOrigin, cookieToken, type Account } from './accounts';\ntype RoomAuth = { account: Account; hash: string };\nimport { LobbyState, Player } from './state';\nimport { movementFacing, type Facing } from '../src/shared/movement';\nimport { MovementInputs } from './movementInputs';\nimport { Activities } from './activities';\nimport { PvpRoom } from './pvp/room';\n",
+          "to": "import { accounts, allowedOrigin, cookieToken, type Account } from './accounts';\ntype RoomAuth = { account: Account; hash: string };\nimport { LobbyState, Player } from './state';\nimport { applyMovementInput,movementFacing, type Facing } from '../src/shared/movement';\nimport { MovementInputs } from './movementInputs';\nimport { Activities } from './activities';\nimport { PvpRoom } from './pvp/room';\n"
+        },
+        {
+          "from": "import { cabinetSeat } from '../src/shared/cabinetSeating';\nimport { playerRecoveryPoint } from '../src/shared/playerRecovery';\nimport { findPath, walkable, type Point } from '../src/game/navigation';\nimport { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLinkAt, inHallDoor, SEATS, DRINKS, atBar, type ChatMessage, type HallId } from '../src/shared/world';\nimport { canTravelByElevator, elevatorDock } from '../src/shared/elevator';\nimport { intoxicatedMovement } from '../src/shared/intoxication';\nimport type { DrinkingState } from './intoxicationStore';\n",
+          "to": "import { cabinetSeat } from '../src/shared/cabinetSeating';\nimport { playerRecoveryPoint } from '../src/shared/playerRecovery';\nimport { findPath, walkable, type Point } from '../src/game/navigation';\nimport { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLinkAt, stairWindowLink, playerHallArrival, inHallDoor, SEATS, DRINKS, atBar, type ChatMessage, type HallId } from '../src/shared/world';\nimport { canTravelByElevator, elevatorDock } from '../src/shared/elevator';\nimport { intoxicatedMovement } from '../src/shared/intoxication';\nimport type { DrinkingState } from './intoxicationStore';\n"
+        },
+        {
+          "from": "      this.activities.tick(dt);this.guards.tick(dt);this.bartender.tick(dt);this.guests.tick(dt);this.cat.tick(dt);hallElapsed+=dt;\n      while(hallElapsed>=.05){this.tick(.05);hallElapsed-=.05;}\n    }, 1000/60);\n    const movementActions = new Set(['move', 'target', 'stop', 'playing', 'cabinet-play', 'stand', 'sit', 'drink', 'activity', 'cat', 'elevator']);\n    const hugBlockedActions = new Set([...movementActions,'inputs','cabinet-reaction']);\n    const listen = (type: string, handler: (client: Client, value: any) => void | Promise<void>) => this.onMessage(type, (client, value) => {\n      const apply = () => {\n",
+          "to": "      this.activities.tick(dt);this.guards.tick(dt);this.bartender.tick(dt);this.guests.tick(dt);this.cat.tick(dt);hallElapsed+=dt;\n      while(hallElapsed>=.05){this.tick(.05);hallElapsed-=.05;}\n    }, 1000/60);\n    const movementActions = new Set(['move', 'target', 'stop', 'playing', 'cabinet-play', 'stand', 'sit', 'drink', 'activity', 'cat', 'elevator','stair-window']);\n    const hugBlockedActions = new Set([...movementActions,'inputs','cabinet-reaction']);\n    const listen = (type: string, handler: (client: Client, value: any) => void | Promise<void>) => this.onMessage(type, (client, value) => {\n      const apply = () => {\n"
+        },
+        {
+          "from": "      if (!p || (data as {revision?:number})?.revision!==p.hallRevision || !control || !data || typeof data !== 'object' || p.playing || Date.now() - control.lastTarget < 150) return;\n      const { x, y } = data as { x?: unknown; y?: unknown };\n      if (typeof x !== 'number' || typeof y !== 'number' || !Number.isFinite(x) || !Number.isFinite(y)) return;\n      this.stop(client.sessionId);\n      this.stand(client.sessionId);\n      control.predicted = false;\n",
+          "to": "      if (!p || (data as {revision?:number})?.revision!==p.hallRevision || !control || !data || typeof data !== 'object' || p.playing || Date.now() - control.lastTarget < 150) return;\n      const { x, y } = data as { x?: unknown; y?: unknown };\n      if (typeof x !== 'number' || typeof y !== 'number' || !Number.isFinite(x) || !Number.isFinite(y)) return;\n      if(p.hall==='street'&&p.stairStep>0){this.stop(client.sessionId);return;}\n      this.stop(client.sessionId);\n      this.stand(client.sessionId);\n      control.predicted = false;\n"
+        },
+        {
+          "from": "      control.path = findPath(p, { x, y }, hallObstacles(p.hall));\n    });\n    listen('stop', client => this.stop(client.sessionId));\n    // Recovery bypasses queued movement, but never an access restriction or a live shared game.\n    this.onMessage('unstuck', (client, value: unknown) => {\n      const request = value as { requestId?: number; revision?: number };\n",
+          "to": "      control.path = findPath(p, { x, y }, hallObstacles(p.hall));\n    });\n    listen('stop', client => this.stop(client.sessionId));\n    listen('stair-window',(client,value:unknown)=>{\n      const p=this.state.players.get(client.sessionId),c=this.controls.get(client.sessionId);\n      if(!p||!c||(value as {revision?:number})?.revision!==p.hallRevision||p.playing||p.seat||p.action==='drink')return;\n      const link=stairWindowLink(p);if(!link)return;\n      this.activities.leave(client.sessionId);this.releaseCabinet(client.sessionId);this.stop(client.sessionId);this.stand(client.sessionId);\n      const arrival=playerHallArrival(p.hall,link);p.hall=link.target;p.hallRevision++;Object.assign(p,arrival);c.lastTarget=0;\n      client.send('activities',this.activities.snapshot(client.sessionId));\n    });\n    // Recovery bypasses queued movement, but never an access restriction or a live shared game.\n    this.onMessage('unstuck', (client, value: unknown) => {\n      const request = value as { requestId?: number; revision?: number };\n"
+        },
+        {
+          "from": "  private publish(message: ChatMessage) { this.history.push(message); if (this.history.length > 60) this.history.shift(); this.broadcast('chat', message); }\n  private stop(id: string) {\n    const c = this.controls.get(id); if (c) { c.dx = c.dy = 0; c.path = []; c.predicted = false; c.afterMovement = undefined; c.inputs.cancel(); }\n    const p = this.state.players.get(id); if (p) { p.moving = false; if (c) p.inputSeq = c.inputs.sequence; }\n  }\n  private cabinetDistance(player: Player, cabinet: Cabinet) {\n    const { entry } = cabinetSeat(cabinet);\n",
+          "to": "  private publish(message: ChatMessage) { this.history.push(message); if (this.history.length > 60) this.history.shift(); this.broadcast('chat', message); }\n  private stop(id: string) {\n    const c = this.controls.get(id); if (c) { c.dx = c.dy = 0; c.path = []; c.predicted = false; c.afterMovement = undefined; c.inputs.cancel(); }\n    const p = this.state.players.get(id); if (p) { p.moving = false; if(p.hall==='street'&&p.stairStep>0)applyMovementInput(p,{seq:0,x:0,y:0,ms:0}); if (c) p.inputSeq = c.inputs.sequence; }\n  }\n  private cabinetDistance(player: Player, cabinet: Cabinet) {\n    const { entry } = cabinetSeat(cabinet);\n"
+        },
+        {
+          "from": "  }\n  private enterDoor(id:string){\n    const p=this.state.players.get(id),c=this.controls.get(id);\n    if(!p?.connected||p.security||!c||this.cat.isHugging(id)||p.playing||p.seat||p.action==='drink'||!inHallDoor(p))return false;\n    this.activities.leave(id);this.releaseCabinet(id);this.stop(id);this.stand(id);\n    const link=hallLinkAt(p)!;const hall=link.target,door=link.arrival;\n    p.hall=hall;p.hallRevision++;p.x=door.arrival.x;p.y=door.arrival.y;p.facing=door.facing;c.lastTarget=0;\n    this.clients.find(client=>client.sessionId===id)?.send('activities',this.activities.snapshot(id));\n    return true;\n  }\n",
+          "to": "  }\n  private enterDoor(id:string){\n    const p=this.state.players.get(id),c=this.controls.get(id);\n    if(!p?.connected||!c)return false;\n    if(p.security||this.cat.isHugging(id)||p.playing||p.seat||p.action==='drink'){p.stairStep=0;return false;}\n    if(p.hall==='street'&&p.stairStep>0&&!p.moving)settleRoofStairLanding(p);\n    const previous=p.stairStep;\n    p.stairStep=p.hall==='street'?advanceRoofStairStep(p.stairStep,p):0;\n    if(!previous&&p.stairStep===1){p.x=STREET_ROOF_STAIRS.foot.x;p.y=STREET_ROOF_STAIRS.foot.y;p.stairDirection=1;}\n    const link=hallLinkAt(p);if(!link)return false;\n    if(p.hall==='street'&&link.target==='roof'&&p.stairStep!==ROOF_STAIR_ROUTE.length)return false;\n    this.activities.leave(id);this.releaseCabinet(id);this.stop(id);this.stand(id);\n    const hall=link.target,arrival=playerHallArrival(p.hall,link);\n    p.hall=hall;p.hallRevision++;Object.assign(p,arrival);c.lastTarget=0;\n    this.clients.find(client=>client.sessionId===id)?.send('activities',this.activities.snapshot(id));\n    return true;\n  }\n"
+        },
+        {
+          "from": "      let dx = c.dx, dy = c.dy;\n      if (Date.now() - c.at > 450) dx = dy = 0;\n      if (!dx && !dy && !c.path.length) { p.moving = false; continue; }\n      let remaining = (c.path.length ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * (c.inputs.sequence ? c.inputs.takeDuration(dt*1000)/1000 : dt)\n        * intoxicatedMovement(p.soberAt, { x: dx, y: dy, ms: dt * 1000 }, Date.now() / 50).speedMultiplier;\n      const beforeX = p.x, beforeY = p.y;\n",
+          "to": "      let dx = c.dx, dy = c.dy;\n      if (Date.now() - c.at > 450) dx = dy = 0;\n      if (!dx && !dy && !c.path.length) { p.moving = false; continue; }\n      if(p.hall==='street'&&(p.stairStep>0||!c.path.length&&nearRoofStairBase(p))){\n        c.path=[];\n        if(applyMovementInput(p,{seq:0,x:dx,y:dy,ms:c.inputs.sequence?c.inputs.takeDuration(dt*1000):dt*1000},[...this.state.guards.values()]))this.guards.contact(id);\n        this.enterDoor(id);continue;\n      }\n      let remaining = (c.path.length ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * (c.inputs.sequence ? c.inputs.takeDuration(dt*1000)/1000 : dt)\n        * intoxicatedMovement(p.soberAt, { x: dx, y: dy, ms: dt * 1000 }, Date.now() / 50).speedMultiplier;\n      const beforeX = p.x, beforeY = p.y;\n"
+        },
+        {
+          "from": "      if (movementActions.has(type) && control?.inputs.pendingCount) control.afterMovement = () => { void apply(); };\n      else return apply();\n    });\n    listen('activity', (client,value:unknown)=>this.activities.handle(client.sessionId,value));\n    listen('pvp',async(client,value:unknown)=>{await this.pvp.command(client.sessionId,value);});\n    listen('cat', (client, value: unknown) => {\n",
+          "to": "      if (movementActions.has(type) && control?.inputs.pendingCount) control.afterMovement = () => { void apply(); };\n      else return apply();\n    });\n    listen('mira-attention',(client,value:unknown)=>this.bartender.attend(client.sessionId,value));\n    listen('activity', (client,value:unknown)=>this.activities.handle(client.sessionId,value));\n    listen('pvp',async(client,value:unknown)=>{await this.pvp.command(client.sessionId,value);});\n    listen('cat', (client, value: unknown) => {\n"
+        },
+        {
+          "from": "        if (!valid()) return;\n        const current = await accounts.drinking.read(accountId);\n        if (!valid() || Date.now() < current.lastDrinkAt + 3200) return;\n        // Reserve the accepted sip before its persisted dose completes.\n        this.stop(client.sessionId); p.action = 'drink'; p.drink = id as string; p.actionUntil = Date.now()+3200;\n        if (!p.seat) p.facing = 'down';\n        const drinking = await accounts.drinking.consume(accountId, id as string, Date.now());\n        if (!this.currentAction(client, p, control, chatRevision, hallRevision)) return;\n        access.drinking = drinking; p.soberAt = drinking.soberAt;\n      } catch (error) {\n        if (this.currentAction(client, p, control, chatRevision, hallRevision) && p.action === 'drink' && p.drink === id) {\n          p.action = p.seat ? 'sit' : 'idle'; p.drink = ''; p.actionUntil = 0;\n",
+          "to": "        if (!valid()) return;\n        const current = await accounts.drinking.read(accountId);\n        if (!valid() || Date.now() < current.lastDrinkAt + 3200) return;\n        // Reserve the command, then publish sip and dose together after persistence.\n        this.stop(client.sessionId);\n        const drinking = await accounts.drinking.consume(accountId, id as string, Date.now());\n        if (!valid()) return;\n        this.stop(client.sessionId);\n        access.drinking = drinking; p.soberAt = drinking.soberAt;\n        p.action = 'drink'; p.drink = id as string; p.actionUntil = Date.now()+3200;\n        if (!p.seat) p.facing = 'down';\n      } catch (error) {\n        if (this.currentAction(client, p, control, chatRevision, hallRevision) && p.action === 'drink' && p.drink === id) {\n          p.action = p.seat ? 'sit' : 'idle'; p.drink = ''; p.actionUntil = 0;\n"
+        },
+        {
+          "from": "    finally { this.joiningAccounts.delete(auth.account.id); }\n  }\n  onDrop(client: Client, code?: number) {\n    console.info(JSON.stringify({ event: 'lobby-connection', phase: 'drop', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));\n    this.cancelChat(client);\n    this.activities.disconnect(client.sessionId);\n",
+          "to": "    finally { this.joiningAccounts.delete(auth.account.id); }\n  }\n  onDrop(client: Client, code?: number) {\n    this.bartender.forget(client.sessionId);\n    console.info(JSON.stringify({ event: 'lobby-connection', phase: 'drop', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));\n    this.cancelChat(client);\n    this.activities.disconnect(client.sessionId);\n"
+        },
+        {
+          "from": "    };\n  }\n  onLeave(client: Client, code?: number) {\n    console.info(JSON.stringify({ event: 'lobby-connection', phase: 'left', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));\n    this.cancelChat(client);\n    const chatControl = this.controls.get(client.sessionId);\n",
+          "to": "    };\n  }\n  onLeave(client: Client, code?: number) {\n    this.bartender.forget(client.sessionId);\n    console.info(JSON.stringify({ event: 'lobby-connection', phase: 'left', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));\n    this.cancelChat(client);\n    const chatControl = this.controls.get(client.sessionId);\n"
+        }
+      ]
+    },
+    "server/authRoutes.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/authRoutes.ts",
+      "baseSha256": "eb980c443089cd96a7710892a53ce6b8a9aa93c3952ea4da5e51c617d7b15b3b",
+      "sha256": "eb980c443089cd96a7710892a53ce6b8a9aa93c3952ea4da5e51c617d7b15b3b"
+    },
+    "server/accounts.ts": {
+      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "path": "server/accounts.ts",
+      "baseSha256": "841b9926833f8613cea2500d368a63c3318f6288ecd9acf0e0ef26b4ef2d3db8",
+      "sha256": "841b9926833f8613cea2500d368a63c3318f6288ecd9acf0e0ef26b4ef2d3db8"
+    },
+    "server/admin/routes.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/admin/routes.ts",
+      "baseSha256": "0ca35f36009e1741d4e8c161cb94fb13d810710b1b4b843213098c6e5c81debe",
+      "sha256": "0ca35f36009e1741d4e8c161cb94fb13d810710b1b4b843213098c6e5c81debe"
+    },
+    "src/shared/paymentMethods.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/paymentMethods.ts",
+      "baseSha256": "a5f187bce65ca55e9bf4219ecfccb4e3df8dca8dc306debc6167988a56b993ef",
+      "sha256": "a5f187bce65ca55e9bf4219ecfccb4e3df8dca8dc306debc6167988a56b993ef"
+    },
+    "server/miraLanguages.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/miraLanguages.ts",
+      "baseSha256": "81a0dc95088097967ec77f1b793fda1fdcd86c57d271cc0a90c688be8a75c3e2",
+      "sha256": "81a0dc95088097967ec77f1b793fda1fdcd86c57d271cc0a90c688be8a75c3e2"
+    },
+    "server/demoWallet.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/demoWallet.ts",
+      "baseSha256": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
+      "sha256": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61"
+    },
+    "server/database-migrations.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/database-migrations.ts",
+      "baseSha256": "3502380cf90176df4543365115ad4d9292ca4e6eed11ba2ce77f8ffed95b70a4",
+      "sha256": "3502380cf90176df4543365115ad4d9292ca4e6eed11ba2ce77f8ffed95b70a4"
+    },
+    "src/shared/arcadeCatalog.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/arcadeCatalog.ts",
+      "baseSha256": "946d05c1c450086d48efa318d7d65df6bdd5641f2edcd05599b67f7499a0a55a",
+      "sha256": "946d05c1c450086d48efa318d7d65df6bdd5641f2edcd05599b67f7499a0a55a"
+    },
+    "src/shared/rooftop.ts": {
+      "commit": "64cc6a77ccc5f6de6a81c79c51958f010f9efb37",
+      "path": "src/shared/rooftop.ts",
+      "baseSha256": "fe32902b5474e7c9600d67aeb3afd976985e794f65ec651195993ea5c0b0badc",
+      "sha256": "fe32902b5474e7c9600d67aeb3afd976985e794f65ec651195993ea5c0b0badc"
+    },
+    "src/shared/walletAccount.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/walletAccount.ts",
+      "baseSha256": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560",
+      "sha256": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560"
+    },
+    "server/casinoApiPro.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/casinoApiPro.ts",
+      "baseSha256": "7cebe70acde4407d2c2e1c35981f55e66a3e7b4b0c5027fda26210eed761a172",
+      "sha256": "7cebe70acde4407d2c2e1c35981f55e66a3e7b4b0c5027fda26210eed761a172"
+    },
+    "server/crypto/config.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/crypto/config.ts",
+      "baseSha256": "b33bbb2e6d6aaed135ebc14555dfe81916db77492ad3fb1c02e6fd3cc1e340ee",
+      "sha256": "b33bbb2e6d6aaed135ebc14555dfe81916db77492ad3fb1c02e6fd3cc1e340ee"
+    },
+    "server/caribbeanCrew.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/caribbeanCrew.ts",
+      "baseSha256": "97166b981ab702c04ea93399d21341e95c678105c65d388d95c270568bb1a7b0",
+      "sha256": "97166b981ab702c04ea93399d21341e95c678105c65d388d95c270568bb1a7b0"
+    },
+    "src/shared/gameStakes.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/gameStakes.ts",
+      "baseSha256": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b",
+      "sha256": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b"
+    },
+    "src/shared/lobbyConnection.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/lobbyConnection.ts",
+      "baseSha256": "4cd112040e2d4dbefefab9c882b176c9ee0944d4b167c4c9280a594e5eb2dbac",
+      "sha256": "4cd112040e2d4dbefefab9c882b176c9ee0944d4b167c4c9280a594e5eb2dbac"
+    },
+    "server/mira.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/mira.ts",
+      "baseSha256": "07de2263bb99f40fdedeb428e7d7ae56c873232c7a35167fa6b923efa9e631c2",
+      "sha256": "07de2263bb99f40fdedeb428e7d7ae56c873232c7a35167fa6b923efa9e631c2"
+    },
+    "server/casinoApiProWallet.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/casinoApiProWallet.ts",
+      "baseSha256": "b2d74ad27ecf809e086e8573625201d36d346c5866c48a4b3f6d3bd1352b632c",
+      "sha256": "b2d74ad27ecf809e086e8573625201d36d346c5866c48a4b3f6d3bd1352b632c"
+    },
+    "server/finance/nile-play-error.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/finance/nile-play-error.ts",
+      "baseSha256": "20a472d05d7517035771156ccd4c778e699cdf3b0e27d3c693e8d4f39c197e57",
+      "sha256": "20a472d05d7517035771156ccd4c778e699cdf3b0e27d3c693e8d4f39c197e57"
+    },
+    "server/starSpinCollection.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/starSpinCollection.ts",
+      "baseSha256": "7321c7441112d32dc09668f447694d1ae1fb75c1720bbb126f2d42b1d65013fe",
+      "sha256": "7321c7441112d32dc09668f447694d1ae1fb75c1720bbb126f2d42b1d65013fe"
+    },
+    "server/nilePlayRoutes.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/nilePlayRoutes.ts",
+      "baseSha256": "3a2a07178abfd57475c8eacd849243ad0718101e03e9eec685844a806ff8c84f",
+      "sha256": "3a2a07178abfd57475c8eacd849243ad0718101e03e9eec685844a806ff8c84f"
+    },
+    "server/skinStudio.ts": {
+      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "path": "server/skinStudio.ts",
+      "baseSha256": "67319448db188636b94b28e08bd5527b528e21cd19fea4605c787f7131171c16",
+      "sha256": "67319448db188636b94b28e08bd5527b528e21cd19fea4605c787f7131171c16"
+    },
+    "server/commonCombatWallet.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/commonCombatWallet.ts",
+      "baseSha256": "a4c54488171ad734558f916a45efb9b14a45d4316d784fbe84f25c568d92ae5f",
+      "sha256": "a4c54488171ad734558f916a45efb9b14a45d4316d784fbe84f25c568d92ae5f"
+    },
+    "server/payments/protocol.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/payments/protocol.ts",
+      "baseSha256": "7adc9a2bdacee27ed8b7c33b593e46ced92b7da6e163c22b677ad81643b89bb8",
+      "sha256": "7adc9a2bdacee27ed8b7c33b593e46ced92b7da6e163c22b677ad81643b89bb8"
+    },
+    "src/shared/wildNudge.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/wildNudge.ts",
+      "baseSha256": "de36b83b823d2fd48f69bb2aa0c383a44ffbb80ec287e759dd1115db23775624",
+      "sha256": "de36b83b823d2fd48f69bb2aa0c383a44ffbb80ec287e759dd1115db23775624"
+    },
+    "server/miraMemory.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/miraMemory.ts",
+      "baseSha256": "0b6168881412e1d7b81101f86041810918924a3b432509237a2c16bc68f2e442",
+      "sha256": "0b6168881412e1d7b81101f86041810918924a3b432509237a2c16bc68f2e442"
+    },
+    "server/game-database-migrations.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/game-database-migrations.ts",
+      "baseSha256": "6d4446e40557697a55338ac1ce5552a5849acc24494cd7032fc32b62a27a8492",
+      "sha256": "6d4446e40557697a55338ac1ce5552a5849acc24494cd7032fc32b62a27a8492"
+    },
+    "server/demoWalletRequestLimit.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/demoWalletRequestLimit.ts",
+      "baseSha256": "51be9c0f1aa9b59f6ed60c751a8c6f2f14ec50f215d24ed54ea664f44eb4261e",
+      "sha256": "51be9c0f1aa9b59f6ed60c751a8c6f2f14ec50f215d24ed54ea664f44eb4261e"
+    },
+    "src/shared/jackieChan.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/jackieChan.ts",
+      "baseSha256": "a834b1229ee97b500b1e8801f27cb3bf569d6c4bab6ca73eeaf06745747934bf",
+      "sha256": "a834b1229ee97b500b1e8801f27cb3bf569d6c4bab6ca73eeaf06745747934bf"
+    },
+    "server/admin/validation.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/admin/validation.ts",
+      "baseSha256": "1146a17967d226bd845baf37fb9525c1f9dc1254ac88ecda19ba40915264fcb7",
+      "sha256": "1146a17967d226bd845baf37fb9525c1f9dc1254ac88ecda19ba40915264fcb7"
+    },
+    "src/shared/nileWallet.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/nileWallet.ts",
+      "baseSha256": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29",
+      "sha256": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29"
+    },
+    "server/pvp/virtual-service.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/pvp/virtual-service.ts",
+      "baseSha256": "600c5bed3d92a4042d9bd160a4766057b77f85ed22ab2c350663fd1e9877a7f2",
+      "sha256": "600c5bed3d92a4042d9bd160a4766057b77f85ed22ab2c350663fd1e9877a7f2"
+    },
+    "server/database.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/database.ts",
+      "baseSha256": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8",
+      "sha256": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8"
+    },
+    "server/moderation.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/moderation.ts",
+      "baseSha256": "91925b614047a301e24db2274b44704a4866b8e6aa7de981e25f84a3ef67f63f",
+      "sha256": "91925b614047a301e24db2274b44704a4866b8e6aa7de981e25f84a3ef67f63f"
+    },
+    "server/demoWalletAmounts.ts": {
+      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "path": "server/demoWalletAmounts.ts",
+      "baseSha256": "f1f0a88915a232f134b83203b670e51ea1d5e81273ae0ccdcb4ac1c521b52cce",
+      "sha256": "f1f0a88915a232f134b83203b670e51ea1d5e81273ae0ccdcb4ac1c521b52cce"
+    },
+    "src/shared/caribbeanCrew.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/caribbeanCrew.ts",
+      "baseSha256": "e96587114a2e20aaeb7504fd43a7c03a6769b4d77aaa3d91a4f39597d5057b7c",
+      "sha256": "e96587114a2e20aaeb7504fd43a7c03a6769b4d77aaa3d91a4f39597d5057b7c"
+    },
+    "src/shared/appearance.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/appearance.ts",
+      "baseSha256": "d753df5f08e1c6717c4ba3fdbe1b0202013177859995751296a8a900f6a5f1a1",
+      "sha256": "d753df5f08e1c6717c4ba3fdbe1b0202013177859995751296a8a900f6a5f1a1"
+    },
+    "src/shared/flagBattle.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/flagBattle.ts",
+      "baseSha256": "269b48f9367609b2343b732982631f88203fed9fa2b40e6bb08d9f6611b64aa4",
+      "sha256": "269b48f9367609b2343b732982631f88203fed9fa2b40e6bb08d9f6611b64aa4"
+    },
+    "src/shared/starSpinCollection.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/starSpinCollection.ts",
+      "baseSha256": "b58b4347a5b447080b07ec30282a369bb36315071533c0fcdc95c58b8f3e48d1",
+      "sha256": "b58b4347a5b447080b07ec30282a369bb36315071533c0fcdc95c58b8f3e48d1"
+    },
+    "server/crypto/amounts.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/crypto/amounts.ts",
+      "baseSha256": "db07ec76cc3cd4a5fd5bc7d0a923605d7472a70c163fa0271ac9688549413839",
+      "sha256": "db07ec76cc3cd4a5fd5bc7d0a923605d7472a70c163fa0271ac9688549413839"
+    },
+    "server/miraProvider.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/miraProvider.ts",
+      "baseSha256": "3cf544de934662cfa2486e95e6ded39c6426a342579faa650549db2959cff63f",
+      "sha256": "3cf544de934662cfa2486e95e6ded39c6426a342579faa650549db2959cff63f"
+    },
+    "server/providerPending.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/providerPending.ts",
+      "baseSha256": "09c0bda54e971862815188731f2ce6dfa2a0d7fd79e21ceb301883ece001e4a8",
+      "sha256": "09c0bda54e971862815188731f2ce6dfa2a0d7fd79e21ceb301883ece001e4a8"
+    },
+    "server/intoxicationStore.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/intoxicationStore.ts",
+      "baseSha256": "7c5b74fea951e449e5bebc621621e1222cea9252d0873d2e15eafe22eedefe5c",
+      "sha256": "7c5b74fea951e449e5bebc621621e1222cea9252d0873d2e15eafe22eedefe5c"
+    },
+    "server/guards.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/guards.ts",
+      "baseSha256": "da90ac7eb4b880286abfebdd62fa87198ce73fcefa2b5e659872430822a61496",
+      "sha256": "28a683fa3dd20d93582352041eb644e3e36c1be946bb1214887e2758c1aaa659",
+      "patches": [
+        {
+          "from": "import { Guard, type LobbyState, type Player as PlayerBody } from './state';\nimport { findPath, walkable, type Point } from '../src/game/navigation';\nimport { hallObstacles, HALL_DOORS, hallLinks, otherHall, type ConnectedHallDoor, type HallId } from '../src/shared/world';\nimport { GUARD_EXIT, GUARD_HOME, type SecurityDecision } from '../src/shared/security';\nimport { movementFacing, type Facing } from '../src/shared/movement';\nimport { guardPath } from './guardNavigation';\nimport { GUARD_STOPS, GUARD_BAR_TALKS, type GuardStop } from './guardRoutine';\nimport { GUARD_CONTACT_RADIUS } from '../src/shared/guardCollision';\n\ntype Job = { id: string; decision: SecurityDecision };\ntype Resume = {elapsed:number;phase:string;progress:number;facing:string;target:string;speech:string;reply:string;routine:string};\n",
+          "to": "import { Guard, type LobbyState, type Player as PlayerBody } from './state';\nimport { findPath, walkable, type Point } from '../src/game/navigation';\nimport { hallObstacles, HALL_DOORS, hallLinks, hallLinkToward, otherHall, type ConnectedHallDoor, type HallId } from '../src/shared/world';\nimport { GUARD_EXIT, GUARD_HOME, type SecurityDecision } from '../src/shared/security';\nimport { movementFacing, type Facing } from '../src/shared/movement';\nimport { guardPath } from './guardNavigation';\nimport { GUARD_STOPS, GUARD_BAR_TALKS, type GuardStop } from './guardRoutine';\nimport { GUARD_CONTACT_RADIUS } from '../src/shared/guardCollision';\nimport { ROOF } from '../src/shared/rooftop';\nimport { TOILET } from '../src/shared/toilet';\nimport { STREET } from '../src/shared/street';\n\ntype Job = { id: string; decision: SecurityDecision };\ntype Resume = {elapsed:number;phase:string;progress:number;facing:string;target:string;speech:string;reply:string;routine:string};\n"
+        },
+        {
+          "from": "    // The map key identifies the person, while hall changes only at a doorway.\n    state.guards.set('security', guard);\n    this.duties.push({ guard, queue: [], path: [], elapsed: 0,\n      stops:{arcade:[...GUARD_STOPS.arcade],tables:[...GUARD_STOPS.tables],github:[...GUARD_STOPS.github]}, remaining:3,\n      duration:0, conversation:0, lastConversation:-1 });\n  }\n\n",
+          "to": "    // The map key identifies the person, while hall changes only at a doorway.\n    state.guards.set('security', guard);\n    this.duties.push({ guard, queue: [], path: [], elapsed: 0,\n      stops:{arcade:[...GUARD_STOPS.arcade],tables:[...GUARD_STOPS.tables],github:[...GUARD_STOPS.github],street:[...GUARD_STOPS.street],roof:[...GUARD_STOPS.roof],toilet:[...GUARD_STOPS.toilet]}, remaining:3,\n      duration:0, conversation:0, lastConversation:-1 });\n  }\n\n"
+        },
+        {
+          "from": "  }\n  private phase(d: Duty, phase: string) { d.guard.phase = phase; d.guard.progress = 0; d.guard.reply = ''; d.elapsed = 0; }\n  private route(d: Duty, goal: Point) {\n    d.path = guardPath(d.guard, goal, hallObstacles(d.guard.hall));\n  }\n  private nextVisit(d: Duty) {\n",
+          "to": "  }\n  private phase(d: Duty, phase: string) { d.guard.phase = phase; d.guard.progress = 0; d.guard.reply = ''; d.elapsed = 0; }\n  private route(d: Duty, goal: Point) {\n    if(d.guard.hall==='street'&&(goal===GUARD_EXIT||goal===GUARD_HOME))goal=STREET.spawn;\n    if(d.guard.hall==='roof'&&(goal===GUARD_EXIT||goal===GUARD_HOME))goal=ROOF.spawn;\n    if(d.guard.hall==='toilet'&&(goal===GUARD_EXIT||goal===GUARD_HOME))goal=TOILET.spawn;\n    d.path = guardPath(d.guard, goal, hallObstacles(d.guard.hall));\n  }\n  private nextVisit(d: Duty) {\n"
+        },
+        {
+          "from": "    if(d.elapsed>=d.duration)this.nextVisit(d);\n  }\n  private transfer(d: Duty, hall: HallId) {\n    const links=hallLinks(d.guard.hall as HallId);const link=links.find(link=>link.target===hall)??links.find(link=>link.target==='tables')!;\n    d.transferFrom=d.guard.hall as HallId;d.transfer=link.target;d.transferArrival=link.arrival;d.guard.routine='door';d.guard.speech='';\n    this.route(d,link.door.entry);this.phase(d,'transit');\n  }\n",
+          "to": "    if(d.elapsed>=d.duration)this.nextVisit(d);\n  }\n  private transfer(d: Duty, hall: HallId) {\n    const links=hallLinks(d.guard.hall as HallId);const link=hallLinkToward(d.guard.hall as HallId,hall)??links[0];\n    d.transferFrom=d.guard.hall as HallId;d.transfer=link.target;d.transferArrival=link.arrival;d.guard.routine='door';d.guard.speech='';\n    this.route(d,link.door.entry);this.phase(d,'transit');\n  }\n"
+        }
+      ]
+    },
+    "src/shared/skinStudio.ts": {
+      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "path": "src/shared/skinStudio.ts",
+      "baseSha256": "628c6763ae3cd6c9f8b209ea669cbbdc168b1b0efd9d452b191147acb3afd4fc",
+      "sha256": "628c6763ae3cd6c9f8b209ea669cbbdc168b1b0efd9d452b191147acb3afd4fc"
+    },
+    "src/shared/floodedTemple.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/floodedTemple.ts",
+      "baseSha256": "1c1369bd31afb101871e37b45373fbdaee0db09a631e4e4a242c24b396becb5b",
+      "sha256": "1c1369bd31afb101871e37b45373fbdaee0db09a631e4e4a242c24b396becb5b"
+    },
+    "server/admin/store.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/admin/store.ts",
+      "baseSha256": "7ce3070f3098a584066ed92e6c11cb0f73f35705409d29069f4cbb95d60766fb",
+      "sha256": "7ce3070f3098a584066ed92e6c11cb0f73f35705409d29069f4cbb95d60766fb"
+    },
+    "src/i18n/index.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/i18n/index.ts",
+      "baseSha256": "2d164e663d6a3922184508c3a65f01615c7c9bd64ac7e6717a790e78959e00ea",
+      "sha256": "2d164e663d6a3922184508c3a65f01615c7c9bd64ac7e6717a790e78959e00ea"
+    },
+    "src/shared/cryptoWallet.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/cryptoWallet.ts",
+      "baseSha256": "4bddde9c8fa664711fd18f66207366c53e810ce9fa09fb9c98775fdd554bc89b",
+      "sha256": "4bddde9c8fa664711fd18f66207366c53e810ce9fa09fb9c98775fdd554bc89b"
+    },
+    "src/shared/world.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/world.ts",
+      "baseSha256": "88c5b4473a23d396e12dc699174caa764ede9257dfea2df5361eaef14ea8e45d",
+      "sha256": "1dc6bbabc09a553ce435a7bbd5c0b07dbcf8bac4defad7b72536bdf69eac1e6a",
+      "patches": [
+        {
+          "from": "nds = { cat?: (a",
+          "to": "nds = { elevator?: (target: HallId) => Promise<boolean>; cat?: (a"
+        },
+        {
+          "from": "bounds, ...PLANT",
+          "to": "bounds, ACTIVITIES['tsu-e-fa'].bounds, ...PLANT"
+        },
+        {
+          "from": "export type NetworkCommands = { ",
+          "to": "export type NetworkCommands = { recover?: () => Promise<boolean>; "
+        },
+        {
+          "from": "import type { GameReaction } from './cabinetSeating';\nimport type { CatAction } from './cat';\nimport { CAT_CARE } from './catCare';\nexport const PLAYER_SPEED = 155;\nexport const PLAYER_SPRINT_SPEED = PLAYER_SPEED * 1.75;\nexport const ROOM_CAPACITY = 30;\n",
+          "to": "import type { GameReaction } from './cabinetSeating';\nimport type { CatAction } from './cat';\nimport { CAT_CARE } from './catCare';\nimport { STREET, STREET_DOOR, CASINO_EXIT, STREET_OBSTACLES } from './street';\nimport { ROOF, ROOF_OBSTACLES, ROOF_STAIRS, ROOF_STAIR_RETURN, STREET_ROOF_STAIRS } from './rooftop';\nimport { TOILET,TOILET_OBSTACLES,ROOF_TOILET,TOILET_WINDOW } from './toilet';\nimport {STAIR_WINDOW,atStairWindow,atCardWindow} from './stairWindow';\nexport const PLAYER_SPEED = 155;\nexport const PLAYER_SPRINT_SPEED = PLAYER_SPEED * 1.75;\nexport const ROOM_CAPACITY = 30;\n"
+        },
+        {
+          "from": "  ACTIVITIES.hockey.bounds, ACTIVITIES.piano.bounds,\n  ...SEATS.filter(s => s.kind === 'bar').map(s => ({x:s.x-18,y:s.y-15,w:36,h:30})),\n];\nexport type HallId = 'arcade' | 'tables' | 'github';\nexport const HALLS = {\n  arcade: { floor:1, name: translateText('Казино и бар'), number: '01', spawn: { x: 540, y: 590 } },\n  tables: { floor:2, name: translateText('Игры на двоих'), number: '02', spawn: { x: 540, y: 590 } },\n  github: { floor:3, name: translateText('Карточный салон'), number: '03', spawn: { x: 540, y: 590 } },\n} as const;\nexport const HALL_DOORS = {\n  arcade: { entry: { x: 900, y: 240 }, arrival: { x: 900, y: 290 }, facing: 'down', click: { x: 900, y: 107 }, left: 860, right: 940, top: 225, bottom: 247 },\n  tables: { entry: { x: 900, y: 1300 }, arrival: { x: 900, y: 1250 }, facing: 'up', click: { x: 900, y: 1307 }, left: 860, right: 940, top: 1293, bottom: 1310 },\n  github: { entry: { x: 900, y: 1300 }, arrival: { x: 900, y: 1250 }, facing: 'up', click: { x: 900, y: 1307 }, left: 860, right: 940, top: 1293, bottom: 1310 },\n} as const;\nexport type HallDoor = typeof HALL_DOORS[HallId];\nexport const GITHUB_ROOM_DOOR = { entry: { x: 800, y: 240 }, arrival: { x: 800, y: 290 }, facing: 'down', click: { x: 800, y: 107 }, left: 760, right: 840, top: 225, bottom: 247 } as const;\nexport type ConnectedHallDoor = HallDoor | typeof GITHUB_ROOM_DOOR;\nexport type HallLink = { target: HallId; door: ConnectedHallDoor; arrival: ConnectedHallDoor };\nexport function hallLinks(hall: HallId): HallLink[] {\n  if (hall === 'arcade') return [{ target: 'tables', door: HALL_DOORS.arcade, arrival: HALL_DOORS.tables }];\n  if (hall === 'github') return [{ target: 'tables', door: HALL_DOORS.github, arrival: GITHUB_ROOM_DOOR }];\n  return [\n    { target: 'arcade', door: HALL_DOORS.tables, arrival: HALL_DOORS.arcade },\n    { target: 'github', door: GITHUB_ROOM_DOOR, arrival: HALL_DOORS.github },\n  ];\n}\nexport function hallLinkAt(p: { x: number; y: number; hall: string }): HallLink | undefined {\n  if (!Object.hasOwn(HALLS, p.hall)) return;\n  return hallLinks(p.hall as HallId).find(({ door }) => p.x >= door.left && p.x <= door.right && p.y >= door.top && p.y <= door.bottom);\n",
+          "to": "  ACTIVITIES.hockey.bounds, ACTIVITIES.piano.bounds,\n  ...SEATS.filter(s => s.kind === 'bar').map(s => ({x:s.x-18,y:s.y-15,w:36,h:30})),\n];\nexport type HallId = 'arcade' | 'tables' | 'github' | 'street' | 'roof' | 'toilet';\nexport const HALLS = {\n  arcade: { floor:1, name: translateText('Казино и бар'), number: '01', spawn: { x: 540, y: 590 } },\n  tables: { floor:2, name: translateText('Игры на двоих'), number: '02', spawn: { x: 540, y: 590 } },\n  github: { floor:3, name: translateText('Карточный салон'), number: '03', spawn: { x: 540, y: 590 } },\n  roof: { floor:0, name: translateText('Крыша казино'), number: 'R', spawn: ROOF.spawn },\n  toilet: { floor:0, name: translateText('Туалет'), number:'WC',spawn:TOILET.spawn },\n  street: { floor:0, name: translateText('Улица казино'), number: '↗', spawn: STREET.spawn },\n} as const;\nexport const HALL_DOORS = {\n  street: STREET_DOOR,\n  roof: ROOF_STAIRS,\n  toilet: TOILET_WINDOW,\n  arcade: { entry: { x: 900, y: 240 }, arrival: { x: 900, y: 290 }, facing: 'down', click: { x: 900, y: 107 }, left: 860, right: 940, top: 225, bottom: 247 },\n  tables: { entry: { x: 900, y: 1300 }, arrival: { x: 900, y: 1250 }, facing: 'up', click: { x: 900, y: 1307 }, left: 860, right: 940, top: 1293, bottom: 1310 },\n  github: { entry: { x: 900, y: 1300 }, arrival: { x: 900, y: 1250 }, facing: 'up', click: { x: 900, y: 1307 }, left: 860, right: 940, top: 1293, bottom: 1310 },\n} as const;\nexport type HallDoor = typeof HALL_DOORS[HallId];\nexport const GITHUB_ROOM_DOOR = { entry: { x: 800, y: 240 }, arrival: { x: 800, y: 290 }, facing: 'down', click: { x: 800, y: 107 }, left: 760, right: 840, top: 225, bottom: 247 } as const;\nexport type ConnectedHallDoor = HallDoor | typeof GITHUB_ROOM_DOOR | typeof CASINO_EXIT | typeof STREET_ROOF_STAIRS | typeof ROOF_TOILET;\nexport type HallLink = { target: HallId; door: ConnectedHallDoor; arrival: ConnectedHallDoor };\nexport function hallLinks(hall: HallId): HallLink[] {\n  if (hall === 'roof') return [{ target: 'street', door: ROOF_STAIRS, arrival: STREET_ROOF_STAIRS },{target:'toilet',door:ROOF_TOILET,arrival:TOILET_WINDOW}];\n  if (hall === 'toilet') return [{target:'roof',door:TOILET_WINDOW,arrival:ROOF_TOILET}];\n  if (hall === 'street') return [\n    { target: 'arcade', door: STREET_DOOR, arrival: CASINO_EXIT },\n    { target: 'roof', door: STREET_ROOF_STAIRS, arrival: ROOF_STAIRS },\n  ];\n  if (hall === 'arcade') return [\n    { target: 'tables', door: HALL_DOORS.arcade, arrival: HALL_DOORS.tables },\n    { target: 'street', door: CASINO_EXIT, arrival: STREET_DOOR },\n  ];\n  if (hall === 'github') return [{ target: 'tables', door: HALL_DOORS.github, arrival: GITHUB_ROOM_DOOR }];\n  return [\n    { target: 'arcade', door: HALL_DOORS.tables, arrival: HALL_DOORS.arcade },\n    { target: 'github', door: GITHUB_ROOM_DOOR, arrival: HALL_DOORS.github },\n  ];\n}\nexport const isExteriorHall = (hall: string) => hall === 'street' || hall === 'roof';\nexport const isCasinoFloor = (hall:string) => hall === 'arcade' || hall === 'tables' || hall === 'github';\n\n/** Player stair state is separate from the ground arrivals used by roaming actors. */\nexport function playerHallArrival(from:string,link:{target:HallId;arrival:{arrival:{x:number;y:number};facing:Facing}}){\n  if(from==='github'&&link.target==='street')return STAIR_WINDOW.return;\n  if(from==='roof'&&link.target==='street')return ROOF_STAIR_RETURN;\n  return {...link.arrival.arrival,facing:link.arrival.facing,stairStep:0,stairDirection:1};\n}\n\n/** Explicit window interaction never turns ordinary stair movement into a floor change. */\nexport function stairWindowLink(p:{hall:string;x:number;y:number;stairStep?:number}):{target:HallId;arrival:{arrival:{x:number;y:number};facing:Facing}}|undefined{\n  if(atStairWindow(p))return {target:'github',arrival:{arrival:STAIR_WINDOW.arrival,facing:'down'}};\n  if(atCardWindow(p))return {target:'street',arrival:{arrival:STAIR_WINDOW.landing,facing:'down'}};\n}\n\n/** First real doorway on a shortest route, also used by security and the cat. */\nexport function hallLinkToward(from: HallId, target: HallId): HallLink | undefined {\n  const queue = hallLinks(from).map(first => ({ hall: first.target, first }));\n  const seen = new Set<HallId>([from]);\n  for (let i = 0; i < queue.length; i++) {\n    const step = queue[i];\n    if (step.hall === target) return step.first;\n    if (seen.has(step.hall)) continue;\n    seen.add(step.hall);\n    for (const link of hallLinks(step.hall)) if (!seen.has(link.target)) queue.push({ hall: link.target, first: step.first });\n  }\n}\n\nexport function hallLinkAt(p: { x: number; y: number; hall: string }): HallLink | undefined {\n  if (!Object.hasOwn(HALLS, p.hall)) return;\n  return hallLinks(p.hall as HallId).find(({ door }) => p.x >= door.left && p.x <= door.right && p.y >= door.top && p.y <= door.bottom);\n"
+        },
+        {
+          "from": "export const inHallDoor = (p: {x:number;y:number;hall:string}) => {\n  return Boolean(hallLinkAt(p));\n};\nexport const otherHall = (hall:string): HallId => hall==='arcade'||hall==='github'?'tables':'arcade';\nexport const activityHall = (id: string): HallId => id === 'piano' ? 'arcade' : ['durak','transfer-durak','crazy-eights'].includes(id) ? 'github' : 'tables';\nexport const hallObstacles = (hall?: string): Obstacle[] => hall === 'arcade' ? ARCADE_OBSTACLES : hall === 'tables' ? TABLE_OBSTACLES : hall === 'github' ? GITHUB_OBSTACLES : ROOM_OBSTACLES;\nconst GITHUB_OBSTACLES = [...clubObstacles('github'), ...cabinetsInHall('github').map(cabinetBounds), ACTIVITIES.durak.bounds, ACTIVITIES['transfer-durak'].bounds, ACTIVITIES['crazy-eights'].bounds];\nconst ARCADE_OBSTACLES = [\n  ...clubObstacles('arcade'),\n",
+          "to": "export const inHallDoor = (p: {x:number;y:number;hall:string}) => {\n  return Boolean(hallLinkAt(p));\n};\nexport const otherHall = (hall:string): HallId => hall==='toilet'?'roof':hall==='roof'?'street':hall==='arcade'||hall==='github'?'tables':'arcade';\nexport const activityHall = (id: string): HallId => id === 'piano' ? 'arcade' : ['durak','transfer-durak','crazy-eights'].includes(id) ? 'github' : 'tables';\nexport const hallObstacles = (hall?: string): Obstacle[] => hall === 'toilet' ? TOILET_OBSTACLES : hall === 'roof' ? ROOF_OBSTACLES : hall === 'street' ? STREET_OBSTACLES : hall === 'arcade' ? ARCADE_OBSTACLES : hall === 'tables' ? TABLE_OBSTACLES : hall === 'github' ? GITHUB_OBSTACLES : ROOM_OBSTACLES;\nconst GITHUB_OBSTACLES = [...clubObstacles('github'), ...cabinetsInHall('github').map(cabinetBounds), ACTIVITIES.durak.bounds, ACTIVITIES['transfer-durak'].bounds, ACTIVITIES['crazy-eights'].bounds];\nconst ARCADE_OBSTACLES = [\n  ...clubObstacles('arcade'),\n"
+        },
+        {
+          "from": "] as const;\nexport const atBar = (p: { x: number; y: number }) => p.x >= BAR_SERVICE.x && p.x <= BAR_SERVICE.x+BAR_SERVICE.w && p.y >= BAR_SERVICE.y && p.y <= BAR_SERVICE.y+BAR_SERVICE.h;\nexport type PlayerAction = 'idle' | 'sit' | 'drink';\nexport type PlayerView = { security?: string; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; inputSeq: number };\nexport type ChatMessage = { id: string; senderId: string; name: string; text: string; time: number; system?: boolean; requestId?: string };\nexport type NetworkCommands = { recover?: () => Promise<boolean>; elevator?: (target: HallId) => Promise<boolean>; cat?: (action: CatAction) => void; inputs: (inputs: MovementInput[]) => void; move: (x: number, y: number) => void; target: (x: number, y: number) => void; stop: () => void; sit: (seat: string) => void; stand: () => void; drink: (drink: string) => void; cabinetPlay?: (id: string) => Promise<boolean>; cabinetLeave?: () => void; cabinetReaction?: (id: string, reaction: GameReaction) => void };\n",
+          "to": "] as const;\nexport const atBar = (p: { x: number; y: number }) => p.x >= BAR_SERVICE.x && p.x <= BAR_SERVICE.x+BAR_SERVICE.w && p.y >= BAR_SERVICE.y && p.y <= BAR_SERVICE.y+BAR_SERVICE.h;\nexport type PlayerAction = 'idle' | 'sit' | 'drink';\nexport type PlayerView = { stairStep?: number;stairDirection?:number; security?: string; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; inputSeq: number };\nexport type ChatMessage = { id: string; senderId: string; name: string; text: string; time: number; system?: boolean; requestId?: string };\nexport type NetworkCommands = { recover?: () => Promise<boolean>; stairWindow?: () => void; elevator?: (target: HallId) => Promise<boolean>; cat?: (action: CatAction) => void; inputs: (inputs: MovementInput[]) => void; move: (x: number, y: number) => void; target: (x: number, y: number) => void; stop: () => void; sit: (seat: string) => void; stand: () => void; drink: (drink: string) => void; cabinetPlay?: (id: string) => Promise<boolean>; cabinetLeave?: () => void; cabinetReaction?: (id: string, reaction: GameReaction) => void };\n"
+        },
+        {
+          "from": "import { CABINETS, cabinetsInHall, cabinetBounds } from './cabinets';\nimport type { GameReaction } from './cabinetSeating';\nimport type { CatAction } from './cat';\nimport { CAT_CARE } from './catCare';\nimport { STREET, STREET_DOOR, CASINO_EXIT, STREET_OBSTACLES } from './street';\nimport { ROOF, ROOF_OBSTACLES, ROOF_STAIRS, ROOF_STAIR_RETURN, STREET_ROOF_STAIRS } from './rooftop';\n",
+          "to": "import { CABINETS, cabinetsInHall, cabinetBounds } from './cabinets';\nimport type { GameReaction } from './cabinetSeating';\nimport type { CatAction } from './cat';\nimport type { MiraAttention } from './miraRoutine';\nimport { CAT_CARE } from './catCare';\nimport { STREET, STREET_DOOR, CASINO_EXIT, STREET_OBSTACLES } from './street';\nimport { ROOF, ROOF_OBSTACLES, ROOF_STAIRS, ROOF_STAIR_RETURN, STREET_ROOF_STAIRS } from './rooftop';\n"
+        },
+        {
+          "from": "export type PlayerAction = 'idle' | 'sit' | 'drink';\nexport type PlayerView = { stairStep?: number;stairDirection?:number; security?: string; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; inputSeq: number };\nexport type ChatMessage = { id: string; senderId: string; name: string; text: string; time: number; system?: boolean; requestId?: string };\nexport type NetworkCommands = { recover?: () => Promise<boolean>; stairWindow?: () => void; elevator?: (target: HallId) => Promise<boolean>; cat?: (action: CatAction) => void; inputs: (inputs: MovementInput[]) => void; move: (x: number, y: number) => void; target: (x: number, y: number) => void; stop: () => void; sit: (seat: string) => void; stand: () => void; drink: (drink: string) => void; cabinetPlay?: (id: string) => Promise<boolean>; cabinetLeave?: () => void; cabinetReaction?: (id: string, reaction: GameReaction) => void };\n",
+          "to": "export type PlayerAction = 'idle' | 'sit' | 'drink';\nexport type PlayerView = { stairStep?: number;stairDirection?:number; security?: string; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; inputSeq: number };\nexport type ChatMessage = { id: string; senderId: string; name: string; text: string; time: number; system?: boolean; requestId?: string };\nexport type NetworkCommands = { miraAttention?: (phase: MiraAttention) => void; recover?: () => Promise<boolean>; stairWindow?: () => void; elevator?: (target: HallId) => Promise<boolean>; cat?: (action: CatAction) => void; inputs: (inputs: MovementInput[]) => void; move: (x: number, y: number) => void; target: (x: number, y: number) => void; stop: () => void; sit: (seat: string) => void; stand: () => void; drink: (drink: string) => void; cabinetPlay?: (id: string) => Promise<boolean>; cabinetLeave?: () => void; cabinetReaction?: (id: string, reaction: GameReaction) => void };\n"
+        },
+        {
+          "from": "import { CAT_CARE } from './catCare';\nimport { STREET, STREET_DOOR, CASINO_EXIT, STREET_OBSTACLES } from './street';\nimport { ROOF, ROOF_OBSTACLES, ROOF_STAIRS, ROOF_STAIR_RETURN, STREET_ROOF_STAIRS } from './rooftop';\nimport { TOILET,TOILET_OBSTACLES,ROOF_TOILET,TOILET_WINDOW } from './toilet';\nimport {STAIR_WINDOW,atStairWindow,atCardWindow} from './stairWindow';\nexport const PLAYER_SPEED = 155;\nexport const PLAYER_SPRINT_SPEED = PLAYER_SPEED * 1.75;\n",
+          "to": "import { CAT_CARE } from './catCare';\nimport { STREET, STREET_DOOR, CASINO_EXIT, STREET_OBSTACLES } from './street';\nimport { ROOF, ROOF_OBSTACLES, ROOF_STAIRS, ROOF_STAIR_RETURN, STREET_ROOF_STAIRS } from './rooftop';\nimport { TOILET,TOILET_OBSTACLES,ROOF_TOILET,TOILET_WINDOW,TOILET_HALL_DOOR,CARD_TOILET_DOOR } from './toilet';\nimport {STAIR_WINDOW,atStairWindow,atCardWindow} from './stairWindow';\nexport const PLAYER_SPEED = 155;\nexport const PLAYER_SPRINT_SPEED = PLAYER_SPEED * 1.75;\n"
+        },
+        {
+          "from": "} as const;\nexport type HallDoor = typeof HALL_DOORS[HallId];\nexport const GITHUB_ROOM_DOOR = { entry: { x: 800, y: 240 }, arrival: { x: 800, y: 290 }, facing: 'down', click: { x: 800, y: 107 }, left: 760, right: 840, top: 225, bottom: 247 } as const;\nexport type ConnectedHallDoor = HallDoor | typeof GITHUB_ROOM_DOOR | typeof CASINO_EXIT | typeof STREET_ROOF_STAIRS | typeof ROOF_TOILET;\nexport type HallLink = { target: HallId; door: ConnectedHallDoor; arrival: ConnectedHallDoor };\nexport function hallLinks(hall: HallId): HallLink[] {\n  if (hall === 'roof') return [{ target: 'street', door: ROOF_STAIRS, arrival: STREET_ROOF_STAIRS },{target:'toilet',door:ROOF_TOILET,arrival:TOILET_WINDOW}];\n  if (hall === 'toilet') return [{target:'roof',door:TOILET_WINDOW,arrival:ROOF_TOILET}];\n  if (hall === 'street') return [\n    { target: 'arcade', door: STREET_DOOR, arrival: CASINO_EXIT },\n    { target: 'roof', door: STREET_ROOF_STAIRS, arrival: ROOF_STAIRS },\n",
+          "to": "} as const;\nexport type HallDoor = typeof HALL_DOORS[HallId];\nexport const GITHUB_ROOM_DOOR = { entry: { x: 800, y: 240 }, arrival: { x: 800, y: 290 }, facing: 'down', click: { x: 800, y: 107 }, left: 760, right: 840, top: 225, bottom: 247 } as const;\nexport type ConnectedHallDoor = HallDoor | typeof GITHUB_ROOM_DOOR | typeof CASINO_EXIT | typeof STREET_ROOF_STAIRS | typeof ROOF_TOILET | typeof TOILET_HALL_DOOR | typeof CARD_TOILET_DOOR;\nexport type HallLink = { target: HallId; door: ConnectedHallDoor; arrival: ConnectedHallDoor };\nexport function hallLinks(hall: HallId): HallLink[] {\n  if (hall === 'roof') return [{ target: 'street', door: ROOF_STAIRS, arrival: STREET_ROOF_STAIRS },{target:'toilet',door:ROOF_TOILET,arrival:TOILET_WINDOW}];\n  if (hall === 'toilet') return [{target:'roof',door:TOILET_WINDOW,arrival:ROOF_TOILET},{target:'github',door:TOILET_HALL_DOOR,arrival:CARD_TOILET_DOOR}];\n  if (hall === 'street') return [\n    { target: 'arcade', door: STREET_DOOR, arrival: CASINO_EXIT },\n    { target: 'roof', door: STREET_ROOF_STAIRS, arrival: ROOF_STAIRS },\n"
+        },
+        {
+          "from": "    { target: 'tables', door: HALL_DOORS.arcade, arrival: HALL_DOORS.tables },\n    { target: 'street', door: CASINO_EXIT, arrival: STREET_DOOR },\n  ];\n  if (hall === 'github') return [{ target: 'tables', door: HALL_DOORS.github, arrival: GITHUB_ROOM_DOOR }];\n  return [\n    { target: 'arcade', door: HALL_DOORS.tables, arrival: HALL_DOORS.arcade },\n    { target: 'github', door: GITHUB_ROOM_DOOR, arrival: HALL_DOORS.github },\n",
+          "to": "    { target: 'tables', door: HALL_DOORS.arcade, arrival: HALL_DOORS.tables },\n    { target: 'street', door: CASINO_EXIT, arrival: STREET_DOOR },\n  ];\n  if (hall === 'github') return [{ target: 'tables', door: HALL_DOORS.github, arrival: GITHUB_ROOM_DOOR },{target:'toilet',door:CARD_TOILET_DOOR,arrival:TOILET_HALL_DOOR}];\n  return [\n    { target: 'arcade', door: HALL_DOORS.tables, arrival: HALL_DOORS.arcade },\n    { target: 'github', door: GITHUB_ROOM_DOOR, arrival: HALL_DOORS.github },\n"
+        }
+      ]
+    },
+    "server/bartender.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "server/bartender.ts",
+      "baseSha256": "fed387ed0d6b9da378c976f306ab13f13201e93ae906ece3bdfab3e183cb8e0b",
+      "sha256": "d669db795f60d965c0ca5617b54661fc15407a83800fd47a246827317920d63f",
+      "patches": [
+        {
+          "from": "import { MiraRoutine } from '../src/shared/miraRoutine';\nimport { type LobbyState } from './state';\n\nexport class Bartender {\n  private routine = new MiraRoutine();\n  constructor(private state: LobbyState) { Object.assign(state.mira, this.routine.state); }\n  tick(dt: number) {\n    const serving = [...this.state.players.values()].some(p => p.connected && p.hall === 'arcade' && p.action === 'drink');\n    const chatting = [...this.state.guards.values()].some(guard => guard.hall === 'arcade' && guard.phase === 'chat');\n    this.routine.tick(dt, serving, chatting);\n    Object.assign(this.state.mira, this.routine.state);\n  }\n}\n",
+          "to": "import { MiraRoutine, type MiraAttention } from '../src/shared/miraRoutine';\nimport { atBar } from '../src/shared/world';\nimport { type LobbyState } from './state';\n\nexport class Bartender {\n  private routine = new MiraRoutine();\n  private attention = new Map<string,{phase:MiraAttention;expires:number}>();\n  constructor(private state: LobbyState) { Object.assign(state.mira, this.routine.state); }\n  attend(id:string,value:unknown,now=Date.now()) {\n    const phase=(value as {phase?:unknown}|null)?.phase;\n    if (phase==='closed') {this.attention.delete(id);return;}\n    if (phase!=='greet'&&phase!=='listen'&&phase!=='speak') return;\n    const p=this.state.players.get(id);\n    if(!p?.connected||p.hall!=='arcade'||p.security||p.playing||!atBar(p)) {this.attention.delete(id);return;}\n    this.attention.set(id,{phase,expires:now+5000});\n  }\n  forget(id:string) {this.attention.delete(id);}\n  tick(dt: number) {\n    const serving = [...this.state.players.values()].some(p => p.connected && p.hall === 'arcade' && p.action === 'drink');\n    const chatting = [...this.state.guards.values()].some(guard => guard.hall === 'arcade' && guard.phase === 'chat');\n    for(const [id,entry] of this.attention) {\n      const p=this.state.players.get(id);\n      if(entry.expires<Date.now()||!p?.connected||p.hall!=='arcade'||p.security||p.playing||!atBar(p))this.attention.delete(id);\n    }\n    const phases=[...this.attention.values()].map(entry=>entry.phase);\n    const attention:MiraAttention=phases.includes('speak')?'speak':phases.includes('greet')?'greet':phases.includes('listen')?'listen':'closed';\n    this.routine.tick(dt, serving, chatting,attention);\n    Object.assign(this.state.mira, this.routine.state);\n  }\n}\n"
+        }
+      ]
+    },
+    "server/payments/client.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "server/payments/client.ts",
+      "baseSha256": "3895dae49df2ca687941b79e6a65c6dfef3fcb5c1630d1ccd58fc3320569afbf",
+      "sha256": "3895dae49df2ca687941b79e6a65c6dfef3fcb5c1630d1ccd58fc3320569afbf"
+    },
+    "server/skinDescriptions.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/skinDescriptions.ts",
+      "baseSha256": "d71c371bb7d0a06df50fdebc77b10f984871bf7018518e3bcc9c27666ac82c41",
+      "sha256": "d71c371bb7d0a06df50fdebc77b10f984871bf7018518e3bcc9c27666ac82c41"
+    },
+    "src/shared/progression.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/progression.ts",
+      "baseSha256": "5f79d619753062d77aa5a6c15c93a06b9435da241da861bd0308eb6a6982184e",
+      "sha256": "5f79d619753062d77aa5a6c15c93a06b9435da241da861bd0308eb6a6982184e"
+    },
+    "src/shared/caribbeanTransport.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/caribbeanTransport.ts",
+      "baseSha256": "8623c8e5f4f7eef28997a3b9630873e86c4c7fa7f1ff1b790490802d9fd9415a",
+      "sha256": "8623c8e5f4f7eef28997a3b9630873e86c4c7fa7f1ff1b790490802d9fd9415a"
+    },
+    "src/i18n/en.ts": {
+      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
+      "path": "src/i18n/en.ts",
+      "baseSha256": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68",
+      "sha256": "e6a39483750df92467b584e98319ce679f2a3489669e4b0d3f64a2d7ba0a762c",
+      "patches": [
+        {
+          "from": "  \"Изменения звука сохраняются сразу.\": \"Sound settings are saved automatically.\",\n  \"Настройки\": \"Settings\",\n  \"Открыть настройки\": \"Open settings\",\n  \".profile [aria-label=\\\"Настройки игрока\\\"]\": \".profile [aria-label=\\\"Player settings\\\"]\",\n",
+          "to": "  \"Изменения звука сохраняются сразу.\": \"Sound settings are saved automatically.\",\n  \"Настройки\": \"Settings\",\n  \"Профиль и настройки\": \"Profile and settings\",\n  \"Открыть настройки\": \"Open settings\",\n  \".profile [aria-label=\\\"Настройки игрока\\\"]\": \".profile [aria-label=\\\"Player settings\\\"]\",\n"
+        },
+        {
+          "from": "\"Ещё один толчок, и на выход. 9/10.\": \"One more bump and you are out. 9/10.\"",
+          "to": "\"Ещё один толчок, и на выход.\": \"One more bump and you are out.\""
+        },
+        {
+          "from": "Кнопка «Игры» открывает список текущего этажа.\": \"Floor 1: slots and casino games. Floor 2: chess, pool and air hockey. Floor 3: card tables with dealers. Use the glowing stairs or the floor buttons at the top",
+          "to": "Лифт рядом с лестницей позволяет сразу выбрать любой этаж. Кнопка «Игры» открывает список текущего этажа.\": \"Floor 1: slots and casino games. Floor 2: chess, pool and air hockey. Floor 3: card tables with dealers. Use the glowing stairs or the floor buttons at the top. The elevator beside the stairs takes you directly to any floor"
+        },
+        {
+          "from": "ng> = {\n  ...pro",
+          "to": "ng> = {\n  'ЛИФТ': 'ELEVATOR',\n  'Лифт': 'Elevator',\n  'Выйти из лифта': 'Leave the elevator',\n  'Подойти к лифту': 'Walk to the elevator',\n  'Выбери этаж': 'Choose a floor',\n  'Этажи': 'Floors',\n  'Ты здесь': 'You are here',\n  'Можно сразу на любой этаж': 'Go directly to any floor',\n  'Поездка без ожидания других игроков': 'Travel without waiting for other players',\n  'Двери закрываются': 'Doors closing',\n  'Едем на этаж {0}': 'Going to floor {0}',\n  'Этаж {0}: {1}': 'Floor {0}: {1}',\n  'Поездка не подтверждена. Попробуй ещё раз.': 'Travel was not confirmed. Please try again.',\n  'Не удалось подтвердить поездку. Проверь подключение и попробуй ещё раз.': 'Travel could not be confirmed. Check your connection and try again.',\n  'Подойди к лифту и заверши текущее занятие.': 'Walk to the elevator and finish your current activity.',\n  ...pro"
+        },
+        {
+          "from": "export const english: Record<string, string> = {\n",
+          "to": "export const english: Record<string, string> = {\n  'Чат': 'Chat',\n  'Демо': 'Demo',\n  'Открыть чат': 'Open chat',\n  'Закрыть чат': 'Close chat',\n  'Свернуть чат': 'Collapse chat',\n"
+        },
+        {
+          "from": "onds.\",\n  \"Некор",
+          "to": "onds.\",\n  \"Этот аккаунт уже находится в зале. Закрой другую вкладку и попробуй снова.\": \"This account is already in the hall. Close the other tab and try again.\",\n  \"Некор"
+        },
+        {
+          "from": "\n};\n",
+          "to": "\n  'Галактический реактор':'Star Spin',\n};\n"
+        }
+      ]
+    },
+    "server/ambientGuests.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/ambientGuests.ts",
+      "baseSha256": "34aeb118f49617650e15ecd82db008f5fbf084a0339f92afb1aa1d6ea2c827a5",
+      "sha256": "34aeb118f49617650e15ecd82db008f5fbf084a0339f92afb1aa1d6ea2c827a5"
+    },
+    "server/demoCasino.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "server/demoCasino.ts",
+      "baseSha256": "8cd914d9ca5f78282deae590f1f9f440f3b4fb384e503e9a526bbc2d61f51c9a",
+      "sha256": "8cd914d9ca5f78282deae590f1f9f440f3b4fb384e503e9a526bbc2d61f51c9a"
+    },
+    "src/shared/intoxication.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/intoxication.ts",
+      "baseSha256": "742b40f26c4efe392d9a76895e9287a06c877aeecc5cbbc5d2419e7ff9689e95",
+      "sha256": "742b40f26c4efe392d9a76895e9287a06c877aeecc5cbbc5d2419e7ff9689e95"
+    },
+    "server/finance/pg-ledger-schema.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/finance/pg-ledger-schema.ts",
+      "baseSha256": "5e962ec09ceb66fdc01713682461d0c4111377656bcf7621908c862606b1db90",
+      "sha256": "5e962ec09ceb66fdc01713682461d0c4111377656bcf7621908c862606b1db90"
+    },
+    "src/shared/neopolis.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/neopolis.ts",
+      "baseSha256": "2ec8799c72f2038edafcd1f7d6f3031b4866f07f2ecd334728ae77bdb3823488",
+      "sha256": "2ec8799c72f2038edafcd1f7d6f3031b4866f07f2ecd334728ae77bdb3823488"
+    },
+    "src/shared/nilePlay.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/nilePlay.ts",
+      "baseSha256": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6",
+      "sha256": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6"
+    },
+    "src/shared/gameCore.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/gameCore.ts",
+      "baseSha256": "3e59b987bd47e61137af39aace7717bc7490e3dabf52193de8668fbcca5ca737",
+      "sha256": "3e59b987bd47e61137af39aace7717bc7490e3dabf52193de8668fbcca5ca737"
+    },
+    "src/shared/roundPrecision.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/roundPrecision.ts",
+      "baseSha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
+      "sha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8"
+    },
+    "server/cat.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/cat.ts",
+      "baseSha256": "ba39b45c7c185d39402fafa574413f32138305d1be9ea60e806193be35b54153",
+      "sha256": "ba39b45c7c185d39402fafa574413f32138305d1be9ea60e806193be35b54153"
+    },
+    "src/i18n/volcanicPlinkoEn.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/i18n/volcanicPlinkoEn.ts",
+      "baseSha256": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8",
+      "sha256": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8"
+    },
+    "server/payments/sandbox.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/payments/sandbox.ts",
+      "baseSha256": "36eff26f3804d4c45fbab9d2b76c960a04e5805ecfbec71c5b9ba2af61f32fb9",
+      "sha256": "36eff26f3804d4c45fbab9d2b76c960a04e5805ecfbec71c5b9ba2af61f32fb9"
+    },
+    "src/shared/forestHeart.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/forestHeart.ts",
+      "baseSha256": "1ada448ed03adb04bfb510f489bed9703a07fab982e063a4e7068bbbbf71272b",
+      "sha256": "1ada448ed03adb04bfb510f489bed9703a07fab982e063a4e7068bbbbf71272b"
+    },
+    "src/shared/skinAssetUrl.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/skinAssetUrl.ts",
+      "baseSha256": "b683e9a7ea2b7cb39b295c73d5a73b0feaee25ec825e6c1c2cf5d8348d4609c4",
+      "sha256": "b683e9a7ea2b7cb39b295c73d5a73b0feaee25ec825e6c1c2cf5d8348d4609c4"
+    },
+    "src/shared/usdtWallet.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/usdtWallet.ts",
+      "baseSha256": "23b523bb24b84dcdbda636f1b6bd940e3072a5069b9ba8c44c71da29129c484a",
+      "sha256": "23b523bb24b84dcdbda636f1b6bd940e3072a5069b9ba8c44c71da29129c484a"
+    },
+    "src/i18n/progressionEn.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/i18n/progressionEn.ts",
+      "baseSha256": "66c68ac05b3b362c4ef1dae60afaeb1c484d6ada0887adefd9954a4de12c1ba4",
+      "sha256": "66c68ac05b3b362c4ef1dae60afaeb1c484d6ada0887adefd9954a4de12c1ba4"
+    },
+    "src/shared/dracona.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/dracona.ts",
+      "baseSha256": "ee182b2547a155c80978ebbbabcc28c9dd2fd88224a7015eb9d03973132e0137",
+      "sha256": "ee182b2547a155c80978ebbbabcc28c9dd2fd88224a7015eb9d03973132e0137"
+    },
+    "server/payments/sandbox-provider.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/payments/sandbox-provider.ts",
+      "baseSha256": "49c87ee04aad4424b4b7714d8a5f992c2c16c3d7f3ed577f40251baa7555fb8d",
+      "sha256": "49c87ee04aad4424b4b7714d8a5f992c2c16c3d7f3ed577f40251baa7555fb8d"
+    },
+    "server/flagTote.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/flagTote.ts",
+      "baseSha256": "3484afadaa02475db78d57dc540e405e87412063eed2b35bb7ff1c81ec891707",
+      "sha256": "3484afadaa02475db78d57dc540e405e87412063eed2b35bb7ff1c81ec891707"
+    },
+    "src/shared/rewardSpinCatalog.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/rewardSpinCatalog.ts",
+      "baseSha256": "df633494f99d6fcf81b5c8a0aa87ed69e8fd3d1cb907617007124bbf8ead6429",
+      "sha256": "df633494f99d6fcf81b5c8a0aa87ed69e8fd3d1cb907617007124bbf8ead6429"
+    },
+    "src/shared/cardTables.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/cardTables.ts",
+      "baseSha256": "12197eabb008c9166bfedc0ddbb6bce5a1023090faf1c71bc56960418d00f6ab",
+      "sha256": "12197eabb008c9166bfedc0ddbb6bce5a1023090faf1c71bc56960418d00f6ab"
+    },
+    "server/chatSpam.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/chatSpam.ts",
+      "baseSha256": "9017bd9b11a7efbe45bade2af74bc1b57e01d9441e8622081061c63a01f858b0",
+      "sha256": "9017bd9b11a7efbe45bade2af74bc1b57e01d9441e8622081061c63a01f858b0"
+    },
+    "src/shared/crLeo.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/crLeo.ts",
+      "baseSha256": "a4ca6775d722c6c0c2968544086100422e9d77455225e53a108b02c0132f198c",
+      "sha256": "a4ca6775d722c6c0c2968544086100422e9d77455225e53a108b02c0132f198c"
+    },
+    "src/shared/demoWallet.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/demoWallet.ts",
+      "baseSha256": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
+      "sha256": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef"
+    },
+    "src/shared/clubLayout.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/clubLayout.ts",
+      "baseSha256": "6df6051ddd013821d78193622fa7c8bc8b765bc8f971a2d30eeb462d0cc86414",
+      "sha256": "a82d184cca7e000476040f3b34be40f24933b7788d09e5f61df91a511e404c3f",
+      "patches": [
+        {
+          "from": "// The collection now shares the main hall without a distant gateway.\nexport const LUELON_NEW_ZONE_OBSTACLES: Obstacle[] = [];\nexport const CLUB_ZONES: Record<HallId, ClubZone[]> = {\n  arcade: [\n    {name:translateText('БАР МИРЫ'),x:100,y:285,w:350,h:360,color:0x352b38},\n    {name:translateText('МУЗЫКАЛЬНЫЙ САЛОН'),x:620,y:285,w:400,h:360,color:0x443042},\n",
+          "to": "// The collection now shares the main hall without a distant gateway.\nexport const LUELON_NEW_ZONE_OBSTACLES: Obstacle[] = [];\nexport const CLUB_ZONES: Record<HallId, ClubZone[]> = {\n  street: [],\n  roof: [],\n  toilet: [],\n  arcade: [\n    {name:translateText('БАР МИРЫ'),x:100,y:285,w:350,h:360,color:0x352b38},\n    {name:translateText('МУЗЫКАЛЬНЫЙ САЛОН'),x:620,y:285,w:400,h:360,color:0x443042},\n"
+        },
+        {
+          "from": "  roof: [],\n  toilet: [],\n  arcade: [\n    {name:translateText('БАР МИРЫ'),x:100,y:285,w:350,h:360,color:0x352b38},\n    {name:translateText('МУЗЫКАЛЬНЫЙ САЛОН'),x:620,y:285,w:400,h:360,color:0x443042},\n    LUELON_NEW_ZONE,\n    {name:translateText('ГОСТИНАЯ'),x:150,y:800,w:800,h:370,color:0x453141},\n",
+          "to": "  roof: [],\n  toilet: [],\n  arcade: [\n    {name:translateText('Роял Бар'),x:100,y:285,w:350,h:360,color:0x352b38},\n    {name:translateText('МУЗЫКАЛЬНЫЙ САЛОН'),x:620,y:285,w:400,h:360,color:0x443042},\n    LUELON_NEW_ZONE,\n    {name:translateText('ГОСТИНАЯ'),x:150,y:800,w:800,h:370,color:0x453141},\n"
+        }
+      ]
+    },
+    "server/chatQueue.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/chatQueue.ts",
+      "baseSha256": "3d8510afeeca31800cbd436f983973ca188744b68d33d982e9182940e8e5a573",
+      "sha256": "3d8510afeeca31800cbd436f983973ca188744b68d33d982e9182940e8e5a573"
+    },
+    "src/shared/furniture.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/furniture.ts",
+      "baseSha256": "dbbb212cc84b3c1c5b6bb41b144102e38b974e29a240bca524eedeb8f6f5d5da",
+      "sha256": "dbbb212cc84b3c1c5b6bb41b144102e38b974e29a240bca524eedeb8f6f5d5da"
+    },
+    "src/shared/casinoSessions.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/casinoSessions.ts",
+      "baseSha256": "002e31c3198d885571e78b3fdc714aeed6179cd269f5927de3ad0c23dacbb2dd",
+      "sha256": "002e31c3198d885571e78b3fdc714aeed6179cd269f5927de3ad0c23dacbb2dd"
+    },
+    "src/shared/afterglowWardrobe.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/afterglowWardrobe.ts",
+      "baseSha256": "6dace1ede72ee479115b5cbf2d1d512c9e8800fd315be407cea787377362dc1f",
+      "sha256": "6dace1ede72ee479115b5cbf2d1d512c9e8800fd315be407cea787377362dc1f"
+    },
+    "server/guardBumps.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/guardBumps.ts",
+      "baseSha256": "8f4cfed0c0b83a43f718058d2633ff9d8155207f40322d0d01a485af30b0c18c",
+      "sha256": "8f4cfed0c0b83a43f718058d2633ff9d8155207f40322d0d01a485af30b0c18c"
+    },
+    "server/games/core.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/core.ts",
+      "baseSha256": "e7120245e02b5777eb6aff660c5f1f154a8e0f6b14ae80fbfed09656c9c425b9",
+      "sha256": "e7120245e02b5777eb6aff660c5f1f154a8e0f6b14ae80fbfed09656c9c425b9"
+    },
+    "src/shared/memeOverload.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/memeOverload.ts",
+      "baseSha256": "3380fce5ee723cea9a07d8b098c933e0465300fcc19fa727ef30ccbf7303244b",
+      "sha256": "3380fce5ee723cea9a07d8b098c933e0465300fcc19fa727ef30ccbf7303244b"
+    },
+    "server/games/casinoSessions.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "server/games/casinoSessions.ts",
+      "baseSha256": "ffd0232b3a380a4a781cbdd943559e530cbdac5417740fdcf4f862c3fcf98d1f",
+      "sha256": "ffd0232b3a380a4a781cbdd943559e530cbdac5417740fdcf4f862c3fcf98d1f"
+    },
+    "src/shared/activities.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/activities.ts",
+      "baseSha256": "ef5c6a0cc74b005704682523742bb71f25f0fa83aa25eeabbdeb8cc556c7142b",
+      "sha256": "ef5c6a0cc74b005704682523742bb71f25f0fa83aa25eeabbdeb8cc556c7142b"
+    },
+    "src/shared/guardCollision.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/guardCollision.ts",
+      "baseSha256": "a050c55ac5d5e9ab9615635de1b64801343d9a9675c1cd1b23d7bc4e9b49a9f2",
+      "sha256": "a050c55ac5d5e9ab9615635de1b64801343d9a9675c1cd1b23d7bc4e9b49a9f2"
+    },
+    "src/shared/cabinets.ts": {
+      "commit": "60b13bb8dde910919057835ed056a98257b78857",
+      "path": "src/shared/cabinets.ts",
+      "baseSha256": "1c767cf6e980b290b7920bf63da365c50fcce574b1fcde5e4295596889d9e332",
+      "sha256": "1d3b9848ce47797d9ae4cee9e21c53095f95e910e2760fb61a450ebbf2f01c06",
+      "patches": [
+        {
+          "from": "import {JACKIE_GAME} from './jackieChan';\nimport { t as translateText, language } from '../i18n/index';\nexport type Cabinet = { id: string; name: string; subtitle: string; x: number; y: number; color: number; playable: boolean; hall?: 'arcade' | 'tables' | 'github'; demo?: boolean; wallet?: boolean; provider?: boolean; github?: boolean; defaultGameId?: string; collection?: CabinetCollection | 'luelon' };\n\nimport { PENALTY_GAME } from './crLeo';\nimport { CARIBBEAN_GAME } from './caribbeanTreasures';\nimport { BASE_EXPANSION_GAMES, EXPANSION_NAMES } from './casinoExpansion';\nimport { STUDIO_GAMES, STUDIO_INFO } from './studioGames';\nimport { CARD_GAME_IDS, CARD_GAME_NAMES, isCardGame, isRetiredCardGame, cardTableBounds } from './cardTables';\nimport type { Obstacle } from '../game/navigation';\nimport { LUELON_NEW_ZONE } from './clubLayout';\nimport {ARCADE_CABINET_SPECS, type CabinetCollection} from './arcadeCatalog';\nconst expansionPositions=BASE_EXPANSION_GAMES.map((_,i)=>i===0?[240,600]:i===1?[480,810]:i===10?[240,1180]:i===11?[480,1180]:[1200,1060]);\n// Shared positions keep rendering, collisions and server play status aligned.\nexport const CABINETS: Cabinet[] = [\n  { id: 'casinoapipro', name: 'Casino Api Pro', subtitle: translateText('14 казино-игр · Общий демобаланс'), x: 240, y: 267, color: 0x72e3ee, playable: true, provider: true },\n  { id: 'royal-fruits', name: 'Royal Fruits', subtitle: translateText('Три барабана · Одна линия'), x: 500, y: 267, color: 0xf5bc64, playable: true, wallet: true },\n  { id: 'royal-dice', name: 'Royal Dice', subtitle: translateText('Выбери число и шанс выигрыша'), x: 1200, y: 320, color: 0x75cbd9, playable: true, wallet: true },\n  { id: 'royal-limbo', name: 'Royal Limbo', subtitle: translateText('Задай свой множитель'), x: 1430, y: 320, color: 0xc6a0ed, playable: true, wallet: true },\n  { id: 'royal-mines', name: 'Royal Mines', subtitle: translateText('Открывай клетки · Забирай выигрыш'), x: 1660, y: 320, color: 0x7bcaa1, playable: true, wallet: true },\n  { id: 'royal-plinko', name: language === 'en' ? 'Veil of Night · Plinko' : 'Завеса ночи · Plinko', subtitle: language === 'en' ? 'Night magic · 12 rows · Three risks' : 'Магия ночи · 12 рядов · Три риска', x: 1890, y: 320, color: 0xeb91af, playable: true, wallet: true },\n  { id: 'royal-keno', name: 'Royal Keno', subtitle: translateText('Выбирай числа от 1 до 40'), x: 1890, y: 620, color: 0x9babec, playable: true, wallet: true },\n  { id: 'luelon', name: 'Luelon Play', subtitle: translateText('Каталог демоигр · Кредиты Luelon'), x: 780, y: 810, color: 0xd6aaef, playable: true, hall: 'arcade', demo: true },\n  { id: 'github-blackjack', name: translateText('Блэкджек'), subtitle: translateText('Карты · Дилер · 21'), x: 1200, y: 570, color: 0x79c9bb, playable: true, hall: 'arcade', github: true },\n  { id: 'github-poker', name: translateText('Покер'), subtitle: translateText('Холдем · Соперник за столом'), x: 1430, y: 570, color: 0xd6aaef, playable: true, hall: 'arcade', github: true },\n  { id: 'github-video-poker', name: translateText('Видеопокер'), subtitle: translateText('Пять карт · Удержание · Джокер'), x: 1660, y: 570, color: 0xf5bc64, playable: true, hall: 'arcade', github: true },\n  { id: 'github-baccarat', name: translateText('Баккара'), subtitle: translateText('Игрок · Банкир · Ничья'), x: 1200, y: 810, color: 0xeb91af, playable: true, hall: 'arcade', github: true },\n  { id: 'github-craps', name: 'Craps', subtitle: translateText('Две кости · Pass Line · Field'), x: 1430, y: 810, color: 0x75cbd9, playable: true, hall: 'arcade', github: true },\n  { id: 'github-hilo', name: 'Hi-Lo', subtitle: translateText('Выше или ниже · USDT · Nile'), x: 1660, y: 810, color: 0xe2c484, playable: true, hall: 'arcade', github: true },\n  ...BASE_EXPANSION_GAMES.map((id,i):Cabinet=>({id,name:id==='github-crash'?'LAST EXIT':EXPANSION_NAMES[id],subtitle:id==='github-crash'?(language==='en'?'Car chase · Take the exit':'Погоня · Успей уйти'):translateText('Общий тестовый кошелёк · Ставки и выплаты'),x:expansionPositions[i][0],y:expansionPositions[i][1],color:id==='github-crash'?0xd3b477:[0xe2c484,0x8ecba2,0xc6a0ed,0x75cbd9][i%4],playable:true,hall:'arcade',github:true})),\n];\n\nCABINETS.push({id:JACKIE_GAME,name:translateText('Гонконгский воин'),subtitle:translateText('Кунг-фу кино · Коллекция костюмов'),x:1560,y:1050,color:0xd9a356,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:PENALTY_GAME,name:'CR vs. Leo',subtitle:translateText('Серия ударов · Пенальти и штрафные'),x:1380,y:1050,color:0xdce6ca,playable:true,wallet:true,hall:'arcade'});\n\nconst leftCabinets=new Set(['casinoapipro','royal-fruits','luelon','github-diamonds','github-crash','github-deuces','github-sic-bo']);\nlet tableIndex=0;\nfor(const cabinet of CABINETS){if(leftCabinets.has(cabinet.id))continue;const i=tableIndex++;cabinet.x=1200+(i%5)*180;cabinet.y=[270,410,550,790,930,1070,1210][Math.floor(i/5)];}\n\n// The new wing has separate cabinets, leaving the original club routes intact.\nconst annexGames = [\n  { id:'variant-target-plinko', name:translateText('Плинко: мишень'), subtitle:translateText('Один шарик · Выбери зону приземления'), color:0x75cbd9 },\n  { id:'variant-triple-poker', name:translateText('Три карты: комбинация'), subtitle:translateText('Пара, флеш или стрит · Один расклад'), color:0xd6aaef },\n  { id:'variant-dice-streak', name:translateText('Кости: серия'), subtitle:translateText('Пять бросков · Собери серию'), color:0xf5bc64 },\n  { id:'variant-gem-collection', name:translateText('Самоцветы: коллекция'), subtitle:translateText('Выбери три цвета · Найди их среди пяти'), color:0x86d8b0 },\n  { id:'variant-double-mines', name:translateText('Мины: парный поиск'), subtitle:translateText('Открывай пары · Забирай выигрыш'), color:0x7bba95 },\n  { id:'variant-blackjack-target', name:translateText('21: тройной расклад'), subtitle:translateText('Три карты · Выбери сумму'), color:0xf3ca77 },\n];\nCABINETS.push(...annexGames.map((game,index):Cabinet=>({...game,x:2250+index%3*180,y:410+Math.floor(index/3)*520,playable:true,wallet:true,hall:'arcade'})));\n\nconst studioOrder = [...STUDIO_GAMES.filter(id=>id!=='studio-last-convoy'&&STUDIO_INFO[id].kind==='slot'),...STUDIO_GAMES.filter(id=>STUDIO_INFO[id].kind!=='slot')];\nconst studioRows = [300,470,640,980,1150];\nCABINETS.push(...studioOrder.map((id,index):Cabinet=>({id,name:id==='studio-velvet-reign'?'Velvet Reign':id==='studio-cosmic-escape'?'Cosmic Escape':id==='studio-caramel-carnival'?'Caramel Carnival':STUDIO_INFO[id].name,subtitle:id==='studio-caramel-carnival'?translateText('8+ в любом месте · Билеты и фестиваль'):STUDIO_INFO[id].subtitle,x:id==='studio-velvet-reign'?LUELON_NEW_ZONE.velvet.x:id==='studio-cosmic-escape'?LUELON_NEW_ZONE.cosmic.x:id==='studio-caramel-carnival'?LUELON_NEW_ZONE.caramel.x:3000+index%7*180,y:id==='studio-velvet-reign'?LUELON_NEW_ZONE.velvet.y:id==='studio-cosmic-escape'?LUELON_NEW_ZONE.cosmic.y:id==='studio-caramel-carnival'?LUELON_NEW_ZONE.caramel.y:studioRows[Math.floor(index/7)],color:STUDIO_INFO[id].color,playable:true,wallet:true,hall:'arcade'})));\n\nCABINETS.push({id:'studio-last-convoy',name:translateText('Последний конвой'),subtitle:translateText('Каскады · Баррикады · Эвакуация'),x:4520,y:410,color:0x9ec6a0,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:'flag-battle',name:translateText('Флажочки'),subtitle:translateText('12 / 24 / 48 стран · Один победитель'),x:1380,y:1050,color:0x78e5bc,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:'studio-forest-heart',name:language==='en'?'Forest Heart':'Сердце леса',subtitle:language==='en'?'Living roots · One free turn · Four bonus pulses':'Живые корни · Один поворот · Четыре бонусных импульса',x:0,y:0,color:0x87d7bc,playable:true,wallet:true,hall:'arcade'});\n\n// Every card variation has its own table and dealer on the card floor.\nCABINETS.push(\n  {id:'variant-color',name:CARD_GAME_NAMES['variant-color'],subtitle:translateText('Угадай цвет · Собери серию'),x:0,y:0,color:0xe2c484,playable:true,wallet:true,hall:'github'},\n  {id:'variant-duel',name:CARD_GAME_NAMES['variant-duel'],subtitle:translateText('Две карты · Выбери расстояние между рангами'),x:0,y:0,color:0x8ecba2,playable:true,wallet:true,hall:'github'},\n  {id:'variant-war',name:CARD_GAME_NAMES['variant-war'],subtitle:translateText('Два фронта · Щит или атака'),x:0,y:0,color:0xc6a0ed,playable:true,wallet:true,hall:'github'},\n);\nconst cardRows = [340,540,740,1000,1200];\nCARD_GAME_IDS.forEach((id,index)=>{\n  const cabinet=CABINETS.find(item=>item.id===id)!;\n  cabinet.hall='github';cabinet.x=1120+index%7*460;cabinet.y=cardRows[Math.floor(index/7)];\n});\n\nfor (let index = CABINETS.length - 1; index >= 0; index--) {\n  if (isRetiredCardGame(CABINETS[index].id)) CABINETS.splice(index, 1);\n}\n\n// A collection entry uses the existing Royal seats and the shared wallet.\nCABINETS.push({id:'studio-wild-nudge',name:language==='en'?'Galactic Reactor':'Галактический реактор',subtitle:language==='en'?'Dovetail WILD · Reactor overdrive · Eight free spins':'Доводка WILD · Перегрузка реактора · Восемь бесплатных спинов',x:0,y:0,color:0x83edff,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:'studio-flooded-temple',name:language==='en'?'Flooded Temple':'Затопленный храм',subtitle:language==='en'?'5 × 3 · Cascades · Free spins':'5 × 3 · Каскады · Бесплатные вращения',x:0,y:0,color:0x58d2cd,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:CARIBBEAN_GAME,name:'Карибские сокровища',subtitle:'Гигантские символы · Капитанский залп · Две тактики',x:0,y:0,color:0xd7a04a,playable:true,wallet:true,hall:'arcade'});\n\n// Keep game descriptions available even when their game has no dedicated physical seat.\nCABINETS.push({id:'royal-roulette',name:translateText('Рулетка'),subtitle:translateText('Европейская рулетка · Одно зеро'),x:0,y:0,color:0xd7b472,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:'royal-coins',name:'Royal Coins',subtitle:translateText('Три барабана · Одна линия'),x:0,y:0,color:0xd7b472,playable:true,wallet:true,hall:'arcade'});\nexport const GAME_CABINETS: readonly Cabinet[] = CABINETS.map(c=>({...c}));\nfor (let index = CABINETS.length - 1; index >= 0; index--) {\n  if ((CABINETS[index].hall ?? 'arcade') === 'arcade') CABINETS.splice(index, 1);\n}\nconst collectionNames = {royal:'Royal',github:'GitHub',casinoapipro:'Casino API PRO',luelon:'Luelon'};\nconst collectionCounts = {royal:0,github:0,casinoapipro:0,luelon:0};\nfor (const spec of ARCADE_CABINET_SPECS) {\n  const definition=GAME_CABINETS.find(c=>c.id===(spec.defaultGameId??spec.id))!;\n  const number=++collectionCounts[spec.collection];\n  CABINETS.push({...definition,...spec,hall:'arcade',playable:true,\n    name:spec.collection==='luelon'?'Luelon Play':`${collectionNames[spec.collection]} ${String(number).padStart(2,'0')}`,\n    subtitle:spec.collection==='luelon'?translateText('Каталог демоигр · Кредиты Luelon'):translateText('Выбери игру в каталоге'),\n    demo:spec.collection==='luelon',provider:spec.collection==='casinoapipro',\n  });\n}\n\nexport const cabinetHall = (cabinet: Cabinet): 'arcade' | 'tables' | 'github' => cabinet.hall ?? 'arcade';\nexport const cabinetsInHall = (hall: string): Cabinet[] => CABINETS.filter(cabinet => cabinetHall(cabinet) === hall);\nexport const cabinetBounds = (cabinet: Cabinet): Obstacle => isCardGame(cabinet.id) ? cardTableBounds(cabinet) : {x:cabinet.x-47,y:cabinet.y-51,w:94,h:51};\n",
+          "to": "import {JACKIE_GAME} from './jackieChan';\nimport { t as translateText, language } from '../i18n/index';\nexport type Cabinet = { id: string; name: string; subtitle: string; x: number; y: number; color: number; playable: boolean; hall?: 'arcade' | 'tables' | 'github'; demo?: boolean; wallet?: boolean; provider?: boolean; github?: boolean; defaultGameId?: string; collection?: CabinetCollection | 'luelon' };\n\nimport { PENALTY_GAME } from './crLeo';\nimport { CARIBBEAN_GAME } from './caribbeanTreasures';\nimport { BASE_EXPANSION_GAMES, EXPANSION_NAMES } from './casinoExpansion';\nimport { STUDIO_GAMES, STUDIO_INFO } from './studioGames';\nimport { CARD_GAME_IDS, CARD_GAME_NAMES, isCardGame, isRetiredCardGame, cardTableBounds } from './cardTables';\nimport type { Obstacle } from '../game/navigation';\nimport { LUELON_NEW_ZONE } from './clubLayout';\nimport {ARCADE_CABINET_SPECS, type CabinetCollection} from './arcadeCatalog';\nconst expansionPositions=BASE_EXPANSION_GAMES.map((_,i)=>i===0?[240,600]:i===1?[480,810]:i===10?[240,1180]:i===11?[480,1180]:[1200,1060]);\n// Shared positions keep rendering, collisions and server play status aligned.\nexport const CABINETS: Cabinet[] = [\n  { id: 'casinoapipro', name: 'Casino Api Pro', subtitle: translateText('14 казино-игр · Общий демобаланс'), x: 240, y: 267, color: 0x72e3ee, playable: true, provider: true },\n  { id: 'royal-fruits', name: 'Royal Fruits', subtitle: translateText('Три барабана · Одна линия'), x: 500, y: 267, color: 0xf5bc64, playable: true, wallet: true },\n  { id: 'royal-dice', name: 'Royal Dice', subtitle: translateText('Выбери число и шанс выигрыша'), x: 1200, y: 320, color: 0x75cbd9, playable: true, wallet: true },\n  { id: 'royal-limbo', name: 'Royal Limbo', subtitle: translateText('Задай свой множитель'), x: 1430, y: 320, color: 0xc6a0ed, playable: true, wallet: true },\n  { id: 'royal-mines', name: 'Royal Mines', subtitle: translateText('Открывай клетки · Забирай выигрыш'), x: 1660, y: 320, color: 0x7bcaa1, playable: true, wallet: true },\n  { id: 'royal-plinko', name: language === 'en' ? 'Veil of Night · Plinko' : 'Завеса ночи · Plinko', subtitle: language === 'en' ? 'Night magic · 12 rows · Three risks' : 'Магия ночи · 12 рядов · Три риска', x: 1890, y: 320, color: 0xeb91af, playable: true, wallet: true },\n  { id: 'royal-keno', name: 'Royal Keno', subtitle: translateText('Выбирай числа от 1 до 40'), x: 1890, y: 620, color: 0x9babec, playable: true, wallet: true },\n  { id: 'luelon', name: 'Luelon Play', subtitle: translateText('Каталог демоигр · Кредиты Luelon'), x: 780, y: 810, color: 0xd6aaef, playable: true, hall: 'arcade', demo: true },\n  { id: 'github-blackjack', name: translateText('Блэкджек'), subtitle: translateText('Карты · Дилер · 21'), x: 1200, y: 570, color: 0x79c9bb, playable: true, hall: 'arcade', github: true },\n  { id: 'github-poker', name: translateText('Покер'), subtitle: translateText('Холдем · Соперник за столом'), x: 1430, y: 570, color: 0xd6aaef, playable: true, hall: 'arcade', github: true },\n  { id: 'github-video-poker', name: translateText('Видеопокер'), subtitle: translateText('Пять карт · Удержание · Джокер'), x: 1660, y: 570, color: 0xf5bc64, playable: true, hall: 'arcade', github: true },\n  { id: 'github-baccarat', name: translateText('Баккара'), subtitle: translateText('Игрок · Банкир · Ничья'), x: 1200, y: 810, color: 0xeb91af, playable: true, hall: 'arcade', github: true },\n  { id: 'github-craps', name: 'Craps', subtitle: translateText('Две кости · Pass Line · Field'), x: 1430, y: 810, color: 0x75cbd9, playable: true, hall: 'arcade', github: true },\n  { id: 'github-hilo', name: 'Hi-Lo', subtitle: translateText('Выше или ниже · USDT · Nile'), x: 1660, y: 810, color: 0xe2c484, playable: true, hall: 'arcade', github: true },\n  { id: 'github-tower', name: 'Dragon Tower', subtitle: translateText('Девять уровней · USDT · Nile'), x: 1890, y: 810, color: 0x8ecba2, playable: true, hall: 'arcade', github: true },\n  ...BASE_EXPANSION_GAMES.map((id,i):Cabinet=>({id,name:id==='github-crash'?'LAST EXIT':EXPANSION_NAMES[id],subtitle:id==='github-crash'?(language==='en'?'Car chase · Take the exit':'Погоня · Успей уйти'):translateText('Общий тестовый кошелёк · Ставки и выплаты'),x:expansionPositions[i][0],y:expansionPositions[i][1],color:id==='github-crash'?0xd3b477:[0xe2c484,0x8ecba2,0xc6a0ed,0x75cbd9][i%4],playable:true,hall:'arcade',github:true})),\n];\n\nCABINETS.push({id:JACKIE_GAME,name:translateText('Гонконгский воин'),subtitle:translateText('Кунг-фу кино · Коллекция костюмов'),x:1560,y:1050,color:0xd9a356,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:PENALTY_GAME,name:'CR vs. Leo',subtitle:translateText('Серия ударов · Пенальти и штрафные'),x:1380,y:1050,color:0xdce6ca,playable:true,wallet:true,hall:'arcade'});\n\nconst leftCabinets=new Set(['casinoapipro','royal-fruits','luelon','github-diamonds','github-crash','github-deuces','github-sic-bo']);\nlet tableIndex=0;\nfor(const cabinet of CABINETS){if(leftCabinets.has(cabinet.id))continue;const i=tableIndex++;cabinet.x=1200+(i%5)*180;cabinet.y=[270,410,550,790,930,1070,1210][Math.floor(i/5)];}\n\n// The new wing has separate cabinets, leaving the original club routes intact.\nconst annexGames = [\n  { id:'variant-target-plinko', name:translateText('Плинко: мишень'), subtitle:translateText('Один шарик · Выбери зону приземления'), color:0x75cbd9 },\n  { id:'variant-triple-poker', name:translateText('Три карты: комбинация'), subtitle:translateText('Пара, флеш или стрит · Один расклад'), color:0xd6aaef },\n  { id:'variant-dice-streak', name:translateText('Кости: серия'), subtitle:translateText('Пять бросков · Собери серию'), color:0xf5bc64 },\n  { id:'variant-gem-collection', name:translateText('Самоцветы: коллекция'), subtitle:translateText('Выбери три цвета · Найди их среди пяти'), color:0x86d8b0 },\n  { id:'variant-double-mines', name:translateText('Мины: парный поиск'), subtitle:translateText('Открывай пары · Забирай выигрыш'), color:0x7bba95 },\n  { id:'variant-blackjack-target', name:translateText('21: тройной расклад'), subtitle:translateText('Три карты · Выбери сумму'), color:0xf3ca77 },\n];\nCABINETS.push(...annexGames.map((game,index):Cabinet=>({...game,x:2250+index%3*180,y:410+Math.floor(index/3)*520,playable:true,wallet:true,hall:'arcade'})));\n\nconst studioOrder = [...STUDIO_GAMES.filter(id=>id!=='studio-last-convoy'&&STUDIO_INFO[id].kind==='slot'),...STUDIO_GAMES.filter(id=>STUDIO_INFO[id].kind!=='slot')];\nconst studioRows = [300,470,640,980,1150];\nCABINETS.push(...studioOrder.map((id,index):Cabinet=>({id,name:id==='studio-velvet-reign'?'Velvet Reign':id==='studio-cosmic-escape'?'Cosmic Escape':id==='studio-caramel-carnival'?'Caramel Carnival':STUDIO_INFO[id].name,subtitle:id==='studio-caramel-carnival'?translateText('8+ в любом месте · Билеты и фестиваль'):STUDIO_INFO[id].subtitle,x:id==='studio-velvet-reign'?LUELON_NEW_ZONE.velvet.x:id==='studio-cosmic-escape'?LUELON_NEW_ZONE.cosmic.x:id==='studio-caramel-carnival'?LUELON_NEW_ZONE.caramel.x:3000+index%7*180,y:id==='studio-velvet-reign'?LUELON_NEW_ZONE.velvet.y:id==='studio-cosmic-escape'?LUELON_NEW_ZONE.cosmic.y:id==='studio-caramel-carnival'?LUELON_NEW_ZONE.caramel.y:studioRows[Math.floor(index/7)],color:STUDIO_INFO[id].color,playable:true,wallet:true,hall:'arcade'})));\n\nCABINETS.push({id:'studio-last-convoy',name:translateText('Последний конвой'),subtitle:translateText('Каскады · Баррикады · Эвакуация'),x:4520,y:410,color:0x9ec6a0,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:'studio-forest-heart',name:language==='en'?'Forest Heart':'Сердце леса',subtitle:language==='en'?'Living roots · One free turn · Four bonus pulses':'Живые корни · Один поворот · Четыре бонусных импульса',x:0,y:0,color:0x87d7bc,playable:true,wallet:true,hall:'arcade'});\n\n// Every card variation has its own table and dealer on the card floor.\nCABINETS.push(\n  {id:'variant-color',name:CARD_GAME_NAMES['variant-color'],subtitle:translateText('Угадай цвет · Собери серию'),x:0,y:0,color:0xe2c484,playable:true,wallet:true,hall:'github'},\n  {id:'variant-duel',name:CARD_GAME_NAMES['variant-duel'],subtitle:translateText('Две карты · Выбери расстояние между рангами'),x:0,y:0,color:0x8ecba2,playable:true,wallet:true,hall:'github'},\n  {id:'variant-war',name:CARD_GAME_NAMES['variant-war'],subtitle:translateText('Два фронта · Щит или атака'),x:0,y:0,color:0xc6a0ed,playable:true,wallet:true,hall:'github'},\n);\nconst cardRows = [340,540,740,1000,1200];\nCARD_GAME_IDS.forEach((id,index)=>{\n  const cabinet=CABINETS.find(item=>item.id===id)!;\n  cabinet.hall='github';cabinet.x=1120+index%7*460;cabinet.y=cardRows[Math.floor(index/7)];\n});\n\nfor (let index = CABINETS.length - 1; index >= 0; index--) {\n  if (isRetiredCardGame(CABINETS[index].id)) CABINETS.splice(index, 1);\n}\n\n// A collection entry uses the existing Royal seats and the shared wallet.\nCABINETS.push({id:'studio-flooded-temple',name:language==='en'?'Flooded Temple':'Затопленный храм',subtitle:language==='en'?'5 × 3 · Cascades · Free spins':'5 × 3 · Каскады · Бесплатные вращения',x:0,y:0,color:0x58d2cd,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:CARIBBEAN_GAME,name:'Карибские сокровища',subtitle:'Гигантские символы · Капитанский залп · Две тактики',x:0,y:0,color:0xd7a04a,playable:true,wallet:true,hall:'arcade'});\n\n// Keep game descriptions available even when their game has no dedicated physical seat.\nCABINETS.push({id:'royal-roulette',name:translateText('Рулетка'),subtitle:translateText('Европейская рулетка · Одно зеро'),x:0,y:0,color:0xd7b472,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:'flag-battle',name:translateText('Флажочки'),subtitle:translateText('12 / 24 / 48 стран · Один победитель'),x:1380,y:1050,color:0x78e5bc,playable:true,wallet:true,hall:'arcade'});\nCABINETS.push({id:'royal-coins',name:'Royal Coins',subtitle:translateText('Три барабана · Одна линия'),x:0,y:0,color:0xd7b472,playable:true,wallet:true,hall:'arcade'});\nexport const GAME_CABINETS: readonly Cabinet[] = CABINETS.map(c=>({...c}));\nfor (let index = CABINETS.length - 1; index >= 0; index--) {\n  if ((CABINETS[index].hall ?? 'arcade') === 'arcade') CABINETS.splice(index, 1);\n}\nconst collectionNames = {royal:'Royal',github:'GitHub',casinoapipro:'Casino API PRO',luelon:'Luelon'};\nconst collectionCounts = {royal:0,github:0,casinoapipro:0,luelon:0};\nfor (const spec of ARCADE_CABINET_SPECS) {\n  const definition=GAME_CABINETS.find(c=>c.id===(spec.defaultGameId??spec.id))!;\n  const number=++collectionCounts[spec.collection];\n  CABINETS.push({...definition,...spec,hall:'arcade',playable:true,\n    name:spec.collection==='luelon'?'Luelon Play':`${collectionNames[spec.collection]} ${String(number).padStart(2,'0')}`,\n    subtitle:spec.collection==='luelon'?translateText('Каталог демоигр · Кредиты Luelon'):translateText('Выбери игру в каталоге'),\n    demo:spec.collection==='luelon',provider:spec.collection==='casinoapipro',\n  });\n}\n\nexport const cabinetHall = (cabinet: Cabinet): 'arcade' | 'tables' | 'github' => cabinet.hall ?? 'arcade';\nexport const cabinetsInHall = (hall: string): Cabinet[] => CABINETS.filter(cabinet => cabinetHall(cabinet) === hall);\nexport const cabinetBounds = (cabinet: Cabinet): Obstacle => isCardGame(cabinet.id) ? cardTableBounds(cabinet) : {x:cabinet.x-47,y:cabinet.y-51,w:94,h:51};\n"
+        },
+        {
+          "from": "export const GAME_CABINETS: readonly Cabinet[] = CABINETS.map(c=>({...c}));\n",
+          "to": "CABINETS.push({id:'studio-wild-nudge',name:'Star Spin',subtitle:language==='en'?'Light or Dark side · Companions · Dovetail WILD':'Свет или Тьма · Коллекция героинь · Доводка WILD',x:0,y:0,color:0x83edff,playable:true,wallet:true,hall:'arcade'});\nexport const GAME_CABINETS: readonly Cabinet[] = CABINETS.map(c=>({...c}));\n"
+        }
+      ]
+    },
+    "src/shared/afterglow.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/afterglow.ts",
+      "baseSha256": "eedcc278d149ae66b59d79afeef85d17a3fa5eb7f8d80bf5b5caf73c77b18035",
+      "sha256": "eedcc278d149ae66b59d79afeef85d17a3fa5eb7f8d80bf5b5caf73c77b18035"
+    },
+    "server/skinImages.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/skinImages.ts",
+      "baseSha256": "66c462f28a2536e6ee28f1d9c34e68858a49441b10042aa672666e1fdc43584e",
+      "sha256": "66c462f28a2536e6ee28f1d9c34e68858a49441b10042aa672666e1fdc43584e"
+    },
+    "server/demoMines.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/demoMines.ts",
+      "baseSha256": "24ec9d93e65e9553acc39e53e5acbc7724e8117aec2a83eff36dfe12985d40e5",
+      "sha256": "24ec9d93e65e9553acc39e53e5acbc7724e8117aec2a83eff36dfe12985d40e5"
+    },
+    "src/shared/velvetReign.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/velvetReign.ts",
+      "baseSha256": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+      "sha256": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f"
+    },
+    "src/shared/catCare.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/catCare.ts",
+      "baseSha256": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8",
+      "sha256": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8"
+    },
+    "server/state.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/state.ts",
+      "baseSha256": "ba4992ebece32ae0827ebbd00602ac1976d9cd488bce84f77c7a914f1660e2ee",
+      "sha256": "5a0d35589a963df279066cae23c5c4b26f6b2d31c39a11db1cb44469407aed4f",
+      "patches": [
+        {
+          "from": "  name: t.string().default('Гость'), x: t.number().default(540), y: t.number().default(570),\n  skin: t.uint8().default(0), facing: t.string().default('down'), moving: t.boolean().default(false),\n  hall: t.string().default('arcade'), hallRevision: t.number().default(0),\n  inputSeq: t.number().default(0),\n  connected: t.boolean().default(true), playing: t.boolean().default(false),\n  cabinet: t.string().default(''), gameReaction: t.string().default(''), gameReactionUntil: t.number().default(0),\n  activity: t.string().default(''), ears: t.boolean().default(false),\n",
+          "to": "  name: t.string().default('Гость'), x: t.number().default(540), y: t.number().default(570),\n  skin: t.uint8().default(0), facing: t.string().default('down'), moving: t.boolean().default(false),\n  hall: t.string().default('arcade'), hallRevision: t.number().default(0),\n  inputSeq: t.number().default(0), stairStep: t.uint8().default(0), stairDirection:t.number().default(1),\n  connected: t.boolean().default(true), playing: t.boolean().default(false),\n  cabinet: t.string().default(''), gameReaction: t.string().default(''), gameReactionUntil: t.number().default(0),\n  activity: t.string().default(''), ears: t.boolean().default(false),\n"
+        }
+      ]
+    },
+    "server/demoFlight.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/demoFlight.ts",
+      "baseSha256": "97b5a64dc961e6fd9b4a83c07113332aafd3919cb5e3cadba4a1b6512f280593",
+      "sha256": "97b5a64dc961e6fd9b4a83c07113332aafd3919cb5e3cadba4a1b6512f280593"
+    },
+    "server/nileSkinPayments.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/nileSkinPayments.ts",
+      "baseSha256": "8d09ddda1e8ee29a532fe6e5bb04e6fbca78bcdb917512bcff826282f029668b",
+      "sha256": "8d09ddda1e8ee29a532fe6e5bb04e6fbca78bcdb917512bcff826282f029668b"
+    },
+    "src/shared/street.ts": {
+      "commit": "64cc6a77ccc5f6de6a81c79c51958f010f9efb37",
+      "path": "src/shared/street.ts",
+      "baseSha256": "15112fd6f1fd4abc5483f042f6a11d1fd555040b17f92966d56bf49c764cea51",
+      "sha256": "15112fd6f1fd4abc5483f042f6a11d1fd555040b17f92966d56bf49c764cea51"
+    },
+    "src/shared/nitroRun.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/nitroRun.ts",
+      "baseSha256": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+      "sha256": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a"
+    },
+    "server/skinPayments.ts": {
+      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "path": "server/skinPayments.ts",
+      "baseSha256": "de670656ae84f4c9ce179b73278570a61ad85f9c164985f8f8d73a8feb710456",
+      "sha256": "de670656ae84f4c9ce179b73278570a61ad85f9c164985f8f8d73a8feb710456"
+    },
+    "src/shared/movement.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/movement.ts",
+      "baseSha256": "d9dbc4e857101b0a432d95d76f34addf5787ea7566234692e14513dbfef1cf6b",
+      "sha256": "bb815fd40edeacc421806041fb64585897b44d447d7cb1c7021004d36b9904f8",
+      "patches": [
+        {
+          "from": "export type Facing = 'down' | 'left' | 'right' | 'up';\nimport { walkable } from '../game/navigation';\nimport { PLAYER_SPEED, PLAYER_SPRINT_SPEED, hallObstacles, SEATS } from './world';\n",
+          "to": "import { advanceRoofStairStep,moveRoofStairs,settleRoofStairLanding,roofStairApproach,ROOF_STAIR_SPEED_SCALE,STREET_ROOF_STAIRS } from './rooftop';\nexport type Facing = 'down' | 'left' | 'right' | 'up';\nimport { walkable } from '../game/navigation';\nimport { PLAYER_SPEED, PLAYER_SPRINT_SPEED, hallObstacles, SEATS } from './world';\n"
+        },
+        {
+          "from": "import { intoxicatedMovement } from './intoxication';\n\nexport type MovementInput = { seq: number; x: number; y: number; ms: number; sprint?: boolean; route?: boolean };\nexport type MovementBody = { hall?: string; soberAt?: number; x: number; y: number; facing: string; moving: boolean; seat: string; action: string; drink: string; actionUntil: number };\n\n/** Shared collision integration for local prediction, server validation and replay. */\nexport function applyMovementInput(body: MovementBody, input: MovementInput, guards:readonly GuardCollider[] = []) {\n  let contact=false;\n  const length = Math.hypot(input.x, input.y);\n  body.moving = false;\n  if (!length) return;\n  const seat = SEATS.find(s => s.id === body.seat);\n  if (seat) { body.x = seat.entry.x; body.y = seat.entry.y; }\n  body.seat = ''; body.action = 'idle'; body.drink = ''; body.actionUntil = 0;\n  const beforeX = body.x, beforeY = body.y;\n  const impaired = intoxicatedMovement(body.soberAt ?? 0, input);\n  // Click routes retain their checked direction while keeping the same speed impairment.\n  if (input.route === true) { impaired.x = input.x / length; impaired.y = input.y / length; }\n  const distance = (input.sprint === true ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * impaired.speedMultiplier * input.ms / 1000 / 3;\n",
+          "to": "import { intoxicatedMovement } from './intoxication';\n\nexport type MovementInput = { seq: number; x: number; y: number; ms: number; sprint?: boolean; route?: boolean };\nexport type MovementBody = { hall?: string; stairStep?: number; stairDirection?:number; soberAt?: number; x: number; y: number; facing: string; moving: boolean; seat: string; action: string; drink: string; actionUntil: number };\n\n/** Shared collision integration for local prediction, server validation and replay. */\nexport function applyMovementInput(body: MovementBody, input: MovementInput, guards:readonly GuardCollider[] = []) {\n  let contact=false;\n  const length = Math.hypot(input.x, input.y);\n  body.moving = false;\n  if (!length) {if(body.hall==='street')settleRoofStairLanding(body);return;}\n  const seat = SEATS.find(s => s.id === body.seat);\n  if (seat) { body.x = seat.entry.x; body.y = seat.entry.y; }\n  body.seat = ''; body.action = 'idle'; body.drink = ''; body.actionUntil = 0;\n  const beforeX = body.x, beforeY = body.y;\n  const impaired = intoxicatedMovement(body.soberAt ?? 0, input);\n  if(body.hall==='street'&&moveRoofStairs(body,input,(input.sprint===true?PLAYER_SPRINT_SPEED:PLAYER_SPEED)*ROOF_STAIR_SPEED_SCALE*impaired.speedMultiplier*input.ms/1000)){\n    if(body.moving)body.facing=movementFacing(body.x-beforeX,body.y-beforeY,body.facing as Facing);\n    return;\n  }\n  const approach=body.hall==='street'?roofStairApproach(body,input,(input.sprint?PLAYER_SPRINT_SPEED:PLAYER_SPEED)*impaired.speedMultiplier*input.ms/1000):null;\n  if(approach){\n    if(walkable(approach.x,approach.y,hallObstacles('street'))){\n      if(blockedByGuard(body,approach.x,approach.y,guards))contact=true;\n      else{\n        body.x=approach.x;body.y=approach.y;\n        if(Math.hypot(body.x-STREET_ROOF_STAIRS.foot.x,body.y-STREET_ROOF_STAIRS.foot.y)<=7){body.x=STREET_ROOF_STAIRS.foot.x;body.y=STREET_ROOF_STAIRS.foot.y;body.stairStep=1;body.stairDirection=1;}\n      }\n    }\n    body.moving=Math.hypot(body.x-beforeX,body.y-beforeY)>.001;\n    if(body.moving)body.facing=movementFacing(body.x-beforeX,body.y-beforeY,body.facing as Facing);\n    return contact;\n  }\n  // Click routes retain their checked direction while keeping the same speed impairment.\n  if (input.route === true) { impaired.x = input.x / length; impaired.y = input.y / length; }\n  const distance = (input.sprint === true ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * impaired.speedMultiplier * input.ms / 1000 / 3;\n"
+        },
+        {
+          "from": "      if(blockedByGuard(body,body.x,body.y+y,guards))contact=true;else body.y+=y;\n    }\n  }\n  const dx = body.x-beforeX, dy = body.y-beforeY;\n  body.moving = Math.hypot(dx, dy) > .01;\n  if (body.moving) body.facing = movementFacing(dx, dy, body.facing as Facing);\n",
+          "to": "      if(blockedByGuard(body,body.x,body.y+y,guards))contact=true;else body.y+=y;\n    }\n  }\n  if(body.hall==='street'){\n    const previous=body.stairStep??0;body.stairStep=advanceRoofStairStep(previous,body);\n    if(!previous&&body.stairStep===1){body.x=STREET_ROOF_STAIRS.foot.x;body.y=STREET_ROOF_STAIRS.foot.y;body.stairDirection=1;}\n  }\n  else if(body.stairStep)body.stairStep=0;\n  const dx = body.x-beforeX, dy = body.y-beforeY;\n  body.moving = Math.hypot(dx, dy) > .01;\n  if (body.moving) body.facing = movementFacing(dx, dy, body.facing as Facing);\n"
+        }
+      ]
+    },
+    "src/shared/lastConvoy.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/lastConvoy.ts",
+      "baseSha256": "3785225275083c74d12bf61eb5855b8ae544e72eaefadc6f172bc51f305d6978",
+      "sha256": "3785225275083c74d12bf61eb5855b8ae544e72eaefadc6f172bc51f305d6978"
+    },
+    "server/games/rush/hilo.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/rush/hilo.ts",
+      "baseSha256": "1d55a974edac435060aebb0c34b222c0763259476c2b9ddcab22ee69bd9d2803",
+      "sha256": "1d55a974edac435060aebb0c34b222c0763259476c2b9ddcab22ee69bd9d2803"
+    },
+    "server/pvp/virtual-wallet.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/pvp/virtual-wallet.ts",
+      "baseSha256": "78b99a9001b544cc089028fd3ef96fbd61f57d6a2ba5c6b53f2ee913c88e6feb",
+      "sha256": "78b99a9001b544cc089028fd3ef96fbd61f57d6a2ba5c6b53f2ee913c88e6feb"
+    },
+    "server/movementInputs.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/movementInputs.ts",
+      "baseSha256": "801b9d62225ce08fd374d2ca7d9d799c764c060ec752750eee5efe90fff52825",
+      "sha256": "801b9d62225ce08fd374d2ca7d9d799c764c060ec752750eee5efe90fff52825"
+    },
+    "server/demoExpansion.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/demoExpansion.ts",
+      "baseSha256": "edaa12803beca8288d3595ebb21063ceb9f0bb030fd949adda56f8b78ad53297",
+      "sha256": "edaa12803beca8288d3595ebb21063ceb9f0bb030fd949adda56f8b78ad53297"
+    },
+    "src/shared/toilet.ts": {
+      "commit": "4cdd8b7389e5ec9931eab676688d6969eb8324e9",
+      "path": "src/shared/toilet.ts",
+      "baseSha256": "7254f1c0da2d0d383e411aad49c948aa2e1ce7b0ec5e5832a967aa946b0f5b07",
+      "sha256": "7254f1c0da2d0d383e411aad49c948aa2e1ce7b0ec5e5832a967aa946b0f5b07"
+    },
+    "src/shared/caramelCarnival.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/caramelCarnival.ts",
+      "baseSha256": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b",
+      "sha256": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b"
+    },
+    "server/games/rush/dragontower.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/rush/dragontower.ts",
+      "baseSha256": "5c7adc3f4bd84c473da9ab583fbff1ebf27c5db8b4bde78b7016d1a673475405",
+      "sha256": "5c7adc3f4bd84c473da9ab583fbff1ebf27c5db8b4bde78b7016d1a673475405"
+    },
+    "server/activities.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/activities.ts",
+      "baseSha256": "fbfd749768618947fc6a11b4bc4cfc967c231067330ffdca28ce3077e3fddf6f",
+      "sha256": "fbfd749768618947fc6a11b4bc4cfc967c231067330ffdca28ce3077e3fddf6f"
+    },
+    "server/pvp/store.ts": {
+      "commit": "f39d48910bb7189cb721256b48effc67f0477cbd",
+      "path": "server/pvp/store.ts",
+      "baseSha256": "713ec77918a8f64e5a74ab1b9ba27c9552a9fc6955d5fc07de0bb1c004af63df",
+      "sha256": "713ec77918a8f64e5a74ab1b9ba27c9552a9fc6955d5fc07de0bb1c004af63df"
+    },
+    "src/shared/stairWindow.ts": {
+      "commit": "64cc6a77ccc5f6de6a81c79c51958f010f9efb37",
+      "path": "src/shared/stairWindow.ts",
+      "baseSha256": "67b2561c1be14bac242523acbcb0605ce440b318c47846c607658b9a0aacabe3",
+      "sha256": "67b2561c1be14bac242523acbcb0605ce440b318c47846c607658b9a0aacabe3"
+    },
+    "server/pvp/room.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/pvp/room.ts",
+      "baseSha256": "31b7c1aedcd71f4ee52b56c5678ea839f4685c450d8aaeb6f782d1d9b77613b9",
+      "sha256": "31b7c1aedcd71f4ee52b56c5678ea839f4685c450d8aaeb6f782d1d9b77613b9"
+    },
+    "server/removedCasino.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/removedCasino.ts",
+      "baseSha256": "af5382e477b29e300f6aa39899c7e3bf075878c07c38040105e8e522b25222ee",
+      "sha256": "af5382e477b29e300f6aa39899c7e3bf075878c07c38040105e8e522b25222ee"
+    },
+    "src/shared/clubGeometry.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/clubGeometry.ts",
+      "baseSha256": "e70216f7cea75cd5f14f868b777431f1f824ee0347e017c3124d213a243d7290",
+      "sha256": "e70216f7cea75cd5f14f868b777431f1f824ee0347e017c3124d213a243d7290"
+    },
+    "server/finance/combat-escrow.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/finance/combat-escrow.ts",
+      "baseSha256": "302f8caaf4bb20c088e81b08dd514cfe3d0a191385e5d084f5efebe0490c3a8c",
+      "sha256": "302f8caaf4bb20c088e81b08dd514cfe3d0a191385e5d084f5efebe0490c3a8c"
+    },
+    "src/shared/characters.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/characters.ts",
+      "baseSha256": "ec8a3741b571d301f72f28e79f2293d7bcdb83e9654fe21d1acd9e0eb1bded1f",
+      "sha256": "ec8a3741b571d301f72f28e79f2293d7bcdb83e9654fe21d1acd9e0eb1bded1f"
+    },
+    "src/shared/neopolisMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/neopolisMath.ts",
+      "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+    },
+    "src/shared/cabinetSeating.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/cabinetSeating.ts",
+      "baseSha256": "79306f90ae0607f6f3b60bf4868816027bb023af454a1b95f09b1163815c4a8c",
+      "sha256": "087040ee4788247488c7b2445bffde6816214ec0279209acc7fb41f3a052aebd",
+      "patches": [
+        {
+          "from": "import type { Cabinet } from './cabinets';\nimport { isCardGame, cardTableSeat, cardTableApproach } from './cardTables';\n\nexport type GameReaction = 'win' | 'lose';\nexport type CabinetPlayResult = { id: string; requestId: number; accepted: boolean; reason?: string };\n",
+          "to": "import type { Cabinet } from './cabinets';\nimport { isCardGame, cardTableSeat, cardTableApproach } from './cardTables';\nimport { BOUNDS } from './clubGeometry';\n\nexport type GameReaction = 'win' | 'lose';\nexport type CabinetPlayResult = { id: string; requestId: number; accepted: boolean; reason?: string };\n"
+        },
+        {
+          "from": "  return {\n    x: cabinet.x, y: cabinet.y + 43,\n    // The Diamonds aisle has a planter in front, so approach its stool from the right.\n    entry: { x: cabinet.x + (cabinet.id === 'github-diamonds' ? 48 : 0), y: cabinet.y + 65 },\n  };\n};\n",
+          "to": "  return {\n    x: cabinet.x, y: cabinet.y + 43,\n    // The Diamonds aisle has a planter in front, so approach its stool from the right.\n    entry: { x: cabinet.x + (cabinet.id === 'github-diamonds' ? 48 : 0), y: Math.min(cabinet.y + 65, BOUNDS.bottom) },\n  };\n};\n"
+        }
+      ]
+    },
+    "server/games/legacyCasinoSessions.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/legacyCasinoSessions.ts",
+      "baseSha256": "eb55573ffc5739fe4d2a6578117bbfe63a01344ce2a27c0bb083f37984bc3047",
+      "sha256": "eb55573ffc5739fe4d2a6578117bbfe63a01344ce2a27c0bb083f37984bc3047"
+    },
+    "src/shared/neopolisStakePayouts.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/neopolisStakePayouts.ts",
+      "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+      "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+    },
+    "server/games/coins.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/coins.ts",
+      "baseSha256": "727e6a62b098f0591525a4dfd646c78568e3a04ff554364f2c157d41cbbba5da",
+      "sha256": "727e6a62b098f0591525a4dfd646c78568e3a04ff554364f2c157d41cbbba5da"
+    },
+    "src/shared/flightGame.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/flightGame.ts",
+      "baseSha256": "5bf2cd8dc8b462ffda56bf79cfabbe59c825c49c39786ce7aa3811ec0c62e3e9",
+      "sha256": "5bf2cd8dc8b462ffda56bf79cfabbe59c825c49c39786ce7aa3811ec0c62e3e9"
+    },
+    "src/shared/originalGames.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/originalGames.ts",
+      "baseSha256": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
+      "sha256": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0"
+    },
+    "src/shared/playerRecovery.ts": {
+      "commit": "60834b76153ece2f4fc0ce4c03c6a8ff7e929e56",
+      "path": "src/shared/playerRecovery.ts",
+      "baseSha256": "27e80e4e6b4b0a43b838e9bb567fbd2125011d26480496391cf6787439c4f905",
+      "sha256": "27e80e4e6b4b0a43b838e9bb567fbd2125011d26480496391cf6787439c4f905"
+    },
+    "server/games/fruits.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/fruits.ts",
+      "baseSha256": "3880e46cb2cacd41cf855eb69ef2edda956b39209caf7bb4b73fdca16a8aea05",
+      "sha256": "3880e46cb2cacd41cf855eb69ef2edda956b39209caf7bb4b73fdca16a8aea05"
+    },
+    "src/shared/caribbeanTreasures.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/caribbeanTreasures.ts",
+      "baseSha256": "8e987b2de8799b444dd01fe2fcb3a567dd7921a8c1dee4b139e00e13ee3e03bb",
+      "sha256": "8e987b2de8799b444dd01fe2fcb3a567dd7921a8c1dee4b139e00e13ee3e03bb"
+    },
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/caribbeanTreasuresMath.ts",
+      "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+      "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+    },
+    "src/shared/wildNudgeStakes.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/wildNudgeStakes.ts",
+      "baseSha256": "b038121718a674dd88578b9ace2c219e6f226a05372919a87e87b2dcc5afb54f",
+      "sha256": "b038121718a674dd88578b9ace2c219e6f226a05372919a87e87b2dcc5afb54f"
+    },
+    "src/shared/flagTote.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/flagTote.ts",
+      "baseSha256": "98c84c8e3de49e97fde4097939fb2b42acc1ea912b09e875af80cd9597322619",
+      "sha256": "98c84c8e3de49e97fde4097939fb2b42acc1ea912b09e875af80cd9597322619"
+    },
+    "src/game/navigation.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/game/navigation.ts",
+      "baseSha256": "3c4919cddf664e5a3bcc58095734eb0dfcc3d61787454a306623379787d97e4d",
+      "sha256": "3c4919cddf664e5a3bcc58095734eb0dfcc3d61787454a306623379787d97e4d"
+    },
+    "src/shared/wildNudgeMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/wildNudgeMath.ts",
+      "baseSha256": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74",
+      "sha256": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74"
+    },
+    "src/shared/floodedTempleMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/floodedTempleMath.ts",
+      "baseSha256": "514c0156493f4bfa94b7d4c56dcbc03d9d35e4430216eea359c4e02632fb7ac1",
+      "sha256": "514c0156493f4bfa94b7d4c56dcbc03d9d35e4430216eea359c4e02632fb7ac1"
+    },
+    "server/games/wheel.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/wheel.ts",
+      "baseSha256": "6e9d4238c3a98b53e913553f92af64766b54b40c83e793516549a649e46d2ab6",
+      "sha256": "6e9d4238c3a98b53e913553f92af64766b54b40c83e793516549a649e46d2ab6"
+    },
+    "src/shared/casinoExpansion.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/casinoExpansion.ts",
+      "baseSha256": "ad1474233c750035eecbf54544c9c6f3a6eb9ae47bbe6319703b2383c211100d",
+      "sha256": "ad1474233c750035eecbf54544c9c6f3a6eb9ae47bbe6319703b2383c211100d"
+    },
+    "src/shared/forestHeartMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/forestHeartMath.ts",
+      "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+      "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
+    },
+    "server/games/wildNudge.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/wildNudge.ts",
+      "baseSha256": "7d66b6ba4c76045de00b34a780ce26103d4367f6f39143930ee8f0fe6f12aa9e",
+      "sha256": "7d66b6ba4c76045de00b34a780ce26103d4367f6f39143930ee8f0fe6f12aa9e"
+    },
+    "server/progression/store.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/progression/store.ts",
+      "baseSha256": "31c2ad735adda4257d6c042330b7fb17a2cb8b5e445ab582bef35219fcc32658",
+      "sha256": "31c2ad735adda4257d6c042330b7fb17a2cb8b5e445ab582bef35219fcc32658"
+    },
+    "server/games/types.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/types.ts",
+      "baseSha256": "c866ed8a8a19a66f4210caae41e25becf8c6d169871da1934a7b152d0f2aedc0",
+      "sha256": "c866ed8a8a19a66f4210caae41e25becf8c6d169871da1934a7b152d0f2aedc0"
+    },
+    "src/shared/studioGames.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/studioGames.ts",
+      "baseSha256": "5be1d552e408e7a2fe1d1cff923b70bdda059a57847c46db09c96dc2ae63e29a",
+      "sha256": "5be1d552e408e7a2fe1d1cff923b70bdda059a57847c46db09c96dc2ae63e29a"
+    },
+    "server/games/roulette.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/roulette.ts",
+      "baseSha256": "b8aba50f88ff2c65b54bef35a056b13d5b470d6b9f955f2610559c101e0390ef",
+      "sha256": "b8aba50f88ff2c65b54bef35a056b13d5b470d6b9f955f2610559c101e0390ef"
+    },
+    "src/shared/wildNudgeData.json": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/wildNudgeData.json",
+      "baseSha256": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8",
+      "sha256": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8"
+    },
+    "server/progression/sources.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/progression/sources.ts",
+      "baseSha256": "6640ff15833378a077ca7ef19a502414fab6f99bf6ccb63db30f8ceb8cdd9674",
+      "sha256": "6640ff15833378a077ca7ef19a502414fab6f99bf6ccb63db30f8ceb8cdd9674"
+    },
+    "src/shared/elevator.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/elevator.ts",
+      "baseSha256": "d7f4f8da997be7e9f9c35e79e5398aec50d1e3f7af1afcc0efaa6f61f466e9ca",
+      "sha256": "7347067a1398ee7c6f315f1ec903d88496ef4c76595aabe339ff3e82760de056",
+      "patches": [
+        {
+          "from": "import { HALLS, HALL_DOORS, type HallId } from './world';\n\n/** Both the picker and scene creation follow the hall registry, including future floors. */\nexport function elevatorFloors() {\n  return (Object.keys(HALLS) as HallId[]).sort((a, b) => HALLS[a].floor - HALLS[b].floor);\n}\n\n/** A dock beside the existing staircase, with a separate approach and safe exit. */\n",
+          "to": "import { HALLS, HALL_DOORS, isCasinoFloor, type HallId } from './world';\n\n/** Both the picker and scene creation follow the hall registry, including future floors. */\nexport function elevatorFloors() {\n  return (Object.keys(HALLS) as HallId[]).filter(isCasinoFloor).sort((a, b) => HALLS[a].floor - HALLS[b].floor);\n}\n\n/** A dock beside the existing staircase, with a separate approach and safe exit. */\n"
+        },
+        {
+          "from": "}\n\nexport function atElevator(player: { hall: string; x: number; y: number }) {\n  if (!Object.hasOwn(HALLS, player.hall)) return false;\n  const { entry } = elevatorDock(player.hall as HallId);\n  return Math.hypot(player.x - entry.x, player.y - entry.y) <= 44;\n}\n",
+          "to": "}\n\nexport function atElevator(player: { hall: string; x: number; y: number }) {\n  if (!Object.hasOwn(HALLS, player.hall) || !isCasinoFloor(player.hall)) return false;\n  const { entry } = elevatorDock(player.hall as HallId);\n  return Math.hypot(player.x - entry.x, player.y - entry.y) <= 44;\n}\n"
+        },
+        {
+          "from": "  hall: string; x: number; y: number; connected?: boolean; playing?: boolean;\n  security?: string; seat?: string; cabinet?: string; activity?: string; action?: string;\n}, target: unknown): target is HallId {\n  return typeof target === 'string' && Object.hasOwn(HALLS, target) && target !== player.hall\n    && player.connected !== false && !player.security && !player.playing && !player.cabinet\n    && !player.activity && !player.seat && player.action !== 'drink' && atElevator(player);\n}\n",
+          "to": "  hall: string; x: number; y: number; connected?: boolean; playing?: boolean;\n  security?: string; seat?: string; cabinet?: string; activity?: string; action?: string;\n}, target: unknown): target is HallId {\n  return typeof target === 'string' && Object.hasOwn(HALLS, target) && isCasinoFloor(target) && target !== player.hall\n    && player.connected !== false && !player.security && !player.playing && !player.cabinet\n    && !player.activity && !player.seat && player.action !== 'drink' && atElevator(player);\n}\n"
+        }
+      ]
+    },
+    "src/shared/draconaMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/draconaMath.ts",
+      "baseSha256": "7b73a84f00df88ebce06e8eca1676b90ca457b36d3db4329b723cc66e9977583",
+      "sha256": "7b73a84f00df88ebce06e8eca1676b90ca457b36d3db4329b723cc66e9977583"
+    },
+    "server/games/jackieChan.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/jackieChan.ts",
+      "baseSha256": "12ad39116f68c9aec96ec49a88d46ff66d9bb75f751d981ebcc35c5eb9974297",
+      "sha256": "12ad39116f68c9aec96ec49a88d46ff66d9bb75f751d981ebcc35c5eb9974297"
+    },
+    "server/games/originals.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/originals.ts",
+      "baseSha256": "a40c038406cf6a7ffbb0fa7b92af2937c40a7012626bc2ab06a232d03c152d45",
+      "sha256": "a40c038406cf6a7ffbb0fa7b92af2937c40a7012626bc2ab06a232d03c152d45"
+    },
+    "server/games/vfair/mines/mines-math.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/mines/mines-math.ts",
+      "baseSha256": "ab647b2f14b6cb49b2ad4045dc84b453326cd74d7f5d182a9d6fca257f812f0b",
+      "sha256": "ab647b2f14b6cb49b2ad4045dc84b453326cd74d7f5d182a9d6fca257f812f0b"
+    },
+    "src/shared/floodedTempleData.json": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/floodedTempleData.json",
+      "baseSha256": "0033975e51c12770b84dbe04146ad9f474276e783ee7c2ed2c6179ad3ee437dc",
+      "sha256": "0033975e51c12770b84dbe04146ad9f474276e783ee7c2ed2c6179ad3ee437dc"
+    },
+    "server/progression/freeSpins.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/progression/freeSpins.ts",
+      "baseSha256": "7b7cdda7a23c921071e2a28366f00488f5e31bfc2bad5b178b5a254e235056c4",
+      "sha256": "7b7cdda7a23c921071e2a28366f00488f5e31bfc2bad5b178b5a254e235056c4"
+    },
+    "server/jackieCollection.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/jackieCollection.ts",
+      "baseSha256": "343b64552a0249b240436d717fbd2c9c3f4e9dbe457319126b478ad6cd63f13c",
+      "sha256": "343b64552a0249b240436d717fbd2c9c3f4e9dbe457319126b478ad6cd63f13c"
+    },
+    "src/shared/draconaMathV1.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/draconaMathV1.ts",
+      "baseSha256": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21",
+      "sha256": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21"
+    },
+    "src/shared/neopolisMathV3.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/neopolisMathV3.ts",
+      "baseSha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
+      "sha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820"
+    },
+    "server/progression/skinGenerations.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/progression/skinGenerations.ts",
+      "baseSha256": "ae72341e7ea85c8eb8e787ea7f82799548ee146aac152cd09d8ddd847c280390",
+      "sha256": "ae72341e7ea85c8eb8e787ea7f82799548ee146aac152cd09d8ddd847c280390"
+    },
+    "src/shared/cat.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/cat.ts",
+      "baseSha256": "a42a808a4d6e582a2fc7f47c0b1836a6cc1a4157a1a140d425e792c220e070b9",
+      "sha256": "d44cd0ff7cc10e46ac2730551c2544c2dbcefae415f62036452005169b4d187b",
+      "patches": [
+        {
+          "from": "import { CAT_HOME } from './catHome';\nimport { CAT_CARE } from './catCare';\nimport { hallLinks, hallObstacles, HALLS, type HallId } from './world';\nimport { findPath, walkable, type Point } from '../game/navigation';\nimport { movementFacing, type Facing } from './movement';\nimport { catSurface, canCatUseSurface, type CatSurface } from './catSurfaces';\n",
+          "to": "import { CAT_HOME } from './catHome';\nimport { CAT_CARE } from './catCare';\nimport { hallLinks, hallLinkToward, hallObstacles, HALLS, type HallId } from './world';\nimport { findPath, walkable, type Point } from '../game/navigation';\nimport { movementFacing, type Facing } from './movement';\nimport { catSurface, canCatUseSurface, type CatSurface } from './catSurfaces';\n"
+        },
+        {
+          "from": "    let point: Point = destination;\n    if (destination.hall !== this.view.hall) {\n      const links = hallLinks(this.view.hall);\n      this.transition = links.find(link => link.target === destination.hall) ?? links[0];\n      point = this.transition.door.entry;\n    }\n    this.path = findPath(this.view, point, hallObstacles(this.view.hall));\n",
+          "to": "    let point: Point = destination;\n    if (destination.hall !== this.view.hall) {\n      const links = hallLinks(this.view.hall);\n      this.transition = hallLinkToward(this.view.hall, destination.hall) ?? links[0];\n      point = this.transition.door.entry;\n    }\n    this.path = findPath(this.view, point, hallObstacles(this.view.hall));\n"
+        }
+      ]
+    },
+    "src/shared/chat.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/chat.ts",
+      "baseSha256": "1b513fd076d2cfb871b9be0c00bb9218a2ebf296e3b29738ca705c908e9c8d71",
+      "sha256": "1b513fd076d2cfb871b9be0c00bb9218a2ebf296e3b29738ca705c908e9c8d71"
+    },
+    "src/shared/ambientGuests.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/ambientGuests.ts",
+      "baseSha256": "6a30d7b77ae830984256dee833ebf5edb57e1c7cdd63d49f6c3d928a91a670fd",
+      "sha256": "6a30d7b77ae830984256dee833ebf5edb57e1c7cdd63d49f6c3d928a91a670fd"
+    },
+    "server/combatRoom.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/combatRoom.ts",
+      "baseSha256": "bd92ac1ca5a6d4ff2eae0a6ef0958abf1b68c20f8b893f58061685f6e2ec3294",
+      "sha256": "bd92ac1ca5a6d4ff2eae0a6ef0958abf1b68c20f8b893f58061685f6e2ec3294"
+    },
+    "src/shared/miraRoutine.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/miraRoutine.ts",
+      "baseSha256": "6c4c54350515d5157afa57edb2a29cad149d1becea98b7fccd3473d20e069c47",
+      "sha256": "1edf1b32dec6a1d9646f23c0907ec5458aa311a35121633d9fdd5a8ac1470300",
+      "patches": [
+        {
+          "from": "import type { Facing } from './movement';\nimport { barPoint } from './furniture';\n\nexport type MiraAction = 'walk' | 'polish' | 'wipe' | 'stock' | 'idle' | 'serve' | 'chat';\nexport type MiraView = { x: number; y: number; facing: Facing; action: MiraAction; progress: number };\nexport const MIRA_HOME = barPoint(125,116);\nconst jobs: { x: number; y: number; action: MiraAction; duration: number; facing: Facing }[] = [\n  { ...MIRA_HOME, action: 'polish', duration: 7, facing: 'down' },\n  { ...barPoint(51,116), action: 'wipe', duration: 6, facing: 'down' },\n  { ...barPoint(195,106), action: 'stock', duration: 5, facing: 'up' },\n  { ...barPoint(166,116), action: 'polish', duration: 8, facing: 'down' },\n  { ...MIRA_HOME, action: 'idle', duration: 4, facing: 'left' },\n  { ...barPoint(194,116), action: 'wipe', duration: 6, facing: 'down' },\n];\n\n/** Dedicated staff lane stays behind the counter, separate from visitor navigation. */\nexport class MiraRoutine {\n  readonly state: MiraView = { ...MIRA_HOME, facing: 'down', action: 'polish', progress: 0 };\n  private job = 0;\n  private elapsed = 0;\n  tick(delta: number, serving = false, chatting = false) {\n    const dt = Math.max(0, Math.min(delta, .1));\n    const task = jobs[this.job];\n    const destination = serving || chatting ? MIRA_HOME : task;\n    const dx = destination.x - this.state.x, dy = destination.y - this.state.y, distance = Math.hypot(dx, dy);\n    if (distance > .1) {\n      const amount = Math.min(distance, dt * (serving || chatting ? 80 : 30));\n      this.state.x += dx / distance * amount; this.state.y += dy / distance * amount;\n      this.state.action = 'walk'; this.state.facing = dx < 0 ? 'left' : 'right'; this.state.progress = 0;\n      return;\n    }\n    this.state.x = destination.x; this.state.y = destination.y;\n    if (serving || chatting) {\n      this.state.action = serving ? 'serve' : 'chat'; this.state.facing = serving ? 'down' : 'left'; this.state.progress = 0;\n      return;\n    }\n    this.state.action = task.action; this.state.facing = task.facing;\n    this.elapsed += dt; this.state.progress = Math.min(1, this.elapsed / task.duration);\n    if (this.elapsed >= task.duration) { this.job = (this.job + 1) % jobs.length; this.elapsed = 0; }\n",
+          "to": "import type { Facing } from './movement';\nimport { barPoint } from './furniture';\n\nexport type MiraAction = 'walk' | 'polish' | 'wipe' | 'stock' | 'idle' | 'serve' | 'chat' | 'sit' | 'sit-down' | 'stand-up' | 'greet' | 'listen';\nexport type MiraAttention = 'closed' | 'greet' | 'listen' | 'speak';\nexport type MiraView = { x: number; y: number; facing: Facing; action: MiraAction; progress: number };\nexport const MIRA_HOME = barPoint(125,116);\nexport const MIRA_SEAT = barPoint(51,116);\n// Game-specific initial art timings, to be checked in the real room.\nexport const MIRA_TRANSITION_SECONDS = .8;\nexport const MIRA_SERVICE_SECONDS = 3.2;\nconst jobs: { x: number; y: number; action: MiraAction; duration: number; facing: Facing }[] = [\n  { ...MIRA_HOME, action: 'polish', duration: 7, facing: 'down' },\n  { ...barPoint(51,116), action: 'wipe', duration: 6, facing: 'down' },\n  { ...barPoint(195,106), action: 'stock', duration: 5, facing: 'up' },\n  { ...barPoint(166,116), action: 'polish', duration: 8, facing: 'down' },\n  { ...MIRA_SEAT, action: 'sit', duration: 10, facing: 'down' },\n  { ...barPoint(194,116), action: 'wipe', duration: 6, facing: 'down' },\n];\n\nconst ease = (p: number) => { const x = Math.max(0, Math.min(1, p)); return x * x * (3 - 2 * x); };\nexport function miraSeatAmount(action: MiraAction, progress: number) {\n  return action === 'sit' ? 1 : action === 'sit-down' ? ease(progress) : action === 'stand-up' ? 1 - ease(progress) : 0;\n}\n\n/** One room-owned timeline controls positions, transitions and meaningful gestures. */\nexport class MiraRoutine {\n  readonly state: MiraView = { ...MIRA_HOME, facing: 'down', action: 'polish', progress: 0 };\n  private job = 0;\n  private elapsed = 0;\n  private transitionElapsed = 0;\n  private activity = '';\n  private activityElapsed = 0;\n  private attentionActive = false;\n  private greetingPending = false;\n  private greetingElapsed = 0;\n  private servicePending = false;\n  private previousServing = false;\n  tick(delta: number, serving = false, chatting = false, attention: MiraAttention = 'closed') {\n    const dt = Math.max(0, Math.min(Number.isFinite(delta) ? delta : 0, .1));\n    const task = jobs[this.job];\n    if (attention !== 'closed' && !this.attentionActive) { this.greetingPending = true; this.greetingElapsed = 0; }\n    if (attention === 'closed') this.greetingPending = false;\n    this.attentionActive = attention !== 'closed';\n    if(serving&&!this.previousServing)this.servicePending=true;\n    this.previousServing=serving;\n    if(this.state.action==='serve'&&this.state.progress>=1&&!serving)this.servicePending=false;\n    const service=serving||this.servicePending;\n    const key = service ? 'serve' : attention !== 'closed' ? attention : chatting ? 'chat' : '';\n    if (key !== this.activity) { this.activity = key; this.activityElapsed = 0; }\n    const destination = key ? MIRA_HOME : task;\n    if (this.state.action === 'stand-up') {\n      this.transitionElapsed += dt;\n      this.state.progress = Math.min(1, this.transitionElapsed / MIRA_TRANSITION_SECONDS);\n      if (this.state.progress === 1) { this.state.action = 'idle'; this.state.progress = 0; }\n      return;\n    }\n    if ((this.state.action === 'sit' || this.state.action === 'sit-down') && (key || task.action !== 'sit')) {\n      this.transitionElapsed = this.state.action === 'sit-down' ? (1 - this.state.progress) * MIRA_TRANSITION_SECONDS : 0;\n      this.state.action = 'stand-up'; this.state.progress = this.transitionElapsed / MIRA_TRANSITION_SECONDS;\n      return;\n    }\n    const dx = destination.x - this.state.x, dy = destination.y - this.state.y, distance = Math.hypot(dx, dy);\n    if (distance > .1) {\n      const amount = Math.min(distance, dt * (key ? 65 : 30));\n      this.state.x += dx / distance * amount; this.state.y += dy / distance * amount;\n      this.state.action = 'walk'; this.state.facing = Math.abs(dx) > Math.abs(dy) ? dx < 0 ? 'left' : 'right' : dy < 0 ? 'up' : 'down';\n      this.state.progress = (this.state.progress + dt * 1.6) % 1;\n      return;\n    }\n    this.state.x = destination.x; this.state.y = destination.y;\n    if (key) {\n      this.activityElapsed += dt;\n      if(!service&&this.greetingPending) {this.greetingElapsed+=dt;if(this.greetingElapsed>=1.2)this.greetingPending=false;}\n      this.state.action = service ? 'serve' : this.greetingPending || attention === 'greet' ? 'greet' : attention === 'listen' ? 'listen' : 'chat';\n      this.state.facing = chatting && attention === 'closed' ? 'left' : 'down';\n      this.state.progress = service ? Math.min(1, this.activityElapsed / MIRA_SERVICE_SECONDS)\n        : this.state.action === 'greet' ? Math.min(1, this.greetingElapsed / 1.2) : (this.activityElapsed % 4) / 4;\n      return;\n    }\n    if (task.action === 'sit' && this.state.action !== 'sit') {\n      if (this.state.action !== 'sit-down') { this.state.action = 'sit-down'; this.transitionElapsed = 0; }\n      this.transitionElapsed += dt; this.state.progress = Math.min(1, this.transitionElapsed / MIRA_TRANSITION_SECONDS);\n      if (this.state.progress < 1) return;\n    }\n    this.state.action = task.action; this.state.facing = task.facing;\n    this.elapsed += dt; this.state.progress = Math.min(1, this.elapsed / task.duration);\n    if (this.elapsed >= task.duration) { this.job = (this.job + 1) % jobs.length; this.elapsed = 0; }\n"
+        }
+      ]
+    },
+    "src/shared/security.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/security.ts",
+      "baseSha256": "c97474be324300fae8e277dbc3480c9ad66f3fb1a1f68287317426c4c550afff",
+      "sha256": "c97474be324300fae8e277dbc3480c9ad66f3fb1a1f68287317426c4c550afff"
+    },
+    "server/games/vfair/dice/dice-math.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/dice/dice-math.ts",
+      "baseSha256": "a6e83f4cf71c63ab3cca9751012fe1dbc93a832ea553a4bfbe2c8eaa27d8867e",
+      "sha256": "a6e83f4cf71c63ab3cca9751012fe1dbc93a832ea553a4bfbe2c8eaa27d8867e"
+    },
+    "server/games/vfair/decimal.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/decimal.ts",
+      "baseSha256": "235cf2ea332f2a635b06e86462809821f9e515e5a73de6c944811f2d3b0f60d7",
+      "sha256": "235cf2ea332f2a635b06e86462809821f9e515e5a73de6c944811f2d3b0f60d7"
+    },
+    "src/shared/neopolisMathV1.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/neopolisMathV1.ts",
+      "baseSha256": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92",
+      "sha256": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92"
+    },
+    "server/games/flagBattle.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/flagBattle.ts",
+      "baseSha256": "48adde5247fa57348efecb91f05dec1eb9203e544c3f42407e5ebbcff52c9068",
+      "sha256": "48adde5247fa57348efecb91f05dec1eb9203e544c3f42407e5ebbcff52c9068"
+    },
+    "server/chatModerationProvider.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/chatModerationProvider.ts",
+      "baseSha256": "dfc4cace619ce5e6cfc99b0bb73f7c83b9bf30246a6d0b52518e7796a0ce8a9a",
+      "sha256": "dfc4cace619ce5e6cfc99b0bb73f7c83b9bf30246a6d0b52518e7796a0ce8a9a"
+    },
+    "src/shared/pvp.ts": {
+      "commit": "f39d48910bb7189cb721256b48effc67f0477cbd",
+      "path": "src/shared/pvp.ts",
+      "baseSha256": "bed164a0fcccf208639302aadb7a5f165541c055616440bf0b16248d861ceddc",
+      "sha256": "bed164a0fcccf208639302aadb7a5f165541c055616440bf0b16248d861ceddc"
+    },
+    "src/shared/catHome.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/catHome.ts",
+      "baseSha256": "37f33f935166ea7da5beeddd9f4df5c208d483f8b62d3e6d72b4298a09851b10",
+      "sha256": "37f33f935166ea7da5beeddd9f4df5c208d483f8b62d3e6d72b4298a09851b10"
+    },
+    "src/shared/combatView.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/combatView.ts",
+      "baseSha256": "a1b52fda09c17b623776603ba93290915fc37543f9e0b3074cc967d1c2f013d7",
+      "sha256": "a1b52fda09c17b623776603ba93290915fc37543f9e0b3074cc967d1c2f013d7"
+    },
+    "src/shared/themedGames.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/themedGames.ts",
+      "baseSha256": "49c241391d49b34e463186ca8a073e6a3bf3aa3d1de56830db4a6a4caea05946",
+      "sha256": "49c241391d49b34e463186ca8a073e6a3bf3aa3d1de56830db4a6a4caea05946"
+    },
+    "src/shared/movementLimits.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/movementLimits.ts",
+      "baseSha256": "6d70cf0d47e42fc3dafac122c24f33da7a00946ad4ac22f06a0a07e4dc118d02",
+      "sha256": "6d70cf0d47e42fc3dafac122c24f33da7a00946ad4ac22f06a0a07e4dc118d02"
+    },
+    "server/progression/handlers.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/progression/handlers.ts",
+      "baseSha256": "afed32a614f614ea72e68ad2d87de8025462d42d21bb1d71241379c9d34c4edf",
+      "sha256": "afed32a614f614ea72e68ad2d87de8025462d42d21bb1d71241379c9d34c4edf"
+    },
+    "server/games/vfair/game-rtp.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/game-rtp.ts",
+      "baseSha256": "850598f0b5b9c2c8d9a13a4ff151be5d23467804bc457f35665e95b6008f87c7",
+      "sha256": "850598f0b5b9c2c8d9a13a4ff151be5d23467804bc457f35665e95b6008f87c7"
+    },
+    "server/games/vfair/limbo/limbo-math.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/limbo/limbo-math.ts",
+      "baseSha256": "71ca6f7b1aeedf1b05804d9ff2c8e72e05fc6242e3d5a5b51b924b08669bdb52",
+      "sha256": "71ca6f7b1aeedf1b05804d9ff2c8e72e05fc6242e3d5a5b51b924b08669bdb52"
+    },
+    "src/shared/neopolisMathV2.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/neopolisMathV2.ts",
+      "baseSha256": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692",
+      "sha256": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692"
+    },
+    "src/shared/casinoVariants.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/casinoVariants.ts",
+      "baseSha256": "806e62338241a65561b7170957045ce2fd931a599302d50785c35f6f0f9f1ca5",
+      "sha256": "806e62338241a65561b7170957045ce2fd931a599302d50785c35f6f0f9f1ca5"
+    },
+    "src/shared/floodedTempleCascade.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/floodedTempleCascade.ts",
+      "baseSha256": "4eeca742538d793bb5efdf79c9b15389ad827716e8728f385e0c9090ec727cde",
+      "sha256": "4eeca742538d793bb5efdf79c9b15389ad827716e8728f385e0c9090ec727cde"
+    },
+    "server/crypto/nowpayments.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/crypto/nowpayments.ts",
+      "baseSha256": "5640783add4c288ca3200faabcef4ed682a6c870a0fe7e89234ad972f99adea4",
+      "sha256": "5640783add4c288ca3200faabcef4ed682a6c870a0fe7e89234ad972f99adea4"
+    },
+    "src/shared/tsuEFa.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/tsuEFa.ts",
+      "baseSha256": "907dc4fae7035222cf290bcf99650b3d4945058931a54eb523cf3e3be02e18ed",
+      "sha256": "907dc4fae7035222cf290bcf99650b3d4945058931a54eb523cf3e3be02e18ed"
+    },
+    "server/games/vfair/mines/mines-constants.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/mines/mines-constants.ts",
+      "baseSha256": "168798b8df86084da0848ef2d4589256a1ad5d8f4c0c30c13960fb0ba47d69db",
+      "sha256": "168798b8df86084da0848ef2d4589256a1ad5d8f4c0c30c13960fb0ba47d69db"
+    },
+    "server/games/vfair/limbo/limbo-roll.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/limbo/limbo-roll.ts",
+      "baseSha256": "d3a0eeffcebdf1c4103116acdebd58ac63e8f97f1a9760328b52f5db02baa347",
+      "sha256": "d3a0eeffcebdf1c4103116acdebd58ac63e8f97f1a9760328b52f5db02baa347"
+    },
+    "src/shared/combatEscrow.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/combatEscrow.ts",
+      "baseSha256": "16bd3c5b7a60e35ab946f98bc4a5acbc85f72e683cf913c27a834da0b03a4f44",
+      "sha256": "16bd3c5b7a60e35ab946f98bc4a5acbc85f72e683cf913c27a834da0b03a4f44"
+    },
+    "server/games/floodedTempleCascade.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/floodedTempleCascade.ts",
+      "baseSha256": "8d7814d13dd390a72b9e64650e0da025bedc484e2c53f010c8966b8d5b7abe94",
+      "sha256": "8d7814d13dd390a72b9e64650e0da025bedc484e2c53f010c8966b8d5b7abe94"
+    },
+    "src/shared/tsuDuel.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/tsuDuel.ts",
+      "baseSha256": "d651edfddcf47c347d8aa3e590dc636a5abc5bf8ebedca103db1dbaee963f9f0",
+      "sha256": "d651edfddcf47c347d8aa3e590dc636a5abc5bf8ebedca103db1dbaee963f9f0"
+    },
+    "server/finance/pvp-money.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/finance/pvp-money.ts",
+      "baseSha256": "e71a90edf48f23a0479b7b85933aab583263daee14edf59edf301baa92b9115b",
+      "sha256": "e71a90edf48f23a0479b7b85933aab583263daee14edf59edf301baa92b9115b"
+    },
+    "server/pvp/tsu-duel.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/pvp/tsu-duel.ts",
+      "baseSha256": "2c0cf3c3a12770011c9261b8d185019e4b841334581253278b6a52c8048e4e92",
+      "sha256": "2c0cf3c3a12770011c9261b8d185019e4b841334581253278b6a52c8048e4e92"
+    },
+    "server/tableGames.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/tableGames.ts",
+      "baseSha256": "aee7d759276dfb0f26d4c0652a5d84fdd441d6e07a94dce46c5af9846c98b198",
+      "sha256": "aee7d759276dfb0f26d4c0652a5d84fdd441d6e07a94dce46c5af9846c98b198"
+    },
+    "src/shared/pvpSeats.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/pvpSeats.ts",
+      "baseSha256": "97bba60d5044f971ac910ece29509ea3df94dd22bea25b6f80eeca56def7a492",
+      "sha256": "97bba60d5044f971ac910ece29509ea3df94dd22bea25b6f80eeca56def7a492"
+    },
+    "server/games/floodedTemple.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/floodedTemple.ts",
+      "baseSha256": "51652a2ae8207feec1153c1e18522e4ebcd8f86175f2edb8931ae46af981ed04",
+      "sha256": "51652a2ae8207feec1153c1e18522e4ebcd8f86175f2edb8931ae46af981ed04"
+    },
+    "server/pvp/cards.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/pvp/cards.ts",
+      "baseSha256": "42db70683726228f6ab2217c7ef48b269cf372368950faa9f4555825880f6cf0",
+      "sha256": "42db70683726228f6ab2217c7ef48b269cf372368950faa9f4555825880f6cf0"
+    },
+    "server/chessGame.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/chessGame.ts",
+      "baseSha256": "d0a44987c9faa8a94552bf0e7662b423e631fd0c3100cd38e5ab93363a9ef2ea",
+      "sha256": "d0a44987c9faa8a94552bf0e7662b423e631fd0c3100cd38e5ab93363a9ef2ea"
+    },
+    "server/guardNavigation.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/guardNavigation.ts",
+      "baseSha256": "5eae9fd73d2f407c3ed0cf6c00d58065d86384728061eba431407d02cf1a4c37",
+      "sha256": "5eae9fd73d2f407c3ed0cf6c00d58065d86384728061eba431407d02cf1a4c37"
+    },
+    "server/games/vfair/plinko/plinko-math.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/plinko/plinko-math.ts",
+      "baseSha256": "9c83981207341b625aca8e5f976da24c2b50bbba3a7e66fd6c330a0584cd15dc",
+      "sha256": "9c83981207341b625aca8e5f976da24c2b50bbba3a7e66fd6c330a0584cd15dc"
+    },
+    "server/guardRoutine.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/guardRoutine.ts",
+      "baseSha256": "45a6847fab3d3eec549eab30322fe1efd4133df94009ada923ce0d6f3005ad01",
+      "sha256": "b8d4a804a493ad22a84c086e6c723b905c04d41d6149e573bd94cfc1d54aca85",
+      "patches": [
+        {
+          "from": "\nexport type GuardStop = { id: string; x: number; y: number; facing: Facing; activity: 'chat' | 'window' | 'inspect' | 'watch' };\nexport const GUARD_STOPS: Record<HallId, GuardStop[]> = {\n  github: [\n    { id:'cards', x:650, y:405, facing:'up', activity:'inspect' },\n    { id:'dice', x:1480, y:875, facing:'up', activity:'watch' },\n",
+          "to": "\nexport type GuardStop = { id: string; x: number; y: number; facing: Facing; activity: 'chat' | 'window' | 'inspect' | 'watch' };\nexport const GUARD_STOPS: Record<HallId, GuardStop[]> = {\n  toilet:[{id:'toilet-window',x:205,y:330,facing:'up',activity:'inspect'}],\n  roof: [\n    { id:'roof-hatch', x:700, y:700, facing:'left', activity:'inspect' },\n    { id:'roof-terrace', x:1700, y:1060, facing:'down', activity:'watch' },\n  ],\n  street: [\n    { id:'street-entrance', x:1100, y:1050, facing:'left', activity:'watch' },\n    { id:'street-side', x:480, y:710, facing:'down', activity:'watch' },\n  ],\n  github: [\n    { id:'cards', x:650, y:405, facing:'up', activity:'inspect' },\n    { id:'dice', x:1480, y:875, facing:'up', activity:'watch' },\n"
+        }
+      ]
+    },
+    "src/shared/nowpaymentsSandbox.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/nowpaymentsSandbox.ts",
+      "baseSha256": "95df8061741dcf8ea642d1aa80ba7937505d3e1b81e17b1fb5dbb64711e37b43",
+      "sha256": "95df8061741dcf8ea642d1aa80ba7937505d3e1b81e17b1fb5dbb64711e37b43"
+    },
+    "server/activityChanges.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/activityChanges.ts",
+      "baseSha256": "4c46ce9f844177ad0981b6d97b91dc2faa45f531c9a23ffd552afa81f1a63e61",
+      "sha256": "4c46ce9f844177ad0981b6d97b91dc2faa45f531c9a23ffd552afa81f1a63e61"
+    },
+    "server/pvp/tsu-e-fa.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/pvp/tsu-e-fa.ts",
+      "baseSha256": "58f0b673419810f425906220b5ff7532d1aef9a1643b011651bd22184ed37ae9",
+      "sha256": "58f0b673419810f425906220b5ff7532d1aef9a1643b011651bd22184ed37ae9"
+    },
+    "src/shared/catSurfaces.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/catSurfaces.ts",
+      "baseSha256": "57d15054db858053e7bc67910cd361f79aa59053b2641fcb8b8b6e41d063dd47",
+      "sha256": "57d15054db858053e7bc67910cd361f79aa59053b2641fcb8b8b6e41d063dd47"
+    },
+    "src/shared/casinoNextVariants.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/shared/casinoNextVariants.ts",
+      "baseSha256": "6f525322bc640eb29ad7bfc025205686f87214b174a08a92d0f800afe636eaa7",
+      "sha256": "6f525322bc640eb29ad7bfc025205686f87214b174a08a92d0f800afe636eaa7"
+    },
+    "server/games/vfair/keno/keno-math.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/keno/keno-math.ts",
+      "baseSha256": "094054bab14de6b4c54b53070804448a39f4bb83f5d4b2eb80cc59bcc6c3fbfa",
+      "sha256": "094054bab14de6b4c54b53070804448a39f4bb83f5d4b2eb80cc59bcc6c3fbfa"
+    },
+    "server/games/neopolis.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/neopolis.ts",
+      "baseSha256": "d8e3a0ac628636293f3317ac61de6ce83054c8b41985fcc8886e78c71e5dfad3",
+      "sha256": "d8e3a0ac628636293f3317ac61de6ce83054c8b41985fcc8886e78c71e5dfad3"
+    },
+    "src/shared/casinoBatchVariants.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/casinoBatchVariants.ts",
+      "baseSha256": "e09ea94fdb5929596f610ef7462dc80d50bcf4926335c398fca6c031a0496135",
+      "sha256": "e09ea94fdb5929596f610ef7462dc80d50bcf4926335c398fca6c031a0496135"
+    },
+    "server/combatGuard.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/combatGuard.ts",
+      "baseSha256": "c0225b2b838cc1b828ce1102a2e012da15287258eed319b5722056f34b06cad9",
+      "sha256": "c0225b2b838cc1b828ce1102a2e012da15287258eed319b5722056f34b06cad9"
+    },
+    "src/shared/hockey.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/hockey.ts",
+      "baseSha256": "eba673cd220fac7d85a3ba9da53d9cf0b5dfae7ca3732306327ac7a28a7ca320",
+      "sha256": "eba673cd220fac7d85a3ba9da53d9cf0b5dfae7ca3732306327ac7a28a7ca320"
+    },
+    "server/games/vfair/limbo/limbo-constants.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/limbo/limbo-constants.ts",
+      "baseSha256": "b5bc95ccd1943068b60bc621354e68a6e53c872d50a34414b52babbd02c3d527",
+      "sha256": "b5bc95ccd1943068b60bc621354e68a6e53c872d50a34414b52babbd02c3d527"
+    },
+    "server/games/vfair/keno/keno-probability.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/keno/keno-probability.ts",
+      "baseSha256": "0f870c04fe76f39b72962ee86a41e63e9ebf7c35edbc82299ba004d98cb4df70",
+      "sha256": "0f870c04fe76f39b72962ee86a41e63e9ebf7c35edbc82299ba004d98cb4df70"
+    },
+    "server/combatGame.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/combatGame.ts",
+      "baseSha256": "825bac6da77facf6a81c942282a0605e5eafea8ecda806fc0fb044e905419782",
+      "sha256": "825bac6da77facf6a81c942282a0605e5eafea8ecda806fc0fb044e905419782"
+    },
+    "src/shared/pool.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/pool.ts",
+      "baseSha256": "5d07e5bb44576ebac96353101584436fb22dfa8d404803195f2b1e57c01fe096",
+      "sha256": "5d07e5bb44576ebac96353101584436fb22dfa8d404803195f2b1e57c01fe096"
+    },
+    "server/games/vfair/plinko/plinko-constants.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/plinko/plinko-constants.ts",
+      "baseSha256": "dca86dc20365d497f6fd6b220f2cc0157e00112b4b2206c03c82959547b67afc",
+      "sha256": "dca86dc20365d497f6fd6b220f2cc0157e00112b4b2206c03c82959547b67afc"
+    },
+    "src/shared/combat.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/combat.ts",
+      "baseSha256": "89c43e69c2a65adf3213c8583c5fdef873f296a20fb6ec8682d75bd6bed3190d",
+      "sha256": "89c43e69c2a65adf3213c8583c5fdef873f296a20fb6ec8682d75bd6bed3190d"
+    },
+    "server/games/vfair/dice/dice-constants.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/dice/dice-constants.ts",
+      "baseSha256": "88219a7c455889904b6ed1c4804737736cf551fa0f83fe382d7835dcd25c44a3",
+      "sha256": "88219a7c455889904b6ed1c4804737736cf551fa0f83fe382d7835dcd25c44a3"
+    },
+    "server/games/vfair/keno/keno-constants.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/keno/keno-constants.ts",
+      "baseSha256": "75476a6be66e77e6830e2bff964b9f4cacb7a89925c9e20a97ebcb7a4dc8946c",
+      "sha256": "75476a6be66e77e6830e2bff964b9f4cacb7a89925c9e20a97ebcb7a4dc8946c"
+    },
+    "server/games/caribbeanTreasures.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/caribbeanTreasures.ts",
+      "baseSha256": "bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99",
+      "sha256": "bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99"
+    },
+    "src/shared/cabinetGeometry.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/cabinetGeometry.ts",
+      "baseSha256": "c63adb8bd873e609053ee24384e999eb4fe170b0be536b02f9ec61e848c00118",
+      "sha256": "c63adb8bd873e609053ee24384e999eb4fe170b0be536b02f9ec61e848c00118"
+    },
+    "server/games/vfair/limbo/limbo-rtp-bounds.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/limbo/limbo-rtp-bounds.ts",
+      "baseSha256": "67756ce5182e7fb4ecce1ce9ecc60aba34986929309b3c631f6ba43c58e534ee",
+      "sha256": "67756ce5182e7fb4ecce1ce9ecc60aba34986929309b3c631f6ba43c58e534ee"
+    },
+    "server/games/vfair/dice/dice-rtp-bounds.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/dice/dice-rtp-bounds.ts",
+      "baseSha256": "c4f310051ab1d73b634855897f9d1f14b13452a6bf8b0d2d64e72cbb4d508fc7",
+      "sha256": "c4f310051ab1d73b634855897f9d1f14b13452a6bf8b0d2d64e72cbb4d508fc7"
+    },
+    "server/games/dracona.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/dracona.ts",
+      "baseSha256": "9d7b86aa2db9dd2ebe0d6a6dc09283a33b868b03a1e5c444f722d90822e9fa95",
+      "sha256": "9d7b86aa2db9dd2ebe0d6a6dc09283a33b868b03a1e5c444f722d90822e9fa95"
+    },
+    "server/games/vfair/keno/keno-multipliers.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/keno/keno-multipliers.ts",
+      "baseSha256": "c76e0a9698539ea0f09f3bfc863ed47351a7ac38270078a0fee8ec579fe240b4",
+      "sha256": "c76e0a9698539ea0f09f3bfc863ed47351a7ac38270078a0fee8ec579fe240b4"
+    },
+    "server/games/vfair/plinko/plinko-multipliers.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/plinko/plinko-multipliers.ts",
+      "baseSha256": "4be4d4ccb0dca62ec216edf295d6459075817d5b115e5d28038df2ebaf96f072",
+      "sha256": "4be4d4ccb0dca62ec216edf295d6459075817d5b115e5d28038df2ebaf96f072"
+    },
+    "server/games/forestHeart.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/forestHeart.ts",
+      "baseSha256": "0c7412ea5438c72d63c7808759e79bb76fa95e12a32a23690dd7b36fcca9a1be",
+      "sha256": "0c7412ea5438c72d63c7808759e79bb76fa95e12a32a23690dd7b36fcca9a1be"
+    },
+    "server/games/vfair/keno/keno-reference-paytables.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/vfair/keno/keno-reference-paytables.ts",
+      "baseSha256": "caa92b92343afa04889b13ef484f6d1598aac196ffe1f7e2e789dbf77c4f25bc",
+      "sha256": "caa92b92343afa04889b13ef484f6d1598aac196ffe1f7e2e789dbf77c4f25bc"
+    },
+    "server/games/crLeo.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/crLeo.ts",
+      "baseSha256": "5bc956040fb008f21a3a5bcaa7b9296f3ef9f049ae32b44654bcef06e6b6e7c1",
+      "sha256": "5bc956040fb008f21a3a5bcaa7b9296f3ef9f049ae32b44654bcef06e6b6e7c1"
+    },
+    "server/lastExitCashoutDelay.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/lastExitCashoutDelay.ts",
+      "baseSha256": "a65fdb48822ab46fc913b72cd4c70fc904b0d66c97e7ebc7c0960899c1849edd",
+      "sha256": "a65fdb48822ab46fc913b72cd4c70fc904b0d66c97e7ebc7c0960899c1849edd"
+    },
+    "src/shared/convoyWardrobe.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/convoyWardrobe.ts",
+      "baseSha256": "e00ff55831b480cfc785354d0bddebef35bd58f754c8bb3dc26fdbd1fe8b60fa",
+      "sha256": "e00ff55831b480cfc785354d0bddebef35bd58f754c8bb3dc26fdbd1fe8b60fa"
+    },
+    "server/afterglowWardrobe.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "server/afterglowWardrobe.ts",
+      "baseSha256": "24009dddabe9d73931a3f71065d7a49c890901053cfa22cc7be48a83a48654a9",
+      "sha256": "24009dddabe9d73931a3f71065d7a49c890901053cfa22cc7be48a83a48654a9"
+    },
+    "src/shared/luelonSlots.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/luelonSlots.ts",
+      "baseSha256": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
+      "sha256": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb"
+    },
+    "server/games/afterglow.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/afterglow.ts",
+      "baseSha256": "732c928d299e6a6adb501d1682e80ec2ea02e510884812771c757f5173013258",
+      "sha256": "732c928d299e6a6adb501d1682e80ec2ea02e510884812771c757f5173013258"
+    },
+    "src/shared/velvetReignHistory.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/velvetReignHistory.ts",
+      "baseSha256": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+      "sha256": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c"
+    },
+    "server/games/nitroRun.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/nitroRun.ts",
+      "baseSha256": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6",
+      "sha256": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6"
+    },
+    "src/shared/floodedTempleCascadeMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/floodedTempleCascadeMath.ts",
+      "baseSha256": "cf9b490bb9bb7f96f18f53e8662c9f931b5e308ca9a291acf8e66d483e352604",
+      "sha256": "cf9b490bb9bb7f96f18f53e8662c9f931b5e308ca9a291acf8e66d483e352604"
+    },
+    "src/shared/cosmicEscapeBets.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/cosmicEscapeBets.ts",
+      "baseSha256": "a810b0f394e290eae0ccbf2f1745ada20f280bb08bd176eb534d0390871f99c7",
+      "sha256": "a810b0f394e290eae0ccbf2f1745ada20f280bb08bd176eb534d0390871f99c7"
+    },
+    "server/games/lastConvoy.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/lastConvoy.ts",
+      "baseSha256": "57545363662a64f1e8a29be7dbab0e6ce183ab4367784ae6bcb68c1bfc9c7dae",
+      "sha256": "57545363662a64f1e8a29be7dbab0e6ce183ab4367784ae6bcb68c1bfc9c7dae"
+    },
+    "src/shared/luelonSlotsModels.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/luelonSlotsModels.ts",
+      "baseSha256": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74",
+      "sha256": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74"
+    },
+    "src/shared/floodedTempleCascadeData.json": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/floodedTempleCascadeData.json",
+      "baseSha256": "5aa05b4cca0476f48d84e70402204ec9029949a8da3c8d2c7a95b6a5456fc07a",
+      "sha256": "5aa05b4cca0476f48d84e70402204ec9029949a8da3c8d2c7a95b6a5456fc07a"
+    },
+    "src/shared/luelonSlotsLines.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/luelonSlotsLines.ts",
+      "baseSha256": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee",
+      "sha256": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee"
+    },
+    "server/games/caramelCarnival.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/caramelCarnival.ts",
+      "baseSha256": "ba16c7b4b5e51559b05c705c67558ef6f34fef22ceb063ab24dd7a1945e40994",
+      "sha256": "ba16c7b4b5e51559b05c705c67558ef6f34fef22ceb063ab24dd7a1945e40994"
+    },
+    "server/games/luelonSlots.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/luelonSlots.ts",
+      "baseSha256": "be78b2715aa850d3801445edf0f714b89dcb76ed98719e5589fcac71dc7fe3f2",
+      "sha256": "be78b2715aa850d3801445edf0f714b89dcb76ed98719e5589fcac71dc7fe3f2"
+    },
+    "server/games/cardEngine.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/cardEngine.ts",
+      "baseSha256": "f36f147ee6f76799fdf1ff18e769d583534b01cb4b34528a09be8f2268877891",
+      "sha256": "f36f147ee6f76799fdf1ff18e769d583534b01cb4b34528a09be8f2268877891"
+    },
+    "server/games/rush/diamonds.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/rush/diamonds.ts",
+      "baseSha256": "213895e44a196028767720525c4de2b5beb54f6662d859d4f9d12e8ab08c789a",
+      "sha256": "213895e44a196028767720525c4de2b5beb54f6662d859d4f9d12e8ab08c789a"
+    },
+    "server/games/casinoVariants.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/casinoVariants.ts",
+      "baseSha256": "f8950c9dbb0285f2d2462f1257620f95e06514c5b4c09574bc152aaf62c78a50",
+      "sha256": "f8950c9dbb0285f2d2462f1257620f95e06514c5b4c09574bc152aaf62c78a50"
+    },
+    "server/games/rush/crash.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/rush/crash.ts",
+      "baseSha256": "18182aa65f5babc4bf693b234aeec8a239646c41d33d4c3126b3abefc7b15a94",
+      "sha256": "18182aa65f5babc4bf693b234aeec8a239646c41d33d4c3126b3abefc7b15a94"
+    },
+    "server/games/studioGames.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/studioGames.ts",
+      "baseSha256": "e3484145ad3dbebc1ded5df6d808f98b5d79e9ebc2fc58b7f8a413782f7b130c",
+      "sha256": "e3484145ad3dbebc1ded5df6d808f98b5d79e9ebc2fc58b7f8a413782f7b130c"
+    },
+    "server/games/velvetReign.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/velvetReign.ts",
+      "baseSha256": "2de78bed621067021920d9ad742986a60034f975647a227a11bcc87869ff45a7",
+      "sha256": "2de78bed621067021920d9ad742986a60034f975647a227a11bcc87869ff45a7"
+    },
+    "server/afterglowProgress.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/afterglowProgress.ts",
+      "baseSha256": "4a7f5d07ca6be6afbcec0c5ff2c7d91bb4da82f81438aa35c8a418cc939134b9",
+      "sha256": "4a7f5d07ca6be6afbcec0c5ff2c7d91bb4da82f81438aa35c8a418cc939134b9"
+    },
+    "server/games/casinoNextVariants.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/casinoNextVariants.ts",
+      "baseSha256": "f989cee4147e107faf7c4e4df216729025fc2baf6e779dde1a64f9b825ce1e43",
+      "sha256": "f989cee4147e107faf7c4e4df216729025fc2baf6e779dde1a64f9b825ce1e43"
+    },
+    "server/games/casinoBatchVariants.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/casinoBatchVariants.ts",
+      "baseSha256": "4d2127a24c5a95e91550cb39394f1a4abbb2c05ebf455e9492947ec97c454b2c",
+      "sha256": "4d2127a24c5a95e91550cb39394f1a4abbb2c05ebf455e9492947ec97c454b2c"
+    },
+    "server/games/velvetMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "server/games/velvetMath.ts",
+      "baseSha256": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
+      "sha256": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f"
+    }
+  }
+}

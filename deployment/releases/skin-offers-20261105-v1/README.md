@@ -1,0 +1,5 @@
+# Royal janitor and cosmetic offers
+
+Publish the approved stationary Zhora NPC and his drawn animations in the toilet. The shared fitting and wardrobe service offers two atelier candidates for $1 and exactly one Zhora candidate for $5. Persist accepted prices and counts, exact reserve/refund amounts and historical ten-dollar orders. Preserve level rewards at the atelier, the active production catalogue, independent modules, other services, environment and persistent data.
+
+Read a fresh full production snapshot. Apply only the listed feature hunks over its exact host/backend origins. Use one committed release:prepare artifact, final compiled-host and common-wallet recovery verification, and release:verify --github. The guarded installer uses nonblocking publication locks, image/source rollback and the reviewed financial lease with skin-job and purchase draining, additive-DDL readiness and table fencing. It never restores the database. Historical and new accepted rounds are covered by the checked compatibility evidence. After publication, verify public bytes and the unchanged catalogue, complete automatic retention, then push the deployment record.
