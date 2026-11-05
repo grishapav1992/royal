@@ -5,7 +5,7 @@ import { PLAYER_CHARACTERS } from '../src/shared/characters';
 const password = 'Character-selection-123!';
 const email = () => `character-selection-${crypto.randomUUID()}@example.test`;
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
-const network = (page: Page) => page.evaluate(() => (window as any).royalDemo.getNetworkState());
+const network = (page: Page) => page.evaluate(() => (window as any).royalDemo?.getNetworkState());
 const savedAccount = async (page: Page) => {
   const response = await page.request.get('/api/auth/me');
   expect(response.ok()).toBe(true);
@@ -13,7 +13,8 @@ const savedAccount = async (page: Page) => {
 };
 
 async function login(page: Page) {
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.goto('/', { waitUntil: 'commit' });
+  await expect(page.locator('#login-form')).toBeVisible({ timeout: 30000 });
   await page.getByLabel('Почта', { exact: true }).fill(email());
   await page.getByLabel('Пароль', { exact: true }).fill(password);
   await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
@@ -21,8 +22,9 @@ async function login(page: Page) {
 }
 
 async function expectConnected(page: Page) {
+  await expect.poll(async () => (await network(page))?.status, { timeout: 30000 }).toBe('connected');
   await expect(page.locator('#join-dialog')).toBeHidden();
-  await expect.poll(async () => (await network(page)).status).toBe('connected');
+  await expect(page.locator('#chat-input')).toBeEnabled();
 }
 
 async function createAccount(page: Page, character: object) {
@@ -30,47 +32,53 @@ async function createAccount(page: Page, character: object) {
   expect(loginResponse.ok()).toBe(true);
   const characterResponse = await page.request.post('/api/auth/character', { data: character });
   expect(characterResponse.ok()).toBe(true);
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.goto('/', { waitUntil: 'commit' });
   await expectConnected(page);
 }
 
 async function openSettings(page: Page) {
+  const profile = page.getByRole('button', { name: 'Профиль и настройки', exact: true });
+  if (await profile.isVisible()) await profile.click();
   await page.getByRole('button', { name: 'Настройки игрока', exact: true }).click();
   await expect(page.locator('#name-dialog')).toBeVisible();
   await expect(page.locator('#settings-character-selection .character-choice')).toHaveCount(PLAYER_CHARACTERS.length);
   await expect(page.locator('.character-editor')).toHaveCount(0);
 }
 
-test('new account selects the expanded roster character and keeps it after reloading', async ({ page }) => {
+test('new account selects a ready-made character and keeps it after reloading', async ({ page }) => {
   await login(page);
   const selection = page.locator('#character-selection');
   await expect(selection.locator('.character-choice')).toHaveCount(PLAYER_CHARACTERS.length);
   await expect(page.locator('.character-editor')).toHaveCount(0);
+  await expect.poll(() => selection.locator('img').evaluateAll(images =>
+    images.every(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0),
+  )).toBe(true);
+  expect(await selection.locator('.character-grid').evaluate(grid => grid.scrollWidth <= grid.clientWidth)).toBe(true);
   for (const character of PLAYER_CHARACTERS) {
     await expect(selection.getByRole('button', { name: character.name, exact: true })).toHaveAttribute('data-skin', String(character.id));
   }
   await expect(selection.locator('[data-skin="6"]')).toHaveCount(0);
   await expect(selection.getByRole('button', { name: 'Эдди', exact: true })).toHaveAttribute('aria-pressed', 'true');
-  await page.getByLabel('Игровое имя', { exact: true }).fill('Рэн из клуба');
-  await selection.getByRole('button', { name: 'Рэн', exact: true }).click();
+  await page.getByLabel('Игровое имя', { exact: true }).fill('Гас из клуба');
+  await selection.getByRole('button', { name: 'Гас', exact: true }).click();
   await expect(selection.locator('[aria-pressed="true"]')).toHaveCount(1);
   const responsePromise = page.waitForResponse(response => response.url().endsWith('/api/auth/character') && response.request().method() === 'POST');
   await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();
   const response = await responsePromise;
   expect(response.ok()).toBe(true);
-  expect(response.request().postDataJSON()).toEqual({ skin: 16, name: 'Рэн из клуба' });
+  expect(response.request().postDataJSON()).toEqual({ skin: 12, name: 'Гас из клуба' });
   await expectConnected(page);
-  await expect.poll(async () => (await state(page)).skin).toBe(16);
-  expect((await state(page)).texture).toBe('citizen-16');
+  await expect.poll(async () => (await state(page)).skin).toBe(12);
+  expect((await state(page)).texture).toBe('citizen-12');
   expect((await state(page)).appearance).toBe('');
-  expect(await savedAccount(page)).toMatchObject({ skin: 16, name: 'Рэн из клуба', appearance: null });
+  expect(await savedAccount(page)).toMatchObject({ skin: 12, name: 'Гас из клуба', appearance: null });
 
   await page.reload({ waitUntil: 'domcontentloaded' });
   await expectConnected(page);
-  await expect.poll(async () => (await state(page)).skin).toBe(16);
-  expect((await state(page)).texture).toBe('citizen-16');
+  await expect.poll(async () => (await state(page)).skin).toBe(12);
+  expect((await state(page)).texture).toBe('citizen-12');
   await openSettings(page);
-  await expect(page.locator('#settings-character-selection').getByRole('button', { name: 'Рэн', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#settings-character-selection').getByRole('button', { name: 'Гас', exact: true })).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('settings replace the fixed character live without reconnecting', async ({ page }) => {
