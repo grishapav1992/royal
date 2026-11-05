@@ -38,3 +38,16 @@ test('reduced motion holds repeated work and conversational gestures but retains
   }
   assert.notEqual(sampleMiraFrame(view('serve',.1),true).frame,sampleMiraFrame(view('serve',.9),true).frame);
 });
+
+test('every painted pose is reachable through a real action, including all four listening drawings',()=>{
+  const reached=new Set<string>();
+  for(const action of ['walk','sit','sit-down','stand-up','wipe','polish','stock','serve','greet','listen','chat'] as const){
+    for(let n=0;n<=1000;n++){
+      const frame=sampleMiraFrame(view(action,n/1000));reached.add(frame.atlas+':'+frame.frame);
+    }
+  }
+  for(const [atlas,spec] of Object.entries(MIRA_ATLASES)){
+    for(let frame=0;frame<spec.columns*spec.rows;frame++)assert.ok(reached.has(atlas+':'+frame),atlas+':'+frame);
+  }
+  assert.equal(reached.size,56);
+});

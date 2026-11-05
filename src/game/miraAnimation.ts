@@ -30,7 +30,10 @@ export function sampleMiraFrame(view:MiraView,reducedMotion=false):MiraFrame {
     case 'stock':return {...result,atlas:'work',frame:12+frameAt(p,4)};
     case 'serve':return {...result,atlas:'serve',frame:p<.12?0:p<.22?1:p<.3?2:p<.5?3:p<.59?4:p<.68?5:p<.82?6:7};
     case 'greet':return {...result,frame:reducedMotion?8:frameAt(clamp((p-.08)/.84),8)};
-    case 'listen':return {...result,frame:reducedMotion?8:p>.4&&p<.6?9:8};
+    case 'listen':{
+      const nod=[9,10,11,10,9];
+      return {...result,frame:reducedMotion||p<=.3||p>=.7?8:nod[frameAt((p-.3)/.4,nod.length)]};
+    }
     case 'chat':{
       const sequence=[15,12,13,14,13,12,15,15];
       return {...result,frame:reducedMotion?13:sequence[frameAt(p,sequence.length)]};

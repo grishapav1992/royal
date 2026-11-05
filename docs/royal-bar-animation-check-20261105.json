@@ -1,0 +1,152 @@
+{
+  "status": "local_fix_verified_not_published",
+  "implementationCommit": "90ef9d9dfc3161866b7d563fabe0f21a0d84cf07",
+  "testedMain": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+  "testedWorkingBase": "371fe3ee3e03fae51be2cc80b04c1e4486c6e76e",
+  "productionAtInspection": {
+    "image": "sha256:5960de68fa1cf1e62e19824224c7008b687dad8cf72a763b7af80b773a08fc84",
+    "sourceCommit": "2e5c07509e20ed52820b44c9537ea396000f8a99",
+    "health": "healthy",
+    "files": {
+      "src/game/MiraRig.ts": "0a8254bfeddcaec47a3f2468b94d05e65e6531970a057a00b0b0249cfa126931",
+      "src/game/miraAnimation.ts": "93ce2c106cddee6b195df5e4d6b26d55c40e1ba98bc60fb0289ad01a1af094ca",
+      "src/game/royalBarArt.ts": "75eb83aeefa8665575a5a1ad8077b62404862671873fe31be4a3ae4ba38fd530",
+      "src/shared/miraRoutine.ts": "1edf1b32dec6a1d9646f23c0907ec5458aa311a35121633d9fdd5a8ac1470300",
+      "server/bartender.ts": "d669db795f60d965c0ca5617b54661fc15407a83800fd47a246827317920d63f",
+      "src/shared/catCare.ts": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8"
+    },
+    "localSourceMatches": {
+      "src/game/MiraRig.ts": true,
+      "src/game/miraAnimation.ts": true,
+      "src/game/royalBarArt.ts": true,
+      "src/shared/miraRoutine.ts": true,
+      "server/bartender.ts": true,
+      "src/shared/catCare.ts": true
+    }
+  },
+  "productionWrites": false,
+  "findings": {
+    "leftGlass": "Missing foreground outline let the left wiping hand cover the fixed glass. Other countertop props also had lower depth than staff contact. Solid parts of the source assembly had alpha 252-253.",
+    "seatedRest": "Previously the seat job followed four ordinary work jobs. Long guard/player dialogue and accepted service can delay a normal shift.",
+    "listening": "Two of the four painted listening drawings were never selected."
+  },
+  "changes": {
+    "allFivePropsAboveStaff": true,
+    "solidRuntimePropAlpha": true,
+    "sourcePngsUnchanged": true,
+    "uninterruptedFirstSitBeforeSeconds": 39.25,
+    "uninterruptedFirstSitAfterSeconds": 10.35,
+    "seatedRestPosition": {
+      "x": 191,
+      "y": 456
+    },
+    "serviceAndDialoguePriorityPreserved": true,
+    "all56PosesReachable": true,
+    "independentAmbientCaptionRemovalPreserved": "6cb9c1cc",
+    "catMug": {
+      "x": 394,
+      "y": 454,
+      "depth": 513
+    },
+    "catApproach": {
+      "x": 437,
+      "y": 493
+    },
+    "catPerch": {
+      "x": 364,
+      "y": 452
+    }
+  },
+  "checks": {
+    "typecheckPassed": true,
+    "miraLogicTestsPassed": 11,
+    "catClimbDrinkDescentTestPassed": true,
+    "pixelBrowserTestsPassed": 2,
+    "viewports": [
+      {
+        "width": 1280,
+        "height": 900
+      },
+      {
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "posesPerViewport": 56,
+    "additionalRightWipeFramesPerViewport": 8,
+    "negativeControlReproducedGlassOverlap": true,
+    "zeroProbePixelChangesInFixedPoses": true,
+    "realSharedBrowserTestsPassed": 1,
+    "shared": {
+      "seatedAfterDesktopReadyMs": 27436,
+      "desktop": {
+        "width": 1280,
+        "height": 900
+      },
+      "mobile": {
+        "width": 390,
+        "height": 844
+      },
+      "lateArrival": true,
+      "observedActions": [
+        "sit",
+        "stand-up",
+        "walk",
+        "greet",
+        "listen"
+      ],
+      "serviceFinalFrame": 7,
+      "reducedMotion": true,
+      "providerStubbed": true,
+      "productionDataUsed": false,
+      "errors": []
+    },
+    "isolatedBackendStartupPassed": true,
+    "browserFixtureNotes": "Visual checks use full scene and source PNGs; forcing poses is limited to the local compositor test. Natural server scenario uses ordinary room actions and no forced poses. The final shared run uses the freshly synchronized host with ambient captions removed. The unchanged five animation/render inputs of the pixel checks are retained.",
+    "repairChecks": "Exact pixels first revealed translucent coffee bleed, then passed after solid prop alpha. The live test observes seating before loading its late mobile viewer and records the brief handover in-browser so a slow join or sparse polling does not miss the phase."
+  },
+  "normalizedSourceSha256": {
+    "src/game/MiraRig.ts": "5b632227fedd525c033a36775f073d32621f5ecd92d1a72506a2ebd4895bc805",
+    "src/game/miraAnimation.ts": "b657618d3850c816ffd8b94999e073ca76cfb67dded2c5d2228eeb90c4575891",
+    "src/game/royalBarArt.ts": "51bf2e34143bdd33728d6be8a349f5ec6cdc9f3108659fbcdaf4c219502ed538",
+    "src/game/royalBarLayers.ts": "6fd30708c1b071916199f57a27df408843e331d5e9e05357f2b26250c16f3e99",
+    "src/shared/miraRoutine.ts": "8ee4fe6f0c12586a488f130cf06b1697047b8d7960dd7028086f122c83fd846d",
+    "src/game/RoomScene.ts": "06ea302fb7d55b62e38264b3bb0e4da644b03b72b6648222e8a6b39b7c2da8b5",
+    "src/main.ts": "2d6a4c778209a02f2590c5f0ec60610e3e77044abc7d5092b769a58e1cdb853d",
+    "src/ui/compact-header.css": "80fb05ba68f888bbb49fe7a30c1d4870c54df975e37a607ffddd30420a83e662",
+    "server/bartender.ts": "d669db795f60d965c0ca5617b54661fc15407a83800fd47a246827317920d63f",
+    "server-tests/mira-animation.test.ts": "16e802eeae6d7af9ecec08a568400142be37ae556b5abc83273c9223d0135198",
+    "server-tests/mira-presentation.test.ts": "deca9049c506b4bacd71f2affaa91c5eb16c1016d0112fc46969fb55379d6a0f",
+    "tests/mira-occlusion.spec.ts": "b80435c42d1d565e31c46a38d7684f60b3bd2eba220afda9a68229631af91ff7",
+    "playwright.mira-animation.config.ts": "22e4ae6039a2b5ca338f969888b6368f1e8871a53466a26019a5c26939a08e9c",
+    "scripts/mira-animation-review.mjs": "af6654f54d281d435131f0f897c58a2801911280d46c030d0a664a4dd43d2e9f"
+  },
+  "media": [
+    {
+      "file": "C:/Users/Aorus/.codex/visualizations/2026/11/04/01a1a6b6-f62b-7273-835c-9f91bf48a69b/mira-natural-routine-fix-20261105.webm",
+      "sha256": "bd9de3aedebb2644dcfd2957e10390de8b655d11e8e9e6954650e7b0c03969dc",
+      "bytes": 6880761
+    },
+    {
+      "file": "C:/Users/Aorus/.codex/visualizations/2026/11/04/01a1a6b6-f62b-7273-835c-9f91bf48a69b/mira-glass-layer-fix-20261105.png",
+      "sha256": "9029cbb7e124288291e01b99d5b595a7067250ea97192e115006e6fc7e93fc47",
+      "bytes": 517756
+    },
+    {
+      "file": "C:/Users/Aorus/.codex/visualizations/2026/11/04/01a1a6b6-f62b-7273-835c-9f91bf48a69b/mira-seated-mobile-fix-20261105.png",
+      "sha256": "944d026b81ba25b9e1f9e2e06c1299ad01a614f9d47a8c50bfc23e6b6e4128af",
+      "bytes": 139076
+    },
+    {
+      "file": "C:/Users/Aorus/.codex/visualizations/2026/11/04/01a1a6b6-f62b-7273-835c-9f91bf48a69b/mira-natural-seat-desktop-20261105.png",
+      "sha256": "a7b49c36abfca2823fb89dde5f9586f6e942b4e376ad23000542605f52a2b0ff",
+      "bytes": 537784
+    }
+  ],
+  "limits": {
+    "projectBrain": "Unavailable at initial SSH query; six exact production source files were checked directly before changes.",
+    "physicalPhoneTested": false,
+    "paidProviderUsed": false,
+    "gameCatalogueOrMathematicsChanged": false
+  }
+}

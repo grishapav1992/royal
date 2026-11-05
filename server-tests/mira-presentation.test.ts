@@ -5,6 +5,16 @@ import { BAR_APPROACH } from '../src/shared/world';
 import { Bartender } from '../server/bartender';
 import { LobbyState, Player } from '../server/state';
 
+test('an uninterrupted shift reaches seated rest after the first job and completes the ordinary work cycle',()=>{
+  const routine=new MiraRoutine(),seen=new Set<string>();let firstSit=Infinity;
+  for(let tick=0;tick<1600;tick++){
+    routine.tick(.05);seen.add(routine.state.action);
+    if(routine.state.action==='sit')firstSit=Math.min(firstSit,(tick+1)*.05);
+  }
+  assert.ok(firstSit>7&&firstSit<=12,'First seated rest must be visible after the first job, within the designed 12-second window');
+  for(const action of ['polish','walk','sit-down','sit','stand-up','wipe','stock'])assert.ok(seen.has(action),action);
+});
+
 test('seated rest rises before service, keeps its position and resumes the staff routine', () => {
   const r=new MiraRoutine();
   for(let n=0;n<2200&&r.state.action!=='sit';n++)r.tick(.05);
