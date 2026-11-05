@@ -1,5 +1,9 @@
 import { english } from './en';
 Object.assign(english, {
+  'Вход в Royal': 'Sign in to Royal',
+  'Проверяем вход…': 'Checking your session…',
+  'Первый вход создаст аккаунт.': 'Your first sign-in creates an account.',
+  'Не удалось подключиться. Попробуй ещё раз.': 'Could not connect. Please try again.',
   'ТВОЙ ВЕЧЕР В ROYAL': 'YOUR EVENING AT ROYAL',
   'Как будешь играть?': 'How would you like to play?',
   'АТМОСФЕРА И ОБЩЕНИЕ': 'ATMOSPHERE AND COMPANY',

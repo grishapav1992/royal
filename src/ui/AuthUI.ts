@@ -2,7 +2,9 @@ import { translateMessage } from '../i18n/index';
 import { isUserMessage, t as translateText, installLanguageSwitcher } from '../i18n/index';
 import { gameAudio } from '../game/GameAudio';
 import {forgetSession} from '../network/sessionRecovery';
+import { AuthRequestError, requestAuth } from '../network/AccountClient';
 import { CharacterSelector } from './CharacterSelector';
+import { bindLoginForm, loginFormMarkup } from './LoginForm';
 import { SkinStudioUI } from './SkinStudioUI';
 import type { Account } from '../../server/accounts';
 import type { PlayerControls } from './PlayerControls';
@@ -36,11 +38,7 @@ export class AuthUI {
       <h2 id="join-title">Твой вход в клуб</h2>
       <section id="login-step">
         <p class="auth-description">Почта, пароль, и ты с нами. Если заходишь впервые, аккаунт создастся автоматически.</p>
-        <form id="login-form">
-          <label for="email">Почта</label><input id="email" type="email" name="email" maxlength="254" autocomplete="username" placeholder="you@example.com" required>
-          <label for="password">Пароль</label><div class="password-field"><input id="password" type="password" name="password" minlength="8" maxlength="128" autocomplete="current-password" placeholder="Не меньше 8 символов" required><button id="reveal-password" type="button" aria-label="Показать пароль" aria-pressed="false">Показать</button></div>
-          <button id="login-button" class="primary-button" type="submit">Продолжить</button>
-        </form>
+        ${loginFormMarkup()}
         <small class="auth-hint">Используй свой пароль для этого клуба. Подтверждение почты пока не требуется.</small>
       </section>
       <section id="character-step" hidden>
@@ -87,15 +85,9 @@ export class AuthUI {
     this.nameDialog.querySelector('#settings-character-selection')!.append(this.settingsSelector.element);
     this.dialog.addEventListener('cancel', event => event.preventDefault());
     this.dialog.addEventListener('close', () => { scene.setLocked(false); });
-    this.dialog.querySelector('#reveal-password')!.addEventListener('click', () => {
-      const input = this.dialog.querySelector<HTMLInputElement>('#password')!; const reveal = input.type === 'password'; input.type = reveal ? 'text' : 'password';
-      const button = this.dialog.querySelector<HTMLButtonElement>('#reveal-password')!;
-      button.textContent = reveal ? translateText('Скрыть') : translateText('Показать'); button.setAttribute('aria-label',reveal ? translateText('Скрыть пароль') : translateText('Показать пароль')); button.setAttribute('aria-pressed',String(reveal));
-    });
-    this.dialog.querySelector('#login-form')!.addEventListener('submit', event => {
-      event.preventDefault(); void this.perform(async () => {
-        const email = this.dialog.querySelector<HTMLInputElement>('#email')!, password = this.dialog.querySelector<HTMLInputElement>('#password')!;
-        const result = await this.api('/login', { email: email.value, password: password.value });
+    const { password } = bindLoginForm(this.dialog, credentials => {
+      void this.perform(async () => {
+        const result = await this.api('/login', credentials);
         password.value = ''; this.account = result.account; await this.continueEntry();
       });
     });
@@ -136,10 +128,17 @@ export class AuthUI {
     void this.perform(async () => { const result = await this.api('/me'); this.account = result.account; await this.continueEntry(); });
   }
   private async api(path: string, body?: object) {
-    const response = await fetch(`/api/auth${path}`, { method: body ? 'POST' : 'GET', credentials: 'same-origin', headers: body ? { 'Content-Type':'application/json' } : undefined, body: body ? JSON.stringify(body) : undefined });
-    const result = await response.json();
-    if (!response.ok) { if (response.status === 401 && path !== '/login') { this.account = null; this.showLogin(); this.error.textContent = translateMessage(result.error); this.error.hidden = false; } throw new Error(result.error || translateText('Не удалось выполнить запрос.')); }
-    return result as { account: Account | null };
+    try {
+      return await requestAuth(path, body);
+    } catch (error) {
+      if (error instanceof AuthRequestError && error.status === 401 && path !== '/login') {
+        this.account = null;
+        this.showLogin();
+        this.error.textContent = translateMessage(error.message);
+        this.error.hidden = false;
+      }
+      throw error;
+    }
   }
   private async perform(action: () => Promise<void>) {
     if (this.busy) return;
@@ -207,7 +206,8 @@ export class AuthUI {
     await this.perform(async () => {
       await this.api('/logout',{});
       const url = new URL(location.href); url.searchParams.delete('room'); history.replaceState(null,'',url);
-      this.leave(); this.account = null; this.showLogin();
+      this.leave(); this.account = null;
+      location.reload();
     });
   }
   showRejoin() {

@@ -1,8 +1,10 @@
 import './i18n/paymentMethodsEn';
+import { requireEntryAccount } from './ui/EntryLogin';
 import { chooseEntryMode } from './ui/EntryModes';
 import { t } from './i18n/index';
 
 async function boot() {
+  if (new URL(location.href).searchParams.get('offline') !== '1') await requireEntryAccount();
   const mode = await chooseEntryMode();
   const { startRoyal } = await import('./main');
   await startRoyal(mode);

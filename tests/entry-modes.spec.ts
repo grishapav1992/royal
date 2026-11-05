@@ -32,11 +32,16 @@ test('entry choice remembers the mode and opens the real casino without loading 
   page.on('request', request => { if (/\/game\/(?:RoomScene|ClubWorld)\./.test(request.url())) worldRequests.push(request.url()); });
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
+  await expect(page.locator('#login-form')).toBeVisible();
+  await expect(page.locator('[data-entry-mode]')).toHaveCount(0);
+  const email = `entry-choice-${crypto.randomUUID()}@example.test`;
+  await page.locator('#email').fill(email);
+  await page.locator('#password').fill('EntryLocal2026');
+  await page.locator('#login-button').click();
   await expect(page.locator('#entry-title')).toHaveText('Как будешь играть?');
   await page.screenshot({ path: proof + '/entry-desktop.png' });
   await page.locator('#remember-entry-mode').check();
   await page.locator('[data-entry-mode="casino"]').click();
-  await page.locator('#email').fill(`entry-choice-${crypto.randomUUID()}@example.test`); await page.locator('#password').fill('EntryLocal2026'); await page.locator('#login-button').click();
   await connected(page);
   await expect(page.locator('.casino-panel')).toBeVisible();
   expect(await page.evaluate(() => (window as any).royalDemo.isWorldLoaded())).toBe(false);
@@ -61,6 +66,19 @@ test('entry choice remembers the mode and opens the real casino without loading 
   await page.screenshot({ path: proof + '/casino-desktop.png' });
   await page.reload(); await connected(page);
   await expect(page.locator('#entry-title')).toHaveCount(0);
+  await expect(page.locator('body')).toHaveAttribute('data-entry-mode', 'casino');
+  await page.locator('.profile-toggle').click();
+  await page.getByRole('button', { name: 'Выйти', exact: true }).click();
+  await expect(page.locator('.entry-login #login-form')).toBeVisible();
+  await expect(page.locator('#casino-catalog')).toHaveCount(0);
+  await page.locator('#email').fill(email);
+  await page.locator('#password').fill('WrongLocal2026');
+  await page.locator('#login-button').click();
+  await expect(page.locator('#join-error')).toHaveText('Неверная почта или пароль.');
+  await expect(page.locator('[data-entry-mode]')).toHaveCount(0);
+  await page.locator('#password').fill('EntryLocal2026');
+  await page.locator('#login-button').click();
+  await connected(page);
   await expect(page.locator('body')).toHaveAttribute('data-entry-mode', 'casino');
   expect(errors).toEqual([]);
 });
@@ -130,9 +148,12 @@ test('casino games use the common wallet and recover a lost response without a s
 });
 
 test('phone catalogue and chat stay usable in both orientations', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 }); await page.goto('/');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await account(page);
+  await page.goto('/');
+  await expect(page.locator('#entry-title')).toBeVisible();
   await page.screenshot({ path: proof + '/entry-mobile.png' });
-  await account(page); await page.goto('/?mode=casino'); await connected(page);
+  await page.goto('/?mode=casino'); await connected(page);
   for (const viewport of [{ width: 390, height: 844 }, { width: 844, height: 390 }]) {
     await page.setViewportSize(viewport);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -152,6 +173,8 @@ test('phone catalogue and chat stay usable in both orientations', async ({ page 
 
 test('new casino player skips the character editor and can change entry preference in settings', async ({ page }) => {
   await page.goto('/?mode=casino');
+  await expect(page.locator('#login-form')).toBeVisible();
+  await expect(page.locator('#casino-catalog')).toHaveCount(0);
   await page.locator('#email').fill(`new-entry-${crypto.randomUUID()}@example.test`);
   await page.locator('#password').fill('EntryLocal2026'); await page.locator('#login-button').click();
   await connected(page);

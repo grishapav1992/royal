@@ -8,12 +8,7 @@ export const isEntryMode = (value: unknown): value is EntryMode => value === 'cl
 export function rememberEntryMode(mode: EntryMode | null) {
   try { if (mode) localStorage.setItem(storageKey, mode); else localStorage.removeItem(storageKey); } catch { /* Choice still works without storage. */ }
 }
-export async function chooseEntryMode(): Promise<EntryMode> {
-  const url = new URL(location.href);
-  if (url.searchParams.get('offline') === '1') return 'club';
-  const explicit = url.searchParams.get('mode');
-  if (isEntryMode(explicit)) return explicit;
-  try { const saved = localStorage.getItem(storageKey); if (isEntryMode(saved)) return saved; } catch { /* Ask for this visit. */ }
+export function renderEntryPage(content: string) {
   const app = document.querySelector<HTMLElement>('#app')!;
   app.innerHTML = `
     <main class="entry-page">
@@ -22,6 +17,20 @@ export async function chooseEntryMode(): Promise<EntryMode> {
           <span aria-hidden="true">♛</span> ${t('РОЯЛЬ')}<small>SOCIAL CASINO CLUB</small>
         </a>
       </header>
+      ${content}
+      <footer class="entry-footer">ROYAL <span>✦</span> ${t('Игры и люди в одном месте')}</footer>
+    </main>`;
+  installLanguageSwitcher(app.querySelector<HTMLElement>('.entry-header')!);
+  return app;
+}
+
+export async function chooseEntryMode(): Promise<EntryMode> {
+  const url = new URL(location.href);
+  if (url.searchParams.get('offline') === '1') return 'club';
+  const explicit = url.searchParams.get('mode');
+  if (isEntryMode(explicit)) return explicit;
+  try { const saved = localStorage.getItem(storageKey); if (isEntryMode(saved)) return saved; } catch { /* Ask for this visit. */ }
+  const app = renderEntryPage(`
       <section class="entry-content" aria-labelledby="entry-title">
         <span class="entry-eyebrow">${t('ТВОЙ ВЕЧЕР В ROYAL')}</span>
         <h1 id="entry-title">${t('Как будешь играть?')}</h1>
@@ -48,10 +57,7 @@ export async function chooseEntryMode(): Promise<EntryMode> {
         <label class="entry-remember">
           <input id="remember-entry-mode" type="checkbox">${t('Открывать выбранный режим при следующем входе')}
         </label>
-      </section>
-      <footer class="entry-footer">ROYAL <span>✦</span> ${t('Игры и люди в одном месте')}</footer>
-    </main>`;
-  installLanguageSwitcher(app.querySelector<HTMLElement>('.entry-header')!);
+      </section>`);
   return new Promise(resolve => {
     app.querySelectorAll<HTMLButtonElement>('[data-entry-mode]').forEach(button => button.onclick = () => {
       const mode = button.dataset.entryMode;
