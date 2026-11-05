@@ -16,10 +16,10 @@ class PublicationTests(unittest.TestCase):
         self.proof = {'hostSingletonsExternalized': True, 'serverImplementationIncluded': False,
                       'sourceFiles': {'shared.ts': 'live'}}
         self.release = {'scope': 'modules', 'modules': [publish.GAME], 'build': {'passed': True},
-                        'sourceCommit': 'next', 'baseCommit': 'base', 'packages': [{'gameId': publish.GAME}],
-                        'moduleProjection': {'inputs': {**self.source, 'shared.ts': 'live'},
+                        'sourceCommit': 'next', 'baseCommit': 'build-base', 'packages': [{'gameId': publish.GAME}],
+                        'moduleProjection': {'productionCommit': 'build-base', 'inputs': {**self.source, 'shared.ts': 'live'},
                                              'modules': {publish.GAME: {'sourceFiles': self.proof['sourceFiles']}}}}
-        self.operator = {'sourceCommit': 'next', 'source': self.source}
+        self.operator = {'sourceCommit': 'next', 'baseCommit': 'base', 'buildBaseCommit': 'build-base', 'source': self.source}
 
     def test_binds_changed_files_and_compiles_other_inputs_from_the_live_host(self):
         publish.validate_inputs(self.before, self.release, self.operator, self.proof)

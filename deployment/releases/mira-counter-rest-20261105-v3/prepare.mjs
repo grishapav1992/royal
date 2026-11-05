@@ -12,6 +12,8 @@ const scope=JSON.parse(fs.readFileSync(path.join(folder,'scope.json')));
 await assertClean(root);const release=JSON.parse(fs.readFileSync('module-build/release-manifest.json')),receipt=JSON.parse(fs.readFileSync('module-build/release-github.json'));
 const installerCommit=process.argv[4];assert(/^[a-f0-9]{40}$/.test(installerCommit));
 assert.equal(release.sourceCommit,receipt.sourceCommit);
+const packagerSourceCommit=process.env.ROYAL_MIRA_PACKAGER_COMMIT || git(root,['rev-parse','HEAD']);
+assert.equal(packagerSourceCommit,installerCommit,'Package with the reviewed installer source');
 for(const commit of [release.sourceCommit,receipt.remoteMain,installerCommit])git(root,['merge-base','--is-ancestor',commit,'origin/main']);
 const installerParent=git(root,['rev-parse',installerCommit+'^']);
 const installerChanges=git(root,['diff','--name-only',installerParent,installerCommit]).split('\n').filter(Boolean);
@@ -57,13 +59,14 @@ const references={
  'overlay-base.py':'deployment/releases/cat-purr-hall-only-20261030-v1/deploy.py',
  'snapshot-base.py':'deployment/releases/universal-spins-20261031-v1/snapshot.py',
  'runtime-inventory.cjs':'deployment/releases/cat-purr-hall-only-20261030-v1/runtime-inventory.cjs',
- 'quiesce.cjs':'deployment/releases/cat-purr-hall-only-20261030-v1/quiesce.cjs',
+ 'quiesce.cjs':'deployment/releases/skin-offers-20261105-v2/quiesce.cjs',
+ 'quiesce-base.cjs':'deployment/releases/cat-purr-hall-only-20261030-v1/quiesce.cjs',
  'financial_gate.py':'deployment/releases/cat-purr-hall-only-20261030-v1/financial_gate.py',
  'image_metadata.py':'deployment/releases/remove-reward-games-catalog-20261031-v1/image_metadata.py',
 };
 const support={};for(const [name,file]of Object.entries(references))support[name]=write(name,committed(release.sourceCommit,file));
 for(const file of ['release-manifest.json','release-github.json'])write(file,fs.readFileSync('module-build/'+file));
-const helperReceipt={format:1,sourceCommit:installerCommit,parentCommit:installerParent,applicationSourceCommit:release.sourceCommit,packagerSourceCommit:git(root,['rev-parse','HEAD']),remoteMain:git(root,['rev-parse','origin/main']),checkedAt:new Date().toISOString(),changedOnlyReleaseTooling:installerChanges};
+const helperReceipt={format:1,sourceCommit:installerCommit,parentCommit:installerParent,applicationSourceCommit:release.sourceCommit,packagerSourceCommit,remoteMain:git(root,['rev-parse','origin/main']),checkedAt:new Date().toISOString(),changedOnlyReleaseTooling:installerChanges};
 const helperReceiptSha256=write('installer-github.json',Buffer.from(JSON.stringify(helperReceipt,null,2)+'\n'));
 const helperSha256=write('deploy.py',committed(installerCommit,folder+'/deploy.py')),snapshotSha256=write('snapshot.py',committed(installerCommit,folder+'/snapshot.py'));
 const manifest={release:name,sourceCommit:release.sourceCommit,helperSourceCommit:installerCommit,helperReceiptSha256,mediaReceiptSha256,baseCommit:before.sourceCommit,before,changed,delta,serverDelta,support,helperSha256,snapshotSha256,

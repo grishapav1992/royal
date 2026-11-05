@@ -20,7 +20,6 @@ LIVE = Path('/opt/royal')
 MODULES = Path('/opt/royal-game-modules')
 STATE = Path('/opt/royal-game-modules-state')
 BACKUP = Path('/opt/royal-backups') / NAME
-SNAPSHOT = Path('/opt/royal-releases/remove-room-labels-20261105-v1/snapshot.py')
 IMAGE_READER = Path('/opt/royal-maintenance/bin/retention-runtime.py')
 LOCKS = (ROOT.parent / 'themed-publish.lock', LIVE / '.client-presentation-deploy.lock', STATE / 'module.lock')
 SOURCES = {'games/royal-roulette/' + name for name in (
@@ -70,8 +69,8 @@ def command(*args):
     return subprocess.check_output(args, text=True, timeout=600).strip()
 
 
-def snapshot():
-    return json.loads(command('python3', str(SNAPSHOT)))
+def snapshot(reader):
+    return json.loads(command('python3', str(reader)))
 
 
 def stable(value):
@@ -93,12 +92,15 @@ def publication_locks():
 def validate_inputs(before, release, operator, proof):
     require(release['scope'] == 'modules' and release['modules'] == [GAME] and release['build']['passed'],
             'Unexpected release scope')
-    require(release['sourceCommit'] == operator['sourceCommit'] and release['baseCommit'] == before['sourceCommit'],
+    require(release['sourceCommit'] == operator['sourceCommit']
+            and release['baseCommit'] == operator['buildBaseCommit']
+            and before['sourceCommit'] == operator['baseCommit'],
             'Unexpected release source or baseline')
     require(len(release['packages']) == 1 and release['packages'][0]['gameId'] == GAME, 'Foreign package')
     require(set(operator['source']) == SOURCES, 'Unexpected source update')
     require(proof['hostSingletonsExternalized'] and not proof['serverImplementationIncluded'], 'Unexpected module boundary')
     projection = release['moduleProjection']
+    require(projection['productionCommit'] == release['baseCommit'], 'Unexpected compilation baseline')
     require(projection['modules'][GAME]['sourceFiles'] == proof['sourceFiles'], 'Compiler input inventory differs')
     inputs = projection['inputs']
     require(SOURCES.issubset(inputs), 'Changed files missing from compilation')
@@ -139,7 +141,10 @@ def publish_locked():
         ('installer-github.json', 'installerReceiptSha256'), ('module-proof.json', 'proofSha256'),
     ):
         require(sha(ROOT / name) == operator[key], 'Publication input changed: ' + name)
-    helpers = {SNAPSHOT, SNAPSHOT.with_name('snapshot-base.py'), SNAPSHOT.with_name('image_metadata.py'), IMAGE_READER}
+    reader = Path(operator['snapshotReader'])
+    require(reader.parent.parent == ROOT.parent and reader.name == 'snapshot.py'
+            and re.fullmatch(r'[a-z0-9-]+', reader.parent.name), 'Unexpected snapshot reader')
+    helpers = {reader, reader.with_name('snapshot-base.py'), reader.with_name('image_metadata.py'), IMAGE_READER}
     require(set(map(Path, operator['helpers'])) == helpers, 'Wrong production verification helpers')
     for name, digest in operator['helpers'].items():
         require(sha(Path(name)) == digest, 'Unreviewed production helper')
@@ -151,13 +156,14 @@ def publish_locked():
     require(release['githubVerified'] is True and receipt['sourceCommit'] == release['sourceCommit']
             and receipt['manifestSha256'] == operator['manifestSha256']
             and re.fullmatch('[a-f0-9]{40}', receipt['remoteMain']), 'Missing GitHub release receipt')
-    require(installer['sourceCommit'] == release['sourceCommit'] and installer['includedInMain'] is True
+    require(installer['sourceCommit'] == operator['installerSourceCommit'] and installer['includedInMain'] is True
+            and re.fullmatch('[a-f0-9]{40}', installer['remoteMain'])
             and installer['files']['deployment/releases/' + NAME + '/publish.py'] == operator['installerSha256'],
             'Installer differs from the GitHub receipt')
     require(operator['publisherSha256'] == before['source']['scripts/game-module-release.py'], 'Unexpected installer engine')
     for name, digest in operator['source'].items():
         require(sha(ROOT / 'source' / name) == digest, 'Changed source payload: ' + name)
-    current = snapshot()
+    current = snapshot(reader)
     require(stable(current) == stable(before) and current['container']['health'] == 'healthy',
             'Production changed since review')
     require(read(STATE / 'host.json')['games'][GAME] == CONTRACT, 'Incompatible roulette host')
@@ -217,7 +223,7 @@ def publish_locked():
         finally:
             os.umask(mask)
         require(result['activeSha256'] == operator['pointerSha256'], 'Published pointer differs')
-        after = snapshot()
+        after = snapshot(reader)
         validate_after(before, after, operator['source'], files, operator['pointerSha256'], version)
         require(shutil.disk_usage(LIVE).free > MIN_FREE, 'Five GiB reserve crossed')
     except Exception:
@@ -233,7 +239,8 @@ def publish_locked():
         raise
     save('after.json', after)
     record = {'published': True, 'release': NAME, 'sourceCommit': release['sourceCommit'],
-              'baseCommit': before['sourceCommit'], 'module': result, 'backup': backup,
+              'baseCommit': before['sourceCommit'], 'buildBaseCommit': release['baseCommit'],
+              'installerSourceCommit': operator['installerSourceCommit'], 'module': result, 'backup': backup,
               'freeBefore': before['availableBytes'], 'freeAfter': after['availableBytes'],
               'hostRestarted': False, 'databaseTouched': False, 'otherModulesPreserved': True,
               'sourceFilesPreserved': len(before['source']) - len(SOURCES),
