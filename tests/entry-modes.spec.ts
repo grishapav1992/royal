@@ -149,5 +149,17 @@ test('new casino player skips the character editor and can change entry preferen
   await page.locator('#cancel-name').click(); await page.reload();
   // The explicit URL mode remains usable; without it, the chooser returns.
   await page.goto('/'); await expect(page.locator('#entry-title')).toBeVisible();
-  await page.goto('/?lang=en'); await expect(page.locator('#entry-title')).toHaveText('How would you like to play?');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole('combobox', { name: 'Язык' }).selectOption('en');
+  await expect(page.locator('#entry-title')).toHaveText('How would you like to play?');
+  await expect(page.getByRole('checkbox', { name: 'Open this mode next time' })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.goto('/');
+  await expect(page.getByRole('combobox', { name: 'Language' })).toHaveValue('en');
+  await page.getByRole('button', { name: /Open the casino/ }).click();
+  await connected(page);
+  await expect(page.getByRole('heading', { name: 'Royal games' })).toBeVisible();
+  await page.getByRole('button', { name: 'Club', exact: true }).click();
+  await expect(page.locator('body')).toHaveAttribute('data-entry-mode', 'club', { timeout: 40000 });
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 });

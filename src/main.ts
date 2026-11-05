@@ -466,8 +466,16 @@ async function changeMode(next: EntryMode) {
   if (offline && next === 'casino') { toast(translateText('Войди в клуб, чтобы открыть игру.')); return false; }
   if (document.querySelector('dialog[open]') && mode !== next) return false;
   if (next === 'club') {
+    $('.casino-panel').hidden = true;
     $('.room-panel').hidden = false;
-    try { await ensureWorld(); } catch { toast(translateText('Не получилось открыть клуб. Попробуй ещё раз.')); $('.room-panel').hidden = mode !== 'club'; throw Error('Club could not load'); }
+    try {
+      await ensureWorld();
+    } catch (error) {
+      $('.room-panel').hidden = mode !== 'club';
+      $('.casino-panel').hidden = mode !== 'casino';
+      toast(translateText('Не получилось открыть клуб. Попробуй ещё раз.'));
+      throw error;
+    }
     worldGame?.loop.wake();
     room.setLocked(Boolean(document.querySelector('dialog[open]')) || Boolean(social && social.client.status !== 'connected'));
   } else {

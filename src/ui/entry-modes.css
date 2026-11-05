@@ -17,3 +17,36 @@ body[data-entry-mode=casino] .workspace{grid-template-columns:minmax(0,1fr) 320p
 .game-chat-dock .casino-chat-close{display:none!important}
 .entry-mode-preference{display:flex;align-items:center;gap:8px;font-size:12px;margin:12px 0}.entry-mode-preference input{width:16px;height:16px;accent-color:#80603c}
 @media(max-width:900px){body[data-entry-mode=casino] .header .room-tools .casino-chat-toggle{display:block}}
+
+.entry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.entry-header .language-caption {
+  display: none;
+}
+
+.entry-header select {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #c6b8a3;
+  border-radius: 6px;
+  background: #faf6ee;
+  color: #342a34;
+  font: 14px system-ui;
+  cursor: pointer;
+}
+
+.entry-header select:focus-visible {
+  outline: 2px solid #96723c;
+  outline-offset: 3px;
+}
+
+@media (max-width: 520px) {
+  .entry-header .entry-brand small {
+    display: none;
+  }
+}
