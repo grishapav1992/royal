@@ -1,0 +1,1482 @@
+{
+  "sourceCommitPreservedInMain": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+  "moduleHistory": {
+    "activePackagesRetained": 124,
+    "retained": [
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\flag-battle\\versions\\2.1.1-91ce9a09756d",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-crash\\versions\\1.1.1-18763854c262",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\original-cr-vs-leo\\versions\\1.1.1-cadce85ec442",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\original-jackie-chan\\versions\\1.2.1-d8b7a6e034d8",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\royal-plinko\\versions\\1.1.1-188ca27af09c",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\royal-roulette\\versions\\1.6.1-43da9f90d662",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-afterglow\\versions\\1.3.1-64ed16c9fae2",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-caramel-carnival\\versions\\1.1.1-21b36544aee1",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-caribbean-treasures\\versions\\1.7.1-cdf1ab4230a6",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-cosmic-escape\\versions\\1.1.1-e67602fca195",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-dracona\\versions\\1.2.1-b2b765c75b29",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-dracona\\versions\\1.2.1-baf16dce2f6f",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-flooded-temple\\versions\\0.10.1-b90cceae07af",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-forest-heart\\versions\\1.16.1-d2f1e2d44908",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-last-convoy\\versions\\1.1.1-cf7207fbd66a",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-meme-overload\\versions\\1.1.1-f6556beffe79",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-neopolis\\versions\\0.6.1-6e9aace9c8f3",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-nitro-run\\versions\\1.1.1-23480eb9c29b",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-velvet-reign\\versions\\1.1.1-1f918b394c70",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-wild-nudge\\versions\\1.5.1-0de29b45f596",
+        "reason": "No preserved committed preparation manifest"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-wild-nudge\\versions\\1.6.0-5978a0ec3be8",
+        "reason": "No preserved committed preparation manifest"
+      }
+    ],
+    "sessionEvidence": "Owned host tests ended and their local preview and backend were closed. Other worktrees and shared cache are outside the selected paths.",
+    "removed": [
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\breaker\\versions\\1.0.0-b19799052244",
+        "pointerSha256": "87461a933d7448b0cddc20ca6b33dabd0d029d3094618838e5aa1db935d85700",
+        "activeVersion": "1.0.0-6c0c9449b41c",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "6545b7ea1328456099b9e9de487526dee0123abaccab19c286ec247407d0a122",
+        "bytes": 5290
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\casinoapipro\\versions\\1.0.0-899d7e6e4d23",
+        "pointerSha256": "8d4cf13b8d3ada2d00e2f5b134e176699cce68fb66b314eaaebf3fa8d8187333",
+        "activeVersion": "1.0.0-34225ad3ac4f",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "a17ed7e05e633c6c96a8c59cbba11d7e19534ef61275ed79aaee038bc5a8dfd7",
+        "bytes": 25063
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\chess\\versions\\1.0.0-c75aae3c058f",
+        "pointerSha256": "9824573643fa01b8e44c00a7f913760d59948bac21d48cc2a41b87bb7f6c7fe4",
+        "activeVersion": "1.0.0-b7b9c2816cd1",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "9f549cb7b4a8b63261ee3286b6ecb5b46d9beff4de0600309e709632b23f4f17",
+        "bytes": 46159
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\crazy-eights\\versions\\1.0.0-1fd93f74d119",
+        "pointerSha256": "55ec12118a23a7db5439459a63ae7a11f88cca307ebfe8c86fc2f91cbcdaa24f",
+        "activeVersion": "1.0.0-d23607371e31",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "053489dd691eb8f591e86284a66dfb0c87e1013c228cb4b1d49c1260bae63c4c",
+        "bytes": 16807
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\drift\\versions\\1.0.0-5825772fff45",
+        "pointerSha256": "2e7620954f88dbfc25ce76e635567e68ae061ee7fc4358121ca746a612ebe4f4",
+        "activeVersion": "1.0.0-fe2c33a2b71c",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "887564607d58f05a5abbeb8f4bfa4d7d4962ee41bfb370d4cc8a3188294a2cd8",
+        "bytes": 11026
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\durak\\versions\\1.0.0-b29258c7350b",
+        "pointerSha256": "c702347d4130075d4af7e841c4d0ee311739b868198fa005bc979c27de01cead",
+        "activeVersion": "1.0.0-453b968791dc",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "ec3805ffd116fca8e46de29ee0ae52a6a9f98cbfd0bbc84efa3319bca2e9ed8d",
+        "bytes": 16793
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\flag-battle\\versions\\2.1.2-06806c849897",
+        "pointerSha256": "1a3d3a1f8ffab7b3bced85242884d5ba72fecbe31a35c7eaf3c1eff505147932",
+        "activeVersion": "2.1.2-1637ae812d37",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 51,
+        "manifestSha256": "5659e4582491770e4f8cd419ad1adc76bebfa612fc46d1f72075ee107ea335af",
+        "bytes": 351882
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\flag-tote\\versions\\1.0.0-f5634e5f4b05",
+        "pointerSha256": "cef49b92cf7b9d87fdb0403564bb348ca2b9efec11c09d5a1812d829f39ceac2",
+        "activeVersion": "1.0.0-24002a84b989",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 51,
+        "manifestSha256": "bad005e4fd70383a27e8913f6490bf56ea415e7de627c7d78ecc1da52674f968",
+        "bytes": 332987
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-andar-bahar\\versions\\1.0.0-142ed98b4b08",
+        "pointerSha256": "fb5fb010e013381ddcd792c7f2559f03c0fe59ee767696cd50b70bd17cb0fb5f",
+        "activeVersion": "1.0.0-d597a739dba1",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "495cd8b3da5ba69138acb5ebf43b7227bc75ff79b0368b5124c39b2fbd548d8a",
+        "bytes": 237931
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-baccarat\\versions\\1.0.0-7c5d4b4c5e7d",
+        "pointerSha256": "9a441e7ab3612af419726db1138d284a3cd65f9e3e2271163c49f9814bbbdce2",
+        "activeVersion": "1.0.0-e07014f8ce5b",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 57,
+        "manifestSha256": "f16dc0b6de271ea818198d8f04a943dcc8ba250e6ad7f8740fc0a8e0577221bd",
+        "bytes": 8548680
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-blackjack\\versions\\1.0.0-569970aeeedd",
+        "pointerSha256": "f5141066c2678c314e51c2e3624bec92b2d841c193ce8dd6358414743021bef8",
+        "activeVersion": "1.0.0-a7277f4a8436",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 57,
+        "manifestSha256": "44a166c8af7abe023c46a8c990bdb63da8a902049b50de6855ffada41404cea6",
+        "bytes": 8548683
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-caribbean\\versions\\1.0.0-04429fcd166d",
+        "pointerSha256": "02f691c726c9dcf04df309152126a56b59a2c02fa1f592b75a945490555966d3",
+        "activeVersion": "1.0.0-6cf45fd9a350",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "6db5c438796d2d63ba0203746170b42393b88685e238db86effec66edf649a44",
+        "bytes": 237927
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-caribbean-draw\\versions\\1.0.0-6fb55256c98e",
+        "pointerSha256": "bcb329e09f10b9471760e54c35bc05597df6828566206379abbe8727567e7f95",
+        "activeVersion": "1.0.0-cc7a551cdf35",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "64863b63eb152ce4b03cf4be13dbe3a0c096ffcabce34da0fd35da0c3cc8267b",
+        "bytes": 237937
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-craps\\versions\\1.0.0-33ae9de63a3d",
+        "pointerSha256": "58c495770884c4ad37eac0d46d60cc6d1a8223bac32a7afb23d6ffe2ac7041a7",
+        "activeVersion": "1.0.0-48ce64870054",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 59,
+        "manifestSha256": "0bc7771602179c20c205707c340272bc9f86ebc9262d6724af0ab9287d96aa52",
+        "bytes": 8726495
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-crash\\versions\\1.1.1-ae554163fc25",
+        "pointerSha256": "3e10f5c50c3a3e824172a15c20114fb83018900db6301a17fe5198d414ccf370",
+        "activeVersion": "1.1.1-f2f2fd46cc38",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 19,
+        "manifestSha256": "b866ff0ae655ae8d5757aac3e53aa27ada0b4b13b88ce41308476fec8521bff7",
+        "bytes": 21963628
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-crazy-four\\versions\\1.0.0-9cc40b40dcfc",
+        "pointerSha256": "f1dfb5e7926de6f3d595d1a824420ae5b9a2a5f4cbc1eedeeb5caa08ef5104c9",
+        "activeVersion": "1.0.0-31ce175f1343",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "bde3217ff52dd37b110654e8c4915bc3bcbfacef6a74fd6d403c95585db729c0",
+        "bytes": 237929
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-deuces\\versions\\1.0.0-e5fbe9c9d551",
+        "pointerSha256": "66dc3e5915b026bd6d453bd22c36b7197f3212f35c113ca1c45e545e01f1206f",
+        "activeVersion": "1.0.0-c0b6ffc90902",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "bf9f24762cc3fa68784fa9ee15db58672391be4a29f171c9b343fcb7d3f72c09",
+        "bytes": 237921
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-diamonds\\versions\\1.0.0-c3afe175e2af",
+        "pointerSha256": "24e775cc1d938f209ef69db0cb05c2cd463770b66ccd50098b7b52bd604c7240",
+        "activeVersion": "1.0.0-edf3c88f06cc",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 5,
+        "manifestSha256": "198e5f31960b7eb0fb5c513c46e75fc03b3fa7abf1c63435af031bdaa9413297",
+        "bytes": 586413
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-dragon-tiger\\versions\\1.0.0-01d6f6fdb68c",
+        "pointerSha256": "f7bb1bf207002e0345e173b6a86e237c4fcee56acb4162a8c59b18c663437268",
+        "activeVersion": "1.0.0-684fc343d3c9",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "0ac502b12a3f0a647f3d1c0100f6e2916c65f3589e69b272c2a439f0a20c2892",
+        "bytes": 237933
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-exposure\\versions\\1.0.0-3bcc8a4adde5",
+        "pointerSha256": "4caf3af303799412ddf721495109c554c3553b92e58438c54ce02e2c18970d9a",
+        "activeVersion": "1.0.0-e3ef38267267",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "106ced55f4c0188421bd739ddc40435f884b90dc2614da8fce7b84fbaf56f499",
+        "bytes": 237925
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-flush\\versions\\1.0.0-e5246cb071b3",
+        "pointerSha256": "cb8bb7aa40f35902244264c703942ad26a5ac74c57cb84a4056a4bb8098f68b1",
+        "activeVersion": "1.0.0-6d85e8ce447e",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "0be4478bab9483d5cbb06999188f4f5f1278fbe8814179ae2a61d5d63942b229",
+        "bytes": 237919
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-four-card\\versions\\1.0.0-26835a94bae4",
+        "pointerSha256": "bd4a725672a459e08038f3722ae890d9ca3162ad681de56075374e9bb803ab27",
+        "activeVersion": "1.0.0-ebb0ee51b1b6",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "b7aa1cccdc30ddb0e73a08ef79cbb4fd31354b5beca82d0443e7ab2bd3927d0d",
+        "bytes": 237927
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-free-bet\\versions\\1.0.0-7ce11a69d548",
+        "pointerSha256": "ca57bb28d459704c82a1e0fa829328181988236baacb9e9bf5c27e574ad7ab2d",
+        "activeVersion": "1.0.0-7def5f0caefb",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "58dea2982d1e94a6580ab5f15e17717f0adb452b30baed170d25460574f0a285",
+        "bytes": 237925
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-hilo\\versions\\1.0.0-a38625e5cc7a",
+        "pointerSha256": "3eacd1d865bb0d61184adf5c4250c5cdd32117da5595a09ba8095922730d81ee",
+        "activeVersion": "1.0.0-ec2fcce450a3",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "09a8cd06ecc8bd2c0a3b652af5d1c40a63f25ce6590733312066388aab58ceaa",
+        "bytes": 154429
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-holdem-bonus\\versions\\1.0.0-a3a3cfa24e51",
+        "pointerSha256": "156b42771fcadb8e8d9245fca038ef2461599651782e0fb3e29898ffe7f2e8ce",
+        "activeVersion": "1.0.0-2480c7174d1e",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "3121aa31343dd38348d0dff90bf89b2d60369f6d1541bbc21374f740d97386cd",
+        "bytes": 237933
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-let-it-ride\\versions\\1.0.0-35d20cec895c",
+        "pointerSha256": "028ac1dba014507679076f73a79ddf200f8b875a2e7ed8d1e8ba77e46f22afe4",
+        "activeVersion": "1.0.0-566eb32204e3",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "76749893549dfde00f3015378e5ba783d8ed8984cb2b41f0a54a3f947a49695e",
+        "bytes": 237931
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-mississippi\\versions\\1.0.0-98362466a69b",
+        "pointerSha256": "538f7d3c02107f73968ba7c6577a7aba58e9d2697056cf7b041437509807a147",
+        "activeVersion": "1.0.0-bef8c691659b",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "a0ed11db1f12208a408fbb09fc62f0beb760bfc872106d8c485a669f650b77c4",
+        "bytes": 237931
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-oasis\\versions\\1.0.0-abe7194856cc",
+        "pointerSha256": "1dd8de1292335c839b0c92556139b3da1dd8fa84cc1388b39980f8fcdee8ed3c",
+        "activeVersion": "1.0.0-615b14c9b804",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "7b2cb8d01ba74941eae3baeed9f03008acb8ef24b2ae8455646e0e7680cc2fbb",
+        "bytes": 237919
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-pai-gow\\versions\\1.0.0-939ef2f537c0",
+        "pointerSha256": "ee752aed0f790dca34853d5eaeb2c2bdad832992a9cb7ce93edaebb523caac31",
+        "activeVersion": "1.0.0-2b1ea609f4e9",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "a60fb867b4c95103e5fbe16b8e93a48c3cfd6bb605e059247a9fa167fb72ae8d",
+        "bytes": 237923
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-poker\\versions\\1.0.0-3dcf2b590e90",
+        "pointerSha256": "ad9528d208dbc40068456aec6f8a088b3ecd23171a1aec47fc47b26c0b2aac8a",
+        "activeVersion": "1.0.0-b8ae36e6e74f",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 57,
+        "manifestSha256": "8a59aa9dbba2af2d86f82bf2644262fc62f61e5673abda901ecf6b8505febfb5",
+        "bytes": 8548671
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-red-dog\\versions\\1.0.0-2383c62adba0",
+        "pointerSha256": "6f27d61b324f7e520c001b37102c6341757327433426a60d2add43cf8919af01",
+        "activeVersion": "1.0.0-5180c271848a",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "e5b831ade00e796c4d8c1d081493a1a1caa010321ff60e6e5025a9fa8bbc5d53",
+        "bytes": 237923
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-rummy\\versions\\1.0.0-9ec95389ba64",
+        "pointerSha256": "cede09186d4b8e622b046bdbdb7d4f37f0649c244cf7f45230f37e4aaa5c1f4f",
+        "activeVersion": "1.0.0-1b91b7041ec4",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "c2f16e561e6abdb8c36b0c637929236cdfe9fd269743aaf016be3a71543882a1",
+        "bytes": 237919
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-russian\\versions\\1.0.0-2d69cc1b62c0",
+        "pointerSha256": "c16a15190871d1ff5bf23666329f8235bdc44e51ea6d7fcb6c4fdef2ace6d4fe",
+        "activeVersion": "1.0.0-07cbe9ea5210",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "fc8028b8805081f13311fdddd5d53b28f1271d12f128980e927c1a7ffb1b5284",
+        "bytes": 237923
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-sic-bo\\versions\\1.0.0-f8b3f52e2984",
+        "pointerSha256": "45a90c48139b50c6ac44e86dc687bcb3cd6d91f73d6a502404a4dcf90d546f48",
+        "activeVersion": "1.0.0-1c02c550204f",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 5,
+        "manifestSha256": "b8499e7833699baeb46e50a10ea11c5f4ec5479f381e939ba822dd20829c2d04",
+        "bytes": 507725
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-spanish\\versions\\1.0.0-3484398487ae",
+        "pointerSha256": "1fed9d6513955fb89e4e9dbc9c1d6247ca1099d3114ff635ea438f58bc4993ff",
+        "activeVersion": "1.0.0-ad8e47eda2cf",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "e90f9c09dd4e3ea0b99f92572f4ec836821e41e84e51849054d3825d5d2b8174",
+        "bytes": 237923
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-switch\\versions\\1.0.0-a9e4e2012932",
+        "pointerSha256": "15f9ea021d22d30248ffba69bb260ea5cdf3c06c9599e764d83c71cc640f38c3",
+        "activeVersion": "1.0.0-d72f941aa6a5",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "2861a4d76a991b40ed7b57b51f0fe5304a0cde995731b85e4a1e2dcc11c972a3",
+        "bytes": 237921
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-three-card\\versions\\1.0.0-1e8a58376792",
+        "pointerSha256": "1870c2356faa5b16393f0bda341d3e41eb16b3e7a9cd0c39fa6c506e44e7b169",
+        "activeVersion": "1.0.0-f104b41d30ed",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "b86272592b0428377f1a2db9900e79b14242618b7eeedb022a3c6001a6dd4282",
+        "bytes": 237929
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-ultimate\\versions\\1.0.0-243184af4801",
+        "pointerSha256": "e7b92d5b6fa8a8190478140f12d5be8a04538092ef5c8b8116849a956df11646",
+        "activeVersion": "1.0.0-4ef356535f69",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "741392c696db910bf481e910de117ec9d55e17b5fc8bda254a7739120793c04c",
+        "bytes": 237925
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-video-poker\\versions\\1.0.0-1aceb8c5de9b",
+        "pointerSha256": "928e1536d1d2e5caa2d3b02bd384f91379cf4b13e70ac6bd0cbe50e38dec3bdc",
+        "activeVersion": "1.0.0-97f791699ca1",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 57,
+        "manifestSha256": "d122ae4e411be8d62001adfb53428aaab50102f076cd10fee2a85566049ff2de",
+        "bytes": 8548689
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\github-war\\versions\\1.0.0-12d42be35cdd",
+        "pointerSha256": "94acd3c936e8bc2f55a8e0c82352a5c1c9e70470341c0ab0c7e9808e1365d6d5",
+        "activeVersion": "1.0.0-0156eae2aca0",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "ffd46c4817e6506cc291b9809863a220a51593d289c4554a69eb97922092d774",
+        "bytes": 237915
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\hockey\\versions\\1.0.0-28722cf1ce0c",
+        "pointerSha256": "37675b39c62cc2d27b540545c2d8a04fa1ad49af18b8ad3852867be6a81cdac6",
+        "activeVersion": "1.0.0-df77ed5ae3b8",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "dfbb934970feeb206426682affb76abdbd22be2e2364ddc1d3ccf5eb5f91f1ae",
+        "bytes": 48719
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\luelon\\versions\\1.0.0-45942d3b2d81",
+        "pointerSha256": "5ba5b0cc24e20a2d166b9e1d385d5fd6a47a088120330e80196d3757f52086e7",
+        "activeVersion": "1.0.0-4de63d2718a4",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "1589e887a9c7619e258312d7b3749ba5b17d200baddfad8af1a8462f40ca7c7b",
+        "bytes": 11152
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\mortal-kombat\\versions\\1.0.0-580b78e6f0e1",
+        "pointerSha256": "064f891074cc0b8ee9ce17c375d6b37a3a05265ef71630d86454f84ccdf46742",
+        "activeVersion": "1.0.0-cb3c86d4a193",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 108,
+        "manifestSha256": "722366fe5d9e48f0634119936f5d1e98cb9732e1a5a8b13dd75b9f4e70415158",
+        "bytes": 372575
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\orbit\\versions\\1.0.0-05cffe03883e",
+        "pointerSha256": "b6ec66fc1e823c2384e630faa173739940429753e9ea012d9e3b446eb86cf72a",
+        "activeVersion": "1.0.0-b9d9c3a70422",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "d63242c6737f6d28a465779babad793011e9c7fcd9d2d8c258e585e5102aceef",
+        "bytes": 11026
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\original-cr-vs-leo\\versions\\1.1.1-9aad58049a7c",
+        "pointerSha256": "46bfaf1fb554d4985395817bdaaa6388ef5b419dfff4801001135596ed70f156",
+        "activeVersion": "1.1.1-68324a52cacb",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 21,
+        "manifestSha256": "c1c892e9fb249e6c0564d77db7858e0963a2c7a3b7814217c54fb850d755b4b4",
+        "bytes": 7915844
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\original-jackie-chan\\versions\\1.2.1-8453417cfb95",
+        "pointerSha256": "295dde000547824fa9af6691e23de296f020aeafdf37586b4693a5597ced9bcc",
+        "activeVersion": "1.2.1-a1df77ac9114",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 40,
+        "manifestSha256": "b7c820b9fd4d2c96c1e634e669d9cf0a2fdee8e7ae4ca16f296101d9c9818142",
+        "bytes": 21606728
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\piano\\versions\\1.0.0-a8539dd21486",
+        "pointerSha256": "86d36e46461d57b5773a160136ec6d093adcfe7a85e782453f6ea66f546ae2af",
+        "activeVersion": "1.0.0-a315905ba1ac",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "f7c4e2eb1c5f386c10955d2803969716ee2078163104b707453efcc963b2f205",
+        "bytes": 39460
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\pixel\\versions\\1.0.0-6d385182fcbd",
+        "pointerSha256": "38d55e4eb0128e0f93e45b23ff1eaff400479d58d4e004ab46a95967ba37179a",
+        "activeVersion": "1.0.0-37a0fa32861f",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "79073e7d52538609eb85ef8946ffc70e7402fbbc8586c45cac8f6f9b251475cd",
+        "bytes": 11026
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\pool\\versions\\1.0.0-4006146445b8",
+        "pointerSha256": "ce54d0740163d76076a3e170496c4dd520b3e1442c071a95d317a719e1019223",
+        "activeVersion": "1.0.0-c4f1b581cd2e",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "ad48f795b93cf90da0bd7d61d646cb45252c05b892897fabedc5d11c5ed7a4d4",
+        "bytes": 48715
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\royal-coins\\versions\\1.0.0-ad5deca6b63a",
+        "pointerSha256": "76c42a24813613a6bd463277fd650de6efe9c6fa545ea1077a0c46ac76d69843",
+        "activeVersion": "1.0.0-74fcabd725d6",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "17bcb54b02c359364e6ffdabe61f2e8521b0199cfd32d7777e16e9a021847fe5",
+        "bytes": 38925
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\royal-dice\\versions\\1.0.0-1ab720733a3e",
+        "pointerSha256": "482ade842e8e1fd8a66b642d888fa519997d65c475d083acba86f9a698e44da5",
+        "activeVersion": "1.0.0-1abc8bddb093",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 5,
+        "manifestSha256": "a705665052580fe226049560a44dad2e2308d8566854c45d8b25536318463e99",
+        "bytes": 481917
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\royal-flight\\versions\\1.0.0-ee2a71e31e34",
+        "pointerSha256": "01dc4520627b784fac5671052a03fec3167bcde1118f6e478bfb0c1dc3d8a1df",
+        "activeVersion": "1.0.0-da6d6c4ff970",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "0fd79948fb10d67386930e6166f2e9d95e458df78fe481ecd0964de1d1593d86",
+        "bytes": 195472
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\royal-fruits\\versions\\1.0.0-c8dfe5be95de",
+        "pointerSha256": "fbdd6f1b7009c4f6882679ba65136062407c721f7e5c8315427fbe4c0abb1df2",
+        "activeVersion": "1.0.0-2be8170a91c0",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 5,
+        "manifestSha256": "3a8298777b2605abdbce6d182de8ab54ac3bb7e7014345688dd2ae33348c8f2d",
+        "bytes": 521461
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\royal-keno\\versions\\1.0.0-388bbf2360eb",
+        "pointerSha256": "c965ee16242b987624b6b5a2086221e6c2a5b1975e2cd6993d7f2b63eb2c52db",
+        "activeVersion": "1.0.0-bba183284e0d",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 5,
+        "manifestSha256": "721517537e6a2b5f600b4c3b9f84957d07c82699fcb2b6eb4b1c4d6daf5dd7b4",
+        "bytes": 552890
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\royal-limbo\\versions\\1.0.0-7dc05022a296",
+        "pointerSha256": "42842249386a329a78394a2529a9ac5571cf9ecb7c35142295a09ac7cca2fcd0",
+        "activeVersion": "1.0.0-cb146b6a4572",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 5,
+        "manifestSha256": "3c63a0dd014ac048e0e385e44ee748208576accbc64a16111066eca5c3878f71",
+        "bytes": 455757
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\royal-mines\\versions\\1.0.0-c71809de64c1",
+        "pointerSha256": "7685fd02c876a35a967fc3d2a5dd39a33faccdbfa8953813ab0357e155abd200",
+        "activeVersion": "1.0.0-af283aa0d716",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 5,
+        "manifestSha256": "ff83a12b36b335f0a81394314be4dfd5388965f6bff2766e92e1a370139e7fe7",
+        "bytes": 508266
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\royal-plinko\\versions\\1.1.1-443c69a0857d",
+        "pointerSha256": "15e01dcfc02fc13d63f48665467792ea1ebfb30f09512676c4edeb9ba3604002",
+        "activeVersion": "1.1.1-c81db50b209f",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 9,
+        "manifestSha256": "f42174ea6505e417fd2bbc4218b20ce61af0840d167b24ed0a532c0c6a33f6e8",
+        "bytes": 2659275
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\royal-roulette\\versions\\1.6.1-38d901c2d8a2",
+        "pointerSha256": "e95ead47b95d0f07a2f752b7a2254a85c38486c7238ff344e36d8ab07f92b2a7",
+        "activeVersion": "1.6.1-4dae65d7a519",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "584838aa73797320d0ce40b5f9a471c5cc786f247a9a187013e80d22c5b4ef51",
+        "bytes": 88812
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\royal-wheel\\versions\\1.0.0-e9c830a2a31e",
+        "pointerSha256": "a2c1aaa680bd13e5d9a9677c265af8d2c17f853a6167d82f2ae23156f8952159",
+        "activeVersion": "1.0.0-dd361f660493",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "f7f3d090f34ef5074c761170902fbd2059fea2d0643eab3d8f11f161f24acc97",
+        "bytes": 195469
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-afterglow\\versions\\1.3.1-bb7ea50abcd0",
+        "pointerSha256": "d18329eef5a89a305f35f0a7a547d6d60a756646bd7d0847447f9a1b3bea451e",
+        "activeVersion": "1.3.1-2c43ae017b69",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 22,
+        "manifestSha256": "02b9fcd0a6727a371cd4fe942aaad85fa6565980c29cda8fbdadffdc2df97c39",
+        "bytes": 3266961
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-aurora-lift\\versions\\1.0.0-4192f6a9a867",
+        "pointerSha256": "bd3efb14917d0558e06f8eaed1d9ab0d1e7a728dec703e45380ce59dca78957c",
+        "activeVersion": "1.0.0-c1d6c91d578f",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 9,
+        "manifestSha256": "96741d9d9855d8761a4e034f8e1cb928016c2bea9750393186ff65f00a66771c",
+        "bytes": 4093744
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-beacon-bay\\versions\\1.0.0-6c77e16cd18c",
+        "pointerSha256": "184ed6aafaae588b65a5cb568bc0bd5e55e5fdbcedffdfcb2ec89d4a09d016de",
+        "activeVersion": "1.0.0-69d7dfe570b0",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 5,
+        "manifestSha256": "6ca8e9e953119d04bf28545a49523d48aef8b3401fb217a72998ca0067d91372",
+        "bytes": 2110057
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-blazing-orchard\\versions\\1.0.0-0af29536eadb",
+        "pointerSha256": "b0aafe7907bc7f029c0b657f0d3489a02aef75f1810c7f81155f97c459e9f23a",
+        "activeVersion": "1.0.0-8479153df8c2",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "e822a908f0d80745b2ff95c85969dd04cdfd63247634782fc93b14aafe31c3a6",
+        "bytes": 1632833
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-canopy-crossing\\versions\\1.0.0-6c1b40a62596",
+        "pointerSha256": "963db40686e33b3283f2e1e501de0a82caca9a3a0ae0628469339aebc02567c8",
+        "activeVersion": "1.0.0-ab6099fae04c",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 9,
+        "manifestSha256": "0f9ce257ff663724c6879a4a2a48ecff6f447d6b19c9a550944c91d4764d9e94",
+        "bytes": 4093776
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-caramel-carnival\\versions\\1.1.1-730a670f7271",
+        "pointerSha256": "1d1349a277e3799191098c60940b99b409502f71155751115921c9c8b8584e62",
+        "activeVersion": "1.1.1-c7888aa15ecd",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 8,
+        "manifestSha256": "fe15e4a51d9e95c53852a3636900cfd6de93a30b66765c8f42924305765fd59a",
+        "bytes": 3193646
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-caribbean-treasures\\versions\\1.7.1-aae161d9b754",
+        "pointerSha256": "23c5a0c6fb1b7c8d2a7af3d09c9aeaa08fe9310b3260468b61a836eaa76b7118",
+        "activeVersion": "1.7.1-f9606dc9e0b2",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 125,
+        "manifestSha256": "3ceb080a93cc7beeb7a2e575da9284c46be7602dd9f8843ec9829c463e9ef38d",
+        "bytes": 14888270
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-copperline-express\\versions\\1.0.0-23cdfaed5121",
+        "pointerSha256": "e440f55ed4d04bf1e509afae9a92952229c6206daa176dcf249f97adccfb7951",
+        "activeVersion": "1.0.0-eb9018f04e3b",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "ec10a36c1a7eebd9a9a4e4e74fae28f4f4e693f96261936299443bd12edcf2c3",
+        "bytes": 1637871
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-cosmic-escape\\versions\\1.1.1-38d4817f5a73",
+        "pointerSha256": "735eb0de1088063b5b95f888536f29b77ef79bbddfd463b89862605af4a2a15e",
+        "activeVersion": "1.1.1-8843a8d9266e",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 9,
+        "manifestSha256": "985ebcfddf27cc2c2c550f775aac4220ebe33c69f0dd005e015ea05fe4f6e266",
+        "bytes": 3876043
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-deep-current\\versions\\1.0.0-3a756ab84d3a",
+        "pointerSha256": "66f42536df53dc4d676cfccadc81f19c0633361ed2aad3ec623294aa292b84be",
+        "activeVersion": "1.0.0-9af0651b6684",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "6cf5000291b66bf68af7f0b32427a4db3617c34b6d54443b46ecec7a5e48bb2e",
+        "bytes": 1632824
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-dune-hopper\\versions\\1.0.0-0f282457d136",
+        "pointerSha256": "8db6f78d34c2b804b97490d939bdc13cc9aaa68d980b7ad299aa6d406966f4c3",
+        "activeVersion": "1.0.0-f68d9133a8a9",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 9,
+        "manifestSha256": "e67da3cc80c1940eefa763348cea7d1ea54710c4f3cbe70b5a9970a74c1e9d50",
+        "bytes": 4093744
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-ember-vault\\versions\\1.0.0-8528d5505b70",
+        "pointerSha256": "9a99dd6487cd2bb4868999cfc5a93b368e8f491c3a9df5e0abf6ef14f8aa3946",
+        "activeVersion": "1.0.0-52d3261ef266",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "1f7fc3d8add3ea6b83ce60e4d850e9387f8da38a8dcbf969b8efc7d7b33e2ab3",
+        "bytes": 1639312
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-flooded-temple\\versions\\0.10.1-3d8a904c9199",
+        "pointerSha256": "30a7ac3e1fa718766e751cdfbb154f4528893e98b90ff98e8c9bf83785b8d268",
+        "activeVersion": "0.10.1-6e88c1a91e3b",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 42,
+        "manifestSha256": "e8d3ded4cc1322011055105d580434950622d7881e8160b6d3ef7a9cac1dcda8",
+        "bytes": 20911150
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-forest-heart\\versions\\1.16.1-13328757ea27",
+        "pointerSha256": "d4ea77205bbfd69235d209cdb6e3eee5748e2dbcaf6b66b4dbc93ed8224c1846",
+        "activeVersion": "1.16.1-d5a85fe8d418",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 21,
+        "manifestSha256": "3d67fd94ae5093d9b68de4c41122f1392bcacf4161e8889505a7f869b6fe0249",
+        "bytes": 6389285
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-fossil-trail\\versions\\1.0.0-ebeae35e190e",
+        "pointerSha256": "f69ed1318fc67e81eec2484b253edf1f5da0c77aec72b5e66ee0d3203e21c09a",
+        "activeVersion": "1.0.0-88593a25c70d",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 9,
+        "manifestSha256": "ba8317c07fd2882f3c92234a22b258ec548a4c89eef4ec2a554d2b9d1c134168",
+        "bytes": 4093752
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-frostline-courier\\versions\\1.0.0-de249a4e5a92",
+        "pointerSha256": "03bada2312fce454899352004ff3750646731d121d4372acfb1ac4685542925c",
+        "activeVersion": "1.0.0-de1ed91be50c",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "64156eb0b593f1248b23fda28f577d185949da4bc880c345ca979e7d0d34645d",
+        "bytes": 1631365
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-gale-riders\\versions\\1.0.0-e46053c797f6",
+        "pointerSha256": "21a56cbb5f20b120552a138e6d16e66407f525461a95e6c5d57389cc0cfd4be7",
+        "activeVersion": "1.0.0-7b58851f6d2d",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 9,
+        "manifestSha256": "1065fcabf46f2bf4b5a3263a31b7332ce75e6334202546edc463687cb1e6031e",
+        "bytes": 4093744
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-jade-koi\\versions\\1.0.0-a9c238ce1ec1",
+        "pointerSha256": "2d1c3533a592dddc5e10c4afff38e7994f790b4b413609461d7230a303c6cc87",
+        "activeVersion": "1.0.0-f656a41b6425",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "cbf5147f39fa06aae629974323c46820bb1e9634cc6c26d50ae7bc1a100c208c",
+        "bytes": 1637841
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-last-convoy\\versions\\1.1.1-661a415e2b0f",
+        "pointerSha256": "a7ec186b4877df23be7245f0a320c80bb6b73e91f9ca5b3b13b4bfb826754f36",
+        "activeVersion": "1.1.1-1091984d1e10",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 18,
+        "manifestSha256": "072e9f4f8d6c8a77f8dfe2ce42f988b306851c6ab3f8571b63a229aeee11308a",
+        "bytes": 6352238
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-lucky-spotlight\\versions\\1.0.0-5e4d38f143ce",
+        "pointerSha256": "c71c901ffd283f8fd39ca81a633bacdb5e891daf85953f5303782f5834e83a99",
+        "activeVersion": "1.0.0-ccfe73608214",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "43b5394a7f480333c3f7841ca862c2a27a419984bdea07878d795c877f15aed4",
+        "bytes": 1577922
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-lumen-grove\\versions\\1.0.0-6ab77cd3d75b",
+        "pointerSha256": "17b446e9adc08ca0ca9fdb3abbe5b3d75dec3a8656f48efaa3a84ac9deef14f4",
+        "activeVersion": "1.0.0-2398e3b6de01",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "450c939489afc1645002dc83e44710d4a21bf449aa4d96bba7288f896dc2b5c6",
+        "bytes": 1622783
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-meme-overload\\versions\\1.1.1-cec12fee0ab9",
+        "pointerSha256": "1dc3b7d5754e0bd526130ac8ecd9e90deb035d0d89d08c1519ad6e549ab21268",
+        "activeVersion": "1.1.1-4a7a359c1817",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 17,
+        "manifestSha256": "45b91c4cb88690ed4b8ac76917312d044512adfc6ea49e2893503b43db9cba4e",
+        "bytes": 3545991
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-midnight-market\\versions\\1.0.0-72b03fba6d2e",
+        "pointerSha256": "35b49de9a13c3bdde75c387b1d89c0da2ffaa9d6f0f1bb72c6b146eb486172fd",
+        "activeVersion": "1.0.0-7df18fb8b2f0",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "23dcc6dcef768991a38e75d7f3d8e7e5d53436fd9e5e6c2b0dae154dbd581b02",
+        "bytes": 1639324
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-moonlit-mint\\versions\\1.0.0-682fbdbfc6ff",
+        "pointerSha256": "b5e419fd651f439d320668af66a0afdc0206db86301d90a83d5e8e6a2bc9076c",
+        "activeVersion": "1.0.0-579e8ad32204",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "e452064122eb87ebd37e011d7f5dee09492b679aadaa5c931c2ab588bc7411b1",
+        "bytes": 1639315
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-mosaic-muse\\versions\\1.0.0-8786200fdc23",
+        "pointerSha256": "941531129a443663694ea5284091955932b8480b100951690607847cf6b1688d",
+        "activeVersion": "1.0.0-393249e313f7",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 9,
+        "manifestSha256": "ea42551fda03fc61f0474967dee88296318ff09510e68947ff33a525d7139d96",
+        "bytes": 4093744
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-neon-crown\\versions\\1.0.0-b638ad2bda57",
+        "pointerSha256": "e60bd71b44b9b41cce2e1338038c4c4dbc5a13d54d244621713ab63de3d09c50",
+        "activeVersion": "1.0.0-cccf09b31349",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "bafbb70b15d49c98afe2373d6b235b2b5598f15d9cdf12adcbbae89c4bf73f57",
+        "bytes": 1587946
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-neopolis\\versions\\0.6.1-955077e883f5",
+        "pointerSha256": "560d217d325eb23d6ee53025a55c62b97b92315ed5d81635ec0edfbe1b1c677c",
+        "activeVersion": "0.6.1-4094c5054bec",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 14,
+        "manifestSha256": "b7de247197a767e765fe31a0c0b86706635670ba3941c83d403bce89d2b7f1c6",
+        "bytes": 6058609
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-nitro-run\\versions\\1.1.1-0b11ecd4f68b",
+        "pointerSha256": "8e3ea7361b98cd8b332573936f0e2afbbb899c074ac3080923d52f4f9ed9f72d",
+        "activeVersion": "1.1.1-1c1decde2742",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 6,
+        "manifestSha256": "c90848a0fa1ee000dff7131ace7a7b35b3b8e028e9c507f33232e89d7c73cc9c",
+        "bytes": 2586688
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-obsidian-drop\\versions\\1.0.0-a51ac53b0528",
+        "pointerSha256": "df763c074518d16d4f53a58b5d74bd9feb9187e1d9e9905e06a3a5583b5295ee",
+        "activeVersion": "1.0.0-78f0a045458c",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "26b362251bfd0908c3d50fa83d74d5b411537a00b362cab26d2f13241f6af668",
+        "bytes": 1608506
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-orbit\\versions\\1.0.0-5d48b8082460",
+        "pointerSha256": "2abac7fa6552215baa997101e0923ce204fcae0581b2db1e16a111f7779eadfe",
+        "activeVersion": "1.0.0-756e9d82a080",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 9,
+        "manifestSha256": "440149e318b49978533fdcf955ed804926e1d932f4cc3f97f381ea595ce47014",
+        "bytes": 4093696
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-petal-parlor\\versions\\1.0.0-e8691f41fbb1",
+        "pointerSha256": "9c50a0e0306d484e14f1ebd95459dc50064af9bd4770aaab2b7aa1c41fc8e3a5",
+        "activeVersion": "1.0.0-bbe3e362da11",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "fed00b353044c898f2f4169066d73d3fd05c34e5923e82557688c25f58bb1022",
+        "bytes": 1642047
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-prism-atelier\\versions\\1.0.0-a1f111023c9a",
+        "pointerSha256": "53a8cbbeb3752d39d3030fd69a51c27618d2c2c57af0597d7de77eaad97f6752",
+        "activeVersion": "1.0.0-a55654deb90e",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "f3d20f9770a1d4742caece192f37b3e8d74e877cdeedd785e6fa342722173ef5",
+        "bytes": 1622789
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-pulse-district\\versions\\1.0.0-0182248c826f",
+        "pointerSha256": "adf1308efc0efe0e4fcff30e5f3c729919218b1819c78105483394709108b3bb",
+        "activeVersion": "1.0.0-73261813cbcf",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "95b585804f2a637d3e144bb0bb837a11f215237eabb7917fdc7334a27a855747",
+        "bytes": 1637859
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-rivet-rally\\versions\\1.0.0-bcc6c27182d6",
+        "pointerSha256": "fac84b3152fdfa769c7458656b987c0f9b134d587b23d883808f9233473c42dc",
+        "activeVersion": "1.0.0-628ffdca8af3",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "60f1b4cce199b9645606279923243e50a74f55a1461137c834e05681e45a716f",
+        "bytes": 1631347
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-saffron-cipher\\versions\\1.0.0-1a298b2d2d4b",
+        "pointerSha256": "8feaa1ef101daa4e6c06b2b07667f4ece06556ee7909e0903815c7f7d3b169bd",
+        "activeVersion": "1.0.0-a34a128b36c5",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 5,
+        "manifestSha256": "70d25a763f21a49cf7ac143191d9cd962dfb85b1c73c8ec5fe5c5a6aa8d4562c",
+        "bytes": 2110073
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-saffron-spin\\versions\\1.0.0-3430db589a56",
+        "pointerSha256": "381ede38b7d83a33a423064cbb8d6be205df58fefcc903c6fa89d80e2d2cd0da",
+        "activeVersion": "1.0.0-a837ced2e24e",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "28618505db94d87c4ebc38e7012aff0f373ec3c51d978a6a45bbf17af3c965ba",
+        "bytes": 1577913
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-signal-fox\\versions\\1.0.0-c70c94db7d2a",
+        "pointerSha256": "58f264adb7a87b3ff06f724a72667a913c8c0caeb4256ff09538a76cb49a8885",
+        "activeVersion": "1.0.0-51babc541e76",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "c89ba7e8ed8f520b0f854763dc39c54b2327b049998707fac59950c5b0d210a8",
+        "bytes": 1686889
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-sky-lanterns\\versions\\1.0.0-045289bf5596",
+        "pointerSha256": "e78ad11159e0aac824b7da48f10a25e3846b0a4c5e72d620c8e9743a8f3b62b4",
+        "activeVersion": "1.0.0-23962efdf52b",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "842272eaaf2953af1c04bcd857cc04af6af4fccb752659d4269d1f4baab25d7a",
+        "bytes": 1631350
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-starfall-oracle\\versions\\1.0.0-9ee24840203b",
+        "pointerSha256": "68a059f790bd462f18d8fd2c857913b2381ff9e57dc7b7f01a1640ac797d354b",
+        "activeVersion": "1.0.0-a700e14e76ca",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 6,
+        "manifestSha256": "b5968fa57acebac0d59eafe64268ac7c07b90e374324d9288904a626d3a1c4a3",
+        "bytes": 2445740
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-stormforge-duel\\versions\\1.0.0-c55b96f31248",
+        "pointerSha256": "78405fb062a19be4b4745065e46fe66523b0386c93eb78657d3a23c4cb177ce9",
+        "activeVersion": "1.0.0-e90975c6ae41",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 5,
+        "manifestSha256": "4707129088b80d73f114fcc26e6dc2ab024a4e904333b64e84cfed7f9ba2a9f2",
+        "bytes": 2110077
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-sunbird-trails\\versions\\1.0.0-8ba514e503bf",
+        "pointerSha256": "328f141e03578ed05b64063a05981251188ef269c3a929aa022775c61230dfea",
+        "activeVersion": "1.0.0-637dac11e922",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "d004e9cfb4cacf3986abfb099a47a2fc7f2b001a5ca3840cd5f1b121f35eca32",
+        "bytes": 1642053
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-tidal-relay\\versions\\1.0.0-c9ebc5d530b7",
+        "pointerSha256": "e0cc1735593860b505a907218b036699b0423602f09ba3e422f21785fb1f57f3",
+        "activeVersion": "1.0.0-ead5534858ed",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 9,
+        "manifestSha256": "8308655b2231fc9d2113114d50f01c373bb31491c538e810bedb75b88e1f4751",
+        "bytes": 4093744
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-velvet-reign\\versions\\1.1.1-da1689e568c3",
+        "pointerSha256": "f6b0a3e871ef66ec9bfcaed4485bce5aa79ba7591fc01aaa4ef8ff309292644b",
+        "activeVersion": "1.1.1-a7f0b69383d1",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 13,
+        "manifestSha256": "07bc54f705c569c0c7b4bfc07d62b431b9f7786089f0ed01ee38efc759d0bd5c",
+        "bytes": 4312884
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\studio-wild-nudge\\versions\\1.6.0-5e045e1a5da6",
+        "pointerSha256": "14a984442166e2359200a6ac8b7f7a4a9f00c287a5be1ae6bf3809cf9db899ca",
+        "activeVersion": "1.6.0-398dd12dfb1c",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 23,
+        "manifestSha256": "cbd6db2a32506bce2b80ed3dbf00b5b29624dffd1234095de3f5977990c1a09f",
+        "bytes": 12543484
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\transfer-durak\\versions\\1.0.0-615b9fe312fa",
+        "pointerSha256": "a8f4a54ffb75f6c42b7814890c5b6247c306912ed3e4cfa46c1c630556d7f7e4",
+        "activeVersion": "1.0.0-dc04f514ae7a",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "da16a5d955640531356df698f4296e293ebc0b8bba314524166a9b210ddd34ed",
+        "bytes": 16811
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\tsu-e-fa\\versions\\1.3.2-cf0011a8b80d",
+        "pointerSha256": "bf4a7cc8f794500408a05794226fb6fd99ebfae3a40a379ae1496cc78e4ff51c",
+        "activeVersion": "1.3.2-3b532dc204d2",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 4,
+        "manifestSha256": "d9f861dd00116cf7ecad97ef7d75a0d27ac0841ba5bb8e12dee6c21bccb92e28",
+        "bytes": 1459526
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-blackjack-target\\versions\\1.0.0-6b733ee9f130",
+        "pointerSha256": "67ddafaacace7fa7e5b4bbad0301844102474a980020a571b696b69537982ca5",
+        "activeVersion": "1.0.0-215d7623047b",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "da2c20126d7db4d5a401283aebb714fa88566d864cdbf7fa740803054362d235",
+        "bytes": 126983
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-color\\versions\\1.0.0-500279af4572",
+        "pointerSha256": "e7ebdd6be1d73e98fc59e69e79aa7fb91166083aa8748e7af1b118055d2cc117",
+        "activeVersion": "1.0.0-f516892f51fc",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "120345359b2000f501c99719331e1c91f91732d356f4d65eb948555945eba44c",
+        "bytes": 127677
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-diamonds\\versions\\1.0.0-bcb2e7ee13e6",
+        "pointerSha256": "95bf592339398eed0c3ac11666e3d32e6672955be2677cada3e3f53c6b8d17aa",
+        "activeVersion": "1.0.0-51bc4fa8672c",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "2ed8e281ee89c957c8016627d91562a86bd0b2215ca7fc131fa3ce2eebeb8072",
+        "bytes": 107137
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-dice\\versions\\1.0.0-b65c7a5b8ec6",
+        "pointerSha256": "2e8f75d85a76ec63249e2668e055a034b1d4ea9b1979555c461224c322158318",
+        "activeVersion": "1.0.0-b5c8d278706a",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "a82a0fc3ce5c3c9f559660fd21e2971583f58cf17d230586fadee4130348233d",
+        "bytes": 183206
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-dice-streak\\versions\\1.0.0-2c51ae3370f6",
+        "pointerSha256": "b88b9b945d128103aef9aa0c79a71dda9f9cd953dd7d58b667157e7b1e33c950",
+        "activeVersion": "1.0.0-6ec7a11d60d3",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "f2ae56a302ff3694f9bd6bb1743ea9091cc221abdfa48f91394b28a198da4034",
+        "bytes": 126973
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-double-mines\\versions\\1.0.0-55c3fd97e281",
+        "pointerSha256": "3b92bc29ca7835b7cbf307a5141e8cba5f616e931fd9dd3c5d566a0e1c890191",
+        "activeVersion": "1.0.0-197281af2282",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "0e07576e1d6ab00ca9cdfa087cfa31a8a1f5c36da17e84660f9c643c40aca826",
+        "bytes": 126975
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-duel\\versions\\1.0.0-243aae0196d1",
+        "pointerSha256": "e56d28107aac5150e8ab3a879b9b16d33e43494fa80806042cd7d467b6252d02",
+        "activeVersion": "1.0.0-93a30e1c97db",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "5a14937af927f58daafb075917fa3e44233cd3112526d17cc8df8f7c471c0aef",
+        "bytes": 127675
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-fruits\\versions\\1.0.0-38ad70ec5fcb",
+        "pointerSha256": "538a270eb643bda615a52be72abefc1bef722a75cceeb800ba6a244fd1d5f65a",
+        "activeVersion": "1.0.0-b8a2ad579f34",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "09122dfaa240a009fff925800a26495d38fe2021087f2a278dd14238e8bd287f",
+        "bytes": 195111
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-gem-collection\\versions\\1.0.0-47f3cc0e7891",
+        "pointerSha256": "8e554d629963903e30f17de8bb4f6ff165ea5eeea67af8af282df0854982f0aa",
+        "activeVersion": "1.0.0-2e5f6a1be3d3",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "dc5172370dd470bd962bf8bc1d8e7971a9504aacf17c5b61b9b87132cd4ea11a",
+        "bytes": 126979
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-keno\\versions\\1.0.0-e90dcbb17894",
+        "pointerSha256": "efc126c8cc0c18a057cab1daa5353fbebbc138b8cd662f66efa389c7f7046c8a",
+        "activeVersion": "1.0.0-8bb969d0f1bc",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "4dd10fb120a92a8d25de78c7073e3a9ad7e9eb5c2b80db121e2a8062ed2fcbc0",
+        "bytes": 127675
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-keys\\versions\\1.0.0-8520b568d5bd",
+        "pointerSha256": "8c8d5fd0226cd5cd4cb7bad7a523097bad49b6b3908f6f7029593c661fa2d92f",
+        "activeVersion": "1.0.0-a309bed01fca",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "15b58a485a3c4a495db8dd51827b98cd92298214bc99779f4078a43bbdaab1c6",
+        "bytes": 127675
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-limbo\\versions\\1.0.0-e9128f7642be",
+        "pointerSha256": "f2d1d3a0cff94a0960939d4ea8a051ab42ffa92db1c3dfe27500f276b5803d4b",
+        "activeVersion": "1.0.0-3de6b9a25d7b",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "4b8a03493656c54e6fc5e4046ba08f3e350009778cab6e9038a17c1224598cd3",
+        "bytes": 186849
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-mines\\versions\\1.0.0-85d3c6ee8ad8",
+        "pointerSha256": "97d11454320481a960b5ad45ba52cc0e7ff357f54e8d6a1359bb1424df65d131",
+        "activeVersion": "1.0.0-57cad8c84c6b",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "de9c0a5994c5961b22792663a82cdc26c7b46cacd359da4b2087ed3b3b0515c3",
+        "bytes": 107131
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-plinko\\versions\\1.0.0-1e9dab11a93e",
+        "pointerSha256": "01cdb1880c92a3dc972d81c6922828c5a232e4445571e55040e2c2b8e09a0f98",
+        "activeVersion": "1.0.0-c79e1de18434",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "335f013bce3a04f18493691883ac158a954adb9feb5a19a5784a7b65f382ed72",
+        "bytes": 62092
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-sic-bo\\versions\\1.0.0-ed6017ffd6ee",
+        "pointerSha256": "b9df6bafb9877a6d0542154e292efad26087455b1fb7e3053ab03294a7796171",
+        "activeVersion": "1.0.0-e92b1dcebd7d",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "2bd36f08b3c2c2e32f692389cf4fb0b5121fee1a2ab1d0b2ed79864196b99c44",
+        "bytes": 107133
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-target-plinko\\versions\\1.0.0-053f4c11a832",
+        "pointerSha256": "64a262fa8c924f3ab1c6d238b0635b137eda3db083b6c4253b183234dc57303c",
+        "activeVersion": "1.0.0-ae071b3808d9",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "4e3ca6e24e0badbed149a2da327e9f05bcb8d1c87936ffbd3e406ec8b542361c",
+        "bytes": 104832
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-triple-poker\\versions\\1.0.0-14a136b76b75",
+        "pointerSha256": "0d646616abfa05d7c380978d9421c4bffa034d24595e6258eaf5d6eb1a85323b",
+        "activeVersion": "1.0.0-f1b92830a254",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "4d5a63ffa372d997072efd295a6435e0e3b7f77d21a65d11c98235581fc9e04e",
+        "bytes": 126975
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\module-dist\\variant-war\\versions\\1.0.0-9502e93328d4",
+        "pointerSha256": "76c86db29f2dbaf41a95baebb3781c0d71bc04319baa38cfc90f9eda2e85a397",
+        "activeVersion": "1.0.0-3eec0ebe163d",
+        "sourceCommit": "97d9eac8e811db0389002ce697865782f9707f41",
+        "files": 3,
+        "manifestSha256": "6b316ab0aca42abdc1929375faed99e2c9e282b99a5029cb9c4168d8fa34927a",
+        "bytes": 127673
+      }
+    ],
+    "removedLogicalBytes": 273989515,
+    "freeBeforeBytes": 303863631872,
+    "freeAfterBytes": 304140894208,
+    "freeDeltaBytes": 277262336
+  },
+  "server": {
+    "removed": [
+      {
+        "path": "/opt/royal-releases/remove-room-labels-20261105-v1/transport.tgz",
+        "bytes": 2390886,
+        "sha256": "0926570ccbea6739aff82011af71bb67ea5fd704671cd8a01c9b9e1459b769a8"
+      },
+      {
+        "path": "/opt/royal-releases/remove-room-labels-20261105-v1/runtime-context",
+        "bytes": 3080233,
+        "files": 5
+      }
+    ],
+    "freeBeforeBytes": 9640673280,
+    "freeAfterBytes": 9643089920,
+    "freeDeltaBytes": 2416640,
+    "rollbackArchivePreserved": "/opt/royal-backups/remove-room-labels-20261105-v1/source.tgz",
+    "sourceCommit": "3a550452f38b5483eae81e3b5b536d7b8402f52c"
+  },
+  "measurementContext": "Logical sizes and observed free-space measurements are separate. Concurrent workloads can affect free-space deltas.",
+  "taskTemporaryFiles": {
+    "removed": [
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\payload",
+        "bytes": 8875034,
+        "files": 21
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\transport.tgz",
+        "bytes": 2390886,
+        "sha256": "0926570ccbea6739aff82011af71bb67ea5fd704671cd8a01c9b9e1459b769a8"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\before.json",
+        "bytes": 3839105
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\capture.json",
+        "bytes": 4466392
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\capture.py",
+        "bytes": 1621
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\cleanup-local.py",
+        "bytes": 5950
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\cleanup-server.py",
+        "bytes": 3037
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\fetch-backend.py",
+        "bytes": 902
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\game-en-1440.png",
+        "bytes": 208104
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\game-en-390.png",
+        "bytes": 95534
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\game-ru-390.png",
+        "bytes": 93547
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\host-avatar-1440.png",
+        "bytes": 276837
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\host-avatar-390.png",
+        "bytes": 87384
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\host-npc-1440.png",
+        "bytes": 270201
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\host-npc-390.png",
+        "bytes": 88209
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\host-review-en.log",
+        "bytes": 232
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\host-review-ru.json",
+        "bytes": 971
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\host-review-ru.log",
+        "bytes": 704
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\host-review.json",
+        "bytes": 1987
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\host-review.log",
+        "bytes": 704
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\host-review.ts",
+        "bytes": 14823
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\linux-tests.json",
+        "bytes": 125
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\linux-tests.py",
+        "bytes": 1920
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\maintenance-status.json",
+        "bytes": 1639
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\maintenance-status.py",
+        "bytes": 2278
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\module-history-plan.json",
+        "bytes": 66448
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\module-history-result.json",
+        "bytes": 66587
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\module-history.py",
+        "bytes": 4380
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\prepare-final.log",
+        "bytes": 43418
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\prepare.log",
+        "bytes": 315
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\production-backend.js",
+        "bytes": 2432679
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\public-after.json",
+        "bytes": 5646
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\public-after.log",
+        "bytes": 62
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\public-before.json",
+        "bytes": 4157
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\public-before.log",
+        "bytes": 63
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\public-catalog-en-1440.png",
+        "bytes": 297002
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\public-catalog-en-390.png",
+        "bytes": 77561
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\public-catalog-ru-1440.png",
+        "bytes": 201277
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\public-catalog-ru-390.png",
+        "bytes": 80263
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\public-check.mjs",
+        "bytes": 4340
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\record.py",
+        "bytes": 7721
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\remote.py",
+        "bytes": 640
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\retry.py",
+        "bytes": 1826
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\review.json",
+        "bytes": 484
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\review.mjs",
+        "bytes": 3272
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\room-en.png",
+        "bytes": 334413
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\server-cleanup.json",
+        "bytes": 631
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\stand-owner.json",
+        "bytes": 125
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\start-maintenance.py",
+        "bytes": 1391
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\start.py",
+        "bytes": 1082
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\status.json",
+        "bytes": 1492
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\status.py",
+        "bytes": 2029
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\summarize.json",
+        "bytes": 1985
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\summarize.py",
+        "bytes": 2053
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\upload.json",
+        "bytes": 279
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\upload.py",
+        "bytes": 2422
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\verify.log",
+        "bytes": 283
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\character-walk-review\\royal\\artifacts\\work\\room-labels-20261105\\wallet.log",
+        "bytes": 2353
+      }
+    ],
+    "removedLogicalBytes": 24376805,
+    "freeBeforeBytes": 304209498112,
+    "freeAfterBytes": 304234024960,
+    "freeDeltaBytes": 24526848,
+    "kept": [
+      "game-ru-1440.png",
+      "owner.json",
+      "progress.json",
+      "room-ru.png"
+    ],
+    "unclassifiedFilesRetained": []
+  },
+  "exceptions": {
+    "olderModulePackages": 21,
+    "cleanupCondition": "A matching preserved GitHub manifest and no active local session",
+    "normalBuildAndSharedCachePreserved": true,
+    "earlierRejectedTargetsUntouched": true,
+    "otherWorktreesUntouched": true
+  }
+}

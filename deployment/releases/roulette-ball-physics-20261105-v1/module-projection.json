@@ -1,0 +1,179 @@
+{
+  "format": 1,
+  "productionCommit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+  "moduleGames": [
+    "royal-roulette"
+  ],
+  "files": {
+    "games/royal-roulette/RouletteAudioBank.ts": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "games/royal-roulette/RouletteAudioBank.ts",
+      "baseSha256": "87fa8fe91093de971bc5e381b5c512583a2ebbea059251726ff7f027557a3bf0",
+      "sha256": "87fa8fe91093de971bc5e381b5c512583a2ebbea059251726ff7f027557a3bf0"
+    },
+    "games/royal-roulette/RouletteMotion.ts": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "games/royal-roulette/RouletteMotion.ts",
+      "baseSha256": "b7c05e35b63650dd067d4fd9d2107f20d739cd146825f12ee21bd2638765d6cf",
+      "sha256": "b7c05e35b63650dd067d4fd9d2107f20d739cd146825f12ee21bd2638765d6cf"
+    },
+    "games/royal-roulette/RouletteSound.ts": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "games/royal-roulette/RouletteSound.ts",
+      "baseSha256": "f2f06b481d844924d93ac3615111b561cda69cafbff28d9b2177963b11227343",
+      "sha256": "f2f06b481d844924d93ac3615111b561cda69cafbff28d9b2177963b11227343"
+    },
+    "games/royal-roulette/RouletteSoundTimeline.ts": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "games/royal-roulette/RouletteSoundTimeline.ts",
+      "baseSha256": "ddfc3abc60edc42a683532eb826bf86e3a020568e45421ff774d5ec49e0afce2",
+      "sha256": "ddfc3abc60edc42a683532eb826bf86e3a020568e45421ff774d5ec49e0afce2"
+    },
+    "games/royal-roulette/RoyalRoulette.ts": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "games/royal-roulette/RoyalRoulette.ts",
+      "baseSha256": "348bf6ce1d3a7ed5f343fd5dccaf1b07c7c8bdb98317a33e8b569f83d13e1cde",
+      "sha256": "348bf6ce1d3a7ed5f343fd5dccaf1b07c7c8bdb98317a33e8b569f83d13e1cde"
+    },
+    "games/royal-roulette/SpinTimeline.ts": {
+      "commit": "d4ac516a479a0f7ce47b849c9136acd1b4f5e5ef",
+      "path": "games/royal-roulette/SpinTimeline.ts",
+      "baseSha256": "e80561282f59e5109a2a2f6843af1370dfdf0c1f5f2fc8ca1c428ce84405773d",
+      "sha256": "e80561282f59e5109a2a2f6843af1370dfdf0c1f5f2fc8ca1c428ce84405773d"
+    },
+    "games/royal-roulette/WheelArtwork.ts": {
+      "commit": "d4ac516a479a0f7ce47b849c9136acd1b4f5e5ef",
+      "path": "games/royal-roulette/WheelArtwork.ts",
+      "baseSha256": "1acacc95fe5a50641f11489aeaf599937c690f97f298d52824224ebb738c58f8",
+      "sha256": "1acacc95fe5a50641f11489aeaf599937c690f97f298d52824224ebb738c58f8"
+    },
+    "games/royal-roulette/entry.ts": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "games/royal-roulette/entry.ts",
+      "baseSha256": "60aaf57cf0681070645d8c2d0008047f3415ac7ce16f79988a6d593abf75e0bb",
+      "sha256": "60aaf57cf0681070645d8c2d0008047f3415ac7ce16f79988a6d593abf75e0bb"
+    },
+    "games/royal-roulette/package.json": {
+      "commit": "d4ac516a479a0f7ce47b849c9136acd1b4f5e5ef",
+      "path": "games/royal-roulette/package.json",
+      "baseSha256": "899b41a219572e9abdf78a6d390dab93a55b74bb17b9095ee1757451c69ddc2e",
+      "sha256": "899b41a219572e9abdf78a6d390dab93a55b74bb17b9095ee1757451c69ddc2e"
+    },
+    "games/royal-roulette/priorities.css": {
+      "commit": "d4ac516a479a0f7ce47b849c9136acd1b4f5e5ef",
+      "path": "games/royal-roulette/priorities.css",
+      "baseSha256": "dd3228ed00d13009a86eeed8b27663acc5ce0f8fbe031d6465e5324961ac2538",
+      "sha256": "dd3228ed00d13009a86eeed8b27663acc5ce0f8fbe031d6465e5324961ac2538"
+    },
+    "games/royal-roulette/roulette.css": {
+      "commit": "d4ac516a479a0f7ce47b849c9136acd1b4f5e5ef",
+      "path": "games/royal-roulette/roulette.css",
+      "baseSha256": "465b182b5309fc8ba19ff6a7ce6ef8cb6ce5362c7ddc2d10bcc28bbed9caac15",
+      "sha256": "465b182b5309fc8ba19ff6a7ce6ef8cb6ce5362c7ddc2d10bcc28bbed9caac15"
+    },
+    "games/royal-roulette/tsconfig.json": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "games/royal-roulette/tsconfig.json",
+      "baseSha256": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de",
+      "sha256": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de"
+    },
+    "src/modules/GameHostContract.ts": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "src/modules/GameHostContract.ts",
+      "baseSha256": "47e6960da87ccab2dcb81c808ad019a82ee587f097754f1ab20a9c4dfcb3631b",
+      "sha256": "47e6960da87ccab2dcb81c808ad019a82ee587f097754f1ab20a9c4dfcb3631b"
+    },
+    "src/modules/GameModuleCatalog.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/modules/GameModuleCatalog.ts",
+      "baseSha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82",
+      "sha256": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1",
+      "patches": [
+        {
+          "from": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },",
+          "to": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },"
+        },
+        {
+          "from": "ion:1},\n] as con",
+          "to": "ion:1},\n {gameId:'tsu-e-fa',slug:'tsu-e-fa',apiVersion:1,rulesVersion:1,progressVersion:1},\n] as con"
+        },
+        {
+          "from": "iVersion:1,rulesVersion:1,progressVersion:1},\n] a",
+          "to": "iVersion:1,rulesVersion:2,progressVersion:1},\n] a"
+        },
+        {
+          "from": ":2,",
+          "to": ":3,"
+        },
+        {
+          "from": ":3,",
+          "to": ":4,"
+        },
+        {
+          "from": "export const STUDIO_GAME_MODULES = [\n",
+          "to": "export const STUDIO_GAME_MODULES = [\n { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },\n"
+        }
+      ]
+    },
+    "src/shared/gameCore.ts": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "src/shared/gameCore.ts",
+      "baseSha256": "3e59b987bd47e61137af39aace7717bc7490e3dabf52193de8668fbcca5ca737",
+      "sha256": "3e59b987bd47e61137af39aace7717bc7490e3dabf52193de8668fbcca5ca737"
+    },
+    "src/shared/gameStakes.ts": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "src/shared/gameStakes.ts",
+      "baseSha256": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b",
+      "sha256": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b"
+    },
+    "src/ui/ActionGameLayout.ts": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "src/ui/ActionGameLayout.ts",
+      "baseSha256": "9b4697dee6b29e28cddf3a67d8d691b2eec0f3968daa8eb08c21b576d4fc12ea",
+      "sha256": "9b4697dee6b29e28cddf3a67d8d691b2eec0f3968daa8eb08c21b576d4fc12ea"
+    },
+    "src/ui/GameLayoutPolicy.ts": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "src/ui/GameLayoutPolicy.ts",
+      "baseSha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c",
+      "sha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c"
+    },
+    "src/ui/GamePriorityPanel.ts": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "src/ui/GamePriorityPanel.ts",
+      "baseSha256": "e7962834ba950151c3de176899ec3b6e49e1c5175f35ac1e5087787d5e0abd34",
+      "sha256": "e7962834ba950151c3de176899ec3b6e49e1c5175f35ac1e5087787d5e0abd34"
+    },
+    "src/ui/action-game-priorities.css": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "src/ui/action-game-priorities.css",
+      "baseSha256": "79f5ae4a93349b57a29b6387632923cdcf943b2df4fc35d55f9a997cac0c5f12",
+      "sha256": "79f5ae4a93349b57a29b6387632923cdcf943b2df4fc35d55f9a997cac0c5f12"
+    },
+    "src/ui/game-priority-panel.css": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "src/ui/game-priority-panel.css",
+      "baseSha256": "0894bf423064c5e1de16f1a1c73831e517efadfb3e5757fd506b1f4d49abcfb1",
+      "sha256": "0894bf423064c5e1de16f1a1c73831e517efadfb3e5757fd506b1f4d49abcfb1"
+    },
+    "src/ui/stakeRules.ts": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "src/ui/stakeRules.ts",
+      "baseSha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df",
+      "sha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df"
+    },
+    "src/ui/stakeSelection.ts": {
+      "commit": "3a550452f38b5483eae81e3b5b536d7b8402f52c",
+      "path": "src/ui/stakeSelection.ts",
+      "baseSha256": "a504e218ad8683f493e68345b26003a33711a07e6231290910054cd31d72c631",
+      "sha256": "a504e218ad8683f493e68345b26003a33711a07e6231290910054cd31d72c631"
+    },
+    "tsconfig.json": {
+      "commit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+      "path": "tsconfig.json",
+      "baseSha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+      "sha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b"
+    }
+  }
+}
