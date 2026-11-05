@@ -82,5 +82,182 @@
     "src/game/RoomScene.ts": "049b3d198e18a077f90dccd6b914ae8f6d58c41da943793024cdd15c216e6e29",
     "src/game/ToiletMerchant.ts": "8a8124c9dbd327172fe028f8f54246a61d9217c86b3b08462bb0c979b9b05261",
     "scripts/game-math/rtp-policy.json": "2f360fdce9867dea58f5f54370551e6d53f00d28e1023d2ffc3b62ac1731800d"
+  },
+  "sourceCommit": "40677977d275a547e5306e678129287618694b07",
+  "githubVerifiedBranch": "feature/toilet-janitor-animation",
+  "cleanup": {
+    "at": "2026-11-05T15:17:13.645314+00:00",
+    "removed": [
+      {
+        "path": "artifacts/work/skin-offers-20261105/final-server.log",
+        "files": 1,
+        "bytes": 3923
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/toilet-browser",
+        "files": 9,
+        "bytes": 938867
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/single-browser",
+        "files": 3,
+        "bytes": 108680
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/qualify.mjs",
+        "files": 1,
+        "bytes": 3036
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/qualification-result.json",
+        "files": 1,
+        "bytes": 5378
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/toilet-ui.log",
+        "files": 1,
+        "bytes": 727
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/native-new",
+        "files": 2,
+        "bytes": 1904438
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/rtp-check.log",
+        "files": 1,
+        "bytes": 168
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/samples",
+        "files": 9,
+        "bytes": 26233
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/browser",
+        "files": 1,
+        "bytes": 45
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/qualification-plan.json",
+        "files": 1,
+        "bytes": 6338
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/afterglow-requalified.log",
+        "files": 1,
+        "bytes": 632
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/atelier-recheck.log",
+        "files": 1,
+        "bytes": 351
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/native-old",
+        "files": 2,
+        "bytes": 1892464
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/skin-http-recheck.log",
+        "files": 1,
+        "bytes": 1157
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/toilet.config.ts",
+        "files": 1,
+        "bytes": 393
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/skin-ui.log",
+        "files": 1,
+        "bytes": 4828
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/playwright.config.ts",
+        "files": 1,
+        "bytes": 305
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/wild-nudge-requalified.log",
+        "files": 1,
+        "bytes": 631
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/skin-server.log",
+        "files": 1,
+        "bytes": 4808
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/round-compatibility.log",
+        "files": 1,
+        "bytes": 2554
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/single-ui.log",
+        "files": 1,
+        "bytes": 638
+      },
+      {
+        "path": "artifacts/work/skin-offers-20261105/qualification",
+        "files": 31,
+        "bytes": 233723
+      },
+      {
+        "path": "artifacts/work/toilet-merchant-local-20261105",
+        "files": 5,
+        "bytes": 5544
+      },
+      {
+        "path": "artifacts/skin-studio/wall-atelier/local-room.png",
+        "files": 1,
+        "bytes": 372107
+      }
+    ],
+    "totalFiles": 79,
+    "totalApparentBytes": 5517968,
+    "archivesCreatedOrRemoved": [],
+    "freeBytesBeforeCleanup": 34624204800,
+    "freeBytesAfterCleanup": 34622193664,
+    "physicalSpaceAttribution": "Free-space measurements include unrelated filesystem activity. Apparent file sizes are not claimed as reclaimed physical disk blocks.",
+    "activeExceptions": [
+      {
+        "path": "artifacts/work/skin-offers-20261105",
+        "files": [
+          {
+            "name": "backend-supervisor.mjs",
+            "bytes": 3876
+          },
+          {
+            "name": "backend.log",
+            "bytes": 1291
+          },
+          {
+            "name": "OWNER.json",
+            "bytes": 346
+          },
+          {
+            "name": "supervisor.log",
+            "bytes": 0
+          },
+          {
+            "name": "backend-ready.json",
+            "bytes": 85
+          }
+        ],
+        "purpose": "Active local backend supervisor and current logs, no saved credentials",
+        "cleanup": "After the existing preview launcher stops and its disposable database is cleaned, remove this stopped backend runtime folder; retain the active checkout until all newer work is preserved in GitHub."
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/casino-street-20261101/checkout",
+        "purpose": "Active local Vite checkout; root checkout has unrelated concurrent work",
+        "cleanup": "After the preview stops and source is preserved in GitHub, remove the inactive extra worktree without discarding newer work."
+      },
+      {
+        "path": "/var/folders/jf/j4h8s0g91q9fgs6xm6lbhlk80000gp/T/royal-pg-KjNWKN",
+        "purpose": "Existing preview database preserved across backend restart",
+        "cleanup": "The original preview launcher owns the disposable database and cleans it on normal shutdown."
+      }
+    ]
   }
 }
