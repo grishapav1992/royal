@@ -4,8 +4,9 @@ import { installGameChat } from './GameChat';
 import { ChatMedia } from './ChatMedia';
 import { prefetchDemoGames } from '../game/demoGames';
 import { AuthUI } from './AuthUI';
-import { ActivitiesUI } from './ActivitiesUI';
-import { PvpUI } from './PvpUI';
+import type { ActivitiesUI } from './ActivitiesUI';
+import type { PvpUI } from './PvpUI';
+import type { ClubHost } from '../ClubHost';
 import type { RoomScene } from '../game/RoomScene';
 import { LobbyClient, type ConnectionStatus } from '../network/LobbyClient';
 import { HALLS, type ChatMessage, type PlayerView } from '../shared/world';
@@ -23,8 +24,8 @@ type OutgoingMessage = {
 
 export class SocialUI {
   readonly client: LobbyClient;
-  readonly activities: ActivitiesUI;
-  readonly pvp:PvpUI;
+  activities?: ActivitiesUI;
+  pvp?: PvpUI;
   private security: SecurityUI;
   private checking = false;
   private sanctioned = false;
@@ -48,7 +49,7 @@ export class SocialUI {
   private outgoing = new Map<string, OutgoingMessage>();
   private outbox = document.createElement('div');
   private deliveryStatus = document.createElement('p');
-  constructor(private scene: RoomScene, private toast: (message: string) => void) {
+  constructor(private scene: ClubHost, private toast: (message: string) => void) {
     window.addEventListener('royal-skin-loaded', () => {
       const portrait = document.querySelector<HTMLImageElement>('#player-portrait img');
       if (portrait) portrait.src = scene.getPortraitFrame('idle', 0);
@@ -118,7 +119,7 @@ export class SocialUI {
         this.showLatest();
         const url = new URL(location.href); url.searchParams.set('room', roomId); history.replaceState({ royalJoinedRoom: roomId }, '', url);
         this.scene.enableOnline({ recover: () => this.client.recoverPlayer(), miraAttention: phase => this.client.send('mira-attention',{phase}), stairWindow: () => { this.client.send('stair-window'); }, elevator: target => this.client.travelByElevator(target), inputs: inputs => this.client.send('inputs',inputs), move: (x,y) => this.client.send('move',{x,y}), target: (x,y) => this.client.send('target',{x,y}), stop: () => this.client.send('stop'), sit: seat => this.client.send('sit',seat), stand: () => this.client.send('stand'), drink: drink => this.client.send('drink',drink), cat: action => this.client.send('cat',action), cabinetPlay: id => this.client.claimCabinet(id), cabinetLeave: () => this.client.releaseCabinet(), cabinetReaction: (id,reaction) => this.client.send('cabinet-reaction',{id,reaction}) });
-        this.dialog.close(); this.scene.setLocked(Boolean(document.querySelector('dialog[open]'))); prefetchDemoGames();
+        this.dialog.close(); this.scene.setLocked(Boolean(document.querySelector('dialog[open]')));
         document.querySelector('.profile-name')!.firstChild!.textContent = this.auth.account?.name || translateText('Игрок');
       },
       players: (players, selfId) => this.updatePlayers(players, selfId),
@@ -130,18 +131,11 @@ export class SocialUI {
       delivery: result => this.chatResult(result),
       history: messages => { messages.forEach(message => this.addMessage(message)); },
       notice: message => this.toast(message),
-      activities: state => this.activities.update(state),
+      activities: state => this.activities?.update(state),
       pvp:value=>this.pvp?.client.receive(value),
       pvpResult:value=>this.pvp?.client.rejected(value),
-      note: note => this.activities.receive(note),
+      note: note => this.activities?.receive(note),
     });
-    this.activities = new ActivitiesUI(scene, value=>{
-      const type = (value as {type?:string})?.type;
-      if (type === 'join' || type === 'leave') this.scene.finishMovement(() => this.client.send('activity',value));
-      else this.client.send('activity',value);
-    });
-    this.pvp=new PvpUI(scene,this.activities,value=>this.client.send('pvp',value));
-    this.pvp.client.setAccount(this.auth.account?.id??null);
     chat.querySelector('form')!.addEventListener('submit', event => {
       event.preventDefault(); const text = this.input.value.trim();
       if (this.sendChat(text)) { this.input.value = ''; this.input.dispatchEvent(new Event('input', { bubbles: true })); this.input.focus(); }
@@ -294,14 +288,14 @@ export class SocialUI {
       portrait.src = this.scene.getPortraitFrame('idle', 0);
       portrait.dataset.appearance = `${self.skin}:${self.appearance ?? ''}`;
     }
-    this.activities.updatePlayers(players,selfId);
-    this.pvp.updatePlayers(players,selfId);
+    this.activities?.updatePlayers(players,selfId);
+    this.pvp?.updatePlayers(players,selfId);
     document.querySelector('#room-count')!.textContent = `${players.length} / 30`;
     (document.querySelector('.npc-count') as HTMLElement).dataset.players=String(players.filter(p=>p.hall===this.scene.hall).length);
     const tags=new Map(Array.from(this.people.querySelectorAll<HTMLElement>('[data-player-id]'),tag=>[tag.dataset.playerId!,tag]));
     for (const player of players) {
       const tag = tags.get(player.id)??document.createElement(player.id===selfId?'span':'button'); tag.className = 'person-tag';tag.dataset.playerId=player.id;tags.delete(player.id);
-      if(tag instanceof HTMLButtonElement){tag.type='button';tag.disabled=!player.connected;tag.title=translateText('Действия с игроком');tag.onclick=()=>this.pvp.openPlayer(player.id);}
+      if(tag instanceof HTMLButtonElement){tag.type='button';tag.disabled=!player.connected || !this.pvp;tag.title=translateText('Действия с игроком');tag.onclick=()=>this.pvp?.openPlayer(player.id);}
       tag.textContent = player.name + ' · ' + HALLS[player.hall].number + (player.id === selfId ? translateText(' (ты)') : '') + (player.ears?' · 🙉':'') + (player.activity==='piano'?translateText(' · рояль'):player.playing ? translateText(' · играет') : player.action === 'drink' ? translateText(' · пьёт') : player.seat ? translateText(' · сидит') : '');
       const intoxication = getIntoxication(player.soberAt);
       if (intoxication.stage) tag.textContent += ' · ' + intoxication.label.toLowerCase();
@@ -367,6 +361,20 @@ export class SocialUI {
   private showLatest() {
     this.followChat = true; this.unread = 0; this.newMessages.hidden = true;
     this.restoreChatPosition();
+  }
+  async attachWorld(scene: RoomScene) {
+    if (this.activities) return;
+    const [{ ActivitiesUI }, { PvpUI }] = await Promise.all([import('./ActivitiesUI'), import('./PvpUI')]);
+    this.activities = new ActivitiesUI(scene, value => {
+      const type = (value as { type?: string })?.type;
+      if (type === 'join' || type === 'leave') this.scene.finishMovement(() => this.client.send('activity', value));
+      else this.client.send('activity', value);
+    });
+    this.pvp = new PvpUI(scene, this.activities, value => this.client.send('pvp', value));
+    this.pvp.client.setAccount(this.auth.account?.id ?? null);
+    this.pvp.client.setConnected(this.client.status === 'connected');
+    this.client.send('activities');
+    prefetchDemoGames();
   }
   setPlaying(playing: boolean) { this.scene.finishMovement(() => { if (playing) this.client.send('playing',true); else this.client.releaseCabinet(); }); }
 }

@@ -1,5 +1,5 @@
 import type { Account } from '../../server/accounts';
-import type { RoomScene } from '../game/RoomScene';
+import type { PlayerControls } from './PlayerControls';
 import { SKIN_VARIANTS,SKIN_OFFERS,SKIN_PRICE_UNITS,type SkinOfferId, skinAssetUrl } from '../shared/skinStudio';
 import type { SkinDescriptionCard as SkinCard, SkinDescribedSnapshot as SkinStudioSnapshot } from '../shared/skinDescription';
 import { WALLET_ACCOUNT_HEADER } from '../shared/walletAccount';
@@ -40,7 +40,7 @@ export class SkinStudioUI {
   private trying = '';
   private fittingJob = '';
   private requestId = 0;
-  constructor(private scene: RoomScene, private account: () => Account | null, private accountChanged: () => Promise<void>) {
+  constructor(private scene: PlayerControls, private account: () => Account | null, private accountChanged: () => Promise<void>) {
     this.fitting = new SkinFittingRoom(() => this.scene.getReducedMotion?.() ?? window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     this.button.type = 'button'; this.button.className = 'logout-button'; this.button.textContent = 'Образы'; this.button.hidden = true;
     this.button.onclick = () => { void this.open(); }; document.querySelector('.profile')!.append(this.button);

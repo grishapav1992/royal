@@ -27,23 +27,30 @@ import { MiraChat } from './ui/MiraChat';
 import { isGithubGame } from './shared/githubGames';
 import './demo-preview.css';
 import { gameAudio } from './game/GameAudio';
-import Phaser from 'phaser';
+import type Phaser from 'phaser';
 import { ProgressionUI } from './ui/ProgressionUI';
-import { RoomScene, CABINETS, type Cabinet } from './game/RoomScene';
-import { GAME_CABINETS, cabinetHall, cabinetsInHall } from './shared/cabinets';
-import { WORLD } from './game/navigation';
+import { CABINETS, GAME_CABINETS, cabinetHall, cabinetsInHall, type Cabinet } from './shared/cabinets';
+import { ClubHost } from './ClubHost';
+import { installModeSwitcher, type EntryMode } from './ui/EntryModes';
 import './style.css';
 import './paper-theme.css';
 import './own-cabinets.css';
 import './mira-dialog.css';
 import './ui/compact-header.css';
+import './ui/casino-lobby.css';
 import { DRINKS, HALLS, hallLinks, isExteriorHall, isCasinoFloor, activityHall, type HallId } from './shared/world';
 import type { BreakerStatus } from './game/breaker';
 import { SocialUI } from './ui/SocialUI';
 import { CatUI } from './ui/CatUI';
 import { RoomLayout } from './ui/RoomLayout';
+export async function startRoyal(initialMode: EntryMode) {
+let mode = initialMode;
 const offline = new URL(location.href).searchParams.get('offline') === '1';
 let social: SocialUI | undefined;
+const room = new ClubHost();
+room.presentation = initialMode;
+let worldGame: Phaser.Game | undefined;
+let worldPromise: Promise<void> | undefined;
 
 const icons = {
   crown: '<path d="m3 7 5 4 4-7 4 7 5-4-2 12H5L3 7Z"/><path d="M6 22h12"/>',
@@ -79,6 +86,7 @@ app.innerHTML = tr`
         <div id="interaction" class="interaction" hidden><div><span class="eyebrow" id="machine-kind">ИГРОВОЙ АВТОМАТ</span><strong id="machine-name"></strong></div><button id="interact" class="primary-button"><kbd>E</kbd><span id="interact-label">Играть</span>${icon('arrow')}</button></div>
         <div class="lounge-controls"><button id="visit-bar">Мини-бар</button><button id="stand-up" hidden>Встать</button></div>
       </section>
+      <section class="casino-panel" aria-label="Каталог казино" hidden><div id="casino-catalog"></div></section>
       <aside class="sidebar">
         <div class="sidebar-heading"><h2>Во что сыграем?</h2><span>${String(hallGameCount('arcade')).padStart(2, '0')}</span></div>
         <section id="card-tables-catalog" aria-label="Карточные столы и крупье" hidden></section>
@@ -135,6 +143,7 @@ function clearPlatformView() {
   $('#mini-game').replaceChildren();
 }
 function showPlatformCatalog() {
+  if (mode === 'casino') { miniDialog.close(); return; }
   if (!platformCabinet?.collection || platformCabinet.collection==='luelon') return;
   const selected = selectedPlatformGame;
   clearPlatformView(); gameAudio.setGame('');
@@ -187,6 +196,7 @@ async function play(cabinet: Cabinet) {
   } finally { openingCabinet = false; }
 }
 async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound, switchPlatform = false, choice?: PlatformChoice) {
+  if (!offline && (!social || social.client.status !== 'connected') || room.getState().security) { toast(translateText('Войди в клуб, чтобы открыть игру.')); return; }
   if (switchPlatform && (!platformCabinet || !miniDialog.open || !platformCabinet.collection || platformCabinet.collection==='luelon' || !isCollectionGame(platformCabinet.collection,cabinet.id))) return;
   if (isRetiredArcadeGame(cabinet.id) && (!recovery || recovery.gameId !== cabinet.id || !ownsRetiredArcadeRound(recovery))) return;
   if (!cabinet.playable) { toast(tr`${cabinet.name} пока недоступен.`); return; }
@@ -263,7 +273,11 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound, 
 }
 let elevator: ElevatorUI | undefined;
 let playerRecoveryVersion = 0;
-const room = new RoomScene({
+function ensureWorld() {
+  if (worldPromise) return worldPromise;
+  worldPromise = (async () => {
+  const { createClubWorld } = await import('./game/ClubWorld');
+  const { scene, game } = await createClubWorld({
   onNear: cabinet => {
     $('#interaction').hidden = !cabinet;
     document.querySelectorAll<HTMLButtonElement>('[data-cabinet]').forEach(el => el.classList.toggle('near', el.dataset.cabinet === cabinet?.id));
@@ -278,8 +292,12 @@ const room = new RoomScene({
     }
   },
   onPlay: cabinet => { void play(cabinet); },
-  onReady: () => { new ClubMap(room);
-    elevator = new ElevatorUI(room, () => room.setLocked(Boolean(document.querySelector('dialog[open]')) || Boolean(social && social.client.status !== 'connected')));
+  });
+    worldGame = game;
+    room.attach(scene);
+    await social?.attachWorld(scene);
+    new ClubMap(scene);
+    elevator = new ElevatorUI(scene, () => room.setLocked(Boolean(document.querySelector('dialog[open]')) || Boolean(social && social.client.status !== 'connected')));
     if (!offline) new FlagToteAnnouncement($('.room-panel'), () => {
       if (openingCabinet || document.querySelector('dialog[open]')) return;
       const cabinet = GAME_CABINETS.find(c => c.id === 'flag-tote');
@@ -290,13 +308,10 @@ const room = new RoomScene({
       const i=CABINETS.indexOf(c);
       const img = document.createElement('img'); img.src = game.textures.getBase64(`cabinet-${i}`); img.alt = ''; document.querySelector(`#art-${artIndex}`)?.append(img);
     });
-    new DemoWalletUI(room);
-    new CryptoWalletUI(room);
     const portrait = document.createElement('img'); portrait.src = game.textures.getBase64('citizen-0', 'down-6'); portrait.alt = ''; $('#player-portrait').append(portrait);
-    if (!offline) social = new SocialUI(room, toast);
-    else { room.onActivity=()=>toast(translateText('Войди в онлайн-зал, чтобы играть вместе и слушать рояль.')); }
-    new ProgressionUI(room);
-    new CatUI(room);
+    if (offline) scene.onActivity=()=>toast(translateText('Войди в онлайн-зал, чтобы играть вместе и слушать рояль.'));
+    new ProgressionUI(scene);
+    new CatUI(scene);
     if (offline) {
       const settings=document.createElement('dialog');settings.id='name-dialog';settings.className='join-dialog auth-dialog';settings.setAttribute('aria-labelledby','name-title');
       settings.innerHTML=translateText('<h2 id="name-title">Настройки игрока</h2><button type="button" id="close-settings" class="primary-button">Готово</button>');
@@ -315,15 +330,16 @@ const room = new RoomScene({
       toast(translateText('Персонаж вернулся ко входу на этаж.'));
       return true;
     });
-    layout.attach(room);
+    layout.attach(scene);
     updateHall(room.hall);
-  },
-});
+  })().catch(error => { worldPromise = undefined; throw error; });
+  return worldPromise;
+}
 const miraChat = new MiraChat(barDialog, {
   portraitFrame: (action, frame) => room.getPortraitFrame(action, frame),
-  playerState: () => room.getDialoguePlayer(),
-  onDrink: id => room.orderDrink(id),
-  onAttention: phase => room.setMiraAttention(phase),
+  playerState: () => room.world!.getDialoguePlayer(),
+  onDrink: id => room.world?.orderDrink(id) ?? false,
+  onAttention: phase => room.world?.setMiraAttention(phase),
 });
 room.onApproach = prepareCabinet;
 let intentTimer: ReturnType<typeof setTimeout>;
@@ -339,14 +355,6 @@ const cabinetIntent = (event: Event) => {
 document.addEventListener('pointerover', cabinetIntent);
 document.addEventListener('focusin', cabinetIntent);
 document.addEventListener('pointerdown', cabinetIntent);
-const game = new Phaser.Game({
-  type: Phaser.AUTO, parent: 'game', width: WORLD.width, height: WORLD.height,
-  backgroundColor: '#191d35', pixelArt: false, roundPixels: false,
-  scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.NO_CENTER },
-  input: { windowEvents:false },
-  scene: [room], audio: { noAudio: true }, banner: false,
-});
-new ResizeObserver(entries=>{const {width,height}=entries[0].contentRect;if(width>0&&height>0)game.scale.setParentSize(Math.floor(width),Math.floor(height));}).observe($('#game'));
 document.querySelectorAll<HTMLButtonElement>('[data-cabinet]').forEach(button => button.addEventListener('click', () => room.approach(button.dataset.cabinet!)));
 window.addEventListener('royal-open-casinoapipro', () => {
   if (platformCabinet && miniDialog.open) { if(platformCabinet.collection==='casinoapipro')showPlatformCatalog(); return; }
@@ -375,9 +383,9 @@ $('#floor-links').addEventListener('click', event => {
   const button=(event.target as HTMLElement).closest<HTMLButtonElement>('[data-floor-target]');
   const link=hallLinks(room.hall).find(link=>link.target===button?.dataset.floorTarget);
   if(!link)return;
-  layout.closePanels();room.approachFloor(link.target);
+  layout.closePanels();room.world?.approachFloor(link.target);
 });
-$('#interact').addEventListener('click', () => room.interact());
+$('#interact').addEventListener('click', () => room.world?.interact());
 $('#help').addEventListener('click', () => { room.setLocked(true); helpDialog.showModal(); });
 $('#start-game').addEventListener('click', () => mini?.start());
 $('#retry-demo').addEventListener('click', () => { void mini?.load(); });
@@ -410,11 +418,11 @@ function updateHall(hall:HallId){
   $('.sidebar-heading span').textContent=String(gameCount).padStart(2,'0');
   const gamesTab=document.querySelector<HTMLButtonElement>('#games-tab');if(gamesTab){gamesTab.textContent=translateText('Игры · ')+String(gameCount);gamesTab.hidden=!isCasinoFloor(hall);}
   if(!isCasinoFloor(hall))layout.closePanels();
-  social?.activities.hallChanged();
+  social?.activities?.hallChanged();
 }
 room.onHall=updateHall;
-$('#visit-bar').addEventListener('click',()=>room.approachBar());
-$('#stand-up').addEventListener('click',()=>room.stand());
+$('#visit-bar').addEventListener('click',()=>room.world?.approachBar());
+$('#stand-up').addEventListener('click',()=>room.world?.stand());
 for (const dialog of [miniDialog, helpDialog, barDialog]) {
   dialog.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => dialog.close()));
   dialog.addEventListener('click', event => { if (event.target === dialog) { const bounds = dialog.getBoundingClientRect(); const { clientX: x, clientY: y } = event; if (x < bounds.left || x > bounds.right || y < bounds.top || y > bounds.bottom) dialog.close(); } });
@@ -440,4 +448,61 @@ document.addEventListener('visibilitychange', () => { if (document.hidden && min
 if (import.meta.env.DEV && import.meta.env.VITE_LOCAL_ATELIER === '1') {
   document.querySelector('.header-center')!.textContent = 'Локальное ателье · тестовый баланс';
 }
-Object.assign(window, { royalDemo: { getState: () => room.getState(), getElevator: () => elevator?.getState() ?? null, getTailor: () => room.getTailorState(), getMiniState: () => mini?.getState() ?? null, getNetworkState: () => social?.client.getState() ?? null, getAudio: () => gameAudio.getState(), getActivities: () => social?.activities.getState() ?? null } });
+Object.assign(window, { royalDemo: { getState: () => room.getState(), getElevator: () => elevator?.getState() ?? null, getTailor: () => room.getTailorState(), getMiniState: () => mini?.getState() ?? null, getNetworkState: () => social?.client.getState() ?? null, getAudio: () => gameAudio.getState(), getActivities: () => social?.activities?.getState() ?? null, getEntryMode: () => mode, isWorldLoaded: () => Boolean(room.world) } });
+
+new DemoWalletUI(room);
+new CryptoWalletUI(room);
+if (!offline) social = new SocialUI(room, toast);
+let casinoCatalog: RoyalPlatformCatalog | undefined;
+const casinoChat = document.createElement('button');
+casinoChat.type = 'button';
+casinoChat.className = 'casino-chat-toggle';
+casinoChat.textContent = translateText('Чат');
+casinoChat.setAttribute('aria-label', translateText('Общий чат'));
+casinoChat.setAttribute('aria-controls', 'club-chat-dock');
+casinoChat.setAttribute('aria-expanded', 'false');
+$('.room-tools').prepend(casinoChat);
+const setCasinoChat = (open: boolean) => {
+  document.body.dataset.casinoChat = open ? 'open' : 'closed'; casinoChat.setAttribute('aria-expanded', String(open));
+  if (open) $('#chat-input')?.focus(); else casinoChat.focus();
+};
+casinoChat.onclick = () => setCasinoChat(document.body.dataset.casinoChat !== 'open');
+const closeChat = document.createElement('button'); closeChat.type = 'button'; closeChat.className = 'casino-chat-close'; closeChat.textContent = '×'; closeChat.setAttribute('aria-label', translateText('Закрыть общий чат')); closeChat.onclick = () => setCasinoChat(false);
+document.querySelector('.chat-heading')?.append(closeChat);
+document.addEventListener('keydown', event => { if (event.key === 'Escape' && document.body.dataset.casinoChat === 'open' && !miniDialog.open) { event.preventDefault(); setCasinoChat(false); } });
+async function changeMode(next: EntryMode) {
+  if (offline && next === 'casino') { toast(translateText('Войди в клуб, чтобы открыть игру.')); return false; }
+  if (document.querySelector('dialog[open]') && mode !== next) return false;
+  if (next === 'club') {
+    $('.casino-panel').hidden = true;
+    $('.room-panel').hidden = false;
+    try {
+      await ensureWorld();
+    } catch (error) {
+      $('.room-panel').hidden = mode !== 'club';
+      $('.casino-panel').hidden = mode !== 'casino';
+      toast(translateText('Не получилось открыть клуб. Попробуй ещё раз.'));
+      throw error;
+    }
+    worldGame?.loop.wake();
+    room.setLocked(Boolean(document.querySelector('dialog[open]')) || Boolean(social && social.client.status !== 'connected'));
+  } else {
+    room.cancelMovement(); room.endCabinet(); social?.client.releaseCabinet();
+    room.setLocked(true); worldGame?.loop.sleep();
+    if (!casinoCatalog) casinoCatalog = new RoyalPlatformCatalog($('#casino-catalog'), choice => {
+      if (!isCollectionGame('royal', choice.gameId) || isRetiredArcadeGame(choice.gameId)) return;
+      const base: Cabinet = { id: 'casino-catalog', name: 'Royal', subtitle: '', x: 0, y: 0, color: 0, playable: true, collection: 'royal' };
+      platformCabinet = base;
+      void openCabinetGame(platformGameCabinet(choice.gameId, base), undefined, false, choice);
+    }, 'royal', undefined, 'casino');
+  }
+  mode = next; room.presentation = next;
+  room.setLocked(Boolean(document.querySelector('dialog[open]')) || Boolean(social && social.client.status !== 'connected'));
+  document.body.dataset.entryMode = next; document.body.dataset.casinoChat = 'closed'; casinoChat.setAttribute('aria-expanded', 'false');
+  $('.room-panel').hidden = next !== 'club'; $('.casino-panel').hidden = next !== 'casino';
+  if (next === 'casino') $('h1').textContent = translateText('Каталог игр'); else updateHall(room.hall);
+  layout.closePanels();
+}
+installModeSwitcher(initialMode, changeMode);
+await changeMode(initialMode);
+}
