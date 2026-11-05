@@ -66,7 +66,7 @@ app.innerHTML = tr`
   <header class="header">
     <a class="brand" href="/" aria-label="Рояль, игровой зал"><span class="brand-mark">${icon('crown')}</span><span>РОЯЛЬ<small>ARCADE SOCIAL CLUB</small></span></a>
     <div class="header-center">${icon('game')}<span>Игровой зал</span></div>
-    <div class="room-heading"><div><h1>Казино и бар <span>01</span></h1></div><div class="room-tools"><nav id="floor-links" class="floor-links" aria-label="Лестницы между этажами"></nav><span class="local-label"><i></i>Локальная игра</span><button class="icon-button" id="help" aria-label="Как играть" title="Как играть">${icon('help')}</button><button class="icon-button" id="fullscreen" aria-label="Полный экран" title="Полный экран">${icon('expand')}</button></div></div>
+    <div class="room-heading"><div><h1>Казино и бар <span>01</span></h1></div><div class="room-tools"><nav id="floor-links" class="floor-links" aria-label="Лестницы между этажами"></nav><span class="local-label"><i></i>${translateText(offline ? 'Локальная игра' : 'Вход в зал')}</span><button class="icon-button" id="help" aria-label="Как играть" title="Как играть">${icon('help')}</button><button class="icon-button" id="fullscreen" aria-label="Полный экран" title="Полный экран">${icon('expand')}</button></div></div>
     <button type="button" class="profile-toggle icon-button" popovertarget="profile-menu" aria-label="Профиль и настройки" title="Профиль и настройки">${icon('person')}</button>
     <div class="profile" id="profile-menu" popover><span class="demo-badge">ДЕМО</span><span class="avatar">${icon('person')}</span><span class="profile-name">Гость<small>Приятно познакомиться</small></span></div>
   </header>

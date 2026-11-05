@@ -48,3 +48,9 @@ main{padding-top:6px}
   .header{min-height:40px;padding-top:3px;padding-bottom:3px}
   main{padding-top:3px}
 }
+
+/* Keep hall controls out of game loading, catalogue and switching views. */
+body:has(:is(#mini-dialog,#casinoapipro-dialog,#pvp-dialog,#shared-dialog)[open]) #app>.header{
+  visibility:hidden;
+  pointer-events:none;
+}
