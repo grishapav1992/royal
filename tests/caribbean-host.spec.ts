@@ -845,7 +845,12 @@ test('saved complete rounds give distinct captain reactions in the real host',as
   await page.request.post('/__test/caribbean/force-scenario',{data:{name:'natural-flagship'}});
   const natural=await action(page,'[data-ct-action=play]');expect(natural.view.caribbean.phase).toBe('choice');
   let history=(await mini()).captain.history;const bonus=history.at(-1);expect(bonus.cue).toBe('bonus');cut('bonus',bonus,bonus);await page.screenshot({path:out+'/reaction-bonus.png'});await page.waitForTimeout(1200);
-  await action(page,'[data-ct-action=choose-flagship]');const done=await finish(page);history=(await mini()).captain.history;
+  await action(page,'[data-ct-action=choose-flagship]');
+  await page.emulateMedia({reducedMotion:'reduce'});
+  for(let spin=0;spin<5;spin++)await action(page,'[data-ct-action=play]');
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  const done=await action(page,'[data-ct-action=play]');expect(done.state).toBe('settled');
+  history=(await mini()).captain.history;
   const grand=history.at(-1);expect(grand.cue).toBe('bigwin');expect(grand.pose).toBe('laugh');cut('bigwin',grand,grand,1.6);
   await expect(page.locator('.ct-status')).toContainText('Крупный выигрыш!');
   results.push({name:'natural-flagship',costUnits:done.spentUnits,payoutUnits:done.returnedUnits,captain:history.filter((e:any)=>e.key.startsWith(done.id))});
