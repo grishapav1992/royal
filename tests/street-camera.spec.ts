@@ -55,7 +55,8 @@ test('building covers people before the view changes behind either rear corner',
     await page.screenshot({path:`../layers-${info.project.name}-${side}-hidden.png`});
     await walk(page,side==='left'?688:2032,360);
     s=await state(page);expect(s.street.view.side).toBe('rear');expect(s.buildingOccluded).toBe(false);expect(s.halo.visible).toBe(true);expect(s.street.view.wall.width).toBe(STREET.building.w);
-    expect(s.street.carRender.every((p:any)=>!p.visible)).toBe(true);expect(s.street.frontRoadVisible).toBe(false);
+    expect(s.street.carRender.every((p:any)=>!p.visible)).toBe(true);
+    expect(s.street.roadVisible).toBe(true);expect(s.street.rearVistaVisible).toBe(true);
     await page.screenshot({path:`../layers-${info.project.name}-${side}-rear.png`});
   }
   await page.evaluate(()=>(window as any).__recordLayers=false);

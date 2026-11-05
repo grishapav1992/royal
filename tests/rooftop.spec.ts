@@ -312,7 +312,8 @@ test('manually climb each switchback without falling, reach the roof edge and re
   await noGroundConversation(page);
   await verifyRearWindows(page,info.project.name);
   expect((await state(page)).renderDepth).toBeGreaterThan(620);
-  expect((await state(page)).street.frontRoadVisible).toBe(false);
+  expect((await state(page)).street.roadVisible).toBe(true);
+  expect((await state(page)).street.rearVistaVisible).toBe(true);
   {const s=await state(page);expect(s.renderVisible).toBe(true);expect(Math.hypot(s.halo.x-s.renderX,s.halo.y-s.renderY)).toBeLessThan(.1);}
   await page.screenshot({path:`../roof-${info.project.name}-climb.png`});
   const prefix=await page.evaluate(()=>(window as any).__roofClimb as {hall:string;x:number;y:number}[]);
