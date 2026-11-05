@@ -30,7 +30,6 @@ export const CLUB_ZONES: Record<HallId, ClubZone[]> = {
     {name:ACTIVITIES.hockey.name,x:580,y:285,w:330,h:325,color:0x334653},
     {name:ACTIVITIES['mortal-kombat'].name,x:995,y:285,w:330,h:325,color:0x3d3447},
     {name:ACTIVITIES.chess.name,x:155,y:745,w:350,h:290,color:0x414237},
-    {name:ACTIVITIES['tsu-e-fa'].name,x:580,y:745,w:350,h:290,color:0x3b4844},
   ],
   github: [
     {name:translateText('ПРИВЕТСТВИЕ И ПРАВИЛА'),x:170,y:245,w:650,h:360,color:0x383345},

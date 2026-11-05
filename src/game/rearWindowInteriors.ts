@@ -1,4 +1,4 @@
-import { HALLS,type HallId } from '../shared/world';
+import { HALLS,GITHUB_ROOM_DOOR,type HallId } from '../shared/world';
 import { BAR_POSITION,FURNITURE } from '../shared/furniture';
 import { ACTIVITIES } from '../shared/activities';
 import { LOUNGES } from '../shared/clubLayout';
@@ -31,7 +31,7 @@ export function rearInteriorViews(hall:HallId):RearInteriorView[]{
     around(hall,'air-hockey','Аэрохоккей',ACTIVITIES.hockey.entry.x,ACTIVITIES.hockey.bounds.y+50,320),
     around(hall,'chess','Шахматный стол',FURNITURE.table.x,FURNITURE.table.y-30,320),
     around(hall,'combat',ACTIVITIES['mortal-kombat'].name,ACTIVITIES['mortal-kombat'].entry.x,ACTIVITIES['mortal-kombat'].bounds.y+25,320),
-    around(hall,'tsu-e-fa',ACTIVITIES['tsu-e-fa'].name,ACTIVITIES['tsu-e-fa'].entry.x,ACTIVITIES['tsu-e-fa'].bounds.y+50,320),
+    around(hall,'stair-landing','Лестница',GITHUB_ROOM_DOOR.arrival.x,GITHUB_ROOM_DOOR.arrival.y,320),
   ];
   else views=[lounge(0),...cabinetsInHall(hall).map(c=>cabinet(c.id))];
   const result=views.filter((p):p is RearInteriorView=>Boolean(p));

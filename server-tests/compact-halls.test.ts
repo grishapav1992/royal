@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ACTIVITIES } from '../src/shared/activities';
+import { ACTIVITIES, FLOOR_ACTIVITY_IDS } from '../src/shared/activities';
 import { cabinetSeat } from '../src/shared/cabinetSeating';
 import { cabinetsInHall } from '../src/shared/cabinets';
 import { CAT_CARE } from '../src/shared/catCare';
@@ -23,7 +23,7 @@ test('compact floors keep their destinations connected and block access beyond t
       ...hallLinks(hall).map(({ door }) => door.entry),
       ...SEATS.filter(seat => seat.hall === hall).map(seat => seat.entry),
       ...cabinetsInHall(hall).map(cabinet => cabinetSeat(cabinet).entry),
-      ...Object.entries(ACTIVITIES).filter(([id]) => activityHall(id) === hall).map(([, activity]) => activity.entry),
+      ...FLOOR_ACTIVITY_IDS.filter(id => activityHall(id) === hall).map(id => ACTIVITIES[id].entry),
     ];
     if (hall === 'arcade') destinations.push(CAT_HOME.approach, CAT_CARE.food.approach, CAT_CARE.scratcher.approach);
     if (hall === 'github') destinations.push(STAIR_WINDOW.entry, STAIR_WINDOW.arrival);
@@ -36,4 +36,10 @@ test('compact floors keep their destinations connected and block access beyond t
       }
     }
   }
+});
+
+test('player invitations leave no Rock Paper Scissors station or furniture collision', () => {
+  assert(!FLOOR_ACTIVITY_IDS.includes('tsu-e-fa'));
+  const {x, y, w, h} = ACTIVITIES['tsu-e-fa'].bounds;
+  assert(walkable(x + w / 2, y + h / 2, hallObstacles('tables'), 16));
 });

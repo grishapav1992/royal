@@ -1,7 +1,7 @@
 import { t as translateText } from '../i18n/index';
 import { activityHall, type PlayerView } from '../shared/world';
 import { HOCKEY_PADDLE_RADIUS } from '../shared/hockey';
-import { ACTIVITIES, CHESS_TIME_MS, type ActivityId, type ActivitiesState, type PianoNote } from '../shared/activities';
+import { ACTIVITIES, FLOOR_ACTIVITY_IDS, CHESS_TIME_MS, type ActivityId, type ActivitiesState, type PianoNote } from '../shared/activities';
 import { gameAudio, type Sound } from '../game/GameAudio';
 import type { RoomScene } from '../game/RoomScene';
 import { PianoAudio } from '../game/PianoAudio';
@@ -30,7 +30,7 @@ export class ActivitiesUI {
  pvpOpen?:(id:ActivityId)=>boolean;
  constructor(private scene:RoomScene,private send:(value:unknown)=>void){
   this.cards=document.createElement('div');this.cards.className='shared-cards';
-  this.cards.innerHTML=(Object.keys(ACTIVITIES) as ActivityId[]).map(id=>`<button type="button" data-activity="${id}"><span>${id==='mortal-kombat'?'⚔':id==='piano'?'♫':id==='pool'?'●':id==='chess'?'♞':'◎'}</span><strong>${ACTIVITIES[id].name}</strong><small>${id==='piano'?translateText('Музыка для всех'):'1 на 1 · USDT'}</small></button>`).join('');
+  this.cards.innerHTML=FLOOR_ACTIVITY_IDS.map(id=>`<button type="button" data-activity="${id}"><span>${id==='mortal-kombat'?'⚔':id==='piano'?'♫':id==='pool'?'●':id==='chess'?'♞':'◎'}</span><strong>${ACTIVITIES[id].name}</strong><small>${id==='piano'?translateText('Музыка для всех'):'1 на 1 · USDT'}</small></button>`).join('');
   document.querySelector('#card-tables-catalog')!.before(this.cards);
   this.cards.querySelectorAll<HTMLButtonElement>('[data-activity]').forEach(button=>button.addEventListener('click',()=>scene.approachActivity(button.dataset.activity as ActivityId),{signal:this.events.signal}));
   this.mute=document.createElement('button');this.mute.id='mute-piano';this.mute.className='invite-button piano-mute';this.mute.type='button';

@@ -122,7 +122,7 @@ const TABLE_OBSTACLES = [
   hallRightWall('tables'),
   ...clubObstacles('tables'),
   ...cabinetsInHall('tables').map(cabinetBounds),
-  ACTIVITIES.pool.bounds, ACTIVITIES.chess.bounds, ACTIVITIES.hockey.bounds, ACTIVITIES['mortal-kombat'].bounds, ACTIVITIES['tsu-e-fa'].bounds, ...PLANTS.map(plantBounds),
+  ACTIVITIES.pool.bounds, ACTIVITIES.chess.bounds, ACTIVITIES.hockey.bounds, ACTIVITIES['mortal-kombat'].bounds, ...PLANTS.map(plantBounds),
 ];
 export const DRINKS = [
   { id: 'lemonade', name: translateText('Лимонад'), description: translateText('Лимон, мята и пузырьки · без алкоголя'), color: '#d6ed88', strength: 0 },

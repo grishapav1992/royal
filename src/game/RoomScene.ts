@@ -39,7 +39,7 @@ import { advanceCharacterMotion, characterRestScale, createCharacterMotion, type
 import { Bar } from './Bar';
 import { preloadRoyalBarArt } from './royalBarArt';
 import { drawActivities } from './activityArt';
-import { ACTIVITIES, type ActivityId } from '../shared/activities';
+import { ACTIVITIES, FLOOR_ACTIVITY_IDS, type ActivityId } from '../shared/activities';
 import { applyMovementInput,movementFacing } from '../shared/movement';
 import { addDrink, getIntoxication, intoxicatedMovement, MAX_SOBER_TIME_MS } from '../shared/intoxication';
 import { MovementPrediction, advanceClickMovement } from '../network/MovementPrediction';
@@ -572,7 +572,7 @@ export class RoomScene extends Phaser.Scene {
     if (this.isHuggingCat()) { this.onCatOpen(); return; }
     const cat=this.catInfo();
     if (cat.near&&!cat.busy) { this.onCatOpen(); return; }
-    const activity=(Object.keys(ACTIVITIES) as ActivityId[]).find(id=>activityHall(id)===this.hall&&Math.hypot(this.player.x-ACTIVITIES[id].entry.x,this.player.y-ACTIVITIES[id].entry.y)<45);
+    const activity=FLOOR_ACTIVITY_IDS.find(id=>activityHall(id)===this.hall&&Math.hypot(this.player.x-ACTIVITIES[id].entry.x,this.player.y-ACTIVITIES[id].entry.y)<45);
     if(activity){this.onActivity(activity);return;}
     if (this.near) { this.player.facing = 'up'; this.onPlay(this.near); }
     else if (this.hall==='arcade'&&atBar(this.player)) this.onBar();
@@ -600,7 +600,7 @@ export class RoomScene extends Phaser.Scene {
     this.pendingCabinet=null; this.pendingLounge='atelier'; this.goTo(ATELIER.entry);
   }
   approachActivity(id:ActivityId){
-    if(this.locked||this.isHuggingCat()||this.typing||this.switching||activityHall(id)!==this.hall)return;
+    if(!FLOOR_ACTIVITY_IDS.includes(id)||this.locked||this.isHuggingCat()||this.typing||this.switching||activityHall(id)!==this.hall)return;
     this.pendingCabinet=null;this.pendingLounge='activity:'+id;this.goTo(ACTIVITIES[id].entry);
   }
   pianoNote(note:number){

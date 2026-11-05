@@ -16,7 +16,7 @@ export function guestStops(hall: HallId): Stop[] {
     ...(hall==='arcade'?SEATS.filter(seat=>seat.kind==='bar').map((seat,i)=>({id:'bar-guest-'+i,x:seat.x,y:seat.y,mood:'drinking' as const,facing:'up' as const})):[]),
     ...games.slice(7),
     ...LOUNGES.filter(l=>l.hall===hall).map((l,i)=>({id:'lounge-guest-'+i,x:l.x+48,y:l.y+4,mood:'resting' as const,facing:'down' as const,seat:'ambient-'+hall+'-'+i})),
-    ...(hall==='tables'?[{id:'pool-watch',x:ACTIVITIES.pool.entry.x+123,y:520,mood:'playing' as const,facing:'left' as const},{id:'hockey-watch',x:ACTIVITIES.hockey.entry.x+70,y:500,mood:'playing' as const,facing:'left' as const},{id:'chess-watch',...ACTIVITIES.chess.entry,mood:'playing' as const,facing:'up' as const},{id:'tsu-e-fa-watch',...ACTIVITIES['tsu-e-fa'].entry,mood:'playing' as const,facing:'up' as const}]:[]),
+    ...(hall==='tables'?[{id:'pool-watch',x:ACTIVITIES.pool.entry.x+123,y:520,mood:'playing' as const,facing:'left' as const},{id:'hockey-watch',x:ACTIVITIES.hockey.entry.x+70,y:500,mood:'playing' as const,facing:'left' as const},{id:'chess-watch',...ACTIVITIES.chess.entry,mood:'playing' as const,facing:'up' as const},{id:'combat-watch',x:ACTIVITIES['mortal-kombat'].entry.x+70,y:ACTIVITIES['mortal-kombat'].entry.y,mood:'playing' as const,facing:'left' as const}]:[]),
     ...(hall==='github'?[{id:'salon-reading',x:430,y:450,mood:'resting' as const,facing:'up' as const},{id:'salon-welcome',x:730,y:530,mood:'resting' as const,facing:'left' as const}]:[]),
   ];
 }

@@ -16,6 +16,8 @@ export const ACTIVITIES = {
   'crazy-eights': {name:'Восьмёрки',entry:{x:1818,y:405},bounds:{x:1774,y:228,w:232,h:122}},
   'tsu-e-fa': {name:language==='en'?'Rock Paper Scissors':'Цу-е-фа',entry:{x:755,y:944},bounds:{x:639,y:782,w:232,h:122}},
 } as const;
+// The entry for tsu-e-fa is used by legacy duels that still require arrival.
+export const FLOOR_ACTIVITY_IDS: readonly ActivityId[] = (Object.keys(ACTIVITIES) as ActivityId[]).filter(id => id !== 'tsu-e-fa');
 export const isActivity = (value: unknown): value is ActivityId => typeof value === 'string' && Object.hasOwn(ACTIVITIES,value);
 export type Ball = {id:number;x:number;y:number;vx:number;vy:number;active:boolean};
 export type TableState = {

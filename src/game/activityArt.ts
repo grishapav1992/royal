@@ -50,7 +50,7 @@ export function drawActivities(scene:Phaser.Scene,open:(id:ActivityId)=>void,hal
   });
   const combatBounds=ACTIVITIES['mortal-kombat'].bounds;
   if(hall==='tables')activate(scene.add.image(combatBounds.x,combatBounds.y-40,combat).setOrigin(0).setDisplaySize(104,143).setDepth(combatBounds.y+combatBounds.h),'mortal-kombat');
-  for(const id of ['durak','transfer-durak','crazy-eights','tsu-e-fa'] as const){
+  for(const id of ['durak','transfer-durak','crazy-eights'] as const){
     if(activityHall(id)!==hall)continue;
     const b=ACTIVITIES[id].bounds;
     const texture=make('pvp-table-'+id,232,152,c=>{
@@ -58,7 +58,7 @@ export function drawActivities(scene:Phaser.Scene,open:(id:ActivityId)=>void,hal
       c.fillStyle='#275c4b';c.beginPath();c.roundRect(9,8,214,103,29);c.fill();
       c.strokeStyle='#cbae79';c.lineWidth=2;c.stroke();
       c.fillStyle='#e8d7ad';c.textAlign='center';c.font='bold 14px sans-serif';c.fillText(ACTIVITIES[id].name,116,55);
-      c.font='11px sans-serif';c.fillText(id==='tsu-e-fa'?'Камень · Ножницы · Бумага':'1 на 1 · USDT',116,78);
+      c.font='11px sans-serif';c.fillText('1 на 1 · USDT',116,78);
       for(const x of [42,157]){c.fillStyle='#342522';c.beginPath();c.roundRect(x,125,38,25,8);c.fill();c.strokeStyle='#b9945f';c.stroke();}
     });
     activate(scene.add.image(b.x,b.y,texture).setOrigin(0).setDisplaySize(232,152).setDepth(b.y+b.h),id);

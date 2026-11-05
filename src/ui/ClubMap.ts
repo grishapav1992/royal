@@ -2,7 +2,7 @@ import { t as translateText } from '../i18n/index';
 import type { RoomScene } from '../game/RoomScene';
 import { CLUB_ZONES, LOUNGES } from '../shared/clubLayout';
 import { BAR_SOLID } from '../shared/furniture';
-import { ACTIVITIES, type ActivityId } from '../shared/activities';
+import { ACTIVITIES, FLOOR_ACTIVITY_IDS } from '../shared/activities';
 import { HALLS, hallLinks, isCasinoFloor, activityHall } from '../shared/world';
 import { elevatorDock } from '../shared/elevator';
 import { cabinetsInHall } from '../shared/cabinets';
@@ -72,7 +72,7 @@ export class ClubMap {
     }
     if(state.hall==='tables'){
       ctx.fillStyle='#71c9b0';
-      for(const id of Object.keys(ACTIVITIES) as ActivityId[]){
+      for(const id of FLOOR_ACTIVITY_IDS){
         if(activityHall(id)!=='tables')continue;
         const {x,y,w,h}=ACTIVITIES[id].bounds;ctx.fillRect(x,y,w,h);
       }
