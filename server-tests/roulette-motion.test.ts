@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {BALL_RADIUS,DIVIDER_TIP,landingPlan,landingPose,launchPose,normalizeAngle,SPIN_CONTACTS,SPIN_TIMING,type SpinPose} from '../games/royal-roulette/SpinTimeline';
+import {BALL_RADIUS,POCKET_DIVIDER,landingPlan,landingPose,launchPose,normalizeAngle,SPIN_CONTACTS,SPIN_TIMING,type SpinPose} from '../games/royal-roulette/SpinTimeline';
 const base:SpinPose={wheel:0,wheelVelocity:0,ball:0,ballVelocity:0,radius:148,hop:0,phase:'idle'};
 const angleError=(n:number)=>Math.min(normalizeAngle(n),360-normalizeAngle(n));
 test('launch accelerates in opposite directions without an angle or speed jump',()=>{
@@ -36,13 +36,16 @@ test('visible impacts touch a divider and then rebound inside the confirmed pock
    assert(Math.abs(relative(after))<Math.abs(relative(before)));
   }
   const divider=landingPose(plan,first),dividerAngle=divider.ball-divider.wheel;
-  assert(Math.abs(divider.radius-(DIVIDER_TIP.radius+DIVIDER_TIP.cap+BALL_RADIUS))<1e-8);
+  assert(Math.abs(divider.radius-(POCKET_DIVIDER.tipRadius+POCKET_DIVIDER.capRadius+BALL_RADIUS))<1e-8);
   assert(Math.abs(dividerAngle/step-.5-Math.round(dividerAngle/step-.5))<1e-8);
   assert(relative(landingPose(plan,first+.001))<0);
-  const entry=landingPose(plan,join);
-  assert(angleError(entry.ball-entry.wheel-pocket*step+2.2)<1e-8);
+  const wallGap=(pose:SpinPose)=>{
+   const offset=angleError(pose.ball-pose.wheel-pocket*step);
+   return pose.radius*Math.sin((step/2-offset)*Math.PI/180)-BALL_RADIUS-POCKET_DIVIDER.width/2;
+  };
+  assert(Math.abs(wallGap(landingPose(plan,join)))<1e-8);
   assert(relative(landingPose(plan,join-.001))<0&&relative(landingPose(plan,join+.001))>0);
-  for(let t=join;t<SPIN_TIMING.landing;t+=3){const p=landingPose(plan,t);assert(angleError(p.ball-p.wheel-pocket*360/37)<=2.2+1e-8);assert(p.radius>=148&&p.radius<=153);}
+  for(let t=join;t<SPIN_TIMING.landing;t+=3){const p=landingPose(plan,t);assert(wallGap(p)>=-1e-8);assert(p.radius>=148&&p.radius<=153);}
  }
 });
 test('infinite poses, stationary landings and invalid pockets are rejected',()=>{
@@ -64,15 +67,18 @@ test('rolling drag loses speed before the ball leaves the rim, including delayed
  }
 });
 
-test('the ball approaches the divider with steadily decreasing slip across launch angles',()=>{
+test('the ball slows counterclockwise until the first hit, including after a previous spin',()=>{
  const drop=SPIN_TIMING.drop*SPIN_TIMING.landing,first=SPIN_CONTACTS[0]*SPIN_TIMING.landing;
- for(let ball=0;ball<360;ball+=7)for(let pocket=0;pocket<37;pocket++){
-  const plan=landingPlan(launchPose({...base,ball},650),pocket);
-  let previous=Infinity;
-  for(let t=drop;t<first;t+=15){
-   const pose=landingPose(plan,t),slip=pose.wheelVelocity-pose.ballVelocity;
-   assert(slip>0&&slip<=previous+1e-8);
-   previous=slip;
+ for(const wait of [650,1285,5000,30000])for(let previousPocket=0;previousPocket<37;previousPocket++){
+  const start=launchPose({...base,wheel:normalizeAngle(-previousPocket*360/37)},wait);
+  for(let pocket=0;pocket<37;pocket++){
+   const plan=landingPlan(start,pocket);
+   let previousVelocity=start.ballVelocity;
+   for(let t=drop;t<first;t+=15){
+    const pose=landingPose(plan,t);
+    assert(pose.ballVelocity<0&&pose.ballVelocity>=previousVelocity-1e-8,`wait ${wait}, pockets ${previousPocket} to ${pocket}, time ${t}`);
+    previousVelocity=pose.ballVelocity;
+   }
   }
  }
 });

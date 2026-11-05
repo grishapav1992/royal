@@ -7,11 +7,14 @@ for(let i=0;i<bounces;i++)contacts.push(contacts[i]+firstFlight*restitution**i);
 contacts[contacts.length-1]=1;
 export const SPIN_CONTACTS:readonly number[]=Object.freeze(contacts);
 export const SPIN_TIMING = Object.freeze({launch:650,landing:4400,drop:.30,join:contacts[1]});
-export const DIVIDER_TIP = Object.freeze({radius:175,cap:1.25});
+export const POCKET_DIVIDER = Object.freeze({tipRadius:175,capRadius:1.25,width:.7});
 export const BALL_RADIUS = 5;
-const rimRadius=187,pocketRadius=148,pocketStep=360/37,pocketEdge=2.2;
-const deflectorRadius=DIVIDER_TIP.radius+DIVIDER_TIP.cap+BALL_RADIUS;
+const rimRadius=187,pocketRadius=148,pocketStep=360/37;
+const pocketEdge=pocketStep/2-Math.asin((BALL_RADIUS+POCKET_DIVIDER.width/2)/pocketRadius)*180/Math.PI;
+const deflectorRadius=POCKET_DIVIDER.tipRadius+POCKET_DIVIDER.capRadius+BALL_RADIUS;
 const approachTime=(firstImpact-SPIN_TIMING.drop)*SPIN_TIMING.landing/1000;
+const approachImpactSpeed=36;
+const dragPower=8,dragMean=1/(dragPower+1);
 const flightTime=(SPIN_TIMING.join-firstImpact)*SPIN_TIMING.landing/1000;
 const pocketTime=(1-SPIN_TIMING.join)*SPIN_TIMING.landing/1000;
 const pocketReboundSpeed=2*pocketEdge/pocketTime;
@@ -20,7 +23,7 @@ export type SpinPhase = 'idle' | 'launch' | 'orbit' | 'coast' | 'drop' | 'pocket
 export type SpinPose = {wheel:number; wheelVelocity:number; ball:number; ballVelocity:number; radius:number; hop:number; phase:SpinPhase};
 export type LandingPlan = {
   start:SpinPose; pocket:number; distance:number;
-  approach:{angle:number; speed:number; impactSpeed:number; dragMix:number};
+  approach:{angle:number; speed:number; dragMix:number};
   pocketAngle:number; deflectorAngle:number; flightSpeed:number;
 };
 export const normalizeAngle = (value:number) => ((value%360)+360)%360;
@@ -57,18 +60,18 @@ export function landingPlan(start:SpinPose,pocket:number):LandingPlan {
   if(distance+360<=max&&Math.abs(distance+360-start.wheelVelocity*duration/2)<Math.abs(distance-start.wheelVelocity*duration/2))distance+=360;
   if(distance<min-1e-8||distance>max+1e-8)throw Error('Wheel deceleration bounds are invalid');
   const dropping=coast(start,duration*SPIN_TIMING.drop),wheelAtDrop=wheelPose({start,distance},SPIN_TIMING.drop);
-  const angle=dropping.value-wheelAtDrop.value,speed=wheelAtDrop.velocity-dropping.velocity;
-  const impactSpeed=.27*speed;
-  // Pick an actual separator upstream of the confirmed pocket. Its lead varies with
-  // the entry pose, and the unwrapped turn is chosen near the middle of the drag range.
-  const lead=(2.5+Math.floor(normalizeAngle(angle)/120))*pocketStep;
-  const idealImpact=angle-(speed+impactSpeed)*approachTime/2;
+  const wheelAtImpact=wheelPose({start,distance},firstImpact);
+  const angle=dropping.value,speed=-dropping.velocity;
+  const lead=(2.5+Math.floor(normalizeAngle(angle-wheelAtDrop.value)/120))*pocketStep;
+  // The drag curves span a full turn at launch speed. Pick the matching
+  // separator closest to their midpoint in the stationary frame.
+  const idealImpact=angle-wheelAtImpact.value-(speed+approachImpactSpeed)*approachTime/2;
   const pocketAngle=pocket*pocketStep+360*Math.round((idealImpact-pocket*pocketStep-lead)/360);
   const deflectorAngle=pocketAngle+lead;
-  const meanSpeed=(angle-deflectorAngle)/approachTime;
-  const dragMix=((meanSpeed-impactSpeed)/(speed-impactSpeed)-1/6)/(4/6);
+  const meanSpeed=(angle-wheelAtImpact.value-deflectorAngle)/approachTime;
+  const dragMix=((meanSpeed-approachImpactSpeed)/(speed-approachImpactSpeed)-dragMean)/(1-2*dragMean);
   const flightSpeed=2*(lead+pocketEdge)/flightTime-pocketImpactSpeed;
-  return {start,pocket,distance,approach:{angle,speed,impactSpeed,dragMix},pocketAngle,deflectorAngle,flightSpeed};
+  return {start,pocket,distance,approach:{angle,speed,dragMix},pocketAngle,deflectorAngle,flightSpeed};
 }
 /** Ballistic flights lose height and duration with a constant restitution ratio. */
 function bounce(t:number){
@@ -86,14 +89,14 @@ export function landingPose(plan:LandingPlan,elapsedMs:number):SpinPose {
   if(t>=1)return {wheel:w.value,wheelVelocity:0,ball:w.value+plan.pocketAngle,ballVelocity:0,radius:pocketRadius,hop:0,phase:'idle'};
   if(t<drop){const b=coast(plan.start,t*duration);return {wheel:w.value,wheelVelocity:w.velocity,ball:b.value,ballVelocity:b.velocity,radius:rimRadius,hop:0,phase:'coast'};}
   if(t<firstImpact){
-    const u=(t-drop)/(firstImpact-drop),{angle,speed,impactSpeed,dragMix}=plan.approach;
-    // Integrate a blend of early and late drag curves in the rotor frame. Both
-    // start at the rolling speed and slow continuously to the divider impact.
-    const early=(1-(1-u)**6)/6,late=u-u**6/6;
-    const travel=approachTime*(impactSpeed*u+(speed-impactSpeed)*(early+(late-early)*dragMix));
-    const drag=(1-dragMix)*(1-u)**5+dragMix*(1-u**5);
-    const relativeSpeed=impactSpeed+(speed-impactSpeed)*drag;
-    return {wheel:w.value,wheelVelocity:w.velocity,ball:w.value+angle-travel,ballVelocity:w.velocity-relativeSpeed,
+    const u=(t-drop)/(firstImpact-drop),{angle,speed,dragMix}=plan.approach;
+    // Apply drag in the stationary frame so the rotor can redirect the
+    // ball only once it reaches the divider.
+    const early=(1-(1-u)**(dragPower+1))*dragMean,late=u-u**(dragPower+1)*dragMean;
+    const travel=approachTime*(approachImpactSpeed*u+(speed-approachImpactSpeed)*(early+(late-early)*dragMix));
+    const drag=(1-dragMix)*(1-u)**dragPower+dragMix*(1-u**dragPower);
+    const angularSpeed=approachImpactSpeed+(speed-approachImpactSpeed)*drag;
+    return {wheel:w.value,wheelVelocity:w.velocity,ball:angle-travel,ballVelocity:-angularSpeed,
       radius:rimRadius+(deflectorRadius-rimRadius)*u*u,hop:0,phase:'drop'};
   }
   const hop=bounce(t);
