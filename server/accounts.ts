@@ -99,9 +99,11 @@ export class AccountStore {
     this.financeAdmin = new FinanceAdminStore(this.db,schemaReady);
     const commonSkins=new CommonSkinPayments(this.db,this.wallet.ready),legacySkins=new NileSkinPayments();
     this.skinRewards=new FreeSkinGenerations(this.db,this.progression.ready);
-    this.skinStudio = new SkinStudioStore(this.db, {skinPurchase:async(account,id,action)=>{
+    this.skinStudio = new SkinStudioStore(this.db, {skinPurchase:async(account,id,action,terms)=>{
       const job=await this.db.prepare('SELECT payment_source,reward_grant_id FROM skin_jobs WHERE id=?').get(id);
-      return (job?.reward_grant_id?this.skinRewards:job?.payment_source==='nile'?legacySkins:commonSkins).skinPurchase(account,id,action);
+      if(job?.reward_grant_id)return this.skinRewards.skinPurchase(account,id,action);
+      if(job?.payment_source==='nile')return legacySkins.skinPurchase(account,id,action);
+      return commonSkins.skinPurchase(account,id,action,terms);
     }}, new CodexSkinImages(), () => true,
       (id, appearance) => this.events.emit('appearance', id, appearance), Promise.all([this.wallet.ready,this.skinRewards.ready]).then(()=>{}), Date.now, new CodexSkinDescriptions(),this.skinRewards);
     this.ready = Promise.all([schemaReady, this.wallet.ready, this.progression.ready, this.rewardSpins.ready, this.caribbeanCrew.ready, this.starSpinCollection.ready, this.sandboxPayments.ready, this.pvp.ready, this.combat.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready, this.skinStudio.ready, this.financeAdmin.ready]).then(() => {

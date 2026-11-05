@@ -12,7 +12,7 @@ export async function demoReservedUnits(db: PostgresDatabase, accountId: string)
     COALESCE((SELECT reserved_units FROM demo_mines_sessions WHERE account_id=? AND state='active'),0)
     + COALESCE((SELECT reserved_units FROM demo_flight_sessions WHERE account_id=? AND state='active'),0)
     + COALESCE((SELECT SUM(reserved_units) FROM demo_casino_sessions WHERE account_id=? AND state='active'),0)
-    + COALESCE((SELECT count(*)*1000 FROM skin_purchases WHERE account_id=? AND state='reserved'),0)
+    + COALESCE((SELECT SUM(amount_cents) FROM skin_purchases WHERE account_id=? AND state='reserved'),0)
     + COALESCE((SELECT SUM(reserved_units) FROM virtual_pvp_holds WHERE account_id=? AND state='held'),0)
     + COALESCE((SELECT SUM(reserved_units) FROM flag_tote_reservations WHERE account_id=?),0) AS units`).get(accountId, accountId, accountId, accountId, accountId, accountId);
   return Number(row!.units);
@@ -26,6 +26,10 @@ export async function migrateDemoAmounts(db: PostgresDatabase) {
     `CREATE TABLE IF NOT EXISTS skin_purchases(id TEXT PRIMARY KEY,account_id TEXT NOT NULL REFERENCES accounts(id),
       state TEXT NOT NULL CHECK(state IN ('reserved','captured','refunded')),created_at BIGINT NOT NULL,updated_at BIGINT NOT NULL)`,
     `CREATE INDEX IF NOT EXISTS skin_purchases_reserved ON skin_purchases(account_id) WHERE state='reserved'`,
+  ] });
+  await applySchemaMigration(db, { id: 'skin-purchase-terms-v2', statements: [
+    'ALTER TABLE skin_purchases ADD COLUMN amount_cents INTEGER NOT NULL DEFAULT 1000 CHECK(amount_cents IN (100,500,1000))',
+    "ALTER TABLE skin_purchases ADD COLUMN offer_id TEXT NOT NULL DEFAULT 'atelier' CHECK(offer_id IN ('atelier','janitor'))",
   ] });
   await applySchemaMigration(db, { id: 'virtual-usdt-pvp-v1', statements: [
     `CREATE TABLE virtual_pvp_banks(match_id TEXT PRIMARY KEY,game_id TEXT NOT NULL,stake_units BIGINT NOT NULL CHECK(stake_units>0),

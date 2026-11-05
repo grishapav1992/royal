@@ -1,24 +1,26 @@
 import type { Account } from '../../server/accounts';
 import type { RoomScene } from '../game/RoomScene';
-import { SKIN_VARIANTS, skinAssetUrl } from '../shared/skinStudio';
+import { SKIN_VARIANTS,SKIN_OFFERS,SKIN_PRICE_UNITS,type SkinOfferId, skinAssetUrl } from '../shared/skinStudio';
 import type { SkinDescriptionCard as SkinCard, SkinDescribedSnapshot as SkinStudioSnapshot } from '../shared/skinDescription';
 import { WALLET_ACCOUNT_HEADER } from '../shared/walletAccount';
 import { demoWallet } from '../wallet/WalletClient';
+import {toiletMerchantPortrait} from '../game/ToiletMerchant';
 import { tailorPortrait } from '../game/atelierArt';
 import { SkinFittingRoom } from './SkinFittingRoom';
 import './skin-studio.css';
 import { t, tr } from '../i18n/index';
 
 const statuses = {
-  reserving: 'Резервируем $10…', generating: 'Рисуем два образа…',
+  reserving: '', generating: 'Рисуем два образа…',
   capturing: 'Подтверждаем оплату…', ready: '',
-  selected: '', refunding: 'Возвращаем $10…', failed: '',
+  selected: '', refunding: '', failed: '',
 };
-type Pending = { id: string; prompt: string; rewardGrantId?:string };
+type Pending = { id: string; prompt: string; rewardGrantId?:string;offerId?:SkinOfferId };
 export class SkinStudioUI {
   readonly dialog = document.createElement('dialog');
   private button = document.createElement('button');
   private data?: SkinStudioSnapshot;
+  private offerId:SkinOfferId='atelier';
   private accountId: string | null = null;
   private epoch = 0;
   private busy = false;
@@ -42,10 +44,11 @@ export class SkinStudioUI {
     this.fitting = new SkinFittingRoom(() => this.scene.getReducedMotion?.() ?? window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     this.button.type = 'button'; this.button.className = 'logout-button'; this.button.textContent = 'Образы'; this.button.hidden = true;
     this.button.onclick = () => { void this.open(); }; document.querySelector('.profile')!.append(this.button);
-    this.scene.onAtelier = () => { void this.open(); };
+    this.scene.onAtelier = () => { void this.open('atelier'); };
+    this.scene.onToiletMerchant=()=>{void this.open('janitor');};
     this.dialog.id = 'skin-studio-dialog'; this.dialog.className = 'skin-studio'; this.dialog.setAttribute('aria-labelledby', 'skin-studio-title');
     this.dialog.innerHTML = `<div class="skin-studio-heading"><div class="skin-studio-identity"><div class="skin-tailor-portrait"></div><div><h2 id="skin-studio-title">Ателье</h2><span class="eyebrow">Южный парк</span></div></div><button type="button" class="icon-button" aria-label="Закрыть ателье">×</button></div>
-      <form><label for="skin-prompt">Опиши новый образ</label><div class="skin-prompt-slot"></div><div class="skin-studio-price"><span class="skin-offer">2 варианта · 1 навсегда</span><p class="skin-balance" aria-live="polite"></p><p class="skin-free-generations" aria-live="polite" hidden></p></div><div class="skin-generate-slot"></div></form>
+      <form><label for="skin-prompt">Опиши новый образ</label><div class="skin-prompt-slot"></div><div class="skin-studio-price"><span class="skin-offer">2 варианта · 1 навсегда</span><p class="skin-balance" aria-live="polite"></p><p class="skin-free-generations" aria-live="polite" hidden></p></div><p class="skin-existing-order" hidden></p><div class="skin-generate-slot"></div></form>
       <div class="skin-status-slot"></div><button type="button" class="text-button skin-refresh" hidden>Проверить статус</button><section class="skin-results" hidden><h3>Примерь и выбери один образ</h3><div class="skin-variants-slot"></div></section>
       <div class="skin-fitting-slot"></div><div class="skin-choose-slot" hidden></div>
       <section class="skin-wardrobe" hidden><h3>Гардероб</h3><div class="skin-wardrobe-slot"></div></section>`;
@@ -54,7 +57,7 @@ export class SkinStudioUI {
     this.prompt.placeholder = 'Например: гангстер в бордовом костюме';
     this.prompt.setAttribute('aria-describedby', 'skin-status');
     this.dialog.querySelector('.skin-prompt-slot')!.append(this.prompt);
-    this.generate.type = 'submit'; this.generate.className = 'primary-button'; this.generate.textContent = 'Создать за $10';
+    this.generate.type = 'submit'; this.generate.className = 'primary-button'; this.generate.textContent = 'Создать за $1';
     this.dialog.querySelector('.skin-generate-slot')!.append(this.generate);
     this.status.id = 'skin-status'; this.status.hidden = true; this.status.setAttribute('role', 'status'); this.status.setAttribute('aria-live', 'polite');
     this.dialog.querySelector('.skin-status-slot')!.append(this.status);
@@ -77,8 +80,8 @@ export class SkinStudioUI {
         if (!this.pending) {
           await this.send('');
           if (epoch !== this.epoch) throw new Error('Аккаунт изменился.');
-          const grant=this.data?.freeGenerations?.find(g=>g.remaining>0);
-          const operation:Pending = { id: crypto.randomUUID(), prompt: this.prompt.value.trim(),...(grant?{rewardGrantId:grant.id}:{}) };
+          const grant=this.offerId==='atelier'?this.data?.freeGenerations?.find(g=>g.remaining>0):undefined;
+          const operation:Pending = { id: crypto.randomUUID(), prompt: this.prompt.value.trim(),offerId:this.offerId,...(grant?{rewardGrantId:grant.id}:{}) };
           // Persist before sending so a lost HTTP response cannot charge another generation.
           sessionStorage.setItem(this.key(), JSON.stringify(operation)); this.pending = operation;
         }
@@ -98,15 +101,21 @@ export class SkinStudioUI {
     });
   }
   private key() { return 'royal-skin-generation:' + this.accountId; }
-  async open() {
-    if (!this.accountId) { this.scene.onNotice?.('Войди в аккаунт, чтобы заказать образ в ателье.'); return; }
+  async open(offerId:SkinOfferId='atelier') {
+    if(this.offerId!==offerId){this.epoch++;this.busy=false;this.data=undefined;this.message='';this.failedRequest=false;clearTimeout(this.poll);clearTimeout(this.walletPoll);}
+    this.offerId=offerId;this.dialog.dataset.offer=offerId;
+    const janitor=offerId==='janitor';
+    this.dialog.querySelector('#skin-studio-title')!.textContent=t(janitor?'Жора: образы':'Ателье');
+    this.dialog.querySelector('.icon-button')!.setAttribute('aria-label',t(janitor?'Закрыть образы Жоры':'Закрыть ателье'));
+    this.dialog.querySelector('.skin-tailor-portrait')!.replaceChildren(janitor?toiletMerchantPortrait():tailorPortrait());
+    if (!this.accountId) { this.scene.onNotice?.(offerId==='janitor'?'Войди в аккаунт, чтобы заказать образ у Жоры.':'Войди в аккаунт, чтобы заказать образ в ателье.'); return; }
     this.scene.setLocked(true); if (!this.dialog.open) this.dialog.showModal();
     await this.perform(() => this.refresh()); this.prompt.focus();
   }
   private async send(path: string, body?: unknown) {
     const epoch = this.epoch, id = this.accountId;
     const requestId = ++this.requestId;
-    const response = await fetch('/api/skin-studio' + path, { method: body ? 'POST' : 'GET', credentials: 'same-origin', signal: AbortSignal.timeout(20000),
+    const response = await fetch('/api/skin-studio' + path+(this.offerId==='janitor'?'?offerId=janitor':''), { method: body ? 'POST' : 'GET', credentials: 'same-origin', signal: AbortSignal.timeout(20000),
       headers: { [WALLET_ACCOUNT_HEADER]: id ?? '', ...(body ? { 'Content-Type': 'application/json' } : {}) }, body: body ? JSON.stringify(body) : undefined });
     const result = await response.json();
     if (epoch !== this.epoch) throw new Error('Аккаунт изменился.');
@@ -161,21 +170,30 @@ export class SkinStudioUI {
   }
   private render() {
     const job = this.data?.job;
-    const freeCount=(this.data?.freeGenerations??[]).reduce((n,g)=>n+g.remaining,0);
+    const freeCount=(this.offerId==='atelier'?(this.data?.freeGenerations??[]):[]).reduce((n,g)=>n+g.remaining,0);
     const free=this.dialog.querySelector<HTMLElement>('.skin-free-generations')!;
     free.hidden=freeCount===0;free.textContent=tr`Бесплатных генераций за уровни: ${freeCount}`;
     const active = job && ['reserving', 'generating', 'capturing', 'ready', 'refunding'].includes(job.state);
     const generating = job && ['reserving', 'generating', 'capturing'].includes(job.state);
-    const count = active ? job.variantCount ?? (job.variants.length || SKIN_VARIANTS) : this.data?.variantCount ?? SKIN_VARIANTS;
-    this.dialog.querySelector('.skin-offer')!.textContent = `${count} варианта · 1 навсегда`;
+    const count = active ? job.variantCount ?? (job.variants.length || SKIN_VARIANTS) : this.data?.variantCount ?? SKIN_OFFERS[this.offerId].variantCount;
+    const price=this.data?.priceUnits??SKIN_OFFERS[this.offerId].priceUnits;
+    const jobPrice=job?.priceUnits??SKIN_PRICE_UNITS;
+    const dollars=(units:string)=>String(Number(BigInt(units))/1000000);
+    const refunding=tr`Возвращаем $${dollars(jobPrice)}…`;
+    const reserving=tr`Резервируем $${dollars(jobPrice)}…`;
+    this.dialog.querySelector('.skin-offer')!.textContent = count===1?t('1 образ · навсегда'):`${count} варианта · 1 навсегда`;
+    this.dialog.querySelector('.skin-results h3')!.textContent=t(count===1?'Примерь и сохрани образ':'Примерь и выбери один образ');
+    const previous=this.dialog.querySelector<HTMLElement>('.skin-existing-order')!;
+    previous.hidden=!active||(!job?.offerId||job.offerId===this.offerId)&&(job?.priceUnits===undefined||job.priceUnits===price||job.funding==='reward');
+    previous.textContent=previous.hidden?'':tr`Ранее принятый заказ: ${t(job?.offerId==='janitor'?'Жора':'Ателье')}, $${dollars(jobPrice)}.`;
     this.variants.dataset.variantCount = String(count);
     this.prompt.disabled = this.busy || !!active || !!this.pending;
     this.generate.disabled = this.busy || !!active || (!this.data?.enabled && !this.pending);
     // Background status requests must not change the label or width of an active generation button.
-    this.generate.textContent = generating ? 'Создаём образы…' : job?.state === 'refunding' ? statuses.refunding
-      : this.pending ? 'Проверить отправленный запрос' : this.busy ? 'Проверяем…' : freeCount>0?t('Создать бесплатно'):'Создать за $10';
+    this.generate.textContent = generating ? t(count===1?'Создаём образ…':'Создаём образы…') : job?.state === 'refunding' ? refunding
+      : this.pending ? 'Проверить отправленный запрос' : this.busy ? 'Проверяем…' : freeCount>0?t('Создать бесплатно'):tr`Создать за $${dollars(price)}`;
     this.status.textContent = this.message || (job?.error && ['failed', 'refunding'].includes(job.state) ? job.error
-      : job?.state === 'generating' && count === 3 ? 'Рисуем три образа…' : job ? statuses[job.state] : this.data && !this.data.enabled ? 'Генерация временно недоступна.' : '');
+      : job?.state==='reserving'?reserving:job?.state==='refunding'?refunding:job?.state==='generating'?t(count===1?'Рисуем один образ…':count===3?'Рисуем три образа…':'Рисуем два образа…'):job ? statuses[job.state] : this.data && !this.data.enabled ? 'Генерация временно недоступна.' : '');
     if(!this.message && job?.funding==='reward' && ['reserving','capturing','refunding'].includes(job.state))
       this.status.textContent=t(job.state==='refunding'?'Возвращаем бесплатную генерацию…':job.state==='reserving'?'Используем бесплатную генерацию…':'Подтверждаем бесплатную генерацию…');
     this.status.hidden = !this.status.textContent;
@@ -191,6 +209,7 @@ export class SkinStudioUI {
     this.variants.querySelectorAll<HTMLButtonElement>('[data-select-skin]').forEach(button => {
       button.setAttribute('aria-pressed', String(button.dataset.selectSkin === this.selected)); button.disabled = this.busy;
     });
+    if(job?.state==='ready'&&job.variantCount===1&&job.variants.length===1&&!this.selected)this.selected=job.variants[0].id;
     this.choose.disabled = this.busy || !this.selected;
     const candidates = job?.state === 'ready' ? job.variants : [];
     if (job?.state === 'ready' && this.fittingJob !== job.id) {

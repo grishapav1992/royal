@@ -5,7 +5,7 @@ import sharp from 'sharp';
 import { PostgresDatabase } from '../server/database';
 import { SkinStudioStore } from '../server/skinStudio';
 import { CodexSkinDescriptions, skinDescription, skinDescriptionImage, type SkinDescriptionGenerator } from '../server/skinDescriptions';
-import { SKIN_PRICE_UNITS, type SkinPurchase } from '../src/shared/skinStudio';
+import { SKIN_PRICE_UNITS, type SkinPaymentTerms, type SkinPurchase } from '../src/shared/skinStudio';
 
 async function fixture(generator: SkinDescriptionGenerator) {
   const db = new PostgresDatabase(':memory:');
@@ -13,8 +13,8 @@ async function fixture(generator: SkinDescriptionGenerator) {
   let now = Date.now(), imageCalls = 0, descriptionsEnabled = false;
   const payments: string[] = [];
   const images = { available: () => true, generate: async () => Buffer.from('different-artwork-' + ++imageCalls) };
-  const wallet = { skinPurchase: async (_id: string, id: string, action: 'reserve' | 'capture' | 'refund'): Promise<SkinPurchase> => {
-    payments.push(action); return { id, amountUnits: SKIN_PRICE_UNITS, state: action === 'reserve' ? 'reserved' : action === 'capture' ? 'captured' : 'refunded' };
+  const wallet = { skinPurchase: async (_id: string, id: string, action: 'reserve' | 'capture' | 'refund',terms?:SkinPaymentTerms): Promise<SkinPurchase> => {
+    payments.push(action); return { id, amountUnits: terms?.priceUnits??SKIN_PRICE_UNITS, state: action === 'reserve' ? 'reserved' : action === 'capture' ? 'captured' : 'refunded' };
   } };
   const makeStore = (descriptions = generator) => new SkinStudioStore(db, wallet, images, () => true, () => {}, undefined, () => now,
     { available: () => descriptionsEnabled && descriptions.available(), describe: image => descriptions.describe(image) });

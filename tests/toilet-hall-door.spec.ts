@@ -48,6 +48,12 @@ test('toilet door reaches floor three by walking and click, returns without boun
     await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.serverX-TOILET_MERCHANT.approach.x,s.serverY-TOILET_MERCHANT.approach.y);},{timeout:18000}).toBeLessThan(9);
     await expect.poll(async()=>(await state(page)).toilet.merchant.frame).toBe(15);
     expect((await state(page)).toilet.merchant.speech.length).toBeGreaterThan(0);
+    await expect(page.locator('#skin-studio-dialog')).toBeVisible();
+    await expect(page.locator('#skin-studio-title')).toHaveText('Жора: образы');
+    await expect(page.locator('#skin-studio-dialog .skin-offer')).toHaveText('1 образ · навсегда');
+    await expect(page.locator('#skin-studio-dialog form button[type=submit]')).toHaveText('Создать за $5');
+    await page.screenshot({path:info.outputPath('janitor-shop.png')});
+    await page.getByRole('button',{name:'Закрыть образы Жоры',exact:true}).click();
     await page.screenshot({path:info.outputPath('janitor-open.png')});
     for(const p of [{x:590,y:515},{x:650,y:515}])await walk(page,p.x,p.y);
     expect((await state(page)).renderDepth).toBeGreaterThan((await state(page)).toilet.merchant.depth);
@@ -61,11 +67,14 @@ test('toilet door reaches floor three by walking and click, returns without boun
     await clickWorld(page,TOILET_MERCHANT.x,TOILET_MERCHANT.y-40);
     await expect.poll(async()=>(await state(page)).toilet.merchant.frame,{timeout:18000}).toBe(15);
     await page.waitForTimeout(400);expect((await state(page)).toilet.merchant.frame).toBe(15);
+    await page.getByRole('button',{name:'Закрыть образы Жоры',exact:true}).click();
     await page.emulateMedia({reducedMotion:'no-preference'});
     await expect.poll(async()=>(await state(page)).toilet.merchant.action,{timeout:7000}).toBe('idle');
     await page.locator('#game').focus();await page.keyboard.press('e');
     await expect.poll(async()=>(await state(page)).toilet.merchant.frame).toBe(15);
     expect((await state(page)).stairNavigation.path).toEqual([]);
+    await expect(page.locator('#skin-studio-dialog')).toBeVisible();
+    await page.getByRole('button',{name:'Закрыть образы Жоры',exact:true}).click();
     await walk(page,TOILET_HALL_DOOR.arrival.x,TOILET_HALL_DOOR.arrival.y);await page.screenshot({path:info.outputPath('toilet-exit.png')});
     await page.locator('#game').focus();await page.keyboard.down('s');try{await hall(page,'github');await page.waitForTimeout(650);expect((await state(page)).hall).toBe('github');}finally{await page.keyboard.up('s');}
     await overview(page,false);await walk(page,CARD_TOILET_DOOR.arrival.x,CARD_TOILET_DOOR.arrival.y);await page.screenshot({path:info.outputPath('third-floor-door.png')});

@@ -140,6 +140,7 @@ export class RoomScene extends Phaser.Scene {
   private elevatorApproachAt = 0;
   private overview=false;
   onBar: () => void = () => {};
+  onToiletMerchant:()=>void=()=>{this.onNotice('Войди в аккаунт, чтобы заказать образ у Жоры.');};
   onAtelier: () => void = () => { this.onNotice('Войди в аккаунт, чтобы заказать образ в ателье.'); };
   onActivity: (id:ActivityId) => void = () => {};
   onApproach: (id: string) => void = () => {};
@@ -592,7 +593,7 @@ export class RoomScene extends Phaser.Scene {
     if(this.hall!=='toilet'||this.locked||this.typing||this.switching||this.isHuggingCat())return;
     if(Math.hypot(this.player.x-TOILET_MERCHANT.x,this.player.y-TOILET_MERCHANT.y)<=TOILET_MERCHANT.interactionRadius){
       this.pendingCabinet=null;this.pendingLounge=null;this.player.path=[];this.marker.setVisible(false);
-      this.finishMovement(()=>{this.network?.stop();if(this.hall==='toilet'){this.player.facing=this.player.x<TOILET_MERCHANT.x?'right':'left';this.toilet?.merchant.interact(this.player);}});
+      this.finishMovement(()=>{this.network?.stop();if(this.hall==='toilet'){this.player.facing=this.player.x<TOILET_MERCHANT.x?'right':'left';this.toilet?.merchant.interact(this.player);this.onToiletMerchant();}});
       return;
     }
     this.pendingCabinet=null;this.pendingLounge='toilet-merchant';this.goTo(TOILET_MERCHANT.approach);

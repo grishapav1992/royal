@@ -1,8 +1,21 @@
-import {  volcanicPlinkoEnglish } from './volcanicPlinkoEn';
+import { volcanicPlinkoEnglish } from './volcanicPlinkoEn';
 import { progressionEnglish } from './progressionEn';
 import { streetEnglish } from './streetEn';
 
 export const english: Record<string, string> = {
+  'Ранее принятый заказ: {0}, ${1}.':'Previously accepted order: {0}, ${1}.',
+  'Жора':'Zhora',
+  'Жора: образы':'Zhora: outfits',
+  'Закрыть образы Жоры':'Close Zhora outfits',
+  'Войди в аккаунт, чтобы заказать образ у Жоры.':'Sign in to order an outfit from Zhora.',
+  '1 образ · навсегда':'1 outfit · yours forever',
+  'Примерь и сохрани образ':'Try on and save your outfit',
+  'Создаём образ…':'Creating your outfit…',
+  'Рисуем один образ…':'Drawing one outfit…',
+  'Создать за ${0}':'Create for ${0}',
+  'Резервируем ${0}…':'Reserving ${0}…',
+  'Возвращаем ${0}…':'Refunding ${0}…',
+
   ...streetEnglish,
   'Улица казино':'Casino street',
   'ВХОД':'ENTRANCE',

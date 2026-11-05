@@ -24,3 +24,5 @@
 .skin-fitting-pad button{font-size:22px}.skin-fitting-pad button:first-child{grid-column:2}.skin-fitting-pad button:nth-child(2){grid-column:1}
 .skin-fitting-pose{padding:10px 22px}.skin-fitting-pose[aria-pressed=true]{background:#34615c;color:#fff}
 @media(max-width:650px){.skin-results .skin-card-grid:not([data-variant-count="3"]){grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.skin-results .skin-card{display:block;padding:8px}.skin-results .skin-preview{height:150px}.skin-results .skin-preview-art{width:100px;height:150px}.skin-results .skin-select{font-size:12px;padding:10px 4px}.skin-closet-grid .skin-card{display:block}.skin-fitting-hint{font-size:12px}}
+
+.skin-card-grid[data-variant-count="1"]{grid-template-columns:minmax(0,1fr);max-width:300px;margin-inline:auto}

@@ -3,8 +3,8 @@
   "gameId": "tsu-e-fa",
   "rulesVersion": 3,
   "progressVersion": 1,
-  "startedAt": "2026-11-04T17:55:32.923Z",
-  "completedAt": "2026-11-04T17:55:51.620Z",
+  "startedAt": "2026-11-05T14:50:26.800Z",
+  "completedAt": "2026-11-05T14:50:32.646Z",
   "sourceHashes": {
     "src/shared/pvp.ts": "bed164a0fcccf208639302aadb7a5f165541c055616440bf0b16248d861ceddc",
     "src/shared/tsuEFa.ts": "907dc4fae7035222cf290bcf99650b3d4945058931a54eb523cf3e3be02e18ed",
@@ -20,7 +20,7 @@
     "scripts/game-math/rtp-tsu-duel-stakes.mjs": "62e3b7442684f56cdcfd55dc014adc10340ee71c4189b2bff40ee27172e34524",
     "scripts/game-math/tsu-duel-wallet.ts": "a633e2b846155f5e109f0a4009a9e30de2d2f7f7d3b4400dfd806d6e3bded023",
     "server/demoWallet.ts": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
-    "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
+    "server/demoWalletAmounts.ts": "f1f0a88915a232f134b83203b670e51ea1d5e81273ae0ccdcb4ac1c521b52cce",
     "server/database.ts": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8",
     "scripts/game-math/rtp-stakes.mjs": "a885087bc907189f46a1a1dcc54f807733fcf8cbfae818a64a9fe9f2aed6de52"
   },

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { SKIN_PRICE_UNITS, SKIN_THEME } from '../src/shared/skinStudio';
+import { SKIN_OFFERS, SKIN_THEME } from '../src/shared/skinStudio';
 import sharp from 'sharp';
 import { misalignedSkinSheet } from './fixtures/skin-walk-sheet';
 
@@ -11,7 +11,7 @@ test('holding left in the fitting room never reverses a shifted or mirrored gene
   const png = await misalignedSkinSheet();
   await page.route('**/api/skin-studio**', route => route.request().url().includes('/assets/')
     ? route.fulfill({ contentType: 'image/png', body: png })
-    : route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: 2, enabled: true, wardrobe: [], equippedId: null,
+    : route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_OFFERS.atelier.priceUnits, variantCount: 2, enabled: true, wardrobe: [], equippedId: null,
       job: { id: jobId, prompt: 'Сохранённый образ с неровными кадрами', state: 'ready', variantCount: 2, createdAt: 1,
         variants: ids.slice(0, 2).map(id => ({ id, jobId, prompt: '', createdAt: 1 })) } } }));
   await page.goto('/tests/fixtures/skin-studio.html');
@@ -67,7 +67,7 @@ test('actual artwork descriptions arrive without losing the tried variant or key
     if (route.request().url().endsWith('/choose')) { expect(route.request().postDataJSON()).toEqual({ jobId, skinId: ids[1] }); chosen = true; }
     const cards = ids.slice(0, 2).map((id, i) => ({ id, jobId, prompt: 'Сумбурный исходный запрос', createdAt: 1,
       description: described ? ['Бродяга в рваном плаще', 'Одногий пират с попугаем'][i] : '', descriptionPending: !described }));
-    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: 2, enabled: true, equippedId: chosen ? ids[1] : null,
+    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_OFFERS.atelier.priceUnits, variantCount: 2, enabled: true, equippedId: chosen ? ids[1] : null,
       job: { id: jobId, prompt: 'Сумбурный исходный запрос', variantCount: 2, state: chosen ? 'selected' : 'ready', error: '', selectedId: chosen ? ids[1] : null, createdAt: 1, variants: chosen ? [] : cards }, wardrobe: chosen ? [cards[1]] : [] } });
   });
   await page.goto('/tests/fixtures/skin-studio.html'); await page.getByRole('button', { name: 'Образы', exact: true }).click();
@@ -89,7 +89,7 @@ test('a late description refresh cannot resurrect candidates after a saved choic
     if (old) await gate;
     if (request.url().endsWith('/choose')) chosen = true;
     const selected = chosen && !old;
-    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: 2, enabled: true, equippedId: selected ? ids[0] : null,
+    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_OFFERS.atelier.priceUnits, variantCount: 2, enabled: true, equippedId: selected ? ids[0] : null,
       job: { id: jobId, prompt: 'Запрос', variantCount: 2, state: selected ? 'selected' : 'ready', error: '', selectedId: selected ? ids[0] : null, createdAt: 1, variants: selected ? [] : cards }, wardrobe: selected ? [{ ...cards[0], descriptionPending: false }] : [] } });
   });
   try {
@@ -118,7 +118,7 @@ test('two variants, explicit single choice, wardrobe, preview controls and mobil
     if (url.pathname.endsWith('/choose')) {
       expect(request.postDataJSON()).toEqual({ jobId, skinId: ids[1] }); chosen = ids[1]; state = 'selected';
     }
-    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, enabled: true, equippedId: chosen || null,
+    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_OFFERS.atelier.priceUnits, enabled: true, equippedId: chosen || null,
       job: { id: jobId, prompt: 'Космический пират', state, error: '', selectedId: chosen || null, createdAt: Date.now(), variants: state === 'ready' ? cards : [] }, wardrobe: chosen ? [cards[1]] : [] } });
   });
   await page.goto('/tests/fixtures/skin-studio.html');
@@ -168,11 +168,11 @@ test('lost creation response retries the same operation after reopening and acco
       sent.push(route.request().postDataJSON());
       if (sent.length === 1) { await route.abort('failed'); return; }
     }
-    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, enabled: true, job: sent.length > 1 ? { id: sent[0].id, prompt: sent[0].prompt, state: 'generating', variants: [], error: '', selectedId: null, createdAt: Date.now() } : null, wardrobe: [], equippedId: null } });
+    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_OFFERS.atelier.priceUnits, enabled: true, job: sent.length > 1 ? { id: sent[0].id, prompt: sent[0].prompt, state: 'generating', variants: [], error: '', selectedId: null, createdAt: Date.now() } : null, wardrobe: [], equippedId: null } });
   });
   await page.goto('/tests/fixtures/skin-studio.html'); await page.getByRole('button', { name: 'Образы', exact: true }).click();
   await page.getByLabel('Опиши новый образ').fill('Поменяй только куртку на золотую');
-  await page.getByRole('button', { name: 'Создать за $10', exact: true }).click();
+  await page.getByRole('button', { name: 'Создать за $1', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Проверить отправленный запрос' })).toBeEnabled();
   await page.getByRole('button', { name: 'Закрыть ателье' }).click();
   await page.getByRole('button', { name: 'Образы', exact: true }).click();
@@ -258,7 +258,7 @@ test('generated walking moves the drawn hands and feet without separating their 
 });
 
 test('fitting room uses the live game walking cadence', async ({ page }) => {
-  const png = await sharp({ create: { width: 1024, height: 1536, channels: 4, background: '#6752a3' } }).png().toBuffer();
+  const png = await misalignedSkinSheet();
   await page.addInitScript(() => {
     const draw = CanvasRenderingContext2D.prototype.drawImage;
     (window as any).fittingSamples = [];
@@ -271,7 +271,7 @@ test('fitting room uses the live game walking cadence', async ({ page }) => {
   });
   await page.route('**/api/skin-studio**', route => route.request().url().includes('/assets/')
     ? route.fulfill({ contentType: 'image/png', body: png })
-    : route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, enabled: true, equippedId: null, wardrobe: [],
+    : route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_OFFERS.atelier.priceUnits, enabled: true, equippedId: null, wardrobe: [],
       job: { id: jobId, prompt: 'Проверка походки', state: 'ready', variantCount: 2, createdAt: 1, variants: ids.slice(0, 2).map(id => ({ id, jobId, prompt: '', createdAt: 1 })) } } }));
   await page.goto('/tests/fixtures/skin-studio.html');
   await page.evaluate(id => (window as any).skinPreview.render(id), ids[0]);
@@ -324,7 +324,7 @@ for (const generated of [false, true]) test(`live ${generated ? 'generated' : 'n
 test('a previously paid three-option order still shows all candidates on desktop and mobile', async ({ page }) => {
   await page.route('**/api/skin-studio**', async route => {
     if (route.request().url().includes('/assets/')) { await route.abort(); return; }
-    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: 2, enabled: true, equippedId: null, wardrobe: [],
+    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_OFFERS.atelier.priceUnits, variantCount: 2, enabled: true, equippedId: null, wardrobe: [],
       job: { id: jobId, prompt: 'Старый заказ', variantCount: 3, state: 'ready', error: '', selectedId: null, createdAt: Date.now(),
         variants: ids.map(id => ({ id, jobId, prompt: 'Старый заказ', createdAt: Date.now() })) } } });
   });
@@ -341,16 +341,16 @@ test('new orders send only a fresh brief, even with a generated pirate equipped'
   await page.route('**/api/skin-studio**', async route => {
     if (route.request().url().includes('/assets/')) { artworkRequests++; await route.abort(); return; }
     if (route.request().method() === 'POST') sent = route.request().postDataJSON();
-    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: 2, enabled: true, wardrobe: [], equippedId: ids[0],
+    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_OFFERS.atelier.priceUnits, variantCount: 2, enabled: true, wardrobe: [], equippedId: ids[0],
       character: { skin: 0, appearance: { version: 2, skinId: ids[0], theme: SKIN_THEME.id } },
       job: sent ? { id: sent.id, state: 'reserving', variantCount: 2, variants: [], error: '' } : null } });
   });
   await page.goto('/tests/fixtures/skin-studio.html');
   await page.getByRole('button', { name: 'Образы', exact: true }).click();
   await page.getByLabel('Опиши новый образ').fill('Новый взрослый учёный в белом халате');
-  await page.getByRole('button', { name: 'Создать за $10', exact: true }).click();
+  await page.getByRole('button', { name: 'Создать за $1', exact: true }).click();
   await expect.poll(() => !!sent).toBe(true);
-  expect(Object.keys(sent).sort()).toEqual(['id', 'prompt']);
+  expect(Object.keys(sent).sort()).toEqual(['id', 'offerId', 'prompt']);
   expect(sent.prompt).toBe('Новый взрослый учёный в белом халате');
   expect(artworkRequests).toBe(0);
   await expect(page.locator('.skin-offer')).toHaveText('2 варианта · 1 навсегда');
@@ -363,7 +363,7 @@ test('the atelier refreshes the same shared wallet as the games after a temporar
     walletCalls++; await route.fulfill(synchronized ? { json: wallet } : { status: 503, json: { error: 'Баланс обновляется.' } });
   });
   await page.route('**/api/skin-studio', async route => {
-    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, enabled: true, wardrobe: [], equippedId: null,
+    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_OFFERS.atelier.priceUnits, enabled: true, wardrobe: [], equippedId: null,
       job: { id: jobId, state: 'ready', variants: [], error: '' } } });
   });
   await page.goto('/tests/fixtures/skin-studio.html');
@@ -389,7 +389,7 @@ test('touch taps move the preview and closing stops a held input', async ({ brow
       if (route.request().url().includes('/assets/')) {
         await route.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536"><rect x="80" y="60" width="100" height="280" fill="#bb7755"/></svg>' }); return;
       }
-      await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: 2, enabled: true, equippedId: null, wardrobe: [],
+      await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_OFFERS.atelier.priceUnits, variantCount: 2, enabled: true, equippedId: null, wardrobe: [],
         job: { id: jobId, state: 'ready', variantCount: 2, variants: ids.slice(0, 2).map(id => ({ id, jobId, prompt: 'Примерка', createdAt: 1 })) } } });
     });
     await page.goto('/tests/fixtures/skin-studio.html');
@@ -419,7 +419,7 @@ test('a new ready order replaces the wardrobe preview while polling keeps the ch
     if (route.request().url().includes('/assets/')) {
       await route.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536"><rect x="80" y="60" width="100" height="280" fill="#5577bb"/></svg>' }); return;
     }
-    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: 2, enabled: true, equippedId: ids[0], wardrobe: [card(ids[0])],
+    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_OFFERS.atelier.priceUnits, variantCount: 2, enabled: true, equippedId: ids[0], wardrobe: [card(ids[0])],
       job: ready ? { id: 'ffffffff-ffff-4fff-8fff-ffffffffffff', state: 'ready', variantCount: 2, variants: ids.slice(1).map(card) }
         : { id: jobId, state: 'selected', selectedId: ids[0], variants: [] } } });
   });
@@ -435,4 +435,46 @@ test('a new ready order replaces the wardrobe preview while polling keeps the ch
   await page.evaluate(() => (window as any).skinPreview.studio.open());
   await expect(page.locator('.skin-fitting-caption')).toContainText('Вариант 2. Походи');
   await expect(page.getByRole('button', { name: 'Примерить вариант 2' })).toHaveAttribute('aria-pressed', 'true');
+});
+
+for(const mobile of [false,true])test('Zhora offers one outfit for $5 and shares fitting and wardrobe with the $1 atelier '+(mobile?'mobile':'desktop'),async({page},info)=>{
+  if(mobile)await page.setViewportSize({width:390,height:844});
+  let order:any,chosen=false;const png=await misalignedSkinSheet();
+  await page.route('**/api/skin-studio**',async route=>{
+    const req=route.request(),url=new URL(req.url());
+    if(url.pathname.includes('/assets/')){await route.fulfill({contentType:'image/png',body:png});return;}
+    if(url.pathname.endsWith('/generations')){order=req.postDataJSON();expect(order.offerId).toBe('janitor');expect(Object.keys(order).sort()).toEqual(['id','offerId','prompt']);}
+    if(url.pathname.endsWith('/choose')){expect(req.postDataJSON()).toEqual({jobId:order.id,skinId:ids[0]});chosen=true;}
+    const offerId=url.searchParams.get('offerId')??'atelier',card={id:ids[0],jobId:order?.id,prompt:order?.prompt,createdAt:1};
+    await route.fulfill({json:{theme:SKIN_THEME,offerId,...SKIN_OFFERS[offerId as keyof typeof SKIN_OFFERS],enabled:true,character:{skin:0,appearance:null},equippedId:chosen?ids[0]:null,freeGenerations:[],
+      job:order?{id:order.id,prompt:order.prompt,state:chosen?'selected':'ready',variantCount:1,offerId:'janitor',priceUnits:'5000000',error:'',variants:chosen?[]:[card]}:null,wardrobe:chosen?[card]:[]}});
+  });
+  await page.goto('/tests/fixtures/skin-studio.html');await page.evaluate(()=>(window as any).skinPreview.studio.open('janitor'));
+  await expect(page.locator('#skin-studio-title')).toHaveText('Жора: образы');await expect(page.locator('.skin-offer')).toHaveText('1 образ · навсегда');
+  await page.getByLabel('Опиши новый образ').fill('Усатый уборщик в плаще Royal');await page.getByRole('button',{name:'Создать за $5',exact:true}).click();
+  await expect(page.locator('.skin-results [data-skin-card]')).toHaveCount(1);await page.getByRole('button',{name:'Примерить вариант 1',exact:true}).click();
+  await expect(page.getByLabel('Площадка для примерки скина')).toBeVisible();
+  await page.screenshot({path:info.outputPath('zhora-single-outfit.png')});
+  await page.getByRole('button',{name:'Сохранить образ',exact:true}).click();await expect(page.locator('.skin-wardrobe [data-skin-card]')).toHaveCount(1);
+  await page.getByRole('button',{name:'Закрыть образы Жоры',exact:true}).click();await page.getByRole('button',{name:'Образы',exact:true}).click();
+  await expect(page.locator('#skin-studio-title')).toHaveText('Ателье');await expect(page.getByRole('button',{name:'Создать за $1',exact:true})).toBeVisible();
+  await expect(page.locator('.skin-offer')).toHaveText('2 варианта · 1 навсегда');await expect(page.locator('.skin-wardrobe [data-skin-card]')).toHaveCount(1);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+test('a lost Zhora order is recovered from the atelier with the original UUID and offer',async({page})=>{
+  const sent:any[]=[];
+  await page.route('**/api/skin-studio**',async route=>{
+    const req=route.request(),url=new URL(req.url());
+    if(url.pathname.endsWith('/generations')){sent.push(req.postDataJSON());if(sent.length===1){await route.abort();return;}}
+    const offerId=url.searchParams.get('offerId')??'atelier';
+    await route.fulfill({json:{theme:SKIN_THEME,offerId,...SKIN_OFFERS[offerId as keyof typeof SKIN_OFFERS],enabled:true,wardrobe:[],equippedId:null,
+      job:sent.length>1?{id:sent[0].id,prompt:sent[0].prompt,offerId:'janitor',priceUnits:'5000000',variantCount:1,state:'generating',variants:[],error:''}:null}});
+  });
+  await page.goto('/tests/fixtures/skin-studio.html');await page.evaluate(()=>(window as any).skinPreview.studio.open('janitor'));
+  await page.getByLabel('Опиши новый образ').fill('Новый уборщик');await page.getByRole('button',{name:'Создать за $5',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Проверить отправленный запрос',exact:true})).toBeEnabled();await page.getByRole('button',{name:'Закрыть образы Жоры',exact:true}).click();
+  await page.getByRole('button',{name:'Образы',exact:true}).click();await page.getByRole('button',{name:'Проверить отправленный запрос',exact:true}).click();
+  expect(sent).toHaveLength(2);expect(sent[0]).toEqual(sent[1]);expect(sent[1].offerId).toBe('janitor');
+  await expect(page.locator('.skin-offer')).toHaveText('1 образ · навсегда');await expect(page.locator('.skin-existing-order')).toContainText('$5');
 });

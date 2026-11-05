@@ -20,10 +20,10 @@ async function fixture() {
   const image = await sheet(), reference = 'data:image/png;base64,' + (await sharp(image).extract({ left: 0, top: 0, width: 256, height: 384 }).png().toBuffer()).toString('base64');
   let now = Date.now(), calls = 0, failImage = false, loseReserve = false, loseCapture = false;
   const purchases = new Map<string, SkinPurchase>(), events: string[] = [], changes: unknown[] = [];
-  const payments: SkinPayments = { skinPurchase: async (_user, id, action) => {
+  const payments: SkinPayments = { skinPurchase: async (_user, id, action,terms) => {
     events.push(action);
     let row = purchases.get(id);
-    if (!row) { row = { id, amountUnits: SKIN_PRICE_UNITS, state: action === 'refund' ? 'refunded' : 'reserved' }; purchases.set(id, row); }
+    if (!row) { row = { id, amountUnits: terms?.priceUnits??(await db.prepare('SELECT price_units FROM skin_jobs WHERE id=?').get(id))?.price_units??SKIN_PRICE_UNITS, state: action === 'refund' ? 'refunded' : 'reserved' }; purchases.set(id, row); }
     else if (row.state === 'reserved') row.state = action === 'capture' ? 'captured' : action === 'refund' ? 'refunded' : 'reserved';
     if (action === 'reserve' && loseReserve) { loseReserve = false; throw new Error('Lost reserve response'); }
     if (action === 'capture' && loseCapture) { loseCapture = false; throw new Error('Lost capture response'); }

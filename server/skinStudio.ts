@@ -2,13 +2,13 @@ import { randomUUID } from 'node:crypto';
 import type { PostgresDatabase, DatabaseRow } from './database';
 import { applySchemaMigration } from './database-migrations';
 import { CryptoError } from './crypto/config';
-import { generatedAppearance, normalizeCharacterAppearance, SKIN_THEME, SKIN_UUID, SKIN_PRICE_UNITS, SKIN_VARIANTS, type SkinPurchase } from '../src/shared/skinStudio';
+import { generatedAppearance, normalizeCharacterAppearance, SKIN_THEME, SKIN_UUID, SKIN_OFFERS,skinOfferId,type SkinOfferId,type SkinPaymentTerms, type SkinPurchase } from '../src/shared/skinStudio';
 import type { SkinDescribedSnapshot, SkinNpcContext } from '../src/shared/skinDescription';
 import type { SkinImageGenerator } from './skinImages';
 import { skinDescription, type SkinDescriptionGenerator } from './skinDescriptions';
 import type { FreeSkinGenerations } from './progression/skinGenerations';
 
-export type SkinPayments = { skinPurchase(user: string, id: string, action: 'reserve' | 'capture' | 'refund'): Promise<SkinPurchase> };
+export type SkinPayments = { skinPurchase(user: string, id: string, action: 'reserve' | 'capture' | 'refund',terms?:SkinPaymentTerms): Promise<SkinPurchase> };
 export class SkinStudioError extends Error { constructor(public status: number, message: string) { super(message); } }
 const fail = (status: number, message: string): never => { throw new SkinStudioError(status, message); };
 const ACTIVE = "('reserving','generating','capturing','ready','refunding')";
@@ -45,56 +45,63 @@ export class SkinStudioStore {
       "CREATE INDEX generated_skins_description_pending ON generated_skins(description_retry_at,description_lease_until) WHERE description='' AND description_requested",
     ] })).then(()=>applySchemaMigration(db,{id:'skin-studio-level-rewards-v1',statements:[
       'ALTER TABLE skin_jobs ADD COLUMN reward_grant_id TEXT',
+    ]})).then(()=>applySchemaMigration(db,{id:'skin-studio-offers-v1',statements:[
+      'ALTER TABLE skin_jobs DROP CONSTRAINT IF EXISTS skin_jobs_variant_count_check',
+      'ALTER TABLE skin_jobs ADD CONSTRAINT skin_jobs_variant_count_check CHECK(variant_count IN (1,2,3))',
+      "ALTER TABLE skin_jobs ADD COLUMN offer_id TEXT NOT NULL DEFAULT 'atelier' CHECK(offer_id IN ('atelier','janitor'))",
+      "ALTER TABLE skin_jobs ADD COLUMN price_units TEXT NOT NULL DEFAULT '10000000' CHECK(price_units IN ('0','1000000','5000000','10000000'))",
     ]}));
   }
   enabled() { return this.paymentEnabled() && this.images.available(); }
   private card(row: DatabaseRow) { return { id: String(row.id), jobId: String(row.job_id), prompt: String(row.prompt), createdAt: Number(row.created_at),
     description: skinDescription(row.description) ?? '', descriptionPending: !row.description && row.description_requested === true
       && Number(row.description_attempts) < 3 && Boolean(this.descriptions?.available()) }; }
-  async snapshot(accountId: string): Promise<SkinDescribedSnapshot> {
+  async snapshot(accountId: string, offerId:SkinOfferId='atelier'): Promise<SkinDescribedSnapshot> {
     await this.ready;
     const row = await this.db.prepare('SELECT * FROM skin_jobs WHERE account_id=? AND theme=? ORDER BY created_at DESC,id DESC LIMIT 1').get(accountId, SKIN_THEME.id);
     let job: SkinDescribedSnapshot['job'] = null;
     if (row) {
       const variants = row.state === 'ready' ? await this.db.prepare(`SELECT ${CARD_FIELDS} FROM generated_skins s JOIN skin_jobs j ON j.id=s.job_id WHERE j.id=? ORDER BY variant`).all(row.id) : [];
-      job = { id: row.id, prompt: row.prompt, state: row.state, error: row.error, selectedId: row.selected_id, createdAt: Number(row.created_at), variantCount: Number(row.variant_count), variants: variants.map(s => this.card(s)), funding:row.reward_grant_id?'reward':'paid' };
+      job = { id: row.id, prompt: row.prompt, state: row.state, error: row.error, selectedId: row.selected_id, createdAt: Number(row.created_at), variantCount: Number(row.variant_count), variants: variants.map(s => this.card(s)), funding:row.reward_grant_id?'reward':'paid',offerId:row.offer_id,priceUnits:row.reward_grant_id?'0':row.price_units };
     }
     const wardrobe = await this.db.prepare(`SELECT ${CARD_FIELDS} FROM generated_skins s JOIN skin_jobs j ON j.id=s.job_id
       WHERE j.account_id=? AND j.theme=? AND j.selected_id=s.id AND j.state='selected' ORDER BY j.created_at DESC LIMIT 200`).all(accountId, SKIN_THEME.id);
     const account = await this.db.prepare('SELECT skin,appearance FROM accounts WHERE id=?').get(accountId);
-    return { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: SKIN_VARIANTS, enabled: this.enabled(), job, wardrobe: wardrobe.map(s => this.card(s)), equippedId: generatedAppearance(account?.appearance)?.skinId ?? null,
-      freeGenerations:await this.freeGenerations?.available(accountId)??[],
+    return { theme: SKIN_THEME, offerId,priceUnits: SKIN_OFFERS[offerId].priceUnits, variantCount: SKIN_OFFERS[offerId].variantCount, enabled: this.enabled(), job, wardrobe: wardrobe.map(s => this.card(s)), equippedId: generatedAppearance(account?.appearance)?.skinId ?? null,
+      freeGenerations:offerId==='atelier'?(await this.freeGenerations?.available(accountId)??[]):[],
       character: { skin: Number(account?.skin ?? 0), appearance: normalizeCharacterAppearance(account?.appearance) } };
   }
-  async create(accountId: string, value: unknown) {
+  async create(accountId: string, value: unknown,viewOffer?:SkinOfferId) {
     await this.ready;
-    const op = value as { id: string; prompt: string; reference?: string; rewardGrantId?:string };
+    const op = value as { id: string; prompt: string; reference?: string; rewardGrantId?:string;offerId?:SkinOfferId };
     // Accept old clients' reference field, but never retain or send their previous character.
-    if (!op || !['id,prompt', 'id,prompt,reference','id,prompt,rewardGrantId','id,prompt,reference,rewardGrantId'].includes(Object.keys(op).sort().join(',')) || typeof op.id !== 'string' || !SKIN_UUID.test(op.id)
+    if (!op || !Object.keys(op).every(key=>['id','prompt','reference','rewardGrantId','offerId'].includes(key)) || typeof op.id !== 'string' || !SKIN_UUID.test(op.id)
       || typeof op.prompt !== 'string' || !op.prompt.trim() || Array.from(op.prompt).length > 1000
       || (op.reference !== undefined && (typeof op.reference !== 'string' || op.reference.length > 1_500_000))
       || (op.rewardGrantId!==undefined && (typeof op.rewardGrantId!=='string'||!SKIN_UUID.test(op.rewardGrantId)))) fail(400, 'Опиши образ, до 1000 символов.');
-    const prompt = op.prompt.trim();
+    const offerId=skinOfferId(op.offerId);if(!offerId)fail(400,'Неизвестное место заказа образа.');
+    if(op.rewardGrantId&&offerId!=='atelier')fail(400,'Бесплатная генерация доступна в ателье.');
+    const offer=SKIN_OFFERS[offerId!],prompt = op.prompt.trim();
     await this.db.transaction(async () => {
       const previous = await this.db.prepare('SELECT * FROM skin_jobs WHERE id=?').get(op.id);
       if (previous) {
-        if (previous.account_id !== accountId || previous.prompt !== prompt || (previous.reward_grant_id??undefined)!==op.rewardGrantId) fail(409, 'Нельзя изменить отправленную генерацию.');
+        if (previous.account_id !== accountId || previous.prompt !== prompt || previous.offer_id!==offerId || (previous.reward_grant_id??undefined)!==op.rewardGrantId) fail(409, 'Нельзя изменить отправленную генерацию.');
         return;
       }
       if (!this.enabled()) fail(503, 'Генерация пока недоступна. Деньги не списаны.');
       if (await this.db.prepare(`SELECT 1 FROM skin_jobs WHERE account_id=? AND state IN ${ACTIVE}`).get(accountId)) fail(409, 'Сначала дождись генерации и выбери один образ.');
       const recent = await this.db.prepare('SELECT count(*) AS n FROM skin_jobs WHERE account_id=? AND created_at>?').get(accountId, this.now() - 3600000);
       if (Number(recent?.n) >= 10) fail(429, 'Доступно до 10 генераций в час. Попробуй позже.');
-      await this.db.prepare("INSERT INTO skin_jobs(id,account_id,theme,prompt,state,created_at,variant_count,payment_source,reward_grant_id) VALUES (?,?,?,?,'reserving',?,?,'virtual-usdt-v1',?)")
-        .run(op.id, accountId, SKIN_THEME.id, prompt, this.now(), op.rewardGrantId?2:SKIN_VARIANTS,op.rewardGrantId??null);
+      await this.db.prepare("INSERT INTO skin_jobs(id,account_id,theme,prompt,state,created_at,variant_count,payment_source,reward_grant_id,offer_id,price_units) VALUES (?,?,?,?,'reserving',?,?,'virtual-usdt-v1',?,?,?)")
+        .run(op.id, accountId, SKIN_THEME.id, prompt, this.now(), op.rewardGrantId?2:offer.variantCount,op.rewardGrantId??null,offerId,op.rewardGrantId?'0':offer.priceUnits);
       if(op.rewardGrantId){
         if(!this.freeGenerations)fail(503,'Бесплатная генерация временно недоступна. Награда сохранена.');
         try{await this.freeGenerations!.reserveForJob(accountId,op.id,op.rewardGrantId);}catch(error){if(error instanceof CryptoError)fail(error.status,error.message);throw error;}
       }
     }, { lockKey: 'skin:' + accountId });
-    return this.snapshot(accountId);
+    return this.snapshot(accountId,viewOffer??offerId!);
   }
-  async choose(accountId: string, jobId: string, skinId: string) {
+  async choose(accountId: string, jobId: string, skinId: string,offerId:SkinOfferId='atelier') {
     await this.ready;
     if (!SKIN_UUID.test(jobId) || !SKIN_UUID.test(skinId)) fail(400, 'Выбери один из готовых образов.');
     const equipped = await this.db.transaction(async () => {
@@ -109,12 +116,12 @@ export class SkinStudioStore {
       return true;
     }, { lockKey: 'skin:' + accountId });
     if (equipped) this.changed(accountId, { version: 2, skinId, theme: SKIN_THEME.id });
-    return this.snapshot(accountId);
+    return this.snapshot(accountId,offerId);
   }
   private async saveAppearance(accountId: string, skinId: string) {
     await this.db.prepare('UPDATE accounts SET appearance=?::jsonb WHERE id=?').run(JSON.stringify({ version: 2, skinId, theme: SKIN_THEME.id }), accountId);
   }
-  async equip(accountId: string, skinId: string) {
+  async equip(accountId: string, skinId: string,offerId:SkinOfferId='atelier') {
     await this.ready;
     if (!SKIN_UUID.test(skinId)) fail(400, 'Выбери сохранённый образ.');
     await this.db.transaction(async () => {
@@ -122,7 +129,7 @@ export class SkinStudioStore {
       await this.saveAppearance(accountId, skinId);
     }, { lockKey: 'skin:' + accountId });
     this.changed(accountId, { version: 2, skinId, theme: SKIN_THEME.id });
-    return this.snapshot(accountId);
+    return this.snapshot(accountId,offerId);
   }
   async asset(skinId: string, accountId?: string) {
     await this.ready;
@@ -196,7 +203,7 @@ export class SkinStudioStore {
         job.state = 'refunding';
       }
       if (job.state === 'reserving') {
-        const purchase = await this.payments.skinPurchase(job.account_id, job.id, 'reserve');
+        const purchase = await this.purchase(job,'reserve');
         if (purchase.state !== 'reserved') throw new SkinStudioError(409, 'Покупка отменена. Создай новую генерацию.');
         if (!await this.withLease(job, async () => {
           await this.db.prepare("UPDATE skin_jobs SET state='generating' WHERE id=?").run(job.id);
@@ -216,14 +223,14 @@ export class SkinStudioStore {
         }
       }
       if (job.state === 'capturing') {
-        const purchase = await this.payments.skinPurchase(job.account_id, job.id, 'capture');
+        const purchase = await this.purchase(job,'capture');
         if (purchase.state !== 'captured') throw new Error('Purchase capture not confirmed');
         await this.withLease(job, async () => {
           await this.db.prepare("UPDATE skin_jobs SET state='ready',lease_until=0 WHERE id=?").run(job.id);
         });
       }
       if (job.state === 'refunding') {
-        const purchase = await this.payments.skinPurchase(job.account_id, job.id, 'refund');
+        const purchase = await this.purchase(job,'refund');
         if (purchase.state !== 'refunded') throw new Error('Purchase refund not confirmed');
         await this.withLease(job, async () => {
           await this.db.prepare('DELETE FROM generated_skins WHERE job_id=?').run(job.id);
@@ -241,6 +248,12 @@ export class SkinStudioStore {
         await this.db.prepare('UPDATE skin_jobs SET lease_until=? WHERE id=?').run(this.now() + 15000, job.id);
       });
     }
+  }
+  private async purchase(job:DatabaseRow,action:'reserve'|'capture'|'refund'){
+    const priceUnits=job.reward_grant_id?'0':String(job.price_units);
+    const purchase=await this.payments.skinPurchase(job.account_id,job.id,action,{offerId:job.offer_id,priceUnits});
+    if(purchase.id!==job.id||purchase.amountUnits!==priceUnits)throw new Error('Unconfirmed skin purchase terms');
+    return purchase;
   }
   private async withLease(job: DatabaseRow, action: () => Promise<void>) {
     return this.db.transaction(async () => {

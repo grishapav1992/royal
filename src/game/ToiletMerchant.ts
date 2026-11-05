@@ -68,3 +68,11 @@ export class ToiletMerchant{
   }
   getState(){return {name:'Жора',...TOILET_MERCHANT,artVersion:1,artLoaded:!!this.art,frame:this.frame,action:this.routine.action,elapsedMs:this.routine.elapsed,reducedMotion:this.reducedMotion,speech:this.bubble.text,scale,depth:this.sprite?.depth,anchor:atlas.frames[this.frame].anchor};}
 }
+
+
+export function toiletMerchantPortrait(){
+  const canvas=document.createElement('canvas');canvas.width=176;canvas.height=200;
+  canvas.setAttribute('role','img');canvas.setAttribute('aria-label',language==='en'?'Zhora in a Royal work coat':'Жора в рабочем плаще Royal');
+  const image=new Image();image.onload=()=>{const f=atlas.frames[15];canvas.getContext('2d')!.drawImage(image,f.rect.x,f.rect.y,f.rect.width,f.rect.height,0,12,176,176);};image.src=TOILET_MERCHANT_URL;
+  return canvas;
+}

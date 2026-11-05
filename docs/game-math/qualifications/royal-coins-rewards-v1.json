@@ -3,8 +3,8 @@
   "gameId": "royal-coins",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-11-01T09:54:23.638Z",
-  "completedAt": "2026-11-01T09:54:23.711Z",
+  "startedAt": "2026-11-05T14:47:56.614Z",
+  "completedAt": "2026-11-05T14:47:56.657Z",
   "sourceHashes": {
     "src/shared/gameCore.ts": "3e59b987bd47e61137af39aace7717bc7490e3dabf52193de8668fbcca5ca737",
     "src/shared/originalGames.ts": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
@@ -17,10 +17,10 @@
     "server/progression/freeSpins.ts": "7b7cdda7a23c921071e2a28366f00488f5e31bfc2bad5b178b5a254e235056c4",
     "server/progression/store.ts": "31c2ad735adda4257d6c042330b7fb17a2cb8b5e445ab582bef35219fcc32658",
     "server/progression/sources.ts": "6640ff15833378a077ca7ef19a502414fab6f99bf6ccb63db30f8ceb8cdd9674",
-    "server/accounts.ts": "57c32ef74552bbeefb2e0e2320bc71f611ac55fd6a2543a49f32f1acd83c0339",
+    "server/accounts.ts": "841b9926833f8613cea2500d368a63c3318f6288ecd9acf0e0ef26b4ef2d3db8",
     "server/progression/handlers.ts": "afed32a614f614ea72e68ad2d87de8025462d42d21bb1d71241379c9d34c4edf",
     "server/progression/skinGenerations.ts": "ae72341e7ea85c8eb8e787ea7f82799548ee146aac152cd09d8ddd847c280390",
-    "server/skinStudio.ts": "0abc4ee79b714793dc81bb315cf73c16357086330ce7ee60092473b3af15e9ad",
+    "server/skinStudio.ts": "67319448db188636b94b28e08bd5527b528e21cd19fea4605c787f7131171c16",
     "src/shared/rewardFruitsPresentation.ts": "4792cfca98e464feed67e263ab75e07880acba4dfe4f2b4746373ee8e33d1a51",
     "src/shared/rewardSpinCatalog.ts": "df633494f99d6fcf81b5c8a0aa87ed69e8fd3d1cb907617007124bbf8ead6429",
     "scripts/game-math/rtp-reward-slots.mjs": "8207b6792cfab6309de3a43e32d9a3dcb07c39e795c42fc26aa12bd223598204"

@@ -1,3 +1,4 @@
+import {skinOfferId,type SkinOfferId} from '../src/shared/skinStudio';
 import express, { type Application, type RequestHandler } from 'express';
 import { accounts, allowedOrigin, cookieToken } from './accounts';
 import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
@@ -22,22 +23,23 @@ export async function installSkinStudio(app: Application, store: SkinStudioStore
     try {
       const account = (await session(cookieToken(req.headers.cookie)))?.account;
       if (!account || account.skin === null || req.get(WALLET_ACCOUNT_HEADER) !== account.id) { res.status(401).json({ error: 'Войди в свой аккаунт и выбери персонажа.' }); return; }
-      res.locals.accountId = account.id; next();
+      const offerId=skinOfferId(req.query.offerId);if(!offerId){res.status(400).json({error:'Неизвестное место заказа образа.'});return;}
+      res.locals.offerId=offerId;res.locals.accountId = account.id; next();
     } catch { res.status(503).json({ error: 'Не удалось проверить аккаунт.' }); }
   }, express.json({ limit: '1600kb', inflate: false }));
-  const handle = (action: (req: express.Request, id: string) => Promise<unknown>): RequestHandler => async (req, res) => {
-    try { res.json(await action(req, res.locals.accountId)); }
+  const handle = (action: (req: express.Request, id: string,offerId:SkinOfferId) => Promise<unknown>): RequestHandler => async (req, res) => {
+    try { res.json(await action(req, res.locals.accountId,res.locals.offerId)); }
     catch (error) { res.status(error instanceof SkinStudioError ? error.status : 503).json({ error: error instanceof SkinStudioError ? error.message : 'Не удалось проверить генерацию. Обнови её статус.' }); }
   };
-  app.get('/api/skin-studio', handle((_req, id) => store.snapshot(id)));
-  app.post('/api/skin-studio/generations', handle((req, id) => store.create(id, req.body)));
-  app.post('/api/skin-studio/choose', handle((req, id) => {
+  app.get('/api/skin-studio', handle((_req, id,offerId) => store.snapshot(id,offerId)));
+  app.post('/api/skin-studio/generations', handle((req, id,offerId) => store.create(id, req.body,offerId)));
+  app.post('/api/skin-studio/choose', handle((req, id,offerId) => {
     if (!req.body || Object.keys(req.body).sort().join(',') !== 'jobId,skinId' || typeof req.body.jobId !== 'string' || typeof req.body.skinId !== 'string') throw new SkinStudioError(400, 'Выбери один из готовых образов.');
-    return store.choose(id, req.body.jobId, req.body.skinId);
+    return store.choose(id, req.body.jobId, req.body.skinId,offerId);
   }));
-  app.post('/api/skin-studio/equip', handle((req, id) => {
+  app.post('/api/skin-studio/equip', handle((req, id,offerId) => {
     if (!req.body || Object.keys(req.body).join(',') !== 'skinId' || typeof req.body.skinId !== 'string') throw new SkinStudioError(400, 'Выбери образ из гардероба.');
-    return store.equip(id, req.body.skinId);
+    return store.equip(id, req.body.skinId,offerId);
   }));
   app.use('/api/skin-studio', ((error, _req, res, _next) => {
     res.status(error?.type === 'entity.too.large' ? 413 : 400).json({ error: 'Некорректный запрос генерации.' });

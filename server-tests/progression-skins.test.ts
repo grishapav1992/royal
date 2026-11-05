@@ -18,9 +18,9 @@ async function fixture() {
   const rights=new FreeSkinGenerations(db,progression.ready);await rights.ready;
   const paid=new CommonSkinPayments(db,wallet.ready);
   let now=1000,calls=0,failImage=false,loseCapture=false;
-  const store=new SkinStudioStore(db,{skinPurchase:async(account,id,action)=>{
+  const store=new SkinStudioStore(db,{skinPurchase:async(account,id,action,terms)=>{
     const job=await db.prepare('SELECT reward_grant_id FROM skin_jobs WHERE id=?').get(id);
-    const result=await (job?.reward_grant_id?rights:paid).skinPurchase(account,id,action);
+    const result=job?.reward_grant_id?await rights.skinPurchase(account,id,action):await paid.skinPurchase(account,id,action,terms);
     if(action==='capture'&&loseCapture){loseCapture=false;throw Error('lost capture reply');}return result;
   }},{available:()=>true,generate:async()=>{calls++;if(failImage)throw Error('provider failed');return Buffer.from('test skin');}},()=>true,()=>{},rights.ready,()=>now,undefined,rights);
   await store.ready;
