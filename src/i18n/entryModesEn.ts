@@ -19,7 +19,6 @@ Object.assign(english, {
   'Каталог казино': 'Casino catalogue',
   'Закрыть общий чат': 'Close the shared chat',
   'Запоминать режим входа': 'Remember my entry mode',
-  'Выбирай игру. Общий чат и сохранённые партии всегда рядом.': 'Choose a game. Shared chat and saved rounds are always close by.',
   'Не получилось открыть клуб. Попробуй ещё раз.': 'Could not open the club. Please try again.',
   'Войди в клуб, чтобы открыть игру.': 'Sign in to open a game.',
   'Не получилось открыть Royal. Обнови страницу и попробуй ещё раз.': 'Could not open Royal. Refresh the page and try again.',

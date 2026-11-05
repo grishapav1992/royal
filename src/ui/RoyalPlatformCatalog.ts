@@ -50,15 +50,46 @@ export class RoyalPlatformCatalog {
   private search: HTMLInputElement;
   private genre: HTMLSelectElement;
   private updateBalance = () => {
-    this.host.querySelector('[data-platform-wallet]')!.textContent = demoWallet.wallet ? `${coins(demoWallet.wallet.balance)} USDT · Демо` : 'USDT · Демо';
+    const label = `USDT · ${t('Демо')}`;
+    this.host.querySelector('[data-platform-wallet]')!.textContent = demoWallet.wallet
+      ? `${coins(demoWallet.wallet.balance)} ${label}`
+      : label;
   };
   constructor(private host: HTMLElement, private select: (choice:PlatformChoice)=>void, private collection:CabinetCollection, private selected?:PlatformChoice, presentation: 'cabinet' | 'casino' = 'cabinet') {
     this.entries=collectionGames(collection).filter(id=>id!=='casinoapipro').map(localEntry);
     this.source=collection;
     const title={royal:t('Игры Royal'),github:t('Доработанные GitHub-игры'),casinoapipro:'Casino API PRO'}[collection];
+    const casino = presentation === 'casino';
+    const heading = casino ? 'h1' : 'h3';
     host.dataset.collection=collection;
-    host.innerHTML = `<section class="royal-platform" aria-label="${t('Каталог игр Рояль')}"><header class="rp-heading"><div><span>ROYAL PLATFORM</span><h3>${title}</h3></div><button type="button" data-platform-wallet></button></header><p class="rp-intro">${t('Выбирай игру и оставайся за своим автоматом. Чат и сохранённые партии всегда рядом.')}</p><nav class="rp-sources" aria-label="${t('Коллекция игр')}">${([collection] as const).map(source=>`<button type="button" data-source="${source}" aria-pressed="${source===this.source}">${sourceNames[source]}<span></span></button>`).join('')}</nav><div class="rp-tools"><label>${t('Найти игру')}<input type="search" aria-label="${t('Найти игру')}" placeholder="${t('Название или тема')}"></label><label>${t('Жанр')}<select aria-label="${t('Жанр')}">${Object.entries(kindNames).map(([id,name])=>`<option value="${id}">${name}</option>`).join('')}</select></label></div><p class="rp-count" role="status"></p><div class="rp-provider-status" role="status" hidden><span></span><button type="button" data-provider-retry>${t('Обновить')}</button></div><div class="rp-grid"></div><p class="rp-empty" role="status" hidden>${t('Игры не найдены. Измени поиск или жанр.')}</p></section>`;
-    if (presentation === 'casino') host.querySelector('.rp-intro')!.textContent = t('Выбирай игру. Общий чат и сохранённые партии всегда рядом.');
+    host.innerHTML = `
+      <section class="royal-platform" aria-label="${t('Каталог игр Рояль')}">
+        <header class="rp-heading">
+          <div><span>${casino ? 'ROYAL CASINO' : 'ROYAL PLATFORM'}</span><${heading}>${title}</${heading}></div>
+          <button type="button" data-platform-wallet></button>
+        </header>
+        ${casino ? '' : `
+          <p class="rp-intro">${t('Выбирай игру и оставайся за своим автоматом. Чат и сохранённые партии всегда рядом.')}</p>
+          <nav class="rp-sources" aria-label="${t('Коллекция игр')}">
+            <button type="button" data-source="${collection}" aria-pressed="true">${sourceNames[collection]}<span></span></button>
+          </nav>`}
+        <div class="rp-tools">
+          <label class="rp-search">${t('Найти игру')}
+            <input type="search" aria-label="${t('Найти игру')}" placeholder="${t('Название или тема')}">
+          </label>
+          <label>${t('Жанр')}
+            <select aria-label="${t('Жанр')}">
+              ${Object.entries(kindNames).map(([id, name]) => `<option value="${id}">${name}</option>`).join('')}
+            </select>
+          </label>
+        </div>
+        <p class="rp-count" role="status"></p>
+        <div class="rp-provider-status" role="status" hidden>
+          <span></span><button type="button" data-provider-retry>${t('Обновить')}</button>
+        </div>
+        <div class="rp-grid"></div>
+        <p class="rp-empty" role="status" hidden>${t('Игры не найдены. Измени поиск или жанр.')}</p>
+      </section>`;
     this.grid=host.querySelector('.rp-grid')!; this.search=host.querySelector('input')!; this.genre=host.querySelector('select')!;
     this.search.oninput=()=>this.render(); this.genre.onchange=()=>this.render();
     host.querySelectorAll<HTMLButtonElement>('[data-source]').forEach(button=>button.onclick=()=>{this.source=button.dataset.source as Source|'all';this.render();});

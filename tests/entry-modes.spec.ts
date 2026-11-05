@@ -42,6 +42,22 @@ test('entry choice remembers the mode and opens the real casino without loading 
   expect(await page.evaluate(() => (window as any).royalDemo.isWorldLoaded())).toBe(false);
   expect(worldRequests).toEqual([]);
   await expect(page.locator('#game canvas')).toHaveCount(0);
+  const catalogue = page.locator('#casino-catalog');
+  const games = catalogue.locator('[data-platform-game]');
+  const gameCount = await games.count();
+  const search = catalogue.getByRole('searchbox');
+  await search.fill('Cosmic Escape');
+  await expect(games).toHaveCount(1);
+  await expect(games.first()).toHaveAttribute('data-platform-game', 'studio-cosmic-escape');
+  await search.clear();
+  const genre = catalogue.getByRole('combobox', { name: 'Жанр' });
+  await genre.selectOption('wheel');
+  await expect(catalogue.locator('[data-platform-game="royal-roulette"]')).toBeVisible();
+  await expect(catalogue.locator('[data-platform-game="studio-cosmic-escape"]')).toHaveCount(0);
+  await genre.selectOption('all');
+  await expect(games).toHaveCount(gameCount);
+  await search.blur();
+  await page.mouse.move(0, 0);
   await page.screenshot({ path: proof + '/casino-desktop.png' });
   await page.reload(); await connected(page);
   await expect(page.locator('#entry-title')).toHaveCount(0);
@@ -141,10 +157,12 @@ test('new casino player skips the character editor and can change entry preferen
   await connected(page);
   await expect(page.locator('#join-dialog')).toBeHidden();
   const identity = await (await page.request.get('/api/auth/me')).json(); expect(identity.account.skin).toBe(0);
+  await page.locator('.profile-toggle').click();
   await page.getByRole('button', { name: 'Настройки игрока', exact: true }).click();
   const preference = page.getByLabel('Запоминать режим входа'); await preference.check();
   await page.locator('#cancel-name').click(); await page.reload(); await connected(page);
   await expect(page.locator('body')).toHaveAttribute('data-entry-mode', 'casino');
+  await page.locator('.profile-toggle').click();
   await page.getByRole('button', { name: 'Настройки игрока', exact: true }).click(); await preference.uncheck();
   await page.locator('#cancel-name').click(); await page.reload();
   // The explicit URL mode remains usable; without it, the chooser returns.
@@ -159,6 +177,10 @@ test('new casino player skips the character editor and can change entry preferen
   await page.getByRole('button', { name: /Open the casino/ }).click();
   await connected(page);
   await expect(page.getByRole('heading', { name: 'Royal games' })).toBeVisible();
+  await expect(page.locator('#casino-catalog [data-platform-wallet]')).toHaveText(/USDT · Demo/);
+  await expect(page.getByRole('searchbox', { name: 'Find a game' })).toBeVisible();
+  const englishGenre = page.getByRole('combobox', { name: 'Genre' });
+  await expect(englishGenre.locator('option:checked')).toHaveText('All genres');
   await page.getByRole('button', { name: 'Club', exact: true }).click();
   await expect(page.locator('body')).toHaveAttribute('data-entry-mode', 'club', { timeout: 40000 });
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
