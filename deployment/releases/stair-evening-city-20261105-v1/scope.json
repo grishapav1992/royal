@@ -1,0 +1,12 @@
+{
+  "productionCommit": "a2a69026c0d85c51a1752dae98d8ca15c1108daa",
+  "feature": "fb10f886b2343603f63e3056a1f4493d9eb39dae",
+  "expectedSources": {
+    "src/game/StreetAmbience.ts": "76c05f0c38ccb97293e539f1e939a77c2239caa469096fab2278b99dcced0e2f",
+    "src/game/StreetRenderer.ts": "6f4a9658f8963a24eafb06c9585b0cd5a922303e5058c8002c616e48dd8cb69a",
+    "src/game/streetArt.ts": "9c42b3afa46bfaddd837a7992bf989d7dcdf6996ddcc920d3636b306758969ff",
+    "src/game/streetCityArt.ts": "3f3fef44d2beac27984e1d40c636adf65d49e255a577bc847e3e29852e9e843d"
+  },
+  "addedGames": [],
+  "restoredGames": []
+}
