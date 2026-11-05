@@ -1,0 +1,2675 @@
+{
+  "format": 1,
+  "release": "pvp-invites-20261105-v3",
+  "status": "published_verified",
+  "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+  "installerSourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+  "productionBase": "28d451add41e5af2648442c91959030de8e4eb01",
+  "baseImage": "sha256:d7028d1e23c5a741dd92811b3904c9b2edd64e1f73296cbe059fe84369f90af9",
+  "featureCommit": "f39d48910bb7189cb721256b48effc67f0477cbd",
+  "runtimeSources": {
+    "src/shared/pvp.ts": "bed164a0fcccf208639302aadb7a5f165541c055616440bf0b16248d861ceddc",
+    "src/ui/GameChat.ts": "c8a0912aa1f57fe09f5252b5a1b227cbc2bc6951f8be3702e65f48885075a002",
+    "src/ui/PlayerDuelMenu.ts": "e2d60a97db15db2ad4b7b602f1b30d40200ecc4f79ff62a706ee5f8309575e0c",
+    "src/ui/PvpUI.ts": "220d9c7f5494b9484671726b1755bfc321f04e839c0e37d98717e109777a540a",
+    "src/ui/pvp-invitations.css": "a6702e757e9114a629bb2ebe925477a11cb2a6f8b200c7378ed83e1e7f50ba70",
+    "server/pvp/store.ts": "713ec77918a8f64e5a74ab1b9ba27c9552a9fc6955d5fc07de0bb1c004af63df"
+  },
+  "qualificationEvidenceSources": {
+    "docs/game-math/qualifications/chess-virtual-v1.json": "27da591cb26e4a2b64bbfa513c453fc0ba237629b7f65cc6f49c68c594ae72b4",
+    "docs/game-math/qualifications/crazy-eights-virtual-v1.json": "12abc97370122d20ae59c8b9a840876315195b3cbed9146810a5a1c29ea6f58e",
+    "docs/game-math/qualifications/durak-virtual-v1.json": "de29ada2f65396b2d25d4db6b1c79c2582bbdd6e342ee4b1ca4a56367fecea18",
+    "docs/game-math/qualifications/hockey-virtual-v1.json": "de62a88a3333bdc4dfc2d1c07e92c097989c2feca3974e6a5ca18b055c3f9874",
+    "docs/game-math/qualifications/mortal-kombat-v2.json": "54ffd99eb78b953012274512895bea8f76c476df96c9d1dda4d243133af076ec",
+    "docs/game-math/qualifications/pool-virtual-v1.json": "1019ab830b4b95a20de09f1458cc4b8b8b9319e2e41b685b15f4879dad510ed5",
+    "docs/game-math/qualifications/transfer-durak-virtual-v1.json": "11e618e84fa3d2ed23498038a86cd1955a3dbc017c42c1feb013b7deaa885ba6",
+    "docs/game-math/qualifications/tsu-e-fa-v1.json": "32757c1c79e5ac35d13b5f7412e86540158eb036337b1cf6f27d7248bc041290",
+    "docs/game-math/qualifications/tsu-e-fa-v2.json": "69ef5cb4bc37f013e4e5a8bbca516efbeb0fac071c8c008ff5a23d09de3ca69e",
+    "docs/game-math/qualifications/tsu-e-fa-v3.json": "f05b89c96fa31a2551f89c642bc66e618b5fc4b6a9e1ba12e431b7af2e84afff",
+    "docs/game-math/qualifications/tsu-e-fa-v4.json": "fb78cb37d14d7653ee6f4452c7cf4ec7be59031479f748563a46ee00b59abfba",
+    "scripts/game-math/tsu-duel-wallet.ts": "a633e2b846155f5e109f0a4009a9e30de2d2f7f7d3b4400dfd806d6e3bded023"
+  },
+  "compiledFiles": {
+    "dist/assets/index--cUSd7Ot.css": "5c4c44bad2f4a9367c0da54186408a97567b129c6102805baeb4960adffebcab",
+    "dist/assets/index-B-7j_gtW.js": "85dad1bf62b8478e4924c079891bcaae11443edf63a521ec39fcc617b672ccfb",
+    "dist/index.html": "89b2e59c612aa4fd643a68f310abe7342d34448a65b28e12bed3ec20f4e38d1d",
+    "dist-server/index.js": "43738347eaf574a53e694e81a72b2d332bd09235484ac736bccd3c7529b39ddc"
+  },
+  "projections": {
+    "hostProjection": {
+      "sha256": "2628137be04d72cfe11e28fc2058549ce340008696ca2be6e0dc641beaded3b4",
+      "inputCount": 287
+    },
+    "backendProjection": {
+      "sha256": "716da46df197784e12454d29e9883a9a7f94fab14b8cc984986887756b6a9ff5",
+      "graphSha256": "e3bfcc32585672acbd3b1385d78e0926ed86acc6970f27ea4f1b5182acc98395",
+      "inputCount": 263
+    }
+  },
+  "build": {
+    "passed": true,
+    "durationMs": 484557,
+    "rtp": {
+      "verified": 38,
+      "stakePoliciesVerified": 20,
+      "stakeAdmissionVerified": 20,
+      "legacyNotQualified": 114
+    }
+  },
+  "wallet": {
+    "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+    "productionBase": "28d451add41e5af2648442c91959030de8e4eb01",
+    "mandatoryWalletTestsPassed": 19,
+    "pvpTestsPassed": 23,
+    "totalTestsPassed": 42,
+    "linuxInstallerTestsPassed": 12,
+    "productionDataModified": false
+  },
+  "browser": {
+    "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+    "productionBase": "28d451add41e5af2648442c91959030de8e4eb01",
+    "passed": 4,
+    "failed": 0,
+    "runs": [
+      {
+        "passed": 3,
+        "scenarios": [
+          "Compact desktop/mobile modal, waiting and decline",
+          "Other game uses its own name and bound opponent",
+          "0.10 match, exact settlement, close/reopen"
+        ]
+      },
+      {
+        "passed": 1,
+        "separateDisposableStand": true,
+        "scenarios": [
+          "Real offline, preserved secret, countdown pause, reconnect, single surrender settlement"
+        ]
+      }
+    ],
+    "runtime": "Exact compiled current-production projections with shared chat and unchanged published Tsu 1.3.2-878d142cb99b",
+    "viewports": [
+      {
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "files": {
+      "dist/assets/index--cUSd7Ot.css": "5c4c44bad2f4a9367c0da54186408a97567b129c6102805baeb4960adffebcab",
+      "dist/assets/index-B-7j_gtW.js": "85dad1bf62b8478e4924c079891bcaae11443edf63a521ec39fcc617b672ccfb",
+      "dist/index.html": "89b2e59c612aa4fd643a68f310abe7342d34448a65b28e12bed3ec20f4e38d1d",
+      "dist-server/index.js": "43738347eaf574a53e694e81a72b2d332bd09235484ac736bccd3c7529b39ddc"
+    },
+    "harness": {
+      "applicationBytesChanged": false,
+      "ports": [
+        5913,
+        5915
+      ],
+      "standSourceSha256": "27a84cdaf4dca5f92a885c5d879801c22766347e469eb4b0045dfd9282991fe0",
+      "standSha256": "ad08eb02e64e31c6d6fab7520e4819782da50c1a318a042f429a26cbd0aa88ad",
+      "testSourceSha256": "3042bed6443fcfb3ec3c1691cd3b70160fff8c71b3f885b34c746d39fac198ea",
+      "testSha256": "6b881c723c5299b51e44adfd8e80cc647ae2a331bd11161ded2276137007eca4",
+      "edits": "Only fixture ports/imports and reuse of the one verified published Tsu package directory"
+    },
+    "productionAccountsCreated": false,
+    "productionBetsPlaced": false,
+    "applicationBytesChangedForTests": false
+  },
+  "catalogue": {
+    "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+    "productionBase": "28d451add41e5af2648442c91959030de8e4eb01",
+    "activeGames": [
+      "studio-cosmic-escape",
+      "studio-caramel-carnival",
+      "studio-velvet-reign",
+      "studio-last-convoy",
+      "studio-nitro-run",
+      "studio-afterglow",
+      "studio-meme-overload",
+      "studio-dracona",
+      "studio-neopolis",
+      "studio-forest-heart",
+      "github-crash",
+      "royal-plinko",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "studio-caribbean-treasures",
+      "studio-flooded-temple",
+      "royal-roulette",
+      "flag-battle",
+      "studio-wild-nudge",
+      "tsu-e-fa"
+    ],
+    "unchangedAccessInputs": {
+      "src/shared/arcadeCatalog.ts": "946d05c1c450086d48efa318d7d65df6bdd5641f2edcd05599b67f7499a0a55a",
+      "src/modules/GameModuleCatalog.ts": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1",
+      "src/ui/ActivitiesUI.ts": "431721288ecfcb33043f6d3806f4df5dfc383d2e6fce0d0471436e967e890701",
+      "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+      "server/pvp/room.ts": "31b7c1aedcd71f4ee52b56c5678ea839f4685c450d8aaeb6f782d1d9b77613b9"
+    },
+    "addedGames": [],
+    "restoredGames": []
+  },
+  "transport": {
+    "ArchiveBytes": 2839244,
+    "Files": 36,
+    "ArchiveSha256": "75fe7d71a72f1a1abe7a7822ac02e1938bcbd791c7562827e3344459449703ce",
+    "InventorySha256": "487451904749bcf4781755f9ce479742fcd09a938ddb579a358c8a743e247064",
+    "FreeBytes": 307832147968
+  },
+  "retention": {
+    "startedAt": 1793857578.1988215,
+    "status": "completed",
+    "freeBefore": 9784631296,
+    "release": "pvp-invites-20261105-v3",
+    "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+    "currentImage": "sha256:55e6ab3340bab7d1c1e0041deb3a4f1ebb1558d07a457144c3efd4542f915520",
+    "rollbackImage": "sha256:d7028d1e23c5a741dd92811b3904c9b2edd64e1f73296cbe059fe84369f90af9",
+    "plannedEntries": 28,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 149,
+    "removedEntries": 28,
+    "removedImageTags": 4,
+    "dockerRetainedImages": [],
+    "freeAfter": 9816829952,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:d7028d1e23c5a741dd92811b3904c9b2edd64e1f73296cbe059fe84369f90af9",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "97c46c4405aeae750a88973c1fcf108722dcba90d4ad44cb9c9defe845131ba7",
+      "files": 8609
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "512f75d3d7b10a125ed54f76b922a12b8b28e1f00056f6d26d8daf6937c03dc0",
+      "receipt": "/var/lib/royal-project-brain/receipts/512f75d3d7b10a125ed54f76b922a12b8b28e1f00056f6d26d8daf6937c03dc0.json",
+      "queued": true
+    },
+    "finishedAt": 1793858267.7738307,
+    "durationSeconds": 689.58
+  },
+  "publication": {
+    "published": true,
+    "preparedImage": "sha256:55e6ab3340bab7d1c1e0041deb3a4f1ebb1558d07a457144c3efd4542f915520",
+    "runningImage": "sha256:55e6ab3340bab7d1c1e0041deb3a4f1ebb1558d07a457144c3efd4542f915520",
+    "containerRestarted": true,
+    "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+    "changedSources": 18,
+    "clientDeltaFiles": 3,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 1,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 13
+  },
+  "preparationSnapshotIsFinancialProof": false,
+  "priorVersionsNeverPublished": [
+    "pvp-invites-20261104-v1",
+    "pvp-invites-20261104-v2"
+  ],
+  "postPublication": {
+    "verified": true,
+    "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+    "image": "sha256:55e6ab3340bab7d1c1e0041deb3a4f1ebb1558d07a457144c3efd4542f915520",
+    "programFiles": 8611,
+    "sourceFiles": 2754,
+    "changedSources": 18,
+    "moduleFilesPreserved": 5338,
+    "otherPersistentServicesPreserved": 13,
+    "configurationsPreserved": true,
+    "gameDataPreserved": true,
+    "activeGames": 20,
+    "addedGames": [],
+    "restoredGames": [],
+    "compiledFilesVerified": 4,
+    "preservedJackieVersion": "1.2.1-e9b60e76ef5e",
+    "financialGatePassed": true,
+    "sourceBackup": {
+      "directory": "/opt/royal-backups/pvp-invites-20261105-v3",
+      "sha256": "c50291b3c2aa94cb70a983fb5df0b0a191b669673c1fbbea984b4eeaefa328d7",
+      "bytes": 41791
+    },
+    "fullAfterSha256": "3782ac9a4b10cac468848aac392b0c7a7df79f3b3f6accc43b1c5535cc9844e7",
+    "verificationMeaning": "Independent consistency check of the completed installer full-read report; not a new financial barrier or another read of running bytes"
+  },
+  "public": {
+    "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+    "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "files": [
+      {
+        "path": "/assets/index--cUSd7Ot.css",
+        "sha256": "5c4c44bad2f4a9367c0da54186408a97567b129c6102805baeb4960adffebcab",
+        "bytes": 159094
+      },
+      {
+        "path": "/assets/index-B-7j_gtW.js",
+        "sha256": "85dad1bf62b8478e4924c079891bcaae11443edf63a521ec39fcc617b672ccfb",
+        "bytes": 2913606
+      },
+      {
+        "path": "/index.html",
+        "sha256": "89b2e59c612aa4fd643a68f310abe7342d34448a65b28e12bed3ec20f4e38d1d",
+        "bytes": 708
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/active.json",
+        "sha256": "03ff5ab3fb697596abe39718d826fecde226898abf2cd35a0280b499e50a5cd7",
+        "bytes": 204
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/versions/1.3.2-878d142cb99b/manifest.json",
+        "sha256": "435c67d9923bbe9f68ef2640ecffe34608ab36d370e907c0ce43f220adff685e",
+        "bytes": 706
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/versions/1.3.2-878d142cb99b/entry-39d3f02e6d3c7937.js",
+        "sha256": "39d3f02e6d3c7937c314d80a588fec3ff754b2919b354f61fdc80f4d86c9196f",
+        "bytes": 31001
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/versions/1.3.2-878d142cb99b/media/tsu-e-fa/v2/hand-poses.png",
+        "sha256": "6028d7f4bd0ba3069657866edd51f6219ffce78036af05bd58b4cff27aef13cc",
+        "bytes": 1416729
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/versions/1.3.2-878d142cb99b/style-fafbbf053a81944e.css",
+        "sha256": "fafbbf053a81944e6811c7e03b1f5fc756c20322fffc39a17523ad3a43627779",
+        "bytes": 11090
+      }
+    ],
+    "checks": [
+      {
+        "path": "/healthz",
+        "status": 200
+      },
+      {
+        "path": "/api/auth/me",
+        "status": 200
+      },
+      {
+        "path": "/api/game-wallet",
+        "status": 410
+      },
+      {
+        "path": "/api/nile-play",
+        "status": 410
+      },
+      {
+        "path": "/api/demo-wallet",
+        "status": 401
+      },
+      {
+        "path": "/api/demo-wallet/expansion",
+        "status": 401
+      }
+    ],
+    "guestBrowsers": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "pageErrors": [],
+        "passed": true
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "pageErrors": [],
+        "passed": true
+      }
+    ],
+    "productionAccountsCreated": false,
+    "productionBetsPlaced": false,
+    "productionMessagesSent": false,
+    "passed": true
+  },
+  "sourceMapLimitation": "Shared brain and graph queries unavailable; inspected exact source projections and full production inventories.",
+  "physicalPhoneConnected": false,
+  "postMaintenance": {
+    "checkedAt": "2026-11-05T06:00:33.587682+00:00",
+    "image": "sha256:55e6ab3340bab7d1c1e0041deb3a4f1ebb1558d07a457144c3efd4542f915520",
+    "sourceCommit": "0ea82843a946179c795d96dac913375793367ef3",
+    "containerId": "ed41e2db2912c786e8735fd4474387a91e74a17e028a87944efd401739c4c4ba",
+    "healthy": true,
+    "maintenanceStatus": "completed",
+    "maintenanceSummary": [
+      {
+        "path": "/opt/royal-maintenance/automatic-runs/run-1104eab9607b409aaa2392440db6be9b/summary.json",
+        "sha256": "0344b9f8eacaf84f49818425834295ad63b1d6b37ab23cac3948cd1819b50a13"
+      }
+    ],
+    "lastResultSha256": "0344b9f8eacaf84f49818425834295ad63b1d6b37ab23cac3948cd1819b50a13",
+    "timerEnabled": "enabled",
+    "timerActive": "active",
+    "serviceActive": "inactive",
+    "freeBytes": 9817411584
+  },
+  "serverStorageCleanup": {
+    "entries": [
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/after.json",
+        "identity": "9576aa9e9af144dd3eab353bde705699166470b1038a5d40af5f996aaea59310",
+        "allocatedBytes": 3956736
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/baseline-reconciliation-github.json",
+        "identity": "6d7905e1e528ac283400d3ae5ab56d2c63e4e06ac90167c018944310e9cd3b35",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/baseline-reconciliation.json",
+        "identity": "b8ce2a3d5fc70b251b859fdb50752d17e0e577e8a48878a682a7c8a3d2630579",
+        "allocatedBytes": 16384
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/build-result.json",
+        "identity": "cf165c4bef6e492e30507123a1650f6a304b93467b96c0deb766e9a7caf97381",
+        "allocatedBytes": 1175552
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/build.log",
+        "identity": "4a3f30a709ff4a5948b6dbdb8b968f57e11a4875da18e9191f33af7a0671fc33",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/deploy.py",
+        "identity": "a7e8207265ff9fb2bc7ce5285908ab30d56c46ccbf8689caaa042367eda270c1",
+        "allocatedBytes": 16384
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/dist-delta",
+        "identity": "6fe3f8b41befe453255325a8c1c825ba89f8659dd232d537d9cd7c4347cab7cf",
+        "allocatedBytes": 12677120
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/engine-build.py",
+        "identity": "a161110e1c4db9204a9b8d2d719a1e13f1c7a08c566ac661f2237e32696ba2f3",
+        "allocatedBytes": 8192
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/image_metadata.py",
+        "identity": "831beb1da413c016e95d3bde2984916c425ef4577b02f7473ed9f66a29397f23",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/install-manifest.json",
+        "identity": "295c6acc71c8b8e273233ebafc2918b9210303b354ec224e8ad11e8068818eed",
+        "allocatedBytes": 4018176
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/installer-github.json",
+        "identity": "0c016f89a564549206500356cff8663748fdaf20faf28c91f609ffeafcc183b3",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/media-github.json",
+        "identity": "e86493126ee2ce57713722cfc8b86f43ab19f13c24dbc8ddef8f2b061a80667e",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/operator-release-2.log",
+        "identity": "7445c30233cb964aba66215e2ad2aae4c053aa081e8652fd36142c2466774cfe",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/operator-release.log",
+        "identity": "f3e8bce0a4f32b9e9db62626744ad7d84a098c71bc3b68758122b754123a9efc",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/operator-summary-2.json",
+        "identity": "4f3c78a58b13fe5222217633c214516936859e357381057212e4f42ebf2dae01",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/operator-summary.json",
+        "identity": "847bfc30d665641be77da409be800551ee489123e9d090d0003555d939c0e76d",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/overlay-base.py",
+        "identity": "af4238eb2005d5b9bae197119a520c5cea0d593381b277ea3e7d67256efd9273",
+        "allocatedBytes": 28672
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/published.json",
+        "identity": "4b4db4b679be774548c84c83244dc8b5c77ddbab7cd89bc76ee88c3f2b92df55",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/quiesce.cjs",
+        "identity": "27b0ace93a380fe6598efb7f2ef68a069f8beb8c1bba16fa97e4cc403d53918c",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/release-github.json",
+        "identity": "e51151ec825fb91090174574a741299da983ab1074f8aebc11f2b764b1a82103",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/release-manifest.json",
+        "identity": "bd88976e1fff76ce264110a1645abbf345bbaac74f0a4156a87a41a223af9c18",
+        "allocatedBytes": 1507328
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/runtime-context",
+        "identity": "6c30ed1391110e43250da6125061850c44b3fd1392ffe560d86979e34ec00bc7",
+        "allocatedBytes": 15126528
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/runtime-inventory.cjs",
+        "identity": "e24743217af6ef1d593a041643b9289180f8618eaff513e26b274321550a89d5",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/server-delta",
+        "identity": "c83fc8909e604aebadd457f25cff1eed154a128dcaa0b2a8e1bc8c687b263f76",
+        "allocatedBytes": 2437120
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/snapshot-base.py",
+        "identity": "30ec9850e6196810c1701c41f3b5e997058a8a36eca7f28d7f2444f20cd995af",
+        "allocatedBytes": 16384
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/snapshot.py",
+        "identity": "acd670cf442d6444b450af424918235c25990f6285b4c1810dab0dd38febb37b",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/royal-bar-mira-20261104-v3/source",
+        "identity": "10f20474c6318be4ce284b1272f10db228d8743bb9eb4aade5bddeefae21cd45",
+        "allocatedBytes": 10539008
+      },
+      {
+        "path": "/opt/royal-backups/royal-bar-mira-20261104-v3",
+        "identity": "a5f2fdb239dc0cd0033344d44a3285f31b244a3a3d1d5e17ad9d3e7b5fe68487",
+        "allocatedBytes": 204800
+      }
+    ],
+    "images": [
+      {
+        "id": "sha256:ad7e8e5b76d8277f00f4714012553efddabfb3c0f27de94ddb575d95b127e84d",
+        "tags": [
+          "royal-game:before-jackie-motion-20261104-v4",
+          "royal-game:before-royal-bar-mira-20261104-v3",
+          "royal-game:before-royal-bar-mira-20261104-v3-prepared",
+          "royal-game:casino-street-20261104-v1"
+        ],
+        "created": "2026-11-04T20:08:22.98061879Z"
+      }
+    ]
+  },
+  "financialBackupsPreserved": 149,
+  "publicationAttempts": 1,
+  "originalSshSessionClosed": true,
+  "installerContinuedAndCompletedWithLocks": true,
+  "rollback": {
+    "directory": "/opt/royal-backups/pvp-invites-20261105-v3",
+    "sha256": "c50291b3c2aa94cb70a983fb5df0b0a191b669673c1fbbea984b4eeaefa328d7",
+    "bytes": 41791
+  },
+  "storageCleanup": {
+    "owner": "pvp-invite-simplify / 01a1a7ab-90ff-7780-839b-16a4642cbd95",
+    "attemptedAt": "2026-11-05T06:10:47.240Z",
+    "status": "blocked_by_automatic_review",
+    "action": "Native PowerShell Remove-Item -LiteralPath with recursive deletion after resolved-path, reparse-point, full file-hash, active-package, stopped-stand and GitHub-preservation validation",
+    "reviewReason": "blocked by policy",
+    "commandStarted": false,
+    "removedDirectories": [],
+    "removedArchiveFiles": [],
+    "removedLogicalBytes": 0,
+    "physicalSpaceReclaimedByTask": 0,
+    "freeAtEarlierInventoryBytes": 307760672768,
+    "freeAfterRejectedAttemptBytes": 307753975808,
+    "physicalSpaceAttribution": "No deletion command ran. Any change in free space belongs to concurrent activity.",
+    "preservationRecordCommit": "85f5e15586ff0aba78c29e4afbcc6a1812596cfd",
+    "sourceCommits": [
+      "0ea82843a946179c795d96dac913375793367ef3",
+      "3e764ca50c761d7762b9d57231cc3dba843d8af5",
+      "93004d313232d1d9e169c07e236d46bb4300f1a0"
+    ],
+    "retainedTaskDirectory": {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\artifacts\\work\\pvp-invite-simplify",
+      "files": 236,
+      "bytes": 144898201
+    },
+    "retainedObsoleteGeneratedPackages": [
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\breaker\\versions\\1.0.0-b19799052244",
+        "gameId": "breaker",
+        "version": "1.0.0-b19799052244",
+        "bytes": 5290,
+        "files": 3,
+        "manifestSha256": "6545b7ea1328456099b9e9de487526dee0123abaccab19c286ec247407d0a122"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\breaker\\versions\\1.0.0-ebd5ac69b628",
+        "gameId": "breaker",
+        "version": "1.0.0-ebd5ac69b628",
+        "bytes": 5290,
+        "files": 3,
+        "manifestSha256": "306fd14f0cbc524bbe127dd736f1e115e2fd30b6e0797ec14e03d73ff563a294"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\casinoapipro\\versions\\1.0.0-899d7e6e4d23",
+        "gameId": "casinoapipro",
+        "version": "1.0.0-899d7e6e4d23",
+        "bytes": 25063,
+        "files": 3,
+        "manifestSha256": "a17ed7e05e633c6c96a8c59cbba11d7e19534ef61275ed79aaee038bc5a8dfd7"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\casinoapipro\\versions\\1.0.0-f63266192108",
+        "gameId": "casinoapipro",
+        "version": "1.0.0-f63266192108",
+        "bytes": 25063,
+        "files": 3,
+        "manifestSha256": "00a6bc37eed129ef46a3e6cc802735484bb884d25dd28360dabf9c33ee1afd87"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\chess\\versions\\1.0.0-bd97cb935c44",
+        "gameId": "chess",
+        "version": "1.0.0-bd97cb935c44",
+        "bytes": 46159,
+        "files": 3,
+        "manifestSha256": "6d6951822e8eccd062f733c04d7fcd16aed00292df2cb5ca7a2f50b375068ed0"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\chess\\versions\\1.0.0-c75aae3c058f",
+        "gameId": "chess",
+        "version": "1.0.0-c75aae3c058f",
+        "bytes": 46159,
+        "files": 3,
+        "manifestSha256": "9f549cb7b4a8b63261ee3286b6ecb5b46d9beff4de0600309e709632b23f4f17"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\crazy-eights\\versions\\1.0.0-2eb3adcdc983",
+        "gameId": "crazy-eights",
+        "version": "1.0.0-2eb3adcdc983",
+        "bytes": 16807,
+        "files": 3,
+        "manifestSha256": "63b852bcfc1b10e9b35bb14622c684a5b4e65ba27631eeddc8b4df28f910c0a8"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\crazy-eights\\versions\\1.0.0-c50db24afc0f",
+        "gameId": "crazy-eights",
+        "version": "1.0.0-c50db24afc0f",
+        "bytes": 16807,
+        "files": 3,
+        "manifestSha256": "d8cb4e918a6cf346c2e9a096d20efb8a10450b93238a2196b68c9fa8ee378d01"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\drift\\versions\\1.0.0-5825772fff45",
+        "gameId": "drift",
+        "version": "1.0.0-5825772fff45",
+        "bytes": 11026,
+        "files": 3,
+        "manifestSha256": "887564607d58f05a5abbeb8f4bfa4d7d4962ee41bfb370d4cc8a3188294a2cd8"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\drift\\versions\\1.0.0-9504edfd381c",
+        "gameId": "drift",
+        "version": "1.0.0-9504edfd381c",
+        "bytes": 11026,
+        "files": 3,
+        "manifestSha256": "f34a76a3674ca1dbb4ad989bb1bd1da652d0f0d0d0a2d7a7ba1d2efd416435f2"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\durak\\versions\\1.0.0-34d75077b164",
+        "gameId": "durak",
+        "version": "1.0.0-34d75077b164",
+        "bytes": 16793,
+        "files": 3,
+        "manifestSha256": "a4723ce79ea203754dac6f3818964f924a1004acf3e30f19b706fc0df98ebe76"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\durak\\versions\\1.0.0-ec2486f14091",
+        "gameId": "durak",
+        "version": "1.0.0-ec2486f14091",
+        "bytes": 16793,
+        "files": 3,
+        "manifestSha256": "f1a592e284004147e8f343f06f217defc08a36b71b04cc5008b1da915d05089a"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\flag-battle\\versions\\2.1.2-06806c849897",
+        "gameId": "flag-battle",
+        "version": "2.1.2-06806c849897",
+        "bytes": 351882,
+        "files": 51,
+        "manifestSha256": "5659e4582491770e4f8cd419ad1adc76bebfa612fc46d1f72075ee107ea335af"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\flag-battle\\versions\\2.1.2-856fc7d184eb",
+        "gameId": "flag-battle",
+        "version": "2.1.2-856fc7d184eb",
+        "bytes": 351882,
+        "files": 51,
+        "manifestSha256": "068ff2f6092cb7faa41d3ee9f82a8faeaf688a2ab50d5275c8ac39511ad1587a"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\flag-tote\\versions\\1.0.0-ca3bc55bd29e",
+        "gameId": "flag-tote",
+        "version": "1.0.0-ca3bc55bd29e",
+        "bytes": 332987,
+        "files": 51,
+        "manifestSha256": "6d1a3486eeb7a4a42691d4b18d39d1507d4eb96c0cf9746c3a01d800bfb620a2"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\flag-tote\\versions\\1.0.0-f5634e5f4b05",
+        "gameId": "flag-tote",
+        "version": "1.0.0-f5634e5f4b05",
+        "bytes": 332987,
+        "files": 51,
+        "manifestSha256": "bad005e4fd70383a27e8913f6490bf56ea415e7de627c7d78ecc1da52674f968"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-andar-bahar\\versions\\1.0.0-142ed98b4b08",
+        "gameId": "github-andar-bahar",
+        "version": "1.0.0-142ed98b4b08",
+        "bytes": 237931,
+        "files": 3,
+        "manifestSha256": "495cd8b3da5ba69138acb5ebf43b7227bc75ff79b0368b5124c39b2fbd548d8a"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-andar-bahar\\versions\\1.0.0-20c835172cff",
+        "gameId": "github-andar-bahar",
+        "version": "1.0.0-20c835172cff",
+        "bytes": 237931,
+        "files": 3,
+        "manifestSha256": "4766b16fb42782297c4d688245f7c2361b7c3f9d1563898b236ba5de3568e423"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-baccarat\\versions\\1.0.0-6a090c8cbb80",
+        "gameId": "github-baccarat",
+        "version": "1.0.0-6a090c8cbb80",
+        "bytes": 8548680,
+        "files": 57,
+        "manifestSha256": "bbf9b83f02908d07ad7039215049dcf006fbae223c63c4c229fedaa034a668c2"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-baccarat\\versions\\1.0.0-7c5d4b4c5e7d",
+        "gameId": "github-baccarat",
+        "version": "1.0.0-7c5d4b4c5e7d",
+        "bytes": 8548680,
+        "files": 57,
+        "manifestSha256": "f16dc0b6de271ea818198d8f04a943dcc8ba250e6ad7f8740fc0a8e0577221bd"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-blackjack\\versions\\1.0.0-569970aeeedd",
+        "gameId": "github-blackjack",
+        "version": "1.0.0-569970aeeedd",
+        "bytes": 8548683,
+        "files": 57,
+        "manifestSha256": "44a166c8af7abe023c46a8c990bdb63da8a902049b50de6855ffada41404cea6"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-blackjack\\versions\\1.0.0-6e501dd6ef2e",
+        "gameId": "github-blackjack",
+        "version": "1.0.0-6e501dd6ef2e",
+        "bytes": 8548683,
+        "files": 57,
+        "manifestSha256": "d88dc6a4a8d16e37f8216cab6189452fdd5ba59fe63383d9f3487410f5819988"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-caribbean\\versions\\1.0.0-04429fcd166d",
+        "gameId": "github-caribbean",
+        "version": "1.0.0-04429fcd166d",
+        "bytes": 237927,
+        "files": 3,
+        "manifestSha256": "6db5c438796d2d63ba0203746170b42393b88685e238db86effec66edf649a44"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-caribbean\\versions\\1.0.0-48be35e80f13",
+        "gameId": "github-caribbean",
+        "version": "1.0.0-48be35e80f13",
+        "bytes": 237927,
+        "files": 3,
+        "manifestSha256": "8a3a7ac9976bb541a6224fb922ff12ca3b48101c167559a8e9b9629285dffa6a"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-caribbean-draw\\versions\\1.0.0-6fb55256c98e",
+        "gameId": "github-caribbean-draw",
+        "version": "1.0.0-6fb55256c98e",
+        "bytes": 237937,
+        "files": 3,
+        "manifestSha256": "64863b63eb152ce4b03cf4be13dbe3a0c096ffcabce34da0fd35da0c3cc8267b"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-caribbean-draw\\versions\\1.0.0-b3770c99fd92",
+        "gameId": "github-caribbean-draw",
+        "version": "1.0.0-b3770c99fd92",
+        "bytes": 237937,
+        "files": 3,
+        "manifestSha256": "62bfa9e8bd1554504a9a71a0c716355e295e2d71e76bc0b1080916e85b8013a6"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-craps\\versions\\1.0.0-33ae9de63a3d",
+        "gameId": "github-craps",
+        "version": "1.0.0-33ae9de63a3d",
+        "bytes": 8726495,
+        "files": 59,
+        "manifestSha256": "0bc7771602179c20c205707c340272bc9f86ebc9262d6724af0ab9287d96aa52"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-craps\\versions\\1.0.0-78bdef669c0d",
+        "gameId": "github-craps",
+        "version": "1.0.0-78bdef669c0d",
+        "bytes": 8726495,
+        "files": 59,
+        "manifestSha256": "d707fdada17cca0c49997dda3b655f5fc7de5604557d04d3042284f47a6827f1"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-crash\\versions\\1.1.1-119d1c891bab",
+        "gameId": "github-crash",
+        "version": "1.1.1-119d1c891bab",
+        "bytes": 21963628,
+        "files": 19,
+        "manifestSha256": "d0aa012f283fa374938fcddc5adac860c2e18143618ff1e208dce216475b6ce2"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-crash\\versions\\1.1.1-ae554163fc25",
+        "gameId": "github-crash",
+        "version": "1.1.1-ae554163fc25",
+        "bytes": 21963628,
+        "files": 19,
+        "manifestSha256": "b866ff0ae655ae8d5757aac3e53aa27ada0b4b13b88ce41308476fec8521bff7"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-crazy-four\\versions\\1.0.0-9cc40b40dcfc",
+        "gameId": "github-crazy-four",
+        "version": "1.0.0-9cc40b40dcfc",
+        "bytes": 237929,
+        "files": 3,
+        "manifestSha256": "bde3217ff52dd37b110654e8c4915bc3bcbfacef6a74fd6d403c95585db729c0"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-crazy-four\\versions\\1.0.0-c30454b36742",
+        "gameId": "github-crazy-four",
+        "version": "1.0.0-c30454b36742",
+        "bytes": 237929,
+        "files": 3,
+        "manifestSha256": "e8a9dfb0977d84519b2a7f36b3499d959e7017a3b401fc3d5251edef14cd732b"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-deuces\\versions\\1.0.0-60990f4c7aa6",
+        "gameId": "github-deuces",
+        "version": "1.0.0-60990f4c7aa6",
+        "bytes": 237921,
+        "files": 3,
+        "manifestSha256": "ff1c49eba95530cdc62c74fe5f038dd68048524a0d4c4352e37816d70fc3f498"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-deuces\\versions\\1.0.0-e5fbe9c9d551",
+        "gameId": "github-deuces",
+        "version": "1.0.0-e5fbe9c9d551",
+        "bytes": 237921,
+        "files": 3,
+        "manifestSha256": "bf9f24762cc3fa68784fa9ee15db58672391be4a29f171c9b343fcb7d3f72c09"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-diamonds\\versions\\1.0.0-54c59cfbf9aa",
+        "gameId": "github-diamonds",
+        "version": "1.0.0-54c59cfbf9aa",
+        "bytes": 586413,
+        "files": 5,
+        "manifestSha256": "f2a199c83cf717bf157ef7a7146d374ba2cace3394083f84e89dca862da8a24b"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-diamonds\\versions\\1.0.0-c3afe175e2af",
+        "gameId": "github-diamonds",
+        "version": "1.0.0-c3afe175e2af",
+        "bytes": 586413,
+        "files": 5,
+        "manifestSha256": "198e5f31960b7eb0fb5c513c46e75fc03b3fa7abf1c63435af031bdaa9413297"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-dragon-tiger\\versions\\1.0.0-01d6f6fdb68c",
+        "gameId": "github-dragon-tiger",
+        "version": "1.0.0-01d6f6fdb68c",
+        "bytes": 237933,
+        "files": 3,
+        "manifestSha256": "0ac502b12a3f0a647f3d1c0100f6e2916c65f3589e69b272c2a439f0a20c2892"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-dragon-tiger\\versions\\1.0.0-0a51b57c30e1",
+        "gameId": "github-dragon-tiger",
+        "version": "1.0.0-0a51b57c30e1",
+        "bytes": 237933,
+        "files": 3,
+        "manifestSha256": "fdd7794c224b16b408d87727341122f5fed7c09e0f4a416d9cbf84c8fd617911"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-exposure\\versions\\1.0.0-3bcc8a4adde5",
+        "gameId": "github-exposure",
+        "version": "1.0.0-3bcc8a4adde5",
+        "bytes": 237925,
+        "files": 3,
+        "manifestSha256": "106ced55f4c0188421bd739ddc40435f884b90dc2614da8fce7b84fbaf56f499"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-exposure\\versions\\1.0.0-8c51e40ec028",
+        "gameId": "github-exposure",
+        "version": "1.0.0-8c51e40ec028",
+        "bytes": 237925,
+        "files": 3,
+        "manifestSha256": "ab2e3d077c103c1ad7be23b95a6784bfa88d53ab53e98761a03728b3b76972ee"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-flush\\versions\\1.0.0-9495ef3838ba",
+        "gameId": "github-flush",
+        "version": "1.0.0-9495ef3838ba",
+        "bytes": 237919,
+        "files": 3,
+        "manifestSha256": "12392435caf8db1bc16969d68147557c29783bce65dd13b9cf7c891f24eaee51"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-flush\\versions\\1.0.0-e5246cb071b3",
+        "gameId": "github-flush",
+        "version": "1.0.0-e5246cb071b3",
+        "bytes": 237919,
+        "files": 3,
+        "manifestSha256": "0be4478bab9483d5cbb06999188f4f5f1278fbe8814179ae2a61d5d63942b229"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-four-card\\versions\\1.0.0-26835a94bae4",
+        "gameId": "github-four-card",
+        "version": "1.0.0-26835a94bae4",
+        "bytes": 237927,
+        "files": 3,
+        "manifestSha256": "b7aa1cccdc30ddb0e73a08ef79cbb4fd31354b5beca82d0443e7ab2bd3927d0d"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-four-card\\versions\\1.0.0-38bddeba9090",
+        "gameId": "github-four-card",
+        "version": "1.0.0-38bddeba9090",
+        "bytes": 237927,
+        "files": 3,
+        "manifestSha256": "c7cdc859792dde05c1c65b76d1a3b72d39d47c0c8273bae0f8dc5418c6316722"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-free-bet\\versions\\1.0.0-5ac9c30978d2",
+        "gameId": "github-free-bet",
+        "version": "1.0.0-5ac9c30978d2",
+        "bytes": 237925,
+        "files": 3,
+        "manifestSha256": "f75252844f1a0a82e6bddce658c3db7ffd6fcbbda49c1e5f9786c9b2db7e23d3"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-free-bet\\versions\\1.0.0-7ce11a69d548",
+        "gameId": "github-free-bet",
+        "version": "1.0.0-7ce11a69d548",
+        "bytes": 237925,
+        "files": 3,
+        "manifestSha256": "58dea2982d1e94a6580ab5f15e17717f0adb452b30baed170d25460574f0a285"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-hilo\\versions\\1.0.0-a36ead275173",
+        "gameId": "github-hilo",
+        "version": "1.0.0-a36ead275173",
+        "bytes": 154429,
+        "files": 3,
+        "manifestSha256": "535b97d3909797fcc51dda8bb629c9df662e7f4309bd42b122ffa69f0df24820"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-hilo\\versions\\1.0.0-a38625e5cc7a",
+        "gameId": "github-hilo",
+        "version": "1.0.0-a38625e5cc7a",
+        "bytes": 154429,
+        "files": 3,
+        "manifestSha256": "09a8cd06ecc8bd2c0a3b652af5d1c40a63f25ce6590733312066388aab58ceaa"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-holdem-bonus\\versions\\1.0.0-a3a3cfa24e51",
+        "gameId": "github-holdem-bonus",
+        "version": "1.0.0-a3a3cfa24e51",
+        "bytes": 237933,
+        "files": 3,
+        "manifestSha256": "3121aa31343dd38348d0dff90bf89b2d60369f6d1541bbc21374f740d97386cd"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-holdem-bonus\\versions\\1.0.0-fd6bd0057cd1",
+        "gameId": "github-holdem-bonus",
+        "version": "1.0.0-fd6bd0057cd1",
+        "bytes": 237933,
+        "files": 3,
+        "manifestSha256": "ffc1213b8b951ac2272b4d9cdfc9f11162489989940890995d90e04ddd4c2223"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-let-it-ride\\versions\\1.0.0-35d20cec895c",
+        "gameId": "github-let-it-ride",
+        "version": "1.0.0-35d20cec895c",
+        "bytes": 237931,
+        "files": 3,
+        "manifestSha256": "76749893549dfde00f3015378e5ba783d8ed8984cb2b41f0a54a3f947a49695e"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-let-it-ride\\versions\\1.0.0-c1ac64f650c8",
+        "gameId": "github-let-it-ride",
+        "version": "1.0.0-c1ac64f650c8",
+        "bytes": 237931,
+        "files": 3,
+        "manifestSha256": "48a246f7850e2320990e1ae60856bc776988315ef30641fe676a0e9f94b3b567"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-mississippi\\versions\\1.0.0-82e8dd373d84",
+        "gameId": "github-mississippi",
+        "version": "1.0.0-82e8dd373d84",
+        "bytes": 237931,
+        "files": 3,
+        "manifestSha256": "613dfdd1df60f9b4b4c2314157b8913d440560d5d6f95528c055118e621e8b7c"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-mississippi\\versions\\1.0.0-98362466a69b",
+        "gameId": "github-mississippi",
+        "version": "1.0.0-98362466a69b",
+        "bytes": 237931,
+        "files": 3,
+        "manifestSha256": "a0ed11db1f12208a408fbb09fc62f0beb760bfc872106d8c485a669f650b77c4"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-oasis\\versions\\1.0.0-a996c904165c",
+        "gameId": "github-oasis",
+        "version": "1.0.0-a996c904165c",
+        "bytes": 237919,
+        "files": 3,
+        "manifestSha256": "fd5dc24ad29408534f6a1fe5f4ea70231e179efcbbcf091cbfc150b164f1f62e"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-oasis\\versions\\1.0.0-abe7194856cc",
+        "gameId": "github-oasis",
+        "version": "1.0.0-abe7194856cc",
+        "bytes": 237919,
+        "files": 3,
+        "manifestSha256": "7b2cb8d01ba74941eae3baeed9f03008acb8ef24b2ae8455646e0e7680cc2fbb"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-pai-gow\\versions\\1.0.0-939ef2f537c0",
+        "gameId": "github-pai-gow",
+        "version": "1.0.0-939ef2f537c0",
+        "bytes": 237923,
+        "files": 3,
+        "manifestSha256": "a60fb867b4c95103e5fbe16b8e93a48c3cfd6bb605e059247a9fa167fb72ae8d"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-pai-gow\\versions\\1.0.0-cc81ced6de94",
+        "gameId": "github-pai-gow",
+        "version": "1.0.0-cc81ced6de94",
+        "bytes": 237923,
+        "files": 3,
+        "manifestSha256": "c30bd5f1926edc16072ecc04119c55c0d16067b94ad4b733ceabf61185f63c70"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-poker\\versions\\1.0.0-3dcf2b590e90",
+        "gameId": "github-poker",
+        "version": "1.0.0-3dcf2b590e90",
+        "bytes": 8548671,
+        "files": 57,
+        "manifestSha256": "8a59aa9dbba2af2d86f82bf2644262fc62f61e5673abda901ecf6b8505febfb5"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-poker\\versions\\1.0.0-6bf38b8f48e6",
+        "gameId": "github-poker",
+        "version": "1.0.0-6bf38b8f48e6",
+        "bytes": 8548671,
+        "files": 57,
+        "manifestSha256": "3818382a3646653c9377eca50cd8eda318c6fcd8efb429db550c95a1a0646fd9"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-red-dog\\versions\\1.0.0-2383c62adba0",
+        "gameId": "github-red-dog",
+        "version": "1.0.0-2383c62adba0",
+        "bytes": 237923,
+        "files": 3,
+        "manifestSha256": "e5b831ade00e796c4d8c1d081493a1a1caa010321ff60e6e5025a9fa8bbc5d53"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-red-dog\\versions\\1.0.0-37c560f8064f",
+        "gameId": "github-red-dog",
+        "version": "1.0.0-37c560f8064f",
+        "bytes": 237923,
+        "files": 3,
+        "manifestSha256": "35080e540eba38b07e73ec4c63c9a144b67b0a5318258d7b7b75018930e8f49f"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-rummy\\versions\\1.0.0-8e57585a778c",
+        "gameId": "github-rummy",
+        "version": "1.0.0-8e57585a778c",
+        "bytes": 237919,
+        "files": 3,
+        "manifestSha256": "d811e09bc50f5f5b90f6bf5411301dd18ffa344e348dccd82c67c07a3e8f4e32"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-rummy\\versions\\1.0.0-9ec95389ba64",
+        "gameId": "github-rummy",
+        "version": "1.0.0-9ec95389ba64",
+        "bytes": 237919,
+        "files": 3,
+        "manifestSha256": "c2f16e561e6abdb8c36b0c637929236cdfe9fd269743aaf016be3a71543882a1"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-russian\\versions\\1.0.0-2d69cc1b62c0",
+        "gameId": "github-russian",
+        "version": "1.0.0-2d69cc1b62c0",
+        "bytes": 237923,
+        "files": 3,
+        "manifestSha256": "fc8028b8805081f13311fdddd5d53b28f1271d12f128980e927c1a7ffb1b5284"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-russian\\versions\\1.0.0-e20f9a47e4ad",
+        "gameId": "github-russian",
+        "version": "1.0.0-e20f9a47e4ad",
+        "bytes": 237923,
+        "files": 3,
+        "manifestSha256": "1bd31e6eeef3f4bc635962d914f9a7e7826af9ef8cc73502502953e602f7b5ce"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-sic-bo\\versions\\1.0.0-10d0dc70746e",
+        "gameId": "github-sic-bo",
+        "version": "1.0.0-10d0dc70746e",
+        "bytes": 507725,
+        "files": 5,
+        "manifestSha256": "1718e69cbda1dfd67892661d3da690cef6fea37b72c1d2b0106c7eacacb7fedc"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-sic-bo\\versions\\1.0.0-f8b3f52e2984",
+        "gameId": "github-sic-bo",
+        "version": "1.0.0-f8b3f52e2984",
+        "bytes": 507725,
+        "files": 5,
+        "manifestSha256": "b8499e7833699baeb46e50a10ea11c5f4ec5479f381e939ba822dd20829c2d04"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-spanish\\versions\\1.0.0-3484398487ae",
+        "gameId": "github-spanish",
+        "version": "1.0.0-3484398487ae",
+        "bytes": 237923,
+        "files": 3,
+        "manifestSha256": "e90f9c09dd4e3ea0b99f92572f4ec836821e41e84e51849054d3825d5d2b8174"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-spanish\\versions\\1.0.0-815d21a411b1",
+        "gameId": "github-spanish",
+        "version": "1.0.0-815d21a411b1",
+        "bytes": 237923,
+        "files": 3,
+        "manifestSha256": "1c59e3083eb693159bae42a6074702509df46c5c8c5458e9af39fce255bd0618"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-switch\\versions\\1.0.0-a9e4e2012932",
+        "gameId": "github-switch",
+        "version": "1.0.0-a9e4e2012932",
+        "bytes": 237921,
+        "files": 3,
+        "manifestSha256": "2861a4d76a991b40ed7b57b51f0fe5304a0cde995731b85e4a1e2dcc11c972a3"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-switch\\versions\\1.0.0-b5f5c2719f51",
+        "gameId": "github-switch",
+        "version": "1.0.0-b5f5c2719f51",
+        "bytes": 237921,
+        "files": 3,
+        "manifestSha256": "8637954c67d567ac9b3cf6b8d2b3badd055e11c6adb71ec02d3ec467c7fc8713"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-three-card\\versions\\1.0.0-1e8a58376792",
+        "gameId": "github-three-card",
+        "version": "1.0.0-1e8a58376792",
+        "bytes": 237929,
+        "files": 3,
+        "manifestSha256": "b86272592b0428377f1a2db9900e79b14242618b7eeedb022a3c6001a6dd4282"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-three-card\\versions\\1.0.0-363e7d38bf34",
+        "gameId": "github-three-card",
+        "version": "1.0.0-363e7d38bf34",
+        "bytes": 237929,
+        "files": 3,
+        "manifestSha256": "d3d1eb43b14d81b3cf6bcf4d051ecb92cffd8dc6f447971ab61a348251e36c46"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-ultimate\\versions\\1.0.0-243184af4801",
+        "gameId": "github-ultimate",
+        "version": "1.0.0-243184af4801",
+        "bytes": 237925,
+        "files": 3,
+        "manifestSha256": "741392c696db910bf481e910de117ec9d55e17b5fc8bda254a7739120793c04c"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-ultimate\\versions\\1.0.0-31ba74e3b867",
+        "gameId": "github-ultimate",
+        "version": "1.0.0-31ba74e3b867",
+        "bytes": 237925,
+        "files": 3,
+        "manifestSha256": "f9d377a0916b8fe3088ee34d8d6190fade2cdc18153927f02aeecacc3f6fc271"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-video-poker\\versions\\1.0.0-1aceb8c5de9b",
+        "gameId": "github-video-poker",
+        "version": "1.0.0-1aceb8c5de9b",
+        "bytes": 8548689,
+        "files": 57,
+        "manifestSha256": "d122ae4e411be8d62001adfb53428aaab50102f076cd10fee2a85566049ff2de"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-video-poker\\versions\\1.0.0-c8d6f43486ac",
+        "gameId": "github-video-poker",
+        "version": "1.0.0-c8d6f43486ac",
+        "bytes": 8548689,
+        "files": 57,
+        "manifestSha256": "af028926d2966dfc50cef00b6dd1ff2d520ab1ea9a0fa9ae52b427b8505bff04"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-war\\versions\\1.0.0-12d42be35cdd",
+        "gameId": "github-war",
+        "version": "1.0.0-12d42be35cdd",
+        "bytes": 237915,
+        "files": 3,
+        "manifestSha256": "ffd46c4817e6506cc291b9809863a220a51593d289c4554a69eb97922092d774"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\github-war\\versions\\1.0.0-1a0536d960e2",
+        "gameId": "github-war",
+        "version": "1.0.0-1a0536d960e2",
+        "bytes": 237915,
+        "files": 3,
+        "manifestSha256": "d6a0bd31728289230b30c2849e3a947c826ed1fe9c8e4f5b0da7cd01332e5fc9"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\hockey\\versions\\1.0.0-28722cf1ce0c",
+        "gameId": "hockey",
+        "version": "1.0.0-28722cf1ce0c",
+        "bytes": 48719,
+        "files": 3,
+        "manifestSha256": "dfbb934970feeb206426682affb76abdbd22be2e2364ddc1d3ccf5eb5f91f1ae"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\hockey\\versions\\1.0.0-ed629c716352",
+        "gameId": "hockey",
+        "version": "1.0.0-ed629c716352",
+        "bytes": 48719,
+        "files": 3,
+        "manifestSha256": "c2d314bf1d6328b0baded5d193fc80d76d00b2ba07456b1b4541906552196d0e"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\luelon\\versions\\1.0.0-1b984b037762",
+        "gameId": "luelon",
+        "version": "1.0.0-1b984b037762",
+        "bytes": 11152,
+        "files": 3,
+        "manifestSha256": "01979ea3f973385867ad248829aef599ca45ae976810b183853fc37d135fbba3"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\luelon\\versions\\1.0.0-45942d3b2d81",
+        "gameId": "luelon",
+        "version": "1.0.0-45942d3b2d81",
+        "bytes": 11152,
+        "files": 3,
+        "manifestSha256": "1589e887a9c7619e258312d7b3749ba5b17d200baddfad8af1a8462f40ca7c7b"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\mortal-kombat\\versions\\1.0.0-580b78e6f0e1",
+        "gameId": "mortal-kombat",
+        "version": "1.0.0-580b78e6f0e1",
+        "bytes": 372575,
+        "files": 108,
+        "manifestSha256": "722366fe5d9e48f0634119936f5d1e98cb9732e1a5a8b13dd75b9f4e70415158"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\mortal-kombat\\versions\\1.0.0-b0b9f40c1513",
+        "gameId": "mortal-kombat",
+        "version": "1.0.0-b0b9f40c1513",
+        "bytes": 372575,
+        "files": 108,
+        "manifestSha256": "c9e68c466a23f8c9d471764c9f5568acc3e7f609e8740d908d9060efaba6d3a0"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\orbit\\versions\\1.0.0-05cffe03883e",
+        "gameId": "orbit",
+        "version": "1.0.0-05cffe03883e",
+        "bytes": 11026,
+        "files": 3,
+        "manifestSha256": "d63242c6737f6d28a465779babad793011e9c7fcd9d2d8c258e585e5102aceef"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\orbit\\versions\\1.0.0-0f8a55a76641",
+        "gameId": "orbit",
+        "version": "1.0.0-0f8a55a76641",
+        "bytes": 11026,
+        "files": 3,
+        "manifestSha256": "92670dd1762e84d710f7bf4c3cf37aa5d03c82bf804e6c4e8475b665ba469d7d"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\original-cr-vs-leo\\versions\\1.1.1-9aad58049a7c",
+        "gameId": "original-cr-vs-leo",
+        "version": "1.1.1-9aad58049a7c",
+        "bytes": 7915844,
+        "files": 21,
+        "manifestSha256": "c1c892e9fb249e6c0564d77db7858e0963a2c7a3b7814217c54fb850d755b4b4"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\original-cr-vs-leo\\versions\\1.1.1-dd7dd5c7cf12",
+        "gameId": "original-cr-vs-leo",
+        "version": "1.1.1-dd7dd5c7cf12",
+        "bytes": 7915844,
+        "files": 21,
+        "manifestSha256": "23282588bc28472f8830d4b9f693c39f91934554d64029c47b6e09ebc8514e9e"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\original-jackie-chan\\versions\\1.2.1-1bb75b626e70",
+        "gameId": "original-jackie-chan",
+        "version": "1.2.1-1bb75b626e70",
+        "bytes": 21606728,
+        "files": 40,
+        "manifestSha256": "2236cac8a1a3c929e3683746235d2dde9bb45eca9cac8beaf27b787382dfd0de"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\original-jackie-chan\\versions\\1.2.1-8453417cfb95",
+        "gameId": "original-jackie-chan",
+        "version": "1.2.1-8453417cfb95",
+        "bytes": 21606728,
+        "files": 40,
+        "manifestSha256": "b7c820b9fd4d2c96c1e634e669d9cf0a2fdee8e7ae4ca16f296101d9c9818142"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\piano\\versions\\1.0.0-2af0037d22ba",
+        "gameId": "piano",
+        "version": "1.0.0-2af0037d22ba",
+        "bytes": 39460,
+        "files": 3,
+        "manifestSha256": "9db82ee12f3772ca60c1d5178feb2e1e4b0853ab2cde601586796de1f78ad98f"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\piano\\versions\\1.0.0-a8539dd21486",
+        "gameId": "piano",
+        "version": "1.0.0-a8539dd21486",
+        "bytes": 39460,
+        "files": 3,
+        "manifestSha256": "f7c4e2eb1c5f386c10955d2803969716ee2078163104b707453efcc963b2f205"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\pixel\\versions\\1.0.0-6d385182fcbd",
+        "gameId": "pixel",
+        "version": "1.0.0-6d385182fcbd",
+        "bytes": 11026,
+        "files": 3,
+        "manifestSha256": "79073e7d52538609eb85ef8946ffc70e7402fbbc8586c45cac8f6f9b251475cd"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\pixel\\versions\\1.0.0-6eec0d1f3186",
+        "gameId": "pixel",
+        "version": "1.0.0-6eec0d1f3186",
+        "bytes": 11026,
+        "files": 3,
+        "manifestSha256": "969fe88936f0b55a73a878c34c1f52086074a386812c2d774931203a72554a79"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\pool\\versions\\1.0.0-4006146445b8",
+        "gameId": "pool",
+        "version": "1.0.0-4006146445b8",
+        "bytes": 48715,
+        "files": 3,
+        "manifestSha256": "ad48f795b93cf90da0bd7d61d646cb45252c05b892897fabedc5d11c5ed7a4d4"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\pool\\versions\\1.0.0-74ad401d0f33",
+        "gameId": "pool",
+        "version": "1.0.0-74ad401d0f33",
+        "bytes": 48715,
+        "files": 3,
+        "manifestSha256": "d82a8d831d1e9a35e90a998368c5a13207ef84f891bce5f8d16230dad3d47091"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-coins\\versions\\1.0.0-ad5deca6b63a",
+        "gameId": "royal-coins",
+        "version": "1.0.0-ad5deca6b63a",
+        "bytes": 38925,
+        "files": 3,
+        "manifestSha256": "17bcb54b02c359364e6ffdabe61f2e8521b0199cfd32d7777e16e9a021847fe5"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-coins\\versions\\1.0.0-c15021d52980",
+        "gameId": "royal-coins",
+        "version": "1.0.0-c15021d52980",
+        "bytes": 38925,
+        "files": 3,
+        "manifestSha256": "5e48c4cb118d539507ca2dd0c213cb0e40273cdf65f09e9eb378180ef429d2a4"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-dice\\versions\\1.0.0-1ab720733a3e",
+        "gameId": "royal-dice",
+        "version": "1.0.0-1ab720733a3e",
+        "bytes": 481917,
+        "files": 5,
+        "manifestSha256": "a705665052580fe226049560a44dad2e2308d8566854c45d8b25536318463e99"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-dice\\versions\\1.0.0-4de4307c3eb3",
+        "gameId": "royal-dice",
+        "version": "1.0.0-4de4307c3eb3",
+        "bytes": 481917,
+        "files": 5,
+        "manifestSha256": "082898b6deea092e2fd8893e1c8125c2649bc22666d83c5f6a0ce65844dc1491"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-flight\\versions\\1.0.0-a63292e3ba66",
+        "gameId": "royal-flight",
+        "version": "1.0.0-a63292e3ba66",
+        "bytes": 195472,
+        "files": 4,
+        "manifestSha256": "33459d0de209d7dc1bd510eda071c4d172aea2f499cf3a4743c48e5f20685d6d"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-flight\\versions\\1.0.0-ee2a71e31e34",
+        "gameId": "royal-flight",
+        "version": "1.0.0-ee2a71e31e34",
+        "bytes": 195472,
+        "files": 4,
+        "manifestSha256": "0fd79948fb10d67386930e6166f2e9d95e458df78fe481ecd0964de1d1593d86"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-fruits\\versions\\1.0.0-b57bcf913109",
+        "gameId": "royal-fruits",
+        "version": "1.0.0-b57bcf913109",
+        "bytes": 521461,
+        "files": 5,
+        "manifestSha256": "0afb5c2e92c725d4aa9ec927e24f014f4b173a24b9dd281bc802c14a1ddd29e9"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-fruits\\versions\\1.0.0-c8dfe5be95de",
+        "gameId": "royal-fruits",
+        "version": "1.0.0-c8dfe5be95de",
+        "bytes": 521461,
+        "files": 5,
+        "manifestSha256": "3a8298777b2605abdbce6d182de8ab54ac3bb7e7014345688dd2ae33348c8f2d"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-keno\\versions\\1.0.0-388bbf2360eb",
+        "gameId": "royal-keno",
+        "version": "1.0.0-388bbf2360eb",
+        "bytes": 552890,
+        "files": 5,
+        "manifestSha256": "721517537e6a2b5f600b4c3b9f84957d07c82699fcb2b6eb4b1c4d6daf5dd7b4"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-keno\\versions\\1.0.0-3b4b751680b4",
+        "gameId": "royal-keno",
+        "version": "1.0.0-3b4b751680b4",
+        "bytes": 552890,
+        "files": 5,
+        "manifestSha256": "2e9df90632bc9028f9703654e723707793e49afeaeee12c4f1b66d7cccd92e04"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-limbo\\versions\\1.0.0-645aefa15f1a",
+        "gameId": "royal-limbo",
+        "version": "1.0.0-645aefa15f1a",
+        "bytes": 455757,
+        "files": 5,
+        "manifestSha256": "010e465efc4b4a3a7d09d0edfd6617c183eb2cfb9055e64208e487c4527cd3a6"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-limbo\\versions\\1.0.0-7dc05022a296",
+        "gameId": "royal-limbo",
+        "version": "1.0.0-7dc05022a296",
+        "bytes": 455757,
+        "files": 5,
+        "manifestSha256": "3c63a0dd014ac048e0e385e44ee748208576accbc64a16111066eca5c3878f71"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-mines\\versions\\1.0.0-6b3edccc5ed3",
+        "gameId": "royal-mines",
+        "version": "1.0.0-6b3edccc5ed3",
+        "bytes": 508266,
+        "files": 5,
+        "manifestSha256": "94d8fb8ce349782fea267b24a244a4c22e8fce8f471ad40cdced8e087319a2ca"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-mines\\versions\\1.0.0-c71809de64c1",
+        "gameId": "royal-mines",
+        "version": "1.0.0-c71809de64c1",
+        "bytes": 508266,
+        "files": 5,
+        "manifestSha256": "ff83a12b36b335f0a81394314be4dfd5388965f6bff2766e92e1a370139e7fe7"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-plinko\\versions\\1.1.1-443c69a0857d",
+        "gameId": "royal-plinko",
+        "version": "1.1.1-443c69a0857d",
+        "bytes": 2659275,
+        "files": 9,
+        "manifestSha256": "f42174ea6505e417fd2bbc4218b20ce61af0840d167b24ed0a532c0c6a33f6e8"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-plinko\\versions\\1.1.1-edc5eeac225a",
+        "gameId": "royal-plinko",
+        "version": "1.1.1-edc5eeac225a",
+        "bytes": 2659275,
+        "files": 9,
+        "manifestSha256": "f18a1f22a724acdac1ce22a70dec7f1b53b642b440ba9dc5befef550be04797f"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-roulette\\versions\\1.6.1-38d901c2d8a2",
+        "gameId": "royal-roulette",
+        "version": "1.6.1-38d901c2d8a2",
+        "bytes": 88812,
+        "files": 3,
+        "manifestSha256": "584838aa73797320d0ce40b5f9a471c5cc786f247a9a187013e80d22c5b4ef51"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-roulette\\versions\\1.6.1-b19574cd1928",
+        "gameId": "royal-roulette",
+        "version": "1.6.1-b19574cd1928",
+        "bytes": 88812,
+        "files": 3,
+        "manifestSha256": "6b6b061a722d8419f35c220d6fb393009b614c0865e08f14b26af44a5cc439fa"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-wheel\\versions\\1.0.0-3073165b4c3d",
+        "gameId": "royal-wheel",
+        "version": "1.0.0-3073165b4c3d",
+        "bytes": 195469,
+        "files": 4,
+        "manifestSha256": "a667d961d723b39ddafd31abb009d574773453d4c0f20e79607a31824e988320"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\royal-wheel\\versions\\1.0.0-e9c830a2a31e",
+        "gameId": "royal-wheel",
+        "version": "1.0.0-e9c830a2a31e",
+        "bytes": 195469,
+        "files": 4,
+        "manifestSha256": "f7f3d090f34ef5074c761170902fbd2059fea2d0643eab3d8f11f161f24acc97"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-afterglow\\versions\\1.3.1-94657ef0793b",
+        "gameId": "studio-afterglow",
+        "version": "1.3.1-94657ef0793b",
+        "bytes": 3266961,
+        "files": 22,
+        "manifestSha256": "7b48abf7e736115c9b19a43ffcf29f406cd644ea316336069b6b9f92b6229010"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-afterglow\\versions\\1.3.1-bb7ea50abcd0",
+        "gameId": "studio-afterglow",
+        "version": "1.3.1-bb7ea50abcd0",
+        "bytes": 3266961,
+        "files": 22,
+        "manifestSha256": "02b9fcd0a6727a371cd4fe942aaad85fa6565980c29cda8fbdadffdc2df97c39"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-aurora-lift\\versions\\1.0.0-4192f6a9a867",
+        "gameId": "studio-aurora-lift",
+        "version": "1.0.0-4192f6a9a867",
+        "bytes": 4093744,
+        "files": 9,
+        "manifestSha256": "96741d9d9855d8761a4e034f8e1cb928016c2bea9750393186ff65f00a66771c"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-aurora-lift\\versions\\1.0.0-830bf622a617",
+        "gameId": "studio-aurora-lift",
+        "version": "1.0.0-830bf622a617",
+        "bytes": 4093744,
+        "files": 9,
+        "manifestSha256": "bf306557bc19801042a060b413c8adb5880e237481dd3aede3ae5761cc40e4c8"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-beacon-bay\\versions\\1.0.0-6c77e16cd18c",
+        "gameId": "studio-beacon-bay",
+        "version": "1.0.0-6c77e16cd18c",
+        "bytes": 2110057,
+        "files": 5,
+        "manifestSha256": "6ca8e9e953119d04bf28545a49523d48aef8b3401fb217a72998ca0067d91372"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-beacon-bay\\versions\\1.0.0-f303bde379d2",
+        "gameId": "studio-beacon-bay",
+        "version": "1.0.0-f303bde379d2",
+        "bytes": 2110057,
+        "files": 5,
+        "manifestSha256": "079c1e1f32dbb21792125eac75d6cfebbe8ea447b9aaffa3f3efb29b455a1dcc"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-blazing-orchard\\versions\\1.0.0-0af29536eadb",
+        "gameId": "studio-blazing-orchard",
+        "version": "1.0.0-0af29536eadb",
+        "bytes": 1632833,
+        "files": 4,
+        "manifestSha256": "e822a908f0d80745b2ff95c85969dd04cdfd63247634782fc93b14aafe31c3a6"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-blazing-orchard\\versions\\1.0.0-cb807c276db3",
+        "gameId": "studio-blazing-orchard",
+        "version": "1.0.0-cb807c276db3",
+        "bytes": 1632833,
+        "files": 4,
+        "manifestSha256": "a1b46f2f274243142fda01692e4c7f977b43c7e169e3dbffbdbcfdaea608291d"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-canopy-crossing\\versions\\1.0.0-0a49fb484250",
+        "gameId": "studio-canopy-crossing",
+        "version": "1.0.0-0a49fb484250",
+        "bytes": 4093776,
+        "files": 9,
+        "manifestSha256": "230cbadb8a9bba011058cd7976aac44a435ae3eda0af5d4fcf2c26449d15bab5"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-canopy-crossing\\versions\\1.0.0-6c1b40a62596",
+        "gameId": "studio-canopy-crossing",
+        "version": "1.0.0-6c1b40a62596",
+        "bytes": 4093776,
+        "files": 9,
+        "manifestSha256": "0f9ce257ff663724c6879a4a2a48ecff6f447d6b19c9a550944c91d4764d9e94"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-caramel-carnival\\versions\\1.1.1-1d4381a815b5",
+        "gameId": "studio-caramel-carnival",
+        "version": "1.1.1-1d4381a815b5",
+        "bytes": 3193646,
+        "files": 8,
+        "manifestSha256": "6d77320b5d32c97da26bd5fa2265d83b29364355e03a343b46eca87d10f01265"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-caramel-carnival\\versions\\1.1.1-730a670f7271",
+        "gameId": "studio-caramel-carnival",
+        "version": "1.1.1-730a670f7271",
+        "bytes": 3193646,
+        "files": 8,
+        "manifestSha256": "fe15e4a51d9e95c53852a3636900cfd6de93a30b66765c8f42924305765fd59a"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-caribbean-treasures\\versions\\1.7.1-6f504a1608e8",
+        "gameId": "studio-caribbean-treasures",
+        "version": "1.7.1-6f504a1608e8",
+        "bytes": 14888270,
+        "files": 125,
+        "manifestSha256": "377e30fbf9c047f48cadc6b8cfa6dac9547e02dcd1d756761e605924c584243e"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-caribbean-treasures\\versions\\1.7.1-aae161d9b754",
+        "gameId": "studio-caribbean-treasures",
+        "version": "1.7.1-aae161d9b754",
+        "bytes": 14888270,
+        "files": 125,
+        "manifestSha256": "3ceb080a93cc7beeb7a2e575da9284c46be7602dd9f8843ec9829c463e9ef38d"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-copperline-express\\versions\\1.0.0-23cdfaed5121",
+        "gameId": "studio-copperline-express",
+        "version": "1.0.0-23cdfaed5121",
+        "bytes": 1637871,
+        "files": 4,
+        "manifestSha256": "ec10a36c1a7eebd9a9a4e4e74fae28f4f4e693f96261936299443bd12edcf2c3"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-copperline-express\\versions\\1.0.0-f3cc4cb25491",
+        "gameId": "studio-copperline-express",
+        "version": "1.0.0-f3cc4cb25491",
+        "bytes": 1637871,
+        "files": 4,
+        "manifestSha256": "de36a64e8b55093bef6090a8c18113f3ff65b6774856225abda330b6538768af"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-cosmic-escape\\versions\\1.1.1-38d4817f5a73",
+        "gameId": "studio-cosmic-escape",
+        "version": "1.1.1-38d4817f5a73",
+        "bytes": 3876043,
+        "files": 9,
+        "manifestSha256": "985ebcfddf27cc2c2c550f775aac4220ebe33c69f0dd005e015ea05fe4f6e266"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-cosmic-escape\\versions\\1.1.1-83a49284ba9f",
+        "gameId": "studio-cosmic-escape",
+        "version": "1.1.1-83a49284ba9f",
+        "bytes": 3876043,
+        "files": 9,
+        "manifestSha256": "6c8513cb74371c1d98b9b9d69248df9769991853b0ceffa32f4582171be25b8c"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-deep-current\\versions\\1.0.0-279998a1a1f8",
+        "gameId": "studio-deep-current",
+        "version": "1.0.0-279998a1a1f8",
+        "bytes": 1632824,
+        "files": 4,
+        "manifestSha256": "cb8549f07710a373a0688d4c421f82edd578488736b638d7e3019db9afaf2d82"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-deep-current\\versions\\1.0.0-3a756ab84d3a",
+        "gameId": "studio-deep-current",
+        "version": "1.0.0-3a756ab84d3a",
+        "bytes": 1632824,
+        "files": 4,
+        "manifestSha256": "6cf5000291b66bf68af7f0b32427a4db3617c34b6d54443b46ecec7a5e48bb2e"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-dracona\\versions\\1.2.1-645557eb495e",
+        "gameId": "studio-dracona",
+        "version": "1.2.1-645557eb495e",
+        "bytes": 5072593,
+        "files": 30,
+        "manifestSha256": "4f414a8284745c81f39435fa52ab2bea2740d053c04c55e08d831d261325b3d4"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-dracona\\versions\\1.2.1-b2b765c75b29",
+        "gameId": "studio-dracona",
+        "version": "1.2.1-b2b765c75b29",
+        "bytes": 5072593,
+        "files": 30,
+        "manifestSha256": "f5d18ce514de73bb7b38a3f761ad55e226194240bd039966679931b45926b89d"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-dune-hopper\\versions\\1.0.0-0f282457d136",
+        "gameId": "studio-dune-hopper",
+        "version": "1.0.0-0f282457d136",
+        "bytes": 4093744,
+        "files": 9,
+        "manifestSha256": "e67da3cc80c1940eefa763348cea7d1ea54710c4f3cbe70b5a9970a74c1e9d50"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-dune-hopper\\versions\\1.0.0-92be02243b52",
+        "gameId": "studio-dune-hopper",
+        "version": "1.0.0-92be02243b52",
+        "bytes": 4093744,
+        "files": 9,
+        "manifestSha256": "409041d034bcc8bd115b0d33d52188922f879f4ec3ce98c61a609601c56813b4"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-ember-vault\\versions\\1.0.0-7915c6dacb89",
+        "gameId": "studio-ember-vault",
+        "version": "1.0.0-7915c6dacb89",
+        "bytes": 1639312,
+        "files": 4,
+        "manifestSha256": "1709cc1c966dbab71a421652df75b3275ed37e55da58b4f4563d0665a7a35115"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-ember-vault\\versions\\1.0.0-8528d5505b70",
+        "gameId": "studio-ember-vault",
+        "version": "1.0.0-8528d5505b70",
+        "bytes": 1639312,
+        "files": 4,
+        "manifestSha256": "1f7fc3d8add3ea6b83ce60e4d850e9387f8da38a8dcbf969b8efc7d7b33e2ab3"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-flooded-temple\\versions\\0.10.1-3d8a904c9199",
+        "gameId": "studio-flooded-temple",
+        "version": "0.10.1-3d8a904c9199",
+        "bytes": 20911150,
+        "files": 42,
+        "manifestSha256": "e8d3ded4cc1322011055105d580434950622d7881e8160b6d3ef7a9cac1dcda8"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-flooded-temple\\versions\\0.10.1-8f26f446133d",
+        "gameId": "studio-flooded-temple",
+        "version": "0.10.1-8f26f446133d",
+        "bytes": 20911150,
+        "files": 42,
+        "manifestSha256": "6d26a1cbd9ccf7781fa73d3f2d6913214fc3803461407ff30cca5fac9514fcd6"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-forest-heart\\versions\\1.16.1-13328757ea27",
+        "gameId": "studio-forest-heart",
+        "version": "1.16.1-13328757ea27",
+        "bytes": 6389285,
+        "files": 21,
+        "manifestSha256": "3d67fd94ae5093d9b68de4c41122f1392bcacf4161e8889505a7f869b6fe0249"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-forest-heart\\versions\\1.16.1-453b6fe4706a",
+        "gameId": "studio-forest-heart",
+        "version": "1.16.1-453b6fe4706a",
+        "bytes": 6389285,
+        "files": 21,
+        "manifestSha256": "1ebe18873ed0adb525d215e6990baa1884ce9bb87cc56620e5cf894d08296a4c"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-fossil-trail\\versions\\1.0.0-cc7a945f61e8",
+        "gameId": "studio-fossil-trail",
+        "version": "1.0.0-cc7a945f61e8",
+        "bytes": 4093752,
+        "files": 9,
+        "manifestSha256": "1459e2556efb408dd4de509b204d70194f648d45b1850dffe86ee28196570d49"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-fossil-trail\\versions\\1.0.0-ebeae35e190e",
+        "gameId": "studio-fossil-trail",
+        "version": "1.0.0-ebeae35e190e",
+        "bytes": 4093752,
+        "files": 9,
+        "manifestSha256": "ba8317c07fd2882f3c92234a22b258ec548a4c89eef4ec2a554d2b9d1c134168"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-frostline-courier\\versions\\1.0.0-07661c932abb",
+        "gameId": "studio-frostline-courier",
+        "version": "1.0.0-07661c932abb",
+        "bytes": 1631365,
+        "files": 4,
+        "manifestSha256": "25f94618540cc7d73237ded8830d465d3baa9068d35dd1aa866221f32ba78fe7"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-frostline-courier\\versions\\1.0.0-de249a4e5a92",
+        "gameId": "studio-frostline-courier",
+        "version": "1.0.0-de249a4e5a92",
+        "bytes": 1631365,
+        "files": 4,
+        "manifestSha256": "64156eb0b593f1248b23fda28f577d185949da4bc880c345ca979e7d0d34645d"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-gale-riders\\versions\\1.0.0-adb01d70497b",
+        "gameId": "studio-gale-riders",
+        "version": "1.0.0-adb01d70497b",
+        "bytes": 4093744,
+        "files": 9,
+        "manifestSha256": "6a28d272d0587407e46495a3b37b98a6d5723a42deeb0e8122f76a4154a9a167"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-gale-riders\\versions\\1.0.0-e46053c797f6",
+        "gameId": "studio-gale-riders",
+        "version": "1.0.0-e46053c797f6",
+        "bytes": 4093744,
+        "files": 9,
+        "manifestSha256": "1065fcabf46f2bf4b5a3263a31b7332ce75e6334202546edc463687cb1e6031e"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-jade-koi\\versions\\1.0.0-093cd3f54601",
+        "gameId": "studio-jade-koi",
+        "version": "1.0.0-093cd3f54601",
+        "bytes": 1637841,
+        "files": 4,
+        "manifestSha256": "de3698f0ada2f7a13761c71c19bf4d54b4623d4317aa29b4faecc5f574b70126"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-jade-koi\\versions\\1.0.0-a9c238ce1ec1",
+        "gameId": "studio-jade-koi",
+        "version": "1.0.0-a9c238ce1ec1",
+        "bytes": 1637841,
+        "files": 4,
+        "manifestSha256": "cbf5147f39fa06aae629974323c46820bb1e9634cc6c26d50ae7bc1a100c208c"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-last-convoy\\versions\\1.1.1-38e7f6dba41c",
+        "gameId": "studio-last-convoy",
+        "version": "1.1.1-38e7f6dba41c",
+        "bytes": 6352238,
+        "files": 18,
+        "manifestSha256": "b4d7d23197f36ac630f6e8690b7ae80a858406b7b64e9093d9c829d54955c633"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-last-convoy\\versions\\1.1.1-661a415e2b0f",
+        "gameId": "studio-last-convoy",
+        "version": "1.1.1-661a415e2b0f",
+        "bytes": 6352238,
+        "files": 18,
+        "manifestSha256": "072e9f4f8d6c8a77f8dfe2ce42f988b306851c6ab3f8571b63a229aeee11308a"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-lucky-spotlight\\versions\\1.0.0-3cc683f0b4b5",
+        "gameId": "studio-lucky-spotlight",
+        "version": "1.0.0-3cc683f0b4b5",
+        "bytes": 1577922,
+        "files": 4,
+        "manifestSha256": "127494399d2c8b0eabb44dfdea184be999adf6ee18b57373a3e8ab3a283c7c6f"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-lucky-spotlight\\versions\\1.0.0-5e4d38f143ce",
+        "gameId": "studio-lucky-spotlight",
+        "version": "1.0.0-5e4d38f143ce",
+        "bytes": 1577922,
+        "files": 4,
+        "manifestSha256": "43b5394a7f480333c3f7841ca862c2a27a419984bdea07878d795c877f15aed4"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-lumen-grove\\versions\\1.0.0-4187f1d22059",
+        "gameId": "studio-lumen-grove",
+        "version": "1.0.0-4187f1d22059",
+        "bytes": 1622783,
+        "files": 4,
+        "manifestSha256": "ecbb4d23e3e4afbee71593e1170602fac2ef527ca9ec327b219f8741431b05ed"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-lumen-grove\\versions\\1.0.0-6ab77cd3d75b",
+        "gameId": "studio-lumen-grove",
+        "version": "1.0.0-6ab77cd3d75b",
+        "bytes": 1622783,
+        "files": 4,
+        "manifestSha256": "450c939489afc1645002dc83e44710d4a21bf449aa4d96bba7288f896dc2b5c6"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-meme-overload\\versions\\1.1.1-c689af274b53",
+        "gameId": "studio-meme-overload",
+        "version": "1.1.1-c689af274b53",
+        "bytes": 3545991,
+        "files": 17,
+        "manifestSha256": "cbfac173cb1337a1409214a57a65da0f68b5ba0feee11c5303b2a89766104038"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-meme-overload\\versions\\1.1.1-cec12fee0ab9",
+        "gameId": "studio-meme-overload",
+        "version": "1.1.1-cec12fee0ab9",
+        "bytes": 3545991,
+        "files": 17,
+        "manifestSha256": "45b91c4cb88690ed4b8ac76917312d044512adfc6ea49e2893503b43db9cba4e"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-midnight-market\\versions\\1.0.0-2b65cee208d7",
+        "gameId": "studio-midnight-market",
+        "version": "1.0.0-2b65cee208d7",
+        "bytes": 1639324,
+        "files": 4,
+        "manifestSha256": "298b6d477a9d545052ddc34b0669d3c1a63570c0227a120b5869ec9502ec2927"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-midnight-market\\versions\\1.0.0-72b03fba6d2e",
+        "gameId": "studio-midnight-market",
+        "version": "1.0.0-72b03fba6d2e",
+        "bytes": 1639324,
+        "files": 4,
+        "manifestSha256": "23dcc6dcef768991a38e75d7f3d8e7e5d53436fd9e5e6c2b0dae154dbd581b02"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-moonlit-mint\\versions\\1.0.0-1f9352d358a0",
+        "gameId": "studio-moonlit-mint",
+        "version": "1.0.0-1f9352d358a0",
+        "bytes": 1639315,
+        "files": 4,
+        "manifestSha256": "f8e11000645bc20807b340f6b1e9c057c3206e8211cb777e5a8a3f664f053a8d"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-moonlit-mint\\versions\\1.0.0-682fbdbfc6ff",
+        "gameId": "studio-moonlit-mint",
+        "version": "1.0.0-682fbdbfc6ff",
+        "bytes": 1639315,
+        "files": 4,
+        "manifestSha256": "e452064122eb87ebd37e011d7f5dee09492b679aadaa5c931c2ab588bc7411b1"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-mosaic-muse\\versions\\1.0.0-8786200fdc23",
+        "gameId": "studio-mosaic-muse",
+        "version": "1.0.0-8786200fdc23",
+        "bytes": 4093744,
+        "files": 9,
+        "manifestSha256": "ea42551fda03fc61f0474967dee88296318ff09510e68947ff33a525d7139d96"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-mosaic-muse\\versions\\1.0.0-eb983c3c1caf",
+        "gameId": "studio-mosaic-muse",
+        "version": "1.0.0-eb983c3c1caf",
+        "bytes": 4093744,
+        "files": 9,
+        "manifestSha256": "8e6a46f47886c92a15a80fab1680edac30a9de8ff2c3c50980dd70da69cde9ca"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-neon-crown\\versions\\1.0.0-b61649efdbaa",
+        "gameId": "studio-neon-crown",
+        "version": "1.0.0-b61649efdbaa",
+        "bytes": 1587946,
+        "files": 4,
+        "manifestSha256": "51e0c6812f8898314cd6180217c90d9a521ce3ebd3c40fd8dba83bf2c0caf694"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-neon-crown\\versions\\1.0.0-b638ad2bda57",
+        "gameId": "studio-neon-crown",
+        "version": "1.0.0-b638ad2bda57",
+        "bytes": 1587946,
+        "files": 4,
+        "manifestSha256": "bafbb70b15d49c98afe2373d6b235b2b5598f15d9cdf12adcbbae89c4bf73f57"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-neopolis\\versions\\0.6.1-0520c83b84dd",
+        "gameId": "studio-neopolis",
+        "version": "0.6.1-0520c83b84dd",
+        "bytes": 6058609,
+        "files": 14,
+        "manifestSha256": "fed8e147fbe5c2a32d2d2a76da9e1dde0c6113768bf123af8c2d8a3635c7c970"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-neopolis\\versions\\0.6.1-955077e883f5",
+        "gameId": "studio-neopolis",
+        "version": "0.6.1-955077e883f5",
+        "bytes": 6058609,
+        "files": 14,
+        "manifestSha256": "b7de247197a767e765fe31a0c0b86706635670ba3941c83d403bce89d2b7f1c6"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-nitro-run\\versions\\1.1.1-06dcf7a75eb9",
+        "gameId": "studio-nitro-run",
+        "version": "1.1.1-06dcf7a75eb9",
+        "bytes": 2586688,
+        "files": 6,
+        "manifestSha256": "dd6f42d357a31d11fbcb7af2279d491ca285e35d046d599075f8710dfa8e2d7a"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-nitro-run\\versions\\1.1.1-0b11ecd4f68b",
+        "gameId": "studio-nitro-run",
+        "version": "1.1.1-0b11ecd4f68b",
+        "bytes": 2586688,
+        "files": 6,
+        "manifestSha256": "c90848a0fa1ee000dff7131ace7a7b35b3b8e028e9c507f33232e89d7c73cc9c"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-obsidian-drop\\versions\\1.0.0-56ee0baf34da",
+        "gameId": "studio-obsidian-drop",
+        "version": "1.0.0-56ee0baf34da",
+        "bytes": 1608506,
+        "files": 4,
+        "manifestSha256": "a57aa87dc7e4f3ca71bf5464e6b6c0ca6d82fd4c1d5132fc6883e1d9cefcd3c0"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-obsidian-drop\\versions\\1.0.0-a51ac53b0528",
+        "gameId": "studio-obsidian-drop",
+        "version": "1.0.0-a51ac53b0528",
+        "bytes": 1608506,
+        "files": 4,
+        "manifestSha256": "26b362251bfd0908c3d50fa83d74d5b411537a00b362cab26d2f13241f6af668"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-orbit\\versions\\1.0.0-06c102dce436",
+        "gameId": "studio-orbit",
+        "version": "1.0.0-06c102dce436",
+        "bytes": 4093696,
+        "files": 9,
+        "manifestSha256": "3d1528ef798b2d7ea083acd3e54b8d47b652993882e98d58f1af2fbed56a1ec7"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-orbit\\versions\\1.0.0-5d48b8082460",
+        "gameId": "studio-orbit",
+        "version": "1.0.0-5d48b8082460",
+        "bytes": 4093696,
+        "files": 9,
+        "manifestSha256": "440149e318b49978533fdcf955ed804926e1d932f4cc3f97f381ea595ce47014"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-petal-parlor\\versions\\1.0.0-4b604f6cf4dc",
+        "gameId": "studio-petal-parlor",
+        "version": "1.0.0-4b604f6cf4dc",
+        "bytes": 1642047,
+        "files": 4,
+        "manifestSha256": "9562fd953c67525577d39e3bc7bd638070a66f5a65fb6939e40982d8dc587098"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-petal-parlor\\versions\\1.0.0-e8691f41fbb1",
+        "gameId": "studio-petal-parlor",
+        "version": "1.0.0-e8691f41fbb1",
+        "bytes": 1642047,
+        "files": 4,
+        "manifestSha256": "fed00b353044c898f2f4169066d73d3fd05c34e5923e82557688c25f58bb1022"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-prism-atelier\\versions\\1.0.0-a1f111023c9a",
+        "gameId": "studio-prism-atelier",
+        "version": "1.0.0-a1f111023c9a",
+        "bytes": 1622789,
+        "files": 4,
+        "manifestSha256": "f3d20f9770a1d4742caece192f37b3e8d74e877cdeedd785e6fa342722173ef5"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-prism-atelier\\versions\\1.0.0-bd1637591210",
+        "gameId": "studio-prism-atelier",
+        "version": "1.0.0-bd1637591210",
+        "bytes": 1622789,
+        "files": 4,
+        "manifestSha256": "6d7d46b2c9ae7bf50431310f7ce9d4708163625c20f2a5a6780d7a0cffbe23d0"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-pulse-district\\versions\\1.0.0-0182248c826f",
+        "gameId": "studio-pulse-district",
+        "version": "1.0.0-0182248c826f",
+        "bytes": 1637859,
+        "files": 4,
+        "manifestSha256": "95b585804f2a637d3e144bb0bb837a11f215237eabb7917fdc7334a27a855747"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-pulse-district\\versions\\1.0.0-d3e5ddd26b0c",
+        "gameId": "studio-pulse-district",
+        "version": "1.0.0-d3e5ddd26b0c",
+        "bytes": 1637859,
+        "files": 4,
+        "manifestSha256": "4ede12721a47c389aeef7619beb166265d7c96f73caf3fac9c381b015e210713"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-rivet-rally\\versions\\1.0.0-64d977289867",
+        "gameId": "studio-rivet-rally",
+        "version": "1.0.0-64d977289867",
+        "bytes": 1631347,
+        "files": 4,
+        "manifestSha256": "f37f928e707b4391e422f70704b7702d1b044fe577f26292b3188be2de03be29"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-rivet-rally\\versions\\1.0.0-bcc6c27182d6",
+        "gameId": "studio-rivet-rally",
+        "version": "1.0.0-bcc6c27182d6",
+        "bytes": 1631347,
+        "files": 4,
+        "manifestSha256": "60f1b4cce199b9645606279923243e50a74f55a1461137c834e05681e45a716f"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-saffron-cipher\\versions\\1.0.0-1a298b2d2d4b",
+        "gameId": "studio-saffron-cipher",
+        "version": "1.0.0-1a298b2d2d4b",
+        "bytes": 2110073,
+        "files": 5,
+        "manifestSha256": "70d25a763f21a49cf7ac143191d9cd962dfb85b1c73c8ec5fe5c5a6aa8d4562c"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-saffron-cipher\\versions\\1.0.0-f57c0225c6cc",
+        "gameId": "studio-saffron-cipher",
+        "version": "1.0.0-f57c0225c6cc",
+        "bytes": 2110073,
+        "files": 5,
+        "manifestSha256": "e30080f1de027a88b34e3d1ac29d43a0824adfc090cf5dc4de9b1112a8b45f8c"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-saffron-spin\\versions\\1.0.0-3430db589a56",
+        "gameId": "studio-saffron-spin",
+        "version": "1.0.0-3430db589a56",
+        "bytes": 1577913,
+        "files": 4,
+        "manifestSha256": "28618505db94d87c4ebc38e7012aff0f373ec3c51d978a6a45bbf17af3c965ba"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-saffron-spin\\versions\\1.0.0-a62e45acefa1",
+        "gameId": "studio-saffron-spin",
+        "version": "1.0.0-a62e45acefa1",
+        "bytes": 1577913,
+        "files": 4,
+        "manifestSha256": "537718915cddc494c4826e3b29c3b0b7598a795be42d933d8dbba16fb8488e2a"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-signal-fox\\versions\\1.0.0-718f2f669360",
+        "gameId": "studio-signal-fox",
+        "version": "1.0.0-718f2f669360",
+        "bytes": 1686889,
+        "files": 4,
+        "manifestSha256": "c04db8aacd09f69bac4c366ab85a70778b8fb8a25aa0d145fa8f024aeef0a56b"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-signal-fox\\versions\\1.0.0-c70c94db7d2a",
+        "gameId": "studio-signal-fox",
+        "version": "1.0.0-c70c94db7d2a",
+        "bytes": 1686889,
+        "files": 4,
+        "manifestSha256": "c89ba7e8ed8f520b0f854763dc39c54b2327b049998707fac59950c5b0d210a8"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-sky-lanterns\\versions\\1.0.0-045289bf5596",
+        "gameId": "studio-sky-lanterns",
+        "version": "1.0.0-045289bf5596",
+        "bytes": 1631350,
+        "files": 4,
+        "manifestSha256": "842272eaaf2953af1c04bcd857cc04af6af4fccb752659d4269d1f4baab25d7a"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-sky-lanterns\\versions\\1.0.0-3b7cd72da5db",
+        "gameId": "studio-sky-lanterns",
+        "version": "1.0.0-3b7cd72da5db",
+        "bytes": 1631350,
+        "files": 4,
+        "manifestSha256": "d948ec9df56014803f3362953a6a9cea0902b70fcbeac8d5d8c66af882593d57"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-starfall-oracle\\versions\\1.0.0-3c93c756b5c4",
+        "gameId": "studio-starfall-oracle",
+        "version": "1.0.0-3c93c756b5c4",
+        "bytes": 2445740,
+        "files": 6,
+        "manifestSha256": "c90dd0e9512635bc3a917a204dc7ae4cb01719938693796144e8def6cc831f73"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-starfall-oracle\\versions\\1.0.0-9ee24840203b",
+        "gameId": "studio-starfall-oracle",
+        "version": "1.0.0-9ee24840203b",
+        "bytes": 2445740,
+        "files": 6,
+        "manifestSha256": "b5968fa57acebac0d59eafe64268ac7c07b90e374324d9288904a626d3a1c4a3"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-stormforge-duel\\versions\\1.0.0-8ee4b05b07f5",
+        "gameId": "studio-stormforge-duel",
+        "version": "1.0.0-8ee4b05b07f5",
+        "bytes": 2110077,
+        "files": 5,
+        "manifestSha256": "b206955c1ca6051e3153ac4848cb7f2202afba55aeab7712facbcd0f6142fac6"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-stormforge-duel\\versions\\1.0.0-c55b96f31248",
+        "gameId": "studio-stormforge-duel",
+        "version": "1.0.0-c55b96f31248",
+        "bytes": 2110077,
+        "files": 5,
+        "manifestSha256": "4707129088b80d73f114fcc26e6dc2ab024a4e904333b64e84cfed7f9ba2a9f2"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-sunbird-trails\\versions\\1.0.0-8ba514e503bf",
+        "gameId": "studio-sunbird-trails",
+        "version": "1.0.0-8ba514e503bf",
+        "bytes": 1642053,
+        "files": 4,
+        "manifestSha256": "d004e9cfb4cacf3986abfb099a47a2fc7f2b001a5ca3840cd5f1b121f35eca32"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-sunbird-trails\\versions\\1.0.0-df2558106bb1",
+        "gameId": "studio-sunbird-trails",
+        "version": "1.0.0-df2558106bb1",
+        "bytes": 1642053,
+        "files": 4,
+        "manifestSha256": "d43d838e0bca00b354d8a0bf351301e9569130a12a2cb7c68cedc60ba70099b0"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-tidal-relay\\versions\\1.0.0-51834a93358b",
+        "gameId": "studio-tidal-relay",
+        "version": "1.0.0-51834a93358b",
+        "bytes": 4093744,
+        "files": 9,
+        "manifestSha256": "7190bb113ece16208ff29ae1418cd1d7ea18935d1f839b30fc9b3e92396ca923"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-tidal-relay\\versions\\1.0.0-c9ebc5d530b7",
+        "gameId": "studio-tidal-relay",
+        "version": "1.0.0-c9ebc5d530b7",
+        "bytes": 4093744,
+        "files": 9,
+        "manifestSha256": "8308655b2231fc9d2113114d50f01c373bb31491c538e810bedb75b88e1f4751"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-velvet-reign\\versions\\1.1.1-4c96bdaa55f6",
+        "gameId": "studio-velvet-reign",
+        "version": "1.1.1-4c96bdaa55f6",
+        "bytes": 4312884,
+        "files": 13,
+        "manifestSha256": "06055a4f1c5916d9cba3e35355f7627fb77aac471e787dac5a0c73eb41e38890"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-velvet-reign\\versions\\1.1.1-da1689e568c3",
+        "gameId": "studio-velvet-reign",
+        "version": "1.1.1-da1689e568c3",
+        "bytes": 4312884,
+        "files": 13,
+        "manifestSha256": "07bc54f705c569c0c7b4bfc07d62b431b9f7786089f0ed01ee38efc759d0bd5c"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-wild-nudge\\versions\\1.6.0-5e045e1a5da6",
+        "gameId": "studio-wild-nudge",
+        "version": "1.6.0-5e045e1a5da6",
+        "bytes": 12543484,
+        "files": 23,
+        "manifestSha256": "cbd6db2a32506bce2b80ed3dbf00b5b29624dffd1234095de3f5977990c1a09f"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\studio-wild-nudge\\versions\\1.6.0-b8db0f524154",
+        "gameId": "studio-wild-nudge",
+        "version": "1.6.0-b8db0f524154",
+        "bytes": 12543484,
+        "files": 23,
+        "manifestSha256": "7a67a7581d02a3b167a31d6c43ca5eed7a35472b2e5d8eb26c298c521132b929"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\transfer-durak\\versions\\1.0.0-2d6a6e12e2f6",
+        "gameId": "transfer-durak",
+        "version": "1.0.0-2d6a6e12e2f6",
+        "bytes": 16811,
+        "files": 3,
+        "manifestSha256": "ec92922f80b044de76c663f3eb784bdea8b47cc22bbf174f3e75416f47c42b58"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\transfer-durak\\versions\\1.0.0-9e7145c6ab0f",
+        "gameId": "transfer-durak",
+        "version": "1.0.0-9e7145c6ab0f",
+        "bytes": 16811,
+        "files": 3,
+        "manifestSha256": "3f97a3ceb42422dc67734bd85ca35ef76cc1ac5f04e13898bb9b6bb4786350b0"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\tsu-e-fa\\versions\\1.3.2-a9c384442b31",
+        "gameId": "tsu-e-fa",
+        "version": "1.3.2-a9c384442b31",
+        "bytes": 1459526,
+        "files": 4,
+        "manifestSha256": "d14c10ee7223dd7e2d23328e9eedc342d0493b5a45ba1473653400f33048ed55"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\tsu-e-fa\\versions\\1.3.2-c9cd9a23e060",
+        "gameId": "tsu-e-fa",
+        "version": "1.3.2-c9cd9a23e060",
+        "bytes": 1459526,
+        "files": 4,
+        "manifestSha256": "3745c35fe37b0ac8bf6c3ed97c8fee19bf2d045598dbba4475675085293fa505"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-blackjack-target\\versions\\1.0.0-66f951530bba",
+        "gameId": "variant-blackjack-target",
+        "version": "1.0.0-66f951530bba",
+        "bytes": 126983,
+        "files": 3,
+        "manifestSha256": "66d5d03ccc9feb7374bc4f2669ae7050286fb3effe74cb345ce9e55f895404fb"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-blackjack-target\\versions\\1.0.0-6b733ee9f130",
+        "gameId": "variant-blackjack-target",
+        "version": "1.0.0-6b733ee9f130",
+        "bytes": 126983,
+        "files": 3,
+        "manifestSha256": "da2c20126d7db4d5a401283aebb714fa88566d864cdbf7fa740803054362d235"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-color\\versions\\1.0.0-45471b5423db",
+        "gameId": "variant-color",
+        "version": "1.0.0-45471b5423db",
+        "bytes": 127677,
+        "files": 3,
+        "manifestSha256": "92cbe0f6269e9f74390f792a58333008a5d6b448283c11c9b47aef53de46f2f0"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-color\\versions\\1.0.0-500279af4572",
+        "gameId": "variant-color",
+        "version": "1.0.0-500279af4572",
+        "bytes": 127677,
+        "files": 3,
+        "manifestSha256": "120345359b2000f501c99719331e1c91f91732d356f4d65eb948555945eba44c"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-diamonds\\versions\\1.0.0-6478e9cf1af3",
+        "gameId": "variant-diamonds",
+        "version": "1.0.0-6478e9cf1af3",
+        "bytes": 107137,
+        "files": 3,
+        "manifestSha256": "cebeb266b8092f0fdb94451044e70f4aadb909097b529f8d054eb19eb21027a8"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-diamonds\\versions\\1.0.0-bcb2e7ee13e6",
+        "gameId": "variant-diamonds",
+        "version": "1.0.0-bcb2e7ee13e6",
+        "bytes": 107137,
+        "files": 3,
+        "manifestSha256": "2ed8e281ee89c957c8016627d91562a86bd0b2215ca7fc131fa3ce2eebeb8072"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-dice\\versions\\1.0.0-60dcfbac392b",
+        "gameId": "variant-dice",
+        "version": "1.0.0-60dcfbac392b",
+        "bytes": 183206,
+        "files": 3,
+        "manifestSha256": "ed3d2df20e1fedacef2c2bc5823f91fc3256b19332cdc2f722a44b7e15d25ad3"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-dice\\versions\\1.0.0-b65c7a5b8ec6",
+        "gameId": "variant-dice",
+        "version": "1.0.0-b65c7a5b8ec6",
+        "bytes": 183206,
+        "files": 3,
+        "manifestSha256": "a82a0fc3ce5c3c9f559660fd21e2971583f58cf17d230586fadee4130348233d"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-dice-streak\\versions\\1.0.0-2c51ae3370f6",
+        "gameId": "variant-dice-streak",
+        "version": "1.0.0-2c51ae3370f6",
+        "bytes": 126973,
+        "files": 3,
+        "manifestSha256": "f2ae56a302ff3694f9bd6bb1743ea9091cc221abdfa48f91394b28a198da4034"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-dice-streak\\versions\\1.0.0-7ca6ce867b32",
+        "gameId": "variant-dice-streak",
+        "version": "1.0.0-7ca6ce867b32",
+        "bytes": 126973,
+        "files": 3,
+        "manifestSha256": "4dfd191ad5ea9294479541c5c8c60d25b8130c8d626ab87ef2bb1a215d66701f"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-double-mines\\versions\\1.0.0-44e93c6b9ad4",
+        "gameId": "variant-double-mines",
+        "version": "1.0.0-44e93c6b9ad4",
+        "bytes": 126975,
+        "files": 3,
+        "manifestSha256": "293c53149ac6a950d96cde1b32161e2459054cd1bda34c59c1c97b58522c3f0e"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-double-mines\\versions\\1.0.0-55c3fd97e281",
+        "gameId": "variant-double-mines",
+        "version": "1.0.0-55c3fd97e281",
+        "bytes": 126975,
+        "files": 3,
+        "manifestSha256": "0e07576e1d6ab00ca9cdfa087cfa31a8a1f5c36da17e84660f9c643c40aca826"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-duel\\versions\\1.0.0-243aae0196d1",
+        "gameId": "variant-duel",
+        "version": "1.0.0-243aae0196d1",
+        "bytes": 127675,
+        "files": 3,
+        "manifestSha256": "5a14937af927f58daafb075917fa3e44233cd3112526d17cc8df8f7c471c0aef"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-duel\\versions\\1.0.0-9c3b31b35c9d",
+        "gameId": "variant-duel",
+        "version": "1.0.0-9c3b31b35c9d",
+        "bytes": 127675,
+        "files": 3,
+        "manifestSha256": "0fa3548623b6f2e349ce10441cdb600d10c63ccbc71d7338b82bf885bfb866c3"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-fruits\\versions\\1.0.0-38ad70ec5fcb",
+        "gameId": "variant-fruits",
+        "version": "1.0.0-38ad70ec5fcb",
+        "bytes": 195111,
+        "files": 3,
+        "manifestSha256": "09122dfaa240a009fff925800a26495d38fe2021087f2a278dd14238e8bd287f"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-fruits\\versions\\1.0.0-b85c8672e74b",
+        "gameId": "variant-fruits",
+        "version": "1.0.0-b85c8672e74b",
+        "bytes": 195111,
+        "files": 3,
+        "manifestSha256": "ca3417c97e49bd3f606139e7ee23c4007a87f50879cfd23492671b17fc92f9c7"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-gem-collection\\versions\\1.0.0-47f3cc0e7891",
+        "gameId": "variant-gem-collection",
+        "version": "1.0.0-47f3cc0e7891",
+        "bytes": 126979,
+        "files": 3,
+        "manifestSha256": "dc5172370dd470bd962bf8bc1d8e7971a9504aacf17c5b61b9b87132cd4ea11a"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-gem-collection\\versions\\1.0.0-6a5011665c14",
+        "gameId": "variant-gem-collection",
+        "version": "1.0.0-6a5011665c14",
+        "bytes": 126979,
+        "files": 3,
+        "manifestSha256": "40964d50427ce1b10a33d93be9204ec1e641ec108fa750a9c7c0ad00089f750a"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-keno\\versions\\1.0.0-17a64ce1173e",
+        "gameId": "variant-keno",
+        "version": "1.0.0-17a64ce1173e",
+        "bytes": 127675,
+        "files": 3,
+        "manifestSha256": "af42cc09090b910a739215e22ccdafb3c31eb5936ef405c55493d80d3b64f0ea"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-keno\\versions\\1.0.0-e90dcbb17894",
+        "gameId": "variant-keno",
+        "version": "1.0.0-e90dcbb17894",
+        "bytes": 127675,
+        "files": 3,
+        "manifestSha256": "4dd10fb120a92a8d25de78c7073e3a9ad7e9eb5c2b80db121e2a8062ed2fcbc0"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-keys\\versions\\1.0.0-41057c77b89c",
+        "gameId": "variant-keys",
+        "version": "1.0.0-41057c77b89c",
+        "bytes": 127675,
+        "files": 3,
+        "manifestSha256": "a36c1016782ccaa79ae4829e3e253658088cf68343c3a35d0670c49509d7dfdf"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-keys\\versions\\1.0.0-8520b568d5bd",
+        "gameId": "variant-keys",
+        "version": "1.0.0-8520b568d5bd",
+        "bytes": 127675,
+        "files": 3,
+        "manifestSha256": "15b58a485a3c4a495db8dd51827b98cd92298214bc99779f4078a43bbdaab1c6"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-limbo\\versions\\1.0.0-712c993840d8",
+        "gameId": "variant-limbo",
+        "version": "1.0.0-712c993840d8",
+        "bytes": 186849,
+        "files": 3,
+        "manifestSha256": "3a6554f8ae90da30b33ef0d75669d2cfcd223240ec45df5e4f50f9c64a562c00"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-limbo\\versions\\1.0.0-e9128f7642be",
+        "gameId": "variant-limbo",
+        "version": "1.0.0-e9128f7642be",
+        "bytes": 186849,
+        "files": 3,
+        "manifestSha256": "4b8a03493656c54e6fc5e4046ba08f3e350009778cab6e9038a17c1224598cd3"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-mines\\versions\\1.0.0-5c0824538be9",
+        "gameId": "variant-mines",
+        "version": "1.0.0-5c0824538be9",
+        "bytes": 107131,
+        "files": 3,
+        "manifestSha256": "a63dc2d1369e81722d69b307fe2503393f6cfc1f9415d9349053a3c72796070f"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-mines\\versions\\1.0.0-85d3c6ee8ad8",
+        "gameId": "variant-mines",
+        "version": "1.0.0-85d3c6ee8ad8",
+        "bytes": 107131,
+        "files": 3,
+        "manifestSha256": "de9c0a5994c5961b22792663a82cdc26c7b46cacd359da4b2087ed3b3b0515c3"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-plinko\\versions\\1.0.0-1e9dab11a93e",
+        "gameId": "variant-plinko",
+        "version": "1.0.0-1e9dab11a93e",
+        "bytes": 62092,
+        "files": 3,
+        "manifestSha256": "335f013bce3a04f18493691883ac158a954adb9feb5a19a5784a7b65f382ed72"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-plinko\\versions\\1.0.0-fd0004882599",
+        "gameId": "variant-plinko",
+        "version": "1.0.0-fd0004882599",
+        "bytes": 62092,
+        "files": 3,
+        "manifestSha256": "2ebf3934e46a55e580f235628355b7cb41db72a904527afa6f9b435e98271f61"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-sic-bo\\versions\\1.0.0-ed6017ffd6ee",
+        "gameId": "variant-sic-bo",
+        "version": "1.0.0-ed6017ffd6ee",
+        "bytes": 107133,
+        "files": 3,
+        "manifestSha256": "2bd36f08b3c2c2e32f692389cf4fb0b5121fee1a2ab1d0b2ed79864196b99c44"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-sic-bo\\versions\\1.0.0-ff4bb0e537b1",
+        "gameId": "variant-sic-bo",
+        "version": "1.0.0-ff4bb0e537b1",
+        "bytes": 107133,
+        "files": 3,
+        "manifestSha256": "bf26bcffeaa323bea4007e31f7743635f14ce4902aa3f009be9369b1f170e664"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-target-plinko\\versions\\1.0.0-053f4c11a832",
+        "gameId": "variant-target-plinko",
+        "version": "1.0.0-053f4c11a832",
+        "bytes": 104832,
+        "files": 3,
+        "manifestSha256": "4e3ca6e24e0badbed149a2da327e9f05bcb8d1c87936ffbd3e406ec8b542361c"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-target-plinko\\versions\\1.0.0-3a273d9eb5e1",
+        "gameId": "variant-target-plinko",
+        "version": "1.0.0-3a273d9eb5e1",
+        "bytes": 104832,
+        "files": 3,
+        "manifestSha256": "a9f608c99fc48a224329a89913d64a7b46370e4e5d782579f7bbeec8887f09dd"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-triple-poker\\versions\\1.0.0-14a136b76b75",
+        "gameId": "variant-triple-poker",
+        "version": "1.0.0-14a136b76b75",
+        "bytes": 126975,
+        "files": 3,
+        "manifestSha256": "4d5a63ffa372d997072efd295a6435e0e3b7f77d21a65d11c98235581fc9e04e"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-triple-poker\\versions\\1.0.0-57632c604504",
+        "gameId": "variant-triple-poker",
+        "version": "1.0.0-57632c604504",
+        "bytes": 126975,
+        "files": 3,
+        "manifestSha256": "bfdca159ecced2fcc6a2daec6218c2759bb47cdcaf8435610b5b39a0a0e36e5c"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-war\\versions\\1.0.0-50b0720cd313",
+        "gameId": "variant-war",
+        "version": "1.0.0-50b0720cd313",
+        "bytes": 127673,
+        "files": 3,
+        "manifestSha256": "06ece2f12e3ca774a3add84afc035eb8afbbf9196ab87134e0801cd76b95535f"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\module-dist\\variant-war\\versions\\1.0.0-9502e93328d4",
+        "gameId": "variant-war",
+        "version": "1.0.0-9502e93328d4",
+        "bytes": 127673,
+        "files": 3,
+        "manifestSha256": "6b316ab0aca42abdc1929375faed99e2c9e282b99a5029cb9c4168d8fa34927a"
+      }
+    ],
+    "retainedArchiveFiles": [
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\artifacts\\work\\pvp-invite-simplify\\release\\browser-results\\pvp-real-lost-connection-f-1c0e8-and-surrender-confirms-once\\trace.zip",
+        "bytes": 35159531,
+        "sha256": "6543f0051d06f65ae6c8a292151e2d0f5e815a586661f0fca3f0af8763d689d8"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\artifacts\\work\\pvp-invite-simplify\\release\\payload.tar.gz",
+        "bytes": 2680206,
+        "sha256": "4e13e46893ce9adca87f26b61da36e7ab94872e4dd094327783a00e43404d282"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\artifacts\\work\\pvp-invite-simplify\\release-v2\\pvp-invites-20261104-v2.tar.gz",
+        "bytes": 2810016,
+        "sha256": "85f03aac5c6d761bd7fa7df17aa9fb02d49ea5cbba04fc65eb5d23838be52e66"
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\artifacts\\work\\pvp-invite-simplify\\release-v3\\pvp-invites-20261105-v3.tar.gz",
+        "bytes": 2839244,
+        "sha256": "75fe7d71a72f1a1abe7a7822ac02e1938bcbd791c7562827e3344459449703ce"
+      }
+    ],
+    "activeLocalPackagesPreserved": 124,
+    "sharedCacheTouched": false,
+    "otherWorktreesTouched": false,
+    "stoppedStandProcesses": [
+      {
+        "Identity": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\artifacts\\work\\pvp-invite-simplify\\release\\stand-identity.json",
+        "OriginalProcessAlive": false,
+        "Pid": 52916
+      },
+      {
+        "Identity": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\artifacts\\work\\pvp-invite-simplify\\release\\stand-identity.json",
+        "OriginalProcessAlive": false,
+        "Pid": 14204
+      },
+      {
+        "Identity": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\artifacts\\work\\pvp-invite-simplify\\release-v2\\stand-identity.json",
+        "OriginalProcessAlive": false,
+        "Pid": 51068
+      },
+      {
+        "Identity": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\artifacts\\work\\pvp-invite-simplify\\release-v2\\stand-identity.json",
+        "OriginalProcessAlive": false,
+        "Pid": 54676
+      },
+      {
+        "Identity": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\artifacts\\work\\pvp-invite-simplify\\release-v3\\stand-identity.json",
+        "OriginalProcessAlive": false,
+        "Pid": 20420
+      },
+      {
+        "Identity": "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-invite-simplify\\royal\\artifacts\\work\\pvp-invite-simplify\\release-v3\\stand-identity.json",
+        "OriginalProcessAlive": false,
+        "Pid": 3732
+      }
+    ],
+    "primaryCheckout": {
+      "path": "C:/Users/Aorus/.codex/worktrees/pvp-invite-simplify/royal",
+      "removal": "Earlier app tool refused removal of the primary task checkout; not retried",
+      "cleanupCondition": "Archive after the app allows this managed checkout to cease being primary; every task commit is verified on GitHub main."
+    },
+    "priorBlockedSyntheticDatabaseDirectories": [
+      {
+        "bytes": 51972934,
+        "path": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-10vTZn"
+      },
+      {
+        "bytes": 51923782,
+        "path": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-8iQPtm"
+      },
+      {
+        "bytes": 52184686,
+        "path": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-b13UfQ"
+      },
+      {
+        "bytes": 52063046,
+        "path": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-K29YiH"
+      },
+      {
+        "bytes": 51997510,
+        "path": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-xcZBJT"
+      }
+    ],
+    "priorDatabaseRejection": "Automatic approval review rejected both computed-path and explicit-path deletion. The response stated blocked by policy and gave no further reason. No deletion was performed.",
+    "cleanupCondition": "Delete only the unchanged task-owned paths once policy permits, recheck any work created since this inventory, preserve all source on GitHub and retain the shared cache.",
+    "freeAfterCheckedAt": "2026-11-05T06:10:47.5426702Z",
+    "priorDatabaseSizeStatus": "The five database sizes are the original 4 November inventory, not a new verification. Those paths were not targeted again.",
+    "serverUploadCleanup": {
+      "checkedAt": "2026-11-05T06:12:24.896840+00:00",
+      "removedFiles": [
+        {
+          "path": "/tmp/royal-pvp-invites-20261104-v1.tar.gz",
+          "bytes": 2680206,
+          "sha256": "4e13e46893ce9adca87f26b61da36e7ab94872e4dd094327783a00e43404d282"
+        },
+        {
+          "path": "/tmp/royal-pvp-invites-20261104-v1-inventory.json",
+          "bytes": 3878,
+          "sha256": "6308f19662cb10cf535e7480aba19ba6a9a959dab8146b6151295de360912cad"
+        },
+        {
+          "path": "/tmp/pvp-invites-20261104-v2.tar.gz",
+          "bytes": 2810016,
+          "sha256": "85f03aac5c6d761bd7fa7df17aa9fb02d49ea5cbba04fc65eb5d23838be52e66"
+        },
+        {
+          "path": "/tmp/pvp-invites-20261104-v2-inventory.json",
+          "bytes": 3878,
+          "sha256": "a45c2b100b7400239239ea1a5ef816d97b5f1ebce320fca5932f63e3157c7d2d"
+        },
+        {
+          "path": "/tmp/pvp-invites-20261105-v3.tar.gz",
+          "bytes": 2839244,
+          "sha256": "75fe7d71a72f1a1abe7a7822ac02e1938bcbd791c7562827e3344459449703ce"
+        },
+        {
+          "path": "/tmp/pvp-invites-20261105-v3-inventory.json",
+          "bytes": 3878,
+          "sha256": "487451904749bcf4781755f9ce479742fcd09a938ddb579a358c8a743e247064"
+        },
+        {
+          "path": "/tmp/royal-pvp-invites-20261104-v2-before.json",
+          "bytes": 3833462,
+          "sha256": "93cf6edb74ad44e8dc253fda3b9e4868527ff46551820cecc684dad4ad469b00"
+        }
+      ],
+      "absent": [],
+      "removedLogicalBytes": 12174562,
+      "freeBeforeBytes": 9802444800,
+      "freeAfterBytes": 9814630400,
+      "programHistoryTouched": false,
+      "rollbackTouched": false,
+      "sourcePreservationCommit": "85f5e15586ff0aba78c29e4afbcc6a1812596cfd",
+      "physicalAttribution": "Free-space changes include concurrent activity; no direct physical reclamation claim."
+    }
+  },
+  "deploymentPreservationRecord": "85f5e15586ff0aba78c29e4afbcc6a1812596cfd"
+}
