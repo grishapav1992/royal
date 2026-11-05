@@ -1,0 +1,629 @@
+{
+  "release": "jackie-motion-20261104-v4",
+  "status": "published_verified_maintenance_completed",
+  "sourceCommit": "5867825c8b116f10cfbb17f78690936e52c4412f",
+  "installerSourceCommit": "b8c7447e141ed01a3406385654b5f2ede31c7f72",
+  "sourcePreservedInMain": true,
+  "publishedAtUtc": "2026-11-04T20:42:05Z",
+  "recordCompletedAtUtc": "2026-11-05T05:27:05.318Z",
+  "module": {
+    "gameId": "original-jackie-chan",
+    "version": "1.2.1-e9b60e76ef5e",
+    "manifestSha256": "eb7acc4ac043c37b4c4be05115823d6f020eb1884fafce003f311795c06a5fc3",
+    "activeSha256": "ca36ab41e1f8b0dfffe070688dcdc0eec38c7135cafd710a918824019d450b95",
+    "resources": 39,
+    "bytes": 21602089
+  },
+  "changes": [
+    "Use one costume scale reference across base, combat and furniture atlases with atlas-cell normalization.",
+    "Reserve the result strip to keep the canvas geometry fixed.",
+    "Remove forced scrolling on fight start, blend the opening from the last painted position and paint every requested animation frame."
+  ],
+  "sourceAfter": {
+    "games/jackie-chan/JackieScene.ts": "c53abe172f86e53a0b797257f4b52a8d250b98cc18c36ca8428f8091905f2a3c",
+    "games/jackie-chan/layout.css": "8be5a8995caa11f83f744c56177f42857a7b4357526198bf641ef78b9f908d6a",
+    "games/jackie-chan/JackieUI.ts": "dcbdf627088459628c8c4fed9c2fb2ea15c4043370d39687049694a4206c5efe"
+  },
+  "scope": {
+    "addedGames": [],
+    "restoredGames": [],
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "preservedServices": 14,
+    "otherModuleInventoriesPreserved": true,
+    "uniformRequestRecoveryFeedbackPreserved": true
+  },
+  "preparation": {
+    "command": "npm run release:prepare -- --base 315fda47301591b5b1ed05806781fcc603cffdcb --modules jackie-chan --module-projection deployment/releases/jackie-motion-20261104-v4/module-projection.json",
+    "passed": true,
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 1001301
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 87806
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 432045
+      }
+    ],
+    "durationMs": 1521155,
+    "moduleTimings": {
+      "rtpDurationMs": 426066,
+      "packagesDurationMs": 4097
+    },
+    "rtp": {
+      "verifiedProfiles": 38,
+      "stakePolicies": 20,
+      "stakeAdmission": 20,
+      "legacyNotQualified": 114,
+      "mathematicsChanged": false
+    },
+    "githubReceipt": {
+      "format": 1,
+      "sourceCommit": "5867825c8b116f10cfbb17f78690936e52c4412f",
+      "manifestSha256": "42f68badb19cac8574618c9ebaf591716a8c4434d22f516b0e432f2a4f70e2f9",
+      "remoteMain": "b8c7447e141ed01a3406385654b5f2ede31c7f72",
+      "checkedAt": "2026-11-04T20:33:22.884Z"
+    },
+    "gameRebuiltForInstallerChanges": false
+  },
+  "validation": {
+    "wallet": {
+      "command": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts",
+      "passed": 19,
+      "failed": 0
+    },
+    "realHost": {
+      "sourceCommit": "59c1202b466e4f3507e82c5f016240af95dbf5d2",
+      "backendSha256": "1f7c1811a49d34355ad90802e9f86858802285fa60489acaf66470cd73dedfa1",
+      "connectedChat": true,
+      "temporaryLocalDatabase": true,
+      "browserScenariosPassed": 2,
+      "geometry": [
+        {
+          "width": 1440,
+          "samples": 3259,
+          "ranges": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "scrollY": 0
+          }
+        },
+        {
+          "width": 390,
+          "samples": 976,
+          "ranges": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "scrollY": 0
+          }
+        },
+        {
+          "width": 844,
+          "samples": 951,
+          "ranges": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "scrollY": 0
+          }
+        }
+      ],
+      "totalGeometrySamples": 5186,
+      "recovery": {
+        "sameUuid": true,
+        "requestAttempts": 2,
+        "stakeDebits": 1,
+        "stakeDebitCents": 10,
+        "reopenPreservedBalance": true
+      },
+      "commands": [
+        "npx playwright test --config artifacts/work/jackie-motion-fix/playwright.current.config.ts --grep \"fight requests and results\"",
+        "npx playwright test --config artifacts/work/jackie-motion-fix/playwright.current.config.ts --grep \"lost response recovers\""
+      ]
+    },
+    "public": {
+      "verified": true,
+      "at": "2026-11-05T05:13:31.214Z",
+      "files": [
+        {
+          "path": "/game-modules/original-jackie-chan/active.json",
+          "sha256": "ca36ab41e1f8b0dfffe070688dcdc0eec38c7135cafd710a918824019d450b95",
+          "bytes": 228
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/entry-945d04e4369272a9.js",
+          "sha256": "945d04e4369272a9b380b98cc8c9ee924ea7716d3451d6eb1393f2a2ea161f40",
+          "bytes": 88650
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/manifest.json",
+          "sha256": "eb7acc4ac043c37b4c4be05115823d6f020eb1884fafce003f311795c06a5fc3",
+          "bytes": 4597
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/audio/harbor.mp3",
+          "sha256": "95fece7bf2c28cffa45183ae20ffe55727c236f62c916784e8b3599388326d69",
+          "bytes": 2708836
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/audio/market.mp3",
+          "sha256": "ef0a91279aa986857531cf19b78e1928decde21ae768f7dc25ead62a3499c494",
+          "bytes": 2736421
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/audio/restaurant.mp3",
+          "sha256": "0c9831e6a8fd15cb78d077e40412fc7939e6992d003c668655bcffcfd843751a",
+          "bytes": 2424206
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/cover.webp",
+          "sha256": "bb3032df4f98654275f6aba9538ed51ba0c36b50b2f6930a35b149ba5ff4794f",
+          "bytes": 273866
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/foe-agile.webp",
+          "sha256": "35f85b59e3a51751bd95f9229f24083a7d85abbb4d0e32740d48fe31712fc21a",
+          "bytes": 327128
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/foe-bruiser.webp",
+          "sha256": "ba1f9d67a7d5a4bd36c2cc15b3f1908187dc0e13a9be16643abf0869fb7b0546",
+          "bytes": 424766
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/foe-enforcer.webp",
+          "sha256": "bc564411f472d8e264d92d9d93e0f1bffa1b2d298ee6bc0b395c5a684cbba262",
+          "bytes": 348102
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/foe-master.webp",
+          "sha256": "17ad59ab0f2dd25f0454601ad3337a6927040792c546028c0957f545b5678f0d",
+          "bytes": 422424
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/foes.webp",
+          "sha256": "938d7f6f57a3a6263ea188d8dc57521cceaeb73b146f66b161dc0dd5560fcf0a",
+          "bytes": 396288
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/harbor.webp",
+          "sha256": "90cad03cf703ee4b0329c2c1f0eb8eedc9a5de42e11f5a9066c556fb151cfa0c",
+          "bytes": 491722
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/hawk-combat.webp",
+          "sha256": "4d8685e1682be5cdc3fc4afa71565658cf8eecbc6aea10ea0af8c7aaba815fb0",
+          "bytes": 421176
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/hawk-furniture.webp",
+          "sha256": "c399677dc8d2b5e00eb338fcb96e5a8cf68f92543ca3b1d9cfab13ffba30f1aa",
+          "bytes": 432414
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/hawk.webp",
+          "sha256": "26ebe9b6e4b222ac48326f2c6218867e39a5df975a1dc6ad1b66d457166b94cb",
+          "bytes": 390406
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/market.webp",
+          "sha256": "e021f8c41a7efc5403613090a8d3a77105b25f1abb35b80a4319680ab83c6685",
+          "bytes": 564842
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/master-combat.webp",
+          "sha256": "839e91c528386f8b160c85ee010d8435f37552a8aac556c54db62e64e2e9f05a",
+          "bytes": 407362
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/master-furniture.webp",
+          "sha256": "6f7a4b3cc5d5982bd07e88d91f7921cc6cf860c4ea5338f52de7cf3648fec14d",
+          "bytes": 473700
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/master.webp",
+          "sha256": "bff8aa02ed7ab1a91e8c09a40abd3fee3872581bfe79958598bc0ebf45e92640",
+          "bytes": 381124
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/mentor-combat.webp",
+          "sha256": "0c5de9b69210203eaea592ee3c1927abc68962e404ca2bf1de95e4be51c303b8",
+          "bytes": 360828
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/mentor-furniture.webp",
+          "sha256": "50855f5dd3fd5fd91aa59ddd580c66b4462ec05b5deade26927dc8e7340080fe",
+          "bytes": 416588
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/mentor.webp",
+          "sha256": "ebbc9927f8d5dcdc98f5d6a6778631b25acea366ef5c1b73164deeb5d4ff9885",
+          "bytes": 368380
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/police-combat.webp",
+          "sha256": "b175d7245361d3b7a6d72613fffa74ed7f948369034a501be42ce2ce81d0faba",
+          "bytes": 412388
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/police-furniture.webp",
+          "sha256": "637f4e443460ce1e29b27709635d2d7afff23cd43145a6511c72f2185ad2da61",
+          "bytes": 436116
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/police.webp",
+          "sha256": "57bf487bfb40374b2e453b0a6f2c923ad73a4d083a340ec2ee9af00fe470c082",
+          "bytes": 388278
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/props.webp",
+          "sha256": "29e80c7c05e432a8cb92c5fef5917e0ae7d7742e2dcfe118f4c2db1903026054",
+          "bytes": 535994
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/restaurant.webp",
+          "sha256": "aa4e78827432a34fea5774b7f874063de55d3c20c0897c2570501214e089293a",
+          "bytes": 519018
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/rush-combat.webp",
+          "sha256": "c4cda4428ee1d96ef74fe25130436218a8544511af07fa203b1d1d57ca1c6bda",
+          "bytes": 334268
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/rush-furniture.webp",
+          "sha256": "1c05c2991749707bdc60fed6d0c58a36c24bb2b7ea133cf4483c415ca6a4b2b5",
+          "bytes": 382596
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/rush.webp",
+          "sha256": "6427980eb0d58998fc7f405ab7f3d371bdba46489e24099f3b827157fdf0946e",
+          "bytes": 293806
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/sailor-combat.webp",
+          "sha256": "9a8e438d4feac5d09c83828d307d60db6718ad69c64054b59de874c3256fe82b",
+          "bytes": 397210
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/sailor-furniture.webp",
+          "sha256": "4f21c312d54955a6acd9fd0ccd960ecb2375bc3b1b58df6f3d53bb071a9fca52",
+          "bytes": 437198
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/sailor.webp",
+          "sha256": "69befaa8eabfac47927a33015b1cc3baf0eab218b20f5d5b743820b7bfe1c783",
+          "bytes": 357138
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/tuxedo-combat.webp",
+          "sha256": "a69cb4851182665c141e9b00494dd551226538af7e129a6050a0b0dda5291c5f",
+          "bytes": 323346
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/tuxedo-furniture.webp",
+          "sha256": "54d64a1f5d67c6a5d55468c136995858af0ffe2125ea5c134dacb4fd6797684a",
+          "bytes": 379540
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/tuxedo.webp",
+          "sha256": "e6df670c74d89ef92f4469458f51ed422ed567735241c5bf8402125e87088211",
+          "bytes": 297152
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/whoami-combat.webp",
+          "sha256": "3853c7c39abcf3e2c4abebacbf3248d833eb54bae0f11651a1eaaa2fb1c9906f",
+          "bytes": 388024
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/whoami-furniture.webp",
+          "sha256": "bfce1ab15f416d5adf612154d3b0db2e0799ac9c11a4aa5fdbddb47695eeee38",
+          "bytes": 435614
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/media/jackie-chan/whoami.webp",
+          "sha256": "c5fbec5f80df4eaeca2f356937509add01937e9ab552f8e0f88de9e1b7ceffa5",
+          "bytes": 393184
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/versions/1.2.1-e9b60e76ef5e/style-ef063b6ee5d779b8.css",
+          "sha256": "ef063b6ee5d779b8c2220996de1b5c7fd2596c7b0c47ed68f60c3cbc3fad2205",
+          "bytes": 31990
+        }
+      ],
+      "checks": [
+        {
+          "path": "/healthz",
+          "status": 200
+        },
+        {
+          "path": "/api/game-wallet",
+          "status": 410
+        },
+        {
+          "path": "/api/nile-play",
+          "status": 410
+        },
+        {
+          "path": "/api/demo-wallet",
+          "status": 401
+        },
+        {
+          "path": "/api/demo-wallet/expansion",
+          "status": 401
+        }
+      ],
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 1000,
+          "pageOverflow": 0,
+          "gameOverflow": 0,
+          "canvas": {
+            "x": 114,
+            "y": 217,
+            "width": 862,
+            "height": 686,
+            "top": 217,
+            "right": 976,
+            "bottom": 903,
+            "left": 114
+          },
+          "hero": {
+            "left": 128.9252173913044,
+            "right": 387.18450592885375,
+            "top": 302.62837944664034,
+            "bottom": 624.26
+          }
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "pageOverflow": 0,
+          "gameOverflow": 0,
+          "canvas": {
+            "x": 12,
+            "y": 63,
+            "width": 366,
+            "height": 449,
+            "top": 63,
+            "right": 378,
+            "bottom": 512,
+            "left": 12
+          },
+          "hero": {
+            "left": 54.740869565217395,
+            "right": 164.39620553359686,
+            "top": 272.0271541501977,
+            "bottom": 408.59000000000003
+          }
+        },
+        {
+          "width": 320,
+          "height": 740,
+          "pageOverflow": 0,
+          "gameOverflow": 0,
+          "canvas": {
+            "x": 12,
+            "y": 80,
+            "width": 296,
+            "height": 328,
+            "top": 80,
+            "right": 308,
+            "bottom": 408,
+            "left": 12
+          },
+          "hero": {
+            "left": 44.271304347826096,
+            "right": 132.95430830039527,
+            "top": 188.03573122529644,
+            "bottom": 298.48
+          }
+        },
+        {
+          "width": 844,
+          "height": 390,
+          "pageOverflow": 0,
+          "gameOverflow": 0,
+          "canvas": {
+            "x": 12,
+            "y": 128,
+            "width": 616,
+            "height": 184,
+            "top": 128,
+            "right": 628,
+            "bottom": 312,
+            "left": 12
+          },
+          "hero": {
+            "left": 137.68,
+            "right": 217.61454545454546,
+            "top": 67.89090909090909,
+            "bottom": 167.44
+          }
+        }
+      ],
+      "pageErrors": [],
+      "productionWrites": 0,
+      "productionAccountsCreated": false,
+      "productionBetsPlaced": false
+    },
+    "physicalPhoneTested": false
+  },
+  "publication": {
+    "hostRelease": "casino-street-20261104-v1",
+    "runningImageAtPublication": "sha256:ad7e8e5b76d8277f00f4714012553efddabfb3c0f27de94ddb575d95b127e84d",
+    "backupCapturedAtPublication": {
+      "sourceArchive": "/opt/royal-backups/jackie-motion-20261104-v4/source.tgz",
+      "sha256": "eefb22d97408bf4abe3a17feb85d0a97571310df2c428ca441da5a0fb8c175f1",
+      "bytes": 21040,
+      "image": "sha256:ad7e8e5b76d8277f00f4714012553efddabfb3c0f27de94ddb575d95b127e84d",
+      "tag": "royal-game:before-jackie-motion-20261104-v4",
+      "retainedPriorPackage": "/opt/royal-game-modules/original-jackie-chan/versions/1.2.1-53d19f3131cb"
+    },
+    "scopedEvidenceDirectoryPresentAfterLaterUpdates": false,
+    "specificRetirementRunIdentified": false,
+    "sourceArchiveStillPresentAfterLaterMaintenance": false,
+    "receipt": {
+      "format": 1,
+      "sourceCommit": "5867825c8b116f10cfbb17f78690936e52c4412f",
+      "manifestSha256": "42f68badb19cac8574618c9ebaf591716a8c4434d22f516b0e432f2a4f70e2f9",
+      "remoteMain": "b8c7447e141ed01a3406385654b5f2ede31c7f72",
+      "checkedAt": "2026-11-04T20:33:22.884Z"
+    }
+  },
+  "maintenance": {
+    "status": "completed",
+    "requestedAt": 1793825225.3463063,
+    "startedAt": 1793825226.0516677,
+    "finishedAt": 1793825905.2134163,
+    "durationSeconds": 679.16,
+    "summaryPath": "/opt/royal-maintenance/automatic-runs/history/run-ea84754ad76f4b16899c266046560491.json",
+    "summarySha256": "f3a4175c003e2e45dc3f131cc954fcebf74c2df6b430e3f18d4f685d7fd1820e",
+    "currentImage": "sha256:ad7e8e5b76d8277f00f4714012553efddabfb3c0f27de94ddb575d95b127e84d",
+    "rollbackImage": "sha256:d35fb87807807cf91d0c51181f70de1260892689de21d222bf88ef07a7481b4c",
+    "verificationPasses": 2,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "preservedFinancialFiles": 145,
+    "removedEntries": 0,
+    "removedImageTags": 0,
+    "freeBefore": 9979478016,
+    "freeAfter": 9957167104,
+    "projectBrain": {
+      "status": "pending",
+      "queued": true
+    }
+  },
+  "laterObservation": {
+    "hostSourceCommit": "28d451add41e5af2648442c91959030de8e4eb01",
+    "allJackieSourcesInHostBaseline": true,
+    "hostManifestSha256": "ac5bd780c14770ba9fe5885d2322352e773c8cbfde8e5be9c620bf3f9354f769",
+    "image": "sha256:d7028d1e23c5a741dd92811b3904c9b2edd64e1f73296cbe059fe84369f90af9",
+    "health": "healthy",
+    "modulePointerSha256": "ca36ab41e1f8b0dfffe070688dcdc0eec38c7135cafd710a918824019d450b95",
+    "timerEnabled": "enabled",
+    "timerActive": "active",
+    "freeBytes": 9820016640,
+    "publicSmokeRepeatedAfterLaterHostUpdates": true
+  },
+  "maintenanceCompatibility": {
+    "installedVerifierSha256": "64e3c3071e856ef94658aee6d16077a13e0bcc707933dbc009f119a960865c3f",
+    "modifiedByThisRelease": false,
+    "all28UniformSourcesAdoptedByHostBaseline": true,
+    "hostBaselineSourceCommit": "59c1202b466e4f3507e82c5f016240af95dbf5d2",
+    "hostBaselineManifestSha256": "5ae2d9887403f2a6f0efccd4f6e70cbbd8002c205f3b0e7fc71c0e6ea432a400",
+    "scopedSuccessorExtensionPreparedInGit": "e841ee183a48b5bca283210afc6ad1bf47ae9f61",
+    "scopedSuccessorExtensionInstalled": false
+  },
+  "storage": {
+    "server": {
+      "removedArchives": [
+        {
+          "path": "/tmp/royal-jackie-motion-20261104-v1.tgz",
+          "bytes": 78606,
+          "sha256": "8ebbc9640f1f06eade3a6dbed72d7db0da952ab58b816158dbd0f032c7e0e67a"
+        },
+        {
+          "path": "/tmp/royal-jackie-motion-20261104-v2.tgz",
+          "bytes": 77445,
+          "sha256": "161b84ae91fb65a82755528dc1e37c7ecc305d47d416c63ab8a99abf5116ca52"
+        },
+        {
+          "path": "/tmp/royal-jackie-motion-20261104-v3.tgz",
+          "bytes": 77499,
+          "sha256": "8c52b44d26f9fd363dcda3439a0df9b36ae3e935c9de01dbc1660f09773a7347"
+        },
+        {
+          "path": "/tmp/royal-jackie-motion-20261104-v4.tgz",
+          "bytes": 79673,
+          "sha256": "c43f17e0f756a122f79b07331cacb761f8934b8edb7b85ce00c501ab6d9626bc"
+        },
+        {
+          "path": "/tmp/royal-jackie-host-20261104-v4.tgz",
+          "bytes": 1358600,
+          "sha256": "4f532b1af3839241871d7fe9ce2771115ebbf5fea93f2fb0acb9e5d63061d68e"
+        }
+      ],
+      "missingArchives": [],
+      "removedFolders": [],
+      "logicalBytesRemoved": 1671823,
+      "freeBefore": 9818337280,
+      "freeAfter": 9820016640,
+      "physicalReclamationAttributed": false,
+      "retainedReleaseFolderExists": false,
+      "retainedSourceBackupExists": false
+    },
+    "local": {
+      "measuredAt": "2026-11-05T05:22:01.351Z",
+      "retainedFolders": [
+        {
+          "path": "artifacts/work/jackie-motion-fix",
+          "bytes": 10015344,
+          "files": 205,
+          "links": 0
+        },
+        {
+          "path": "artifacts/work/jackie-chan",
+          "bytes": 28549685,
+          "files": 39,
+          "links": 0
+        },
+        {
+          "path": "module-dist",
+          "bytes": 86439375,
+          "files": 162,
+          "links": 0
+        },
+        {
+          "path": "module-build",
+          "bytes": 223989,
+          "files": 7,
+          "links": 0
+        },
+        {
+          "path": "dist",
+          "bytes": 5993784,
+          "files": 5,
+          "links": 0
+        },
+        {
+          "path": "dist-server",
+          "bytes": 4855110,
+          "files": 2,
+          "links": 0
+        }
+      ],
+      "removedFolders": [],
+      "removedArchives": [],
+      "logicalBytesRemoved": 0,
+      "reason": "Earlier automatic approval review rejected recursive deletion of task-owned workspace outputs with blocked by policy. The rejection was not bypassed.",
+      "cleanupCondition": "Remove only verified task-owned temporary outputs and the extra checkout after remote preservation is verified and deletion is permitted. Preserve the current module, active work and the shared node_modules junction.",
+      "freeBytesAtFinalInventory": 307901038592,
+      "preservedSourceCommits": [
+        "5867825c8b116f10cfbb17f78690936e52c4412f",
+        "b8c7447e141ed01a3406385654b5f2ede31c7f72"
+      ],
+      "sharedNodeModulesJunctionPreserved": true
+    }
+  },
+  "limitations": [
+    "Shared project graph queries were unavailable. Source inspection and guarded production inventories supplied the evidence.",
+    "Browser mobile checks used viewport emulation; a physical phone was not connected.",
+    "The later host baseline contains all three Jackie source hashes. The earlier scoped evidence directory and source archive are absent; the specific retirement run was not identified. The completed maintenance summary remains in canonical history and is recorded here."
+  ]
+}
