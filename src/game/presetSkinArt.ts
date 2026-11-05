@@ -1,9 +1,13 @@
+import type { frontalArmPose } from './frontalWalk';
+import { drawProfileArm, type profileArmPose } from './profileWalk';
+
 type Point = readonly [x: number, y: number];
 type Cloth = { light: string; dark: string };
 
 /** Paint details in the current torso path, which already follows the animated shoulders. */
 export function drawPresetClothing(
   c: CanvasRenderingContext2D, person: number, cloth: Cloth, side: boolean, back: boolean,
+  rearSleeves: ReadonlyArray<ReturnType<typeof frontalArmPose>> = [],
 ) {
   const { light, dark } = cloth;
   const seam = 'rgba(49, 31, 44, .44)';
@@ -42,29 +46,157 @@ export function drawPresetClothing(
   shade.addColorStop(1, 'rgba(47, 28, 46, .32)');
   c.fillStyle = shade; c.fillRect(0, 55, 64, 17);
   if (side) {
-    // The closure sits towards the nose in profile. The outer panel remains visible.
-    c.translate(24.5, 0); c.scale(.54, 1);
-  }
-
-  if (back) {
-    if (person === 0 || person === 5 || person === 8 || person === 11) {
-      c.beginPath(); c.moveTo(20, 44);
-      c.quadraticCurveTo(32, 47, 44, 44);
-      c.quadraticCurveTo(44, 53, 32, 57);
-      c.quadraticCurveTo(20, 54, 20, 44);
-      c.fillStyle = dark; c.fill();
-      stroke(light, 1.25, [23, 50], [32, 55], [41, 50]);
-    } else {
-      stroke(dark, 2.6, [19, 50], [26, 53], [38, 53], [45, 50]);
-      stroke(shine, .8, [21, 51], [27, 54], [37, 54], [43, 51]);
+    // The side panel spans the back and the front edge visible beside the sleeve.
+    const depth = c.createLinearGradient(18, 0, 43, 0);
+    depth.addColorStop(0, 'rgba(47, 28, 46, .34)');
+    depth.addColorStop(1, 'rgba(47, 28, 46, 0)');
+    c.fillStyle = depth; c.fillRect(17, 45, 30, 25);
+    switch (person) {
+      case 0:
+        for (const y of [54, 59, 64]) {
+          stroke(seam, 1.6, [19, y - 1], [29, y + .2], [42, y]);
+          stroke(shine, .85, [35, y - 1.2], [42, y - 1.4]);
+        }
+        stroke(brass, 1.25, [44, 51], [43, 65]);
+        break;
+      case 1:
+      case 4: {
+        const lining = person === 1 ? light : '#bc7382';
+        panel(lining, [36, 48], [45, 49], [43, 56], [39, 54]);
+        stroke(seam, 1.25, [24, 52], [25, 61], [23, 67]);
+        pocket(35, 59, 9, dark);
+        stroke(lining, 1.1, [37, 60], [43, 60]);
+        break;
+      }
+      case 2:
+        panel(dark, [19, 49], [44, 50], [44, 55], [20, 54]);
+        pocket(35, 56, 9);
+        stroke(light, 1.1, [36, 65], [43, 64]);
+        break;
+      case 3:
+        panel(dark, [21, 49], [31, 49], [37, 64], [31, 68], [20, 65]);
+        stroke('#f4dba9', 1.6, [35, 51], [39, 64]);
+        stroke(light, 1.8, [28, 65], [42, 65]);
+        break;
+      case 5:
+        panel('#965470', [19, 49], [45, 51], [44, 56], [20, 54]);
+        for (const y of [57, 63]) {
+          stroke(seam, 2.8, [37, y], [44, y + .6]);
+          stroke(light, 1.2, [39, y - .15], [44, y + .35]);
+        }
+        break;
+      case 7:
+        panel(dark, [20, 49], [29, 49], [32, 65], [27, 67], [20, 64]);
+        panel(light, [38, 48], [45, 48], [44, 55], [42, 57]);
+        pocket(36, 58, 9);
+        stroke(brass, 1.2, [35, 61], [39, 63], [43, 61]);
+        break;
+      case 8:
+        panel(light, [22, 47], [44, 48], [45, 53], [23, 52]);
+        panel(light, [37, 51], [44, 51], [45, 63], [39, 64]);
+        for (const y of [55, 59, 62]) stroke('#ad773d', .85, [39, y], [44, y - .6]);
+        stroke(dark, 1.3, [34, 54], [36, 58], [35, 63], [37, 67]);
+        break;
+      case 9:
+        panel(dark, [19, 49], [31, 47], [37, 52], [30, 57], [20, 54]);
+        stroke('#988395', 1.4, [22, 54], [31, 56], [37, 52]);
+        stroke(brass, 1.25, [39, 52], [44, 65]);
+        button(42, 56, '#f1dbc0', 1);
+        break;
+      case 10:
+        for (const y of [55, 62, 68]) {
+          stroke(light, 3.2, [20, y - 1], [31, y], [44, y - .5]);
+          stroke(dark, .8, [21, y + 1.2], [34, y + 1.7], [43, y + 1.2]);
+        }
+        break;
+      case 11:
+        panel(dark, [20, 60], [32, 59], [41, 58], [45, 64], [43, 68], [20, 68]);
+        stroke(shine, 1.25, [32, 61], [39, 60], [43, 64]);
+        stroke(light, 1.35, [40, 49], [40, 55]);
+        break;
+      case 12:
+        panel(dark, [35, 48], [46, 48], [45, 57], [40, 62], [39, 55]);
+        panel(light, [40, 56], [43, 54], [45, 56], [44, 57.5]);
+        stroke(seam, 1.4, [23, 52], [26, 60], [23, 67]);
+        button(42, 64, '#dac392', 1.15);
+        break;
     }
-    if (person === 0 || person === 10) {
-      for (const y of [58, 64]) stroke(person === 10 ? light : seam, 2.35, [15, y - 1], [32, y], [49, y - 1]);
-    } else if (person === 5 || person === 7 || person === 12) {
-      stroke(seam, 1.2, [32, 55], [32, 67]);
-      if (person === 7) stroke(dark, 2.4, [23, 61], [32, 63], [41, 61]);
-    } else if (person === 3 || person === 11) {
-      stroke(light, 1.45, [19, 65], [32, 66], [45, 65]);
+  } else if (back) {
+    switch (person) {
+      case 0:
+      case 11:
+        c.beginPath(); c.moveTo(19, 44);
+        c.quadraticCurveTo(32, 47, 45, 44);
+        c.quadraticCurveTo(44, 55, 32, 58);
+        c.quadraticCurveTo(21, 55, 19, 44);
+        c.fillStyle = dark; c.fill();
+        stroke(light, 1.45, [23, 51], [32, 55], [41, 51]);
+        if (person === 0) {
+          for (const y of [59, 65]) stroke(seam, 1.6, [15, y - .6], [32, y], [49, y - .6]);
+        } else {
+          panel(dark, [16, 64], [32, 66], [48, 64], [48, 70], [16, 70]);
+          stroke(shine, 1.1, [21, 65], [32, 66], [43, 65]);
+        }
+        break;
+      case 1:
+      case 4: {
+        const lining = person === 1 ? light : '#bc7382';
+        stroke(seam, 1.15, [32, 55], [32, 68]);
+        panel(dark, [16, 62], [48, 62], [47, 66], [17, 66]);
+        stroke(lining, 1.65, [19, 63], [32, 64], [45, 63]);
+        button(26, 64, lining, 1.25);
+        button(38, 64, lining, 1.25);
+        break;
+      }
+      case 2:
+        panel(dark, [17, 47], [32, 49], [47, 47], [45, 55], [32, 57], [19, 55]);
+        stroke(light, 1.35, [19, 54], [32, 56], [45, 54]);
+        stroke(seam, 1.45, [32, 56], [32, 67]);
+        break;
+      case 3:
+        panel(dark, [17, 47], [47, 47], [46, 54], [32, 58], [18, 54]);
+        stroke('#f4dba9', 1.6, [20, 53], [32, 56], [44, 53]);
+        stroke(light, 1.65, [17, 65], [32, 67], [47, 65]);
+        break;
+      case 5:
+        panel('#965470', [18, 48], [46, 48], [45, 55], [32, 59], [19, 55]);
+        stroke(dark, 2.8, [21, 53], [32, 57], [43, 53]);
+        stroke(shine, 1.1, [22, 54], [32, 57], [42, 54]);
+        stroke(seam, 1.35, [32, 59], [32, 68]);
+        break;
+      case 7:
+        panel(dark, [23, 47], [41, 47], [39, 64], [43, 68], [21, 68], [25, 64]);
+        stroke(shine, 1.15, [24, 57], [32, 61], [40, 57]);
+        stroke(brass, 1.5, [25, 64], [32, 63], [39, 64]);
+        button(32, 63, brass, 1.35);
+        break;
+      case 8:
+        for (const x of [23, 31, 39]) stroke(dark, 1.25, [x, 54], [x + 2, 58], [x, 63], [x + 2, 67]);
+        panel(light, [17, 45], [47, 45], [45, 52], [32, 54], [19, 52]);
+        panel(light, [20, 49], [28, 51], [27, 64], [20, 63]);
+        for (const y of [54, 58, 62]) stroke('#ad773d', .9, [21, y], [27, y + .5]);
+        break;
+      case 9:
+        panel(dark, [17, 47], [32, 50], [47, 47], [45, 56], [32, 60], [19, 56]);
+        stroke('#988395', 1.45, [19, 54], [32, 58], [45, 54]);
+        stroke(seam, 1.4, [32, 60], [32, 68]);
+        break;
+      case 10:
+        for (const y of [55, 62, 68]) {
+          stroke(light, 3.2, [14, y - .8], [32, y], [50, y - .8]);
+          stroke(dark, .8, [18, y + 1.1], [32, y + 1.7], [46, y + 1.1]);
+        }
+        break;
+      case 12:
+        stroke(dark, 2.7, [18, 50], [26, 53], [38, 53], [46, 50]);
+        stroke(shine, 1.05, [20, 51], [27, 54], [37, 54], [44, 51]);
+        stroke(dark, 1.5, [32, 55], [32, 64], [34, 68]);
+        stroke(shine, .8, [31, 58], [31, 64], [32, 67]);
+        break;
+    }
+    for (const { wrist } of rearSleeves) {
+      stroke(seam, 1.6, [wrist.x - 2.65, wrist.y - 1.6], [wrist.x + 2.65, wrist.y - 1.6]);
+      stroke(shine, .7, [wrist.x - 2.2, wrist.y - 2.4], [wrist.x + 2.2, wrist.y - 2.4]);
     }
   } else {
     switch (person) {
@@ -163,15 +295,47 @@ export function drawPresetClothing(
         break;
     }
   }
-  if (person === 8) {
+  if (person === 8 && !side && !back) {
     c.beginPath(); c.roundRect(19, 46, 26, 7, 2.5);
     c.fillStyle = light; c.fill();
-    const x = back ? 23 : 37;
+    const x = 37;
     panel(light, [x, 50], [x + 6.5, 50], [x + 7, 62], [x, 63]);
     for (const y of [54, 58, 61]) stroke('#ad773d', .9, [x + .5, y], [x + 6.2, y - .5]);
   }
   stroke(shine, .75, [22, 67], [32, 68], [42, 67]);
   c.restore();
+}
+
+/** The sleeve's trim follows the same elbow and cuff as the walking arm. */
+export function drawPresetProfileSleeve(
+  c: CanvasRenderingContext2D, pose: ReturnType<typeof profileArmPose>,
+  palette: { shirt: string; skin: string }, ink: string, far: boolean,
+) {
+  const { shirt, skin } = palette;
+  if (far) {
+    const color = Number.parseInt(shirt.slice(1), 16);
+    const red = Math.round((color >>> 16) * .75 + 13);
+    const green = Math.round((color >>> 8 & 255) * .75 + 8);
+    const blue = Math.round((color & 255) * .75 + 12);
+    drawProfileArm(c, pose, `rgb(${red}, ${green}, ${blue})`, skin, ink);
+    return;
+  }
+  drawProfileArm(c, pose, shirt, skin, ink);
+  const { elbow, wrist } = pose;
+  const dx = wrist.x - elbow.x;
+  const dy = wrist.y - elbow.y;
+  const length = Math.hypot(dx, dy);
+  const normalX = dy / length;
+  const normalY = -dx / length;
+  const cuffX = wrist.x - dx * .19;
+  const cuffY = wrist.y - dy * .19;
+
+  c.beginPath(); c.moveTo(elbow.x - normalX * 2.4, elbow.y - normalY * 2.4);
+  c.quadraticCurveTo(elbow.x - 2, cuffY - 2.7, cuffX - normalX * 2.05, cuffY - normalY * 2.05);
+  c.strokeStyle = 'rgba(255, 234, 192, .34)'; c.lineWidth = 1.15; c.stroke();
+  c.beginPath(); c.moveTo(cuffX - normalX * 2.35, cuffY - normalY * 2.35);
+  c.lineTo(cuffX + normalX * 2.35, cuffY + normalY * 2.35);
+  c.strokeStyle = 'rgba(52, 30, 44, .49)'; c.lineWidth = 1.2; c.stroke();
 }
 
 /** Keep the existing oval and foot pivot so soles land on the same atlas rows. */
@@ -191,14 +355,21 @@ export function drawPresetShoe(
   c.strokeStyle = dress ? '#aa7780' : '#fff1d1';
   c.lineWidth = .68;
   c.beginPath();
-  if (back || dress) {
-    const cap = side ? width * .5 : 0;
-    c.moveTo(cap - 3, -height * .35); c.quadraticCurveTo(cap, -height * .92, cap + 3, -height * .35);
+  if (back) {
+    c.moveTo(-width * .36, -height * .38);
+    c.quadraticCurveTo(0, height * .13, width * .36, -height * .38);
+    c.moveTo(0, -height * .72); c.lineTo(0, height * .12);
+  } else if (side) {
+    c.moveTo(-width * .65, -height * .54);
+    c.lineTo(-width * .51, height * .16);
+    c.moveTo(width * .38, -height * .56);
+    c.quadraticCurveTo(width * .49, -height * .28, width * .73, -height * .18);
+  } else if (dress) {
+    c.moveTo(-3, -height * .35); c.quadraticCurveTo(0, -height * .92, 3, -height * .35);
   } else {
-    const lace = side ? width * .12 : 0;
     for (const offset of [-2, 1]) {
-      c.moveTo(lace + offset - .6, -height * .68);
-      c.lineTo(lace + offset + 1, -height * .13);
+      c.moveTo(offset - .6, -height * .68);
+      c.lineTo(offset + 1, -height * .13);
     }
   }
   c.stroke(); c.restore();
