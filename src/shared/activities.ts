@@ -1,19 +1,20 @@
+import { FURNITURE, furnitureBounds } from './furniture';
 import type { CombatView } from './combatView';
 import { t as translateText, language } from '../i18n/index';
 export type ActivityId = 'hockey' | 'pool' | 'piano' | 'chess' | 'mortal-kombat' | 'durak' | 'transfer-durak' | 'crazy-eights' | 'tsu-e-fa';
 const pianoBounds = {x:750,y:400,w:110,h:60} as const;
 export const ACTIVITIES = {
-  'mortal-kombat': { name:'Mortal Kombat', entry:{x:1460,y:510}, bounds:{x:1408,y:372,w:104,h:103} },
-  hockey: { name:translateText('Аэрохоккей'), entry:{x:1220,y:510}, bounds:{x:1175,y:382,w:90,h:100} },
-  pool: { name:translateText('Бильярд'), entry:{x:562,y:510} },
+  'mortal-kombat': { name:'Mortal Kombat', entry:{x:1160,y:510}, bounds:{x:1108,y:372,w:104,h:103} },
+  hockey: { name:translateText('Аэрохоккей'), entry:{x:745,y:510}, bounds:{x:700,y:382,w:90,h:100} },
+  pool: { name:translateText('Бильярд'), entry:{x:FURNITURE.pool.x,y:FURNITURE.pool.y+26}, bounds:furnitureBounds(FURNITURE.pool) },
   piano: { name:translateText('Рояль'), bounds:pianoBounds,
     entry:{x:pianoBounds.x+pianoBounds.w/2,y:pianoBounds.y+pianoBounds.h+20},
     seat:{x:pianoBounds.x+pianoBounds.w/2,y:pianoBounds.y+pianoBounds.h+14} },
-  chess: { name:translateText('Шахматы'), entry:{x:1550,y:950}, bounds:{x:1497,y:853,w:104,h:59} },
+  chess: { name:translateText('Шахматы'), entry:{x:FURNITURE.table.x,y:FURNITURE.table.y+34}, bounds:furnitureBounds(FURNITURE.table) },
   durak: {name:'Подкидной дурак',entry:{x:1048,y:405},bounds:{x:1004,y:228,w:232,h:122}},
   'transfer-durak': {name:'Переводной дурак',entry:{x:1508,y:405},bounds:{x:1464,y:228,w:232,h:122}},
   'crazy-eights': {name:'Восьмёрки',entry:{x:1818,y:405},bounds:{x:1774,y:228,w:232,h:122}},
-  'tsu-e-fa': {name:language==='en'?'Rock Paper Scissors':'Цу-е-фа',entry:{x:1048,y:1030},bounds:{x:1004,y:853,w:232,h:122}},
+  'tsu-e-fa': {name:language==='en'?'Rock Paper Scissors':'Цу-е-фа',entry:{x:755,y:944},bounds:{x:639,y:782,w:232,h:122}},
 } as const;
 export const isActivity = (value: unknown): value is ActivityId => typeof value === 'string' && Object.hasOwn(ACTIVITIES,value);
 export type Ball = {id:number;x:number;y:number;vx:number;vy:number;active:boolean};

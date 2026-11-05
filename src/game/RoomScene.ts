@@ -386,9 +386,10 @@ export class RoomScene extends Phaser.Scene {
       this.tweens.add({ targets: lamp, alpha: .25, duration: 500 + i * 330, yoyo: true, repeat: -1 });
 
     });
-    for (const [key,item] of Object.entries(FURNITURE).filter(([key])=>this.hall==='tables'&&key!=='sofa')) this.prop(key,item.x,item.y,item.scale);
-    if(this.hall==='tables')this.add.text(ACTIVITIES.chess.entry.x, ACTIVITIES.chess.entry.y+10, translateText('Ш А Х М А Т Ы'), { fontFamily: 'Arial', fontSize: '9px', color: '#d4b880' }).setOrigin(.5).setDepth(2);
-    if(this.hall==='tables')this.add.text(562, 516, translateText('Б И Л Ь Я Р Д'), { fontFamily: 'Arial', fontSize: '9px', color: '#d4b880' }).setOrigin(.5).setDepth(2);
+    if(this.hall==='tables'){
+      const pool=FURNITURE.pool;
+      this.prop('pool',pool.x,pool.y,pool.scale);
+    }
     if(this.hall==='tables')PLANTS.forEach((p,i) => this.prop(plantTexture(this.hall,i),p.x,p.y,p.scale));
   }
 

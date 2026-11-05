@@ -37,6 +37,7 @@ import './own-cabinets.css';
 import './mira-dialog.css';
 import './ui/compact-header.css';
 import { DRINKS, HALLS, hallLinks, isExteriorHall, isCasinoFloor, activityHall, type HallId } from './shared/world';
+import { ACTIVITIES } from './shared/activities';
 import type { BreakerStatus } from './game/breaker';
 import { SocialUI } from './ui/SocialUI';
 import { CatUI } from './ui/CatUI';
@@ -56,7 +57,7 @@ const icons = {
 };
 const icon = (name: keyof typeof icons, cls = '') => `<svg class="icon ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name]}</svg>`;
 const catalogCabinets = cabinetsInHall('arcade');
-const hallGameCount = (hall: HallId) => hall === 'arcade' ? ROYAL_PLATFORM_GAMES.length : cabinetsInHall(hall).length + (hall === 'tables'||hall==='github' ? 3 : 0);
+const hallGameCount = (hall: HallId) => hall === 'arcade' ? ROYAL_PLATFORM_GAMES.length : cabinetsInHall(hall).length + (hall === 'tables'||hall==='github' ? Object.keys(ACTIVITIES).filter(id=>activityHall(id)===hall).length : 0);
 const cabinetCards = (cabinets: Cabinet[]) => cabinets.map(cabinet => {
   const index = catalogCabinets.indexOf(cabinet);
   return tr`<button id="${'cabinet-' + cabinet.id}" class="cabinet-card" data-cabinet="${cabinet.id}" data-hall="${cabinetHall(cabinet)}" aria-label="Подойти к автомату ${cabinet.name}"><div class="cabinet-art art-${index}" id="art-${index}"></div><div class="cabinet-copy">${cabinet.demo ? translateText('<span class="card-kicker">ДЕМО</span>') : ''}<strong>${cabinet.name}</strong><small>${cabinet.subtitle}</small></div>${icon('arrow', 'card-arrow')}</button>`;

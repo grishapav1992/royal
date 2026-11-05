@@ -4,7 +4,6 @@ import {hallObstacles, activityHall, HALLS, HALL_DOORS, SEATS, NPC_SPAWNS} from 
 import {CABINETS,cabinetHall,cabinetsInHall} from '../src/shared/cabinets';
 import {cabinetSeat} from '../src/shared/cabinetSeating';
 import {ACTIVITIES} from '../src/shared/activities';
-import {FURNITURE,furnitureBounds} from '../src/shared/furniture';
 import {walkable,findPath} from '../src/game/navigation';
 import {Activities} from '../server/activities';
 import {applyMovementInput} from '../src/shared/movement';
@@ -17,23 +16,24 @@ test('each hall has reachable games and only its own furniture collisions',()=>{
   assert(walkable(activity.entry.x,activity.entry.y,obstacles,16));
   assert(findPath(HALLS[hall].spawn,activity.entry,obstacles).length>0,id);
  }
- const poolRear={x:FURNITURE.pool.x,y:furnitureBounds(FURNITURE.pool).y+7};
+ const pool=ACTIVITIES.pool.bounds, chess=ACTIVITIES.chess.bounds;
+ const poolRear={x:pool.x+pool.w-8,y:pool.y+7};
  const hockeyRear={x:ACTIVITIES.hockey.entry.x,y:ACTIVITIES.hockey.bounds.y+2};
- for(const [x,y,hall] of [[poolRear.x,poolRear.y,'tables'],[1550,875,'tables'],[hockeyRear.x,hockeyRear.y,'tables'],[850,450,'arcade'],[120,290,'arcade'],[500,245,'arcade']] as const){
+ for(const [x,y,hall] of [[poolRear.x,poolRear.y,'tables'],[ACTIVITIES.chess.entry.x,chess.y+15,'tables'],[hockeyRear.x,hockeyRear.y,'tables'],[850,450,'arcade'],[200,400,'arcade'],[1365,405,'arcade']] as const){
   assert(!walkable(x,y,hallObstacles(hall)),hall+' furniture');
   assert(walkable(x,y,hallObstacles(hall==='arcade'?'tables':'arcade')),hall+' absent furniture');
  }
- const body={hall:'tables',x:562,y:510,facing:'up',moving:false,seat:'',action:'idle',drink:'',actionUntil:0};
+ const body={hall:'tables',...ACTIVITIES.pool.entry,facing:'up',moving:false,seat:'',action:'idle',drink:'',actionUntil:0};
  for(let seq=1;seq<80;seq++)applyMovementInput(body,{seq,x:0,y:-1,ms:50});
- assert(body.y>490,'pool stops walking');
+ assert(body.y>=pool.y+pool.h,'pool stops walking');
  Object.assign(body,{hall:'arcade',...poolRear});
  for(let seq=80;seq<110;seq++)applyMovementInput(body,{seq,x:1,y:0,ms:50});
- assert(body.x>690,'the casino aisle crosses the space occupied by the pool in the games room');
+ assert(body.x>poolRear.x+150,'the casino aisle crosses the space occupied by the pool in the games room');
 });
 
 test('current casino games, doors and seating have clear routes from both entrances',()=>{
  const obstacles=hallObstacles('arcade');
- const destinations=[...SEATS.map(s=>({id:s.id,point:s.entry})),...cabinetsInHall('arcade').map(c=>({id:c.id,point:{x:c.x,y:c.y+43}})),{id:'hall-door',point:HALL_DOORS.arcade.entry}];
+ const destinations=[...SEATS.filter(s=>s.hall==='arcade').map(s=>({id:s.id,point:s.entry})),...cabinetsInHall('arcade').map(c=>({id:c.id,point:{x:c.x,y:c.y+43}})),{id:'hall-door',point:HALL_DOORS.arcade.entry}];
  for(const [x,y] of NPC_SPAWNS)assert(walkable(x,y,obstacles,16),'NPC spawn');
  for(const {id,point:destination} of destinations){
   assert(walkable(destination.x,destination.y,obstacles,16),id+' approach');

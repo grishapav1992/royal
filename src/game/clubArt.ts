@@ -27,7 +27,7 @@ export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:str
     g.fillStyle(0xd7b785).fillRect(x-22,670,44,7);
     g.lineStyle(1,0xad9069).lineBetween(x-10,682,x-10,725);
   }
-  const crest=hall==='arcade'?{x:1000,y:1030}:{x:890,y:840};
+  const crest=hall==='arcade'?{x:1000,y:1030}:hall==='tables'?{x:1180,y:1120}:{x:890,y:840};
   g.lineStyle(3,0xc2a06a,.8).strokeCircle(crest.x,crest.y,hall==='arcade'?65:77);
   g.lineStyle(1,0xc2a06a,.6).strokeCircle(crest.x,crest.y,hall==='arcade'?55:65);
   // The floor image already owns this layer, so bake its fixed decoration once.
@@ -41,7 +41,7 @@ export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:str
   scene.add.text(crest.x,crest.y+34,'ROYAL CLUB',{fontFamily:'Arial',fontSize:'11px',letterSpacing:3,color:'#c2aa7b'}).setOrigin(.5).setDepth(.04);
   for(const lounge of LOUNGES.filter(l=>l.hall===hall)) {
     scene.add.image(lounge.x,lounge.y,'sofa').setOrigin(.5,1).setDisplaySize(198,98).setDepth(lounge.y-20);
-    scene.add.image(lounge.x,lounge.y+118,'table').setOrigin(.5,1).setDisplaySize(104,62).setDepth(lounge.y+114);
+    if(hall!=='tables')scene.add.image(lounge.x,lounge.y+118,'table').setOrigin(.5,1).setDisplaySize(104,62).setDepth(lounge.y+114);
     const lamp=scene.make.graphics({x:0,y:0},false);
     lamp.fillStyle(0x332d33).fillEllipse(0,0,34,10).fillRect(-3,-81,6,78);
     lamp.fillStyle(0xe5c594).fillTriangle(-22,-60,0,-96,22,-60);

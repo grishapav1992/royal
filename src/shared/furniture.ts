@@ -2,9 +2,9 @@ import type { Obstacle } from '../game/navigation';
 
 // Visual dimensions and solid bounds share one source of truth.
 export const FURNITURE = {
-  pool: { x:562,y:484,width:208,height:134,scale:1.05,solid:{x:0,y:0,w:204,h:130} },
+  pool: { x:330,y:484,width:208,height:134,scale:1.05,solid:{x:0,y:0,w:204,h:130} },
   sofa: { x:222,y:458,width:158,height:82,scale:1.18,solid:{x:4,y:5,w:150,h:74} },
-  table: { x:1550,y:916,width:112,height:66,scale:1,solid:{x:3,y:3,w:104,h:59} },
+  table: { x:330,y:892,width:112,height:66,scale:1,solid:{x:3,y:3,w:104,h:59} },
 } as const;
 export const BAR_POSITION = {x:140,y:340} as const;
 // Counter art, staff, visitors and server interactions use the same local coordinates.

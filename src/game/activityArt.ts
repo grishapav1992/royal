@@ -6,6 +6,8 @@ export function drawActivities(scene:Phaser.Scene,open:(id:ActivityId)=>void,hal
     if(scene.textures.exists(key))return key;
     const t=scene.textures.createCanvas(key,w*3,h*3)!;t.context.scale(3,3);paint(t.context);t.refresh();return key;
   };
+  const activate=(image:Phaser.GameObjects.Image,id:ActivityId)=>image
+    .setInteractive({useHandCursor:true}).on('pointerdown',()=>open(id));
   const hockey=make('social-hockey',100,116,c=>{
     c.fillStyle='#080f1c';c.fillRect(8,85,8,31);c.fillRect(84,85,8,31);
     const g='#d95244';
@@ -17,7 +19,7 @@ export function drawActivities(scene:Phaser.Scene,open:(id:ActivityId)=>void,hal
     for(const [x,y,color] of [[35,24,'#bb5f79'],[65,70,'#55b9d3']] as const){c.fillStyle='#20394766';c.beginPath();c.ellipse(x,y+4,10,6,0,0,7);c.fill();c.fillStyle=color;c.beginPath();c.ellipse(x,y,9,6,0,0,7);c.fill();c.fillStyle='#e4faff';c.beginPath();c.ellipse(x,y-3,4,3,0,0,7);c.fill();}
     c.fillStyle='#22364a';c.beginPath();c.ellipse(52,46,4,3,0,0,7);c.fill();c.fillStyle='#fff2cb';c.font='5px sans-serif';c.fillText('AIR HOCKEY',30,100);
   });
-  if(hall==='tables')scene.add.image(ACTIVITIES.hockey.bounds.x-5,ACTIVITIES.hockey.bounds.y-7,hockey).setOrigin(0).setDisplaySize(100,116).setDepth(ACTIVITIES.hockey.bounds.y+103);
+  if(hall==='tables')activate(scene.add.image(ACTIVITIES.hockey.bounds.x-5,ACTIVITIES.hockey.bounds.y-7,hockey).setOrigin(0).setDisplaySize(100,116).setDepth(ACTIVITIES.hockey.bounds.y+103),'hockey');
   const piano=make('social-piano',120,91,c=>{
     c.fillStyle='#131722';for(const x of [14,96])c.fillRect(x,56,6,20);
     const g='#363c3a';
@@ -37,7 +39,7 @@ export function drawActivities(scene:Phaser.Scene,open:(id:ActivityId)=>void,hal
       if(row<2||row>5){c.fillStyle='#0006';c.beginPath();c.ellipse(x+4.5,y+4.5,3,1.5,0,0,7);c.fill();c.fillStyle=row<2?'#20232b':'#fff1d6';c.beginPath();c.ellipse(x+4,y+3,2.6,1.7,0,0,7);c.fill();c.fillRect(x+2.8,y,2.4,3);c.beginPath();c.arc(x+4,y,1.7,0,7);c.fill();}
     }
   });
-  if(hall==='tables')scene.add.image(ACTIVITIES.chess.bounds.x-1,ACTIVITIES.chess.bounds.y-2,chess).setOrigin(0).setDisplaySize(108,64).setDepth(ACTIVITIES.chess.bounds.y+64);
+  if(hall==='tables')activate(scene.add.image(ACTIVITIES.chess.bounds.x-1,ACTIVITIES.chess.bounds.y-2,chess).setOrigin(0).setDisplaySize(108,64).setDepth(ACTIVITIES.chess.bounds.y+64),'chess');
   const combat=make('social-mortal-kombat',104,143,c=>{
     c.fillStyle='#201d29';c.beginPath();c.roundRect(0,0,104,143,8);c.fill();
     c.fillStyle='#b99b56';c.fillRect(3,4,98,22);c.fillStyle='#140f17';c.font='bold 10px sans-serif';c.fillText('MORTAL KOMBAT',7,19);
@@ -46,7 +48,8 @@ export function drawActivities(scene:Phaser.Scene,open:(id:ActivityId)=>void,hal
     for(const x of [27,69]){c.fillStyle='#19111c';c.fillRect(x,97,3,13);c.fillStyle='#d97960';c.beginPath();c.arc(x+1,96,5,0,7);c.fill();}
     c.fillStyle='#e8cb7d';c.font='8px sans-serif';c.fillText('PVP  /  5%',31,134);
   });
-  if(hall==='tables')scene.add.image(1408,332,combat).setOrigin(0).setDepth(475);
+  const combatBounds=ACTIVITIES['mortal-kombat'].bounds;
+  if(hall==='tables')activate(scene.add.image(combatBounds.x,combatBounds.y-40,combat).setOrigin(0).setDisplaySize(104,143).setDepth(combatBounds.y+combatBounds.h),'mortal-kombat');
   for(const id of ['durak','transfer-durak','crazy-eights','tsu-e-fa'] as const){
     if(activityHall(id)!==hall)continue;
     const b=ACTIVITIES[id].bounds;
@@ -58,11 +61,11 @@ export function drawActivities(scene:Phaser.Scene,open:(id:ActivityId)=>void,hal
       c.font='11px sans-serif';c.fillText(id==='tsu-e-fa'?'Камень · Ножницы · Бумага':'1 на 1 · USDT',116,78);
       for(const x of [42,157]){c.fillStyle='#342522';c.beginPath();c.roundRect(x,125,38,25,8);c.fill();c.strokeStyle='#b9945f';c.stroke();}
     });
-    scene.add.image(b.x,b.y,texture).setOrigin(0).setDisplaySize(232,152).setDepth(b.y+b.h);
+    activate(scene.add.image(b.x,b.y,texture).setOrigin(0).setDisplaySize(232,152).setDepth(b.y+b.h),id);
   }
-  for(const id of Object.keys(ACTIVITIES) as ActivityId[]){
+  for(const id of ['pool','piano'] as const){
     if(activityHall(id)!==hall)continue;
-    const bounds=id==='pool'?{x:454,y:344,w:216,h:140}:ACTIVITIES[id].bounds;
+    const bounds=ACTIVITIES[id].bounds;
     scene.add.zone(bounds.x+bounds.w/2,bounds.y+bounds.h/2,bounds.w,bounds.h).setDepth(bounds.y+bounds.h+2).setInteractive({useHandCursor:true}).on('pointerdown',()=>open(id));
   }
 }

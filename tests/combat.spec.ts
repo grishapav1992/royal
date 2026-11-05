@@ -14,7 +14,11 @@ async function login(p:Page,identity:string,room?:string){
 async function open(p:Page){
  await p.bringToFront();
  if(await p.locator('#room-overview').getAttribute('aria-pressed')!=='true')await p.locator('#room-overview').click();
- const point=await worldPoint(p,1460,425);await p.mouse.click(point.x,point.y);
+ const {x,y,w,h}=await p.evaluate(async()=>{
+  const modulePath='/src/shared/activities.ts';
+  return (await import(modulePath)).ACTIVITIES['mortal-kombat'].bounds;
+ });
+ const point=await worldPoint(p,x+w/2,y+h/2);await p.mouse.click(point.x,point.y);
  await expect(p.locator('[data-combat]')).toBeVisible({timeout:25000});
 }
 async function balance(p:Page){return p.evaluate(async()=>{const me=await(await fetch('/api/auth/me')).json();const response=await fetch('/api/demo-wallet',{headers:{'X-Royal-Account-Id':me.account?.id??me.id}});const wallet=await response.json();if(!response.ok)throw Error('Balance pending');return wallet.balance;});}

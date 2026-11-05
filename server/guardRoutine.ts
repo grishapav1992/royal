@@ -28,10 +28,10 @@ export const GUARD_STOPS: Record<HallId, GuardStop[]> = {
     { id:'entrance', x:600, y:610, facing:'down', activity:'watch' },
   ],
   tables: [
-    { id:'pool', x:710, y:465, facing:'left', activity:'inspect' },
+    { id:'pool', x:ACTIVITIES.pool.entry.x+148, y:465, facing:'left', activity:'inspect' },
     { id:'window', x:740, y:235, facing:'up', activity:'window' },
-    { id:'hockey', x:1220, y:535, facing:'up', activity:'inspect' },
-    { id:'chess', x:1550, y:990, facing:'left', activity:'watch' },
+    { id:'hockey', x:ACTIVITIES.hockey.entry.x, y:535, facing:'up', activity:'inspect' },
+    { id:'chess', x:ACTIVITIES.chess.entry.x, y:990, facing:'left', activity:'watch' },
     { id:'entrance', x:855, y:1250, facing:'right', activity:'watch' },
   ],
 };

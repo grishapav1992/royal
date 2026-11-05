@@ -1,4 +1,5 @@
 import { t as translateText } from '../i18n/index';
+import { ACTIVITIES } from './activities';
 import type { HallId } from './world';
 import type { Obstacle } from '../game/navigation';
 
@@ -25,11 +26,11 @@ export const CLUB_ZONES: Record<HallId, ClubZone[]> = {
     {name:translateText('ГОСТИНАЯ'),x:150,y:800,w:800,h:370,color:0x453141},
   ],
   tables: [
-    {name:translateText('БИЛЬЯРДНЫЙ ЗАЛ'),x:330,y:285,w:440,h:370,color:0x2d4c3f},
-    {name:translateText('АЭРОХОККЕЙ'),x:1050,y:300,w:350,h:310,color:0x334653},
-    {name:translateText('ЗОНА ОТДЫХА'),x:1500,y:245,w:480,h:380,color:0x3d3447},
-    {name:translateText('ТИХАЯ БИБЛИОТЕКА'),x:1240,y:730,w:730,h:400,color:0x414237},
-    {name:translateText('ГОСТИНАЯ НАВЕРХУ'),x:170,y:780,w:640,h:370,color:0x3b4844},
+    {name:ACTIVITIES.pool.name,x:155,y:285,w:350,h:325,color:0x2d4c3f},
+    {name:ACTIVITIES.hockey.name,x:580,y:285,w:330,h:325,color:0x334653},
+    {name:ACTIVITIES['mortal-kombat'].name,x:995,y:285,w:330,h:325,color:0x3d3447},
+    {name:ACTIVITIES.chess.name,x:155,y:745,w:350,h:290,color:0x414237},
+    {name:ACTIVITIES['tsu-e-fa'].name,x:580,y:745,w:350,h:290,color:0x3b4844},
   ],
   github: [
     {name:translateText('ПРИВЕТСТВИЕ И ПРАВИЛА'),x:170,y:245,w:650,h:360,color:0x383345},
@@ -41,19 +42,19 @@ export const CLUB_ZONES: Record<HallId, ClubZone[]> = {
 export type Lounge = { hall: HallId; x: number; y: number; color: number };
 export const LOUNGES: Lounge[] = [
   {hall:'arcade',x:350,y:950,color:0x895064}, {hall:'arcade',x:750,y:950,color:0x895064},
-  {hall:'tables',x:350,y:900,color:0x527a70}, {hall:'tables',x:680,y:1010,color:0x527a70}, {hall:'tables',x:1800,y:820,color:0x895064},
+  {hall:'tables',x:1180,y:905,color:0x527a70},
   {hall:'github',x:350,y:900,color:0x895064}, {hall:'github',x:670,y:1020,color:0x527a70}, {hall:'github',x:670,y:1190,color:0x527a70},
 ];
-export const CLUB_PLANTS = [ {x:1110,y:440}, {x:2020,y:460}, {x:1080,y:900}, {x:2020,y:1120}, {x:110,y:1180} ];
+export const CLUB_PLANTS = [ {x:1345,y:450}, {x:1345,y:920}, {x:110,y:1180} ];
 const CARD_FLOOR_PLANTS = [{x:110,y:350},{x:110,y:1180},{x:940,y:400},{x:940,y:1100},{x:1950,y:520},{x:1950,y:1050}];
 const ARCADE_PLANTS = [{x:1100,y:850},{x:1780,y:850},{x:1940,y:450},{x:1940,y:1120},{x:110,y:1180}];
 export const clubPlants = (hall: HallId) => hall === 'github' ? CARD_FLOOR_PLANTS : hall === 'arcade' ? ARCADE_PLANTS : CLUB_PLANTS;
-export const clubColumns = (hall: HallId): readonly number[] => hall === 'arcade' ? [220,750] : hall === 'tables' ? [220,750,1140,2000] : [220,750];
+export const clubColumns = (hall: HallId): readonly number[] => hall === 'arcade' ? [220,750] : hall === 'tables' ? [220,1140] : [220,750];
 export const loungeBounds = (lounge: Lounge): Obstacle => ({x:lounge.x-94,y:lounge.y-80,w:188,h:60});
 export const clubObstacles = (hall: HallId): Obstacle[] => [
   ...(hall==='arcade'?LUELON_NEW_ZONE_OBSTACLES:[]),
   ...clubColumns(hall).map(x=>({x:x-19,y:670,w:38,h:63})),
   ...LOUNGES.filter(lounge=>lounge.hall===hall).map(loungeBounds),
-  ...LOUNGES.filter(lounge=>lounge.hall===hall).map(lounge=>({x:lounge.x-47,y:lounge.y+76,w:94,h:36})),
+  ...LOUNGES.filter(lounge=>lounge.hall===hall&&hall!=='tables').map(lounge=>({x:lounge.x-47,y:lounge.y+76,w:94,h:36})),
   ...clubPlants(hall).map(plant=>({x:plant.x-18,y:plant.y-32,w:36,h:26})),
 ];

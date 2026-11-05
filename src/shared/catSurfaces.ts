@@ -30,9 +30,9 @@ export const CAT_SURFACES: readonly CatSurface[] = [
   }),
   ...LOUNGES.flatMap((lounge,index):CatSurface[]=>[
     {id:'sofa:'+index,hall:lounge.hall,kind:'sofa',label:'На спинке дивана',approach:{x:lounge.x+124,y:lounge.y-6},perch:{x:lounge.x+46,y:lounge.y-73},height:67,width:72,depth:lounge.y-17,facing:'left'},
-    {id:'coffee-table:'+index,hall:lounge.hall,kind:'table',label:'На журнальном столике',approach:{x:lounge.x+78,y:lounge.y+122},perch:{x:lounge.x+16,y:lounge.y+80},height:42,width:72,depth:lounge.y+116,facing:'left'},
+    ...(lounge.hall==='tables'?[]:[{id:'coffee-table:'+index,hall:lounge.hall,kind:'table',label:'На журнальном столике',approach:{x:lounge.x+78,y:lounge.y+122},perch:{x:lounge.x+16,y:lounge.y+80},height:42,width:72,depth:lounge.y+116,facing:'left'} as const]),
   ]),
-  {id:'reading-table',hall:'tables',kind:'table',label:'На столике в библиотеке',approach:{x:FURNITURE.table.x+80,y:FURNITURE.table.y+16},perch:{x:FURNITURE.table.x+16,y:FURNITURE.table.y-46},height:62,width:80,depth:FURNITURE.table.y+1,facing:'left'},
+  {id:'reading-table',hall:'tables',kind:'table',label:'На шахматном столе',approach:{x:FURNITURE.table.x+80,y:FURNITURE.table.y+16},perch:{x:FURNITURE.table.x+16,y:FURNITURE.table.y-46},height:62,width:80,depth:FURNITURE.table.y+1,facing:'left'},
 ];
 const surfaces=new Map(CAT_SURFACES.map(surface=>[surface.id,surface]));
 export const catSurface = (id:string):CatSurface|undefined => surfaces.get(id);

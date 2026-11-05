@@ -27,9 +27,11 @@ export function rearInteriorViews(hall:HallId):RearInteriorView[]{
   ];
   else if(hall==='tables')views=[
     around(hall,'billiards','Бильярд',FURNITURE.pool.x,FURNITURE.pool.y-FURNITURE.pool.height/2),
-    lounge(1),
+    lounge(0),
     around(hall,'air-hockey','Аэрохоккей',ACTIVITIES.hockey.entry.x,ACTIVITIES.hockey.bounds.y+50,320),
-    around(hall,'chess','Шахматный стол',FURNITURE.table.x,FURNITURE.table.y-30,320),lounge(2),
+    around(hall,'chess','Шахматный стол',FURNITURE.table.x,FURNITURE.table.y-30,320),
+    around(hall,'combat',ACTIVITIES['mortal-kombat'].name,ACTIVITIES['mortal-kombat'].entry.x,ACTIVITIES['mortal-kombat'].bounds.y+25,320),
+    around(hall,'tsu-e-fa',ACTIVITIES['tsu-e-fa'].name,ACTIVITIES['tsu-e-fa'].entry.x,ACTIVITIES['tsu-e-fa'].bounds.y+50,320),
   ];
   else views=[lounge(0),...cabinetsInHall(hall).map(c=>cabinet(c.id))];
   const result=views.filter((p):p is RearInteriorView=>Boolean(p));

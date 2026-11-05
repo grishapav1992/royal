@@ -1,4 +1,5 @@
 import { t as translateText } from '../i18n/index';
+import { ACTIVITIES } from './activities';
 import { CABINETS, cabinetsInHall } from './cabinets';
 import { hallObstacles, SEATS, type HallId } from './world';
 import { LOUNGES } from './clubLayout';
@@ -15,7 +16,7 @@ export function guestStops(hall: HallId): Stop[] {
     ...(hall==='arcade'?SEATS.filter(seat=>seat.kind==='bar').map((seat,i)=>({id:'bar-guest-'+i,x:seat.x,y:seat.y,mood:'drinking' as const,facing:'up' as const})):[]),
     ...games.slice(7),
     ...LOUNGES.filter(l=>l.hall===hall).map((l,i)=>({id:'lounge-guest-'+i,x:l.x+48,y:l.y+4,mood:'resting' as const,facing:'down' as const,seat:'ambient-'+hall+'-'+i})),
-    ...(hall==='tables'?[{id:'pool-watch',x:685,y:520,mood:'playing' as const,facing:'left' as const},{id:'hockey-watch',x:1290,y:500,mood:'playing' as const,facing:'left' as const},{id:'library',x:1550,y:950,mood:'resting' as const,facing:'up' as const},{id:'library-reading',x:1710,y:1140,mood:'resting' as const,facing:'left' as const}]:[]),
+    ...(hall==='tables'?[{id:'pool-watch',x:ACTIVITIES.pool.entry.x+123,y:520,mood:'playing' as const,facing:'left' as const},{id:'hockey-watch',x:ACTIVITIES.hockey.entry.x+70,y:500,mood:'playing' as const,facing:'left' as const},{id:'chess-watch',...ACTIVITIES.chess.entry,mood:'playing' as const,facing:'up' as const},{id:'tsu-e-fa-watch',...ACTIVITIES['tsu-e-fa'].entry,mood:'playing' as const,facing:'up' as const}]:[]),
     ...(hall==='github'?[{id:'salon-reading',x:430,y:450,mood:'resting' as const,facing:'up' as const},{id:'salon-welcome',x:730,y:530,mood:'resting' as const,facing:'left' as const}]:[]),
   ];
 }

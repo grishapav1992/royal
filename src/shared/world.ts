@@ -22,7 +22,8 @@ export type Seat = { hall?: HallId; id: string; kind: 'sofa' | 'bar'; x: number;
 export const SEATS: readonly Seat[] = [
   ...[49,134,214].map((x,i)=>({id:'bar-'+i,hall:'arcade' as const,kind:'bar' as const,...barPoint(x,211),entry:barPoint(x,253),facing:'up' as const})),
   ...LOUNGES.filter(lounge=>lounge.hall==='arcade').map((lounge,i)=>({id:i===0?'arcade-lounge':'arcade-lounge-'+(i+1),hall:lounge.hall,kind:'sofa' as const,x:lounge.x-30,y:lounge.y+10,entry:{x:lounge.x-30,y:lounge.y+40},facing:'down' as const})),
-  ...(['tables','github'] as const).map(hall=>({id:hall+'-lounge',hall,kind:'sofa' as const,x:320,y:910,entry:{x:320,y:950},facing:'down' as const})),
+  ...LOUNGES.filter(lounge=>lounge.hall==='tables').map(lounge=>({id:'tables-lounge',hall:lounge.hall,kind:'sofa' as const,x:lounge.x-30,y:lounge.y+10,entry:{x:lounge.x-30,y:lounge.y+40},facing:'down' as const})),
+  {id:'github-lounge',hall:'github',kind:'sofa',x:320,y:910,entry:{x:320,y:950},facing:'down'},
 ];
 export const BAR_APPROACH = barPoint(125,241);
 export const ROOM_OBSTACLES: Obstacle[] = [
@@ -121,7 +122,7 @@ const TABLE_OBSTACLES = [
   hallRightWall('tables'),
   ...clubObstacles('tables'),
   ...cabinetsInHall('tables').map(cabinetBounds),
-  furnitureBounds(FURNITURE.pool), furnitureBounds(FURNITURE.table), ACTIVITIES.hockey.bounds, ACTIVITIES['mortal-kombat'].bounds, ACTIVITIES['tsu-e-fa'].bounds, ...PLANTS.map(plantBounds),
+  ACTIVITIES.pool.bounds, ACTIVITIES.chess.bounds, ACTIVITIES.hockey.bounds, ACTIVITIES['mortal-kombat'].bounds, ACTIVITIES['tsu-e-fa'].bounds, ...PLANTS.map(plantBounds),
 ];
 export const DRINKS = [
   { id: 'lemonade', name: translateText('Лимонад'), description: translateText('Лимон, мята и пузырьки · без алкоголя'), color: '#d6ed88', strength: 0 },

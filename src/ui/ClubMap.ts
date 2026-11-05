@@ -2,8 +2,8 @@ import { t as translateText } from '../i18n/index';
 import type { RoomScene } from '../game/RoomScene';
 import { CLUB_ZONES, LOUNGES } from '../shared/clubLayout';
 import { BAR_SOLID } from '../shared/furniture';
-import { ACTIVITIES } from '../shared/activities';
-import { HALLS, hallLinks, isCasinoFloor } from '../shared/world';
+import { ACTIVITIES, type ActivityId } from '../shared/activities';
+import { HALLS, hallLinks, isCasinoFloor, activityHall } from '../shared/world';
 import { elevatorDock } from '../shared/elevator';
 import { cabinetsInHall } from '../shared/cabinets';
 import { isCardGame } from '../shared/cardTables';
@@ -58,7 +58,7 @@ export class ClubMap {
     for(const zone of CLUB_ZONES[state.hall]){ctx.fillStyle='#'+zone.color.toString(16).padStart(6,'0');ctx.fillRect(zone.x,zone.y,zone.w,zone.h);}
     for(const lounge of LOUNGES.filter(lounge=>lounge.hall===state.hall)){
       ctx.fillStyle='#ba8793';ctx.fillRect(lounge.x-99,lounge.y-98,198,98);
-      ctx.fillStyle='#d0b47b';ctx.fillRect(lounge.x-52,lounge.y+56,104,62);
+      if(state.hall!=='tables'){ctx.fillStyle='#d0b47b';ctx.fillRect(lounge.x-52,lounge.y+56,104,62);}
     }
     if(state.hall==='arcade'){
       ctx.fillStyle='#d0b47b';ctx.fillRect(BAR_SOLID.x,BAR_SOLID.y,BAR_SOLID.w,BAR_SOLID.h);
@@ -69,6 +69,13 @@ export class ClubMap {
         ctx.fillStyle='#71c9b0';ctx.beginPath();ctx.ellipse(cabinet.x,cabinet.y-47,112,50,0,0,Math.PI*2);ctx.fill();
         ctx.fillStyle='#f2d3a2';ctx.beginPath();ctx.arc(cabinet.x,cabinet.y-103,14,0,Math.PI*2);ctx.fill();
       }else{ctx.fillStyle=({royal:'#86d2e5',github:'#a1d9b8',casinoapipro:'#e4ca8c',luelon:'#cfafe4'} as Record<string,string>)[cabinet.collection??'']??'#e4ca8c';ctx.fillRect(cabinet.x-28,cabinet.y-35,56,45);}
+    }
+    if(state.hall==='tables'){
+      ctx.fillStyle='#71c9b0';
+      for(const id of Object.keys(ACTIVITIES) as ActivityId[]){
+        if(activityHall(id)!=='tables')continue;
+        const {x,y,w,h}=ACTIVITIES[id].bounds;ctx.fillRect(x,y,w,h);
+      }
     }
     if(state.hall==='github'){
       ctx.font='bold 64px Arial';ctx.textAlign='center';ctx.fillStyle='#d6e6ed';ctx.fillText(translateText('КАРТОЧНЫЙ САЛОН'),2500,838);

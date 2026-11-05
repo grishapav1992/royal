@@ -1,3 +1,4 @@
+import { FURNITURE } from '../shared/furniture';
 import { hallFloor, HALL_WALL } from '../shared/clubGeometry';
 import { HALL_WINDOW_DIVIDERS } from './hallWindows';
 import type Phaser from 'phaser';
@@ -47,9 +48,9 @@ export function drawHallIdentity(scene: Phaser.Scene, hall: HallId) {
   }else if(hall==='github'){
     art('card-salon-sign',1430,106,342,106);
   }else{
-    art('billiard-sign',540,166,316,98);
-    art('billiard-lamp',562,323,156,66,3);
-    lights.fillStyle(0xf6e3ab,.07).fillEllipse(562,378,248,148);
+    art('billiard-sign',500,166,316,98);
+    art('billiard-lamp',FURNITURE.pool.x,323,156,66,3);
+    lights.fillStyle(0xf6e3ab,.07).fillEllipse(FURNITURE.pool.x,378,248,148);
   }
 }
 
