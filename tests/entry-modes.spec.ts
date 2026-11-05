@@ -32,7 +32,7 @@ test('entry choice remembers the mode and opens the real casino without loading 
   page.on('request', request => { if (/\/game\/(?:RoomScene|ClubWorld)\./.test(request.url())) worldRequests.push(request.url()); });
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
-  await expect(page.locator('#entry-title')).toHaveText('Как начнём?');
+  await expect(page.locator('#entry-title')).toHaveText('Как будешь играть?');
   await page.screenshot({ path: proof + '/entry-desktop.png' });
   await page.locator('#remember-entry-mode').check();
   await page.locator('[data-entry-mode="casino"]').click();
@@ -149,5 +149,5 @@ test('new casino player skips the character editor and can change entry preferen
   await page.locator('#cancel-name').click(); await page.reload();
   // The explicit URL mode remains usable; without it, the chooser returns.
   await page.goto('/'); await expect(page.locator('#entry-title')).toBeVisible();
-  await page.goto('/?lang=en'); await expect(page.locator('#entry-title')).toHaveText('How shall we begin?');
+  await page.goto('/?lang=en'); await expect(page.locator('#entry-title')).toHaveText('How would you like to play?');
 });

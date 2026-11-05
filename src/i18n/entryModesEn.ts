@@ -1,7 +1,7 @@
 import { english } from './en';
 Object.assign(english, {
   'ТВОЙ ВЕЧЕР В ROYAL': 'YOUR EVENING AT ROYAL',
-  'Как начнём?': 'How shall we begin?',
+  'Как будешь играть?': 'How would you like to play?',
   'АТМОСФЕРА И ОБЩЕНИЕ': 'ATMOSPHERE AND COMPANY',
   'Войти в клуб': 'Enter the club',
   'Гуляй персонажем, знакомься и находи любимые игры.': 'Explore as your character, meet people and find your favourite games.',
