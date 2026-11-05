@@ -1,0 +1,25 @@
+{
+  "release": "mira-counter-rest-20261105-v3",
+  "featureCommit": "90ef9d9dfc3161866b7d563fabe0f21a0d84cf07",
+  "productionCommit": "a2a69026c0d85c51a1752dae98d8ca15c1108daa",
+  "changedSources": [
+    "src/game/MiraRig.ts",
+    "src/game/miraAnimation.ts",
+    "src/game/royalBarArt.ts",
+    "src/game/royalBarLayers.ts",
+    "src/shared/miraRoutine.ts"
+  ],
+  "mediaSources": [],
+  "expectedSources": {
+    "src/game/MiraRig.ts": "5b632227fedd525c033a36775f073d32621f5ecd92d1a72506a2ebd4895bc805",
+    "src/game/miraAnimation.ts": "b657618d3850c816ffd8b94999e073ca76cfb67dded2c5d2228eeb90c4575891",
+    "src/game/royalBarArt.ts": "51bf2e34143bdd33728d6be8a349f5ec6cdc9f3108659fbcdaf4c219502ed538",
+    "src/game/royalBarLayers.ts": "6fd30708c1b071916199f57a27df408843e331d5e9e05357f2b26250c16f3e99",
+    "src/shared/miraRoutine.ts": "8ee4fe6f0c12586a488f130cf06b1697047b8d7960dd7028086f122c83fd846d"
+  },
+  "preservedBackendInputs": {
+    "src/i18n/en.ts": "e6a39483750df92467b584e98319ce679f2a3489669e4b0d3f64a2d7ba0a762c"
+  },
+  "addedGames": [],
+  "restoredGames": []
+}
