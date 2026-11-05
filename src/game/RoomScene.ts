@@ -394,7 +394,6 @@ export class RoomScene extends Phaser.Scene {
     if(this.hall==='tables')this.add.text(ACTIVITIES.chess.entry.x, ACTIVITIES.chess.entry.y+10, translateText('Ш А Х М А Т Ы'), { fontFamily: 'Arial', fontSize: '9px', color: '#d4b880' }).setOrigin(.5).setDepth(2);
     if(this.hall==='tables')this.add.text(562, 516, translateText('Б И Л Ь Я Р Д'), { fontFamily: 'Arial', fontSize: '9px', color: '#d4b880' }).setOrigin(.5).setDepth(2);
     if(this.hall==='tables')PLANTS.forEach((p,i) => this.prop(plantTexture(this.hall,i),p.x,p.y,p.scale));
-    if(this.hall==='arcade')this.add.text(540,650,translateText('ВХОД В КЛУБ'),{fontFamily:'Arial',fontSize:'10px',color:'#cdb887'}).setOrigin(.5).setDepth(.04);
   }
 
   private prop(key: string, x: number, y: number, scale: number) {
@@ -723,7 +722,7 @@ export class RoomScene extends Phaser.Scene {
     for(const view of views){
       if(!active.has(view.id))continue;
       let actor=this.guests.get(view.id);
-      if(!actor){actor=this.actor(view.x,view.y,view.skin);actor.label=this.add.text(view.x,view.y-83,'',{fontFamily:'Arial',fontSize:'10px',color:'#e4d6b9',backgroundColor:'#2a313ccc',padding:{x:5,y:3}}).setOrigin(.5);this.guests.set(view.id,actor);}
+      if(!actor){actor=this.actor(view.x,view.y,view.skin);this.guests.set(view.id,actor);}
       if(this.network){
         let motion=this.guestMotion.get(view.id);
         if(!motion){motion=new NpcMotion<AmbientGuestView>({delayMs:0,isMoving:view=>view.moving});this.guestMotion.set(view.id,motion);}
@@ -1140,8 +1139,6 @@ export class RoomScene extends Phaser.Scene {
       const moved=Math.hypot(view.x-actor.x,view.y-actor.y)>.001;
       actor.x=view.x;actor.y=view.y;
       actor.facing=view.facing;actor.seat=view.seat;actor.action=view.mood==='drinking'?'drink':view.seat?'sit':'idle';actor.drink=view.drink;
-      const status=view.mood==='playing'?translateText('играет'):view.mood==='drinking'?translateText('пьёт'):view.mood==='resting'?translateText('отдыхает'):translateText('гуляет');
-      const label=translateText('НПС · ')+status;if(actor.label?.text!==label)actor.label?.setText(label);
       this.animateActor(actor,time,view.moving&&moved);
       if(view.mood==='playing'&&!view.moving&&!this.reducedMotion)actor.sprite.setAngle(Math.sin(time/400+actor.phase)*1.5);
     }
