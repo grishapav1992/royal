@@ -45,6 +45,39 @@ async function open(page: Page) {
   await expect(page.locator('#chat-input')).toBeInViewport();
 }
 
+test('player actions show the live level and rank before a duel by keyboard or touch', async ({ page, browser }) => {
+  const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  try {
+    await enter(page);
+    const other = await mobile.newPage();
+    await enter(other);
+    await page.bringToFront();
+    await expect.poll(() => page.evaluate(() => (window as any).royalDemo.getState().remotePositions.length)).toBe(1);
+    await page.keyboard.press('e');
+    const menu = page.locator('#player-actions');
+    await expect(menu).toBeVisible();
+    await expect(menu.locator('.player-duel-level')).toHaveText('Уровень 1');
+    await expect(menu.locator('.player-duel-progress strong')).toHaveText('Зашёл погреться');
+
+    await other.bringToFront();
+    await unlock(other);
+    await page.bringToFront();
+    await expect(menu.locator('.player-duel-level')).toHaveText('Уровень 10');
+    await expect(menu.locator('.player-duel-progress strong')).toHaveText('Гроза автомата у входа');
+    await menu.getByRole('button', { name: 'Предложить игру' }).click();
+    await expect(page.locator('#pvp-dialog [name="game"]')).toHaveValue('tsu-e-fa');
+
+    const remote = await other.evaluate(() => (window as any).royalDemo.getState().remotePositions[0]);
+    const point = await worldPoint(other, remote.x, remote.y - 24);
+    await other.touchscreen.tap(point.x, point.y);
+    const mobileMenu = other.locator('#player-actions');
+    await expect(mobileMenu).toBeVisible();
+    await expect(mobileMenu.locator('.player-duel-level')).toHaveText('Уровень 1');
+    await expect(mobileMenu.locator('.player-duel-progress strong')).toHaveText('Зашёл погреться');
+    await expect(mobileMenu.getByRole('button', { name: 'Предложить игру' })).toBeInViewport();
+  } finally { await mobile.close(); }
+});
+
 test('paid spin result is shown before level feedback and another player sees the new level', async ({ page, browser }) => {
   const observer = await browser.newContext({ viewport: { width: 390, height: 844 } });
   try {
