@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
 import { once } from 'node:events';
-import { mkdtemp, readFile, realpath, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, realpath, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { isAbsolute, join } from 'node:path';
 import { setTimeout as pause } from 'node:timers/promises';
@@ -27,6 +27,8 @@ import { installAuditDetailReport } from '../server/audit/report-detail-source';
 import { readAuditDetail } from '../server/audit/report-investigation';
 import { installAuditPlayerReport } from '../server/audit/report-player-source';
 import { exportAuditPlayer } from '../server/audit/report-player';
+import { installAuditReplayReport } from '../server/audit/report-replay-source';
+import { exportAuditReplay } from '../server/audit/report-replay';
 import { installAuditSummaryReport } from '../server/audit/report-summary-source';
 import { readAuditSummary } from '../server/audit/report-summary';
 import { cryptoConfig } from '../server/crypto/config';
@@ -40,7 +42,9 @@ import { PaymentCredits } from '../server/payments/credits';
 import { PaymentOutbox } from '../server/payments/outbox';
 import { PvpStore } from '../server/pvp/store';
 import { VirtualPvpLedger } from '../server/pvp/virtual-wallet';
+import { seedAuditLoadReplay } from '../scripts/audit-load-replay-fixture';
 import { temporaryDatabase } from '../scripts/database-test';
+import { prepareViewerReplay } from '../src/audit/replay-viewer-model';
 // @ts-ignore The independent qualification fixture is JavaScript without declarations.
 import { cascadeRandom } from '../scripts/game-math/rtp-temple-cascade-model.mjs';
 import { CARIBBEAN_GAME, caribbeanInitialCost } from '../src/shared/caribbeanTreasures';
@@ -182,6 +186,23 @@ test('isolated rehearsal settles accepted games and preserves payments through o
     const sources = { game: game.schema, payments: payments.schema };
     const namespace = game.schema + '.demo_ledger', paymentNamespace = payments.schema + '.crypto_ledger';
     let datasets = new AuditDatasets(audit, sources);
+    const seedArchivedDataset = async () => {
+      const accounts: [string, string] = [randomUUID(), randomUUID()];
+      for (const account of accounts) {
+        await game.prepare('INSERT INTO accounts VALUES (?)').run(account);
+        await wallet.operate(account, { id: randomUUID(), kind: 'deposit', amount: 1000 });
+      }
+      await payments.prepare('INSERT INTO accounts VALUES (?)').run(accounts[0]);
+      const dataset = await datasets.startTest();
+      const replay = await seedAuditLoadReplay(game, audit, bank, { datasetId: dataset.datasetId, environment: 'test' }, accounts);
+      const paymentId = randomUUID();
+      await crypto.creditStarsDeposit(accounts[0], paymentId, '4000000', 'rehearsal-' + paymentId, 100);
+      await outbox.flush();
+      assert.deepEqual(await credits.snapshot(accounts[0]), { balanceUnits: '4000000', reservedUnits: '0' });
+      await datasets.sealTest(dataset.datasetId);
+      return { dataset, replay, accountId: accounts[0], paymentId };
+    };
+    const archived = pgBin ? await seedArchivedDataset() : undefined;
     const testDataset = await datasets.startTest();
     await installAuditCleanup(audit);
     const filesRoot = await realpath(await mkdtemp(join(tmpdir(), 'royal-audit-rehearsal-')));
@@ -192,9 +213,9 @@ test('isolated rehearsal settles accepted games and preserves payments through o
     const group = 'rehearsal_read_' + tag, operator = 'rehearsal_operator_' + tag, password = randomUUID();
     const roleSql = `CREATE ROLE ${identifier(group)} NOLOGIN;
       CREATE ROLE ${identifier(operator)} LOGIN PASSWORD '${password}';
-      GRANT ${identifier(group)} TO ${identifier(operator)};
       ALTER ROLE ${identifier(operator)} SET temp_file_limit='32MB'`;
-    await audit.exec(roleSql);
+    const membershipSql = `GRANT ${identifier(group)} TO ${identifier(operator)}`;
+    await audit.exec(roleSql + '; ' + membershipSql);
     await installAuditReportAccess(audit, group);
     await installAuditPlayerReport(audit, group, sources);
     await installAuditSummaryReport(audit, group, sources);
@@ -202,14 +223,60 @@ test('isolated rehearsal settles accepted games and preserves payments through o
     const grant = (datasetId: string) => audit.prepare('INSERT INTO audit_report_acl VALUES (?,?,?),(?,?,?)')
       .run(operator, datasetId, namespace, operator, datasetId, paymentNamespace);
     await grant(testDataset.datasetId);
+    const readerFor = (env: NodeJS.ProcessEnv) => databaseConfig({ ...env, DATABASE_URL: '', DATABASE_URL_FILE: '',
+      PGUSER: operator, PGPASSWORD: password, PGPASSWORD_FILE: '' });
+    const testPaymentEvent = () => payments.prepare(`SELECT event_id,body,delivered_at FROM payment_outbox
+      WHERE user_id=? AND body::jsonb->>'payment_id'=?`).all(player, testPayment);
     let verifyOriginal: (() => Promise<void>) | undefined;
+    let verifyArchived: (() => Promise<void>) | undefined;
+    let pendingPayment: Awaited<ReturnType<typeof testPaymentEvent>> | undefined;
     if (pgBin) {
+      assert(archived);
+      assert.notEqual(archived.dataset.datasetId, testDataset.datasetId);
+      await installAuditReplayReport(audit, group, sources);
+      await grant(archived.dataset.datasetId);
       const privateRoot = await mkdtemp(join(tmpdir(), 'royal-audit-rehearsal-dump-'));
       t.after(() => rm(privateRoot, { recursive: true, force: true }));
       const archive = join(privateRoot, 'rehearsal.dump');
       const schemas = [game.schema, audit.schema, payments.schema];
       const scope = schemas.map(schema => '--schema=' + schema);
       const inspect = (client: PoolClient) => inspectArchiveState(client, schemas, operator, group, originalAudit.schema);
+      const reportScope = { schema: originalAudit.schema, datasetId: archived.dataset.datasetId };
+      const filters = { fromMs: archived.dataset.startedAtMs, toMs: Date.now() + 60_000 };
+      const csvInput = (destination: string) => ({ ...reportScope, filters: { ...filters, accountId: archived.accountId }, destination });
+      const archivedReports = async (env: NodeJS.ProcessEnv, label: string) => {
+        const reader = readerFor(env);
+        const csvPath = join(privateRoot, label + '.csv'), replayPath = join(privateRoot, label + '.json');
+        assert.equal((await exportAuditPlayer(reader, csvInput(csvPath))).rowCount, 3);
+        const csv = await readFile(csvPath);
+        for (const id of [archived.dataset.datasetId, archived.replay.replayId, archived.paymentId]) assert(csv.includes(id));
+        const { jobId: _summaryJob, asOf, ...summary } = await readAuditSummary(reader, { ...reportScope, filters });
+        assert(Number.isFinite(Date.parse(asOf)));
+        assert.equal(summary.environment, 'test');
+        assert.equal(summary.scanned, 4);
+        const deposit = summary.rows.find(row => row.contour === 'real' && row.asset === 'USDT' && row.movement_type === 'deposit');
+        assert.deepEqual([deposit?.posting_count, deposit?.amount_units], ['1', '4000000']);
+        const { jobId: _detailJob, ...detail } = await readAuditDetail(reader, { ...reportScope,
+          filters: { source: archived.replay.payout.namespace, postingId: archived.replay.payout.rowId } });
+        assert.equal(detail.status, 'found');
+        assert.equal(detail.anchor?.amountUnits, '1900');
+        const result = await exportAuditReplay(reader, { ...reportScope,
+          filters: { replayId: archived.replay.replayId }, destination: replayPath });
+        assert.equal(result.environment, 'test');
+        assert.equal(result.engineVerified, true);
+        assert.equal(result.rowCount, archived.replay.events);
+        const replay = await readFile(replayPath);
+        const packageFile = JSON.parse(replay.toString('utf8'));
+        assert.equal(packageFile.manifest.sha256, archived.replay.checksum);
+        assert.equal(prepareViewerReplay(packageFile).status, 'ready');
+        return { csv, summary, detail, replay };
+      };
+      const before = await archivedReports(process.env, 'before');
+      // Keep one confirmed payment in the archive with its mirror delivery still pending.
+      await credit(testPayment, '2000000');
+      pendingPayment = await testPaymentEvent();
+      assert.equal(pendingPayment.length, 1);
+      assert.equal(pendingPayment[0].delivered_at, null);
       const expected = await archiveSnapshot(originalGame, async client => {
         const { rows: [row] } = await client.query<{ snapshot: string }>('SELECT pg_export_snapshot() AS snapshot');
         const snapshot = '--snapshot=' + row.snapshot;
@@ -235,8 +302,18 @@ test('isolated rehearsal settles accepted games and preserves payments through o
       payments = new PostgresDatabase(originalPayments.schema, { existingSchema: true, config });
       connections.add(game).add(audit).add(payments);
       await Promise.all([game.ready, audit.ready, payments.ready]);
+      const filesBeforeDenied = (await readdir(privateRoot)).sort();
+      await assert.rejects(exportAuditPlayer(readerFor(connectionEnv), csvInput(join(privateRoot, 'denied.csv'))),
+        { code: 'permission-denied', jobId: null });
+      assert.deepEqual((await readdir(privateRoot)).sort(), filesBeforeDenied);
+      await audit.exec(membershipSql);
       assert.deepEqual(await archiveSnapshot(game, inspect), expected.state);
       assert.equal(schemaFingerprint((await localArchiveTool('pg_dump', connectionEnv, [...scope, '--schema-only'])).stdout), expected.schema);
+      assert.deepEqual(await testPaymentEvent(), pendingPayment);
+      assert.deepEqual(await archivedReports(connectionEnv, 'restored'), before);
+      verifyArchived = async () => {
+        assert.deepEqual(await archivedReports(connectionEnv, 'after-cutover'), before);
+      };
       verifyOriginal = async () => {
         assert.deepEqual(await archiveSnapshot(originalGame, inspect), expected.state);
         assert.equal(schemaFingerprint((await localArchiveTool('pg_dump', process.env, [...scope, '--schema-only'])).stdout), expected.schema);
@@ -259,8 +336,7 @@ test('isolated rehearsal settles accepted games and preserves payments through o
     const openingPaymentAnchor = await capturePayment(openingPayment);
     const readOnlyAudit = new PostgresDatabase(audit.schema, { readOnly: true, existingSchema: true, config: databaseConfig(connectionEnv) });
     connections.add(readOnlyAudit);
-    const reader = databaseConfig({ ...connectionEnv, DATABASE_URL: '', DATABASE_URL_FILE: '',
-      PGUSER: operator, PGPASSWORD: password, PGPASSWORD_FILE: '' });
+    const reader = readerFor(connectionEnv);
     const detail = (datasetId: string, anchor: AuditSourceRef) => readAuditDetail(reader,
       { schema: audit.schema, datasetId, filters: { source: anchor.namespace, postingId: anchor.rowId } });
     const observerEnv = { ...connectionEnv, ROYAL_AUDIT_SCHEMA: audit.schema, ROYAL_AUDIT_RECORDER_DB_URL_FILE: undefined,
@@ -407,6 +483,7 @@ test('isolated rehearsal settles accepted games and preserves payments through o
     })).status, 'stored');
     await credit(testPayment, '2000000');
     await credit(testPayment, '2000000');
+    if (pendingPayment) assert.deepEqual(await testPaymentEvent(), pendingPayment);
     const testPaymentAnchor = await capturePayment(testPayment);
     assert.equal((await detail(testDataset.datasetId, testPaymentAnchor)).status, 'found');
     assert.equal((await detail(testDataset.datasetId, openingPaymentAnchor)).status, 'not-captured');
@@ -434,6 +511,13 @@ test('isolated rehearsal settles accepted games and preserves payments through o
       ['open-financial-source:' + payments.schema + '.payment_outbox']);
     await outbox.flush();
     assert.deepEqual(await credits.snapshot(player), { balanceUnits: '3000000', reservedUnits: '0' });
+    if (pendingPayment) {
+      const [event] = await testPaymentEvent();
+      assert.equal(event?.event_id, pendingPayment[0].event_id);
+      assert(Number.isSafeInteger(event?.delivered_at));
+      assert.deepEqual(await game.prepare('SELECT event_id FROM payment_credit_events WHERE user_id=? AND payment_id=?')
+        .all(player, testPayment), [{ event_id: pendingPayment[0].event_id }]);
+    }
     const manifest = await previewAuditCleanup(readOnlyAudit, cleanup);
     assert.deepEqual(manifest.blockers, []);
     assert.equal(manifest.files.files.length, 1);
@@ -525,5 +609,6 @@ test('isolated rehearsal settles accepted games and preserves payments through o
     for (const anchor of [casinoAnchor, testPaymentAnchor]) {
       await assert.rejects(detail(testDataset.datasetId, anchor), { code: 'permission-denied' });
     }
+    await verifyArchived?.();
     await verifyOriginal?.();
   });
