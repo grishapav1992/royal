@@ -33,10 +33,10 @@ export class Bar {
     const target=online?this.motion.sample(renderAt)??this.target??this.routine.state:this.target??this.routine.state;
     Object.assign(this.view,target);
     const seat=miraSeatAmount(target.action,target.progress);
-    this.contact.setVisible(seat>.01).setAlpha(seat*.4);
+    this.contact.setPosition(target.x,BAR_POSITION.y+111).setVisible(seat>.01).setAlpha(seat*.4);
     const time=this.scene.time.now;
     const drawEffects=time-this.lastDraw>=33;
-    if(!drawEffects&&target.action!=='walk'&&target.action!=='wipe')return;
+    if(!drawEffects&&!['walk','wipe','sit','sit-down','stand-up'].includes(target.action))return;
     const elapsed=Number.isFinite(this.lastDraw)?(time-this.lastDraw)/1000:.033;
     const guardListening=target.action==='chat'&&target.facing==='left'&&conversation.active&&!conversation.speaking;
     const action=guardListening||reducedMotion&&target.action==='greet'?'listen':target.action;

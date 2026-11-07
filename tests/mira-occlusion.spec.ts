@@ -1,7 +1,7 @@
 import {test,expect,type Browser,type Page,type BrowserContext} from '@playwright/test';
 import {ROYAL_BAR_PROPS} from '../src/game/royalBarLayers';
 import {sampleMiraFrame} from '../src/game/miraAnimation';
-import type {MiraView} from '../src/shared/miraRoutine';
+import {MIRA_SEAT,type MiraView} from '../src/shared/miraRoutine';
 
 const work=process.env.MIRA_AUDIT_WORK??'artifacts/work/royal-bar-mira/animation-check-20261105/';
 const compiledHost=process.env.MIRA_AUDIT_COMPILED==='1';
@@ -45,7 +45,7 @@ for(const action of ['walk','sit','sit-down','stand-up','wipe','polish','stock',
   }
 }
 
-for(const viewport of [{width:1280,height:900},{width:390,height:844}])test(`${viewport.width}: all 88 poses keep countertop props and the cat mug in front`,async({page})=>{
+for(const viewport of [{width:1280,height:900},{width:390,height:844}])test(`${viewport.width}: all 128 poses keep countertop props and the cat mug in front`,async({page})=>{
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
   await page.setViewportSize(viewport);await page.goto('/?offline=1');await ready(page);
   await page.evaluate(()=>{const audit=(window as any).royalMiraAudit;audit.focus();audit.actors(false);audit.showMira(false);});await settle(page);
@@ -62,17 +62,20 @@ for(const viewport of [{width:1280,height:900},{width:390,height:844}])test(`${v
     expect(diff(reference,current),key).toEqual({});
     const actual=(await state(page)).mira;expect(actual.atlas+':'+actual.frame).toBe(key);checked.push(key);
   }
-  expect(checked).toHaveLength(88);
+  expect(checked).toHaveLength(128);
   for(let n=0;n<24;n++){
     await page.evaluate(view=>(window as any).royalMiraAudit.pose(view),{x:334,y:456,facing:'down',action:'wipe',progress:(n+.5)/120});await settle(page);
     expect(diff(reference,await page.evaluate(points=>(window as any).royalMiraAudit.pixels(points),points)),'right wiping '+n).toEqual({});
   }
   await page.evaluate(()=>(window as any).royalMiraAudit.pose({x:191,y:456,facing:'down',action:'wipe',progress:.08}));await settle(page);
   await page.screenshot({path:work+'fixed-wipe-'+viewport.width+'.png'});
-  await page.evaluate(()=>(window as any).royalMiraAudit.pose({x:191,y:456,facing:'down',action:'sit',progress:.5}));await settle(page);
+  await page.evaluate(()=>(window as any).royalMiraAudit.pose({x:218,y:474,facing:'down',action:'sit',progress:.5}));await settle(page);
   await page.screenshot({path:work+'fixed-sit-'+viewport.width+'.png'});
   const layers=await page.evaluate(()=>(window as any).royalMiraAudit.layers());
   const hand=layers.find((layer:any)=>layer.name==='mira-painted-front').depth;
+  const body=layers.find((layer:any)=>layer.name==='mira-painted-body').depth;
+  expect((await state(page)).mira).toMatchObject({...MIRA_SEAT,action:'sit'});
+  expect(body).toBeGreaterThan(layers.find((layer:any)=>layer.name==='royal-bar-prop-flowers').depth);
   for(const prop of Object.keys(ROYAL_BAR_PROPS))expect(layers.find((layer:any)=>layer.name==='royal-bar-prop-'+prop).depth).toBeGreaterThan(hand);
   expect(layers.find((layer:any)=>layer.name==='cat-water-mug').depth).toBe(513);
   expect(errors).toEqual([]);

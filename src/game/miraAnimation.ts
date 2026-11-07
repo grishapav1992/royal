@@ -2,7 +2,7 @@ import {miraSeatAmount,type MiraView} from '../shared/miraRoutine';
 
 export const MIRA_ATLASES={
   walk:{file:'mira-walk-24.png',columns:6,rows:4,fullBody:true},
-  seat:{file:'mira-seat.png',columns:4,rows:2,fullBody:true},
+  seat:{file:'mira-seat-cycle.png',columns:6,rows:8,fullBody:true,anchorGround:446,scaleHeight:433},
   wipe:{file:'mira-wipe-24.png',columns:6,rows:4,fullBody:false,contactGround:319},
   work:{file:'mira-work-corrected.png',columns:4,rows:4,fullBody:false},
   react:{file:'mira-react.png',columns:4,rows:4,fullBody:false},
@@ -14,7 +14,7 @@ const clamp=(p:number)=>Math.max(0,Math.min(1,Number.isFinite(p)?p:0));
 const frameAt=(p:number,count:number)=>Math.min(count-1,Math.floor(clamp(p)*count));
 
 export function interpolateMiraProgress(from:MiraView,to:MiraView,amount:number):Partial<MiraView> {
-  if(from.action==='wipe'&&to.action==='wipe'&&to.progress>=from.progress){
+  if(from.action===to.action&&['wipe','sit','sit-down','stand-up'].includes(from.action)&&to.progress>=from.progress){
     return {progress:from.progress+(to.progress-from.progress)*amount};
   }
   if(from.action!=='walk'||to.action!=='walk')return {};
@@ -28,8 +28,9 @@ export function sampleMiraFrame(view:MiraView,reducedMotion=false):MiraFrame {
   const result:MiraFrame={atlas:'react',frame:8,seat,flipped:false,clip:view.action};
   switch(view.action){
     case 'walk':return {...result,atlas:'walk',frame:reducedMotion?3:frameAt(p,MIRA_ATLASES.walk.columns*MIRA_ATLASES.walk.rows),flipped:view.facing==='left'};
-    case 'sit':return {...result,atlas:'seat',frame:0};
-    case 'stand-up':case 'sit-down':return {...result,atlas:'seat',frame:Math.round((1-seat)*7)};
+    case 'sit':return {...result,atlas:'seat',frame:24+(reducedMotion?0:frameAt(p%1,24))};
+    case 'sit-down':return {...result,atlas:'seat',frame:Math.round(p*23)};
+    case 'stand-up':return {...result,atlas:'seat',frame:Math.round((1-p)*23)};
     case 'wipe':{
       const count=MIRA_ATLASES.wipe.columns*MIRA_ATLASES.wipe.rows;
       return {...result,atlas:'wipe',frame:reducedMotion?3:frameAt(p===1?1:(p*5)%1,count)};
