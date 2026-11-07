@@ -1,0 +1,235 @@
+{
+  "release": "mira-walk-24-20261107-v1",
+  "sourceCommit": "37b197d1ddbe15ee1befaf8794dba8b45da874fd",
+  "baseCommit": "0f010141171ba40a0ada89f12ba5444fba43fb73",
+  "image": "sha256:bba177f92aaa47d799d3f0dbfcf6e179ca5c13266b3a0776929225aa529c3414",
+  "installManifestSha256": "afa35e8e9a958b5deb0e47f1fb6dcd64669af597e342f5fe59ca55f8a07769da",
+  "atlas": {
+    "path": "/assets/royal-bar/v3/mira-walk-24.png",
+    "sha256": "11e55431a688845b455be04a278ab049b281d1460e69942831bd27891bc0ae9a",
+    "frames": 24,
+    "columns": 6,
+    "rows": 4,
+    "leftMirrored": true
+  },
+  "clientFiles": {
+    "assets/ActivitiesUI-Bq7w-lfh.js": "9bd3566d82d0b2cfb15b30541846cff89aee60acd0208b0aae920826c3e83b8a",
+    "assets/ClubWorld-BUbzDnQN.js": "7983e6600cbb0721c14038d376c04cf3bd19df9978c113f5c01a5f239a69d3b5",
+    "assets/GameHostRuntime-CTofRfIf.js": "3090cc1aa3d5eae59ceae01af5906a83f6df30e4a9ec2c1ca1cf057c10ca2380",
+    "assets/index-BIdhmhRY.js": "a075945c88cb13809644eea016104ecd0cc248d7b0d5714656b480d831bb7b7e",
+    "assets/main-5PPzfANl.js": "222f68bac122bbbb7e0048524483015cf98904117694faf6441640ce5526505e",
+    "assets/phaser-DjPoXbWP.js": "19e8db35be4750ba14bb3d0d22c45a07c40dc4daff56bd58a211d15aa99f0ad3",
+    "assets/PvpUI-BYuu28hF.js": "7386870d924c9fb83b4a6bbc06b5812b0a816402978febd93bbf6ce536aa67a5",
+    "index.html": "dfd66487e86c9ec7e6907ea5c0e0a91a882f096f93cce134574d5f093f542186",
+    "assets/royal-bar/v3/mira-walk-24.png": "11e55431a688845b455be04a278ab049b281d1460e69942831bd27891bc0ae9a"
+  },
+  "sourceFiles": {
+    "src/game/Bar.ts": "e9db72b9a77c6668eff91b895888090580c83ae3274c8953088ef7761ca4fd05",
+    "src/game/miraAnimation.ts": "cf32df48f52bcbc1105045f58ade7697457543b4e1d40f24ab211d7b93c64d94",
+    "src/network/NpcMotion.ts": "de4edc928112365595dfe2044f71dafca2829e4f6bbf00a98620f8b6fb8e04d5",
+    "public/assets/royal-bar/v3/mira-walk-24.png": "11e55431a688845b455be04a278ab049b281d1460e69942831bd27891bc0ae9a"
+  },
+  "server": {
+    "published": {
+      "published": true,
+      "preparedImage": "sha256:bba177f92aaa47d799d3f0dbfcf6e179ca5c13266b3a0776929225aa529c3414",
+      "runningImage": "sha256:bba177f92aaa47d799d3f0dbfcf6e179ca5c13266b3a0776929225aa529c3414",
+      "containerRestarted": true,
+      "sourceCommit": "37b197d1ddbe15ee1befaf8794dba8b45da874fd",
+      "changedSources": 4,
+      "clientDeltaFiles": 9,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 0,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 10
+    },
+    "sourceBackup": {
+      "path": "/opt/royal-backups/mira-walk-24-20261107-v1/source.tgz",
+      "bytes": 3315,
+      "sha256": "e5515537eddd1a9d25d6363a40ea7382465bb9dba6d84d69b6943bab4beba534"
+    },
+    "financialBackup": {
+      "path": "/opt/royal-backups/mira-walk-24-20261107-v1/financial.dump",
+      "sha256": "af4afde2d97211429b6b746b0322291436baa74012408c9bc2bbc4ae0c3f7997",
+      "bytes": 37995757,
+      "databaseRestored": false
+    },
+    "programFiles": 8639,
+    "moduleFiles": 5392,
+    "backendPreserved": true,
+    "modulesPreserved": true
+  },
+  "publicCheck": {
+    "health": true,
+    "clientFiles": 9,
+    "statuses": {
+      "/api/demo-wallet": 401,
+      "/api/nile-wallet": 410,
+      "/api/nile-play/wallet": 410
+    },
+    "desktopAndMobileGuestEntry": true
+  },
+  "checks": {
+    "rtpProfiles": 38,
+    "stakePolicies": 20,
+    "stakeAdmission": 20,
+    "motionAndRoutineTests": 19,
+    "walletTests": 10,
+    "occlusionViewports": 2,
+    "occlusionPoses": 72,
+    "connectedWalk": [
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 900
+        },
+        "left": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "right": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          0
+        ],
+        "online": "connected"
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "left": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          0,
+          1
+        ],
+        "right": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "online": "connected"
+      }
+    ],
+    "connectedChat": true,
+    "phoneLayout": true,
+    "recoveryAfterReopening": {
+      "sameUuid": true,
+      "singleDebit": true,
+      "stakeUnits": 10
+    },
+    "productionWalletMutationsForTesting": false
+  },
+  "catalogue": {
+    "cataloguePointersCompared": 19,
+    "moduleFilesPreserved": 5392,
+    "addedGames": [],
+    "restoredGames": []
+  },
+  "maintenance": {
+    "release": "mira-walk-24-20261107-v1",
+    "sourceCommit": "37b197d1ddbe15ee1befaf8794dba8b45da874fd",
+    "status": "completed",
+    "currentImage": "sha256:bba177f92aaa47d799d3f0dbfcf6e179ca5c13266b3a0776929225aa529c3414",
+    "rollbackImage": "sha256:81a651ac975c4f12034b79a86993c4160b7590728a8dc424d9bacf7b4105cbc8",
+    "healthOk": true,
+    "freeBefore": 13135785984,
+    "freeAfter": 13147172864,
+    "verificationPasses": 2,
+    "preservedFinancialFiles": 186,
+    "finishedAt": 1794069124.413111,
+    "durationSeconds": 67.92,
+    "containersUnchanged": true,
+    "timerEnabled": true,
+    "timerActive": true,
+    "removedEntries": 25
+  }
+}

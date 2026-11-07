@@ -173,7 +173,12 @@ export class RoyalRoulette {
     this.motion.history(n,color(n),observed);
     this.status=round.multiplier>0?`${this.text('Выпало','Result')} ${n}. ${this.text('Выплата','Return')}: ${this.money(round.payoutUnits)} USDT.`:`${this.text('Выпало','Result')} ${n}. ${this.text('Ставка проиграла.','Your bet lost.')}`;
     this.render();
-    if(observed&&!this.paused&&!document.hidden){this.motion.reveal(round.multiplier);this.host.reactions.emitGameOutcome(this.root,round.stakeUnits,round.payoutUnits);}
+    if(observed&&!this.paused&&!document.hidden){
+      this.motion.reveal(round.multiplier);
+      this.host.reactions.emitGameOutcome(this.root,round.stakeUnits,round.payoutUnits);
+    } else {
+      this.host.reactions.emitGameRoundPresented?.(this.root);
+    }
   }
   pause(){this.paused=true;this.motion.pause();}
   resume(){this.paused=false;this.motion.resume();}

@@ -1,7 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {sampleMiraFrame,MIRA_ATLASES} from '../src/game/miraAnimation';
+import {interpolateMiraProgress,sampleMiraFrame,MIRA_ATLASES} from '../src/game/miraAnimation';
 import {MiraRoutine,type MiraView} from '../src/shared/miraRoutine';
+import {NpcMotion} from '../src/network/NpcMotion';
 const view=(action:MiraView['action'],progress:number):MiraView=>({x:265,y:456,facing:'down',action,progress});
 
 test('interrupted sitting reverses the painted sequence at the same contact position',()=>{
@@ -31,6 +32,34 @@ test('all actions select existing complete poses, including ends and nonfinite d
   assert.equal(sampleMiraFrame({...view('walk',.2),facing:'right'}).flipped,false);
 });
 
+test('walk renders all 24 frames in both directions between room updates',()=>{
+  for(const facing of ['left','right'] as const){
+    const motion=new NpcMotion<MiraView>({delayMs:0,interpolate:interpolateMiraProgress});
+    for(let tick=0;tick<=13;tick++){
+      motion.push({...view('walk',(tick*50/625)%1),facing},tick*50);
+    }
+    for(let frame=0;frame<24;frame++){
+      const sample=sampleMiraFrame(motion.sample((frame+.5)*625/24)!);
+      assert.equal(sample.frame,frame);
+      assert.equal(sample.flipped,facing==='left');
+    }
+    assert.equal(sampleMiraFrame(motion.sample(630)!).frame,0);
+  }
+});
+
+test('wipe plays 24 registered poses per sweep and holds the final pose when the task finishes',()=>{
+  const motion=new NpcMotion<MiraView>({delayMs:0,interpolate:interpolateMiraProgress});
+  motion.push(view('wipe',0),0);
+  for(let step=0;step<120;step++){
+    motion.push(view('wipe',(step+1)/120),(step+1)*50);
+    const pose=sampleMiraFrame(motion.sample(step*50+25)!);
+    assert.equal(pose.atlas,'wipe');
+    assert.equal(pose.frame,step%24);
+  }
+  assert.equal(sampleMiraFrame(view('wipe',1)).frame,23);
+  assert.equal(sampleMiraFrame(view('wipe',.9),true).frame,3);
+});
+
 test('reduced motion holds repeated work and conversational gestures but retains meaningful service phases',()=>{
   for(const action of ['walk','wipe','polish','greet','listen','chat'] as const){
     const first=sampleMiraFrame(view(action,.1),true);
@@ -47,7 +76,7 @@ test('every painted pose is reachable through a real action, including all four 
     }
   }
   for(const [atlas,spec] of Object.entries(MIRA_ATLASES)){
-    for(let frame=0;frame<spec.columns*spec.rows;frame++)assert.ok(reached.has(atlas+':'+frame),atlas+':'+frame);
+    for(let frame=atlas==='work'?8:0;frame<spec.columns*spec.rows;frame++)assert.ok(reached.has(atlas+':'+frame),atlas+':'+frame);
   }
-  assert.equal(reached.size,56);
+  assert.equal(reached.size,88);
 });

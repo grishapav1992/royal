@@ -45,7 +45,7 @@ for(const action of ['walk','sit','sit-down','stand-up','wipe','polish','stock',
   }
 }
 
-for(const viewport of [{width:1280,height:900},{width:390,height:844}])test(`${viewport.width}: all 56 poses keep countertop props and the cat mug in front`,async({page})=>{
+for(const viewport of [{width:1280,height:900},{width:390,height:844}])test(`${viewport.width}: all 88 poses keep countertop props and the cat mug in front`,async({page})=>{
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
   await page.setViewportSize(viewport);await page.goto('/?offline=1');await ready(page);
   await page.evaluate(()=>{const audit=(window as any).royalMiraAudit;audit.focus();audit.actors(false);audit.showMira(false);});await settle(page);
@@ -62,9 +62,9 @@ for(const viewport of [{width:1280,height:900},{width:390,height:844}])test(`${v
     expect(diff(reference,current),key).toEqual({});
     const actual=(await state(page)).mira;expect(actual.atlas+':'+actual.frame).toBe(key);checked.push(key);
   }
-  expect(checked).toHaveLength(56);
-  for(let n=0;n<8;n++){
-    await page.evaluate(view=>(window as any).royalMiraAudit.pose(view),{x:334,y:456,facing:'down',action:'wipe',progress:n/40});await settle(page);
+  expect(checked).toHaveLength(88);
+  for(let n=0;n<24;n++){
+    await page.evaluate(view=>(window as any).royalMiraAudit.pose(view),{x:334,y:456,facing:'down',action:'wipe',progress:(n+.5)/120});await settle(page);
     expect(diff(reference,await page.evaluate(points=>(window as any).royalMiraAudit.pixels(points),points)),'right wiping '+n).toEqual({});
   }
   await page.evaluate(()=>(window as any).royalMiraAudit.pose({x:191,y:456,facing:'down',action:'wipe',progress:.08}));await settle(page);
@@ -76,7 +76,7 @@ for(const viewport of [{width:1280,height:900},{width:390,height:844}])test(`${v
   for(const prop of Object.keys(ROYAL_BAR_PROPS))expect(layers.find((layer:any)=>layer.name==='royal-bar-prop-'+prop).depth).toBeGreaterThan(hand);
   expect(layers.find((layer:any)=>layer.name==='cat-water-mug').depth).toBe(513);
   expect(errors).toEqual([]);
-  await test.info().attach('pixel-occlusion.json',{body:JSON.stringify({viewport,probes:probes.length,negativeControlChangedPixels:legacy,checked,extraRightWipingFrames:8,layers,errors},null,2),contentType:'application/json'});
+  await test.info().attach('pixel-occlusion.json',{body:JSON.stringify({viewport,probes:probes.length,negativeControlChangedPixels:legacy,checked,extraRightWipingFrames:24,layers,errors},null,2),contentType:'application/json'});
 });
 
 async function guest(browser:Browser,baseURL:string,viewport:{width:number;height:number},room?:string,video=false){
@@ -84,7 +84,7 @@ async function guest(browser:Browser,baseURL:string,viewport:{width:number;heigh
   expect((await context.request.post('/api/auth/login',{data:{email:`mira-layer-${crypto.randomUUID()}@example.test`,password:crypto.randomUUID()}})).ok()).toBe(true);
   expect((await context.request.post('/api/auth/character',{data:{skin:0,name:'Гость бара'}})).ok()).toBe(true);
   const page=await context.newPage();await page.route('**/api/npc/mira',route=>route.fulfill({json:route.request().method()==='GET'?{turns:[{role:'assistant',content:'Ну? Чем удивишь?'}]}:{reply:'Я слушаю. Сначала расскажи про свой вечер, а затем я приготовлю тебе что-нибудь освежающее.',emotion:'smile'}}));
-  await page.goto(room?'/?room='+room:'/');await ready(page);
+  await page.goto(room?'/?mode=club&room='+room:'/?mode=club');await ready(page);
   await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getNetworkState()?.status)).toBe('connected');
   await page.evaluate(()=>(window as any).royalMiraAudit?.focus());
   return {context,page};

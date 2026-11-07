@@ -13,6 +13,7 @@ import { HALLS, type ChatMessage, type PlayerView } from '../shared/world';
 import { getIntoxication } from '../shared/intoxication';
 import { CHAT_CONFIRMATION_TIMEOUT_MS, CHAT_PENDING_LIMIT, type ChatResult } from '../shared/chat';
 import { maskChatText } from '../shared/chatConduct';
+import { progression } from '../wallet/ProgressionClient';
 import './chat-delivery.css';
 
 type OutgoingMessage = {
@@ -31,6 +32,7 @@ export class SocialUI {
   private security: SecurityUI;
   private sanctioned = false;
   private selfId = '';
+  private publicLevel?: number;
   private roomId = '';
   private messages = new Map<string, ChatMessage>();
   private dialog: HTMLDialogElement;
@@ -279,6 +281,11 @@ export class SocialUI {
   private updatePlayers(players: PlayerView[], selfId: string) {
     this.scene.syncPlayers(players, selfId);
     const self = players.find(player => player.id === selfId);
+    if (self?.level) progression.rememberInitialPublicLevel(this.auth.account?.id, self.level);
+    if (self?.level !== this.publicLevel) {
+      this.publicLevel = self?.level;
+      if (self?.level && self.level !== progression.snapshot?.level) void progression.refresh();
+    }
     if (self) { this.sanctioned = Boolean(self.security); this.chatAvailability(); }
     const portrait = document.querySelector<HTMLImageElement>('#player-portrait img');
     if (self && portrait && portrait.dataset.appearance !== `${self.skin}:${self.appearance ?? ''}`) {

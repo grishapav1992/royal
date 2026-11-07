@@ -76,4 +76,5 @@ export const progressionEnglish: Record<string, string> = {
   'Результат подтверждён сервером': 'Result confirmed by the server',
   'Награда уже открыта': 'Reward unlocked',
   'Награда откроется на уровне {0}': 'Reward unlocks at level {0}',
+  'ур.': 'lvl.',
 };

@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process';
 import { existsSync, statSync, createReadStream } from 'node:fs';
-import { resolve, extname } from 'node:path';
+import { resolve, extname, sep } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { createServer, type Plugin } from 'vite';
 import { temporaryDatabase } from './database-test';
@@ -14,7 +15,7 @@ const apiPort = 2792, webPort = 5392, api = `http://127.0.0.1:${apiPort}`;
 const environment = { ...process.env, ...database.env, PORT: String(apiPort), AUTH_DB_PATH: 'progression_host_test', PUBLIC_ORIGIN: '' };
 const skinFixture=process.env.PROGRESSION_VERIFY_SKINS==='1';
 if(skinFixture)environment.CODEX_SALE_API_KEY='local-progression-fixture';
-const backend = spawn(process.execPath, [...(skinFixture?['--import',resolve('scripts/progression-skin-fixture.mjs')]:[]),...(built ? ['dist-server/index.js'] : ['--import', 'tsx', 'server/index.ts'])], { cwd: process.cwd(), env: environment, stdio: ['ignore', 'pipe', 'pipe'] });
+const backend = spawn(process.execPath, [...(skinFixture?['--import',pathToFileURL(resolve('scripts/progression-skin-fixture.mjs')).href]:[]),...(built ? ['dist-server/index.js'] : ['--import', 'tsx', 'server/index.ts'])], { cwd: process.cwd(), env: environment, stdio: ['ignore', 'pipe', 'pipe'] });
 let log = '', stopping = false, db: PostgresDatabase | undefined, wallet: DemoWalletStore;
 backend.stdout.on('data', bytes => { log = (log + bytes).slice(-5000); });
 backend.stderr.on('data', bytes => { log = (log + bytes).slice(-5000); });
@@ -25,7 +26,7 @@ const plugin: Plugin = { name: 'progression-local-fixture', configureServer(vite
     try { pathname = decodeURIComponent(new URL(req.url ?? '/', 'http://localhost').pathname); } catch { res.statusCode = 400; res.end(); return; }
     for (const base of [resolve('dist'), resolve('public')]) {
       const file = resolve(base, pathname === '/' ? 'index.html' : '.' + pathname);
-      if (!file.startsWith(base + '/') || !existsSync(file) || !statSync(file).isFile()) continue;
+      if (!file.startsWith(base + sep) || !existsSync(file) || !statSync(file).isFile()) continue;
       const mime: Record<string, string> = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.mp3': 'audio/mpeg', '.woff2': 'font/woff2' };
       res.setHeader('Content-Type', mime[extname(file)] ?? 'application/octet-stream');
       if (req.method === 'HEAD') res.end(); else createReadStream(file).pipe(res);

@@ -309,7 +309,6 @@ function ensureWorld() {
     });
     const portrait = document.createElement('img'); portrait.src = game.textures.getBase64('citizen-0', 'down-6'); portrait.alt = ''; $('#player-portrait').append(portrait);
     if (offline) scene.onActivity=()=>toast(translateText('Войди в онлайн-зал, чтобы играть вместе и слушать рояль.'));
-    new ProgressionUI(scene);
     new CatUI(scene);
     if (offline) {
       const settings=document.createElement('dialog');settings.id='name-dialog';settings.className='join-dialog auth-dialog';settings.setAttribute('aria-labelledby','name-title');
@@ -452,6 +451,7 @@ Object.assign(window, { royalDemo: { getState: () => room.getState(), getElevato
 new DemoWalletUI(room);
 new CryptoWalletUI(room);
 if (!offline) social = new SocialUI(room, toast);
+new ProgressionUI(room);
 let casinoCatalog: RoyalPlatformCatalog | undefined;
 const casinoChat = document.createElement('button');
 casinoChat.type = 'button';

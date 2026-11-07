@@ -30,6 +30,19 @@ test('authenticated progression HTTP ignores client scope, starts at one, grants
     await accounts.wallet.operate(login.account.id, { id: randomUUID(), kind: 'play', amount: 100, gameId: 'royal-coins', rulesVersion: 1, input: {} });
     snapshot = await (await fetch(base, { headers })).json(); assert(validProgressionSnapshot(snapshot)); assert(snapshot.level >= 5);
     assert.equal(snapshot.grants.length, 1); const grant = snapshot.grants[0]; assert.equal(grant.poolId, 'royal-slots-v1');
+    assert.deepEqual(snapshot.pendingRewardLevels, [5]);
+    assert.equal(await accounts.progression.publicLevel(login.account.id), snapshot.level);
+    const acknowledge = (level: number, requestHeaders = headers) => fetch(base + '/reward-notices', {
+      method: 'POST', headers: requestHeaders, body: JSON.stringify({ level }),
+    });
+    assert.equal((await acknowledge(5, { ...headers, 'X-Royal-Account-Id': randomUUID() })).status, 401);
+    assert.equal((await acknowledge(10)).status, 404);
+    assert.equal((await acknowledge(5)).status, 204);
+    assert.equal((await acknowledge(5)).status, 204);
+    const acknowledged = await (await fetch(base, { headers })).json();
+    assert.deepEqual(acknowledged.pendingRewardLevels, []);
+    assert.deepEqual(acknowledged.grants, snapshot.grants);
+    assert.deepEqual(acknowledged.skinGrants, snapshot.skinGrants);
     const operation = { id: randomUUID(), grantId: grant.id, gameId: 'royal-coins' };
     const post = (body: unknown) => fetch(base + '/spins', { method: 'POST', headers, body: JSON.stringify(body) });
     const before = await accounts.wallet.snapshot(login.account.id);

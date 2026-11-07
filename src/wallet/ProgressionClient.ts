@@ -10,6 +10,7 @@ type RecoveryStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 
 export class ProgressionClient extends EventTarget {
   accountId: string | null = null;
+  initialPublicLevel?: number;
   snapshot?: ProgressionSnapshot;
   pending?: RewardSpinRequest;
   last?: RewardSpinResult;
@@ -23,6 +24,7 @@ export class ProgressionClient extends EventTarget {
   private readVersion = 0;
   private request?: AbortController;
   private refreshAgain = false;
+  private acknowledgedRewards = new Set<number>();
   constructor(private recoveryStorage?: RecoveryStorage) { super(); }
   private get storage() { return this.recoveryStorage ?? globalThis.sessionStorage; }
   private key(account = this.accountId) { return `royal-reward-spin:${account}`; }
@@ -30,10 +32,19 @@ export class ProgressionClient extends EventTarget {
   private lock() { demoWallet.setExternalBusy(owner, this.busy || !!this.pending || this.recoveryBlocked); }
   get walletBlocked() { return demoWallet.busy || !!demoWallet.pending || demoWallet.hasExternalBusy(owner); }
 
+  rememberInitialPublicLevel(account: string | undefined, level: number) {
+    if (!account || account !== this.accountId || this.initialPublicLevel !== undefined ||
+      !Number.isInteger(level) || level < 1 || level > 100) return;
+    this.initialPublicLevel = level;
+    this.notify();
+  }
+
   setAccount(account: string | null) {
     if (account === this.accountId) return;
     this.epoch++; this.readVersion++; this.request?.abort(); this.request = undefined;
     this.accountId = account; this.snapshot = undefined; this.pending = undefined; this.last = undefined; this.lastOperation = undefined;
+    this.initialPublicLevel = undefined;
+    this.acknowledgedRewards.clear();
     this.freeNominal = null;
     this.busy = this.loading = this.refreshAgain = this.recoveryBlocked = false; this.error = '';
     if (account) {
@@ -67,7 +78,7 @@ export class ProgressionClient extends EventTarget {
       const data: unknown = await response.json();
       if (epoch !== this.epoch || version !== this.readVersion) return;
       if (!response.ok || !validProgressionSnapshot(data) || data.accountId !== account) throw Error('invalid_progression_snapshot');
-      this.snapshot = data;
+      this.snapshot = { ...data, pendingRewardLevels: data.pendingRewardLevels?.filter(level => !this.acknowledgedRewards.has(level)) };
       if (!this.pending && !this.recoveryBlocked) this.error = '';
     } catch {
       if (epoch === this.epoch && version === this.readVersion && !this.pending && !this.recoveryBlocked) {
@@ -80,6 +91,22 @@ export class ProgressionClient extends EventTarget {
         if (this.refreshAgain) { this.refreshAgain = false; void this.refresh(); }
       }
     }
+  }
+
+  async acknowledgeReward(level: number) {
+    const account = this.accountId, epoch = this.epoch;
+    if (!account || !this.snapshot?.pendingRewardLevels?.includes(level)) return;
+    const response = await fetch('/api/progression/reward-notices', {
+      method: 'POST', credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(10000),
+      headers: { 'Content-Type': 'application/json', [WALLET_ACCOUNT_HEADER]: account },
+      body: JSON.stringify({ level }),
+    });
+    if (!response.ok) throw Error('reward_notice_unconfirmed');
+    if (epoch !== this.epoch) return;
+    this.acknowledgedRewards.add(level);
+    if (this.snapshot) this.snapshot = { ...this.snapshot,
+      pendingRewardLevels: this.snapshot.pendingRewardLevels?.filter(value => value !== level) };
+    this.notify();
   }
 
   chooseFunding(nominal: string | null) {

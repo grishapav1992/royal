@@ -11,6 +11,7 @@ export const Player = schema({
   security: t.string().default(''),
   seat: t.string().default(''), action: t.string().default('idle'), drink: t.string().default(''), actionUntil: t.number().default(0),
   soberAt: t.number().default(0), appearance: t.string().default(''),
+  level: t.uint8().default(1),
 }, 'RoyalPlayer');
 export type Player = SchemaType<typeof Player>;
 export const Guest = schema({
