@@ -284,6 +284,7 @@ export class SocialUI {
   private updatePlayers(players: PlayerView[], selfId: string) {
     this.scene.syncPlayers(players, selfId);
     const self = players.find(player => player.id === selfId);
+    if (self?.level) progression.rememberInitialPublicLevel(this.auth.account?.id, self.level);
     if (self?.level !== this.publicLevel) {
       this.publicLevel = self?.level;
       if (self?.level && self.level !== progression.snapshot?.level) void progression.refresh();

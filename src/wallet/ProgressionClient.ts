@@ -10,6 +10,7 @@ type RecoveryStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 
 export class ProgressionClient extends EventTarget {
   accountId: string | null = null;
+  initialPublicLevel?: number;
   snapshot?: ProgressionSnapshot;
   pending?: RewardSpinRequest;
   last?: RewardSpinResult;
@@ -31,10 +32,18 @@ export class ProgressionClient extends EventTarget {
   private lock() { demoWallet.setExternalBusy(owner, this.busy || !!this.pending || this.recoveryBlocked); }
   get walletBlocked() { return demoWallet.busy || !!demoWallet.pending || demoWallet.hasExternalBusy(owner); }
 
+  rememberInitialPublicLevel(account: string | undefined, level: number) {
+    if (!account || account !== this.accountId || this.initialPublicLevel !== undefined ||
+      !Number.isInteger(level) || level < 1 || level > 100) return;
+    this.initialPublicLevel = level;
+    this.notify();
+  }
+
   setAccount(account: string | null) {
     if (account === this.accountId) return;
     this.epoch++; this.readVersion++; this.request?.abort(); this.request = undefined;
     this.accountId = account; this.snapshot = undefined; this.pending = undefined; this.last = undefined; this.lastOperation = undefined;
+    this.initialPublicLevel = undefined;
     this.acknowledgedRewards.clear();
     this.freeNominal = null;
     this.busy = this.loading = this.refreshAgain = this.recoveryBlocked = false; this.error = '';

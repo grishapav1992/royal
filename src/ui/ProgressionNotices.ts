@@ -10,6 +10,7 @@ const en = language === 'en';
 const levelText = (level: number) => en ? `Level ${level}` : `Уровень ${level}`;
 const gameNames = { 'royal-coins': 'Royal Coins', 'royal-fruits': 'Royal Fruits' };
 const bannerTime = 1200;
+const rewardLock = 'progression-notice';
 
 export class ProgressionNotices {
   private dialog = document.createElement('dialog');
@@ -22,6 +23,7 @@ export class ProgressionNotices {
   private level?: number;
   private displayedReward?: number;
   private bannerTimer?: ReturnType<typeof setTimeout>;
+  private stakesLocked = false;
   private waitingForResult = false;
   private presentationRevision = 0;
   private gameDialog = document.querySelector<HTMLDialogElement>('#mini-dialog');
@@ -46,7 +48,10 @@ export class ProgressionNotices {
     document.body.append(this.banner, this.dialog);
     this.dialog.addEventListener('cancel', event => event.preventDefault());
     this.dialog.addEventListener('close', () => {
-      if (!this.dialog.open) this.setLocked(!!document.querySelector('dialog[open]'));
+      if (!this.dialog.open) {
+        if (!this.bannerTimer) this.lockStakes(false);
+        this.setLocked(!!document.querySelector('dialog[open]'));
+      }
     });
     client.addEventListener('change', () => this.render());
     document.addEventListener('visibilitychange', () => {
@@ -84,7 +89,14 @@ export class ProgressionNotices {
 
   private gameRequestInProgress() {
     const kind = demoWallet.pending?.kind;
-    return !!this.gameDialog?.open && (kind === 'play' || kind === 'spin' || demoWallet.hasExternalBusy('progression'));
+    // The notice's own wallet lock is independent of a game's pending result.
+    return !!this.gameDialog?.open && (kind === 'play' || kind === 'spin' ||
+      (!this.stakesLocked && demoWallet.hasExternalBusy('progression')));
+  }
+
+  private lockStakes(locked: boolean) {
+    this.stakesLocked = locked;
+    demoWallet.setExternalBusy(rewardLock, locked);
   }
 
   private render() {
@@ -92,6 +104,7 @@ export class ProgressionNotices {
     if (accountId !== this.account) {
       this.account = accountId;
       this.level = this.displayedReward = undefined;
+      this.lockStakes(false);
       this.waitingForResult = this.gameRequestInProgress();
       this.presentationRevision++;
       this.ok.disabled = false;
@@ -99,19 +112,21 @@ export class ProgressionNotices {
       this.hideBanner();
       this.dialog.close();
     }
-    if (!snapshot || document.hidden || document.querySelector('#join-dialog[open]')) return;
-    this.level ??= snapshot.level;
+    const level = this.level ??= this.client.initialPublicLevel ?? snapshot?.level;
+    if (!snapshot || level === undefined || document.hidden || document.querySelector('#join-dialog[open]')) return;
     if ((this.gameDialog?.open && this.waitingForResult) || document.querySelector('#pvp-dialog[open][data-phase="playing"]')) return;
-    if (snapshot.level > this.level && !this.bannerTimer && !this.dialog.open) {
+    const reward = snapshot.pendingRewardLevels?.[0];
+    if (snapshot.level > level && !this.bannerTimer && !this.dialog.open) {
       this.level = snapshot.level;
+      if (reward !== undefined) this.lockStakes(true);
       this.showBanner(snapshot.level);
       return;
     }
     if (this.bannerTimer || this.ok.disabled) return;
-    const reward = snapshot.pendingRewardLevels?.[0];
     if (reward === undefined) {
       this.displayedReward = undefined;
       this.dialog.close();
+      this.lockStakes(false);
     } else if (reward !== this.displayedReward || !this.dialog.open) {
       this.showReward(snapshot, reward);
     }
@@ -148,7 +163,10 @@ export class ProgressionNotices {
       lines.push(en ? `Free skin generations: ${grant.count}. Each gives two designs to choose from.`
         : `Бесплатные генерации скина: ${grant.count}. Каждая даёт два образа на выбор.`);
     }
-    if (!lines.length) return;
+    if (!lines.length) {
+      if (!this.dialog.open) this.lockStakes(false);
+      return;
+    }
     this.displayedReward = level;
     this.title.textContent = en ? `Level ${level} rewards` : `Награды за ${level}-й уровень`;
     this.rewards.replaceChildren(...lines.map(line => {
@@ -158,6 +176,7 @@ export class ProgressionNotices {
     }));
     this.error.textContent = '';
     if (!this.dialog.open) {
+      this.lockStakes(true);
       this.setLocked(true);
       this.dialog.showModal();
     }

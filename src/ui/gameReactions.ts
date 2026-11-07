@@ -18,6 +18,10 @@ export function emitGameReaction(host: HTMLElement, reaction: GameReaction) {
   host.dispatchEvent(new CustomEvent<{ reaction: GameReaction }>(GAME_REACTION_EVENT, { detail: { reaction }, bubbles: true }));
 }
 
+export function emitGameRoundPresented(host: HTMLElement) {
+  host.dispatchEvent(new Event(GAME_ROUND_PRESENTED_EVENT, { bubbles: true }));
+}
+
 /** Compare the total return with the full stake; returning exactly the stake is neutral. */
 export function gameReactionForAmounts(spentUnits: string, returnedUnits: string): GameReaction | undefined {
   if (!/^\d+$/.test(spentUnits) || !/^\d+$/.test(returnedUnits)) return;
@@ -30,7 +34,7 @@ export function emitGameOutcome(host: HTMLElement, spentUnits: string, returnedU
   const reaction = gameReactionForAmounts(spentUnits, returnedUnits);
   if (reaction) emitGameReaction(host, reaction);
   if (/^\d+$/.test(spentUnits) && BigInt(spentUnits) > 0n) {
-    host.dispatchEvent(new Event(GAME_ROUND_PRESENTED_EVENT, { bubbles: true }));
+    emitGameRoundPresented(host);
   }
 }
 

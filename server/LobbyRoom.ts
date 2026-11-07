@@ -446,18 +446,18 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       this.applyProfile(auth, access, profile, profileRevision);
       if (auth.account.skin === null) throw new ServerError(401, 'Выбери персонажа и войди в зал ещё раз.');
       const others = this.clients.filter(other => other !== client && (other.auth as RoomAuth)?.account.id === auth.account.id);
-      const activeOthers = await Promise.all(others.map(other => accounts.active((other.auth as RoomAuth).hash)));
+      const [activeOthers, level] = await Promise.all([
+        Promise.all(others.map(other => accounts.active((other.auth as RoomAuth).hash))),
+        accounts.progression.publicLevel(auth.account.id).catch(() => { console.error('Room progression level lookup failed'); return 0; }),
+      ]);
       if (this.disposed || this.access.get(client.sessionId) !== access || !access.active) throw new ServerError(401, 'Войди в аккаунт ещё раз.');
       if (access.banUntil > Date.now()) throw new ServerError(403, 'Вход временно закрыт охраной.');
       if (activeOthers.some(Boolean)) throw duplicate();
-      const p = new Player(); p.name = auth.account.name; p.soberAt = access.drinking.soberAt;
+      const p = new Player(); p.name = auth.account.name; p.soberAt = access.drinking.soberAt; p.level = level;
       const index = this.nextSpawn++;
       p.x = 420 + index % 8 * 40; p.y = 570 + Math.floor(index % 24 / 8) * 25; p.skin = auth.account.skin!; p.appearance = serializeAppearance(auth.account.appearance);
       this.playerAccounts.set(client.sessionId, auth.account.id);
       this.state.players.set(client.sessionId, p);
-      void accounts.progression.publicLevel(auth.account.id).then(level => {
-        if (this.state.players.get(client.sessionId) === p && p.level < level) p.level = level;
-      }).catch(() => console.error('Room progression level lookup failed'));
       this.controls.set(client.sessionId, { dx: 0, dy: 0, at: 0, path: [], lastTarget: 0, chatRevision: 0, inputs: new MovementInputs(), predicted: false });
       if((options as {activityProtocol?:unknown}|null)?.activityProtocol===1)this.activityProtocols.add(client.sessionId);
       this.system(p.name+' заходит в зал');

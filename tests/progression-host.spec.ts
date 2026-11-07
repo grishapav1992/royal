@@ -3,7 +3,7 @@ import { ROYAL_PLATFORM_GAMES } from '../src/shared/arcadeCatalog';
 
 const rewardSlotsInCatalogue = ['royal-coins', 'royal-fruits'].every(game => ROYAL_PLATFORM_GAMES.includes(game));
 
-async function enter(page: Page) {
+async function enter(page: Page, waitForProgression = true) {
   await page.goto('/?mode=club');
   await page.getByLabel('Почта', { exact: true }).fill('progression-player-' + crypto.randomUUID() + '@example.test');
   await page.getByLabel('Пароль', { exact: true }).fill('Progression-host-test-42!');
@@ -12,7 +12,7 @@ async function enter(page: Page) {
   await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();
   await expect(page.locator('#join-dialog')).toBeHidden({ timeout: 25000 });
   await expect.poll(() => page.evaluate(() => (window as any).royalDemo.getState().online)).toBe(true);
-  await expect(page.locator('#progression-button')).toHaveText('Уровень 1');
+  if (waitForProgression) await expect(page.locator('#progression-button')).toHaveText('Уровень 1');
 }
 async function unlock(page: Page, confirm = true) {
   const funding = await page.request.post('/__test/progression/fund'); expect(funding.ok()).toBe(true);
@@ -119,6 +119,75 @@ test('reward windows follow milestone order and resume at the first unconfirmed 
   await expect(page.locator('#join-dialog')).toBeHidden({ timeout: 25000 });
   await expect(page.locator('#progression-button')).toHaveText('Уровень 10');
   await expect(notice).toBeHidden();
+});
+
+test('late initial progress and a hidden roulette result still show feedback and protect the wallet', async ({ page }) => {
+  let releaseProgression!: () => void;
+  const initialRead = new Promise<void>(resolve => { releaseProgression = resolve; });
+  await page.route('**/api/progression', async route => {
+    await initialRead;
+    if (route.request().failure()) return;
+    await route.continue();
+  });
+  const banner = page.locator('.level-up-banner');
+  const notice = page.locator('#level-reward-dialog');
+  const spin = page.locator('[data-rr-spin]');
+  try {
+    await enter(page, false);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    expect((await page.request.post('/__test/progression/fund')).ok()).toBe(true);
+    await page.getByRole('button', { name: 'Казино', exact: true }).click();
+    await page.locator('#casino-catalog [data-platform-game="royal-roulette"]').click();
+    await expect(spin).toBeEnabled({ timeout: 15000 });
+    await page.locator('[data-rr-amount="50"]').click();
+    await spin.click();
+    await expect(page.locator('[data-rr-number]')).toHaveText(/^\d+$/);
+    await expect(page.locator('#progression-button')).toHaveText('Уровень …');
+  } finally { releaseProgression(); }
+  await expect(banner).toHaveText('Уровень 4!', { timeout: 15000 });
+  await expect(banner).toBeVisible();
+  await expect(banner).toBeHidden();
+
+  let releaseRound!: () => void;
+  const roundReply = new Promise<void>(resolve => { releaseRound = resolve; });
+  await page.route('**/api/demo-wallet/operations', async route => {
+    const response = await route.fetch();
+    await roundReply;
+    await route.fulfill({ response });
+  }, { times: 1 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.locator('[data-rr-amount="20"]').click();
+  await spin.click();
+  await expect(page.locator('.rr-root')).toHaveAttribute('data-busy', 'true');
+  try {
+    await page.evaluate(() => {
+      Object.defineProperty(document, 'hidden', { configurable: true, value: true });
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+    releaseRound();
+    await expect(page.locator('.rr-root')).toHaveAttribute('data-busy', 'false', { timeout: 10000 });
+    await expect(notice).toBeHidden();
+  } finally {
+    releaseRound();
+    await page.evaluate(() => {
+      Reflect.deleteProperty(document, 'hidden');
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+  }
+  await expect(notice.getByRole('heading')).toHaveText('Награды за 5-й уровень', { timeout: 12000 });
+  await expect(page.locator('#mini-dialog')).toBeVisible();
+  await expect(spin).toBeDisabled();
+  const automaticStart = await page.evaluate(async () => {
+    const host = (globalThis as any)[Symbol.for('royal.game-host.v1')];
+    try {
+      await host.expansionClient.act({ action: 'start', gameId: 'studio-caramel-carnival', stakeUnits: '10', settings: { caramel: { mode: 'normal' } } });
+      return 'accepted';
+    } catch (error) { return (error as Error).message; }
+  });
+  expect(automaticStart).toBe('Сначала проверь предыдущую операцию кошелька.');
+  await notice.getByRole('button', { name: 'OK' }).click();
+  await expect(notice).toBeHidden();
+  await expect(spin).toBeEnabled();
 });
 
 test('the real host keeps local levels, shared free-spin packs and chat usable on desktop and mobile', async ({ page }, info) => {
