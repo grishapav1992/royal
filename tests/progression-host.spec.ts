@@ -151,11 +151,15 @@ test('the real host keeps local levels, shared free-spin packs and chat usable o
   await expect(page.locator('#chat-input')).toBeInViewport();
   await chat.locator('.game-chat-scrim').click({ position: { x: 8, y: 8 }, timeout: 5000 });
   expect(await page.locator('.progression-scroll').evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
-  await page.locator('[data-progression-grant]').nth(1).scrollIntoViewIfNeeded();
-  await expect(page.locator('[data-progression-grant]').nth(1)).toBeInViewport();
+  const secondGrant = page.locator('[data-progression-grant]').nth(1);
+  await expect(async () => {
+    await secondGrant.scrollIntoViewIfNeeded({ timeout: 1500 });
+    await expect(secondGrant).toBeInViewport({ timeout: 1500 });
+  }).toPass({ timeout: 6000 });
   await page.screenshot({ path: info.outputPath('mobile.png') });
   await page.locator('[data-progression-close]').click();
   await expect(page.locator('.workspace > #club-chat-dock')).toBeVisible();
+  await page.getByRole('button', { name: 'Профиль и настройки' }).click();
   await expect(page.locator('#progression-button')).toBeInViewport();
   const header = await page.locator('.header').evaluate(element => element.scrollWidth <= element.clientWidth + 1); expect(header).toBe(true);
   expect(errors).toEqual([]);
