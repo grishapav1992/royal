@@ -1,5 +1,6 @@
 import type { DatabaseRow, PostgresDatabase } from '../database';
 import { isPvpMoneyGame } from '../finance/pvp-money';
+import { registeredAuditMode } from './mode-registry';
 import { gameAccountId } from '../../src/shared/nileWallet';
 import { isAuditEntityRef, type AuditEntityRef, type AuditSourceRef } from './contract';
 
@@ -60,9 +61,8 @@ function gameplayMatch(row: DatabaseRow, matchId: string, entry: PvpPostingKey) 
       challenge.creatorId !== row.creator_id || challenge.opponentId !== row.opponent_id ||
       challenge.status !== row.match_status || challenge.mode === 'free' || challenge.stakeUnits !== transportStake ||
       ![row.creator_id, row.opponent_id].includes(entry.accountId)) return null;
-  const version = challenge.rulesVersion;
-  const rulesVersion = entry.gameId === 'tsu-e-fa' && typeof version === 'number' &&
-    [1, 2, 3, 4].includes(version) ? String(version) : null;
+  const mode = registeredAuditMode(entry.gameId, 'stake', challenge.rulesVersion);
+  const rulesVersion = mode?.category === 'pvp' ? mode.rulesVersion : null;
   return { table: 'pvp_matches', rulesVersion };
 }
 

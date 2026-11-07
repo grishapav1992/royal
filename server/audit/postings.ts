@@ -1,7 +1,8 @@
 import { CLUB_FINE_SOURCE } from '../../src/shared/security';
 import type { PostgresDatabase } from '../database';
 import { AUDIT_SCHEMA_VERSION, isAuditRecord, type AuditPosting, type AuditScope, type AuditSourceRef } from './contract';
-import { casinoPaidStartModes, resolveCasinoPosting, type CasinoPostingResolution } from './casino';
+import { resolveCasinoPosting, type CasinoPostingResolution } from './casino';
+import { isPaidCasinoOpening } from './mode-registry';
 import { resolvePvpPosting, type PvpPostingResolution } from './pvp';
 import { resolveTotePosting, type TotePostingResolution } from './tote';
 import { resolvePaymentPosting, type PaymentPostingResolution } from './payments';
@@ -87,7 +88,7 @@ export class AuditPostingReader {
               if (evidence && 'operation' in evidence && evidence.operation && evidence.entity.category === 'casino' &&
                 evidence.entity.source.namespace.endsWith('.demo_casino_sessions') &&
                 (evidence.operation.rowId !== evidence.entity.source.rowId ||
-                  casinoPaidStartModes.some(rule => rule.gameId === entry.gameId && rule.modes.includes(evidence.entity.modeId)))) {
+                  isPaidCasinoOpening(entry.gameId, evidence.entity.modeId, evidence.entity.rulesVersion))) {
                 movement = 'paid-option';
               }
               break;

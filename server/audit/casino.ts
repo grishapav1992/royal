@@ -1,13 +1,9 @@
 import { identifier, type PostgresDatabase } from '../database';
 import { verifyGameRound } from '../games/core';
-import { validCaramelSettings } from '../../src/shared/caramelCarnival';
-import { validCaribbeanTransportSettings } from '../../src/shared/caribbeanTransport';
 import { isExpansionGame, validExpansionRulesVersion } from '../../src/shared/casinoExpansion';
 import { isSessionGame } from '../../src/shared/casinoSessions';
-import { validFlagSettings } from '../../src/shared/flagBattle';
-import { isLuelonSlotGame, validLuelonSlotSettings } from '../../src/shared/luelonSlots';
-import { validNeopolisSettings } from '../../src/shared/neopolis';
 import { isAuditEntityRef, type AuditEntityRef, type AuditSourceRef } from './contract';
+import { registeredAuditMode, registeredCasinoSessionMode } from './mode-registry';
 
 export type CasinoPostingKey = {
   rowId: string;
@@ -47,44 +43,6 @@ function parseRecord(value: unknown): Record<string, unknown> | null {
   }
 }
 
-const normalExpansionModes = new Set([
-  'github-crash', 'github-hilo', 'original-cr-vs-leo', 'original-jackie-chan',
-  'studio-afterglow', 'studio-dracona', 'studio-flooded-temple', 'studio-forest-heart',
-  'studio-last-convoy', 'studio-meme-overload', 'studio-nitro-run', 'studio-wild-nudge',
-]);
-
-/** Modes whose accepted opening debit pays for an optional feature or enhanced round. */
-export const casinoPaidStartModes: readonly {
-  gameId: string;
-  settingsKey: string;
-  modes: readonly string[];
-}[] = [
-  { gameId: 'studio-cosmic-escape', settingsKey: 'luelon', modes: ['cosmic-chaos', 'ufo-invasion', 'deep-echo'] },
-  { gameId: 'studio-velvet-reign', settingsKey: 'luelon', modes: ['booster', 'hyper', 'spotlight', 'super-encore'] },
-  { gameId: 'studio-caramel-carnival', settingsKey: 'caramel', modes: ['festival'] },
-  { gameId: 'studio-caribbean-treasures', settingsKey: 'caribbean', modes: ['buy-raid', 'buy-flagship'] },
-];
-
-export function casinoExpansionMode(gameId: string, rulesVersion: unknown, settings: unknown): string | null {
-  if (normalExpansionModes.has(gameId)) return 'normal';
-  if (isLuelonSlotGame(gameId)) {
-    return validLuelonSlotSettings(gameId, settings) ? settings.luelon.mode : null;
-  }
-  switch (gameId) {
-    case 'flag-battle':
-      if (!validFlagSettings(settings)) return null;
-      return settings.flags.mode ?? (rulesVersion === 1 ? 'classic' : null);
-    case 'studio-caramel-carnival':
-      return validCaramelSettings(settings) ? settings.caramel.mode : null;
-    case 'studio-caribbean-treasures':
-      return validCaribbeanTransportSettings(settings) ? settings.caribbean.mode : null;
-    case 'studio-neopolis':
-      return validNeopolisSettings(settings) ? settings.neopolis.hero : null;
-    default:
-      return null;
-  }
-}
-
 function entityRef(
   gameId: string, modeId: string | null, rulesVersion: string | null, source: AuditSourceRef,
 ): CasinoPostingResolution['entity'] | null {
@@ -118,8 +76,9 @@ export async function resolveCasinoPosting(db: CasinoDatabase, entry: CasinoPost
     const round = parseRecord(row.instant_result)?.gameRound;
     if (!verifyGameRound(round) || round.gameId !== entry.gameId) return null;
     const operation = sourceRef(db, 'demo_operations', requestKey);
-    const entity = entityRef(entry.gameId, 'normal', String(round.rulesVersion), operation);
-    return entity ? { source, entity, operation, origin: 'command', coverage: 'complete' } : null;
+    const mode = registeredAuditMode(entry.gameId, 'normal', round.rulesVersion);
+    const entity = entityRef(entry.gameId, mode?.modeId ?? null, String(round.rulesVersion), operation);
+    return entity ? { source, entity, operation, origin: 'command', coverage: mode ? 'complete' : 'partial' } : null;
   }
 
   const session = parseRecord(row.session_payload);
@@ -129,7 +88,7 @@ export async function resolveCasinoPosting(db: CasinoDatabase, entry: CasinoPost
   const version = session.rulesVersion;
   const rulesVersion = (isExpansionGame(entry.gameId) && validExpansionRulesVersion(entry.gameId, version))
     || (isSessionGame(entry.gameId) && version === 1) ? String(version) : null;
-  const mode = casinoExpansionMode(entry.gameId, version, session.settings);
+  const mode = registeredCasinoSessionMode(entry.gameId, version, session.settings)?.modeId ?? null;
   const entity = entityRef(entry.gameId, mode, rulesVersion,
     sourceRef(db, 'demo_casino_sessions', operationKey(entry.accountId, row.session_id)));
   if (!entity) return null;

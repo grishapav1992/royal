@@ -1,6 +1,7 @@
 import type { PostgresDatabase } from '../database';
 import { TOTE_GAME, toteUuid } from '../../src/shared/flagTote';
 import type { AuditEntityRef, AuditSourceRef } from './contract';
+import { auditToteMode } from './mode-registry';
 
 type ToteTicketEvidence = {
   ticketId: string;
@@ -65,7 +66,7 @@ export async function resolveTotePosting(db: PostgresDatabase, entry: {
     if (!tickets.length) return null;
     return {
       source: { namespace: db.schema + '.demo_ledger', rowId: entry.rowId },
-      entity: { category: 'totalizator', kind: 'pool', gameId: TOTE_GAME, modeId: 'pool',
+      entity: { category: auditToteMode.category, kind: 'pool', gameId: TOTE_GAME, modeId: auditToteMode.modeId,
         rulesVersion: String(round.rules_version), source: { namespace: db.schema + '.flag_tote_rounds', rowId: roundId }, ticketId },
       origin: ticketId ? 'command' : 'automatic', coverage: 'partial',
       round: { openedAtMs: Number(round.opened_at), closesAtMs: Number(round.closes_at), finishesAtMs: Number(round.finishes_at),

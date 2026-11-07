@@ -3,6 +3,7 @@ import { FLAG_COUNTRIES } from '../../src/shared/flagBattle';
 import { TOTE_GAME, TOTE_LIMITS, settleFlagTote, toteCountry, toteOrder, toteUnits, toteUuid, type ToteMathTicket } from '../../src/shared/flagTote';
 import { TOTE_ADMISSION_CLOCK, reconcileStoredTotePool, type TotePoolReconciliation } from './check-tote';
 import { auditSourceKey, isAuditRecord, type AuditScope, type AuditSourceRef } from './contract';
+import { auditToteMode } from './mode-registry';
 import { createReplayPackage, isReplayId, type ReplayEvent, type ReplayManifest, type ReplayPackage, type ReplayState } from './replay-package';
 import { AuditReplayStore } from './replay-store';
 
@@ -205,8 +206,7 @@ export async function buildCapturedToteReplay(audit: PostgresDatabase, input: Re
     if (!terminal) gaps.push('terminal-unavailable');
     return { status: 'built', value: createReplayPackage({
       formatVersion: 3, timing: 'source-order', scope: report.scope, replayId: input.replayId, entityId: input.poolId,
-      game: { gameId: TOTE_GAME, modeId: 'pool', rulesVersion: '1', category: 'totalizator',
-        replayProfile: 'pool-steps', gameVersion: 'server-rules-1', engineId: 'flag-tote', engineVersion: '1' },
+      game: { ...auditToteMode, gameVersion: 'server-rules-1', engineId: 'flag-tote', engineVersion: '1' },
       initial: poolState(0), coverage: gaps.length ? 'partial' : 'complete', gaps,
     }, events) };
   }, { readOnly: true });

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test, { type TestContext } from 'node:test';
@@ -14,7 +14,9 @@ import { AuditEvidence } from '../server/audit/evidence';
 import { installAuditReportAccess } from '../server/audit/report-access';
 import { installAuditDetailReport, type AuditDetailReport } from '../server/audit/report-detail-source';
 import { readAuditDetail } from '../server/audit/report-investigation';
-import type { AuditDetailLookupFilters } from '../server/audit/report-player';
+import { exportAuditPlayer, type AuditDetailLookupFilters } from '../server/audit/report-player';
+import { installAuditPlayerReport } from '../server/audit/report-player-source';
+import { installAuditSummaryReport, type SummaryReport } from '../server/audit/report-summary-source';
 import { cryptoConfig } from '../server/crypto/config';
 import type { CryptoProvider } from '../server/crypto/nowpayments';
 import { CryptoStore } from '../server/crypto/store';
@@ -104,7 +106,7 @@ async function fixture(t: TestContext) {
     return file;
   };
   return { game, payment, audit, wallet, crypto, actor, other, before, datasets, scope, schema,
-    demo, real, grant, alice, operator, otherOperator, begin, read, finish, sourceRows, lookup, credentialFile };
+    demo, real, grant, reader, alice, operator, otherOperator, begin, read, finish, sourceRows, lookup, credentialFile, config };
 }
 
 test('operator detail projects the accepted command, two canonical legs and sanitized formed responses', async t => {
@@ -182,6 +184,70 @@ test('operator detail projects the accepted command, two canonical legs and sani
   assert.deepEqual(payment.linkedPostings, []);
   assert.deepEqual(payment.events, []);
   await f.finish(otherSource);
+});
+
+test('registered casino mode agrees across detail, CSV and summary and rejects foreign settings', async t => {
+  const f = await fixture(t);
+  const sources = { game: f.game.schema, payments: f.payment.schema };
+  await installAuditPlayerReport(f.audit, f.reader, sources);
+  await installAuditSummaryReport(f.audit, f.reader, sources);
+  const id = randomUUID(), gameId = 'studio-caramel-carnival', foreignMode = 'cosmic-chaos';
+  await f.wallet.expansion.operate(f.actor, { id, gameId, action: 'start', stakeUnits: '10', stakePolicyVersion: 1,
+    settings: { caramel: { mode: 'festival' } } });
+  const [stake] = await f.sourceRows(id);
+  const readAnchor = async () => {
+    const job = await f.begin(stake);
+    try {
+      const detail = await f.read(job);
+      assert.equal(detail.status, 'found');
+      assert(detail.anchor);
+      return detail.anchor;
+    } finally {
+      await f.finish(job);
+    }
+  };
+  const accepted = await readAnchor();
+  assert.deepEqual([accepted.category, accepted.gameId, accepted.modeId, accepted.rulesVersion, accepted.amountUnits],
+    ['casino', gameId, 'festival', '2', '-350']);
+
+  const fromMs = Number(accepted.occurredAtMs);
+  const summary = async (modeId?: string) => {
+    const filters = { category: 'casino', gameId, fromMs, toMs: fromMs + 1, modeId };
+    const started = await f.operator.query<{ id: string }>(
+      `SELECT ${f.schema}.audit_report_begin($1,'summary',$2::jsonb) AS id`,
+      [f.scope.datasetId, JSON.stringify(filters)]);
+    const job = started.rows[0].id;
+    try {
+      const result = await f.operator.query<{ report: SummaryReport }>(
+        `SELECT ${f.schema}.audit_report_summary($1) AS report`, [job]);
+      return result.rows[0].report;
+    } finally {
+      await f.finish(job);
+    }
+  };
+  const rowsForFestival = (await summary('festival')).rows;
+  assert.deepEqual(rowsForFestival.map(row => [row.movement_type, row.posting_count, row.amount_units]),
+    [['paid-option', '1', '-350']]);
+
+  const directory = await mkdtemp(join(tmpdir(), 'royal-audit-mode-csv-'));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const destination = join(directory, 'player.csv');
+  const csv = await exportAuditPlayer(f.config(f.alice), { schema: f.audit.schema, datasetId: f.scope.datasetId, destination,
+    filters: { accountId: f.actor, category: 'casino', gameId, modeId: 'festival', fromMs, toMs: fromMs + 1 } });
+  assert.equal(csv.rowCount, 1);
+  assert((await readFile(destination, 'utf8')).includes(`"${id}","casino","${gameId}","festival","2","${id}"`));
+
+  for (const settings of [{ caramel: { mode: 'unrecognized' }, luelon: { mode: foreignMode } }, 'malformed']) {
+    await f.game.prepare(`UPDATE demo_casino_sessions
+      SET payload=jsonb_set(payload::jsonb,'{settings}',?::jsonb)::text WHERE account_id=? AND id=?`)
+      .run(JSON.stringify(settings), f.actor, id);
+    const damaged = await readAnchor();
+    assert.deepEqual([damaged.category, damaged.gameId, damaged.modeId, damaged.rulesVersion, damaged.amountUnits],
+      ['casino', gameId, null, '2', '-350']);
+    assert.deepEqual((await summary(foreignMode)).rows, []);
+    assert.deepEqual((await summary('festival')).rows, []);
+    assert.deepEqual((await summary()).rows.map(row => [row.posting_count, row.amount_units]), [['1', '-350']]);
+  }
 });
 
 test('detail distinguishes uncaptured, unavailable and current mutable source after sealing', async t => {

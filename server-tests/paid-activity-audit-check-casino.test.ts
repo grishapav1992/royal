@@ -139,6 +139,37 @@ test('paid option, open state and a completed free continuation use different ev
   }
 });
 
+test('accepted v1 Flag Battle and Caribbean keep their historical modes and ordinary stake', async () => {
+  const { db, wallet } = await fixture(max => max - 1);
+  try {
+    for (const { gameId, modeId, settings, debit } of [
+      { gameId: 'flag-battle', modeId: 'classic', settings: { flags: { country: 'RU' } }, debit: '100' },
+      { gameId: CARIBBEAN_GAME, modeId: 'normal', settings: { caribbean: { mode: 'normal', lines: 20 } }, debit: '2000' },
+    ] as const) {
+      const id = randomUUID();
+      const operation = { id, gameId, action: 'start', stakeUnits: '100', settings };
+      const before = await demoBalanceUnits(db, accountId);
+      const { session } = await wallet.expansion.operate(accountId, operation);
+      assert.equal(session.rulesVersion, 1);
+      assert.equal(session.state, 'settled');
+      const retry = await wallet.expansion.operate(accountId, operation);
+      assert.equal(retry.replayed, true);
+      assert.deepEqual(retry.session, session);
+      const key = await selectedRound(db, id, gameId);
+      assert.equal(key.entity.modeId, modeId);
+      assert.equal(key.entity.rulesVersion, '1');
+      const result = await checkCasinoRound(db, key);
+      assert.deepEqual(result.steps.map(step => [step.operationId, step.kind, step.status, step.expectedUnits, step.observedUnits]),
+        [[id, 'stake', 'match', debit, debit]]);
+      assert.equal(result.payout.status, 'match');
+      assert.equal(result.payout.expectedUnits, session.returnedUnits);
+      assert.equal(await demoBalanceUnits(db, accountId), before - Number(debit) + Number(session.returnedUnits));
+    }
+  } finally {
+    await db.close();
+  }
+});
+
 const expansionChoices: Record<string, string> = {
   'studio-cosmic-escape': 'cosmic-chaos',
   'studio-caramel-carnival': 'festival',

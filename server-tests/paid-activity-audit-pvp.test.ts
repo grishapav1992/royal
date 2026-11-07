@@ -1,8 +1,13 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import test, { type TestContext } from 'node:test';
+import { AuditDatasets } from '../server/audit/datasets';
+import { registeredAuditMode } from '../server/audit/mode-registry';
 import { resolvePvpPosting, type PvpPostingKey } from '../server/audit/pvp';
-import { PostgresDatabase } from '../server/database';
+import { installAuditReportAccess } from '../server/audit/report-access';
+import { installAuditDetailReport } from '../server/audit/report-detail-source';
+import { readAuditDetail } from '../server/audit/report-investigation';
+import { databaseConfig, identifier, PostgresDatabase } from '../server/database';
 import { DemoWalletStore } from '../server/demoWallet';
 import { NileCombatEscrow } from '../server/finance/combat-escrow';
 import { PvpStore } from '../server/pvp/store';
@@ -126,6 +131,78 @@ test('negotiated Tsuefa keeps verified v4 rules and does not guess which request
   assert.equal(result.bank.winnerId, f.a.accountId);
   assert.equal(result.bank.feeUnits, '10');
   assert.equal(result.operation, null);
+});
+
+test('named PvP detail reports verified Tsuefa rules and no inferred chess version', async t => {
+  const f = await fixture(t);
+  const audit = new PostgresDatabase(':memory:');
+  const suffix = randomUUID().replaceAll('-', '').slice(0, 12);
+  const reader = 'audit_pvp_reader_' + suffix, operator = 'audit_pvp_operator_' + suffix;
+  const password = randomUUID();
+  await audit.exec(`CREATE ROLE ${identifier(reader)} NOLOGIN;
+    CREATE ROLE ${identifier(operator)} LOGIN PASSWORD '${password}';
+    GRANT ${identifier(reader)} TO ${identifier(operator)};
+    ALTER ROLE ${identifier(operator)} SET temp_file_limit='32MB'`);
+  t.after(async () => {
+    try {
+      await audit.exec(`DROP OWNED BY ${identifier(reader)}; DROP ROLE ${identifier(operator)},${identifier(reader)}`);
+    } finally {
+      await audit.close();
+    }
+  });
+  const sources = { game: f.db.schema };
+  const { datasetId } = await new AuditDatasets(audit, sources).startTest();
+  await installAuditReportAccess(audit, reader);
+  await installAuditDetailReport(audit, reader, sources);
+  const source = f.db.schema + '.demo_ledger';
+  await audit.prepare('INSERT INTO audit_report_acl(operator_name,dataset_id,source_namespace) VALUES (?,?,?)')
+    .run(operator, datasetId, source);
+  const config = databaseConfig({ ...process.env, DATABASE_URL: '', DATABASE_URL_FILE: '',
+    PGUSER: operator, PGPASSWORD: password, PGPASSWORD_FILE: '' });
+
+  const chess = await f.store.command(f.a, {
+    id: randomUUID(), action: 'create', gameId: 'chess', stakeUnits: '10000000', targetId: f.b.accountId,
+  }, f.now);
+  const chessId = chess.active!.id;
+  await f.store.command(f.b, { id: randomUUID(), action: 'accept', challengeId: chessId }, f.now + 1);
+  for (const actor of [f.a, f.b]) {
+    await f.store.command(actor, { id: randomUUID(), action: 'ready', challengeId: chessId }, f.now + 2);
+  }
+  await f.store.adjudicate(f.a.roomId, chessId, null, 'draw', f.now + 3);
+
+  const tsu = await f.store.command(f.a, {
+    id: randomUUID(), action: 'invite', gameId: 'tsu-e-fa', stakeUnits: '1000000', targetId: f.b.accountId,
+  }, f.now + 4);
+  const tsuId = tsu.active!.id;
+  await f.store.command(f.b, { id: randomUUID(), action: 'accept', challengeId: tsuId }, f.now + 5);
+  for (const actor of [f.a, f.b]) {
+    await f.store.command(actor, { id: randomUUID(), action: 'duel-ready', challengeId: tsuId, termsRevision: 0 }, f.now + 6);
+  }
+
+  for (const [gameId, matchId, version, amount] of [
+    ['chess', chessId, null, '-1000'], ['tsu-e-fa', tsuId, '4', '-100'],
+  ] as const) {
+    const [hold] = await f.postings(gameId, matchId, 'hold');
+    assert(hold);
+    const posting = await resolvePvpPosting(f.db, hold);
+    assert(posting);
+    const detail = await readAuditDetail(config, {
+      schema: audit.schema, datasetId, filters: { source, postingId: hold.rowId },
+    });
+    const anchor = detail.anchor;
+    assert.equal(detail.status, 'found');
+    assert(anchor);
+    assert.deepEqual(anchor.source, posting.source);
+    assert.deepEqual(
+      [anchor.accountId, anchor.operationId, anchor.entityId, anchor.movement, anchor.amountUnits],
+      [hold.accountId, hold.operationId, matchId, 'reserve', amount],
+    );
+    assert.deepEqual([anchor.category, anchor.gameId, anchor.modeId, anchor.rulesVersion],
+      [posting.entity.category, posting.entity.gameId, posting.entity.modeId, posting.entity.rulesVersion]);
+    assert.deepEqual([anchor.category, anchor.gameId, anchor.modeId, anchor.rulesVersion], ['pvp', gameId, 'stake', version]);
+  }
+  assert.equal(registeredAuditMode('tsu-e-fa', 'stake', 4)?.replayProfile, 'pvp-turn-based');
+  assert.equal(registeredAuditMode('chess', 'stake', 4), null);
 });
 
 test('combat recovery links both credits to a single timed-out bank with no client attempt', async t => {

@@ -1,8 +1,8 @@
 import { CLUB_FINE_SOURCE } from '../../src/shared/security';
 import { identifier, type PostgresDatabase } from '../database';
 import { applySchemaMigration } from '../database-migrations';
-import { casinoPaidStartModes } from './casino';
 import type { AuditSourceSchemas } from './datasets';
+import { auditToteMode, casinoPaidOpeningSql, casinoSessionModeSql, instantCasinoModeSql, pvpModeVersionSql } from './mode-registry';
 import { auditExportReaderProjectionGuard } from './report-export-slot';
 
 export const playerColumns = [
@@ -41,8 +41,7 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
     await relationExists(db, sources.game, 'capro_players');
   const flags = "substring(l.operation_id from '^flag-tote:(ft1-[0-9]{1,16}):final$')";
   const pvp = "substring(l.operation_id from '^pvp:([0-9a-f-]{36}):(hold|final)$')";
-  const paidStart = casinoPaidStartModes.map(({ gameId, settingsKey, modes }) =>
-    `WHEN ${literal(gameId)} THEN x.payload #>> '{settings,${settingsKey},mode}' IN (${modes.map(literal).join(',')})`).join('\n          ');
+  const paidStart = casinoPaidOpeningSql('l.source', 'session_mode.mode_id', "x.payload->>'rulesVersion'");
   const selects = `
     SELECT r.*, l.id IS NOT NULL AS present, l.amount_units::numeric AS amount, l.balance_units::numeric AS balance,
       NULL::numeric AS reserved_delta, NULL::numeric AS pending_delta, NULL::numeric AS pending_balance,
@@ -56,20 +55,13 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
       CASE WHEN l.source LIKE 'pvp:%' THEN substring(l.source from 5)
         WHEN l.source='flag-tote' OR x.session_id IS NOT NULL OR op.result IS NOT NULL
           OR l.source IN ('royal-flight','royal-mines','github-tower','casinoapipro') THEN l.source END AS game_id,
-      CASE WHEN b.match_id IS NOT NULL THEN 'stake' WHEN pool.id IS NOT NULL THEN 'pool'
-        WHEN op.result IS NOT NULL THEN 'normal'
-        WHEN x.session_id IS NOT NULL THEN COALESCE(
-          x.payload #>> '{settings,luelon,mode}',x.payload #>> '{settings,caramel,mode}',
-          x.payload #>> '{settings,caribbean,mode}',x.payload #>> '{settings,neopolis,hero}',
-          x.payload #>> '{settings,flags,mode}',
-          CASE WHEN l.source='flag-battle' AND x.payload->>'rulesVersion'='1' THEN 'classic'
-            WHEN l.source IN ('github-crash','github-hilo','original-cr-vs-leo','original-jackie-chan',
-              'studio-afterglow','studio-dracona','studio-flooded-temple','studio-forest-heart','studio-last-convoy',
-              'studio-meme-overload','studio-nitro-run','studio-wild-nudge') THEN 'normal' END)
+      CASE WHEN b.match_id IS NOT NULL THEN 'stake' WHEN pool.id IS NOT NULL THEN ${literal(auditToteMode.modeId)}
+        WHEN op.kind='spin' AND op.request_key IS NULL AND l.source='royal-coins' AND op.round IS NULL THEN 'normal'
+        WHEN op.result IS NOT NULL THEN ${instantCasinoModeSql('l.source', 'op.round')}
+        WHEN x.session_id IS NOT NULL THEN session_mode.mode_id
         END AS mode_id,
-      COALESCE(pool.rules_version::text, x.payload->>'rulesVersion',
-        CASE WHEN pg_input_is_valid(op.result,'jsonb') THEN op.result::jsonb #>> '{gameRound,rulesVersion}' END,
-        CASE WHEN b.game_id='tsu-e-fa' THEN m.rules_version END) AS rules_version,
+      COALESCE(pool.rules_version::text, x.payload->>'rulesVersion', op.round->>'rulesVersion',
+        m.rules_version) AS rules_version,
       COALESCE(pool.id,b.match_id,x.session_id,CASE WHEN op.result IS NOT NULL THEN l.operation_id END,
         f.session_id,n.id) AS entity_id, ticket.id AS ticket_id,
       CASE
@@ -82,7 +74,7 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
         WHEN l.entry_type='bet' AND b.match_id IS NOT NULL THEN 'reserve'
         WHEN l.entry_type='bet' AND x.session_id<>l.operation_id THEN 'paid-option'
         WHEN l.entry_type='bet' AND req.session_id=x.session_id AND x.session_id=l.operation_id
-          AND (CASE l.source ${paidStart} ELSE false END) THEN 'paid-option'
+          AND (${paidStart}) THEN 'paid-option'
         WHEN l.entry_type='bet' THEN 'stake'
         WHEN l.entry_type='win' THEN 'payout'
         WHEN l.entry_type='refund' THEN 'refund'
@@ -98,7 +90,8 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
       SELECT balance_units FROM ${g}.demo_ledger WHERE id=r.prior_id AND account_id=r.account_id LIMIT 1
     ) p ON true
     LEFT JOIN LATERAL (
-      SELECT result FROM ${g}.demo_operations
+      SELECT kind,request_key,result,CASE WHEN pg_input_is_valid(result,'jsonb') THEN result::jsonb->'gameRound' END AS round
+      FROM ${g}.demo_operations
       WHERE l.entry_type<>'deposit' AND l.source IS DISTINCT FROM ${fine}
         AND account_id=l.account_id AND operation_id=l.operation_id AND kind IN ('play','spin') LIMIT 1
     ) op ON true
@@ -112,14 +105,26 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
         AND s.account_id=l.account_id AND s.id=COALESCE(req.session_id,l.operation_id)
         AND s.game_id=l.source LIMIT 1
     ) x ON true
+    CROSS JOIN LATERAL (
+      SELECT CASE WHEN x.payload->>'id'=x.session_id AND x.payload->>'gameId'=l.source
+        THEN ${casinoSessionModeSql('l.source', 'x.payload')} END AS mode_id
+    ) session_mode
     LEFT JOIN ${g}.demo_flight_requests f ON l.source='royal-flight' AND f.account_id=l.account_id AND f.id=l.operation_id
     LEFT JOIN ${g}.demo_mines_sessions n ON l.source='royal-mines' AND n.account_id=l.account_id
       AND n.id=l.operation_id
     LEFT JOIN ${g}.virtual_pvp_banks b ON l.source='pvp:'||b.game_id AND b.match_id=${pvp}
       AND EXISTS (SELECT 1 FROM ${g}.virtual_pvp_holds h WHERE h.match_id=b.match_id AND h.account_id=l.account_id)
     ${hasMatches ? `LEFT JOIN LATERAL (
-      SELECT CASE WHEN pg_input_is_valid(pm.payload,'jsonb') THEN pm.payload::jsonb #>> '{challenge,rulesVersion}' END AS rules_version
-      FROM ${g}.pvp_matches pm WHERE pm.id=b.match_id AND (pm.creator_id=l.account_id OR pm.opponent_id=l.account_id)
+      SELECT ${pvpModeVersionSql('b.game_id', "p.challenge->'rulesVersion'")} AS rules_version
+      FROM ${g}.pvp_matches pm
+      CROSS JOIN LATERAL (
+        SELECT CASE WHEN pg_input_is_valid(pm.payload,'jsonb') THEN pm.payload::jsonb->'challenge' END AS challenge
+      ) p
+      WHERE b.game_id='tsu-e-fa' AND pm.id=b.match_id AND (pm.creator_id=l.account_id OR pm.opponent_id=l.account_id)
+        AND p.challenge->>'id'=pm.id AND p.challenge->>'gameId'=b.game_id
+        AND p.challenge->>'creatorId'=pm.creator_id AND p.challenge->>'opponentId' IS NOT DISTINCT FROM pm.opponent_id
+        AND p.challenge->>'status'=pm.status AND p.challenge->>'mode' IS DISTINCT FROM 'free'
+        AND p.challenge->'stakeUnits'=to_jsonb((b.stake_units::numeric*10000)::text)
     ) m ON true` : 'LEFT JOIN LATERAL (SELECT NULL::text AS rules_version) m ON true'}
     LEFT JOIN ${g}.flag_tote_tickets ticket ON l.source='flag-tote' AND l.entry_type='bet' AND ticket.account_id=l.account_id
       AND ticket.id=substring(l.operation_id from '^flag-tote:([0-9a-fA-F-]{36})$')

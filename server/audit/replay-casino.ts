@@ -12,6 +12,7 @@ import { PLINKO_RISKS } from '../../src/shared/originalGames';
 import type { RoundPrecision } from '../../src/shared/roundPrecision';
 import type { AuditSourceRef } from './contract';
 import { checkCapturedCasinoRound, type CapturedCasinoRoundCheck } from './check-casino';
+import { registeredAuditMode } from './mode-registry';
 import { createReplayPackage, isReplayId, type ReplayEvent, type ReplayManifest, type ReplayPackage, type ReplayState } from './replay-package';
 import { AuditReplayStore } from './replay-store';
 
@@ -80,9 +81,11 @@ function draft(checked: Checked, replayId: string, entityId: string, engineId: s
   const { entity, scope } = checked;
   if (!entity.rulesVersion) return null;
   const rulesVersion = entity.rulesVersion;
+  const mode = registeredAuditMode(entity.gameId, entity.modeId, Number(rulesVersion));
+  if (mode?.category !== 'casino') return null;
   return {
     formatVersion: 2, timing: 'source-order', scope, replayId, entityId,
-    game: { category: 'casino', gameId: entity.gameId, modeId: entity.modeId, rulesVersion, replayProfile: 'casino-steps',
+    game: { ...mode,
       gameVersion: 'server-rules-' + rulesVersion, engineId,
       engineVersion: engineRevision === undefined ? rulesVersion : rulesVersion + '-' + engineRevision },
     initial: state(0, []), coverage: 'complete', gaps: [],
@@ -263,8 +266,7 @@ async function expansion(audit: PostgresDatabase, checked: Checked, input: Reque
   const start = requests.find((request): request is Start => request?.action === 'start' && request.id === id);
   const startStep = checked.result.steps.find(step => step.operationId === id);
   const namespace = input.gameSchema + '.demo_ledger';
-  const paidOption = startStep?.kind === 'paid-option' && !(start && 'caribbean' in start.settings && start.settings.caribbean.mode === 'normal');
-  const debit = startStep && money(startStep, namespace, paidOption ? 'paid-option' : 'stake');
+  const debit = startStep && money(startStep, namespace, startStep.kind === 'paid-option' ? 'paid-option' : 'stake');
   if (!start || !debit) return unavailable('accepted-start-unavailable');
   const selection = startSelection(start, saved);
   if (!visibleSafe(selection)) return unavailable('inconsistent-source');

@@ -23,8 +23,9 @@ import { validNitroSettlement } from '../../src/shared/nitroRun';
 import { expansionExactAward, precisionBaseSession } from '../../src/shared/roundPrecision';
 import { isStudioGame, validStudioSettlement } from '../../src/shared/studioGames';
 import { WILD_NUDGE_GAME, validWildNudgeSession } from '../../src/shared/wildNudgeStakes';
-import { casinoExpansionMode, resolveCasinoPosting } from './casino';
+import { resolveCasinoPosting } from './casino';
 import { isAuditEntityRef, type AuditEntityRef, type AuditScope, type AuditSourceRef } from './contract';
+import { isPaidCasinoOpening, registeredCasinoSessionMode } from './mode-registry';
 
 type CasinoEntity = AuditEntityRef & { category: 'casino' };
 type RoundKey = { accountId: string; entity: CasinoEntity };
@@ -245,8 +246,9 @@ async function checkExpansion(db: RoundReader, key: RoundKey, id: string): Promi
     return missing(ref, 'unsupported-version', state);
   }
   const s = raw as ExpansionState;
-  const mode = casinoExpansionMode(game, s.rulesVersion, s.settings);
-  if (mode === null || mode !== key.entity.modeId) return missing(ref, 'accepted-terms-unavailable', state);
+  const mode = registeredCasinoSessionMode(game, s.rulesVersion, s.settings);
+  if (!mode || mode.modeId !== key.entity.modeId) return missing(ref, 'accepted-terms-unavailable', state);
+  const paidOpening = isPaidCasinoOpening(game, mode.modeId, mode.rulesVersion);
   const requests = await db.prepare(`SELECT id,request_key FROM ${identifier(db.schema)}.demo_casino_requests WHERE account_id=? AND session_id=?
     ORDER BY (id=?) DESC,created_at,id LIMIT ?`).all(key.accountId, id, id, maxRoundEvidence + 1) as RequestRow[];
   if (requests.length > maxRoundEvidence) return missing(ref, 'evidence-limit', state);
@@ -281,7 +283,7 @@ async function checkExpansion(db: RoundReader, key: RoundKey, id: string): Promi
     const noOp = game === 'github-crash' && operation?.action === 'move' && state === 'settled'
       && win.length === 1 && win[0].operation_id !== request.id;
     const cost = isStart ? startCost : operation?.action === 'move' && freeMoves ? 0n : null;
-    const kind = isStart ? cost !== null && start?.action === 'start' && cost !== BigInt(start.stakeUnits) ? 'paid-option' : 'stake'
+    const kind = isStart ? paidOpening ? 'paid-option' : 'stake'
       : noOp ? 'no-op' : cost === 0n ? 'free' : 'unknown';
     const check = postingCheck(db, key, refs, debits(rows).filter(row => row.operation_id === request.id), cost, 'stake',
       cost === null ? null : cost === 0n ? 0 : 1, isStart ? 'accepted-terms-unavailable' : 'step-cost-unavailable',
