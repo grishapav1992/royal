@@ -15,12 +15,16 @@ import { defineServer, defineRoom } from '@colyseus/core';
 import { WebSocketTransport } from '@colyseus/ws-transport';
 import express from 'express';
 import { resolve } from 'node:path';
-import { LobbyRoom } from './LobbyRoom';
+import { LobbyRoom, configureLobbyAuditAttempts } from './LobbyRoom';
 import { installAuth } from './authRoutes';
 import { accounts } from './accounts';
 import { installFinanceAdmin } from './admin/routes';
+import { startAuditAttemptRuntime } from './audit/attempts';
+import { auditHttpAttempts } from './audit/http-attempts';
 
 const port = Number(process.env.PORT || 2567);
+const auditAttempts = startAuditAttemptRuntime();
+configureLobbyAuditAttempts(auditAttempts?.record);
 let stopTote: (() => void) | undefined;
 let stopCrypto: (() => void) | undefined;
 let stopSandbox: (() => void) | undefined;
@@ -38,6 +42,7 @@ const server = defineServer({
       }
       next();
     });
+    if (auditAttempts) app.use(auditHttpAttempts(auditAttempts.record, { gameSchema: accounts.schema }));
     installPaymentMethods(app);
     installAuth(app);
     installCaribbeanCrew(app);
@@ -62,6 +67,6 @@ const server = defineServer({
   },
 });
 server.onBeforeShutdown(async () => { console.info(JSON.stringify({ event: 'lobby-server-shutdown', uptimeSeconds: Math.floor(process.uptime()) })); await stopSkinStudio?.(); });
-server.onShutdown(async () => { stopTote?.(); stopCrypto?.(); stopSandbox?.(); await accounts.close(); });
+server.onShutdown(async () => { stopTote?.(); stopCrypto?.(); stopSandbox?.(); await Promise.all([accounts.close(), auditAttempts?.close()]); });
 await server.listen(port, '0.0.0.0');
 console.log(`Royal server listening on port ${port}`);

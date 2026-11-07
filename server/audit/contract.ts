@@ -78,6 +78,7 @@ export type AuditAttempt = RecordHeader & {
   response: 'formed' | 'not-observed';
   statusCode: number | null;
   balance: AuditResponseBalance;
+  delivery?: 'handed-off' | 'closed' | 'unobserved';
 };
 export type AuditReplay = RecordHeader & {
   type: 'replay';
@@ -204,7 +205,13 @@ function responseBalance(value: unknown): value is AuditResponseBalance {
 }
 
 function attempt(value: Record<string, unknown>): boolean {
-  if (!fields(value, [...header, ...operation, 'attemptId', 'transport', 'route', 'decision', 'response', 'statusCode', 'balance']) ||
+  const names = [...header, ...operation, 'attemptId', 'transport', 'route', 'decision', 'response', 'statusCode', 'balance'];
+  if (Object.hasOwn(value, 'delivery')) {
+    names.push('delivery');
+    if (!oneOf(value.delivery, ['handed-off', 'closed', 'unobserved']) ||
+      (value.delivery === 'handed-off' && value.response !== 'formed')) return false;
+  }
+  if (!fields(value, names) ||
     !identifier(value.attemptId) || !identifier(value.accountId) || !nullable(value.operationId, identifier) ||
     !nullable(value.entity, isAuditEntityRef) || !oneOf(value.transport, ['http', 'websocket']) ||
     !(value.transport === 'http'

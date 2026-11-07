@@ -49,6 +49,10 @@ test('attempts retain a wrong response, an unobserved response and a successful 
   assert.notEqual(attempt.balance.units, posting.availableAfterUnits);
   assert.equal(replay.operationId, attempt.operationId);
   assert.equal(isAuditRecord({ ...lost, balance: attempt.balance }), false);
+  assert.ok(isAuditRecord({ ...lost, delivery: 'closed' }));
+  assert.ok(isAuditRecord({ ...attempt, delivery: 'handed-off' }));
+  assert.equal(isAuditRecord({ ...lost, delivery: 'handed-off' }), false);
+  assert.equal(isAuditRecord({ ...attempt, delivery: 'received' }), false);
   assert.equal(isAuditRecord({ ...attempt, route: '/api/demo-wallet/operations?token=value' }), false);
   assert.equal(isAuditRecord({ ...attempt, requestBody: 'not an audited field' }), false);
   assert.ok(isAuditRecord({ ...attempt, transport: 'websocket', route: 'pvp', statusCode: null, balance: { state: 'absent' } }));

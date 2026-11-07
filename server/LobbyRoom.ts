@@ -32,6 +32,8 @@ import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLi
 import { canTravelByElevator, elevatorDock } from '../src/shared/elevator';
 import { intoxicatedMovement } from '../src/shared/intoxication';
 import type { DrinkingState } from './intoxicationStore';
+import type { AuditAttemptSink } from './audit/attempts';
+import { WsAttemptCapture } from './audit/ws-attempts';
 
 type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatRevision: number; inputs: MovementInputs; predicted: boolean; afterMovement?: () => void };
 const CHAT_REQUEST_ID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
@@ -41,14 +43,26 @@ const pendingDrinks = new Set<string>();
 const CABINET_REACTION_MS = 2400;
 const CABINET_REACTION_INTERVAL_MS = 450;
 const CABINET_PLAY_DISTANCE = 90;
+let lobbyAuditSink: AuditAttemptSink | undefined;
+export function configureLobbyAuditAttempts(sink: AuditAttemptSink | undefined) { lobbyAuditSink = sink; }
+
 export class LobbyRoom extends Room<{ state: LobbyState }> {
   state = new LobbyState();
   maxClients = ROOM_CAPACITY;
   maxMessagesPerSecond = 80;
+  private readonly wsAttempts = lobbyAuditSink && new WsAttemptCapture(lobbyAuditSink, { gameSchema: accounts.schema });
   private activities = new Activities(id => this.state.players.get(id), id => this.stop(id), (type,value,hall) => this.broadcastActivity(type,value,hall), (id,text) => this.clients.find(c=>c.sessionId===id)?.send('notice',text),undefined,{escrow:new CommonCombatWallet(accounts.combat,id=>accounts.financeAdmin.assertAllowed(id)),account:id=>this.playerAccounts.get(id),name:id=>this.state.players.get(id)?.name??'Игрок'});
   private pvp=new PvpRoom({roomId:()=>this.roomId,activities:this.activities,allowMoney:id=>accounts.financeAdmin.assertAllowed(id),
     people:()=>[...this.state.players].flatMap(([sessionId,p])=>{const accountId=this.playerAccounts.get(sessionId);return accountId?[{sessionId,accountId,name:p.name,hall:p.hall,x:p.x,y:p.y,connected:p.connected,available:!p.playing&&!p.activity&&!p.seat&&p.action!=='drink'}]:[];}),
-    send:(id,type,value)=>this.clients.find(c=>c.sessionId===id)?.send(type,value)},virtualPvpCommand(accounts.pvp));
+    send:(id,type,value)=>{
+      const client = this.clients.find(c => c.sessionId === id);
+      try { client?.send(type,value); }
+      catch (error) {
+        this.wsAttempts?.observePvpReply(id, client, type, value, 'unobserved');
+        throw error;
+      }
+      this.wsAttempts?.observePvpReply(id, client, type, value, client ? 'handed-off' : 'closed');
+    }},this.pvpService());
   private guards = new Guards(this.state, (id, decision) => {
     if (decision.kind !== 'ejecting') return;
     const client = this.clients.find(c => c.sessionId === id);
@@ -127,6 +141,12 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       const player = this.state.players.get(client.sessionId); if (player) player.appearance = serializeAppearance(appearance);
     }
   };
+  private pvpService() {
+    const command = virtualPvpCommand(accounts.pvp);
+    if (!this.wsAttempts) return command;
+    return (accountId: string, action: string, value: unknown) =>
+      this.wsAttempts!.runPvpService(accountId, action, value, () => command(accountId, action, value));
+  }
   onCreate() {
     this.state.serverNow = Date.now();
     accounts.events.on('security', this.securityListener);
@@ -164,12 +184,26 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
         if (result) return result.catch(() => client.send('notice', 'Не удалось подтвердить действие. Попробуй ещё раз.'));
       };
       const control = this.controls.get(client.sessionId);
+      if (type === 'pvp' && this.wsAttempts) {
+        const accountId = this.playerAccounts.get(client.sessionId);
+        if (accountId) return this.wsAttempts.runPvp({ sessionId: client.sessionId, accountId, connection: client }, value, apply);
+      }
       // UI actions must start at the end of already accepted movement, not discard it.
       if (movementActions.has(type) && control?.inputs.pendingCount) control.afterMovement = () => { void apply(); };
       else return apply();
     });
     listen('mira-attention',(client,value:unknown)=>this.bartender.attend(client.sessionId,value));
-    listen('activity', (client,value:unknown)=>this.activities.handle(client.sessionId,value));
+    listen('activity', (client,value:unknown)=>{
+      const sessionId = client.sessionId;
+      const handle = () => this.activities.handle(sessionId, value);
+      if (!this.wsAttempts) return handle();
+      const accountId = this.playerAccounts.get(sessionId);
+      const activity = this.state.players.get(sessionId)?.activity;
+      const combat = activity === 'mortal-kombat' ? this.activities.combat?.state : undefined;
+      const wager = activity && ['chess','hockey','pool'].includes(activity) && this.activities.wagers.get(activity)?.includes(sessionId);
+      if (!accountId || !wager && !combat?.players.includes(sessionId)) return handle();
+      return this.wsAttempts.runActivity({ sessionId, accountId, connection: client }, value, handle);
+    });
     listen('pvp',async(client,value:unknown)=>{await this.pvp.command(client.sessionId,value);});
     listen('cat', (client, value: unknown) => {
       const message = this.cat.handle(client.sessionId, value);
@@ -455,6 +489,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     finally { this.joiningAccounts.delete(auth.account.id); }
   }
   onDrop(client: Client, code?: number) {
+    this.wsAttempts?.dropped(client.sessionId, client);
     this.bartender.forget(client.sessionId);
     console.info(JSON.stringify({ event: 'lobby-connection', phase: 'drop', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));
     this.cancelChat(client);
@@ -508,6 +543,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     };
   }
   onLeave(client: Client, code?: number) {
+    this.wsAttempts?.dropped(client.sessionId, client);
     this.bartender.forget(client.sessionId);
     console.info(JSON.stringify({ event: 'lobby-connection', phase: 'left', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));
     this.cancelChat(client);

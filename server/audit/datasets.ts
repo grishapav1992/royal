@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { identifier, type PostgresDatabase } from '../database';
 import { applySchemaMigration } from '../database-migrations';
 import { migrateAuditEvidence } from './evidence';
+import { migrateAuditAttemptCapture } from './attempts';
 
 export type AuditSourceSchemas = { game: string; payments?: string };
 
@@ -61,7 +62,7 @@ export class AuditDatasets {
       ...gameLedgers.map(table => namespace(sources.game, table)),
       ...(sources.payments ? [namespace(sources.payments, 'crypto_ledger')] : []),
     ].sort();
-    this.ready = migrateAuditDatasets(db).then(() => migrateAuditEvidence(db));
+    this.ready = migrateAuditDatasets(db).then(() => migrateAuditEvidence(db)).then(() => migrateAuditAttemptCapture(db));
   }
 
   private async optionalTable(schema: string, table: string) {

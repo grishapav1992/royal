@@ -38,9 +38,9 @@ export class AuditEvidence {
     const write = async () => {
       const previous = await find();
       if (previous) return replay(previous);
-      const dataset = await this.db.prepare(`SELECT environment,sealed_at_ms FROM ${this.tables}audit_datasets
+      const dataset = await this.db.prepare(`SELECT environment,started_at_ms,sealed_at_ms FROM ${this.tables}audit_datasets
         WHERE id=? FOR SHARE`).get(datasetId);
-      if (!dataset || dataset.environment !== environment || dataset.sealed_at_ms !== null) {
+      if (!dataset || dataset.environment !== environment || dataset.sealed_at_ms !== null || occurredAtMs < dataset.started_at_ms) {
         throw new Error('Audit evidence requires an active matching dataset');
       }
       const result = await this.db.prepare(`INSERT INTO ${this.tables}audit_evidence
