@@ -5,11 +5,12 @@ import type { ChatMessage } from '../src/shared/world';
 
 type Proof = { requests: ChatRequest[]; results: ChatResult[]; messages: ChatMessage[] };
 const proof = (page: Page) => page.evaluate(() => (window as any).__realChat as Proof);
+const api = 'http://127.0.0.1:2584';
 
 async function register(page: Page, name: string) {
-  const login = await page.request.post('/api/auth/login', { data: { email: `transport-${crypto.randomUUID()}@example.test`, password: 'Royal-test-123!' } });
+  const login = await page.request.post(api + '/api/auth/login', { data: { email: `transport-${crypto.randomUUID()}@example.test`, password: 'Royal-test-123!' } });
   expect(login.ok()).toBe(true);
-  expect((await page.request.post('/api/auth/character', { data: { skin: 0, name } })).ok()).toBe(true);
+  expect((await page.request.post(api + '/api/auth/character', { data: { skin: 0, name } })).ok()).toBe(true);
 }
 
 async function captureRealTransport(page: Page) {
@@ -42,12 +43,12 @@ async function captureRealTransport(page: Page) {
   return cdp;
 }
 
-test('real UI and WebSocket deliver correlated messages once and keep legacy moderation', async ({ browser, request }) => {
-  const hostLogin = await request.post('/api/auth/login', { data: { email: `transport-host-${crypto.randomUUID()}@example.test`, password: 'Royal-test-123!' } });
+test('real UI and WebSocket deliver correlated and legacy messages with server-side masking', async ({ browser, request }) => {
+  const hostLogin = await request.post(api + '/api/auth/login', { data: { email: `transport-host-${crypto.randomUUID()}@example.test`, password: 'Royal-test-123!' } });
   expect(hostLogin.ok()).toBe(true);
   const cookie = hostLogin.headers()['set-cookie'].split(';')[0];
-  await request.post('/api/auth/character', { data: { skin: 0 } });
-  const host = await new Client(process.env.TEST_BASE_URL || 'http://127.0.0.1:2584', { headers: { Cookie: cookie } }).create('lobby');
+  expect((await request.post(api + '/api/auth/character', { data: { skin: 0 } })).ok()).toBe(true);
+  const host = await new Client(api, { headers: { Cookie: cookie } }).create('lobby');
   host.onMessage('*', () => {});
   const senderContext = await browser.newContext(), observerContext = await browser.newContext();
   const sender = await senderContext.newPage(), observer = await observerContext.newPage(), errors: string[] = [];
@@ -55,7 +56,7 @@ test('real UI and WebSocket deliver correlated messages once and keep legacy mod
   try {
     await register(sender, 'Тест отправки'); await register(observer, 'Тест наблюдения');
     for (const page of [sender, observer]) {
-      await page.goto('/?room=' + host.roomId + '&lang=ru');
+      await page.goto('/?mode=club&room=' + host.roomId + '&lang=ru');
       await expect(page.locator('#chat-input')).toBeEnabled();
     }
     const cdp = await captureRealTransport(sender);
@@ -73,21 +74,19 @@ test('real UI and WebSocket deliver correlated messages once and keep legacy mod
     await expect.poll(async () => (await proof(sender)).results.filter(result => result.id === sent.id && result.status === 'published').length).toBe(2);
     expect((await proof(sender)).messages.filter(message => message.requestId === sent.id)).toHaveLength(1);
     await expect(observer.locator('#chat-log > [data-message-id]').filter({ hasText: greeting })).toHaveCount(1);
-    const legacy = 'Синтетическое сообщение старого клиента';
-    await sender.evaluate(text => (window as any).__realChat.send(text), legacy);
+    const legacy = 'F**k, сообщение старого клиента';
+    await sender.evaluate(text => (window as any).__realChat.send(text), 'Fuck, сообщение старого клиента');
     await expect(observer.locator('#chat-log > [data-message-id]').filter({ hasText: legacy })).toHaveCount(1);
     await expect(sender.locator('#chat-log > [data-message-id]').filter({ hasText: legacy })).toHaveCount(1);
     await sender.locator('#chat-input').fill('ты дебил'); await sender.locator('#send-chat').click();
-    await expect.poll(async () => (await proof(sender)).results.filter(result => result.status === 'rejected').length).toBe(1);
-    const rejected = (await proof(sender)).results.find(result => result.status === 'rejected')!;
-    await expect(sender.locator(`.chat-outgoing[data-request-id="${rejected.id}"]`)).toHaveAttribute('data-delivery', 'rejected');
-    await expect(observer.locator('.security-message')).toContainText('первое предупреждение');
+    await expect(sender.locator('#chat-log > [data-message-id]').filter({ hasText: 'ты д***л' })).toHaveCount(1);
+    await expect(observer.locator('#chat-log > [data-message-id]').filter({ hasText: 'ты д***л' })).toHaveCount(1);
+    await expect(observer.locator('.security-message')).toHaveCount(0);
     expect((await proof(sender)).messages.some(message => message.text === 'ты дебил')).toBe(false);
     await expect(sender.locator('#chat-log > [data-message-id]').filter({ hasText: 'ты дебил' })).toHaveCount(0);
     await expect(observer.locator('#chat-log > [data-message-id]').filter({ hasText: 'ты дебил' })).toHaveCount(0);
-    await sender.screenshot({ path: 'artifacts/chat-real-rejected.png' });
     expect(errors).toEqual([]);
-    console.log('REAL_CHAT_PROOF: UI auth + PostgreSQL + real WebSocket; sender/observer delivery; queued/published requestId; outbox cleared; duplicate UUID once; legacy delivered; insult rejected and warning persisted.');
+    console.log('REAL_CHAT_PROOF: UI auth + PostgreSQL + real WebSocket, masked delivery for both clients, duplicate UUID published once, legacy text masked.');
     await cdp.detach();
   } finally { await senderContext.close(); await observerContext.close(); await host.leave(); }
 });

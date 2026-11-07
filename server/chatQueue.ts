@@ -49,7 +49,7 @@ export class ChatQueue {
     const job = lane.waiting.shift();
     if (!job) { if (this.lanes.get(account) === lane) this.lanes.delete(account); return; }
     lane.running = job;
-    // Cancelled in-flight work keeps its lane until the provider actually settles.
+    // Cancelled in-flight work keeps its lane until its task settles.
     void Promise.resolve().then(() => job.cancelled ? undefined : job.task(() => job.cancelled))
       .then(job.resolve, job.reject).finally(() => { lane.running = undefined; this.next(account, lane); });
   }

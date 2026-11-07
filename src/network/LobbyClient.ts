@@ -44,7 +44,6 @@ export class LobbyClient {
     mira: (mira: MiraView) => void;
     security: (decision: SecurityDecision) => void;
     ejected: (until: number) => void;
-    checking: (value: boolean) => void;
     status: (status: ConnectionStatus) => void;
     joined: (roomId: string, sessionId: string, recovering?: boolean) => void;
     players: (players: PlayerView[], selfId: string) => void;
@@ -119,7 +118,8 @@ export class LobbyClient {
       let denied = false;
       onMessage('security', (decision: SecurityDecision) => { if(decision.kind === 'ejecting') banUntil = decision.until; this.events.security(decision); });
       onMessage('ejected', (value: {until: number}) => { banUntil = value.until; this.events.ejected(value.until); });
-      onMessage('chat-check', value => this.events.checking(Boolean(value)));
+      // Older servers can still emit this packet during a host update.
+      onMessage('chat-check', () => {});
       onMessage('chat-result', (result: ChatResult) => {
         if (result && typeof result.id === 'string' && ['queued', 'published', 'rejected', 'cancelled'].includes(result.status)) {
           this.events.delivery?.({ ...result, message: result.message ? translateText(result.message) : undefined });
@@ -193,7 +193,7 @@ export class LobbyClient {
         if (state.mira) this.events.mira({ x: state.mira.x, y: state.mira.y, facing: state.mira.facing as MiraView['facing'], action: state.mira.action as MiraView['action'], progress: state.mira.progress });
       });
       room.onDrop(() => { if (current()) this.setStatus('reconnecting'); });
-      room.onReconnect(() => { if (!current()) return; queueMicrotask(() => { if (current()) rememberSession(room, accountId); }); this.events.checking(false); this.events.npcTime(0,0);this.activities=undefined; this.setStatus('connected'); room.send('stop'); room.send('history'); room.send('activities'); });
+      room.onReconnect(() => { if (!current()) return; queueMicrotask(() => { if (current()) rememberSession(room, accountId); }); this.events.npcTime(0,0);this.activities=undefined; this.setStatus('connected'); room.send('stop'); room.send('history'); room.send('activities'); });
       room.onLeave(code => {
         if (!current()) return;
         this.lastCloseCode = code;
@@ -250,7 +250,6 @@ export class LobbyClient {
   }
   private setStatus(status: ConnectionStatus) {
     this.status = status;
-    if (status !== 'connected') this.events.checking(false);
     if (status !== 'connected') this.finishElevator(false);
     if (status !== 'connected') this.finishPlayerRecovery(false);
     if (status !== 'connected' && this.pendingCabinet) {

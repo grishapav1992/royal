@@ -43,7 +43,7 @@ async function fixture(context: TestContext) {
   const releases = () => room.packets.filter(packet => packet.type === 'playing' && packet.value === false);
   const ignore = () => {};
   const client = new LobbyClient({ npcTime: ignore, guards: ignore, guests: ignore, mira: ignore, security: ignore, ejected: until => ejections.push(until),
-    checking: ignore, joined: ignore, players: ignore, chat: ignore, history: ignore, activities: ignore, note: ignore,
+    joined: ignore, players: ignore, chat: ignore, history: ignore, activities: ignore, note: ignore,
     notice: message => notices.push(message), status: status => statuses.push({ status, releases: releases().length }) });
   (client as any).client = { joinOrCreate: async () => room, joinById: async () => room };
   await client.join(); room.packets.length = 0; statuses.length = 0;

@@ -20,12 +20,17 @@ test.beforeEach(async ({ baseURL }) => {
 
 async function host(page: Page) {
   const context = page.context(), writes: string[] = [], errors: string[] = [];
+  let entrySession = true;
   page.on('pageerror', error => errors.push(error.message));
   await context.route('**/*', async route => {
     const request = route.request(), url = new URL(request.url());
     if (!['http:', 'https:'].includes(url.protocol)) return route.continue();
     if (url.origin !== 'http://127.0.0.1:4180') return route.abort('blockedbyclient');
     if (!['GET', 'HEAD'].includes(request.method())) { writes.push(request.method() + ' ' + url.pathname); return route.abort('blockedbyclient'); }
+    if (url.pathname === '/api/auth/me' && entrySession) {
+      entrySession = false;
+      return route.fulfill({ json: { account: { id: 'chat-fixture-entry' } } });
+    }
     if (url.pathname.startsWith('/api/')) return route.fulfill({ json: { account: null, games: [] } });
     if (url.pathname.startsWith('/game-modules/')) {
       const root = resolve('module-dist'), path = resolve(root, url.pathname.slice('/game-modules/'.length));
@@ -38,7 +43,7 @@ async function host(page: Page) {
     return route.continue();
   });
   await context.routeWebSocket('**/*', socket => socket.close());
-  await page.goto('/?lang=ru');
+  await page.goto('/?mode=club&lang=ru');
   await expect(page.locator('#join-dialog')).toBeVisible();
   await expect(page.locator('#loading')).toHaveCount(0);
   const cdp = await context.newCDPSession(page);
@@ -76,7 +81,7 @@ async function host(page: Page) {
         legacy: async () => {
           const { LobbyClient } = await import('/src/network/LobbyClient.ts');
           const noop = () => {};
-          const client = new LobbyClient({npcTime:noop,guards:noop,guests:noop,mira:noop,security:noop,ejected:noop,checking:noop,status:noop,joined:noop,players:noop,chat:noop,history:noop,notice:noop,activities:noop,note:noop});
+          const client = new LobbyClient({npcTime:noop,guards:noop,guests:noop,mira:noop,security:noop,ejected:noop,status:noop,joined:noop,players:noop,chat:noop,history:noop,notice:noop,activities:noop,note:noop});
           client.client = {joinOrCreate: async () => room}; await client.join();
           handlers.get('chat-result')({id:crypto.randomUUID(),status:'queued'});
           handlers.get('chat-result')({id:crypto.randomUUID(),status:'rejected'});
@@ -99,18 +104,25 @@ async function send(page: Page, text: string) {
 const receive = (page: Page, type: string, value: unknown) => page.evaluate(({ type, value }) => window.__chatFixture.receive(type, value), { type, value });
 const chatPackets = (page: Page) => page.evaluate(() => window.__chatFixture.packets.filter(packet => packet.type === 'chat'));
 
-test('pending checks keep composition available, publish replaces the pending row, and the limit is three', async ({ page }) => {
+test('a masked message appears immediately without a checking indicator and is replaced on delivery', async ({ page }) => {
   const proof = await host(page);
-  const first = await send(page, 'Первое сообщение');
+  const first = await send(page, 'Fuck, первое сообщение');
   expect(first.id).toMatch(/^[0-9a-f-]{36}$/);
+  expect(first.text).toBe('Fuck, первое сообщение');
+  const pending = page.locator(`[data-request-id="${first.id}"]`);
+  await expect(pending).toContainText('F**k, первое сообщение');
+  await expect(pending.locator('.chat-meta')).toBeVisible();
   await receive(page, 'chat-check', true); await receive(page, 'chat-result', { id: first.id, status: 'queued' });
-  await expect(page.locator('[data-request-id]')).toHaveCount(1);
+  await expect(pending).toHaveAttribute('data-delivery', 'queued');
+  await expect(pending.locator('.chat-outgoing-status')).toHaveCount(0);
+  await expect(page.locator('#chat-delivery-status')).toBeHidden();
   await expect(page.locator('#chat-input')).toHaveValue(''); await expect(page.locator('#chat-input')).toBeEnabled();
   await page.locator('#chat-input').fill('Следующий черновик');
-  await receive(page, 'chat', { id: 'published-first', requestId: first.id, senderId: 'chat-fixture-self', name: 'Тест', text: first.text, time: Date.now() });
+  const masked = 'F**k, первое сообщение';
+  await receive(page, 'chat', { id: 'published-first', requestId: first.id, senderId: 'chat-fixture-self', name: 'Тест', text: masked, time: Date.now() });
   await receive(page, 'chat-result', { id: first.id, status: 'published' });
   await expect(page.locator('[data-request-id]')).toHaveCount(0);
-  await expect(page.locator('[data-message-id="published-first"]')).toContainText(first.text);
+  await expect(page.locator('[data-message-id="published-first"]')).toContainText(masked);
   await expect(page.locator('#chat-input')).toHaveValue('Следующий черновик');
   await send(page, 'Второе сообщение'); await send(page, 'Третье сообщение'); await send(page, 'Четвёртое сообщение');
   await page.locator('#chat-input').fill('Пятый черновик');
@@ -138,9 +150,9 @@ test('an explicit rejection preserves both texts and only a manual retry creates
   expect(proof).toEqual({ writes: [], errors: [] });
 });
 
-test('drop clears checking, preserves unconfirmed text and reconciles history without resending', async ({ page }) => {
+test('drop preserves unconfirmed text and reconciles history without resending', async ({ page }) => {
   const proof = await host(page), first = await send(page, 'Сообщение перед обрывом');
-  await receive(page, 'chat-check', true); await page.locator('#chat-input').fill('Черновик после отправки');
+  await receive(page, 'chat-result', { id: first.id, status: 'queued' }); await page.locator('#chat-input').fill('Черновик после отправки');
   await page.evaluate(() => window.__chatFixture.drop());
   const saved = page.locator(`[data-request-id="${first.id}"]`);
   await expect(saved).toHaveAttribute('data-delivery', 'uncertain'); await expect(saved.locator('[data-chat-retry]')).toHaveCount(0);
@@ -155,7 +167,7 @@ test('drop clears checking, preserves unconfirmed text and reconciles history wi
 
 test('the confirmation deadline retains uncertain text without fabricating delivery or enabling retry', async ({ page }) => {
   const proof = await host(page); await page.clock.install();
-  const first = await send(page, 'Нет ответа на проверку'); await receive(page, 'chat-check', true);
+  const first = await send(page, 'Нет ответа на отправку'); await receive(page, 'chat-result', { id: first.id, status: 'queued' });
   await page.clock.fastForward(CHAT_CONFIRMATION_TIMEOUT_MS + 100);
   const saved = page.locator(`[data-request-id="${first.id}"]`);
   await expect(saved).toHaveAttribute('data-delivery', 'uncertain'); await expect(saved).toContainText('Ответ задерживается');
@@ -194,7 +206,7 @@ test('published acknowledgement remains authoritative until history arrives and 
   await receive(page, 'history', [{ id: 'published-history', requestId: first.id, senderId: 'chat-fixture-self', name: 'Тест', text: first.text, time: Date.now() }]);
   await expect(page.locator('[data-request-id]')).toHaveCount(0);
   const second = await send(page, 'Сохранить после отмены');
-  await receive(page, 'chat-result', { id: second.id, status: 'cancelled', message: 'Проверка сообщения отменена.' });
+  await receive(page, 'chat-result', { id: second.id, status: 'cancelled', message: 'Отправка сообщения отменена.' });
   await expect(page.locator(`[data-request-id="${second.id}"]`)).toHaveAttribute('data-delivery', 'cancelled');
   await expect(page.locator(`[data-chat-retry="${second.id}"]`)).toBeEnabled();
   expect((await chatPackets(page)).length).toBe(2);

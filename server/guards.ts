@@ -159,8 +159,7 @@ export class Guards {
     this.phase(d, 'approach');
     const { kind, reason } = d.job!.decision;
     if (kind === 'warning') {
-      g.speech = reason === 'spam' ? 'Не засоряй чат. Хватит спамить.'
-        : reason === 'profanity' ? 'Не засоряй чат матом.' : 'Не оскорбляй других гостей.';
+      g.speech = reason === 'spam' ? 'Не засоряй чат. Хватит спамить.' : 'Не оскорбляй других гостей.';
     } else {
       g.speech = reason === 'collision' ? 'Десятый толчок. На выход.' : 'Правила были озвучены. На выход.';
     }

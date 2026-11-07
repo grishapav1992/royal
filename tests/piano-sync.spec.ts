@@ -13,7 +13,7 @@ test('LobbyClient clears a note from a fresh snapshot even when no notes patch f
       onStateChange:()=>{},onDrop:()=>{},onLeave:()=>{},onError:()=>{},onReconnect:(handler:()=>void)=>{reconnect=handler;},
     };
     const noop=()=>{};
-    const client=new LobbyClient({guards:noop,mira:noop,security:noop,ejected:noop,checking:noop,status:noop,
+    const client=new LobbyClient({guards:noop,mira:noop,security:noop,ejected:noop,status:noop,
       joined:noop,players:noop,chat:noop,history:noop,notice:noop,activities:(state:any)=>states.push(state),note:(note:any)=>noteEvents.push(note)});
     client.client={joinOrCreate:async()=>room};await client.join();
     const snapshot={tables:[],pianist:'pianist',notes:[60],chess:{clock:{remainingMs:[900000,900000],running:null}}};

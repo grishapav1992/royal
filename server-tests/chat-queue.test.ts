@@ -8,7 +8,7 @@ function gate() {
   return { promise, release };
 }
 
-test('chat checks preserve account order while other accounts proceed independently', async () => {
+test('chat delivery preserves account order while other accounts proceed independently', async () => {
   const queue = new ChatQueue(), first = gate(), calls: string[] = [];
   const a = queue.enqueue('a', async () => { calls.push('a1'); await first.promise; });
   const next = queue.enqueue('a', async () => { calls.push('a2'); });
@@ -30,7 +30,7 @@ test('chat queues bound active accounts and waiting messages and release capacit
   assert(queue.enqueue('c', async () => {}));
 });
 
-test('a failed moderation task does not stall later messages', async () => {
+test('a failed delivery task does not stall later messages', async () => {
   const queue = new ChatQueue(), calls: number[] = [];
   const failed = queue.enqueue('a', async () => { throw new Error('provider unavailable'); });
   const next = queue.enqueue('a', async () => { calls.push(2); });
@@ -39,7 +39,7 @@ test('a failed moderation task does not stall later messages', async () => {
   assert.deepEqual(calls, [2]);
 });
 
-test('cancellation releases queued jobs but keeps an in-flight provider lane reserved', async () => {
+test('cancellation releases queued jobs but keeps an in-flight lane reserved', async () => {
   const queue = new ChatQueue(3, 1), hold = gate(), owner = {}, cancelled: number[] = [], calls: number[] = [];
   const first = queue.enqueue('a', async wasCancelled => { calls.push(1); await hold.promise; assert.equal(wasCancelled(), true); }, () => cancelled.push(1), owner)!;
   const second = queue.enqueue('a', async () => { calls.push(2); }, () => cancelled.push(2), owner)!;
