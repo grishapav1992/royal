@@ -12,11 +12,12 @@ import { RoomCat } from './cat';
 import { chatSpam } from './chatSpam';
 import { chatLanguageWindow } from './chatLanguageWindow';
 import { chatQueue } from './chatQueue';
+import { RoomChat, type ChatStamp } from './roomChat';
 import { filterChatLanguage } from '../src/shared/chatConduct';
 import { guardBumps } from './guardBumps';
 import { blockedByGuard } from '../src/shared/guardCollision';
 import type { SecurityDecision } from '../src/shared/security';
-import type { ChatResult } from '../src/shared/chat';
+import { isChatLocation, type ChatResult } from '../src/shared/chat';
 import { randomUUID } from 'node:crypto';
 import { accounts, allowedOrigin, cookieToken, type Account } from './accounts';
 type RoomAuth = { account: Account; hash: string };
@@ -83,7 +84,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       const text = decision.kind === 'warning'
         ? p.name + ', первое предупреждение за спам. Повтор в течение суток: выход на 10 минут.'
         : p.name + ejection;
-      this.publish({ id: randomUUID(), senderId: 'security', name: 'ОХРАНА', time: Date.now(), text });
+      if (isChatLocation(p.hall)) this.publish(this.roomChat.stamp(p.hall), { id: randomUUID(), senderId: 'security', name: 'ОХРАНА', time: Date.now(), text });
     }
   };
   private controls = new Map<string, Control>();
@@ -98,7 +99,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   private bartender = new Bartender(this.state);
   private guests=new AmbientGuests(this.state);
   private cat=new RoomCat(this.state);
-  private history: ChatMessage[] = [];
+  private readonly roomChat = new RoomChat();
   private nextSpawn = 0;
   private logoutListener = (hash: string) => {
     for (const client of this.clients) if ((client.auth as RoomAuth)?.hash === hash) {
@@ -240,6 +241,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       const link=stairWindowLink(p);if(!link)return;
       this.activities.leave(client.sessionId);this.releaseCabinet(client.sessionId);this.stop(client.sessionId);this.stand(client.sessionId);
       const arrival=playerHallArrival(p.hall,link);p.hall=link.target;p.hallRevision++;Object.assign(p,arrival);c.lastTarget=0;
+      this.updateChatVisit(client.sessionId, p.hall);
       client.send('activities',this.activities.snapshot(client.sessionId));
     });
     // Recovery bypasses queued movement, but never an access restriction or a live shared game.
@@ -267,6 +269,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       this.activities.leave(client.sessionId); this.releaseCabinet(client.sessionId); this.stop(client.sessionId);
       const dock = elevatorDock(target);
       p.hall = target; p.hallRevision++; p.x = dock.arrival.x; p.y = dock.arrival.y; p.facing = dock.facing;
+      this.updateChatVisit(client.sessionId, p.hall);
       control.lastTarget = 0;
       client.send('elevator-result', { requestId, target, accepted: true, revision: p.hallRevision });
       client.send('activities', this.activities.snapshot(client.sessionId));
@@ -338,7 +341,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       } finally { access.pendingDrink = false; pendingDrinks.delete(accountId); }
     });
     this.onMessage('chat', async (client, value: unknown) => {
-      const object = value && typeof value === 'object' && !Array.isArray(value) ? value as { id?: unknown; text?: unknown } : undefined;
+      const object = value && typeof value === 'object' && !Array.isArray(value) ? value as { id?: unknown; text?: unknown; visitId?: unknown } : undefined;
       const requestId = object && typeof object.id === 'string' && object.id.length === 36 && CHAT_REQUEST_ID.test(object.id) ? object.id : undefined;
       if (typeof value !== 'string' && !requestId) { client.send('notice', 'Неверный формат сообщения.'); return; }
       const player = this.state.players.get(client.sessionId), control = this.controls.get(client.sessionId);
@@ -368,12 +371,20 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (!player || !control || !player.connected || player.security || !this.accessAllowed(client)) {
         finish('cancelled', 'Сообщение не отправлено. Дождись подключения к залу.'); return;
       }
+      const visit = this.roomChat.visit(client.sessionId);
+      if (!visit || visit.hall !== player.hall) {
+        finish('rejected', 'Чат доступен на игровых этажах и в туалете.'); return;
+      }
+      if (object?.visitId !== undefined && object.visitId !== visit.id) {
+        finish('cancelled', 'Локация изменилась. Отправь сообщение снова.'); return;
+      }
       const { account: { id }, hash } = client.auth as RoomAuth, chatRevision = control.chatRevision;
       if (pendingChatDiscipline.has(id)) {
         finish('cancelled', 'Дождись решения охраны перед отправкой сообщения.');
         return;
       }
-      // Public room chat follows the connection, independent of movement between floors.
+      const stamp = this.roomChat.stamp(visit.hall);
+      // Movement changes recipients, while the accepted message keeps its source location.
       const current = () => !this.disposed && this.state.players.get(client.sessionId) === player
         && this.controls.get(client.sessionId) === control && control.chatRevision === chatRevision
         && player.connected && !player.security && this.accessAllowed(client);
@@ -417,7 +428,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
           if (!await accounts.active(hash)) { this.logoutListener(hash); return; }
           if (!valid()) return;
           if (countLanguage()) { await moderate('profanity', true); return; }
-          this.publish({ id: randomUUID(), senderId: client.sessionId, name: player.name, text: filtered.text, time: Date.now(), ...(requestId ? { requestId } : {}) });
+          this.publish(stamp, { id: randomUUID(), senderId: client.sessionId, name: player.name, text: filtered.text, time: Date.now(), ...(requestId ? { requestId } : {}) });
           finish('published');
         } catch {
           finish('rejected', 'Не удалось подтвердить сообщение. Оно не отправлено. Попробуй ещё раз.');
@@ -427,7 +438,13 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       result('queued');
       await queued;
     });
-    this.onMessage('history', client => client.send('history', this.history));
+    this.onMessage('history', client => {
+      const player = this.state.players.get(client.sessionId);
+      const visit = this.roomChat.visit(client.sessionId);
+      const current = player?.connected && this.access.get(client.sessionId)?.active && visit?.hall === player.hall ? visit : undefined;
+      client.send('chat-visit', current ?? null);
+      client.send('history', current ? this.roomChat.read(current) : []);
+    });
   }
   async onAuth(_client: Client, _options: unknown, context: AuthContext) {
     if (!allowedOrigin(context.headers.get('origin') || undefined)) throw new ServerError(403, 'Недопустимый источник подключения.');
@@ -471,7 +488,8 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       this.state.players.set(client.sessionId, p);
       this.controls.set(client.sessionId, { dx: 0, dy: 0, at: 0, path: [], lastTarget: 0, chatRevision: 0, inputs: new MovementInputs(), predicted: false });
       if((options as {activityProtocol?:unknown}|null)?.activityProtocol===1)this.activityProtocols.add(client.sessionId);
-      this.system(p.name+' заходит в зал');
+      this.updateChatVisit(client.sessionId, p.hall);
+      this.system(p.hall, p.name+' заходит в зал');
     } catch (error) { if (this.access.get(client.sessionId) === access) this.access.delete(client.sessionId); throw error; }
     finally { this.joiningAccounts.delete(auth.account.id); }
   }
@@ -536,10 +554,11 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     if (chatControl) this.chatResults.delete(chatControl);
     this.activities.leave(client.sessionId);
     this.playerAccounts.delete(client.sessionId);
+    this.roomChat.leave(client.sessionId);
     this.releaseCabinet(client.sessionId);
     const p = this.state.players.get(client.sessionId);
     this.state.players.delete(client.sessionId); this.controls.delete(client.sessionId); this.access.delete(client.sessionId);this.activityProtocols.delete(client.sessionId);
-    if (p) this.system(p.name+' покидает зал');
+    if (p) this.system(p.hall, p.name+' покидает зал');
   }
   private cancelChat(client: Client) {
     const control = this.controls.get(client.sessionId), account = (client.auth as RoomAuth)?.account.id;
@@ -586,8 +605,24 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       }));
     } finally { this.refreshingAccess = false; }
   }
-  private system(text: string) { this.publish({ id: randomUUID(), senderId: '', name: '', text, time: Date.now(), system: true }); }
-  private publish(message: ChatMessage) { this.history.push(message); if (this.history.length > 60) this.history.shift(); this.broadcast('chat', message); }
+  private updateChatVisit(sessionId: string, hall: string) {
+    const previous = this.roomChat.visit(sessionId);
+    const current = this.roomChat.enter(sessionId, hall);
+    if (previous !== current) this.clients.find(client => client.sessionId === sessionId)?.send('chat-visit', current ?? null);
+  }
+  private system(hall: string, text: string) {
+    if (isChatLocation(hall)) this.publish(this.roomChat.stamp(hall), { id: randomUUID(), senderId: '', name: '', text, time: Date.now(), system: true });
+  }
+  private publish(stamp: ChatStamp, message: ChatMessage) {
+    this.roomChat.append(stamp, message);
+    for (const client of this.clients) {
+      const player = this.state.players.get(client.sessionId);
+      if (!player?.connected || player.hall !== stamp.hall || !this.access.get(client.sessionId)?.active) continue;
+      const visit = this.roomChat.visit(client.sessionId);
+      const payload = visit && this.roomChat.deliver(visit, stamp, message);
+      if (payload) client.send('chat', payload);
+    }
+  }
   private stop(id: string) {
     const c = this.controls.get(id); if (c) { c.dx = c.dy = 0; c.path = []; c.predicted = false; c.afterMovement = undefined; c.inputs.cancel(); }
     const p = this.state.players.get(id); if (p) { p.moving = false; if(p.hall==='street'&&p.stairStep>0)applyMovementInput(p,{seq:0,x:0,y:0,ms:0}); if (c) p.inputSeq = c.inputs.sequence; }
@@ -670,6 +705,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.activities.leave(id);this.releaseCabinet(id);this.stop(id);this.stand(id);
     const hall=link.target,arrival=playerHallArrival(p.hall,link);
     p.hall=hall;p.hallRevision++;Object.assign(p,arrival);c.lastTarget=0;
+    this.updateChatVisit(id, hall);
     this.clients.find(client=>client.sessionId===id)?.send('activities',this.activities.snapshot(id));
     return true;
   }

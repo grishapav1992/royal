@@ -8,6 +8,7 @@ import { accounts } from '../server/accounts';
 import { chatSpam } from '../server/chatSpam';
 import { chatLanguageWindow } from '../server/chatLanguageWindow';
 import { SECURITY_BAN_MS } from '../src/shared/security';
+import type { HallId } from '../src/shared/world';
 type SessionCheck = { hash: string; resolve: (active: boolean) => void; reject: (error: Error) => void };
 
 function fixture(context: TestContext, options: { suffix?: string; account?: string; checks?: SessionCheck[] } = {}) {
@@ -15,11 +16,14 @@ function fixture(context: TestContext, options: { suffix?: string; account?: str
   const published: any[] = [], packets: { type: string; value: any }[] = [];
   const id = context.name + (options.suffix ?? ""), account = options.account ?? id;
   const client: any = { sessionId: id, auth: { account: { id: account, name: 'Игрок', skin: 0, appearance: null }, hash: id },
-    send(type: string, value: unknown) { packets.push({ type, value }); }, leave() {} };
+    send(type: string, value: unknown) {
+      packets.push({ type, value });
+      if (type === 'chat') published.push(value);
+    }, leave() {} };
   context.mock.method(room, 'onMessage', (type: string, handler: any) => { handlers.set(type, handler); });
   context.mock.method(room, 'setPatchRate', () => {});
   context.mock.method(room, 'setSimulationInterval', () => {});
-  context.mock.method(room, 'broadcast', (type: string, value: unknown) => { if (type === 'chat') published.push(value); });
+  context.mock.method(room, 'broadcast', () => {});
   context.mock.method(room.clock, 'setInterval', () => ({ clear() {} }));
   context.mock.method(room, 'allowReconnection', async () => undefined as any);
   context.mock.method(accounts, 'currentAccount', async () => client.auth.account);
@@ -34,10 +38,24 @@ function fixture(context: TestContext, options: { suffix?: string; account?: str
   const player = new Player(); player.name = 'Игрок'; room.state.players.set(id, player);
   (room as any).controls.set(id, { dx: 0, dy: 0, at: 0, path: [], lastTarget: 0, chatRevision: 0, inputs: new MovementInputs(), predicted: false });
   (room as any).access.set(id, { active: true, banUntil: 0, pendingEject: false, revision: 0, profileRevision: { name: 0, skin: 0, appearance: 0 }, drinking: { soberAt: 0, lastDrink: '', lastDrinkAt: 0 } });
+  (room as any).updateChatVisit(id, player.hall);
+  packets.length = 0;
   context.after(async () => { chatSpam.clear(account); chatLanguageWindow.clear(account); await room.onDispose(); room.clock.clear(); });
   const send = (text: unknown) => handlers.get('chat')!(client, text) as Promise<void>;
+  const move = (hall: HallId) => { player.hall = hall; player.hallRevision++; (room as any).updateChatVisit(id, hall); };
+  const observe = (name: string, hall: HallId) => {
+    const observerId = id + ':' + name, received: typeof packets = [];
+    const observer: any = { sessionId: observerId, send(type: string, value: unknown) { received.push({ type, value }); } };
+    const guest = new Player(); guest.hall = hall; guest.name = name;
+    room.clients.push(observer);
+    room.state.players.set(observerId, guest);
+    (room as any).access.set(observerId, { active: true });
+    (room as any).updateChatVisit(observerId, hall);
+    return { received, history: () => handlers.get('history')!(observer) };
+  };
+  const history = () => handlers.get('history')!(client);
   const flush = () => new Promise<void>(resolve => setImmediate(resolve));
-  return { room, client, player, packets, published, checks, active, record, eject, send, flush };
+  return { room, client, player, packets, published, checks, active, record, eject, send, flush, move, observe, history };
 }
 
 test('background delivery preserves account order without emitting a checking status', async context => {
@@ -183,14 +201,55 @@ test('a full queue rejects overflow and still detects spam at arrival time', asy
   assert.equal(published.filter(message => message.senderId !== 'security').length, 0);
 });
 
-test('an approved correlated message survives moving to another floor', async context => {
-  const { send, player, checks, packets, published, flush } = fixture(context);
+test('a queued message stays on the source floor and excludes later arrivals from live delivery and history', async context => {
+  const { send, move, observe, history, checks, packets, published, flush } = fixture(context);
+  const original = observe('On the floor before sending', 'arcade');
+  const otherFloor = observe('On the destination floor', 'tables');
   const id = randomUUID(), pending = send({ id, text: 'Синтетическая проверка этажа' });
   await flush(); assert.equal(checks.length, 1);
-  player.hall = 'tables'; player.hallRevision++;
+  move('tables');
+  const late = observe('On the floor after sending', 'arcade');
   checks[0].resolve(true); await pending;
-  assert.equal(published.length, 1); assert.equal(published[0].requestId, id);
+  assert.equal(published.length, 0);
+  assert.deepEqual(original.received.filter(packet => packet.type === 'chat').map(packet => packet.value.requestId), [id]);
+  assert.equal(otherFloor.received.some(packet => packet.type === 'chat'), false);
+  assert.equal(late.received.some(packet => packet.type === 'chat'), false);
+  late.history();
+  assert.deepEqual(late.received.at(-1), { type: 'history', value: [] });
+  original.history();
+  assert.deepEqual(original.received.at(-1)?.value.map((message: any) => message.requestId), [id]);
+  move('arcade');
+  history();
+  assert.deepEqual(packets.at(-1), { type: 'history', value: [] });
   assert.deepEqual(packets.filter(packet => packet.type === 'chat-result').map(packet => packet.value), [{ id, status: 'queued' }, { id, status: 'published' }]);
+});
+
+test('the toilet has a private chat visit and exterior locations reject send and history', async context => {
+  const { send, move, observe, history, checks, packets, published, flush } = fixture(context);
+  const floor = observe('Floor', 'arcade');
+  const toilet = observe('Toilet', 'toilet');
+  const firstVisit = toilet.received[0].value.id;
+  move('toilet');
+  const ownVisit = packets.at(-1)?.value.id;
+  const id = randomUUID();
+  const pending = send({ id, text: 'Привет в туалете', visitId: ownVisit });
+  await flush(); checks[0].resolve(true); await pending;
+  assert.deepEqual(published.map(message => message.requestId), [id]);
+  assert.equal(toilet.received.find(packet => packet.type === 'chat')?.value.visitId, firstVisit);
+  assert.equal(floor.received.some(packet => packet.type === 'chat'), false);
+  for (const hall of ['street', 'roof'] as const) {
+    move(hall);
+    const exterior = randomUUID();
+    await send({ id: exterior, text: 'Попытка написать снаружи', visitId: ownVisit });
+    assert(packets.some(packet => packet.type === 'chat-result' && packet.value.id === exterior && packet.value.status === 'rejected'));
+    history();
+    assert.deepEqual(packets.at(-1), { type: 'history', value: [] });
+  }
+  move('toilet');
+  const stale = randomUUID();
+  await send({ id: stale, text: 'Запрос с прошлого визита', visitId: ownVisit });
+  assert(packets.some(packet => packet.type === 'chat-result' && packet.value.id === stale && packet.value.status === 'cancelled'));
+  assert.equal(checks.length, 1);
 });
 
 test('duplicate request IDs reuse their result without a second publication', async context => {

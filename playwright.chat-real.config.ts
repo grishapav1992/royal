@@ -2,6 +2,7 @@ import { defineConfig } from '@playwright/test';
 
 const api = 'http://127.0.0.1:2584';
 const web = 'http://127.0.0.1:5184';
+process.env.TEST_BASE_URL ??= api;
 // Run under scripts/database-test.ts so the real backend only sees a temporary database.
 export default defineConfig({
   testDir: './tests', testMatch: ['chat-real-transport.spec.ts', 'chat-layout.spec.ts'],

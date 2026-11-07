@@ -123,3 +123,73 @@ test('the tenth offensive word ejects an account without a warning in the real c
     expect(errors).toEqual([]);
   } finally { await host.leave(); }
 });
+
+test('real chat follows each floor visit and closes on the street', async ({ browser, request }) => {
+  const host = await createHost(request);
+  const senderContext = await browser.newContext(), observerContext = await browser.newContext();
+  const sender = await senderContext.newPage(), observer = await observerContext.newPage();
+  const dock = sender.locator('#club-chat-dock');
+  const rows = (page: Page, text: string) => page.locator('#chat-log > [data-message-id]').filter({ hasText: text });
+  const send = async (page: Page, text: string) => {
+    await page.locator('#chat-input').fill(text);
+    await page.locator('#send-chat').click();
+    await expect(rows(page, text)).toHaveCount(1);
+  };
+  const travel = async (hall: 'arcade' | 'tables') => {
+    await sender.bringToFront();
+    await sender.locator('#elevator-shortcut').click();
+    await expect(sender.locator('#elevator-dialog')).toHaveAttribute('data-phase', 'choose', { timeout: 20000 });
+    await sender.locator(`[data-elevator-floor="${hall}"]`).click();
+    await expect(sender.locator('#elevator-dialog')).toBeHidden({ timeout: 20000 });
+    await expect(dock).toHaveAttribute('data-chat-hall', hall);
+  };
+  try {
+    await register(sender, 'Гость на этажах'); await register(observer, 'Гость первого этажа');
+    for (const page of [sender, observer]) {
+      await page.goto('/?mode=club&room=' + host.roomId + '&lang=en');
+      await expect(page.locator('#club-chat-dock')).toHaveAttribute('data-chat-hall', 'arcade');
+      await expect(page.locator('#chat-input')).toBeEnabled();
+    }
+    const senderTransport = await captureRealTransport(sender), observerTransport = await captureRealTransport(observer);
+    const old = 'Before leaving the arcade';
+    await send(observer, old);
+    await expect(rows(sender, old)).toHaveCount(1);
+    const draft = 'A rejected draft from the arcade ' + 'x'.repeat(300);
+    await sender.locator('#chat-input').evaluate((input: HTMLInputElement, text) => {
+      input.value = text;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.form!.dispatchEvent(new Event('submit', { cancelable: true }));
+    }, draft);
+    const rejected = sender.locator('.chat-outgoing[data-delivery="rejected"]');
+    await expect(rejected).toContainText(draft);
+
+    await travel('tables');
+    await expect(rows(sender, old)).toHaveCount(0);
+    await expect(rejected).toContainText('Draft from another location');
+    await expect(rejected).not.toContainText(draft);
+    await expect(rejected.getByRole('button', { name: 'Retry' })).toHaveCount(0);
+    await rejected.getByRole('button', { name: 'Restore to input' }).click();
+    await expect(sender.locator('#chat-input')).toHaveValue(draft);
+    await rejected.getByRole('button', { name: 'Dismiss' }).click();
+    const downstairs = 'Still downstairs while you are away';
+    const upstairs = 'A message from the second floor';
+    await send(observer, downstairs);
+    await send(sender, upstairs);
+    expect((await proof(sender)).messages.some(message => message.text === downstairs)).toBe(false);
+    expect((await proof(observer)).messages.some(message => message.text === upstairs)).toBe(false);
+
+    await travel('arcade');
+    await expect(rows(sender, old)).toHaveCount(0);
+    await expect(rows(sender, upstairs)).toHaveCount(0);
+    await expect(rows(sender, downstairs)).toHaveCount(0);
+    const fresh = 'After arriving back downstairs';
+    await send(observer, fresh);
+    await expect(rows(sender, fresh)).toHaveCount(1);
+
+    await sender.bringToFront();
+    await sender.locator('[data-floor-target="street"]').click();
+    await expect(dock).toBeHidden({ timeout: 20000 });
+    await expect(sender.locator('#chat-input')).toBeDisabled();
+    await senderTransport.detach(); await observerTransport.detach();
+  } finally { await senderContext.close(); await observerContext.close(); await host.leave(); }
+});

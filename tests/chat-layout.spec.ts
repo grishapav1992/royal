@@ -1,17 +1,28 @@
 import {test,expect} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
-test('persistent chat fits with the game and a reduced mobile viewport',async({page,request})=>{
+test('persistent chat fits with the game and a reduced mobile viewport',async({page,request},testInfo)=>{
  const login=await request.post('/api/auth/login',{data:{email:`layout-host-${crypto.randomUUID()}@example.test`,password:'Royal-test-123!'}});const cookie=login.headers()['set-cookie'].split(';')[0];await request.post('/api/auth/character',{data:{skin:0}});
- const host=await new Client(process.env.TEST_BASE_URL||'http://127.0.0.1:2567',{headers:{Cookie:cookie}}).create('lobby');for(const type of ['chat','activities'])host.onMessage(type,()=>{});
+ const host=await new Client(process.env.TEST_BASE_URL||'http://127.0.0.1:2567',{headers:{Cookie:cookie}}).create('lobby');for(const type of ['chat','chat-visit','activities'])host.onMessage(type,()=>{});
  try{
-  await page.goto('/?room='+host.roomId);await page.getByLabel('Почта',{exact:true}).fill(`layout-${crypto.randomUUID()}@example.test`);await page.getByLabel('Пароль',{exact:true}).fill('Royal-test-123!');await page.getByRole('button',{name:'Продолжить',exact:true}).click();await expect(page.locator('#character-step')).toBeVisible();await page.getByRole('button',{name:'Войти в зал',exact:true}).click();await expect(page.locator('#join-dialog')).toBeHidden();
+  const visitor=await page.request.post('/api/auth/login',{data:{email:`layout-${crypto.randomUUID()}@example.test`,password:'Royal-test-123!'}});
+  expect(visitor.ok()).toBe(true);
+  expect((await page.request.post('/api/auth/character',{data:{skin:0}})).ok()).toBe(true);
+  await page.goto('/?mode=club&room='+host.roomId+'&lang=ru');
+  await expect(page.locator('#club-chat-dock')).toHaveAttribute('data-chat-hall','arcade');
+  await expect(page.locator('#chat-input')).toBeEnabled();
   await page.setViewportSize({width:390,height:844});await expect(page.locator('#chat-input')).toBeInViewport();
-  // VisualViewport changes app height when a mobile keyboard covers the screen.
-  await page.evaluate(()=>document.documentElement.style.setProperty('--app-height','420px'));await page.waitForTimeout(250);
-  const game=(await page.locator('#game').boundingBox())!,chat=(await page.locator('#chat-panel').boundingBox())!,input=(await page.locator('#chat-input').boundingBox())!;
-  expect(game.height).toBeGreaterThan(70);expect(game.y+game.height).toBeLessThanOrEqual(chat.y);expect(input.y+input.height).toBeLessThan(420);
+  // Reduce the viewport through the browser and measure the visible composer.
+  await page.setViewportSize({width:390,height:420});
+  await expect.poll(async () => {
+    const input = await page.locator('#chat-input').boundingBox();
+    return input ? input.y + input.height : Infinity;
+  }).toBeLessThan(420);
+  const game = (await page.locator('#game').boundingBox())!;
+  const chat = (await page.locator('#chat-panel').boundingBox())!;
+  expect(game.height).toBeGreaterThan(70);
+  expect(game.y + game.height).toBeLessThanOrEqual(chat.y);
   await page.locator('#chat-input').fill('Чат открыт вместе с игрой');await page.locator('#send-chat').click();await expect(page.locator('#chat-log')).toContainText('Чат открыт вместе с игрой');
-  await page.screenshot({path:'artifacts/chat-keyboard-viewport.png'});
-  await page.evaluate(()=>document.documentElement.style.removeProperty('--app-height'));await page.setViewportSize({width:1366,height:768});await page.locator('#games-tab').click();await expect(page.locator('#chat-input')).toBeVisible();await expect(page.locator('.catalog-panel')).toBeVisible();await page.locator('#panel-close').click();await expect(page.locator('#chat-panel')).toBeVisible();
+  await page.screenshot({path:testInfo.outputPath('chat-keyboard-viewport.png')});
+  await page.setViewportSize({width:1366,height:768});await page.locator('#games-tab').click();await expect(page.locator('#chat-input')).toBeVisible();await expect(page.locator('.catalog-panel')).toBeVisible();await page.locator('#panel-close').click();await expect(page.locator('#chat-panel')).toBeVisible();
  }finally{await host.leave();await request.post('/api/auth/logout');}
 });

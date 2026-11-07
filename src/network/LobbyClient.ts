@@ -12,7 +12,7 @@ import { savedSession, savedRoom, rememberSession, forgetSession } from './sessi
 import { configureReconnection, lobbyMatchmakingFetch } from './reconnection';
 import { LOBBY_RECOVERY_WINDOW_MS } from '../shared/lobbyConnection';
 import type { CabinetPlayResult } from '../shared/cabinetSeating';
-import type { ChatRequest, ChatResult } from '../shared/chat';
+import type { ChatRequest, ChatResult, ChatVisit } from '../shared/chat';
 import type { PvpSnapshot } from '../shared/pvp';
 import type { PlayerRecoveryResult } from '../shared/playerRecovery';
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
@@ -48,6 +48,7 @@ export class LobbyClient {
     joined: (roomId: string, sessionId: string, recovering?: boolean) => void;
     players: (players: PlayerView[], selfId: string) => void;
     chat: (message: ChatMessage) => void;
+    chatVisit?: (visit: ChatVisit | null) => void;
     delivery?: (result: ChatResult) => void;
     pvp?:(value:PvpSnapshot)=>void;
     pvpResult?:(value:{requestId:string;error:string;rejected:boolean})=>void;
@@ -126,6 +127,7 @@ export class LobbyClient {
         }
       });
       onMessage('chat', message => this.events.chat(message as ChatMessage));
+      onMessage('chat-visit', (visit: ChatVisit | null) => this.events.chatVisit?.(visit));
       onMessage('history', messages => this.events.history(messages as ChatMessage[]));
       onMessage('notice', message => this.events.notice(translateText(String(message))));
       onMessage('pvp',(value:PvpSnapshot)=>this.events.pvp?.(value));
