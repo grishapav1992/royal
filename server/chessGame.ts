@@ -24,9 +24,15 @@ export class ChessGame {
     }catch{return false;}
   }
   resign(id:string){this.tick();if(this.state.phase!=='playing'||!this.state.players.includes(id))return false;this.state.phase='finished';this.state.clock.running=null;this.state.winner=this.state.players.find(p=>p!==id)!;this.state.message='Соперник сдался';this.state.moves=[];this.state.sound='win';this.state.revision++;return true;}
-  tick(){
-    const s=this.state;if(s.phase!=='playing'||!s.clock.running)return;
-    const now=this.now(),elapsed=Math.max(0,now-this.clockAt);this.clockAt=now;
+  tick(paused=false){
+    const s=this.state;if(s.phase!=='playing')return;
+    const now=this.now();
+    if(paused||!s.clock.running){
+      s.clock.running=paused?null:s.turn;
+      this.clockAt=now;
+      return;
+    }
+    const elapsed=Math.max(0,now-this.clockAt);this.clockAt=now;
     const side=s.clock.running==='w'?0:1;s.clock.remainingMs[side]=Math.max(0,s.clock.remainingMs[side]-elapsed);
     if(s.clock.remainingMs[side]>0)return;
     const draw=this.insufficientMaterial(side===0?'b':'w');

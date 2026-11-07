@@ -27,6 +27,9 @@ export class SecurityUI {
         : 'Вход закрыт за повторное нарушение правил чата.';
       this.dialog.querySelector('h2 + p')!.textContent = translateText(reason);
     }
+    this.capture();
+  }
+  capture() {
     for (const dialog of Array.from(document.querySelectorAll<HTMLDialogElement>('dialog[open]'))) dialog.close();
     this.scene.setSecurity(true);
     document.querySelector<HTMLInputElement>('#chat-input')?.blur();

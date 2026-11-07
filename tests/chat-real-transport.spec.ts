@@ -2,8 +2,9 @@ import { test, expect, type APIRequestContext, type Page } from '@playwright/tes
 import { Client } from '@colyseus/sdk';
 import type { ChatRequest, ChatResult } from '../src/shared/chat';
 import type { ChatMessage } from '../src/shared/world';
+import type { SecurityDecision } from '../src/shared/security';
 
-type Proof = { requests: ChatRequest[]; results: ChatResult[]; messages: ChatMessage[]; ejections: number[] };
+type Proof = { requests: ChatRequest[]; results: ChatResult[]; messages: ChatMessage[]; captures: SecurityDecision[]; ejections: unknown[] };
 const proof = (page: Page) => page.evaluate(() => (window as any).__realChat as Proof);
 const api = 'http://127.0.0.1:2584';
 
@@ -31,12 +32,19 @@ async function captureRealTransport(page: Page) {
   const installed = await cdp.send('Runtime.callFunctionOn', { objectId: socialId!, returnByValue: true,
     functionDeclaration: `function() {
       const room = this.client.room, send = room.send.bind(room);
-      const requests = [], results = [], messages = [], ejections = [];
+      const requests = [], results = [], messages = [], captures = [], ejections = [];
       room.send = (type, value) => { if (type === 'chat') requests.push(value); return send(type, value); };
       room.onMessage('chat-result', result => results.push(result));
       room.onMessage('chat', message => messages.push(message));
-      room.onMessage('ejected', value => ejections.push(value.until));
-      window.__realChat = { requests, results, messages, ejections, send: value => room.send('chat', value) };
+      room.onMessage('club-capture', value => captures.push(value));
+      room.onMessage('club-ejected', value => ejections.push(value));
+      window.__realChat = {
+        requests, results, messages, captures, ejections, send: value => room.send('chat', value),
+        self: () => {
+          const player = room.state.players.get(room.sessionId);
+          return { hall: player.hall, x: player.x, security: player.security, connected: player.connected };
+        }
+      };
       return { status: this.client.status, roomId: room.roomId };
     }` });
   expect(installed.exceptionDetails).toBeUndefined();
@@ -70,7 +78,8 @@ test('real chat masks profanity and delivers insults below the threshold regardl
     const greeting = 'Синтетическое приветствие по WebSocket';
     await sender.locator('#chat-input').fill(greeting); await sender.locator('#send-chat').click();
     await expect(sender.locator('#chat-log > [data-message-id]').filter({ hasText: greeting })).toHaveCount(1);
-    await expect(observer.locator('#chat-log > [data-message-id]').filter({ hasText: greeting })).toHaveCount(1);
+    await observer.bringToFront();
+    await expect(observer.locator('#chat-log > [data-message-id]').filter({ hasText: greeting })).toHaveCount(1, { timeout: 15000 });
     const sent = (await proof(sender)).requests[0];
     expect(sent).toMatchObject({ text: greeting }); expect(sent.id).toMatch(/^[a-f0-9-]{36}$/);
     await expect.poll(async () => (await proof(sender)).results.filter(result => result.id === sent.id).map(result => result.status)).toEqual(['queued', 'published']);
@@ -97,7 +106,7 @@ test('real chat masks profanity and delivers insults below the threshold regardl
   } finally { await senderContext.close(); await observerContext.close(); await host.leave(); }
 });
 
-test('the tenth offensive word ejects an account without a warning in the real chat', async ({ page, request }) => {
+test('the tenth offensive word triggers a capture and street escort in the same session', async ({ page, request }) => {
   const host = await createHost(request);
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
@@ -114,13 +123,16 @@ test('the tenth offensive word ejects an account without a warning in the real c
     const confirmedAfter = Date.now();
     await input.fill('Ты идиот'); await send.click();
     await expect(page.locator('.security-message')).toContainText('too much offensive language in chat');
-    await expect(page.locator('#security-dialog')).toBeVisible({ timeout: 20000 });
-    await expect(page.locator('#security-dialog')).toContainText('Entry blocked for excessive offensive language in chat.');
-    await expect(page.locator('#security-return')).toBeDisabled();
-    const ejections = (await proof(page)).ejections;
-    expect(ejections).toHaveLength(1);
-    expect(ejections[0]).toBeGreaterThanOrEqual(confirmedAfter + 20 * 60_000);
-    expect(ejections[0]).toBeLessThanOrEqual(Date.now() + 20 * 60_000);
+    await expect.poll(async () => (await proof(page)).ejections.length, { timeout: 30000 }).toBe(1);
+    const { captures } = await proof(page);
+    expect(captures).toHaveLength(1);
+    expect(captures[0]).toMatchObject({ kind: 'ejecting', reason: 'profanity' });
+    expect(captures[0].until).toBeGreaterThanOrEqual(confirmedAfter + 20 * 60_000);
+    expect(captures[0].until).toBeLessThanOrEqual(Date.now() + 20 * 60_000);
+    await expect.poll(() => page.evaluate(() => (window as any).__realChat.self()))
+      .toMatchObject({ hall: 'street', security: '', connected: true });
+    await expect(page.locator('#security-dialog')).toBeHidden();
+    await expect(page.locator('#club-chat-dock')).toBeHidden();
     expect(errors).toEqual([]);
     await transport.detach();
   } finally { await host.leave(); }
@@ -135,6 +147,7 @@ test('the first confirmed spam episode immediately dispatches the guard', async 
     const text = 'Check the announcements t.me/ExampleChannel';
     const rows = page.locator('#chat-log > [data-message-id]').filter({ hasText: text });
     await expect(input).toBeEnabled();
+    const transport = await captureRealTransport(page);
     for (let count = 1; count <= 2; count++) {
       await input.fill(text); await send.click();
       await expect(rows).toHaveCount(count);
@@ -142,7 +155,9 @@ test('the first confirmed spam episode immediately dispatches the guard', async 
     await input.fill(text); await send.click();
     await expect(page.locator('.security-message')).toContainText('spam in chat. Security is on its way.');
     await expect(rows).toHaveCount(2);
-    await expect(page.locator('#security-dialog')).toContainText('Security removed the player for chat spam.', { timeout: 20000 });
+    await expect.poll(async () => (await proof(page)).ejections.length, { timeout: 30000 }).toBe(1);
+    expect((await proof(page)).captures).toMatchObject([{ kind: 'ejecting', reason: 'spam' }]);
+    await transport.detach();
   } finally { await host.leave(); }
 });
 

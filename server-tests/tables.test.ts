@@ -42,7 +42,7 @@ test('scratch and wrong group transfer the turn, eight on the break is re-spotte
  const breaking=pool();corner(breaking,8);breaking.state.breaking=true;breaking.shoot('a',Math.PI*1.25,300);run(breaking,12);assert.equal(breaking.state.phase,'playing');assert(breaking.state.balls.find(b=>b.id===8)!.active);assert.deepEqual(breaking.state.groups,['open','open']);
 });
 test('piano ownership, invalid notes, listener mute and disconnect release are enforced',()=>{
- const player=()=>({x:120,y:340,playing:false,connected:true,activity:'',ears:false,seat:'',action:'idle',facing:'down',moving:false});
+ const player=()=>({...ACTIVITIES.piano.entry,playing:false,connected:true,activity:'',ears:false,seat:'',action:'idle',facing:'down',moving:false});
  const people=new Map([['a',player()],['b',player()]]);const events:{type:string;value:any}[]=[];
  const a=new Activities(id=>people.get(id),()=>{},(type,value)=>events.push({type,value}),()=>{});
  a.handle('a',{type:'join',id:'piano'});assert.equal(a.pianist,'a');a.handle('b',{type:'join',id:'piano'});assert.equal(a.pianist,'a');

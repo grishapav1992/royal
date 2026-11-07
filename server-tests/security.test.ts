@@ -9,6 +9,7 @@ import { ChatSpam } from '../server/chatSpam';
 import { ChatLanguageWindow } from '../server/chatLanguageWindow';
 import { PostgresDatabase } from '../server/database';
 import { Guards } from '../server/guards';
+import { GUARD_STOPS } from '../server/guardRoutine';
 import { LobbyState, Player } from '../server/state';
 import { SECURITY_BAN_MS, SECURITY_WARNING_MS } from '../src/shared/security';
 import { hallObstacles, hallLinks, type HallId } from '../src/shared/world';
@@ -146,7 +147,7 @@ test('a repeat violation in another room upgrades a pending warning to an ejecti
 });
 
 test('guard can reach and escort visitors from narrow passages by cabinets and bar stools',()=>{
- for(const [x,y,hall] of [[170,340,'arcade'],[1000,520,'arcade'],[1000,560,'arcade'],[440,400,'tables'],[440,440,'tables']] as const){
+ for(const [x,y,hall] of [[170,325,'arcade'],[1000,520,'arcade'],[1000,560,'arcade'],[440,400,'tables'],[440,440,'tables']] as const){
   const state=new LobbyState(),p=new Player();Object.assign(p,{x,y,hall});state.players.set('a',p);let finished=false;
   const guards=new Guards(state,()=>finished=true);guards.enqueue('a',{kind:'ejecting',until:999999});
   let approached=false;
@@ -163,6 +164,7 @@ test('guard can reach and escort visitors from narrow passages by cabinets and b
 test('ambient patrol visits bar, windows and games, stays outside furniture and varies its conversation',()=>{
  const state=new LobbyState();let seed=2;const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/2**32;};
  const guards=new Guards(state,()=>{},random),visits=new Map<string,Set<string>>(),lines=new Set<string>();
+ const bar=GUARD_STOPS.arcade.find(stop=>stop.id==='bar')!;
  for(let i=0;i<12000;i++){
   guards.tick(.05);
   for(const g of state.guards.values()){
@@ -170,7 +172,7 @@ test('ambient patrol visits bar, windows and games, stays outside furniture and 
    assert(walkable(g.x,g.y,hallObstacles(g.hall)),`${hall} ${g.routine}: ${g.x},${g.y}`);
    if(!visits.has(hall))visits.set(hall,new Set());
    if(['chat','window','inspect','watch'].includes(g.phase))visits.get(hall)!.add(g.routine);
-   if(g.phase==='chat') {assert.equal(hall,'arcade');assert(Math.hypot(g.x-828,g.y-520)<1);if(g.reply)lines.add(g.reply);}
+   if(g.phase==='chat') {assert.equal(hall,'arcade');assert(Math.hypot(g.x-bar.x,g.y-bar.y)<1);if(g.reply)lines.add(g.reply);}
    else assert.equal(g.reply,'');
   }
  }

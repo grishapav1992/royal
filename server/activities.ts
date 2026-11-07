@@ -25,7 +25,8 @@ export class Activities {
   private pianoElapsed=0;
   readonly wagers=new Map<string,string[]>();
   canJoin:(id:string,game:string)=>boolean=()=>true;
-  constructor(private player:(id:string)=>Visitor|undefined,private stop:(id:string)=>void,private broadcast:(type:string,value:unknown,hall:HallId)=>void,private notice:(id:string,text:string)=>void,now:()=>number=()=>performance.now(),combat?:CombatDependencies){
+  constructor(private player:(id:string)=>Visitor|undefined,private stop:(id:string)=>void,private broadcast:(type:string,value:unknown,hall:HallId)=>void,private notice:(id:string,text:string)=>void,now:()=>number=()=>performance.now(),combat?:CombatDependencies,
+    private wagerPresent:(id:string)=>boolean=id=>player(id)?.connected===true){
     if(combat)this.combat=new CombatRoom(combat,notice);
     this.chess=new ChessGame(undefined,now);this.chessChanges=new ActivityChanges(this.chess.state);this.chessRevision=this.chess.state.revision;
   }
@@ -50,15 +51,15 @@ export class Activities {
       }else if(!(v.id==='mortal-kombat'?this.combat?.join(id):v.id==='chess'?this.chess.join(id):this.tables.find(t=>t.state.id===v.id)!.join(id))){this.notice(id,'Оба места заняты. Можно наблюдать за партией.');return;}
       this.stop(id);p.activity=v.id;p.playing=true;this.changed();return;
     }
-    if(v.type==='paddle')this.tables[0].move(id,v.x,v.y);
-    if(v.type==='shot'){this.tables[1].shoot(id,v.angle,v.power,v.pocket);this.changed();}
-    if(v.type==='place'){
+    if(v.type==='paddle'&&this.wagerReady('hockey'))this.tables[0].move(id,v.x,v.y);
+    if(v.type==='shot'&&this.wagerReady('pool')){this.tables[1].shoot(id,v.angle,v.power,v.pocket);this.changed();}
+    if(v.type==='place'&&this.wagerReady('pool')){
       const table=this.tables[1];
       if(!table.place(id,v.x,v.y)&&table.state.phase==='playing'&&table.state.players[table.state.turn]===id&&table.state.ballInHand!=='none')this.notice(id,'Выбери свободное место для белого шара'+(table.state.ballInHand==='kitchen'?' слева от линии.':'.'));
       this.changed();
     }
-    if(v.type==='chess-move'&&this.chess.move(id,v.from,v.to,v.promotion))this.changed();
-    if(v.type==='chess-resign'&&this.chess.resign(id))this.changed();
+    if(v.type==='chess-move'&&this.wagerReady('chess')&&this.chess.move(id,v.from,v.to,v.promotion))this.changed();
+    if(v.type==='chess-resign'&&this.wagerReady('chess')&&this.chess.resign(id))this.changed();
     if(v.type==='rematch'){if([...this.wagers.values()].some(ids=>ids.includes(id)))return;this.tables.forEach(t=>t.rematch(id));this.chess.rematch(id);this.changed();}
     if(v.type==='note'&&id===this.pianist&&typeof v.note==='number'&&Number.isInteger(v.note)&&v.note>=60&&v.note<=76&&typeof v.down==='boolean'){
       const now=Date.now();
@@ -85,7 +86,8 @@ export class Activities {
     this.tables.forEach((table,index)=>{
       // Keep the final frame pending even if the game finishes before the next send.
       this.tablePending[index] ||= table.state.phase==='playing';
-      if(!this.wagers.has(table.state.id)||table.state.players.every(id=>this.player(id)?.connected))table.tick(dt);this.tableElapsed[index]+=dt;
+      if(this.wagerReady(table.state.id))table.tick(dt);
+      this.tableElapsed[index]+=dt;
       const interval=table.state.id==='hockey'?1/30:1/20;
       if(this.tablePending[index]&&this.tableElapsed[index]+1e-9>=interval){
         this.tableElapsed[index]=Math.max(0,(this.tableElapsed[index]+1e-9)%interval-1e-9);
@@ -94,12 +96,17 @@ export class Activities {
       }
     });
     this.sendTables(updates);
-    this.chess.tick();
+    const running=this.chess.state.clock.running;
+    this.chess.tick(!this.wagerReady('chess'));
     this.chessElapsed+=dt;
-    if(this.chess.state.revision!==this.chessRevision||this.chessElapsed+1e-9>=1)this.sendChess(this.chessElapsed+1e-9>=1);
+    const clockDue=running!==this.chess.state.clock.running||this.chessElapsed+1e-9>=1;
+    if(this.chess.state.revision!==this.chessRevision||clockDue)this.sendChess(clockDue);
     for(const [note,at] of this.notes)if(Date.now()-at>4000){this.notes.delete(note);this.broadcast('piano-note',{note,down:false,player:this.pianist},'arcade');}
     this.pianoElapsed+=dt;
     if(this.pianoElapsed+1e-9>=.05){this.pianoElapsed=Math.max(0,(this.pianoElapsed+1e-9)%.05-1e-9);this.sendPiano();}
+  }
+  private wagerReady(game:string) {
+    return this.wagers.get(game)?.every(id=>this.wagerPresent(id)) ?? true;
   }
   startWager(game:string,ids:string[],activity=game){
     const previous=this.wagers.get(game);

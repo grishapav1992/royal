@@ -114,6 +114,16 @@ export class SocialUI {
       mira: mira => this.scene.syncMira(mira),
       security: decision => { this.sanctioned = true; this.security.intervention(decision); this.chatAvailability(); },
       ejected: until => this.security.ejected(until),
+      clubCapture: () => {
+        this.sanctioned = true;
+        this.security.capture();
+        this.chatAvailability();
+      },
+      clubEjected: () => {
+        this.sanctioned = false;
+        this.scene.setSecurity(false);
+        this.chatAvailability();
+      },
       status: status => this.connectionStatus(status),
       joined: (roomId, selfId, recovering) => {
         this.pvp?.client.setAccount(this.auth.account?.id??null);

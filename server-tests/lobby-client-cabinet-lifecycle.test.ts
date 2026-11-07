@@ -2,6 +2,7 @@ import { test, type TestContext } from 'node:test';
 import assert from 'node:assert/strict';
 import { build } from 'esbuild';
 import { fileURLToPath } from 'node:url';
+import type { ClubCaptureDecision, SecurityDecision } from '../src/shared/security';
 
 // Bundle the browser client with only the transport replaced, preserving its
 // real claim, message matching, timeout and reconnection lifecycle.
@@ -40,9 +41,11 @@ class TransportRoom {
 
 async function fixture(context: TestContext) {
   const room = new TransportRoom(), notices: string[] = [], ejections: number[] = [], statuses: { status: string; releases: number }[] = [];
+  const clubTransitions: (SecurityDecision | 'street')[] = [];
   const releases = () => room.packets.filter(packet => packet.type === 'playing' && packet.value === false);
   const ignore = () => {};
   const client = new LobbyClient({ npcTime: ignore, guards: ignore, guests: ignore, mira: ignore, security: ignore, ejected: until => ejections.push(until),
+    clubCapture: decision => clubTransitions.push(decision), clubEjected: () => clubTransitions.push('street'),
     joined: ignore, players: ignore, chat: ignore, history: ignore, activities: ignore, note: ignore,
     notice: message => notices.push(message), status: status => statuses.push({ status, releases: releases().length }) });
   (client as any).client = { joinOrCreate: async () => room, joinById: async () => room };
@@ -50,7 +53,7 @@ async function fixture(context: TestContext) {
   context.after(() => client.leave());
   const request = () => room.packets.filter(packet => packet.type === 'cabinet-play').at(-1)!.value;
   const reply = (accepted: boolean, result: Record<string, unknown> = {}) => room.handlers.get('cabinet-play-result')!({ ...request(), accepted, ...result });
-  return { client, room, notices, ejections, statuses, releases, request, reply };
+  return { client, room, notices, ejections, clubTransitions, statuses, releases, request, reply };
 }
 
 test('player recovery waits for its matching authoritative state and fails on disconnect', async context => {
@@ -216,6 +219,33 @@ test('a warning followed by reconnection failure is not a ban', async context =>
   f.room.drop(); f.room.finalLeave(4003);
   await f.client.join();
   assert.deepEqual(f.ejections, []); assert.equal(f.client.status, 'connected');
+});
+
+test('club capture cancels pending admissions and street ejection permits reconnection', async context => {
+  const f = await fixture(context);
+  const cabinet = f.client.claimCabinet('royal-fruits');
+  const elevator = f.client.travelByElevator('tables');
+  const recovery = f.client.recoverPlayer();
+  const decision: ClubCaptureDecision = { kind: 'ejecting', until: Date.now() + 120000, reason: 'collision', pursuitId: 'capture-1' };
+  f.room.handlers.get('club-capture')!(decision);
+  assert.deepEqual(await Promise.all([cabinet, elevator, recovery]), [false, false, false]);
+  assert.deepEqual(f.clubTransitions, [decision]);
+  assert.equal(f.releases().length, 0);
+
+  f.room.handlers.get('club-ejected')!({ pursuitId: decision.pursuitId });
+  f.room.handlers.get('club-capture')!(decision);
+  f.room.handlers.get('club-ejected')!({ pursuitId: decision.pursuitId });
+  assert.deepEqual(f.clubTransitions, [decision, 'street']);
+  assert.equal(f.client.getState().roomId, f.room.roomId);
+  assert.equal(f.client.status, 'connected');
+
+  f.room.drop(); f.room.finalLeave(4003);
+  await f.client.join();
+  assert.equal(f.client.status, 'connected');
+  f.room.handlers.get('club-capture')!(decision);
+  f.room.handlers.get('club-ejected')!({ pursuitId: decision.pursuitId });
+  assert.deepEqual(f.clubTransitions, [decision, 'street']);
+  assert.deepEqual(f.ejections, []);
 });
 
 test('a confirmed ban keeps the exact server deadline through final departure', async context => {

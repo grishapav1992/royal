@@ -1,9 +1,9 @@
 import { BOUNDS, findPath, walkable, type Obstacle, type Point } from '../src/game/navigation';
 
-function clear(a: Point, b: Point, obstacles: Obstacle[]) {
+export function guardLineClear(a: Point, b: Point, obstacles: Obstacle[], padding = 0) {
   return !obstacles.some(o => {
     let enter=0, exit=1;
-    for (const [start,delta,min,max] of [[a.x,b.x-a.x,o.x-12,o.x+o.w+12],[a.y,b.y-a.y,o.y-12,o.y+o.h+12]]) {
+    for (const [start,delta,min,max] of [[a.x,b.x-a.x,o.x-padding,o.x+o.w+padding],[a.y,b.y-a.y,o.y-padding,o.y+o.h+padding]]) {
       if (Math.abs(delta)<1e-9) { if(start<=min||start>=max)return false; }
       else {
         const t1=(min-start)/delta,t2=(max-start)/delta;
@@ -19,7 +19,7 @@ function clear(a: Point, b: Point, obstacles: Obstacle[]) {
 export function guardPath(from: Point, to: Point, obstacles: Obstacle[]): Point[] {
   if(!walkable(from.x,from.y,obstacles)||!walkable(to.x,to.y,obstacles))return [];
   const grid=findPath(from,to,obstacles);
-  if(grid.length && grid.every((p,i)=>clear(i?grid[i-1]:from,p,obstacles)))return grid;
+  if(grid.length && grid.every((p,i)=>guardLineClear(i?grid[i-1]:from,p,obstacles,12)))return grid;
   const corners=obstacles.flatMap(o=>[o.x-12.1,o.x+o.w+12.1].flatMap(x=>[o.y-12.1,o.y+o.h+12.1].map(y=>({x,y}))));
   const nodes=[from,to,...corners.filter(p=>p.x>=BOUNDS.left&&p.x<=BOUNDS.right&&p.y>=BOUNDS.top&&p.y<=BOUNDS.bottom&&walkable(p.x,p.y,obstacles))];
   const costs=nodes.map(()=>Infinity),parents=nodes.map(()=>-1),closed=new Set<number>();costs[0]=0;
@@ -31,7 +31,7 @@ export function guardPath(from: Point, to: Point, obstacles: Obstacle[]): Point[
     for(let i=0;i<nodes.length;i++){
       if(closed.has(i))continue;
       const cost=costs[current]+Math.hypot(nodes[i].x-nodes[current].x,nodes[i].y-nodes[current].y);
-      if(cost<costs[i]&&clear(nodes[current],nodes[i],obstacles)){costs[i]=cost;parents[i]=current;}
+      if(cost<costs[i]&&guardLineClear(nodes[current],nodes[i],obstacles,12)){costs[i]=cost;parents[i]=current;}
     }
   }
   return [];

@@ -1,22 +1,39 @@
 import { Guard, type LobbyState, type Player as PlayerBody } from './state';
 import { findPath, walkable, type Point } from '../src/game/navigation';
-import { hallObstacles, HALL_DOORS, hallLinks, hallLinkToward, otherHall, type ConnectedHallDoor, type HallId } from '../src/shared/world';
-import { GUARD_EXIT, GUARD_HOME, type SecurityDecision } from '../src/shared/security';
+import { hallObstacles, HALL_DOORS, hallLinks, hallLinkToward, isCasinoFloor, otherHall, type ConnectedHallDoor, type HallId } from '../src/shared/world';
+import { GUARD_EXIT, GUARD_HOME, type ClubPursuit, type SecurityDecision } from '../src/shared/security';
 import { movementFacing, type Facing } from '../src/shared/movement';
-import { guardPath } from './guardNavigation';
+import { guardLineClear, guardPath } from './guardNavigation';
 import { GUARD_STOPS, GUARD_BAR_TALKS, type GuardStop } from './guardRoutine';
 import { GUARD_CONTACT_RADIUS } from '../src/shared/guardCollision';
 import { ROOF } from '../src/shared/rooftop';
 import { TOILET } from '../src/shared/toilet';
 import { STREET } from '../src/shared/street';
 
-type Job = { id: string; decision: SecurityDecision };
+const SIGHT_RANGE = 260;
+const LOST_AFTER_SECONDS = 2.5;
+const SEARCH_AFTER_VIOLATION_SECONDS = 12;
+const REPATH_SECONDS = .25;
+const ESCORT_STALL_SECONDS = 2;
+const VIEW_DIRECTION: Record<Facing, Point> = {
+  down: { x: 0, y: 1 }, up: { x: 0, y: -1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 },
+};
+type Chase = {
+  pursuit: ClubPursuit; hall: string; player: PlayerBody; lastKnown: Point;
+  unseen: number; sighted: boolean; repath: number; pending: boolean; caught: boolean; escortStall: number;
+};
+type Job = { id: string; decision: SecurityDecision; chase?: Chase };
+type Enforcement = {
+  marked: (id: string) => ClubPursuit | undefined;
+  capture: (id: string, pursuit: ClubPursuit) => Promise<SecurityDecision | null>;
+};
 type Resume = {elapsed:number;phase:string;progress:number;facing:string;target:string;speech:string;reply:string;routine:string};
 type Duty = { guard: Guard; queue: Job[]; job?: Job; resume?:Resume; path: Point[]; elapsed: number; stops: Record<HallId, GuardStop[]>; remaining: number; transfer?: HallId; transferArrival?: ConnectedHallDoor; transferFrom?: HallId; visit?: GuardStop; duration: number; conversation: number; lastConversation: number };
 export class Guards {
   private duties: Duty[] = [];
   private touching=new Set<string>();
-  constructor(private state: LobbyState, private finish: (id: string, decision: SecurityDecision) => void, private random = Math.random, private onBump:(id:string)=>number=()=>1) {
+  constructor(private state: LobbyState, private finish: (id: string, decision: SecurityDecision) => void,
+    private random = Math.random, private onBump:(id:string)=>number=()=>1, private enforcement?: Enforcement) {
     const guard = new Guard();
     // The map key identifies the person, while hall changes only at a doorway.
     state.guards.set('security', guard);
@@ -28,6 +45,8 @@ export class Guards {
   contact(id:string) {
     const p=this.state.players.get(id),d=this.duties[0],g=d.guard;
     if(!p?.connected||p.security||p.hall!==g.hall||g.phase==='door'||this.touching.has(id)||Math.hypot(p.x-g.x,p.y-g.y)>GUARD_CONTACT_RADIUS+12)return;
+    if (d.job?.chase && d.job.id === id) return;
+    if (!guardLineClear(g, p, hallObstacles(g.hall))) return;
     this.touching.add(id);
     const count=this.onBump(id);
     if(count>=10||d.job)return;
@@ -82,6 +101,98 @@ export class Guards {
     p.security = decision.kind; p.moving = false;
     this.duties[0].queue.push({ id, decision });
   }
+  pursue(id: string, pursuit: ClubPursuit): boolean {
+    const p = this.state.players.get(id), d = this.duties[0];
+    if (!this.enforcement || !p?.connected || p.security || !isCasinoFloor(p.hall) || pursuit.until <= Date.now()
+      || d.job?.id === id || d.queue.some(job => job.id === id)) return false;
+    d.queue.push({
+      id, decision: { kind: 'ejecting', until: pursuit.until, reason: pursuit.reason },
+      chase: { pursuit, hall: p.hall, player: p, lastKnown: { x: p.x, y: p.y }, unseen: 0,
+        sighted: !pursuit.reason, repath: 0, pending: false, caught: false, escortStall: 0 },
+    });
+    return true;
+  }
+  cancelPursuit(id: string) {
+    const d = this.duties[0];
+    d.queue = d.queue.filter(job => job.id !== id || !job.chase);
+    if (d.job?.id === id && d.job.chase && !d.job.chase.pending && !d.job.chase.caught) this.release(d);
+  }
+  private release(d: Duty, unlock = true) {
+    const job = d.job;
+    const player = job && this.state.players.get(job.id);
+    if (unlock && player && job && (!job.chase || (job.chase.player === player && job.chase.pending))) player.security = '';
+    d.job = undefined;
+    d.transfer = undefined;
+    d.resume = undefined;
+    d.guard.target = '';
+    d.guard.speech = '';
+    this.route(d, GUARD_HOME);
+    this.phase(d, 'return');
+  }
+  private sees(guard: Guard, player: PlayerBody, facing: boolean): boolean {
+    const dx = player.x - guard.x, dy = player.y - guard.y, distance = Math.hypot(dx, dy);
+    if (distance > SIGHT_RANGE) return false;
+    const view = VIEW_DIRECTION[guard.facing as Facing];
+    if (facing && view && dx * view.x + dy * view.y < distance * .5) return false;
+    return guardLineClear(guard, player, hallObstacles(guard.hall));
+  }
+  private look(d: Duty) {
+    const g = d.guard;
+    if (!this.enforcement || !isCasinoFloor(g.hall) || ['bump', 'door', 'transit', 'enter'].includes(g.phase)) return;
+    for (const [id, player] of this.state.players) {
+      if (!player.connected || player.security || player.hall !== g.hall) continue;
+      const pursuit = this.enforcement.marked(id);
+      if (pursuit && this.sees(g, player, true) && this.pursue(id, pursuit)) return;
+    }
+  }
+  private validChase(job: Job, chase: Chase): boolean {
+    const player = chase.player;
+    return this.state.players.get(job.id) === player && player.connected && player.hall === chase.hall
+      && chase.pursuit.until > Date.now();
+  }
+  private contactReached(guard: Guard, player: PlayerBody): boolean {
+    return player.hall === guard.hall && Math.hypot(player.x - guard.x, player.y - guard.y) <= GUARD_CONTACT_RADIUS
+      && guardLineClear(guard, player, hallObstacles(guard.hall));
+  }
+  private tryCapture(d: Duty, job: Job, chase: Chase): boolean {
+    if (!this.contactReached(d.guard, chase.player)) return false;
+    chase.pending = true;
+    chase.player.security = 'ejecting';
+    chase.player.moving = false;
+    d.path = [];
+    void this.enforcement!.capture(job.id, chase.pursuit).then(decision => {
+      if (d.job !== job) return;
+      if (!decision || this.state.players.get(job.id) !== chase.player) { this.release(d); return; }
+      chase.pending = false;
+      chase.caught = true;
+      job.decision = decision;
+      d.guard.facing = movementFacing(chase.player.x - d.guard.x, chase.player.y - d.guard.y, d.guard.facing as Facing);
+      this.phase(d, 'grab');
+    }, () => { if (d.job === job) this.release(d); });
+    return true;
+  }
+  private follow(d: Duty, job: Job, chase: Chase, dt: number): boolean {
+    if (this.tryCapture(d, job, chase)) return false;
+    if (this.sees(d.guard, chase.player, false)) {
+      chase.lastKnown = { x: chase.player.x, y: chase.player.y };
+      chase.unseen = 0;
+      chase.sighted = true;
+    } else {
+      chase.unseen += dt;
+      const searching = !chase.sighted && Math.hypot(d.guard.x - chase.lastKnown.x, d.guard.y - chase.lastKnown.y) > GUARD_CONTACT_RADIUS;
+      const limit = searching ? SEARCH_AFTER_VIOLATION_SECONDS : LOST_AFTER_SECONDS;
+      if (chase.unseen >= limit) { this.release(d); return false; }
+    }
+    chase.repath -= dt;
+    if (chase.repath <= 0) {
+      const obstacles = hallObstacles(d.guard.hall);
+      const target = chase.lastKnown;
+      d.path = walkable(target.x, target.y, obstacles) && guardLineClear(d.guard, target, obstacles, 12)
+        ? [target] : guardPath(d.guard, target, obstacles);
+      chase.repath = REPATH_SECONDS;
+    }
+    return true;
+  }
   private phase(d: Duty, phase: string) { d.guard.phase = phase; d.guard.progress = 0; d.guard.reply = ''; d.elapsed = 0; }
   private route(d: Duty, goal: Point) {
     if(d.guard.hall==='street'&&(goal===GUARD_EXIT||goal===GUARD_HOME))goal=STREET.spawn;
@@ -133,6 +244,13 @@ export class Guards {
   }
   private approach(d: Duty) {
     const g=d.guard,p=this.state.players.get(d.job!.id)!;
+    const chase = d.job!.chase;
+    if (chase) {
+      this.phase(d, 'approach');
+      chase.repath = 0;
+      g.speech = '';
+      return;
+    }
     const obstacles = hallObstacles(g.hall);
     const candidates = [32,48,64,96].flatMap(radius => Array.from({length:16},(_,i)=>({x:p.x+Math.cos(i*Math.PI/8)*radius,y:p.y+Math.sin(i*Math.PI/8)*radius})));
     // A clear point can still snap into furniture on the navigation grid. Try every side.
@@ -170,10 +288,11 @@ export class Guards {
     for(const id of this.touching){const p=this.state.players.get(id),g=this.duties[0].guard;if(!p||p.hall!==g.hall||Math.hypot(p.x-g.x,p.y-g.y)>GUARD_CONTACT_RADIUS+10)this.touching.delete(id);}
     for (const d of this.duties) {
       const g = d.guard;
+      if (!d.job && !d.queue.length) this.look(d);
       if (!d.job && d.queue.length) {
         d.job = d.queue.shift()!;
         const p = this.state.players.get(d.job.id);
-        if (!p) { d.job = undefined; continue; }
+        if (!p || (d.job.chase && !this.validChase(d.job, d.job.chase))) { this.release(d); continue; }
         g.target = d.job.id;
         g.routine = ''; g.reply = '';
         d.resume=undefined;
@@ -183,10 +302,18 @@ export class Guards {
 
       }
       if (d.job && !this.state.players.has(d.job.id)) {
-        d.job = undefined; d.transfer=undefined; g.target = ''; g.speech = ''; this.route(d, GUARD_HOME); this.phase(d, 'return');
+        this.release(d);
+      }
+      const job = d.job, chase = job?.chase;
+      if (job && chase && !chase.caught) {
+        if (chase.pending) continue;
+        if (!this.validChase(job, chase)) { this.release(d); continue; }
+        if (g.phase === 'transit' && d.elapsed >= SEARCH_AFTER_VIOLATION_SECONDS) { this.release(d); continue; }
+        if (g.phase === 'approach' && !this.follow(d, job, chase, dt)) continue;
       }
       d.elapsed += dt;
       if (['approach', 'carry', 'return', 'patrol', 'transit', 'enter'].includes(g.phase)) {
+        const beforeX = g.x, beforeY = g.y;
         let distance = dt * (g.phase === 'carry' ? 150 : g.phase==='patrol'||g.phase==='return'||(['transit','enter'].includes(g.phase)&&!d.job)?85:220);
         while (distance > 0 && d.path.length) {
           const point = d.path[0], dx = point.x - g.x, dy = point.y - g.y, length = Math.hypot(dx, dy);
@@ -200,6 +327,14 @@ export class Guards {
         if (g.phase === 'carry' && d.job) {
           const p = this.state.players.get(d.job.id)!;
           p.x = g.x; p.y = g.y; p.facing = g.facing;
+          if (chase) {
+            chase.escortStall = g.x === beforeX && g.y === beforeY ? chase.escortStall + dt : 0;
+            if (chase.escortStall >= ESCORT_STALL_SECONDS) d.path = [];
+          }
+        }
+        if (g.phase === 'approach' && job && chase) {
+          this.tryCapture(d, job, chase);
+          continue;
         }
         if (!d.path.length) {
           if(g.phase==='transit') {
@@ -209,6 +344,7 @@ export class Guards {
             d.transfer=undefined;d.remaining=3;
             if(d.job){const player=this.state.players.get(d.job.id);if(player&&player.hall!==g.hall)this.transfer(d,player.hall as HallId);else this.approach(d);}else this.nextVisit(d);
           } else if (g.phase === 'approach') {
+            if (!this.contactReached(g, this.state.players.get(d.job!.id)!)) { this.release(d); continue; }
             g.facing = 'down'; this.phase(d, d.job!.decision.kind === 'warning' ? 'warn' : 'grab');
             g.speech = d.job!.decision.kind === 'warning' ? 'Первое предупреждение!\nЕщё раз в течение суток: выход на 10 минут.' : 'Пора проветриться.';
           } else if (g.phase === 'patrol') { this.settle(d); }
@@ -235,7 +371,7 @@ export class Guards {
             const p = this.state.players.get(job.id);
             if (p && job.decision.kind === 'warning') p.security = '';
             this.finish(job.id, job.decision);
-            d.job = undefined; g.target = ''; g.speech = ''; this.route(d, GUARD_HOME); this.phase(d, 'return');
+            this.release(d, false);
           }
         }
       } else if(g.phase==='idle'&&d.elapsed>=1.2)this.nextVisit(d);

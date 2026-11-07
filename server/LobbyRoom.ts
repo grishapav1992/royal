@@ -17,7 +17,7 @@ import { RoomChat, type ChatStamp } from './roomChat';
 import { filterChatLanguage } from '../src/shared/chatConduct';
 import { guardBumps } from './guardBumps';
 import { blockedByGuard } from '../src/shared/guardCollision';
-import type { ClubViolation, SecurityDecision } from '../src/shared/security';
+import type { ClubCaptureDecision, ClubPursuit, ClubSanction, ClubViolation, SecurityDecision } from '../src/shared/security';
 import { isChatLocation, type ChatResult, type ChatVisit } from '../src/shared/chat';
 import { randomUUID } from 'node:crypto';
 import { accounts, allowedOrigin, cookieToken, type Account } from './accounts';
@@ -35,11 +35,13 @@ import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLi
 import { canTravelByElevator, elevatorDock } from '../src/shared/elevator';
 import { intoxicatedMovement } from '../src/shared/intoxication';
 import type { DrinkingState } from './intoxicationStore';
+import { STREET } from '../src/shared/street';
 
 type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatRevision: number; inputs: MovementInputs; predicted: boolean; afterMovement?: () => void };
 const CHAT_REQUEST_ID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 type ProfileRevision = { name: number; skin: number; appearance: number };
-type Access = { active: boolean; banUntil: number; drinking: DrinkingState; revision: number; profileRevision: ProfileRevision; pendingDrink: boolean; pendingEject: boolean };
+type Access = { active: boolean; banUntil: number; drinking: DrinkingState; revision: number; profileRevision: ProfileRevision; pendingDrink: boolean; pendingEject: boolean;
+  sanction?: ClubSanction | null; capture?: ClubCaptureDecision; resumeHall?: string };
 const pendingDrinks = new Set<string>();
 const pendingChatDiscipline = new Set<string>();
 const CHAT_REJECTIONS = {
@@ -53,38 +55,86 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   state = new LobbyState();
   maxClients = ROOM_CAPACITY;
   maxMessagesPerSecond = 80;
-  private activities = new Activities(id => this.state.players.get(id), id => this.stop(id), (type,value,hall) => this.broadcastActivity(type,value,hall), (id,text) => this.clients.find(c=>c.sessionId===id)?.send('notice',text),undefined,{escrow:new CommonCombatWallet(accounts.combat,id=>accounts.financeAdmin.assertAllowed(id)),account:id=>this.playerAccounts.get(id),name:id=>this.state.players.get(id)?.name??'Игрок'});
+  private activities = new Activities(id => this.state.players.get(id), id => this.stop(id), (type,value,hall) => this.broadcastActivity(type,value,hall), (id,text) => this.clients.find(c=>c.sessionId===id)?.send('notice',text),undefined,{escrow:new CommonCombatWallet(accounts.combat,id=>accounts.financeAdmin.assertAllowed(id)),account:id=>this.playerAccounts.get(id),name:id=>this.state.players.get(id)?.name??'Игрок'},id=>!this.state.players.get(id)?.security&&this.wagerPresent(id));
   private pvp=new PvpRoom({roomId:()=>this.roomId,activities:this.activities,allowMoney:id=>accounts.financeAdmin.assertAllowed(id),
-    people:()=>[...this.state.players].flatMap(([sessionId,p])=>{const accountId=this.playerAccounts.get(sessionId);return accountId?[{sessionId,accountId,name:p.name,hall:p.hall,x:p.x,y:p.y,connected:p.connected,available:!p.playing&&!p.activity&&!p.seat&&p.action!=='drink'}]:[];}),
+    people:()=>[...this.state.players].flatMap(([sessionId,p])=>{
+      const accountId=this.playerAccounts.get(sessionId);
+      return accountId?[{sessionId,accountId,name:p.name,hall:p.hall,x:p.x,y:p.y,connected:this.wagerPresent(sessionId),
+        available:!p.security&&!p.playing&&!p.activity&&!p.seat&&p.action!=='drink'}]:[];
+    }),
     send:(id,type,value)=>this.clients.find(c=>c.sessionId===id)?.send(type,value)},virtualPvpCommand(accounts.pvp));
   private guards = new Guards(this.state, (id, decision) => {
-    if (decision.kind !== 'ejecting') return;
-    const client = this.clients.find(c => c.sessionId === id);
-    client?.send('ejected', { until: decision.until });
-    this.clock.setTimeout(() => client?.leave(4003), 200);
+    if (decision.kind === 'ejecting') this.finishEscort(id);
   },Math.random,id=>{
     const client=this.clients.find(c=>c.sessionId===id);if(!client)return 0;
     const account=(client.auth as RoomAuth).account.id,count=guardBumps.record(account);
     if(count>=10)void this.ejectForCollision(client);
     return count;
+  }, {
+    marked: id => {
+      const sanction = this.access.get(id)?.sanction;
+      if (sanction && sanction.until > Date.now()) return { id: randomUUID(), sanctionId: sanction.id, until: sanction.until };
+    },
+    capture: (id, pursuit) => this.confirmCapture(id, pursuit),
   });
-  private dispatchViolation(client: Client, player: Player, until: number, reason: ClubViolation) {
+  private dispatchViolation(client: Client, player: Player, pursuit: ClubPursuit, reason: ClubViolation) {
     const access = this.access.get(client.sessionId);
     if (!access?.active || player.security || !isChatLocation(player.hall)) return;
-    chatQueue.cancel((client.auth as RoomAuth).account.id);
-    access.revision++; access.banUntil = until;
-    const control = this.controls.get(client.sessionId); if (control) control.chatRevision++;
-    this.activities.leave(client.sessionId); this.releaseCabinet(client.sessionId); this.stop(client.sessionId);
-    this.stand(client.sessionId); player.playing = false;
-    const decision: SecurityDecision = { kind: 'ejecting', until, reason };
-    this.guards.enqueue(client.sessionId, decision);
-    client.send('security', decision);
+    if (!this.guards.pursue(client.sessionId, pursuit)) return;
     const announcement = reason === 'collision' ? ', десять толчков охранника. Охрана на подходе.'
       : reason === 'profanity' ? ', слишком много грубых слов в чате. Охрана на подходе.'
       : ', спам в чате. Охрана на подходе.';
     this.publish(this.roomChat.stamp(player.hall), {
       id: randomUUID(), senderId: 'security', name: 'ОХРАНА', time: Date.now(), text: player.name + announcement,
     });
+  }
+  private async confirmCapture(id: string, pursuit: ClubPursuit): Promise<SecurityDecision | null> {
+    const client = this.clients.find(c => c.sessionId === id);
+    const access = this.access.get(id), player = this.state.players.get(id);
+    if (!client || !access?.active || !player?.connected) return null;
+    const accountId = (client.auth as RoomAuth).account.id;
+    const { outcome, replayed } = await accounts.clubSanctions.recordCapture(accountId, { sanctionId: pursuit.sanctionId, pursuitId: pursuit.id });
+    if (this.disposed || this.state.players.get(id) !== player || this.access.get(id) !== access) return null;
+    if (!outcome) {
+      if (access.sanction?.id === pursuit.sanctionId) { access.revision++; access.sanction = null; }
+      return null;
+    }
+    if (replayed) return null;
+    access.revision++;
+    access.sanction = outcome.sanction;
+    const decision: ClubCaptureDecision = { kind: 'ejecting', until: outcome.sanction.until, reason: pursuit.reason, pursuitId: pursuit.id };
+    access.capture = decision;
+    if (this.hasRecoverableActivity(id)) access.resumeHall = player.hall;
+    this.pvp.dropped(id);
+    const position = { x: player.x, y: player.y, facing: player.facing };
+    const control = this.controls.get(id); if (control) control.chatRevision++;
+    this.cancelChat(client);
+    if (player.connected) this.activities.disconnect(id);
+    this.cat.handle(id, 'release');
+    this.releaseCabinet(id);
+    player.activity = '';
+    this.stand(id);
+    this.stop(id);
+    Object.assign(player, position, { playing: false });
+    if (player.connected) this.clients.find(c => c.sessionId === id)?.send('club-capture', decision);
+    return decision;
+  }
+  private hasRecoverableActivity(id: string): boolean {
+    return this.pvp.locked(id) || this.pvp.pending(id) || this.activities.combat?.state.players.includes(id) === true;
+  }
+  private wagerPresent(id: string): boolean {
+    const player = this.state.players.get(id), access = this.access.get(id);
+    return !!player?.connected && !access?.capture && !(access?.resumeHall && this.hasRecoverableActivity(id));
+  }
+  private finishEscort(id: string) {
+    const player = this.state.players.get(id);
+    if (!player) return;
+    this.stop(id);
+    Object.assign(player, STREET.spawn, { hall: 'street', facing: 'down', stairStep: 0, stairDirection: 1, security: '' });
+    player.hallRevision++;
+    this.updateChatVisit(id, player.hall);
+    const capture = this.access.get(id)?.capture;
+    if (player.connected && capture) this.clients.find(c => c.sessionId === id)?.send('club-ejected', { pursuitId: capture.pursuitId });
   }
   private controls = new Map<string, Control>();
   private chatResults = new Map<Control, Map<string, ChatResult>>();
@@ -472,13 +522,14 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.access.set(client.sessionId, access);
     try {
       const revision = access.revision, profileRevision = { ...access.profileRevision };
-      const [active, until, drinking, profile] = await Promise.all([
+      const [active, until, drinking, profile, sanction] = await Promise.all([
         accounts.active(auth.hash), accounts.moderation.banUntil(auth.account.id), accounts.drinking.read(auth.account.id), accounts.currentAccount(auth.account.id),
+        accounts.clubSanctions.active(auth.account.id),
       ]);
       if (this.disposed || this.access.get(client.sessionId) !== access || !active || !access.active) throw new ServerError(401, 'Войди в аккаунт ещё раз.');
       access.banUntil = Math.max(until, access.banUntil);
       if (access.banUntil > Date.now()) throw new ServerError(403, 'Вход временно закрыт охраной.');
-      if (revision === access.revision) access.drinking = drinking;
+      if (revision === access.revision) { access.drinking = drinking; access.sanction = sanction; }
       this.applyProfile(auth, access, profile, profileRevision);
       if (auth.account.skin === null) throw new ServerError(401, 'Выбери персонажа и войди в зал ещё раз.');
       const others = this.clients.filter(other => other !== client && (other.auth as RoomAuth)?.account.id === auth.account.id);
@@ -509,6 +560,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.stop(client.sessionId);
     const control = this.controls.get(client.sessionId); if (control) control.chatRevision++;
     const p = this.state.players.get(client.sessionId); if (p) p.connected = false;
+    this.guards.cancelPursuit(client.sessionId);
     this.pvp.dropped(client.sessionId);
     if (!p || !this.accessAllowed(client)) return;
     // Refused joins, expired reservations and shutdown must not reject outside the room lifecycle.
@@ -530,17 +582,23 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     const auth = client.auth as RoomAuth;
     try {
       const revision = access.revision, profileRevision = { ...access.profileRevision };
-      const [active, until, drinking, profile] = await Promise.all([
+      const [active, until, drinking, profile, sanction] = await Promise.all([
         accounts.active(auth.hash), accounts.moderation.banUntil(auth.account.id), accounts.drinking.read(auth.account.id), accounts.currentAccount(auth.account.id),
+        accounts.clubSanctions.active(auth.account.id),
       ]);
       if (this.disposed || this.access.get(client.sessionId) !== access || this.state.players.get(client.sessionId) !== p || !active || !access.active) { client.leave(4001); return; }
       access.banUntil = Math.max(until, access.banUntil);
       if (access.banUntil > Date.now()) { client.leave(4003); return; }
-      if (revision === access.revision) { access.drinking = drinking; p.soberAt = drinking.soberAt; }
+      if (revision === access.revision) { access.drinking = drinking; p.soberAt = drinking.soberAt; access.sanction = sanction; }
       this.applyProfile(auth, access, profile, profileRevision);
       if (auth.account.skin === null) { client.leave(4001); return; }
       p.name = auth.account.name; p.skin = auth.account.skin; p.appearance = serializeAppearance(auth.account.appearance);
-      p.connected = true;this.activities.reconnect(client.sessionId);
+      p.connected = true;
+      if (!access.resumeHall) this.activities.reconnect(client.sessionId);
+      if (access.capture) {
+        client.send('club-capture', access.capture);
+        if (p.hall === 'street' && !p.security) client.send('club-ejected', { pursuitId: access.capture.pursuitId });
+      }
       console.info(JSON.stringify({ event: 'lobby-connection', phase: 'reconnected', uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));
       const control = this.controls.get(client.sessionId);
       if (control) for (const result of this.chatResults.get(control)?.values() ?? []) if (result.status !== 'queued') client.send('chat-result', result);
@@ -558,6 +616,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.bartender.forget(client.sessionId);
     console.info(JSON.stringify({ event: 'lobby-connection', phase: 'left', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));
     this.cancelChat(client);
+    this.guards.cancelPursuit(client.sessionId);
     const chatControl = this.controls.get(client.sessionId);
     if (chatControl) this.chatResults.delete(chatControl);
     this.activities.leave(client.sessionId);
@@ -572,13 +631,13 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     const control = this.controls.get(client.sessionId), account = (client.auth as RoomAuth)?.account.id;
     if (control && account) chatQueue.cancel(account, control);
   }
-  private accessAllowed(client: Client, allowPendingEject = false) {
+  private accessAllowed(client: Client) {
     const access = this.access.get(client.sessionId);
-    return !!access?.active && access.banUntil <= Date.now() && (allowPendingEject || !access.pendingEject);
+    return !!access?.active && access.banUntil <= Date.now();
   }
-  private currentAction(client: Client, player: Player, control: Control, chatRevision: number, hallRevision: number, allowPendingEject = false) {
+  private currentAction(client: Client, player: Player, control: Control, chatRevision: number, hallRevision: number) {
     return !this.disposed && this.state.players.get(client.sessionId) === player && this.controls.get(client.sessionId) === control
-      && control.chatRevision === chatRevision && player.hallRevision === hallRevision && player.connected && !player.security && this.accessAllowed(client, allowPendingEject);
+      && control.chatRevision === chatRevision && player.hallRevision === hallRevision && player.connected && !player.security && this.accessAllowed(client);
   }
   private canDrink(player: Player, id: unknown) {
     return player.hall === 'arcade' && atBar(player) && !player.playing && player.action !== 'drink' && DRINKS.some(drink => drink.id === id);
@@ -589,17 +648,23 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       && player.connected && this.state.players.get(client.sessionId) === player && this.roomChat.visit(client.sessionId) === visit;
     const pursuitId = currentGamingVisit() ? randomUUID() : undefined;
     const { outcome, replayed } = await accounts.clubSanctions.recordViolation(accountId, { id, reason, pursuitId });
-    if (!replayed && pursuitId && currentGamingVisit()) this.dispatchViolation(client, player, outcome.sanction.until, reason);
+    const access = this.access.get(client.sessionId);
+    if (replayed || !access || this.state.players.get(client.sessionId) !== player) return;
+    access.revision++;
+    access.sanction = outcome.sanction;
+    if (pursuitId && currentGamingVisit()) {
+      this.dispatchViolation(client, player, { id: pursuitId, sanctionId: outcome.sanction.id, until: outcome.sanction.until, reason }, reason);
+    }
   }
   private async ejectForCollision(client: Client) {
     const player = this.state.players.get(client.sessionId), control = this.controls.get(client.sessionId), access = this.access.get(client.sessionId);
     if (!player || !control || !access || access.pendingEject || !this.accessAllowed(client)) return;
     const chatRevision = control.chatRevision, hallRevision = player.hallRevision;
-    access.pendingEject = true; this.stop(client.sessionId);
+    access.pendingEject = true;
     try {
       const active = await accounts.active((client.auth as RoomAuth).hash);
       if (!active) { this.logoutListener((client.auth as RoomAuth).hash); return; }
-      if (!this.currentAction(client, player, control, chatRevision, hallRevision, true)) return;
+      if (!this.currentAction(client, player, control, chatRevision, hallRevision)) return;
       await this.recordClubViolation(client, player, this.roomChat.visit(client.sessionId), 'collision', randomUUID());
     } catch { if (this.state.players.get(client.sessionId) === player) client.send('notice', 'Не удалось подтвердить действие. Попробуй ещё раз.'); }
     finally { access.pendingEject = false; }
@@ -612,9 +677,10 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
         const access = this.access.get(client.sessionId), player = this.state.players.get(client.sessionId);
         if (!access || !player) return;
         const revision = access.revision, auth = client.auth as RoomAuth;
-        const [active, until, drinking] = await Promise.all([accounts.active(auth.hash), accounts.moderation.banUntil(auth.account.id), accounts.drinking.read(auth.account.id)]);
+        const [active, until, drinking, sanction] = await Promise.all([accounts.active(auth.hash), accounts.moderation.banUntil(auth.account.id),
+          accounts.drinking.read(auth.account.id), accounts.clubSanctions.active(auth.account.id)]);
         if (this.disposed || this.access.get(client.sessionId) !== access || this.state.players.get(client.sessionId) !== player || access.revision !== revision) return;
-        access.active = active; access.banUntil = until; access.drinking = drinking; player.soberAt = drinking.soberAt;
+        access.active = active; access.banUntil = until; access.drinking = drinking; access.sanction = sanction; player.soberAt = drinking.soberAt;
         if (!active || until > Date.now()) { player.connected = false; this.releaseCabinet(client.sessionId); this.stop(client.sessionId); client.leave(active ? 4003 : 4001); }
       }));
     } finally { this.refreshingAccess = false; }
@@ -622,7 +688,21 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   private updateChatVisit(sessionId: string, hall: string) {
     const previous = this.roomChat.visit(sessionId);
     const current = this.roomChat.enter(sessionId, hall);
-    if (previous !== current) this.clients.find(client => client.sessionId === sessionId)?.send('chat-visit', current ?? null);
+    if (previous !== current) {
+      this.guards.cancelPursuit(sessionId);
+      this.clients.find(client => client.sessionId === sessionId)?.send('chat-visit', current ?? null);
+    }
+    const access = this.access.get(sessionId), player = this.state.players.get(sessionId);
+    if (!access || !player || player.security) return;
+    if (hall !== 'street') access.capture = undefined;
+    if (access.resumeHall && (access.resumeHall === hall || !this.hasRecoverableActivity(sessionId))) {
+      access.resumeHall = undefined;
+      if (this.activities.combat?.state.players.includes(sessionId)) {
+        player.activity = 'mortal-kombat'; player.playing = true;
+        this.activities.reconnect(sessionId);
+      }
+      this.pvp.tick();
+    }
   }
   private system(hall: string, text: string) {
     if (isChatLocation(hall)) this.publish(this.roomChat.stamp(hall), { id: randomUUID(), senderId: '', name: '', text, time: Date.now(), system: true });

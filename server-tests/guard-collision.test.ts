@@ -54,9 +54,10 @@ test('bump streaks are per account, reset after a quiet period and restart after
 
 test('guard-initiated contact pushes an idle guest without a strike and never through furniture',()=>{
  const state=new LobbyState();let bumps=0;const guards=new Guards(state,()=>{},()=>.3,()=>++bumps),g=state.guards.get('security')!;
- const p=new Player();p.x=625;p.y=635;state.players.set('a',p);
+ const start={x:545,y:625};
+ const p=new Player();Object.assign(p,start);state.players.set('a',p);
  for(let i=0;i<120;i++){guards.tick(.05);assert(walkable(p.x,p.y,hallObstacles(p.hall)));assert(Math.hypot(g.x-p.x,g.y-p.y)>=GUARD_CONTACT_RADIUS-.001);}
- assert.equal(bumps,0);assert.equal(p.security,'');assert(p.x!==625||p.y!==635);
+ assert.equal(bumps,0);assert.equal(p.security,'');assert(p.x!==start.x||p.y!==start.y);
 });
 
 test('physical harassment ban needs no chat strike and is enforced by the account store',async()=>{

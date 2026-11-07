@@ -1,6 +1,6 @@
 import { translateMessage as translateText } from '../i18n/index';
 import type { CatView } from '../shared/cat';
-import type { GuardView, SecurityDecision } from '../shared/security';
+import type { ClubCaptureDecision, GuardView, SecurityDecision } from '../shared/security';
 import type { MiraView } from '../shared/miraRoutine';
 import type { AmbientGuestView } from '../shared/ambientGuests';
 import { Client, ErrorCode, type Room } from '@colyseus/sdk';
@@ -35,6 +35,7 @@ export class LobbyClient {
   private pendingElevator?: { target: HallId; requestId: number; revision?: number; finish: (accepted: boolean) => void; timer: ReturnType<typeof setTimeout> };
   private releaseCabinetWhenConnected = false;
   private pendingCabinet?: { id: string; requestId: number; finish: (accepted: boolean) => void; timer: ReturnType<typeof setTimeout> };
+  private capture?: { session: string; pursuitId: string; escorted: boolean };
   status: ConnectionStatus = 'disconnected';
   constructor(private events: {
     npcTime: (simulationAt: number, guestsAt: number) => void;
@@ -44,6 +45,8 @@ export class LobbyClient {
     mira: (mira: MiraView) => void;
     security: (decision: SecurityDecision) => void;
     ejected: (until: number) => void;
+    clubCapture?: (decision: ClubCaptureDecision) => void;
+    clubEjected?: () => void;
     status: (status: ConnectionStatus) => void;
     joined: (roomId: string, sessionId: string, recovering?: boolean) => void;
     players: (players: PlayerView[], selfId: string) => void;
@@ -117,8 +120,23 @@ export class LobbyClient {
       configureReconnection(room.reconnection);
       let banUntil = 0;
       let denied = false;
+      const captureSession = room.roomId + ':' + room.sessionId;
+      if (this.capture?.session !== captureSession) this.capture = undefined;
       onMessage('security', (decision: SecurityDecision) => { if(decision.kind === 'ejecting') banUntil = decision.until; this.events.security(decision); });
       onMessage('ejected', (value: {until: number}) => { banUntil = value.until; this.events.ejected(value.until); });
+      onMessage('club-capture', (decision: ClubCaptureDecision) => {
+        if (this.capture?.pursuitId === decision.pursuitId) return;
+        this.capture = { session: captureSession, pursuitId: decision.pursuitId, escorted: false };
+        this.finishElevator(false);
+        this.finishPlayerRecovery(false);
+        this.cancelCabinetAdmission();
+        this.events.clubCapture?.(decision);
+      });
+      onMessage('club-ejected', (event: { pursuitId: string }) => {
+        if (!this.capture || event.pursuitId !== this.capture.pursuitId || this.capture.escorted) return;
+        this.capture.escorted = true;
+        this.events.clubEjected?.();
+      });
       // Older servers can still emit this packet during a host update.
       onMessage('chat-check', () => {});
       onMessage('chat-result', (result: ChatResult) => {
@@ -256,8 +274,7 @@ export class LobbyClient {
     if (status !== 'connected') this.finishPlayerRecovery(false);
     if (status !== 'connected' && this.pendingCabinet) {
       this.releaseCabinetWhenConnected = true;
-      const pending = this.pendingCabinet; this.pendingCabinet = undefined;
-      clearTimeout(pending.timer); pending.finish(false);
+      this.cancelCabinetAdmission();
     }
     if (status === 'connected' && this.releaseCabinetWhenConnected) this.releaseCabinet();
     this.events.status(status);
@@ -265,6 +282,13 @@ export class LobbyClient {
   releaseCabinet() {
     this.releaseCabinetWhenConnected = this.status !== 'connected';
     if (!this.releaseCabinetWhenConnected) this.room?.send('playing', false);
+  }
+  private cancelCabinetAdmission() {
+    const pending = this.pendingCabinet;
+    if (!pending) return;
+    this.pendingCabinet = undefined;
+    clearTimeout(pending.timer);
+    pending.finish(false);
   }
   private finishPlayerRecovery(accepted: boolean) {
     const pending = this.pendingPlayerRecovery;
@@ -328,6 +352,7 @@ export class LobbyClient {
   getState() { return { status: this.status, roomId: this.room?.roomId, selfId: this.room?.sessionId, lastCloseCode: this.lastCloseCode, recoveryAttempts: this.recoveryAttempts }; }
   leave() {
     this.generation++;
+    this.capture = undefined;
     this.joining = undefined;
     this.recovery = undefined;
     if (this.recoveryWait) { clearTimeout(this.recoveryWait.timer); this.recoveryWait.cancel(); }

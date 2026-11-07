@@ -27,6 +27,7 @@ function fixture(context: TestContext, options: { suffix?: string; account?: str
   context.mock.method(room, 'allowReconnection', async () => undefined as any);
   context.mock.method(accounts, 'currentAccount', async () => client.auth.account);
   context.mock.method(accounts.moderation, 'banUntil', async () => 0);
+  context.mock.method(accounts.clubSanctions, 'active', async () => null);
   context.mock.method(accounts.drinking, 'read', async () => ({ soberAt: 0, lastDrink: '', lastDrinkAt: 0 }));
   const sanction = () => ({
     outcome: { opened: true, sanction: { id: randomUUID(), until: Date.now() + 20 * 60_000, amountCents: 1000, revision: 1 } },
@@ -37,7 +38,7 @@ function fixture(context: TestContext, options: { suffix?: string; account?: str
   ) => sanction());
   const checks: SessionCheck[] = options.checks ?? [];
   const active = context.mock.method(accounts, 'active', (hash: string) => new Promise<boolean>((resolve, reject) => checks.push({ hash, resolve, reject })));
-  room.onCreate(); room.state.guards.clear(); room.clients.push(client);
+  room.onCreate(); room.clients.push(client);
   const player = new Player(); player.name = 'Игрок'; room.state.players.set(id, player);
   (room as any).controls.set(id, { dx: 0, dy: 0, at: 0, path: [], lastTarget: 0, chatRevision: 0, inputs: new MovementInputs(), predicted: false });
   (room as any).access.set(id, { active: true, banUntil: 0, pendingEject: false, revision: 0, profileRevision: { name: 0, skin: 0, appearance: 0 }, drinking: { soberAt: 0, lastDrink: '', lastDrinkAt: 0 } });
@@ -139,8 +140,9 @@ test('an insult after nine profane words ejects once across rooms without counti
   await b.send(last);
   assert.equal(b.record.mock.callCount(), 1);
   assert.equal(b.record.mock.calls[0].arguments[1].reason, 'profanity');
-  assert(b.packets.some(packet => packet.type === 'security' && packet.value.kind === 'ejecting' && packet.value.reason === 'profanity'));
-  assert.equal(a.packets.some(packet => packet.type === 'security'), false);
+  assert(b.published.some(message => message.senderId === 'security' && message.text.includes('грубых слов')));
+  assert.equal(a.published.some(message => message.senderId === 'security'), false);
+  assert.equal(b.player.security, '');
   assert(b.packets.some(packet => packet.type === 'chat-result' && packet.value.id === last.id && packet.value.status === 'rejected'));
   assert.equal(b.published.some(message => message.requestId === last.id), false);
 });
@@ -182,12 +184,13 @@ test('the first confirmed spam episode records one sanction and immediately disp
   checks[0].resolve(true);
   commit();
   await Promise.all([first, ...rest]);
-  assert(packets.some(packet => packet.type === 'security' && packet.value.kind === 'ejecting' && packet.value.reason === 'spam'));
+  assert(published.some(message => message.senderId === 'security' && message.text.includes('спам')));
+  assert.equal(packets.some(packet => packet.type === 'club-capture'), false);
   assert.equal(published.filter(message => message.senderId !== 'security').length, 0);
 });
 
 test('a delayed toilet violation records the mark without dispatching a guard after a floor change', async context => {
-  const { send, move, checks, packets, record, flush } = fixture(context);
+  const { send, move, checks, published, record, flush } = fixture(context);
   move('toilet');
   const message = send({ id: randomUUID(), text: 'fuck shit Scheiße putain coño cazzo kurwa caralho klootzak idiot' });
   await flush();
@@ -195,11 +198,11 @@ test('a delayed toilet violation records the mark without dispatching a guard af
   checks[0].resolve(true); await message;
   assert.equal(record.mock.callCount(), 1);
   assert.deepEqual(record.mock.calls[0].arguments[1].pursuitId, undefined);
-  assert.equal(packets.some(packet => packet.type === 'security'), false);
+  assert.equal(published.some(message => message.senderId === 'security'), false);
 });
 
 test('a persisted violation cannot dispatch its old pursuit after the player escapes and reenters', async context => {
-  const { send, move, checks, packets, record, sanction, flush } = fixture(context);
+  const { send, move, checks, published, record, sanction, flush } = fixture(context);
   let commit!: () => void;
   record.mock.mockImplementation(() => new Promise(resolve => { commit = () => resolve(sanction()); }));
   const message = send({ id: randomUUID(), text: 'fuck shit Scheiße putain coño cazzo kurwa caralho klootzak idiot' });
@@ -210,16 +213,44 @@ test('a persisted violation cannot dispatch its old pursuit after the player esc
   move('github');
   commit();
   await message;
-  assert.equal(packets.some(packet => packet.type === 'security'), false);
+  assert.equal(published.some(message => message.senderId === 'security'), false);
 });
 
 test('the collision threshold uses the same account sanction store', async context => {
-  const { room, client, checks, packets, record, flush } = fixture(context);
+  const { room, client, checks, published, record, flush } = fixture(context);
   const pending = (room as any).ejectForCollision(client);
   await flush(); checks[0].resolve(true); await pending;
   assert.equal(record.mock.callCount(), 1);
   assert.equal(record.mock.calls[0].arguments[1].reason, 'collision');
-  assert(packets.some(packet => packet.type === 'security' && packet.value.kind === 'ejecting' && packet.value.reason === 'collision'));
+  assert(published.some(message => message.senderId === 'security' && message.text.includes('толчков')));
+});
+
+test('a confirmed physical capture places a dropped session on the street and reconnect replays the escort', async context => {
+  const { room, client, player, send, checks, packets, sanction, record, active, flush } = fixture(context);
+  const saved = sanction();
+  record.mock.mockImplementation(async () => saved);
+  let commit!: () => void;
+  const capture = context.mock.method(accounts.clubSanctions, 'recordCapture', () => new Promise(resolve => {
+    commit = () => resolve({ outcome: { sanction: saved.outcome.sanction, kind: 'initial' }, replayed: false });
+  }));
+  const guard = room.state.guards.get('security')!;
+  guard.x = player.x + 30; guard.y = player.y;
+  const violation = send({ id: randomUUID(), text: 'fuck shit Scheiße putain coño cazzo kurwa caralho klootzak idiot' });
+  await flush(); checks[0].resolve(true); await violation;
+  assert.equal(player.security, '');
+  (room as any).guards.tick(.05);
+  assert.equal(player.security, 'ejecting');
+  assert.equal(capture.mock.callCount(), 1);
+  assert.equal(capture.mock.calls[0].arguments[1].pursuitId, record.mock.calls[0].arguments[1].pursuitId);
+  room.onDrop(client);
+  commit(); await flush();
+  for (let i = 0; i < 300 && player.hall !== 'street'; i++) (room as any).guards.tick(.05);
+  assert.equal(player.hall, 'street');
+  assert.equal(player.security, '');
+  assert.equal(packets.some(packet => packet.type === 'club-ejected'), false);
+  active.mock.mockImplementation(async () => true);
+  await room.onReconnect(client);
+  assert.deepEqual(packets.filter(packet => packet.type.startsWith('club-')).map(packet => packet.type), ['club-capture', 'club-ejected']);
 });
 
 test('cross-room retries while delivery is pending return the outcome without counting as repeated spam', async context => {

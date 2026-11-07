@@ -4,11 +4,11 @@ import {Activities} from '../server/activities';
 import {ACTIVITIES,CHESS_TIME_MS,mergeActivities,mergePianoNote,type ActivitiesMessage,type ActivitiesState,type ActivitiesUpdate} from '../src/shared/activities';
 import {activityHall,type HallId} from '../src/shared/world';
 
-function setup(){
+function setup(wagerPresent?: (id: string) => boolean){
   const people=new Map<string,{hall:HallId;x:number;y:number;playing:boolean;connected:boolean;activity:string;ears:boolean;seat:string;action:string;facing:string;moving:boolean}>();
   let now=0;
   const events:{type:string;value:any;hall:HallId}[]=[];
-  const service=new Activities(id=>people.get(id),()=>{},(type,value,hall)=>events.push({type,value:structuredClone(value),hall}),()=>{},()=>now);
+  const service=new Activities(id=>people.get(id),()=>{},(type,value,hall)=>events.push({type,value:structuredClone(value),hall}),()=>{},()=>now,undefined,wagerPresent);
   const join=(id:string,activity:keyof typeof ACTIVITIES)=>{
     people.set(id,{hall:activityHall(activity),...ACTIVITIES[activity].entry,playing:false,connected:true,activity:'',ears:false,seat:'',action:'idle',facing:'down',moving:false});
     service.handle(id,{type:'join',id:activity});
@@ -65,6 +65,70 @@ test('hockey and pool have independent rates and patches reconstruct the authori
   events.length=0;tick(13);const poolPackets=updates().filter(e=>e.value.tables?.some((t:any)=>t.id==='pool'));
   assert.equal(poolPackets.at(-1)?.value.tables.find((t:any)=>t.id==='pool').moving,false);
   events.length=0;tick(2);assert.equal(updates().filter(e=>e.value.tables?.some((t:any)=>t.id==='pool')).length,0);
+});
+
+test('funded tables freeze physics and ignore inputs while a participant is unavailable', () => {
+  const unavailable = new Set<string>();
+  const { service, join, tick } = setup(id => !unavailable.has(id));
+  join('h1', 'hockey'); join('h2', 'hockey'); join('p1', 'pool'); join('p2', 'pool');
+  service.startWager('hockey', ['h1', 'h2']);
+  service.startWager('pool', ['p1', 'p2']);
+
+  unavailable.add('h2'); unavailable.add('p2');
+  const before = structuredClone(service.snapshot().tables);
+  service.handle('h1', { type: 'paddle', x: 200, y: 120 });
+  service.handle('p1', { type: 'shot', angle: 0, power: 850 });
+  tick(2);
+  assert.deepEqual(service.snapshot().tables, before);
+
+  unavailable.clear();
+  tick(.25);
+  assert.deepEqual(service.tables[0].state.paddles, before[0].paddles);
+  assert.equal(service.tables[1].state.moving, false);
+  service.handle('h1', { type: 'paddle', x: 200, y: 120 });
+  service.handle('p1', { type: 'shot', angle: 0, power: 850 });
+  tick(.25);
+  assert.notDeepEqual(service.tables[0].state.paddles, before[0].paddles);
+  assert.equal(service.tables[1].state.moving, true);
+
+  unavailable.add('p2');
+  const inFlight = structuredClone(service.tables[1].state);
+  tick(2);
+  assert.deepEqual(service.tables[1].state, inFlight);
+  unavailable.delete('p2');
+  tick(1 / 60);
+  assert.notDeepEqual(service.tables[1].state.balls, inFlight.balls);
+});
+
+test('funded chess pauses clocks and rejects moves and resignations until both participants return', () => {
+  const unavailable = new Set<string>();
+  const { service, events, join, tick, updates } = setup(id => !unavailable.has(id));
+  join('a', 'chess'); join('b', 'chess');
+  service.startWager('chess', ['a', 'b']);
+  tick(.25);
+
+  unavailable.add('b');
+  const remaining = [...service.chess.state.clock.remainingMs];
+  events.length = 0;
+  tick(1 / 60);
+  assert.equal(updates().at(-1)?.value.chess.clock.running, null);
+  service.handle('a', { type: 'chess-move', from: 'e2', to: 'e4' });
+  service.handle('a', { type: 'chess-resign' });
+  tick(3);
+  assert.equal(service.chess.state.phase, 'playing');
+  assert.equal(service.chess.state.last, null);
+  assert.deepEqual(service.chess.state.clock, { remainingMs: remaining, running: null });
+
+  unavailable.delete('b');
+  events.length = 0;
+  tick(1 / 60);
+  assert.equal(updates().at(-1)?.value.chess.clock.running, 'w');
+  assert.deepEqual(service.chess.state.clock, { remainingMs: remaining, running: 'w' });
+  service.handle('a', { type: 'chess-move', from: 'e2', to: 'e4' });
+  tick(.25);
+  assert.deepEqual(service.chess.state.last, { from: 'e2', to: 'e4' });
+  assert(service.chess.state.clock.remainingMs[1] < CHESS_TIME_MS);
+  assert.equal(service.chess.state.clock.remainingMs[0], remaining[0]);
 });
 
 test('a hockey match finishing between send intervals publishes the goal and final result',()=>{
