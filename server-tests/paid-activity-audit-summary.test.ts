@@ -17,6 +17,7 @@ import type { CryptoProvider } from '../server/crypto/nowpayments';
 import { CryptoStore } from '../server/crypto/store';
 import { databaseConfig, identifier, PostgresDatabase } from '../server/database';
 import { DemoWalletStore } from '../server/demoWallet';
+import { recordDemoUnits } from '../server/demoWalletAmounts';
 import { FlagToteStore } from '../server/flagTote';
 import { PaymentCredits } from '../server/payments/credits';
 import { releaseProviderPending, saveProviderPendingUnits } from '../server/providerPending';
@@ -193,6 +194,10 @@ test('period summary reports exact scoped totals, confirmations, refunds and sin
     assert.deepEqual([get(result, 'totalizator', 'payout').posting_count, get(result, 'totalizator', 'payout').amount_units], ['2', '380']);
     assert.deepEqual([get(result, 'totalizator', 'fee').posting_count, get(result, 'totalizator', 'fee').fee_units], ['0', '20']);
     assert.equal(get(result, 'pvp', 'fee').amount_units, null);
+    for (const [category, modeId] of [['pvp', 'stake'], ['totalizator', 'pool']]) {
+      const mode = await f.run({ fromMs: f.fromMs, toMs: f.toMs, modeId });
+      assert.deepEqual(mode.rows, result.rows.filter(row => row.category === category));
+    }
 
     const firstAt = f.poolCredits[0].created_at, secondAt = f.poolCredits[1].created_at;
     const first = await f.run({ fromMs: firstAt, toMs: secondAt, category: 'totalizator' });
@@ -206,6 +211,30 @@ test('period summary reports exact scoped totals, confirmations, refunds and sin
     assert.equal(get(account, 'pvp', 'payout').amount_units, '190');
     assert.equal(get(account, 'pvp', 'refund').amount_units, '100');
     assert.equal(get(account, 'pvp', 'fee'), undefined);
+  });
+
+  await t.test('unverified PvP postings and pool bets retain legacy paid-option classification', async t => {
+    const linkedSession = async (accountId: string, operationId: string, source: string, at: number) => {
+      const sessionId = randomUUID();
+      await f.game.prepare(`INSERT INTO demo_casino_sessions(account_id,id,game_id,state,payload,reserved_units)
+        VALUES (?,?,?,'settled','{}',0)`).run(accountId, sessionId, source);
+      await f.game.prepare(`INSERT INTO demo_casino_requests(account_id,id,request_key,session_id,created_at)
+        VALUES (?,?,'legacy',?,?)`).run(accountId, operationId, sessionId, at);
+    };
+    const at = f.toMs + 60, orphan = 'pvp:' + randomUUID() + ':hold';
+    await atLedgerTime(t, () => at, () => recordDemoUnits(f.game, f.a, orphan, 'bet', -100, 9900, 'pvp:chess'));
+    await linkedSession(f.a, orphan, 'pvp:chess', at);
+    const pvp = await f.run({ fromMs: at, toMs: at + 1, category: 'pvp' });
+    assert.deepEqual([get(pvp, 'pvp', 'paid-option').posting_count, get(pvp, 'pvp', 'paid-option').amount_units], ['1', '-100']);
+
+    const ticket = await f.game.prepare(`SELECT operation_id,created_at,amount_units::text FROM demo_ledger
+      WHERE account_id=? AND source='flag-tote' AND entry_type='bet'`).get(f.b);
+    assert(ticket);
+    await linkedSession(f.b, ticket.operation_id, 'flag-tote', Number(ticket.created_at));
+    const pool = await f.run({ accountId: f.b, fromMs: Number(ticket.created_at), toMs: Number(ticket.created_at) + 1,
+      category: 'totalizator', modeId: 'pool' });
+    const option = get(pool, 'totalizator', 'paid-option');
+    assert.deepEqual([option.posting_count, option.amount_units], ['1', ticket.amount_units]);
   });
 
   await t.test('a wallet deposit cannot inherit the game category from a colliding session ID', async t => {

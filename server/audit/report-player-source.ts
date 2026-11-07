@@ -24,7 +24,7 @@ async function relationExists(db: PostgresDatabase, schema: string, table: strin
 }
 
 /** Shared canonical projection over already scoped references. */
-export async function auditPostingProjectionSql(db: PostgresDatabase, sources: AuditSourceSchemas, allowedSources?: 'allowed') {
+export async function auditPostingProjectionSql(db: PostgresDatabase, sources: AuditSourceSchemas, consumer?: 'summary') {
   const names = [db.schema, sources.game, ...(sources.payments ? [sources.payments] : [])];
   if (names.some(name => !validName(name)) || new Set(names).size !== names.length) {
     throw new Error('Invalid audit report source configuration');
@@ -33,14 +33,25 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
   const p = sources.payments ? identifier(sources.payments) : null;
   const demo = literal(sources.game + '.demo_ledger'), pending = literal(sources.game + '.capro_pending_ledger');
   const crypto = sources.payments ? literal(sources.payments + '.crypto_ledger') : 'NULL::text';
-  const sourceSelected = (namespace: string) => allowedSources
-    ? ` AND EXISTS (SELECT 1 FROM ${allowedSources} WHERE source_namespace=${namespace})` : '';
+  const summary = consumer === 'summary';
+  const sourceSelected = (namespace: string) => summary
+    ? ` AND EXISTS (SELECT 1 FROM allowed WHERE source_namespace=${namespace})` : '';
   const fine = literal(CLUB_FINE_SOURCE);
   const hasMatches = await relationExists(db, sources.game, 'pvp_matches');
   const hasCallbacks = await relationExists(db, sources.game, 'capro_transactions') &&
     await relationExists(db, sources.game, 'capro_players');
   const flags = "substring(l.operation_id from '^flag-tote:(ft1-[0-9]{1,16}):final$')";
   const pvp = "substring(l.operation_id from '^pvp:([0-9a-f-]{36}):(hold|final)$')";
+  const pvpJoin = `LEFT JOIN ${g}.virtual_pvp_banks b ON l.source='pvp:'||b.game_id AND b.match_id=${pvp}
+      AND EXISTS (SELECT 1 FROM ${g}.virtual_pvp_holds h WHERE h.match_id=b.match_id AND h.account_id=l.account_id)`;
+  const toteJoins = `LEFT JOIN ${g}.flag_tote_tickets ticket ON l.source='flag-tote' AND l.entry_type='bet' AND ticket.account_id=l.account_id
+      AND ticket.id=substring(l.operation_id from '^flag-tote:([0-9a-fA-F-]{36})$')
+    LEFT JOIN ${g}.flag_tote_rounds pool ON l.source='flag-tote' AND pool.id=COALESCE(ticket.round_id,${flags})
+      AND EXISTS (SELECT 1 FROM ${g}.flag_tote_tickets pt WHERE pt.round_id=pool.id AND pt.account_id=l.account_id)`;
+  // Verified banks and pools supply the summary mode and fee entity. Rows without either anchor keep the legacy lookups.
+  // Pool bets still use session data for paid-option detection.
+  const needInstant = summary ? ' AND b.match_id IS NULL AND pool.id IS NULL' : '';
+  const needSession = summary ? " AND b.match_id IS NULL AND (pool.id IS NULL OR l.entry_type='bet')" : '';
   const paidStart = casinoPaidOpeningSql('l.source', 'session_mode.mode_id', "x.payload->>'rulesVersion'");
   const selects = `
     SELECT r.*, l.id IS NOT NULL AS present, l.amount_units::numeric AS amount, l.balance_units::numeric AS balance,
@@ -89,19 +100,20 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
     LEFT JOIN LATERAL (
       SELECT balance_units FROM ${g}.demo_ledger WHERE id=r.prior_id AND account_id=r.account_id LIMIT 1
     ) p ON true
+    ${summary ? pvpJoin + '\n    ' + toteJoins : ''}
     LEFT JOIN LATERAL (
       SELECT kind,request_key,result,CASE WHEN pg_input_is_valid(result,'jsonb') THEN result::jsonb->'gameRound' END AS round
       FROM ${g}.demo_operations
-      WHERE l.entry_type<>'deposit' AND l.source IS DISTINCT FROM ${fine}
+      WHERE l.entry_type<>'deposit' AND l.source IS DISTINCT FROM ${fine}${needInstant}
         AND account_id=l.account_id AND operation_id=l.operation_id AND kind IN ('play','spin') LIMIT 1
     ) op ON true
     LEFT JOIN LATERAL (
       SELECT session_id FROM ${g}.demo_casino_requests
-      WHERE l.entry_type<>'deposit' AND l.source IS DISTINCT FROM ${fine} AND account_id=l.account_id AND id=l.operation_id LIMIT 1
+      WHERE l.entry_type<>'deposit' AND l.source IS DISTINCT FROM ${fine}${needSession} AND account_id=l.account_id AND id=l.operation_id LIMIT 1
     ) req ON true
     LEFT JOIN LATERAL (
       SELECT s.id AS session_id, CASE WHEN pg_input_is_valid(s.payload,'jsonb') THEN s.payload::jsonb END AS payload
-      FROM ${g}.demo_casino_sessions s WHERE l.entry_type<>'deposit' AND l.source IS DISTINCT FROM ${fine}
+      FROM ${g}.demo_casino_sessions s WHERE l.entry_type<>'deposit' AND l.source IS DISTINCT FROM ${fine}${needSession}
         AND s.account_id=l.account_id AND s.id=COALESCE(req.session_id,l.operation_id)
         AND s.game_id=l.source LIMIT 1
     ) x ON true
@@ -112,8 +124,7 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
     LEFT JOIN ${g}.demo_flight_requests f ON l.source='royal-flight' AND f.account_id=l.account_id AND f.id=l.operation_id
     LEFT JOIN ${g}.demo_mines_sessions n ON l.source='royal-mines' AND n.account_id=l.account_id
       AND n.id=l.operation_id
-    LEFT JOIN ${g}.virtual_pvp_banks b ON l.source='pvp:'||b.game_id AND b.match_id=${pvp}
-      AND EXISTS (SELECT 1 FROM ${g}.virtual_pvp_holds h WHERE h.match_id=b.match_id AND h.account_id=l.account_id)
+    ${summary ? '' : pvpJoin}
     ${hasMatches ? `LEFT JOIN LATERAL (
       SELECT ${pvpModeVersionSql('b.game_id', "p.challenge->'rulesVersion'")} AS rules_version
       FROM ${g}.pvp_matches pm
@@ -126,10 +137,7 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
         AND p.challenge->>'status'=pm.status AND p.challenge->>'mode' IS DISTINCT FROM 'free'
         AND p.challenge->'stakeUnits'=to_jsonb((b.stake_units::numeric*10000)::text)
     ) m ON true` : 'LEFT JOIN LATERAL (SELECT NULL::text AS rules_version) m ON true'}
-    LEFT JOIN ${g}.flag_tote_tickets ticket ON l.source='flag-tote' AND l.entry_type='bet' AND ticket.account_id=l.account_id
-      AND ticket.id=substring(l.operation_id from '^flag-tote:([0-9a-fA-F-]{36})$')
-    LEFT JOIN ${g}.flag_tote_rounds pool ON l.source='flag-tote' AND pool.id=COALESCE(ticket.round_id,${flags})
-      AND EXISTS (SELECT 1 FROM ${g}.flag_tote_tickets pt WHERE pt.round_id=pool.id AND pt.account_id=l.account_id)
+    ${summary ? '' : toteJoins}
     CROSS JOIN LATERAL (
       SELECT ${hasCallbacks ? `EXISTS (SELECT 1 FROM ${g}.capro_transactions ct JOIN ${g}.capro_players cp ON cp.player_id=ct.player_id
         WHERE l.source='casinoapipro' AND ct.transaction_id=substring(l.operation_id from 7)
