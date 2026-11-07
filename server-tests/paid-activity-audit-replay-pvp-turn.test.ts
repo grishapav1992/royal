@@ -205,10 +205,10 @@ test('records the actual promotion piece in the accepted move', () => {
   assert.deepEqual(events[9].data, { kind: 'action', action: { profile: 'pvp-turn-based', code: 'move', seat: 1, positions: [49, 56, 4] } });
 });
 
-test('paid chess records a real LobbyRoom match, settled wallet and scoped replay', {
+test('paid chess and v4 duels record real LobbyRoom matches with settled scoped replays', {
   skip: process.env.NODE_ENV !== 'test',
 }, async t => {
-  const [{ LobbyRoom, configureLobbyChessReplay }, { accounts }, { PostgresDatabase }, { AuditDatasets },
+  const [{ LobbyRoom, configureLobbyChessReplay, configureLobbyPvpReplays }, { accounts }, { PostgresDatabase }, { AuditDatasets },
     { AuditReplayStore }, { persistCapturedChessReplay }, { pvpSeat }] = await Promise.all([
     import('../server/LobbyRoom'), import('../server/accounts'), import('../server/database'), import('../server/audit/datasets'),
     import('../server/audit/replay-store'), import('../server/audit/replay-chess-storage'), import('../src/shared/pvpSeats'),
@@ -228,6 +228,8 @@ test('paid chess records a real LobbyRoom match, settled wallet and scoped repla
   let settle!: (recording: CapturedChessReplay | null) => void;
   const finished = new Promise<CapturedChessReplay | null>(resolve => { settle = resolve; });
   configureLobbyChessReplay(recording => { observed.push(recording); settle(recording); });
+  const tsu: import('../server/audit/replay-pvp-tsu').CapturedTsuReplay[] = [];
+  configureLobbyPvpReplays({ recordTsu: recording => tsu.push(recording) });
   const room = new LobbyRoom();
   room.roomId = 'chess-audit-' + randomUUID();
   const messages = new Map<string, (client: any, message: any) => unknown>();
@@ -237,7 +239,7 @@ test('paid chess records a real LobbyRoom match, settled wallet and scoped repla
   t.mock.method(room, 'setSimulationInterval', () => {});
   t.mock.method(room, 'broadcast', () => {});
   t.mock.method(room.clock, 'setInterval', (callback: () => void) => { intervals.push(callback); return { clear() {} }; });
-  t.after(() => { configureLobbyChessReplay(undefined); room.onDispose(); room.clock.clear(); });
+  t.after(() => { configureLobbyChessReplay(undefined); configureLobbyPvpReplays(); room.onDispose(); room.clock.clear(); });
   room.onCreate();
 
   const clients = await Promise.all(logins.map(async (login, index) => {
@@ -293,4 +295,29 @@ test('paid chess records a real LobbyRoom match, settled wallet and scoped repla
   assert.equal(events.at(-1)?.postings.length, 1);
   assert.equal(events.at(-1)?.money?.[0]?.units, '190');
   assert.equal(verifyChessTurnReplay(verified.value).status, 'verified');
+
+  const pvp = Reflect.get(room, 'pvp') as { queue: Promise<unknown>; sync(): Promise<void> };
+  await pvp.queue;
+  await pvp.sync();
+  for (const { client } of clients) Object.assign(room.state.players.get(client.sessionId)!, { hall: 'tables', x: 460, y: 560 });
+  await pvp.sync();
+  const duel = await command(0, { action: 'invite', gameId: 'tsu-e-fa', stakeUnits: '100000', targetId: logins[1].account.id });
+  await command(1, { action: 'accept', challengeId: duel.id });
+  await command(0, { action: 'duel-ready', challengeId: duel.id, termsRevision: 0 });
+  assert.equal((await command(1, { action: 'duel-ready', challengeId: duel.id, termsRevision: 0 })).status, 'playing');
+  await command(0, { action: 'move', challengeId: duel.id, revision: 0, move: { kind: 'choose', round: 1, choice: 'scissors' } });
+  await command(1, { action: 'resign', challengeId: duel.id });
+  assert.equal(tsu.length, 1);
+  assert.equal(tsu[0].settlement.reason, 'resign');
+  assert.deepEqual(tsu[0].gaps, []);
+  const { persistCapturedTsuReplay } = await import('../server/audit/replay-pvp-tsu-storage');
+  assert.equal(await persistCapturedTsuReplay(audit, storageScope, accounts.schema, tsu[0]), 'recorded');
+  const loaded = await new AuditReplayStore(audit).read(storageScope, duel.id);
+  assert.equal(loaded.status, 'verified');
+  if (loaded.status === 'verified') {
+    const last = loaded.value.fragments.at(-1)?.events.at(-1);
+    assert.ok(last?.data.kind === 'terminal' && last.data.state.profile === 'pvp-turn-based');
+    assert.deepEqual(last.data.state.board.slice(5), [0, 0, 0, 0]);
+    assert.equal(last.money?.[0]?.units, '19');
+  }
 });

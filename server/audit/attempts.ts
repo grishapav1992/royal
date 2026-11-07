@@ -5,6 +5,9 @@ import { applySchemaMigration } from '../database-migrations';
 import { AuditEvidence } from './evidence';
 import { chessReplayWriter } from './replay-chess-storage';
 import { combatReplayWriter } from './replay-pvp-realtime';
+import { cardsReplayWriter } from './replay-pvp-cards-storage';
+import { sportReplayWriter } from './replay-pvp-sport';
+import { tsuReplayWriter } from './replay-pvp-tsu-storage';
 import { toteAdmissionWriter } from './tote-admission';
 
 export type AuditAttemptObservation = Omit<AuditAttempt, 'schemaVersion' | 'scope' | 'type'>;
@@ -124,6 +127,9 @@ export function startAuditAttemptRuntime(env: NodeJS.ProcessEnv = process.env, g
   const scope: AuditScope = { datasetId, environment: live !== undefined ? 'live' : 'test' };
   const chess = env.ROYAL_AUDIT_CHESS_REPLAY === '1' && gameSchema ? chessReplayWriter(db, scope, gameSchema) : undefined;
   const combat = env.ROYAL_AUDIT_COMBAT_REPLAY === '1' && gameSchema ? combatReplayWriter(db, scope, gameSchema) : undefined;
+  const card = env.ROYAL_AUDIT_CARD_REPLAY === '1' && gameSchema ? cardsReplayWriter(db, scope, gameSchema) : undefined;
+  const sport = env.ROYAL_AUDIT_SPORT_REPLAY === '1' && gameSchema ? sportReplayWriter(db, scope, gameSchema) : undefined;
+  const tsu = env.ROYAL_AUDIT_TSU_REPLAY === '1' && gameSchema ? tsuReplayWriter(db, scope, gameSchema) : undefined;
   const tote = env.ROYAL_AUDIT_TOTE_ADMISSION === '1' && gameSchema ? toteAdmissionWriter(db, scope, gameSchema) : undefined;
   const evidence = new AuditEvidence(db, schema);
   const writer: CaptureWriter = {
@@ -141,9 +147,12 @@ export function startAuditAttemptRuntime(env: NodeJS.ProcessEnv = process.env, g
     record: recorder.record,
     recordChess: chess?.record,
     recordCombat: combat?.record,
+    recordCard: card?.record,
+    recordSport: sport?.record,
+    recordTsu: tsu?.record,
     recordToteAdmission: tote?.record,
     async close() {
-      await Promise.all([recorder.stop(), chess?.stop(), combat?.stop(), tote?.stop()]);
+      await Promise.all([recorder.stop(), chess?.stop(), combat?.stop(), card?.stop(), sport?.stop(), tsu?.stop(), tote?.stop()]);
       await db.close();
     },
   };

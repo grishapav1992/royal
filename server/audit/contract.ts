@@ -2,7 +2,7 @@ export const AUDIT_SCHEMA_VERSION = 1;
 
 const profiles = {
   casino: ['casino-steps'],
-  pvp: ['pvp-turn-based', 'pvp-realtime'],
+  pvp: ['pvp-turn-based', 'pvp-realtime', 'pvp-sport'],
   totalizator: ['pool-steps'],
 } as const;
 const entityKinds = { casino: 'round', pvp: 'match', totalizator: 'pool' } as const;

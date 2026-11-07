@@ -20,6 +20,12 @@ label{font-weight:600}#metadata{margin-top:14px;overflow-wrap:anywhere}
 .chess{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));width:min(100%,448px);margin:12px auto;aspect-ratio:1;border:1px solid var(--edge)}
 .square{display:grid;place-items:center;color:#14191f;background:#d2bea1;font-size:clamp(16px,5vw,40px);line-height:1;aspect-ratio:1}.square.dark{background:#896f57;color:#fff5db}
 .ring{height:175px;position:relative;margin:12px 0;border:1px solid var(--edge);border-bottom:4px solid #8a7854;border-radius:6px;overflow:hidden;background:#202938}
+.replay-table{position:relative;aspect-ratio:9/5;margin:12px 0;border:1px solid var(--edge);border-radius:8px;overflow:hidden;background:#193e31}
+.replay-table.hockey{background:linear-gradient(90deg,#213a55 49.75%,#89badc 50%,#213a55 50.25%)}
+.table-dot{position:absolute;transform:translate(-50%,-50%);border-radius:50%;display:grid;place-items:center;font-size:11px}
+.table-ball{width:3.3%;aspect-ratio:1;background:#eee;color:#111}.hockey .table-ball{background:#111}
+.table-pocket{width:5%;aspect-ratio:1;background:#111}
+.table-paddle{width:8.9%;aspect-ratio:1;background:#206393;color:#fff}.table-paddle:nth-child(2){background:#944943}
 .fighter{position:absolute;transform:translateX(-50%);padding:4px;border-radius:5px;background:#305f83;color:#fff;white-space:nowrap}.fighter:nth-child(2){background:#944943}
 .tokens{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.tokens span{border:1px solid var(--edge);background:#263142;padding:3px 7px;border-radius:4px}
 #event p,#state p{margin:7px 0}#links{margin-top:12px}ul{padding-left:22px;overflow-wrap:anywhere}li{margin:5px 0}code{font-size:.9em;color:var(--accent)}

@@ -1,3 +1,4 @@
+import type { TableReplayObservation, TableReplayObserver } from './audit/replay-pvp-sport-engine';
 import type { Ball, TableState } from '../src/shared/activities';
 import { clampPaddle, stepPaddle, stepHockeyPuck, keepPaddleClearOfServe } from '../src/shared/hockey';
 import { canPlaceCue, POOL_POCKETS } from '../src/shared/pool';
@@ -6,6 +7,11 @@ const ball=(id:number,x:number,y:number):Ball=>({id,x,y,vx:0,vy:0,active:true});
 const pockets=POOL_POCKETS;
 export class TableGame {
   state:TableState;
+  private replayObserver?: TableReplayObserver;
+  setReplayObserver(observer?: TableReplayObserver) { this.replayObserver=observer; }
+  private observeReplay(event: TableReplayObservation) {
+    try { this.replayObserver?.(event); } catch { /* Audit observation cannot interrupt play. */ }
+  }
   private targets=[{x:100,y:200},{x:620,y:200}];
   private pocketed:number[]=[];
   private firstHit=-1;
@@ -40,12 +46,14 @@ export class TableGame {
       const rack=[1,9,2,10,8,3,4,11,5,12,6,13,7,14,15];let index=0;
       for(let row=0;row<5;row++)for(let col=0;col<=row;col++)this.state.balls.push(ball(rack[index++],470+row*19.2,200+(col-row/2)*22.2));
     }
+    if(this.replayObserver&&this.state.phase==='playing')this.observeReplay({kind:'start',state:this.state});
   }
   private serve() {this.state.balls=[ball(0,360,200)];this.state.balls[0].vx=this.state.turn===0?180:-180;this.state.balls[0].vy=60;this.state.serveDelay=.8;}
   move(id:string,x:unknown,y:unknown) {
     const side=this.state.players.indexOf(id);
     if(this.state.id!=='hockey'||this.state.phase!=='playing'||side<0||typeof x!=='number'||typeof y!=='number'||!Number.isFinite(x)||!Number.isFinite(y))return;
-    this.targets[side]=clampPaddle({x,y},side);
+    const target=this.targets[side]=clampPaddle({x,y},side);
+    if(this.replayObserver)this.observeReplay({kind:'paddle',seat:side===0?1:2,...target,state:this.state});
   }
   shoot(id:string,angle:unknown,power:unknown,pocket:unknown=-1) {
     const s=this.state;
@@ -54,13 +62,18 @@ export class TableGame {
     if(this.eightEligible&&(!Number.isInteger(pocket)||Number(pocket)<0||Number(pocket)>5))return false;
     this.calledPocket=Number(pocket);this.eightPocket=-1;this.firstHit=-1;this.rails.clear();this.afterContactRail=false;
     const cue=s.balls[0];cue.vx=Math.cos(angle)*clamp(power,80,850);cue.vy=Math.sin(angle)*clamp(power,80,850);
-    s.moving=true;s.message='';this.pocketed=[];this.scratch=false;this.shotTime=0;this.sound('cue');return true;
+    s.moving=true;s.message='';this.pocketed=[];this.scratch=false;this.shotTime=0;this.sound('cue');
+    if(this.replayObserver)this.observeReplay({kind:'shot',seat:s.turn===0?1:2,angle,power:clamp(power,80,850),
+      pocket:Number.isInteger(this.calledPocket)&&this.calledPocket>=0&&this.calledPocket<=5?this.calledPocket:-1,state:s});
+    return true;
   }
   place(id:string,x:unknown,y:unknown){
     const s=this.state;
     if(s.id!=='pool'||s.phase!=='playing'||s.moving||s.players[s.turn]!==id||s.ballInHand==='none'||typeof x!=='number'||typeof y!=='number'||!Number.isFinite(x)||!Number.isFinite(y))return false;
     if(!canPlaceCue(s,x,y))return false;
-    Object.assign(s.balls[0],{x,y,active:true,vx:0,vy:0});s.ballInHand='none';s.message='Белый шар установлен';return true;
+    Object.assign(s.balls[0],{x,y,active:true,vx:0,vy:0});s.ballInHand='none';s.message='Белый шар установлен';
+    if(this.replayObserver)this.observeReplay({kind:'place',seat:s.turn===0?1:2,x,y,state:s});
+    return true;
   }
   private group(id:number):'open'|'solid'|'stripe'{return id>=1&&id<=7?'solid':id>=9?'stripe':'open';}
   private sound(kind:string){if(this.elapsed-this.soundTime<.06&&['rail','hit'].includes(kind))return;this.soundTime=this.elapsed;this.state.sound={seq:this.state.sound.seq+1,kind};}
@@ -69,6 +82,7 @@ export class TableGame {
     if(this.state.phase!=='playing')return;
     const steps=Math.ceil(Math.min(dt,.1)*240), step=Math.min(dt,.1)/steps;
     for(let i=0;i<steps&&this.state.phase==='playing';i++)this.state.id==='hockey'?this.hockey(step):this.pool(step);
+    if(this.replayObserver)this.observeReplay({kind:'advance',dt,state:this.state});
   }
   private hockey(dt:number) {
     const s=this.state,b=s.balls[0];

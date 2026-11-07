@@ -1,6 +1,10 @@
 import { MAX_REPLAY_FILE_BYTES, prepareViewerReplay } from './replay-viewer-model';
 import type { ReplayEvent, ReplayPoolEvent, ReplayState } from '../../server/audit/replay-package';
 
+import { decodeCardReplayAction, decodeCardReplayPosition, isCardTurnReplayGame } from '../../server/audit/replay-pvp-cards';
+import { cardLabel } from '../shared/pvp';
+import { POOL_POCKETS } from '../shared/pool';
+
 const element = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const file = element<HTMLInputElement>('package-file');
 const status = element('status'), metadata = element('metadata'), playback = element('playback');
@@ -42,13 +46,53 @@ function chips(label: string, values: readonly number[]) {
   for (const value of values) add(row, String(value), 'span');
 }
 
+const signs = ['', 'Камень', 'Ножницы', 'Бумага'];
+const cardMoves: Record<string, string> = { play: 'Карта сыграна', attack: 'Атака', defend: 'Защита', transfer: 'Перевод',
+  take: 'Взял карты со стола', done: 'Завершил атаку', draw: 'Взял карту из колоды', pass: 'Пропуск', resign: 'Сдача' };
+
+function showSport(state: Extract<ReplayState, { profile: 'pvp-sport' }>) {
+  const hockey = state.game === 'hockey';
+  const table = add(stateView, '', 'div', 'replay-table ' + state.game);
+  table.setAttribute('role', 'img');
+  table.setAttribute('aria-label', hockey ? 'Положение шайбы и бит' : 'Положение шаров на столе');
+  const dot = (text: string, x: number, y: number, css: string) => {
+    const marker = add(table, text, 'span', 'table-dot ' + css);
+    marker.style.left = x / 7200 + '%';
+    marker.style.top = y / 4000 + '%';
+  };
+  if (hockey) state.paddles.forEach(({ x, y }, index) => dot(String(index + 1), x, y, 'table-paddle'));
+  else for (const [x, y] of POOL_POCKETS) dot('', x * 1000, y * 1000, 'table-pocket');
+  for (const ball of state.balls) if (ball.active) dot(hockey || !ball.id ? '' : String(ball.id), ball.x, ball.y, 'table-ball');
+  add(stateView, 'Такт ' + state.tick + (hockey ? ' · счёт ' + state.score.join(' : ') : ' · ход игрока ' + state.turn));
+}
+
 function showState(state: ReplayState | null, stateSequence: number | null, sequence: number) {
   stateView.replaceChildren();
   if (!state) { add(stateView, 'Нет подтверждённого состояния на этом шаге.'); return; }
   add(stateView, phases[state.phase] + (stateSequence !== sequence ? ' · подтверждённое состояние #' + stateSequence : ''), 'p', 'muted');
   switch (state.profile) {
     case 'pvp-turn-based': {
-      if (replay?.package.manifest.game.gameId !== 'chess' || state.board.length !== 64) {
+      const game = replay?.package.manifest.game;
+      const gameId = game?.gameId;
+      if (gameId === 'tsu-e-fa' && game?.engineId === 'royal-tsu-duel' && state.board.length === 9) {
+        const [round, a, b, stage, mask, last, signA, signB] = state.board;
+        add(stateView, 'Раунд ' + round + ' · счёт ' + a + ' : ' + b);
+        add(stateView, ['Выбор', 'Отсчёт', 'Раскрытие'][stage] + (mask ? ' · выбор зафиксирован у ' + (mask === 3 ? 'обоих' : 'игрока ' + mask) : ''));
+        if (last) add(stateView, 'Раскрытие раунда ' + last + ' · ' + signs[signA] + ' / ' + signs[signB]);
+        break;
+      }
+      if (isCardTurnReplayGame(gameId) && game?.engineId === 'royal-cards') {
+        const cards = decodeCardReplayPosition(gameId, state.board);
+        if (!cards) break;
+        add(stateView, 'Карт на руках ' + cards.handCounts.join(' / ') + ' · в колоде ' + cards.stockCount);
+        if (cards.trump !== null) add(stateView, 'Козырь ' + cardLabel(cards.trump));
+        if (gameId === 'crazy-eights') add(stateView, 'Текущая масть ' + ['♠', '♥', '♦', '♣'][cards.suit]);
+        if (cards.table.length) add(stateView, 'На столе ' + cards.table.map(({ attack, defense }) =>
+          cardLabel(attack) + (defense === undefined ? '' : ' → ' + cardLabel(defense))).join(' · '));
+        if (state.seatToMove) add(stateView, 'Ход игрока ' + state.seatToMove);
+        break;
+      }
+      if (gameId !== 'chess' || state.board.length !== 64) {
         chips('Позиции', state.board);
         break;
       }
@@ -66,6 +110,7 @@ function showState(state: ReplayState | null, stateSequence: number | null, sequ
       add(stateView, 'Ход ' + state.turn + (state.seatToMove === null ? '' : ' · очередь игрока ' + state.seatToMove));
       break;
     }
+    case 'pvp-sport': showSport(state); break;
     case 'pvp-realtime': {
       const isCombat = replay?.package.manifest.game.engineId === 'royal-combat-60hz';
       const ring = isCombat ? add(stateView, '', 'div', 'ring') : null;
@@ -125,9 +170,26 @@ function showEvent(event: ReplayEvent | null) {
   else {
     const action = data.action;
     switch (action.profile) {
-      case 'pvp-turn-based': add(eventView, 'Игрок ' + action.seat + ' · ' + (action.code === 'resign' ? 'сдача'
-        : action.code === 'move' && replay?.package.manifest.game.gameId === 'chess' && action.positions.length >= 2
-          ? square(action.positions[0]) + ' → ' + square(action.positions[1]) : action.code + ' · ' + action.positions.join(', '))); break;
+      case 'pvp-turn-based': {
+        const game = replay?.package.manifest.game;
+        const gameId = game?.gameId;
+        let description = action.code === 'resign' ? 'сдача' : action.code + ' · ' + action.positions.join(', ');
+        if (action.code === 'move' && gameId === 'chess' && action.positions.length >= 2) {
+          description = square(action.positions[0]) + ' → ' + square(action.positions[1]);
+        } else if (action.code === 'move' && gameId === 'tsu-e-fa' && game?.engineId === 'royal-tsu-duel') {
+          description = 'выбор зафиксирован · раунд ' + action.positions[0];
+        } else if (isCardTurnReplayGame(gameId) && game?.engineId === 'royal-cards') {
+          const move = decodeCardReplayAction(gameId, action);
+          if (move) description = cardMoves[move.kind] + ('card' in move && move.card !== undefined ? ' · ' + cardLabel(move.card) : '');
+        }
+        add(eventView, 'Игрок ' + action.seat + ' · ' + description);
+        break;
+      }
+      case 'pvp-sport': {
+        add(eventView, action.code === 'advance' ? 'Шагов физики ' + action.durations.length :
+          'Игрок ' + action.seat + ' · ' + ({ paddle: 'движение биты', place: 'позиция битка', shot: 'удар', resign: 'сдача' })[action.code]);
+        break;
+      }
       case 'pvp-realtime': add(eventView, 'Управление игрока ' + action.seat + ' · такт ' + action.tick + ' · кнопки ' + action.buttons); break;
       case 'casino-steps': add(eventView, ({ start: 'Начало', move: 'Действие', cashout: 'Выход' })[action.code]
         + (action.selection.length ? ' · ' + action.selection.join(', ') : '')); break;
@@ -218,7 +280,9 @@ file.addEventListener('change', async () => {
     frame = 0;
     const coverage = manifest.coverage === 'partial' ? 'Частичная запись · ' + manifest.gaps.map(gap => gaps[gap]).join(', ')
       : 'Полная запись';
-    message(coverage + (replay.engineVerified ? ' · состояния сверены движком' : ' · целостность пакета проверена'));
+    message(coverage + (replay.engineVerified
+      ? manifest.game.engineId === 'royal-tsu-duel' ? ' · раскрытие и счёт проверены' : ' · состояния сверены движком'
+      : ' · целостность пакета проверена'));
     metadata.textContent = manifest.game.gameId + ' / ' + manifest.game.modeId + ' · формат ' + manifest.formatVersion
       + ' · правила ' + manifest.game.rulesVersion + ' · ' + (manifest.scope.environment === 'test' ? 'ТЕСТ' : 'РАБОЧИЙ')
       + (manifest.timing ? ' · только порядок событий, точное время неизвестно' : '');

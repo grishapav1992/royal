@@ -15,6 +15,10 @@ import { createReplayPackage, type ReplayEvent } from '../server/audit/replay-pa
 import { combatReplayDefinition, combatReplayFrame, combatReplayTickDuration } from '../server/audit/replay-pvp-realtime-engine';
 import { chessTurnReplayDefinition } from '../server/audit/replay-pvp-turn';
 
+import { sportReplayDefinitions, sportReplayFrame } from '../server/audit/replay-pvp-sport-engine';
+import { tsuTurnReplayDefinition } from '../server/audit/replay-pvp-tsu';
+import { TableGame } from '../server/tableGames';
+
 const scope = { datasetId: randomUUID(), environment: 'test' } as const;
 const amount = '9007199254740993';
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -83,6 +87,42 @@ function combatPackage(changeCheckpoint: boolean) {
   }, {
     sequence: 2, atMs: 500, postings: [], data: { kind: 'checkpoint', state: checkpoint },
   }]);
+}
+
+function hockeyPackage() {
+  const { formatVersion, ...game } = sportReplayDefinitions.find(mode => mode.gameId === 'hockey')!;
+  const table = new TableGame('hockey');
+  table.join('1'); table.join('2');
+  const initial = sportReplayFrame(table.state, 0), replayId = randomUUID();
+  const dt = 1 / 60;
+  table.move('1', 240, 120);
+  table.tick(dt);
+  return createReplayPackage({ formatVersion, game, initial, scope, replayId, entityId: replayId,
+    coverage: 'partial', gaps: ['terminal-unavailable'] }, [
+    { sequence: 1, atMs: 0, postings: [], data: { kind: 'action', action: { profile: 'pvp-sport', code: 'paddle', seat: 1, x: 240, y: 120 } } },
+    { sequence: 2, atMs: 17, postings: [], data: { kind: 'action', action: { profile: 'pvp-sport', code: 'advance', durations: [dt] } } },
+    { sequence: 3, atMs: 17, postings: [], data: { kind: 'checkpoint', state: sportReplayFrame(table.state, 1) } },
+  ]);
+}
+
+function tsuPackage() {
+  const { formatVersion, ...game } = tsuTurnReplayDefinition, replayId = randomUUID();
+  const state = (round: number, board: number[]) => ({ profile: 'pvp-turn-based' as const, phase: 'open' as const,
+    turn: round, seatToMove: null, board });
+  const initial = state(1, [1, 0, 0, 0, 0, 0, 0, 0, 0]);
+  const checkpoint = (board: number[], round = 1): ReplayEvent['data'] => ({ kind: 'checkpoint', state: state(round, board) });
+  const move = (seat: 1 | 2): ReplayEvent['data'] => ({ kind: 'action',
+    action: { profile: 'pvp-turn-based', code: 'move', seat, positions: [1] } });
+  const steps = [
+    { atMs: 0, data: { kind: 'checkpoint', state: initial } as const },
+    { atMs: 100, data: move(1) },
+    { atMs: 100, data: checkpoint([1, 0, 0, 0, 1, 0, 0, 0, 0]) },
+    { atMs: 200, data: move(2) },
+    { atMs: 200, data: checkpoint([1, 0, 0, 1, 3, 0, 0, 0, 0]) },
+    { atMs: 2000, data: checkpoint([2, 1, 0, 2, 0, 1, 1, 2, 1], 2) },
+  ];
+  return createReplayPackage({ formatVersion, game, initial, scope, replayId, entityId: replayId,
+    coverage: 'partial', gaps: ['terminal-unavailable'] }, steps.map((event, i) => ({ ...event, sequence: i + 1, postings: [] })));
 }
 
 function legacyCasinoPackage() {
@@ -161,6 +201,21 @@ test('serves the full investigation flow from a local HTML file with networking 
   await expect(state).toHaveText(/345000, 0.*Подтверждённый такт 30/);
   await upload(combatPackage(true));
   await expect(status).toHaveText(/расходится с повторным расчётом/);
+
+  await upload(hockeyPackage());
+  await expect(state.getByRole('img', { name: 'Положение шайбы и бит' })).toBeVisible();
+  await expect(state.locator('.table-paddle')).toHaveCount(2);
+  const startingPaddle = await state.locator('.table-paddle').first().getAttribute('style');
+  await jump(2);
+  await expect(state).toHaveText(/Такт 1/);
+  assert.notEqual(await state.locator('.table-paddle').first().getAttribute('style'), startingPaddle);
+
+  await upload(tsuPackage());
+  await jump(5);
+  await expect(state).toHaveText(/Отсчёт.*выбор зафиксирован у обоих/);
+  await expect(state).not.toHaveText(/Камень|Ножницы/);
+  await jump(6);
+  await expect(state).toHaveText(/Раскрытие раунда 1.*Камень \/ Ножницы/);
 
   await upload(legacyCasinoPackage());
   await expect(page.locator('#metadata')).toHaveText(/формат 1/);
