@@ -348,8 +348,11 @@ test('standby pilot cancels both WAL wait and an active query, budgeting the act
   { timeout: 35_000, skip: !pgBasebackup }, async t => {
     const directory = await mkdtemp(join(tmpdir(), 'royal-audit-load-check-'));
     t.after(() => rm(directory, { recursive: true, force: true }));
+    // The supported macOS and Linux fixtures detect a closed client while executing SQL.
+    const readerStopBudgetMs = process.platform === 'darwin' || process.platform === 'linux' ? 1000 : 60000;
     const { stdout, exitCode } = await run(['--pilot-gate', '--workers', '2', '--rounds', '3',
-      '--standby-pg-basebackup', pgBasebackup!, '--reader-stop-budget-ms', '60000'], { ...process.env, TMPDIR: directory })
+      '--standby-pg-basebackup', pgBasebackup!, '--reader-stop-budget-ms', String(readerStopBudgetMs)],
+    { ...process.env, TMPDIR: directory })
       .then(({ stdout }) => ({ stdout, exitCode: 0 }), error => {
         if (error.code !== 1 || !error.stdout) throw error;
         return { stdout: String(error.stdout), exitCode: 1 };
@@ -360,8 +363,6 @@ test('standby pilot cancels both WAL wait and an active query, budgeting the act
     assert.equal(report.scale.ok, true);
     assert.equal(report.capture.gaps, 0);
     assert.equal(report.pilotGate.noWalletErrorsOrTimeouts, true);
-    assert.equal(report.ok, report.pilotGate.ok);
-    assert.equal(exitCode, report.ok ? 0 : 1);
     assert.equal(report.standby.sameHost, true);
     assert.equal(report.standby.beforeControl.streaming, true);
     assert.equal(report.standby.afterReports.streaming, true);
@@ -373,5 +374,7 @@ test('standby pilot cancels both WAL wait and an active query, budgeting the act
     assert(report.cancellation.databaseReaderStopMs >= report.cancellation.cancellationMs);
     assert.equal(report.budget.readerStopTarget, 'standby-active-query');
     assert.deepEqual(report.budget.checks, [{ metric: 'readerStopMs',
-      actual: report.standby.activeCancellation.databaseReaderStopMs, limit: 60000, passed: true }]);
+      actual: report.standby.activeCancellation.databaseReaderStopMs, limit: readerStopBudgetMs, passed: true }]);
+    assert.equal(report.ok, report.pilotGate.ok);
+    assert.equal(exitCode, report.ok ? 0 : 1);
   });

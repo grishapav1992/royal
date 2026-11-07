@@ -106,6 +106,19 @@ export async function openAuditReportReader({ fixtureReplayLsn, ...config }: Rea
         await pause(5, undefined, { signal });
       }
     }
+    if (readOnly) {
+      try {
+        // Observe a closed reader socket even while PostgreSQL is blocked inside a query.
+        // A missing setting or a shorter existing interval needs no update.
+        await query(`SELECT pg_catalog.set_config(name,'100ms',false)
+          FROM pg_catalog.pg_settings
+          WHERE CASE WHEN name='client_connection_check_interval'
+            THEN setting::integer NOT BETWEEN 1 AND 100 ELSE false END`);
+      } catch (error) {
+        // Unsupported PostgreSQL builds reject nonzero intervals. The statement timeout remains in force.
+        if ((error as { code?: string } | null)?.code !== '22023') throw error;
+      }
+    }
     await query(readOnly ? 'BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY' : 'BEGIN ISOLATION LEVEL READ COMMITTED');
     const settings = await query("SELECT pg_size_bytes(current_setting('temp_file_limit'))::text AS bytes");
     const bytes = Number(settings.rows[0]?.bytes);

@@ -230,6 +230,8 @@ test('player CSV uses scoped report credentials, real capture and bounded Postgr
           // Leave time to inspect the backend independently of the report runner's ordinary lock budget.
           const reader = await openAuditReportReader({ ...settings, lock_timeout: 8_000, statement_timeout: 9_000 }, jobId, signal);
           try {
+            // Keep the fixture backend alive after client disconnect to exercise the admission fence.
+            await reader.connection.query("SET LOCAL client_connection_check_interval='0'");
             backend = (await reader.connection.query('SELECT pg_backend_pid() AS pid')).rows[0].pid;
             await page(reader.connection, jobId);
             return { rowCount: 0, bytes: 0 };
@@ -252,6 +254,30 @@ test('player CSV uses scoped report credentials, real capture and bounded Postgr
       blocker.release();
       await Promise.all([other.end(), pending]);
     }
+  });
+
+  await t.test('the named CSV export continues when PostgreSQL rejects connection polling', async t => {
+    const query = pg.Client.prototype.query;
+    let rejectedSettings = 0;
+    const mock = t.mock.method(pg.Client.prototype, 'query', function (this: pg.Client, ...args: unknown[]) {
+      if (typeof args[0] !== 'string' || !args[0].includes("name='client_connection_check_interval'")) {
+        return Reflect.apply(query, this, args);
+      }
+      // Use a real PostgreSQL GUC error with the SQLSTATE returned by unsupported builds.
+      return Reflect.apply(query, this, ["SELECT pg_catalog.set_config('client_connection_check_interval','-1ms',false)"])
+        .catch((error: unknown) => {
+          assert.equal((error as { code?: string }).code, '22023');
+          rejectedSettings++;
+          throw error;
+        });
+    });
+    try {
+      const exported = await run('connection-polling-unavailable');
+      assert.equal(rejectedSettings, 1);
+      assert.deepEqual(csvRows(await read('connection-polling-unavailable')).map(row => row.operation_id), [f.playId, f.playId]);
+      assert.deepEqual(await journal(exported.jobId), { operator_name: f.owner, dataset_id: f.datasetId,
+        status: 'succeeded', row_count: 2, byte_count: exported.bytes, reason: null });
+    } finally { mock.mock.restore(); }
   });
 
   await t.test('account, date, source and game filters select unique canonical postings', async () => {

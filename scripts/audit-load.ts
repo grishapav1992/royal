@@ -419,7 +419,7 @@ async function cancelReport(game: PostgresDatabase, audit: PostgresDatabase, ope
     controller.abort();
     const result = await pending;
     const cancellationMs = rounded(performance.now() - started);
-    // The connection can only complete the blocked query after lock timeout while this lock is held.
+    // Observe the server exit independently of the cancelled client while the fixture keeps the lock.
     await waitFor(async () => await audit.prepare('SELECT 1 FROM pg_stat_activity WHERE pid=?').get(backend)
       ? undefined : true, 3000, abort);
     const databaseReaderStopMs = rounded(performance.now() - started);
