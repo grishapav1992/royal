@@ -5,6 +5,7 @@ import { once } from 'node:events';
 import { randomUUID } from 'node:crypto';
 import { gzipSync } from 'node:zlib';
 import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
+import { isRetiredArcadeGame } from '../src/shared/arcadeCatalog';
 import type { DemoWalletRequestLimitOptions } from '../server/demoWalletRequestLimit';
 
 process.env.AUTH_DB_PATH = ':memory:';
@@ -62,11 +63,11 @@ test('Originals HTTP rejects data theft, forged outcomes, excessive bodies and r
 
     await t.test('client-selected payouts, SQL strings and prototype fields cannot change a balance', async () => {
       const before = (await accounts.wallet.snapshot(alice.account.id));
-      const valid = { kind: 'play', gameId: 'royal-dice', rulesVersion: 1, amount: 10, input: { gameMode: 'rollUnder', sliderValue: 50 } };
+      const valid = { kind: 'play', gameId: 'royal-plinko', rulesVersion: 1, stakePolicyVersion: 1, amount: 10, input: { rows: 12, risk: 'medium' } };
       const malformed = [
         { ...valid, payout: 99999999 }, { ...valid, outcome: { won: true } },
-        { ...valid, amount: -10 }, { ...valid, amount: 10.01 }, { ...valid, gameId: "royal-dice'; DROP TABLE accounts;--" },
-        { ...valid, input: JSON.parse('{"gameMode":"rollUnder","sliderValue":50,"__proto__":{"polluted":true}}') },
+        { ...valid, amount: -10 }, { ...valid, amount: 10.001 }, { ...valid, gameId: "royal-plinko'; DROP TABLE accounts;--" },
+        { ...valid, input: JSON.parse('{"rows":12,"risk":"medium","__proto__":{"polluted":true}}') },
         { ...valid, gameId: 'royal-keno', input: { picks: [1, 1], risk: 'classic' } },
         { ...valid, gameId: 'royal-keno', input: { picks: [41], risk: 'classic' } },
         { ...valid, gameId: 'royal-keno', input: { picks: ['<img src="https://attacker.example">'], risk: 'classic' } },
@@ -77,7 +78,7 @@ test('Originals HTTP rejects data theft, forged outcomes, excessive bodies and r
       ];
       for (const operation of malformed) {
         const response = await request('/api/demo-wallet/operations', { id: randomUUID(), ...operation });
-        assert.equal(response.status, 400); await response.arrayBuffer();
+        assert.equal(response.status, isRetiredArcadeGame(operation.gameId) ? 409 : 400); await response.arrayBuffer();
       }
       assert.equal(Object.hasOwn(Object.prototype, 'polluted'), false);
       assert.deepEqual((await accounts.wallet.snapshot(alice.account.id)), before);
@@ -100,8 +101,13 @@ test('Originals HTTP rejects data theft, forged outcomes, excessive bodies and r
       assert.equal(Object.keys(await compressed.json()).join(','), 'error');
     });
 
-    await t.test('a foreign account cannot recover a field and parallel replay never charges twice', async () => {
+    await t.test('retired Mines rejects new stakes and only the owner can replay an accepted round', async () => {
       const start = { id: randomUUID(), action: 'start', amount: 10, mineCount: 1 };
+      const retired = await request('/api/demo-wallet/mines', start);
+      assert.equal(retired.status, 409); await retired.arrayBuffer();
+      assert.equal((await accounts.wallet.snapshot(alice.account.id)).balance, 1000);
+      // Seed a round accepted before retirement. The public route remains closed to new stakes.
+      await accounts.wallet.mines.operate(alice.account.id, start);
       const responses = await Promise.all(Array.from({ length: 6 }, () => request('/api/demo-wallet/mines', start)));
       const results = await Promise.all(responses.map(async response => { assert.equal(response.status, 200); return response.json(); }));
       for (const result of results) {

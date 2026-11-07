@@ -1,5 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { Client } from '@colyseus/sdk';
+import { ROOM_CHAT_PROTOCOL, type ChatVisit } from '../src/shared/chat';
+import { elevatorDock } from '../src/shared/elevator';
 const password = 'Chat-overlay-isolated-test-123!';
 const proofDir = process.env.CHAT_PROOF_DIR || 'artifacts/chat-over-games-20261015';
 async function login(page: Page, room: string) {
@@ -31,11 +33,25 @@ test('connected chat sends and receives over slots and dealer games, restores on
   expect(auth.ok()).toBe(true); await request.post('/api/auth/character',{data:{skin:0}});
   const cookie=auth.headers()['set-cookie'].split(';')[0];
   const host=await new Client(process.env.TEST_BASE_URL || 'http://127.0.0.1:2567',{headers:{Cookie:cookie}}).create('lobby');
-  const received:string[]=[]; host.onMessage('chat',m=>received.push(m.text)); host.onMessage('activities',()=>{}); host.onMessage('chat-check',()=>{});host.onMessage('notice',m=>console.log('Observer notice',m));
+  const received:string[]=[];
+  let hostVisit: ChatVisit | null = null;
+  host.onMessage('*',()=>{});
+  host.onMessage('chat',m=>received.push(m.text));
+  host.onMessage('chat-visit',value=>{hostVisit=value;});
+  host.send('history',{version:ROOM_CHAT_PROTOCOL});
   try {
+    await expect.poll(()=>hostVisit?.hall).toBe('arcade');
     await login(page,host.roomId);
     await page.locator('#chat-input').fill('Сохранённый черновик');
     for(const [id,hall] of [[process.env.CHAT_SLOT || 'royal-fruits','arcade'],['github-baccarat','github']]) {
+      if (hall === 'github') {
+        const player = () => host.state.players.get(host.sessionId);
+        const entry = elevatorDock('arcade').entry;
+        host.send('target', { ...entry, revision: player().hallRevision });
+        await expect.poll(() => Math.hypot(player().x - entry.x, player().y - entry.y), { timeout: 20000 }).toBeLessThan(40);
+        host.send('elevator', { target: hall, requestId: 1, revision: player().hallRevision });
+        await expect.poll(()=>hostVisit?.hall).toBe(hall);
+      }
       console.log('Opening',id);await openGame(page,id,hall);console.log('Opened',id);
       const toggle=page.getByRole('button',{name:'Общий чат',exact:true});
       await expect(toggle).toBeVisible(); await expect(page.locator('#mini-dialog #chat-panel')).toBeHidden();
@@ -50,7 +66,7 @@ test('connected chat sends and receives over slots and dealer games, restores on
         await page.keyboard.press('Enter');
         await expect(page.locator('#chat-log')).toContainText(message,{timeout:20000});
         await expect.poll(()=>received.includes(message),{timeout:20000}).toBe(true);
-        const reply=`Ответ ${id} ${viewport.width}`; host.send('chat',reply);
+        const reply=`Ответ ${id} ${viewport.width}`; host.send('chat',{id:crypto.randomUUID(),text:reply,visitId:hostVisit?.id});
         await expect(page.locator('#chat-log')).toContainText(reply,{timeout:20000});
         await expect(page.locator('#mini-dialog')).toBeVisible();
         await page.waitForTimeout(700);

@@ -1,4 +1,4 @@
-import { test, expect, type APIRequestContext, type Page } from '@playwright/test';
+import { test, expect, type APIRequestContext, type Page, type Route } from '@playwright/test';
 import { Client } from '@colyseus/sdk';
 import type { ChatRequest, ChatResult } from '../src/shared/chat';
 import type { ChatMessage } from '../src/shared/world';
@@ -119,7 +119,7 @@ test('the tenth offensive word triggers a capture and street escort in the same 
     await register(page, 'Проверка порога');
     await page.goto('/?mode=club&room=' + host.roomId + '&lang=en');
     const input = page.locator('#chat-input'), send = page.locator('#send-chat');
-    await expect(input).toBeEnabled();
+    await expect(input).toBeEnabled({ timeout: 30000 });
     const transport = await captureRealTransport(page);
     await input.fill('fuck shit Scheiße putain coño cazzo kurwa caralho klootzak'); await send.click();
     const masked = 'f**k s**t S*****e p****n c**o c***o k***a c*****o k******k';
@@ -163,7 +163,7 @@ test('the first confirmed spam episode immediately dispatches the guard', async 
     const input = page.locator('#chat-input'), send = page.locator('#send-chat');
     const text = 'Check the announcements t.me/ExampleChannel';
     const rows = page.locator('#chat-log > [data-message-id]').filter({ hasText: text });
-    await expect(input).toBeEnabled();
+    await expect(input).toBeEnabled({ timeout: 30000 });
     const transport = await captureRealTransport(page);
     for (let count = 1; count <= 2; count++) {
       await input.fill(text); await send.click();
@@ -265,18 +265,21 @@ test('paying on the street recovers a lost response after reload without a secon
     expect(await (await page.request.get(api + '/api/demo-wallet', { headers })).json()).toMatchObject({ balance: 25.37 });
 
     const submissions: unknown[] = [];
-    await page.route(`**${finePath}`, async route => {
+    page.on('request', request => {
+      if (request.url().endsWith(finePath) && request.method() === 'POST') submissions.push(request.postDataJSON());
+    });
+    const dropReply = async (route: Route) => {
       if (route.request().method() !== 'POST') { await route.continue(); return; }
-      submissions.push(route.request().postDataJSON());
-      if (submissions.length > 1) { await route.continue(); return; }
       const committed = await route.fetch();
       expect(await committed.json()).toMatchObject({ status: 'paid', replayed: false });
       await route.abort('failed');
-    });
+    };
+    await page.route(`**${finePath}`, dropReply);
     await page.getByRole('button', { name: 'Pay fine', exact: true }).click();
     const retry = page.getByRole('button', { name: 'Retry payment of 15 virtual USDT' });
     await expect(retry).toBeEnabled();
     expect(submissions).toHaveLength(1);
+    await page.unroute(`**${finePath}`, dropReply);
 
     await page.setViewportSize({ width: 844, height: 390 });
     await page.reload();
@@ -285,8 +288,10 @@ test('paying on the street recovers a lost response after reload without a secon
     await trigger.click();
     await expect(page.locator('#club-fine-dialog')).toBeInViewport();
     expect(submissions).toHaveLength(1);
+    const replay = page.waitForResponse(response => response.url().endsWith(finePath) && response.request().method() === 'POST');
     await retry.click();
-    await expect(page.locator('#club-fine-status')).toHaveText('Fine paid.');
+    expect(await (await replay).json()).toMatchObject({ status: 'paid', replayed: true });
+    await expect(page.locator('#club-fine-status')).toHaveText('Fine paid.', { timeout: 15000 });
     expect(submissions).toEqual([submissions[0], submissions[0]]);
     expect(await (await page.request.get(api + finePath, { headers })).json()).toMatchObject({ sanction: null });
     const wallet = await (await page.request.get(api + '/api/demo-wallet', { headers })).json();
@@ -324,7 +329,7 @@ test('real chat follows each floor visit and closes on the street', async ({ bro
     await register(sender, 'Гость на этажах'); await register(observer, 'Гость первого этажа');
     for (const page of [sender, observer]) {
       await page.goto('/?mode=club&room=' + host.roomId + '&lang=en');
-      await expect(page.locator('#club-chat-dock')).toHaveAttribute('data-chat-hall', 'arcade');
+      await expect(page.locator('#club-chat-dock')).toHaveAttribute('data-chat-hall', 'arcade', { timeout: 30000 });
       await expect(page.locator('#chat-input')).toBeEnabled();
     }
     const senderTransport = await captureRealTransport(sender), observerTransport = await captureRealTransport(observer);

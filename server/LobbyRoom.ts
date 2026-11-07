@@ -18,7 +18,7 @@ import { filterChatLanguage } from '../src/shared/chatConduct';
 import { guardBumps } from './guardBumps';
 import { blockedByGuard } from '../src/shared/guardCollision';
 import type { ClubCaptureDecision, ClubPursuit, ClubSanction, ClubViolation, SecurityDecision } from '../src/shared/security';
-import { isChatLocation, type ChatResult, type ChatVisit } from '../src/shared/chat';
+import { isChatLocation, ROOM_CHAT_PROTOCOL, type ChatResult, type ChatVisit } from '../src/shared/chat';
 import { randomUUID } from 'node:crypto';
 import { accounts, allowedOrigin, cookieToken, type Account } from './accounts';
 type RoomAuth = { account: Account; hash: string };
@@ -37,12 +37,12 @@ import { intoxicatedMovement } from '../src/shared/intoxication';
 import type { DrinkingState } from './intoxicationStore';
 import { STREET } from '../src/shared/street';
 
-type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatRevision: number; inputs: MovementInputs; predicted: boolean; afterMovement?: () => void };
+type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatRevision: number; chatVersion?: number; inputs: MovementInputs; predicted: boolean; afterMovement?: () => void };
 const CHAT_REQUEST_ID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 type ProfileRevision = { name: number; skin: number; appearance: number };
 type DisguiseCheck = { usable?: boolean };
 type Access = { active: boolean; drinking: DrinkingState; revision: number; profileRevision: ProfileRevision; pendingDrink: boolean; pendingEject: boolean;
-  sanction?: ClubSanction | null; sanctionRevision?: number; paidSanctions?: Set<string>; capture?: ClubCaptureDecision; resumeHall?: string;
+  sanction?: ClubSanction | null; sanctionRevision?: number; closedSanctions?: Set<string>; capture?: ClubCaptureDecision; resumeHall?: string;
   equippedSkinId?: string; disguises?: Map<string, DisguiseCheck>; disguiseOfferVisit?: number };
 const DISGUISE_CACHE_LIMIT = 200;
 const pendingDrinks = new Set<string>();
@@ -101,8 +101,8 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     if (this.disposed || this.state.players.get(id) !== player || this.access.get(id) !== access) return null;
     if (!outcome) {
       if (access.sanction?.id === pursuit.sanctionId) {
-        access.sanctionRevision = (access.sanctionRevision ?? 0) + 1;
-        access.sanction = null;
+        this.closeSanction(client, access, pursuit.sanctionId);
+        if (player.connected) client.send('club-sanction-changed', {});
       }
       return null;
     }
@@ -212,23 +212,26 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   private finePaidListener = (accountId: string, sanctionId: string) => {
     for (const client of this.clients) if ((client.auth as RoomAuth)?.account.id === accountId) {
       const access = this.access.get(client.sessionId);
-      if (!access?.active || access.paidSanctions?.has(sanctionId)) continue;
-      const paid = access.paidSanctions ??= new Set();
-      paid.add(sanctionId);
-      if (paid.size > 32) paid.delete(paid.values().next().value!);
-      if (access.sanction?.id === sanctionId) {
-        access.sanctionRevision = (access.sanctionRevision ?? 0) + 1;
-        access.sanction = null;
-      }
-      this.guards.cancelPursuit(client.sessionId, sanctionId);
+      if (!access?.active || access.closedSanctions?.has(sanctionId)) continue;
+      this.closeSanction(client, access, sanctionId);
       client.send('club-sanction-changed', {});
     }
   };
+  private closeSanction(client: Client, access: Access, sanctionId: string) {
+    const closed = access.closedSanctions ??= new Set();
+    closed.add(sanctionId);
+    if (closed.size > 32) closed.delete(closed.values().next().value!);
+    if (access.sanction?.id === sanctionId) {
+      access.sanctionRevision = (access.sanctionRevision ?? 0) + 1;
+      access.sanction = null;
+    }
+    this.guards.cancelPursuit(client.sessionId, sanctionId);
+  }
   private applySanction(client: Client, sanction: ClubSanction, revealedSkinId?: string) {
     const access = this.access.get(client.sessionId);
     if (!access?.active) return;
     const previous = access.sanction;
-    const newEpisode = !access.paidSanctions?.has(sanction.id) && previous?.id !== sanction.id;
+    const newEpisode = !access.closedSanctions?.has(sanction.id) && previous?.id !== sanction.id;
     access.sanctionRevision = (access.sanctionRevision ?? 0) + 1;
     if (newEpisode || (previous?.id === sanction.id && previous.revision < sanction.revision)) {
       access.sanction = sanction;
@@ -475,6 +478,12 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       const requestId = object && typeof object.id === 'string' && object.id.length === 36 && CHAT_REQUEST_ID.test(object.id) ? object.id : undefined;
       if (typeof value !== 'string' && !requestId) { client.send('notice', 'Неверный формат сообщения.'); return; }
       const player = this.state.players.get(client.sessionId), control = this.controls.get(client.sessionId);
+      if (control?.chatVersion !== ROOM_CHAT_PROTOCOL) {
+        const message = 'Обнови страницу, чтобы снова пользоваться чатом.';
+        if (requestId) client.send('chat-result', { id: requestId, status: 'cancelled', message });
+        client.send('notice', message);
+        return;
+      }
       const records = control ? this.chatResults.get(control) ?? new Map<string, ChatResult>() : undefined;
       if (control && records) this.chatResults.set(control, records);
       const previous = requestId && records?.get(requestId);
@@ -578,12 +587,14 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       result('queued');
       await queued;
     });
-    this.onMessage('history', client => {
-      const player = this.state.players.get(client.sessionId);
-      const visit = this.roomChat.visit(client.sessionId);
-      const current = player?.connected && this.access.get(client.sessionId)?.active && visit?.hall === player.hall ? visit : undefined;
-      client.send('chat-visit', current ?? null);
-      client.send('history', current ? this.roomChat.read(current) : []);
+    this.onMessage('history', (client, value: unknown) => {
+      const control = this.controls.get(client.sessionId);
+      if (!control || !this.accessAllowed(client) || (value as { version?: unknown } | undefined)?.version !== ROOM_CHAT_PROTOCOL) {
+        client.send('history', []);
+        return;
+      }
+      control.chatVersion = ROOM_CHAT_PROTOCOL;
+      if (this.state.players.get(client.sessionId)?.connected) this.sendChatHistory(client);
     });
   }
   async onAuth(_client: Client, _options: unknown, context: AuthContext) {
@@ -609,7 +620,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (this.disposed || this.access.get(client.sessionId) !== access || !active || !access.active) throw new ServerError(401, 'Войди в аккаунт ещё раз.');
       if (revision === access.revision) access.drinking = drinking;
       this.applyProfile(auth, access, profile, profileRevision);
-      this.applyEnforcementSnapshot(access, enforcement, sanctionRevision, profileRevision.appearance);
+      this.applyEnforcementSnapshot(client, access, enforcement, sanctionRevision, profileRevision.appearance);
       void this.refreshDisguise(client, access);
       if (auth.account.skin === null) throw new ServerError(401, 'Выбери персонажа и войди в зал ещё раз.');
       const others = this.clients.filter(other => other !== client && (other.auth as RoomAuth)?.account.id === auth.account.id);
@@ -638,7 +649,8 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.cancelChat(client);
     this.activities.disconnect(client.sessionId);
     this.stop(client.sessionId);
-    const control = this.controls.get(client.sessionId); if (control) control.chatRevision++;
+    const control = this.controls.get(client.sessionId);
+    if (control) { control.chatRevision++; control.chatVersion = undefined; }
     const p = this.state.players.get(client.sessionId); if (p) p.connected = false;
     this.guards.cancelPursuit(client.sessionId);
     this.pvp.dropped(client.sessionId);
@@ -671,7 +683,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (this.disposed || this.access.get(client.sessionId) !== access || this.state.players.get(client.sessionId) !== p || !active || !access.active) { client.leave(4001); return; }
       if (revision === access.revision) { access.drinking = drinking; p.soberAt = drinking.soberAt; }
       this.applyProfile(auth, access, profile, profileRevision);
-      this.applyEnforcementSnapshot(access, enforcement, sanctionRevision, profileRevision.appearance);
+      this.applyEnforcementSnapshot(client, access, enforcement, sanctionRevision, profileRevision.appearance);
       if (auth.account.skin === null) { client.leave(4001); return; }
       p.name = auth.account.name; p.skin = auth.account.skin; p.appearance = serializeAppearance(auth.account.appearance);
       p.connected = true;
@@ -683,6 +695,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       }
       console.info(JSON.stringify({ event: 'lobby-connection', phase: 'reconnected', uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));
       const control = this.controls.get(client.sessionId);
+      if (control?.chatVersion === ROOM_CHAT_PROTOCOL) this.sendChatHistory(client);
       if (control) for (const result of this.chatResults.get(control)?.values() ?? []) if (result.status !== 'queued') client.send('chat-result', result);
     } catch { client.leave(4001); }
   }
@@ -695,10 +708,15 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     };
     access.equippedSkinId = generatedAppearance(auth.account.appearance)?.skinId;
   }
-  private applyEnforcementSnapshot(access: Access, snapshot: { sanction: ClubSanction | null; disguiseSkinId: string | null },
+  private applyEnforcementSnapshot(client: Client, access: Access, snapshot: { sanction: ClubSanction | null; disguiseSkinId: string | null },
     sanctionRevision: number | undefined, appearanceRevision: number) {
-    if (sanctionRevision !== access.sanctionRevision || (snapshot.sanction && access.paidSanctions?.has(snapshot.sanction.id))) return;
+    if (sanctionRevision !== access.sanctionRevision || (snapshot.sanction && access.closedSanctions?.has(snapshot.sanction.id))) return;
+    const previous = access.sanction;
+    if (previous && previous.id !== snapshot.sanction?.id) this.closeSanction(client, access, previous.id);
     access.sanction = snapshot.sanction;
+    if (previous !== undefined && (previous?.id !== snapshot.sanction?.id || previous?.revision !== snapshot.sanction?.revision)) {
+      client.send('club-sanction-changed', {});
+    }
     if (appearanceRevision !== access.profileRevision.appearance) return;
     if (access.equippedSkinId && access.sanction) {
       this.cacheDisguise(access, access.equippedSkinId, { usable: snapshot.disguiseSkinId === access.equippedSkinId });
@@ -778,7 +796,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
           if (!active) { player.connected = false; this.releaseCabinet(client.sessionId); this.stop(client.sessionId); client.leave(4001); return; }
         }
         if (access.active) {
-          this.applyEnforcementSnapshot(access, enforcement, sanctionRevision, appearanceRevision);
+          this.applyEnforcementSnapshot(client, access, enforcement, sanctionRevision, appearanceRevision);
           void this.refreshDisguise(client, access);
         }
       }));
@@ -789,7 +807,9 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     const current = this.roomChat.enter(sessionId, hall);
     if (previous !== current) {
       this.guards.cancelPursuit(sessionId);
-      this.clients.find(client => client.sessionId === sessionId)?.send('chat-visit', current ?? null);
+      if (this.controls.get(sessionId)?.chatVersion === ROOM_CHAT_PROTOCOL) {
+        this.clients.find(client => client.sessionId === sessionId)?.send('chat-visit', current ?? null);
+      }
     }
     const access = this.access.get(sessionId), player = this.state.players.get(sessionId);
     if (!access || !player || player.security) return;
@@ -804,6 +824,13 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       this.pvp.tick();
     }
   }
+  private sendChatHistory(client: Client) {
+    const visit = this.roomChat.visit(client.sessionId);
+    const player = this.state.players.get(client.sessionId);
+    const current = player?.connected && this.accessAllowed(client) && visit?.hall === player.hall ? visit : undefined;
+    client.send('chat-visit', current ?? null);
+    client.send('history', current ? this.roomChat.read(current) : []);
+  }
   private system(hall: string, text: string) {
     if (isChatLocation(hall)) this.publish(this.roomChat.stamp(hall), { id: randomUUID(), senderId: '', name: '', text, time: Date.now(), system: true });
   }
@@ -811,7 +838,8 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.roomChat.append(stamp, message);
     for (const client of this.clients) {
       const player = this.state.players.get(client.sessionId);
-      if (!player?.connected || player.hall !== stamp.hall || !this.access.get(client.sessionId)?.active) continue;
+      if (!player?.connected || player.hall !== stamp.hall || !this.accessAllowed(client)
+        || this.controls.get(client.sessionId)?.chatVersion !== ROOM_CHAT_PROTOCOL) continue;
       const visit = this.roomChat.visit(client.sessionId);
       const payload = visit && this.roomChat.deliver(visit, stamp, message);
       if (payload) client.send('chat', payload);

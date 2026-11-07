@@ -82,7 +82,10 @@ test('toilet door reaches floor three by walking and click, returns without boun
     await overview(page);await clickWorld(page,TOILET_HALL_DOOR.click.x,TOILET_HALL_DOOR.click.y);await hall(page,'github');
     await page.locator('#game').focus();await page.keyboard.down('w');try{await hall(page,'toilet');await page.waitForTimeout(650);expect((await state(page)).hall).toBe('toilet');}finally{await page.keyboard.up('w');}
     await overview(page);await clickWorld(page,TOILET_WINDOW.click.x,TOILET_WINDOW.click.y);await hall(page,'roof');
-    await expect(page.locator('#chat-input')).toBeEnabled();await expect(page.locator('#wallet-balance')).toHaveText(balance!);expect(errors).toEqual([]);
+    await expect(page.locator('.local-label')).toHaveAttribute('data-status', 'connected');
+    await expect(page.locator('#club-chat-dock')).toBeHidden();
+    await expect(page.locator('#chat-input')).toBeDisabled();
+    await expect(page.locator('#wallet-balance')).toHaveText(balance!);expect(errors).toEqual([]);
   }catch(error){
     const s=await state(page);console.log('Toilet doorway failure',JSON.stringify({hall:s.hall,x:s.x,y:s.y,serverX:s.serverX,serverY:s.serverY,locked:s.locked,switching:s.switching,nav:s.stairNavigation,errors}));
     await page.screenshot({path:info.outputPath('failure.png')});throw error;

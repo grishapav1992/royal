@@ -54,7 +54,10 @@ test('front facade shows real floors through glass, pauses its visitors and pres
   const frozen=(await state(page)).street.frontWindows.time;await page.waitForTimeout(250);expect((await state(page)).street.frontWindows.time).toBe(frozen);
   expect((await state(page)).street.rearWindows.entry.available).toBe(false);await page.screenshot({path:'../front-windows-'+info.project.name+'-rear-regression.png'});
   await overview(page,true);for(const p of [{x:2320,y:360},{x:2320,y:1050},{x:1550,y:1050}])await walk(page,p.x,p.y);await overview(page,false);
-  await page.emulateMedia({reducedMotion:'reduce'});await page.reload();await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
+  await page.emulateMedia({reducedMotion:'reduce'});await page.reload();
+  await expect(page.locator('.local-label')).toHaveAttribute('data-status', 'connected', { timeout: 25000 });
+  await expect(page.locator('#club-chat-dock')).toBeHidden();
+  await expect(page.locator('#chat-input')).toBeDisabled();
   await expect.poll(async()=>(await state(page)).hall).toBe('street');await expect.poll(async()=>(await state(page)).street.frontWindows.motion).toBe(false);
   const paused=(await state(page)).street.frontWindows;await page.waitForTimeout(400);const still=(await state(page)).street.frontWindows;
   expect(still.time).toBe(paused.time);expect(still.people.map((p:any)=>[p.x,p.y,p.frame])).toEqual(paused.people.map((p:any)=>[p.x,p.y,p.frame]));

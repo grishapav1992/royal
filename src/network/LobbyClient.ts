@@ -12,7 +12,7 @@ import { savedSession, savedRoom, rememberSession, forgetSession } from './sessi
 import { configureReconnection, lobbyMatchmakingFetch } from './reconnection';
 import { LOBBY_RECOVERY_WINDOW_MS } from '../shared/lobbyConnection';
 import type { CabinetPlayResult } from '../shared/cabinetSeating';
-import type { ChatRequest, ChatResult, ChatVisit } from '../shared/chat';
+import { isChatLocation, ROOM_CHAT_PROTOCOL, type ChatRequest, type ChatResult, type ChatVisit } from '../shared/chat';
 import type { PvpSnapshot } from '../shared/pvp';
 import type { PlayerRecoveryResult } from '../shared/playerRecovery';
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
@@ -147,8 +147,12 @@ export class LobbyClient {
         }
       });
       onMessage('chat', message => this.events.chat(message as ChatMessage));
-      onMessage('chat-visit', (visit: ChatVisit | null) => this.events.chatVisit?.(visit));
-      onMessage('history', messages => this.events.history(messages as ChatMessage[]));
+      onMessage('chat-visit', (visit: ChatVisit | null) => {
+        if (visit === null || (visit && Number.isSafeInteger(visit.id) && visit.id > 0 && isChatLocation(visit.hall))) {
+          this.events.chatVisit?.(visit);
+        }
+      });
+      onMessage('history', messages => { if (Array.isArray(messages)) this.events.history(messages as ChatMessage[]); });
       onMessage('notice', message => this.events.notice(translateText(String(message))));
       onMessage('pvp',(value:PvpSnapshot)=>this.events.pvp?.(value));
       onMessage('pvp-result',(value:{requestId:string;error:string;rejected:boolean})=>this.events.pvpResult?.(value));
@@ -215,7 +219,7 @@ export class LobbyClient {
         if (state.mira) this.events.mira({ x: state.mira.x, y: state.mira.y, facing: state.mira.facing as MiraView['facing'], action: state.mira.action as MiraView['action'], progress: state.mira.progress });
       });
       room.onDrop(() => { if (current()) this.setStatus('reconnecting'); });
-      room.onReconnect(() => { if (!current()) return; queueMicrotask(() => { if (current()) rememberSession(room, accountId); }); this.events.npcTime(0,0);this.activities=undefined; this.setStatus('connected'); room.send('stop'); room.send('history'); room.send('activities'); });
+      room.onReconnect(() => { if (!current()) return; queueMicrotask(() => { if (current()) rememberSession(room, accountId); }); this.events.npcTime(0,0);this.activities=undefined; this.setStatus('connected'); room.send('stop'); this.requestChatHistory(); room.send('activities'); });
       room.onLeave(code => {
         if (!current()) return;
         this.lastCloseCode = code;
@@ -235,7 +239,7 @@ export class LobbyClient {
       if (recovered) { room.send('stop'); if (!recovering) room.send('playing', false); }
       this.events.joined(room.roomId, room.sessionId, recovering);
       this.setStatus('connected');
-      room.send('history');
+      this.requestChatHistory();
       room.send('activities');
     } catch (error) {
       if (generation !== this.generation) return;
@@ -351,6 +355,7 @@ export class LobbyClient {
     return true;
   }
   sendChat(request: ChatRequest): boolean { return this.send('chat', request); }
+  requestChatHistory(): boolean { return this.send('history', { version: ROOM_CHAT_PROTOCOL }); }
   getState() { return { status: this.status, roomId: this.room?.roomId, selfId: this.room?.sessionId, lastCloseCode: this.lastCloseCode, recoveryAttempts: this.recoveryAttempts }; }
   leave() {
     this.generation++;

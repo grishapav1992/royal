@@ -21,7 +21,7 @@ type OutgoingMessage = {
   text: string;
   time: number;
   roomId: string;
-  visitId?: number;
+  visitId: number;
   status: 'sending' | 'queued' | 'published' | 'rejected' | 'cancelled' | 'uncertain';
   message?: string;
   timer?: ReturnType<typeof setTimeout>;
@@ -154,10 +154,7 @@ export class SocialUI {
         if (fresh && !message.system && message.senderId !== this.selfId) this.gameChat.messageReceived();
       },
       delivery: result => this.chatResult(result),
-      history: messages => {
-        if (!this.chatReady) { this.chatReady = true; this.chatAvailability(); }
-        messages.forEach(message => this.addMessage(message));
-      },
+      history: messages => { messages.forEach(message => this.addMessage(message)); },
       notice: message => this.toast(message),
       activities: state => this.activities?.update(state),
       pvp:value=>this.pvp?.client.receive(value),
@@ -208,9 +205,6 @@ export class SocialUI {
   }
   private setChatVisit(visit: ChatVisit | null | undefined) {
     if (this.chatVisit === visit || (visit && visit.id === this.chatVisit?.id)) return;
-    if (this.chatVisit === undefined && visit) {
-      for (const entry of this.outgoing.values()) if (entry.roomId === this.roomId && entry.visitId === undefined) entry.visitId = visit.id;
-    }
     this.chatVisit = visit;
     this.chatDock.toggleAttribute('data-chat-unavailable', visit === null);
     if (visit) this.chatDock.dataset.chatHall = visit.hall;
@@ -225,10 +219,10 @@ export class SocialUI {
     this.showLatest();
   }
   private isCurrentChatVisit(entry: OutgoingMessage) {
-    return this.chatVisit !== null && entry.roomId === this.roomId && entry.visitId === this.chatVisit?.id;
+    return !!this.chatVisit && entry.roomId === this.roomId && entry.visitId === this.chatVisit.id;
   }
   private chatAvailability() {
-    const disabled = this.client.status !== 'connected' || !this.chatReady || this.sanctioned || this.chatVisit === null;
+    const disabled = this.client.status !== 'connected' || !this.chatReady || this.sanctioned || !this.chatVisit;
     this.input.disabled = disabled;
     this.media?.setDisabled(disabled);
     this.input.placeholder = this.sanctioned ? translateText('Подожди, охранник обращается к тебе') : translateText('Напиши что-нибудь…');
@@ -245,7 +239,8 @@ export class SocialUI {
   }
   private sendChat(text: string): boolean {
     text = text.trim();
-    if (!text || this.input.disabled || this.client.status !== 'connected' || this.sanctioned) return false;
+    const visit = this.chatVisit;
+    if (!text || !visit || this.input.disabled || this.client.status !== 'connected' || this.sanctioned) return false;
     if (this.pendingChatCount() >= CHAT_PENDING_LIMIT) {
       this.toast(translateText('Сначала дождись ответа на сохранённые сообщения.')); return false;
     }
@@ -253,7 +248,7 @@ export class SocialUI {
       this.toast(translateText('Это сообщение ещё не подтверждено. Проверь историю перед повтором.')); return false;
     }
     const id = crypto.randomUUID();
-    const entry: OutgoingMessage = { id, text, time: Date.now(), roomId: this.roomId, visitId: this.chatVisit?.id, status: 'sending' };
+    const entry: OutgoingMessage = { id, text, time: Date.now(), roomId: this.roomId, visitId: visit.id, status: 'sending' };
     this.outgoing.set(id, entry);
     entry.timer = setTimeout(() => {
       if (entry.status !== 'sending' && entry.status !== 'queued') return;
@@ -263,7 +258,7 @@ export class SocialUI {
     }, CHAT_CONFIRMATION_TIMEOUT_MS);
     this.showLatest(); this.renderOutbox();
     try {
-      if (this.client.sendChat({ id, text, ...(this.chatVisit ? { visitId: this.chatVisit.id } : {}) })) return true;
+      if (this.client.sendChat({ id, text, visitId: visit.id })) return true;
       clearTimeout(entry.timer); this.outgoing.delete(id); this.renderOutbox();
       this.toast(translateText('Нет подключения. Текст остался в поле.')); return false;
     } catch {
@@ -283,7 +278,7 @@ export class SocialUI {
       entry.status = result.status; entry.message = result.message;
       if (result.status === 'published') {
         if (!this.isCurrentChatVisit(entry)) { this.removeOutgoing(entry.id); return; }
-        try { this.client.send('history'); } catch { /* The published result remains valid while history reconnects. */ }
+        try { this.client.requestChatHistory(); } catch { /* The published result remains valid while history reconnects. */ }
       }
     }
     this.renderOutbox();
@@ -384,7 +379,7 @@ export class SocialUI {
     return row;
   }
   private addMessage(message: ChatMessage): boolean {
-    if (this.chatVisit === null || message.visitId !== this.chatVisit?.id) return false;
+    if (!this.chatReady || !this.chatVisit || message?.visitId !== this.chatVisit.id) return false;
     if (message.senderId === this.selfId && message.requestId) this.removeOutgoing(message.requestId);
     if (this.messages.has(message.id)) return false;
     this.saveChatPosition();

@@ -78,5 +78,11 @@ for(const online of [false,true])test('simple stair movement and unlabelled wind
   await keyUntil(page,'a',async()=>roofWindowPlatformOffset(await state(page))<.1);
   await page.screenshot({path:'../stair-simple-'+(online?'online':'offline')+'-return.png'});
   await keyUntil(page,'s',async()=>(await state(page)).stairStep===0);
-  expect((await state(page)).hall).toBe('street');if(online)await expect(page.locator('#chat-input')).toBeEnabled();expect(errors).toEqual([]);
+  expect((await state(page)).hall).toBe('street');
+  if (online) {
+    await expect(page.locator('.local-label')).toHaveAttribute('data-status', 'connected');
+    await expect(page.locator('#club-chat-dock')).toBeHidden();
+    await expect(page.locator('#chat-input')).toBeDisabled();
+  }
+  expect(errors).toEqual([]);
 });

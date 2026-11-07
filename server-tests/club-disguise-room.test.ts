@@ -6,7 +6,7 @@ import { accounts } from '../server/accounts';
 import { PostgresDatabase } from '../server/database';
 import type { Guards } from '../server/guards';
 import { LobbyRoom } from '../server/LobbyRoom';
-import type { ChatResult } from '../src/shared/chat';
+import { ROOM_CHAT_PROTOCOL, type ChatResult } from '../src/shared/chat';
 import { ROOF_STAIR_ROUTE } from '../src/shared/rooftop';
 import { parseGeneratedAppearance, SKIN_OFFERS, SKIN_THEME, type SkinOfferId } from '../src/shared/skinStudio';
 import { STREET } from '../src/shared/street';
@@ -115,7 +115,7 @@ test('a marked restroom visitor can disguise, be exposed by new misconduct and r
   await enterRestroom();
   await nextTurn();
   assert.equal(offers().length, 1);
-  await send('history');
+  await send('history', { version: ROOM_CHAT_PROTOCOL });
   faceVisitor('up', 20);
   guards.tick(0);
   assert.equal(offers().length, 1, 'fetching history does not repeat the offer');

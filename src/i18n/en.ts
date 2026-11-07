@@ -12,6 +12,7 @@ export const english: Record<string, string> = {
   'Закрыть образы Жоры':'Close Zhora outfits',
   'Войди в аккаунт, чтобы заказать образ у Жоры.':'Sign in to order an outfit from Zhora.',
   'Штраф':'Fine',
+  'Обнови страницу, чтобы снова пользоваться чатом.':'Refresh the page to use chat again.',
   'Клубный штраф':'Club fine',
   'Оплатить штраф':'Pay fine',
   'До окончания штрафа {0}':'Fine ends in {0}',

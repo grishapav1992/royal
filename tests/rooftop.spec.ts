@@ -6,6 +6,11 @@ import {STAIR_WINDOW} from '../src/shared/stairWindow';
 import {onRoofWindowPlatform,roofWindowPlatformOffset,roofWindowPlatformPosition} from '../src/shared/rooftop';
 
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
+async function expectExteriorChat(page: Page) {
+  await expect(page.locator('.local-label')).toHaveAttribute('data-status', 'connected', { timeout: 25000 });
+  await expect(page.locator('#club-chat-dock')).toBeHidden();
+  await expect(page.locator('#chat-input')).toBeDisabled();
+}
 async function overview(page: Page, on: boolean) {
   const button = page.locator('#room-overview');
   if ((await button.getAttribute('aria-pressed') === 'true') !== on) await button.click();
@@ -123,7 +128,7 @@ async function allRearInteriors(page:Page){
       return windows.filter((w:any)=>w.onscreen&&w.room&&w.captured).length;
     }).toBe(15);
     await page.locator('#game canvas').screenshot({path:'../rear-views-all-floors.png'});
-    await expect(page.locator('#chat-input')).toBeEnabled();
+    await expectExteriorChat(page);
   }finally{await page.setViewportSize(viewport);}
 }
 
@@ -186,7 +191,7 @@ async function thirdFloorWindow(page:Page,project:string){
     await noGroundConversation(page);
   };
   await enter();await page.screenshot({path:'../landing-controls-'+project+'-inside.png'});await leave();
-  await page.reload();await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
+  await page.reload();await expectExteriorChat(page);
   await expect.poll(async()=>(await state(page)).online).toBe(true);
   expect(onRoofWindowPlatform(await state(page))).toBe(true);
   // Each vertical direction leaves the platform; window clicks still guide back along it.
@@ -318,7 +323,7 @@ test('manually climb each switchback without falling, reach the roof edge and re
   await page.screenshot({path:`../roof-${info.project.name}-climb.png`});
   const prefix=await page.evaluate(()=>(window as any).__roofClimb as {hall:string;x:number;y:number}[]);
   await page.reload();
-  await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
+  await expectExteriorChat(page);
   await expect.poll(async ()=>(await state(page)).hall).toBe('street');
   expect((await state(page)).stairStep).toBe(3);
   expect((await state(page)).stairDirection).toBe(-1);
@@ -358,7 +363,7 @@ test('manually climb each switchback without falling, reach the roof edge and re
   expect(climb.slice(bottom).some(p=>p.hall==='street'&&p.y<430)).toBe(true);
   await expect(page.locator('h1')).toContainText('Крыша казино');
   await expect(page.locator('#games-tab')).toBeHidden();
-  await expect(page.locator('#chat-panel')).toBeVisible(); await expect(page.locator('#chat-input')).toBeEnabled();
+  await expectExteriorChat(page);
   await expect(page.locator('#elevator-shortcut')).toBeHidden();
   const floors = await page.evaluate(() => (window as any).royalDemo.getElevator().floors);
   expect(floors).not.toContain('roof');
@@ -398,13 +403,12 @@ test('manually climb each switchback without falling, reach the roof edge and re
   await walk(page, 960, 1050); await overview(page, false);
   await page.screenshot({ path: `../roof-${info.project.name}-terrace.png` });
   const before = await state(page); await page.emulateMedia({reducedMotion:'reduce'}); await page.reload();
-  await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
+  await expectExteriorChat(page);
   await expect.poll(async () => (await state(page)).online).toBe(true);
   await expect.poll(async () => (await state(page)).hall).toBe('roof');
   const recovered = await state(page); expect(recovered.reducedMotion).toBe(true);
   expect(Math.hypot(recovered.x - before.x, recovered.y - before.y)).toBeLessThan(5);
   expect((await page.evaluate(() => (window as any).royalDemo.getNetworkState())).roomId).toBe(network.roomId);
-  await expect(page.locator('#chat-input')).toBeEnabled();
   await overview(page, true);
   await clickWorld(page, ROOF_STAIRS.click.x, ROOF_STAIRS.click.y);
   await expect.poll(async () => (await state(page)).hall, { timeout: 15000 }).toBe('street');
@@ -419,7 +423,7 @@ test('manually climb each switchback without falling, reach the roof edge and re
   await verifyFrozenRearWindows(page);
   await page.screenshot({path:`../roof-${info.project.name}-return-top.png`});
   await page.reload();
-  await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
+  await expectExteriorChat(page);
   await expect.poll(async()=>(await state(page)).online).toBe(true);
   expect((await state(page)).hall).toBe('street');
   expect((await state(page)).stairStep).toBe(ROOF_STAIR_RETURN.stairStep);

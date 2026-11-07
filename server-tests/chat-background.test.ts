@@ -7,6 +7,7 @@ import { MovementInputs } from '../server/movementInputs';
 import { accounts } from '../server/accounts';
 import { chatSpam } from '../server/chatSpam';
 import { chatLanguageWindow } from '../server/chatLanguageWindow';
+import { ROOM_CHAT_PROTOCOL } from '../src/shared/chat';
 import type { HallId } from '../src/shared/world';
 type SessionCheck = { hash: string; resolve: (active: boolean) => void; reject: (error: Error) => void };
 
@@ -42,24 +43,46 @@ function fixture(context: TestContext, options: { suffix?: string; account?: str
   (room as any).controls.set(id, { dx: 0, dy: 0, at: 0, path: [], lastTarget: 0, chatRevision: 0, inputs: new MovementInputs(), predicted: false });
   (room as any).access.set(id, { active: true, pendingEject: false, revision: 0, profileRevision: { name: 0, skin: 0, appearance: 0 }, drinking: { soberAt: 0, lastDrink: '', lastDrinkAt: 0 } });
   (room as any).updateChatVisit(id, player.hall);
+  const requestHistory = (target: any, version?: number) => handlers.get('history')!(target, version === undefined ? undefined : { version });
+  requestHistory(client, ROOM_CHAT_PROTOCOL);
   packets.length = 0;
   context.after(async () => { chatSpam.clear(account); chatLanguageWindow.clear(account); await room.onDispose(); room.clock.clear(); });
   const send = (text: unknown) => handlers.get('chat')!(client, text) as Promise<void>;
   const move = (hall: HallId) => { player.hall = hall; player.hallRevision++; (room as any).updateChatVisit(id, hall); };
-  const observe = (name: string, hall: HallId) => {
+  const observe = (name: string, hall: HallId, modern = true) => {
     const observerId = id + ':' + name, received: typeof packets = [];
     const observer: any = { sessionId: observerId, send(type: string, value: unknown) { received.push({ type, value }); } };
     const guest = new Player(); guest.hall = hall; guest.name = name;
     room.clients.push(observer);
     room.state.players.set(observerId, guest);
     (room as any).access.set(observerId, { active: true });
+    (room as any).controls.set(observerId, {});
     (room as any).updateChatVisit(observerId, hall);
-    return { received, history: () => handlers.get('history')!(observer) };
+    if (modern) requestHistory(observer, ROOM_CHAT_PROTOCOL);
+    return { received, history: (version = modern ? ROOM_CHAT_PROTOCOL : undefined) => requestHistory(observer, version),
+      send: (text: unknown) => handlers.get('chat')!(observer, text) };
   };
-  const history = () => handlers.get('history')!(client);
+  const history = (version = ROOM_CHAT_PROTOCOL) => requestHistory(client, version);
   const flush = () => new Promise<void>(resolve => setImmediate(resolve));
   return { room, client, player, packets, published, checks, active, record, sanction, send, flush, move, observe, history };
 }
+
+test('an unversioned client receives no floor history or messages and cannot post', async context => {
+  const { send, checks, flush, observe } = fixture(context);
+  const legacy = observe('legacy', 'arcade', false);
+  legacy.history();
+  assert.deepEqual(legacy.received, [{ type: 'history', value: [] }]);
+  await legacy.send('Message from an unversioned client');
+  assert.equal(checks.length, 0);
+  const published = send('Message scoped to the floor visit');
+  await flush(); checks[0].resolve(true); await published;
+  assert.equal(legacy.received.some(packet => packet.type === 'chat' || packet.type === 'chat-visit'), false);
+  legacy.history(ROOM_CHAT_PROTOCOL);
+  const visit = legacy.received.find(packet => packet.type === 'chat-visit')!.value;
+  const history = legacy.received.at(-1)!.value;
+  assert.deepEqual(history.map((message: { text: string; visitId: number }) => [message.text, message.visitId]),
+    [['Message scoped to the floor visit', visit.id]]);
+});
 
 test('background delivery preserves account order without emitting a checking status', async context => {
   const { send, checks, published, packets, flush } = fixture(context);
@@ -228,6 +251,7 @@ test('a confirmed physical capture places a dropped session on the street and re
   const { room, client, player, send, checks, packets, sanction, record, active, flush } = fixture(context);
   const saved = sanction();
   record.mock.mockImplementation(async () => saved);
+  context.mock.method(accounts.clubSanctions, 'enforcement', async () => ({ sanction: saved.outcome.sanction, disguiseSkinId: null }));
   let commit!: () => void;
   const capture = context.mock.method(accounts.clubSanctions, 'recordCapture', () => new Promise(resolve => {
     commit = () => resolve({ outcome: { sanction: saved.outcome.sanction, kind: 'initial' }, replayed: false });
@@ -361,7 +385,7 @@ test('duplicate request IDs reuse their result without a second publication', as
 });
 
 test('disconnect cancels correlated messages and reconnect resynchronizes terminal results', async context => {
-  const { room, client, send, checks, active, packets, published, flush } = fixture(context);
+  const { room, client, send, checks, active, packets, published, flush, history } = fixture(context);
   const ids = [randomUUID(), randomUUID()];
   const first = send({ id: ids[0], text: 'Синтетическая первая проверка связи' });
   const second = send({ id: ids[1], text: 'Синтетическая вторая проверка связи' });
@@ -370,6 +394,11 @@ test('disconnect cancels correlated messages and reconnect resynchronizes termin
   for (const id of ids) assert.equal(packets.filter(packet => packet.type === 'chat-result' && packet.value.id === id && packet.value.status === 'cancelled').length, 1);
   packets.length = 0; active.mock.mockImplementation(async () => true); await room.onReconnect(client);
   assert.deepEqual(packets.filter(packet => packet.type === 'chat-result').map(packet => packet.value.id), ids);
+  history(0);
+  assert.deepEqual(packets.at(-1), { type: 'history', value: [] });
+  assert.equal(packets.some(packet => packet.type === 'chat-visit'), false, 'a resumed socket must negotiate again');
+  history();
+  assert.equal(packets.at(-2)?.type, 'chat-visit');
   await send({ id: ids[0], text: 'Синтетическая первая проверка связи' });
   assert.equal(checks.length, 1); assert.equal(published.length, 0);
 });

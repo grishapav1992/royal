@@ -90,8 +90,26 @@ async function joinRoom(context: TestContext, { token }: Credentials, duringJoin
     Object.assign(guard, { hall: player.hall, x: player.x, y: player.y - distance, facing: 'down', phase: 'idle' });
     guards.tick(0);
   };
-  return { client, player, guard, guards, packets, spot, enter };
+  return { client, player, guard, guards, packets, spot, enter, refresh: () => (room as unknown as { refreshAccess(): Promise<void> }).refreshAccess() };
 }
+
+test('a room reconciles an episode closed by another process without a local payment event', async context => {
+  const owner = await guest(context, 25);
+  const sanction = await mark(owner.accountId);
+  const room = await joinRoom(context, owner);
+  await room.enter(); room.spot();
+  assert.equal(room.guard.target, room.client.sessionId);
+
+  // Call the durable store without the local HTTP route notification to represent a different process.
+  assert.equal((await accounts.clubSanctions.pay(owner.accountId, quote(sanction))).status, 'paid');
+  assert.equal(room.guard.target, room.client.sessionId);
+  await room.refresh();
+  assert.equal(room.guard.target, '');
+  assert.equal(room.packets.filter(type => type === 'club-sanction-changed').length, 1);
+  accounts.events.emit('club-sanction', owner.accountId, sanction);
+  room.spot();
+  assert.equal(room.guard.target, '', 'a delayed old mark cannot resurrect the closed pursuit');
+});
 
 test('fine routes inherit private wallet authorization, strict input and per-account limits', async context => {
   const request = await serve(context, { limit: 2 });

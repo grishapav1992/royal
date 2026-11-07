@@ -57,7 +57,9 @@ test('walk outside, circle the casino, reconnect and return through the same ent
   await expect(page.locator('h1')).toContainText('Улица казино');
   await expect(page.locator('#elevator-shortcut')).toBeHidden();
   expect(await page.evaluate(() => (window as any).royalDemo.getElevator().floors)).not.toContain('street');
-  await expect(page.locator('#chat-input')).toBeEnabled();
+  await expect(page.locator('.local-label')).toHaveAttribute('data-status', 'connected');
+  await expect(page.locator('#club-chat-dock')).toBeHidden();
+  await expect(page.locator('#chat-input')).toBeDisabled();
   const streetBefore=(await state(page)).street;
   expect(streetBefore.pedestrians).toHaveLength(5);
   await expect.poll(async () => (await state(page)).street.pedestrians[0].x).not.toBe(streetBefore.pedestrians[0].x);
@@ -181,8 +183,10 @@ test('walk outside, circle the casino, reconnect and return through the same ent
   // Reload while outdoors must recover the room and location, rather than spawning indoors.
   await page.emulateMedia({reducedMotion:'reduce'});
   await page.reload();
-  await expect(page.locator('#chat-input')).toBeEnabled();
+  await expect(page.locator('.local-label')).toHaveAttribute('data-status', 'connected', { timeout: 25000 });
   await expect.poll(async () => (await state(page)).hall, { timeout: 25000 }).toBe('street');
+  await expect(page.locator('#club-chat-dock')).toBeHidden();
+  await expect(page.locator('#chat-input')).toBeDisabled();
   const recovered = await page.evaluate(() => (window as any).royalDemo.getNetworkState());
   expect(recovered.roomId).toBe(network.roomId);
   await expect.poll(async () => (await state(page)).street.motion).toBe(false);
