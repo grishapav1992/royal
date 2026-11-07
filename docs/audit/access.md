@@ -17,11 +17,14 @@ VALUES ('named_operator', '<dataset UUID>', 'royal_game.demo_ledger');
 ALTER ROLE named_operator SET temp_file_limit = '64MB';
 ```
 
-После миграций источников и схемы аудита установщик запускает функции `installAuditReportAccess(db, group)` и `installAuditPlayerReport(db, group, sources)`. В `sources` указываются фактические имена игровой схемы и, если подключён платёжный источник, его схемы в той же базе. Оператору выдаётся EXECUTE на функции, а установка выполняется отдельной учётной записью. [Модуль доступа](../../server/audit/report-access.ts) · [Проекция истории](../../server/audit/report-player-source.ts)
+После миграций источников запустите установку от служебной учётной записи с `ROYAL_AUDIT_CLEANUP_DB_URL_FILE`. Команда создаёт таблицы в заранее подготовленной схеме аудита, устанавливает журнал очистки, права группы и функции для всех видов отчётов. Для платёжного контура на той же базе добавьте `--payments-schema royal_payments`. Повтор с теми же схемами и группой применяет те же миграции.
 
-Для сводки установщик дополнительно вызывает `installAuditSummaryReport(db, group, sources)`. Версия миграции доступа расширяет журнал существующих выгрузок и сохраняет ранее выданные права на запуск и завершение. [Сводка](../../server/audit/report-summary-source.ts)
+```sh
+npm run --silent audit:cleanup -- install --schema royal_audit --game-schema royal_game \
+  --reader-role royal_audit_reader
+```
 
-Для разбора отдельных операций после миграций набора и исходных схем вызовите `installAuditDetailReport(db, group, sources)`, `installAuditReplayReport(db, group, sources)` и `installAuditReconcileReport(db, group)`. Новые виды заданий добавляются отдельной миграцией журнала. [Детализация](../../server/audit/report-detail-source.ts) · [Выгрузка реплея](../../server/audit/report-replay-source.ts) · [Очередь сверок](../../server/audit/report-reconcile-source.ts)
+Служебная учётная запись должна владеть объектами аудита и иметь право читать нужные исходные таблицы. Операторы получают только групповой доступ к ограниченным функциям и индивидуальные разрешения на выбранные источники. [Модуль доступа](../../server/audit/report-access.ts) · [Установка и очистка](cleanup.md)
 
 ## Журнал выгрузок
 

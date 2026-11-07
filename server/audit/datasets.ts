@@ -83,6 +83,19 @@ export class AuditDatasets {
     await this.db.exec(`LOCK TABLE ${names.join(', ')} IN SHARE ROW EXCLUSIVE MODE NOWAIT`);
   }
 
+  private async captureTriggerState(ledger: string) {
+    const fn = relation(this.db.schema, 'audit_capture_posting_v1');
+    const row = await this.db.prepare(`SELECT tgfoid=to_regprocedure(?) AS correct, tgenabled,
+      tgdeferrable,tginitdeferred,tgtype,tgisinternal,tgnargs,tgqual IS NULL AS unconditional
+      FROM pg_trigger WHERE tgrelid=to_regclass(?) AND tgname='royal_audit_posting_v1'`).get(fn + '()', ledger);
+    if (!row) return 'missing';
+    if (!row.correct || !row.tgdeferrable || !row.tginitdeferred || row.tgtype !== 5 || row.tgisinternal ||
+        row.tgnargs !== 0 || !row.unconditional || (row.tgenabled !== 'O' && row.tgenabled !== 'D')) {
+      throw new Error('Conflicting audit capture on ' + ledger);
+    }
+    return row.tgenabled === 'O' ? 'enabled' : 'disabled';
+  }
+
   private async attachCapture(install: boolean) {
     const fn = relation(this.db.schema, 'audit_capture_posting_v1');
     const sources = relation(this.db.schema, 'audit_dataset_sources');
@@ -100,20 +113,17 @@ export class AuditDatasets {
       $audit$;
       REVOKE ALL ON FUNCTION ${fn}() FROM PUBLIC`);
     for (const ledger of this.ledgers) {
-      const current = await this.db.prepare(`SELECT tgfoid=to_regprocedure(?) AS correct, tgenabled,
-        tgdeferrable,tginitdeferred,tgtype
-        FROM pg_trigger WHERE tgrelid=to_regclass(?) AND tgname='royal_audit_posting_v1'`).get(fn + '()', ledger);
-      if (current) {
-        if (!current.correct || current.tgenabled !== 'O' || !current.tgdeferrable || !current.tginitdeferred || current.tgtype !== 5) {
-          throw new Error('Conflicting audit capture on ' + ledger);
-        }
-        continue;
-      }
-      if (!install) throw new Error('Audit capture is missing on ' + ledger);
+      const state = await this.captureTriggerState(ledger);
       const [schema, table] = ledger.split('.');
-      await this.db.exec(`CREATE CONSTRAINT TRIGGER royal_audit_posting_v1
-        AFTER INSERT ON ${relation(schema, table)} DEFERRABLE INITIALLY DEFERRED
-        FOR EACH ROW EXECUTE FUNCTION ${fn}()`);
+      const target = relation(schema, table);
+      if (state === 'missing') {
+        if (!install) throw new Error('Audit capture is missing on ' + ledger);
+        await this.db.exec(`CREATE CONSTRAINT TRIGGER royal_audit_posting_v1
+          AFTER INSERT ON ${target} DEFERRABLE INITIALLY DEFERRED
+          FOR EACH ROW EXECUTE FUNCTION ${fn}()`);
+      } else if (state === 'disabled') {
+        await this.db.exec(`ALTER TABLE ONLY ${target} ENABLE TRIGGER royal_audit_posting_v1`);
+      }
     }
   }
 
@@ -178,15 +188,22 @@ export class AuditDatasets {
     }
   }
 
+  private async registeredLedgers(datasetId: string) {
+    return (await this.db.prepare('SELECT source_namespace FROM audit_dataset_sources WHERE dataset_id=? ORDER BY source_namespace')
+      .all(datasetId)).map(row => String(row.source_namespace));
+  }
+
   async startTest() {
     await this.ready;
     return this.db.transaction(async () => {
       const existing = await this.db.prepare(`SELECT id::text,environment,started_at_ms FROM audit_datasets WHERE sealed_at_ms IS NULL`).get();
       if (existing) {
-        const registered = (await this.db.prepare('SELECT source_namespace FROM audit_dataset_sources WHERE dataset_id=? ORDER BY source_namespace')
-          .all(existing.id)).map(row => row.source_namespace);
+        const registered = await this.registeredLedgers(String(existing.id));
         if (existing.environment !== 'test' || JSON.stringify(registered) !== JSON.stringify(this.ledgers)) {
           throw new Error('Another audit dataset is active');
+        }
+        for (const ledger of this.ledgers) {
+          if (await this.captureTriggerState(ledger) !== 'enabled') throw new Error('Active audit capture is unavailable');
         }
         return { datasetId: String(existing.id), environment: 'test' as const, startedAtMs: Number(existing.started_at_ms) };
       }
@@ -203,6 +220,33 @@ export class AuditDatasets {
       throw new Error('Live audit checkpoint requires a cleaned sealed test dataset');
     }
     return this.createCheckpoint('live');
+  }
+
+  /** Seal the exact dataset and disable its trusted source triggers at one fenced boundary. */
+  async stopCapture(datasetId: string, environment: 'test' | 'live') {
+    await this.ready;
+    return this.db.transaction(async () => {
+      const row = await this.db.prepare('SELECT sealed_at_ms FROM audit_datasets WHERE id=? AND environment=? FOR UPDATE NOWAIT')
+        .get(datasetId, environment);
+      if (!row || JSON.stringify(await this.registeredLedgers(datasetId)) !== JSON.stringify(this.ledgers)) {
+        throw new Error('Audit capture scope does not match');
+      }
+      if (await this.db.prepare('SELECT 1 FROM audit_datasets WHERE id<>? AND sealed_at_ms IS NULL').get(datasetId)) {
+        throw new Error('Another audit dataset is active');
+      }
+      await this.fence(this.ledgers);
+      for (const ledger of this.ledgers) {
+        const state = await this.captureTriggerState(ledger);
+        if (state === 'missing') throw new Error('Audit capture is missing on ' + ledger);
+        if (state === 'enabled') {
+          const [schema, table] = ledger.split('.');
+          await this.db.exec(`ALTER TABLE ONLY ${relation(schema, table)} DISABLE TRIGGER royal_audit_posting_v1`);
+        }
+      }
+      const sealedAtMs = row.sealed_at_ms ?? (await this.db.prepare(`UPDATE audit_datasets SET sealed_at_ms=GREATEST(started_at_ms,
+        floor(extract(epoch FROM clock_timestamp())*1000)::bigint) WHERE id=? RETURNING sealed_at_ms`).get(datasetId))!.sealed_at_ms;
+      return { status: 'stopped' as const, datasetId, environment, sealedAtMs: Number(sealedAtMs) };
+    }, { lockKey: 'audit-dataset' });
   }
 
   async sealTest(datasetId: string) {

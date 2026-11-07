@@ -199,12 +199,8 @@ test('refuses audit table inheritance or delete rewrites that could touch a diff
   assert.match(await readFile(f.file,'utf8'),/test,-100/);
 });
 
-test('the service CLI resumes file completion with the reviewed digest and never repeats the database cutover', async t => {
+test('the service CLI installs report access, stops capture and safely resumes the reviewed cutover', async t => {
   const f = await fixture(t);
-  await f.datasets.sealTest(f.input.datasetId);
-  await f.audit.exec(`CREATE FUNCTION stop_cleanup_journal() RETURNS trigger LANGUAGE plpgsql AS $audit$
-    BEGIN RAISE EXCEPTION 'fixture interruption'; END $audit$;
-    CREATE TRIGGER stop_cleanup_journal BEFORE UPDATE ON audit_cleanup_runs FOR EACH ROW EXECUTE FUNCTION stop_cleanup_journal()`);
   const url = new URL('postgresql://localhost');
   url.hostname = process.env.PGHOST!;
   url.port = process.env.PGPORT!;
@@ -219,10 +215,31 @@ test('the service CLI resumes file completion with the reviewed digest and never
   });
   const file = join(f.filesRoot,'cleanup-config');
   await writeFile(file,url.href,{ mode:0o600 });
+  const group = 'audit_install_reader_' + randomUUID().replaceAll('-','').slice(0,12);
+  await f.audit.exec(`CREATE ROLE ${identifier(group)} NOLOGIN`);
   const run = (command:string,...extra:string[]) => promisify(execFile)(process.execPath,
     ['--import','tsx','scripts/audit-cleanup.ts',command,'--schema',f.audit.schema,'--game-schema',f.game.schema,
-      '--dataset',f.input.datasetId,'--files-root',f.filesRoot,...extra],
+      ...(command === 'install' ? [] : ['--dataset',f.input.datasetId]),
+      ...(['plan','apply'].includes(command) ? ['--files-root',f.filesRoot] : []),...extra],
     { cwd:fileURLToPath(new URL('..',import.meta.url)),env:{ ...process.env,ROYAL_AUDIT_CLEANUP_DB_URL_FILE:file } });
+  const expectedInstallation = { status:'installed', readerRole:group };
+  assert.deepEqual(JSON.parse((await run('install','--reader-role',group)).stdout),expectedInstallation);
+  assert.deepEqual(JSON.parse((await run('install','--reader-role',group)).stdout),expectedInstallation);
+  const privileges = await f.audit.prepare(`SELECT p.proname FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname=? AND has_function_privilege(?,p.oid,'EXECUTE') ORDER BY p.proname`).all(f.audit.schema,group);
+  assert.deepEqual(privileges.map(row => row.proname), [
+    'audit_report_begin','audit_report_detail','audit_report_finish','audit_report_player_page',
+    'audit_report_reconcile','audit_report_replay','audit_report_summary',
+  ]);
+  assert.equal((await f.audit.prepare("SELECT has_table_privilege(?,?,'SELECT') AS direct").get(group,f.source))?.direct,false);
+  const stopped = JSON.parse((await run('stop-capture','--environment','test')).stdout);
+  assert.equal(stopped.status,'stopped');
+  assert.equal(stopped.datasetId,f.input.datasetId);
+  assert.equal((await f.game.prepare(`SELECT tgenabled FROM pg_trigger WHERE tgrelid='demo_ledger'::regclass
+    AND tgname='royal_audit_posting_v1'`).get())?.tgenabled,'D');
+  await f.audit.exec(`CREATE FUNCTION stop_cleanup_journal() RETURNS trigger LANGUAGE plpgsql AS $audit$
+    BEGIN RAISE EXCEPTION 'fixture interruption'; END $audit$;
+    CREATE TRIGGER stop_cleanup_journal BEFORE UPDATE ON audit_cleanup_runs FOR EACH ROW EXECUTE FUNCTION stop_cleanup_journal()`);
   const manifest = JSON.parse((await run('plan')).stdout);
   assert.deepEqual(manifest.blockers,[]);
   await assert.rejects(run('apply','--sha256',manifest.sha256), error => {
@@ -238,8 +255,17 @@ test('the service CLI resumes file completion with the reviewed digest and never
   assert.equal(finished.liveDatasetId,row.live_dataset_id);
   assert.equal(finished.files.alreadyAbsent,1);
   assert.equal((await f.audit.prepare("SELECT count(*)::int AS n FROM audit_datasets WHERE environment='live'").get())?.n,1);
+  assert.equal((await f.game.prepare(`SELECT tgenabled FROM pg_trigger WHERE tgrelid='demo_ledger'::regclass
+    AND tgname='royal_audit_posting_v1'`).get())?.tgenabled,'O');
+  await assert.rejects(run('stop-capture','--environment','test'));
   await assert.rejects(promisify(execFile)(process.execPath, ['--import','tsx','scripts/audit-cleanup.ts',
     'init-files','--schema',f.audit.schema,'--dataset',f.input.datasetId,'--files-root',f.filesRoot], {
     cwd:fileURLToPath(new URL('..',import.meta.url)),env:{ ...process.env,ROYAL_AUDIT_CLEANUP_DB_URL_FILE:file },
   }), error => String((error as { stderr?: string }).stderr).includes('test-dataset-already-cleaned'));
+  const stoppedLive = await f.datasets.stopCapture(row.live_dataset_id,'live');
+  assert.equal(stoppedLive.environment,'live');
+  const unobserved = randomUUID();
+  await f.play(unobserved);
+  assert.equal((await f.game.prepare('SELECT count(*)::int AS n FROM demo_ledger WHERE operation_id=?').get(unobserved))?.n,2);
+  assert.equal((await f.audit.prepare('SELECT count(*)::int AS n FROM audit_posting_refs WHERE operation_id=?').get(unobserved))?.n,0);
 });

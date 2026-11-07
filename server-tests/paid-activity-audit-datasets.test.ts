@@ -162,3 +162,72 @@ test('membership follows the source transaction, independent of ID allocation, r
   await f.wallet.operate(f.player, { id: post, kind: 'deposit', amount: 1 });
   assert.equal((await f.refs()).find(row => row.operation_id === post)?.dataset_id, next.datasetId);
 });
+
+test('a fenced stop keeps committed stakes and lets settlement retry after a broken audit reference writer', async t => {
+  const f = await fixture(t);
+  for (const account of [f.player, f.opponent]) {
+    await f.wallet.operate(account, { id: randomUUID(), kind: 'deposit', amount: 100 });
+  }
+  const dataset = await f.datasets.startTest();
+  const ledger = new VirtualPvpLedger(f.game, f.wallet);
+  const matchId = randomUUID(), hold = { matchId, gameId: 'chess', stakeUnits: '10000000' };
+  for (const account of [f.player, f.opponent]) await ledger.pvpHold(account, hold);
+  const before = await f.refs();
+  assert.equal(before.length, 2);
+  const captureStates = async () => (await f.audit.prepare(`
+    SELECT tgenabled FROM pg_trigger WHERE tgname='royal_audit_posting_v1'
+    AND tgrelid=ANY(ARRAY[to_regclass(?),to_regclass(?),to_regclass(?)]) ORDER BY tgrelid
+  `).all(f.game.schema + '.demo_ledger', f.game.schema + '.capro_pending_ledger', f.payment.schema + '.crypto_ledger'))
+    .map(row => row.tgenabled);
+  await assert.rejects(f.datasets.stopCapture(dataset.datasetId, 'live'), /scope does not match/);
+  const writer = await f.game.pool.connect();
+  try {
+    await writer.query('BEGIN');
+    await writer.query('LOCK TABLE demo_ledger IN ROW EXCLUSIVE MODE');
+    await assert.rejects(f.datasets.stopCapture(dataset.datasetId, 'test'), { code: '55P03' });
+    assert.deepEqual(await captureStates(), ['O', 'O', 'O']);
+    assert.equal((await f.audit.prepare('SELECT sealed_at_ms FROM audit_datasets WHERE id=?').get(dataset.datasetId))?.sealed_at_ms, null);
+  } finally {
+    await writer.query('ROLLBACK');
+    writer.release();
+  }
+
+  await f.audit.exec(`CREATE FUNCTION fixture_reject_audit_ref() RETURNS trigger LANGUAGE plpgsql AS $audit$
+    BEGIN RAISE EXCEPTION 'isolated audit reference failure'; END $audit$;
+    CREATE TRIGGER fixture_reject_audit_ref BEFORE INSERT ON audit_posting_refs
+    FOR EACH ROW EXECUTE FUNCTION fixture_reject_audit_ref()`);
+  const final = { matchId, winnerId: f.player, reason: 'win' } as const;
+  await assert.rejects(ledger.pvpFinish(f.player, final), /isolated audit reference failure/);
+  assert.deepEqual(await f.game.prepare('SELECT state,fee_units FROM virtual_pvp_banks WHERE match_id=?').get(matchId),
+    { state: 'open', fee_units: 0 });
+  assert.deepEqual(await f.refs(), before);
+
+  const stopped = await f.datasets.stopCapture(dataset.datasetId, 'test');
+  assert.equal(stopped.status, 'stopped');
+  assert(stopped.sealedAtMs >= dataset.startedAtMs);
+  assert.deepEqual(await f.datasets.stopCapture(dataset.datasetId, 'test'), stopped);
+  assert.deepEqual(await captureStates(), ['D', 'D', 'D']);
+  await ledger.pvpFinish(f.player, final);
+  assert.equal((await ledger.pvpFinish(f.player, final)).replayed, true);
+  const payout = await f.game.prepare('SELECT account_id,amount_units::text FROM demo_ledger WHERE operation_id=?')
+    .all('pvp:' + matchId + ':final');
+  assert.deepEqual(payout, [{ account_id: f.player, amount_units: '1900' }]);
+  const postStopPayment = randomUUID();
+  await f.crypto.creditStarsDeposit(f.player, postStopPayment, '1000000', 'after-audit-stop', Date.now());
+  assert.ok(await f.payment.prepare('SELECT 1 FROM crypto_ledger WHERE operation_id=?').get(postStopPayment));
+  assert.deepEqual(await f.refs(), before);
+
+  await f.audit.exec('DROP TRIGGER fixture_reject_audit_ref ON audit_posting_refs');
+  const next = await f.datasets.startTest();
+  assert.notEqual(next.datasetId, dataset.datasetId);
+  assert.deepEqual(await captureStates(), ['O', 'O', 'O']);
+  const opening = await f.audit.prepare('SELECT available_units::text FROM audit_opening_balances WHERE dataset_id=? AND account_id=? AND source_namespace=?')
+    .get(next.datasetId, f.player, f.game.schema + '.demo_ledger');
+  assert.deepEqual(opening, { available_units: '10900' });
+  await assert.rejects(f.datasets.stopCapture(dataset.datasetId, 'test'), /Another audit dataset is active/);
+  const afterRestart = randomUUID();
+  await f.wallet.operate(f.player, { id: afterRestart, kind: 'deposit', amount: 1 });
+  const rows = await f.refs();
+  assert.equal(rows.length, 3);
+  assert.equal(rows.find(row => row.operation_id === afterRestart)?.dataset_id, next.datasetId);
+});

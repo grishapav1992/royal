@@ -23,7 +23,9 @@ import { startAuditAttemptRuntime } from './audit/attempts';
 import { auditHttpAttempts } from './audit/http-attempts';
 
 const port = Number(process.env.PORT || 2567);
-const auditAttempts = startAuditAttemptRuntime(process.env, accounts.schema);
+const configuredAudit = startAuditAttemptRuntime(process.env, accounts.schema);
+const auditAttempts = await configuredAudit?.ready ? configuredAudit : undefined;
+if (configuredAudit && !auditAttempts) await configuredAudit.close();
 configureLobbyAuditAttempts(auditAttempts?.record);
 configureLobbyChessReplay(auditAttempts?.recordChess);
 configureLobbyCombatReplay(auditAttempts?.recordCombat);

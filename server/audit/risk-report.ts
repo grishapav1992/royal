@@ -1,6 +1,5 @@
-import { isDeepStrictEqual } from 'node:util';
 import type { PostgresDatabase } from '../database';
-import type { AuditCategory, AuditScope } from './contract';
+import { auditSourceKey, type AuditCategory, type AuditScope } from './contract';
 import { AuditPostingReader } from './postings';
 import { selectCasinoRisk } from './risk-casino';
 import { selectPvpRisk } from './risk-pvp';
@@ -28,7 +27,7 @@ function reportSignal(signal: AuditRiskSignal, stored: StoredAuditRiskSignal | n
     subjectAccountIds: signal.input.subject.accountIds, asset: signal.input.asset, comparisonKey: signal.input.comparisonKey,
     gaps: signal.gaps, completeness: signal.input.completeness, subject: signal.subject, comparison: signal.comparison,
     evidence: signal.input.observations.filter(row => subjectAccounts.has(row.primary.accountId!)),
-    revision: stored?.revision ?? null, review: stored?.review ?? null,
+    revision: stored?.revision ?? null, review: stored?.review ?? null, replayLinks: stored?.replayLinks ?? [],
     reviewStatus: stored?.reviewAppliesToCurrent ? 'reviewed' : stored?.review ? 'needs-review' : 'unreviewed',
   };
 }
@@ -51,10 +50,13 @@ export async function runAuditRiskReport(audit: PostgresDatabase, game: Postgres
   for (const candidate of candidates) {
     signal?.throwIfAborted();
     const calculated = evaluateAuditRiskRule(candidate.rule, candidate.input);
-    const stored = await storage.record(calculated);
+    const subject = new Set(calculated.input.subject.accountIds);
+    const subjectSources = new Set(calculated.input.observations.flatMap(row =>
+      row.entity && row.primary.accountId && subject.has(row.primary.accountId) ? [auditSourceKey(row.entity.source)] : []));
+    const links = (candidate.replayLinks ?? []).filter(link => subjectSources.has(auditSourceKey(link.source)));
+    const stored = await storage.record(calculated, links);
     const current = stored?.signal ?? calculated;
-    const factsMatch = isDeepStrictEqual(calculated, { ...current, input: { ...current.input, asOfMs: calculated.input.asOfMs } });
-    signals.push({ ...reportSignal(current, stored), segment: candidate.segment, replayLinks: factsMatch ? candidate.replayLinks ?? [] : [] });
+    signals.push({ ...reportSignal(current, stored), segment: candidate.segment, ...(stored ? {} : { replayLinks: links }) });
     for (const finding of candidate.financialFindings ?? []) {
       financial.set(JSON.stringify([finding.code, finding.source.namespace, finding.source.rowId, finding.postings]), finding);
     }

@@ -1,8 +1,10 @@
 import { identifier, type PostgresDatabase } from '../database';
 import { reconcileStoredPvpMatch } from './check-pvp';
 import type { AuditAsset, AuditEntityRef } from './contract';
+import { cardTurnReplayDefinitions, verifyCardTurnReplay } from './replay-pvp-cards';
+import { tsuTurnReplayDefinition, verifyTsuTurnReplay } from './replay-pvp-tsu';
 import { chessTurnReplayDefinition, verifyChessTurnReplay } from './replay-pvp-turn';
-import { inspectReplayManifest } from './replay-package';
+import { inspectReplayManifest, type ReplayDefinition } from './replay-package';
 import { AuditReplayStore } from './replay-store';
 import { type AuditRiskEvidence, type AuditRiskRule } from './risk-rules';
 import { RISK_WINDOW_MS, riskAccounts, riskCandidate, riskSourceBoundaries,
@@ -34,13 +36,25 @@ export const pvpRiskRules = {
   response: rule('pvp-fast-response-intervals', { numerator: '2', denominator: '3' }, { numerator: '3', denominator: '2' }),
 } as const;
 
+const timedReplayDefinitions = [chessTurnReplayDefinition, tsuTurnReplayDefinition, ...cardTurnReplayDefinitions];
+const expandedTimingRule = (base: AuditRiskRule): AuditRiskRule => ({
+  ...base, version: '2', sample: { ...base.sample, selector: 'scoped-pvp-timed-replay-v2' },
+});
+const terminalForReason: Readonly<Record<string, string>> = {
+  win: 'settled', resign: 'forfeited', disconnect: 'forfeited', timeout: 'timed-out', draw: 'draw',
+};
+const expandedTimingRules = {
+  resignation: expandedTimingRule(pvpRiskRules.resignation),
+  response: expandedTimingRule(pvpRiskRules.response),
+};
+
 type Cohort = 'subject' | 'comparison';
 type Coverage = Record<Cohort, boolean>;
 type PostingProof = Extract<AuditRiskEvidence, { kind: 'posting' }>;
 type MatchCheck = Awaited<ReturnType<typeof reconcileStoredPvpMatch>>;
 type Anchor = { accountId: string; cohort: Cohort };
 type Timing = { resign?: { seat: 1 | 2; atMs: number; sequence: number };
-  responses: { seat: 1 | 2; elapsedMs: number; sequence: number }[]; terminalSequence: number; gameVersion: string };
+  responses?: { seat: 1 | 2; elapsedMs: number; sequence: number }[]; terminalSequence: number; gameVersion: string };
 type Participant = {
   cohort: Cohort; primary: PostingProof; supporting: PostingProof[]; entity: AuditEntityRef;
   opponent: string; net: bigint; drawn: boolean; seat?: 1 | 2; timing?: Timing;
@@ -71,39 +85,45 @@ function labels(rows: Participant[], keyOf: (row: Participant) => string) {
 }
 
 async function timingFor(audit: PostgresDatabase, store: AuditReplayStore, selection: AuditRiskSelection, matchId: string,
-  winnerSeat: 1 | 2 | null, finals: PostingProof[]): Promise<Timing | undefined> {
+  definition: ReplayDefinition, winnerSeat: 1 | 2 | null, bankReason: string | null, finals: PostingProof[]): Promise<Timing | undefined> {
   const header = await audit.prepare(`SELECT manifest FROM audit_replay_packages WHERE dataset_id=? AND replay_id=?
     AND octet_length(manifest::text)<=65536`).get(selection.scope.datasetId, matchId);
   const manifest = inspectReplayManifest(header?.manifest);
-  if (manifest.status !== 'verified' || manifest.value.fragments.reduce((sum, part) => sum + part.eventCount, 0) > maxReplayEvents ||
+  if (manifest.status !== 'verified' || manifest.value.coverage !== 'complete' || manifest.value.timing === 'source-order' ||
+      !manifest.value.terminal || manifest.value.fragments.reduce((sum, part) => sum + part.eventCount, 0) > maxReplayEvents ||
       manifest.value.fragments.reduce((sum, part) => sum + part.byteLength, 0) > maxReplayBytes) return;
-  const read = await store.read(selection.scope, matchId, [chessTurnReplayDefinition]);
-  if (read.status !== 'verified') return;
+  const read = await store.read(selection.scope, matchId, [definition]);
+  if (read.status !== 'verified' || read.value.manifest.entityId !== matchId) return;
   const { value } = read;
-  if (value.manifest.entityId !== matchId || value.manifest.game.gameId !== 'chess' ||
-      value.manifest.coverage !== 'complete' || value.manifest.timing === 'source-order' || !value.manifest.terminal ||
-      verifyChessTurnReplay(value).status !== 'verified') return;
-  const end = value.fragments.at(-1)?.events.at(-1);
+  const events = value.fragments.flatMap(part => part.events), end = events.at(-1);
   if (end?.data.kind !== 'terminal' || end.data.winnerSeat !== winnerSeat || end.postings.length !== finals.length ||
       finals.some(proof => !end.postings.some(ref => ref.namespace === proof.source.namespace && ref.rowId === proof.source.rowId))) return;
-  const timing: Timing = { terminalSequence: value.manifest.terminal.sequence,
-    gameVersion: value.manifest.game.rulesVersion + ':' + value.manifest.game.engineVersion, responses: [] };
+
+  const chess = definition.gameId === 'chess', simultaneous = definition.gameId === 'tsu-e-fa';
+  const verified = chess ? verifyChessTurnReplay(value) : simultaneous ? verifyTsuTurnReplay(value) : verifyCardTurnReplay(value);
+  if (verified.status !== 'verified' || ('engineVerified' in verified && !verified.engineVerified)) return;
+
+  const timing: Timing = { terminalSequence: end.sequence, gameVersion: definition.rulesVersion + ':' + definition.engineVersion,
+    ...(simultaneous ? {} : { responses: [] }) };
   let previousMove: { seat: 1 | 2; atMs: number } | undefined;
-  for (const { sequence, atMs, data } of value.fragments.flatMap(part => part.events)) {
+  for (const { sequence, atMs, data } of events) {
     if (data.kind === 'presence') previousMove = undefined;
     if (data.kind !== 'action' || data.action.profile !== 'pvp-turn-based') continue;
     const { code, seat } = data.action;
     if (code === 'resign') timing.resign = { seat, sequence, atMs };
-    if (code === 'move') {
+    if (timing.responses && (code === 'move' || !chess && code === 'pass')) {
       if (previousMove && previousMove.seat !== seat) timing.responses.push({ seat, elapsedMs: atMs - previousMove.atMs, sequence });
       previousMove = { seat, atMs };
     }
   }
+  // Card and Tsu sessions commit a distinct voluntary surrender outcome. Preserve the chess engine's separate v1 convention.
+  if (!chess && (!bankReason || end.data.outcome !== terminalForReason[bankReason] ||
+      (bankReason === 'resign') !== Boolean(timing.resign))) return;
   return timing;
 }
 
 function shortResponse(row: Participant) {
-  const sample = row.timing?.responses.filter(response => response.seat === row.seat)
+  const sample = row.timing?.responses?.filter(response => response.seat === row.seat)
     .sort((a, b) => a.elapsedMs - b.elapsedMs || a.sequence - b.sequence) ?? [];
   if (sample.length < 2) return;
   const lower = sample[Math.floor((sample.length - 1) / 2)], upper = sample[Math.floor(sample.length / 2)];
@@ -246,12 +266,15 @@ export async function selectPvpRisk(audit: PostgresDatabase, selection: AuditRis
       const sharesSubject = participants.some(account => selection.subjectAccountIds.includes(account));
       const eligible = anchors.filter(anchor => anchor.cohort === 'subject' || !sharesSubject);
       if (!eligible.length) continue;
-      const standard = replayAvailable && check.bank.gameId === 'chess' ? await audit.prepare(
+      const bank = check.bank;
+      const definition = replayAvailable ? timedReplayDefinitions.find(row => row.gameId === bank.gameId &&
+        (row.rulesVersion === bank.gameRulesVersion || row.gameId !== 'tsu-e-fa' && bank.gameRulesVersion === null)) : undefined;
+      const standard = definition ? await audit.prepare(
         `SELECT creator_id,opponent_id FROM ${game}.pvp_matches WHERE id=?`).get(matchId) : undefined;
       const winner = check.bank.winnerId;
       const winningSeat = winner === null ? null : winner === standard?.creator_id ? 1 : winner === standard?.opponent_id ? 2 : undefined;
-      const timing = standard && winningSeat !== undefined ? await timingFor(audit, replayStore, selection, matchId, winningSeat,
-        postingProofs.filter(proof => proof.operationId?.endsWith(':final'))) : undefined;
+      const timing = definition && standard && winningSeat !== undefined ? await timingFor(audit, replayStore, selection, matchId,
+        definition, winningSeat, check.bank.reason, postingProofs.filter(proof => proof.operationId?.endsWith(':final'))) : undefined;
       for (const anchor of eligible) {
         const participant = check.participants.find(actor => actor.accountId === anchor.accountId);
         const primary = postingProofs.find(posting => posting.accountId === anchor.accountId && posting.operationId?.endsWith(':hold'));
@@ -285,8 +308,13 @@ export async function selectPvpRisk(audit: PostgresDatabase, selection: AuditRis
         labels(directed, row => JSON.stringify([row.opponent, row.net > 0n ? 'received' : 'paid'])), covered));
 
       const verified = rows.filter(row => row.timing && row.seat);
-      const timedCovered = { ...covered };
-      for (const row of rows) if (!row.timing || !row.seat) timedCovered[row.cohort] = false;
+      const resignationCovered = { ...covered }, responseCovered = { ...covered };
+      for (const row of rows) {
+        if (!row.timing || !row.seat) resignationCovered[row.cohort] = false;
+        if (!row.timing?.responses || !row.seat) responseCovered[row.cohort] = false;
+      }
+      const timingRules = timedReplayDefinitions.some(row => row.gameId !== 'chess' && segment.startsWith(row.gameId + ':'))
+        ? expandedTimingRules : pvpRiskRules;
       const versions = new Set(verified.map(row => row.timing!.gameVersion));
       for (const version of versions.size ? versions : ['timing-unavailable']) {
         const timed = verified.filter(row => row.timing?.gameVersion === version);
@@ -298,8 +326,8 @@ export async function selectPvpRisk(audit: PostgresDatabase, selection: AuditRis
           return response ? [{ ...row, ...response }] : [];
         });
         const timingSegment = segment + ':' + version;
-        const resignation = riskCandidate(selection, pvpRiskRules.resignation, timingSegment, asset, resignations, timedCovered);
-        const response = riskCandidate(selection, pvpRiskRules.response, timingSegment, asset, intervals, timedCovered);
+        const resignation = riskCandidate(selection, timingRules.resignation, timingSegment, asset, resignations, resignationCovered);
+        const response = riskCandidate(selection, timingRules.response, timingSegment, asset, intervals, responseCovered);
         addReplayLinks(resignation, resignations);
         addReplayLinks(response, intervals);
         candidates.push(resignation, response);

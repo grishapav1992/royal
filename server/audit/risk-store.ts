@@ -1,14 +1,23 @@
 import { isDeepStrictEqual } from 'node:util';
 import type { PostgresDatabase } from '../database';
 import { applySchemaMigration } from '../database-migrations';
-import { isAuditRecord, type AuditScope } from './contract';
+import { auditSourceKey, isAuditRecord, type AuditEntityRef, type AuditScope } from './contract';
 import type { AuditPostingReader } from './postings';
+import { inspectReplayManifest, isReplayId } from './replay-package';
+import { AuditReplayStore } from './replay-store';
+import type { AuditRiskCandidate } from './risk-selection';
 import {
   evaluateAuditRiskRule, isRiskActorId, isRiskScope, isRiskSignalKey, riskAssetKey, riskEntityKey, riskEvidenceKey,
   type AuditRiskEvidence, type AuditRiskSignal,
 } from './risk-rules';
 
 const maximumPayloadBytes = 1_048_576;
+const maximumReplayLinks = 96;
+const maximumReplayLinkBytes = 65_536;
+const maximumLinkedReplayEvents = 512;
+const maximumLinkedReplayBytes = 256 * 1024;
+type ReplayLink = NonNullable<AuditRiskCandidate['replayLinks']>[number];
+type ReplayLinks = { version: 1; links: ReplayLink[] };
 const reviewDecisions = ['explained', 'escalated', 'dismissed'] as const;
 type ReviewDecision = (typeof reviewDecisions)[number];
 type Review = { revision: number; reviewerId: string; decision: ReviewDecision; reviewedAtMs: number };
@@ -18,6 +27,7 @@ export type StoredAuditRiskSignal = {
   revision: number;
   review: Review | null;
   reviewAppliesToCurrent: boolean;
+  replayLinks?: ReplayLink[];
 };
 
 export async function migrateAuditRiskSignals(db: PostgresDatabase) {
@@ -36,6 +46,10 @@ export async function migrateAuditRiskSignals(db: PostgresDatabase) {
       FOREIGN KEY(rule_id,rule_version) REFERENCES audit_risk_rules(rule_id,rule_version)
     )`,
   ] });
+  await applySchemaMigration(db, { id: 'paid-activity-audit-risk-replay-links-v1', statements: [
+    `ALTER TABLE audit_risk_signals ADD COLUMN replay_links jsonb NOT NULL DEFAULT '{"version":1,"links":[]}'::jsonb
+      CHECK (jsonb_typeof(replay_links)='object' AND octet_length(replay_links::text)<=${maximumReplayLinkBytes})`,
+  ] });
 }
 
 function checkSignal(value: AuditRiskSignal): AuditRiskSignal {
@@ -50,20 +64,69 @@ function checkSignal(value: AuditRiskSignal): AuditRiskSignal {
 const positiveRevision = (value: unknown): value is number =>
   typeof value === 'number' && Number.isSafeInteger(value) && value > 0;
 
-function stored(signal: AuditRiskSignal, revision: number, review: Review | null): StoredAuditRiskSignal {
+function exactFields(value: unknown, fields: string[]): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && Object.getPrototypeOf(value) === Object.prototype &&
+    Reflect.ownKeys(value).length === fields.length && fields.every(field => Object.hasOwn(value, field));
+}
+
+function subjectProofs(signal: AuditRiskSignal) {
+  const accounts = new Set(signal.input.subject.accountIds);
+  const entities = new Map<string, { entity: AuditEntityRef; accountId: string; postings: Set<string> }>();
+  for (const { entity, primary, supporting } of signal.input.observations) {
+    if (!entity || !primary.accountId || !accounts.has(primary.accountId)) continue;
+    const key = auditSourceKey(entity.source);
+    const proof = entities.get(key) ?? { entity, accountId: primary.accountId, postings: new Set<string>() };
+    for (const ref of [primary, ...supporting]) if (ref.kind === 'posting') proof.postings.add(auditSourceKey(ref.source));
+    entities.set(key, proof);
+  }
+  return entities;
+}
+
+function checkedReplayLinks(signal: AuditRiskSignal, input: unknown): ReplayLinks {
+  if (!exactFields(input, ['version', 'links']) || input.version !== 1 || !Array.isArray(input.links) ||
+      input.links.length > maximumReplayLinks) throw new Error('Invalid audit risk replay links');
+  const eligible = subjectProofs(signal);
+  const unique = new Set<string>();
+  const links: ReplayLink[] = [];
+  for (const link of input.links) {
+    if (!exactFields(link, ['replayId', 'sequence', 'source']) || !isReplayId(link.replayId) ||
+        !positiveRevision(link.sequence) || !exactFields(link.source, ['namespace', 'rowId']) ||
+        typeof link.source.namespace !== 'string' || typeof link.source.rowId !== 'string') {
+      throw new Error('Invalid audit risk replay link');
+    }
+    const source = { namespace: link.source.namespace, rowId: link.source.rowId }, key = link.replayId + ':' + link.sequence;
+    if (!eligible.get(auditSourceKey(source))?.postings.size || unique.has(key)) throw new Error('Audit risk replay link outside subject evidence');
+    unique.add(key);
+    links.push({ replayId: link.replayId, sequence: link.sequence, source });
+  }
+  links.sort((a, b) => (a.replayId < b.replayId ? -1 : a.replayId > b.replayId ? 1 : a.sequence - b.sequence));
+  return { version: 1, links };
+}
+
+function replayEntityId(entity: AuditEntityRef, accountId: string): string | null {
+  if (entity.category !== 'casino') return entity.source.rowId;
+  try {
+    const key: unknown = JSON.parse(entity.source.rowId);
+    return Array.isArray(key) && key.length === 2 && key[0] === accountId && typeof key[1] === 'string' ? key[1] : null;
+  } catch { return null; }
+}
+
+function stored(signal: AuditRiskSignal, revision: number, review: Review | null, attachment: unknown): StoredAuditRiskSignal {
   if (!positiveRevision(revision) || (review !== null && (!positiveRevision(review.revision) || review.revision > revision ||
       !isRiskActorId(review.reviewerId) || !reviewDecisions.includes(review.decision) ||
       !Number.isSafeInteger(review.reviewedAtMs) || review.reviewedAtMs < 0))) {
     throw new Error('Invalid stored audit risk revision or review');
   }
-  return { signal, revision, review, reviewAppliesToCurrent: review !== null && review.revision === revision };
+  const { links } = checkedReplayLinks(signal, attachment);
+  return { signal, revision, review, reviewAppliesToCurrent: review !== null && review.revision === revision,
+    ...(links.length ? { replayLinks: links } : {}) };
 }
 
 function unchanged(previous: AuditRiskSignal, candidate: AuditRiskSignal) {
   return isDeepStrictEqual(previous, { ...candidate, input: { ...candidate.input, asOfMs: previous.input.asOfMs } });
 }
 
-type RiskRow = { signal: AuditRiskSignal; revision: number; review: Review | null };
+type RiskRow = { signal: AuditRiskSignal; revision: number; review: Review | null; replay_links: unknown };
 type RecordedEvidence = {
   accountId: string | null;
   operationId: string | null;
@@ -76,7 +139,7 @@ export class AuditRiskSignals {
   constructor(private readonly db: PostgresDatabase, private readonly postings?: Pick<AuditPostingReader, 'read'>) {}
 
   private row(scope: AuditScope, key: string) {
-    return this.db.prepare(`SELECT s.signal,s.revision,s.review FROM audit_risk_signals s
+    return this.db.prepare(`SELECT s.signal,s.revision,s.review,s.replay_links FROM audit_risk_signals s
       JOIN audit_datasets d ON d.id=s.dataset_id
       WHERE s.dataset_id=? AND s.signal_key=? AND d.environment=?`)
       .get(scope.datasetId, key, scope.environment) as Promise<RiskRow | undefined>;
@@ -90,7 +153,7 @@ export class AuditRiskSignals {
     if (signal.key !== key || signal.input.scope.datasetId !== scope.datasetId || signal.input.scope.environment !== scope.environment) {
       throw new Error('Audit risk signal scope mismatch');
     }
-    return stored(signal, row.revision, row.review);
+    return stored(signal, row.revision, row.review, row.replay_links);
   }
 
   private async validateEvidence(signal: AuditRiskSignal) {
@@ -160,9 +223,42 @@ export class AuditRiskSignals {
     }
   }
 
-  async record(value: AuditRiskSignal): Promise<StoredAuditRiskSignal | null> {
+  private async validateReplayLinks(signal: AuditRiskSignal, links: ReplayLink[]) {
+    if (!links.length) return;
+    const eligible = subjectProofs(signal), scope = signal.input.scope;
+    const store = new AuditReplayStore(this.db);
+    const packs = new Map<string, Awaited<ReturnType<AuditReplayStore['read']>>>();
+    for (const link of links) {
+      let replay = packs.get(link.replayId);
+      if (!replay) {
+        const header = await this.db.prepare(`SELECT manifest FROM audit_replay_packages WHERE dataset_id=? AND replay_id=?
+          AND octet_length(manifest::text)<=65536`).get(scope.datasetId, link.replayId);
+        const manifest = inspectReplayManifest(header?.manifest);
+        if (manifest.status !== 'verified' ||
+            manifest.value.fragments.reduce((sum, part) => sum + part.eventCount, 0) > maximumLinkedReplayEvents ||
+            manifest.value.fragments.reduce((sum, part) => sum + part.byteLength, 0) > maximumLinkedReplayBytes) {
+          throw new Error('Audit risk replay unavailable or outside budget');
+        }
+        replay = await store.read(scope, link.replayId);
+        packs.set(link.replayId, replay);
+      }
+      if (replay.status !== 'verified') throw new Error('Audit risk replay unavailable');
+      const { entity, accountId, postings } = eligible.get(auditSourceKey(link.source))!;
+      const { manifest, fragments } = replay.value, game = manifest.game;
+      if (manifest.entityId !== replayEntityId(entity, accountId) || game.category !== entity.category ||
+          game.gameId !== entity.gameId || game.modeId !== entity.modeId ||
+          entity.rulesVersion !== null && game.rulesVersion !== entity.rulesVersion ||
+          !fragments.some(part => part.events.some(event => event.sequence === link.sequence)) ||
+          !fragments.some(part => part.events.some(event => event.postings.some(ref => postings.has(auditSourceKey(ref)))))) {
+        throw new Error('Audit risk replay does not match subject evidence or event');
+      }
+    }
+  }
+
+  async record(value: AuditRiskSignal, replayLinks?: ReplayLink[]): Promise<StoredAuditRiskSignal | null> {
     const signal = checkSignal(value);
     const { input, key, rule, status } = signal, { scope, asOfMs } = input;
+    const supplied = replayLinks === undefined ? undefined : checkedReplayLinks(signal, { version: 1, links: replayLinks });
     return this.db.transaction(async () => {
       const dataset = await this.db.prepare('SELECT environment,started_at_ms,sealed_at_ms FROM audit_datasets WHERE id=? FOR SHARE')
         .get(scope.datasetId);
@@ -176,13 +272,17 @@ export class AuditRiskSignals {
       }
       const previous = await this.row(scope, key);
       if (previous && !isDeepStrictEqual(previous.signal.rule, rule)) throw new Error('Audit risk rule version changed');
-      if (previous && asOfMs < previous.signal.input.asOfMs) return stored(previous.signal, previous.revision, previous.review);
+      const prior = previous && stored(previous.signal, previous.revision, previous.review, previous.replay_links);
+      if (previous && asOfMs < previous.signal.input.asOfMs) return prior!;
       const sameFacts = previous ? unchanged(previous.signal, signal) : false;
+      const attachment = supplied ?? { version: 1, links: sameFacts ? prior?.replayLinks ?? [] : [] };
+      const sameLinks = isDeepStrictEqual(attachment.links, prior?.replayLinks ?? []);
       if (previous && asOfMs === previous.signal.input.asOfMs) {
         if (!sameFacts) throw new Error('Conflicting audit risk evaluation at the same observation time');
-        return stored(previous.signal, previous.revision, previous.review);
+        if (sameLinks) return prior!;
       }
       await this.validateEvidence(signal);
+      if (!sameLinks || !sameFacts) await this.validateReplayLinks(signal, attachment.links);
       const definition = JSON.stringify(rule);
       const findDefinition = () => this.db.prepare(`SELECT definition=?::jsonb AS matches FROM audit_risk_rules
         WHERE rule_id=? AND rule_version=?`).get(definition, rule.id, rule.version);
@@ -196,11 +296,11 @@ export class AuditRiskSignals {
       const registered = await findDefinition();
       if (registered?.matches !== true) throw new Error('Audit risk rule version changed');
       const revision = previous ? previous.revision + (sameFacts ? 0 : 1) : 1;
-      await this.db.prepare(`INSERT INTO audit_risk_signals(dataset_id,signal_key,rule_id,rule_version,as_of_ms,revision,status,signal)
-        VALUES (?,?,?,?,?,?,?,?::jsonb) ON CONFLICT (dataset_id,signal_key) DO UPDATE
-        SET as_of_ms=excluded.as_of_ms,revision=excluded.revision,status=excluded.status,signal=excluded.signal`)
-        .run(scope.datasetId, key, rule.id, rule.version, asOfMs, revision, status, JSON.stringify(signal));
-      return stored(signal, revision, previous?.review ?? null);
+      await this.db.prepare(`INSERT INTO audit_risk_signals(dataset_id,signal_key,rule_id,rule_version,as_of_ms,revision,status,signal,replay_links)
+        VALUES (?,?,?,?,?,?,?,?::jsonb,?::jsonb) ON CONFLICT (dataset_id,signal_key) DO UPDATE
+        SET as_of_ms=excluded.as_of_ms,revision=excluded.revision,status=excluded.status,signal=excluded.signal,replay_links=excluded.replay_links`)
+        .run(scope.datasetId, key, rule.id, rule.version, asOfMs, revision, status, JSON.stringify(signal), JSON.stringify(attachment));
+      return stored(signal, revision, previous?.review ?? null, attachment);
     }, { lockKey: 'paid-audit-risk:' + scope.datasetId + ':' + key });
   }
 
@@ -217,12 +317,12 @@ export class AuditRiskSignals {
       if (!row) return null;
       if (row.revision !== expectedRevision || row.signal.status === 'clear') throw new Error('Audit risk review requires current finding');
       if (row.review?.revision === row.revision && row.review.reviewerId === reviewerId && row.review.decision === decision) {
-        return stored(row.signal, row.revision, row.review);
+        return stored(row.signal, row.revision, row.review, row.replay_links);
       }
       const review = { revision: row.revision, reviewerId, decision, reviewedAtMs: Date.now() };
       await this.db.prepare('UPDATE audit_risk_signals SET review=?::jsonb WHERE dataset_id=? AND signal_key=?')
         .run(JSON.stringify(review), scope.datasetId, key);
-      return stored(row.signal, row.revision, review);
+      return stored(row.signal, row.revision, review, row.replay_links);
     }, { lockKey: 'paid-audit-risk:' + scope.datasetId + ':' + key });
   }
 }

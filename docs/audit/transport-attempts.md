@@ -9,7 +9,37 @@ DATA-06. Аудит присваивает каждой наблюдаемой �
 | WebSocket PvP | Отдельные команды и прямые ответы для исходного соединения, сессии и ID запроса. Рассылки обновлений комнаты пропускаются. | Действующий протокол PvP не отмечает ветку успешного повтора, поэтому одинаковые UUID видны как разные попытки с решением `unknown`. |
 | WebSocket платных действий комнаты | Выбранные действия в текущем платном контексте. | У действий без прямого подтверждения ответ `not-observed`. Высокочастотное управление относится к потоку воспроизведения. |
 
-Наблюдатель включается для заранее созданного активного набора. Передайте игровому процессу серверную схему через `ROYAL_AUDIT_SCHEMA` и один точный UUID через `ROYAL_AUDIT_TEST_DATASET_ID` для `environment=test` или `ROYAL_AUDIT_LIVE_DATASET_ID` для `environment=live`. Миграции выполняются при подготовке набора. Приложение использует отдельный пул с одним соединением. Запись выполняется асинхронно и не входит в транзакцию кошелька. При остановке сервера очередь осушается. Оператор останавливает наблюдение до закрытия набора. [Переключение](cleanup.md)
+## Подключение наблюдателя
+
+Передайте игровому процессу серверную схему через `ROYAL_AUDIT_SCHEMA` и один точный UUID через `ROYAL_AUDIT_TEST_DATASET_ID` для `environment=test` или `ROYAL_AUDIT_LIVE_DATASET_ID` для `environment=live`. Миграции выполняются при подготовке набора. Наблюдатель использует отдельный пул с одним соединением и именованный PostgreSQL LOGIN из файла `ROYAL_AUDIT_RECORDER_DB_URL_FILE`. URL указывает на ту же базу, что и игровой процесс, и содержит явные имя пользователя, пароль, адрес и имя базы. Для TLS доступен `ROYAL_AUDIT_PGSSLMODE=verify-full`, при необходимости укажите доверенный сертификат через `ROYAL_AUDIT_PGSSLROOTCERT`. Подключение тестового раннера через обычные переменные PostgreSQL доступно только при `NODE_ENV=test` и отсутствии пути к файлу.
+
+Перед подключением обработчиков наблюдатель проверяет права роли, существование выбранного активного набора и возможность взять блокировку его строки. Ошибка конфигурации или проверки оставляет игровой сервер доступным. Диагностика `audit-attempt-capture-disabled` указывает класс отказа без параметров соединения. При остановке сервера очередь осушается. Оператор останавливает наблюдение до закрытия набора. [Переключение](cleanup.md)
+
+В Compose наблюдатель подключается отдельным файлом `compose.audit.yaml`. Добавьте его после действующих файлов конфигурации при подготовке проверенного выпуска или изолированного стенда. `ROYAL_AUDIT_RECORDER_SECRET_FILE` задаёт путь к приватному файлу на хосте. Он должен быть доступен для чтения пользователю `node` в контейнере. Если для TLS нужен отдельный CA, смонтируйте его только для чтения и задайте `ROYAL_AUDIT_PGSSLROOTCERT` с путём внутри контейнера. Проверка Compose с флагом `config --quiet` проверяет конфигурацию без вывода значений.
+
+### Права роли
+
+После установки схемы выдайте выделенному LOGIN прямые гранты. Пример использует имена `royal_audit`, `royal_game` и `royal_audit_recorder`. Пароль назначается отдельно. Колонка `capture_lock_permission` допускает только значение `true`. Право на неё позволяет выполнять `FOR SHARE` при записи, а ключ, окружение, начало и граница закрытия остаются защищены. Проверка старта отклоняет роль с правами записи в зарегистрированные исходные схемы.
+
+```sql
+GRANT USAGE ON SCHEMA royal_audit TO royal_audit_recorder;
+GRANT SELECT ON royal_audit.audit_datasets, royal_audit.audit_dataset_sources TO royal_audit_recorder;
+GRANT UPDATE (capture_lock_permission) ON royal_audit.audit_datasets TO royal_audit_recorder;
+GRANT SELECT, INSERT ON royal_audit.audit_evidence, royal_audit.audit_attempt_capture_gaps TO royal_audit_recorder;
+GRANT UPDATE (missing_count, first_at_ms, last_at_ms)
+  ON royal_audit.audit_attempt_capture_gaps TO royal_audit_recorder;
+```
+
+Для профилей реплеев PvP требуются дополнительные права. Для карточных игр и дуэли со знаками также требуется SELECT на `royal_game.pvp_requests`. Для наблюдения приёма билетов тотализатора нужны USAGE на `royal_game` и SELECT на `royal_game.flag_tote_tickets`, `royal_game.demo_ledger` и `royal_audit.audit_posting_refs`.
+Проверка старта подтверждает обязательные права транспорта. При недостающем доступе к источнику отдельный профиль записывает диагностический пропуск.
+
+```sql
+GRANT USAGE ON SCHEMA royal_game TO royal_audit_recorder;
+GRANT SELECT ON royal_game.demo_ledger, royal_game.virtual_pvp_banks, royal_game.virtual_pvp_holds,
+  royal_game.pvp_matches, royal_game.combat_matches TO royal_audit_recorder;
+GRANT SELECT ON royal_audit.audit_posting_refs, royal_audit.audit_opening_obligations TO royal_audit_recorder;
+GRANT SELECT, INSERT ON royal_audit.audit_replay_packages, royal_audit.audit_replay_fragments TO royal_audit_recorder;
+```
 
 Очередь ограничена 128 ожидающими записями на процесс. Переполнение и ошибки записи отражаются счётчиком `audit_attempt_capture_gaps` и диагностикой без содержимого запроса. После восстановления доступа сохраняется диапазон времени и суммарное число известных пропусков процесса. При аварийном завершении незаписанные наблюдения в памяти могут потеряться. Финансовый журнал и транзакционные ссылки на проводки остаются отдельным источником.
 

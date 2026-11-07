@@ -2,13 +2,20 @@ import { parseArgs } from 'node:util';
 import { AuditCleanupBlocked, applyAuditCleanup, installAuditCleanup, previewAuditCleanup, requireAuditCleanupExportDataset } from '../server/audit/cleanup';
 import { AuditCleanupFilesError, initializeAuditExportDirectory, registerAuditExportFile } from '../server/audit/cleanup-files';
 import { AuditDatasets } from '../server/audit/datasets';
+import { installAuditReportAccess } from '../server/audit/report-access';
+import { installAuditDetailReport } from '../server/audit/report-detail-source';
+import { installAuditPlayerReport } from '../server/audit/report-player-source';
+import { installAuditReconcileReport } from '../server/audit/report-reconcile-source';
+import { installAuditReplayReport } from '../server/audit/report-replay-source';
+import { installAuditSummaryReport } from '../server/audit/report-summary-source';
 import { isReplayId } from '../server/audit/replay-package';
 import { databaseConfig, PostgresDatabase } from '../server/database';
 
 const sourceFlags = '--schema <audit-schema> --game-schema <game-schema> [--payments-schema <payments-schema>]';
 const usage = [
-  'npm run audit:cleanup -- install ' + sourceFlags,
+  'npm run audit:cleanup -- install ' + sourceFlags + ' [--reader-role <NOLOGIN group>]',
   'npm run audit:cleanup -- start-test ' + sourceFlags,
+  'npm run audit:cleanup -- stop-capture ' + sourceFlags + ' --dataset <UUID> --environment <test|live>',
   'npm run audit:cleanup -- seal ' + sourceFlags + ' --dataset <test UUID>',
   'npm run audit:cleanup -- init-files --schema <audit-schema> --dataset <test UUID> --files-root <private root>',
   'npm run audit:cleanup -- register-file --schema <audit-schema> --dataset <test UUID> --files-root <private root> --name <file>',
@@ -21,11 +28,12 @@ const invalid = () => new Error('Invalid audit cleanup configuration');
 async function main() {
   const { values, positionals, tokens } = parseArgs({ allowPositionals: true, strict: true, tokens: true, options: {
     help: { type: 'boolean' }, schema: { type: 'string' }, 'game-schema': { type: 'string' }, 'payments-schema': { type: 'string' },
-    dataset: { type: 'string' }, 'files-root': { type: 'string' }, name: { type: 'string' }, sha256: { type: 'string' },
+    'reader-role': { type: 'string' }, dataset: { type: 'string' }, environment: { type: 'string' }, 'files-root': { type: 'string' }, name: { type: 'string' }, sha256: { type: 'string' },
   } });
   if (values.help) { console.log(usage); return; }
-  const { schema, name, sha256 } = values;
+  const { schema, name, sha256, environment } = values;
   const game = values['game-schema'], payments = values['payments-schema'], filesRoot = values['files-root'];
+  const reader = values['reader-role'];
   const datasetId = values.dataset?.toLowerCase(), command = positionals[0], connection = process.env.ROYAL_AUDIT_CLEANUP_DB_URL_FILE;
   const flags = tokens.flatMap(token => token.kind === 'option' ? [token.name] : []);
   const permits = (...allowed: string[]) => flags.every(flag => flag === 'schema' || allowed.includes(flag));
@@ -57,16 +65,28 @@ async function main() {
     }
     if (!game) throw invalid();
     const sourceSchemas = { game, payments };
-    if ((command === 'install' || command === 'start-test') && permits(...sources)) {
+    if (command === 'install' && permits(...sources,'reader-role') && (reader === undefined || schemaName(reader))) {
       const datasets = new AuditDatasets(db, sourceSchemas);
-      if (command === 'install') {
-        await datasets.ready;
-        await installAuditCleanup(db);
-        console.log(JSON.stringify({ status: 'installed' }));
-      } else console.log(JSON.stringify(await datasets.startTest()));
+      await datasets.ready;
+      await installAuditCleanup(db);
+      if (reader) {
+        await installAuditReportAccess(db, reader);
+        await installAuditPlayerReport(db, reader, sourceSchemas);
+        await installAuditSummaryReport(db, reader, sourceSchemas);
+        await installAuditDetailReport(db, reader, sourceSchemas);
+        await installAuditReplayReport(db, reader, sourceSchemas);
+        await installAuditReconcileReport(db, reader);
+      }
+      console.log(JSON.stringify({ status: 'installed', ...(reader ? { readerRole: reader } : {}) }));
+    } else if (command === 'start-test' && permits(...sources)) {
+      console.log(JSON.stringify(await new AuditDatasets(db, sourceSchemas).startTest()));
     } else if (command === 'seal' && permits(...sources,'dataset') && isReplayId(datasetId)) {
       await new AuditDatasets(db, sourceSchemas, { existingSchema: true }).sealTest(datasetId);
       console.log(JSON.stringify({ status: 'sealed', datasetId }));
+    } else if (command === 'stop-capture' && permits(...sources,'dataset','environment') && isReplayId(datasetId) &&
+        (environment === 'test' || environment === 'live')) {
+      const result = await new AuditDatasets(db, sourceSchemas, { existingSchema: true }).stopCapture(datasetId, environment);
+      console.log(JSON.stringify(result));
     } else if (command === 'plan' && permits(...sources,'dataset','files-root') && isReplayId(datasetId) && filesRoot) {
       const result = await previewAuditCleanup(db, { datasetId, sources: sourceSchemas, filesRoot });
       console.log(JSON.stringify(result));
