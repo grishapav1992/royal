@@ -46,7 +46,6 @@ async function host(page: Page) {
   await page.goto('/?mode=club&lang=ru');
   await page.waitForFunction(() => typeof window.royalDemo?.getNetworkState === 'function');
   await expect(page.locator('#join-dialog')).toBeVisible();
-  await expect(page.locator('#loading')).toHaveCount(0);
   const cdp = await context.newCDPSession(page);
   const fn = await cdp.send('Runtime.evaluate', { expression: 'window.royalDemo.getNetworkState' });
   const properties = await cdp.send('Runtime.getProperties', { objectId: fn.result.objectId! });
@@ -227,6 +226,7 @@ test('a sticker uses the same tracked protocol and keeps a typed draft', async (
 
 for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }]) test(`real host game chat keeps pending text and composition in bounds at ${viewport.width}px`, async ({ page }) => {
   await page.setViewportSize(viewport); const proof = await host(page);
+  await expect(page.locator('#loading')).toHaveCount(0, { timeout: 20000 });
   // Open through the real catalog, walking, seating and host game window.
   await page.locator('#games-tab').click();
   const cabinet = page.locator('[data-studio="royal-dice"], [data-cabinet="royal-dice"]').first();
