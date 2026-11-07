@@ -24,7 +24,12 @@ OWNER = "finance_schema_owner"
 BASE_TABLES = ("meta", "users", "accounts", "journals", "entries", "requests", "withdrawals", "rounds", "outbox")
 DEPOSIT_TABLES = ("deposit_streams", "deposit_addresses", "deposit_blocks", "deposit_events")
 TOTAL_TABLES = ("account_totals",)
-ROYAL_SCHEMAS = ('royal_finance', 'royal_game', 'royal_tron_reader', 'royal_nile_deposits', 'royal_nile_play', 'royal_mainnet', 'royal_payments')
+AUDIT_SCHEMA = 'royal_audit'
+AUDIT_ROLES = {'royal_audit_reader': False, 'royal_audit_recorder': True,
+               'royal_audit_worker': True, 'royal_audit_risk': True}
+AUDIT_REVIEWER_ROLE = re.compile(r'royal_audit_reviewer_[a-z0-9]+(?:_[a-z0-9]+)*')
+AUDIT_SOURCE_TABLES = {'royal_game.demo_ledger', 'royal_game.capro_pending_ledger', 'royal_payments.crypto_ledger'}
+ROYAL_SCHEMAS = ('royal_finance', 'royal_game', 'royal_tron_reader', 'royal_nile_deposits', 'royal_nile_play', 'royal_mainnet', 'royal_payments', AUDIT_SCHEMA)
 ROYAL_LOGINS = ('royal_game_app', 'royal_tron_reader_app', 'royal_nile_deposits_app', 'royal_nile_play_app', 'royal_nile_views_app', 'royal_nile_reconcile_app', 'royal_mainnet_app', 'royal_payments_app')
 ROYAL_OWNERS = dict(zip(('royal_game', 'royal_tron_reader', 'royal_nile_deposits', 'royal_nile_play', 'royal_mainnet', 'royal_payments'),
                         ('royal_game_app', 'royal_tron_reader_app', 'royal_nile_deposits_app', 'royal_nile_play_app', 'royal_mainnet_app', 'royal_payments_app')))
@@ -125,6 +130,163 @@ def audit_royal_roles(container, roles):
     sql = "WITH owned(login,schema) AS (VALUES " + owned + ") SELECT (SELECT count(*) FROM pg_roles WHERE rolname IN (" + logins + ") AND (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls)) + (SELECT count(*) FROM pg_auth_members m JOIN pg_roles r ON r.oid=m.member WHERE r.rolname IN (" + logins + ")) + (SELECT count(*) FROM pg_roles r CROSS JOIN pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE r.rolname IN (" + logins + ") AND n.nspname IN (" + ','.join("'" + schema + "'" for schema in ROYAL_SCHEMAS) + ") AND c.relkind IN ('r','p') AND NOT EXISTS(SELECT FROM owned o WHERE o.login=r.rolname AND o.schema=n.nspname) AND has_table_privilege(r.oid,c.oid,'INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER'));"
     return int(query(container, sql, 'royal_role_audit'))
 
+
+
+def finance_roles(version):
+    return [OWNER, "royal_finance_runtime", "finance_app"] + (
+        ["royal_finance_observer", "finance_ingest"] if version >= 2 else [])
+
+
+def audit_role_login(role):
+    if not isinstance(role, str) or len(role) > 63:
+        return None
+    if role in AUDIT_ROLES:
+        return AUDIT_ROLES[role]
+    return True if AUDIT_REVIEWER_ROLE.fullmatch(role) else None
+
+
+def audit_metadata_valid(value):
+    invalid = OpsError('invalid_audit_backup_inventory')
+    if not isinstance(value, dict) or set(value) != {'format', 'roles', 'triggers', 'active_sources'} \
+            or type(value['format']) is not int or value['format'] != 1:
+        raise invalid
+    roles, triggers, sources = value['roles'], value['triggers'], value['active_sources']
+    if not isinstance(roles, list) or any(audit_role_login(role) is None for role in roles) \
+            or roles != sorted(set(roles)) or not isinstance(triggers, list) or len(triggers) > len(AUDIT_SOURCE_TABLES):
+        raise invalid
+    relations = []
+    enabled = set()
+    for trigger in triggers:
+        if not isinstance(trigger, dict) or set(trigger) != {'relation', 'enabled', 'trigger_sha256', 'function_sha256'} \
+                or not isinstance(trigger['relation'], str) or trigger['relation'] not in AUDIT_SOURCE_TABLES \
+                or trigger['enabled'] not in ('O', 'D') or any(
+                    not isinstance(trigger[key], str) or not re.fullmatch('[a-f0-9]{64}', trigger[key])
+                    for key in ('trigger_sha256', 'function_sha256')):
+            raise invalid
+        relations.append(trigger['relation'])
+        if trigger['enabled'] == 'O':
+            enabled.add(trigger['relation'])
+    if relations != sorted(set(relations)) or not isinstance(sources, list) or any(
+            not isinstance(source, str) or source not in enabled for source in sources) or sources != sorted(set(sources)):
+        raise invalid
+    return value
+
+
+def audit_metadata_from_backup(metadata, all_tables, fingerprint_format):
+    schemas = metadata.get('schemas', [])
+    audit = metadata.get('audit')
+    has_audit_schema = (isinstance(schemas, list) and AUDIT_SCHEMA in schemas) or any(
+        table.startswith(AUDIT_SCHEMA + '.') for table in (all_tables or ()))
+    if audit is not None:
+        audit_metadata_valid(audit)
+        expected_schemas = sorted({table.split('.')[0] for table in (all_tables or ())} | {AUDIT_SCHEMA})
+        if fingerprint_format != 2 or schemas != expected_schemas:
+            raise OpsError('invalid_audit_backup_schema_scope')
+    elif has_audit_schema:
+        raise OpsError('missing_audit_backup_inventory')
+    return audit
+
+
+def audit_restore_roles_sql(metadata):
+    return ''.join(
+        'CREATE ROLE "' + role + '" ' + ('LOGIN' if audit_role_login(role) else 'NOLOGIN')
+        + ' NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;'
+        for role in audit_metadata_valid(metadata)['roles'])
+
+
+def audit_backup_catalog(container, schemas, version, runtime_roles, snapshot_start=''):
+    """Check the optional schema, referenced cluster roles, and cross-schema capture DDL."""
+    if not set(schemas) <= set(ROYAL_SCHEMAS):
+        raise OpsError('invalid_audit_backup_schema_scope')
+    def read(sql, label):
+        return json.loads(query(container, snapshot_start + sql + (' ROLLBACK;' if snapshot_start else ''), label))
+
+    # Trigger definitions are returned only as digests. The qualified search path is
+    # identical before backup and after restore, independent of caller role settings.
+    scoped = ','.join("'" + schema + "'" for schema in sorted(set(schemas) | {AUDIT_SCHEMA}))
+    catalog = read("""SET """ + ('LOCAL ' if snapshot_start else '') + """search_path=pg_catalog;
+      SELECT jsonb_build_object(
+        'present',to_regnamespace('royal_audit') IS NOT NULL,
+        'triggers',coalesce((SELECT jsonb_agg(jsonb_build_object(
+          'relation',n.nspname||'.'||c.relname, 'enabled',t.tgenabled,
+          'trigger_sha256',encode(sha256(convert_to(pg_get_triggerdef(t.oid),'UTF8')),'hex'),
+          'function_sha256',encode(sha256(convert_to(pg_get_functiondef(p.oid),'UTF8')),'hex'),
+          'trusted',t.tgname='royal_audit_posting_v1' AND c.relkind='r'
+            AND pns.nspname='royal_audit' AND p.proname='audit_capture_posting_v1'
+            AND p.prosecdef AND pg_get_userbyid(p.proowner)='finance_schema_owner'
+            AND p.proconfig=ARRAY['search_path=pg_catalog']
+            AND NOT EXISTS(SELECT 1 FROM aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a
+              WHERE a.grantee=0 AND a.privilege_type='EXECUTE')
+            AND t.tgdeferrable AND t.tginitdeferred AND t.tgtype=5 AND t.tgnargs=0 AND t.tgqual IS NULL
+        ) ORDER BY n.nspname,c.relname,t.tgname)
+        FROM pg_trigger t JOIN pg_class c ON c.oid=t.tgrelid JOIN pg_namespace n ON n.oid=c.relnamespace
+        JOIN pg_proc p ON p.oid=t.tgfoid JOIN pg_namespace pns ON pns.oid=p.pronamespace
+        WHERE NOT t.tgisinternal AND n.nspname IN (""" + scoped + """)
+          AND (t.tgname='royal_audit_posting_v1' OR pns.nspname='royal_audit')),'[]'::jsonb));""", 'audit_capture_catalog')
+    triggers = catalog['triggers']
+    if any(trigger.pop('trusted', None) is not True for trigger in triggers):
+        raise OpsError('untrusted_audit_capture')
+    if not catalog['present']:
+        if triggers:
+            raise OpsError('missing_audit_backup_schema')
+        return None
+
+    # This inventory includes column-level grants and grants on source schemas.
+    # Named operator membership and passwords are provisioned outside the archive.
+    role_deps = read("""WITH deps AS (
+      SELECT DISTINCT r.rolname, r.rolcanlogin, r.oid,
+        (r.rolsuper OR r.rolcreatedb OR r.rolcreaterole OR r.rolreplication OR r.rolbypassrls) AS elevated,
+        coalesce(schema_obj.nspname,default_acl_schema.nspname,policy_schema.nspname,obj.schema) AS schema_name,
+        d.deptype
+      FROM pg_shdepend d JOIN pg_roles r ON r.oid=d.refobjid AND d.refclassid='pg_authid'::regclass
+      CROSS JOIN LATERAL pg_identify_object(d.classid,d.objid,d.objsubid) obj
+      LEFT JOIN pg_namespace schema_obj ON d.classid='pg_namespace'::regclass AND schema_obj.oid=d.objid
+      LEFT JOIN pg_default_acl defaults ON d.classid='pg_default_acl'::regclass AND defaults.oid=d.objid
+      LEFT JOIN pg_namespace default_acl_schema ON default_acl_schema.oid=defaults.defaclnamespace
+      LEFT JOIN pg_policy policy ON d.classid='pg_policy'::regclass AND policy.oid=d.objid
+      LEFT JOIN pg_class policy_table ON policy_table.oid=policy.polrelid
+      LEFT JOIN pg_namespace policy_schema ON policy_schema.oid=policy_table.relnamespace
+      WHERE d.dbid=(SELECT oid FROM pg_database WHERE datname=current_database())
+    ), included AS (
+      SELECT * FROM deps WHERE schema_name IN (""" + scoped + """)
+    )
+    SELECT coalesce(jsonb_agg(jsonb_build_object('role',r.rolname,'login',r.rolcanlogin,
+      'owns_audit',r.owns_audit,'safe',NOT r.elevated AND NOT has_database_privilege(r.oid,current_database(),'CREATE')
+        AND NOT EXISTS(SELECT 1 FROM pg_auth_members m WHERE m.member=r.oid)
+        AND NOT EXISTS(SELECT 1 FROM pg_namespace n WHERE n.nspname IN (""" + scoped + """) AND (
+          has_schema_privilege(r.oid,n.oid,'CREATE') OR EXISTS(
+            SELECT 1 FROM pg_class c WHERE c.relnamespace=n.oid AND c.relkind IN ('r','p','v','m','f')
+              AND (r.rolname='royal_audit_reader' AND has_any_column_privilege(r.oid,c.oid,'SELECT')
+                OR (r.rolname='royal_audit_reader' OR n.nspname<>'royal_audit') AND (
+                  has_table_privilege(r.oid,c.oid,'INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')
+                  OR has_any_column_privilege(r.oid,c.oid,'INSERT,UPDATE,REFERENCES')))))
+      )) ORDER BY r.rolname),'[]'::jsonb)
+    FROM (SELECT rolname,rolcanlogin,oid,elevated,bool_or(schema_name='royal_audit' AND deptype='o') AS owns_audit
+      FROM included GROUP BY rolname,rolcanlogin,oid,elevated) r;""", 'audit_role_dependencies')
+    existing_roles = set(finance_roles(version)) | set(runtime_roles)
+    audit_roles = []
+    for role in role_deps:
+        name = role['role']
+        if role['owns_audit'] and name != OWNER:
+            raise OpsError('untrusted_audit_object_owner')
+        if name in existing_roles:
+            continue
+        login = audit_role_login(name)
+        if login is None or role['login'] is not login or role['safe'] is not True:
+            raise OpsError('untrusted_audit_backup_role')
+        audit_roles.append(name)
+
+    registry_count = read("""SELECT count(*) FROM (VALUES
+      (to_regclass('royal_audit.audit_datasets')),
+      (to_regclass('royal_audit.audit_dataset_sources')),
+      (to_regclass('royal_audit.audit_posting_refs'))) required(oid)
+      WHERE oid IS NOT NULL;""", 'audit_backup_registry')
+    if registry_count != 3 and (registry_count or triggers):
+        raise OpsError('missing_audit_backup_registry')
+    sources = read("""SELECT coalesce(jsonb_agg(s.source_namespace ORDER BY s.source_namespace),'[]'::jsonb)
+      FROM royal_audit.audit_dataset_sources s JOIN royal_audit.audit_datasets d ON d.id=s.dataset_id
+      WHERE d.sealed_at_ms IS NULL;""", 'audit_backup_sources') if registry_count else []
+    return audit_metadata_valid({'format': 1, 'roles': audit_roles, 'triggers': triggers, 'active_sources': sources})
 
 
 def tables_for_version(version):
@@ -353,6 +515,9 @@ def backup():
             runtime_roles = json.loads(query(container, "SELECT coalesce(jsonb_agg(rolname ORDER BY rolname),'[]'::jsonb) FROM pg_roles WHERE rolname IN (" + ','.join("'" + role + "'" for role in ROYAL_LOGINS) + ");", 'runtime_role_inventory'))
             if audit_royal_roles(container, runtime_roles):
                 raise OpsError('unsafe_royal_roles')
+            audit = audit_backup_catalog(container, schemas, version, runtime_roles, snapshot_start)
+            if audit is not None:
+                schemas = sorted(set(schemas) | {AUDIT_SCHEMA})
             fingerprint_tables = fingerprint_inventory(container, snapshot_start)
             if [table['table'] for table in fingerprint_tables] != all_tables:
                 raise OpsError('source_fingerprint_inventory_mismatch')
@@ -374,8 +539,9 @@ def backup():
                         "database_bytes": database_bytes, "fingerprint_bytes": fingerprint_bytes,
                         "fingerprint_format": 2, "fingerprint_tables": fingerprint_tables,
                         "role_audit": role_audit,
-                        "roles": [OWNER, "royal_finance_runtime", "finance_app"] +
-                        (["royal_finance_observer", "finance_ingest"] if version >= 2 else [])}
+                        "roles": finance_roles(version)}
+            if audit is not None:
+                metadata['audit'] = audit
             os.replace(temporary, target)
             target.with_suffix(".dump.manifest").write_bytes(manifest)
             atomic_json(target.with_suffix(".dump.json"), metadata)
@@ -511,6 +677,8 @@ def restore_check(target):
         validate_fingerprint_inventory(fingerprint_tables)
         if [table['table'] for table in fingerprint_tables] != all_tables:
             raise OpsError('backup_fingerprint_inventory_mismatch')
+    audit = audit_metadata_from_backup(metadata, all_tables, fingerprint_format)
+    schemas = metadata.get('schemas', [])
     image = run(["docker", "inspect", db_container(), "--format", "{{.Image}}"], "database_image").decode().strip()
     if not re.fullmatch(r"sha256:[a-f0-9]{64}", image):
         raise OpsError("database_image_invalid")
@@ -552,6 +720,8 @@ def restore_check(target):
                              "GRANT royal_finance_observer TO finance_ingest WITH INHERIT TRUE;", "restore_observer_roles")
         for role in runtime_roles:
             query(container, 'CREATE ROLE ' + role + ' LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS; GRANT CONNECT' + ('' if role in ('royal_nile_views_app', 'royal_nile_reconcile_app') else ', CREATE') + ' ON DATABASE ' + DB + ' TO ' + role + ';', 'restore_royal_role')
+        if audit is not None and audit['roles']:
+            query(container, audit_restore_roles_sql(audit), 'restore_audit_roles')
         with target.open("rb") as source:
             run(["docker", "exec", "-i", container, "pg_restore", "-U", OWNER, "-d", DB,
                  "--single-transaction", "--exit-on-error"], "restore_database", stdin=source, timeout=600)
@@ -564,6 +734,8 @@ def restore_check(target):
             fingerprint, fingerprint_bytes = query_digest(container, "SET timezone='UTC'; " + (qualified_copy_sql(all_tables) if all_tables is not None else copy_sql(tables)), "restored_fingerprint")
         if fingerprint != metadata.get("data_sha256"):
             raise OpsError("restored_data_mismatch")
+        if audit is not None and audit_backup_catalog(container, schemas, version, runtime_roles) != audit:
+            raise OpsError('restored_audit_inventory_mismatch')
         checks = json.loads(query(container, reconciliation_sql(version), "restore_reconciliation"))
         if audit_royal_roles(container, runtime_roles):
             raise OpsError('restored_royal_roles_invalid')
@@ -581,6 +753,8 @@ def restore_check(target):
                   "storage": "private-disk-workspace", "memory_limit_bytes": 512 * 1024 ** 2,
                   "required_disk_free_bytes": required_space, "fingerprint_bytes": fingerprint_bytes}
         result['fingerprint_format'] = fingerprint_format
+        if audit is not None:
+            result['audit_verified'] = True
         value = record("restore", True, **result)
         atomic_json(target.with_suffix(".dump.restore.json"), value)
         return result
