@@ -1,6 +1,5 @@
-import { randomUUID } from 'node:crypto';
-import { link, lstat, open, unlink, type FileHandle } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import type { FileHandle } from 'node:fs/promises';
+import { writeAuditOutput } from './export-file';
 
 export type AuditCsvColumn<Row> = {
   header: string;
@@ -29,7 +28,6 @@ export class AuditCsvExportError extends Error {
 }
 
 const nonnegativeInteger = (value: number) => Number.isSafeInteger(value) && value >= 0;
-const errorCode = (error: unknown) => (error as NodeJS.ErrnoException | null)?.code;
 const escapes: Record<string, string> = { '\\': '\\\\', '\n': '\\n', '\r': '\\r', '\t': '\\t' };
 
 function textCell(value: string): string {
@@ -78,8 +76,6 @@ export async function writeAuditCsv<Row>(options: AuditCsvOptions<Row>): Promise
     !nonnegativeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 2_147_483_647) {
     throw new AuditCsvExportError('invalid-options');
   }
-  const destination = resolve(options.destination);
-  const temporary = join(dirname(destination), '.royal-audit-' + randomUUID() + '.part');
   const controller = new AbortController();
   const cancel = () => controller.abort(new AuditCsvExportError('cancelled'));
   const timeout = () => controller.abort(new AuditCsvExportError('timeout'));
@@ -91,9 +87,6 @@ export async function writeAuditCsv<Row>(options: AuditCsvOptions<Row>): Promise
     if (performance.now() >= deadline) timeout();
     controller.signal.throwIfAborted();
   };
-  let file: FileHandle | undefined;
-  let ownsTemporary = false;
-  let published = false;
   let iterator: AsyncIterator<Row> | undefined;
   let exhausted = false;
   let rowCount = 0, bytes = 0;
@@ -105,52 +98,27 @@ export async function writeAuditCsv<Row>(options: AuditCsvOptions<Row>): Promise
     bytes += size;
   };
   try {
-    checkActive();
-    await lstat(destination).then(() => { throw new AuditCsvExportError('destination-exists'); }, error => {
-      if (errorCode(error) !== 'ENOENT') throw error;
-    });
-    checkActive();
-    file = await open(temporary, 'wx', 0o600);
-    ownsTemporary = true;
-    await write(file, columns.map(column => textCell(column.header)).join(',') + '\n');
-    iterator = options.rows[Symbol.asyncIterator]();
-    for (;;) {
-      checkActive();
-      const next = await nextRow(iterator, controller.signal);
-      checkActive();
-      if (next.done) {
-        exhausted = true;
-        break;
+    return await writeAuditOutput(options.destination, checkActive, async file => {
+      await write(file, columns.map(column => textCell(column.header)).join(',') + '\n');
+      iterator = options.rows[Symbol.asyncIterator]();
+      for (;;) {
+        checkActive();
+        const next = await nextRow(iterator, controller.signal);
+        checkActive();
+        if (next.done) {
+          exhausted = true;
+          break;
+        }
+        if (rowCount === maxRows) throw new AuditCsvExportError('row-limit');
+        await write(file, columns.map(column => cell(column, next.value)).join(',') + '\n');
+        rowCount++;
       }
-      if (rowCount === maxRows) throw new AuditCsvExportError('row-limit');
-      await write(file, columns.map(column => cell(column, next.value)).join(',') + '\n');
-      rowCount++;
-    }
-    await file.sync();
-    await file.close();
-    file = undefined;
-    checkActive();
-    // Linking in the same directory is the commit point. A racing file or symlink wins.
-    await link(temporary, destination).catch(error => {
-      if (errorCode(error) === 'EEXIST') throw new AuditCsvExportError('destination-exists');
-      throw error;
-    });
-    published = true;
-    try { await unlink(temporary); }
-    catch (error) {
-      if (errorCode(error) !== 'ENOENT') return { rowCount, bytes, cleanupPending: temporary };
-    }
-    return { rowCount, bytes };
+      return { rowCount, bytes };
+    }, () => new AuditCsvExportError('destination-exists'));
   } finally {
     clearTimeout(timer);
     signal?.removeEventListener('abort', cancel);
     // An iterator blocked in next() may queue return(). Do not defer file cleanup until it unblocks.
     if (iterator && !exhausted) void Promise.resolve().then(() => iterator?.return?.()).catch(() => {});
-    try { await file?.close(); }
-    finally {
-      if (ownsTemporary && !published) await unlink(temporary).catch(error => {
-        if (errorCode(error) !== 'ENOENT') throw error;
-      });
-    }
   }
 }

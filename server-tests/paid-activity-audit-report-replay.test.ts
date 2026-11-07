@@ -1,0 +1,237 @@
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+import { mkdtemp, readFile, readdir, rm, stat } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import test from 'node:test';
+import { AuditDatasets } from '../server/audit/datasets';
+import { buildCapturedCasinoReplay } from '../server/audit/replay-casino';
+import { persistCapturedChessReplay } from '../server/audit/replay-chess-storage';
+import { createReplayPackage, type ReplayPackage } from '../server/audit/replay-package';
+import { ChessTurnReplayCapture, type CapturedChessReplay } from '../server/audit/replay-pvp-turn';
+import { AuditReplayStore } from '../server/audit/replay-store';
+import { persistCapturedToteReplay } from '../server/audit/replay-tote';
+import { installAuditReportAccess } from '../server/audit/report-access';
+import { exportAuditReplay } from '../server/audit/report-replay';
+import { installAuditReplayReport } from '../server/audit/report-replay-source';
+import { ChessGame } from '../server/chessGame';
+import { databaseConfig, identifier, PostgresDatabase } from '../server/database';
+import { DemoWalletStore } from '../server/demoWallet';
+import { NileCombatEscrow } from '../server/finance/combat-escrow';
+import { FlagToteStore } from '../server/flagTote';
+import { PvpStore } from '../server/pvp/store';
+import { VirtualPvpLedger } from '../server/pvp/virtual-wallet';
+import { prepareViewerReplay } from '../src/audit/replay-viewer-model';
+import { TOTE_TIMING } from '../src/shared/flagTote';
+
+test('named operators export only authorized canonical replay packages and journal verification outcomes', async t => {
+  const game = new PostgresDatabase(':memory:'), audit = new PostgresDatabase(':memory:');
+  const scratch = await mkdtemp(join(tmpdir(), 'royal-audit-replay-report-'));
+  const operators: PostgresDatabase[] = [];
+  t.after(async () => {
+    await Promise.all([game.close(), audit.close(), ...operators.map(operator => operator.close())]);
+    await rm(scratch, { recursive: true, force: true });
+  });
+
+  const accounts = [randomUUID(), randomUUID()];
+  await game.exec('CREATE TABLE accounts(id text PRIMARY KEY)');
+  await game.prepare('INSERT INTO accounts VALUES (?),(?)').run(...accounts);
+  const wallet = new DemoWalletStore(game, () => 0);
+  const ledger = new VirtualPvpLedger(game, wallet), pvp = new PvpStore(ledger);
+  const combat = new NileCombatEscrow(ledger);
+  await Promise.all([wallet.ready, pvp.ready, combat.ready]);
+  for (const accountId of accounts) await wallet.operate(accountId, { id: randomUUID(), kind: 'deposit', amount: 100 });
+  const datasets = new AuditDatasets(audit, { game: game.schema });
+  const scope = await datasets.startTest().then(({ datasetId, environment }) => ({ datasetId, environment }));
+  const { datasetId } = scope, schema = audit.schema, a = identifier(schema);
+  const demo = game.schema + '.demo_ledger', pending = game.schema + '.capro_pending_ledger';
+  const suffix = randomUUID().slice(0, 8), group = 'replay_reader_' + suffix;
+  const alice = 'replay_alice_' + suffix, bob = 'replay_bob_' + suffix;
+  const password = randomUUID();
+  await audit.exec(`CREATE ROLE ${group} NOLOGIN;
+    CREATE ROLE ${alice} LOGIN PASSWORD '${password}'; CREATE ROLE ${bob} LOGIN PASSWORD '${password}';
+    GRANT ${group} TO ${alice},${bob}; ALTER ROLE ${alice} SET temp_file_limit='64MB'; ALTER ROLE ${bob} SET temp_file_limit='64MB'`);
+  await installAuditReportAccess(audit, group);
+  await installAuditReplayReport(audit, group, { game: game.schema });
+  await audit.prepare('INSERT INTO audit_report_acl VALUES (?,?,?),(?,?,?)').run(alice, datasetId, demo, bob, datasetId, pending);
+  const login = (name: string) => databaseConfig({ ...process.env, DATABASE_URL: '', DATABASE_URL_FILE: '', PGUSER: name,
+    PGPASSWORD: password, PGPASSWORD_FILE: '' });
+  const raw = (name: string) => {
+    const db = new PostgresDatabase(schema, { existingSchema: true, config: login(name) });
+    operators.push(db);
+    return db;
+  };
+  const aliceDb = raw(alice), bobDb = raw(bob);
+  const begin = (db: PostgresDatabase, replayId: string, dataset = datasetId) => db.prepare(
+    `SELECT ${a}.audit_report_begin(?,'replay',?::jsonb) AS id`).get(dataset, JSON.stringify({ replayId })).then(row => row!.id as string);
+  const read = (db: PostgresDatabase, job: string) => db.prepare(`SELECT ${a}.audit_report_replay(?) AS replay`)
+    .get(job).then(row => row!.replay as unknown);
+  const cancel = (db: PostgresDatabase, job: string) => db.prepare(
+    `SELECT ${a}.audit_report_finish(?,'cancelled',0,0,'cancelled')`).get(job);
+  const run = (name: string, replayId: string, file: string, dataset = datasetId) =>
+    exportAuditReplay(login(name), { schema, datasetId: dataset, filters: { replayId }, destination: join(scratch, file) });
+  const replayStore = new AuditReplayStore(audit);
+  const persist = async (pack: ReplayPackage, headerOnly = false) => {
+    assert.equal(await replayStore.writeManifest(pack.manifest), 'recorded');
+    if (!headerOnly) for (const fragment of pack.fragments) assert.equal(await replayStore.writeFragment(scope, pack.manifest.replayId, fragment), 'recorded');
+  };
+  const playId = randomUUID();
+  await wallet.operate(accounts[0], { id: playId, kind: 'play', gameId: 'royal-roulette', input: { bet: 'black' },
+    amount: 0.1, rulesVersion: 1, stakePolicyVersion: 1 });
+  const stake = (await game.prepare("SELECT id::text FROM demo_ledger WHERE operation_id=? AND entry_type='bet'").get(playId))!.id;
+  const built = await buildCapturedCasinoReplay(audit, { datasetId, gameSchema: game.schema, replayId: randomUUID(),
+    posting: { namespace: demo, rowId: stake } });
+  assert.equal(built.status, 'built');
+  if (built.status !== 'built') return;
+  const manifest = built.value.manifest;
+  const legacyEvents = built.value.fragments.flatMap(fragment => fragment.events).map(({ money, calculation, ...event }) => event);
+  const legacy = (replayId = randomUUID(), entityId = playId, events = legacyEvents) => createReplayPackage({
+    formatVersion: 1, scope, replayId, entityId, game: manifest.game, initial: manifest.initial,
+    coverage: 'complete', gaps: [],
+  }, events);
+  const original = legacy();
+  await persist(original);
+
+  await t.test('publishes legacy and pinned formats as offline viewer JSON, preserves the test marker and never overwrites', async () => {
+    const first = await run(alice, original.manifest.replayId, 'legacy.json');
+    const output = join(scratch, 'legacy.json');
+    const before = await readFile(output, 'utf8');
+    assert.equal((await stat(output)).mode & 0o777, 0o600);
+    assert.deepEqual(JSON.parse(before), original);
+    assert.equal(prepareViewerReplay(JSON.parse(before)).status, 'ready');
+    assert.equal(first.engineVerified, false);
+    assert.equal(first.environment, 'test');
+    assert.equal(first.rowCount, 2);
+    assert.equal(first.bytes, Buffer.byteLength(before));
+    assert.deepEqual(await audit.prepare('SELECT operator_name,kind,status,row_count,byte_count FROM audit_export_jobs WHERE id=?').get(first.jobId),
+      { operator_name: alice, kind: 'replay', status: 'succeeded', row_count: 2, byte_count: first.bytes });
+    await assert.rejects(run(alice, original.manifest.replayId, 'legacy.json'), { code: 'output-error' });
+    assert.equal(await readFile(output, 'utf8'), before);
+
+    const now = Date.now(), actors = accounts.map(accountId => ({
+      accountId, name: 'fixture player', roomId: 'report-replay', connected: true, available: true,
+    }));
+    await pvp.syncRoom(actors[0].roomId, actors, now);
+    const match = (await pvp.command(actors[0], { id: randomUUID(), action: 'create', gameId: 'chess',
+      stakeUnits: '1000000', targetId: accounts[1] }, now)).active!.id;
+    await pvp.command(actors[1], { id: randomUUID(), action: 'accept', challengeId: match }, now + 1);
+    await pvp.command(actors[0], { id: randomUUID(), action: 'ready', challengeId: match }, now + 2);
+    const ready = (await pvp.command(actors[1], { id: randomUUID(), action: 'ready', challengeId: match }, now + 3)).active!;
+    let at = 10, recording: CapturedChessReplay | undefined;
+    const engine = new ChessGame(undefined, () => at);
+    const capture = new ChessTurnReplayCapture(id => id, value => { recording = value; }, () => at);
+    capture.observeMatches([ready]);
+    engine.setReplayObserver(value => capture.observeEngine(value));
+    for (const id of accounts) assert(engine.join(id));
+    at += 100;
+    assert(engine.move(accounts[0], 'e2', 'e4', undefined));
+    assert(engine.resign(accounts[1]));
+    await pvp.adjudicate(actors[0].roomId, match, accounts[0], 'win', now + 100);
+    capture.observeAdjudication(match, accounts[0], 'win', now + 100);
+    assert.ok(recording);
+    assert.equal(await persistCapturedChessReplay(audit, scope, game.schema, recording), 'recorded');
+    const pinned = await run(alice, match, 'chess.json');
+    const packageFile = JSON.parse(await readFile(join(scratch, 'chess.json'), 'utf8')) as ReplayPackage;
+    assert.equal(pinned.engineVerified, true);
+    assert.equal(packageFile.manifest.scope.environment, 'test');
+    const readyViewer = prepareViewerReplay(packageFile);
+    assert.equal(readyViewer.status, 'ready');
+    if (readyViewer.status === 'ready') assert.equal(readyViewer.engineVerified, true);
+    const { formatVersion, game: definition, initial, coverage, gaps } = packageFile.manifest;
+    const inconsistent = createReplayPackage({ formatVersion, scope, replayId: randomUUID(), entityId: match,
+      game: definition, initial, coverage, gaps }, packageFile.fragments.flatMap(fragment => fragment.events).map(event =>
+      event.data.kind === 'terminal' ? { ...event, data: { ...event.data, winnerSeat: 2 } } : event));
+    await persist(inconsistent);
+    await assert.rejects(run(alice, inconsistent.manifest.replayId, 'inconsistent.json'), { code: 'replay-corrupt' });
+
+    let poolClock = (Math.floor(Date.now() / TOTE_TIMING.period) + 1) * TOTE_TIMING.period;
+    const tote = new FlagToteStore(game, account => wallet.snapshotInTransaction(account), wallet.ready, () => poolClock, () => 0);
+    const round = (await tote.snapshot(accounts[0])).round;
+    for (const [account, country] of [[accounts[0], 'FR'], [accounts[1], 'BR'], [accounts[0], 'DE']]) {
+      await tote.bet(account, { id: randomUUID(), roundId: round.id, rulesVersion: 1, country, stakeUnits: '100' });
+    }
+    poolClock = round.finishesAt;
+    await tote.advance();
+    const toteReplay = randomUUID();
+    assert.equal((await persistCapturedToteReplay(audit, { datasetId, gameSchema: game.schema, poolId: round.id,
+      replayId: toteReplay })).status, 'stored');
+    const poolResult = await run(alice, toteReplay, 'tote.json');
+    const poolPackage = JSON.parse(await readFile(join(scratch, 'tote.json'), 'utf8'));
+    assert.equal(poolResult.engineVerified, false);
+    assert.equal(poolPackage.manifest.formatVersion, 3);
+    assert.equal(poolPackage.manifest.entityId, round.id);
+    assert.equal(prepareViewerReplay(poolPackage).status, 'ready');
+  });
+
+  await t.test('requires a committed owned job and a live grant for each captured posting source', async () => {
+    await assert.rejects(aliceDb.prepare(`SELECT manifest FROM ${a}.audit_replay_packages`).get(), { code: '42501' });
+    await assert.rejects(aliceDb.transaction(async () => {
+      const uncommitted = await begin(aliceDb, original.manifest.replayId);
+      return read(aliceDb, uncommitted);
+    }), { code: '42501' });
+    const own = await begin(aliceDb, original.manifest.replayId);
+    try {
+      await assert.rejects(read(bobDb, own), { code: '42501' });
+      await assert.rejects(aliceDb.transaction(() => read(aliceDb, own), { readOnly: true }), { code: '42501' });
+    } finally { await cancel(aliceDb, own); }
+
+    for (const replayId of [original.manifest.replayId, randomUUID()]) {
+      const job = await begin(bobDb, replayId);
+      try { assert.deepEqual(await read(bobDb, job), { status: 'absent' }); }
+      finally { await cancel(bobDb, job); }
+    }
+    const foreign = randomUUID();
+    await audit.prepare("INSERT INTO audit_datasets VALUES(?,'test',0,1)").run(foreign);
+    await audit.prepare('INSERT INTO audit_dataset_sources VALUES(?,?)').run(foreign, demo);
+    await assert.rejects(begin(aliceDb, original.manifest.replayId, foreign), { code: '42501' });
+
+    const id = (await game.prepare(`INSERT INTO capro_pending_ledger
+      (account_id,operation_id,amount_units,pending_balance_units,reason,created_at)
+      VALUES (?,?,'1','1','credit',?) RETURNING id::text`).get(accounts[0], randomUUID(), Date.now()))!.id;
+    const crossEvents = legacyEvents.map((event, index) => index === 0
+      ? { ...event, postings: [...event.postings, { namespace: pending, rowId: id }] } : event);
+    const mixed = legacy(randomUUID(), playId, crossEvents);
+    await persist(mixed);
+    const job = await begin(aliceDb, mixed.manifest.replayId);
+    try {
+      assert.deepEqual(await read(aliceDb, job), { status: 'absent' });
+      await audit.prepare('INSERT INTO audit_report_acl VALUES (?,?,?)').run(alice, datasetId, pending);
+      assert.equal((await read(aliceDb, job) as { status: string }).status, 'candidate');
+      await audit.prepare('DELETE FROM audit_report_acl WHERE operator_name=? AND dataset_id=? AND source_namespace=?').run(alice, datasetId, pending);
+      assert.deepEqual(await read(aliceDb, job), { status: 'absent' });
+    } finally { await cancel(aliceDb, job); }
+
+    const detached = legacy();
+    await persist(detached);
+    await audit.prepare(`UPDATE audit_replay_fragments SET fragment=jsonb_set(fragment,'{events,0,money}',?::jsonb)
+      WHERE dataset_id=? AND replay_id=?`).run(
+      JSON.stringify([{ movement: 'payout', units: '1', posting: { namespace: pending, rowId: id } }]),
+      datasetId, detached.manifest.replayId);
+    const detachedJob = await begin(aliceDb, detached.manifest.replayId);
+    try { assert.deepEqual(await read(aliceDb, detachedJob), { status: 'absent' }); }
+    finally { await cancel(aliceDb, detachedJob); }
+  });
+
+  await t.test('distinguishes absent, corrupt, incomplete and unsupported without publishing a partial file', async () => {
+    const noBasis = legacy(randomUUID(), randomUUID(), legacyEvents.map(event => ({ ...event, postings: [] })));
+    const incomplete = legacy();
+    const corrupt = legacy();
+    const unsupported = legacy();
+    await persist(noBasis);
+    await persist(incomplete, true);
+    await persist(corrupt);
+    await persist(unsupported);
+    await audit.prepare(`UPDATE audit_replay_fragments SET fragment=jsonb_set(fragment,'{sha256}',to_jsonb(?::text))
+      WHERE dataset_id=? AND replay_id=?`).run('0'.repeat(64), datasetId, corrupt.manifest.replayId);
+    await audit.prepare(`UPDATE audit_replay_packages SET manifest=jsonb_set(manifest,'{formatVersion}','77'::jsonb)
+      WHERE dataset_id=? AND replay_id=?`).run(datasetId, unsupported.manifest.replayId);
+    for (const [pack, code] of [[noBasis, 'replay-absent'], [incomplete, 'replay-incomplete'],
+      [corrupt, 'replay-corrupt'], [unsupported, 'replay-unsupported']] as const) {
+      await assert.rejects(run(alice, pack.manifest.replayId, code + '.json'), { code });
+      const row = await audit.prepare(`SELECT status,reason,row_count,byte_count FROM audit_export_jobs
+        WHERE operator_name=? AND filters->>'replayId'=?`).get(alice, pack.manifest.replayId);
+      assert.deepEqual(row, { status: 'failed', reason: code, row_count: 0, byte_count: 0 });
+    }
+    assert.deepEqual((await readdir(scratch)).sort(), ['chess.json', 'legacy.json', 'tote.json']);
+  });
+});

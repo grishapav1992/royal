@@ -14,6 +14,8 @@ export type PlayerReportFilters = {
   contour?: 'virtual' | 'test' | 'real';
 };
 export type AuditReportFilters = Omit<PlayerReportFilters, 'accountId'> & { accountId?: string };
+export type AuditPostingReportFilters = { source: string; postingId: string; refresh?: boolean };
+export type AuditReportKind = 'player' | 'summary' | 'detail' | 'replay' | 'reconcile';
 
 type Limits = { maxRows: number; maxBytes: number; maxScanned: number; timeoutMs: number; pageSize: number };
 const defaults: Limits = { maxRows: 10_000, maxBytes: 16 * 1024 * 1024, maxScanned: 20_000, timeoutMs: 60_000, pageSize: 128 };
@@ -21,7 +23,7 @@ const maxTempBytes = 64 * 1024 * 1024;
 const units = new Set<keyof PlayerReportRow>(['schema_version', 'posting_id', 'scale', 'amount_units', 'reserved_delta_units',
   'expected_balance_units', 'stored_balance_units', 'pending_delta_units', 'stored_pending_units']);
 type Failure = 'cancelled' | 'time-limit' | 'row-limit' | 'scan-limit' | 'byte-limit' | 'source-unavailable' | 'output-error' |
-  'internal-error' | 'permission-denied';
+  'internal-error' | 'permission-denied' | 'replay-absent' | 'replay-corrupt' | 'replay-incomplete' | 'replay-unsupported';
 
 export class AuditPlayerReportError extends Error {
   constructor(readonly code: Failure | 'journal-unavailable', readonly jobId: string | null) { super(code); }
@@ -52,11 +54,11 @@ function failureCode(error: unknown, signal: AbortSignal, timeout: AbortSignal):
   if (code === '57014') return 'time-limit';
   if (code === '54000') return 'scan-limit';
   if (code && (code.startsWith('08') || ['42P01','3F000','ECONNREFUSED','ECONNRESET'].includes(code))) return 'source-unavailable';
-  if (code && ['ENOENT','EACCES','EPERM','ENOSPC','EDQUOT','EROFS','EXDEV','ENOTDIR'].includes(code)) return 'output-error';
+  if (code && ['EEXIST','ENOENT','EACCES','EPERM','ENOSPC','EDQUOT','EROFS','EXDEV','ENOTDIR'].includes(code)) return 'output-error';
   return 'internal-error';
 }
 
-export async function openAuditReportReader(config: ClientConfig, jobId: string, signal: AbortSignal) {
+export async function openAuditReportReader(config: ClientConfig, jobId: string, signal: AbortSignal, readOnly = true) {
   const connection = new pg.Client(config);
   connection.on('error', () => { /* Active query errors are handled by the export. */ });
   let end: Promise<void> | undefined;
@@ -70,7 +72,7 @@ export async function openAuditReportReader(config: ClientConfig, jobId: string,
   try {
     signal.throwIfAborted();
     await connection.connect();
-    await connection.query('BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY');
+    await connection.query(readOnly ? 'BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY' : 'BEGIN ISOLATION LEVEL READ COMMITTED');
     const settings = await connection.query("SELECT pg_size_bytes(current_setting('temp_file_limit'))::text AS bytes");
     const bytes = Number(settings.rows[0]?.bytes);
     if (!Number.isSafeInteger(bytes) || bytes < 0 || bytes > maxTempBytes) {
@@ -112,8 +114,9 @@ async function* pages(config: ClientConfig, fn: string, jobId: string, limits: L
 
 /** Both journal and query connections use the named PostgreSQL report login. */
 export async function runAuditReport<T extends { rowCount: number; bytes: number }>(
-  config: ClientConfig, input: { schema: string; datasetId: string; filters: AuditReportFilters;
-    signal?: AbortSignal }, kind: 'player' | 'summary', timeoutMs: number,
+  config: ClientConfig, input: { schema: string; datasetId: string;
+    filters: AuditReportFilters | AuditPostingReportFilters | { replayId: string };
+    signal?: AbortSignal }, kind: AuditReportKind, timeoutMs: number,
   run: (settings: ClientConfig, schema: string, jobId: string, signal: AbortSignal) => Promise<T>,
 ) {
   if (!/^[a-z_][a-z0-9_]{0,62}$/.test(input.schema)) throw new Error('Invalid audit schema name');

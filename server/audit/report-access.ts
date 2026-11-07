@@ -23,8 +23,9 @@ export async function installAuditReportAccess(db: PostgresDatabase, readerRole:
   const begin = relation('audit_report_begin');
   const finish = relation('audit_report_finish');
   const resultReasons = "'time-limit','row-limit','scan-limit','byte-limit','source-unavailable','output-error','internal-error','permission-denied'";
+  const investigationReasons = resultReasons + ",'replay-absent','replay-corrupt','replay-incomplete','replay-unsupported'";
 
-  const beginSql = (summary: boolean) => `CREATE ${summary ? 'OR REPLACE ' : ''}FUNCTION ${begin}(p_dataset uuid,p_kind text,p_filters jsonb) RETURNS uuid
+  const beginSql = (version: 1 | 2 | 3) => `CREATE ${version > 1 ? 'OR REPLACE ' : ''}FUNCTION ${begin}(p_dataset uuid,p_kind text,p_filters jsonb) RETURNS uuid
       LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
       DECLARE
         v_from bigint;
@@ -32,14 +33,35 @@ export async function installAuditReportAccess(db: PostgresDatabase, readerRole:
         v_now timestamptz;
         v_job uuid;
       BEGIN
-        IF ${summary ? "p_kind IS NULL OR p_kind NOT IN ('player','summary')" : "p_kind IS DISTINCT FROM 'player'"} OR
+        IF ${version === 3 ? "p_kind IS NULL OR p_kind NOT IN ('player','summary','detail','replay','reconcile')"
+          : version === 2 ? "p_kind IS NULL OR p_kind NOT IN ('player','summary')" : "p_kind IS DISTINCT FROM 'player'"} OR
            pg_catalog.jsonb_typeof(p_filters) IS DISTINCT FROM 'object' OR
            pg_catalog.pg_column_size(p_filters)>4096 THEN
           RAISE EXCEPTION 'Invalid audit export filters' USING ERRCODE='22023';
         END IF;
-        IF EXISTS (SELECT 1 FROM pg_catalog.jsonb_object_keys(p_filters) AS key(name)
+${version === 3 ? `        IF p_kind='replay' THEN
+          IF (p_filters - 'replayId')<>'{}'::jsonb OR
+             pg_catalog.jsonb_typeof(p_filters->'replayId') IS DISTINCT FROM 'string' OR
+             (p_filters->>'replayId') !~ '^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$' THEN
+            RAISE EXCEPTION 'Invalid audit replay filter' USING ERRCODE='22023';
+          END IF;
+        ELSIF p_kind IN ('detail','reconcile') THEN
+          IF (p_filters - ARRAY['source','postingId','refresh'])<>'{}'::jsonb OR
+             (p_filters ? 'refresh' AND (p_kind<>'reconcile' OR
+               pg_catalog.jsonb_typeof(p_filters->'refresh') IS DISTINCT FROM 'boolean')) OR
+             pg_catalog.jsonb_typeof(p_filters->'source') IS DISTINCT FROM 'string' OR
+             (p_filters->>'source') !~ '^[a-z_][a-z_0-9]{0,62}[.][a-z_][a-z_0-9]{0,62}$' OR
+             pg_catalog.jsonb_typeof(p_filters->'postingId') IS DISTINCT FROM 'string' OR
+             (p_filters->>'postingId') !~ '^[1-9][0-9]{0,18}$' THEN
+            RAISE EXCEPTION 'Invalid audit posting filter' USING ERRCODE='22023';
+          END IF;
+          IF (p_filters->>'postingId')::numeric>9223372036854775807 THEN
+            RAISE EXCEPTION 'Invalid audit posting ID' USING ERRCODE='22023';
+          END IF;
+        ELSE
+` : ''}        IF EXISTS (SELECT 1 FROM pg_catalog.jsonb_object_keys(p_filters) AS key(name)
             WHERE name NOT IN ('accountId','fromMs','toMs','category','gameId','modeId','asset','contour')) OR
-${summary ? `           ((p_kind='player' OR p_filters ? 'accountId') AND
+${version > 1 ? `           ((p_kind='player' OR p_filters ? 'accountId') AND
              (pg_catalog.jsonb_typeof(p_filters->'accountId') IS DISTINCT FROM 'string' OR
               (p_filters->>'accountId') !~ '^[a-zA-Z0-9._:-]{1,128}$')) OR` : `           pg_catalog.jsonb_typeof(p_filters->'accountId') IS DISTINCT FROM 'string' OR
            (p_filters->>'accountId') !~ '^[a-zA-Z0-9._:-]{1,128}$' OR`}
@@ -61,7 +83,7 @@ ${summary ? `           ((p_kind='player' OR p_filters ? 'accountId') AND
              (p_filters->>'asset') !~ '^[A-Z][A-Z0-9_]{0,31}$')) THEN
           RAISE EXCEPTION 'Invalid audit export filters' USING ERRCODE='22023';
         END IF;
-        IF NOT EXISTS (SELECT 1 FROM ${acl} WHERE operator_name=SESSION_USER AND dataset_id=p_dataset) THEN
+${version === 3 ? '        END IF;\n' : ''}        IF NOT EXISTS (SELECT 1 FROM ${acl} WHERE operator_name=SESSION_USER AND dataset_id=p_dataset) THEN
           RAISE EXCEPTION 'Audit export scope is unavailable' USING ERRCODE='42501';
         END IF;
 
@@ -76,6 +98,28 @@ ${summary ? `           ((p_kind='player' OR p_filters ? 'accountId') AND
           RAISE EXCEPTION 'An audit export is already running' USING ERRCODE='55P03';
         END IF;
         RETURN v_job;
+      END
+      $audit$`;
+
+  const finishSql = (expanded: boolean) => `CREATE ${expanded ? 'OR REPLACE ' : ''}FUNCTION ${finish}(p_job uuid,p_outcome text,p_row_count bigint,p_byte_count bigint,p_reason text) RETURNS void
+      LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
+      DECLARE
+        v_now timestamptz := pg_catalog.clock_timestamp();
+      BEGIN
+        IF p_outcome IS NULL OR p_outcome NOT IN ('succeeded','failed','cancelled') OR
+           p_row_count NOT BETWEEN 0 AND ${maximumSafeInteger} OR
+           p_byte_count NOT BETWEEN 0 AND ${maximumSafeInteger} OR
+           (p_outcome='succeeded' AND (p_row_count IS NULL OR p_byte_count IS NULL OR p_reason IS NOT NULL)) OR
+           (p_outcome='failed' AND (p_reason IS NULL OR p_reason NOT IN (${expanded ? investigationReasons : resultReasons}))) OR
+           (p_outcome='cancelled' AND p_reason IS DISTINCT FROM 'cancelled') THEN
+          RAISE EXCEPTION 'Invalid audit export outcome' USING ERRCODE='22023';
+        END IF;
+        UPDATE ${jobs} SET status=p_outcome,finished_at=GREATEST(started_at,v_now),
+          row_count=p_row_count,byte_count=p_byte_count,reason=p_reason
+          WHERE id=p_job AND operator_name=SESSION_USER AND status='running' AND expires_at>v_now;
+        IF NOT FOUND THEN
+          RAISE EXCEPTION 'Audit export job is unavailable' USING ERRCODE='42501';
+        END IF;
       END
       $audit$`;
 
@@ -97,28 +141,8 @@ ${summary ? `           ((p_kind='player' OR p_filters ? 'accountId') AND
       CHECK((status='running')=(finished_at IS NULL))
     )`,
     `CREATE UNIQUE INDEX audit_report_one_running ON ${jobs}(operator_name) WHERE status='running'`,
-    beginSql(false),
-    `CREATE FUNCTION ${finish}(p_job uuid,p_outcome text,p_row_count bigint,p_byte_count bigint,p_reason text) RETURNS void
-      LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
-      DECLARE
-        v_now timestamptz := pg_catalog.clock_timestamp();
-      BEGIN
-        IF p_outcome IS NULL OR p_outcome NOT IN ('succeeded','failed','cancelled') OR
-           p_row_count NOT BETWEEN 0 AND ${maximumSafeInteger} OR
-           p_byte_count NOT BETWEEN 0 AND ${maximumSafeInteger} OR
-           (p_outcome='succeeded' AND (p_row_count IS NULL OR p_byte_count IS NULL OR p_reason IS NOT NULL)) OR
-           (p_outcome='failed' AND (p_reason IS NULL OR p_reason NOT IN (${resultReasons}))) OR
-           (p_outcome='cancelled' AND p_reason IS DISTINCT FROM 'cancelled') THEN
-          RAISE EXCEPTION 'Invalid audit export outcome' USING ERRCODE='22023';
-        END IF;
-        UPDATE ${jobs} SET status=p_outcome,finished_at=GREATEST(started_at,v_now),
-          row_count=p_row_count,byte_count=p_byte_count,reason=p_reason
-          WHERE id=p_job AND operator_name=SESSION_USER AND status='running' AND expires_at>v_now;
-        IF NOT FOUND THEN
-          RAISE EXCEPTION 'Audit export job is unavailable' USING ERRCODE='42501';
-        END IF;
-      END
-      $audit$`,
+    beginSql(1),
+    finishSql(false),
     `REVOKE ALL ON TABLE ${acl},${jobs} FROM PUBLIC,${reader}`,
     `REVOKE ALL ON FUNCTION ${begin}(uuid,text,jsonb),${finish}(uuid,text,bigint,bigint,text) FROM PUBLIC`,
     `GRANT USAGE ON SCHEMA ${schema} TO ${reader}`,
@@ -127,6 +151,12 @@ ${summary ? `           ((p_kind='player' OR p_filters ? 'accountId') AND
   await applySchemaMigration(db, { id: 'paid-activity-audit-summary-access-v1', statements: [
     `ALTER TABLE ${jobs} DROP CONSTRAINT audit_export_jobs_kind_check,
       ADD CONSTRAINT audit_export_jobs_kind_check CHECK(kind IN ('player','summary'))`,
-    beginSql(true),
+    beginSql(2),
+  ] });
+  await applySchemaMigration(db, { id: 'paid-activity-audit-investigation-access-v1', statements: [
+    `ALTER TABLE ${jobs} DROP CONSTRAINT audit_export_jobs_kind_check,
+      ADD CONSTRAINT audit_export_jobs_kind_check CHECK(kind IN ('player','summary','detail','replay','reconcile'))`,
+    beginSql(3),
+    finishSql(true),
   ] });
 }
