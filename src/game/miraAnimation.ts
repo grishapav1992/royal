@@ -3,6 +3,7 @@ import {miraSeatAmount,type MiraView} from '../shared/miraRoutine';
 export const MIRA_ATLASES={
   walk:{file:'mira-walk-24.png',columns:6,rows:4,fullBody:true},
   seat:{file:'mira-seat.png',columns:4,rows:2,fullBody:true},
+  wipe:{file:'mira-wipe-24.png',columns:6,rows:4,fullBody:false,contactGround:319},
   work:{file:'mira-work-corrected.png',columns:4,rows:4,fullBody:false},
   react:{file:'mira-react.png',columns:4,rows:4,fullBody:false},
   serve:{file:'mira-serve.png',columns:4,rows:2,fullBody:false},
@@ -12,7 +13,10 @@ export type MiraFrame={atlas:MiraAtlas;frame:number;seat:number;flipped:boolean;
 const clamp=(p:number)=>Math.max(0,Math.min(1,Number.isFinite(p)?p:0));
 const frameAt=(p:number,count:number)=>Math.min(count-1,Math.floor(clamp(p)*count));
 
-export function interpolateMiraWalk(from:MiraView,to:MiraView,amount:number):Partial<MiraView> {
+export function interpolateMiraProgress(from:MiraView,to:MiraView,amount:number):Partial<MiraView> {
+  if(from.action==='wipe'&&to.action==='wipe'&&to.progress>=from.progress){
+    return {progress:from.progress+(to.progress-from.progress)*amount};
+  }
   if(from.action!=='walk'||to.action!=='walk')return {};
   const phaseChange=(to.progress-from.progress+1)%1;
   return {progress:(from.progress+phaseChange*amount)%1};
@@ -27,7 +31,8 @@ export function sampleMiraFrame(view:MiraView,reducedMotion=false):MiraFrame {
     case 'sit':return {...result,atlas:'seat',frame:0};
     case 'stand-up':case 'sit-down':return {...result,atlas:'seat',frame:Math.round((1-seat)*7)};
     case 'wipe':{
-      return {...result,atlas:'work',frame:reducedMotion?1:p>.96?7:frameAt((p*5)%1,8)};
+      const count=MIRA_ATLASES.wipe.columns*MIRA_ATLASES.wipe.rows;
+      return {...result,atlas:'wipe',frame:reducedMotion?3:frameAt(p===1?1:(p*5)%1,count)};
     }
     case 'polish':{
       const sequence=[8,9,10,11,10,9];

@@ -3,13 +3,13 @@ import {BAR_POSITION} from '../shared/furniture';
 import {MiraRoutine,miraSeatAmount,type MiraAttention,type MiraView} from '../shared/miraRoutine';
 import {NpcMotion} from '../network/NpcMotion';
 import {MiraRig} from './MiraRig';
-import {interpolateMiraWalk} from './miraAnimation';
+import {interpolateMiraProgress} from './miraAnimation';
 import {drawRoyalBar} from './royalBarArt';
 
 export class Bar {
   private routine=new MiraRoutine();
   private target?:MiraView;
-  private motion=new NpcMotion<MiraView>({delayMs:0,isMoving:view=>view.action==='walk',interpolate:interpolateMiraWalk});
+  private motion=new NpcMotion<MiraView>({delayMs:0,isMoving:view=>view.action==='walk',interpolate:interpolateMiraProgress});
   private view:MiraView={...this.routine.state};
   private attention:MiraAttention='closed';
   private rig:MiraRig;
@@ -36,7 +36,7 @@ export class Bar {
     this.contact.setVisible(seat>.01).setAlpha(seat*.4);
     const time=this.scene.time.now;
     const drawEffects=time-this.lastDraw>=33;
-    if(!drawEffects&&target.action!=='walk')return;
+    if(!drawEffects&&target.action!=='walk'&&target.action!=='wipe')return;
     const elapsed=Number.isFinite(this.lastDraw)?(time-this.lastDraw)/1000:.033;
     const guardListening=target.action==='chat'&&target.facing==='left'&&conversation.active&&!conversation.speaking;
     const action=guardListening||reducedMotion&&target.action==='greet'?'listen':target.action;
