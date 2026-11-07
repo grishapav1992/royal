@@ -1,12 +1,15 @@
 import assert from 'node:assert/strict';
-import { randomUUID } from 'node:crypto';
+import { execFile } from 'node:child_process';
+import { createHash, randomUUID } from 'node:crypto';
 import { once } from 'node:events';
 import { mkdtemp, readFile, realpath, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { isAbsolute, join } from 'node:path';
 import { setTimeout as pause } from 'node:timers/promises';
 import test from 'node:test';
+import { promisify } from 'node:util';
 import express from 'express';
+import pg, { type PoolClient } from 'pg';
 import { startAuditAttemptRuntime } from '../server/audit/attempts';
 import { checkCapturedCasinoRound } from '../server/audit/check-casino';
 import { reconcileStoredPvpMatch } from '../server/audit/check-pvp';
@@ -31,6 +34,7 @@ import { NileCombatEscrow } from '../server/finance/combat-escrow';
 import { FlagToteStore } from '../server/flagTote';
 import { PvpStore } from '../server/pvp/store';
 import { VirtualPvpLedger } from '../server/pvp/virtual-wallet';
+import { temporaryDatabase } from '../scripts/database-test';
 // @ts-ignore The independent qualification fixture is JavaScript without declarations.
 import { cascadeRandom } from '../scripts/game-math/rtp-temple-cascade-model.mjs';
 import { CARIBBEAN_GAME, caribbeanInitialCost } from '../src/shared/caribbeanTreasures';
@@ -47,31 +51,98 @@ async function observed<T>(read: () => Promise<T | undefined>): Promise<T> {
   }
 }
 
+const pgBin = process.env.ROYAL_TEST_PG_BIN;
+const exec = promisify(execFile);
+const sha256 = (data: string | Buffer) => createHash('sha256').update(data).digest('hex');
+
+function localArchiveTool(tool: 'pg_dump' | 'pg_restore', env: NodeJS.ProcessEnv, args: string[]) {
+  assert(pgBin && isAbsolute(pgBin), 'Archive tool directory must be absolute');
+  assert.equal(env.NODE_ENV, 'test');
+  assert.equal(env.PGHOST, '127.0.0.1');
+  assert.equal(env.PGDATABASE, 'royal_test');
+  assert.equal(env.PGUSER, 'postgres');
+  assert.match(env.PGPORT ?? '', /^[1-9][0-9]{0,4}$/);
+  assert(env.PGPASSWORD);
+  return exec(join(pgBin, tool + (process.platform === 'win32' ? '.exe' : '')), [
+    '--host=127.0.0.1', '--port=' + env.PGPORT, '--username=postgres', '--dbname=royal_test', '--no-password', ...args,
+  ], { env: { PATH: process.env.PATH, SystemRoot: process.env.SystemRoot, LC_ALL: 'C', PGSSLMODE: 'disable',
+    PGPASSWORD: env.PGPASSWORD }, timeout: 20_000, maxBuffer: 4 * 1024 * 1024 });
+}
+
+async function archiveSnapshot<T>(game: PostgresDatabase, inspect: (client: PoolClient) => Promise<T>) {
+  const client = await game.pool.connect();
+  try {
+    await client.query("BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY; SET LOCAL search_path=pg_catalog; SET LOCAL timezone='UTC'");
+    return await inspect(client);
+  } finally {
+    try { await client.query('ROLLBACK'); }
+    finally { client.release(); }
+  }
+}
+
+async function inspectArchiveState(client: PoolClient, schemas: string[], operator: string, group: string, audit: string) {
+  const tables = await client.query<{ schema_name: string; table_name: string }>(
+    `SELECT n.nspname AS schema_name,c.relname AS table_name FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+      WHERE c.relkind='r' AND n.nspname=ANY($1::text[]) ORDER BY n.nspname,c.relname`, [schemas]);
+  const contents = [];
+  for (const { schema_name, table_name } of tables.rows) {
+    const table = identifier(schema_name) + '.' + identifier(table_name);
+    const { rows } = await client.query(`SELECT count(*)::int AS rows,
+      encode(sha256(convert_to(COALESCE(string_agg(body,E'\\n' ORDER BY body COLLATE "C"),''),'UTF8')),'hex') AS digest
+      FROM (SELECT to_jsonb(entry)::text AS body FROM ${table} entry) contents`);
+    contents.push({ table, ...rows[0] });
+  }
+  const triggers = (await client.query(`SELECT c.relname AS table_name,t.tgenabled,
+      pg_get_triggerdef(t.oid) AS definition,pg_get_functiondef(t.tgfoid) AS function_definition
+    FROM pg_trigger t JOIN pg_class c ON c.oid=t.tgrelid JOIN pg_namespace n ON n.oid=c.relnamespace
+    WHERE n.nspname=ANY($1::text[]) AND t.tgname='royal_audit_posting_v1' ORDER BY n.nspname,c.relname`, [schemas])).rows;
+  const operatorAccess = (await client.query(`SELECT pg_has_role($1::name,$2::name,'MEMBER') AS member,
+      has_schema_privilege($1::name,$3::text,'USAGE') AS schema_usage,
+      has_function_privilege($1::name,format('%I.audit_report_begin(uuid,text,jsonb)',$3),'EXECUTE') AS run_report,
+      has_table_privilege($1::name,format('%I.audit_posting_refs',$3),'SELECT') AS read_source`, [operator, group, audit])).rows[0];
+  return { contents, triggers, operatorAccess };
+}
+
+function schemaFingerprint(sql: string) {
+  // PostgreSQL adds a random restrict key to each text dump.
+  return sha256(sql.replace(/^\\(?:un)?restrict [^\r\n]+\r?\n/gm, ''));
+}
+
+async function openStores(game: PostgresDatabase) {
+  const wallet = new DemoWalletStore(game, cascadeRandom(129733));
+  const bank = new VirtualPvpLedger(game, wallet);
+  const pvp = new PvpStore(bank), combat = new NileCombatEscrow(bank);
+  await Promise.all([pvp.ready, combat.ready]);
+  return { wallet, bank, pvp };
+}
+
 test('isolated rehearsal settles accepted casino, PvP and shared pool money after observer failure and test-to-live cutover',
-  { timeout: 25_000 }, async t => {
+  { timeout: pgBin ? 65_000 : 25_000 }, async t => {
     // The project database runner supplies these values and creates a disposable local cluster.
     assert.equal(process.env.NODE_ENV, 'test');
     assert.equal(process.env.PGHOST, '127.0.0.1');
     assert.equal(process.env.PGDATABASE, 'royal_test');
     assert.equal(process.env.DATABASE_URL, '');
     assert.equal(process.env.DATABASE_URL_FILE, '');
-    const game = new PostgresDatabase(':memory:'), audit = new PostgresDatabase(':memory:');
-    const readOnlyAudit = new PostgresDatabase(audit.schema, { readOnly: true, existingSchema: true });
+    const originalGame = new PostgresDatabase(':memory:'), originalAudit = new PostgresDatabase(':memory:');
+    let game = originalGame, audit = originalAudit, connectionEnv = process.env;
+    let restored: Awaited<ReturnType<typeof temporaryDatabase>> | undefined;
+    const connections = new Set([game, audit]);
     let runtime: ReturnType<typeof startAuditAttemptRuntime>;
     t.after(async () => {
       try { await runtime?.close(); }
-      finally { await Promise.all([game.close(), audit.close(), readOnlyAudit.close()]); }
+      finally {
+        try { await Promise.all([...connections].map(db => db.close())); }
+        finally { await restored?.cleanup(); }
+      }
     });
     const player = randomUUID(), other = randomUUID();
     await game.exec('CREATE TABLE accounts(id text PRIMARY KEY)');
     await game.prepare('INSERT INTO accounts VALUES (?),(?)').run(player, other);
-    const wallet = new DemoWalletStore(game, cascadeRandom(129733));
+    let { wallet, bank, pvp } = await openStores(game);
     for (const account of [player, other]) {
       await wallet.operate(account, { id: randomUUID(), kind: 'deposit', amount: 1000 });
     }
-    const bank = new VirtualPvpLedger(game, wallet);
-    const pvp = new PvpStore(bank), combat = new NileCombatEscrow(bank);
-    await Promise.all([pvp.ready, combat.ready]);
     const a = { accountId: player, name: 'Rehearsal A', roomId: 'rehearsal' };
     const b = { accountId: other, name: 'Rehearsal B', roomId: a.roomId };
     const beginMatch = async (now: number) => {
@@ -85,7 +156,7 @@ test('isolated rehearsal settles accepted casino, PvP and shared pool money afte
       return match;
     };
     const sources = { game: game.schema }, namespace = game.schema + '.demo_ledger';
-    const datasets = new AuditDatasets(audit, sources);
+    let datasets = new AuditDatasets(audit, sources);
     const testDataset = await datasets.startTest();
     await installAuditCleanup(audit);
     const filesRoot = await realpath(await mkdtemp(join(tmpdir(), 'royal-audit-rehearsal-')));
@@ -94,10 +165,11 @@ test('isolated rehearsal settles accepted casino, PvP and shared pool money afte
     const cleanup = { datasetId: testDataset.datasetId, sources, filesRoot };
     const tag = randomUUID().replaceAll('-', '').slice(0, 12);
     const group = 'rehearsal_read_' + tag, operator = 'rehearsal_operator_' + tag, password = randomUUID();
-    await audit.exec(`CREATE ROLE ${identifier(group)} NOLOGIN;
+    const roleSql = `CREATE ROLE ${identifier(group)} NOLOGIN;
       CREATE ROLE ${identifier(operator)} LOGIN PASSWORD '${password}';
       GRANT ${identifier(group)} TO ${identifier(operator)};
-      ALTER ROLE ${identifier(operator)} SET temp_file_limit='32MB'`);
+      ALTER ROLE ${identifier(operator)} SET temp_file_limit='32MB'`;
+    await audit.exec(roleSql);
     await installAuditReportAccess(audit, group);
     await installAuditPlayerReport(audit, group, sources);
     await installAuditSummaryReport(audit, group, sources);
@@ -105,9 +177,52 @@ test('isolated rehearsal settles accepted casino, PvP and shared pool money afte
     const grant = (datasetId: string) =>
       audit.prepare('INSERT INTO audit_report_acl VALUES (?,?,?)').run(operator, datasetId, namespace);
     await grant(testDataset.datasetId);
-    const reader = databaseConfig({ ...process.env, DATABASE_URL: '', DATABASE_URL_FILE: '',
+    let verifyOriginal: (() => Promise<void>) | undefined;
+    if (pgBin) {
+      const privateRoot = await mkdtemp(join(tmpdir(), 'royal-audit-rehearsal-dump-'));
+      t.after(() => rm(privateRoot, { recursive: true, force: true }));
+      const archive = join(privateRoot, 'rehearsal.dump');
+      const schemas = [game.schema, audit.schema];
+      const scope = schemas.map(schema => '--schema=' + schema);
+      const inspect = (client: PoolClient) => inspectArchiveState(client, schemas, operator, group, originalAudit.schema);
+      const expected = await archiveSnapshot(originalGame, async client => {
+        const { rows: [row] } = await client.query<{ snapshot: string }>('SELECT pg_export_snapshot() AS snapshot');
+        const snapshot = '--snapshot=' + row.snapshot;
+        const state = await inspect(client);
+        const ddl = await localArchiveTool('pg_dump', process.env, [...scope, snapshot, '--schema-only']);
+        await localArchiveTool('pg_dump', process.env, [...scope, snapshot, '--format=custom', '--file=' + archive]);
+        return { state, schema: schemaFingerprint(ddl.stdout), archive: sha256(await readFile(archive)) };
+      });
+      assert.deepEqual(expected.state.triggers.map(row => [row.table_name, row.tgenabled]),
+        [['capro_pending_ledger', 'O'], ['demo_ledger', 'O']]);
+      assert.deepEqual(expected.state.operatorAccess, { member: true, schema_usage: true, run_report: true, read_source: false });
+      restored = await temporaryDatabase();
+      assert.notEqual(restored.env.PGPORT, process.env.PGPORT);
+      const owner = new pg.Client(databaseConfig(restored.env));
+      try { await owner.connect(); await owner.query(roleSql); }
+      finally { await owner.end(); }
+      await localArchiveTool('pg_restore', restored.env, ['--single-transaction', '--exit-on-error', archive]);
+      assert.equal(sha256(await readFile(archive)), expected.archive);
+      connectionEnv = restored.env;
+      const config = databaseConfig(connectionEnv);
+      game = new PostgresDatabase(originalGame.schema, { existingSchema: true, config });
+      audit = new PostgresDatabase(originalAudit.schema, { existingSchema: true, config });
+      connections.add(game).add(audit);
+      await Promise.all([game.ready, audit.ready]);
+      assert.deepEqual(await archiveSnapshot(game, inspect), expected.state);
+      assert.equal(schemaFingerprint((await localArchiveTool('pg_dump', connectionEnv, [...scope, '--schema-only'])).stdout), expected.schema);
+      verifyOriginal = async () => {
+        assert.deepEqual(await archiveSnapshot(originalGame, inspect), expected.state);
+        assert.equal(schemaFingerprint((await localArchiveTool('pg_dump', process.env, [...scope, '--schema-only'])).stdout), expected.schema);
+      };
+      ({ wallet, bank, pvp } = await openStores(game));
+      datasets = new AuditDatasets(audit, sources, { existingSchema: true });
+    }
+    const readOnlyAudit = new PostgresDatabase(audit.schema, { readOnly: true, existingSchema: true, config: databaseConfig(connectionEnv) });
+    connections.add(readOnlyAudit);
+    const reader = databaseConfig({ ...connectionEnv, DATABASE_URL: '', DATABASE_URL_FILE: '',
       PGUSER: operator, PGPASSWORD: password, PGPASSWORD_FILE: '' });
-    const observerEnv = { ...process.env, ROYAL_AUDIT_SCHEMA: audit.schema,
+    const observerEnv = { ...connectionEnv, ROYAL_AUDIT_SCHEMA: audit.schema, ROYAL_AUDIT_RECORDER_DB_URL_FILE: undefined,
       ROYAL_AUDIT_TEST_DATASET_ID: undefined, ROYAL_AUDIT_LIVE_DATASET_ID: undefined,
       ROYAL_AUDIT_TOTE_ADMISSION: '1', ROYAL_AUDIT_CHESS_REPLAY: undefined, ROYAL_AUDIT_COMBAT_REPLAY: undefined,
       ROYAL_AUDIT_CARD_REPLAY: undefined, ROYAL_AUDIT_SPORT_REPLAY: undefined, ROYAL_AUDIT_TSU_REPLAY: undefined };
@@ -336,4 +451,5 @@ test('isolated rehearsal settles accepted casino, PvP and shared pool money afte
     }
     assert.equal((await detail(live.liveDatasetId, (await capture(newOperation.id)).rowId)).status, 'found');
     await assert.rejects(detail(testDataset.datasetId, casinoAnchor.rowId), { code: 'permission-denied' });
+    await verifyOriginal?.();
   });
