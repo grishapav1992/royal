@@ -20,8 +20,10 @@ async function stop(){if(stopping)return;stopping=true;await vite?.close();if(ba
 for(const signal of ['SIGINT','SIGTERM'])process.once(signal,()=>void stop().then(()=>process.exit(0)));
 process.stdin.setEncoding('utf8');process.stdin.on('data',data=>{if(data.trim()==='stop')void stop().then(()=>process.exit(0));});
 const hook=`
+const auditHost=room;
 const mountMiraAudit=()=>{
-if(!room.bar){setTimeout(mountMiraAudit,25);return;}
+const room=auditHost.world;
+if(!room?.bar){setTimeout(mountMiraAudit,25);return;}
 let auditPose,hideAuditActors=false,hideMira=false;
 room.events.on('postupdate',()=>{if(hideAuditActors)for(const actor of [room.player,...room.guests.values()]){actor.sprite.setVisible(false);actor.shadow.setVisible(false);actor.label?.setVisible(false);actor.blush?.setVisible(false);}});
 room.events.on('postupdate',()=>{for(const name of ['mira-painted-body','mira-painted-front'])room.children.getByName(name)?.setVisible(!hideMira);});

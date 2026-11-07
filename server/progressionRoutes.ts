@@ -70,6 +70,13 @@ export function installProgression(app: Application) {
     }
   }
   app.get('/api/progression', (_req, res) => { void forward(res.locals.accountId, 'progression-snapshot', null, res); });
+  app.post('/api/progression/reward-notices', async (req, res) => {
+    const level = req.body?.level;
+    if (!Number.isInteger(level) || level < 1 || level > 100) { res.sendStatus(400); return; }
+    try {
+      res.sendStatus(await accounts.progression.acknowledgeReward(res.locals.accountId, level) ? 204 : 404);
+    } catch { res.sendStatus(503); }
+  });
   app.post('/api/progression/spins', async (req, res) => {
     if (!validRewardSpinRequest(req.body)) {
       res.status(400).json({ error: 'Некорректный запрос бесплатного спина.', rejected: true }); return;

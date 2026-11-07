@@ -138,6 +138,12 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       const player = this.state.players.get(client.sessionId); if (player) player.name = name;
     }
   };
+  private levelListener = (accountId: string, level: number) => {
+    for (const [id, account] of this.playerAccounts) {
+      const player = this.state.players.get(id);
+      if (account === accountId && player && player.level < level) player.level = level;
+    }
+  };
   private skinListener = (id: string, skin: number) => {
     for (const client of this.clients) if ((client.auth as RoomAuth)?.account.id === id) {
       const access = this.access.get(client.sessionId); if (access) access.profileRevision.skin++;
@@ -190,6 +196,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     accounts.events.on('skin', this.skinListener);
     accounts.events.on('appearance', this.appearanceListener);
     accounts.events.on('drinking', this.drinkingListener);
+    accounts.events.on('progression-level', this.levelListener);
     this.clock.setInterval(() => { void this.refreshAccess().catch(() => console.error('Room access refresh failed')); }, 60000);
     this.clock.setInterval(()=>this.pvp.tick(),1000);
     this.setPatchRate(50);
@@ -508,11 +515,14 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       this.applyProfile(auth, access, profile, profileRevision);
       if (auth.account.skin === null) throw new ServerError(401, 'Выбери персонажа и войди в зал ещё раз.');
       const others = this.clients.filter(other => other !== client && (other.auth as RoomAuth)?.account.id === auth.account.id);
-      const activeOthers = await Promise.all(others.map(other => accounts.active((other.auth as RoomAuth).hash)));
+      const [activeOthers, level] = await Promise.all([
+        Promise.all(others.map(other => accounts.active((other.auth as RoomAuth).hash))),
+        accounts.progression.publicLevel(auth.account.id).catch(() => { console.error('Room progression level lookup failed'); return 0; }),
+      ]);
       if (this.disposed || this.access.get(client.sessionId) !== access || !access.active) throw new ServerError(401, 'Войди в аккаунт ещё раз.');
       if (access.banUntil > Date.now()) throw new ServerError(403, 'Вход временно закрыт охраной.');
       if (activeOthers.some(Boolean)) throw duplicate();
-      const p = new Player(); p.name = auth.account.name; p.soberAt = access.drinking.soberAt;
+      const p = new Player(); p.name = auth.account.name; p.soberAt = access.drinking.soberAt; p.level = level;
       const index = this.nextSpawn++;
       p.x = 420 + index % 8 * 40; p.y = 570 + Math.floor(index % 24 / 8) * 25; p.skin = auth.account.skin!; p.appearance = serializeAppearance(auth.account.appearance);
       this.playerAccounts.set(client.sessionId, auth.account.id);
@@ -546,6 +556,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.disposed = true;
     accounts.events.off('security', this.securityListener); accounts.events.off('logout', this.logoutListener);
     accounts.events.off('name', this.nameListener); accounts.events.off('skin', this.skinListener); accounts.events.off('appearance', this.appearanceListener); accounts.events.off('drinking', this.drinkingListener);
+    accounts.events.off('progression-level', this.levelListener);
   }
   async onReconnect(client: Client) {
     const p = this.state.players.get(client.sessionId), access = this.access.get(client.sessionId);

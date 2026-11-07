@@ -1,0 +1,65 @@
+{
+  "inputs": {
+    "host": [
+      "src/game/RoomScene.ts",
+      "src/i18n/progressionEn.ts",
+      "src/main.ts",
+      "src/network/LobbyClient.ts",
+      "src/shared/progression.ts",
+      "src/shared/world.ts",
+      "src/ui/PlayerDuelMenu.ts",
+      "src/ui/ProgressionNotices.ts",
+      "src/ui/ProgressionUI.ts",
+      "src/ui/SocialUI.ts",
+      "src/ui/gameReactions.ts",
+      "src/ui/playerLevelStatus.ts",
+      "src/ui/progression-notices.css",
+      "src/ui/pvp-invitations.css",
+      "src/wallet/ProgressionClient.ts"
+    ],
+    "backend": [
+      "server/LobbyRoom.ts",
+      "server/accounts.ts",
+      "server/progression/store.ts",
+      "server/progressionRoutes.ts",
+      "server/state.ts",
+      "src/shared/progression.ts",
+      "src/shared/world.ts"
+    ],
+    "module": [
+      "games/royal-roulette/RoyalRoulette.ts"
+    ],
+    "qualifications": [
+      "docs/game-math/qualifications/royal-coins-rewards-v1.json",
+      "docs/game-math/qualifications/royal-fruits-rewards-v1.json"
+    ]
+  },
+  "changed": {
+    "docs/game-math/qualifications/royal-coins-rewards-v1.json": "94046a72550ad7d35edec45fc7234a1802ff7c5a39d122fae68d9f978017ede3",
+    "docs/game-math/qualifications/royal-fruits-rewards-v1.json": "434024d0955565e1b5b9b07ecc949b64f73580cec310007832fe536c14bcc538",
+    "games/royal-roulette/RoyalRoulette.ts": "458cb0d9e66cd2c9fdd0190168a02faeb4b051becfbab22d29f88abf40c6de2c",
+    "server/LobbyRoom.ts": "23d4f075fb538eab0b23f630b9451822ae0b85390958ee96ed407d30de41b806",
+    "server/accounts.ts": "d8d1fdd9c29c8077e53bcb7cae8f184bc9380fdc94ecdeb9da95b72316e3c01c",
+    "server/progression/store.ts": "6fdfab6a120c5cf88e607e7a42ac4255771c2842c990d8900d69b41cdd5d8697",
+    "server/progressionRoutes.ts": "8da0aeef9ae462de7a56ecabf53f5701bb35ee826e71fc429e9ad052c6eb705b",
+    "server/state.ts": "d635a76700f9cfe267b1b71eece773c9429ef0bd5c513870281a738bf312c58b",
+    "src/game/RoomScene.ts": "36e7e61306360a1bc81a39f5d760476c07bad1f5f885aceb08502047b9854a82",
+    "src/i18n/progressionEn.ts": "bc8c0c11910980b69da153e5fdd564c530431ec939dc08cfec079de76f587c5d",
+    "src/main.ts": "4a6aadf216859988272b87a3f90cf474534165b1d71a9285febb63447f15f042",
+    "src/network/LobbyClient.ts": "d0ba3d57c0f2547f4814d4ca23023a91a058ae5ea8da4342b55672d3ee5f140a",
+    "src/shared/progression.ts": "a95b51753171f6c2e504a2b19869c04bad0ba18e35f3c512f175295947516d77",
+    "src/shared/world.ts": "ff661e9364700176227080ea49f9bb189c5027e32ae9efa634b245f6c2eec698",
+    "src/ui/PlayerDuelMenu.ts": "e8ec5a0fc4824389f7a4e62f7395d259b65879d2ec0c26e117a463c8eefacf8a",
+    "src/ui/ProgressionNotices.ts": "060af07f24f16d42ed5ab88effc9168bfbd6b712dd56e54c5fb36eb3d2adca3f",
+    "src/ui/ProgressionUI.ts": "92e99612719a97e6b7d27a68efb8d22453d8ac34368c95ace4b3b6e5d9270088",
+    "src/ui/SocialUI.ts": "b2707f5e6f3475852bddddd87d7839da68dc454c34e148797a1d97ee1abab4b8",
+    "src/ui/gameReactions.ts": "630a0bb0b0ccc68f22637269df1b6b9d401710964207d602d6bbc2b020f14bf9",
+    "src/ui/playerLevelStatus.ts": "8fa4164d2fcbc8a9270a9e0993d4e84aad98a904c6ca2389413a8f555a466e96",
+    "src/ui/progression-notices.css": "656ab22fd0aacb6d51b86f9ba1267205b506815aa8c728e8ca70a65ce8d6971a",
+    "src/ui/pvp-invitations.css": "e18ce2a238f9d24265045c19d01cf6912ec4115553e90722c48a45b1fa283ccd",
+    "src/wallet/ProgressionClient.ts": "f0b3a77c7adeee4cc80587281b9cd3dc0d01e86d7ff692d60296c325f0174a8e"
+  },
+  "preservedBackendInputs": {
+    "src/i18n/en.ts": "e6a39483750df92467b584e98319ce679f2a3489669e4b0d3f64a2d7ba0a762c"
+  }
+}

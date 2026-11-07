@@ -79,7 +79,8 @@ export class AccountStore {
       CREATE TABLE IF NOT EXISTS sessions (hash TEXT PRIMARY KEY, account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE, expires INTEGER NOT NULL);
       CREATE INDEX IF NOT EXISTS sessions_expiry ON sessions(expires);`)).then(() => applyAccountSchemaMigrations(this.db));
     const commonWallet = new DemoWalletStore(this.db, undefined, undefined, schemaReady);
-    this.progression = new ProgressionStore(this.db,{prerequisite:commonWallet.ready});
+    this.progression = new ProgressionStore(this.db,{prerequisite:commonWallet.ready,
+      onLevel: (accountId, level) => { this.events.emit('progression-level', accountId, level); }});
     this.wallet = instrumentProgressionWallet(this.db,commonWallet,this.progression);
     this.rewardSpins = new LiveFreeSpinService(this.db,this.wallet,this.progression,undefined,undefined,id=>this.financeAdmin.assertAllowed(id));
     this.caribbeanCrew=new CaribbeanCrewStore(this.db,schemaReady);
