@@ -83,7 +83,10 @@ test('occupied toilet visitor animates behind a locked door and leaves the other
     await page.reload();await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
     await expect.poll(async()=>{const s=await state(page);return s.hall==='toilet'&&s.online&&!s.locked&&Number.isFinite(s.serverX);}).toBe(true);await overview(page);
     await clickWorld(page,TOILET_WINDOW.click.x,TOILET_WINDOW.click.y);await expect.poll(async()=>(await state(page)).hall,{timeout:20000}).toBe('roof');
-    await expect(page.locator('#chat-input')).toBeEnabled();await expect(page.locator('#wallet-balance')).toHaveText(balance!);expect(errors).toEqual([]);
+    await expect(page.locator('.local-label')).toHaveAttribute('data-status', 'connected');
+    await expect(page.locator('#club-chat-dock')).toBeHidden();
+    await expect(page.locator('#chat-input')).toBeDisabled();
+    await expect(page.locator('#wallet-balance')).toHaveText(balance!);expect(errors).toEqual([]);
   }catch(error){
     const s=await state(page);console.log('Toilet route failure',JSON.stringify({hall:s.hall,x:s.x,y:s.y,serverX:s.serverX,serverY:s.serverY,locked:s.locked,switching:s.switching,nav:s.stairNavigation,errors}));
     await page.screenshot({path:info.outputPath('route-diagnostic.png')});throw error;

@@ -27,6 +27,7 @@ export class PvpRoom {
       ||this.matches.some(c=>c.gameId===game&&c.status==='playing'&&this.host.people().some(p=>p.sessionId===session&&(p.accountId===c.creatorId||p.accountId===c.opponentId)));
   }
   locked(session:string){return [...this.host.activities.wagers.values()].some(ids=>ids.includes(session));}
+  pending(session:string){return this.outstanding.has(session);}
   dropped(session:string){
     const person=this.host.people().find(p=>p.sessionId===session);
     if(person&&!this.drops.has(person.accountId))this.drops.set(person.accountId,Date.now());
@@ -93,17 +94,20 @@ export class PvpRoom {
   }
   private async sync(){
     if(this.stopped)return;
-    const people=this.host.people(),owner=people[0]?.accountId;if(!owner)return;
+    let people=this.host.people();
+    const owner=people[0]?.accountId;if(!owner)return;
     const result=await this.call(owner,'pvp-sync',{roomId:this.host.roomId(),people:people.map(({accountId,name,connected,available})=>({accountId,name,connected,available,...(!connected&&this.drops.has(accountId)?{disconnectedAt:this.drops.get(accountId)}:{})}))});
     if(result.status!==200||!Array.isArray(result.value?.snapshots)||!Array.isArray(result.value?.matches))return;
+    people=this.host.people();
     this.matches=result.value.matches;
     for(const id of this.drops.keys())if(people.some(p=>p.accountId===id&&p.connected)||!this.matches.some(c=>c.creatorId===id||c.opponentId===id))this.drops.delete(id);
     for(const [game,id] of this.running)if(!this.matches.some(c=>c.id===id&&c.status==='playing')){this.host.activities.finishWager(game);this.running.delete(game);}
     for(const c of this.matches){
       if(c.status!=='playing')continue;
       const players=[c.creatorId,c.opponentId].map(id=>people.find(p=>p.accountId===id));
-      if(players.some(p=>!p?.connected))continue;
-      const key=isDirectPvp(c)?'tsu-e-fa:'+c.id:c.gameId;
+      const direct=isDirectPvp(c);
+      if(players.some(p=>!p?.connected||(!direct&&p.hall!==activityHall(c.gameId))))continue;
+      const key=direct?'tsu-e-fa:'+c.id:c.gameId;
       this.host.activities.startWager(key,players.map(p=>p!.sessionId),c.gameId);this.running.set(key,c.id);
       if(isPvpSnapshotGame(c.gameId))continue;
       const state=c.gameId==='chess'?this.host.activities.chess.state:this.host.activities.tables.find(t=>t.state.id===c.gameId)!.state;

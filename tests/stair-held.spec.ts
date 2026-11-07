@@ -94,6 +94,11 @@ for(const online of [false,true])test('held stair combinations complete every fl
   for(const step of [7,8,9,10,11])expect(traces[1].steps).toContain(step);
   for(const step of [7,8,9,10])expect(traces[2].steps).toContain(step);
   for(const step of [1,2,3,4,5,6])expect(traces[3].steps).toContain(step);
-  expect(errors).toEqual([]);if(online)await expect(page.locator('#chat-input')).toBeEnabled();
+  expect(errors).toEqual([]);
+  if (online) {
+    await expect(page.locator('.local-label')).toHaveAttribute('data-status', 'connected');
+    await expect(page.locator('#club-chat-dock')).toBeHidden();
+    await expect(page.locator('#chat-input')).toBeDisabled();
+  }
   await page.screenshot({path:'../held-stair-'+mode+'-ground.png'});
 });

@@ -1,6 +1,6 @@
 import { translateMessage as translateText } from '../i18n/index';
 import type { CatView } from '../shared/cat';
-import type { GuardView, SecurityDecision } from '../shared/security';
+import type { ClubCaptureDecision, GuardView, SecurityDecision } from '../shared/security';
 import type { MiraView } from '../shared/miraRoutine';
 import type { AmbientGuestView } from '../shared/ambientGuests';
 import { Client, ErrorCode, type Room } from '@colyseus/sdk';
@@ -12,7 +12,7 @@ import { savedSession, savedRoom, rememberSession, forgetSession } from './sessi
 import { configureReconnection, lobbyMatchmakingFetch } from './reconnection';
 import { LOBBY_RECOVERY_WINDOW_MS } from '../shared/lobbyConnection';
 import type { CabinetPlayResult } from '../shared/cabinetSeating';
-import type { ChatRequest, ChatResult } from '../shared/chat';
+import { isChatLocation, ROOM_CHAT_PROTOCOL, type ChatRequest, type ChatResult, type ChatVisit } from '../shared/chat';
 import type { PvpSnapshot } from '../shared/pvp';
 import type { PlayerRecoveryResult } from '../shared/playerRecovery';
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
@@ -35,6 +35,7 @@ export class LobbyClient {
   private pendingElevator?: { target: HallId; requestId: number; revision?: number; finish: (accepted: boolean) => void; timer: ReturnType<typeof setTimeout> };
   private releaseCabinetWhenConnected = false;
   private pendingCabinet?: { id: string; requestId: number; finish: (accepted: boolean) => void; timer: ReturnType<typeof setTimeout> };
+  private capture?: { session: string; pursuitId: string; escorted: boolean };
   status: ConnectionStatus = 'disconnected';
   constructor(private events: {
     npcTime: (simulationAt: number, guestsAt: number) => void;
@@ -44,11 +45,14 @@ export class LobbyClient {
     mira: (mira: MiraView) => void;
     security: (decision: SecurityDecision) => void;
     ejected: (until: number) => void;
-    checking: (value: boolean) => void;
+    clubCapture?: (decision: ClubCaptureDecision) => void;
+    clubEjected?: () => void;
+    clubSanctionChanged?: () => void;
     status: (status: ConnectionStatus) => void;
     joined: (roomId: string, sessionId: string, recovering?: boolean) => void;
     players: (players: PlayerView[], selfId: string) => void;
     chat: (message: ChatMessage) => void;
+    chatVisit?: (visit: ChatVisit | null) => void;
     delivery?: (result: ChatResult) => void;
     pvp?:(value:PvpSnapshot)=>void;
     pvpResult?:(value:{requestId:string;error:string;rejected:boolean})=>void;
@@ -117,16 +121,38 @@ export class LobbyClient {
       configureReconnection(room.reconnection);
       let banUntil = 0;
       let denied = false;
+      const captureSession = room.roomId + ':' + room.sessionId;
+      if (this.capture?.session !== captureSession) this.capture = undefined;
       onMessage('security', (decision: SecurityDecision) => { if(decision.kind === 'ejecting') banUntil = decision.until; this.events.security(decision); });
       onMessage('ejected', (value: {until: number}) => { banUntil = value.until; this.events.ejected(value.until); });
-      onMessage('chat-check', value => this.events.checking(Boolean(value)));
+      onMessage('club-capture', (decision: ClubCaptureDecision) => {
+        if (this.capture?.pursuitId === decision.pursuitId) return;
+        this.capture = { session: captureSession, pursuitId: decision.pursuitId, escorted: false };
+        this.finishElevator(false);
+        this.finishPlayerRecovery(false);
+        this.cancelCabinetAdmission();
+        this.events.clubCapture?.(decision);
+      });
+      onMessage('club-ejected', (event: { pursuitId: string }) => {
+        if (!this.capture || event.pursuitId !== this.capture.pursuitId || this.capture.escorted) return;
+        this.capture.escorted = true;
+        this.events.clubEjected?.();
+      });
+      onMessage('club-sanction-changed', () => this.events.clubSanctionChanged?.());
+      // Older servers can still emit this packet during a host update.
+      onMessage('chat-check', () => {});
       onMessage('chat-result', (result: ChatResult) => {
         if (result && typeof result.id === 'string' && ['queued', 'published', 'rejected', 'cancelled'].includes(result.status)) {
           this.events.delivery?.({ ...result, message: result.message ? translateText(result.message) : undefined });
         }
       });
       onMessage('chat', message => this.events.chat(message as ChatMessage));
-      onMessage('history', messages => this.events.history(messages as ChatMessage[]));
+      onMessage('chat-visit', (visit: ChatVisit | null) => {
+        if (visit === null || (visit && Number.isSafeInteger(visit.id) && visit.id > 0 && isChatLocation(visit.hall))) {
+          this.events.chatVisit?.(visit);
+        }
+      });
+      onMessage('history', messages => { if (Array.isArray(messages)) this.events.history(messages as ChatMessage[]); });
       onMessage('notice', message => this.events.notice(translateText(String(message))));
       onMessage('pvp',(value:PvpSnapshot)=>this.events.pvp?.(value));
       onMessage('pvp-result',(value:{requestId:string;error:string;rejected:boolean})=>this.events.pvpResult?.(value));
@@ -193,7 +219,7 @@ export class LobbyClient {
         if (state.mira) this.events.mira({ x: state.mira.x, y: state.mira.y, facing: state.mira.facing as MiraView['facing'], action: state.mira.action as MiraView['action'], progress: state.mira.progress });
       });
       room.onDrop(() => { if (current()) this.setStatus('reconnecting'); });
-      room.onReconnect(() => { if (!current()) return; queueMicrotask(() => { if (current()) rememberSession(room, accountId); }); this.events.checking(false); this.events.npcTime(0,0);this.activities=undefined; this.setStatus('connected'); room.send('stop'); room.send('history'); room.send('activities'); });
+      room.onReconnect(() => { if (!current()) return; queueMicrotask(() => { if (current()) rememberSession(room, accountId); }); this.events.npcTime(0,0);this.activities=undefined; this.setStatus('connected'); room.send('stop'); this.requestChatHistory(); room.send('activities'); });
       room.onLeave(code => {
         if (!current()) return;
         this.lastCloseCode = code;
@@ -213,7 +239,7 @@ export class LobbyClient {
       if (recovered) { room.send('stop'); if (!recovering) room.send('playing', false); }
       this.events.joined(room.roomId, room.sessionId, recovering);
       this.setStatus('connected');
-      room.send('history');
+      this.requestChatHistory();
       room.send('activities');
     } catch (error) {
       if (generation !== this.generation) return;
@@ -250,13 +276,11 @@ export class LobbyClient {
   }
   private setStatus(status: ConnectionStatus) {
     this.status = status;
-    if (status !== 'connected') this.events.checking(false);
     if (status !== 'connected') this.finishElevator(false);
     if (status !== 'connected') this.finishPlayerRecovery(false);
     if (status !== 'connected' && this.pendingCabinet) {
       this.releaseCabinetWhenConnected = true;
-      const pending = this.pendingCabinet; this.pendingCabinet = undefined;
-      clearTimeout(pending.timer); pending.finish(false);
+      this.cancelCabinetAdmission();
     }
     if (status === 'connected' && this.releaseCabinetWhenConnected) this.releaseCabinet();
     this.events.status(status);
@@ -264,6 +288,13 @@ export class LobbyClient {
   releaseCabinet() {
     this.releaseCabinetWhenConnected = this.status !== 'connected';
     if (!this.releaseCabinetWhenConnected) this.room?.send('playing', false);
+  }
+  private cancelCabinetAdmission() {
+    const pending = this.pendingCabinet;
+    if (!pending) return;
+    this.pendingCabinet = undefined;
+    clearTimeout(pending.timer);
+    pending.finish(false);
   }
   private finishPlayerRecovery(accepted: boolean) {
     const pending = this.pendingPlayerRecovery;
@@ -324,9 +355,11 @@ export class LobbyClient {
     return true;
   }
   sendChat(request: ChatRequest): boolean { return this.send('chat', request); }
+  requestChatHistory(): boolean { return this.send('history', { version: ROOM_CHAT_PROTOCOL }); }
   getState() { return { status: this.status, roomId: this.room?.roomId, selfId: this.room?.sessionId, lastCloseCode: this.lastCloseCode, recoveryAttempts: this.recoveryAttempts }; }
   leave() {
     this.generation++;
+    this.capture = undefined;
     this.joining = undefined;
     this.recovery = undefined;
     if (this.recoveryWait) { clearTimeout(this.recoveryWait.timer); this.recoveryWait.cancel(); }

@@ -1,5 +1,6 @@
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
+import {ROOM_CHAT_PROTOCOL,type ChatVisit} from '../src/shared/chat';
 
 const game='studio-caribbean-treasures',out=process.env.CARIBBEAN_ARTIFACTS_DIR||'artifacts/work/caribbean-empty-balance';
 const test=base.extend<{roomPath:string;roomSession:{path:string;send:(text:string)=>void}}>({
@@ -14,8 +15,14 @@ roomSession:async({request},use)=>{
   return new Response(await reply.body(),{status:reply.status(),headers:reply.headers()});
  }});
  const room=await client.create<any>('lobby');
- for(const name of ['chat','chat-result','activities','piano-note','notice','chat-check','security','ejected','pvp'])room.onMessage(name,()=>{});
- try{await use({path:'/?room='+room.roomId+'&mode=club',send:text=>room.send('chat',{id:crypto.randomUUID(),text})});}finally{await Promise.race([room.leave(),new Promise(resolve=>setTimeout(resolve,1500))]);}
+ room.onMessage('*',()=>{});
+ let visit:ChatVisit|null= null;
+ room.onMessage('chat-visit',value=>{visit=value;});
+ room.send('history',{version:ROOM_CHAT_PROTOCOL});
+ try{
+  await expect.poll(()=>visit?.hall).toBe('arcade');
+  await use({path:'/?room='+room.roomId+'&mode=club',send:text=>room.send('chat',{id:crypto.randomUUID(),text,visitId:visit?.id})});
+ }finally{await Promise.race([room.leave(),new Promise(resolve=>setTimeout(resolve,1500))]);}
 }});
 const state=(page:Page)=>page.evaluate(()=>{try{return(window as any).royalDemo?.getState()??{};}catch{return{};}});
 async function enter(page:Page,path:string,email=`ct-player-${crypto.randomUUID()}@example.test`){

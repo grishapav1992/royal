@@ -3,8 +3,8 @@
   "gameId": "tsu-e-fa",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-11-04T17:55:45.624Z",
-  "completedAt": "2026-11-04T17:55:46.629Z",
+  "startedAt": "2026-11-07T19:05:33.555Z",
+  "completedAt": "2026-11-07T19:05:34.189Z",
   "sourceHashes": {
     "src/shared/pvp.ts": "bed164a0fcccf208639302aadb7a5f165541c055616440bf0b16248d861ceddc",
     "server/pvp/store.ts": "713ec77918a8f64e5a74ab1b9ba27c9552a9fc6955d5fc07de0bb1c004af63df",
@@ -14,10 +14,10 @@
     "server/finance/nile-play-error.ts": "20a472d05d7517035771156ccd4c778e699cdf3b0e27d3c693e8d4f39c197e57",
     "src/shared/tsuEFa.ts": "907dc4fae7035222cf290bcf99650b3d4945058931a54eb523cf3e3be02e18ed",
     "server/pvp/tsu-e-fa.ts": "58f0b673419810f425906220b5ff7532d1aef9a1643b011651bd22184ed37ae9",
-    "server/pvp/room.ts": "31b7c1aedcd71f4ee52b56c5678ea839f4685c450d8aaeb6f782d1d9b77613b9",
+    "server/pvp/room.ts": "a430ea5e11405a639043a35d818c93decd1795d8ccfbbe49409ebf0cfae898c7",
     "scripts/game-math/rtp-virtual-pvp.mjs": "9a63eb3aa5272dfa62d6314a3fa7b2102a91c27261fd837026a9560e98b75403",
     "src/shared/pvpSeats.ts": "97bba60d5044f971ac910ece29509ea3df94dd22bea25b6f80eeca56def7a492",
-    "server/activities.ts": "fbfd749768618947fc6a11b4bc4cfc967c231067330ffdca28ce3077e3fddf6f",
+    "server/activities.ts": "de63c7928ff4a338749d1f9a5151156ab275f26c9228e15c2a09fc3d36c56af4",
     "scripts/game-math/rtp-tsu-e-fa.mjs": "7cc894c26d67dc6a72cfab42d6961a64b1ef7399b12a01700db1f70f1f11f8b8"
   },
   "policySha256": "3905af920c9ea78fc0c594aeb5c3e81ba832dda135264f8b961cc8968284f222",

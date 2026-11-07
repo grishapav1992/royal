@@ -1,9 +1,10 @@
 import { test, expect, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { resolve, sep } from 'node:path';
-import { CHAT_CONFIRMATION_TIMEOUT_MS } from '../src/shared/chat';
+import { CHAT_CONFIRMATION_TIMEOUT_MS, ROOM_CHAT_PROTOCOL } from '../src/shared/chat';
 
-type Packet = { type: string; value: { id: string; text: string } };
+const visitId = 7;
+type Packet = { type: string; value: unknown };
 type BrowserFixture = {
   packets: Packet[];
   receive: (type: string, value: unknown) => void;
@@ -18,14 +19,19 @@ test.beforeEach(async ({ baseURL }) => {
   test.skip(baseURL !== 'http://127.0.0.1:4180', 'Run with playwright.chat-delivery.config.ts to keep every connection local.');
 });
 
-async function host(page: Page) {
+async function host(page: Page, supportsChatVisits = true) {
   const context = page.context(), writes: string[] = [], errors: string[] = [];
+  let entrySession = true;
   page.on('pageerror', error => errors.push(error.message));
   await context.route('**/*', async route => {
     const request = route.request(), url = new URL(request.url());
     if (!['http:', 'https:'].includes(url.protocol)) return route.continue();
     if (url.origin !== 'http://127.0.0.1:4180') return route.abort('blockedbyclient');
     if (!['GET', 'HEAD'].includes(request.method())) { writes.push(request.method() + ' ' + url.pathname); return route.abort('blockedbyclient'); }
+    if (url.pathname === '/api/auth/me' && entrySession) {
+      entrySession = false;
+      return route.fulfill({ json: { account: { id: 'chat-fixture-entry' } } });
+    }
     if (url.pathname.startsWith('/api/')) return route.fulfill({ json: { account: null, games: [] } });
     if (url.pathname.startsWith('/game-modules/')) {
       const root = resolve('module-dist'), path = resolve(root, url.pathname.slice('/game-modules/'.length));
@@ -38,9 +44,9 @@ async function host(page: Page) {
     return route.continue();
   });
   await context.routeWebSocket('**/*', socket => socket.close());
-  await page.goto('/?lang=ru');
+  await page.goto('/?mode=club&lang=ru');
+  await page.waitForFunction(() => typeof window.royalDemo?.getNetworkState === 'function');
   await expect(page.locator('#join-dialog')).toBeVisible();
-  await expect(page.locator('#loading')).toHaveCount(0);
   const cdp = await context.newCDPSession(page);
   const fn = await cdp.send('Runtime.evaluate', { expression: 'window.royalDemo.getNetworkState' });
   const properties = await cdp.send('Runtime.getProperties', { objectId: fn.result.objectId! });
@@ -56,12 +62,20 @@ async function host(page: Page) {
   }
   expect(socialId, 'the test changes only the real host transport through the debugger').toBeTruthy();
   const installed = await cdp.send('Runtime.callFunctionOn', { objectId: socialId!, awaitPromise: true, returnByValue: true,
-    functionDeclaration: `async function() {
+    arguments: [{ value: supportsChatVisits }, { value: ROOM_CHAT_PROTOCOL }, { value: visitId }],
+    functionDeclaration: `async function(supportsChatVisits, protocol, visitId) {
       const handlers = new Map(), packets = [];
       let drop, reconnect, leave;
       const room = {
         roomId: 'chat-fixture-room', sessionId: 'chat-fixture-self', reconnection: {},
-        send(type, value) { packets.push({type,value}); },
+        send(type, value) {
+          packets.push({type,value});
+          if (type === 'history') {
+            if (supportsChatVisits && value?.version === protocol) handlers.get('chat-visit')?.({ id: visitId, hall: 'arcade' });
+            const legacy = { id: 'legacy-history', senderId: 'other', name: 'Игрок', text: 'Общая история', time: Date.now() };
+            handlers.get('history')?.(supportsChatVisits ? [] : [legacy]);
+          }
+        },
         onMessage(type, callback) { handlers.set(type, callback); }, onStateChange() {}, onError() {},
         onDrop(callback) { drop = callback; }, onReconnect(callback) { reconnect = callback; },
         onLeave(callback) { leave = callback; }, leave() { leave(1000); },
@@ -69,14 +83,13 @@ async function host(page: Page) {
       this.client.client = { joinOrCreate: async () => room };
       await this.client.join();
       this.scene.network = undefined;
-      packets.length = 0;
       window.__chatFixture = {
         packets, receive: (type, value) => handlers.get(type)?.(value), drop, reconnect,
         disconnect: () => leave(1000),
         legacy: async () => {
           const { LobbyClient } = await import('/src/network/LobbyClient.ts');
           const noop = () => {};
-          const client = new LobbyClient({npcTime:noop,guards:noop,guests:noop,mira:noop,security:noop,ejected:noop,checking:noop,status:noop,joined:noop,players:noop,chat:noop,history:noop,notice:noop,activities:noop,note:noop});
+          const client = new LobbyClient({npcTime:noop,guards:noop,guests:noop,mira:noop,security:noop,ejected:noop,status:noop,joined:noop,players:noop,chat:noop,history:noop,notice:noop,activities:noop,note:noop});
           client.client = {joinOrCreate: async () => room}; await client.join();
           handlers.get('chat-result')({id:crypto.randomUUID(),status:'queued'});
           handlers.get('chat-result')({id:crypto.randomUUID(),status:'rejected'});
@@ -88,29 +101,42 @@ async function host(page: Page) {
   expect(installed.exceptionDetails).toBeUndefined();
   expect(installed.result.value).toEqual({ account: null, status: 'connected' });
   await expect(page.locator('#join-dialog')).toBeHidden();
-  await expect(page.locator('#chat-input')).toBeEnabled();
+  if (supportsChatVisits) await expect(page.locator('#chat-input')).toBeEnabled();
+  else await expect(page.locator('#chat-input')).toBeDisabled();
   return { writes, errors };
 }
 
 async function send(page: Page, text: string) {
   await page.locator('#chat-input').fill(text); await page.locator('#send-chat').click();
-  return page.evaluate(() => window.__chatFixture.packets.filter(packet => packet.type === 'chat').at(-1)!.value);
+  return page.evaluate(() => window.__chatFixture.packets.filter(packet => packet.type === 'chat').at(-1)!.value as { id: string; text: string; visitId: number });
 }
 const receive = (page: Page, type: string, value: unknown) => page.evaluate(({ type, value }) => window.__chatFixture.receive(type, value), { type, value });
-const chatPackets = (page: Page) => page.evaluate(() => window.__chatFixture.packets.filter(packet => packet.type === 'chat'));
+const chatPackets = (page: Page) => page.evaluate(() => window.__chatFixture.packets.filter(packet => packet.type === 'chat') as Array<{ type: 'chat'; value: { id: string; text: string; visitId: number } }>);
+const historyRequests = (page: Page) => page.evaluate(() => window.__chatFixture.packets.filter(packet => packet.type === 'history').map(packet => packet.value));
 
-test('pending checks keep composition available, publish replaces the pending row, and the limit is three', async ({ page }) => {
+test('a masked message appears immediately without a checking indicator and is replaced on delivery', async ({ page }) => {
   const proof = await host(page);
-  const first = await send(page, 'Первое сообщение');
+  const first = await send(page, 'Fuck, первое сообщение');
   expect(first.id).toMatch(/^[0-9a-f-]{36}$/);
+  expect(first.text).toBe('Fuck, первое сообщение');
+  expect(first.visitId).toBe(visitId);
+  expect(await historyRequests(page)).toEqual([{ version: ROOM_CHAT_PROTOCOL }]);
+  const pending = page.locator(`[data-request-id="${first.id}"]`);
+  await expect(pending).toContainText('F**k, первое сообщение');
+  await expect(pending.locator('.chat-meta')).toBeVisible();
   await receive(page, 'chat-check', true); await receive(page, 'chat-result', { id: first.id, status: 'queued' });
-  await expect(page.locator('[data-request-id]')).toHaveCount(1);
+  await expect(pending).toHaveAttribute('data-delivery', 'queued');
+  await expect(pending.locator('.chat-outgoing-status')).toHaveCount(0);
+  await expect(page.locator('#chat-delivery-status')).toBeHidden();
   await expect(page.locator('#chat-input')).toHaveValue(''); await expect(page.locator('#chat-input')).toBeEnabled();
   await page.locator('#chat-input').fill('Следующий черновик');
-  await receive(page, 'chat', { id: 'published-first', requestId: first.id, senderId: 'chat-fixture-self', name: 'Тест', text: first.text, time: Date.now() });
+  const masked = 'F**k, первое сообщение';
+  await receive(page, 'chat', { id: 'published-first', requestId: first.id, senderId: 'chat-fixture-self', name: 'Тест', text: masked, time: Date.now(), visitId });
   await receive(page, 'chat-result', { id: first.id, status: 'published' });
   await expect(page.locator('[data-request-id]')).toHaveCount(0);
-  await expect(page.locator('[data-message-id="published-first"]')).toContainText(first.text);
+  await expect(page.locator('[data-message-id="published-first"]')).toContainText(masked);
+  await receive(page, 'chat', { id: 'other-visit', senderId: 'other', name: 'Игрок', text: 'Чужой этаж', time: Date.now(), visitId: visitId + 1 });
+  await expect(page.locator('[data-message-id="other-visit"]')).toHaveCount(0);
   await expect(page.locator('#chat-input')).toHaveValue('Следующий черновик');
   await send(page, 'Второе сообщение'); await send(page, 'Третье сообщение'); await send(page, 'Четвёртое сообщение');
   await page.locator('#chat-input').fill('Пятый черновик');
@@ -138,16 +164,17 @@ test('an explicit rejection preserves both texts and only a manual retry creates
   expect(proof).toEqual({ writes: [], errors: [] });
 });
 
-test('drop clears checking, preserves unconfirmed text and reconciles history without resending', async ({ page }) => {
+test('drop preserves unconfirmed text and reconciles history without resending', async ({ page }) => {
   const proof = await host(page), first = await send(page, 'Сообщение перед обрывом');
-  await receive(page, 'chat-check', true); await page.locator('#chat-input').fill('Черновик после отправки');
+  await receive(page, 'chat-result', { id: first.id, status: 'queued' }); await page.locator('#chat-input').fill('Черновик после отправки');
   await page.evaluate(() => window.__chatFixture.drop());
   const saved = page.locator(`[data-request-id="${first.id}"]`);
   await expect(saved).toHaveAttribute('data-delivery', 'uncertain'); await expect(saved.locator('[data-chat-retry]')).toHaveCount(0);
   await page.evaluate(() => window.__chatFixture.reconnect());
   await expect(page.locator('#chat-input')).toBeEnabled(); await expect(page.locator('#chat-input')).toHaveValue('Черновик после отправки');
   expect((await chatPackets(page)).length).toBe(1);
-  await receive(page, 'history', [{ id: 'after-reconnect', requestId: first.id, senderId: 'chat-fixture-self', name: 'Тест', text: first.text, time: Date.now() }]);
+  expect(await historyRequests(page)).toEqual([{ version: ROOM_CHAT_PROTOCOL }, { version: ROOM_CHAT_PROTOCOL }]);
+  await receive(page, 'history', [{ id: 'after-reconnect', requestId: first.id, senderId: 'chat-fixture-self', name: 'Тест', text: first.text, time: Date.now(), visitId }]);
   await expect(saved).toHaveCount(0); await expect(page.locator('[data-message-id="after-reconnect"]')).toContainText(first.text);
   await expect(page.locator('#chat-delivery-status')).toBeHidden(); expect((await chatPackets(page)).length).toBe(1);
   expect(proof).toEqual({ writes: [], errors: [] });
@@ -155,7 +182,7 @@ test('drop clears checking, preserves unconfirmed text and reconciles history wi
 
 test('the confirmation deadline retains uncertain text without fabricating delivery or enabling retry', async ({ page }) => {
   const proof = await host(page); await page.clock.install();
-  const first = await send(page, 'Нет ответа на проверку'); await receive(page, 'chat-check', true);
+  const first = await send(page, 'Нет ответа на отправку'); await receive(page, 'chat-result', { id: first.id, status: 'queued' });
   await page.clock.fastForward(CHAT_CONFIRMATION_TIMEOUT_MS + 100);
   const saved = page.locator(`[data-request-id="${first.id}"]`);
   await expect(saved).toHaveAttribute('data-delivery', 'uncertain'); await expect(saved).toContainText('Ответ задерживается');
@@ -184,17 +211,33 @@ test('old transport fixtures may omit the delivery callback', async ({ page }) =
   expect(proof).toEqual({ writes: [], errors: [] });
 });
 
+test('a legacy backend cannot unlock chat or show its unscoped history and live messages', async ({ page }) => {
+  const proof = await host(page, false);
+  const message = { id: 'legacy-live', senderId: 'other', name: 'Игрок', text: 'Сообщение всей комнаты', time: Date.now() };
+  await receive(page, 'chat', message);
+  await expect(page.locator('[data-message-id]')).toHaveCount(0);
+  await expect(page.locator('#chat-input')).toBeDisabled();
+  await page.evaluate(() => { window.__chatFixture.drop(); window.__chatFixture.reconnect(); });
+  await receive(page, 'history', [{ ...message, visitId }]);
+  await expect(page.locator('[data-message-id]')).toHaveCount(0);
+  await expect(page.locator('#chat-input')).toBeDisabled();
+  expect(await historyRequests(page)).toEqual([{ version: ROOM_CHAT_PROTOCOL }, { version: ROOM_CHAT_PROTOCOL }]);
+  expect(await chatPackets(page)).toHaveLength(0);
+  expect(proof).toEqual({ writes: [], errors: [] });
+});
+
 test('published acknowledgement remains authoritative until history arrives and cancellation permits manual recovery', async ({ page }) => {
   const proof = await host(page); await page.clock.install();
   const first = await send(page, 'Публикация подтверждена');
   await receive(page, 'chat-result', { id: first.id, status: 'published' });
+  expect(await historyRequests(page)).toEqual([{ version: ROOM_CHAT_PROTOCOL }, { version: ROOM_CHAT_PROTOCOL }]);
   await expect(page.locator(`[data-request-id="${first.id}"]`)).toHaveAttribute('data-delivery', 'published');
   await page.clock.fastForward(CHAT_CONFIRMATION_TIMEOUT_MS + 100);
   await expect(page.locator(`[data-request-id="${first.id}"]`)).toHaveAttribute('data-delivery', 'published');
-  await receive(page, 'history', [{ id: 'published-history', requestId: first.id, senderId: 'chat-fixture-self', name: 'Тест', text: first.text, time: Date.now() }]);
+  await receive(page, 'history', [{ id: 'published-history', requestId: first.id, senderId: 'chat-fixture-self', name: 'Тест', text: first.text, time: Date.now(), visitId }]);
   await expect(page.locator('[data-request-id]')).toHaveCount(0);
   const second = await send(page, 'Сохранить после отмены');
-  await receive(page, 'chat-result', { id: second.id, status: 'cancelled', message: 'Проверка сообщения отменена.' });
+  await receive(page, 'chat-result', { id: second.id, status: 'cancelled', message: 'Отправка сообщения отменена.' });
   await expect(page.locator(`[data-request-id="${second.id}"]`)).toHaveAttribute('data-delivery', 'cancelled');
   await expect(page.locator(`[data-chat-retry="${second.id}"]`)).toBeEnabled();
   expect((await chatPackets(page)).length).toBe(2);
@@ -214,6 +257,7 @@ test('a sticker uses the same tracked protocol and keeps a typed draft', async (
 
 for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }]) test(`real host game chat keeps pending text and composition in bounds at ${viewport.width}px`, async ({ page }) => {
   await page.setViewportSize(viewport); const proof = await host(page);
+  await expect(page.locator('#loading')).toHaveCount(0, { timeout: 20000 });
   // Open through the real catalog, walking, seating and host game window.
   await page.locator('#games-tab').click();
   const cabinet = page.locator('[data-studio="royal-dice"], [data-cabinet="royal-dice"]').first();

@@ -72,7 +72,11 @@ test('building covers people before the view changes behind either rear corner',
   await page.evaluate(()=>(window as any).__recordLayers=false);
   expect(await page.evaluate(()=>(window as any).__layerViolations)).toEqual([]);
   expect(await page.evaluate(()=>(window as any).__layerFrames)).toBeGreaterThan(100);
-  await page.reload();await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});await expect.poll(async()=>(await state(page)).street?.view.side).toBe('rear');
+  await page.reload();
+  await expect(page.locator('.local-label')).toHaveAttribute('data-status', 'connected', { timeout: 25000 });
+  await expect(page.locator('#club-chat-dock')).toBeHidden();
+  await expect(page.locator('#chat-input')).toBeDisabled();
+  await expect.poll(async()=>(await state(page)).street?.view.side).toBe('rear');
   await expect(page.locator('#wallet-balance')).toHaveText(balance!);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);expect(errors).toEqual([]);
 });
