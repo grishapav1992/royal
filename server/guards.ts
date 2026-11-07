@@ -163,7 +163,7 @@ export class Guards {
     } else {
       g.speech = reason === 'collision' ? 'Десятый толчок. На выход.'
         : reason === 'profanity' ? 'Слишком много грубых слов. На выход.'
-        : 'Правила были озвучены. На выход.';
+        : 'Спам в чате. На выход.';
     }
   }
   tick(dt: number) {
@@ -212,7 +212,7 @@ export class Guards {
             g.facing = 'down'; this.phase(d, d.job!.decision.kind === 'warning' ? 'warn' : 'grab');
             g.speech = d.job!.decision.kind === 'warning' ? 'Первое предупреждение!\nЕщё раз в течение суток: выход на 10 минут.' : 'Пора проветриться.';
           } else if (g.phase === 'patrol') { this.settle(d); }
-          else if (g.phase === 'carry') { this.phase(d, 'throw'); g.facing = 'down'; g.speech = d.job?.decision.reason==='collision'?'Возвращайся через 10 минут.\nИ больше не толкайся.':'Возвращайся через 10 минут.\nСоблюдай правила чата.'; }
+          else if (g.phase === 'carry') { this.phase(d, 'throw'); g.facing = 'down'; g.speech = d.job?.decision.reason==='collision'?'Больше не толкайся.':'Соблюдай правила чата.'; }
           else { this.phase(d, 'idle'); g.facing = 'down'; }
         }
       } else if(g.phase==='bump') {

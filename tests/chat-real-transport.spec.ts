@@ -3,7 +3,7 @@ import { Client } from '@colyseus/sdk';
 import type { ChatRequest, ChatResult } from '../src/shared/chat';
 import type { ChatMessage } from '../src/shared/world';
 
-type Proof = { requests: ChatRequest[]; results: ChatResult[]; messages: ChatMessage[] };
+type Proof = { requests: ChatRequest[]; results: ChatResult[]; messages: ChatMessage[]; ejections: number[] };
 const proof = (page: Page) => page.evaluate(() => (window as any).__realChat as Proof);
 const api = 'http://127.0.0.1:2584';
 
@@ -31,11 +31,12 @@ async function captureRealTransport(page: Page) {
   const installed = await cdp.send('Runtime.callFunctionOn', { objectId: socialId!, returnByValue: true,
     functionDeclaration: `function() {
       const room = this.client.room, send = room.send.bind(room);
-      const requests = [], results = [], messages = [];
+      const requests = [], results = [], messages = [], ejections = [];
       room.send = (type, value) => { if (type === 'chat') requests.push(value); return send(type, value); };
       room.onMessage('chat-result', result => results.push(result));
       room.onMessage('chat', message => messages.push(message));
-      window.__realChat = { requests, results, messages, send: value => room.send('chat', value) };
+      room.onMessage('ejected', value => ejections.push(value.until));
+      window.__realChat = { requests, results, messages, ejections, send: value => room.send('chat', value) };
       return { status: this.client.status, roomId: room.roomId };
     }` });
   expect(installed.exceptionDetails).toBeUndefined();
@@ -62,6 +63,7 @@ test('real chat masks profanity and delivers insults below the threshold regardl
     await register(sender, 'Тест отправки'); await register(observer, 'Тест наблюдения');
     for (const page of [sender, observer]) {
       await page.goto('/?mode=club&room=' + host.roomId + '&lang=en');
+      await expect(page.locator('#club-chat-dock')).toHaveAttribute('data-chat-hall', 'arcade', { timeout: 30000 });
       await expect(page.locator('#chat-input')).toBeEnabled();
     }
     const cdp = await captureRealTransport(sender);
@@ -104,23 +106,43 @@ test('the tenth offensive word ejects an account without a warning in the real c
     await page.goto('/?mode=club&room=' + host.roomId + '&lang=en');
     const input = page.locator('#chat-input'), send = page.locator('#send-chat');
     await expect(input).toBeEnabled();
+    const transport = await captureRealTransport(page);
     await input.fill('fuck shit Scheiße putain coño cazzo kurwa caralho klootzak'); await send.click();
     const masked = 'f**k s**t S*****e p****n c**o c***o k***a c*****o k******k';
     await expect(page.locator('#chat-log > [data-message-id]').filter({ hasText: masked })).toHaveCount(1);
     await expect(page.locator('.security-message')).toHaveCount(0);
+    const confirmedAfter = Date.now();
     await input.fill('Ты идиот'); await send.click();
     await expect(page.locator('.security-message')).toContainText('too much offensive language in chat');
     await expect(page.locator('#security-dialog')).toBeVisible({ timeout: 20000 });
     await expect(page.locator('#security-dialog')).toContainText('Entry blocked for excessive offensive language in chat.');
     await expect(page.locator('#security-return')).toBeDisabled();
-    const cookies = await page.context().cookies(api);
-    const cookie = cookies.map(({ name, value }) => name + '=' + value).join('; ');
-    const reentry = new Client(api, { headers: { Cookie: cookie } });
-    await expect(reentry.joinById(host.roomId)).rejects.toMatchObject({
-      code: 403,
-      message: expect.stringContaining('Охрана закрыла вход'),
-    });
+    const ejections = (await proof(page)).ejections;
+    expect(ejections).toHaveLength(1);
+    expect(ejections[0]).toBeGreaterThanOrEqual(confirmedAfter + 20 * 60_000);
+    expect(ejections[0]).toBeLessThanOrEqual(Date.now() + 20 * 60_000);
     expect(errors).toEqual([]);
+    await transport.detach();
+  } finally { await host.leave(); }
+});
+
+test('the first confirmed spam episode immediately dispatches the guard', async ({ page, request }) => {
+  const host = await createHost(request);
+  try {
+    await register(page, 'Проверка спама');
+    await page.goto('/?mode=club&room=' + host.roomId + '&lang=en');
+    const input = page.locator('#chat-input'), send = page.locator('#send-chat');
+    const text = 'Check the announcements t.me/ExampleChannel';
+    const rows = page.locator('#chat-log > [data-message-id]').filter({ hasText: text });
+    await expect(input).toBeEnabled();
+    for (let count = 1; count <= 2; count++) {
+      await input.fill(text); await send.click();
+      await expect(rows).toHaveCount(count);
+    }
+    await input.fill(text); await send.click();
+    await expect(page.locator('.security-message')).toContainText('spam in chat. Security is on its way.');
+    await expect(rows).toHaveCount(2);
+    await expect(page.locator('#security-dialog')).toContainText('Security removed the player for chat spam.', { timeout: 20000 });
   } finally { await host.leave(); }
 });
 

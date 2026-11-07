@@ -73,6 +73,13 @@ test('offensive words reach the threshold in a rolling 30-second window per acco
  assert.equal(language.check('c', 9, 61001), true);
 });
 
+test('another account cannot prune the event-time window of a queued message', () => {
+  const language = new ChatLanguageWindow(account => account === 'waiting');
+  assert.equal(language.check('waiting', 9, 1000), false);
+  assert.equal(language.check('other', 1, 40000), false);
+  assert.equal(language.check('waiting', 1, 1500), true);
+});
+
 test('flood protection warns about speed before sanctioning and allows ordinary varied conversation',()=>{
  const spam=new ChatSpam();
  for(let i=0;i<7;i++)assert.equal(spam.check('flood','сообщение '+i,1000+i*100),i<4?'ok':'slow');

@@ -23,6 +23,7 @@ export class SecurityUI {
     if (decision.reason) {
       const reason = decision.reason === 'collision' ? 'Вход закрыт за толчки охранника.'
         : decision.reason === 'profanity' ? 'Вход закрыт за избыток грубых слов в чате.'
+        : decision.reason === 'spam' ? 'Охрана вывела игрока за спам в чате.'
         : 'Вход закрыт за повторное нарушение правил чата.';
       this.dialog.querySelector('h2 + p')!.textContent = translateText(reason);
     }

@@ -7,7 +7,6 @@ import { MovementInputs } from '../server/movementInputs';
 import { accounts } from '../server/accounts';
 import { chatSpam } from '../server/chatSpam';
 import { chatLanguageWindow } from '../server/chatLanguageWindow';
-import { SECURITY_BAN_MS } from '../src/shared/security';
 import type { HallId } from '../src/shared/world';
 type SessionCheck = { hash: string; resolve: (active: boolean) => void; reject: (error: Error) => void };
 
@@ -29,9 +28,13 @@ function fixture(context: TestContext, options: { suffix?: string; account?: str
   context.mock.method(accounts, 'currentAccount', async () => client.auth.account);
   context.mock.method(accounts.moderation, 'banUntil', async () => 0);
   context.mock.method(accounts.drinking, 'read', async () => ({ soberAt: 0, lastDrink: '', lastDrinkAt: 0 }));
-  const record = context.mock.method(accounts.moderation, 'record', async () => ({ kind: 'warning' as const, until: 0 }));
-  const eject = context.mock.method(accounts.moderation, 'eject', async (_id: string, now: number, reason: 'collision' | 'profanity') =>
-    ({ kind: 'ejecting' as const, until: now + SECURITY_BAN_MS, reason }));
+  const sanction = () => ({
+    outcome: { opened: true, sanction: { id: randomUUID(), until: Date.now() + 20 * 60_000, amountCents: 1000, revision: 1 } },
+    replayed: false,
+  });
+  const record = context.mock.method(accounts.clubSanctions, 'recordViolation', async (
+    _account: string, _event: Parameters<typeof accounts.clubSanctions.recordViolation>[1],
+  ) => sanction());
   const checks: SessionCheck[] = options.checks ?? [];
   const active = context.mock.method(accounts, 'active', (hash: string) => new Promise<boolean>((resolve, reject) => checks.push({ hash, resolve, reject })));
   room.onCreate(); room.state.guards.clear(); room.clients.push(client);
@@ -55,7 +58,7 @@ function fixture(context: TestContext, options: { suffix?: string; account?: str
   };
   const history = () => handlers.get('history')!(client);
   const flush = () => new Promise<void>(resolve => setImmediate(resolve));
-  return { room, client, player, packets, published, checks, active, record, eject, send, flush, move, observe, history };
+  return { room, client, player, packets, published, checks, active, record, sanction, send, flush, move, observe, history };
 }
 
 test('background delivery preserves account order without emitting a checking status', async context => {
@@ -99,7 +102,7 @@ test('profanity from an expired session cannot eject a later valid session', asy
   assert.equal(expired.published.length, 0);
   const one = valid.send({ id: randomUUID(), text: 'блять' });
   await valid.flush(); checks[1].resolve(true); await one;
-  assert.equal(valid.eject.mock.callCount(), 0);
+  assert.equal(valid.record.mock.callCount(), 0);
   assert.deepEqual(valid.published.map(message => message.text), ['б***ь']);
 });
 
@@ -123,27 +126,27 @@ test('an insult after nine profane words ejects once across rooms without counti
   await a.flush(); checks[0].resolve(true); await five;
   await a.send(first);
   const replay = b.send({ ...first, id: first.id.toUpperCase() });
-  await a.flush(); checks[1].resolve(true); await replay;
+  await replay;
+  assert.equal(checks.length, 1);
+  assert.equal(b.published.length, 0);
   const nine = b.send({ id: randomUUID(), text: 'coño caralho putain klootzak' });
-  await a.flush(); checks[2].resolve(true); await nine;
+  await a.flush(); checks[1].resolve(true); await nine;
   assert.equal(b.record.mock.callCount(), 0);
-  assert.equal(b.eject.mock.callCount(), 0);
 
   const last = { id: randomUUID(), text: 'Ты идиот' };
   const ten = b.send(last);
-  await a.flush(); checks[3].resolve(true); await ten;
+  await a.flush(); checks[2].resolve(true); await ten;
   await b.send(last);
-  assert.equal(b.eject.mock.callCount(), 1);
-  assert.equal(b.record.mock.callCount(), 0);
-  for (const room of [a, b]) {
-    assert(room.packets.some(packet => packet.type === 'security' && packet.value.kind === 'ejecting' && packet.value.reason === 'profanity'));
-  }
+  assert.equal(b.record.mock.callCount(), 1);
+  assert.equal(b.record.mock.calls[0].arguments[1].reason, 'profanity');
+  assert(b.packets.some(packet => packet.type === 'security' && packet.value.kind === 'ejecting' && packet.value.reason === 'profanity'));
+  assert.equal(a.packets.some(packet => packet.type === 'security'), false);
   assert(b.packets.some(packet => packet.type === 'chat-result' && packet.value.id === last.id && packet.value.status === 'rejected'));
   assert.equal(b.published.some(message => message.requestId === last.id), false);
 });
 
 test('addressed and standalone insults are delivered below the same threshold', async context => {
-  const { room, send, checks, published, packets, record, eject, flush } = fixture(context);
+  const { room, send, checks, published, packets, record, flush } = fixture(context);
   const other = new Player(); other.name = 'Грифа';
   room.state.players.set('other', other);
   const messages = ['Грифа, ты дебил!', 'idiot'];
@@ -153,14 +156,13 @@ test('addressed and standalone insults are delivered below the same threshold', 
   }
   assert.deepEqual(published.map(message => message.text), messages);
   assert.equal(record.mock.callCount(), 0);
-  assert.equal(eject.mock.callCount(), 0);
   assert.equal(packets.some(packet => packet.type === 'security'), false);
 });
 
-test('a burst advertising the same channel records one offense while the warning is pending', async context => {
-  const { send, checks, published, packets, record, flush } = fixture(context);
-  let warn!: () => void;
-  record.mock.mockImplementation(() => new Promise(resolve => { warn = () => resolve({ kind: 'warning', until: 0 }); }));
+test('the first confirmed spam episode records one sanction and immediately dispatches security', async context => {
+  const { send, checks, published, packets, record, sanction, flush } = fixture(context);
+  let commit!: () => void;
+  record.mock.mockImplementation(() => new Promise(resolve => { commit = () => resolve(sanction()); }));
   const first = send('Смотрите анонсы https://t.me/RoyalExample');
   await flush();
   const rest = [
@@ -175,11 +177,76 @@ test('a burst advertising the same channel records one offense while the warning
   checks[1].resolve(true);
   await flush();
   assert.equal(record.mock.callCount(), 1);
+  assert.equal(record.mock.calls[0].arguments[1].reason, 'spam');
   assert(packets.some(packet => packet.type === 'notice' && /отклонено за спам/.test(packet.value)));
   checks[0].resolve(true);
-  warn();
+  commit();
   await Promise.all([first, ...rest]);
+  assert(packets.some(packet => packet.type === 'security' && packet.value.kind === 'ejecting' && packet.value.reason === 'spam'));
   assert.equal(published.filter(message => message.senderId !== 'security').length, 0);
+});
+
+test('a delayed toilet violation records the mark without dispatching a guard after a floor change', async context => {
+  const { send, move, checks, packets, record, flush } = fixture(context);
+  move('toilet');
+  const message = send({ id: randomUUID(), text: 'fuck shit Scheiße putain coño cazzo kurwa caralho klootzak idiot' });
+  await flush();
+  move('tables');
+  checks[0].resolve(true); await message;
+  assert.equal(record.mock.callCount(), 1);
+  assert.deepEqual(record.mock.calls[0].arguments[1].pursuitId, undefined);
+  assert.equal(packets.some(packet => packet.type === 'security'), false);
+});
+
+test('a persisted violation cannot dispatch its old pursuit after the player escapes and reenters', async context => {
+  const { send, move, checks, packets, record, sanction, flush } = fixture(context);
+  let commit!: () => void;
+  record.mock.mockImplementation(() => new Promise(resolve => { commit = () => resolve(sanction()); }));
+  const message = send({ id: randomUUID(), text: 'fuck shit Scheiße putain coño cazzo kurwa caralho klootzak idiot' });
+  await flush(); checks[0].resolve(true); await flush();
+  assert.equal(record.mock.callCount(), 1);
+  assert.equal(typeof record.mock.calls[0].arguments[1].pursuitId, 'string');
+  move('toilet');
+  move('github');
+  commit();
+  await message;
+  assert.equal(packets.some(packet => packet.type === 'security'), false);
+});
+
+test('the collision threshold uses the same account sanction store', async context => {
+  const { room, client, checks, packets, record, flush } = fixture(context);
+  const pending = (room as any).ejectForCollision(client);
+  await flush(); checks[0].resolve(true); await pending;
+  assert.equal(record.mock.callCount(), 1);
+  assert.equal(record.mock.calls[0].arguments[1].reason, 'collision');
+  assert(packets.some(packet => packet.type === 'security' && packet.value.kind === 'ejecting' && packet.value.reason === 'collision'));
+});
+
+test('cross-room retries while delivery is pending return the outcome without counting as repeated spam', async context => {
+  context.mock.timers.enable({ apis: ['Date'], now: 1_000 });
+  const checks: SessionCheck[] = [], account = context.name;
+  const a = fixture(context, { suffix: '-a', account, checks }), b = fixture(context, { suffix: '-b', account, checks });
+  const id = randomUUID(), text = 'Please check this announcement t.me/OneSharedChannel';
+  b.move('tables');
+  const first = a.send({ id, text, visitId: 1 });
+  await a.flush();
+  context.mock.timers.tick(31_000);
+  const retries = [b.send({ id, text, visitId: 1 }), b.send({ id: id.toUpperCase(), text, visitId: 1 })];
+  await a.flush();
+  assert.equal(checks.length, 1);
+  checks[0].resolve(true);
+  await Promise.all([first, ...retries]);
+  assert.equal(a.published.length, 1);
+  assert.equal(b.published.length, 0);
+  assert.equal(b.record.mock.callCount(), 0);
+  assert.equal(b.packets.filter(packet => packet.type === 'chat-result' && packet.value.status === 'published').length, 2);
+  context.mock.timers.tick(31_000);
+  const recovered = fixture(context, { suffix: '-recovered', account, checks });
+  recovered.move('github');
+  await recovered.send({ id, text, visitId: 1 });
+  assert.equal(checks.length, 1);
+  assert.equal(recovered.published.length, 0);
+  assert(recovered.packets.some(packet => packet.type === 'chat-result' && packet.value.status === 'published'));
 });
 
 test('disconnecting cancels both the in-flight message and its queue', async context => {

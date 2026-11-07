@@ -13,6 +13,8 @@ export class ChatQueue {
   private lanes = new Map<string, Lane>();
   constructor(private maxPerAccount = CHAT_PENDING_LIMIT, private maxAccounts = 12) {}
 
+  hasPending(account: string): boolean { return this.lanes.has(account); }
+
   enqueue(account: string, task: Job['task'], onCancel?: () => void, owner?: object): Promise<void> | undefined {
     let lane = this.lanes.get(account);
     if (!lane) {

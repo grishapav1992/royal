@@ -12,12 +12,13 @@ import { RoomCat } from './cat';
 import { chatSpam } from './chatSpam';
 import { chatLanguageWindow } from './chatLanguageWindow';
 import { chatQueue } from './chatQueue';
+import { chatReceipts, type ChatReceipt } from './chatReceipts';
 import { RoomChat, type ChatStamp } from './roomChat';
 import { filterChatLanguage } from '../src/shared/chatConduct';
 import { guardBumps } from './guardBumps';
 import { blockedByGuard } from '../src/shared/guardCollision';
-import type { SecurityDecision } from '../src/shared/security';
-import { isChatLocation, type ChatResult } from '../src/shared/chat';
+import type { ClubViolation, SecurityDecision } from '../src/shared/security';
+import { isChatLocation, type ChatResult, type ChatVisit } from '../src/shared/chat';
 import { randomUUID } from 'node:crypto';
 import { accounts, allowedOrigin, cookieToken, type Account } from './accounts';
 type RoomAuth = { account: Account; hash: string };
@@ -30,7 +31,7 @@ import { cabinetHall, cabinetsInHall, type Cabinet } from '../src/shared/cabinet
 import { cabinetSeat } from '../src/shared/cabinetSeating';
 import { playerRecoveryPoint } from '../src/shared/playerRecovery';
 import { findPath, walkable, type Point } from '../src/game/navigation';
-import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLinkAt, stairWindowLink, playerHallArrival, inHallDoor, SEATS, DRINKS, atBar, type ChatMessage, type HallId } from '../src/shared/world';
+import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLinkAt, stairWindowLink, playerHallArrival, inHallDoor, isCasinoFloor, SEATS, DRINKS, atBar, type ChatMessage, type HallId } from '../src/shared/world';
 import { canTravelByElevator, elevatorDock } from '../src/shared/elevator';
 import { intoxicatedMovement } from '../src/shared/intoxication';
 import type { DrinkingState } from './intoxicationStore';
@@ -67,26 +68,24 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     if(count>=10)void this.ejectForCollision(client);
     return count;
   });
-  private securityListener = (accountId: string, decision: SecurityDecision) => {
-    chatQueue.cancel(accountId);
-    for (const client of this.clients) if ((client.auth as RoomAuth)?.account.id === accountId) {
-      const access = this.access.get(client.sessionId);
-      if (access) { access.revision++; if (decision.kind === 'ejecting') access.banUntil = decision.until; }
-      const p = this.state.players.get(client.sessionId);
-      if (!p || p.security === 'ejecting') continue;
-      const control = this.controls.get(client.sessionId); if (control) control.chatRevision++;
-      this.activities.leave(client.sessionId); this.releaseCabinet(client.sessionId); this.stop(client.sessionId); this.stand(client.sessionId); p.playing = false;
-      this.guards.enqueue(client.sessionId, decision);
-      client.send('security', decision);
-      const ejection = decision.reason === 'collision' ? ', десять толчков охранника. Вход закрыт на 10 минут.'
-        : decision.reason === 'profanity' ? ', слишком много грубых слов в чате. Вход закрыт на 10 минут.'
-        : ', повторное нарушение. Вход закрыт на 10 минут.';
-      const text = decision.kind === 'warning'
-        ? p.name + ', первое предупреждение за спам. Повтор в течение суток: выход на 10 минут.'
-        : p.name + ejection;
-      if (isChatLocation(p.hall)) this.publish(this.roomChat.stamp(p.hall), { id: randomUUID(), senderId: 'security', name: 'ОХРАНА', time: Date.now(), text });
-    }
-  };
+  private dispatchViolation(client: Client, player: Player, until: number, reason: ClubViolation) {
+    const access = this.access.get(client.sessionId);
+    if (!access?.active || player.security || !isChatLocation(player.hall)) return;
+    chatQueue.cancel((client.auth as RoomAuth).account.id);
+    access.revision++; access.banUntil = until;
+    const control = this.controls.get(client.sessionId); if (control) control.chatRevision++;
+    this.activities.leave(client.sessionId); this.releaseCabinet(client.sessionId); this.stop(client.sessionId);
+    this.stand(client.sessionId); player.playing = false;
+    const decision: SecurityDecision = { kind: 'ejecting', until, reason };
+    this.guards.enqueue(client.sessionId, decision);
+    client.send('security', decision);
+    const announcement = reason === 'collision' ? ', десять толчков охранника. Охрана на подходе.'
+      : reason === 'profanity' ? ', слишком много грубых слов в чате. Охрана на подходе.'
+      : ', спам в чате. Охрана на подходе.';
+    this.publish(this.roomChat.stamp(player.hall), {
+      id: randomUUID(), senderId: 'security', name: 'ОХРАНА', time: Date.now(), text: player.name + announcement,
+    });
+  }
   private controls = new Map<string, Control>();
   private chatResults = new Map<Control, Map<string, ChatResult>>();
   private cabinetReactionAt = new Map<string, number>();
@@ -146,7 +145,6 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   };
   onCreate() {
     this.state.serverNow = Date.now();
-    accounts.events.on('security', this.securityListener);
     accounts.events.on('logout', this.logoutListener);
     accounts.events.on('name', this.nameListener);
     accounts.events.on('skin', this.skinListener);
@@ -350,6 +348,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       const previous = requestId && records?.get(requestId);
       if (previous) { client.send('chat-result', previous); return; }
       let finished = false;
+      let receipt: ChatReceipt | undefined;
       const result = (status: ChatResult['status'], message?: string) => {
         if (!requestId) return;
         const value: ChatResult = { id: requestId, status, ...(message ? { message } : {}) };
@@ -362,13 +361,26 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       };
       const finish = (status: Exclude<ChatResult['status'], 'queued'>, message?: string) => {
         if (finished) return;
-        finished = true; result(status, message);
+        finished = true;
+        receipt?.settle({ status, message });
+        result(status, message);
         if (message) client.send('notice', message);
       };
       const raw = typeof value === 'string' ? value : object?.text;
       const text = typeof raw === 'string' ? raw.replace(/[\u0000-\u001f\u007f]/g, ' ').trim() : '';
       if (!text || text.length > 300) { finish('rejected', 'Сообщение должно содержать от 1 до 300 символов.'); return; }
-      if (!player || !control || !player.connected || player.security || !this.accessAllowed(client)) {
+      if (!player || !control || !player.connected || !this.access.get(client.sessionId)?.active) {
+        finish('cancelled', 'Сообщение не отправлено. Дождись подключения к залу.'); return;
+      }
+      const { account: { id }, hash } = client.auth as RoomAuth, chatRevision = control.chatRevision;
+      const receivedAt = Date.now();
+      const previousReceipt = requestId && chatReceipts.find(id, requestId, receivedAt);
+      if (previousReceipt) {
+        const outcome = await previousReceipt.outcome;
+        finish(outcome.status, outcome.message);
+        return;
+      }
+      if (player.security || !this.accessAllowed(client)) {
         finish('cancelled', 'Сообщение не отправлено. Дождись подключения к залу.'); return;
       }
       const visit = this.roomChat.visit(client.sessionId);
@@ -378,7 +390,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (object?.visitId !== undefined && object.visitId !== visit.id) {
         finish('cancelled', 'Локация изменилась. Отправь сообщение снова.'); return;
       }
-      const { account: { id }, hash } = client.auth as RoomAuth, chatRevision = control.chatRevision;
+      if (requestId) receipt = chatReceipts.create(id, requestId, receivedAt);
       if (pendingChatDiscipline.has(id)) {
         finish('cancelled', 'Дождись решения охраны перед отправкой сообщения.');
         return;
@@ -389,7 +401,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
         && this.controls.get(client.sessionId) === control && control.chatRevision === chatRevision
         && player.connected && !player.security && this.accessAllowed(client);
       const filtered = filterChatLanguage(text);
-      const countLanguage = () => chatLanguageWindow.check(id, filtered.count, Date.now(), requestId);
+      const countLanguage = () => chatLanguageWindow.check(id, filtered.count, receivedAt, requestId);
       const moderate = async (violation: keyof typeof CHAT_REJECTIONS, verified: boolean) => {
         pendingChatDiscipline.add(id);
         try {
@@ -398,17 +410,13 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
             chatQueue.cancel(id);
             if (!await accounts.active(hash)) { this.logoutListener(hash); return; }
             if (!current()) return;
-            if (countLanguage()) violation = 'profanity';
           }
-          if (violation !== 'spam') chatSpam.clear(id);
           control.chatRevision++;
           finish('rejected', CHAT_REJECTIONS[violation]);
           chatQueue.cancel(id);
-          const decision = violation === 'profanity'
-            ? await accounts.moderation.eject(id, Date.now(), violation)
-            : await accounts.moderation.record(id);
-          if (violation === 'profanity') chatLanguageWindow.clear(id);
-          accounts.events.emit('security', id, { ...decision, reason: violation });
+          await this.recordClubViolation(client, player, visit, violation, requestId ? 'chat:' + requestId.toLowerCase() : randomUUID());
+          chatSpam.clear(id);
+          chatLanguageWindow.clear(id);
         } catch {
           const message = 'Не удалось подтвердить действие. Попробуй ещё раз.';
           if (finished) client.send('notice', message);
@@ -418,7 +426,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
           if (!finished) finish('cancelled', 'Отправка сообщения отменена.');
         }
       };
-      const spam = chatSpam.check(id, text);
+      const spam = chatSpam.check(id, text, receivedAt);
       if (spam === 'spam') { await moderate('spam', false); return; }
       if (spam === 'slow') { finish('rejected', 'Слишком быстро. Продолжение спама вызовет охранника.'); return; }
       const queued = chatQueue.enqueue(id, async cancelled => {
@@ -512,7 +520,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.chatResults.clear();
     for (const id of this.state.players.keys()) this.releaseCabinet(id);
     this.disposed = true;
-    accounts.events.off('security', this.securityListener); accounts.events.off('logout', this.logoutListener);
+    accounts.events.off('logout', this.logoutListener);
     accounts.events.off('name', this.nameListener); accounts.events.off('skin', this.skinListener); accounts.events.off('appearance', this.appearanceListener); accounts.events.off('drinking', this.drinkingListener);
     accounts.events.off('progression-level', this.levelListener);
   }
@@ -575,19 +583,25 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   private canDrink(player: Player, id: unknown) {
     return player.hall === 'arcade' && atBar(player) && !player.playing && player.action !== 'drink' && DRINKS.some(drink => drink.id === id);
   }
+  private async recordClubViolation(client: Client, player: Player, visit: ChatVisit | undefined, reason: ClubViolation, id: string) {
+    const accountId = (client.auth as RoomAuth).account.id;
+    const currentGamingVisit = () => !this.disposed && !!visit && isCasinoFloor(visit.hall) && player.hall === visit.hall
+      && player.connected && this.state.players.get(client.sessionId) === player && this.roomChat.visit(client.sessionId) === visit;
+    const pursuitId = currentGamingVisit() ? randomUUID() : undefined;
+    const { outcome, replayed } = await accounts.clubSanctions.recordViolation(accountId, { id, reason, pursuitId });
+    if (!replayed && pursuitId && currentGamingVisit()) this.dispatchViolation(client, player, outcome.sanction.until, reason);
+  }
   private async ejectForCollision(client: Client) {
     const player = this.state.players.get(client.sessionId), control = this.controls.get(client.sessionId), access = this.access.get(client.sessionId);
     if (!player || !control || !access || access.pendingEject || !this.accessAllowed(client)) return;
-    const accountId = (client.auth as RoomAuth).account.id, chatRevision = control.chatRevision, hallRevision = player.hallRevision;
+    const chatRevision = control.chatRevision, hallRevision = player.hallRevision;
     access.pendingEject = true; this.stop(client.sessionId);
     try {
       const active = await accounts.active((client.auth as RoomAuth).hash);
       if (!active) { this.logoutListener((client.auth as RoomAuth).hash); return; }
       if (!this.currentAction(client, player, control, chatRevision, hallRevision, true)) return;
-      const decision = await accounts.moderation.eject(accountId);
-      if (this.currentAction(client, player, control, chatRevision, hallRevision, true)) this.stop(client.sessionId);
-      accounts.events.emit('security', accountId, decision);
-    } catch { if (this.state.players.get(client.sessionId) === player) client.send('notice', 'Охрана проверяет нарушение. Подожди немного.'); }
+      await this.recordClubViolation(client, player, this.roomChat.visit(client.sessionId), 'collision', randomUUID());
+    } catch { if (this.state.players.get(client.sessionId) === player) client.send('notice', 'Не удалось подтвердить действие. Попробуй ещё раз.'); }
     finally { access.pendingEject = false; }
   }
   private async refreshAccess() {
