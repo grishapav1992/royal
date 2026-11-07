@@ -62,7 +62,8 @@ function verifyReplayCandidate(input: unknown, datasetId: string, replayId: stri
 
 /** Export the exact offline-viewer payload, including its authenticated test/live dataset marker. */
 export async function exportAuditReplay(config: ClientConfig, input: {
-  schema: string; datasetId: string; filters: ReplayReportFilters; destination: string; signal?: AbortSignal;
+  schema: string; datasetId: string; filters: ReplayReportFilters; destination: string;
+  signal?: AbortSignal; fixtureStandbyPort?: number;
 }) {
   if (!isReplayId(input.datasetId) || !isReplayId(input.filters.replayId)) throw new Error('Invalid audit replay identity');
   return runAuditReport(config, input, 'replay', timeoutMs, async (settings, schema, jobId, signal) => {

@@ -143,9 +143,11 @@ export async function runAuditReport<T extends { rowCount: number; bytes: number
 ) {
   if (!/^[a-z_][a-z0-9_]{0,62}$/.test(input.schema)) throw new Error('Invalid audit schema name');
   const { fixtureStandbyPort } = input;
+  const fixtureReplay = kind === 'replay' && input.schema === 'test_audit_load' &&
+    config.database === 'royal_test' && config.user === 'audit_load_replay';
   if (fixtureStandbyPort !== undefined && (config.host !== '127.0.0.1' || config.connectionString ||
       !Number.isInteger(fixtureStandbyPort) || fixtureStandbyPort < 1 || fixtureStandbyPort > 65_535 ||
-      fixtureStandbyPort === config.port || (kind !== 'player' && kind !== 'summary'))) {
+      fixtureStandbyPort === config.port || (kind !== 'player' && kind !== 'summary' && !fixtureReplay))) {
     throw new Error('Expected a separate loopback report fixture');
   }
   const schema = identifier(input.schema);

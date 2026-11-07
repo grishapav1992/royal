@@ -9,8 +9,8 @@ import { promisify } from 'node:util';
 import { assessAuditPilotGate } from '../scripts/audit-load';
 
 const script = fileURLToPath(new URL('../scripts/audit-load.ts', import.meta.url));
-const run = (args: string[], env = process.env) => promisify(execFile)(
-  process.execPath, ['--import', 'tsx', script, ...args], { env, timeout: 30_000 },
+const run = (args: string[], env = process.env, execArgs: string[] = []) => promisify(execFile)(
+  process.execPath, ['--import', 'tsx', ...execArgs, script, ...args], { env, timeout: 30_000 },
 );
 const fixtureFiles = async (directory: string) => (await readdir(directory))
   .filter(name => /^royal-(pg|audit-load|audit-standby)-/.test(name));
@@ -260,6 +260,54 @@ test('pilot gate measures audited wallets without reports and exits according to
 });
 
 const pgBasebackup = process.env.ROYAL_AUDIT_TEST_PG_BASEBACKUP;
+const skewedParentClock = 'data:text/javascript,' + encodeURIComponent(
+  "Object.defineProperty(performance, 'timeOrigin', { value: performance.timeOrigin + 60000 })");
+for (const standby of [false, true]) test(
+  `replay-first ${standby ? 'standby' : 'primary'} pilot verifies replay and detail with separate process clocks`,
+  { timeout: 35_000, skip: standby && !pgBasebackup }, async t => {
+  const directory = await mkdtemp(join(tmpdir(), 'royal-audit-load-check-'));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const { stdout, exitCode } = await run(['--pilot-gate', '--replay-first', '--report-process', '--mixed-history',
+    '--workers', '2', '--rounds', '3', '--seed', '8', ...(standby ? ['--standby-pg-basebackup', pgBasebackup!] : [])],
+  { ...process.env, TMPDIR: directory }, ['--import', skewedParentClock])
+    .then(result => ({ stdout: result.stdout, exitCode: 0 }), error => {
+      if (error.code !== 1 || !error.stdout) throw error;
+      return { stdout: String(error.stdout), exitCode: 1 };
+    });
+  const report = JSON.parse(stdout);
+  assert.deepEqual(await fixtureFiles(directory), []);
+  assert.equal(report.capacityConfirmed, false);
+  assert.equal(report.pilotGate.firstReport, 'replay');
+  assert.equal(report.pilotGate.firstQueryObserved, true);
+  assert.equal(report.pilotGate.noWalletErrorsOrTimeouts, true);
+  assert.equal(report.pilotGate.maxP95GrowthPercent, 10);
+  assert.equal(report.reports.replay.engineVerified, true);
+  assert.equal(report.reports.replay.verified, true);
+  assert(report.reports.replay.events > 128 && report.reports.replay.fragments > 1);
+  assert(report.reports.replay.bytes > 0 && report.reports.replay.elapsedMs > 0);
+  assert(report.reports.replay.overlappingStakeCalls > 0 && report.reports.replay.overlappingSettlementCalls > 0);
+  assert.equal(report.reports.detail.verified, true);
+  assert(report.reports.detail.elapsedMs > 0);
+  assert.equal(report.reports.player.rows, 10_000);
+  assert.equal(report.scale.atLimit.scanned, 20_000);
+  assert.equal(report.scale.ok, true);
+  assert.equal(report.reportProcess.requests, 5);
+  assert.deepEqual(report.reports.admission, { serialVerified: true,
+    order: ['audit_load_replay', 'audit_load_player', 'audit_load_summary', 'audit_load_limit', 'audit_load_wide'] });
+  assert.equal(report.capture.gaps, 0);
+  assert.equal(!!report.standby, standby);
+  if (standby) {
+    assert.equal(report.standby.beforeControl.streaming, true);
+    assert.equal(report.standby.afterReports.streaming, true);
+    assert.equal(report.pilotGate.databaseActivity.withReports.tempBytes, 0);
+    assert(report.standby.databaseActivity.withReports.tempBytes > 0);
+    assert.deepEqual(report.standby.replayCancellation,
+      { replayWaitObserved: true, readerStopped: true, journalCancelled: true, noPartialOutput: true });
+  }
+  assert.equal(report.ok, report.pilotGate.ok);
+  assert.equal(exitCode, report.ok ? 0 : 1);
+});
+
 test('standby pilot waits for journal WAL and releases a reader when replay is paused',
   { timeout: 35_000, skip: !pgBasebackup }, async t => {
     const directory = await mkdtemp(join(tmpdir(), 'royal-audit-load-check-'));

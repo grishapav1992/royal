@@ -5,28 +5,33 @@ import { basename, dirname, resolve } from 'node:path';
 import { setTimeout as pause } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 import { AuditPlayerReportError, exportAuditPlayer } from '../server/audit/report-player';
+import { exportAuditReplay } from '../server/audit/report-replay';
 import { readAuditSummary } from '../server/audit/report-summary';
 
 type Login = Parameters<typeof exportAuditPlayer>[0];
 type PlayerInput = Omit<Parameters<typeof exportAuditPlayer>[1], 'signal'>;
 type SummaryInput = Omit<Parameters<typeof readAuditSummary>[1], 'signal'>;
+type ReplayInput = Omit<Parameters<typeof exportAuditReplay>[1], 'signal'>;
 type PlayerResult = Awaited<ReturnType<typeof exportAuditPlayer>>;
 type SummaryResult = Awaited<ReturnType<typeof readAuditSummary>>;
+type ReplayResult = Awaited<ReturnType<typeof exportAuditReplay>>;
+type ReportResult = PlayerResult | SummaryResult | ReplayResult;
 type Timing = { from: number; to: number };
 type Timed<T> = Timing & { result: T };
 type WireLogin = { host: string; port: number; database: string; user: string; password: string };
-type Work = { kind: 'player'; input: PlayerInput } | { kind: 'summary'; input: SummaryInput };
+type Work = { kind: 'player'; input: PlayerInput } | { kind: 'summary'; input: SummaryInput } | { kind: 'replay'; input: ReplayInput };
 type Request = Work & { id: number; login: WireLogin };
 type RequestBody = Request | { kind: 'stop' };
 type Reply = { kind: 'ready' } | ({ kind: 'result'; id: number; cpu: NodeJS.CpuUsage } & Timing & (
-  { result: PlayerResult | SummaryResult } | { code?: ConstructorParameters<typeof AuditPlayerReportError>[0]; jobId: string | null }));
+  { result: ReportResult } | { code?: ConstructorParameters<typeof AuditPlayerReportError>[0]; jobId: string | null }));
 const file = fileURLToPath(import.meta.url);
-const maxRequests = 4;
+const maxRequests = 5;
 const maxMessageBytes = 128 * 1024;
-const stamp = () => performance.timeOrigin + performance.now();
+// The parent and child share the same host monotonic clock.
+export const auditLoadMonotonicMs = () => Number(process.hrtime.bigint()) / 1e6;
 const isolatedLogin = (login: Partial<WireLogin>): login is WireLogin => login.host === '127.0.0.1' &&
   login.database === 'royal_test' && typeof login.port === 'number' && Number.isInteger(login.port) && login.port > 0 && login.port <= 65_535 &&
-  typeof login.user === 'string' && /^audit_load_(player|summary|limit|wide)$/.test(login.user) &&
+  typeof login.user === 'string' && /^audit_load_(player|summary|limit|wide|replay)$/.test(login.user) &&
   typeof login.password === 'string' && /^[a-f0-9-]{36}$/.test(login.password);
 
 function sendReply(reply: Reply) {
@@ -49,26 +54,27 @@ function serve() {
     if (controller.signal.aborted) return;
     if (!message || active || message.id !== ++requestCount || requestCount > maxRequests ||
         !isolatedLogin(message.login ?? {}) || message.input?.schema !== 'test_audit_load' ||
-        (message.kind !== 'player' && message.kind !== 'summary')) { stop(); return; }
+        (message.kind !== 'player' && message.kind !== 'summary' && message.kind !== 'replay')) { stop(); return; }
     const { id, login, kind } = message;
-    if (kind === 'player') {
+    if (kind === 'player' || kind === 'replay') {
       const { destination } = message.input;
-      if (typeof destination !== 'string' || basename(destination) !== 'player.csv' ||
+      if (typeof destination !== 'string' || basename(destination) !== (kind === 'player' ? 'player.csv' : 'replay.json') ||
           !basename(dirname(destination)).startsWith('royal-audit-load-') || dirname(dirname(destination)) !== tmpdir()) {
         stop();
         return;
       }
     }
-    const from = stamp(), before = process.cpuUsage();
+    const from = auditLoadMonotonicMs(), before = process.cpuUsage();
     const options = { ...login, ssl: false };
     const job = kind === 'player' ? exportAuditPlayer(options, { ...message.input, signal: controller.signal }) :
-      readAuditSummary(options, { ...message.input, signal: controller.signal });
+      kind === 'summary' ? readAuditSummary(options, { ...message.input, signal: controller.signal }) :
+        exportAuditReplay(options, { ...message.input, signal: controller.signal });
     active = job.then(result => {
-      const reply = { kind: 'result' as const, id, from, to: stamp(), cpu: process.cpuUsage(before), result };
+      const reply = { kind: 'result' as const, id, from, to: auditLoadMonotonicMs(), cpu: process.cpuUsage(before), result };
       if (Buffer.byteLength(JSON.stringify(reply)) > maxMessageBytes) throw new Error('Isolated report response exceeds bound');
       sendReply(reply);
     }).catch(error => {
-      sendReply({ kind: 'result', id, from, to: stamp(), cpu: process.cpuUsage(before),
+      sendReply({ kind: 'result', id, from, to: auditLoadMonotonicMs(), cpu: process.cpuUsage(before),
         code: error instanceof AuditPlayerReportError ? error.code : undefined,
         jobId: error instanceof AuditPlayerReportError ? error.jobId : null });
     }).finally(() => { active = null; });
@@ -83,7 +89,7 @@ export async function startAuditLoadReportConsumer(signal?: AbortSignal) {
     env: { PATH: process.env.PATH, TMPDIR: process.env.TMPDIR, TEMP: process.env.TEMP,
       SystemRoot: process.env.SystemRoot, NODE_ENV: 'test' } });
   const closed = new Promise<true>(resolveClose => { child.once('close', () => resolveClose(true)); });
-  type Pending = { id: number; requestedAt: number; resolve: (value: Timed<PlayerResult | SummaryResult>) => void;
+  type Pending = { id: number; requestedAt: number; resolve: (value: Timed<ReportResult>) => void;
     reject: (error: unknown) => void };
   let pending: Pending | undefined, requestCount = 0;
   let closing: Promise<void> | undefined;
@@ -96,14 +102,14 @@ export async function startAuditLoadReportConsumer(signal?: AbortSignal) {
     const call = pending;
     pending = undefined;
     if (!Number.isFinite(reply.from) || !Number.isFinite(reply.to) || reply.from < call.requestedAt - 1 ||
-        reply.to < reply.from || reply.to > stamp() + 1) {
+        reply.to < reply.from || reply.to > auditLoadMonotonicMs() + 1) {
       call.reject(new Error('Isolated report consumer clock mismatch'));
       return;
     }
     cpu.user += reply.cpu.user;
     cpu.system += reply.cpu.system;
     if ('result' in reply) {
-      call.resolve({ from: reply.from - performance.timeOrigin, to: reply.to - performance.timeOrigin, result: reply.result });
+      call.resolve({ from: reply.from, to: reply.to, result: reply.result });
     } else call.reject(reply.code ? new AuditPlayerReportError(reply.code, reply.jobId) : new Error('Isolated report consumer failed'));
   });
   const close = () => closing ??= (async () => {
@@ -132,14 +138,15 @@ export async function startAuditLoadReportConsumer(signal?: AbortSignal) {
     }
     const id = ++requestCount, request: Request = { ...work, id, login };
     if (Buffer.byteLength(JSON.stringify(request)) > maxMessageBytes) throw new Error('Isolated report request exceeds bound');
-    return new Promise<Timed<PlayerResult | SummaryResult>>((resolveReport, reject) => {
-      pending = { id, requestedAt: stamp(), resolve: resolveReport, reject };
+    return new Promise<Timed<ReportResult>>((resolveReport, reject) => {
+      pending = { id, requestedAt: auditLoadMonotonicMs(), resolve: resolveReport, reject };
       child.send(request, error => { if (error && pending?.id === id) rejectPending(); });
     });
   };
   return {
     player: (login: Login, input: PlayerInput) => run(login, { kind: 'player', input }) as Promise<Timed<PlayerResult>>,
     summary: (login: Login, input: SummaryInput) => run(login, { kind: 'summary', input }) as Promise<Timed<SummaryResult>>,
+    replay: (login: Login, input: ReplayInput) => run(login, { kind: 'replay', input }) as Promise<Timed<ReplayResult>>,
     metrics: () => ({ requests: requestCount, userCpuMicros: cpu.user, systemCpuMicros: cpu.system }),
     close,
   };

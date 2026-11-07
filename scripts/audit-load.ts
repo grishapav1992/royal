@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { once } from 'node:events';
 import { createReadStream } from 'node:fs';
-import { mkdtemp, readdir, rm, stat } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, rm, stat } from 'node:fs/promises';
 import { Agent, request } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -14,9 +14,14 @@ import { startAuditAttemptRuntime } from '../server/audit/attempts';
 import { AuditDatasets } from '../server/audit/datasets';
 import { auditHttpAttempts } from '../server/audit/http-attempts';
 import { auditCommandRoutes } from '../server/audit/intents';
+import { verifyReplayPackage } from '../server/audit/replay-package';
 import { installAuditReportAccess } from '../server/audit/report-access';
+import { installAuditDetailReport } from '../server/audit/report-detail-source';
+import { readAuditDetail } from '../server/audit/report-investigation';
 import { installAuditPlayerReport, playerColumns } from '../server/audit/report-player-source';
 import { AuditPlayerReportError, exportAuditPlayer } from '../server/audit/report-player';
+import { installAuditReplayReport } from '../server/audit/report-replay-source';
+import { exportAuditReplay } from '../server/audit/report-replay';
 import { AUDIT_SUMMARY_SCAN_CAP, installAuditSummaryReport } from '../server/audit/report-summary-source';
 import { readAuditSummary } from '../server/audit/report-summary';
 import { databaseConfig, identifier, PostgresDatabase } from '../server/database';
@@ -26,12 +31,13 @@ import { VirtualPvpLedger } from '../server/pvp/virtual-wallet';
 import { matchesMixedHistoryTotals, mixedHistoryAccountCount, seedMixedAuditHistory,
   type MixedHistoryPosting } from './audit-load-mixed-history';
 import { startAuditLoadStandby } from './audit-load-standby';
-import { startAuditLoadReportConsumer } from './audit-load-report-consumer';
+import { auditLoadMonotonicMs, startAuditLoadReportConsumer } from './audit-load-report-consumer';
+import { seedAuditLoadReplay } from './audit-load-replay-fixture';
 import { temporaryDatabase } from './database-test';
 
 type Budget = { stakeP95Ms?: number; settlementP95Ms?: number; readerStopMs?: number };
 type LoadOptions = { workers: number; roundsPerWorker: number; seedRounds: number;
-  scaleHistory?: boolean; mixedHistory?: boolean; pilotGate?: boolean; summaryFirst?: boolean; reportProcess?: boolean;
+  scaleHistory?: boolean; mixedHistory?: boolean; pilotGate?: boolean; summaryFirst?: boolean; replayFirst?: boolean; reportProcess?: boolean;
   budget?: Budget; standbyPgBasebackup?: string };
 type Metric = 'stake' | 'settlement' | 'casinoRound' | 'retry';
 type Sample = { from: number; to: number; ok: boolean };
@@ -48,7 +54,7 @@ const pilotMaxP95GrowthPercent = 10;
 const defaults: LoadOptions = { workers: 4, roundsPerWorker: 8, seedRounds: 40 };
 
 function loadOptions(input: LoadOptions) {
-  const { workers, roundsPerWorker, seedRounds, scaleHistory, mixedHistory, pilotGate, summaryFirst, reportProcess,
+  const { workers, roundsPerWorker, seedRounds, scaleHistory, mixedHistory, pilotGate, summaryFirst, replayFirst, reportProcess,
     budget, standbyPgBasebackup } = input;
   if (!Number.isInteger(workers) || workers < 1 || workers > 8 || !Number.isInteger(roundsPerWorker) ||
       roundsPerWorker < 2 || roundsPerWorker > 16 || !Number.isInteger(seedRounds) || seedRounds < 8 || seedRounds > 40) {
@@ -61,9 +67,12 @@ function loadOptions(input: LoadOptions) {
     throw new Error('The isolated standby requires --pilot-gate and a pg_basebackup executable');
   }
   if (summaryFirst && !pilotGate) throw new Error('The summary-first order requires --pilot-gate');
+  if (replayFirst && (!pilotGate || summaryFirst)) {
+    throw new Error('The replay-first order requires --pilot-gate and a single first report');
+  }
   if (reportProcess && !pilotGate) throw new Error('The isolated report process requires --pilot-gate');
   return { workers, roundsPerWorker, seedRounds, scaleHistory: scaleHistory || mixedHistory || pilotGate, mixedHistory,
-    pilotGate, summaryFirst, reportProcess, budget, standbyPgBasebackup };
+    pilotGate, summaryFirst, replayFirst, reportProcess, budget, standbyPgBasebackup };
 }
 
 const rounded = (value: number) => Number(value.toFixed(3));
@@ -117,10 +126,10 @@ async function workload(game: PostgresDatabase, wallet: VirtualPvpLedger, baseUr
   let expectedFees = 0, completedRounds = 0;
   const timed = async <T>(kind: Metric, work: () => Promise<T>) => {
     signal?.throwIfAborted();
-    const from = performance.now();
+    const from = auditLoadMonotonicMs();
     let ok = false;
     try { const result = await work(); ok = true; return result; }
-    finally { samples[kind].push({ from, to: performance.now(), ok }); }
+    finally { samples[kind].push({ from, to: auditLoadMonotonicMs(), ok }); }
   };
   const plinko = async (accountId: string, op: ReturnType<typeof playRequest>) => {
     const body = JSON.stringify(op);
@@ -415,13 +424,14 @@ async function cancelReport(game: PostgresDatabase, audit: PostgresDatabase, ope
 }
 
 async function observeActiveReport(audit: PostgresDatabase, standby: Standby | undefined, operator: string,
-  report: 'player' | 'summary', signal?: AbortSignal) {
+  report: 'player' | 'summary' | 'replay', signal?: AbortSignal) {
   const connection = standby?.connect();
   try {
     await connection?.connect();
     const sql = `SELECT 1 FROM pg_stat_activity WHERE datname=current_database()
       AND usename=$1 AND application_name=$2 AND state='active' AND query LIKE $3 LIMIT 1`;
-    const parameters = [operator, 'royal/audit-' + report, report === 'player' ? '%audit_report_player_page%' : '%audit_report_summary%'];
+    const projection = report === 'player' ? 'audit_report_player_page' : 'audit_report_' + report;
+    const parameters = [operator, 'royal/audit-' + report, `%${projection}%`];
     return await waitFor(async () => {
       const rows = (await (connection ?? audit.pool).query(sql, parameters)).rows;
       return rows.length ? true : undefined;
@@ -484,9 +494,11 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     const makePairs = (): Pair[] => Array.from({ length: options.workers }, () => [randomUUID(), randomUUID()]);
     const baselinePairs = makePairs(), activePairs = makePairs(), reportAccount = randomUUID();
     const controlPairs = options.pilotGate ? makePairs() : [];
+    const replayPair: Pair | null = options.replayFirst ? [randomUUID(), randomUUID()] : null;
     const scaleAccounts = options.scaleHistory
       ? Array.from({ length: options.mixedHistory ? mixedHistoryAccountCount : 2 }, () => randomUUID()) : null;
-    const accounts = [...baselinePairs.flat(), ...activePairs.flat(), ...controlPairs.flat(), reportAccount, ...(scaleAccounts ?? [])];
+    const accounts = [...baselinePairs.flat(), ...activePairs.flat(), ...controlPairs.flat(), reportAccount,
+      ...(scaleAccounts ?? []), ...(replayPair ?? [])];
     const wallet = new DemoWalletStore(game, () => 0), pvp = new VirtualPvpLedger(game, wallet);
     for (const accountId of accounts) {
       await game.prepare('INSERT INTO accounts VALUES (?)').run(accountId);
@@ -510,10 +522,12 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     const baseUrl = 'http://127.0.0.1:' + address.port;
     const baseline = await workload(game, pvp, baseUrl, loopbackAgent, baselinePairs, options.roundsPerWorker, signal);
     const sources = { game: game.schema };
-    const { datasetId, startedAtMs } = await new AuditDatasets(audit, sources).startTest();
+    const { datasetId, startedAtMs, environment } = await new AuditDatasets(audit, sources).startTest();
     const group = 'audit_load_read', reader = 'audit_load_player', summaryReader = 'audit_load_summary';
     const wideReader = 'audit_load_wide', limitReader = 'audit_load_limit', password = randomUUID();
-    const readers = [reader, summaryReader, ...(scaleAccounts ? [wideReader, limitReader] : [])];
+    const replayReader = 'audit_load_replay', detailReader = 'audit_load_detail';
+    const readers = [reader, summaryReader, ...(scaleAccounts ? [wideReader, limitReader] : []),
+      ...(replayPair ? [replayReader, detailReader] : [])];
     await audit.exec('CREATE ROLE ' + group + ' NOLOGIN');
     for (const name of readers) {
       await audit.exec(`CREATE ROLE ${name} LOGIN PASSWORD '${password}';
@@ -537,6 +551,11 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       await waitFor(async () => Date.now() >= widePeriod.toMs ? true : undefined, 2000, signal);
       await game.exec('ANALYZE demo_ledger');
       await audit.exec('ANALYZE audit_posting_refs');
+    }
+    const replayFixture = replayPair ? await seedAuditLoadReplay(game, audit, pvp, { datasetId, environment }, replayPair) : null;
+    if (replayFixture) {
+      await installAuditReplayReport(audit, group, sources);
+      await installAuditDetailReport(audit, group, sources);
     }
     for (let i = 0; i < options.seedRounds; i++) await wallet.operate(reportAccount, playRequest());
     standby = options.standbyPgBasebackup ? await startAuditLoadStandby(options.standbyPgBasebackup, cluster.env, signal) : undefined;
@@ -572,8 +591,8 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       filters: { accountId: scaleAccounts?.[0] ?? reportAccount, ...(widePeriod ?? period) },
       destination: join(directory, 'player.csv'), limits: scaleAccounts ? undefined : { pageSize: 1 } };
     const observeTiming = async <T>(work: () => Promise<T>) => {
-      const from = performance.now(), result = await work();
-      return { from, to: performance.now(), result };
+      const from = auditLoadMonotonicMs(), result = await work();
+      return { from, to: auditLoadMonotonicMs(), result };
     };
     const wireScope = { schema: audit.schema, datasetId, fixtureStandbyPort: standby?.port };
     const reportScope = { ...wireScope, signal };
@@ -587,17 +606,22 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       observeTiming(() => exportAuditPlayer(operator(reader), reportInput))).catch(error => throwReportFailure('player CSV', error));
     const limitPeriod = widePeriod ? { ...widePeriod, toMs: widePeriod.toMs - 1 } : null;
     const startLimit = () => limitPeriod ? readSummary(limitReader, limitPeriod, 'at-limit summary') : null;
-    const firstPlayer = options.summaryFirst ? null : startPlayer();
+    const replayInput = replayFixture ? { ...wireScope, filters: { replayId: replayFixture.replayId },
+      destination: join(directory, 'replay.json') } : null;
+    const firstReplay = replayInput ? (reportConsumer ? reportConsumer.replay(operator(replayReader), replayInput) :
+      observeTiming(() => exportAuditReplay(operator(replayReader), { ...replayInput, signal })))
+      .catch(error => throwReportFailure('replay', error)) : null;
+    const firstPlayer = options.summaryFirst || firstReplay ? null : startPlayer();
     const firstLimit = options.summaryFirst ? startLimit() : null;
-    const first = firstPlayer ?? firstLimit;
+    const first = firstPlayer ?? firstLimit ?? firstReplay;
     if (!first) throw new Error('Missing first isolated audit report');
     // Keep the first report rejection controlled while waiting for a real reader backend.
     void first.catch(() => {});
     let firstQueryObserved = false;
     try {
       if (options.pilotGate) {
-        firstQueryObserved = await observeActiveReport(audit, standby, options.summaryFirst ? limitReader : reader,
-          options.summaryFirst ? 'summary' : 'player', signal);
+        firstQueryObserved = await observeActiveReport(audit, standby, firstReplay ? replayReader : options.summaryFirst ? limitReader : reader,
+          firstReplay ? 'replay' : options.summaryFirst ? 'summary' : 'player', signal);
       } else {
         await waitFor(async () => (await readdir(directory!)).some(file => file.endsWith('.part')) ? true : undefined, 2000, signal);
       }
@@ -606,13 +630,14 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       throw error;
     }
     const remainingReports = async () => {
+      const replay = await firstReplay;
       const initialLimit = await firstLimit;
       const csv = await (firstPlayer ?? startPlayer());
       const summary = await readSummary(summaryReader, period, 'narrow summary');
       const atLimit = initialLimit ?? await startLimit();
       const wide = widePeriod ? await observeTiming(() => rejectOversizedSummary(audit!, { ...reportScope, filters: widePeriod },
         wideReader, () => rawSummary(wideReader, widePeriod))).catch(error => throwReportFailure('oversized summary', error)) : null;
-      return { csv, summary, atLimit, wide };
+      return { csv, summary, atLimit, wide, replay };
     };
     const [activeResult, reportsResult] = await Promise.allSettled([
       workload(game, pvp, baseUrl, loopbackAgent, activePairs, options.roundsPerWorker, signal),
@@ -620,7 +645,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     ]);
     if (activeResult.status === 'rejected') throw activeResult.reason;
     if (reportsResult.status === 'rejected') throw reportsResult.reason;
-    const { value: active } = activeResult, { value: { csv, summary, atLimit, wide } } = reportsResult;
+    const { value: active } = activeResult, { value: { csv, summary, atLimit, wide, replay } } = reportsResult;
     await runtime.close();
     runtime = undefined;
     await reportConsumer?.close();
@@ -629,7 +654,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     const standbyReportActivity = standby && standbyBeforeReports ? activityDelta(standbyBeforeReports, await standbyActivity(standby)) : null;
     const standbyAfterReports = standby ? await verifyStandby(standby, audit, signal) : null;
     const jobOrder = options.summaryFirst ? [limitReader, reader, summaryReader, wideReader]
-      : [reader, summaryReader, ...(scaleAccounts ? [limitReader, wideReader] : [])];
+      : [...(replayFixture ? [replayReader] : []), reader, summaryReader, ...(scaleAccounts ? [limitReader, wideReader] : [])];
     const jobs = await audit.prepare(`SELECT operator_name,status,reason,started_at,finished_at FROM audit_export_jobs
       WHERE dataset_id=? AND operator_name=ANY(?::name[]) ORDER BY started_at,finished_at,id`).all(datasetId, jobOrder);
     const serialVerified = jobs.length === jobOrder.length && jobs.every((job, index) => {
@@ -638,6 +663,24 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
         (!previous || previous.finished_at <= job.started_at) &&
         (job.operator_name === wideReader ? job.status === 'failed' && job.reason === 'scan-limit' : job.status === 'succeeded');
     });
+    let replayVerified = true;
+    let detail: { elapsedMs: number; verified: boolean } | null = null;
+    if (replay && replayInput && replayFixture) {
+      const data = await readFile(replayInput.destination, 'utf8');
+      const exported = verifyReplayPackage(JSON.parse(data));
+      replayVerified = exported.status === 'verified' && exported.value.manifest.sha256 === replayFixture.checksum &&
+        replay.result.engineVerified && replay.result.coverage === 'complete' && replay.result.environment === 'test' &&
+        replay.result.replayId === replayFixture.replayId && replay.result.datasetId === datasetId &&
+        replay.result.rowCount === replayFixture.events && replay.result.bytes === Buffer.byteLength(data);
+      await rm(replayInput.destination);
+      const { from, to, result } = await observeTiming(() => readAuditDetail(operator(detailReader), {
+        schema: audit!.schema, datasetId, signal,
+        filters: { source: replayFixture.payout.namespace, postingId: replayFixture.payout.rowId },
+      }));
+      detail = { elapsedMs: rounded(to - from), verified: result.status === 'found' &&
+        result.anchor?.category === 'pvp' && result.anchor.movement === 'payout' && result.anchor.amountUnits === '1900' &&
+        result.outcome?.kind === 'pvp-bank' && result.outcome.state === 'settled' && result.outcome.feeUnits === '100' };
+    }
     const stopped = await waitFor(async () => await audit!.prepare(
       "SELECT 1 FROM pg_stat_activity WHERE application_name='royal/audit-attempts' LIMIT 1").get() ? undefined : true, 1000, signal);
     const cancellation = await cancelReport(game, audit, operator(reader),
@@ -649,10 +692,14 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       .get(datasetId))!.n;
     const overlap = (window: { from: number; to: number }, metric: Metric) =>
       active.samples[metric].filter(sample => sample.from < window.to && sample.to > window.from).length;
+    const replayReport = replay && replayFixture ? { events: replay.result.rowCount, fragments: replayFixture.fragments,
+      bytes: replay.result.bytes, elapsedMs: rounded(replay.to - replay.from), engineVerified: replay.result.engineVerified,
+      verified: replayVerified, overlappingStakeCalls: overlap(replay, 'stake'), overlappingSettlementCalls: overlap(replay, 'settlement') } : null;
     const report = { player: { rows: csv.result.rowCount, bytes: csv.result.bytes, elapsedMs: rounded(csv.to - csv.from),
       overlappingStakeCalls: overlap(csv, 'stake'), overlappingSettlementCalls: overlap(csv, 'settlement') },
     summary: { rows: summary.result.rows.length, scanned: summary.result.scanned, elapsedMs: rounded(summary.to - summary.from),
       overlappingStakeCalls: overlap(summary, 'stake'), overlappingSettlementCalls: overlap(summary, 'settlement') },
+    ...(replayReport && detail ? { replay: replayReport, detail } : {}),
     admission: { serialVerified, order: jobs.map(job => job.operator_name) } };
     let scale: { fixturePostings: number; capturedFixturePostings: number; reportTempFileLimit: string;
       csvAmountsAndBalancesMatch: boolean;
@@ -685,11 +732,11 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     }
     const expectedAttempts = options.workers * options.roundsPerWorker * 2 * (control ? 2 : 1);
     const expectedPostings = active.expectedPostings + (control?.expectedPostings ?? 0) +
-      options.seedRounds * 2 + (scale?.fixturePostings ?? 0);
+      options.seedRounds * 2 + (scale?.fixturePostings ?? 0) + (replayFixture?.postings ?? 0);
     const csvMatches = csv.result.rowCount === (scaleAccounts ? scalePlayerRows : options.seedRounds * 2) &&
       (await stat(reportInput.destination)).size === csv.result.bytes;
-    const firstReport = options.summaryFirst ? 'at-limit-summary' : 'player';
-    const firstReportOverlap = options.summaryFirst ? scale?.atLimit : report.player;
+    const firstReport = options.replayFirst ? 'replay' : options.summaryFirst ? 'at-limit-summary' : 'player';
+    const firstReportOverlap = options.replayFirst ? replayReport : options.summaryFirst ? scale?.atLimit : report.player;
     const observedOverlap = !!firstReportOverlap && firstReportOverlap.overlappingStakeCalls > 0 &&
       firstReportOverlap.overlappingSettlementCalls > 0;
     const captureOk = stopped && records.postingRefs.rows === expectedPostings &&
@@ -705,7 +752,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     return { schemaVersion: 1, environment: 'isolated-local-postgresql', capacityConfirmed: false,
       ok: baseline.noDoubleMoney && active.noDoubleMoney && captureOk && csvMatches && observedOverlap && serialVerified && cancellationOk &&
         report.summary.scanned >= options.seedRounds * 2 && (scale?.ok ?? true) && (budget?.ok ?? true) &&
-        (control?.noDoubleMoney ?? true) && pilotPassed,
+        (control?.noDoubleMoney ?? true) && replayVerified && (detail?.verified ?? true) && pilotPassed,
       runtime: { node: process.version, postgres, platform: process.platform, architecture: process.arch },
       workload: { workers: options.workers, roundsPerWorker: options.roundsPerWorker, seedRounds: options.seedRounds },
       ...(scale ? { scale } : {}), ...(budget ? { budget } : {}),
@@ -761,13 +808,13 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   try {
     const { values } = parseArgs({ options: { workers: { type: 'string' }, rounds: { type: 'string' }, seed: { type: 'string' },
       'scale-history': { type: 'boolean' }, 'mixed-history': { type: 'boolean' }, 'pilot-gate': { type: 'boolean' },
-      'summary-first': { type: 'boolean' },
+      'summary-first': { type: 'boolean' }, 'replay-first': { type: 'boolean' },
       'report-process': { type: 'boolean' },
       'standby-pg-basebackup': { type: 'string' },
       'stake-p95-budget-ms': { type: 'string' }, 'settlement-p95-budget-ms': { type: 'string' },
       'reader-stop-budget-ms': { type: 'string' }, help: { type: 'boolean' } } });
     if (values.help) {
-      console.log('node --import tsx scripts/audit-load.ts [--workers 1..8] [--rounds 2..16] [--seed 8..40] [--scale-history] [--mixed-history] [--pilot-gate] [--summary-first] [--report-process]\n' +
+      console.log('node --import tsx scripts/audit-load.ts [--workers 1..8] [--rounds 2..16] [--seed 8..40] [--scale-history] [--mixed-history] [--pilot-gate] [--summary-first | --replay-first] [--report-process]\n' +
         '  [--standby-pg-basebackup /path/to/pg_basebackup] [--stake-p95-budget-ms n]\n' +
         '  [--settlement-p95-budget-ms n] [--reader-stop-budget-ms n]');
       exitCode = 0;
@@ -779,7 +826,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       const result = await runAuditLoad({ workers: Number(values.workers ?? defaults.workers),
         roundsPerWorker: Number(values.rounds ?? defaults.roundsPerWorker), seedRounds: Number(values.seed ?? defaults.seedRounds),
         scaleHistory: values['scale-history'], mixedHistory: values['mixed-history'], pilotGate: values['pilot-gate'],
-        summaryFirst: values['summary-first'],
+        summaryFirst: values['summary-first'], replayFirst: values['replay-first'],
         reportProcess: values['report-process'],
         standbyPgBasebackup: values['standby-pg-basebackup'],
         budget: Object.keys(budget).length ? budget : undefined }, controller.signal);
