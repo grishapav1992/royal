@@ -45,7 +45,7 @@ for(const action of ['walk','sit','sit-down','stand-up','wipe','polish','stock',
   }
 }
 
-for(const viewport of [{width:1280,height:900},{width:390,height:844}])test(`${viewport.width}: all 128 poses keep countertop props and the cat mug in front`,async({page})=>{
+for(const viewport of [{width:1280,height:900},{width:390,height:844}])test(`${viewport.width}: all 144 poses keep countertop props and the cat mug in front`,async({page})=>{
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
   await page.setViewportSize(viewport);await page.goto('/?offline=1');await ready(page);
   await page.evaluate(()=>{const audit=(window as any).royalMiraAudit;audit.focus();audit.actors(false);audit.showMira(false);});await settle(page);
@@ -62,7 +62,7 @@ for(const viewport of [{width:1280,height:900},{width:390,height:844}])test(`${v
     expect(diff(reference,current),key).toEqual({});
     const actual=(await state(page)).mira;expect(actual.atlas+':'+actual.frame).toBe(key);checked.push(key);
   }
-  expect(checked).toHaveLength(128);
+  expect(checked).toHaveLength(144);
   for(let n=0;n<24;n++){
     await page.evaluate(view=>(window as any).royalMiraAudit.pose(view),{x:334,y:456,facing:'down',action:'wipe',progress:(n+.5)/120});await settle(page);
     expect(diff(reference,await page.evaluate(points=>(window as any).royalMiraAudit.pixels(points),points)),'right wiping '+n).toEqual({});
@@ -120,12 +120,12 @@ test('real shared routine seats Mira, rises for dialogue and serves with a late 
     await a.page.getByRole('button',{name:'Напитки',exact:true}).click();await a.page.locator('[data-drink="wine"]').click();
     await expect.poll(async()=>(await state(b.page)).mira.action).toBe('serve');
     // Record the short handover phase in the browser so increasing poll delays cannot miss it.
-    await expect.poll(()=>b.page.evaluate(()=>(window as any).observedMiraService.includes(7)),{timeout:7000}).toBe(true);
+    await expect.poll(()=>b.page.evaluate(()=>(window as any).observedMiraService.includes(23)),{timeout:7000}).toBe(true);
     await a.page.emulateMedia({reducedMotion:'reduce'});await expect.poll(async()=>(await state(a.page)).reducedMotion).toBe(true);
     await a.page.getByRole('button',{name:'Уйти',exact:true}).click();
     await expect.poll(async()=>['greet','listen','chat'].includes((await state(a.page)).mira.action)).toBe(false);
     expect(errors).toEqual([]);
-    await test.info().attach('shared-routine.json',{body:JSON.stringify({seatedAfterDesktopReadyMs:seatedAfterMs,desktop:{width:1280,height:900},mobile:{width:390,height:844},lateArrival:true,observedActions:[...new Set(seen)],serviceFinalFrame:7,reducedMotion:true,providerStubbed:true,productionDataUsed:false,errors},null,2),contentType:'application/json'});
+    await test.info().attach('shared-routine.json',{body:JSON.stringify({seatedAfterDesktopReadyMs:seatedAfterMs,desktop:{width:1280,height:900},mobile:{width:390,height:844},lateArrival:true,observedActions:[...new Set(seen)],serviceFinalFrame:23,reducedMotion:true,providerStubbed:true,productionDataUsed:false,errors},null,2),contentType:'application/json'});
     completed=true;
   }finally{
     for(const context of contexts)await context.close();if(video&&completed)await video.saveAs(work+'natural-cycle.webm');

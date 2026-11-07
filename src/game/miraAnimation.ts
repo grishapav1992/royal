@@ -1,4 +1,4 @@
-import {miraSeatAmount,type MiraView} from '../shared/miraRoutine';
+import {MIRA_SERVICE_SECONDS,miraSeatAmount,type MiraView} from '../shared/miraRoutine';
 
 export const MIRA_ATLASES={
   walk:{file:'mira-walk-24.png',columns:6,rows:4,fullBody:true},
@@ -6,15 +6,22 @@ export const MIRA_ATLASES={
   wipe:{file:'mira-wipe-24.png',columns:6,rows:4,fullBody:false,contactGround:319},
   work:{file:'mira-work-corrected.png',columns:4,rows:4,fullBody:false},
   react:{file:'mira-react.png',columns:4,rows:4,fullBody:false},
-  serve:{file:'mira-serve.png',columns:4,rows:2,fullBody:false},
+  serve:{file:'mira-serve-24.png',columns:6,rows:4,fullBody:false,anchorGround:427,scaleHeight:414},
 } as const;
 export type MiraAtlas=keyof typeof MIRA_ATLASES;
 export type MiraFrame={atlas:MiraAtlas;frame:number;seat:number;flipped:boolean;clip:MiraView['action']};
+const SERVE_FRAME_START_MS=[0,100,200,400,490,580,660,750,880,1000,1200,1400,1600,1670,1750,1820,1900,2050,2120,2200,2310,2430,2540,2650] as const;
+const SERVE_DURATION_MS=MIRA_SERVICE_SECONDS*1000;
+
+export function isMiraPouring(frame:MiraFrame|undefined):boolean {
+  return frame?.atlas==='serve'&&frame.frame>=8&&frame.frame<=12;
+}
+
 const clamp=(p:number)=>Math.max(0,Math.min(1,Number.isFinite(p)?p:0));
 const frameAt=(p:number,count:number)=>Math.min(count-1,Math.floor(clamp(p)*count));
 
 export function interpolateMiraProgress(from:MiraView,to:MiraView,amount:number):Partial<MiraView> {
-  if(from.action===to.action&&['wipe','sit','sit-down','stand-up'].includes(from.action)&&to.progress>=from.progress){
+  if(from.action===to.action&&['wipe','sit','sit-down','stand-up','serve'].includes(from.action)&&to.progress>=from.progress){
     return {progress:from.progress+(to.progress-from.progress)*amount};
   }
   if(from.action!=='walk'||to.action!=='walk')return {};
@@ -40,7 +47,11 @@ export function sampleMiraFrame(view:MiraView,reducedMotion=false):MiraFrame {
       return {...result,atlas:'work',frame:reducedMotion?8:sequence[frameAt((p*5)%1,sequence.length)]};
     }
     case 'stock':return {...result,atlas:'work',frame:12+frameAt(p,4)};
-    case 'serve':return {...result,atlas:'serve',frame:p<.12?0:p<.22?1:p<.3?2:p<.5?3:p<.59?4:p<.68?5:p<.82?6:7};
+    case 'serve':{
+      const next=SERVE_FRAME_START_MS.findIndex(start=>p<start/SERVE_DURATION_MS);
+      const frame=next<0?SERVE_FRAME_START_MS.length-1:next-1;
+      return {...result,atlas:'serve',frame};
+    }
     case 'greet':return {...result,frame:reducedMotion?8:frameAt(clamp((p-.08)/.84),8)};
     case 'listen':{
       const nod=[9,10,11,10,9];

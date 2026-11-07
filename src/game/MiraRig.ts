@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import {BAR_POSITION} from '../shared/furniture';
 import {MIRA_COUNTER_FRONT_Y,type MiraView} from '../shared/miraRoutine';
-import {MIRA_ATLASES,sampleMiraFrame,type MiraAtlas,type MiraFrame} from './miraAnimation';
+import {isMiraPouring,MIRA_ATLASES,sampleMiraFrame,type MiraAtlas,type MiraFrame} from './miraAnimation';
 import {ROYAL_BAR_DEPTH} from './royalBarLayers';
 
 type Rect={x:number;y:number;width:number;height:number};
@@ -86,6 +86,6 @@ export class MiraRig {
   getState(){
     return {artVersion:3,animationMethod:'painted-sequences',renderX:this.body.x,renderY:this.body.y,
       clip:this.sample?.clip,atlas:this.sample?.atlas,frame:this.sample?.frame,paintedBounds:{...this.bounds},bodyDepth:this.body.depth,foregroundDepth:this.foreground.depth,
-      pouring:this.sample?.atlas==='serve'&&[3,4].includes(this.sample.frame)};
+      pouring:isMiraPouring(this.sample)};
   }
 }
