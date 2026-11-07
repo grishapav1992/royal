@@ -111,13 +111,19 @@ def container_inventory():
 
 
 def stop_container(name, expected):
-    names = run('docker', 'ps', '-a', '--filter', f'name=^/{name}$', '--format', '{{.ID}}', '--no-trunc')
-    if not names:
+    lookup = ('docker', 'ps', '-a', '--filter', f'name=^/{name}$', '--format', '{{.ID}}', '--no-trunc')
+    container = run(*lookup)
+    if not container:
         return False
-    require(expected and names == expected['Id'], f'Container changed: {name}')
-    if run('docker', 'inspect', '--type', 'container', '--format', '{{.State.Running}}', names) == 'true':
-        run('docker', 'stop', '-t', '15', names)
-    run('docker', 'rm', names)
+    require(expected and container == expected['Id'], f'Container changed: {name}')
+    try:
+        if run('docker', 'inspect', '--type', 'container', '--format', '{{.State.Running}}', container) == 'true':
+            run('docker', 'stop', '-t', '15', container)
+        run('docker', 'rm', container)
+    except RuntimeError:
+        # Compose run --rm may remove a one-shot container as its service stops.
+        if run(*lookup):
+            raise
     return True
 
 
