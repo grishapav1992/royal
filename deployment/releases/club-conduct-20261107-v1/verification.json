@@ -1,0 +1,236 @@
+{
+  "release": "club-conduct-20261107-v1",
+  "sourceCommit": "361627db8aca0e8deff128e6dc4fa0868b9152c1",
+  "baseCommit": "2a077d6174cc13b4f6cc10d13d66cb2ff5bbbef5",
+  "image": "sha256:0a65fe05e0262fcb12c5219194593ddfcbb4edb11c36f00a9811000e83219d30",
+  "installManifestSha256": "038d89ece15dafc55d643fb2ee959228f580091d82af15b954911d881cd0957b",
+  "clientFiles": {
+    "assets/ActivitiesUI-CuRT_AUm.js": "075a59b6b300a9856a830f7c351aa9e2ff646aed20c7b0c62b8277836b7d3caf",
+    "assets/ClubWorld-0G7dzTuS.js": "221417e38266ffe20dbe1a716b5b0bf8ec1f16d7674e966272a553202972f6c8",
+    "assets/GameHostRuntime-D6slTNM3.js": "32e63e5198082e79f34f228f84ab0576d4a9553c12fc7ac02da09de0a74d6967",
+    "assets/index-C1gGShJu.js": "1fe7baebf5d0b86c8062c7a658403252cee07ccc6e85521b345f25be3163853e",
+    "assets/main-51U1UjXk.js": "00c71774f195e760af10c83dded84ebf10a9aab19e5b8bac1d0db1ab8f83470d",
+    "assets/main-5lA1s7Yr.css": "478b06152730769c4048d5cd84d94f378c849c28a665fea84b21a3ced652ef0a",
+    "assets/phaser-B0BPtV7V.js": "01be8d2fc33184d7e50b14cd29afc2deb9243d67194147641d44bbc38bd35bf6",
+    "assets/playerLevelStatus-Bdpqh1ID.js": "248afeee10fe03b0ebbbed478eb785b926e4ae570ec79dcc7a21aeac45f0614d",
+    "assets/PvpUI-DASfDJAZ.js": "a79e2f430021bdb407dc72ff2a74a909d9dcbdfa5e2e4108628f3a674b3a48ee",
+    "index.html": "e2fbe61641afa2fc5f030e1c556a088b37327f16083b80e00051fbf6bf0c251d"
+  },
+  "sourceFiles": {
+    "src/main.ts": "e3d2bc3806827509c85314fafc539e97229847d2100b89143de7453fb66770b4",
+    "src/i18n/en.ts": "0a86cc3190daa717d88dd8e82bfbe142c36a2887a4b6858d52d7f451e73a2e5d",
+    "src/ui/DemoWalletUI.ts": "db3cb238572e5160c4d1739b046befe25a2055adce7906de7504ffd94b702e8d",
+    "src/ui/ClubFineUI.ts": "d7e6eddee718d67132648107caa67fad4352ce420d61035a621f38a635821808",
+    "src/shared/world.ts": "3e9d1e02fa863c1aa571e937e046acba76ec73b7936b8516ee18502f4413a35e",
+    "src/ui/SocialUI.ts": "43c22aa9b7118c5d61c1da6e7ec4daa9e5b796e51c9f8342320ca181963a90c1",
+    "src/ui/club-fine.css": "925e6b50bd9459db6fb121d2e1db04a847ecaf5603404f091a11b5fc3b7b8a7e",
+    "src/shared/security.ts": "cb90b33dc56f71b12436c40cabc241f1f1d8ae8776e39f7f22cd9fde90c23f36",
+    "src/ui/SecurityUI.ts": "f65426e6277188f5898c307982dbc3679026f6079a0c300073d5097360094949",
+    "src/network/LobbyClient.ts": "ec71a90c0b0b483761ae8632557426a6f6e1de5c40f12d097c450a1e09450cd7",
+    "src/shared/chat.ts": "fde47ea2884daedbe79ada8bb627697e5c39b09cf50295e37918feb3aa982591",
+    "src/shared/chatConduct.ts": "00fffaeef49a7520e6b4ec4eeaafdc9847462c325118e6f0f7fab61a6508c7ab",
+    "src/ui/chat-delivery.css": "047b5ed3e03d25e589718661e8c3144e5978d88455f8224f4a81de7c36849a0f",
+    "src/ui/SkinStudioUI.ts": "689fcb46cba5990401548d829544d69e7a574b1e0b578a9ed9d23ebe59ec3328",
+    "server/index.ts": "2c2630776793a869d760e875802531d8a90ba100c19cc5f28f7045e4c15be3a3",
+    "server/clubFineRoutes.ts": "d938c7059174ff15b4f2b743702c0c85dde86a8e9602d9c17a40f35508811b5f",
+    "server/LobbyRoom.ts": "7851b979ec59e03396ba9010a1d73097a4953fe151035a6e3c473c7a5c83540d",
+    "server/accounts.ts": "baebbea9aae0e330246ddd8556f4ce0b91fb8dda030bf058dfb972b4705b2ea3",
+    "server/moderation.ts": "f04693111b2eebeb37bf5ed5e0fac9a4525df456b89b21ef079876a337b14480",
+    "server/clubSanctions.ts": "cc69677a3f09bb57c4aecf98f468d1637ac0e7fea63137543e7247a8d1dcc83f",
+    "server/guards.ts": "b61ad85049b405ae6fad282e156de86e743456f5c40b65c89f5c8e715d86f5f8",
+    "server/chatSpam.ts": "e2a2f8103b14f0b118bb82962de69d85374dfbd10d23a38a5031a67bfc1c9901",
+    "server/chatLanguageWindow.ts": "bee6876560d0ac1f11a13354ecb60320a22f976d40842a400521169a1a7e1679",
+    "server/chatQueue.ts": "f25123b7a3677702286916afc780d6f98b04d01e1d747bfadf8fb11395dcc7c0",
+    "server/chatReceipts.ts": "35f3d3cba9527fb61abf3ac1e12d78c64724b1532a25f203e6552dc1a21d6d57",
+    "server/roomChat.ts": "1bf0385f852eda31fce09886c3cc8c7538f2c46732bf73b7bafe0b2cab4a448d",
+    "server/activities.ts": "de63c7928ff4a338749d1f9a5151156ab275f26c9228e15c2a09fc3d36c56af4",
+    "server/pvp/room.ts": "a430ea5e11405a639043a35d818c93decd1795d8ccfbbe49409ebf0cfae898c7",
+    "server/chessGame.ts": "a068afda63de7659efe922f4ddc5a6cb2f0fc3c8b25f53e2aaee07e45cc5014e",
+    "server/guardNavigation.ts": "d3ed2f85b46741262e65d8306798b4702f8c485bc5b3a30ec5286c60d7641f31"
+  },
+  "server": {
+    "published": {
+      "published": true,
+      "preparedImage": "sha256:0a65fe05e0262fcb12c5219194593ddfcbb4edb11c36f00a9811000e83219d30",
+      "runningImage": "sha256:0a65fe05e0262fcb12c5219194593ddfcbb4edb11c36f00a9811000e83219d30",
+      "containerRestarted": true,
+      "sourceCommit": "361627db8aca0e8deff128e6dc4fa0868b9152c1",
+      "changedSources": 30,
+      "clientDeltaFiles": 10,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 1,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 10
+    },
+    "sourceBackup": {
+      "path": "/opt/royal-backups/club-conduct-20261107-v1/source.tgz",
+      "bytes": 200737,
+      "sha256": "f03e8ed3897eafdf424791faa7a720742fbc3f195af58d11002d0a647d022191"
+    },
+    "financialBackup": {
+      "path": "/opt/royal-backups/club-conduct-20261107-v1/financial.dump",
+      "sha256": "9c9d273bfc79e9fd91a197f01295a202bc174ede5432c8044fc59f76f8c70036",
+      "bytes": 38002631,
+      "databaseRestored": false
+    },
+    "database": {
+      "sanctionTables": 4,
+      "legacyTable": true,
+      "legacyMigration": true
+    },
+    "programFiles": 8675,
+    "moduleFiles": 5395,
+    "backendSha256": "5e94ef5f22439ea7c63ad219117a491aa51752ca34255a97183cfd961ae0c577",
+    "otherProgramsPreserved": true,
+    "modulesPreserved": true
+  },
+  "publicCheck": {
+    "health": true,
+    "verifiedPublicFiles": 30,
+    "cataloguePointers": 19,
+    "statuses": {
+      "GET /healthz": 200,
+      "GET /api/auth/me": 200,
+      "GET /api/demo-wallet": 401,
+      "GET /api/demo-wallet/expansion": 401,
+      "GET /api/demo-wallet/club-fine": 401,
+      "POST /api/demo-wallet/club-fine": 401,
+      "GET /api/nile-wallet": 410,
+      "GET /api/nile-play/wallet": 410
+    },
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 1000
+      },
+      {
+        "width": 390,
+        "height": 844
+      }
+    ],
+    "productionWalletMutationsForTesting": false
+  },
+  "checks": {
+    "rtpProfiles": 38,
+    "stakePolicies": 20,
+    "sourcePostgresTests": 112,
+    "browserScenarios": 11,
+    "candidateBackendSha256": "5e94ef5f22439ea7c63ad219117a491aa51752ca34255a97183cfd961ae0c577",
+    "candidateClientIndexSha256": "e2fbe61641afa2fc5f030e1c556a088b37327f16083b80e00051fbf6bf0c251d",
+    "walletRecovery": {
+      "sameUuid": true,
+      "singleDebit": true,
+      "stakeCents": 10
+    },
+    "clubFineLostResponseRecovery": true,
+    "retiredAdmission": {
+      "statuses": {
+        "royal-dice": 409,
+        "royal-mines": 409,
+        "flag-tote": 410
+      },
+      "walletUnchanged": true
+    },
+    "productionWalletMutationsForTesting": false
+  },
+  "catalogue": {
+    "cataloguePointersCompared": 19,
+    "moduleFilesPreserved": 5395,
+    "addedGames": [],
+    "restoredGames": [],
+    "inheritedHiddenSlotAdmission": {
+      "baselineSource": "2a077d6174cc13b4f6cc10d13d66cb2ff5bbbef5",
+      "candidateSource": "361627db8aca0e8deff128e6dc4fa0868b9152c1",
+      "baseline": {
+        "backendSha256": "e43b6eb20d74b736e25566caa8f84d6a00a3aa7dd41d24ac87948a21063ba0c5",
+        "results": [
+          {
+            "requestKind": "play",
+            "requestedGame": "royal-coins",
+            "status": 200,
+            "settledGame": "royal-coins",
+            "debits": [
+              -100
+            ]
+          },
+          {
+            "requestKind": "play",
+            "requestedGame": "royal-fruits",
+            "status": 200,
+            "settledGame": "royal-fruits",
+            "debits": [
+              -100
+            ]
+          },
+          {
+            "requestKind": "spin",
+            "requestedGame": null,
+            "status": 200,
+            "settledGame": "royal-coins",
+            "debits": [
+              -100
+            ]
+          }
+        ]
+      },
+      "candidate": {
+        "backendSha256": "5e94ef5f22439ea7c63ad219117a491aa51752ca34255a97183cfd961ae0c577",
+        "results": [
+          {
+            "requestKind": "play",
+            "requestedGame": "royal-coins",
+            "status": 200,
+            "settledGame": "royal-coins",
+            "debits": [
+              -100
+            ]
+          },
+          {
+            "requestKind": "play",
+            "requestedGame": "royal-fruits",
+            "status": 200,
+            "settledGame": "royal-fruits",
+            "debits": [
+              -100
+            ]
+          },
+          {
+            "requestKind": "spin",
+            "requestedGame": null,
+            "status": 200,
+            "settledGame": "royal-coins",
+            "debits": [
+              -100
+            ]
+          }
+        ]
+      },
+      "admissionIdentical": true,
+      "productionAccountsOrRoundsCreated": false
+    }
+  },
+  "maintenance": {
+    "release": "club-conduct-20261107-v1",
+    "sourceCommit": "361627db8aca0e8deff128e6dc4fa0868b9152c1",
+    "status": "completed",
+    "currentImage": "sha256:0a65fe05e0262fcb12c5219194593ddfcbb4edb11c36f00a9811000e83219d30",
+    "rollbackImage": "sha256:9ddb3517cdaa91cc111a630d3eab7634a8525ae8444d80dfdceed612851361a1",
+    "healthOk": true,
+    "freeBefore": 12899389440,
+    "freeAfter": 12920098816,
+    "verificationPasses": 2,
+    "preservedFinancialFiles": 202,
+    "finishedAt": 1794083558.4016607,
+    "durationSeconds": 77.65,
+    "containersUnchanged": true,
+    "timerEnabled": true,
+    "timerActive": true,
+    "removedEntries": 23
+  },
+  "baselineVerification": {
+    "sharedGraphAtStart": "unavailable",
+    "directRunningProgramAndSourceInventory": true
+  }
+}
