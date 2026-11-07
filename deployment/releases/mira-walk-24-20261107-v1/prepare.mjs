@@ -54,7 +54,7 @@ const references={
 };
 const support={};for(const [file,source]of Object.entries(references))support[file]=write(file,committed(source));
 for(const file of ['release-manifest.json','release-github.json'])write(file,fs.readFileSync('module-build/'+file));
-const helperSha256=write('deploy.py',committed(folder+'/deploy.py')),snapshotSha256=write('snapshot.py',committed('deployment/releases/remove-room-labels-20261105-v1/snapshot.py'));
+const helperSha256=write('deploy.py',committed(folder+'/deploy.py')),snapshotSha256=write('snapshot.py',committed(folder+'/snapshot.py'));
 const manifest={release:name,sourceCommit:release.sourceCommit,baseCommit:before.sourceCommit,before,changed,delta,serverDelta:{},support,helperSha256,snapshotSha256,
  releaseManifestSha256:sha(fs.readFileSync('module-build/release-manifest.json')),receiptSha256:sha(fs.readFileSync('module-build/release-github.json')),addedGames:[],restoredGames:[]};
 write('install-manifest.json',Buffer.from(JSON.stringify(manifest,null,2)+'\n'));
