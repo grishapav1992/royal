@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import {BAR_POSITION} from '../shared/furniture';
-import type {MiraView} from '../shared/miraRoutine';
+import {MIRA_COUNTER_FRONT_Y,type MiraView} from '../shared/miraRoutine';
 import {MIRA_ATLASES,sampleMiraFrame,type MiraAtlas,type MiraFrame} from './miraAnimation';
 import {ROYAL_BAR_DEPTH} from './royalBarLayers';
 
@@ -16,6 +16,7 @@ function registerAtlas(scene:Phaser.Scene,atlas:MiraAtlas):PaintedFrame[]{
   // The wipe atlas packs matching body and hand-contact tiles in two halves.
   const contactGround='contactGround' in spec?spec.contactGround:undefined;
   const bodyHeight=contactGround===undefined?image.height:image.height/2;
+  const anchorGround='anchorGround' in spec?spec.anchorGround:contactGround;
   const pixels=context.getImageData(0,0,image.width,bodyHeight).data,frames:PaintedFrame[]=[];
   for(let row=0;row<spec.rows;row++)for(let col=0;col<spec.columns;col++){
     const x0=Math.floor(col*image.width/spec.columns),x1=Math.floor((col+1)*image.width/spec.columns);
@@ -25,11 +26,11 @@ function registerAtlas(scene:Phaser.Scene,atlas:MiraAtlas):PaintedFrame[]{
       left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);
     }
     if(right<=left||bottom<=top)throw new Error('Empty painted Mira frame: '+atlas+' '+frames.length);
-    const ground=contactGround===undefined?bottom+1:y0+contactGround;
+    const ground=anchorGround===undefined?bottom+1:y0+anchorGround;
     frames.push({image,rect:{x:left,y:top,width:right-left+1,height:bottom-top+1},
       anchorX:(x0+x1)/2-left,anchorY:ground-top,contactOffset:image.height-bodyHeight,scale:1});
   }
-  const heights=frames.map(f=>f.rect.height).sort((a,b)=>a-b),height=heights[Math.floor(heights.length/2)];
+  const heights=frames.map(f=>f.rect.height).sort((a,b)=>a-b),height='scaleHeight' in spec?spec.scaleHeight:heights[Math.floor(heights.length/2)];
   for(const frame of frames)frame.scale=(spec.fullBody?110:60)/height;
   return frames;
 }
@@ -61,8 +62,11 @@ export class MiraRig {
     const sample=sampleMiraFrame(view,reducedMotion),frame=this.frames[sample.atlas][sample.frame];
     this.sample=sample;
     const fullBody=MIRA_ATLASES[sample.atlas].fullBody;
-    const baseY=view.y+52-13*sample.seat,originY=baseY-SIZE.height;
-    this.body.setPosition(view.x,baseY);this.foreground.setPosition(view.x,baseY);
+    const baseY=view.y+52-31*sample.seat,originY=baseY-SIZE.height;
+    const depth=view.y>MIRA_COUNTER_FRONT_Y?ROYAL_BAR_DEPTH.props+.25:ROYAL_BAR_DEPTH.staff;
+    this.body.setPosition(view.x,baseY);
+    if(this.body.depth!==depth)this.body.setDepth(depth);
+    this.foreground.setPosition(view.x,baseY);
     const width=frame.rect.width*frame.scale,height=frame.rect.height*frame.scale;
     const x=SIZE.width/2-frame.anchorX*frame.scale;
     const bottom=fullBody?SIZE.height:BAR_POSITION.y+114-originY;
@@ -72,12 +76,7 @@ export class MiraRig {
     if(signature===this.signature)return;this.signature=signature;
     const draw=(texture:Phaser.Textures.CanvasTexture,front:boolean)=>{
       const c=texture.context;c.clearRect(0,0,texture.width,texture.height);c.save();c.scale(SIZE.resolution,SIZE.resolution);
-      if(front&&!frame.contactOffset){
-        if(!fullBody||sample.seat<=.01){c.restore();texture.refresh();return;}
-        c.beginPath();
-        c.rect(0,BAR_POSITION.y+106-originY,SIZE.width,8+sample.seat*55);
-        c.clip();
-      }
+      if(front&&!frame.contactOffset){c.restore();texture.refresh();return;}
       if(sample.flipped){c.translate(SIZE.width,0);c.scale(-1,1);}
       const r=frame.rect;c.drawImage(frame.image,r.x,r.y+(front?frame.contactOffset:0),r.width,r.height,x,y,width,height);
       c.restore();texture.refresh();
@@ -86,7 +85,7 @@ export class MiraRig {
   }
   getState(){
     return {artVersion:3,animationMethod:'painted-sequences',renderX:this.body.x,renderY:this.body.y,
-      clip:this.sample?.clip,atlas:this.sample?.atlas,frame:this.sample?.frame,paintedBounds:{...this.bounds},foregroundDepth:this.foreground.depth,
+      clip:this.sample?.clip,atlas:this.sample?.atlas,frame:this.sample?.frame,paintedBounds:{...this.bounds},bodyDepth:this.body.depth,foregroundDepth:this.foreground.depth,
       pouring:this.sample?.atlas==='serve'&&[3,4].includes(this.sample.frame)};
   }
 }
