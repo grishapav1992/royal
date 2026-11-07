@@ -112,10 +112,11 @@ export class Guards {
     });
     return true;
   }
-  cancelPursuit(id: string) {
+  cancelPursuit(id: string, sanctionId?: string) {
     const d = this.duties[0];
-    d.queue = d.queue.filter(job => job.id !== id || !job.chase);
-    if (d.job?.id === id && d.job.chase && !d.job.chase.pending && !d.job.chase.caught) this.release(d);
+    const matches = (job: Job) => job.id === id && job.chase && (sanctionId === undefined || job.chase.pursuit.sanctionId === sanctionId);
+    d.queue = d.queue.filter(job => !matches(job));
+    if (d.job && matches(d.job) && d.job.chase && !d.job.chase.pending && !d.job.chase.caught) this.release(d);
   }
   private release(d: Duty, unlock = true) {
     const job = d.job;

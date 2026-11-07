@@ -1,8 +1,9 @@
 import { randomUUID } from 'node:crypto';
 import type { PostgresDatabase } from './database';
 import { applySchemaMigration } from './database-migrations';
-import type { ClubSanction, ClubViolation } from '../src/shared/security';
+import type { ClubFineRequest, ClubFineResult, ClubSanction, ClubViolation } from '../src/shared/security';
 import { generatedAppearance, SKIN_THEME, SKIN_UUID } from '../src/shared/skinStudio';
+import { CryptoError } from './crypto/config';
 
 const INITIAL_DURATION_MS = 20 * 60 * 1000;
 const REPEAT_DURATION_MS = 10 * 60 * 1000;
@@ -15,11 +16,13 @@ type Capture = { pursuitId: string; sanctionId: string };
 type CaptureOutcome = { sanction: ClubSanction; kind: 'initial' | 'repeat' };
 type EventResult<T> = { outcome: T; replayed: boolean };
 type ActiveSanction = { sanction: ClubSanction; initialPursuitId: string | null };
+type ChargeFine = (accountId: string, operationId: string, amountCents: number) => Promise<boolean>;
 
 export class ClubSanctionStore {
   readonly ready: Promise<void>;
 
-  constructor(private db: PostgresDatabase, prerequisite: Promise<void> = Promise.resolve(), private skinStudioReady?: Promise<void>) {
+  constructor(private db: PostgresDatabase, prerequisite: Promise<void> = Promise.resolve(),
+    private skinStudioReady?: Promise<void>, private chargeFine?: ChargeFine) {
     this.ready = prerequisite.then(async () => {
       await db.transaction(async () => db.exec(`
       CREATE TABLE IF NOT EXISTS club_sanctions (
@@ -43,6 +46,16 @@ export class ClubSanctionStore {
         skin_id TEXT NOT NULL,
         revealed_at BIGINT NOT NULL,
         PRIMARY KEY (account_id, skin_id)
+      );
+      CREATE TABLE IF NOT EXISTS club_fine_payments (
+        account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+        operation_id TEXT NOT NULL,
+        episode_id TEXT NOT NULL,
+        revision INTEGER NOT NULL CHECK (revision > 0),
+        amount_cents BIGINT NOT NULL CHECK (amount_cents > 0),
+        paid_at BIGINT NOT NULL,
+        PRIMARY KEY (account_id, operation_id),
+        UNIQUE (account_id, episode_id)
       );
       `));
       if (!await db.hasTable('chat_conduct_discipline')) return;
@@ -76,6 +89,37 @@ export class ClubSanctionStore {
   async isUsableDisguise(accountId: string, skinId: string): Promise<boolean> {
     await this.ready;
     return !!await this.readDisguise(accountId, skinId);
+  }
+
+  async pay(accountId: string, value: unknown, now?: number): Promise<ClubFineResult> {
+    const request = parseFineRequest(value);
+    const charge = this.chargeFine;
+    if (!charge) throw new Error('Club fine wallet is unavailable');
+    await this.ready;
+    return this.db.transaction(async () => {
+      const at = now ?? Date.now();
+      const { id } = request;
+      const sanction = (await this.readActive(accountId, at))?.sanction ?? null;
+      const prior = await this.db.prepare(`SELECT episode_id,revision,amount_cents,paid_at
+        FROM club_fine_payments WHERE account_id=? AND operation_id=?`).get(accountId, id);
+      if (prior) {
+        if (prior.episode_id !== request.sanctionId || Number(prior.revision) !== request.revision || Number(prior.amount_cents) !== request.amountCents) {
+          return { status: 'id-conflict', sanction };
+        }
+        return { status: 'paid', sanction, receipt: { ...request, paidAt: Number(prior.paid_at) }, replayed: true };
+      }
+      if (!sanction) return { status: 'inactive', sanction };
+      if (sanction.id !== request.sanctionId || sanction.revision !== request.revision || sanction.amountCents !== request.amountCents) {
+        return { status: 'changed', sanction };
+      }
+      if (sanction.amountCents <= 0) return { status: 'inactive', sanction };
+
+      if (!await charge(accountId, id, sanction.amountCents)) return { status: 'insufficient', sanction };
+      await this.db.prepare(`INSERT INTO club_fine_payments (account_id,operation_id,episode_id,revision,amount_cents,paid_at)
+        VALUES (?,?,?,?,?,?)`).run(accountId, id, sanction.id, sanction.revision, sanction.amountCents, at);
+      await this.db.prepare('DELETE FROM club_sanctions WHERE account_id=? AND episode_id=?').run(accountId, sanction.id);
+      return { status: 'paid', sanction: null, receipt: { ...request, paidAt: at }, replayed: false };
+    }, { lockKey: 'account:' + accountId });
   }
 
   recordViolation(accountId: string, violation: Violation, now?: number): Promise<EventResult<ViolationOutcome>> {
@@ -159,4 +203,16 @@ export class ClubSanctionStore {
       return { outcome, replayed: false };
     }, { lockKey: 'account:' + accountId });
   }
+}
+
+function parseFineRequest(value: unknown): ClubFineRequest {
+  const request = value as ClubFineRequest | undefined;
+  if (!request || typeof request !== 'object' || Object.keys(request).sort().join(',') !== 'amountCents,id,revision,sanctionId'
+    || typeof request.id !== 'string' || !SKIN_UUID.test(request.id)
+    || typeof request.sanctionId !== 'string' || !SKIN_UUID.test(request.sanctionId)
+    || !Number.isSafeInteger(request.revision) || request.revision <= 0
+    || !Number.isSafeInteger(request.amountCents) || request.amountCents < 0) {
+    throw new CryptoError(400, 'Некорректный запрос на оплату штрафа.');
+  }
+  return { ...request, id: request.id.toLowerCase(), sanctionId: request.sanctionId.toLowerCase() };
 }

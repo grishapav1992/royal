@@ -249,7 +249,8 @@ test('a confirmed physical capture places a dropped session on the street and re
   assert.equal(packets.some(packet => packet.type === 'club-ejected'), false);
   active.mock.mockImplementation(async () => true);
   await room.onReconnect(client);
-  assert.deepEqual(packets.filter(packet => packet.type.startsWith('club-')).map(packet => packet.type), ['club-capture', 'club-ejected']);
+  assert.deepEqual(packets.filter(packet => packet.type.startsWith('club-')).map(packet => packet.type),
+    ['club-sanction-changed', 'club-capture', 'club-ejected']);
 });
 
 test('cross-room retries while delivery is pending return the outcome without counting as repeated spam', async context => {

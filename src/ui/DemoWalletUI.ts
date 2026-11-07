@@ -2,6 +2,7 @@ import { t as translateText, tr, locale } from '../i18n/index';
 import type { RoomScene } from '../game/RoomScene';
 import { demoWallet, coins } from '../wallet/WalletClient';
 import {providerCoins} from '../shared/demoWallet';
+import { CLUB_FINE_SOURCE } from '../shared/security';
 import { NowPaymentsSandboxUI } from './NowPaymentsSandboxUI';
 import '../wallet.css';
 
@@ -69,11 +70,12 @@ export class DemoWalletUI {
     retry.hidden = !demoWallet.pending; retry.disabled = demoWallet.busy;
     const history = this.dialog.querySelector('#wallet-history')!; history.replaceChildren();
     for (const entry of demoWallet.wallet?.entries ?? []) {
-      const row = document.createElement('li'); row.dataset.kind = entry.kind;
+      const row = document.createElement('li'); row.dataset.kind = entry.source === CLUB_FINE_SOURCE ? CLUB_FINE_SOURCE : entry.kind;
       const label = document.createElement('span');
       const action = { deposit: translateText('Пополнение'), bet: translateText('ставка'), win: translateText('начисление'), refund: translateText('возврат ставки'), rollback: translateText('отмена операции') }[entry.kind];
       const gameName = entry.source === 'studio-wild-nudge' ? 'Star Spin' : entry.source === 'original-jackie-chan' ? translateText('Гонконгский воин') : (entry.gameName ? translateText(entry.gameName) : '') || (entry.source === 'casinoapipro' ? 'Casino Api Pro' : entry.source === 'royal-roulette' ? translateText('Рулетка') : 'Royal Coins');
-      label.textContent = entry.kind === 'deposit' ? entry.source === 'nowpayments-sandbox' ? 'NOWPayments Sandbox' : action : `${gameName}: ${action}`;
+      label.textContent = entry.source === CLUB_FINE_SOURCE ? translateText('Клубный штраф')
+        : entry.kind === 'deposit' ? entry.source === 'nowpayments-sandbox' ? 'NOWPayments Sandbox' : action : `${gameName}: ${action}`;
       const amount = document.createElement('strong'); amount.textContent = `${entry.amount > 0 ? '+' : ''}${coins(entry.amount)}`;
       const detail = document.createElement('small'); detail.textContent = tr`${new Date(entry.createdAt).toLocaleString(locale)} · Остаток ${coins(entry.balance)}`;
       row.append(label, amount, detail); history.append(row);

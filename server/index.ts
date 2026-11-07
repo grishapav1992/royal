@@ -1,5 +1,6 @@
 import { installFlagToteRoutes } from './flagToteRoutes';
 import { installDemoWallet } from './demoWalletRoutes';
+import { installClubFineRoutes } from './clubFineRoutes';
 import { installProgression } from './progressionRoutes';
 import {installCaribbeanCrew} from './caribbeanCrewRoutes';
 import {installStarSpinCollection} from './starSpinCollectionRoutes';
@@ -44,6 +45,7 @@ const server = defineServer({
     installStarSpinCollection(app);
     installFinanceAdmin(app);
     installDemoWallet(app);
+    installClubFineRoutes(app);
     stopTote = installFlagToteRoutes(app, accounts.wallet.tote);
     installProgression(app);
     stopSandbox = installSandboxPayments(app);

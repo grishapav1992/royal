@@ -4,6 +4,8 @@ import type { ChatRequest, ChatResult } from '../src/shared/chat';
 import type { ChatMessage } from '../src/shared/world';
 import type { SecurityDecision } from '../src/shared/security';
 import { CARD_TOILET_DOOR, TOILET_MERCHANT } from '../src/shared/toilet';
+import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
+import { PostgresDatabase } from '../server/database';
 
 type Proof = { requests: ChatRequest[]; results: ChatResult[]; messages: ChatMessage[]; captures: SecurityDecision[]; ejections: unknown[] };
 const proof = (page: Page) => page.evaluate(() => (window as any).__realChat as Proof);
@@ -13,6 +15,7 @@ async function register(page: Page, name: string) {
   const login = await page.request.post(api + '/api/auth/login', { data: { email: `transport-${crypto.randomUUID()}@example.test`, password: 'Royal-test-123!' } });
   expect(login.ok()).toBe(true);
   expect((await page.request.post(api + '/api/auth/character', { data: { skin: 0, name } })).ok()).toBe(true);
+  return (await login.json()).account.id as string;
 }
 
 async function captureRealTransport(page: Page) {
@@ -220,6 +223,82 @@ test('Zhora privately offers a disguise after a confirmed restroom violation', a
     expect((await proof(page)).captures).toHaveLength(0);
     await transport.detach();
   } finally { await host.leave(); }
+});
+
+test('paying on the street recovers a lost response after reload without a second debit', async ({ page, request }) => {
+  expect(process.env.NODE_ENV).toBe('test');
+  expect(process.env.PGDATABASE).toBe('royal_test');
+  expect(process.env.PGHOST).toBe('127.0.0.1');
+  expect(process.env.DATABASE_URL).toBe('');
+  const host = await createHost(request);
+  const db = new PostgresDatabase('test_chat_real', { existingSchema: true });
+  const finePath = '/api/demo-wallet/club-fine';
+  try {
+    const account = await register(page, 'Оплата штрафа');
+    await db.prepare(`INSERT INTO demo_wallets (account_id,balance,fraction_units) VALUES (?,25,37)
+      ON CONFLICT(account_id) DO UPDATE SET balance=excluded.balance,fraction_units=excluded.fraction_units`).run(account);
+    await page.goto('/?mode=club&room=' + host.roomId + '&lang=en');
+    const input = page.locator('#chat-input'), trigger = page.locator('#club-fine-open');
+    await expect(input).toBeEnabled({ timeout: 30000 });
+    await expect(trigger).toBeHidden();
+    await input.fill('fuck shit Scheiße putain coño cazzo kurwa caralho klootzak idiot');
+    await page.locator('#send-chat').click();
+    await expect(page.locator('#club-chat-dock')).toHaveAttribute('data-chat-unavailable', '', { timeout: 30000 });
+    await expect(trigger).toBeVisible();
+    await trigger.click();
+    await expect(page.locator('#club-fine-quote')).toHaveText('Amount due 10 virtual USDT');
+    await expect(page.locator('#club-fine-countdown')).toContainText('Fine ends in');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(page.locator('#club-fine-dialog')).toBeInViewport();
+
+    // The room integration test produces this revision through physical contact. Hold the browser at the older displayed price.
+    await db.prepare(`UPDATE club_sanctions SET amount_cents=amount_cents+500, expires_at=expires_at+600000, revision=revision+1
+      WHERE account_id=?`).run(account);
+    const updatedStatus = page.waitForResponse(response => response.url().endsWith(finePath) && response.request().method() === 'GET');
+    await page.evaluate(() => window.dispatchEvent(new Event('royal-club-sanction')));
+    expect(await (await updatedStatus).json()).toMatchObject({ sanction: { amountCents: 1500, revision: 2 } });
+    await expect(page.locator('#club-fine-quote')).toHaveText('Amount due 10 virtual USDT');
+    await page.getByRole('button', { name: 'Pay fine', exact: true }).click();
+    await expect(page.locator('#club-fine-status')).toHaveText('The fine has changed. Check the time and amount.');
+    await expect(page.locator('#club-fine-quote')).toHaveText('Amount due 15 virtual USDT');
+    const headers = { [WALLET_ACCOUNT_HEADER]: account };
+    expect(await (await page.request.get(api + '/api/demo-wallet', { headers })).json()).toMatchObject({ balance: 25.37 });
+
+    const submissions: unknown[] = [];
+    await page.route(`**${finePath}`, async route => {
+      if (route.request().method() !== 'POST') { await route.continue(); return; }
+      submissions.push(route.request().postDataJSON());
+      if (submissions.length > 1) { await route.continue(); return; }
+      const committed = await route.fetch();
+      expect(await committed.json()).toMatchObject({ status: 'paid', replayed: false });
+      await route.abort('failed');
+    });
+    await page.getByRole('button', { name: 'Pay fine', exact: true }).click();
+    const retry = page.getByRole('button', { name: 'Retry payment of 15 virtual USDT' });
+    await expect(retry).toBeEnabled();
+    expect(submissions).toHaveLength(1);
+
+    await page.setViewportSize({ width: 844, height: 390 });
+    await page.reload();
+    await expect.poll(() => page.evaluate(() => (window as any).royalDemo?.getNetworkState()?.status), { timeout: 30000 }).toBe('connected');
+    await expect(trigger).toBeVisible();
+    await trigger.click();
+    await expect(page.locator('#club-fine-dialog')).toBeInViewport();
+    expect(submissions).toHaveLength(1);
+    await retry.click();
+    await expect(page.locator('#club-fine-status')).toHaveText('Fine paid.');
+    expect(submissions).toEqual([submissions[0], submissions[0]]);
+    expect(await (await page.request.get(api + finePath, { headers })).json()).toMatchObject({ sanction: null });
+    const wallet = await (await page.request.get(api + '/api/demo-wallet', { headers })).json();
+    expect(wallet.balance).toBe(10.37);
+    expect(wallet.entries.filter((entry: { source: string }) => entry.source === 'club-fine')).toMatchObject([{ amount: -15, balance: 10.37 }]);
+
+    await page.locator('#club-fine-close').click();
+    await expect(trigger).toBeHidden();
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.locator('[data-floor-target="arcade"]').click();
+    await expect(page.locator('#club-chat-dock')).toHaveAttribute('data-chat-hall', 'arcade', { timeout: 30000 });
+  } finally { await db.close(); await host.leave(); }
 });
 
 test('real chat follows each floor visit and closes on the street', async ({ browser, request }) => {

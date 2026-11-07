@@ -1,4 +1,6 @@
 import { DemoWalletStore } from './demoWallet';
+import { demoBalanceUnits, recordDemoUnits, saveDemoUnits } from './demoWalletAmounts';
+import { CLUB_FINE_SOURCE } from '../src/shared/security';
 import {CaribbeanCrewStore} from './caribbeanCrew';
 import {StarSpinCollectionStore} from './starSpinCollection';
 import { CasinoApiProWallet } from './casinoApiProWallet';
@@ -109,12 +111,25 @@ export class AccountStore {
       return commonSkins.skinPurchase(account,id,action,terms);
     }}, new CodexSkinImages(), () => true,
       (id, appearance) => this.events.emit('appearance', id, appearance), Promise.all([this.wallet.ready,this.skinRewards.ready]).then(()=>{}), Date.now, new CodexSkinDescriptions(),this.skinRewards);
-    this.clubSanctions = new ClubSanctionStore(this.db, this.moderation.ready, this.skinStudio.ready);
+    this.clubSanctions = new ClubSanctionStore(this.db, this.moderation.ready, this.skinStudio.ready,
+      (accountId, operationId, amountCents) => this.chargeClubFine(accountId, operationId, amountCents));
     this.ready = Promise.all([schemaReady, this.wallet.ready, this.progression.ready, this.rewardSpins.ready, this.caribbeanCrew.ready, this.starSpinCollection.ready, this.sandboxPayments.ready, this.pvp.ready, this.combat.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.clubSanctions.ready, this.drinking.ready, this.paymentCredits.ready, this.skinStudio.ready, this.financeAdmin.ready]).then(() => {
       this.wagerSweep=setInterval(()=>{if(!this.sweeping)this.sweeping=Promise.allSettled([this.pvp.sweep(),this.combat.recoverExpired(),this.progression.processPending()]).finally(()=>{this.sweeping=undefined;});},1000);
       this.wagerSweep.unref();
     });
     this.events.setMaxListeners(0);
+  }
+  private async chargeClubFine(accountId: string, operationId: string, amountCents: number) {
+    // The sanction store holds the same account lock as game wagers and skin purchases.
+    if (!this.db.inTransaction) throw new Error('Fine debit requires an account transaction');
+    await this.wallet.ready;
+    await this.financeAdmin.assertAllowed(accountId);
+    const balance = await demoBalanceUnits(this.db, accountId);
+    if (balance < amountCents) return false;
+    const remaining = balance - amountCents;
+    await saveDemoUnits(this.db, accountId, remaining);
+    await recordDemoUnits(this.db, accountId, `${CLUB_FINE_SOURCE}:${operationId}`, 'bet', -amountCents, remaining, CLUB_FINE_SOURCE, 'Клубный штраф');
+    return true;
   }
   async login(rawEmail: unknown, rawPassword: unknown) {
     await this.ready;

@@ -21,6 +21,7 @@ import { isExpansionGame, EXPANSION_NAMES } from './shared/casinoExpansion';
 import { isSessionGame } from './shared/casinoSessions';
 import { ClubMap } from './ui/ClubMap';
 import { DemoWalletUI } from './ui/DemoWalletUI';
+import { ClubFineUI } from './ui/ClubFineUI';
 import { CryptoWalletUI } from './ui/CryptoWalletUI';
 import { MiraChat } from './ui/MiraChat';
 import { isGithubGame } from './shared/githubGames';
@@ -450,7 +451,10 @@ Object.assign(window, { royalDemo: { getState: () => room.getState(), getElevato
 
 new DemoWalletUI(room);
 new CryptoWalletUI(room);
-if (!offline) social = new SocialUI(room, toast);
+if (!offline) {
+  new ClubFineUI(room);
+  social = new SocialUI(room, toast);
+}
 new ProgressionUI(room);
 let casinoCatalog: RoyalPlatformCatalog | undefined;
 const casinoChat = document.createElement('button');

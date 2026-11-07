@@ -125,6 +125,7 @@ export class SocialUI {
         this.scene.setSecurity(false);
         this.chatAvailability();
       },
+      clubSanctionChanged: () => window.dispatchEvent(new Event('royal-club-sanction')),
       status: status => this.connectionStatus(status),
       joined: (roomId, selfId, recovering) => {
         this.pvp?.client.setAccount(this.auth.account?.id??null);
@@ -189,7 +190,10 @@ export class SocialUI {
       }
       this.renderOutbox();
     }
-    if(status==='connected')this.activities?.connected();
+    if (status === 'connected') {
+      this.activities?.connected();
+      window.dispatchEvent(new Event('royal-club-sanction'));
+    }
     if(status==='disconnected'||status==='reconnecting')this.activities?.disconnected();
     this.statusLabel.textContent = { connecting: translateText('Подключаемся…'), connected: translateText('В сети'), reconnecting: translateText('Восстанавливаем связь…'), disconnected: translateText('Нет подключения') }[status];
     this.statusLabel.dataset.status = status;

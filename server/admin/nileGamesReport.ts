@@ -2,11 +2,14 @@
 // The unrelated historical demo schema is never queried.
 export const nativeFinanceSql=`
  SELECT 'native:'||l.account_id||':'||l.operation_id||':'||l.game AS id,l.account_id AS player_id,''::text AS opponent_id,
- CASE WHEN l.game='atelier' THEN 'purchase' ELSE 'game' END AS kind,CASE WHEN l.game='atelier' THEN '' ELSE 'house' END AS mode,l.game,
+ CASE WHEN l.game='club-fine' THEN 'adjustment' WHEN l.game='atelier' THEN 'purchase' ELSE 'game' END AS kind,
+ CASE WHEN l.game IN ('atelier','club-fine') THEN '' ELSE 'house' END AS mode,l.game,
  l.round_id,CASE WHEN coalesce(c.state,m.state,f.state,p.state) IN ('active','reserved') THEN 'pending'
  WHEN p.state='refunded' THEN 'failed' ELSE 'finished' END AS status,coalesce(c.state,m.state,f.state,p.state,'finished') AS provider_status,
- CASE WHEN l.stake>0 THEN l.stake ELSE l.payout END AS amount_units,l.delta AS delta_units,l.stake AS stake_units,l.payout AS payout_units,
- ''::text AS tx_id,'usdt-nile'::text AS currency,''::text AS address,l.created_at,''::text AS actor_id,''::text AS reason,0::numeric AS fee_units
+ CASE WHEN l.game='club-fine' THEN abs(l.delta) WHEN l.stake>0 THEN l.stake ELSE l.payout END AS amount_units,
+ l.delta AS delta_units,CASE WHEN l.game='club-fine' THEN 0 ELSE l.stake END AS stake_units,l.payout AS payout_units,
+ ''::text AS tx_id,'usdt-nile'::text AS currency,''::text AS address,l.created_at,''::text AS actor_id,
+ CASE WHEN l.game='club-fine' THEN 'Клубный штраф' ELSE '' END AS reason,0::numeric AS fee_units
  FROM (SELECT x.account_id,x.operation_id,coalesce(x.source,'royal-coins') AS game,
  coalesce((SELECT q.session_id FROM demo_casino_requests q WHERE q.account_id=x.account_id AND q.id=x.operation_id),x.operation_id) AS round_id,
  min(x.created_at) AS created_at,

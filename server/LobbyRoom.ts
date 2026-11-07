@@ -42,7 +42,7 @@ const CHAT_REQUEST_ID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9
 type ProfileRevision = { name: number; skin: number; appearance: number };
 type DisguiseCheck = { usable?: boolean };
 type Access = { active: boolean; drinking: DrinkingState; revision: number; profileRevision: ProfileRevision; pendingDrink: boolean; pendingEject: boolean;
-  sanction?: ClubSanction | null; sanctionRevision?: number; capture?: ClubCaptureDecision; resumeHall?: string;
+  sanction?: ClubSanction | null; sanctionRevision?: number; paidSanctions?: Set<string>; capture?: ClubCaptureDecision; resumeHall?: string;
   equippedSkinId?: string; disguises?: Map<string, DisguiseCheck>; disguiseOfferVisit?: number };
 const DISGUISE_CACHE_LIMIT = 200;
 const pendingDrinks = new Set<string>();
@@ -209,13 +209,31 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       this.applySanction(client, sanction, revealedSkinId);
     }
   };
+  private finePaidListener = (accountId: string, sanctionId: string) => {
+    for (const client of this.clients) if ((client.auth as RoomAuth)?.account.id === accountId) {
+      const access = this.access.get(client.sessionId);
+      if (!access?.active || access.paidSanctions?.has(sanctionId)) continue;
+      const paid = access.paidSanctions ??= new Set();
+      paid.add(sanctionId);
+      if (paid.size > 32) paid.delete(paid.values().next().value!);
+      if (access.sanction?.id === sanctionId) {
+        access.sanctionRevision = (access.sanctionRevision ?? 0) + 1;
+        access.sanction = null;
+      }
+      this.guards.cancelPursuit(client.sessionId, sanctionId);
+      client.send('club-sanction-changed', {});
+    }
+  };
   private applySanction(client: Client, sanction: ClubSanction, revealedSkinId?: string) {
     const access = this.access.get(client.sessionId);
     if (!access?.active) return;
     const previous = access.sanction;
-    const newEpisode = previous?.id !== sanction.id;
+    const newEpisode = !access.paidSanctions?.has(sanction.id) && previous?.id !== sanction.id;
     access.sanctionRevision = (access.sanctionRevision ?? 0) + 1;
-    if (newEpisode || previous.revision <= sanction.revision) access.sanction = sanction;
+    if (newEpisode || (previous?.id === sanction.id && previous.revision < sanction.revision)) {
+      access.sanction = sanction;
+      client.send('club-sanction-changed', {});
+    }
     if (revealedSkinId) {
       this.cacheDisguise(access, revealedSkinId, { usable: false });
       client.send('notice', 'Охрана раскрыла маскировку. Образ остался в гардеробе.');
@@ -262,6 +280,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     accounts.events.on('skin', this.skinListener);
     accounts.events.on('appearance', this.appearanceListener);
     accounts.events.on('club-sanction', this.sanctionListener);
+    accounts.events.on('club-fine-paid', this.finePaidListener);
     accounts.events.on('drinking', this.drinkingListener);
     accounts.events.on('progression-level', this.levelListener);
     this.clock.setInterval(() => { void this.refreshAccess().catch(() => console.error('Room access refresh failed')); }, 60000);
@@ -590,10 +609,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (this.disposed || this.access.get(client.sessionId) !== access || !active || !access.active) throw new ServerError(401, 'Войди в аккаунт ещё раз.');
       if (revision === access.revision) access.drinking = drinking;
       this.applyProfile(auth, access, profile, profileRevision);
-      if (sanctionRevision === access.sanctionRevision) {
-        access.sanction = enforcement.sanction;
-        this.applyDisguiseSnapshot(access, enforcement.disguiseSkinId, profileRevision.appearance);
-      }
+      this.applyEnforcementSnapshot(access, enforcement, sanctionRevision, profileRevision.appearance);
       void this.refreshDisguise(client, access);
       if (auth.account.skin === null) throw new ServerError(401, 'Выбери персонажа и войди в зал ещё раз.');
       const others = this.clients.filter(other => other !== client && (other.auth as RoomAuth)?.account.id === auth.account.id);
@@ -640,6 +656,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     accounts.events.off('name', this.nameListener); accounts.events.off('skin', this.skinListener); accounts.events.off('appearance', this.appearanceListener); accounts.events.off('drinking', this.drinkingListener);
     accounts.events.off('progression-level', this.levelListener);
     accounts.events.off('club-sanction', this.sanctionListener);
+    accounts.events.off('club-fine-paid', this.finePaidListener);
   }
   async onReconnect(client: Client) {
     const p = this.state.players.get(client.sessionId), access = this.access.get(client.sessionId);
@@ -654,10 +671,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (this.disposed || this.access.get(client.sessionId) !== access || this.state.players.get(client.sessionId) !== p || !active || !access.active) { client.leave(4001); return; }
       if (revision === access.revision) { access.drinking = drinking; p.soberAt = drinking.soberAt; }
       this.applyProfile(auth, access, profile, profileRevision);
-      if (sanctionRevision === access.sanctionRevision) {
-        access.sanction = enforcement.sanction;
-        this.applyDisguiseSnapshot(access, enforcement.disguiseSkinId, profileRevision.appearance);
-      }
+      this.applyEnforcementSnapshot(access, enforcement, sanctionRevision, profileRevision.appearance);
       if (auth.account.skin === null) { client.leave(4001); return; }
       p.name = auth.account.name; p.skin = auth.account.skin; p.appearance = serializeAppearance(auth.account.appearance);
       p.connected = true;
@@ -681,10 +695,13 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     };
     access.equippedSkinId = generatedAppearance(auth.account.appearance)?.skinId;
   }
-  private applyDisguiseSnapshot(access: Access, disguiseSkinId: string | null, appearanceRevision: number) {
+  private applyEnforcementSnapshot(access: Access, snapshot: { sanction: ClubSanction | null; disguiseSkinId: string | null },
+    sanctionRevision: number | undefined, appearanceRevision: number) {
+    if (sanctionRevision !== access.sanctionRevision || (snapshot.sanction && access.paidSanctions?.has(snapshot.sanction.id))) return;
+    access.sanction = snapshot.sanction;
     if (appearanceRevision !== access.profileRevision.appearance) return;
     if (access.equippedSkinId && access.sanction) {
-      this.cacheDisguise(access, access.equippedSkinId, { usable: disguiseSkinId === access.equippedSkinId });
+      this.cacheDisguise(access, access.equippedSkinId, { usable: snapshot.disguiseSkinId === access.equippedSkinId });
     }
   }
   onLeave(client: Client, code?: number) {
@@ -726,7 +743,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     if (replayed) return;
     accounts.events.emit('club-sanction', account.id, outcome.sanction, outcome.revealedSkinId);
     const access = this.access.get(client.sessionId);
-    if (!access?.active || this.state.players.get(client.sessionId) !== player) return;
+    if (!access?.active || access.sanction?.id !== outcome.sanction.id || this.state.players.get(client.sessionId) !== player) return;
     if (pursuitId && currentGamingVisit()) {
       this.dispatchViolation(client, player, { id: pursuitId, sanctionId: outcome.sanction.id, until: outcome.sanction.until, reason }, reason);
     }
@@ -760,9 +777,8 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
           access.active = active; access.drinking = drinking; player.soberAt = drinking.soberAt;
           if (!active) { player.connected = false; this.releaseCabinet(client.sessionId); this.stop(client.sessionId); client.leave(4001); return; }
         }
-        if (access.active && sanctionRevision === access.sanctionRevision) {
-          access.sanction = enforcement.sanction;
-          this.applyDisguiseSnapshot(access, enforcement.disguiseSkinId, appearanceRevision);
+        if (access.active) {
+          this.applyEnforcementSnapshot(access, enforcement, sanctionRevision, appearanceRevision);
           void this.refreshDisguise(client, access);
         }
       }));

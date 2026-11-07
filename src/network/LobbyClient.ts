@@ -47,6 +47,7 @@ export class LobbyClient {
     ejected: (until: number) => void;
     clubCapture?: (decision: ClubCaptureDecision) => void;
     clubEjected?: () => void;
+    clubSanctionChanged?: () => void;
     status: (status: ConnectionStatus) => void;
     joined: (roomId: string, sessionId: string, recovering?: boolean) => void;
     players: (players: PlayerView[], selfId: string) => void;
@@ -137,6 +138,7 @@ export class LobbyClient {
         this.capture.escorted = true;
         this.events.clubEjected?.();
       });
+      onMessage('club-sanction-changed', () => this.events.clubSanctionChanged?.());
       // Older servers can still emit this packet during a host update.
       onMessage('chat-check', () => {});
       onMessage('chat-result', (result: ChatResult) => {

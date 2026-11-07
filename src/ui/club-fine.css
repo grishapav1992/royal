@@ -1,0 +1,9 @@
+.primary-button.club-fine-trigger {
+  align-self: flex-end;
+  flex: 0 0 auto;
+  margin: 0 0 6px auto;
+  padding: 6px 12px;
+  min-height: 36px;
+}
+.club-fine-trigger[hidden], #club-fine-pay[hidden] { display: none; }
+#club-fine-close { justify-content: center; min-height: 36px; }
