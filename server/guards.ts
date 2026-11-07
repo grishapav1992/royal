@@ -157,7 +157,13 @@ export class Guards {
       }
     }
     this.phase(d, 'approach');
-    g.speech = d.job!.decision.kind === 'warning' ? (d.job!.decision.reason === 'spam' ? 'Не засоряй чат. Хватит спамить.' : 'Не оскорбляй других гостей.') : d.job!.decision.reason==='collision'?'Десятый толчок. На выход.':'Правила были озвучены. На выход.';
+    const { kind, reason } = d.job!.decision;
+    if (kind === 'warning') {
+      g.speech = reason === 'spam' ? 'Не засоряй чат. Хватит спамить.'
+        : reason === 'profanity' ? 'Не засоряй чат матом.' : 'Не оскорбляй других гостей.';
+    } else {
+      g.speech = reason === 'collision' ? 'Десятый толчок. На выход.' : 'Правила были озвучены. На выход.';
+    }
   }
   tick(dt: number) {
     for(const id of this.touching){const p=this.state.players.get(id),g=this.duties[0].guard;if(!p||p.hall!==g.hall||Math.hypot(p.x-g.x,p.y-g.y)>GUARD_CONTACT_RADIUS+10)this.touching.delete(id);}
@@ -205,7 +211,7 @@ export class Guards {
             g.facing = 'down'; this.phase(d, d.job!.decision.kind === 'warning' ? 'warn' : 'grab');
             g.speech = d.job!.decision.kind === 'warning' ? 'Первое предупреждение!\nЕщё раз в течение суток: выход на 10 минут.' : 'Пора проветриться.';
           } else if (g.phase === 'patrol') { this.settle(d); }
-          else if (g.phase === 'carry') { this.phase(d, 'throw'); g.facing = 'down'; g.speech = d.job?.decision.reason==='collision'?'Возвращайся через 10 минут.\nИ больше не толкайся.':'Возвращайся через 10 минут.\nБез оскорблений и спама.'; }
+          else if (g.phase === 'carry') { this.phase(d, 'throw'); g.facing = 'down'; g.speech = d.job?.decision.reason==='collision'?'Возвращайся через 10 минут.\nИ больше не толкайся.':'Возвращайся через 10 минут.\nСоблюдай правила чата.'; }
           else { this.phase(d, 'idle'); g.facing = 'down'; }
         }
       } else if(g.phase==='bump') {

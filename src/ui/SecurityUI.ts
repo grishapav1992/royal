@@ -9,7 +9,7 @@ export class SecurityUI {
   constructor(private scene: Pick<RoomScene, 'setSecurity'> & { guardPortrait(): string }, retry: () => void) {
     this.dialog.id = 'security-dialog'; this.dialog.className = 'security-dialog';
     this.dialog.setAttribute('aria-labelledby', 'security-title');
-    this.dialog.innerHTML = translateText('<div class="security-night"><span class="security-sign">ROYAL</span><span class="security-closed">ПАУЗА НА ВХОД</span><img alt="Охранник клуба"/></div><span class="eyebrow">ОХРАНА КЛУБА</span><h2 id="security-title">На сегодня без грубостей.</h2><p>Вход закрыт за повторные оскорбления или спам.</p><p id="security-time" role="status"></p><button class="primary-button" id="security-return" disabled>Вернуться в зал</button>');
+    this.dialog.innerHTML = translateText('<div class="security-night"><span class="security-sign">ROYAL</span><span class="security-closed">ПАУЗА НА ВХОД</span><img alt="Охранник клуба"/></div><span class="eyebrow">ОХРАНА КЛУБА</span><h2 id="security-title">На сегодня без грубостей.</h2><p>Вход закрыт за повторное нарушение правил чата.</p><p id="security-time" role="status"></p><button class="primary-button" id="security-return" disabled>Вернуться в зал</button>');
     document.body.append(this.dialog);
     this.dialog.addEventListener('cancel', event => event.preventDefault());
     this.dialog.querySelector('button')!.addEventListener('click', () => {
@@ -20,7 +20,7 @@ export class SecurityUI {
   }
   get active() { return this.until > 0; }
   intervention(decision: SecurityDecision) {
-    if(decision.reason)this.dialog.querySelector('h2 + p')!.textContent=decision.reason==='collision'?translateText('Вход закрыт за толчки охранника.'):translateText('Вход закрыт за повторные оскорбления или спам.');
+    if(decision.reason)this.dialog.querySelector('h2 + p')!.textContent=decision.reason==='collision'?translateText('Вход закрыт за толчки охранника.'):translateText('Вход закрыт за повторное нарушение правил чата.');
     for (const dialog of Array.from(document.querySelectorAll<HTMLDialogElement>('dialog[open]'))) dialog.close();
     this.scene.setSecurity(true);
     document.querySelector<HTMLInputElement>('#chat-input')?.blur();

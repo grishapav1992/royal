@@ -38,6 +38,12 @@ const CHAT_REQUEST_ID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9
 type ProfileRevision = { name: number; skin: number; appearance: number };
 type Access = { active: boolean; banUntil: number; drinking: DrinkingState; revision: number; profileRevision: ProfileRevision; pendingDrink: boolean; pendingEject: boolean };
 const pendingDrinks = new Set<string>();
+const pendingChatDiscipline = new Set<string>();
+const CHAT_VIOLATIONS = {
+  spam: { reason: 'спам', notice: 'Сообщение отклонено за спам.' },
+  insult: { reason: 'оскорбления', notice: 'Сообщение отклонено за оскорбление игроков.' },
+  profanity: { reason: 'поток мата', notice: 'Сообщение отклонено за чрезмерную брань.' },
+};
 const CABINET_REACTION_MS = 2400;
 const CABINET_REACTION_INTERVAL_MS = 450;
 const CABINET_PLAY_DISTANCE = 90;
@@ -71,8 +77,9 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       this.activities.leave(client.sessionId); this.releaseCabinet(client.sessionId); this.stop(client.sessionId); this.stand(client.sessionId); p.playing = false;
       this.guards.enqueue(client.sessionId, decision);
       client.send('security', decision);
+      const warning = decision.reason === 'collision' ? CHAT_VIOLATIONS.insult : CHAT_VIOLATIONS[decision.reason ?? 'insult'];
       this.publish({ id: randomUUID(), senderId: 'security', name: 'ОХРАНА', time: Date.now(),
-        text: decision.kind === 'warning' ? p.name + ', первое предупреждение за ' + (decision.reason === 'spam' ? 'спам' : 'оскорбления') + '. Повтор в течение суток: выход на 10 минут.' : p.name + (decision.reason==='collision'?', десять толчков охранника. Вход закрыт на 10 минут.':', повторное нарушение. Вход закрыт на 10 минут.') });
+        text: decision.kind === 'warning' ? p.name + ', первое предупреждение за ' + warning.reason + '. Повтор в течение суток: выход на 10 минут.' : p.name + (decision.reason==='collision'?', десять толчков охранника. Вход закрыт на 10 минут.':', повторное нарушение. Вход закрыт на 10 минут.') });
     }
   };
   private controls = new Map<string, Control>();
@@ -356,44 +363,47 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (!player || !control || !player.connected || player.security || !this.accessAllowed(client)) {
         finish('cancelled', 'Сообщение не отправлено. Дождись подключения к залу.'); return;
       }
-      const id = (client.auth as RoomAuth).account.id, chatRevision = control.chatRevision;
+      const { account: { id }, hash } = client.auth as RoomAuth, chatRevision = control.chatRevision;
+      if (pendingChatDiscipline.has(id)) {
+        finish('cancelled', 'Дождись решения охраны перед отправкой сообщения.');
+        return;
+      }
       // Public room chat follows the connection, independent of movement between floors.
       const current = () => !this.disposed && this.state.players.get(client.sessionId) === player
         && this.controls.get(client.sessionId) === control && control.chatRevision === chatRevision
         && player.connected && !player.security && this.accessAllowed(client);
-      const spam = chatSpam.check(id, text);
-      if (spam === 'spam') {
-        control.chatRevision++; chatQueue.cancel(id);
-        finish('rejected', 'Сообщение отклонено за спам.');
+      const rejectViolation = async (reason: keyof typeof CHAT_VIOLATIONS) => {
+        pendingChatDiscipline.add(id);
         try {
-          if (!await accounts.active((client.auth as RoomAuth).hash)) { this.logoutListener((client.auth as RoomAuth).hash); return; }
+          chatSpam.clear(id);
+          control.chatRevision++;
+          finish('rejected', CHAT_VIOLATIONS[reason].notice);
+          chatQueue.cancel(id);
+          if (reason === 'spam' && !await accounts.active(hash)) { this.logoutListener(hash); return; }
           const decision = await accounts.moderation.record(id);
-          accounts.events.emit('security', id, { ...decision, reason: 'spam' });
+          accounts.events.emit('security', id, { ...decision, reason });
         } catch { client.send('notice', 'Не удалось подтвердить действие. Попробуй ещё раз.'); }
-        return;
-      }
+        finally { pendingChatDiscipline.delete(id); }
+      };
+      const spam = chatSpam.check(id, text);
+      if (spam === 'spam') { await rejectViolation('spam'); return; }
       if (spam === 'slow') { finish('rejected', 'Слишком быстро. Продолжение спама вызовет охранника.'); return; }
       const queued = chatQueue.enqueue(id, async cancelled => {
         const valid = () => !cancelled() && current();
         let checkingProvider = false;
         try {
           if (!valid()) { finish('cancelled', 'Проверка сообщения отменена.'); return; }
-          if (!await accounts.active((client.auth as RoomAuth).hash)) { this.logoutListener((client.auth as RoomAuth).hash); return; }
+          if (!await accounts.active(hash)) { this.logoutListener(hash); return; }
           if (!valid()) { finish('cancelled', 'Проверка сообщения отменена.'); return; }
           checkingProvider = true;
-          const violation = await chatModerator.check(id, text);
+          const verdict = await chatModerator.check(id, text);
           checkingProvider = false;
           if (!valid()) { finish('cancelled', 'Проверка сообщения отменена.'); return; }
-          if (!await accounts.active((client.auth as RoomAuth).hash)) { this.logoutListener((client.auth as RoomAuth).hash); return; }
+          if (!await accounts.active(hash)) { this.logoutListener(hash); return; }
           if (!valid()) { finish('cancelled', 'Проверка сообщения отменена.'); return; }
-          if (violation) {
-            chatSpam.clear(id);
-            control.chatRevision++;
-            finish('rejected', 'Сообщение отклонено за оскорбление другого человека.');
-            chatQueue.cancel(id);
-            const decision = await accounts.moderation.record(id);
-            accounts.events.emit('security', id, { ...decision, reason: 'insult' });
-          } else if (violation === false) {
+          if (verdict === 'insult' || verdict === 'profanity') {
+            await rejectViolation(verdict);
+          } else if (verdict === 'allow') {
             this.publish({ id: randomUUID(), senderId: client.sessionId, name: player.name, text, time: Date.now(), ...(requestId ? { requestId } : {}) });
             finish('published');
           } else {

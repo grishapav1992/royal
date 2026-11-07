@@ -46,15 +46,15 @@ test('classifier isolates untrusted multilingual input, serializes per account a
     await assert.rejects(service.check('a','Next'),/ещё проверяется/);
     assert.equal(bodies[0].input[0].role,'user'); assert.equal(bodies[0].store,false);
     assert.equal(bodies[0].reasoning.effort,'low'); assert.equal(bodies[0].text.format.strict,true);
-    assert(!bodies[0].instructions.includes('答え'));finish(result('{"violation":true}'));assert.equal(await pending,true);
-    const malformed=service.check('a','test');finish(result('{"violation":"true"}'));await assert.rejects(malformed,/не начислено/);
+    assert(!bodies[0].instructions.includes('答え'));finish(result('{"verdict":"insult"}'));assert.equal(await pending,'insult');
+    const malformed=service.check('a','test');finish(result('{"verdict":true}'));await assert.rejects(malformed,/не начислено/);
     const failed=service.check('a','test');finish(new Response('',{status:503}));await assert.rejects(failed,/не начислено/);
-    const safe=service.check('a','Привет!');finish(result('{"violation":false}'));assert.equal(await safe,false);
+    const safe=service.check('a','Привет!');finish(result('{"verdict":"allow"}'));assert.equal(await safe,'allow');
   } finally {if(previous===undefined)delete process.env.CODEX_SALE_API_KEY;else process.env.CODEX_SALE_API_KEY=previous;}
 });
 
 test('offline detector allows profanity but detects clear personal insults including non-obscene ones',()=>{
-  for(const text of ['ты дебил','Ты идиот!','ты д\u200bебил','ｆｕｃｋ you','you are an idiot'])assert.equal(obviousInsult(text),true,text);
+  for(const text of ['ты дебил','Ты идиот!','ты д\u200bебил','ｆｕｃｋ you','you are an idiot','вы все дебилы','you are all idiots'])assert.equal(obviousInsult(text),true,text);
   for(const text of ['FUCK','б\u200bлять','пиздец','блять, опять проиграл','this game is fucking hard','Страхуй машину','Scunthorpe','ты неправильно сыграл','Я идиот','Он сказал «ты дебил»'])assert.equal(obviousInsult(text),false,text);
 });
 
@@ -88,6 +88,32 @@ test('flood protection warns about speed before sanctioning and allows ordinary 
  assert.equal(spam.check('flood','восьмое сообщение',1800),'spam');
  for(let i=0;i<30;i++)assert.equal(spam.check('normal','разная реплика '+i,1000+i*3000),'ok');
  spam.clear('normal');assert.equal(spam.check('normal','ещё одна реплика',92000),'ok');
+});
+
+test('spam catches small edits to long messages but permits changing numbers in conversation', () => {
+ const spam = new ChatSpam();
+ assert.equal(spam.check('a', 'Заходите в нашу группу, там ежедневно раздают бонусы', 1000), 'ok');
+ assert.equal(spam.check('a', 'Заходите в нашу группку, там ежеднево раздают бонусы', 6000), 'ok');
+ assert.equal(spam.check('a', 'Заходите в нашу групу, там ежедневно раздают бонусы!', 11000), 'spam');
+ for (let index = 1; index <= 3; index++) {
+  assert.equal(spam.check('b', 'У меня сейчас на игровом счёте ' + index * 100 + ' очков', 1000 + index * 5000), 'ok');
+ }
+});
+
+test('telegram spam requires three messages about the same destination within the window', () => {
+ const spam = new ChatSpam();
+ assert.equal(spam.check('a', 'Уже есть новый пост на https://t.me/RoyalExample/12', 1000), 'ok');
+ assert.equal(spam.check('a', 'Telegram: @royalexample и https://t.me/another_example', 6000), 'ok');
+ assert.equal(spam.check('b', 'Ещё один пост https://t.me/RoyalExample/12', 8000), 'ok');
+ assert.equal(spam.check('a', 'Подборка новостей t.me/another_example', 11000), 'ok');
+ assert.equal(spam.check('a', 'Смотрите архив на https://telegram.me/s/royalexample?source=game', 16000), 'spam');
+ assert.equal(spam.check('b', 'Канал здесь tg://resolve?domain=RoyalExample', 39000), 'ok');
+ assert.equal(spam.check('b', 'Написал про обновление в ТГ: @RoyalExample', 44000), 'ok');
+ for (const [index, text] of [
+  'Про этот сайт уже говорил https://t.me/share?url=example.org',
+  'Открой встроенный диалог t.me/share/url?url=another.example',
+  'Вот инструкция https://t.me/share?url=docs.example',
+ ].entries()) assert.equal(spam.check('c', text, 49000 + 5000 * index), 'ok');
 });
 
 test('guards warn, release, carry and eject in all three halls without crossing furniture; queued/disconnected guests do not stall duty',()=>{

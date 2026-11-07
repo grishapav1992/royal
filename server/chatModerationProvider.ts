@@ -17,10 +17,12 @@ export function chatModerationProvider(): ChatModerationProvider | undefined {
  return { name, key, model, ...(backupModel && backupModel !== model ? { backupModel } : {}) };
 }
 
-const schema = { type: 'object', properties: { violation: { type: 'boolean' } }, required: ['violation'], additionalProperties: false };
+const verdicts = ['allow', 'insult', 'profanity'] as const;
+export type ChatVerdict = typeof verdicts[number];
+const schema = { type: 'object', properties: { verdict: { type: 'string', enum: verdicts } }, required: ['verdict'], additionalProperties: false };
 
 export async function requestChatVerdict(request: typeof fetch, provider: ChatModerationProvider,
- instructions: string, text: string, budgetMs: number): Promise<boolean> {
+ instructions: string, text: string, budgetMs: number): Promise<ChatVerdict> {
  const controller = new AbortController();
  let timeout: ReturnType<typeof setTimeout> | undefined;
  const operation = async () => {
@@ -57,9 +59,9 @@ export async function requestChatVerdict(request: typeof fetch, provider: ChatMo
      .filter((item: { type?: string }) => item.type === 'output_text').map((item: { text?: string }) => item.text ?? '').join('');
    }
    if (typeof output !== 'string') throw new Error('Invalid output');
-   const verdict = JSON.parse(output.trim());
-   if (!verdict || Array.isArray(verdict) || typeof verdict.violation !== 'boolean' || Object.keys(verdict).length !== 1) throw new Error('Invalid verdict');
-   return verdict.violation;
+   const result = JSON.parse(output.trim());
+   if (!result || Array.isArray(result) || !verdicts.includes(result.verdict) || Object.keys(result).length !== 1) throw new Error('Invalid verdict');
+   return result.verdict;
   } catch { throw new ChatModerationFailure('invalid'); }
  };
  try {

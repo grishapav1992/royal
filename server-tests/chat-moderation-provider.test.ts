@@ -19,7 +19,7 @@ test('chat uses its own fast models and permits an explicit legacy provider', ()
 });
 
 test('reported ordinary phrase is untrusted input and uses strict private classification', async () => {
- for (const violation of [false, true]) {
+ for (const verdict of ['allow', 'insult', 'profanity']) {
   let count = 0;
   const service = new ChatModerator((async (url, init) => {
    count++; assert.equal(url, 'https://api.venice.ai/api/v1/chat/completions');
@@ -30,22 +30,22 @@ test('reported ordinary phrase is untrusted input and uses strict private classi
    assert.equal(body.response_format.json_schema.schema.additionalProperties, false);
    assert.equal(body.store, false); assert.equal(body.stream, false);
    assert.equal(body.venice_parameters.include_venice_system_prompt, false);
-   return response({ violation });
+   return response({ verdict });
   }) as typeof fetch);
-  assert.equal(await service.check('a', 'Все гуд итс вери гуд'), violation);
+  assert.equal(await service.check('a', 'Все гуд итс вери гуд'), verdict);
   assert.equal(count, 1, 'valid verdict must not be retried');
  }
 });
 
 test('transport, HTTP and malformed verdicts use the same policy on the backup', async () => {
- for (const failed of [() => new Response('', { status: 503 }), () => response({ violation: false }, 'length'),
-  () => response({ violation: 'false' }), () => response({ violation: false, extra: 'x' }), () => { throw new Error('sensitive raw detail'); }]) {
+ for (const failed of [() => new Response('', { status: 503 }), () => response({ verdict: 'allow' }, 'length'),
+  () => response({ verdict: false }), () => response({ verdict: 'allow', extra: 'x' }), () => { throw new Error('sensitive raw detail'); }]) {
   const bodies: any[] = [];
   const service = new ChatModerator((async (_url, init) => {
    bodies.push(JSON.parse(init!.body as string));
-   return bodies.length === 1 ? failed() : response({ violation: true });
+   return bodies.length === 1 ? failed() : response({ verdict: 'insult' });
   }) as typeof fetch);
-  assert.equal(await service.check('a', 'ты дебил'), true);
+  assert.equal(await service.check('a', 'ты дебил'), 'insult');
   assert.equal(bodies.length, 2);
   assert.equal(bodies[0].model, 'qwen3-next-80b'); assert.equal(bodies[1].model, 'mistral-small-3-2-24b-instruct');
   assert.deepEqual(bodies[0].messages, bodies[1].messages);
@@ -55,16 +55,16 @@ test('transport, HTTP and malformed verdicts use the same policy on the backup',
 test('a stalled primary is aborted, backup wins and late primary cannot change its verdict', async () => {
  let count = 0, release!: (value: Response) => void, signal: AbortSignal | undefined;
  const service = new ChatModerator((async (_url, init) => {
-  if (++count > 1) return response({ violation: false });
+  if (++count > 1) return response({ verdict: 'allow' });
   signal = init!.signal as AbortSignal;
   return new Promise<Response>(resolve => { release = resolve; });
  }) as typeof fetch, 100);
  const start = Date.now();
- assert.equal(await service.check('a', 'Привет'), false);
+ assert.equal(await service.check('a', 'Привет'), 'allow');
  assert.ok(Date.now() - start < 250);
  assert.equal(signal?.aborted, true); assert.equal(count, 2);
- release(response({ violation: true })); await new Promise(resolve => setImmediate(resolve));
- assert.equal(await service.check('a', 'Ещё привет'), false);
+ release(response({ verdict: 'insult' })); await new Promise(resolve => setImmediate(resolve));
+ assert.equal(await service.check('a', 'Ещё привет'), 'allow');
 });
 
 test('all attempts share one deadline and failure releases the account without a verdict', async () => {
@@ -92,7 +92,7 @@ test('diagnostics omit text, keys and raw provider errors', async () => {
 test('oversized bodies, malformed JSON and nonfinal verdicts are not accepted', async () => {
  const provider = chatModerationProvider()!;
  for (const fixture of [new Response('x'.repeat(65537)), new Response('{}', { headers: { 'Content-Length': '65537' } }),
-  new Response('{'), response(null), response([]), response({ violation: true }, 'content_filter')]) {
+  new Response('{'), response(null), response([]), response({ verdict: 'insult' }, 'content_filter')]) {
   await assert.rejects(requestChatVerdict((async () => fixture) as typeof fetch, provider, 'rules', 'text', 100));
  }
 });
