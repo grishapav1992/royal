@@ -1,9 +1,8 @@
 import { verifyReplayPackage, type ReplayEvent, type ReplayPackage, type ReplayState } from '../../server/audit/replay-package';
 import { chessTurnReplayDefinition, verifyChessTurnReplay } from '../../server/audit/replay-pvp-turn';
 import { combatReplayDefinition, reconstructCombatReplay } from '../../server/audit/replay-pvp-realtime-engine';
-
 import { isCardTurnReplayGame, verifyCardTurnReplay } from '../../server/audit/replay-pvp-cards';
-import { reconstructSportReplay } from '../../server/audit/replay-pvp-sport-engine';
+import { reconstructSportReplay, sportReplayDefinitions } from '../../server/audit/replay-pvp-sport-engine';
 import { tsuTurnReplayDefinition, verifyTsuTurnReplay } from '../../server/audit/replay-pvp-tsu';
 
 type Frame = { sequence: number; event: ReplayEvent | null; state: ReplayState | null; stateSequence: number | null };
@@ -20,8 +19,8 @@ export function prepareViewerReplay(input: unknown): ViewerReplay {
   const { manifest, fragments } = pack;
   const { game } = manifest;
   const events = fragments.flatMap(fragment => fragment.events);
-  const chess = game.replayProfile === 'pvp-turn-based' && game.gameId === 'chess';
-  const combat = game.replayProfile === 'pvp-realtime' && game.gameId === combatReplayDefinition.gameId;
+  const chess = game.gameId === chessTurnReplayDefinition.gameId;
+  const combat = game.gameId === combatReplayDefinition.gameId;
   const reconstructed = new Map<number, ReplayState>();
   let engineVerified = false;
   if (chess || combat) {
@@ -35,16 +34,15 @@ export function prepareViewerReplay(input: unknown): ViewerReplay {
       const pinned = verifyReplayPackage(pack, [chess ? chessTurnReplayDefinition : combatReplayDefinition]);
       if (pinned.status !== 'verified') return pinned;
     }
-  }
-  if (game.replayProfile === 'pvp-sport') {
+  } else if (game.replayProfile === 'pvp-sport' || sportReplayDefinitions.some(definition => definition.gameId === game.gameId)) {
     const result = reconstructSportReplay(pack, undefined, (event, state) => reconstructed.set(event.sequence, state));
     if (result.status !== 'verified') return result.status === 'unsupported' || result.status === 'too-large' ? { status: result.status } : { status: 'mismatch' };
     engineVerified = !!manifest.initial && !!manifest.terminal && !manifest.gaps.includes('event-gap');
-  } else if (game.gameId === tsuTurnReplayDefinition.gameId && game.engineId === tsuTurnReplayDefinition.engineId) {
+  } else if (game.gameId === tsuTurnReplayDefinition.gameId) {
     const result = verifyTsuTurnReplay(pack);
     if (result.status !== 'verified') return result.status === 'unsupported' ? { status: 'unsupported' } : { status: 'mismatch' };
     engineVerified = result.engineVerified;
-  } else if (isCardTurnReplayGame(game.gameId) && game.engineId === 'royal-cards') {
+  } else if (isCardTurnReplayGame(game.gameId)) {
     const result = verifyCardTurnReplay(pack);
     if (result.status !== 'verified') return result.status === 'unsupported' ? { status: 'unsupported' } : { status: 'mismatch' };
   }

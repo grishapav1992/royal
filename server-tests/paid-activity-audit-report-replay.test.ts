@@ -1,14 +1,18 @@
 import assert from 'node:assert/strict';
+import { execFile } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { mkdtemp, readFile, readdir, rm, stat } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
 import { AuditDatasets } from '../server/audit/datasets';
 import { buildCapturedCasinoReplay } from '../server/audit/replay-casino';
 import { persistCapturedChessReplay } from '../server/audit/replay-chess-storage';
-import { createReplayPackage, type ReplayPackage } from '../server/audit/replay-package';
+import { createReplayPackage, type ReplayPackage, type ReplayState } from '../server/audit/replay-package';
 import { ChessTurnReplayCapture, type CapturedChessReplay } from '../server/audit/replay-pvp-turn';
+import { tsuTurnReplayDefinition } from '../server/audit/replay-pvp-tsu';
 import { AuditReplayStore } from '../server/audit/replay-store';
 import { persistCapturedToteReplay } from '../server/audit/replay-tote';
 import { installAuditReportAccess } from '../server/audit/report-access';
@@ -211,6 +215,53 @@ test('named operators export only authorized canonical replay packages and journ
     const detachedJob = await begin(aliceDb, detached.manifest.replayId);
     try { assert.deepEqual(await read(aliceDb, detachedJob), { status: 'absent' }); }
     finally { await cancel(aliceDb, detachedJob); }
+  });
+
+  await t.test('the named operator CLI rejects a valid package with an unpinned engine', async () => {
+    const matchId = randomUUID(), replayId = randomUUID();
+    await ledger.pvpHold(accounts[0], { matchId, gameId: 'tsu-e-fa', stakeUnits: '100000' });
+    const held = await game.prepare("SELECT id::text FROM demo_ledger WHERE operation_id=? AND source='pvp:tsu-e-fa'")
+      .get('pvp:' + matchId + ':hold');
+    assert.ok(held);
+    const posting = { namespace: demo, rowId: held.id as string };
+    const { formatVersion: _, ...definition } = tsuTurnReplayDefinition;
+    const initial = { profile: 'pvp-turn-based', phase: 'open', turn: 1, seatToMove: null,
+      board: [1, 0, 0, 0, 0, 0, 0, 0, 0] } satisfies ReplayState;
+    const pack = createReplayPackage({ formatVersion: 2, scope, replayId, entityId: matchId,
+      game: { ...definition, engineId: 'unreleased-tsu-engine' }, initial, coverage: 'partial', gaps: ['terminal-unavailable'],
+    }, [{ sequence: 1, atMs: 0, postings: [posting], money: [{ posting, movement: 'reserve', units: '-10' }],
+      data: { kind: 'checkpoint', state: initial } }]);
+    await persist(pack);
+    const operatorFile = join(scratch, 'operator-url');
+    const destination = join(scratch, 'unpinned.json');
+    const config = login(alice), url = new URL('postgresql://localhost');
+    url.hostname = config.host!;
+    url.port = String(config.port);
+    url.pathname = '/' + encodeURIComponent(config.database!);
+    url.username = alice;
+    url.password = password;
+    await writeFile(operatorFile, url.toString() + '\n', { mode: 0o600, flag: 'wx' });
+    let jobId: string | undefined;
+    try {
+      await assert.rejects(promisify(execFile)(process.execPath, ['--import', 'tsx',
+        fileURLToPath(new URL('../scripts/audit.ts', import.meta.url)), 'replay', '--schema', schema,
+        '--dataset', datasetId, '--replay', replayId, '--output', destination], {
+        env: { ...process.env, ROYAL_AUDIT_DB_URL_FILE: operatorFile, ROYAL_AUDIT_PGSSLMODE: 'disable' }, timeout: 15_000,
+      }), (error: { code: number; stderr: string }) => {
+        assert.equal(error.code, 1);
+        const report = JSON.parse(error.stderr);
+        assert.equal(report.error, 'replay-unsupported');
+        jobId = report.jobId;
+        return true;
+      });
+    } finally {
+      await rm(operatorFile, { force: true });
+    }
+    await assert.rejects(stat(destination), { code: 'ENOENT' });
+    assert.deepEqual(await audit.prepare(
+      'SELECT operator_name,status,reason,row_count,byte_count FROM audit_export_jobs WHERE id=?').get(jobId),
+    { operator_name: alice, status: 'failed', reason: 'replay-unsupported', row_count: 0, byte_count: 0 });
+    assert.equal(prepareViewerReplay(pack).status, 'unsupported');
   });
 
   await t.test('distinguishes absent, corrupt, incomplete and unsupported without publishing a partial file', async () => {

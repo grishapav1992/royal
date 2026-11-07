@@ -242,7 +242,8 @@ test('the service CLI installs report access, stops capture and safely resumes t
   const privileges = await f.audit.prepare(`SELECT p.proname FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
     WHERE n.nspname=? AND has_function_privilege(?,p.oid,'EXECUTE') ORDER BY p.proname`).all(f.audit.schema,group);
   assert.deepEqual(privileges.map(row => row.proname), [
-    'audit_report_begin','audit_report_detail','audit_report_finish','audit_report_player_page',
+    'audit_report_authorize_primary_publish','audit_report_begin','audit_report_begin_export',
+    'audit_report_detail','audit_report_finish','audit_report_player_page',
     'audit_report_reconcile','audit_report_reconcile_page','audit_report_reconcile_period','audit_report_replay','audit_report_summary',
   ]);
   assert.equal((await f.audit.prepare("SELECT has_table_privilege(?,?,'SELECT') AS direct").get(group,f.source))?.direct,false);

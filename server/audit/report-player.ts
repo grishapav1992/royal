@@ -171,6 +171,7 @@ export async function runAuditReport<T extends { rowCount: number; bytes: number
   if (!/^[a-z_][a-z0-9_]{0,62}$/.test(input.schema)) throw new Error('Invalid audit schema name');
   const { fixtureStandbyPort } = input;
   const useStandby = fixtureStandbyPort !== undefined;
+  const heavyExport = kind === 'player' || kind === 'summary' || kind === 'replay';
   const fixtureReplay = kind === 'replay' && input.schema === 'test_audit_load' &&
     config.database === 'royal_test' && config.user === 'audit_load_replay';
   if (fixtureStandbyPort !== undefined && (config.host !== '127.0.0.1' || config.connectionString ||
@@ -197,7 +198,7 @@ export async function runAuditReport<T extends { rowCount: number; bytes: number
     const role = await log.query(`SELECT (rolsuper OR rolcreaterole OR rolcreatedb OR rolreplication OR rolbypassrls) AS privileged
       FROM pg_catalog.pg_roles WHERE rolname=session_user`);
     if (role.rows[0]?.privileged !== false) throw new AuditPlayerReportError('permission-denied', null);
-    const begin = useStandby ? 'audit_report_begin_standby' : 'audit_report_begin';
+    const begin = useStandby ? 'audit_report_begin_standby' : heavyExport ? 'audit_report_begin_export' : 'audit_report_begin';
     const started = await log.query(`SELECT ${schema}.${begin}($1,$2,$3) AS id`,
       [input.datasetId, kind, JSON.stringify(input.filters)]);
     const id: unknown = started.rows[0]?.id;
@@ -213,11 +214,12 @@ export async function runAuditReport<T extends { rowCount: number; bytes: number
       }
       reader = { ...settings, port: fixtureStandbyPort, fixtureReplayLsn: lsn };
     }
-    const authorizePublication: AuditOutputPublisher | undefined = useStandby ? async publish => {
+    const authorizePublication: AuditOutputPublisher | undefined = heavyExport ? async publish => {
       signal.throwIfAborted();
       await log.query('BEGIN ISOLATION LEVEL READ COMMITTED');
       try {
-        await log.query(`SELECT ${schema}.audit_report_authorize_standby_publish($1)`, [id]);
+        const authorize = useStandby ? 'audit_report_authorize_standby_publish' : 'audit_report_authorize_primary_publish';
+        await log.query(`SELECT ${schema}.${authorize}($1)`, [id]);
         signal.throwIfAborted();
         await publish();
       } finally {

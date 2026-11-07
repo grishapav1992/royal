@@ -4,6 +4,8 @@ BASE-01 для [ТЗ 0.2](https://chatgpt.com/space/page_46dff86b1e548191833f89a
 
 **Единицы.** Общий игровой журнал хранит виртуальный баланс в сотых, нормализованный актив `VIRTUAL_USD`, масштаб 2. Интерфейсы могут подписывать его USDT Demo. Виртуальный PvP передаёт эквивалент в масштабе 6, проводки и удержания в общей базе имеют масштаб 2. Платёжный USDT имеет масштаб 6, номинал Stars в XTR целочисленный с масштабом 0. Набор аудита «ТЕСТ» отделён от финансового контура и масштаба актива. [Хранение денег](../../server/demoWalletAmounts.ts) · [Транспорт PvP](../../src/shared/pvp.ts) · [Платёжный журнал](../../server/crypto/store.ts)
 
+При повторной сверке 8 ноября по МСК граф показывал выпуск `club-conduct-20261107-v1`. SHA-256 файла `src/shared/arcadeCatalog.ts` в опубликованных проекциях хоста и backend совпал со срезом матрицы. [Проекция хоста](../../deployment/releases/club-conduct-20261107-v1/host-projection.json) · [Проекция backend](../../deployment/releases/club-conduct-20261107-v1/backend-projection.json)
+
 ## Казино
 
 В обычном каталоге 19 игр. В таблице указана версия правил для текущей общей политики ставок 1. Параметры описывают ветви расчёта, квалифицированные в политике, включая варианты, которые конкретный клиент может не показывать. Для принятых операций считываются сохранённые версия, режим и параметры. Режим допуска и релиз клиента проверяются отдельно от квалификации. [Политики ставок](../../scripts/game-math/rtp-policy.json) · [Транспорт и версии](../../server/demoWalletRoutes.ts)
@@ -119,7 +121,7 @@ ROYAL_TEST_PG_BIN=/path/to/postgresql/17/bin node --import tsx scripts/database-
 | --- | --- |
 | BASE-01, BASE-02 | Матрица выше, валидация формы и ссылок. [Контракт](contract.md) · [Тест](../../server-tests/paid-activity-audit-contract.test.mjs) |
 | BASE-03, BASE-04, DATA-01 | Контрольная точка, изолированные операции, параллельный коммит, захват, повтор и откат. [Наборы](foundation.md) · [Фикстуры](../../server-tests/paid-activity-audit-fixtures.test.mjs) · [Граница](../../server-tests/paid-activity-audit-datasets.test.ts) |
-| DATA-02–DATA-06, CHECK-01–CHECK-04 | Исходные ключи, точные проводки и состояние ответа, сверки R-01–R-07. [Сверки](check-balances.md) · [Платежи](payment-postings.md) · [Транспорт](transport-attempts.md) |
+| DATA-02–DATA-06, CHECK-01–CHECK-04 | Исходные ключи, точные проводки и состояние ответа, сверки R-01–R-07. Остаётся различить принятие и повтор в успешных ответах PvP WebSocket и при создании заказов Stars и Sandbox. [Сверки](check-balances.md) · [Платежи](payment-postings.md) · [Транспорт](transport-attempts.md) |
 | REP-01–REP-07 | Доказательства по режимам выше, целостность пакета и локальный просмотр без сети. [Формат](replay-package.md) · [Просмотрщик](../../server-tests/paid-activity-audit-replay-viewer.test.ts) |
 | RISK-01–RISK-05 | Подозрительные и контрольные серии, пробелы покрытия и ручной разбор с доказательствами. [Правила](risk.md) · [Отчёт и разбор](../../server-tests/paid-activity-audit-risk-report.test.ts) |
 | CLI-01–CLI-05 | Доступ именованной роли, журналирование, ограниченные отчёты, точные итоги и постраничная сверка. [Доступ и команды](access.md) |

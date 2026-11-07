@@ -4,9 +4,8 @@ import { AuditPlayerReportError, openAuditReportReader, runAuditReport } from '.
 import { isReplayId, verifyReplayPackage } from './replay-package';
 import { chessTurnReplayDefinition, verifyChessTurnReplay } from './replay-pvp-turn';
 import { combatReplayDefinition, reconstructCombatReplay } from './replay-pvp-realtime-engine';
-
 import { isCardTurnReplayGame, verifyCardTurnReplay } from './replay-pvp-cards';
-import { reconstructSportReplay } from './replay-pvp-sport-engine';
+import { reconstructSportReplay, sportReplayDefinitions } from './replay-pvp-sport-engine';
 import { tsuTurnReplayDefinition, verifyTsuTurnReplay } from './replay-pvp-tsu';
 
 export type ReplayReportFilters = { replayId: string };
@@ -44,16 +43,15 @@ function verifyReplayCandidate(input: unknown, datasetId: string, replayId: stri
       }
       engineVerified = true;
     }
-  }
-  if (game.replayProfile === 'pvp-sport') {
+  } else if (game.replayProfile === 'pvp-sport' || sportReplayDefinitions.some(definition => definition.gameId === game.gameId)) {
     const result = reconstructSportReplay(pack);
     if (result.status !== 'verified') return verificationFailure(result.status, jobId);
     engineVerified = !!manifest.initial && !!manifest.terminal && !manifest.gaps.includes('event-gap');
-  } else if (game.gameId === tsuTurnReplayDefinition.gameId && game.engineId === tsuTurnReplayDefinition.engineId) {
+  } else if (game.gameId === tsuTurnReplayDefinition.gameId) {
     const result = verifyTsuTurnReplay(pack);
     if (result.status !== 'verified') return verificationFailure(result.status, jobId);
     engineVerified = result.engineVerified;
-  } else if (isCardTurnReplayGame(game.gameId) && game.engineId === 'royal-cards') {
+  } else if (isCardTurnReplayGame(game.gameId)) {
     const result = verifyCardTurnReplay(pack);
     if (result.status !== 'verified') return verificationFailure(result.status, jobId);
   }

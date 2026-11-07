@@ -31,7 +31,8 @@ export async function installAuditReplayReport(db: PostgresDatabase, readerRole:
   const acl = a + '.audit_report_acl', refs = a + '.audit_posting_refs', opening = a + '.audit_opening_obligations';
   const fn = a + '.audit_report_replay', projection = a + '.audit_report_replay_projection';
   const reader = identifier(readerRole);
-  const authorizeJob = `SELECT e.dataset_id,e.filters,e.standby_sources,d.environment INTO j FROM ${a}.audit_export_jobs e
+  const authorizeJob = `SELECT e.dataset_id,e.filters,COALESCE(e.primary_sources,e.standby_sources) AS export_sources,d.environment
+        INTO j FROM ${a}.audit_export_jobs e
         JOIN ${a}.audit_datasets d ON d.id=e.dataset_id
         WHERE e.id=p_job AND e.operator_name=session_user AND e.kind='replay' AND e.status='running'
           AND e.expires_at>clock_timestamp() AND ${auditExportReaderRoute};

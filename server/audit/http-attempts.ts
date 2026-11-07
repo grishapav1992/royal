@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { RequestHandler, Response } from 'express';
 import { gameAccountId } from '../../src/shared/nileWallet';
+import { demoWalletOperationReplayed } from '../demoWallet';
 import { auditDemoLedgerSnapshot, type AuditAttemptObservation, type AuditAttemptSink } from './attempts';
 import type { AuditResponseBalance, AuditSourceRef } from './contract';
 import { auditCommandRoutes, auditFineOperationId, observeAuditIntent } from './intents';
@@ -94,7 +95,8 @@ function responseBalance(body: Record<string, unknown> | null, shape: BalanceSha
   return { state: 'value', asset: { contour: 'real', code: 'USDT', scale: 6 }, units, snapshot: null };
 }
 
-function observeResponse(response: Response, body: unknown, route: Route, snapshot: AuditSourceRef | null): FormedResponse {
+function observeResponse(response: Response, body: unknown, route: Route, snapshot: AuditSourceRef | null,
+  walletReplayed: boolean | undefined): FormedResponse {
   const statusCode = response.statusCode;
   let parsed: Record<string, unknown> | null = null;
   let decoded = false;
@@ -119,6 +121,7 @@ function observeResponse(response: Response, body: unknown, route: Route, snapsh
   } else if (statusCode >= 200 && statusCode < 300) {
     if (route.template === auditCommandRoutes.fine && ['changed', 'inactive', 'insufficient', 'id-conflict']
         .some(status => status === parsed?.status)) decision = 'rejected';
+    else if (walletReplayed !== undefined) decision = walletReplayed ? 'replayed' : 'accepted';
     else if ((route.template !== auditCommandRoutes.fine || parsed?.status === 'paid') && typeof parsed?.replayed === 'boolean') {
       decision = parsed.replayed ? 'replayed' : 'accepted';
     }
@@ -138,6 +141,7 @@ export function auditHttpAttempts(sink: AuditAttemptSink, { gameSchema }: { game
     const occurredAtMs = Date.now();
     let observed: FormedResponse | null = null;
     let snapshot: AuditSourceRef | null = null;
+    let walletReplayed: boolean | undefined;
     let ended = false;
 
     function complete(delivery: 'handed-off' | 'closed' | 'unobserved') {
@@ -168,22 +172,29 @@ export function auditHttpAttempts(sink: AuditAttemptSink, { gameSchema }: { game
     response.once('finish', onFinish);
     response.once('close', onClose);
 
-    // Pin the source reference from the server wallet before JSON serialization.
-    if (route.balanceShape === 'virtual' && gameSchema !== undefined) {
+    // Pin server-only evidence before JSON serialization.
+    if (template === auditCommandRoutes.core || (route.balanceShape === 'virtual' && gameSchema !== undefined)) {
       const json = response.json;
       response.json = function (this: Response, body?: unknown) {
-        const previous = snapshot;
+        const previousSnapshot = snapshot;
+        const previousWalletReplayed = walletReplayed;
         if (!ended && !this.headersSent && gameAccountId(this.locals.accountId)) {
           try {
             snapshot = auditDemoLedgerSnapshot(gameSchema, object(body)?.wallet);
+            if (template === auditCommandRoutes.core) {
+              const result = body as { [demoWalletOperationReplayed]?: boolean } | null | undefined;
+              walletReplayed = result?.[demoWalletOperationReplayed];
+            }
           } catch {
             snapshot = null;
+            walletReplayed = undefined;
           }
         }
         try {
           return json.call(this, body);
         } finally {
-          snapshot = previous;
+          snapshot = previousSnapshot;
+          walletReplayed = previousWalletReplayed;
         }
       };
     }
@@ -193,7 +204,7 @@ export function auditHttpAttempts(sink: AuditAttemptSink, { gameSchema }: { game
       const observe = !ended && !this.headersSent && observed === null && gameAccountId(this.locals.accountId);
       if (observe) {
         try {
-          observed = observeResponse(this, body, route, snapshot);
+          observed = observeResponse(this, body, route, snapshot, walletReplayed);
         } catch {
           // Leave the response unobserved if sanitization fails.
         }

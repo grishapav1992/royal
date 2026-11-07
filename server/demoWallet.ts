@@ -15,6 +15,7 @@ import {providerDecimal,providerPendingUnits,releaseProviderPending} from './pro
 import { removedCasinoSchema, settleRemovedCasino } from './removedCasino';
 
 export class WalletError extends Error { constructor(public status: number, message: string) { super(message); } }
+export const demoWalletOperationReplayed = Symbol('demoWalletOperationReplayed');
 const MAX_BALANCE = MAX_DEMO_UNITS / 100;
 export class DemoWalletStore {
   readonly ready: Promise<void>;
@@ -101,7 +102,7 @@ export class DemoWalletStore {
           || saved.gameRound.rulesVersion !== game.rulesVersion || saved.gameRound.stakeUnits !== String(amountCents)
           || JSON.stringify(saved.gameRound.input) !== JSON.stringify(game.input))) throw new Error('Invalid saved game round');
         const result = { ...saved, wallet: await this.rawSnapshot(accountId) };
-        return result;
+        return Object.defineProperty(result, demoWalletOperationReplayed, { value: true });
       }
       if (op.kind === 'play' && usesGameStakes(op.gameId) && op.stakePolicyVersion===1 && !validGameBet(op.amount)) throw new WalletError(400, 'Недопустимая ставка.');
       const recent = (await this.db.prepare('SELECT COUNT(*) AS n FROM (SELECT 1 FROM demo_ledger WHERE account_id=? AND created_at>? LIMIT 120) recent').get(accountId, Date.now() - 60000));
@@ -137,7 +138,7 @@ export class DemoWalletStore {
       const settled = { ...(round ? { round } : {}), ...(gameRound ? { gameRound } : {}) };
       (await this.db.prepare('INSERT INTO demo_operations(account_id,operation_id,kind,amount,result,request_key,amount_units) VALUES (?,?,?,?,?,?,?)').run(accountId,op.id,op.kind,Math.trunc(op.amount),JSON.stringify(settled),requestKey,amountCents));
       const result = { wallet: await this.rawSnapshot(accountId), ...settled };
-      return result;
+      return Object.defineProperty(result, demoWalletOperationReplayed, { value: false });
     }, { lockKey: 'account:' + accountId });
   }
 }

@@ -16,7 +16,7 @@ export function auditExportReaderSlotGuard(schema: string) {
 }
 
 export const auditExportReaderRoute = "e.reader_route=CASE WHEN pg_catalog.pg_is_in_recovery() THEN 'standby' ELSE 'primary' END";
-export const auditExportSourcePinned = (source: string) => `(j.standby_sources IS NULL OR ${source}=ANY(j.standby_sources))`;
+export const auditExportSourcePinned = (source: string) => `(j.export_sources IS NULL OR ${source}=ANY(j.export_sources))`;
 
 export function auditExportReaderProjectionGuard(schema: string, job: 'job' | 'p_job', kind: 'player' | 'summary' | 'replay') {
   return `${auditExportReaderSlotGuard(schema)}

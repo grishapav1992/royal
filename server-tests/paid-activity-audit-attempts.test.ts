@@ -77,7 +77,7 @@ test('actual HTTP and WebSocket attempts persist independently of canonical post
         res.destroy();
         return res;
       }
-      if (req.get('x-fixture-response') === 'wrong') return send({ ...body, wallet: { ...body.wallet, balance: -1 } });
+      if (req.get('x-fixture-response') === 'wrong') body.wallet.balance = -1;
       return send(body);
     };
     next();
@@ -99,7 +99,7 @@ test('actual HTTP and WebSocket attempts persist independently of canonical post
   await assert.rejects(call('operations', core, 'drop'));
   const expected: { operationId: string; units: string; decision: string }[] = [];
   for (const [route, op, decision] of [
-    ['operations', core, 'unknown'],
+    ['operations', core, 'replayed'],
     ['expansion', expansion, 'accepted'], ['expansion', expansion, 'replayed'],
   ] as const) {
     const reply = await call(route, op);
@@ -174,6 +174,7 @@ test('actual HTTP and WebSocket attempts persist independently of canonical post
   const lost = rows.find(row => row.delivery === 'closed');
   assert.equal(lost?.operationId, core.id);
   assert.equal(lost?.response, 'not-observed');
+  assert.equal(lost?.decision, 'unknown');
   assert.ok(rows.filter(row => row !== lost).every(row => row.delivery === 'handed-off' && row.response === 'formed'));
   for (const { operationId, units, decision } of expected) {
     const matching = rows.find(row => row.operationId === operationId && row.decision === decision && row.balance.units === units);
@@ -196,7 +197,9 @@ test('actual HTTP and WebSocket attempts persist independently of canonical post
   const game = new PostgresDatabase(accounts.schema, { readOnly: true });
   t.after(async () => game.close());
   const reader = new AuditPostingReader(audit, game);
-  const mismatch = await reconcileStoredAuditAttempt(rows.find(row => row.balance.units === '-100'), reader);
+  const wrongAttempt = rows.find(row => row.balance.units === '-100');
+  assert.equal(wrongAttempt?.decision, 'replayed');
+  const mismatch = await reconcileStoredAuditAttempt(wrongAttempt, reader);
   assert.equal(mismatch.status, 'mismatch');
   assert.equal(mismatch.observedUnits, '-100');
   assert.notEqual(mismatch.expectedUnits, '-100');

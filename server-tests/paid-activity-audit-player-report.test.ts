@@ -115,6 +115,14 @@ test('player CSV uses scoped report credentials, real capture and bounded Postgr
   const read = (name: string) => readFile(f.destination(name), 'utf8');
   const run = (name: string, changes?: Partial<Pick<Parameters<typeof exportAuditPlayer>[1], 'filters' | 'limits'>>) =>
     exportAuditPlayer(f.login(f.owner), { ...f.options, ...changes, destination: f.destination(name) });
+  const waitFor = async (predicate: () => Promise<boolean>) => {
+    const deadline = performance.now() + 3_000;
+    do {
+      if (await predicate()) return;
+      await pause(5);
+    } while (performance.now() < deadline);
+    assert.fail('Timed out waiting for the report backend');
+  };
 
   await t.test('only the job owner reads the selected account through the projection', async () => {
     const owner = new pg.Client(f.login(f.owner)), other = new pg.Client(f.login(f.other));
@@ -212,14 +220,6 @@ test('player CSV uses scoped report credentials, real capture and bounded Postgr
     const blocker = await f.audit.pool.connect(), other = new pg.Client(f.login(f.other));
     const controller = new AbortController();
     let pending: Promise<unknown> | undefined;
-    const waitFor = async (predicate: () => Promise<boolean>) => {
-      const deadline = performance.now() + 3_000;
-      do {
-        if (await predicate()) return;
-        await pause(5);
-      } while (performance.now() < deadline);
-      assert.fail('Timed out waiting for the report backend');
-    };
     try {
       await other.connect();
       await blocker.query('BEGIN');
@@ -278,6 +278,61 @@ test('player CSV uses scoped report credentials, real capture and bounded Postgr
       assert.deepEqual(await journal(exported.jobId), { operator_name: f.owner, dataset_id: f.datasetId,
         status: 'succeeded', row_count: 2, byte_count: exported.bytes, reason: null });
     } finally { mock.mock.restore(); }
+  });
+
+  await t.test('revoking a primary grant after staging CSV rows prevents publication', async () => {
+    const blocker = await f.audit.pool.connect();
+    const filesBefore = (await readdir(f.directory)).sort();
+    let revoked = false;
+    let pending: Promise<unknown> | undefined;
+    try {
+      await blocker.query('BEGIN');
+      const removal = await blocker.query(`DELETE FROM ${f.auditSchema}.audit_report_acl
+        WHERE operator_name=$1 AND dataset_id=$2 AND source_namespace=$3`, [f.owner, f.datasetId, f.gameSource]);
+      assert.equal(removal.rowCount, 1);
+      pending = run('revoked-after-staging').then(() => null, (error: unknown) => error);
+      await waitFor(async () => !!await f.audit.prepare(`SELECT 1 FROM pg_stat_activity
+        WHERE datname=current_database() AND usename=? AND application_name='royal/audit-player'
+          AND state='active' AND wait_event_type='Lock' AND query LIKE '%audit_report_authorize_primary_publish%'`).get(f.owner));
+      const partial = (await readdir(f.directory)).find(name => name.endsWith('.part'));
+      assert(partial);
+      const staged = csvRows(await readFile(join(f.directory, partial), 'utf8'));
+      assert.deepEqual(staged.map(row => row.operation_id), [f.playId, f.playId]);
+
+      await blocker.query('COMMIT');
+      revoked = true;
+      const result = await pending;
+      assert(result instanceof AuditPlayerReportError && result.code === 'permission-denied' && result.jobId);
+      assert.deepEqual(await journal(result.jobId), { operator_name: f.owner, dataset_id: f.datasetId,
+        status: 'failed', row_count: 0, byte_count: 0, reason: 'permission-denied' });
+      assert.deepEqual((await readdir(f.directory)).sort(), filesBefore);
+    } finally {
+      if (!revoked) await blocker.query('ROLLBACK').catch(() => {});
+      blocker.release();
+      try { await pending; }
+      finally { if (revoked) await f.grant(f.owner, f.gameSource); }
+    }
+  });
+
+  await t.test('primary report jobs retain the source scope granted at admission', async () => {
+    const actor = new pg.Client(f.login(f.owner));
+    try {
+      await actor.connect();
+      const { rows: [{ id }] } = await actor.query<{ id: string }>(
+        `SELECT ${f.auditSchema}.audit_report_begin_export($1,'player',$2::jsonb) AS id`,
+        [f.datasetId, JSON.stringify(f.options.filters)]);
+      try {
+        await f.grant(f.owner, f.paymentSource);
+        const result = await actor.query<{ page: { rows: PlayerReportRow[] } }>(
+          `SELECT ${f.auditSchema}.audit_report_player_page($1,NULL,NULL,NULL,10) AS page`, [id]);
+        assert.deepEqual(result.rows[0].page.rows.map(row => [row.source, row.operation_id]),
+          [[f.gameSource, f.playId], [f.gameSource, f.playId]]);
+      } finally {
+        await cancel(actor, id);
+        await f.audit.prepare('DELETE FROM audit_report_acl WHERE operator_name=? AND dataset_id=? AND source_namespace=?')
+          .run(f.owner, f.datasetId, f.paymentSource);
+      }
+    } finally { await actor.end(); }
   });
 
   await t.test('account, date, source and game filters select unique canonical postings', async () => {

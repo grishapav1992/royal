@@ -23,6 +23,8 @@ export async function installAuditReportAccess(db: PostgresDatabase, readerRole:
   const jobs = relation('audit_export_jobs');
   const begin = relation('audit_report_begin');
   const finish = relation('audit_report_finish');
+  const beginExport = relation('audit_report_begin_export');
+  const authorizePrimaryPublish = relation('audit_report_authorize_primary_publish');
   const beginStandby = relation('audit_report_begin_standby');
   const authorizeStandbyPublish = relation('audit_report_authorize_standby_publish');
   const resultReasons = "'time-limit','row-limit','scan-limit','byte-limit','source-unavailable','output-error','internal-error','permission-denied'";
@@ -289,5 +291,58 @@ ${version >= 9 ? `        IF p_kind IN (${exportKinds}) THEN
       END
       $audit$`,
     `REVOKE ALL ON FUNCTION ${beginStandby}(uuid,text,jsonb),${authorizeStandbyPublish}(uuid) FROM PUBLIC,${reader}`,
+  ] });
+  await applySchemaMigration(db, { id: 'paid-activity-audit-primary-publication-v1', statements: [
+    `ALTER TABLE ${jobs} ADD COLUMN primary_sources text[],
+      ADD CONSTRAINT audit_report_primary_sources_check CHECK (primary_sources IS NULL OR
+        (reader_route='primary' AND kind IN (${exportKinds}) AND pg_catalog.cardinality(primary_sources) BETWEEN 1 AND 16))`,
+    `CREATE FUNCTION ${beginExport}(p_dataset uuid,p_kind text,p_filters jsonb) RETURNS uuid
+      LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
+      DECLARE
+        v_job uuid;
+        v_sources text[];
+      BEGIN
+        IF p_kind IS NULL OR p_kind NOT IN (${exportKinds}) THEN
+          RAISE EXCEPTION 'Invalid audit export kind' USING ERRCODE='22023';
+        END IF;
+        v_job := ${begin}(p_dataset,p_kind,p_filters);
+        SELECT pg_catalog.array_agg(source_namespace ORDER BY source_namespace) INTO v_sources
+        FROM ${acl} WHERE operator_name=SESSION_USER AND dataset_id=p_dataset;
+        IF COALESCE(pg_catalog.cardinality(v_sources),0) NOT BETWEEN 1 AND 16 THEN
+          RAISE EXCEPTION 'Audit export scope is unavailable' USING ERRCODE='42501';
+        END IF;
+        UPDATE ${jobs} SET primary_sources=v_sources WHERE id=v_job;
+        RETURN v_job;
+      END
+      $audit$`,
+    `CREATE FUNCTION ${authorizePrimaryPublish}(p_job uuid) RETURNS void
+      LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
+      DECLARE
+        v_dataset uuid;
+        v_sources text[];
+        v_expires timestamptz;
+        v_grants integer;
+      BEGIN
+        IF pg_catalog.pg_is_in_recovery() OR current_setting('transaction_isolation')<>'read committed' THEN
+          RAISE EXCEPTION 'Audit export publication requires the primary' USING ERRCODE='42501';
+        END IF;
+        SELECT e.dataset_id,e.primary_sources,e.expires_at INTO v_dataset,v_sources,v_expires
+        FROM ${jobs} e WHERE e.id=p_job AND e.operator_name=SESSION_USER AND e.reader_route='primary'
+          AND e.status='running' AND e.expires_at>pg_catalog.clock_timestamp() AND e.primary_sources IS NOT NULL
+        FOR SHARE OF e;
+        IF NOT FOUND THEN
+          RAISE EXCEPTION 'Audit export job is unavailable' USING ERRCODE='42501';
+        END IF;
+        PERFORM a.source_namespace FROM ${acl} a WHERE a.operator_name=SESSION_USER
+          AND a.dataset_id=v_dataset AND a.source_namespace=ANY(v_sources)
+        ORDER BY a.source_namespace FOR SHARE OF a;
+        GET DIAGNOSTICS v_grants=ROW_COUNT;
+        IF v_grants<>pg_catalog.cardinality(v_sources) OR v_expires<=pg_catalog.clock_timestamp() THEN
+          RAISE EXCEPTION 'Audit export publication access denied' USING ERRCODE='42501';
+        END IF;
+      END
+      $audit$`,
+    `REVOKE ALL ON FUNCTION ${beginExport}(uuid,text,jsonb),${authorizePrimaryPublish}(uuid) FROM PUBLIC`,
+    `GRANT EXECUTE ON FUNCTION ${beginExport}(uuid,text,jsonb),${authorizePrimaryPublish}(uuid) TO ${reader}`,
   ] });
 }

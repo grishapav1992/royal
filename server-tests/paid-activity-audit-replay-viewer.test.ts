@@ -193,7 +193,22 @@ test('serves the full investigation flow from a local HTML file with networking 
   await upload({ ...chess, manifest: { ...chess.manifest, formatVersion: 99 } });
   await expect(status).toHaveText(/не поддерживается/);
 
-  await upload(combatPackage(false));
+  const tsu = tsuPackage(), combat = combatPackage(false);
+  for (const [pack, game] of [
+    [tsu, { ...tsu.manifest.game, engineId: 'unreleased-tsu-engine' }],
+    [chess, { ...chess.manifest.game, gameId: 'hockey' }],
+    [chess, { ...chess.manifest.game, gameId: 'durak', engineId: 'unreleased-card-engine' }],
+    [combat, { ...combat.manifest.game, gameId: 'chess' }],
+  ] as const) {
+    const { formatVersion, initial, replayId, entityId, coverage, gaps } = pack.manifest;
+    const incompatible = createReplayPackage({ scope, formatVersion, game, initial, replayId, entityId, coverage, gaps },
+      pack.fragments.flatMap(fragment => fragment.events));
+    await upload(incompatible);
+    await expect(status).toHaveText(/не поддерживается/);
+    await expect(page.locator('#playback')).toBeHidden();
+  }
+
+  await upload(combat);
   await expect(status).toHaveText(/Частичная запись.*состояния сверены движком/);
   await jump(1);
   await expect(state).toHaveText(/240000, 0.*Подтверждённый такт 0/);
@@ -210,7 +225,7 @@ test('serves the full investigation flow from a local HTML file with networking 
   await expect(state).toHaveText(/Такт 1/);
   assert.notEqual(await state.locator('.table-paddle').first().getAttribute('style'), startingPaddle);
 
-  await upload(tsuPackage());
+  await upload(tsu);
   await jump(5);
   await expect(state).toHaveText(/Отсчёт.*выбор зафиксирован у обоих/);
   await expect(state).not.toHaveText(/Камень|Ножницы/);

@@ -215,7 +215,8 @@ export async function installAuditPlayerReport(db: PostgresDatabase, readerRole:
         IF current_setting('transaction_isolation')<>'read committed' OR pg_current_xact_id_if_assigned() IS NOT NULL THEN
           RAISE EXCEPTION 'Audit report requires a separate committed job' USING ERRCODE='42501';
         END IF;
-        SELECT e.dataset_id,e.filters,e.standby_sources,d.environment INTO j FROM ${a}.audit_export_jobs e
+        SELECT e.dataset_id,e.filters,COALESCE(e.primary_sources,e.standby_sources) AS export_sources,d.environment
+        INTO j FROM ${a}.audit_export_jobs e
         JOIN ${a}.audit_datasets d ON d.id=e.dataset_id
         WHERE e.id=job AND e.operator_name=session_user AND e.kind='player' AND e.status='running'
           AND e.expires_at>clock_timestamp() AND ${auditExportReaderRoute};

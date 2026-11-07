@@ -134,7 +134,7 @@ test('real wallet routes distinguish typed decisions and capture a formed lost r
     const closed = await closedObservation;
     assert.equal(closed.accountId, accountId);
     assert.equal(closed.operationId, instant.id);
-    assert.equal(closed.decision, 'unknown');
+    assert.equal(closed.decision, 'accepted');
     assert.equal(closed.response, 'formed');
     assert.equal(closed.delivery, 'closed');
     assert.equal(closed.statusCode, 200);
@@ -143,16 +143,18 @@ test('real wallet routes distinguish typed decisions and capture a formed lost r
     const retryObservation = observer.next();
     const retry = await post(base, '/api/demo-wallet/operations', instant, headers);
     assert.equal(retry.status, 200);
-    await retry.json();
+    const retryBody = await retry.json();
+    assert.deepEqual(Object.keys(retryBody).sort(), ['gameRound', 'wallet']);
     const handedOff = await retryObservation;
     assert.equal(handedOff.operationId, instant.id);
     assert.notEqual(handedOff.attemptId, closed.attemptId);
-    assert.equal(handedOff.decision, 'unknown');
+    assert.equal(handedOff.decision, 'replayed');
     assert.equal(handedOff.delivery, 'handed-off');
     assert.equal(handedOff.balance.state, 'value');
-    const instantRows = await accounts.db.prepare(`SELECT id::text,entry_type FROM demo_ledger
+    const instantRows = await accounts.db.prepare(`SELECT id::text,entry_type,amount_units::text FROM demo_ledger
       WHERE account_id=? AND operation_id=? ORDER BY id`).all(accountId, instant.id);
-    assert.deepEqual(instantRows.map(row => row.entry_type), ['bet', 'win']);
+    assert.deepEqual(instantRows.map(row => [row.entry_type, row.amount_units]),
+      [['bet', '-10'], ['win', retryBody.gameRound.payoutUnits]]);
     assert.deepEqual(handedOff.balance.snapshot, {
       namespace: accounts.schema + '.demo_ledger', rowId: instantRows[1].id,
     });
