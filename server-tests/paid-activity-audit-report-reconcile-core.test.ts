@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import test, { type TestContext } from 'node:test';
+import { migrateAuditAttemptCapture } from '../server/audit/attempts';
 import type { AuditAttempt, AuditSourceRef } from '../server/audit/contract';
 import { AuditDatasets } from '../server/audit/datasets';
 import { AuditEvidence } from '../server/audit/evidence';
@@ -217,4 +218,29 @@ test('period selection and financial checks share one snapshot across a concurre
   assert(mismatch);
   assert.deepEqual(mismatch.anchors, [anchor]);
   assert.equal(BigInt(mismatch.observed!) - BigInt(mismatch.expected!), 7n);
+});
+
+test('an empty period shows recorded attempt capture gaps without attributing them to an account', async t => {
+  const f = await fixture(t);
+  const { datasetId, startedAtMs } = await f.datasets.startTest();
+  await migrateAuditAttemptCapture(f.audit);
+  const at = startedAtMs + 100;
+  await f.audit.prepare(`INSERT INTO audit_attempt_capture_gaps(dataset_id,producer_id,missing_count,first_at_ms,last_at_ms)
+    VALUES (?,?,4,?,?)`).run(datasetId, randomUUID(), at, at + 10);
+  const check = (fromMs: number, toMs: number, sourceNamespace = f.ledger) => buildAuditPeriodReconciliation(f.audit,
+    f.sources, { datasetId, sourceNamespace, accountId: f.account, fromMs, toMs });
+  const overlap = await check(at, at + 1);
+  assert.equal(overlap.status, 'ready');
+  assert.equal(overlap.selectedCount, 0);
+  assert.deepEqual(overlap.financialErrors, []);
+  assert.deepEqual(overlap.coverage.find(row => row.code === 'attempt-capture-gap-overlap'),
+    { rule: 'period', code: 'attempt-capture-gap-overlap', anchors: [], sources: [] });
+  for (const selection of [[at - 1, at], [at + 11, at + 12]] as const) {
+    const boundary = await check(...selection);
+    assert.equal(boundary.status, 'ready');
+    assert(!boundary.coverage.some(row => row.code === 'attempt-capture-gap-overlap'));
+  }
+  const payment = await check(at, at + 1, f.payments.schema + '.crypto_ledger');
+  assert.equal(payment.status, 'ready');
+  assert(!payment.coverage.some(row => row.code === 'attempt-capture-gap-overlap'));
 });

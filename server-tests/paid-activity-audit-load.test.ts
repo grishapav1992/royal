@@ -48,8 +48,8 @@ test('audit load measures both wallet phases, preserves money and stops cancelle
   assert(report.reports.player.bytes > 0);
   assert(report.reports.player.overlappingStakeCalls > 0);
   assert(report.reports.player.overlappingSettlementCalls > 0);
-  assert(report.reports.summary.overlappingStakeCalls > 0);
   assert(report.reports.summary.scanned >= 80);
+  assert.deepEqual(report.reports.admission, { serialVerified: true, order: ['audit_load_player', 'audit_load_summary'] });
   assert.equal(report.cancellation.blockedQueryObserved, true);
   assert.equal(report.cancellation.readerStopped, true);
   assert.equal(report.cancellation.outcome, 'cancelled');
@@ -102,7 +102,8 @@ test('audit load verifies both report limits, exact CSV balances and concurrent 
   assert.equal(report.scale.atLimit.exactTotal, true);
   assert.equal(report.scale.overLimit.outcome, 'scan-limit');
   assert.equal(report.scale.overLimit.journalRejected, true);
-  assert(report.scale.overLimit.overlappingStakeCalls > 0);
+  assert.deepEqual(report.reports.admission, { serialVerified: true,
+    order: ['audit_load_player', 'audit_load_summary', 'audit_load_limit', 'audit_load_wide'] });
   assert.equal(report.capture.postingRefs.rows, 20_115);
   assert.equal(report.capture.gaps, 0);
   assert.equal(report.cancellation.noPartialOutput, true);
@@ -156,6 +157,28 @@ test('pilot comparison accepts the exact 10 percent boundary and rejects p95 gro
   assert(failed.p95.every(check => check.passed));
 });
 
+
+test('summary-first pilot starts wallets against the observed boundary query and completes all reports in one slot', { timeout: 35_000 }, async () => {
+  const stdout = await run(['--pilot-gate', '--summary-first', '--report-process', '--workers', '2', '--rounds', '3'])
+    .then(result => result.stdout, error => {
+      if (error.code !== 1 || !error.stdout) throw error;
+      return String(error.stdout);
+    });
+  const report = JSON.parse(stdout);
+  assert.equal(report.pilotGate.firstReport, 'at-limit-summary');
+  assert.equal(report.reportProcess.sameHost, true);
+  assert.equal(report.reportProcess.idleDuringControl, true);
+  assert.equal(report.reportProcess.requests, 4);
+  assert(report.reportProcess.userCpuMicros > 0);
+  assert.equal(report.pilotGate.firstQueryObserved, true);
+  assert(report.scale.atLimit.overlappingStakeCalls > 0);
+  assert.equal(report.scale.atLimit.exactTotal, true);
+  assert.deepEqual(report.reports.admission, { serialVerified: true,
+    order: ['audit_load_limit', 'audit_load_player', 'audit_load_summary', 'audit_load_wide'] });
+  assert.equal(report.reports.player.rows, 10_000);
+  assert.equal(report.scale.overLimit.outcome, 'scan-limit');
+});
+
 test('pilot gate measures audited wallets without reports and exits according to the fixed comparison', { timeout: 35_000 }, async t => {
   const directory = await mkdtemp(join(tmpdir(), 'royal-audit-load-check-'));
   t.after(() => rm(directory, { recursive: true, force: true }));
@@ -168,7 +191,7 @@ test('pilot gate measures audited wallets without reports and exits according to
   assert.deepEqual(await fixtureFiles(directory), []);
   assert.equal(report.capacityConfirmed, false);
   assert.equal(report.scale.ok, true);
-  assert(report.scale.atLimit.overlappingStakeCalls > 0);
+  assert(report.reports.player.overlappingStakeCalls > 0);
   assert.equal(report.withAuditWithoutReports.noDoubleMoney, true);
   assert.equal(report.withAudit.noDoubleMoney, true);
   assert.equal(report.withAuditWithoutReports.postings, 34);
@@ -177,7 +200,10 @@ test('pilot gate measures audited wallets without reports and exits according to
   assert.equal(report.capture.attemptPayloads.rows, 24);
   assert.equal(report.capture.gaps, 0);
   const expected = assessAuditPilotGate(report.withAuditWithoutReports.metrics, report.withAudit.metrics);
-  const { databaseActivity, ...gate } = report.pilotGate;
+  const { databaseActivity, firstReport, firstQueryObserved, observedOverlap, ...gate } = report.pilotGate;
+  assert.equal(firstReport, 'player');
+  assert.equal(firstQueryObserved, true);
+  assert.equal(observedOverlap, true);
   assert.deepEqual(gate, expected);
   assert.equal(gate.noWalletErrorsOrTimeouts, true);
   assert.equal(report.ok, expected.ok);

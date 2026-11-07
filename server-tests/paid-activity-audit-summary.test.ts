@@ -137,7 +137,7 @@ async function fixture(t: TestContext) {
     finally { await finish(client, job); }
   };
   return { audit, game, wallet, owner, ownerLogin, otherLogin, begin, read, finish, run, fromMs, toMs, datasetId,
-    a, exact, gameSource, paymentSource, poolCredits, missingAt, operatorConfig: config(owner) };
+    a, b, exact, gameSource, paymentSource, poolCredits, missingAt, operatorConfig: config(owner) };
 }
 
 test('period summary reports exact scoped totals, confirmations, refunds and single commissions', async t => {
@@ -154,9 +154,7 @@ test('period summary reports exact scoped totals, confirmations, refunds and sin
     const job = await f.begin(f.ownerLogin, { fromMs: f.fromMs, toMs: f.toMs });
     try {
       await assert.rejects(f.read(f.otherLogin, job), { code: '42501' });
-      const limited = await f.run({ fromMs: f.fromMs, toMs: f.toMs }, f.otherLogin);
-      assert.deepEqual(limited.sources, [f.gameSource]);
-      assert(limited.rows.length > 0 && limited.rows.every(row => row.contour === 'virtual'));
+      await assert.rejects(f.begin(f.otherLogin, { fromMs: f.fromMs, toMs: f.toMs }), { code: '55P03' });
       await f.audit.prepare('DELETE FROM audit_report_acl WHERE operator_name=? AND dataset_id=? AND source_namespace=?')
         .run(f.owner, f.datasetId, f.paymentSource);
       try { assert.deepEqual((await f.read(f.ownerLogin, job)).sources, [f.gameSource]); }
@@ -165,6 +163,9 @@ test('period summary reports exact scoped totals, confirmations, refunds and sin
       }
     } finally { await f.finish(f.ownerLogin, job); }
     await assert.rejects(f.read(f.ownerLogin, job), { code: '42501' });
+    const limited = await f.run({ fromMs: f.fromMs, toMs: f.toMs }, f.otherLogin);
+    assert.deepEqual(limited.sources, [f.gameSource]);
+    assert(limited.rows.length > 0 && limited.rows.every(row => row.contour === 'virtual'));
   });
 
   await t.test('scope, date and typed groups include canonical money and exclude the payment mirror', async () => {
@@ -218,6 +219,24 @@ test('period summary reports exact scoped totals, confirmations, refunds and sin
     const casino = await f.run({ ...filters, category: 'casino' });
     assert.equal(casino.scanned, 1);
     assert.deepEqual(casino.rows, []);
+  });
+
+  await t.test('a posting ID must still match the captured account, operation and timestamp', async t => {
+    const at = f.toMs + 30;
+    const changedAccount = randomUUID(), changedOperation = randomUUID(), changedTime = randomUUID(), intact = randomUUID();
+    await atLedgerTime(t, () => at, async () => {
+      for (const id of [changedAccount, changedOperation, changedTime, intact]) {
+        await f.wallet.operate(f.a, { id, kind: 'deposit', amount: 1 });
+      }
+    });
+    await f.game.prepare('UPDATE demo_ledger SET account_id=? WHERE operation_id=?').run(f.b, changedAccount);
+    await f.game.prepare('UPDATE demo_ledger SET operation_id=? WHERE operation_id=?').run(randomUUID(), changedOperation);
+    await f.game.prepare('UPDATE demo_ledger SET created_at=? WHERE operation_id=?').run(at + 1, changedTime);
+    const summary = await f.run({ fromMs: at, toMs: at + 1 });
+    assert.equal(summary.scanned, 4);
+    assert.equal(summary.gaps.unavailablePostings, 3);
+    const deposit = get(summary, null, 'deposit');
+    assert.deepEqual([deposit.posting_count, deposit.amount_units], ['1', '100']);
   });
 
   await t.test('coverage remains visible under category filters and excessive windows fail without totals', async () => {

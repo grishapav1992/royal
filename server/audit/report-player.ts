@@ -31,7 +31,7 @@ type Failure = 'cancelled' | 'time-limit' | 'row-limit' | 'scan-limit' | 'byte-l
   'internal-error' | 'permission-denied' | 'replay-absent' | 'replay-corrupt' | 'replay-incomplete' | 'replay-unsupported';
 
 export class AuditPlayerReportError extends Error {
-  constructor(readonly code: Failure | 'journal-unavailable', readonly jobId: string | null) { super(code); }
+  constructor(readonly code: Failure | 'journal-unavailable' | 'report-busy', readonly jobId: string | null) { super(code); }
 }
 
 function reportLimits(overrides: Partial<Limits> | undefined): Limits {
@@ -44,7 +44,7 @@ function reportLimits(overrides: Partial<Limits> | undefined): Limits {
 
 function failureCode(error: unknown, signal: AbortSignal, timeout: AbortSignal): Failure {
   if (signal.aborted) return timeout.aborted ? 'time-limit' : 'cancelled';
-  if (error instanceof AuditPlayerReportError && error.code !== 'journal-unavailable') return error.code;
+  if (error instanceof AuditPlayerReportError && error.code !== 'journal-unavailable' && error.code !== 'report-busy') return error.code;
   if (error instanceof AuditCsvExportError) {
     switch (error.code) {
       case 'cancelled': return 'cancelled';
@@ -182,6 +182,9 @@ export async function runAuditReport<T extends { rowCount: number; bytes: number
     await finish('succeeded', written.rowCount, written.bytes, null);
     return { jobId, ...written };
   } catch (error) {
+    if (!jobId && !signal.aborted && (error as { code?: string } | null)?.code === '55P03') {
+      throw new AuditPlayerReportError('report-busy', null);
+    }
     const code = failureCode(error, signal, timeout);
     if (jobId) {
       if (reportCompleted) throw new AuditPlayerReportError('journal-unavailable', jobId);

@@ -3,7 +3,7 @@ import { auditSourceKey, type AuditScope, type AuditSourceRef } from './contract
 import type { AuditSourceSchemas } from './datasets';
 import { auditReconcileSection, auditReconcileSupportsSource, reconcileAuditPostingInSnapshot,
   type ReadyAuditReconciliation } from './report-reconcile-core';
-import { readLinkedAuditSignals } from './report-reconcile-signals';
+import { auditSignalReplayLinkLimit, readLinkedAuditSignals } from './report-reconcile-signals';
 import { AUDIT_RECONCILE_MAX_BYTES } from './report-reconcile-source';
 import { isReplayId } from './replay-package';
 
@@ -129,6 +129,13 @@ export async function buildAuditPeriodReconciliation(audit: PostgresDatabase, so
     if (fromMs < captureStartedAtMs) base.coverage.push(periodGap('period-before-capture'));
     if (captureSealedAtMs !== null && toMs > captureSealedAtMs) base.coverage.push(periodGap('period-after-capture'));
     if (captureSealedAtMs === null && toMs > asOfMs) base.coverage.push(periodGap('period-after-snapshot'));
+    if (sourceNamespace === sources.game + '.demo_ledger') {
+      const gap = await auditReconcileSection(audit, async () => Boolean(await audit.prepare(`SELECT 1 FROM audit_attempt_capture_gaps
+        WHERE dataset_id=? AND first_at_ms<? AND last_at_ms>=? LIMIT 1`).get(datasetId, toMs, fromMs)));
+      // Recorder ranges are dataset-wide. Do not infer the missing attempt belonged to the selected account.
+      if (gap === null) base.coverage.push(periodGap('attempt-capture-coverage-unavailable'));
+      else if (gap) base.coverage.push(periodGap('attempt-capture-gap-overlap'));
+    }
     if (rows.length > AUDIT_RECONCILE_PERIOD_MAX_POSTINGS) {
       return { ...base, status: 'scan-limit', selectedCountLowerBound: true,
         coverage: [...base.coverage, periodGap('period-scan-limit')] };
@@ -168,7 +175,12 @@ export async function buildAuditPeriodReconciliation(audit: PostgresDatabase, so
         addCoverage({ rule: 'RISK-05', code: !linked ? 'signal-source-unavailable' : 'signal-scan-limit',
           anchors: [anchor], sources: [anchor] });
       }
-      for (const entry of linked?.signals ?? []) merge(signals, entry.key, { ...entry, anchors: [anchor] });
+      for (const entry of linked?.signals ?? []) {
+        const item = merge(signals, entry.key, { ...entry, anchors: [anchor] });
+        const links = new Map([...item.replayLinks, ...entry.replayLinks].map(link =>
+          [link.replayId + ':' + link.sequence, link]));
+        item.replayLinks = [...links.values()].slice(0, auditSignalReplayLinkLimit);
+      }
     }
 
     signal.throwIfAborted();

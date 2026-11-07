@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test, { type TestContext } from 'node:test';
@@ -11,15 +11,19 @@ import pg from 'pg';
 import type { AuditAttempt, AuditScope, AuditSourceRef } from '../server/audit/contract';
 import { AuditDatasets } from '../server/audit/datasets';
 import { AuditEvidence } from '../server/audit/evidence';
+import { AuditPostingReader } from '../server/audit/postings';
+import { persistCapturedCasinoReplay } from '../server/audit/replay-casino';
 import { installAuditReportAccess } from '../server/audit/report-access';
 import { installAuditDetailReport } from '../server/audit/report-detail-source';
 import { requestAuditPeriodReconcile, requestAuditReconcile } from '../server/audit/report-investigation';
 import { installAuditReconcileReport } from '../server/audit/report-reconcile-source';
 import { processAuditReconcileRequest } from '../server/audit/report-reconcile-worker';
+import { installAuditReplayReport } from '../server/audit/report-replay-source';
 import { evaluateAuditRiskRule } from '../server/audit/risk-rules';
 import { AuditRiskSignals } from '../server/audit/risk-store';
 import { databaseConfig, identifier, PostgresDatabase } from '../server/database';
 import { DemoWalletStore } from '../server/demoWallet';
+import { prepareViewerReplay } from '../src/audit/replay-viewer-model';
 
 async function fixture(t: TestContext) {
   const audit = new PostgresDatabase(':memory:'), game = new PostgresDatabase(':memory:');
@@ -92,7 +96,7 @@ async function fixture(t: TestContext) {
   };
   const workerFile = await connectionFile(worker), operatorFile = await connectionFile(operator);
   const input = { schema: audit.schema, datasetId, filters: { source: anchor.namespace, postingId: anchor.rowId } };
-  return { audit, game, scope, a, sources, anchor, input, grant, operator, worker, risk, attempt, config, workerFile, operatorFile,
+  return { audit, game, scope, a, sources, anchor, input, grant, group, operator, worker, risk, attempt, config, workerFile, operatorFile, directory,
     wallet, accountId, peerId, startedAtMs, occurredAtMs: Number(row.created_at) };
 }
 
@@ -181,6 +185,71 @@ test('named operator enqueues a bounded reconciliation and receives verified, se
   await assert.rejects(worker.exec('UPDATE ' + identifier(f.game.schema) + '.demo_ledger SET balance_units=0'), { code: '42501' });
   await f.audit.prepare('DELETE FROM audit_report_acl WHERE operator_name=? AND source_namespace=?').run(f.operator, f.anchor.namespace);
   await assert.rejects(requestAuditReconcile(f.config(f.operator), f.input), { code: 'permission-denied' });
+});
+
+test('reconciliation links an authorized signal to an exported viewer frame and server outcome', async t => {
+  const f = await fixture(t);
+  const replayId = randomUUID();
+  await installAuditReplayReport(f.audit, f.group, f.sources);
+  assert.equal((await persistCapturedCasinoReplay(f.audit, { datasetId: f.scope.datasetId, gameSchema: f.game.schema,
+    posting: f.anchor, replayId })).status, 'stored');
+  const jump = { replayId, sequence: 1, source: f.anchor };
+  const risk = new AuditRiskSignals(f.audit, new AuditPostingReader(f.audit, f.game));
+  assert.deepEqual((await risk.record(f.risk, [jump]))?.replayLinks, [jump]);
+  const config = f.config(f.operator);
+  const worker = new PostgresDatabase(f.audit.schema, { existingSchema: true, config: f.config(f.worker) });
+  t.after(() => worker.close());
+  const request = (refresh = false) => requestAuditReconcile(config, { ...f.input, filters: { ...f.input.filters, refresh } });
+  const run = async (refresh = false) => {
+    assert.equal((await request(refresh)).requestStatus, 'queued');
+    assert.equal(await processAuditReconcileRequest(worker, f.sources), 'ready');
+    const response = await request();
+    assert.equal(response.requestStatus, 'ready');
+    return response.report!;
+  };
+  const report = await run();
+  assert.deepEqual(report.signals[0].sources, [f.anchor]);
+  assert.deepEqual(report.signals[0].replayLinks, [jump]);
+  assert.equal(report.replayFrames, undefined);
+  const toMs = Date.now() + 1000;
+  const periodInput = { schema: f.audit.schema, datasetId: f.scope.datasetId,
+    filters: { source: f.anchor.namespace, accountId: f.accountId, fromMs: f.startedAtMs, toMs } };
+  assert.equal((await requestAuditPeriodReconcile(config, periodInput)).requestStatus, 'queued');
+  assert.equal(await processAuditReconcileRequest(worker, f.sources), 'ready');
+  const periodReport = await requestAuditPeriodReconcile(config, periodInput);
+  assert.equal(periodReport.report?.status, 'ready');
+  assert.deepEqual(periodReport.report?.signals[0].replayLinks, [jump]);
+
+  const cli = (args: string[]) => promisify(execFile)(process.execPath, ['--import', 'tsx', 'scripts/audit.ts', ...args,
+    '--schema', f.audit.schema, '--dataset', f.scope.datasetId], { cwd: fileURLToPath(new URL('..', import.meta.url)),
+    env: { ...process.env, ROYAL_AUDIT_DB_URL_FILE: f.operatorFile } });
+  const file = join(f.directory, 'linked-replay.json');
+  const { replayId: linkedId, sequence } = report.signals[0].replayLinks[0];
+  const exported = JSON.parse((await cli(['replay', '--replay', linkedId, '--output', file])).stdout);
+  assert.equal(exported.replayId, linkedId);
+  const viewer = prepareViewerReplay(JSON.parse(await readFile(file, 'utf8')));
+  assert.equal(viewer.status, 'ready');
+  const frame = viewer.frames.find(item => item.sequence === sequence);
+  assert.deepEqual(frame?.event?.postings, [f.anchor]);
+  const detail = JSON.parse((await cli(['detail', '--source', f.anchor.namespace, '--posting', f.anchor.rowId])).stdout);
+  const terminal = viewer.frames.at(-1)?.event;
+  assert.equal(terminal?.data.kind, 'terminal');
+  assert.equal(terminal?.money?.find(leg => leg.movement === 'payout')?.units, detail.outcome.payoutUnits);
+
+  const replaceLinks = (links: unknown[]) => f.audit.prepare(
+    'UPDATE audit_risk_signals SET replay_links=?::jsonb WHERE dataset_id=? AND signal_key=?')
+    .run(JSON.stringify({ version: 1, links }), f.scope.datasetId, f.risk.key);
+  for (const link of [{ ...jump, sequence: 999 }, { ...jump, replayId: randomUUID() }, { ...jump, sequence: 'bad' }]) {
+    await replaceLinks([link]);
+    const unresolved = await run(true);
+    assert.deepEqual(unresolved.signals[0].sources, [f.anchor]);
+    assert.deepEqual(unresolved.signals[0].replayLinks, []);
+    assert(unresolved.financialErrors.some((item: { rule: string }) => item.rule === 'R-02'));
+  }
+  await f.audit.prepare('DELETE FROM audit_report_acl WHERE operator_name=? AND source_namespace=?').run(f.operator, f.anchor.namespace);
+  await assert.rejects(request(), { code: 'permission-denied' });
+  await assert.rejects(cli(['replay', '--replay', linkedId, '--output', join(f.directory, 'denied.json')]),
+    (error: unknown) => (error as { stderr?: string })?.stderr?.includes('"error":"permission-denied"') === true);
 });
 
 test('period reconciliation selects captured postings by time and account and reapplies source permissions', async t => {

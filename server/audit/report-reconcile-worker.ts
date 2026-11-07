@@ -22,12 +22,12 @@ async function postingResult(audit: PostgresDatabase, sources: AuditSourceSchema
     if (!signalSourceUnavailable(error)) throw error;
     return { signals: [], clipped: false, sourceUnavailable: true as const };
   });
-  const { findings, coverage, requiredSources, ...identity } = report;
+  const { findings, coverage, requiredSources, replayFrames: _replayFrames, ...identity } = report;
   const gap = 'sourceUnavailable' in linked ? 'signal-source-unavailable' : linked.clipped ? 'signal-scan-limit' : null;
   const gaps = gap ? [...coverage, { rule: 'RISK-05', code: gap, sources: [target] }] : coverage;
   return { payload: { ...identity, financialErrors: findings.filter(item => item.status === 'mismatch'),
     checks: findings.filter(item => item.status !== 'mismatch'), coverage: gaps,
-    signals: linked.signals.map(({ sources: _sources, ...entry }) => entry) },
+    signals: linked.signals },
   namespaces: [...new Set([target.namespace, ...requiredSources])].sort() };
 }
 

@@ -129,13 +129,19 @@ function replayEntityId(entity: AuditEntityRef, accountId: string): string | nul
   } catch { return null; }
 }
 
-function stored(signal: AuditRiskSignal, revision: number, review: Review | null, attachment: unknown): StoredAuditRiskSignal {
+function stored(signal: AuditRiskSignal, revision: number, review: Review | null, attachment: unknown,
+  omitInvalidReplayLinks = false): StoredAuditRiskSignal {
   if (!positiveRevision(revision) || (review !== null && (!positiveRevision(review.revision) || review.revision > revision ||
       !isRiskActorId(review.reviewerId) || !reviewDecisions.includes(review.decision) ||
       !Number.isSafeInteger(review.reviewedAtMs) || review.reviewedAtMs < 0))) {
     throw new Error('Invalid stored audit risk revision or review');
   }
-  const { links } = checkedReplayLinks(signal, attachment);
+  let links: ReplayLink[] = [];
+  try {
+    ({ links } = checkedReplayLinks(signal, attachment));
+  } catch (error) {
+    if (!omitInvalidReplayLinks) throw error;
+  }
   return { signal, revision, review, reviewAppliesToCurrent: review !== null && review.revision === revision,
     ...(links.length ? { replayLinks: links } : {}) };
 }
@@ -163,7 +169,7 @@ export class AuditRiskSignals {
       .get(scope.datasetId, key, scope.environment) as Promise<RiskRow | undefined>;
   }
 
-  async read(scope: AuditScope, key: string): Promise<StoredAuditRiskSignal | null> {
+  async read(scope: AuditScope, key: string, options?: { omitInvalidReplayLinks?: boolean }): Promise<StoredAuditRiskSignal | null> {
     if (!isRiskScope(scope) || !isRiskSignalKey(key)) return null;
     const row = await this.row(scope, key);
     if (!row) return null;
@@ -171,7 +177,7 @@ export class AuditRiskSignals {
     if (signal.key !== key || signal.input.scope.datasetId !== scope.datasetId || signal.input.scope.environment !== scope.environment) {
       throw new Error('Audit risk signal scope mismatch');
     }
-    return stored(signal, row.revision, row.review, row.replay_links);
+    return stored(signal, row.revision, row.review, row.replay_links, options?.omitInvalidReplayLinks);
   }
 
   private async validateEvidence(signal: AuditRiskSignal) {

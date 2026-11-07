@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import test from 'node:test';
 import { databaseConfig, identifier, PostgresDatabase } from '../server/database';
 import { installAuditReportAccess } from '../server/audit/report-access';
+import { readAuditSummary } from '../server/audit/report-summary';
 
 test('audit report roles enforce dataset grants, journal ownership and export leases in PostgreSQL', async t => {
   const owner = new PostgresDatabase(':memory:');
@@ -54,11 +55,12 @@ test('audit report roles enforce dataset grants, journal ownership and export le
     await owner.prepare(`INSERT INTO ${acl} VALUES(?, ?, ?), (?, ?, ?)`)
       .run(aliceRole, datasetA, sourceA, bobRole, datasetB, sourceB);
 
+    const loginConfig = (user: string) => databaseConfig({ ...process.env, DATABASE_URL: '', DATABASE_URL_FILE: '',
+      PGUSER: user, PGPASSWORD: password, PGPASSWORD_FILE: '', PGPOOL_MAX: '2' });
     const login = (user: string) => {
       const client = new PostgresDatabase(owner.schema, { existingSchema: user !== outsiderRole,
         readOnly: user === outsiderRole,
-        config: databaseConfig({ ...process.env, DATABASE_URL: '', DATABASE_URL_FILE: '',
-          PGUSER: user, PGPASSWORD: password, PGPASSWORD_FILE: '', PGPOOL_MAX: '2' }) });
+        config: loginConfig(user) });
       clients.push(client);
       return client;
     };
@@ -74,7 +76,7 @@ test('audit report roles enforce dataset grants, journal ownership and export le
         await alice.exec(`SET LOCAL ROLE ${identifier(readerRole)}`);
         return begin(alice);
       });
-      const bobJob = await begin(bob, datasetB, { accountId: 'player-example', fromMs: 1000, toMs: 2000 });
+      const bobJob = await begin(bob, datasetB, { source: sourceB, postingId: '1' }, 'detail');
       const started = await owner.prepare(`SELECT operator_name,dataset_id,kind,filters,status,
         extract(epoch FROM expires_at-started_at)::bigint AS lease_seconds FROM ${jobs} WHERE id=?`).get(aliceJob);
       assert.deepEqual(started, { operator_name: aliceRole, dataset_id: datasetA, kind: 'player', filters, status: 'running', lease_seconds: 300 });
@@ -156,6 +158,33 @@ test('audit report roles enforce dataset grants, journal ownership and export le
       assert.deepEqual(await owner.prepare(`SELECT status,reason,finished_at IS NOT NULL AS finished FROM ${jobs} WHERE id=?`).get(job),
         { status: 'expired', reason: 'lease-expired', finished: true });
       await finish(alice, replacement);
+    });
+
+    await t.test('one export slot covers different roles, datasets and export kinds', async () => {
+      const range = { fromMs: 1000, toMs: 2000 };
+      const outcomes = await Promise.allSettled([begin(alice), begin(bob, datasetB, range, 'summary')]);
+      const first = outcomes[0], second = outcomes[1];
+      const admitted = first.status === 'fulfilled' ? first : second;
+      const denied = first.status === 'rejected' ? first : second;
+      assert(admitted.status === 'fulfilled' && denied.status === 'rejected');
+      assert.equal(denied.reason.code, '55P03');
+      const active = admitted.value;
+      const blockedRole = first.status === 'fulfilled' ? bobRole : aliceRole;
+      const blocked = first.status === 'fulfilled' ? bob : alice;
+      const blockedDataset = first.status === 'fulfilled' ? datasetB : datasetA;
+      await assert.rejects(readAuditSummary(loginConfig(blockedRole), { schema: owner.schema, datasetId: blockedDataset,
+        filters: range }), { code: 'report-busy', jobId: null });
+      await assert.rejects(begin(blocked, blockedDataset, { replayId: randomUUID() }, 'replay'), { code: '55P03' });
+      assert.equal((await owner.prepare(`SELECT count(*)::int AS n FROM ${jobs} WHERE status='running'`).get())?.n, 1);
+      await owner.prepare(`WITH fixture AS (SELECT clock_timestamp() AS now)
+        UPDATE ${jobs} SET started_at=fixture.now-interval '6 minutes',expires_at=fixture.now-interval '1 minute'
+        FROM fixture WHERE id=?`).run(active);
+      const replacement = await begin(blocked, blockedDataset, { replayId: randomUUID() }, 'replay');
+      assert.deepEqual(await owner.prepare(`SELECT status,reason FROM ${jobs} WHERE id=?`).get(active),
+        { status: 'expired', reason: 'lease-expired' });
+      await finish(blocked, replacement, 'cancelled', null, null, 'cancelled');
+      const available = await begin(alice);
+      await finish(alice, available);
     });
   } finally {
     await Promise.all(clients.map(client => client.close()));

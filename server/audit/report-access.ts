@@ -24,8 +24,9 @@ export async function installAuditReportAccess(db: PostgresDatabase, readerRole:
   const finish = relation('audit_report_finish');
   const resultReasons = "'time-limit','row-limit','scan-limit','byte-limit','source-unavailable','output-error','internal-error','permission-denied'";
   const investigationReasons = resultReasons + ",'replay-absent','replay-corrupt','replay-incomplete','replay-unsupported'";
+  const exportKinds = "'player','summary','replay'";
 
-  const beginSql = (version: 1 | 2 | 3 | 4 | 5) => `CREATE ${version > 1 ? 'OR REPLACE ' : ''}FUNCTION ${begin}(p_dataset uuid,p_kind text,p_filters jsonb) RETURNS uuid
+  const beginSql = (version: 1 | 2 | 3 | 4 | 5 | 6) => `CREATE ${version > 1 ? 'OR REPLACE ' : ''}FUNCTION ${begin}(p_dataset uuid,p_kind text,p_filters jsonb) RETURNS uuid
       LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
       DECLARE
         v_from bigint;
@@ -120,10 +121,12 @@ ${version >= 3 ? '        END IF;\n' : ''}        IF NOT EXISTS (SELECT 1 FROM $
 
         v_now := pg_catalog.clock_timestamp();
         UPDATE ${jobs} SET status='expired',finished_at=v_now,reason='lease-expired'
-          WHERE operator_name=SESSION_USER AND status='running' AND expires_at<=v_now;
+          WHERE ${version >= 6 ? `status='running' AND expires_at<=v_now AND
+            (operator_name=SESSION_USER OR (p_kind IN (${exportKinds}) AND kind IN (${exportKinds})))`
+            : "operator_name=SESSION_USER AND status='running' AND expires_at<=v_now"};
         INSERT INTO ${jobs}(operator_name,dataset_id,kind,filters,status,started_at,expires_at)
           VALUES(SESSION_USER,p_dataset,p_kind,p_filters,'running',v_now,v_now+interval '${leaseMinutes} minutes')
-          ON CONFLICT(operator_name) WHERE status='running' DO NOTHING
+          ON CONFLICT${version >= 6 ? '' : "(operator_name) WHERE status='running'"} DO NOTHING
           RETURNING id INTO v_job;
         IF v_job IS NULL THEN
           RAISE EXCEPTION 'An audit export is already running' USING ERRCODE='55P03';
@@ -192,4 +195,11 @@ ${version >= 3 ? '        END IF;\n' : ''}        IF NOT EXISTS (SELECT 1 FROM $
   ] });
   await applySchemaMigration(db, { id: 'paid-activity-audit-detail-lookup-access-v1', statements: [beginSql(4)] });
   await applySchemaMigration(db, { id: 'paid-activity-audit-period-reconcile-access-v1', statements: [beginSql(5)] });
+  await applySchemaMigration(db, { id: 'paid-activity-audit-export-admission-v1', statements: [
+    `UPDATE ${jobs} SET status='expired',finished_at=pg_catalog.clock_timestamp(),reason='lease-expired'
+      WHERE status='running' AND kind IN (${exportKinds}) AND expires_at<=pg_catalog.clock_timestamp()`,
+    `CREATE UNIQUE INDEX audit_report_one_export ON ${jobs} ((1))
+      WHERE status='running' AND kind IN (${exportKinds})`,
+    beginSql(6),
+  ] });
 }

@@ -78,10 +78,11 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
         WHEN l.entry_type='rollback' THEN 'reversal'
         WHEN l.entry_type='deposit' THEN 'deposit' END AS movement
     FROM anchors r
+    -- Resolve the unique posting ID before validating the reference metadata.
     LEFT JOIN LATERAL (
-      SELECT id,account_id,operation_id,source,entry_type,amount_units,balance_units FROM ${g}.demo_ledger
-      WHERE id=r.source_row_id AND account_id=r.account_id AND operation_id=r.operation_id AND created_at=r.occurred_at_ms LIMIT 1
-    ) l ON true
+      SELECT id,account_id,operation_id,created_at,source,entry_type,amount_units,balance_units FROM ${g}.demo_ledger
+      WHERE id=r.source_row_id LIMIT 1
+    ) l ON l.account_id=r.account_id AND l.operation_id=r.operation_id AND l.created_at=r.occurred_at_ms
     LEFT JOIN LATERAL (
       SELECT balance_units FROM ${g}.demo_ledger WHERE id=r.prior_id AND account_id=r.account_id LIMIT 1
     ) p ON true

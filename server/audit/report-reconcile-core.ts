@@ -11,6 +11,7 @@ import type { AuditSourceSchemas } from './datasets';
 import { auditCommandRoutes } from './intents';
 import { isReplayId } from './replay-package';
 import { AuditReplayStore } from './replay-store';
+import { riskReplayWithinBudget } from './risk-replay-links';
 
 type Rule = 'R-01' | 'R-02' | 'R-03' | 'R-04' | 'R-05' | 'R-06' | 'payment' | 'replay';
 type Reference = { rule: Rule; code: string; sources: AuditSourceRef[] };
@@ -29,6 +30,7 @@ export type ReadyAuditReconciliation = {
   coverage: Reference[];
   evidence: AuditSourceRef[];
   replayIds: string[];
+  replayFrames: Map<string, Map<number, Set<string>>>;
 };
 export type AuditReconciliation = ReadyAuditReconciliation | { status: 'not-found' } | { status: 'unsupported' };
 
@@ -417,11 +419,19 @@ async function replays(audit: PostgresDatabase, report: ReadyAuditReconciliation
     if (result.status !== 'verified') continue;
     const { manifest, fragments } = result.value;
     const game = manifest.game;
+    const events = fragments.flatMap(fragment => fragment.events);
     if (manifest.entityId !== entityId || game.category !== entity.category || game.gameId !== entity.gameId ||
         game.modeId !== entity.modeId || (entity.rulesVersion !== null && game.rulesVersion !== entity.rulesVersion) ||
-        !fragments.some(fragment => fragment.events.some(event => event.postings.some(ref => auditSourceKey(ref) === auditSourceKey(anchor))))) continue;
+        !events.some(event => event.postings.some(ref => auditSourceKey(ref) === auditSourceKey(anchor)))) continue;
     report.replayIds.push(replay_id);
     output.link(source(audit.schema + '.audit_replay_packages', replay_id));
+    // A signal jump may only reveal a frame from the source already authorized for this report.
+    if (riskReplayWithinBudget(manifest) && events.every(event =>
+      event.postings.every(ref => ref.namespace === anchor.namespace) &&
+      (event.money ?? []).every(leg => leg.posting.namespace === anchor.namespace))) {
+      report.replayFrames.set(replay_id, new Map(events.map(event =>
+        [event.sequence, new Set(event.postings.map(auditSourceKey))])));
+    }
   }
   if (!report.replayIds.length) output.add('replay', 'insufficient-data', 'replay-not-linked');
 }
@@ -478,7 +488,7 @@ async function reconcilePosting(audit: PostgresDatabase, sources: AuditSourceSch
   }
   const report: ReadyAuditReconciliation = { status: 'ready', schemaVersion: 1, scope: { datasetId, environment },
     anchor: source(anchor.namespace, anchor.rowId), accountId, operationId, occurredAtMs, entity: null, requiredSources: [anchor.namespace],
-    findings: [], coverage: [], evidence: [], replayIds: [] };
+    findings: [], coverage: [], evidence: [], replayIds: [], replayFrames: new Map() };
   const output = recorder(report);
   output.link(report.anchor);
   const run = async <T>(rule: Rule, action: () => Promise<T>): Promise<T | null> => {
