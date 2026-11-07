@@ -18,7 +18,7 @@ const usage = 'npm run audit -- player ' + period + ' --account <id> --output <n
   'npm run audit -- replay ' + scope + ' --replay <uuid> --output <new JSON file>\n' +
   'npm run audit -- reconcile ' + anchor + ' [--wait] [--refresh]\n' +
   'npm run audit -- reconcile ' + period + ' --source <ledger namespace> [--account <id>] [--wait] [--refresh]\n' +
-  'npm run audit -- reconcile ' + period + ' --source <ledger namespace> --paged [--account <id>] [--wait] [--refresh | --cursor <uuid>]';
+  'npm run audit -- reconcile ' + period + ' --source <ledger namespace> --paged [--account <id>] [--wait] [--refresh | [--cursor <uuid>] [--retry]]';
 const invalid = () => new Error('Invalid audit report arguments');
 const identifierToken = /^[a-zA-Z0-9._:-]{1,128}$/;
 
@@ -42,10 +42,11 @@ async function main() {
     asset: { type: 'string' }, contour: { type: 'string' },
     source: { type: 'string' }, posting: { type: 'string' }, replay: { type: 'string' },
     operation: { type: 'string' }, round: { type: 'string' }, match: { type: 'string' }, ticket: { type: 'string' },
-    wait: { type: 'boolean' }, refresh: { type: 'boolean' }, paged: { type: 'boolean' }, cursor: { type: 'string' },
+    wait: { type: 'boolean' }, refresh: { type: 'boolean' }, paged: { type: 'boolean' }, cursor: { type: 'string' }, retry: { type: 'boolean' },
   } });
   if (values.help) { console.log(usage); return; }
-  const { schema, dataset, account, from, to, output, category, game, mode, asset, contour, posting, replay, wait, refresh, paged, cursor } = values;
+  const { schema, dataset, account, from, to, output, category, game, mode, asset, contour, posting, replay,
+    wait, refresh, paged, cursor, retry } = values;
   const kind = positionals[0];
   if (positionals.length !== 1 || !schema || !dataset ||
       !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(dataset)) throw invalid();
@@ -88,8 +89,9 @@ async function main() {
           : await requestAuditReconcile(config, { ...input, filters: { ...filters, ...(refresh ? { refresh: true } : {}) },
             waitMs: wait ? 40_000 : 0 });
       } else if (kind === 'reconcile') {
-        if (!permits('source','from','to','account','wait','refresh','paged','cursor') || !from || !to ||
+        if (!permits('source','from','to','account','wait','refresh','paged','cursor','retry') || !from || !to ||
             (account !== undefined && !identifierToken.test(account)) ||
+            (retry && (!paged || refresh)) ||
             (cursor !== undefined && (!paged || refresh || !isReplayId(cursor.toLowerCase())))) throw invalid();
         const filters = {
           source, fromMs: timestamp(from), toMs: timestamp(to),
@@ -97,7 +99,8 @@ async function main() {
         };
         const request = { ...input, filters, waitMs: wait ? 40_000 : 0 };
         result = paged ? await requestAuditReconcilePage(config, { ...request,
-          filters: { ...filters, paged: true, ...(cursor === undefined ? {} : { cursor: cursor.toLowerCase() }) },
+          filters: { ...filters, paged: true, ...(cursor === undefined ? {} : { cursor: cursor.toLowerCase() }),
+            ...(retry ? { retry: true } : {}) },
         }) : await requestAuditPeriodReconcile(config, request);
       } else {
         const selectors = (['operation','round','match','ticket'] as const).filter(key => values[key] !== undefined);

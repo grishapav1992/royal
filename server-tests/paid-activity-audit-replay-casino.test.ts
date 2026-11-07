@@ -124,6 +124,81 @@ test('Caribbean paid start and free bonus steps follow saved revisions rather th
   assert.equal(incomplete.value.fragments[0].events.length, 1);
 });
 
+test('both natural Caribbean tactics preserve the accepted choice, free spins and single settlement for every line count', async t => {
+  const f = await fixture(t);
+  const tactics = [
+    { name: 'raid', move: 'caribbean-choose-raid', selection: 2, freeSpins: 14 },
+    { name: 'flagship', move: 'caribbean-choose-flagship', selection: 3, freeSpins: 6 },
+  ] as const;
+  for (const lines of [1, 5, 10, 20] as const) for (const tactic of tactics) await t.test(lines + '/' + tactic.name, async () => {
+    const id = randomUUID(), stakeUnits = '10';
+    const before = await demoBalanceUnits(f.game, f.account);
+    let { session } = await f.wallet.expansion.operate(f.account, { id, gameId: CARIBBEAN_GAME, action: 'start',
+      stakeUnits, stakePolicyVersion: 1, settings: { caribbean: { lines, mode: 'normal', stakeBasis: 'total' } } });
+    assert.equal(session.view.caribbean?.phase, 'choice');
+    assert.equal(session.spentUnits, stakeUnits);
+    const input = await f.request(id);
+    const choice = { id: randomUUID(), gameId: CARIBBEAN_GAME, action: 'move', sessionId: id, move: tactic.move,
+      revision: session.view.caribbean!.revision } as const;
+    const accepted = await f.wallet.expansion.operate(f.account, choice);
+    assert.equal(accepted.replayed, false);
+    const repeated = await f.wallet.expansion.operate(f.account, choice);
+    assert.equal(repeated.replayed, true);
+    assert.deepEqual(repeated.session, accepted.session);
+    session = accepted.session;
+    assert.equal(session.view.caribbean?.tactic, tactic.name);
+    assert.equal(session.view.caribbean?.remaining, tactic.freeSpins);
+
+    const spinIds: string[] = [];
+    for (let spin = 0; spin < tactic.freeSpins; spin++) {
+      assert.equal(session.state, 'active');
+      const spinId = randomUUID();
+      spinIds.push(spinId);
+      session = (await f.wallet.expansion.operate(f.account, { id: spinId, gameId: CARIBBEAN_GAME, action: 'move',
+        sessionId: id, move: 'caribbean-spin', revision: session.view.caribbean!.revision })).session;
+    }
+    assert.equal(session.state, 'settled');
+    assert.equal(session.spentUnits, stakeUnits);
+    const replay = await buildCapturedCasinoReplay(f.audit, input);
+    assert.equal(replay.status, 'built');
+    assert.equal(replay.value.manifest.coverage, 'complete');
+    assert.equal(replay.value.manifest.game.modeId, 'normal');
+    const events = replay.value.fragments.flatMap(fragment => fragment.events);
+    const actions = events.flatMap(event => event.data.kind === 'action' ? [event.data.action] : []);
+    assert.deepEqual(actions, [
+      { profile: 'casino-steps', code: 'start', selection: [lines] },
+      { profile: 'casino-steps', code: 'move', selection: [tactic.selection] },
+      ...spinIds.map(() => ({ profile: 'casino-steps', code: 'move', selection: [1] })),
+    ]);
+    const boards = session.view.caribbean!.spins.map(spin => spin.frame.grid);
+    assert.deepEqual(events.flatMap(event => event.data.kind !== 'action' && event.data.state.profile === 'casino-steps'
+      ? [event.data.state.visible] : []), [boards[0], ...boards]);
+    const postings = await f.game.prepare(`SELECT id::text,operation_id,entry_type,amount_units::text
+      FROM demo_ledger WHERE account_id=? AND operation_id=ANY(?::text[]) ORDER BY demo_ledger.id`)
+      .all(f.account, [id, choice.id, ...spinIds]);
+    assert.deepEqual(postings.map(row => [row.operation_id, row.entry_type, row.amount_units]), [
+      [id, 'bet', '-' + stakeUnits], [spinIds.at(-1), 'win', session.returnedUnits],
+    ]);
+    assert.deepEqual(events.flatMap(event => event.money ?? []), [
+      { movement: 'stake', units: '-' + stakeUnits, posting: input.posting },
+      { movement: 'payout', units: session.returnedUnits, posting: { namespace: input.posting.namespace, rowId: postings[1].id } },
+    ]);
+    assert.equal(events.at(-1)?.data.kind, 'terminal');
+    assert.equal(events.at(-1)?.calculation?.creditedUnits, session.returnedUnits);
+    assert.equal(await demoBalanceUnits(f.game, f.account), before - Number(stakeUnits) + Number(session.returnedUnits));
+
+    if (lines === 20 && tactic.name === 'flagship') {
+      await f.game.prepare('UPDATE demo_casino_requests SET request_key=? WHERE account_id=? AND id=?')
+        .run(JSON.stringify({ ...choice, move: 'caribbean-choose-raid' }), f.account, choice.id);
+      const inconsistent = await buildCapturedCasinoReplay(f.audit, input);
+      assert.equal(inconsistent.status, 'built');
+      assert.equal(inconsistent.value.manifest.coverage, 'partial');
+      assert.deepEqual(inconsistent.value.manifest.gaps, ['event-gap', 'terminal-unavailable']);
+      assert.equal(inconsistent.value.manifest.terminal, null);
+    }
+  });
+});
+
 test('automatic Crash closes with its actual payout and late cashout never becomes an action', async t => {
   const f = await fixture(t);
   let now = Date.now();

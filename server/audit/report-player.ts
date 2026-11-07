@@ -2,6 +2,7 @@ import pg, { type ClientConfig, type QueryResult } from 'pg';
 import { setTimeout as pause } from 'node:timers/promises';
 import { identifier } from '../database';
 import { AuditCsvExportError, writeAuditCsv } from './export-csv';
+import { AUDIT_EXPORT_READER_SLOT_CONSTRAINT } from './report-export-slot';
 import { playerColumns, type PlayerReportCursor, type PlayerReportPage, type PlayerReportRow } from './report-player-source';
 
 export type PlayerReportFilters = {
@@ -17,7 +18,7 @@ export type PlayerReportFilters = {
 export type AuditReportFilters = Omit<PlayerReportFilters, 'accountId'> & { accountId?: string };
 export type AuditPostingReportFilters = { source: string; postingId: string; refresh?: boolean };
 export type AuditReconcilePeriodFilters = { source: string; fromMs: number; toMs: number; accountId?: string; refresh?: boolean };
-export type AuditReconcilePageFilters = AuditReconcilePeriodFilters & { paged: true; cursor?: string };
+export type AuditReconcilePageFilters = AuditReconcilePeriodFilters & { paged: true; cursor?: string; retry?: true };
 export type AuditDetailLookupFilters = { source: string; lookupKind: 'operation' | 'round' | 'match' | 'ticket';
   lookupId: string; accountId?: string };
 export type AuditReportKind = 'player' | 'summary' | 'detail' | 'replay' | 'reconcile';
@@ -29,10 +30,10 @@ const units = new Set<keyof PlayerReportRow>(['schema_version', 'posting_id', 's
   'expected_balance_units', 'stored_balance_units', 'pending_delta_units', 'stored_pending_units']);
 type ReaderConfig = ClientConfig & { fixtureReplayLsn?: string };
 type Failure = 'cancelled' | 'time-limit' | 'row-limit' | 'scan-limit' | 'byte-limit' | 'source-unavailable' | 'output-error' |
-  'internal-error' | 'permission-denied' | 'replay-absent' | 'replay-corrupt' | 'replay-incomplete' | 'replay-unsupported';
+  'internal-error' | 'permission-denied' | 'report-busy' | 'replay-absent' | 'replay-corrupt' | 'replay-incomplete' | 'replay-unsupported';
 
 export class AuditPlayerReportError extends Error {
-  constructor(readonly code: Failure | 'journal-unavailable' | 'report-busy', readonly jobId: string | null) { super(code); }
+  constructor(readonly code: Failure | 'journal-unavailable', readonly jobId: string | null) { super(code); }
 }
 
 function reportLimits(overrides: Partial<Limits> | undefined): Limits {
@@ -45,7 +46,7 @@ function reportLimits(overrides: Partial<Limits> | undefined): Limits {
 
 function failureCode(error: unknown, signal: AbortSignal, timeout: AbortSignal): Failure {
   if (signal.aborted) return timeout.aborted ? 'time-limit' : 'cancelled';
-  if (error instanceof AuditPlayerReportError && error.code !== 'journal-unavailable' && error.code !== 'report-busy') return error.code;
+  if (error instanceof AuditPlayerReportError && error.code !== 'journal-unavailable') return error.code;
   if (error instanceof AuditCsvExportError) {
     switch (error.code) {
       case 'cancelled': return 'cancelled';
@@ -55,7 +56,8 @@ function failureCode(error: unknown, signal: AbortSignal, timeout: AbortSignal):
       default: return 'output-error';
     }
   }
-  const code = (error as { code?: string } | null)?.code;
+  const { code, constraint } = (error as { code?: string; constraint?: string } | null) ?? {};
+  if (code === '55P03' && constraint === AUDIT_EXPORT_READER_SLOT_CONSTRAINT) return 'report-busy';
   if (code === '42501') return 'permission-denied';
   if (code === '57014') return 'time-limit';
   if (code === '54000') return 'scan-limit';

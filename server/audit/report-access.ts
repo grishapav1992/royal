@@ -1,6 +1,7 @@
 import { identifier, type PostgresDatabase } from '../database';
 import { applySchemaMigration } from '../database-migrations';
 import { migrateAuditDatasets } from './datasets';
+import { auditExportReaderSlotGuard } from './report-export-slot';
 
 const maximumPeriodMs = 31 * 24 * 60 * 60 * 1000;
 const maximumSafeInteger = Number.MAX_SAFE_INTEGER;
@@ -26,7 +27,7 @@ export async function installAuditReportAccess(db: PostgresDatabase, readerRole:
   const investigationReasons = resultReasons + ",'replay-absent','replay-corrupt','replay-incomplete','replay-unsupported'";
   const exportKinds = "'player','summary','replay'";
 
-  const beginSql = (version: 1 | 2 | 3 | 4 | 5 | 6 | 7) => `CREATE ${version > 1 ? 'OR REPLACE ' : ''}FUNCTION ${begin}(p_dataset uuid,p_kind text,p_filters jsonb) RETURNS uuid
+  const beginSql = (version: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) => `CREATE ${version > 1 ? 'OR REPLACE ' : ''}FUNCTION ${begin}(p_dataset uuid,p_kind text,p_filters jsonb) RETURNS uuid
       LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
       DECLARE
         v_from bigint;
@@ -47,7 +48,7 @@ ${version >= 3 ? `        IF p_kind='replay' THEN
             RAISE EXCEPTION 'Invalid audit replay filter' USING ERRCODE='22023';
           END IF;
 ${version >= 5 ? `        ELSIF p_kind='reconcile' AND (p_filters ? 'fromMs' OR p_filters ? 'toMs') THEN
-          IF (p_filters - ARRAY['source','fromMs','toMs','accountId','refresh'${version >= 7 ? ",'paged','cursor'" : ''}])<>'{}'::jsonb OR
+          IF (p_filters - ARRAY['source','fromMs','toMs','accountId','refresh'${version >= 7 ? ",'paged','cursor'" : ''}${version >= 8 ? ",'retry'" : ''}])<>'{}'::jsonb OR
              pg_catalog.jsonb_typeof(p_filters->'source') IS DISTINCT FROM 'string' OR
              (p_filters->>'source') !~ '^[a-z_][a-z_0-9]{0,62}[.][a-z_][a-z_0-9]{0,62}$' OR
              (p_filters ? 'accountId' AND (pg_catalog.jsonb_typeof(p_filters->'accountId') IS DISTINCT FROM 'string' OR
@@ -57,6 +58,8 @@ ${version >= 7 ? `             (p_filters ? 'paged' AND p_filters->'paged' IS DI
              (p_filters ? 'cursor' AND (p_filters->'paged' IS DISTINCT FROM 'true'::jsonb OR p_filters ? 'refresh' OR
                pg_catalog.jsonb_typeof(p_filters->'cursor') IS DISTINCT FROM 'string' OR
                (p_filters->>'cursor') !~ '^[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$')) OR
+` : ''}${version >= 8 ? `             (p_filters ? 'retry' AND (p_filters->'paged' IS DISTINCT FROM 'true'::jsonb OR p_filters ? 'refresh' OR
+               p_filters->'retry' IS DISTINCT FROM 'true'::jsonb)) OR
 ` : ''}             pg_catalog.jsonb_typeof(p_filters->'fromMs') IS DISTINCT FROM 'number' OR
              pg_catalog.jsonb_typeof(p_filters->'toMs') IS DISTINCT FROM 'number' OR
              (p_filters->>'fromMs') !~ '^[0-9]{1,16}$' OR (p_filters->>'toMs') !~ '^[0-9]{1,16}$' THEN
@@ -67,7 +70,11 @@ ${version >= 7 ? `             (p_filters ? 'paged' AND p_filters->'paged' IS DI
           IF v_to>${maximumSafeInteger} OR v_to<=v_from OR v_to-v_from>${maximumPeriodMs} THEN
             RAISE EXCEPTION 'Invalid audit reconciliation period' USING ERRCODE='22023';
           END IF;
-` : ''}${version >= 4 ? `        ELSIF p_kind='detail' AND p_filters ? 'lookupKind' THEN
+${version >= 8 ? `          IF p_filters ? 'retry' AND NOT EXISTS (SELECT 1 FROM ${relation('_royal_migrations')}
+            WHERE id='paid-activity-audit-period-retry-v1') THEN
+            RAISE EXCEPTION 'Audit reconciliation retry is unavailable' USING ERRCODE='55000';
+          END IF;
+` : ''}` : ''}${version >= 4 ? `        ELSIF p_kind='detail' AND p_filters ? 'lookupKind' THEN
           IF (p_filters - ARRAY['source','lookupKind','lookupId','accountId'])<>'{}'::jsonb OR
              pg_catalog.jsonb_typeof(p_filters->'source') IS DISTINCT FROM 'string' OR
              (p_filters->>'source') !~ '^[a-z_][a-z_0-9]{0,62}[.][a-z_][a-z_0-9]{0,62}$' OR
@@ -123,7 +130,11 @@ ${version >= 3 ? '        END IF;\n' : ''}        IF NOT EXISTS (SELECT 1 FROM $
           RAISE EXCEPTION 'Audit export scope is unavailable' USING ERRCODE='42501';
         END IF;
 
-        v_now := pg_catalog.clock_timestamp();
+${version >= 9 ? `        IF p_kind IN (${exportKinds}) THEN
+          ${auditExportReaderSlotGuard(db.schema)}
+        END IF;
+
+` : ''}        v_now := pg_catalog.clock_timestamp();
         UPDATE ${jobs} SET status='expired',finished_at=v_now,reason='lease-expired'
           WHERE ${version >= 6 ? `status='running' AND expires_at<=v_now AND
             (operator_name=SESSION_USER OR (p_kind IN (${exportKinds}) AND kind IN (${exportKinds})))`
@@ -139,7 +150,7 @@ ${version >= 3 ? '        END IF;\n' : ''}        IF NOT EXISTS (SELECT 1 FROM $
       END
       $audit$`;
 
-  const finishSql = (expanded: boolean) => `CREATE ${expanded ? 'OR REPLACE ' : ''}FUNCTION ${finish}(p_job uuid,p_outcome text,p_row_count bigint,p_byte_count bigint,p_reason text) RETURNS void
+  const finishSql = (expanded: boolean, physicalSlot = false) => `CREATE ${expanded ? 'OR REPLACE ' : ''}FUNCTION ${finish}(p_job uuid,p_outcome text,p_row_count bigint,p_byte_count bigint,p_reason text) RETURNS void
       LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
       DECLARE
         v_now timestamptz := pg_catalog.clock_timestamp();
@@ -148,7 +159,7 @@ ${version >= 3 ? '        END IF;\n' : ''}        IF NOT EXISTS (SELECT 1 FROM $
            p_row_count NOT BETWEEN 0 AND ${maximumSafeInteger} OR
            p_byte_count NOT BETWEEN 0 AND ${maximumSafeInteger} OR
            (p_outcome='succeeded' AND (p_row_count IS NULL OR p_byte_count IS NULL OR p_reason IS NOT NULL)) OR
-           (p_outcome='failed' AND (p_reason IS NULL OR p_reason NOT IN (${expanded ? investigationReasons : resultReasons}))) OR
+           (p_outcome='failed' AND (p_reason IS NULL OR p_reason NOT IN (${expanded ? investigationReasons : resultReasons}${physicalSlot ? ",'report-busy'" : ''}))) OR
            (p_outcome='cancelled' AND p_reason IS DISTINCT FROM 'cancelled') THEN
           RAISE EXCEPTION 'Invalid audit export outcome' USING ERRCODE='22023';
         END IF;
@@ -207,4 +218,6 @@ ${version >= 3 ? '        END IF;\n' : ''}        IF NOT EXISTS (SELECT 1 FROM $
     beginSql(6),
   ] });
   await applySchemaMigration(db, { id: 'paid-activity-audit-period-continuation-access-v1', statements: [beginSql(7)] });
+  await applySchemaMigration(db, { id: 'paid-activity-audit-period-retry-access-v1', statements: [beginSql(8)] });
+  await applySchemaMigration(db, { id: 'paid-activity-audit-reader-slot-access-v1', statements: [beginSql(9), finishSql(true, true)] });
 }

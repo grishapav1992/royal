@@ -5,12 +5,13 @@ import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test, { type TestContext } from 'node:test';
+import { setTimeout as pause } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import pg from 'pg';
 import { AuditDatasets } from '../server/audit/datasets';
 import { installAuditReportAccess } from '../server/audit/report-access';
-import { AuditPlayerReportError, exportAuditPlayer } from '../server/audit/report-player';
+import { AuditPlayerReportError, exportAuditPlayer, openAuditReportReader, runAuditReport } from '../server/audit/report-player';
 import { installAuditPlayerReport, playerColumns, type PlayerReportRow } from '../server/audit/report-player-source';
 import { cryptoConfig } from '../server/crypto/config';
 import type { CryptoProvider } from '../server/crypto/nowpayments';
@@ -105,8 +106,12 @@ test('player CSV uses scoped report credentials, real capture and bounded Postgr
     FROM audit_export_jobs WHERE id=?`).get(jobId);
   const start = (actor: pg.Client) => actor.query(`SELECT ${f.auditSchema}.audit_report_begin($1,'player',$2::jsonb) AS id`,
     [f.datasetId, JSON.stringify(f.options.filters)]).then(result => result.rows[0].id as string);
-  const page = (actor: pg.Client, job: string) =>
-    actor.query(`SELECT ${f.auditSchema}.audit_report_player_page($1,NULL,NULL,NULL,1) AS page`, [job]);
+  const page = (actor: pg.Client, job: string, cursor?: { at: string; source: string; id: string }) =>
+    actor.query(`SELECT ${f.auditSchema}.audit_report_player_page($1,$2,$3,$4,1) AS page`,
+      [job, cursor?.at ?? null, cursor?.source ?? null, cursor?.id ?? null]);
+  const cancel = (actor: pg.Client, job: string) =>
+    actor.query(`SELECT ${f.auditSchema}.audit_report_finish($1,'cancelled',0,0,'cancelled')`, [job]);
+  const readerBusy = { code: '55P03', constraint: 'audit_export_reader_slot' };
   const read = (name: string) => readFile(f.destination(name), 'utf8');
   const run = (name: string, changes?: Partial<Pick<Parameters<typeof exportAuditPlayer>[1], 'filters' | 'limits'>>) =>
     exportAuditPlayer(f.login(f.owner), { ...f.options, ...changes, destination: f.destination(name) });
@@ -141,11 +146,111 @@ test('player CSV uses scoped report credentials, real capture and bounded Postgr
         try { await assert.rejects(page(owner, job), { code: '42501' }); }
         finally { await f.grant(f.owner, f.gameSource); }
       } finally {
-        await owner.query(`SELECT ${f.auditSchema}.audit_report_finish($1,'cancelled',0,0,'cancelled')`, [job]);
+        await cancel(owner, job);
       }
       await assert.rejects(page(owner, job), { code: '42501' });
     } finally {
       await Promise.all([owner.end(), other.end()]);
+    }
+  });
+
+  await t.test('only one backend holds the export slot until its read transaction ends', async () => {
+    const owner = new pg.Client(f.login(f.owner)), duplicate = new pg.Client(f.login(f.owner));
+    const other = new pg.Client(f.login(f.other));
+    try {
+      await Promise.all([owner.connect(), duplicate.connect(), other.connect()]);
+      const job = await start(duplicate);
+      await owner.query('BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY');
+      const first = (await page(owner, job)).rows[0].page;
+      await assert.rejects(page(duplicate, job), readerBusy);
+      await assert.rejects(page(other, job), { code: '42501' });
+      const second = (await page(owner, job, first.cursor)).rows[0].page;
+      assert.notEqual(second.cursor.id, first.cursor.id);
+      assert.equal(second.rows[0].movement_type, 'payout');
+
+      await cancel(duplicate, job);
+      assert.equal((await journal(job))?.status, 'cancelled');
+      await assert.rejects(start(other), readerBusy);
+      for (const [kind, filters] of [['summary', f.options.filters], ['replay', { replayId: randomUUID() }]]) {
+        await assert.rejects(other.query(`SELECT ${f.auditSchema}.audit_report_begin($1,$2,$3::jsonb)`,
+          [f.datasetId, kind, JSON.stringify(filters)]), readerBusy);
+      }
+      const detail = await other.query(`SELECT ${f.auditSchema}.audit_report_begin($1,'detail',$2::jsonb) AS id`,
+        [f.datasetId, JSON.stringify({ source: f.gameSource, postingId: first.cursor.id })]);
+      await cancel(other, detail.rows[0].id);
+
+      await owner.query('COMMIT');
+      await assert.rejects(page(duplicate, job), { code: '42501' });
+      const replacement = await start(other);
+      assert.equal((await page(other, replacement)).rows[0].page.scanned, 1);
+      await cancel(other, replacement);
+    } finally {
+      await Promise.all([owner.end(), duplicate.end(), other.end()]);
+    }
+  });
+
+  await t.test('a projection slot conflict after admission records a controlled busy outcome', async () => {
+    const first = new pg.Client(f.login(f.owner)), duplicate = new pg.Client(f.login(f.owner));
+    let jobId: string | null = null;
+    try {
+      await Promise.all([first.connect(), duplicate.connect()]);
+      await assert.rejects(runAuditReport(f.login(f.owner), f.options, 'player', 5_000, async (_settings, _schema, id) => {
+        jobId = id;
+        await first.query('BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY');
+        await page(first, id);
+        await page(duplicate, id);
+        return { rowCount: 0, bytes: 0 };
+      }), error => error instanceof AuditPlayerReportError && error.code === 'report-busy' && error.jobId === jobId);
+      assert.deepEqual(await journal(jobId!), { operator_name: f.owner, dataset_id: f.datasetId,
+        status: 'failed', row_count: 0, byte_count: 0, reason: 'report-busy' });
+    } finally {
+      await Promise.all([first.end(), duplicate.end()]);
+    }
+  });
+
+  await t.test('cancelling a blocked PostgreSQL query keeps admission closed while its backend is working', async () => {
+    const blocker = await f.audit.pool.connect(), other = new pg.Client(f.login(f.other));
+    const controller = new AbortController();
+    let pending: Promise<unknown> | undefined;
+    const waitFor = async (predicate: () => Promise<boolean>) => {
+      const deadline = performance.now() + 3_000;
+      do {
+        if (await predicate()) return;
+        await pause(5);
+      } while (performance.now() < deadline);
+      assert.fail('Timed out waiting for the report backend');
+    };
+    try {
+      await other.connect();
+      await blocker.query('BEGIN');
+      await blocker.query('LOCK TABLE ' + f.gameSource + ' IN ACCESS EXCLUSIVE MODE');
+      let backend: number | undefined;
+      pending = runAuditReport(f.login(f.owner), { ...f.options, signal: controller.signal }, 'player', 10_000,
+        async (settings, _schema, jobId, signal) => {
+          // Leave time to inspect the backend independently of the report runner's ordinary lock budget.
+          const reader = await openAuditReportReader({ ...settings, lock_timeout: 8_000, statement_timeout: 9_000 }, jobId, signal);
+          try {
+            backend = (await reader.connection.query('SELECT pg_backend_pid() AS pid')).rows[0].pid;
+            await page(reader.connection, jobId);
+            return { rowCount: 0, bytes: 0 };
+          } finally { await reader.finish(); }
+        }).then(() => null, (error: unknown) => error);
+      await waitFor(async () => backend !== undefined && !!await f.audit.prepare(`SELECT 1 FROM pg_stat_activity a
+        JOIN pg_locks l ON l.pid=a.pid AND l.locktype='advisory' AND l.granted
+        WHERE a.pid=? AND a.wait_event_type='Lock' AND a.query LIKE '%audit_report_player_page%'`).get(backend));
+      controller.abort();
+      const stopped = await pending;
+      assert(stopped instanceof AuditPlayerReportError && stopped.code === 'cancelled' && stopped.jobId);
+      assert.equal((await journal(stopped.jobId))?.status, 'cancelled');
+      await assert.rejects(start(other), readerBusy);
+      await blocker.query('ROLLBACK');
+      await waitFor(async () => !await f.audit.prepare('SELECT 1 FROM pg_stat_activity WHERE pid=?').get(backend));
+      await cancel(other, await start(other));
+    } finally {
+      controller.abort();
+      await blocker.query('ROLLBACK').catch(() => {});
+      blocker.release();
+      await Promise.all([other.end(), pending]);
     }
   });
 

@@ -171,6 +171,7 @@ test('named operators export only authorized canonical replay packages and journ
     }), { code: '42501' });
     const own = await begin(aliceDb, original.manifest.replayId);
     try {
+      await assert.rejects(aliceDb.prepare(`SELECT ${a}.audit_report_replay_projection(?::uuid)`).get(own), { code: '42501' });
       await assert.rejects(read(bobDb, own), { code: '42501' });
       await assert.rejects(aliceDb.transaction(() => read(aliceDb, own), { readOnly: true }), { code: '42501' });
     } finally { await cancel(aliceDb, own); }

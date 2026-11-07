@@ -337,7 +337,7 @@ test('dense periods return an explicit scan limit and share queue capacity with 
   assert.deepEqual(result.report?.financialErrors, []);
 });
 
-test('the CLI continues a frozen dense window without duplication, through lease retry and ACL revocation', async t => {
+test('the CLI continues a frozen dense window without duplication, through failure, lease retry and ACL revocation', async t => {
   const f = await fixture(t);
   const at = Math.max(f.occurredAtMs, Date.now());
   await f.game.prepare(`INSERT INTO demo_ledger(account_id,operation_id,kind,amount,balance,created_at,
@@ -346,7 +346,7 @@ test('the CLI continues a frozen dense window without duplication, through lease
     FROM generate_series(1,35) n ORDER BY n`).run(f.accountId, at);
   const input = { schema: f.audit.schema, datasetId: f.scope.datasetId };
   const filters = { source: f.anchor.namespace, fromMs: at, toMs: at + 60_000, accountId: f.accountId, paged: true as const };
-  const request = (overrides: Partial<typeof filters & { cursor: string; refresh: boolean }> = {}, operator = f.operator) =>
+  const request = (overrides: Partial<typeof filters & { cursor: string; refresh: boolean; retry: true }> = {}, operator = f.operator) =>
     requestAuditReconcilePage(f.config(operator), { ...input, filters: { ...filters, ...overrides } });
   const refs = async () => (await f.audit.prepare(`SELECT source_row_id::text AS id FROM audit_posting_refs
     WHERE dataset_id=? AND source_namespace=? AND account_id=? AND occurred_at_ms>=? AND occurred_at_ms<?
@@ -364,7 +364,9 @@ test('the CLI continues a frozen dense window without duplication, through lease
       cwd: fileURLToPath(new URL('..', import.meta.url)), env: { ...process.env, ROYAL_AUDIT_DB_URL_FILE: f.operatorFile },
     });
   await assert.rejects(cli('--cursor', randomUUID(), '--refresh'), { code: 2 });
+  await assert.rejects(cli('--retry', '--refresh'), { code: 2 });
   assert.equal((await request({ cursor: randomUUID() })).requestStatus, 'cursor-expired');
+  assert.equal((await request({ retry: true })).requestStatus, 'not-requested');
   assert.equal((await f.audit.prepare('SELECT count(*)::int AS n FROM audit_reconcile_requests').get())?.n, 0);
   assert.equal(JSON.parse((await cli()).stdout).requestStatus, 'queued');
   assert.equal(await processOne(), 'ready');
@@ -376,6 +378,7 @@ test('the CLI continues a frozen dense window without duplication, through lease
   assert.equal(first.cursor, null);
   assert(first.nextCursor);
   const secondCursor = first.nextCursor;
+  assert.equal((await request({ cursor: secondCursor, retry: true })).requestStatus, 'not-requested');
   assert.deepEqual(page(first), { offset: 0, processed: 16, total: original.length, hasMore: true, anchors: original.slice(0, 16) });
   assert.equal((await request({ cursor: secondCursor, accountId: f.peerId })).requestStatus, 'cursor-expired');
   const another = f.operator + '_peer', password = randomUUID();
@@ -400,6 +403,21 @@ test('the CLI continues a frozen dense window without duplication, through lease
   assert.equal((await refs()).length, original.length + 1);
   assert.equal(JSON.parse((await cli('--cursor', secondCursor)).stdout).requestStatus, 'queued');
   assert.equal((await request({ cursor: secondCursor })).requestStatus, 'queued');
+  const frozen = () => f.audit.prepare('SELECT scan_manifest,scan_offset,scan_cursor FROM audit_reconcile_requests WHERE scan_owner=?')
+    .get(f.operator);
+  const saved = await frozen();
+  await f.audit.exec(`REVOKE SELECT ON ${f.a}.audit_posting_refs FROM ${identifier(f.worker)}`);
+  assert.equal(await processOne(), 'failed');
+  assert.equal((await request({ cursor: secondCursor })).requestStatus, 'failed');
+  await f.audit.prepare('DELETE FROM audit_report_acl WHERE operator_name=? AND source_namespace=?').run(f.operator, counterpart);
+  assert.equal((await request({ cursor: secondCursor, retry: true })).requestStatus, 'source-unavailable');
+  assert.deepEqual(await frozen(), saved);
+  await f.grant(counterpart);
+  await f.audit.exec(`GRANT SELECT ON ${f.a}.audit_posting_refs TO ${identifier(f.worker)}`);
+  const retried = JSON.parse((await cli('--cursor', secondCursor, '--retry')).stdout);
+  assert.equal(retried.requestStatus, 'queued');
+  assert.equal((await request({ cursor: secondCursor, retry: true })).requestedAt, retried.requestedAt);
+  assert.deepEqual(await frozen(), saved);
   await f.audit.exec(`UPDATE audit_reconcile_requests SET status='running',claim=pg_catalog.gen_random_uuid(),
     lease_until=pg_catalog.clock_timestamp()-interval '1 second' WHERE scan_owner IS NOT NULL`);
   assert.deepEqual((await Promise.all([processOne(), processOne()])).sort(), ['idle','ready']);
@@ -418,6 +436,7 @@ test('the CLI continues a frozen dense window without duplication, through lease
   assert.equal(page(last).total, original.length);
   assert.deepEqual([...page(first).anchors, ...page(second).anchors, ...page(last).anchors], original);
   assert.equal((await request({ cursor: secondCursor })).requestStatus, 'cursor-expired');
+  assert.equal((await request({ cursor: secondCursor, retry: true })).requestStatus, 'cursor-expired');
   assert.equal((await request({ refresh: true })).requestStatus, 'queued');
   assert.equal(await processOne(), 'ready');
   assert.equal(page(await request()).total, original.length + 1);

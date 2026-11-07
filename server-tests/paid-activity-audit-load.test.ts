@@ -97,6 +97,7 @@ test('audit load verifies both report limits, exact CSV balances and concurrent 
   assert(report.reports.summary.scanned >= 80 && report.reports.summary.scanned <= 114);
   assert.equal(report.scale.fixturePostings, 20_001);
   assert.equal(report.scale.capturedFixturePostings, 20_001);
+  assert.equal(report.scale.mixedHistory, undefined);
   assert.equal(report.scale.csvAmountsAndBalancesMatch, true);
   assert.equal(report.scale.atLimit.scanned, 20_000);
   assert.equal(report.scale.atLimit.exactTotal, true);
@@ -177,6 +178,48 @@ test('summary-first pilot starts wallets against the observed boundary query and
     order: ['audit_load_limit', 'audit_load_player', 'audit_load_summary', 'audit_load_wide'] });
   assert.equal(report.reports.player.rows, 10_000);
   assert.equal(report.scale.overLimit.outcome, 'scan-limit');
+});
+
+test('mixed history verifies exact category totals, commissions and the focused CSV in the pilot', { timeout: 35_000 }, async t => {
+  const directory = await mkdtemp(join(tmpdir(), 'royal-audit-load-check-'));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const { stdout, exitCode } = await run(['--mixed-history', '--pilot-gate', '--summary-first', '--report-process',
+    '--workers', '2', '--rounds', '3', '--seed', '8'], { ...process.env, TMPDIR: directory })
+    .then(result => ({ stdout: result.stdout, exitCode: 0 }), error => {
+      if (error.code !== 1 || !error.stdout) throw error;
+      return { stdout: String(error.stdout), exitCode: 1 };
+    });
+  const report = JSON.parse(stdout);
+  assert.deepEqual(await fixtureFiles(directory), []);
+  assert.equal(report.capacityConfirmed, false);
+  assert.equal(report.scale.fixturePostings, 20_001);
+  assert.equal(report.scale.capturedFixturePostings, 20_001);
+  assert.equal(report.scale.atLimit.scanned, 20_000);
+  assert.equal(report.scale.atLimit.exactTotal, true);
+  assert(report.scale.atLimit.overlappingStakeCalls > 0 && report.scale.atLimit.overlappingSettlementCalls > 0);
+  assert.equal(report.scale.overLimit.outcome, 'scan-limit');
+  assert.equal(report.scale.overLimit.journalRejected, true);
+  assert.equal(report.reports.player.rows, 10_000);
+  assert.equal(report.scale.csvAmountsAndBalancesMatch, true);
+  assert.equal(report.scale.ok, true);
+  const { accountCount, timestampCount, totals } = report.scale.mixedHistory;
+  assert.equal(accountCount, 17);
+  assert(timestampCount > 9_000);
+  assert.deepEqual(totals.map(({ category, movement, count, amountUnits, feeUnits }: {
+    category: string | null; movement: string; count: number; amountUnits: number | null; feeUnits: number | null;
+  }) => [category, movement, count, amountUnits, feeUnits]), [
+    ['casino', 'stake', 6300, -756000, null], ['casino', 'payout', 6300, 748310, null],
+    ['pvp', 'reserve', 2000, -300000, null], ['pvp', 'refund', 400, 60000, null], ['pvp', 'payout', 800, 228000, null],
+    ['totalizator', 'stake', 960, -256000, null], ['totalizator', 'refund', 192, 51200, null],
+    ['totalizator', 'payout', 768, 194560, null], [null, 'deposit', 2280, 1416000, null],
+    ['pvp', 'fee', 0, null, 12000], ['totalizator', 'fee', 0, null, 10240],
+  ]);
+  assert.equal(report.pilotGate.maxP95GrowthPercent, 10);
+  assert.equal(report.pilotGate.noWalletErrorsOrTimeouts, true);
+  assert.equal(report.capture.gaps, 0);
+  assert.equal(report.reports.admission.serialVerified, true);
+  assert.equal(report.ok, report.pilotGate.ok);
+  assert.equal(exitCode, report.ok ? 0 : 1);
 });
 
 test('pilot gate measures audited wallets without reports and exits according to the fixed comparison', { timeout: 35_000 }, async t => {

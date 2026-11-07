@@ -1,6 +1,7 @@
 import { identifier, type PostgresDatabase } from '../database';
 import { applySchemaMigration } from '../database-migrations';
 import type { AuditSourceSchemas } from './datasets';
+import { auditExportReaderProjectionGuard } from './report-export-slot';
 import { auditPostingProjectionSql } from './report-player-source';
 
 export const summaryColumns = [
@@ -39,7 +40,7 @@ export async function installAuditSummaryReport(db: PostgresDatabase, readerRole
   const fn = a + '.audit_report_summary', signature = fn + '(uuid)';
   await db.transaction(async () => {
     await db.exec(`CREATE OR REPLACE FUNCTION ${fn}(job uuid) RETURNS jsonb
-      LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path=pg_catalog,pg_temp
+      LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path=pg_catalog,pg_temp
       SET plan_cache_mode=force_custom_plan AS $summary$
       DECLARE j record;
       DECLARE report jsonb;
@@ -56,6 +57,7 @@ export async function installAuditSummaryReport(db: PostgresDatabase, readerRole
             AND acl.source_namespace IN (${demo},${pending},${crypto})) THEN
           RAISE EXCEPTION 'Audit report access denied' USING ERRCODE='42501';
         END IF;
+        ${auditExportReaderProjectionGuard(db.schema, 'job', 'summary')}
 
         WITH allowed AS MATERIALIZED (
           SELECT source_namespace FROM ${a}.audit_report_acl

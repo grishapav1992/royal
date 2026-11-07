@@ -1,5 +1,6 @@
 import { identifier, type PostgresDatabase } from '../database';
 import type { AuditSourceSchemas } from './datasets';
+import { auditExportReaderSlotGuard } from './report-export-slot';
 
 const validName = (name: string) => /^[a-z_][a-z0-9_]{0,62}$/.test(name);
 const uuidPattern = '^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$';
@@ -28,7 +29,17 @@ export async function installAuditReplayReport(db: PostgresDatabase, readerRole:
       AND l.operation_id=r.operation_id AND l.created_at=r.occurred_at_ms
   ))`).join('\n');
   const acl = a + '.audit_report_acl', refs = a + '.audit_posting_refs', opening = a + '.audit_opening_obligations';
-  const fn = a + '.audit_report_replay';
+  const fn = a + '.audit_report_replay', projection = a + '.audit_report_replay_projection';
+  const reader = identifier(readerRole);
+  const authorizeJob = `SELECT e.dataset_id,e.filters,d.environment INTO j FROM ${a}.audit_export_jobs e
+        JOIN ${a}.audit_datasets d ON d.id=e.dataset_id
+        WHERE e.id=p_job AND e.operator_name=session_user AND e.kind='replay' AND e.status='running'
+          AND e.expires_at>clock_timestamp();
+        IF NOT FOUND OR NOT EXISTS (
+          SELECT 1 FROM ${acl} WHERE operator_name=session_user AND dataset_id=j.dataset_id
+        ) THEN
+          RAISE EXCEPTION 'Audit report access denied' USING ERRCODE='42501';
+        END IF;`;
   const demoPosting = `l.id=r.source_row_id AND l.account_id=r.account_id
     AND l.operation_id=r.operation_id AND l.created_at=r.occurred_at_ms`;
   const pvpKeys = "('pvp:'||v_entity||':hold','pvp:'||v_entity||':final')";
@@ -40,9 +51,10 @@ export async function installAuditReplayReport(db: PostgresDatabase, readerRole:
      ))`;
 
   await db.transaction(async () => {
-    await db.exec(`CREATE OR REPLACE FUNCTION ${fn}(p_job uuid) RETURNS jsonb
-      LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path=pg_catalog,pg_temp
-      SET plan_cache_mode=force_custom_plan AS $replay_report$
+    // The byte preflight, fragment aggregation and authorization read the same snapshot.
+    await db.exec(`CREATE OR REPLACE FUNCTION ${projection}(p_job uuid) RETURNS jsonb
+      LANGUAGE plpgsql STABLE SECURITY INVOKER SET search_path=pg_catalog,pg_temp
+      SET plan_cache_mode=force_custom_plan AS $replay_projection$
       DECLARE
         j record;
         v_manifest jsonb;
@@ -56,18 +68,7 @@ export async function installAuditReplayReport(db: PostgresDatabase, readerRole:
         v_bytes bigint;
         v_absent CONSTANT jsonb := '{"status":"absent"}'::jsonb;
       BEGIN
-        IF current_setting('transaction_isolation')<>'read committed' OR pg_current_xact_id_if_assigned() IS NOT NULL THEN
-          RAISE EXCEPTION 'Audit report requires a separate committed job' USING ERRCODE='42501';
-        END IF;
-        SELECT e.dataset_id,e.filters,d.environment INTO j FROM ${a}.audit_export_jobs e
-        JOIN ${a}.audit_datasets d ON d.id=e.dataset_id
-        WHERE e.id=p_job AND e.operator_name=session_user AND e.kind='replay' AND e.status='running'
-          AND e.expires_at>clock_timestamp();
-        IF NOT FOUND OR NOT EXISTS (
-          SELECT 1 FROM ${acl} WHERE operator_name=session_user AND dataset_id=j.dataset_id
-        ) THEN
-          RAISE EXCEPTION 'Audit report access denied' USING ERRCODE='42501';
-        END IF;
+        ${authorizeJob}
         IF NOT EXISTS (SELECT 1 FROM ${acl} WHERE operator_name=session_user AND dataset_id=j.dataset_id
           AND source_namespace=${demo}) THEN RETURN v_absent; END IF;
 
@@ -185,8 +186,22 @@ export async function installAuditReplayReport(db: PostgresDatabase, readerRole:
         ) THEN RETURN '{"status":"corrupt"}'::jsonb; END IF;
         RETURN jsonb_build_object('status','candidate','manifest',v_manifest,'fragments',v_fragments);
       END
+      $replay_projection$;
+      REVOKE ALL ON FUNCTION ${projection}(uuid) FROM PUBLIC,${reader};
+
+      CREATE OR REPLACE FUNCTION ${fn}(p_job uuid) RETURNS jsonb
+      LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $replay_report$
+      DECLARE j record;
+      BEGIN
+        IF current_setting('transaction_isolation')<>'read committed' OR pg_current_xact_id_if_assigned() IS NOT NULL THEN
+          RAISE EXCEPTION 'Audit report requires a separate committed job' USING ERRCODE='42501';
+        END IF;
+        ${authorizeJob}
+        ${auditExportReaderSlotGuard(db.schema)}
+        RETURN ${projection}(p_job);
+      END
       $replay_report$;
       REVOKE ALL ON FUNCTION ${fn}(uuid) FROM PUBLIC;
-      GRANT EXECUTE ON FUNCTION ${fn}(uuid) TO ${identifier(readerRole)}`);
+      GRANT EXECUTE ON FUNCTION ${fn}(uuid) TO ${reader}`);
   }, { lockKey: 'audit-report-replay-install' });
 }

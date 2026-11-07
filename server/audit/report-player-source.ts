@@ -1,6 +1,7 @@
 import { identifier, type PostgresDatabase } from '../database';
 import { applySchemaMigration } from '../database-migrations';
 import type { AuditSourceSchemas } from './datasets';
+import { auditExportReaderProjectionGuard } from './report-export-slot';
 
 export const playerColumns = [
   'schema_version', 'dataset_id', 'environment', 'source', 'posting_id', 'account_id', 'occurred_at',
@@ -202,6 +203,7 @@ export async function installAuditPlayerReport(db: PostgresDatabase, readerRole:
            NOT (cursor_at IS NULL AND cursor_source IS NULL AND cursor_id IS NULL)) THEN
           RAISE EXCEPTION 'Invalid audit page' USING ERRCODE='22023';
         END IF;
+        ${auditExportReaderProjectionGuard(db.schema, 'job', 'player')}
         RETURN (
           WITH refs AS MATERIALIZED (
             SELECT r.* FROM ${a}.audit_posting_refs r

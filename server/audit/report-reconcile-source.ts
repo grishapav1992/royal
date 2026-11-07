@@ -212,37 +212,18 @@ export async function installAuditReconcileReport(db: PostgresDatabase, readerRo
   const auxiliarySourceMissing = `EXISTS (SELECT 1 FROM pg_catalog.unnest(v_request.required_sources) n(source_namespace)
     WHERE NOT EXISTS (SELECT 1 FROM ${acl} a WHERE a.dataset_id=v_dataset
       AND a.operator_name=SESSION_USER AND a.source_namespace=n.source_namespace))`;
-  const chooseAction = `CASE
+  const chooseAction = (retryEnabled: boolean) => `CASE${retryEnabled ? `
+    WHEN v_retry AND v_request.status='failed' AND (v_cursor IS NULL OR v_cursor=v_request.scan_cursor) THEN 'retry'
+    WHEN v_retry THEN NULL` : ''}
     WHEN v_cursor IS NULL AND v_request.request_id IS NULL THEN 'start'
     WHEN v_cursor IS NULL AND v_refresh AND v_request.status IN ('ready','failed') THEN 'refresh'
     WHEN v_cursor IS NOT NULL AND v_request.status='ready' AND v_request.scan_next_cursor=v_cursor THEN 'advance'
     ELSE NULL END`;
-  await applySchemaMigration(db, { id: 'paid-activity-audit-period-continuation-v1', statements: [
-    `ALTER TABLE ${requests}
-      ADD COLUMN scan_owner name,
-      ADD COLUMN scan_cursor uuid,
-      ADD COLUMN scan_next_cursor uuid,
-      ADD COLUMN scan_manifest jsonb CHECK (pg_catalog.jsonb_typeof(scan_manifest)='object'
-        AND pg_catalog.octet_length(scan_manifest::text)<=${maxManifestBytes}),
-      ADD COLUMN scan_offset integer NOT NULL DEFAULT 0,
-      ADD CHECK (
-        (scan_owner IS NULL AND scan_cursor IS NULL AND scan_next_cursor IS NULL AND scan_manifest IS NULL AND scan_offset=0) OR
-        (scan_owner IS NOT NULL AND posting_id IS NULL AND scan_offset>=0 AND scan_offset<${AUDIT_RECONCILE_SCAN_MAX_POSTINGS}
-          AND scan_offset % ${AUDIT_RECONCILE_PAGE_SIZE}=0 AND (scan_offset=0)=(scan_cursor IS NULL)
-          AND (scan_next_cursor IS NULL OR
-            (status='ready' AND scan_manifest IS NOT NULL AND scan_next_cursor IS DISTINCT FROM scan_cursor)))
-      )`,
-    `DROP INDEX ${schema}.audit_reconcile_period_key`,
-    `CREATE UNIQUE INDEX audit_reconcile_period_key ON ${requests}(dataset_id,source_namespace,from_ms,to_ms,account_id)
-      WHERE posting_id IS NULL AND scan_owner IS NULL`,
-    `CREATE UNIQUE INDEX audit_reconcile_period_page_key ON ${requests}(dataset_id,source_namespace,from_ms,to_ms,account_id,scan_owner)
-      WHERE posting_id IS NULL AND scan_owner IS NOT NULL`,
-    readPeriodSql(true),
-    `CREATE FUNCTION ${readPage}(p_job uuid,p_enqueue boolean) RETURNS jsonb
+  const readPageSql = (retryEnabled: boolean) => `CREATE ${retryEnabled ? 'OR REPLACE ' : ''}FUNCTION ${readPage}(p_job uuid,p_enqueue boolean) RETURNS jsonb
       LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
       DECLARE
         v_dataset uuid; v_environment text; v_filters jsonb; v_source text;
-        v_from bigint; v_to bigint; v_account text; v_cursor uuid; v_refresh boolean;
+        v_from bigint; v_to bigint; v_account text; v_cursor uuid; v_refresh boolean;${retryEnabled ? ' v_retry boolean;' : ''}
         v_request ${requests}%ROWTYPE; v_action text; v_status text; v_visible boolean; v_changed bigint := 0;
       BEGIN
         IF p_enqueue IS NULL THEN RAISE EXCEPTION 'Invalid reconciliation request' USING ERRCODE='22023'; END IF;
@@ -260,15 +241,16 @@ export async function installAuditReconcileReport(db: PostgresDatabase, readerRo
         v_source := v_filters->>'source'; v_from := (v_filters->>'fromMs')::bigint; v_to := (v_filters->>'toMs')::bigint;
         v_account := COALESCE(v_filters->>'accountId','');
         v_cursor := (v_filters->>'cursor')::uuid;
-        v_refresh := COALESCE((v_filters->>'refresh')::boolean,false);
+        v_refresh := COALESCE((v_filters->>'refresh')::boolean,false);${retryEnabled ? `
+        v_retry := COALESCE((v_filters->>'retry')::boolean,false);` : ''}
         ${lookupPage};
-        v_action := ${chooseAction};
+        v_action := ${chooseAction(retryEnabled)};
         IF p_enqueue AND v_action IS NOT NULL AND NOT ${auxiliarySourceMissing} THEN
           IF NOT pg_catalog.pg_try_advisory_xact_lock(pg_catalog.hashtextextended('${db.schema}:audit-reconcile-queue',0)) THEN
             v_status := 'queue-busy';
           ELSE
             ${lookupPage} FOR UPDATE;
-            v_action := ${chooseAction};
+            v_action := ${chooseAction(retryEnabled)};
             IF ${auxiliarySourceMissing} THEN
               v_status := 'source-unavailable';
             ELSIF v_action IS NOT NULL AND
@@ -285,7 +267,11 @@ export async function installAuditReconcileReport(db: PostgresDatabase, readerRo
                 scan_offset=0,scan_cursor=NULL,scan_next_cursor=NULL,scan_manifest=NULL
                 WHERE request_id=v_request.request_id;
               GET DIAGNOSTICS v_changed = ROW_COUNT;
-            ELSIF v_action='advance' THEN
+${retryEnabled ? `            ELSIF v_action='retry' THEN
+              UPDATE ${requests} SET status='queued',requested_at=pg_catalog.clock_timestamp(),finished_at=NULL
+                WHERE request_id=v_request.request_id;
+              GET DIAGNOSTICS v_changed = ROW_COUNT;
+` : ''}            ELSIF v_action='advance' THEN
               IF v_request.result #>> '{page,offset}' IS DISTINCT FROM v_request.scan_offset::text OR
                   v_request.result #>> '{page,processed}' IS DISTINCT FROM '${AUDIT_RECONCILE_PAGE_SIZE}' OR
                   v_request.result #> '{page,hasMore}' IS DISTINCT FROM 'true'::jsonb OR
@@ -327,8 +313,31 @@ export async function installAuditReconcileReport(db: PostgresDatabase, readerRo
           'cursor',CASE WHEN v_visible THEN v_request.scan_cursor END,
           'nextCursor',CASE WHEN v_status='ready' THEN v_request.scan_next_cursor END);
       END
-      $audit$`,
+      $audit$`;
+  await applySchemaMigration(db, { id: 'paid-activity-audit-period-continuation-v1', statements: [
+    `ALTER TABLE ${requests}
+      ADD COLUMN scan_owner name,
+      ADD COLUMN scan_cursor uuid,
+      ADD COLUMN scan_next_cursor uuid,
+      ADD COLUMN scan_manifest jsonb CHECK (pg_catalog.jsonb_typeof(scan_manifest)='object'
+        AND pg_catalog.octet_length(scan_manifest::text)<=${maxManifestBytes}),
+      ADD COLUMN scan_offset integer NOT NULL DEFAULT 0,
+      ADD CHECK (
+        (scan_owner IS NULL AND scan_cursor IS NULL AND scan_next_cursor IS NULL AND scan_manifest IS NULL AND scan_offset=0) OR
+        (scan_owner IS NOT NULL AND posting_id IS NULL AND scan_offset>=0 AND scan_offset<${AUDIT_RECONCILE_SCAN_MAX_POSTINGS}
+          AND scan_offset % ${AUDIT_RECONCILE_PAGE_SIZE}=0 AND (scan_offset=0)=(scan_cursor IS NULL)
+          AND (scan_next_cursor IS NULL OR
+            (status='ready' AND scan_manifest IS NOT NULL AND scan_next_cursor IS DISTINCT FROM scan_cursor)))
+      )`,
+    `DROP INDEX ${schema}.audit_reconcile_period_key`,
+    `CREATE UNIQUE INDEX audit_reconcile_period_key ON ${requests}(dataset_id,source_namespace,from_ms,to_ms,account_id)
+      WHERE posting_id IS NULL AND scan_owner IS NULL`,
+    `CREATE UNIQUE INDEX audit_reconcile_period_page_key ON ${requests}(dataset_id,source_namespace,from_ms,to_ms,account_id,scan_owner)
+      WHERE posting_id IS NULL AND scan_owner IS NOT NULL`,
+    readPeriodSql(true),
+    readPageSql(false),
     `REVOKE ALL ON FUNCTION ${readPage}(uuid,boolean) FROM PUBLIC`,
     `GRANT EXECUTE ON FUNCTION ${readPage}(uuid,boolean) TO ${reader}`,
   ] });
+  await applySchemaMigration(db, { id: 'paid-activity-audit-period-retry-v1', statements: [readPageSql(true)] });
 }
