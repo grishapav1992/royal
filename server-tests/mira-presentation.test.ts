@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { MiraRoutine, MIRA_HOME, miraSeatAmount } from '../src/shared/miraRoutine';
+import { MiraRoutine, MIRA_COUNTER_FRONT_Y, MIRA_HOME, MIRA_SEAT, miraSeatAmount, type MiraView } from '../src/shared/miraRoutine';
 import { BAR_APPROACH } from '../src/shared/world';
 import { Bartender } from '../server/bartender';
 import { LobbyState, Player } from '../server/state';
@@ -13,6 +13,37 @@ test('an uninterrupted shift reaches seated rest after the first job and complet
   }
   assert.ok(firstSit>7&&firstSit<=12,'First seated rest must be visible after the first job, within the designed 12-second window');
   for(const action of ['polish','walk','sit-down','sit','stand-up','wipe','stock'])assert.ok(seen.has(action),action);
+});
+
+test('Mira rounds the left end of the bar in both directions and holds the front seat',()=>{
+  const r=new MiraRoutine(), path:MiraView[]=[];
+  for(let tick=0;tick<500;tick++){
+    r.tick(.05);path.push({...r.state});
+    if(path.some(p=>p.action==='stand-up')&&r.state.action==='walk'&&r.state.x===MIRA_HOME.x&&r.state.y===MIRA_HOME.y)break;
+  }
+  const start=path.findIndex(p=>p.action==='walk');
+  const phases=path.slice(start).map(p=>p.action).filter((p,i,a)=>p!==a[i-1]);
+  assert.deepEqual(phases,['walk','sit-down','sit','stand-up','walk']);
+  assert.deepEqual({x:path.at(-1)!.x,y:path.at(-1)!.y},MIRA_HOME);
+  const seated=path.filter(p=>p.action==='sit');
+  assert.ok(seated.length>=36&&seated.length<=40);
+  assert.ok(seated.every(p=>p.x===MIRA_SEAT.x&&p.y===MIRA_SEAT.y));
+  const crossings=path.filter((p,i)=>i>0&&(p.y>MIRA_COUNTER_FRONT_Y)!==(path[i-1].y>MIRA_COUNTER_FRONT_Y));
+  assert.equal(crossings.length,2);
+  assert.ok(crossings.every(p=>p.x<107&&p.action==='walk'));
+});
+
+test('an order during the outgoing walk turns Mira back along the same side of the counter',()=>{
+  const r=new MiraRoutine();
+  for(let n=0;n<250&&!(r.state.action==='walk'&&r.state.y>MIRA_COUNTER_FRONT_Y);n++)r.tick(.05);
+  assert.equal(r.state.action,'walk');assert.ok(r.state.y>MIRA_COUNTER_FRONT_Y);
+  for(let n=0;n<120&&r.state.action!=='serve';n++){
+    const previous={...r.state};r.tick(.05,true);
+    if(previous.y>MIRA_COUNTER_FRONT_Y&&r.state.y<=MIRA_COUNTER_FRONT_Y)assert.ok(r.state.x<107);
+    assert.notEqual(r.state.action,'sit-down');
+    assert.ok(Math.hypot(r.state.x-previous.x,r.state.y-previous.y)<=5.26);
+  }
+  assert.equal(r.state.action,'serve');assert.deepEqual({x:r.state.x,y:r.state.y},MIRA_HOME);
 });
 
 test('seated rest rises before service, keeps its position and resumes the staff routine', () => {

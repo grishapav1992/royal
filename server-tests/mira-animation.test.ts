@@ -60,6 +60,17 @@ test('wipe plays 24 registered poses per sweep and holds the final pose when the
   assert.equal(sampleMiraFrame(view('wipe',.9),true).frame,3);
 });
 
+test('seating and rising share the same registered poses and seated rest moves only through its idle cycle',()=>{
+  for(let frame=0;frame<24;frame++){
+    const p=frame/23;
+    assert.equal(sampleMiraFrame(view('sit-down',p)).frame,frame);
+    assert.equal(sampleMiraFrame(view('stand-up',1-p)).frame,frame);
+    assert.equal(sampleMiraFrame(view('sit',(frame+.5)/24)).frame,24+frame);
+    assert.equal(sampleMiraFrame(view('sit',p),true).frame,24);
+  }
+  assert.equal(sampleMiraFrame(view('sit',1)).frame,24);
+});
+
 test('reduced motion holds repeated work and conversational gestures but retains meaningful service phases',()=>{
   for(const action of ['walk','wipe','polish','greet','listen','chat'] as const){
     const first=sampleMiraFrame(view(action,.1),true);
@@ -78,5 +89,5 @@ test('every painted pose is reachable through a real action, including all four 
   for(const [atlas,spec] of Object.entries(MIRA_ATLASES)){
     for(let frame=atlas==='work'?8:0;frame<spec.columns*spec.rows;frame++)assert.ok(reached.has(atlas+':'+frame),atlas+':'+frame);
   }
-  assert.equal(reached.size,88);
+  assert.equal(reached.size,128);
 });
