@@ -15,6 +15,7 @@ import type { CabinetPlayResult } from '../shared/cabinetSeating';
 import type { ChatRequest, ChatResult } from '../shared/chat';
 import type { PvpSnapshot } from '../shared/pvp';
 import type { PlayerRecoveryResult } from '../shared/playerRecovery';
+import type { VoiceResult } from '../shared/voice';
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
 export class LobbyClient {
   private client = new Client(import.meta.env.VITE_SERVER_URL || `${location.origin}${import.meta.env.DEV ? '/multiplayer' : ''}`, { fetchFn: lobbyMatchmakingFetch });
@@ -50,6 +51,8 @@ export class LobbyClient {
     players: (players: PlayerView[], selfId: string) => void;
     chat: (message: ChatMessage) => void;
     delivery?: (result: ChatResult) => void;
+    voiceAvailable?: (available: boolean) => void;
+    voiceResult?: (result: VoiceResult) => void;
     pvp?:(value:PvpSnapshot)=>void;
     pvpResult?:(value:{requestId:string;error:string;rejected:boolean})=>void;
     history: (messages: ChatMessage[]) => void;
@@ -120,6 +123,8 @@ export class LobbyClient {
       onMessage('security', (decision: SecurityDecision) => { if(decision.kind === 'ejecting') banUntil = decision.until; this.events.security(decision); });
       onMessage('ejected', (value: {until: number}) => { banUntil = value.until; this.events.ejected(value.until); });
       onMessage('chat-check', value => this.events.checking(Boolean(value)));
+      onMessage('voice-available', (value: boolean) => this.events.voiceAvailable?.(value));
+      onMessage('voice-result', (value: VoiceResult) => this.events.voiceResult?.(value));
       onMessage('chat-result', (result: ChatResult) => {
         if (result && typeof result.id === 'string' && ['queued', 'published', 'rejected', 'cancelled'].includes(result.status)) {
           this.events.delivery?.({ ...result, message: result.message ? translateText(result.message) : undefined });

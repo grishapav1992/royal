@@ -486,6 +486,7 @@ async function changeMode(next: EntryMode) {
     worldGame?.loop.wake();
     room.setLocked(Boolean(document.querySelector('dialog[open]')) || Boolean(social && social.client.status !== 'connected'));
   } else {
+    social?.leaveLocationVoice();
     room.cancelMovement(); room.endCabinet(); social?.client.releaseCabinet();
     room.setLocked(true); worldGame?.loop.sleep();
     if (!casinoCatalog) casinoCatalog = new RoyalPlatformCatalog($('#casino-catalog'), choice => {

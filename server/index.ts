@@ -19,6 +19,7 @@ import { LobbyRoom } from './LobbyRoom';
 import { installAuth } from './authRoutes';
 import { accounts } from './accounts';
 import { installFinanceAdmin } from './admin/routes';
+import { voice } from './voice';
 
 const port = Number(process.env.PORT || 2567);
 let stopTote: (() => void) | undefined;
@@ -40,6 +41,7 @@ const server = defineServer({
     });
     installPaymentMethods(app);
     installAuth(app);
+    voice?.install(app);
     installCaribbeanCrew(app);
     installStarSpinCollection(app);
     installFinanceAdmin(app);

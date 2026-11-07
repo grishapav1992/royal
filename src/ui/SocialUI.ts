@@ -2,6 +2,7 @@ import { t as translateText, tr, locale, translateMessage } from '../i18n/index'
 import { SecurityUI } from './SecurityUI';
 import { installGameChat } from './GameChat';
 import { ChatMedia } from './ChatMedia';
+import { VoiceChat } from './VoiceChat';
 import { prefetchDemoGames } from '../game/demoGames';
 import { AuthUI } from './AuthUI';
 import type { ActivitiesUI } from './ActivitiesUI';
@@ -46,6 +47,7 @@ export class SocialUI {
   private newMessages: HTMLButtonElement;
   private media: ChatMedia;
   private gameChat: ReturnType<typeof installGameChat>;
+  private voiceChat: VoiceChat;
   private outgoing = new Map<string, OutgoingMessage>();
   private outbox = document.createElement('div');
   private deliveryStatus = document.createElement('p');
@@ -66,6 +68,7 @@ export class SocialUI {
     const dock=document.createElement('aside');dock.className='chat-dock';dock.setAttribute('aria-label',translateText('Общий чат клуба'));dock.append(chat);
     document.querySelector('.workspace')!.append(dock);document.querySelector('.workspace')!.classList.add('with-chat');
     this.gameChat = installGameChat(dock, document.querySelector<HTMLDialogElement>('#mini-dialog')!);
+    this.voiceChat = new VoiceChat(chat, { send: (type, value) => this.client.send(type, value) });
     catalog.hidden = false;
     this.people = chat.querySelector<HTMLDivElement>('#people-list')!;
     this.list = chat.querySelector<HTMLDivElement>('#chat-log')!;
@@ -104,7 +107,7 @@ export class SocialUI {
       cat: cat => this.scene.syncCat(cat),
       guards: guards => this.scene.syncGuards(guards),
       mira: mira => this.scene.syncMira(mira),
-      security: decision => { this.sanctioned = true; this.security.intervention(decision); this.chatAvailability(); },
+      security: decision => { this.voiceChat.clear(); this.sanctioned = true; this.security.intervention(decision); this.chatAvailability(); },
       ejected: until => this.security.ejected(until),
       checking: value => { this.checking = value; this.chatAvailability(); },
       status: status => this.connectionStatus(status),
@@ -129,6 +132,8 @@ export class SocialUI {
         if (fresh && !message.system && message.senderId !== this.selfId) this.gameChat.messageReceived();
       },
       delivery: result => this.chatResult(result),
+      voiceAvailable: available => this.voiceChat.voice.setAvailable(available),
+      voiceResult: result => this.voiceChat.voice.receive(result),
       history: messages => { messages.forEach(message => this.addMessage(message)); },
       notice: message => this.toast(message),
       activities: state => this.activities?.update(state),
@@ -154,6 +159,8 @@ export class SocialUI {
   }
   private connectionStatus(status: ConnectionStatus) {
     this.pvp?.client.setConnected(status==='connected');
+    if (status === 'connected') this.client.send('voice-status');
+    else this.voiceChat.clear();
     if (status !== 'connected') {
       this.checking = false;
       for (const entry of this.outgoing.values()) if (entry.status === 'sending' || entry.status === 'queued') {
@@ -280,6 +287,7 @@ export class SocialUI {
     this.media?.prune(); this.chatAvailability(); this.restoreChatPosition();
   }
   private updatePlayers(players: PlayerView[], selfId: string) {
+    this.voiceChat.updatePlayers(players, selfId, this.scene.presentation === 'club' && this.client.status === 'connected');
     this.scene.syncPlayers(players, selfId);
     const self = players.find(player => player.id === selfId);
     if (self) { this.sanctioned = Boolean(self.security); this.chatAvailability(); }
@@ -303,6 +311,10 @@ export class SocialUI {
       if(!tag.parentElement)this.people.append(tag);
     }
     for(const tag of tags.values())tag.remove();
+  }
+  leaveLocationVoice() {
+    this.voiceChat.clear();
+    this.client.send('voice-leave');
   }
   private addMessage(message: ChatMessage) {
     if (message.requestId) this.removeOutgoing(message.requestId);

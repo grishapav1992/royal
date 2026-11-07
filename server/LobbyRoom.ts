@@ -32,6 +32,8 @@ import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLi
 import { canTravelByElevator, elevatorDock } from '../src/shared/elevator';
 import { intoxicatedMovement } from '../src/shared/intoxication';
 import type { DrinkingState } from './intoxicationStore';
+import { voice, type VoiceAdmission } from './voice';
+import type { VoiceResult } from '../src/shared/voice';
 
 type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatRevision: number; inputs: MovementInputs; predicted: boolean; afterMovement?: () => void };
 const CHAT_REQUEST_ID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
@@ -67,6 +69,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (access) { access.revision++; if (decision.kind === 'ejecting') access.banUntil = decision.until; }
       const p = this.state.players.get(client.sessionId);
       if (!p || p.security === 'ejecting') continue;
+      this.leaveVoice(client.sessionId);
       const control = this.controls.get(client.sessionId); if (control) control.chatRevision++;
       this.activities.leave(client.sessionId); this.releaseCabinet(client.sessionId); this.stop(client.sessionId); this.stand(client.sessionId); p.playing = false;
       this.guards.enqueue(client.sessionId, decision);
@@ -83,6 +86,8 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   private access = new Map<string, Access>();
   private joiningAccounts = new Set<string>();
   private playerAccounts = new Map<string, string>();
+  private voiceSessions = new Map<string, { admission?: VoiceAdmission }>();
+  private voiceJoinAt = new Map<string, number>();
   private refreshingAccess = false;
   private disposed = false;
   private bartender = new Bartender(this.state);
@@ -96,6 +101,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (access) { access.active = false; access.revision++; }
       this.cancelChat(client);
       const player = this.state.players.get(client.sessionId); if (player) player.connected = false;
+      this.leaveVoice(client.sessionId);
       this.releaseCabinet(client.sessionId); this.stop(client.sessionId); client.leave(4001);
     }
   };
@@ -137,6 +143,11 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     accounts.events.on('drinking', this.drinkingListener);
     this.clock.setInterval(() => { void this.refreshAccess().catch(() => console.error('Room access refresh failed')); }, 60000);
     this.clock.setInterval(()=>this.pvp.tick(),1000);
+    this.onMessage('voice-status', client => client.send('voice-available', Boolean(voice)));
+    this.onMessage('voice-join', (client, requestId: unknown) => {
+      if (typeof requestId === 'number' && Number.isSafeInteger(requestId) && requestId > 0) void this.joinVoice(client, requestId);
+    });
+    this.onMessage('voice-leave', client => this.leaveVoice(client.sessionId));
     this.setPatchRate(50);
     let hallElapsed=0;
     this.setSimulationInterval(delta => {
@@ -222,7 +233,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if(!p||!c||(value as {revision?:number})?.revision!==p.hallRevision||p.playing||p.seat||p.action==='drink')return;
       const link=stairWindowLink(p);if(!link)return;
       this.activities.leave(client.sessionId);this.releaseCabinet(client.sessionId);this.stop(client.sessionId);this.stand(client.sessionId);
-      const arrival=playerHallArrival(p.hall,link);p.hall=link.target;p.hallRevision++;Object.assign(p,arrival);c.lastTarget=0;
+      const arrival=playerHallArrival(p.hall,link);this.leaveVoice(client.sessionId);p.hall=link.target;p.hallRevision++;Object.assign(p,arrival);c.lastTarget=0;
       client.send('activities',this.activities.snapshot(client.sessionId));
     });
     // Recovery bypasses queued movement, but never an access restriction or a live shared game.
@@ -249,6 +260,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       }
       this.activities.leave(client.sessionId); this.releaseCabinet(client.sessionId); this.stop(client.sessionId);
       const dock = elevatorDock(target);
+      this.leaveVoice(client.sessionId);
       p.hall = target; p.hallRevision++; p.x = dock.arrival.x; p.y = dock.arrival.y; p.facing = dock.facing;
       control.lastTarget = 0;
       client.send('elevator-result', { requestId, target, accepted: true, revision: p.hallRevision });
@@ -455,6 +467,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     finally { this.joiningAccounts.delete(auth.account.id); }
   }
   onDrop(client: Client, code?: number) {
+    this.leaveVoice(client.sessionId);
     this.bartender.forget(client.sessionId);
     console.info(JSON.stringify({ event: 'lobby-connection', phase: 'drop', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));
     this.cancelChat(client);
@@ -468,6 +481,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     void this.allowReconnection(client, this.pvp.locked(client.sessionId)?60:LOBBY_RECONNECT_GRACE_SECONDS).catch(() => {});
   }
   onDispose() {
+    for (const id of this.voiceSessions.keys()) this.leaveVoice(id);
     this.pvp.stop();
     for (const client of this.clients) this.cancelChat(client);
     this.chatPending.clear(); this.chatResults.clear();
@@ -508,6 +522,8 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     };
   }
   onLeave(client: Client, code?: number) {
+    this.leaveVoice(client.sessionId);
+    this.voiceJoinAt.delete(client.sessionId);
     this.bartender.forget(client.sessionId);
     console.info(JSON.stringify({ event: 'lobby-connection', phase: 'left', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));
     this.cancelChat(client);
@@ -523,6 +539,35 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   private cancelChat(client: Client) {
     const control = this.controls.get(client.sessionId), account = (client.auth as RoomAuth)?.account.id;
     if (control && account) chatQueue.cancel(account, control);
+  }
+  private async joinVoice(client: Client, requestId: number) {
+    const respond = (result: Omit<VoiceResult, 'requestId'>) => client.send('voice-result', { requestId, ...result });
+    if (!voice) { respond({ unavailable: true }); return; }
+    const id = client.sessionId;
+    const player = this.state.players.get(id);
+    const account = this.playerAccounts.get(id);
+    if (!player?.connected || player.security || !account || !this.accessAllowed(client)) { respond({}); return; }
+    const now = Date.now();
+    if (now - (this.voiceJoinAt.get(id) ?? 0) < 500) { respond({}); return; }
+    this.voiceJoinAt.set(id, now);
+    this.leaveVoice(id);
+    const session: { admission?: VoiceAdmission } = {};
+    const hall = player.hall as HallId;
+    this.voiceSessions.set(id, session);
+    const current = () => this.voiceSessions.get(id) === session && player.connected && !player.security
+      && player.hall === hall && this.accessAllowed(client);
+    try {
+      session.admission = await voice.admit(this.roomId, hall, id, account, current);
+      if (current()) respond({ credentials: session.admission?.credentials });
+      else session.admission?.close();
+    } catch {
+      if (current()) { this.leaveVoice(id); respond({}); }
+    }
+  }
+  private leaveVoice(id: string) {
+    const session = this.voiceSessions.get(id);
+    this.voiceSessions.delete(id);
+    session?.admission?.close();
   }
   private accessAllowed(client: Client, allowPendingEject = false) {
     const access = this.access.get(client.sessionId);
@@ -561,7 +606,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
         const [active, until, drinking] = await Promise.all([accounts.active(auth.hash), accounts.moderation.banUntil(auth.account.id), accounts.drinking.read(auth.account.id)]);
         if (this.disposed || this.access.get(client.sessionId) !== access || this.state.players.get(client.sessionId) !== player || access.revision !== revision) return;
         access.active = active; access.banUntil = until; access.drinking = drinking; player.soberAt = drinking.soberAt;
-        if (!active || until > Date.now()) { player.connected = false; this.releaseCabinet(client.sessionId); this.stop(client.sessionId); client.leave(active ? 4003 : 4001); }
+        if (!active || until > Date.now()) { player.connected = false; this.leaveVoice(client.sessionId); this.releaseCabinet(client.sessionId); this.stop(client.sessionId); client.leave(active ? 4003 : 4001); }
       }));
     } finally { this.refreshingAccess = false; }
   }
@@ -648,7 +693,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     if(p.hall==='street'&&link.target==='roof'&&p.stairStep!==ROOF_STAIR_ROUTE.length)return false;
     this.activities.leave(id);this.releaseCabinet(id);this.stop(id);this.stand(id);
     const hall=link.target,arrival=playerHallArrival(p.hall,link);
-    p.hall=hall;p.hallRevision++;Object.assign(p,arrival);c.lastTarget=0;
+    this.leaveVoice(id);p.hall=hall;p.hallRevision++;Object.assign(p,arrival);c.lastTarget=0;
     this.clients.find(client=>client.sessionId===id)?.send('activities',this.activities.snapshot(id));
     return true;
   }

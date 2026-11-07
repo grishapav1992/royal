@@ -1,0 +1,13 @@
+port: 7880
+bind_addresses:
+  - 127.0.0.1
+rtc:
+  tcp_port: 7881
+  udp_port: 7882
+  use_external_ip: true
+keys:
+  REPLACE_WITH_VOICE_API_KEY: REPLACE_WITH_VOICE_API_SECRET
+webhook:
+  api_key: REPLACE_WITH_VOICE_API_KEY
+  urls:
+    - https://game.example.com/internal/voice/events

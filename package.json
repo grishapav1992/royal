@@ -101,6 +101,8 @@
     "@rive-app/webgl2": "2.49.0",
     "chess.js": "^1.4.0",
     "express": "^5.2.1",
+    "livekit-client": "2.23.0",
+    "livekit-server-sdk": "2.19.2",
     "pg": "8.23.1",
     "phaser": "3.90.0",
     "qrcode-generator": "2.0.4",

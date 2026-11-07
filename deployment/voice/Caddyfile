@@ -1,0 +1,20 @@
+{$ROYAL_VOICE_DOMAIN} {
+	@signaling path /rtc /rtc/*
+	handle @signaling {
+		forward_auth {$ROYAL_GAME_ORIGIN} {
+			uri /internal/voice/authorize
+			header_up Host {upstream_hostport}
+			header_up -Connection
+			header_up -Upgrade
+		}
+		reverse_proxy 127.0.0.1:7880
+	}
+
+	handle /twirp/livekit.RoomService/RemoveParticipant {
+		reverse_proxy 127.0.0.1:7880
+	}
+
+	handle {
+		respond 404
+	}
+}

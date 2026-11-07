@@ -1,0 +1,57 @@
+.voice-chat {
+  display: grid;
+  gap: .3rem;
+  padding: .3rem .45rem;
+  font-size: .8rem;
+}
+
+.voice-chat [hidden], .voice-chat[hidden] {
+  display: none;
+}
+
+.voice-chat-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .3rem;
+}
+
+.voice-chat button {
+  min-height: 2rem;
+  padding: .2rem .45rem;
+  font-size: inherit;
+}
+
+.voice-chat [data-transmitting] {
+  touch-action: none;
+  user-select: none;
+}
+
+.voice-chat [data-transmitting="true"], .voice-chat [data-speaking="true"] {
+  font-weight: 700;
+}
+
+.voice-chat ul {
+  display: grid;
+  gap: .2rem;
+  max-height: min(10rem, 25dvh);
+  overflow: auto;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.voice-chat li {
+  display: flex;
+  gap: .5rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.voice-chat li button {
+  flex-shrink: 0;
+}
+
+.voice-chat p {
+  margin: 0;
+}
