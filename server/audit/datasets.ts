@@ -55,7 +55,7 @@ export class AuditDatasets {
   private readonly sources: AuditSourceSchemas;
   private readonly ledgers: string[];
 
-  constructor(private readonly db: PostgresDatabase, sources: AuditSourceSchemas) {
+  constructor(private readonly db: PostgresDatabase, sources: AuditSourceSchemas, options?: { existingSchema?: boolean }) {
     const schemas = [db.schema, sources.game, ...(sources.payments === undefined ? [] : [sources.payments])];
     if (new Set(schemas).size !== schemas.length || schemas.some(schema => !/^[a-z_][a-z0-9_]{0,62}$/.test(schema))) {
       throw new Error('Audit and source schemas must be distinct PostgreSQL schema names');
@@ -65,7 +65,7 @@ export class AuditDatasets {
       ...gameLedgers.map(table => namespace(sources.game, table)),
       ...(sources.payments ? [namespace(sources.payments, 'crypto_ledger')] : []),
     ].sort();
-    this.ready = migrateAuditDatasets(db).then(() => migrateAuditEvidence(db)).then(() => migrateAuditAttemptCapture(db))
+    this.ready = options?.existingSchema ? db.ready : migrateAuditDatasets(db).then(() => migrateAuditEvidence(db)).then(() => migrateAuditAttemptCapture(db))
       .then(() => migrateAuditOperationLookup(db)).then(() => migrateAuditReplayPackages(db)).then(() => migrateAuditRiskSignals(db));
   }
 
@@ -83,12 +83,12 @@ export class AuditDatasets {
     await this.db.exec(`LOCK TABLE ${names.join(', ')} IN SHARE ROW EXCLUSIVE MODE NOWAIT`);
   }
 
-  private async attachCapture() {
+  private async attachCapture(install: boolean) {
     const fn = relation(this.db.schema, 'audit_capture_posting_v1');
     const sources = relation(this.db.schema, 'audit_dataset_sources');
     const datasets = relation(this.db.schema, 'audit_datasets');
     const refs = relation(this.db.schema, 'audit_posting_refs');
-    await this.db.exec(`CREATE OR REPLACE FUNCTION ${fn}() RETURNS trigger
+    if (install) await this.db.exec(`CREATE OR REPLACE FUNCTION ${fn}() RETURNS trigger
       LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog AS $audit$
       BEGIN
         INSERT INTO ${refs}(dataset_id,source_namespace,source_row_id,account_id,operation_id,occurred_at_ms)
@@ -100,17 +100,42 @@ export class AuditDatasets {
       $audit$;
       REVOKE ALL ON FUNCTION ${fn}() FROM PUBLIC`);
     for (const ledger of this.ledgers) {
-      const current = await this.db.prepare(`SELECT tgfoid=to_regprocedure(?) AS correct, tgenabled
+      const current = await this.db.prepare(`SELECT tgfoid=to_regprocedure(?) AS correct, tgenabled,
+        tgdeferrable,tginitdeferred,tgtype
         FROM pg_trigger WHERE tgrelid=to_regclass(?) AND tgname='royal_audit_posting_v1'`).get(fn + '()', ledger);
       if (current) {
-        if (!current.correct || current.tgenabled !== 'O') throw new Error('Conflicting audit capture on ' + ledger);
+        if (!current.correct || current.tgenabled !== 'O' || !current.tgdeferrable || !current.tginitdeferred || current.tgtype !== 5) {
+          throw new Error('Conflicting audit capture on ' + ledger);
+        }
         continue;
       }
+      if (!install) throw new Error('Audit capture is missing on ' + ledger);
       const [schema, table] = ledger.split('.');
       await this.db.exec(`CREATE CONSTRAINT TRIGGER royal_audit_posting_v1
         AFTER INSERT ON ${relation(schema, table)} DEFERRABLE INITIALLY DEFERRED
         FOR EACH ROW EXECUTE FUNCTION ${fn}()`);
     }
+  }
+
+  private async createCheckpoint<E extends 'test' | 'live'>(environment: E) {
+    const { game, payments } = this.sources;
+    const sandbox = await this.optionalTable(game,'nowpayments_sandbox_deposits');
+    const stars = !!payments && await this.optionalTable(payments,'telegram_stars_orders');
+    await this.fence([
+      ...this.ledgers,
+      ...gameCheckpoint.map(table => namespace(game,table)),
+      ...(sandbox ? [namespace(game,'nowpayments_sandbox_deposits')] : []),
+      ...(payments ? paymentCheckpoint.map(table => namespace(payments,table)) : []),
+      ...(payments && stars ? [namespace(payments,'telegram_stars_orders')] : []),
+    ]);
+    await this.attachCapture(environment === 'test');
+    const datasetId = randomUUID();
+    const row = await this.db.prepare(`INSERT INTO audit_datasets(id,environment,started_at_ms)
+      VALUES (?,?,floor(extract(epoch FROM clock_timestamp())*1000)::bigint) RETURNING started_at_ms`).get(datasetId,environment);
+    for (const ledger of this.ledgers) await this.db.prepare('INSERT INTO audit_dataset_sources VALUES (?,?)').run(datasetId,ledger);
+    await this.openingBalances(datasetId);
+    await this.openingObligations(datasetId,sandbox,stars);
+    return { datasetId, environment, startedAtMs: Number(row!.started_at_ms) };
   }
 
   private async openingBalances(id: string) {
@@ -165,25 +190,19 @@ export class AuditDatasets {
         }
         return { datasetId: String(existing.id), environment: 'test' as const, startedAtMs: Number(existing.started_at_ms) };
       }
-      const { game, payments } = this.sources;
-      const sandbox = await this.optionalTable(game,'nowpayments_sandbox_deposits');
-      const stars = !!payments && await this.optionalTable(payments,'telegram_stars_orders');
-      await this.fence([
-        ...this.ledgers,
-        ...gameCheckpoint.map(table => namespace(game,table)),
-        ...(sandbox ? [namespace(game,'nowpayments_sandbox_deposits')] : []),
-        ...(payments ? paymentCheckpoint.map(table => namespace(payments,table)) : []),
-        ...(payments && stars ? [namespace(payments,'telegram_stars_orders')] : []),
-      ]);
-      await this.attachCapture();
-      const datasetId = randomUUID();
-      const row = await this.db.prepare(`INSERT INTO audit_datasets(id,environment,started_at_ms)
-        VALUES (?,'test',floor(extract(epoch FROM clock_timestamp())*1000)::bigint) RETURNING started_at_ms`).get(datasetId);
-      for (const ledger of this.ledgers) await this.db.prepare('INSERT INTO audit_dataset_sources VALUES (?,?)').run(datasetId,ledger);
-      await this.openingBalances(datasetId);
-      await this.openingObligations(datasetId,sandbox,stars);
-      return { datasetId, environment: 'test' as const, startedAtMs: Number(row!.started_at_ms) };
+      return this.createCheckpoint('test');
     }, { lockKey: 'audit-dataset' });
+  }
+
+  /** Used after the validated test rows are removed, in the same cutover transaction. */
+  async startLiveInCleanupTransaction(sealedTestId: string) {
+    if (!this.db.inTransaction || !await this.db.prepare(`SELECT 1 FROM audit_datasets d
+      WHERE d.id=? AND d.environment='test' AND d.sealed_at_ms IS NOT NULL
+      AND NOT EXISTS(SELECT 1 FROM audit_dataset_sources s WHERE s.dataset_id=d.id)
+      AND NOT EXISTS(SELECT 1 FROM audit_datasets active WHERE active.sealed_at_ms IS NULL)`).get(sealedTestId)) {
+      throw new Error('Live audit checkpoint requires a cleaned sealed test dataset');
+    }
+    return this.createCheckpoint('live');
   }
 
   async sealTest(datasetId: string) {

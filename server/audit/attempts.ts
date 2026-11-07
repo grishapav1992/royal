@@ -107,19 +107,21 @@ export class AuditAttemptRecorder {
   }
 }
 
-/** Operator provisions and starts the test dataset before enabling the transport observer. */
+/** Operator provisions the active dataset before enabling the transport observer. */
 export function startAuditAttemptRuntime(env: NodeJS.ProcessEnv = process.env, gameSchema?: string) {
-  const schema = env.ROYAL_AUDIT_SCHEMA, datasetId = env.ROYAL_AUDIT_TEST_DATASET_ID;
-  if (schema === undefined && datasetId === undefined) return;
-  if (!schema || !/^[a-z_][a-z0-9_]{0,62}$/.test(schema) || !datasetId ||
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(datasetId)) {
-    throw new Error('Audit attempts require a valid schema and test dataset ID');
+  const schema = env.ROYAL_AUDIT_SCHEMA, test = env.ROYAL_AUDIT_TEST_DATASET_ID, live = env.ROYAL_AUDIT_LIVE_DATASET_ID;
+  const configuredId = live ?? test;
+  if (schema === undefined && configuredId === undefined) return;
+  if ((live !== undefined && test !== undefined) || !schema || !/^[a-z_][a-z0-9_]{0,62}$/.test(schema) || !configuredId ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(configuredId)) {
+    throw new Error('Audit attempts require a valid schema and exactly one test or live dataset ID');
   }
+  const datasetId = configuredId.toLowerCase();
   const db = new PostgresDatabase(schema, { existingSchema: true, config: {
     ...databaseConfig(env), max: 1, statement_timeout: 2000, lock_timeout: 500, application_name: 'royal/audit-attempts',
   } });
   const producerId = randomUUID();
-  const scope: AuditScope = { datasetId, environment: 'test' };
+  const scope: AuditScope = { datasetId, environment: live !== undefined ? 'live' : 'test' };
   const chess = env.ROYAL_AUDIT_CHESS_REPLAY === '1' && gameSchema ? chessReplayWriter(db, scope, gameSchema) : undefined;
   const combat = env.ROYAL_AUDIT_COMBAT_REPLAY === '1' && gameSchema ? combatReplayWriter(db, scope, gameSchema) : undefined;
   const tote = env.ROYAL_AUDIT_TOTE_ADMISSION === '1' && gameSchema ? toteAdmissionWriter(db, scope, gameSchema) : undefined;
@@ -127,10 +129,10 @@ export function startAuditAttemptRuntime(env: NodeJS.ProcessEnv = process.env, g
   const writer: CaptureWriter = {
     record: attempt => evidence.record(attempt),
     gap: gap => db.prepare(`INSERT INTO audit_attempt_capture_gaps(dataset_id,producer_id,missing_count,first_at_ms,last_at_ms)
-      SELECT id,?, ?, ?, ? FROM audit_datasets WHERE id=? AND environment='test' AND sealed_at_ms IS NULL FOR SHARE
+      SELECT id,?, ?, ?, ? FROM audit_datasets WHERE id=? AND environment=? AND sealed_at_ms IS NULL FOR SHARE
       ON CONFLICT(dataset_id,producer_id) DO UPDATE SET missing_count=EXCLUDED.missing_count,
       first_at_ms=EXCLUDED.first_at_ms,last_at_ms=EXCLUDED.last_at_ms`)
-      .run(producerId, gap.count, gap.firstAtMs, gap.lastAtMs, datasetId),
+      .run(producerId, gap.count, gap.firstAtMs, gap.lastAtMs, datasetId, scope.environment),
   };
   const recorder = new AuditAttemptRecorder(scope, writer, count => {
     console.warn(JSON.stringify({ event: 'audit-attempt-capture-gap', datasetId, producerId, missingCount: count }));

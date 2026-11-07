@@ -92,6 +92,8 @@
     "test:progression:ui": "playwright test --config=playwright.progression.config.ts",
     "progression:report": "node --env-file-if-exists=.env --import tsx scripts/progression-report.ts",
     "audit": "node --import tsx scripts/audit.ts",
+    "audit:cleanup": "node --import tsx scripts/audit-cleanup.ts",
+    "audit:load": "node --import tsx scripts/audit-load.ts",
     "audit:reconcile-worker": "node --import tsx scripts/audit-reconcile-worker.ts",
     "audit:replay-prepare": "node --import tsx scripts/audit-replay-prepare.ts",
     "audit:risk": "node --import tsx scripts/audit-risk.ts",
