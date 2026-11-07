@@ -5,6 +5,7 @@ type Options<T> = {
   teleportDistance?: number;
   now?: () => number;
   isMoving?: (view: T) => boolean;
+  interpolate?: (from: T, to: T, amount: number) => Partial<T>;
 };
 
 /** Renders a short history of authoritative NPC positions without extrapolating. */
@@ -15,12 +16,14 @@ export class NpcMotion<T extends Position> {
   private readonly teleportDistance: number;
   private readonly now: () => number;
   private readonly isMoving?: (view: T) => boolean;
+  private readonly interpolate?: Options<T>['interpolate'];
 
   constructor(options: Options<T> = {}) {
     this.delayMs = Math.max(0, options.delayMs ?? 150);
     this.teleportDistance = Math.max(0, options.teleportDistance ?? 160);
     this.now = options.now ?? (() => performance.now());
     this.isMoving = options.isMoving;
+    this.interpolate = options.interpolate;
   }
 
   reset(view?: T, at = this.now()) {
@@ -77,6 +80,7 @@ export class NpcMotion<T extends Position> {
     const discrete = travels && this.isMoving && !this.isMoving(from.view) && this.isMoving(to.view) ? to.view : from.view;
     return {
       ...discrete,
+      ...this.interpolate?.(from.view, to.view, amount),
       x: from.view.x + (to.view.x - from.view.x) * amount,
       y: from.view.y + (to.view.y - from.view.y) * amount,
     };

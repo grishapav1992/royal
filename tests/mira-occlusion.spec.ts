@@ -45,7 +45,7 @@ for(const action of ['walk','sit','sit-down','stand-up','wipe','polish','stock',
   }
 }
 
-for(const viewport of [{width:1280,height:900},{width:390,height:844}])test(`${viewport.width}: all 56 poses keep countertop props and the cat mug in front`,async({page})=>{
+for(const viewport of [{width:1280,height:900},{width:390,height:844}])test(`${viewport.width}: all 72 poses keep countertop props and the cat mug in front`,async({page})=>{
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
   await page.setViewportSize(viewport);await page.goto('/?offline=1');await ready(page);
   await page.evaluate(()=>{const audit=(window as any).royalMiraAudit;audit.focus();audit.actors(false);audit.showMira(false);});await settle(page);
@@ -62,7 +62,7 @@ for(const viewport of [{width:1280,height:900},{width:390,height:844}])test(`${v
     expect(diff(reference,current),key).toEqual({});
     const actual=(await state(page)).mira;expect(actual.atlas+':'+actual.frame).toBe(key);checked.push(key);
   }
-  expect(checked).toHaveLength(56);
+  expect(checked).toHaveLength(72);
   for(let n=0;n<8;n++){
     await page.evaluate(view=>(window as any).royalMiraAudit.pose(view),{x:334,y:456,facing:'down',action:'wipe',progress:n/40});await settle(page);
     expect(diff(reference,await page.evaluate(points=>(window as any).royalMiraAudit.pixels(points),points)),'right wiping '+n).toEqual({});
