@@ -28,8 +28,9 @@ import { databaseConfig, identifier, PostgresDatabase } from '../server/database
 import { DemoWalletStore } from '../server/demoWallet';
 import { verifyGameRound } from '../server/games/core';
 import { VirtualPvpLedger } from '../server/pvp/virtual-wallet';
-import { matchesMixedHistoryTotals, mixedHistoryAccountCount, seedMixedAuditHistory,
+import { auditMixedHistoryPeriod, auditReportMonthMs, matchesMixedHistoryTotals, mixedHistoryAccountCount, seedMixedAuditHistory,
   type MixedHistoryPosting } from './audit-load-mixed-history';
+import { MAX_RETAINED_AUDIT_HISTORY_ROWS, seedRetainedAuditHistory } from './audit-load-retained-history';
 import { drainAuditLoadStandbyReport, findAuditLoadBlockedStandbyPage, grantAuditLoadStandbyReports,
   installAuditLoadStandbyPageBarrier, lockAuditLoadStandbyPageBarrier, startAuditLoadStandby,
   unlockAuditLoadStandbyPageBarrier } from './audit-load-standby';
@@ -41,7 +42,7 @@ type Budget = { stakeP95Ms?: number; settlementP95Ms?: number; readerStopMs?: nu
 type LoadOptions = { workers: number; roundsPerWorker: number; seedRounds: number;
   scaleHistory?: boolean; mixedHistory?: boolean; pilotGate?: boolean; summaryFirst?: boolean; replayFirst?: boolean; reportProcess?: boolean;
   controlAfterReports?: boolean;
-  budget?: Budget; standbyPgBasebackup?: string };
+  budget?: Budget; standbyPgBasebackup?: string; retainedHistoryRows?: number };
 type Metric = 'stake' | 'settlement' | 'casinoRound' | 'retry';
 type Sample = { from: number; to: number; ok: boolean };
 type Leg = [account: string, operation: string, entry: string, units: string];
@@ -58,7 +59,7 @@ const defaults: LoadOptions = { workers: 4, roundsPerWorker: 8, seedRounds: 40 }
 
 function loadOptions(input: LoadOptions) {
   const { workers, roundsPerWorker, seedRounds, scaleHistory, mixedHistory, pilotGate, summaryFirst, replayFirst, reportProcess,
-    controlAfterReports, budget, standbyPgBasebackup } = input;
+    controlAfterReports, budget, standbyPgBasebackup, retainedHistoryRows } = input;
   if (!Number.isInteger(workers) || workers < 1 || workers > 8 || !Number.isInteger(roundsPerWorker) ||
       roundsPerWorker < 2 || roundsPerWorker > 16 || !Number.isInteger(seedRounds) || seedRounds < 8 || seedRounds > 40) {
     throw new Error('Invalid isolated audit load options');
@@ -75,8 +76,12 @@ function loadOptions(input: LoadOptions) {
   }
   if (reportProcess && !pilotGate) throw new Error('The isolated report process requires --pilot-gate');
   if (controlAfterReports && !pilotGate) throw new Error('The reversed control phase requires --pilot-gate');
+  if (retainedHistoryRows !== undefined && (!Number.isSafeInteger(retainedHistoryRows) || retainedHistoryRows < 1 ||
+      retainedHistoryRows > MAX_RETAINED_AUDIT_HISTORY_ROWS || !mixedHistory || !pilotGate)) {
+    throw new Error('Retained audit history requires --mixed-history, --pilot-gate and 1..1000000 rows');
+  }
   return { workers, roundsPerWorker, seedRounds, scaleHistory: scaleHistory || mixedHistory || pilotGate, mixedHistory,
-    pilotGate, summaryFirst, replayFirst, reportProcess, controlAfterReports, budget, standbyPgBasebackup };
+    pilotGate, summaryFirst, replayFirst, reportProcess, controlAfterReports, budget, standbyPgBasebackup, retainedHistoryRows };
 }
 
 const rounded = (value: number) => Number(value.toFixed(3));
@@ -241,7 +246,7 @@ async function seedScaleHistory(game: PostgresDatabase, player: string, other: s
   return { fromMs, toMs: fromMs + 2 };
 }
 
-async function verifyScaleCsv(path: string, accountId: string, mixed?: readonly MixedHistoryPosting[]) {
+async function verifyScaleCsv(path: string, accountId: string, mixed?: readonly MixedHistoryPosting[], hasPriorPosting = false) {
   const input = createReadStream(path);
   const lines = createInterface({ input, crlfDelay: Infinity });
   const header = playerColumns.map(column => JSON.stringify(column)).join(',');
@@ -266,7 +271,7 @@ async function verifyScaleCsv(path: string, accountId: string, mixed?: readonly 
       if (fixture && (cells[operation] !== JSON.stringify(fixture.operation_id) ||
           cells[occurred] !== JSON.stringify(new Date(fixture.created_at).toISOString()) ||
           cells[category] !== (fixture.category === null ? '' : JSON.stringify(fixture.category)) ||
-          cells[basis] !== (rowCount === 1 ? '"opening"' : '"adjacent"'))) return false;
+          cells[basis] !== (rowCount === 1 && !hasPriorPosting ? '"opening"' : '"adjacent"'))) return false;
       previousId = BigInt(cells[id]);
     }
     return rowCount === scalePlayerRows;
@@ -274,6 +279,29 @@ async function verifyScaleCsv(path: string, accountId: string, mixed?: readonly 
     lines.close();
     input.destroy();
   }
+}
+
+async function verifyRetainedAuditHistory(audit: PostgresDatabase, game: PostgresDatabase, datasetId: string, accountId: string,
+  retained: Awaited<ReturnType<typeof seedRetainedAuditHistory>>, period: { fromMs: number; toMs: number }) {
+  const source = game.schema + '.demo_ledger';
+  const captured = (await audit.prepare(`SELECT count(*)::int AS rows,count(DISTINCT account_id)::int AS accounts,
+    count(*) FILTER (WHERE account_id=?)::int AS player_rows,
+    min(occurred_at_ms)::text AS first_at,max(occurred_at_ms)::text AS last_at
+    FROM audit_posting_refs WHERE dataset_id=? AND source_namespace=? AND occurred_at_ms<?`)
+    .get(accountId, datasetId, source, period.fromMs))!;
+  const prior = await audit.prepare(`SELECT l.balance_units::text AS balance FROM audit_posting_refs r
+    JOIN ${identifier(game.schema)}.demo_ledger l ON l.id=r.source_row_id AND l.account_id=r.account_id
+      AND l.operation_id=r.operation_id AND l.created_at=r.occurred_at_ms
+    WHERE r.dataset_id=? AND r.source_namespace=? AND r.account_id=? AND r.occurred_at_ms<?
+    ORDER BY r.source_row_id DESC LIMIT 1`).get(datasetId, source, accountId, period.fromMs);
+  const reportWindowMs = period.toMs - period.fromMs;
+  const previousBalanceMatches = prior?.balance === String(retained.playerEndingUnits);
+  const latest = retained.rows === 1 ? retained.fromMs : retained.toMs - 1;
+  return { ...retained, capturedRows: captured.rows, capturedAccounts: captured.accounts,
+    capturedPlayerRows: captured.player_rows, previousBalanceMatches, reportWindowMs,
+    ok: captured.rows === retained.rows && captured.accounts === retained.accounts && captured.player_rows === retained.playerRows &&
+      captured.first_at === String(retained.fromMs) && captured.last_at === String(latest) && retained.toMs === period.fromMs &&
+      reportWindowMs === auditReportMonthMs && previousBalanceMatches };
 }
 
 function throwReportFailure(report: string, error: unknown): never {
@@ -617,8 +645,12 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     }
     const operator = (name: string) => databaseConfig({ ...cluster.env, PGUSER: name, PGPASSWORD: password, PGPOOL_MAX: '2' });
     const before = await sizes(audit, game);
+    const retained = options.retainedHistoryRows !== undefined && scaleAccounts ? await seedRetainedAuditHistory(game, {
+      rows: options.retainedHistoryRows, beforeMs: auditMixedHistoryPeriod(startedAtMs, true).fromMs,
+      playerAccount: scaleAccounts[0], playerOpeningUnits: Number(initialCents),
+    }, signal) : null;
     const mixedHistory = options.mixedHistory && scaleAccounts
-      ? await seedMixedAuditHistory(game, scaleAccounts, startedAtMs, scalePlayerRows, Number(initialCents)) : null;
+      ? await seedMixedAuditHistory(game, scaleAccounts, startedAtMs, scalePlayerRows, Number(initialCents), retained ?? undefined) : null;
     const widePeriod = mixedHistory ? { fromMs: mixedHistory.fromMs, toMs: mixedHistory.toMs } :
       scaleAccounts ? await seedScaleHistory(game, scaleAccounts[0], scaleAccounts[1], startedAtMs) : null;
     if (widePeriod) {
@@ -807,16 +839,19 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     if (widePeriod && atLimit && wide && scaleAccounts) {
       const fixturePostings = AUDIT_SUMMARY_SCAN_CAP + 1;
       const distribution = mixedHistory ? ',count(DISTINCT account_id)::int AS account_count,count(DISTINCT occurred_at_ms)::int AS timestamp_count' : '';
-      const captured = await audit.prepare(`SELECT count(*)::int AS n${distribution} FROM audit_posting_refs
+      const captured = await audit.prepare(`SELECT count(*)::int AS n,min(occurred_at_ms)::text AS first_at,
+        max(occurred_at_ms)::text AS last_at${distribution} FROM audit_posting_refs
         WHERE dataset_id=? AND occurred_at_ms>=? AND occurred_at_ms<?`).get(datasetId, widePeriod.fromMs, widePeriod.toMs);
       const distributionMatches = !mixedHistory || (captured?.account_count === mixedHistory.accountCount &&
         captured.timestamp_count === mixedHistory.timestampCount);
+      const boundsMatch = !retained || (captured?.first_at === String(widePeriod.fromMs) && captured.last_at === String(widePeriod.toMs - 1));
       const totals = atLimit.result.rows[0];
       const exactTotal = mixedHistory ? matchesMixedHistoryTotals(atLimit.result, mixedHistory.totals) :
         atLimit.result.rows.length === 1 && totals.movement_type === 'deposit' &&
         totals.posting_count === String(AUDIT_SUMMARY_SCAN_CAP) && totals.amount_units === String(AUDIT_SUMMARY_SCAN_CAP * 100) &&
         totals.coverage_status === 'complete';
-      const csvAmountsAndBalancesMatch = await verifyScaleCsv(reportInput.destination, scaleAccounts[0], mixedHistory?.playerPostings);
+      const csvAmountsAndBalancesMatch = await verifyScaleCsv(reportInput.destination, scaleAccounts[0],
+        mixedHistory?.playerPostings, !!retained);
       scale = { fixturePostings, capturedFixturePostings: Number(captured?.n), reportTempFileLimit, csvAmountsAndBalancesMatch,
         ...(mixedHistory ? { mixedHistory: { accountCount: Number(captured?.account_count), timestampCount: Number(captured?.timestamp_count),
           totals: mixedHistory.totals } } : {}),
@@ -824,12 +859,14 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
           overlappingStakeCalls: overlap(atLimit, 'stake'), overlappingSettlementCalls: overlap(atLimit, 'settlement') },
         overLimit: { ...wide.result, elapsedMs: rounded(wide.to - wide.from), overlappingStakeCalls: overlap(wide, 'stake'),
           overlappingSettlementCalls: overlap(wide, 'settlement') },
-        ok: captured?.n === fixturePostings && distributionMatches && csvAmountsAndBalancesMatch && atLimit.result.scanned === AUDIT_SUMMARY_SCAN_CAP &&
-          exactTotal && wide.result.journalRejected };
+        ok: captured?.n === fixturePostings && distributionMatches && boundsMatch && csvAmountsAndBalancesMatch &&
+          atLimit.result.scanned === AUDIT_SUMMARY_SCAN_CAP && exactTotal && wide.result.journalRejected };
     }
+    const retainedHistory = retained && scaleAccounts && widePeriod
+      ? await verifyRetainedAuditHistory(audit, game, datasetId, scaleAccounts[0], retained, widePeriod) : null;
     const expectedAttempts = options.workers * options.roundsPerWorker * 2 * (control ? 2 : 1);
     const expectedPostings = active.expectedPostings + (control?.expectedPostings ?? 0) +
-      options.seedRounds * 2 + (scale?.fixturePostings ?? 0) + (replayFixture?.postings ?? 0);
+      options.seedRounds * 2 + (scale?.fixturePostings ?? 0) + (replayFixture?.postings ?? 0) + (retained?.rows ?? 0);
     const csvMatches = csv.result.rowCount === (scaleAccounts ? scalePlayerRows : options.seedRounds * 2) &&
       (await stat(reportInput.destination)).size === csv.result.bytes;
     const firstReport = options.replayFirst ? 'replay' : options.summaryFirst ? 'at-limit-summary' : 'player';
@@ -854,10 +891,11 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       : report.summary.scanned >= options.seedRounds * 2;
     return { schemaVersion: 1, environment: 'isolated-local-postgresql', capacityConfirmed: false,
       ok: baseline.noDoubleMoney && active.noDoubleMoney && captureOk && csvMatches && observedOverlap && serialVerified && cancellationOk &&
-        narrowSummaryMatches && (scale?.ok ?? true) && (budget?.ok ?? true) &&
+        narrowSummaryMatches && (scale?.ok ?? true) && (retainedHistory?.ok ?? true) && (budget?.ok ?? true) &&
         (control?.noDoubleMoney ?? true) && replayVerified && (detail?.verified ?? true) && pilotPassed,
       runtime: { node: process.version, postgres, platform: process.platform, architecture: process.arch },
       workload: { workers: options.workers, roundsPerWorker: options.roundsPerWorker, seedRounds: options.seedRounds },
+      ...(retainedHistory ? { retainedHistory } : {}),
       ...(scale ? { scale } : {}), ...(budget ? { budget: {
         ...budget, ...(options.budget?.readerStopMs === undefined ? {} : { readerStopTarget }),
       } } : {}),
@@ -914,6 +952,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   try {
     const { values } = parseArgs({ options: { workers: { type: 'string' }, rounds: { type: 'string' }, seed: { type: 'string' },
       'scale-history': { type: 'boolean' }, 'mixed-history': { type: 'boolean' }, 'pilot-gate': { type: 'boolean' },
+      'retained-history-rows': { type: 'string' },
       'summary-first': { type: 'boolean' }, 'replay-first': { type: 'boolean' },
       'control-after-reports': { type: 'boolean' },
       'report-process': { type: 'boolean' },
@@ -923,7 +962,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     if (values.help) {
       console.log('node --import tsx scripts/audit-load.ts [--workers 1..8] [--rounds 2..16] [--seed 8..40] [--scale-history] [--mixed-history] [--pilot-gate] [--summary-first | --replay-first] [--report-process]\n' +
         '  [--control-after-reports] [--standby-pg-basebackup /path/to/pg_basebackup] [--stake-p95-budget-ms n]\n' +
-        '  [--settlement-p95-budget-ms n] [--reader-stop-budget-ms n]');
+        '  [--settlement-p95-budget-ms n] [--reader-stop-budget-ms n] [--retained-history-rows 1..1000000]');
       exitCode = 0;
     } else {
       const budget: Budget = {};
@@ -933,6 +972,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       const result = await runAuditLoad({ workers: Number(values.workers ?? defaults.workers),
         roundsPerWorker: Number(values.rounds ?? defaults.roundsPerWorker), seedRounds: Number(values.seed ?? defaults.seedRounds),
         scaleHistory: values['scale-history'], mixedHistory: values['mixed-history'], pilotGate: values['pilot-gate'],
+        retainedHistoryRows: values['retained-history-rows'] === undefined ? undefined : Number(values['retained-history-rows']),
         summaryFirst: values['summary-first'], replayFirst: values['replay-first'],
         reportProcess: values['report-process'], controlAfterReports: values['control-after-reports'],
         standbyPgBasebackup: values['standby-pg-basebackup'],

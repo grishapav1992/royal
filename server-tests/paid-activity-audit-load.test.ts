@@ -82,6 +82,21 @@ test('audit load rejects an oversized workload before provisioning', async () =>
   });
 });
 
+test('retained history requires the mixed pilot and a bounded row count', async () => {
+  for (const args of [
+    ['0', '--mixed-history', '--pilot-gate'],
+    ['1000001', '--mixed-history', '--pilot-gate'],
+    ['2000', '--mixed-history'],
+    ['2000', '--pilot-gate'],
+  ]) {
+    await assert.rejects(run(['--retained-history-rows', ...args]), error => {
+      const failure = error as { code?: number; stderr?: string };
+      return failure.code === 1 && JSON.parse(failure.stderr ?? '{}').message ===
+        'Retained audit history requires --mixed-history, --pilot-gate and 1..1000000 rows';
+    });
+  }
+});
+
 test('audit load verifies both report limits, exact CSV balances and concurrent money at scale', { timeout: 35_000 }, async t => {
   const directory = await mkdtemp(join(tmpdir(), 'royal-audit-load-check-'));
   t.after(() => rm(directory, { recursive: true, force: true }));
@@ -225,6 +240,50 @@ test('mixed history verifies exact category totals, commissions and the focused 
   assert.equal(report.pilotGate.maxP95GrowthPercent, 10);
   assert.equal(report.pilotGate.noWalletErrorsOrTimeouts, true);
   assert.equal(report.capture.gaps, 0);
+  assert.equal(report.reports.admission.serialVerified, true);
+  assert.equal(report.ok, report.pilotGate.ok);
+  assert.equal(exitCode, report.ok ? 0 : 1);
+});
+
+test('the monthly reports exclude retained history and use the player balance before the window', { timeout: 35_000 }, async t => {
+  const directory = await mkdtemp(join(tmpdir(), 'royal-audit-load-check-'));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const { stdout, exitCode } = await run(['--retained-history-rows', '2000', '--mixed-history', '--pilot-gate',
+    '--summary-first', '--report-process', '--workers', '2', '--rounds', '3', '--seed', '8'],
+  { ...process.env, TMPDIR: directory }).then(result => ({ stdout: result.stdout, exitCode: 0 }), error => {
+    if (error.code !== 1 || !error.stdout) throw error;
+    return { stdout: String(error.stdout), exitCode: 1 };
+  });
+  const report = JSON.parse(stdout);
+  assert.deepEqual(await fixtureFiles(directory), []);
+  assert.equal(report.capacityConfirmed, false);
+  assert.equal(report.retainedHistory.rows, 2_000);
+  assert.equal(report.retainedHistory.accounts, 1_000);
+  assert.equal(report.retainedHistory.capturedRows, 2_000);
+  assert.equal(report.retainedHistory.capturedAccounts, 1_000);
+  assert.equal(report.retainedHistory.playerRows, 2);
+  assert.equal(report.retainedHistory.capturedPlayerRows, 2);
+  assert.equal(report.retainedHistory.playerEndingUnits, 10_200);
+  assert.equal(report.retainedHistory.previousBalanceMatches, true);
+  assert.equal(report.retainedHistory.reportWindowMs, 30 * 24 * 60 * 60 * 1000);
+  assert.equal(report.retainedHistory.ok, true);
+  assert.equal(report.reports.player.rows, 10_000);
+  assert.equal(report.reports.summary.scanned, 16);
+  assert.equal(report.scale.csvAmountsAndBalancesMatch, true);
+  assert.equal(report.scale.capturedFixturePostings, 20_001);
+  assert.equal(report.scale.atLimit.scanned, 20_000);
+  assert.equal(report.scale.atLimit.exactTotal, true);
+  assert.equal(report.scale.overLimit.outcome, 'scan-limit');
+  assert.equal(report.scale.overLimit.journalRejected, true);
+  assert.equal(report.scale.ok, true);
+  assert.equal(report.capture.expectedPostings, 22_085);
+  assert.equal(report.capture.postingRefs.rows, 22_085);
+  assert.equal(report.capture.gaps, 0);
+  assert.equal(report.withAuditWithoutReports.noDoubleMoney, true);
+  assert.equal(report.withAudit.noDoubleMoney, true);
+  assert.equal(report.pilotGate.noWalletErrorsOrTimeouts, true);
+  assert.equal(report.pilotGate.firstQueryObserved, true);
+  assert.equal(report.pilotGate.observedOverlap, true);
   assert.equal(report.reports.admission.serialVerified, true);
   assert.equal(report.ok, report.pilotGate.ok);
   assert.equal(exitCode, report.ok ? 0 : 1);

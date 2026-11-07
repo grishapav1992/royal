@@ -9,6 +9,14 @@ import { pvpPayout } from '../src/shared/pvp';
 import { coreExactAward, makeRoundPrecision } from '../src/shared/roundPrecision';
 
 export const mixedHistoryAccountCount = 17;
+export const auditReportMonthMs = 30 * 24 * 60 * 60 * 1000;
+const poolRounds = 320;
+
+export function auditMixedHistoryPeriod(startedAtMs: number, month = false) {
+  const sentinelAt = Math.floor(startedAtMs / TOTE_TIMING.period) * TOTE_TIMING.period;
+  return { fromMs: month ? sentinelAt + 1 - auditReportMonthMs : sentinelAt - poolRounds * TOTE_TIMING.period,
+    toMs: sentinelAt + 1 };
+}
 
 type Category = 'casino' | 'pvp' | 'totalizator';
 type Movement = 'deposit' | 'stake' | 'reserve' | 'payout' | 'refund';
@@ -57,12 +65,12 @@ export function matchesMixedHistoryTotals(report: SummaryReport, totals: readonl
 
 /** Synthetic source rows for an isolated load test. The regular source trigger captures every posting. */
 export async function seedMixedAuditHistory(db: PostgresDatabase, accounts: readonly string[], startedAtMs: number,
-  playerRows: number, openingUnits: number) {
+  playerRows: number, openingUnits: number, retained?: { fromMs: number; playerEndingUnits: number }) {
   const [player, ...others] = accounts;
   if (accounts.length !== mixedHistoryAccountCount) throw new Error('Unexpected mixed audit history accounts');
-  const poolRounds = 320, pvpRounds = 1000;
-  const sentinelAt = Math.floor(startedAtMs / TOTE_TIMING.period) * TOTE_TIMING.period;
-  const fromMs = sentinelAt - poolRounds * TOTE_TIMING.period;
+  const pvpRounds = 1000;
+  const { fromMs, toMs } = auditMixedHistoryPeriod(startedAtMs, !!retained);
+  const sentinelAt = toMs - 1;
   const spreadAt = (index: number, count: number) => fromMs + Math.floor(index * (sentinelAt - fromMs - 10_000) / count);
   const other = (index: number) => others[index % others.length];
   let entropy = 0x726b131a;
@@ -122,8 +130,11 @@ export async function seedMixedAuditHistory(db: PostgresDatabase, accounts: read
   }
 
   const pools: Pool[] = [], tickets: Ticket[] = [];
+  const firstPoolAt = Math.ceil(fromMs / TOTE_TIMING.period) * TOTE_TIMING.period;
+  const availablePoolPeriods = (sentinelAt - firstPoolAt) / TOTE_TIMING.period;
   for (let index = 0; index < poolRounds; index++) {
-    const openedAt = fromMs + index * TOTE_TIMING.period, closesAt = openedAt + TOTE_TIMING.betting;
+    const openedAt = firstPoolAt + Math.floor(index * availablePoolPeriods / poolRounds) * TOTE_TIMING.period;
+    const closesAt = openedAt + TOTE_TIMING.betting;
     const finishesAt = closesAt + TOTE_TIMING.race, id = 'ft1-' + openedAt;
     const outcome = drawToteOrder(draw), countries = outcome.order.slice(-4, -1);
     if (index % 5 === 0) countries[2] = countries[0];
@@ -154,6 +165,7 @@ export async function seedMixedAuditHistory(db: PostgresDatabase, accounts: read
   deposit(other(0), sentinelAt, 100);
 
   const balances = new Map(accounts.map(accountId => [accountId, openingUnits]));
+  if (retained) balances.set(player, retained.playerEndingUnits);
   const ledger = postings.sort((a, b) => a.created_at - b.created_at).map((row, ordinal) => {
     const balance = (balances.get(row.account_id) ?? 0) + row.amount_units;
     if (balance < 0 || balance > MAX_DEMO_UNITS) throw new Error('Mixed audit history balance outside wallet limits');
@@ -162,7 +174,8 @@ export async function seedMixedAuditHistory(db: PostgresDatabase, accounts: read
   });
   await db.transaction(async () => {
     // Opening funding predates the synthetic event clock. It was recorded before capture was enabled.
-    await db.prepare('UPDATE demo_ledger SET created_at=? WHERE account_id=ANY(?::text[])').run(fromMs - 1, accounts);
+    await db.prepare('UPDATE demo_ledger SET created_at=? WHERE account_id=ANY(?::text[]) AND created_at>=?')
+      .run((retained?.fromMs ?? fromMs) - 1, accounts, fromMs);
     await db.prepare(`INSERT INTO demo_operations(account_id,operation_id,kind,amount,amount_units,result,request_key)
       SELECT account_id,operation_id,'play',amount_units/100,amount_units,result,request_key
       FROM jsonb_to_recordset(?::jsonb) AS t(account_id text,operation_id text,amount_units integer,result text,request_key text)`)
@@ -192,6 +205,6 @@ export async function seedMixedAuditHistory(db: PostgresDatabase, accounts: read
       FROM jsonb_to_recordset(?::jsonb) AS t(account_id text,units bigint) WHERE w.account_id=t.account_id`)
       .run(JSON.stringify([...balances].map(([account_id, units]) => ({ account_id, units }))));
   });
-  return { fromMs, toMs: sentinelAt + 1, totals, accountCount: accounts.length,
+  return { fromMs, toMs, totals, accountCount: accounts.length,
     timestampCount: new Set(ledger.map(row => row.created_at)).size, playerPostings: ledger.filter(row => row.account_id === player) };
 }
