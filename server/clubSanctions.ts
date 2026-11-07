@@ -2,14 +2,15 @@ import { randomUUID } from 'node:crypto';
 import type { PostgresDatabase } from './database';
 import { applySchemaMigration } from './database-migrations';
 import type { ClubSanction, ClubViolation } from '../src/shared/security';
+import { generatedAppearance, SKIN_THEME, SKIN_UUID } from '../src/shared/skinStudio';
 
 const INITIAL_DURATION_MS = 20 * 60 * 1000;
 const REPEAT_DURATION_MS = 10 * 60 * 1000;
 const INITIAL_AMOUNT_CENTS = 1000;
 const REPEAT_AMOUNT_CENTS = 500;
 
-type Violation = { id: string; reason: ClubViolation; pursuitId?: string };
-type ViolationOutcome = { sanction: ClubSanction; opened: boolean };
+type Violation = { id: string; reason: ClubViolation; pursuitId?: string; equippedSkinId?: string | null };
+type ViolationOutcome = { sanction: ClubSanction; opened: boolean; revealedSkinId?: string };
 type Capture = { pursuitId: string; sanctionId: string };
 type CaptureOutcome = { sanction: ClubSanction; kind: 'initial' | 'repeat' };
 type EventResult<T> = { outcome: T; replayed: boolean };
@@ -18,7 +19,7 @@ type ActiveSanction = { sanction: ClubSanction; initialPursuitId: string | null 
 export class ClubSanctionStore {
   readonly ready: Promise<void>;
 
-  constructor(private db: PostgresDatabase, prerequisite: Promise<void> = Promise.resolve()) {
+  constructor(private db: PostgresDatabase, prerequisite: Promise<void> = Promise.resolve(), private skinStudioReady?: Promise<void>) {
     this.ready = prerequisite.then(async () => {
       await db.transaction(async () => db.exec(`
       CREATE TABLE IF NOT EXISTS club_sanctions (
@@ -36,6 +37,12 @@ export class ClubSanctionStore {
         reason TEXT,
         outcome JSONB NOT NULL,
         PRIMARY KEY (account_id, kind, event_id)
+      );
+      CREATE TABLE IF NOT EXISTS club_disguise_exposures (
+        account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+        skin_id TEXT NOT NULL,
+        revealed_at BIGINT NOT NULL,
+        PRIMARY KEY (account_id, skin_id)
       );
       `));
       if (!await db.hasTable('chat_conduct_discipline')) return;
@@ -56,10 +63,31 @@ export class ClubSanctionStore {
     return (await this.readActive(accountId, now))?.sanction ?? null;
   }
 
+  async enforcement(accountId: string, now = Date.now()) {
+    await this.ready;
+    if (this.skinStudioReady) await this.skinStudioReady;
+    return this.db.transaction(async () => {
+      const sanction = (await this.readActive(accountId, now))?.sanction ?? null;
+      const disguiseSkinId = sanction ? await this.readDisguise(accountId) : null;
+      return { sanction, disguiseSkinId };
+    }, { readOnly: true });
+  }
+
+  async isUsableDisguise(accountId: string, skinId: string): Promise<boolean> {
+    await this.ready;
+    return !!await this.readDisguise(accountId, skinId);
+  }
+
   recordViolation(accountId: string, violation: Violation, now?: number): Promise<EventResult<ViolationOutcome>> {
     return this.applyEvent(accountId, 'violation', violation.id, now, async at => {
       const active = await this.readActive(accountId, at);
-      if (active) return { sanction: active.sanction, opened: false };
+      if (active) {
+        const revealedSkinId = await this.readDisguise(accountId, violation.equippedSkinId);
+        if (!revealedSkinId) return { sanction: active.sanction, opened: false };
+        await this.db.prepare('INSERT INTO club_disguise_exposures (account_id,skin_id,revealed_at) VALUES (?,?,?)')
+          .run(accountId, revealedSkinId, at);
+        return { sanction: active.sanction, opened: false, revealedSkinId };
+      }
 
       const sanction: ClubSanction = {
         id: randomUUID(), until: at + INITIAL_DURATION_MS, amountCents: INITIAL_AMOUNT_CENTS, revision: 1,
@@ -72,6 +100,19 @@ export class ClubSanctionStore {
       `).run(accountId, sanction.id, violation.pursuitId ?? null, sanction.until, sanction.amountCents, sanction.revision);
       return { sanction, opened: true };
     }, violation.reason);
+  }
+
+  private async readDisguise(accountId: string, equippedSkinId?: string | null): Promise<string | null> {
+    if (!this.skinStudioReady || equippedSkinId === null) return null;
+    await this.skinStudioReady;
+    const skinId = equippedSkinId ?? generatedAppearance((await this.db.prepare('SELECT appearance FROM accounts WHERE id=?').get(accountId))?.appearance)?.skinId;
+    if (!skinId || !SKIN_UUID.test(skinId)) return null;
+    const row = await this.db.prepare(`SELECT s.id FROM generated_skins s
+      JOIN skin_jobs j ON j.id=s.job_id AND j.selected_id=s.id
+      WHERE s.id=? AND j.account_id=? AND j.theme=? AND j.state='selected' AND j.offer_id='janitor'
+        AND NOT EXISTS (SELECT 1 FROM club_disguise_exposures e WHERE e.account_id=j.account_id AND e.skin_id=s.id)`)
+      .get(skinId, accountId, SKIN_THEME.id);
+    return row ? String(row.id) : null;
   }
 
   recordCapture(accountId: string, capture: Capture, now?: number): Promise<EventResult<CaptureOutcome | null>> {

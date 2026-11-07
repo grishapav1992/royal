@@ -48,6 +48,7 @@ export class SkinStudioUI {
     this.scene.onToiletMerchant=()=>{void this.open('janitor');};
     this.dialog.id = 'skin-studio-dialog'; this.dialog.className = 'skin-studio'; this.dialog.setAttribute('aria-labelledby', 'skin-studio-title');
     this.dialog.innerHTML = `<div class="skin-studio-heading"><div class="skin-studio-identity"><div class="skin-tailor-portrait"></div><div><h2 id="skin-studio-title">Ателье</h2><span class="eyebrow">Южный парк</span></div></div><button type="button" class="icon-button" aria-label="Закрыть ателье">×</button></div>
+      <p class="skin-disguise-help" hidden>${t('Пока на тебе метка, надетый образ Жоры скрывает тебя от охраны. Новое нарушение раскрывает этот образ.')}</p>
       <form><label for="skin-prompt">Опиши новый образ</label><div class="skin-prompt-slot"></div><div class="skin-studio-price"><span class="skin-offer">2 варианта · 1 навсегда</span><p class="skin-balance" aria-live="polite"></p><p class="skin-free-generations" aria-live="polite" hidden></p></div><p class="skin-existing-order" hidden></p><div class="skin-generate-slot"></div></form>
       <div class="skin-status-slot"></div><button type="button" class="text-button skin-refresh" hidden>Проверить статус</button><section class="skin-results" hidden><h3>Примерь и выбери один образ</h3><div class="skin-variants-slot"></div></section>
       <div class="skin-fitting-slot"></div><div class="skin-choose-slot" hidden></div>
@@ -105,6 +106,7 @@ export class SkinStudioUI {
     if(this.offerId!==offerId){this.epoch++;this.busy=false;this.data=undefined;this.message='';this.failedRequest=false;clearTimeout(this.poll);clearTimeout(this.walletPoll);}
     this.offerId=offerId;this.dialog.dataset.offer=offerId;
     const janitor=offerId==='janitor';
+    this.dialog.querySelector<HTMLElement>('.skin-disguise-help')!.hidden=!janitor;
     this.dialog.querySelector('#skin-studio-title')!.textContent=t(janitor?'Жора: образы':'Ателье');
     this.dialog.querySelector('.icon-button')!.setAttribute('aria-label',t(janitor?'Закрыть образы Жоры':'Закрыть ателье'));
     this.dialog.querySelector('.skin-tailor-portrait')!.replaceChildren(janitor?toiletMerchantPortrait():tailorPortrait());

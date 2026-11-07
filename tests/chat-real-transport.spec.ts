@@ -3,6 +3,7 @@ import { Client } from '@colyseus/sdk';
 import type { ChatRequest, ChatResult } from '../src/shared/chat';
 import type { ChatMessage } from '../src/shared/world';
 import type { SecurityDecision } from '../src/shared/security';
+import { CARD_TOILET_DOOR, TOILET_MERCHANT } from '../src/shared/toilet';
 
 type Proof = { requests: ChatRequest[]; results: ChatResult[]; messages: ChatMessage[]; captures: SecurityDecision[]; ejections: unknown[] };
 const proof = (page: Page) => page.evaluate(() => (window as any).__realChat as Proof);
@@ -170,6 +171,53 @@ test('the first confirmed spam episode immediately dispatches the guard', async 
     await expect(rows).toHaveCount(2);
     await expect.poll(async () => (await proof(page)).ejections.length, { timeout: 30000 }).toBe(1);
     expect((await proof(page)).captures).toMatchObject([{ kind: 'ejecting', reason: 'spam' }]);
+    await transport.detach();
+  } finally { await host.leave(); }
+});
+
+test('Zhora privately offers a disguise after a confirmed restroom violation', async ({ page, request }) => {
+  const host = await createHost(request);
+  const state = () => page.evaluate(() => (window as any).royalDemo.getState());
+  const clickWorld = async (x: number, y: number) => {
+    await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+    const { view } = await state();
+    const canvas = (await page.locator('#game canvas').boundingBox())!;
+    await page.mouse.click(canvas.x + (x - view.x) * view.zoom * canvas.width / view.width,
+      canvas.y + (y - view.y) * view.zoom * canvas.height / view.height);
+  };
+  const overview = async () => {
+    const toggle = page.locator('#room-overview');
+    if (await toggle.getAttribute('aria-pressed') !== 'true') await toggle.click();
+  };
+  try {
+    await register(page, 'Гость у Жоры');
+    await page.goto('/?mode=club&room=' + host.roomId + '&lang=en');
+    const dock = page.locator('#club-chat-dock'), input = page.locator('#chat-input');
+    await expect(input).toBeEnabled({ timeout: 30000 });
+    const transport = await captureRealTransport(page);
+    await page.locator('#elevator-shortcut').click();
+    await expect(page.locator('#elevator-dialog')).toHaveAttribute('data-phase', 'choose', { timeout: 20000 });
+    await page.locator('[data-elevator-floor="github"]').click();
+    await expect(page.locator('#elevator-dialog')).toBeHidden({ timeout: 20000 });
+    await expect(dock).toHaveAttribute('data-chat-hall', 'github');
+    await overview();
+    await clickWorld(CARD_TOILET_DOOR.click.x, CARD_TOILET_DOOR.click.y);
+    await expect(dock).toHaveAttribute('data-chat-hall', 'toilet', { timeout: 25000 });
+    await expect(input).toBeEnabled();
+    const offer = page.getByText('Zhora: Security looking for you? I can find you a disguise.', { exact: true });
+    await expect(offer).toBeHidden();
+    await input.fill('fuck shit Scheiße putain coño cazzo kurwa caralho klootzak idiot');
+    await page.locator('#send-chat').click();
+    await expect(offer).toBeVisible();
+    await expect.poll(async () => (await proof(page)).results.at(-1)?.status).toBe('rejected');
+    await expect(dock).toHaveAttribute('data-chat-hall', 'toilet');
+    await overview();
+    await clickWorld(TOILET_MERCHANT.x, TOILET_MERCHANT.y - 40);
+    const shop = page.locator('#skin-studio-dialog');
+    await expect(shop).toBeVisible({ timeout: 20000 });
+    await expect(shop.getByRole('heading', { name: 'Zhora: outfits' })).toBeVisible();
+    await expect(shop.locator('.skin-disguise-help')).toContainText('A new violation exposes the outfit.');
+    expect((await proof(page)).captures).toHaveLength(0);
     await transport.detach();
   } finally { await host.leave(); }
 });

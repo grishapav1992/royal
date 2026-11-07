@@ -3,7 +3,7 @@ import { LOBBY_RECONNECT_GRACE_SECONDS } from '../src/shared/lobbyConnection';
 import { CommonCombatWallet } from './commonCombatWallet';
 import { virtualPvpCommand } from './pvp/virtual-service';
 import { serializeAppearance } from '../src/shared/appearance';
-import type { CharacterAppearance } from '../src/shared/skinStudio';
+import { generatedAppearance, type CharacterAppearance } from '../src/shared/skinStudio';
 import { Room, type Client, type AuthContext, ServerError } from '@colyseus/core';
 import { Guards } from './guards';
 import { Bartender } from './bartender';
@@ -40,8 +40,11 @@ import { STREET } from '../src/shared/street';
 type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatRevision: number; inputs: MovementInputs; predicted: boolean; afterMovement?: () => void };
 const CHAT_REQUEST_ID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 type ProfileRevision = { name: number; skin: number; appearance: number };
+type DisguiseCheck = { usable?: boolean };
 type Access = { active: boolean; drinking: DrinkingState; revision: number; profileRevision: ProfileRevision; pendingDrink: boolean; pendingEject: boolean;
-  sanction?: ClubSanction | null; capture?: ClubCaptureDecision; resumeHall?: string };
+  sanction?: ClubSanction | null; sanctionRevision?: number; capture?: ClubCaptureDecision; resumeHall?: string;
+  equippedSkinId?: string; disguises?: Map<string, DisguiseCheck>; disguiseOfferVisit?: number };
+const DISGUISE_CACHE_LIMIT = 200;
 const pendingDrinks = new Set<string>();
 const pendingChatDiscipline = new Set<string>();
 const CHAT_REJECTIONS = {
@@ -72,7 +75,8 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     return count;
   }, {
     marked: id => {
-      const sanction = this.access.get(id)?.sanction;
+      const access = this.access.get(id), sanction = access?.sanction;
+      if (!access?.active || this.hasPendingOrUsableDisguise(access)) return;
       if (sanction && sanction.until > Date.now()) return { id: randomUUID(), sanctionId: sanction.id, until: sanction.until };
     },
     capture: (id, pursuit) => this.confirmCapture(id, pursuit),
@@ -96,12 +100,14 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     const { outcome, replayed } = await accounts.clubSanctions.recordCapture(accountId, { sanctionId: pursuit.sanctionId, pursuitId: pursuit.id });
     if (this.disposed || this.state.players.get(id) !== player || this.access.get(id) !== access) return null;
     if (!outcome) {
-      if (access.sanction?.id === pursuit.sanctionId) { access.revision++; access.sanction = null; }
+      if (access.sanction?.id === pursuit.sanctionId) {
+        access.sanctionRevision = (access.sanctionRevision ?? 0) + 1;
+        access.sanction = null;
+      }
       return null;
     }
     if (replayed) return null;
-    access.revision++;
-    access.sanction = outcome.sanction;
+    accounts.events.emit('club-sanction', accountId, outcome.sanction);
     const decision: ClubCaptureDecision = { kind: 'ejecting', until: outcome.sanction.until, reason: pursuit.reason, pursuitId: pursuit.id };
     access.capture = decision;
     if (this.hasRecoverableActivity(id)) access.resumeHall = player.hall;
@@ -188,17 +194,74 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   };
   private appearanceListener = (id: string, appearance: CharacterAppearance | null) => {
     for (const client of this.clients) if ((client.auth as RoomAuth)?.account.id === id) {
-      const access = this.access.get(client.sessionId); if (access) access.profileRevision.appearance++;
-      (client.auth as RoomAuth).account.appearance = appearance;
+      const access = this.access.get(client.sessionId), auth = client.auth as RoomAuth;
+      if (access) access.profileRevision.appearance++;
+      auth.account.appearance = appearance;
       const player = this.state.players.get(client.sessionId); if (player) player.appearance = serializeAppearance(appearance);
+      if (access) {
+        access.equippedSkinId = generatedAppearance(appearance)?.skinId;
+        void this.refreshDisguise(client, access);
+      }
     }
   };
+  private sanctionListener = (accountId: string, sanction: ClubSanction, revealedSkinId?: string) => {
+    for (const client of this.clients) if ((client.auth as RoomAuth)?.account.id === accountId) {
+      this.applySanction(client, sanction, revealedSkinId);
+    }
+  };
+  private applySanction(client: Client, sanction: ClubSanction, revealedSkinId?: string) {
+    const access = this.access.get(client.sessionId);
+    if (!access?.active) return;
+    const previous = access.sanction;
+    const newEpisode = previous?.id !== sanction.id;
+    access.sanctionRevision = (access.sanctionRevision ?? 0) + 1;
+    if (newEpisode || previous.revision <= sanction.revision) access.sanction = sanction;
+    if (revealedSkinId) {
+      this.cacheDisguise(access, revealedSkinId, { usable: false });
+      client.send('notice', 'Охрана раскрыла маскировку. Образ остался в гардеробе.');
+    }
+    if (newEpisode) void this.refreshDisguise(client, access);
+    else this.offerDisguise(client.sessionId);
+  }
+  private cacheDisguise(access: Access, skinId: string, check: DisguiseCheck) {
+    const cache = access.disguises ??= new Map();
+    cache.delete(skinId);
+    cache.set(skinId, check);
+    if (cache.size > DISGUISE_CACHE_LIMIT) cache.delete(cache.keys().next().value!);
+  }
+  private hasPendingOrUsableDisguise(access: Access): boolean {
+    const check = access.equippedSkinId && access.disguises?.get(access.equippedSkinId);
+    return !!check && check.usable !== false;
+  }
+  private async refreshDisguise(client: Client, access: Access) {
+    const skinId = access.equippedSkinId;
+    if (skinId && access.sanction && access.sanction.until > Date.now() && !access.disguises?.has(skinId)) {
+      // Hold fresh patrol recognition while checking this particular outfit. Re-equipping it shares the check.
+      const check: DisguiseCheck = {};
+      this.cacheDisguise(access, skinId, check);
+      try { check.usable = await accounts.clubSanctions.isUsableDisguise((client.auth as RoomAuth).account.id, skinId); }
+      catch { check.usable = false; console.error('Room disguise refresh failed'); }
+      // A committed exposure or a newer authoritative snapshot can replace this check while it runs.
+      if (this.disposed || this.access.get(client.sessionId) !== access || access.disguises?.get(skinId) !== check) return;
+    }
+    this.offerDisguise(client.sessionId);
+  }
+  private offerDisguise(sessionId: string) {
+    const access = this.access.get(sessionId), visit = this.roomChat.visit(sessionId);
+    if (!access?.active || !access.sanction || access.sanction.until <= Date.now() || this.hasPendingOrUsableDisguise(access)
+      || visit?.hall !== 'toilet' || access.disguiseOfferVisit === visit.id) return;
+    const client = this.clients.find(other => other.sessionId === sessionId);
+    if (!client || !this.state.players.get(sessionId)?.connected) return;
+    access.disguiseOfferVisit = visit.id;
+    client.send('notice', 'Жора: Охрана тебя ищет? Могу подобрать маскировку.');
+  }
   onCreate() {
     this.state.serverNow = Date.now();
     accounts.events.on('logout', this.logoutListener);
     accounts.events.on('name', this.nameListener);
     accounts.events.on('skin', this.skinListener);
     accounts.events.on('appearance', this.appearanceListener);
+    accounts.events.on('club-sanction', this.sanctionListener);
     accounts.events.on('drinking', this.drinkingListener);
     accounts.events.on('progression-level', this.levelListener);
     this.clock.setInterval(() => { void this.refreshAccess().catch(() => console.error('Room access refresh failed')); }, 60000);
@@ -519,14 +582,19 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     const access: Access = { active: true, drinking: { soberAt: 0, lastDrink: '', lastDrinkAt: 0 }, revision: 0, profileRevision: { name: 0, skin: 0, appearance: 0 }, pendingDrink: false, pendingEject: false };
     this.access.set(client.sessionId, access);
     try {
-      const revision = access.revision, profileRevision = { ...access.profileRevision };
-      const [active, drinking, profile, sanction] = await Promise.all([
+      const revision = access.revision, sanctionRevision = access.sanctionRevision, profileRevision = { ...access.profileRevision };
+      const [active, drinking, profile, enforcement] = await Promise.all([
         accounts.active(auth.hash), accounts.drinking.read(auth.account.id), accounts.currentAccount(auth.account.id),
-        accounts.clubSanctions.active(auth.account.id),
+        accounts.clubSanctions.enforcement(auth.account.id),
       ]);
       if (this.disposed || this.access.get(client.sessionId) !== access || !active || !access.active) throw new ServerError(401, 'Войди в аккаунт ещё раз.');
-      if (revision === access.revision) { access.drinking = drinking; access.sanction = sanction; }
+      if (revision === access.revision) access.drinking = drinking;
       this.applyProfile(auth, access, profile, profileRevision);
+      if (sanctionRevision === access.sanctionRevision) {
+        access.sanction = enforcement.sanction;
+        this.applyDisguiseSnapshot(access, enforcement.disguiseSkinId, profileRevision.appearance);
+      }
+      void this.refreshDisguise(client, access);
       if (auth.account.skin === null) throw new ServerError(401, 'Выбери персонажа и войди в зал ещё раз.');
       const others = this.clients.filter(other => other !== client && (other.auth as RoomAuth)?.account.id === auth.account.id);
       const [activeOthers, level] = await Promise.all([
@@ -571,23 +639,29 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     accounts.events.off('logout', this.logoutListener);
     accounts.events.off('name', this.nameListener); accounts.events.off('skin', this.skinListener); accounts.events.off('appearance', this.appearanceListener); accounts.events.off('drinking', this.drinkingListener);
     accounts.events.off('progression-level', this.levelListener);
+    accounts.events.off('club-sanction', this.sanctionListener);
   }
   async onReconnect(client: Client) {
     const p = this.state.players.get(client.sessionId), access = this.access.get(client.sessionId);
     if (!p || !access) { client.leave(4001); return; }
     const auth = client.auth as RoomAuth;
     try {
-      const revision = access.revision, profileRevision = { ...access.profileRevision };
-      const [active, drinking, profile, sanction] = await Promise.all([
+      const revision = access.revision, sanctionRevision = access.sanctionRevision, profileRevision = { ...access.profileRevision };
+      const [active, drinking, profile, enforcement] = await Promise.all([
         accounts.active(auth.hash), accounts.drinking.read(auth.account.id), accounts.currentAccount(auth.account.id),
-        accounts.clubSanctions.active(auth.account.id),
+        accounts.clubSanctions.enforcement(auth.account.id),
       ]);
       if (this.disposed || this.access.get(client.sessionId) !== access || this.state.players.get(client.sessionId) !== p || !active || !access.active) { client.leave(4001); return; }
-      if (revision === access.revision) { access.drinking = drinking; p.soberAt = drinking.soberAt; access.sanction = sanction; }
+      if (revision === access.revision) { access.drinking = drinking; p.soberAt = drinking.soberAt; }
       this.applyProfile(auth, access, profile, profileRevision);
+      if (sanctionRevision === access.sanctionRevision) {
+        access.sanction = enforcement.sanction;
+        this.applyDisguiseSnapshot(access, enforcement.disguiseSkinId, profileRevision.appearance);
+      }
       if (auth.account.skin === null) { client.leave(4001); return; }
       p.name = auth.account.name; p.skin = auth.account.skin; p.appearance = serializeAppearance(auth.account.appearance);
       p.connected = true;
+      void this.refreshDisguise(client, access);
       if (!access.resumeHall) this.activities.reconnect(client.sessionId);
       if (access.capture) {
         client.send('club-capture', access.capture);
@@ -605,6 +679,13 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       skin: captured.skin === access.profileRevision.skin ? profile.skin : auth.account.skin,
       appearance: captured.appearance === access.profileRevision.appearance ? profile.appearance : auth.account.appearance,
     };
+    access.equippedSkinId = generatedAppearance(auth.account.appearance)?.skinId;
+  }
+  private applyDisguiseSnapshot(access: Access, disguiseSkinId: string | null, appearanceRevision: number) {
+    if (appearanceRevision !== access.profileRevision.appearance) return;
+    if (access.equippedSkinId && access.sanction) {
+      this.cacheDisguise(access, access.equippedSkinId, { usable: disguiseSkinId === access.equippedSkinId });
+    }
   }
   onLeave(client: Client, code?: number) {
     this.bartender.forget(client.sessionId);
@@ -636,15 +717,16 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     return player.hall === 'arcade' && atBar(player) && !player.playing && player.action !== 'drink' && DRINKS.some(drink => drink.id === id);
   }
   private async recordClubViolation(client: Client, player: Player, visit: ChatVisit | undefined, reason: ClubViolation, id: string) {
-    const accountId = (client.auth as RoomAuth).account.id;
+    const { account } = client.auth as RoomAuth;
+    const equippedSkinId = generatedAppearance(account.appearance)?.skinId ?? null;
     const currentGamingVisit = () => !this.disposed && !!visit && isCasinoFloor(visit.hall) && player.hall === visit.hall
       && player.connected && this.state.players.get(client.sessionId) === player && this.roomChat.visit(client.sessionId) === visit;
     const pursuitId = currentGamingVisit() ? randomUUID() : undefined;
-    const { outcome, replayed } = await accounts.clubSanctions.recordViolation(accountId, { id, reason, pursuitId });
+    const { outcome, replayed } = await accounts.clubSanctions.recordViolation(account.id, { id, reason, pursuitId, equippedSkinId });
+    if (replayed) return;
+    accounts.events.emit('club-sanction', account.id, outcome.sanction, outcome.revealedSkinId);
     const access = this.access.get(client.sessionId);
-    if (replayed || !access || this.state.players.get(client.sessionId) !== player) return;
-    access.revision++;
-    access.sanction = outcome.sanction;
+    if (!access?.active || this.state.players.get(client.sessionId) !== player) return;
     if (pursuitId && currentGamingVisit()) {
       this.dispatchViolation(client, player, { id: pursuitId, sanctionId: outcome.sanction.id, until: outcome.sanction.until, reason }, reason);
     }
@@ -669,12 +751,20 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       await Promise.all(this.clients.map(async client => {
         const access = this.access.get(client.sessionId), player = this.state.players.get(client.sessionId);
         if (!access || !player) return;
-        const revision = access.revision, auth = client.auth as RoomAuth;
-        const [active, drinking, sanction] = await Promise.all([accounts.active(auth.hash),
-          accounts.drinking.read(auth.account.id), accounts.clubSanctions.active(auth.account.id)]);
-        if (this.disposed || this.access.get(client.sessionId) !== access || this.state.players.get(client.sessionId) !== player || access.revision !== revision) return;
-        access.active = active; access.drinking = drinking; access.sanction = sanction; player.soberAt = drinking.soberAt;
-        if (!active) { player.connected = false; this.releaseCabinet(client.sessionId); this.stop(client.sessionId); client.leave(4001); }
+        const revision = access.revision, sanctionRevision = access.sanctionRevision, auth = client.auth as RoomAuth;
+        const appearanceRevision = access.profileRevision.appearance;
+        const [active, drinking, enforcement] = await Promise.all([accounts.active(auth.hash),
+          accounts.drinking.read(auth.account.id), accounts.clubSanctions.enforcement(auth.account.id)]);
+        if (this.disposed || this.access.get(client.sessionId) !== access || this.state.players.get(client.sessionId) !== player) return;
+        if (revision === access.revision) {
+          access.active = active; access.drinking = drinking; player.soberAt = drinking.soberAt;
+          if (!active) { player.connected = false; this.releaseCabinet(client.sessionId); this.stop(client.sessionId); client.leave(4001); return; }
+        }
+        if (access.active && sanctionRevision === access.sanctionRevision) {
+          access.sanction = enforcement.sanction;
+          this.applyDisguiseSnapshot(access, enforcement.disguiseSkinId, appearanceRevision);
+          void this.refreshDisguise(client, access);
+        }
       }));
     } finally { this.refreshingAccess = false; }
   }
@@ -687,6 +777,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     }
     const access = this.access.get(sessionId), player = this.state.players.get(sessionId);
     if (!access || !player || player.security) return;
+    this.offerDisguise(sessionId);
     if (hall !== 'street') access.capture = undefined;
     if (access.resumeHall && (access.resumeHall === hall || !this.hasRecoverableActivity(sessionId))) {
       access.resumeHall = undefined;
