@@ -44,6 +44,7 @@ async function host(page: Page) {
   });
   await context.routeWebSocket('**/*', socket => socket.close());
   await page.goto('/?mode=club&lang=ru');
+  await page.waitForFunction(() => typeof window.royalDemo?.getNetworkState === 'function');
   await expect(page.locator('#join-dialog')).toBeVisible();
   await expect(page.locator('#loading')).toHaveCount(0);
   const cdp = await context.newCDPSession(page);
