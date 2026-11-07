@@ -6,11 +6,13 @@ import { AuditDatasets } from '../server/audit/datasets';
 import { AuditEvidence } from '../server/audit/evidence';
 import { auditCommandRoutes, observeAuditIntent } from '../server/audit/intents';
 import { AuditPostingReader } from '../server/audit/postings';
+import { persistCapturedCasinoReplay } from '../server/audit/replay-casino';
 import { casinoConflictRiskRule, casinoPurchaseRefundRiskRule, selectCasinoRisk } from '../server/audit/risk-casino';
+import { runAuditRiskReport } from '../server/audit/risk-report';
 import { evaluateAuditRiskRule } from '../server/audit/risk-rules';
 import { RISK_WINDOW_MS, type AuditRiskSelection } from '../server/audit/risk-selection';
 import { AuditRiskSignals } from '../server/audit/risk-store';
-import { PostgresDatabase } from '../server/database';
+import { identifier, PostgresDatabase } from '../server/database';
 import { DemoWalletStore } from '../server/demoWallet';
 import { recordDemoUnits } from '../server/demoWalletAmounts';
 import { cascadeRandom } from '../scripts/game-math/rtp-temple-cascade-model.mjs';
@@ -70,8 +72,10 @@ test('casino retry control stays clear and changed-intent 409 series links the c
     await f.wallet.operate(f.account, command);
     retries.push(await transport(f, f.account, command, 'ok'));
   }
+  const peerCommands: Core[] = [];
   for (const peer of f.peers) {
     const own = plinko();
+    peerCommands.push(own);
     await f.wallet.operate(peer, own);
     await transport(f, peer, own, 'ok');
   }
@@ -103,6 +107,44 @@ test('casino retry control stays clear and changed-intent 409 series links the c
   }
   assert.equal(candidate.financialFindings, undefined);
   assert.equal((await f.store.record(signal))?.signal.status, 'observed');
+  assert.equal(candidate.replayLinks, undefined);
+  await f.store.review(f.selection.scope, signal.key, { expectedRevision: 1, reviewerId: 'operator', decision: 'explained' });
+  const namespace = f.game.schema + '.demo_ledger';
+  const posting = { namespace, rowId: debit[0].id }, replayId = randomUUID(), peerReplayId = randomUUID();
+  const peerDebit = await f.game.prepare("SELECT id::text FROM demo_ledger WHERE operation_id=? AND entry_type='bet'").get(peerCommands[0].id);
+  assert(peerDebit);
+  const peerPosting = { namespace, rowId: peerDebit.id };
+  const replayInput = { datasetId: f.selection.scope.datasetId, gameSchema: f.game.schema };
+  assert.equal((await persistCapturedCasinoReplay(f.audit, { ...replayInput, replayId, posting })).status, 'stored');
+  assert.equal((await persistCapturedCasinoReplay(f.audit, { ...replayInput, replayId: peerReplayId, posting: peerPosting })).status, 'stored');
+  const link = { replayId, sequence: 1, source: posting };
+  const linked = await runAuditRiskReport(f.audit, f.game, f.selection, 'casino');
+  const finding = linked.signals.find(item => item.key === signal.key)!;
+  assert.deepEqual(finding.replayLinks, [link]);
+  assert.equal(finding.revision, 1);
+  assert.equal(finding.reviewStatus, 'reviewed');
+  assert.deepEqual((await f.store.read(f.selection.scope, signal.key))?.replayLinks, [link]);
+  await assert.rejects(f.store.record(signal, [{ ...link, sequence: 2 }]), /subject posting or event/);
+  await assert.rejects(f.store.record(signal, [{ replayId: peerReplayId, sequence: 1, source: peerPosting }]), /outside subject evidence/);
+  await assert.rejects(f.store.record(signal, [{ ...link, replayId: peerReplayId }]), /subject posting or event/);
+
+  const role = identifier('risk_no_replay_' + randomUUID().replaceAll('-', '').slice(0, 12));
+  const auditSchema = identifier(f.audit.schema), gameSchema = identifier(f.game.schema);
+  await f.audit.exec(`CREATE ROLE ${role}`);
+  try {
+    await f.audit.exec(`GRANT USAGE ON SCHEMA ${auditSchema},${gameSchema} TO ${role};
+      GRANT SELECT ON ALL TABLES IN SCHEMA ${auditSchema},${gameSchema} TO ${role};
+      REVOKE SELECT ON ${auditSchema}.audit_replay_fragments FROM ${role}`);
+    const denied = await f.audit.transaction(async () => {
+      await f.audit.exec(`SET LOCAL ROLE ${role}`);
+      return f.candidates();
+    }, { readOnly: true });
+    const deniedCandidate = denied.find(item => item.rule.id === casinoConflictRiskRule.id)!;
+    assert.equal(deniedCandidate.replayLinks, undefined);
+    assert.deepEqual(deniedCandidate.input, candidate.input);
+  } finally {
+    await f.audit.exec(`DROP OWNED BY ${role}; DROP ROLE ${role}`);
+  }
 
   const observedAt = Date.now();
   await f.audit.prepare('INSERT INTO audit_attempt_capture_gaps VALUES (?,?,1,?,?)')
@@ -143,6 +185,9 @@ test('authorized casino bonus remains clear, extra free-step debit and unexpecte
   assert.equal(base.amount_units, '-' + caribbeanInitialCost(settings.caribbean, '100'));
   assert.equal((await f.game.prepare("SELECT count(*)::int AS n FROM demo_ledger WHERE operation_id=ANY(?::text[]) AND entry_type='bet'")
     .get(moves))!.n, 0);
+  const posting = { namespace: f.game.schema + '.demo_ledger', rowId: base.id }, replayId = randomUUID();
+  assert.equal((await persistCapturedCasinoReplay(f.audit, { datasetId: f.selection.scope.datasetId, gameSchema: f.game.schema,
+    posting, replayId })).status, 'stored');
 
   await recordDemoUnits(f.game, f.account, moves[0], 'bet', -1, 100, CARIBBEAN_GAME);
   await recordDemoUnits(f.game, f.account, roundId, 'refund', 50, 150, CARIBBEAN_GAME);
@@ -158,7 +203,10 @@ test('authorized casino bonus remains clear, extra free-step debit and unexpecte
   assert.deepEqual(candidate.financialFindings?.map(item => item.code).sort(),
     ['casino-refund-posting-source', 'casino-step-posting-count']);
   assert(candidate.financialFindings?.every(item => item.postings.some(ref => ref.rowId === base.id)));
-  assert.equal((await f.store.record(risk))?.signal.status, 'observed');
+  assert.deepEqual(candidate.replayLinks, [{ replayId, sequence: 1, source: posting }]);
+  const stored = await f.store.record(risk, candidate.replayLinks);
+  assert.equal(stored?.signal.status, 'observed');
+  assert.deepEqual(stored?.replayLinks, candidate.replayLinks);
 });
 
 test('casino selector emits explicit incomplete coverage on source row limit and wrong scope stays closed', async t => {

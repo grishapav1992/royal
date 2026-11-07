@@ -102,7 +102,7 @@ function unavailable(error: unknown) {
 }
 
 /** Some CHECK readers catch source errors. A savepoint also repairs the shared snapshot if PostgreSQL aborted it. */
-async function section<T>(audit: PostgresDatabase, work: () => Promise<T>): Promise<T | null> {
+export async function auditReconcileSection<T>(audit: PostgresDatabase, work: () => Promise<T>): Promise<T | null> {
   await audit.exec('SAVEPOINT audit_reconcile_section');
   try {
     const result = await work();
@@ -426,71 +426,92 @@ async function replays(audit: PostgresDatabase, report: ReadyAuditReconciliation
   if (!report.replayIds.length) output.add('replay', 'insufficient-data', 'replay-not-linked');
 }
 
-/** Trusted CLI-04 materialization, derived from one captured posting and one committed read-only snapshot. */
-export async function buildAuditReconciliation(audit: PostgresDatabase, sources: AuditSourceSchemas, datasetId: string,
-  anchor: AuditSourceRef, signal?: AbortSignal): Promise<AuditReconciliation> {
-  signal?.throwIfAborted();
+function adapters(audit: PostgresDatabase, sources: AuditSourceSchemas) {
   if (!name(sources.game) || (sources.payments !== undefined && !name(sources.payments)) ||
       new Set([audit.schema, sources.game, ...(sources.payments ? [sources.payments] : [])]).size !== (sources.payments ? 3 : 2)) {
     throw new Error('Invalid audit reconciliation source configuration');
   }
-  if (!isReplayId(datasetId.toLowerCase()) || !rowId(anchor.rowId)) return { status: 'unsupported' };
-  datasetId = datasetId.toLowerCase();
-  const ledgers = [adapter(sources.game, 'demo_ledger'), adapter(sources.game, 'capro_pending_ledger'),
+  return [adapter(sources.game, 'demo_ledger'), adapter(sources.game, 'capro_pending_ledger'),
     ...(sources.payments ? [adapter(sources.payments, 'crypto_ledger')] : [])];
-  const ledger = ledgers.find(item => item.namespace === anchor.namespace);
-  if (!ledger) return { status: 'unsupported' };
+}
+
+export function auditReconcileSupportsSource(audit: PostgresDatabase, sources: AuditSourceSchemas, namespace: string) {
+  return adapters(audit, sources).some(ledger => ledger.namespace === namespace);
+}
+
+/** Trusted CLI-04 materialization, derived from one captured posting and one committed read-only snapshot. */
+export async function buildAuditReconciliation(audit: PostgresDatabase, sources: AuditSourceSchemas, datasetId: string,
+  anchor: AuditSourceRef, signal?: AbortSignal): Promise<AuditReconciliation> {
+  signal?.throwIfAborted();
+  const ledger = adapters(audit, sources).find(item => item.namespace === anchor.namespace);
+  datasetId = datasetId.toLowerCase();
+  if (!ledger || !isReplayId(datasetId) || !rowId(anchor.rowId)) return { status: 'unsupported' };
   if (audit.inTransaction) throw new Error('Audit reconciliation requires an independent snapshot');
   return audit.transaction(async () => {
     await audit.exec("SET LOCAL statement_timeout='3s'");
-    const capture = await audit.prepare(`SELECT d.environment,r.account_id,r.operation_id,r.occurred_at_ms
-      FROM audit_posting_refs r JOIN audit_datasets d ON d.id=r.dataset_id
-      WHERE r.dataset_id=? AND r.source_namespace=? AND r.source_row_id=?`)
-      .get(datasetId, anchor.namespace, anchor.rowId);
-    if (!capture) return { status: 'not-found' };
-    const { environment, account_id: accountId, operation_id: operationId, occurred_at_ms: occurredAtMs } = capture;
-    if (environment !== 'test' && environment !== 'live' || typeof accountId !== 'string' ||
-        !/^[a-zA-Z0-9._:-]{1,128}$/.test(accountId) || typeof operationId !== 'string' || operationId.length > 512 ||
-        !operationId.length || /[\x00-\x1f\x7f]/.test(operationId) || !Number.isSafeInteger(occurredAtMs) || occurredAtMs < 0) {
-      return { status: 'unsupported' };
-    }
-    const report: ReadyAuditReconciliation = { status: 'ready', schemaVersion: 1, scope: { datasetId, environment },
-      anchor: source(anchor.namespace, anchor.rowId), accountId, operationId, occurredAtMs, entity: null, requiredSources: [anchor.namespace],
-      findings: [], coverage: [], evidence: [], replayIds: [] };
-    const output = recorder(report);
-    output.link(report.anchor);
-    const run = async <T>(rule: Rule, action: () => Promise<T>): Promise<T | null> => {
-      signal?.throwIfAborted();
-      const result = await section(audit, async () => ({ value: await action() }));
-      if (!result) output.add(rule, 'insufficient-data', 'source-unavailable');
-      return result?.value ?? null;
-    };
-    const row = await run('R-01', () => balances(audit, ledger, report, output));
-    if (!row?.present) return report;
-    await run('R-01', () => stakeDirection(audit, row, ledger, sources, report, output));
-    const routes = await run('R-02', () => attempts(audit, ledger, row, report, output, signal));
-    if (ledger.ledger === 'crypto_ledger' && sources.payments) {
-      await run('payment', () => payment(audit, sources.payments!, row.entry, report, output));
-    } else if (ledger.ledger === 'demo_ledger' && row.game?.startsWith('pvp:')) {
-      await run('R-05', () => pvp(audit, sources.game, report, output));
-    } else if (ledger.ledger === 'demo_ledger' && row.game === 'flag-tote') {
-      await run('R-06', () => tote(audit, sources.game, report, output));
-    } else if (ledger.ledger === 'demo_ledger' && ['bet', 'win', 'refund', 'rollback'].includes(row.entry ?? '') &&
-        row.game !== 'atelier' && row.game !== 'janitor-skins' && !row.game?.startsWith('reward:')) {
-      await run('R-04', () => casino(audit, sources.game, report, output));
-    }
-    if (ledger.ledger === 'demo_ledger') {
-      const preferred = report.entity?.source.namespace.endsWith('.demo_operations') ? auditCommandRoutes.core : null;
-      const boundRoutes = preferred ? [preferred] : [auditCommandRoutes.core, auditCommandRoutes.expansion, auditCommandRoutes.session]
-        .filter(route => routes?.has(route));
-      for (const route of boundRoutes) await run('R-03', () => repeats(audit, sources.game, report, output, route));
-      if (!boundRoutes.length && report.entity?.category === 'pvp') {
-        output.add('R-03', 'insufficient-data', 'operation-request-unassociated');
-      }
-    }
-    await run('replay', () => replays(audit, report, output, signal));
-    report.requiredSources = [...new Set(report.requiredSources)].sort();
-    signal?.throwIfAborted();
-    return report;
+    return reconcilePosting(audit, sources, ledger, datasetId, anchor, signal);
   }, { readOnly: true });
+}
+
+/** Trusted caller owns the enclosing read-only snapshot and its time limits. */
+export async function reconcileAuditPostingInSnapshot(audit: PostgresDatabase, sources: AuditSourceSchemas, datasetId: string,
+  anchor: AuditSourceRef, signal?: AbortSignal): Promise<AuditReconciliation> {
+  const ledger = adapters(audit, sources).find(item => item.namespace === anchor.namespace);
+  if (!ledger || !isReplayId(datasetId) || !rowId(anchor.rowId)) return { status: 'unsupported' };
+  return reconcilePosting(audit, sources, ledger, datasetId, anchor, signal);
+}
+
+async function reconcilePosting(audit: PostgresDatabase, sources: AuditSourceSchemas, ledger: Adapter, datasetId: string,
+  anchor: AuditSourceRef, signal?: AbortSignal): Promise<AuditReconciliation> {
+  signal?.throwIfAborted();
+  if (!audit.inTransaction) throw new Error('Audit reconciliation requires a snapshot');
+  const capture = await audit.prepare(`SELECT d.environment,r.account_id,r.operation_id,r.occurred_at_ms
+    FROM audit_posting_refs r JOIN audit_datasets d ON d.id=r.dataset_id
+    WHERE r.dataset_id=? AND r.source_namespace=? AND r.source_row_id=?`)
+    .get(datasetId, anchor.namespace, anchor.rowId);
+  if (!capture) return { status: 'not-found' };
+  const { environment, account_id: accountId, operation_id: operationId, occurred_at_ms: occurredAtMs } = capture;
+  if (environment !== 'test' && environment !== 'live' || typeof accountId !== 'string' ||
+      !/^[a-zA-Z0-9._:-]{1,128}$/.test(accountId) || typeof operationId !== 'string' || operationId.length > 512 ||
+      !operationId.length || /[\x00-\x1f\x7f]/.test(operationId) || !Number.isSafeInteger(occurredAtMs) || occurredAtMs < 0) {
+    return { status: 'unsupported' };
+  }
+  const report: ReadyAuditReconciliation = { status: 'ready', schemaVersion: 1, scope: { datasetId, environment },
+    anchor: source(anchor.namespace, anchor.rowId), accountId, operationId, occurredAtMs, entity: null, requiredSources: [anchor.namespace],
+    findings: [], coverage: [], evidence: [], replayIds: [] };
+  const output = recorder(report);
+  output.link(report.anchor);
+  const run = async <T>(rule: Rule, action: () => Promise<T>): Promise<T | null> => {
+    signal?.throwIfAborted();
+    const result = await auditReconcileSection(audit, async () => ({ value: await action() }));
+    if (!result) output.add(rule, 'insufficient-data', 'source-unavailable');
+    return result?.value ?? null;
+  };
+  const row = await run('R-01', () => balances(audit, ledger, report, output));
+  if (!row?.present) return report;
+  await run('R-01', () => stakeDirection(audit, row, ledger, sources, report, output));
+  const routes = await run('R-02', () => attempts(audit, ledger, row, report, output, signal));
+  if (ledger.ledger === 'crypto_ledger' && sources.payments) {
+    await run('payment', () => payment(audit, sources.payments!, row.entry, report, output));
+  } else if (ledger.ledger === 'demo_ledger' && row.game?.startsWith('pvp:')) {
+    await run('R-05', () => pvp(audit, sources.game, report, output));
+  } else if (ledger.ledger === 'demo_ledger' && row.game === 'flag-tote') {
+    await run('R-06', () => tote(audit, sources.game, report, output));
+  } else if (ledger.ledger === 'demo_ledger' && ['bet', 'win', 'refund', 'rollback'].includes(row.entry ?? '') &&
+      row.game !== 'atelier' && row.game !== 'janitor-skins' && !row.game?.startsWith('reward:')) {
+    await run('R-04', () => casino(audit, sources.game, report, output));
+  }
+  if (ledger.ledger === 'demo_ledger') {
+    const preferred = report.entity?.source.namespace.endsWith('.demo_operations') ? auditCommandRoutes.core : null;
+    const boundRoutes = preferred ? [preferred] : [auditCommandRoutes.core, auditCommandRoutes.expansion, auditCommandRoutes.session]
+      .filter(route => routes?.has(route));
+    for (const route of boundRoutes) await run('R-03', () => repeats(audit, sources.game, report, output, route));
+    if (!boundRoutes.length && report.entity?.category === 'pvp') {
+      output.add('R-03', 'insufficient-data', 'operation-request-unassociated');
+    }
+  }
+  await run('replay', () => replays(audit, report, output, signal));
+  report.requiredSources = [...new Set(report.requiredSources)].sort();
+  signal?.throwIfAborted();
+  return report;
 }

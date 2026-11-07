@@ -1,7 +1,7 @@
 import { parseArgs } from 'node:util';
 import { databaseConfig } from '../server/database';
 import { AuditPlayerReportError, exportAuditPlayer, type AuditDetailLookupFilters, type AuditReportFilters } from '../server/audit/report-player';
-import { readAuditDetail, requestAuditReconcile } from '../server/audit/report-investigation';
+import { readAuditDetail, requestAuditPeriodReconcile, requestAuditReconcile } from '../server/audit/report-investigation';
 import { exportAuditReplay } from '../server/audit/report-replay';
 import { readAuditSummary } from '../server/audit/report-summary';
 
@@ -15,8 +15,10 @@ const usage = 'npm run audit -- player ' + period + ' --account <id> --output <n
   'npm run audit -- detail ' + scope + ' --source <ledger namespace> ' +
     '(--operation <id> | --round <id> | --match <uuid> | --ticket <uuid>) [--account <id>]\n' +
   'npm run audit -- replay ' + scope + ' --replay <uuid> --output <new JSON file>\n' +
-  'npm run audit -- reconcile ' + anchor + ' [--wait] [--refresh]';
+  'npm run audit -- reconcile ' + anchor + ' [--wait] [--refresh]\n' +
+  'npm run audit -- reconcile ' + period + ' --source <ledger namespace> [--account <id>] [--wait] [--refresh]';
 const invalid = () => new Error('Invalid audit report arguments');
+const identifierToken = /^[a-zA-Z0-9._:-]{1,128}$/;
 
 function timestamp(value: string) {
   const match = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]{1,3})?(?:Z|[+-][0-9]{2}:[0-9]{2})$/.exec(value);
@@ -83,12 +85,18 @@ async function main() {
         result = kind === 'detail' ? await readAuditDetail(config, { ...input, filters })
           : await requestAuditReconcile(config, { ...input, filters: { ...filters, ...(refresh ? { refresh: true } : {}) },
             waitMs: wait ? 40_000 : 0 });
+      } else if (kind === 'reconcile') {
+        if (!permits('source','from','to','account','wait','refresh') || !from || !to ||
+            (account !== undefined && !identifierToken.test(account))) throw invalid();
+        result = await requestAuditPeriodReconcile(config, { ...input, filters: {
+          source, fromMs: timestamp(from), toMs: timestamp(to),
+          ...(account === undefined ? {} : { accountId: account }), ...(refresh ? { refresh: true } : {}),
+        }, waitMs: wait ? 40_000 : 0 });
       } else {
         const selectors = (['operation','round','match','ticket'] as const).filter(key => values[key] !== undefined);
-        if (kind !== 'detail' || selectors.length !== 1 || !permits('source', selectors[0], 'account')) throw invalid();
+        if (selectors.length !== 1 || !permits('source', selectors[0], 'account')) throw invalid();
         const lookupKind = selectors[0], lookupId = values[lookupKind]!;
-        const token = /^[a-zA-Z0-9._:-]{1,128}$/;
-        if (!token.test(lookupId) || (account !== undefined && !token.test(account)) ||
+        if (!identifierToken.test(lookupId) || (account !== undefined && !identifierToken.test(account)) ||
             ((lookupKind === 'match' || lookupKind === 'ticket') &&
               !/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(lookupId))) throw invalid();
         const filters: AuditDetailLookupFilters = { source, lookupKind, lookupId, ...(account === undefined ? {} : { accountId: account }) };

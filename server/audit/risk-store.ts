@@ -3,8 +3,9 @@ import type { PostgresDatabase } from '../database';
 import { applySchemaMigration } from '../database-migrations';
 import { auditSourceKey, isAuditRecord, type AuditEntityRef, type AuditScope } from './contract';
 import type { AuditPostingReader } from './postings';
-import { inspectReplayManifest, isReplayId } from './replay-package';
+import { isReplayId } from './replay-package';
 import { AuditReplayStore } from './replay-store';
+import { casinoRiskReplayPostings, riskReplaySequence, riskReplayWithinBudget, toteRiskReplayProofs } from './risk-replay-links';
 import type { AuditRiskCandidate } from './risk-selection';
 import {
   evaluateAuditRiskRule, isRiskActorId, isRiskScope, isRiskSignalKey, riskAssetKey, riskEntityKey, riskEvidenceKey,
@@ -14,8 +15,6 @@ import {
 const maximumPayloadBytes = 1_048_576;
 const maximumReplayLinks = 96;
 const maximumReplayLinkBytes = 65_536;
-const maximumLinkedReplayEvents = 512;
-const maximumLinkedReplayBytes = 256 * 1024;
 type ReplayLink = NonNullable<AuditRiskCandidate['replayLinks']>[number];
 type ReplayLinks = { version: 1; links: ReplayLink[] };
 const reviewDecisions = ['explained', 'escalated', 'dismissed'] as const;
@@ -71,15 +70,32 @@ function exactFields(value: unknown, fields: string[]): value is Record<string, 
 
 function subjectProofs(signal: AuditRiskSignal) {
   const accounts = new Set(signal.input.subject.accountIds);
-  const entities = new Map<string, { entity: AuditEntityRef; accountId: string; postings: Set<string> }>();
-  for (const { entity, primary, supporting } of signal.input.observations) {
-    if (!entity || !primary.accountId || !accounts.has(primary.accountId)) continue;
+  const entities = new Map<string, { entity: AuditEntityRef; accountId: string; postings: Set<string>;
+    tickets: ReturnType<typeof toteRiskReplayProofs> }>();
+  const casinoPostings = new Map<string, ReturnType<typeof casinoRiskReplayPostings>[number]>();
+  for (const row of signal.input.observations) {
+    const { entity, primary, supporting } = row;
+    if (!primary.accountId || !accounts.has(primary.accountId)) continue;
+    for (const posting of casinoRiskReplayPostings(row)) casinoPostings.set(auditSourceKey(posting.source), posting);
+    if (!entity) continue;
     const key = auditSourceKey(entity.source);
-    const proof = entities.get(key) ?? { entity, accountId: primary.accountId, postings: new Set<string>() };
+    const proof = entities.get(key) ?? { entity, accountId: primary.accountId, postings: new Set<string>(), tickets: [] };
     for (const ref of [primary, ...supporting]) if (ref.kind === 'posting') proof.postings.add(auditSourceKey(ref.source));
+    proof.tickets.push(...toteRiskReplayProofs(row, accounts));
     entities.set(key, proof);
   }
-  return entities;
+  return { entities, casinoPostings };
+}
+
+function eligibleReplaySource({ entities, casinoPostings }: ReturnType<typeof subjectProofs>, source: ReplayLink['source']) {
+  const key = auditSourceKey(source);
+  return !!entities.get(key)?.postings.size || casinoPostings.has(key);
+}
+
+export function subjectRiskReplayLinks(signal: AuditRiskSignal, links: ReplayLink[]) {
+  if (!links.length) return links;
+  const eligible = subjectProofs(signal);
+  return links.filter(link => eligibleReplaySource(eligible, link.source));
 }
 
 function checkedReplayLinks(signal: AuditRiskSignal, input: unknown): ReplayLinks {
@@ -95,7 +111,9 @@ function checkedReplayLinks(signal: AuditRiskSignal, input: unknown): ReplayLink
       throw new Error('Invalid audit risk replay link');
     }
     const source = { namespace: link.source.namespace, rowId: link.source.rowId }, key = link.replayId + ':' + link.sequence;
-    if (!eligible.get(auditSourceKey(source))?.postings.size || unique.has(key)) throw new Error('Audit risk replay link outside subject evidence');
+    if (!eligibleReplaySource(eligible, source) || unique.has(key)) {
+      throw new Error('Audit risk replay link outside subject evidence');
+    }
     unique.add(key);
     links.push({ replayId: link.replayId, sequence: link.sequence, source });
   }
@@ -233,18 +251,34 @@ export class AuditRiskSignals {
       if (!replay) {
         const header = await this.db.prepare(`SELECT manifest FROM audit_replay_packages WHERE dataset_id=? AND replay_id=?
           AND octet_length(manifest::text)<=65536`).get(scope.datasetId, link.replayId);
-        const manifest = inspectReplayManifest(header?.manifest);
-        if (manifest.status !== 'verified' ||
-            manifest.value.fragments.reduce((sum, part) => sum + part.eventCount, 0) > maximumLinkedReplayEvents ||
-            manifest.value.fragments.reduce((sum, part) => sum + part.byteLength, 0) > maximumLinkedReplayBytes) {
+        if (!riskReplayWithinBudget(header?.manifest)) {
           throw new Error('Audit risk replay unavailable or outside budget');
         }
         replay = await store.read(scope, link.replayId);
         packs.set(link.replayId, replay);
       }
       if (replay.status !== 'verified') throw new Error('Audit risk replay unavailable');
-      const { entity, accountId, postings } = eligible.get(auditSourceKey(link.source))!;
       const { manifest, fragments } = replay.value, game = manifest.game;
+      const sourceKey = auditSourceKey(link.source);
+      const casinoPosting = eligible.casinoPostings.get(sourceKey);
+      if (casinoPosting) {
+        const resolved = await this.postings?.read(scope.datasetId, casinoPosting.source);
+        const entity = resolved?.status === 'found' ? resolved.posting.entity : null;
+        if (resolved?.status !== 'found' || resolved.posting.scope.datasetId !== scope.datasetId ||
+            resolved.posting.scope.environment !== scope.environment || resolved.posting.accountId !== casinoPosting.accountId ||
+            resolved.posting.operationId !== casinoPosting.operationId || resolved.posting.occurredAtMs !== casinoPosting.occurredAtMs ||
+            entity?.category !== 'casino' || riskReplaySequence({ entity, posting: casinoPosting }, replay.value) !== link.sequence) {
+          throw new Error('Audit risk casino replay does not match subject posting or event');
+        }
+        continue;
+      }
+      const { entity, accountId, postings, tickets } = eligible.entities.get(sourceKey)!;
+      if (entity.category === 'totalizator') {
+        if (!tickets.some(ticket => riskReplaySequence(ticket, replay.value) === link.sequence)) {
+          throw new Error('Audit risk tote replay does not match subject ticket or event');
+        }
+        continue;
+      }
       if (manifest.entityId !== replayEntityId(entity, accountId) || game.category !== entity.category ||
           game.gameId !== entity.gameId || game.modeId !== entity.modeId ||
           entity.rulesVersion !== null && game.rulesVersion !== entity.rulesVersion ||

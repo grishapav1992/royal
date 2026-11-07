@@ -2,6 +2,7 @@ import { identifier, type PostgresDatabase } from '../database';
 import { TOTE_GAME, TOTE_LIMITS, TOTE_STAKES, TOTE_TIMING, toteCountry, toteUuid } from '../../src/shared/flagTote';
 import { TOTE_ADMISSION_CLOCK } from './check-tote';
 import { auditSourceKey, isAuditRecord, type AuditAsset, type AuditEvent, type AuditSourceRef } from './contract';
+import { attachRiskReplayJumps, toteRiskReplayProofs } from './risk-replay-links';
 import type { AuditRiskEvidence, AuditRiskRule } from './risk-rules';
 import { RISK_WINDOW_MS, riskAccounts, riskCandidate, riskSourceBoundaries,
   type AuditRiskCandidate, type AuditRiskSelection } from './risk-selection';
@@ -208,7 +209,7 @@ export async function selectToteRisk(audit: PostgresDatabase, selection: AuditRi
     if (!samples) return incomplete();
     selection.signal?.throwIfAborted();
     const baseline = boundaries.wholeWindow && complete;
-    return subjects.map(pair => {
+    const candidates = subjects.map(pair => {
       const rows: CandidateRow[] = [], findings: Finding[] = [];
       let subject = baseline, comparison = baseline && comparisons.length > 0 && selection.comparisonAccountIds.length % 2 === 0;
       for (const [id, sample] of samples) {
@@ -234,6 +235,12 @@ export async function selectToteRisk(audit: PostgresDatabase, selection: AuditRi
       }
       return candidate(pair, rows, subject, comparison, findings);
     });
+    await attachRiskReplayJumps(audit, selection, candidates.map(candidate => {
+      const subject = new Set(candidate.input.subject.accountIds);
+      return { candidate, proofs: candidate.input.observations.flatMap(row => subject.has(row.primary.accountId!) ?
+        toteRiskReplayProofs(row, subject) : []) };
+    }));
+    return candidates;
   }, { readOnly: true }).catch(error => {
     const code = (error as { code?: string } | null)?.code;
     if (code && ['42P01', '3F000', '42501', '57014'].includes(code)) return incomplete();

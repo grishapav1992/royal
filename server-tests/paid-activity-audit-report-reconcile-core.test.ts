@@ -7,6 +7,7 @@ import { AuditEvidence } from '../server/audit/evidence';
 import { auditCommandRoutes, observeAuditIntent } from '../server/audit/intents';
 import { persistCapturedCasinoReplay } from '../server/audit/replay-casino';
 import { buildAuditReconciliation } from '../server/audit/report-reconcile-core';
+import { buildAuditPeriodReconciliation } from '../server/audit/report-reconcile-period-core';
 import { cryptoConfig } from '../server/crypto/config';
 import type { CryptoProvider } from '../server/crypto/nowpayments';
 import { CryptoStore } from '../server/crypto/store';
@@ -182,4 +183,38 @@ test('PvP bank and historical pool use their committed CHECK results under the s
   const damaged = await buildAuditReconciliation(f.audit, f.sources, datasetId, poolAnchor);
   assert.equal(damaged.status, 'ready');
   assert(damaged.findings.some(row => row.rule === 'R-06' && row.code === 'ticket-refund' && row.status === 'mismatch'));
+});
+
+test('period selection and financial checks share one snapshot across a concurrent source commit', async t => {
+  const f = await fixture(t);
+  const { datasetId } = await f.datasets.startTest();
+  const operationId = randomUUID();
+  await f.wallet.operate(f.account, { id: operationId, kind: 'deposit', amount: 1 });
+  const anchor = await f.capture(operationId, f.account, 'deposit');
+  const posting = await f.game.prepare('SELECT created_at FROM demo_ledger WHERE id=?').get(anchor.rowId);
+  assert(posting);
+  const selection = { datasetId, sourceNamespace: f.ledger, accountId: f.account,
+    fromMs: posting.created_at, toMs: posting.created_at + 1 };
+  const prepare = f.audit.prepare.bind(f.audit);
+  const mocked = t.mock.method(f.audit, 'prepare', (sql: string) => {
+    const query = prepare(sql);
+    if (!sql.includes('ORDER BY occurred_at_ms,source_row_id LIMIT')) return query;
+    return { ...query, async all(...args: unknown[]) {
+      const rows = await query.all(...args);
+      await f.game.prepare('UPDATE demo_ledger SET balance_units=balance_units+7 WHERE id=?').run(anchor.rowId);
+      return rows;
+    } };
+  });
+  const before = await buildAuditPeriodReconciliation(f.audit, f.sources, selection);
+  mocked.mock.restore();
+  assert.equal(before.status, 'ready');
+  assert.equal(before.selectedCount, 1);
+  assert.deepEqual(before.financialErrors, []);
+
+  const after = await buildAuditPeriodReconciliation(f.audit, f.sources, selection);
+  assert.equal(after.status, 'ready');
+  const mismatch = after.financialErrors.find(item => item.rule === 'R-01' && item.code === 'available-balance-opening');
+  assert(mismatch);
+  assert.deepEqual(mismatch.anchors, [anchor]);
+  assert.equal(BigInt(mismatch.observed!) - BigInt(mismatch.expected!), 7n);
 });

@@ -5,6 +5,8 @@ import { AuditDatasets } from '../server/audit/datasets';
 import { AuditEvidence } from '../server/audit/evidence';
 import type { AuditEvent } from '../server/audit/contract';
 import { TOTE_ADMISSION_CLOCK } from '../server/audit/check-tote';
+import { AuditReplayStore } from '../server/audit/replay-store';
+import { persistCapturedToteReplay } from '../server/audit/replay-tote';
 import { runAuditRiskReport } from '../server/audit/risk-report';
 import { evaluateAuditRiskRule } from '../server/audit/risk-rules';
 import { RISK_WINDOW_MS, type AuditRiskSelection } from '../server/audit/risk-selection';
@@ -61,14 +63,23 @@ async function fixture(t: TestContext) {
 test('one stable synchronized pair is explained by several pools and exact captured receipts', async t => {
   const f = await fixture(t), admissions = new Map<string, { event: AuditEvent; postingMs: number }>();
   const samePools = new Set<string>();
+  const rounds: ToteRound[] = [];
+  const persist = (round: ToteRound, replayId: string) => persistCapturedToteReplay(f.audit, {
+    datasetId: f.scope.datasetId, gameSchema: f.game.schema, poolId: round.id, replayId,
+  });
   for (let index = 0; index < 5; index++) {
     const round = await f.pool(index);
+    rounds.push(round);
     if (index < 3) samePools.add(round.id);
     const comparisonTime = index === 3 ? 400 : 120;
     const early = await f.accept(round, f.d, 5000);
     const comparison = await f.accept(round, f.c, comparisonTime, index === 4 ? 'DE' : 'FR');
     const first = await f.accept(round, f.a, 100);
     const second = await f.accept(round, f.b, 30);
+    if (index === 0) {
+      const stale = await persist(round, randomUUID());
+      assert(stale.status === 'stored' && stale.coverage === 'partial');
+    }
     for (const ticket of [early, comparison, first, second]) {
       const event = await f.clock(ticket);
       admissions.set(ticket.id, { event, postingMs: ticket.postingMs });
@@ -99,12 +110,37 @@ test('one stable synchronized pair is explained by several pools and exact captu
   assert.equal(report.signals[0].status, 'observed');
   assert.equal(report.signals[0].key, signal.key);
   assert.equal(report.signals[0].evidence.length, 5);
+  assert.deepEqual(report.signals[0].replayLinks, []);
   assert.deepEqual(report.financial.findings, []);
-  const stored = await new AuditRiskSignals(f.audit).read(f.scope, signal.key);
+  const storage = new AuditRiskSignals(f.audit);
+  const stored = await storage.read(f.scope, signal.key);
   assert.equal(stored?.signal.key, signal.key);
   assert.deepEqual((await selectToteRisk(f.audit, { ...f.selection,
     subjectAccountIds: [...f.selection.subjectAccountIds].reverse(), comparisonAccountIds: [...f.selection.comparisonAccountIds].reverse(),
   }))[0], candidate);
+
+  const replayId = randomUUID();
+  const saved = await persist(rounds[4], replayId);
+  assert(saved.status === 'stored' && saved.coverage === 'partial');
+  const replay = await new AuditReplayStore(f.audit).read(f.scope, replayId);
+  assert(replay.status === 'verified');
+  assert(replay.value.manifest.gaps.includes('terminal-unavailable'));
+  const events = replay.value.fragments.flatMap(fragment => fragment.events);
+  const source = { namespace: f.game.schema + '.flag_tote_rounds', rowId: rounds[4].id };
+  const expected = events.flatMap(event => {
+    if (event.pool?.kind !== 'ticket') return [];
+    const admission = admissions.get(event.pool.ticketId)?.event;
+    return admission?.accountId && f.selection.subjectAccountIds.includes(admission.accountId) ?
+      [{ replayId, sequence: event.sequence, source }] : [];
+  });
+  assert.equal(expected.length, 2);
+  const enriched = await runAuditRiskReport(f.audit, f.game, f.selection, 'totalizator');
+  assert.deepEqual(enriched.signals[0].replayLinks, expected);
+  assert.equal(enriched.signals[0].revision, 1);
+  assert.deepEqual((await storage.read(f.scope, signal.key))?.replayLinks, expected);
+  const comparison = events.find(event => event.pool?.kind === 'ticket' && admissions.get(event.pool.ticketId)?.event.accountId === f.c);
+  assert(comparison);
+  await assert.rejects(storage.record(signal, [{ replayId, sequence: comparison.sequence, source }]), /subject ticket or event/);
 });
 
 test('isolated lawful last-second tickets are negative controls even when repeated', async t => {

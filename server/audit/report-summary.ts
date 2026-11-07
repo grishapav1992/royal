@@ -3,7 +3,8 @@ import { AuditPlayerReportError, openAuditReportReader, runAuditReport, type Aud
 import type { SummaryReport } from './report-summary-source';
 
 export async function readAuditSummary(
-  config: ClientConfig, input: { schema: string; datasetId: string; filters: AuditReportFilters; signal?: AbortSignal },
+  config: ClientConfig, input: { schema: string; datasetId: string; filters: AuditReportFilters;
+    signal?: AbortSignal; fixtureStandbyPort?: number },
 ) {
   const result = await runAuditReport(config, input, 'summary', 60_000, async (settings, schema, jobId, signal) => {
     const { connection, finish } = await openAuditReportReader(settings, jobId, signal);

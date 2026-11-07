@@ -25,7 +25,7 @@ export async function installAuditReportAccess(db: PostgresDatabase, readerRole:
   const resultReasons = "'time-limit','row-limit','scan-limit','byte-limit','source-unavailable','output-error','internal-error','permission-denied'";
   const investigationReasons = resultReasons + ",'replay-absent','replay-corrupt','replay-incomplete','replay-unsupported'";
 
-  const beginSql = (version: 1 | 2 | 3 | 4) => `CREATE ${version > 1 ? 'OR REPLACE ' : ''}FUNCTION ${begin}(p_dataset uuid,p_kind text,p_filters jsonb) RETURNS uuid
+  const beginSql = (version: 1 | 2 | 3 | 4 | 5) => `CREATE ${version > 1 ? 'OR REPLACE ' : ''}FUNCTION ${begin}(p_dataset uuid,p_kind text,p_filters jsonb) RETURNS uuid
       LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
       DECLARE
         v_from bigint;
@@ -45,7 +45,24 @@ ${version >= 3 ? `        IF p_kind='replay' THEN
              (p_filters->>'replayId') !~ '^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$' THEN
             RAISE EXCEPTION 'Invalid audit replay filter' USING ERRCODE='22023';
           END IF;
-${version === 4 ? `        ELSIF p_kind='detail' AND p_filters ? 'lookupKind' THEN
+${version >= 5 ? `        ELSIF p_kind='reconcile' AND (p_filters ? 'fromMs' OR p_filters ? 'toMs') THEN
+          IF (p_filters - ARRAY['source','fromMs','toMs','accountId','refresh'])<>'{}'::jsonb OR
+             pg_catalog.jsonb_typeof(p_filters->'source') IS DISTINCT FROM 'string' OR
+             (p_filters->>'source') !~ '^[a-z_][a-z_0-9]{0,62}[.][a-z_][a-z_0-9]{0,62}$' OR
+             (p_filters ? 'accountId' AND (pg_catalog.jsonb_typeof(p_filters->'accountId') IS DISTINCT FROM 'string' OR
+               (p_filters->>'accountId') !~ '^[a-zA-Z0-9._:-]{1,128}$')) OR
+             (p_filters ? 'refresh' AND pg_catalog.jsonb_typeof(p_filters->'refresh') IS DISTINCT FROM 'boolean') OR
+             pg_catalog.jsonb_typeof(p_filters->'fromMs') IS DISTINCT FROM 'number' OR
+             pg_catalog.jsonb_typeof(p_filters->'toMs') IS DISTINCT FROM 'number' OR
+             (p_filters->>'fromMs') !~ '^[0-9]{1,16}$' OR (p_filters->>'toMs') !~ '^[0-9]{1,16}$' THEN
+            RAISE EXCEPTION 'Invalid audit reconciliation period' USING ERRCODE='22023';
+          END IF;
+          v_from := (p_filters->>'fromMs')::bigint;
+          v_to := (p_filters->>'toMs')::bigint;
+          IF v_to>${maximumSafeInteger} OR v_to<=v_from OR v_to-v_from>${maximumPeriodMs} THEN
+            RAISE EXCEPTION 'Invalid audit reconciliation period' USING ERRCODE='22023';
+          END IF;
+` : ''}${version >= 4 ? `        ELSIF p_kind='detail' AND p_filters ? 'lookupKind' THEN
           IF (p_filters - ARRAY['source','lookupKind','lookupId','accountId'])<>'{}'::jsonb OR
              pg_catalog.jsonb_typeof(p_filters->'source') IS DISTINCT FROM 'string' OR
              (p_filters->>'source') !~ '^[a-z_][a-z_0-9]{0,62}[.][a-z_][a-z_0-9]{0,62}$' OR
@@ -174,4 +191,5 @@ ${version >= 3 ? '        END IF;\n' : ''}        IF NOT EXISTS (SELECT 1 FROM $
     finishSql(true),
   ] });
   await applySchemaMigration(db, { id: 'paid-activity-audit-detail-lookup-access-v1', statements: [beginSql(4)] });
+  await applySchemaMigration(db, { id: 'paid-activity-audit-period-reconcile-access-v1', statements: [beginSql(5)] });
 }

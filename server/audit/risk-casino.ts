@@ -5,6 +5,7 @@ import { resolveCasinoPosting, type CasinoPostingResolution } from './casino';
 import { checkCapturedCasinoRound } from './check-casino';
 import { isAuditRecord, type AuditAsset, type AuditSourceRef } from './contract';
 import { auditCommandRoutes, fingerprintAuditIntent } from './intents';
+import { attachRiskReplayJumps, casinoRiskReplayPostings } from './risk-replay-links';
 import { riskEntityKey, riskEvidenceKey, type AuditRiskEvidence, type AuditRiskRule } from './risk-rules';
 import {
   RISK_WINDOW_MS, riskAccounts, riskCandidate, riskSourceBoundaries, type AuditRiskCandidate, type AuditRiskSelection,
@@ -95,6 +96,7 @@ export async function selectCasinoRisk(audit: PostgresDatabase, selection: Audit
         kind: 'posting', source: { namespace: canonical, rowId: row.id }, accountId: row.account_id,
         operationId: row.operation_id, occurredAtMs: row.occurred_at_ms,
       });
+      const replayEntities = new Map<string, CasinoPostingResolution['entity']>();
       const originalCache = new Map<string, Original | null>();
       const original = async (accountId: string, operationId: string): Promise<Original | null> => {
         const key = JSON.stringify([accountId, operationId]);
@@ -111,6 +113,7 @@ export async function selectCasinoRisk(audit: PostgresDatabase, selection: Audit
         const row = rows.length < 9 ? rows.find(item => item.entry_type === 'bet') : null;
         const resolved = row?.source ? await resolveCasinoPosting(reader, { rowId: row.id, accountId, operationId, gameId: row.source }) : null;
         const value = resolved && row && groupKey(resolved.entity) ? { entity: resolved.entity, proof: postingProof(row) } : null;
+        if (value && subjects.has(accountId)) replayEntities.set(riskEvidenceKey(value.proof), value.entity);
         originalCache.set(key, value);
         return value;
       };
@@ -223,6 +226,7 @@ export async function selectCasinoRisk(audit: PostgresDatabase, selection: Audit
         if (check?.status === 'source-unavailable') { capped(moneySample); break; }
         if (check?.status !== 'found' || check.basis !== 'dataset') { markGap(moneySample, accountId); continue; }
         const primary = postingProof(row);
+        if (resolved && subjects.has(accountId)) replayEntities.set(riskEvidenceKey(primary), resolved.entity);
         const supporting = key === riskEvidenceKey(primary) ? [] : [start.proof];
         const result = check.result;
         if (entry_type === 'refund') {
@@ -252,7 +256,15 @@ export async function selectCasinoRisk(audit: PostgresDatabase, selection: Audit
         const findings = financial.get(candidate.segment);
         if (findings?.size) candidate.financialFindings = [...findings.values()];
       }
-      return [...finish(casinoConflictRiskRule, attemptSample, subjectMoneySegments), ...moneyCandidates];
+      const candidates = [...finish(casinoConflictRiskRule, attemptSample, subjectMoneySegments), ...moneyCandidates];
+      await attachRiskReplayJumps(audit, selection, candidates.map(candidate => ({ candidate,
+        proofs: candidate.input.observations.flatMap(row => subjects.has(row.primary.accountId!) ?
+          casinoRiskReplayPostings(row).flatMap(posting => {
+            const entity = replayEntities.get(riskEvidenceKey(posting));
+            return entity ? [{ entity, posting }] : [];
+          }) : []),
+      })));
+      return candidates;
     }, { readOnly: true });
   } catch (error) {
     selection.signal?.throwIfAborted();

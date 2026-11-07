@@ -13,28 +13,10 @@ export async function installAuditReconcileReport(db: PostgresDatabase, readerRo
   const schema = identifier(db.schema), reader = identifier(readerRole);
   const requests = schema + '.audit_reconcile_requests';
   const read = schema + '.audit_report_reconcile';
+  const readPeriod = schema + '.audit_report_reconcile_period';
   const dataset = schema + '.audit_datasets', refs = schema + '.audit_posting_refs';
   const acl = schema + '.audit_report_acl', jobs = schema + '.audit_export_jobs';
-  await applySchemaMigration(db, { id: 'paid-activity-audit-reconcile-report-v1', indexes: [
-    { name: 'audit_replay_packages_entity', table: 'audit_replay_packages', columns: ['dataset_id', "(manifest->>'entityId')", 'replay_id'] },
-    { name: 'audit_risk_signals_observed', table: 'audit_risk_signals', columns: ['dataset_id', 'as_of_ms DESC', 'signal_key'], where: "status='observed'" },
-  ], statements: [
-    `CREATE TABLE ${requests} (
-      dataset_id uuid NOT NULL, source_namespace text NOT NULL, posting_id bigint NOT NULL,
-      status text NOT NULL CHECK(status IN ('queued','running','ready','failed')),
-      requested_at timestamptz NOT NULL, finished_at timestamptz, claim uuid, lease_until timestamptz,
-      result jsonb CHECK (pg_catalog.octet_length(result::text)<=${AUDIT_RECONCILE_MAX_BYTES * 2}),
-      required_sources text[] NOT NULL DEFAULT '{}',
-      PRIMARY KEY(dataset_id,source_namespace,posting_id),
-      FOREIGN KEY(dataset_id,source_namespace,posting_id) REFERENCES ${refs}(dataset_id,source_namespace,source_row_id),
-      CHECK((status='running')=(claim IS NOT NULL AND lease_until IS NOT NULL)),
-      CHECK((status IN ('ready','failed'))=(finished_at IS NOT NULL)),
-      CHECK((status='ready')=(result IS NOT NULL)),
-      CHECK(status<>'ready' OR pg_catalog.array_position(required_sources,source_namespace) IS NOT NULL)
-    )`,
-    `CREATE INDEX audit_reconcile_next ON ${requests}(requested_at,dataset_id,source_namespace,posting_id)
-      WHERE status IN ('queued','running')`,
-    `CREATE FUNCTION ${read}(p_job uuid,p_enqueue boolean) RETURNS jsonb
+  const readPostingSql = (periodEnabled: boolean) => `CREATE ${periodEnabled ? 'OR REPLACE ' : ''}FUNCTION ${read}(p_job uuid,p_enqueue boolean) RETURNS jsonb
       LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
       DECLARE
         v_dataset uuid; v_environment text; v_filters jsonb; v_source text; v_id bigint;
@@ -48,7 +30,7 @@ export async function installAuditReconcileReport(db: PostgresDatabase, readerRo
         SELECT j.dataset_id,d.environment,j.filters INTO v_dataset,v_environment,v_filters
           FROM ${jobs} j JOIN ${dataset} d ON d.id=j.dataset_id
           WHERE j.id=p_job AND j.kind='reconcile' AND j.operator_name=SESSION_USER AND j.status='running'
-            AND j.expires_at>pg_catalog.clock_timestamp()
+            AND j.expires_at>pg_catalog.clock_timestamp()${periodEnabled ? " AND j.filters ? 'postingId'" : ''}
             AND EXISTS (SELECT 1 FROM ${acl} a WHERE a.operator_name=SESSION_USER AND a.dataset_id=j.dataset_id
               AND a.source_namespace=j.filters->>'source');
         IF NOT FOUND THEN RAISE EXCEPTION 'Audit reconciliation is unavailable' USING ERRCODE='42501'; END IF;
@@ -110,9 +92,113 @@ export async function installAuditReconcileReport(db: PostgresDatabase, readerRo
               AND a.operator_name=SESSION_USER AND a.source_namespace=n.source_namespace)
           ) THEN v_request.result ELSE NULL END);
       END
-      $audit$`,
+      $audit$`;
+  await applySchemaMigration(db, { id: 'paid-activity-audit-reconcile-report-v1', indexes: [
+    { name: 'audit_replay_packages_entity', table: 'audit_replay_packages', columns: ['dataset_id', "(manifest->>'entityId')", 'replay_id'] },
+    { name: 'audit_risk_signals_observed', table: 'audit_risk_signals', columns: ['dataset_id', 'as_of_ms DESC', 'signal_key'], where: "status='observed'" },
+  ], statements: [
+    `CREATE TABLE ${requests} (
+      dataset_id uuid NOT NULL, source_namespace text NOT NULL, posting_id bigint NOT NULL,
+      status text NOT NULL CHECK(status IN ('queued','running','ready','failed')),
+      requested_at timestamptz NOT NULL, finished_at timestamptz, claim uuid, lease_until timestamptz,
+      result jsonb CHECK (pg_catalog.octet_length(result::text)<=${AUDIT_RECONCILE_MAX_BYTES * 2}),
+      required_sources text[] NOT NULL DEFAULT '{}',
+      PRIMARY KEY(dataset_id,source_namespace,posting_id),
+      FOREIGN KEY(dataset_id,source_namespace,posting_id) REFERENCES ${refs}(dataset_id,source_namespace,source_row_id),
+      CHECK((status='running')=(claim IS NOT NULL AND lease_until IS NOT NULL)),
+      CHECK((status IN ('ready','failed'))=(finished_at IS NOT NULL)),
+      CHECK((status='ready')=(result IS NOT NULL)),
+      CHECK(status<>'ready' OR pg_catalog.array_position(required_sources,source_namespace) IS NOT NULL)
+    )`,
+    `CREATE INDEX audit_reconcile_next ON ${requests}(requested_at,dataset_id,source_namespace,posting_id)
+      WHERE status IN ('queued','running')`,
+    readPostingSql(false),
     `REVOKE ALL ON TABLE ${requests} FROM PUBLIC,${reader}`,
     `REVOKE ALL ON FUNCTION ${read}(uuid,boolean) FROM PUBLIC`,
     `GRANT EXECUTE ON FUNCTION ${read}(uuid,boolean) TO ${reader}`,
+  ] });
+  await applySchemaMigration(db, { id: 'paid-activity-audit-period-reconcile-report-v1', indexes: [
+    { name: 'audit_posting_refs_period', table: 'audit_posting_refs',
+      columns: ['dataset_id', 'source_namespace', 'occurred_at_ms', 'source_row_id'] },
+    { name: 'audit_posting_refs_period_account', table: 'audit_posting_refs',
+      columns: ['dataset_id', 'source_namespace', 'account_id', 'occurred_at_ms', 'source_row_id'] },
+  ], statements: [
+    `ALTER TABLE ${requests}
+      DROP CONSTRAINT audit_reconcile_requests_pkey,
+      ALTER COLUMN posting_id DROP NOT NULL,
+      ADD COLUMN request_id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+      ADD COLUMN from_ms bigint, ADD COLUMN to_ms bigint, ADD COLUMN account_id text,
+      ADD UNIQUE(dataset_id,source_namespace,posting_id),
+      ADD FOREIGN KEY(dataset_id,source_namespace) REFERENCES ${schema}.audit_dataset_sources(dataset_id,source_namespace),
+      ADD CHECK ((posting_id IS NOT NULL AND from_ms IS NULL AND to_ms IS NULL AND account_id IS NULL) OR
+        (posting_id IS NULL AND from_ms IS NOT NULL AND to_ms IS NOT NULL AND account_id IS NOT NULL AND
+          from_ms>=0 AND to_ms<=9007199254740991 AND to_ms>from_ms AND to_ms-from_ms<=2678400000 AND
+          account_id ~ '^[a-zA-Z0-9._:-]{0,128}$'))`,
+    `CREATE UNIQUE INDEX audit_reconcile_period_key ON ${requests}(dataset_id,source_namespace,from_ms,to_ms,account_id)
+      WHERE posting_id IS NULL`,
+    readPostingSql(true),
+    `CREATE FUNCTION ${readPeriod}(p_job uuid,p_enqueue boolean) RETURNS jsonb
+      LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
+      DECLARE
+        v_dataset uuid; v_environment text; v_filters jsonb; v_source text;
+        v_from bigint; v_to bigint; v_account text; v_request ${requests}%ROWTYPE; v_status text;
+        v_report jsonb;
+      BEGIN
+        IF p_enqueue IS NULL THEN RAISE EXCEPTION 'Invalid reconciliation request' USING ERRCODE='22023'; END IF;
+        IF pg_catalog.current_setting('transaction_isolation')<>'read committed' OR
+            pg_catalog.pg_current_xact_id_if_assigned() IS NOT NULL THEN
+          RAISE EXCEPTION 'Audit reconciliation requires a committed job' USING ERRCODE='42501';
+        END IF;
+        SELECT j.dataset_id,d.environment,j.filters INTO v_dataset,v_environment,v_filters
+          FROM ${jobs} j JOIN ${dataset} d ON d.id=j.dataset_id
+          JOIN ${acl} a ON a.dataset_id=j.dataset_id AND a.operator_name=SESSION_USER
+            AND a.source_namespace=j.filters->>'source'
+          WHERE j.id=p_job AND j.kind='reconcile' AND j.operator_name=SESSION_USER AND j.status='running'
+            AND j.expires_at>pg_catalog.clock_timestamp() AND j.filters ? 'fromMs';
+        IF NOT FOUND THEN RAISE EXCEPTION 'Audit reconciliation is unavailable' USING ERRCODE='42501'; END IF;
+        v_source := v_filters->>'source'; v_from := (v_filters->>'fromMs')::bigint; v_to := (v_filters->>'toMs')::bigint;
+        v_account := COALESCE(v_filters->>'accountId','');
+        SELECT * INTO v_request FROM ${requests} WHERE dataset_id=v_dataset AND source_namespace=v_source AND posting_id IS NULL
+          AND from_ms=v_from AND to_ms=v_to AND account_id=v_account;
+        IF p_enqueue AND (v_request.status IS NULL OR
+            (COALESCE((v_filters->>'refresh')::boolean,false) AND v_request.status IN ('ready','failed')))
+            AND NOT EXISTS (SELECT 1 FROM pg_catalog.unnest(v_request.required_sources) n(source_namespace)
+              WHERE NOT EXISTS (SELECT 1 FROM ${acl} a WHERE a.dataset_id=v_dataset
+                AND a.operator_name=SESSION_USER AND a.source_namespace=n.source_namespace)) THEN
+            IF NOT pg_catalog.pg_try_advisory_xact_lock(pg_catalog.hashtextextended('${db.schema}:audit-reconcile-queue',0)) THEN
+              v_status := 'queue-busy';
+            ELSIF (SELECT count(*) FROM ${requests} WHERE status IN ('queued','running'))>=${maxQueue} THEN
+              v_status := 'queue-full';
+            ELSE
+              INSERT INTO ${requests} AS existing(dataset_id,source_namespace,from_ms,to_ms,account_id,status,requested_at)
+                VALUES(v_dataset,v_source,v_from,v_to,v_account,'queued',pg_catalog.clock_timestamp())
+                ON CONFLICT(dataset_id,source_namespace,from_ms,to_ms,account_id) WHERE posting_id IS NULL DO UPDATE
+                SET status='queued',requested_at=EXCLUDED.requested_at,finished_at=NULL,result=NULL,required_sources='{}'
+                WHERE COALESCE((v_filters->>'refresh')::boolean,false) AND existing.status IN ('ready','failed')
+                  AND NOT EXISTS (SELECT 1 FROM pg_catalog.unnest(existing.required_sources) n(source_namespace)
+                    WHERE NOT EXISTS (SELECT 1 FROM ${acl} a WHERE a.dataset_id=v_dataset
+                      AND a.operator_name=SESSION_USER AND a.source_namespace=n.source_namespace));
+            END IF;
+        END IF;
+        SELECT * INTO v_request FROM ${requests} WHERE dataset_id=v_dataset AND source_namespace=v_source AND posting_id IS NULL
+          AND from_ms=v_from AND to_ms=v_to AND account_id=v_account;
+        SELECT CASE WHEN v_request.status='ready' AND EXISTS (
+              SELECT 1 FROM pg_catalog.unnest(v_request.required_sources) n(source_namespace)
+              WHERE NOT EXISTS (SELECT 1 FROM ${acl} a WHERE a.dataset_id=v_dataset
+                AND a.operator_name=SESSION_USER AND a.source_namespace=n.source_namespace)
+            ) THEN 'source-unavailable' ELSE COALESCE(v_status,v_request.status,'not-requested') END
+          INTO v_status FROM ${jobs} j JOIN ${acl} a ON a.dataset_id=j.dataset_id
+            AND a.operator_name=SESSION_USER AND a.source_namespace=v_source
+          WHERE j.id=p_job AND j.kind='reconcile' AND j.operator_name=SESSION_USER AND j.status='running'
+            AND j.expires_at>pg_catalog.clock_timestamp();
+        IF NOT FOUND THEN RAISE EXCEPTION 'Audit reconciliation is unavailable' USING ERRCODE='42501'; END IF;
+        IF v_status='ready' THEN v_report := v_request.result; END IF;
+        RETURN pg_catalog.jsonb_build_object('schemaVersion',1,'datasetId',v_dataset,'environment',v_environment,
+          'selection',pg_catalog.jsonb_build_object('source',v_source,'fromMs',v_from,'toMs',v_to,'accountId',NULLIF(v_account,'')),
+          'requestedAt',v_request.requested_at,'finishedAt',v_request.finished_at,'requestStatus',v_status,'report',v_report);
+      END
+      $audit$`,
+    `REVOKE ALL ON FUNCTION ${readPeriod}(uuid,boolean) FROM PUBLIC`,
+    `GRANT EXECUTE ON FUNCTION ${readPeriod}(uuid,boolean) TO ${reader}`,
   ] });
 }

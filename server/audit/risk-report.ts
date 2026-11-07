@@ -1,11 +1,11 @@
 import type { PostgresDatabase } from '../database';
-import { auditSourceKey, type AuditCategory, type AuditScope } from './contract';
+import type { AuditCategory, AuditScope } from './contract';
 import { AuditPostingReader } from './postings';
 import { selectCasinoRisk } from './risk-casino';
 import { selectPvpRisk } from './risk-pvp';
 import { evaluateAuditRiskRule, type AuditRiskSignal } from './risk-rules';
 import { type AuditRiskCandidate, type AuditRiskSelection } from './risk-selection';
-import { AuditRiskSignals, type StoredAuditRiskSignal } from './risk-store';
+import { AuditRiskSignals, subjectRiskReplayLinks, type StoredAuditRiskSignal } from './risk-store';
 import { selectToteRisk } from './risk-tote';
 
 const selectors = { casino: selectCasinoRisk, pvp: selectPvpRisk, totalizator: selectToteRisk } as const;
@@ -50,10 +50,7 @@ export async function runAuditRiskReport(audit: PostgresDatabase, game: Postgres
   for (const candidate of candidates) {
     signal?.throwIfAborted();
     const calculated = evaluateAuditRiskRule(candidate.rule, candidate.input);
-    const subject = new Set(calculated.input.subject.accountIds);
-    const subjectSources = new Set(calculated.input.observations.flatMap(row =>
-      row.entity && row.primary.accountId && subject.has(row.primary.accountId) ? [auditSourceKey(row.entity.source)] : []));
-    const links = (candidate.replayLinks ?? []).filter(link => subjectSources.has(auditSourceKey(link.source)));
+    const links = subjectRiskReplayLinks(calculated, candidate.replayLinks ?? []);
     const stored = await storage.record(calculated, links);
     const current = stored?.signal ?? calculated;
     signals.push({ ...reportSignal(current, stored), segment: candidate.segment, ...(stored ? {} : { replayLinks: links }) });

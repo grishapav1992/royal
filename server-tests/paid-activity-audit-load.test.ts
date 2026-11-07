@@ -13,7 +13,7 @@ const run = (args: string[], env = process.env) => promisify(execFile)(
   process.execPath, ['--import', 'tsx', script, ...args], { env, timeout: 30_000 },
 );
 const fixtureFiles = async (directory: string) => (await readdir(directory))
-  .filter(name => name.startsWith('royal-pg-') || name.startsWith('royal-audit-load-'));
+  .filter(name => /^royal-(pg|audit-load|audit-standby)-/.test(name));
 
 test('audit load measures both wallet phases, preserves money and stops cancelled database work', { timeout: 35_000 }, async () => {
   const { stdout } = await run(['--workers', '2', '--rounds', '3', '--seed', '40'], {
@@ -189,3 +189,32 @@ test('pilot gate measures audited wallets without reports and exits according to
     }
   }
 });
+
+const pgBasebackup = process.env.ROYAL_AUDIT_TEST_PG_BASEBACKUP;
+test('standby pilot waits for journal WAL and releases a reader when replay is paused',
+  { timeout: 35_000, skip: !pgBasebackup }, async t => {
+    const directory = await mkdtemp(join(tmpdir(), 'royal-audit-load-check-'));
+    t.after(() => rm(directory, { recursive: true, force: true }));
+    const { stdout, exitCode } = await run(['--pilot-gate', '--workers', '2', '--rounds', '3',
+      '--standby-pg-basebackup', pgBasebackup!], { ...process.env, TMPDIR: directory })
+      .then(({ stdout }) => ({ stdout, exitCode: 0 }), error => {
+        if (error.code !== 1 || !error.stdout) throw error;
+        return { stdout: String(error.stdout), exitCode: 1 };
+      });
+    const report = JSON.parse(stdout);
+    assert.deepEqual(await fixtureFiles(directory), []);
+    assert.equal(report.capacityConfirmed, false);
+    assert.equal(report.scale.ok, true);
+    assert.equal(report.capture.gaps, 0);
+    assert.equal(report.pilotGate.noWalletErrorsOrTimeouts, true);
+    assert.equal(report.ok, report.pilotGate.ok);
+    assert.equal(exitCode, report.ok ? 0 : 1);
+    assert.equal(report.standby.sameHost, true);
+    assert.equal(report.standby.beforeControl.streaming, true);
+    assert.equal(report.standby.afterReports.streaming, true);
+    assert.notEqual(report.standby.beforeControl.replayLsn, report.standby.afterReports.replayLsn);
+    assert(report.standby.databaseActivity.withReports.blocksHit > report.standby.databaseActivity.withoutReports.blocksHit);
+    assert.equal(report.standby.lockCancellationTarget, 'primary');
+    assert.deepEqual(report.standby.replayCancellation,
+      { replayWaitObserved: true, readerStopped: true, journalCancelled: true, noPartialOutput: true });
+  });

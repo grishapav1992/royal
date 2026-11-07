@@ -1,4 +1,5 @@
 import pg, { type ClientConfig, type QueryResult } from 'pg';
+import { setTimeout as pause } from 'node:timers/promises';
 import { identifier } from '../database';
 import { AuditCsvExportError, writeAuditCsv } from './export-csv';
 import { playerColumns, type PlayerReportCursor, type PlayerReportPage, type PlayerReportRow } from './report-player-source';
@@ -15,6 +16,7 @@ export type PlayerReportFilters = {
 };
 export type AuditReportFilters = Omit<PlayerReportFilters, 'accountId'> & { accountId?: string };
 export type AuditPostingReportFilters = { source: string; postingId: string; refresh?: boolean };
+export type AuditReconcilePeriodFilters = { source: string; fromMs: number; toMs: number; accountId?: string; refresh?: boolean };
 export type AuditDetailLookupFilters = { source: string; lookupKind: 'operation' | 'round' | 'match' | 'ticket';
   lookupId: string; accountId?: string };
 export type AuditReportKind = 'player' | 'summary' | 'detail' | 'replay' | 'reconcile';
@@ -24,6 +26,7 @@ const defaults: Limits = { maxRows: 10_000, maxBytes: 16 * 1024 * 1024, maxScann
 const maxTempBytes = 64 * 1024 * 1024;
 const units = new Set<keyof PlayerReportRow>(['schema_version', 'posting_id', 'scale', 'amount_units', 'reserved_delta_units',
   'expected_balance_units', 'stored_balance_units', 'pending_delta_units', 'stored_pending_units']);
+type ReaderConfig = ClientConfig & { fixtureReplayLsn?: string };
 type Failure = 'cancelled' | 'time-limit' | 'row-limit' | 'scan-limit' | 'byte-limit' | 'source-unavailable' | 'output-error' |
   'internal-error' | 'permission-denied' | 'replay-absent' | 'replay-corrupt' | 'replay-incomplete' | 'replay-unsupported';
 
@@ -60,7 +63,7 @@ function failureCode(error: unknown, signal: AbortSignal, timeout: AbortSignal):
   return 'internal-error';
 }
 
-export async function openAuditReportReader(config: ClientConfig, jobId: string, signal: AbortSignal, readOnly = true) {
+export async function openAuditReportReader({ fixtureReplayLsn, ...config }: ReaderConfig, jobId: string, signal: AbortSignal, readOnly = true) {
   const connection = new pg.Client(config);
   connection.on('error', () => { /* Active query errors are handled by the export. */ });
   let end: Promise<void> | undefined;
@@ -74,6 +77,19 @@ export async function openAuditReportReader(config: ClientConfig, jobId: string,
   try {
     signal.throwIfAborted();
     await connection.connect();
+    if (fixtureReplayLsn) {
+      if (!readOnly) throw new AuditPlayerReportError('source-unavailable', jobId);
+      const deadline = performance.now() + 2000;
+      for (;;) {
+        signal.throwIfAborted();
+        const { rows } = await connection.query(`SELECT pg_is_in_recovery() AS standby,
+          pg_last_wal_replay_lsn() >= $1::pg_lsn AS replayed`, [fixtureReplayLsn]);
+        if (!rows[0]?.standby) throw new AuditPlayerReportError('source-unavailable', jobId);
+        if (rows[0].replayed) break;
+        if (performance.now() >= deadline) throw new AuditPlayerReportError('source-unavailable', jobId);
+        await pause(5, undefined, { signal });
+      }
+    }
     await connection.query(readOnly ? 'BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY' : 'BEGIN ISOLATION LEVEL READ COMMITTED');
     const settings = await connection.query("SELECT pg_size_bytes(current_setting('temp_file_limit'))::text AS bytes");
     const bytes = Number(settings.rows[0]?.bytes);
@@ -87,7 +103,7 @@ export async function openAuditReportReader(config: ClientConfig, jobId: string,
   }
 }
 
-async function* pages(config: ClientConfig, fn: string, jobId: string, limits: Limits, signal: AbortSignal): AsyncGenerator<PlayerReportRow> {
+async function* pages(config: ReaderConfig, fn: string, jobId: string, limits: Limits, signal: AbortSignal): AsyncGenerator<PlayerReportRow> {
   const { connection, finish } = await openAuditReportReader(config, jobId, signal);
   let cursor: PlayerReportCursor | null = null, scanned = 0;
   try {
@@ -117,11 +133,17 @@ async function* pages(config: ClientConfig, fn: string, jobId: string, limits: L
 /** Both journal and query connections use the named PostgreSQL report login. */
 export async function runAuditReport<T extends { rowCount: number; bytes: number }>(
   config: ClientConfig, input: { schema: string; datasetId: string;
-    filters: AuditReportFilters | AuditPostingReportFilters | AuditDetailLookupFilters | { replayId: string };
-    signal?: AbortSignal }, kind: AuditReportKind, timeoutMs: number,
-  run: (settings: ClientConfig, schema: string, jobId: string, signal: AbortSignal) => Promise<T>,
+    filters: AuditReportFilters | AuditPostingReportFilters | AuditReconcilePeriodFilters | AuditDetailLookupFilters | { replayId: string };
+    signal?: AbortSignal; fixtureStandbyPort?: number }, kind: AuditReportKind, timeoutMs: number,
+  run: (settings: ReaderConfig, schema: string, jobId: string, signal: AbortSignal) => Promise<T>,
 ) {
   if (!/^[a-z_][a-z0-9_]{0,62}$/.test(input.schema)) throw new Error('Invalid audit schema name');
+  const { fixtureStandbyPort } = input;
+  if (fixtureStandbyPort !== undefined && (config.host !== '127.0.0.1' || config.connectionString ||
+      !Number.isInteger(fixtureStandbyPort) || fixtureStandbyPort < 1 || fixtureStandbyPort > 65_535 ||
+      fixtureStandbyPort === config.port || (kind !== 'player' && kind !== 'summary'))) {
+    throw new Error('Expected a separate loopback report fixture');
+  }
   const schema = identifier(input.schema);
   const timeout = AbortSignal.timeout(timeoutMs);
   const signal = input.signal ? AbortSignal.any([input.signal, timeout]) : timeout;
@@ -145,7 +167,17 @@ export async function runAuditReport<T extends { rowCount: number; bytes: number
     const id: unknown = started.rows[0]?.id;
     if (typeof id !== 'string' || !/^[a-f0-9-]{36}$/.test(id)) throw new AuditPlayerReportError('internal-error', null);
     jobId = id;
-    const written = await run(settings, schema, jobId, signal);
+    let reader: ReaderConfig = settings;
+    if (fixtureStandbyPort !== undefined) {
+      // With synchronous commit on the fixture, the journal's completed INSERT has reached the flushed WAL.
+      const { rows } = await log.query('SELECT pg_current_wal_flush_lsn()::text AS lsn');
+      const lsn: unknown = rows[0]?.lsn;
+      if (typeof lsn !== 'string' || !/^[0-9A-F]+\/[0-9A-F]+$/.test(lsn)) {
+        throw new AuditPlayerReportError('source-unavailable', jobId);
+      }
+      reader = { ...settings, port: fixtureStandbyPort, fixtureReplayLsn: lsn };
+    }
+    const written = await run(reader, schema, jobId, signal);
     reportCompleted = true;
     await finish('succeeded', written.rowCount, written.bytes, null);
     return { jobId, ...written };
@@ -164,7 +196,7 @@ export async function runAuditReport<T extends { rowCount: number; bytes: number
 
 export async function exportAuditPlayer(
   config: ClientConfig, input: { schema: string; datasetId: string; filters: PlayerReportFilters; destination: string;
-    signal?: AbortSignal; limits?: Partial<Limits> },
+    signal?: AbortSignal; limits?: Partial<Limits>; fixtureStandbyPort?: number },
 ) {
   const limits = reportLimits(input.limits);
   return runAuditReport(config, input, 'player', limits.timeoutMs, (settings, schema, jobId, signal) =>

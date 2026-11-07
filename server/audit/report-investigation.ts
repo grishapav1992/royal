@@ -4,18 +4,22 @@ import type { AuditScope, AuditSourceRef } from './contract';
 import type { AuditDetailReport } from './report-detail-source';
 import {
   AuditPlayerReportError, openAuditReportReader, runAuditReport, type AuditDetailLookupFilters, type AuditPostingReportFilters,
+  type AuditReconcilePeriodFilters,
 } from './report-player';
 
 type Investigation = { schema: string; datasetId: string; filters: AuditPostingReportFilters; signal?: AbortSignal };
 type DetailInvestigation = Omit<Investigation, 'filters'> & { filters: AuditPostingReportFilters | AuditDetailLookupFilters };
 type ReportIdentity = { schemaVersion: 1; datasetId: string; environment: AuditScope['environment'] };
 type ReconcileReport = ReportIdentity & {
-  anchor: AuditSourceRef;
   requestStatus: 'queued' | 'running' | 'ready' | 'failed' | 'not-captured' | 'not-requested' |
     'queue-full' | 'queue-busy' | 'source-unavailable';
   requestedAt: string | null;
   finishedAt: string | null;
   report: Record<string, unknown> | null;
+};
+type PostingReconcileReport = ReconcileReport & { anchor: AuditSourceRef };
+type PeriodReconcileReport = ReconcileReport & {
+  selection: { source: string; fromMs: number; toMs: number; accountId: string | null };
 };
 const byteLimit = 1024 * 1024 + 4096;
 const environments = new Set(['test', 'live']);
@@ -65,7 +69,11 @@ export async function readAuditDetail(config: ClientConfig, input: DetailInvesti
   return result.output;
 }
 
-export async function requestAuditReconcile(config: ClientConfig, input: Investigation & { waitMs?: number }) {
+async function requestReconciliation<T extends ReconcileReport>(config: ClientConfig,
+  input: Omit<Investigation, 'filters'> & { filters: AuditPostingReportFilters | AuditReconcilePeriodFilters; waitMs?: number },
+  read: 'audit_report_reconcile' | 'audit_report_reconcile_period',
+  identityMatches: (report: T | undefined) => boolean,
+) {
   const waitMs = input.waitMs ?? 0;
   if (!Number.isSafeInteger(waitMs) || waitMs < 0 || waitMs > 45_000) throw new Error('Invalid audit reconcile wait');
   const result = await runAuditReport(config, input, 'reconcile', 60_000, async (settings, schema, jobId, signal) => {
@@ -73,8 +81,8 @@ export async function requestAuditReconcile(config: ClientConfig, input: Investi
     try {
       const query = async (enqueue: boolean) => {
         signal.throwIfAborted();
-        const response = await connection.query<{ report: ReconcileReport }>(
-          'SELECT ' + schema + '.audit_report_reconcile($1,$2) AS report', [jobId, enqueue]);
+        const response = await connection.query<{ report: T }>(
+          'SELECT ' + schema + '.' + read + '($1,$2) AS report', [jobId, enqueue]);
         return response.rows[0]?.report;
       };
       let report = await query(true);
@@ -87,9 +95,22 @@ export async function requestAuditReconcile(config: ClientConfig, input: Investi
         report = await query(false);
       }
       signal.throwIfAborted();
-      return { ...outputFor(report, input, jobId, report?.anchor?.namespace === input.filters.source &&
-        report.anchor.rowId === input.filters.postingId), rowCount: report?.report ? 1 : 0 };
+      return { ...outputFor(report, input, jobId, identityMatches(report)), rowCount: report?.report ? 1 : 0 };
     } finally { await finish(); }
   });
   return result.output;
+}
+
+export function requestAuditReconcile(config: ClientConfig, input: Investigation & { waitMs?: number }) {
+  return requestReconciliation<PostingReconcileReport>(config, input, 'audit_report_reconcile', report =>
+    report?.anchor?.namespace === input.filters.source && report.anchor.rowId === input.filters.postingId);
+}
+
+export function requestAuditPeriodReconcile(config: ClientConfig,
+  input: Omit<Investigation, 'filters'> & { filters: AuditReconcilePeriodFilters; waitMs?: number },
+) {
+  const { source, fromMs, toMs, accountId } = input.filters;
+  return requestReconciliation<PeriodReconcileReport>(config, input, 'audit_report_reconcile_period', report =>
+    report?.selection?.source === source && report.selection.fromMs === fromMs && report.selection.toMs === toMs &&
+    report.selection.accountId === (accountId ?? null));
 }

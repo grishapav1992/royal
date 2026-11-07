@@ -21,6 +21,9 @@ export async function migrateAuditReplayPackages(db: PostgresDatabase) {
       FOREIGN KEY(dataset_id,replay_id) REFERENCES audit_replay_packages(dataset_id,replay_id)
     )`,
   ] });
+  await applySchemaMigration(db, { id: 'paid-activity-audit-replay-entity-index-v1', statements: [], indexes: [
+    { name: 'audit_replay_packages_entity', table: 'audit_replay_packages', columns: ['dataset_id', "(manifest->>'entityId')", 'replay_id'] },
+  ] });
 }
 
 type WriteResult = 'recorded' | 'replayed' | 'conflict' | 'corrupt' | 'unsupported' | 'too-large'

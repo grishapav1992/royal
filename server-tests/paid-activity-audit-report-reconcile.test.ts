@@ -13,7 +13,7 @@ import { AuditDatasets } from '../server/audit/datasets';
 import { AuditEvidence } from '../server/audit/evidence';
 import { installAuditReportAccess } from '../server/audit/report-access';
 import { installAuditDetailReport } from '../server/audit/report-detail-source';
-import { requestAuditReconcile } from '../server/audit/report-investigation';
+import { requestAuditPeriodReconcile, requestAuditReconcile } from '../server/audit/report-investigation';
 import { installAuditReconcileReport } from '../server/audit/report-reconcile-source';
 import { processAuditReconcileRequest } from '../server/audit/report-reconcile-worker';
 import { evaluateAuditRiskRule } from '../server/audit/risk-rules';
@@ -92,7 +92,8 @@ async function fixture(t: TestContext) {
   };
   const workerFile = await connectionFile(worker), operatorFile = await connectionFile(operator);
   const input = { schema: audit.schema, datasetId, filters: { source: anchor.namespace, postingId: anchor.rowId } };
-  return { audit, game, scope, a, sources, anchor, input, grant, operator, worker, risk, attempt, config, workerFile, operatorFile };
+  return { audit, game, scope, a, sources, anchor, input, grant, operator, worker, risk, attempt, config, workerFile, operatorFile,
+    wallet, accountId, peerId, startedAtMs, occurredAtMs: Number(row.created_at) };
 }
 
 test('named operator enqueues a bounded reconciliation and receives verified, separately classified results', async t => {
@@ -180,4 +181,89 @@ test('named operator enqueues a bounded reconciliation and receives verified, se
   await assert.rejects(worker.exec('UPDATE ' + identifier(f.game.schema) + '.demo_ledger SET balance_units=0'), { code: '42501' });
   await f.audit.prepare('DELETE FROM audit_report_acl WHERE operator_name=? AND source_namespace=?').run(f.operator, f.anchor.namespace);
   await assert.rejects(requestAuditReconcile(f.config(f.operator), f.input), { code: 'permission-denied' });
+});
+
+test('period reconciliation selects captured postings by time and account and reapplies source permissions', async t => {
+  const f = await fixture(t);
+  const filters = { source: f.anchor.namespace, fromMs: f.occurredAtMs, toMs: f.occurredAtMs + 1, accountId: f.accountId };
+  const input = { schema: f.audit.schema, datasetId: f.scope.datasetId };
+  const config = f.config(f.operator);
+  const request = (overrides = {}) => requestAuditPeriodReconcile(config, { ...input, filters: { ...filters, ...overrides } });
+  const worker = new PostgresDatabase(f.audit.schema, { existingSchema: true, config: f.config(f.worker) });
+  t.after(() => worker.close());
+  const processOne = () => processAuditReconcileRequest(worker, f.sources);
+  const args = ['--schema',f.audit.schema,'--dataset',f.scope.datasetId,'--source',f.anchor.namespace,
+    '--from',new Date(filters.fromMs).toISOString(),'--to',new Date(filters.toMs).toISOString(),'--account',f.accountId];
+  const cli = (...extra: string[]) => promisify(execFile)(process.execPath, ['--import','tsx','scripts/audit.ts','reconcile',...args,...extra],
+    { cwd: fileURLToPath(new URL('..', import.meta.url)), env: { ...process.env, ROYAL_AUDIT_DB_URL_FILE: f.operatorFile } });
+  await assert.rejects(cli('--posting', f.anchor.rowId), { code: 2 });
+  await assert.rejects(request({ toMs: filters.fromMs }), { code: 'internal-error' });
+  const queued = JSON.parse((await cli()).stdout);
+  assert.equal(queued.requestStatus, 'queued');
+  assert.equal(queued.environment, 'test');
+  assert.deepEqual(queued.selection, filters);
+  assert.equal((await request()).requestStatus, 'queued');
+  assert.equal((await f.audit.prepare('SELECT count(*)::int AS n FROM audit_reconcile_requests').get())?.n, 1);
+  await f.audit.exec(`UPDATE audit_reconcile_requests SET status='running',claim=pg_catalog.gen_random_uuid(),
+    lease_until=pg_catalog.clock_timestamp()-interval '1 second'`);
+  const outcomes = await Promise.all([processOne(), processOne()]);
+  assert.deepEqual(outcomes.sort(), ['idle','ready']);
+  const ready = await request();
+  assert.equal(ready.requestStatus, 'ready');
+  const report = ready.report as { status: string; selectedCount: number;
+    financialErrors: { rule: string; observed?: string; anchors: AuditSourceRef[] }[];
+    coverage: { rule: string; code: string }[]; signals: { key: string; anchors: AuditSourceRef[] }[] };
+  assert.equal(report.status, 'ready');
+  assert(report.selectedCount > 0);
+  assert(report.financialErrors.some(item => item.rule === 'R-02' && item.observed === '-1' &&
+    item.anchors.some(anchor => anchor.rowId === f.anchor.rowId && anchor.namespace === f.anchor.namespace)));
+  assert(report.coverage.some(item => item.rule === 'replay'));
+  assert.deepEqual(report.signals.map(item => item.key), [f.risk.key]);
+  assert(report.signals[0].anchors.some(anchor => anchor.rowId === f.anchor.rowId && anchor.namespace === f.anchor.namespace));
+  assert.deepEqual(await f.audit.prepare('SELECT operator_name,status,kind,filters FROM audit_export_jobs WHERE id=?').get(ready.jobId),
+    { operator_name: f.operator, status: 'succeeded', kind: 'reconcile', filters });
+  for (const other of [{ accountId: f.peerId }, { fromMs: filters.fromMs - 1, toMs: filters.fromMs }]) {
+    assert.equal((await request(other)).requestStatus, 'queued');
+    assert.equal(await processOne(), 'ready');
+    const empty = await request(other);
+    assert.equal(empty.report?.status, 'ready');
+    assert.equal(empty.report?.selectedCount, 0);
+    assert.deepEqual(empty.report?.financialErrors, []);
+  }
+
+  const counterpart = f.game.schema + '.capro_pending_ledger';
+  await f.grant(counterpart);
+  await f.audit.prepare('UPDATE audit_reconcile_requests SET required_sources=?::text[] WHERE account_id=? AND from_ms=?')
+    .run([f.anchor.namespace, counterpart], f.accountId, filters.fromMs);
+  assert.equal((await request()).requestStatus, 'ready');
+  await f.audit.prepare('DELETE FROM audit_report_acl WHERE operator_name=? AND source_namespace=?').run(f.operator, counterpart);
+  assert.equal((await request({ refresh: true })).requestStatus, 'source-unavailable');
+  assert.equal((await request()).report, null);
+  await f.audit.prepare('DELETE FROM audit_report_acl WHERE operator_name=? AND source_namespace=?').run(f.operator, f.anchor.namespace);
+  await assert.rejects(request(), { code: 'permission-denied' });
+});
+
+test('dense periods return an explicit scan limit and share queue capacity with posting checks', async t => {
+  const f = await fixture(t);
+  for (let index = 0; index < 17; index++) {
+    await f.wallet.operate(f.accountId, { id: randomUUID(), kind: 'deposit', amount: 1 });
+  }
+  const config = f.config(f.operator);
+  const input = { schema: f.audit.schema, datasetId: f.scope.datasetId,
+    filters: { source: f.anchor.namespace, fromMs: f.startedAtMs, toMs: Date.now() + 1, accountId: f.accountId } };
+  await f.audit.prepare(`INSERT INTO audit_reconcile_requests(dataset_id,source_namespace,from_ms,to_ms,account_id,status,requested_at)
+    SELECT ?,?,n,n+1,'','queued',pg_catalog.clock_timestamp() FROM pg_catalog.generate_series(1,64) n`)
+    .run(f.scope.datasetId, f.anchor.namespace);
+  assert.equal((await requestAuditReconcile(config, f.input)).requestStatus, 'queue-full');
+  assert.equal((await requestAuditPeriodReconcile(config, input)).requestStatus, 'queue-full');
+  await f.audit.exec('DELETE FROM audit_reconcile_requests');
+  assert.equal((await requestAuditPeriodReconcile(config, input)).requestStatus, 'queued');
+  const worker = new PostgresDatabase(f.audit.schema, { existingSchema: true, config: f.config(f.worker) });
+  t.after(() => worker.close());
+  assert.equal(await processAuditReconcileRequest(worker, f.sources), 'ready');
+  const result = await requestAuditPeriodReconcile(config, input);
+  assert.equal(result.report?.status, 'scan-limit');
+  assert.equal(result.report?.selectedCount, 17);
+  assert.equal(result.report?.selectedCountLowerBound, true);
+  assert.deepEqual(result.report?.financialErrors, []);
 });
