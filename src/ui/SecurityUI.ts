@@ -22,7 +22,7 @@ export class SecurityUI {
   intervention(decision: SecurityDecision) {
     if (decision.reason) {
       const reason = decision.reason === 'collision' ? 'Вход закрыт за толчки охранника.'
-        : decision.reason === 'profanity' ? 'Вход закрыт за избыток мата в чате.'
+        : decision.reason === 'profanity' ? 'Вход закрыт за избыток грубых слов в чате.'
         : 'Вход закрыт за повторное нарушение правил чата.';
       this.dialog.querySelector('h2 + p')!.textContent = translateText(reason);
     }

@@ -6,7 +6,7 @@ import { Player } from '../server/state';
 import { MovementInputs } from '../server/movementInputs';
 import { accounts } from '../server/accounts';
 import { chatSpam } from '../server/chatSpam';
-import { chatProfanity } from '../server/chatProfanity';
+import { chatLanguageWindow } from '../server/chatLanguageWindow';
 import { SECURITY_BAN_MS } from '../src/shared/security';
 type SessionCheck = { hash: string; resolve: (active: boolean) => void; reject: (error: Error) => void };
 
@@ -34,7 +34,7 @@ function fixture(context: TestContext, options: { suffix?: string; account?: str
   const player = new Player(); player.name = 'Игрок'; room.state.players.set(id, player);
   (room as any).controls.set(id, { dx: 0, dy: 0, at: 0, path: [], lastTarget: 0, chatRevision: 0, inputs: new MovementInputs(), predicted: false });
   (room as any).access.set(id, { active: true, banUntil: 0, pendingEject: false, revision: 0, profileRevision: { name: 0, skin: 0, appearance: 0 }, drinking: { soberAt: 0, lastDrink: '', lastDrinkAt: 0 } });
-  context.after(async () => { chatSpam.clear(account); chatProfanity.clear(account); await room.onDispose(); room.clock.clear(); });
+  context.after(async () => { chatSpam.clear(account); chatLanguageWindow.clear(account); await room.onDispose(); room.clock.clear(); });
   const send = (text: unknown) => handlers.get('chat')!(client, text) as Promise<void>;
   const flush = () => new Promise<void>(resolve => setImmediate(resolve));
   return { room, client, player, packets, published, checks, active, record, eject, send, flush };
@@ -97,7 +97,7 @@ test('profanity is masked before broadcast without adding sanctions', async cont
   assert.deepEqual(published.map(message => [message.requestId, message.text]), [[id, 'F**k, я идиот!']]);
 });
 
-test('the tenth profane word ejects once across rooms without counting a retried request', async context => {
+test('an insult after nine profane words ejects once across rooms without counting a retried request', async context => {
   const checks: SessionCheck[] = [];
   const account = context.name, a = fixture(context, { suffix: '-a', account, checks }), b = fixture(context, { suffix: '-b', account, checks });
   const first = { id: randomUUID(), text: 'fuck shit kurwa merde cazzo' };
@@ -111,7 +111,7 @@ test('the tenth profane word ejects once across rooms without counting a retried
   assert.equal(b.record.mock.callCount(), 0);
   assert.equal(b.eject.mock.callCount(), 0);
 
-  const last = { id: randomUUID(), text: 'блять' };
+  const last = { id: randomUUID(), text: 'Ты идиот' };
   const ten = b.send(last);
   await a.flush(); checks[3].resolve(true); await ten;
   await b.send(last);
@@ -124,26 +124,19 @@ test('the tenth profane word ejects once across rooms without counting a retried
   assert.equal(b.published.some(message => message.requestId === last.id), false);
 });
 
-test('two separate addressed insults invoke the guard once each, even in different languages', async context => {
-  const { room, send, checks, published, packets, record, flush, player } = fixture(context);
+test('addressed and standalone insults are delivered below the same threshold', async context => {
+  const { room, send, checks, published, packets, record, eject, flush } = fixture(context);
   const other = new Player(); other.name = 'Грифа';
   room.state.players.set('other', other);
-  let offenses = 0;
-  record.mock.mockImplementation(async () => ({ kind: ++offenses === 1 ? 'warning' : 'ejecting', until: Date.now() + 600000 }));
-  const first = { id: randomUUID(), text: 'Грифа, ты дебил!' };
-  const warning = send(first);
-  await flush(); checks[0].resolve(true); await warning;
-  await send(first);
-  assert.equal(record.mock.callCount(), 1);
-  assert(packets.some(packet => packet.type === 'security' && packet.value.reason === 'insult' && packet.value.kind === 'warning'));
-  player.security = '';
-  const second = { id: randomUUID(), text: 'You are an idiot. Leave the room.' };
-  const ejection = send(second);
-  await flush(); checks[1].resolve(true); await ejection;
-  assert.equal(record.mock.callCount(), 2);
-  assert(packets.some(packet => packet.type === 'security' && packet.value.reason === 'insult' && packet.value.kind === 'ejecting'));
-  assert(packets.some(packet => packet.type === 'chat-result' && packet.value.id === second.id && packet.value.status === 'rejected'));
-  assert.equal(published.filter(message => message.senderId !== 'security').length, 0);
+  const messages = ['Грифа, ты дебил!', 'idiot'];
+  for (const [index, text] of messages.entries()) {
+    const delivery = send({ id: randomUUID(), text });
+    await flush(); checks[index].resolve(true); await delivery;
+  }
+  assert.deepEqual(published.map(message => message.text), messages);
+  assert.equal(record.mock.callCount(), 0);
+  assert.equal(eject.mock.callCount(), 0);
+  assert.equal(packets.some(packet => packet.type === 'security'), false);
 });
 
 test('a burst advertising the same channel records one offense while the warning is pending', async context => {

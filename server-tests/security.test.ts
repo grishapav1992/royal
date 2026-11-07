@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { AccountStore } from '../server/accounts';
 import { ModerationStore } from '../server/moderation';
 import { ChatSpam } from '../server/chatSpam';
-import { ChatProfanity } from '../server/chatProfanity';
+import { ChatLanguageWindow } from '../server/chatLanguageWindow';
 import { PostgresDatabase } from '../server/database';
 import { Guards } from '../server/guards';
 import { LobbyState, Player } from '../server/state';
@@ -59,18 +59,18 @@ test('spam detects normalized repeated messages, isolates accounts and expires o
  assert.equal(spam.check('short','ДА!',75000),'spam');
 });
 
-test('profanity reaches ten words in a rolling 30-second window per account', () => {
- const profanity = new ChatProfanity();
- assert.equal(profanity.check('a', 6, 1000), false);
- assert.equal(profanity.check('a', 3, 2000), false);
- assert.equal(profanity.check('b', 5, 2000), false);
- assert.equal(profanity.check('a', 1, 30999), true);
- assert.equal(profanity.check('b', 4, 30999), false);
- profanity.clear('a');
- assert.equal(profanity.check('a', 1, 31000), false);
- assert.equal(profanity.check('c', 9, 31000), false);
- assert.equal(profanity.check('c', 1, 61000), false);
- assert.equal(profanity.check('c', 9, 61001), true);
+test('offensive words reach the threshold in a rolling 30-second window per account', () => {
+ const language = new ChatLanguageWindow();
+ assert.equal(language.check('a', 6, 1000), false);
+ assert.equal(language.check('a', 3, 2000), false);
+ assert.equal(language.check('b', 5, 2000), false);
+ assert.equal(language.check('a', 1, 30999), true);
+ assert.equal(language.check('b', 4, 30999), false);
+ language.clear('a');
+ assert.equal(language.check('a', 1, 31000), false);
+ assert.equal(language.check('c', 9, 31000), false);
+ assert.equal(language.check('c', 1, 61000), false);
+ assert.equal(language.check('c', 9, 61001), true);
 });
 
 test('flood protection warns about speed before sanctioning and allows ordinary varied conversation',()=>{

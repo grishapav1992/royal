@@ -53,7 +53,7 @@ async function createHost(request: APIRequestContext) {
   return host;
 }
 
-test('real chat masks profanity and ejects an account after a second directed insult', async ({ browser, request }) => {
+test('real chat masks profanity and delivers insults below the threshold regardless of address', async ({ browser, request }) => {
   const host = await createHost(request);
   const senderContext = await browser.newContext(), observerContext = await browser.newContext();
   const sender = await senderContext.newPage(), observer = await observerContext.newPage(), errors: string[] = [];
@@ -85,25 +85,17 @@ test('real chat masks profanity and ejects an account after a second directed in
     await expect(sender.locator('#chat-log > [data-message-id]').filter({ hasText: legacy })).toHaveCount(1);
     await sender.locator('#chat-input').fill('I am an idiot'); await sender.locator('#send-chat').click();
     await expect(observer.locator('#chat-log > [data-message-id]').filter({ hasText: 'I am an idiot' })).toHaveCount(1);
-    await expect(observer.locator('.security-message')).toHaveCount(0);
     await sender.locator('#chat-input').fill('You are an idiot'); await sender.locator('#send-chat').click();
-    await expect(sender.locator('.chat-outgoing[data-delivery="rejected"]')).toContainText('rejected for insulting other players');
-    await expect(observer.locator('.security-message')).toContainText('first warning for insults');
-    expect((await proof(sender)).messages.some(message => message.text === 'You are an idiot')).toBe(false);
-    await expect(observer.locator('#chat-log > [data-message-id]').filter({ hasText: 'You are an idiot' })).toHaveCount(0);
-    await expect(sender.locator('#chat-input')).toBeEnabled({ timeout: 20000 });
-    await sender.locator('#chat-input').fill('Du bist ein Idiot'); await sender.locator('#send-chat').click();
-    await expect(observer.locator('.security-message').last()).toContainText('Entry blocked for 10 minutes');
-    await expect(sender.locator('#security-dialog')).toBeVisible({ timeout: 20000 });
-    await expect(sender.locator('#security-return')).toBeDisabled();
+    await expect(observer.locator('#chat-log > [data-message-id]').filter({ hasText: 'You are an idiot' })).toHaveCount(1);
+    await expect(observer.locator('.security-message')).toHaveCount(0);
 
     expect(errors).toEqual([]);
-    console.log('REAL_CHAT_PROOF: English UI + PostgreSQL + real WebSocket, masked delivery, warning and ejection after insults in two languages.');
+    console.log('REAL_CHAT_PROOF: English UI + PostgreSQL + real WebSocket, masked delivery and a shared threshold for insults.');
     await cdp.detach();
   } finally { await senderContext.close(); await observerContext.close(); await host.leave(); }
 });
 
-test('the tenth profane word ejects an account without a warning in the real chat', async ({ page, request }) => {
+test('the tenth offensive word ejects an account without a warning in the real chat', async ({ page, request }) => {
   const host = await createHost(request);
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
@@ -116,11 +108,18 @@ test('the tenth profane word ejects an account without a warning in the real cha
     const masked = 'f**k s**t S*****e p****n c**o c***o k***a c*****o k******k';
     await expect(page.locator('#chat-log > [data-message-id]').filter({ hasText: masked })).toHaveCount(1);
     await expect(page.locator('.security-message')).toHaveCount(0);
-    await input.fill('блять'); await send.click();
-    await expect(page.locator('.security-message')).toContainText('too much profanity in chat');
+    await input.fill('Ты идиот'); await send.click();
+    await expect(page.locator('.security-message')).toContainText('too much offensive language in chat');
     await expect(page.locator('#security-dialog')).toBeVisible({ timeout: 20000 });
-    await expect(page.locator('#security-dialog')).toContainText('Entry blocked for excessive profanity in chat.');
+    await expect(page.locator('#security-dialog')).toContainText('Entry blocked for excessive offensive language in chat.');
     await expect(page.locator('#security-return')).toBeDisabled();
+    const cookies = await page.context().cookies(api);
+    const cookie = cookies.map(({ name, value }) => name + '=' + value).join('; ');
+    const reentry = new Client(api, { headers: { Cookie: cookie } });
+    await expect(reentry.joinById(host.roomId)).rejects.toMatchObject({
+      code: 403,
+      message: expect.stringContaining('Охрана закрыла вход'),
+    });
     expect(errors).toEqual([]);
   } finally { await host.leave(); }
 });

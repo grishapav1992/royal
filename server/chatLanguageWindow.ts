@@ -3,7 +3,7 @@ const WORD_LIMIT = 10;
 type Sample = { at: number; words: number; requestId?: string };
 
 // The account window is shared by all rooms in this server process.
-export class ChatProfanity {
+export class ChatLanguageWindow {
   private readonly accounts = new Map<string, Sample[]>();
   private cleanedAt = 0;
 
@@ -27,4 +27,4 @@ export class ChatProfanity {
   }
 }
 
-export const chatProfanity = new ChatProfanity();
+export const chatLanguageWindow = new ChatLanguageWindow();
