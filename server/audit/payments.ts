@@ -1,11 +1,13 @@
 import { createHash } from 'node:crypto';
+import { CLUB_FINE_SOURCE } from '../../src/shared/security';
+import { SKIN_UUID } from '../../src/shared/skinStudio';
 import type { PostgresDatabase } from '../database';
 import { validPaymentEvent } from '../payments/protocol';
 import type { AuditAsset, AuditPosting, AuditSourceRef } from './contract';
 
 type PostingFields = Omit<AuditPosting, 'schemaVersion' | 'scope' | 'type'>;
 type PaymentSource = 'nowpayments' | 'telegram-stars' | 'payment-adjustment' | 'nowpayments-sandbox'
-  | 'legacy-direct-topup' | 'skin-purchase' | 'progression-reward' | 'casinoapipro-sandbox';
+  | 'legacy-direct-topup' | 'skin-purchase' | 'progression-reward' | 'casinoapipro-sandbox' | typeof CLUB_FINE_SOURCE;
 type PaymentTable = 'demo_ledger' | 'capro_pending_ledger' | 'crypto_ledger';
 type MirrorTable = 'payment_outbox' | 'payment_credit_events';
 
@@ -209,6 +211,16 @@ async function resolveDemo(db: PostgresDatabase, key: PaymentPostingKey) {
     const linked = await db.prepare('SELECT id FROM skin_purchases WHERE id=? AND account_id=? AND offer_id=?')
       .get(operationId, accountId, row.source === 'janitor-skins' ? 'janitor' : 'atelier');
     if (linked) operation = source(db, 'skin_purchases', operationId);
+  } else if (row.source === CLUB_FINE_SOURCE && entry === 'bet') {
+    paymentSource = CLUB_FINE_SOURCE;
+    movement = 'fine';
+    const prefix = CLUB_FINE_SOURCE + ':';
+    const id = operationId.startsWith(prefix) ? operationId.slice(prefix.length) : '';
+    if (SKIN_UUID.test(id) && await db.hasTable('club_fine_payments')) {
+      const linked = await db.prepare(`SELECT operation_id FROM club_fine_payments
+        WHERE account_id=? AND operation_id=? AND amount_cents::numeric=-?::numeric`).get(accountId, id, row.amount_units);
+      if (linked) operation = source(db, 'club_fine_payments', JSON.stringify([accountId, id]));
+    }
   } else if (row.source.startsWith('reward:') && entry === 'win' && operationId.startsWith('reward:')) {
     paymentSource = 'progression-reward';
     movement = 'reward';

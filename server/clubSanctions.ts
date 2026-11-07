@@ -205,7 +205,7 @@ export class ClubSanctionStore {
   }
 }
 
-function parseFineRequest(value: unknown): ClubFineRequest {
+export function parseFineRequest(value: unknown): ClubFineRequest {
   const request = value as ClubFineRequest | undefined;
   if (!request || typeof request !== 'object' || Object.keys(request).sort().join(',') !== 'amountCents,id,revision,sanctionId'
     || typeof request.id !== 'string' || !SKIN_UUID.test(request.id)

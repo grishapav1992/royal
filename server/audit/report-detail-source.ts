@@ -1,3 +1,4 @@
+import { CLUB_FINE_SOURCE } from '../../src/shared/security';
 import { identifier, type PostgresDatabase } from '../database';
 import { applySchemaMigration } from '../database-migrations';
 import type { AuditSourceRef } from './contract';
@@ -55,6 +56,9 @@ function posting(alias: string) {
 export async function installAuditDetailReport(db: PostgresDatabase, readerRole: string, sources: AuditSourceSchemas) {
   if (!/^[a-z_][a-z0-9_]{0,62}$/.test(readerRole)) throw new Error('Invalid audit detail reader role');
   const { a, g, p, demo, pending, crypto, selects } = await auditPostingProjectionSql(db, sources);
+  const finePrefix = CLUB_FINE_SOURCE + ':';
+  const hasFineReceipts = (await db.prepare('SELECT to_regclass(?) IS NOT NULL AS present')
+    .get(sources.game + '.club_fine_payments'))?.present === true;
   await applySchemaMigration(db, { id: 'paid-activity-audit-detail-events-v1', statements: [], indexes: [
     { name: 'audit_evidence_detail_events', table: 'audit_evidence',
       columns: ['dataset_id', 'account_id', "(payload->>'operationId')", 'occurred_at_ms', 'evidence_id'],
@@ -250,7 +254,15 @@ export async function installAuditDetailReport(db: PostgresDatabase, readerRole:
 
         v_keys := ARRAY[v_anchor.operation_id]::text[];
         IF v_source=${demo} THEN
-          IF v_anchor.category='casino' AND v_anchor.entity_id IS NOT NULL THEN
+          IF v_anchor.movement='fine' THEN
+            v_routes := ARRAY['/api/demo-wallet/club-fine'];
+            ${hasFineReceipts ? `SELECT jsonb_build_object('id',p.operation_id,'kind',${literal(CLUB_FINE_SOURCE)},
+              'amountUnits',p.amount_cents::text,'occurredAtMs',p.paid_at::text,
+              'source',${operationSource('club_fine_payments', 'p.operation_id')}) INTO v_operation
+            FROM ${g}.club_fine_payments p WHERE starts_with(v_anchor.operation_id,${literal(finePrefix)})
+              AND p.account_id=v_anchor.account_id AND p.operation_id=substring(v_anchor.operation_id from ${finePrefix.length + 1})
+              AND p.amount_cents::numeric=-v_anchor.amount;` : ''}
+          ELSIF v_anchor.category='casino' AND v_anchor.entity_id IS NOT NULL THEN
             IF EXISTS (SELECT 1 FROM ${g}.demo_casino_sessions s WHERE s.account_id=v_anchor.account_id
               AND s.id=v_anchor.entity_id AND s.game_id=v_anchor.game_id) THEN
               v_keys := v_keys||ARRAY[v_anchor.entity_id]||ARRAY(

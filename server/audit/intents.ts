@@ -1,15 +1,24 @@
 import { createHash } from 'node:crypto';
 import { prepareGame } from '../games/core';
+import { parseFineRequest } from '../clubSanctions';
 import { validExpansionAction } from '../../src/shared/casinoExpansion';
 import { casinoActionKey, validCasinoAction } from '../../src/shared/casinoSessions';
 import { validPvpRequest } from '../../src/shared/pvp';
+import { CLUB_FINE_SOURCE, type ClubFineRequest } from '../../src/shared/security';
 
 export const auditCommandRoutes = {
   core: '/api/demo-wallet/operations',
   expansion: '/api/demo-wallet/expansion',
   session: '/api/demo-wallet/casino-sessions',
+  fine: '/api/demo-wallet/club-fine',
   pvp: 'pvp',
 } as const;
+
+export const auditFineOperationId = (id: string) => CLUB_FINE_SOURCE + ':' + id.toLowerCase();
+
+export function auditFineIntentKey({ sanctionId, revision, amountCents }: ClubFineRequest) {
+  return JSON.stringify([sanctionId, revision, amountCents]);
+}
 
 function coreIntent(value: Record<string, unknown>) {
   const { kind, amount, gameId, rulesVersion, input, stakePolicyVersion } = value;
@@ -39,9 +48,14 @@ export function fingerprintAuditIntent(route: string, accountId: string, operati
 export function observeAuditIntent(route: string, accountId: string, operationId: string, value: unknown): string | undefined {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return;
   const row = value as Record<string, unknown>;
-  if (row.id !== operationId) return;
   let key: string | null = null;
   try {
+    if (route === auditCommandRoutes.fine) {
+      const fine = parseFineRequest(row);
+      if (auditFineOperationId(fine.id) !== operationId) return;
+      return fingerprintAuditIntent(route, accountId, operationId, auditFineIntentKey(fine));
+    }
+    if (row.id !== operationId) return;
     switch (route) {
       case auditCommandRoutes.core: key = coreIntent(row); break;
       case auditCommandRoutes.expansion: if (validExpansionAction(row)) key = JSON.stringify(row); break;

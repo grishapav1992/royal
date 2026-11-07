@@ -1,3 +1,4 @@
+import { CLUB_FINE_SOURCE } from '../../src/shared/security';
 import type { PostgresDatabase } from '../database';
 import { AUDIT_SCHEMA_VERSION, isAuditRecord, type AuditPosting, type AuditScope, type AuditSourceRef } from './contract';
 import { resolveCasinoPosting, type CasinoPostingResolution } from './casino';
@@ -75,6 +76,7 @@ export class AuditPostingReader {
           if (!row) return { status: 'source-unavailable' } as const;
           const entry = { rowId: source.rowId, accountId: String(row.account_id), operationId: String(row.operation_id),
             gameId: String(row.source) };
+          if (entry.gameId === CLUB_FINE_SOURCE) return { status: 'unsupported' } as const;
           const evidence = entry.gameId.startsWith('pvp:')
             ? await resolvePvpPosting(match, { ...entry, gameId: entry.gameId.slice(4) })
             : entry.gameId === 'flag-tote' ? await resolveTotePosting(match, entry) : await resolveCasinoPosting(match, entry);

@@ -6,7 +6,13 @@ import { test } from 'node:test';
 import express, { type Application } from 'express';
 import { accounts } from '../server/accounts';
 import type { AuditAttemptObservation } from '../server/audit/attempts';
+import { reconcileStoredAuditOperation } from '../server/audit/check-repeats';
+import { AuditDatasets } from '../server/audit/datasets';
+import { AuditEvidence } from '../server/audit/evidence';
 import { auditHttpAttempts } from '../server/audit/http-attempts';
+import { auditCommandRoutes } from '../server/audit/intents';
+import { installClubFineRoutes } from '../server/clubFineRoutes';
+import { PostgresDatabase } from '../server/database';
 import { installDemoWallet } from '../server/demoWalletRoutes';
 import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
 
@@ -42,6 +48,61 @@ function post(base: string, path: string, body: unknown, headers: Record<string,
 }
 
 test.after(async () => accounts.close());
+
+test('real club-fine attempts link the committed debit and distinguish business rejection from payment and replay', async t => {
+  const login = await accounts.login(randomUUID() + '@example.test', 'Royal-audit-fine-42!');
+  const accountId = login.account.id;
+  t.after(() => accounts.logout(login.token));
+  await accounts.wallet.operate(accountId, { id: randomUUID(), kind: 'deposit', amount: 100 });
+  const { outcome: { sanction } } = await accounts.clubSanctions.recordViolation(accountId,
+    { id: randomUUID(), reason: 'spam' });
+  const audit = new PostgresDatabase(':memory:');
+  t.after(() => audit.close());
+  const { datasetId, environment } = await new AuditDatasets(audit, { game: accounts.schema }).startTest();
+  const observer = collector(), evidence = new AuditEvidence(audit, audit.schema);
+  const app = express();
+  app.use(auditHttpAttempts(observer.record, { gameSchema: accounts.schema }));
+  installDemoWallet(app);
+  installClubFineRoutes(app);
+  const quote = { id: randomUUID(), sanctionId: sanction.id, revision: sanction.revision, amountCents: sanction.amountCents };
+  const operationId = 'club-fine:' + quote.id;
+  await serve(app, async base => {
+    const headers = { Cookie: 'royal_session=' + login.token, [WALLET_ACCOUNT_HEADER]: accountId };
+    const scenarios = [
+      { body: { ...quote, revision: quote.revision + 1 }, status: 'changed', decision: 'rejected' },
+      { body: { ...quote, id: quote.id.toUpperCase(), sanctionId: quote.sanctionId.toUpperCase() }, status: 'paid', decision: 'accepted' },
+      { body: quote, status: 'paid', decision: 'replayed' },
+      { body: { ...quote, amountCents: quote.amountCents + 1 }, status: 'id-conflict', decision: 'rejected' },
+    ];
+    for (const scenario of scenarios) {
+      const observation = observer.next();
+      const reply = await post(base, auditCommandRoutes.fine, scenario.body, headers);
+      assert.equal(reply.status, 200);
+      assert.equal((await reply.json()).status, scenario.status);
+      const attempt = await observation;
+      assert.equal(attempt.operationId, operationId);
+      assert.equal(attempt.decision, scenario.decision);
+      assert.equal(attempt.delivery, 'handed-off');
+      assert.deepEqual(attempt.balance, { state: 'absent' });
+      assert(attempt.intentFingerprint);
+      await evidence.record({ ...attempt, scope: { datasetId, environment }, schemaVersion: 1, type: 'attempt' });
+    }
+  });
+  const source = { datasetId, accountId, operationId, route: auditCommandRoutes.fine };
+  const result = await reconcileStoredAuditOperation(audit, accounts.schema, source);
+  assert.equal(result.status, 'match');
+  assert.deepEqual(result.command, {
+    namespace: accounts.schema + '.club_fine_payments', rowId: JSON.stringify([accountId, quote.id]),
+  });
+  assert.equal(result.money.reason, 'single-fine-debit');
+  assert.equal(result.money.postings.length, 1);
+  assert.equal(result.duplicateAcceptedDecision, false);
+  assert.deepEqual(observer.attempts.map(attempt => result.attempts.find(item => item.attemptId === attempt.attemptId)?.reason),
+    ['different-intent-rejected', 'same-accepted-intent', 'same-accepted-intent', 'different-intent-rejected']);
+  await accounts.db.prepare('UPDATE club_fine_payments SET amount_cents=amount_cents+1 WHERE account_id=? AND operation_id=?')
+    .run(accountId, quote.id);
+  assert.equal((await reconcileStoredAuditOperation(audit, accounts.schema, source)).money.reason, 'fine-debit-mismatch');
+});
 
 test('real wallet routes distinguish typed decisions and capture a formed lost reply without a second debit', async () => {
   const login = await accounts.login(randomUUID() + '@example.test', 'Royal-audit-http-42!');

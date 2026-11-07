@@ -1,3 +1,4 @@
+import { CLUB_FINE_SOURCE } from '../../src/shared/security';
 import { identifier, type PostgresDatabase } from '../database';
 import { checkAuditStakeDirection, reconcileAuditBalance, reconcileStoredAuditAttempt, type AuditBalanceEntry, type AuditBalanceStream } from './check-balances';
 import { checkCapturedCasinoRound } from './check-casino';
@@ -88,9 +89,11 @@ function readCaptured(audit: PostgresDatabase, ledger: Adapter, filter: string) 
 
 function normalized(row: SourceRow, ledger: Adapter, scope: AuditScope): AuditPosting | null {
   if (!row.present || !units(row.available_delta)) return null;
+  const movement = row.game === CLUB_FINE_SOURCE ? 'fine'
+    : row.entry === 'bet' || row.entry === 'debit' ? 'stake' : 'adjustment';
   const posting: AuditPosting = { schemaVersion: 1, type: 'posting', scope, occurredAtMs: row.occurred_at_ms,
     source: source(ledger.namespace, row.row_id), sequence: row.row_id, accountId: row.account_id, operationId: row.operation_id,
-    entity: null, coverage: 'partial', movement: row.entry === 'bet' || row.entry === 'debit' ? 'stake' : 'adjustment',
+    entity: null, coverage: 'partial', movement,
     asset: ledger.asset, availableDeltaUnits: row.available_delta, availableAfterUnits: units(row.available_after) ? row.available_after : null,
     reservedDeltaUnits: units(row.reserved_delta) ? row.reserved_delta : null,
     reservedAfterUnits: units(row.reserved_after) ? row.reserved_after : null };
@@ -508,11 +511,12 @@ async function reconcilePosting(audit: PostgresDatabase, sources: AuditSourceSch
   } else if (ledger.ledger === 'demo_ledger' && row.game === 'flag-tote') {
     await run('R-06', () => tote(audit, sources.game, report, output));
   } else if (ledger.ledger === 'demo_ledger' && ['bet', 'win', 'refund', 'rollback'].includes(row.entry ?? '') &&
-      row.game !== 'atelier' && row.game !== 'janitor-skins' && !row.game?.startsWith('reward:')) {
+      row.game !== CLUB_FINE_SOURCE && row.game !== 'atelier' && row.game !== 'janitor-skins' && !row.game?.startsWith('reward:')) {
     await run('R-04', () => casino(audit, sources.game, report, output));
   }
   if (ledger.ledger === 'demo_ledger') {
-    const preferred = report.entity?.source.namespace.endsWith('.demo_operations') ? auditCommandRoutes.core : null;
+    const preferred = row.game === CLUB_FINE_SOURCE ? auditCommandRoutes.fine
+      : report.entity?.source.namespace.endsWith('.demo_operations') ? auditCommandRoutes.core : null;
     const boundRoutes = preferred ? [preferred] : [auditCommandRoutes.core, auditCommandRoutes.expansion, auditCommandRoutes.session]
       .filter(route => routes?.has(route));
     for (const route of boundRoutes) await run('R-03', () => repeats(audit, sources.game, report, output, route));

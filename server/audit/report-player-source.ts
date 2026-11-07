@@ -1,3 +1,4 @@
+import { CLUB_FINE_SOURCE } from '../../src/shared/security';
 import { identifier, type PostgresDatabase } from '../database';
 import { applySchemaMigration } from '../database-migrations';
 import type { AuditSourceSchemas } from './datasets';
@@ -31,6 +32,7 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
   const p = sources.payments ? identifier(sources.payments) : null;
   const demo = literal(sources.game + '.demo_ledger'), pending = literal(sources.game + '.capro_pending_ledger');
   const crypto = sources.payments ? literal(sources.payments + '.crypto_ledger') : 'NULL::text';
+  const fine = literal(CLUB_FINE_SOURCE);
   const hasMatches = await relationExists(db, sources.game, 'pvp_matches');
   const hasCallbacks = await relationExists(db, sources.game, 'capro_transactions') &&
     await relationExists(db, sources.game, 'capro_players');
@@ -67,6 +69,7 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
         f.session_id,n.id) AS entity_id, ticket.id AS ticket_id,
       CASE
         WHEN t.transfer THEN 'release'
+        WHEN l.source=${fine} THEN CASE WHEN l.entry_type='bet' THEN 'fine' END
         WHEN l.source='casinoapipro' AND l.entry_type='win' AND l.operation_id LIKE 'capro:transfer:%'
           AND NOT provider.explicit_credit THEN NULL
         WHEN l.entry_type='bet' AND l.source IN ('atelier','janitor-skins') THEN 'purchase'
@@ -89,15 +92,16 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
     ) p ON true
     LEFT JOIN LATERAL (
       SELECT result FROM ${g}.demo_operations
-      WHERE l.entry_type<>'deposit' AND account_id=l.account_id AND operation_id=l.operation_id AND kind IN ('play','spin') LIMIT 1
+      WHERE l.entry_type<>'deposit' AND l.source IS DISTINCT FROM ${fine}
+        AND account_id=l.account_id AND operation_id=l.operation_id AND kind IN ('play','spin') LIMIT 1
     ) op ON true
     LEFT JOIN LATERAL (
       SELECT session_id FROM ${g}.demo_casino_requests
-      WHERE l.entry_type<>'deposit' AND account_id=l.account_id AND id=l.operation_id LIMIT 1
+      WHERE l.entry_type<>'deposit' AND l.source IS DISTINCT FROM ${fine} AND account_id=l.account_id AND id=l.operation_id LIMIT 1
     ) req ON true
     LEFT JOIN LATERAL (
       SELECT s.id AS session_id, CASE WHEN pg_input_is_valid(s.payload,'jsonb') THEN s.payload::jsonb END AS payload
-      FROM ${g}.demo_casino_sessions s WHERE l.entry_type<>'deposit'
+      FROM ${g}.demo_casino_sessions s WHERE l.entry_type<>'deposit' AND l.source IS DISTINCT FROM ${fine}
         AND s.account_id=l.account_id AND s.id=COALESCE(req.session_id,l.operation_id)
         AND s.game_id=l.source LIMIT 1
     ) x ON true

@@ -3,7 +3,7 @@ import type { RequestHandler, Response } from 'express';
 import { gameAccountId } from '../../src/shared/nileWallet';
 import { auditDemoLedgerSnapshot, type AuditAttemptObservation, type AuditAttemptSink } from './attempts';
 import type { AuditResponseBalance, AuditSourceRef } from './contract';
-import { auditCommandRoutes, observeAuditIntent } from './intents';
+import { auditCommandRoutes, auditFineOperationId, observeAuditIntent } from './intents';
 
 type BalanceShape = 'virtual' | 'real' | 'none';
 type Route = { template: string; balanceShape: BalanceShape; pathId?: string | null };
@@ -16,6 +16,7 @@ const moneyRoutes: ReadonlyMap<string, BalanceShape> = new Map([
   ['/api/demo-wallet/flight', 'virtual'],
   ['/api/demo-wallet/mines', 'virtual'],
   ['/api/demo-wallet/flag-tote', 'virtual'],
+  [auditCommandRoutes.fine, 'none'],
   ['/api/progression/spins', 'virtual'],
   ['/api/nowpayments-sandbox/deposits', 'none'],
   ['/api/crypto-wallet/deposits', 'real'],
@@ -42,7 +43,8 @@ function bodyOperationId(body: unknown, route: string): string | null {
   const fields = object(body);
   const id = fields && Object.hasOwn(fields, 'id') ? fields.id : null;
   const format = route === auditCommandRoutes.core ? /^[a-f0-9-]{36}$/i : /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i;
-  return typeof id === 'string' && format.test(id) ? id : null;
+  if (typeof id !== 'string' || !format.test(id)) return null;
+  return route === auditCommandRoutes.fine ? auditFineOperationId(id) : id;
 }
 
 function paidRoute(path: string): Route | null {
@@ -114,8 +116,12 @@ function observeResponse(response: Response, body: unknown, route: Route, snapsh
   let decision: FormedResponse['decision'] = 'unknown';
   if ((statusCode >= 400 && statusCode < 500) || (statusCode >= 500 && parsed?.rejected === true)) {
     decision = 'rejected';
-  } else if (statusCode >= 200 && statusCode < 300 && typeof parsed?.replayed === 'boolean') {
-    decision = parsed.replayed ? 'replayed' : 'accepted';
+  } else if (statusCode >= 200 && statusCode < 300) {
+    if (route.template === auditCommandRoutes.fine && ['changed', 'inactive', 'insufficient', 'id-conflict']
+        .some(status => status === parsed?.status)) decision = 'rejected';
+    else if ((route.template !== auditCommandRoutes.fine || parsed?.status === 'paid') && typeof parsed?.replayed === 'boolean') {
+      decision = parsed.replayed ? 'replayed' : 'accepted';
+    }
   }
   const balance = decoded || route.balanceShape === 'none' || [204, 205, 304].includes(statusCode)
     ? responseBalance(parsed, route.balanceShape, snapshot) : { state: 'not-recorded' as const };

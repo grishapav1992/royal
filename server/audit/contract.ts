@@ -31,7 +31,7 @@ export type AuditEntityRef = {
 );
 
 const movements = ['deposit', 'withdrawal-reserve', 'withdrawal-paid', 'stake', 'paid-option',
-  'reserve', 'release', 'payout', 'refund', 'adjustment', 'reward', 'purchase', 'fee', 'reversal'] as const;
+  'reserve', 'release', 'payout', 'refund', 'adjustment', 'reward', 'purchase', 'fee', 'fine', 'reversal'] as const;
 const events = ['accepted', 'advanced', 'reserved', 'released', 'settled', 'cancelled', 'timed-out',
   'disconnected', 'reconnected', 'forfeited', 'recovered'] as const;
 const coverage = ['complete', 'partial', 'not-recorded', 'source-unavailable', 'unsupported'] as const;

@@ -1,8 +1,11 @@
+import { CLUB_FINE_SOURCE } from '../../src/shared/security';
+import { SKIN_UUID } from '../../src/shared/skinStudio';
+import { parseFineRequest } from '../clubSanctions';
 import { identifier, type PostgresDatabase } from '../database';
 import { applySchemaMigration } from '../database-migrations';
 import { verifyGameRound } from '../games/core';
 import { isAuditRecord, type AuditAttempt, type AuditSourceRef } from './contract';
-import { auditCommandRoutes, fingerprintAuditIntent } from './intents';
+import { auditCommandRoutes, auditFineIntentKey, auditFineOperationId, fingerprintAuditIntent } from './intents';
 
 type Status = 'match' | 'mismatch' | 'insufficient-data';
 type AttemptCheck = { attemptId: string; status: Status; intent: 'same' | 'different' | 'unknown'; reason: string };
@@ -62,6 +65,12 @@ function checkMoney(route: string, namespace: string, rows: Posting[], accepted:
     return { status: 'insufficient-data', reason: 'canonical-posting-unavailable', postings };
   }
   if (!accepted) return { status: 'insufficient-data', reason: 'accepted-command-unavailable', postings };
+  if (route === auditCommandRoutes.fine) {
+    if (!rows.length) return { status: 'insufficient-data', reason: 'command-not-in-posting-boundary', postings };
+    const matches = rows.length === 1 && rows[0].kind === 'bet' && rows[0].game === CLUB_FINE_SOURCE &&
+      rows[0].units === '-' + accepted.amount_units;
+    return { status: matches ? 'match' : 'mismatch', reason: matches ? 'single-fine-debit' : 'fine-debit-mismatch', postings };
+  }
   if (route !== auditCommandRoutes.core) {
     const debits = rows.filter(row => row.kind === 'bet').length;
     const credits = rows.filter(row => row.kind === 'win' || row.kind === 'refund').length;
@@ -85,12 +94,29 @@ function checkMoney(route: string, namespace: string, rows: Posting[], accepted:
   return { status: matches ? 'match' : 'mismatch', reason: matches ? 'single-command-plan' : 'command-money-plan-mismatch', postings };
 }
 
+async function fineReceipt(db: PostgresDatabase, game: string, accountId: string, receiptId: string) {
+  const row = await db.prepare(`SELECT operation_id AS id,episode_id AS "sanctionId",revision,
+      amount_cents AS "amountCents",paid_at AS created_at FROM ${game}club_fine_payments
+    WHERE account_id=? AND operation_id=?`).get(accountId, receiptId);
+  if (!row) return null;
+  try {
+    const { created_at, ...fields } = row;
+    const fine = parseFineRequest(fields);
+    if (fine.amountCents === 0 || !Number.isSafeInteger(created_at) || created_at < 0) return null;
+    return { amount_units: String(fine.amountCents), request_key: auditFineIntentKey(fine), created_at };
+  } catch {
+    return null;
+  }
+}
+
 /** All comparisons share one read-only database snapshot of the selected dataset and source schema. */
 export async function reconcileStoredAuditOperation(db: PostgresDatabase, gameSchema: string, operation: Operation): Promise<AuditRepeatCheck> {
   if (!/^[a-z_][a-z0-9_]{0,62}$/.test(gameSchema)) throw new Error('Invalid audit game schema');
   const { datasetId, accountId, operationId, route } = operation;
-  const core = route === auditCommandRoutes.core, pvp = route === auditCommandRoutes.pvp;
-  if (!core && !pvp && route !== auditCommandRoutes.expansion && route !== auditCommandRoutes.session) return missing('route-unsupported');
+  const core = route === auditCommandRoutes.core, pvp = route === auditCommandRoutes.pvp, fine = route === auditCommandRoutes.fine;
+  if (!core && !pvp && !fine && route !== auditCommandRoutes.expansion && route !== auditCommandRoutes.session) return missing('route-unsupported');
+  const receiptId = operationId.slice(CLUB_FINE_SOURCE.length + 1);
+  if (fine && (!SKIN_UUID.test(receiptId) || auditFineOperationId(receiptId) !== operationId)) return missing('fine-key-unavailable');
   const game = identifier(gameSchema) + '.';
   const ledgerNamespace = gameSchema + '.demo_ledger';
   try {
@@ -113,19 +139,19 @@ export async function reconcileStoredAuditOperation(db: PostgresDatabase, gameSc
         ORDER BY r.source_row_id LIMIT 501`).all(datasetId, ledgerNamespace, accountId, operationId) as Posting[];
       if (rows.length > 500) return missing('operation-posting-limit');
       if (!rows.length && !attempts.length) return missing('operation-not-observed');
-      const table = core ? 'demo_operations' : pvp ? 'pvp_requests' : 'demo_casino_requests';
-      const source = core
+      const table = core ? 'demo_operations' : pvp ? 'pvp_requests' : fine ? 'club_fine_payments' : 'demo_casino_requests';
+      const source = fine ? await fineReceipt(db, game, accountId, receiptId) : core
         ? await db.prepare(`SELECT kind,amount_units::text,result,request_key FROM ${game}${table}
           WHERE account_id=? AND operation_id=?`).get(accountId, operationId)
         : await db.prepare(`SELECT request_key,created_at FROM ${game}${table} WHERE account_id=? AND id=?`).get(accountId, operationId);
       const key = parseJson(source?.request_key);
-      const routeMatches = core || pvp || key !== null && typeof key === 'object' &&
+      const routeMatches = core || pvp || fine || key !== null && typeof key === 'object' &&
         Array.isArray(key) === (route === auditCommandRoutes.session);
       // Without a captured posting or an explicit accepted reply, a later request cannot close a sealed dataset's ambiguity.
       const seenInSealed = rows.length > 0 || attempts.some(attempt => attempt.decision === 'accepted' || attempt.decision === 'replayed');
       const accepted = source && routeMatches && (scope.sealed_at_ms === null || seenInSealed) &&
         (source.created_at === undefined || scope.sealed_at_ms === null || source.created_at <= scope.sealed_at_ms) ? source : null;
-      const command = accepted ? { namespace: gameSchema + '.' + table, rowId: JSON.stringify([accountId, operationId]) } : null;
+      const command = accepted ? { namespace: gameSchema + '.' + table, rowId: JSON.stringify([accountId, fine ? receiptId : operationId]) } : null;
       const fingerprint = typeof accepted?.request_key === 'string'
         ? fingerprintAuditIntent(route, accountId, operationId, accepted.request_key) : null;
       const outcomes = attempts.map(attempt => checkAttempt(attempt, fingerprint));
