@@ -30,7 +30,7 @@ export const AUDIT_SUMMARY_SCAN_CAP = 20_000;
 /** Privileged setup only. The operator executes a fixed, scoped projection over captured references. */
 export async function installAuditSummaryReport(db: PostgresDatabase, readerRole: string, sources: AuditSourceSchemas) {
   if (!/^[a-z_][a-z0-9_]{0,62}$/.test(readerRole)) throw new Error('Invalid audit summary reader');
-  const { a, g, demo, pending, crypto, selects } = await auditPostingProjectionSql(db, sources);
+  const { a, g, demo, pending, crypto, selects } = await auditPostingProjectionSql(db, sources, 'allowed');
   await applySchemaMigration(db, { id: 'paid-activity-audit-summary-period-v1', statements: [], indexes: [
     { name: 'audit_posting_refs_period', table: 'audit_posting_refs',
       columns: ['dataset_id', 'source_namespace', 'occurred_at_ms', 'source_row_id'] },

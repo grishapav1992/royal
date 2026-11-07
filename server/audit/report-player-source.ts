@@ -1,6 +1,7 @@
 import { CLUB_FINE_SOURCE } from '../../src/shared/security';
 import { identifier, type PostgresDatabase } from '../database';
 import { applySchemaMigration } from '../database-migrations';
+import { casinoPaidStartModes } from './casino';
 import type { AuditSourceSchemas } from './datasets';
 import { auditExportReaderProjectionGuard } from './report-export-slot';
 
@@ -23,7 +24,7 @@ async function relationExists(db: PostgresDatabase, schema: string, table: strin
 }
 
 /** Shared canonical projection over already scoped references. */
-export async function auditPostingProjectionSql(db: PostgresDatabase, sources: AuditSourceSchemas) {
+export async function auditPostingProjectionSql(db: PostgresDatabase, sources: AuditSourceSchemas, allowedSources?: 'allowed') {
   const names = [db.schema, sources.game, ...(sources.payments ? [sources.payments] : [])];
   if (names.some(name => !validName(name)) || new Set(names).size !== names.length) {
     throw new Error('Invalid audit report source configuration');
@@ -32,12 +33,16 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
   const p = sources.payments ? identifier(sources.payments) : null;
   const demo = literal(sources.game + '.demo_ledger'), pending = literal(sources.game + '.capro_pending_ledger');
   const crypto = sources.payments ? literal(sources.payments + '.crypto_ledger') : 'NULL::text';
+  const sourceSelected = (namespace: string) => allowedSources
+    ? ` AND EXISTS (SELECT 1 FROM ${allowedSources} WHERE source_namespace=${namespace})` : '';
   const fine = literal(CLUB_FINE_SOURCE);
   const hasMatches = await relationExists(db, sources.game, 'pvp_matches');
   const hasCallbacks = await relationExists(db, sources.game, 'capro_transactions') &&
     await relationExists(db, sources.game, 'capro_players');
   const flags = "substring(l.operation_id from '^flag-tote:(ft1-[0-9]{1,16}):final$')";
   const pvp = "substring(l.operation_id from '^pvp:([0-9a-f-]{36}):(hold|final)$')";
+  const paidStart = casinoPaidStartModes.map(({ gameId, settingsKey, modes }) =>
+    `WHEN ${literal(gameId)} THEN x.payload #>> '{settings,${settingsKey},mode}' IN (${modes.map(literal).join(',')})`).join('\n          ');
   const selects = `
     SELECT r.*, l.id IS NOT NULL AS present, l.amount_units::numeric AS amount, l.balance_units::numeric AS balance,
       NULL::numeric AS reserved_delta, NULL::numeric AS pending_delta, NULL::numeric AS pending_balance,
@@ -76,6 +81,8 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
         WHEN l.entry_type='win' AND l.source LIKE 'reward:%' AND l.operation_id LIKE 'reward:%' THEN 'reward'
         WHEN l.entry_type='bet' AND b.match_id IS NOT NULL THEN 'reserve'
         WHEN l.entry_type='bet' AND x.session_id<>l.operation_id THEN 'paid-option'
+        WHEN l.entry_type='bet' AND req.session_id=x.session_id AND x.session_id=l.operation_id
+          AND (CASE l.source ${paidStart} ELSE false END) THEN 'paid-option'
         WHEN l.entry_type='bet' THEN 'stake'
         WHEN l.entry_type='win' THEN 'payout'
         WHEN l.entry_type='refund' THEN 'refund'
@@ -133,7 +140,7 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
           WHERE cp.account_id=l.account_id AND cp.operation_id=l.operation_id AND cp.reason='transfer'
             AND cp.amount_units::numeric=-l.amount_units)) IS TRUE AS transfer
     ) t
-    WHERE r.source_namespace=${demo}
+    WHERE r.source_namespace=${demo}${sourceSelected(demo)}
 
     UNION ALL
     SELECT r.*, l.id IS NOT NULL, CASE WHEN l.id IS NOT NULL THEN 0::numeric END, NULL::numeric,
@@ -152,7 +159,7 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
     LEFT JOIN LATERAL (
       SELECT pending_balance_units FROM ${g}.capro_pending_ledger WHERE id=r.prior_id AND account_id=r.account_id LIMIT 1
     ) p ON true
-    WHERE r.source_namespace=${pending}
+    WHERE r.source_namespace=${pending}${sourceSelected(pending)}
     ${p ? `UNION ALL
     SELECT r.*, l.id IS NOT NULL,l.available_delta::numeric,l.balance_units::numeric,l.reserved_delta::numeric,
       NULL::numeric,NULL::numeric,p.balance_units::numeric,'real','USDT',6,
@@ -170,7 +177,7 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
     LEFT JOIN LATERAL (
       SELECT balance_units FROM ${p}.crypto_ledger WHERE id=r.prior_id AND account_id=r.account_id LIMIT 1
     ) p ON true
-    WHERE r.source_namespace=${crypto}` : ''}
+    WHERE r.source_namespace=${crypto}${sourceSelected(crypto)}` : ''}
   `;
   return { a, g, p, demo, pending, crypto, selects };
 }

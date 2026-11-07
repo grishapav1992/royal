@@ -53,6 +53,18 @@ const normalExpansionModes = new Set([
   'studio-last-convoy', 'studio-meme-overload', 'studio-nitro-run', 'studio-wild-nudge',
 ]);
 
+/** Modes whose accepted opening debit pays for an optional feature or enhanced round. */
+export const casinoPaidStartModes: readonly {
+  gameId: string;
+  settingsKey: string;
+  modes: readonly string[];
+}[] = [
+  { gameId: 'studio-cosmic-escape', settingsKey: 'luelon', modes: ['cosmic-chaos', 'ufo-invasion', 'deep-echo'] },
+  { gameId: 'studio-velvet-reign', settingsKey: 'luelon', modes: ['booster', 'hyper', 'spotlight', 'super-encore'] },
+  { gameId: 'studio-caramel-carnival', settingsKey: 'caramel', modes: ['festival'] },
+  { gameId: 'studio-caribbean-treasures', settingsKey: 'caribbean', modes: ['buy-raid', 'buy-flagship'] },
+];
+
 export function casinoExpansionMode(gameId: string, rulesVersion: unknown, settings: unknown): string | null {
   if (normalExpansionModes.has(gameId)) return 'normal';
   if (isLuelonSlotGame(gameId)) {

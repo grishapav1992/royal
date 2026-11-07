@@ -1,7 +1,7 @@
 import { CLUB_FINE_SOURCE } from '../../src/shared/security';
 import type { PostgresDatabase } from '../database';
 import { AUDIT_SCHEMA_VERSION, isAuditRecord, type AuditPosting, type AuditScope, type AuditSourceRef } from './contract';
-import { resolveCasinoPosting, type CasinoPostingResolution } from './casino';
+import { casinoPaidStartModes, resolveCasinoPosting, type CasinoPostingResolution } from './casino';
 import { resolvePvpPosting, type PvpPostingResolution } from './pvp';
 import { resolveTotePosting, type TotePostingResolution } from './tote';
 import { resolvePaymentPosting, type PaymentPostingResolution } from './payments';
@@ -86,7 +86,10 @@ export class AuditPostingReader {
               movement = evidence?.entity.category === 'pvp' ? 'reserve' : 'stake';
               if (evidence && 'operation' in evidence && evidence.operation && evidence.entity.category === 'casino' &&
                 evidence.entity.source.namespace.endsWith('.demo_casino_sessions') &&
-                evidence.operation.rowId !== evidence.entity.source.rowId) movement = 'paid-option';
+                (evidence.operation.rowId !== evidence.entity.source.rowId ||
+                  casinoPaidStartModes.some(rule => rule.gameId === entry.gameId && rule.modes.includes(evidence.entity.modeId)))) {
+                movement = 'paid-option';
+              }
               break;
             case 'win': movement = 'payout'; break;
             case 'refund': movement = 'refund'; break;

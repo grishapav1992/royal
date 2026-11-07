@@ -3,10 +3,16 @@ import { randomInt, randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import test, { type TestContext } from 'node:test';
 import { AuditDatasets } from '../server/audit/datasets';
+import { AuditPostingReader } from '../server/audit/postings';
 import { buildCapturedCasinoReplay, persistCapturedCasinoReplay } from '../server/audit/replay-casino';
 import { planReplaySeek, verifyReplayPackage } from '../server/audit/replay-package';
 import { AuditReplayStore } from '../server/audit/replay-store';
-import { PostgresDatabase } from '../server/database';
+import { installAuditReportAccess } from '../server/audit/report-access';
+import { installAuditDetailReport } from '../server/audit/report-detail-source';
+import { readAuditDetail } from '../server/audit/report-investigation';
+import { readAuditSummary } from '../server/audit/report-summary';
+import { installAuditSummaryReport } from '../server/audit/report-summary-source';
+import { databaseConfig, identifier, PostgresDatabase } from '../server/database';
 import { DemoExpansionStore } from '../server/demoExpansion';
 import { DemoWalletStore } from '../server/demoWallet';
 import { demoBalanceUnits } from '../server/demoWalletAmounts';
@@ -336,12 +342,28 @@ test('purchased casino bonuses preserve each free continuation and the final pos
   });
 });
 
-test('every qualified casino entry mode in the approved catalogue produces money-linked replay evidence', async t => {
+test('every qualified casino entry mode produces matching posting, detail and replay evidence', async t => {
   const seeded = cascadeRandom(129733);
   // The seeded fixture is 32-bit, while settlement may request a larger precision ticket.
   const f = await fixture(t, maximum => maximum <= 0x1_0000_0000 ? seeded(maximum) : randomInt(maximum));
   const { stakePolicies }: { stakePolicies: Record<string, { choices: string[]; rulesVersion: number }> } =
     JSON.parse(await readFile(new URL('../scripts/game-math/rtp-policy.json', import.meta.url), 'utf8'));
+  const tag = randomUUID().replaceAll('-', '').slice(0, 12);
+  const group = 'casino_matrix_reader_' + tag, login = 'casino_matrix_operator_' + tag, password = randomUUID();
+  await f.audit.exec(`CREATE ROLE ${identifier(group)} NOLOGIN;
+    CREATE ROLE ${identifier(login)} LOGIN PASSWORD '${password}';
+    GRANT ${identifier(group)} TO ${identifier(login)};
+    ALTER ROLE ${identifier(login)} SET temp_file_limit='32MB'`);
+  await installAuditReportAccess(f.audit, group);
+  await installAuditDetailReport(f.audit, group, { game: f.game.schema });
+  await installAuditSummaryReport(f.audit, group, { game: f.game.schema });
+  await f.audit.prepare('INSERT INTO audit_report_acl(operator_name,dataset_id,source_namespace) VALUES (?,?,?)')
+    .run(login, f.scope.datasetId, f.game.schema + '.demo_ledger');
+  const operator = databaseConfig({ ...process.env, DATABASE_URL: '', DATABASE_URL_FILE: '',
+    PGUSER: login, PGPASSWORD: password, PGPASSWORD_FILE: '' });
+  const postingReader = new AuditPostingReader(f.audit, f.game);
+  const fromMs = Date.now();
+  const openingDebits: { movement: string; units: bigint }[] = [];
   const run = async (gameId: string, mode: string, rulesVersion: number, player: string, id: string,
     open: boolean, spent: string, returned: string) => {
     const legs = await f.refs(id, player);
@@ -359,9 +381,22 @@ test('every qualified casino entry mode in the approved catalogue produces money
     assert.equal(verifyReplayPackage(result.value, [{ ...manifest.game, formatVersion: 2 }]).status, 'verified');
     const events = fragments.flatMap(fragment => fragment.events);
     const start = events[0];
+    const movement = spent === '10' ? 'stake' : 'paid-option';
     assert.equal(start.data.kind, 'action');
+    assert.equal(start.money?.[0]?.movement, movement);
     assert.equal(start.money?.[0]?.units, '-' + spent);
     assert.deepEqual(start.money?.[0]?.posting, legs[0].posting);
+    const report = await readAuditDetail(operator, { schema: f.audit.schema, datasetId: f.scope.datasetId,
+      filters: { source: legs[0].posting.namespace, postingId: legs[0].posting.rowId } });
+    assert.equal(report.status, 'found');
+    const anchor = report.anchor;
+    assert(anchor);
+    assert.deepEqual([anchor.category, anchor.gameId, anchor.modeId, anchor.rulesVersion, anchor.movement, anchor.amountUnits],
+      ['casino', gameId, mode, String(rulesVersion), movement, '-' + spent]);
+    const posting = await postingReader.read(f.scope.datasetId, legs[0].posting);
+    assert.equal(posting.status, 'found');
+    assert.equal(posting.posting.movement, movement);
+    openingDebits.push({ movement, units: -BigInt(spent) });
     if (!open) {
       const end = events.at(-1);
       assert.deepEqual([legs[1].type, legs[1].units], ['win', returned]);
@@ -402,5 +437,14 @@ test('every qualified casino entry mode in the approved catalogue produces money
       }, 2, true, true, true, true, true, true, true, true, 2, 4, true, true, 2, 2, 2, true);
       await run(gameId, mode, policy.rulesVersion, player, id, session.state === 'active', session.spentUnits, session.returnedUnits);
     });
+  }
+  const summary = await readAuditSummary(operator, { schema: f.audit.schema, datasetId: f.scope.datasetId,
+    filters: { category: 'casino', fromMs, toMs: Date.now() + 1000 } });
+  for (const movement of ['stake', 'paid-option']) {
+    const row = summary.rows.find(row => row.movement_type === movement);
+    const expected = openingDebits.filter(debit => debit.movement === movement);
+    assert(expected.length);
+    assert.equal(row?.posting_count, String(expected.length));
+    assert.equal(row?.amount_units, String(expected.reduce((sum, debit) => sum + debit.units, 0n)));
   }
 });

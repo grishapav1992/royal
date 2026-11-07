@@ -19,6 +19,7 @@ import { databaseConfig, identifier, PostgresDatabase } from '../server/database
 import { DemoWalletStore } from '../server/demoWallet';
 import { FlagToteStore } from '../server/flagTote';
 import { PaymentCredits } from '../server/payments/credits';
+import { releaseProviderPending, saveProviderPendingUnits } from '../server/providerPending';
 import { VirtualPvpLedger } from '../server/pvp/virtual-wallet';
 import { TOTE_TIMING } from '../src/shared/flagTote';
 
@@ -137,7 +138,7 @@ async function fixture(t: TestContext) {
     finally { await finish(client, job); }
   };
   return { audit, game, wallet, owner, ownerLogin, otherLogin, begin, read, finish, run, fromMs, toMs, datasetId,
-    a, b, exact, gameSource, paymentSource, poolCredits, missingAt, operatorConfig: config(owner) };
+    a, b, exact, gameSource, paymentSource, grant, poolCredits, missingAt, operatorConfig: config(owner) };
 }
 
 test('period summary reports exact scoped totals, confirmations, refunds and single commissions', async t => {
@@ -219,6 +220,41 @@ test('period summary reports exact scoped totals, confirmations, refunds and sin
     const casino = await f.run({ ...filters, category: 'casino' });
     assert.equal(casino.scanned, 1);
     assert.deepEqual(casino.rows, []);
+  });
+
+  await t.test('the pending branch and the matching available release respect the current source grants', async t => {
+    const pending = f.game.schema + '.capro_pending_ledger', at = f.toMs + 50;
+    const revoke = (namespace: string) => f.audit.prepare(
+      'DELETE FROM audit_report_acl WHERE operator_name=? AND dataset_id=? AND source_namespace=?')
+      .run(f.owner, f.datasetId, namespace);
+    await atLedgerTime(t, () => at - 1, () => saveProviderPendingUnits(f.game, f.a, randomUUID(), 350n, 350n, 'credit'));
+    assert.equal(await atLedgerTime(t, () => at, () => releaseProviderPending(f.game, f.a)), 0n);
+    const filters = { fromMs: at, toMs: at + 1 };
+    const availableOnly = await f.run(filters);
+    assert.equal(availableOnly.scanned, 1);
+    assert.equal(availableOnly.gaps.unclassifiedPostings, 1);
+    assert.equal(get(availableOnly, null, 'release'), undefined);
+
+    await f.grant(f.owner, pending);
+    try {
+      const combined = await f.run(filters);
+      assert.equal(combined.scanned, 2);
+      assert.equal(combined.gaps.unclassifiedPostings, 0);
+      const release = get(combined, null, 'release');
+      assert.deepEqual([release.posting_count, release.amount_units, release.pending_delta_units], ['2', '350', '-350']);
+      await revoke(f.gameSource);
+      await revoke(f.paymentSource);
+      try {
+        const pendingOnly = await f.run(filters);
+        assert.deepEqual(pendingOnly.sources, [pending]);
+        assert.equal(pendingOnly.scanned, 1);
+        const release = get(pendingOnly, null, 'release');
+        assert.deepEqual([release.posting_count, release.amount_units, release.pending_delta_units], ['1', '0', '-350']);
+      } finally {
+        await f.grant(f.owner, f.gameSource);
+        await f.grant(f.owner, f.paymentSource);
+      }
+    } finally { await revoke(pending); }
   });
 
   await t.test('a posting ID must still match the captured account, operation and timestamp', async t => {
