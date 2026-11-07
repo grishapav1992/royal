@@ -284,6 +284,18 @@ function assertStandbyCancellation(cancellation: {
   assert.deepEqual(outcome, { replayWaitObserved: true, readerStopped: true, journalCancelled: true, noPartialOutput: true });
 }
 
+function assertActiveStandbyCancellation(cancellation: {
+  cancellationMs: number; databaseReaderStopMs: number; blockedQueryObserved: boolean;
+  stagedRowObserved: boolean; readerStopped: boolean; journalCancelled: boolean;
+  noPartialOutput: boolean; slotRetainedUntilDrain: boolean;
+}) {
+  const { cancellationMs, databaseReaderStopMs, ...outcome } = cancellation;
+  assert(Number.isFinite(cancellationMs) && cancellationMs > 0);
+  assert(Number.isFinite(databaseReaderStopMs) && databaseReaderStopMs > 0);
+  assert.deepEqual(outcome, { blockedQueryObserved: true, stagedRowObserved: true, readerStopped: true,
+    journalCancelled: true, noPartialOutput: true, slotRetainedUntilDrain: true });
+}
+
 for (const standby of [false, true]) test(
   `replay-first ${standby ? 'standby' : 'primary'} pilot verifies replay and detail with separate process clocks`,
   { timeout: 35_000, skip: standby && !pgBasebackup }, async t => {
@@ -326,12 +338,13 @@ for (const standby of [false, true]) test(
     assert.equal(report.pilotGate.databaseActivity.withReports.tempBytes, 0);
     assert(report.standby.databaseActivity.withReports.tempBytes > 0);
     assertStandbyCancellation(report.standby.replayCancellation);
+    assertActiveStandbyCancellation(report.standby.activeCancellation);
   }
   assert.equal(report.ok, report.pilotGate.ok);
   assert.equal(exitCode, report.ok ? 0 : 1);
 });
 
-test('standby pilot waits for journal WAL and releases a reader when replay is paused',
+test('standby pilot cancels both WAL wait and an active query, budgeting the active reader',
   { timeout: 35_000, skip: !pgBasebackup }, async t => {
     const directory = await mkdtemp(join(tmpdir(), 'royal-audit-load-check-'));
     t.after(() => rm(directory, { recursive: true, force: true }));
@@ -356,8 +369,9 @@ test('standby pilot waits for journal WAL and releases a reader when replay is p
     assert(report.standby.databaseActivity.withReports.blocksHit > report.standby.databaseActivity.withoutReports.blocksHit);
     assert.equal(report.standby.lockCancellationTarget, 'primary');
     assertStandbyCancellation(report.standby.replayCancellation);
+    assertActiveStandbyCancellation(report.standby.activeCancellation);
     assert(report.cancellation.databaseReaderStopMs >= report.cancellation.cancellationMs);
-    assert.equal(report.budget.readerStopTarget, 'standby-wal-replay-wait');
+    assert.equal(report.budget.readerStopTarget, 'standby-active-query');
     assert.deepEqual(report.budget.checks, [{ metric: 'readerStopMs',
-      actual: report.standby.replayCancellation.databaseReaderStopMs, limit: 60000, passed: true }]);
+      actual: report.standby.activeCancellation.databaseReaderStopMs, limit: 60000, passed: true }]);
   });

@@ -30,7 +30,9 @@ import { verifyGameRound } from '../server/games/core';
 import { VirtualPvpLedger } from '../server/pvp/virtual-wallet';
 import { matchesMixedHistoryTotals, mixedHistoryAccountCount, seedMixedAuditHistory,
   type MixedHistoryPosting } from './audit-load-mixed-history';
-import { drainAuditLoadStandbyReport, grantAuditLoadStandbyReports, startAuditLoadStandby } from './audit-load-standby';
+import { drainAuditLoadStandbyReport, findAuditLoadBlockedStandbyPage, grantAuditLoadStandbyReports,
+  installAuditLoadStandbyPageBarrier, lockAuditLoadStandbyPageBarrier, startAuditLoadStandby,
+  unlockAuditLoadStandbyPageBarrier } from './audit-load-standby';
 import { auditLoadMonotonicMs, startAuditLoadReportConsumer } from './audit-load-report-consumer';
 import { seedAuditLoadReplay } from './audit-load-replay-fixture';
 import { temporaryDatabase } from './database-test';
@@ -450,6 +452,21 @@ async function observeActiveReport(audit: PostgresDatabase, standby: Standby | u
   } finally { await connection?.end(); }
 }
 
+async function measureStandbyReaderStop(observer: ReturnType<Standby['connect']>,
+  backend: { pid: number; backend_start: string }, options: {
+    controller: AbortController; pending: Promise<unknown>; observationMs: number; signal?: AbortSignal;
+  }) {
+  const started = performance.now();
+  options.controller.abort();
+  const [{ result, cancellationMs }, databaseReaderStopMs] = await Promise.all([
+    options.pending.then(result => ({ result, cancellationMs: rounded(performance.now() - started) })),
+    waitFor(async () => (await observer.query(
+      'SELECT 1 FROM pg_stat_activity WHERE pid=$1 AND backend_start=$2::timestamptz', [backend.pid, backend.backend_start])).rowCount
+      ? undefined : rounded(performance.now() - started), options.observationMs, options.signal),
+  ]);
+  return { result, cancellationMs, databaseReaderStopMs };
+}
+
 async function cancelStandbyReplayWait(standby: Standby, audit: PostgresDatabase, operator: ReportLogin, input: PlayerInput,
   directory: string, abort?: AbortSignal) {
   const observer = standby.connect(), controller = new AbortController();
@@ -467,14 +484,8 @@ async function cancelStandbyReplayWait(standby: Standby, audit: PostgresDatabase
       `SELECT pid,backend_start::text FROM pg_stat_activity
       WHERE usename=$1 AND application_name='royal/audit-player' AND query LIKE '%pg_last_wal_replay_lsn%'`,
       [operator.user])).rows[0], 2000, signal);
-    const started = performance.now();
-    controller.abort();
-    const [{ result, cancellationMs }, databaseReaderStopMs] = await Promise.all([
-      pending.then(result => ({ result, cancellationMs: rounded(performance.now() - started) })),
-      waitFor(async () => (await observer.query(
-        'SELECT 1 FROM pg_stat_activity WHERE pid=$1 AND backend_start=$2::timestamptz', [backend.pid, backend.backend_start])).rowCount
-        ? undefined : rounded(performance.now() - started), 2000, abort),
-    ]);
+    const { result, cancellationMs, databaseReaderStopMs } = await measureStandbyReaderStop(observer, backend,
+      { controller, pending, observationMs: 2000, signal: abort });
     const journal = result instanceof AuditPlayerReportError && result.jobId
       ? await audit.prepare('SELECT status,reason FROM audit_export_jobs WHERE id=?').get(result.jobId) : null;
     await observer.query('SELECT pg_wal_replay_resume()');
@@ -491,6 +502,49 @@ async function cancelStandbyReplayWait(standby: Standby, audit: PostgresDatabase
     await pending;
     try { if (replayPaused) await observer.query('SELECT pg_wal_replay_resume()'); }
     finally { await observer.end(); }
+  }
+}
+
+async function cancelActiveStandbyReport(standby: Standby, audit: PostgresDatabase, operator: ReportLogin,
+  input: PlayerInput, directory: string, abort?: AbortSignal) {
+  if (!operator.user) throw new Error('Missing the named audit load operator');
+  const operatorName = operator.user;
+  const observer = standby.connect(), controller = new AbortController();
+  const signal = abort ? AbortSignal.any([abort, controller.signal]) : controller.signal;
+  let pending: Promise<unknown> | undefined;
+  let locked = false;
+  try {
+    await observer.connect();
+    await lockAuditLoadStandbyPageBarrier(observer);
+    locked = true;
+    pending = exportAuditPlayer(operator, { ...input, limits: { ...input.limits, pageSize: 1 }, signal })
+      .then(() => null, error => error);
+    const backend = await waitFor(() => findAuditLoadBlockedStandbyPage(observer, operatorName), 3000, signal);
+    const partial = (await readdir(directory)).find(file => file.endsWith('.part'));
+    const stagedRowObserved = !!partial &&
+      (await readFile(join(directory, partial), 'utf8')).includes(JSON.stringify(input.filters.accountId));
+    // Keep the barrier held until PostgreSQL exits the reader, including its normal statement timeout.
+    const { result, cancellationMs, databaseReaderStopMs } = await measureStandbyReaderStop(observer, backend,
+      { controller, pending, observationMs: 7000, signal: abort });
+    if (!(result instanceof AuditPlayerReportError) || !result.jobId) throw new Error('Missing cancelled active standby job');
+    const journal = await audit.prepare(`SELECT status,reason,reader_route,row_count::text,byte_count::text
+      FROM audit_export_jobs WHERE id=? AND operator_name=? AND dataset_id=?`).get(result.jobId, operatorName, input.datasetId);
+    const attempt = await exportAuditPlayer(operator, { ...input, fixtureStandbyPort: undefined, signal: abort })
+      .then(() => null, error => error);
+    const slotRetainedUntilDrain = attempt instanceof AuditPlayerReportError && attempt.code === 'report-busy' && attempt.jobId === null;
+    await waitForStandbyDrain(standby, audit, result.jobId, abort);
+    const files = await readdir(directory);
+    return { blockedQueryObserved: true, stagedRowObserved, readerStopped: true, cancellationMs, databaseReaderStopMs,
+      journalCancelled: result.code === 'cancelled' && journal?.status === 'cancelled' && journal.reason === 'cancelled' &&
+        journal.reader_route === 'standby' && journal.row_count === '0' && journal.byte_count === '0',
+      noPartialOutput: files.length === 1 && files[0] === 'player.csv', slotRetainedUntilDrain };
+  } finally {
+    controller.abort();
+    try { if (locked) await unlockAuditLoadStandbyPageBarrier(observer); }
+    finally {
+      await observer.end();
+      await pending;
+    }
   }
 }
 
@@ -727,6 +781,10 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     const replayCancellation = standby ? await cancelStandbyReplayWait(standby, audit, operator(reader),
       { ...reportInput, destination: join(directory, 'cancelled-standby.csv') }, directory, signal) : null;
     const after = await sizes(audit, game), records = await recordSizes(audit, datasetId);
+    // The barrier is installed after both wallet phases and their database counters are final.
+    if (standby) await installAuditLoadStandbyPageBarrier(audit, group);
+    const activeCancellation = standby ? await cancelActiveStandbyReport(standby, audit, operator(reader),
+      { ...reportInput, destination: join(directory, 'cancelled-active-standby.csv') }, directory, signal) : null;
     const captureGaps = (await audit.prepare('SELECT COALESCE(sum(missing_count),0)::text AS n FROM audit_attempt_capture_gaps WHERE dataset_id=?')
       .get(datasetId))!.n;
     const overlap = (window: { from: number; to: number }, metric: Metric) =>
@@ -782,11 +840,13 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       records.attemptPayloads.rows === expectedAttempts && captureGaps === '0';
     const cancellationOk = cancellation.outcome === 'cancelled' && cancellation.noPartialOutput &&
       cancellation.readerStopped && cancellation.journalCancelled && (replayCancellation === null ||
-        (replayCancellation.journalCancelled && replayCancellation.noPartialOutput));
-    const readerStopMs = standby ? replayCancellation?.databaseReaderStopMs ?? null : cancellation.databaseReaderStopMs;
+        (replayCancellation.journalCancelled && replayCancellation.noPartialOutput)) && (activeCancellation === null ||
+        (activeCancellation.stagedRowObserved && activeCancellation.journalCancelled && activeCancellation.noPartialOutput &&
+          activeCancellation.slotRetainedUntilDrain));
+    const readerStopMs = standby ? activeCancellation?.databaseReaderStopMs ?? null : cancellation.databaseReaderStopMs;
     const budget = assessBudget(options.budget, { stakeP95Ms: active.metrics.stake.p95Ms,
       settlementP95Ms: active.metrics.settlement.p95Ms, readerStopMs });
-    const readerStopTarget = standby ? 'standby-wal-replay-wait' : 'primary-active-query';
+    const readerStopTarget = standby ? 'standby-active-query' : 'primary-active-query';
     const pilot = control ? assessAuditPilotGate(control.metrics, active.metrics) : null;
     const pilotPassed = pilot ? pilot.ok && firstQueryObserved && observedOverlap && serialVerified : true;
     const postgres = (await audit.prepare('SHOW server_version').get())!.server_version as string;
@@ -813,7 +873,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       ...(standbyBeforeControl && standbyAfterReports ? { standby: { sameHost: true,
         beforeControl: standbyBeforeControl, afterReports: standbyAfterReports,
         databaseActivity: { withoutReports: standbyControlActivity, withReports: standbyReportActivity },
-        lockCancellationTarget: 'primary', replayCancellation,
+        lockCancellationTarget: 'primary', replayCancellation, activeCancellation,
       } } : {}),
       baseline: { metrics: baseline.metrics, elapsedMs: baseline.elapsedMs, noDoubleMoney: baseline.noDoubleMoney, postings: baseline.actualPostings },
       withAudit: { metrics: active.metrics, elapsedMs: active.elapsedMs, noDoubleMoney: active.noDoubleMoney, postings: active.actualPostings },

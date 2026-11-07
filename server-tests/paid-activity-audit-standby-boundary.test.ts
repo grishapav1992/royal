@@ -6,7 +6,10 @@ import { join } from 'node:path';
 import test from 'node:test';
 import { setTimeout as pause } from 'node:timers/promises';
 import pg, { type Client } from 'pg';
-import { drainAuditLoadStandbyReport, grantAuditLoadStandbyReports, startAuditLoadStandby } from '../scripts/audit-load-standby';
+import {
+  drainAuditLoadStandbyReport, findAuditLoadBlockedStandbyPage, grantAuditLoadStandbyReports,
+  installAuditLoadStandbyPageBarrier, lockAuditLoadStandbyPageBarrier, startAuditLoadStandby, unlockAuditLoadStandbyPageBarrier,
+} from '../scripts/audit-load-standby';
 import { temporaryDatabase } from '../scripts/database-test';
 import { AuditDatasets } from '../server/audit/datasets';
 import { installAuditReportAccess } from '../server/audit/report-access';
@@ -17,26 +20,6 @@ import { DemoWalletStore } from '../server/demoWallet';
 import { saveProviderPendingUnits } from '../server/providerPending';
 
 const pgBasebackup = process.env.ROYAL_AUDIT_TEST_PG_BASEBACKUP;
-const pageBarrier = [19473, 22501] as const;
-
-async function installPageBarrier(audit: PostgresDatabase, reader: string) {
-  const schema = identifier(audit.schema), page = schema + '.audit_report_player_page';
-  const signature = '(uuid,bigint,text,bigint,bigint)';
-  await audit.exec(`ALTER FUNCTION ${page}${signature} RENAME TO audit_fixture_player_page;
-    CREATE FUNCTION ${page}(job uuid, cursor_at bigint, cursor_source text, cursor_id bigint, page_size bigint)
-    RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path=pg_catalog,pg_temp SET lock_timeout='0' AS $fixture$
-    DECLARE result jsonb;
-    BEGIN
-      result := ${schema}.audit_fixture_player_page(job, cursor_at, cursor_source, cursor_id, page_size);
-      IF pg_is_in_recovery() AND cursor_at IS NOT NULL THEN
-        PERFORM pg_advisory_xact_lock(${pageBarrier[0]},${pageBarrier[1]});
-      END IF;
-      RETURN result;
-    END
-    $fixture$;
-    REVOKE ALL ON FUNCTION ${page}${signature} FROM PUBLIC;
-    GRANT EXECUTE ON FUNCTION ${page}${signature} TO ${identifier(reader)}`);
-}
 
 async function waitFor<T>(probe: () => Promise<T | undefined>, message: string): Promise<T> {
   const deadline = performance.now() + 3000;
@@ -84,7 +67,7 @@ test('physical standby enforces WAL, routes and grants when exporting a player r
     await installAuditReportAccess(audit, reader);
     await grantAuditLoadStandbyReports(audit, reader);
     await installAuditPlayerReport(audit, reader, sources);
-    await installPageBarrier(audit, reader);
+    await installAuditLoadStandbyPageBarrier(audit, reader);
     const demo = game.schema + '.demo_ledger', pending = game.schema + '.capro_pending_ledger';
     const grant = audit.prepare('INSERT INTO audit_report_acl(operator_name,dataset_id,source_namespace) VALUES (?,?,?)');
     await grant.run(operator, datasetId, demo);
@@ -189,14 +172,8 @@ test('physical standby enforces WAL, routes and grants when exporting a player r
     const schema = identifier(audit.schema);
     const beginPrimary = () => primaryReader.query<{ id: string }>(`
       SELECT ${schema}.audit_report_begin($1,'player',$2::jsonb) AS id`, [datasetId, JSON.stringify(options.filters)]);
-    const waitForBlockedPage = () => waitFor(async () => {
-      const { rows } = await standbyObserver.query<{ pid: number; backend_start: string }>(`
-        SELECT a.pid,a.backend_start::text FROM pg_stat_activity a JOIN pg_locks l ON l.pid=a.pid
-        WHERE a.usename=$1 AND a.application_name=$2 AND a.state='active'
-          AND l.locktype='advisory' AND l.classid=$3::oid AND l.objid=$4::oid AND l.objsubid=2 AND NOT l.granted`,
-      [operator, application, ...pageBarrier]);
-      return rows[0];
-    }, 'Expected a live standby backend to reach the second player page');
+    const waitForBlockedPage = () => waitFor(() => findAuditLoadBlockedStandbyPage(standbyObserver, operator),
+      'Expected a live standby backend to reach the second player page');
 
     await t.test('WAL recovery aborts a blocked CSV without falling back or releasing the slot early', async () => {
       const filesBefore = (await readdir(outputDirectory)).sort();
@@ -204,7 +181,7 @@ test('physical standby enforces WAL, routes and grants when exporting a player r
       const lockConflicts = async () => (await standbyObserver.query<{ count: number }>(`
         SELECT confl_lock::int AS count FROM pg_stat_database_conflicts WHERE datname=current_database()`)).rows[0].count;
       const conflictsBefore = await lockConflicts();
-      await standbyObserver.query('SELECT pg_advisory_lock($1,$2)', [...pageBarrier]);
+      await lockAuditLoadStandbyPageBarrier(standbyObserver);
       const exportResult = exportAuditPlayer(login, { ...options, limits: { pageSize: 1 },
         destination: join(outputDirectory, 'recovery-conflict.csv') })
         .then(result => ({ result }), (error: unknown) => ({ error }));
@@ -248,7 +225,7 @@ test('physical standby enforces WAL, routes and grants when exporting a player r
         assert((await readFile(retryFile, 'utf8')).includes(depositId));
         await waitForDrain(retry.jobId);
       } finally {
-        await standbyObserver.query('SELECT pg_advisory_unlock_all()');
+        await unlockAuditLoadStandbyPageBarrier(standbyObserver);
         await exportResult;
       }
     });
@@ -256,7 +233,8 @@ test('physical standby enforces WAL, routes and grants when exporting a player r
     await t.test('an active standby job cannot read on primary or publish after a source is revoked', async () => {
       await grant.run(operator, datasetId, pending);
       const filesBefore = (await readdir(outputDirectory)).sort();
-      await standbyObserver.query('SELECT pg_advisory_lock($1,$2)', [...pageBarrier]);
+      await lockAuditLoadStandbyPageBarrier(standbyObserver);
+      let barrierHeld = true;
       const exportResult = exportAuditPlayer(login, { ...options, limits: { pageSize: 1 },
         destination: join(outputDirectory, 'revoked-during-read.csv') })
         .then(result => ({ result }), (error: unknown) => ({ error }));
@@ -277,7 +255,8 @@ test('physical standby enforces WAL, routes and grants when exporting a player r
           .run(operator, datasetId, pending);
         assert.equal((await standbyObserver.query(`SELECT 1 FROM ${schema}.audit_report_acl
           WHERE operator_name=$1 AND dataset_id=$2 AND source_namespace=$3`, [operator, datasetId, pending])).rowCount, 1);
-        await standbyObserver.query('SELECT pg_advisory_unlock_all()');
+        await unlockAuditLoadStandbyPageBarrier(standbyObserver);
+        barrierHeld = false;
         const result = await exportResult;
         assert('error' in result && result.error instanceof AuditPlayerReportError);
         assert.equal(result.error.code, 'permission-denied');
@@ -294,7 +273,7 @@ test('physical standby enforces WAL, routes and grants when exporting a player r
         await resumeReplay();
         await waitForDrain(job.id);
       } finally {
-        await standbyObserver.query('SELECT pg_advisory_unlock_all()');
+        if (barrierHeld) await unlockAuditLoadStandbyPageBarrier(standbyObserver);
         await resumeReplay();
         await exportResult;
       }
