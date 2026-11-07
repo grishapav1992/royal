@@ -3,6 +3,7 @@ import { identifier, type PostgresDatabase } from '../database';
 import { applySchemaMigration } from '../database-migrations';
 import { migrateAuditEvidence } from './evidence';
 import { migrateAuditAttemptCapture } from './attempts';
+import { migrateAuditOperationLookup } from './check-repeats';
 
 export type AuditSourceSchemas = { game: string; payments?: string };
 
@@ -62,7 +63,8 @@ export class AuditDatasets {
       ...gameLedgers.map(table => namespace(sources.game, table)),
       ...(sources.payments ? [namespace(sources.payments, 'crypto_ledger')] : []),
     ].sort();
-    this.ready = migrateAuditDatasets(db).then(() => migrateAuditEvidence(db)).then(() => migrateAuditAttemptCapture(db));
+    this.ready = migrateAuditDatasets(db).then(() => migrateAuditEvidence(db)).then(() => migrateAuditAttemptCapture(db))
+      .then(() => migrateAuditOperationLookup(db));
   }
 
   private async optionalTable(schema: string, table: string) {
@@ -140,7 +142,8 @@ export class AuditDatasets {
     if (sandbox) await copy(game,'nowpayments_sandbox_deposits', `account_id,id,state,NULL
       FROM ${relation(game,'nowpayments_sandbox_deposits')} WHERE state NOT IN ('finished','failed','refunded','expired')`);
     if (payments) {
-      await copy(payments,'crypto_operations', `account_id,id,state,NULL FROM ${relation(payments,'crypto_operations')}
+      await copy(payments,'crypto_operations', `account_id,id,state,CASE WHEN kind='withdrawal' THEN amount_units END
+        FROM ${relation(payments,'crypto_operations')}
         WHERE state NOT IN ('finished','rejected','expired','refunded')`);
       await copy(payments,'crypto_wallet_holds', `account_id,operation_id,'review',NULL FROM ${relation(payments,'crypto_wallet_holds')}`);
       if (stars) await copy(payments,'telegram_stars_orders', `account_id,id,state,NULL

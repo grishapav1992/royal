@@ -12,6 +12,7 @@ import { AuditAttemptRecorder, startAuditAttemptRuntime, type AuditAttemptObserv
 import { auditHttpAttempts } from '../server/audit/http-attempts';
 import { AuditPostingReader } from '../server/audit/postings';
 import { reconcileAuditBalance, reconcileStoredAuditAttempt } from '../server/audit/check-balances';
+import { reconcileStoredAuditOperation } from '../server/audit/check-repeats';
 
 process.env.AUTH_DB_PATH = ':memory:';
 const { accounts } = await import('../server/accounts');
@@ -219,6 +220,19 @@ test('actual HTTP and WebSocket attempts persist independently of canonical post
     asset: { contour: 'virtual', code: 'VIRTUAL_USD', scale: 2 }, sourceNamespace,
     component: 'available', openingUnits: opening.available_units, entries });
   assert.ok(balance.checks.length >= 4 && balance.checks.every(check => check.status === 'match'));
+  const accountId = login.account.id;
+  const repeats = await reconcileStoredAuditOperation(audit, accounts.schema,
+    { datasetId, accountId, operationId: core.id, route: '/api/demo-wallet/operations' });
+  assert.equal(repeats.status, 'match');
+  assert.equal(repeats.money.postings.length, 2);
+  assert.equal(repeats.attempts.filter(attempt => attempt.reason === 'same-accepted-intent').length, 3);
+  assert.equal(repeats.attempts.filter(attempt => attempt.reason === 'different-intent-rejected').length, 1);
+  assert.equal(repeats.attempts.find(attempt => attempt.attemptId === lost.attemptId)?.intent, 'same');
+  const pvpRepeats = await reconcileStoredAuditOperation(audit, accounts.schema,
+    { datasetId, accountId, operationId: pvpId, route: 'pvp' });
+  assert.equal(pvpRepeats.money.reason, 'match-bank-check-required');
+  assert.equal(pvpRepeats.attempts.filter(attempt => attempt.reason === 'same-accepted-intent').length, 2);
+  assert.equal(pvpRepeats.attempts.filter(attempt => attempt.reason === 'different-intent-rejected').length, 1);
   assert.deepEqual(await audit.prepare('SELECT missing_count FROM audit_attempt_capture_gaps WHERE dataset_id=?').all(datasetId),
     [{ missing_count: 1 }]);
 });

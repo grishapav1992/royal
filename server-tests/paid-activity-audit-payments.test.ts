@@ -2,6 +2,9 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { test } from 'node:test';
 import { isAuditRecord } from '../server/audit/contract';
+import { AuditDatasets } from '../server/audit/datasets';
+import { AuditEvidence } from '../server/audit/evidence';
+import { reconcileStoredPayment } from '../server/audit/check-payments';
 import { resolvePaymentMirror, resolvePaymentPosting, type PaymentPostingKey } from '../server/audit/payments';
 import { DemoWalletStore } from '../server/demoWallet';
 import { CasinoApiProWallet } from '../server/casinoApiProWallet';
@@ -40,12 +43,14 @@ async function allPostings(db: PostgresDatabase, table: PaymentPostingKey['table
 }
 
 test('canonical payment postings distinguish reserves, paid withdrawals, refunds, Stars and mirrors', async () => {
-  const payments = await newDb(), game = await newDb();
+  const payments = await newDb(), game = await newDb(), audit = await newDb();
   try {
+    const demo = new DemoWalletStore(game);
     const credits = new PaymentCredits(game);
     let payment: Record<string, unknown> = {};
     let payout: Record<string, unknown> = {};
     let rejectNext = false;
+    let waitNext = false;
     let payoutNumber = 0;
     const provider: CryptoProvider = {
       currencies: async () => [{ code: 'usdttrc20', name: 'USDT', network: 'trx', memo: false }],
@@ -62,7 +67,7 @@ test('canonical payment postings distinguish reserves, paid withdrawals, refunds
       conversion: async () => { throw new Error('Unexpected conversion lookup'); },
       createPayout: async (id, currency, address, memo, amount) => {
         payout = { id: String(201 + payoutNumber++), unique_external_id: id, currency, address,
-          extra_id: memo, amount, status: rejectNext ? 'rejected' : 'finished' };
+          extra_id: memo, amount, status: waitNext ? 'waiting' : rejectNext ? 'rejected' : 'finished' };
         return { id: '301', withdrawals: [payout] };
       },
       payout: async () => payout,
@@ -71,18 +76,25 @@ test('canonical payment postings distinguish reserves, paid withdrawals, refunds
       async (_url, init) => Response.json(await credits.apply(JSON.parse(String(init?.body)))));
     const wallet = new CryptoStore(payments, { ...cryptoConfig({}), enabled: true, withdrawals: true }, provider,
       outbox.ready, undefined, undefined, change => outbox.record(change));
-    await wallet.ready;
+    await Promise.all([wallet.ready, demo.ready]);
     const depositId = randomUUID();
     await wallet.deposit(accountId, { id: depositId, amountUnits: '25000000', currency: 'usdttrc20' });
     await wallet.applyPayment({ ...payment, payment_status: 'finished', outcome_amount: '25' });
     await wallet.applyPayment({ ...payment, payment_status: 'finished', outcome_amount: '27' });
     await wallet.applyPayment({ ...payment, payment_status: 'finished', outcome_amount: '27' });
 
+    const datasets = new AuditDatasets(audit, { game: game.schema, payments: payments.schema });
+    const dataset = await datasets.startTest();
+    const withdrawn: string[] = [];
     for (const shouldReject of [false, true]) {
       rejectNext = shouldReject;
       const quote = await wallet.quote(accountId, { id: randomUUID(), amountUnits: '5000000',
         currency: 'usdttrc20', address: 'T' + 'A'.repeat(33), memo: '' });
-      await wallet.withdraw(accountId, { id: randomUUID(), quoteId: quote.id });
+      const id = randomUUID();
+      await wallet.withdraw(accountId, { id, quoteId: quote.id });
+      await wallet.withdraw(accountId, { id, quoteId: quote.id });
+      await wallet.applyPayout(payout);
+      withdrawn.push(id);
     }
     const starsId = randomUUID();
     await wallet.creditStarsDeposit(accountId, starsId, '1000000', 'fixture-stars-charge', 100);
@@ -129,9 +141,45 @@ test('canonical payment postings distinguish reserves, paid withdrawals, refunds
     assert.equal(received?.eventId, eventId);
     assert(!Object.hasOwn(received!, 'posting'));
     assert.equal((await allPostings(payments, 'crypto_ledger')).length, rows.length);
+    const check = (operationId: string, kind: 'withdrawal' | 'adjustment' = 'withdrawal') =>
+      reconcileStoredPayment(audit, payments.schema, { datasetId: dataset.datasetId, accountId, operationId, kind });
+    const paid = await check(withdrawn[0]), returned = await check(withdrawn[1]), adjusted = await check(adjustId, 'adjustment');
+    assert.deepEqual([paid.status, paid.stage, paid.confirmedWithdrawalUnits, paid.postings.length], ['match', 'confirmed', '5000000', 2]);
+    assert.deepEqual([returned.status, returned.stage, returned.confirmedWithdrawalUnits, returned.postings.length], ['match', 'refunded', null, 2]);
+    assert.deepEqual([adjusted.status, adjusted.stage, adjusted.postings.length], ['match', 'adjusted', 1]);
+    const rejectedId = randomUUID();
+    const evidence = new AuditEvidence(audit, audit.schema);
+    await evidence.record({ schemaVersion: 1, scope: { datasetId: dataset.datasetId, environment: 'test' },
+      type: 'attempt', attemptId: randomUUID(), accountId, operationId: rejectedId, entity: null, occurredAtMs: Date.now(),
+      transport: 'http', route: '/api/crypto-wallet/withdrawals', decision: 'rejected', response: 'formed', statusCode: 409,
+      balance: { state: 'absent' } });
+    const refused = await check(rejectedId);
+    assert.deepEqual([refused.stage, refused.confirmedWithdrawalUnits, refused.postings.length], ['request-rejected', null, 0]);
+
+    await datasets.sealTest(dataset.datasetId);
+    const secondAccount = randomUUID();
+    await payments.prepare('INSERT INTO accounts VALUES (?)').run(secondAccount);
+    await wallet.creditStarsDeposit(secondAccount, randomUUID(), '10000000', 'fixture-second-account-stars', 100);
+    waitNext = true;
+    const quote = await wallet.quote(secondAccount, { id: randomUUID(), amountUnits: '5000000',
+      currency: 'usdttrc20', address: 'T' + 'A'.repeat(33), memo: '' });
+    const openId = randomUUID();
+    await wallet.withdraw(secondAccount, { id: openId, quoteId: quote.id });
+    const next = await datasets.startTest();
+    const checkNext = () => reconcileStoredPayment(audit, payments.schema,
+      { datasetId: next.datasetId, accountId: secondAccount, operationId: openId, kind: 'withdrawal' });
+    const reserved = await checkNext();
+    assert.deepEqual([reserved.status, reserved.stage, reserved.postings.length], ['match', 'reserved', 0]);
+    await wallet.applyPayout({ ...payout, status: 'finished' });
+    await wallet.applyPayout({ ...payout, status: 'finished' });
+    const carried = await checkNext();
+    assert.deepEqual([carried.status, carried.stage, carried.confirmedWithdrawalUnits, carried.postings.length],
+      ['match', 'confirmed', '5000000', 1]);
+    const older = await reconcileStoredPayment(audit, payments.schema,
+      { datasetId: dataset.datasetId, accountId: secondAccount, operationId: openId, kind: 'withdrawal' });
+    assert.equal(older.stage, 'unobserved');
   } finally {
-    await payments.close();
-    await game.close();
+    await Promise.all([payments.close(), game.close(), audit.close()]);
   }
 });
 

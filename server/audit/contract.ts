@@ -79,6 +79,7 @@ export type AuditAttempt = RecordHeader & {
   statusCode: number | null;
   balance: AuditResponseBalance;
   delivery?: 'handed-off' | 'closed' | 'unobserved';
+  intentFingerprint?: string;
 };
 export type AuditReplay = RecordHeader & {
   type: 'replay';
@@ -210,6 +211,10 @@ function attempt(value: Record<string, unknown>): boolean {
     names.push('delivery');
     if (!oneOf(value.delivery, ['handed-off', 'closed', 'unobserved']) ||
       (value.delivery === 'handed-off' && value.response !== 'formed')) return false;
+  }
+  if (Object.hasOwn(value, 'intentFingerprint')) {
+    names.push('intentFingerprint');
+    if (value.operationId === null || !sha256(value.intentFingerprint)) return false;
   }
   if (!fields(value, names) ||
     !identifier(value.attemptId) || !identifier(value.accountId) || !nullable(value.operationId, identifier) ||

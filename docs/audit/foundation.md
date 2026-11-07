@@ -18,17 +18,24 @@
 
 Сессии казино дают связь с автоматическим расчётом без искусственного клиентского запроса. PvP сохраняет частичную связь через банк при отсутствующей игровой версии. Для общего пула зачисление раскрывается до отдельных билетов. Старые билеты имеют порядковый номер, а точное время решения о приёме требует отдельного наблюдения. Резолвер платежей возвращает исходную проводку, а платёжная проекция остаётся свидетельством доставки.
 
+## Денежная сверка
+
+| Правило | Источник и граница проверки |
+| --- | --- |
+| R-01–R-03 | Начальный остаток, исходные проводки, сформированный ответ и отпечаток принятой команды сравниваются отдельно. [Сверка остатков и повторов](check-balances.md) |
+| R-04 | Принятые условия, сохранённая версия расчёта и фактические проводки раунда. Платный вход в бонус и бесплатное продолжение различаются. Если состояние многошагового раунда на момент закрытия набора не зафиксировано, проверка показывает пробел. [Сверка казино](../../server/audit/check-casino.ts) |
+| R-05 | Удержания и обе стороны банка матча, выплата или возвраты, единственная комиссия. Ёмкость под выплату сверяется отдельно от удержанной ставки. [Сверка PvP](../../server/audit/check-pvp.ts) |
+| R-06 | Банк, комиссия, распределение и возвраты по версии общего пула. Время принятия требует отдельного серверного свидетельства. [Сверка пула](../../server/audit/check-tote.ts) |
+| R-07 | Резерв, расход резерва и возврат по исходным строкам платежей. Связь противоположных корректировок требует отдельного поля источника. [Сверка платежей](payment-postings.md) |
+
 ## Изолированная проверка
 
 ```sh
-node --test server-tests/paid-activity-audit-fixtures.test.mjs
+node --test server-tests/paid-activity-audit-{contract,fixtures}.test.mjs
+node --import tsx --test server-tests/paid-activity-audit-{check-balances,ws-attempts}.test.ts
 node --import tsx scripts/database-test.ts --import tsx --test --test-concurrency=1 \
-  server-tests/paid-activity-audit-datasets.test.ts \
-  server-tests/paid-activity-audit-evidence.test.ts \
-  server-tests/paid-activity-audit-casino.test.ts \
-  server-tests/paid-activity-audit-pvp.test.ts \
-  server-tests/paid-activity-audit-tote.test.ts \
-  server-tests/paid-activity-audit-payments.test.ts
+  server-tests/paid-activity-audit-{datasets,evidence,attempts,http-attempts,casino,pvp,tote,payments}.test.ts \
+  server-tests/paid-activity-audit-check-{repeats,casino,pvp,tote}.test.ts
 ```
 
 Тесты покрывают оба контура, старый резерв PvP, доставку платёжного зеркала после границы, занятый срез, откат, заранее выделенный меньший ID, закрытие набора и смену набора. Для фикстур ожидаемые финансовые результаты и поведенческие метки записаны отдельно от входных событий.

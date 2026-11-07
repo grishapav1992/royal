@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { gameAccountId } from '../../src/shared/nileWallet';
 import { auditDemoLedgerSnapshot, type AuditAttemptObservation, type AuditAttemptSink } from './attempts';
 import { isAuditEntityRef, type AuditEntityRef } from './contract';
+import { observeAuditIntent } from './intents';
 
 export type WsAttemptOwner = { sessionId: string; accountId: string; connection: object };
 type Delivery = 'handed-off' | 'closed' | 'unobserved';
@@ -76,6 +77,8 @@ export class WsAttemptCapture {
         (command.action === 'create' && (command.mode === 'free' || command.stakeUnits === '0'))) return invoke();
     const operationId = gameAccountId(command.id) ? command.id : null;
     const context: Context = { owner, observation: this.observation(owner.accountId, 'pvp', operationId, null), dropped: false, finished: false };
+    const fingerprint = operationId ? observeAuditIntent('pvp', owner.accountId, operationId, value) : undefined;
+    if (fingerprint) context.observation.intentFingerprint = fingerprint;
     const active = this.pending.get(owner.connection) ?? new Set<Context>();
     active.add(context);
     this.pending.set(owner.connection, active);

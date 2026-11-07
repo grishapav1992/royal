@@ -3,6 +3,7 @@ import type { RequestHandler, Response } from 'express';
 import { gameAccountId } from '../../src/shared/nileWallet';
 import { auditDemoLedgerSnapshot, type AuditAttemptObservation, type AuditAttemptSink } from './attempts';
 import type { AuditResponseBalance, AuditSourceRef } from './contract';
+import { auditCommandRoutes, observeAuditIntent } from './intents';
 
 type BalanceShape = 'virtual' | 'real' | 'none';
 type Route = { template: string; balanceShape: BalanceShape; pathId?: string | null };
@@ -37,11 +38,11 @@ function object(value: unknown): Record<string, unknown> | null {
   return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : null;
 }
 
-function bodyOperationId(body: unknown): string | null {
+function bodyOperationId(body: unknown, route: string): string | null {
   const fields = object(body);
   const id = fields && Object.hasOwn(fields, 'id') ? fields.id : null;
-  // The core wallet also accepts UUID-shaped historical IDs outside UUID v4.
-  return typeof id === 'string' && /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(id) ? id : null;
+  const format = route === auditCommandRoutes.core ? /^[a-f0-9-]{36}$/i : /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i;
+  return typeof id === 'string' && format.test(id) ? id : null;
 }
 
 function paidRoute(path: string): Route | null {
@@ -142,9 +143,11 @@ export function auditHttpAttempts(sink: AuditAttemptSink, { gameSchema }: { game
       if (!gameAccountId(accountId)) return;
 
       try {
+        const operationId = pathId === undefined ? bodyOperationId(request.body, template) : pathId;
+        const intentFingerprint = operationId ? observeAuditIntent(template, accountId, operationId, request.body) : undefined;
         sink({
-          attemptId, occurredAtMs, accountId,
-          operationId: pathId === undefined ? bodyOperationId(request.body) : pathId,
+          attemptId, occurredAtMs, accountId, operationId,
+          ...(intentFingerprint ? { intentFingerprint } : {}),
           entity: null, transport: 'http', route: template, delivery,
           ...(observed ? { ...observed, response: 'formed' }
             : { decision: 'unknown', statusCode: null, response: 'not-observed', balance: { state: 'not-recorded' } }),

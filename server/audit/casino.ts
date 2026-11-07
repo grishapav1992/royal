@@ -1,4 +1,4 @@
-import type { PostgresDatabase } from '../database';
+import { identifier, type PostgresDatabase } from '../database';
 import { verifyGameRound } from '../games/core';
 import { validCaramelSettings } from '../../src/shared/caramelCarnival';
 import { validCaribbeanTransportSettings } from '../../src/shared/caribbeanTransport';
@@ -24,9 +24,11 @@ export type CasinoPostingResolution = {
   origin: 'command' | 'automatic' | 'unknown';
 };
 
+type CasinoDatabase = Pick<PostgresDatabase, 'prepare' | 'schema'>;
+
 type CasinoSourceTable = 'demo_ledger' | 'demo_operations' | 'demo_casino_requests' | 'demo_casino_sessions';
 
-function sourceRef(db: PostgresDatabase, table: CasinoSourceTable, rowId: string): AuditSourceRef {
+function sourceRef(db: CasinoDatabase, table: CasinoSourceTable, rowId: string): AuditSourceRef {
   return { namespace: db.schema + '.' + table, rowId };
 }
 
@@ -51,7 +53,7 @@ const normalExpansionModes = new Set([
   'studio-last-convoy', 'studio-meme-overload', 'studio-nitro-run', 'studio-wild-nudge',
 ]);
 
-function expansionMode(gameId: string, rulesVersion: unknown, settings: unknown): string | null {
+export function casinoExpansionMode(gameId: string, rulesVersion: unknown, settings: unknown): string | null {
   if (normalExpansionModes.has(gameId)) return 'normal';
   if (isLuelonSlotGame(gameId)) {
     return validLuelonSlotSettings(gameId, settings) ? settings.luelon.mode : null;
@@ -80,16 +82,17 @@ function entityRef(
 }
 
 /** Resolve a committed ledger row through the source keys, without running a wallet method or replaying an RNG. */
-export async function resolveCasinoPosting(db: PostgresDatabase, entry: CasinoPostingKey): Promise<CasinoPostingResolution | null> {
+export async function resolveCasinoPosting(db: CasinoDatabase, entry: CasinoPostingKey): Promise<CasinoPostingResolution | null> {
   if (!/^[1-9][0-9]{0,18}$/.test(entry.rowId) || BigInt(entry.rowId) > 9223372036854775807n) return null;
+  const schema = identifier(db.schema);
   const row = await db.prepare(`
     SELECT l.entry_type, o.result AS instant_result, r.session_id AS request_session_id,
       s.id AS session_id, s.payload AS session_payload
-    FROM demo_ledger l
-    LEFT JOIN demo_operations o ON o.account_id=l.account_id AND o.operation_id=l.operation_id
+    FROM ${schema}.demo_ledger l
+    LEFT JOIN ${schema}.demo_operations o ON o.account_id=l.account_id AND o.operation_id=l.operation_id
       AND o.kind IN ('play','spin')
-    LEFT JOIN demo_casino_requests r ON r.account_id=l.account_id AND r.id=l.operation_id
-    LEFT JOIN demo_casino_sessions s ON s.account_id=l.account_id
+    LEFT JOIN ${schema}.demo_casino_requests r ON r.account_id=l.account_id AND r.id=l.operation_id
+    LEFT JOIN ${schema}.demo_casino_sessions s ON s.account_id=l.account_id
       AND s.id=COALESCE(r.session_id,l.operation_id) AND s.game_id=l.source
     WHERE l.id=?::bigint AND l.account_id=? AND l.operation_id=? AND l.source=?
       AND l.entry_type IN ('bet','win','refund','rollback')
@@ -114,7 +117,7 @@ export async function resolveCasinoPosting(db: PostgresDatabase, entry: CasinoPo
   const version = session.rulesVersion;
   const rulesVersion = (isExpansionGame(entry.gameId) && validExpansionRulesVersion(entry.gameId, version))
     || (isSessionGame(entry.gameId) && version === 1) ? String(version) : null;
-  const mode = expansionMode(entry.gameId, version, session.settings);
+  const mode = casinoExpansionMode(entry.gameId, version, session.settings);
   const entity = entityRef(entry.gameId, mode, rulesVersion,
     sourceRef(db, 'demo_casino_sessions', operationKey(entry.accountId, row.session_id)));
   if (!entity) return null;
