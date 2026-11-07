@@ -1,5 +1,4 @@
-import { randomUUID } from 'node:crypto';
-import { once } from 'node:events';
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { mkdtemp, readFile, readdir, rm, stat } from 'node:fs/promises';
 import { Agent, request } from 'node:http';
@@ -9,10 +8,9 @@ import { createInterface } from 'node:readline';
 import { setTimeout as pause } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
-import express from 'express';
-import { startAuditAttemptRuntime } from '../server/audit/attempts';
+import { auditDemoLedgerSnapshot } from '../server/audit/attempts';
+import { isAuditRecord } from '../server/audit/contract';
 import { AuditDatasets } from '../server/audit/datasets';
-import { auditHttpAttempts } from '../server/audit/http-attempts';
 import { auditCommandRoutes } from '../server/audit/intents';
 import { verifyReplayPackage } from '../server/audit/replay-package';
 import { installAuditReportAccess } from '../server/audit/report-access';
@@ -28,6 +26,8 @@ import { databaseConfig, identifier, PostgresDatabase } from '../server/database
 import { DemoWalletStore } from '../server/demoWallet';
 import { verifyGameRound } from '../server/games/core';
 import { VirtualPvpLedger } from '../server/pvp/virtual-wallet';
+import { gameBetCents } from '../src/shared/gameStakes';
+import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
 import { auditMixedHistoryPeriod, auditReportMonthMs, matchesMixedHistoryTotals, mixedHistoryAccountCount, seedMixedAuditHistory,
   type MixedHistoryPosting } from './audit-load-mixed-history';
 import { MAX_RETAINED_AUDIT_HISTORY_ROWS, seedRetainedAuditHistory } from './audit-load-retained-history';
@@ -36,6 +36,7 @@ import { drainAuditLoadStandbyReport, findAuditLoadBlockedStandbyPage, grantAudi
   unlockAuditLoadStandbyPageBarrier } from './audit-load-standby';
 import { auditLoadMonotonicMs, startAuditLoadReportConsumer } from './audit-load-report-consumer';
 import { seedAuditLoadReplay } from './audit-load-replay-fixture';
+import { startAuditLoadWallet } from './audit-load-wallet';
 import { temporaryDatabase } from './database-test';
 
 type Budget = { stakeP95Ms?: number; settlementP95Ms?: number; readerStopMs?: number };
@@ -47,7 +48,8 @@ type Metric = 'stake' | 'settlement' | 'casinoRound' | 'retry';
 type Sample = { from: number; to: number; ok: boolean };
 type Leg = [account: string, operation: string, entry: string, units: string];
 type Pair = [string, string];
-type Capture = ReturnType<typeof startAuditAttemptRuntime>;
+type LoadPlayers = [left: string, right: string, casino: string];
+type CasinoBalance = { accountId: string; units: string; rowId: string };
 type PlayerInput = Parameters<typeof exportAuditPlayer>[1];
 type ReportLogin = Parameters<typeof exportAuditPlayer>[0];
 type Standby = Awaited<ReturnType<typeof startAuditLoadStandby>>;
@@ -100,7 +102,7 @@ export function assessAuditPilotGate(withoutReports: WorkloadMetrics, withReport
       baseline.completed === baseline.attempts && active.completed === active.attempts &&
       baseline.errors === 0 && active.errors === 0;
   });
-  const p95 = (['stake', 'settlement'] as const).map(metric => {
+  const p95 = (['stake', 'settlement', 'casinoRound'] as const).map(metric => {
     const controlMs = withoutReports[metric].p95Ms, reportMs = withReports[metric].p95Ms;
     const controlMicros = controlMs === null ? 0 : Math.round(controlMs * 1000);
     const reportMicros = reportMs === null ? 0 : Math.round(reportMs * 1000);
@@ -128,10 +130,11 @@ async function waitFor<T>(probe: () => Promise<T | undefined>, timeoutMs: number
   }
 }
 
-async function workload(game: PostgresDatabase, wallet: VirtualPvpLedger, baseUrl: string, agent: Agent, pairs: Pair[],
-  rounds: number, signal?: AbortSignal) {
+async function workload(game: PostgresDatabase, wallet: VirtualPvpLedger, baseUrl: string, agent: Agent,
+  tokens: ReadonlyMap<string, string>, workers: LoadPlayers[], rounds: number, signal?: AbortSignal) {
   const samples: Record<Metric, Sample[]> = { stake: [], settlement: [], casinoRound: [], retry: [] };
   const expected: Leg[] = [], matchIds: string[] = [];
+  const casinoBalances = new Map<string, CasinoBalance>();
   let expectedFees = 0, completedRounds = 0;
   const timed = async <T>(kind: Metric, work: () => Promise<T>) => {
     signal?.throwIfAborted();
@@ -142,9 +145,12 @@ async function workload(game: PostgresDatabase, wallet: VirtualPvpLedger, baseUr
   };
   const plinko = async (accountId: string, op: ReturnType<typeof playRequest>) => {
     const body = JSON.stringify(op);
+    const token = tokens.get(accountId);
+    if (!token) throw new Error('Fixture wallet session is missing');
     const response = await new Promise<string>((complete, reject) => {
       const call = request(baseUrl + auditCommandRoutes.core, { agent, method: 'POST', signal,
-        headers: { 'content-type': 'application/json', 'content-length': Buffer.byteLength(body), 'x-fixture-account': accountId } },
+        headers: { 'content-type': 'application/json', 'content-length': Buffer.byteLength(body),
+          cookie: 'royal_session=' + token, [WALLET_ACCOUNT_HEADER]: accountId } },
       reply => {
         reply.on('error', reject);
         if (reply.statusCode !== 200) {
@@ -163,51 +169,57 @@ async function workload(game: PostgresDatabase, wallet: VirtualPvpLedger, baseUr
       call.on('error', reject);
       call.end(body);
     });
-    const { gameRound } = JSON.parse(response) as { gameRound?: unknown };
-    if (!verifyGameRound(gameRound) || gameRound.stakeUnits !== '100') throw new Error('Fixture casino result is invalid');
-    return gameRound;
+    const { gameRound, wallet } = JSON.parse(response) as { gameRound?: unknown; wallet?: { balance?: unknown } };
+    const units = gameBetCents(wallet?.balance), snapshot = auditDemoLedgerSnapshot(game.schema, wallet);
+    if (!verifyGameRound(gameRound) || gameRound.gameId !== op.gameId || gameRound.stakeUnits !== '100' ||
+        units === undefined || snapshot === null) throw new Error('Fixture casino result or wallet snapshot is invalid');
+    return { gameRound, balance: { accountId, units: String(units), rowId: snapshot.rowId } };
+  };
+  const pvpRound = async (a: string, b: string, round: number) => {
+    const matchId = randomUUID();
+    matchIds.push(matchId);
+    const terms = { matchId, gameId: 'chess', stakeUnits: '1000000' };
+    for (const account of [a, b]) {
+      await timed('stake', () => wallet.pvpHold(account, terms));
+      expected.push([account, 'pvp:' + matchId + ':hold', 'bet', '-100']);
+    }
+    await timed('retry', async () => {
+      if (!(await wallet.pvpHold(a, terms)).replayed) throw new Error('Fixture hold replay was not recognized');
+    });
+    const winnerId = round % 2 ? a : null;
+    const settlement = { matchId, winnerId, reason: winnerId ? 'win' : 'draw' };
+    await timed('settlement', () => wallet.pvpFinish(a, settlement));
+    if (winnerId) {
+      expected.push([winnerId, 'pvp:' + matchId + ':final', 'win', '190']);
+      expectedFees += 10;
+    } else for (const account of [a, b]) expected.push([account, 'pvp:' + matchId + ':final', 'refund', '100']);
+    await timed('retry', async () => {
+      if (!(await wallet.pvpFinish(a, settlement)).replayed) throw new Error('Fixture settlement replay was not recognized');
+    });
+  };
+  const casinoRound = async (accountId: string) => {
+    const command = playRequest();
+    const outcome = await timed('casinoRound', () => plinko(accountId, command));
+    expected.push([accountId, command.id, 'bet', '-100'], [accountId, command.id, 'win', outcome.gameRound.payoutUnits]);
+    await timed('retry', async () => {
+      const repeated = await plinko(accountId, command);
+      if (JSON.stringify(repeated) !== JSON.stringify(outcome)) throw new Error('Fixture casino replay differs');
+    });
+    casinoBalances.set(command.id, outcome.balance);
   };
   const started = performance.now();
-  await Promise.all(pairs.map(async ([a, b]) => {
-    try {
-      for (let round = 0; round < rounds; round++) {
-        const matchId = randomUUID();
-        matchIds.push(matchId);
-        const terms = { matchId, gameId: 'chess', stakeUnits: '1000000' };
-        for (const account of [a, b]) {
-          await timed('stake', () => wallet.pvpHold(account, terms));
-          expected.push([account, 'pvp:' + matchId + ':hold', 'bet', '-100']);
-        }
-        await timed('retry', async () => {
-          if (!(await wallet.pvpHold(a, terms)).replayed) throw new Error('Fixture hold replay was not recognized');
-        });
-        const winnerId = round % 2 ? a : null;
-        const settlement = { matchId, winnerId, reason: winnerId ? 'win' : 'draw' };
-        await timed('settlement', () => wallet.pvpFinish(a, settlement));
-        if (winnerId) {
-          expected.push([winnerId, 'pvp:' + matchId + ':final', 'win', '190']);
-          expectedFees += 10;
-        } else for (const account of [a, b]) expected.push([account, 'pvp:' + matchId + ':final', 'refund', '100']);
-        await timed('retry', async () => {
-          if (!(await wallet.pvpFinish(a, settlement)).replayed) throw new Error('Fixture settlement replay was not recognized');
-        });
-        const command = playRequest();
-        const outcome = await timed('casinoRound', () => plinko(a, command));
-        expected.push([a, command.id, 'bet', '-100'], [a, command.id, 'win', outcome.payoutUnits]);
-        await timed('retry', async () => {
-          const repeated = await plinko(a, command);
-          if (JSON.stringify(repeated) !== JSON.stringify(outcome)) throw new Error('Fixture casino replay differs');
-        });
-        completedRounds++;
-      }
-    } catch {
-      // The failed step is counted by timed(). Stop that pair instead of inventing later settlements.
+  await Promise.all(workers.map(async ([a, b, casino]) => {
+    for (let round = 0; round < rounds; round++) {
+      // The failed step is counted by timed(). Wait for both lanes before stopping this worker.
+      const steps = await Promise.allSettled([pvpRound(a, b, round), casinoRound(casino)]);
+      if (steps.some(step => step.status === 'rejected')) return;
+      completedRounds++;
     }
   }));
   const elapsedMs = rounded(performance.now() - started);
   signal?.throwIfAborted();
-  const accounts = pairs.flat();
-  const actual = await game.prepare(`SELECT account_id,operation_id,entry_type,amount_units::text FROM demo_ledger
+  const accounts = workers.flat();
+  const actual = await game.prepare(`SELECT id::text,account_id,operation_id,entry_type,amount_units::text,balance_units::text FROM demo_ledger
     WHERE account_id=ANY(?::text[]) AND entry_type<>'deposit'`).all(accounts);
   const expectedKeys = expected.map(row => JSON.stringify(row)).sort();
   const actualKeys = actual.map(row => JSON.stringify([row.account_id, row.operation_id, row.entry_type, row.amount_units])).sort();
@@ -215,14 +227,40 @@ async function workload(game: PostgresDatabase, wallet: VirtualPvpLedger, baseUr
     FROM demo_wallets WHERE account_id=ANY(?::text[])`).all(accounts);
   const bank = await game.prepare(`SELECT count(*)::int AS n,COALESCE(sum(fee_units),0)::text AS fee,
     count(*) FILTER (WHERE state='open')::int AS open FROM virtual_pvp_banks WHERE match_id=ANY(?::text[])`).get(matchIds);
-  const noDoubleMoney = completedRounds === pairs.length * rounds &&
+  const casinoWallets = actual.filter(row => row.entry_type === 'win' && casinoBalances.has(row.operation_id));
+  const casinoBalancesVerified = casinoWallets.length === completedRounds && casinoWallets.every(row => {
+    const balance = casinoBalances.get(row.operation_id);
+    return balance?.accountId === row.account_id && balance.units === row.balance_units && balance.rowId === row.id;
+  });
+  const noDoubleMoney = completedRounds === workers.length * rounds && casinoBalancesVerified &&
     JSON.stringify(expectedKeys) === JSON.stringify(actualKeys) && balances.length === accounts.length &&
     balances.every(row => initialCents + expected.filter(leg => leg[0] === row.account_id)
       .reduce((sum, leg) => sum + BigInt(leg[3]), 0n) === BigInt(row.units)) &&
     bank?.n === completedRounds && bank.fee === String(expectedFees) && bank.open === 0;
   const metrics = { stake: stats(samples.stake), settlement: stats(samples.settlement),
     casinoRound: stats(samples.casinoRound), retry: stats(samples.retry) };
-  return { samples, metrics, elapsedMs, completedRounds, expectedPostings: expected.length, actualPostings: actual.length, noDoubleMoney };
+  return { samples, metrics, elapsedMs, completedRounds, expectedPostings: expected.length, actualPostings: actual.length,
+    noDoubleMoney, casinoBalances, casinoBalancesVerified };
+}
+
+async function verifyCasinoAttempts(audit: PostgresDatabase, datasetId: string, source: string,
+  expected: ReadonlyMap<string, CasinoBalance>) {
+  const rows = await audit.prepare("SELECT payload FROM audit_evidence WHERE dataset_id=? AND kind='attempt'").all(datasetId);
+  const seen = new Set<string>();
+  for (const { payload } of rows) {
+    if (!isAuditRecord(payload) || payload.type !== 'attempt' || !payload.operationId ||
+        payload.transport !== 'http' || payload.route !== auditCommandRoutes.core || payload.statusCode !== 200 ||
+        payload.response !== 'formed' || payload.delivery !== 'handed-off' ||
+        (payload.decision !== 'accepted' && payload.decision !== 'replayed')) return false;
+    const balance = expected.get(payload.operationId);
+    const key = payload.operationId + ':' + payload.decision;
+    if (!balance || seen.has(key) || payload.accountId !== balance.accountId || payload.balance.state !== 'value' ||
+        payload.balance.units !== balance.units || payload.balance.asset.code !== 'VIRTUAL_USD' ||
+        payload.balance.asset.contour !== 'virtual' || payload.balance.asset.scale !== 2 ||
+        payload.balance.snapshot?.namespace !== source || payload.balance.snapshot.rowId !== balance.rowId) return false;
+    seen.add(key);
+  }
+  return seen.size === expected.size * 2;
 }
 
 /** Fixture-only bulk history. Capture comes from the normal source trigger, not a seeded reference table. */
@@ -585,44 +623,38 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
   let directory: string | undefined, game: PostgresDatabase | undefined, audit: PostgresDatabase | undefined;
   let standby: Standby | undefined;
   let reportConsumer: Awaited<ReturnType<typeof startAuditLoadReportConsumer>> | undefined;
-  let runtime: Capture;
-  let server: ReturnType<express.Application['listen']> | undefined;
+  let walletHttp: Awaited<ReturnType<typeof startAuditLoadWallet>> | undefined;
   try {
     directory = await mkdtemp(join(tmpdir(), 'royal-audit-load-'));
     const config = databaseConfig({ ...cluster.env, PGPOOL_MAX: '8' });
     game = new PostgresDatabase('test_audit_load_game', { config });
     audit = new PostgresDatabase('test_audit_load', { config });
-    await game.exec('CREATE TABLE accounts(id text PRIMARY KEY)');
-    const makePairs = (): Pair[] => Array.from({ length: options.workers }, () => [randomUUID(), randomUUID()]);
-    const baselinePairs = makePairs(), activePairs = makePairs(), reportAccount = randomUUID();
-    const controlPairs = options.pilotGate ? makePairs() : [];
+    walletHttp = await startAuditLoadWallet(cluster.env, signal);
+    const makeWorkers = (): LoadPlayers[] => Array.from({ length: options.workers }, () => [randomUUID(), randomUUID(), randomUUID()]);
+    const baselineWorkers = makeWorkers(), activeWorkers = makeWorkers(), reportAccount = randomUUID();
+    const controlWorkers = options.pilotGate ? makeWorkers() : [];
     const replayPair: Pair | null = options.replayFirst ? [randomUUID(), randomUUID()] : null;
     const scaleAccounts = options.scaleHistory
       ? Array.from({ length: options.mixedHistory ? mixedHistoryAccountCount : 2 }, () => randomUUID()) : null;
-    const accounts = [...baselinePairs.flat(), ...activePairs.flat(), ...controlPairs.flat(), reportAccount,
+    const players = [...baselineWorkers.flat(), ...activeWorkers.flat(), ...controlWorkers.flat()];
+    const accounts = [...players, reportAccount,
       ...(scaleAccounts ?? []), ...(replayPair ?? [])];
     const wallet = new DemoWalletStore(game, () => 0), pvp = new VirtualPvpLedger(game, wallet);
     for (const accountId of accounts) {
-      await game.prepare('INSERT INTO accounts VALUES (?)').run(accountId);
+      await game.prepare('INSERT INTO accounts(id,email,name,password,created_at) VALUES (?,?,?,?,?)')
+        .run(accountId, accountId + '@example.invalid', 'Audit fixture', '', 0);
       await wallet.operate(accountId, { id: randomUUID(), kind: 'deposit', amount: Number(initialCents / 100n) });
     }
-    const app = express(), actors = new Set(accounts);
-    const observe = auditHttpAttempts(observation => runtime?.record(observation), { gameSchema: game.schema });
-    app.use(express.json({ limit: '4kb' }));
-    app.use((req, res, next) => runtime ? observe(req, res, next) : next());
-    app.post(auditCommandRoutes.core, async (req, res) => {
-      const account = req.get('x-fixture-account');
-      if (!account || !actors.has(account)) { res.sendStatus(403); return; }
-      res.locals.accountId = account;
-      try { res.json(await wallet.operate(account, req.body)); }
-      catch { res.sendStatus(409); }
-    });
-    server = app.listen(0, '127.0.0.1');
-    await once(server, 'listening');
-    const address = server.address();
-    if (!address || typeof address === 'string' || address.address !== '127.0.0.1') throw new Error('Expected isolated loopback HTTP');
-    const baseUrl = 'http://127.0.0.1:' + address.port;
-    const baseline = await workload(game, pvp, baseUrl, loopbackAgent, baselinePairs, options.roundsPerWorker, signal);
+    const tokens = new Map<string, string>();
+    for (const accountId of players) {
+      const token = randomBytes(32).toString('hex');
+      const hash = createHash('sha256').update(token).digest('hex');
+      await game.prepare('INSERT INTO sessions(hash,account_id,expires) VALUES (?,?,?)')
+        .run(hash, accountId, Date.now() + 60 * 60_000);
+      tokens.set(accountId, token);
+    }
+    const http = walletHttp;
+    const baseline = await workload(game, pvp, http.baseUrl, loopbackAgent, tokens, baselineWorkers, options.roundsPerWorker, signal);
     const sources = { game: game.schema };
     const { datasetId, startedAtMs, environment } = await new AuditDatasets(audit, sources).startTest();
     const group = 'audit_load_read', reader = 'audit_load_player', summaryReader = 'audit_load_summary';
@@ -669,12 +701,6 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     const initialStandby = standby ? await verifyStandby(standby, audit, signal) : null;
     let standbyBeforeControl = options.controlAfterReports ? null : initialStandby;
     reportConsumer = options.reportProcess ? await startAuditLoadReportConsumer(signal) : undefined;
-    const startRecorder = () => {
-      const capture = startAuditAttemptRuntime({ ...cluster.env,
-        ROYAL_AUDIT_SCHEMA: audit!.schema, ROYAL_AUDIT_TEST_DATASET_ID: datasetId }, game!.schema);
-      if (!capture) throw new Error('Isolated audit observer did not start');
-      return capture;
-    };
     let control: Awaited<ReturnType<typeof workload>> | null = null, controlActivity: Activity | null = null;
     let standbyControlActivity: Activity | null = null;
     let controlNodeCpu: NodeJS.CpuUsage | null = null;
@@ -683,10 +709,9 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       const beforeControl = await databaseActivity(audit!, game!);
       const standbyControl = standby ? await standbyActivity(standby) : null;
       const beforeControlCpu = process.cpuUsage();
-      runtime = startRecorder();
-      const measured = await workload(game!, pvp, baseUrl, loopbackAgent, controlPairs, options.roundsPerWorker, signal);
-      await runtime.close();
-      runtime = undefined;
+      await http.startCapture(datasetId);
+      const measured = await workload(game!, pvp, http.baseUrl, loopbackAgent, tokens, controlWorkers, options.roundsPerWorker, signal);
+      await http.stopCapture();
       controlNodeCpu = process.cpuUsage(beforeControlCpu);
       controlActivity = activityDelta(beforeControl, await databaseActivity(audit!, game!));
       if (standby && standbyControl) standbyControlActivity = activityDelta(standbyControl, await standbyActivity(standby));
@@ -696,7 +721,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     const beforeReports = options.pilotGate ? await databaseActivity(audit, game) : null;
     const standbyBeforeReports = standby ? await standbyActivity(standby) : null;
     const beforeReportsCpu = process.cpuUsage();
-    runtime = startRecorder();
+    await http.startCapture(datasetId);
     const period = { fromMs: widePeriod?.toMs ?? startedAtMs, toMs: Date.now() + 60_000 };
     // The narrow report uses seeded rows in both phase orders. Only the paired wallets vary during the run.
     const narrowFilters = options.pilotGate ? { ...period, accountId: reportAccount } : period;
@@ -763,14 +788,13 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       return { csv, summary, atLimit, wide, replay };
     };
     const [activeResult, reportsResult] = await Promise.allSettled([
-      workload(game, pvp, baseUrl, loopbackAgent, activePairs, options.roundsPerWorker, signal),
+      workload(game, pvp, http.baseUrl, loopbackAgent, tokens, activeWorkers, options.roundsPerWorker, signal),
       remainingReports(),
     ]);
     if (activeResult.status === 'rejected') throw activeResult.reason;
     if (reportsResult.status === 'rejected') throw reportsResult.reason;
     const { value: active } = activeResult, { value: { csv, summary, atLimit, wide, replay } } = reportsResult;
-    await runtime.close();
-    runtime = undefined;
+    await http.stopCapture();
     const reportsNodeCpu = process.cpuUsage(beforeReportsCpu);
     const reportActivity = beforeReports ? activityDelta(beforeReports, await databaseActivity(audit, game)) : null;
     const standbyReportActivity = standby && standbyBeforeReports ? activityDelta(standbyBeforeReports, await standbyActivity(standby)) : null;
@@ -821,20 +845,25 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       .get(datasetId))!.n;
     const overlap = (window: { from: number; to: number }, metric: Metric) =>
       active.samples[metric].filter(sample => sample.from < window.to && sample.to > window.from).length;
+    const reportOverlap = (window: { from: number; to: number }) => ({
+      overlappingStakeCalls: overlap(window, 'stake'),
+      overlappingSettlementCalls: overlap(window, 'settlement'),
+      overlappingCasinoCalls: overlap(window, 'casinoRound'),
+    });
     const replayReport = replay && replayFixture ? { events: replay.result.rowCount, fragments: replayFixture.fragments,
       bytes: replay.result.bytes, elapsedMs: rounded(replay.to - replay.from), engineVerified: replay.result.engineVerified,
-      verified: replayVerified, overlappingStakeCalls: overlap(replay, 'stake'), overlappingSettlementCalls: overlap(replay, 'settlement') } : null;
+      verified: replayVerified, ...reportOverlap(replay) } : null;
     const report = { player: { rows: csv.result.rowCount, bytes: csv.result.bytes, elapsedMs: rounded(csv.to - csv.from),
-      overlappingStakeCalls: overlap(csv, 'stake'), overlappingSettlementCalls: overlap(csv, 'settlement') },
+      ...reportOverlap(csv) },
     summary: { rows: summary.result.rows.length, scanned: summary.result.scanned, elapsedMs: rounded(summary.to - summary.from),
-      overlappingStakeCalls: overlap(summary, 'stake'), overlappingSettlementCalls: overlap(summary, 'settlement') },
+      ...reportOverlap(summary) },
     ...(replayReport && detail ? { replay: replayReport, detail } : {}),
     admission: { serialVerified, order: jobs.map(job => job.operator_name) } };
     let scale: { fixturePostings: number; capturedFixturePostings: number; reportTempFileLimit: string;
       csvAmountsAndBalancesMatch: boolean;
       mixedHistory?: Pick<Awaited<ReturnType<typeof seedMixedAuditHistory>>, 'accountCount' | 'timestampCount' | 'totals'>;
-      atLimit: { scanned: number; elapsedMs: number; exactTotal: boolean; overlappingStakeCalls: number; overlappingSettlementCalls: number };
-      overLimit: { outcome: string; journalRejected: boolean; elapsedMs: number; overlappingStakeCalls: number; overlappingSettlementCalls: number };
+      atLimit: { scanned: number; elapsedMs: number; exactTotal: boolean } & ReturnType<typeof reportOverlap>;
+      overLimit: { outcome: string; journalRejected: boolean; elapsedMs: number } & ReturnType<typeof reportOverlap>;
       ok: boolean } | null = null;
     if (widePeriod && atLimit && wide && scaleAccounts) {
       const fixturePostings = AUDIT_SUMMARY_SCAN_CAP + 1;
@@ -855,26 +884,29 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       scale = { fixturePostings, capturedFixturePostings: Number(captured?.n), reportTempFileLimit, csvAmountsAndBalancesMatch,
         ...(mixedHistory ? { mixedHistory: { accountCount: Number(captured?.account_count), timestampCount: Number(captured?.timestamp_count),
           totals: mixedHistory.totals } } : {}),
-        atLimit: { scanned: atLimit.result.scanned, elapsedMs: rounded(atLimit.to - atLimit.from), exactTotal,
-          overlappingStakeCalls: overlap(atLimit, 'stake'), overlappingSettlementCalls: overlap(atLimit, 'settlement') },
-        overLimit: { ...wide.result, elapsedMs: rounded(wide.to - wide.from), overlappingStakeCalls: overlap(wide, 'stake'),
-          overlappingSettlementCalls: overlap(wide, 'settlement') },
+        atLimit: { scanned: atLimit.result.scanned, elapsedMs: rounded(atLimit.to - atLimit.from), exactTotal, ...reportOverlap(atLimit) },
+        overLimit: { ...wide.result, elapsedMs: rounded(wide.to - wide.from), ...reportOverlap(wide) },
         ok: captured?.n === fixturePostings && distributionMatches && boundsMatch && csvAmountsAndBalancesMatch &&
           atLimit.result.scanned === AUDIT_SUMMARY_SCAN_CAP && exactTotal && wide.result.journalRejected };
     }
     const retainedHistory = retained && scaleAccounts && widePeriod
       ? await verifyRetainedAuditHistory(audit, game, datasetId, scaleAccounts[0], retained, widePeriod) : null;
     const expectedAttempts = options.workers * options.roundsPerWorker * 2 * (control ? 2 : 1);
+    const casinoBalances = new Map([...(control?.casinoBalances ?? []), ...active.casinoBalances]);
+    const casinoAttemptsVerified = active.casinoBalancesVerified && (control?.casinoBalancesVerified ?? true) &&
+      casinoBalances.size * 2 === expectedAttempts &&
+      await verifyCasinoAttempts(audit, datasetId, game.schema + '.demo_ledger', casinoBalances);
     const expectedPostings = active.expectedPostings + (control?.expectedPostings ?? 0) +
       options.seedRounds * 2 + (scale?.fixturePostings ?? 0) + (replayFixture?.postings ?? 0) + (retained?.rows ?? 0);
     const csvMatches = csv.result.rowCount === (scaleAccounts ? scalePlayerRows : options.seedRounds * 2) &&
       (await stat(reportInput.destination)).size === csv.result.bytes;
     const firstReport = options.replayFirst ? 'replay' : options.summaryFirst ? 'at-limit-summary' : 'player';
     const firstReportOverlap = options.replayFirst ? replayReport : options.summaryFirst ? scale?.atLimit : report.player;
+    const overlappingCasinoCalls = firstReportOverlap?.overlappingCasinoCalls ?? 0;
     const observedOverlap = !!firstReportOverlap && firstReportOverlap.overlappingStakeCalls > 0 &&
-      firstReportOverlap.overlappingSettlementCalls > 0;
+      firstReportOverlap.overlappingSettlementCalls > 0 && overlappingCasinoCalls > 0;
     const captureOk = stopped && records.postingRefs.rows === expectedPostings &&
-      records.attemptPayloads.rows === expectedAttempts && captureGaps === '0';
+      records.attemptPayloads.rows === expectedAttempts && captureGaps === '0' && casinoAttemptsVerified;
     const cancellationOk = cancellation.outcome === 'cancelled' && cancellation.noPartialOutput &&
       cancellation.readerStopped && cancellation.journalCancelled && (replayCancellation === null ||
         (replayCancellation.journalCancelled && replayCancellation.noPartialOutput)) && (activeCancellation === null ||
@@ -894,6 +926,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
         narrowSummaryMatches && (scale?.ok ?? true) && (retainedHistory?.ok ?? true) && (budget?.ok ?? true) &&
         (control?.noDoubleMoney ?? true) && replayVerified && (detail?.verified ?? true) && pilotPassed,
       runtime: { node: process.version, postgres, platform: process.platform, architecture: process.arch },
+      transport: { casino: 'authenticated-http', pvp: 'ledger' },
       workload: { workers: options.workers, roundsPerWorker: options.roundsPerWorker, seedRounds: options.seedRounds },
       ...(retainedHistory ? { retainedHistory } : {}),
       ...(scale ? { scale } : {}), ...(budget ? { budget: {
@@ -902,7 +935,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       ...(control && pilot ? {
         withAuditWithoutReports: { metrics: control.metrics, elapsedMs: control.elapsedMs,
           noDoubleMoney: control.noDoubleMoney, postings: control.actualPostings },
-        pilotGate: { ...pilot, ok: pilotPassed, firstReport, firstQueryObserved, observedOverlap,
+        pilotGate: { ...pilot, ok: pilotPassed, firstReport, firstQueryObserved, observedOverlap, overlappingCasinoCalls,
           phaseOrder: options.controlAfterReports ? ['with-reports', 'without-reports'] : ['without-reports', 'with-reports'],
           databaseActivity: { withoutReports: controlActivity, withReports: reportActivity } },
       } : {}),
@@ -915,23 +948,18 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       } } : {}),
       baseline: { metrics: baseline.metrics, elapsedMs: baseline.elapsedMs, noDoubleMoney: baseline.noDoubleMoney, postings: baseline.actualPostings },
       withAudit: { metrics: active.metrics, elapsedMs: active.elapsedMs, noDoubleMoney: active.noDoubleMoney, postings: active.actualPostings },
-      reports: report, cancellation, capture: { stopped, expectedAttempts, expectedPostings, gaps: Number(captureGaps), ...records },
+      reports: report, cancellation, capture: { stopped, expectedAttempts, expectedPostings, gaps: Number(captureGaps),
+        casinoAttemptsVerified, ...records },
       disk: { before, after, growth: { databaseBytes: after.databaseBytes - before.databaseBytes,
         gameLedgerBytes: after.gameLedgerBytes - before.gameLedgerBytes, auditRelationsBytes: after.auditRelationsBytes - before.auditRelationsBytes } } };
   } finally {
+    loopbackAgent.destroy();
     try {
-      await Promise.allSettled([runtime?.close(), reportConsumer?.close()]).then(outcomes => {
+      await Promise.allSettled([walletHttp?.close(), reportConsumer?.close()]).then(outcomes => {
         const failed = outcomes.find(outcome => outcome.status === 'rejected');
         if (failed?.status === 'rejected') throw failed.reason;
       });
     } finally {
-      loopbackAgent.destroy();
-      if (server) {
-        await new Promise<void>(resolveClose => {
-          server!.close(() => resolveClose());
-          server!.closeAllConnections();
-        });
-      }
       try { await Promise.all([game?.close(), audit?.close()]); }
       finally {
         try {

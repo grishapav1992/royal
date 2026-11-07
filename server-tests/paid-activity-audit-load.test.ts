@@ -7,6 +7,7 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { assessAuditPilotGate } from '../scripts/audit-load';
+import { startAuditLoadWallet } from '../scripts/audit-load-wallet';
 
 const script = fileURLToPath(new URL('../scripts/audit-load.ts', import.meta.url));
 const run = (args: string[], env = process.env, execArgs: string[] = []) => promisify(execFile)(
@@ -27,6 +28,7 @@ test('audit load measures both wallet phases, preserves money and stops cancelle
   assert.equal(report.schemaVersion, 1);
   assert.equal(report.environment, 'isolated-local-postgresql');
   assert.equal(report.capacityConfirmed, false);
+  assert.deepEqual(report.transport, { casino: 'authenticated-http', pvp: 'ledger' });
   assert.equal(report.ok, true);
   assert.equal(report.scale, undefined);
   assert.equal(report.budget, undefined);
@@ -60,6 +62,7 @@ test('audit load measures both wallet phases, preserves money and stops cancelle
   assert.equal(report.capture.gaps, 0);
   assert.equal(report.capture.expectedAttempts, 12);
   assert.equal(report.capture.attemptPayloads.rows, 12);
+  assert.equal(report.capture.casinoAttemptsVerified, true);
   assert.equal(report.capture.expectedPostings, 114);
   assert.equal(report.capture.postingRefs.rows, 114);
   assert(report.capture.attemptPayloads.averageBytes > 0);
@@ -80,6 +83,18 @@ test('audit load rejects an oversized workload before provisioning', async () =>
     const failure = error as { code?: number; stderr?: string };
     return failure.code === 1 && JSON.parse(failure.stderr ?? '{}').message === 'The reversed control phase requires --pilot-gate';
   });
+});
+
+test('audit load wallet rejects an external database host or URL before starting the child', async () => {
+  const fixtureEnv = { NODE_ENV: 'test', PGHOST: '127.0.0.1', PGPORT: '5432', PGDATABASE: 'royal_test',
+    PGUSER: 'postgres', PGPASSWORD: '0'.repeat(64), PGSSLMODE: 'disable' };
+  for (const override of [
+    { PGHOST: 'production-db.example.invalid' },
+    { DATABASE_URL: 'postgresql://reviewer@production-db.example.invalid/royal' },
+  ]) {
+    await assert.rejects(startAuditLoadWallet({ ...fixtureEnv, ...override }),
+      { message: 'Expected credentials for the disposable audit wallet database' });
+  }
 });
 
 test('retained history requires the mixed pilot and a bounded row count', async () => {
@@ -164,17 +179,22 @@ test('audit load rejects an invalid budget before provisioning', async () => {
 test('pilot comparison accepts the exact 10 percent boundary and rejects p95 growth or incomplete wallet work', () => {
   const metric = (p95Ms: number, completed = 8) => ({ p95Ms, attempts: 8, completed, errors: 8 - completed });
   const control = { stake: metric(10), settlement: metric(7), casinoRound: metric(20), retry: metric(8) };
-  const within = { ...control, stake: metric(11), settlement: metric(7.7) };
+  const within = { ...control, stake: metric(11), settlement: metric(7.7), casinoRound: metric(22) };
   const pass = assessAuditPilotGate(control, within);
   assert.equal(pass.ok, true);
   assert.equal(pass.noWalletErrorsOrTimeouts, true);
   assert.deepEqual(pass.p95.map(check => [check.metric, check.growthPercent, check.passed]),
-    [['stake', 10, true], ['settlement', 10, true]]);
+    [['stake', 10, true], ['settlement', 10, true], ['casinoRound', 10, true]]);
 
   const slow = assessAuditPilotGate(control, { ...within, settlement: metric(7.701) });
   assert.equal(slow.ok, false);
   assert.equal(slow.noWalletErrorsOrTimeouts, true);
   assert.equal(slow.p95[1].passed, false);
+  const slowCasino = assessAuditPilotGate(control, { ...within, casinoRound: metric(22.001) });
+  assert.equal(slowCasino.ok, false);
+  assert.equal(slowCasino.noWalletErrorsOrTimeouts, true);
+  assert.deepEqual(slowCasino.p95.map(check => [check.metric, check.passed]),
+    [['stake', true], ['settlement', true], ['casinoRound', false]]);
   const failed = assessAuditPilotGate(control, { ...within, retry: metric(8, 7) });
   assert.equal(failed.ok, false);
   assert.equal(failed.noWalletErrorsOrTimeouts, false);
@@ -195,6 +215,7 @@ test('summary-first pilot starts wallets against the observed boundary query and
   assert.equal(report.reportProcess.requests, 4);
   assert(report.reportProcess.userCpuMicros > 0);
   assert.equal(report.pilotGate.firstQueryObserved, true);
+  assert(report.pilotGate.overlappingCasinoCalls > 0);
   assert(report.scale.atLimit.overlappingStakeCalls > 0);
   assert.equal(report.scale.atLimit.exactTotal, true);
   assert.deepEqual(report.reports.admission, { serialVerified: true,
@@ -310,15 +331,20 @@ for (const reverse of [false, true]) test(`pilot gate uses equal fixtures with t
   assert.equal(report.withAuditWithoutReports.postings, 34);
   assert.equal(report.withAudit.postings, 34);
   assert.equal(report.capture.postingRefs.rows, 20_149);
+  assert.equal(report.capture.expectedAttempts, 24);
   assert.equal(report.capture.attemptPayloads.rows, 24);
+  assert.equal(report.capture.casinoAttemptsVerified, true);
   assert.equal(report.capture.gaps, 0);
   const expected = assessAuditPilotGate(report.withAuditWithoutReports.metrics, report.withAudit.metrics);
-  const { databaseActivity, firstReport, firstQueryObserved, observedOverlap, phaseOrder, ...gate } = report.pilotGate;
+  const { databaseActivity, firstReport, firstQueryObserved, observedOverlap, overlappingCasinoCalls, phaseOrder,
+    ...gate } = report.pilotGate;
   assert.equal(firstReport, 'player');
   assert.equal(firstQueryObserved, true);
   assert.equal(observedOverlap, true);
+  assert(overlappingCasinoCalls > 0);
   assert.deepEqual(phaseOrder, reverse ? ['with-reports', 'without-reports'] : ['without-reports', 'with-reports']);
   assert.deepEqual(gate, expected);
+  assert.deepEqual(gate.p95.map(({ metric }: { metric: string }) => metric), ['stake', 'settlement', 'casinoRound']);
   assert.equal(gate.noWalletErrorsOrTimeouts, true);
   assert.equal(report.ok, expected.ok);
   assert.equal(result.exitCode, expected.ok ? 0 : 1);
@@ -373,6 +399,7 @@ for (const standby of [false, true]) test(
   assert.equal(report.capacityConfirmed, false);
   assert.equal(report.pilotGate.firstReport, 'replay');
   assert.equal(report.pilotGate.firstQueryObserved, true);
+  assert(report.pilotGate.overlappingCasinoCalls > 0);
   assert.deepEqual(report.pilotGate.phaseOrder, standby ? ['with-reports', 'without-reports'] : ['without-reports', 'with-reports']);
   assert.equal(report.pilotGate.noWalletErrorsOrTimeouts, true);
   assert.equal(report.pilotGate.maxP95GrowthPercent, 10);

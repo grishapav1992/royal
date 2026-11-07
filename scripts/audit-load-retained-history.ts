@@ -31,8 +31,10 @@ export async function seedRetainedAuditHistory(game: PostgresDatabase, input: {
     const player = await game.prepare(`SELECT (balance::bigint*100+fraction_units)::text AS units
       FROM demo_wallets WHERE account_id=? FOR UPDATE`).get(playerAccount);
     if (player?.units !== String(playerOpeningUnits)) throw new Error('Unexpected retained fixture opening balance');
-    await game.prepare(`INSERT INTO accounts(id) SELECT ${syntheticAccount}
-      FROM generate_series(2,?::integer) AS history_accounts(account_number)`).run(accounts);
+    await game.prepare(`INSERT INTO accounts(id,email,name,password,created_at)
+      SELECT id,id || '@example.invalid','Audit history','',0
+      FROM (SELECT ${syntheticAccount} AS id
+        FROM generate_series(2,?::integer) AS history_accounts(account_number)) accounts`).run(accounts);
     await game.prepare(`INSERT INTO demo_wallets(account_id) SELECT ${syntheticAccount}
       FROM generate_series(2,?::integer) AS history_accounts(account_number)`).run(accounts);
   });
