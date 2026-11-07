@@ -5,6 +5,7 @@ import { applySchemaMigration } from '../database-migrations';
 import { AuditEvidence } from './evidence';
 import { chessReplayWriter } from './replay-chess-storage';
 import { combatReplayWriter } from './replay-pvp-realtime';
+import { toteAdmissionWriter } from './tote-admission';
 
 export type AuditAttemptObservation = Omit<AuditAttempt, 'schemaVersion' | 'scope' | 'type'>;
 export type AuditAttemptSink = (observation: AuditAttemptObservation) => void;
@@ -121,6 +122,7 @@ export function startAuditAttemptRuntime(env: NodeJS.ProcessEnv = process.env, g
   const scope: AuditScope = { datasetId, environment: 'test' };
   const chess = env.ROYAL_AUDIT_CHESS_REPLAY === '1' && gameSchema ? chessReplayWriter(db, scope, gameSchema) : undefined;
   const combat = env.ROYAL_AUDIT_COMBAT_REPLAY === '1' && gameSchema ? combatReplayWriter(db, scope, gameSchema) : undefined;
+  const tote = env.ROYAL_AUDIT_TOTE_ADMISSION === '1' && gameSchema ? toteAdmissionWriter(db, scope, gameSchema) : undefined;
   const evidence = new AuditEvidence(db, schema);
   const writer: CaptureWriter = {
     record: attempt => evidence.record(attempt),
@@ -137,8 +139,9 @@ export function startAuditAttemptRuntime(env: NodeJS.ProcessEnv = process.env, g
     record: recorder.record,
     recordChess: chess?.record,
     recordCombat: combat?.record,
+    recordToteAdmission: tote?.record,
     async close() {
-      await Promise.all([recorder.stop(), chess?.stop(), combat?.stop()]);
+      await Promise.all([recorder.stop(), chess?.stop(), combat?.stop(), tote?.stop()]);
       await db.close();
     },
   };

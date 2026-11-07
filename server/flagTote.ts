@@ -3,8 +3,10 @@ import type { PostgresDatabase } from './database';
 import { WalletError } from './demoWallet';
 import { demoBalanceUnits, demoReservedUnits, saveDemoUnits, recordDemoUnits, MAX_DEMO_UNITS } from './demoWalletAmounts';
 import { FLAG_COUNTRIES, type FlagCountry } from '../src/shared/flagBattle';
-import { TOTE_LIMITS, TOTE_TIMING, settleFlagTote, toteEligible, validToteBet, type ToteMathTicket, type ToteRound, type ToteReply, type ToteSettlement } from '../src/shared/flagTote';
+import { TOTE_LIMITS, TOTE_TIMING, settleFlagTote, toteEligible, validToteBet, type ToteBet, type ToteMathTicket, type ToteRound, type ToteReply, type ToteSettlement } from '../src/shared/flagTote';
 import type { DemoWallet } from '../src/shared/demoWallet';
+
+export type FlagToteAdmission = ToteBet & { accountId: string; admittedAtMs: number };
 
 export function drawToteOrder(draw: (max: number) => number = randomInt) {
   const take = (max: number) => { const n = draw(max); if (!Number.isSafeInteger(n) || n < 0 || n >= max) throw Error('Invalid pool entropy'); return n; };
@@ -14,7 +16,9 @@ export function drawToteOrder(draw: (max: number) => number = randomInt) {
 }
 export class FlagToteStore {
   readonly ready: Promise<void>;
+  private admissionObserver?: (admission: FlagToteAdmission) => void;
   constructor(private db: PostgresDatabase, private wallet: (id: string) => Promise<DemoWallet>, prerequisite: Promise<void>, private now: () => number = Date.now, private draw: (max: number) => number = randomInt) { this.ready = prerequisite; }
+  setAdmissionObserver(observer?: (admission: FlagToteAdmission) => void) { this.admissionObserver = observer; }
   async hasAcceptedOperation(account:string,id:unknown){await this.ready;return typeof id==='string'&&!!await this.db.prepare('SELECT 1 FROM flag_tote_tickets WHERE account_id=? AND id=?').get(account,id);}
   private async accountLocks(ids: string[]) {
     for (const id of [...new Set(ids)].sort()) await this.db.prepare('SELECT pg_advisory_xact_lock(hashtextextended(?,0))').get(this.db.schema + ':key:account:' + id);
@@ -78,8 +82,10 @@ export class FlagToteStore {
   }
   async bet(accountId: string, value: unknown): Promise<ToteReply> {
     if (!validToteBet(value)) throw new WalletError(400, 'Некорректная ставка тотализатора.');
+    const observe = this.db.inTransaction ? undefined : this.admissionObserver;
+    let admission: FlagToteAdmission | undefined;
     await this.advance();
-    return this.db.transaction(async () => {
+    const reply = await this.db.transaction(async () => {
       const previous = await this.db.prepare('SELECT * FROM flag_tote_tickets WHERE id=?').get(value.id);
       await this.accountLocks([accountId]);
       if (previous) {
@@ -87,7 +93,9 @@ export class FlagToteStore {
         return { ...await this.snapshotInTransaction(accountId), replayed: true };
       }
       const round = await this.db.prepare('SELECT * FROM flag_tote_rounds WHERE id=?').get(value.roundId);
-      if (!round || Number(round.rules_version) !== value.rulesVersion || round.state !== 'open' || this.now() >= Number(round.closes_at) || this.now() < Number(round.opened_at)) throw new WalletError(409, 'Ставки на этот раунд закрыты. Обнови раунд.');
+      if (!round || Number(round.rules_version) !== value.rulesVersion || round.state !== 'open') throw new WalletError(409, 'Ставки на этот раунд закрыты. Обнови раунд.');
+      const admittedAtMs = this.now();
+      if (admittedAtMs >= Number(round.closes_at) || admittedAtMs < Number(round.opened_at)) throw new WalletError(409, 'Ставки на этот раунд закрыты. Обнови раунд.');
       const counts = await this.db.prepare('SELECT count(*) AS tickets,coalesce(sum(stake_units),0) AS pot,coalesce(sum(CASE WHEN account_id=? THEN stake_units ELSE 0 END),0) AS mine FROM flag_tote_tickets WHERE round_id=?').get(accountId, value.roundId);
       const stake = Number(value.stakeUnits);
       if (Number(counts!.tickets) >= TOTE_LIMITS.maxTickets || Number(counts!.pot) + stake > TOTE_LIMITS.maxBank || Number(counts!.mine) + stake > TOTE_LIMITS.maxAccount) throw new WalletError(409, 'Достигнут лимит ставок этого раунда.');
@@ -99,7 +107,12 @@ export class FlagToteStore {
       await this.db.prepare('INSERT INTO flag_tote_tickets(round_id,sequence,account_id,id,country,stake_units) VALUES(?,?,?,?,?,?)').run(value.roundId, Number(counts!.tickets) + 1, accountId, value.id, value.country, stake);
       await saveDemoUnits(this.db, accountId, balance - stake);
       await recordDemoUnits(this.db, accountId, 'flag-tote:' + value.id, 'bet', -stake, balance - stake, 'flag-tote', 'Флаговый тотализатор');
+      if (observe) admission = { ...value, accountId, admittedAtMs };
       return { ...await this.snapshotInTransaction(accountId), replayed: false };
     }, { lockKey: 'flag-tote' });
+    if (admission) {
+      try { observe?.(admission); } catch { /* The committed ticket remains accepted if audit observation fails. */ }
+    }
+    return reply;
   }
 }

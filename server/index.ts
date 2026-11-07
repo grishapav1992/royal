@@ -27,6 +27,7 @@ const auditAttempts = startAuditAttemptRuntime(process.env, accounts.schema);
 configureLobbyAuditAttempts(auditAttempts?.record);
 configureLobbyChessReplay(auditAttempts?.recordChess);
 configureLobbyCombatReplay(auditAttempts?.recordCombat);
+accounts.wallet.tote.setAdmissionObserver(auditAttempts?.recordToteAdmission);
 let stopTote: (() => void) | undefined;
 let stopCrypto: (() => void) | undefined;
 let stopSandbox: (() => void) | undefined;

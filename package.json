@@ -92,6 +92,7 @@
     "test:progression:ui": "playwright test --config=playwright.progression.config.ts",
     "progression:report": "node --env-file-if-exists=.env --import tsx scripts/progression-report.ts",
     "audit": "node --import tsx scripts/audit.ts",
+    "audit:risk": "node --import tsx scripts/audit-risk.ts",
     "audit:viewer": "node scripts/build-audit-viewer.mjs",
     "test:game-stakes": "node --import tsx scripts/database-test.ts --import tsx --test --test-concurrency=1 server-tests/game-stakes.test.ts server-tests/round-precision.test.ts server-tests/game-stakes-http.test.ts"
   },
