@@ -79,9 +79,11 @@ test('roof has a safe complete walking loop, solid equipment and guarded edges',
 
 test('roof connects the rear street stairs and discreet restroom window with safe arrivals', () => {
   assert.deepEqual(hallLinks('roof').map(link => link.target), ['street','toilet']);
-  assert.equal(hallLinkAt({ hall: 'street', ...STREET_ROOF_STAIRS.entry })?.target, 'roof');
-  assert.equal(hallLinkAt({ hall: 'roof', ...ROOF_STAIRS.entry })?.target, 'street');
-  for (const hall of ['street', 'roof'] as const) for (const link of hallLinks(hall)) {
+  for (const hall of ['street', 'roof', 'toilet', 'github'] as const) for (const link of hallLinks(hall)) {
+    assert.equal(hallLinkAt({ hall, ...link.door.entry })?.target, link.target);
+    const reverse = hallLinks(link.target).find(candidate => candidate.target === hall);
+    assert.deepEqual(reverse?.door, link.arrival);
+    assert.deepEqual(reverse?.arrival, link.door);
     assert(walkable(link.arrival.arrival.x, link.arrival.arrival.y, hallObstacles(link.target), 16));
     assert(!hallLinkAt({ hall: link.target, ...link.arrival.arrival }));
   }
@@ -93,7 +95,8 @@ test('roof connects the rear street stairs and discreet restroom window with saf
       const link = hallLinkToward(here, target); assert(link); here = link.target;
     }
   }
-  assert.equal(hallLinkToward('github', 'roof')?.target, 'tables');
+  assert.equal(hallLinkToward('github', 'roof')?.target, 'toilet');
+  assert.equal(hallLinkToward('roof', 'github')?.target, 'toilet');
   assert.equal(hallLinkToward('arcade', 'roof')?.target, 'street');
   assert.equal(hallLinkAt({ hall: 'street', x: 1660, y: 360 }), undefined, 'rear circulation lane does not trigger the stairs');
 });

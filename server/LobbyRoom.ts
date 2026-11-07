@@ -40,7 +40,7 @@ import { STREET } from '../src/shared/street';
 type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatRevision: number; inputs: MovementInputs; predicted: boolean; afterMovement?: () => void };
 const CHAT_REQUEST_ID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 type ProfileRevision = { name: number; skin: number; appearance: number };
-type Access = { active: boolean; banUntil: number; drinking: DrinkingState; revision: number; profileRevision: ProfileRevision; pendingDrink: boolean; pendingEject: boolean;
+type Access = { active: boolean; drinking: DrinkingState; revision: number; profileRevision: ProfileRevision; pendingDrink: boolean; pendingEject: boolean;
   sanction?: ClubSanction | null; capture?: ClubCaptureDecision; resumeHall?: string };
 const pendingDrinks = new Set<string>();
 const pendingChatDiscipline = new Set<string>();
@@ -508,8 +508,6 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     if (!allowedOrigin(context.headers.get('origin') || undefined)) throw new ServerError(403, 'Недопустимый источник подключения.');
     const auth = await accounts.session(cookieToken(context.headers.get('cookie') || undefined));
     if (!auth) throw new ServerError(401, 'Сначала войди по почте и паролю.');
-    const until = await accounts.moderation.banUntil(auth.account.id);
-    if (until) throw new ServerError(403, 'Охрана закрыла вход за нарушение правил клуба. Осталось '+Math.ceil((until-Date.now())/60000)+' мин.');
     if (auth.account.skin === null) throw new ServerError(400, 'Сначала выбери персонажа.');
     return auth;
   }
@@ -518,17 +516,15 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     // Dropped clients leave this.clients before their reserved player is removed.
     if (this.joiningAccounts.has(auth.account.id) || [...this.playerAccounts.values()].includes(auth.account.id)) throw duplicate();
     this.joiningAccounts.add(auth.account.id);
-    const access: Access = { active: true, banUntil: 0, drinking: { soberAt: 0, lastDrink: '', lastDrinkAt: 0 }, revision: 0, profileRevision: { name: 0, skin: 0, appearance: 0 }, pendingDrink: false, pendingEject: false };
+    const access: Access = { active: true, drinking: { soberAt: 0, lastDrink: '', lastDrinkAt: 0 }, revision: 0, profileRevision: { name: 0, skin: 0, appearance: 0 }, pendingDrink: false, pendingEject: false };
     this.access.set(client.sessionId, access);
     try {
       const revision = access.revision, profileRevision = { ...access.profileRevision };
-      const [active, until, drinking, profile, sanction] = await Promise.all([
-        accounts.active(auth.hash), accounts.moderation.banUntil(auth.account.id), accounts.drinking.read(auth.account.id), accounts.currentAccount(auth.account.id),
+      const [active, drinking, profile, sanction] = await Promise.all([
+        accounts.active(auth.hash), accounts.drinking.read(auth.account.id), accounts.currentAccount(auth.account.id),
         accounts.clubSanctions.active(auth.account.id),
       ]);
       if (this.disposed || this.access.get(client.sessionId) !== access || !active || !access.active) throw new ServerError(401, 'Войди в аккаунт ещё раз.');
-      access.banUntil = Math.max(until, access.banUntil);
-      if (access.banUntil > Date.now()) throw new ServerError(403, 'Вход временно закрыт охраной.');
       if (revision === access.revision) { access.drinking = drinking; access.sanction = sanction; }
       this.applyProfile(auth, access, profile, profileRevision);
       if (auth.account.skin === null) throw new ServerError(401, 'Выбери персонажа и войди в зал ещё раз.');
@@ -538,11 +534,11 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
         accounts.progression.publicLevel(auth.account.id).catch(() => { console.error('Room progression level lookup failed'); return 0; }),
       ]);
       if (this.disposed || this.access.get(client.sessionId) !== access || !access.active) throw new ServerError(401, 'Войди в аккаунт ещё раз.');
-      if (access.banUntil > Date.now()) throw new ServerError(403, 'Вход временно закрыт охраной.');
       if (activeOthers.some(Boolean)) throw duplicate();
       const p = new Player(); p.name = auth.account.name; p.soberAt = access.drinking.soberAt; p.level = level;
       const index = this.nextSpawn++;
       p.x = 420 + index % 8 * 40; p.y = 570 + Math.floor(index % 24 / 8) * 25; p.skin = auth.account.skin!; p.appearance = serializeAppearance(auth.account.appearance);
+      if (access.sanction && access.sanction.until > Date.now()) Object.assign(p, STREET.spawn, { hall: 'street' });
       this.playerAccounts.set(client.sessionId, auth.account.id);
       this.state.players.set(client.sessionId, p);
       this.controls.set(client.sessionId, { dx: 0, dy: 0, at: 0, path: [], lastTarget: 0, chatRevision: 0, inputs: new MovementInputs(), predicted: false });
@@ -582,13 +578,11 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     const auth = client.auth as RoomAuth;
     try {
       const revision = access.revision, profileRevision = { ...access.profileRevision };
-      const [active, until, drinking, profile, sanction] = await Promise.all([
-        accounts.active(auth.hash), accounts.moderation.banUntil(auth.account.id), accounts.drinking.read(auth.account.id), accounts.currentAccount(auth.account.id),
+      const [active, drinking, profile, sanction] = await Promise.all([
+        accounts.active(auth.hash), accounts.drinking.read(auth.account.id), accounts.currentAccount(auth.account.id),
         accounts.clubSanctions.active(auth.account.id),
       ]);
       if (this.disposed || this.access.get(client.sessionId) !== access || this.state.players.get(client.sessionId) !== p || !active || !access.active) { client.leave(4001); return; }
-      access.banUntil = Math.max(until, access.banUntil);
-      if (access.banUntil > Date.now()) { client.leave(4003); return; }
       if (revision === access.revision) { access.drinking = drinking; p.soberAt = drinking.soberAt; access.sanction = sanction; }
       this.applyProfile(auth, access, profile, profileRevision);
       if (auth.account.skin === null) { client.leave(4001); return; }
@@ -632,8 +626,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     if (control && account) chatQueue.cancel(account, control);
   }
   private accessAllowed(client: Client) {
-    const access = this.access.get(client.sessionId);
-    return !!access?.active && access.banUntil <= Date.now();
+    return this.access.get(client.sessionId)?.active === true;
   }
   private currentAction(client: Client, player: Player, control: Control, chatRevision: number, hallRevision: number) {
     return !this.disposed && this.state.players.get(client.sessionId) === player && this.controls.get(client.sessionId) === control
@@ -677,11 +670,11 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
         const access = this.access.get(client.sessionId), player = this.state.players.get(client.sessionId);
         if (!access || !player) return;
         const revision = access.revision, auth = client.auth as RoomAuth;
-        const [active, until, drinking, sanction] = await Promise.all([accounts.active(auth.hash), accounts.moderation.banUntil(auth.account.id),
+        const [active, drinking, sanction] = await Promise.all([accounts.active(auth.hash),
           accounts.drinking.read(auth.account.id), accounts.clubSanctions.active(auth.account.id)]);
         if (this.disposed || this.access.get(client.sessionId) !== access || this.state.players.get(client.sessionId) !== player || access.revision !== revision) return;
-        access.active = active; access.banUntil = until; access.drinking = drinking; access.sanction = sanction; player.soberAt = drinking.soberAt;
-        if (!active || until > Date.now()) { player.connected = false; this.releaseCabinet(client.sessionId); this.stop(client.sessionId); client.leave(active ? 4003 : 4001); }
+        access.active = active; access.drinking = drinking; access.sanction = sanction; player.soberAt = drinking.soberAt;
+        if (!active) { player.connected = false; this.releaseCabinet(client.sessionId); this.stop(client.sessionId); client.leave(4001); }
       }));
     } finally { this.refreshingAccess = false; }
   }

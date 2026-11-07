@@ -66,7 +66,10 @@ async function host(page: Page) {
       let drop, reconnect, leave;
       const room = {
         roomId: 'chat-fixture-room', sessionId: 'chat-fixture-self', reconnection: {},
-        send(type, value) { packets.push({type,value}); },
+        send(type, value) {
+          packets.push({type,value});
+          if (type === 'history') handlers.get('history')?.([]);
+        },
         onMessage(type, callback) { handlers.set(type, callback); }, onStateChange() {}, onError() {},
         onDrop(callback) { drop = callback; }, onReconnect(callback) { reconnect = callback; },
         onLeave(callback) { leave = callback; }, leave() { leave(1000); },

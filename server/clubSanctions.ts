@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { PostgresDatabase } from './database';
+import { applySchemaMigration } from './database-migrations';
 import type { ClubSanction, ClubViolation } from '../src/shared/security';
 
 const INITIAL_DURATION_MS = 20 * 60 * 1000;
@@ -18,7 +19,8 @@ export class ClubSanctionStore {
   readonly ready: Promise<void>;
 
   constructor(private db: PostgresDatabase, prerequisite: Promise<void> = Promise.resolve()) {
-    this.ready = prerequisite.then(() => db.transaction(async () => db.exec(`
+    this.ready = prerequisite.then(async () => {
+      await db.transaction(async () => db.exec(`
       CREATE TABLE IF NOT EXISTS club_sanctions (
         account_id TEXT PRIMARY KEY REFERENCES accounts(id) ON DELETE CASCADE,
         episode_id TEXT NOT NULL,
@@ -35,7 +37,18 @@ export class ClubSanctionStore {
         outcome JSONB NOT NULL,
         PRIMARY KEY (account_id, kind, event_id)
       );
-    `)));
+      `));
+      if (!await db.hasTable('chat_conduct_discipline')) return;
+      await applySchemaMigration(db, {
+        id: 'game-club-legacy-marks-v1',
+        statements: [`INSERT INTO club_sanctions
+          (account_id, episode_id, initial_pursuit_id, expires_at, amount_cents, revision)
+          SELECT account_id, gen_random_uuid()::text, NULL, banned_until, 0, 1
+          FROM chat_conduct_discipline
+          WHERE banned_until > EXTRACT(EPOCH FROM statement_timestamp()) * 1000
+          ON CONFLICT (account_id) DO NOTHING`],
+      });
+    });
   }
 
   async active(accountId: string, now = Date.now()): Promise<ClubSanction | null> {

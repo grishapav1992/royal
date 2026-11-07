@@ -38,6 +38,7 @@ export class SocialUI {
   private roomId = '';
   private messages = new Map<string, ChatMessage>();
   private chatVisit?: ChatVisit | null;
+  private chatReady = false;
   private chatDock: HTMLElement;
   private dialog: HTMLDialogElement;
   private list: HTMLDivElement;
@@ -142,13 +143,20 @@ export class SocialUI {
         document.querySelector('.profile-name')!.firstChild!.textContent = this.auth.account?.name || translateText('Игрок');
       },
       players: (players, selfId) => this.updatePlayers(players, selfId),
-      chatVisit: visit => this.setChatVisit(visit),
+      chatVisit: visit => {
+        this.chatReady = true;
+        this.setChatVisit(visit);
+        this.chatAvailability();
+      },
       chat: message => {
         const fresh = this.addMessage(message);
         if (fresh && !message.system && message.senderId !== this.selfId) this.gameChat.messageReceived();
       },
       delivery: result => this.chatResult(result),
-      history: messages => { messages.forEach(message => this.addMessage(message)); },
+      history: messages => {
+        if (!this.chatReady) { this.chatReady = true; this.chatAvailability(); }
+        messages.forEach(message => this.addMessage(message));
+      },
       notice: message => this.toast(message),
       activities: state => this.activities?.update(state),
       pvp:value=>this.pvp?.client.receive(value),
@@ -174,6 +182,7 @@ export class SocialUI {
   private connectionStatus(status: ConnectionStatus) {
     this.pvp?.client.setConnected(status==='connected');
     if (status !== 'connected') {
+      this.chatReady = false;
       for (const entry of this.outgoing.values()) if (entry.status === 'sending' || entry.status === 'queued') {
         clearTimeout(entry.timer); entry.timer = undefined; entry.status = 'uncertain';
         entry.message = translateText('Связь прервалась. Доставка не подтверждена. Текст сохранён.');
@@ -215,7 +224,7 @@ export class SocialUI {
     return this.chatVisit !== null && entry.roomId === this.roomId && entry.visitId === this.chatVisit?.id;
   }
   private chatAvailability() {
-    const disabled = this.client.status !== 'connected' || this.sanctioned || this.chatVisit === null;
+    const disabled = this.client.status !== 'connected' || !this.chatReady || this.sanctioned || this.chatVisit === null;
     this.input.disabled = disabled;
     this.media?.setDisabled(disabled);
     this.input.placeholder = this.sanctioned ? translateText('Подожди, охранник обращается к тебе') : translateText('Напиши что-нибудь…');

@@ -40,6 +40,7 @@ async function captureRealTransport(page: Page) {
       room.onMessage('club-ejected', value => ejections.push(value));
       window.__realChat = {
         requests, results, messages, captures, ejections, send: value => room.send('chat', value),
+        leave: () => this.client.leave(),
         self: () => {
           const player = room.state.players.get(room.sessionId);
           return { hall: player.hall, x: player.x, security: player.security, connected: player.connected };
@@ -134,7 +135,19 @@ test('the tenth offensive word triggers a capture and street escort in the same 
     await expect(page.locator('#security-dialog')).toBeHidden();
     await expect(page.locator('#club-chat-dock')).toBeHidden();
     expect(errors).toEqual([]);
+    const originalSession = await page.evaluate(() => (window as any).royalDemo.getNetworkState().selfId);
+    await page.evaluate(() => (window as any).__realChat.leave());
     await transport.detach();
+    await page.reload();
+    await expect.poll(() => page.evaluate(() => (window as any).royalDemo?.getNetworkState().status), { timeout: 30000 }).toBe('connected');
+    await expect(page.locator('#club-chat-dock')).toHaveAttribute('data-chat-unavailable', '');
+    expect(await page.evaluate(() => (window as any).royalDemo.getNetworkState().selfId)).not.toBe(originalSession);
+    const returnTransport = await captureRealTransport(page);
+    await expect.poll(() => page.evaluate(() => (window as any).__realChat.self()))
+      .toMatchObject({ hall: 'street', security: '', connected: true });
+    await page.locator('[data-floor-target="arcade"]').click();
+    await expect(page.locator('#club-chat-dock')).toHaveAttribute('data-chat-hall', 'arcade', { timeout: 30000 });
+    await returnTransport.detach();
   } finally { await host.leave(); }
 });
 

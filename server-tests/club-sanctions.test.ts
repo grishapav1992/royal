@@ -2,6 +2,7 @@ import { test, type TestContext } from 'node:test';
 import assert from 'node:assert/strict';
 import { ClubSanctionStore } from '../server/clubSanctions';
 import { PostgresDatabase } from '../server/database';
+import { ModerationStore } from '../server/moderation';
 
 const MINUTE = 60_000;
 
@@ -11,6 +12,38 @@ async function fixture(context: TestContext) {
   await db.exec("CREATE TABLE accounts(id TEXT PRIMARY KEY); INSERT INTO accounts VALUES ('a'), ('b')");
   return { db, store: new ClubSanctionStore(db) };
 }
+
+test('legacy migration imports active bans once and preserves existing marks and legacy history', async context => {
+  const { db, store } = await fixture(context);
+  await db.exec("INSERT INTO accounts VALUES ('c'), ('d'), ('e')");
+  const now = Date.now(), until = now + 5 * MINUTE;
+  const { outcome: { sanction: modern } } = await store.recordViolation('b', { id: 'modern', reason: 'spam' }, now);
+  const { outcome: { sanction: expiredModern } } = await store.recordViolation('e', { id: 'expired', reason: 'spam' }, now - 21 * MINUTE);
+  const legacyReady = new ModerationStore(db).ready.then(async () => {
+    await db.prepare(`INSERT INTO chat_conduct_discipline (account_id, warned_until, banned_until)
+      VALUES ('a',0,?), ('b',0,?), ('c',0,?), ('d',?,0), ('e',0,?)`)
+      .run(until, until, now - 1, until, until);
+  });
+  const migrated = new ClubSanctionStore(db, legacyReady);
+  const imported = await migrated.active('a', now);
+  assert(imported);
+  assert.match(imported.id, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+  assert.deepEqual(imported, { id: imported.id, until, amountCents: 0, revision: 1 });
+  assert.equal((await db.prepare("SELECT initial_pursuit_id FROM club_sanctions WHERE account_id='a'").get())?.initial_pursuit_id, null);
+  assert.deepEqual(await migrated.active('b', now), modern);
+  assert.equal(await migrated.active('c', now), null);
+  assert.equal(await migrated.active('d', now), null);
+  assert.equal(await migrated.active('e', now), null);
+  assert.equal((await db.prepare("SELECT episode_id FROM club_sanctions WHERE account_id='e'").get())?.episode_id, expiredModern.id);
+  await db.close();
+
+  const reopened = new PostgresDatabase(db.schema, { existingSchema: true });
+  context.after(() => reopened.close());
+  assert.deepEqual(await new ClubSanctionStore(reopened).active('a', now), imported);
+  await reopened.prepare("DELETE FROM club_sanctions WHERE account_id='a'").run();
+  assert.equal(await new ClubSanctionStore(reopened).active('a', now), null);
+  assert.equal(Number((await reopened.prepare("SELECT banned_until FROM chat_conduct_discipline WHERE account_id='a'").get())?.banned_until), until);
+});
 
 test('the first violation assigns a persistent account sanction before a guard capture', async context => {
   const { db, store } = await fixture(context);

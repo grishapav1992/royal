@@ -94,7 +94,7 @@ export class AccountStore {
     this.combat=new NileCombatEscrow(virtualWallet);
     this.casinoApiProWallet = new CasinoApiProWallet(this.db, schemaReady);
     this.moderation = new ModerationStore(this.db, schemaReady);
-    this.clubSanctions = new ClubSanctionStore(this.db, schemaReady);
+    this.clubSanctions = new ClubSanctionStore(this.db, this.moderation.ready);
     this.drinking = new IntoxicationStore(this.db, (id, state) => { this.events.emit('drinking', id, state); }, schemaReady);
     const payments = paymentClientConfig();
     this.paymentCredits = new PaymentCredits(this.db, schemaReady);

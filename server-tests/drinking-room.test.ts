@@ -110,13 +110,13 @@ test('movement uses room access state and logout cancels an uncommitted asynchro
   context.mock.method(room.clock, 'setInterval', () => ({ clear() {} }));
   room.onCreate(); await room.onJoin(client, {}, auth); room.clients.push(client);
   let finish!: (active: boolean) => void;
-  let sessionReads = 0, banReads = 0;
+  let sessionReads = 0, sanctionReads = 0;
   context.mock.method(accounts, 'active', () => { sessionReads++; return new Promise<boolean>(resolve => { finish = resolve; }); });
-  context.mock.method(accounts.moderation, 'banUntil', async () => { banReads++; return 0; });
+  context.mock.method(accounts.clubSanctions, 'active', async () => { sanctionReads++; return null; });
   try {
     const player = room.state.players.get(client.sessionId)!;
     for (let index = 0; index < 80; index++) handlers.get('move')(client, { x: 0, y: 0, revision: player.hallRevision });
-    assert.equal(sessionReads, 0); assert.equal(banReads, 0, 'movement must not wait for PostgreSQL');
+    assert.equal(sessionReads, 0); assert.equal(sanctionReads, 0, 'movement must not wait for PostgreSQL');
     Object.assign(player, BAR_APPROACH);
     const pending = handlers.get('drink')(client, 'beer');
     assert.equal(sessionReads, 1);

@@ -26,7 +26,6 @@ function fixture(context: TestContext, options: { suffix?: string; account?: str
   context.mock.method(room.clock, 'setInterval', () => ({ clear() {} }));
   context.mock.method(room, 'allowReconnection', async () => undefined as any);
   context.mock.method(accounts, 'currentAccount', async () => client.auth.account);
-  context.mock.method(accounts.moderation, 'banUntil', async () => 0);
   context.mock.method(accounts.clubSanctions, 'active', async () => null);
   context.mock.method(accounts.drinking, 'read', async () => ({ soberAt: 0, lastDrink: '', lastDrinkAt: 0 }));
   const sanction = () => ({
@@ -41,7 +40,7 @@ function fixture(context: TestContext, options: { suffix?: string; account?: str
   room.onCreate(); room.clients.push(client);
   const player = new Player(); player.name = 'Игрок'; room.state.players.set(id, player);
   (room as any).controls.set(id, { dx: 0, dy: 0, at: 0, path: [], lastTarget: 0, chatRevision: 0, inputs: new MovementInputs(), predicted: false });
-  (room as any).access.set(id, { active: true, banUntil: 0, pendingEject: false, revision: 0, profileRevision: { name: 0, skin: 0, appearance: 0 }, drinking: { soberAt: 0, lastDrink: '', lastDrinkAt: 0 } });
+  (room as any).access.set(id, { active: true, pendingEject: false, revision: 0, profileRevision: { name: 0, skin: 0, appearance: 0 }, drinking: { soberAt: 0, lastDrink: '', lastDrinkAt: 0 } });
   (room as any).updateChatVisit(id, player.hall);
   packets.length = 0;
   context.after(async () => { chatSpam.clear(account); chatLanguageWindow.clear(account); await room.onDispose(); room.clock.clear(); });
