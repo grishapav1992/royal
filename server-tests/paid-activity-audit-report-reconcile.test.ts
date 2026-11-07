@@ -38,7 +38,8 @@ async function fixture(t: TestContext) {
     CREATE ROLE ${identifier(operator)} LOGIN PASSWORD '${password}';
     CREATE ROLE ${identifier(worker)} LOGIN PASSWORD '${password}';
     GRANT ${identifier(group)} TO ${identifier(operator)};
-    ALTER ROLE ${identifier(operator)} SET temp_file_limit='32MB'`);
+    ALTER ROLE ${identifier(operator)} SET temp_file_limit='32MB';
+    ALTER ROLE ${identifier(worker)} SET temp_file_limit='32MB'`);
   await installAuditReportAccess(audit, group);
   await installAuditDetailReport(audit, group, sources);
   await installAuditReconcileReport(audit, group);

@@ -18,13 +18,16 @@ async function main() {
       schema === game || schema === payments || game === payments) throw new Error('Invalid reconciliation worker configuration');
   const config = { ...databaseConfig({ DATABASE_URL_FILE: source, PGSSLMODE: process.env.ROYAL_AUDIT_PGSSLMODE,
     PGSSLROOTCERT: process.env.ROYAL_AUDIT_PGSSLROOTCERT }), max: 1, statement_timeout: 3000, lock_timeout: 1000,
-    application_name: 'royal/audit-reconcile-worker' };
+    idle_in_transaction_session_timeout: 15_000, application_name: 'royal/audit-reconcile-worker' };
   const audit = new PostgresDatabase(schema, { existingSchema: true, config });
   const controller = new AbortController();
   const cancel = () => controller.abort();
   process.on('SIGINT', cancel);
   process.on('SIGTERM', cancel);
   try {
+    const row = await audit.prepare("SELECT pg_size_bytes(current_setting('temp_file_limit'))::text AS bytes").get();
+    const bytes = Number(row?.bytes);
+    if (!Number.isSafeInteger(bytes) || bytes < 0 || bytes > 64 * 1024 * 1024) throw new Error('Invalid worker temporary file limit');
     do {
       const outcome = await processAuditReconcileRequest(audit, { game, payments }, controller.signal);
       if (outcome !== 'idle' || !values.watch) console.log(JSON.stringify({ outcome }));

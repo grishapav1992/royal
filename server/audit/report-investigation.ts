@@ -19,10 +19,9 @@ type ReconcileReport = ReportIdentity & {
 const byteLimit = 1024 * 1024 + 4096;
 const environments = new Set(['test', 'live']);
 
-function outputFor<T extends ReportIdentity & Partial<Record<'source' | 'anchor', AuditSourceRef>>>(
-  report: T | undefined, input: Investigation, jobId: string, identityKey: 'source' | 'anchor',
+function outputFor<T extends ReportIdentity>(
+  report: T | undefined, input: Investigation, jobId: string, identity: AuditSourceRef | undefined,
 ) {
-  const identity = report?.[identityKey];
   if (!report || report.schemaVersion !== 1 || report.datasetId !== input.datasetId.toLowerCase() ||
       typeof report.environment !== 'string' || !environments.has(report.environment) ||
       identity?.namespace !== input.filters.source || identity.rowId !== input.filters.postingId) {
@@ -41,7 +40,7 @@ export async function readAuditDetail(config: ClientConfig, input: Investigation
       const query = await connection.query<{ report: AuditDetailReport }>(
         'SELECT ' + schema + '.audit_report_detail($1) AS report', [jobId]);
       const report = query.rows[0]?.report;
-      const result = outputFor(report, input, jobId, 'source');
+      const result = outputFor(report, input, jobId, report?.source);
       const rowCount = [result.output.linkedPostings, result.output.attempts, result.output.events]
         .reduce((count, rows) => count + (Array.isArray(rows) ? rows.length : 0), result.output.anchor ? 1 : 0);
       signal.throwIfAborted();
@@ -74,7 +73,7 @@ export async function requestAuditReconcile(config: ClientConfig, input: Investi
         report = await query(false);
       }
       signal.throwIfAborted();
-      return { ...outputFor(report, input, jobId, 'anchor'), rowCount: report?.report ? 1 : 0 };
+      return { ...outputFor(report, input, jobId, report?.anchor), rowCount: report?.report ? 1 : 0 };
     } finally { await finish(); }
   });
   return result.output;
