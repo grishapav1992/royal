@@ -12,7 +12,7 @@ import { LobbyClient, type ConnectionStatus } from '../network/LobbyClient';
 import { HALLS, type ChatMessage, type PlayerView } from '../shared/world';
 import { getIntoxication } from '../shared/intoxication';
 import { CHAT_CONFIRMATION_TIMEOUT_MS, CHAT_PENDING_LIMIT, type ChatResult } from '../shared/chat';
-import { maskChatText } from '../shared/chatMask';
+import { maskChatText } from '../shared/chatConduct';
 import './chat-delivery.css';
 
 type OutgoingMessage = {
@@ -303,14 +303,15 @@ export class SocialUI {
   }
   private chatRow(item: Omit<ChatMessage, 'id'>) {
     const row = document.createElement('div'); row.className = item.system ? 'chat-system' : 'chat-message';
-    if (item.senderId === 'security') row.classList.add('security-message');
+    const security = item.senderId === 'security';
+    if (security) row.classList.add('security-message');
     if (!item.system) {
       const meta = document.createElement('div'); meta.className = 'chat-meta';
-      const name = document.createElement('strong'); name.textContent = item.name + (item.senderId === this.selfId ? translateText(' · ты') : '');
+      const name = document.createElement('strong'); name.textContent = (security ? translateText(item.name) : item.name) + (item.senderId === this.selfId ? translateText(' · ты') : '');
       const time = document.createElement('time'); time.textContent = new Date(item.time).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
       meta.append(name, time); row.append(meta);
     }
-    row.append(this.media.content(item.system ? translateMessage(item.text) : item.text, item.system));
+    row.append(this.media.content(item.system || security ? translateMessage(item.text) : item.text, item.system));
     return row;
   }
   private addMessage(message: ChatMessage) {

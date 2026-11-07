@@ -43,7 +43,7 @@ async function captureRealTransport(page: Page) {
   return cdp;
 }
 
-test('real UI and WebSocket deliver correlated and legacy messages with server-side masking', async ({ browser, request }) => {
+test('real chat masks profanity and ejects an account after a second directed insult', async ({ browser, request }) => {
   const hostLogin = await request.post(api + '/api/auth/login', { data: { email: `transport-host-${crypto.randomUUID()}@example.test`, password: 'Royal-test-123!' } });
   expect(hostLogin.ok()).toBe(true);
   const cookie = hostLogin.headers()['set-cookie'].split(';')[0];
@@ -56,7 +56,7 @@ test('real UI and WebSocket deliver correlated and legacy messages with server-s
   try {
     await register(sender, 'Тест отправки'); await register(observer, 'Тест наблюдения');
     for (const page of [sender, observer]) {
-      await page.goto('/?mode=club&room=' + host.roomId + '&lang=ru');
+      await page.goto('/?mode=club&room=' + host.roomId + '&lang=en');
       await expect(page.locator('#chat-input')).toBeEnabled();
     }
     const cdp = await captureRealTransport(sender);
@@ -78,15 +78,21 @@ test('real UI and WebSocket deliver correlated and legacy messages with server-s
     await sender.evaluate(text => (window as any).__realChat.send(text), 'Fuck, сообщение старого клиента');
     await expect(observer.locator('#chat-log > [data-message-id]').filter({ hasText: legacy })).toHaveCount(1);
     await expect(sender.locator('#chat-log > [data-message-id]').filter({ hasText: legacy })).toHaveCount(1);
-    await sender.locator('#chat-input').fill('ты дебил'); await sender.locator('#send-chat').click();
-    await expect(sender.locator('#chat-log > [data-message-id]').filter({ hasText: 'ты д***л' })).toHaveCount(1);
-    await expect(observer.locator('#chat-log > [data-message-id]').filter({ hasText: 'ты д***л' })).toHaveCount(1);
+    await sender.locator('#chat-input').fill('I am an idiot'); await sender.locator('#send-chat').click();
+    await expect(observer.locator('#chat-log > [data-message-id]').filter({ hasText: 'I am an idiot' })).toHaveCount(1);
     await expect(observer.locator('.security-message')).toHaveCount(0);
-    expect((await proof(sender)).messages.some(message => message.text === 'ты дебил')).toBe(false);
-    await expect(sender.locator('#chat-log > [data-message-id]').filter({ hasText: 'ты дебил' })).toHaveCount(0);
-    await expect(observer.locator('#chat-log > [data-message-id]').filter({ hasText: 'ты дебил' })).toHaveCount(0);
+    await sender.locator('#chat-input').fill('You are an idiot'); await sender.locator('#send-chat').click();
+    await expect(sender.locator('.chat-outgoing[data-delivery="rejected"]')).toContainText('rejected for insulting other players');
+    await expect(observer.locator('.security-message')).toContainText('first warning for insults');
+    expect((await proof(sender)).messages.some(message => message.text === 'You are an idiot')).toBe(false);
+    await expect(observer.locator('#chat-log > [data-message-id]').filter({ hasText: 'You are an idiot' })).toHaveCount(0);
+    await expect(sender.locator('#chat-input')).toBeEnabled({ timeout: 20000 });
+    await sender.locator('#chat-input').fill('Du bist ein Idiot'); await sender.locator('#send-chat').click();
+    await expect(observer.locator('.security-message').last()).toContainText('Entry blocked for 10 minutes');
+    await expect(sender.locator('#security-dialog')).toBeVisible({ timeout: 20000 });
+    await expect(sender.locator('#security-return')).toBeDisabled();
     expect(errors).toEqual([]);
-    console.log('REAL_CHAT_PROOF: UI auth + PostgreSQL + real WebSocket, masked delivery for both clients, duplicate UUID published once, legacy text masked.');
+    console.log('REAL_CHAT_PROOF: English UI + PostgreSQL + real WebSocket, masked delivery, warning and ejection after insults in two languages.');
     await cdp.detach();
   } finally { await senderContext.close(); await observerContext.close(); await host.leave(); }
 });

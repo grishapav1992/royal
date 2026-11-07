@@ -70,14 +70,34 @@ test('an expired session never publishes or adds sanctions', async context => {
 
 test('profanity is masked before broadcast without adding sanctions', async context => {
   const { send, checks, published, packets, record, flush } = fixture(context);
-  const id = randomUUID(), pending = send({ id, text: 'Fuck, ты идиот!' });
+  const id = randomUUID(), pending = send({ id, text: 'Fuck, я идиот!' });
   await flush(); checks[0].resolve(true); await pending;
   assert.equal(record.mock.callCount(), 0);
   assert.equal(checks.length, 1);
   assert.deepEqual(packets.filter(packet => packet.type === 'chat-result').map(packet => packet.value), [
     { id, status: 'queued' }, { id, status: 'published' },
   ]);
-  assert.deepEqual(published.map(message => [message.requestId, message.text]), [[id, 'F**k, ты и***т!']]);
+  assert.deepEqual(published.map(message => [message.requestId, message.text]), [[id, 'F**k, я идиот!']]);
+});
+
+test('two separate addressed insults invoke the guard once each, even in different languages', async context => {
+  const { send, checks, published, packets, record, flush, player } = fixture(context);
+  let offenses = 0;
+  record.mock.mockImplementation(async () => ({ kind: ++offenses === 1 ? 'warning' : 'ejecting', until: Date.now() + 600000 }));
+  const first = { id: randomUUID(), text: 'You are an idiot!' };
+  const warning = send(first);
+  await flush(); checks[0].resolve(true); await warning;
+  await send(first);
+  assert.equal(record.mock.callCount(), 1);
+  assert(packets.some(packet => packet.type === 'security' && packet.value.reason === 'insult' && packet.value.kind === 'warning'));
+  player.security = '';
+  const second = { id: randomUUID(), text: 'Du bist ein Idiot!' };
+  const ejection = send(second);
+  await flush(); checks[1].resolve(true); await ejection;
+  assert.equal(record.mock.callCount(), 2);
+  assert(packets.some(packet => packet.type === 'security' && packet.value.reason === 'insult' && packet.value.kind === 'ejecting'));
+  assert(packets.some(packet => packet.type === 'chat-result' && packet.value.id === second.id && packet.value.status === 'rejected'));
+  assert.equal(published.filter(message => message.senderId !== 'security').length, 0);
 });
 
 test('a burst advertising the same channel records one offense while the warning is pending', async context => {

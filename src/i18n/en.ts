@@ -109,6 +109,7 @@ export const english: Record<string, string> = {
   "Отправка сообщения отменена.": "Sending the message was cancelled.",
   "Сообщение отклонено за спам.": "The message was rejected as spam.",
   "Сообщение отклонено за оскорбление другого человека.": "The message was rejected for insulting another person.",
+  "Сообщение отклонено за оскорбление игроков.": "The message was rejected for insulting other players.",
   "Дождись решения охраны перед отправкой сообщения.": "Wait for security to finish before sending another message.",
   "Проверка не завершена. Сообщение не отправлено. Попробуй ещё раз.": "The check did not finish. Message not sent. Try again.",
   "Не удалось подтвердить сообщение. Оно не отправлено. Попробуй ещё раз.": "The message could not be confirmed. It was not sent. Try again.",
