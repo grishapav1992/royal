@@ -26,7 +26,8 @@ import { VirtualPvpLedger } from '../server/pvp/virtual-wallet';
 import { temporaryDatabase } from './database-test';
 
 type Budget = { stakeP95Ms?: number; settlementP95Ms?: number; readerStopMs?: number };
-type LoadOptions = { workers: number; roundsPerWorker: number; seedRounds: number; scaleHistory?: boolean; budget?: Budget };
+type LoadOptions = { workers: number; roundsPerWorker: number; seedRounds: number;
+  scaleHistory?: boolean; pilotGate?: boolean; budget?: Budget };
 type Metric = 'stake' | 'settlement' | 'casinoRound' | 'retry';
 type Sample = { from: number; to: number; ok: boolean };
 type Leg = [account: string, operation: string, entry: string, units: string];
@@ -37,10 +38,11 @@ type ReportLogin = Parameters<typeof exportAuditPlayer>[0];
 const initialCents = 10000n;
 const scalePlayerRows = 10_000;
 const reportTempFileLimit = '32MB';
+const pilotMaxP95GrowthPercent = 10;
 const defaults: LoadOptions = { workers: 4, roundsPerWorker: 8, seedRounds: 40 };
 
 function loadOptions(input: LoadOptions) {
-  const { workers, roundsPerWorker, seedRounds, scaleHistory, budget } = input;
+  const { workers, roundsPerWorker, seedRounds, scaleHistory, pilotGate, budget } = input;
   if (!Number.isInteger(workers) || workers < 1 || workers > 8 || !Number.isInteger(roundsPerWorker) ||
       roundsPerWorker < 2 || roundsPerWorker > 16 || !Number.isInteger(seedRounds) || seedRounds < 8 || seedRounds > 40) {
     throw new Error('Invalid isolated audit load options');
@@ -48,7 +50,7 @@ function loadOptions(input: LoadOptions) {
   if (budget && Object.values(budget).some(value => !Number.isFinite(value) || value <= 0 || value > 60_000)) {
     throw new Error('Invalid isolated audit load budget');
   }
-  return { workers, roundsPerWorker, seedRounds, scaleHistory, budget };
+  return { workers, roundsPerWorker, seedRounds, scaleHistory: scaleHistory || pilotGate, pilotGate, budget };
 }
 
 const rounded = (value: number) => Number(value.toFixed(3));
@@ -56,6 +58,27 @@ function stats(samples: Sample[]) {
   const success = samples.filter(item => item.ok).map(item => item.to - item.from).sort((a, b) => a - b);
   return { attempts: samples.length, completed: success.length, errors: samples.length - success.length,
     p95Ms: success.length ? rounded(success[Math.ceil(success.length * 0.95) - 1]) : null };
+}
+
+type WorkloadMetrics = Record<Metric, ReturnType<typeof stats>>;
+
+export function assessAuditPilotGate(withoutReports: WorkloadMetrics, withReports: WorkloadMetrics) {
+  const noWalletErrorsOrTimeouts = (Object.keys(withoutReports) as Metric[]).every(metric => {
+    const baseline = withoutReports[metric], active = withReports[metric];
+    return baseline.attempts > 0 && active.attempts === baseline.attempts &&
+      baseline.completed === baseline.attempts && active.completed === active.attempts &&
+      baseline.errors === 0 && active.errors === 0;
+  });
+  const p95 = (['stake', 'settlement'] as const).map(metric => {
+    const controlMs = withoutReports[metric].p95Ms, reportMs = withReports[metric].p95Ms;
+    const controlMicros = controlMs === null ? 0 : Math.round(controlMs * 1000);
+    const reportMicros = reportMs === null ? 0 : Math.round(reportMs * 1000);
+    const measured = controlMicros > 0 && reportMicros > 0;
+    return { metric, controlMs, reportMs, growthPercent: measured ? rounded((reportMicros / controlMicros - 1) * 100) : null,
+      passed: measured && reportMicros * 100 <= controlMicros * (100 + pilotMaxP95GrowthPercent) };
+  });
+  return { maxP95GrowthPercent: pilotMaxP95GrowthPercent, noWalletErrorsOrTimeouts, p95,
+    ok: noWalletErrorsOrTimeouts && p95.every(metric => metric.passed) };
 }
 
 function playRequest() {
@@ -218,6 +241,11 @@ async function verifyScaleCsv(path: string, accountId: string) {
   }
 }
 
+function throwReportFailure(report: string, error: unknown): never {
+  if (error instanceof AuditPlayerReportError) throw new Error('Isolated ' + report + ' failed: ' + error.code);
+  throw error;
+}
+
 async function rejectOversizedSummary(audit: PostgresDatabase, operator: ReportLogin, input: Parameters<typeof readAuditSummary>[1],
   operatorName: string) {
   try {
@@ -241,6 +269,36 @@ function assessBudget(budget: Budget | undefined, observed: Record<keyof Budget,
     return { metric, actual, limit, passed: actual !== null && actual <= limit };
   });
   return { checks, ok: checks.every(check => check.passed) };
+}
+
+async function flushFixtureStats(db: PostgresDatabase) {
+  const connections = [];
+  try {
+    for (let pending = db.pool.totalCount; pending > 0; pending--) connections.push(await db.pool.connect());
+    await Promise.all(connections.map(connection => connection.query('SELECT pg_stat_force_next_flush()')));
+  } finally {
+    for (const connection of connections) connection.release();
+  }
+}
+
+async function databaseActivity(audit: PostgresDatabase, game: PostgresDatabase) {
+  // The report and recorder connections have closed. Flush the two fixture pools before sampling.
+  await Promise.all([flushFixtureStats(audit), flushFixtureStats(game)]);
+  const row = (await audit.prepare(`SELECT blks_read,blks_hit,temp_bytes,temp_files
+    FROM pg_stat_database WHERE datname=current_database()`).get())!;
+  return { blocksRead: Number(row.blks_read), blocksHit: Number(row.blks_hit),
+    tempBytes: Number(row.temp_bytes), tempFiles: Number(row.temp_files) };
+}
+
+type Activity = Awaited<ReturnType<typeof databaseActivity>>;
+
+function activityDelta(before: Activity, after: Activity): Activity {
+  const activity = { blocksRead: after.blocksRead - before.blocksRead, blocksHit: after.blocksHit - before.blocksHit,
+    tempBytes: after.tempBytes - before.tempBytes, tempFiles: after.tempFiles - before.tempFiles };
+  if (Object.values(activity).some(value => !Number.isSafeInteger(value) || value < 0)) {
+    throw new Error('Invalid isolated audit database activity counters');
+  }
+  return activity;
 }
 
 async function sizes(audit: PostgresDatabase, game: PostgresDatabase) {
@@ -318,8 +376,9 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     await game.exec('CREATE TABLE accounts(id text PRIMARY KEY)');
     const makePairs = (): Pair[] => Array.from({ length: options.workers }, () => [randomUUID(), randomUUID()]);
     const baselinePairs = makePairs(), activePairs = makePairs(), reportAccount = randomUUID();
+    const controlPairs = options.pilotGate ? makePairs() : [];
     const scaleAccounts = options.scaleHistory ? [randomUUID(), randomUUID()] as const : null;
-    const accounts = [...baselinePairs.flat(), ...activePairs.flat(), reportAccount, ...(scaleAccounts ?? [])];
+    const accounts = [...baselinePairs.flat(), ...activePairs.flat(), ...controlPairs.flat(), reportAccount, ...(scaleAccounts ?? [])];
     const wallet = new DemoWalletStore(game, () => 0), pvp = new VirtualPvpLedger(game, wallet);
     for (const accountId of accounts) {
       await game.prepare('INSERT INTO accounts VALUES (?)').run(accountId);
@@ -345,8 +404,8 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     const sources = { game: game.schema };
     const { datasetId, startedAtMs } = await new AuditDatasets(audit, sources).startTest();
     const group = 'audit_load_read', reader = 'audit_load_player', summaryReader = 'audit_load_summary';
-    const wideReader = 'audit_load_wide', password = randomUUID();
-    const readers = [reader, summaryReader, ...(scaleAccounts ? [wideReader] : [])];
+    const wideReader = 'audit_load_wide', limitReader = 'audit_load_limit', password = randomUUID();
+    const readers = [reader, summaryReader, ...(scaleAccounts ? [wideReader] : []), ...(options.pilotGate ? [limitReader] : [])];
     await audit.exec('CREATE ROLE ' + group + ' NOLOGIN');
     for (const name of readers) {
       await audit.exec(`CREATE ROLE ${name} LOGIN PASSWORD '${password}';
@@ -369,8 +428,23 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       await audit.exec('ANALYZE audit_posting_refs');
     }
     for (let i = 0; i < options.seedRounds; i++) await wallet.operate(reportAccount, playRequest());
-    runtime = startAuditAttemptRuntime({ ...cluster.env, ROYAL_AUDIT_SCHEMA: audit.schema, ROYAL_AUDIT_TEST_DATASET_ID: datasetId }, game.schema);
-    if (!runtime) throw new Error('Isolated audit observer did not start');
+    const startRecorder = () => {
+      const capture = startAuditAttemptRuntime({ ...cluster.env,
+        ROYAL_AUDIT_SCHEMA: audit!.schema, ROYAL_AUDIT_TEST_DATASET_ID: datasetId }, game!.schema);
+      if (!capture) throw new Error('Isolated audit observer did not start');
+      return capture;
+    };
+    let control: Awaited<ReturnType<typeof workload>> | null = null, controlActivity: Activity | null = null;
+    if (options.pilotGate) {
+      const beforeControl = await databaseActivity(audit, game);
+      runtime = startRecorder();
+      control = await workload(game, pvp, baseUrl, loopbackAgent, controlPairs, options.roundsPerWorker, signal);
+      await runtime.close();
+      runtime = undefined;
+      controlActivity = activityDelta(beforeControl, await databaseActivity(audit, game));
+    }
+    const beforeReports = options.pilotGate ? await databaseActivity(audit, game) : null;
+    runtime = startRecorder();
     const period = { fromMs: widePeriod?.toMs ?? startedAtMs, toMs: Date.now() + 60_000 };
     const reportInput = { schema: audit.schema, datasetId, signal,
       filters: { accountId: scaleAccounts?.[0] ?? reportAccount, ...(widePeriod ?? period) },
@@ -389,21 +463,28 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       await player.catch(() => {});
       throw error;
     }
-    const [activeResult, csvResult, summaryResult, wideResult] = await Promise.allSettled([
+    const reportScope = { schema: audit.schema, datasetId, signal };
+    const readSummary = (name: string, filters: typeof period) =>
+      observeTiming(() => readAuditSummary(operator(name), { ...reportScope, filters }));
+    const limitPeriod = widePeriod ? { ...widePeriod, toMs: widePeriod.toMs - 1 } : null;
+    const [activeResult, csvResult, summaryResult, wideResult, limitResult] = await Promise.allSettled([
       workload(game, pvp, baseUrl, loopbackAgent, activePairs, options.roundsPerWorker, signal),
       player,
-      observeTiming(() => readAuditSummary(operator(summaryReader), { schema: audit!.schema, datasetId, filters: period, signal })),
+      readSummary(summaryReader, period),
       widePeriod ? observeTiming(() => rejectOversizedSummary(audit!, operator(wideReader),
-        { schema: audit!.schema, datasetId, filters: widePeriod, signal }, wideReader)) : null,
+        { ...reportScope, filters: widePeriod }, wideReader)) : null,
+      options.pilotGate && limitPeriod ? readSummary(limitReader, limitPeriod) : null,
     ]);
     if (activeResult.status === 'rejected') throw activeResult.reason;
-    if (csvResult.status === 'rejected') throw csvResult.reason;
-    if (summaryResult.status === 'rejected') throw summaryResult.reason;
-    if (wideResult.status === 'rejected') throw wideResult.reason;
+    if (csvResult.status === 'rejected') throwReportFailure('player CSV', csvResult.reason);
+    if (summaryResult.status === 'rejected') throwReportFailure('narrow summary', summaryResult.reason);
+    if (wideResult.status === 'rejected') throwReportFailure('oversized summary', wideResult.reason);
+    if (limitResult.status === 'rejected') throwReportFailure('at-limit summary', limitResult.reason);
     const { value: active } = activeResult, { value: csv } = csvResult, { value: summary } = summaryResult;
     const { value: wide } = wideResult;
     await runtime.close();
     runtime = undefined;
+    const reportActivity = beforeReports ? activityDelta(beforeReports, await databaseActivity(audit, game)) : null;
     const stopped = await waitFor(async () => await audit!.prepare(
       "SELECT 1 FROM pg_stat_activity WHERE application_name='royal/audit-attempts' LIMIT 1").get() ? undefined : true, 1000, signal);
     const cancellation = await cancelReport(game, audit, operator(reader),
@@ -418,28 +499,30 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     summary: { rows: summary.result.rows.length, scanned: summary.result.scanned, elapsedMs: rounded(summary.to - summary.from),
       overlappingStakeCalls: overlap(summary, 'stake'), overlappingSettlementCalls: overlap(summary, 'settlement') } };
     let scale: { fixturePostings: number; capturedFixturePostings: number; reportTempFileLimit: string;
-      csvAmountsAndBalancesMatch: boolean; atLimit: { scanned: number; elapsedMs: number; exactTotal: boolean };
+      csvAmountsAndBalancesMatch: boolean;
+      atLimit: { scanned: number; elapsedMs: number; exactTotal: boolean; overlappingStakeCalls?: number };
       overLimit: { outcome: string; journalRejected: boolean; elapsedMs: number; overlappingStakeCalls: number }; ok: boolean } | null = null;
-    if (widePeriod && wide && scaleAccounts) {
+    if (widePeriod && limitPeriod && wide && scaleAccounts) {
       const fixturePostings = AUDIT_SUMMARY_SCAN_CAP + 1;
       const captured = await audit.prepare(`SELECT count(*)::int AS n FROM audit_posting_refs
         WHERE dataset_id=? AND occurred_at_ms>=? AND occurred_at_ms<?`).get(datasetId, widePeriod.fromMs, widePeriod.toMs);
-      const atLimit = await observeTiming(() => readAuditSummary(operator(summaryReader), {
-        schema: audit!.schema, datasetId, filters: { ...widePeriod, toMs: widePeriod.toMs - 1 }, signal,
-      }));
+      const atLimit = limitResult.value ?? await readSummary(summaryReader, limitPeriod);
+      const limitOverlap = limitResult.value ? overlap(atLimit, 'stake') : null;
       const totals = atLimit.result.rows[0];
       const exactTotal = atLimit.result.rows.length === 1 && totals.movement_type === 'deposit' &&
         totals.posting_count === String(AUDIT_SUMMARY_SCAN_CAP) && totals.amount_units === String(AUDIT_SUMMARY_SCAN_CAP * 100) &&
         totals.coverage_status === 'complete';
       const csvAmountsAndBalancesMatch = await verifyScaleCsv(reportInput.destination, scaleAccounts[0]);
       scale = { fixturePostings, capturedFixturePostings: Number(captured?.n), reportTempFileLimit, csvAmountsAndBalancesMatch,
-        atLimit: { scanned: atLimit.result.scanned, elapsedMs: rounded(atLimit.to - atLimit.from), exactTotal },
+        atLimit: { scanned: atLimit.result.scanned, elapsedMs: rounded(atLimit.to - atLimit.from), exactTotal,
+          ...(limitOverlap !== null ? { overlappingStakeCalls: limitOverlap } : {}) },
         overLimit: { ...wide.result, elapsedMs: rounded(wide.to - wide.from), overlappingStakeCalls: overlap(wide, 'stake') },
         ok: captured?.n === fixturePostings && csvAmountsAndBalancesMatch && atLimit.result.scanned === AUDIT_SUMMARY_SCAN_CAP &&
-          exactTotal && wide.result.journalRejected && overlap(wide, 'stake') > 0 };
+          exactTotal && wide.result.journalRejected && overlap(wide, 'stake') > 0 && (limitOverlap ?? 1) > 0 };
     }
-    const expectedAttempts = options.workers * options.roundsPerWorker * 2;
-    const expectedPostings = active.expectedPostings + options.seedRounds * 2 + (scale?.fixturePostings ?? 0);
+    const expectedAttempts = options.workers * options.roundsPerWorker * 2 * (control ? 2 : 1);
+    const expectedPostings = active.expectedPostings + (control?.expectedPostings ?? 0) +
+      options.seedRounds * 2 + (scale?.fixturePostings ?? 0);
     const csvMatches = csv.result.rowCount === (scaleAccounts ? scalePlayerRows : options.seedRounds * 2) &&
       (await stat(reportInput.destination)).size === csv.result.bytes;
     const observedOverlap = report.player.overlappingStakeCalls > 0 && report.player.overlappingSettlementCalls > 0 &&
@@ -450,13 +533,20 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       cancellation.readerStopped && cancellation.journalCancelled;
     const budget = assessBudget(options.budget, { stakeP95Ms: active.metrics.stake.p95Ms,
       settlementP95Ms: active.metrics.settlement.p95Ms, readerStopMs: cancellation.databaseReaderStopMs });
+    const pilot = control ? assessAuditPilotGate(control.metrics, active.metrics) : null;
     const postgres = (await audit.prepare('SHOW server_version').get())!.server_version as string;
     return { schemaVersion: 1, environment: 'isolated-local-postgresql', capacityConfirmed: false,
       ok: baseline.noDoubleMoney && active.noDoubleMoney && captureOk && csvMatches && observedOverlap && cancellationOk &&
-        report.summary.scanned >= options.seedRounds * 2 && (scale?.ok ?? true) && (budget?.ok ?? true),
+        report.summary.scanned >= options.seedRounds * 2 && (scale?.ok ?? true) && (budget?.ok ?? true) &&
+        (control?.noDoubleMoney ?? true) && (pilot?.ok ?? true),
       runtime: { node: process.version, postgres, platform: process.platform, architecture: process.arch },
       workload: { workers: options.workers, roundsPerWorker: options.roundsPerWorker, seedRounds: options.seedRounds },
       ...(scale ? { scale } : {}), ...(budget ? { budget } : {}),
+      ...(control && pilot ? {
+        withAuditWithoutReports: { metrics: control.metrics, elapsedMs: control.elapsedMs,
+          noDoubleMoney: control.noDoubleMoney, postings: control.actualPostings },
+        pilotGate: { ...pilot, databaseActivity: { withoutReports: controlActivity, withReports: reportActivity } },
+      } : {}),
       baseline: { metrics: baseline.metrics, elapsedMs: baseline.elapsedMs, noDoubleMoney: baseline.noDoubleMoney, postings: baseline.actualPostings },
       withAudit: { metrics: active.metrics, elapsedMs: active.elapsedMs, noDoubleMoney: active.noDoubleMoney, postings: active.actualPostings },
       reports: report, cancellation, capture: { stopped, expectedAttempts, expectedPostings, gaps: Number(captureGaps), ...records },
@@ -489,10 +579,11 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   let exitCode = 1;
   try {
     const { values } = parseArgs({ options: { workers: { type: 'string' }, rounds: { type: 'string' }, seed: { type: 'string' },
-      'scale-history': { type: 'boolean' }, 'stake-p95-budget-ms': { type: 'string' }, 'settlement-p95-budget-ms': { type: 'string' },
+      'scale-history': { type: 'boolean' }, 'pilot-gate': { type: 'boolean' },
+      'stake-p95-budget-ms': { type: 'string' }, 'settlement-p95-budget-ms': { type: 'string' },
       'reader-stop-budget-ms': { type: 'string' }, help: { type: 'boolean' } } });
     if (values.help) {
-      console.log('node --import tsx scripts/audit-load.ts [--workers 1..8] [--rounds 2..16] [--seed 8..40] [--scale-history]\n' +
+      console.log('node --import tsx scripts/audit-load.ts [--workers 1..8] [--rounds 2..16] [--seed 8..40] [--scale-history] [--pilot-gate]\n' +
         '  [--stake-p95-budget-ms n] [--settlement-p95-budget-ms n] [--reader-stop-budget-ms n]');
       exitCode = 0;
     } else {
@@ -502,7 +593,8 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       if (values['reader-stop-budget-ms'] !== undefined) budget.readerStopMs = Number(values['reader-stop-budget-ms']);
       const result = await runAuditLoad({ workers: Number(values.workers ?? defaults.workers),
         roundsPerWorker: Number(values.rounds ?? defaults.roundsPerWorker), seedRounds: Number(values.seed ?? defaults.seedRounds),
-        scaleHistory: values['scale-history'], budget: Object.keys(budget).length ? budget : undefined }, controller.signal);
+        scaleHistory: values['scale-history'], pilotGate: values['pilot-gate'],
+        budget: Object.keys(budget).length ? budget : undefined }, controller.signal);
       console.log(JSON.stringify(result));
       exitCode = result.ok ? 0 : 1;
     }

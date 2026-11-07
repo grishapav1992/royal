@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
+import { assessAuditPilotGate } from '../scripts/audit-load';
 
 const script = fileURLToPath(new URL('../scripts/audit-load.ts', import.meta.url));
 const run = (args: string[], env = process.env) => promisify(execFile)(
@@ -29,6 +30,8 @@ test('audit load measures both wallet phases, preserves money and stops cancelle
   assert.equal(report.ok, true);
   assert.equal(report.scale, undefined);
   assert.equal(report.budget, undefined);
+  assert.equal(report.pilotGate, undefined);
+  assert.equal(report.withAuditWithoutReports, undefined);
   assert.deepEqual(report.workload, { workers: 2, roundsPerWorker: 3, seedRounds: 40 });
   for (const phase of [report.baseline, report.withAudit]) {
     assert.equal(phase.noDoubleMoney, true);
@@ -131,4 +134,58 @@ test('audit load rejects an invalid budget before provisioning', async () => {
     const failure = error as { code?: number; stderr?: string };
     return failure.code === 1 && JSON.parse(failure.stderr ?? '{}').message === 'Invalid isolated audit load budget';
   });
+});
+
+test('pilot comparison accepts the exact 10 percent boundary and rejects p95 growth or incomplete wallet work', () => {
+  const metric = (p95Ms: number, completed = 8) => ({ p95Ms, attempts: 8, completed, errors: 8 - completed });
+  const control = { stake: metric(10), settlement: metric(7), casinoRound: metric(20), retry: metric(8) };
+  const within = { ...control, stake: metric(11), settlement: metric(7.7) };
+  const pass = assessAuditPilotGate(control, within);
+  assert.equal(pass.ok, true);
+  assert.equal(pass.noWalletErrorsOrTimeouts, true);
+  assert.deepEqual(pass.p95.map(check => [check.metric, check.growthPercent, check.passed]),
+    [['stake', 10, true], ['settlement', 10, true]]);
+
+  const slow = assessAuditPilotGate(control, { ...within, settlement: metric(7.701) });
+  assert.equal(slow.ok, false);
+  assert.equal(slow.noWalletErrorsOrTimeouts, true);
+  assert.equal(slow.p95[1].passed, false);
+  const failed = assessAuditPilotGate(control, { ...within, retry: metric(8, 7) });
+  assert.equal(failed.ok, false);
+  assert.equal(failed.noWalletErrorsOrTimeouts, false);
+  assert(failed.p95.every(check => check.passed));
+});
+
+test('pilot gate measures audited wallets without reports and exits according to the fixed comparison', { timeout: 35_000 }, async t => {
+  const directory = await mkdtemp(join(tmpdir(), 'royal-audit-load-check-'));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const result = await run(['--pilot-gate', '--workers', '2', '--rounds', '3'], { ...process.env, TMPDIR: directory })
+    .then(({ stdout }) => ({ stdout, exitCode: 0 }), error => {
+      if (error.code !== 1 || !error.stdout) throw error;
+      return { stdout: String(error.stdout), exitCode: 1 };
+    });
+  const report = JSON.parse(result.stdout);
+  assert.deepEqual(await fixtureFiles(directory), []);
+  assert.equal(report.capacityConfirmed, false);
+  assert.equal(report.scale.ok, true);
+  assert(report.scale.atLimit.overlappingStakeCalls > 0);
+  assert.equal(report.withAuditWithoutReports.noDoubleMoney, true);
+  assert.equal(report.withAudit.noDoubleMoney, true);
+  assert.equal(report.withAuditWithoutReports.postings, 34);
+  assert.equal(report.withAudit.postings, 34);
+  assert.equal(report.capture.postingRefs.rows, 20_149);
+  assert.equal(report.capture.attemptPayloads.rows, 24);
+  assert.equal(report.capture.gaps, 0);
+  const expected = assessAuditPilotGate(report.withAuditWithoutReports.metrics, report.withAudit.metrics);
+  const { databaseActivity, ...gate } = report.pilotGate;
+  assert.deepEqual(gate, expected);
+  assert.equal(gate.noWalletErrorsOrTimeouts, true);
+  assert.equal(report.ok, expected.ok);
+  assert.equal(result.exitCode, expected.ok ? 0 : 1);
+  for (const activity of [databaseActivity.withoutReports, databaseActivity.withReports]) {
+    assert(activity.blocksHit > 0);
+    for (const value of [activity.blocksRead, activity.blocksHit, activity.tempBytes, activity.tempFiles]) {
+      assert(Number.isSafeInteger(value) && value >= 0);
+    }
+  }
 });
