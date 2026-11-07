@@ -16,10 +16,23 @@
   gap: .3rem;
 }
 
-.voice-chat button {
-  min-height: 2rem;
+.chat-panel .voice-chat button {
+  min-height: 2.5rem;
   padding: .2rem .45rem;
+  border: 1px solid #856e4f;
+  border-radius: .4rem;
+  background: #252335;
+  color: #fff0cb;
   font-size: inherit;
+}
+
+.chat-panel .voice-chat button:focus-visible {
+  outline: 2px solid #efca83;
+  outline-offset: 1px;
+}
+
+.chat-panel .voice-chat button:disabled {
+  opacity: .6;
 }
 
 .voice-chat [data-transmitting] {
@@ -29,6 +42,12 @@
 
 .voice-chat [data-transmitting="true"], .voice-chat [data-speaking="true"] {
   font-weight: 700;
+}
+
+.chat-panel .voice-chat [data-transmitting="true"] {
+  border-color: #bce988;
+  color: #dcf8be;
+  background: #30432f;
 }
 
 .voice-chat ul {
