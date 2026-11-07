@@ -97,7 +97,7 @@ test('physical standby enforces WAL, routes and grants when exporting a player r
       pendingClock.mock.restore();
     }
 
-    standby = await startAuditLoadStandby(pgBasebackup!, cluster.env);
+    standby = await startAuditLoadStandby(pgBasebackup!, cluster.env, undefined, { immediateRecoveryConflicts: true });
     const standbyObserver = standby.connect();
     const primaryObserver = standby.connect(Number(cluster.env.PGPORT));
     clients.push(standbyObserver, primaryObserver);
@@ -189,6 +189,70 @@ test('physical standby enforces WAL, routes and grants when exporting a player r
     const schema = identifier(audit.schema);
     const beginPrimary = () => primaryReader.query<{ id: string }>(`
       SELECT ${schema}.audit_report_begin($1,'player',$2::jsonb) AS id`, [datasetId, JSON.stringify(options.filters)]);
+    const waitForBlockedPage = () => waitFor(async () => {
+      const { rows } = await standbyObserver.query<{ pid: number; backend_start: string }>(`
+        SELECT a.pid,a.backend_start::text FROM pg_stat_activity a JOIN pg_locks l ON l.pid=a.pid
+        WHERE a.usename=$1 AND a.application_name=$2 AND a.state='active'
+          AND l.locktype='advisory' AND l.classid=$3::oid AND l.objid=$4::oid AND l.objsubid=2 AND NOT l.granted`,
+      [operator, application, ...pageBarrier]);
+      return rows[0];
+    }, 'Expected a live standby backend to reach the second player page');
+
+    await t.test('WAL recovery aborts a blocked CSV without falling back or releasing the slot early', async () => {
+      const filesBefore = (await readdir(outputDirectory)).sort();
+      const primaryCallsBefore = await primaryPageCalls();
+      const lockConflicts = async () => (await standbyObserver.query<{ count: number }>(`
+        SELECT confl_lock::int AS count FROM pg_stat_database_conflicts WHERE datname=current_database()`)).rows[0].count;
+      const conflictsBefore = await lockConflicts();
+      await standbyObserver.query('SELECT pg_advisory_lock($1,$2)', [...pageBarrier]);
+      const exportResult = exportAuditPlayer(login, { ...options, limits: { pageSize: 1 },
+        destination: join(outputDirectory, 'recovery-conflict.csv') })
+        .then(result => ({ result }), (error: unknown) => ({ error }));
+      try {
+        const backend = await waitForBlockedPage();
+        const partial = (await readdir(outputDirectory)).find(file => file.endsWith('.part'));
+        assert(partial);
+        assert((await readFile(join(outputDirectory, partial), 'utf8')).includes(depositId));
+        const postingRefs = schema + '.audit_posting_refs';
+        assert.equal((await standbyObserver.query(`SELECT 1 FROM pg_locks
+          WHERE pid=$1 AND relation=$2::regclass AND mode='AccessShareLock' AND granted`,
+        [backend.pid, postingRefs])).rowCount, 1);
+
+        // Keep the page barrier held while WAL applies the primary's exclusive lock.
+        await primaryObserver.query(`BEGIN; LOCK TABLE ${postingRefs} IN ACCESS EXCLUSIVE MODE; COMMIT`);
+        const result = await exportResult;
+        assert('error' in result && result.error instanceof AuditPlayerReportError);
+        assert.equal(result.error.code, 'source-unavailable');
+        assert(result.error.jobId);
+        const jobId = result.error.jobId;
+        assert.deepEqual(await audit.prepare(`SELECT status,reason,row_count::text,byte_count::text,reader_route,standby_drained_at
+          FROM audit_export_jobs WHERE id=?`).get(jobId),
+        { status: 'failed', reason: 'source-unavailable', row_count: '0', byte_count: '0', reader_route: 'standby',
+          standby_drained_at: null });
+        assert.deepEqual((await readdir(outputDirectory)).sort(), filesBefore);
+        await waitFor(async () => (await standbyObserver.query(`SELECT 1 FROM pg_stat_activity
+          WHERE pid=$1 AND backend_start=$2::timestamptz`, [backend.pid, backend.backend_start])).rowCount === 0
+          ? true : undefined, 'Recovery conflict left its standby PostgreSQL backend active');
+        await waitFor(async () => await lockConflicts() > conflictsBefore ? true : undefined,
+          'Expected PostgreSQL to count a standby lock conflict');
+        assert.equal(await lockConflicts(), conflictsBefore + 1);
+        assert.equal(await primaryPageCalls(), primaryCallsBefore);
+        await assert.rejects(beginPrimary(), { code: '55P03' });
+        await waitForDrain(jobId);
+        const next = await beginPrimary();
+        await primaryReader.query(`SELECT ${schema}.audit_report_finish($1,'cancelled',0,0,'cancelled')`, [next.rows[0].id]);
+
+        const retryFile = join(outputDirectory, 'after-recovery-conflict.csv');
+        const retry = await exportAuditPlayer(login, { ...options, destination: retryFile });
+        assert.equal(retry.rowCount, 1);
+        assert((await readFile(retryFile, 'utf8')).includes(depositId));
+        await waitForDrain(retry.jobId);
+      } finally {
+        await standbyObserver.query('SELECT pg_advisory_unlock_all()');
+        await exportResult;
+      }
+    });
+
     await t.test('an active standby job cannot read on primary or publish after a source is revoked', async () => {
       await grant.run(operator, datasetId, pending);
       const filesBefore = (await readdir(outputDirectory)).sort();
@@ -197,14 +261,7 @@ test('physical standby enforces WAL, routes and grants when exporting a player r
         destination: join(outputDirectory, 'revoked-during-read.csv') })
         .then(result => ({ result }), (error: unknown) => ({ error }));
       try {
-        const backend = await waitFor(async () => {
-          const { rows } = await standbyObserver.query<{ pid: number; backend_start: string }>(`
-            SELECT a.pid,a.backend_start::text FROM pg_stat_activity a JOIN pg_locks l ON l.pid=a.pid
-            WHERE a.usename=$1 AND a.application_name=$2 AND a.state='active'
-              AND l.locktype='advisory' AND l.classid=$3::oid AND l.objid=$4::oid AND l.objsubid=2 AND NOT l.granted`,
-          [operator, application, ...pageBarrier]);
-          return rows[0];
-        }, 'Expected a live standby backend to reach the second player page');
+        const backend = await waitForBlockedPage();
         const partial = (await readdir(outputDirectory)).find(file => file.endsWith('.part'));
         assert(partial);
         assert((await readFile(join(outputDirectory, partial), 'utf8')).includes(pendingId));

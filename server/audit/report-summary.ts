@@ -7,16 +7,16 @@ export async function readAuditSummary(
     signal?: AbortSignal; fixtureStandbyPort?: number },
 ) {
   const result = await runAuditReport(config, input, 'summary', 60_000, async (settings, schema, jobId, signal, authorizePublication) => {
-    const { connection, finish } = await openAuditReportReader(settings, jobId, signal);
+    const { query, finish } = await openAuditReportReader(settings, jobId, signal);
     try {
       signal.throwIfAborted();
-      const query = await connection.query<{ summary: SummaryReport }>('SELECT ' + schema + '.audit_report_summary($1) AS summary', [jobId]);
-      const summary = query.rows[0]?.summary;
+      const result = await query<{ summary: SummaryReport }>('SELECT ' + schema + '.audit_report_summary($1) AS summary', [jobId]);
+      const summary = result.rows[0]?.summary;
       if (!summary || summary.datasetId !== input.datasetId.toLowerCase() || !Array.isArray(summary.rows)) {
         throw new AuditPlayerReportError('internal-error', jobId);
       }
       signal.throwIfAborted();
-      await connection.query('COMMIT');
+      await query('COMMIT');
       const output = { jobId, ...summary };
       const bytes = Buffer.byteLength(JSON.stringify(output) + '\n', 'utf8');
       await authorizePublication?.(async () => {});

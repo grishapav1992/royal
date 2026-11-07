@@ -67,13 +67,13 @@ export async function exportAuditReplay(config: ClientConfig, input: {
 }) {
   if (!isReplayId(input.datasetId) || !isReplayId(input.filters.replayId)) throw new Error('Invalid audit replay identity');
   return runAuditReport(config, input, 'replay', timeoutMs, async (settings, schema, jobId, signal, publish) => {
-    const { connection, finish } = await openAuditReportReader(settings, jobId, signal);
+    const { query, finish } = await openAuditReportReader(settings, jobId, signal);
     let candidate: unknown;
     try {
       signal.throwIfAborted();
-      const result = await connection.query<{ replay: unknown }>(`SELECT ${schema}.audit_report_replay($1) AS replay`, [jobId]);
+      const result = await query<{ replay: unknown }>(`SELECT ${schema}.audit_report_replay($1) AS replay`, [jobId]);
       candidate = result.rows[0]?.replay;
-      await connection.query('COMMIT');
+      await query('COMMIT');
     } finally {
       await finish();
     }

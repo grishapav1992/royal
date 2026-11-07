@@ -463,13 +463,18 @@ async function cancelStandbyReplayWait(standby: Standby, audit: PostgresDatabase
     await waitFor(async () => (await observer.query('SELECT pg_get_wal_replay_pause_state() AS state')).rows[0]?.state === 'paused'
       ? true : undefined, 2000, signal);
     pending = exportAuditPlayer(operator, { ...input, signal }).then(() => null, error => error);
-    const pid = await waitFor(async () => (await observer.query(`SELECT pid FROM pg_stat_activity
-      WHERE application_name='royal/audit-player' AND query LIKE '%pg_last_wal_replay_lsn%'`)).rows[0]?.pid as number | undefined,
-    2000, signal);
+    const backend = await waitFor(async () => (await observer.query<{ pid: number; backend_start: string }>(
+      `SELECT pid,backend_start::text FROM pg_stat_activity
+      WHERE usename=$1 AND application_name='royal/audit-player' AND query LIKE '%pg_last_wal_replay_lsn%'`,
+      [operator.user])).rows[0], 2000, signal);
+    const started = performance.now();
     controller.abort();
-    const result = await pending;
-    await waitFor(async () => (await observer.query('SELECT 1 FROM pg_stat_activity WHERE pid=$1', [pid])).rowCount
-      ? undefined : true, 2000, abort);
+    const [{ result, cancellationMs }, databaseReaderStopMs] = await Promise.all([
+      pending.then(result => ({ result, cancellationMs: rounded(performance.now() - started) })),
+      waitFor(async () => (await observer.query(
+        'SELECT 1 FROM pg_stat_activity WHERE pid=$1 AND backend_start=$2::timestamptz', [backend.pid, backend.backend_start])).rowCount
+        ? undefined : rounded(performance.now() - started), 2000, abort),
+    ]);
     const journal = result instanceof AuditPlayerReportError && result.jobId
       ? await audit.prepare('SELECT status,reason FROM audit_export_jobs WHERE id=?').get(result.jobId) : null;
     await observer.query('SELECT pg_wal_replay_resume()');
@@ -477,7 +482,7 @@ async function cancelStandbyReplayWait(standby: Standby, audit: PostgresDatabase
     if (!(result instanceof AuditPlayerReportError) || !result.jobId) throw new Error('Missing cancelled standby report job');
     await waitForStandbyDrain(standby, audit, result.jobId, abort);
     const files = await readdir(directory);
-    return { replayWaitObserved: true, readerStopped: true,
+    return { replayWaitObserved: true, readerStopped: true, cancellationMs, databaseReaderStopMs,
       journalCancelled: result.code === 'cancelled' &&
         journal?.status === 'cancelled' && journal.reason === 'cancelled',
       noPartialOutput: files.length === 1 && files[0] === 'player.csv' };
@@ -778,8 +783,10 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     const cancellationOk = cancellation.outcome === 'cancelled' && cancellation.noPartialOutput &&
       cancellation.readerStopped && cancellation.journalCancelled && (replayCancellation === null ||
         (replayCancellation.journalCancelled && replayCancellation.noPartialOutput));
+    const readerStopMs = standby ? replayCancellation?.databaseReaderStopMs ?? null : cancellation.databaseReaderStopMs;
     const budget = assessBudget(options.budget, { stakeP95Ms: active.metrics.stake.p95Ms,
-      settlementP95Ms: active.metrics.settlement.p95Ms, readerStopMs: cancellation.databaseReaderStopMs });
+      settlementP95Ms: active.metrics.settlement.p95Ms, readerStopMs });
+    const readerStopTarget = standby ? 'standby-wal-replay-wait' : 'primary-active-query';
     const pilot = control ? assessAuditPilotGate(control.metrics, active.metrics) : null;
     const pilotPassed = pilot ? pilot.ok && firstQueryObserved && observedOverlap && serialVerified : true;
     const postgres = (await audit.prepare('SHOW server_version').get())!.server_version as string;
@@ -791,7 +798,9 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
         (control?.noDoubleMoney ?? true) && replayVerified && (detail?.verified ?? true) && pilotPassed,
       runtime: { node: process.version, postgres, platform: process.platform, architecture: process.arch },
       workload: { workers: options.workers, roundsPerWorker: options.roundsPerWorker, seedRounds: options.seedRounds },
-      ...(scale ? { scale } : {}), ...(budget ? { budget } : {}),
+      ...(scale ? { scale } : {}), ...(budget ? { budget: {
+        ...budget, ...(options.budget?.readerStopMs === undefined ? {} : { readerStopTarget }),
+      } } : {}),
       ...(control && pilot ? {
         withAuditWithoutReports: { metrics: control.metrics, elapsedMs: control.elapsedMs,
           noDoubleMoney: control.noDoubleMoney, postings: control.actualPostings },

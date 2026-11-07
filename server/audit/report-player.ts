@@ -1,4 +1,4 @@
-import pg, { type ClientConfig, type QueryResult } from 'pg';
+import pg, { type ClientConfig, type QueryResult, type QueryResultRow } from 'pg';
 import { setTimeout as pause } from 'node:timers/promises';
 import { identifier } from '../database';
 import { AuditCsvExportError, writeAuditCsv } from './export-csv';
@@ -70,6 +70,18 @@ function failureCode(error: unknown, signal: AbortSignal, timeout: AbortSignal):
 export async function openAuditReportReader({ fixtureReplayLsn, ...config }: ReaderConfig, jobId: string, signal: AbortSignal, readOnly = true) {
   const connection = new pg.Client(config);
   connection.on('error', () => { /* Active query errors are handled by the export. */ });
+  const query = async <Row extends QueryResultRow = QueryResultRow>(sql: string, values?: unknown[]) => {
+    try {
+      return await connection.query<Row>(sql, values);
+    } catch (error) {
+      const code = (error as { code?: string } | null)?.code;
+      // Recovery can cancel the standby statement or terminate its session.
+      if (fixtureReplayLsn && code === '40001') {
+        throw new AuditPlayerReportError('source-unavailable', jobId);
+      }
+      throw error;
+    }
+  };
   let end: Promise<void> | undefined;
   const close = () => { end ??= connection.end().catch(() => {}); };
   const finish = async () => {
@@ -86,7 +98,7 @@ export async function openAuditReportReader({ fixtureReplayLsn, ...config }: Rea
       const deadline = performance.now() + 2000;
       for (;;) {
         signal.throwIfAborted();
-        const { rows } = await connection.query(`SELECT pg_is_in_recovery() AS standby,
+        const { rows } = await query(`SELECT pg_is_in_recovery() AS standby,
           pg_last_wal_replay_lsn() >= $1::pg_lsn AS replayed`, [fixtureReplayLsn]);
         if (!rows[0]?.standby) throw new AuditPlayerReportError('source-unavailable', jobId);
         if (rows[0].replayed) break;
@@ -94,13 +106,13 @@ export async function openAuditReportReader({ fixtureReplayLsn, ...config }: Rea
         await pause(5, undefined, { signal });
       }
     }
-    await connection.query(readOnly ? 'BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY' : 'BEGIN ISOLATION LEVEL READ COMMITTED');
-    const settings = await connection.query("SELECT pg_size_bytes(current_setting('temp_file_limit'))::text AS bytes");
+    await query(readOnly ? 'BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY' : 'BEGIN ISOLATION LEVEL READ COMMITTED');
+    const settings = await query("SELECT pg_size_bytes(current_setting('temp_file_limit'))::text AS bytes");
     const bytes = Number(settings.rows[0]?.bytes);
     if (!Number.isSafeInteger(bytes) || bytes < 0 || bytes > maxTempBytes) {
       throw new AuditPlayerReportError('source-unavailable', jobId);
     }
-    return { connection, finish };
+    return { connection, query, finish };
   } catch (error) {
     await finish();
     throw error;
@@ -108,12 +120,12 @@ export async function openAuditReportReader({ fixtureReplayLsn, ...config }: Rea
 }
 
 async function* pages(config: ReaderConfig, fn: string, jobId: string, limits: Limits, signal: AbortSignal): AsyncGenerator<PlayerReportRow> {
-  const { connection, finish } = await openAuditReportReader(config, jobId, signal);
+  const { query, finish } = await openAuditReportReader(config, jobId, signal);
   let cursor: PlayerReportCursor | null = null, scanned = 0;
   try {
     for (;;) {
       signal.throwIfAborted();
-      const result: QueryResult<{ page: PlayerReportPage }> = await connection.query<{ page: PlayerReportPage }>(
+      const result: QueryResult<{ page: PlayerReportPage }> = await query<{ page: PlayerReportPage }>(
         'SELECT ' + fn + '($1,$2,$3,$4,$5) AS page',
         [jobId, cursor?.at ?? null, cursor?.source ?? null, cursor?.id ?? null, limits.pageSize]);
       const page: PlayerReportPage | undefined = result.rows[0]?.page;
@@ -128,7 +140,7 @@ async function* pages(config: ReaderConfig, fn: string, jobId: string, limits: L
       if (page.scanned < limits.pageSize) break;
       cursor = page.cursor;
     }
-    await connection.query('COMMIT');
+    await query('COMMIT');
   } finally {
     await finish();
   }

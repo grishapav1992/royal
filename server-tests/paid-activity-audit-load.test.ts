@@ -113,6 +113,9 @@ test('audit load verifies both report limits, exact CSV balances and concurrent 
   assert.equal(report.capture.gaps, 0);
   assert.equal(report.cancellation.noPartialOutput, true);
   assert.equal(report.budget.ok, true);
+  assert.equal(report.budget.readerStopTarget, 'primary-active-query');
+  assert.equal(report.budget.checks.find(({ metric }: { metric: string }) => metric === 'readerStopMs').actual,
+    report.cancellation.databaseReaderStopMs);
   assert.deepEqual(report.budget.checks.map(({ metric, passed }: { metric: string; passed: boolean }) => [metric, passed]),
     [['stakeP95Ms', true], ['settlementP95Ms', true], ['readerStopMs', true]]);
 });
@@ -128,6 +131,7 @@ test('audit load returns a failed budget result and disposes of its fixture', { 
     assert.equal(report.ok, false);
     assert.equal(report.withAudit.noDoubleMoney, true);
     assert.equal(report.budget.ok, false);
+    assert.equal(report.budget.readerStopTarget, 'primary-active-query');
     assert.deepEqual(report.budget.checks, [{ metric: 'readerStopMs',
       actual: report.cancellation.databaseReaderStopMs, limit: 1, passed: false }]);
     return true;
@@ -270,6 +274,16 @@ for (const reverse of [false, true]) test(`pilot gate uses equal fixtures with t
 const pgBasebackup = process.env.ROYAL_AUDIT_TEST_PG_BASEBACKUP;
 const skewedParentClock = 'data:text/javascript,' + encodeURIComponent(
   "Object.defineProperty(performance, 'timeOrigin', { value: performance.timeOrigin + 60000 })");
+function assertStandbyCancellation(cancellation: {
+  cancellationMs: number; databaseReaderStopMs: number; replayWaitObserved: boolean;
+  readerStopped: boolean; journalCancelled: boolean; noPartialOutput: boolean;
+}) {
+  const { cancellationMs, databaseReaderStopMs, ...outcome } = cancellation;
+  assert(Number.isFinite(cancellationMs) && cancellationMs > 0);
+  assert(Number.isFinite(databaseReaderStopMs) && databaseReaderStopMs > 0);
+  assert.deepEqual(outcome, { replayWaitObserved: true, readerStopped: true, journalCancelled: true, noPartialOutput: true });
+}
+
 for (const standby of [false, true]) test(
   `replay-first ${standby ? 'standby' : 'primary'} pilot verifies replay and detail with separate process clocks`,
   { timeout: 35_000, skip: standby && !pgBasebackup }, async t => {
@@ -311,8 +325,7 @@ for (const standby of [false, true]) test(
     assert.equal(report.standby.afterReports.streaming, true);
     assert.equal(report.pilotGate.databaseActivity.withReports.tempBytes, 0);
     assert(report.standby.databaseActivity.withReports.tempBytes > 0);
-    assert.deepEqual(report.standby.replayCancellation,
-      { replayWaitObserved: true, readerStopped: true, journalCancelled: true, noPartialOutput: true });
+    assertStandbyCancellation(report.standby.replayCancellation);
   }
   assert.equal(report.ok, report.pilotGate.ok);
   assert.equal(exitCode, report.ok ? 0 : 1);
@@ -323,7 +336,7 @@ test('standby pilot waits for journal WAL and releases a reader when replay is p
     const directory = await mkdtemp(join(tmpdir(), 'royal-audit-load-check-'));
     t.after(() => rm(directory, { recursive: true, force: true }));
     const { stdout, exitCode } = await run(['--pilot-gate', '--workers', '2', '--rounds', '3',
-      '--standby-pg-basebackup', pgBasebackup!], { ...process.env, TMPDIR: directory })
+      '--standby-pg-basebackup', pgBasebackup!, '--reader-stop-budget-ms', '60000'], { ...process.env, TMPDIR: directory })
       .then(({ stdout }) => ({ stdout, exitCode: 0 }), error => {
         if (error.code !== 1 || !error.stdout) throw error;
         return { stdout: String(error.stdout), exitCode: 1 };
@@ -342,6 +355,9 @@ test('standby pilot waits for journal WAL and releases a reader when replay is p
     assert.notEqual(report.standby.beforeControl.replayLsn, report.standby.afterReports.replayLsn);
     assert(report.standby.databaseActivity.withReports.blocksHit > report.standby.databaseActivity.withoutReports.blocksHit);
     assert.equal(report.standby.lockCancellationTarget, 'primary');
-    assert.deepEqual(report.standby.replayCancellation,
-      { replayWaitObserved: true, readerStopped: true, journalCancelled: true, noPartialOutput: true });
+    assertStandbyCancellation(report.standby.replayCancellation);
+    assert(report.cancellation.databaseReaderStopMs >= report.cancellation.cancellationMs);
+    assert.equal(report.budget.readerStopTarget, 'standby-wal-replay-wait');
+    assert.deepEqual(report.budget.checks, [{ metric: 'readerStopMs',
+      actual: report.standby.replayCancellation.databaseReaderStopMs, limit: 60000, passed: true }]);
   });

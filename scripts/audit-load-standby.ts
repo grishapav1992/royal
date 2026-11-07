@@ -76,7 +76,8 @@ async function loopbackPort() {
 
 /** Clone only the benchmark-owned primary. No external database connection is accepted. */
 export async function startAuditLoadStandby(pgBasebackup: string,
-  primary: { PGPORT: string; PGDATABASE: string; PGUSER: string; PGPASSWORD: string }, signal?: AbortSignal) {
+  primary: { PGPORT: string; PGDATABASE: string; PGUSER: string; PGPASSWORD: string }, signal?: AbortSignal,
+  options?: { immediateRecoveryConflicts?: boolean }) {
   const port = await loopbackPort();
   const backup = resolve(pgBasebackup);
   if (!/^pg_basebackup(?:\.exe)?$/.test(basename(backup))) throw new Error('Expected a pg_basebackup executable');
@@ -99,8 +100,9 @@ export async function startAuditLoadStandby(pgBasebackup: string,
       '--checkpoint=fast', '--wal-method=stream', '--write-recovery-conf', '--no-password'],
     { env, timeout: 20_000, signal });
     signal?.throwIfAborted();
+    const recoveryDelay = options?.immediateRecoveryConflicts ? ' -c max_standby_streaming_delay=0' : '';
     await control(['start', '-w', '-t', '10', '-l', join(directory, 'standby.log'),
-      '-o', `-h 127.0.0.1 -p ${port} -c unix_socket_directories= -c hot_standby_feedback=off`]);
+      '-o', `-h 127.0.0.1 -p ${port} -c unix_socket_directories= -c hot_standby_feedback=off${recoveryDelay}`]);
   } catch (error) {
     await stop();
     signal?.throwIfAborted();
