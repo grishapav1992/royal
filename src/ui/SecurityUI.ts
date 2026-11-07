@@ -20,7 +20,12 @@ export class SecurityUI {
   }
   get active() { return this.until > 0; }
   intervention(decision: SecurityDecision) {
-    if(decision.reason)this.dialog.querySelector('h2 + p')!.textContent=decision.reason==='collision'?translateText('Вход закрыт за толчки охранника.'):translateText('Вход закрыт за повторное нарушение правил чата.');
+    if (decision.reason) {
+      const reason = decision.reason === 'collision' ? 'Вход закрыт за толчки охранника.'
+        : decision.reason === 'profanity' ? 'Вход закрыт за избыток мата в чате.'
+        : 'Вход закрыт за повторное нарушение правил чата.';
+      this.dialog.querySelector('h2 + p')!.textContent = translateText(reason);
+    }
     for (const dialog of Array.from(document.querySelectorAll<HTMLDialogElement>('dialog[open]'))) dialog.close();
     this.scene.setSecurity(true);
     document.querySelector<HTMLInputElement>('#chat-input')?.blur();

@@ -76,12 +76,19 @@ function isProfane(word: string): boolean {
 }
 
 /** Match whole words so a benign word containing a similar fragment stays readable. */
-export function maskChatText(text: string): string {
-  return text.replace(/[\p{L}\p{M}\p{N}\p{Cf}]+/gu, word => {
+export function filterChatProfanity(text: string): { text: string; count: number } {
+  let count = 0;
+  const masked = text.replace(/[\p{L}\p{M}\p{N}\p{Cf}]+/gu, word => {
     if (!isProfane(normalize(word))) return word;
+    count++;
     const characters = Array.from(word.replace(/\p{Cf}/gu, ''));
     return characters[0] + '*'.repeat(characters.length - 2) + characters.at(-1);
   });
+  return { text: masked, count };
+}
+
+export function maskChatText(text: string): string {
+  return filterChatProfanity(text).text;
 }
 
 /** Sanction only explicit forms of address. A bare insult can be a quotation or self-commentary. */

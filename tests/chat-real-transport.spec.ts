@@ -43,7 +43,7 @@ async function captureRealTransport(page: Page) {
   return cdp;
 }
 
-test('real chat masks profanity and ejects an account after a second directed insult', async ({ browser, request }) => {
+test('real chat masks profanity and enforces both insult and profanity ejections', async ({ browser, request }) => {
   const hostLogin = await request.post(api + '/api/auth/login', { data: { email: `transport-host-${crypto.randomUUID()}@example.test`, password: 'Royal-test-123!' } });
   expect(hostLogin.ok()).toBe(true);
   const cookie = hostLogin.headers()['set-cookie'].split(';')[0];
@@ -91,8 +91,19 @@ test('real chat masks profanity and ejects an account after a second directed in
     await expect(observer.locator('.security-message').last()).toContainText('Entry blocked for 10 minutes');
     await expect(sender.locator('#security-dialog')).toBeVisible({ timeout: 20000 });
     await expect(sender.locator('#security-return')).toBeDisabled();
+
+    await observer.locator('#chat-input').fill('fuck shit Scheiße putain coño cazzo kurwa caralho klootzak');
+    await observer.locator('#send-chat').click();
+    const maskedFlood = 'f**k s**t S*****e p****n c**o c***o k***a c*****o k******k';
+    await expect(observer.locator('#chat-log > [data-message-id]').filter({ hasText: maskedFlood })).toHaveCount(1);
+    await expect(observer.locator('#chat-input')).toBeEnabled();
+    await observer.locator('#chat-input').fill('блять'); await observer.locator('#send-chat').click();
+    await expect(observer.locator('.security-message').last()).toContainText('too much profanity in chat');
+    await expect(observer.locator('#security-dialog')).toBeVisible({ timeout: 20000 });
+    await expect(observer.locator('#security-dialog')).toContainText('Entry blocked for excessive profanity in chat.');
+    await expect(observer.locator('#security-return')).toBeDisabled();
     expect(errors).toEqual([]);
-    console.log('REAL_CHAT_PROOF: English UI + PostgreSQL + real WebSocket, masked delivery, warning and ejection after insults in two languages.');
+    console.log('REAL_CHAT_PROOF: English UI + PostgreSQL + real WebSocket, masked delivery, ejection for repeated insults and at ten profane words.');
     await cdp.detach();
   } finally { await senderContext.close(); await observerContext.close(); await host.leave(); }
 });

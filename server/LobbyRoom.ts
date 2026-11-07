@@ -10,8 +10,9 @@ import { Bartender } from './bartender';
 import { AmbientGuests } from './ambientGuests';
 import { RoomCat } from './cat';
 import { chatSpam } from './chatSpam';
+import { chatProfanity } from './chatProfanity';
 import { chatQueue } from './chatQueue';
-import { isDirectedChatInsult, maskChatText } from '../src/shared/chatConduct';
+import { filterChatProfanity, isDirectedChatInsult } from '../src/shared/chatConduct';
 import { guardBumps } from './guardBumps';
 import { blockedByGuard } from '../src/shared/guardCollision';
 import type { SecurityDecision } from '../src/shared/security';
@@ -39,6 +40,11 @@ type ProfileRevision = { name: number; skin: number; appearance: number };
 type Access = { active: boolean; banUntil: number; drinking: DrinkingState; revision: number; profileRevision: ProfileRevision; pendingDrink: boolean; pendingEject: boolean };
 const pendingDrinks = new Set<string>();
 const pendingChatDiscipline = new Set<string>();
+const CHAT_REJECTIONS = {
+  spam: 'Сообщение отклонено за спам.',
+  insult: 'Сообщение отклонено за оскорбление игроков.',
+  profanity: 'Сообщение отклонено из-за избытка мата.',
+};
 const CABINET_REACTION_MS = 2400;
 const CABINET_REACTION_INTERVAL_MS = 450;
 const CABINET_PLAY_DISTANCE = 90;
@@ -73,8 +79,13 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       this.guards.enqueue(client.sessionId, decision);
       client.send('security', decision);
       const violation = decision.reason === 'insult' ? 'оскорбления' : 'спам';
-      this.publish({ id: randomUUID(), senderId: 'security', name: 'ОХРАНА', time: Date.now(),
-        text: decision.kind === 'warning' ? p.name + ', первое предупреждение за ' + violation + '. Повтор в течение суток: выход на 10 минут.' : p.name + (decision.reason==='collision'?', десять толчков охранника. Вход закрыт на 10 минут.':', повторное нарушение. Вход закрыт на 10 минут.') });
+      const ejection = decision.reason === 'collision' ? ', десять толчков охранника. Вход закрыт на 10 минут.'
+        : decision.reason === 'profanity' ? ', слишком много мата в чате. Вход закрыт на 10 минут.'
+        : ', повторное нарушение. Вход закрыт на 10 минут.';
+      const text = decision.kind === 'warning'
+        ? p.name + ', первое предупреждение за ' + violation + '. Повтор в течение суток: выход на 10 минут.'
+        : p.name + ejection;
+      this.publish({ id: randomUUID(), senderId: 'security', name: 'ОХРАНА', time: Date.now(), text });
     }
   };
   private controls = new Map<string, Control>();
@@ -361,17 +372,22 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       const current = () => !this.disposed && this.state.players.get(client.sessionId) === player
         && this.controls.get(client.sessionId) === control && control.chatRevision === chatRevision
         && player.connected && !player.security && this.accessAllowed(client);
+      const filtered = filterChatProfanity(text);
+      const profanity = chatProfanity.check(id, filtered.count);
       const spam = chatSpam.check(id, text);
-      const violation = spam === 'spam' ? 'spam' : isDirectedChatInsult(text) ? 'insult' : undefined;
+      const violation = profanity ? 'profanity' : spam === 'spam' ? 'spam' : isDirectedChatInsult(text) ? 'insult' : undefined;
       if (violation) {
         pendingChatDiscipline.add(id);
         try {
-          if (violation === 'insult') chatSpam.clear(id);
+          if (violation !== 'spam') chatSpam.clear(id);
           control.chatRevision++;
-          finish('rejected', violation === 'spam' ? 'Сообщение отклонено за спам.' : 'Сообщение отклонено за оскорбление игроков.');
+          finish('rejected', CHAT_REJECTIONS[violation]);
           chatQueue.cancel(id);
           if (!await accounts.active(hash)) { this.logoutListener(hash); return; }
-          const decision = await accounts.moderation.record(id);
+          const decision = violation === 'profanity'
+            ? await accounts.moderation.eject(id, Date.now(), violation)
+            : await accounts.moderation.record(id);
+          if (violation === 'profanity') chatProfanity.clear(id);
           accounts.events.emit('security', id, { ...decision, reason: violation });
         } catch { client.send('notice', 'Не удалось подтвердить действие. Попробуй ещё раз.'); }
         finally { pendingChatDiscipline.delete(id); }
@@ -384,7 +400,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
           if (!valid()) return;
           if (!await accounts.active(hash)) { this.logoutListener(hash); return; }
           if (!valid()) return;
-          this.publish({ id: randomUUID(), senderId: client.sessionId, name: player.name, text: maskChatText(text), time: Date.now(), ...(requestId ? { requestId } : {}) });
+          this.publish({ id: randomUUID(), senderId: client.sessionId, name: player.name, text: filtered.text, time: Date.now(), ...(requestId ? { requestId } : {}) });
           finish('published');
         } catch {
           finish('rejected', 'Не удалось подтвердить сообщение. Оно не отправлено. Попробуй ещё раз.');

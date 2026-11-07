@@ -161,7 +161,9 @@ export class Guards {
     if (kind === 'warning') {
       g.speech = reason === 'spam' ? 'Не засоряй чат. Хватит спамить.' : 'Не оскорбляй других гостей.';
     } else {
-      g.speech = reason === 'collision' ? 'Десятый толчок. На выход.' : 'Правила были озвучены. На выход.';
+      g.speech = reason === 'collision' ? 'Десятый толчок. На выход.'
+        : reason === 'profanity' ? 'Слишком много мата. На выход.'
+        : 'Правила были озвучены. На выход.';
     }
   }
   tick(dt: number) {

@@ -28,13 +28,13 @@ export class ModerationStore {
     return { kind: repeat ? 'ejecting' : 'warning', until };
     }, { lockKey: 'account:' + id });
   }
-  async eject(id:string,now=Date.now()):Promise<SecurityDecision> {
+  async eject(id: string, now = Date.now(), reason: 'collision' | 'profanity' = 'collision'): Promise<SecurityDecision> {
     await this.ready;
     return this.db.transaction(async () => {
     const until=Math.max(await this.banUntil(id,now),now+SECURITY_BAN_MS);
     (await this.db.prepare(`INSERT INTO chat_conduct_discipline(account_id,warned_until,banned_until) VALUES(?,0,?)
       ON CONFLICT(account_id) DO UPDATE SET warned_until=0,banned_until=excluded.banned_until`).run(id,until));
-    return {kind:'ejecting',until,reason:'collision'};
+    return { kind: 'ejecting', until, reason };
     }, { lockKey: 'account:' + id });
   }
 }

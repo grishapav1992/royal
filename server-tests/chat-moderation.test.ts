@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { isDirectedChatInsult, maskChatText } from '../src/shared/chatConduct';
+import { filterChatProfanity, isDirectedChatInsult, maskChatText } from '../src/shared/chatConduct';
 
 test('chat masks profanity and preserves standalone non-obscene insults', () => {
   assert.equal(maskChatText('Fuck! Я идиот.'), 'F**k! Я идиот.');
@@ -26,6 +26,13 @@ test('European profanity is masked in the same message regardless of language', 
     'F**k, S*****e, p****n, c**o, c***o, k***a, c*****o, k******k, б***ь',
   );
   assert.equal(maskChatText('foda-se, hijo de puta, vai a fanculo'), 'f**a-se, hijo de p**a, vai a f*****o');
+});
+
+test('the profanity count matches masked occurrences and includes repeats', () => {
+  assert.deepEqual(filterChatProfanity('Fuck, fuck, f**k, идиот, kurwa'), {
+    text: 'F**k, f**k, f**k, идиот, k***a',
+    count: 3,
+  });
 });
 
 test('explicit insults target people even when the insult is not profanity', () => {
