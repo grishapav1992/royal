@@ -18,7 +18,7 @@ const committed = (ref, file) => git('show', ref + ':' + file);
 const release = read('module-build/release-manifest.json');
 const receipt = read('module-build/release-github.json');
 const before = read(baseline);
-const scope = read(folder + '/scope.json');
+const scope = JSON.parse(committed(installer, folder + '/scope.json'));
 assert.equal(text('status', '--porcelain'), '');
 assert.equal(text('rev-parse', 'HEAD'), release.sourceCommit);
 assert.equal(receipt.sourceCommit, release.sourceCommit);
@@ -30,7 +30,7 @@ assert.equal(before.container.image, before.preparedImage);
 assert.deepEqual(before.program, before.preparedProgram);
 for (const ref of [release.sourceCommit, receipt.remoteMain, installer]) git('merge-base', '--is-ancestor', ref, 'origin/main');
 const changedOnlyReleaseTooling = text('diff', '--name-only', installer + '^', installer).split('\n');
-assert(changedOnlyReleaseTooling.length && changedOnlyReleaseTooling.every(file => file.startsWith(folder + '/')));
+assert(changedOnlyReleaseTooling.length && changedOnlyReleaseTooling.every(file => file.startsWith(folder + '/')), 'Installer revision must only contain app release tooling');
 const config = kind => folder + '/' + kind + '-projection.json';
 const readers = {};
 for (const kind of ['host', 'backend']) {
@@ -88,7 +88,7 @@ const installerReceipt = { format: 1, sourceCommit: installer, applicationSource
 const helperReceiptSha256 = write('installer-github.json', JSON.stringify(installerReceipt));
 const helperSha256 = write('deploy.py', committed(installer, folder + '/deploy.py'));
 const snapshotSha256 = write('snapshot.py', committed(installer, 'deployment/releases/mira-walk-24-20261107-v1/snapshot.py'));
-const scopeSha256 = write('scope.json', committed(release.sourceCommit, folder + '/scope.json'));
+const scopeSha256 = write('scope.json', committed(installer, folder + '/scope.json'));
 for (const file of ['release-manifest.json', 'release-github.json']) write(file, fs.readFileSync('module-build/' + file));
 const manifest = { release: name, sourceCommit: release.sourceCommit, baseCommit: before.sourceCommit,
   helperSourceCommit: installer, helperReceiptSha256, before, changed, delta, serverDelta, support, helperSha256,

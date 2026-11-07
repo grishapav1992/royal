@@ -60,6 +60,7 @@
     "src/wallet/ProgressionClient.ts": "f0b3a77c7adeee4cc80587281b9cd3dc0d01e86d7ff692d60296c325f0174a8e"
   },
   "preservedBackendInputs": {
-    "src/i18n/en.ts": "e6a39483750df92467b584e98319ce679f2a3489669e4b0d3f64a2d7ba0a762c"
+    "src/i18n/en.ts": "e6a39483750df92467b584e98319ce679f2a3489669e4b0d3f64a2d7ba0a762c",
+    "src/i18n/progressionEn.ts": "66c68ac05b3b362c4ef1dae60afaeb1c484d6ada0887adefd9954a4de12c1ba4"
   }
 }
