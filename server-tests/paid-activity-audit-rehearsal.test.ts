@@ -16,6 +16,7 @@ import { reconcileStoredPvpMatch } from '../server/audit/check-pvp';
 import { reconcileStoredTotePool } from '../server/audit/check-tote';
 import { initializeAuditExportDirectory, registerAuditExportFile } from '../server/audit/cleanup-files';
 import { applyAuditCleanup, installAuditCleanup, previewAuditCleanup } from '../server/audit/cleanup';
+import type { AuditSourceRef } from '../server/audit/contract';
 import { AuditDatasets } from '../server/audit/datasets';
 import { auditHttpAttempts } from '../server/audit/http-attempts';
 import { auditCommandRoutes } from '../server/audit/intents';
@@ -28,10 +29,15 @@ import { installAuditPlayerReport } from '../server/audit/report-player-source';
 import { exportAuditPlayer } from '../server/audit/report-player';
 import { installAuditSummaryReport } from '../server/audit/report-summary-source';
 import { readAuditSummary } from '../server/audit/report-summary';
+import { cryptoConfig } from '../server/crypto/config';
+import type { CryptoProvider } from '../server/crypto/nowpayments';
+import { CryptoStore } from '../server/crypto/store';
 import { databaseConfig, identifier, PostgresDatabase } from '../server/database';
 import { DemoWalletStore } from '../server/demoWallet';
 import { NileCombatEscrow } from '../server/finance/combat-escrow';
 import { FlagToteStore } from '../server/flagTote';
+import { PaymentCredits } from '../server/payments/credits';
+import { PaymentOutbox } from '../server/payments/outbox';
 import { PvpStore } from '../server/pvp/store';
 import { VirtualPvpLedger } from '../server/pvp/virtual-wallet';
 import { temporaryDatabase } from '../scripts/database-test';
@@ -116,7 +122,7 @@ async function openStores(game: PostgresDatabase) {
   return { wallet, bank, pvp };
 }
 
-test('isolated rehearsal settles accepted casino, PvP and shared pool money after observer failure and test-to-live cutover',
+test('isolated rehearsal settles accepted games and preserves payments through observer failure and test-to-live cutover',
   { timeout: pgBin ? 65_000 : 25_000 }, async t => {
     // The project database runner supplies these values and creates a disposable local cluster.
     assert.equal(process.env.NODE_ENV, 'test');
@@ -125,9 +131,10 @@ test('isolated rehearsal settles accepted casino, PvP and shared pool money afte
     assert.equal(process.env.DATABASE_URL, '');
     assert.equal(process.env.DATABASE_URL_FILE, '');
     const originalGame = new PostgresDatabase(':memory:'), originalAudit = new PostgresDatabase(':memory:');
-    let game = originalGame, audit = originalAudit, connectionEnv = process.env;
+    const originalPayments = new PostgresDatabase(':memory:');
+    let game = originalGame, audit = originalAudit, payments = originalPayments, connectionEnv = process.env;
     let restored: Awaited<ReturnType<typeof temporaryDatabase>> | undefined;
-    const connections = new Set([game, audit]);
+    const connections = new Set([game, audit, payments]);
     let runtime: ReturnType<typeof startAuditAttemptRuntime>;
     t.after(async () => {
       try { await runtime?.close(); }
@@ -139,6 +146,23 @@ test('isolated rehearsal settles accepted casino, PvP and shared pool money afte
     const player = randomUUID(), other = randomUUID();
     await game.exec('CREATE TABLE accounts(id text PRIMARY KEY)');
     await game.prepare('INSERT INTO accounts VALUES (?),(?)').run(player, other);
+    await payments.exec('CREATE TABLE accounts(id text PRIMARY KEY)');
+    await payments.prepare('INSERT INTO accounts VALUES (?)').run(player);
+    // Credit an already confirmed Stars purchase without contacting a provider.
+    const openPaymentStores = () => {
+      const credits = new PaymentCredits(game);
+      const outbox = new PaymentOutbox(payments, 'http://fixture/internal/payments/events', 'a'.repeat(64), credits.ready,
+        async (_url, init) => Response.json(await credits.apply(JSON.parse(String(init?.body)))));
+      const crypto = new CryptoStore(payments, cryptoConfig({}), {} as CryptoProvider, outbox.ready,
+        undefined, undefined, change => outbox.record(change));
+      return { credits, outbox, crypto };
+    };
+    let { credits, outbox, crypto } = openPaymentStores();
+    const openingPayment = randomUUID(), testPayment = randomUUID(), livePayment = randomUUID();
+    const credit = (id: string, units: string) => crypto.creditStarsDeposit(player, id, units, 'rehearsal-' + id, 100);
+    await credit(openingPayment, '1000000');
+    await outbox.flush();
+    assert.deepEqual(await credits.snapshot(player), { balanceUnits: '1000000', reservedUnits: '0' });
     let { wallet, bank, pvp } = await openStores(game);
     for (const account of [player, other]) {
       await wallet.operate(account, { id: randomUUID(), kind: 'deposit', amount: 1000 });
@@ -155,7 +179,8 @@ test('isolated rehearsal settles accepted casino, PvP and shared pool money afte
       for (const actor of [a, b]) await pvp.command(actor, { id: randomUUID(), action: 'ready', challengeId: match }, now + 2);
       return match;
     };
-    const sources = { game: game.schema }, namespace = game.schema + '.demo_ledger';
+    const sources = { game: game.schema, payments: payments.schema };
+    const namespace = game.schema + '.demo_ledger', paymentNamespace = payments.schema + '.crypto_ledger';
     let datasets = new AuditDatasets(audit, sources);
     const testDataset = await datasets.startTest();
     await installAuditCleanup(audit);
@@ -174,15 +199,15 @@ test('isolated rehearsal settles accepted casino, PvP and shared pool money afte
     await installAuditPlayerReport(audit, group, sources);
     await installAuditSummaryReport(audit, group, sources);
     await installAuditDetailReport(audit, group, sources);
-    const grant = (datasetId: string) =>
-      audit.prepare('INSERT INTO audit_report_acl VALUES (?,?,?)').run(operator, datasetId, namespace);
+    const grant = (datasetId: string) => audit.prepare('INSERT INTO audit_report_acl VALUES (?,?,?),(?,?,?)')
+      .run(operator, datasetId, namespace, operator, datasetId, paymentNamespace);
     await grant(testDataset.datasetId);
     let verifyOriginal: (() => Promise<void>) | undefined;
     if (pgBin) {
       const privateRoot = await mkdtemp(join(tmpdir(), 'royal-audit-rehearsal-dump-'));
       t.after(() => rm(privateRoot, { recursive: true, force: true }));
       const archive = join(privateRoot, 'rehearsal.dump');
-      const schemas = [game.schema, audit.schema];
+      const schemas = [game.schema, audit.schema, payments.schema];
       const scope = schemas.map(schema => '--schema=' + schema);
       const inspect = (client: PoolClient) => inspectArchiveState(client, schemas, operator, group, originalAudit.schema);
       const expected = await archiveSnapshot(originalGame, async client => {
@@ -193,8 +218,8 @@ test('isolated rehearsal settles accepted casino, PvP and shared pool money afte
         await localArchiveTool('pg_dump', process.env, [...scope, snapshot, '--format=custom', '--file=' + archive]);
         return { state, schema: schemaFingerprint(ddl.stdout), archive: sha256(await readFile(archive)) };
       });
-      assert.deepEqual(expected.state.triggers.map(row => [row.table_name, row.tgenabled]),
-        [['capro_pending_ledger', 'O'], ['demo_ledger', 'O']]);
+      assert.deepEqual(expected.state.triggers.map(row => [row.table_name, row.tgenabled]).sort(),
+        [['capro_pending_ledger', 'O'], ['crypto_ledger', 'O'], ['demo_ledger', 'O']]);
       assert.deepEqual(expected.state.operatorAccess, { member: true, schema_usage: true, run_report: true, read_source: false });
       restored = await temporaryDatabase();
       assert.notEqual(restored.env.PGPORT, process.env.PGPORT);
@@ -207,8 +232,9 @@ test('isolated rehearsal settles accepted casino, PvP and shared pool money afte
       const config = databaseConfig(connectionEnv);
       game = new PostgresDatabase(originalGame.schema, { existingSchema: true, config });
       audit = new PostgresDatabase(originalAudit.schema, { existingSchema: true, config });
-      connections.add(game).add(audit);
-      await Promise.all([game.ready, audit.ready]);
+      payments = new PostgresDatabase(originalPayments.schema, { existingSchema: true, config });
+      connections.add(game).add(audit).add(payments);
+      await Promise.all([game.ready, audit.ready, payments.ready]);
       assert.deepEqual(await archiveSnapshot(game, inspect), expected.state);
       assert.equal(schemaFingerprint((await localArchiveTool('pg_dump', connectionEnv, [...scope, '--schema-only'])).stdout), expected.schema);
       verifyOriginal = async () => {
@@ -216,12 +242,27 @@ test('isolated rehearsal settles accepted casino, PvP and shared pool money afte
         assert.equal(schemaFingerprint((await localArchiveTool('pg_dump', process.env, [...scope, '--schema-only'])).stdout), expected.schema);
       };
       ({ wallet, bank, pvp } = await openStores(game));
+      ({ credits, outbox, crypto } = openPaymentStores());
       datasets = new AuditDatasets(audit, sources, { existingSchema: true });
     }
+    const checkpoint = (datasetId: string) => audit.prepare(`SELECT available_units::text,reserved_units::text
+      FROM audit_opening_balances WHERE dataset_id=? AND source_namespace=? AND account_id=?`)
+      .get(datasetId, paymentNamespace, player);
+    assert.deepEqual(await checkpoint(testDataset.datasetId), { available_units: '1000000', reserved_units: '0' });
+    const capturePayment = async (operationId: string) => {
+      const [posting, ...duplicates] = await payments.prepare('SELECT id::text FROM crypto_ledger WHERE account_id=? AND operation_id=?')
+        .all(player, operationId);
+      assert(posting);
+      assert.equal(duplicates.length, 0);
+      return { namespace: paymentNamespace, rowId: posting.id as string };
+    };
+    const openingPaymentAnchor = await capturePayment(openingPayment);
     const readOnlyAudit = new PostgresDatabase(audit.schema, { readOnly: true, existingSchema: true, config: databaseConfig(connectionEnv) });
     connections.add(readOnlyAudit);
     const reader = databaseConfig({ ...connectionEnv, DATABASE_URL: '', DATABASE_URL_FILE: '',
       PGUSER: operator, PGPASSWORD: password, PGPASSWORD_FILE: '' });
+    const detail = (datasetId: string, anchor: AuditSourceRef) => readAuditDetail(reader,
+      { schema: audit.schema, datasetId, filters: { source: anchor.namespace, postingId: anchor.rowId } });
     const observerEnv = { ...connectionEnv, ROYAL_AUDIT_SCHEMA: audit.schema, ROYAL_AUDIT_RECORDER_DB_URL_FILE: undefined,
       ROYAL_AUDIT_TEST_DATASET_ID: undefined, ROYAL_AUDIT_LIVE_DATASET_ID: undefined,
       ROYAL_AUDIT_TOTE_ADMISSION: '1', ROYAL_AUDIT_CHESS_REPLAY: undefined, ROYAL_AUDIT_COMBAT_REPLAY: undefined,
@@ -364,37 +405,55 @@ test('isolated rehearsal settles accepted casino, PvP and shared pool money afte
     assert.equal((await persistCapturedToteReplay(audit, {
       datasetId: testDataset.datasetId, gameSchema: game.schema, poolId: round.id, replayId: randomUUID(),
     })).status, 'stored');
+    await credit(testPayment, '2000000');
+    await credit(testPayment, '2000000');
+    const testPaymentAnchor = await capturePayment(testPayment);
+    assert.equal((await detail(testDataset.datasetId, testPaymentAnchor)).status, 'found');
+    assert.equal((await detail(testDataset.datasetId, openingPaymentAnchor)).status, 'not-captured');
 
     const period = (fromMs: number) => ({ fromMs, toMs: Date.now() + 60_000 });
     const testExport = join(testExports, 'postings.csv');
     const reportInput = (datasetId: string, fromMs: number, destination: string) =>
       ({ schema: audit.schema, datasetId, filters: { accountId: player, ...period(fromMs) }, destination });
-    assert.equal((await exportAuditPlayer(reader, reportInput(testDataset.datasetId, testDataset.startedAtMs, testExport))).rowCount, 7);
+    assert.equal((await exportAuditPlayer(reader, reportInput(testDataset.datasetId, testDataset.startedAtMs, testExport))).rowCount, 8);
     const csvBefore = await readFile(testExport, 'utf8');
-    for (const id of [testDataset.datasetId, roundId, match, tickets[0].id]) assert(csvBefore.includes(id));
+    for (const id of [testDataset.datasetId, roundId, match, tickets[0].id, testPayment]) assert(csvBefore.includes(id));
+    assert(!csvBefore.includes(openingPayment));
     const testSummary = await readAuditSummary(reader, { schema: audit.schema, datasetId: testDataset.datasetId,
       filters: period(testDataset.startedAtMs) });
     assert.equal(testSummary.environment, 'test');
-    assert.equal(testSummary.scanned, 10);
+    assert.equal(testSummary.scanned, 11);
+    const testDeposit = testSummary.rows.find(row => row.contour === 'real' && row.asset === 'USDT' && row.movement_type === 'deposit');
+    assert.deepEqual([testDeposit?.posting_count, testDeposit?.amount_units, testDeposit?.reserved_delta_units], ['1', '2000000', '0']);
     const poolPayout = testSummary.rows.find(row => row.category === 'totalizator' && row.movement_type === 'payout');
     assert.deepEqual([poolPayout?.posting_count, poolPayout?.amount_units], ['2', '380']);
     assert.equal(testSummary.rows.find(row => row.category === 'totalizator' && row.movement_type === 'fee')?.fee_units, '20');
     await registerAuditExportFile(filesRoot, testDataset.datasetId, 'postings.csv');
     await datasets.sealTest(testDataset.datasetId);
+    assert.deepEqual((await previewAuditCleanup(readOnlyAudit, cleanup)).blockers,
+      ['open-financial-source:' + payments.schema + '.payment_outbox']);
+    await outbox.flush();
+    assert.deepEqual(await credits.snapshot(player), { balanceUnits: '3000000', reservedUnits: '0' });
     const manifest = await previewAuditCleanup(readOnlyAudit, cleanup);
     assert.deepEqual(manifest.blockers, []);
     assert.equal(manifest.files.files.length, 1);
-    for (const [table, rows] of [['audit_posting_refs', 10], ['audit_evidence', 4], ['audit_attempt_capture_gaps', 1],
-      ['audit_replay_packages', 2], ['audit_export_jobs', 2], ['audit_report_acl', 1]] as const) {
+    for (const [table, rows] of [['audit_posting_refs', 11], ['audit_evidence', 4], ['audit_attempt_capture_gaps', 1],
+      ['audit_replay_packages', 2], ['audit_export_jobs', 4], ['audit_report_acl', 2]] as const) {
       assert.equal(manifest.rows.find(item => item.table === table)?.rows, rows);
     }
-    const sourcesSnapshot = () => Promise.all(['demo_ledger', 'demo_wallets', 'demo_casino_requests', 'demo_casino_sessions',
-      'pvp_matches', 'virtual_pvp_banks', 'virtual_pvp_holds', 'flag_tote_rounds', 'flag_tote_tickets', 'flag_tote_reservations'].map(table => game.prepare(
-      'SELECT to_jsonb(s) AS row FROM ' + identifier(table) + ' s ORDER BY to_jsonb(s)::text').all()));
+    const tableRows = (db: PostgresDatabase, tables: string[]) => tables.map(table => db.prepare(
+      'SELECT to_jsonb(s) AS row FROM ' + identifier(table) + ' s ORDER BY to_jsonb(s)::text').all());
+    const sourcesSnapshot = () => Promise.all([
+      ...tableRows(game, ['demo_ledger', 'demo_wallets', 'demo_casino_requests', 'demo_casino_sessions', 'pvp_matches',
+        'virtual_pvp_banks', 'virtual_pvp_holds', 'flag_tote_rounds', 'flag_tote_tickets', 'flag_tote_reservations',
+        'payment_credit_wallets', 'payment_credit_events']),
+      ...tableRows(payments, ['crypto_ledger', 'crypto_wallets', 'crypto_operations', 'crypto_wallet_holds', 'payment_outbox']),
+    ]);
     const protectedRows = await sourcesSnapshot();
     const live = await applyAuditCleanup(audit, { ...cleanup, expectedSha256: manifest.sha256 });
     assert.equal(live.status, 'complete');
     assert.notEqual(live.liveDatasetId, testDataset.datasetId);
+    assert.deepEqual(await checkpoint(live.liveDatasetId), { available_units: '3000000', reserved_units: '0' });
     assert.deepEqual(await sourcesSnapshot(), protectedRows);
     await assert.rejects(readFile(testExport), { code: 'ENOENT' });
     for (const item of manifest.rows) {
@@ -406,6 +465,8 @@ test('isolated rehearsal settles accepted casino, PvP and shared pool money afte
     assert.equal((await expand(moves.at(-1)!)).replayed, true);
     assert.equal((await bank.pvpFinish(player, { matchId: match, winnerId: player, reason: 'win' })).replayed, true);
     assert.equal((await pool.bet(ticketOwner, repeatTicket)).replayed, true);
+    await credit(openingPayment, '1000000');
+    await credit(testPayment, '2000000');
     assert.deepEqual(await sourcesSnapshot(), protectedRows);
     assert.equal(await audit.prepare('SELECT 1 FROM audit_posting_refs WHERE dataset_id=?').get(live.liveDatasetId), undefined);
     runtime = startAuditAttemptRuntime({ ...observerEnv, ROYAL_AUDIT_LIVE_DATASET_ID: live.liveDatasetId }, game.schema);
@@ -421,11 +482,21 @@ test('isolated rehearsal settles accepted casino, PvP and shared pool money afte
     assert.deepEqual(await play(), played);
     const liveClock = Date.now(), newMatch = await beginMatch(liveClock);
     await pvp.adjudicate(a.roomId, newMatch, player, 'win', liveClock + 3);
+    await credit(livePayment, '3000000');
+    await credit(livePayment, '3000000');
+    await outbox.flush();
+    const livePaymentAnchor = await capturePayment(livePayment);
+    const finalPaymentBalance = await payments.prepare('SELECT balance_units::text,reserved_units::text FROM crypto_wallets WHERE account_id=?')
+      .get(player);
+    assert.deepEqual(finalPaymentBalance, { balance_units: '6000000', reserved_units: '0' });
+    assert.deepEqual(await credits.snapshot(player), { balanceUnits: '6000000', reservedUnits: '0' });
     await stopObserver();
-    const liveRefs = await audit.prepare('SELECT operation_id FROM audit_posting_refs WHERE dataset_id=? ORDER BY source_row_id')
-      .all(live.liveDatasetId);
-    assert.deepEqual(liveRefs.map(row => row.operation_id), [newOperation.id, newOperation.id,
+    const liveRefs = await audit.prepare(`SELECT source_namespace,operation_id FROM audit_posting_refs
+      WHERE dataset_id=? ORDER BY source_namespace,source_row_id`).all(live.liveDatasetId);
+    assert.equal(liveRefs.length, 6);
+    assert.deepEqual(liveRefs.filter(row => row.source_namespace === namespace).map(row => row.operation_id), [newOperation.id, newOperation.id,
       'pvp:' + newMatch + ':hold', 'pvp:' + newMatch + ':hold', 'pvp:' + newMatch + ':final']);
+    assert.deepEqual(liveRefs.filter(row => row.source_namespace === paymentNamespace).map(row => row.operation_id), [livePayment]);
     const liveAttempts = await audit.prepare("SELECT payload->'scope' AS scope,payload->>'operationId' AS operation_id FROM audit_evidence WHERE dataset_id=?")
       .all(live.liveDatasetId);
     assert.equal(liveAttempts.length, 2);
@@ -433,23 +504,26 @@ test('isolated rehearsal settles accepted casino, PvP and shared pool money afte
 
     await grant(live.liveDatasetId);
     const liveExport = join(filesRoot, 'live.csv');
-    assert.equal((await exportAuditPlayer(reader, reportInput(live.liveDatasetId, live.liveStartedAtMs, liveExport))).rowCount, 4);
+    assert.equal((await exportAuditPlayer(reader, reportInput(live.liveDatasetId, live.liveStartedAtMs, liveExport))).rowCount, 5);
     const liveCsv = await readFile(liveExport, 'utf8');
-    assert(liveCsv.includes(newOperation.id) && liveCsv.includes(newMatch));
-    for (const old of [testDataset.datasetId, roundId, match, round.id, ...tickets.map(ticket => ticket.id)]) {
+    for (const id of [newOperation.id, newMatch, livePayment]) assert(liveCsv.includes(id));
+    for (const old of [testDataset.datasetId, roundId, match, round.id, openingPayment, testPayment, ...tickets.map(ticket => ticket.id)]) {
       assert(!liveCsv.includes(old));
     }
     const summary = await readAuditSummary(reader, { schema: audit.schema, datasetId: live.liveDatasetId, filters: period(live.liveStartedAtMs) });
     assert.equal(summary.environment, 'live');
-    assert.equal(summary.scanned, 5);
-    assert.deepEqual([...new Set(summary.rows.map(row => row.category))].sort(), ['casino', 'pvp']);
+    assert.equal(summary.scanned, 6);
+    assert.deepEqual([...new Set(summary.rows.flatMap(row => row.category ? [row.category] : []))].sort(), ['casino', 'pvp']);
     assert.equal(summary.rows.find(row => row.category === 'pvp' && row.movement_type === 'fee')?.fee_units, '100');
-    const detail = (datasetId: string, postingId: string) => readAuditDetail(reader,
-      { schema: audit.schema, datasetId, filters: { source: namespace, postingId } });
-    for (const anchor of [casinoAnchor, matchAnchor, ticketAnchor]) {
-      assert.equal((await detail(live.liveDatasetId, anchor.rowId)).status, 'not-captured');
+    const liveDeposit = summary.rows.find(row => row.contour === 'real' && row.asset === 'USDT' && row.movement_type === 'deposit');
+    assert.deepEqual([liveDeposit?.posting_count, liveDeposit?.amount_units, liveDeposit?.reserved_delta_units], ['1', '3000000', '0']);
+    for (const anchor of [casinoAnchor, matchAnchor, ticketAnchor, openingPaymentAnchor, testPaymentAnchor]) {
+      assert.equal((await detail(live.liveDatasetId, anchor)).status, 'not-captured');
     }
-    assert.equal((await detail(live.liveDatasetId, (await capture(newOperation.id)).rowId)).status, 'found');
-    await assert.rejects(detail(testDataset.datasetId, casinoAnchor.rowId), { code: 'permission-denied' });
+    assert.equal((await detail(live.liveDatasetId, await capture(newOperation.id))).status, 'found');
+    assert.equal((await detail(live.liveDatasetId, livePaymentAnchor)).status, 'found');
+    for (const anchor of [casinoAnchor, testPaymentAnchor]) {
+      await assert.rejects(detail(testDataset.datasetId, anchor), { code: 'permission-denied' });
+    }
     await verifyOriginal?.();
   });
