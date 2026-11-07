@@ -81,13 +81,17 @@ test('flood protection warns about speed before sanctioning and allows ordinary 
  spam.clear('normal');assert.equal(spam.check('normal','ещё одна реплика',92000),'ok');
 });
 
-test('spam catches small edits to long messages but permits changing numbers in conversation', () => {
+test('spam requires an exact duplicate before treating small edits as a repeat', () => {
  const spam = new ChatSpam();
  assert.equal(spam.check('a', 'Заходите в нашу группу, там ежедневно раздают бонусы', 1000), 'ok');
  assert.equal(spam.check('a', 'Заходите в нашу группку, там ежеднево раздают бонусы', 6000), 'ok');
- assert.equal(spam.check('a', 'Заходите в нашу групу, там ежедневно раздают бонусы!', 11000), 'spam');
+ assert.equal(spam.check('a', 'Заходите в нашу групу, там ежедневно раздают бонусы!', 11000), 'ok');
+ assert.equal(spam.check('a', 'Заходите в нашу группу, там ежедневно раздают бонусы!', 16000), 'spam');
  for (let index = 1; index <= 3; index++) {
   assert.equal(spam.check('b', 'У меня сейчас на игровом счёте ' + index * 100 + ' очков', 1000 + index * 5000), 'ok');
+ }
+ for (const [index, name] of ['Анна', 'Инна', 'Яна'].entries()) {
+  assert.equal(spam.check('c', 'Спасибо за игру, ' + name + '! Удачи за следующим столом!', 20000 + index * 6000), 'ok');
  }
 });
 

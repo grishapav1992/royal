@@ -373,26 +373,39 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
         && this.controls.get(client.sessionId) === control && control.chatRevision === chatRevision
         && player.connected && !player.security && this.accessAllowed(client);
       const filtered = filterChatProfanity(text);
-      const profanity = chatProfanity.check(id, filtered.count);
-      const spam = chatSpam.check(id, text);
-      const violation = profanity ? 'profanity' : spam === 'spam' ? 'spam' : isDirectedChatInsult(text) ? 'insult' : undefined;
-      if (violation) {
+      const countProfanity = () => chatProfanity.check(id, filtered.count, Date.now(), requestId);
+      const moderate = async (violation: keyof typeof CHAT_REJECTIONS, verified: boolean) => {
         pendingChatDiscipline.add(id);
         try {
+          if (!verified) {
+            result('queued');
+            chatQueue.cancel(id);
+            if (!await accounts.active(hash)) { this.logoutListener(hash); return; }
+            if (!current()) return;
+            if (countProfanity()) violation = 'profanity';
+          }
           if (violation !== 'spam') chatSpam.clear(id);
           control.chatRevision++;
           finish('rejected', CHAT_REJECTIONS[violation]);
           chatQueue.cancel(id);
-          if (!await accounts.active(hash)) { this.logoutListener(hash); return; }
           const decision = violation === 'profanity'
             ? await accounts.moderation.eject(id, Date.now(), violation)
             : await accounts.moderation.record(id);
           if (violation === 'profanity') chatProfanity.clear(id);
           accounts.events.emit('security', id, { ...decision, reason: violation });
-        } catch { client.send('notice', 'Не удалось подтвердить действие. Попробуй ещё раз.'); }
-        finally { pendingChatDiscipline.delete(id); }
-        return;
-      }
+        } catch {
+          const message = 'Не удалось подтвердить действие. Попробуй ещё раз.';
+          if (finished) client.send('notice', message);
+          else finish('rejected', message);
+        } finally {
+          pendingChatDiscipline.delete(id);
+          if (!finished) finish('cancelled', 'Отправка сообщения отменена.');
+        }
+      };
+      const spam = chatSpam.check(id, text);
+      const otherPlayers = Array.from(this.state.players.values()).filter(other => other !== player && other.connected);
+      const violation = spam === 'spam' ? 'spam' : isDirectedChatInsult(text, otherPlayers.map(other => other.name)) ? 'insult' : undefined;
+      if (violation) { await moderate(violation, false); return; }
       if (spam === 'slow') { finish('rejected', 'Слишком быстро. Продолжение спама вызовет охранника.'); return; }
       const queued = chatQueue.enqueue(id, async cancelled => {
         const valid = () => !cancelled() && current();
@@ -400,6 +413,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
           if (!valid()) return;
           if (!await accounts.active(hash)) { this.logoutListener(hash); return; }
           if (!valid()) return;
+          if (countProfanity()) { await moderate('profanity', true); return; }
           this.publish({ id: randomUUID(), senderId: client.sessionId, name: player.name, text: filtered.text, time: Date.now(), ...(requestId ? { requestId } : {}) });
           finish('published');
         } catch {

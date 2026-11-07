@@ -91,16 +91,49 @@ export function maskChatText(text: string): string {
   return filterChatProfanity(text).text;
 }
 
-/** Sanction only explicit forms of address. A bare insult can be a quotation or self-commentary. */
-export function isDirectedChatInsult(text: string): boolean {
-  const normalized = normalize(text).replace(/[’‘]/gu, "'").replace(/\s+/gu, ' ').trim().replace(/[.!?…]+$/u, '').trimEnd();
-  const opener = /^([\p{L}\p{M}]+)[,.!?…]+ /u.exec(normalized);
-  const addressed = opener && isProfane(opener[1]) ? normalized.slice(opener[0].length) : normalized;
+const QUOTES = new Map([['"', '"'], ["'", "'"], ['«', '»'], ['“', '”'], ['„', '“'], ['‘', '’']]);
+const LETTER = /[\p{L}\p{M}]/u;
+
+function* chatSentences(text: string): Iterable<string> {
+  const closingQuotes: string[] = [];
+  let start = 0;
+  for (let index = 0; index < text.length; index++) {
+    const character = text[index], next = text[index + 1] ?? '';
+    const afterLetter = LETTER.test(text[index - 1] ?? '');
+    // An apostrophe inside a word belongs to the word, including inside a quote.
+    if ((character === "'" || character === '’') && afterLetter && LETTER.test(next)) continue;
+    if (character === closingQuotes.at(-1)) { closingQuotes.pop(); continue; }
+    const close = QUOTES.get(character);
+    if (close && !(character === "'" && afterLetter)) { closingQuotes.push(close); continue; }
+    if (closingQuotes.length) continue;
+    if ('.!?…'.includes(character) && (!next || next === ' ')) {
+      yield text.slice(start, index);
+      start = index + 1;
+    }
+  }
+  yield text.slice(start);
+}
+
+function insultSentence(sentence: string, names: readonly string[]): boolean {
+  const text = sentence.trim().replace(/[.!?…]+$/u, '').trimEnd().replace(/[’‘]/gu, "'");
+  const opener = /^([\p{L}\p{M}]+)[,.!?…]+ /u.exec(text);
+  const addressed = opener && isProfane(opener[1]) ? text.slice(opener[0].length) : text;
   const mention = /^@[\p{L}\p{N}_][\p{L}\p{M}\p{N}_.-]{0,47}(?:\s*[:,]\s*|\s+)/u.exec(addressed);
-  const phrase = mention ? addressed.slice(mention[0].length) : addressed;
+  const name = !mention && names.find(candidate => addressed.startsWith(candidate + ','));
+  const phrase = mention ? addressed.slice(mention[0].length) : name ? addressed.slice(name.length + 1).trimStart() : addressed;
   return ADDRESS_RULES.some(({ prefix, insult, attack }) => {
-    if (attack?.test(phrase) || (mention && insult.test(phrase))) return true;
+    if (attack?.test(phrase) || ((mention || name) && insult.test(phrase))) return true;
     const address = prefix.exec(phrase);
     return address !== null && insult.test(phrase.slice(address[0].length));
   });
+}
+
+/** Sanction explicit forms of address in individual sentences, keeping quotations intact. */
+export function isDirectedChatInsult(text: string, playerNames: readonly string[] = []): boolean {
+  const normalized = normalize(text).replace(/\s+/gu, ' ').trim();
+  const names = playerNames.map(name => normalize(name).replace(/[’‘]/gu, "'"));
+  for (const sentence of chatSentences(normalized)) {
+    if (insultSentence(sentence, names)) return true;
+  }
+  return false;
 }

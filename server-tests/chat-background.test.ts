@@ -72,6 +72,19 @@ test('an expired session never publishes or adds sanctions', async context => {
   assert(packets.some(packet => packet.type === 'chat-result' && packet.value.id === id && packet.value.status === 'cancelled'));
 });
 
+test('profanity from an expired session cannot eject a later valid session', async context => {
+  const checks: SessionCheck[] = [];
+  const account = context.name, expired = fixture(context, { suffix: '-expired', account, checks });
+  const valid = fixture(context, { suffix: '-valid', account, checks });
+  const nine = expired.send({ id: randomUUID(), text: 'fuck shit Scheiße putain coño cazzo kurwa caralho klootzak' });
+  await expired.flush(); checks[0].resolve(false); await nine;
+  assert.equal(expired.published.length, 0);
+  const one = valid.send({ id: randomUUID(), text: 'блять' });
+  await valid.flush(); checks[1].resolve(true); await one;
+  assert.equal(valid.eject.mock.callCount(), 0);
+  assert.deepEqual(valid.published.map(message => message.text), ['б***ь']);
+});
+
 test('profanity is masked before broadcast without adding sanctions', async context => {
   const { send, checks, published, packets, record, flush } = fixture(context);
   const id = randomUUID(), pending = send({ id, text: 'Fuck, я идиот!' });
@@ -87,18 +100,20 @@ test('profanity is masked before broadcast without adding sanctions', async cont
 test('the tenth profane word ejects once across rooms without counting a retried request', async context => {
   const checks: SessionCheck[] = [];
   const account = context.name, a = fixture(context, { suffix: '-a', account, checks }), b = fixture(context, { suffix: '-b', account, checks });
-  const first = { id: randomUUID(), text: 'fuck shit kurwa merde cazzo coño' };
-  const six = a.send(first);
-  await a.flush(); checks[0].resolve(true); await six;
+  const first = { id: randomUUID(), text: 'fuck shit kurwa merde cazzo' };
+  const five = a.send(first);
+  await a.flush(); checks[0].resolve(true); await five;
   await a.send(first);
-  const nine = b.send({ id: randomUUID(), text: 'caralho putain klootzak' });
-  await a.flush(); checks[1].resolve(true); await nine;
+  const replay = b.send({ ...first, id: first.id.toUpperCase() });
+  await a.flush(); checks[1].resolve(true); await replay;
+  const nine = b.send({ id: randomUUID(), text: 'coño caralho putain klootzak' });
+  await a.flush(); checks[2].resolve(true); await nine;
   assert.equal(b.record.mock.callCount(), 0);
   assert.equal(b.eject.mock.callCount(), 0);
 
   const last = { id: randomUUID(), text: 'блять' };
   const ten = b.send(last);
-  await a.flush(); checks[2].resolve(true); await ten;
+  await a.flush(); checks[3].resolve(true); await ten;
   await b.send(last);
   assert.equal(b.eject.mock.callCount(), 1);
   assert.equal(b.record.mock.callCount(), 0);
@@ -106,21 +121,23 @@ test('the tenth profane word ejects once across rooms without counting a retried
     assert(room.packets.some(packet => packet.type === 'security' && packet.value.kind === 'ejecting' && packet.value.reason === 'profanity'));
   }
   assert(b.packets.some(packet => packet.type === 'chat-result' && packet.value.id === last.id && packet.value.status === 'rejected'));
-  assert.equal([...a.published, ...b.published].filter(message => message.senderId !== 'security').length, 2);
+  assert.equal(b.published.some(message => message.requestId === last.id), false);
 });
 
 test('two separate addressed insults invoke the guard once each, even in different languages', async context => {
-  const { send, checks, published, packets, record, flush, player } = fixture(context);
+  const { room, send, checks, published, packets, record, flush, player } = fixture(context);
+  const other = new Player(); other.name = 'Грифа';
+  room.state.players.set('other', other);
   let offenses = 0;
   record.mock.mockImplementation(async () => ({ kind: ++offenses === 1 ? 'warning' : 'ejecting', until: Date.now() + 600000 }));
-  const first = { id: randomUUID(), text: 'You are an idiot!' };
+  const first = { id: randomUUID(), text: 'Грифа, ты дебил!' };
   const warning = send(first);
   await flush(); checks[0].resolve(true); await warning;
   await send(first);
   assert.equal(record.mock.callCount(), 1);
   assert(packets.some(packet => packet.type === 'security' && packet.value.reason === 'insult' && packet.value.kind === 'warning'));
   player.security = '';
-  const second = { id: randomUUID(), text: 'Du bist ein Idiot!' };
+  const second = { id: randomUUID(), text: 'You are an idiot. Leave the room.' };
   const ejection = send(second);
   await flush(); checks[1].resolve(true); await ejection;
   assert.equal(record.mock.callCount(), 2);

@@ -58,10 +58,15 @@ export class ChatSpam {
     const entries = (this.accounts.get(id) ?? []).filter(entry => now-entry.at < 30000);
     entries.push({ at: now, text: normalized, telegram });
     this.accounts.set(id,entries);
-    const repeats = entries.filter(entry => entry.text === normalized || nearlyEqual(entry.text, normalized)).length;
+    const textCounts = new Map<string, number>();
+    for (const entry of entries) textCounts.set(entry.text, (textCounts.get(entry.text) ?? 0) + 1);
+    const repeats = textCounts.get(normalized)!;
+    // A similar message needs corroboration from an exact duplicate.
+    const repeatedVariant = [...textCounts].some(([candidate, count]) =>
+      candidate !== normalized && (repeats >= 2 || count >= 2) && nearlyEqual(candidate, normalized));
     const repeatedDestination = telegram.some(destination => entries.filter(entry => entry.telegram.includes(destination)).length >= 3);
     // Short replies and emoji need more repetitions to avoid punishing a normal conversation.
-    if (entries.filter(entry => now-entry.at < 10000).length >= 8 || repeatedDestination || repeats >= (Array.from(normalized).length >= 8 ? 3 : 5)) {
+    if (entries.filter(entry => now-entry.at < 10000).length >= 8 || repeatedDestination || repeatedVariant || repeats >= (Array.from(normalized).length >= 8 ? 3 : 5)) {
       this.clear(id);
       return 'spam';
     }
