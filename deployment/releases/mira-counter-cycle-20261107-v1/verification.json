@@ -1,0 +1,200 @@
+{
+  "release": "mira-counter-cycle-20261107-v1",
+  "sourceCommit": "2a077d6174cc13b4f6cc10d13d66cb2ff5bbbef5",
+  "baseCommit": "1b1bc2567628fbf5179e7528b5f8144db5cc0731",
+  "image": "sha256:9ddb3517cdaa91cc111a630d3eab7634a8525ae8444d80dfdceed612851361a1",
+  "installManifestSha256": "a07369320ca601db78e88f7525ea371c5bc693bb1457e83e7d755835cd154cbf",
+  "atlas": {
+    "path": "/assets/royal-bar/v3/mira-seat-cycle.png",
+    "sha256": "413967d35fcce83e46fac56cee52f236332d24bca64b66a291db6a2696427c4a",
+    "transitionFrames": 24,
+    "seatedFrames": 24,
+    "columns": 6,
+    "rows": 8,
+    "transitionMs": 960,
+    "restMs": 1920
+  },
+  "clientFiles": {
+    "assets/ActivitiesUI-B3yUZz8L.js": "dca8e42fbafee4d63f6959dbd560af4ae47999204c3c9902bf664fc56f23283d",
+    "assets/ClubWorld-0rN-7ov7.js": "2cd5137b7505f25e48b5421a24e769ac803c1daec88a4f2987d437b5dda8a4f0",
+    "assets/GameHostRuntime-ChiGMT_J.js": "75a38fa58df0337cc7f8c6707e14c2399e84dc5c0e979c75671f7d7be06f9f1a",
+    "assets/index-BB-IG0XF.js": "7bc3b3d72eb79906c277ad85125f5f734747b9a28a67ebad8dd49c9ced489cb0",
+    "assets/main-CuM2npUn.js": "d773fa1311e31adf3b69df797577fbc00233856c9346e5f4bfdacb48af3aad03",
+    "assets/phaser-C5kh86al.js": "4ac8c9bf47d910e212dc85f2ad457af430affab793c7e1be13b11687bfb4a21e",
+    "assets/playerLevelStatus-hK2YXlpC.js": "4d995cebaca377d38b91c24259222c43860dc0a2dcd62d59e1bf09bf4b742a10",
+    "assets/PvpUI-Bp0p92Fn.js": "895d418e8543be4f6842b05b8f4fa228006d176660ecb4ee4da9b371631cd563",
+    "index.html": "d9bea48065c5c8c6f28a4f220d769d1ec19bb7c563310656153ba41db49d480c",
+    "assets/royal-bar/v3/mira-seat-cycle.png": "413967d35fcce83e46fac56cee52f236332d24bca64b66a291db6a2696427c4a"
+  },
+  "sourceFiles": {
+    "src/game/Bar.ts": "60fde60dfcafa034bd34e4a0750891f8478acfbccbb0159186061aa981035f5e",
+    "src/game/miraAnimation.ts": "0e8d302f5623e13245714c9cfacac6bb730c0e6e8251c07f7154db9cd6704aa0",
+    "src/game/MiraRig.ts": "ca2be12150b9373d32b08a79eda592ee6b1b6479521130a346adc20ac785bf6c",
+    "src/shared/miraRoutine.ts": "25afb726f976e3f425ace6cf7393604c259bcd7911bce3a4e99e26f23a331fdb",
+    "public/assets/royal-bar/v3/mira-seat-cycle.png": "413967d35fcce83e46fac56cee52f236332d24bca64b66a291db6a2696427c4a"
+  },
+  "server": {
+    "published": {
+      "published": true,
+      "preparedImage": "sha256:9ddb3517cdaa91cc111a630d3eab7634a8525ae8444d80dfdceed612851361a1",
+      "runningImage": "sha256:9ddb3517cdaa91cc111a630d3eab7634a8525ae8444d80dfdceed612851361a1",
+      "containerRestarted": true,
+      "sourceCommit": "2a077d6174cc13b4f6cc10d13d66cb2ff5bbbef5",
+      "changedSources": 5,
+      "clientDeltaFiles": 10,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 1,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 10
+    },
+    "sourceBackup": {
+      "path": "/opt/royal-backups/mira-counter-cycle-20261107-v1/source.tgz",
+      "bytes": 5890,
+      "sha256": "08701b89babd01a88a46de7f46537905507266b76ce2fcb8f0ec6cc80a139278"
+    },
+    "financialBackup": {
+      "path": "/opt/royal-backups/mira-counter-cycle-20261107-v1/financial.dump",
+      "sha256": "bf9158992c701fb7171ae69f5632e77009f0fa72c5b3e811ec887fd096f48d2d",
+      "bytes": 38002631,
+      "databaseRestored": false
+    },
+    "programFiles": 8666,
+    "moduleFiles": 5395,
+    "backendSha256": "e43b6eb20d74b736e25566caa8f84d6a00a3aa7dd41d24ac87948a21063ba0c5",
+    "otherProgramsPreserved": true,
+    "modulesPreserved": true
+  },
+  "publicCheck": {
+    "health": true,
+    "clientFiles": 10,
+    "statuses": {
+      "/api/demo-wallet": 401,
+      "/api/nile-wallet": 410,
+      "/api/nile-play/wallet": 410
+    },
+    "desktopAndMobileGuestEntry": true
+  },
+  "checks": {
+    "rtpProfiles": 38,
+    "stakePolicies": 20,
+    "stakeAdmission": 20,
+    "motionAndRoutineTests": 31,
+    "walletTests": 10,
+    "occlusionViewports": 2,
+    "occlusionPoses": 128,
+    "extraWipePosesOnRight": 24,
+    "connectedCycle": [
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 900
+        },
+        "observed": [
+          "walk",
+          "sit-down",
+          "sit",
+          "stand-up",
+          "walk"
+        ],
+        "poseCounts": {
+          "sit-down": 23,
+          "sit": 24,
+          "stand-up": 23
+        },
+        "crossings": [
+          {
+            "action": "walk",
+            "frame": 9,
+            "x": 88.83323948307392,
+            "y": 469.32077664151217,
+            "bodyDepth": 510.75
+          },
+          {
+            "action": "walk",
+            "frame": 14,
+            "x": 89.08940872848034,
+            "y": 468.08011530399324,
+            "bodyDepth": 457
+          }
+        ],
+        "seated": true,
+        "roomId": "Gao3Ys424"
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "observed": [
+          "walk",
+          "sit-down",
+          "sit",
+          "stand-up",
+          "walk"
+        ],
+        "poseCounts": {
+          "sit-down": 23,
+          "sit": 24,
+          "stand-up": 23
+        },
+        "crossings": [
+          {
+            "action": "walk",
+            "frame": 9,
+            "x": 88.92345487082807,
+            "y": 469.0809496884736,
+            "bodyDepth": 510.75
+          },
+          {
+            "action": "walk",
+            "frame": 14,
+            "x": 88.97754811812192,
+            "y": 468.6506822165847,
+            "bodyDepth": 457
+          }
+        ],
+        "seated": true,
+        "roomId": "Gao3Ys424"
+      }
+    ],
+    "interruptedSitAndOutgoingOrder": true,
+    "connectedChat": true,
+    "phoneLayout": true,
+    "recoveryAfterReopening": {
+      "sameUuid": true,
+      "singleDebit": true,
+      "stakeUnits": 10
+    },
+    "productionWalletMutationsForTesting": false
+  },
+  "catalogue": {
+    "cataloguePointersCompared": 19,
+    "moduleFilesPreserved": 5395,
+    "addedGames": [],
+    "restoredGames": []
+  },
+  "maintenance": {
+    "release": "mira-counter-cycle-20261107-v1",
+    "sourceCommit": "2a077d6174cc13b4f6cc10d13d66cb2ff5bbbef5",
+    "status": "completed",
+    "currentImage": "sha256:9ddb3517cdaa91cc111a630d3eab7634a8525ae8444d80dfdceed612851361a1",
+    "rollbackImage": "sha256:daa07a08e1e6da6919d60a39918b56c85ecc0914c30f59a9a88552188e0fd608",
+    "healthOk": true,
+    "freeBefore": 12958646272,
+    "freeAfter": 12972310528,
+    "verificationPasses": 2,
+    "preservedFinancialFiles": 198,
+    "finishedAt": 1794075989.5641418,
+    "durationSeconds": 70.45,
+    "containersUnchanged": true,
+    "timerEnabled": true,
+    "timerActive": true,
+    "removedEntries": 26
+  },
+  "baselineVerification": {
+    "sharedGraphAtStart": "selected publication could not be verified",
+    "directRunningProgramAndSourceInventory": true
+  }
+}
