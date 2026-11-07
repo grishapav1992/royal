@@ -76,6 +76,10 @@ test('audit load rejects an oversized workload before provisioning', async () =>
     const failure = error as { code?: number; stderr?: string };
     return failure.code === 1 && JSON.parse(failure.stderr ?? '{}').message === 'Invalid isolated audit load options';
   });
+  await assert.rejects(run(['--control-after-reports']), error => {
+    const failure = error as { code?: number; stderr?: string };
+    return failure.code === 1 && JSON.parse(failure.stderr ?? '{}').message === 'The reversed control phase requires --pilot-gate';
+  });
 });
 
 test('audit load verifies both report limits, exact CSV balances and concurrent money at scale', { timeout: 35_000 }, async t => {
@@ -222,10 +226,12 @@ test('mixed history verifies exact category totals, commissions and the focused 
   assert.equal(exitCode, report.ok ? 0 : 1);
 });
 
-test('pilot gate measures audited wallets without reports and exits according to the fixed comparison', { timeout: 35_000 }, async t => {
+for (const reverse of [false, true]) test(`pilot gate uses equal fixtures with the control ${reverse ? 'after' : 'before'} reports`,
+  { timeout: 35_000 }, async t => {
   const directory = await mkdtemp(join(tmpdir(), 'royal-audit-load-check-'));
   t.after(() => rm(directory, { recursive: true, force: true }));
-  const result = await run(['--pilot-gate', '--workers', '2', '--rounds', '3'], { ...process.env, TMPDIR: directory })
+  const result = await run(['--pilot-gate', '--workers', '2', '--rounds', '3',
+    ...(reverse ? ['--control-after-reports'] : [])], { ...process.env, TMPDIR: directory })
     .then(({ stdout }) => ({ stdout, exitCode: 0 }), error => {
       if (error.code !== 1 || !error.stdout) throw error;
       return { stdout: String(error.stdout), exitCode: 1 };
@@ -235,6 +241,7 @@ test('pilot gate measures audited wallets without reports and exits according to
   assert.equal(report.capacityConfirmed, false);
   assert.equal(report.scale.ok, true);
   assert(report.reports.player.overlappingStakeCalls > 0);
+  assert.equal(report.reports.summary.scanned, 80);
   assert.equal(report.withAuditWithoutReports.noDoubleMoney, true);
   assert.equal(report.withAudit.noDoubleMoney, true);
   assert.equal(report.withAuditWithoutReports.postings, 34);
@@ -243,10 +250,11 @@ test('pilot gate measures audited wallets without reports and exits according to
   assert.equal(report.capture.attemptPayloads.rows, 24);
   assert.equal(report.capture.gaps, 0);
   const expected = assessAuditPilotGate(report.withAuditWithoutReports.metrics, report.withAudit.metrics);
-  const { databaseActivity, firstReport, firstQueryObserved, observedOverlap, ...gate } = report.pilotGate;
+  const { databaseActivity, firstReport, firstQueryObserved, observedOverlap, phaseOrder, ...gate } = report.pilotGate;
   assert.equal(firstReport, 'player');
   assert.equal(firstQueryObserved, true);
   assert.equal(observedOverlap, true);
+  assert.deepEqual(phaseOrder, reverse ? ['with-reports', 'without-reports'] : ['without-reports', 'with-reports']);
   assert.deepEqual(gate, expected);
   assert.equal(gate.noWalletErrorsOrTimeouts, true);
   assert.equal(report.ok, expected.ok);
@@ -268,7 +276,8 @@ for (const standby of [false, true]) test(
   const directory = await mkdtemp(join(tmpdir(), 'royal-audit-load-check-'));
   t.after(() => rm(directory, { recursive: true, force: true }));
   const { stdout, exitCode } = await run(['--pilot-gate', '--replay-first', '--report-process', '--mixed-history',
-    '--workers', '2', '--rounds', '3', '--seed', '8', ...(standby ? ['--standby-pg-basebackup', pgBasebackup!] : [])],
+    '--workers', '2', '--rounds', '3', '--seed', '8',
+    ...(standby ? ['--standby-pg-basebackup', pgBasebackup!, '--control-after-reports'] : [])],
   { ...process.env, TMPDIR: directory }, ['--import', skewedParentClock])
     .then(result => ({ stdout: result.stdout, exitCode: 0 }), error => {
       if (error.code !== 1 || !error.stdout) throw error;
@@ -279,6 +288,7 @@ for (const standby of [false, true]) test(
   assert.equal(report.capacityConfirmed, false);
   assert.equal(report.pilotGate.firstReport, 'replay');
   assert.equal(report.pilotGate.firstQueryObserved, true);
+  assert.deepEqual(report.pilotGate.phaseOrder, standby ? ['with-reports', 'without-reports'] : ['without-reports', 'with-reports']);
   assert.equal(report.pilotGate.noWalletErrorsOrTimeouts, true);
   assert.equal(report.pilotGate.maxP95GrowthPercent, 10);
   assert.equal(report.reports.replay.engineVerified, true);
