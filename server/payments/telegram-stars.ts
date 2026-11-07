@@ -5,6 +5,7 @@ import type { DatabaseRow } from '../database';
 import { gameAccountId } from '../../src/shared/nileWallet';
 import { amount } from '../crypto/amounts';
 import type { TelegramStarsConfig, TelegramProvider } from './telegram-provider';
+import { markOperationAttempt } from '../operation-attempt';
 
 const fail = (status: number, message: string): never => { throw new CryptoError(status, message); };
 const userId = (value: unknown): value is number => Number.isSafeInteger(value) && Number(value) > 0;
@@ -52,7 +53,7 @@ export class TelegramStarsStore {
       const old = await this.wallet.db.prepare('SELECT * FROM telegram_stars_orders WHERE id=?').get(op.id);
       if (old) {
         if (old.account_id !== accountId || Number(old.stars) !== op.stars || old.bot_id !== this.botId) fail(409, 'Нельзя изменить сохранённый платёж Stars.');
-        return this.view(old);
+        return markOperationAttempt(this.view(old), true);
       }
       if (!this.available(accountId)) fail(503, 'Оплата Telegram Stars пока не подключена для этого аккаунта.');
       if (this.config.trialAccountIds && op.stars !== 100) fail(400, 'Для проверки доступен только платёж 100 Stars.');
@@ -63,7 +64,7 @@ export class TelegramStarsStore {
       const row = await this.wallet.db.prepare(`INSERT INTO telegram_stars_orders(id,account_id,bot_id,stars,amount_units,terms_url,created_at,expires_at,updated_at)
         VALUES (?,?,?,?,?,?,?,?,?) RETURNING *`).get(op.id, accountId, this.botId, op.stars,
         String(BigInt(op.stars) * BigInt(this.config.unitsPerStar)), this.config.termsUrl, this.now(), this.now() + 1800000, this.now());
-      return this.view(row!);
+      return markOperationAttempt(this.view(row!), false);
     }, { lockKey: 'crypto-ledger' });
   }
   private async order(payload: unknown) {

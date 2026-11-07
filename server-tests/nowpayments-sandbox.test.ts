@@ -1,8 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID, createHmac } from 'node:crypto';
-import { once } from 'node:events';
+import { EventEmitter, once } from 'node:events';
 import express from 'express';
+import type { AuditAttemptObservation } from '../server/audit/attempts';
+import { auditHttpAttempts } from '../server/audit/http-attempts';
 import { PostgresDatabase } from '../server/database';
 import { DemoWalletStore } from '../server/demoWallet';
 import { SandboxPaymentStore } from '../server/payments/sandbox';
@@ -169,13 +171,16 @@ test('credential writer creates a private local file, keeps Sandbox disabled, an
   } finally { await rm(root, { recursive: true }); }
 });
 
-test('authenticated Sandbox deposit funds an accepted wager and idempotent replay in every one of the twelve Royal games', { timeout: 60000 }, async () => {
+test('authenticated Sandbox deposit funds an accepted wager and idempotent replay in every Royal house game', { timeout: 60000 }, async t => {
   const { accounts } = await import('../server/accounts');
   const { installDemoWallet } = await import('../server/demoWalletRoutes');
   const { installSandboxPayments } = await import('../server/payments/sandbox-routes');
   const provider = new Provider(), db = Reflect.get(accounts, 'db') as PostgresDatabase;
   const store = new SandboxPaymentStore(db, config, provider, accounts.wallet.ready);
-  const app = express(); installDemoWallet(app); const stop = installSandboxPayments(app, store);
+  const app = express(), audit = new EventEmitter();
+  app.use(auditHttpAttempts(attempt => { audit.emit('attempt', attempt); }));
+  installDemoWallet(app);
+  const stop = installSandboxPayments(app, store);
   const server = app.listen(0, '127.0.0.1'); await once(server, 'listening'); const address = server.address(); assert(address && typeof address !== 'string');
   const base = `http://127.0.0.1:${address.port}`;
   const settings: Record<string, unknown> = {
@@ -183,23 +188,65 @@ test('authenticated Sandbox deposit funds an accepted wager and idempotent repla
     'studio-caramel-carnival': { caramel: { mode: 'normal' } }, 'studio-last-convoy': { convoy: { mode: 'normal' } },
     'studio-nitro-run': { nitro: { mode: 'normal' } }, 'studio-meme-overload': { nitro: { mode: 'normal' } },
     'studio-afterglow': { afterglow: { mode: 'normal' } }, 'studio-dracona': { dracona: { mode: 'normal' } },
-    'studio-neopolis': { neopolis: { hero: 'granite' } }, 'github-crash': {}, 'original-cr-vs-leo': { penalty: { hero: 'leo', risk: 'safe' } },
+    'studio-neopolis': { neopolis: { hero: 'granite' } }, 'studio-forest-heart': { forestHeart: { mode: 'normal' } },
+    'github-crash': {}, 'original-cr-vs-leo': { penalty: { hero: 'leo', risk: 'safe' } },
+    'original-jackie-chan': { jackie: { risk: 'safe', costume: 'master', location: 'restaurant' } },
   };
   try {
     assert.equal((await fetch(base + '/api/nowpayments-sandbox')).status, 401);
+    await t.test('creation, retry and conflict are distinct audit decisions while refresh only checks payment status', async () => {
+      const login = await accounts.login('sandbox-' + randomUUID() + '@example.test', 'Sandbox-fixture-42!');
+      try {
+        const accountId = login.account.id, op = operation(), route = '/api/nowpayments-sandbox/deposits';
+        const exchange = async (path: string, body: unknown, status: number, decision: AuditAttemptObservation['decision']) => {
+          const observed = once(audit, 'attempt', { signal: AbortSignal.timeout(5000) });
+          const response = await fetch(base + path, { method: 'POST', body: JSON.stringify(body), headers: {
+            Cookie: 'royal_session=' + login.token, 'X-Royal-Account-Id': accountId, 'Content-Type': 'application/json',
+          } });
+          const result = await response.json(), [attempt] = await observed as [AuditAttemptObservation];
+          assert.equal(response.status, status);
+          assert.equal(attempt.statusCode, status);
+          assert.equal(attempt.accountId, accountId);
+          assert.equal(attempt.operationId, op.id);
+          assert.equal(attempt.route, path === route ? route : route + '/:id/refresh');
+          assert.equal(attempt.decision, decision);
+          assert.equal(attempt.delivery, 'handed-off');
+          assert.deepEqual(attempt.balance, { state: 'absent' });
+          return result;
+        };
+        const created = await exchange(route, op, 200, 'accepted');
+        assert.deepEqual(Object.keys(created).sort(), ['amount', 'createdAt', 'creditedAmount', 'id', 'paymentId', 'scenario', 'status']);
+        assert.equal(created.status, 'waiting');
+        assert.deepEqual(await exchange(route, op, 200, 'replayed'), created);
+        assert.deepEqual(Object.keys(await exchange(route, { ...op, amount: op.amount + 1 }, 409, 'rejected')), ['error']);
+        provider.settle(created.paymentId, 'finished', '0');
+        const refresh = route + '/' + op.id + '/refresh';
+        const settled = await exchange(refresh, {}, 200, 'unknown');
+        assert.equal(settled.status, 'finished');
+        assert.deepEqual(await exchange(refresh, {}, 200, 'unknown'), settled);
+        assert.equal(provider.creates, 1);
+        assert.equal((await db.prepare('SELECT count(*) AS n FROM nowpayments_sandbox_deposits WHERE account_id=?').get(accountId))?.n, 1);
+        assert.equal((await db.prepare('SELECT count(*) AS n FROM demo_ledger WHERE account_id=? AND operation_id=?')
+          .get(accountId, 'nowpayments-sandbox:' + op.id))?.n, 1);
+      } finally {
+        await accounts.logout(login.token);
+      }
+    });
     for (const game of ARCADE_HOUSE_GAMES) {
       const login = await accounts.login('sandbox-' + randomUUID() + '@example.test', 'Sandbox-fixture-42!'), id = login.account.id;
       const headers = { Cookie: 'royal_session=' + login.token, 'X-Royal-Account-Id': id, 'Content-Type': 'application/json', 'X-Royal-Card-Rules': '2',
         'X-Royal-Caramel-Rules': '1', 'X-Royal-Velvet-Rules': '1', 'X-Royal-Convoy-Rules': '1', 'X-Royal-Nitro-Rules': '1',
-        'X-Royal-Afterglow-Rules': '1', 'X-Royal-Afterglow-Progress': '3', 'X-Royal-Meme-Rules': '1', 'X-Royal-Cr-Leo': '1', 'X-Royal-Dracona-Rules': '2', 'X-Royal-Neopolis-Rules': '3' };
+        'X-Royal-Afterglow-Rules': '1', 'X-Royal-Afterglow-Progress': '4', 'X-Royal-Meme-Rules': '1', 'X-Royal-Cr-Leo': '1',
+        'X-Royal-Dracona-Rules': '2', 'X-Royal-Neopolis-Rules': '4', 'X-Royal-Forest-Heart-Rules': '1', 'X-Royal-Jackie': '2' };
       const post = (path: string, body: unknown) => fetch(base + path, { method: 'POST', headers, body: JSON.stringify(body) });
       const op = operation(), deposit = await post('/api/nowpayments-sandbox/deposits', op); assert.equal(deposit.status, 200);
       const created = await deposit.json(); provider.settle(created.paymentId, 'finished', '0');
       assert.equal((await post('/api/nowpayments-sandbox/deposits/' + op.id + '/refresh', {})).status, 200);
       assert.equal((await accounts.wallet.snapshot(id)).balance, 1000);
       const plinko = game === 'royal-plinko', path = '/api/demo-wallet/' + (plinko ? 'operations' : 'expansion');
-      const wager = plinko ? { id: randomUUID(), kind: 'play', amount: 10, gameId: game, rulesVersion: 1, input: { rows: 12, risk: 'easy' } }
-        : { id: randomUUID(), action: 'start', gameId: game, stakeUnits: '1000', settings: settings[game] };
+      const wager = plinko ? { id: randomUUID(), kind: 'play', amount: 10, gameId: game, rulesVersion: 1, stakePolicyVersion: 1,
+        input: { rows: 12, risk: 'easy' } }
+        : { id: randomUUID(), action: 'start', gameId: game, stakeUnits: '1000', stakePolicyVersion: 1, settings: settings[game] };
       const response = await post(path, wager), result = await response.json(); assert.equal(response.status, 200, game + ': ' + JSON.stringify(result));
       const replay = await post(path, wager); assert.equal(replay.status, 200);
       const saved = await replay.json(); assert.equal(saved.wallet.balance, result.wallet.balance, game);

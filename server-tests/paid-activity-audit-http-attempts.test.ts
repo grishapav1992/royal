@@ -14,6 +14,7 @@ import { auditCommandRoutes } from '../server/audit/intents';
 import { installClubFineRoutes } from '../server/clubFineRoutes';
 import { PostgresDatabase } from '../server/database';
 import { installDemoWallet } from '../server/demoWalletRoutes';
+import { markOperationAttempt } from '../server/operation-attempt';
 import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
 
 function collector() {
@@ -254,6 +255,30 @@ test('observer records the serialized balance, sanitized IDs and only static aut
     await (await fetch(base + '/api/demo-wallet/operations')).json();
     await (await post(base, '/api/demo-wallet/debug', { id: operationId })).json();
     assert.equal(observer.attempts.length, 5);
+  });
+});
+
+test('order routes use only trusted metadata and do not share it with refresh attempts', async () => {
+  const accountId = randomUUID(), operationId = randomUUID(), observer = collector();
+  const stars = '/api/crypto-wallet/stars';
+  const refresh = '/api/nowpayments-sandbox/deposits/' + operationId + '/refresh';
+  const app = express();
+  app.use(auditHttpAttempts(observer.record), express.json());
+  app.use((_req, res, next) => { res.locals.accountId = accountId; next(); });
+  app.post(stars, (_req, res) => { res.json({ id: operationId, replayed: true }); });
+  app.post(refresh, (_req, res) => { res.json(markOperationAttempt({ id: operationId }, true)); });
+
+  await serve(app, async base => {
+    for (const path of [stars, refresh]) {
+      const observation = observer.next();
+      const response = await post(base, path, { id: operationId, replayed: true });
+      assert.equal(response.status, 200);
+      const attempt = await observation;
+      assert.equal(attempt.operationId, operationId);
+      assert.equal(attempt.decision, 'unknown');
+      assert.equal(attempt.response, 'formed');
+      assert.deepEqual(attempt.balance, { state: 'absent' });
+    }
   });
 });
 

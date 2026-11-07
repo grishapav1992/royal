@@ -2,11 +2,12 @@ import express from 'express';
 import { gameAccountId } from '../../src/shared/nileWallet';
 import { CryptoError } from '../crypto/config';
 import type { CryptoStore } from '../crypto/store';
-import { validateServiceSecret, verifyServiceSignature } from './protocol';
+import { paymentOrderReplayHeader, validateServiceSecret, verifyServiceSignature } from './protocol';
 import { requireFinanceAdmin } from '../admin/validation';
 import { paymentFinanceReport } from '../admin/paymentFinance';
 import type { TelegramStarsStore } from './telegram-stars';
 import { validTelegramSecret } from './telegram-provider';
+import { operationReplayed } from '../operation-attempt';
 
 export function createPaymentApp(store: CryptoStore, requestSecret: string, stars?: TelegramStarsStore) {
   validateServiceSecret(requestSecret);
@@ -77,7 +78,12 @@ export function createPaymentApp(store: CryptoStore, requestSecret: string, star
         const id = String(req.params.user);
         if (!gameAccountId(id)) throw new CryptoError(400, 'Некорректный игрок.');
         if (register && (store.config.enabled || store.externalCreditsEnabled)) await store.db.prepare('INSERT INTO accounts(id) VALUES (?) ON CONFLICT DO NOTHING').run(id);
-        res.json(await fn(id, req.body, req));
+        const result = await fn(id, req.body, req);
+        if (method === 'post' && action === 'stars' && result && typeof result === 'object') {
+          const replayed = Reflect.get(result, operationReplayed);
+          if (typeof replayed === 'boolean') res.setHeader(paymentOrderReplayHeader, String(replayed));
+        }
+        res.json(result);
       } catch (error) { fail(error, res); }
     });
   };

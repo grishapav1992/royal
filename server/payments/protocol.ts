@@ -2,6 +2,8 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { gameAccountId, nileUnits } from '../../src/shared/nileWallet';
 import { amount } from '../crypto/amounts';
 
+export const paymentOrderReplayHeader = 'x-royal-payment-order-replayed';
+
 export type PaymentEvent = { event_id: string; user_id: string; payment_id: string; kind: 'deposit' | 'reserve' | 'paid' | 'refund' | 'adjustment';
   currency: 'USDT'; scale: 6; deposit_amount: string; available_delta_units: string; reserved_delta_units: string; created_at: number };
 export const signedUnits = (value: unknown): value is string => typeof value === 'string' && /^-?(0|[1-9]\d{0,12})$/.test(value)

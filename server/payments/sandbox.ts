@@ -6,6 +6,7 @@ import { gameAccountId } from '../../src/shared/nileWallet';
 import { units } from '../crypto/amounts';
 import { validSandboxCase, type SandboxSnapshot, type SandboxDeposit } from '../../src/shared/nowpaymentsSandbox';
 import { demoBalanceUnits, demoReservedUnits, MAX_DEMO_UNITS, recordDemoUnits, saveDemoUnits } from '../demoWalletAmounts';
+import { markOperationAttempt } from '../operation-attempt';
 import type { SandboxConfig, SandboxProvider } from './sandbox-provider';
 
 const fail = (status: number, text: string): never => { throw new CryptoError(status, text); };
@@ -61,7 +62,7 @@ export class SandboxPaymentStore {
       if (!row) fail(409, 'Этот номер тестового пополнения уже использован.');
       return { created: true, row: row! };
     }, { lockKey: 'account:' + accountId });
-    if (!claimed.created) return this.view(claimed.row);
+    if (!claimed.created) return markOperationAttempt(this.view(claimed.row), true);
     try {
       const reply = await this.provider.create(String(op.id), Number(op.amount), op.scenario);
       // Create never credits. A separate authenticated GET must confirm identity and settlement.
@@ -77,7 +78,7 @@ export class SandboxPaymentStore {
       await this.db.prepare("UPDATE nowpayments_sandbox_deposits SET state='review',updated_at=? WHERE id=? AND state='creating'").run(Date.now(), op.id);
       throw new CryptoError(503, 'Создание тестового платежа не подтверждено. Не создавай замену: проверь сохранённую операцию.');
     }
-    return this.view((await this.db.prepare('SELECT * FROM nowpayments_sandbox_deposits WHERE id=?').get(op.id))!);
+    return markOperationAttempt(this.view((await this.db.prepare('SELECT * FROM nowpayments_sandbox_deposits WHERE id=?').get(op.id))!), false);
   }
   private confirmedCredit(payment: Record<string, unknown>, row: DatabaseRow) {
     if (String(payment.payment_id) !== String(row.payment_id) || payment.order_id !== row.id || payment.price_currency !== 'usd'

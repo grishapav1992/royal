@@ -13,6 +13,11 @@ import { PaymentClient } from '../server/payments/client';
 import { createPaymentApp } from '../server/payments/app';
 import { telegramStarsConfig, validTelegramSecret, TelegramBot } from '../server/payments/telegram-provider';
 import { TelegramStarsStore } from '../server/payments/telegram-stars';
+import { paymentOrderReplayHeader } from '../server/payments/protocol';
+import { installCryptoWallet } from '../server/cryptoWalletRoutes';
+import { auditHttpAttempts } from '../server/audit/http-attempts';
+import type { AuditAttemptObservation } from '../server/audit/attempts';
+import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
 
 const requestSecret = 'a'.repeat(64), eventSecret = 'b'.repeat(64);
 const configured = () => telegramStarsConfig({ TELEGRAM_STARS_ENABLED: 'true', TELEGRAM_BOT_USERNAME: 'RoyalFixtureBot',
@@ -91,6 +96,63 @@ test('Stars configuration fails closed and Telegram API failures never expose th
   assert(!validTelegramSecret('x', config.webhookSecret)); assert(!validTelegramSecret('', ''));
   const bot = new TelegramBot(config, async () => { throw new Error(config.token); });
   await assert.rejects(() => bot.call('sendInvoice', {}), error => error instanceof Error && !error.message.includes(config.token));
+});
+test('Stars audit distinguishes new and replayed orders across the private and public HTTP routes', async () => {
+  const f = await fixture(false);
+  const attempts: AuditAttemptObservation[] = [];
+  const privateHeaders: (string | null)[] = [];
+  let legacyHeader: string | null | undefined;
+  const client = new PaymentClient(f.client.config, f.credits, async (url, init) => {
+    const response = await fetch(url, init);
+    privateHeaders.push(response.headers.get(paymentOrderReplayHeader));
+    if (legacyHeader === undefined) return response;
+    const headers = new Headers(response.headers);
+    if (legacyHeader === null) headers.delete(paymentOrderReplayHeader);
+    else headers.set(paymentOrderReplayHeader, legacyHeader);
+    return new Response(response.body, { status: response.status, headers });
+  });
+  const app = express();
+  app.use(auditHttpAttempts(attempt => attempts.push(attempt)));
+  installCryptoWallet(app, client, async token => token === 'fixture' ? { account: { id: f.account } } : null);
+  const publicServer = await listen(app);
+  const order = { id: randomUUID(), stars: 100, termsAccepted: true };
+  const post = (value = order) => fetch(publicServer.url + '/api/crypto-wallet/stars', {
+    method: 'POST', headers: { Cookie: 'royal_session=fixture', [WALLET_ACCOUNT_HEADER]: f.account,
+      'Content-Type': 'application/json', [paymentOrderReplayHeader]: 'true' }, body: JSON.stringify(value),
+  });
+  try {
+    const unsigned = await fetch(f.client.config.url + '/internal/users/' + f.account + '/stars', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(order),
+    });
+    assert.equal(unsigned.status, 401);
+    assert.equal(unsigned.headers.get(paymentOrderReplayHeader), null);
+    await unsigned.json();
+
+    const first = await post();
+    assert.equal(first.status, 200);
+    assert.equal(first.headers.get(paymentOrderReplayHeader), null);
+    const firstOrder = await first.json() as Record<string, unknown>;
+    assert.equal(firstOrder.id, order.id);
+    assert.deepEqual(Object.keys(firstOrder).sort(), ['amountUnits', 'botUrl', 'createdAt', 'expiresAt', 'id', 'stars', 'status']);
+
+    for (const simulatedHeader of [undefined, null, 'true, false']) {
+      legacyHeader = simulatedHeader;
+      const replay = await post();
+      assert.equal(replay.status, 200);
+      assert.equal(replay.headers.get(paymentOrderReplayHeader), null);
+      assert.deepEqual(await replay.json(), firstOrder);
+    }
+    legacyHeader = undefined;
+    const conflict = await post({ ...order, stars: 101 });
+    assert.equal(conflict.status, 409);
+    assert.equal(conflict.headers.get(paymentOrderReplayHeader), null);
+    await conflict.json();
+
+    assert.deepEqual(privateHeaders, ['false', 'true', 'true', 'true', null]);
+    assert.deepEqual(attempts.map(attempt => attempt.decision), ['accepted', 'replayed', 'unknown', 'unknown', 'rejected']);
+    assert(attempts.every(attempt => attempt.operationId === order.id && attempt.delivery === 'handed-off'));
+    assert.equal((await f.db.prepare('SELECT count(*)::int AS n FROM telegram_stars_orders').get())?.n, 1);
+  } finally { await publicServer.close(); await f.close(); }
 });
 test('NOWPayments and Stars add to the same account balance and mirror, with no second wallet per provider', async () => {
   const f = await fixture();

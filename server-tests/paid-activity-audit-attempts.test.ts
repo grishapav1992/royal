@@ -150,9 +150,11 @@ test('actual HTTP and WebSocket attempts persist independently of canonical post
       const first = await sendPvp('1000000');
       assert.equal(first.type, 'pvp', String(first.response.error ?? ''));
       assert.ok(first.response.wallet);
+      assert.equal(Object.hasOwn(first.response, 'replayed'), false);
       const repeated = await sendPvp('1000000');
       assert.equal(repeated.type, 'pvp', String(repeated.response.error ?? ''));
       assert.ok(repeated.response.wallet);
+      assert.equal(Object.hasOwn(repeated.response, 'replayed'), false);
       const conflict = await sendPvp('2000000');
       assert.equal(conflict.type, 'pvp-result');
       assert.equal(conflict.response.rejected, true);
@@ -185,7 +187,8 @@ test('actual HTTP and WebSocket attempts persist independently of canonical post
   const wsAttempts = rows.filter(row => row.transport === 'websocket');
   assert.equal(wsAttempts.length, 3);
   assert.ok(wsAttempts.every(row => row.operationId === pvpId && row.route === 'pvp' && row.statusCode === null));
-  assert.equal(wsAttempts.filter(row => row.balance.state === 'value' && row.decision === 'unknown').length, 2);
+  assert.deepEqual(wsAttempts.filter(row => row.balance.state === 'value').map(row => row.decision).sort(),
+    ['accepted', 'replayed']);
   assert.equal(wsAttempts.filter(row => row.balance.state === 'absent' && row.decision === 'rejected').length, 1);
   const postings = await audit.prepare(`SELECT operation_id,count(*)::int AS count FROM audit_posting_refs
     WHERE dataset_id=? GROUP BY operation_id ORDER BY operation_id`).all(datasetId);

@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { RequestHandler, Response } from 'express';
 import { gameAccountId } from '../../src/shared/nileWallet';
-import { demoWalletOperationReplayed } from '../demoWallet';
+import { operationReplayed } from '../operation-attempt';
 import { auditDemoLedgerSnapshot, type AuditAttemptObservation, type AuditAttemptSink } from './attempts';
 import type { AuditResponseBalance, AuditSourceRef } from './contract';
 import { auditCommandRoutes, auditFineOperationId, observeAuditIntent } from './intents';
@@ -25,6 +25,15 @@ const moneyRoutes: ReadonlyMap<string, BalanceShape> = new Map([
   ['/api/crypto-wallet/rounds', 'real'],
   ['/api/crypto-wallet/stars', 'real'],
   ['/api/skin-studio/generations', 'none'],
+]);
+
+const serverReplayRoutes = new Set([
+  auditCommandRoutes.core,
+  '/api/demo-wallet/flight',
+  '/api/demo-wallet/mines',
+  '/api/nowpayments-sandbox/deposits',
+  '/api/crypto-wallet/stars',
+  '/api/skin-studio/generations',
 ]);
 
 const refreshRoutes = [
@@ -96,7 +105,7 @@ function responseBalance(body: Record<string, unknown> | null, shape: BalanceSha
 }
 
 function observeResponse(response: Response, body: unknown, route: Route, snapshot: AuditSourceRef | null,
-  walletReplayed: boolean | undefined): FormedResponse {
+  serverReplayed: boolean | undefined): FormedResponse {
   const statusCode = response.statusCode;
   let parsed: Record<string, unknown> | null = null;
   let decoded = false;
@@ -121,8 +130,9 @@ function observeResponse(response: Response, body: unknown, route: Route, snapsh
   } else if (statusCode >= 200 && statusCode < 300) {
     if (route.template === auditCommandRoutes.fine && ['changed', 'inactive', 'insufficient', 'id-conflict']
         .some(status => status === parsed?.status)) decision = 'rejected';
-    else if (walletReplayed !== undefined) decision = walletReplayed ? 'replayed' : 'accepted';
-    else if ((route.template !== auditCommandRoutes.fine || parsed?.status === 'paid') && typeof parsed?.replayed === 'boolean') {
+    else if (serverReplayed !== undefined) decision = serverReplayed ? 'replayed' : 'accepted';
+    else if (!serverReplayRoutes.has(route.template) &&
+      (route.template !== auditCommandRoutes.fine || parsed?.status === 'paid') && typeof parsed?.replayed === 'boolean') {
       decision = parsed.replayed ? 'replayed' : 'accepted';
     }
   }
@@ -137,11 +147,12 @@ export function auditHttpAttempts(sink: AuditAttemptSink, { gameSchema }: { game
     const route = request.method === 'POST' ? paidRoute(request.path) : null;
     if (!route) return next();
     const { template, pathId } = route;
+    const hasServerReplay = serverReplayRoutes.has(template);
     const attemptId = randomUUID();
     const occurredAtMs = Date.now();
     let observed: FormedResponse | null = null;
     let snapshot: AuditSourceRef | null = null;
-    let walletReplayed: boolean | undefined;
+    let serverReplayed: boolean | undefined;
     let ended = false;
 
     function complete(delivery: 'handed-off' | 'closed' | 'unobserved') {
@@ -173,28 +184,28 @@ export function auditHttpAttempts(sink: AuditAttemptSink, { gameSchema }: { game
     response.once('close', onClose);
 
     // Pin server-only evidence before JSON serialization.
-    if (template === auditCommandRoutes.core || (route.balanceShape === 'virtual' && gameSchema !== undefined)) {
+    if (hasServerReplay || (route.balanceShape === 'virtual' && gameSchema !== undefined)) {
       const json = response.json;
       response.json = function (this: Response, body?: unknown) {
         const previousSnapshot = snapshot;
-        const previousWalletReplayed = walletReplayed;
+        const previousServerReplayed = serverReplayed;
         if (!ended && !this.headersSent && gameAccountId(this.locals.accountId)) {
           try {
-            snapshot = auditDemoLedgerSnapshot(gameSchema, object(body)?.wallet);
-            if (template === auditCommandRoutes.core) {
-              const result = body as { [demoWalletOperationReplayed]?: boolean } | null | undefined;
-              walletReplayed = result?.[demoWalletOperationReplayed];
+            if (route.balanceShape === 'virtual') snapshot = auditDemoLedgerSnapshot(gameSchema, object(body)?.wallet);
+            if (hasServerReplay) {
+              const result = body as { [operationReplayed]?: boolean } | null | undefined;
+              serverReplayed = result?.[operationReplayed];
             }
           } catch {
             snapshot = null;
-            walletReplayed = undefined;
+            serverReplayed = undefined;
           }
         }
         try {
           return json.call(this, body);
         } finally {
           snapshot = previousSnapshot;
-          walletReplayed = previousWalletReplayed;
+          serverReplayed = previousServerReplayed;
         }
       };
     }
@@ -204,7 +215,7 @@ export function auditHttpAttempts(sink: AuditAttemptSink, { gameSchema }: { game
       const observe = !ended && !this.headersSent && observed === null && gameAccountId(this.locals.accountId);
       if (observe) {
         try {
-          observed = observeResponse(this, body, route, snapshot, walletReplayed);
+          observed = observeResponse(this, body, route, snapshot, serverReplayed);
         } catch {
           // Leave the response unobserved if sanitization fails.
         }

@@ -3,7 +3,8 @@ import { gameAccountId } from '../../src/shared/nileWallet';
 import { validCryptoWallet } from '../../src/shared/cryptoWallet';
 import { CryptoError } from '../crypto/config';
 import type { PaymentCredits } from './credits';
-import { serviceSignature, validateServiceSecret } from './protocol';
+import { paymentOrderReplayHeader, serviceSignature, validateServiceSecret } from './protocol';
+import { markOperationAttempt } from '../operation-attempt';
 
 export type PaymentClientConfig = { url: string; requestSecret: string; eventSecret: string };
 export function paymentClientConfig(env: NodeJS.ProcessEnv = process.env): PaymentClientConfig {
@@ -35,6 +36,10 @@ export class PaymentClient {
     } catch { throw new CryptoError(503, 'Платежный сервис временно недоступен. Проверь ту же операцию позже.'); }
     if (!response.ok) throw new CryptoError([400, 401, 403, 404, 409, 429, 503].includes(response.status) ? response.status : 503,
       typeof row.error === 'string' && /[а-я]/i.test(row.error) ? row.error : 'Платежный сервис не подтвердил операцию.');
+    if (method === 'POST' && action === 'stars' && row && typeof row === 'object' && !Array.isArray(row)) {
+      const replayed = response.headers.get(paymentOrderReplayHeader);
+      if (replayed === 'true' || replayed === 'false') return markOperationAttempt(row, replayed === 'true');
+    }
     return row;
   }
   async snapshot(userId: string) {

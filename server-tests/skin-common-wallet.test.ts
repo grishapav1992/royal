@@ -1,20 +1,27 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
+import { once } from 'node:events';
+import express from 'express';
 import { PostgresDatabase } from '../server/database';
 import { DemoWalletStore } from '../server/demoWallet';
 import { CommonSkinPayments } from '../server/skinPayments';
 import { demoBalanceUnits, demoReservedUnits, saveDemoUnits, MAX_DEMO_UNITS } from '../server/demoWalletAmounts';
 import { SkinStudioStore } from '../server/skinStudio';
+import { installSkinStudio } from '../server/skinStudioRoutes';
+import { auditHttpAttempts } from '../server/audit/http-attempts';
+import type { AuditAttemptObservation } from '../server/audit/attempts';
+import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
 import sharp from 'sharp';
 
-async function fixture(balance = 5000) {
+async function fixture(balance = 5000, accountId = 'alice') {
   const db = new PostgresDatabase(':memory:');
-  await db.exec("CREATE TABLE accounts(id TEXT PRIMARY KEY,skin INTEGER DEFAULT 0,appearance JSONB); INSERT INTO accounts(id) VALUES ('alice'),('bob')");
+  await db.exec('CREATE TABLE accounts(id TEXT PRIMARY KEY,skin INTEGER DEFAULT 0,appearance JSONB)');
+  await db.prepare("INSERT INTO accounts(id) VALUES (?),('bob')").run(accountId);
   const wallet = new DemoWalletStore(db); await Promise.all([wallet.ready, wallet.expansion.ready]);
-  await saveDemoUnits(db, 'alice', balance);
+  await saveDemoUnits(db, accountId, balance);
   return { db, wallet, payments: new CommonSkinPayments(db, wallet.ready),
-    balance: () => demoBalanceUnits(db, 'alice'), reserved: () => demoReservedUnits(db, 'alice') };
+    balance: () => demoBalanceUnits(db, accountId), reserved: () => demoReservedUnits(db, accountId) };
 }
 
 test('atelier debits the same wallet as games once and capture never charges again', async () => {
@@ -30,6 +37,59 @@ test('atelier debits the same wallet as games once and capture never charges aga
     assert.equal(entries.length, 1); assert.equal(entries[0].amount, -10); assert.equal(entries[0].gameName, 'Ателье');
     await assert.rejects(() => f.payments.skinPurchase('alice', id, 'refund'));
   } finally { await f.db.close(); }
+});
+
+test('atelier HTTP audit distinguishes order acceptance, replay and conflict from a worker charge', async () => {
+  const accountId = randomUUID();
+  const f = await fixture(5000, accountId);
+  const images = { available: () => true, generate: async () => Buffer.from('fixture outfit') };
+  const studio = new SkinStudioStore(f.db, f.payments, images, () => true, () => {});
+  const attempts: AuditAttemptObservation[] = [];
+  const app = express();
+  app.use(auditHttpAttempts(attempt => { attempts.push(attempt); }));
+  const stop = await installSkinStudio(app, studio, async token =>
+    token === 'test-session' ? { account: { id: accountId, skin: 0 } } : null, false);
+  const server = app.listen(0, '127.0.0.1');
+  try {
+    await once(server, 'listening');
+    const address = server.address();
+    assert(address && typeof address !== 'string');
+    const url = 'http://127.0.0.1:' + address.port + '/api/skin-studio/generations';
+    const request = { id: randomUUID(), prompt: 'Персонаж в плаще' };
+    const post = (body: typeof request) => fetch(url, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: 'royal_session=test-session',
+        [WALLET_ACCOUNT_HEADER]: accountId }, body: JSON.stringify(body),
+    });
+    const first = await post(request);
+    assert.equal(first.status, 200);
+    const accepted = await first.json();
+    assert.equal(accepted.job.id, request.id);
+    assert.equal(accepted.job.state, 'reserving');
+    assert.equal(Object.hasOwn(accepted, 'replayed'), false);
+    const retry = await post(request);
+    assert.equal(retry.status, 200);
+    assert.deepEqual(await retry.json(), accepted);
+    const conflict = await post({ ...request, prompt: 'Другой образ' });
+    assert.equal(conflict.status, 409);
+    await conflict.json();
+
+    assert.deepEqual(attempts.map(attempt => attempt.decision), ['accepted', 'replayed', 'rejected']);
+    assert.equal(new Set(attempts.map(attempt => attempt.attemptId)).size, 3);
+    assert.ok(attempts.every(attempt => attempt.accountId === accountId && attempt.operationId === request.id &&
+      attempt.route === '/api/skin-studio/generations' && attempt.balance.state === 'absent'));
+    assert.deepEqual(await f.db.prepare('SELECT id FROM skin_jobs WHERE account_id=?').all(accountId), [{ id: request.id }]);
+    assert.equal((await f.wallet.snapshot(accountId)).entries.length, 0);
+    await studio.tick();
+    assert.equal((await studio.snapshot(accountId)).job?.state, 'ready');
+    assert.equal(await f.balance(), 4900);
+    assert.equal(await f.reserved(), 0);
+    const entries = (await f.wallet.snapshot(accountId)).entries;
+    assert.deepEqual(entries.map(entry => [entry.operationId, entry.amount]), [[request.id, -1]]);
+  } finally {
+    await stop();
+    await new Promise<void>(resolve => server.close(() => resolve()));
+    await f.db.close();
+  }
 });
 
 test('a pending atelier reserves refund capacity and repeated refunds return exactly ten dollars', async () => {

@@ -145,6 +145,7 @@ export class PvpStore {
       return Promise.all(people.filter(p => p.connected).map(async p => ({ accountId: p.accountId, snapshot: await this.snapshot({ accountId: p.accountId, name: p.name, roomId }, now) })));
     });
   }
+  /** The observer can read the replay flag for commands with a saved receipt. JSON omits it. */
   async command(actor: Actor, value: unknown, now = Date.now()): Promise<PvpSnapshot> {
     if (!gameAccountId(actor.accountId) || !roomValid(actor.roomId) || typeof actor.name !== 'string' || !validPvpRequest(value)) return fail('Некорректный запрос поединка.', 400);
     await this.ready;
@@ -153,7 +154,7 @@ export class PvpStore {
       const previous = await this.ledger.db.prepare('SELECT * FROM pvp_requests WHERE account_id=? AND id=?').get(actor.accountId, op.id);
       if (previous) {
         if (previous.request_key !== key) return fail('Нельзя изменить отправленное действие.');
-        return { ...await this.snapshot(actor, now), requestId: op.id };
+        return Object.defineProperty({ ...await this.snapshot(actor, now), requestId: op.id }, 'replayed', { value: true });
       }
       const rate = await this.ledger.db.prepare('SELECT count(*) AS n FROM pvp_requests WHERE account_id=? AND created_at>?').get(actor.accountId, now - 60_000);
       if (Number(rate!.n) >= 120) return fail('Слишком много действий. Подожди немного.', 429);
@@ -243,7 +244,7 @@ export class PvpStore {
       }
       await this.save(s, now);
       await this.ledger.db.prepare('INSERT INTO pvp_requests(account_id,id,request_key,match_id,created_at) VALUES(?,?,?,?,?)').run(actor.accountId, op.id, key, s.challenge.id, now);
-      return { ...await this.snapshot(actor, now), requestId: op.id };
+      return Object.defineProperty({ ...await this.snapshot(actor, now), requestId: op.id }, 'replayed', { value: false });
     });
   }
   async adjudicate(roomId: string, matchId: string, winnerId: string | null, reason: 'win' | 'draw' | 'server', now = Date.now()) {

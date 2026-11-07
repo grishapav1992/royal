@@ -1,5 +1,6 @@
 import type {PostgresDatabase} from '../database';
 import type {DemoWalletStore} from '../demoWallet';
+import { markOperationAttempt } from '../operation-attempt';
 import type {VirtualPvpLedger} from '../pvp/virtual-wallet';
 
 export type ProgressionSourceContext = {
@@ -111,6 +112,9 @@ export function instrumentProgressionWallet<T extends DemoWalletStore>(db:Postgr
    const replayed=body?await acceptedOperation(db,accountId,(body as {id?:unknown}).id):false;
    const result=await Reflect.apply(method,target,args);
    await sources.afterCommand(accountId,{path,method:body?'POST':'GET',body},replayed);
+   if (name === 'operate' && (path === '/operations' || path === '/mines' || path === '/flight')) {
+    return markOperationAttempt(result, replayed);
+   }
    return result;
   },{lockKey:'account:'+accountId});
  };

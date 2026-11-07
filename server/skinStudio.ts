@@ -7,6 +7,7 @@ import type { SkinDescribedSnapshot, SkinNpcContext } from '../src/shared/skinDe
 import type { SkinImageGenerator } from './skinImages';
 import { skinDescription, type SkinDescriptionGenerator } from './skinDescriptions';
 import type { FreeSkinGenerations } from './progression/skinGenerations';
+import { markOperationAttempt } from './operation-attempt';
 
 export type SkinPayments = { skinPurchase(user: string, id: string, action: 'reserve' | 'capture' | 'refund',terms?:SkinPaymentTerms): Promise<SkinPurchase> };
 export class SkinStudioError extends Error { constructor(public status: number, message: string) { super(message); } }
@@ -82,11 +83,11 @@ export class SkinStudioStore {
     const offerId=skinOfferId(op.offerId);if(!offerId)fail(400,'Неизвестное место заказа образа.');
     if(op.rewardGrantId&&offerId!=='atelier')fail(400,'Бесплатная генерация доступна в ателье.');
     const offer=SKIN_OFFERS[offerId!],prompt = op.prompt.trim();
-    await this.db.transaction(async () => {
+    const replayed = await this.db.transaction(async () => {
       const previous = await this.db.prepare('SELECT * FROM skin_jobs WHERE id=?').get(op.id);
       if (previous) {
         if (previous.account_id !== accountId || previous.prompt !== prompt || previous.offer_id!==offerId || (previous.reward_grant_id??undefined)!==op.rewardGrantId) fail(409, 'Нельзя изменить отправленную генерацию.');
-        return;
+        return true;
       }
       if (!this.enabled()) fail(503, 'Генерация пока недоступна. Деньги не списаны.');
       if (await this.db.prepare(`SELECT 1 FROM skin_jobs WHERE account_id=? AND state IN ${ACTIVE}`).get(accountId)) fail(409, 'Сначала дождись генерации и выбери один образ.');
@@ -98,8 +99,9 @@ export class SkinStudioStore {
         if(!this.freeGenerations)fail(503,'Бесплатная генерация временно недоступна. Награда сохранена.');
         try{await this.freeGenerations!.reserveForJob(accountId,op.id,op.rewardGrantId);}catch(error){if(error instanceof CryptoError)fail(error.status,error.message);throw error;}
       }
+      return false;
     }, { lockKey: 'skin:' + accountId });
-    return this.snapshot(accountId,viewOffer??offerId!);
+    return markOperationAttempt(await this.snapshot(accountId,viewOffer??offerId!), replayed);
   }
   async choose(accountId: string, jobId: string, skinId: string,offerId:SkinOfferId='atelier') {
     await this.ready;

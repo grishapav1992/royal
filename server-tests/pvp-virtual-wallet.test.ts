@@ -57,6 +57,11 @@ test('draws, expired invites and lost game servers refund the original balance w
   }
   const invite=await c.store.command(c.aa,{id:randomUUID(),action:'create',gameId:'pool',stakeUnits:'50000000',targetId:null},c.now);
   await c.store.sweep(c.now+120001);assert.equal((await c.store.snapshot(c.aa)).active!.id,invite.active!.id);assert.equal(await c.balance(c.a),20000);
+  const cancel = { id: randomUUID(), action: 'cancel', challengeId: invite.active!.id };
+  const terminal = await c.store.command(c.aa, cancel, c.now + 120002);
+  assert.equal(terminal.requestId, cancel.id);
+  assert.equal(Object.hasOwn(terminal, 'replayed'), false);
+  assert.equal(await c.db.prepare('SELECT 1 FROM pvp_requests WHERE account_id=? AND id=?').get(c.a, cancel.id), undefined);
   assert.equal(Number((await c.db.prepare('SELECT sum(fee_units) AS n FROM virtual_pvp_banks').get())!.n),0);
  }finally{await c.close();}
 });
