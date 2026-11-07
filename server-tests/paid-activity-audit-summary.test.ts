@@ -136,7 +136,7 @@ async function fixture(t: TestContext) {
     try { return await read(client, job); }
     finally { await finish(client, job); }
   };
-  return { audit, owner, ownerLogin, otherLogin, begin, read, finish, run, fromMs, toMs, datasetId,
+  return { audit, game, wallet, owner, ownerLogin, otherLogin, begin, read, finish, run, fromMs, toMs, datasetId,
     a, exact, gameSource, paymentSource, poolCredits, missingAt, operatorConfig: config(owner) };
 }
 
@@ -204,6 +204,20 @@ test('period summary reports exact scoped totals, confirmations, refunds and sin
     assert.equal(get(account, 'pvp', 'payout').amount_units, '190');
     assert.equal(get(account, 'pvp', 'refund').amount_units, '100');
     assert.equal(get(account, 'pvp', 'fee'), undefined);
+  });
+
+  await t.test('a wallet deposit cannot inherit the game category from a colliding session ID', async t => {
+    const id = randomUUID(), at = f.toMs + 10;
+    await atLedgerTime(t, () => at, () => f.wallet.operate(f.a, { id, kind: 'deposit', amount: 1 }));
+    await f.game.prepare(`INSERT INTO demo_casino_sessions(account_id,id,game_id,state,payload,reserved_units)
+      VALUES (?,?,'royal-coins','settled','{"rulesVersion":1}',0)`).run(f.a, id);
+    const filters = { fromMs: at, toMs: at + 1 };
+    const result = await f.run(filters);
+    assert.equal(result.scanned, 1);
+    assert.deepEqual([get(result, null, 'deposit').posting_count, get(result, null, 'deposit').amount_units], ['1', '100']);
+    const casino = await f.run({ ...filters, category: 'casino' });
+    assert.equal(casino.scanned, 1);
+    assert.deepEqual(casino.rows, []);
   });
 
   await t.test('coverage remains visible under category filters and excessive windows fail without totals', async () => {

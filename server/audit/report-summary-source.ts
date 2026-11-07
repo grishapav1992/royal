@@ -63,38 +63,47 @@ export async function installAuditSummaryReport(db: PostgresDatabase, readerRole
             AND source_namespace IN (${demo},${pending},${crypto})
         ), refs AS MATERIALIZED (
           SELECT r.* FROM allowed s CROSS JOIN LATERAL (
-            SELECT ref.* FROM ${a}.audit_posting_refs ref
+            SELECT ref.source_namespace,ref.source_row_id,ref.account_id,ref.operation_id,ref.occurred_at_ms
+            FROM ${a}.audit_posting_refs ref
             WHERE ref.dataset_id=j.dataset_id AND ref.source_namespace=s.source_namespace
               AND ref.occurred_at_ms>=(j.filters->>'fromMs')::bigint AND ref.occurred_at_ms<(j.filters->>'toMs')::bigint
               AND (j.filters->>'accountId' IS NULL OR ref.account_id=j.filters->>'accountId')
-            ORDER BY ref.occurred_at_ms,ref.source_row_id LIMIT ${AUDIT_SUMMARY_SCAN_CAP + 1}
+            -- Success uses every row. An extra row only serves as the scan-limit sentinel.
+            LIMIT ${AUDIT_SUMMARY_SCAN_CAP + 1}
           ) r LIMIT ${AUDIT_SUMMARY_SCAN_CAP + 1}
-        ), scan AS (SELECT count(*) AS scanned FROM refs), anchors AS (
-          SELECT refs.*,NULL::bigint AS prior_id,NULL::numeric AS opening_balance
+        ), scan AS (SELECT count(*) AS scanned FROM refs), anchors AS NOT MATERIALIZED (
+          SELECT j.dataset_id AS dataset_id,refs.*,NULL::bigint AS prior_id,NULL::numeric AS opening_balance
           FROM refs WHERE (SELECT scanned FROM scan)<=${AUDIT_SUMMARY_SCAN_CAP}
-        ), projected AS MATERIALIZED (${selects}), classified AS MATERIALIZED (
-          SELECT q.*,
+        ), projected AS (${selects}), classified AS MATERIALIZED (
+          SELECT fee.source_row_id,fee.account_id,fee.operation_id,fee.entity_id,
+            q.amount,q.reserved_delta,q.pending_delta,q.contour,q.asset,q.scale,q.category,q.movement,
+            (j.filters->>'category' IS NULL OR q.category=j.filters->>'category')
+              AND (j.filters->>'gameId' IS NULL OR q.game_id=j.filters->>'gameId')
+              AND (j.filters->>'modeId' IS NULL OR q.mode_id=j.filters->>'modeId')
+              AND (j.filters->>'asset' IS NULL OR q.asset=j.filters->>'asset')
+              AND (j.filters->>'contour' IS NULL OR q.contour=j.filters->>'contour') AS matches_filters,
             CASE WHEN q.source_namespace=${crypto} AND q.movement='withdrawal-paid' AND q.amount=0 AND q.reserved_delta<0
               THEN -q.reserved_delta END AS confirmed_withdrawal,
             CASE WHEN NOT q.present THEN 'source-unavailable' WHEN q.movement IS NULL THEN 'unsupported'
               WHEN q.movement='withdrawal-paid' AND (q.amount IS DISTINCT FROM 0 OR q.reserved_delta IS NULL OR q.reserved_delta>=0)
                 THEN 'partial' ELSE 'complete' END AS coverage
           FROM projected q
-        ), matched AS MATERIALIZED (
-          SELECT * FROM classified q
-          WHERE (j.filters->>'category' IS NULL OR q.category=j.filters->>'category')
-            AND (j.filters->>'gameId' IS NULL OR q.game_id=j.filters->>'gameId')
-            AND (j.filters->>'modeId' IS NULL OR q.mode_id=j.filters->>'modeId')
-            AND (j.filters->>'asset' IS NULL OR q.asset=j.filters->>'asset')
-            AND (j.filters->>'contour' IS NULL OR q.contour=j.filters->>'contour')
-        ), fee_anchors AS MATERIALIZED (
-          SELECT m.* FROM matched m
-          WHERE j.filters->>'accountId' IS NULL AND m.present AND m.source_namespace=${demo}
-            AND m.category IN ('pvp','totalizator')
-            AND m.movement='payout' AND m.amount>0
+          LEFT JOIN LATERAL (
+            SELECT q.source_row_id,q.account_id,q.operation_id,q.entity_id
+            WHERE j.filters->>'accountId' IS NULL AND q.present AND q.source_namespace=${demo}
+              AND q.category IN ('pvp','totalizator') AND q.movement='payout' AND q.amount>0
+          ) fee ON true
+        ), gaps AS (
+          SELECT count(*) FILTER (WHERE coverage='source-unavailable') AS unavailable,
+            count(*) FILTER (WHERE coverage='unsupported') AS unclassified,
+            count(*) FILTER (WHERE coverage='partial') AS invalid_withdrawals
+          FROM classified
+        ), fee_anchors AS (
+          SELECT m.* FROM classified m
+          WHERE m.matches_filters AND m.source_row_id IS NOT NULL
             -- Charge once across periods, even when multiple pool credits have different timestamps.
             AND m.source_row_id=(SELECT older.source_row_id FROM ${a}.audit_posting_refs older
-              WHERE older.dataset_id=m.dataset_id AND older.source_namespace=m.source_namespace
+              WHERE older.dataset_id=j.dataset_id AND older.source_namespace=${demo}
                 AND older.operation_id=m.operation_id ORDER BY older.source_row_id LIMIT 1)
         ), fees AS MATERIALIZED (
           SELECT m.contour,m.asset,m.scale,m.category,
@@ -132,7 +141,7 @@ export async function installAuditSummaryReport(db: PostgresDatabase, readerRole
           SELECT contour,asset,scale,category,movement AS movement_type,count(*) AS posting_count,
             sum(amount) AS amount,sum(reserved_delta) AS reserved_delta,sum(pending_delta) AS pending_delta,
             sum(confirmed_withdrawal) AS confirmed_withdrawal,NULL::numeric AS fee,coverage
-          FROM matched GROUP BY contour,asset,scale,category,movement,coverage
+          FROM classified WHERE matches_filters GROUP BY contour,asset,scale,category,movement,coverage
           UNION ALL
           SELECT contour,asset,scale,category,'fee',0,NULL,NULL,NULL,NULL,sum(fee),
             CASE WHEN fee IS NULL THEN 'partial' ELSE 'complete' END
@@ -143,9 +152,9 @@ export async function installAuditSummaryReport(db: PostgresDatabase, readerRole
           'sources',COALESCE((SELECT jsonb_agg(source_namespace ORDER BY source_namespace) FROM allowed),'[]'::jsonb),
           'scanned',(SELECT scanned FROM scan),
           'gaps',jsonb_build_object(
-            'unavailablePostings',(SELECT count(*) FROM classified WHERE coverage='source-unavailable'),
-            'unclassifiedPostings',(SELECT count(*) FROM classified WHERE coverage='unsupported'),
-            'invalidWithdrawalPostings',(SELECT count(*) FROM classified WHERE coverage='partial'),
+            'unavailablePostings',gaps.unavailable,
+            'unclassifiedPostings',gaps.unclassified,
+            'invalidWithdrawalPostings',gaps.invalid_withdrawals,
             'unavailableFees',(SELECT count(*) FROM fees WHERE fee IS NULL),
             'feesExcludedForAccount',j.filters->>'accountId' IS NOT NULL),
           'rows',COALESCE((SELECT jsonb_agg(jsonb_build_object(
@@ -154,7 +163,7 @@ export async function installAuditSummaryReport(db: PostgresDatabase, readerRole
             'reserved_delta_units',t.reserved_delta::text,'pending_delta_units',t.pending_delta::text,
             'confirmed_withdrawal_units',t.confirmed_withdrawal::text,'fee_units',t.fee::text,'coverage_status',t.coverage)
             ORDER BY t.contour,t.asset,t.scale,t.category,t.movement_type,t.coverage) FROM totals t),'[]'::jsonb))
-        INTO report;
+        INTO report FROM gaps;
         IF (report->>'scanned')::bigint>${AUDIT_SUMMARY_SCAN_CAP} THEN
           RAISE EXCEPTION 'Audit summary scan limit exceeded' USING ERRCODE='54000';
         END IF;

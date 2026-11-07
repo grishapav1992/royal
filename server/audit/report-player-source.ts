@@ -87,14 +87,16 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
     ) p ON true
     LEFT JOIN LATERAL (
       SELECT result FROM ${g}.demo_operations
-      WHERE account_id=l.account_id AND operation_id=l.operation_id AND kind IN ('play','spin') LIMIT 1
+      WHERE l.entry_type<>'deposit' AND account_id=l.account_id AND operation_id=l.operation_id AND kind IN ('play','spin') LIMIT 1
     ) op ON true
     LEFT JOIN LATERAL (
-      SELECT session_id FROM ${g}.demo_casino_requests WHERE account_id=l.account_id AND id=l.operation_id LIMIT 1
+      SELECT session_id FROM ${g}.demo_casino_requests
+      WHERE l.entry_type<>'deposit' AND account_id=l.account_id AND id=l.operation_id LIMIT 1
     ) req ON true
     LEFT JOIN LATERAL (
       SELECT s.id AS session_id, CASE WHEN pg_input_is_valid(s.payload,'jsonb') THEN s.payload::jsonb END AS payload
-      FROM ${g}.demo_casino_sessions s WHERE s.account_id=l.account_id AND s.id=COALESCE(req.session_id,l.operation_id)
+      FROM ${g}.demo_casino_sessions s WHERE l.entry_type<>'deposit'
+        AND s.account_id=l.account_id AND s.id=COALESCE(req.session_id,l.operation_id)
         AND s.game_id=l.source LIMIT 1
     ) x ON true
     LEFT JOIN ${g}.demo_flight_requests f ON l.source='royal-flight' AND f.account_id=l.account_id AND f.id=l.operation_id
@@ -205,7 +207,8 @@ export async function installAuditPlayerReport(db: PostgresDatabase, readerRole:
             WHERE r.dataset_id=j.dataset_id AND r.account_id=j.filters->>'accountId'
               AND r.occurred_at_ms>=(j.filters->>'fromMs')::bigint AND r.occurred_at_ms<(j.filters->>'toMs')::bigint
               AND r.source_namespace IN (${demo},${pending},${crypto})
-              AND (cursor_at IS NULL OR (r.occurred_at_ms,r.source_namespace,r.source_row_id)>(cursor_at,cursor_source,cursor_id))
+              AND (r.occurred_at_ms,r.source_namespace,r.source_row_id)>
+                (COALESCE(cursor_at,(j.filters->>'fromMs')::bigint-1),COALESCE(cursor_source,''),COALESCE(cursor_id,0))
               AND EXISTS (SELECT 1 FROM ${a}.audit_report_acl acl WHERE acl.operator_name=session_user
                 AND acl.dataset_id=r.dataset_id AND acl.source_namespace=r.source_namespace)
             ORDER BY r.occurred_at_ms,r.source_namespace,r.source_row_id LIMIT page_size
