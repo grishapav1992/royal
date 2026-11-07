@@ -25,7 +25,7 @@ export async function installAuditReportAccess(db: PostgresDatabase, readerRole:
   const resultReasons = "'time-limit','row-limit','scan-limit','byte-limit','source-unavailable','output-error','internal-error','permission-denied'";
   const investigationReasons = resultReasons + ",'replay-absent','replay-corrupt','replay-incomplete','replay-unsupported'";
 
-  const beginSql = (version: 1 | 2 | 3) => `CREATE ${version > 1 ? 'OR REPLACE ' : ''}FUNCTION ${begin}(p_dataset uuid,p_kind text,p_filters jsonb) RETURNS uuid
+  const beginSql = (version: 1 | 2 | 3 | 4) => `CREATE ${version > 1 ? 'OR REPLACE ' : ''}FUNCTION ${begin}(p_dataset uuid,p_kind text,p_filters jsonb) RETURNS uuid
       LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
       DECLARE
         v_from bigint;
@@ -33,19 +33,33 @@ export async function installAuditReportAccess(db: PostgresDatabase, readerRole:
         v_now timestamptz;
         v_job uuid;
       BEGIN
-        IF ${version === 3 ? "p_kind IS NULL OR p_kind NOT IN ('player','summary','detail','replay','reconcile')"
+        IF ${version >= 3 ? "p_kind IS NULL OR p_kind NOT IN ('player','summary','detail','replay','reconcile')"
           : version === 2 ? "p_kind IS NULL OR p_kind NOT IN ('player','summary')" : "p_kind IS DISTINCT FROM 'player'"} OR
            pg_catalog.jsonb_typeof(p_filters) IS DISTINCT FROM 'object' OR
            pg_catalog.pg_column_size(p_filters)>4096 THEN
           RAISE EXCEPTION 'Invalid audit export filters' USING ERRCODE='22023';
         END IF;
-${version === 3 ? `        IF p_kind='replay' THEN
+${version >= 3 ? `        IF p_kind='replay' THEN
           IF (p_filters - 'replayId')<>'{}'::jsonb OR
              pg_catalog.jsonb_typeof(p_filters->'replayId') IS DISTINCT FROM 'string' OR
              (p_filters->>'replayId') !~ '^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$' THEN
             RAISE EXCEPTION 'Invalid audit replay filter' USING ERRCODE='22023';
           END IF;
-        ELSIF p_kind IN ('detail','reconcile') THEN
+${version === 4 ? `        ELSIF p_kind='detail' AND p_filters ? 'lookupKind' THEN
+          IF (p_filters - ARRAY['source','lookupKind','lookupId','accountId'])<>'{}'::jsonb OR
+             pg_catalog.jsonb_typeof(p_filters->'source') IS DISTINCT FROM 'string' OR
+             (p_filters->>'source') !~ '^[a-z_][a-z_0-9]{0,62}[.][a-z_][a-z_0-9]{0,62}$' OR
+             pg_catalog.jsonb_typeof(p_filters->'lookupKind') IS DISTINCT FROM 'string' OR
+             (p_filters->>'lookupKind') NOT IN ('operation','round','match','ticket') OR
+             pg_catalog.jsonb_typeof(p_filters->'lookupId') IS DISTINCT FROM 'string' OR
+             (p_filters->>'lookupId') !~ '^[a-zA-Z0-9._:-]{1,128}$' OR
+             ((p_filters->>'lookupKind') IN ('match','ticket') AND
+               (p_filters->>'lookupId') !~ '^[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$') OR
+             (p_filters ? 'accountId' AND (pg_catalog.jsonb_typeof(p_filters->'accountId') IS DISTINCT FROM 'string' OR
+               (p_filters->>'accountId') !~ '^[a-zA-Z0-9._:-]{1,128}$')) THEN
+            RAISE EXCEPTION 'Invalid audit detail lookup' USING ERRCODE='22023';
+          END IF;
+` : ''}        ELSIF p_kind IN ('detail','reconcile') THEN
           IF (p_filters - ARRAY['source','postingId','refresh'])<>'{}'::jsonb OR
              (p_filters ? 'refresh' AND (p_kind<>'reconcile' OR
                pg_catalog.jsonb_typeof(p_filters->'refresh') IS DISTINCT FROM 'boolean')) OR
@@ -83,7 +97,7 @@ ${version > 1 ? `           ((p_kind='player' OR p_filters ? 'accountId') AND
              (p_filters->>'asset') !~ '^[A-Z][A-Z0-9_]{0,31}$')) THEN
           RAISE EXCEPTION 'Invalid audit export filters' USING ERRCODE='22023';
         END IF;
-${version === 3 ? '        END IF;\n' : ''}        IF NOT EXISTS (SELECT 1 FROM ${acl} WHERE operator_name=SESSION_USER AND dataset_id=p_dataset) THEN
+${version >= 3 ? '        END IF;\n' : ''}        IF NOT EXISTS (SELECT 1 FROM ${acl} WHERE operator_name=SESSION_USER AND dataset_id=p_dataset) THEN
           RAISE EXCEPTION 'Audit export scope is unavailable' USING ERRCODE='42501';
         END IF;
 
@@ -159,4 +173,5 @@ ${version === 3 ? '        END IF;\n' : ''}        IF NOT EXISTS (SELECT 1 FROM 
     beginSql(3),
     finishSql(true),
   ] });
+  await applySchemaMigration(db, { id: 'paid-activity-audit-detail-lookup-access-v1', statements: [beginSql(4)] });
 }

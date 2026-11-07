@@ -1,17 +1,31 @@
 import assert from 'node:assert/strict';
+import { execFile } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test, { type TestContext } from 'node:test';
+import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
 import pg from 'pg';
 import type { AuditAttempt, AuditEvent, AuditSourceRef } from '../server/audit/contract';
 import { AuditDatasets } from '../server/audit/datasets';
 import { AuditEvidence } from '../server/audit/evidence';
 import { installAuditReportAccess } from '../server/audit/report-access';
 import { installAuditDetailReport, type AuditDetailReport } from '../server/audit/report-detail-source';
+import { readAuditDetail } from '../server/audit/report-investigation';
+import type { AuditDetailLookupFilters } from '../server/audit/report-player';
 import { cryptoConfig } from '../server/crypto/config';
 import type { CryptoProvider } from '../server/crypto/nowpayments';
 import { CryptoStore } from '../server/crypto/store';
 import { databaseConfig, identifier, PostgresDatabase } from '../server/database';
+import { DemoExpansionStore } from '../server/demoExpansion';
 import { DemoWalletStore } from '../server/demoWallet';
+import { demoBalanceUnits } from '../server/demoWalletAmounts';
+import { FlagToteStore } from '../server/flagTote';
+import { cardEngine } from '../server/games/cardEngine';
+import { VirtualPvpLedger } from '../server/pvp/virtual-wallet';
+import { TOTE_TIMING } from '../src/shared/flagTote';
 
 async function fixture(t: TestContext) {
   const game = new PostgresDatabase(':memory:'), payment = new PostgresDatabase(':memory:'), audit = new PostgresDatabase(':memory:');
@@ -22,7 +36,9 @@ async function fixture(t: TestContext) {
   await audit.exec(`CREATE ROLE ${identifier(reader)} NOLOGIN;
     CREATE ROLE ${identifier(alice)} LOGIN PASSWORD '${password}';
     CREATE ROLE ${identifier(bob)} LOGIN PASSWORD '${password}';
-    GRANT ${identifier(reader)} TO ${identifier(alice)},${identifier(bob)}`);
+    GRANT ${identifier(reader)} TO ${identifier(alice)},${identifier(bob)};
+    ALTER ROLE ${identifier(alice)} SET temp_file_limit='32MB';
+    ALTER ROLE ${identifier(bob)} SET temp_file_limit='32MB'`);
   t.after(async () => {
     await Promise.all(clients.map(client => client.end()));
     await audit.exec(`DROP OWNED BY ${identifier(reader)}; DROP ROLE ${identifier(alice)},${identifier(bob)},${identifier(reader)}`);
@@ -51,9 +67,10 @@ async function fixture(t: TestContext) {
     'INSERT INTO audit_report_acl(operator_name,dataset_id,source_namespace) VALUES (?,?,?)').run(name, selected, namespace);
   await grant(alice, demo);
   await grant(bob, demo);
+  const config = (name: string) => databaseConfig({ ...process.env, DATABASE_URL: '', DATABASE_URL_FILE: '',
+    PGUSER: name, PGPASSWORD: password, PGPASSWORD_FILE: '' });
   const login = async (name: string) => {
-    const client = new pg.Client(databaseConfig({ ...process.env, DATABASE_URL: '', DATABASE_URL_FILE: '',
-      PGUSER: name, PGPASSWORD: password, PGPASSWORD_FILE: '' }));
+    const client = new pg.Client(config(name));
     await client.connect();
     clients.push(client);
     return client;
@@ -71,8 +88,23 @@ async function fixture(t: TestContext) {
     return (await db.prepare(`SELECT id::text FROM ${table} WHERE account_id=? AND operation_id=? ORDER BY ${table}.id`)
       .all(account, op)).map(row => ({ namespace: db.schema + '.' + table, rowId: row.id }));
   };
+  const lookup = (filters: AuditDetailLookupFilters, selected = datasetId) =>
+    readAuditDetail(config(alice), { schema: audit.schema, datasetId: selected, filters });
+  const credentialFile = async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'royal-detail-'));
+    t.after(() => rm(directory, { recursive: true, force: true }));
+    const url = new URL('postgresql://localhost');
+    url.hostname = process.env.PGHOST!;
+    url.port = process.env.PGPORT!;
+    url.pathname = '/' + process.env.PGDATABASE!;
+    url.username = alice;
+    url.password = password;
+    const file = join(directory, 'operator-url');
+    await writeFile(file, url.href, { mode: 0o600 });
+    return file;
+  };
   return { game, payment, audit, wallet, crypto, actor, other, before, datasets, scope, schema,
-    demo, real, grant, alice, operator, otherOperator, begin, read, finish, sourceRows };
+    demo, real, grant, alice, operator, otherOperator, begin, read, finish, sourceRows, lookup, credentialFile };
 }
 
 test('operator detail projects the accepted command, two canonical legs and sanitized formed responses', async t => {
@@ -217,4 +249,153 @@ test('a high-repeat operation is capped with an explicit attempt coverage marker
   assert.equal(report.coverage.attemptsTruncated, true);
   assert.deepEqual(report.attempts.map(row => row.occurredAtMs), Array.from({ length: 64 }, (_, index) => String(at + index)));
   await f.finish(job);
+});
+
+test('typed operation and instant round keep the original journal selector, source and account boundary', async t => {
+  const f = await fixture(t);
+  const id = randomUUID();
+  for (const account of [f.actor, f.other]) {
+    await f.wallet.operate(account, { id, kind: 'play', gameId: 'royal-roulette',
+      input: { bet: 'black' }, rulesVersion: 1, stakePolicyVersion: 1, amount: 1 });
+  }
+  await f.crypto.creditStarsDeposit(f.actor, id, '1000000', randomUUID(), 100);
+  const shared = { source: f.demo, lookupId: id };
+  for (const lookupKind of ['operation', 'round'] as const) {
+    const filters = { ...shared, lookupKind };
+    const ambiguous = await f.lookup(filters);
+    assert.equal(ambiguous.status, 'ambiguous-account');
+    assert.deepEqual(ambiguous.selection, filters);
+    assert.equal(ambiguous.source, null);
+    assert.equal(ambiguous.anchor, null);
+    assert(!JSON.stringify(ambiguous).includes(f.actor) && !JSON.stringify(ambiguous).includes(f.other));
+  }
+
+  const [stake, payout] = await f.sourceRows(id);
+  const connection = await f.credentialFile();
+  const { stdout } = await promisify(execFile)(process.execPath, ['--import','tsx','scripts/audit.ts','detail',
+    '--schema',f.audit.schema,'--dataset',f.scope.datasetId,'--source',f.demo,'--round',id,'--account',f.actor], {
+    cwd:fileURLToPath(new URL('..',import.meta.url)),env:{ ...process.env, ROYAL_AUDIT_DB_URL_FILE:connection },
+  });
+  const report = JSON.parse(stdout) as AuditDetailReport & { jobId: string };
+  const filters = { ...shared, lookupKind: 'round', accountId: f.actor };
+  assert.equal(report.status, 'found');
+  assert.deepEqual(report.selection, filters);
+  assert.deepEqual(report.source, stake);
+  assert.deepEqual(report.linkedPostings.map(row => row.source), [payout]);
+  assert.equal(report.outcome?.kind, 'casino-round');
+  const journal = await f.audit.prepare('SELECT operator_name,kind,status,filters FROM audit_export_jobs WHERE id=?').get(report.jobId);
+  assert.deepEqual(journal, { operator_name: f.alice, kind: 'detail', status: 'succeeded', filters });
+
+  const unknown = await f.lookup({ ...shared, lookupKind: 'operation', accountId: randomUUID() });
+  assert.equal(unknown.status, 'not-captured');
+  assert.equal(unknown.source, null);
+  const uncaptured = await f.lookup({ source: f.demo, lookupKind: 'operation', lookupId: f.before });
+  assert.equal(uncaptured.status, 'not-captured');
+  await assert.rejects(f.lookup({ source: f.real, lookupKind: 'operation', lookupId: id }), { code: 'permission-denied' });
+  await f.grant(f.alice, f.real);
+  const payment = await f.lookup({ source: f.real, lookupKind: 'operation', lookupId: id });
+  assert.equal(payment.operation?.kind, 'deposit');
+  assert.deepEqual(payment.linkedPostings, []);
+  assert.equal((await f.lookup({ source: f.real, lookupKind: 'round', lookupId: id })).status, 'not-captured');
+
+  await assert.rejects(f.operator.query(`SELECT ${f.schema}.audit_report_begin($1,'detail',$2::jsonb)`,
+    [f.scope.datasetId, JSON.stringify({ ...filters, postingId: stake.rowId })]), { code: '22023' });
+  const damagedId = randomUUID();
+  await f.wallet.operate(f.actor, { id: damagedId, kind: 'deposit', amount: 1 });
+  const [damagedPosting] = await f.sourceRows(damagedId);
+  await f.game.prepare("UPDATE demo_ledger SET operation_id='damaged' WHERE id=?").run(damagedPosting.rowId);
+  const damaged = await f.lookup({ source: f.demo, lookupKind: 'operation', lookupId: damagedId });
+  assert.equal(damaged.status, 'source-unavailable');
+  assert.deepEqual(damaged.source, damagedPosting);
+
+  const crowded = randomUUID();
+  await f.game.prepare(`INSERT INTO demo_ledger(account_id,operation_id,kind,amount,balance,created_at,amount_units,balance_units,entry_type)
+    SELECT ?,?,'deposit',1,1,?,100,100,'deposit' FROM generate_series(1,129)`).run(f.actor,crowded,Date.now());
+  await assert.rejects(f.lookup({ source: f.demo, lookupKind: 'operation', lookupId: crowded, accountId: f.actor }), { code: 'scan-limit' });
+});
+
+test('typed round follows a captured continuation of a round proved at the opening checkpoint', async t => {
+  const f = await fixture(t);
+  let clock = Date.now();
+  const store = new DemoExpansionStore(f.game, async account => ({ balance: await demoBalanceUnits(f.game, account) / 100, entries: [] }),
+    f.wallet.ready, async () => {}, () => 0, () => clock, cardEngine, () => 2.3456);
+  const id = randomUUID(), cashout = randomUUID(), gameId = 'github-crash';
+  await store.operate(f.actor, { id, gameId, action: 'start', stakeUnits: '100', stakePolicyVersion: 1, settings: {} });
+  await f.datasets.sealTest(f.scope.datasetId);
+  const next = await f.datasets.startTest();
+  await f.grant(f.alice, f.demo, next.datasetId);
+  clock += 4_000;
+  await store.operate(f.actor, { id: cashout, gameId, action: 'move', sessionId: id, move: 'cashout' });
+  const [credit] = await f.sourceRows(cashout);
+  const lookup = { source: f.demo, lookupKind: 'round', lookupId: id } as const;
+  const report = await f.lookup(lookup, next.datasetId);
+  assert.equal(report.status, 'found');
+  assert.deepEqual(report.source, credit);
+  assert.equal(report.anchor?.entityId, id);
+  assert.equal(report.operation?.id, cashout);
+  assert.deepEqual(report.linkedPostings, []);
+  assert.equal((await f.lookup({ ...lookup, lookupKind: 'operation' }, next.datasetId)).status, 'not-captured');
+  assert.equal((await f.lookup({ ...lookup, accountId: f.other }, next.datasetId)).status, 'not-captured');
+  const old = await f.lookup(lookup);
+  assert.equal(old.status, 'found');
+  assert.equal(old.outcome, null);
+  assert.deepEqual(old.linkedPostings, []);
+});
+
+test('typed PvP match shows both captured participants or one explicit account', async t => {
+  const f = await fixture(t);
+  const ledger = new VirtualPvpLedger(f.game, f.wallet);
+  const matchId = randomUUID();
+  const terms = { matchId, gameId: 'chess', stakeUnits: '10000000' };
+  for (const account of [f.actor, f.other]) await ledger.pvpHold(account, terms);
+  await ledger.pvpFinish(f.actor, { matchId, winnerId: f.actor, reason: 'win' });
+  const lookup = { source: f.demo, lookupKind: 'match', lookupId: matchId } as const;
+  const match = await f.lookup(lookup);
+  assert.equal(match.status, 'found');
+  assert.equal(match.anchor?.entityId, matchId);
+  assert.equal(match.coverage.linkedPostingScope, 'match');
+  assert.equal(match.outcome?.winnerAccountId, f.actor);
+  const legs = [match.anchor!, ...match.linkedPostings];
+  assert.deepEqual(legs.map(row => [row.accountId, row.amountUnits]),
+    [[f.actor,'-1000'], [f.other,'-1000'], [f.actor,'1900']]);
+  for (const accountId of [f.actor, f.other]) {
+    const found = await f.lookup({ ...lookup, accountId });
+    assert.equal(found.status, 'found');
+    assert.equal(found.anchor?.entityId, matchId);
+    assert.equal(found.anchor?.accountId, accountId);
+    assert.equal(found.outcome?.kind, 'pvp-bank');
+    assert.equal(found.outcome?.accountWon, accountId === f.actor);
+    assert(found.linkedPostings.every(row => row.accountId === accountId));
+  }
+});
+
+test('typed ticket finds its own debit or the captured refund after an opening checkpoint', async t => {
+  const f = await fixture(t);
+  let clock = (Math.floor(Date.now() / TOTE_TIMING.period) + 1) * TOTE_TIMING.period + 1;
+  const pool = new FlagToteStore(f.game, id => f.wallet.snapshotInTransaction(id), f.wallet.ready, () => clock, () => 0);
+  const { round } = await pool.snapshot(f.actor);
+  assert(round);
+  const id = randomUUID();
+  await pool.bet(f.actor, { id, roundId: round.id, rulesVersion: 1, country: 'FR', stakeUnits: '100' });
+  const lookup = { source: f.demo, lookupKind: 'ticket', lookupId: id } as const;
+  const accepted = await f.lookup(lookup);
+  assert.equal(accepted.status, 'found');
+  assert.equal(accepted.anchor?.ticketId, id);
+  assert.equal(accepted.operation?.id, id);
+  assert.equal(accepted.anchor?.operationId, 'flag-tote:' + id);
+  assert.equal((await f.lookup({ ...lookup, accountId: f.other })).status, 'not-captured');
+
+  await f.datasets.sealTest(f.scope.datasetId);
+  const next = await f.datasets.startTest();
+  await f.grant(f.alice, f.demo, next.datasetId);
+  clock = round.finishesAt;
+  await pool.advance();
+  const settled = await f.lookup(lookup, next.datasetId);
+  assert.equal(settled.status, 'found');
+  assert.equal(settled.anchor?.operationId, 'flag-tote:' + round.id + ':final');
+  assert.equal(settled.anchor?.movement, 'refund');
+  assert.equal(settled.operation?.id, id);
+  assert.equal(settled.outcome?.state, 'refunded');
+  assert.deepEqual(settled.linkedPostings, []);
+  assert.equal((await f.lookup({ ...lookup, accountId: f.other }, next.datasetId)).status, 'not-captured');
 });

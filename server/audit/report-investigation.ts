@@ -3,10 +3,11 @@ import type { ClientConfig } from 'pg';
 import type { AuditScope, AuditSourceRef } from './contract';
 import type { AuditDetailReport } from './report-detail-source';
 import {
-  AuditPlayerReportError, openAuditReportReader, runAuditReport, type AuditPostingReportFilters,
+  AuditPlayerReportError, openAuditReportReader, runAuditReport, type AuditDetailLookupFilters, type AuditPostingReportFilters,
 } from './report-player';
 
 type Investigation = { schema: string; datasetId: string; filters: AuditPostingReportFilters; signal?: AbortSignal };
+type DetailInvestigation = Omit<Investigation, 'filters'> & { filters: AuditPostingReportFilters | AuditDetailLookupFilters };
 type ReportIdentity = { schemaVersion: 1; datasetId: string; environment: AuditScope['environment'] };
 type ReconcileReport = ReportIdentity & {
   anchor: AuditSourceRef;
@@ -20,11 +21,11 @@ const byteLimit = 1024 * 1024 + 4096;
 const environments = new Set(['test', 'live']);
 
 function outputFor<T extends ReportIdentity>(
-  report: T | undefined, input: Investigation, jobId: string, identity: AuditSourceRef | undefined,
+  report: T | undefined, input: { datasetId: string }, jobId: string, identityMatches: boolean,
 ) {
   if (!report || report.schemaVersion !== 1 || report.datasetId !== input.datasetId.toLowerCase() ||
       typeof report.environment !== 'string' || !environments.has(report.environment) ||
-      identity?.namespace !== input.filters.source || identity.rowId !== input.filters.postingId) {
+      !identityMatches) {
     throw new AuditPlayerReportError('internal-error', jobId);
   }
   const output = { jobId, ...report };
@@ -33,14 +34,27 @@ function outputFor<T extends ReportIdentity>(
   return { output, bytes };
 }
 
-export async function readAuditDetail(config: ClientConfig, input: Investigation) {
+function detailIdentityMatches(report: AuditDetailReport | undefined, filters: DetailInvestigation['filters']) {
+  if (!report) return false;
+  if ('postingId' in filters) {
+    return report.source?.namespace === filters.source && report.source.rowId === filters.postingId;
+  }
+  const selection = report.selection;
+  if (selection?.source !== filters.source || selection.lookupKind !== filters.lookupKind ||
+      selection.lookupId !== filters.lookupId || selection.accountId !== filters.accountId) return false;
+  if (report.source === null) return report.anchor === null && report.status !== 'found';
+  return report.source.namespace === filters.source && /^[1-9][0-9]{0,18}$/.test(report.source.rowId) &&
+    (!filters.accountId || report.anchor?.accountId === filters.accountId);
+}
+
+export async function readAuditDetail(config: ClientConfig, input: DetailInvestigation) {
   const result = await runAuditReport(config, input, 'detail', 30_000, async (settings, schema, jobId, signal) => {
     const { connection, finish } = await openAuditReportReader(settings, jobId, signal);
     try {
       const query = await connection.query<{ report: AuditDetailReport }>(
         'SELECT ' + schema + '.audit_report_detail($1) AS report', [jobId]);
       const report = query.rows[0]?.report;
-      const result = outputFor(report, input, jobId, report?.source);
+      const result = outputFor(report, input, jobId, detailIdentityMatches(report, input.filters));
       const rowCount = [result.output.linkedPostings, result.output.attempts, result.output.events]
         .reduce((count, rows) => count + (Array.isArray(rows) ? rows.length : 0), result.output.anchor ? 1 : 0);
       signal.throwIfAborted();
@@ -73,7 +87,8 @@ export async function requestAuditReconcile(config: ClientConfig, input: Investi
         report = await query(false);
       }
       signal.throwIfAborted();
-      return { ...outputFor(report, input, jobId, report?.anchor), rowCount: report?.report ? 1 : 0 };
+      return { ...outputFor(report, input, jobId, report?.anchor?.namespace === input.filters.source &&
+        report.anchor.rowId === input.filters.postingId), rowCount: report?.report ? 1 : 0 };
     } finally { await finish(); }
   });
   return result.output;

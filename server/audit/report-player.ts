@@ -15,6 +15,8 @@ export type PlayerReportFilters = {
 };
 export type AuditReportFilters = Omit<PlayerReportFilters, 'accountId'> & { accountId?: string };
 export type AuditPostingReportFilters = { source: string; postingId: string; refresh?: boolean };
+export type AuditDetailLookupFilters = { source: string; lookupKind: 'operation' | 'round' | 'match' | 'ticket';
+  lookupId: string; accountId?: string };
 export type AuditReportKind = 'player' | 'summary' | 'detail' | 'replay' | 'reconcile';
 
 type Limits = { maxRows: number; maxBytes: number; maxScanned: number; timeoutMs: number; pageSize: number };
@@ -115,7 +117,7 @@ async function* pages(config: ClientConfig, fn: string, jobId: string, limits: L
 /** Both journal and query connections use the named PostgreSQL report login. */
 export async function runAuditReport<T extends { rowCount: number; bytes: number }>(
   config: ClientConfig, input: { schema: string; datasetId: string;
-    filters: AuditReportFilters | AuditPostingReportFilters | { replayId: string };
+    filters: AuditReportFilters | AuditPostingReportFilters | AuditDetailLookupFilters | { replayId: string };
     signal?: AbortSignal }, kind: AuditReportKind, timeoutMs: number,
   run: (settings: ClientConfig, schema: string, jobId: string, signal: AbortSignal) => Promise<T>,
 ) {

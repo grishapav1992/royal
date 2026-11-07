@@ -3,6 +3,7 @@ import { applySchemaMigration } from '../database-migrations';
 import type { AuditSourceRef } from './contract';
 import type { AuditSourceSchemas } from './datasets';
 import { auditPostingProjectionSql } from './report-player-source';
+import type { AuditDetailLookupFilters } from './report-player';
 
 export const AUDIT_DETAIL_MAX_BYTES = 262144;
 const maxPostings = 128;
@@ -12,8 +13,9 @@ export type AuditDetailReport = {
   schemaVersion: 1;
   datasetId: string;
   environment: 'test' | 'live';
-  status: 'found' | 'not-captured' | 'source-unavailable';
-  source: AuditSourceRef;
+  status: 'found' | 'not-captured' | 'source-unavailable' | 'ambiguous-account';
+  source: AuditSourceRef | null;
+  selection?: AuditDetailLookupFilters;
   anchor: Record<string, unknown> | null;
   linkedPostings: Record<string, unknown>[];
   operation: Record<string, unknown> | null;
@@ -58,6 +60,12 @@ export async function installAuditDetailReport(db: PostgresDatabase, readerRole:
       columns: ['dataset_id', 'account_id', "(payload->>'operationId')", 'occurred_at_ms', 'evidence_id'],
       where: "kind='event'" },
   ] });
+  await applySchemaMigration(db, { id: 'paid-activity-audit-detail-lookup-v1', statements: [], indexes: [
+    { name: 'audit_detail_refs_operation_account', table: 'audit_posting_refs',
+      columns: ['dataset_id', 'source_namespace', 'operation_id', 'account_id', 'source_row_id'] },
+    { name: 'audit_detail_opening_entity', table: 'audit_opening_obligations',
+      columns: ['dataset_id', 'source_namespace', 'entity_id', 'account_id'] },
+  ] });
   const fn = a + '.audit_report_detail', signature = fn + '(uuid)';
   const anchors = `anchors AS (
     SELECT r.*,older.source_row_id AS prior_id,opening.available_units AS opening_balance
@@ -81,6 +89,13 @@ export async function installAuditDetailReport(db: PostgresDatabase, readerRole:
         v_anchor record;
         v_source text;
         v_id text;
+        v_lookup_kind text;
+        v_lookup_id text;
+        v_lookup_account text;
+        v_resolution record;
+        v_match_accounts text[];
+        v_open_ticket_round text;
+        v_open_ticket_account text;
         v_keys text[];
         v_routes text[] := ARRAY[]::text[];
         v_operation jsonb;
@@ -103,21 +118,123 @@ export async function installAuditDetailReport(db: PostgresDatabase, readerRole:
             AND e.status='running' AND e.expires_at>clock_timestamp();
         IF NOT FOUND THEN RAISE EXCEPTION 'Audit detail access denied' USING ERRCODE='42501'; END IF;
         v_source := j.filters->>'source';
-        v_id := j.filters->>'postingId';
         IF v_source IS NULL OR NOT (v_source=ANY(array_remove(ARRAY[${demo},${pending},${crypto}]::text[],NULL)))
           OR NOT EXISTS (SELECT 1 FROM ${a}.audit_report_acl acl WHERE acl.operator_name=SESSION_USER
             AND acl.dataset_id=j.dataset_id AND acl.source_namespace=v_source) THEN
           RAISE EXCEPTION 'Audit detail access denied' USING ERRCODE='42501';
         END IF;
-        IF v_id IS NULL OR v_id !~ '^[1-9][0-9]{0,18}$' THEN
-          RAISE EXCEPTION 'Invalid audit detail anchor' USING ERRCODE='22023';
-        END IF;
-        IF v_id::numeric>9223372036854775807 THEN
-          RAISE EXCEPTION 'Invalid audit detail anchor' USING ERRCODE='22023';
-        END IF;
         v_report := jsonb_build_object('schemaVersion',1,'datasetId',j.dataset_id::text,'environment',j.environment,
-          'source',jsonb_build_object('namespace',v_source,'rowId',v_id),'anchor',NULL,'linkedPostings','[]'::jsonb,
-          'operation',NULL,'outcome',NULL,'events','[]'::jsonb,'attempts','[]'::jsonb,'coverage','{}'::jsonb);
+          'source',NULL,'anchor',NULL,'linkedPostings','[]'::jsonb,'operation',NULL,'outcome',NULL,
+          'events','[]'::jsonb,'attempts','[]'::jsonb,'coverage','{}'::jsonb);
+        v_lookup_kind := j.filters->>'lookupKind';
+        IF v_lookup_kind IS NULL THEN
+          v_id := j.filters->>'postingId';
+          IF v_id IS NULL OR v_id !~ '^[1-9][0-9]{0,18}$' THEN
+            RAISE EXCEPTION 'Invalid audit detail anchor' USING ERRCODE='22023';
+          END IF;
+          IF v_id::numeric>9223372036854775807 THEN
+            RAISE EXCEPTION 'Invalid audit detail anchor' USING ERRCODE='22023';
+          END IF;
+        ELSE
+          v_report := v_report||jsonb_build_object('selection',j.filters);
+          v_lookup_id := j.filters->>'lookupId';
+          v_lookup_account := j.filters->>'accountId';
+          IF v_lookup_kind<>'operation' AND v_source<>${demo} THEN
+            RETURN v_report||jsonb_build_object('status','not-captured','coverage',jsonb_build_object('anchor','not-captured'));
+          END IF;
+          IF v_lookup_kind='ticket' THEN
+            SELECT t.round_id,t.account_id INTO v_open_ticket_round,v_open_ticket_account
+            FROM ${g}.flag_tote_tickets t WHERE t.id=v_lookup_id AND (v_lookup_account IS NULL OR t.account_id=v_lookup_account)
+              AND EXISTS (SELECT 1 FROM ${a}.audit_opening_obligations o WHERE o.dataset_id=j.dataset_id
+                AND o.source_namespace=${literal(sources.game + '.flag_tote_tickets')} AND o.entity_id=t.id
+                AND o.account_id=t.account_id);
+          END IF;
+          v_keys := CASE v_lookup_kind
+            WHEN 'match' THEN ARRAY['pvp:'||v_lookup_id||':hold','pvp:'||v_lookup_id||':final']
+            WHEN 'ticket' THEN ARRAY['flag-tote:'||v_lookup_id]
+            ELSE ARRAY[v_lookup_id] END;
+
+          -- Resolve only indexed keys in the journal's source. A capped lookup never guesses an account.
+          WITH known_keys AS (
+            SELECT k AS operation_id,v_lookup_account AS account_id FROM unnest(v_keys) AS keys(k)
+            UNION ALL
+            SELECT 'flag-tote:'||v_open_ticket_round||':final',v_open_ticket_account WHERE v_open_ticket_round IS NOT NULL
+          ), direct AS MATERIALIZED (
+            SELECT r.* FROM known_keys k CROSS JOIN LATERAL (
+              (SELECT ref.* FROM ${a}.audit_posting_refs ref WHERE k.account_id IS NULL AND ref.dataset_id=j.dataset_id
+                AND ref.source_namespace=v_source AND ref.operation_id=k.operation_id
+              ORDER BY ref.source_row_id LIMIT ${maxPostings + 1})
+              UNION ALL
+              (SELECT ref.* FROM ${a}.audit_posting_refs ref WHERE k.account_id IS NOT NULL AND ref.dataset_id=j.dataset_id
+                AND ref.source_namespace=v_source AND ref.operation_id=k.operation_id AND ref.account_id=k.account_id
+              ORDER BY ref.source_row_id LIMIT ${maxPostings + 1})
+            ) r LIMIT ${maxPostings + 1}
+          ), opening AS MATERIALIZED (
+            SELECT o.account_id FROM ${a}.audit_opening_obligations o
+            WHERE v_lookup_kind='round' AND v_lookup_account IS NULL AND o.dataset_id=j.dataset_id
+              AND o.source_namespace=${literal(sources.game + '.demo_casino_sessions')} AND o.entity_id=v_lookup_id
+            LIMIT ${maxPostings + 1}
+          ), accounts AS (
+            SELECT account_id FROM opening
+            UNION ALL SELECT v_lookup_account WHERE v_lookup_kind='round' AND v_lookup_account IS NOT NULL
+          ), requests AS MATERIALIZED (
+            SELECT q.id,q.account_id FROM accounts a CROSS JOIN LATERAL (
+              SELECT r.id,r.account_id FROM ${g}.demo_casino_requests r
+              WHERE r.account_id=a.account_id AND r.session_id=v_lookup_id LIMIT ${maxPostings + 1}
+            ) q WHERE NOT EXISTS (SELECT 1 FROM direct d WHERE d.account_id=a.account_id)
+            LIMIT ${maxPostings + 1}
+          ), indirect AS MATERIALIZED (
+            SELECT r.* FROM requests q CROSS JOIN LATERAL (
+              SELECT ref.* FROM ${a}.audit_posting_refs ref WHERE ref.dataset_id=j.dataset_id
+                AND ref.source_namespace=v_source AND ref.operation_id=q.id AND ref.account_id=q.account_id
+              ORDER BY ref.source_row_id LIMIT ${maxPostings + 1}
+            ) r LIMIT ${maxPostings + 1}
+          ), refs AS MATERIALIZED (
+            SELECT * FROM direct UNION SELECT * FROM indirect
+          ), budget AS (
+            SELECT (SELECT count(*) FROM opening)>${maxPostings} OR (SELECT count(*) FROM requests)>${maxPostings}
+              OR (SELECT count(*) FROM refs)>${maxPostings} AS exceeded
+          ), anchors AS (
+            SELECT r.*,NULL::bigint AS prior_id,NULL::numeric AS opening_balance FROM refs r
+            WHERE NOT (SELECT exceeded FROM budget)
+          ), projected AS (${selects}), candidates AS (
+            SELECT p.*,CASE v_lookup_kind WHEN 'operation' THEN true
+              WHEN 'round' THEN p.category='casino' AND p.entity_id=v_lookup_id
+              WHEN 'match' THEN p.category='pvp' AND p.entity_id=v_lookup_id
+              WHEN 'ticket' THEN p.category='totalizator' AND (p.ticket_id=v_lookup_id OR
+                (p.account_id=v_open_ticket_account AND p.entity_id=v_open_ticket_round
+                  AND p.operation_id='flag-tote:'||v_open_ticket_round||':final')) END AS matched
+            FROM projected p
+          )
+          SELECT count(DISTINCT account_id) FILTER (WHERE matched) AS accounts,
+            min(account_id) FILTER (WHERE matched) AS matching_account,
+            array_agg(DISTINCT account_id) FILTER (WHERE matched) AS matching_accounts,
+            COALESCE(min(source_row_id) FILTER (WHERE matched AND present),min(source_row_id) FILTER (WHERE matched)) AS row_id,
+            count(DISTINCT account_id) FILTER (WHERE NOT present) AS unavailable_accounts,
+            min(account_id) FILTER (WHERE NOT present) AS unavailable_account,(SELECT exceeded FROM budget) AS exceeded
+          INTO v_resolution FROM candidates;
+
+          IF v_resolution.exceeded THEN RAISE EXCEPTION 'Audit detail lookup scan limit exceeded' USING ERRCODE='54000'; END IF;
+          IF v_lookup_kind='match' AND v_lookup_account IS NULL THEN
+            IF v_resolution.accounts>2 OR v_resolution.unavailable_accounts>0 THEN
+              RETURN v_report||jsonb_build_object('status','source-unavailable','coverage',jsonb_build_object('anchor','source-unavailable'));
+            END IF;
+            v_match_accounts := v_resolution.matching_accounts;
+          ELSE
+            IF v_resolution.accounts>1 THEN
+              RETURN v_report||jsonb_build_object('status','ambiguous-account','coverage',jsonb_build_object('anchor','ambiguous-account'));
+            END IF;
+            IF v_lookup_kind<>'operation' AND (v_resolution.unavailable_accounts>1 OR
+                (v_resolution.unavailable_accounts=1 AND v_resolution.unavailable_account IS DISTINCT FROM v_resolution.matching_account)) THEN
+              RETURN v_report||jsonb_build_object('status','source-unavailable','coverage',jsonb_build_object('anchor','source-unavailable'));
+            END IF;
+          END IF;
+          v_id := v_resolution.row_id::text;
+          IF v_id IS NULL THEN
+            RETURN v_report||jsonb_build_object('status','not-captured','coverage',jsonb_build_object('anchor','not-captured'));
+          END IF;
+        END IF;
+        v_report := v_report||jsonb_build_object('source',jsonb_build_object('namespace',v_source,'rowId',v_id));
 
         WITH refs AS MATERIALIZED (
           SELECT r.* FROM ${a}.audit_posting_refs r WHERE r.dataset_id=j.dataset_id
@@ -189,7 +306,8 @@ export async function installAuditDetailReport(db: PostgresDatabase, readerRole:
             SELECT jsonb_build_object('id',t.id,'kind','ticket','stakeUnits',t.stake_units::text,'country',
               CASE WHEN t.country ~ '^[A-Z]{2}$' THEN t.country END,'entityId',t.round_id,
               'source',jsonb_build_object('namespace',${literal(sources.game + '.flag_tote_tickets')},'rowId',t.id)) INTO v_operation
-            FROM ${g}.flag_tote_tickets t WHERE t.id=v_anchor.ticket_id AND t.account_id=v_anchor.account_id
+            FROM ${g}.flag_tote_tickets t WHERE t.id=COALESCE(v_anchor.ticket_id,
+              CASE WHEN v_lookup_kind='ticket' THEN v_lookup_id END) AND t.account_id=v_anchor.account_id
               AND t.round_id=v_anchor.entity_id;
           END IF;
           IF v_operation IS NULL AND v_anchor.category IS DISTINCT FROM 'pvp'
@@ -238,10 +356,13 @@ export async function installAuditDetailReport(db: PostgresDatabase, readerRole:
         v_keys := v_keys[1:${maxPostings}];
         WITH refs AS MATERIALIZED (
           SELECT r.* FROM ${a}.audit_posting_refs r WHERE r.dataset_id=j.dataset_id
-            AND r.source_namespace=v_source AND r.account_id=v_anchor.account_id AND r.operation_id=ANY(v_keys)
-            AND r.source_row_id<>v_id::bigint ORDER BY r.source_row_id LIMIT ${maxPostings + 1}
+            AND r.source_namespace=v_source AND r.account_id=ANY(COALESCE(v_match_accounts,ARRAY[v_anchor.account_id]))
+            AND r.operation_id=ANY(v_keys) AND r.source_row_id<>v_id::bigint
+          ORDER BY r.source_row_id LIMIT ${maxPostings + 1}
         ), ${anchors}, projected AS (${selects}), page AS (
-          SELECT * FROM projected ORDER BY source_row_id LIMIT ${maxPostings}
+          SELECT * FROM projected
+          WHERE v_match_accounts IS NULL OR (category='pvp' AND entity_id=v_lookup_id)
+          ORDER BY source_row_id LIMIT ${maxPostings}
         )
         SELECT COALESCE((SELECT jsonb_agg(${posting('page')} ORDER BY source_row_id) FROM page),'[]'::jsonb),
           v_links_truncated OR (SELECT count(*) FROM refs)>${maxPostings}
@@ -254,7 +375,9 @@ export async function installAuditDetailReport(db: PostgresDatabase, readerRole:
           SELECT jsonb_build_object('kind','pvp-bank','basis',CASE WHEN j.sealed_at_ms IS NULL THEN 'current-source'
             ELSE 'captured-settlement' END,'state',b.state,'reason',
             CASE WHEN b.reason IN ('win','draw','cancel','expired','server','disconnect','resign','timeout') THEN b.reason END,
-            'feeUnits',b.fee_units::text,'accountWon',CASE WHEN b.state='settled' THEN b.winner_id=v_anchor.account_id END)
+            'feeUnits',b.fee_units::text,'accountWon',CASE WHEN b.state='settled' THEN b.winner_id=v_anchor.account_id END) ||
+            CASE WHEN v_match_accounts IS NOT NULL THEN jsonb_build_object('winnerAccountId',
+              CASE WHEN b.state='settled' AND b.winner_id=ANY(v_match_accounts) THEN b.winner_id END) ELSE '{}'::jsonb END
             INTO v_outcome FROM ${g}.virtual_pvp_banks b WHERE b.match_id=v_anchor.entity_id AND b.game_id=v_anchor.game_id;
         ELSIF v_source=${demo} AND v_anchor.category='totalizator' AND v_anchor.entity_id IS NOT NULL
           AND (j.sealed_at_ms IS NULL OR v_anchor.operation_id='flag-tote:'||v_anchor.entity_id||':final' OR EXISTS (
@@ -281,9 +404,12 @@ export async function installAuditDetailReport(db: PostgresDatabase, readerRole:
           WHERE e.dataset_id=j.dataset_id AND e.kind='event'
             AND e.payload->>'operationId'=ANY(v_keys) AND e.payload->>'eventId'=e.evidence_id
             AND e.evidence_id ~ '${recordId}' AND (
-              (e.account_id=v_anchor.account_id AND e.payload->>'accountId'=v_anchor.account_id) OR
-              (e.account_id IS NULL AND e.payload->'accountId'='null'::jsonb
-                AND e.payload->'postings' @> jsonb_build_array(v_anchor.detail->'source')))
+              (e.account_id=ANY(COALESCE(v_match_accounts,ARRAY[v_anchor.account_id])) AND e.payload->>'accountId'=e.account_id) OR
+              (e.account_id IS NULL AND e.payload->'accountId'='null'::jsonb AND (
+                e.payload->'postings' @> jsonb_build_array(v_anchor.detail->'source') OR
+                (v_match_accounts IS NOT NULL AND EXISTS (
+                  SELECT 1 FROM jsonb_array_elements(v_postings) linked
+                  WHERE e.payload->'postings' @> jsonb_build_array(linked->'source'))))))
             AND e.payload->'schemaVersion'='1'::jsonb AND e.payload->>'type'=e.kind
             AND jsonb_typeof(e.payload->'occurredAtMs')='number' AND e.payload->>'occurredAtMs'=e.occurred_at_ms::text
             AND e.payload#>>'{scope,datasetId}'=j.dataset_id::text AND e.payload#>>'{scope,environment}'=j.environment
@@ -304,11 +430,11 @@ export async function installAuditDetailReport(db: PostgresDatabase, readerRole:
           (SELECT count(*) FROM evidence)>${maxEvidence} INTO v_events,v_events_truncated;
 
         WITH evidence AS MATERIALIZED (
-          SELECT e.evidence_id,e.occurred_at_ms,e.payload FROM ${a}.audit_evidence e
-          WHERE e.dataset_id=j.dataset_id AND e.account_id=v_anchor.account_id AND e.kind='attempt'
+          SELECT e.evidence_id,e.account_id,e.occurred_at_ms,e.payload FROM ${a}.audit_evidence e
+          WHERE e.dataset_id=j.dataset_id AND e.account_id=ANY(COALESCE(v_match_accounts,ARRAY[v_anchor.account_id])) AND e.kind='attempt'
             AND e.payload->>'operationId'=ANY(v_keys) AND e.payload->>'route'=ANY(v_routes)
             AND e.payload->>'attemptId'=e.evidence_id AND e.evidence_id ~ '${recordId}'
-            AND e.payload->>'accountId'=v_anchor.account_id AND e.payload->'schemaVersion'='1'::jsonb
+            AND e.payload->>'accountId'=e.account_id AND e.payload->'schemaVersion'='1'::jsonb
             AND e.payload->>'type'=e.kind AND jsonb_typeof(e.payload->'occurredAtMs')='number'
             AND e.payload->>'occurredAtMs'=e.occurred_at_ms::text AND e.payload#>>'{scope,datasetId}'=j.dataset_id::text AND e.payload#>>'{scope,environment}'=j.environment
             AND e.payload->>'decision' IN ('accepted','replayed','rejected','unknown')
@@ -331,7 +457,7 @@ export async function installAuditDetailReport(db: PostgresDatabase, readerRole:
               ON l.id=r.source_row_id AND l.account_id=r.account_id AND l.operation_id=r.operation_id
                 AND l.created_at=r.occurred_at_ms
             WHERE v_source=${demo} AND r.dataset_id=j.dataset_id AND r.source_namespace=v_source
-              AND r.account_id=v_anchor.account_id AND e.payload#>>'{balance,snapshot,namespace}'=v_source
+              AND r.account_id=e.account_id AND e.payload#>>'{balance,snapshot,namespace}'=v_source
               AND r.source_row_id=CASE WHEN e.payload#>>'{balance,snapshot,rowId}' ~ '^[1-9][0-9]{0,18}$' THEN
                 CASE WHEN (e.payload#>>'{balance,snapshot,rowId}')::numeric<=9223372036854775807
                   THEN (e.payload#>>'{balance,snapshot,rowId}')::bigint END END
@@ -359,6 +485,9 @@ export async function installAuditDetailReport(db: PostgresDatabase, readerRole:
             'operation',CASE WHEN v_operation IS NOT NULL THEN 'stored' ELSE 'not-recorded' END,
             'outcome',v_outcome_coverage,'events',CASE WHEN jsonb_array_length(v_events)>0 THEN 'partial' ELSE 'not-recorded' END,
             'attempts',CASE WHEN jsonb_array_length(v_attempts)>0 THEN 'partial' ELSE 'not-recorded' END));
+        IF v_match_accounts IS NOT NULL THEN
+          v_report := jsonb_set(v_report,'{coverage,linkedPostingScope}','"match"'::jsonb);
+        END IF;
         IF octet_length(v_report::text)>${AUDIT_DETAIL_MAX_BYTES} THEN
           RAISE EXCEPTION 'Audit detail byte limit exceeded' USING ERRCODE='54000';
         END IF;
