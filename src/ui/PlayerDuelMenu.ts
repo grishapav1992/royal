@@ -3,6 +3,7 @@ import type { PvpClient } from '../network/PvpClient';
 import type { PlayerView } from '../shared/world';
 import { PVP_PLAYER_DISTANCE } from '../shared/tsuEFa';
 import { language } from '../i18n/index';
+import { playerLevelStatus } from './playerLevelStatus';
 import './pvp-invitations.css';
 
 const copy=(ru:string,en:string)=>language==='en'?en:ru;
@@ -10,17 +11,25 @@ export class PlayerDuelMenu {
   private menu=document.createElement('dialog');
   private players:PlayerView[]=[];private self='';private selected='';private approaching='';private approachUntil=0;
   private title=document.createElement('h2');private status=document.createElement('p');
+  private progress=document.createElement('div');
+  private level=document.createElement('span');private rank=document.createElement('strong');
+  private rankIcon=document.createElement('span');private shownLevel?:number;
   private invite=document.createElement('button');private approach=document.createElement('button');
   private prior;private handler=(id:string)=>this.open(id);
   constructor(private scene:RoomScene,private client:PvpClient,offer:(account:string)=>void){
     this.prior=scene.onPlayer;scene.onPlayer=this.handler;
     this.menu.id='player-actions';this.menu.className='player-duel-menu';this.title.id='player-actions-title';this.menu.setAttribute('aria-labelledby',this.title.id);
+    this.progress.className='player-duel-progress';this.progress.hidden=true;
+    this.rankIcon.className='player-duel-rank-icon';this.rankIcon.setAttribute('aria-hidden','true');
+    this.level.className='player-duel-level';
+    const rankText=document.createElement('div');rankText.append(this.level,this.rank);
+    this.progress.append(this.rankIcon,rankText);
     this.invite.type=this.approach.type='button';this.invite.dataset.playerInvite='';this.approach.dataset.playerApproach='';
     this.invite.textContent=copy('Предложить игру','Invite to play');this.approach.textContent=copy('Подойти к игроку','Walk to player');
     this.invite.onclick=()=>{const person=this.client.snapshot?.people.find(p=>p.sessionId===this.selected);if(!person||this.invite.disabled)return;this.menu.close();offer(person.accountId);};
     this.approach.onclick=()=>{const target=this.players.find(p=>p.id===this.selected);if(!target)return;this.approaching=target.id;this.approachUntil=Date.now()+20000;this.menu.close();this.scene.goTo({x:target.x,y:target.y+35});};
     const close=document.createElement('button');close.type='button';close.textContent=copy('Закрыть','Close');close.onclick=()=>this.menu.close();
-    this.menu.append(this.title,this.status,this.invite,this.approach,close);document.body.append(this.menu);
+    this.menu.append(this.title,this.progress,this.status,this.invite,this.approach,close);document.body.append(this.menu);
     this.menu.addEventListener('close',()=>scene.setLocked(!!document.querySelector('dialog[open]')));
   }
   update(players:PlayerView[],self:string){this.players=players;this.self=self;this.refresh();}
@@ -40,6 +49,7 @@ export class PlayerDuelMenu {
     const near=!!target&&target.hall===this.scene.hall&&Math.hypot(this.scene.player.x-target.x,this.scene.player.y-target.y)<PVP_PLAYER_DISTANCE-20;
     const busy=!!this.client.snapshot?.active&&['open','arriving','playing'].includes(this.client.snapshot.active.status);
     this.title.textContent=target?.name??copy('Игрок вышел из зала','Player left the hall');
+    this.refreshProgress(target?.level);
     this.invite.disabled=!near||!person?.available||!target?.connected||busy||!this.client.connected;
     this.approach.hidden=near||!target||target.hall!==this.scene.hall;this.approach.disabled=busy;
     this.status.textContent=busy?copy('Сначала заверши текущий поединок.','Finish your current duel first.')
@@ -48,6 +58,17 @@ export class PlayerDuelMenu {
       :!near?copy('Подойди ближе, чтобы предложить сыграть.','Walk closer to invite this player.')
       :!person?.available?copy('Игрок сейчас занят.','Player is busy.')
       :copy('Выбери игру и ставку, затем отправь предложение.','Choose a game and stake, then send an invitation.');
+  }
+  private refreshProgress(level?:number){
+    if(level===this.shownLevel)return;
+    this.shownLevel=level;
+    const rank=playerLevelStatus(level);
+    this.progress.hidden=!rank;
+    if(!rank)return;
+    this.progress.toggleAttribute('data-legendary',rank.legendary);
+    this.level.textContent=copy(`Уровень ${level}`,`Level ${level}`);
+    this.rank.textContent=rank.title;
+    this.rankIcon.textContent=rank.symbol;
   }
   reset(){this.approaching='';this.menu.close();}
   destroy(){this.reset();this.menu.remove();if(this.scene.onPlayer===this.handler)this.scene.onPlayer=this.prior;}

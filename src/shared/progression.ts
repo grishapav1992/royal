@@ -26,7 +26,7 @@ export const rewardLeaves = (r: LevelReward): (FreeSpinReward | SkinGenerationRe
 export type ProgressionLevel<R extends ProgressionReward = LevelReward> = { level: number; xp: string; reward?: R };
 export type ProgressionGrant = { id: string; count: number; remaining: number; stakeUnits: string; level: number; currency: string } & SpinDestination;
 export type ProgressionSnapshot<R extends ProgressionReward = LevelReward> = { accountId: string; locationId: string; policyVersion: string; currency: string; xp: string; level: number;
-  levels: ProgressionLevel<R>[]; grants: ProgressionGrant[]; skinGrants?: SkinGenerationGrant[]; enabled: boolean };
+  levels: ProgressionLevel<R>[]; grants: ProgressionGrant[]; skinGrants?: SkinGenerationGrant[]; pendingRewardLevels?: number[]; enabled: boolean };
 export type RewardSpinRequest = { id: string; grantId: string; gameId?: RewardGame };
 export type RewardSpinResult = RewardSpinRequest & { gameRound: GameRound; payoutUnits: string; remaining: number;
   wallet: DemoWallet | NilePlayWallet; replayed: boolean };
@@ -66,6 +66,10 @@ export function validProgressionSnapshot(value: unknown): value is ProgressionSn
     if (row.reward && !validLevelReward(row.reward)) return false;
   }
   if(value.levels[0].xp!=='0'||value.level!==value.levels.filter((l:any)=>BigInt(l.xp)<=BigInt(value.xp)).at(-1)?.level)return false;
+  const pending = value.pendingRewardLevels;
+  if (pending !== undefined && (!Array.isArray(pending) || pending.length > 100 ||
+    !pending.every((level, i) => Number.isInteger(level) && level >= 1 && level <= value.level
+      && !!value.levels[level - 1].reward && (i === 0 || level > pending[i - 1])))) return false;
   if (value.skinGrants !== undefined && (!Array.isArray(value.skinGrants) || value.skinGrants.length > 100
     || !value.skinGrants.every((r: any) => object(r) && uuid(r.id) && validLevelReward({ ...r, kind: 'skin_generation' })
       && count(r.remaining) && r.remaining <= r.count && Number.isInteger(r.level) && r.level >= 1 && r.level <= 100 && r.currency === value.currency))) return false;

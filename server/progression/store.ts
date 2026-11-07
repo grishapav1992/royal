@@ -19,7 +19,7 @@ export class ProgressionStore<S extends string = ExperienceSource, R extends Pro
   readonly locationId: string;
   private scope: string;
   constructor(readonly db: PostgresDatabase, private options: { policy?: ProgressionPolicy<S,R>; handlers?: ProgressionHandlers<S,R>; environment?: string; locationId?: string;
-    now?: () => number; prerequisite?: Promise<unknown>; readOnly?: boolean } = {}) {
+    now?: () => number; prerequisite?: Promise<unknown>; readOnly?: boolean; onLevel?: (accountId: string, level: number) => void } = {}) {
     this.policy = structuredClone(options.policy ?? DEFAULT_PROGRESSION_POLICY as unknown as ProgressionPolicy<S,R>);
     this.handlers = options.handlers ?? DEFAULT_PROGRESSION_HANDLERS as unknown as ProgressionHandlers<S,R>;
     this.environment = options.environment ?? PROGRESSION_CURRENCY;
@@ -71,9 +71,12 @@ export class ProgressionStore<S extends string = ExperienceSource, R extends Pro
           UNIQUE(account_id,location_id,currency,milestone_id));`);
       await this.db.exec('ALTER TABLE progression_rewards ADD COLUMN IF NOT EXISTS pool_id TEXT');
       // Preserve already issued v1 rights if upgrading a database created before the handler seam.
-      await this.db.exec(`INSERT INTO progression_milestones SELECT id,account_id,currency||':'||location_id,milestone_id,policy_version,level,type,
+      await this.db.exec(`INSERT INTO progression_milestones(id,account_id,scope,milestone_id,policy_version,level,kind,definition_json,created_at)
+        SELECT id,account_id,currency||':'||location_id,milestone_id,policy_version,level,type,
         jsonb_build_object('kind','free_spins','gameId',game_id,'count',count,'stakeUnits',nominal_units)::text,created_at
         FROM progression_rewards WHERE pool_id IS NULL ON CONFLICT DO NOTHING`);
+      // Existing grants predate the notification feature.
+      await this.db.exec('ALTER TABLE progression_milestones ADD COLUMN IF NOT EXISTS notice_pending BOOLEAN NOT NULL DEFAULT false');
       await this.db.exec('ALTER TABLE progression_settings ADD COLUMN IF NOT EXISTS skins_enabled BOOLEAN NOT NULL DEFAULT true');
       await this.db.prepare('INSERT INTO progression_settings(scope,activated_at) VALUES(?,?) ON CONFLICT DO NOTHING').run(this.scope,this.now());
       const definition=JSON.stringify(this.policy);
@@ -126,12 +129,18 @@ export class ProgressionStore<S extends string = ExperienceSource, R extends Pro
   async processPending(accountId?: string, limit=200) {
     await this.ready;
     if(this.options.readOnly)return 0;
-    return this.db.transaction(async()=>{
+    const levels = new Map<string, number>();
+    const count = await this.db.transaction(async()=>{
       const rows=await this.db.prepare('SELECT o.*,r.context_json,r.scope FROM progression_outbox o JOIN progression_rounds r ON r.id=o.id WHERE NOT o.processed AND r.scope=?'
         +(accountId?' AND o.account_id=?':'')+' ORDER BY o.created_at,o.id LIMIT ? FOR UPDATE OF o SKIP LOCKED').all(...(accountId?[this.scope,accountId,limit]:[this.scope,limit]));
-      for(const row of rows)await this.apply(row);
+      for(const row of rows) {
+        const level = await this.apply(row);
+        if (level !== undefined) levels.set(row.account_id, level);
+      }
       return rows.length;
     });
+    for (const [account, level] of levels) this.options.onLevel?.(account, level);
+    return count;
   }
   private async apply(row: DatabaseRow) {
     const c=JSON.parse(row.context_json) as RoundContext<S>,e=JSON.parse(row.payload) as SettledExperience<S>;
@@ -154,11 +163,23 @@ export class ProgressionStore<S extends string = ExperienceSource, R extends Pro
     for(const milestone of policy.levels.filter(l=>l.level>Number(player.level)&&l.level<=level&&l.reward)){
       const r=milestone.reward!;
       const claim:MilestoneClaim={id:randomUUID(),accountId:c.accountId,locationId:c.locationId,environment:c.environment,milestoneId:'level:'+milestone.level,policyVersion:c.policyVersion!,level:milestone.level,createdAt:this.now()};
-      const inserted=await this.db.prepare('INSERT INTO progression_milestones VALUES(?,?,?,?,?,?,?,?,?) ON CONFLICT(account_id,scope,milestone_id) DO NOTHING')
+      const inserted=await this.db.prepare('INSERT INTO progression_milestones(id,account_id,scope,milestone_id,policy_version,level,kind,definition_json,created_at,notice_pending) VALUES(?,?,?,?,?,?,?,?,?,true) ON CONFLICT(account_id,scope,milestone_id) DO NOTHING')
         .run(claim.id,claim.accountId,row.scope,claim.milestoneId,claim.policyVersion,claim.level,r.kind,JSON.stringify(r),claim.createdAt);
       if(inserted.changes===1)await this.rewardHandler(r).issue(this.db,claim,r);
     }
     await this.db.prepare('UPDATE progression_outbox SET processed=true WHERE id=?').run(row.id);
+    if (level > Number(player.level)) return level;
+  }
+  async publicLevel(accountId: string) {
+    await this.ready;
+    const row = await this.db.prepare('SELECT level FROM progression_players WHERE account_id=? AND scope=?').get(accountId, this.scope);
+    return Number(row?.level ?? 1);
+  }
+  async acknowledgeReward(accountId: string, level: number) {
+    await this.ready;
+    const result = await this.db.prepare('UPDATE progression_milestones SET notice_pending=false WHERE account_id=? AND scope=? AND milestone_id=?')
+      .run(accountId, this.scope, 'level:' + level);
+    return result.changes === 1;
   }
   async snapshot(accountId: string, locationId=this.locationId): Promise<ProgressionSnapshot<R>> {
     await this.ready;
@@ -166,10 +187,13 @@ export class ProgressionStore<S extends string = ExperienceSource, R extends Pro
     await this.processPending(accountId);
     return this.db.transaction(async()=>{
       const player=await this.db.prepare('SELECT * FROM progression_players WHERE account_id=? AND scope=?').get(accountId,this.scope);
+      const notices = await this.db.prepare('SELECT level FROM progression_milestones WHERE account_id=? AND scope=? AND notice_pending AND level<=? ORDER BY level')
+        .all(accountId, this.scope, Number(player?.level ?? 1));
       const policy=player?JSON.parse((await this.db.prepare('SELECT definition FROM progression_policies WHERE scope=? AND version=?').get(this.scope,player.policy_version))!.definition):this.policy;
       const grants=await this.db.prepare('SELECT * FROM progression_rewards WHERE account_id=? AND location_id=? AND currency=? ORDER BY level,id').all(accountId,this.locationId,this.environment);
       const skins=await this.db.prepare('SELECT * FROM progression_skin_rewards WHERE account_id=? AND location_id=? AND currency=? ORDER BY level,id').all(accountId,this.locationId,this.environment);
       return {accountId,locationId,policyVersion:policy.version,currency:this.environment,xp:String(player?.xp??'0'),level:Number(player?.level??1),levels:policy.levels,
+        pendingRewardLevels: notices.map(row => Number(row.level)),
         grants:grants.map(g=>({id:g.id,...(g.pool_id?{poolId:g.pool_id}:{gameId:g.game_id}),count:Number(g.count),remaining:Number(g.remaining),stakeUnits:g.nominal_units,level:Number(g.level),currency:g.currency})),
         skinGrants:skins.map(g=>({id:g.id,count:Number(g.count),remaining:Number(g.remaining),level:Number(g.level),theme:g.theme,variantCount:2 as const,currency:g.currency})),enabled:await this.spinsEnabled()};
     });

@@ -1,6 +1,7 @@
 import type { ExpansionSession } from '../shared/casinoExpansion';
 
 export const GAME_REACTION_EVENT = 'royal-game-reaction';
+export const GAME_ROUND_PRESENTED_EVENT = 'royal-game-round-presented';
 export type GameReaction = 'win' | 'lose';
 export type GameReactionSnapshot = {
   gameId: string; account: string; sessionId: string; active: boolean;
@@ -17,6 +18,10 @@ export function emitGameReaction(host: HTMLElement, reaction: GameReaction) {
   host.dispatchEvent(new CustomEvent<{ reaction: GameReaction }>(GAME_REACTION_EVENT, { detail: { reaction }, bubbles: true }));
 }
 
+export function emitGameRoundPresented(host: HTMLElement) {
+  host.dispatchEvent(new Event(GAME_ROUND_PRESENTED_EVENT, { bubbles: true }));
+}
+
 /** Compare the total return with the full stake; returning exactly the stake is neutral. */
 export function gameReactionForAmounts(spentUnits: string, returnedUnits: string): GameReaction | undefined {
   if (!/^\d+$/.test(spentUnits) || !/^\d+$/.test(returnedUnits)) return;
@@ -28,6 +33,9 @@ export function gameReactionForAmounts(spentUnits: string, returnedUnits: string
 export function emitGameOutcome(host: HTMLElement, spentUnits: string, returnedUnits: string) {
   const reaction = gameReactionForAmounts(spentUnits, returnedUnits);
   if (reaction) emitGameReaction(host, reaction);
+  if (/^\d+$/.test(spentUnits) && BigInt(spentUnits) > 0n) {
+    emitGameRoundPresented(host);
+  }
 }
 
 /** Saved results establish a baseline. Only an observed party or pending action can react. */

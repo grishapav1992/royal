@@ -1,0 +1,47 @@
+.level-up-banner {
+  position: fixed;
+  inset: 18% 0 auto;
+  margin: 0 auto;
+  padding: .45em 1em;
+  max-width: calc(100vw - 32px);
+  border: 2px solid #e3ab62;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #252137, #423252);
+  color: #fff0b5;
+  box-shadow: 0 5px 24px #130e22a8;
+  font: 900 clamp(24px, 5vw, 48px)/1.2 system-ui, sans-serif;
+  text-align: center;
+  pointer-events: none;
+}
+
+.level-up-banner:popover-open {
+  animation: level-up-entrance 320ms cubic-bezier(.2, .8, .28, 1.2) both;
+}
+
+@keyframes level-up-entrance {
+  from { opacity: 0; transform: translateY(14px) scale(.86); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.level-reward-dialog {
+  width: min(440px, calc(100% - 28px));
+  max-height: calc(100dvh - 28px);
+  box-sizing: border-box;
+  padding: clamp(18px, 5vw, 30px);
+  border: 2px solid #a7794c;
+  border-radius: 14px;
+  background: #fcf0d8;
+  color: #302637;
+  box-shadow: 0 16px 58px #130e2280;
+}
+
+.level-reward-dialog::backdrop { background: #17142280; }
+.level-reward-dialog h2 { margin: 0 0 16px; }
+.level-reward-dialog ul { display: grid; gap: 10px; padding-left: 22px; line-height: 1.5; }
+.level-reward-dialog [role="alert"] { color: #8c2d3a; }
+.level-reward-dialog [role="alert"]:empty { display: none; }
+.level-reward-dialog button { min-height: 44px; min-width: 96px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .level-up-banner:popover-open { animation: none; }
+}
