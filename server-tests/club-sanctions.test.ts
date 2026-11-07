@@ -64,16 +64,19 @@ test('the first violation assigns a persistent account sanction before a guard c
 });
 
 test('the first chase settles without extension and a repeat adds ten minutes to the remaining time once', async context => {
-  const { store } = await fixture(context);
+  const { db, store } = await fixture(context);
   const { outcome: { sanction: first } } = await store.recordViolation('a', { id: 'v1', reason: 'collision', pursuitId: 'p1' }, 0);
   const initial = await store.recordCapture('a', { pursuitId: 'p1', sanctionId: first.id }, MINUTE);
   assert.deepEqual(initial, { outcome: { sanction: first, kind: 'initial' }, replayed: false });
+  const state = () => db.prepare('SELECT clearance_generation,state_version FROM club_conduct_state WHERE account_id=?').get('a');
+  assert.deepEqual(await state(), { clearance_generation: 0, state_version: 1 });
   const capture = { pursuitId: 'p2', sanctionId: first.id };
   const attempts = await Promise.all([store.recordCapture('a', capture, 15 * MINUTE), store.recordCapture('a', capture, 15 * MINUTE)]);
   const extended = { ...first, until: 30 * MINUTE, amountCents: 1500, revision: 2 };
   assert.equal(attempts.filter(attempt => !attempt.replayed).length, 1);
   for (const result of attempts) assert.deepEqual(result.outcome, { sanction: extended, kind: 'repeat' });
   assert.deepEqual(await store.active('a', 15 * MINUTE), extended);
+  assert.deepEqual(await state(), { clearance_generation: 0, state_version: 2 });
 });
 
 test('a first violation in the toilet can be followed by a repeat chase without an initial chase', async context => {
@@ -103,6 +106,28 @@ test('expiry clears the payable sanction and stale events cannot change a fresh 
   assert.deepEqual(await store.recordCapture('a', { ...oldCapture, pursuitId: 'old-repeat' }, old.until),
     { outcome: null, replayed: false });
   assert.deepEqual(await store.active('a', old.until), fresh);
+});
+
+test('an old capture replay leaves the newer expired episode for a fresh writer to normalize', async context => {
+  const { db, store } = await fixture(context);
+  const oldEvent = { id: 'old', reason: 'spam', pursuitId: 'old-pursuit' } as const;
+  const { outcome: old } = await store.recordViolation('a', oldEvent, 0);
+  const oldCapture = { pursuitId: oldEvent.pursuitId, sanctionId: old.sanction.id };
+  const initial = await store.recordCapture('a', oldCapture, MINUTE);
+  const { outcome: { sanction: fresh } } = await store.recordViolation('a', { id: 'fresh', reason: 'spam' }, old.sanction.until);
+  const state = () => db.prepare('SELECT clearance_generation,state_version FROM club_conduct_state WHERE account_id=?').get('a');
+  assert.deepEqual(await state(), { clearance_generation: 1, state_version: 3 });
+
+  assert.deepEqual(await store.recordCapture('a', oldCapture, fresh.until), { ...initial, replayed: true });
+  assert.deepEqual(await store.recordViolation('a', oldEvent, fresh.until), { outcome: old, replayed: true });
+  assert.equal((await db.prepare('SELECT episode_id FROM club_sanctions WHERE account_id=?').get('a'))?.episode_id, fresh.id);
+  assert.deepEqual(await state(), { clearance_generation: 1, state_version: 3 });
+
+  const attempts = await Promise.all(['fresh-capture-1', 'fresh-capture-2'].map(pursuitId =>
+    store.recordCapture('a', { pursuitId, sanctionId: fresh.id }, fresh.until)));
+  assert(attempts.every(result => result.outcome === null));
+  assert.equal(await db.prepare('SELECT episode_id FROM club_sanctions WHERE account_id=?').get('a'), undefined);
+  assert.deepEqual(await state(), { clearance_generation: 2, state_version: 4 });
 });
 
 test('concurrent violations create one episode and reserve only the first pursuit as initial', async context => {

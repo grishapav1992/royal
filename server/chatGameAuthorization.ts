@@ -36,7 +36,7 @@ function boundedTimeout(value: number | false | undefined, ceiling: number) {
   return typeof value === 'number' && value > 0 ? Math.min(value, ceiling) : ceiling;
 }
 
-async function initializeClubConductState(db: PostgresDatabase) {
+export async function initializeClubConductState(db: PostgresDatabase) {
   await db.transaction(() => db.exec(`
     CREATE TABLE IF NOT EXISTS club_conduct_state (
       account_id TEXT PRIMARY KEY REFERENCES accounts(id) ON DELETE CASCADE,

@@ -45,6 +45,24 @@ async function debits(store: AccountStore, accountId: string) {
   return rows.map(row => ({ operationId: row.operation_id, amount: Number(row.amount_units), balance: Number(row.balance_units) }));
 }
 
+async function raceInAccountOrder<A, B>(store: AccountStore, accountId: string, first: () => Promise<A>, second: () => Promise<B>) {
+  let acquired!: () => void;
+  let proceed!: () => void;
+  const locked = new Promise<void>(resolve => { acquired = resolve; });
+  const ready = new Promise<void>(resolve => { proceed = resolve; });
+  const leading = store.financeAdmin.db.transaction(async () => {
+    acquired();
+    await ready;
+    return first();
+  }, { lockKey: 'account:' + accountId });
+  await Promise.race([locked, leading]);
+  try {
+    const competing = second();
+    proceed();
+    return await Promise.all([leading, competing]);
+  } finally { proceed(); }
+}
+
 test('a concurrent fine retry records one exact debit and the receipt survives a store restart', async context => {
   const { store, accountId, reopen } = await fixture(context, 2275);
   const request = quote(await mark(store, accountId));
@@ -60,6 +78,8 @@ test('a concurrent fine retry records one exact debit and the receipt survives a
     assert.deepEqual(result, { ...expected, replayed: result.replayed });
   }
   assert.equal(await store.clubSanctions.active(accountId, PAY_AT), null);
+  assert.deepEqual(await store.financeAdmin.db.prepare('SELECT clearance_generation,state_version FROM club_conduct_state WHERE account_id=?').get(accountId),
+    { clearance_generation: 1, state_version: 2 });
 
   const restored = await reopen();
   assert.deepEqual(await restored.clubSanctions.pay(accountId, request, PAY_AT + 1), { ...expected, replayed: true });
@@ -68,6 +88,11 @@ test('a concurrent fine retry records one exact debit and the receipt survives a
   const fresh = await mark(restored, accountId, PAY_AT + 1);
   assert.deepEqual(await restored.clubSanctions.pay(accountId, request, PAY_AT + 2), { ...expected, sanction: fresh, replayed: true });
   assert.deepEqual(await restored.clubSanctions.active(accountId, PAY_AT + 2), fresh);
+  assert.deepEqual(await restored.clubSanctions.pay(accountId, request, fresh.until), { ...expected, replayed: true });
+  const db = restored.financeAdmin.db;
+  assert.equal((await db.prepare('SELECT episode_id FROM club_sanctions WHERE account_id=?').get(accountId))?.episode_id, fresh.id);
+  assert.deepEqual(await db.prepare('SELECT clearance_generation,state_version FROM club_conduct_state WHERE account_id=?').get(accountId),
+    { clearance_generation: 1, state_version: 3 });
   assert.deepEqual(await debits(restored, accountId), [{ operationId: `club-fine:${request.id}`, amount: -1000, balance: 1375 }]);
   const wallet = await restored.wallet.snapshot(accountId);
   assert.equal(wallet.balance, 13.75);
@@ -147,10 +172,12 @@ test('capture before payment changes the quote and capture after payment cannot 
   const sanctions = store.clubSanctions;
   const first = await mark(store, accountId);
   const stale = quote(first);
-  const capture = await sanctions.recordCapture(accountId, { pursuitId: randomUUID(), sanctionId: first.id }, PAY_AT);
+  const pursuit = { pursuitId: randomUUID(), sanctionId: first.id };
+  const [capture, payment] = await raceInAccountOrder(store, accountId,
+    () => sanctions.recordCapture(accountId, pursuit, PAY_AT), () => sanctions.pay(accountId, stale, PAY_AT + 1));
   const updated = { ...first, revision: 2, amountCents: 1500, until: first.until + 10 * 60_000 };
   assert.deepEqual(capture, { outcome: { kind: 'repeat', sanction: updated }, replayed: false });
-  assert.deepEqual(await sanctions.pay(accountId, stale, PAY_AT + 1), { status: 'changed', sanction: updated });
+  assert.deepEqual(payment, { status: 'changed', sanction: updated });
   assert.equal(await demoBalanceUnits(store.financeAdmin.db, accountId), 2050);
   assert.deepEqual(await debits(store, accountId), []);
 
@@ -163,17 +190,35 @@ test('capture before payment changes the quote and capture after payment cannot 
   assert.deepEqual(await debits(store, accountId), [{ operationId: `club-fine:${request.id}`, amount: -1500, balance: 550 }]);
 });
 
+test('payment wins the account lock race and the old pursuit cannot extend the cleared sanction', async context => {
+  const { store, accountId } = await fixture(context, 2050);
+  const sanctions = store.clubSanctions;
+  const sanction = await mark(store, accountId);
+  const request = quote(sanction);
+  const pursuit = { pursuitId: randomUUID(), sanctionId: sanction.id };
+  const [payment, capture] = await raceInAccountOrder(store, accountId,
+    () => sanctions.pay(accountId, request, PAY_AT), () => sanctions.recordCapture(accountId, pursuit, PAY_AT + 1));
+  assert.deepEqual(payment, { status: 'paid', sanction: null, receipt: { ...request, paidAt: PAY_AT }, replayed: false });
+  assert.deepEqual(capture, { outcome: null, replayed: false });
+  assert.deepEqual(await store.financeAdmin.db.prepare('SELECT clearance_generation,state_version FROM club_conduct_state WHERE account_id=?').get(accountId),
+    { clearance_generation: 1, state_version: 2 });
+  assert.deepEqual(await debits(store, accountId), [{ operationId: `club-fine:${request.id}`, amount: -1000, balance: 1050 }]);
+});
+
 test('low funds, expiry, and a zero legacy fee leave the wallet untouched', async context => {
   const { store, accountId } = await fixture(context, 999);
   const sanctions = store.clubSanctions;
+  const db = store.financeAdmin.db;
+  const state = () => db.prepare('SELECT clearance_generation,state_version FROM club_conduct_state WHERE account_id=?').get(accountId);
   const original = await mark(store, accountId);
   const request = quote(original);
   assert.deepEqual(await sanctions.pay(accountId, request, PAY_AT), { status: 'insufficient', sanction: original });
   assert.deepEqual(await sanctions.active(accountId, PAY_AT), original);
+  assert.deepEqual(await state(), { clearance_generation: 0, state_version: 1 });
   assert.deepEqual(await sanctions.pay(accountId, request, original.until), { status: 'inactive', sanction: null });
+  assert.deepEqual(await state(), { clearance_generation: 1, state_version: 2 });
 
   const imported = { ...await mark(store, accountId, original.until), amountCents: 0 };
-  const db = store.financeAdmin.db;
   await db.prepare('UPDATE club_sanctions SET amount_cents=0 WHERE account_id=?').run(accountId);
   assert.deepEqual(await sanctions.pay(accountId, quote(imported), original.until), { status: 'inactive', sanction: imported });
   assert.deepEqual(await sanctions.active(accountId, original.until), imported);

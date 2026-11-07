@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { PostgresDatabase } from './database';
 import { applySchemaMigration } from './database-migrations';
+import { advanceClubConductState, initializeClubConductState, normalizeExpiredClubSanction } from './chatGameAuthorization';
 import type { ClubFineRequest, ClubFineResult, ClubSanction, ClubViolation } from '../src/shared/security';
 import { generatedAppearance, SKIN_THEME, SKIN_UUID } from '../src/shared/skinStudio';
 import { CryptoError } from './crypto/config';
@@ -58,6 +59,7 @@ export class ClubSanctionStore {
         UNIQUE (account_id, episode_id)
       );
       `));
+      await initializeClubConductState(db);
       if (!await db.hasTable('chat_conduct_discipline')) return;
       await applySchemaMigration(db, {
         id: 'game-club-legacy-marks-v1',
@@ -70,6 +72,8 @@ export class ClubSanctionStore {
       });
     });
   }
+
+  usesDatabase(db: PostgresDatabase): boolean { return this.db === db; }
 
   async active(accountId: string, now = Date.now()): Promise<ClubSanction | null> {
     await this.ready;
@@ -99,9 +103,11 @@ export class ClubSanctionStore {
     return this.db.transaction(async () => {
       const at = now ?? Date.now();
       const { id } = request;
-      const sanction = (await this.readActive(accountId, at))?.sanction ?? null;
       const prior = await this.db.prepare(`SELECT episode_id,revision,amount_cents,paid_at
         FROM club_fine_payments WHERE account_id=? AND operation_id=?`).get(accountId, id);
+      // Receipt retries can report the current sanction but must leave its generation alone.
+      if (!prior) await normalizeExpiredClubSanction(this.db, accountId, { now: at });
+      const sanction = (await this.readActive(accountId, at))?.sanction ?? null;
       if (prior) {
         if (prior.episode_id !== request.sanctionId || Number(prior.revision) !== request.revision || Number(prior.amount_cents) !== request.amountCents) {
           return { status: 'id-conflict', sanction };
@@ -117,7 +123,9 @@ export class ClubSanctionStore {
       if (!await charge(accountId, id, sanction.amountCents)) return { status: 'insufficient', sanction };
       await this.db.prepare(`INSERT INTO club_fine_payments (account_id,operation_id,episode_id,revision,amount_cents,paid_at)
         VALUES (?,?,?,?,?,?)`).run(accountId, id, sanction.id, sanction.revision, sanction.amountCents, at);
-      await this.db.prepare('DELETE FROM club_sanctions WHERE account_id=? AND episode_id=?').run(accountId, sanction.id);
+      const closed = await this.db.prepare('DELETE FROM club_sanctions WHERE account_id=? AND episode_id=?').run(accountId, sanction.id);
+      if (closed.changes !== 1) throw new Error('Club sanction changed during payment');
+      await advanceClubConductState(this.db, accountId, true);
       return { status: 'paid', sanction: null, receipt: { ...request, paidAt: at }, replayed: false };
     }, { lockKey: 'account:' + accountId });
   }
@@ -130,6 +138,7 @@ export class ClubSanctionStore {
         if (!revealedSkinId) return { sanction: active.sanction, opened: false };
         await this.db.prepare('INSERT INTO club_disguise_exposures (account_id,skin_id,revealed_at) VALUES (?,?,?)')
           .run(accountId, revealedSkinId, at);
+        await advanceClubConductState(this.db, accountId, false);
         return { sanction: active.sanction, opened: false, revealedSkinId };
       }
 
@@ -142,6 +151,7 @@ export class ClubSanctionStore {
           initial_pursuit_id=excluded.initial_pursuit_id, expires_at=excluded.expires_at,
           amount_cents=excluded.amount_cents, revision=excluded.revision
       `).run(accountId, sanction.id, violation.pursuitId ?? null, sanction.until, sanction.amountCents, sanction.revision);
+      await advanceClubConductState(this.db, accountId, false);
       return { sanction, opened: true };
     }, violation.reason);
   }
@@ -173,6 +183,7 @@ export class ClubSanctionStore {
       };
       await this.db.prepare('UPDATE club_sanctions SET expires_at=?, amount_cents=?, revision=? WHERE account_id=?')
         .run(sanction.until, sanction.amountCents, sanction.revision, accountId);
+      await advanceClubConductState(this.db, accountId, false);
       return { sanction, kind: 'repeat' };
     });
   }
@@ -197,7 +208,9 @@ export class ClubSanctionStore {
         .get(accountId, kind, id);
       if (prior) return { outcome: prior.outcome as T, replayed: true };
 
-      const outcome = await change(now ?? Date.now());
+      const at = now ?? Date.now();
+      await normalizeExpiredClubSanction(this.db, accountId, { now: at });
+      const outcome = await change(at);
       await this.db.prepare('INSERT INTO club_sanction_events (account_id,kind,event_id,reason,outcome) VALUES (?,?,?,?,?::jsonb)')
         .run(accountId, kind, id, reason ?? null, JSON.stringify(outcome));
       return { outcome, replayed: false };

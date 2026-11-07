@@ -117,6 +117,8 @@ test('concurrent offenses expose the same equipped disguise only once', async co
   assert(results.every(result => !result.replayed && !result.outcome.opened));
   assert.deepEqual(results.flatMap(result => result.outcome.revealedSkinId ?? []), [disguise]);
   assert.deepEqual(await store.enforcement('alice', START + 1), { sanction, disguiseSkinId: null });
+  assert.deepEqual(await db.prepare('SELECT clearance_generation,state_version FROM club_conduct_state WHERE account_id=?').get('alice'),
+    { clearance_generation: 0, state_version: 2 });
 });
 
 test('confirmation reveals the disguise recorded for the offense if the equipped outfit changes', async context => {

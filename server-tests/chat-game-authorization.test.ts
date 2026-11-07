@@ -67,12 +67,14 @@ test('two expiry normalizers clear a single old episode and share its new genera
   assert.deepEqual(second[0], second[1]);
   assert.equal(await db.prepare('SELECT episode_id FROM club_sanctions WHERE account_id=?').get('alice'), undefined);
   assert.deepEqual(await db.prepare('SELECT clearance_generation,state_version FROM club_conduct_state WHERE account_id=?').get('alice'),
-    { clearance_generation: 1, state_version: 1 });
+    { clearance_generation: 1, state_version: 2 });
 
   await sanctions.recordViolation('alice', { id: 'fresh', reason: 'spam' });
   assert.equal(await normalizeExpiredClubSanction(db, 'alice', { expectedEpisodeId: old.outcome.sanction.id }), undefined);
   assert(await sanctions.active('alice'));
   assert.equal((await auth.admit([alice]))[0]?.clearanceGeneration, 1);
+  assert.deepEqual(await db.prepare('SELECT clearance_generation,state_version FROM club_conduct_state WHERE account_id=?').get('alice'),
+    { clearance_generation: 1, state_version: 3 });
 });
 
 test('clearance and state changes use the existing account transaction and roll back together', async context => {
@@ -131,7 +133,8 @@ test('an account lock timeout is retryable without clearing a sanction outside i
   try {
     await assert.rejects(auth.admit([alice]), error => error instanceof ChatAuthorizationUnavailable
       && (error.cause as NodeJS.ErrnoException).code === '55P03');
-    assert.equal(await db.prepare('SELECT account_id FROM club_conduct_state WHERE account_id=?').get('alice'), undefined);
+    assert.deepEqual(await db.prepare('SELECT clearance_generation,state_version FROM club_conduct_state WHERE account_id=?').get('alice'),
+      { clearance_generation: 0, state_version: 1 });
   } finally {
     release();
     await holding;
