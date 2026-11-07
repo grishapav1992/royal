@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 import { existsSync, statSync, createReadStream } from 'node:fs';
-import { resolve, extname } from 'node:path';
+import { resolve, extname, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { createServer, type Plugin } from 'vite';
@@ -26,7 +26,7 @@ const plugin: Plugin = { name: 'progression-local-fixture', configureServer(vite
     try { pathname = decodeURIComponent(new URL(req.url ?? '/', 'http://localhost').pathname); } catch { res.statusCode = 400; res.end(); return; }
     for (const base of [resolve('dist'), resolve('public')]) {
       const file = resolve(base, pathname === '/' ? 'index.html' : '.' + pathname);
-      if (!file.startsWith(base + '/') || !existsSync(file) || !statSync(file).isFile()) continue;
+      if (!file.startsWith(base + sep) || !existsSync(file) || !statSync(file).isFile()) continue;
       const mime: Record<string, string> = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.mp3': 'audio/mpeg', '.woff2': 'font/woff2' };
       res.setHeader('Content-Type', mime[extname(file)] ?? 'application/octet-stream');
       if (req.method === 'HEAD') res.end(); else createReadStream(file).pipe(res);
