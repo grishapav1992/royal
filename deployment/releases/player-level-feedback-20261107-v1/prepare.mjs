@@ -30,7 +30,7 @@ assert.equal(before.container.image, before.preparedImage);
 assert.deepEqual(before.program, before.preparedProgram);
 for (const ref of [release.sourceCommit, receipt.remoteMain, installer]) git('merge-base', '--is-ancestor', ref, 'origin/main');
 const changedOnlyReleaseTooling = text('diff', '--name-only', installer + '^', installer).split('\n');
-assert(changedOnlyReleaseTooling.length && changedOnlyReleaseTooling.every(file => file.startsWith(folder + '/')));
+assert(changedOnlyReleaseTooling.length && changedOnlyReleaseTooling.every(file => file.startsWith(folder + '/')), 'Installer revision must only contain app release tooling');
 const config = kind => folder + '/' + kind + '-projection.json';
 const readers = {};
 for (const kind of ['host', 'backend']) {
