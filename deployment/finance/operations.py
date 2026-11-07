@@ -654,6 +654,25 @@ def reconciliation_sql(version):
 def restore_check(target):
     if target.parent.resolve() != BACKUPS.resolve() or not NAME.fullmatch(target.name):
         raise OpsError("restore_backup_path_invalid")
+    receipt = target.with_suffix('.dump.restore.json')
+    previous = read_json(receipt)
+    attempt = {'ok': False, 'file': target.name, 'status': 'in-progress', 'checked_at': utc()}
+    if isinstance(previous, dict) and 'last_success_at' in previous:
+        attempt['last_success_at'] = previous['last_success_at']
+    atomic_json(receipt, attempt)
+    try:
+        result = _restore_archive(target)
+    except Exception as error:
+        code = str(error) if isinstance(error, OpsError) else type(error).__name__
+        atomic_json(receipt, {**attempt, 'status': 'failed', 'checked_at': utc(), 'error': code})
+        raise
+    result['cleanup_verified'] = True
+    value = record('restore', True, status='complete', **result)
+    atomic_json(receipt, value)
+    return result
+
+
+def _restore_archive(target):
     metadata = read_json(target.with_suffix(".dump.json"))
     if metadata.get("sha256") != sha256(target) or metadata.get("file") != target.name:
         raise OpsError("backup_checksum_mismatch")
@@ -755,8 +774,6 @@ def restore_check(target):
         result['fingerprint_format'] = fingerprint_format
         if audit is not None:
             result['audit_verified'] = True
-        value = record("restore", True, **result)
-        atomic_json(target.with_suffix(".dump.restore.json"), value)
         return result
     finally:
         # The unique name identifies only this operation's isolated container.
@@ -769,7 +786,10 @@ def restore_check(target):
         if cleanup.returncode and (created or b'No such container' not in cleanup.stderr):
             # Keep the private workspace if container shutdown cannot be confirmed.
             raise OpsError('restore_cleanup_failed')
-        shutil.rmtree(workspace_path)
+        try:
+            shutil.rmtree(workspace_path)
+        except OSError as error:
+            raise OpsError('restore_workspace_cleanup_failed') from error
 
 
 def age(path):
