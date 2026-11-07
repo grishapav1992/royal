@@ -5,6 +5,7 @@ import hashlib
 import importlib.util
 from io import StringIO
 import json
+import os
 from pathlib import Path
 import resource
 import subprocess
@@ -75,7 +76,10 @@ def check_restore_receipts():
     with TemporaryDirectory(prefix='royal-finance-restore-receipt-') as temporary:
         root = Path(temporary)
         archive = root / 'finance-20261108T123456Z-abcdef12.dump'
-        archive.write_bytes(b'synthetic archive')
+        archive_bytes = b'synthetic archive'
+        changed_bytes = b'changed archive!!'
+        assert len(archive_bytes) == len(changed_bytes)
+        archive.write_bytes(archive_bytes)
         metadata = {'file': archive.name, 'sha256': ops.sha256(archive), 'data_sha256': 'd' * 64,
                     'schema_version': 1, 'tables': list(ops.tables_for_version(1)), 'bytes': archive.stat().st_size}
         ops.atomic_json(archive.with_suffix('.dump.json'), metadata)
@@ -86,6 +90,39 @@ def check_restore_receipts():
         checks = {'net_units': '0', 'meta_rows': 1, 'schema_version': 1, 'guard_trigger_count': 7}
         remove_workspace = ops.shutil.rmtree
         failed_step = None
+        changed_step = None
+        restored_bytes = []
+
+        def replace_archive():
+            replacement = root / 'replacement.dump'
+            replacement.write_bytes(changed_bytes)
+            replacement.replace(archive)
+
+        def fake_query(_container, _sql, label):
+            if label == 'restore_roles' and changed_step == 'before_restore':
+                replace_archive()
+            return json.dumps(checks)
+
+        def fake_run(_args, label, *, stdin=None, **_):
+            if label == 'database_image':
+                return b'sha256:' + b'a' * 64
+            if label == 'restore_database':
+                descriptor = stdin.fileno()
+                limit = len(archive_bytes) + 1
+                if changed_step == 'during_restore':
+                    replace_archive()
+                if changed_step == 'rewrite':
+                    stamp = archive.stat()
+                    archive.write_bytes(changed_bytes)
+                    os.utime(archive, ns=(stamp.st_atime_ns, stamp.st_mtime_ns))
+                    try:
+                        restored_bytes.append(os.read(descriptor, limit))
+                    finally:
+                        archive.write_bytes(archive_bytes)
+                        os.utime(archive, ns=(stamp.st_atime_ns, stamp.st_mtime_ns))
+                else:
+                    restored_bytes.append(os.read(descriptor, limit))
+            return b''
 
         def during_cleanup():
             pending = invoke('latest')['restore']
@@ -105,6 +142,16 @@ def check_restore_receipts():
             if failed_step == 'workspace':
                 raise OSError('synthetic workspace removal failure')
             remove_workspace(path)
+            if changed_step == 'cleanup':
+                replace_archive()
+
+        def rejected_restore(error, last_success):
+            failed = invoke('restore-check', 1)
+            receipt = invoke('latest')['restore']
+            assert failed['ok'] is False and failed['error'] == error
+            assert receipt['ok'] is False and receipt['status'] == 'failed' and receipt['error'] == error
+            assert receipt['last_success_at'] == last_success
+            assert 'cleanup_verified' not in receipt and 'audit_verified' not in receipt and 'sha256' not in receipt
 
         with (patch.multiple(ops, BACKUPS=root, STATE=root, ROOT=Path(__file__).resolve().parents[2]),
               patch.object(ops.os, 'chown'),
@@ -112,8 +159,8 @@ def check_restore_receipts():
               patch.object(ops.shutil, 'rmtree', side_effect=workspace_remove),
               patch.object(ops.subprocess, 'run', side_effect=docker_remove) as removal,
               patch.object(ops, 'db_container', return_value='synthetic'),
-              patch.object(ops, 'run', return_value=b'sha256:' + b'a' * 64),
-              patch.object(ops, 'query', return_value=json.dumps(checks)),
+              patch.object(ops, 'run', side_effect=fake_run),
+              patch.object(ops, 'query', side_effect=fake_query),
               patch.object(ops, 'query_digest', return_value=(metadata['data_sha256'], 1)),
               patch.object(ops, 'audit_metadata_from_backup', return_value=catalog),
               patch.object(ops, 'audit_backup_catalog', return_value=catalog),
@@ -122,17 +169,38 @@ def check_restore_receipts():
             assert success['ok'] is True and success['status'] == 'complete'
             assert success['cleanup_verified'] is True and success['audit_verified'] is True
             assert success['sha256'] == metadata['sha256'] and not list(root.glob('restore-*'))
+            assert restored_bytes == [archive_bytes]
             assert invoke('latest')['restore'] == {key: value for key, value in success.items() if key != 'check'}
+            for changed_step, expected_input in [('before_restore', []), ('during_restore', [archive_bytes]),
+                                                 ('rewrite', [changed_bytes]), ('cleanup', [archive_bytes])]:
+                input_count = len(restored_bytes)
+                removal_count = removal.call_count
+                rejected_restore('restore_backup_archive_changed', success['last_success_at'])
+                assert restored_bytes[input_count:] == expected_input
+                assert removal.call_count == removal_count + 1 and not list(root.glob('restore-*'))
+                archive.write_bytes(archive_bytes)
+            changed_step = None
+            input_count = len(restored_bytes)
+            removal_count = removal.call_count
+            archive.write_bytes(changed_bytes)
+            rejected_restore('backup_checksum_mismatch', success['last_success_at'])
+            other_file = root / 'symlink-target.dump'
+            other_file.write_bytes(archive_bytes)
+            archive.unlink()
+            archive.symlink_to(other_file)
+            rejected_restore('restore_backup_file_invalid', success['last_success_at'])
+            archive.unlink()
+            os.mkfifo(archive)
+            rejected_restore('restore_backup_file_invalid', success['last_success_at'])
+            assert len(restored_bytes) == input_count and removal.call_count == removal_count
+            assert not list(root.glob('restore-*'))
+            archive.unlink()
+            archive.write_bytes(archive_bytes)
             for failed_step, error in [('container', 'restore_cleanup_failed'), ('workspace', 'restore_workspace_cleanup_failed')]:
-                failed = invoke('restore-check', 1)
-                receipt = invoke('latest')['restore']
-                assert failed['ok'] is False and failed['error'] == error
-                assert receipt['ok'] is False and receipt['status'] == 'failed' and receipt['error'] == error
-                assert receipt['last_success_at'] == success['last_success_at']
-                assert 'cleanup_verified' not in receipt and 'audit_verified' not in receipt
-            assert removal.call_count == 3 and len(list(root.glob('restore-*'))) == 2
+                rejected_restore(error, success['last_success_at'])
+            assert removal.call_count == removal_count + 2 and len(list(root.glob('restore-*'))) == 2
 
 
 check_restore_receipts()
-print(json.dumps({'ok': True, 'checks': 12, 'stream_bytes': size, 'peak_rss_bytes': rss_bytes,
-                  'migration_metadata_included': True, 'private_rows_printed': False}))
+print(json.dumps({'ok': True, 'checks': 19, 'stream_bytes': size, 'peak_rss_bytes': rss_bytes,
+                  'migration_metadata_included': True, 'archive_binding_verified': True, 'private_rows_printed': False}))

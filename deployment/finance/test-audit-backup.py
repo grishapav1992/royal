@@ -29,9 +29,9 @@ schemas = ['royal_audit', 'royal_game']
 legacy_schemas = ['royal_game']
 
 
-def call(name, args, *, expected=0):
+def call(name, args, *, expected=0, stdin=None):
     result = subprocess.run([str(tools / name), *args], env=environment, capture_output=True,
-                            text=True, check=False, timeout=60)
+                            text=True, check=False, timeout=60, stdin=stdin)
     if result.returncode != expected:
         raise AssertionError(f'{name} returned {result.returncode}: {result.stderr}')
     return result.stdout
@@ -73,7 +73,9 @@ def dump(source, selected_schemas, archive, snapshot_name=None):
 
 
 def restore(target, database, archive, *, expected=0):
-    call('pg_restore', [*target, '-d', database, '--single-transaction', '--exit-on-error', str(archive)], expected=expected)
+    with ops._verified_restore_source(archive, ops.sha256(archive)) as (source, verify_source):
+        verify_source()
+        call('pg_restore', [*target, '-d', database, '--single-transaction', '--exit-on-error'], expected=expected, stdin=source)
 
 
 def rejected(fn, message):

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Operational checks for the isolated financial simulator, never a live restore."""
 import argparse
+from contextlib import contextmanager
 import datetime as dt
 import fcntl
 import hashlib
@@ -10,6 +11,7 @@ from pathlib import Path
 import re
 import select
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -464,12 +466,16 @@ def audit_roles(container, version):
     return json.loads(query(container, sql + ");", "live_role_audit"))
 
 
-def sha256(path):
+def sha256_stream(stream):
     digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for block in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(block)
+    for block in iter(lambda: stream.read(1024 * 1024), b""):
+        digest.update(block)
     return digest.hexdigest()
+
+
+def sha256(path):
+    with path.open("rb") as stream:
+        return sha256_stream(stream)
 
 
 def candidates():
@@ -674,8 +680,48 @@ def restore_check(target):
 
 def _restore_archive(target):
     metadata = read_json(target.with_suffix(".dump.json"))
-    if metadata.get("sha256") != sha256(target) or metadata.get("file") != target.name:
+    if not isinstance(metadata, dict) or metadata.get("file") != target.name:
         raise OpsError("backup_checksum_mismatch")
+    with _verified_restore_source(target, metadata.get("sha256")) as (source, verify_source):
+        return _restore_into_workspace(metadata, source, verify_source)
+
+
+@contextmanager
+def _verified_restore_source(target, expected_sha256):
+    try:
+        source = open(target, "rb", opener=lambda path, flags: os.open(path, flags | os.O_NOFOLLOW | os.O_NONBLOCK))
+    except OSError as error:
+        raise OpsError("restore_backup_file_invalid") from error
+
+    def identity(info):
+        return info.st_dev, info.st_ino, info.st_mode, info.st_size, info.st_mtime_ns, info.st_ctime_ns
+
+    with source:
+        opened = os.fstat(source.fileno())
+        if not stat.S_ISREG(opened.st_mode):
+            raise OpsError("restore_backup_file_invalid")
+        expected = identity(opened)
+
+        def verify_source():
+            try:
+                current = target.lstat()
+                descriptor = os.fstat(source.fileno())
+            except OSError as error:
+                raise OpsError("restore_backup_archive_changed") from error
+            if identity(current) != expected or identity(descriptor) != expected:
+                raise OpsError("restore_backup_archive_changed")
+
+        verify_source()
+        digest = sha256_stream(source)
+        verify_source()
+        if digest != expected_sha256:
+            raise OpsError("backup_checksum_mismatch")
+        source.seek(0)
+        yield source, verify_source
+        verify_source()
+
+
+def _restore_into_workspace(metadata, source, verify_source):
     version = metadata.get("schema_version", 1)
     tables = tables_for_version(version)
     if metadata.get("tables") != list(tables):
@@ -741,9 +787,10 @@ def _restore_archive(target):
             query(container, 'CREATE ROLE ' + role + ' LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS; GRANT CONNECT' + ('' if role in ('royal_nile_views_app', 'royal_nile_reconcile_app') else ', CREATE') + ' ON DATABASE ' + DB + ' TO ' + role + ';', 'restore_royal_role')
         if audit is not None and audit['roles']:
             query(container, audit_restore_roles_sql(audit), 'restore_audit_roles')
-        with target.open("rb") as source:
-            run(["docker", "exec", "-i", container, "pg_restore", "-U", OWNER, "-d", DB,
-                 "--single-transaction", "--exit-on-error"], "restore_database", stdin=source, timeout=600)
+        verify_source()
+        run(["docker", "exec", "-i", container, "pg_restore", "-U", OWNER, "-d", DB,
+             "--single-transaction", "--exit-on-error"], "restore_database", stdin=source, timeout=600)
+        verify_source()
         if fingerprint_format == 2:
             restored_inventory = fingerprint_inventory(container)
             if restored_inventory != fingerprint_tables:
@@ -766,7 +813,7 @@ def _restore_archive(target):
             if value != expected:
                 raise OpsError("restored_" + name + "_invalid")
         query(container, "SET ROLE finance_app; SELECT count(*) FROM royal_finance.accounts;", "restore_runtime_read")
-        result = {"file": target.name, "sha256": metadata["sha256"], "data_sha256": fingerprint,
+        result = {"file": metadata["file"], "sha256": metadata["sha256"], "data_sha256": fingerprint,
                   "seconds": round(time.monotonic() - started, 2), "checks": checks,
                   "isolated_container": container, "network": "none", "live_volume_attached": False,
                   "storage": "private-disk-workspace", "memory_limit_bytes": 512 * 1024 ** 2,
