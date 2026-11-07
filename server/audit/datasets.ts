@@ -5,6 +5,7 @@ import { migrateAuditEvidence } from './evidence';
 import { migrateAuditAttemptCapture } from './attempts';
 import { migrateAuditOperationLookup } from './check-repeats';
 import { migrateAuditReplayPackages } from './replay-store';
+import { migrateAuditRiskSignals } from './risk-store';
 
 export type AuditSourceSchemas = { game: string; payments?: string };
 
@@ -65,7 +66,7 @@ export class AuditDatasets {
       ...(sources.payments ? [namespace(sources.payments, 'crypto_ledger')] : []),
     ].sort();
     this.ready = migrateAuditDatasets(db).then(() => migrateAuditEvidence(db)).then(() => migrateAuditAttemptCapture(db))
-      .then(() => migrateAuditOperationLookup(db)).then(() => migrateAuditReplayPackages(db));
+      .then(() => migrateAuditOperationLookup(db)).then(() => migrateAuditReplayPackages(db)).then(() => migrateAuditRiskSignals(db));
   }
 
   private async optionalTable(schema: string, table: string) {

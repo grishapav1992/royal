@@ -286,7 +286,7 @@ export function buildChessTurnReplay(recording: CapturedChessReplay, scope: Audi
 }
 
 /** Replays the whole game from the pinned initial state, preserving history-dependent chess rules. */
-export function verifyChessTurnReplay(input: unknown):
+export function verifyChessTurnReplay(input: unknown, onState?: (sequence: number, state: TurnState) => void):
   { status: 'verified'; state: TurnState | null } | { status: 'corrupt' | 'unsupported' | 'too-large' | 'incomplete' } {
   const checked = verifyReplayPackage(input, [chessTurnReplayDefinition]);
   if (checked.status !== 'verified') return { status: checked.status };
@@ -299,7 +299,7 @@ export function verifyChessTurnReplay(input: unknown):
   const disconnected = new Set<Seat>();
   if (!sameState(manifest.initial, previous)) return { status: 'corrupt' };
 
-  for (const { data, atMs } of fragments.flatMap(fragment => fragment.events)) {
+  for (const { sequence, data, atMs } of fragments.flatMap(fragment => fragment.events)) {
     const clockSeat = sideSeat(chess.turn());
     const clockTime = spent[clockSeat - 1] + atMs - lastMoveAt;
     if (data.kind === 'action') {
@@ -331,6 +331,7 @@ export function verifyChessTurnReplay(input: unknown):
       if (!sameState(data.state, terminal)) return { status: 'corrupt' };
       previous = terminal;
     } else return { status: 'corrupt' };
+    onState?.(sequence, previous);
   }
   return { status: 'verified', state: previous };
 }

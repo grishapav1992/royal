@@ -35,6 +35,7 @@ import type { DrinkingState } from './intoxicationStore';
 import type { AuditAttemptSink } from './audit/attempts';
 import { WsAttemptCapture } from './audit/ws-attempts';
 import { ChessTurnReplayCapture, type CapturedChessReplay } from './audit/replay-pvp-turn';
+import { CombatRealtimeReplayCapture, type CapturedCombatReplay } from './audit/replay-pvp-realtime';
 import type { PvpSnapshot } from '../src/shared/pvp';
 
 type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatRevision: number; inputs: MovementInputs; predicted: boolean; afterMovement?: () => void };
@@ -49,6 +50,8 @@ let lobbyAuditSink: AuditAttemptSink | undefined;
 export function configureLobbyAuditAttempts(sink: AuditAttemptSink | undefined) { lobbyAuditSink = sink; }
 let lobbyChessReplaySink: ((recording: CapturedChessReplay) => void) | undefined;
 export function configureLobbyChessReplay(sink: typeof lobbyChessReplaySink) { lobbyChessReplaySink = sink; }
+let lobbyCombatReplaySink: ((recording: CapturedCombatReplay) => void) | undefined;
+export function configureLobbyCombatReplay(sink: typeof lobbyCombatReplaySink) { lobbyCombatReplaySink = sink; }
 
 export class LobbyRoom extends Room<{ state: LobbyState }> {
   state = new LobbyState();
@@ -57,7 +60,9 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   private readonly wsAttempts = lobbyAuditSink && new WsAttemptCapture(lobbyAuditSink, { gameSchema: accounts.schema });
   private readonly chessReplay = lobbyChessReplaySink &&
     new ChessTurnReplayCapture(sessionId => this.playerAccounts.get(sessionId), lobbyChessReplaySink);
-  private activities = new Activities(id => this.state.players.get(id), id => this.stop(id), (type,value,hall) => this.broadcastActivity(type,value,hall), (id,text) => this.clients.find(c=>c.sessionId===id)?.send('notice',text),undefined,{escrow:new CommonCombatWallet(accounts.combat,id=>accounts.financeAdmin.assertAllowed(id)),account:id=>this.playerAccounts.get(id),name:id=>this.state.players.get(id)?.name??'Игрок'});
+  private readonly combatReplay = lobbyCombatReplaySink && new CombatRealtimeReplayCapture(lobbyCombatReplaySink);
+  private readonly combatEscrow = new CommonCombatWallet(accounts.combat, id => accounts.financeAdmin.assertAllowed(id));
+  private activities = new Activities(id => this.state.players.get(id), id => this.stop(id), (type,value,hall) => this.broadcastActivity(type,value,hall), (id,text) => this.clients.find(c=>c.sessionId===id)?.send('notice',text),undefined,{escrow:this.combatReplay?.escrow(this.combatEscrow)??this.combatEscrow,account:id=>this.playerAccounts.get(id),name:id=>this.state.players.get(id)?.name??'Игрок'});
   private pvp=new PvpRoom({roomId:()=>this.roomId,activities:this.activities,allowMoney:id=>accounts.financeAdmin.assertAllowed(id),
     people:()=>[...this.state.players].flatMap(([sessionId,p])=>{const accountId=this.playerAccounts.get(sessionId);return accountId?[{sessionId,accountId,name:p.name,hall:p.hall,x:p.x,y:p.y,connected:p.connected,available:!p.playing&&!p.activity&&!p.seat&&p.action!=='drink'}]:[];}),
     send:(id,type,value)=>{
@@ -178,6 +183,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   onCreate() {
     this.state.serverNow = Date.now();
     if (this.chessReplay) this.activities.chess.setReplayObserver(observation => this.chessReplay?.observeEngine(observation));
+    if (this.combatReplay && this.activities.combat) this.combatReplay.attach(this.activities.combat);
     accounts.events.on('security', this.securityListener);
     accounts.events.on('logout', this.logoutListener);
     accounts.events.on('name', this.nameListener);
