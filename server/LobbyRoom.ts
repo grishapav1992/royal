@@ -583,7 +583,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
           finish('rejected', 'Не удалось подтвердить сообщение. Оно не отправлено. Попробуй ещё раз.');
         } finally { if (!finished) finish('cancelled', 'Отправка сообщения отменена.'); }
       }, () => finish('cancelled', 'Отправка сообщения отменена.'), control);
-      if (!queued) { finish('rejected', 'Очередь отправки заполнена. Повтори сообщение через несколько секунд.'); return; }
+      if (!queued) { finish('rejected', 'Сообщение не отправлено. Текст сохранён.'); return; }
       result('queued');
       await queued;
     });

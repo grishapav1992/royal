@@ -138,7 +138,7 @@ export const english: Record<string, string> = {
   "Проверка не завершена. Сообщение не отправлено. Попробуй ещё раз.": "The check did not finish. Message not sent. Try again.",
   "Не удалось подтвердить сообщение. Оно не отправлено. Попробуй ещё раз.": "The message could not be confirmed. It was not sent. Try again.",
   "Очередь проверки заполнена. Повтори сообщение через несколько секунд.": "The check queue is full. Try your message again in a few seconds.",
-  "Очередь отправки заполнена. Повтори сообщение через несколько секунд.": "The send queue is full. Try your message again in a few seconds.",
+  "Сообщение не отправлено. Текст сохранён.": "Message not sent. Your text is saved.",
   "Загрузка игры…": "Loading game…",
   "Не удалось загрузить игру. Повтори попытку. Монеты не списывались.": "The game could not load. Try again. No coins were charged.",
   "ЛИМОНАД  ·  КОФЕ  ·  ЯГОДЫ": "LEMONADE  ·  COFFEE  ·  BERRIES",

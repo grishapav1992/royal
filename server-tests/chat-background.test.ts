@@ -316,7 +316,7 @@ test('a full queue rejects overflow and still detects spam at arrival time', asy
   const first = send('Разные сообщения 0');
   await flush();
   const rest = Array.from({ length: 7 }, (_, index) => send('Разные сообщения ' + (index + 1)));
-  assert(packets.some(packet => packet.type === 'notice' && /Очередь отправки заполнена/.test(packet.value)));
+  assert(packets.some(packet => packet.type === 'notice' && packet.value === 'Сообщение не отправлено. Текст сохранён.'));
   for (const check of checks) check.resolve(true);
   await Promise.all([first, ...rest]);
   assert.equal(record.mock.callCount(), 1);
