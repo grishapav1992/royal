@@ -5,8 +5,66 @@ import { tmpdir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
 import { promisify } from 'node:util';
 import pg from 'pg';
+import { identifier, type PostgresDatabase } from '../server/database';
+import { auditExportReaderSlotKey } from '../server/audit/report-export-slot';
 
 const run = promisify(execFile);
+
+export async function grantAuditLoadStandbyReports(audit: PostgresDatabase, group: string) {
+  if (!audit.schema.startsWith('test_')) throw new Error('Expected a test audit schema');
+  const isolated = await audit.prepare(`SELECT 1 WHERE current_database()='royal_test'
+    AND host(inet_server_addr())='127.0.0.1' AND NOT pg_is_in_recovery()`).get();
+  if (!isolated) throw new Error('Expected the isolated audit primary');
+  const schema = identifier(audit.schema);
+  await audit.exec(`GRANT EXECUTE ON FUNCTION ${schema}.audit_report_begin_standby(uuid,text,jsonb),
+    ${schema}.audit_report_authorize_standby_publish(uuid) TO ${identifier(group)}`);
+}
+
+/** Only the controller of the exact isolated pair has the credentials to release its reader slot. */
+export async function drainAuditLoadStandbyReport(
+  primary: Pick<pg.Client, 'query'>, standby: Pick<pg.Client, 'query'>, schema: string, jobId: string,
+): Promise<boolean> {
+  if (!schema.startsWith('test_')) throw new Error('Expected a test audit schema');
+  const jobs = identifier(schema) + '.audit_export_jobs';
+  const identity = `SELECT current_database() AS database, pg_is_in_recovery() AS recovery,
+    host(inet_server_addr()) AS address, inet_server_port() AS port, system_identifier::text AS id
+    FROM pg_control_system()`;
+  const [primaryIdentity, standbyIdentity] = await Promise.all([primary.query(identity), standby.query(identity)]);
+  const main = primaryIdentity.rows[0], replica = standbyIdentity.rows[0];
+  if (main?.database !== 'royal_test' || replica?.database !== main.database ||
+      main?.recovery !== false || replica?.recovery !== true || !main?.id || replica.id !== main.id ||
+      main.address !== '127.0.0.1' || replica.address !== main.address || replica.port === main.port) {
+    throw new Error('Expected a physical standby of the isolated audit primary');
+  }
+  const { rowCount: streaming } = await standby.query(`SELECT 1 FROM pg_stat_wal_receiver
+    WHERE status='streaming' AND sender_host='127.0.0.1' AND sender_port=$1`, [main.port]);
+  if (!streaming) return false;
+  const terminal = `SELECT status, EXTRACT(EPOCH FROM finished_at)::text AS finished
+    FROM ${jobs} WHERE id=$1 AND reader_route='standby' AND status<>'running' AND finished_at IS NOT NULL`;
+  let expected = (await primary.query(terminal, [jobId])).rows[0];
+  if (!expected) {
+    // Commit lease expiry independently of a new admission, which must still be rejected until the reader drains.
+    await primary.query(`UPDATE ${jobs} SET status='expired',finished_at=clock_timestamp(),reason='lease-expired'
+      WHERE id=$1 AND reader_route='standby' AND status='running' AND expires_at<=clock_timestamp()`, [jobId]);
+    expected = (await primary.query(terminal, [jobId])).rows[0];
+  }
+  if (!expected) return false;
+  await standby.query('BEGIN ISOLATION LEVEL READ COMMITTED READ ONLY');
+  try {
+    const { rows: [slot] } = await standby.query(`SELECT
+      pg_try_advisory_xact_lock(hashtextextended($1,0)) AS available`, [auditExportReaderSlotKey(schema)]);
+    if (!slot?.available) return false;
+    const { rows: [replayed] } = await standby.query(terminal, [jobId]);
+    if (replayed?.status !== expected.status || replayed.finished !== expected.finished) return false;
+  } finally {
+    await standby.query('ROLLBACK');
+  }
+  // The replayed terminal job cannot pass the projection's fresh check after acquiring the lock.
+  const { rowCount } = await primary.query(`UPDATE ${jobs} SET standby_drained_at=COALESCE(standby_drained_at,clock_timestamp())
+    WHERE id=$1 AND reader_route='standby' AND status=$2 AND EXTRACT(EPOCH FROM finished_at)::text=$3`,
+  [jobId, expected.status, expected.finished]);
+  return rowCount === 1;
+}
 
 async function loopbackPort() {
   const server = createServer();

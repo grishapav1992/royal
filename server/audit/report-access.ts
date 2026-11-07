@@ -23,6 +23,8 @@ export async function installAuditReportAccess(db: PostgresDatabase, readerRole:
   const jobs = relation('audit_export_jobs');
   const begin = relation('audit_report_begin');
   const finish = relation('audit_report_finish');
+  const beginStandby = relation('audit_report_begin_standby');
+  const authorizeStandbyPublish = relation('audit_report_authorize_standby_publish');
   const resultReasons = "'time-limit','row-limit','scan-limit','byte-limit','source-unavailable','output-error','internal-error','permission-denied'";
   const investigationReasons = resultReasons + ",'replay-absent','replay-corrupt','replay-incomplete','replay-unsupported'";
   const exportKinds = "'player','summary','replay'";
@@ -220,4 +222,72 @@ ${version >= 9 ? `        IF p_kind IN (${exportKinds}) THEN
   await applySchemaMigration(db, { id: 'paid-activity-audit-period-continuation-access-v1', statements: [beginSql(7)] });
   await applySchemaMigration(db, { id: 'paid-activity-audit-period-retry-access-v1', statements: [beginSql(8)] });
   await applySchemaMigration(db, { id: 'paid-activity-audit-reader-slot-access-v1', statements: [beginSql(9), finishSql(true, true)] });
+  await applySchemaMigration(db, { id: 'paid-activity-audit-standby-reader-slot-v1', statements: [
+    `ALTER TABLE ${jobs}
+      ADD COLUMN reader_route text NOT NULL DEFAULT 'primary',
+      ADD COLUMN standby_sources text[],
+      ADD COLUMN standby_drained_at timestamptz,
+      ADD CONSTRAINT audit_report_reader_route_check CHECK (
+        (reader_route='primary' AND standby_sources IS NULL AND standby_drained_at IS NULL)
+        OR (reader_route='standby' AND kind IN (${exportKinds})
+          AND standby_sources IS NOT NULL AND pg_catalog.cardinality(standby_sources) BETWEEN 1 AND 16
+          AND (standby_drained_at IS NULL OR status<>'running'))
+      )`,
+    `DROP INDEX ${relation('audit_report_one_export')}`,
+    `CREATE UNIQUE INDEX audit_report_one_export ON ${jobs} ((1))
+      WHERE kind IN (${exportKinds})
+        AND (status='running' OR (reader_route='standby' AND standby_drained_at IS NULL))`,
+    `CREATE FUNCTION ${beginStandby}(p_dataset uuid,p_kind text,p_filters jsonb) RETURNS uuid
+      LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
+      DECLARE
+        v_job uuid;
+        v_sources text[];
+      BEGIN
+        IF pg_catalog.pg_is_in_recovery() OR NOT EXISTS (SELECT 1 FROM ${relation('audit_datasets')}
+          WHERE id=p_dataset AND environment='test') THEN
+          RAISE EXCEPTION 'Audit standby fixture scope is unavailable' USING ERRCODE='42501';
+        END IF;
+        IF p_kind IS NULL OR p_kind NOT IN (${exportKinds}) THEN
+          RAISE EXCEPTION 'Invalid audit standby report kind' USING ERRCODE='22023';
+        END IF;
+        v_job := ${begin}(p_dataset,p_kind,p_filters);
+        SELECT pg_catalog.array_agg(source_namespace ORDER BY source_namespace) INTO v_sources
+        FROM ${acl} WHERE operator_name=SESSION_USER AND dataset_id=p_dataset;
+        IF COALESCE(pg_catalog.cardinality(v_sources),0) NOT BETWEEN 1 AND 16 THEN
+          RAISE EXCEPTION 'Audit standby fixture scope is unavailable' USING ERRCODE='42501';
+        END IF;
+        UPDATE ${jobs} SET reader_route='standby',standby_sources=v_sources WHERE id=v_job;
+        RETURN v_job;
+      END
+      $audit$`,
+    `CREATE FUNCTION ${authorizeStandbyPublish}(p_job uuid) RETURNS void
+      LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
+      DECLARE
+        v_dataset uuid;
+        v_sources text[];
+        v_expires timestamptz;
+        v_grants integer;
+      BEGIN
+        IF pg_catalog.pg_is_in_recovery() OR current_setting('transaction_isolation')<>'read committed' THEN
+          RAISE EXCEPTION 'Audit standby publication requires the primary' USING ERRCODE='42501';
+        END IF;
+        SELECT e.dataset_id,e.standby_sources,e.expires_at INTO v_dataset,v_sources,v_expires
+        FROM ${jobs} e JOIN ${relation('audit_datasets')} d ON d.id=e.dataset_id
+        WHERE e.id=p_job AND e.operator_name=SESSION_USER AND e.reader_route='standby'
+          AND e.status='running' AND e.expires_at>pg_catalog.clock_timestamp() AND d.environment='test'
+        FOR SHARE OF e;
+        IF NOT FOUND THEN
+          RAISE EXCEPTION 'Audit standby job is unavailable' USING ERRCODE='42501';
+        END IF;
+        PERFORM a.source_namespace FROM ${acl} a WHERE a.operator_name=SESSION_USER
+          AND a.dataset_id=v_dataset AND a.source_namespace=ANY(v_sources)
+        ORDER BY a.source_namespace FOR SHARE OF a;
+        GET DIAGNOSTICS v_grants=ROW_COUNT;
+        IF v_grants<>pg_catalog.cardinality(v_sources) OR v_expires<=pg_catalog.clock_timestamp() THEN
+          RAISE EXCEPTION 'Audit standby publication access denied' USING ERRCODE='42501';
+        END IF;
+      END
+      $audit$`,
+    `REVOKE ALL ON FUNCTION ${beginStandby}(uuid,text,jsonb),${authorizeStandbyPublish}(uuid) FROM PUBLIC,${reader}`,
+  ] });
 }

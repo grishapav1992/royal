@@ -1,7 +1,9 @@
-import { writeAuditOutput } from './export-file';
+import { writeAuditOutput, type AuditOutputPublisher } from './export-file';
 import { AuditPlayerReportError } from './report-player';
 
-export async function writeAuditJson(input: { destination: string; value: unknown; maxBytes: number; signal: AbortSignal }) {
+export async function writeAuditJson(input: {
+  destination: string; value: unknown; maxBytes: number; signal: AbortSignal; publish?: AuditOutputPublisher;
+}) {
   const check = () => input.signal.throwIfAborted();
   check();
   const json = JSON.stringify(input.value);
@@ -14,5 +16,5 @@ export async function writeAuditJson(input: { destination: string; value: unknow
   return writeAuditOutput(input.destination, check, async file => {
     await file.writeFile(payload, 'utf8');
     return { bytes };
-  });
+  }, undefined, input.publish);
 }

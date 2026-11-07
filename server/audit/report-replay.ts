@@ -66,7 +66,7 @@ export async function exportAuditReplay(config: ClientConfig, input: {
   signal?: AbortSignal; fixtureStandbyPort?: number;
 }) {
   if (!isReplayId(input.datasetId) || !isReplayId(input.filters.replayId)) throw new Error('Invalid audit replay identity');
-  return runAuditReport(config, input, 'replay', timeoutMs, async (settings, schema, jobId, signal) => {
+  return runAuditReport(config, input, 'replay', timeoutMs, async (settings, schema, jobId, signal, publish) => {
     const { connection, finish } = await openAuditReportReader(settings, jobId, signal);
     let candidate: unknown;
     try {
@@ -80,7 +80,7 @@ export async function exportAuditReplay(config: ClientConfig, input: {
     signal.throwIfAborted();
     const { pack, engineVerified, rowCount } = verifyReplayCandidate(candidate, input.datasetId, input.filters.replayId, jobId);
     const { manifest } = pack;
-    const written = await writeAuditJson({ destination: input.destination, value: pack, maxBytes: maxFileBytes, signal });
+    const written = await writeAuditJson({ destination: input.destination, value: pack, maxBytes: maxFileBytes, signal, publish });
     return { ...written, rowCount, replayId: manifest.replayId, datasetId: manifest.scope.datasetId,
       environment: manifest.scope.environment, coverage: manifest.coverage, engineVerified };
   });

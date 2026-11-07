@@ -87,6 +87,14 @@ test('reviews an exact manifest, purges only test data and records a new live ch
   assert((await previewAuditCleanup(f.readonly,f.input)).blockers.includes('active-reconcile-requests'));
   await f.audit.prepare("UPDATE audit_reconcile_requests SET status='failed',finished_at=clock_timestamp() WHERE dataset_id=?")
     .run(f.input.datasetId);
+  const held = (await f.audit.prepare(`INSERT INTO audit_export_jobs(operator_name,dataset_id,kind,filters,status,
+      started_at,expires_at,finished_at,reason,reader_route,standby_sources)
+    VALUES(?,?,'player','{}','cancelled',clock_timestamp(),clock_timestamp()+interval '5 minutes',
+      clock_timestamp(),'cancelled','standby',ARRAY[?::text]) RETURNING id`).get(operator,f.input.datasetId,f.source))!.id;
+  assert((await previewAuditCleanup(f.readonly, f.input)).blockers.includes('active-export-jobs'));
+  await f.audit.prepare('UPDATE audit_export_jobs SET standby_drained_at=clock_timestamp() WHERE id=?').run(held);
+  assert(!(await previewAuditCleanup(f.readonly, f.input)).blockers.includes('active-export-jobs'));
+  await f.audit.prepare('DELETE FROM audit_export_jobs WHERE id=?').run(held);
   const raw = await f.raw(), before = await previewAuditCleanup(f.readonly, f.input);
   assert.deepEqual(before.blockers, []);
   assert.equal(before.files.files.length, 1);

@@ -72,8 +72,10 @@ export async function inspectAuditCleanupRows(db: PostgresDatabase, datasetId: s
     WHERE n.nspname=? AND c.relname=ANY(?::text[]) AND NOT t.tgisinternal AND t.tgenabled<>'D' LIMIT 1`)
     .get(db.schema, tables);
   if (unexpectedConstraint || trigger) blockers.push('unexpected-audit-dependency');
-  if (tables.includes('audit_export_jobs') && await db.prepare(`SELECT 1 FROM ${schema}.audit_export_jobs
-    WHERE dataset_id=? AND status='running' AND expires_at>pg_catalog.clock_timestamp() LIMIT 1`).get(datasetId)) {
+  if (tables.includes('audit_export_jobs') && await db.prepare(`SELECT 1 FROM ${schema}.audit_export_jobs e
+    WHERE dataset_id=? AND ((status='running' AND expires_at>pg_catalog.clock_timestamp())
+      OR (pg_catalog.to_jsonb(e)->>'reader_route'='standby' AND pg_catalog.to_jsonb(e)->>'standby_drained_at' IS NULL))
+    LIMIT 1`).get(datasetId)) {
     blockers.push('active-export-jobs');
   }
   if (tables.includes('audit_reconcile_requests') && await db.prepare(`SELECT 1 FROM ${schema}.audit_reconcile_requests

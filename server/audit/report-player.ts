@@ -2,6 +2,7 @@ import pg, { type ClientConfig, type QueryResult } from 'pg';
 import { setTimeout as pause } from 'node:timers/promises';
 import { identifier } from '../database';
 import { AuditCsvExportError, writeAuditCsv } from './export-csv';
+import type { AuditOutputPublisher } from './export-file';
 import { AUDIT_EXPORT_READER_SLOT_CONSTRAINT } from './report-export-slot';
 import { playerColumns, type PlayerReportCursor, type PlayerReportPage, type PlayerReportRow } from './report-player-source';
 
@@ -139,13 +140,16 @@ export async function runAuditReport<T extends { rowCount: number; bytes: number
     filters: AuditReportFilters | AuditPostingReportFilters | AuditReconcilePeriodFilters | AuditReconcilePageFilters |
       AuditDetailLookupFilters | { replayId: string };
     signal?: AbortSignal; fixtureStandbyPort?: number }, kind: AuditReportKind, timeoutMs: number,
-  run: (settings: ReaderConfig, schema: string, jobId: string, signal: AbortSignal) => Promise<T>,
+  run: (settings: ReaderConfig, schema: string, jobId: string, signal: AbortSignal,
+    authorizePublication?: AuditOutputPublisher) => Promise<T>,
 ) {
   if (!/^[a-z_][a-z0-9_]{0,62}$/.test(input.schema)) throw new Error('Invalid audit schema name');
   const { fixtureStandbyPort } = input;
+  const useStandby = fixtureStandbyPort !== undefined;
   const fixtureReplay = kind === 'replay' && input.schema === 'test_audit_load' &&
     config.database === 'royal_test' && config.user === 'audit_load_replay';
   if (fixtureStandbyPort !== undefined && (config.host !== '127.0.0.1' || config.connectionString ||
+      config.database !== 'royal_test' || !input.schema.startsWith('test_') ||
       !Number.isInteger(fixtureStandbyPort) || fixtureStandbyPort < 1 || fixtureStandbyPort > 65_535 ||
       fixtureStandbyPort === config.port || (kind !== 'player' && kind !== 'summary' && !fixtureReplay))) {
     throw new Error('Expected a separate loopback report fixture');
@@ -168,7 +172,8 @@ export async function runAuditReport<T extends { rowCount: number; bytes: number
     const role = await log.query(`SELECT (rolsuper OR rolcreaterole OR rolcreatedb OR rolreplication OR rolbypassrls) AS privileged
       FROM pg_catalog.pg_roles WHERE rolname=session_user`);
     if (role.rows[0]?.privileged !== false) throw new AuditPlayerReportError('permission-denied', null);
-    const started = await log.query('SELECT ' + schema + '.audit_report_begin($1,$2,$3) AS id',
+    const begin = useStandby ? 'audit_report_begin_standby' : 'audit_report_begin';
+    const started = await log.query(`SELECT ${schema}.${begin}($1,$2,$3) AS id`,
       [input.datasetId, kind, JSON.stringify(input.filters)]);
     const id: unknown = started.rows[0]?.id;
     if (typeof id !== 'string' || !/^[a-f0-9-]{36}$/.test(id)) throw new AuditPlayerReportError('internal-error', null);
@@ -183,7 +188,19 @@ export async function runAuditReport<T extends { rowCount: number; bytes: number
       }
       reader = { ...settings, port: fixtureStandbyPort, fixtureReplayLsn: lsn };
     }
-    const written = await run(reader, schema, jobId, signal);
+    const authorizePublication: AuditOutputPublisher | undefined = useStandby ? async publish => {
+      signal.throwIfAborted();
+      await log.query('BEGIN ISOLATION LEVEL READ COMMITTED');
+      try {
+        await log.query(`SELECT ${schema}.audit_report_authorize_standby_publish($1)`, [id]);
+        signal.throwIfAborted();
+        await publish();
+      } finally {
+        // If the link succeeded, let the caller distinguish a later journal failure from an output failure.
+        await log.query('ROLLBACK').catch(() => {});
+      }
+    } : undefined;
+    const written = await run(reader, schema, jobId, signal, authorizePublication);
     reportCompleted = true;
     await finish('succeeded', written.rowCount, written.bytes, null);
     return { jobId, ...written };
@@ -208,11 +225,11 @@ export async function exportAuditPlayer(
     signal?: AbortSignal; limits?: Partial<Limits>; fixtureStandbyPort?: number },
 ) {
   const limits = reportLimits(input.limits);
-  return runAuditReport(config, input, 'player', limits.timeoutMs, (settings, schema, jobId, signal) =>
+  return runAuditReport(config, input, 'player', limits.timeoutMs, (settings, schema, jobId, signal, publish) =>
     writeAuditCsv<PlayerReportRow>({
       destination: input.destination,
       columns: playerColumns.map(header => ({ header, kind: units.has(header) ? 'units' : 'text', value: row => row[header] })),
       rows: pages(settings, schema + '.audit_report_player_page', jobId, limits, signal),
-      maxRows: limits.maxRows, maxBytes: limits.maxBytes, timeoutMs: limits.timeoutMs, signal,
+      maxRows: limits.maxRows, maxBytes: limits.maxBytes, timeoutMs: limits.timeoutMs, signal, publish,
     }));
 }

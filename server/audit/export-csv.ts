@@ -1,5 +1,5 @@
 import type { FileHandle } from 'node:fs/promises';
-import { writeAuditOutput } from './export-file';
+import { writeAuditOutput, type AuditOutputPublisher } from './export-file';
 
 export type AuditCsvColumn<Row> = {
   header: string;
@@ -15,6 +15,7 @@ type AuditCsvOptions<Row> = {
   maxBytes: number;
   timeoutMs: number;
   signal?: AbortSignal;
+  publish?: AuditOutputPublisher;
 };
 
 type ErrorCode = 'invalid-options' | 'invalid-cell' | 'row-limit' | 'byte-limit' |
@@ -114,7 +115,7 @@ export async function writeAuditCsv<Row>(options: AuditCsvOptions<Row>): Promise
         rowCount++;
       }
       return { rowCount, bytes };
-    }, () => new AuditCsvExportError('destination-exists'));
+    }, () => new AuditCsvExportError('destination-exists'), options.publish);
   } finally {
     clearTimeout(timer);
     signal?.removeEventListener('abort', cancel);

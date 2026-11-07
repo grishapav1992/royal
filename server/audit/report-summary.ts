@@ -6,7 +6,7 @@ export async function readAuditSummary(
   config: ClientConfig, input: { schema: string; datasetId: string; filters: AuditReportFilters;
     signal?: AbortSignal; fixtureStandbyPort?: number },
 ) {
-  const result = await runAuditReport(config, input, 'summary', 60_000, async (settings, schema, jobId, signal) => {
+  const result = await runAuditReport(config, input, 'summary', 60_000, async (settings, schema, jobId, signal, authorizePublication) => {
     const { connection, finish } = await openAuditReportReader(settings, jobId, signal);
     try {
       signal.throwIfAborted();
@@ -18,7 +18,9 @@ export async function readAuditSummary(
       signal.throwIfAborted();
       await connection.query('COMMIT');
       const output = { jobId, ...summary };
-      return { output, rowCount: summary.rows.length, bytes: Buffer.byteLength(JSON.stringify(output) + '\n', 'utf8') };
+      const bytes = Buffer.byteLength(JSON.stringify(output) + '\n', 'utf8');
+      await authorizePublication?.(async () => {});
+      return { output, rowCount: summary.rows.length, bytes };
     } finally {
       await finish();
     }

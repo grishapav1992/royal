@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test, { type TestContext } from 'node:test';
 import { AuditCsvExportError, writeAuditCsv, type AuditCsvColumn } from '../server/audit/export-csv';
+import { writeAuditJson } from '../server/audit/export-json';
 
 type Row = { text: string | null; units: string | null };
 const columns: readonly AuditCsvColumn<Row>[] = [
@@ -146,4 +147,69 @@ test('an existing path or a racing writer owns the destination', async t => {
   }
   await assert.rejects(writeAuditCsv({ ...f.options, rows: forbiddenRead() }), withCode('destination-exists'));
   assert.equal(await readFile(target, 'utf8'), 'unrelated');
+});
+
+test('authorization wraps publication of a complete private CSV and denial removes its part', async t => {
+  const f = await fixture(t);
+  const expected = '"text","units"\n"settled",7\n';
+  const error = new Error('Publication denied');
+  let attempts = 0;
+  await assert.rejects(writeAuditCsv({ ...f.options, rows: stream([{ text: 'settled', units: '7' }]),
+    async publish() {
+      attempts++;
+      const part = (await readdir(f.directory)).find(name => name !== f.unrelated);
+      assert(part);
+      const path = join(f.directory, part);
+      assert.equal(await readFile(path, 'utf8'), expected);
+      assert.equal((await stat(path)).mode & 0o777, 0o600);
+      await assert.rejects(stat(f.destination), { code: 'ENOENT' });
+      throw error;
+    },
+  }), caught => caught === error);
+  assert.equal(attempts, 1);
+  await f.assertOnlyUnrelated();
+  await assert.rejects(writeAuditCsv({ ...f.options, rows: stream([]), publish: async () => {} }),
+    /skipped its commit callback/);
+  await f.assertOnlyUnrelated();
+});
+
+test('cancellation and a racing output still win before the publication callback links', async t => {
+  const f = await fixture(t);
+  const controller = new AbortController();
+  await assert.rejects(writeAuditCsv({ ...f.options, rows: stream([]), signal: controller.signal,
+    async publish(linkOutput) {
+      controller.abort();
+      await linkOutput();
+    },
+  }), withCode('cancelled'));
+  await f.assertOnlyUnrelated();
+
+  await assert.rejects(writeAuditCsv({ ...f.options, rows: stream([]),
+    async publish(linkOutput) {
+      await writeFile(f.destination, 'racing owner', { flag: 'wx' });
+      await linkOutput();
+    },
+  }), withCode('destination-exists'));
+  assert.equal(await readFile(f.destination, 'utf8'), 'racing owner');
+  assert.deepEqual((await readdir(f.directory)).sort(), [f.unrelated, 'report.csv']);
+});
+
+test('JSON uses the same publication wrapper and a post-link error preserves the final file', async t => {
+  const f = await fixture(t);
+  const destination = join(f.directory, 'report.json');
+  const input = { destination, value: { ok: true }, maxBytes: 128, signal: new AbortController().signal };
+  const denied = new Error('Publication denied');
+  await assert.rejects(writeAuditJson({ ...input, publish: async () => { throw denied; } }), error => error === denied);
+  await f.assertOnlyUnrelated();
+
+  const afterLink = new Error('Post-publication failure');
+  await assert.rejects(writeAuditJson({ ...input, async publish(linkOutput) {
+    await assert.rejects(stat(destination), { code: 'ENOENT' });
+    await linkOutput();
+    assert.equal(await readFile(destination, 'utf8'), '{"ok":true}\n');
+    throw afterLink;
+  } }), error => error === afterLink);
+  assert.equal(await readFile(destination, 'utf8'), '{"ok":true}\n');
+  assert.equal((await stat(destination)).mode & 0o777, 0o600);
+  assert.deepEqual((await readdir(f.directory)).sort(), [f.unrelated, 'report.json']);
 });

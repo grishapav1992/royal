@@ -3,7 +3,7 @@ import { identifier, type PostgresDatabase } from '../database';
 import { applySchemaMigration } from '../database-migrations';
 import type { AuditSourceSchemas } from './datasets';
 import { auditToteMode, casinoPaidOpeningSql, casinoSessionModeSql, instantCasinoModeSql, pvpModeVersionSql } from './mode-registry';
-import { auditExportReaderProjectionGuard } from './report-export-slot';
+import { auditExportReaderProjectionGuard, auditExportReaderRoute, auditExportSourcePinned } from './report-export-slot';
 
 export const playerColumns = [
   'schema_version', 'dataset_id', 'environment', 'source', 'posting_id', 'account_id', 'occurred_at',
@@ -24,7 +24,7 @@ async function relationExists(db: PostgresDatabase, schema: string, table: strin
 }
 
 /** Shared canonical projection over already scoped references. */
-export async function auditPostingProjectionSql(db: PostgresDatabase, sources: AuditSourceSchemas, consumer?: 'summary') {
+export async function auditPostingProjectionSql(db: PostgresDatabase, sources: AuditSourceSchemas, consumer?: 'player' | 'summary') {
   const names = [db.schema, sources.game, ...(sources.payments ? [sources.payments] : [])];
   if (names.some(name => !validName(name)) || new Set(names).size !== names.length) {
     throw new Error('Invalid audit report source configuration');
@@ -36,6 +36,7 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
   const summary = consumer === 'summary';
   const sourceSelected = (namespace: string) => summary
     ? ` AND EXISTS (SELECT 1 FROM allowed WHERE source_namespace=${namespace})` : '';
+  const pendingPinned = consumer ? ` AND ${auditExportSourcePinned('acl.source_namespace')}` : '';
   const fine = literal(CLUB_FINE_SOURCE);
   const hasMatches = await relationExists(db, sources.game, 'pvp_matches');
   const hasCallbacks = await relationExists(db, sources.game, 'capro_transactions') &&
@@ -147,7 +148,7 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
       SELECT (l.source='casinoapipro' AND l.entry_type='win' AND l.amount_units>0 AND l.operation_id LIKE 'capro:transfer:%'
         AND NOT provider.explicit_credit
         AND EXISTS (SELECT 1 FROM ${a}.audit_report_acl acl WHERE acl.operator_name=session_user
-          AND acl.dataset_id=r.dataset_id AND acl.source_namespace=${pending})
+          AND acl.dataset_id=r.dataset_id AND acl.source_namespace=${pending}${pendingPinned})
         AND EXISTS (SELECT 1 FROM ${g}.capro_pending_ledger cp JOIN ${a}.audit_posting_refs pending_ref
           ON pending_ref.dataset_id=r.dataset_id AND pending_ref.source_namespace=${pending} AND pending_ref.source_row_id=cp.id
           WHERE cp.account_id=l.account_id AND cp.operation_id=l.operation_id AND cp.reason='transfer'
@@ -198,7 +199,7 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
 /** Privileged setup only. The reader role executes a fixed projection, with no access to its base tables. */
 export async function installAuditPlayerReport(db: PostgresDatabase, readerRole: string, sources: AuditSourceSchemas) {
   if (!validName(readerRole)) throw new Error('Invalid audit report role name');
-  const { a, demo, pending, crypto, selects } = await auditPostingProjectionSql(db, sources);
+  const { a, demo, pending, crypto, selects } = await auditPostingProjectionSql(db, sources, 'player');
   await applySchemaMigration(db, { id: 'paid-activity-audit-player-sequence-v1', statements: [], indexes: [
     { name: 'audit_posting_refs_player_sequence', table: 'audit_posting_refs',
       columns: ['dataset_id', 'account_id', 'source_namespace', 'source_row_id'] },
@@ -214,12 +215,13 @@ export async function installAuditPlayerReport(db: PostgresDatabase, readerRole:
         IF current_setting('transaction_isolation')<>'read committed' OR pg_current_xact_id_if_assigned() IS NOT NULL THEN
           RAISE EXCEPTION 'Audit report requires a separate committed job' USING ERRCODE='42501';
         END IF;
-        SELECT e.dataset_id,e.filters,d.environment INTO j FROM ${a}.audit_export_jobs e
+        SELECT e.dataset_id,e.filters,e.standby_sources,d.environment INTO j FROM ${a}.audit_export_jobs e
         JOIN ${a}.audit_datasets d ON d.id=e.dataset_id
         WHERE e.id=job AND e.operator_name=session_user AND e.kind='player' AND e.status='running'
-          AND e.expires_at>clock_timestamp();
+          AND e.expires_at>clock_timestamp() AND ${auditExportReaderRoute};
         IF NOT FOUND OR NOT EXISTS (SELECT 1 FROM ${a}.audit_report_acl acl
-          WHERE acl.operator_name=session_user AND acl.dataset_id=j.dataset_id) THEN
+          WHERE acl.operator_name=session_user AND acl.dataset_id=j.dataset_id
+            AND ${auditExportSourcePinned('acl.source_namespace')}) THEN
           RAISE EXCEPTION 'Audit report access denied' USING ERRCODE='42501';
         END IF;
         IF page_size IS NULL OR page_size<1 OR page_size>256 OR
@@ -237,7 +239,8 @@ export async function installAuditPlayerReport(db: PostgresDatabase, readerRole:
               AND (r.occurred_at_ms,r.source_namespace,r.source_row_id)>
                 (COALESCE(cursor_at,(j.filters->>'fromMs')::bigint-1),COALESCE(cursor_source,''),COALESCE(cursor_id,0))
               AND EXISTS (SELECT 1 FROM ${a}.audit_report_acl acl WHERE acl.operator_name=session_user
-                AND acl.dataset_id=r.dataset_id AND acl.source_namespace=r.source_namespace)
+                AND acl.dataset_id=r.dataset_id AND acl.source_namespace=r.source_namespace
+                AND ${auditExportSourcePinned('acl.source_namespace')})
             ORDER BY r.occurred_at_ms,r.source_namespace,r.source_row_id LIMIT page_size
           ), anchors AS (
             SELECT r.*, older.source_row_id AS prior_id, op.available_units AS opening_balance

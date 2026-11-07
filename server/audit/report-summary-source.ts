@@ -1,7 +1,7 @@
 import { identifier, type PostgresDatabase } from '../database';
 import { applySchemaMigration } from '../database-migrations';
 import type { AuditSourceSchemas } from './datasets';
-import { auditExportReaderProjectionGuard } from './report-export-slot';
+import { auditExportReaderProjectionGuard, auditExportReaderRoute, auditExportSourcePinned } from './report-export-slot';
 import { auditPostingProjectionSql } from './report-player-source';
 
 export const summaryColumns = [
@@ -48,13 +48,14 @@ export async function installAuditSummaryReport(db: PostgresDatabase, readerRole
         IF current_setting('transaction_isolation')<>'read committed' OR pg_current_xact_id_if_assigned() IS NOT NULL THEN
           RAISE EXCEPTION 'Audit report requires a separate committed job' USING ERRCODE='42501';
         END IF;
-        SELECT e.dataset_id,e.filters,d.environment INTO j FROM ${a}.audit_export_jobs e
+        SELECT e.dataset_id,e.filters,e.standby_sources,d.environment INTO j FROM ${a}.audit_export_jobs e
         JOIN ${a}.audit_datasets d ON d.id=e.dataset_id
         WHERE e.id=job AND e.operator_name=session_user AND e.kind='summary' AND e.status='running'
-          AND e.expires_at>clock_timestamp();
+          AND e.expires_at>clock_timestamp() AND ${auditExportReaderRoute};
         IF NOT FOUND OR NOT EXISTS (SELECT 1 FROM ${a}.audit_report_acl acl
           WHERE acl.operator_name=session_user AND acl.dataset_id=j.dataset_id
-            AND acl.source_namespace IN (${demo},${pending},${crypto})) THEN
+            AND acl.source_namespace IN (${demo},${pending},${crypto})
+            AND ${auditExportSourcePinned('acl.source_namespace')}) THEN
           RAISE EXCEPTION 'Audit report access denied' USING ERRCODE='42501';
         END IF;
         ${auditExportReaderProjectionGuard(db.schema, 'job', 'summary')}
@@ -62,7 +63,7 @@ export async function installAuditSummaryReport(db: PostgresDatabase, readerRole
         WITH allowed AS MATERIALIZED (
           SELECT source_namespace FROM ${a}.audit_report_acl
           WHERE operator_name=session_user AND dataset_id=j.dataset_id
-            AND source_namespace IN (${demo},${pending},${crypto})
+            AND source_namespace IN (${demo},${pending},${crypto}) AND ${auditExportSourcePinned('source_namespace')}
         ), refs AS MATERIALIZED (
           SELECT r.* FROM allowed s CROSS JOIN LATERAL (
             SELECT ref.source_namespace,ref.source_row_id,ref.account_id,ref.operation_id,ref.occurred_at_ms

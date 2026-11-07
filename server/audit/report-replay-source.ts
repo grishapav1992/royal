@@ -1,6 +1,6 @@
 import { identifier, type PostgresDatabase } from '../database';
 import type { AuditSourceSchemas } from './datasets';
-import { auditExportReaderSlotGuard } from './report-export-slot';
+import { auditExportReaderRoute, auditExportReaderSlotGuard, auditExportSourcePinned } from './report-export-slot';
 
 const validName = (name: string) => /^[a-z_][a-z0-9_]{0,62}$/.test(name);
 const uuidPattern = '^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$';
@@ -31,12 +31,13 @@ export async function installAuditReplayReport(db: PostgresDatabase, readerRole:
   const acl = a + '.audit_report_acl', refs = a + '.audit_posting_refs', opening = a + '.audit_opening_obligations';
   const fn = a + '.audit_report_replay', projection = a + '.audit_report_replay_projection';
   const reader = identifier(readerRole);
-  const authorizeJob = `SELECT e.dataset_id,e.filters,d.environment INTO j FROM ${a}.audit_export_jobs e
+  const authorizeJob = `SELECT e.dataset_id,e.filters,e.standby_sources,d.environment INTO j FROM ${a}.audit_export_jobs e
         JOIN ${a}.audit_datasets d ON d.id=e.dataset_id
         WHERE e.id=p_job AND e.operator_name=session_user AND e.kind='replay' AND e.status='running'
-          AND e.expires_at>clock_timestamp();
+          AND e.expires_at>clock_timestamp() AND ${auditExportReaderRoute};
         IF NOT FOUND OR NOT EXISTS (
           SELECT 1 FROM ${acl} WHERE operator_name=session_user AND dataset_id=j.dataset_id
+            AND ${auditExportSourcePinned('source_namespace')}
         ) THEN
           RAISE EXCEPTION 'Audit report access denied' USING ERRCODE='42501';
         END IF;`;
@@ -70,7 +71,7 @@ export async function installAuditReplayReport(db: PostgresDatabase, readerRole:
       BEGIN
         ${authorizeJob}
         IF NOT EXISTS (SELECT 1 FROM ${acl} WHERE operator_name=session_user AND dataset_id=j.dataset_id
-          AND source_namespace=${demo}) THEN RETURN v_absent; END IF;
+          AND source_namespace=${demo} AND ${auditExportSourcePinned('source_namespace')}) THEN RETURN v_absent; END IF;
 
         v_replay_id := (j.filters->>'replayId')::uuid;
         SELECT manifest INTO v_manifest FROM ${a}.audit_replay_packages
@@ -163,6 +164,7 @@ export async function installAuditReplayReport(db: PostgresDatabase, readerRole:
           SELECT 1 FROM parsed p WHERE NOT EXISTS (
             SELECT 1 FROM ${refs} r JOIN ${acl} acl ON acl.operator_name=session_user
               AND acl.dataset_id=r.dataset_id AND acl.source_namespace=r.source_namespace
+              AND ${auditExportSourcePinned('acl.source_namespace')}
             WHERE r.dataset_id=j.dataset_id AND r.source_namespace=p.source_namespace AND r.source_row_id=p.row_id
               AND ((r.source_namespace=${demo} AND EXISTS (
                 SELECT 1 FROM ${g}.demo_ledger l WHERE ${demoPosting} AND

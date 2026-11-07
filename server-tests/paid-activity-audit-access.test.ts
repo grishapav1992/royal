@@ -186,6 +186,49 @@ test('audit report roles enforce dataset grants, journal ownership and export le
       const available = await begin(alice);
       await finish(alice, available);
     });
+
+    await t.test('standby publication locks pinned grants and terminal jobs occupy the slot until drained', async () => {
+      const standbyBegin = (actor: PostgresDatabase, dataset = datasetA) => actor.prepare(
+        `SELECT ${audit}.audit_report_begin_standby(?,'player',?::jsonb) AS id`)
+        .get(dataset, JSON.stringify(filters)).then(row => row!.id as string);
+      const authorize = (actor: PostgresDatabase, jobId: string) => actor.prepare(
+        `SELECT ${audit}.audit_report_authorize_standby_publish(?)`).get(jobId);
+      await assert.rejects(standbyBegin(alice), { code: '42501' });
+      await owner.exec(`GRANT EXECUTE ON FUNCTION ${audit}.audit_report_begin_standby(uuid,text,jsonb),
+        ${audit}.audit_report_authorize_standby_publish(uuid) TO ${identifier(readerRole)}`);
+      const live = randomUUID();
+      await owner.prepare(`INSERT INTO ${audit}.audit_datasets VALUES(?,'live',0,1000)`).run(live);
+      await owner.prepare(`INSERT INTO ${audit}.audit_dataset_sources VALUES(?,?)`).run(live, sourceA);
+      await owner.prepare(`INSERT INTO ${acl} VALUES(?,?,?),(?,?,?)`).run(aliceRole, live, sourceA, aliceRole, datasetA, sourceB);
+      await assert.rejects(standbyBegin(alice, live), { code: '42501' });
+
+      const job = await standbyBegin(alice);
+      assert.deepEqual(await owner.prepare(`SELECT reader_route,standby_sources,standby_drained_at FROM ${jobs} WHERE id=?`).get(job),
+        { reader_route: 'standby', standby_sources: [sourceA, sourceB].sort(), standby_drained_at: null });
+      await assert.rejects(authorize(bob, job), { code: '42501' });
+      const revoke = () => owner.prepare(`DELETE FROM ${acl} WHERE operator_name=? AND dataset_id=? AND source_namespace=?`)
+        .run(aliceRole, datasetA, sourceB);
+      const tryConcurrentWrite = (write: () => Promise<unknown>) => owner.transaction(async () => {
+        await owner.exec("SET LOCAL lock_timeout='50ms'");
+        await write();
+      }, { lockKey: 'standby-publication-test' });
+      await alice.transaction(async () => {
+        await authorize(alice, job);
+        await assert.rejects(tryConcurrentWrite(revoke), { code: '55P03' });
+        await assert.rejects(tryConcurrentWrite(() =>
+          owner.prepare(`UPDATE ${jobs} SET expires_at=expires_at WHERE id=?`).run(job)), { code: '55P03' });
+      });
+      await revoke();
+      await assert.rejects(authorize(alice, job), { code: '42501' });
+      await finish(alice, job, 'cancelled', 0, 0, 'cancelled');
+      await assert.rejects(alice.prepare(`UPDATE ${jobs} SET standby_drained_at=clock_timestamp() WHERE id=?`).run(job),
+        { code: '42501' });
+      await assert.rejects(begin(bob, datasetB, { fromMs: 1000, toMs: 2000 }, 'summary'), { code: '55P03' });
+      await owner.prepare(`UPDATE ${jobs} SET standby_drained_at=clock_timestamp() WHERE id=?`).run(job);
+      const primary = await begin(alice);
+      await assert.rejects(authorize(alice, primary), { code: '42501' });
+      await finish(alice, primary);
+    });
   } finally {
     await Promise.all(clients.map(client => client.close()));
     await source.close();

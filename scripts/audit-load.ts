@@ -30,7 +30,7 @@ import { verifyGameRound } from '../server/games/core';
 import { VirtualPvpLedger } from '../server/pvp/virtual-wallet';
 import { matchesMixedHistoryTotals, mixedHistoryAccountCount, seedMixedAuditHistory,
   type MixedHistoryPosting } from './audit-load-mixed-history';
-import { startAuditLoadStandby } from './audit-load-standby';
+import { drainAuditLoadStandbyReport, grantAuditLoadStandbyReports, startAuditLoadStandby } from './audit-load-standby';
 import { auditLoadMonotonicMs, startAuditLoadReportConsumer } from './audit-load-report-consumer';
 import { seedAuditLoadReplay } from './audit-load-replay-fixture';
 import { temporaryDatabase } from './database-test';
@@ -358,6 +358,15 @@ async function verifyStandby(standby: Standby, audit: PostgresDatabase, signal?:
   } finally { await connection.end(); }
 }
 
+async function waitForStandbyDrain(standby: Standby, audit: PostgresDatabase, jobId: string, signal?: AbortSignal) {
+  const connection = standby.connect();
+  try {
+    await connection.connect();
+    await waitFor(async () => await drainAuditLoadStandbyReport(audit.pool, connection, audit.schema, jobId)
+      ? true : undefined, 3000, signal);
+  } finally { await connection.end(); }
+}
+
 function activityDelta(before: Activity, after: Activity): Activity {
   const activity = { blocksRead: after.blocksRead - before.blocksRead, blocksHit: after.blocksHit - before.blocksHit,
     tempBytes: after.tempBytes - before.tempBytes, tempFiles: after.tempFiles - before.tempFiles };
@@ -463,9 +472,13 @@ async function cancelStandbyReplayWait(standby: Standby, audit: PostgresDatabase
       ? undefined : true, 2000, abort);
     const journal = result instanceof AuditPlayerReportError && result.jobId
       ? await audit.prepare('SELECT status,reason FROM audit_export_jobs WHERE id=?').get(result.jobId) : null;
+    await observer.query('SELECT pg_wal_replay_resume()');
+    replayPaused = false;
+    if (!(result instanceof AuditPlayerReportError) || !result.jobId) throw new Error('Missing cancelled standby report job');
+    await waitForStandbyDrain(standby, audit, result.jobId, abort);
     const files = await readdir(directory);
     return { replayWaitObserved: true, readerStopped: true,
-      journalCancelled: result instanceof AuditPlayerReportError && result.code === 'cancelled' &&
+      journalCancelled: result.code === 'cancelled' &&
         journal?.status === 'cancelled' && journal.reason === 'cancelled',
       noPartialOutput: files.length === 1 && files[0] === 'player.csv' };
   } finally {
@@ -537,6 +550,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
         ALTER ROLE ${name} SET temp_file_limit='${reportTempFileLimit}'`);
     }
     await installAuditReportAccess(audit, group);
+    if (options.standbyPgBasebackup) await grantAuditLoadStandbyReports(audit, group);
     await installAuditPlayerReport(audit, group, sources);
     await installAuditSummaryReport(audit, group, sources);
     for (const name of readers) {
@@ -602,21 +616,31 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       const from = auditLoadMonotonicMs(), result = await work();
       return { from, to: auditLoadMonotonicMs(), result };
     };
+    const drainAfterReport = async <T extends { result: { jobId: string } }>(pending: Promise<T>) => {
+      const result = await pending.catch(async (error: unknown) => {
+        if (standby && error instanceof AuditPlayerReportError && error.jobId) {
+          await waitForStandbyDrain(standby, audit!, error.jobId, signal);
+        }
+        throw error;
+      });
+      if (standby) await waitForStandbyDrain(standby, audit!, result.result.jobId, signal);
+      return result;
+    };
     const wireScope = { schema: audit.schema, datasetId, fixtureStandbyPort: standby?.port };
     const reportScope = { ...wireScope, signal };
-    const rawSummary = (name: string, filters: typeof period) => reportConsumer
+    const rawSummary = (name: string, filters: typeof period) => drainAfterReport(reportConsumer
       ? reportConsumer.summary(operator(name), { ...wireScope, filters })
-      : observeTiming(() => readAuditSummary(operator(name), { ...reportScope, filters }));
+      : observeTiming(() => readAuditSummary(operator(name), { ...reportScope, filters })));
     const readSummary = (name: string, filters: typeof period, description: string) =>
       rawSummary(name, filters).catch(error => throwReportFailure(description, error));
     const { signal: _playerSignal, ...wirePlayer } = reportInput;
-    const startPlayer = () => (reportConsumer ? reportConsumer.player(operator(reader), wirePlayer) :
+    const startPlayer = () => drainAfterReport(reportConsumer ? reportConsumer.player(operator(reader), wirePlayer) :
       observeTiming(() => exportAuditPlayer(operator(reader), reportInput))).catch(error => throwReportFailure('player CSV', error));
     const limitPeriod = widePeriod ? { ...widePeriod, toMs: widePeriod.toMs - 1 } : null;
     const startLimit = () => limitPeriod ? readSummary(limitReader, limitPeriod, 'at-limit summary') : null;
     const replayInput = replayFixture ? { ...wireScope, filters: { replayId: replayFixture.replayId },
       destination: join(directory, 'replay.json') } : null;
-    const firstReplay = replayInput ? (reportConsumer ? reportConsumer.replay(operator(replayReader), replayInput) :
+    const firstReplay = replayInput ? drainAfterReport(reportConsumer ? reportConsumer.replay(operator(replayReader), replayInput) :
       observeTiming(() => exportAuditReplay(operator(replayReader), { ...replayInput, signal })))
       .catch(error => throwReportFailure('replay', error)) : null;
     const firstPlayer = options.summaryFirst || firstReplay ? null : startPlayer();
@@ -664,11 +688,12 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     await reportConsumer?.close();
     const jobOrder = options.summaryFirst ? [limitReader, reader, summaryReader, wideReader]
       : [...(replayFixture ? [replayReader] : []), reader, summaryReader, ...(scaleAccounts ? [limitReader, wideReader] : [])];
-    const jobs = await audit.prepare(`SELECT operator_name,status,reason,started_at,finished_at FROM audit_export_jobs
+    const jobs = await audit.prepare(`SELECT operator_name,status,reason,started_at,finished_at,reader_route,standby_drained_at FROM audit_export_jobs
       WHERE dataset_id=? AND operator_name=ANY(?::name[]) ORDER BY started_at,finished_at,id`).all(datasetId, jobOrder);
     const serialVerified = jobs.length === jobOrder.length && jobs.every((job, index) => {
       const previous = jobs[index - 1];
       return job.operator_name === jobOrder[index] && job.finished_at !== null &&
+        (standby ? job.reader_route === 'standby' && job.standby_drained_at !== null : job.reader_route === 'primary') &&
         (!previous || previous.finished_at <= job.started_at) &&
         (job.operator_name === wideReader ? job.status === 'failed' && job.reason === 'scan-limit' : job.status === 'succeeded');
     });
