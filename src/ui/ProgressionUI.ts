@@ -1,5 +1,5 @@
 import { locale, t, tr } from '../i18n/index';
-import type { RoomScene } from '../game/RoomScene';
+import type { ClubHost } from '../ClubHost';
 import { rewardGames, rewardLeaves, type LevelReward, type ProgressionGrant, type RewardGame } from '../shared/progression';
 import { formatNileUnits } from '../shared/nileWallet';
 import { DEMO_SYMBOLS } from '../shared/demoWallet';
@@ -7,6 +7,7 @@ import { progression, type ProgressionClient } from '../wallet/ProgressionClient
 import { demoWallet } from '../wallet/WalletClient';
 import { fruitSymbol, FRUITS_SYMBOL_NAMES } from './FruitsArtwork';
 import { registerGameChatDialog } from './GameChat';
+import { ProgressionNotices } from './ProgressionNotices';
 import './progression.css';
 
 const xp = (value: string | bigint) => BigInt(value).toLocaleString(locale);
@@ -25,7 +26,7 @@ export class ProgressionUI {
   private renderedResult = '';
   private feedback = '';
   private account: string | null = null;
-  constructor(private scene: RoomScene, private client: ProgressionClient = progression) {
+  constructor(private scene: Pick<ClubHost, 'setLocked' | 'onAtelier'>, private client: ProgressionClient = progression) {
     this.button.type = 'button'; this.button.id = 'progression-button'; this.button.className = 'progression-button';
     this.button.hidden = true; this.button.onclick = () => this.show();
     document.querySelector('.profile-name')?.after(this.button);
@@ -65,6 +66,7 @@ export class ProgressionUI {
     demoWallet.addEventListener('change', () => this.render());
     document.addEventListener('visibilitychange', () => { if (!document.hidden) void client.refresh(); });
     setInterval(() => { if (client.accountId && !document.hidden) void client.refresh(); }, 15000);
+    new ProgressionNotices(client, locked => scene.setLocked(locked));
     client.setAccount(demoWallet.accountId); this.render();
   }
   private find<T extends HTMLElement = HTMLElement>(selector: string) { return this.dialog.querySelector<T>(selector)!; }

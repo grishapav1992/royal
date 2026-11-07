@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { GAME_REACTION_EVENT, emitGameReaction, gameReactionForAmounts, observeGameOutcome, resetGameOutcomes, type GameReactionSnapshot } from '../src/ui/gameReactions';
+import { GAME_REACTION_EVENT, GAME_ROUND_PRESENTED_EVENT, emitGameReaction, gameReactionForAmounts, observeGameOutcome, resetGameOutcomes, type GameReactionSnapshot } from '../src/ui/gameReactions';
 
 function fixture() {
   const host = new EventTarget() as unknown as HTMLElement;
@@ -39,7 +39,9 @@ test('opening saved results and refreshing them does not replay emotions', () =>
 });
 
 test('active parties react once after confirmed settlement, with ties staying neutral', () => {
-  const { observe, reactions } = fixture();
+  const { host, observe, reactions } = fixture();
+  let presented = 0;
+  host.addEventListener(GAME_ROUND_PRESENTED_EVENT, event => { assert(event.bubbles); presented++; });
   observe({ sessionId: 'win', active: true });
   observe({ sessionId: 'win', returnedUnits: '2000' });
   observe({ sessionId: 'win', returnedUnits: '2000' });
@@ -48,6 +50,7 @@ test('active parties react once after confirmed settlement, with ties staying ne
   observe({ sessionId: 'loss', active: true });
   observe({ sessionId: 'loss', returnedUnits: '500' });
   assert.deepEqual(reactions, ['win', 'lose']);
+  assert.equal(presented, 3);
 });
 
 test('instant rounds wait for pending operations to settle and ignore stale results during a retry', () => {

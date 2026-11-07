@@ -173,14 +173,18 @@ test('new Tsu-e-fa registration earns the same own-stake XP for both settled PvP
   const ledger=instrumentProgressionPvpLedger(c.db,new VirtualPvpLedger(c.db,c.wallet),c.progression),store=new PvpStore(ledger);
   const now=Date.now(),actors=[c.a,c.b].map((accountId,i)=>({accountId,name:'Player '+i,roomId:'progression-tsu'}));
   await store.syncRoom('progression-tsu',actors.map(a=>({...a,connected:true,available:true})),now);
-  const created=await store.command(actors[0],{id:randomUUID(),action:'create',gameId:'tsu-e-fa',stakeUnits:'1100000',targetId:c.b},now);
+  const created=await store.command(actors[0],{id:randomUUID(),action:'invite',gameId:'tsu-e-fa',stakeUnits:'1000000',targetId:c.b},now);
   const challengeId=created.active!.id;
   await store.command(actors[1],{id:randomUUID(),action:'accept',challengeId},now);
-  for(const actor of actors)await store.command(actor,{id:randomUUID(),action:'ready',challengeId},now);
+  for(const actor of actors)await store.command(actor,{id:randomUUID(),action:'duel-ready',challengeId,termsRevision:0},now);
   assert.equal((await c.events()).length,0);
   const finish={id:randomUUID(),action:'resign' as const,challengeId};await store.command(actors[1],finish,now);await store.command(actors[1],finish,now);
   const events=await c.events();assert.equal(events.length,2);assert.deepEqual(new Set(events.map(e=>e.accountId)),new Set([c.a,c.b]));
-  assert(events.every(e=>e.sourceId===challengeId&&e.paidUnits==='1100000'&&e.refundedUnits==='0'));
-  assert.equal((await c.progression.snapshot(c.a)).xp,'110');assert.equal((await c.progression.snapshot(c.b)).xp,'110');
+  assert(events.every(e=>e.sourceId===challengeId&&e.paidUnits==='1000000'&&e.refundedUnits==='0'));
+  for (const account of [c.a, c.b]) {
+   const snapshot = await c.progression.snapshot(account);
+   assert.equal(snapshot.xp, '100');
+   assert.deepEqual(snapshot.pendingRewardLevels, []);
+  }
  }finally{await c.close();}
 });

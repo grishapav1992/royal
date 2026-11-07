@@ -113,6 +113,12 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       const player = this.state.players.get(client.sessionId); if (player) player.name = name;
     }
   };
+  private levelListener = (accountId: string, level: number) => {
+    for (const [id, account] of this.playerAccounts) {
+      const player = this.state.players.get(id);
+      if (account === accountId && player && player.level < level) player.level = level;
+    }
+  };
   private skinListener = (id: string, skin: number) => {
     for (const client of this.clients) if ((client.auth as RoomAuth)?.account.id === id) {
       const access = this.access.get(client.sessionId); if (access) access.profileRevision.skin++;
@@ -135,6 +141,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     accounts.events.on('skin', this.skinListener);
     accounts.events.on('appearance', this.appearanceListener);
     accounts.events.on('drinking', this.drinkingListener);
+    accounts.events.on('progression-level', this.levelListener);
     this.clock.setInterval(() => { void this.refreshAccess().catch(() => console.error('Room access refresh failed')); }, 60000);
     this.clock.setInterval(()=>this.pvp.tick(),1000);
     this.setPatchRate(50);
@@ -448,6 +455,9 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       p.x = 420 + index % 8 * 40; p.y = 570 + Math.floor(index % 24 / 8) * 25; p.skin = auth.account.skin!; p.appearance = serializeAppearance(auth.account.appearance);
       this.playerAccounts.set(client.sessionId, auth.account.id);
       this.state.players.set(client.sessionId, p);
+      void accounts.progression.publicLevel(auth.account.id).then(level => {
+        if (this.state.players.get(client.sessionId) === p && p.level < level) p.level = level;
+      }).catch(() => console.error('Room progression level lookup failed'));
       this.controls.set(client.sessionId, { dx: 0, dy: 0, at: 0, path: [], lastTarget: 0, chatRevision: 0, inputs: new MovementInputs(), predicted: false });
       if((options as {activityProtocol?:unknown}|null)?.activityProtocol===1)this.activityProtocols.add(client.sessionId);
       this.system(p.name+' заходит в зал');
@@ -475,6 +485,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.disposed = true;
     accounts.events.off('security', this.securityListener); accounts.events.off('logout', this.logoutListener);
     accounts.events.off('name', this.nameListener); accounts.events.off('skin', this.skinListener); accounts.events.off('appearance', this.appearanceListener); accounts.events.off('drinking', this.drinkingListener);
+    accounts.events.off('progression-level', this.levelListener);
   }
   async onReconnect(client: Client) {
     const p = this.state.players.get(client.sessionId), access = this.access.get(client.sessionId);

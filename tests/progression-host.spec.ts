@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 
 async function enter(page: Page) {
-  await page.goto('/');
+  await page.goto('/?mode=club');
   await page.getByLabel('Почта', { exact: true }).fill('progression-player-' + crypto.randomUUID() + '@example.test');
   await page.getByLabel('Пароль', { exact: true }).fill('Progression-host-test-42!');
   await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
@@ -11,7 +11,7 @@ async function enter(page: Page) {
   await expect.poll(() => page.evaluate(() => (window as any).royalDemo.getState().online)).toBe(true);
   await expect(page.locator('#progression-button')).toHaveText('Уровень 1');
 }
-async function unlock(page: Page) {
+async function unlock(page: Page, confirm = true) {
   const funding = await page.request.post('/__test/progression/fund'); expect(funding.ok()).toBe(true);
   const result = await page.evaluate(async () => {
     const { account } = await (await fetch('/api/auth/me')).json();
@@ -23,7 +23,16 @@ async function unlock(page: Page) {
     }
     return (await fetch('/api/progression', { headers })).json();
   });
-  expect(result.level).toBeGreaterThanOrEqual(10); expect(result.grants).toHaveLength(2); return result;
+  expect(result.level).toBeGreaterThanOrEqual(10); expect(result.grants).toHaveLength(2);
+  if (confirm) {
+    const notice = page.locator('#level-reward-dialog');
+    for (const level of result.pendingRewardLevels) {
+      await expect(notice.getByRole('heading')).toHaveText(`Награды за ${level}-й уровень`);
+      await notice.getByRole('button', { name: 'OK' }).click();
+    }
+    await expect(notice).toBeHidden();
+  }
+  return result;
 }
 async function open(page: Page) {
   await page.locator('#progression-button').click();
@@ -32,6 +41,73 @@ async function open(page: Page) {
   await expect(page.locator('#progression-dialog #club-chat-dock')).toBeVisible();
   await expect(page.locator('#chat-input')).toBeInViewport();
 }
+
+test('paid spin result is shown before level feedback and another player sees the new level', async ({ page, browser }) => {
+  const observer = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  try {
+    await enter(page);
+    const other = await observer.newPage();
+    await enter(other);
+    const player = await page.evaluate(() => (window as any).royalDemo.getNetworkState().selfId);
+    const label = () => other.evaluate(id => (window as any).royalDemo.getState().remotePositions.find((value: any) => value.id === id)?.label, player);
+    await expect.poll(label).toContain('Зашёл погреться');
+    expect((await page.request.post('/__test/progression/fund')).ok()).toBe(true);
+    await page.getByRole('button', { name: 'Казино', exact: true }).click();
+    await page.locator('#casino-catalog [data-platform-game="royal-coins"]').click();
+    await expect(page.locator('#coins-spin')).toBeEnabled({ timeout: 15000 });
+    await page.locator('#coins-bet').selectOption('100');
+
+    let release!: () => void;
+    const hold = new Promise<void>(resolve => { release = resolve; });
+    await page.route('**/api/demo-wallet/operations', async route => {
+      const response = await route.fetch();
+      await hold;
+      await route.fulfill({ response });
+    }, { times: 1 });
+    await page.locator('#coins-spin').click();
+    const notice = page.locator('#level-reward-dialog');
+    try {
+      await expect.poll(label).toContain('ур. 5');
+      await expect.poll(label).toContain('Охотник за жетонами');
+      await expect(page.locator('#progression-button')).toHaveText('Уровень 5');
+      await expect(page.locator('.level-up-banner')).toBeHidden();
+      await expect(notice).toBeHidden();
+    } finally { release(); }
+    await expect(page.locator('.level-up-banner')).toHaveText('Уровень 5!');
+    await expect(page.locator('.level-up-banner')).toBeVisible();
+    await expect(page.locator('.royal-coins')).not.toHaveClass(/spinning/);
+    await expect(notice).toBeVisible();
+    await expect(notice).toContainText('Royal Coins или Royal Fruits');
+    await expect(notice).toContainText('Бесплатные генерации скина: 1');
+    await expect(page.locator('#mini-dialog')).toBeVisible();
+    await notice.getByRole('button', { name: 'OK' }).click();
+    await expect(notice).toBeHidden();
+  } finally { await observer.close(); }
+});
+
+test('reward windows follow milestone order and resume at the first unconfirmed reward after reload', async ({ page }) => {
+  await enter(page);
+  await unlock(page, false);
+  const notice = page.locator('#level-reward-dialog');
+  await expect(notice.getByRole('heading')).toHaveText('Награды за 5-й уровень');
+  await notice.getByRole('button', { name: 'OK' }).click();
+  await expect(notice.getByRole('heading')).toHaveText('Награды за 10-й уровень');
+  await page.evaluate(() => {
+    const url = new URL(location.href);
+    url.searchParams.set('mode', 'casino');
+    history.replaceState(history.state, '', url);
+  });
+  await page.reload();
+  await expect(notice.getByRole('heading')).toHaveText('Награды за 10-й уровень', { timeout: 25000 });
+  await expect(page.locator('body')).toHaveAttribute('data-entry-mode', 'casino');
+  expect(await page.evaluate(() => (window as any).royalDemo.isWorldLoaded())).toBe(false);
+  await notice.getByRole('button', { name: 'OK' }).click();
+  await expect(notice).toBeHidden();
+  await page.reload();
+  await expect(page.locator('#join-dialog')).toBeHidden({ timeout: 25000 });
+  await expect(page.locator('#progression-button')).toHaveText('Уровень 10');
+  await expect(notice).toBeHidden();
+});
 
 test('the real host keeps local levels, shared free-spin packs and chat usable on desktop and mobile', async ({ page }, info) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));

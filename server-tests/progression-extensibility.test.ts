@@ -118,7 +118,7 @@ test('upgrading pre-registry free-spin grants preserves their identity and remai
     const before = await store.snapshot(account);
     await db.exec('DROP TABLE progression_milestones');
     const upgraded = new ProgressionStore(db, { now: () => 2000 }); await upgraded.ready;
-    assert.deepEqual(await upgraded.snapshot(account), before);
+    assert.deepEqual(await upgraded.snapshot(account), { ...before, pendingRewardLevels: [] });
     const claim = await db.prepare('SELECT * FROM progression_milestones WHERE account_id=?').get(account);
     assert.equal(claim?.id, before.grants[0].id);
     assert.equal(claim?.policy_version, before.policyVersion);
