@@ -1,7 +1,8 @@
 import { parseArgs } from 'node:util';
 import { databaseConfig } from '../server/database';
 import { AuditPlayerReportError, exportAuditPlayer, type AuditDetailLookupFilters, type AuditReportFilters } from '../server/audit/report-player';
-import { readAuditDetail, requestAuditPeriodReconcile, requestAuditReconcile } from '../server/audit/report-investigation';
+import { readAuditDetail, requestAuditPeriodReconcile, requestAuditReconcile, requestAuditReconcilePage } from '../server/audit/report-investigation';
+import { isReplayId } from '../server/audit/replay-package';
 import { exportAuditReplay } from '../server/audit/report-replay';
 import { readAuditSummary } from '../server/audit/report-summary';
 
@@ -16,7 +17,8 @@ const usage = 'npm run audit -- player ' + period + ' --account <id> --output <n
     '(--operation <id> | --round <id> | --match <uuid> | --ticket <uuid>) [--account <id>]\n' +
   'npm run audit -- replay ' + scope + ' --replay <uuid> --output <new JSON file>\n' +
   'npm run audit -- reconcile ' + anchor + ' [--wait] [--refresh]\n' +
-  'npm run audit -- reconcile ' + period + ' --source <ledger namespace> [--account <id>] [--wait] [--refresh]';
+  'npm run audit -- reconcile ' + period + ' --source <ledger namespace> [--account <id>] [--wait] [--refresh]\n' +
+  'npm run audit -- reconcile ' + period + ' --source <ledger namespace> --paged [--account <id>] [--wait] [--refresh | --cursor <uuid>]';
 const invalid = () => new Error('Invalid audit report arguments');
 const identifierToken = /^[a-zA-Z0-9._:-]{1,128}$/;
 
@@ -40,10 +42,10 @@ async function main() {
     asset: { type: 'string' }, contour: { type: 'string' },
     source: { type: 'string' }, posting: { type: 'string' }, replay: { type: 'string' },
     operation: { type: 'string' }, round: { type: 'string' }, match: { type: 'string' }, ticket: { type: 'string' },
-    wait: { type: 'boolean' }, refresh: { type: 'boolean' },
+    wait: { type: 'boolean' }, refresh: { type: 'boolean' }, paged: { type: 'boolean' }, cursor: { type: 'string' },
   } });
   if (values.help) { console.log(usage); return; }
-  const { schema, dataset, account, from, to, output, category, game, mode, asset, contour, posting, replay, wait, refresh } = values;
+  const { schema, dataset, account, from, to, output, category, game, mode, asset, contour, posting, replay, wait, refresh, paged, cursor } = values;
   const kind = positionals[0];
   if (positionals.length !== 1 || !schema || !dataset ||
       !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(dataset)) throw invalid();
@@ -86,12 +88,17 @@ async function main() {
           : await requestAuditReconcile(config, { ...input, filters: { ...filters, ...(refresh ? { refresh: true } : {}) },
             waitMs: wait ? 40_000 : 0 });
       } else if (kind === 'reconcile') {
-        if (!permits('source','from','to','account','wait','refresh') || !from || !to ||
-            (account !== undefined && !identifierToken.test(account))) throw invalid();
-        result = await requestAuditPeriodReconcile(config, { ...input, filters: {
+        if (!permits('source','from','to','account','wait','refresh','paged','cursor') || !from || !to ||
+            (account !== undefined && !identifierToken.test(account)) ||
+            (cursor !== undefined && (!paged || refresh || !isReplayId(cursor.toLowerCase())))) throw invalid();
+        const filters = {
           source, fromMs: timestamp(from), toMs: timestamp(to),
           ...(account === undefined ? {} : { accountId: account }), ...(refresh ? { refresh: true } : {}),
-        }, waitMs: wait ? 40_000 : 0 });
+        };
+        const request = { ...input, filters, waitMs: wait ? 40_000 : 0 };
+        result = paged ? await requestAuditReconcilePage(config, { ...request,
+          filters: { ...filters, paged: true, ...(cursor === undefined ? {} : { cursor: cursor.toLowerCase() }) },
+        }) : await requestAuditPeriodReconcile(config, request);
       } else {
         const selectors = (['operation','round','match','ticket'] as const).filter(key => values[key] !== undefined);
         if (selectors.length !== 1 || !permits('source', selectors[0], 'account')) throw invalid();

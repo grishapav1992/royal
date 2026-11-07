@@ -142,6 +142,10 @@ function moveSelection(move: Move): number[] | null {
   return [kind, ...(move.picks ?? []), ...(move.penaltyRisk ? [ordinal(move.penaltyRisk, risks)] : [])];
 }
 
+function consecutiveMoves(moves: readonly Move[], initialRevision: number) {
+  return moves.every((move, index) => move.revision === initialRevision + index);
+}
+
 // Preserve only observed display symbols and decisions. Never serialize entropy tapes, seeds or private engine state.
 function checkpointFrames(s: ExpansionState, start: Start, accepted: Move[]): number[][] | null {
   const v = s.view;
@@ -171,7 +175,7 @@ function checkpointFrames(s: ExpansionState, start: Start, accepted: Move[]): nu
   }
   if (v.templeCascade) {
     const c = v.templeCascade;
-    if (accepted.some(move => move.move !== 'temple-cascade')) return null;
+    if (!consecutiveMoves(accepted, 1) || accepted.some(move => move.move !== 'temple-cascade')) return null;
     const cascade = initialCascadeState();
     return c.operations.map(operation => {
       let grid: number[] = [];
@@ -190,7 +194,8 @@ function checkpointFrames(s: ExpansionState, start: Start, accepted: Move[]): nu
   }
   if (v.temple) {
     const t = v.temple;
-    if (t.history.length !== accepted.length || t.history.some((step, i) => accepted[i].move !== 'temple-' + step.kind
+    if (!consecutiveMoves(accepted, 1) || t.history.length !== accepted.length ||
+        t.history.some((step, i) => accepted[i].move !== 'temple-' + step.kind
       || ('to' in step ? accepted[i].picks?.[0] !== step.to : accepted[i].picks !== undefined))) return null;
     return Array.from({ length: t.history.length + 1 }, (_, i) => {
       const bonus = rebuildTempleView(t.baseCase, t.bonusCase, s.stakeUnits, t.history.slice(0, i)).bonusState;
@@ -200,7 +205,8 @@ function checkpointFrames(s: ExpansionState, start: Start, accepted: Move[]): nu
   if (v.forestHeart) {
     const f = v.forestHeart, chose = f.base.ability && f.base.choiceDone;
     const expected = chose ? f.base.rotation === null ? 'forest-pass' : 'forest-turn-' + f.base.rotation : null;
-    if (expected && accepted[0]?.move !== expected || accepted.slice(Number(chose)).some(move => move.move !== 'forest-spin')) return null;
+    if (!consecutiveMoves(accepted, 1) || (expected && accepted[0]?.move !== expected) ||
+        accepted.slice(Number(chose)).some(move => move.move !== 'forest-spin')) return null;
     const base = [...compact(f.base.bits), f.base.energy];
     return [base, ...(chose ? [[...base, (f.base.rotation ?? -1) + 1]] : []),
       ...f.bonus.map(spin => [...compact(spin.bits), spin.energy, spin.receiverMask, spin.heldState])];
@@ -210,20 +216,24 @@ function checkpointFrames(s: ExpansionState, start: Start, accepted: Move[]): nu
     const shotMove = v.penalty ? 'penalty-kick' : 'jackie-fight';
     const banked = combat.status === 'banked';
     const shotMoves = accepted.slice(0, banked ? -1 : undefined);
-    if (shotMoves.some((move, i) => move.move !== shotMove || move.penaltyRisk !== undefined
+    if (!consecutiveMoves(accepted, 1) || shotMoves.some((move, i) => move.move !== shotMove || move.penaltyRisk !== undefined
       && move.penaltyRisk !== (combat.shots[i + 1]?.risk ?? combat.risk))
       || banked && accepted.at(-1)?.move !== 'cashout') return null;
     const frames = combat.shots.map(shot => [ordinal(shot.finish, ['goal', 'save', 'post', 'wide']), Number(shot.side === 1),
       ordinal(shot.risk ?? combat.risk, risks), ...(shot.zone === undefined ? [] : [shot.zone])]);
     return banked ? [...frames, frames.at(-1)!] : frames;
   }
-  if (v.neopolis) return v.neopolis.history.map(spin => spin.result.grid);
-  if (v.dracona) return v.dracona.history.map(spin => spin.result.grid);
-  if (v.wildNudge) return v.wildNudge.spins.map(spin => spin.grid);
+  if (v.neopolis || v.dracona || v.wildNudge) {
+    if (!consecutiveMoves(accepted, 1)) return null;
+    if (v.wildNudge) return v.wildNudge.spins.map(spin => spin.grid);
+    return (v.neopolis ?? v.dracona)!.history.map(spin => spin.result.grid);
+  }
   const slot = v.caramel ?? v.convoy ?? v.nitro ?? v.afterglow;
-  if (slot) return [...(slot.history[0]?.kind === 'base' ? [] : [[]]), ...slot.history.map(spin => spin.finalGrid)];
-  if (v.luelon && v.luelon.decisions.length === 0) {
-    return [...(v.luelon.history[0]?.kind === 'base' ? [] : [[]]), ...v.luelon.history.map(spin => spin.finalGrid)];
+  const spins = slot?.history ?? (v.luelon?.decisions.length === 0 ? v.luelon.history : null);
+  if (spins) {
+    const baseSpin = spins[0]?.kind === 'base';
+    if (!consecutiveMoves(accepted, baseSpin ? 1 : 0)) return null;
+    return [...(baseSpin ? [] : [[]]), ...spins.map(spin => spin.finalGrid)];
   }
   return null;
 }

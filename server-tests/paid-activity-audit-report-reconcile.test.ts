@@ -15,7 +15,7 @@ import { AuditPostingReader } from '../server/audit/postings';
 import { persistCapturedCasinoReplay } from '../server/audit/replay-casino';
 import { installAuditReportAccess } from '../server/audit/report-access';
 import { installAuditDetailReport } from '../server/audit/report-detail-source';
-import { requestAuditPeriodReconcile, requestAuditReconcile } from '../server/audit/report-investigation';
+import { requestAuditPeriodReconcile, requestAuditReconcile, requestAuditReconcilePage } from '../server/audit/report-investigation';
 import { installAuditReconcileReport } from '../server/audit/report-reconcile-source';
 import { processAuditReconcileRequest } from '../server/audit/report-reconcile-worker';
 import { installAuditReplayReport } from '../server/audit/report-replay-source';
@@ -335,4 +335,91 @@ test('dense periods return an explicit scan limit and share queue capacity with 
   assert.equal(result.report?.selectedCount, 17);
   assert.equal(result.report?.selectedCountLowerBound, true);
   assert.deepEqual(result.report?.financialErrors, []);
+});
+
+test('the CLI continues a frozen dense window without duplication, through lease retry and ACL revocation', async t => {
+  const f = await fixture(t);
+  const at = Math.max(f.occurredAtMs, Date.now());
+  await f.game.prepare(`INSERT INTO demo_ledger(account_id,operation_id,kind,amount,balance,created_at,
+      amount_units,balance_units,entry_type,source)
+    SELECT ?,gen_random_uuid()::text,'deposit',1,100+n,?,100,(100+n)*100,'deposit','royal-coins'
+    FROM generate_series(1,35) n ORDER BY n`).run(f.accountId, at);
+  const input = { schema: f.audit.schema, datasetId: f.scope.datasetId };
+  const filters = { source: f.anchor.namespace, fromMs: at, toMs: at + 60_000, accountId: f.accountId, paged: true as const };
+  const request = (overrides: Partial<typeof filters & { cursor: string; refresh: boolean }> = {}, operator = f.operator) =>
+    requestAuditReconcilePage(f.config(operator), { ...input, filters: { ...filters, ...overrides } });
+  const refs = async () => (await f.audit.prepare(`SELECT source_row_id::text AS id FROM audit_posting_refs
+    WHERE dataset_id=? AND source_namespace=? AND account_id=? AND occurred_at_ms>=? AND occurred_at_ms<?
+    ORDER BY occurred_at_ms,source_row_id`).all(input.datasetId, filters.source, filters.accountId, filters.fromMs, filters.toMs))
+    .map(row => ({ namespace: filters.source, rowId: row.id }));
+  const original = await refs();
+  assert(original.length >= 35);
+  const worker = new PostgresDatabase(f.audit.schema, { existingSchema: true, config: f.config(f.worker) });
+  t.after(() => worker.close());
+  const processOne = () => processAuditReconcileRequest(worker, f.sources);
+  const args = ['--schema',input.schema,'--dataset',input.datasetId,'--source',filters.source,'--paged','--account',f.accountId,
+    '--from',new Date(filters.fromMs).toISOString(),'--to',new Date(filters.toMs).toISOString()];
+  const cli = (...extra: string[]) => promisify(execFile)(process.execPath,
+    ['--import','tsx','scripts/audit.ts','reconcile',...args,...extra], {
+      cwd: fileURLToPath(new URL('..', import.meta.url)), env: { ...process.env, ROYAL_AUDIT_DB_URL_FILE: f.operatorFile },
+    });
+  await assert.rejects(cli('--cursor', randomUUID(), '--refresh'), { code: 2 });
+  assert.equal((await request({ cursor: randomUUID() })).requestStatus, 'cursor-expired');
+  assert.equal((await f.audit.prepare('SELECT count(*)::int AS n FROM audit_reconcile_requests').get())?.n, 0);
+  assert.equal(JSON.parse((await cli()).stdout).requestStatus, 'queued');
+  assert.equal(await processOne(), 'ready');
+  const page = (result: Awaited<ReturnType<typeof request>>) => result.report?.page as {
+    offset: number; processed: number; total: number; hasMore: boolean; anchors: AuditSourceRef[];
+  };
+  const first = await request();
+  assert.equal(first.requestStatus, 'ready');
+  assert.equal(first.cursor, null);
+  assert(first.nextCursor);
+  const secondCursor = first.nextCursor;
+  assert.deepEqual(page(first), { offset: 0, processed: 16, total: original.length, hasMore: true, anchors: original.slice(0, 16) });
+  assert.equal((await request({ cursor: secondCursor, accountId: f.peerId })).requestStatus, 'cursor-expired');
+  const another = f.operator + '_peer', password = randomUUID();
+  await f.audit.exec(`CREATE ROLE ${identifier(another)} LOGIN PASSWORD '${password}';
+    GRANT ${identifier(f.group)} TO ${identifier(another)};
+    ALTER ROLE ${identifier(another)} SET temp_file_limit='32MB'`);
+  await f.audit.prepare('INSERT INTO audit_report_acl VALUES (?,?,?)').run(another, input.datasetId, filters.source);
+  const stolen = await requestAuditReconcilePage({ ...f.config(another), password },
+    { ...input, filters: { ...filters, cursor: secondCursor } });
+  assert.deepEqual([stolen.requestStatus, stolen.cursor, stolen.nextCursor, stolen.report], ['cursor-expired', null, null, null]);
+
+  const counterpart = f.game.schema + '.capro_pending_ledger';
+  await f.grant(counterpart);
+  await f.audit.prepare('UPDATE audit_reconcile_requests SET required_sources=?::text[] WHERE scan_owner=?')
+    .run([filters.source, counterpart], f.operator);
+  await f.audit.prepare('DELETE FROM audit_report_acl WHERE operator_name=? AND source_namespace=?').run(f.operator, counterpart);
+  const denied = await request({ cursor: secondCursor });
+  assert.deepEqual([denied.requestStatus, denied.cursor, denied.nextCursor, denied.report], ['source-unavailable', null, null, null]);
+  await f.grant(counterpart);
+
+  await f.wallet.operate(f.accountId, { id: randomUUID(), kind: 'deposit', amount: 1 });
+  assert.equal((await refs()).length, original.length + 1);
+  assert.equal(JSON.parse((await cli('--cursor', secondCursor)).stdout).requestStatus, 'queued');
+  assert.equal((await request({ cursor: secondCursor })).requestStatus, 'queued');
+  await f.audit.exec(`UPDATE audit_reconcile_requests SET status='running',claim=pg_catalog.gen_random_uuid(),
+    lease_until=pg_catalog.clock_timestamp()-interval '1 second' WHERE scan_owner IS NOT NULL`);
+  assert.deepEqual((await Promise.all([processOne(), processOne()])).sort(), ['idle','ready']);
+  const second = await request({ cursor: secondCursor });
+  assert(second.nextCursor);
+  assert.equal(second.cursor, secondCursor);
+  assert.equal(second.report?.selectionAsOfMs, first.report?.selectionAsOfMs);
+  assert.deepEqual(page(second), { offset: 16, processed: 16, total: original.length, hasMore: true, anchors: original.slice(16, 32) });
+  assert.deepEqual((await request({ cursor: secondCursor })).report, second.report);
+  assert.deepEqual((await f.audit.prepare('SELECT filters FROM audit_export_jobs WHERE id=?').get(second.jobId))?.filters,
+    { ...filters, cursor: secondCursor });
+  assert.equal((await request({ cursor: second.nextCursor })).requestStatus, 'queued');
+  assert.equal(await processOne(), 'ready');
+  const last = await request({ cursor: second.nextCursor });
+  assert.equal(last.nextCursor, null);
+  assert.equal(page(last).total, original.length);
+  assert.deepEqual([...page(first).anchors, ...page(second).anchors, ...page(last).anchors], original);
+  assert.equal((await request({ cursor: secondCursor })).requestStatus, 'cursor-expired');
+  assert.equal((await request({ refresh: true })).requestStatus, 'queued');
+  assert.equal(await processOne(), 'ready');
+  assert.equal(page(await request()).total, original.length + 1);
+  assert.equal((await request({ cursor: second.nextCursor })).requestStatus, 'cursor-expired');
 });

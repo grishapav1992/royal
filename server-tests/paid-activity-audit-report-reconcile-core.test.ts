@@ -8,7 +8,7 @@ import { AuditEvidence } from '../server/audit/evidence';
 import { auditCommandRoutes, observeAuditIntent } from '../server/audit/intents';
 import { persistCapturedCasinoReplay } from '../server/audit/replay-casino';
 import { buildAuditReconciliation } from '../server/audit/report-reconcile-core';
-import { buildAuditPeriodReconciliation } from '../server/audit/report-reconcile-period-core';
+import { buildAuditPeriodPageReconciliation, buildAuditPeriodReconciliation } from '../server/audit/report-reconcile-period-core';
 import { cryptoConfig } from '../server/crypto/config';
 import type { CryptoProvider } from '../server/crypto/nowpayments';
 import { CryptoStore } from '../server/crypto/store';
@@ -243,4 +243,67 @@ test('an empty period shows recorded attempt capture gaps without attributing th
   const payment = await check(at, at + 1, f.payments.schema + '.crypto_ledger');
   assert.equal(payment.status, 'ready');
   assert(!payment.coverage.some(row => row.code === 'attempt-capture-gap-overlap'));
+});
+
+test('paged selection freezes tied source IDs and excludes late commits on both sides of the page boundary', async t => {
+  const f = await fixture(t);
+  const { datasetId } = await f.datasets.startTest();
+  const at = Date.now();
+  const selection = { datasetId, sourceNamespace: f.ledger, accountId: f.account, fromMs: at, toMs: at + 1 };
+  const page = (manifest: unknown, offset: number) => buildAuditPeriodPageReconciliation(
+    f.audit, f.sources, selection, { manifest, offset });
+  const insert = `INSERT INTO demo_ledger(account_id,operation_id,kind,amount,balance,created_at,amount_units,balance_units,entry_type,source)
+    SELECT $1,gen_random_uuid()::text,'deposit',0,100,$2,0,10000,'deposit','royal-coins'
+    FROM generate_series(1,$3) RETURNING id::text`;
+  const late = await f.game.pool.connect();
+  try {
+    await late.query('BEGIN');
+    const earlyId = (await late.query(insert, [f.account, at, 1])).rows[0].id;
+    const captured = (await f.game.pool.query(insert, [f.account, at, 19])).rows.map(row => row.id as string);
+    const laterId = (await late.query(insert, [f.account, at, 1])).rows[0].id;
+    const first = await page(null, 0);
+    assert.equal(first.report.status, 'ready');
+    assert(first.manifest);
+    assert.deepEqual(first.manifest.rowIds, captured);
+    assert.deepEqual(first.report.page, { offset: 0, processed: 16, total: 19, hasMore: true,
+      anchors: captured.slice(0, 16).map(rowId => ({ namespace: f.ledger, rowId })) });
+    assert.equal(first.report.selectionAsOfMs, first.report.asOfMs);
+    await late.query('COMMIT');
+
+    const second = await page(first.manifest, 16);
+    assert.equal(second.report.status, 'ready');
+    assert.equal(second.report.selectionAsOfMs, first.report.selectionAsOfMs);
+    assert(second.report.asOfMs >= first.report.asOfMs);
+    assert.deepEqual(second.report.page, { offset: 16, processed: 3, total: 19, hasMore: false,
+      anchors: captured.slice(16).map(rowId => ({ namespace: f.ledger, rowId })) });
+    assert.deepEqual(second.manifest, first.manifest);
+    const refreshed = await page(null, 0);
+    assert.deepEqual(refreshed.manifest?.rowIds, [earlyId, ...captured, laterId]);
+
+    await f.audit.prepare('UPDATE audit_posting_refs SET account_id=? WHERE dataset_id=? AND source_namespace=? AND source_row_id=?')
+      .run(f.other, datasetId, f.ledger, captured[16]);
+    const changed = await page(first.manifest, 16);
+    assert.equal(changed.report.status, 'ready');
+    assert.deepEqual(changed.report.page, second.report.page);
+    assert(changed.report.coverage.some(item => item.code === 'posting-unavailable' && item.anchors[0].rowId === captured[16]));
+    await assert.rejects(buildAuditPeriodPageReconciliation(f.audit, f.sources, { ...selection, accountId: f.other },
+      { manifest: first.manifest, offset: 16 }), /Invalid audit reconciliation scan manifest/);
+  } finally {
+    await late.query('ROLLBACK');
+    late.release();
+  }
+});
+
+test('a paged selection over its hard cap returns a lower bound and no processed anchors', async t => {
+  const f = await fixture(t);
+  const { datasetId } = await f.datasets.startTest();
+  const at = Date.now();
+  await f.audit.prepare(`INSERT INTO audit_posting_refs(dataset_id,source_namespace,source_row_id,account_id,operation_id,occurred_at_ms)
+    SELECT ?,?,n,?,n::text,? FROM generate_series(1,4097) n`).run(datasetId, f.ledger, f.account, at);
+  const { report, manifest } = await buildAuditPeriodPageReconciliation(f.audit, f.sources,
+    { datasetId, sourceNamespace: f.ledger, accountId: f.account, fromMs: at, toMs: at + 1 }, { manifest: null, offset: 0 });
+  assert.equal(report.status, 'scan-limit');
+  assert.equal(report.selectedCountLowerBound, true);
+  assert.deepEqual(report.page, { offset: 0, processed: 0, total: 4097, hasMore: false, anchors: [] });
+  assert.equal(manifest, null);
 });

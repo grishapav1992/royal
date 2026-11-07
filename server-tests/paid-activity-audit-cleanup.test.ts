@@ -80,9 +80,9 @@ test('reviews an exact manifest, purges only test data and records a new live ch
   await f.datasets.sealTest(f.input.datasetId);
   await f.audit.prepare(`INSERT INTO audit_reconcile_requests(dataset_id,source_namespace,posting_id,status,requested_at)
     VALUES (?,?,?,'queued',clock_timestamp())`).run(f.input.datasetId,f.source,f.anchor.rowId);
-  await f.audit.prepare(`INSERT INTO audit_reconcile_requests(dataset_id,source_namespace,from_ms,to_ms,account_id,status,requested_at)
-    VALUES (?,?,?,?,?,'queued',clock_timestamp())`)
-    .run(f.input.datasetId,f.source,f.dataset.startedAtMs,f.dataset.startedAtMs + 1,'');
+  await f.audit.prepare(`INSERT INTO audit_reconcile_requests(dataset_id,source_namespace,from_ms,to_ms,account_id,status,requested_at,scan_owner)
+    VALUES (?,?,?,?,?,'queued',clock_timestamp(),?)`)
+    .run(f.input.datasetId,f.source,f.dataset.startedAtMs,f.dataset.startedAtMs + 1,'',operator);
   await f.audit.prepare('DELETE FROM audit_reconcile_requests WHERE dataset_id=? AND posting_id IS NOT NULL').run(f.input.datasetId);
   assert((await previewAuditCleanup(f.readonly,f.input)).blockers.includes('active-reconcile-requests'));
   await f.audit.prepare("UPDATE audit_reconcile_requests SET status='failed',finished_at=clock_timestamp() WHERE dataset_id=?")
@@ -235,7 +235,7 @@ test('the service CLI installs report access, stops capture and safely resumes t
     WHERE n.nspname=? AND has_function_privilege(?,p.oid,'EXECUTE') ORDER BY p.proname`).all(f.audit.schema,group);
   assert.deepEqual(privileges.map(row => row.proname), [
     'audit_report_begin','audit_report_detail','audit_report_finish','audit_report_player_page',
-    'audit_report_reconcile','audit_report_reconcile_period','audit_report_replay','audit_report_summary',
+    'audit_report_reconcile','audit_report_reconcile_page','audit_report_reconcile_period','audit_report_replay','audit_report_summary',
   ]);
   assert.equal((await f.audit.prepare("SELECT has_table_privilege(?,?,'SELECT') AS direct").get(group,f.source))?.direct,false);
   const stopped = JSON.parse((await run('stop-capture','--environment','test')).stdout);

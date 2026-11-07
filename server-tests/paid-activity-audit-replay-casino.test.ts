@@ -19,20 +19,24 @@ import { cascadeRandom } from '../scripts/game-math/rtp-temple-cascade-model.mjs
 async function fixture(t: TestContext, draw: (max: number) => number = () => 0) {
   const game = new PostgresDatabase(':memory:'), audit = new PostgresDatabase(':memory:');
   t.after(async () => { await Promise.all([audit.close(), game.close()]); });
-  const account = randomUUID();
   await game.exec('CREATE TABLE accounts(id text PRIMARY KEY)');
-  await game.prepare('INSERT INTO accounts VALUES (?)').run(account);
   const wallet = new DemoWalletStore(game, draw);
-  await wallet.operate(account, { id: randomUUID(), kind: 'deposit', amount: 10000 });
+  const createPlayer = async (amount = 10000) => {
+    const player = randomUUID();
+    await game.prepare('INSERT INTO accounts VALUES (?)').run(player);
+    await wallet.operate(player, { id: randomUUID(), kind: 'deposit', amount });
+    return player;
+  };
+  const account = await createPlayer();
   const datasets = new AuditDatasets(audit, { game: game.schema });
   const { datasetId, environment } = await datasets.startTest();
   const refs = async (operationId: string, player = account) => (await game.prepare(`SELECT id::text,entry_type,amount_units::text
     FROM demo_ledger WHERE account_id=? AND operation_id=? ORDER BY demo_ledger.id`).all(player, operationId))
     .map(row => ({ type: row.entry_type, units: row.amount_units, posting: { namespace: game.schema + '.demo_ledger', rowId: row.id } }));
-  const request = async (operationId: string, replayId = randomUUID()) => ({
-    datasetId, gameSchema: game.schema, posting: (await refs(operationId))[0].posting, replayId,
+  const request = async (operationId: string, player = account) => ({
+    datasetId, gameSchema: game.schema, posting: (await refs(operationId, player))[0].posting, replayId: randomUUID(),
   });
-  return { game, audit, account, wallet, datasets, scope: { datasetId, environment }, refs, request };
+  return { game, audit, account, createPlayer, wallet, datasets, scope: { datasetId, environment }, refs, request };
 }
 
 test('instant replay retains the accepted selection, server outcome, zero payout and precision receipt', async t => {
@@ -161,6 +165,102 @@ test('automatic Crash closes with its actual payout and late cashout never becom
   assert.equal((await new AuditReplayStore(f.audit).read(f.scope, input.replayId)).status, 'verified');
 });
 
+test('Forest Heart replays each accepted rotation and pass through all free bonus steps', async t => {
+  const f = await fixture(t, maximum => maximum === 4096 ? 0b101101010011 : 0);
+  const gameId = 'studio-forest-heart';
+  const operate = (command: object) => f.wallet.expansion.operate(f.account, command,
+    2, true, true, true, true, true, true, true, true, 2, 4, true, true, 2, 2, 2, true);
+  for (const rotation of [null, ...Array.from({ length: 12 }, (_, index) => index)]) {
+    const move = rotation === null ? 'forest-pass' : 'forest-turn-' + rotation;
+    await t.test(move, async () => {
+      const id = randomUUID();
+      let { session } = await operate({ id, gameId, action: 'start', stakeUnits: '10', stakePolicyVersion: 1,
+        settings: { forestHeart: { mode: 'normal' } } });
+      assert.equal(session.view.forestHeart?.stage, 'choice');
+      const input = await f.request(id);
+      const choice = randomUUID();
+      session = (await operate({ id: choice, gameId, action: 'move', sessionId: id, move,
+        revision: session.view.forestHeart!.revision })).session;
+      assert.equal(session.view.forestHeart?.base.rotation, rotation);
+      assert.deepEqual(await f.refs(choice), []);
+      let terminal = '';
+      for (let spin = 0; spin < 4; spin++) {
+        assert.equal(session.view.forestHeart?.stage, 'bonus');
+        terminal = randomUUID();
+        session = (await operate({ id: terminal, gameId, action: 'move', sessionId: id, move: 'forest-spin',
+          revision: session.view.forestHeart!.revision })).session;
+      }
+      assert.equal(session.state, 'settled');
+      const replay = await buildCapturedCasinoReplay(f.audit, input);
+      assert.equal(replay.status, 'built');
+      assert.equal(replay.value.manifest.coverage, 'complete');
+      const events = replay.value.fragments.flatMap(fragment => fragment.events);
+      const moves = events.filter(event => event.data.kind === 'action' && event.data.action.code === 'move');
+      assert.equal(moves.length, 5);
+      assert(moves.every(event => event.postings.length === 0 && !event.money));
+      const choiceFrame = events[events.indexOf(moves[0]) + 1].data;
+      assert.equal(choiceFrame.kind, 'checkpoint');
+      assert.equal(choiceFrame.state.profile, 'casino-steps');
+      assert.equal(choiceFrame.state.visible.at(-1), (rotation ?? -1) + 1);
+      assert.deepEqual(events.at(-1)?.money, [{ movement: 'payout', units: session.returnedUnits,
+        posting: (await f.refs(terminal))[0].posting }]);
+    });
+  }
+});
+
+test('purchased casino bonuses preserve each free continuation and the final posting', async t => {
+  const seeded = cascadeRandom(129733);
+  const f = await fixture(t, maximum => maximum <= 0x1_0000_0000 ? seeded(maximum) : randomInt(maximum));
+  const scenarios = [
+    ...['cosmic-chaos', 'ufo-invasion', 'deep-echo'].map(choice => ({ gameId: 'studio-cosmic-escape', choice, view: 'luelon' as const })),
+    ...['spotlight', 'super-encore'].map(choice => ({ gameId: 'studio-velvet-reign', choice, view: 'luelon' as const })),
+    { gameId: 'studio-caramel-carnival', choice: 'festival', view: 'caramel' as const },
+    ...[1, 5, 10, 20].flatMap(lines => ['raid', 'flagship'].map(tactic => ({
+      gameId: CARIBBEAN_GAME, choice: 'lines-' + lines + '-buy-' + tactic, view: 'caribbean' as const,
+    }))),
+  ];
+  for (const { gameId, choice, view } of scenarios) await t.test(gameId + '/' + choice, async () => {
+    const id = randomUUID(), player = await f.createPlayer();
+    let { session } = await f.wallet.expansion.operate(player, { id, gameId, action: 'start',
+      stakeUnits: '10', stakePolicyVersion: 1, settings: settingsFor(gameId, choice) });
+    assert.equal(session.state, 'active');
+    const { spentUnits } = session;
+    const input = await f.request(id, player);
+    const commands = [];
+    while (session.state === 'active') {
+      assert(commands.length < 128, 'fixture must settle within the replay budget');
+      const [action] = session.view.actions;
+      assert.equal(session.view.actions.length, 1);
+      assert.equal(action.cost, 0);
+      const command = { id: randomUUID(), gameId, action: 'move', sessionId: id, move: action.move,
+        revision: session.view[view]!.revision };
+      commands.push(command);
+      session = (await f.wallet.expansion.operate(player, command)).session;
+    }
+    assert.equal(session.spentUnits, spentUnits);
+    const replay = await buildCapturedCasinoReplay(f.audit, input);
+    assert.equal(replay.status, 'built');
+    assert.equal(replay.value.manifest.coverage, 'complete');
+    const events = replay.value.fragments.flatMap(fragment => fragment.events);
+    assert.deepEqual(events[0].money, [{ movement: 'paid-option', units: '-' + spentUnits, posting: input.posting }]);
+    const continuation = events.filter(event => event.data.kind === 'action' && event.data.action.code === 'move');
+    assert.equal(continuation.length, commands.length);
+    assert(continuation.every(event => !event.money && !event.postings.length));
+    const last = commands.at(-1)!;
+    assert.deepEqual(events.at(-1)?.money, [{ movement: 'payout', units: session.returnedUnits,
+      posting: (await f.refs(last.id, player))[0].posting }]);
+
+    if (choice === 'spotlight') {
+      await f.game.prepare('UPDATE demo_casino_requests SET request_key=? WHERE account_id=? AND id=?')
+        .run(JSON.stringify({ ...last, revision: last.revision + 20 }), player, last.id);
+      const incomplete = await buildCapturedCasinoReplay(f.audit, input);
+      assert.equal(incomplete.status, 'built');
+      assert.deepEqual(incomplete.value.manifest.gaps, ['event-gap', 'terminal-unavailable']);
+      assert.equal(incomplete.value.manifest.terminal, null);
+    }
+  });
+});
+
 test('every qualified casino entry mode in the approved catalogue produces money-linked replay evidence', async t => {
   const seeded = cascadeRandom(129733);
   // The seeded fixture is 32-bit, while settlement may request a larger precision ticket.
@@ -218,12 +318,10 @@ test('every qualified casino entry mode in the approved catalogue produces money
       if (!starts.has(encoded)) starts.set(encoded, choice);
     }
     for (const [encoded, choice] of starts) await t.test(gameId + '/start/' + choice, async () => {
-      const player = randomUUID(), id = randomUUID();
+      const player = await f.createPlayer(100), id = randomUUID();
       const settings = JSON.parse(encoded);
       const mode = settings.luelon?.mode ?? settings.caramel?.mode ?? settings.neopolis?.hero ??
         settings.flags?.mode ?? settings.caribbean?.mode ?? 'normal';
-      await f.game.prepare('INSERT INTO accounts VALUES (?)').run(player);
-      await f.wallet.operate(player, { id: randomUUID(), kind: 'deposit', amount: 100 });
       const { session } = await f.wallet.expansion.operate(player, {
         id, gameId, action: 'start', stakeUnits: '10', stakePolicyVersion: 1, settings,
       }, 2, true, true, true, true, true, true, true, true, 2, 4, true, true, 2, 2, 2, true);

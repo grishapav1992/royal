@@ -1,13 +1,14 @@
 import type { PostgresDatabase } from '../database';
 import type { AuditSourceSchemas } from './datasets';
 import { buildAuditReconciliation } from './report-reconcile-core';
-import { buildAuditPeriodReconciliation } from './report-reconcile-period-core';
+import { buildAuditPeriodPageReconciliation, buildAuditPeriodReconciliation } from './report-reconcile-period-core';
 import { AUDIT_RECONCILE_MAX_BYTES } from './report-reconcile-source';
 import { readLinkedAuditSignals, signalSourceUnavailable } from './report-reconcile-signals';
 
 type Claim = {
   request_id: string; dataset_id: string; source_namespace: string; posting_id: string | null;
   from_ms: string | null; to_ms: string | null; account_id: string | null; claim: string;
+  scan_owner: string | null; scan_manifest: unknown; scan_offset: number; required_sources: string[];
 };
 const leaseSeconds = 120;
 
@@ -33,12 +34,19 @@ async function postingResult(audit: PostgresDatabase, sources: AuditSourceSchema
 
 async function periodResult(audit: PostgresDatabase, sources: AuditSourceSchemas, row: Claim, signal: AbortSignal) {
   if (row.from_ms === null || row.to_ms === null || row.account_id === null) throw new Error('Invalid audit period claim');
-  const report = await buildAuditPeriodReconciliation(audit, sources, { datasetId: row.dataset_id,
+  const selection = { datasetId: row.dataset_id,
     sourceNamespace: row.source_namespace, fromMs: Number(row.from_ms), toMs: Number(row.to_ms),
-    accountId: row.account_id || null }, signal);
-  if (!('requiredSources' in report)) return { payload: report, namespaces: [row.source_namespace] };
+    accountId: row.account_id || null };
+  const scan = row.scan_owner === null ? null : await buildAuditPeriodPageReconciliation(audit, sources, selection,
+    { manifest: row.scan_manifest, offset: row.scan_offset }, signal);
+  const report = scan?.report ?? await buildAuditPeriodReconciliation(audit, sources, selection, signal);
+  const continuation = { manifest: scan?.manifest ?? null, hasMore: report.status === 'ready' && report.page?.hasMore === true };
+  const previous = scan ? row.required_sources : [];
+  if (!('requiredSources' in report)) {
+    return { payload: report, namespaces: [...new Set([row.source_namespace, ...previous])].sort(), continuation };
+  }
   const { requiredSources, ...payload } = report;
-  return { payload, namespaces: [...new Set([row.source_namespace, ...requiredSources])].sort() };
+  return { payload, namespaces: [...new Set([row.source_namespace, ...previous, ...requiredSources])].sort(), continuation };
 }
 
 /** Claims one bounded request. The token prevents a stalled worker overwriting a reclaimed result. */
@@ -51,24 +59,31 @@ export async function processAuditReconcileRequest(audit: PostgresDatabase, sour
     ) UPDATE audit_reconcile_requests r SET status='running',claim=pg_catalog.gen_random_uuid(),
       lease_until=pg_catalog.clock_timestamp()+interval '${leaseSeconds} seconds'
     FROM next_request n WHERE r.request_id=n.request_id
-    RETURNING r.request_id::text,r.dataset_id,r.source_namespace,r.posting_id::text,r.from_ms::text,r.to_ms::text,r.account_id,r.claim`).get() as Claim | undefined;
+    RETURNING r.request_id::text,r.dataset_id,r.source_namespace,r.posting_id::text,r.from_ms::text,r.to_ms::text,r.account_id,r.claim,
+      r.scan_owner::text,r.scan_manifest,r.scan_offset,r.required_sources`).get() as Claim | undefined;
   if (!row) return 'idle' as const;
   const address = [row.request_id, row.claim];
   const timeout = AbortSignal.timeout(35_000);
   const signal = abort ? AbortSignal.any([abort, timeout]) : timeout;
   try {
-    const { payload, namespaces } = row.posting_id === null
+    const result = row.posting_id === null
       ? await periodResult(audit, sources, row, signal)
       : await postingResult(audit, sources, { ...row, posting_id: row.posting_id }, signal);
+    const { payload, namespaces } = result;
+    const continuation = 'continuation' in result ? result.continuation : null;
     signal.throwIfAborted();
     const encoded = JSON.stringify(payload);
     if (Buffer.byteLength(encoded, 'utf8') > AUDIT_RECONCILE_MAX_BYTES || namespaces.length > 8) {
       throw new Error('Audit reconciliation result limit');
     }
     const write = await audit.prepare(`UPDATE audit_reconcile_requests SET status='ready',finished_at=pg_catalog.clock_timestamp(),
-        claim=NULL,lease_until=NULL,result=?::jsonb,required_sources=?::text[]
+        claim=NULL,lease_until=NULL,result=?::jsonb,required_sources=?::text[],
+        scan_manifest=CASE WHEN scan_owner IS NULL THEN scan_manifest ELSE ?::jsonb END,
+        scan_next_cursor=CASE WHEN scan_owner IS NOT NULL AND ?::boolean THEN pg_catalog.gen_random_uuid() ELSE NULL END
       WHERE request_id=? AND claim=? AND status='running'
-        AND lease_until>pg_catalog.clock_timestamp()`).run(encoded, namespaces, ...address);
+        AND lease_until>pg_catalog.clock_timestamp()`)
+      .run(encoded, namespaces, continuation?.manifest ? JSON.stringify(continuation.manifest) : null,
+        continuation?.hasMore ?? false, ...address);
     return write.changes ? 'ready' as const : 'lease-lost' as const;
   } catch {
     const cancelled = abort?.aborted ?? false;
