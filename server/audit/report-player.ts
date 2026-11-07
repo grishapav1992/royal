@@ -13,6 +13,7 @@ export type PlayerReportFilters = {
   asset?: string;
   contour?: 'virtual' | 'test' | 'real';
 };
+export type AuditReportFilters = Omit<PlayerReportFilters, 'accountId'> & { accountId?: string };
 
 type Limits = { maxRows: number; maxBytes: number; maxScanned: number; timeoutMs: number; pageSize: number };
 const defaults: Limits = { maxRows: 10_000, maxBytes: 16 * 1024 * 1024, maxScanned: 20_000, timeoutMs: 60_000, pageSize: 128 };
@@ -49,17 +50,22 @@ function failureCode(error: unknown, signal: AbortSignal, timeout: AbortSignal):
   const code = (error as { code?: string } | null)?.code;
   if (code === '42501') return 'permission-denied';
   if (code === '57014') return 'time-limit';
+  if (code === '54000') return 'scan-limit';
   if (code && (code.startsWith('08') || ['42P01','3F000','ECONNREFUSED','ECONNRESET'].includes(code))) return 'source-unavailable';
   if (code && ['ENOENT','EACCES','EPERM','ENOSPC','EDQUOT','EROFS','EXDEV','ENOTDIR'].includes(code)) return 'output-error';
   return 'internal-error';
 }
 
-async function* pages(config: ClientConfig, fn: string, jobId: string, limits: Limits, signal: AbortSignal): AsyncGenerator<PlayerReportRow> {
+export async function openAuditReportReader(config: ClientConfig, jobId: string, signal: AbortSignal) {
   const connection = new pg.Client(config);
   connection.on('error', () => { /* Active query errors are handled by the export. */ });
   let end: Promise<void> | undefined;
   const close = () => { end ??= connection.end().catch(() => {}); };
-  let cursor: PlayerReportCursor | null = null, scanned = 0;
+  const finish = async () => {
+    signal.removeEventListener('abort', close);
+    close();
+    await end;
+  };
   signal.addEventListener('abort', close, { once: true });
   try {
     signal.throwIfAborted();
@@ -70,6 +76,17 @@ async function* pages(config: ClientConfig, fn: string, jobId: string, limits: L
     if (!Number.isSafeInteger(bytes) || bytes < 0 || bytes > maxTempBytes) {
       throw new AuditPlayerReportError('source-unavailable', jobId);
     }
+    return { connection, finish };
+  } catch (error) {
+    await finish();
+    throw error;
+  }
+}
+
+async function* pages(config: ClientConfig, fn: string, jobId: string, limits: Limits, signal: AbortSignal): AsyncGenerator<PlayerReportRow> {
+  const { connection, finish } = await openAuditReportReader(config, jobId, signal);
+  let cursor: PlayerReportCursor | null = null, scanned = 0;
+  try {
     for (;;) {
       signal.throwIfAborted();
       const result: QueryResult<{ page: PlayerReportPage }> = await connection.query<{ page: PlayerReportPage }>(
@@ -89,28 +106,26 @@ async function* pages(config: ClientConfig, fn: string, jobId: string, limits: L
     }
     await connection.query('COMMIT');
   } finally {
-    signal.removeEventListener('abort', close);
-    close();
-    await end;
+    await finish();
   }
 }
 
-/** Run a bounded export as a named PostgreSQL report login. Both connections use the same login. */
-export async function exportAuditPlayer(
-  config: ClientConfig, input: { schema: string; datasetId: string; filters: PlayerReportFilters; destination: string;
-    signal?: AbortSignal; limits?: Partial<Limits> },
+/** Both journal and query connections use the named PostgreSQL report login. */
+export async function runAuditReport<T extends { rowCount: number; bytes: number }>(
+  config: ClientConfig, input: { schema: string; datasetId: string; filters: AuditReportFilters;
+    signal?: AbortSignal }, kind: 'player' | 'summary', timeoutMs: number,
+  run: (settings: ClientConfig, schema: string, jobId: string, signal: AbortSignal) => Promise<T>,
 ) {
   if (!/^[a-z_][a-z0-9_]{0,62}$/.test(input.schema)) throw new Error('Invalid audit schema name');
   const schema = identifier(input.schema);
-  const limits = reportLimits(input.limits);
-  const timeout = AbortSignal.timeout(limits.timeoutMs);
+  const timeout = AbortSignal.timeout(timeoutMs);
   const signal = input.signal ? AbortSignal.any([input.signal, timeout]) : timeout;
   const settings = { ...config, connectionTimeoutMillis: 5000, statement_timeout: 5000, lock_timeout: 1000,
-    idle_in_transaction_session_timeout: 15_000, application_name: 'royal/audit-player' };
+    idle_in_transaction_session_timeout: 15_000, application_name: 'royal/audit-' + kind };
   const log = new pg.Client(settings);
   log.on('error', () => { /* Journal errors are handled by their own queries. */ });
   let jobId: string | null = null;
-  let fileCompleted = false;
+  let reportCompleted = false;
   const finish = async (outcome: string, count: number, bytes: number, reason: Failure | null) => {
     await log.query('SELECT ' + schema + '.audit_report_finish($1,$2,$3,$4,$5)', [jobId, outcome, count, bytes, reason]);
   };
@@ -121,23 +136,18 @@ export async function exportAuditPlayer(
       FROM pg_catalog.pg_roles WHERE rolname=session_user`);
     if (role.rows[0]?.privileged !== false) throw new AuditPlayerReportError('permission-denied', null);
     const started = await log.query('SELECT ' + schema + '.audit_report_begin($1,$2,$3) AS id',
-      [input.datasetId, 'player', JSON.stringify(input.filters)]);
+      [input.datasetId, kind, JSON.stringify(input.filters)]);
     const id: unknown = started.rows[0]?.id;
     if (typeof id !== 'string' || !/^[a-f0-9-]{36}$/.test(id)) throw new AuditPlayerReportError('internal-error', null);
     jobId = id;
-    const written = await writeAuditCsv<PlayerReportRow>({
-      destination: input.destination,
-      columns: playerColumns.map(header => ({ header, kind: units.has(header) ? 'units' : 'text', value: row => row[header] })),
-      rows: pages(settings, schema + '.audit_report_player_page', jobId, limits, signal),
-      maxRows: limits.maxRows, maxBytes: limits.maxBytes, timeoutMs: limits.timeoutMs, signal,
-    });
-    fileCompleted = true;
+    const written = await run(settings, schema, jobId, signal);
+    reportCompleted = true;
     await finish('succeeded', written.rowCount, written.bytes, null);
     return { jobId, ...written };
   } catch (error) {
     const code = failureCode(error, signal, timeout);
     if (jobId) {
-      if (fileCompleted) throw new AuditPlayerReportError('journal-unavailable', jobId);
+      if (reportCompleted) throw new AuditPlayerReportError('journal-unavailable', jobId);
       try { await finish(code === 'cancelled' ? 'cancelled' : 'failed', 0, 0, code); }
       catch { throw new AuditPlayerReportError('journal-unavailable', jobId); }
     }
@@ -145,4 +155,18 @@ export async function exportAuditPlayer(
   } finally {
     await log.end().catch(() => {});
   }
+}
+
+export async function exportAuditPlayer(
+  config: ClientConfig, input: { schema: string; datasetId: string; filters: PlayerReportFilters; destination: string;
+    signal?: AbortSignal; limits?: Partial<Limits> },
+) {
+  const limits = reportLimits(input.limits);
+  return runAuditReport(config, input, 'player', limits.timeoutMs, (settings, schema, jobId, signal) =>
+    writeAuditCsv<PlayerReportRow>({
+      destination: input.destination,
+      columns: playerColumns.map(header => ({ header, kind: units.has(header) ? 'units' : 'text', value: row => row[header] })),
+      rows: pages(settings, schema + '.audit_report_player_page', jobId, limits, signal),
+      maxRows: limits.maxRows, maxBytes: limits.maxBytes, timeoutMs: limits.timeoutMs, signal,
+    }));
 }

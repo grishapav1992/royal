@@ -115,7 +115,7 @@ function unavailable(error: unknown) {
 
 /** Reconcile one captured match against both participants in one read-only PostgreSQL snapshot. */
 export async function reconcileStoredPvpMatch(
-  audit: PostgresDatabase, game: PostgresDatabase, datasetId: string, matchId: string,
+  audit: PostgresDatabase, game: Pick<PostgresDatabase, 'schema'>, datasetId: string, matchId: string,
 ): Promise<PvpMatchCheck> {
   const result: PvpMatchCheck = {
     status: 'not-captured', scope: null, matchId, bank: null, participants: [], totals: null, findings: [],

@@ -1,7 +1,8 @@
 import { createHash } from 'node:crypto';
 import { isAuditMode, type AuditMode, type AuditReplayProfile, type AuditScope, type AuditSourceRef } from './contract';
 
-export const REPLAY_FORMAT_VERSION = 1;
+export const REPLAY_FORMAT_VERSION = 2;
+type ReplayFormatVersion = 1 | typeof REPLAY_FORMAT_VERSION;
 const limits = { fragments: 128, eventsPerFragment: 128, postingsPerEvent: 16,
   manifestBytes: 65536, fragmentBytes: 262144, packageBytes: 8388608 } as const;
 
@@ -17,17 +18,22 @@ type ReplayAction =
   { profile: 'casino-steps'; code: 'start' | 'move' | 'cashout'; selection: number[] } |
   { profile: 'pvp-turn-based'; code: 'move' | 'pass' | 'resign'; seat: 1 | 2; positions: number[] } |
   { profile: 'pvp-realtime'; code: 'input'; seat: 1 | 2; tick: number; buttons: number } |
-  { profile: 'pool-steps'; code: 'advance' | 'eliminate'; entrants: number[] };
+  { profile: 'pool-steps'; code: 'advance' | 'eliminate' | 'ticket' | 'close' | 'allocate'; entrants: number[] };
 type ReplayEventData =
   { kind: 'action'; action: ReplayAction } |
   { kind: 'checkpoint'; state: ReplayState } |
+  { kind: 'presence'; event: 'disconnected' | 'reconnected'; seat: 1 | 2 } |
   { kind: 'terminal'; state: ReplayState; outcome: 'settled' | 'cancelled' | 'timed-out' | 'forfeited' | 'draw'; winnerSeat: 1 | 2 | null };
-export type ReplayEvent = { sequence: number; atMs: number; data: ReplayEventData; postings: AuditSourceRef[] };
+type ReplayMoney = { movement: 'stake' | 'paid-option' | 'payout' | 'refund' | 'reserve' | 'release' | 'reversal';
+  units: string; posting: AuditSourceRef };
+type ReplayCalculation = { baseUnits: string; creditedUnits: string; numerator: string; denominator: string };
+export type ReplayEvent = { sequence: number; atMs: number; data: ReplayEventData; postings: AuditSourceRef[];
+  money?: ReplayMoney[]; calculation?: ReplayCalculation };
 type ReplayGap = 'initial-state-unavailable' | 'event-gap' | 'terminal-unavailable' | 'source-unavailable' | 'unsupported-source';
 type FragmentRef = { index: number; firstSequence: number; lastSequence: number; firstMs: number; lastMs: number;
   eventCount: number; byteLength: number; sha256: string };
 export type ReplayManifest = {
-  formatVersion: typeof REPLAY_FORMAT_VERSION;
+  formatVersion: ReplayFormatVersion;
   scope: AuditScope;
   replayId: string;
   entityId: string;
@@ -35,11 +41,12 @@ export type ReplayManifest = {
   initial: ReplayState | null;
   coverage: 'complete' | 'partial';
   gaps: ReplayGap[];
+  timing?: 'source-order';
   terminal: { sequence: number; sha256: string } | null;
   fragments: FragmentRef[];
   sha256: string;
 };
-export type ReplayFragment = { formatVersion: typeof REPLAY_FORMAT_VERSION; scope: AuditScope; replayId: string;
+export type ReplayFragment = { formatVersion: ReplayFormatVersion; scope: AuditScope; replayId: string;
   index: number; events: ReplayEvent[]; sha256: string };
 export type ReplayPackage = { manifest: ReplayManifest; fragments: ReplayFragment[] };
 type ReplayProblem = 'corrupt' | 'unsupported' | 'too-large';
@@ -116,7 +123,7 @@ function state(value: unknown, profile: AuditReplayProfile): value is ReplayStat
   }
 }
 
-function action(value: unknown, profile: AuditReplayProfile): value is ReplayAction {
+function action(value: unknown, profile: AuditReplayProfile, version: ReplayFormatVersion): value is ReplayAction {
   if (!object(value) || own(value, 'profile') !== profile) return false;
   switch (profile) {
     case 'casino-steps': return fields(value, ['profile', 'code', 'selection'])
@@ -126,7 +133,8 @@ function action(value: unknown, profile: AuditReplayProfile): value is ReplayAct
     case 'pvp-realtime': return fields(value, ['profile', 'code', 'seat', 'tick', 'buttons'])
       && value.code === 'input' && seat(value.seat) && integer(value.tick) && integer(value.buttons, 0, 65535);
     case 'pool-steps': return fields(value, ['profile', 'code', 'entrants'])
-      && oneOf(value.code, ['advance', 'eliminate']) && list(value.entrants, 256, token)
+      && oneOf(value.code, version === 1 ? ['advance', 'eliminate'] : ['advance', 'eliminate', 'ticket', 'close', 'allocate'])
+      && list(value.entrants, 256, token)
       && new Set(value.entrants).size === value.entrants.length;
   }
 }
@@ -137,13 +145,50 @@ function posting(value: unknown): value is AuditSourceRef {
     && typeof value.rowId === 'string' && /^[1-9][0-9]{0,18}$/.test(value.rowId) && BigInt(value.rowId) <= 9223372036854775807n;
 }
 
-function event(value: unknown, profile: AuditReplayProfile): value is ReplayEvent {
-  if (!fields(value, ['sequence', 'atMs', 'data', 'postings']) || !integer(value.sequence, 1) || !integer(value.atMs)
+const postingKey = (ref: AuditSourceRef) => ref.namespace + '/' + ref.rowId;
+const unsignedUnits = (value: unknown): value is string => typeof value === 'string' && /^(0|[1-9][0-9]{0,77})$/.test(value);
+
+function replayMoney(value: unknown): value is ReplayMoney {
+  if (!fields(value, ['movement', 'units', 'posting']) || !posting(value.posting) ||
+    typeof value.units !== 'string' || !/^(0|-?[1-9][0-9]{0,77})$/.test(value.units) ||
+    !oneOf(value.movement, ['stake', 'paid-option', 'payout', 'refund', 'reserve', 'release', 'reversal'])) return false;
+  const units = BigInt(value.units);
+  if (value.movement === 'stake' || value.movement === 'paid-option' || value.movement === 'reserve') return units < 0n;
+  if (value.movement === 'payout' || value.movement === 'refund') return units >= 0n;
+  return true;
+}
+
+function event(value: unknown, profile: AuditReplayProfile, version: ReplayFormatVersion): value is ReplayEvent {
+  if (!object(value)) return false;
+  const names = ['sequence', 'atMs', 'data', 'postings'];
+  if (version === 2 && Object.hasOwn(value, 'money')) names.push('money');
+  if (version === 2 && Object.hasOwn(value, 'calculation')) names.push('calculation');
+  if (!fields(value, names) || !integer(value.sequence, 1) || !integer(value.atMs)
     || !list(value.postings, limits.postingsPerEvent, posting) || !object(value.data)) return false;
-  const postingIds = value.postings.map(ref => ref.namespace + '/' + ref.rowId);
-  if (new Set(postingIds).size !== postingIds.length) return false;
+  const postingIds = new Set(value.postings.map(postingKey));
+  if (postingIds.size !== value.postings.length) return false;
+  const money = value.money;
+  if (Object.hasOwn(value, 'money') && (!list(money, limits.postingsPerEvent, replayMoney) ||
+    !money.every(leg => postingIds.has(postingKey(leg.posting))) ||
+    new Set(money.map(leg => postingKey(leg.posting))).size !== money.length)) return false;
   const data = value.data;
-  if (own(data, 'kind') === 'action') return fields(data, ['kind', 'action']) && action(data.action, profile);
+  if (Object.hasOwn(value, 'calculation')) {
+    const c = value.calculation;
+    if (profile !== 'casino-steps' || data.kind !== 'terminal' ||
+      !fields(c, ['baseUnits', 'creditedUnits', 'numerator', 'denominator']) ||
+      !unsignedUnits(c.baseUnits) || !unsignedUnits(c.creditedUnits) || !unsignedUnits(c.numerator) ||
+      !unsignedUnits(c.denominator) || c.denominator === '0') return false;
+    const numerator = BigInt(c.numerator), denominator = BigInt(c.denominator);
+    const floor = numerator / denominator, credit = BigInt(c.creditedUnits);
+    if (BigInt(c.baseUnits) > floor || credit < floor || credit > floor + (numerator % denominator === 0n ? 0n : 1n)) return false;
+    const payouts = Array.isArray(money) ? (money as ReplayMoney[]).filter(leg => leg.movement === 'payout') : [];
+    if (payouts.length && payouts.reduce((sum, leg) => sum + BigInt(leg.units), 0n) !== credit) return false;
+  }
+  if (own(data, 'kind') === 'presence') {
+    return version === 2 && (profile === 'pvp-turn-based' || profile === 'pvp-realtime') &&
+      fields(data, ['kind', 'event', 'seat']) && oneOf(data.event, ['disconnected', 'reconnected']) && seat(data.seat);
+  }
+  if (own(data, 'kind') === 'action') return fields(data, ['kind', 'action']) && action(data.action, profile, version);
   if (own(data, 'kind') === 'checkpoint') return fields(data, ['kind', 'state']) && state(data.state, profile) && data.state.phase === 'open';
   return fields(data, ['kind', 'state', 'outcome', 'winnerSeat']) && data.kind === 'terminal'
     && state(data.state, profile) && data.state.phase !== 'open'
@@ -175,12 +220,22 @@ function fragmentRef(value: unknown): value is FragmentRef {
     && integer(value.byteLength, 1, limits.fragmentBytes) && sha(value.sha256);
 }
 
+function entityId(value: unknown, game: ReplayManifest['game'], version: ReplayFormatVersion) {
+  return isReplayId(value) || version === 2 && game.category === 'totalizator' &&
+    typeof value === 'string' && /^ft1-[0-9]{1,16}$/.test(value);
+}
+
 function manifestShape(value: unknown): value is ReplayManifest {
-  if (!fields(value, ['formatVersion', 'scope', 'replayId', 'entityId', 'game', 'initial', 'coverage', 'gaps', 'terminal', 'fragments', 'sha256'])
-    || value.formatVersion !== REPLAY_FORMAT_VERSION || !isReplayScope(value.scope)
-    || !isReplayId(value.replayId) || !isReplayId(value.entityId) || !gameIdentity(value.game)
+  if (!object(value)) return false;
+  const version = own(value, 'formatVersion');
+  const names = ['formatVersion', 'scope', 'replayId', 'entityId', 'game', 'initial', 'coverage', 'gaps', 'terminal', 'fragments', 'sha256'];
+  if (version === 2 && Object.hasOwn(value, 'timing')) names.push('timing');
+  if (!fields(value, names) || (version !== 1 && version !== 2) || !isReplayScope(value.scope)
+    || !isReplayId(value.replayId) || !gameIdentity(value.game) || !entityId(value.entityId, value.game, version)
     || !oneOf(value.coverage, ['complete', 'partial']) || !list(value.gaps, gapCodes.length, gapCode)
     || !list(value.fragments, limits.fragments, fragmentRef) || !sha(value.sha256)) return false;
+  if (Object.hasOwn(value, 'timing') && (value.timing !== 'source-order' ||
+    value.fragments.some(ref => ref.firstMs !== 0 || ref.lastMs !== 0))) return false;
   const { fragments, gaps, terminal, coverage, initial } = value;
   if (initial !== null && (!state(initial, value.game.replayProfile) || initial.phase !== 'open')) return false;
   if (terminal !== null && (!fields(terminal, ['sequence', 'sha256']) || !integer(terminal.sequence, 1)
@@ -201,7 +256,7 @@ function manifestShape(value: unknown): value is ReplayManifest {
 
 export function inspectReplayManifest(value: unknown): Inspection<ReplayManifest> {
   const version = object(value) ? own(value, 'formatVersion') : null;
-  if (integer(version, 1) && version !== REPLAY_FORMAT_VERSION) return { status: 'unsupported' };
+  if (integer(version, 1) && version !== 1 && version !== REPLAY_FORMAT_VERSION) return { status: 'unsupported' };
   if (!manifestShape(value)) return { status: 'corrupt' };
   if (size(value) > limits.manifestBytes || size(value) + value.fragments.reduce((sum, ref) => sum + ref.byteLength, 0) > limits.packageBytes) {
     return { status: 'too-large' };
@@ -214,7 +269,8 @@ export function inspectReplayFragment(manifest: ReplayManifest, value: unknown):
   if (!fields(value, ['formatVersion', 'scope', 'replayId', 'index', 'events', 'sha256']) || value.formatVersion !== manifest.formatVersion
     || !isReplayScope(value.scope) || !sameScope(value.scope, manifest.scope) || value.replayId !== manifest.replayId
     || !integer(value.index, 0, manifest.fragments.length - 1) || !sha(value.sha256)
-    || !list(value.events, limits.eventsPerFragment, (candidate): candidate is ReplayEvent => event(candidate, manifest.game.replayProfile))) {
+    || !list(value.events, limits.eventsPerFragment, (candidate): candidate is ReplayEvent =>
+      event(candidate, manifest.game.replayProfile, manifest.formatVersion))) {
     return { status: 'corrupt' };
   }
   const expected = manifest.fragments[value.index], first = value.events[0], last = value.events.at(-1);
@@ -252,6 +308,18 @@ export function verifyReplayPackage(input: unknown, supported?: readonly ReplayD
   }
   const missingFragments = manifest.fragments.filter(ref => !fragments.has(ref.index)).map(ref => ref.index);
   if (missingFragments.length) return { status: 'incomplete', missingFragments };
+  if (manifest.formatVersion === 2) {
+    const paid = new Set<string>();
+    for (const fragment of fragments.values()) {
+      for (const event of fragment.events) {
+        for (const leg of event.money ?? []) {
+          const key = postingKey(leg.posting);
+          if (paid.has(key)) return { status: 'corrupt' };
+          paid.add(key);
+        }
+      }
+    }
+  }
   if (supported) {
     const version = { ...manifest.game, formatVersion: manifest.formatVersion };
     if (!supported.some(item => canonical(item) === canonical(version))) return { status: 'unsupported' };
@@ -261,18 +329,23 @@ export function verifyReplayPackage(input: unknown, supported?: readonly ReplayD
 
 /** Builds packages only from supplied, already accepted evidence. It never queries or plays a game. */
 export function createReplayPackage(
-  input: Omit<ReplayManifest, 'formatVersion' | 'terminal' | 'fragments' | 'sha256'>, events: readonly ReplayEvent[],
+  input: Omit<ReplayManifest, 'formatVersion' | 'terminal' | 'fragments' | 'sha256'> & { formatVersion?: ReplayFormatVersion },
+  events: readonly ReplayEvent[],
 ): ReplayPackage {
-  if (!fields(input, ['scope', 'replayId', 'entityId', 'game', 'initial', 'coverage', 'gaps'])
-    || !gameIdentity(input.game) || !isReplayId(input.replayId) || !isReplayId(input.entityId) || !isReplayScope(input.scope)
+  const version = own(input, 'formatVersion') ?? 1;
+  const names = ['scope', 'replayId', 'entityId', 'game', 'initial', 'coverage', 'gaps'];
+  if (Object.hasOwn(input, 'formatVersion')) names.push('formatVersion');
+  if (version === 2 && Object.hasOwn(input, 'timing')) names.push('timing');
+  if ((version !== 1 && version !== 2) || !fields(input, names) || !gameIdentity(input.game) ||
+    !isReplayId(input.replayId) || !entityId(input.entityId, input.game, version) || !isReplayScope(input.scope)
     || !list(events, limits.fragments * limits.eventsPerFragment,
-      (candidate): candidate is ReplayEvent => event(candidate, input.game.replayProfile))) throw new Error('Invalid replay evidence');
+      (candidate): candidate is ReplayEvent => event(candidate, input.game.replayProfile, version))) throw new Error('Invalid replay evidence');
   const fragments: ReplayFragment[] = [];
   const refs: FragmentRef[] = [];
   for (let offset = 0; offset < events.length; offset += limits.eventsPerFragment) {
     const part = events.slice(offset, offset + limits.eventsPerFragment);
     const first = part[0], last = part[part.length - 1];
-    const body: Omit<ReplayFragment, 'sha256'> = { formatVersion: REPLAY_FORMAT_VERSION, scope: input.scope,
+    const body: Omit<ReplayFragment, 'sha256'> = { formatVersion: version, scope: input.scope,
       replayId: input.replayId, index: fragments.length, events: part };
     const fragment = { ...body, sha256: hash(body) };
     fragments.push(fragment);
@@ -280,7 +353,7 @@ export function createReplayPackage(
       eventCount: part.length, byteLength: size(fragment), sha256: fragment.sha256 });
   }
   const terminal = events.at(-1);
-  const body = { ...input, formatVersion: REPLAY_FORMAT_VERSION,
+  const body = { ...input, formatVersion: version,
     terminal: terminal?.data.kind === 'terminal' ? { sequence: terminal.sequence, sha256: hash(terminal) } : null, fragments: refs };
   if (!manifestShape({ ...body, sha256: '0'.repeat(64) })) throw new Error('Invalid replay evidence');
   const result = { manifest: { ...body, sha256: hash(body) }, fragments };

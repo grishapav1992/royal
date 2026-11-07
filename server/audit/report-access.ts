@@ -24,25 +24,7 @@ export async function installAuditReportAccess(db: PostgresDatabase, readerRole:
   const finish = relation('audit_report_finish');
   const resultReasons = "'time-limit','row-limit','scan-limit','byte-limit','source-unavailable','output-error','internal-error','permission-denied'";
 
-  await applySchemaMigration(db, { id: 'paid-activity-audit-report-access-v1', statements: [
-    `CREATE TABLE ${acl} (
-      operator_name name NOT NULL, dataset_id uuid NOT NULL, source_namespace text NOT NULL,
-      PRIMARY KEY(operator_name,dataset_id,source_namespace),
-      FOREIGN KEY(dataset_id,source_namespace) REFERENCES ${relation('audit_dataset_sources')}(dataset_id,source_namespace)
-    )`,
-    `CREATE TABLE ${jobs} (
-      id uuid PRIMARY KEY DEFAULT pg_catalog.gen_random_uuid(),
-      operator_name name NOT NULL, dataset_id uuid NOT NULL REFERENCES ${relation('audit_datasets')}(id),
-      kind text NOT NULL CHECK(kind='player'), filters jsonb NOT NULL,
-      status text NOT NULL CHECK(status IN ('running','succeeded','failed','cancelled','expired')),
-      started_at timestamptz NOT NULL, expires_at timestamptz NOT NULL CHECK(expires_at>started_at),
-      finished_at timestamptz CHECK(finished_at>=started_at),
-      row_count bigint CHECK(row_count BETWEEN 0 AND ${maximumSafeInteger}),
-      byte_count bigint CHECK(byte_count BETWEEN 0 AND ${maximumSafeInteger}), reason text,
-      CHECK((status='running')=(finished_at IS NULL))
-    )`,
-    `CREATE UNIQUE INDEX audit_report_one_running ON ${jobs}(operator_name) WHERE status='running'`,
-    `CREATE FUNCTION ${begin}(p_dataset uuid,p_kind text,p_filters jsonb) RETURNS uuid
+  const beginSql = (summary: boolean) => `CREATE ${summary ? 'OR REPLACE ' : ''}FUNCTION ${begin}(p_dataset uuid,p_kind text,p_filters jsonb) RETURNS uuid
       LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
       DECLARE
         v_from bigint;
@@ -50,15 +32,17 @@ export async function installAuditReportAccess(db: PostgresDatabase, readerRole:
         v_now timestamptz;
         v_job uuid;
       BEGIN
-        IF p_kind IS DISTINCT FROM 'player' OR
+        IF ${summary ? "p_kind IS NULL OR p_kind NOT IN ('player','summary')" : "p_kind IS DISTINCT FROM 'player'"} OR
            pg_catalog.jsonb_typeof(p_filters) IS DISTINCT FROM 'object' OR
            pg_catalog.pg_column_size(p_filters)>4096 THEN
           RAISE EXCEPTION 'Invalid audit export filters' USING ERRCODE='22023';
         END IF;
         IF EXISTS (SELECT 1 FROM pg_catalog.jsonb_object_keys(p_filters) AS key(name)
             WHERE name NOT IN ('accountId','fromMs','toMs','category','gameId','modeId','asset','contour')) OR
-           pg_catalog.jsonb_typeof(p_filters->'accountId') IS DISTINCT FROM 'string' OR
-           (p_filters->>'accountId') !~ '^[a-zA-Z0-9._:-]{1,128}$' OR
+${summary ? `           ((p_kind='player' OR p_filters ? 'accountId') AND
+             (pg_catalog.jsonb_typeof(p_filters->'accountId') IS DISTINCT FROM 'string' OR
+              (p_filters->>'accountId') !~ '^[a-zA-Z0-9._:-]{1,128}$')) OR` : `           pg_catalog.jsonb_typeof(p_filters->'accountId') IS DISTINCT FROM 'string' OR
+           (p_filters->>'accountId') !~ '^[a-zA-Z0-9._:-]{1,128}$' OR`}
            pg_catalog.jsonb_typeof(p_filters->'fromMs') IS DISTINCT FROM 'number' OR
            pg_catalog.jsonb_typeof(p_filters->'toMs') IS DISTINCT FROM 'number' OR
            (p_filters->>'fromMs') !~ '^[0-9]{1,16}$' OR (p_filters->>'toMs') !~ '^[0-9]{1,16}$' THEN
@@ -93,7 +77,27 @@ export async function installAuditReportAccess(db: PostgresDatabase, readerRole:
         END IF;
         RETURN v_job;
       END
-      $audit$`,
+      $audit$`;
+
+  await applySchemaMigration(db, { id: 'paid-activity-audit-report-access-v1', statements: [
+    `CREATE TABLE ${acl} (
+      operator_name name NOT NULL, dataset_id uuid NOT NULL, source_namespace text NOT NULL,
+      PRIMARY KEY(operator_name,dataset_id,source_namespace),
+      FOREIGN KEY(dataset_id,source_namespace) REFERENCES ${relation('audit_dataset_sources')}(dataset_id,source_namespace)
+    )`,
+    `CREATE TABLE ${jobs} (
+      id uuid PRIMARY KEY DEFAULT pg_catalog.gen_random_uuid(),
+      operator_name name NOT NULL, dataset_id uuid NOT NULL REFERENCES ${relation('audit_datasets')}(id),
+      kind text NOT NULL CHECK(kind='player'), filters jsonb NOT NULL,
+      status text NOT NULL CHECK(status IN ('running','succeeded','failed','cancelled','expired')),
+      started_at timestamptz NOT NULL, expires_at timestamptz NOT NULL CHECK(expires_at>started_at),
+      finished_at timestamptz CHECK(finished_at>=started_at),
+      row_count bigint CHECK(row_count BETWEEN 0 AND ${maximumSafeInteger}),
+      byte_count bigint CHECK(byte_count BETWEEN 0 AND ${maximumSafeInteger}), reason text,
+      CHECK((status='running')=(finished_at IS NULL))
+    )`,
+    `CREATE UNIQUE INDEX audit_report_one_running ON ${jobs}(operator_name) WHERE status='running'`,
+    beginSql(false),
     `CREATE FUNCTION ${finish}(p_job uuid,p_outcome text,p_row_count bigint,p_byte_count bigint,p_reason text) RETURNS void
       LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
       DECLARE
@@ -119,5 +123,10 @@ export async function installAuditReportAccess(db: PostgresDatabase, readerRole:
     `REVOKE ALL ON FUNCTION ${begin}(uuid,text,jsonb),${finish}(uuid,text,bigint,bigint,text) FROM PUBLIC`,
     `GRANT USAGE ON SCHEMA ${schema} TO ${reader}`,
     `GRANT EXECUTE ON FUNCTION ${begin}(uuid,text,jsonb),${finish}(uuid,text,bigint,bigint,text) TO ${reader}`,
+  ] });
+  await applySchemaMigration(db, { id: 'paid-activity-audit-summary-access-v1', statements: [
+    `ALTER TABLE ${jobs} DROP CONSTRAINT audit_export_jobs_kind_check,
+      ADD CONSTRAINT audit_export_jobs_kind_check CHECK(kind IN ('player','summary'))`,
+    beginSql(true),
   ] });
 }

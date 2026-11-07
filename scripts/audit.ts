@@ -1,10 +1,12 @@
 import { parseArgs } from 'node:util';
 import { databaseConfig } from '../server/database';
-import { AuditPlayerReportError, exportAuditPlayer, type PlayerReportFilters } from '../server/audit/report-player';
+import { AuditPlayerReportError, exportAuditPlayer, type AuditReportFilters } from '../server/audit/report-player';
+import { readAuditSummary } from '../server/audit/report-summary';
 
-const usage = 'npm run audit -- player --schema <audit-schema> --dataset <uuid> --account <id> ' +
-  '--from <ISO timestamp with timezone> --to <ISO timestamp with timezone> --output <new CSV file> ' +
-  '[--category <casino|pvp|totalizator>] [--game <id>] [--mode <id>] [--asset <code>] [--contour <virtual|test|real>]';
+const period = '--schema <audit-schema> --dataset <uuid> --from <ISO timestamp with timezone> --to <ISO timestamp with timezone>';
+const optionalFilters = '[--category <casino|pvp|totalizator>] [--game <id>] [--mode <id>] [--asset <code>] [--contour <virtual|test|real>]';
+const usage = 'npm run audit -- player ' + period + ' --account <id> --output <new CSV file> ' + optionalFilters + '\n' +
+  'npm run audit -- summary ' + period + ' [--account <id>] ' + optionalFilters;
 
 function timestamp(value: string) {
   const match = /^([0-9]{4})-([0-9]{2})-([0-9]{2})T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]{1,3})?(?:Z|[+-][0-9]{2}:[0-9]{2})$/.exec(value);
@@ -27,7 +29,9 @@ async function main() {
   } });
   if (values.help) { console.log(usage); return; }
   const { schema, dataset, account, from, to, output, category, game, mode, asset, contour } = values;
-  if (positionals.length !== 1 || positionals[0] !== 'player' || !schema || !dataset || !account || !from || !to || !output ||
+  const kind = positionals[0];
+  if (positionals.length !== 1 || (kind !== 'player' && kind !== 'summary') || !schema || !dataset || !from || !to ||
+      (kind === 'player' && (!account || !output)) || (kind === 'summary' && output !== undefined) ||
       !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(dataset) ||
       (category !== undefined && !['casino','pvp','totalizator'].includes(category)) ||
       (contour !== undefined && !['virtual','test','real'].includes(contour))) throw new Error('Invalid audit report arguments');
@@ -38,16 +42,19 @@ async function main() {
     PGSSLMODE: process.env.ROYAL_AUDIT_PGSSLMODE,
     PGSSLROOTCERT: process.env.ROYAL_AUDIT_PGSSLROOTCERT,
   });
-  const filters: PlayerReportFilters = {
-    accountId: account, fromMs: timestamp(from), toMs: timestamp(to), category: category as PlayerReportFilters['category'],
-    gameId: game, modeId: mode, asset, contour: contour as PlayerReportFilters['contour'],
+  const filters: AuditReportFilters = {
+    accountId: account, fromMs: timestamp(from), toMs: timestamp(to), category: category as AuditReportFilters['category'],
+    gameId: game, modeId: mode, asset, contour: contour as AuditReportFilters['contour'],
   };
   const controller = new AbortController();
   const cancel = () => controller.abort();
   process.on('SIGINT', cancel);
   process.on('SIGTERM', cancel);
   try {
-    const result = await exportAuditPlayer(config, { schema, datasetId: dataset, filters, destination: output, signal: controller.signal });
+    const input = { schema, datasetId: dataset, filters, signal: controller.signal };
+    const result = kind === 'player'
+      ? await exportAuditPlayer(config, { ...input, filters: { ...filters, accountId: account! }, destination: output! })
+      : await readAuditSummary(config, input);
     console.log(JSON.stringify(result));
   } finally {
     process.off('SIGINT', cancel);

@@ -34,6 +34,8 @@ import { intoxicatedMovement } from '../src/shared/intoxication';
 import type { DrinkingState } from './intoxicationStore';
 import type { AuditAttemptSink } from './audit/attempts';
 import { WsAttemptCapture } from './audit/ws-attempts';
+import { ChessTurnReplayCapture, type CapturedChessReplay } from './audit/replay-pvp-turn';
+import type { PvpSnapshot } from '../src/shared/pvp';
 
 type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatRevision: number; inputs: MovementInputs; predicted: boolean; afterMovement?: () => void };
 const CHAT_REQUEST_ID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
@@ -45,12 +47,16 @@ const CABINET_REACTION_INTERVAL_MS = 450;
 const CABINET_PLAY_DISTANCE = 90;
 let lobbyAuditSink: AuditAttemptSink | undefined;
 export function configureLobbyAuditAttempts(sink: AuditAttemptSink | undefined) { lobbyAuditSink = sink; }
+let lobbyChessReplaySink: ((recording: CapturedChessReplay) => void) | undefined;
+export function configureLobbyChessReplay(sink: typeof lobbyChessReplaySink) { lobbyChessReplaySink = sink; }
 
 export class LobbyRoom extends Room<{ state: LobbyState }> {
   state = new LobbyState();
   maxClients = ROOM_CAPACITY;
   maxMessagesPerSecond = 80;
   private readonly wsAttempts = lobbyAuditSink && new WsAttemptCapture(lobbyAuditSink, { gameSchema: accounts.schema });
+  private readonly chessReplay = lobbyChessReplaySink &&
+    new ChessTurnReplayCapture(sessionId => this.playerAccounts.get(sessionId), lobbyChessReplaySink);
   private activities = new Activities(id => this.state.players.get(id), id => this.stop(id), (type,value,hall) => this.broadcastActivity(type,value,hall), (id,text) => this.clients.find(c=>c.sessionId===id)?.send('notice',text),undefined,{escrow:new CommonCombatWallet(accounts.combat,id=>accounts.financeAdmin.assertAllowed(id)),account:id=>this.playerAccounts.get(id),name:id=>this.state.players.get(id)?.name??'Игрок'});
   private pvp=new PvpRoom({roomId:()=>this.roomId,activities:this.activities,allowMoney:id=>accounts.financeAdmin.assertAllowed(id),
     people:()=>[...this.state.players].flatMap(([sessionId,p])=>{const accountId=this.playerAccounts.get(sessionId);return accountId?[{sessionId,accountId,name:p.name,hall:p.hall,x:p.x,y:p.y,connected:p.connected,available:!p.playing&&!p.activity&&!p.seat&&p.action!=='drink'}]:[];}),
@@ -143,12 +149,35 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   };
   private pvpService() {
     const command = virtualPvpCommand(accounts.pvp);
-    if (!this.wsAttempts) return command;
-    return (accountId: string, action: string, value: unknown) =>
-      this.wsAttempts!.runPvpService(accountId, action, value, () => command(accountId, action, value));
+    if (!this.wsAttempts && !this.chessReplay) return command;
+    return async (accountId: string, action: string, value: unknown) => {
+      const invoke = () => command(accountId, action, value);
+      const result = this.wsAttempts ? await this.wsAttempts.runPvpService(accountId, action, value, invoke) : await invoke();
+      if (result.status === 200 && this.chessReplay) {
+        try {
+          if (action === 'pvp-sync' && Array.isArray(result.value?.matches) && Array.isArray(result.value?.snapshots)) {
+            this.chessReplay.observeMatches(result.value.matches,
+              result.value.snapshots.flatMap((row: { snapshot?: PvpSnapshot }) => row.snapshot?.challenges ?? []));
+          } else if (action === 'pvp-command' && Array.isArray(result.value?.challenges)) {
+            const request = (value as { request?: { id?: unknown; action?: unknown; challengeId?: unknown } })?.request;
+            for (const challenge of result.value.challenges) {
+              this.chessReplay.observeTerminal(challenge, request?.action === 'resign' && request.id === result.value.requestId &&
+                request.challengeId === challenge.id ? accountId : undefined);
+            }
+          } else if (action === 'pvp-result') {
+            const settled = value as { matchId: string; winnerId: string | null; reason: string };
+            if (settled.reason === 'win' || settled.reason === 'draw') {
+              this.chessReplay.observeAdjudication(settled.matchId, settled.winnerId, settled.reason, Date.now());
+            }
+          }
+        } catch { /* The room settlement remains authoritative if audit capture fails. */ }
+      }
+      return result;
+    };
   }
   onCreate() {
     this.state.serverNow = Date.now();
+    if (this.chessReplay) this.activities.chess.setReplayObserver(observation => this.chessReplay?.observeEngine(observation));
     accounts.events.on('security', this.securityListener);
     accounts.events.on('logout', this.logoutListener);
     accounts.events.on('name', this.nameListener);
@@ -490,6 +519,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   }
   onDrop(client: Client, code?: number) {
     this.wsAttempts?.dropped(client.sessionId, client);
+    this.chessReplay?.observePresence(client.sessionId, 'disconnected');
     this.bartender.forget(client.sessionId);
     console.info(JSON.stringify({ event: 'lobby-connection', phase: 'drop', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));
     this.cancelChat(client);
@@ -528,6 +558,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (auth.account.skin === null) { client.leave(4001); return; }
       p.name = auth.account.name; p.skin = auth.account.skin; p.appearance = serializeAppearance(auth.account.appearance);
       p.connected = true;this.activities.reconnect(client.sessionId);
+      this.chessReplay?.observePresence(client.sessionId, 'reconnected');
       console.info(JSON.stringify({ event: 'lobby-connection', phase: 'reconnected', uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));
       const control = this.controls.get(client.sessionId);
       client.send('chat-check', Boolean(control && this.chatPending.get(control)));
@@ -544,6 +575,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   }
   onLeave(client: Client, code?: number) {
     this.wsAttempts?.dropped(client.sessionId, client);
+    this.chessReplay?.observePresence(client.sessionId, 'disconnected');
     this.bartender.forget(client.sessionId);
     console.info(JSON.stringify({ event: 'lobby-connection', phase: 'left', code, uptimeSeconds: Math.floor(process.uptime()), connectedClients: this.clients.length }));
     this.cancelChat(client);

@@ -3,6 +3,7 @@ import { AUDIT_SCHEMA_VERSION, isAuditRecord, type AuditAttempt, type AuditScope
 import { PostgresDatabase, databaseConfig } from '../database';
 import { applySchemaMigration } from '../database-migrations';
 import { AuditEvidence } from './evidence';
+import { chessReplayWriter } from './replay-chess-storage';
 
 export type AuditAttemptObservation = Omit<AuditAttempt, 'schemaVersion' | 'scope' | 'type'>;
 export type AuditAttemptSink = (observation: AuditAttemptObservation) => void;
@@ -105,7 +106,7 @@ export class AuditAttemptRecorder {
 }
 
 /** Operator provisions and starts the test dataset before enabling the transport observer. */
-export function startAuditAttemptRuntime(env: NodeJS.ProcessEnv = process.env) {
+export function startAuditAttemptRuntime(env: NodeJS.ProcessEnv = process.env, gameSchema?: string) {
   const schema = env.ROYAL_AUDIT_SCHEMA, datasetId = env.ROYAL_AUDIT_TEST_DATASET_ID;
   if (schema === undefined && datasetId === undefined) return;
   if (!schema || !/^[a-z_][a-z0-9_]{0,62}$/.test(schema) || !datasetId ||
@@ -117,6 +118,7 @@ export function startAuditAttemptRuntime(env: NodeJS.ProcessEnv = process.env) {
   } });
   const producerId = randomUUID();
   const scope: AuditScope = { datasetId, environment: 'test' };
+  const chess = env.ROYAL_AUDIT_CHESS_REPLAY === '1' && gameSchema ? chessReplayWriter(db, scope, gameSchema) : undefined;
   const evidence = new AuditEvidence(db, schema);
   const writer: CaptureWriter = {
     record: attempt => evidence.record(attempt),
@@ -131,8 +133,9 @@ export function startAuditAttemptRuntime(env: NodeJS.ProcessEnv = process.env) {
   });
   return {
     record: recorder.record,
+    recordChess: chess?.record,
     async close() {
-      await recorder.stop();
+      await Promise.all([recorder.stop(), chess?.stop()]);
       await db.close();
     },
   };

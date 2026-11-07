@@ -81,6 +81,29 @@ test('partial evidence can seek only from verified checkpoints across known sequ
   assert.throws(() => createReplayPackage(draft(), [casinoMove(1), casinoMove(1), casinoEnd(2)]), /Invalid replay/);
 });
 
+test('format 2 binds exact monetary legs and calculation without pretending to know event times', () => {
+  const source = { namespace: 'game.demo_ledger', rowId: '9223372036854775807' };
+  const payout = { ...casinoEnd(2), atMs: 0, postings: [source],
+    money: [{ movement: 'payout', units: '9007199254740993', posting: source }],
+    calculation: { baseUnits: '9007199254740992', creditedUnits: '9007199254740993',
+      numerator: '18014398509481985', denominator: '2' } } satisfies ReplayEvent;
+  const start = { ...casinoMove(1), atMs: 0 };
+  const input = { ...draft(), formatVersion: 2, timing: 'source-order' } as const;
+  const pack = createReplayPackage(input, [start, payout]);
+  assert.equal(pack.manifest.formatVersion, 2);
+  assert.equal(pack.manifest.timing, 'source-order');
+  assert.equal(verifyReplayPackage(pack, [{ ...casino, formatVersion: 2 }]).status, 'verified');
+  assert.equal(verifyReplayPackage(pack, [casino]).status, 'unsupported');
+  assert.throws(() => createReplayPackage(draft(), [start, payout]), /Invalid replay/);
+  assert.throws(() => createReplayPackage(input, [start, { ...payout, atMs: 1 }]), /Invalid replay/);
+  assert.throws(() => createReplayPackage(input, [start, { ...payout, postings: [] }]), /Invalid replay/);
+  assert.throws(() => createReplayPackage(input, [{ ...start, postings: [source], money: payout.money }, payout]), /Invalid replay/);
+  assert.throws(() => createReplayPackage(input, [start,
+    { ...payout, calculation: { ...payout.calculation, creditedUnits: '1' } }]), /Invalid replay/);
+  const prior = createReplayPackage(draft(), [casinoMove(1), casinoEnd(2)]);
+  assert.equal(verifyReplayPackage(prior, [casino, { ...casino, formatVersion: 2 }]).status, 'verified');
+});
+
 test('strict profiles preserve typed evidence and reject extra or private fields and oversized inputs', () => {
   const fighters: [{ x: number; y: number; health: number; pose: number; facing: 1 },
     { x: number; y: number; health: number; pose: number; facing: -1 }] = [

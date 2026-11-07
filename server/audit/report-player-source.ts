@@ -20,16 +20,12 @@ async function relationExists(db: PostgresDatabase, schema: string, table: strin
   return (await db.prepare('SELECT to_regclass(?) IS NOT NULL AS present').get(schema + '.' + table))?.present === true;
 }
 
-/** Privileged setup only. The reader role executes a fixed projection, with no access to its base tables. */
-export async function installAuditPlayerReport(db: PostgresDatabase, readerRole: string, sources: AuditSourceSchemas) {
+/** Shared canonical projection over already scoped references. */
+export async function auditPostingProjectionSql(db: PostgresDatabase, sources: AuditSourceSchemas) {
   const names = [db.schema, sources.game, ...(sources.payments ? [sources.payments] : [])];
-  if (!validName(readerRole) || names.some(name => !validName(name)) || new Set(names).size !== names.length) {
-    throw new Error('Invalid audit player report configuration');
+  if (names.some(name => !validName(name)) || new Set(names).size !== names.length) {
+    throw new Error('Invalid audit report source configuration');
   }
-  await applySchemaMigration(db, { id: 'paid-activity-audit-player-sequence-v1', statements: [], indexes: [
-    { name: 'audit_posting_refs_player_sequence', table: 'audit_posting_refs',
-      columns: ['dataset_id', 'account_id', 'source_namespace', 'source_row_id'] },
-  ] });
   const a = identifier(db.schema), g = identifier(sources.game);
   const p = sources.payments ? identifier(sources.payments) : null;
   const demo = literal(sources.game + '.demo_ledger'), pending = literal(sources.game + '.capro_pending_ledger');
@@ -37,8 +33,6 @@ export async function installAuditPlayerReport(db: PostgresDatabase, readerRole:
   const hasMatches = await relationExists(db, sources.game, 'pvp_matches');
   const hasCallbacks = await relationExists(db, sources.game, 'capro_transactions') &&
     await relationExists(db, sources.game, 'capro_players');
-  const fn = a + '.audit_report_player_page';
-  const signature = fn + '(uuid,bigint,text,bigint,bigint)';
   const flags = "substring(l.operation_id from '^flag-tote:(ft1-[0-9]{1,16}):final$')";
   const pvp = "substring(l.operation_id from '^pvp:([0-9a-f-]{36}):(hold|final)$')";
   const selects = `
@@ -84,15 +78,24 @@ export async function installAuditPlayerReport(db: PostgresDatabase, readerRole:
         WHEN l.entry_type='rollback' THEN 'reversal'
         WHEN l.entry_type='deposit' THEN 'deposit' END AS movement
     FROM anchors r
-    LEFT JOIN ${g}.demo_ledger l ON l.id=r.source_row_id AND l.account_id=r.account_id
-      AND l.operation_id=r.operation_id AND l.created_at=r.occurred_at_ms
-    LEFT JOIN ${g}.demo_ledger p ON p.id=r.prior_id AND p.account_id=r.account_id
-    LEFT JOIN ${g}.demo_operations op ON op.account_id=l.account_id AND op.operation_id=l.operation_id AND op.kind IN ('play','spin')
-    LEFT JOIN ${g}.demo_casino_requests req ON req.account_id=l.account_id AND req.id=l.operation_id
+    LEFT JOIN LATERAL (
+      SELECT id,account_id,operation_id,source,entry_type,amount_units,balance_units FROM ${g}.demo_ledger
+      WHERE id=r.source_row_id AND account_id=r.account_id AND operation_id=r.operation_id AND created_at=r.occurred_at_ms LIMIT 1
+    ) l ON true
+    LEFT JOIN LATERAL (
+      SELECT balance_units FROM ${g}.demo_ledger WHERE id=r.prior_id AND account_id=r.account_id LIMIT 1
+    ) p ON true
+    LEFT JOIN LATERAL (
+      SELECT result FROM ${g}.demo_operations
+      WHERE account_id=l.account_id AND operation_id=l.operation_id AND kind IN ('play','spin') LIMIT 1
+    ) op ON true
+    LEFT JOIN LATERAL (
+      SELECT session_id FROM ${g}.demo_casino_requests WHERE account_id=l.account_id AND id=l.operation_id LIMIT 1
+    ) req ON true
     LEFT JOIN LATERAL (
       SELECT s.id AS session_id, CASE WHEN pg_input_is_valid(s.payload,'jsonb') THEN s.payload::jsonb END AS payload
       FROM ${g}.demo_casino_sessions s WHERE s.account_id=l.account_id AND s.id=COALESCE(req.session_id,l.operation_id)
-        AND s.game_id=l.source
+        AND s.game_id=l.source LIMIT 1
     ) x ON true
     LEFT JOIN ${g}.demo_flight_requests f ON l.source='royal-flight' AND f.account_id=l.account_id AND f.id=l.operation_id
     LEFT JOIN ${g}.demo_mines_sessions n ON l.source='royal-mines' AND n.account_id=l.account_id
@@ -134,9 +137,13 @@ export async function installAuditPlayerReport(db: PostgresDatabase, readerRole:
       CASE l.reason WHEN 'debit' THEN 'stake' WHEN 'credit' THEN 'payout' WHEN 'refund' THEN 'refund'
         WHEN 'rollback' THEN 'reversal' WHEN 'transfer' THEN 'release' END
     FROM anchors r
-    LEFT JOIN ${g}.capro_pending_ledger l ON l.id=r.source_row_id AND l.account_id=r.account_id
-      AND l.operation_id=r.operation_id AND l.created_at=r.occurred_at_ms
-    LEFT JOIN ${g}.capro_pending_ledger p ON p.id=r.prior_id AND p.account_id=r.account_id
+    LEFT JOIN LATERAL (
+      SELECT id,amount_units,pending_balance_units,reason FROM ${g}.capro_pending_ledger
+      WHERE id=r.source_row_id AND account_id=r.account_id AND operation_id=r.operation_id AND created_at=r.occurred_at_ms LIMIT 1
+    ) l ON true
+    LEFT JOIN LATERAL (
+      SELECT pending_balance_units FROM ${g}.capro_pending_ledger WHERE id=r.prior_id AND account_id=r.account_id LIMIT 1
+    ) p ON true
     WHERE r.source_namespace=${pending}
     ${p ? `UNION ALL
     SELECT r.*, l.id IS NOT NULL,l.available_delta::numeric,l.balance_units::numeric,l.reserved_delta::numeric,
@@ -148,11 +155,28 @@ export async function installAuditPlayerReport(db: PostgresDatabase, readerRole:
         WHEN l.entry_key='adjustment:'||l.operation_id THEN 'adjustment'
         WHEN l.entry_key LIKE 'deposit:%' THEN 'deposit' END
     FROM anchors r
-    LEFT JOIN ${p}.crypto_ledger l ON l.id=r.source_row_id AND l.account_id=r.account_id
-      AND l.operation_id=r.operation_id AND l.created_at=r.occurred_at_ms
-    LEFT JOIN ${p}.crypto_ledger p ON p.id=r.prior_id AND p.account_id=r.account_id
+    LEFT JOIN LATERAL (
+      SELECT id,operation_id,entry_key,available_delta,reserved_delta,balance_units FROM ${p}.crypto_ledger
+      WHERE id=r.source_row_id AND account_id=r.account_id AND operation_id=r.operation_id AND created_at=r.occurred_at_ms LIMIT 1
+    ) l ON true
+    LEFT JOIN LATERAL (
+      SELECT balance_units FROM ${p}.crypto_ledger WHERE id=r.prior_id AND account_id=r.account_id LIMIT 1
+    ) p ON true
     WHERE r.source_namespace=${crypto}` : ''}
   `;
+  return { a, g, p, demo, pending, crypto, selects };
+}
+
+/** Privileged setup only. The reader role executes a fixed projection, with no access to its base tables. */
+export async function installAuditPlayerReport(db: PostgresDatabase, readerRole: string, sources: AuditSourceSchemas) {
+  if (!validName(readerRole)) throw new Error('Invalid audit report role name');
+  const { a, demo, pending, crypto, selects } = await auditPostingProjectionSql(db, sources);
+  await applySchemaMigration(db, { id: 'paid-activity-audit-player-sequence-v1', statements: [], indexes: [
+    { name: 'audit_posting_refs_player_sequence', table: 'audit_posting_refs',
+      columns: ['dataset_id', 'account_id', 'source_namespace', 'source_row_id'] },
+  ] });
+  const fn = a + '.audit_report_player_page';
+  const signature = fn + '(uuid,bigint,text,bigint,bigint)';
   await db.transaction(async () => {
     await db.exec(`CREATE OR REPLACE FUNCTION ${fn}(job uuid, cursor_at bigint, cursor_source text, cursor_id bigint, page_size bigint)
       RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $player$

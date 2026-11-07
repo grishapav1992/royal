@@ -1,12 +1,34 @@
 import { Chess } from 'chess.js';
 import type { ChessState } from '../src/shared/activities';
 import { CHESS_TIME_MS } from '../src/shared/activities';
+import type { ChessReplayObservation } from './audit/replay-pvp-turn';
+
+type ReplayEvent<T = ChessReplayObservation> = T extends ChessReplayObservation ? Omit<T,'atMs'|'players'|'state'> : never;
+
+export function chessTimeoutDraw(board: ChessState['board'], color:'w'|'b'){
+  const own=board.filter(p=>p.color===color);
+  if(own.some(p=>['p','r','q'].includes(p.type)))return false;
+  if(own.some(p=>p.type==='n'))return own.length===2&&!board.some(p=>p.color!==color&&!['k','q'].includes(p.type));
+  if(own.some(p=>p.type==='b')){
+    const bishops=board.filter(p=>p.type==='b'),colors=new Set(bishops.map(p=>(p.square.charCodeAt(0)+Number(p.square[1]))%2));
+    return colors.size===1&&!board.some(p=>['p','n'].includes(p.type));
+  }
+  return true;
+}
 
 export class ChessGame {
   private game:Chess;
   private clockAt=0;
+  private replayObserver?: (observation: ChessReplayObservation) => void;
   readonly state:ChessState={players:[],phase:'waiting',turn:'w',board:[],moves:[],last:null,check:false,winner:'',message:'Ждём второго игрока',ready:[],revision:0,sound:'',clock:{remainingMs:[CHESS_TIME_MS,CHESS_TIME_MS],running:null}};
   constructor(private initialFen?:string,private now:()=>number=()=>performance.now()){this.game=new Chess(initialFen);this.sync();}
+  setReplayObserver(observer?: (observation: ChessReplayObservation) => void){this.replayObserver=observer;}
+  private reportReplay(event: ReplayEvent){
+    const {players,board,turn,phase,winner,revision}=this.state;
+    if(!this.replayObserver||players.length!==2||phase==='waiting')return;
+    try{this.replayObserver({...event,atMs:this.clockAt,players:[players[0],players[1]],
+      state:{board:board.map(piece=>({...piece})),turn,phase,winner,revision}});}catch{/* Gameplay does not depend on replay capture. */}
+  }
   join(id:string){
     if(this.state.players.includes(id))return true;
     if(this.state.players.length===2)return false;
@@ -20,35 +42,30 @@ export class ChessGame {
     if(promotion!==undefined&&(typeof promotion!=='string'||!['q','r','b','n'].includes(promotion)))return false;
     try{
       const move=this.game.move({from,to,promotion:promotion as string|undefined});
-      this.state.last={from,to};this.state.sound=move.captured?'coin':'hit';this.sync();this.state.clock.running=this.state.phase==='playing'?this.state.turn:null;return true;
+      this.state.last={from,to};this.state.sound=move.captured?'coin':'hit';this.sync();this.state.clock.running=this.state.phase==='playing'?this.state.turn:null;
+      this.reportReplay({kind:'move',seat:move.color==='w'?1:2,from:move.from,to:move.to,...(move.promotion?{promotion:move.promotion}:{})});
+      return true;
     }catch{return false;}
   }
-  resign(id:string){this.tick();if(this.state.phase!=='playing'||!this.state.players.includes(id))return false;this.state.phase='finished';this.state.clock.running=null;this.state.winner=this.state.players.find(p=>p!==id)!;this.state.message='Соперник сдался';this.state.moves=[];this.state.sound='win';this.state.revision++;return true;}
+  resign(id:string){this.tick();if(this.state.phase!=='playing'||!this.state.players.includes(id))return false;this.state.phase='finished';this.state.clock.running=null;this.state.winner=this.state.players.find(p=>p!==id)!;this.state.message='Соперник сдался';this.state.moves=[];this.state.sound='win';this.state.revision++;
+    this.reportReplay({kind:'resign',seat:this.state.players[0]===id?1:2});return true;}
   tick(){
     const s=this.state;if(s.phase!=='playing'||!s.clock.running)return;
     const now=this.now(),elapsed=Math.max(0,now-this.clockAt);this.clockAt=now;
     const side=s.clock.running==='w'?0:1;s.clock.remainingMs[side]=Math.max(0,s.clock.remainingMs[side]-elapsed);
     if(s.clock.remainingMs[side]>0)return;
-    const draw=this.insufficientMaterial(side===0?'b':'w');
+    const draw=chessTimeoutDraw(s.board,side===0?'b':'w');
     s.phase='finished';s.clock.running=null;s.winner=draw?'':s.players[1-side];
     s.message=draw?'Ничья: у соперника недостаточно фигур для мата':(side===0?'Время белых истекло':'Время чёрных истекло');
     s.moves=[];s.sound='win';s.revision++;
-  }
-  private insufficientMaterial(color:'w'|'b'){
-    const board=this.state.board,own=board.filter(p=>p.color===color);
-    if(own.some(p=>['p','r','q'].includes(p.type)))return false;
-    if(own.some(p=>p.type==='n'))return own.length===2&&!board.some(p=>p.color!==color&&!['k','q'].includes(p.type));
-    if(own.some(p=>p.type==='b')){
-      const bishops=board.filter(p=>p.type==='b'),colors=new Set(bishops.map(p=>(p.square.charCodeAt(0)+Number(p.square[1]))%2));
-      return colors.size===1&&!board.some(p=>['p','n'].includes(p.type));
-    }
-    return true;
+    this.reportReplay({kind:'timeout'});
   }
   rematch(id:string){
     if(this.state.phase!=='finished'||!this.state.players.includes(id)||this.state.ready.includes(id))return;
     this.state.ready.push(id);if(this.state.ready.length===2){this.state.players.reverse();this.reset();}
   }
-  private reset(){this.game=new Chess(this.initialFen);Object.assign(this.state,{phase:this.state.players.length===2?'playing':'waiting',ready:[],winner:'',last:null,sound:'',clock:{remainingMs:[CHESS_TIME_MS,CHESS_TIME_MS],running:null}});this.clockAt=this.now();this.sync();this.state.clock.running=this.state.phase==='playing'?this.state.turn:null;}
+  private reset(){this.game=new Chess(this.initialFen);Object.assign(this.state,{phase:this.state.players.length===2?'playing':'waiting',ready:[],winner:'',last:null,sound:'',clock:{remainingMs:[CHESS_TIME_MS,CHESS_TIME_MS],running:null}});this.clockAt=this.now();this.sync();this.state.clock.running=this.state.phase==='playing'?this.state.turn:null;
+    if(this.state.phase==='playing')this.reportReplay({kind:'start'});}
   private sync(){
     const s=this.state;s.turn=this.game.turn();s.board=this.game.board().flat().filter(p=>p!==null).map(p=>({square:p.square,type:p.type,color:p.color}));s.check=this.game.isCheck();
     if(s.phase==='playing'&&this.game.isGameOver()){
