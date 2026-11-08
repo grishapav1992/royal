@@ -4,7 +4,7 @@ import pg from 'pg';
 import { evaluateChatModeration, CHAT_MODERATION_RULES_VERSION, type ChatModerationState } from '../server/chatModerationRules';
 import { fingerprintChatV2Envelope } from '../server/chatProtocolV2';
 import { chatV2FirstAdmissionAge, isChatLocation, parseChatV2Send, type ChatLocation, type ChatV2Send } from '../src/shared/chat';
-import { seedChatSqlProbe } from './chat-load-sql-prefill';
+import { seedChatSqlProbe, type ChatSqlPrefillOptions } from './chat-load-sql-prefill';
 
 export type SqlProbeRequest = Readonly<{ accountId: string; envelope: ChatV2Send; location: ChatLocation; originSeq: number }>;
 type ReceiptKey = Readonly<{ accountId: string; messageId: string }>;
@@ -18,6 +18,7 @@ export type SqlProbeTiming = Readonly<{
   phase: 'admit' | 'claim' | 'idleClaim' | 'finish'; items: number; poolMs: number; workMs: number; commitMs: number;
 }>;
 export type SqlProbePartition = Readonly<{ index: number; count: number }>;
+type SqlProbeAuthority = Readonly<{ hostId: string; systemIdentifier: string; expiresAtUnixMs: number; signal?: AbortSignal }>;
 
 const role = 'royal_chat_load_chat';
 const bucketCount = 32;
@@ -97,11 +98,12 @@ function probeRows(rows: readonly SqlProbeRequest[]) {
  * entrypoint and never accepts an external connection string.
  */
 export class ChatSqlProbe {
-  private constructor(private readonly pool: pg.Pool, private readonly leaseMs: number,
-    private readonly onTiming?: (timing: SqlProbeTiming) => void) {}
+  private readonly verified = new WeakSet<pg.PoolClient>();
+  private constructor(private readonly pool: pg.Pool, private readonly runId: string, private readonly leaseMs: number,
+    private readonly onTiming?: (timing: SqlProbeTiming) => void, private readonly authority?: SqlProbeAuthority) {}
 
   static async open(chat: { port: number; role: string; password: string }, runId: string, leaseMs = 15_000,
-    onTiming?: (timing: SqlProbeTiming) => void) {
+    onTiming?: (timing: SqlProbeTiming) => void, authority?: SqlProbeAuthority) {
     assert(chat.role === role && Number.isInteger(chat.port) && chat.port > 0 && chat.port <= 65535
       && /^[a-f0-9]{64}$/.test(chat.password) && /^[a-f0-9-]{36}$/.test(runId)
       && Number.isSafeInteger(leaseMs) && leaseMs >= 10 && leaseMs <= 30_000, 'Invalid owned SQL probe configuration');
@@ -109,16 +111,12 @@ export class ChatSqlProbe {
       ssl: false, max: 16, connectionTimeoutMillis: 3000, statement_timeout: 5000, query_timeout: 8000,
       application_name: 'royal/chat-sql-probe', options: '-c search_path=' + schema + ',pg_catalog' });
     pool.on('error', () => { /* Operations surface connection failures. */ });
-    const store = new ChatSqlProbe(pool, leaseMs, onTiming);
+    const store = new ChatSqlProbe(pool, runId, leaseMs, onTiming, authority);
     try {
-      const evidence = (await pool.query(`
-        SELECT current_user AS role, current_database() AS database, current_setting('royal.chat_load_run_id', true) AS marker,
-          pg_is_in_recovery() AS replica, current_setting('fsync') AS fsync, current_setting('synchronous_commit') AS commit_mode,
-          current_setting('synchronous_standby_names') AS standbys`)).rows[0];
-      assert(evidence.role === role && evidence.database === role && evidence.marker === runId && !evidence.replica
-        && evidence.fsync === 'on' && evidence.commit_mode === 'on' && evidence.standbys,
-      'SQL probe requires the owned synchronous primary');
-      await store.transaction(client => client.query(ddl));
+      await store.transaction(async client => {
+        if (!authority) await store.verifyPrimary(client);
+        return client.query(ddl);
+      });
       return store;
     } catch (error) {
       await pool.end();
@@ -126,9 +124,56 @@ export class ChatSqlProbe {
     }
   }
 
-  private async transaction<T>(operation: (client: pg.PoolClient) => Promise<T>, phase?: 'admit' | 'claim' | 'finish') {
-    const started = performance.now();
+  private requireCurrentAuthority() {
+    if (!this.authority) return;
+    this.authority.signal?.throwIfAborted();
+    assert(Number.isSafeInteger(this.authority.expiresAtUnixMs) && Date.now() < this.authority.expiresAtUnixMs,
+      'SQL probe authority expired');
+  }
+
+  private async verifyPrimary(client: pg.PoolClient) {
+    const { rows: [evidence] } = await client.query(`
+      SELECT session_user AS login, current_user AS role, current_database() AS database,
+        current_setting('royal.chat_load_run_id', true) AS marker, pg_is_in_recovery() AS replica,
+        current_setting('transaction_read_only') AS read_only, current_setting('fsync') AS fsync,
+        current_setting('synchronous_commit') AS commit_mode, current_setting('synchronous_standby_names') AS standbys
+      ${this.authority ? `, current_setting('royal.chat_load_node_id', true) AS host_id,
+        (SELECT system_identifier::text FROM pg_catalog.pg_control_system()) AS system_identifier` : ''}`);
+    assert(evidence.login === role && evidence.role === role && evidence.database === role && evidence.marker === this.runId
+      && evidence.replica === false && evidence.read_only === 'off' && evidence.fsync === 'on' && evidence.commit_mode === 'on'
+      && evidence.standbys, 'SQL probe requires the owned synchronous primary');
+    if (this.authority) {
+      assert(evidence.host_id === this.authority.hostId && evidence.system_identifier === this.authority.systemIdentifier
+        && evidence.standbys === 'FIRST 1 (royal_chat_load_standby)', 'SQL probe primary identity changed');
+    }
+  }
+
+  private async acquire() {
+    this.requireCurrentAuthority();
     const client = await this.pool.connect();
+    try {
+      if (this.authority && !this.verified.has(client)) {
+        await this.verifyPrimary(client);
+        this.verified.add(client);
+      }
+      this.requireCurrentAuthority();
+      return client;
+    } catch (error) {
+      client.release(true);
+      throw error;
+    }
+  }
+
+  private async read(text: string) {
+    if (!this.authority) return this.pool.query(text);
+    const client = await this.acquire();
+    try { return await client.query(text); }
+    finally { client.release(); }
+  }
+
+  private async transaction<T>(operation: (client: pg.PoolClient) => Promise<T>, phase?: 'admit' | 'claim' | 'finish', commitTimeoutMs = 8_000) {
+    const started = performance.now();
+    const client = await this.acquire();
     const acquired = performance.now();
     let commitStarted = false, warnedDuringCommit = false, destroyed = false;
     const notice = (message: { severity?: string }) => {
@@ -138,12 +183,15 @@ export class ChatSqlProbe {
     try {
       await client.query('BEGIN');
       const result = await operation(client);
+      this.requireCurrentAuthority();
       commitStarted = true;
       const committing = performance.now();
-      await client.query('COMMIT');
+      const commit: pg.QueryConfig & { query_timeout: number } = { text: 'COMMIT', query_timeout: commitTimeoutMs };
+      await client.query(commit);
       // PostgreSQL can commit locally while warning that the standby wait was
       // cancelled. A successful command tag alone is not a durable receipt.
       if (warnedDuringCommit) throw new Error('SQL probe commit lost synchronous confirmation');
+      this.requireCurrentAuthority();
       if (phase && this.onTiming && Array.isArray(result)) {
         this.onTiming({ phase: phase === 'claim' && !result.length ? 'idleClaim' : phase, items: result.length,
           poolMs: acquired - started, workMs: committing - acquired, commitMs: performance.now() - committing });
@@ -357,17 +405,27 @@ export class ChatSqlProbe {
     return new Map(result.rows.map(row => [row.bucket, row.pending]));
   }
 
-  prefill(accounts: readonly string[], roomEpochs: readonly string[], count: number) {
+  async prefill(accounts: readonly string[], roomEpochs: readonly string[], count: number, options: ChatSqlPrefillOptions = {}) {
+    assert(!options.fullHistory || this.authority, 'Full history requires a verified distributed primary');
+    const result = await seedChatSqlProbe(operation => this.transaction(operation, undefined, 35_000), accounts, roomEpochs, count, options);
+    const analyze = 'ANALYZE lane, request, channel, feed';
+    if (options.fullHistory) await this.preparationQuery(analyze);
+    else await this.transaction(client => client.query(analyze));
+    return result;
+  }
+
+  private preparationQuery(text: string) {
+    // Full history counts and ANALYZE are outside the timed workload.
+    const query: pg.QueryConfig & { query_timeout: number } = { text, query_timeout: 125_000 };
     return this.transaction(async client => {
-      const result = await seedChatSqlProbe(client, accounts, roomEpochs, count);
-      await client.query('ANALYZE lane, request, channel, feed');
-      return result;
+      await client.query("SET LOCAL statement_timeout='120s'");
+      return client.query(query);
     });
   }
 
   async sample() {
     const pool = { total: this.pool.totalCount, idle: this.pool.idleCount, waiting: this.pool.waitingCount };
-    const { rows: [row] } = await this.pool.query(`
+    const { rows: [row] } = await this.read(`
       WITH clients AS (
         SELECT wait_event_type,wait_event FROM pg_stat_activity WHERE datname=current_database()
           AND application_name='royal/chat-sql-probe' AND pid<>pg_backend_pid() AND state='active'
@@ -386,14 +444,16 @@ export class ChatSqlProbe {
       replayLagBytes: row.replica_ready ? integer(row.replay_lag) : null };
   }
 
-  async stats() {
-    const result = (await this.pool.query(`
+  async stats(fullHistory = false) {
+    assert(!fullHistory || this.authority, 'Full history requires a verified distributed primary');
+    const sql = `
       SELECT count(*) AS accepted, count(*) FILTER (WHERE outcome IS NULL) AS pending,
         count(*) FILTER (WHERE outcome='publish') AS published,
         count(*) FILTER (WHERE outcome IS NOT NULL AND outcome <> 'publish') AS rejected,
         (SELECT count(*) FROM outbox) AS outbox, (SELECT sum(pending) FROM quota) AS quota,
         (SELECT count(*) FROM feed) AS feed, pg_current_wal_insert_lsn()::text AS wal_lsn,
-        pg_database_size(current_database()) AS database_bytes FROM request`)).rows[0];
+        pg_database_size(current_database()) AS database_bytes FROM request`;
+    const result = (await (fullHistory ? this.preparationQuery(sql) : this.read(sql))).rows[0];
     assert.equal(integer(result.pending), integer(result.quota), 'SQL probe quota mismatch');
     return { accepted: integer(result.accepted), pending: integer(result.pending), published: integer(result.published),
       rejected: integer(result.rejected), outbox: integer(result.outbox), feed: integer(result.feed),

@@ -180,3 +180,42 @@ test('owned synchronous SQL probe persists unique admissions, fences leases and 
     await rmdir(directory);
   }
 });
+test('attached SQL checks the backend that writes and rolls back when authority expires before commit', async t => {
+  const runId = randomUUID(), hostId = 'a'.repeat(64), systemIdentifier = '7241429140201234567';
+  const role = 'royal_chat_load_chat', connection = { port: 15432, role, password: 'b'.repeat(64) };
+  let now = Date.now();
+  const expiresAtUnixMs = now + 60_000;
+  t.mock.method(Date, 'now', () => now);
+  const fixture = (observedHost: string, afterDdl?: () => void) => {
+    const queries: string[] = [], releases: (boolean | undefined)[] = [];
+    return { queries, releases, client: {
+      on() {}, removeListener() {}, release(destroy?: boolean) { releases.push(destroy); },
+      async query(command: string | { text: string }) {
+        const text = typeof command === 'string' ? command : command.text;
+        if (text.includes('royal.chat_load_node_id')) {
+          queries.push('verify');
+          return { rows: [{ login: role, role, database: role, marker: runId, replica: false, read_only: 'off', fsync: 'on', commit_mode: 'on',
+            standbys: 'FIRST 1 (royal_chat_load_standby)', host_id: observedHost, system_identifier: systemIdentifier }] };
+        }
+        if (text.includes('CREATE SCHEMA')) { queries.push('DDL'); afterDdl?.(); }
+        else queries.push(text);
+        return { rows: [] };
+      },
+    } };
+  };
+  const approved = fixture(hostId), foreign = fixture('c'.repeat(64));
+  const expired = fixture(hostId, () => { now = expiresAtUnixMs; });
+  const clients = [approved.client, foreign.client, expired.client];
+  t.mock.method(pg.Pool.prototype, 'connect', async () => clients.shift());
+  t.mock.method(pg.Pool.prototype, 'end', async () => {});
+  const authority = { hostId, systemIdentifier, expiresAtUnixMs };
+  const store = await ChatSqlProbe.open(connection, runId, undefined, undefined, authority);
+  try {
+    assert.deepEqual(approved.queries, ['verify', 'BEGIN', 'DDL', 'COMMIT']);
+    await assert.rejects(store.stats(), /primary identity changed/);
+    assert.deepEqual(foreign.queries, ['verify']);
+    assert.deepEqual(foreign.releases, [true]);
+  } finally { await store.close(); }
+  await assert.rejects(ChatSqlProbe.open(connection, runId, undefined, undefined, authority), /authority expired/);
+  assert.deepEqual(expired.queries, ['verify', 'BEGIN', 'DDL', 'ROLLBACK']);
+});

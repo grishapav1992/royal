@@ -7,9 +7,10 @@ import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { createChatMessageId } from '../src/shared/chat';
 import { startLocalChatLoadStand } from './chat-load-stand';
+import { openDistributedChatLoadStand } from './chat-load-distributed-stand';
 import { ChatSqlProbe, chatSqlQuotaPartition, type SqlProbeAdmission, type SqlProbeRequest, type SqlProbeTiming } from './chat-load-sql-store';
 import { BoundedSamples } from './load-websocket-diagnostics';
-import { CHAT_SQL_PREFILL_MAX_REQUESTS } from './chat-load-sql-prefill';
+import { CHAT_SQL_FULL_PREFILL_REQUESTS, CHAT_SQL_PREFILL_MAX_REQUESTS } from './chat-load-sql-prefill';
 
 const admissionBatchLimit = 128;
 const workerBatchLimit = 64;
@@ -17,11 +18,13 @@ const accountCount = 10_000;
 const roomCapacity = 30;
 const burstFrameMs = 20;
 const drainMs = 5_000;
-const outputName = 'local-chat-sql-probe.json';
 const identitySeed = 'royal-chat-sql-fixture-v1';
+const minimumFullHistoryFreeBytes = 80 * 1024 ** 3;
+const fullHistoryReportBudgetMs = 130_000;
 
 type Options = {
   directory: string;
+  distributedManifest?: string;
   seconds: number;
   rate: number;
   burst: number;
@@ -53,28 +56,37 @@ function fixtureId(kind: 'account' | 'room', index: number) {
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-8${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
 }
 
+function requireMeasurementTime(options: Options, expiresAtUnixMs?: number) {
+  const reportingMs = options.prefill === CHAT_SQL_FULL_PREFILL_REQUESTS ? fullHistoryReportBudgetMs : 8_000;
+  assert(!expiresAtUnixMs || Date.now() + options.seconds * 1_000 + drainMs + reportingMs < expiresAtUnixMs,
+    'Not enough manifest lifetime for the measurement and report');
+}
+
 function readOptions(): Options {
   const { positionals, values } = parseArgs({
     allowPositionals: true,
     options: { seconds: { type: 'string' }, rate: { type: 'string' }, burst: { type: 'string' },
       'burst-at': { type: 'string' }, 'admission-workers': { type: 'string' }, workers: { type: 'string' },
-      'quota-partitions': { type: 'string' }, prefill: { type: 'string' } },
+      'quota-partitions': { type: 'string' }, prefill: { type: 'string' }, 'distributed-manifest': { type: 'string' } },
   });
   assert.equal(positionals.length, 1,
-    'Usage: node --import tsx scripts/chat-load-sql-probe.ts <owned-artifact-directory> [--seconds 3 --rate 40 --burst 0 --burst-at 1 --prefill 0 --quota-partitions 1]');
+    'Usage: node --import tsx scripts/chat-load-sql-probe.ts <owned-artifact-directory> [--distributed-manifest PRIVATE_JSON] [--seconds 3 --rate 40 --burst 0 --burst-at 1 --prefill 0 --quota-partitions 1]');
+  const distributedManifest = values['distributed-manifest'];
+  assert(distributedManifest === undefined || distributedManifest.length > 0, 'Invalid distributed manifest path');
+  assert(values.prefill !== 'full' || distributedManifest, 'Full history requires a distributed manifest');
   // The one-host experiment is deliberately shorter than the target 30-minute run.
-  const seconds = int(values.seconds, 3, 1, 120, 'seconds');
+  const seconds = int(values.seconds, 3, 1, distributedManifest ? 1800 : 120, 'seconds');
   const admissionWorkers = int(values['admission-workers'], 4, 1, 8, 'admission-workers');
   const workers = int(values.workers, 4, 1, 8, 'workers');
   const quotaPartitions = int(values['quota-partitions'], 1, 1, 8, 'quota-partitions');
   assert([1, 2, 4, 8].includes(quotaPartitions) && admissionWorkers % quotaPartitions === 0 && workers % quotaPartitions === 0,
     'Quota partitions must divide both worker counts evenly');
   return {
-    directory: resolve(positionals[0]), seconds, rate: int(values.rate, 40, 1, 333, 'rate'),
+    directory: resolve(positionals[0]), distributedManifest, seconds, rate: int(values.rate, 40, 1, 333, 'rate'),
     burst: int(values.burst, 0, 0, 10_000, 'burst'),
     burstAt: int(values['burst-at'], Math.min(1, seconds - 1), 0, seconds - 1, 'burst-at'),
     admissionWorkers, workers, quotaPartitions,
-    prefill: int(values.prefill, 0, 0, CHAT_SQL_PREFILL_MAX_REQUESTS, 'prefill'),
+    prefill: values.prefill === 'full' ? CHAT_SQL_FULL_PREFILL_REQUESTS : int(values.prefill, 0, 0, CHAT_SQL_PREFILL_MAX_REQUESTS, 'prefill'),
   };
 }
 
@@ -207,17 +219,27 @@ async function sampleResources(probe: ChatSqlProbe, startedAt: number, options: 
 }
 
 async function measure(probe: ChatSqlProbe, options: Options, controller: AbortController,
-  accounts: readonly string[], rooms: readonly string[]) {
+  accounts: readonly string[], rooms: readonly string[], expiresAtUnixMs?: number) {
   const { signal } = controller;
-  const prefill = options.prefill ? await probe.prefill(accounts, rooms, options.prefill) : { requests: 0, publications: 0 };
+  const fullHistory = options.prefill === CHAT_SQL_FULL_PREFILL_REQUESTS;
+  const preparationStarted = performance.now();
+  const prefill = options.prefill ? await probe.prefill(accounts, rooms, options.prefill, { fullHistory, signal,
+    ...(fullHistory ? { onProgress: (committed: number) => {
+      if (committed % 1_000_000 === 0 || committed === options.prefill) {
+        console.error(JSON.stringify({ phase: 'history-prefill', committed, total: options.prefill }));
+      }
+    } } : {}) }) : { requests: 0, publications: 0 };
   const observed = new Map<string, Observation>();
   const inFlight = new Set<Promise<void>>();
   const queues = Array.from({ length: options.quotaPartitions }, () => ({ slots: [] as Slot[], busy: 0 }));
   const accountPartitions = accounts.map(accountId => chatSqlQuotaPartition(accountId, options.quotaPartitions));
   const admissionLimit = options.admissionWorkers / options.quotaPartitions;
-  const before = await probe.stats();
+  const before = await probe.stats(fullHistory);
   assert(before.accepted === prefill.requests && before.published === prefill.requests && before.feed === prefill.publications
     && before.pending === 0 && before.rejected === 0 && before.outbox === 0, 'Unexpected initial SQL probe state');
+  signal.throwIfAborted();
+  requireMeasurementTime(options, expiresAtUnixMs);
+  const preparationMs = performance.now() - preparationStarted;
   const startedAt = performance.now() + 100;
   const wallStartMs = Date.now() + 100;
   const endsAt = startedAt + options.seconds * 1_000;
@@ -323,7 +345,7 @@ async function measure(probe: ChatSqlProbe, options: Options, controller: AbortC
   signal.throwIfAborted();
   assert(resourceSamples?.all.samples && (!options.burst || resourceSamples.burst.samples), 'Incomplete SQL probe resource sampling');
 
-  const after = await probe.stats();
+  const after = await probe.stats(fullHistory);
   const database = { accepted: after.accepted - before.accepted, pending: after.pending,
     published: after.published - before.published, rejected: after.rejected, outbox: after.outbox,
     feed: after.feed - before.feed, walLsn: after.walLsn };
@@ -346,7 +368,7 @@ async function measure(probe: ChatSqlProbe, options: Options, controller: AbortC
     && steady.published === steady.accepted && steady.finishedByDeadline === steady.accepted;
   const burstProfilePassed = burst.planned === 0 || (burst.offered === burst.planned && burst.accepted === burst.planned
     && burst.published === burst.planned && burst.finishedByDeadline === burst.planned);
-  return { steady, burst, database, prefill, primaryDatabaseBytes: { before: before.databaseBytes, after: after.databaseBytes },
+  return { steady, burst, database, prefill, preparationMs, primaryDatabaseBytes: { before: before.databaseBytes, after: after.databaseBytes },
     resources: resourceSamples, walBytes: walBytes(before.walLsn, after.walLsn), peakInFlight, staleClaims,
     integrityPassed, steadyProfilePassed, burstProfilePassed,
     localProfilePassed: integrityPassed && steadyProfilePassed && burstProfilePassed };
@@ -357,7 +379,7 @@ async function main() {
   const artifactRoot = join(await realpath(process.cwd()), 'artifacts', 'work');
   assert(await realpath(options.directory) === options.directory && dirname(options.directory) === artifactRoot,
     'Use an owned directory under artifacts/work');
-  const reportPath = resolve(options.directory, outputName);
+  const reportPath = resolve(options.directory, options.distributedManifest ? 'distributed-chat-sql-probe.json' : 'local-chat-sql-probe.json');
   await lstat(reportPath).then(() => { throw new Error('Use a new artifact directory for each probe'); },
     error => { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; });
   const controller = new AbortController();
@@ -365,22 +387,41 @@ async function main() {
   process.once('SIGINT', interrupt);
   process.once('SIGTERM', interrupt);
   try {
-    const stand = await startLocalChatLoadStand(options.directory, controller.signal);
+    const attached = options.distributedManifest ? await openDistributedChatLoadStand(options.distributedManifest, controller.signal) : undefined;
+    const local = attached ? undefined : await startLocalChatLoadStand(options.directory, controller.signal);
+    const stand = attached ?? local;
+    assert(stand);
+    const expiryTimer = attached ? setTimeout(interrupt, Math.max(0, attached.expiresAtUnixMs - Date.now())) : undefined;
     let result: Awaited<ReturnType<typeof measure>>;
     const timings = createTimingCollector();
     try {
-      assert(!options.prefill || stand.report.freeDiskBytes >= 10 * 1024 ** 3, 'Not enough free space for prefill');
+      const minimumDiskBytes = options.prefill === CHAT_SQL_FULL_PREFILL_REQUESTS ? minimumFullHistoryFreeBytes : 10 * 1024 ** 3;
+      assert(!options.prefill || stand.report.freeDiskBytes >= minimumDiskBytes, 'Not enough reported free space for prefill');
+      requireMeasurementTime(options, attached?.expiresAtUnixMs);
+      controller.signal.throwIfAborted();
       const accounts = Array.from({ length: accountCount }, (_, index) => fixtureId('account', index));
       const rooms = Array.from({ length: Math.ceil(accountCount / roomCapacity) }, (_, index) => fixtureId('room', index));
-      const probe = await ChatSqlProbe.open(stand.chat, stand.runId, undefined, timings.add);
-      try { result = await measure(probe, options, controller, accounts, rooms); }
-      finally { await probe.close(); }
-    } finally { await stand.cleanup(); }
+      try {
+        const authority = attached ? { ...attached.primaryIdentity, expiresAtUnixMs: attached.expiresAtUnixMs, signal: controller.signal } : undefined;
+        const probe = await ChatSqlProbe.open(stand.chat, stand.runId, undefined, timings.add, authority);
+        try { result = await measure(probe, options, controller, accounts, rooms, attached?.expiresAtUnixMs); }
+        finally { await probe.close(); }
+      } catch (error) {
+        if (attached) throw new Error('Distributed SQL measurement did not complete', { cause: error });
+        throw error;
+      }
+    } finally {
+      clearTimeout(expiryTimer);
+      await local?.cleanup();
+    }
     controller.signal.throwIfAborted();
+    assert(!attached || Date.now() < attached.expiresAtUnixMs, 'SQL probe authority expired before report');
     assert.equal(await realpath(options.directory), options.directory, 'Probe artifact directory changed');
-    const { directory: _directory, ...profile } = options;
-    const report = { qualification: 'preliminary_single_host', topology: 'generator_workers_and_postgres_on_one_host',
-      targetAccepted: false, cleanupConfirmed: true,
+    const { directory: _directory, distributedManifest: _distributedManifest, ...profile } = options;
+    const report = { qualification: attached ? 'distributed_sql_probe' : 'preliminary_single_host',
+      topology: attached?.report.topology ?? 'generator_workers_and_postgres_on_one_host',
+      targetAccepted: false, cleanupConfirmed: Boolean(local), connectionsClosed: true,
+      ...(attached ? { runId: attached.runId } : {}),
       profile: { ...profile, burstFrameMs, identitySeed }, stand: stand.report, ...result, transactions: timings.summary() };
     await writeFile(reportPath, JSON.stringify(report, null, 2) + '\n', { flag: 'wx' });
     console.log(JSON.stringify(report));
