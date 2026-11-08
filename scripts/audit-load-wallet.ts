@@ -10,6 +10,7 @@ import { auditHttpAttempts } from '../server/audit/http-attempts';
 import { pvpSeat } from '../src/shared/pvpSeats';
 import { activityHall } from '../src/shared/world';
 import { installAuditLoadPvpTiming, type AuditLoadPvpTrace } from './audit-load-pvp-timing';
+import { startAuditLoadLockObserver } from './audit-load-lock-observer';
 
 const file = fileURLToPath(import.meta.url);
 const gameSchema = 'test_audit_load_game';
@@ -53,6 +54,7 @@ async function serve() {
   let configureLobbyAudit: (typeof import('../server/LobbyRoom'))['configureLobbyAuditAttempts'] | undefined;
   let configureChessReplay: (typeof import('../server/LobbyRoom'))['configureLobbyChessReplay'] | undefined;
   let takePvpTiming: (() => AuditLoadPvpTrace[]) | undefined;
+  let lockObserver: Awaited<ReturnType<typeof startAuditLoadLockObserver>> | undefined;
   let capture: ReturnType<typeof startAuditAttemptRuntime>;
   let active: Promise<void> = Promise.resolve();
   let closing = false, ready = false, busy = false, lastId = 0;
@@ -76,7 +78,8 @@ async function serve() {
             server!.close(() => done());
             server!.closeAllConnections();
           });
-          await accounts?.close();
+          try { await lockObserver?.close(); }
+          finally { await accounts?.close(); }
         }
       }
     }).catch(() => { process.exitCode = 1; }).finally(() => {
@@ -139,8 +142,15 @@ async function serve() {
     configureLobbyAudit = configureLobbyAuditAttempts;
     configureChessReplay = configureLobbyChessReplay;
     if (process.argv.includes('--pvp-timing')) {
-      const [{ PvpRoom }, { PostgresDatabase }] = await Promise.all([import('../server/pvp/room'), import('../server/database')]);
-      takePvpTiming = installAuditLoadPvpTiming(PvpRoom.prototype, accounts.pvp, PostgresDatabase.prototype, gameSchema);
+      const [{ PvpRoom }, { PostgresDatabase, databaseConfig }] = await Promise.all([
+        import('../server/pvp/room'), import('../server/database'),
+      ]);
+      const observer = lockObserver = await startAuditLoadLockObserver(databaseConfig(env));
+      const take = installAuditLoadPvpTiming(PvpRoom.prototype, accounts.pvp, PostgresDatabase.prototype, gameSchema, observer);
+      takePvpTiming = () => {
+        if (observer.failed) throw new Error('Isolated advisory lock observer failed');
+        return take();
+      };
     }
     class AuditLoadLobby extends LobbyRoom {
       maxClients = 2;

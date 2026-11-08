@@ -366,6 +366,9 @@ for (const reverse of [false, true]) test(`pilot gate uses equal fixtures with t
     assert.equal(timing.traced, 18);
     assert.equal(timing.completed, 18);
     assert.equal(timing.matched, 18);
+    for (const count of [timing.observedAdvisoryWaits.command, timing.observedAdvisoryWaits.sync]) {
+      assert(Number.isInteger(count) && count >= 0 && count <= timing.traced);
+    }
     assert.deepEqual(Object.fromEntries(Object.entries<{ completed: number }>(timing.actions)
       .map(([action, result]) => [action, result.completed])), { create: 6, accept: 6, cancel: 4, resign: 2 });
     for (const metric of ['stake', 'settlement'] as const) {
@@ -379,9 +382,13 @@ for (const reverse of [false, true]) test(`pilot gate uses equal fixtures with t
       assert(segments.every(value => Number.isFinite(value) && value >= 0));
       assert(Math.abs(roomMs - segments.reduce((sum, value) => sum + value, 0)) < 0.005);
       for (const [span, transaction] of [[commandMs, commandTransaction], [syncMs, syncTransaction]]) {
-        const { admissionMs, bodyMs, finishMs } = transaction;
+        const { admissionMs, bodyMs, finishMs, checkoutMs, beginMs, advisoryMs, advisoryScope, observedWaitLowerBoundMs } = transaction;
         assert(admissionMs >= 0 && bodyMs > 0 && finishMs >= 0);
         assert(admissionMs + bodyMs + finishMs <= span + 0.002);
+        assert([checkoutMs, beginMs, advisoryMs].every(value => Number.isFinite(value) && value >= 0));
+        assert(advisoryScope === 'schema' || advisoryScope === 'key');
+        assert(checkoutMs + beginMs + advisoryMs <= admissionMs + 0.002);
+        if (observedWaitLowerBoundMs !== null) assert(observedWaitLowerBoundMs >= 0 && observedWaitLowerBoundMs <= advisoryMs);
       }
     }
   }
