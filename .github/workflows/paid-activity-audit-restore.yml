@@ -1,0 +1,51 @@
+name: Restore synthetic paid audit archive
+on:
+  push:
+    branches: [main, feature/paid-activity-audit-base]
+    paths:
+      - '.github/workflows/paid-activity-audit-restore.yml'
+      - 'deployment/finance/operations.py'
+      - 'deployment/finance/seed-audit-restore-fixture.ts'
+      - 'deployment/finance/test-audit-restore-docker.sh'
+      - 'compose.finance.yaml'
+      - 'server/audit/**'
+      - 'server/crypto/**'
+      - 'server/database.ts'
+      - 'server/database-migrations.ts'
+      - 'server/demoWallet*.ts'
+      - 'server/finance/combat-escrow.ts'
+      - 'server/finance/*schema.ts'
+      - 'server/finance/role-safety.*'
+      - 'server/finance/store.ts'
+      - 'server/payments/**'
+      - 'server/pvp/**'
+      - 'server/tableGames.ts'
+      - 'scripts/audit-load-replay-fixture.ts'
+      - 'src/shared/hockey.ts'
+      - 'package.json'
+      - 'package-lock.json'
+permissions:
+  contents: read
+concurrency:
+  group: paid-audit-restore-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  canonical-restore:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: bash deployment/finance/test-audit-restore-docker.sh
+      - uses: actions/upload-artifact@v7
+        with:
+          name: synthetic-audit-restore-proof
+          path: ${{ runner.temp }}/royal-audit-restore-proof.json
+          if-no-files-found: error
+          retention-days: 3
