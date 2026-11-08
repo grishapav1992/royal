@@ -115,6 +115,8 @@ ROYAL_TEST_PG_BIN=/path/to/postgresql/17/bin node --import tsx scripts/database-
   --import tsx --test server-tests/paid-activity-audit-rehearsal.test.ts
 ```
 
+Для архивного прогона нужен `python3` в `PATH`. Он запускает штатную проверку каталога и ролей из того же снимка PostgreSQL, что и копирование. [Приёмка восстановления](cleanup.md)
+
 ## Проверки по задачам ТЗ
 
 | Задачи | Воспроизводимое доказательство |

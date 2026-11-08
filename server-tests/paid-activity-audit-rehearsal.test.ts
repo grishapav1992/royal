@@ -66,18 +66,55 @@ const pgBin = process.env.ROYAL_TEST_PG_BIN;
 const exec = promisify(execFile);
 const sha256 = (data: string | Buffer) => createHash('sha256').update(data).digest('hex');
 
-function localArchiveTool(tool: 'pg_dump' | 'pg_restore', env: NodeJS.ProcessEnv, args: string[]) {
+function localArchiveSettings(env: NodeJS.ProcessEnv) {
   assert(pgBin && isAbsolute(pgBin), 'Archive tool directory must be absolute');
   assert.equal(env.NODE_ENV, 'test');
   assert.equal(env.PGHOST, '127.0.0.1');
   assert.equal(env.PGDATABASE, 'royal_test');
-  assert.equal(env.PGUSER, 'postgres');
+  assert.equal(env.PGUSER, 'finance_schema_owner');
   assert.match(env.PGPORT ?? '', /^[1-9][0-9]{0,4}$/);
   assert(env.PGPASSWORD);
-  return exec(join(pgBin, tool + (process.platform === 'win32' ? '.exe' : '')), [
-    '--host=127.0.0.1', '--port=' + env.PGPORT, '--username=postgres', '--dbname=royal_test', '--no-password', ...args,
-  ], { env: { PATH: process.env.PATH, SystemRoot: process.env.SystemRoot, LC_ALL: 'C', PGSSLMODE: 'disable',
-    PGPASSWORD: env.PGPASSWORD }, timeout: 20_000, maxBuffer: 4 * 1024 * 1024 });
+  return { bin: pgBin, port: env.PGPORT!, env: { PATH: process.env.PATH, SystemRoot: process.env.SystemRoot,
+    LC_ALL: 'C', PGSSLMODE: 'disable', PGPASSWORD: env.PGPASSWORD }, timeout: 20_000, maxBuffer: 4 * 1024 * 1024 };
+}
+
+function localArchiveTool(tool: 'pg_dump' | 'pg_restore', databaseEnv: NodeJS.ProcessEnv, args: string[]) {
+  const { bin, port, ...options } = localArchiveSettings(databaseEnv);
+  return exec(join(bin, tool + (process.platform === 'win32' ? '.exe' : '')), [
+    '--host=127.0.0.1', '--port=' + port, '--username=finance_schema_owner', '--dbname=royal_test', '--no-password', ...args,
+  ], options);
+}
+
+async function archiveCatalog(databaseEnv: NodeJS.ProcessEnv, snapshot: string) {
+  const { bin, port, ...options } = localArchiveSettings(databaseEnv);
+  const { stdout } = await exec('python3', ['-B',
+    fileURLToPath(new URL('../deployment/finance/test-audit-archive-catalog.py', import.meta.url)), bin, port, snapshot,
+  ], options);
+  return JSON.parse(stdout) as {
+    catalog: { roles: string[]; active_sources: string[] };
+    roleSql: string;
+  };
+}
+
+async function canonicalArchiveDatabase() {
+  const cluster = await temporaryDatabase();
+  try {
+    const admin = new pg.Client(databaseConfig(cluster.env));
+    const password = randomUUID();
+    try {
+      await admin.connect();
+      await admin.query(`CREATE ROLE finance_schema_owner LOGIN SUPERUSER PASSWORD '${password}'`);
+    } finally { await admin.end(); }
+    return { ...cluster, env: { ...cluster.env, PGUSER: 'finance_schema_owner', PGPASSWORD: password } };
+  } catch (error) {
+    await cluster.cleanup();
+    throw error;
+  }
+}
+
+async function exportSnapshot(client: PoolClient) {
+  const { rows: [row] } = await client.query<{ snapshot: string }>('SELECT pg_export_snapshot() AS snapshot');
+  return row.snapshot;
 }
 
 async function archiveSnapshot<T>(game: PostgresDatabase, inspect: (client: PoolClient) => Promise<T>) {
@@ -135,9 +172,13 @@ test('isolated rehearsal settles accepted games and preserves payments through o
     assert.equal(process.env.PGDATABASE, 'royal_test');
     assert.equal(process.env.DATABASE_URL, '');
     assert.equal(process.env.DATABASE_URL_FILE, '');
-    const originalGame = new PostgresDatabase(':memory:'), originalAudit = new PostgresDatabase(':memory:');
-    const originalPayments = new PostgresDatabase(':memory:');
-    let game = originalGame, audit = originalAudit, payments = originalPayments, connectionEnv = process.env;
+    const archiveSource = pgBin ? await canonicalArchiveDatabase() : undefined;
+    const originalEnv: NodeJS.ProcessEnv = archiveSource?.env ?? process.env;
+    const originalConfig = databaseConfig(originalEnv);
+    const originalGame = new PostgresDatabase(pgBin ? 'royal_game' : ':memory:', { config: originalConfig });
+    const originalAudit = new PostgresDatabase(pgBin ? 'royal_audit' : ':memory:', { config: originalConfig });
+    const originalPayments = new PostgresDatabase(pgBin ? 'royal_payments' : ':memory:', { config: originalConfig });
+    let game = originalGame, audit = originalAudit, payments = originalPayments, connectionEnv = originalEnv;
     let restored: Awaited<ReturnType<typeof temporaryDatabase>> | undefined;
     const connections = new Set([game, audit, payments]);
     let runtime: ReturnType<typeof startAuditAttemptRuntime>;
@@ -145,7 +186,10 @@ test('isolated rehearsal settles accepted games and preserves payments through o
       try { await runtime?.close(); }
       finally {
         try { await Promise.all([...connections].map(db => db.close())); }
-        finally { await restored?.cleanup(); }
+        finally {
+          try { await restored?.cleanup(); }
+          finally { await archiveSource?.cleanup(); }
+        }
       }
     });
     const player = randomUUID(), other = randomUUID();
@@ -211,12 +255,12 @@ test('isolated rehearsal settles accepted games and preserves payments through o
     const testExports = await initializeAuditExportDirectory(filesRoot, testDataset.datasetId);
     const cleanup = { datasetId: testDataset.datasetId, sources, filesRoot };
     const tag = randomUUID().replaceAll('-', '').slice(0, 12);
-    const group = 'rehearsal_read_' + tag, operator = 'rehearsal_operator_' + tag, password = randomUUID();
-    const roleSql = `CREATE ROLE ${identifier(group)} NOLOGIN;
-      CREATE ROLE ${identifier(operator)} LOGIN PASSWORD '${password}';
+    const group = pgBin ? 'royal_audit_reader' : 'rehearsal_read_' + tag;
+    const operator = pgBin ? 'royal_audit_reviewer_rehearsal' : 'rehearsal_operator_' + tag, password = randomUUID();
+    const operatorSql = `CREATE ROLE ${identifier(operator)} LOGIN PASSWORD '${password}';
       ALTER ROLE ${identifier(operator)} SET temp_file_limit='32MB'`;
     const membershipSql = `GRANT ${identifier(group)} TO ${identifier(operator)}`;
-    await audit.exec(roleSql + '; ' + membershipSql);
+    await audit.exec(`CREATE ROLE ${identifier(group)} NOLOGIN; ` + operatorSql + '; ' + membershipSql);
     await installAuditReportAccess(audit, group);
     await installAuditPlayerReport(audit, group, sources);
     await installAuditSummaryReport(audit, group, sources);
@@ -272,27 +316,32 @@ test('isolated rehearsal settles accepted games and preserves payments through o
         assert.equal(prepareViewerReplay(packageFile).status, 'ready');
         return { csv, summary, detail, replay };
       };
-      const before = await archivedReports(process.env, 'before');
+      const before = await archivedReports(originalEnv, 'before');
       // Keep one confirmed payment in the archive with its mirror delivery still pending.
       await credit(testPayment, '2000000');
       pendingPayment = await testPaymentEvent();
       assert.equal(pendingPayment.length, 1);
       assert.equal(pendingPayment[0].delivered_at, null);
       const expected = await archiveSnapshot(originalGame, async client => {
-        const { rows: [row] } = await client.query<{ snapshot: string }>('SELECT pg_export_snapshot() AS snapshot');
-        const snapshot = '--snapshot=' + row.snapshot;
+        const snapshot = await exportSnapshot(client);
         const state = await inspect(client);
-        const ddl = await localArchiveTool('pg_dump', process.env, [...scope, snapshot, '--schema-only']);
-        await localArchiveTool('pg_dump', process.env, [...scope, snapshot, '--format=custom', '--file=' + archive]);
-        return { state, schema: schemaFingerprint(ddl.stdout), archive: sha256(await readFile(archive)) };
+        const { catalog, roleSql } = await archiveCatalog(originalEnv, snapshot);
+        const dumpScope = [...scope, '--snapshot=' + snapshot];
+        const ddl = await localArchiveTool('pg_dump', originalEnv, [...dumpScope, '--schema-only']);
+        await localArchiveTool('pg_dump', originalEnv, [...dumpScope, '--format=custom', '--file=' + archive]);
+        return { state, catalog, roleSql, schema: schemaFingerprint(ddl.stdout), archive: sha256(await readFile(archive)) };
       });
+      assert.deepEqual(expected.catalog.roles, [group]);
+      assert.deepEqual(expected.catalog.active_sources, [
+        'royal_game.capro_pending_ledger', 'royal_game.demo_ledger', 'royal_payments.crypto_ledger',
+      ]);
       assert.deepEqual(expected.state.triggers.map(row => [row.table_name, row.tgenabled]).sort(),
         [['capro_pending_ledger', 'O'], ['crypto_ledger', 'O'], ['demo_ledger', 'O']]);
       assert.deepEqual(expected.state.operatorAccess, { member: true, schema_usage: true, run_report: true, read_source: false });
-      restored = await temporaryDatabase();
-      assert.notEqual(restored.env.PGPORT, process.env.PGPORT);
+      restored = await canonicalArchiveDatabase();
+      assert.notEqual(restored.env.PGPORT, originalEnv.PGPORT);
       const owner = new pg.Client(databaseConfig(restored.env));
-      try { await owner.connect(); await owner.query(roleSql); }
+      try { await owner.connect(); await owner.query(expected.roleSql + ' ' + operatorSql); }
       finally { await owner.end(); }
       await localArchiveTool('pg_restore', restored.env, ['--single-transaction', '--exit-on-error', archive]);
       assert.equal(sha256(await readFile(archive)), expected.archive);
@@ -303,6 +352,9 @@ test('isolated rehearsal settles accepted games and preserves payments through o
       payments = new PostgresDatabase(originalPayments.schema, { existingSchema: true, config });
       connections.add(game).add(audit).add(payments);
       await Promise.all([game.ready, audit.ready, payments.ready]);
+      const { catalog: restoredCatalog } = await archiveSnapshot(game,
+        async client => archiveCatalog(connectionEnv, await exportSnapshot(client)));
+      assert.deepEqual(restoredCatalog, expected.catalog);
       const filesBeforeDenied = (await readdir(privateRoot)).sort();
       await assert.rejects(exportAuditPlayer(readerFor(connectionEnv), csvInput(join(privateRoot, 'denied.csv'))),
         { code: 'permission-denied', jobId: null });
@@ -336,7 +388,7 @@ test('isolated rehearsal settles accepted games and preserves payments through o
       };
       verifyOriginal = async () => {
         assert.deepEqual(await archiveSnapshot(originalGame, inspect), expected.state);
-        assert.equal(schemaFingerprint((await localArchiveTool('pg_dump', process.env, [...scope, '--schema-only'])).stdout), expected.schema);
+        assert.equal(schemaFingerprint((await localArchiveTool('pg_dump', originalEnv, [...scope, '--schema-only'])).stdout), expected.schema);
       };
       ({ wallet, bank, pvp } = await openStores(game));
       ({ credits, outbox, crypto } = openPaymentStores());
