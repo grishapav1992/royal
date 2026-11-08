@@ -2,11 +2,12 @@ import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
 import { once } from 'node:events';
-import { mkdtemp, readFile, readdir, realpath, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { isAbsolute, join } from 'node:path';
 import { setTimeout as pause } from 'node:timers/promises';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import express from 'express';
 import pg, { type PoolClient } from 'pg';
@@ -311,6 +312,25 @@ test('isolated rehearsal settles accepted games and preserves payments through o
       assert.equal(schemaFingerprint((await localArchiveTool('pg_dump', connectionEnv, [...scope, '--schema-only'])).stdout), expected.schema);
       assert.deepEqual(await testPaymentEvent(), pendingPayment);
       assert.deepEqual(await archivedReports(connectionEnv, 'restored'), before);
+      const operatorFile = join(privateRoot, 'operator-url');
+      const cliReplay = join(privateRoot, 'restored-cli.json');
+      const operatorUrl = new URL('postgresql://127.0.0.1/royal_test');
+      operatorUrl.port = restored.env.PGPORT;
+      operatorUrl.username = operator;
+      operatorUrl.password = password;
+      await writeFile(operatorFile, operatorUrl.toString() + '\n', { mode: 0o600, flag: 'wx' });
+      const { stdout } = await exec(process.execPath, ['--import', 'tsx',
+        fileURLToPath(new URL('../scripts/audit.ts', import.meta.url)), 'replay', '--schema', reportScope.schema,
+        '--dataset', reportScope.datasetId, '--replay', archived.replay.replayId, '--output', cliReplay], {
+        env: { PATH: process.env.PATH, SystemRoot: process.env.SystemRoot, NODE_ENV: 'test',
+          ROYAL_AUDIT_DB_URL_FILE: operatorFile, ROYAL_AUDIT_PGSSLMODE: 'disable' }, timeout: 15_000,
+      });
+      const { jobId, engineVerified } = JSON.parse(stdout);
+      assert.equal(engineVerified, true);
+      assert.deepEqual(await readFile(cliReplay), before.replay);
+      assert.deepEqual(await audit.prepare(
+        'SELECT operator_name,kind,status,row_count,byte_count FROM audit_export_jobs WHERE id=?').get(jobId),
+      { operator_name: operator, kind: 'replay', status: 'succeeded', row_count: archived.replay.events, byte_count: before.replay.length });
       verifyArchived = async () => {
         assert.deepEqual(await archivedReports(connectionEnv, 'after-cutover'), before);
       };
