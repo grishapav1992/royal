@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { assessAuditPilotGate } from '../scripts/audit-load';
 import { startAuditLoadWallet } from '../scripts/audit-load-wallet';
+import { createAuditLoadLockOwnerIndex } from '../scripts/audit-load-pvp-timing';
 
 const script = fileURLToPath(new URL('../scripts/audit-load.ts', import.meta.url));
 const run = (args: string[], env = process.env, execArgs: string[] = []) => promisify(execFile)(
@@ -216,6 +217,19 @@ test('pilot comparison accepts the exact 10 percent boundary and rejects p95 gro
   assert(failed.p95.every(check => check.passed));
 });
 
+test('holder attribution requires a unique BEGIN window for the exact backend', () => {
+  const owners = createAuditLoadLockOwnerIndex();
+  owners.record(20, 100, 102, 'pvp-command');
+  owners.record(20, 101, 104, 'pvp-sync');
+  owners.record(21, 100, 104, 'pvp-sweep');
+  assert.equal(owners.find({ pid: 20, transactionStartMs: 100.25 }), 'pvp-command');
+  assert.equal(owners.find({ pid: 20, transactionStartMs: 101.25 }), undefined);
+  assert.equal(owners.find({ pid: 20, transactionStartMs: 102 }), 'pvp-sync');
+  assert.equal(owners.find({ pid: 21, transactionStartMs: 101.25 }), 'pvp-sweep');
+  assert.equal(owners.find({ pid: 22, transactionStartMs: 101.25 }), undefined);
+  assert.equal(owners.find({ pid: 20, transactionStartMs: 104 }), undefined);
+});
+
 
 test('summary-first pilot starts wallets against the observed boundary query and completes all reports in one slot', { timeout: 35_000 }, async () => {
   const stdout = await run(['--pilot-gate', '--summary-first', '--report-process', '--workers', '2', '--rounds', '3'])
@@ -369,6 +383,14 @@ for (const reverse of [false, true]) test(`pilot gate uses equal fixtures with t
     for (const count of [timing.observedAdvisoryWaits.command, timing.observedAdvisoryWaits.sync]) {
       assert(Number.isInteger(count) && count >= 0 && count <= timing.traced);
     }
+    for (const stage of ['command', 'sync'] as const) {
+      const observation = timing.holderObservations[stage];
+      assert.equal(observation.observed, timing.observedAdvisoryWaits[stage]);
+      assert(observation.unattributed >= 0 && observation.unattributed <= observation.observed);
+      for (const count of Object.values<number>(observation.byKind)) {
+        assert(Number.isInteger(count) && count >= 0 && count <= observation.observed - observation.unattributed);
+      }
+    }
     assert.deepEqual(Object.fromEntries(Object.entries<{ completed: number }>(timing.actions)
       .map(([action, result]) => [action, result.completed])), { create: 6, accept: 6, cancel: 4, resign: 2 });
     for (const metric of ['stake', 'settlement'] as const) {
@@ -382,11 +404,15 @@ for (const reverse of [false, true]) test(`pilot gate uses equal fixtures with t
       assert(segments.every(value => Number.isFinite(value) && value >= 0));
       assert(Math.abs(roomMs - segments.reduce((sum, value) => sum + value, 0)) < 0.005);
       for (const [span, transaction] of [[commandMs, commandTransaction], [syncMs, syncTransaction]]) {
-        const { admissionMs, bodyMs, finishMs, checkoutMs, beginMs, advisoryMs, advisoryScope, observedWaitLowerBoundMs } = transaction;
+        const { admissionMs, bodyMs, finishMs, checkoutMs, beginMs, advisoryMs, advisoryScope,
+          advisoryHolders, observedWaitLowerBoundMs } = transaction;
         assert(admissionMs >= 0 && bodyMs > 0 && finishMs >= 0);
         assert(admissionMs + bodyMs + finishMs <= span + 0.002);
         assert([checkoutMs, beginMs, advisoryMs].every(value => Number.isFinite(value) && value >= 0));
         assert(advisoryScope === 'schema' || advisoryScope === 'key');
+        assert(Array.isArray(advisoryHolders));
+        assert.equal(advisoryHolders.length, new Set(advisoryHolders).size);
+        for (const kind of advisoryHolders) assert(Object.hasOwn(timing.holderObservations.command.byKind, kind));
         assert(checkoutMs + beginMs + advisoryMs <= admissionMs + 0.002);
         if (observedWaitLowerBoundMs !== null) assert(observedWaitLowerBoundMs >= 0 && observedWaitLowerBoundMs <= advisoryMs);
       }

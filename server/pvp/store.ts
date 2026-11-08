@@ -144,7 +144,19 @@ export class PvpStore {
         if(JSON.stringify([c.ready,c.disconnected])!==priorPresence)c.revision++;
         await this.expire(s, now); if (live(c)) await this.save(s, now);
       }
-      return Promise.all(people.filter(p => p.connected).map(async p => ({ accountId: p.accountId, snapshot: await this.snapshot({ accountId: p.accountId, name: p.name, roomId }, now) })));
+      const connected = people.filter(p => p.connected);
+      if (!connected.length) return [];
+      const rows = await this.ledger.db.prepare(`SELECT actor.account_id, ARRAY(
+        SELECT candidate.payload FROM pvp_matches AS candidate WHERE candidate.room_id=? AND
+          (candidate.status IN ('open','arriving','playing') OR candidate.creator_id=actor.account_id OR candidate.opponent_id=actor.account_id)
+        ORDER BY candidate.updated_at DESC LIMIT 100) AS payloads
+        FROM unnest(?::text[]) AS actor(account_id)`).all(roomId, connected.map(p => p.accountId));
+      const histories = new Map<string, string[]>(rows.map(row => [row.account_id, row.payloads]));
+      return Promise.all(connected.map(async ({ accountId, name }) => ({
+        accountId,
+        snapshot: await this.snapshotFromMatches({ accountId, name, roomId }, now,
+          histories.get(accountId)!.map(payload => JSON.parse(payload) as StoredMatch)),
+      })));
     });
   }
   /** The observer can read the replay flag for commands with a saved receipt. JSON omits it. */
@@ -153,13 +165,19 @@ export class PvpStore {
     await this.ready;
     return this.ledger.db.transaction(async () => {
       const op: PvpRequest = value, key = stable(op);
-      const previous = await this.ledger.db.prepare('SELECT * FROM pvp_requests WHERE account_id=? AND id=?').get(actor.accountId, op.id);
-      if (previous) {
-        if (previous.request_key !== key) return fail('Нельзя изменить отправленное действие.');
+      // A saved receipt takes precedence. The 120th recent receipt is enough to limit a new command.
+      const admission = (await this.ledger.db.prepare(`SELECT saved.request_key,
+        CASE WHEN saved.id IS NULL THEN EXISTS (
+          SELECT 1 FROM pvp_requests AS recent WHERE recent.account_id=request.account_id
+            AND recent.created_at>request.cutoff LIMIT 1 OFFSET 119
+        ) ELSE FALSE END AS rate_limited
+        FROM (VALUES (?::text, ?::text, ?::bigint)) AS request(account_id,id,cutoff)
+        LEFT JOIN pvp_requests AS saved USING (account_id,id)`).get(actor.accountId, op.id, now - 60_000))!;
+      if (admission.request_key !== null) {
+        if (admission.request_key !== key) return fail('Нельзя изменить отправленное действие.');
         return Object.defineProperty({ ...await this.snapshot(actor, now), requestId: op.id }, 'replayed', { value: true });
       }
-      const rate = await this.ledger.db.prepare('SELECT count(*) AS n FROM pvp_requests WHERE account_id=? AND created_at>?').get(actor.accountId, now - 60_000);
-      if (Number(rate!.n) >= 120) return fail('Слишком много действий. Подожди немного.', 429);
+      if (admission.rate_limited) return fail('Слишком много действий. Подожди немного.', 429);
       let s: StoredMatch;
       let hold: PvpHoldResult | undefined;
       if (op.action === 'create'||op.action==='invite') {
@@ -273,6 +291,9 @@ export class PvpStore {
     const all = (await this.ledger.db.prepare(`SELECT payload FROM pvp_matches WHERE room_id=? AND
       (status IN ('open','arriving','playing') OR creator_id=? OR opponent_id=?) ORDER BY updated_at DESC LIMIT 100`).all(actor.roomId, actor.accountId, actor.accountId))
       .map(row => JSON.parse(String(row.payload)) as StoredMatch);
+    return this.snapshotFromMatches(actor, now, all, wallet);
+  }
+  private async snapshotFromMatches(actor: Actor, now: number, all: StoredMatch[], wallet?: PvpSnapshot['wallet']): Promise<PvpSnapshot> {
     const available = all.filter(s => participant(s.challenge, actor.accountId) || s.challenge.status === 'open' && (!s.challenge.targetId || s.challenge.targetId === actor.accountId));
     const own = available.find(s => participant(s.challenge, actor.accountId) && live(s.challenge)) ?? available.find(s => participant(s.challenge, actor.accountId));
     const cards=own?.cards?publicCardGame(own.cards,own.challenge.creatorId===actor.accountId?0:1):null;

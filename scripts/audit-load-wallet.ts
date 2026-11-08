@@ -146,7 +146,7 @@ async function serve() {
         import('../server/pvp/room'), import('../server/database'),
       ]);
       const observer = lockObserver = await startAuditLoadLockObserver(databaseConfig(env));
-      const take = installAuditLoadPvpTiming(PvpRoom.prototype, accounts.pvp, PostgresDatabase.prototype, gameSchema, observer);
+      const take = installAuditLoadPvpTiming(PvpRoom.prototype, accounts, PostgresDatabase.prototype, gameSchema, observer);
       takePvpTiming = () => {
         if (observer.failed) throw new Error('Isolated advisory lock observer failed');
         return take();

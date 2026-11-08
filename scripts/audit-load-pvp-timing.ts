@@ -1,15 +1,17 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 import type { Pool, PoolClient } from 'pg';
+import type { AccountStore } from '../server/accounts';
 import type { PostgresDatabase } from '../server/database';
 import type { PvpRoom } from '../server/pvp/room';
-import type { PvpStore } from '../server/pvp/store';
-import type { startAuditLoadLockObserver } from './audit-load-lock-observer';
+import type { AuditLoadLockHolder, startAuditLoadLockObserver } from './audit-load-lock-observer';
 
 type Interval = { from: number; to: number };
 const actions = ['create', 'accept', 'cancel', 'resign'] as const;
 export type AuditLoadPvpAction = typeof actions[number];
 type Command = { id: string; action: AuditLoadPvpAction };
-type LockQuery = Interval & { scope: 'schema' | 'key'; observedWaitLowerBoundMs?: number };
+const holderKinds = ['pvp-command', 'pvp-sync', 'pvp-sweep', 'pvp-adjudicate', 'combat-recovery', 'progression', 'other'] as const;
+type HolderKind = typeof holderKinds[number];
+type LockQuery = Interval & { scope: 'schema' | 'key'; observedWaitLowerBoundMs?: number; holders: HolderKind[] };
 type Transaction = Interval & { body?: Interval; checkout?: Interval; begin?: Interval; advisory?: LockQuery };
 type Stage = Interval & { transaction?: Transaction };
 export type AuditLoadPvpTrace = Command & {
@@ -22,17 +24,42 @@ function stamp(): Interval {
   return { from: now, to: now };
 }
 
+export function createAuditLoadLockOwnerIndex() {
+  const recent = new Map<number, Array<Interval & { kind: HolderKind }>>();
+  return {
+    record(pid: number, from: number, to: number, kind: HolderKind) {
+      if (from >= to) return;
+      const history = recent.get(pid) ?? [];
+      history.push({ from, to, kind });
+      if (history.length > 32) history.shift();
+      recent.delete(pid);
+      recent.set(pid, history);
+      const oldest = recent.keys().next().value;
+      if (recent.size > 32 && oldest !== undefined) recent.delete(oldest);
+    },
+    find({ pid, transactionStartMs }: AuditLoadLockHolder) {
+      const matches = recent.get(pid)?.filter(entry => entry.from <= transactionStartMs && transactionStartMs < entry.to);
+      return matches?.length === 1 ? matches[0].kind : undefined;
+    },
+  };
+}
+
 /** Installed only in the disposable wallet child. Retries reuse IDs and keep the first trace. */
-export function installAuditLoadPvpTiming(room: PvpRoom, store: PvpStore, database: PostgresDatabase, schema: string,
+export function installAuditLoadPvpTiming(room: PvpRoom, services: Pick<AccountStore, 'pvp' | 'combat' | 'progression'>,
+  database: PostgresDatabase, schema: string,
   lockObserver: Awaited<ReturnType<typeof startAuditLoadLockObserver>>) {
-  type Admission = { timing: Transaction; client?: PoolClient };
-  const scope = new AsyncLocalStorage<{ trace: AuditLoadPvpTrace; stage?: Stage; admission?: Admission }>();
+  type Admission = { timing?: Transaction; owner?: HolderKind; client?: PoolClient; entered?: boolean };
+  const scope = new AsyncLocalStorage<{ trace?: AuditLoadPvpTrace; stage?: Stage; admission?: Admission; owner?: HolderKind }>();
+  const { pvp: store, combat, progression } = services;
+  const owners = createAuditLoadLockOwnerIndex();
   const traces = new Map<string, AuditLoadPvpTrace>();
   const observedPools = new WeakSet<Pool>();
   const observedClients = new WeakSet<PoolClient>();
   const maxTraces = 8 * 16 * 3;
   const roomCommand = room.command;
   const storeCommand = store.command.bind(store), syncRoom = store.syncRoom.bind(store), roomMatches = store.roomMatches.bind(store);
+  const sweep = store.sweep.bind(store), adjudicate = store.adjudicate.bind(store);
+  const recoverExpired = combat.recoverExpired.bind(combat), processPending = progression.processPending.bind(progression);
   const transaction = database.transaction;
   const advisorySql = 'SELECT pg_advisory_xact_lock(hashtextextended($1, 0))';
 
@@ -42,21 +69,29 @@ export function installAuditLoadPvpTiming(room: PvpRoom, store: PvpStore, databa
     const query = client.query;
     client.query = function (this: PoolClient, ...args: unknown[]) {
       const admission = scope.getStore()?.admission;
-      if (!admission || admission.timing.body || admission.client !== this) return Reflect.apply(query, this, args);
+      if (!admission || admission.entered || admission.client !== this) return Reflect.apply(query, this, args);
       const { timing } = admission;
-      if (args[0] === 'BEGIN' && args.length === 1 && !timing.begin) {
-        const begin = timing.begin = stamp();
-        return (Reflect.apply(query, this, args) as Promise<unknown>).finally(() => { begin.to = performance.now(); });
+      const pid = (this as PoolClient & { processID?: number }).processID;
+      if (args.length === 1 && (args[0] === 'BEGIN' || args[0] === 'BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY')) {
+        const begin = timing && (timing.begin = stamp());
+        const from = Date.now();
+        return (Reflect.apply(query, this, args) as Promise<unknown>).then(result => {
+          if (typeof pid === 'number' && admission.owner) owners.record(pid, from, Date.now() + 1, admission.owner);
+          return result;
+        }).finally(() => { if (begin) begin.to = performance.now(); });
       }
       const key = args[0] === advisorySql && args.length === 2 && Array.isArray(args[1]) ? args[1][0] : undefined;
-      if (typeof key !== 'string' || (key !== schema && !key.startsWith(schema + ':key:')) || timing.advisory) {
+      if (!timing || typeof key !== 'string' || (key !== schema && !key.startsWith(schema + ':key:')) || timing.advisory) {
         return Reflect.apply(query, this, args);
       }
-      const advisory: LockQuery = timing.advisory = { ...stamp(), scope: key === schema ? 'schema' : 'key' };
-      const pid = (this as PoolClient & { processID?: number }).processID;
+      const advisory: LockQuery = timing.advisory = { ...stamp(), scope: key === schema ? 'schema' : 'key', holders: [] };
       const result = Reflect.apply(query, this, args) as Promise<unknown>;
-      const untrack = typeof pid === 'number' ? lockObserver.track(pid, key, waitMs => {
+      const untrack = typeof pid === 'number' ? lockObserver.track(pid, key, (waitMs, holders) => {
         advisory.observedWaitLowerBoundMs = Math.max(advisory.observedWaitLowerBoundMs ?? 0, waitMs);
+        for (const holder of holders) {
+          const kind = owners.find(holder);
+          if (kind && !advisory.holders.includes(kind)) advisory.holders.push(kind);
+        }
       }) : undefined;
       return result.finally(() => { advisory.to = performance.now(); untrack?.(); });
     } as PoolClient['query'];
@@ -68,10 +103,10 @@ export function installAuditLoadPvpTiming(room: PvpRoom, store: PvpStore, databa
     pool.connect = function (this: Pool, ...args: unknown[]) {
       const admission = scope.getStore()?.admission;
       // pg.Pool.query uses callback checkout. Only the outer transaction's promise is measured.
-      if (!admission || args.length || admission.timing.checkout) return Reflect.apply(connect, this, args);
-      const checkout = admission.timing.checkout = stamp();
+      if (!admission || args.length || admission.client) return Reflect.apply(connect, this, args);
+      const checkout = admission.timing && (admission.timing.checkout = stamp());
       return (Reflect.apply(connect, this, args) as Promise<PoolClient>)
-        .finally(() => { checkout.to = performance.now(); })
+        .finally(() => { if (checkout) checkout.to = performance.now(); })
         .then(client => {
           admission.client = client;
           observeClient(client);
@@ -94,30 +129,40 @@ export function installAuditLoadPvpTiming(room: PvpRoom, store: PvpStore, databa
 
   const measure = <T>(name: 'command' | 'sync' | 'matches', work: () => Promise<T>) => {
     const current = scope.getStore();
-    if (!current || current.trace[name]) return work();
+    if (!current?.trace || current.trace[name]) return work();
     const stage = current.trace[name] = stamp();
-    return scope.run({ trace: current.trace, stage: name === 'matches' ? undefined : stage }, async () => {
+    return scope.run({ ...current, stage: name === 'matches' ? undefined : stage }, async () => {
       try { return await work(); }
       finally { stage.to = performance.now(); }
     });
   };
-  store.command = (...args) => measure('command', () => storeCommand(...args));
-  store.syncRoom = (...args) => measure('sync', () => syncRoom(...args));
+  const withOwner = <T>(owner: HolderKind, work: () => Promise<T>) => scope.run({ ...scope.getStore(), owner }, work);
+  store.command = (...args) => withOwner('pvp-command', () => measure('command', () => storeCommand(...args)));
+  store.syncRoom = (...args) => withOwner('pvp-sync', () => measure('sync', () => syncRoom(...args)));
+  store.sweep = (...args) => withOwner('pvp-sweep', () => sweep(...args));
+  store.adjudicate = (...args) => withOwner('pvp-adjudicate', () => adjudicate(...args));
+  combat.recoverExpired = (...args) => withOwner('combat-recovery', () => recoverExpired(...args));
+  progression.processPending = (...args) => withOwner('progression', () => processPending(...args));
   store.roomMatches = (...args) => measure('matches', () => roomMatches(...args));
 
   database.transaction = function <T>(this: PostgresDatabase, callback: () => Promise<T>,
     options?: Parameters<PostgresDatabase['transaction']>[1]) {
     const current = scope.getStore(), stage = current?.stage;
-    if (!current || !stage || this.schema !== schema || this.inTransaction || stage.transaction) {
+    const owner = !options?.readOnly && options?.lockKey === undefined ? current?.owner ?? 'other' : undefined;
+    const traceAdmission = stage && !stage.transaction;
+    if (this.schema !== schema || this.inTransaction || (!traceAdmission && !owner)) {
       return (transaction<T>).call(this, callback, options);
     }
     observePool(this.pool);
-    const timing: Transaction = stage.transaction = stamp();
-    return scope.run({ trace: current.trace, stage, admission: { timing } }, () => (transaction<T>).call(this, async () => {
+    const timing: Transaction | undefined = traceAdmission ? stage.transaction = stamp() : undefined;
+    const admission: Admission = { timing, owner };
+    return scope.run({ ...current, admission }, () => (transaction<T>).call(this, async () => {
+      admission.entered = true;
+      if (!timing) return callback();
       const body = timing.body = stamp();
       try { return await callback(); }
       finally { body.to = performance.now(); }
-    }, options)).finally(() => { timing.to = performance.now(); });
+    }, options)).finally(() => { if (timing) timing.to = performance.now(); });
   };
 
   return () => {
@@ -150,6 +195,7 @@ export function summarizeAuditLoadPvpTiming(samples: AuditLoadPvpSample[], trace
         beginMs: timing.begin ? elapsed(timing.begin) : null,
         advisoryMs: timing.advisory ? elapsed(timing.advisory) : null,
         advisoryScope: timing.advisory?.scope ?? null,
+        advisoryHolders: timing.advisory?.holders ?? [],
         observedWaitLowerBoundMs: timing.advisory?.observedWaitLowerBoundMs === undefined
           ? null : rounded(timing.advisory.observedWaitLowerBoundMs),
         bodyMs: elapsed(timing.body),
@@ -171,12 +217,19 @@ export function summarizeAuditLoadPvpTiming(samples: AuditLoadPvpSample[], trace
     p95: rows[Math.ceil(rows.length * 0.95) - 1] ?? null, slowest: rows.at(-1) ?? null,
   });
   const rows = successful.map(correlate);
+  const observations = (stage: 'command' | 'sync') => {
+    const waits = traces.flatMap(trace => {
+      const advisory = trace[stage]?.transaction?.advisory;
+      return advisory?.observedWaitLowerBoundMs === undefined ? [] : [advisory];
+    });
+    return { observed: waits.length, unattributed: waits.filter(wait => !wait.holders.length).length,
+      byKind: Object.fromEntries(holderKinds.map(kind => [kind, waits.filter(wait => wait.holders.includes(kind)).length])) };
+  };
+  const commandHolders = observations('command'), syncHolders = observations('sync');
   return {
     traced: traces.length, completed: rows.length, matched: rows.filter(complete).length,
-    observedAdvisoryWaits: {
-      command: traces.filter(trace => trace.command?.transaction?.advisory?.observedWaitLowerBoundMs !== undefined).length,
-      sync: traces.filter(trace => trace.sync?.transaction?.advisory?.observedWaitLowerBoundMs !== undefined).length,
-    },
+    observedAdvisoryWaits: { command: commandHolders.observed, sync: syncHolders.observed },
+    holderObservations: { command: commandHolders, sync: syncHolders },
     stake: summarize(rows.filter(row => row.action === 'create' || row.action === 'accept')),
     settlement: summarize(rows.filter(row => row.action === 'cancel' || row.action === 'resign')),
     actions: Object.fromEntries(actions.map(action => [action, summarize(rows.filter(row => row.action === action))])),

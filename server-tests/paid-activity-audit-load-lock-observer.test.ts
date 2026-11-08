@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { setTimeout as pause } from 'node:timers/promises';
 import pg from 'pg';
-import { startAuditLoadLockObserver } from '../scripts/audit-load-lock-observer';
+import { startAuditLoadLockObserver, type AuditLoadLockHolder } from '../scripts/audit-load-lock-observer';
 import { temporaryDatabase } from '../scripts/database-test';
 import { databaseConfig } from '../server/database';
 
@@ -17,11 +17,12 @@ async function waitFor(condition: () => boolean | Promise<boolean>, message: str
   assert.fail(message);
 }
 
-test('the isolated lock observer correlates only an ungranted lock for the tracked backend and exact key',
+test('the isolated lock observer identifies the granted holder and excludes earlier waiters and unrelated keys',
   { timeout: 15_000 }, async () => {
     const cluster = await temporaryDatabase();
     const config = databaseConfig(cluster.env);
-    const holder = new pg.Client(config), waiter = new pg.Client(config), other = new pg.Client(config);
+    const holder = new pg.Client(config), waiter = new pg.Client(config);
+    const queued = new pg.Client(config), other = new pg.Client(config);
     let observer: Awaited<ReturnType<typeof startAuditLoadLockObserver>> | undefined;
     const blocked: Promise<unknown>[] = [];
     const backend = async (client: pg.Client) => (await client.query<{ pid: number }>('SELECT pg_backend_pid() AS pid')).rows[0].pid;
@@ -29,29 +30,41 @@ test('the isolated lock observer correlates only an ungranted lock for the track
       const query = client.query(lockSql, [key]);
       void query.catch(() => {});
       blocked.push(query);
+      return query;
     };
     try {
-      await Promise.all([holder.connect(), waiter.connect(), other.connect()]);
-      const [holderPid, waiterPid, otherPid] = await Promise.all([backend(holder), backend(waiter), backend(other)]);
+      const clients = [holder, waiter, queued, other];
+      await Promise.all(clients.map(client => client.connect()));
+      const [holderPid, waiterPid, queuedPid, otherPid] = await Promise.all(clients.map(backend));
       const watchedKey = 'audit-load-lock-observer-test', otherKey = watchedKey + ':other';
       await holder.query('BEGIN');
       await holder.query(lockSql, [watchedKey]);
       await holder.query(lockSql, [otherKey]);
-      const isBlocked = async (pid: number) => (await holder.query<{ blocked: boolean }>(
-        'SELECT $1::integer = ANY(pg_blocking_pids($2::integer)) AS blocked', [holderPid, pid])).rows[0].blocked;
+      const { rows: [expectedHolder] } = await holder.query<AuditLoadLockHolder>(`SELECT pid,
+        (EXTRACT(EPOCH FROM xact_start) * 1000)::float8 AS "transactionStartMs"
+        FROM pg_stat_activity WHERE pid = pg_backend_pid()`);
+      const blockers = async (pid: number) => (await holder.query<{ blockers: number[] }>(
+        'SELECT pg_blocking_pids($1::integer) AS blockers', [pid])).rows[0].blockers;
       waitOn(other, otherKey);
-      await waitFor(() => isBlocked(otherPid), 'Expected a waiter on the other advisory key');
+      await waitFor(async () => (await blockers(otherPid)).includes(holderPid), 'Expected a waiter on the other advisory key');
+      await queued.query('BEGIN');
+      await queued.query(lockSql, [watchedKey + ':unrelated-granted']);
+      const queuedWait = waitOn(queued, watchedKey);
+      await waitFor(async () => (await blockers(queuedPid)).includes(holderPid), 'Expected an earlier waiter on the watched key');
 
       observer = await startAuditLoadLockObserver(config);
-      const samples: number[] = [], unmatched: number[] = [];
+      const samples: { waitMs: number; holders: AuditLoadLockHolder[] }[] = [], unmatched: number[] = [];
       observer.track(holderPid, watchedKey, waitMs => unmatched.push(waitMs));
       observer.track(otherPid, watchedKey, waitMs => unmatched.push(waitMs));
-      const stop = observer.track(waiterPid, watchedKey, waitMs => samples.push(waitMs));
+      const stop = observer.track(waiterPid, watchedKey, (waitMs, holders) => samples.push({ waitMs, holders }));
       const started = performance.now();
       waitOn(waiter, watchedKey);
       await waitFor(() => samples.length > 0, 'Expected a sampled wait on the tracked advisory key');
-      assert(await isBlocked(waiterPid));
-      assert(samples.every(waitMs => Number.isFinite(waitMs) && waitMs > 0 && waitMs <= performance.now() - started + 1));
+      assert.deepEqual((await blockers(waiterPid)).sort(), [holderPid, queuedPid].sort());
+      for (const { waitMs, holders } of samples) {
+        assert(Number.isFinite(waitMs) && waitMs > 0 && waitMs <= performance.now() - started + 1);
+        assert.deepEqual(holders, [expectedHolder]);
+      }
       assert.deepEqual(unmatched, []);
 
       stop();
@@ -60,11 +73,13 @@ test('the isolated lock observer correlates only an ungranted lock for the track
       await observer.close();
       assert.equal(samples.length, observed);
       assert.equal(observer.failed, false);
-      assert(await isBlocked(waiterPid));
+      assert((await blockers(waiterPid)).includes(holderPid));
       await holder.query('ROLLBACK');
+      await queuedWait;
+      await queued.query('ROLLBACK');
       await Promise.all(blocked);
     } finally {
-      await Promise.allSettled([observer?.close(), holder.end(), waiter.end(), other.end(), ...blocked]);
+      await Promise.allSettled([observer?.close(), holder.end(), waiter.end(), queued.end(), other.end(), ...blocked]);
       await cluster.cleanup();
     }
   });

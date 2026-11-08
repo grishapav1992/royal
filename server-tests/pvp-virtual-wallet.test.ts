@@ -9,7 +9,7 @@ import {virtualPvpCommand} from '../server/pvp/virtual-service';
 import {demoBalanceUnits,saveDemoUnits,MAX_DEMO_UNITS,demoReservedUnits} from '../server/demoWalletAmounts';
 import {CommonSkinPayments} from '../server/skinPayments';
 import {NileCombatEscrow} from '../server/finance/combat-escrow';
-import {validVirtualPvpWallet,VIRTUAL_PVP_SCOPE} from '../src/shared/pvp';
+import {PVP_INVITE_MS,validVirtualPvpWallet,VIRTUAL_PVP_SCOPE} from '../src/shared/pvp';
 import {savedTower,seedDemoTower} from './helpers/removed-tower';
 
 async function fixture(amount=200){
@@ -92,6 +92,144 @@ test('fresh paid create and accept read the wallet once and retries read the set
       assert.equal(retried.wallet.reservedUnits, '0');
       assert.deepEqual(retried.wallet, await c.ledger.wallet(actor.accountId));
     }
+  } finally {
+    await c.close();
+  }
+});
+test('room sync reads one batch of bounded player histories and preserves private views', async t => {
+  const c = await fixture();
+  try {
+    const roomId = c.aa.roomId;
+    const guest = { accountId: randomUUID(), name: 'Сергей', roomId };
+    const people = [...c.people, { accountId: guest.accountId, name: guest.name, connected: true, available: true }];
+    await c.db.prepare('INSERT INTO accounts VALUES(?)').run(guest.accountId);
+    await c.common.operate(guest.accountId, { id: randomUUID(), kind: 'deposit', amount: 200 });
+    await c.store.syncRoom(roomId, people, c.now);
+
+    const opened = await c.store.command(c.aa, {
+      id: randomUUID(), action: 'create', gameId: 'durak', stakeUnits: '50000000', targetId: c.b,
+    }, c.now);
+    assert(opened.active);
+    const challengeId = opened.active.id;
+    await c.store.command(c.bb, { id: randomUUID(), action: 'accept', challengeId }, c.now);
+    for (const actor of [c.aa, c.bb]) {
+      await c.store.command(actor, { id: randomUUID(), action: 'ready', challengeId }, c.now);
+    }
+    const invite = await c.store.command(guest, {
+      id: randomUUID(), action: 'create', gameId: 'chess', stakeUnits: '50000000', targetId: c.a,
+    }, c.now);
+    assert(invite.active);
+    const inviteId = invite.active.id;
+    const cardRow = await c.db.prepare('SELECT payload FROM pvp_matches WHERE id=?').get(challengeId);
+    assert(cardRow);
+    const { cards } = JSON.parse(String(cardRow.payload)) as { cards: { hands: [number[], number[]] } };
+
+    const pastOpponent = randomUUID();
+    const template = opened.active;
+    const histories = [c.aa, c.bb].map((actor, side) => Array.from({ length: 101 }, (_, rank) => {
+      const updatedAt = c.now - (rank * 2 + side + 1);
+      const challenge = {
+        ...template, id: randomUUID(), gameId: 'chess', creatorId: actor.accountId, creatorName: actor.name,
+        targetId: pastOpponent, opponentId: pastOpponent, opponentName: 'Бывший соперник',
+        status: 'finished', winnerId: actor.accountId, reason: 'resign', createdAt: updatedAt - 1, expiresAt: updatedAt,
+      };
+      return { id: challenge.id, creatorId: challenge.creatorId, updatedAt,
+        payload: JSON.stringify({ challenge, roomId, cards: null, lastMoveAt: updatedAt, roomSeenAt: updatedAt }) };
+    }));
+    const historyRows = histories.flat();
+    await c.db.prepare(`INSERT INTO pvp_matches(id,room_id,creator_id,opponent_id,status,payload,updated_at)
+      SELECT id,?,creator_id,?,'finished',payload,updated_at
+      FROM unnest(?::text[],?::text[],?::text[],?::bigint[]) AS history(id,creator_id,payload,updated_at)`)
+      .run(roomId, pastOpponent, historyRows.map(row => row.id), historyRows.map(row => row.creatorId),
+        historyRows.map(row => row.payload), historyRows.map(row => row.updatedAt));
+
+    const queries = t.mock.method(c.db as unknown as { query(sql: string): Promise<unknown> }, 'query');
+    const snapshots = await c.store.syncRoom(roomId, people, c.now);
+    const candidateReads = queries.mock.calls.filter(({ arguments: [sql] }) =>
+      /\bfrom\s+pvp_matches\b/i.test(sql) && /\border\s+by\s+(?:\w+\.)?updated_at\s+desc\b/i.test(sql)).length;
+    queries.mock.restore();
+    assert.deepEqual(snapshots.map(row => row.accountId), [c.a, c.b, guest.accountId]);
+    const [left, right, guestView] = snapshots.map(row => row.snapshot);
+    for (const [side, snapshot] of [left, right].entries()) {
+      assert.equal(snapshot.active?.id, challengeId);
+      assert(snapshot.cards);
+      assert.deepEqual(snapshot.cards.hand, cards.hands[side]);
+      assert.equal(Object.hasOwn(snapshot.cards, 'hands'), false);
+      assert.deepEqual(snapshot.challenges.filter(challenge => challenge.status === 'finished').map(challenge => challenge.id),
+        histories[side].slice(0, 98).map(row => row.id));
+    }
+    assert.equal(left.challenges.some(challenge => challenge.id === inviteId), true);
+    assert.equal(right.challenges.some(challenge => challenge.id === inviteId), false);
+    assert.equal(right.people.find(person => person.accountId === guest.accountId)?.available, false);
+    assert.deepEqual(guestView.challenges.map(challenge => challenge.id), [inviteId]);
+    assert.equal(guestView.cards, null);
+
+    const afterExpiry = await c.store.syncRoom(roomId, people, c.now + PVP_INVITE_MS);
+    for (const { accountId, snapshot } of afterExpiry) {
+      const invited = accountId === guest.accountId;
+      assert.equal(snapshot.active?.id, invited ? inviteId : challengeId);
+      assert.equal(snapshot.active?.status, 'cancelled');
+      assert.equal(snapshot.active?.reason, invited ? 'expired' : 'server');
+      assert(validVirtualPvpWallet(snapshot.wallet));
+      assert.equal(snapshot.wallet.balanceUnits, '200000000');
+      assert.equal(snapshot.wallet.reservedUnits, '0');
+    }
+    assert.equal(candidateReads, 1, 'read all candidate histories in one database query');
+  } finally {
+    await c.close();
+  }
+});
+test('command admission reads receipt and rate together while preserving the exact cutoff', async t => {
+  const c = await fixture();
+  try {
+    const create = { id: randomUUID(), action: 'create', gameId: 'chess', stakeUnits: '50000000', targetId: c.b };
+    const opened = await c.store.command(c.aa, create, c.now);
+    assert(opened.active);
+    const challengeId = opened.active.id;
+    await c.store.command(c.bb, { id: randomUUID(), action: 'accept', challengeId }, c.now);
+
+    const cutoff = c.now - 60_000;
+    const updated = await c.db.prepare('UPDATE pvp_requests SET created_at=? WHERE account_id=? AND id=?')
+      .run(cutoff, c.a, create.id);
+    assert.equal(updated.changes, 1);
+    const recentIds = Array.from({ length: 119 }, () => randomUUID());
+    await c.db.prepare(`INSERT INTO pvp_requests(account_id,id,request_key,match_id,created_at)
+      SELECT ?,id,request_key,?,? FROM unnest(?::text[],?::text[]) AS history(id,request_key)`)
+      .run(c.a, challengeId, cutoff + 1, recentIds, recentIds.map(id => JSON.stringify({ action: 'ready', challengeId, id })));
+
+    const queries = t.mock.method(c.db as unknown as { query(sql: string): Promise<unknown> }, 'query');
+    const admissionReads = () => {
+      const count = queries.mock.calls.filter(({ arguments: [sql] }) => /\bfrom\s+pvp_requests\b/i.test(sql)).length;
+      queries.mock.resetCalls();
+      return count;
+    };
+    const ready = { id: randomUUID(), action: 'ready', challengeId };
+    const accepted = await c.store.command(c.aa, ready, c.now);
+    const freshReads = admissionReads();
+    assert.equal(accepted.requestId, ready.id);
+    assert.equal(Object.getOwnPropertyDescriptor(accepted, 'replayed')?.value, false);
+    assert.deepEqual(accepted.active?.ready, [c.a]);
+
+    const cancel = { id: randomUUID(), action: 'cancel', challengeId };
+    await assert.rejects(c.store.command(c.aa, cancel, c.now), { status: 429 });
+    const deniedReads = admissionReads();
+    const replayed = await c.store.command(c.aa, create, c.now);
+    const replayReads = admissionReads();
+    assert.equal(replayed.requestId, create.id);
+    assert.equal(Object.getOwnPropertyDescriptor(replayed, 'replayed')?.value, true);
+    assert(replayed.active);
+    assert.equal(replayed.active.id, challengeId);
+    assert.equal(replayed.active.status, 'arriving');
+    assert.deepEqual(replayed.active.ready, [c.a]);
+
+    await assert.rejects(c.store.command(c.aa, { ...create, stakeUnits: '60000000' }, c.now),
+      { status: 409, code: 'Нельзя изменить отправленное действие.' });
+    const conflictReads = admissionReads();
+    queries.mock.restore();
+    assert.equal(await c.db.prepare('SELECT 1 FROM pvp_requests WHERE account_id=? AND id=?').get(c.a, cancel.id), undefined);
+    assert.equal(await c.balance(c.a), 15000);
+    assert.equal(await c.balance(c.b), 15000);
+    assert.deepEqual([freshReads, deniedReads, replayReads, conflictReads], [1, 1, 1, 1]);
   } finally {
     await c.close();
   }

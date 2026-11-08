@@ -1,23 +1,39 @@
 import pg, { type PoolConfig } from 'pg';
 
 const pollMs = 10;
+// pg_blocking_pids also includes queued blockers. Confirm a granted lock in the same lock snapshot.
 const waitSample = `
   WITH watched AS (
     SELECT pid, hashtextextended(label, 0) AS lock_key
     FROM unnest($1::integer[], $2::text[]) AS target(pid, label)
+  ), locks AS MATERIALIZED (
+    SELECT pid, database, classid, objid, mode, granted, waitstart
+    FROM pg_locks
+    WHERE locktype = 'advisory' AND objsubid = 1
+      AND database = (SELECT oid FROM pg_database WHERE datname = current_database())
+  ), waiting AS MATERIALIZED (
+    SELECT l.*, pg_blocking_pids(l.pid) AS blocking_pids
+    FROM watched w
+    JOIN locks l ON l.pid = w.pid AND NOT l.granted AND l.mode = 'ExclusiveLock'
+      AND l.classid::bigint = ((w.lock_key >> 32) & 4294967295::bigint)
+      AND l.objid::bigint = (w.lock_key & 4294967295::bigint)
+    JOIN pg_stat_activity a ON a.pid = l.pid AND a.datid = l.database
+    WHERE a.state = 'active' AND a.wait_event_type = 'Lock' AND a.wait_event = 'advisory'
+      AND a.query_start <= l.waitstart AND l.waitstart < statement_timestamp()
   )
-  SELECT l.pid, (EXTRACT(EPOCH FROM (statement_timestamp() - l.waitstart)) * 1000)::float8 AS wait_ms
-  FROM watched w
-  JOIN pg_locks l ON l.pid = w.pid AND l.locktype = 'advisory' AND NOT l.granted
-    AND l.mode = 'ExclusiveLock' AND l.objsubid = 1
-    AND l.classid::bigint = ((w.lock_key >> 32) & 4294967295::bigint)
-    AND l.objid::bigint = (w.lock_key & 4294967295::bigint)
-  JOIN pg_stat_activity a ON a.pid = l.pid AND a.datid = l.database
-  WHERE a.datname = current_database() AND a.state = 'active'
-    AND a.wait_event_type = 'Lock' AND a.wait_event = 'advisory'
-    AND a.query_start <= l.waitstart AND l.waitstart < statement_timestamp()`;
+  SELECT w.pid, (EXTRACT(EPOCH FROM (statement_timestamp() - w.waitstart)) * 1000)::float8 AS wait_ms,
+    COALESCE((SELECT json_agg(json_build_object('pid', a.pid,
+      'transactionStartMs', (EXTRACT(EPOCH FROM a.xact_start) * 1000)::float8) ORDER BY a.pid)
+    FROM pg_stat_activity a
+    WHERE a.pid = ANY(w.blocking_pids) AND a.datid = w.database
+      AND a.backend_start <= a.xact_start AND a.xact_start <= statement_timestamp()
+      AND EXISTS (SELECT 1 FROM locks h WHERE h.pid = a.pid AND h.granted
+        AND h.database = w.database AND h.classid = w.classid AND h.objid = w.objid
+        AND h.mode IN ('ExclusiveLock', 'ShareLock'))), '[]'::json) AS holders
+  FROM waiting w`;
 
-type Watch = { key: string; observe: (waitMs: number) => void };
+export type AuditLoadLockHolder = { pid: number; transactionStartMs: number };
+type Watch = { key: string; observe: (waitMs: number, holders: AuditLoadLockHolder[]) => void };
 
 /** Uses a separate connection to sample a wait only while a fixture command is awaiting its lock. */
 export async function startAuditLoadLockObserver(config: PoolConfig) {
@@ -56,13 +72,13 @@ export async function startAuditLoadLockObserver(config: PoolConfig) {
   }
 
   async function sample(watches: Map<number, Watch>) {
-    const { rows } = await client.query<{ pid: number; wait_ms: number }>(waitSample,
+    const { rows } = await client.query<{ pid: number; wait_ms: number; holders: AuditLoadLockHolder[] }>(waitSample,
       [[...watches.keys()], [...watches.values()].map(watch => watch.key)]);
     for (const row of rows) {
       const watch = watches.get(row.pid);
       // A backend can be reused for another query while the sample is on its way back.
       if (watch && pending.get(row.pid) === watch && Number.isFinite(row.wait_ms) && row.wait_ms > 0) {
-        watch.observe(row.wait_ms);
+        watch.observe(row.wait_ms, row.holders);
       }
     }
   }
@@ -82,7 +98,7 @@ export async function startAuditLoadLockObserver(config: PoolConfig) {
 
   return {
     get failed() { return failed; },
-    track(pid: number, key: string, observe: (waitMs: number) => void) {
+    track(pid: number, key: string, observe: Watch['observe']) {
       if (closed || failed) return () => {};
       const watch = { key, observe };
       pending.set(pid, watch);
