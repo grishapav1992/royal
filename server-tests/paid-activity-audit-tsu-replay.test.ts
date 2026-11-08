@@ -27,13 +27,20 @@ async function fixture(t: TestContext) {
   await wallet.ready;
   for (const actor of [a, b]) await wallet.operate(actor.accountId, { id: randomUUID(), kind: 'deposit', amount: 100 });
   const ledger = new VirtualPvpLedger(game, wallet);
-  const store = new PvpStore(ledger), combat = new NileCombatEscrow(ledger);
+  let store = new PvpStore(ledger);
+  const combat = new NileCombatEscrow(ledger);
   const datasets = new AuditDatasets(audit, { game: game.schema });
   const replays = new AuditReplayStore(audit);
-  await Promise.all([store.ready, combat.ready, datasets.ready, replays.ready]);
+  await Promise.all([store.ready, combat.ready, datasets.ready]);
   const { datasetId, startedAtMs } = await datasets.startTest();
   const scope = { datasetId, environment: 'test' } as const;
-  const recordings: CapturedTsuReplay[] = [], capture = new TsuTurnReplayCapture(row => recordings.push(row));
+  const recordings: CapturedTsuReplay[] = [];
+  let capture = new TsuTurnReplayCapture(row => recordings.push(row));
+  const restartObserver = async () => {
+    store = new PvpStore(ledger);
+    capture = new TsuTurnReplayCapture(row => recordings.push(row));
+    await store.ready;
+  };
   let now = startedAtMs;
   const sync = async (at: number, connected = true) => {
     now = at;
@@ -58,7 +65,7 @@ async function fixture(t: TestContext) {
   }
   const move = (actor: typeof a, round: number, choice: TsuEFaChoice, id = randomUUID(), captureReply = true) =>
     command(actor, { id, action: 'move', challengeId: matchId, revision: 0, move: { kind: 'choose', round, choice } }, captureReply);
-  return { game, audit, replays, scope, a, b, matchId, sync, command, move, now: () => now, recordings };
+  return { game, audit, replays, scope, a, b, matchId, sync, command, move, now: () => now, recordings, restartObserver };
 }
 
 test('v4 records server reveals, reconnect and exact wallet links without exporting choices early', async t => {
@@ -103,6 +110,59 @@ test('v4 records server reveals, reconnect and exact wallet links without export
   if (end.kind === 'terminal' && end.state.profile === 'pvp-turn-based') end.state.board[8] = 2;
   const { formatVersion, scope, replayId, entityId, game, initial, coverage, gaps } = loaded.value.manifest;
   const invalid = createReplayPackage({ formatVersion, scope, replayId, entityId, game, initial, coverage, gaps }, corruptEvents);
+  assert.equal(verifyTsuTurnReplay(invalid).status, 'corrupt');
+});
+
+test('a restarted observer records a paid Tsu suffix from the recovered public position', async t => {
+  const f = await fixture(t);
+  await f.move(f.a, 1, 'rock');
+  const first = await f.move(f.b, 1, 'scissors');
+  const revealed = await f.sync(first.tsuEFa!.duel!.endsAt);
+  await f.sync(revealed.tsuEFa!.duel!.endsAt);
+  await f.move(f.a, 2, 'paper');
+
+  await f.restartObserver();
+  const firstObserved = await f.sync(f.now() + 1);
+  assert.equal(firstObserved.active?.status, 'playing');
+  assert.equal(firstObserved.tsuEFa?.choice, 'paper');
+  const locked = await f.move(f.b, 2, 'rock');
+  await f.sync(locked.tsuEFa!.duel!.endsAt);
+
+  assert.equal(f.recordings.length, 1);
+  const [recording] = f.recordings;
+  assert.equal(recording.initial, null);
+  assert.deepEqual(recording.gaps, ['initial-state-unavailable', 'event-gap']);
+  assert.equal(await persistCapturedTsuReplay(f.audit, f.scope, f.game.schema, recording), 'recorded');
+  assert.equal(await persistCapturedTsuReplay(f.audit, f.scope, f.game.schema, recording), 'replayed');
+  const loaded = await f.replays.read(f.scope, f.matchId);
+  assert.equal(loaded.status, 'verified');
+  if (loaded.status !== 'verified') return;
+  assert.deepEqual(verifyTsuTurnReplay(loaded.value), { status: 'verified', engineVerified: false });
+  const viewer = prepareViewerReplay(loaded.value);
+  assert.equal(viewer.status, 'ready');
+  if (viewer.status === 'ready') assert.equal(viewer.engineVerified, false);
+  const events = loaded.value.fragments.flatMap(fragment => fragment.events);
+  assert.deepEqual(events.map(event => event.data.kind), ['checkpoint', 'action', 'checkpoint', 'terminal']);
+  const boundary = events[0].data;
+  assert.ok(boundary.kind === 'checkpoint' && boundary.state.profile === 'pvp-turn-based');
+  assert.equal(boundary.state.turn, 2);
+  assert.deepEqual(boundary.state.board.slice(4), [1, 1, 1, 2, 1]);
+  assert.equal(events[0].atMs, 0);
+  assert(events.slice(0, -1).every(event => !event.money && event.postings.length === 0));
+  const end = events.at(-1)!;
+  assert.ok(end.data.kind === 'terminal' && end.data.state.profile === 'pvp-turn-based');
+  assert.equal(end.data.winnerSeat, 1);
+  assert.deepEqual(end.data.state.board.slice(5), [2, 3, 1, 1]);
+  const posting = (await f.game.prepare('SELECT id::text FROM demo_ledger WHERE account_id=? AND operation_id=?')
+    .get(f.a.accountId, 'pvp:' + f.matchId + ':final'))!.id;
+  assert.deepEqual(end.money, [{ movement: 'payout', units: '19', posting: { namespace: f.game.schema + '.demo_ledger', rowId: posting } }]);
+  const reserve = (await f.game.prepare('SELECT id::text FROM demo_ledger WHERE account_id=? AND operation_id=?')
+    .get(f.a.accountId, 'pvp:' + f.matchId + ':hold'))!.id;
+  const forged = structuredClone(events);
+  forged[0].postings = [{ namespace: f.game.schema + '.demo_ledger', rowId: reserve }];
+  forged[0].money = [{ movement: 'reserve', units: '-10', posting: forged[0].postings[0] }];
+  const { formatVersion, scope, replayId, entityId, game, initial, coverage, gaps } = loaded.value.manifest;
+  const invalid = createReplayPackage({ formatVersion, scope, replayId, entityId, game, initial, coverage, gaps }, forged);
   assert.equal(verifyTsuTurnReplay(invalid).status, 'corrupt');
 });
 

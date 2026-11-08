@@ -3,7 +3,7 @@ import { isReplayId, type ReplayEvent } from './replay-package';
 import { tsuReplayState, verifyTsuTerminal, verifyTsuTransition, type CapturedTsuReplay } from './replay-pvp-tsu';
 
 type Seat = 1 | 2;
-type State = CapturedTsuReplay['initial'];
+type State = NonNullable<CapturedTsuReplay['initial']>;
 type Active = { recording: CapturedTsuReplay; state: State; revision: number; startedAt: number;
   observedAt: number; presence: Set<Seat>; participants: [string, string]; gap: boolean };
 type Command = { id?: unknown; action?: unknown; challengeId?: unknown };
@@ -36,12 +36,15 @@ export class TsuTurnReplayCapture {
       const ongoing = challenge.status === 'playing';
       const state = tsuReplayState(view, ongoing ? 'open' : challenge.reason === 'server' ? 'cancelled' : 'settled');
       let active = this.active.get(challenge.id);
-      if (!active && ongoing && state && view.revision === 0 && view.duel.startsAt === now &&
-          command?.action === 'duel-ready' && !view.duel.paused && this.active.size < 32) {
+      const originalStart = view.revision === 0 && view.duel.startsAt === now && command?.action === 'duel-ready';
+      const laterObservation = view.revision > 0 || view.duel.startsAt < now;
+      if (!active && ongoing && state && (originalStart || laterObservation) &&
+          !view.duel.paused && !challenge.disconnected.length && this.active.size < 32) {
         const participants: Active['participants'] = [challenge.creatorId, challenge.opponentId];
-        const recording: CapturedTsuReplay = { matchId: challenge.id, initial: state, events: [], lockReceipts: [], gaps: [],
+        const recording: CapturedTsuReplay = { matchId: challenge.id, initial: originalStart ? state : null, events: [],
+          lockReceipts: [], gaps: originalStart ? [] : ['initial-state-unavailable', 'event-gap'],
           settlement: { reason: '', winnerSeat: null, finishedAtMs: 0 } };
-        active = { recording, state, revision: 0, startedAt: view.duel.startsAt, observedAt: now,
+        active = { recording, state, revision: view.revision, startedAt: now, observedAt: now,
           presence: new Set(), participants, gap: false };
         this.active.set(challenge.id, active);
         append(active, active.startedAt, { kind: 'checkpoint', state });
@@ -115,7 +118,8 @@ export class TsuTurnReplayCapture {
       }
     }
     if (active.recording.events.at(-1)?.data.kind !== 'terminal') {
-      active.recording.gaps.push('event-gap', 'terminal-unavailable');
+      if (!active.recording.gaps.includes('event-gap')) active.recording.gaps.push('event-gap');
+      active.recording.gaps.push('terminal-unavailable');
     }
     this.sink(active.recording);
   }

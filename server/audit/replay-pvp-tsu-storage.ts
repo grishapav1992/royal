@@ -45,7 +45,7 @@ export async function persistCapturedTsuReplay(audit: PostgresDatabase, scope: A
       const movement = hold ? 'reserve' : posting.entryType === 'refund' ? 'refund' : 'payout';
       (hold ? start : finish).push({ movement, units: posting.units, posting: posting.source });
     }
-    return { start, finish, sourceGap: start.length !== 2, missingLock: missingLock?.sequence };
+    return { start, finish, sourceGap: recording.initial !== null && start.length !== 2, missingLock: missingLock?.sequence };
   }, { readOnly: true });
   if (!links) return 'not-captured';
   const provenRecording = links.missingLock === undefined ? recording : { ...recording,

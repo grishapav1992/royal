@@ -282,9 +282,12 @@ file.addEventListener('change', async () => {
     frame = 0;
     const coverage = manifest.coverage === 'partial' ? 'Частичная запись · ' + manifest.gaps.map(gap => gaps[gap]).join(', ')
       : 'Полная запись';
-    const firstBoard = manifest.game.gameId === 'chess' && !manifest.initial
+    const gameId = manifest.game.gameId;
+    const firstBoard = !manifest.initial && (gameId === 'chess' || gameId === 'tsu-e-fa')
       ? replay.frames.find(frame => frame.state)?.state : null;
-    const boundary = firstBoard?.profile === 'pvp-turn-based' ? ' · с позиции после полухода ' + firstBoard.turn : '';
+    const boundary = firstBoard?.profile === 'pvp-turn-based'
+      ? (gameId === 'chess' ? ' · с позиции после полухода ' : ' · с первого наблюдения в раунде ') + firstBoard.turn
+      : '';
     message(coverage + boundary + (replay.engineVerified
       ? manifest.game.engineId === 'royal-tsu-duel' ? ' · раскрытие и счёт проверены' : ' · состояния сверены движком'
       : ' · целостность пакета проверена'));

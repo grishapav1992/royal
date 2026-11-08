@@ -70,6 +70,8 @@ export function verifyTsuTurnReplay(input: unknown) {
   const { manifest, fragments } = checked.value;
   const corrupt = { status: 'corrupt' } as const;
   if (manifest.timing) return corrupt;
+  const suffix = manifest.initial === null;
+  if (suffix && !manifest.gaps.includes('initial-state-unavailable')) return corrupt;
   const partial = manifest.gaps.some(gap => gap === 'event-gap' || gap === 'initial-state-unavailable');
   let current = manifest.initial, locked = 0, resigned: Seat | null = null, sequence = 0;
   let needsInitialCheckpoint = true;
@@ -77,6 +79,10 @@ export function verifyTsuTurnReplay(input: unknown) {
   if (current && (!validState(current) || !sameBoard(current.board, initialBoard))) return corrupt;
   for (const fragment of fragments) for (const event of fragment.events) {
     const { data } = event;
+    if (suffix && (event.sequence !== sequence + 1 ||
+        (!sequence && (data.kind !== 'checkpoint' || event.atMs !== 0)) ||
+        (data.kind !== 'terminal' && (event.postings.length > 0 || event.money?.length)) ||
+        event.money?.some(leg => leg.movement !== 'payout' && leg.movement !== 'refund'))) return corrupt;
     if (event.sequence !== ++sequence) {
       if (!partial) return corrupt;
       sequence = event.sequence;
@@ -117,7 +123,7 @@ export function verifyTsuTurnReplay(input: unknown) {
 
 export type CapturedTsuReplay = {
   matchId: string;
-  initial: TurnState;
+  initial: TurnState | null;
   events: ReplayEvent[];
   lockReceipts: { requestId: string; seat: Seat; round: number; at: number; sequence: number }[];
   gaps: ReplayManifest['gaps'];
@@ -130,7 +136,7 @@ export function buildTsuTurnReplay(recording: CapturedTsuReplay, scope: AuditSco
   const gaps = [...recording.gaps];
   if (links.sourceGap) gaps.push('source-unavailable');
   const events = recording.events.map((event, index) => {
-    const money = index === 0 ? links.start : event.data.kind === 'terminal' ? links.finish : undefined;
+    const money = index === 0 && recording.initial ? links.start : event.data.kind === 'terminal' ? links.finish : undefined;
     return { ...event, postings: money?.map(leg => leg.posting) ?? [], ...(money?.length ? { money } : {}) };
   });
   const pack = createReplayPackage({ formatVersion: 2, scope, replayId: recording.matchId, entityId: recording.matchId,

@@ -128,7 +128,7 @@ function poolIdlePackage() {
   ]);
 }
 
-function tsuPackage() {
+function tsuPackage(late = false) {
   const { formatVersion, ...game } = tsuTurnReplayDefinition, replayId = randomUUID();
   assert(formatVersion === 2);
   const state = (round: number, board: number[]) => ({ profile: 'pvp-turn-based' as const, phase: 'open' as const,
@@ -145,6 +145,9 @@ function tsuPackage() {
     { atMs: 200, data: checkpoint([1, 0, 0, 1, 3, 0, 0, 0, 0]) },
     { atMs: 2000, data: checkpoint([2, 1, 0, 2, 0, 1, 1, 2, 1], 2) },
   ];
+  if (late) return createReplayPackage({ formatVersion, game, initial: null, scope, replayId, entityId: replayId,
+    coverage: 'partial', gaps: ['initial-state-unavailable', 'event-gap', 'terminal-unavailable'] },
+  [{ ...steps[5], atMs: 0, sequence: 1, postings: [] }]);
   return createReplayPackage({ formatVersion, game, initial, scope, replayId, entityId: replayId,
     coverage: 'partial', gaps: ['terminal-unavailable'] }, steps.map((event, i) => ({ ...event, sequence: i + 1, postings: [] })));
 }
@@ -266,6 +269,11 @@ test('serves the full investigation flow from a local HTML file with networking 
   await expect(state).toHaveText(/Отсчёт.*выбор зафиксирован у обоих/);
   await expect(state).not.toHaveText(/Камень|Ножницы/);
   await jump(6);
+  await expect(state).toHaveText(/Раскрытие раунда 1.*Камень \/ Ножницы/);
+
+  await upload(tsuPackage(true));
+  await expect(status).toHaveText(/Частичная запись.*с первого наблюдения в раунде 2.*целостность пакета проверена/);
+  await jump(1);
   await expect(state).toHaveText(/Раскрытие раунда 1.*Камень \/ Ножницы/);
 
   await upload(legacyCasinoPackage());
