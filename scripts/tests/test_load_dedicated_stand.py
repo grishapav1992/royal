@@ -141,6 +141,27 @@ class DedicatedStandTests(unittest.TestCase):
         with self.assertRaises(HELPER.Refused):
             HELPER.validate({**valid, 'tlsGateway': HELPER.TLS_GATEWAY})
 
+    def test_chat_v2_requires_exact_shape_parent_workload_and_integer_bounds(self):
+        profile = {'clients': 1000, 'seconds': 60, 'steadyPerSecond': 333}
+        self.assertNotIn('chatV2', plan())
+        for valid in [profile, {**profile, 'movingClients': 1000},
+                      {**profile, 'steadyPerSecond': 0, 'movingClients': 0, 'burst': {'count': 1000, 'atSecond': 59}}]:
+            with self.subTest(valid=valid):
+                self.assertEqual(HELPER.validate({**plan(), 'chatV2': valid})['chatV2'], valid)
+        for invalid in [None, False, [], {}, {**profile, 'clients': 999}, {**profile, 'seconds': 59},
+                        {**profile, 'seconds': 60.0}, {**profile, 'steadyPerSecond': True},
+                        {**profile, 'steadyPerSecond': 334}, {**profile, 'steadyPerSecond': 0},
+                        {**profile, 'movingClients': False}, {**profile, 'movingClients': 1001},
+                        {**profile, 'walletPerSecond': 25}, {**profile, 'burst': None},
+                        {**profile, 'burst': {'count': 1, 'atSecond': 0, 'extra': 1}},
+                        {**profile, 'burst': {'count': True, 'atSecond': 0}},
+                        {**profile, 'burst': {'count': 0, 'atSecond': 0}},
+                        {**profile, 'burst': {'count': 1001, 'atSecond': 0}},
+                        {**profile, 'burst': {'count': 1, 'atSecond': False}},
+                        {**profile, 'burst': {'count': 1, 'atSecond': 60}}]:
+            with self.subTest(invalid=invalid), self.assertRaisesRegex(HELPER.Refused, 'invalid-chat-v2-profile'):
+                HELPER.validate({**plan(), 'chatV2': invalid})
+
     def test_gateway_accepts_exact_largest_profile_owners(self):
         self.plan.update(clients=10000, gameProcesses=36)
         gateway = self.stand.tls_config(38001)['apps']['http']['servers']['gateway']
@@ -237,8 +258,20 @@ class DedicatedStandTests(unittest.TestCase):
         mounts = [created[index + 1] for index, value in enumerate(created) if value == '--mount']
         self.assertEqual(mounts, ['type=bind,src=' + str(self.root / 'run') + ',dst=/app/run'])
         self.assertNotIn('--ulimit', created)
+        self.assertFalse(any(arg.startswith('--chat-v2-') for arg in created))
         self.assertFalse(any(args[:2] == ['docker', 'start'] for args, _ in self.docker.calls))
         self.assertFalse((self.root / 'metadata-verified.copy').exists())
+
+    def test_container_passes_exact_chat_v2_flags_including_zero_moving_clients(self):
+        self.plan.update(clients=10000, gameProcesses=34, seconds=1800, chatV2={
+            'clients': 10000, 'seconds': 1800, 'steadyPerSecond': 333, 'movingClients': 0,
+            'burst': {'count': 10000, 'atSecond': 1799}})
+        with patch.object(self.stand, 'host_gate'):
+            self.stand.create()
+        created = self.docker.mutations()[0]
+        flags = [(arg, created[index + 1]) for index, arg in enumerate(created) if arg.startswith('--chat-v2-')]
+        self.assertEqual(flags, [('--chat-v2-rate', '333'), ('--chat-v2-moving-clients', '0'),
+                                 ('--chat-v2-burst', '10000'), ('--chat-v2-burst-at-second', '1799')])
 
     def test_large_container_sets_bounded_file_limit_and_exact_workload(self):
         self.plan.update(clients=10000, gameProcesses=34, seconds=1800)
@@ -486,6 +519,27 @@ class DedicatedStandTests(unittest.TestCase):
         self.assertNotIn('tokens', result)
         with patch.object(HELPER, 'alive', return_value=False):
             self.assertFalse(self.stand.status()['ready'])
+
+    def test_readiness_attests_the_exact_chat_v2_profile(self):
+        profile = {'clients': 1000, 'seconds': 60, 'steadyPerSecond': 1, 'movingClients': 0}
+        self.plan['chatV2'] = profile
+        self.docker.created('running')
+        self.state(phase='running', assetsVerified=True)
+        HELPER.write_private(self.stand.guard_path, {'runId': RUN, 'phase': 'watching', 'pid': 200, 'ticks': 'ticks'})
+        self.fixture()
+        fixture = HELPER.private_json(self.stand.manifest)
+        with patch.object(HELPER, 'alive', return_value=True):
+            with self.assertRaisesRegex(HELPER.Refused, 'manifest-attestation-failed'):
+                self.stand.status()
+            for invalid in [None, {**profile, 'movingClients': False}, {**profile, 'steadyPerSecond': 2}]:
+                HELPER.write_private(self.stand.manifest, {**fixture, 'chatV2': invalid})
+                with self.subTest(invalid=invalid), self.assertRaisesRegex(HELPER.Refused, 'manifest-attestation-failed'):
+                    self.stand.status()
+            HELPER.write_private(self.stand.manifest, {**fixture, 'chatV2': profile})
+            self.assertTrue(self.stand.status()['ready'])
+            self.plan.pop('chatV2')
+            with self.assertRaisesRegex(HELPER.Refused, 'manifest-attestation-failed'):
+                self.stand.status()
 
 
 class TlsGatewayTests(unittest.TestCase):
@@ -805,6 +859,17 @@ class TlsGatewayTests(unittest.TestCase):
             self.assertEqual(context.wrap_socket.call_args.kwargs['server_hostname'], 'royal-load.test')
             self.assertIn(b'Authorization: Bearer ' + fixture['secret'].encode(), connection.sendall.call_args.args[0])
             self.assertEqual(response.read.call_args.args, (65537,))
+            profile = {'clients': 1000, 'seconds': 60, 'steadyPerSecond': 1}
+            self.plan['chatV2'] = profile
+            mixed_fixture = {**fixture, 'chatV2': profile}
+            with self.assertRaisesRegex(HELPER.Refused, 'tls-attestation-mismatch'):
+                self.stand.tls_probe_connection(mixed_fixture, self.CERTIFICATE)
+            response.read.return_value = json.dumps({**value, 'chatV2': {**profile, 'steadyPerSecond': True}}).encode()
+            with self.assertRaisesRegex(HELPER.Refused, 'tls-attestation-mismatch'):
+                self.stand.tls_probe_connection(mixed_fixture, self.CERTIFICATE)
+            response.read.return_value = json.dumps({**value, 'chatV2': profile}).encode()
+            self.stand.tls_probe_connection(mixed_fixture, self.CERTIFICATE)
+            self.plan.pop('chatV2')
             response.read.return_value = json.dumps({**value, 'runId': RUN}).encode()
             with self.assertRaisesRegex(HELPER.Refused, 'tls-attestation-mismatch'):
                 self.stand.tls_probe_connection(fixture, self.CERTIFICATE)

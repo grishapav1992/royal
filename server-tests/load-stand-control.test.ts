@@ -109,7 +109,12 @@ test('only an attested V2 profile uses a fixed future epoch and rejects results 
   const chatV2 = { clients: 4, seconds: 1, steadyPerSecond: 2 };
   const { control } = await make({ status: { clients: 4, seconds: 1, chatV2 } });
   t.after(() => control.close());
-  assert.deepEqual((await begin(control.port, '/status').response).body.chatV2, chatV2);
+  const clockBefore = Date.now();
+  const status = (await begin(control.port, '/status').response).body;
+  assert.deepEqual(status.chatV2, chatV2);
+  assert(Number.isSafeInteger(status.serverTimeMs) && status.serverTimeMs >= clockBefore && status.serverTimeMs <= Date.now());
+  const unauthorized = await begin(control.port, '/status', undefined, { headers: { authorization: '' } }).response;
+  assert.deepEqual(unauthorized, { status: 401, body: { error: 'stand-request-rejected' } });
   assert.equal((await begin(control.port, '/prepared', { ...preparedBody, startAtUnixMs: Date.now() + 1_000 },
     { headers: { authorization: '' } }).response).status, 401);
   const ready = begin(control.port, '/prepared', preparedBody);
@@ -236,7 +241,8 @@ test('close releases held and idle sockets, is idempotent, and leaves unrelated 
 
 test('invalid options and sensitive metadata fail before opening any listener', async () => {
   for (const overrides of [{ secret: 'wrong' }, { secret: secret.toUpperCase() }, { runId: '../other' }, { expiresAt: Date.now() - 1 },
-    { expiresAt: Date.now() + MAX_STAND_SESSION_MS + 60000 }, { status: { nested: { tokens: ['private'] } } }]) {
+    { expiresAt: Date.now() + MAX_STAND_SESSION_MS + 60000 }, { status: { nested: { tokens: ['private'] } } },
+    { status: { serverTimeMs: Date.now() } }]) {
     await assert.rejects(createStandControl(options(overrides).config), TypeError);
   }
   const aborted = new AbortController(); aborted.abort();

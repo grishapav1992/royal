@@ -9,7 +9,8 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { assessDedicatedStage, attestationCode, checkArtifactReadExitCode, checkOwnedStatus, checkTlsGatewayStatus, checkTlsProxyFinished, checkTlsProxyReady,
   classifyArtifactError,
-  directTlsProxyConfig, HELPER_SHA256, PRE_SCALE_HELPER_SHA256, PREVIOUS_HELPER_SHA256, LEGACY_HELPER_SHA256, localMeasurementWindow, MACHINE_SHA256,
+  directTlsProxyConfig, HELPER_SHA256, CAPACITY_HELPER_SHA256, PRE_SCALE_HELPER_SHA256, PREVIOUS_HELPER_SHA256,
+  LEGACY_HELPER_SHA256, localMeasurementWindow, MACHINE_SHA256,
   managedCommand, privateTemporaryDirectory, remoteArtifactReadCode, resourceCoverage, resourceMonitorCode, runDedicatedWebsocketStage, sshArguments,
   stopOwnedProcessGroup, stopOwnedTlsProxyProcessGroup, validateDedicatedStagePlan, validateTlsProxyDiagnostics,
   verifyManifest, verifyPublicCertificate } from '../run-dedicated-websocket-stage.mjs';
@@ -67,11 +68,48 @@ test('10k dedicated plans require 34 owners and the expanded helper, with bounde
   const verified = validateDedicatedStagePlan(expanded);
   assert.equal(verified.remotePlan.clients, 10000);
   assert.match(resourceMonitorCode(verified, id), /deadline=started\+3900/);
+  const priorCapacity = { ...expanded, remotePlan: { ...expanded.remotePlan, helperSha256: CAPACITY_HELPER_SHA256 } };
+  assert.equal(validateDedicatedStagePlan(priorCapacity).remotePlan.clients, 10000);
   const legacy = { ...expanded, remotePlan: { ...expanded.remotePlan, clients: 6000, gameProcesses: 24, helperSha256: PRE_SCALE_HELPER_SHA256 } };
   assert.match(resourceMonitorCode(validateDedicatedStagePlan(legacy), id), /deadline=started\+3300/);
   for (const patch of [{ gameProcesses: 33 }, { gameProcesses: 37 }, { clients: 10001 }, { helperSha256: PRE_SCALE_HELPER_SHA256 }]) {
     assert.throws(() => validateDedicatedStagePlan({ ...expanded, remotePlan: { ...expanded.remotePlan, ...patch } }), /invalid-stage-workload/);
   }
+});
+test('a dedicated mixed plan pins exact V2 workload parameters to the new helper', () => {
+  const chatV2 = { clients: 10000, seconds: 1800, steadyPerSecond: 333, movingClients: 1000, burst: { count: 10000, atSecond: 600 } };
+  const workload = { ...remotePlan, clients: chatV2.clients, seconds: chatV2.seconds, gameProcesses: 34 };
+  const localPlan = { ...plan, outputDir: resolve(tmpdir(), 'stage-test-output') };
+  const validate = (profile, helperSha256 = HELPER_SHA256) =>
+    validateDedicatedStagePlan({ ...localPlan, remotePlan: { ...workload, chatV2: profile, helperSha256 } });
+  assert.deepEqual(validate(chatV2).remotePlan.chatV2, chatV2);
+  assert.equal(validate({ ...chatV2, steadyPerSecond: 0, movingClients: 0 }).remotePlan.chatV2.movingClients, 0);
+  assert.throws(() => validate(chatV2, CAPACITY_HELPER_SHA256), /invalid-stage-chat-profile/);
+  for (const profile of [undefined, null, { ...chatV2, clients: 9999 }, { ...chatV2, seconds: 1 },
+    { ...chatV2, steadyPerSecond: true }, { ...chatV2, steadyPerSecond: 334 }, { ...chatV2, steadyPerSecond: 0, burst: undefined },
+    { ...chatV2, movingClients: -1 }, { ...chatV2, movingClients: 10001 },
+    { ...chatV2, burst: { count: 1, atSecond: 1800 } }, { ...chatV2, burst: { count: 10001, atSecond: 0 } },
+    { ...chatV2, burst: { count: 1, atSecond: 0, extra: true } }, { ...chatV2, extra: true }]) {
+    assert.throws(() => validate(profile), /invalid-stage-chat-profile/);
+  }
+});
+test('the actual manifest parser and dedicated attestation require exactly the planned chat profile', async () => {
+  const { tsImport } = await import('tsx/esm/api');
+  const { parseStandManifest, standHost } = await tsImport('../load-stand-contract.ts', import.meta.url);
+  const chatV2 = { clients: remotePlan.clients, seconds: remotePlan.seconds, steadyPerSecond: 333, movingClients: 0, burst: { count: 100, atSecond: 0 } };
+  const mixed = { ...plan, remotePlan: { ...remotePlan, chatV2 } };
+  const body = { ...manifest, tokens: Array.from({ length: remotePlan.clients }, (_, index) =>
+    createHash('sha256').update('synthetic-dedicated-manifest-' + index).digest('hex')), serverHost: standHost() };
+  const verify = (profile, currentPlan = mixed) => {
+    const data = Buffer.from(JSON.stringify({ ...body, chatV2: profile }));
+    return verifyManifest(currentPlan, data, { ...ready, manifestSha256: createHash('sha256').update(data).digest('hex') }, parseStandManifest);
+  };
+  assert.deepEqual(verify({ ...chatV2, burst: { atSecond: 0, count: 100 } }).chatV2, chatV2);
+  assert.throws(() => verify(undefined), /manifest-plan-mismatch/);
+  assert.throws(() => verify({ ...chatV2, movingClients: 1 }), /manifest-plan-mismatch/);
+  assert.throws(() => verify({ ...chatV2, burst: { count: 100, atSecond: 1 } }), /manifest-plan-mismatch/);
+  assert.throws(() => verify(chatV2, plan), /manifest-plan-mismatch/);
+  assert.equal(verify(undefined, plan).chatV2, undefined);
 });
 const handle = (done = pending()) => ({ child: { pid: 321 }, done, ended: false, stop: async () => true });
 const proxySha = '341eb48ae3909de3cb909e01dff5ef5db9cb1f0857e098b95b4988a26500de12';
@@ -676,4 +714,58 @@ test('empty or failed load checks cannot pass on connection counts alone', () =>
   for (const patch of [{ checks: {} }, { checks: { generatorSustainedTarget: false } }, { gameProcesses: 4 }, { cleanup: { passed: false } }])
     assert.equal(assessDedicatedStage(plan, outcome, { ...reports, server: { ...server, ...patch } }).ok, false);
   assert.equal(assessDedicatedStage(plan, outcome, { ...reports, generator: { ...generator, results: [{}] } }).ok, false);
+});
+test('mixed stage requires matching profile, common epoch and bounded clock evidence for a pilot verdict', () => {
+  const profile = { clients: 100, seconds: 15, steadyPerSecond: 333, movingClients: 12, burst: { count: 100, atSecond: 3 } };
+  const mixed = { ...plan, remotePlan: { ...remotePlan, chatV2: profile } };
+  const outcome = { generatorExitCode: 0, attestedBeforeGenerators: true, standRunId, containerId: id,
+    resourceMonitorExitCode: 0, resourceCoverage: { fullIntervalObserved: true }, stopConfirmed: true, remotePrivateFixtureGone: true,
+    ownedGroupsStopped: true, localPrivateFixtureGone: true, missingArtifacts: [], localMeasurementWindow: { generatorCompletedAtMs: 126000 } };
+  const startAtUnixMs = 106000;
+  const chatV2 = { profile, startAtUnixMs, qualification: 'isolated-websocket-pilot', targetAccepted: false };
+  const sample = { lowerOffsetMs: -5, upperOffsetMs: 8, maxRoundTripMs: 9, samples: 3 };
+  const clock = { maxOffsetMs: 50, beforeStart: { ...sample, checkedAtUnixMs: 103000 },
+    afterMeasurement: { ...sample, checkedAtUnixMs: 125000 } };
+  const movement = { plannedClients: 12, sentClients: 12, connectedClients: 12 };
+  const shardMovement = { plannedClients: 3, sentClients: 3, connectedClients: 3 };
+  const summary = { connectedClients: 100, movement };
+  const chatServer = { ...server, chatV2, summary,
+    checks: { ...server.checks, chatV2OfferedAtTarget: true, chatV2DeliveryComplete: true, movementCoverage: true } };
+  const chatGenerator = { ...generator, chatV2: { profile, startAtUnixMs, clock, crossHostClockOffsetVerified: true },
+    results: generator.results.map(result => ({ ...result, connectedClients: 25, chatV2: { startAtUnixMs }, movement: shardMovement })),
+    serverReport: { chatV2, summary } };
+  const reports = { server: chatServer, generator: chatGenerator, state, guardian, resourceSummary };
+  const verified = assessDedicatedStage(mixed, outcome, reports);
+  assert.equal(verified.ok, true);
+  assert.equal(verified.verdict, 'passed-dedicated-chat-v2-pilot');
+  assert.equal(verified.targetAccepted, false);
+  const window = localMeasurementWindow(mixed, 104000, 126000, chatGenerator);
+  assert.equal(window.measurePhaseObservedAtMs, 104000);
+  assert.equal(window.measurementStartAtMs, startAtUnixMs);
+  assert.equal(window.estimatedObservationEndAtMs, 123000);
+  const rejectsGenerator = patch => assert.equal(assessDedicatedStage(mixed, outcome, {
+    ...reports, generator: { ...chatGenerator, ...patch },
+  }).ok, false);
+  rejectsGenerator({ chatV2: undefined });
+  rejectsGenerator({ chatV2: { ...chatGenerator.chatV2, profile: { ...profile, movingClients: 11 } } });
+  rejectsGenerator({ serverReport: { ...chatGenerator.serverReport, chatV2: { ...chatV2, startAtUnixMs: 106001 } } });
+  rejectsGenerator({ serverReport: { ...chatGenerator.serverReport, chatV2: { ...chatV2, targetAccepted: true } } });
+  rejectsGenerator({ results: [generator.results[0], ...chatGenerator.results.slice(1)] });
+  rejectsGenerator({ results: [{ ...chatGenerator.results[0], connectedClients: 24 }, ...chatGenerator.results.slice(1)] });
+  rejectsGenerator({ results: [{ ...chatGenerator.results[0], movement: { ...shardMovement, sentClients: 2 } }, ...chatGenerator.results.slice(1)] });
+  rejectsGenerator({ chatV2: { ...chatGenerator.chatV2, crossHostClockOffsetVerified: false } });
+  rejectsGenerator({ chatV2: { ...chatGenerator.chatV2, clock: { ...clock, beforeStart: { ...clock.beforeStart, checkedAtUnixMs: 64999 } } } });
+  for (const badAfter of [{ lowerOffsetMs: 10, upperOffsetMs: 20 }, { upperOffsetMs: 51 },
+    { checkedAtUnixMs: 120999 }, { checkedAtUnixMs: 126001 }]) {
+    const changed = { ...chatGenerator, chatV2: { ...chatGenerator.chatV2, clock: { ...clock, afterMeasurement: {
+      ...clock.afterMeasurement, ...badAfter,
+    } } } };
+    rejectsGenerator({ chatV2: changed.chatV2 });
+    assert.equal(localMeasurementWindow(mixed, 104000, 126000, changed).estimatedObservationEndAtMs, null);
+  }
+  const invalidWorker = { ...chatGenerator, results: [null, ...chatGenerator.results.slice(1)] };
+  assert.equal(localMeasurementWindow(mixed, 104000, 126000, invalidWorker).estimatedObservationEndAtMs, null);
+  assert.equal(assessDedicatedStage(mixed, outcome, { ...reports, generator: invalidWorker }).ok, false);
+  assert.equal(assessDedicatedStage(mixed, outcome, { ...reports, server: { ...chatServer, chatV2: { ...chatV2, targetAccepted: true } } }).ok, false);
+  assert.equal(assessDedicatedStage(mixed, outcome, { ...reports, server }).ok, false);
 });

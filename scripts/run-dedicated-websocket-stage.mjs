@@ -6,14 +6,16 @@ import { createServer } from 'node:net';
 import { homedir, tmpdir } from 'node:os';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { isDeepStrictEqual } from 'node:util';
 
 const project = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-export const HELPER_SHA256 = 'd6b95bb623305220e4b18e8b1e3860d55e0ba4e3d28c1979bea18a422467f8af';
+export const HELPER_SHA256 = 'b6fc993b27f7b47fbf589d837ac0ff97bac3474148a8f4050f654ecf4b430f8e';
+export const CAPACITY_HELPER_SHA256 = 'd6b95bb623305220e4b18e8b1e3860d55e0ba4e3d28c1979bea18a422467f8af';
 export const PRE_SCALE_HELPER_SHA256 = 'b1ce729747c84a8b6228f2579175abf1a605c34682eae8244369d1a2107212d8';
 export const PREVIOUS_HELPER_SHA256 = 'e27d3a70dfa0405fb99477bfa246aa9287d9b2039f7f5085cccd5dcb7570416c';
 export const LEGACY_HELPER_SHA256 = '5421303dac2e8a6f814f3c3f7ffaaa78305a56ef291b719d6e5cf921917a2ceb';
 export const MACHINE_SHA256 = '97966a66c8d354a25927d498a4b44f23e9d49c3e7c2941ce0079e1317231421e';
-const tlsHelperHashes = [HELPER_SHA256, PRE_SCALE_HELPER_SHA256, PREVIOUS_HELPER_SHA256];
+const tlsHelperHashes = [HELPER_SHA256, CAPACITY_HELPER_SHA256, PRE_SCALE_HELPER_SHA256, PREVIOUS_HELPER_SHA256];
 const legacyClientLimit = 6000, maxClients = 10000, legacyProcessLimit = 24, maxGameProcesses = 36;
 const maxStageSeconds = 3900;
 const stageDurationSeconds = remote => 900 + remote.seconds + (remote.clients > legacyClientLimit ? 1200 : 600);
@@ -21,6 +23,7 @@ const host = 'root@31.56.189.118', hex = /^[a-f0-9]{64}$/;
 const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const hash = data => createHash('sha256').update(data).digest('hex');
 const integer = (n, low, high) => Number.isSafeInteger(n) && n >= low && n <= high;
+const shardClients = (total, workers, index) => Math.floor(total / workers) + Number(index < total % workers);
 const pause = ms => new Promise(done => setTimeout(done, ms));
 const maximumReport = 32 * 1024 ** 2;
 const maximumProxyDiagnostics = 8 * 1024 ** 2;
@@ -38,6 +41,45 @@ class StageError extends Error { constructor(code) { super(code); this.code = co
 const fail = code => { throw new StageError(code); };
 const safeError = error => error instanceof StageError ? error.code : 'dedicated-stage-runtime-failure';
 
+function validChatV2Profile(profile, clients, seconds) {
+  if (!profile || typeof profile !== 'object' || Array.isArray(profile)
+    || Object.keys(profile).some(key => !['clients', 'seconds', 'steadyPerSecond', 'movingClients', 'burst'].includes(key))
+    || profile.clients !== clients || profile.seconds !== seconds || !integer(profile.steadyPerSecond, 0, 333)
+    || Object.hasOwn(profile, 'movingClients') && !integer(profile.movingClients, 0, clients)) return false;
+  if (!Object.hasOwn(profile, 'burst')) return profile.steadyPerSecond > 0;
+  const { burst } = profile;
+  return burst && typeof burst === 'object' && !Array.isArray(burst) && Object.keys(burst).sort().join(',') === 'atSecond,count'
+    && integer(burst.count, 1, clients) && integer(burst.atSecond, 0, seconds - 1);
+}
+
+function verifiedChatClock(chat, seconds, completed) {
+  const start = chat?.startAtUnixMs, clock = chat?.clock;
+  if (chat?.crossHostClockOffsetVerified !== true || clock?.maxOffsetMs !== 50 || !integer(start, 1, Number.MAX_SAFE_INTEGER)
+    || !integer(completed, 1, Number.MAX_SAFE_INTEGER)) return false;
+  const { beforeStart, afterMeasurement } = clock;
+  const validSample = sample => sample?.samples === 3 && integer(sample.checkedAtUnixMs, 1, Number.MAX_SAFE_INTEGER)
+    && integer(sample.lowerOffsetMs, -50, 50) && integer(sample.upperOffsetMs, sample.lowerOffsetMs, 50)
+    && integer(sample.maxRoundTripMs, 0, Number.MAX_SAFE_INTEGER);
+  const sendEnd = start + seconds * 1000;
+  // Include the preparation response, future barrier and bounded drain/probes.
+  return validSample(beforeStart) && validSample(afterMeasurement)
+    && integer(start - beforeStart.checkedAtUnixMs, 1, 41_000)
+    && integer(afterMeasurement.checkedAtUnixMs - sendEnd, 0, 30_000) && afterMeasurement.checkedAtUnixMs <= completed
+    && Math.max(beforeStart.lowerOffsetMs, afterMeasurement.lowerOffsetMs) <= Math.min(beforeStart.upperOffsetMs, afterMeasurement.upperOffsetMs);
+}
+
+function verifiedMovement(server, generator, total, workers) {
+  const movement = { plannedClients: total, sentClients: total, connectedClients: total };
+  return server?.checks?.movementCoverage === true && server.checks.generatorSustainedTarget === true
+    && isDeepStrictEqual(server?.summary?.movement, movement)
+    && isDeepStrictEqual(generator?.serverReport?.summary?.movement, movement)
+    && Array.isArray(generator?.results) && generator.results.length === workers
+    && generator.results.every((result, index) => {
+      const planned = shardClients(total, workers, index);
+      return isDeepStrictEqual(result?.movement, { plannedClients: planned, sentClients: planned, connectedClients: planned });
+    });
+}
+
 export function validateDedicatedStagePlan(value, { platform = process.platform, directInterface } = {}) {
   if (!value || value.protocol !== 1 || !value.remotePlan) fail('invalid-local-stage-plan');
   const remote = value.remotePlan, { budget } = remote;
@@ -49,13 +91,19 @@ export function validateDedicatedStagePlan(value, { platform = process.platform,
   const transport = value.transport ?? 'ssh';
   if (!['ssh', 'direct-tls'].includes(transport)) fail('invalid-stage-transport');
   if (transport === 'direct-tls') keys.push('tlsGateway');
+  const hasChatV2 = Object.hasOwn(remote, 'chatV2');
+  if (hasChatV2) keys.push('chatV2');
   if (Object.keys(remote).length !== keys.length || keys.some(key => !(key in remote))
     || !/^sha256:[a-f0-9]{64}$/.test(remote.imageId ?? '') || !hex.test(remote.metadataSha256 ?? '')
     || !hex.test(remote.bundleSha256 ?? '') || ![...tlsHelperHashes, LEGACY_HELPER_SHA256].includes(remote.helperSha256)
     || remote.machineIdSha256 !== MACHINE_SHA256) fail('invalid-pinned-remote-plan');
   if (!integer(remote.gameProcesses, 1, maxGameProcesses) || !integer(remote.clients, 4, Math.min(maxClients, remote.gameProcesses * 300))
     || !integer(remote.seconds, 1, 1800)
-    || (remote.clients > legacyClientLimit || remote.gameProcesses > legacyProcessLimit) && remote.helperSha256 !== HELPER_SHA256) fail('invalid-stage-workload');
+    || (remote.clients > legacyClientLimit || remote.gameProcesses > legacyProcessLimit)
+      && ![HELPER_SHA256, CAPACITY_HELPER_SHA256].includes(remote.helperSha256)) fail('invalid-stage-workload');
+  if (hasChatV2 && (remote.helperSha256 !== HELPER_SHA256 || !validChatV2Profile(remote.chatV2, remote.clients, remote.seconds))) {
+    fail('invalid-stage-chat-profile');
+  }
   if (!budget || Object.keys(budget).sort().join(',') !== 'cpus,memoryMiB,pidsLimit'
     || typeof budget.cpus !== 'number' || !Number.isFinite(budget.cpus) || budget.cpus < 1 || budget.cpus > 18
     || !integer(budget.memoryMiB, 1024, 40960) || !integer(budget.pidsLimit, 64, 2048)) fail('invalid-container-budget');
@@ -270,7 +318,7 @@ export function verifyManifest(plan, bytes, status, parse) {
   if (manifest.runId !== status.standRunId || manifest.bundleSha256 !== remote.bundleSha256
     || manifest.clients !== remote.clients || manifest.seconds !== remote.seconds || (manifest.gameProcesses ?? 4) !== remote.gameProcesses
     || manifest.apiEndpoint !== 'http://127.0.0.1:17100' || manifest.serverApiPort !== status.serverApiPort
-    || manifest.serverControlPort !== status.serverControlPort) fail('manifest-plan-mismatch');
+    || manifest.serverControlPort !== status.serverControlPort || !isDeepStrictEqual(manifest.chatV2, remote.chatV2)) fail('manifest-plan-mismatch');
   return manifest;
 }
 export function checkTlsGatewayStatus(plan, value, containerId, standRunId, pinned) {
@@ -358,23 +406,29 @@ function launchTlsProxy(plan, configPath, outputPath, diagnosticsPath, config, r
 export function localMeasurementWindow(plan, phaseObservedAtMs, generatorCompletedAtMs, generator) {
   const phase = integer(phaseObservedAtMs, 1, Number.MAX_SAFE_INTEGER) ? phaseObservedAtMs : null;
   const completed = integer(generatorCompletedAtMs, 1, Number.MAX_SAFE_INTEGER) ? generatorCompletedAtMs : null;
+  const chatV2 = plan.remotePlan.chatV2, seconds = plan.remotePlan.seconds;
+  const start = chatV2 ? verifiedChatClock(generator?.chatV2, seconds, completed) ? generator.chatV2.startAtUnixMs : null : phase;
   const result = { measurePhaseObservedAtMs: phase, generatorCompletedAtMs: completed,
-    nominalSendingSeconds: plan.remotePlan.seconds, maximumDrainSeconds: 2,
-    nominalSendEndAtMs: phase === null ? null : phase + plan.remotePlan.seconds * 1000,
+    ...(chatV2 ? { measurementStartAtMs: start } : {}),
+    nominalSendingSeconds: seconds, maximumDrainSeconds: chatV2 ? 5 : 2,
+    nominalSendEndAtMs: start === null ? null : start + seconds * 1000,
     reportedWorkerSendSeconds: null, reportedWorkerObservationSeconds: null, reportedWorkerDrainSeconds: null,
     estimatedSendEndAtMs: null, estimatedObservationEndAtMs: null,
-    definition: 'The generator emits its first measure stderr phase before worker commands; its receipt here is an approximate local alignment anchor that may follow those commands because of IPC delay. Worker durations distinguish sending from up to 2s ACK drain; estimated ends add their longest reported durations to that anchor. Generator completion additionally includes server report transfer and child cleanup. This is not a cross-host clock or latency measurement.' };
+    definition: chatV2
+      ? 'The V2 scheduled epoch anchors the local worker window after the before-and-after clock checks. Estimated ends include the longest worker send and drain durations from that epoch.'
+      : 'The generator emits its first measure stderr phase before worker commands; its receipt here is an approximate local alignment anchor that may follow those commands because of IPC delay. Worker durations distinguish sending from up to 2s ACK drain; estimated ends add their longest reported durations to that anchor. Generator completion additionally includes server report transfer and child cleanup. This is not a cross-host clock or latency measurement.' };
   if (!Array.isArray(generator?.results) || generator.results.length !== plan.workers) return result;
   const numbers = ['durationSeconds', 'observationSeconds', 'drainSeconds'];
-  if (generator.results.some(value => numbers.some(key => typeof value[key] !== 'number' || !Number.isFinite(value[key]) || value[key] < 0)
+  if (generator.results.some(value => !value || typeof value !== 'object'
+    || numbers.some(key => typeof value[key] !== 'number' || !Number.isFinite(value[key]) || value[key] < 0)
     || value.durationSeconds > plan.remotePlan.seconds + 15 || value.observationSeconds < value.durationSeconds
     || value.observationSeconds > plan.remotePlan.seconds + 30 || value.drainSeconds > 10)) return result;
   result.reportedWorkerSendSeconds = generator.results.map(value => value.durationSeconds);
   result.reportedWorkerObservationSeconds = generator.results.map(value => value.observationSeconds);
   result.reportedWorkerDrainSeconds = generator.results.map(value => value.drainSeconds);
-  if (phase !== null) {
-    result.estimatedSendEndAtMs = phase + Math.max(...result.reportedWorkerSendSeconds) * 1000;
-    result.estimatedObservationEndAtMs = phase + Math.max(...result.reportedWorkerObservationSeconds) * 1000;
+  if (start !== null) {
+    result.estimatedSendEndAtMs = start + Math.max(...result.reportedWorkerSendSeconds) * 1000;
+    result.estimatedObservationEndAtMs = start + Math.max(...result.reportedWorkerObservationSeconds) * 1000;
   }
   return result;
 }
@@ -437,11 +491,12 @@ export function validateTlsProxyDiagnostics(plan, data, finished, window) {
     || Object.entries(finished.errorDetails).some(([key, count]) => {
       const parts = key.split('/'); return parts.length !== 2 || !stages.has(parts[0]) || !types.has(parts[1]) || !integer(count, 1, Number.MAX_SAFE_INTEGER);
     }) || Object.values(finished.errorDetails).reduce((sum, count) => sum + count, 0) !== last.counters.errorCount) fail('unsafe-tls-proxy-error-details');
+  const windowStartAt = plan.remotePlan.chatV2 ? window?.measurementStartAtMs : window?.measurePhaseObservedAtMs;
   return { rowCount: rows.length, sha256: hash(data), firstSampleAtMs: first.sampledAtMs, lastSampleAtMs: last.sampledAtMs, maximumGapMs: maxGapMs,
-    localSendingPeriodBracketed: integer(window?.measurePhaseObservedAtMs, 1, Number.MAX_SAFE_INTEGER)
-      && Number.isFinite(window?.estimatedSendEndAtMs) && first.sampledAtMs <= window.measurePhaseObservedAtMs && last.sampledAtMs >= window.estimatedSendEndAtMs,
-    localObservationPeriodBracketed: integer(window?.measurePhaseObservedAtMs, 1, Number.MAX_SAFE_INTEGER)
-      && Number.isFinite(window?.estimatedObservationEndAtMs) && first.sampledAtMs <= window.measurePhaseObservedAtMs && last.sampledAtMs >= window.estimatedObservationEndAtMs,
+    localSendingPeriodBracketed: integer(windowStartAt, 1, Number.MAX_SAFE_INTEGER)
+      && Number.isFinite(window?.estimatedSendEndAtMs) && first.sampledAtMs <= windowStartAt && last.sampledAtMs >= window.estimatedSendEndAtMs,
+    localObservationPeriodBracketed: integer(windowStartAt, 1, Number.MAX_SAFE_INTEGER)
+      && Number.isFinite(window?.estimatedObservationEndAtMs) && first.sampledAtMs <= windowStartAt && last.sampledAtMs >= window.estimatedObservationEndAtMs,
     maximumSampledCpuOneCorePercent: Math.max(...rows.map(row => row.cpuOneCorePercent)),
     maximumSampledIntervalLagMs: Math.max(...rows.map(row => row.eventLoopLag.maxMs)), counters: { ...last.counters },
     errorDetails: { ...finished.errorDetails },
@@ -539,6 +594,8 @@ export function resourceCoverage(plan, server, summary, rows, containerId) {
 }
 export function assessDedicatedStage(plan, outcome, reports) {
   const { remotePlan: remote } = plan, { server, generator, state, resourceSummary, guardian } = reports;
+  const chatV2 = remote.chatV2;
+  const chatStartAt = server?.chatV2?.startAtUnixMs;
   const checks = {
     orchestrationCompleted: !outcome.failure && outcome.generatorExitCode === 0,
     attestedBeforeGenerators: outcome.attestedBeforeGenerators === true,
@@ -549,8 +606,22 @@ export function assessDedicatedStage(plan, outcome, reports) {
     generatorChecksPassed: generator?.ok === true && generator.productionTraffic === false && generator.generatorOnly === true
       && generator.runId === outcome.standRunId && generator.bundleSha256 === remote.bundleSha256 && generator.targetClients === remote.clients
       && generator.seconds === remote.seconds && generator.inputMode === 'browser-window' && generator.sdkWebSocket === 'ws'
-      && generator.results?.length === plan.workers && generator.cleanup?.passed === true
+      && Array.isArray(generator.results) && generator.results.length === plan.workers && generator.cleanup?.passed === true
       && generator.attestation?.control === true && generator.attestation?.gameApi === true && generator.attestation?.verifiedBeforeGenerators === true,
+    ...(chatV2 ? {
+      chatV2ProfileAndEpoch: integer(chatStartAt, 1, Number.MAX_SAFE_INTEGER)
+        && isDeepStrictEqual(server.chatV2.profile, chatV2) && isDeepStrictEqual(generator?.chatV2?.profile, chatV2)
+        && generator?.chatV2?.startAtUnixMs === chatStartAt && isDeepStrictEqual(generator?.serverReport?.chatV2, server.chatV2)
+        && Array.isArray(generator?.results) && generator.results.length === plan.workers
+        && generator.results.every((result, index) => result?.chatV2?.startAtUnixMs === chatStartAt
+          && result.connectedClients === shardClients(remote.clients, plan.workers, index)),
+      chatV2PilotChecksPassed: server?.chatV2?.qualification === 'isolated-websocket-pilot' && server.chatV2.targetAccepted === false
+        && server.checks?.connections === true && server.summary?.connectedClients === remote.clients
+        && generator?.serverReport?.summary?.connectedClients === remote.clients
+        && server.checks.chatV2OfferedAtTarget === true && server.checks.chatV2DeliveryComplete === true,
+      chatV2ClockVerified: verifiedChatClock(generator?.chatV2, remote.seconds, outcome.localMeasurementWindow?.generatorCompletedAtMs),
+      ...(chatV2.movingClients === undefined ? {} : { chatV2MovementCoverage: verifiedMovement(server, generator, chatV2.movingClients, plan.workers) }),
+    } : {}),
     supervisorCompleted: state?.runId === remote.runId && state.containerId === outcome.containerId && state.phase === 'ended'
       && state.passed === true && state.reason === 'container-ended' && state.stopConfirmed === true && state.privateFixtureGone === true,
     guardianCompleted: guardian?.runId === remote.runId && guardian.phase === 'ended' && guardian.reason === 'supervisor-completed'
@@ -567,8 +638,9 @@ export function assessDedicatedStage(plan, outcome, reports) {
       && outcome.tlsGatewayFinal?.assetsRemoved === true && outcome.tlsProxyExitCode === 0 && outcome.tlsProxyFinalValidated === true
       && outcome.tlsProxyDiagnostics?.localObservationPeriodBracketed === true,
   };
-  return { checks, ok: Object.values(checks).every(Boolean), verdict: Object.values(checks).every(Boolean)
-    ? 'passed-dedicated-limited-stage' : 'failed-or-inconclusive-dedicated-stage' };
+  const ok = Object.values(checks).every(Boolean);
+  return { checks, ok, ...(chatV2 ? { targetAccepted: false } : {}), verdict: ok
+    ? chatV2 ? 'passed-dedicated-chat-v2-pilot' : 'passed-dedicated-limited-stage' : 'failed-or-inconclusive-dedicated-stage' };
 }
 
 export async function runDedicatedWebsocketStage(rawPlan, overrides = {}) {
@@ -580,6 +652,7 @@ export async function runDedicatedWebsocketStage(rawPlan, overrides = {}) {
   const controller = new AbortController(), abort = () => controller.abort(), handles = [], reports = {};
   const outcome = { runId: plan.remotePlan.runId, targetHost: plan.remotePlan.targetHost, productionTraffic: false,
     clients: plan.remotePlan.clients, seconds: plan.remotePlan.seconds, gameProcesses: plan.remotePlan.gameProcesses,
+    ...(plan.remotePlan.chatV2 ? { chatV2Profile: plan.remotePlan.chatV2 } : {}),
     workers: plan.workers, transport: plan.transport, transports: plan.transport === 'ssh' ? plan.localPorts.api.length : null,
     apiAliases: plan.localPorts.api.length, sshGameCarriers: plan.transport === 'ssh' ? plan.localPorts.api.length : 0,
     sshControlCarriers: 1, budget: plan.remotePlan.budget, directInterface: plan.directInterface ?? null,
@@ -808,7 +881,8 @@ async function main() {
   const result = await runDedicatedWebsocketStage(plan, { directInterface: values['--direct-interface'],
     progress: value => console.error(JSON.stringify(value)) });
   console.log(JSON.stringify({ runId: result.runId, outputDir: plan.outputDir, ok: result.ok, verdict: result.verdict,
-    failure: result.failure, checks: result.checks, stopConfirmed: result.stopConfirmed, ownedGroupsStopped: result.ownedGroupsStopped }));
+    targetAccepted: result.targetAccepted, failure: result.failure, checks: result.checks,
+    stopConfirmed: result.stopConfirmed, ownedGroupsStopped: result.ownedGroupsStopped }));
   if (!result.ok) process.exitCode = 1;
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch(error => {

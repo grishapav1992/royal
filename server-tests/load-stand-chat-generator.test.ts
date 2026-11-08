@@ -120,6 +120,17 @@ test('the real isolated generator starts two SDK workers together and reconciles
   const [code] = await exit;
   assert.equal(code, 0, diagnostics);
   const report = await readFile(output, 'utf8');
-  assert.equal(JSON.parse(report).ok, true);
+  const verified = JSON.parse(report);
+  assert.equal(verified.ok, true);
+  assert.equal(verified.chatV2.crossHostClockOffsetVerified, true);
+  const { beforeStart, afterMeasurement, maxOffsetMs } = verified.chatV2.clock;
+  assert.equal(maxOffsetMs, 50);
+  assert(beforeStart.checkedAtUnixMs < startAtUnixMs);
+  assert(afterMeasurement.checkedAtUnixMs >= startAtUnixMs + profile.seconds * 1000);
+  for (const probe of [beforeStart, afterMeasurement]) {
+    assert.equal(probe.samples, 3);
+    assert(probe.lowerOffsetMs <= 0 && probe.upperOffsetMs >= 0);
+    assert(probe.lowerOffsetMs >= -maxOffsetMs && probe.upperOffsetMs <= maxOffsetMs);
+  }
   for (const token of [secret, ...tokens]) assert(!(report + diagnostics).includes(token));
 });

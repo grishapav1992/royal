@@ -3,6 +3,7 @@ import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { installLoopbackNetworking } from './load-server-metrics';
 import { DEFAULT_GAME_PROCESSES } from './load-stand-limits';
+import { sampleStandClock, STAND_CHAT_MAX_CLOCK_OFFSET_MS } from './load-stand-clock';
 import { attestGeneratorApiOrigins, generatorApiOrigins, generatorBatchApiIndex } from './load-generator-endpoints';
 import { loopbackEndpoint, parseStandManifest, parseStandReady, parseStandResult, parseStandStart, standHost, StandError,
   verifyStandStatus, type StandManifest, type StandReady, type StandResult } from './load-stand-contract';
@@ -133,8 +134,16 @@ async function run() {
     }
     const connectionPhase = { durationSeconds: round((performance.now() - connectedAt) / 1000), batches,
       connectionAttempts: ready.reduce((sum, item) => sum + item.connectionAttempts, 0), connectionRetries: ready.reduce((sum, item) => sum + item.connectionRetries, 0) };
+    const sampleClock = () => sampleStandClock(async () => {
+      const status = await control(manifest, controlEndpoint, '/status', undefined, controller.signal, 1500);
+      verifyStandStatus(status, manifest);
+      return status.serverTimeMs;
+    });
+    const clockBeforeStart = chatV2 ? await sampleClock() : undefined;
+    if (clockBeforeStart) report.chatV2.clock = { maxOffsetMs: STAND_CHAT_MAX_CLOCK_OFFSET_MS, beforeStart: clockBeforeStart.proof };
     const start = parseStandStart(await control(manifest, controlEndpoint, '/prepared', { runId: manifest.runId, ready, clientHost: report.clientHost,
       inputMode: config.inputMode, gameProcesses, connectionPhase }, controller.signal, 30000), manifest);
+    clockBeforeStart?.assertLocalClock();
     const { startAtUnixMs } = start;
     if (chatV2) report.chatV2.startAtUnixMs = startAtUnixMs;
     console.error(JSON.stringify({ phase: 'measure', clients: manifest.clients, seconds: manifest.seconds, workers: config.workers }));
@@ -144,6 +153,16 @@ async function run() {
     gameProcesses,
     chatV2 && startAtUnixMs !== undefined ? { profile: chatV2, shard: { index, count: config.workers }, startAtUnixMs } : undefined)));
     report.ready = ready; report.connectionPhase = connectionPhase; report.results = results;
+    if (clockBeforeStart) {
+      const clockAfterMeasurement = await sampleClock();
+      report.chatV2.clock.afterMeasurement = clockAfterMeasurement.proof;
+      clockBeforeStart.assertLocalClock();
+      if (clockBeforeStart.proof.lowerOffsetMs > clockAfterMeasurement.proof.upperOffsetMs
+        || clockAfterMeasurement.proof.lowerOffsetMs > clockBeforeStart.proof.upperOffsetMs) {
+        throw new StandError('stand-chat-clock-offset-changed');
+      }
+      report.chatV2.crossHostClockOffsetVerified = true;
+    }
     const response = await control(manifest, controlEndpoint, '/results', { runId: manifest.runId, results }, controller.signal, 90000);
     if (response.runId !== manifest.runId || !response.report || typeof response.report !== 'object') throw new StandError('stand-result-response-mismatch');
     reported = true; report.serverReport = response.report;

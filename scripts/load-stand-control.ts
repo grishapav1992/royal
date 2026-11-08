@@ -84,13 +84,15 @@ export async function createStandControl<TPrepared, TResults>(options: StandCont
   if (options.signal?.aborted) throw new StandControlError('signal-aborted');
   const secretBytes = Buffer.from(options.secret, 'hex');
   const metadata = statusSnapshot(options.status);
+  if (Object.hasOwn(metadata, 'serverTimeMs')) throw new TypeError('reserved-stand-status-field');
   let chatV2: StandManifest['chatV2'];
   if (metadata.chatV2 !== undefined) {
     if (typeof metadata.clients !== 'number' || typeof metadata.seconds !== 'number') throw new StandError('invalid-stand-chat-profile');
     chatV2 = parseStandChatV2(metadata.chatV2, metadata.clients, metadata.seconds);
   }
-  const status = json({ ...metadata, ...(chatV2 ? { chatV2 } : {}),
-    protocol: 1, role: 'isolated-test-stand', runId: options.runId, expiresAt: options.expiresAt });
+  const statusMetadata = { ...metadata, ...(chatV2 ? { chatV2 } : {}),
+    protocol: 1, role: 'isolated-test-stand', runId: options.runId, expiresAt: options.expiresAt };
+  const status = json(statusMetadata);
   const prepared = deferred<TPrepared>(), results = deferred<TResults>();
   const sockets = new Set<Socket>(), held = new Set<ServerResponse>();
   let phase: Phase = 'waiting', abortCode: StandAbortCode | undefined, closing: Promise<void> | undefined, publishing: Promise<void> | undefined;
@@ -134,7 +136,10 @@ export async function createStandControl<TPrepared, TResults>(options: StandCont
     const path = request.url;
     if (!['/status', '/prepared', '/results', '/abort'].includes(path ?? '')) { fail(response, 404); return; }
     if (request.method !== (path === '/status' ? 'GET' : 'POST')) { fail(response, 405); return; }
-    if (path === '/status') { send(response, 200, status); return; }
+    if (path === '/status') {
+      send(response, 200, chatV2 ? json({ ...statusMetadata, serverTimeMs: Date.now() }) : status);
+      return;
+    }
     if (!/^application\/json(?:\s*;\s*charset=utf-8)?$/i.test(request.headers['content-type'] ?? '')) { fail(response, 415); return; }
     const body = await readBody(request);
     if (response.destroyed) return;

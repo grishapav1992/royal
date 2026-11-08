@@ -89,6 +89,37 @@ def digest(path, limit=1024 * 1024):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def validate_chat_v2(profile, clients, seconds):
+    required = {'clients', 'seconds', 'steadyPerSecond'}
+    allowed = required | {'movingClients', 'burst'}
+    if not isinstance(profile, dict) or not required <= profile.keys() <= allowed:
+        raise Refused('invalid-chat-v2-profile')
+    if (any(type(profile[key]) is not int for key in required)
+            or profile['clients'] != clients or profile['seconds'] != seconds
+            or not 0 <= profile['steadyPerSecond'] <= 333):
+        raise Refused('invalid-chat-v2-profile')
+    if 'movingClients' in profile and (type(profile['movingClients']) is not int or not 0 <= profile['movingClients'] <= clients):
+        raise Refused('invalid-chat-v2-profile')
+    if 'burst' in profile:
+        burst = profile['burst']
+        if (not isinstance(burst, dict) or set(burst) != {'count', 'atSecond'}
+                or type(burst['count']) is not int or not 1 <= burst['count'] <= clients
+                or type(burst['atSecond']) is not int or not 0 <= burst['atSecond'] < seconds):
+            raise Refused('invalid-chat-v2-profile')
+    elif not profile['steadyPerSecond']:
+        raise Refused('invalid-chat-v2-profile')
+
+
+def matches_chat_v2(plan, fixture):
+    if 'chatV2' not in plan or 'chatV2' not in fixture:
+        return 'chatV2' not in plan and 'chatV2' not in fixture
+    try:
+        validate_chat_v2(fixture['chatV2'], plan['clients'], plan['seconds'])
+    except Refused:
+        return False
+    return fixture['chatV2'] == plan['chatV2']
+
+
 def validate(plan):
     try:
         run = plan['runId']
@@ -110,6 +141,8 @@ def validate(plan):
         raise Refused('invalid-client-or-process-limit')
     if type(seconds) is not int or not 1 <= seconds <= 1800:
         raise Refused('invalid-measurement-seconds')
+    if 'chatV2' in plan:
+        validate_chat_v2(plan['chatV2'], count, seconds)
     budget = plan.get('budget', {'cpus': 18, 'memoryMiB': 40960, 'pidsLimit': 2048})
     if not isinstance(budget, dict) or set(budget) != {'cpus', 'memoryMiB', 'pidsLimit'}:
         raise Refused('invalid-container-budget')
@@ -294,9 +327,10 @@ class Stand:
             raise Refused('tls-attestation-malformed-response') from None
         if not isinstance(value, dict):
             raise Refused('tls-attestation-malformed-response')
-        if value.get('protocol') != 1 or value.get('role') != 'isolated-test-stand' or any(
-                value.get(key) != fixture.get(key) for key in ['runId', 'bundleSha256', 'clients', 'seconds',
-                                                              'gameProcesses', 'apiEndpoint', 'expiresAt', 'serverHost']):
+        if (value.get('protocol') != 1 or value.get('role') != 'isolated-test-stand'
+                or any(value.get(key) != fixture.get(key) for key in ['runId', 'bundleSha256', 'clients', 'seconds',
+                                                                      'gameProcesses', 'apiEndpoint', 'expiresAt', 'serverHost'])
+                or not matches_chat_v2(self.plan, fixture) or not matches_chat_v2(self.plan, value)):
             raise Refused('tls-attestation-mismatch')
 
     def tls_status(self, probe=True):
@@ -621,6 +655,13 @@ class Stand:
                 '--stand-manifest', '/app/run/stand.json', '--client-origin', CLIENT_ORIGIN,
                 '--frame-diagnostics', '--resource-diagnostics', '--input-mode', 'browser-window',
                 '--min-rate-percent', '99', '--max-unacknowledged-percent', '0', '--output', '/app/run/server.json']
+        if 'chatV2' in self.plan:
+            profile = self.plan['chatV2']
+            args += ['--chat-v2-rate', str(profile['steadyPerSecond'])]
+            if 'movingClients' in profile:
+                args += ['--chat-v2-moving-clients', str(profile['movingClients'])]
+            if 'burst' in profile:
+                args += ['--chat-v2-burst', str(profile['burst']['count']), '--chat-v2-burst-at-second', str(profile['burst']['atSecond'])]
         if self.plan.get('sameHostGenerators') is True:
             args += ['--generator-completion-file', '/app/run/generator-completion.json']
         with self.host_admission():
@@ -784,7 +825,10 @@ class Stand:
         if not cancelled and value and value['status'] == 'running' and state.get('phase') == 'running' and active and state.get('assetsVerified'):
             fixture = private_json(self.manifest, 2 * 1024 * 1024) if self.manifest.exists() else None
             if fixture:
-                if fixture.get('protocol') != 1 or fixture.get('role') != 'isolated-test-stand' or fixture.get('apiEndpoint') != CLIENT_ORIGIN or fixture.get('bundleSha256') != self.plan['bundleSha256'] or fixture.get('clients') != self.plan['clients'] or fixture.get('seconds') != self.plan['seconds'] or fixture.get('gameProcesses', 4) != self.plan['gameProcesses']:
+                if (fixture.get('protocol') != 1 or fixture.get('role') != 'isolated-test-stand' or fixture.get('apiEndpoint') != CLIENT_ORIGIN
+                        or fixture.get('bundleSha256') != self.plan['bundleSha256'] or fixture.get('clients') != self.plan['clients']
+                        or fixture.get('seconds') != self.plan['seconds'] or fixture.get('gameProcesses', 4) != self.plan['gameProcesses']
+                        or not matches_chat_v2(self.plan, fixture)):
                     raise Refused('manifest-attestation-failed')
                 ports = [fixture.get('serverApiPort'), fixture.get('serverControlPort')]
                 if any(type(port) is not int or not 1024 <= port <= 65535 for port in ports) or ports[0] == ports[1]:
