@@ -356,6 +356,7 @@ test('named operators export only authorized canonical replay packages and journ
       (account_id,operation_id,amount_units,pending_balance_units,reason,created_at)
       VALUES (?,?,'1','1','credit',?) RETURNING id::text`).get(players[1], randomUUID(), Date.now()))!.id;
     const { formatVersion, ...chessDefinition } = chessTurnReplayDefinition;
+    assert.equal(formatVersion, 2);
     const hiddenReplayId = randomUUID();
     const hidden = createReplayPackage({ formatVersion, game: chessDefinition, scope, replayId: hiddenReplayId,
       entityId: match, initial: recording.initial, coverage: 'partial', gaps: recording.gaps },
