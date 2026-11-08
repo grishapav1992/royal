@@ -219,7 +219,8 @@ function render() {
   timeline.value = String(frame);
   jumpSequence.value = String(current.sequence);
   position.textContent = 'Событие #' + current.sequence + (current.event && !replay.package.manifest.timing
-    ? ' · ' + (current.event.atMs / 1000).toFixed(3) + ' с от начала' : '');
+    ? ' · ' + (current.event.atMs / 1000).toFixed(3) + ' с от начала' +
+      (replay.package.manifest.game.gameId === 'chess' && !replay.package.manifest.initial ? ' записи' : '') : '');
   previous.disabled = frame === 0;
   next.disabled = frame === replay.frames.length - 1;
   play.disabled = timer !== undefined || next.disabled;
@@ -280,7 +281,10 @@ file.addEventListener('change', async () => {
     frame = 0;
     const coverage = manifest.coverage === 'partial' ? 'Частичная запись · ' + manifest.gaps.map(gap => gaps[gap]).join(', ')
       : 'Полная запись';
-    message(coverage + (replay.engineVerified
+    const firstBoard = manifest.game.gameId === 'chess' && !manifest.initial
+      ? replay.frames.find(frame => frame.state)?.state : null;
+    const boundary = firstBoard?.profile === 'pvp-turn-based' ? ' · с позиции после полухода ' + firstBoard.turn : '';
+    message(coverage + boundary + (replay.engineVerified
       ? manifest.game.engineId === 'royal-tsu-duel' ? ' · раскрытие и счёт проверены' : ' · состояния сверены движком'
       : ' · целостность пакета проверена'));
     metadata.textContent = manifest.game.gameId + ' / ' + manifest.game.modeId + ' · формат ' + manifest.formatVersion

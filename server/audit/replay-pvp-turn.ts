@@ -27,7 +27,7 @@ type WalletOutcome = 'win' | 'draw' | 'resign' | 'disconnect' | 'server' | 'time
 export type ChessReplayObservation = {
   atMs: number;
   players: [string, string];
-  state: { board: Board; turn: 'w' | 'b'; phase: 'playing' | 'finished'; winner: string; revision: number };
+  state: { board: Board; turn: 'w' | 'b'; phase: 'playing' | 'finished'; winner: string; revision: number; ply: number };
 } & (
   { kind: 'start' } |
   { kind: 'move'; seat: Seat; from: string; to: string; promotion?: string } |
@@ -80,10 +80,21 @@ function sameState(a: ReplayState, b: TurnState) {
     a.seatToMove === b.seatToMove && sameBoard(a.board, b.board);
 }
 
-function makeMove(chess: Chess, seat: Seat, positions: readonly number[]): boolean {
-  if (chess.isGameOver() || seat !== sideSeat(chess.turn()) || (positions.length !== 2 && positions.length !== 3)) return false;
+function validMovePositions(positions: readonly number[]) {
+  if (positions.length !== 2 && positions.length !== 3) return false;
   const [from, to, promoted] = positions;
-  if (from < 0 || from > 63 || to < 0 || to > 63 || promoted !== undefined && (promoted < 1 || promoted > 4)) return false;
+  return from >= 0 && from <= 63 && to >= 0 && to <= 63 && (promoted === undefined || promoted >= 1 && promoted <= 4);
+}
+
+function movePositions(move: Extract<ChessReplayObservation, { kind: 'move' }>) {
+  const positions = [indexOfSquare(move.from), indexOfSquare(move.to)];
+  if (move.promotion !== undefined) positions.push(promotions.indexOf(move.promotion as Promotion) + 1);
+  return positions;
+}
+
+function makeMove(chess: Chess, seat: Seat, positions: readonly number[]): boolean {
+  if (chess.isGameOver() || seat !== sideSeat(chess.turn()) || !validMovePositions(positions)) return false;
+  const [from, to, promoted] = positions;
   try {
     const promotion = promoted === undefined ? undefined : promotions[promoted - 1];
     return chess.move({ from: squareAt(from), to: squareAt(to), promotion }).promotion === promotion;
@@ -96,8 +107,6 @@ function observedBoard(observation: ChessReplayObservation, chess: Chess) {
 
 type ActiveCapture = {
   match: PvpChallenge;
-  chess: Chess;
-  initial: TurnState;
   events: ReplayEvent[];
   startedAt: number;
   ply: number;
@@ -105,7 +114,14 @@ type ActiveCapture = {
   disconnected: Set<Seat>;
   gap: boolean;
   end?: { outcome: Terminal['outcome']; winnerSeat: Seat | null; at: number };
-};
+} & ({ chess: Chess; initial: TurnState } | { chess: null; initial: null; position: TurnState });
+type SuffixCapture = Extract<ActiveCapture, { chess: null }>;
+
+function observedPosition({ board, ply, turn }: ChessReplayObservation['state']): TurnState | null {
+  const encoded = encodeBoard(board);
+  if (!encoded || !Number.isSafeInteger(ply) || ply < 1 || (ply % 2 === 0 ? 'w' : 'b') !== turn) return null;
+  return { profile: 'pvp-turn-based', phase: 'open', turn: ply, seatToMove: sideSeat(turn), board: encoded };
+}
 
 type MatchCandidate = Pick<PvpChallenge, 'id' | 'creatorId' | 'opponentId' | 'gameId' | 'status' | 'stakeUnits'>;
 
@@ -152,6 +168,29 @@ export class ChessTurnReplayCapture {
     capture.events.push({ sequence: capture.events.length + 1, atMs: elapsed, data, postings: [] });
   }
 
+  private recordSuffix(capture: SuffixCapture, observation: Exclude<ChessReplayObservation, { kind: 'start' }>, position: TurnState) {
+    const { atMs, state } = observation;
+    const positions = observation.kind === 'move' ? movePositions(observation) : [];
+    if (observation.kind === 'move' && (!validMovePositions(positions) || position.seatToMove !== other(observation.seat)) ||
+        observation.kind !== 'move' && state.phase !== 'finished') return false;
+
+    if (state.phase === 'finished') {
+      const winner = state.winner === '' ? null : this.seat(state.winner, capture.match);
+      if (winner === undefined || observation.kind === 'resign' && winner !== other(observation.seat) ||
+          observation.kind === 'move' && winner !== null && winner !== observation.seat) return false;
+      const outcome = observation.kind === 'timeout' ? 'timed-out' : observation.kind === 'resign' ? 'forfeited'
+        : winner === null ? 'draw' : 'settled';
+      capture.end = { outcome, winnerSeat: winner, at: atMs };
+    }
+    if (observation.kind !== 'timeout') this.append(capture, atMs, { kind: 'action', action: {
+      profile: game.replayProfile, code: observation.kind, seat: observation.seat, positions,
+    } });
+    if (!capture.end) this.append(capture, atMs, { kind: 'checkpoint', state: position });
+    capture.position = position;
+    capture.ply = position.turn;
+    return true;
+  }
+
   observeEngine(observation: ChessReplayObservation) {
     const match = this.candidate;
     if (!match || this.seat(observation.players[0], match) !== 1 || this.seat(observation.players[1], match) !== 2) return;
@@ -167,13 +206,27 @@ export class ChessTurnReplayCapture {
     }
 
     const capture = this.active;
-    if (!capture || capture.end || capture.match.id !== match.id || capture.gap) return;
+    if (!capture) {
+      const position = observedPosition(observation.state);
+      if (!position || !Number.isFinite(observation.atMs) || !Number.isSafeInteger(observation.state.revision) ||
+          observation.state.revision < 0) return;
+      const suffix: SuffixCapture = { match, chess: null, initial: null, position, events: [], startedAt: observation.atMs,
+        ply: position.turn, revision: observation.state.revision, disconnected: new Set(), gap: false };
+      if (this.recordSuffix(suffix, observation, position)) this.active = suffix;
+      return;
+    }
+    if (capture.end || capture.match.id !== match.id || capture.gap) return;
     if (observation.state.revision !== capture.revision + 1) { capture.gap = true; return; }
     capture.revision = observation.state.revision;
     const { chess } = capture;
+    if (!chess) {
+      const position = observedPosition(observation.state);
+      if (!position || (observation.kind === 'move' ? position.turn !== capture.ply + 1 : !sameState(position, capture.position)) ||
+          !this.recordSuffix(capture, observation, position)) capture.gap = true;
+      return;
+    }
     if (observation.kind === 'move') {
-      const positions = [indexOfSquare(observation.from), indexOfSquare(observation.to)];
-      if (observation.promotion !== undefined) positions.push(promotions.indexOf(observation.promotion as Promotion) + 1);
+      const positions = movePositions(observation);
       if (!makeMove(chess, observation.seat, positions) || !observedBoard(observation, chess) ||
           (observation.state.phase === 'finished') !== chess.isGameOver()) {
         capture.gap = true;
@@ -238,6 +291,7 @@ export class ChessTurnReplayCapture {
       (reason === 'win' || reason === 'resign' || reason === 'disconnect') && winner === null) return;
 
     this.active = undefined;
+    this.candidate = undefined;
     const now = this.now();
     let end = capture.end;
     if (!end && !capture.gap) {
@@ -255,10 +309,13 @@ export class ChessTurnReplayCapture {
       capture.gap = true;
       end = undefined;
     }
-    if (end && !capture.gap) this.append(capture, end.at, { kind: 'terminal', outcome: end.outcome, winnerSeat: end.winnerSeat,
-      state: stateOf(capture.chess, capture.ply, end.outcome === 'cancelled' ? 'cancelled' : 'settled') });
-    const gaps: Gap[] = [];
-    if (capture.gap) gaps.push('event-gap');
+    if (end && !capture.gap) {
+      const phase = end.outcome === 'cancelled' ? 'cancelled' : 'settled';
+      const state: TurnState = capture.chess ? stateOf(capture.chess, capture.ply, phase)
+        : { ...capture.position, phase, seatToMove: null };
+      this.append(capture, end.at, { kind: 'terminal', outcome: end.outcome, winnerSeat: end.winnerSeat, state });
+    }
+    const gaps: Gap[] = capture.initial === null ? ['initial-state-unavailable', 'event-gap'] : capture.gap ? ['event-gap'] : [];
     if (capture.events.at(-1)?.data.kind !== 'terminal') gaps.push('terminal-unavailable');
     this.sink({ matchId: capture.match.id, initial: capture.initial, events: capture.events, gaps,
       settlement: { reason, winnerSeat: winner, finishedAtMs } });
@@ -271,7 +328,7 @@ export function buildChessTurnReplay(recording: CapturedChessReplay, scope: Audi
 } = {}): ReplayPackage {
   const terminalIndex = recording.events.length - 1;
   const events = recording.events.map((event, index) => {
-    const isStart = index === 0 && event.data.kind === 'checkpoint' && event.atMs === 0;
+    const isStart = recording.initial !== null && index === 0 && event.data.kind === 'checkpoint' && event.atMs === 0;
     const isTerminal = index === terminalIndex && event.data.kind === 'terminal';
     const money = isStart ? links.startMoney : isTerminal ? links.terminalMoney : undefined;
     const postings = isStart ? links.start : isTerminal ? links.terminal : undefined;
@@ -285,13 +342,59 @@ export function buildChessTurnReplay(recording: CapturedChessReplay, scope: Audi
   return replay;
 }
 
-/** Replays the whole game from the pinned initial state, preserving history-dependent chess rules. */
+/** Validates observed suffix order and boards without simulating the unobserved start. */
+function verifyObservedSuffix(events: readonly ReplayEvent[], onState?: (sequence: number, state: TurnState) => void) {
+  const corrupt = { status: 'corrupt' } as const;
+  let previous: TurnState | null = null;
+  let pending: Extract<Extract<EventData, { kind: 'action' }>['action'], { profile: 'pvp-turn-based' }> | null = null;
+  const disconnected = new Set<Seat>();
+  for (const [index, { sequence, atMs, data, postings, money }] of events.entries()) {
+    if (sequence !== index + 1 || (index === 0 && atMs !== 0) || data.kind !== 'terminal' && postings.length > 0 ||
+        money?.some(leg => leg.movement !== 'payout' && leg.movement !== 'refund')) return corrupt;
+    if (data.kind === 'action') {
+      const { action } = data;
+      if (action.profile !== 'pvp-turn-based' || pending ||
+          (action.code === 'move' ? !validMovePositions(action.positions) || !!previous && action.seat !== previous.seatToMove
+            : action.code !== 'resign' || action.positions.length > 0)) return corrupt;
+      pending = action;
+      continue;
+    }
+    if (data.kind === 'presence') {
+      if (!previous || pending || disconnected.has(data.seat) === (data.event === 'disconnected')) return corrupt;
+      if (data.event === 'disconnected') disconnected.add(data.seat);
+      else disconnected.delete(data.seat);
+      continue;
+    }
+    const { state } = data;
+    const move = pending?.code === 'move' ? pending : null;
+    const nextSeat = state.profile === 'pvp-turn-based' && state.turn % 2 === 0 ? 1 : 2;
+    if (state.profile !== 'pvp-turn-based' || state.turn < 1 || state.board.length !== 64 || state.board.some(code => code > 12) ||
+        state.board.filter(code => code === 6).length !== 1 || state.board.filter(code => code === 12).length !== 1 ||
+        move && move.seat === nextSeat || previous && (state.turn !== previous.turn + Number(!!move) ||
+          !move && !sameBoard(previous.board, state.board))) return corrupt;
+    if (data.kind === 'checkpoint') {
+      if (!move || state.seatToMove !== nextSeat) return corrupt;
+    } else if (state.seatToMove !== null || state.phase !== (data.outcome === 'cancelled' ? 'cancelled' : 'settled') ||
+        (data.outcome === 'settled' || data.outcome === 'draw') && (!move || data.winnerSeat !== (data.outcome === 'draw' ? null : move.seat)) ||
+        data.outcome === 'forfeited' && (data.winnerSeat === null ||
+          (pending ? pending.code !== 'resign' || data.winnerSeat !== other(pending.seat) : !disconnected.has(other(data.winnerSeat)))) ||
+        (data.outcome === 'timed-out' || data.outcome === 'cancelled') && pending) return corrupt;
+    previous = state;
+    pending = null;
+    onState?.(sequence, state);
+  }
+  return { status: 'verified' as const, state: previous };
+}
+
+/** Replays full history from the pinned initial position and validates partial evidence separately. */
 export function verifyChessTurnReplay(input: unknown, onState?: (sequence: number, state: TurnState) => void):
   { status: 'verified'; state: TurnState | null } | { status: 'corrupt' | 'unsupported' | 'too-large' | 'incomplete' } {
   const checked = verifyReplayPackage(input, [chessTurnReplayDefinition]);
   if (checked.status !== 'verified') return { status: checked.status };
   const { manifest, fragments } = checked.value;
-  if (!manifest.initial) return manifest.coverage === 'partial' && !fragments.length ? { status: 'verified', state: null } : { status: 'corrupt' };
+  const events = fragments.flatMap(fragment => fragment.events);
+  if (!manifest.initial) return !events.length || manifest.gaps.includes('event-gap')
+    ? verifyObservedSuffix(events, onState) : { status: 'corrupt' };
   const chess = new Chess();
   let ply = 0, previous: TurnState = stateOf(chess, ply), resignation: Seat | undefined;
   const spent = [0, 0];
@@ -299,7 +402,7 @@ export function verifyChessTurnReplay(input: unknown, onState?: (sequence: numbe
   const disconnected = new Set<Seat>();
   if (!sameState(manifest.initial, previous)) return { status: 'corrupt' };
 
-  for (const { sequence, data, atMs } of fragments.flatMap(fragment => fragment.events)) {
+  for (const { sequence, data, atMs } of events) {
     const clockSeat = sideSeat(chess.turn());
     const clockTime = spent[clockSeat - 1] + atMs - lastMoveAt;
     if (data.kind === 'action') {

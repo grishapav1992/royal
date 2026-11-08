@@ -7,6 +7,7 @@ import { ChessGame } from '../server/chessGame';
 import { buildChessTurnReplay, ChessTurnReplayCapture, verifyChessTurnReplay,
   type CapturedChessReplay } from '../server/audit/replay-pvp-turn';
 import { createReplayPackage, type ReplayEvent } from '../server/audit/replay-package';
+import { prepareViewerReplay } from '../src/audit/replay-viewer-model';
 
 const white = 'white-session-secret';
 const black = 'black-session-secret';
@@ -97,6 +98,65 @@ test('replays repeated positions as an engine draw from the original turn histor
   const { events } = result(records);
   const end = events.at(-1)?.data;
   assert.equal(end?.kind === 'terminal' && end.outcome, 'draw');
+});
+
+test('late chess capture shows the first observed ply and the real suffix without engine verification', () => {
+  const { chess, match, capture, records, move, settle } = setup({ bind: false });
+  assert.equal(move(white, 'f2', 'f3'), true);
+  assert.equal(move(black, 'e7', 'e5'), true);
+  capture.observeMatches([match]);
+  assert.equal(move(white, 'g2', 'g4'), true);
+  assert.equal(move(black, 'd8', 'h4'), true);
+  assert.equal(chess.state.winner, black);
+  settle(blackAccount, 'win');
+  assert.equal(records.length, 1);
+
+  const reserve = { namespace: 'test_game.demo_ledger', rowId: '10' };
+  const payout = { namespace: 'test_game.demo_ledger', rowId: '20' };
+  const replay = buildChessTurnReplay(records[0], scope, {
+    startMoney: [{ posting: reserve, units: '-100', movement: 'reserve' }],
+    terminalMoney: [{ posting: payout, units: '190', movement: 'payout' }],
+  });
+  const { manifest, fragments } = replay;
+  assert.equal(manifest.coverage, 'partial');
+  assert.equal(manifest.initial, null);
+  assert.deepEqual(manifest.gaps, ['initial-state-unavailable', 'event-gap']);
+  const events = fragments.flatMap(fragment => fragment.events);
+  const firstBoard = events.find(event => event.data.kind === 'checkpoint');
+  assert(firstBoard?.data.kind === 'checkpoint' && firstBoard.data.state.profile === 'pvp-turn-based');
+  assert.equal(firstBoard.atMs, 0);
+  assert.equal(firstBoard.data.state.turn, 3);
+  assert.equal(firstBoard.data.state.seatToMove, 2);
+  assert.equal(firstBoard.data.state.board[30], 1);
+  assert.deepEqual(firstBoard.postings, []);
+  assert(events.every(event => event.postings.every(posting => posting.rowId !== reserve.rowId)));
+  const moves = events.flatMap(({ data }) => data.kind === 'action' && data.action.profile === 'pvp-turn-based'
+    ? [data.action.positions] : []);
+  assert.deepEqual(moves, [[14, 30], [59, 31]]);
+
+  const last = events.at(-1);
+  assert(last?.data.kind === 'terminal' && last.data.state.profile === 'pvp-turn-based');
+  assert.equal(last.data.state.turn, 4);
+  assert.equal(last.data.outcome, 'settled');
+  assert.equal(last.data.winnerSeat, 2);
+  assert.deepEqual(last.postings, [payout]);
+  assert.equal(verifyChessTurnReplay(replay).status, 'verified');
+  const viewer = prepareViewerReplay(replay);
+  assert.equal(viewer.status, 'ready');
+  assert.equal(viewer.engineVerified, false);
+  assert.equal(viewer.frames[0].state, null);
+  assert.deepEqual(viewer.frames.find(frame => frame.sequence === firstBoard.sequence)?.state, firstBoard.data.state);
+
+  const unsupported = createReplayPackage({ formatVersion: 2, scope, replayId: manifest.replayId, entityId: manifest.entityId,
+    game: { ...manifest.game, engineVersion: 'unknown-version' }, initial: null, coverage: 'partial', gaps: manifest.gaps }, events);
+  assert.equal(verifyChessTurnReplay(unsupported).status, 'unsupported');
+  assert.equal(prepareViewerReplay(unsupported).status, 'unsupported');
+  const wrongPly = createReplayPackage({ formatVersion: 2, scope, replayId: manifest.replayId, entityId: manifest.entityId,
+    game: manifest.game, initial: null, coverage: 'partial', gaps: manifest.gaps }, events.map(event =>
+    event.data.kind === 'checkpoint' && event.data.state.profile === 'pvp-turn-based'
+      ? { ...event, data: { ...event.data, state: { ...event.data.state, turn: event.data.state.turn + 2 } } } : event));
+  assert.equal(verifyChessTurnReplay(wrongPly).status, 'corrupt');
+  assert.equal(prepareViewerReplay(wrongPly).status, 'corrupt');
 });
 
 test('distinguishes actual clock timeout from the rejected late move and rejects a forged early timeout', () => {

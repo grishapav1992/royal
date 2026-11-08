@@ -27,7 +27,7 @@ export class ChessGame {
     const {players,board,turn,phase,winner,revision}=this.state;
     if(!this.replayObserver||players.length!==2||phase==='waiting')return;
     try{this.replayObserver({...event,atMs:this.clockAt,players:[players[0],players[1]],
-      state:{board:board.map(piece=>({...piece})),turn,phase,winner,revision}});}catch{/* Gameplay does not depend on replay capture. */}
+      state:{board:board.map(piece=>({...piece})),turn,phase,winner,revision,ply:2*(this.game.moveNumber()-1)+Number(turn==='b')}});}catch{/* Gameplay does not depend on replay capture. */}
   }
   join(id:string){
     if(this.state.players.includes(id))return true;

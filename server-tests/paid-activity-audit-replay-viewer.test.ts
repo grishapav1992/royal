@@ -23,7 +23,7 @@ const scope = { datasetId: randomUUID(), environment: 'test' } as const;
 const amount = '9007199254740993';
 const root = fileURLToPath(new URL('..', import.meta.url));
 
-function chessPackage() {
+function chessPackage(late = false) {
   const { formatVersion: _, ...game } = chessTurnReplayDefinition;
   const chess = new Chess();
   const square = (value: string) => (Number(value[1]) - 1) * 8 + value.charCodeAt(0) - 97;
@@ -39,8 +39,10 @@ function chessPackage() {
   };
   const initial = state(0, 'open');
   const moves = [['f2', 'f3'], ['e7', 'e5'], ['g2', 'g4'], ['d8', 'h4']];
+  let firstObserved: ReturnType<typeof state> | undefined;
   const events: ReplayEvent[] = moves.map(([from, to], index) => {
     chess.move({ from, to });
+    if (late && index === 2) firstObserved = state(3, 'open');
     return { sequence: index + 1, atMs: 1000 * (index + 1), postings: [], data: { kind: 'action',
       action: { profile: 'pvp-turn-based', code: 'move', seat: index % 2 === 0 ? 1 : 2, positions: [square(from), square(to)] } } };
   });
@@ -48,6 +50,11 @@ function chessPackage() {
   events.push({ sequence: 5, atMs: 4000, postings: [posting], money: [{ posting, movement: 'payout', units: amount }],
     data: { kind: 'terminal', outcome: 'settled', winnerSeat: 2, state: state(4, 'settled') } });
   const replayId = randomUUID();
+  if (firstObserved) return createReplayPackage({ formatVersion: 2, game, initial: null, scope, replayId,
+    entityId: replayId, coverage: 'partial', gaps: ['initial-state-unavailable', 'event-gap', 'terminal-unavailable'] }, [
+    { ...events[2], sequence: 1, atMs: 0 },
+    { sequence: 2, atMs: 0, postings: [], data: { kind: 'checkpoint', state: firstObserved } },
+  ]);
   return createReplayPackage({ formatVersion: 2, game, initial, scope, replayId, entityId: replayId, coverage: 'complete', gaps: [] }, events);
 }
 
@@ -91,6 +98,7 @@ function combatPackage(changeCheckpoint: boolean) {
 
 function hockeyPackage() {
   const { formatVersion, ...game } = sportReplayDefinitions.find(mode => mode.gameId === 'hockey')!;
+  assert(formatVersion === 4);
   const table = new TableGame('hockey');
   table.join('1'); table.join('2');
   const initial = sportReplayFrame(table.state, 0), replayId = randomUUID();
@@ -107,6 +115,7 @@ function hockeyPackage() {
 
 function tsuPackage() {
   const { formatVersion, ...game } = tsuTurnReplayDefinition, replayId = randomUUID();
+  assert(formatVersion === 2);
   const state = (round: number, board: number[]) => ({ profile: 'pvp-turn-based' as const, phase: 'open' as const,
     turn: round, seatToMove: null, board });
   const initial = state(1, [1, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -182,6 +191,12 @@ test('serves the full investigation flow from a local HTML file with networking 
   await expect(state.locator('[data-square=h4]')).toHaveAttribute('data-piece', '11');
   await page.locator('#previous').click();
   await expect(page.locator('#links')).toBeEmpty();
+
+  await upload(chessPackage(true));
+  await expect(status).toHaveText(/Частичная запись.*с позиции после полухода 3.*целостность пакета проверена/);
+  await expect(state.locator('[data-square=g4]')).toHaveCount(0);
+  await jump(2);
+  await expect(state.locator('[data-square=g4]')).toHaveAttribute('data-piece', '1');
 
   const invalid = structuredClone(chess);
   invalid.fragments[0].events[0].atMs++;

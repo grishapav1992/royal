@@ -264,6 +264,47 @@ test('named operators export only authorized canonical replay packages and journ
     assert.equal(prepareViewerReplay(pack).status, 'unsupported');
   });
 
+  await t.test('exports a recorded chess suffix as partial without a simulated result', async () => {
+    const now = Date.now(), roomId = 'late-chess-replay';
+    const players = [randomUUID(), randomUUID()];
+    await game.prepare('INSERT INTO accounts VALUES (?),(?)').run(...players);
+    for (const accountId of players) await wallet.operate(accountId, { id: randomUUID(), kind: 'deposit', amount: 100 });
+    const actors = players.map(accountId => ({ accountId, name: 'fixture player', roomId, connected: true, available: true }));
+    await pvp.syncRoom(roomId, actors, now);
+    const match = (await pvp.command(actors[0], { id: randomUUID(), action: 'create', gameId: 'chess',
+      stakeUnits: '1000000', targetId: players[1] }, now)).active!.id;
+    await pvp.command(actors[1], { id: randomUUID(), action: 'accept', challengeId: match }, now + 1);
+    await pvp.command(actors[0], { id: randomUUID(), action: 'ready', challengeId: match }, now + 2);
+    const ready = (await pvp.command(actors[1], { id: randomUUID(), action: 'ready', challengeId: match }, now + 3)).active!;
+    let at = 10, recording: CapturedChessReplay | undefined;
+    const engine = new ChessGame(undefined, () => at);
+    const capture = new ChessTurnReplayCapture(id => id, value => { recording = value; }, () => at);
+    engine.setReplayObserver(value => capture.observeEngine(value));
+    for (const id of players) assert(engine.join(id));
+    assert(engine.move(players[0], 'f2', 'f3', undefined));
+    assert(engine.move(players[1], 'e7', 'e5', undefined));
+    capture.observeMatches([ready]);
+    at += 100;
+    assert(engine.move(players[0], 'g2', 'g4', undefined));
+    at += 100;
+    assert(engine.move(players[1], 'd8', 'h4', undefined));
+    await pvp.adjudicate(roomId, match, players[1], 'win', now + 200);
+    capture.observeAdjudication(match, players[1], 'win', now + 200);
+    assert(recording);
+    assert.equal(await persistCapturedChessReplay(audit, scope, game.schema, recording), 'recorded');
+
+    const result = await run(alice, match, 'chess-partial.json');
+    assert.equal(result.coverage, 'partial');
+    assert.equal(result.engineVerified, false);
+    const exported = JSON.parse(await readFile(join(scratch, 'chess-partial.json'), 'utf8')) as ReplayPackage;
+    assert.deepEqual(exported.manifest.gaps, ['initial-state-unavailable', 'event-gap']);
+    const events = exported.fragments.flatMap(fragment => fragment.events);
+    assert.deepEqual(events.flatMap(event => event.money ?? []).map(leg => [leg.movement, leg.units]), [['payout', '190']]);
+    const viewer = prepareViewerReplay(exported);
+    assert.equal(viewer.status, 'ready');
+    assert.equal(viewer.engineVerified, false);
+  });
+
   await t.test('distinguishes absent, corrupt, incomplete and unsupported without publishing a partial file', async () => {
     const noBasis = legacy(randomUUID(), randomUUID(), legacyEvents.map(event => ({ ...event, postings: [] })));
     const incomplete = legacy();
@@ -284,6 +325,6 @@ test('named operators export only authorized canonical replay packages and journ
         WHERE operator_name=? AND filters->>'replayId'=?`).get(alice, pack.manifest.replayId);
       assert.deepEqual(row, { status: 'failed', reason: code, row_count: 0, byte_count: 0 });
     }
-    assert.deepEqual((await readdir(scratch)).sort(), ['chess.json', 'legacy.json', 'tote.json']);
+    assert.deepEqual((await readdir(scratch)).sort(), ['chess-partial.json', 'chess.json', 'legacy.json', 'tote.json']);
   });
 });

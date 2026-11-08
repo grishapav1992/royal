@@ -36,12 +36,13 @@ function verifyReplayCandidate(input: unknown, datasetId: string, replayId: stri
   if (chess || combat) {
     const pinned = verifyReplayPackage(pack, [chess ? chessTurnReplayDefinition : combatReplayDefinition]);
     if (pinned.status !== 'verified') return verificationFailure(pinned.status, jobId);
-    if (manifest.initial && events.every((event, index) => event.sequence === index + 1)) {
+    const canSimulate = !!manifest.initial && events.every((event, index) => event.sequence === index + 1);
+    if (canSimulate || chess && !manifest.initial) {
       const simulated = chess ? verifyChessTurnReplay(pack) : reconstructCombatReplay(pack);
       if (simulated.status !== 'verified') {
         return verificationFailure(simulated.status === 'unknown-tick' ? 'corrupt' : simulated.status, jobId);
       }
-      engineVerified = true;
+      engineVerified = canSimulate;
     }
   } else if (game.replayProfile === 'pvp-sport' || sportReplayDefinitions.some(definition => definition.gameId === game.gameId)) {
     const result = reconstructSportReplay(pack);

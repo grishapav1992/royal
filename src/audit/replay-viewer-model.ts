@@ -24,12 +24,16 @@ export function prepareViewerReplay(input: unknown): ViewerReplay {
   const reconstructed = new Map<number, ReplayState>();
   let engineVerified = false;
   if (chess || combat) {
-    if (manifest.initial && events.every((event, index) => event.sequence === index + 1)) {
+    const canSimulate = !!manifest.initial && events.every((event, index) => event.sequence === index + 1);
+    if (canSimulate || chess && !manifest.initial) {
       const result = chess
         ? verifyChessTurnReplay(pack, (sequence, state) => reconstructed.set(sequence, state))
         : reconstructCombatReplay(pack, undefined, (event, state) => reconstructed.set(event.sequence, state));
-      if (result.status !== 'verified') return result.status === 'unsupported' ? { status: 'unsupported' } : { status: 'mismatch' };
-      engineVerified = true;
+      if (result.status !== 'verified') {
+        if (result.status === 'unsupported') return { status: 'unsupported' };
+        return { status: canSimulate ? 'mismatch' : 'corrupt' };
+      }
+      engineVerified = canSimulate;
     } else {
       const pinned = verifyReplayPackage(pack, [chess ? chessTurnReplayDefinition : combatReplayDefinition]);
       if (pinned.status !== 'verified') return pinned;
