@@ -112,6 +112,14 @@ async function canonicalArchiveDatabase() {
   }
 }
 
+async function writeLocalArchiveCredential(path: string, port: string, user: string, password: string) {
+  const url = new URL('postgresql://127.0.0.1/royal_test');
+  url.port = port;
+  url.username = user;
+  url.password = password;
+  await writeFile(path, url.toString() + '\n', { mode: 0o600, flag: 'wx' });
+}
+
 async function exportSnapshot(client: PoolClient) {
   const { rows: [row] } = await client.query<{ snapshot: string }>('SELECT pg_export_snapshot() AS snapshot');
   return row.snapshot;
@@ -275,11 +283,19 @@ test('isolated rehearsal settles accepted games and preserves payments through o
     let verifyOriginal: (() => Promise<void>) | undefined;
     let verifyArchived: (() => Promise<void>) | undefined;
     let pendingPayment: Awaited<ReturnType<typeof testPaymentEvent>> | undefined;
+    let recorderFile: string | undefined;
     if (pgBin) {
       assert(archived);
       assert.notEqual(archived.dataset.datasetId, testDataset.datasetId);
       await installAuditReplayReport(audit, group, sources);
       await grant(archived.dataset.datasetId);
+      await audit.exec(`CREATE ROLE royal_audit_recorder LOGIN;
+        GRANT USAGE ON SCHEMA royal_audit, royal_game TO royal_audit_recorder;
+        GRANT SELECT ON audit_datasets, audit_dataset_sources, audit_posting_refs TO royal_audit_recorder;
+        GRANT UPDATE (capture_lock_permission) ON audit_datasets TO royal_audit_recorder;
+        GRANT SELECT, INSERT ON audit_evidence, audit_attempt_capture_gaps TO royal_audit_recorder;
+        GRANT UPDATE (missing_count, first_at_ms, last_at_ms) ON audit_attempt_capture_gaps TO royal_audit_recorder;
+        GRANT SELECT ON royal_game.flag_tote_tickets, royal_game.demo_ledger TO royal_audit_recorder`);
       const privateRoot = await mkdtemp(join(tmpdir(), 'royal-audit-rehearsal-dump-'));
       t.after(() => rm(privateRoot, { recursive: true, force: true }));
       const archive = join(privateRoot, 'rehearsal.dump');
@@ -331,7 +347,7 @@ test('isolated rehearsal settles accepted games and preserves payments through o
         await localArchiveTool('pg_dump', originalEnv, [...dumpScope, '--format=custom', '--file=' + archive]);
         return { state, catalog, roleSql, schema: schemaFingerprint(ddl.stdout), archive: sha256(await readFile(archive)) };
       });
-      assert.deepEqual(expected.catalog.roles, [group]);
+      assert.deepEqual(expected.catalog.roles, [group, 'royal_audit_recorder']);
       assert.deepEqual(expected.catalog.active_sources, [
         'royal_game.capro_pending_ledger', 'royal_game.demo_ledger', 'royal_payments.crypto_ledger',
       ]);
@@ -355,6 +371,10 @@ test('isolated rehearsal settles accepted games and preserves payments through o
       const { catalog: restoredCatalog } = await archiveSnapshot(game,
         async client => archiveCatalog(connectionEnv, await exportSnapshot(client)));
       assert.deepEqual(restoredCatalog, expected.catalog);
+      const recorderPassword = randomUUID();
+      recorderFile = join(privateRoot, 'recorder-url');
+      await audit.exec(`ALTER ROLE royal_audit_recorder PASSWORD '${recorderPassword}'`);
+      await writeLocalArchiveCredential(recorderFile, restored.env.PGPORT, 'royal_audit_recorder', recorderPassword);
       const filesBeforeDenied = (await readdir(privateRoot)).sort();
       await assert.rejects(exportAuditPlayer(readerFor(connectionEnv), csvInput(join(privateRoot, 'denied.csv'))),
         { code: 'permission-denied', jobId: null });
@@ -366,11 +386,7 @@ test('isolated rehearsal settles accepted games and preserves payments through o
       assert.deepEqual(await archivedReports(connectionEnv, 'restored'), before);
       const operatorFile = join(privateRoot, 'operator-url');
       const cliReplay = join(privateRoot, 'restored-cli.json');
-      const operatorUrl = new URL('postgresql://127.0.0.1/royal_test');
-      operatorUrl.port = restored.env.PGPORT;
-      operatorUrl.username = operator;
-      operatorUrl.password = password;
-      await writeFile(operatorFile, operatorUrl.toString() + '\n', { mode: 0o600, flag: 'wx' });
+      await writeLocalArchiveCredential(operatorFile, restored.env.PGPORT, operator, password);
       const { stdout } = await exec(process.execPath, ['--import', 'tsx',
         fileURLToPath(new URL('../scripts/audit.ts', import.meta.url)), 'replay', '--schema', reportScope.schema,
         '--dataset', reportScope.datasetId, '--replay', archived.replay.replayId, '--output', cliReplay], {
@@ -411,12 +427,14 @@ test('isolated rehearsal settles accepted games and preserves payments through o
     const reader = readerFor(connectionEnv);
     const detail = (datasetId: string, anchor: AuditSourceRef) => readAuditDetail(reader,
       { schema: audit.schema, datasetId, filters: { source: anchor.namespace, postingId: anchor.rowId } });
-    const observerEnv = { ...connectionEnv, ROYAL_AUDIT_SCHEMA: audit.schema, ROYAL_AUDIT_RECORDER_DB_URL_FILE: undefined,
+    const observerEnv = { ...(recorderFile ? { NODE_ENV: 'production' } : connectionEnv),
+      ROYAL_AUDIT_SCHEMA: audit.schema, ROYAL_AUDIT_RECORDER_DB_URL_FILE: recorderFile,
       ROYAL_AUDIT_TEST_DATASET_ID: undefined, ROYAL_AUDIT_LIVE_DATASET_ID: undefined,
       ROYAL_AUDIT_TOTE_ADMISSION: '1', ROYAL_AUDIT_CHESS_REPLAY: undefined, ROYAL_AUDIT_COMBAT_REPLAY: undefined,
       ROYAL_AUDIT_CARD_REPLAY: undefined, ROYAL_AUDIT_SPORT_REPLAY: undefined, ROYAL_AUDIT_TSU_REPLAY: undefined };
     runtime = startAuditAttemptRuntime({ ...observerEnv, ROYAL_AUDIT_TEST_DATASET_ID: testDataset.datasetId }, game.schema);
     assert(runtime?.recordToteAdmission);
+    assert.equal(await runtime.ready, true);
     const stopObserver = async () => {
       const active = runtime;
       runtime = undefined;
@@ -627,6 +645,7 @@ test('isolated rehearsal settles accepted games and preserves payments through o
     assert.equal(await audit.prepare('SELECT 1 FROM audit_posting_refs WHERE dataset_id=?').get(live.liveDatasetId), undefined);
     runtime = startAuditAttemptRuntime({ ...observerEnv, ROYAL_AUDIT_LIVE_DATASET_ID: live.liveDatasetId }, game.schema);
     assert(runtime?.recordToteAdmission);
+    assert.equal(await runtime.ready, true);
     pool.setAdmissionObserver(runtime.recordToteAdmission);
     assert.equal((await pool.bet(ticketOwner, repeatTicket)).replayed, true);
     pool.setAdmissionObserver(undefined);
