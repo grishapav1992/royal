@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import test, { type TestContext } from 'node:test';
-import type { PvpChallenge, PvpRequest } from '../src/shared/pvp';
+import { VIRTUAL_PVP_SCOPE, type PvpChallenge, type PvpRequest } from '../src/shared/pvp';
+import { POOL_IDLE_TIMEOUT_MS } from '../src/shared/pool';
+import { pvpSeat } from '../src/shared/pvpSeats';
+import { prepareViewerReplay } from '../src/audit/replay-viewer-model';
 import { AuditDatasets } from '../server/audit/datasets';
 import { createReplayPackage, verifyReplayPackage, type SportGame, type SportReplayFrame } from '../server/audit/replay-package';
 import { buildSportReplay, persistCapturedSportReplay, SportReplayCapture, type CapturedSportReplay } from '../server/audit/replay-pvp-sport';
@@ -11,6 +14,7 @@ import { PostgresDatabase } from '../server/database';
 import { DemoWalletStore } from '../server/demoWallet';
 import { NileCombatEscrow } from '../server/finance/combat-escrow';
 import { PvpStore } from '../server/pvp/store';
+import { virtualPvpCommand } from '../server/pvp/virtual-service';
 import { VirtualPvpLedger } from '../server/pvp/virtual-wallet';
 import { TableGame } from '../server/tableGames';
 
@@ -189,6 +193,128 @@ test('a durable pool award without observed physics end does not invent an exact
   assert.equal(events.some(event => event.data.kind === 'terminal'), false);
   const mismatched = buildSportReplay({ ...recordings[0], gaps: ['terminal-unavailable', 'event-gap'] }, f.scope, { sourceGap: true });
   assert.deepEqual(mismatched.manifest.gaps, ['terminal-unavailable', 'event-gap', 'source-unavailable']);
+});
+
+test('the paid LobbyRoom pool deadline records an observed idle terminal and exactly one payout', {
+  skip: process.env.NODE_ENV !== 'test',
+}, async t => {
+  const [{ LobbyRoom, configureLobbyPvpReplays }, { accounts }] = await Promise.all([
+    import('../server/LobbyRoom'), import('../server/accounts'),
+  ]);
+  await accounts.ready;
+  const game = new PostgresDatabase(accounts.schema, { existingSchema: true });
+  const audit = new PostgresDatabase(':memory:');
+  t.after(async () => { await Promise.all([game.close(), audit.close(), accounts.close()]); });
+  const logins = await Promise.all([0, 1].map(async seat => {
+    const login = await accounts.login('pool-idle-' + seat + '-' + randomUUID() + '@example.test', 'test-password-only');
+    await accounts.select(login.account.id, 0);
+    await accounts.wallet.operate(login.account.id, { id: randomUUID(), kind: 'deposit', amount: 10 });
+    return login;
+  }));
+  const { datasetId, environment } = await new AuditDatasets(audit, { game: accounts.schema }).startTest();
+  const scope = { datasetId, environment };
+  const records: CapturedSportReplay[] = [];
+  configureLobbyPvpReplays({ recordSport: record => records.push(record) });
+  const room = new LobbyRoom();
+  room.roomId = 'pool-audit-' + randomUUID();
+  const messages = new Map<string, (client: unknown, value: unknown) => unknown>();
+  t.mock.method(room, 'onMessage', (name: string, listener: (client: unknown, value: unknown) => unknown) => messages.set(name, listener));
+  t.mock.method(room, 'setPatchRate', () => {});
+  t.mock.method(room, 'setSimulationInterval', () => {});
+  t.mock.method(room, 'broadcast', () => {});
+  t.mock.method(room.clock, 'setInterval', () => ({ clear() {} }));
+  t.after(() => { configureLobbyPvpReplays(); room.onDispose(); room.clock.clear(); });
+  room.onCreate();
+  const clients = await Promise.all(logins.map(async (login, index) => {
+    const auth = (await accounts.session(login.token))!;
+    const replies = new Map<string, { type: string; active?: PvpChallenge }>();
+    const client = { sessionId: sessions[index], auth, leave() {},
+      send(type: string, value: { requestId?: string; active?: PvpChallenge } | null) {
+        if (value?.requestId) replies.set(value.requestId, { type, active: value.active });
+      } };
+    await room.onJoin(client as never, { activityProtocol: 1 }, auth);
+    room.clients.push(client as never);
+    Object.assign(room.state.players.get(client.sessionId)!, { hall: 'tables', ...pvpSeat('pool', index) });
+    return { client, replies };
+  }));
+  await accounts.pvp.syncRoom(room.roomId, logins.map(({ account }) => ({
+    accountId: account.id, name: account.name, connected: true, available: true,
+  })));
+  const command = async (seat: number, request: Record<string, unknown>) => {
+    const id = randomUUID();
+    await messages.get('pvp')!(clients[seat].client, { ...request, id, walletScope: VIRTUAL_PVP_SCOPE });
+    const reply = clients[seat].replies.get(id);
+    assert.equal(reply?.type, 'pvp');
+    assert(reply?.active);
+    return reply.active;
+  };
+  const { id: matchId } = await command(0, { action: 'create', gameId: 'pool', stakeUnits: '1000000', targetId: null });
+  await command(1, { action: 'accept', challengeId: matchId });
+  await command(0, { action: 'ready', challengeId: matchId });
+  const playing = await command(1, { action: 'ready', challengeId: matchId });
+  assert.equal(playing.status, 'playing');
+  const [creator, opponent] = logins.map(({ account }) => account.id);
+  const invalid = await virtualPvpCommand(accounts.pvp)(creator, 'pvp-result', {
+    roomId: room.roomId, matchId, winnerId: opponent, reason: 'timeout', idleForMs: POOL_IDLE_TIMEOUT_MS,
+  });
+  assert.equal(invalid.status, 400);
+
+  const pvp = Reflect.get(room, 'pvp') as { sync(): Promise<void>; poolTurn?: { at: number } };
+  assert(pvp.poolTurn);
+  const startedAt = pvp.poolTurn.at;
+  let wallClock = startedAt;
+  const clock = t.mock.method(Date, 'now', () => wallClock);
+  try {
+    // Keep the room lease fresh while testing the unchanged wall-clock cutoff.
+    for (let elapsed = 10_000; elapsed <= POOL_IDLE_TIMEOUT_MS; elapsed += 10_000) {
+      wallClock = startedAt + elapsed;
+      await pvp.sync();
+    }
+    assert.equal(records.length, 0);
+    wallClock++;
+    await pvp.sync();
+    await pvp.sync();
+  } finally { clock.mock.restore(); }
+
+  assert.equal(records.length, 1);
+  assert.deepEqual(records[0].gaps, []);
+  assert.equal(records[0].settlement.reason, 'timeout');
+  const bank = await game.prepare('SELECT winner_id,reason,fee_units FROM virtual_pvp_banks WHERE match_id=?').get(matchId);
+  assert.deepEqual(bank, { winner_id: opponent, reason: 'timeout', fee_units: 10 });
+  const final = await game.prepare("SELECT account_id,amount_units FROM demo_ledger WHERE operation_id=? AND entry_type='win'")
+    .all('pvp:' + matchId + ':final');
+  assert.deepEqual(final, [{ account_id: opponent, amount_units: 190 }]);
+  assert.equal(await persistCapturedSportReplay(audit, scope, accounts.schema, records[0]), 'recorded');
+  const stored = await new AuditReplayStore(audit).read(scope, matchId, sportReplayDefinitions);
+  assert.equal(stored.status, 'verified');
+  const pack = stored.value;
+  assert.equal(pack.manifest.formatVersion, 5);
+  assert.equal(pack.manifest.coverage, 'complete');
+  const events = pack.fragments.flatMap(fragment => fragment.events);
+  const terminal = events.at(-1);
+  assert(terminal?.data.kind === 'terminal' && terminal.data.state.profile === 'pvp-sport');
+  const terminalData = terminal.data;
+  assert.equal(terminal.data.outcome, 'timed-out');
+  assert.equal(terminal.data.idleForMs, POOL_IDLE_TIMEOUT_MS + 1);
+  assert.equal(terminal.data.winnerSeat, 2);
+  assert.equal(terminal.data.state.moving, false);
+  assert.equal(terminal.data.state.turn, 1);
+  assert.deepEqual(terminal.money?.map(leg => [leg.movement, leg.units]), [['payout', '190']]);
+  assert.equal(prepareViewerReplay(pack).status, 'ready');
+
+  const { sha256: _sha, terminal: _terminal, fragments: _fragments, ...manifest } = pack.manifest;
+  const beforeTerminal = events.slice(0, -1);
+  assert.throws(() => createReplayPackage(manifest, [...beforeTerminal,
+    { ...terminal, data: { ...terminalData, idleForMs: POOL_IDLE_TIMEOUT_MS } }]), /Invalid replay evidence/);
+  const wrongWinner = createReplayPackage(manifest, [...beforeTerminal, { ...terminal, data: { ...terminalData, winnerSeat: 1 } }]);
+  assert.equal(reconstructSportReplay(wrongWinner).status, 'corrupt');
+
+  const withoutHandoff = tableCapture(playing);
+  withoutHandoff.capture.observeAdjudication(matchId, opponent, 'timeout', wallClock);
+  const partial = buildSportReplay(withoutHandoff.recordings[0], scope);
+  assert.equal(partial.manifest.formatVersion, 4);
+  assert.deepEqual(partial.manifest.gaps, ['terminal-unavailable']);
+  assert.equal(partial.manifest.terminal, null);
 });
 
 test('installing a throwing observer leaves accepted physics, move and return values unchanged', () => {

@@ -163,6 +163,7 @@ function showEvent(event: ReplayEvent | null) {
   const { data } = event;
   if (data.kind === 'terminal') {
     add(eventView, outcomes[data.outcome] + (data.winnerSeat ? ' · победитель ' + data.winnerSeat : ''));
+    if (data.idleForMs !== undefined) add(eventView, 'Простой перед истечением хода · ' + (data.idleForMs / 1000).toFixed(3) + ' с');
     if (event.pool) add(eventView, poolDetail(event.pool));
   } else if (event.pool) add(eventView, poolDetail(event.pool));
   else if (data.kind === 'checkpoint') add(eventView, 'Контрольное состояние сервера');

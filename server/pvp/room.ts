@@ -2,6 +2,7 @@ import { ACTIVITIES, type ActivityId } from '../../src/shared/activities';
 import { activityHall } from '../../src/shared/world';
 import { isPvpSnapshotGame, isDirectPvp, isFreePvp, isNegotiatedPvp, validPvpRequest, type PvpChallenge, type PvpSnapshot } from '../../src/shared/pvp';
 import { PVP_PLAYER_DISTANCE } from '../../src/shared/tsuEFa';
+import { POOL_IDLE_TIMEOUT_MS } from '../../src/shared/pool';
 import { playCommand } from '../nilePlayRoutes';
 import {pvpSeat} from '../../src/shared/pvpSeats';
 import type { Activities } from '../activities';
@@ -112,14 +113,19 @@ export class PvpRoom {
       if(isPvpSnapshotGame(c.gameId))continue;
       const state=c.gameId==='chess'?this.host.activities.chess.state:this.host.activities.tables.find(t=>t.state.id===c.gameId)!.state;
       let winner:string|null|undefined;
+      let idleForMs:number|undefined;
       if(state.phase==='finished')winner=state.winner?people.find(p=>p.sessionId===state.winner)?.accountId??null:null;
       if(c.gameId==='pool'&&state.phase==='playing'&&'turn'in state){
         const turn=Number(state.turn),moving='moving'in state&&state.moving;
         if(!this.poolTurn||this.poolTurn.id!==c.id||this.poolTurn.turn!==turn||moving)this.poolTurn={id:c.id,turn,at:Date.now()};
-        else if(Date.now()-this.poolTurn.at>60_000)winner=[c.creatorId,c.opponentId][1-turn]!;
+        else{
+          const elapsed=Date.now()-this.poolTurn.at;
+          if(elapsed>POOL_IDLE_TIMEOUT_MS){winner=[c.creatorId,c.opponentId][1-turn]!;idleForMs=elapsed;}
+        }
       }
       if(winner!==undefined){
-        const settled=await this.call(c.creatorId,'pvp-result',{roomId:this.host.roomId(),matchId:c.id,winnerId:winner,reason:winner?'win':'draw'});
+        const reason=idleForMs===undefined?{reason:winner?'win':'draw'}:{reason:'timeout',idleForMs};
+        const settled=await this.call(c.creatorId,'pvp-result',{roomId:this.host.roomId(),matchId:c.id,winnerId:winner,...reason});
         if(settled.status===200)c.status='finished';
       }
     }

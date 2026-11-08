@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {applyPvpMoneyEvent} from '../../server/finance/pvp-money.ts';
-import {pvpPayout,validVirtualPvpStake} from '../../src/shared/pvp.ts';
+import {isStandardPvpGame,pvpPayout,STANDARD_PVP_RULES_VERSION,validVirtualPvpStake} from '../../src/shared/pvp.ts';
 
 /** Every allowed stake and settlement choice, using the production money functions. */
 export function qualifyVirtualPvp(gameId,policy){
+ if(isStandardPvpGame(gameId))assert.equal(policy.rulesVersion,STANDARD_PVP_RULES_VERSION);
  const accounts=['11111111-1111-4111-8111-111111111111','22222222-2222-4222-8222-222222222222'];
  const participants=accounts.map((accountId,i)=>({accountId,userId:'player'+i}));
  const results=[];let serverReplayChecks=0;

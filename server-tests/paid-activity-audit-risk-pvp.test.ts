@@ -334,7 +334,7 @@ test('Tsu v4 identifies quick voluntary surrenders without treating simultaneous
 
 test('reviewers retain exact subject replay jumps across reads and attachment upgrades without source grants', async t => {
   const f = await fixture(t, 6);
-  const matches = [];
+  const matches: string[] = [];
   for (let index = 0; index < 6; index++) matches.push(await f.timedMatch('durak', 0, 1, { fast: true }));
   await f.timedBaseline('durak');
   const initial = candidate(await f.select([0]), 'resignation');

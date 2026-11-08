@@ -1,4 +1,5 @@
 import type { PvpChallenge } from '../../src/shared/pvp';
+import { isPoolIdleTimeout } from '../../src/shared/pool';
 import { identifier, type PostgresDatabase } from '../database';
 import { reconcileStoredPvpMatch } from './check-pvp';
 import type { AuditScope } from './contract';
@@ -21,6 +22,7 @@ export type CapturedSportReplay = {
 };
 type ActiveCapture = { match: Match; initial: SportReplayFrame; state: TableReplayObservation['state']; startedAt: number;
   events: ReplayEvent[]; disconnected: Set<Seat>; pending: number[]; pendingAt: number; tick: number; gap: boolean;
+  idle?: { state: SportReplayFrame; at: number; elapsedMs: number };
   end?: { winner: Seat; state: SportReplayFrame; at: number } };
 
 const checkpointEveryTicks = 120;
@@ -138,12 +140,14 @@ export class SportReplayCapture {
     }
   }
 
-  /** End a partial transcript at the room's handoff only if the adjudication actually succeeds. */
-  observeAdjudicationStart(matchId: string): (() => void) | undefined {
+  /** Freeze the room's cutoff before the wallet call, and apply it only on success. */
+  observeAdjudicationStart(matchId: string, idleForMs?: number): (() => void) | undefined {
     const capture = [...this.active.values()].find(active => active.match.id === matchId);
     if (!capture || capture.end || capture.gap || capture.state.phase !== 'playing') return;
     this.flush(capture);
     const length = capture.events.length, tick = capture.tick, gap = capture.gap;
+    const idle = isPoolIdleTimeout(idleForMs) && capture.state.id === 'pool' && !capture.state.moving && !capture.disconnected.size
+      ? { state: sportReplayFrame(capture.state, tick, 'settled'), at: this.now(), elapsedMs: idleForMs } : undefined;
     return () => {
       if (this.active.get(capture.match.gameId) !== capture) return;
       capture.events.length = length;
@@ -151,10 +155,11 @@ export class SportReplayCapture {
       capture.gap = gap;
       capture.pending = [];
       capture.end = undefined;
+      capture.idle = idle;
     };
   }
 
-  observeAdjudication(matchId: string, winnerId: string | null, reason: 'win' | 'draw' | 'server', finishedAtMs: number) {
+  observeAdjudication(matchId: string, winnerId: string | null, reason: 'win' | 'draw' | 'server' | 'timeout', finishedAtMs: number) {
     const match = this.find(matchId);
     if (match) this.finish(match, winnerId, reason, finishedAtMs);
   }
@@ -178,7 +183,7 @@ export class SportReplayCapture {
     const winnerSeat = accountSeat(match, winnerId);
     if (winnerSeat === undefined || !Number.isSafeInteger(finishedAtMs) || finishedAtMs < 0 ||
       (reason === 'draw' || reason === 'server') && winnerSeat !== null ||
-      (reason === 'win' || reason === 'resign' || reason === 'disconnect') && winnerSeat === null) return;
+      (reason === 'win' || reason === 'resign' || reason === 'disconnect' || reason === 'timeout') && winnerSeat === null) return;
     const capture = this.active.get(match.gameId);
     this.active.delete(match.gameId);
     this.candidates.delete(match.gameId);
@@ -192,7 +197,11 @@ export class SportReplayCapture {
     const now = this.now();
     this.flush(capture);
     let terminal: Terminal | undefined;
-    if (!capture.gap && capture.end?.winner === winnerSeat && reason === 'win') {
+    let terminalAt = capture.end?.at ?? now;
+    if (!capture.gap && reason === 'timeout' && capture.idle && winnerSeat === other(capture.idle.state.turn)) {
+      terminal = { kind: 'terminal', state: capture.idle.state, outcome: 'timed-out', winnerSeat, idleForMs: capture.idle.elapsedMs };
+      terminalAt = capture.idle.at;
+    } else if (!capture.gap && capture.end?.winner === winnerSeat && reason === 'win') {
       terminal = { kind: 'terminal', state: capture.end.state, outcome: 'settled', winnerSeat };
     } else if (!capture.gap && !capture.end && capture.state.phase === 'playing') {
       const resigning = accountSeat(match, acceptedResignationActor);
@@ -205,7 +214,7 @@ export class SportReplayCapture {
         terminal = { kind: 'terminal', state: sportReplayFrame(capture.state, capture.tick, 'cancelled'), outcome: 'cancelled', winnerSeat: null };
       }
     }
-    if (terminal) this.append(capture, capture.end?.at ?? now, terminal);
+    if (terminal) this.append(capture, terminalAt, terminal);
     const gaps: Gap[] = [];
     if (capture.gap) gaps.push('event-gap');
     if (capture.events.at(-1)?.data.kind !== 'terminal') gaps.push('terminal-unavailable');
@@ -216,14 +225,17 @@ export class SportReplayCapture {
 export function buildSportReplay(recording: CapturedSportReplay, scope: AuditScope, links: {
   startMoney?: ReplayEvent['money']; terminalMoney?: ReplayEvent['money']; sourceGap?: boolean;
 } = {}) {
-  const { formatVersion: _version, ...game } = sportReplayDefinitions.find(definition => definition.gameId === recording.gameId)!;
+  const last = recording.events.at(-1)?.data;
+  const formatVersion = last?.kind === 'terminal' && last.outcome === 'timed-out' ? 5 : 4;
+  const { formatVersion: _version, ...game } = sportReplayDefinitions.find(definition =>
+    definition.gameId === recording.gameId && definition.formatVersion === formatVersion)!;
   const events = recording.events.map((event, index) => {
     const money = index === 0 && event.data.kind === 'checkpoint' && event.atMs === 0 ? links.startMoney :
       event.data.kind === 'terminal' ? links.terminalMoney : undefined;
     return { ...event, postings: money?.map(leg => leg.posting) ?? [], ...(money?.length ? { money } : {}) };
   });
   const gaps = links.sourceGap ? [...recording.gaps, 'source-unavailable' as const] : recording.gaps;
-  const pack = createReplayPackage({ formatVersion: 4, scope, replayId: recording.matchId, entityId: recording.matchId,
+  const pack = createReplayPackage({ formatVersion, scope, replayId: recording.matchId, entityId: recording.matchId,
     game, initial: recording.initial, gaps, coverage: gaps.length ? 'partial' : 'complete' }, events);
   if (reconstructSportReplay(pack).status !== 'verified') throw new Error('Invalid sport replay evidence');
   return pack;

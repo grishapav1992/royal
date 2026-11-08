@@ -1,8 +1,9 @@
 import { isAuditMode, type AuditMode, type AuditReplayProfile, type AuditScope, type AuditSourceRef } from './contract';
 import { replayDigest } from './replay-digest';
+import { isPoolIdleTimeout } from '../../src/shared/pool';
 
-export const REPLAY_FORMAT_VERSION = 4;
-type ReplayFormatVersion = 1 | 2 | 3 | typeof REPLAY_FORMAT_VERSION;
+export const REPLAY_FORMAT_VERSION = 5;
+type ReplayFormatVersion = 1 | 2 | 3 | 4 | typeof REPLAY_FORMAT_VERSION;
 const limits = { fragments: 128, eventsPerFragment: 128, postingsPerEvent: 16,
   manifestBytes: 65536, fragmentBytes: 262144, packageBytes: 8388608 } as const;
 
@@ -37,7 +38,8 @@ type ReplayEventData =
   { kind: 'action'; action: ReplayAction } |
   { kind: 'checkpoint'; state: ReplayState } |
   { kind: 'presence'; event: 'disconnected' | 'reconnected'; seat: 1 | 2 } |
-  { kind: 'terminal'; state: ReplayState; outcome: 'settled' | 'cancelled' | 'timed-out' | 'forfeited' | 'draw'; winnerSeat: 1 | 2 | null };
+  { kind: 'terminal'; state: ReplayState; outcome: 'settled' | 'cancelled' | 'timed-out' | 'forfeited' | 'draw';
+    winnerSeat: 1 | 2 | null; idleForMs?: number };
 type ReplayMoney = { movement: 'stake' | 'paid-option' | 'payout' | 'refund' | 'reserve' | 'release' | 'reversal';
   units: string; posting: AuditSourceRef };
 type ReplayCalculation = { baseUnits: string; creditedUnits: string; numerator: string; denominator: string };
@@ -128,7 +130,8 @@ function fighter(value: unknown): value is Fighter {
 const token = (value: unknown): value is number => integer(value, 0, 1023);
 const seat = (value: unknown) => value === 1 || value === 2;
 const knownPhase = (value: unknown) => oneOf(value, ['open', 'settled', 'cancelled']);
-const isFormatVersion = (value: unknown): value is ReplayFormatVersion => value === 1 || value === 2 || value === 3 || value === REPLAY_FORMAT_VERSION;
+const isFormatVersion = (value: unknown): value is ReplayFormatVersion =>
+  value === 1 || value === 2 || value === 3 || value === 4 || value === REPLAY_FORMAT_VERSION;
 
 const sportCoordinate = (value: unknown) => integer(value, -2000000, 2000000);
 const finite = (value: unknown, min = -Infinity, max = Infinity): value is number =>
@@ -192,7 +195,7 @@ function action(value: unknown, profile: AuditReplayProfile, version: ReplayForm
       && oneOf(value.code, ['move', 'pass', 'resign']) && seat(value.seat) && list(value.positions, 16, token);
     case 'pvp-realtime': return fields(value, ['profile', 'code', 'seat', 'tick', 'buttons'])
       && value.code === 'input' && seat(value.seat) && integer(value.tick) && integer(value.buttons, 0, 65535);
-    case 'pvp-sport': return version === 4 && sportAction(value);
+    case 'pvp-sport': return version >= 4 && sportAction(value);
     case 'pool-steps': return fields(value, ['profile', 'code', 'entrants'])
       && oneOf(value.code, version === 1 ? ['advance', 'eliminate'] : ['advance', 'eliminate', 'ticket', 'close', 'allocate'])
       && list(value.entrants, 256, token)
@@ -278,17 +281,20 @@ function event(value: unknown, profile: AuditReplayProfile, version: ReplayForma
     if (payouts.length && payouts.reduce((sum, leg) => sum + BigInt(leg.units), 0n) !== credit) return false;
   }
   if (own(data, 'kind') === 'presence') {
-    return version >= 2 && (profile === 'pvp-turn-based' || profile === 'pvp-realtime' || profile === 'pvp-sport' && version === 4) &&
+    return version >= 2 && (profile === 'pvp-turn-based' || profile === 'pvp-realtime' || profile === 'pvp-sport' && version >= 4) &&
       fields(data, ['kind', 'event', 'seat']) && oneOf(data.event, ['disconnected', 'reconnected']) && seat(data.seat);
   }
   if (own(data, 'kind') === 'action') return fields(data, ['kind', 'action']) && action(data.action, profile, version);
   if (own(data, 'kind') === 'checkpoint') return fields(data, ['kind', 'state']) && state(data.state, profile) && data.state.phase === 'open';
-  return fields(data, ['kind', 'state', 'outcome', 'winnerSeat']) && data.kind === 'terminal'
+  const idle = version === 5 && profile === 'pvp-sport' && data.outcome === 'timed-out';
+  const terminalFields = idle ? ['kind', 'state', 'outcome', 'winnerSeat', 'idleForMs'] : ['kind', 'state', 'outcome', 'winnerSeat'];
+  return fields(data, terminalFields) && data.kind === 'terminal'
     && state(data.state, profile) && data.state.phase !== 'open'
+    && (!idle || isPoolIdleTimeout(data.idleForMs))
     && oneOf(data.outcome, ['settled', 'cancelled', 'timed-out', 'forfeited', 'draw'])
     && (data.outcome !== 'cancelled' || data.state.phase === 'cancelled')
     && (data.outcome !== 'settled' && data.outcome !== 'draw' || data.state.phase === 'settled')
-    && (data.winnerSeat === null || (profile === 'pvp-turn-based' || profile === 'pvp-realtime' || profile === 'pvp-sport' && version === 4) && seat(data.winnerSeat)
+    && (data.winnerSeat === null || (profile === 'pvp-turn-based' || profile === 'pvp-realtime' || profile === 'pvp-sport' && version >= 4) && seat(data.winnerSeat)
       && data.outcome !== 'draw' && data.outcome !== 'cancelled');
 }
 
@@ -329,7 +335,7 @@ function manifestShape(value: unknown): value is ReplayManifest {
     || !isReplayId(value.replayId) || !gameIdentity(value.game) || !entityId(value.entityId, value.game, version)
     || !oneOf(value.coverage, ['complete', 'partial']) || !list(value.gaps, gapCodes.length + extraGapCodes.length, gapCode(version))
     || !list(value.fragments, limits.fragments, fragmentRef) || !sha(value.sha256)) return false;
-  if ((value.game.replayProfile === 'pvp-sport') !== (version === 4)) return false;
+  if ((value.game.replayProfile === 'pvp-sport') !== (version >= 4) || version === 5 && value.game.gameId !== 'pool') return false;
   if (Object.hasOwn(value, 'timing') && (value.timing !== 'source-order' ||
     value.fragments.some(ref => ref.firstMs !== 0 || ref.lastMs !== 0))) return false;
   const { fragments, gaps, terminal, coverage, initial } = value;

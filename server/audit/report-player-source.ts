@@ -18,6 +18,7 @@ export type PlayerReportPage = { cursor: PlayerReportCursor | null; scanned: num
 
 const validName = (value: string) => /^[a-z_][a-z0-9_]{0,62}$/.test(value);
 const literal = (value: string) => "'" + value.replaceAll("'", "''") + "'";
+const accountIdPattern = '^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$';
 
 async function relationExists(db: PostgresDatabase, schema: string, table: string) {
   return (await db.prepare('SELECT to_regclass(?) IS NOT NULL AS present').get(schema + '.' + table))?.present === true;
@@ -39,6 +40,7 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
   const pendingPinned = consumer ? ` AND ${auditExportSourcePinned('acl.source_namespace')}` : '';
   const fine = literal(CLUB_FINE_SOURCE);
   const hasMatches = await relationExists(db, sources.game, 'pvp_matches');
+  const hasCombat = await relationExists(db, sources.game, 'combat_matches');
   const hasCallbacks = await relationExists(db, sources.game, 'capro_transactions') &&
     await relationExists(db, sources.game, 'capro_players');
   const flags = "substring(l.operation_id from '^flag-tote:(ft1-[0-9]{1,16}):final$')";
@@ -72,8 +74,8 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
         WHEN op.result IS NOT NULL THEN ${instantCasinoModeSql('l.source', 'op.round')}
         WHEN x.session_id IS NOT NULL THEN session_mode.mode_id
         END AS mode_id,
-      COALESCE(pool.rules_version::text, x.payload->>'rulesVersion', op.round->>'rulesVersion',
-        m.rules_version) AS rules_version,
+      CASE WHEN l.source LIKE 'pvp:%' THEN COALESCE(m.rules_version, combat.rules_version)
+        ELSE COALESCE(pool.rules_version::text, x.payload->>'rulesVersion', op.round->>'rulesVersion') END AS rules_version,
       COALESCE(pool.id,b.match_id,x.session_id,CASE WHEN op.result IS NOT NULL THEN l.operation_id END,
         f.session_id,n.id) AS entity_id, ticket.id AS ticket_id,
       CASE
@@ -132,12 +134,23 @@ export async function auditPostingProjectionSql(db: PostgresDatabase, sources: A
       CROSS JOIN LATERAL (
         SELECT CASE WHEN pg_input_is_valid(pm.payload,'jsonb') THEN pm.payload::jsonb->'challenge' END AS challenge
       ) p
-      WHERE b.game_id='tsu-e-fa' AND pm.id=b.match_id AND (pm.creator_id=l.account_id OR pm.opponent_id=l.account_id)
+      WHERE b.game_id<>'mortal-kombat' AND pm.id=b.match_id AND (pm.creator_id=l.account_id OR pm.opponent_id=l.account_id)
         AND p.challenge->>'id'=pm.id AND p.challenge->>'gameId'=b.game_id
         AND p.challenge->>'creatorId'=pm.creator_id AND p.challenge->>'opponentId' IS NOT DISTINCT FROM pm.opponent_id
         AND p.challenge->>'status'=pm.status AND p.challenge->>'mode' IS DISTINCT FROM 'free'
         AND p.challenge->'stakeUnits'=to_jsonb((b.stake_units::numeric*10000)::text)
     ) m ON true` : 'LEFT JOIN LATERAL (SELECT NULL::text AS rules_version) m ON true'}
+    ${hasCombat ? `LEFT JOIN LATERAL (
+      SELECT ${pvpModeVersionSql('b.game_id', "to_jsonb(cm)->'rules_version'")} AS rules_version
+      FROM ${g}.combat_matches cm
+      CROSS JOIN LATERAL (
+        SELECT CASE WHEN pg_input_is_valid(cm.accounts,'jsonb') THEN cm.accounts::jsonb END AS accounts
+      ) c
+      WHERE b.game_id='mortal-kombat' AND cm.id=b.match_id AND cm.stake_units::numeric=b.stake_units::numeric*10000
+        AND CASE WHEN jsonb_typeof(c.accounts)='array' THEN jsonb_array_length(c.accounts)=2
+          AND (c.accounts->>0) ~ '${accountIdPattern}' AND (c.accounts->>1) ~ '${accountIdPattern}'
+          AND (c.accounts->>0)<>(c.accounts->>1) AND l.account_id IN (c.accounts->>0,c.accounts->>1) END
+    ) combat ON true` : 'LEFT JOIN LATERAL (SELECT NULL::text AS rules_version) combat ON true'}
     ${summary ? '' : toteJoins}
     CROSS JOIN LATERAL (
       SELECT ${hasCallbacks ? `EXISTS (SELECT 1 FROM ${g}.capro_transactions ct JOIN ${g}.capro_players cp ON cp.player_id=ct.player_id

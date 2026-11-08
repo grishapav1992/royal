@@ -25,6 +25,8 @@ export const PVP_GAMES = {
 export type PvpGameId = keyof typeof PVP_GAMES;
 export type PvpCardGameId = Extract<PvpGameId, 'durak' | 'transfer-durak' | 'crazy-eights'>;
 export const isPvpGame = (id: unknown): id is PvpGameId => typeof id === 'string' && Object.hasOwn(PVP_GAMES, id);
+export const STANDARD_PVP_RULES_VERSION = 1 as const;
+export const isStandardPvpGame = (id: unknown): id is Exclude<PvpGameId, 'tsu-e-fa'> => isPvpGame(id) && id !== 'tsu-e-fa';
 export const isPvpCardGame = (id: unknown): id is PvpCardGameId => ['durak', 'transfer-durak', 'crazy-eights'].includes(String(id));
 export const isPvpSnapshotGame = (id: unknown) => isPvpCardGame(id) || id === 'tsu-e-fa';
 export const PVP_RECONNECT_MS = 60_000;

@@ -1,4 +1,5 @@
 import { gameAccountId } from './nileWallet';
+export const COMBAT_RULES_VERSION = 2;
 export const COMBAT_USDT_STAKES = [1, 2, 5, 10, 50, 100] as const;
 export type CombatEscrowReceipt = {
  id:string;accounts:[string,string];stakeUnits:string;

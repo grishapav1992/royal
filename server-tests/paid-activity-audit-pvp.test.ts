@@ -62,8 +62,8 @@ test('standard PvP distinguishes same operation keys by account and resolves bot
     assert.equal(result.hold.payoutCapacityUnits, '1900');
     assert.equal(result.hold.source.rowId, JSON.stringify([matchId, hold.accountId]));
     assert.equal(result.entity.source.namespace, f.db.schema + '.pvp_matches');
-    assert.equal(result.entity.rulesVersion, null);
-    assert.equal(result.coverage, 'partial');
+    assert.equal(result.entity.rulesVersion, '1');
+    assert.equal(result.coverage, 'complete');
     assert.equal(result.operation, null);
     assert.equal(result.origin, 'unknown');
   }
@@ -133,7 +133,7 @@ test('negotiated Tsuefa keeps verified v4 rules and does not guess which request
   assert.equal(result.operation, null);
 });
 
-test('named PvP detail reports verified Tsuefa rules and no inferred chess version', async t => {
+test('named PvP detail reports only verified rules pins from standard, Combat and Tsuefa matches', async t => {
   const f = await fixture(t);
   const audit = new PostgresDatabase(':memory:');
   const suffix = randomUUID().replaceAll('-', '').slice(0, 12);
@@ -170,6 +170,17 @@ test('named PvP detail reports verified Tsuefa rules and no inferred chess versi
   }
   await f.store.adjudicate(f.a.roomId, chessId, null, 'draw', f.now + 3);
 
+  const legacy = await f.store.command(f.a, {
+    id: randomUUID(), action: 'create', gameId: 'chess', stakeUnits: '10000000', targetId: f.b.accountId,
+  }, f.now + 4);
+  const legacyId = legacy.active!.id;
+  await f.store.command(f.a, { id: randomUUID(), action: 'cancel', challengeId: legacyId }, f.now + 5);
+  await f.db.prepare("UPDATE pvp_matches SET payload=(payload::jsonb #- '{challenge,rulesVersion}')::text WHERE id=?").run(legacyId);
+
+  const combat = { id: randomUUID(), accounts: [f.a.accountId, f.b.accountId], stakeUnits: '10000000' };
+  await f.combat.fund(f.a.accountId, combat);
+  await f.combat.cancel(f.a.accountId, combat);
+
   const tsu = await f.store.command(f.a, {
     id: randomUUID(), action: 'invite', gameId: 'tsu-e-fa', stakeUnits: '1000000', targetId: f.b.accountId,
   }, f.now + 4);
@@ -179,9 +190,7 @@ test('named PvP detail reports verified Tsuefa rules and no inferred chess versi
     await f.store.command(actor, { id: randomUUID(), action: 'duel-ready', challengeId: tsuId, termsRevision: 0 }, f.now + 6);
   }
 
-  for (const [gameId, matchId, version, amount] of [
-    ['chess', chessId, null, '-1000'], ['tsu-e-fa', tsuId, '4', '-100'],
-  ] as const) {
+  const check = async (gameId: string, matchId: string, version: string | null, amount: string) => {
     const [hold] = await f.postings(gameId, matchId, 'hold');
     assert(hold);
     const posting = await resolvePvpPosting(f.db, hold);
@@ -200,7 +209,18 @@ test('named PvP detail reports verified Tsuefa rules and no inferred chess versi
     assert.deepEqual([anchor.category, anchor.gameId, anchor.modeId, anchor.rulesVersion],
       [posting.entity.category, posting.entity.gameId, posting.entity.modeId, posting.entity.rulesVersion]);
     assert.deepEqual([anchor.category, anchor.gameId, anchor.modeId, anchor.rulesVersion], ['pvp', gameId, 'stake', version]);
-  }
+  };
+  await check('chess', chessId, '1', '-1000');
+  await check('chess', legacyId, null, '-1000');
+  await check('mortal-kombat', combat.id, '2', '-1000');
+  await check('tsu-e-fa', tsuId, '4', '-100');
+  await f.db.prepare("UPDATE pvp_matches SET payload=jsonb_set(payload::jsonb,'{challenge,rulesVersion}',?::jsonb)::text WHERE id=?")
+    .run(JSON.stringify('1'), legacyId);
+  await check('chess', legacyId, null, '-1000');
+  await f.db.prepare('UPDATE combat_matches SET rules_version=NULL WHERE id=?').run(combat.id);
+  await check('mortal-kombat', combat.id, null, '-1000');
+  await f.db.prepare('UPDATE combat_matches SET rules_version=1 WHERE id=?').run(combat.id);
+  await check('mortal-kombat', combat.id, null, '-1000');
   assert.equal(registeredAuditMode('tsu-e-fa', 'stake', 4)?.replayProfile, 'pvp-turn-based');
   assert.equal(registeredAuditMode('chess', 'stake', 4), null);
 });
@@ -216,7 +236,8 @@ test('combat recovery links both credits to a single timed-out bank with no clie
     const result = await resolvePvpPosting(f.db, hold);
     assert.ok(result);
     assert.equal(result.entity.source.namespace, f.db.schema + '.combat_matches');
-    assert.equal(result.entity.rulesVersion, null);
+    assert.equal(result.entity.rulesVersion, '2');
+    assert.equal(result.coverage, 'complete');
     assert.equal(result.hold.stakeUnits, '1000');
     assert.equal(result.operation, null);
   }

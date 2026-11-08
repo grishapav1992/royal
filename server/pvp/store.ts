@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { gameAccountId } from '../../src/shared/nileWallet';
-import { PVP_ARRIVAL_MS, PVP_INVITE_MS, PVP_MOVE_MS, PVP_RECONNECT_MS, isPvpCardGame, pvpPayout, validPvpRequest,
+import { PVP_ARRIVAL_MS, PVP_INVITE_MS, PVP_MOVE_MS, PVP_RECONNECT_MS, STANDARD_PVP_RULES_VERSION, isPvpCardGame, pvpPayout, validPvpRequest,
   isPvpSnapshotGame, isDirectPvp, isFreePvp, isNegotiatedPvp, VIRTUAL_PVP_SCOPE, type PvpChallenge, type PvpRequest, type PvpSnapshot } from '../../src/shared/pvp';
 import {TSU_DUEL_DEFAULT_STAKE,tsuDuelPayout} from '../../src/shared/tsuDuel';
 import {createTsuDuel,lockTsuDuel,advanceTsuDuel,publicTsuDuel,type TsuDuelState} from './tsu-duel';
@@ -203,7 +203,8 @@ export class PvpStore {
           targetId: op.targetId, opponentId: null, opponentName: '', stakeUnits,
           ...(negotiated?tsuDuelPayout(stakeUnits):pvpPayout(stakeUnits)),
           ...(negotiated&&op.stakeUnits!==undefined?{offeredStake:true as const}:{}),
-          ...(negotiated?{rulesVersion:4 as const,mode:'stake' as const,targetWins:2 as const,termsRevision:0}:{}),
+          rulesVersion: negotiated ? 4 : STANDARD_PVP_RULES_VERSION, mode: 'stake',
+          ...(negotiated?{targetWins:2 as const,termsRevision:0}:{}),
           status: 'open', createdAt: now, expiresAt: now + PVP_INVITE_MS, ready: [], winnerId: null, reason: '', revision: 0, disconnected: [] };
         s = { challenge, cards: null, roomId: actor.roomId, lastMoveAt: now, roomSeenAt: now };
         if (!negotiated) hold = await this.ledger.pvpHold(actor.accountId, { matchId: challenge.id, gameId: op.gameId, stakeUnits: op.stakeUnits }, now);
@@ -280,11 +281,15 @@ export class PvpStore {
       return Object.defineProperty({ ...await this.snapshotWithWallet(actor, now, wallet), requestId: op.id }, 'replayed', { value: false });
     });
   }
-  async adjudicate(roomId: string, matchId: string, winnerId: string | null, reason: 'win' | 'draw' | 'server', now = Date.now()) {
+  async adjudicate(roomId: string, matchId: string, winnerId: string | null, reason: 'win' | 'draw' | 'server' | 'timeout', now = Date.now()) {
     await this.ready;
     return this.ledger.db.transaction(async () => {
       const s = await this.saved(matchId);
       if (s.roomId !== roomId || isPvpSnapshotGame(s.challenge.gameId)) return fail('Неверный игровой стол.');
+      if (reason === 'timeout' && (s.challenge.gameId !== 'pool' || s.challenge.status !== 'playing' ||
+          winnerId === null || !participant(s.challenge, winnerId))) {
+        return fail('Неверный исход по тайм-ауту.');
+      }
       if (s.challenge.status === 'playing') await this.finish(s, winnerId, reason, now);
     });
   }

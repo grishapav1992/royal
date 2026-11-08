@@ -1,6 +1,7 @@
 import { createServer } from 'node:http';
 import { NilePlayLedger, NilePlayError } from './nile-play-ledger';
 import { gameAccountId } from '../../src/shared/nileWallet';
+import { isPoolIdleTimeout } from '../../src/shared/pool';
 import { requireFinanceAdmin } from '../admin/validation';
 import { CryptoError } from '../crypto/config';
 import { PvpStore } from '../pvp/store';
@@ -94,7 +95,10 @@ export function createNilePlayServer(ledger: NilePlayLedger) {
             }
             else if (body.action === 'pvp-result') {
                 const v=body.value;
-                if(!v||Object.keys(v).sort().join(',')!=='matchId,reason,roomId,winnerId'||!['win','draw','server'].includes(v.reason))throw new NilePlayError('invalid_pvp_request',400);
+                const timeout=v?.reason==='timeout';
+                const fields=timeout?'idleForMs,matchId,reason,roomId,winnerId':'matchId,reason,roomId,winnerId';
+                if(!v||Object.keys(v).sort().join(',')!==fields||!['win','draw','server','timeout'].includes(v.reason)||
+                    timeout&&(typeof v.winnerId!=='string'||!isPoolIdleTimeout(v.idleForMs)))throw new NilePlayError('invalid_pvp_request',400);
                 await pvp.adjudicate(v.roomId,v.matchId,v.winnerId,v.reason);respond(200,{ok:true});
             }
             else

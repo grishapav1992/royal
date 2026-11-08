@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { pvpFixture } from './finance/helpers/nile-pvp-fixture';
 import { NileCombatEscrow } from '../server/finance/combat-escrow';
-import { validCombatEscrowReceipt } from '../src/shared/combatEscrow';
+import { COMBAT_RULES_VERSION, validCombatEscrowReceipt } from '../src/shared/combatEscrow';
 
 async function fixture(){
  const c=await pvpFixture();let now=Date.now();
@@ -16,6 +16,8 @@ test('combat uses the shared Nile journal, reserves both stakes and pays 95% exa
  const c=await fixture();try{
   const m=c.match(),r=await c.escrow.fund(c.a,m);assert.equal(validCombatEscrowReceipt(r),true);
   await c.escrow.fund(c.a,m);
+  assert.deepEqual(await c.ledger.db.prepare('SELECT rules_version FROM combat_matches WHERE id=?').get(m.id),
+   {rules_version:COMBAT_RULES_VERSION});
   const held=await c.wallet(c.a);assert.equal(held.state,'assigned');if(held.state!=='assigned')return;
   assert.equal(held.balanceUnits,'190000000');assert.equal(held.reservedUnits,'10000000');
   const result=await c.escrow.settle(c.a,{...m,winner:c.a});
@@ -41,6 +43,7 @@ test('combat rejects forged actors, participants, stakes, winners and reused ide
   await assert.rejects(()=>c.escrow.fund(c.a,{...m,accounts:[c.a,c.a]}));
   await assert.rejects(()=>c.escrow.fund(c.a,{...m,stakeUnits:'1'}));
   await assert.rejects(()=>c.escrow.fund(c.a,{...m,winner:c.a}));
+  await assert.rejects(()=>c.escrow.fund(c.a,{...m,rulesVersion:COMBAT_RULES_VERSION}));
   await c.escrow.fund(c.a,m);
   await assert.rejects(()=>c.escrow.settle(c.a,{...m,winner:outsider}));
   await assert.rejects(()=>c.escrow.fund(c.a,{...m,accounts:[c.a,outsider]}));
@@ -70,11 +73,41 @@ test('cancellation blocks delayed funding and orphan expiry refunds once after r
   const cancelled=c.match();
   assert.equal((await c.escrow.cancel(c.a,cancelled)).state,'cancelled');
   assert.equal((await c.escrow.fund(c.a,cancelled)).state,'cancelled');
+  assert.deepEqual(await c.ledger.db.prepare('SELECT rules_version FROM combat_matches WHERE id=?').get(cancelled.id),
+   {rules_version:null});
   const m=c.match();await c.escrow.fund(c.a,m);c.advance(150001);
   const restarted=c.restart();await restarted.recoverExpired();await restarted.recoverExpired();
   const late=await restarted.settle(c.a,{...m,winner:c.a});assert.equal(late.state,'refunded');assert.equal(late.feeUnits,'0');
+  assert.deepEqual(await c.ledger.db.prepare('SELECT rules_version FROM combat_matches WHERE id=?').get(m.id),
+   {rules_version:COMBAT_RULES_VERSION});
   for(const id of [c.a,c.b]){const w=await c.wallet(id);assert.equal(w.state==='assigned'&&w.balanceUnits,'200000000');assert.equal(w.state==='assigned'&&w.reservedUnits,'0');}
   await c.ledger.audit();
+ }finally{await c.close();}
+});
+test('a fight funded before the rules-version migration remains unpinned through retry and recovery',async()=>{
+ const c=await pvpFixture();try{
+  const m={id:randomUUID(),accounts:[c.a,c.b],stakeUnits:'10000000'};
+  let now=Date.now();
+  await c.ledger.db.exec(`CREATE TABLE combat_matches(
+    id TEXT PRIMARY KEY, accounts TEXT NOT NULL, stake_units BIGINT NOT NULL,
+    state TEXT NOT NULL, expires_at BIGINT NOT NULL, winner TEXT NOT NULL DEFAULT '',
+    fee_units BIGINT NOT NULL DEFAULT 0, payout_units BIGINT NOT NULL DEFAULT 0)`);
+  for(const account of m.accounts) await c.ledger.pvpHold(account,
+   {matchId:m.id,gameId:'mortal-kombat',stakeUnits:m.stakeUnits},now);
+  await c.ledger.db.prepare("INSERT INTO combat_matches(id,accounts,stake_units,state,expires_at) VALUES (?,?,?,'active',?)")
+   .run(m.id,JSON.stringify(m.accounts),m.stakeUnits,now+150000);
+  const escrow=new NileCombatEscrow(c.ledger,()=>now);
+  assert.equal((await escrow.fund(c.a,m)).state,'active');
+  now+=150001;
+  await escrow.recoverExpired();
+  assert.equal((await escrow.fund(c.a,m)).state,'refunded');
+  assert.deepEqual(await c.ledger.db.prepare('SELECT rules_version FROM combat_matches WHERE id=?').get(m.id),
+   {rules_version:null});
+  for(const account of m.accounts){
+   const wallet=await c.ledger.wallet(account,now);
+   assert.equal(wallet.state==='assigned'&&wallet.balanceUnits,'200000000');
+   assert.equal(wallet.state==='assigned'&&wallet.reservedUnits,'0');
+  }
  }finally{await c.close();}
 });
 test('stale Nile funding and simultaneous combat reservations fail closed without partial debits',async()=>{

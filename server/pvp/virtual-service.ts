@@ -1,6 +1,7 @@
 import { NilePlayError } from '../finance/nile-play-error';
 import { PvpStore } from './store';
 import { VIRTUAL_PVP_SCOPE } from '../../src/shared/pvp';
+import { isPoolIdleTimeout } from '../../src/shared/pool';
 
 /** Private in-process transport. Only authenticated room code can adjudicate a game. */
 export function virtualPvpCommand(store:PvpStore){
@@ -12,7 +13,8 @@ export function virtualPvpCommand(store:PvpStore){
       }
       if(action==='pvp-sync')return {status:200,value:{snapshots:await store.syncRoom(v.roomId,v.people),matches:await store.roomMatches(v.roomId)}};
       if(action==='pvp-result'){
-        if(!v||!['win','draw','server'].includes(v.reason))throw new NilePlayError('invalid_pvp_request',400);
+        if(!v||!['win','draw','server','timeout'].includes(v.reason)||
+          v.reason==='timeout'&&(typeof v.winnerId!=='string'||!isPoolIdleTimeout(v.idleForMs)))throw new NilePlayError('invalid_pvp_request',400);
         await store.adjudicate(v.roomId,v.matchId,v.winnerId,v.reason);return {status:200,value:{ok:true}};
       }
       throw new NilePlayError('invalid_pvp_request',400);

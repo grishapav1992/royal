@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import {applyPvpMoneyEvent} from '../../server/finance/pvp-money.ts';
-import {COMBAT_USDT_STAKES} from '../../src/shared/combatEscrow.ts';
+import {COMBAT_RULES_VERSION,COMBAT_USDT_STAKES} from '../../src/shared/combatEscrow.ts';
 
 /** Exhaustive journal replay, not a probabilistic estimate of player skill. */
 export function qualifyCombat(policy) {
+ assert.equal(policy.rulesVersion,COMBAT_RULES_VERSION);
  assert.deepEqual(policy.stakes,COMBAT_USDT_STAKES.map(n=>n*1000000));
  const accounts=['11111111-1111-4111-8111-111111111111','22222222-2222-4222-8222-222222222222'];
  const participants=accounts.map((accountId,i)=>({accountId,userId:'fighter'+i}));

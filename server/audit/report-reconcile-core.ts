@@ -10,6 +10,7 @@ import { auditSourceKey, isAuditEntityRef, isAuditRecord, type AuditAsset, type 
   type AuditScope, type AuditSourceRef } from './contract';
 import type { AuditSourceSchemas } from './datasets';
 import { auditCommandRoutes } from './intents';
+import { replayMatchesAuditRules } from './pvp-replay-version';
 import { isReplayId } from './replay-package';
 import { AuditReplayStore } from './replay-store';
 import { riskReplayWithinBudget } from './risk-replay-links';
@@ -403,6 +404,7 @@ async function payment(audit: PostgresDatabase, schema: string, entry: string | 
 async function replays(audit: PostgresDatabase, report: ReadyAuditReconciliation, output: Recorder, signal?: AbortSignal) {
   const { scope, anchor, entity } = report;
   if (!entity) return;
+  if (entity.category === 'pvp' && report.coverage.some(row => row.rule === 'R-05' && row.code === 'rules-unsupported')) return;
   let entityId: unknown = entity.source.rowId;
   if (entity.category === 'casino') {
     try {
@@ -421,10 +423,8 @@ async function replays(audit: PostgresDatabase, report: ReadyAuditReconciliation
     const result = await store.read(scope, replay_id);
     if (result.status !== 'verified') continue;
     const { manifest, fragments } = result.value;
-    const game = manifest.game;
     const events = fragments.flatMap(fragment => fragment.events);
-    if (manifest.entityId !== entityId || game.category !== entity.category || game.gameId !== entity.gameId ||
-        game.modeId !== entity.modeId || (entity.rulesVersion !== null && game.rulesVersion !== entity.rulesVersion) ||
+    if (manifest.entityId !== entityId || !replayMatchesAuditRules(entity, manifest) ||
         !events.some(event => event.postings.some(ref => auditSourceKey(ref) === auditSourceKey(anchor)))) continue;
     report.replayIds.push(replay_id);
     output.link(source(audit.schema + '.audit_replay_packages', replay_id));

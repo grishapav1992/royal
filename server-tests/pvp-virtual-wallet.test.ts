@@ -9,7 +9,7 @@ import {virtualPvpCommand} from '../server/pvp/virtual-service';
 import {demoBalanceUnits,saveDemoUnits,MAX_DEMO_UNITS,demoReservedUnits} from '../server/demoWalletAmounts';
 import {CommonSkinPayments} from '../server/skinPayments';
 import {NileCombatEscrow} from '../server/finance/combat-escrow';
-import {PVP_INVITE_MS,validVirtualPvpWallet,VIRTUAL_PVP_SCOPE} from '../src/shared/pvp';
+import {PVP_GAMES,PVP_INVITE_MS,STANDARD_PVP_RULES_VERSION,isStandardPvpGame,validVirtualPvpWallet,VIRTUAL_PVP_SCOPE} from '../src/shared/pvp';
 import {savedTower,seedDemoTower} from './helpers/removed-tower';
 
 async function fixture(amount=200){
@@ -49,6 +49,71 @@ test('the real room service requires the new wallet scope, preserves private han
   assert.equal(await c.balance(c.a),24500);assert.equal(await c.balance(c.b),15000);
  }finally{await c.close();}
 });
+test('standard paid PvP pins server rules on acceptance and preserves unpinned historical matches', async () => {
+  const c = await fixture();
+  try {
+    const hold = { action: 'create', stakeUnits: '50000000', targetId: c.b };
+    await assert.rejects(c.store.command(c.aa, { ...hold, id: randomUUID(), gameId: 'pool', rulesVersion: 4 }, c.now),
+      { status: 400 });
+    for (const gameId of Object.keys(PVP_GAMES).filter(isStandardPvpGame)) {
+      const created = await c.store.command(c.aa, { ...hold, id: randomUUID(), gameId }, c.now);
+      assert(created.active);
+      const { id: challengeId, rulesVersion, mode } = created.active;
+      assert.equal(rulesVersion, STANDARD_PVP_RULES_VERSION);
+      assert.equal(mode, 'stake');
+      const accepted = await c.store.command(c.bb, { id: randomUUID(), action: 'accept', challengeId }, c.now);
+      assert.equal(accepted.active?.rulesVersion, rulesVersion);
+      const row = await c.db.prepare('SELECT payload FROM pvp_matches WHERE id=?').get(challengeId);
+      assert.equal(JSON.parse(String(row?.payload)).challenge.rulesVersion, rulesVersion);
+      assert.deepEqual(await Promise.all([c.balance(c.a), c.balance(c.b)]), [15000, 15000]);
+      await c.store.command(c.aa, { id: randomUUID(), action: 'cancel', challengeId }, c.now);
+    }
+    const legacy = await c.store.command(c.aa, { ...hold, id: randomUUID(), gameId: 'chess' }, c.now);
+    assert(legacy.active);
+    const challengeId = legacy.active.id;
+    await c.db.prepare(`UPDATE pvp_matches SET payload=(payload::jsonb #- '{challenge,rulesVersion}' #- '{challenge,mode}')::text
+      WHERE id=?`).run(challengeId);
+    const restored = new PvpStore(c.ledger);
+    await restored.syncRoom(c.aa.roomId, c.people, c.now);
+    const accepted = await restored.command(c.bb, { id: randomUUID(), action: 'accept', challengeId }, c.now);
+    assert.equal(accepted.active?.id, challengeId);
+    assert.equal(accepted.active?.rulesVersion, undefined);
+    assert.equal(accepted.active?.mode, undefined);
+    assert.deepEqual(await Promise.all([c.balance(c.a), c.balance(c.b)]), [15000, 15000]);
+  } finally { await c.close(); }
+});
+
+test('trusted idle adjudication settles only a playing pool match for a participant', async () => {
+  const c = await fixture();
+  try {
+    const roomId = c.aa.roomId;
+    const playing = async (gameId: 'pool' | 'chess') => {
+      const created = await c.store.command(c.aa, {
+        id: randomUUID(), action: 'create', gameId, stakeUnits: '50000000', targetId: c.b,
+      }, c.now);
+      assert(created.active);
+      const challengeId = created.active.id;
+      await c.store.command(c.bb, { id: randomUUID(), action: 'accept', challengeId }, c.now);
+      for (const actor of [c.aa, c.bb]) await c.store.command(actor, { id: randomUUID(), action: 'ready', challengeId }, c.now);
+      return challengeId;
+    };
+    const pool = await playing('pool');
+    for (const invalid of [null, randomUUID()]) await assert.rejects(c.store.adjudicate(roomId, pool, invalid, 'timeout', c.now),
+      { status: 409 });
+    assert.deepEqual(await Promise.all([c.balance(c.a), c.balance(c.b)]), [15000, 15000]);
+    await c.store.adjudicate(roomId, pool, c.a, 'timeout', c.now);
+    await assert.rejects(c.store.adjudicate(roomId, pool, c.a, 'timeout', c.now), { status: 409 });
+    const result = (await c.store.snapshot(c.aa, c.now)).challenges.find(challenge => challenge.id === pool);
+    assert.equal(result?.status, 'finished');
+    assert.equal(result?.reason, 'timeout');
+    assert.equal(result?.winnerId, c.a);
+    assert.deepEqual(await Promise.all([c.balance(c.a), c.balance(c.b)]), [24500, 15000]);
+    const chess = await playing('chess');
+    await assert.rejects(c.store.adjudicate(roomId, chess, c.a, 'timeout', c.now), { status: 409 });
+    assert.equal((await c.store.snapshot(c.aa, c.now)).active?.status, 'playing');
+  } finally { await c.close(); }
+});
+
 test('fresh paid create and accept read the wallet once and retries read the settled wallet', async t => {
   const c = await fixture();
   try {

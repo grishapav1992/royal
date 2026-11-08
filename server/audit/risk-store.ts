@@ -3,6 +3,7 @@ import type { PostgresDatabase } from '../database';
 import { applySchemaMigration } from '../database-migrations';
 import { auditSourceKey, isAuditRecord, type AuditEntityRef, type AuditScope } from './contract';
 import type { AuditPostingReader } from './postings';
+import { replayMatchesAuditRules } from './pvp-replay-version';
 import { isReplayId } from './replay-package';
 import { AuditReplayStore } from './replay-store';
 import { casinoRiskReplayPostings, riskReplaySequence, riskReplayWithinBudget, toteRiskReplayProofs } from './risk-replay-links';
@@ -264,7 +265,7 @@ export class AuditRiskSignals {
         packs.set(link.replayId, replay);
       }
       if (replay.status !== 'verified') throw new Error('Audit risk replay unavailable');
-      const { manifest, fragments } = replay.value, game = manifest.game;
+      const { manifest, fragments } = replay.value;
       const sourceKey = auditSourceKey(link.source);
       const casinoPosting = eligible.casinoPostings.get(sourceKey);
       if (casinoPosting) {
@@ -285,9 +286,7 @@ export class AuditRiskSignals {
         }
         continue;
       }
-      if (manifest.entityId !== replayEntityId(entity, accountId) || game.category !== entity.category ||
-          game.gameId !== entity.gameId || game.modeId !== entity.modeId ||
-          entity.rulesVersion !== null && game.rulesVersion !== entity.rulesVersion ||
+      if (manifest.entityId !== replayEntityId(entity, accountId) || !replayMatchesAuditRules(entity, manifest) ||
           !fragments.some(part => part.events.some(event => event.sequence === link.sequence)) ||
           !fragments.some(part => part.events.some(event => event.postings.some(ref => postings.has(auditSourceKey(ref)))))) {
         throw new Error('Audit risk replay does not match subject evidence or event');

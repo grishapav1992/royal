@@ -1,4 +1,7 @@
 import type {TableState} from './activities';
+export const POOL_IDLE_TIMEOUT_MS = 60_000;
+export const isPoolIdleTimeout = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isSafeInteger(value) && value > POOL_IDLE_TIMEOUT_MS;
 export const POOL_POCKETS=[[25,25],[360,18],[695,25],[25,375],[360,382],[695,375]];
 export function canPlaceCue(s:TableState,x:number,y:number){
   return Number.isFinite(x)&&Number.isFinite(y)&&x>=40&&x<=680&&y>=40&&y<=360&&

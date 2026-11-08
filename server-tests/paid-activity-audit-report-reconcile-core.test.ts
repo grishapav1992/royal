@@ -7,6 +7,9 @@ import { AuditDatasets } from '../server/audit/datasets';
 import { AuditEvidence } from '../server/audit/evidence';
 import { auditCommandRoutes, observeAuditIntent } from '../server/audit/intents';
 import { persistCapturedCasinoReplay } from '../server/audit/replay-casino';
+import { createReplayPackage } from '../server/audit/replay-package';
+import { chessTurnReplayDefinition } from '../server/audit/replay-pvp-turn';
+import { AuditReplayStore } from '../server/audit/replay-store';
 import { buildAuditReconciliation } from '../server/audit/report-reconcile-core';
 import { buildAuditPeriodPageReconciliation, buildAuditPeriodReconciliation } from '../server/audit/report-reconcile-period-core';
 import { cryptoConfig } from '../server/crypto/config';
@@ -148,7 +151,7 @@ test('provider debit components use both registered sources and real adjustment 
   assert(payment.findings.some(item => item.code === 'reserved-balance-opening' && item.expected === '0'));
 });
 
-test('PvP bank and historical pool use their committed CHECK results under the selected posting', async t => {
+test('PvP bank and historical pool use committed checks, and pinned PvP links only an exact replay definition', async t => {
   const f = await fixture(t);
   const ledger = new VirtualPvpLedger(f.game, f.wallet);
   const pvp = new PvpStore(ledger), combat = new NileCombatEscrow(ledger);
@@ -157,16 +160,39 @@ test('PvP bank and historical pool use their committed CHECK results under the s
   const b = { accountId: f.other, name: 'Fixture B', roomId: a.roomId };
   const now = Date.now();
   await pvp.syncRoom(a.roomId, [a, b].map(actor => ({ ...actor, connected: true, available: true })), now);
-  const { datasetId } = await f.datasets.startTest();
+  const { datasetId, environment } = await f.datasets.startTest();
+  const scope = { datasetId, environment };
   const challenge = await pvp.command(a, {
     id: randomUUID(), action: 'create', gameId: 'chess', stakeUnits: '10000000', targetId: b.accountId,
   }, now);
   const matchId = challenge.active!.id;
   const matchAnchor = await f.capture('pvp:' + matchId + ':hold');
+  const { formatVersion, ...game } = chessTurnReplayDefinition;
+  assert(formatVersion === 2);
+  const replayStore = new AuditReplayStore(f.audit), compatibleId = randomUUID();
+  for (const [replayId, definition] of [[compatibleId, game], [randomUUID(), { ...game, engineVersion: 'unknown-engine' }],
+    [randomUUID(), { ...game, rulesVersion: '1' }]] as const) {
+    const pack = createReplayPackage({ formatVersion, game: definition, scope, replayId, entityId: matchId,
+      initial: null, coverage: 'partial', gaps: ['initial-state-unavailable', 'terminal-unavailable'] }, [{
+      sequence: 1, atMs: now, postings: [matchAnchor],
+      data: { kind: 'checkpoint', state: { profile: 'pvp-turn-based', phase: 'open', turn: 0, seatToMove: 1, board: [] } },
+    }]);
+    assert.equal(await replayStore.writeManifest(pack.manifest), 'recorded');
+    assert.equal(await replayStore.writeFragment(scope, replayId, pack.fragments[0]), 'recorded');
+  }
   const match = await buildAuditReconciliation(f.audit, f.sources, datasetId, matchAnchor);
   assert.equal(match.status, 'ready');
   assert.equal(match.entity?.category, 'pvp');
+  assert.equal(match.entity?.rulesVersion, '1');
+  assert.deepEqual(match.replayIds, [compatibleId]);
   assert(match.findings.some(row => row.rule === 'R-05' && row.status === 'pending'));
+  await f.game.prepare("UPDATE pvp_matches SET payload=jsonb_set(payload::jsonb,'{challenge,rulesVersion}','99'::jsonb)::text WHERE id=?")
+    .run(matchId);
+  const unsupported = await buildAuditReconciliation(f.audit, f.sources, datasetId, matchAnchor);
+  assert.equal(unsupported.status, 'ready');
+  assert.equal(unsupported.entity?.rulesVersion, null);
+  assert(unsupported.coverage.some(row => row.rule === 'R-05' && row.code === 'rules-unsupported'));
+  assert.deepEqual(unsupported.replayIds, []);
 
   let poolNow = (Math.floor(Date.now() / TOTE_TIMING.period) + 1) * TOTE_TIMING.period + 1;
   const pool = new FlagToteStore(f.game, account => f.wallet.snapshotInTransaction(account), f.wallet.ready, () => poolNow, () => 0);

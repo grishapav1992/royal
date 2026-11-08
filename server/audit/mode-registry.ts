@@ -1,12 +1,14 @@
 import { CARAMEL_GAME, validCaramelSettings } from '../../src/shared/caramelCarnival';
 import { CARIBBEAN_GAME } from '../../src/shared/caribbeanTreasures';
 import { validCaribbeanTransportSettings } from '../../src/shared/caribbeanTransport';
+import { COMBAT_RULES_VERSION } from '../../src/shared/combatEscrow';
 import { FLAG_GAME, FLAG_MODES, flagCountries, validFlagSettings } from '../../src/shared/flagBattle';
 import { TOTE_GAME } from '../../src/shared/flagTote';
 import { GAME_CATALOG } from '../../src/shared/gameCore';
 import { LUELON_SLOT_INFO, validLuelonSlotSettings } from '../../src/shared/luelonSlots';
 import { NEOPOLIS_GAME, validNeopolisSettings } from '../../src/shared/neopolis';
 import { HEROES } from '../../src/shared/neopolisMath';
+import { isStandardPvpGame, PVP_GAMES, STANDARD_PVP_RULES_VERSION } from '../../src/shared/pvp';
 import { auditModeKey, isAuditModeRegistry, type AuditMode } from './contract';
 
 type SessionRegistration = {
@@ -55,9 +57,16 @@ const sessions: readonly SessionRegistration[] = [
 const instantModes: AuditMode[] = GAME_CATALOG.filter(game => game.kind === 'instant').map(game => ({
   gameId: game.id, modeId: 'normal', rulesVersion: String(game.rulesVersion), category: 'casino', replayProfile: 'casino-steps',
 }));
-const versionedPvpModes: AuditMode[] = [1, 2, 3, 4].map(version => ({
-  gameId: 'tsu-e-fa', modeId: 'stake', rulesVersion: String(version), category: 'pvp', replayProfile: 'pvp-turn-based',
-}));
+const versionedPvpModes: AuditMode[] = [
+  ...[1, 2, 3, 4].map((version): AuditMode => ({
+    gameId: 'tsu-e-fa', modeId: 'stake', rulesVersion: String(version), category: 'pvp', replayProfile: 'pvp-turn-based',
+  })),
+  ...Object.keys(PVP_GAMES).filter(isStandardPvpGame).map((gameId): AuditMode => ({
+    gameId, modeId: 'stake', rulesVersion: String(STANDARD_PVP_RULES_VERSION), category: 'pvp',
+    replayProfile: gameId === 'hockey' || gameId === 'pool' ? 'pvp-sport' : 'pvp-turn-based',
+  })),
+  { gameId: 'mortal-kombat', modeId: 'stake', rulesVersion: String(COMBAT_RULES_VERSION), category: 'pvp', replayProfile: 'pvp-realtime' },
+];
 export const auditToteMode = Object.freeze({ gameId: TOTE_GAME, modeId: 'pool', rulesVersion: '1',
   category: 'totalizator', replayProfile: 'pool-steps' } satisfies AuditMode);
 const sessionModes: AuditMode[] = sessions.flatMap(rule => rule.versions.flatMap(version => rule.modes.map(modeId => ({
@@ -79,6 +88,11 @@ for (const rule of sessions) {
 export function registeredAuditMode(gameId: string, modeId: string, version: unknown) {
   if (typeof version !== 'number' || !Number.isSafeInteger(version)) return null;
   return modesByKey.get(JSON.stringify([gameId, modeId, String(version)])) ?? null;
+}
+
+export function registeredPvpRulesVersion(gameId: string, version: unknown) {
+  const mode = registeredAuditMode(gameId, 'stake', version);
+  return mode?.category === 'pvp' ? mode.rulesVersion : null;
 }
 
 function record(value: unknown): Record<string, unknown> | null {
@@ -138,7 +152,6 @@ export function instantCasinoModeSql(game: string, round: string) {
 }
 
 export function pvpModeVersionSql(game: string, version: string) {
-  const saved = `(${version})::text`;
-  return `CASE WHEN ${game}='tsu-e-fa' AND ${inList(saved, versionedPvpModes.map(mode => mode.rulesVersion))}
-    THEN ${saved} END`;
+  return `CASE ${versionedPvpModes.map(mode => `WHEN ${game}=${literal(mode.gameId)}
+    AND (${version})=${literal(mode.rulesVersion)}::jsonb THEN ${literal(mode.rulesVersion)}`).join('\n')} END`;
 }

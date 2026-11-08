@@ -1,8 +1,8 @@
 import type { DatabaseRow } from '../database';
-import type { NilePlayLedger } from './nile-play-ledger';
+import { applySchemaMigration } from '../database-migrations';
 import { NilePlayError } from './nile-play-error';
 import { gameAccountId } from '../../src/shared/nileWallet';
-import { COMBAT_USDT_STAKES, type CombatEscrowReceipt } from '../../src/shared/combatEscrow';
+import { COMBAT_RULES_VERSION, COMBAT_USDT_STAKES, type CombatEscrowReceipt } from '../../src/shared/combatEscrow';
 import type { PvpLedger } from '../pvp/store';
 
 const fail = (code: string, status = 409): never => { throw new NilePlayError(code, status); };
@@ -18,7 +18,11 @@ export class NileCombatEscrow {
     expires_at BIGINT NOT NULL, winner TEXT NOT NULL DEFAULT '',
     fee_units BIGINT NOT NULL DEFAULT 0, payout_units BIGINT NOT NULL DEFAULT 0);
    CREATE TABLE IF NOT EXISTS combat_seats(account_id TEXT PRIMARY KEY, match_id TEXT NOT NULL REFERENCES combat_matches(id));
-   CREATE INDEX IF NOT EXISTS combat_expiry ON combat_matches(state,expires_at);`)));
+   CREATE INDEX IF NOT EXISTS combat_expiry ON combat_matches(state,expires_at);`)))
+   .then(() => applySchemaMigration(ledger.db, {
+    id: 'combat-match-rules-version-v1',
+    statements: ['ALTER TABLE combat_matches ADD COLUMN rules_version INTEGER CHECK (rules_version > 0)'],
+   }));
  }
  private receipt(row: DatabaseRow): CombatEscrowReceipt {
   return {id: row.id, accounts: JSON.parse(row.accounts), stakeUnits: String(row.stake_units), state: row.state,
@@ -49,7 +53,8 @@ export class NileCombatEscrow {
    const now = this.now();
    // Both holds and metadata commit together, or neither player is charged.
    for (const account of v.accounts) await this.ledger.pvpHold(account,{matchId:v.id,gameId:'mortal-kombat',stakeUnits:v.stakeUnits},now);
-   await this.ledger.db.prepare("INSERT INTO combat_matches(id,accounts,stake_units,state,expires_at) VALUES (?,?,?,'active',?)").run(v.id,JSON.stringify(v.accounts),v.stakeUnits,now+150000);
+   await this.ledger.db.prepare("INSERT INTO combat_matches(id,accounts,stake_units,state,expires_at,rules_version) VALUES (?,?,?,'active',?,?)")
+    .run(v.id,JSON.stringify(v.accounts),v.stakeUnits,now+150000,COMBAT_RULES_VERSION);
    for (const account of v.accounts) await this.ledger.db.prepare('INSERT INTO combat_seats VALUES (?,?)').run(account,v.id);
    return this.receipt((await this.existing(v))!);
   });

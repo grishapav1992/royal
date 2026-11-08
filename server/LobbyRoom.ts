@@ -258,9 +258,10 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     const snapshotCapture = [this.cardReplay, this.tsuReplay].filter(replay => replay !== undefined);
     if (!this.wsAttempts && !turnCapture.length && !snapshotCapture.length) return command;
     return async (accountId: string, action: string, value: unknown) => {
-      const settled = action === 'pvp-result' ? value as { matchId: string; winnerId: string | null; reason: string } | null : null;
+      const settled = action === 'pvp-result' ? value as { matchId: string; winnerId: string | null; reason: string; idleForMs?: number } | null : null;
       let confirmSportCutoff: (() => void) | undefined;
-      try { if (settled) confirmSportCutoff = this.sportReplay?.observeAdjudicationStart(settled.matchId); }
+      try { if (settled) confirmSportCutoff = this.sportReplay?.observeAdjudicationStart(settled.matchId,
+        settled.reason === 'timeout' ? settled.idleForMs : undefined); }
       catch { /* Audit observation cannot interrupt adjudication. */ }
       const invoke = () => command(accountId, action, value);
       const result = this.wsAttempts ? await this.wsAttempts.runPvpService(accountId, action, value, invoke) : await invoke();
@@ -286,6 +287,9 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
           } else if (settled?.reason === 'win' || settled?.reason === 'draw') {
             confirmSportCutoff?.();
             for (const replay of turnCapture) replay.observeAdjudication(settled.matchId, settled.winnerId, settled.reason, Date.now());
+          } else if (settled?.reason === 'timeout') {
+            confirmSportCutoff?.();
+            this.sportReplay?.observeAdjudication(settled.matchId, settled.winnerId, settled.reason, Date.now());
           }
         } catch { /* The room settlement remains authoritative if audit capture fails. */ }
       }

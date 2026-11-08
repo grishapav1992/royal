@@ -56,7 +56,7 @@ test('open principal is distinct from payout capacity and one settled bank charg
   const pending = await f.check(datasetId, matchId);
   assert.equal(pending.status, 'pending');
   assert.deepEqual(pending.findings, []);
-  assert.equal(pending.bank?.gameRulesVersion, null);
+  assert.equal(pending.bank?.gameRulesVersion, '1');
   assert.equal(pending.bank?.moneyRulesVersion, 'virtual-usdt-pvp-v1');
   assert.equal(pending.participants[0].hold?.payoutCapacityUnits, '1900');
   assert.deepEqual(pending.totals, { stakeUnits: '1000', payoutUnits: '0', refundUnits: '0', feeUnits: '0', remainderUnits: '1000' });
@@ -67,12 +67,31 @@ test('open principal is distinct from payout capacity and one settled bank charg
   const result = await f.check(datasetId, matchId);
   assert.equal(result.status, 'match');
   assert.deepEqual(result.findings, []);
+  assert.equal(result.bank?.gameRulesVersion, '1');
   assert.equal(result.bank?.winnerId, f.a.accountId);
   assert.deepEqual(result.totals, { stakeUnits: '2000', payoutUnits: '1900', refundUnits: '0', feeUnits: '100', remainderUnits: '0' });
   const byAccount = new Map(result.participants.map(participant => [participant.accountId, participant]));
   assert.deepEqual(byAccount.get(f.a.accountId)?.postings.map(row => row.units), ['-1000', '1900']);
   assert.deepEqual(byAccount.get(f.b.accountId)?.postings.map(row => row.units), ['-1000']);
   assert.equal(new Set(result.participants.flatMap(participant => participant.postings.map(posting => posting.source.rowId))).size, 3);
+});
+
+test('historical PvP rules stay unpinned and unsupported stored values are never promoted', async t => {
+  const f = await fixture(t);
+  const { datasetId } = await f.datasets.startTest();
+  const matchId = await f.chess();
+  await f.game.prepare("UPDATE pvp_matches SET payload=(payload::jsonb #- '{challenge,rulesVersion}')::text WHERE id=?").run(matchId);
+  const historical = await f.check(datasetId, matchId);
+  assert.equal(historical.status, 'pending');
+  assert.equal(historical.bank?.gameRulesVersion, null);
+  assert.deepEqual(historical.findings, []);
+  for (const pin of ['1', 2, -1, 1.5]) {
+    await f.game.prepare("UPDATE pvp_matches SET payload=jsonb_set(payload::jsonb,'{challenge,rulesVersion}',?::jsonb)::text WHERE id=?")
+      .run(JSON.stringify(pin), matchId);
+    const invalid = await f.check(datasetId, matchId);
+    assert.equal(invalid.bank?.gameRulesVersion, null);
+    assert(invalid.findings.some(finding => finding.code === 'rules-unsupported'));
+  }
 });
 
 test('draw returns both stakes, and cancellation returns only the accepted stake without a fee', async t => {
@@ -124,6 +143,7 @@ test('combat recovery accounts for opening holds without inventing pre-cutover p
   const { datasetId } = await f.datasets.startTest();
   const opening = await f.check(datasetId, match.id);
   assert.equal(opening.status, 'pending');
+  assert.equal(opening.bank?.gameRulesVersion, '2');
   assert.ok(opening.participants.every(participant => participant.openingStakeUnits === '1000' && participant.postings.length === 0));
   f.advanceCombat(150_001);
   await f.combat.recoverExpired();

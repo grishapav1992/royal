@@ -15,7 +15,7 @@ import { createReplayPackage, type ReplayEvent } from '../server/audit/replay-pa
 import { combatReplayDefinition, combatReplayFrame, combatReplayTickDuration } from '../server/audit/replay-pvp-realtime-engine';
 import { chessTurnReplayDefinition } from '../server/audit/replay-pvp-turn';
 
-import { sportReplayDefinitions, sportReplayFrame } from '../server/audit/replay-pvp-sport-engine';
+import { poolIdleReplayDefinition, sportReplayDefinitions, sportReplayFrame } from '../server/audit/replay-pvp-sport-engine';
 import { tsuTurnReplayDefinition } from '../server/audit/replay-pvp-tsu';
 import { TableGame } from '../server/tableGames';
 
@@ -110,6 +110,21 @@ function hockeyPackage() {
     { sequence: 1, atMs: 0, postings: [], data: { kind: 'action', action: { profile: 'pvp-sport', code: 'paddle', seat: 1, x: 240, y: 120 } } },
     { sequence: 2, atMs: 17, postings: [], data: { kind: 'action', action: { profile: 'pvp-sport', code: 'advance', durations: [dt] } } },
     { sequence: 3, atMs: 17, postings: [], data: { kind: 'checkpoint', state: sportReplayFrame(table.state, 1) } },
+  ]);
+}
+
+function poolIdlePackage() {
+  const { formatVersion, ...game } = poolIdleReplayDefinition, replayId = randomUUID();
+  assert(formatVersion === 5);
+  const table = new TableGame('pool');
+  table.join('1'); table.join('2');
+  const initial = sportReplayFrame(table.state, 0);
+  const winnerSeat = initial.turn === 1 ? 2 : 1;
+  return createReplayPackage({ formatVersion, game, initial, scope, replayId, entityId: replayId,
+    coverage: 'complete', gaps: [] }, [
+    { sequence: 1, atMs: 0, postings: [], data: { kind: 'checkpoint', state: initial } },
+    { sequence: 2, atMs: 60_001, postings: [], data: { kind: 'terminal', outcome: 'timed-out', winnerSeat, idleForMs: 60_001,
+      state: sportReplayFrame(table.state, 0, 'settled') } },
   ]);
 }
 
@@ -239,6 +254,12 @@ test('serves the full investigation flow from a local HTML file with networking 
   await jump(2);
   await expect(state).toHaveText(/Такт 1/);
   assert.notEqual(await state.locator('.table-paddle').first().getAttribute('style'), startingPaddle);
+
+  await upload(poolIdlePackage());
+  await expect(status).toHaveText(/Полная запись.*состояния сверены движком/);
+  await expect(page.locator('#metadata')).toHaveText(/формат 5/);
+  await jump(2);
+  await expect(page.locator('#event')).toHaveText(/Простой перед истечением хода.*60\.001 с/);
 
   await upload(tsu);
   await jump(5);

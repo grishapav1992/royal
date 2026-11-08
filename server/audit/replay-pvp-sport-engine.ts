@@ -1,14 +1,17 @@
 import type { TableState } from '../../src/shared/activities';
 import { clampPaddle } from '../../src/shared/hockey';
+import { isPoolIdleTimeout } from '../../src/shared/pool';
 import { TableGame } from '../tableGames';
 import {
   verifyReplayPackage, type ReplayDefinition, type ReplayEvent, type SportGame, type SportReplayFrame,
 } from './replay-package';
 
-export const sportReplayDefinitions: ReplayDefinition[] = (['hockey', 'pool'] as const).map(gameId => ({
+const historicalSportDefinitions: ReplayDefinition[] = (['hockey', 'pool'] as const).map(gameId => ({
   gameId, modeId: 'stake', category: 'pvp', replayProfile: 'pvp-sport', formatVersion: 4,
   rulesVersion: 'royal-table-game-v1', gameVersion: 'royal-table-game-v1', engineId: 'royal-table-physics', engineVersion: '1',
 }));
+export const poolIdleReplayDefinition: ReplayDefinition = { ...historicalSportDefinitions[1], formatVersion: 5 };
+export const sportReplayDefinitions = [...historicalSportDefinitions, poolIdleReplayDefinition];
 
 export const sportReplayMaximumTicks = 72_000;
 type Seat = 1 | 2;
@@ -60,6 +63,8 @@ export function reconstructSportReplay(input: unknown, targetTick?: number,
   if (checked.status !== 'verified') return { status: checked.status };
   if (targetTick !== undefined && (!Number.isSafeInteger(targetTick) || targetTick < 0)) return { status: 'corrupt' };
   const { manifest, fragments } = checked.value;
+  const last = fragments.at(-1)?.events.at(-1)?.data;
+  if (manifest.formatVersion === 5 && (last?.kind !== 'terminal' || last.outcome !== 'timed-out')) return { status: 'corrupt' };
   if (!manifest.initial) return !fragments.length ? { status: 'verified', state: null } : { status: 'corrupt' };
   const engine = new TableGame(manifest.game.gameId as SportGame);
   engine.join(syntheticId(1)); engine.join(syntheticId(2));
@@ -115,6 +120,8 @@ export function reconstructSportReplay(input: unknown, targetTick?: number,
       const winner = data.winnerSeat;
       const valid = data.outcome === 'settled' && phase === 'settled' && winner !== null && engine.state.winner === syntheticId(winner) ||
         data.outcome === 'forfeited' && phase === 'open' && winner !== null && (resigned ? otherSeat(resigned) === winner : disconnected.has(otherSeat(winner))) ||
+        data.outcome === 'timed-out' && manifest.formatVersion === 5 && engine.state.id === 'pool' && phase === 'open' &&
+          !resigned && !disconnected.size && !engine.state.moving && winner === (engine.state.turn === 0 ? 2 : 1) && isPoolIdleTimeout(data.idleForMs) ||
         data.outcome === 'cancelled' && phase === 'open' && !resigned && winner === null;
       if (!valid || data.state.profile !== 'pvp-sport') return { status: 'corrupt' };
       phase = data.outcome === 'cancelled' ? 'cancelled' : 'settled';

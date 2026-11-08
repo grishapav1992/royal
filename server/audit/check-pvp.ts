@@ -5,6 +5,7 @@ import { tsuDuelPayout, validTsuDuelStake } from '../../src/shared/tsuDuel';
 import { identifier, type DatabaseRow, type PostgresDatabase } from '../database';
 import { isPvpMoneyGame } from '../finance/pvp-money';
 import type { AuditScope, AuditSourceRef } from './contract';
+import { registeredPvpRulesVersion } from './mode-registry';
 
 type State = 'open' | 'settled' | 'refunded';
 type HoldState = 'held' | 'settled' | 'refunded';
@@ -80,7 +81,7 @@ function gameplay(row: DatabaseRow, matchId: string, gameSchema: string) {
     if (!Array.isArray(accounts) || accounts.length !== 2 || !accounts.every(gameAccountId) || accounts[0] === accounts[1]) return null;
     return {
       source: source(gameSchema + '.combat_matches', matchId), accounts, status: row.combat_state as string,
-      winner: row.combat_winner || null, reason: null, stakeMatches: row.combat_stake === micro, version: null,
+      winner: row.combat_winner || null, reason: null, stakeMatches: row.combat_stake === micro, version: row.combat_rules_version as unknown,
       feeMicro: row.combat_fee as string, payoutMicro: row.combat_payout as string,
     };
   }
@@ -89,12 +90,11 @@ function gameplay(row: DatabaseRow, matchId: string, gameSchema: string) {
       challenge.creatorId !== row.creator_id || challenge.opponentId !== row.opponent_id ||
       challenge.status !== row.pvp_status || !gameStates.has(row.pvp_status) || !gameAccountId(row.creator_id) ||
       (row.opponent_id !== null && (!gameAccountId(row.opponent_id) || row.creator_id === row.opponent_id))) return null;
-  const version = challenge.rulesVersion;
   return {
     source: source(gameSchema + '.pvp_matches', matchId),
     accounts: row.opponent_id === null ? [row.creator_id as string] : [row.creator_id as string, row.opponent_id as string],
     status: row.pvp_status as string, winner: challenge.winnerId, reason: challenge.reason,
-    stakeMatches: challenge.stakeUnits === micro, version: typeof version === 'number' ? String(version) : null,
+    stakeMatches: challenge.stakeUnits === micro, version: challenge.rulesVersion,
     feeMicro: null, payoutMicro: null,
   };
 }
@@ -156,7 +156,8 @@ export async function reconcileStoredPvpMatch(
         SELECT b.game_id,b.state,b.winner_id,b.reason,b.stake_units::text,b.fee_units::text,
           m.payload AS pvp_payload,m.status AS pvp_status,m.creator_id,m.opponent_id,
           c.accounts AS combat_accounts,c.state AS combat_state,c.winner AS combat_winner,
-          c.stake_units::text AS combat_stake,c.fee_units::text AS combat_fee,c.payout_units::text AS combat_payout
+          c.stake_units::text AS combat_stake,c.fee_units::text AS combat_fee,c.payout_units::text AS combat_payout,
+          to_jsonb(c)->'rules_version' AS combat_rules_version
         FROM ${prefix}virtual_pvp_banks b
         LEFT JOIN ${prefix}pvp_matches m ON m.id=b.match_id AND b.game_id<>'mortal-kombat'
         LEFT JOIN ${prefix}combat_matches c ON c.id=b.match_id AND b.game_id='mortal-kombat'
@@ -171,10 +172,12 @@ export async function reconcileStoredPvpMatch(
       const sealedWithoutFinal = dataset.sealed_at_ms !== null && !entries.some(entry => entry.operation_id === finalKey);
       const hiddenTerminal = sealedWithoutFinal && storedState !== 'open';
       const state = hiddenTerminal ? null : storedState;
-      const match = sealedWithoutFinal ? null : gameplay(row, matchId, game.schema);
+      const savedMatch = gameplay(row, matchId, game.schema);
+      const match = sealedWithoutFinal ? null : savedMatch;
+      const version = savedMatch?.stakeMatches ? registeredPvpRulesVersion(row.game_id, savedMatch.version) : null;
       result.bank = {
         source: bankSource, gameId: row.game_id, moneyRulesVersion: 'virtual-usdt-pvp-v1',
-        gameRulesVersion: match?.version ?? null, state, stakeUnits: row.stake_units,
+        gameRulesVersion: version, state, stakeUnits: row.stake_units,
         feeUnits: hiddenTerminal ? null : row.fee_units, winnerId: hiddenTerminal ? null : row.winner_id,
         reason: hiddenTerminal ? null : row.reason,
       };
@@ -214,8 +217,7 @@ export async function reconcileStoredPvpMatch(
       }
       if (hiddenTerminal) issue('terminal-not-captured', 'gap');
 
-      if (!expectedTerms || (row.game_id === 'tsu-e-fa' && match?.version !== null &&
-          match?.version !== undefined && !['1', '2', '3', '4'].includes(match.version))) issue('rules-unsupported', 'gap');
+      if (!expectedTerms || savedMatch?.stakeMatches && savedMatch.version != null && version === null) issue('rules-unsupported', 'gap');
       if (!match && !sealedWithoutFinal) issue('match-unconfirmed', 'gap');
       if (match) {
         if (gameplayState(match.status, match.winner) !== state || match.winner !== row.winner_id ||

@@ -1,6 +1,6 @@
 import type { DatabaseRow, PostgresDatabase } from '../database';
 import { isPvpMoneyGame } from '../finance/pvp-money';
-import { registeredAuditMode } from './mode-registry';
+import { registeredPvpRulesVersion } from './mode-registry';
 import { gameAccountId } from '../../src/shared/nileWallet';
 import { isAuditEntityRef, type AuditEntityRef, type AuditSourceRef } from './contract';
 
@@ -50,7 +50,7 @@ function gameplayMatch(row: DatabaseRow, matchId: string, entry: PvpPostingKey) 
     if (Array.isArray(accounts) && accounts.length === 2 && accounts.every(gameAccountId) &&
         accounts[0] !== accounts[1] && accounts.includes(entry.accountId) &&
         transportStake === row.combat_stake_units) {
-      return { table: 'combat_matches', rulesVersion: null };
+      return { table: 'combat_matches', rulesVersion: registeredPvpRulesVersion(entry.gameId, row.combat_rules_version) };
     }
     return null;
   }
@@ -61,8 +61,7 @@ function gameplayMatch(row: DatabaseRow, matchId: string, entry: PvpPostingKey) 
       challenge.creatorId !== row.creator_id || challenge.opponentId !== row.opponent_id ||
       challenge.status !== row.match_status || challenge.mode === 'free' || challenge.stakeUnits !== transportStake ||
       ![row.creator_id, row.opponent_id].includes(entry.accountId)) return null;
-  const mode = registeredAuditMode(entry.gameId, 'stake', challenge.rulesVersion);
-  const rulesVersion = mode?.category === 'pvp' ? mode.rulesVersion : null;
+  const rulesVersion = registeredPvpRulesVersion(entry.gameId, challenge.rulesVersion);
   return { table: 'pvp_matches', rulesVersion };
 }
 
@@ -78,7 +77,7 @@ export async function resolvePvpPosting(db: PostgresDatabase, entry: PvpPostingK
       b.stake_units::text AS bank_stake_units,
       h.state AS hold_state, h.stake_units::text AS stake_units, h.reserved_units::text AS capacity_units,
       m.payload AS match_payload, m.creator_id, m.opponent_id, m.status AS match_status,
-      c.accounts AS combat_accounts, c.stake_units::text AS combat_stake_units
+      c.accounts AS combat_accounts, c.stake_units::text AS combat_stake_units, to_jsonb(c)->'rules_version' AS combat_rules_version
     FROM demo_ledger l
     JOIN virtual_pvp_banks b ON b.match_id=? AND l.source='pvp:'||b.game_id
     JOIN virtual_pvp_holds h ON h.match_id=b.match_id AND h.account_id=l.account_id

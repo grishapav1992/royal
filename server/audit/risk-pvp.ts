@@ -1,6 +1,7 @@
 import { identifier, type PostgresDatabase } from '../database';
 import { reconcileStoredPvpMatch } from './check-pvp';
 import type { AuditAsset, AuditEntityRef } from './contract';
+import { acceptedPvpReplayRulesVersion } from './pvp-replay-version';
 import { cardTurnReplayDefinitions, verifyCardTurnReplay } from './replay-pvp-cards';
 import { tsuTurnReplayDefinition, verifyTsuTurnReplay } from './replay-pvp-tsu';
 import { chessTurnReplayDefinition, verifyChessTurnReplay } from './replay-pvp-turn';
@@ -165,7 +166,7 @@ function entityFor(check: MatchCheck, schema: string): AuditEntityRef {
   const bank = check.bank!;
   const source = { namespace: schema + (bank.gameId === 'mortal-kombat' ? '.combat_matches' : '.pvp_matches'), rowId: check.matchId };
   return { category: 'pvp', kind: 'match', gameId: bank.gameId, modeId: 'stake',
-    rulesVersion: bank.gameId === 'tsu-e-fa' ? bank.gameRulesVersion : null, source, ticketId: null };
+    rulesVersion: bank.gameRulesVersion, source, ticketId: null };
 }
 
 async function proofs(audit: PostgresDatabase, selection: AuditRiskSelection, matchId: string): Promise<PostingProof[] | undefined> {
@@ -268,7 +269,8 @@ export async function selectPvpRisk(audit: PostgresDatabase, selection: AuditRis
       if (!eligible.length) continue;
       const bank = check.bank;
       const definition = replayAvailable ? timedReplayDefinitions.find(row => row.gameId === bank.gameId &&
-        (row.rulesVersion === bank.gameRulesVersion || row.gameId !== 'tsu-e-fa' && bank.gameRulesVersion === null)) : undefined;
+        (bank.gameRulesVersion === null ? row.gameId !== 'tsu-e-fa' :
+          acceptedPvpReplayRulesVersion(row) === bank.gameRulesVersion)) : undefined;
       const standard = definition ? await audit.prepare(
         `SELECT creator_id,opponent_id FROM ${game}.pvp_matches WHERE id=?`).get(matchId) : undefined;
       const winner = check.bank.winnerId;
