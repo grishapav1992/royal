@@ -70,19 +70,25 @@ export class VirtualPvpLedger {
     await this.ready;
     return this.db.transaction(async()=>{
       await this.lock([accountId]);
-      const bank=await this.db.prepare('SELECT * FROM virtual_pvp_banks WHERE match_id=?').get(v.matchId);
-      const hold=await this.db.prepare('SELECT * FROM virtual_pvp_holds WHERE match_id=? AND account_id=?').get(v.matchId,accountId);
+      const admission=(await this.db.prepare(`SELECT bank.game_id,bank.stake_units,bank.state,
+        EXISTS (SELECT 1 FROM virtual_pvp_holds receipt
+          WHERE receipt.match_id=request.match_id AND receipt.account_id=request.account_id) AS has_receipt,
+        EXISTS (SELECT 1 FROM virtual_pvp_holds active
+          WHERE active.account_id=request.account_id AND active.state='held') AS has_active_hold,
+        EXISTS (SELECT 1 FROM virtual_pvp_holds seat WHERE seat.match_id=request.match_id LIMIT 1 OFFSET 1) AS bank_full
+        FROM (VALUES (?::text,?::text)) AS request(match_id,account_id)
+        LEFT JOIN virtual_pvp_banks bank USING (match_id)`).get(v.matchId,accountId))!;
       const stake=cents(v.stakeUnits),capacity=cents((tsu?tsuDuelPayout:pvpPayout)(v.stakeUnits).payoutUnits);
-      if(bank&&(bank.game_id!==v.gameId||Number(bank.stake_units)!==stake))return fail('play_idempotency_conflict');
-      if(hold)return {wallet:await this.wallet(accountId),replayed:true};
-      if(bank&&bank.state!=='open')return fail('pvp_unavailable');
-      if(await this.db.prepare("SELECT 1 FROM virtual_pvp_holds WHERE account_id=? AND state='held' LIMIT 1").get(accountId))return fail('Сначала заверши текущую ставку.');
-      const count=await this.db.prepare('SELECT count(*) AS n FROM virtual_pvp_holds WHERE match_id=?').get(v.matchId);
-      if(Number(count!.n)>=2)return fail('pvp_unavailable');
+      const hasBank=admission.game_id!==null;
+      if(hasBank&&(admission.game_id!==v.gameId||Number(admission.stake_units)!==stake))return fail('play_idempotency_conflict');
+      if(admission.has_receipt)return {wallet:await this.wallet(accountId),replayed:true};
+      if(hasBank&&admission.state!=='open')return fail('pvp_unavailable');
+      if(admission.has_active_hold)return fail('Сначала заверши текущую ставку.');
+      if(admission.bank_full)return fail('pvp_unavailable');
       const balance=await demoBalanceUnits(this.db,accountId);
       if(balance<stake)return fail('play_insufficient_balance');
       if(balance-stake+await demoReservedUnits(this.db,accountId)+capacity>MAX_DEMO_UNITS)return fail('Недостаточно места на балансе для возможного выигрыша.');
-      if(!bank)await this.db.prepare("INSERT INTO virtual_pvp_banks(match_id,game_id,stake_units,state,created_at,updated_at) VALUES(?,?,?,'open',?,?)").run(v.matchId,v.gameId,stake,now,now);
+      if(!hasBank)await this.db.prepare("INSERT INTO virtual_pvp_banks(match_id,game_id,stake_units,state,created_at,updated_at) VALUES(?,?,?,'open',?,?)").run(v.matchId,v.gameId,stake,now,now);
       await this.db.prepare("INSERT INTO virtual_pvp_holds VALUES(?,?,?,?,'held')").run(v.matchId,accountId,stake,capacity);
       await saveDemoUnits(this.db,accountId,balance-stake);
       await recordDemoUnits(this.db,accountId,'pvp:'+v.matchId+':hold','bet',-stake,balance-stake,'pvp:'+v.gameId,PVP_GAMES[v.gameId as PvpGameId]??'Mortal Kombat');
@@ -95,8 +101,11 @@ export class VirtualPvpLedger {
       ||v.winnerId!==null&&!gameAccountId(v.winnerId)||!['win','draw','cancel','expired','server','disconnect','resign','timeout'].includes(v.reason))return fail('invalid_pvp_request',400);
     await this.ready;
     return this.db.transaction(async()=>{
-      const bank=await this.db.prepare('SELECT * FROM virtual_pvp_banks WHERE match_id=?').get(v.matchId);
-      const holds=await this.db.prepare('SELECT * FROM virtual_pvp_holds WHERE match_id=? ORDER BY account_id').all(v.matchId);
+      const holds=await this.db.prepare(`SELECT bank.game_id,bank.stake_units AS bank_stake_units,bank.state,
+        bank.winner_id,bank.reason,hold.account_id,hold.stake_units
+        FROM virtual_pvp_banks bank JOIN virtual_pvp_holds hold USING (match_id)
+        WHERE bank.match_id=? ORDER BY hold.account_id`).all(v.matchId);
+      const bank=holds[0];
       if(!bank||!holds.some(h=>h.account_id===accountId))return fail('pvp_unavailable');
       await this.lock(holds.map(h=>h.account_id));
       if(bank.state!=='open'){
@@ -104,7 +113,7 @@ export class VirtualPvpLedger {
         return {wallet:await this.wallet(accountId),replayed:true};
       }
       if(v.winnerId!==null&&(holds.length!==2||!holds.some(h=>h.account_id===v.winnerId)))return fail('invalid_pvp_result');
-      const units=String(Number(bank.stake_units)*10000);
+      const units=String(Number(bank.bank_stake_units)*10000);
       const payout=bank.game_id==='tsu-e-fa'&&validTsuDuelStake(units)?tsuDuelPayout(units):pvpPayout(units);
       await this.db.prepare('UPDATE virtual_pvp_banks SET state=?,winner_id=?,reason=?,fee_units=?,updated_at=? WHERE match_id=?')
         .run(v.winnerId?'settled':'refunded',v.winnerId,v.reason,v.winnerId?cents(payout.feeUnits):0,now,v.matchId);

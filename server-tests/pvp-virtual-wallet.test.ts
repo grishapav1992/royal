@@ -184,6 +184,84 @@ test('PvP and slots spend the same top-up; 50+50 returns 95 with a single 5 USDT
   assert(validVirtualPvpWallet(await c.ledger.wallet(c.a)));
  }finally{await c.close();}
 });
+test('virtual PvP batches hold admission and finish metadata without changing receipt precedence', async t => {
+  const c = await fixture();
+  try {
+    const other = randomUUID();
+    await c.db.prepare('INSERT INTO accounts VALUES (?)').run(other);
+    await c.common.operate(other, { id: randomUUID(), kind: 'deposit', amount: 200 });
+    const queries = t.mock.method(c.db as unknown as { query(sql: string, values?: unknown[]): Promise<unknown> }, 'query');
+    const takeQueries = () => {
+      const calls = queries.mock.calls.map(call => call.arguments);
+      queries.mock.resetCalls();
+      return calls;
+    };
+    const bankOrHold = /\b(?:from|join)\s+virtual_pvp_(?:banks|holds)\b/i;
+    const match = c.match();
+    const holdReads: string[][] = [];
+    for (const accountId of [c.a, c.b]) {
+      const accepted = await c.ledger.pvpHold(accountId, match, c.now);
+      assert.equal(accepted.replayed, false);
+      assert.equal(accepted.wallet.balanceUnits, '150000000');
+      assert.equal(accepted.wallet.reservedUnits, '50000000');
+      const calls = takeQueries();
+      const balance = calls.findIndex(([sql]) => /\bselect\s+balance,fraction_units\s+from\s+demo_wallets\b/i.test(sql));
+      const capacity = calls.findIndex(([sql]) => /\bfrom\s+demo_mines_sessions\b/i.test(sql));
+      const firstWrite = calls.findIndex(([sql]) => /\binsert\s+into\s+virtual_pvp_(?:banks|holds)\b/i.test(sql));
+      assert(balance >= 0 && balance < capacity && capacity < firstWrite, 'balance and capacity checks precede the hold write');
+      holdReads.push(calls.slice(0, balance).map(([sql]) => sql).filter(sql => bankOrHold.test(sql)));
+    }
+
+    await assert.rejects(c.ledger.pvpHold(other, match, c.now), { code: 'pvp_unavailable' });
+    await c.ledger.pvpHold(other, c.match(), c.now);
+    await assert.rejects(c.ledger.pvpHold(other, match, c.now), { code: 'Сначала заверши текущую ставку.' });
+    await assert.rejects(c.ledger.pvpHold(c.a, { ...match, stakeUnits: '60000000' }, c.now), { code: 'play_idempotency_conflict' });
+    const initialReplay = await c.ledger.pvpHold(c.a, match, c.now);
+    assert.equal(initialReplay.replayed, true);
+    assert.equal(initialReplay.wallet.balanceUnits, '150000000');
+
+    const finish = { matchId: match.matchId, winnerId: c.a, reason: 'win' };
+    await assert.rejects(c.ledger.pvpFinish(other, finish, c.now + 1), { code: 'pvp_unavailable' });
+    takeQueries();
+    const settled = await c.ledger.pvpFinish(c.a, finish, c.now + 1);
+    assert.equal(settled.replayed, false);
+    assert.equal(settled.wallet.balanceUnits, '245000000');
+    assert.equal(settled.wallet.reservedUnits, '0');
+    const finishCalls = takeQueries();
+    const lock = /\bpg_advisory_xact_lock\b/;
+    const firstLock = finishCalls.findIndex(([sql]) => lock.test(sql));
+    const firstWrite = finishCalls.findIndex(([sql]) => /\bupdate\s+virtual_pvp_(?:banks|holds)\b/i.test(sql));
+    assert(firstLock >= 0 && firstLock < firstWrite, 'finish acquires participant account locks after reading the bank and before writes');
+    const finishReads = finishCalls.slice(0, firstLock).map(([sql]) => sql).filter(sql => bankOrHold.test(sql));
+    assert.deepEqual(finishCalls.slice(firstLock, firstWrite).filter(([sql]) => lock.test(sql)).map(([, values]) => values?.[0]),
+      [c.a, c.b].sort().map(id => c.db.schema + ':key:account:' + id));
+
+    await assert.rejects(c.ledger.pvpHold(other, match, c.now + 2), { code: 'pvp_unavailable' });
+    await c.ledger.pvpHold(c.a, c.match(), c.now + 2);
+    const priorHold = await c.ledger.pvpHold(c.a, match, c.now + 2);
+    const priorFinish = await c.ledger.pvpFinish(c.a, finish, c.now + 2);
+    assert.equal(priorHold.replayed, true);
+    assert.equal(priorFinish.replayed, true);
+    assert.equal(priorHold.wallet.balanceUnits, '195000000');
+    assert.equal(priorHold.wallet.reservedUnits, '50000000');
+    assert.deepEqual(priorFinish.wallet, priorHold.wallet);
+    await assert.rejects(c.ledger.pvpHold(c.a, { ...match, stakeUnits: '60000000' }, c.now + 2), { code: 'play_idempotency_conflict' });
+    await assert.rejects(c.ledger.pvpFinish(c.a, { ...finish, winnerId: c.b }, c.now + 2), { code: 'play_idempotency_conflict' });
+    const bank = await c.db.prepare('SELECT state,winner_id,fee_units FROM virtual_pvp_banks WHERE match_id=?').get(match.matchId);
+    assert.deepEqual(bank, { state: 'settled', winner_id: c.a, fee_units: 500 });
+    const postings = await c.db.prepare('SELECT account_id,entry_type,amount_units FROM demo_ledger WHERE operation_id IN (?,?) ORDER BY id')
+      .all('pvp:' + match.matchId + ':hold', 'pvp:' + match.matchId + ':final');
+    assert.deepEqual(postings.map(row => [row.account_id, row.entry_type, row.amount_units]),
+      [[c.a, 'bet', -5000], [c.b, 'bet', -5000], [c.a, 'win', 9500]]);
+    assert.deepEqual([...holdReads, finishReads].map(reads => reads.length), [1, 1, 1]);
+    for (const [sql] of [...holdReads, finishReads]) {
+      assert.match(sql, /\bvirtual_pvp_banks\b/);
+      assert.match(sql, /\bvirtual_pvp_holds\b/);
+    }
+  } finally {
+    await c.close();
+  }
+});
 test('the real room service requires the new wallet scope, preserves private hands and settles once',async()=>{
  const c=await fixture();try{
   const service=virtualPvpCommand(c.store),request={id:randomUUID(),action:'create',gameId:'durak',stakeUnits:'50000000',targetId:c.b};
