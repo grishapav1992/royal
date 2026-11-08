@@ -7,7 +7,7 @@ import { test } from 'node:test';
 import pg from 'pg';
 import { createChatMessageId } from '../src/shared/chat';
 import { startLocalChatLoadStand } from './chat-load-stand';
-import { ChatSqlProbe, type SqlProbeRequest } from './chat-load-sql-store';
+import { ChatSqlProbe, chatSqlQuotaPartition, type SqlProbeRequest } from './chat-load-sql-store';
 
 test('owned synchronous SQL probe persists unique admissions, fences leases and records final effects', async () => {
   const root = resolve('artifacts', 'work');
@@ -71,7 +71,7 @@ test('owned synchronous SQL probe persists unique admissions, fences leases and 
           store.admit([request(sameBucketPeer, 'Второй новый участник', 7)]),
         ])).flat().map(row => row.status), ['accepted', 'accepted']);
         assert.equal((await store.finish(await store.claim(4))).length, 2);
-        const lateChannel = request('channel-wait', 'Ожидание свободного канала', 8);
+        const lateChannel = request(sameBucket, 'Ожидание свободного канала', 8);
         assert.equal((await store.admit([lateChannel]))[0].status, 'accepted');
         const channelLocker = clientAt();
         try {
@@ -86,15 +86,18 @@ test('owned synchronous SQL probe persists unique admissions, fences leases and 
             blocked = (await store.sample()).lockWaits === 1;
             if (!blocked) await delay(20);
           }
+          const concurrentAdmission = store.admit([request(sameBucketPeer, 'Приём параллельно публикации', 9)]);
+          const beforeUnlock = await Promise.race([concurrentAdmission, delay(500).then(() => undefined)]);
           await delay(1_100);
           await channelLocker.query('COMMIT');
           assert(blocked, 'Finish did not wait for the channel row');
           assert.deepEqual((await waiting).map(row => row.status), ['stale']);
+          assert.equal(beforeUnlock?.[0].status, 'accepted', 'A blocked channel held the admission quota');
         } finally {
           await channelLocker.end();
         }
-        assert.deepEqual((await store.finish(await store.claim(4))).map(row => row.status), ['published']);
-        const interrupted = request('interrupted', 'Сообщение при отказе реплики', 9);
+        assert.deepEqual((await store.finish(await store.claim(4))).map(row => row.status), ['published', 'published']);
+        const interrupted = request('interrupted', 'Сообщение при отказе реплики', 10);
         await stand.withReplicaStopped(async () => {
           assert.equal((await store.sample()).replicaReady, false);
           const control = clientAt();
@@ -118,16 +121,29 @@ test('owned synchronous SQL probe persists unique admissions, fences leases and 
         });
         assert.equal((await store.admit([interrupted]))[0].status, 'duplicate');
         assert.deepEqual((await store.finish(await store.claim(4))).map(row => row.status), ['published']);
+        const partitionAccounts = Array.from({ length: 16 }, (_, index) => `partition-${index}`);
+        const divided = [0, 1].map(index => {
+          const accountId = partitionAccounts.find(account => chatSqlQuotaPartition(account, 2) === index);
+          assert(accountId);
+          return request(accountId, `Сообщение из группы ${index}`, index + 11);
+        });
+        await assert.rejects(store.claim(4, { index: 0, count: 3 }), /Invalid quota partition/);
+        const accepted = await Promise.all(divided.map(item => store.admit([item])));
+        assert.deepEqual(accepted.map(rows => rows[0].status), ['accepted', 'accepted']);
+        const claimsByPartition = await Promise.all([0, 1].map(index => store.claim(4, { index, count: 2 })));
+        assert.deepEqual(claimsByPartition.map(rows => rows.map(row => row.accountId)), divided.map(item => [item.accountId]));
+        const published = await Promise.all(claimsByPartition.map(rows => store.finish(rows)));
+        assert.deepEqual(published.map(rows => rows[0].status), ['published', 'published']);
         const stats = await store.stats();
         const { databaseBytes, walLsn, ...counts } = stats;
-        assert.deepEqual(counts, { accepted: 8, pending: 0, published: 7, rejected: 1, outbox: 1, feed: 7 });
+        assert.deepEqual(counts, { accepted: 11, pending: 0, published: 10, rejected: 1, outbox: 1, feed: 10 });
         assert(databaseBytes > 0 && walLsn);
         const inspector = clientAt();
         try {
           await inspector.connect();
           const feed = (await inspector.query(`
             SELECT publication_seq::int AS sequence, message_id, body FROM chat_sql_probe.feed ORDER BY publication_seq`)).rows;
-          assert.deepEqual(feed.map(row => row.sequence), [1, 2, 3, 4, 5, 6, 7]);
+          assert.deepEqual(feed.map(row => row.sequence), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
           const publishedFirst = feed.find(row => row.message_id === first.envelope.messageId);
           assert.equal(publishedFirst?.body, 'What the f**k');
           assert.equal((await inspector.query('SELECT count(*)::int AS n FROM chat_sql_probe.request WHERE body IS NOT NULL')).rows[0].n, 0);
@@ -146,7 +162,7 @@ test('owned synchronous SQL probe persists unique admissions, fences leases and 
                 SELECT (SELECT count(*)::int FROM chat_sql_probe.request WHERE body IS NULL) AS finalized,
                   (SELECT count(*)::int FROM chat_sql_probe.feed) AS published,
                   (SELECT count(*)::int FROM chat_sql_probe.outbox) AS outbox`);
-              replicated = counts.finalized === 8 && counts.published === 7 && counts.outbox === 1;
+              replicated = counts.finalized === 11 && counts.published === 10 && counts.outbox === 1;
             }
             if (!replicated) await delay(50);
           }

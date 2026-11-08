@@ -17,6 +17,7 @@ export type SqlProbeClaim = ReceiptKey & Readonly<{
 export type SqlProbeTiming = Readonly<{
   phase: 'admit' | 'claim' | 'idleClaim' | 'finish'; items: number; poolMs: number; workMs: number; commitMs: number;
 }>;
+export type SqlProbePartition = Readonly<{ index: number; count: number }>;
 
 const role = 'royal_chat_load_chat';
 const bucketCount = 32;
@@ -75,6 +76,10 @@ function integer(value: string | number) {
 
 function bucketFor(accountId: string) {
   return createHash('sha256').update(accountId).digest().readUInt32BE(0) % bucketCount;
+}
+
+export function chatSqlQuotaPartition(accountId: string, count: number) {
+  return bucketFor(accountId) % count;
 }
 
 function probeRows(rows: readonly SqlProbeRequest[]) {
@@ -228,17 +233,20 @@ export class ChatSqlProbe {
     }, 'admit');
   }
 
-  async claim(limit: number): Promise<SqlProbeClaim[]> {
+  async claim(limit: number, { index, count }: SqlProbePartition = { index: 0, count: 1 }): Promise<SqlProbeClaim[]> {
     if (!Number.isSafeInteger(limit) || limit < 1 || limit > 64) throw new RangeError('Invalid claim batch size');
+    if (!Number.isSafeInteger(count) || count < 1 || count > 8 || bucketCount % count !== 0
+      || !Number.isSafeInteger(index) || index < 0 || index >= count) throw new RangeError('Invalid quota partition');
     return this.transaction(async client => {
       const leased = await client.query(`
         WITH ready AS (
           SELECT l.account_id FROM lane l WHERE l.pending > 0 AND NOT l.sanction_pending
             AND l.lease_until <= floor(extract(epoch FROM statement_timestamp()) * 1000)::bigint
+            AND l.bucket % $3::int = $4::int
           ORDER BY l.lease_until, l.account_id LIMIT $1 FOR UPDATE SKIP LOCKED
         )
         UPDATE lane l SET fence=l.fence+1, lease_until=${timeMs}+$2 FROM ready
-        WHERE ready.account_id=l.account_id RETURNING l.account_id,l.head_seq,l.fence,l.conduct`, [limit, this.leaseMs]);
+        WHERE ready.account_id=l.account_id RETURNING l.account_id,l.head_seq,l.fence,l.conduct`, [limit, this.leaseMs, count, index]);
       if (!leased.rowCount) return [];
       // Read the locked heads with a fresh READ COMMITTED snapshot. A lane
       // selected while another transaction finishes may expose a newer head.
@@ -270,10 +278,9 @@ export class ChatSqlProbe {
         const row = current.get(claim.accountId);
         return row && row.pending > 0 && integer(row.head_seq) === claim.sequence && integer(row.fence) === claim.fence;
       });
-      await this.lockQuotas(client, fenced.map(({ claim }) => current.get(claim.accountId)!));
       const now = integer((await client.query(`SELECT ${timeMs} AS now`)).rows[0].now);
       const active = fenced.filter(({ claim }) => integer(current.get(claim.accountId)!.lease_until) > now);
-      const written = active.length ? await this.writeOutcomes(client, active) : new Set<string>();
+      const written = active.length ? await this.writeOutcomes(client, active, active.map(({ claim }) => current.get(claim.accountId)!)) : new Set<string>();
       const outcomes = new Map(active.filter(({ claim }) => written.has(claim.accountId))
         .map(({ claim, decision }) => [claim.accountId, decision.outcome]));
       return claims.map(({ accountId, messageId }) => {
@@ -284,7 +291,7 @@ export class ChatSqlProbe {
   }
 
   private async writeOutcomes(client: pg.PoolClient,
-    active: readonly { claim: SqlProbeClaim; decision: ReturnType<typeof evaluateChatModeration> }[]) {
+    active: readonly { claim: SqlProbeClaim; decision: ReturnType<typeof evaluateChatModeration> }[], lanes: readonly LaneRow[]) {
     const rows = active.map(({ claim, decision }) => ({
       account_id: claim.accountId, message_id: claim.messageId, account_seq: claim.sequence, room_epoch: claim.roomEpoch,
       location: claim.location, origin_seq: claim.originSeq, outcome: decision.outcome, conduct: decision.state,
@@ -301,6 +308,8 @@ export class ChatSqlProbe {
         SELECT DISTINCT room_epoch,location FROM ${feedInput}
       ) s USING (room_epoch,location) ORDER BY c.room_epoch,c.location FOR UPDATE OF c`, [payload]);
     }
+    // A wait on a shared channel must not hold quota rows needed for admission.
+    await this.lockQuotas(client, lanes);
     const input = `jsonb_to_recordset($1::jsonb) AS i(account_id text,message_id uuid,account_seq bigint,
       room_epoch uuid,location text,outcome text,conduct jsonb,origin_seq bigint,body text,publication_id uuid)`;
     const { rows: [written] } = await client.query(`

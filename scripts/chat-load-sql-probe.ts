@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { randomUUID } from 'node:crypto';
+import { createHash } from 'node:crypto';
 import { lstat, realpath, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
@@ -7,7 +7,7 @@ import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import { createChatMessageId } from '../src/shared/chat';
 import { startLocalChatLoadStand } from './chat-load-stand';
-import { ChatSqlProbe, type SqlProbeAdmission, type SqlProbeRequest, type SqlProbeTiming } from './chat-load-sql-store';
+import { ChatSqlProbe, chatSqlQuotaPartition, type SqlProbeAdmission, type SqlProbeRequest, type SqlProbeTiming } from './chat-load-sql-store';
 import { BoundedSamples } from './load-websocket-diagnostics';
 import { CHAT_SQL_PREFILL_MAX_REQUESTS } from './chat-load-sql-prefill';
 
@@ -18,6 +18,7 @@ const roomCapacity = 30;
 const burstFrameMs = 20;
 const drainMs = 5_000;
 const outputName = 'local-chat-sql-probe.json';
+const identitySeed = 'royal-chat-sql-fixture-v1';
 
 type Options = {
   directory: string;
@@ -27,6 +28,7 @@ type Options = {
   burstAt: number;
   admissionWorkers: number;
   workers: number;
+  quotaPartitions: number;
   prefill: number;
 };
 type Slot = { cohort: 'steady' | 'burst'; dueAt: number; offerBefore: number; accountIndex: number; originSeq: number };
@@ -46,22 +48,32 @@ function int(value: string | undefined, fallback: number, min: number, max: numb
   return number;
 }
 
+function fixtureId(kind: 'account' | 'room', index: number) {
+  const hex = createHash('sha256').update(`${identitySeed}:${kind}:${index}`).digest('hex');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-8${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
+}
+
 function readOptions(): Options {
   const { positionals, values } = parseArgs({
     allowPositionals: true,
     options: { seconds: { type: 'string' }, rate: { type: 'string' }, burst: { type: 'string' },
-      'burst-at': { type: 'string' }, 'admission-workers': { type: 'string' }, workers: { type: 'string' }, prefill: { type: 'string' } },
+      'burst-at': { type: 'string' }, 'admission-workers': { type: 'string' }, workers: { type: 'string' },
+      'quota-partitions': { type: 'string' }, prefill: { type: 'string' } },
   });
   assert.equal(positionals.length, 1,
-    'Usage: node --import tsx scripts/chat-load-sql-probe.ts <owned-artifact-directory> [--seconds 3 --rate 40 --burst 0 --burst-at 1 --prefill 0]');
+    'Usage: node --import tsx scripts/chat-load-sql-probe.ts <owned-artifact-directory> [--seconds 3 --rate 40 --burst 0 --burst-at 1 --prefill 0 --quota-partitions 1]');
   // The one-host experiment is deliberately shorter than the target 30-minute run.
   const seconds = int(values.seconds, 3, 1, 120, 'seconds');
+  const admissionWorkers = int(values['admission-workers'], 4, 1, 8, 'admission-workers');
+  const workers = int(values.workers, 4, 1, 8, 'workers');
+  const quotaPartitions = int(values['quota-partitions'], 1, 1, 8, 'quota-partitions');
+  assert([1, 2, 4, 8].includes(quotaPartitions) && admissionWorkers % quotaPartitions === 0 && workers % quotaPartitions === 0,
+    'Quota partitions must divide both worker counts evenly');
   return {
     directory: resolve(positionals[0]), seconds, rate: int(values.rate, 40, 1, 333, 'rate'),
     burst: int(values.burst, 0, 0, 10_000, 'burst'),
     burstAt: int(values['burst-at'], Math.min(1, seconds - 1), 0, seconds - 1, 'burst-at'),
-    admissionWorkers: int(values['admission-workers'], 4, 1, 8, 'admission-workers'),
-    workers: int(values.workers, 4, 1, 8, 'workers'),
+    admissionWorkers, workers, quotaPartitions,
     prefill: int(values.prefill, 0, 0, CHAT_SQL_PREFILL_MAX_REQUESTS, 'prefill'),
   };
 }
@@ -200,6 +212,9 @@ async function measure(probe: ChatSqlProbe, options: Options, controller: AbortC
   const prefill = options.prefill ? await probe.prefill(accounts, rooms, options.prefill) : { requests: 0, publications: 0 };
   const observed = new Map<string, Observation>();
   const inFlight = new Set<Promise<void>>();
+  const queues = Array.from({ length: options.quotaPartitions }, () => ({ slots: [] as Slot[], busy: 0 }));
+  const accountPartitions = accounts.map(accountId => chatSqlQuotaPartition(accountId, options.quotaPartitions));
+  const admissionLimit = options.admissionWorkers / options.quotaPartitions;
   const before = await probe.stats();
   assert(before.accepted === prefill.requests && before.published === prefill.requests && before.feed === prefill.publications
     && before.pending === 0 && before.rejected === 0 && before.outbox === 0, 'Unexpected initial SQL probe state');
@@ -215,7 +230,7 @@ async function measure(probe: ChatSqlProbe, options: Options, controller: AbortC
     controller.abort();
   };
 
-  const offer = (slots: readonly Slot[]) => {
+  const offer = (slots: readonly Slot[], partition: number) => {
     const batch = slots.map(slot => {
       const messageId = createChatMessageId(Math.floor(wallStartMs + slot.dueAt - startedAt));
       const request: SqlProbeRequest = { accountId: accounts[slot.accountIndex], location: 'arcade', originSeq: prefill.requests + slot.originSeq,
@@ -246,15 +261,16 @@ async function measure(probe: ChatSqlProbe, options: Options, controller: AbortC
         row.acknowledgedAt = acknowledgedAt;
         if (result.status === 'accepted') accepted++;
       });
-    }).catch(fail).finally(() => { inFlight.delete(pending); });
+    }).catch(fail).finally(() => { inFlight.delete(pending); queues[partition].busy--; });
     inFlight.add(pending);
+    queues[partition].busy++;
     peakInFlight = Math.max(peakInFlight, inFlight.size);
   };
 
-  const work = async () => {
+  const work = async (partition: number) => {
     while (!signal.aborted && performance.now() < deadline) {
       if (schedulerDone && !inFlight.size && finished === accepted) return;
-      const claims = await probe.claim(workerBatchLimit);
+      const claims = await probe.claim(workerBatchLimit, { index: partition, count: options.quotaPartitions });
       if (!claims.length) { await delay(5, undefined, { signal }); continue; }
       const results = await probe.finish(claims);
       const finishedAt = performance.now();
@@ -271,23 +287,28 @@ async function measure(probe: ChatSqlProbe, options: Options, controller: AbortC
 
   const monitoring = new AbortController();
   const resources = sampleResources(probe, startedAt, options, monitoring.signal).catch(fail);
-  const workers = Array.from({ length: options.workers }, () => work().catch(fail));
+  const workers = Array.from({ length: options.workers }, (_, index) => work(index % options.quotaPartitions).catch(fail));
   try {
     const plan = arrivals(options, startedAt);
     let next = plan.next();
-    while (!next.done && performance.now() < endsAt) {
+    while (performance.now() < endsAt) {
       signal.throwIfAborted();
       const now = performance.now();
-      if (inFlight.size < options.admissionWorkers && next.value.dueAt <= now) {
-        const slots: Slot[] = [];
-        while (!next.done && next.value.dueAt <= now && slots.length < admissionBatchLimit) {
-          if (next.value.offerBefore > now) slots.push(next.value);
-          next = plan.next();
-        }
-        offer(slots);
-      } else {
-        await delay(Math.max(1, Math.min(5, next.value.dueAt - now)), undefined, { signal });
+      while (!next.done && next.value.dueAt <= now) {
+        const slot = next.value;
+        if (slot.offerBefore > now) queues[accountPartitions[slot.accountIndex]].slots.push(slot);
+        next = plan.next();
       }
+      for (const [partition, queue] of queues.entries()) {
+        while (queue.busy < admissionLimit && queue.slots.length) {
+          const readyAt = performance.now();
+          const slots = queue.slots.splice(0, admissionBatchLimit).filter(slot => slot.offerBefore > readyAt);
+          if (slots.length) offer(slots, partition);
+        }
+      }
+      if (next.done && queues.every(queue => !queue.slots.length)) break;
+      const wakeIn = next.done ? 1 : Math.max(1, Math.min(5, next.value.dueAt - performance.now()));
+      await delay(wakeIn, undefined, { signal });
     }
   } catch (error) {
     fail(error);
@@ -349,8 +370,8 @@ async function main() {
     const timings = createTimingCollector();
     try {
       assert(!options.prefill || stand.report.freeDiskBytes >= 10 * 1024 ** 3, 'Not enough free space for prefill');
-      const accounts = Array.from({ length: accountCount }, () => randomUUID());
-      const rooms = Array.from({ length: Math.ceil(accountCount / roomCapacity) }, () => randomUUID());
+      const accounts = Array.from({ length: accountCount }, (_, index) => fixtureId('account', index));
+      const rooms = Array.from({ length: Math.ceil(accountCount / roomCapacity) }, (_, index) => fixtureId('room', index));
       const probe = await ChatSqlProbe.open(stand.chat, stand.runId, undefined, timings.add);
       try { result = await measure(probe, options, controller, accounts, rooms); }
       finally { await probe.close(); }
@@ -360,7 +381,7 @@ async function main() {
     const { directory: _directory, ...profile } = options;
     const report = { qualification: 'preliminary_single_host', topology: 'generator_workers_and_postgres_on_one_host',
       targetAccepted: false, cleanupConfirmed: true,
-      profile: { ...profile, burstFrameMs }, stand: stand.report, ...result, transactions: timings.summary() };
+      profile: { ...profile, burstFrameMs, identitySeed }, stand: stand.report, ...result, transactions: timings.summary() };
     await writeFile(reportPath, JSON.stringify(report, null, 2) + '\n', { flag: 'wx' });
     console.log(JSON.stringify(report));
     if (!report.localProfilePassed) process.exitCode = 1;
