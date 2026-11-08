@@ -380,6 +380,7 @@ for (const reverse of [false, true]) test(`pilot gate uses equal fixtures with t
     assert.equal(timing.traced, 18);
     assert.equal(timing.completed, 18);
     assert.equal(timing.matched, 18);
+    assert.equal(timing.readOnlySyncs, 6);
     for (const count of [timing.observedAdvisoryWaits.command, timing.observedAdvisoryWaits.sync]) {
       assert(Number.isInteger(count) && count >= 0 && count <= timing.traced);
     }
@@ -399,21 +400,33 @@ for (const reverse of [false, true]) test(`pilot gate uses equal fixtures with t
       assert.equal(timing[metric].overlappingFirstReport, phase === 'withAudit' ?
         report.reports.player[metric === 'stake' ? 'overlappingStakeCalls' : 'overlappingSettlementCalls'] : 0);
       const { roomMs, beforeStoreMs, commandMs, commandTransaction, beforeSyncMs, syncMs, syncTransaction,
-        beforeRoomMatchesMs, roomMatchesMs, afterRoomMatchesMs } = row.server;
-      const segments = [beforeStoreMs, commandMs, beforeSyncMs, syncMs, beforeRoomMatchesMs, roomMatchesMs, afterRoomMatchesMs];
+        syncProbeTransaction, syncReadOnly, afterSyncMs } = row.server;
+      const segments = [beforeStoreMs, commandMs, beforeSyncMs, syncMs, afterSyncMs];
       assert(segments.every(value => Number.isFinite(value) && value >= 0));
       assert(Math.abs(roomMs - segments.reduce((sum, value) => sum + value, 0)) < 0.005);
-      for (const [span, transaction] of [[commandMs, commandTransaction], [syncMs, syncTransaction]]) {
+      assert.equal(syncReadOnly, metric === 'settlement');
+      assert.equal(syncProbeTransaction === null, syncReadOnly);
+      const phases = [[commandMs, commandTransaction, false], [syncMs, syncTransaction, syncReadOnly]];
+      if (syncProbeTransaction) phases.push([syncMs, syncProbeTransaction, true]);
+      for (const [span, transaction, readOnly] of phases) {
         const { admissionMs, bodyMs, finishMs, checkoutMs, beginMs, advisoryMs, advisoryScope,
           advisoryHolders, observedWaitLowerBoundMs } = transaction;
         assert(admissionMs >= 0 && bodyMs > 0 && finishMs >= 0);
         assert(admissionMs + bodyMs + finishMs <= span + 0.002);
-        assert([checkoutMs, beginMs, advisoryMs].every(value => Number.isFinite(value) && value >= 0));
-        assert(advisoryScope === 'schema' || advisoryScope === 'key');
+        assert([checkoutMs, beginMs].every(value => Number.isFinite(value) && value >= 0));
+        if (readOnly) {
+          assert.equal(advisoryMs, null);
+          assert.equal(advisoryScope, null);
+          assert.equal(observedWaitLowerBoundMs, null);
+          assert.deepEqual(advisoryHolders, []);
+        } else {
+          assert(Number.isFinite(advisoryMs) && advisoryMs >= 0);
+          assert(advisoryScope === 'schema' || advisoryScope === 'key');
+        }
         assert(Array.isArray(advisoryHolders));
         assert.equal(advisoryHolders.length, new Set(advisoryHolders).size);
         for (const kind of advisoryHolders) assert(Object.hasOwn(timing.holderObservations.command.byKind, kind));
-        assert(checkoutMs + beginMs + advisoryMs <= admissionMs + 0.002);
+        assert(checkoutMs + beginMs + (advisoryMs ?? 0) <= admissionMs + 0.002);
         if (observedWaitLowerBoundMs !== null) assert(observedWaitLowerBoundMs >= 0 && observedWaitLowerBoundMs <= advisoryMs);
       }
     }

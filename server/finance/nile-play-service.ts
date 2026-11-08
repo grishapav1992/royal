@@ -90,8 +90,7 @@ export function createNilePlayServer(ledger: NilePlayLedger) {
             else if (body.action === 'pvp-sync') {
                 const v = body.value;
                 if (!v || Object.keys(v).sort().join(',') !== 'people,roomId') throw new NilePlayError('invalid_pvp_request',400);
-                const snapshots = await pvp.syncRoom(v.roomId,v.people);
-                respond(200,{snapshots,matches:await pvp.roomMatches(v.roomId)});
+                respond(200,await pvp.syncRoomState(v.roomId,v.people));
             }
             else if (body.action === 'pvp-result') {
                 const v=body.value;

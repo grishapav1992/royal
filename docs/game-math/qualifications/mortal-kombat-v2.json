@@ -3,8 +3,8 @@
   "gameId": "mortal-kombat",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-11-08T08:56:01.256Z",
-  "completedAt": "2026-11-08T08:56:01.260Z",
+  "startedAt": "2026-11-08T09:30:17.620Z",
+  "completedAt": "2026-11-08T09:30:17.631Z",
   "sourceHashes": {
     "server/finance/pvp-money.ts": "e71a90edf48f23a0479b7b85933aab583263daee14edf59edf301baa92b9115b",
     "src/shared/pvp.ts": "83f197cf873c2949bfd27b7e6ad722233584574898fdecf6a60b71cd7d7b54d3",
@@ -14,7 +14,7 @@
     "server/combatGame.ts": "825bac6da77facf6a81c942282a0605e5eafea8ecda806fc0fb044e905419782",
     "server/combatRoom.ts": "bd92ac1ca5a6d4ff2eae0a6ef0958abf1b68c20f8b893f58061685f6e2ec3294",
     "server/combatGuard.ts": "c0225b2b838cc1b828ce1102a2e012da15287258eed319b5722056f34b06cad9",
-    "server/pvp/virtual-wallet.ts": "78b99a9001b544cc089028fd3ef96fbd61f57d6a2ba5c6b53f2ee913c88e6feb",
+    "server/pvp/virtual-wallet.ts": "7cc35b6010339db85320abaa050b6771809b2f16cf2823698a5fc6d1b031aae8",
     "server/commonCombatWallet.ts": "a4c54488171ad734558f916a45efb9b14a45d4316d784fbe84f25c568d92ae5f",
     "server/finance/nile-play-error.ts": "20a472d05d7517035771156ccd4c778e699cdf3b0e27d3c693e8d4f39c197e57",
     "scripts/game-math/rtp-combat.mjs": "312d52d1ee14523e6b4ad79250702ad44f8eb34eb93605580c8f81ad0a4ddaba"

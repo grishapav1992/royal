@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
+import {setTimeout as delay} from 'node:timers/promises';
 import {PostgresDatabase} from '../server/database';
 import {DemoWalletStore} from '../server/demoWallet';
 import {VirtualPvpLedger} from '../server/pvp/virtual-wallet';
@@ -9,6 +10,7 @@ import {virtualPvpCommand} from '../server/pvp/virtual-service';
 import {demoBalanceUnits,saveDemoUnits,MAX_DEMO_UNITS,demoReservedUnits} from '../server/demoWalletAmounts';
 import {CommonSkinPayments} from '../server/skinPayments';
 import {NileCombatEscrow} from '../server/finance/combat-escrow';
+import {saveProviderPendingUnits} from '../server/providerPending';
 import {PVP_GAMES,PVP_INVITE_MS,STANDARD_PVP_RULES_VERSION,isStandardPvpGame,validVirtualPvpWallet,VIRTUAL_PVP_SCOPE} from '../src/shared/pvp';
 import {savedTower,seedDemoTower} from './helpers/removed-tower';
 
@@ -23,6 +25,151 @@ async function fixture(amount=200){
  const match=(gameId='chess',stakeUnits='50000000')=>({matchId:randomUUID(),gameId,stakeUnits});
  return{db,a,b,aa,bb,now,people,common,ledger,store,match,close:()=>db.close(),balance:(id:string)=>demoBalanceUnits(db,id)};
 }
+
+async function holdSchemaLock(db: PostgresDatabase) {
+  const holder = await db.pool.connect();
+  try {
+    await holder.query('BEGIN');
+    await holder.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [db.schema]);
+  } catch (error) {
+    holder.release(true);
+    throw error;
+  }
+  return {
+    async expectWaiter() {
+      const deadline = performance.now() + 2000;
+      do {
+        const { rows: [result] } = await holder.query<{ waiting: boolean }>(`SELECT EXISTS (
+          SELECT 1 FROM pg_locks l WHERE l.locktype='advisory' AND NOT l.granted
+            AND pg_backend_pid()=ANY(pg_blocking_pids(l.pid))) AS waiting`);
+        if (result.waiting) return;
+        await delay(10);
+      } while (performance.now() < deadline);
+      assert.fail('Expected a transaction to wait on the fixture schema lock');
+    },
+    async release() {
+      try {
+        await holder.query('ROLLBACK');
+      } catch (error) {
+        holder.release(true);
+        throw error;
+      }
+      holder.release();
+    },
+  };
+}
+
+async function syncWaitingForSchema<T>(db: PostgresDatabase, startSync: () => Promise<T>) {
+  const blocker = await holdSchemaLock(db);
+  try {
+    const syncing = startSync();
+    void syncing.catch(() => {});
+    await blocker.expectWaiter();
+    return syncing;
+  } finally {
+    await blocker.release();
+  }
+}
+
+function lockedWalletReference(db: PostgresDatabase, common: DemoWalletStore, accountId: string) {
+  return db.transaction(async () => {
+    const wallet = await common.snapshotInTransaction(accountId);
+    const held = await db.prepare("SELECT coalesce(sum(stake_units),0) AS n FROM virtual_pvp_holds WHERE account_id=? AND state='held'")
+      .get(accountId);
+    return { scope: VIRTUAL_PVP_SCOPE, state: 'assigned', ready: true, wallet,
+      balanceUnits: String(Math.round(wallet.balance * 100) * 10000), reservedUnits: String(Number(held!.n) * 10000) };
+  }, { lockKey: 'account:' + accountId });
+}
+
+test('idle virtual room sync bypasses the schema lock while live sync keeps it', { timeout: 10000 }, async () => {
+  const c = await fixture();
+  try {
+    await c.common.operate(c.a, { id: randomUUID(), kind: 'spin', amount: 10 });
+    await saveProviderPendingUnits(c.db, c.a, 'capro:' + randomUUID(), 123n, 123n, 'credit');
+    const expected = await Promise.all([c.a, c.b].map(id => lockedWalletReference(c.db, c.common, id)));
+    assert.equal(expected[0].wallet.pendingBalance, '1.23');
+    const blocker = await holdSchemaLock(c.db);
+    try {
+      const idle = await Promise.race([c.store.syncRoomState(c.aa.roomId, c.people, c.now), delay(2000, null, { ref: false })]);
+      assert(idle, 'Idle projection must finish before the schema lock is released');
+      assert.deepEqual(idle.matches, []);
+      assert.deepEqual(idle.snapshots.map(row => row.accountId), [c.a, c.b]);
+      assert.deepEqual(idle.snapshots.map(row => row.snapshot.wallet), expected);
+    } finally {
+      await blocker.release();
+    }
+
+    const opened = await c.store.command(c.aa, {
+      id: randomUUID(), action: 'create', gameId: 'chess', stakeUnits: '50000000', targetId: c.b,
+    }, c.now);
+    assert(opened.active);
+    const live = await syncWaitingForSchema(c.db, () => c.store.syncRoomState(c.aa.roomId, c.people, c.now));
+    assert.deepEqual(live.matches, [opened.active]);
+    assert.equal(live.snapshots[0].snapshot.active?.id, opened.active.id);
+    assert.deepEqual(live.snapshots.map(row => row.snapshot.wallet),
+      await Promise.all([c.a, c.b].map(id => lockedWalletReference(c.db, c.common, id))));
+  } finally {
+    await c.close();
+  }
+});
+
+test('idle virtual room with a retained casino round settles under the schema lock', { timeout: 10000 }, async () => {
+  const c = await fixture();
+  try {
+    const historical = await seedDemoTower(c.db, c.a, savedTower([]));
+    assert.equal(await c.balance(c.a), 19000);
+    const result = await syncWaitingForSchema(c.db, () => c.store.syncRoomState(c.aa.roomId, c.people, c.now));
+    assert.deepEqual(result.matches, []);
+    const wallet = result.snapshots[0].snapshot.wallet;
+    assert(validVirtualPvpWallet(wallet));
+    assert.equal(wallet.balanceUnits, '200000000');
+    assert.deepEqual(wallet.wallet.entries.filter(entry => entry.operationId === historical.id).map(entry => entry.kind), ['refund', 'bet']);
+    assert.equal((await c.db.prepare('SELECT reason FROM removed_casino_settlements WHERE account_id=? AND session_id=?')
+      .get(c.a, historical.id))?.reason, 'refund');
+    assert.deepEqual(wallet, await lockedWalletReference(c.db, c.common, c.a));
+  } finally {
+    await c.close();
+  }
+});
+
+test('idle virtual room sync keeps one snapshot when a paid match opens during projection', { timeout: 10000 }, async t => {
+  const c = await fixture();
+  const probed = Promise.withResolvers<boolean>(), resume = Promise.withResolvers<void>();
+  try {
+    const expected = await lockedWalletReference(c.db, c.common, c.a);
+    const db = c.db as unknown as { query(sql: string, values?: unknown[]): Promise<unknown> };
+    const query = db.query.bind(db);
+    let first = true;
+    t.mock.method(db, 'query', async (sql: string, values?: unknown[]) => {
+      const result = await query(sql, values);
+      if (first && /SELECT 1 FROM pvp_matches WHERE room_id=/i.test(sql)) {
+        first = false;
+        probed.resolve(true);
+        await resume.promise;
+      }
+      return result;
+    });
+    const syncing = c.store.syncRoomState(c.aa.roomId, c.people, c.now);
+    void syncing.catch(() => {});
+    try {
+      assert(await Promise.race([probed.promise, delay(2000, false, { ref: false })]));
+      const created = await c.store.command(c.aa, {
+        id: randomUUID(), action: 'create', gameId: 'chess', stakeUnits: '50000000', targetId: c.b,
+      }, c.now + 1);
+      assert.equal(created.active?.status, 'open');
+      assert(validVirtualPvpWallet(created.wallet));
+      assert.equal(created.wallet.reservedUnits, '50000000');
+    } finally {
+      resume.resolve();
+    }
+    const idle = await syncing;
+    assert.deepEqual(idle.matches, []);
+    assert.equal(idle.snapshots[0].snapshot.active, null);
+    assert.deepEqual(idle.snapshots[0].snapshot.wallet, expected);
+  } finally {
+    await c.close();
+  }
+});
 test('PvP and slots spend the same top-up; 50+50 returns 95 with a single 5 USDT fee',async()=>{
  const c=await fixture();try{
   const m=c.match();await c.ledger.pvpHold(c.a,m);await c.ledger.pvpHold(c.b,m);

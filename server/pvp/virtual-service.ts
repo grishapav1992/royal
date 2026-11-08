@@ -11,7 +11,7 @@ export function virtualPvpCommand(store:PvpStore){
         if(!v||v.request?.walletScope!==VIRTUAL_PVP_SCOPE)throw new NilePlayError('Обнови страницу, чтобы использовать общий игровой баланс.',409);
         return {status:200,value:await store.command({accountId,name:v.name,roomId:v.roomId},v.request)};
       }
-      if(action==='pvp-sync')return {status:200,value:{snapshots:await store.syncRoom(v.roomId,v.people),matches:await store.roomMatches(v.roomId)}};
+      if(action==='pvp-sync')return {status:200,value:await store.syncRoomState(v.roomId,v.people)};
       if(action==='pvp-result'){
         if(!v||!['win','draw','server','timeout'].includes(v.reason)||
           v.reason==='timeout'&&(typeof v.winnerId!=='string'||!isPoolIdleTimeout(v.idleForMs)))throw new NilePlayError('invalid_pvp_request',400);

@@ -15,6 +15,7 @@ export type PvpLedger = Pick<NilePlayLedger,'ready'|'db'> & {
   wallet(accountId:string,now?:number):Promise<PvpSnapshot['wallet']>;
   pvpHold(accountId:string,value:unknown,now?:number):Promise<PvpWalletResult>;
   pvpFinish(accountId:string,value:unknown,now?:number):Promise<PvpWalletResult>;
+  readIdleRoomWallets?(accountIds: string[]): Promise<ReadonlyMap<string, PvpSnapshot['wallet']> | undefined>;
 };
 
 export type PvpPresence = { accountId: string; name: string; connected: boolean; available: boolean; disconnectedAt?:number };
@@ -117,13 +118,29 @@ export class PvpStore {
     });
   }
   async syncRoom(roomId: string, people: PvpPresence[], now = Date.now()) {
+    return (await this.syncRoomState(roomId, people, now)).snapshots;
+  }
+  async syncRoomState(roomId: string, people: PvpPresence[], now = Date.now()) {
     if (!roomValid(roomId) || !Array.isArray(people) || people.length > 100 || !people.every(p => gameAccountId(p.accountId)
       && typeof p.name === 'string' && typeof p.connected === 'boolean' && typeof p.available === 'boolean'
       && (p.disconnectedAt===undefined||Number.isSafeInteger(p.disconnectedAt)&&p.disconnectedAt>=0&&p.disconnectedAt<=now))
       || new Set(people.map(p => p.accountId)).size !== people.length) return fail('Некорректный состав комнаты.', 400);
     await this.ready;
-    this.rooms.set(roomId, { people: people.map(p => ({ ...p, name: cleanName(p.name) })), at: now });
-    return this.ledger.db.transaction(async () => {
+    const presence = people.map(p => ({ ...p, name: cleanName(p.name) }));
+    const connected = presence.filter(p => p.connected);
+    this.rooms.set(roomId, { people: presence, at: now });
+    const { db, readIdleRoomWallets } = this.ledger;
+    if (readIdleRoomWallets && !db.inTransaction) {
+      const idle = await db.transaction(async () => {
+        const active = await db.prepare("SELECT 1 FROM pvp_matches WHERE room_id=? AND status IN ('open','arriving','playing') LIMIT 1").get(roomId);
+        if (active) return undefined;
+        const wallets = await readIdleRoomWallets.call(this.ledger, connected.map(p => p.accountId));
+        if (!wallets) return undefined;
+        return { snapshots: await this.roomSnapshots(roomId, now, presence, connected, wallets), matches: [] };
+      }, { readOnly: true });
+      if (idle) return idle;
+    }
+    return db.transaction(async () => {
       for (const row of await this.ledger.db.prepare("SELECT payload FROM pvp_matches WHERE room_id=? AND status IN ('open','arriving','playing')").all(roomId)) {
         const s: StoredMatch = JSON.parse(String(row.payload)), c = s.challenge;
         // Expire an old lease before refreshing it, so a server restart cannot restart a lost physics game.
@@ -133,13 +150,13 @@ export class PvpStore {
         s.roomSeenAt = now;
         const priorPresence=JSON.stringify([c.ready,c.disconnected]);
         for (const id of members(c)) {
-          const online = people.some(person => person.accountId === id && person.connected), index = c.disconnected.findIndex(p => p.accountId === id);
+          const online = presence.some(person => person.accountId === id && person.connected), index = c.disconnected.findIndex(p => p.accountId === id);
           if (online && index >= 0){
             if(isNegotiatedPvp(c)){s.reconnectSpent??={};s.reconnectSpent[id]=Math.max(0,PVP_RECONNECT_MS-(c.disconnected[index].until-now));}
             c.disconnected.splice(index, 1);
           }
           if (!online && index < 0) {
-            const observedAt=isNegotiatedPvp(c)?Math.max(previousSeenAt,people.find(p=>p.accountId===id)?.disconnectedAt??now):now;
+            const observedAt=isNegotiatedPvp(c)?Math.max(previousSeenAt,presence.find(p=>p.accountId===id)?.disconnectedAt??now):now;
             pausedAt=Math.min(pausedAt,observedAt);
             c.disconnected.push({ accountId: id, until: observedAt + Math.max(0,PVP_RECONNECT_MS-(isNegotiatedPvp(c)?s.reconnectSpent?.[id]??0:0)) });
           }
@@ -156,20 +173,25 @@ export class PvpStore {
         if(JSON.stringify([c.ready,c.disconnected])!==priorPresence)c.revision++;
         await this.expire(s, now); if (live(c)) await this.save(s, now);
       }
-      const connected = people.filter(p => p.connected);
-      if (!connected.length) return [];
-      const rows = await this.ledger.db.prepare(`SELECT actor.account_id, ARRAY(
+      const snapshots = await this.roomSnapshots(roomId, now, presence, connected);
+      return { snapshots, matches: await this.roomMatches(roomId) };
+    });
+  }
+  private async roomSnapshots(roomId: string, now: number, presence: PvpPresence[],
+    connected: PvpPresence[], wallets?: ReadonlyMap<string, PvpSnapshot['wallet']>) {
+    if (!connected.length) return [];
+    const rows = await this.ledger.db.prepare(`SELECT actor.account_id, ARRAY(
         SELECT candidate.payload FROM pvp_matches AS candidate WHERE candidate.room_id=? AND
           (candidate.status IN ('open','arriving','playing') OR candidate.creator_id=actor.account_id OR candidate.opponent_id=actor.account_id)
         ORDER BY candidate.updated_at DESC LIMIT 100) AS payloads
         FROM unnest(?::text[]) AS actor(account_id)`).all(roomId, connected.map(p => p.accountId));
-      const histories = new Map<string, string[]>(rows.map(row => [row.account_id, row.payloads]));
-      return Promise.all(connected.map(async ({ accountId, name }) => ({
-        accountId,
-        snapshot: await this.snapshotFromMatches({ accountId, name, roomId }, now,
-          histories.get(accountId)!.map(payload => JSON.parse(payload) as StoredMatch)),
-      })));
-    });
+    const histories = new Map<string, string[]>(rows.map(row => [row.account_id, row.payloads]));
+    return Promise.all(connected.map(async ({ accountId, name }) => {
+      const wallet = wallets?.get(accountId);
+      if (wallets && !wallet) throw new Error('Idle room wallet projection is incomplete');
+      const matches = histories.get(accountId)!.map(payload => JSON.parse(payload) as StoredMatch);
+      return { accountId, snapshot: await this.snapshotFromMatches({ accountId, name, roomId }, now, matches, wallet, presence) };
+    }));
   }
   /** The observer can read the replay flag for commands with a saved receipt. JSON omits it. */
   async command(actor: Actor, value: unknown, now = Date.now()): Promise<PvpSnapshot> {
@@ -310,7 +332,8 @@ export class PvpStore {
       .map(row => JSON.parse(String(row.payload)) as StoredMatch);
     return this.snapshotFromMatches(actor, now, all, wallet);
   }
-  private async snapshotFromMatches(actor: Actor, now: number, all: StoredMatch[], wallet?: PvpSnapshot['wallet']): Promise<PvpSnapshot> {
+  private async snapshotFromMatches(actor: Actor, now: number, all: StoredMatch[], wallet?: PvpSnapshot['wallet'],
+    presence = this.rooms.get(actor.roomId)?.people ?? []): Promise<PvpSnapshot> {
     const available = all.filter(s => participant(s.challenge, actor.accountId) || s.challenge.status === 'open' && (!s.challenge.targetId || s.challenge.targetId === actor.accountId));
     const own = available.find(s => participant(s.challenge, actor.accountId) && live(s.challenge)) ?? available.find(s => participant(s.challenge, actor.accountId));
     const cards=own?.cards?publicCardGame(own.cards,own.challenge.creatorId===actor.accountId?0:1):null;
@@ -320,7 +343,7 @@ export class PvpStore {
     if (tsuEFa && own?.challenge.status !== 'playing'&&own?.challenge.status!=='arriving') { tsuEFa.phase = 'finished'; tsuEFa.winner = own?.challenge.winnerId === null ? null : own?.challenge.winnerId === own?.challenge.creatorId ? 0 : 1; }
     return { challenges: available.map(s => s.challenge), active: own?.challenge ?? null,
       cards, tsuEFa,
-      people: (this.rooms.get(actor.roomId)?.people ?? []).filter(p => p.connected && p.accountId !== actor.accountId)
+      people: presence.filter(p => p.connected && p.accountId !== actor.accountId)
         .map(p => ({ accountId: p.accountId, name: p.name, available: p.available && !all.some(s => participant(s.challenge, p.accountId) && live(s.challenge)) })),
       wallet: wallet ?? await this.ledger.wallet(actor.accountId, now), now };
   }

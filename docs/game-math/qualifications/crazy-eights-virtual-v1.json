@@ -3,14 +3,14 @@
   "gameId": "crazy-eights",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-11-08T09:09:26.257Z",
-  "completedAt": "2026-11-08T09:09:26.553Z",
+  "startedAt": "2026-11-08T09:30:16.424Z",
+  "completedAt": "2026-11-08T09:30:16.818Z",
   "sourceHashes": {
     "src/shared/pvp.ts": "83f197cf873c2949bfd27b7e6ad722233584574898fdecf6a60b71cd7d7b54d3",
-    "server/pvp/store.ts": "5ca4dfb93c866e1febf2f49066eb1a97a141b78452f53b04ae1f838d6594dfea",
+    "server/pvp/store.ts": "bfbaad13350a37efa24c7753253a70112e0b9481e83cc8fc6170aab6c9362a11",
     "server/pvp/cards.ts": "42db70683726228f6ab2217c7ef48b269cf372368950faa9f4555825880f6cf0",
     "server/finance/pvp-money.ts": "e71a90edf48f23a0479b7b85933aab583263daee14edf59edf301baa92b9115b",
-    "server/pvp/virtual-wallet.ts": "78b99a9001b544cc089028fd3ef96fbd61f57d6a2ba5c6b53f2ee913c88e6feb",
+    "server/pvp/virtual-wallet.ts": "7cc35b6010339db85320abaa050b6771809b2f16cf2823698a5fc6d1b031aae8",
     "server/finance/nile-play-error.ts": "20a472d05d7517035771156ccd4c778e699cdf3b0e27d3c693e8d4f39c197e57",
     "src/shared/pvpSeats.ts": "97bba60d5044f971ac910ece29509ea3df94dd22bea25b6f80eeca56def7a492",
     "scripts/game-math/rtp-virtual-pvp.mjs": "57473491cbf947b53ceec92d3b5ef734cbab5de0ec36aaf03900ab47491b68f2"

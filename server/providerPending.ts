@@ -9,7 +9,10 @@ export function providerDecimal(units:bigint):string {
 }
 export async function providerPendingUnits(db:PostgresDatabase,accountId:string):Promise<bigint> {
   const row=await db.prepare('SELECT pending_units FROM capro_pending_balances WHERE account_id=?').get(accountId);
-  const units=row?.pending_units??'0';
+  return parseProviderPendingUnits(row?.pending_units);
+}
+export function parseProviderPendingUnits(stored:unknown):bigint {
+  const units=stored??'0';
   if(typeof units!=='string'||!/^(0|[1-9][0-9]*)$/.test(units))throw new Error('Invalid saved provider balance');
   return BigInt(units);
 }

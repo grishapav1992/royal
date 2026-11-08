@@ -6,12 +6,14 @@ import { isPvpMoneyGame } from '../finance/pvp-money';
 import { gameAccountId } from '../../src/shared/nileWallet';
 import { PVP_GAMES, pvpPayout, validVirtualPvpStake, VIRTUAL_PVP_SCOPE, type PvpGameId, type VirtualPvpWallet } from '../../src/shared/pvp';
 import {validTsuDuelStake,tsuDuelPayout} from '../../src/shared/tsuDuel';
+import { settleRemovedCasino } from '../removedCasino';
+import { parseProviderPendingUnits, providerDecimal } from '../providerPending';
 
 const fail=(code:string,status=409):never=>{throw new NilePlayError(code,status);};
 const cents=(micro:string)=>Number(BigInt(micro)/10000n);
 export class VirtualPvpLedger {
   readonly ready:Promise<void>;
-  constructor(readonly db:PostgresDatabase,private common:DemoWalletStore){this.ready=common.ready;}
+  constructor(readonly db:PostgresDatabase,common:DemoWalletStore){this.ready=common.ready;}
   private async lock(accounts:string[]){
     for(const id of [...new Set(accounts)].sort())await this.db.prepare('SELECT pg_advisory_xact_lock(hashtextextended(?,0))').get(this.db.schema+':key:account:'+id);
   }
@@ -19,10 +21,45 @@ export class VirtualPvpLedger {
     await this.ready;
     return this.db.transaction(async()=>{
       await this.lock([accountId]);
-      const wallet=await this.common.snapshotInTransaction(accountId);
-      const held=await this.db.prepare("SELECT coalesce(sum(stake_units),0) AS n FROM virtual_pvp_holds WHERE account_id=? AND state='held'").get(accountId);
-      return {scope:VIRTUAL_PVP_SCOPE,state:'assigned',ready:true,wallet,balanceUnits:String(Math.round(wallet.balance*100)*10000),reservedUnits:String(Number(held!.n)*10000)};
+      await settleRemovedCasino(this.db, accountId);
+      return (await this.readWallets([accountId])).get(accountId)!;
     });
+  }
+  /** Called in the same repeatable-read snapshot as the idle-room check. */
+  async readIdleRoomWallets(accountIds: string[]) {
+    if (!this.db.inTransaction) throw new Error('Idle room wallet projection requires a transaction');
+    if (await this.db.prepare(`SELECT 1 FROM demo_casino_sessions
+      WHERE account_id=ANY(?::text[]) AND game_id='github-tower' AND state='active' LIMIT 1`).get(accountIds)) return undefined;
+    return this.readWallets(accountIds);
+  }
+  private async readWallets(accountIds: string[]) {
+    const rows = await this.db.prepare(`SELECT player.account_id, w.balance AS wallet_balance, w.fraction_units,
+      pending.pending_units, (SELECT coalesce(sum(h.stake_units),0) FROM virtual_pvp_holds h
+        WHERE h.account_id=player.account_id AND h.state='held') AS held_units, history.*
+      FROM unnest(?::text[]) WITH ORDINALITY AS player(account_id,position)
+      LEFT JOIN demo_wallets w USING (account_id)
+      LEFT JOIN capro_pending_balances pending USING (account_id)
+      LEFT JOIN LATERAL (
+        SELECT id,entry_type AS kind,amount_units/100.0 AS amount,balance_units/100.0 AS balance,
+          operation_id AS operationId,created_at AS createdAt,source,game_name AS gameName
+        FROM demo_ledger WHERE account_id=player.account_id ORDER BY id DESC LIMIT 50
+      ) history ON true ORDER BY player.position,history.id DESC`).all(accountIds);
+    const wallets = new Map<string, VirtualPvpWallet>();
+    for (const row of rows) {
+      const { account_id: accountId, id, kind, amount, balance, operationId, createdAt, source, gameName } = row;
+      let projection = wallets.get(accountId);
+      if (!projection) {
+        const units = Number(row.wallet_balance ?? 0) * 100 + Number(row.fraction_units ?? 0);
+        const pending = parseProviderPendingUnits(row.pending_units);
+        projection = { scope: VIRTUAL_PVP_SCOPE, state: 'assigned', ready: true,
+          wallet: { balance: units / 100, entries: [], ...(pending ? { pendingBalance: providerDecimal(pending) } : {}) },
+          balanceUnits: String(units * 10000), reservedUnits: String(Number(row.held_units) * 10000) };
+        wallets.set(accountId, projection);
+      }
+      if (id !== null) projection.wallet.entries.push({ id, kind, amount: Number(amount), balance: Number(balance),
+        operationId, createdAt, source, gameName });
+    }
+    return wallets;
   }
   async hasPvpMatch(id:string){return !!await this.db.prepare('SELECT 1 FROM virtual_pvp_banks WHERE match_id=?').get(id);}
   async pvpHold(accountId:string,value:unknown,now=Date.now()){

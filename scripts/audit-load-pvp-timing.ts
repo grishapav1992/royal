@@ -13,9 +13,9 @@ const holderKinds = ['pvp-command', 'pvp-sync', 'pvp-sweep', 'pvp-adjudicate', '
 type HolderKind = typeof holderKinds[number];
 type LockQuery = Interval & { scope: 'schema' | 'key'; observedWaitLowerBoundMs?: number; holders: HolderKind[] };
 type Transaction = Interval & { body?: Interval; checkout?: Interval; begin?: Interval; advisory?: LockQuery };
-type Stage = Interval & { transaction?: Transaction };
+type Stage = Interval & { transaction?: Transaction; readOnlyTransaction?: Transaction };
 export type AuditLoadPvpTrace = Command & {
-  room: Interval; command?: Stage; sync?: Stage; matches?: Interval;
+  room: Interval; command?: Stage; sync?: Stage;
 };
 export type AuditLoadPvpSample = Interval & { ok: boolean; pvp?: Command };
 
@@ -57,7 +57,7 @@ export function installAuditLoadPvpTiming(room: PvpRoom, services: Pick<AccountS
   const observedClients = new WeakSet<PoolClient>();
   const maxTraces = 8 * 16 * 3;
   const roomCommand = room.command;
-  const storeCommand = store.command.bind(store), syncRoom = store.syncRoom.bind(store), roomMatches = store.roomMatches.bind(store);
+  const storeCommand = store.command.bind(store), syncRoom = store.syncRoomState.bind(store);
   const sweep = store.sweep.bind(store), adjudicate = store.adjudicate.bind(store);
   const recoverExpired = combat.recoverExpired.bind(combat), processPending = progression.processPending.bind(progression);
   const transaction = database.transaction;
@@ -127,34 +127,34 @@ export function installAuditLoadPvpTiming(room: PvpRoom, services: Pick<AccountS
     });
   };
 
-  const measure = <T>(name: 'command' | 'sync' | 'matches', work: () => Promise<T>) => {
+  const measure = <T>(name: 'command' | 'sync', work: () => Promise<T>) => {
     const current = scope.getStore();
     if (!current?.trace || current.trace[name]) return work();
     const stage = current.trace[name] = stamp();
-    return scope.run({ ...current, stage: name === 'matches' ? undefined : stage }, async () => {
+    return scope.run({ ...current, stage }, async () => {
       try { return await work(); }
       finally { stage.to = performance.now(); }
     });
   };
   const withOwner = <T>(owner: HolderKind, work: () => Promise<T>) => scope.run({ ...scope.getStore(), owner }, work);
   store.command = (...args) => withOwner('pvp-command', () => measure('command', () => storeCommand(...args)));
-  store.syncRoom = (...args) => withOwner('pvp-sync', () => measure('sync', () => syncRoom(...args)));
+  store.syncRoomState = (...args) => withOwner('pvp-sync', () => measure('sync', () => syncRoom(...args)));
   store.sweep = (...args) => withOwner('pvp-sweep', () => sweep(...args));
   store.adjudicate = (...args) => withOwner('pvp-adjudicate', () => adjudicate(...args));
   combat.recoverExpired = (...args) => withOwner('combat-recovery', () => recoverExpired(...args));
   progression.processPending = (...args) => withOwner('progression', () => processPending(...args));
-  store.roomMatches = (...args) => measure('matches', () => roomMatches(...args));
 
   database.transaction = function <T>(this: PostgresDatabase, callback: () => Promise<T>,
     options?: Parameters<PostgresDatabase['transaction']>[1]) {
     const current = scope.getStore(), stage = current?.stage;
     const owner = !options?.readOnly && options?.lockKey === undefined ? current?.owner ?? 'other' : undefined;
-    const traceAdmission = stage && !stage.transaction;
+    const slot = options?.readOnly ? 'readOnlyTransaction' : 'transaction';
+    const traceAdmission = stage && !stage[slot];
     if (this.schema !== schema || this.inTransaction || (!traceAdmission && !owner)) {
       return (transaction<T>).call(this, callback, options);
     }
     observePool(this.pool);
-    const timing: Transaction | undefined = traceAdmission ? stage.transaction = stamp() : undefined;
+    const timing: Transaction | undefined = traceAdmission ? stage[slot] = stamp() : undefined;
     const admission: Admission = { timing, owner };
     return scope.run({ ...current, admission }, () => (transaction<T>).call(this, async () => {
       admission.entered = true;
@@ -182,12 +182,11 @@ export function summarizeAuditLoadPvpTiming(samples: AuditLoadPvpSample[], trace
     const trace = sample.pvp && byId.get(sample.pvp.id);
     const clientMs = elapsed(sample);
     const firstReportOverlap = firstReport !== undefined && sample.from < firstReport.to && sample.to > firstReport.from;
-    if (!trace || trace.action !== sample.pvp?.action || !trace.command || !trace.sync || !trace.matches) {
+    if (!trace || trace.action !== sample.pvp?.action || !trace.command || !trace.sync) {
       return { action: sample.pvp?.action, clientMs, firstReportOverlap, server: null };
     }
-    const { command, sync, matches, room } = trace;
-    const transaction = (stage: Stage) => {
-      const timing = stage.transaction;
+    const { command, sync, room } = trace;
+    const transaction = (timing?: Transaction) => {
       if (!timing?.body) return null;
       return {
         admissionMs: rounded(timing.body.from - timing.from),
@@ -204,10 +203,11 @@ export function summarizeAuditLoadPvpTiming(samples: AuditLoadPvpSample[], trace
     };
     return { action: trace.action, clientMs, firstReportOverlap, server: {
       roomMs: elapsed(room), beforeStoreMs: rounded(command.from - room.from),
-      commandMs: elapsed(command), commandTransaction: transaction(command),
-      beforeSyncMs: rounded(sync.from - command.to), syncMs: elapsed(sync), syncTransaction: transaction(sync),
-      beforeRoomMatchesMs: rounded(matches.from - sync.to), roomMatchesMs: elapsed(matches),
-      afterRoomMatchesMs: rounded(room.to - matches.to),
+      commandMs: elapsed(command), commandTransaction: transaction(command.transaction),
+      beforeSyncMs: rounded(sync.from - command.to), syncMs: elapsed(sync),
+      syncTransaction: transaction(sync.transaction ?? sync.readOnlyTransaction),
+      syncProbeTransaction: sync.transaction ? transaction(sync.readOnlyTransaction) : null,
+      syncReadOnly: !sync.transaction && !!sync.readOnlyTransaction, afterSyncMs: rounded(room.to - sync.to),
     } };
   };
   const complete = (row: ReturnType<typeof correlate>) => !!row.server?.commandTransaction && !!row.server.syncTransaction;
@@ -228,6 +228,7 @@ export function summarizeAuditLoadPvpTiming(samples: AuditLoadPvpSample[], trace
   const commandHolders = observations('command'), syncHolders = observations('sync');
   return {
     traced: traces.length, completed: rows.length, matched: rows.filter(complete).length,
+    readOnlySyncs: rows.filter(row => row.server?.syncReadOnly).length,
     observedAdvisoryWaits: { command: commandHolders.observed, sync: syncHolders.observed },
     holderObservations: { command: commandHolders, sync: syncHolders },
     stake: summarize(rows.filter(row => row.action === 'create' || row.action === 'accept')),
