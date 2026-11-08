@@ -27,7 +27,7 @@ test('current allowlist includes build inputs but excludes env, data and generat
 });
 test('every local Docker COPY source and both runtime card engines are present in the isolated build context', () => {
   const docker = current.find(file => file.path === 'Dockerfile.load').data.toString();
-  const lines = docker.replace(/\\\r?\n\s*/g, ' ').split('\n');
+  const lines = docker.replace(/\\\r?\n\s*/g, ' ').split(/\r?\n/);
   for (const line of lines.filter(line => line.startsWith('COPY ') && !line.startsWith('COPY --from='))) {
     const sources = line.trim().split(/\s+/).slice(1, -1);
     for (const source of sources) assert.equal(current.some(file => file.path === source || file.path.startsWith(source + '/')), true,

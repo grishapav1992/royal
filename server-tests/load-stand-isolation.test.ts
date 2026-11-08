@@ -13,7 +13,7 @@ import { standHost, STAND_ROLE, type StandManifest } from '../scripts/load-stand
 
 const hash = (value: string) => createHash('sha256').update(value).digest('hex');
 
-for (const mode of ['missing-api-attestation', 'wrong-api-run'] as const) {
+for (const mode of ['missing-api-attestation', 'wrong-api-run', 'missing-api-chat-profile'] as const) {
   test(`the real generator refuses ${mode} before sending session cookies or spawning SDK clients`, { timeout: 15000 }, async t => {
     const directory = await mkdtemp(join(tmpdir(), 'royal-stand-isolation-'));
     t.after(() => rm(directory, { recursive: true, force: true }));
@@ -21,6 +21,7 @@ for (const mode of ['missing-api-attestation', 'wrong-api-run'] as const) {
     let cookies = 0, matchmaking = 0;
     const runId = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee', secret = hash('isolated-control-only'), bundleSha256 = hash('isolated-test-bundle');
     const createdAt = Date.now(), expiresAt = createdAt + 60000, serverHost = standHost();
+    const chatV2 = mode === 'missing-api-chat-profile' ? { clients: 4, seconds: 1, steadyPerSecond: 4 } : undefined;
     const api = createServer((request, response) => {
       paths.push(request.url!);
       if (request.headers.cookie) cookies++;
@@ -30,7 +31,7 @@ for (const mode of ['missing-api-attestation', 'wrong-api-run'] as const) {
         response.statusCode = 404; response.end(JSON.stringify({ error: 'unknown-route' })); return;
       }
       if (request.url === '/__load-stand/status') {
-        response.end(JSON.stringify({ protocol: 1, role: STAND_ROLE, runId: 'different-run', expiresAt, bundleSha256,
+        response.end(JSON.stringify({ protocol: 1, role: STAND_ROLE, runId: mode === 'wrong-api-run' ? 'different-run' : runId, expiresAt, bundleSha256,
           clients: 4, seconds: 1, serverHost, apiEndpoint: endpoint })); return;
       }
       // A regular application health response cannot attest a load-test API origin.
@@ -42,12 +43,13 @@ for (const mode of ['missing-api-attestation', 'wrong-api-run'] as const) {
     const address = api.address(); assert(address && typeof address !== 'string');
     const endpoint = 'http://127.0.0.1:' + address.port, aborts: StandAbortCode[] = [];
     const control = await createStandControl({ runId, secret, expiresAt,
-      status: { clients: 4, seconds: 1, apiEndpoint: endpoint, bundleSha256, serverHost }, onAbort: code => { aborts.push(code); },
+      status: { clients: 4, seconds: 1, apiEndpoint: endpoint, bundleSha256, serverHost, ...(chatV2 ? { chatV2 } : {}) }, onAbort: code => { aborts.push(code); },
       validatePrepared: () => { throw new Error('unexpected-preparation'); }, validateResults: () => { throw new Error('unexpected-results'); } });
     t.after(() => control.close());
     const manifest: StandManifest = { protocol: 1, role: STAND_ROLE, runId, secret, createdAt, expiresAt, apiEndpoint: endpoint,
       controlEndpoint: 'http://127.0.0.1:' + control.port, serverApiPort: address.port, serverControlPort: control.port,
-      bundleSha256, clients: 4, seconds: 1, serverHost, tokens: Array.from({ length: 4 }, (_, i) => hash('synthetic-only-' + i)) };
+      bundleSha256, clients: 4, seconds: 1, serverHost, tokens: Array.from({ length: 4 }, (_, i) => hash('synthetic-only-' + i)),
+      ...(chatV2 ? { chatV2 } : {}) };
     const manifestPath = join(directory, 'private-manifest.json'), output = join(directory, 'generator-report.json');
     await writeFile(manifestPath, JSON.stringify(manifest), { mode: 0o600, flag: 'wx' });
     const env: NodeJS.ProcessEnv = { NODE_ENV: 'test' };

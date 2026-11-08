@@ -22,7 +22,7 @@ COPY public ./public
 COPY scripts/build-load-stand.mjs scripts/crypto-reconcile.ts scripts/database-test.ts \
     scripts/load-stand-database.ts scripts/load-generator-completion.ts scripts/load-account-probe.ts scripts/load-websocket-cluster.ts scripts/load-server-metrics.ts \
     scripts/temporary-redis.ts scripts/load-stand-control.ts scripts/load-stand-contract.ts \
-    scripts/load-stand-limits.ts scripts/websocket-server-diagnostics.ts scripts/load-websocket-diagnostics.ts ./scripts/
+    scripts/load-stand-limits.ts scripts/websocket-server-diagnostics.ts scripts/load-websocket-diagnostics.ts scripts/load-chat-v2-workload.ts ./scripts/
 RUN npm run build && node scripts/build-load-stand.mjs
 RUN node_modules/.bin/esbuild scripts/load-account-probe.ts --bundle --platform=node --packages=external --format=esm --target=node22 --outfile=dist-load/account-probe.mjs
 RUN test -x node_modules/@embedded-postgres/linux-x64/native/bin/postgres

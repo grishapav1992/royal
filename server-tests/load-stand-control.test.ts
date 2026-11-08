@@ -105,6 +105,45 @@ test('concurrent preparations admit exactly one and keep the first start barrier
   assert.deepEqual(aborts, []);
 });
 
+test('only an attested V2 profile uses a fixed future epoch and rejects results before its send window ends', { timeout: 5000 }, async t => {
+  const chatV2 = { clients: 4, seconds: 1, steadyPerSecond: 2 };
+  const { control } = await make({ status: { clients: 4, seconds: 1, chatV2 } });
+  t.after(() => control.close());
+  assert.deepEqual((await begin(control.port, '/status').response).body.chatV2, chatV2);
+  assert.equal((await begin(control.port, '/prepared', { ...preparedBody, startAtUnixMs: Date.now() + 1_000 },
+    { headers: { authorization: '' } }).response).status, 401);
+  const ready = begin(control.port, '/prepared', preparedBody);
+  await control.prepared;
+  assert.throws(() => control.start(), /stand-start-barrier-mismatch/);
+  assert.throws(() => control.start(Date.now() + 50), /invalid-stand-chat-start/);
+  assert.throws(() => control.start(Date.now() + 5_000), /invalid-stand-chat-start/);
+  const startAtUnixMs = Date.now() + 250;
+  control.start(startAtUnixMs);
+  control.start(startAtUnixMs);
+  assert.throws(() => control.start(startAtUnixMs + 1), /stand-start-already-fixed/);
+  assert.deepEqual(await ready.response, { status: 200, body: { start: true, runId, startAtUnixMs } });
+  assert.equal((await begin(control.port, '/results', resultsBody).response).status, 409);
+  await new Promise(resolve => setTimeout(resolve, startAtUnixMs + 1_020 - Date.now()));
+  const finished = begin(control.port, '/results', resultsBody);
+  assert.deepEqual(await control.results, resultsBody);
+  await control.publish({ ok: true });
+  assert.deepEqual(await finished.response, { status: 200, body: { runId, report: { ok: true } } });
+});
+
+test('legacy barriers refuse an unexpected epoch and malformed V2 metadata fails before listening', { timeout: 5000 }, async t => {
+  const chatV2 = { clients: 4, seconds: 1, steadyPerSecond: 2 };
+  for (const status of [{ clients: '4', seconds: 1, chatV2 }, { clients: 4, seconds: 2, chatV2 },
+    { clients: 4, seconds: 1, chatV2: { ...chatV2, extra: true } }]) {
+    await assert.rejects(createStandControl(options({ status }).config), /invalid-stand-chat-profile/);
+  }
+  const { control } = await make(); t.after(() => control.close());
+  const ready = begin(control.port, '/prepared', preparedBody);
+  await control.prepared;
+  assert.throws(() => control.start(Date.now() + 250), /stand-start-barrier-mismatch/);
+  control.start();
+  assert.deepEqual(await ready.response, { status: 200, body: { start: true, runId } });
+});
+
 test('results are validated once, wait for publication, and flush before immediate shutdown', { timeout: 5000 }, async t => {
   const { control, aborts } = await make(); t.after(() => control.close());
   const ready = begin(control.port, '/prepared', preparedBody); await control.prepared;

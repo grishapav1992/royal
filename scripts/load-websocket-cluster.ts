@@ -7,15 +7,13 @@ import { tmpdir } from 'node:os';
 import { monitorEventLoopDelay } from 'node:perf_hooks';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
-import { Redis } from 'ioredis';
-import { RedisDriver } from '@colyseus/redis-driver';
-import { temporaryRedis, freeLocalPort } from './temporary-redis';
+import { pathToFileURL } from 'node:url';
+import type { Redis } from 'ioredis';
 import { installLoopbackNetworking, type ServerMetrics, type RoomTraffic } from './load-server-metrics';
-import { READY_PROCESSES_KEY, parseReadyProcess } from '../server/clusterRegistry';
 import type { AccountStore } from '../server/accounts';
 import { createStandControl, type StandControl } from './load-stand-control';
-import { encodeStandServerReport, loopbackEndpoint, parseStandFinished, parseStandPrepared, standErrorDiagnostics, standHost, standReportForControl, STAND_ROLE,
-  type StandManifest, type StandPrepared, type StandFinished, type StandErrorDiagnostics } from './load-stand-contract';
+import { encodeStandServerReport, loopbackEndpoint, parseStandChatV2, parseStandFinished, parseStandPrepared, standErrorDiagnostics, standHost, standReportForControl, STAND_ROLE,
+  type StandManifest, type StandPrepared, type StandFinished, type StandErrorDiagnostics, type StandResult } from './load-stand-contract';
 import { DEFAULT_GAME_PROCESSES, MAX_GAME_PROCESSES, MAX_MEASUREMENT_SECONDS, MAX_STAND_CLIENTS, MAX_STAND_METRIC_INTERVALS,
   STAND_MAX_CONNECTIONS_PER_PROCESS, STAND_MAX_ROOMS_PER_PROCESS, STAND_ROOM_CAPACITY,
   standLoadProfile, standPreparationTimeoutMs, standSessionDurationMs, standStartupTimeoutMs } from './load-stand-limits';
@@ -27,11 +25,13 @@ type Ready = { kind: 'ready'; count: number; connectedClients: number; rooms: Oc
 type Result = { kind: 'result'; count: number; connectedClients: number; rooms: Occupancy[]; durationSeconds: number; observationSeconds: number;
   packetsSent: number; inputPacketsPerSecond: number; receivedBytes: number; maxClientBufferedBytes: number; ackMs: Quantiles; stateIntervalMs: Quantiles;
   unacknowledgedPackets: number; unacknowledgedAtEndOfSending: number; oldestUnacknowledgedMs: number; drainSeconds: number;
-  tracking?: { latencyTimingSamplesDropped: number };
+  tracking?: { latencyTimingSamplesDropped: number }; chatV2?: StandResult['chatV2'];
   errorCount: number; errors: Record<string, number>; generator: { cpuPercent: number; rssMiB: number; eventLoopP99Ms: number; eventLoopMaxMs: number } };
 type Cli = { bundle: string; output: string; proxyBinary?: string; metricsScript?: string; standManifest?: string; clientOrigin?: string;
-  inputMode: 'stress' | 'browser-window'; frameDiagnostics: boolean; resourceDiagnostics: boolean; sdkWebSocket: 'ws' | 'native'; clients: number; gameProcesses: number; seconds: number; minRatePercent: number; ackP95Ms: number; ackP99Ms: number; maxUnacknowledgedPercent: number };
+  inputMode: 'stress' | 'browser-window'; frameDiagnostics: boolean; resourceDiagnostics: boolean; sdkWebSocket: 'ws' | 'native'; clients: number; gameProcesses: number; seconds: number;
+  minRatePercent: number; ackP95Ms: number; ackP99Ms: number; maxUnacknowledgedPercent: number; chatV2?: StandManifest['chatV2'] };
 class HarnessError extends Error { constructor(readonly code: string, readonly diagnostics?: StandErrorDiagnostics) { super(code); } }
+const chatV2StartLeadMs = 2_000;
 const round = (value: number) => Number(value.toFixed(2));
 const delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 const exited = (child: ChildProcess) => child.exitCode !== null || child.signalCode !== null;
@@ -46,11 +46,13 @@ function cli(): Cli | undefined {
     console.log('Optional --metrics-script /path/to/metrics.mjs uses prebuilt metrics without tsx.');
     console.log('Game processes: --game-processes 4 (default), 1 to 24; each admits ten rooms of thirty players. Up to 6000 clients, requiring at least twenty game processes.');
     console.log('Server-only stand: --stand-manifest /private/path/stand.json --client-origin http://127.0.0.1:17100. Run load-websocket-generators.ts separately through SSH loopback port forwards.');
+    console.log('For an isolated Chat V2 pilot, use --chat-v2-rate 333, --chat-v2-burst 100 --chat-v2-burst-at-second 2, or both. Requires --stand-manifest and a compatible server bundle.');
     console.log('Input mode: --input-mode stress (default) or browser-window. A throttled input rate never passes the same load budget.');
     return;
   }
   const values: Record<string, string> = {};
-  const known = new Set(['--server-bundle', '--output', '--proxy-binary', '--metrics-script', '--sdk-websocket', '--stand-manifest', '--client-origin', '--input-mode', '--clients', '--game-processes', '--seconds', '--min-rate-percent', '--ack-p95-ms', '--ack-p99-ms', '--max-unacknowledged-percent']);
+  const known = new Set(['--server-bundle', '--output', '--proxy-binary', '--metrics-script', '--sdk-websocket', '--stand-manifest', '--client-origin', '--input-mode', '--clients', '--game-processes', '--seconds', '--min-rate-percent', '--ack-p95-ms', '--ack-p99-ms', '--max-unacknowledged-percent',
+    '--chat-v2-rate', '--chat-v2-burst', '--chat-v2-burst-at-second']);
   let frameDiagnostics = false, resourceDiagnostics = false;
   for (let index = 2; index < process.argv.length; index++) {
     const key = process.argv[index];
@@ -73,13 +75,25 @@ function cli(): Cli | undefined {
   if (values['--client-origin'] && !values['--stand-manifest']) throw new HarnessError('client-origin-needs-stand');
   const clients = number('--clients', 1000, 4, MAX_STAND_CLIENTS), gameProcesses = number('--game-processes', DEFAULT_GAME_PROCESSES, 1, MAX_GAME_PROCESSES);
   try { standLoadProfile(clients, gameProcesses); } catch { throw new HarnessError('stand-profile-capacity-exceeded'); }
+  const seconds = number('--seconds', 70, 1, MAX_MEASUREMENT_SECONDS);
+  const hasBurst = values['--chat-v2-burst'] !== undefined, hasBurstAt = values['--chat-v2-burst-at-second'] !== undefined;
+  let chatV2: StandManifest['chatV2'];
+  if (values['--chat-v2-rate'] !== undefined || hasBurst || hasBurstAt) {
+    if (!values['--stand-manifest']) throw new HarnessError('chat-v2-needs-stand');
+    if (hasBurst !== hasBurstAt) throw new HarnessError('chat-v2-burst-needs-count-and-time');
+    const steadyPerSecond = number('--chat-v2-rate', 0, 0, 333);
+    const burst = hasBurst ? { count: number('--chat-v2-burst', 0, 1, clients),
+      atSecond: number('--chat-v2-burst-at-second', 0, 0, seconds - 1) } : undefined;
+    try { chatV2 = parseStandChatV2({ clients, seconds, steadyPerSecond, ...(burst ? { burst } : {}) }, clients, seconds); }
+    catch { throw new HarnessError('invalid-stand-chat-profile'); }
+  }
   return { bundle: resolve(values['--server-bundle'] ?? 'dist-server/index.js'),
     metricsScript: values['--metrics-script'] ? resolve(values['--metrics-script']) : undefined,
     standManifest: values['--stand-manifest'] ? resolve(values['--stand-manifest']) : undefined,
     clientOrigin: values['--client-origin'] ? loopbackEndpoint(values['--client-origin']) : undefined, inputMode,
     proxyBinary: values['--proxy-binary'] || process.env.ROYAL_CADDY_BINARY, frameDiagnostics, resourceDiagnostics, sdkWebSocket,
     output: resolve(values['--output'] ?? `artifacts/websocket-simulation/load-cluster-${new Date().toISOString().replace(/[:.]/g, '-')}.json`),
-    clients, gameProcesses, seconds: number('--seconds', 70, 1, MAX_MEASUREMENT_SECONDS),
+    clients, gameProcesses, seconds, chatV2,
     minRatePercent: number('--min-rate-percent', 90, 1, 100, false), ackP95Ms: number('--ack-p95-ms', 250, 1, 30000, false),
     ackP99Ms: number('--ack-p99-ms', 500, 1, 30000, false), maxUnacknowledgedPercent: number('--max-unacknowledged-percent', 1, 0, 100, false) };
 }
@@ -172,6 +186,30 @@ function observedClients(reports: { connectedClients: number; rooms: Occupancy[]
   }
   return { total, countsByOwner: Object.fromEntries(counts), valid: valid && [...counts.values()].every(count => count <= STAND_MAX_CONNECTIONS_PER_PROCESS) };
 }
+export function chatV2Pilot(results: readonly Pick<Result, 'chatV2'>[], profile: NonNullable<StandManifest['chatV2']>, startAtUnixMs: number) {
+  const summaries = results.map(result => {
+    if (result.chatV2?.startAtUnixMs !== startAtUnixMs) throw new HarnessError('stand-chat-result-epoch-mismatch');
+    return result.chatV2.summary;
+  });
+  const totals = (cohort: 'steady' | 'burst') => summaries.reduce((total, summary) => {
+    const row = summary[cohort];
+    return { planned: total.planned + row.planned, offered: total.offered + row.offered,
+      acceptanceConfirmed: total.acceptanceConfirmed + row.acceptanceConfirmed, published: total.published + row.published,
+      terminalByDeadline: total.terminalByDeadline + row.terminalByDeadline, witnessed: total.witnessed + row.witnessed,
+      unresolved: total.unresolved + row.unresolved };
+  }, { planned: 0, offered: 0, acceptanceConfirmed: 0, published: 0, terminalByDeadline: 0, witnessed: 0, unresolved: 0 });
+  const steady = totals('steady'), burst = totals('burst');
+  const unmatchedPublications = summaries.reduce((sum, summary) => sum + summary.unmatchedPublications, 0);
+  const complete = (row: typeof steady) => row.unresolved === 0 && row.offered === row.acceptanceConfirmed
+    && row.offered === row.published && row.offered === row.terminalByDeadline && row.offered === row.witnessed;
+  return { profile, startAtUnixMs, qualification: 'isolated-websocket-pilot', targetAccepted: false, steady, burst, unmatchedPublications,
+    checks: {
+      chatV2OfferedAtTarget: steady.planned === profile.steadyPerSecond * profile.seconds
+        && summaries.every(({ steady }) => steady.offered * 100 >= steady.planned * 99)
+        && burst.planned === (profile.burst?.count ?? 0) && burst.offered === burst.planned,
+      chatV2DeliveryComplete: complete(steady) && complete(burst) && unmatchedPublications === 0,
+    } };
+}
 const diagnosticKinds = ['too many messages per second', 'not registered.', 'Room account lease renewal failed', 'Room account lease release failed', "couldn't decode message", 'Redis cluster runtime failed', 'Lobby cluster connection lost. Restarting this process.'] as const;
 function collectDiagnostics(child: ChildProcess, counts: Record<string, number>) {
   for (const stream of [child.stdout, child.stderr]) {
@@ -224,6 +262,7 @@ async function run() {
   const report: Record<string, any> = { productionTraffic: false, setup: 'Temporary local PostgreSQL and Valkey, configured game processes and independent SDK generators; loopback TCP only, no .env files',
     bundle: { path: bundle, sha256: bundleSha256 }, host: standHost(),
     generatorLocation: config.standManifest ? 'separate-runner' : 'same-host',
+    ...(config.chatV2 ? { chatV2: { profile: config.chatV2, qualification: 'isolated-websocket-pilot', targetAccepted: false } } : {}),
     targetClients: config.clients, gameProcesses: config.gameProcesses, capacity: { maxSeats: profile.maxSeats, maxRooms: profile.maxRooms }, measurementSeconds: config.seconds, proxy: { kind: proxyBinary ? 'native-caddy' : 'node-tcp', tcpNoDelay: true },
     frameDiagnostics: config.frameDiagnostics, resourceDiagnostics: config.resourceDiagnostics, sdkWebSocket: config.sdkWebSocket,
     workload: { packetsPerClientPerSecond: 30, stepsPerPacket: 2, targetInputStepsPerClientPerSecond: 60, browserPredictionSendWindow: config.inputMode === 'browser-window', inputMode: config.inputMode,
@@ -256,9 +295,11 @@ async function run() {
   const interrupt = () => controller.abort();
   process.once('SIGINT', interrupt); process.once('SIGTERM', interrupt);
   const overallTimer = setTimeout(interrupt, standSessionDurationMs(config.seconds) + standPreparationTimeoutMs(config.clients));
-  let front: Server | undefined, redis: Awaited<ReturnType<typeof temporaryRedis>> | undefined, observer: Redis | undefined, accounts: AccountStore | undefined;
+  let front: Server | undefined, redis: Awaited<ReturnType<typeof import('./temporary-redis')['temporaryRedis']>> | undefined;
+  let observer: Redis | undefined, accounts: AccountStore | undefined;
   let proxy: ChildProcess | undefined, proxyDirectory: string | undefined, parentTimer: ReturnType<typeof setInterval> | undefined;
   let standControl: StandControl<StandPrepared, StandFinished> | undefined, standPrepared: StandPrepared | undefined;
+  let standChatStartAtUnixMs: number | undefined;
   let standManifestCreated = false;
   const parentLoop = monitorEventLoopDelay({ resolution: 10 });
   let phase = 'prepare', cleaning = false, measuring = false, measureStartedAt = 0, measureEndedAt = 0;
@@ -281,6 +322,10 @@ async function run() {
     child.on('exit', (code, signal) => { report.childExits.push({ role, code, signal, duringCleanup: cleaning }); if (!cleaning) controller.abort(); });
   };
   try {
+    // Guard argument-only invocations before loading the dedicated cluster runtime.
+    const [{ Redis }, { RedisDriver }, { temporaryRedis, freeLocalPort }, { READY_PROCESSES_KEY, parseReadyProcess }] = await Promise.all([
+      import('ioredis'), import('@colyseus/redis-driver'), import('./temporary-redis'), import('../server/clusterRegistry'),
+    ]).catch(error => { throw new HarnessError('cluster-runtime-unavailable', standErrorDiagnostics(error)); });
     redis = await temporaryRedis(); check();
     observer = new Redis(redis.url, { enableOfflineQueue: false, maxRetriesPerRequest: 1, connectTimeout: 2000, commandTimeout: 2000 });
     observer.on('error', () => { if (!cleaning) controller.abort(); });
@@ -311,14 +356,18 @@ async function run() {
       const createdAt = Date.now(), expiresAt = createdAt + standSessionDurationMs(config.seconds);
       standIdentity = { runId, secret, createdAt, expiresAt };
       standControl = await createStandControl<StandPrepared, StandFinished>({ runId, secret, expiresAt, signal: controller.signal,
-        status: { bundleSha256, clients: config.clients, gameProcesses: config.gameProcesses, seconds: config.seconds, apiEndpoint: clientEndpoint, serverHost: report.host },
+        status: { bundleSha256, clients: config.clients, gameProcesses: config.gameProcesses, seconds: config.seconds, apiEndpoint: clientEndpoint, serverHost: report.host,
+          ...(config.chatV2 ? { chatV2: config.chatV2 } : {}) },
         onAbort: () => { if (!cleaning) controller.abort(); },
         validatePrepared: body => {
-          const parsed = parseStandPrepared(body, runId, config.clients, config.gameProcesses);
+          const parsed = parseStandPrepared(body, runId, config.clients, config.gameProcesses, config.chatV2);
           if (parsed.inputMode !== config.inputMode) throw new HarnessError('stand-input-mode-mismatch');
           standPrepared = parsed; return parsed;
         },
-        validateResults: body => { if (!standPrepared) throw new HarnessError('stand-not-prepared'); return parseStandFinished(body, runId, standPrepared, config.seconds); },
+        validateResults: body => {
+          if (!standPrepared) throw new HarnessError('stand-not-prepared');
+          return parseStandFinished(body, runId, standPrepared, config.seconds, standChatStartAtUnixMs);
+        },
       });
     }
     phase = 'proxy';
@@ -400,7 +449,8 @@ async function run() {
       const manifest: StandManifest = { protocol: 1, role: STAND_ROLE, runId, secret, createdAt, expiresAt,
         apiEndpoint: clientEndpoint, controlEndpoint: 'http://127.0.0.1:' + standControl!.port,
         serverApiPort: frontPort, serverControlPort: standControl!.port, bundleSha256,
-        clients: config.clients, gameProcesses: config.gameProcesses, seconds: config.seconds, serverHost: report.host, tokens };
+        clients: config.clients, gameProcesses: config.gameProcesses, seconds: config.seconds, serverHost: report.host, tokens,
+        ...(config.chatV2 ? { chatV2: config.chatV2 } : {}) };
       await writeFile(config.standManifest, JSON.stringify(manifest) + '\n', { flag: 'wx', mode: 0o600 }); standManifestCreated = true;
       report.stand = { runId, expiresAt, serverApiPort: frontPort, serverControlPort: standControl!.port, clientEndpoint };
       console.error(JSON.stringify({ phase: 'stand-ready', ...report.stand, manifestPath: config.standManifest }));
@@ -456,7 +506,15 @@ async function run() {
       await sampleProxy();
     }
     await Promise.all([...games.values()].map(game => requestWorker(game, { kind: 'reset-load-diagnostics', requestId: randomUUID() }, 'load-diagnostics-reset', 5000, controller.signal)));
-    phase = 'measure'; measureStartedAt = Date.now(); measuring = true;
+    phase = 'measure';
+    if (config.chatV2) {
+      if (!standControl) throw new HarnessError('chat-v2-needs-stand');
+      standChatStartAtUnixMs = Date.now() + chatV2StartLeadMs;
+      report.chatV2.startAtUnixMs = standChatStartAtUnixMs;
+      standControl.start(standChatStartAtUnixMs);
+      await delay(Math.max(0, standChatStartAtUnixMs - Date.now())); check();
+    }
+    measureStartedAt = standChatStartAtUnixMs ?? Date.now(); measuring = true;
     if (config.resourceDiagnostics && proxy) proxyTimer = setInterval(() => { void sampleProxy(); }, 2000);
     let parentLastCpu = process.cpuUsage(), parentLastTime = performance.now(), parentLastWall = Date.now();
     parentLoop.enable(); parentLoop.reset();
@@ -470,13 +528,16 @@ async function run() {
     console.error(`Measuring ${config.clients} clients for ${config.seconds}s at 60 input steps/s on ${config.gameProcesses} game processes.`);
     let results: Result[];
     if (standControl) {
-      standControl.start();
+      if (standChatStartAtUnixMs === undefined) standControl.start();
       results = (await bounded(standControl.results, (config.seconds + 30) * 1000, 'stand-generator-result-timeout')).results;
     } else {
       results = await Promise.all(generators.map(generator => requestWorker<Result>(generator,
         { kind: 'measure', seconds: config.seconds, stepsPerPacket: 2, drainMs: 2000, inputMode: config.inputMode }, 'result', (config.seconds + 15) * 1000, controller.signal)));
     }
     measureEndedAt = Date.now(); measuring = false; report.generators = results;
+    const chatPilot = config.chatV2 && standChatStartAtUnixMs !== undefined
+      ? chatV2Pilot(results, config.chatV2, standChatStartAtUnixMs) : undefined;
+    if (chatPilot) report.chatV2 = chatPilot;
     if (config.frameDiagnostics) {
       await Promise.all([...games].map(async ([id, game]) => {
         const snapshot = await requestWorker<{ traffic?: RoomTraffic }>(game, { kind: 'snapshot-load-diagnostics', requestId: randomUUID() },
@@ -528,7 +589,8 @@ async function run() {
       generatorSustainedTarget: results.every(result => result.count > 0 && result.inputPacketsPerSecond / (result.count * 30) * 100 >= config.minRatePercent),
       ackSamplesAvailable: results.every(result => result.ackMs.count > 0),
       ackLatencyWithinLocalBudget: results.every(result => result.ackMs.p95 <= config.ackP95Ms && result.ackMs.p99 <= config.ackP99Ms),
-      ackResidualWithinLocalBudget: afterDrain / Math.max(1, packets) * 100 <= config.maxUnacknowledgedPercent };
+      ackResidualWithinLocalBudget: afterDrain / Math.max(1, packets) * 100 <= config.maxUnacknowledgedPercent,
+      ...chatPilot?.checks };
     report.ok = Object.values(report.checks).every(Boolean);
     report.verdict = report.ok ? 'passed-local-comparison'
       : !report.checks.connections ? 'failed-connections'
@@ -537,6 +599,8 @@ async function run() {
       : !report.checks.metricSamplesAvailable || !report.checks.resourceSamplesAvailable || !report.checks.ackTimingTrackingComplete
         || !report.checks.serverDiagnosticCoverageComplete ? 'inconclusive-metrics'
       : !report.checks.generatorSustainedTarget ? 'inconclusive-generator-rate'
+      : chatPilot && !chatPilot.checks.chatV2OfferedAtTarget ? 'inconclusive-chat-v2-offer-rate'
+      : chatPilot && !chatPilot.checks.chatV2DeliveryComplete ? 'failed-chat-v2-delivery'
       : !report.checks.serverInputDeliveryComplete ? 'failed-input-delivery' : 'failed-local-checks';
   } catch (error) {
     report.ok = false; report.verdict = phase === 'connect' ? 'failed-admission' : 'setup-or-runtime-failure';
@@ -593,5 +657,7 @@ async function run() {
   }
 }
 
-void run().catch(error => { console.error(JSON.stringify({ ok: false, code: error instanceof HarnessError ? error.code : 'local-harness-startup-failure',
-  diagnostics: error instanceof HarnessError && error.diagnostics ? error.diagnostics : standErrorDiagnostics(error) })); process.exitCode = 1; });
+if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
+  void run().catch(error => { console.error(JSON.stringify({ ok: false, code: error instanceof HarnessError ? error.code : 'local-harness-startup-failure',
+    diagnostics: error instanceof HarnessError && error.diagnostics ? error.diagnostics : standErrorDiagnostics(error) })); process.exitCode = 1; });
+}

@@ -4,7 +4,7 @@ import { dirname, resolve } from 'node:path';
 import { installLoopbackNetworking } from './load-server-metrics';
 import { DEFAULT_GAME_PROCESSES } from './load-stand-limits';
 import { attestGeneratorApiOrigins, generatorApiOrigins, generatorBatchApiIndex } from './load-generator-endpoints';
-import { loopbackEndpoint, parseStandManifest, parseStandReady, parseStandResult, standHost, StandError,
+import { loopbackEndpoint, parseStandManifest, parseStandReady, parseStandResult, parseStandStart, standHost, StandError,
   verifyStandStatus, type StandManifest, type StandReady, type StandResult } from './load-stand-contract';
 
 const delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
@@ -76,6 +76,7 @@ async function run() {
   const info = await stat(config.manifest);
   if (!info.isFile() || info.size > 1024 ** 2 || process.platform !== 'win32' && (info.mode & 0o077)) throw new StandError('private-stand-manifest-required');
   const manifest = parseStandManifest(JSON.parse(await readFile(config.manifest, 'utf8')));
+  const { chatV2 } = manifest;
   if (config.workers > manifest.clients) throw new StandError('more-generators-than-clients');
   await mkdir(dirname(config.output), { recursive: true });
   try { await stat(config.output); throw new StandError('generator-report-already-exists'); }
@@ -90,6 +91,7 @@ async function run() {
   process.once('SIGINT', abort); process.once('SIGTERM', abort); const overall = setTimeout(abort, manifest.expiresAt - Date.now());
   const report: Record<string, any> = { productionTraffic: false, generatorOnly: true, runId: manifest.runId,
     targetClients: manifest.clients, seconds: manifest.seconds, inputMode: config.inputMode, sdkWebSocket: config.sdkWebSocket,
+    ...(chatV2 ? { chatV2: { profile: chatV2, crossHostClockOffsetVerified: false } } : {}),
     clientHost: standHost(), serverHost: manifest.serverHost, bundleSha256: manifest.bundleSha256,
     tunnel: { apiOrigin: endpoint, controlOrigin: controlEndpoint, mappedApiOrigins, transportCount: mappedApiOrigins.length, assignmentMode,
       perGeneratorApiAliases: assignmentMode === 'fixed-per-generator',
@@ -102,7 +104,8 @@ async function run() {
     verifyStandStatus(await control(manifest, controlEndpoint, '/status', undefined, controller.signal, 5000), manifest); attested = true;
     await attestGeneratorApiOrigins(apiOrigins, manifest, origin => control(manifest, origin, '/__load-stand/status', undefined, controller.signal, 5000));
     report.attestation = { control: true, gameApi: true, gameApiOrigins: [...new Set(apiOrigins)], verifiedBeforeGenerators: true };
-    const childEnv: NodeJS.ProcessEnv = { NODE_ENV: 'test', LOAD_SDK_WEBSOCKET: config.sdkWebSocket };
+    const childEnv: NodeJS.ProcessEnv = { NODE_ENV: 'test', LOAD_SDK_WEBSOCKET: config.sdkWebSocket,
+      ...(chatV2 ? { LOAD_CHAT_V2: '1' } : {}) };
     for (const key of ['PATH', 'HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'TZ']) if (process.env[key] !== undefined) childEnv[key] = process.env[key];
     for (let index = 0; index < config.workers; index++) {
       const child = spawn(process.execPath, ['--import', 'tsx', 'scripts/load-websocket-worker.ts'], { env: childEnv, stdio: ['ignore', 'ignore', 'ignore', 'ipc'] }); children.push(child);
@@ -119,8 +122,10 @@ async function run() {
       await delay(Math.max(0, 200 - (performance.now() - lastBatchAt))); lastBatchAt = performance.now();
       const origin = apiOrigins[generatorBatchApiIndex(apiOrigins.length, config.workers, index, batches)];
       const result = parseStandReady(await command(children[index], { kind: 'connect', endpoint: origin, ...(config.apiPorts ? { canonicalEndpoint: endpoint } : {}), tokens, concurrency: 4,
+        ...(chatV2 ? { chatV2: { profile: chatV2, shard: { index, count: config.workers } } } : {}),
         maxRetries: 3, retryDelayMs: 250, joinTimeoutMs: 15000 }, 'ready', controller.signal, 90000), manifest.gameProcesses ?? DEFAULT_GAME_PROCESSES); ready[index] = result;
       if (result.joinedBatch !== tokens.length || result.connectedClients !== offsets[index] + tokens.length || Object.values(result.errors).some(count => count > 0)) throw new StandError('generator-admission-incomplete');
+      if (chatV2 ? result.chatV2Ready !== result.count : result.chatV2Ready !== undefined) throw new StandError('generator-chat-readiness-incomplete');
       const counts = assignmentCounts[index].get(origin) ?? { batches: 0, admittedClients: 0 };
       counts.batches++; counts.admittedClients += tokens.length; assignmentCounts[index].set(origin, counts);
       offsets[index] += tokens.length; batches++;
@@ -128,12 +133,16 @@ async function run() {
     }
     const connectionPhase = { durationSeconds: round((performance.now() - connectedAt) / 1000), batches,
       connectionAttempts: ready.reduce((sum, item) => sum + item.connectionAttempts, 0), connectionRetries: ready.reduce((sum, item) => sum + item.connectionRetries, 0) };
-    const start = await control(manifest, controlEndpoint, '/prepared', { runId: manifest.runId, ready, clientHost: report.clientHost,
-      inputMode: config.inputMode, gameProcesses: manifest.gameProcesses ?? DEFAULT_GAME_PROCESSES, connectionPhase }, controller.signal, 30000);
-    if (start.start !== true || start.runId !== manifest.runId) throw new StandError('stand-start-barrier-mismatch');
+    const start = parseStandStart(await control(manifest, controlEndpoint, '/prepared', { runId: manifest.runId, ready, clientHost: report.clientHost,
+      inputMode: config.inputMode, gameProcesses: manifest.gameProcesses ?? DEFAULT_GAME_PROCESSES, connectionPhase }, controller.signal, 30000), manifest);
+    const { startAtUnixMs } = start;
+    if (chatV2) report.chatV2.startAtUnixMs = startAtUnixMs;
     console.error(JSON.stringify({ phase: 'measure', clients: manifest.clients, seconds: manifest.seconds, workers: config.workers }));
-    const results: StandResult[] = await Promise.all(children.map(async child => parseStandResult(await command(child,
-      { kind: 'measure', seconds: manifest.seconds, stepsPerPacket: 2, drainMs: 2000, inputMode: config.inputMode }, 'result', controller.signal, (manifest.seconds + 15) * 1000), manifest.gameProcesses ?? DEFAULT_GAME_PROCESSES)));
+    const results: StandResult[] = await Promise.all(children.map(async (child, index) => parseStandResult(await command(child,
+      { kind: 'measure', seconds: manifest.seconds, stepsPerPacket: 2, drainMs: chatV2 ? 5000 : 2000, inputMode: config.inputMode,
+        ...(startAtUnixMs !== undefined ? { startAtUnixMs } : {}) }, 'result', controller.signal, (manifest.seconds + (chatV2 ? 25 : 15)) * 1000),
+    manifest.gameProcesses ?? DEFAULT_GAME_PROCESSES,
+    chatV2 && startAtUnixMs !== undefined ? { profile: chatV2, shard: { index, count: config.workers }, startAtUnixMs } : undefined)));
     report.ready = ready; report.connectionPhase = connectionPhase; report.results = results;
     const response = await control(manifest, controlEndpoint, '/results', { runId: manifest.runId, results }, controller.signal, 90000);
     if (response.runId !== manifest.runId || !response.report || typeof response.report !== 'object') throw new StandError('stand-result-response-mismatch');

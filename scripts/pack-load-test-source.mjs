@@ -12,7 +12,7 @@ const exactFiles = ['Dockerfile.load', '.dockerignore', 'package.json', 'package
   'scripts/build-load-stand.mjs', 'scripts/crypto-reconcile.ts', 'scripts/database-test.ts', 'scripts/load-stand-database.ts', 'scripts/load-generator-completion.ts', 'scripts/load-account-probe.ts',
   'scripts/load-websocket-cluster.ts', 'scripts/load-server-metrics.ts', 'scripts/temporary-redis.ts',
   'scripts/load-stand-control.ts', 'scripts/load-stand-contract.ts', 'scripts/load-stand-limits.ts',
-  'scripts/websocket-server-diagnostics.ts', 'scripts/load-websocket-diagnostics.ts'];
+  'scripts/websocket-server-diagnostics.ts', 'scripts/load-websocket-diagnostics.ts', 'scripts/load-chat-v2-workload.ts'];
 const trees = ['src', 'server', 'public'];
 const extensions = new Set(['.ts', '.tsx', '.js', '.mjs', '.css', '.json', '.html', '.svg', '.png', '.jpg', '.jpeg',
   '.webp', '.gif', '.ico', '.woff', '.woff2', '.ttf', '.ogg', '.mp3', '.wav', '.webm', '.go', '.mod', '.sum', '.md', '.txt', '.sql', '.php']);

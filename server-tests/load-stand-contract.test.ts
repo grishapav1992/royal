@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { test } from 'node:test';
-import { encodeStandServerReport, loopbackEndpoint, parseStandFinished, parseStandManifest, parseStandPrepared, parseStandResult,
-  standErrorDiagnostics, standHost, standReportForControl, STAND_CONTROL_REPORT_MAX_BYTES, STAND_SERVER_ARTIFACT_MAX_BYTES, STAND_ROLE, verifyStandStatus, type StandReady, type StandResult } from '../scripts/load-stand-contract';
+import { encodeStandServerReport, loopbackEndpoint, parseStandChatV2, parseStandFinished, parseStandManifest, parseStandPrepared, parseStandResult,
+  parseStandStart, standErrorDiagnostics, standHost, standReportForControl, STAND_CONTROL_REPORT_MAX_BYTES, STAND_SERVER_ARTIFACT_MAX_BYTES,
+  STAND_ROLE, verifyStandStatus, type StandReady, type StandResult } from '../scripts/load-stand-contract';
 import { MAX_MEASUREMENT_SECONDS, MAX_STAND_CLIENTS, MAX_STAND_SESSION_MS, standGameProcessIds, standSessionDurationMs } from '../scripts/load-stand-limits';
+import { ChatV2WorkloadLedger, ChatV2WorkloadPlan } from '../scripts/load-chat-v2-workload';
+import { createChatMessageId } from '../src/shared/chat';
 
 const now = 1791670000000, runId = '12345678-1234-1234-1234-123456789abc';
 const hash = (value: string) => createHash('sha256').update(value).digest('hex');
@@ -21,6 +24,7 @@ const result = (index: number): StandResult => ({ ...ready(index), kind: 'result
   errorCount: 0, errors: {}, generator: { cpuPercent: 1, rssMiB: 50, eventLoopP99Ms: 10, eventLoopMaxMs: 15 } });
 const preparation = () => ({ runId, ready: [0, 1, 2, 3].map(ready), clientHost: standHost(), inputMode: 'stress',
   connectionPhase: { durationSeconds: 1, batches: 4, connectionAttempts: 4, connectionRetries: 0 } });
+const chatV2 = { clients: 4, seconds: 2, steadyPerSecond: 2, burst: { count: 4, atSecond: 1 } };
 
 test('failure diagnostics retain safe PG, errno and caller-identified AuthError status without error payloads', () => {
   const secret = 'synthetic-secret@example.test password-token SELECT * FROM sessions';
@@ -78,6 +82,80 @@ test('stand attestation requires the session, bundle, expiry, API origin and hos
     assert.throws(() => verifyStandStatus({ ...status, ...changed }, manifest));
   }
 });
+
+test('V2 opt-in is exact, bound to the isolated manifest and attested by every endpoint', () => {
+  const manifest = parseStandManifest({ ...fixture(), chatV2 }, now);
+  assert.deepEqual(manifest.chatV2, chatV2);
+  const status = { ...manifest, tokens: undefined, secret: undefined };
+  verifyStandStatus({ ...status, chatV2: { burst: { atSecond: 1, count: 4 }, steadyPerSecond: 2, seconds: 2, clients: 4 } }, manifest);
+  for (const malformed of [null, { ...chatV2, token: 'unexpected' }, { ...chatV2, clients: 5 }, { ...chatV2, seconds: 3 },
+    { ...chatV2, steadyPerSecond: '2' }, { ...chatV2, steadyPerSecond: 334 }, { ...chatV2, steadyPerSecond: 0, burst: undefined },
+    { ...chatV2, burst: { ...chatV2.burst, count: 5 } }, { ...chatV2, burst: { ...chatV2.burst, atSecond: 2 } },
+    { ...chatV2, burst: { ...chatV2.burst, extra: true } }]) {
+    assert.throws(() => parseStandManifest({ ...fixture(), chatV2: malformed }, now));
+  }
+  assert.throws(() => verifyStandStatus({ ...status, chatV2: undefined }, manifest), /stand-chat-attestation-mismatch/);
+  assert.throws(() => verifyStandStatus({ ...status, chatV2: { ...chatV2, steadyPerSecond: 3 } }, manifest), /stand-chat-attestation-mismatch/);
+  assert.throws(() => verifyStandStatus(status, parseStandManifest(fixture(), now)), /stand-chat-attestation-mismatch/);
+  assert.throws(() => parseStandChatV2({ ...chatV2, clients: MAX_STAND_CLIENTS + 1 }, MAX_STAND_CLIENTS + 1, 2));
+});
+
+test('the V2 start time is explicit, future, bounded, and fits duration and drain before expiry', () => {
+  const manifest = parseStandManifest({ ...fixture(), chatV2 }, now), legacy = parseStandManifest(fixture(), now);
+  const start = { start: true, runId, startAtUnixMs: now + 2_000 };
+  assert.deepEqual(parseStandStart(start, manifest, now), start);
+  assert.deepEqual(parseStandStart({ start: true, runId }, legacy, now), { start: true, runId });
+  assert.throws(() => parseStandStart(start, legacy, now), /start-barrier-mismatch/);
+  for (const changed of [{ startAtUnixMs: undefined }, { runId: 'other' }, { extra: true }, { startAtUnixMs: now },
+    { startAtUnixMs: now + 1.5 }, { startAtUnixMs: now + 10_001 }, { startAtUnixMs: String(now + 2_000) }]) {
+    assert.throws(() => parseStandStart({ ...start, ...changed }, manifest, now));
+  }
+  assert.throws(() => parseStandStart(start, { ...manifest, expiresAt: now + 9_000 }, now), /invalid-stand-chat-start/);
+});
+
+test('V2 readiness requires every authenticated client and exact worker shard counts', () => {
+  const clients = (index: number, count: number): StandReady => ({ ...ready(index), count, connectedClients: count,
+    rooms: [{ id: 'room-' + index, count, owner: 'main' }], chatV2Ready: count });
+  const readiness = { ...preparation(), ready: [clients(0, 2), clients(1, 1), clients(2, 1)] };
+  assert.deepEqual(parseStandPrepared(readiness, runId, 4, 4, chatV2).chatV2, chatV2);
+  assert.throws(() => parseStandPrepared(readiness, runId, 4), /invalid-stand-chat-readiness/);
+  assert.throws(() => parseStandPrepared(preparation(), runId, 4, 4, chatV2), /invalid-stand-chat-readiness/);
+  assert.throws(() => parseStandPrepared({ ...readiness, ready: [clients(0, 1), clients(1, 2), clients(2, 1)] }, runId, 4, 4, chatV2),
+    /invalid-stand-chat-readiness/);
+  assert.throws(() => parseStandPrepared({ ...readiness, ready: [{ ...clients(0, 2), chatV2Ready: 1 }, ...readiness.ready.slice(1)] },
+    runId, 4, 4, chatV2), /invalid-stand-chat-readiness/);
+});
+
+test('V2 results must reconcile with the expected start, shard counts and exact aggregate schema', () => {
+  const startAtUnixMs = now + 2_000, roomEpoch = 'b98e89c0-4a94-4ad1-9af0-3f5dd9959282';
+  const prepared = parseStandPrepared({ ...preparation(), ready: preparation().ready.map(row => ({ ...row, chatV2Ready: 1 })) }, runId, 4, 4, chatV2);
+  const results = prepared.ready.map((_, index) => {
+    const plan = new ChatV2WorkloadPlan(chatV2, { index, count: 4 }), ledger = new ChatV2WorkloadLedger(plan);
+    if (index === 0) {
+      const messageId = createChatMessageId(now), publicationId = 'bcf0f919-3c62-4307-b61b-530f8559f2c2';
+      ledger.offer('steady', 0, { messageId, roomEpoch, text: 'Hello', visitId: 1 }, 0);
+      ledger.observeResult(0, { messageId, status: 'accepted' }, 5);
+      ledger.observePublication(0, { roomEpoch }, { publicationId, publicationSeq: 1 }, 10);
+      ledger.observeResult(0, { messageId, status: 'published', publicationId }, 11);
+    }
+    return { ...result(index), chatV2: { startAtUnixMs, summary: ledger.summary() } };
+  });
+  assert.deepEqual(parseStandFinished({ runId, results }, runId, prepared, 2, startAtUnixMs).results[0].chatV2, results[0].chatV2);
+  assert.throws(() => parseStandResult(results[0]), /unexpected-stand-chat-result/);
+  assert.throws(() => parseStandFinished({ runId, results }, runId, prepared, 2), /invalid-stand-chat-finish/);
+  assert.throws(() => parseStandFinished({ runId, results }, runId, prepared, 2, startAtUnixMs + 1), /stand-chat-result-start-mismatch/);
+  const { chatV2: original } = results[0];
+  const expected = { profile: chatV2, shard: { index: 0, count: 4 }, startAtUnixMs };
+  for (const changed of [{ planned: 2 }, { missed: 1 }, { offered: 2 }, { published: 0 }, { acceptanceConfirmed: 0 },
+    { messageIds: ['unexpected'] }, { delivery: { ...original.summary.steady.delivery, count: 0 } },
+    { offerLag: { ...original.summary.steady.offerLag, max: 1_001 } }]) {
+    const summary = { ...original.summary, steady: { ...original.summary.steady, ...changed } };
+    assert.throws(() => parseStandResult({ ...results[0], chatV2: { ...original, summary } }, 4, expected));
+  }
+  assert.throws(() => parseStandResult({ ...results[0], chatV2: undefined }, 4, expected));
+  assert.throws(() => parseStandResult(results[0], 4, { ...expected, shard: { index: 0, count: 2 } }), /invalid-stand-chat-shard-count/);
+});
+
 test('admission must account for every client and preserve supported room owners', () => {
   const parsed = parseStandPrepared(preparation(), runId, 4); assert.equal(parsed.ready.length, 4);
   assert.throws(() => parseStandPrepared({ ...preparation(), ready: [ready(0)] }, runId, 4));

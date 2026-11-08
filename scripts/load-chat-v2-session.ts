@@ -39,11 +39,13 @@ export class LoadChatV2Session {
   private readonly lastOffered = { steady: -1, burst: -1 };
 
   constructor(private readonly accountIndex: number, private readonly ledger: ChatV2WorkloadLedger,
-    private readonly now: () => number) {}
+    private readonly now: () => number, private readonly monotonicNow = now) {}
 
   get ready() {
     return Boolean(this.connection?.transport.connection.isOpen && this.connection.clock);
   }
+
+  get visitReady() { return this.ready && Boolean(this.connection?.visit); }
 
   get unresolved() { return this.pending.size; }
 
@@ -61,7 +63,7 @@ export class LoadChatV2Session {
       listen('chat.ready', value => {
         const ready = parseChatV2Ready(value);
         assert(ready, 'Invalid V2 ready packet');
-        connection.clock ??= { serverTimeMs: ready.serverTimeMs, receivedAtMs: this.now() };
+        connection.clock ??= { serverTimeMs: ready.serverTimeMs, receivedAtMs: this.monotonicNow() };
       });
       listen('chat.visit', value => {
         if (!connection.clock) return;
@@ -120,7 +122,7 @@ export class LoadChatV2Session {
     if (!connection?.transport.connection.isOpen || !connection.clock || !visit) return;
     const preparingAtMs = this.now();
     if (!(preparingAtMs >= dueAtMs && preparingAtMs < offerBeforeMs)) return;
-    const messageId = createChatMessageId(this.serverNow(connection.clock, preparingAtMs));
+    const messageId = createChatMessageId(this.serverNow(connection.clock));
     const parsed = parseChatV2Send({ messageId, text, roomEpoch: visit.roomEpoch, visitId: visit.visitId });
     assert(parsed.ok, 'Invalid synthetic V2 chat text');
     const atMs = this.now();
@@ -138,7 +140,7 @@ export class LoadChatV2Session {
     const connection = this.connection;
     if (!connection?.transport.connection.isOpen || !connection.clock) return;
     const atMs = this.now();
-    const serverTimeMs = this.serverNow(connection.clock, atMs);
+    const serverTimeMs = this.serverNow(connection.clock);
     let resent = 0;
     const messageIds: string[] = [];
     for (const [messageId, row] of this.pending) {
@@ -162,8 +164,8 @@ export class LoadChatV2Session {
     catch (error) { connection.resume = undefined; throw error; }
   }
 
-  private serverNow(clock: NonNullable<Connection['clock']>, atMs: number) {
-    return clock.serverTimeMs + Math.max(0, Math.floor(atMs - clock.receivedAtMs));
+  private serverNow(clock: NonNullable<Connection['clock']>) {
+    return clock.serverTimeMs + Math.max(0, Math.floor(this.monotonicNow() - clock.receivedAtMs));
   }
 
   private observeResult(result: ChatV2Result | ChatV2ResumeResult, atMs: number) {

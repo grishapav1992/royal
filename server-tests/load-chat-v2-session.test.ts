@@ -98,6 +98,24 @@ test('parses server messages and witnesses only the sender publication in the ac
   assert.throws(() => room.emit('chat.batch', { messages: [] }), /Invalid V2 chat batch/);
 });
 
+test('pre-start negotiation calibrates UUIDs independently of the common workload start', () => {
+  let monotonic = 100, startAt = 0;
+  const ledger = new ChatV2WorkloadLedger(new ChatV2WorkloadPlan({ clients: 1, steadyPerSecond: 1, seconds: 1 }));
+  const session = new LoadChatV2Session(0, ledger, () => monotonic - startAt, () => monotonic);
+  const room = new FakeRoom();
+  session.attach(room, sender);
+  room.negotiate();
+  assert(session.ready);
+  assert(!session.visitReady);
+  room.emit('chat.visit', visit);
+  assert(session.visitReady);
+  startAt = 500;
+  monotonic = 510;
+  const id = session.offer({ cohort: 'steady', index: 0 }, 'A scheduled message');
+  assert.equal(chatMessageIdTimestamp(id), serverTimeMs + 410);
+  assert.equal(ledger.summary().steady.offerLag.p50, 10);
+});
+
 test('reconnect requests original IDs even before a visit, then replays only a missing matching envelope', () => {
   const { session, room, clock, ledger } = fixture(2);
   session.attach(room, sender);

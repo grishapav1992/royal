@@ -1,11 +1,13 @@
 import { timingSafeEqual } from 'node:crypto';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import type { Socket } from 'node:net';
+import { parseStandChatV2, parseStandStart, StandError, type StandManifest } from './load-stand-contract';
 import { MAX_STAND_SESSION_MS } from './load-stand-limits';
 
 const MAX_BODY_BYTES = 2 * 1024 * 1024;
 const MAX_RESPONSE_BYTES = 8 * 1024 * 1024;
 const CLOSE_TIMEOUT_MS = 2000;
+const CHAT_START_MIN_LEAD_MS = 100;
 export type StandAbortCode = 'generator-aborted' | 'connection-lost' | 'expired' | 'closed' | 'signal-aborted' | 'timeout';
 export class StandControlError extends Error {
   constructor(readonly code: StandAbortCode) { super(`stand-${code}`); this.name = 'StandControlError'; }
@@ -24,7 +26,7 @@ export type StandControl<TPrepared, TResults> = {
   port: number;
   prepared: Promise<TPrepared>;
   results: Promise<TResults>;
-  start(): void;
+  start(startAtUnixMs?: number): void;
   publish(report: object): Promise<void>;
   close(): Promise<void>;
 };
@@ -81,11 +83,20 @@ export async function createStandControl<TPrepared, TResults>(options: StandCont
     throw new TypeError('invalid-stand-control-options');
   if (options.signal?.aborted) throw new StandControlError('signal-aborted');
   const secretBytes = Buffer.from(options.secret, 'hex');
-  const status = json({ ...statusSnapshot(options.status), protocol: 1, role: 'isolated-test-stand', runId: options.runId, expiresAt: options.expiresAt });
+  const metadata = statusSnapshot(options.status);
+  let chatV2: StandManifest['chatV2'];
+  if (metadata.chatV2 !== undefined) {
+    if (typeof metadata.clients !== 'number' || typeof metadata.seconds !== 'number') throw new StandError('invalid-stand-chat-profile');
+    chatV2 = parseStandChatV2(metadata.chatV2, metadata.clients, metadata.seconds);
+  }
+  const status = json({ ...metadata, ...(chatV2 ? { chatV2 } : {}),
+    protocol: 1, role: 'isolated-test-stand', runId: options.runId, expiresAt: options.expiresAt });
   const prepared = deferred<TPrepared>(), results = deferred<TResults>();
   const sockets = new Set<Socket>(), held = new Set<ServerResponse>();
   let phase: Phase = 'waiting', abortCode: StandAbortCode | undefined, closing: Promise<void> | undefined, publishing: Promise<void> | undefined;
   let preparedResponse: ServerResponse | undefined, resultsResponse: ServerResponse | undefined;
+  let scheduledStart: number | undefined;
+  let resultsNotBefore: number | undefined;
   const send = (response: ServerResponse, statusCode: number, body: string, endConnection = false) => {
     if (response.destroyed || response.writableEnded) return;
     response.writeHead(statusCode, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store',
@@ -144,6 +155,7 @@ export async function createStandControl<TPrepared, TResults>(options: StandCont
       phase = 'prepared'; preparedResponse = response; hold(response); prepared.resolve(value); return;
     }
     if (phase !== 'running') { fail(response, 409); return; }
+    if (resultsNotBefore !== undefined && performance.now() < resultsNotBefore) { fail(response, 409); return; }
     let value: TResults;
     try { value = options.validateResults(body); } catch { fail(response, 400); return; }
     phase = 'results'; resultsResponse = response; hold(response); results.resolve(value);
@@ -177,15 +189,24 @@ export async function createStandControl<TPrepared, TResults>(options: StandCont
   if (!address || typeof address === 'string') throw new Error('stand-control-listen-failed');
   return {
     port: address.port, prepared: prepared.promise, results: results.promise,
-    start() {
-      if (Date.now() >= options.expiresAt) abort('expired');
+    start(startAtUnixMs) {
+      const now = Date.now(), monotonicNow = performance.now();
+      if (now >= options.expiresAt) abort('expired');
       if (phase === 'aborted' || closing) throw new StandControlError(abortCode ?? 'closed');
-      if (phase === 'running' || phase === 'results' || phase === 'published') return;
+      if (phase === 'running' || phase === 'results' || phase === 'published') {
+        if (startAtUnixMs !== scheduledStart) throw new StandError('stand-start-already-fixed');
+        return;
+      }
       if (phase !== 'prepared' || !preparedResponse) throw new Error('stand-not-prepared');
       if (preparedResponse.destroyed) { abort('connection-lost'); throw new StandControlError('connection-lost'); }
+      const start = parseStandStart({ start: true, runId: options.runId, ...(startAtUnixMs === undefined ? {} : { startAtUnixMs }) },
+        { runId: options.runId, expiresAt: options.expiresAt, seconds: chatV2?.seconds ?? 0, chatV2 }, now);
+      if (start.startAtUnixMs !== undefined && start.startAtUnixMs < now + CHAT_START_MIN_LEAD_MS) throw new StandError('invalid-stand-chat-start');
+      scheduledStart = start.startAtUnixMs;
+      if (chatV2 && scheduledStart !== undefined) resultsNotBefore = monotonicNow + (scheduledStart - now) + chatV2.seconds * 1_000;
       const response = preparedResponse;
       held.delete(response); preparedResponse = undefined; phase = 'running';
-      send(response, 200, json({ start: true, runId: options.runId }));
+      send(response, 200, json(start));
     },
     publish(report) {
       if (publishing) return publishing;
