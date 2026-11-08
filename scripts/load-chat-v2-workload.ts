@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { parseChatV2Send, type ChatV2Batch, type ChatV2Publication, type ChatV2Result,
-  type ChatV2ResumeResult, type ChatV2Send } from '../src/shared/chat';
+  type ChatV2ResumeResult, type ChatV2Send, type ChatLocation } from '../src/shared/chat';
+import type { AuditReceipt } from './load-chat-v2-audit-types';
 import { MAX_MEASUREMENT_SECONDS } from './load-stand-limits';
 import { BoundedSamples } from './load-websocket-diagnostics';
 
@@ -103,6 +104,7 @@ type Entry = {
   cohort: Cohort;
   accountIndex: number;
   envelope: ChatV2Send;
+  location?: ChatLocation;
   offeredAtMs: number;
   offerLagMs: number;
   retries: number;
@@ -127,14 +129,14 @@ export class ChatV2WorkloadLedger {
 
   constructor(readonly plan: ChatV2WorkloadPlan) {}
 
-  offer(cohort: Cohort, index: number, envelope: ChatV2Send, atMs: number) {
+  offer(cohort: Cohort, index: number, envelope: ChatV2Send, atMs: number, location?: ChatLocation) {
     const slot = this.plan.slot(cohort, index);
     const parsed = parseChatV2Send(envelope);
     assert(parsed.ok && sameEnvelope(parsed.value, envelope), 'Expected a canonical V2 send');
     assert(atMs >= slot.dueAtMs && atMs < slot.offerBeforeMs, 'Send is outside its planned offer window');
     assert(!this.entries.has(envelope.messageId) && !this.offeredSlots[cohort].has(index), 'Duplicate first send or schedule slot');
     this.offeredSlots[cohort].add(index);
-    this.entries.set(envelope.messageId, { cohort, accountIndex: slot.accountIndex, envelope: parsed.value,
+    this.entries.set(envelope.messageId, { cohort, accountIndex: slot.accountIndex, envelope: parsed.value, location,
       offeredAtMs: atMs, offerLagMs: atMs - slot.dueAtMs, retries: 0, deferred: false, resumeMiss: false });
   }
 
@@ -187,6 +189,17 @@ export class ChatV2WorkloadLedger {
     let unmatchedPublications = 0;
     for (const publication of this.publications.values()) unmatchedPublications += Number(!publication.entry);
     return { steady: this.summarize('steady'), burst: this.summarize('burst'), unmatchedPublications };
+  }
+
+  *auditReceipts(): Generator<AuditReceipt, void> {
+    for (const entry of this.entries.values()) {
+      const result = entry.terminal?.result;
+      if (result?.status !== 'published') continue;
+      assert(entry.location, 'Missing location of an audited V2 send');
+      const publicationId = result.publicationId;
+      yield { publicationId, accountIndex: entry.accountIndex, roomEpoch: entry.envelope.roomEpoch, location: entry.location,
+        publicationSeq: this.publications.get(publicationId)?.witness?.publicationSeq ?? null, offeredAtMs: entry.offeredAtMs };
+    }
   }
 
   private summarize(cohort: Cohort) {

@@ -618,7 +618,9 @@ export function assessDedicatedStage(plan, outcome, reports) {
       chatV2PilotChecksPassed: server?.chatV2?.qualification === 'isolated-websocket-pilot' && server.chatV2.targetAccepted === false
         && server.checks?.connections === true && server.summary?.connectedClients === remote.clients
         && generator?.serverReport?.summary?.connectedClients === remote.clients
-        && server.checks.chatV2OfferedAtTarget === true && server.checks.chatV2DeliveryComplete === true,
+        && server.checks.chatV2OfferedAtTarget === true && server.checks.chatV2DeliveryComplete === true
+        && server.checks.chatV2PublicationIdsUnique === true && server.checks.chatV2PeerDeliveryComplete === true
+        && Boolean(server.chatV2.audit) && isDeepStrictEqual(server.chatV2.audit, generator?.chatAudit),
       chatV2ClockVerified: verifiedChatClock(generator?.chatV2, remote.seconds, outcome.localMeasurementWindow?.generatorCompletedAtMs),
       ...(chatV2.movingClients === undefined ? {} : { chatV2MovementCoverage: verifiedMovement(server, generator, chatV2.movingClients, plan.workers) }),
     } : {}),

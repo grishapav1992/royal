@@ -4,6 +4,7 @@ import { CHAT_CONFIRMATION_TIMEOUT_MS, CHAT_V2_RESUME_LIMIT, ROOM_CHAT_PROTOCOL,
   parseChatV2ResumeResponse, parseChatV2Send, parseChatV2Visit, type ChatV2ClientPackets, type ChatV2ResumeResult,
   type ChatV2Result, type ChatV2Send, type ChatV2ServerPackets, type ChatV2Visit } from '../src/shared/chat';
 import type { ChatV2WorkloadLedger, ChatV2WorkloadSlot } from './load-chat-v2-workload';
+import type { AuditAccount, AuditWitness } from './load-chat-v2-audit-types';
 
 type Outbound = Pick<ChatV2ClientPackets, 'chat.send' | 'chat.resume'> & {
   history: { version: typeof ROOM_CHAT_PROTOCOL; offerVersion: typeof ROOM_CHAT_PROTOCOL_V2 };
@@ -35,6 +36,7 @@ type Connection = {
 /** One authenticated synthetic account. The caller owns the socket, reconnection, deadlines and recovery ticks. */
 export class LoadChatV2Session {
   private connection?: Connection;
+  private peerObserver?: { senderId?: string; observe: (witness: AuditWitness) => void };
   private readonly pending = new Map<string, Pending>();
   private readonly lastOffered = { steady: -1, burst: -1 };
 
@@ -48,6 +50,16 @@ export class LoadChatV2Session {
   get visitReady() { return this.ready && Boolean(this.connection?.visit); }
 
   get unresolved() { return this.pending.size; }
+
+  get auditAccount(): AuditAccount | undefined {
+    const connection = this.connection, visit = connection?.visit;
+    if (!connection || !this.ready || !visit) return;
+    return { accountIndex: this.accountIndex, senderId: connection.senderId, roomEpoch: visit.roomEpoch, location: visit.location };
+  }
+
+  observePeers(senderId: string | undefined, observe: (witness: AuditWitness) => void) {
+    this.peerObserver = { senderId, observe };
+  }
 
   attach(transport: LoadChatV2Transport, senderId: string) {
     assert(transport.connection.isOpen && senderId, 'Chat V2 requires an open socket and its authenticated sender identity');
@@ -94,7 +106,12 @@ export class LoadChatV2Session {
         assert(batch.fromCursor >= visit.initialCursor, 'V2 chat batch starts before the active visit');
         const atMs = this.now();
         for (const message of batch.messages) {
-          if (!message.system && message.senderId === connection.senderId) this.ledger.observePublication(this.accountIndex, batch, message, atMs);
+          if (message.system) continue;
+          if (message.senderId === connection.senderId) this.ledger.observePublication(this.accountIndex, batch, message, atMs);
+          else if (this.peerObserver && (this.peerObserver.senderId === undefined || message.senderId === this.peerObserver.senderId)) {
+            this.peerObserver.observe({ publicationId: message.publicationId, accountIndex: this.accountIndex, senderId: message.senderId,
+              roomEpoch: visit.roomEpoch, location: visit.location, publicationSeq: message.publicationSeq, atMs });
+          }
         }
       });
       transport.send('history', { version: ROOM_CHAT_PROTOCOL, offerVersion: ROOM_CHAT_PROTOCOL_V2 });
@@ -128,7 +145,7 @@ export class LoadChatV2Session {
     const atMs = this.now();
     if (!(atMs >= dueAtMs && atMs < offerBeforeMs)) return;
     connection.transport.send('chat.send', parsed.value);
-    this.ledger.offer(cohort, index, parsed.value, atMs);
+    this.ledger.offer(cohort, index, parsed.value, atMs, visit.location);
     this.lastOffered[cohort] = index;
     this.pending.set(messageId, { envelope: parsed.value, accepted: false, retryNotBeforeMs: atMs,
       checkAtMs: atMs + CHAT_CONFIRMATION_TIMEOUT_MS, missing: false });

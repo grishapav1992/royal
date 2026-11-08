@@ -722,7 +722,9 @@ test('mixed stage requires matching profile, common epoch and bounded clock evid
     resourceMonitorExitCode: 0, resourceCoverage: { fullIntervalObserved: true }, stopConfirmed: true, remotePrivateFixtureGone: true,
     ownedGroupsStopped: true, localPrivateFixtureGone: true, missingArtifacts: [], localMeasurementWindow: { generatorCompletedAtMs: 126000 } };
   const startAtUnixMs = 106000;
-  const chatV2 = { profile, startAtUnixMs, qualification: 'isolated-websocket-pilot', targetAccepted: false };
+  const chatAudit = { receipts: 5095, uniquePublications: 5095, duplicatePublications: 0, eligiblePublications: 5000, ineligiblePublications: 95,
+    witnessedPublications: 5000, unmatchedWitnesses: 0, mismatchedWitnesses: 0, changedVisits: 0, peerDeliveryP95Ms: 70 };
+  const chatV2 = { profile, startAtUnixMs, qualification: 'isolated-websocket-pilot', targetAccepted: false, audit: chatAudit };
   const sample = { lowerOffsetMs: -5, upperOffsetMs: 8, maxRoundTripMs: 9, samples: 3 };
   const clock = { maxOffsetMs: 50, beforeStart: { ...sample, checkedAtUnixMs: 103000 },
     afterMeasurement: { ...sample, checkedAtUnixMs: 125000 } };
@@ -730,10 +732,11 @@ test('mixed stage requires matching profile, common epoch and bounded clock evid
   const shardMovement = { plannedClients: 3, sentClients: 3, connectedClients: 3 };
   const summary = { connectedClients: 100, movement };
   const chatServer = { ...server, chatV2, summary,
-    checks: { ...server.checks, chatV2OfferedAtTarget: true, chatV2DeliveryComplete: true, movementCoverage: true } };
+    checks: { ...server.checks, chatV2OfferedAtTarget: true, chatV2DeliveryComplete: true, movementCoverage: true,
+      chatV2PublicationIdsUnique: true, chatV2PeerDeliveryComplete: true } };
   const chatGenerator = { ...generator, chatV2: { profile, startAtUnixMs, clock, crossHostClockOffsetVerified: true },
     results: generator.results.map(result => ({ ...result, connectedClients: 25, chatV2: { startAtUnixMs }, movement: shardMovement })),
-    serverReport: { chatV2, summary } };
+    chatAudit, serverReport: { chatV2, summary } };
   const reports = { server: chatServer, generator: chatGenerator, state, guardian, resourceSummary };
   const verified = assessDedicatedStage(mixed, outcome, reports);
   assert.equal(verified.ok, true);
@@ -747,6 +750,8 @@ test('mixed stage requires matching profile, common epoch and bounded clock evid
     ...reports, generator: { ...chatGenerator, ...patch },
   }).ok, false);
   rejectsGenerator({ chatV2: undefined });
+  rejectsGenerator({ chatAudit: undefined });
+  rejectsGenerator({ chatAudit: { ...chatAudit, witnessedPublications: 4999 } });
   rejectsGenerator({ chatV2: { ...chatGenerator.chatV2, profile: { ...profile, movingClients: 11 } } });
   rejectsGenerator({ serverReport: { ...chatGenerator.serverReport, chatV2: { ...chatV2, startAtUnixMs: 106001 } } });
   rejectsGenerator({ serverReport: { ...chatGenerator.serverReport, chatV2: { ...chatV2, targetAccepted: true } } });

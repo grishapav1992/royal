@@ -13,7 +13,7 @@ import { installLoopbackNetworking, type ServerMetrics, type RoomTraffic } from 
 import { assertOwnedLoadDatabase, LOAD_RUN_REDIS_KEY } from './load-stand-ownership';
 import type { AccountStore } from '../server/accounts';
 import { createStandControl, type StandControl } from './load-stand-control';
-import { encodeStandServerReport, loopbackEndpoint, parseStandChatV2, parseStandFinished, parseStandPrepared, standErrorDiagnostics, standHost, standReportForControl, STAND_ROLE,
+import { chatAuditChecks, encodeStandServerReport, loopbackEndpoint, parseStandChatV2, parseStandFinished, parseStandPrepared, standErrorDiagnostics, standHost, standReportForControl, STAND_ROLE,
   type StandManifest, type StandPrepared, type StandFinished, type StandErrorDiagnostics, type StandResult } from './load-stand-contract';
 import { DEFAULT_GAME_PROCESSES, MAX_GAME_PROCESSES, MAX_MEASUREMENT_SECONDS, MAX_STAND_CLIENTS, MAX_STAND_METRIC_INTERVALS,
   STAND_MAX_CONNECTIONS_PER_PROCESS, STAND_MAX_ROOMS_PER_PROCESS, STAND_ROOM_CAPACITY,
@@ -216,7 +216,8 @@ function observedClients(reports: { connectedClients: number; rooms: Occupancy[]
   }
   return { total, countsByOwner: Object.fromEntries(counts), valid: valid && [...counts.values()].every(count => count <= STAND_MAX_CONNECTIONS_PER_PROCESS) };
 }
-export function chatV2Pilot(results: readonly Pick<Result, 'chatV2'>[], profile: NonNullable<StandManifest['chatV2']>, startAtUnixMs: number) {
+export function chatV2Pilot(results: readonly Pick<Result, 'chatV2'>[], profile: NonNullable<StandManifest['chatV2']>,
+  startAtUnixMs: number, audit?: StandFinished['chatAudit']) {
   const summaries = results.map(result => {
     if (result.chatV2?.startAtUnixMs !== startAtUnixMs) throw new HarnessError('stand-chat-result-epoch-mismatch');
     return result.chatV2.summary;
@@ -233,11 +234,13 @@ export function chatV2Pilot(results: readonly Pick<Result, 'chatV2'>[], profile:
   const complete = (row: typeof steady) => row.unresolved === 0 && row.offered === row.acceptanceConfirmed
     && row.offered === row.published && row.offered === row.terminalByDeadline && row.offered === row.witnessed;
   return { profile, startAtUnixMs, qualification: 'isolated-websocket-pilot', targetAccepted: false, steady, burst, unmatchedPublications,
+    ...(audit ? { audit } : {}),
     checks: {
       chatV2OfferedAtTarget: steady.planned === profile.steadyPerSecond * profile.seconds
         && summaries.every(({ steady }) => steady.offered * 100 >= steady.planned * 99)
         && burst.planned === (profile.burst?.count ?? 0) && burst.offered === burst.planned,
       chatV2DeliveryComplete: complete(steady) && complete(burst) && unmatchedPublications === 0,
+      ...(audit ? chatAuditChecks(audit) : {}),
     } };
 }
 const diagnosticKinds = ['too many messages per second', 'not registered.', 'Room account lease renewal failed', 'Room account lease release failed', "couldn't decode message", 'Redis cluster runtime failed', 'Lobby cluster connection lost. Restarting this process.'] as const;
@@ -408,7 +411,9 @@ async function run() {
         },
         validateResults: body => {
           if (!standPrepared) throw new HarnessError('stand-not-prepared');
-          return parseStandFinished(body, runId, standPrepared, config.seconds, standChatStartAtUnixMs);
+          const parsed = parseStandFinished(body, runId, standPrepared, config.seconds, standChatStartAtUnixMs);
+          if (config.chatV2 && !parsed.chatAudit) throw new HarnessError('stand-chat-audit-required');
+          return parsed;
         },
       });
     }
@@ -572,16 +577,19 @@ async function run() {
     }, 1000);
     console.error(`Measuring ${config.clients} clients for ${config.seconds}s with ${movingClients} sending 60 input steps/s on ${config.gameProcesses} game processes.`);
     let results: Result[];
+    let chatAudit: StandFinished['chatAudit'];
     if (standControl) {
       if (standChatStartAtUnixMs === undefined) standControl.start();
-      results = (await bounded(standControl.results, (config.seconds + 30) * 1000, 'stand-generator-result-timeout')).results;
+      const finished = await bounded(standControl.results, (config.seconds + (config.chatV2 ? 60 : 30)) * 1000, 'stand-generator-result-timeout');
+      results = finished.results;
+      chatAudit = finished.chatAudit;
     } else {
       results = await Promise.all(generators.map(generator => requestWorker<Result>(generator,
         { kind: 'measure', seconds: config.seconds, stepsPerPacket: 2, drainMs: 2000, inputMode: config.inputMode }, 'result', (config.seconds + 15) * 1000, controller.signal)));
     }
     measureEndedAt = Date.now(); measuring = false; report.generators = results;
     const chatPilot = config.chatV2 && standChatStartAtUnixMs !== undefined
-      ? chatV2Pilot(results, config.chatV2, standChatStartAtUnixMs) : undefined;
+      ? chatV2Pilot(results, config.chatV2, standChatStartAtUnixMs, chatAudit) : undefined;
     if (chatPilot) report.chatV2 = chatPilot;
     if (config.frameDiagnostics) {
       await Promise.all([...games].map(async ([id, game]) => {
@@ -658,7 +666,9 @@ async function run() {
         || !report.checks.serverDiagnosticCoverageComplete ? 'inconclusive-metrics'
       : !report.checks.generatorSustainedTarget || report.checks.movementCoverage === false ? 'inconclusive-generator-rate'
       : chatPilot && !chatPilot.checks.chatV2OfferedAtTarget ? 'inconclusive-chat-v2-offer-rate'
+      : chatPilot?.checks.chatV2PublicationIdsUnique === false ? 'failed-chat-v2-publication-identity'
       : chatPilot && !chatPilot.checks.chatV2DeliveryComplete ? 'failed-chat-v2-delivery'
+      : chatPilot?.checks.chatV2PeerDeliveryComplete === false ? 'failed-chat-v2-peer-delivery'
       : !report.checks.serverInputDeliveryComplete ? 'failed-input-delivery' : 'failed-local-checks';
   } catch (error) {
     report.ok = false; report.verdict = phase === 'connect' ? 'failed-admission' : 'setup-or-runtime-failure';

@@ -135,6 +135,15 @@ test('Chat V2 pilot verdict requires the planned offer rate and complete self-wi
     assert.equal(pilot({ burst: { ...burst, ...delta } }).checks.chatV2DeliveryComplete, false);
   }
   assert.equal(pilot({ unmatchedPublications: 1 }).checks.chatV2DeliveryComplete, false);
+  const audited = { receipts: 103, uniquePublications: 103, duplicatePublications: 0, eligiblePublications: 100, ineligiblePublications: 3,
+    witnessedPublications: 100, unmatchedWitnesses: 0, mismatchedWitnesses: 0, changedVisits: 0, peerDeliveryP95Ms: 120 };
+  const auditPilot = (change = {}) => chatV2Pilot([{ chatV2: { startAtUnixMs, summary: { ...blank, steady, burst } } }],
+    profile, startAtUnixMs, { ...audited, ...change });
+  assert.equal(auditPilot().checks.chatV2PeerDeliveryComplete, true);
+  assert.equal(auditPilot({ eligiblePublications: 0, witnessedPublications: 0 }).checks.chatV2PeerDeliveryComplete, false);
+  assert.equal(auditPilot({ witnessedPublications: 0 }).checks.chatV2PeerDeliveryComplete, false);
+  assert.equal(auditPilot({ changedVisits: 1 }).checks.chatV2PeerDeliveryComplete, false);
+  assert.equal(auditPilot({ duplicatePublications: 1 }).checks.chatV2PublicationIdsUnique, false);
   assert.throws(() => chatV2Pilot([{}], profile, startAtUnixMs), /stand-chat-result-epoch-mismatch/);
   assert.throws(() => chatV2Pilot([{ chatV2: { startAtUnixMs: startAtUnixMs - 1, summary: blank } }], profile, startAtUnixMs),
     /stand-chat-result-epoch-mismatch/);

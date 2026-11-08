@@ -19,7 +19,8 @@ function request(worker: ChildProcess, command: object): Promise<any> {
       if (error) reject(error); else resolve(result);
     };
     const receive = (message: { kind?: string }) => {
-      if (message.kind === 'ready' || message.kind === 'result' || message.kind === 'error') finish(undefined, message);
+      if (message.kind === 'ready' || message.kind === 'result' || message.kind === 'error'
+        || message.kind === 'chat-audit-roster' || message.kind === 'chat-audit-evidence') finish(undefined, message);
     };
     const exited = () => finish(new Error('Synthetic worker exited before reporting'));
     const timer = setTimeout(() => finish(new Error('Synthetic worker did not report')), 15_000);
@@ -34,7 +35,7 @@ test('actual load worker separates movers from chat clients and resumes the same
   const tokens = new Map(['slow', 'fast', 'legacy', 'idle', 'implicit'].map(name => [randomBytes(32).toString('hex'), name]));
   const [slowToken, fastToken, legacyToken, idleToken, implicitToken] = tokens.keys();
   const epoch = randomUUID(), workers: ChildProcess[] = [];
-  const joins: string[] = [], offers: { name: string; senderId: string; messageId: string; text: string; at: number }[] = [];
+  const joins: string[] = [], offers: { name: string; senderId: string; messageId: string; publicationId: string; text: string; at: number }[] = [];
   const resumed: { senderId: string; messageIds: string[] }[] = [];
   const inputFrames = new Map<string, number>();
   let legacyPackets = 0;
@@ -63,8 +64,11 @@ test('actual load worker separates movers from chat clients and resumes the same
           senderId: client.sessionId, name: client.auth as string, text, time: Date.now() };
         assert(!this.publications.has(messageId));
         this.publications.set(messageId, publication);
-        offers.push({ name: publication.name, senderId: client.sessionId, messageId, text, at: Date.now() });
+        offers.push({ name: publication.name, senderId: client.sessionId, messageId, publicationId: publication.publicationId, text, at: Date.now() });
         if (client.auth === 'slow') {
+          const receiver = this.clients.find(peer => peer.auth === 'fast');
+          assert(receiver && receiver.sessionId !== client.sessionId);
+          this.witness(receiver, publication);
           (client.ref as unknown as { terminate(): void }).terminate();
           return;
         }
@@ -122,6 +126,7 @@ test('actual load worker separates movers from chat clients and resumes the same
     const legacyReady = await request(legacy, { kind: 'connect', endpoint, tokens: [legacyToken] });
     assert.equal(legacyReady.connectedClients, 1);
     assert(!('chatV2Ready' in legacyReady) && !('movingClients' in legacyReady));
+    assert.equal((await request(legacy, { kind: 'chat-audit-roster' })).kind, 'error');
     const movement = await request(legacy, { kind: 'measure', seconds: 1 });
     assert(movement.packetsSent > 0 && movement.errorCount === 0 && !('chatV2' in movement) && !('movement' in movement));
     assert.equal(legacyPackets, 0);
@@ -132,10 +137,19 @@ test('actual load worker separates movers from chat clients and resumes the same
     assert.equal(ready.chatV2Ready, 2);
     assert.equal(ready.movingClients, 1);
     assert.deepEqual(joins.slice(1), ['fast', 'slow']);
+    const roster = await request(worker, { kind: 'chat-audit-roster' });
+    assert.equal(roster.kind, 'chat-audit-roster');
+    assert.deepEqual(roster.accounts.map((account: { accountIndex: number }) => account.accountIndex).sort(), [1, 3]);
+    assert(roster.accounts.every((account: { roomEpoch: string; location: string }) => account.roomEpoch === epoch && account.location === 'arcade'));
+    const sender = roster.accounts.find((account: { accountIndex: number }) => account.accountIndex === 1);
+    const receiver = roster.accounts.find((account: { accountIndex: number }) => account.accountIndex === 3);
+    assert(sender.senderId !== receiver.senderId);
+    assert.equal((await request(worker, { kind: 'chat-audit-evidence', stream: 'receipts', offset: 0 })).kind, 'error');
     assert.equal((await request(worker, { kind: 'measure', seconds: 1, startAtUnixMs: Date.now() - 1, stepsPerPacket: 2 })).kind, 'error');
     assert.equal((await request(worker, { kind: 'measure', seconds: 1, startAtUnixMs: Date.now() + 500, stepsPerPacket: 3 })).kind, 'error');
     const startAtUnixMs = Date.now() + 500;
-    const result = await request(worker, { kind: 'measure', seconds: 1, startAtUnixMs, drainMs: 750, stepsPerPacket: 2, inputMode: 'browser-window' });
+    const result = await request(worker, { kind: 'measure', seconds: 1, startAtUnixMs, drainMs: 750, stepsPerPacket: 2, inputMode: 'browser-window',
+      chatAuditObservers: [{ accountIndex: 3, senderId: sender.senderId }] });
     assert.equal(result.errorCount, 0);
     assert.equal(result.connectedClients, 2);
     assert.deepEqual(result.movement, { plannedClients: 1, sentClients: 1, connectedClients: 1 });
@@ -151,6 +165,20 @@ test('actual load worker separates movers from chat clients and resumes the same
     assert.deepEqual(resumed, [{ senderId: offers[0].senderId, messageIds: [offers[0].messageId] }]);
     const { planned, offered, published, witnessed, retryAttempts } = result.chatV2.summary.steady;
     assert.deepEqual({ planned, offered, published, witnessed, retryAttempts }, { planned: 2, offered: 2, published: 2, witnessed: 2, retryAttempts: 0 });
+    assert.equal((await request(worker, { kind: 'chat-audit-roster' })).kind, 'error');
+    assert.equal((await request(worker, { kind: 'chat-audit-evidence', stream: 'receipts', offset: 1 })).kind, 'error');
+    const receipts = await request(worker, { kind: 'chat-audit-evidence', stream: 'receipts', offset: 0 });
+    const witnesses = await request(worker, { kind: 'chat-audit-evidence', stream: 'witnesses', offset: 0 });
+    assert(receipts.done && witnesses.done);
+    assert.deepEqual(receipts.rows.map(({ offeredAtMs, ...row }: { offeredAtMs: number }) => row), offers.map((offer, index) => ({
+      publicationId: offer.publicationId, accountIndex: 1 + 2 * index, roomEpoch: epoch, location: 'arcade', publicationSeq: index + 1,
+    })));
+    assert.equal(witnesses.rows.length, 1);
+    const { atMs, ...peerWitness } = witnesses.rows[0];
+    assert(atMs >= receipts.rows[0].offeredAtMs);
+    assert.deepEqual(peerWitness, { publicationId: offers[0].publicationId, accountIndex: 3, senderId: sender.senderId,
+      roomEpoch: epoch, location: 'arcade', publicationSeq: 1 });
+    assert.equal((await request(worker, { kind: 'chat-audit-evidence', stream: 'receipts', offset: 2 })).kind, 'error');
 
     const unsupported = startWorker(true);
     const unavailable = await request(unsupported, { kind: 'connect', endpoint, tokens: [legacyToken],

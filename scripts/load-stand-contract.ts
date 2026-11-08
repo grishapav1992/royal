@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { availableParallelism, hostname, totalmem } from 'node:os';
 import { ChatV2WorkloadPlan, type ChatV2WorkloadLedger, type ChatV2WorkloadProfile } from './load-chat-v2-workload';
+import type { ChatAuditSummary } from './load-chat-v2-audit-types';
 import { DEFAULT_GAME_PROCESSES, MAX_GAME_PROCESSES, MAX_MEASUREMENT_SECONDS, MAX_STAND_CLIENTS,
   STAND_MAX_ROOMS_PER_PROCESS, STAND_ROOM_CAPACITY, standGameProcessIds, standLoadProfile, standSessionDurationMs } from './load-stand-limits';
 
@@ -36,7 +37,7 @@ export type StandResult = { kind: 'result'; count: number; connectedClients: num
   chatV2?: StandChatV2Result; movement?: StandMovementResult; [key: string]: unknown };
 export type StandPrepared = { runId: string; ready: StandReady[]; gameProcesses?: number; clientHost: StandHost; inputMode: 'stress' | 'browser-window';
   connectionPhase: { durationSeconds: number; batches: number; connectionAttempts: number; connectionRetries: number }; chatV2?: ChatV2WorkloadProfile };
-export type StandFinished = { runId: string; results: StandResult[] };
+export type StandFinished = { runId: string; results: StandResult[]; chatAudit?: ChatAuditSummary };
 export class StandError extends Error { constructor(readonly code: string) { super(code); } }
 export type StandErrorDiagnostics = { name: string; code?: string; errno?: number; authStatus?: number;
   frames: { file: string; line: number; column: number }[] };
@@ -319,7 +320,33 @@ export function parseStandFinished(value: unknown, runId: string, prepared: Stan
   const results = finished.results.map((item, index) => parseStandResult(item, prepared.gameProcesses ?? DEFAULT_GAME_PROCESSES,
     chatV2 && startAtUnixMs !== undefined ? { profile: chatV2, shard: { index, count: prepared.ready.length }, startAtUnixMs } : undefined));
   if (results.some((result, index) => result.count !== prepared.ready[index].count || result.durationSeconds < seconds * .9)) throw new StandError('incomplete-stand-measurement');
-  return { runId, results };
+  if (!Object.hasOwn(finished, 'chatAudit')) return { runId, results };
+  if (!chatV2) throw new StandError('unexpected-stand-chat-audit');
+  const published = results.reduce((sum, result) => sum + result.chatV2!.summary.steady.published + result.chatV2!.summary.burst.published, 0);
+  return { runId, results, chatAudit: parseStandChatAudit(finished.chatAudit, chatV2, published) };
+}
+
+function parseStandChatAudit(value: unknown, profile: ChatV2WorkloadProfile, published: number): ChatAuditSummary {
+  const audit = object(value);
+  const countKeys = ['receipts', 'uniquePublications', 'duplicatePublications', 'eligiblePublications', 'ineligiblePublications',
+    'witnessedPublications', 'unmatchedWitnesses', 'mismatchedWitnesses', 'changedVisits'] as const;
+  if (!hasKeys(audit, [...countKeys, 'peerDeliveryP95Ms'])) throw new StandError('invalid-stand-chat-audit');
+  const maximum = profile.seconds * profile.steadyPerSecond + (profile.burst?.count ?? 0);
+  const counts = Object.fromEntries(countKeys.map(key => [key, number(audit[key], 0, maximum, true)])) as Record<typeof countKeys[number], number>;
+  if (counts.receipts !== published || counts.uniquePublications + counts.duplicatePublications !== counts.receipts
+    || counts.eligiblePublications + counts.ineligiblePublications + counts.changedVisits !== counts.uniquePublications
+    || counts.witnessedPublications > counts.eligiblePublications || counts.witnessedPublications + counts.unmatchedWitnesses + counts.mismatchedWitnesses > maximum
+    || !counts.witnessedPublications && audit.peerDeliveryP95Ms !== null) throw new StandError('inconsistent-stand-chat-audit');
+  return { ...counts, peerDeliveryP95Ms: counts.witnessedPublications
+    ? number(audit.peerDeliveryP95Ms, 0, (profile.seconds + 45) * 1000) : null };
+}
+
+export function chatAuditChecks(audit: ChatAuditSummary) {
+  return {
+    chatV2PublicationIdsUnique: audit.duplicatePublications === 0,
+    chatV2PeerDeliveryComplete: audit.changedVisits === 0 && audit.eligiblePublications > 0
+      && audit.witnessedPublications === audit.eligiblePublications && audit.unmatchedWitnesses === 0 && audit.mismatchedWitnesses === 0,
+  };
 }
 export function verifyStandStatus(value: unknown, manifest: StandManifest) {
   const status = object(value);

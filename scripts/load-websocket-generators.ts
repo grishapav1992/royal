@@ -4,8 +4,10 @@ import { dirname, resolve } from 'node:path';
 import { installLoopbackNetworking } from './load-server-metrics';
 import { DEFAULT_GAME_PROCESSES } from './load-stand-limits';
 import { sampleStandClock, STAND_CHAT_MAX_CLOCK_OFFSET_MS } from './load-stand-clock';
+import { ChatPublicationAudit } from './load-chat-v2-audit';
+import { CHAT_AUDIT_PAGE_SIZE } from './load-chat-v2-audit-types';
 import { attestGeneratorApiOrigins, generatorApiOrigins, generatorBatchApiIndex } from './load-generator-endpoints';
-import { loopbackEndpoint, parseStandManifest, parseStandReady, parseStandResult, parseStandStart, standHost, StandError,
+import { chatAuditChecks, loopbackEndpoint, parseStandManifest, parseStandReady, parseStandResult, parseStandStart, standHost, StandError,
   verifyStandStatus, type StandManifest, type StandReady, type StandResult } from './load-stand-contract';
 
 const delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
@@ -27,6 +29,29 @@ function command<T>(child: ChildProcess, payload: object, response: string, sign
     child.on('message', message); child.once('exit', died); signal.addEventListener('abort', aborted, { once: true });
     child.send(payload, error => { if (error) fail('generator-ipc-failed'); });
   });
+}
+async function collectChatAudit(audit: ChatPublicationAudit, children: ChildProcess[], results: StandResult[], signal: AbortSignal) {
+  const deadline = performance.now() + 30_000;
+  // Load receipts first so witnesses can be matched without another full evidence map.
+  for (const stream of ['receipts', 'witnesses'] as const) {
+    for (const [shard, child] of children.entries()) {
+      let offset = 0;
+      for (;;) {
+        const remaining = Math.ceil(deadline - performance.now());
+        if (remaining <= 0) throw new StandError('stand-chat-audit-timeout');
+        const page = await command<{ stream: unknown; offset: unknown; rows: unknown; done: unknown }>(
+          child, { kind: 'chat-audit-evidence', stream, offset }, 'chat-audit-evidence', signal, remaining);
+        if (page.stream !== stream || page.offset !== offset || typeof page.done !== 'boolean' || !Array.isArray(page.rows)
+          || page.rows.length > CHAT_AUDIT_PAGE_SIZE || !page.done && page.rows.length !== CHAT_AUDIT_PAGE_SIZE) {
+          throw new StandError('invalid-stand-chat-audit-page');
+        }
+        audit[stream](shard, page.rows);
+        if (page.done) break;
+        offset += page.rows.length;
+      }
+    }
+  }
+  return audit.finish(results.map(result => result.chatV2!.summary.steady.published + result.chatV2!.summary.burst.published));
 }
 async function stop(child: ChildProcess) {
   if (exited(child)) return;
@@ -134,6 +159,10 @@ async function run() {
     }
     const connectionPhase = { durationSeconds: round((performance.now() - connectedAt) / 1000), batches,
       connectionAttempts: ready.reduce((sum, item) => sum + item.connectionAttempts, 0), connectionRetries: ready.reduce((sum, item) => sum + item.connectionRetries, 0) };
+    const audit = chatV2 ? new ChatPublicationAudit(await Promise.all(children.map(async child => {
+      const roster = await command<{ accounts: unknown }>(child, { kind: 'chat-audit-roster' }, 'chat-audit-roster', controller.signal, 10_000);
+      return roster.accounts;
+    })), chatV2) : undefined;
     const sampleClock = () => sampleStandClock(async () => {
       const status = await control(manifest, controlEndpoint, '/status', undefined, controller.signal, 1500);
       verifyStandStatus(status, manifest);
@@ -149,7 +178,9 @@ async function run() {
     console.error(JSON.stringify({ phase: 'measure', clients: manifest.clients, seconds: manifest.seconds, workers: config.workers }));
     const results: StandResult[] = await Promise.all(children.map(async (child, index) => parseStandResult(await command(child,
       { kind: 'measure', seconds: manifest.seconds, stepsPerPacket: 2, drainMs: chatV2 ? 5000 : 2000, inputMode: config.inputMode,
-        ...(startAtUnixMs !== undefined ? { startAtUnixMs } : {}) }, 'result', controller.signal, (manifest.seconds + (chatV2 ? 25 : 15)) * 1000),
+        ...(startAtUnixMs !== undefined ? { startAtUnixMs } : {}),
+        ...(audit ? { chatAuditObservers: audit.observers(index) } : {}) },
+      'result', controller.signal, (manifest.seconds + (chatV2 ? 25 : 15)) * 1000),
     gameProcesses,
     chatV2 && startAtUnixMs !== undefined ? { profile: chatV2, shard: { index, count: config.workers }, startAtUnixMs } : undefined)));
     report.ready = ready; report.connectionPhase = connectionPhase; report.results = results;
@@ -163,10 +194,15 @@ async function run() {
       }
       report.chatV2.crossHostClockOffsetVerified = true;
     }
-    const response = await control(manifest, controlEndpoint, '/results', { runId: manifest.runId, results }, controller.signal, 90000);
+    const chatAudit = audit ? await collectChatAudit(audit, children, results, controller.signal) : undefined;
+    if (chatAudit) report.chatAudit = chatAudit;
+    const response = await control(manifest, controlEndpoint, '/results', { runId: manifest.runId, results, ...(chatAudit ? { chatAudit } : {}) },
+      controller.signal, 90000);
     if (response.runId !== manifest.runId || !response.report || typeof response.report !== 'object') throw new StandError('stand-result-response-mismatch');
     reported = true; report.serverReport = response.report;
-    report.ok = report.serverReport.ok === true; report.verdict = report.serverReport.verdict;
+    const auditPassed = !chatAudit || Object.values(chatAuditChecks(chatAudit)).every(Boolean);
+    report.ok = report.serverReport.ok === true && auditPassed;
+    report.verdict = report.serverReport.ok === true && !auditPassed ? 'failed-generator-chat-audit' : report.serverReport.verdict;
   } catch (error) { report.ok = false; report.verdict = 'generator-or-stand-failure'; report.failure = { code: error instanceof StandError ? error.code : 'generator-runtime-failure' }; }
   finally {
     cleaning = true; clearTimeout(overall); process.off('SIGINT', abort); process.off('SIGTERM', abort);

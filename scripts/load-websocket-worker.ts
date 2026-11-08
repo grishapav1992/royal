@@ -2,6 +2,7 @@ import type { Room, SeatReservation } from '@colyseus/sdk';
 import NodeWebSocket from 'ws';
 import { monitorEventLoopDelay } from 'node:perf_hooks';
 import type { LobbyState } from '../server/state';
+import { CHAT_AUDIT_PAGE_SIZE, CHAT_AUDIT_SENDER_ID, type AuditObserver, type AuditReceipt, type AuditWitness } from './load-chat-v2-audit-types';
 import { LoadChatV2Session, type LoadChatV2Transport } from './load-chat-v2-session';
 import { ChatV2WorkloadLedger, ChatV2WorkloadPlan, type ChatV2WorkloadProfile } from './load-chat-v2-workload';
 import { installLoopbackNetworking } from './load-server-metrics';
@@ -29,8 +30,14 @@ type Member = { room: Room<LobbyState>; seq: number; tracker: PacketTracker; win
 type InputMode = 'stress' | 'browser-window';
 type ChatConfig = { profile: ChatV2WorkloadProfile; shard: { index: number; count: number } };
 type ConnectCommand = { kind: 'connect'; endpoint: string; canonicalEndpoint?: string; gameProcesses?: number; tokens: string[]; concurrency?: number; maxRetries?: number; retryDelayMs?: number; joinTimeoutMs?: number; chatV2?: ChatConfig };
-type Command = ConnectCommand | { kind: 'measure'; seconds: number; stepsPerPacket?: number; drainMs?: number; inputMode?: InputMode; startAtUnixMs?: number } | { kind: 'shutdown' };
-type ChatRun = { plan: ChatV2WorkloadPlan; ledger: ChatV2WorkloadLedger; byAccount: Map<number, Member>; requested: number; expected: number; startedAt?: number; finished?: boolean };
+type AuditStream = 'receipts' | 'witnesses';
+type AuditRow = AuditReceipt | AuditWitness;
+type AuditPage = { iterator: Iterator<AuditRow>; next: IteratorResult<AuditRow>; offset: number };
+type AuditRun = { witnesses: Map<string, AuditWitness>; pages: Map<AuditStream, AuditPage> };
+type Command = ConnectCommand
+  | { kind: 'measure'; seconds: number; stepsPerPacket?: number; drainMs?: number; inputMode?: InputMode; startAtUnixMs?: number; chatAuditObservers?: AuditObserver[] }
+  | { kind: 'chat-audit-roster' } | { kind: 'chat-audit-evidence'; stream: AuditStream; offset: number } | { kind: 'shutdown' };
+type ChatRun = { plan: ChatV2WorkloadPlan; ledger: ChatV2WorkloadLedger; byAccount: Map<number, Member>; requested: number; expected: number; startedAt?: number; finished?: boolean; audit?: AuditRun };
 const members: Member[] = [];
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const send = (message: unknown) => { if (process.connected) process.send?.(message); };
@@ -153,6 +160,77 @@ function reserveChatAccounts(command: ConnectCommand) {
   const run = chatRun ??= { plan, ledger: new ChatV2WorkloadLedger(plan), byAccount: new Map(), requested: 0, expected };
   run.requested += command.tokens.length;
   return { run, first };
+}
+
+function reportChatAuditRoster() {
+  const chat = chatRun;
+  if (!chat || chat.startedAt !== undefined || chat.requested !== chat.expected || chatReady() !== chat.expected) {
+    throw new Error('Invalid V2 audit roster state');
+  }
+  const accounts = [...chat.byAccount.values()].map(member => {
+    const account = member.chat?.auditAccount;
+    if (!account || member.left || !CHAT_AUDIT_SENDER_ID.test(account.senderId)) throw new Error('Invalid V2 audit account');
+    return account;
+  });
+  if (accounts.length !== chat.expected) throw new Error('Incomplete V2 audit roster');
+  send({ kind: 'chat-audit-roster', accounts });
+}
+
+function configureChatAudit(chat: ChatRun, observers: AuditObserver[]) {
+  if (!Array.isArray(observers) || observers.length > chat.expected) throw new Error('Invalid V2 audit observer count');
+  const selected = new Map<number, { session: LoadChatV2Session; senderId?: string }>();
+  for (const observer of observers) {
+    if (!observer || typeof observer !== 'object' || Object.keys(observer).some(key => key !== 'accountIndex' && key !== 'senderId')
+      || selected.has(observer.accountIndex)) throw new Error('Invalid V2 audit observer');
+    const session = chat.byAccount.get(observer.accountIndex)?.chat, account = session?.auditAccount;
+    if (!session || !account || (Object.hasOwn(observer, 'senderId')
+      && (typeof observer.senderId !== 'string' || !CHAT_AUDIT_SENDER_ID.test(observer.senderId) || observer.senderId === account.senderId))) {
+      throw new Error('Invalid V2 audit observer account');
+    }
+    selected.set(observer.accountIndex, { session, senderId: observer.senderId });
+  }
+  const audit: AuditRun = { witnesses: new Map(), pages: new Map() };
+  chat.audit = audit;
+  const { steadyPerSecond, seconds, burst } = chat.plan.profile;
+  const maximum = steadyPerSecond * seconds + (burst?.count ?? 0);
+  for (const { session, senderId } of selected.values()) {
+    session.observePeers(senderId, witness => {
+      if (chat.startedAt === undefined || chat.finished || witness.atMs < 0) return;
+      if (!CHAT_AUDIT_SENDER_ID.test(witness.senderId)) throw new Error('Invalid V2 audit witness sender');
+      const prior = audit.witnesses.get(witness.publicationId);
+      if (prior) {
+        if (prior.accountIndex !== witness.accountIndex || prior.senderId !== witness.senderId || prior.roomEpoch !== witness.roomEpoch
+          || prior.location !== witness.location || prior.publicationSeq !== witness.publicationSeq) {
+          throw new Error('Conflicting V2 audit witnesses');
+        }
+        return;
+      }
+      if (audit.witnesses.size >= maximum) throw new Error('V2 audit witness capacity exceeded');
+      audit.witnesses.set(witness.publicationId, witness);
+    });
+  }
+}
+
+function reportChatAuditPage(stream: AuditStream, offset: number) {
+  const chat = chatRun, audit = chat?.audit;
+  if (!chat?.finished || !audit || (stream !== 'receipts' && stream !== 'witnesses')
+    || !Number.isSafeInteger(offset) || offset < 0) throw new Error('Invalid V2 audit evidence request');
+  let page = audit.pages.get(stream);
+  if (!page) {
+    if (offset !== 0) throw new Error('Invalid initial V2 audit evidence offset');
+    const iterator = stream === 'receipts' ? chat.ledger.auditReceipts() : audit.witnesses.values();
+    page = { iterator, next: iterator.next(), offset: 0 };
+    audit.pages.set(stream, page);
+  } else if (page.next.done || page.offset !== offset) {
+    throw new Error('Unexpected V2 audit evidence offset');
+  }
+  const rows: AuditRow[] = [];
+  while (!page.next.done && rows.length < CHAT_AUDIT_PAGE_SIZE) {
+    rows.push(page.next.value);
+    page.next = page.iterator.next();
+  }
+  page.offset += rows.length;
+  send({ kind: 'chat-audit-evidence', stream, offset, rows, done: page.next.done === true });
 }
 
 function attachChat(member: Member, run: ChatRun, accountIndex: number, resetDiagnostics: (connected: boolean) => void) {
@@ -319,7 +397,8 @@ function startChatMeasurement(run: ChatRun, started: number, stopAt: number, dra
   chatTimer = setTimeout(tick, Math.max(0, started - performance.now()));
 }
 
-async function measure(seconds: number, stepsPerPacket = 3, drainMs = 150, inputMode: InputMode = 'stress', startAtUnixMs?: number) {
+async function measure(seconds: number, stepsPerPacket = 3, drainMs = 150, inputMode: InputMode = 'stress', startAtUnixMs?: number,
+  chatAuditObservers?: AuditObserver[]) {
   validateMeasurementSeconds(seconds);
   if (!Number.isInteger(stepsPerPacket) || stepsPerPacket < 1 || stepsPerPacket > 6) throw new Error('invalid step count');
   if (!Number.isInteger(drainMs) || drainMs < 0 || drainMs > 10000) throw new Error('invalid drain duration');
@@ -333,10 +412,11 @@ async function measure(seconds: number, stepsPerPacket = 3, drainMs = 150, input
       || seconds !== chat.plan.profile.seconds || chat.requested !== chat.expected || chatReady() !== chat.expected) {
       throw new Error('Invalid V2 worker start barrier');
     }
+    if (chatAuditObservers !== undefined) configureChatAudit(chat, chatAuditObservers);
     chat.startedAt = localNow + leadMs;
     while (!shuttingDown && performance.now() < chat.startedAt) await delay(Math.max(1, chat.startedAt - performance.now()));
     if (shuttingDown || chatReady() !== chat.expected) throw new Error('V2 worker lost readiness before start');
-  } else if (startAtUnixMs !== undefined || process.env.LOAD_CHAT_V2 === '1') {
+  } else if (startAtUnixMs !== undefined || chatAuditObservers !== undefined || process.env.LOAD_CHAT_V2 === '1') {
     throw new Error('V2 worker start requires a negotiated profile');
   }
   const previouslyBlocked = members.filter(member => member.bufferGuard.blocked).length;
@@ -494,7 +574,10 @@ process.on('message', raw => {
   if (command.kind === 'shutdown') { void shutdown(); return; }
   commands = commands.then(async () => {
     if (command.kind === 'connect') await connect(command);
-    else if (command.kind === 'measure') await measure(command.seconds, command.stepsPerPacket, command.drainMs, command.inputMode, command.startAtUnixMs);
+    else if (command.kind === 'measure') await measure(command.seconds, command.stepsPerPacket, command.drainMs, command.inputMode,
+      command.startAtUnixMs, command.chatAuditObservers);
+    else if (command.kind === 'chat-audit-roster') reportChatAuditRoster();
+    else if (command.kind === 'chat-audit-evidence') reportChatAuditPage(command.stream, command.offset);
   }).catch(() => { send({ kind: 'error', reason: 'Worker command failed' }); });
 });
 process.on('disconnect', () => { void shutdown(); });

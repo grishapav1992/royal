@@ -180,6 +180,13 @@ test('V2 results must reconcile with the expected start, shard counts and exact 
     return { ...result(index), chatV2: { startAtUnixMs, summary: ledger.summary() } };
   });
   assert.deepEqual(parseStandFinished({ runId, results }, runId, prepared, 2, startAtUnixMs).results[0].chatV2, results[0].chatV2);
+  const chatAudit = { receipts: 1, uniquePublications: 1, duplicatePublications: 0, eligiblePublications: 1, ineligiblePublications: 0,
+    witnessedPublications: 1, unmatchedWitnesses: 0, mismatchedWitnesses: 0, changedVisits: 0, peerDeliveryP95Ms: 12 };
+  assert.deepEqual(parseStandFinished({ runId, results, chatAudit }, runId, prepared, 2, startAtUnixMs).chatAudit, chatAudit);
+  for (const changed of [{ receipts: 2 }, { duplicatePublications: 1 }, { ineligiblePublications: 1 }, { witnessedPublications: 2 },
+    { witnessedPublications: 0 }, { peerDeliveryP95Ms: null }, { unmatchedWitnesses: 8 }, { publicationIds: ['private'] }]) {
+    assert.throws(() => parseStandFinished({ runId, results, chatAudit: { ...chatAudit, ...changed } }, runId, prepared, 2, startAtUnixMs));
+  }
   assert.throws(() => parseStandResult(results[0]), /unexpected-stand-chat-result/);
   assert.throws(() => parseStandFinished({ runId, results }, runId, prepared, 2), /invalid-stand-chat-finish/);
   assert.throws(() => parseStandFinished({ runId, results }, runId, prepared, 2, startAtUnixMs + 1), /stand-chat-result-start-mismatch/);
@@ -220,6 +227,7 @@ test('stand reports preserve bounded percentile metadata and reject incomplete t
 test('results cannot drop a generator, shorten measurement or change assigned client counts', () => {
   const prepared = parseStandPrepared(preparation(), runId, 4), finished = { runId, results: [0, 1, 2, 3].map(result) };
   assert.equal(parseStandFinished(finished, runId, prepared, 2).results.length, 4);
+  assert.throws(() => parseStandFinished({ ...finished, chatAudit: {} }, runId, prepared, 2), /unexpected-stand-chat-audit/);
   assert.throws(() => parseStandFinished({ ...finished, results: finished.results.slice(1) }, runId, prepared, 2));
   const short = result(0); short.durationSeconds = 1; short.inputPacketsPerSecond = 60;
   assert.throws(() => parseStandFinished({ ...finished, results: [short, ...finished.results.slice(1)] }, runId, prepared, 2));

@@ -134,3 +134,16 @@ test('late offers, changed retries, unexpected receipts and conflicting publicat
   assert.throws(() => ledger.observeResult(1, { messageId: other.messageId, status: 'id_conflict', reasonCode: 'id_conflict' }, 511),
     /reported an ID conflict/);
 });
+
+test('audit enumerates the exact terminal publication IDs even when the sender did not observe its own batch', () => {
+  const ledger = new ChatV2WorkloadLedger(new ChatV2WorkloadPlan({ clients: 2, seconds: 1, steadyPerSecond: 2 }));
+  const sent = envelope(), pending = envelope();
+  ledger.offer('steady', 0, sent, 0, 'arcade');
+  ledger.offer('steady', 1, pending, 500, 'tables');
+  const published = { messageId: sent.messageId, status: 'published', publicationId } as const;
+  ledger.observeResult(0, published, 12);
+  ledger.observeResult(0, published, 13);
+  assert.deepEqual([...ledger.auditReceipts()], [{ publicationId, accountIndex: 0, roomEpoch, location: 'arcade', publicationSeq: null, offeredAtMs: 0 }]);
+  ledger.observePublication(0, { roomEpoch }, { publicationId, publicationSeq: 7 }, 14);
+  assert.deepEqual([...ledger.auditReceipts()], [{ publicationId, accountIndex: 0, roomEpoch, location: 'arcade', publicationSeq: 7, offeredAtMs: 0 }]);
+});
