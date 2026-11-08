@@ -240,6 +240,9 @@ export async function startLocalChatLoadStand(parentDirectory: string, signal?: 
     await connect({ ...chat, port: standby.port }, async client => {
       assert.equal((await client.query('SELECT pg_is_in_recovery() AS recovery')).rows[0].recovery, true);
       await waitFor(async () => {
+        // Synchronous commit confirms a standby WAL flush. Replay of the DDL
+        // can still be pending when the connection to the replica opens.
+        if (!(await client.query("SELECT to_regclass('public.stand_probe') IS NOT NULL AS present")).rows[0].present) return;
         const result = await client.query('SELECT 1 FROM stand_probe WHERE id = $1', [runId]);
         return result.rowCount === 1 ? true : undefined;
       }, 'Committed chat WAL did not reach the standby', signal);
