@@ -17,7 +17,7 @@ printf 'POSTGRES_PASSWORD=%s\n' "$fixture_password" > "$finance_root/fixture.env
 cat > "$finance_root/compose.finance.yaml" <<'YAML'
 name: royal-audit-restore-fixture
 services:
-  finance-db:
+  finance-db: &fixture
     # Image verified in deployment/finance/STATUS.md.
     image: postgres@sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652
     user: postgres
@@ -43,12 +43,24 @@ services:
       interval: 1s
       timeout: 3s
       retries: 30
+  finance-clone:
+    <<: *fixture
+    command: [postgres, -c, royal.audit_restore_fixture=restored]
+    volumes:
+      - clone_data:/var/lib/postgresql/data
 volumes:
   fixture_data:
+  clone_data:
 YAML
 
 local_docker() { sudo env -i PATH=/usr/sbin:/usr/bin:/sbin:/bin DOCKER_CONFIG="$docker_config" docker "$@"; }
 compose() { local_docker compose -f "$finance_root/compose.finance.yaml" "$@"; }
+loopback_port() {
+  local address
+  address=$(compose port "$1" 5432) || return 1
+  [[ $address =~ ^127\.0\.0\.1:([1-9][0-9]{0,4})$ ]] || return 1
+  printf '%s\n' "${BASH_REMATCH[1]}"
+}
 run_ops() {
   sudo env -i PATH=/usr/sbin:/usr/bin:/sbin:/bin \
     DOCKER_CONFIG="$docker_config" \
@@ -69,16 +81,13 @@ cleanup() {
 trap cleanup EXIT
 
 compose up --detach --wait --wait-timeout 60 finance-db
-address=$(compose port finance-db 5432)
-[[ $address =~ ^127\.0\.0\.1:([1-9][0-9]{0,4})$ ]]
-port=${BASH_REMATCH[1]}
+port=$(loopback_port finance-db)
 container=$(compose ps -q finance-db)
 image_id=$(local_docker inspect "$container" --format '{{.Image}}')
 [[ $image_id =~ ^sha256:[a-f0-9]{64}$ ]]
 cd "$repo_root"
 NODE_ENV=test ROYAL_AUDIT_RESTORE_FIXTURE_PASSWORD="$fixture_password" \
   node --import tsx deployment/finance/seed-audit-restore-fixture.ts "$port"
-unset fixture_password
 
 run_ops backup
 run_ops restore-check
@@ -100,6 +109,24 @@ jq -e '
 archive_file=$(jq -r '.metadata.file' "$test_root/success.json")
 [[ $archive_file =~ ^finance-[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}\.dump$ ]]
 metadata="$backup_dir/$archive_file.json"
+compose up --detach --wait --wait-timeout 60 finance-clone
+clone_port=$(loopback_port finance-clone)
+clone=$(compose ps -q finance-clone)
+[[ $clone != "$container" && $clone_port != "$port" ]]
+[[ $(local_docker inspect "$clone" --format '{{.Image}}') == "$image_id" ]]
+sudo env -i PATH=/usr/sbin:/usr/bin:/sbin:/bin DOCKER_CONFIG="$docker_config" \
+  python3 -B "$repo_root/deployment/finance/restore-audit-continuation-fixture.py" \
+  "$clone" "$test_root/success.json" "$backup_dir/$archive_file" > "$test_root/clone-binding.json"
+jq -e --slurpfile success "$test_root/success.json" \
+  '.archiveSha256 == $success[0].restore.sha256 and .dataSha256 == $success[0].restore.data_sha256' \
+  "$test_root/clone-binding.json" >/dev/null
+NODE_ENV=test ROYAL_AUDIT_RESTORE_FIXTURE_PASSWORD="$fixture_password" \
+  node --import tsx deployment/finance/resume-audit-restore-fixture.ts "$clone_port" > "$test_root/continuation.json"
+jq -e '.exactRetry and .recordedAttempts == 1 and .walletUnchanged and .auditedBalanceMatches' \
+  "$test_root/continuation.json" >/dev/null
+unset fixture_password
+compose rm --stop --force finance-clone
+
 # Keep the real archive and its SHA. Change only one structurally valid catalog digest.
 sudo jq '.audit.triggers[0].trigger_sha256 = ("0" * 64)' "$metadata" \
   | sudo tee "$metadata.changed" >/dev/null
@@ -121,7 +148,9 @@ workspaces=$(sudo find "$state_dir" -mindepth 1 -maxdepth 1 -type d -name 'resto
 [[ -z $remaining && -z $workspaces ]]
 
 jq -n --arg image "$image_id" --slurpfile success "$test_root/success.json" \
-  --slurpfile rejected "$test_root/latest-rejected.json" '{
+  --slurpfile rejected "$test_root/latest-rejected.json" --slurpfile clone "$test_root/clone-binding.json" \
+  --slurpfile resumed "$test_root/continuation.json" '{
     fixture: "synthetic", sourceImageId: $image, restore: $success[0].restore,
+    continuation: ($clone[0] + $resumed[0]),
     rejectedRestore: $rejected[0].restore
   }' > "$RUNNER_TEMP/royal-audit-restore-proof.json"

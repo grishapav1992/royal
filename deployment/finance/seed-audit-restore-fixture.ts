@@ -13,6 +13,7 @@ import { FinanceStore, migrateFinance } from '../../server/finance/store';
 import { PaymentOutbox } from '../../server/payments/outbox';
 import { VirtualPvpLedger } from '../../server/pvp/virtual-wallet';
 import { seedAuditLoadReplay } from '../../scripts/audit-load-replay-fixture';
+import { CARIBBEAN_GAME } from '../../src/shared/caribbeanTreasures';
 
 const port = process.argv[2];
 const password = process.env.ROYAL_AUDIT_RESTORE_FIXTURE_PASSWORD;
@@ -78,6 +79,12 @@ try {
     GRANT SELECT,INSERT ON audit_evidence,audit_attempt_capture_gaps TO royal_audit_recorder;
     GRANT UPDATE (missing_count,first_at_ms,last_at_ms) ON audit_attempt_capture_gaps TO royal_audit_recorder`);
   const replay = await seedAuditLoadReplay(game, audit, bank, { datasetId, environment: 'test' }, accounts);
+  const accepted = await wallet.expansion.operate(accounts[0], {
+    id: randomUUID(), gameId: CARIBBEAN_GAME, action: 'start', stakeUnits: '100', stakePolicyVersion: 1,
+    settings: { caribbean: { mode: 'buy-raid', lines: 5, stakeBasis: 'total' } },
+  });
+  assert.equal(accepted.session.state, 'active');
+  assert.equal(accepted.replayed, false);
   const payment = randomUUID();
   await crypto.creditStarsDeposit(accounts[0], payment, '4000000', 'synthetic-' + payment, Date.now());
   const captured = await audit.prepare(`SELECT count(*) AS count FROM audit_posting_refs
