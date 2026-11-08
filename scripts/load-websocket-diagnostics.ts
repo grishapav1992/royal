@@ -62,7 +62,7 @@ export class BrowserInputWindow {
   constructor(private sequence = 0) { this.sentThrough = sequence; }
   offer(x: number, y: number, ms: number) {
     if (this.pending.length >= MAX_PENDING_MOVEMENT_INPUTS - (x || y ? 1 : 0)) return false;
-    const input = { seq: ++this.sequence, x, y, ms: Math.min(MAX_MOVEMENT_INPUT_MS, Math.max(0, ms)), sprint: false };
+    const input = { seq: ++this.sequence, x, y, ms: Math.min(MAX_MOVEMENT_INPUT_MS, Math.max(0, ms)), sprint: false, route: undefined };
     this.pending.push(input); this.outgoing.push(input); return true;
   }
   flush(send: (inputs: MovementInput[]) => void) {
