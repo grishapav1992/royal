@@ -1,0 +1,226 @@
+{
+  "release": "mira-serve-24-20261108-v1",
+  "sourceCommit": "f64d0a292e8c655df1931cee9f308d936df8090e",
+  "baseCommit": "361627db8aca0e8deff128e6dc4fa0868b9152c1",
+  "image": "sha256:d3abb3de1eeadf1545f97f432910a066a92f1d888290d2d1510d23a007b96525",
+  "installManifestSha256": "70c4b7efa502f864ae496c9b8b7210259486f35a39d5351c51a2d02fc0ff4446",
+  "atlas": {
+    "path": "/assets/royal-bar/v3/mira-serve-24.png",
+    "sha256": "80151d10d266d42137f592849949f8137fa1a6af97e6636c7c2371bb004edb2d",
+    "sourcePreviewSha256": "920838ca5d6651f1dd046276fdf0636ba449d4a19e4729f03a592655606f537f",
+    "columns": 6,
+    "rows": 4,
+    "frames": 24,
+    "durationMs": 3200,
+    "frameStartMs": [
+      0,
+      100,
+      200,
+      400,
+      490,
+      580,
+      660,
+      750,
+      880,
+      1000,
+      1200,
+      1400,
+      1600,
+      1670,
+      1750,
+      1820,
+      1900,
+      2050,
+      2120,
+      2200,
+      2310,
+      2430,
+      2540,
+      2650
+    ],
+    "pouringFrames": [
+      8,
+      9,
+      10,
+      11,
+      12
+    ]
+  },
+  "clientFiles": {
+    "assets/ActivitiesUI-BymkbJUN.js": "0d0f4be32393024e3b04688d20e6f1fd10d737a2e643d3ac90e20f015a339585",
+    "assets/ClubWorld-CaqcxNA9.js": "6de00395738576691a3d4c0fbe6344b5d3d0365280939623f41ce0f831ae1be5",
+    "assets/GameHostRuntime-D5rnbs8P.js": "2ca485dafe38b1a1d3d6585136ed599390287a199e88ea59a0ec6fc6076a8fb0",
+    "assets/index-DvelQ_mm.js": "f6ac14d21393fc65cf2f3fdd8388e8daf491c476ac1d1e8bfa416a9f1547588e",
+    "assets/main-kzAYJdej.js": "c1fe09e8222da3a0699991c1b163c549a1e80c0d595e8758936268bd9cdf5de8",
+    "assets/phaser-B5ghFrHW.js": "4d54efc973815b4619163e900babbf9a941156d8456f3c67b39c8045d3524a7e",
+    "assets/playerLevelStatus-DdU69JTi.js": "2f5d79bcfc099c7b318bfbb52ffb1fad29637f08d4f2e0a9bacbeacb63d59ad0",
+    "assets/PvpUI-I8xLZRvE.js": "ca9b6fdaf90c6cfdb8d8c20e3c006d7f63e01d481fd75a9de93a2bb79b896733",
+    "index.html": "4c0749ae7782ea23cc87a9512d58f141b0a6936294ec1eb72a53e32ec0f92095",
+    "assets/royal-bar/v3/mira-serve-24.png": "80151d10d266d42137f592849949f8137fa1a6af97e6636c7c2371bb004edb2d"
+  },
+  "sourceFiles": {
+    "src/game/Bar.ts": "abf45e500e154a17bc83874b59a53015a00183730f4372a548e1a02666ca5ef8",
+    "src/game/miraAnimation.ts": "f563982cf0aa416b0537b1410ea20729230eb438828ced673f63d3d3200eb094",
+    "src/game/MiraRig.ts": "b7b69524096d4f32674772a9281e8fca5bd7d826f865592fd7bbf15da89a5513",
+    "public/assets/royal-bar/v3/mira-serve-24.png": "80151d10d266d42137f592849949f8137fa1a6af97e6636c7c2371bb004edb2d"
+  },
+  "server": {
+    "published": {
+      "published": true,
+      "preparedImage": "sha256:d3abb3de1eeadf1545f97f432910a066a92f1d888290d2d1510d23a007b96525",
+      "runningImage": "sha256:d3abb3de1eeadf1545f97f432910a066a92f1d888290d2d1510d23a007b96525",
+      "containerRestarted": true,
+      "sourceCommit": "f64d0a292e8c655df1931cee9f308d936df8090e",
+      "changedSources": 4,
+      "clientDeltaFiles": 10,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 0,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 10
+    },
+    "sourceBackup": {
+      "path": "/opt/royal-backups/mira-serve-24-20261108-v1/source.tgz",
+      "bytes": 4546,
+      "sha256": "4441bb463bcbe4e299ccece695276838dbf7be7c637df189bab3713d2d37d9e8"
+    },
+    "financialBackup": {
+      "path": "/opt/royal-backups/mira-serve-24-20261108-v1/financial.dump",
+      "sha256": "f559f834fd1c87f5f1197b0739cb54d3034621617240d3dbc2ac06ab0768285d",
+      "bytes": 38010121,
+      "databaseRestored": false
+    },
+    "programFiles": 8684,
+    "moduleFiles": 5395,
+    "backendSha256": "5e94ef5f22439ea7c63ad219117a491aa51752ca34255a97183cfd961ae0c577",
+    "transportMetadataRemoved": {
+      "files": 41,
+      "bytes": 6683
+    }
+  },
+  "checks": {
+    "buildAndGithubVerification": true,
+    "productionBackendSha256": "5e94ef5f22439ea7c63ad219117a491aa51752ca34255a97183cfd961ae0c577",
+    "occlusionPoses": 144,
+    "occlusionViewports": 2,
+    "connectedService": [
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 900
+        },
+        "connected": true,
+        "frames": 24,
+        "pouringFrames": 5
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "connected": true,
+        "frames": 24,
+        "pouringFrames": 5
+      }
+    ],
+    "walletRecovery": [
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 900
+        },
+        "connectedChat": true,
+        "sameUuid": true,
+        "singleDebit": true,
+        "stakeUnits": 10
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "connectedChat": true,
+        "sameUuid": true,
+        "singleDebit": true,
+        "stakeUnits": 10
+      }
+    ],
+    "walletTests": 19,
+    "productionAccountsOrRoundsCreated": false
+  },
+  "publicCheck": {
+    "health": true,
+    "verifiedPublicFiles": 10,
+    "viewports": [
+      {
+        "width": 1280,
+        "height": 900,
+        "atlasLoaded": true,
+        "offline": true
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "atlasLoaded": true,
+        "offline": true
+      }
+    ],
+    "statuses": {
+      "/healthz": 200,
+      "/api/auth/me": 200,
+      "/api/demo-wallet": 401,
+      "/api/demo-wallet/expansion": 401,
+      "/api/demo-wallet/club-fine": 401,
+      "/api/nile-wallet": 410,
+      "/api/nile-play/wallet": 410
+    }
+  },
+  "catalogue": {
+    "publicPointers": {
+      "studio-cosmic-escape": "e317da3d53d59a77d041f017c6f4c64e2de9c5320e30d6b5bcc28416e322fd5a",
+      "studio-caramel-carnival": "1f1bfb68a97246dc5e01f0a348e0274106b8f47d811ef44e728231ad69239728",
+      "studio-velvet-reign": "7d68db73639b57de7a64bccf15c5d2dd28df393600a969773c7916b1baee5ecd",
+      "studio-last-convoy": "4719d29d0fc020473dd88b6c4820d9e158b4782acfb6ccf722a1b274388a6491",
+      "studio-nitro-run": "2f1db276d4e4fc80b04d7ca208c55ea8e0d6d67905eeeae1158e8e1de1b1a45e",
+      "studio-afterglow": "48d928e8147918acdd69422c30c0bac1dc3d906ab3e0efdb967bb332d79a808f",
+      "studio-meme-overload": "35e183b47cd02dde634043691b015f777aef38e670ce17ca054928b1209b99ba",
+      "studio-dracona": "c10e0d66ac72313bb9e3c5b36e00c12093bbc891dab1eec462b070bb39baeca0",
+      "studio-neopolis": "b4922363b9af39c9196de85fa02c06f59ca8a11fea928732a32864ea0714e358",
+      "studio-forest-heart": "241693e84688d259e4116fada2384987ee53b8cce65e08efc5a066592bd29462",
+      "github-crash": "deef44e1e5d1a3ae7610f3a846067fef3549216ebcab1a556dd08affb5a8858e",
+      "royal-plinko": "726bab895825baeb53f0b3b3119ed7af7ae249eae2682d281c7fb62b59f42558",
+      "original-cr-vs-leo": "7c8c0df5a2d8d94c17a0d018fb0b7e30f8f854c7e4032ad3e4fd180e5116fcc3",
+      "original-jackie-chan": "ca36ab41e1f8b0dfffe070688dcdc0eec38c7135cafd710a918824019d450b95",
+      "studio-caribbean-treasures": "cc502ab15de4752e6d632062d29073adc4a3110dca076f7b17042fa130fa6d85",
+      "studio-flooded-temple": "272e43214f4c4f2911033118819ee970d0f2a43a38a8611f4862e311d0a49fe5",
+      "royal-roulette": "fb49365877d997d59454df7a5f28742b51f5afe9f751aaa86126661222f1a651",
+      "flag-battle": "2dbf07d4069cbaa5a790d79e278a4698a70bae9c150998151f5a5632fbd12f33",
+      "studio-wild-nudge": "45f58382424e564dc0aae819214ddd91ce8d9e0a7083c49e960947417d54ec2c"
+    },
+    "moduleFilesPreserved": 5395,
+    "addedGames": [],
+    "restoredGames": [],
+    "existingHiddenAdmissionEvidence": {
+      "fromRelease": "club-conduct-20261107-v1",
+      "unchangedBackendSha256": "5e94ef5f22439ea7c63ad219117a491aa51752ca34255a97183cfd961ae0c577"
+    }
+  },
+  "maintenance": {
+    "status": "completed",
+    "sourceCommit": "f64d0a292e8c655df1931cee9f308d936df8090e",
+    "currentImage": "sha256:d3abb3de1eeadf1545f97f432910a066a92f1d888290d2d1510d23a007b96525",
+    "rollbackImage": "sha256:0a65fe05e0262fcb12c5219194593ddfcbb4edb11c36f00a9811000e83219d30",
+    "healthOk": true,
+    "timerEnabled": true,
+    "timerActive": true,
+    "verificationPasses": 2,
+    "freeBefore": 12484374528,
+    "freeAfter": 12834725888,
+    "removedEntries": 25,
+    "removedImageTags": 3,
+    "preservedFinancialFiles": 206,
+    "durationSeconds": 78.97,
+    "projectBrainQueued": true
+  }
+}

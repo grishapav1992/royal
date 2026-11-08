@@ -36,7 +36,7 @@ export class Bar {
     this.contact.setPosition(target.x,BAR_POSITION.y+111).setVisible(seat>.01).setAlpha(seat*.4);
     const time=this.scene.time.now;
     const drawEffects=time-this.lastDraw>=33;
-    if(!drawEffects&&!['walk','wipe','sit','sit-down','stand-up'].includes(target.action))return;
+    if(!drawEffects&&!['walk','wipe','sit','sit-down','stand-up','serve'].includes(target.action))return;
     const elapsed=Number.isFinite(this.lastDraw)?(time-this.lastDraw)/1000:.033;
     const guardListening=target.action==='chat'&&target.facing==='left'&&conversation.active&&!conversation.speaking;
     const action=guardListening||reducedMotion&&target.action==='greet'?'listen':target.action;
