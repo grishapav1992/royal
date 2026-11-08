@@ -130,7 +130,8 @@ test('default command timing follows PostgreSQL when the Node clock is behind or
   let nodeNow = databaseNow - 60 * minute;
   context.mock.method(Date, 'now', () => nodeNow);
 
-  assert.equal((await sanctions.active('alice'))?.id, original.outcome.sanction.id);
+  assert(original.outcome.sanction.until < databaseNow);
+  assert.equal(await sanctions.active('alice'), null);
   const stale = command();
   assert.deepEqual(await commands.apply(stale), { version: 1, eventId: stale.eventId, status: 'obsolete',
     state: { clearanceGeneration: 1, stateVersion: 2 } });
@@ -147,12 +148,54 @@ test('default command timing follows PostgreSQL when the Node clock is behind or
   assert.equal(opened.sanction.until, createdAt + duration);
 
   nodeNow = databaseNow + 60 * minute;
-  assert.equal(await sanctions.active('alice'), null);
+  assert.deepEqual(await sanctions.active('alice'), opened.sanction);
   const current = await commands.apply(command({ clearanceGeneration: 1 }));
   assert.equal(current.status, 'applied');
   assert.equal(current.opened, false);
   assert.deepEqual(current.sanction, opened.sanction);
   assert.deepEqual(current.state, opened.state);
+});
+
+test('clock drift cannot charge an expired fine or close a current episode during capture', async context => {
+  const { db, sanctions, debits } = await fixture(context);
+  const clock = db.prepare('SELECT floor(extract(epoch FROM clock_timestamp()) * 1000)::bigint AS now_ms');
+  const databaseNow = (await clock.get())?.now_ms;
+  assert.equal(typeof databaseNow, 'number');
+  const minute = 60_000, duration = 20 * minute;
+  let nodeNow = databaseNow - 60 * minute;
+  context.mock.method(Date, 'now', () => nodeNow);
+
+  const open = async (accountId: string, at?: number) => (await sanctions.recordViolation(accountId,
+    { id: randomUUID(), reason: 'spam' }, at)).outcome.sanction;
+  const quote = (sanction: Awaited<ReturnType<typeof open>>) => ({ id: randomUUID(), sanctionId: sanction.id,
+    revision: sanction.revision, amountCents: sanction.amountCents });
+  const state = (accountId: string) => db.prepare('SELECT clearance_generation,state_version FROM club_conduct_state WHERE account_id=?').get(accountId);
+
+  const expired = await open('alice', databaseNow - duration - minute);
+  assert.deepEqual(await sanctions.pay('alice', quote(expired)), { status: 'inactive', sanction: null });
+  assert.deepEqual(debits, []);
+  assert.deepEqual(await state('alice'), { clearance_generation: 1, state_version: 2 });
+
+  const expiredAgain = await open('alice', databaseNow - duration - minute);
+  assert.deepEqual(await sanctions.recordCapture('alice', { pursuitId: 'expired', sanctionId: expiredAgain.id }),
+    { outcome: null, replayed: false });
+  assert.deepEqual(await state('alice'), { clearance_generation: 2, state_version: 4 });
+
+  const current = await open('bob');
+  assert(current.until >= databaseNow + duration && current.until <= (await clock.get())?.now_ms + duration);
+  nodeNow = databaseNow + 60 * minute;
+  assert.deepEqual(await sanctions.enforcement('bob'), { sanction: current, disguiseSkinId: null });
+  const capture = await sanctions.recordCapture('bob', { pursuitId: 'current', sanctionId: current.id });
+  const extended = { ...current, until: current.until + 10 * minute, amountCents: 1500, revision: 2 };
+  assert.deepEqual(capture, { outcome: { sanction: extended, kind: 'repeat' }, replayed: false });
+  assert.deepEqual(await state('bob'), { clearance_generation: 0, state_version: 2 });
+
+  const request = quote(extended);
+  const paid = await sanctions.pay('bob', request);
+  assert.equal(paid.status, 'paid');
+  assert(paid.receipt.paidAt >= databaseNow && paid.receipt.paidAt <= (await clock.get())?.now_ms);
+  assert.deepEqual(debits, [{ accountId: 'bob', operationId: request.id, amountCents: 1500 }]);
+  assert.deepEqual(await state('bob'), { clearance_generation: 1, state_version: 3 });
 });
 
 test('a delayed toilet command exposes the observed skin and emits no pursuit', async context => {

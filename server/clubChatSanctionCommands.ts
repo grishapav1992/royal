@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { canonicalChatMessageId, parseChatV2Visit, type ChatLocation } from '../src/shared/chat';
 import type { ClubSanction } from '../src/shared/security';
 import { SKIN_UUID } from '../src/shared/skinStudio';
-import { normalizeExpiredClubSanction, type ClubConductState } from './chatGameAuthorization';
+import { normalizeExpiredClubSanction, readClubGameTime, type ClubConductState } from './chatGameAuthorization';
 import type { ClubSanctionStore } from './clubSanctions';
 import type { PostgresDatabase } from './database';
 import { applySchemaMigration } from './database-migrations';
@@ -87,14 +87,6 @@ async function readConductState(db: PostgresDatabase, accountId: string): Promis
   return { clearanceGeneration, stateVersion };
 }
 
-async function readGameTime(db: PostgresDatabase): Promise<number> {
-  const row = await db.prepare('SELECT floor(extract(epoch FROM statement_timestamp()) * 1000)::bigint AS now_ms').get();
-  const value = row?.now_ms;
-  const at = typeof value === 'number' || typeof value === 'string' ? Number(value) : NaN;
-  if (!Number.isSafeInteger(at) || at < 0) throw new Error('Invalid game database time');
-  return at;
-}
-
 /** The game owns this receipt and outbox. Delivery happens after the account transaction commits. */
 export class ClubChatSanctionCommands {
   readonly ready: Promise<void>;
@@ -139,7 +131,7 @@ export class ClubChatSanctionCommands {
       if (prior) return prior.fingerprint === fingerprint ? prior.receipt as Receipt : { ...identity, status: 'id_conflict' };
 
       // Read the same game clock used at admission, after taking the account lock.
-      const appliedAt = this.now?.() ?? await readGameTime(this.db);
+      const appliedAt = this.now?.() ?? await readClubGameTime(this.db);
       const state = await normalizeExpiredClubSanction(this.db, accountId, { now: appliedAt })
         ?? await readConductState(this.db, accountId);
       if (command.clearanceGeneration < state.clearanceGeneration) {

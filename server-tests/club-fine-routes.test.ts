@@ -140,6 +140,22 @@ test('fine routes inherit private wallet authorization, strict input and per-acc
   assert.equal((await accounts.wallet.snapshot(owner.accountId)).balance, 40);
 });
 
+test('fine routes quote and charge against the database clock despite a fast Node clock', async context => {
+  const request = await serve(context);
+  const owner = await guest(context, 40), sanction = await mark(owner.accountId);
+  const fastNodeTime = Date.now() + 60 * 60_000;
+  context.mock.method(Date, 'now', () => fastNodeTime);
+  const visible = await body<ClubFineStatus>(await request(owner));
+  assert.deepEqual(visible.sanction, sanction);
+  assert(visible.serverNow < sanction.until && sanction.until < fastNodeTime);
+
+  const payment = await body<ClubFineResponse>(await request(owner, quote(sanction)));
+  assert.equal(payment.status, 'paid');
+  assert(visible.serverNow <= payment.receipt.paidAt && payment.receipt.paidAt <= payment.serverNow);
+  assert(payment.serverNow < sanction.until);
+  assert.equal((await accounts.wallet.snapshot(owner.accountId)).balance, 30);
+});
+
 test('paying the current fine stops matching pursuits in all rooms and lets a confirmed escort finish', async context => {
   const request = await serve(context);
   const owner = await guest(context, 40);
@@ -177,13 +193,12 @@ test('paying the current fine stops matching pursuits in all rooms and lets a co
   }
 
   const payment = quote(current);
-  const requestedAt = Date.now();
   const paid = await body<ClubFineResponse>(await request(owner, payment));
   assert.equal(paid.status, 'paid');
   assert.equal(paid.replayed, false);
   assert.equal(paid.sanction, null);
   assert.deepEqual(paid.receipt, { ...payment, paidAt: paid.receipt.paidAt });
-  assert(paid.receipt.paidAt >= requestedAt && paid.receipt.paidAt <= paid.serverNow);
+  assert(paid.receipt.paidAt >= changed.serverNow && paid.receipt.paidAt <= paid.serverNow);
   assert.equal((await body<ClubFineStatus>(await request(owner))).sanction, null);
 
   for (const room of chasing) {

@@ -1,7 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import type { PostgresDatabase } from './database';
 import { applySchemaMigration } from './database-migrations';
-import { advanceClubConductState, initializeClubConductState, normalizeExpiredClubSanction } from './chatGameAuthorization';
+import { advanceClubConductState, CLUB_GAME_TIME_SQL, initializeClubConductState, normalizeExpiredClubSanction,
+  readClubGameTime } from './chatGameAuthorization';
 import type { ClubFineRequest, ClubFineResult, ClubSanction, ClubViolation } from '../src/shared/security';
 import { generatedAppearance, SKIN_THEME, SKIN_UUID } from '../src/shared/skinStudio';
 import { CryptoError } from './crypto/config';
@@ -75,12 +76,14 @@ export class ClubSanctionStore {
 
   usesDatabase(db: PostgresDatabase): boolean { return this.db === db; }
 
-  async active(accountId: string, now = Date.now()): Promise<ClubSanction | null> {
+  gameTime(): Promise<number> { return readClubGameTime(this.db); }
+
+  async active(accountId: string, now?: number): Promise<ClubSanction | null> {
     await this.ready;
     return (await this.readActive(accountId, now))?.sanction ?? null;
   }
 
-  async enforcement(accountId: string, now = Date.now()) {
+  async enforcement(accountId: string, now?: number) {
     await this.ready;
     if (this.skinStudioReady) await this.skinStudioReady;
     return this.db.transaction(async () => {
@@ -101,7 +104,7 @@ export class ClubSanctionStore {
     if (!charge) throw new Error('Club fine wallet is unavailable');
     await this.ready;
     return this.db.transaction(async () => {
-      const at = now ?? Date.now();
+      const at = now ?? await this.gameTime();
       const { id } = request;
       const prior = await this.db.prepare(`SELECT episode_id,revision,amount_cents,paid_at
         FROM club_fine_payments WHERE account_id=? AND operation_id=?`).get(accountId, id);
@@ -188,9 +191,9 @@ export class ClubSanctionStore {
     });
   }
 
-  private async readActive(accountId: string, now: number): Promise<ActiveSanction | null> {
+  private async readActive(accountId: string, now?: number): Promise<ActiveSanction | null> {
     const row = await this.db.prepare(`SELECT episode_id, initial_pursuit_id, expires_at, amount_cents, revision
-      FROM club_sanctions WHERE account_id=? AND expires_at>?`).get(accountId, now);
+      FROM club_sanctions WHERE account_id=? AND expires_at>COALESCE(?::bigint, ${CLUB_GAME_TIME_SQL})`).get(accountId, now ?? null);
     if (!row) return null;
     return {
       initialPursuitId: row.initial_pursuit_id as string | null,
@@ -208,7 +211,7 @@ export class ClubSanctionStore {
         .get(accountId, kind, id);
       if (prior) return { outcome: prior.outcome as T, replayed: true };
 
-      const at = now ?? Date.now();
+      const at = now ?? await this.gameTime();
       await normalizeExpiredClubSanction(this.db, accountId, { now: at });
       const outcome = await change(at);
       await this.db.prepare('INSERT INTO club_sanction_events (account_id,kind,event_id,reason,outcome) VALUES (?,?,?,?,?::jsonb)')

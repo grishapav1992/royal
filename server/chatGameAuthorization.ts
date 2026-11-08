@@ -3,6 +3,7 @@ import { databaseConfig, PostgresDatabase } from './database';
 import { generatedAppearance } from '../src/shared/skinStudio';
 
 export const CHAT_GAME_AUTHORIZATION_BATCH_LIMIT = 50;
+export const CLUB_GAME_TIME_SQL = 'floor(extract(epoch FROM statement_timestamp()) * 1000)::bigint';
 const batchBudgetMs = 1000;
 const temporaryDatabaseErrors = new Set(['55P03', '57014', '57P01', '57P02', '57P03', '53300',
   'ECONNREFUSED', 'ECONNRESET', 'ETIMEDOUT', 'EPIPE']);
@@ -30,6 +31,11 @@ function counter(value: unknown) {
   const number = typeof value === 'number' || typeof value === 'string' ? Number(value) : NaN;
   if (!Number.isSafeInteger(number) || number < 0) throw new Error('Invalid club conduct counter');
   return number;
+}
+
+export async function readClubGameTime(db: PostgresDatabase): Promise<number> {
+  const row = await db.prepare(`SELECT ${CLUB_GAME_TIME_SQL} AS now_ms`).get();
+  return counter(row?.now_ms);
 }
 
 function boundedTimeout(value: number | false | undefined, ceiling: number) {
@@ -68,7 +74,7 @@ export function normalizeExpiredClubSanction(db: PostgresDatabase, accountId: st
     const expired = await db.prepare(`
       DELETE FROM club_sanctions
       WHERE account_id = ? AND (?::text IS NULL OR episode_id = ?)
-        AND expires_at <= COALESCE(?::bigint, floor(extract(epoch FROM statement_timestamp()) * 1000)::bigint)
+        AND expires_at <= COALESCE(?::bigint, ${CLUB_GAME_TIME_SQL})
       RETURNING episode_id`).get(accountId, expectedEpisodeId, expectedEpisodeId, now ?? null);
     if (expired) return advanceClubConductState(db, accountId, true);
   }, { lockKey: 'account:' + accountId });
@@ -133,7 +139,7 @@ export class ChatGameAuthorization {
     return this.withBudget(sessions, async (db, references) => {
       const rows = await db.prepare(`
         WITH authority AS (
-          SELECT pg_is_in_recovery() AS replica, floor(extract(epoch FROM statement_timestamp()) * 1000)::bigint AS authorized_at
+          SELECT pg_is_in_recovery() AS replica, ${CLUB_GAME_TIME_SQL} AS authorized_at
         )
         SELECT authority.*, s.account_id
         FROM unnest(?::text[], ?::text[]) WITH ORDINALITY AS input(account_id, session_hash, ordinal)
@@ -149,7 +155,7 @@ export class ChatGameAuthorization {
   private async readAdmission(db: PostgresDatabase, references: readonly ChatGameSession[]) {
     const rows = await db.prepare(`
       WITH authority AS (
-        SELECT pg_is_in_recovery() AS replica, floor(extract(epoch FROM statement_timestamp()) * 1000)::bigint AS authorized_at
+        SELECT pg_is_in_recovery() AS replica, ${CLUB_GAME_TIME_SQL} AS authorized_at
       )
       SELECT authority.*, a.id AS account_id, a.appearance, state.clearance_generation,
         CASE WHEN sanction.expires_at <= authority.authorized_at THEN sanction.episode_id END AS expired_episode_id
