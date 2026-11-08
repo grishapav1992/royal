@@ -45,20 +45,30 @@ export class PvpStore {
     if (!row) return fail('Поединок не найден.', 404);
     return JSON.parse(String(row.payload));
   }
-  private async save(s: StoredMatch, now: number) {
+  private async save(s: StoredMatch, now: number, receipt?: { accountId: string; id: string; key: string }) {
     const c = s.challenge;
-    await this.ledger.db.prepare(`INSERT INTO pvp_matches(id,room_id,creator_id,opponent_id,status,payload,updated_at) VALUES(?,?,?,?,?,?,?)
-      ON CONFLICT(id) DO UPDATE SET opponent_id=excluded.opponent_id,status=excluded.status,payload=excluded.payload,updated_at=excluded.updated_at`)
-      .run(c.id, s.roomId, c.creatorId, c.opponentId, c.status, JSON.stringify(s), now);
+    const upsert = `INSERT INTO pvp_matches(id,room_id,creator_id,opponent_id,status,payload,updated_at) VALUES(?,?,?,?,?,?,?)
+      ON CONFLICT(id) DO UPDATE SET opponent_id=excluded.opponent_id,status=excluded.status,payload=excluded.payload,updated_at=excluded.updated_at`;
+    const values = [c.id, s.roomId, c.creatorId, c.opponentId, c.status, JSON.stringify(s), now];
+    if (receipt) {
+      await this.ledger.db.prepare(`WITH saved AS (${upsert} RETURNING id)
+        INSERT INTO pvp_requests(account_id,id,request_key,match_id,created_at)
+        SELECT ?,?,?,saved.id,? FROM saved`).run(...values, receipt.accountId, receipt.id, receipt.key, now);
+    } else {
+      await this.ledger.db.prepare(upsert).run(...values);
+    }
   }
   private async current(id: string) {
     return !!await this.ledger.db.prepare("SELECT 1 FROM pvp_matches WHERE (creator_id=? OR opponent_id=?) AND status IN ('open','arriving','playing') LIMIT 1").get(id, id);
   }
-  private async finish(s: StoredMatch, winnerId: string | null, reason: string, now: number) {
+  private async settle(s: StoredMatch, winnerId: string | null, reason: string, now: number) {
     if (!isFreePvp(s.challenge)&&(!isNegotiatedPvp(s.challenge)||s.funded)) await this.ledger.pvpFinish(s.challenge.creatorId, { matchId: s.challenge.id, winnerId, reason }, now);
     const c = s.challenge;
     c.status = winnerId || reason === 'draw' ? 'finished' : 'cancelled'; c.winnerId = winnerId; c.reason = reason;
     c.expiresAt = now; c.revision++; c.disconnected = [];
+  }
+  private async finish(s: StoredMatch, winnerId: string | null, reason: string, now: number) {
+    await this.settle(s, winnerId, reason, now);
     await this.save(s, now);
   }
   private async expire(s: StoredMatch, now: number, advanceDuel = true) {
@@ -212,7 +222,7 @@ export class PvpStore {
           if(isNegotiatedPvp(c))s.duel=createTsuDuel(now,c.rulesVersion===4?4:3);
         } else if (op.action === 'cancel') {
           if (c.status === 'playing' || !participant(c, actor.accountId) && c.targetId !== actor.accountId) return fail('Партию можно завершить только сдачей.');
-          await this.finish(s, null, 'cancel', now);
+          await this.settle(s, null, 'cancel', now);
         } else if(op.action==='terms'||op.action==='duel-ready'||op.action==='unready'){
           if(!isNegotiatedPvp(c)||c.status!=='arriving'||!participant(c,actor.accountId)||c.disconnected.length)return fail('Условия сейчас недоступны.');
           if(op.termsRevision!==c.termsRevision)return fail('Условия изменились. Проверь ставку и нажми «Готово» ещё раз.');
@@ -240,7 +250,7 @@ export class PvpStore {
           }
         } else if (op.action === 'resign') {
           if (c.status !== 'playing' || !participant(c, actor.accountId)) return fail('Партия ещё не началась.');
-          await this.finish(s, members(c).find(id => id !== actor.accountId)!, 'resign', now);
+          await this.settle(s, members(c).find(id => id !== actor.accountId)!, 'resign', now);
         } else if (op.action === 'move') {
           if (c.status !== 'playing' || !participant(c, actor.accountId)) return fail('Состояние партии изменилось. Обнови стол.');
           const side = c.creatorId === actor.accountId ? 0 : 1;
@@ -253,18 +263,17 @@ export class PvpStore {
             // Choices share a round token: the first player's revision must not reject a simultaneous second choice.
             try { s.tsuEFa = playTsuEFa(s.tsuEFa, side, op.move); } catch { return fail('Этот выбор недоступен.'); }
             if (s.tsuEFa.round !== round) { s.lastMoveAt = now; c.expiresAt = now + PVP_MOVE_MS; }
-            if (s.tsuEFa.phase === 'finished') await this.finish(s, members(c)[s.tsuEFa.winner!], 'win', now);
+            if (s.tsuEFa.phase === 'finished') await this.settle(s, members(c)[s.tsuEFa.winner!], 'win', now);
           } else {
             if (!s.cards || op.revision !== s.cards.revision || op.move.kind === 'choose') return fail('Состояние партии изменилось. Обнови стол.');
             try { s.cards = playCardMove(s.cards, side, op.move); } catch { return fail('Этот ход недоступен.'); }
             s.lastMoveAt = now; c.expiresAt = now + PVP_MOVE_MS;
-            if (s.cards.phase === 'finished') await this.finish(s, s.cards.winner === null ? null : members(c)[s.cards.winner], s.cards.winner === null ? 'draw' : 'win', now);
+            if (s.cards.phase === 'finished') await this.settle(s, s.cards.winner === null ? null : members(c)[s.cards.winner], s.cards.winner === null ? 'draw' : 'win', now);
           }
         }
         c.revision++;
       }
-      await this.save(s, now);
-      await this.ledger.db.prepare('INSERT INTO pvp_requests(account_id,id,request_key,match_id,created_at) VALUES(?,?,?,?,?)').run(actor.accountId, op.id, key, s.challenge.id, now);
+      await this.save(s, now, { accountId: actor.accountId, id: op.id, key });
       // A fresh virtual hold already read this wallet under the account lock, which is still held.
       const wallet = hold && !hold.replayed && 'scope' in hold.wallet && hold.wallet.scope === VIRTUAL_PVP_SCOPE
         ? hold.wallet : undefined;

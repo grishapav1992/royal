@@ -96,6 +96,93 @@ test('fresh paid create and accept read the wallet once and retries read the set
     await c.close();
   }
 });
+for (const action of ['cancel', 'resign'] as const) test(`PvP ${action} saves match and receipt in one query and rolls back a failed receipt`, async t => {
+  const c = await fixture();
+  try {
+    const queries = t.mock.method(c.db as unknown as { query(sql: string): Promise<unknown> }, 'query');
+    const matchWrite = /\b(?:insert\s+into|update)\s+pvp_matches\b/i;
+    const receiptWrite = /\binsert\s+into\s+pvp_requests\b/i;
+    const takeWrites = () => {
+      const writes = queries.mock.calls.map(call => call.arguments[0]).filter(sql => matchWrite.test(sql) || receiptWrite.test(sql));
+      queries.mock.resetCalls();
+      return writes;
+    };
+
+    const create = { id: randomUUID(), action: 'create', gameId: 'chess', stakeUnits: '50000000', targetId: c.b };
+    const opened = await c.store.command(c.aa, create, c.now);
+    const createWrites = takeWrites();
+    assert(opened.active);
+    const challengeId = opened.active.id;
+    const receipt = (accountId: string, id: string) => c.db.prepare('SELECT match_id,request_key,created_at FROM pvp_requests WHERE account_id=? AND id=?')
+      .get(accountId, id);
+    assert.equal((await receipt(c.a, create.id))?.match_id, challengeId);
+    await c.store.command(c.bb, { id: randomUUID(), action: 'accept', challengeId }, c.now);
+    if (action === 'resign') for (const actor of [c.aa, c.bb]) {
+      await c.store.command(actor, { id: randomUUID(), action: 'ready', challengeId }, c.now);
+    }
+    const actor = action === 'cancel' ? c.aa : c.bb;
+    const command = { id: randomUUID(), action, challengeId };
+    const matchRow = () => c.db.prepare('SELECT status,payload,updated_at FROM pvp_matches WHERE id=?').get(challengeId);
+    const bankRow = () => c.db.prepare('SELECT state,winner_id,reason,fee_units,updated_at FROM virtual_pvp_banks WHERE match_id=?').get(challengeId);
+    const holdRows = () => c.db.prepare('SELECT account_id,state FROM virtual_pvp_holds WHERE match_id=? ORDER BY account_id').all(challengeId);
+    const finalEntries = () => c.db.prepare('SELECT account_id,entry_type,amount_units FROM demo_ledger WHERE operation_id=? ORDER BY account_id')
+      .all('pvp:' + challengeId + ':final');
+    const before = await c.store.snapshot(actor, c.now);
+    assert(before.active);
+    const [beforeMatch, beforeBank, beforeHolds] = await Promise.all([matchRow(), bankRow(), holdRows()]);
+    assert.equal(beforeBank?.state, 'open');
+    await c.db.exec(`CREATE FUNCTION reject_pvp_receipt() RETURNS trigger LANGUAGE plpgsql AS $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM virtual_pvp_banks WHERE match_id=NEW.match_id AND state IN ('settled','refunded')) THEN
+          RAISE EXCEPTION 'PvP receipt arrived before settlement';
+        END IF;
+        RAISE EXCEPTION 'PvP test receipt rejected';
+      END $$;
+      CREATE TRIGGER reject_pvp_receipt BEFORE INSERT ON pvp_requests FOR EACH ROW EXECUTE FUNCTION reject_pvp_receipt()`);
+    takeWrites();
+
+    await assert.rejects(c.store.command(actor, command, c.now + 1), /PvP test receipt rejected/);
+    const rejectedWrites = takeWrites();
+    assert.deepEqual(await matchRow(), beforeMatch);
+    assert.deepEqual(await bankRow(), beforeBank);
+    assert.deepEqual(await holdRows(), beforeHolds);
+    assert.deepEqual(await finalEntries(), []);
+    assert.deepEqual(await Promise.all([c.balance(c.a), c.balance(c.b)]), [15000, 15000]);
+    assert.equal(await receipt(actor.accountId, command.id), undefined);
+    await c.db.exec('DROP TRIGGER reject_pvp_receipt ON pvp_requests');
+
+    const settled = await c.store.command(actor, command, c.now + 1);
+    const settlementWrites = takeWrites();
+    assert.equal(Object.getOwnPropertyDescriptor(settled, 'replayed')?.value, false);
+    assert.equal(settled.active?.status, action === 'cancel' ? 'cancelled' : 'finished');
+    assert.equal(settled.active?.reason, action);
+    assert.equal(settled.active?.revision, before.active.revision + 2);
+    const savedReceipt = await receipt(actor.accountId, command.id);
+    assert.equal(savedReceipt?.match_id, challengeId);
+    const payouts = await finalEntries();
+    const expected = action === 'cancel' ? [[c.a, 'refund', 5000], [c.b, 'refund', 5000]] : [[c.a, 'win', 9500]];
+    assert.deepEqual(payouts.map(row => [row.account_id, row.entry_type, Number(row.amount_units)]).sort(), expected.sort());
+    const balances = action === 'cancel' ? [20000, 20000] : [24500, 15000];
+    assert.deepEqual(await Promise.all([c.balance(c.a), c.balance(c.b)]), balances);
+
+    const retried = await c.store.command(actor, command, c.now + 2);
+    assert.deepEqual(takeWrites(), []);
+    assert.equal(Object.getOwnPropertyDescriptor(retried, 'replayed')?.value, true);
+    assert.equal(retried.active?.revision, settled.active?.revision);
+    assert.deepEqual(await receipt(actor.accountId, command.id), savedReceipt);
+    assert.deepEqual(await finalEntries(), payouts);
+    assert.deepEqual(await Promise.all([c.balance(c.a), c.balance(c.b)]), balances);
+
+    const writes = [createWrites, rejectedWrites, settlementWrites];
+    assert.deepEqual(writes.map(statements => statements.length), [1, 1, 1]);
+    for (const [sql] of writes) {
+      assert.match(sql, matchWrite);
+      assert.match(sql, receiptWrite);
+    }
+  } finally {
+    await c.close();
+  }
+});
 test('room sync reads one batch of bounded player histories and preserves private views', async t => {
   const c = await fixture();
   try {
