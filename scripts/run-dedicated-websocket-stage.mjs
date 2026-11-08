@@ -8,10 +8,15 @@ import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const project = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-export const HELPER_SHA256 = 'b1ce729747c84a8b6228f2579175abf1a605c34682eae8244369d1a2107212d8';
+export const HELPER_SHA256 = 'd6b95bb623305220e4b18e8b1e3860d55e0ba4e3d28c1979bea18a422467f8af';
+export const PRE_SCALE_HELPER_SHA256 = 'b1ce729747c84a8b6228f2579175abf1a605c34682eae8244369d1a2107212d8';
 export const PREVIOUS_HELPER_SHA256 = 'e27d3a70dfa0405fb99477bfa246aa9287d9b2039f7f5085cccd5dcb7570416c';
 export const LEGACY_HELPER_SHA256 = '5421303dac2e8a6f814f3c3f7ffaaa78305a56ef291b719d6e5cf921917a2ceb';
 export const MACHINE_SHA256 = '97966a66c8d354a25927d498a4b44f23e9d49c3e7c2941ce0079e1317231421e';
+const tlsHelperHashes = [HELPER_SHA256, PRE_SCALE_HELPER_SHA256, PREVIOUS_HELPER_SHA256];
+const legacyClientLimit = 6000, maxClients = 10000, legacyProcessLimit = 24, maxGameProcesses = 36;
+const maxStageSeconds = 3900;
+const stageDurationSeconds = remote => 900 + remote.seconds + (remote.clients > legacyClientLimit ? 1200 : 600);
 const host = 'root@31.56.189.118', hex = /^[a-f0-9]{64}$/;
 const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 const hash = data => createHash('sha256').update(data).digest('hex');
@@ -46,10 +51,11 @@ export function validateDedicatedStagePlan(value, { platform = process.platform,
   if (transport === 'direct-tls') keys.push('tlsGateway');
   if (Object.keys(remote).length !== keys.length || keys.some(key => !(key in remote))
     || !/^sha256:[a-f0-9]{64}$/.test(remote.imageId ?? '') || !hex.test(remote.metadataSha256 ?? '')
-    || !hex.test(remote.bundleSha256 ?? '') || ![HELPER_SHA256, PREVIOUS_HELPER_SHA256, LEGACY_HELPER_SHA256].includes(remote.helperSha256)
+    || !hex.test(remote.bundleSha256 ?? '') || ![...tlsHelperHashes, LEGACY_HELPER_SHA256].includes(remote.helperSha256)
     || remote.machineIdSha256 !== MACHINE_SHA256) fail('invalid-pinned-remote-plan');
-  if (!integer(remote.gameProcesses, 1, 24) || !integer(remote.clients, 4, Math.min(6000, remote.gameProcesses * 300))
-    || !integer(remote.seconds, 1, 1800)) fail('invalid-stage-workload');
+  if (!integer(remote.gameProcesses, 1, maxGameProcesses) || !integer(remote.clients, 4, Math.min(maxClients, remote.gameProcesses * 300))
+    || !integer(remote.seconds, 1, 1800)
+    || (remote.clients > legacyClientLimit || remote.gameProcesses > legacyProcessLimit) && remote.helperSha256 !== HELPER_SHA256) fail('invalid-stage-workload');
   if (!budget || Object.keys(budget).sort().join(',') !== 'cpus,memoryMiB,pidsLimit'
     || typeof budget.cpus !== 'number' || !Number.isFinite(budget.cpus) || budget.cpus < 1 || budget.cpus > 18
     || !integer(budget.memoryMiB, 1024, 40960) || !integer(budget.pidsLimit, 64, 2048)) fail('invalid-container-budget');
@@ -68,7 +74,7 @@ export function validateDedicatedStagePlan(value, { platform = process.platform,
   let directTls;
   if (transport === 'direct-tls') {
     const gateway = remote.tlsGateway;
-    if (platform !== 'darwin' || ![HELPER_SHA256, PREVIOUS_HELPER_SHA256].includes(remote.helperSha256) || !gateway
+    if (platform !== 'darwin' || !tlsHelperHashes.includes(remote.helperSha256) || !gateway
       || Object.keys(gateway).sort().join(',') !== 'port,serverName' || gateway.port !== 26443 || gateway.serverName !== 'royal-load.test'
       || value.localPorts.api.join(',') !== '17100,17102,17103,17104' || value.workers > 4) fail('invalid-direct-tls-transport');
     if (!value.directTls || !hex.test(value.directTls.proxySha256 ?? '')
@@ -109,7 +115,7 @@ export function stopOwnedTlsProxyProcessGroup(child, options = {}) {
 
 export function managedCommand(program, args, { timeoutMs, signal, input, maximum = 65536, onProgress, onMessage,
   spawnImpl = spawn, stopGroup = stopOwnedProcessGroup } = {}) {
-  if (!integer(timeoutMs, 1, 3500000) || !integer(maximum, 1, maximumReport)) fail('invalid-bounded-command');
+  if (!integer(timeoutMs, 1, maxStageSeconds * 1000) || !integer(maximum, 1, maximumReport)) fail('invalid-bounded-command');
   const env = {};
   for (const key of ['PATH', 'HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'TZ']) if (process.env[key] !== undefined) env[key] = process.env[key];
   const child = spawnImpl(program, args, { cwd: project, env, detached: true, stdio: ['pipe', 'pipe', 'pipe'] });
@@ -240,7 +246,7 @@ export function classifyArtifactError(error, stage) {
     'private-bounded-file-required', 'private-file-size-changed'].includes(code) ? 'rejected' : 'unavailable', code };
 }
 export function resourceMonitorCode(plan, expectedId) {
-  const seconds = 900 + plan.remotePlan.seconds + 600;
+  const seconds = stageDurationSeconds(plan.remotePlan);
   return attestationCode(plan, expectedId) + `identifier=${JSON.stringify(expectedId)}\nname=expected['containerName']\nsummary=root/'resource-monitor.json'\nsamples=root/'resource-monitor.jsonl'\nstarted=time.monotonic(); deadline=started+${seconds}; count=0; reason='monitor-timeout'; last=None\ndef inspect():\n fmt='{"Id":{{json .Id}},"Name":{{json .Name}},"Image":{{json .Image}},"label":{{json (index .Config.Labels "royal.load.run-id")}},"status":{{json .State.Status}},"pid":{{json .State.Pid}},"startedAt":{{json .State.StartedAt}},"exitCode":{{json .State.ExitCode}},"oomKilled":{{json .State.OOMKilled}}}'\n reply=subprocess.run(['docker','inspect','--format',fmt,identifier],capture_output=True,timeout=5)\n if reply.returncode or len(reply.stdout)>4096: raise RuntimeError('inspect-unavailable')\n value=json.loads(reply.stdout)\n if value['Id']!=identifier or value['Name']!='/'+name or value['Image']!=expected['imageId'] or value['label']!=expected['runId']: raise RuntimeError('ownership-changed')\n return value\ndef numbers(path):\n result={}\n for line in path.read_text().splitlines():\n  fields=line.split()\n  if len(fields)==2 and fields[0] in ['usage_usec','user_usec','system_usec','nr_periods','nr_throttled','throttled_usec','anon','file','sock','pgfault','pgmajfault','low','high','max','oom','oom_kill']: result[fields[0]]=int(fields[1])\n return result\ntry:\n fd=os.open(samples,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)\n with os.fdopen(fd,'w') as output:\n  while time.monotonic()<deadline:\n   last=inspect(); elapsed=round(time.monotonic()-started,3)\n   cpu=list(map(int,Path('/proc/stat').read_text().splitlines()[0].split()[1:9]))\n   memory=next(int(line.split()[1])*1024 for line in Path('/proc/meminfo').read_text().splitlines() if line.startswith('MemAvailable:'))\n   sample={'sampledAtMs':int(time.time()*1000),'elapsedSeconds':elapsed,'hostCpuJiffies':cpu,'hostMemAvailableBytes':memory,'container':last}\n   if last['pid']>1 and last['status'] in ['running','restarting','paused']:\n    try:\n     rows=Path('/proc/'+str(last['pid'])+'/cgroup').read_text().splitlines(); unified=next(row[3:] for row in rows if row.startswith('0::'))\n     base=Path('/sys/fs/cgroup'+unified)\n     if not base.resolve().is_relative_to(Path('/sys/fs/cgroup')): raise RuntimeError('cgroup-outside-controller')\n     sample['cgroup']={'cpu':numbers(base/'cpu.stat'),'memoryCurrentBytes':int((base/'memory.current').read_text()),'memoryEvents':numbers(base/'memory.events'),'memoryStat':numbers(base/'memory.stat')}\n    except (FileNotFoundError,ProcessLookupError):\n     last=inspect()\n     if last['status'] not in ['exited','dead']: raise\n     sample['container']=last;sample['sampledAtMs']=int(time.time()*1000);sample['elapsedSeconds']=round(time.monotonic()-started,3)\n   encoded=json.dumps(sample,separators=(',',':'))+'\\n'\n   if len(encoded)>8192 or count>=${seconds + 1}: raise RuntimeError('sample-budget-exceeded')\n   output.write(encoded);output.flush();count+=1\n   if last['status'] in ['created','exited','dead']: reason='container-ended';break\n   time.sleep(1)\nexcept Exception: reason='resource-monitor-failed'\nresult={'runId':expected['runId'],'containerId':identifier,'imageId':expected['imageId'],'reason':reason,'sampleCount':count,'elapsedSeconds':round(time.monotonic()-started,3),'lastState':last['status'] if last else None,'budget':expected['budget'],'definition':'Host CPU jiffies and cgroup cumulative CPU counters; cgroup memory includes all stand services. Samples stop after the owned container ends.'}\nfd=os.open(summary,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)\nwith os.fdopen(fd,'w') as output: json.dump(result,output,separators=(',',':'))\nprint(json.dumps({'runId':expected['runId'],'reason':reason,'sampleCount':count},separators=(',',':')))\nif reason!='container-ended': sys.exit(1)\n`;
 }
 export function checkOwnedStatus(plan, value, expectedId) {
@@ -298,7 +304,7 @@ export function directTlsProxyConfig(plan, certificatePath, gateway) {
   return { runId: plan.remotePlan.runId, clientLimit: plan.remotePlan.clients, listenHost: '127.0.0.1',
     listenPorts: [...plan.localPorts.api], remoteHost: '31.56.189.118', remotePort: 26443, interface: 'en0',
     certSha256: gateway.certificateSha256, publicCertPath: certificatePath, serverName: 'royal-load.test',
-    sessionSeconds: 900 + plan.remotePlan.seconds + 600 };
+    sessionSeconds: stageDurationSeconds(plan.remotePlan) };
 }
 export function checkTlsProxyReady(config, ready, pid) {
   if (!ready || ready.kind !== 'ready' || ready.runId !== config.runId || ready.pid !== pid
@@ -326,7 +332,7 @@ export function checkTlsProxyFinished(plan, value) {
     || Object.values(value.errors).some(count => !integer(count, 0, Number.MAX_SAFE_INTEGER) || count !== 0)) fail('tls-proxy-final-mismatch');
   const resources = value.resources, lag = resources?.eventLoopLag;
   if (['durationSeconds'].some(key => typeof value[key] !== 'number' || !Number.isFinite(value[key]) || value[key] <= 0)
-    || value.durationSeconds > 900 + plan.remotePlan.seconds + 600
+    || value.durationSeconds > stageDurationSeconds(plan.remotePlan)
     || !resources || ['cpuUserSeconds', 'cpuSystemSeconds', 'maxRssMiB'].some(key => typeof resources[key] !== 'number'
       || !Number.isFinite(resources[key]) || resources[key] < 0)
     || !lag || lag.periodMs !== 100 || !integer(lag.count, 0, Number.MAX_SAFE_INTEGER)
@@ -382,7 +388,8 @@ export function validateTlsProxyDiagnostics(plan, data, finished, window) {
     && Object.keys(value).sort().join(',') === [...keys].sort().join(',');
   if (!Buffer.isBuffer(data) || data.length === 0 || data.length > maximumProxyDiagnostics || !data.toString().endsWith('\n')) fail('invalid-tls-proxy-diagnostics-size');
   const lines = data.toString().split('\n'); lines.pop();
-  if (lines.length < 2 || lines.length > 3302 || lines.some(line => Buffer.byteLength(line) > 8192)) fail('invalid-tls-proxy-diagnostics-count');
+  if (lines.length < 2 || lines.length > stageDurationSeconds(plan.remotePlan) + 2
+    || lines.some(line => Buffer.byteLength(line) > 8192)) fail('invalid-tls-proxy-diagnostics-count');
   let rows; try { rows = lines.map(line => JSON.parse(line)); } catch { fail('invalid-tls-proxy-diagnostics-json'); }
   let previous, maxGapMs = 0;
   for (const [index, row] of rows.entries()) {
@@ -473,7 +480,7 @@ export function resourceCoverage(plan, server, summary, rows, containerId) {
   const result = { fullIntervalObserved: false, maximumGapMs: null, requiredStartMs: null, requiredEndMs: null,
     firstLiveCounterMs: null, lastLiveCounterMs: null, unobservedCounterTailMs: null, fullCounterRangeBracketed: false,
     definition: 'Same-server wall timestamps only. Full interval observation includes the terminal state sample; live cumulative CPU counter endpoints are reported separately. Samples do not establish continuous CPU or memory peaks. An omitted metric epoch start is derived conservatively from last sampledAt minus whole-epoch observedSeconds.' };
-  if (!server || !summary || !Array.isArray(rows) || rows.length < 3 || rows.length > 3301 || rows.length !== summary.sampleCount
+  if (!server || !summary || !Array.isArray(rows) || rows.length < 3 || rows.length > stageDurationSeconds(plan.remotePlan) + 1 || rows.length !== summary.sampleCount
     || summary.reason !== 'container-ended' || summary.runId !== plan.remotePlan.runId || summary.containerId !== containerId
     || summary.imageId !== plan.remotePlan.imageId) return result;
   const processes = Object.values(server.servers ?? {});
@@ -550,7 +557,7 @@ export function assessDedicatedStage(plan, outcome, reports) {
       && guardian.stopConfirmed === true && guardian.privateFixtureGone === true,
     resourceCoverage: resourceSummary?.runId === remote.runId && resourceSummary.containerId === outcome.containerId
       && resourceSummary.imageId === remote.imageId && resourceSummary.reason === 'container-ended'
-      && integer(resourceSummary.sampleCount, 1, 3301) && outcome.resourceMonitorExitCode === 0
+      && integer(resourceSummary.sampleCount, 1, stageDurationSeconds(remote) + 1) && outcome.resourceMonitorExitCode === 0
       && outcome.resourceCoverage?.fullIntervalObserved === true,
     remoteStopped: outcome.stopConfirmed === true && outcome.remotePrivateFixtureGone === true,
     localCleanup: outcome.ownedGroupsStopped === true && outcome.localPrivateFixtureGone === true,
@@ -604,7 +611,8 @@ export async function runDedicatedWebsocketStage(rawPlan, overrides = {}) {
     }
   };
   process.on('SIGINT', abort); process.on('SIGTERM', abort);
-  const timer = setTimeout(abort, (900 + plan.remotePlan.seconds + 600) * 1000);
+  const stageTimeoutMs = stageDurationSeconds(plan.remotePlan) * 1000;
+  const timer = setTimeout(abort, stageTimeoutMs);
   const wait = async (work, duration, code) => {
     const deadline = now() + duration;
     while (now() < deadline && !controller.signal.aborted) { const result = await work(); if (result) return result; await delay(1000); }
@@ -627,7 +635,7 @@ export async function runDedicatedWebsocketStage(rawPlan, overrides = {}) {
     await checkPins();
     monitor = overrides.monitor ? await overrides.monitor(expectedId, controller.signal)
       : run('/usr/bin/ssh', [...sshArguments(plan), host, 'python3', '-'], { input: resourceMonitorCode(plan, expectedId),
-        timeoutMs: (900 + plan.remotePlan.seconds + 600) * 1000, signal: controller.signal });
+        timeoutMs: stageTimeoutMs, signal: controller.signal });
     handles.push(monitor);
     monitor.done.then(result => { if (result.code !== 0 && !cleaning) controller.abort(); }, () => { if (!cleaning) controller.abort(); });
     const data = await copy('manifest', expectedId, controller.signal), manifest = verifyManifest(plan, data, ready, api.parseStandManifest);
@@ -659,7 +667,7 @@ export async function runDedicatedWebsocketStage(rawPlan, overrides = {}) {
       const forward = ['-L', '127.0.0.1:' + plan.localPorts.control + ':127.0.0.1:' + ready.serverControlPort];
       const args = [...sshArguments(plan), '-N', ...forward, host];
       const tunnel = overrides.tunnel ? await overrides.tunnel(0, args, controller.signal)
-        : run('/usr/bin/ssh', args, { timeoutMs: (900 + plan.remotePlan.seconds + 600) * 1000, signal: controller.signal });
+        : run('/usr/bin/ssh', args, { timeoutMs: stageTimeoutMs, signal: controller.signal });
       handles.push(tunnel);
       tunnel.done.then(() => { if (!cleaning) controller.abort(); }, () => { if (!cleaning) controller.abort(); });
     } else for (let index = 0; index < plan.localPorts.api.length; index++) {
@@ -668,7 +676,7 @@ export async function runDedicatedWebsocketStage(rawPlan, overrides = {}) {
       if (index === 0) forward.push('-L', '127.0.0.1:' + plan.localPorts.control + ':127.0.0.1:' + ready.serverControlPort);
       const args = [...sshArguments(plan), '-N', ...forward, host];
       const tunnel = overrides.tunnel ? await overrides.tunnel(index, args, controller.signal)
-        : run('/usr/bin/ssh', args, { timeoutMs: (900 + plan.remotePlan.seconds + 600) * 1000, signal: controller.signal });
+        : run('/usr/bin/ssh', args, { timeoutMs: stageTimeoutMs, signal: controller.signal });
       handles.push(tunnel);
       tunnel.done.then(() => { if (!cleaning) controller.abort(); }, () => { if (!cleaning) controller.abort(); });
       // Complete one authenticated carrier before opening the next SSH handshake.
@@ -687,7 +695,8 @@ export async function runDedicatedWebsocketStage(rawPlan, overrides = {}) {
     const args = ['--import', 'tsx', 'scripts/load-websocket-generators.ts', '--manifest', manifestPath,
       '--control-port', String(plan.localPorts.control), '--api-ports', plan.localPorts.api.join(','), '--workers', String(plan.workers),
       '--input-mode', 'browser-window', '--sdk-websocket', 'ws', '--output', reportPath];
-    const generator = run(process.execPath, args, { timeoutMs: (plan.remotePlan.seconds + Math.ceil(plan.remotePlan.clients / 20) + 210) * 1000,
+    const admissionSeconds = plan.remotePlan.clients > legacyClientLimit ? 900 : Math.ceil(plan.remotePlan.clients / 20);
+    const generator = run(process.execPath, args, { timeoutMs: (plan.remotePlan.seconds + admissionSeconds + 210) * 1000,
       signal: controller.signal, maximum: maximumReport, onProgress: progress }); handles.push(generator);
     let result;
     try { result = await generator.done; } finally { generatorCompletedAtMs = wallNow(); }

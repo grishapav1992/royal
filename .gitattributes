@@ -1,2 +1,5 @@
 # Qualification evidence includes hashes of exact reference JSON bytes.
 docs/game-math/qualifications/*.json text eol=lf
+# Load tooling attests these exact source bytes across operating systems.
+scripts/load-dedicated-stand.py text eol=lf
+scripts/load-direct-tls-proxy.py text eol=lf

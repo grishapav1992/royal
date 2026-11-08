@@ -48,7 +48,7 @@ RUN mkdir -p /app/run && chown node:node /app/run && chmod 700 /app/run \
 # startup, SQL and cleanup. The probe stores no database or credentials in layers.
 RUN printf '%s\n' \
     'import pg from "pg"; import { readdir } from "node:fs/promises";' \
-    'const flag = process.argv.indexOf("--expected-connections"); const expected = Number(process.argv[flag + 1]); if (flag < 0 || ![154, 178].includes(expected)) throw Error("probe-expected-limit");' \
+    'const flag = process.argv.indexOf("--expected-connections"); const expected = Number(process.argv[flag + 1]); if (flag < 0 || ![154, 178, 250].includes(expected)) throw Error("probe-expected-limit");' \
     'const client = new pg.Client(); try { await client.connect(); const result = await client.query("SELECT 1 AS value, current_setting($1, true) AS marker", ["royal.websocket_load_run_id"]); const limit = await client.query("SHOW max_connections"); if (result.rows[0]?.value !== 1 || !process.env.LOAD_LOBBY_RUN_ID || result.rows[0].marker !== process.env.LOAD_LOBBY_RUN_ID || Number(limit.rows[0]?.max_connections) !== expected) throw Error("probe"); } finally { await client.end(); }' \
     'if (!(await readdir("/tmp")).some(name => name.startsWith("royal-pg-"))) throw Error("temporary-database-missing");' \
     > /app/load-db-probe.mjs
@@ -59,6 +59,8 @@ RUN node --check dist-load/lobby-server.mjs \
     && node --input-type=module -e 'import { readdir } from "node:fs/promises"; if ((await readdir("/tmp")).some(name => name.startsWith("royal-pg-"))) process.exit(1); console.log("temporary PostgreSQL 20-process init/start/query/limit154/cleanup passed under UID node");' \
     && node dist-load/database.mjs /app/load-db-probe.mjs --expected-connections 178 --game-processes 24 \
     && node --input-type=module -e 'import { readdir } from "node:fs/promises"; if ((await readdir("/tmp")).some(name => name.startsWith("royal-pg-"))) process.exit(1); console.log("temporary PostgreSQL 24-process init/start/query/limit178/cleanup passed under UID node");' \
+    && node dist-load/database.mjs /app/load-db-probe.mjs --expected-connections 250 --game-processes 36 \
+    && node --input-type=module -e 'import { readdir } from "node:fs/promises"; if ((await readdir("/tmp")).some(name => name.startsWith("royal-pg-"))) process.exit(1); console.log("temporary PostgreSQL 36-process init/start/query/limit250/cleanup passed under UID node");' \
     && node dist-load/database.mjs /app/dist-load/account-probe.mjs --game-processes 20 \
     && node --input-type=module -e 'import { readdir } from "node:fs/promises"; if ((await readdir("/tmp")).some(name => name.startsWith("royal-pg-"))) process.exit(1); console.log("temporary PostgreSQL account login/select0..5/session/read/cleanup passed under UID node");' \
     && node dist-load/cluster.mjs --help

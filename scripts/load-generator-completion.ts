@@ -1,6 +1,7 @@
 import { constants } from 'node:fs';
 import { lstat, open, realpath } from 'node:fs/promises';
 import { basename, dirname, join, resolve } from 'node:path';
+import { MAX_MEASUREMENT_SECONDS, MAX_STAND_CLIENTS } from './load-stand-limits';
 
 const maximumReport = 16 * 1024 ** 2;
 const hex = /^[a-f0-9]{64}$/, uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
@@ -61,8 +62,8 @@ async function privateBytes(path: string, maximum: number, incompleteManifest = 
 function identityFrom(bytes: Buffer): Identity {
   const value = JSON.parse(bytes.toString());
   if (value.protocol !== 1 || value.role !== 'isolated-test-stand' || !uuid.test(value.runId)
-    || !hex.test(value.bundleSha256) || !Number.isInteger(value.clients) || value.clients < 1 || value.clients > 6000
-    || !Number.isInteger(value.seconds) || value.seconds < 1 || value.seconds > 1800) refuse();
+    || !hex.test(value.bundleSha256) || !Number.isInteger(value.clients) || value.clients < 1 || value.clients > MAX_STAND_CLIENTS
+    || !Number.isInteger(value.seconds) || value.seconds < 1 || value.seconds > MAX_MEASUREMENT_SECONDS) refuse();
   // Keep only public provenance; manifest credentials are never retained in the hold state.
   return { runId: value.runId, bundleSha256: value.bundleSha256, clients: value.clients, seconds: value.seconds };
 }

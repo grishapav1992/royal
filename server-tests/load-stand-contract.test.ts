@@ -4,8 +4,11 @@ import { test } from 'node:test';
 import { encodeStandServerReport, loopbackEndpoint, parseStandChatV2, parseStandFinished, parseStandManifest, parseStandPrepared, parseStandResult,
   parseStandStart, standErrorDiagnostics, standHost, standReportForControl, STAND_CONTROL_REPORT_MAX_BYTES, STAND_SERVER_ARTIFACT_MAX_BYTES,
   STAND_ROLE, verifyStandStatus, type StandReady, type StandResult } from '../scripts/load-stand-contract';
-import { MAX_MEASUREMENT_SECONDS, MAX_STAND_CLIENTS, MAX_STAND_SESSION_MS, standGameProcessIds, standSessionDurationMs } from '../scripts/load-stand-limits';
+import { MAX_GAME_PROCESSES, MAX_MEASUREMENT_SECONDS, MAX_STAND_CLIENTS, MAX_STAND_SESSION_MS,
+  standAdmissionTimeoutMs, standGameProcessIds, standSessionDurationMs } from '../scripts/load-stand-limits';
 import { ChatV2WorkloadLedger, ChatV2WorkloadPlan } from '../scripts/load-chat-v2-workload';
+import type { ServerMetrics } from '../scripts/load-server-metrics';
+import type { TrafficWindow } from '../scripts/websocket-server-diagnostics';
 import { createChatMessageId } from '../src/shared/chat';
 
 const now = 1791670000000, runId = '12345678-1234-1234-1234-123456789abc';
@@ -222,15 +225,24 @@ test('results cannot drop a generator, shorten measurement or change assigned cl
   assert.throws(() => parseStandFinished({ ...finished, results: [short, ...finished.results.slice(1)] }, runId, prepared, 2));
 });
 
-test('thirty-minute measurement and forty-minute session limits remain finite and coordinated', () => {
-  assert.equal(MAX_MEASUREMENT_SECONDS, 1800); assert.equal(MAX_STAND_SESSION_MS, 40 * 60000);
+test('admission and session budgets are bounded by the configured client profile', () => {
+  assert.equal(MAX_MEASUREMENT_SECONDS, 1800); assert.equal(MAX_STAND_SESSION_MS, 50 * 60000);
   assert.equal(standSessionDurationMs(1), 601000); assert.equal(standSessionDurationMs(300), 900000);
-  assert.equal(standSessionDurationMs(1800), MAX_STAND_SESSION_MS);
+  assert.equal(standSessionDurationMs(1800, 6000), 40 * 60000);
+  assert.equal(standSessionDurationMs(1800, 6001), MAX_STAND_SESSION_MS);
+  assert.equal(standSessionDurationMs(1800, 10000), MAX_STAND_SESSION_MS);
+  assert.equal(standAdmissionTimeoutMs(6000), 480000);
+  assert.equal(standAdmissionTimeoutMs(6001), 900000);
+  assert.equal(standAdmissionTimeoutMs(10000), 900000);
   for (const seconds of [0, -1, .5, 1801, NaN, Infinity]) assert.throws(() => standSessionDurationMs(seconds), RangeError);
+  for (const clients of [3, 10001, 6000.5, NaN]) {
+    assert.throws(() => standAdmissionTimeoutMs(clients), RangeError);
+    assert.throws(() => standSessionDurationMs(1800, clients), RangeError);
+  }
   const long = { ...fixture(), seconds: 1800, expiresAt: now + standSessionDurationMs(1800) };
   assert.equal(parseStandManifest(long, now).seconds, 1800);
   assert.throws(() => parseStandManifest({ ...long, seconds: 1801 }, now));
-  assert.throws(() => parseStandManifest({ ...long, expiresAt: now + MAX_STAND_SESSION_MS + 1 }, now));
+  assert.throws(() => parseStandManifest({ ...long, expiresAt: long.expiresAt + 1 }, now));
   assert.throws(() => parseStandManifest({ ...long, createdAt: now - 1 }, now));
   assert.throws(() => parseStandManifest(long, long.expiresAt));
 });
@@ -246,6 +258,7 @@ test('long-run results accept bounded scheduling overhead and reject oversized d
 });
 
 test('large sustained packet and ACK totals fit long runs while reservoirs stay bounded', () => {
+  const excessiveSamples = (MAX_MEASUREMENT_SECONDS + 45) * MAX_STAND_CLIENTS * 60 + 1;
   for (const count of [250, 300, 1200]) {
     const packetsSent = count * 30 * 1800;
     const measured = { ...result(0), count, connectedClients: count, packetsSent, durationSeconds: 1800, observationSeconds: 1802,
@@ -256,90 +269,146 @@ test('large sustained packet and ACK totals fit long runs while reservoirs stay 
       tracking: { latencyTimingSamplesDropped: 0 } };
     const parsed = parseStandResult(measured);
     assert.equal(parsed.packetsSent, packetsSent); assert.equal(parsed.ackMs.count, packetsSent); assert.equal(parsed.ackMs.sampleCount, 8192);
-    assert.throws(() => parseStandResult({ ...measured, ackMs: { ...measured.ackMs, count: 1e9 } }));
-    assert.throws(() => parseStandResult({ ...measured, packetsSent: 1e9, inputPacketsPerSecond: 1e9 / 1800 }));
+    assert.throws(() => parseStandResult({ ...measured, ackMs: { ...measured.ackMs, count: excessiveSamples } }));
+    assert.throws(() => parseStandResult({ ...measured, packetsSent: excessiveSamples, inputPacketsPerSecond: excessiveSamples / 1800 }));
     assert.equal(parseStandResult({ ...measured, errors: { send: packetsSent }, errorCount: packetsSent,
       tracking: { latencyTimingSamplesDropped: packetsSent } }).errorCount, packetsSent);
   }
 });
 
-test('six thousand clients require an explicit adequate process profile in the private manifest', () => {
-  const large = { ...fixture(), clients: MAX_STAND_CLIENTS, gameProcesses: 20,
-    tokens: Array.from({ length: MAX_STAND_CLIENTS }, (_, index) => hash('large-client-' + index)) };
-  assert.equal(parseStandManifest(large, now).gameProcesses, 20);
+const capacityProfiles = [{ clients: 6000, gameProcesses: 20 }, { clients: 10_000, gameProcesses: 34 }];
+
+for (const { clients, gameProcesses } of capacityProfiles) test(`${clients} clients require an explicit adequate process profile in the private manifest`, () => {
+  const seconds = MAX_MEASUREMENT_SECONDS;
+  const large = { ...fixture(), clients, gameProcesses, seconds, expiresAt: now + standSessionDurationMs(seconds, clients),
+    chatV2: { clients, seconds, steadyPerSecond: 333, movingClients: 1000, burst: { count: clients, atSecond: 2 } },
+    tokens: Array.from({ length: clients }, (_, index) => hash('large-client-' + index)) };
+  assert(Buffer.byteLength(JSON.stringify(large)) < 1024 ** 2);
+  assert.equal(parseStandManifest(large, now).gameProcesses, gameProcesses);
+  assert.deepEqual(parseStandManifest(large, now).chatV2, large.chatV2);
   assert.equal(parseStandManifest(fixture(), now).gameProcesses, 4);
-  for (const gameProcesses of [undefined, 19, 25, 0, 20.5, NaN]) assert.throws(() => parseStandManifest({ ...large, gameProcesses }, now));
+  for (const invalid of [undefined, gameProcesses - 1, MAX_GAME_PROCESSES + 1, 0, gameProcesses + .5, NaN]) {
+    assert.throws(() => parseStandManifest({ ...large, gameProcesses: invalid }, now));
+  }
+  assert.throws(() => parseStandManifest({ ...large, expiresAt: large.expiresAt + 1 }, now));
   assert.throws(() => parseStandManifest({ ...large, clients: MAX_STAND_CLIENTS + 1 }, now));
   const manifest = parseStandManifest(large, now), status = { ...manifest, tokens: undefined, secret: undefined };
   verifyStandStatus(status, manifest);
-  assert.throws(() => verifyStandStatus({ ...status, gameProcesses: 19 }, manifest));
+  assert.throws(() => verifyStandStatus({ ...status, gameProcesses: gameProcesses - 1 }, manifest));
   assert.throws(() => verifyStandStatus({ ...status, gameProcesses: undefined }, manifest));
 });
 
-test('six thousand-client admission and long results retain exact owners and finite report limits', () => {
-  const owners = standGameProcessIds(20), clients = MAX_STAND_CLIENTS;
-  const rooms = Array.from({ length: clients / 30 }, (_, index) => ({ id: 'large-room-' + index, count: 30, owner: owners[Math.floor(index / 10)] }));
+for (const { clients, gameProcesses } of capacityProfiles) test(`${clients}-client admission and long results retain exact owners and finite counters`, () => {
+  const owners = standGameProcessIds(gameProcesses), roomCount = Math.ceil(clients / 30);
+  const rooms = Array.from({ length: roomCount }, (_, index) => ({ id: 'large-room-' + index,
+    count: Math.min(30, clients - index * 30), owner: owners[Math.floor(index / 10)] }));
   const largeReady = { ...ready(0), count: clients, connectedClients: clients, rooms, requestedBatch: 4, joinedBatch: 4,
     connectionAttempts: clients, connectionRetries: 0 };
-  const preparedValue = { ...preparation(), ready: [largeReady], gameProcesses: 20,
-    connectionPhase: { durationSeconds: 300, batches: clients / 4, connectionAttempts: clients, connectionRetries: 0 } };
-  const prepared = parseStandPrepared(preparedValue, runId, clients, 20);
-  assert.equal(prepared.ready[0].rooms.length, 200);
+  const preparedValue = { ...preparation(), ready: [largeReady], gameProcesses,
+    connectionPhase: { durationSeconds: clients / 20, batches: clients / 4, connectionAttempts: clients, connectionRetries: 0 } };
+  const prepared = parseStandPrepared(preparedValue, runId, clients, gameProcesses);
+  assert.equal(prepared.ready[0].rooms.length, roomCount);
+  assert.equal(prepared.ready[0].rooms.at(-1)?.owner, owners.at(-1));
   assert.throws(() => parseStandPrepared(preparedValue, runId, clients));
-  assert.throws(() => parseStandPrepared({ ...preparedValue, gameProcesses: 19 }, runId, clients, 20));
-  const packetsSent = clients * 30 * MAX_MEASUREMENT_SECONDS;
+  assert.throws(() => parseStandPrepared({ ...preparedValue, gameProcesses: gameProcesses - 1 }, runId, clients, gameProcesses));
+  const packetsSent = clients * 60 * MAX_MEASUREMENT_SECONDS;
   const measured = { ...result(0), count: clients, connectedClients: clients, rooms, durationSeconds: MAX_MEASUREMENT_SECONDS,
-    observationSeconds: MAX_MEASUREMENT_SECONDS + 2, packetsSent, inputPacketsPerSecond: clients * 30,
+    observationSeconds: MAX_MEASUREMENT_SECONDS + 2, packetsSent, inputPacketsPerSecond: clients * 60,
     ackMs: { count: packetsSent, sampleCount: 8192, sampling: 'bounded-reservoir', p50: 10, p95: 30, p99: 50, max: 100, mean: 20 },
     tracking: { latencyTimingSamplesDropped: 0 } };
   assert.equal(parseStandFinished({ runId, results: [measured] }, runId, prepared, MAX_MEASUREMENT_SECONDS).results[0].packetsSent, packetsSent);
   assert.throws(() => parseStandResult(measured));
-  const foreignRooms = rooms.map((room, index) => index === 0 ? { ...room, owner: 'worker-20' } : room);
-  assert.throws(() => parseStandResult({ ...measured, rooms: foreignRooms }, 20));
-  assert.throws(() => parseStandResult({ ...measured, rooms: [...rooms, rooms[0]] }, 20));
+  const foreignRooms = rooms.map((room, index) => index === 0 ? { ...room, owner: 'worker-' + gameProcesses } : room);
+  assert.throws(() => parseStandResult({ ...measured, rooms: foreignRooms }, gameProcesses));
+  assert.throws(() => parseStandResult({ ...measured, rooms: [...rooms, rooms[0]] }, gameProcesses));
   const tooManySamples = (MAX_MEASUREMENT_SECONDS + 45) * MAX_STAND_CLIENTS * 60 + 1;
-  assert.throws(() => parseStandResult({ ...measured, ackMs: { ...measured.ackMs, count: tooManySamples } }, 20));
-  assert.throws(() => parseStandResult({ ...measured, errors: { send: tooManySamples }, errorCount: tooManySamples }, 20));
+  assert.throws(() => parseStandResult({ ...measured, ackMs: { ...measured.ackMs, count: tooManySamples } }, gameProcesses));
+  assert.throws(() => parseStandResult({ ...measured, errors: { send: tooManySamples }, errorCount: tooManySamples }, gameProcesses));
   const tooFast = MAX_STAND_CLIENTS * 60 + 1;
-  assert.throws(() => parseStandResult({ ...measured, inputPacketsPerSecond: tooFast, packetsSent: tooFast * MAX_MEASUREMENT_SECONDS }, 20));
+  assert.throws(() => parseStandResult({ ...measured, inputPacketsPerSecond: tooFast, packetsSent: tooFast * MAX_MEASUREMENT_SECONDS }, gameProcesses));
+});
+
+test('ten thousand clients across 32 V2 generator shards fit the two MiB control request budget', () => {
+  const clients = 10_000, gameProcesses = 34, count = 32, seconds = MAX_MEASUREMENT_SECONDS;
+  const startAtUnixMs = now + 2_000, owners = standGameProcessIds(gameProcesses);
+  const profile = { clients, seconds, movingClients: 1000, steadyPerSecond: 333, burst: { count: clients, atSecond: 2 } };
+  const shards = Array.from({ length: count }, (_, index) => {
+    const plan = new ChatV2WorkloadPlan(profile, { index, count });
+    // With 30 seats per room and 32 shards, a shard can report one room entry per connected client.
+    const rooms = Array.from({ length: plan.clientsInShard }, (_, offset) => {
+      const roomIndex = Math.floor((index + offset * count) / 30);
+      return { id: String(roomIndex).padStart(64, 'r'), owner: owners[Math.floor(roomIndex / 10)], count: 1 };
+    });
+    const occupancy = { rooms, count: plan.clientsInShard, connectedClients: plan.clientsInShard };
+    const inputPacketsPerSecond = plan.movingClients * 30, packetsSent = inputPacketsPerSecond * seconds;
+    const batchSize = plan.clientsInShard % 4 || 4, measured = result(index);
+    return {
+      ready: { ...ready(index), ...occupancy, requestedBatch: batchSize, joinedBatch: batchSize,
+        connectionAttempts: plan.clientsInShard, chatV2Ready: plan.clientsInShard, movingClients: plan.movingClients },
+      result: { ...measured, ...occupancy, durationSeconds: seconds, observationSeconds: seconds + 5, packetsSent, inputPacketsPerSecond,
+        offeredInputPacketsPerSecond: inputPacketsPerSecond, offeredInputStepsPerSecond: inputPacketsPerSecond * 2,
+        ackMs: { ...measured.ackMs, count: packetsSent }, chatV2: { startAtUnixMs, summary: new ChatV2WorkloadLedger(plan).summary() },
+        movement: { plannedClients: plan.movingClients, sentClients: plan.movingClients, connectedClients: plan.movingClients } },
+    };
+  });
+  const preparedBody = { ...preparation(), gameProcesses, ready: shards.map(shard => shard.ready),
+    connectionPhase: { durationSeconds: 550, batches: shards.reduce((sum, shard) => sum + Math.ceil(shard.ready.count / 4), 0),
+      connectionAttempts: clients, connectionRetries: 0 } };
+  const resultBody = { runId, results: shards.map(shard => shard.result) };
+  for (const body of [preparedBody, resultBody]) assert(Buffer.byteLength(JSON.stringify(body)) < 2 * 1024 ** 2);
+  const prepared = parseStandPrepared(preparedBody, runId, clients, gameProcesses, profile);
+  const finished = parseStandFinished(resultBody, runId, prepared, seconds, startAtUnixMs);
+  assert.equal(finished.results.reduce((sum, worker) => sum + worker.connectedClients, 0), clients);
+  assert.equal(finished.results.reduce((sum, worker) => sum + (worker.movement?.plannedClients ?? 0), 0), profile.movingClients);
 });
 
 test('room identities and ten rooms per owner remain bounded for expanded profiles', () => {
   const duplicated = { ...result(0), count: 2, connectedClients: 2, rooms: [ready(0).rooms[0], ready(0).rooms[0]] };
-  assert.throws(() => parseStandResult(duplicated, 24));
-  const rooms = Array.from({ length: 11 }, (_, index) => ({ id: 'over-room-' + index, owner: 'worker-23', count: 1 }));
-  assert.throws(() => parseStandResult({ ...result(0), count: 11, connectedClients: 11, rooms }, 24));
-  const last = { ...result(0), rooms: [{ id: 'last-room', owner: 'worker-23', count: 1 }] };
-  assert.equal(parseStandResult(last, 24).rooms[0].owner, 'worker-23');
-  assert.throws(() => parseStandResult(last, 23));
+  assert.throws(() => parseStandResult(duplicated, MAX_GAME_PROCESSES));
+  const lastOwner = 'worker-35';
+  const rooms = Array.from({ length: 11 }, (_, index) => ({ id: 'over-room-' + index, owner: lastOwner, count: 1 }));
+  assert.throws(() => parseStandResult({ ...result(0), count: 11, connectedClients: 11, rooms }, MAX_GAME_PROCESSES));
+  const last = { ...result(0), rooms: [{ id: 'last-room', owner: lastOwner, count: 1 }] };
+  assert.equal(parseStandResult(last, MAX_GAME_PROCESSES).rooms[0].owner, lastOwner);
+  assert.throws(() => parseStandResult(last, MAX_GAME_PROCESSES - 1));
 });
 
-for (const gameProcesses of [20, 24]) test(`${gameProcesses}-process control report fits six MiB without changing proof or cumulative totals`, () => {
-  const owners = standGameProcessIds(gameProcesses), clientCount = 6000 / gameProcesses, totalFrames = 324000000 / gameProcesses;
-  const trafficWindow = { incomingFrames: clientCount * 30, incomingBytes: clientCount * 30 * 90, inputFrames: clientCount * 30,
-    decodedInputSequences: clientCount * 60, inputDecodeErrors: 0, oversizedInputFrames: 0, repeatedInputSequences: 0,
-    regressingInputSequences: 0, sequenceGapEvents: 0, sequenceGapSize: 0, inputDispatchEvents: clientCount * 30,
-    inputAcceptCalls: clientCount * 30, inputAcceptSuccesses: clientCount * 30, queueAcceptedSteps: clientCount * 60,
-    queueAdvancedRemovals: clientCount * 60, queueCancelledRemovals: 0, inputSeqAdvancements: clientCount * 30,
-    receivedSequencesCoveredByInputSeq: clientCount * 60, outgoingSendCalls: clientCount * 20, outgoingBytes: clientCount * 20 * 300,
-    outgoingSendThrows: 0, limiterHits: 0, arrivalTrackingEvictions: 0, rollingWindowOverflows: 0, untrackedClientFrames: 0,
-    inputQueueCoverageMisses: 0, unacknowledgedSequencesAtClose: 0, diagnosticErrors: 0, maxRollingFramesPerClientSecond: 30,
-    maxRollingInputsPerClientSecond: 30, maxClockWindowFrames: 30, maxRoomClockLagMs: 17, minRoomClockLagMs: 0,
-    maxQueuedStepsPerClient: 2, maxQueuedMovementMsPerClient: 33.333333333333336, maxQueueResidenceMs: 16.666666666666668,
-    maxWebSocketBufferedBytes: 100000, maxSocketReadableBytes: 65536, maxSocketWritableBytes: 65536,
-    pendingAtEnd: { clients: clientCount, queuedSteps: 0, queuedMovementMs: 0, oldestQueueResidenceMs: 0, webSocketBufferedBytes: 0,
-      socketReadableBytes: 0, socketWritableBytes: 0, socketsAboveBufferedLimit: 0, receivedSequencesAwaitingInputSeq: 0 } };
-  const windows = Array.from({ length: 300 }, (_, index) => ({ ...trafficWindow, startedAtMs: index * 1000,
-    endedAtMs: (index + 1) * 1000, intervalMs: 1000 }));
+for (const gameProcesses of [20, 24, 34, 36]) test(`${gameProcesses}-process control report fits six MiB without changing proof or cumulative totals`, () => {
+  const owners = standGameProcessIds(gameProcesses), clients = gameProcesses <= 24 ? 6000 : 10_000;
+  const totalFrames = clients * 30 * MAX_MEASUREMENT_SECONDS;
+  const processTraffic = (clientCount: number) => {
+    const traffic = { incomingFrames: clientCount * 30, incomingBytes: clientCount * 30 * 90, inputFrames: clientCount * 30,
+      decodedInputSequences: clientCount * 60, inputDecodeErrors: 0, oversizedInputFrames: 0, repeatedInputSequences: 0,
+      regressingInputSequences: 0, sequenceGapEvents: 0, sequenceGapSize: 0, inputDispatchEvents: clientCount * 30,
+      inputAcceptCalls: clientCount * 30, inputAcceptSuccesses: clientCount * 30, queueAcceptedSteps: clientCount * 60,
+      queueAdvancedRemovals: clientCount * 60, queueCancelledRemovals: 0, inputSeqAdvancements: clientCount * 30,
+      receivedSequencesCoveredByInputSeq: clientCount * 60, outgoingSendCalls: clientCount * 20, outgoingBytes: clientCount * 20 * 300,
+      outgoingSendThrows: 0, limiterHits: 0, arrivalTrackingEvictions: 0, rollingWindowOverflows: 0, untrackedClientFrames: 0,
+      inputQueueCoverageMisses: 0, unacknowledgedSequencesAtClose: 0, diagnosticErrors: 0, maxRollingFramesPerClientSecond: 30,
+      maxRollingInputsPerClientSecond: 30, maxClockWindowFrames: 30, maxRoomClockLagMs: 17, minRoomClockLagMs: 0,
+      maxQueuedStepsPerClient: 2, maxQueuedMovementMsPerClient: 33.333333333333336, maxQueueResidenceMs: 16.666666666666668,
+      maxWebSocketBufferedBytes: 100000, maxSocketReadableBytes: 65536, maxSocketWritableBytes: 65536,
+      pendingAtEnd: { clients: clientCount, queuedSteps: 0, queuedMovementMs: 0, oldestQueueResidenceMs: 0, webSocketBufferedBytes: 0,
+        socketReadableBytes: 0, socketWritableBytes: 0, socketsAboveBufferedLimit: 0, receivedSequencesAwaitingInputSeq: 0 } };
+    const windows: TrafficWindow[] = Array.from({ length: 300 }, (_, index) => ({ ...traffic, startedAtMs: index * 1000 + .234567891,
+      endedAtMs: (index + 1) * 1000 + .234567891, intervalMs: 1000 }));
+    const inputFrames = clientCount * 30 * MAX_MEASUREMENT_SECONDS;
+    return { inputFrames, diagnosticErrors: 0, maxQueuedStepsPerClient: 12, receiveToInputSeqAge: { count: inputFrames, maxMs: 200 }, windows,
+      coverage: { inputQueueClients: clientCount }, limits: { windows: 300, trackedClients: 330 } };
+  };
+  const intervals: ServerMetrics[] = Array.from({ length: 300 }, (_, index) => ({ kind: 'metrics', intervalStartedAt: now + index * 1000,
+    sampledAt: now + (index + 1) * 1000, intervalMs: 1000.123456789, cpuPercent: 50.123456789, rssMiB: 222.123456789,
+    heapMiB: 88.123456789, eventLoopP99Ms: 25.123456789, eventLoopMaxMs: 34.123456789 }));
+  const serverMetrics = { samples: 1800, cpuMaxPercent: 97, retainedIntervalCount: 300, droppedIntervalCount: 1500, intervals };
   const full = { ok: true, verdict: 'passed-local-comparison', productionTraffic: false, gameProcesses,
     checks: { connections: true, serverInputDeliveryComplete: true },
-    summary: { connectedClients: 6000, inputPacketsPerSecond: 180000 }, inputDelivery: { sentFrames: 324000000, receivedFrames: 324000000 },
+    summary: { connectedClients: clients, inputPacketsPerSecond: clients * 30 }, inputDelivery: { sentFrames: totalFrames, receivedFrames: totalFrames },
     processLimits: owners.map(id => ({ id, maxRooms: 10, roomCapacity: 30, maxConnections: 330 })),
-    servers: Object.fromEntries(owners.map(id => [id, { samples: 1800, cpuMaxPercent: 97, retainedIntervalCount: 300, droppedIntervalCount: 1500,
-      intervals: Array.from({ length: 300 }, (_, index) => ({ sampledAt: index, cpuPercent: 50 })) }])),
-    roomTrafficDiagnostics: Object.fromEntries(owners.map(id => [id, { inputFrames: totalFrames, diagnosticErrors: 0,
-      maxQueuedStepsPerClient: 12, receiveToInputSeqAge: { count: totalFrames, maxMs: 200 }, windows,
-      coverage: { inputQueueClients: clientCount }, limits: { windows: 300, trackedClients: 330 } }])) };
+    servers: Object.fromEntries(owners.map(id => [id, serverMetrics])),
+    orchestrator: serverMetrics,
+    roomTrafficDiagnostics: Object.fromEntries(owners.map((id, index) => [
+      id, processTraffic(Math.floor(clients / gameProcesses) + (index < clients % gameProcesses ? 1 : 0)),
+    ])) };
   assert(Buffer.byteLength(JSON.stringify(full)) > STAND_CONTROL_REPORT_MAX_BYTES);
   assert(Buffer.byteLength(encodeStandServerReport(full)) <= STAND_SERVER_ARTIFACT_MAX_BYTES);
   const compact = standReportForControl(full);
@@ -348,7 +417,8 @@ for (const gameProcesses of [20, 24]) test(`${gameProcesses}-process control rep
   const servers = compact.servers as Record<string, Record<string, unknown>>;
   const diagnostics = compact.roomTrafficDiagnostics as Record<string, Record<string, unknown>>;
   assert.equal(servers.main.samples, 1800); assert.equal(servers.main.cpuMaxPercent, 97); assert.equal(servers.main.intervals, undefined);
-  assert.equal(diagnostics.main.inputFrames, totalFrames); assert.equal(diagnostics.main.maxQueuedStepsPerClient, 12);
+  assert.equal(diagnostics.main.inputFrames, full.roomTrafficDiagnostics.main.inputFrames); assert.equal(diagnostics.main.maxQueuedStepsPerClient, 12);
+  assert.equal(Object.values(diagnostics).reduce((sum, row) => sum + Number(row.inputFrames), 0), totalFrames);
   assert.deepEqual(diagnostics.main.coverage, full.roomTrafficDiagnostics.main.coverage);
   assert.equal(diagnostics.main.windows, undefined); assert.equal(full.roomTrafficDiagnostics.main.windows.length, 300);
   const transfer = compact.detailTransfer as { source: string; omittedArrays: { path: string; items: number }[] };

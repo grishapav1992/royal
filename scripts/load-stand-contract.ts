@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto';
 import { availableParallelism, hostname, totalmem } from 'node:os';
 import { ChatV2WorkloadPlan, type ChatV2WorkloadLedger, type ChatV2WorkloadProfile } from './load-chat-v2-workload';
-import { DEFAULT_GAME_PROCESSES, MAX_GAME_PROCESSES, MAX_MEASUREMENT_SECONDS, MAX_STAND_CLIENTS, MAX_STAND_SESSION_MS,
-  STAND_MAX_ROOMS_PER_PROCESS, STAND_ROOM_CAPACITY, standGameProcessIds, standLoadProfile } from './load-stand-limits';
+import { DEFAULT_GAME_PROCESSES, MAX_GAME_PROCESSES, MAX_MEASUREMENT_SECONDS, MAX_STAND_CLIENTS,
+  STAND_MAX_ROOMS_PER_PROCESS, STAND_ROOM_CAPACITY, standGameProcessIds, standLoadProfile, standSessionDurationMs } from './load-stand-limits';
 
 export const STAND_PROTOCOL = 1;
 export const STAND_ROLE = 'isolated-test-stand';
@@ -143,11 +143,12 @@ export function parseStandManifest(value: unknown, now = Date.now()): StandManif
   if (manifest.protocol !== STAND_PROTOCOL || manifest.role !== STAND_ROLE || typeof manifest.runId !== 'string'
     || !/^[a-f0-9-]{36}$/.test(manifest.runId) || typeof manifest.secret !== 'string' || !hex.test(manifest.secret)
     || typeof manifest.bundleSha256 !== 'string' || !hex.test(manifest.bundleSha256)) throw new StandError('invalid-stand-manifest');
-  const createdAt = number(manifest.createdAt, 1), expiresAt = number(manifest.expiresAt, now + 1, now + MAX_STAND_SESSION_MS);
-  if (createdAt > now + 30000 || expiresAt <= createdAt || expiresAt - createdAt > MAX_STAND_SESSION_MS) throw new StandError('invalid-stand-expiry');
   const clients = number(manifest.clients, 4, MAX_STAND_CLIENTS, true), seconds = number(manifest.seconds, 1, MAX_MEASUREMENT_SECONDS, true);
   const gameProcesses = number(manifest.gameProcesses ?? DEFAULT_GAME_PROCESSES, 1, MAX_GAME_PROCESSES, true);
   try { standLoadProfile(clients, gameProcesses); } catch { throw new StandError('invalid-stand-profile'); }
+  const maximumSessionMs = standSessionDurationMs(MAX_MEASUREMENT_SECONDS, clients);
+  const createdAt = number(manifest.createdAt, 1), expiresAt = number(manifest.expiresAt, now + 1, now + maximumSessionMs);
+  if (createdAt > now + 30000 || expiresAt <= createdAt || expiresAt - createdAt > maximumSessionMs) throw new StandError('invalid-stand-expiry');
   if (!Array.isArray(manifest.tokens) || manifest.tokens.length !== clients || manifest.tokens.some(token => typeof token !== 'string' || !hex.test(token))
     || new Set(manifest.tokens).size !== clients) throw new StandError('invalid-stand-tokens');
   const chatV2 = manifest.chatV2 === undefined ? undefined : parseStandChatV2(manifest.chatV2, clients, seconds);

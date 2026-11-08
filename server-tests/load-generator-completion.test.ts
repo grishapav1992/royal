@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { chmod, mkdtemp, readFile, realpath, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import test, { type TestContext } from 'node:test';
 import { boundedCompletionRead, createGeneratorCompletionHold, generatorCompletionExitCode, generatorCompletionOptions } from '../scripts/load-generator-completion.ts';
 
@@ -18,12 +18,12 @@ test('bounded file reads tolerate short OS reads and reject growth beyond the li
   assert.deepEqual(await boundedCompletionRead(source.length, reader(source)), source);
   await assert.rejects(boundedCompletionRead(source.length - 1, reader(source)), /refused/);
 });
-async function fixture(t: TestContext, partial = false) {
+async function fixture(t: TestContext, partial = false, clients = 4) {
   const directory = await realpath(await mkdtemp(join(tmpdir(), 'royal-generator-hold-')));
   t.after(() => rm(directory, { recursive: true, force: true }));
   const marker = join(directory, 'generator-completion.json'), manifest = join(directory, 'stand.json'), report = join(directory, 'generators.json');
   const hold = await createGeneratorCompletionHold(marker, manifest, { pollMs: 2, timeoutMs: 75 }); t.after(hold.close);
-  const manifestBytes = JSON.stringify({ protocol: 1, role: 'isolated-test-stand', runId, bundleSha256, clients: 4, seconds: 5,
+  const manifestBytes = JSON.stringify({ protocol: 1, role: 'isolated-test-stand', runId, bundleSha256, clients, seconds: 5,
     secret: 'private-synthetic-secret', tokens: ['private-synthetic-token'] });
   if (partial) {
     await writeFile(manifest, '', { mode: 0o600 }); await sleep(10);
@@ -33,7 +33,7 @@ async function fixture(t: TestContext, partial = false) {
   await sleep(20); await rm(manifest);
   const finish = async (generatorExitCode = 0, change = {}) => {
     const bytes = Buffer.from(JSON.stringify({ generatorOnly: true, productionTraffic: false, runId, bundleSha256,
-      targetClients: 4, seconds: 5, ok: generatorExitCode === 0, cleanup: { passed: true, failures: [] } }));
+      targetClients: clients, seconds: 5, ok: generatorExitCode === 0, cleanup: { passed: true, failures: [] } }));
     await writeFile(report, bytes, { mode: 0o600 });
     await writeFile(marker, JSON.stringify({ protocol: 1, purpose: 'isolated-generator-completion', runId, bundleSha256,
       generatorExitCode, reportSha256: createHash('sha256').update(bytes).digest('hex'), reportBytes: bytes.length, ...change }), { mode: 0o600 });
@@ -42,12 +42,13 @@ async function fixture(t: TestContext, partial = false) {
 }
 
 test('opt-in flags are consumed without changing any cluster arguments', () => {
-  const args = ['--clients', '600', '--stand-manifest', '/app/run/stand.json', '--generator-completion-file', '/app/run/generator-completion.json', '--seconds', '30'];
-  assert.deepEqual(generatorCompletionOptions(args).args, ['--clients', '600', '--stand-manifest', '/app/run/stand.json', '--seconds', '30']);
+  const directory = resolve(tmpdir(), 'royal-private-stand'), manifest = join(directory, 'stand.json'), marker = join(directory, 'generator-completion.json');
+  const args = ['--clients', '600', '--stand-manifest', manifest, '--generator-completion-file', marker, '--seconds', '30'];
+  assert.deepEqual(generatorCompletionOptions(args).args, ['--clients', '600', '--stand-manifest', manifest, '--seconds', '30']);
   assert.deepEqual(generatorCompletionOptions(['--clients', '600']), { args: ['--clients', '600'] });
-  for (const invalid of [args.concat('--generator-completion-file', '/app/run/generator-completion.json'),
-    ['--generator-completion-file', '/app/run/generator-completion.json'],
-    ['--stand-manifest', '/app/run/stand.json', '--generator-completion-file', '/other/generator-completion.json']]) {
+  for (const invalid of [args.concat('--generator-completion-file', marker),
+    ['--generator-completion-file', marker],
+    ['--stand-manifest', manifest, '--generator-completion-file', join(directory, 'other', 'generator-completion.json')]]) {
     assert.throws(() => generatorCompletionOptions(invalid), /refused/);
   }
 });
@@ -57,6 +58,15 @@ test('completion waits for external exec exit marker after stand manifest was re
   const waiting = value.hold.wait().then(result => { settled = true; return result; });
   await sleep(15); assert.equal(settled, false);
   await value.finish(); assert.deepEqual(await waiting, { generatorExitCode: 0 });
+});
+
+test('completion binds the external report to the exact 10,000-client identity', { skip: process.platform === 'win32' }, async t => {
+  const value = await fixture(t, false, 10000);
+  await value.finish();
+  assert.deepEqual(await value.hold.wait(), { generatorExitCode: 0 });
+  const oversized = await fixture(t, false, 10001);
+  await oversized.finish();
+  await assert.rejects(oversized.hold.wait(), /refused/);
 });
 
 test('manifest creation may be empty or partial before its final publication', async t => {

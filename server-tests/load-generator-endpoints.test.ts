@@ -67,13 +67,13 @@ test('a wrong run, bundle, host, profile or canonical API rejects an alias', asy
 test('actual SDK publicAddress endpoint is routed through its attested generator alias', () => {
   class ProbeClient extends Client {
     endpoint(reservation: SeatReservation) {
-      return generatorWebSocketEndpoint(super.buildEndpoint(reservation, { sessionId: 'session' }), 'http://127.0.0.1:17103', canonical);
+      return generatorWebSocketEndpoint(super.buildEndpoint(reservation, { sessionId: 'session' }), 'http://127.0.0.1:17103', canonical, 36);
     }
   }
   const client = new ProbeClient('http://127.0.0.1:17103');
-  const result = new URL(client.endpoint({ name: 'lobby', roomId: 'room', processId: 'pid', sessionId: 'session', publicAddress: '127.0.0.1:17100/workers/worker-19' }));
+  const result = new URL(client.endpoint({ name: 'lobby', roomId: 'room', processId: 'pid', sessionId: 'session', publicAddress: '127.0.0.1:17100/workers/worker-35' }));
   assert.equal(result.host, '127.0.0.1:17103');
-  assert.equal(result.pathname, '/workers/worker-19/pid/room');
+  assert.equal(result.pathname, '/workers/worker-35/pid/room');
   assert.equal(result.searchParams.get('sessionId'), 'session');
 });
 test('unexpected reservation endpoints cannot be redirected to an alias', () => {
@@ -84,4 +84,8 @@ test('unexpected reservation endpoints cannot be redirected to an alias', () => 
     assert.throws(() => generatorWebSocketEndpoint(endpoint, 'http://127.0.0.1:17102', canonical), /unexpected-generator-websocket-endpoint/);
   }
   assert.throws(() => generatorWebSocketEndpoint('ws://127.0.0.1:17100/workers/main/pid/room', 'http://example.test:17102', canonical));
+  const highOwner = 'ws://127.0.0.1:17100/workers/worker-33/pid/room';
+  assert.equal(new URL(generatorWebSocketEndpoint(highOwner, 'http://127.0.0.1:17102', canonical, 34)).pathname, '/workers/worker-33/pid/room');
+  assert.throws(() => generatorWebSocketEndpoint(highOwner, 'http://127.0.0.1:17102', canonical, 33), /unexpected-generator-websocket-endpoint/);
+  assert.throws(() => generatorWebSocketEndpoint(highOwner.replace('worker-33', 'worker-36'), 'http://127.0.0.1:17102', canonical, 36), /unexpected-generator-websocket-endpoint/);
 });

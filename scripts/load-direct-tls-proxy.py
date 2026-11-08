@@ -25,7 +25,12 @@ CONNECT_SECONDS = 10
 IDLE_SECONDS = 900
 CLOSE_SECONDS = 2
 CHUNK_BYTES = 65536
-DIAGNOSTIC_ROWS = 3302
+LEGACY_MAX_CLIENTS = 6000
+MAX_CLIENTS = 10000
+LEGACY_SESSION_SECONDS = 3300
+MAX_SESSION_SECONDS = 3900
+SOCKET_RESERVE = 64
+FD_RESERVE = 128
 DIAGNOSTIC_BYTES = 8 * 1024 * 1024
 ERROR_STAGES = {'accept', 'interface-bind', 'tcp-connect', 'tls-handshake', 'to-upstream-read',
                 'to-upstream-write', 'to-upstream-drain', 'to-local-read', 'to-local-write',
@@ -101,9 +106,10 @@ def read_config(path):
         raise Refused('invalid-config-fields')
     if not isinstance(config['runId'], str) or not re.fullmatch(r'[A-Za-z0-9_-]{8,128}', config['runId']):
         raise Refused('invalid-run-id')
-    if type(config['clientLimit']) is not int or not 1 <= config['clientLimit'] <= 6000:
+    if type(config['clientLimit']) is not int or not 1 <= config['clientLimit'] <= MAX_CLIENTS:
         raise Refused('invalid-client-limit')
-    if type(config['sessionSeconds']) is not int or not 1 <= config['sessionSeconds'] <= 3300:
+    max_session = MAX_SESSION_SECONDS if config['clientLimit'] > LEGACY_MAX_CLIENTS else LEGACY_SESSION_SECONDS
+    if type(config['sessionSeconds']) is not int or not 1 <= config['sessionSeconds'] <= max_session:
         raise Refused('invalid-session-duration')
     if config['listenHost'] != '127.0.0.1' or config['listenPorts'] != LISTEN_PORTS or any(type(port) is not int for port in config['listenPorts']):
         raise Refused('fixed-loopback-listeners-required')
@@ -136,9 +142,9 @@ def tls_context(config):
 
 
 def fd_preflight(client_limit):
-    required = 2 * (client_limit + 64) + 128
-    if required > 16000:
+    if type(client_limit) is not int or not 1 <= client_limit <= MAX_CLIENTS:
         raise Refused('socket-fd-budget-exceeded')
+    required = 2 * (client_limit + SOCKET_RESERVE) + FD_RESERVE
     soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
     if hard != resource.RLIM_INFINITY and hard < required:
         raise Refused('insufficient-hard-fd-limit')
@@ -188,7 +194,7 @@ async def close_writer(writer):
 class Proxy:
     def __init__(self, config, context, index):
         self.config, self.context, self.index = config, context, index
-        self.socket_limit = config['clientLimit'] + 64
+        self.socket_limit = config['clientLimit'] + SOCKET_RESERVE
         self.servers, self.tasks, self.writers = [], set(), set()
         self.stopping = False
         self.stop_event = asyncio.Event()
@@ -397,7 +403,7 @@ class Diagnostics:
                'eventLoopLag': {'count': self.lag_count, 'sampleCount': len(values),
                                 'sampling': 'complete' if len(values) == self.lag_count else 'bounded-reservoir',
                                 'p99Ms': round(p99, 3), 'maxMs': round(self.interval_max_lag, 3)}}
-        if self.row_count >= DIAGNOSTIC_ROWS:
+        if self.row_count >= self.proxy.config['sessionSeconds'] + 2:
             raise Refused('diagnostics-row-limit')
         data = (json.dumps(row, separators=(',', ':'), sort_keys=True) + '\n').encode('ascii')
         if self.bytes_written + len(data) > DIAGNOSTIC_BYTES:

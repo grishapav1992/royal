@@ -76,7 +76,7 @@ async function run() {
   const info = await stat(config.manifest);
   if (!info.isFile() || info.size > 1024 ** 2 || process.platform !== 'win32' && (info.mode & 0o077)) throw new StandError('private-stand-manifest-required');
   const manifest = parseStandManifest(JSON.parse(await readFile(config.manifest, 'utf8')));
-  const { chatV2 } = manifest;
+  const { chatV2, gameProcesses = DEFAULT_GAME_PROCESSES } = manifest;
   if (config.workers > manifest.clients) throw new StandError('more-generators-than-clients');
   await mkdir(dirname(config.output), { recursive: true });
   try { await stat(config.output); throw new StandError('generator-report-already-exists'); }
@@ -121,9 +121,9 @@ async function run() {
       const tokens = groups[index].slice(offsets[index], offsets[index] + 4); if (!tokens.length) continue;
       await delay(Math.max(0, 200 - (performance.now() - lastBatchAt))); lastBatchAt = performance.now();
       const origin = apiOrigins[generatorBatchApiIndex(apiOrigins.length, config.workers, index, batches)];
-      const result = parseStandReady(await command(children[index], { kind: 'connect', endpoint: origin, ...(config.apiPorts ? { canonicalEndpoint: endpoint } : {}), tokens, concurrency: 4,
+      const result = parseStandReady(await command(children[index], { kind: 'connect', endpoint: origin, ...(config.apiPorts ? { canonicalEndpoint: endpoint, gameProcesses } : {}), tokens, concurrency: 4,
         ...(chatV2 ? { chatV2: { profile: chatV2, shard: { index, count: config.workers } } } : {}),
-        maxRetries: 3, retryDelayMs: 250, joinTimeoutMs: 15000 }, 'ready', controller.signal, 90000), manifest.gameProcesses ?? DEFAULT_GAME_PROCESSES); ready[index] = result;
+        maxRetries: 3, retryDelayMs: 250, joinTimeoutMs: 15000 }, 'ready', controller.signal, 90000), gameProcesses); ready[index] = result;
       if (result.joinedBatch !== tokens.length || result.connectedClients !== offsets[index] + tokens.length || Object.values(result.errors).some(count => count > 0)) throw new StandError('generator-admission-incomplete');
       if (chatV2 ? result.chatV2Ready !== result.count : result.chatV2Ready !== undefined) throw new StandError('generator-chat-readiness-incomplete');
       const counts = assignmentCounts[index].get(origin) ?? { batches: 0, admittedClients: 0 };
@@ -134,14 +134,14 @@ async function run() {
     const connectionPhase = { durationSeconds: round((performance.now() - connectedAt) / 1000), batches,
       connectionAttempts: ready.reduce((sum, item) => sum + item.connectionAttempts, 0), connectionRetries: ready.reduce((sum, item) => sum + item.connectionRetries, 0) };
     const start = parseStandStart(await control(manifest, controlEndpoint, '/prepared', { runId: manifest.runId, ready, clientHost: report.clientHost,
-      inputMode: config.inputMode, gameProcesses: manifest.gameProcesses ?? DEFAULT_GAME_PROCESSES, connectionPhase }, controller.signal, 30000), manifest);
+      inputMode: config.inputMode, gameProcesses, connectionPhase }, controller.signal, 30000), manifest);
     const { startAtUnixMs } = start;
     if (chatV2) report.chatV2.startAtUnixMs = startAtUnixMs;
     console.error(JSON.stringify({ phase: 'measure', clients: manifest.clients, seconds: manifest.seconds, workers: config.workers }));
     const results: StandResult[] = await Promise.all(children.map(async (child, index) => parseStandResult(await command(child,
       { kind: 'measure', seconds: manifest.seconds, stepsPerPacket: 2, drainMs: chatV2 ? 5000 : 2000, inputMode: config.inputMode,
         ...(startAtUnixMs !== undefined ? { startAtUnixMs } : {}) }, 'result', controller.signal, (manifest.seconds + (chatV2 ? 25 : 15)) * 1000),
-    manifest.gameProcesses ?? DEFAULT_GAME_PROCESSES,
+    gameProcesses,
     chatV2 && startAtUnixMs !== undefined ? { profile: chatV2, shard: { index, count: config.workers }, startAtUnixMs } : undefined)));
     report.ready = ready; report.connectionPhase = connectionPhase; report.results = results;
     const response = await control(manifest, controlEndpoint, '/results', { runId: manifest.runId, results }, controller.signal, 90000);

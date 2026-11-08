@@ -243,7 +243,7 @@ test('invalid options and sensitive metadata fail before opening any listener', 
   await assert.rejects(createStandControl(options({ signal: aborted.signal }).config), errorCode('signal-aborted'));
 });
 
-test('a bounded long-run control session accepts a forty-minute lifetime without waiting for it', { timeout: 5000 }, async t => {
+test('a bounded long-run control session accepts a fifty-minute lifetime without waiting for it', { timeout: 5000 }, async t => {
   const expiresAt = Date.now() + MAX_STAND_SESSION_MS - 1000;
   const { control } = await make({ expiresAt }); t.after(() => control.close());
   const response = await begin(control.port, '/status').response;

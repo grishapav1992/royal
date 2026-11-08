@@ -6,7 +6,7 @@ import { temporaryDatabase } from '../scripts/database-test';
 import { assertOwnedLoadDatabase, setLoadDatabaseRun } from '../scripts/load-stand-ownership';
 
 test('load stand attests the exact temporary database and its configured connection limit', async () => {
-  const database = await temporaryDatabase({ maxConnections: 154 });
+  const database = await temporaryDatabase({ maxConnections: 250 });
   const env = { ...database.env, LOAD_LOBBY_RUN_ID: randomUUID() };
   const client = new Client({ host: env.PGHOST, port: Number(env.PGPORT), database: env.PGDATABASE,
     user: env.PGUSER, password: env.PGPASSWORD, ssl: false });
@@ -21,7 +21,7 @@ test('load stand attests the exact temporary database and its configured connect
     assert.equal(await assertOwnedLoadDatabase(env), env.LOAD_LOBBY_RUN_ID);
     await client.connect();
     const { rows: [settings] } = await client.query('SHOW max_connections');
-    assert.equal(settings.max_connections, '154');
+    assert.equal(settings.max_connections, '250');
     await client.query('CREATE DATABASE unrelated');
     await assert.rejects(assertOwnedLoadDatabase(env), /load-database-not-owned/);
   } finally {

@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { assessDedicatedStage, attestationCode, checkArtifactReadExitCode, checkOwnedStatus, checkTlsGatewayStatus, checkTlsProxyFinished, checkTlsProxyReady,
   classifyArtifactError,
-  directTlsProxyConfig, HELPER_SHA256, PREVIOUS_HELPER_SHA256, LEGACY_HELPER_SHA256, localMeasurementWindow, MACHINE_SHA256,
+  directTlsProxyConfig, HELPER_SHA256, PRE_SCALE_HELPER_SHA256, PREVIOUS_HELPER_SHA256, LEGACY_HELPER_SHA256, localMeasurementWindow, MACHINE_SHA256,
   managedCommand, privateTemporaryDirectory, remoteArtifactReadCode, resourceCoverage, resourceMonitorCode, runDedicatedWebsocketStage, sshArguments,
   stopOwnedProcessGroup, stopOwnedTlsProxyProcessGroup, validateDedicatedStagePlan, validateTlsProxyDiagnostics,
   verifyManifest, verifyPublicCertificate } from '../run-dedicated-websocket-stage.mjs';
@@ -54,10 +54,24 @@ const pending = () => new Promise(() => {});
 test('current helper pin matches source and prior TLS helper remains explicitly supported', async () => {
   const source = await readFile(join(project, 'scripts/load-dedicated-stand.py'));
   assert.equal(createHash('sha256').update(source).digest('hex'), HELPER_SHA256);
-  assert.equal(validateDedicatedStagePlan({ ...plan, remotePlan: { ...remotePlan,
+  assert.equal(validateDedicatedStagePlan({ ...plan, outputDir: resolve(tmpdir(), 'stage-test-output'), remotePlan: { ...remotePlan,
     helperSha256: PREVIOUS_HELPER_SHA256 } }).remotePlan.helperSha256, PREVIOUS_HELPER_SHA256);
-  assert.equal(validateDedicatedStagePlan({ ...tlsPlan, remotePlan: { ...tlsPlan.remotePlan,
-    helperSha256: PREVIOUS_HELPER_SHA256 } }, { platform: 'darwin' }).remotePlan.helperSha256, PREVIOUS_HELPER_SHA256);
+  if (process.platform !== 'win32') {
+    assert.equal(validateDedicatedStagePlan({ ...tlsPlan, remotePlan: { ...tlsPlan.remotePlan,
+      helperSha256: PREVIOUS_HELPER_SHA256 } }, { platform: 'darwin' }).remotePlan.helperSha256, PREVIOUS_HELPER_SHA256);
+  }
+});
+test('10k dedicated plans require 34 owners and the expanded helper, with bounded execution time', () => {
+  const expanded = { ...plan, outputDir: resolve(tmpdir(), 'stage-test-output'), remotePlan: {
+    ...remotePlan, clients: 10000, seconds: 1800, gameProcesses: 34 } };
+  const verified = validateDedicatedStagePlan(expanded);
+  assert.equal(verified.remotePlan.clients, 10000);
+  assert.match(resourceMonitorCode(verified, id), /deadline=started\+3900/);
+  const legacy = { ...expanded, remotePlan: { ...expanded.remotePlan, clients: 6000, gameProcesses: 24, helperSha256: PRE_SCALE_HELPER_SHA256 } };
+  assert.match(resourceMonitorCode(validateDedicatedStagePlan(legacy), id), /deadline=started\+3300/);
+  for (const patch of [{ gameProcesses: 33 }, { gameProcesses: 37 }, { clients: 10001 }, { helperSha256: PRE_SCALE_HELPER_SHA256 }]) {
+    assert.throws(() => validateDedicatedStagePlan({ ...expanded, remotePlan: { ...expanded.remotePlan, ...patch } }), /invalid-stage-workload/);
+  }
 });
 const handle = (done = pending()) => ({ child: { pid: 321 }, done, ended: false, stop: async () => true });
 const proxySha = '341eb48ae3909de3cb909e01dff5ef5db9cb1f0857e098b95b4988a26500de12';

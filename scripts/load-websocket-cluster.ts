@@ -1,6 +1,6 @@
 import { spawn, type ChildProcess } from 'node:child_process';
 import { createServer, request, type Server } from 'node:http';
-import { connect, type Socket } from 'node:net';
+import { connect, createServer as createTcpServer, type Socket } from 'node:net';
 import { readFile, realpath, stat, mkdir, writeFile } from 'node:fs/promises';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { tmpdir } from 'node:os';
@@ -17,7 +17,7 @@ import { encodeStandServerReport, loopbackEndpoint, parseStandChatV2, parseStand
   type StandManifest, type StandPrepared, type StandFinished, type StandErrorDiagnostics, type StandResult } from './load-stand-contract';
 import { DEFAULT_GAME_PROCESSES, MAX_GAME_PROCESSES, MAX_MEASUREMENT_SECONDS, MAX_STAND_CLIENTS, MAX_STAND_METRIC_INTERVALS,
   STAND_MAX_CONNECTIONS_PER_PROCESS, STAND_MAX_ROOMS_PER_PROCESS, STAND_ROOM_CAPACITY,
-  standLoadProfile, standPreparationTimeoutMs, standSessionDurationMs, standStartupTimeoutMs } from './load-stand-limits';
+  standAdmissionTimeoutMs, standLoadProfile, standPreparationTimeoutMs, standSessionDurationMs, standStartupTimeoutMs } from './load-stand-limits';
 
 type Occupancy = { id: string; count: number; owner: string };
 type Quantiles = { count: number; p50: number; p95: number; p99: number; max: number };
@@ -45,7 +45,7 @@ function cli(): Cli | undefined {
     console.log('The SDK generator uses ws by default. Optional diagnostics: --frame-diagnostics and --sdk-websocket native; diagnostics are off for performance comparisons.');
     console.log('Optional --resource-diagnostics samples native proxy CPU/RSS and macOS host compression/swap counters.');
     console.log('Optional --metrics-script /path/to/metrics.mjs uses prebuilt metrics without tsx.');
-    console.log('Game processes: --game-processes 4 (default), 1 to 24; each admits ten rooms of thirty players. Up to 6000 clients, requiring at least twenty game processes.');
+    console.log(`Game processes: --game-processes 4 (default), 1 to ${MAX_GAME_PROCESSES}; each admits ten rooms of thirty players. ${MAX_STAND_CLIENTS} clients require at least ${Math.ceil(MAX_STAND_CLIENTS / (STAND_MAX_ROOMS_PER_PROCESS * STAND_ROOM_CAPACITY))} game processes.`);
     console.log('Server-only stand: --stand-manifest /private/path/stand.json --client-origin http://127.0.0.1:17100. Run load-websocket-generators.ts separately through SSH loopback port forwards.');
     console.log('For an isolated Chat V2 pilot, use --chat-v2-rate 333, --chat-v2-burst 100 --chat-v2-burst-at-second 2, or both. Requires --stand-manifest and a compatible server bundle.');
     console.log('For a mixed Chat V2 pilot, --chat-v2-moving-clients sets how many connected clients also send movement input. By default all move.');
@@ -105,6 +105,32 @@ async function bounded<T>(work: Promise<T>, ms: number, code: string): Promise<T
   let timer: ReturnType<typeof setTimeout> | undefined;
   try { return await Promise.race([work, new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new HarnessError(code)), ms); })]); }
   finally { if (timer) clearTimeout(timer); }
+}
+
+export async function reserveStandPorts(count: number) {
+  if (!Number.isSafeInteger(count) || count < 1 || count > MAX_GAME_PROCESSES + 1) throw new RangeError('invalid-stand-port-count');
+  const listeners = new Map<number, ReturnType<typeof createTcpServer>>();
+  const release = async (port: number) => {
+    const listener = listeners.get(port);
+    if (!listener) return;
+    listeners.delete(port);
+    await new Promise<void>((resolve, reject) => listener.close(error => error ? reject(error) : resolve()));
+  };
+  const close = async () => { await Promise.all([...listeners.keys()].map(release)); };
+  try {
+    for (let index = 0; index < count; index++) {
+      const listener = createTcpServer(socket => socket.destroy());
+      await new Promise<void>((resolve, reject) => {
+        listener.once('error', reject);
+        listener.listen(0, '127.0.0.1', resolve);
+      });
+      listeners.set((listener.address() as { port: number }).port, listener);
+    }
+    return { ports: [...listeners.keys()], release, close };
+  } catch (error) {
+    await close();
+    throw error;
+  }
 }
 function requestWorker<T>(child: ChildProcess, command: object, response: string, timeoutMs: number, signal: AbortSignal): Promise<T> {
   return new Promise<T>((resolve, reject) => {
@@ -302,8 +328,10 @@ async function run() {
   const controller = new AbortController();
   const interrupt = () => controller.abort();
   process.once('SIGINT', interrupt); process.once('SIGTERM', interrupt);
-  const overallTimer = setTimeout(interrupt, standSessionDurationMs(config.seconds) + standPreparationTimeoutMs(config.clients));
+  const sessionMs = standSessionDurationMs(config.seconds, config.clients);
+  const overallTimer = setTimeout(interrupt, sessionMs + standPreparationTimeoutMs(config.clients));
   let front: Server | undefined, redis: Awaited<ReturnType<typeof import('./temporary-redis')['temporaryRedis']>> | undefined;
+  let portReservations: Awaited<ReturnType<typeof reserveStandPorts>> | undefined;
   let observer: Redis | undefined, accounts: AccountStore | undefined;
   let proxy: ChildProcess | undefined, proxyDirectory: string | undefined, parentTimer: ReturnType<typeof setInterval> | undefined;
   let standControl: StandControl<StandPrepared, StandFinished> | undefined, standPrepared: StandPrepared | undefined;
@@ -331,7 +359,7 @@ async function run() {
   };
   try {
     // Guard argument-only invocations before loading the dedicated cluster runtime.
-    const [{ Redis }, { RedisDriver }, { temporaryRedis, freeLocalPort }, { READY_PROCESSES_KEY, parseReadyProcess }] = await Promise.all([
+    const [{ Redis }, { RedisDriver }, { temporaryRedis }, { READY_PROCESSES_KEY, parseReadyProcess }] = await Promise.all([
       import('ioredis'), import('@colyseus/redis-driver'), import('./temporary-redis'), import('./load-lobby-owners'),
     ]).catch(error => { throw new HarnessError('cluster-runtime-unavailable', standErrorDiagnostics(error)); });
     redis = await temporaryRedis(loadRunId); check();
@@ -358,15 +386,16 @@ async function run() {
       }
     }));
     phase = 'accounts-prepared';
-    const ports = new Map<string, number>(); for (const id of ids) ports.set(id, await freeLocalPort());
-    const frontPort = await freeLocalPort();
+    const reserved = portReservations = await reserveStandPorts(ids.length + 1);
+    const ports = new Map(ids.map((id, index) => [id, reserved.ports[index]]));
+    const frontPort = reserved.ports[ids.length];
     const endpoint = 'http://127.0.0.1:' + frontPort;
     const clientEndpoint = config.clientOrigin ?? endpoint;
     let standIdentity: { runId: string; secret: string; createdAt: number; expiresAt: number } | undefined;
     if (config.standManifest) {
       phase = 'control';
       const runId = randomUUID(), secret = randomBytes(32).toString('hex');
-      const createdAt = Date.now(), expiresAt = createdAt + standSessionDurationMs(config.seconds);
+      const createdAt = Date.now(), expiresAt = createdAt + sessionMs;
       standIdentity = { runId, secret, createdAt, expiresAt };
       standControl = await createStandControl<StandPrepared, StandFinished>({ runId, secret, expiresAt, signal: controller.signal,
         status: { bundleSha256, clients: config.clients, gameProcesses: config.gameProcesses, seconds: config.seconds, apiEndpoint: clientEndpoint, serverHost: report.host,
@@ -420,6 +449,7 @@ async function run() {
       const routes = ids.map(id => `  handle_path /workers/${id}/* {\n    reverse_proxy 127.0.0.1:${ports.get(id)}\n  }`).join('\n');
       const attestationRoute = standControl ? `  handle /__load-stand/status {\n    rewrite * /status\n    reverse_proxy 127.0.0.1:${standControl.port}\n  }\n` : '';
       await writeFile(caddyfile, `{\n  admin off\n  auto_https off\n}\nhttp://127.0.0.1:${frontPort} {\n  bind 127.0.0.1\n${attestationRoute}${routes}\n  handle {\n    reverse_proxy 127.0.0.1:${ports.get('main')}\n  }\n}\n`, { mode: 0o600 });
+      await reserved.release(frontPort); check();
       proxy = spawn(proxyBinary, ['run', '--config', caddyfile, '--adapter', 'caddyfile'],
         { env: { PATH: baseEnv.PATH, HOME: proxyDirectory, TMPDIR: baseEnv.TMPDIR }, stdio: 'ignore' });
       watch(proxy, 'proxy/caddy');
@@ -427,10 +457,12 @@ async function run() {
         .catch(error => { throw new HarnessError('proxy-spawn-failed', standErrorDiagnostics(error)); });
       front = undefined;
     } else {
+      await reserved.release(frontPort); check();
       await new Promise<void>((resolve, reject) => { front!.once('error', reject); front!.listen(frontPort, '127.0.0.1', resolve); });
     }
     phase = 'startup';
     for (const id of ids) {
+      await reserved.release(ports.get(id)!); check();
       const game = spawn(process.execPath, [...(metricsScript ? [metricsScript] : ['--import', 'tsx', 'scripts/load-server-metrics.ts']), '--server-bundle', bundle], {
         env: { ...baseEnv, PORT: String(ports.get(id)), REDIS_URL: redis.url, PUBLIC_ORIGIN: clientEndpoint, LOBBY_WORKER_ID: id,
           LOBBY_WORKER_ONLY: String(id !== 'main'), LOBBY_AUTH_CONCURRENCY: id === 'main' ? '8' : '4', PGPOOL_MAX: id === 'main' ? '10' : '6', DEBUG: 'colyseus:matchmaking' },
@@ -467,7 +499,7 @@ async function run() {
       await writeFile(config.standManifest, JSON.stringify(manifest) + '\n', { flag: 'wx', mode: 0o600 }); standManifestCreated = true;
       report.stand = { runId, expiresAt, serverApiPort: frontPort, serverControlPort: standControl!.port, clientEndpoint };
       console.error(JSON.stringify({ phase: 'stand-ready', ...report.stand, manifestPath: config.standManifest }));
-      const prepared = await bounded(standControl!.prepared, 8 * 60000, 'stand-generator-connect-timeout'); check();
+      const prepared = await bounded(standControl!.prepared, standAdmissionTimeoutMs(config.clients), 'stand-generator-connect-timeout'); check();
       ready = prepared.ready; report.generatorHost = prepared.clientHost;
       report.differentReportedHosts = prepared.clientHost.hostFingerprint !== report.host.hostFingerprint;
       report.hostSeparationDefinition = 'Hashed hostname comparison, not proof of separate physical hardware; SSH and proxy costs remain part of the transport';
@@ -649,6 +681,7 @@ async function run() {
     await Promise.all([...games].map(([id, child]) => cleanup('game-cleanup-' + id, () => stopChild(child, false), 15000)));
     if (front) await cleanup('proxy-cleanup', () => new Promise<void>(resolve => front!.close(() => resolve())), 2000);
     if (accounts) await cleanup('accounts-cleanup', () => accounts!.close(), 6000);
+    if (portReservations) await cleanup('port-reservation-cleanup', () => portReservations!.close(), 2000);
     if (observer) { await cleanup('observer-cleanup', () => observer!.quit(), 1500); observer.disconnect(); }
     if (redis) await cleanup('valkey-cleanup', () => redis!.cleanup(), 5000);
     if (proxyDirectory) await cleanup('proxy-directory-cleanup', () => rm(proxyDirectory!, { recursive: true, force: true }), 2000);

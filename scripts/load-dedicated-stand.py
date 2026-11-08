@@ -29,6 +29,11 @@ PURPOSE = 'royal.load.purpose=dedicated-stand'
 INACTIVE = {'created', 'exited', 'dead'}
 HEX = re.compile(r'[a-f0-9]{64}')
 CLIENT_ORIGIN = 'http://127.0.0.1:17100'
+LEGACY_MAX_CLIENTS = 6000
+MAX_CLIENTS = 10000
+MAX_GAME_PROCESSES = 36
+CLIENTS_PER_PROCESS = 300
+PREPARATION_SECONDS = 900
 LIMITS_NOTE = 'Container caps include game, PostgreSQL, Redis and Caddy; they affect capacity measurements.'
 TLS_GATEWAY = {'port': 26443, 'serverName': 'royal-load.test'}
 TLS_REFUSED_CODES = {'stop-requested-before-start', 'ready-stand-required-before-tls', 'fresh-tls-gateway-required',
@@ -100,7 +105,8 @@ def validate(plan):
         if not HEX.fullmatch(str(plan.get(key, ''))):
             raise Refused('pinned-digests-required')
     count, processes, seconds = plan.get('clients'), plan.get('gameProcesses', 4), plan.get('seconds')
-    if type(processes) is not int or not 1 <= processes <= 24 or type(count) is not int or not 4 <= count <= min(6000, processes * 300):
+    if (type(processes) is not int or not 1 <= processes <= MAX_GAME_PROCESSES
+            or type(count) is not int or not 4 <= count <= min(MAX_CLIENTS, processes * CLIENTS_PER_PROCESS)):
         raise Refused('invalid-client-or-process-limit')
     if type(seconds) is not int or not 1 <= seconds <= 1800:
         raise Refused('invalid-measurement-seconds')
@@ -594,17 +600,24 @@ class Stand:
         if image.get('Id') != self.plan['imageId'] or image.get('Os') != 'linux':
             raise Refused('immutable-linux-image-required')
         budget = self.plan['budget']
+        clients = self.plan['clients']
+        file_limits = []
+        if clients > LEGACY_MAX_CLIENTS:
+            # Each Caddy proxy holds both sides of a stream, plus admission and process reserve.
+            required_fds = 2 * (clients + 64) + 128
+            file_limits = ['--ulimit', f'nofile={required_fds}:{required_fds}']
         args = ['docker', 'create', '--pull', 'never', '--name', self.name, '--label', 'royal.load.run-id=' + self.run, '--label', PURPOSE,
                 '--cpus', str(budget['cpus']), '--memory', str(budget['memoryMiB']) + 'm', '--memory-swap', str(budget['memoryMiB']) + 'm',
                 '--pids-limit', str(budget['pidsLimit']), '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
                 '--read-only', '--user', '1000:1000', '--network', 'host', '--entrypoint', 'node', '--workdir', '/app',
+                *file_limits,
                 '--tmpfs', '/tmp:rw,exec,nosuid,size=4g,uid=1000,gid=1000',
                 '--mount', 'type=bind,src=' + str(self.root / 'run') + ',dst=/app/run',
                 '--env', 'NODE_ENV=test', '--env', 'HOME=/tmp', '--env', 'ROYAL_REDIS_SERVER_BINARY=/usr/bin/redis-server',
                 self.plan['imageId'], '/app/dist-load/database.mjs', '/app/dist-load/cluster.mjs',
                 '--metrics-script', '/app/dist-load/metrics.mjs', '--server-bundle', '/app/dist-server/index.js',
                 '--proxy-binary', '/usr/local/bin/caddy', '--game-processes', str(self.plan['gameProcesses']),
-                '--clients', str(self.plan['clients']), '--seconds', str(self.plan['seconds']),
+                '--clients', str(clients), '--seconds', str(self.plan['seconds']),
                 '--stand-manifest', '/app/run/stand.json', '--client-origin', CLIENT_ORIGIN,
                 '--frame-diagnostics', '--resource-diagnostics', '--input-mode', 'browser-window',
                 '--min-rate-percent', '99', '--max-unacknowledged-percent', '0', '--output', '/app/run/server.json']
@@ -649,7 +662,9 @@ class Stand:
             self.not_cancelled()
             if self.state_path.exists() or self.inspect():
                 raise Refused('new-run-uuid-required')
-            write_private(self.state_path, {'runId': self.run, 'phase': 'creating', 'deadline': time.monotonic() + 900 + self.plan['seconds'] + 600})
+            session_overhead = 1200 if self.plan['clients'] > LEGACY_MAX_CLIENTS else 600
+            deadline = time.monotonic() + PREPARATION_SECONDS + self.plan['seconds'] + session_overhead
+            write_private(self.state_path, {'runId': self.run, 'phase': 'creating', 'deadline': deadline})
             try:
                 child = self.spawn('supervise', 'supervisor.log')
             except BaseException:

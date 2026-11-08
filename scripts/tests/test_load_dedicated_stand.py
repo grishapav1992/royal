@@ -122,12 +122,13 @@ class DedicatedStandTests(unittest.TestCase):
     def test_validate_exact_dedicated_host_uuid_immutable_image_and_capacity(self):
         invalid = [{'targetHost': '45.192.12.242'}, {'ownedRoot': '/opt/royal'}, {'containerName': 'royal-game-1'},
                    {'runId': '../royal'}, {'imageId': 'royal:latest'}, {'protocol': True}, {'clients': 1201},
-                   {'clients': 6001, 'gameProcesses': 24}, {'gameProcesses': 25}, {'seconds': 1801},
+                   {'clients': 7201, 'gameProcesses': 24}, {'clients': 10000, 'gameProcesses': 33},
+                   {'clients': 10001, 'gameProcesses': 36}, {'gameProcesses': 37}, {'seconds': 1801},
                    {'metadataSha256': 'bad'}, {'gameProcesses': True}, {'clients': True}]
         for change in invalid:
             with self.subTest(change=change), self.assertRaises(HELPER.Refused):
                 HELPER.validate({**plan(), **change})
-        for processes, clients in [(1, 300), (4, 1200), (20, 6000), (24, 6000)]:
+        for processes, clients in [(1, 300), (4, 1200), (20, 6000), (24, 6000), (34, 10000), (36, 10000)]:
             with self.subTest(processes=processes):
                 self.assertEqual(HELPER.validate({**plan(), 'gameProcesses': processes, 'clients': clients})['clients'], clients)
 
@@ -139,6 +140,17 @@ class DedicatedStandTests(unittest.TestCase):
                 HELPER.validate({**plan(), 'sameHostGenerators': value})
         with self.assertRaises(HELPER.Refused):
             HELPER.validate({**valid, 'tlsGateway': HELPER.TLS_GATEWAY})
+
+    def test_gateway_accepts_exact_largest_profile_owners(self):
+        self.plan.update(clients=10000, gameProcesses=36)
+        gateway = self.stand.tls_config(38001)['apps']['http']['servers']['gateway']
+        route = gateway['routes'][0]['match'][2]
+        pattern = route['path_regexp']['pattern']
+        self.assertEqual(route['method'], ['GET'])
+        self.assertEqual(route['header']['Upgrade'], ['websocket'])
+        self.assertIsNotNone(re.fullmatch(pattern, '/workers/worker-35/process/room'))
+        self.assertIsNone(re.fullmatch(pattern, '/workers/worker-36/process/room'))
+        self.assertIsNone(re.fullmatch(pattern, '/workers/worker-350/process/room'))
 
     def test_same_host_generator_completion_uses_only_fixed_owned_path(self):
         self.plan['sameHostGenerators'] = True
@@ -224,8 +236,21 @@ class DedicatedStandTests(unittest.TestCase):
             self.assertEqual(created[created.index(flag) + 1], value)
         mounts = [created[index + 1] for index, value in enumerate(created) if value == '--mount']
         self.assertEqual(mounts, ['type=bind,src=' + str(self.root / 'run') + ',dst=/app/run'])
+        self.assertNotIn('--ulimit', created)
         self.assertFalse(any(args[:2] == ['docker', 'start'] for args, _ in self.docker.calls))
         self.assertFalse((self.root / 'metadata-verified.copy').exists())
+
+    def test_large_container_sets_bounded_file_limit_and_exact_workload(self):
+        self.plan.update(clients=10000, gameProcesses=34, seconds=1800)
+        with patch.object(self.stand, 'host_gate'):
+            self.assertEqual(self.stand.create(), ID)
+        created, = self.docker.mutations()
+        for flag, value in [('--ulimit', 'nofile=20256:20256'), ('--clients', '10000'),
+                            ('--game-processes', '34'), ('--seconds', '1800')]:
+            index = created.index(flag)
+            self.assertEqual(created[index + 1], value)
+            self.assertEqual(index < created.index(self.plan['imageId']), flag == '--ulimit')
+        self.assertTrue(self.stand.state()['assetsVerified'])
 
     def test_changed_asset_digest_refuses_before_start(self):
         self.plan['metadataSha256'] = '0' * 64
@@ -274,11 +299,18 @@ class DedicatedStandTests(unittest.TestCase):
 
     def test_start_returns_creating_without_waiting_for_load(self):
         child = Mock(pid=123)
-        with patch.object(self.stand, 'spawn', return_value=child) as spawn:
+        with patch.object(self.stand, 'spawn', return_value=child) as spawn, patch.object(HELPER.time, 'monotonic', return_value=100):
             result = self.stand.start()
         self.assertEqual(result['phase'], 'creating')
+        self.assertEqual(self.stand.state()['deadline'], 1660)
         spawn.assert_called_once_with('supervise', 'supervisor.log')
         self.assertEqual(self.docker.mutations(), [])
+
+    def test_large_stand_gives_guardian_time_for_admission_and_cleanup(self):
+        self.plan.update(clients=10000, gameProcesses=34, seconds=1800)
+        with patch.object(self.stand, 'spawn', return_value=Mock(pid=123)), patch.object(HELPER.time, 'monotonic', return_value=100):
+            self.stand.start()
+        self.assertEqual(self.stand.state()['deadline'], 4000)
 
     def test_stop_persists_cancel_even_when_critical_section_cannot_be_acquired(self):
         @contextmanager

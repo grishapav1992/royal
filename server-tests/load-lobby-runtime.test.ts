@@ -14,17 +14,17 @@ import { LOAD_RUN_REDIS_KEY } from '../scripts/load-stand-ownership';
 test('stand config binds worker roles and accepts only the temporary loopback services', () => {
   const env = { NODE_ENV: 'test', PGHOST: '127.0.0.1', PGDATABASE: 'royal_test', PGUSER: 'postgres', PGSSLMODE: 'disable',
     PGPASSWORD: 'a'.repeat(64), PGPORT: '35001', AUTH_DB_PATH: 'royal_websocket_load', PGPOOL_MAX: '6', LOAD_LOBBY_RUN_ID: randomUUID(),
-    LOBBY_WORKER_ID: 'worker-23', LOBBY_WORKER_ONLY: 'true', REDIS_URL: 'redis://127.0.0.1:35002',
+    LOBBY_WORKER_ID: 'worker-35', LOBBY_WORKER_ONLY: 'true', REDIS_URL: 'redis://127.0.0.1:35002',
     PUBLIC_ORIGIN: 'http://127.0.0.1:35003', PORT: '35004', NOWPAYMENTS_API_KEY: 'omitted-fixture' };
   const config = parseLoadLobbyConfig(env);
-  assert.equal(config.publicAddress, '127.0.0.1:35003/workers/worker-23');
+  assert.equal(config.publicAddress, '127.0.0.1:35003/workers/worker-35');
   assert.equal(config.maxAuthWork, 4);
   const sanitized = isolatedLoadLobbyEnvironment(config, env);
   assert.equal(sanitized.NOWPAYMENTS_API_KEY, undefined);
   assert.equal(sanitized.NOWPAYMENTS_ENABLED, 'false');
   for (const override of [{ NODE_ENV: 'production' }, { PGHOST: 'localhost' }, { PGDATABASE: 'royal_game' },
     { DATABASE_URL: 'postgresql://other.invalid' }, { LOAD_LOBBY_RUN_ID: undefined }, { LOBBY_WORKER_ONLY: 'false' },
-    { LOBBY_WORKER_ID: 'worker-24' }, { REDIS_URL: 'redis://127.0.0.1:35002/1' },
+    { LOBBY_WORKER_ID: 'worker-36' }, { REDIS_URL: 'redis://127.0.0.1:35002/1' },
     { REDIS_URL: 'redis://localhost:35002' }, { PUBLIC_ORIGIN: 'https://example.invalid' }, { PORT: '35001' }, { PGPOOL_MAX: '50' }]) {
     assert.throws(() => parseLoadLobbyConfig({ ...env, ...override }));
   }

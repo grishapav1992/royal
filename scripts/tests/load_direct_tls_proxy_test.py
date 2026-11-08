@@ -50,10 +50,19 @@ class ConfigurationTests(unittest.TestCase):
         self.assertEqual(proxy.read_config(self.file), config(self.cert))
         for change in [{'remoteHost': '127.0.0.1'}, {'remotePort': 443}, {'listenHost': '0.0.0.0'},
                        {'listenPorts': [17100, 17101, 17103, 17104]}, {'interface': 'utun7'},
-                       {'serverName': 'other.test'}, {'clientLimit': 6001}, {'clientLimit': True},
+                       {'serverName': 'other.test'}, {'clientLimit': 10001}, {'clientLimit': True},
                        {'sessionSeconds': 3301}, {'extra': 'rejected'}]:
             self.save({**config(self.cert), **change})
             with self.assertRaises(proxy.Refused):
+                proxy.read_config(self.file)
+
+    def test_large_client_profile_accepts_extended_session_only_for_large_runs(self):
+        large = {**config(self.cert), 'clientLimit': 10000, 'sessionSeconds': 3900}
+        self.save(large)
+        self.assertEqual(proxy.read_config(self.file), large)
+        for change in [{'clientLimit': 6000}, {'sessionSeconds': 3901}]:
+            self.save({**large, **change})
+            with self.assertRaisesRegex(proxy.Refused, 'invalid-session-duration'):
                 proxy.read_config(self.file)
 
     def test_config_permissions_symlink_and_hardlink_are_rejected(self):
@@ -110,6 +119,17 @@ class ConfigurationTests(unittest.TestCase):
                 proxy.fd_preflight(600)
             setter.assert_not_called()
 
+    def test_large_profile_reserves_two_fds_per_stream_and_refuses_low_hard_limit(self):
+        with patch.object(proxy.resource, 'getrlimit', side_effect=[(256, 32768), (20256, 32768)]), patch.object(proxy.resource, 'setrlimit') as setter:
+            self.assertEqual(proxy.fd_preflight(10000), {'requiredFds': 20256, 'fdSoftLimit': 20256})
+            setter.assert_called_once_with(proxy.resource.RLIMIT_NOFILE, (20256, 32768))
+        with patch.object(proxy.resource, 'getrlimit', return_value=(256, 16000)), patch.object(proxy.resource, 'setrlimit') as setter:
+            with self.assertRaisesRegex(proxy.Refused, 'insufficient-hard-fd-limit'):
+                proxy.fd_preflight(10000)
+            setter.assert_not_called()
+        with self.assertRaisesRegex(proxy.Refused, 'socket-fd-budget-exceeded'):
+            proxy.fd_preflight(10001)
+
     def test_full_session_loop_lag_tracking_is_bounded_with_exact_maximum(self):
         instance = proxy.Proxy(config(self.cert), None, 11)
         for index in range(33000):
@@ -151,6 +171,18 @@ class ConfigurationTests(unittest.TestCase):
         self.assertFalse(hasattr(diagnostics, 'rows'))
         for previous, current in zip(rows, rows[1:]):
             self.assertEqual(current['intervalStartedAtMs'], previous['sampledAtMs'])
+        with self.assertRaisesRegex(proxy.Refused, 'row-limit'):
+            diagnostics.sample()
+
+    def test_large_profile_diagnostics_cover_full_extended_session(self):
+        clock = [0]
+        value = {**config(self.cert), 'clientLimit': 10000, 'sessionSeconds': 3900}
+        diagnostics = proxy.Diagnostics(proxy.Proxy(value, None, 11), None,
+                                        monotonic=lambda: clock[0], wall=lambda: clock[0] + 1)
+        for second in range(1, 3901):
+            clock[0] = second
+            diagnostics.sample()
+        self.assertEqual(diagnostics.finish()['rowCount'], 3902)
         with self.assertRaisesRegex(proxy.Refused, 'row-limit'):
             diagnostics.sample()
 

@@ -28,7 +28,7 @@ type Member = { room: Room<LobbyState>; seq: number; tracker: PacketTracker; win
   byteBaseline?: { tcp: NodeSocket; read: number; written: number }; priorTcpRead?: number; priorTcpWritten?: number };
 type InputMode = 'stress' | 'browser-window';
 type ChatConfig = { profile: ChatV2WorkloadProfile; shard: { index: number; count: number } };
-type ConnectCommand = { kind: 'connect'; endpoint: string; canonicalEndpoint?: string; tokens: string[]; concurrency?: number; maxRetries?: number; retryDelayMs?: number; joinTimeoutMs?: number; chatV2?: ChatConfig };
+type ConnectCommand = { kind: 'connect'; endpoint: string; canonicalEndpoint?: string; gameProcesses?: number; tokens: string[]; concurrency?: number; maxRetries?: number; retryDelayMs?: number; joinTimeoutMs?: number; chatV2?: ChatConfig };
 type Command = ConnectCommand | { kind: 'measure'; seconds: number; stepsPerPacket?: number; drainMs?: number; inputMode?: InputMode; startAtUnixMs?: number } | { kind: 'shutdown' };
 type ChatRun = { plan: ChatV2WorkloadPlan; ledger: ChatV2WorkloadLedger; byAccount: Map<number, Member>; requested: number; expected: number; startedAt?: number; finished?: boolean };
 const members: Member[] = [];
@@ -123,9 +123,10 @@ const timeout = async <T>(promise: Promise<T>, ms: number): Promise<T> => {
   finally { if (timer) clearTimeout(timer); }
 };
 class LoopbackClient extends Client {
-  constructor(private readonly endpoint: string, token: string, private readonly canonicalEndpoint?: string) { super(endpoint, { headers: { Cookie: 'royal_session=' + token } }); }
+  constructor(private readonly endpoint: string, token: string, private readonly canonicalEndpoint?: string,
+    private readonly gameProcesses?: number) { super(endpoint, { headers: { Cookie: 'royal_session=' + token } }); }
   protected override buildEndpoint(reservation: SeatReservation, options?: unknown) {
-    return generatorWebSocketEndpoint(super.buildEndpoint(reservation, options), this.endpoint, this.canonicalEndpoint);
+    return generatorWebSocketEndpoint(super.buildEndpoint(reservation, options), this.endpoint, this.canonicalEndpoint, this.gameProcesses);
   }
 }
 function reserveChatAccounts(command: ConnectCommand) {
@@ -224,7 +225,7 @@ async function connect(command: ConnectCommand) {
       for (let attempt = 0; attempt <= maxRetries && !shuttingDown; attempt++) {
       try {
         connectionAttempts++;
-        const client = new LoopbackClient(endpoint, token, command.canonicalEndpoint);
+        const client = new LoopbackClient(endpoint, token, command.canonicalEndpoint, command.gameProcesses);
         const pending = client.joinOrCreate<LobbyState>('lobby', { activityProtocol: 1 });
         let expired = false;
         void pending.then(room => { if (expired) { room.reconnection.enabled = false; void room.leave().catch(() => {}); } }).catch(() => {});
