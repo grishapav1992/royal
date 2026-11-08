@@ -12,7 +12,7 @@ import { AuditEvidence } from '../server/audit/evidence';
 import { buildCapturedCasinoReplay } from '../server/audit/replay-casino';
 import { persistCapturedChessReplay } from '../server/audit/replay-chess-storage';
 import { createReplayPackage, type ReplayPackage, type ReplayState } from '../server/audit/replay-package';
-import { ChessTurnReplayCapture, type CapturedChessReplay } from '../server/audit/replay-pvp-turn';
+import { chessTurnReplayDefinition, ChessTurnReplayCapture, type CapturedChessReplay } from '../server/audit/replay-pvp-turn';
 import { tsuTurnReplayDefinition } from '../server/audit/replay-pvp-tsu';
 import { AuditReplayStore } from '../server/audit/replay-store';
 import { persistCapturedToteReplay } from '../server/audit/replay-tote';
@@ -351,9 +351,33 @@ test('named operators export only authorized canonical replay packages and journ
       WHERE operator_name=? AND filters->>'entityId'=? AND reason='replay-not-recorded'`).get(alice, match);
     assert.deepEqual(gapJob, { status: 'failed', reason: 'replay-not-recorded', row_count: 0, byte_count: 0 });
     const detailInput = { schema, datasetId, filters: { source: demo, lookupKind: 'match', lookupId: match } } as const;
-    assert.equal((await readAuditDetail(login(alice), detailInput)).coverage.replay, 'not-recorded');
+    const before = (await readAuditDetail(login(alice), detailInput)).coverage;
+    const pendingId = (await game.prepare(`INSERT INTO capro_pending_ledger
+      (account_id,operation_id,amount_units,pending_balance_units,reason,created_at)
+      VALUES (?,?,'1','1','credit',?) RETURNING id::text`).get(players[1], randomUUID(), Date.now()))!.id;
+    const { formatVersion, ...chessDefinition } = chessTurnReplayDefinition;
+    const hiddenReplayId = randomUUID();
+    const hidden = createReplayPackage({ formatVersion, game: chessDefinition, scope, replayId: hiddenReplayId,
+      entityId: match, initial: recording.initial, coverage: 'partial', gaps: recording.gaps },
+    recording.events.map(event => event.data.kind === 'terminal'
+      ? { ...event, postings: [{ namespace: pending, rowId: pendingId }] } : event));
+    await persist(hidden);
+    await assert.rejects(run(alice, hiddenReplayId, 'hidden-match.json'), { code: 'replay-absent' });
+    assert.deepEqual((await readAuditDetail(login(alice), detailInput)).coverage, before);
+    assert.equal(before.replayCapture, 'gap-observed');
+
+    await audit.prepare('INSERT INTO audit_report_acl VALUES (?,?,?)').run(alice, datasetId, pending);
+    try {
+      assert.equal((await run(alice, hiddenReplayId, 'permitted-match.json')).coverage, 'partial');
+    } finally {
+      await rm(join(scratch, 'permitted-match.json'), { force: true });
+      await audit.prepare('DELETE FROM audit_report_acl WHERE operator_name=? AND dataset_id=? AND source_namespace=?')
+        .run(alice, datasetId, pending);
+      await audit.prepare('DELETE FROM audit_replay_fragments WHERE dataset_id=? AND replay_id=?').run(datasetId, hiddenReplayId);
+      await audit.prepare('DELETE FROM audit_replay_packages WHERE dataset_id=? AND replay_id=?').run(datasetId, hiddenReplayId);
+    }
     assert.equal(await persistCapturedChessReplay(audit, scope, game.schema, recording), 'recorded');
-    assert.equal((await readAuditDetail(login(alice), detailInput)).coverage.replay, undefined);
+    assert.equal((await readAuditDetail(login(alice), detailInput)).coverage.replayCapture, 'gap-observed');
 
     const result = await runEntity(alice, selector, 'chess-partial.json');
     assert.equal(result.coverage, 'partial');
