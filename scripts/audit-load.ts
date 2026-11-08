@@ -41,15 +41,16 @@ import { auditLoadMonotonicMs, startAuditLoadReportConsumer } from './audit-load
 import { seedAuditLoadReplay } from './audit-load-replay-fixture';
 import { startAuditLoadWallet } from './audit-load-wallet';
 import { openAuditLoadPvpPairs } from './audit-load-pvp-client';
+import { summarizeAuditLoadPvpTiming, type AuditLoadPvpSample } from './audit-load-pvp-timing';
 import { temporaryDatabase } from './database-test';
 
 type Budget = { stakeP95Ms?: number; settlementP95Ms?: number; readerStopMs?: number };
 type LoadOptions = { workers: number; roundsPerWorker: number; seedRounds: number;
   scaleHistory?: boolean; mixedHistory?: boolean; pilotGate?: boolean; summaryFirst?: boolean; replayFirst?: boolean; reportProcess?: boolean;
-  controlAfterReports?: boolean;
+  controlAfterReports?: boolean; pvpTiming?: boolean;
   budget?: Budget; standbyPgBasebackup?: string; retainedHistoryRows?: number };
 type Metric = 'stake' | 'settlement' | 'casinoRound' | 'retry';
-type Sample = { from: number; to: number; ok: boolean };
+type Sample = AuditLoadPvpSample;
 type Leg = [account: string, operation: string, entry: string, units: string];
 type Pair = [string, string];
 type LoadPlayers = [left: string, right: string, casino: string];
@@ -69,7 +70,7 @@ const defaults: LoadOptions = { workers: 4, roundsPerWorker: 8, seedRounds: 40 }
 
 function loadOptions(input: LoadOptions) {
   const { workers, roundsPerWorker, seedRounds, scaleHistory, mixedHistory, pilotGate, summaryFirst, replayFirst, reportProcess,
-    controlAfterReports, budget, standbyPgBasebackup, retainedHistoryRows } = input;
+    controlAfterReports, pvpTiming, budget, standbyPgBasebackup, retainedHistoryRows } = input;
   if (!Number.isInteger(workers) || workers < 1 || workers > 8 || !Number.isInteger(roundsPerWorker) ||
       roundsPerWorker < 2 || roundsPerWorker > 16 || !Number.isInteger(seedRounds) || seedRounds < 8 || seedRounds > 40) {
     throw new Error('Invalid isolated audit load options');
@@ -91,7 +92,7 @@ function loadOptions(input: LoadOptions) {
     throw new Error('Retained audit history requires --mixed-history, --pilot-gate and 1..1000000 rows');
   }
   return { workers, roundsPerWorker, seedRounds, scaleHistory: scaleHistory || mixedHistory || pilotGate, mixedHistory,
-    pilotGate, summaryFirst, replayFirst, reportProcess, controlAfterReports, budget, standbyPgBasebackup, retainedHistoryRows };
+    pilotGate, summaryFirst, replayFirst, reportProcess, controlAfterReports, pvpTiming, budget, standbyPgBasebackup, retainedHistoryRows };
 }
 
 const rounded = (value: number) => Number(value.toFixed(3));
@@ -140,18 +141,22 @@ async function waitFor<T>(observation: string, probe: () => Promise<T | undefine
 }
 
 async function workload(game: PostgresDatabase, peers: PvpPhase['pairs'], baseUrl: string, agent: Agent,
-  tokens: ReadonlyMap<string, string>, workers: LoadPlayers[], rounds: number, signal?: AbortSignal) {
+  tokens: ReadonlyMap<string, string>, workers: LoadPlayers[], rounds: number, signal?: AbortSignal, pvpTiming?: boolean) {
   const samples: Record<Metric, Sample[]> = { stake: [], settlement: [], casinoRound: [], retry: [] };
   const expected: Leg[] = [];
   const expectedBanks = new Map<string, { accounts: [string, string]; winnerId: string | null }>();
   const casinoBalances = new Map<string, WireBalance>(), pvpBalances = new Map<string, PvpBalance>();
   let completedRounds = 0;
-  const timed = async <T>(kind: Metric, work: () => Promise<T>) => {
+  const timed = async <T>(kind: Metric, work: () => Promise<T>, command?: Sample['pvp']) => {
     signal?.throwIfAborted();
     const from = auditLoadMonotonicMs();
     let ok = false;
     try { const result = await work(); ok = true; return result; }
-    finally { samples[kind].push({ from, to: auditLoadMonotonicMs(), ok }); }
+    finally {
+      const sample: Sample = { from, to: auditLoadMonotonicMs(), ok };
+      if (pvpTiming && command) sample.pvp = { id: command.id, action: command.action };
+      samples[kind].push(sample);
+    }
   };
   const plinko = async (accountId: string, op: ReturnType<typeof playRequest>) => {
     const body = JSON.stringify(op);
@@ -205,7 +210,7 @@ async function workload(game: PostgresDatabase, peers: PvpPhase['pairs'], baseUr
       return snapshot;
     };
     const create = { id: randomUUID(), action: 'create', gameId: 'chess', stakeUnits: '1000000', targetId: b } as const;
-    const opened = await timed('stake', () => send(0, create));
+    const opened = await timed('stake', () => send(0, create), create);
     const matchId = opened.active?.id;
     if (!matchId || opened.active?.status !== 'open' || opened.active.creatorId !== a) {
       throw new Error('Expected newly opened PvP challenge');
@@ -217,7 +222,7 @@ async function workload(game: PostgresDatabase, peers: PvpPhase['pairs'], baseUr
       if (replayedOpen.active?.id !== matchId) throw new Error('Fixture PvP replay changed the challenge');
     }
     const accept = { id: randomUUID(), action: 'accept', challengeId: matchId } as const;
-    const accepted = await timed('stake', () => send(1, accept));
+    const accepted = await timed('stake', () => send(1, accept), accept);
     if (accepted.active?.id !== matchId || accepted.active.status !== 'arriving' || accepted.active.opponentId !== b) {
       throw new Error('Expected accepted PvP challenge');
     }
@@ -235,7 +240,7 @@ async function workload(game: PostgresDatabase, peers: PvpPhase['pairs'], baseUr
       if (!match || match.winnerId !== winnerId || match.reason !== settlement.action ||
           match.status !== (winnerId ? 'finished' : 'cancelled')) throw new Error('Expected exact PvP settlement');
     };
-    await timed('settlement', async () => assertSettled(await send(actor, settlement)));
+    await timed('settlement', async () => assertSettled(await send(actor, settlement)), settlement);
     await timed('retry', async () => {
       assertSettled(await send(actor, settlement, 'replayed'));
     });
@@ -745,7 +750,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     const config = databaseConfig({ ...cluster.env, PGPOOL_MAX: '8' });
     game = new PostgresDatabase('test_audit_load_game', { config });
     audit = new PostgresDatabase('test_audit_load', { config });
-    walletHttp = await startAuditLoadWallet(cluster.env, signal);
+    walletHttp = await startAuditLoadWallet(cluster.env, signal, options.pvpTiming);
     const makeWorkers = (): LoadPlayers[] => Array.from({ length: options.workers }, () => [randomUUID(), randomUUID(), randomUUID()]);
     const baselineWorkers = makeWorkers(), activeWorkers = makeWorkers(), reportAccount = randomUUID();
     const controlWorkers = options.pilotGate ? makeWorkers() : [];
@@ -779,9 +784,13 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       await pvpPhase?.close();
       pvpPhase = undefined;
     };
+    const collectPvpTiming = async (phase: Awaited<ReturnType<typeof workload>>, firstReport?: { from: number; to: number }) =>
+      options.pvpTiming ? summarizeAuditLoadPvpTiming([...phase.samples.stake, ...phase.samples.settlement],
+        await http.takePvpTiming(), firstReport) : undefined;
     const baselinePvp = await preparePvp(baselineWorkers);
-    const baseline = await workload(game, baselinePvp, http.baseUrl, loopbackAgent, tokens, baselineWorkers, options.roundsPerWorker, signal);
+    const baseline = await workload(game, baselinePvp, http.baseUrl, loopbackAgent, tokens, baselineWorkers, options.roundsPerWorker, signal, options.pvpTiming);
     await closePvp();
+    const baselinePvpTiming = await collectPvpTiming(baseline);
     const sources = { game: game.schema };
     const { datasetId, startedAtMs, environment } = await new AuditDatasets(audit, sources).startTest();
     const group = 'audit_load_read', reader = 'audit_load_player', summaryReader = 'audit_load_summary';
@@ -829,6 +838,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     let standbyBeforeControl = options.controlAfterReports ? null : initialStandby;
     reportConsumer = options.reportProcess ? await startAuditLoadReportConsumer(signal) : undefined;
     let control: Awaited<ReturnType<typeof workload>> | null = null, controlActivity: Activity | null = null;
+    let controlPvpTiming: Awaited<ReturnType<typeof collectPvpTiming>>;
     let standbyControlActivity: Activity | null = null;
     let controlNodeCpu: NodeJS.CpuUsage | null = null;
     const runControl = async () => {
@@ -838,12 +848,13 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       const beforeControl = await databaseActivity(audit!, game!);
       const standbyControl = standby ? await standbyActivity(standby) : null;
       const beforeControlCpu = process.cpuUsage();
-      const measured = await workload(game!, controlPvp, http.baseUrl, loopbackAgent, tokens, controlWorkers, options.roundsPerWorker, signal);
+      const measured = await workload(game!, controlPvp, http.baseUrl, loopbackAgent, tokens, controlWorkers, options.roundsPerWorker, signal, options.pvpTiming);
       await closePvp();
       await http.stopCapture();
       controlNodeCpu = process.cpuUsage(beforeControlCpu);
       controlActivity = activityDelta(beforeControl, await databaseActivity(audit!, game!));
       if (standby && standbyControl) standbyControlActivity = activityDelta(standbyControl, await standbyActivity(standby));
+      controlPvpTiming = await collectPvpTiming(measured);
       return measured;
     };
     if (options.pilotGate && !options.controlAfterReports) control = await runControl();
@@ -919,7 +930,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       return { csv, summary, atLimit, wide, replay };
     };
     const [activeResult, reportsResult] = await Promise.allSettled([
-      workload(game, activePvp, http.baseUrl, loopbackAgent, tokens, activeWorkers, options.roundsPerWorker, signal),
+      workload(game, activePvp, http.baseUrl, loopbackAgent, tokens, activeWorkers, options.roundsPerWorker, signal, options.pvpTiming),
       remainingReports(),
     ]);
     if (activeResult.status === 'rejected') throw activeResult.reason;
@@ -931,6 +942,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     const reportActivity = beforeReports ? activityDelta(beforeReports, await databaseActivity(audit, game)) : null;
     const standbyReportActivity = standby && standbyBeforeReports ? activityDelta(standbyBeforeReports, await standbyActivity(standby)) : null;
     const standbyAfterReports = standby ? await verifyStandby(standby, audit, signal) : null;
+    const activePvpTiming = await collectPvpTiming(active, (options.replayFirst ? replay : options.summaryFirst ? atLimit : csv) ?? undefined);
     if (options.controlAfterReports) control = await runControl();
     await reportConsumer?.close();
     const jobOrder = options.summaryFirst ? [limitReader, reader, summaryReader, wideReader]
@@ -1079,6 +1091,9 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
         (control?.noDoubleMoney ?? true) && replayVerified && (detail?.verified ?? true) && pilotPassed,
       runtime: { node: process.version, postgres, platform: process.platform, architecture: process.arch },
       transport: { casino: 'authenticated-http', pvp: 'authenticated-websocket' },
+      ...(options.pvpTiming ? { pvpTiming: {
+        baseline: baselinePvpTiming, withAuditWithoutReports: controlPvpTiming, withAudit: activePvpTiming,
+      } } : {}),
       workload: { workers: options.workers, roundsPerWorker: options.roundsPerWorker, seedRounds: options.seedRounds },
       ...(retainedHistory ? { retainedHistory } : {}),
       ...(scale ? { scale } : {}), ...(budget ? { budget: {
@@ -1136,13 +1151,13 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
       'retained-history-rows': { type: 'string' },
       'summary-first': { type: 'boolean' }, 'replay-first': { type: 'boolean' },
       'control-after-reports': { type: 'boolean' },
-      'report-process': { type: 'boolean' },
+      'report-process': { type: 'boolean' }, 'pvp-timing': { type: 'boolean' },
       'standby-pg-basebackup': { type: 'string' },
       'stake-p95-budget-ms': { type: 'string' }, 'settlement-p95-budget-ms': { type: 'string' },
       'reader-stop-budget-ms': { type: 'string' }, help: { type: 'boolean' } } });
     if (values.help) {
       console.log('node --import tsx scripts/audit-load.ts [--workers 1..8] [--rounds 2..16] [--seed 8..40] [--scale-history] [--mixed-history] [--pilot-gate] [--summary-first | --replay-first] [--report-process]\n' +
-        '  [--control-after-reports] [--standby-pg-basebackup /path/to/pg_basebackup] [--stake-p95-budget-ms n]\n' +
+        '  [--control-after-reports] [--pvp-timing] [--standby-pg-basebackup /path/to/pg_basebackup] [--stake-p95-budget-ms n]\n' +
         '  [--settlement-p95-budget-ms n] [--reader-stop-budget-ms n] [--retained-history-rows 1..1000000]');
       exitCode = 0;
     } else {
@@ -1155,7 +1170,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
         scaleHistory: values['scale-history'], mixedHistory: values['mixed-history'], pilotGate: values['pilot-gate'],
         retainedHistoryRows: values['retained-history-rows'] === undefined ? undefined : Number(values['retained-history-rows']),
         summaryFirst: values['summary-first'], replayFirst: values['replay-first'],
-        reportProcess: values['report-process'], controlAfterReports: values['control-after-reports'],
+        reportProcess: values['report-process'], controlAfterReports: values['control-after-reports'], pvpTiming: values['pvp-timing'],
         standbyPgBasebackup: values['standby-pg-basebackup'],
         budget: Object.keys(budget).length ? budget : undefined }, controller.signal);
       console.log(JSON.stringify(result));

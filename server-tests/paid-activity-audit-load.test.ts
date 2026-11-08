@@ -50,6 +50,7 @@ test('audit load measures both wallet phases, preserves money and stops cancelle
   assert.equal(report.scale, undefined);
   assert.equal(report.budget, undefined);
   assert.equal(report.pilotGate, undefined);
+  assert.equal(report.pvpTiming, undefined);
   assert.equal(report.withAuditWithoutReports, undefined);
   assert.deepEqual(report.workload, { workers: 2, roundsPerWorker: 3, seedRounds: 40 });
   for (const phase of [report.baseline, report.withAudit]) {
@@ -329,7 +330,7 @@ for (const reverse of [false, true]) test(`pilot gate uses equal fixtures with t
   { timeout: 35_000 }, async t => {
   const directory = await mkdtemp(join(tmpdir(), 'royal-audit-load-check-'));
   t.after(() => rm(directory, { recursive: true, force: true }));
-  const result = await run(['--pilot-gate', '--workers', '2', '--rounds', '3',
+  const result = await run(['--pilot-gate', '--pvp-timing', '--workers', '2', '--rounds', '3',
     ...(reverse ? ['--control-after-reports'] : [])], { ...process.env, TMPDIR: directory })
     .then(({ stdout }) => ({ stdout, exitCode: 0 }), error => {
       if (error.code !== 1 || !error.stdout) throw error;
@@ -360,6 +361,30 @@ for (const reverse of [false, true]) test(`pilot gate uses equal fixtures with t
   assert.equal(gate.noWalletErrorsOrTimeouts, true);
   assert.equal(report.ok, expected.ok);
   assert.equal(result.exitCode, expected.ok ? 0 : 1);
+  for (const phase of ['baseline', 'withAuditWithoutReports', 'withAudit'] as const) {
+    const timing = report.pvpTiming[phase];
+    assert.equal(timing.traced, 18);
+    assert.equal(timing.completed, 18);
+    assert.equal(timing.matched, 18);
+    assert.deepEqual(Object.fromEntries(Object.entries<{ completed: number }>(timing.actions)
+      .map(([action, result]) => [action, result.completed])), { create: 6, accept: 6, cancel: 4, resign: 2 });
+    for (const metric of ['stake', 'settlement'] as const) {
+      const row = timing[metric].p95;
+      assert.equal(row.clientMs, report[phase].metrics[metric].p95Ms);
+      assert.equal(timing[metric].overlappingFirstReport, phase === 'withAudit' ?
+        report.reports.player[metric === 'stake' ? 'overlappingStakeCalls' : 'overlappingSettlementCalls'] : 0);
+      const { roomMs, beforeStoreMs, commandMs, commandTransaction, beforeSyncMs, syncMs, syncTransaction,
+        beforeRoomMatchesMs, roomMatchesMs, afterRoomMatchesMs } = row.server;
+      const segments = [beforeStoreMs, commandMs, beforeSyncMs, syncMs, beforeRoomMatchesMs, roomMatchesMs, afterRoomMatchesMs];
+      assert(segments.every(value => Number.isFinite(value) && value >= 0));
+      assert(Math.abs(roomMs - segments.reduce((sum, value) => sum + value, 0)) < 0.005);
+      for (const [span, transaction] of [[commandMs, commandTransaction], [syncMs, syncTransaction]]) {
+        const { admissionMs, bodyMs, finishMs } = transaction;
+        assert(admissionMs >= 0 && bodyMs > 0 && finishMs >= 0);
+        assert(admissionMs + bodyMs + finishMs <= span + 0.002);
+      }
+    }
+  }
   for (const activity of [databaseActivity.withoutReports, databaseActivity.withReports]) {
     assert(activity.blocksHit > 0);
     for (const value of [activity.blocksRead, activity.blocksHit, activity.tempBytes, activity.tempFiles]) {

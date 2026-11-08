@@ -9,15 +9,17 @@ import { startAuditAttemptRuntime } from '../server/audit/attempts';
 import { auditHttpAttempts } from '../server/audit/http-attempts';
 import { pvpSeat } from '../src/shared/pvpSeats';
 import { activityHall } from '../src/shared/world';
+import { installAuditLoadPvpTiming, type AuditLoadPvpTrace } from './audit-load-pvp-timing';
 
 const file = fileURLToPath(import.meta.url);
 const gameSchema = 'test_audit_load_game';
 const auditSchema = 'test_audit_load';
 const commandTimeoutMs = 5000;
 const datasetUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-type Command = { kind: 'start'; datasetId: string } | { kind: 'stop' };
+type Command = { kind: 'start'; datasetId: string } | { kind: 'stop' } | { kind: 'take-pvp-timing' };
 type Request = (Command & { id: number }) | { kind: 'shutdown' };
-type Reply = { kind: 'ready'; port: number; wsPort: number } | { kind: 'result'; id: number; ok: boolean };
+type Reply = { kind: 'ready'; port: number; wsPort: number } |
+  { kind: 'result'; id: number; ok: boolean; pvpTiming?: AuditLoadPvpTrace[] };
 
 function fixtureEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
   const { NODE_ENV, PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD, PGSSLMODE } = env;
@@ -50,6 +52,7 @@ async function serve() {
   let realtime: { gracefullyShutdown(exit: boolean): Promise<void> } | undefined;
   let configureLobbyAudit: (typeof import('../server/LobbyRoom'))['configureLobbyAuditAttempts'] | undefined;
   let configureChessReplay: (typeof import('../server/LobbyRoom'))['configureLobbyChessReplay'] | undefined;
+  let takePvpTiming: (() => AuditLoadPvpTrace[]) | undefined;
   let capture: ReturnType<typeof startAuditAttemptRuntime>;
   let active: Promise<void> = Promise.resolve();
   let closing = false, ready = false, busy = false, lastId = 0;
@@ -85,7 +88,9 @@ async function serve() {
   process.on('message', (request: Request) => {
     if (closing) return;
     if (request?.kind === 'shutdown') { stop(); return; }
-    if (!ready || busy || request?.id !== ++lastId || (request.kind !== 'start' && request.kind !== 'stop') ||
+    if (!ready || busy || request?.id !== ++lastId ||
+        (request.kind !== 'start' && request.kind !== 'stop' && request.kind !== 'take-pvp-timing') ||
+        (request.kind === 'take-pvp-timing' && !takePvpTiming) ||
         (request.kind === 'start' && (capture || typeof request.datasetId !== 'string' || !datasetUuid.test(request.datasetId)))) {
       process.exitCode = 1;
       stop();
@@ -103,8 +108,9 @@ async function serve() {
         if (!capture?.recordChess || !await capture.ready) throw new Error('Isolated audit wallet capture did not start');
         configureLobbyAudit?.(capture.record);
         configureChessReplay?.(capture.recordChess);
-      } else await stopCapture();
-      send({ kind: 'result', id: request.id, ok: true });
+      } else if (request.kind === 'stop') await stopCapture();
+      const pvpTiming = request.kind === 'take-pvp-timing' ? takePvpTiming!() : undefined;
+      send({ kind: 'result', id: request.id, ok: true, pvpTiming });
     })().catch(() => {
       send({ kind: 'result', id: request.id, ok: false });
       process.exitCode = 1;
@@ -132,6 +138,10 @@ async function serve() {
     ]);
     configureLobbyAudit = configureLobbyAuditAttempts;
     configureChessReplay = configureLobbyChessReplay;
+    if (process.argv.includes('--pvp-timing')) {
+      const [{ PvpRoom }, { PostgresDatabase }] = await Promise.all([import('../server/pvp/room'), import('../server/database')]);
+      takePvpTiming = installAuditLoadPvpTiming(PvpRoom.prototype, accounts.pvp, PostgresDatabase.prototype, gameSchema);
+    }
     class AuditLoadLobby extends LobbyRoom {
       maxClients = 2;
 
@@ -160,9 +170,9 @@ async function serve() {
 }
 
 /** Runs the actual wallet installer without loading global accounts in the benchmark process. */
-export async function startAuditLoadWallet(clusterEnv: NodeJS.ProcessEnv, signal?: AbortSignal) {
+export async function startAuditLoadWallet(clusterEnv: NodeJS.ProcessEnv, signal?: AbortSignal, pvpTiming = false) {
   signal?.throwIfAborted();
-  const child = fork(file, [], { execArgv: ['--import', 'tsx'], stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
+  const child = fork(file, pvpTiming ? ['--pvp-timing'] : [], { execArgv: ['--import', 'tsx'], stdio: ['ignore', 'ignore', 'ignore', 'ipc'],
     env: { PATH: process.env.PATH, TMPDIR: process.env.TMPDIR, TEMP: process.env.TEMP, SystemRoot: process.env.SystemRoot,
       ...fixtureEnv(clusterEnv) } });
   const closed = new Promise<{ code: number | null }>(done => {
@@ -217,13 +227,20 @@ export async function startAuditLoadWallet(clusterEnv: NodeJS.ProcessEnv, signal
       if (reply?.kind !== 'result' || reply.id !== id || reply.ok !== true) {
         throw new Error('Isolated audit wallet command failed');
       }
+      return reply;
     } finally { finished.abort(); pending = false; }
   };
   return {
     baseUrl: 'http://127.0.0.1:' + port,
     wsBaseUrl: 'http://127.0.0.1:' + wsPort,
-    startCapture: (datasetId: string) => run({ kind: 'start', datasetId }),
-    stopCapture: () => run({ kind: 'stop' }),
+    startCapture: async (datasetId: string) => { await run({ kind: 'start', datasetId }); },
+    stopCapture: async () => { await run({ kind: 'stop' }); },
+    takePvpTiming: async () => {
+      if (!pvpTiming) throw new Error('Isolated PvP timing is disabled');
+      const reply = await run({ kind: 'take-pvp-timing' });
+      if (!Array.isArray(reply.pvpTiming)) throw new Error('Missing isolated PvP timing batch');
+      return reply.pvpTiming;
+    },
     close,
   };
 }
