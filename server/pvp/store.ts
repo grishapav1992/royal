@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { gameAccountId } from '../../src/shared/nileWallet';
 import { PVP_ARRIVAL_MS, PVP_INVITE_MS, PVP_MOVE_MS, PVP_RECONNECT_MS, isPvpCardGame, pvpPayout, validPvpRequest,
-  isPvpSnapshotGame, isDirectPvp, isFreePvp, isNegotiatedPvp, type PvpChallenge, type PvpRequest, type PvpSnapshot } from '../../src/shared/pvp';
+  isPvpSnapshotGame, isDirectPvp, isFreePvp, isNegotiatedPvp, VIRTUAL_PVP_SCOPE, type PvpChallenge, type PvpRequest, type PvpSnapshot } from '../../src/shared/pvp';
 import {TSU_DUEL_DEFAULT_STAKE,tsuDuelPayout} from '../../src/shared/tsuDuel';
 import {createTsuDuel,lockTsuDuel,advanceTsuDuel,publicTsuDuel,type TsuDuelState} from './tsu-duel';
 import { createCardGame, playCardMove, publicCardGame, type CardState } from './cards';
@@ -9,9 +9,11 @@ import { createTsuEFa, playTsuEFa, publicTsuEFa, type TsuEFaState } from './tsu-
 import type { NilePlayLedger } from '../finance/nile-play-ledger';
 import {NilePlayError} from '../finance/nile-play-error';
 
+type PvpHoldResult = { wallet: PvpSnapshot['wallet']; replayed: boolean };
+
 export type PvpLedger = Pick<NilePlayLedger,'ready'|'db'> & {
   wallet(accountId:string,now?:number):Promise<PvpSnapshot['wallet']>;
-  pvpHold(accountId:string,value:unknown,now?:number):Promise<unknown>;
+  pvpHold(accountId:string,value:unknown,now?:number):Promise<PvpHoldResult>;
   pvpFinish(accountId:string,value:unknown,now?:number):Promise<unknown>;
 };
 
@@ -159,6 +161,7 @@ export class PvpStore {
       const rate = await this.ledger.db.prepare('SELECT count(*) AS n FROM pvp_requests WHERE account_id=? AND created_at>?').get(actor.accountId, now - 60_000);
       if (Number(rate!.n) >= 120) return fail('Слишком много действий. Подожди немного.', 429);
       let s: StoredMatch;
+      let hold: PvpHoldResult | undefined;
       if (op.action === 'create'||op.action==='invite') {
         const negotiated=op.action==='invite';
         const stakeUnits=negotiated?(op.stakeUnits??TSU_DUEL_DEFAULT_STAKE):op.stakeUnits;
@@ -175,7 +178,7 @@ export class PvpStore {
           ...(negotiated?{rulesVersion:4 as const,mode:'stake' as const,targetWins:2 as const,termsRevision:0}:{}),
           status: 'open', createdAt: now, expiresAt: now + PVP_INVITE_MS, ready: [], winnerId: null, reason: '', revision: 0, disconnected: [] };
         s = { challenge, cards: null, roomId: actor.roomId, lastMoveAt: now, roomSeenAt: now };
-        if (!negotiated) await this.ledger.pvpHold(actor.accountId, { matchId: challenge.id, gameId: op.gameId, stakeUnits: op.stakeUnits }, now);
+        if (!negotiated) hold = await this.ledger.pvpHold(actor.accountId, { matchId: challenge.id, gameId: op.gameId, stakeUnits: op.stakeUnits }, now);
       } else {
         s = await this.saved(op.challengeId); const c = s.challenge;
         if (s.roomId !== actor.roomId || !participant(c, actor.accountId) && c.targetId !== actor.accountId && !(op.action === 'accept' && c.targetId === null)) return fail('Этот вызов недоступен.');
@@ -186,7 +189,7 @@ export class PvpStore {
           if (busy && !isDirectPvp(c)) return fail('Этот стол уже зарезервирован. Выбери другой вызов.');
           if (!this.rooms.get(actor.roomId)?.people.some(p => p.accountId === actor.accountId && p.connected && p.available)) return fail('Сначала заверши текущую игру.');
           if (!this.rooms.get(actor.roomId)?.people.some(p => p.accountId === c.creatorId && p.connected && p.available)) return fail('Автор вызова сейчас недоступен.');
-          if (!isFreePvp(c)&&!isNegotiatedPvp(c)) await this.ledger.pvpHold(actor.accountId, { matchId: c.id, gameId: c.gameId, stakeUnits: c.stakeUnits }, now);
+          if (!isFreePvp(c)&&!isNegotiatedPvp(c)) hold = await this.ledger.pvpHold(actor.accountId, { matchId: c.id, gameId: c.gameId, stakeUnits: c.stakeUnits }, now);
           c.opponentId = actor.accountId; c.opponentName = cleanName(actor.name); c.status = 'arriving'; c.expiresAt = now + PVP_ARRIVAL_MS;
           if(isNegotiatedPvp(c))s.duel=createTsuDuel(now,c.rulesVersion===4?4:3);
         } else if (op.action === 'cancel') {
@@ -244,7 +247,10 @@ export class PvpStore {
       }
       await this.save(s, now);
       await this.ledger.db.prepare('INSERT INTO pvp_requests(account_id,id,request_key,match_id,created_at) VALUES(?,?,?,?,?)').run(actor.accountId, op.id, key, s.challenge.id, now);
-      return Object.defineProperty({ ...await this.snapshot(actor, now), requestId: op.id }, 'replayed', { value: false });
+      // A fresh virtual hold already read this wallet under the account lock, which is still held.
+      const wallet = hold && !hold.replayed && 'scope' in hold.wallet && hold.wallet.scope === VIRTUAL_PVP_SCOPE
+        ? hold.wallet : undefined;
+      return Object.defineProperty({ ...await this.snapshotWithWallet(actor, now, wallet), requestId: op.id }, 'replayed', { value: false });
     });
   }
   async adjudicate(roomId: string, matchId: string, winnerId: string | null, reason: 'win' | 'draw' | 'server', now = Date.now()) {
@@ -260,6 +266,9 @@ export class PvpStore {
     return (await this.ledger.db.prepare("SELECT payload FROM pvp_matches WHERE room_id=? AND status IN ('open','arriving','playing')").all(roomId)).map(row => (JSON.parse(String(row.payload)) as StoredMatch).challenge);
   }
   async snapshot(actor: Actor, now = Date.now()): Promise<PvpSnapshot> {
+    return this.snapshotWithWallet(actor, now);
+  }
+  private async snapshotWithWallet(actor: Actor, now: number, wallet?: PvpSnapshot['wallet']): Promise<PvpSnapshot> {
     await this.ready;
     const all = (await this.ledger.db.prepare(`SELECT payload FROM pvp_matches WHERE room_id=? AND
       (status IN ('open','arriving','playing') OR creator_id=? OR opponent_id=?) ORDER BY updated_at DESC LIMIT 100`).all(actor.roomId, actor.accountId, actor.accountId))
@@ -275,6 +284,6 @@ export class PvpStore {
       cards, tsuEFa,
       people: (this.rooms.get(actor.roomId)?.people ?? []).filter(p => p.connected && p.accountId !== actor.accountId)
         .map(p => ({ accountId: p.accountId, name: p.name, available: p.available && !all.some(s => participant(s.challenge, p.accountId) && live(s.challenge)) })),
-      wallet: await this.ledger.wallet(actor.accountId, now), now };
+      wallet: wallet ?? await this.ledger.wallet(actor.accountId, now), now };
   }
 }
