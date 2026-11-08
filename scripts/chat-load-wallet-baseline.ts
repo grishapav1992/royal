@@ -15,8 +15,9 @@ import type { GamePlayRequest, RouletteRound } from '../src/shared/gameCore';
 import { CLUB_FINE_SOURCE, type ClubFineReceipt, type ClubFineRequest, type ClubFineResponse } from '../src/shared/security';
 import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
 import { authorizationBatchBudget, authorizationSessionCount, measureGameAuthorization } from './chat-load-game-authorization';
+import { attestWalletGameIdentity, parseWalletGameIdentity, walletGameRole, type WalletGameIdentity } from './chat-load-wallet-distributed';
 
-const databaseName = 'royal_chat_load_game';
+const databaseName = walletGameRole;
 const freshRate = 25;
 const replayRate = 2;
 const rate = freshRate + replayRate;
@@ -39,7 +40,8 @@ function requireWalletOwner() {
 }
 
 function options(args: string[]) {
-  const allowed = ['--run-id', '--phase', '--duration-seconds', '--output', '--start-at-ms', '--authorization-rate'];
+  const allowed = ['--run-id', '--phase', '--duration-seconds', '--output', '--start-at-ms', '--authorization-rate',
+    '--expected-game-host-id', '--expected-game-system-id'];
   const values = new Map<string, string>();
   for (let index = 0; index < args.length; index += 2) {
     const key = args[index], value = args[index + 1];
@@ -52,16 +54,18 @@ function options(args: string[]) {
   const durationSeconds = Number(values.get('--duration-seconds') ?? 1800);
   const startAt = values.has('--start-at-ms') ? Number(values.get('--start-at-ms')) : undefined;
   const authorizationRate = values.has('--authorization-rate') ? Number(values.get('--authorization-rate')) : undefined;
+  const gameIdentity = values.has('--expected-game-host-id') || values.has('--expected-game-system-id')
+    ? parseWalletGameIdentity(values.get('--expected-game-host-id'), values.get('--expected-game-system-id')) : undefined;
   requireCondition(runId && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(runId)
     && output && ['baseline', 'chat-on'].includes(phase)
     && Number.isSafeInteger(durationSeconds) && durationSeconds >= 1 && durationSeconds <= 1800
     && (authorizationRate === undefined || Number.isSafeInteger(authorizationRate) && authorizationRate >= 1 && authorizationRate <= 333)
     && (startAt === undefined || Number.isSafeInteger(startAt) && startAt > Date.now() && startAt <= Date.now() + 15 * 60000),
   'invalid_arguments');
-  return { runId, output, phase, durationSeconds, startAt, authorizationRate };
+  return { runId, output, phase, durationSeconds, startAt, authorizationRate, gameIdentity };
 }
 
-async function authorizeStand(runId: string) {
+async function authorizeStand(runId: string, gameIdentity?: WalletGameIdentity) {
   const env = process.env, port = Number(env.PGPORT), pool = Number(env.PGPOOL_MAX ?? 10);
   requireCondition(env.NODE_ENV === 'test' && env.PGHOST === '127.0.0.1'
     && env.PGDATABASE === databaseName && env.PGUSER === databaseName && env.PGSSLMODE === 'disable'
@@ -82,13 +86,15 @@ async function authorizeStand(runId: string) {
   const probe = new pg.Client(databaseConfig(isolatedEnv));
   try {
     await probe.connect();
-    const result = await probe.query(`
-      SELECT current_database() AS db, current_user AS role, current_setting('royal.chat_load_run_id', true) AS marker,
-        NOT pg_is_in_recovery() AS primary,
-        EXISTS (SELECT 1 FROM pg_namespace WHERE nspname = 'royal_game' AND nspowner = current_user::regrole) AS owned_schema`);
-    const row = result.rows[0];
-    requireCondition(row.db === databaseName && row.role === databaseName && row.marker === runId && row.primary && row.owned_schema,
-      'stand_database_identity_mismatch');
+    if (gameIdentity) await attestWalletGameIdentity(probe, runId, gameIdentity, false);
+    else {
+      const { rows: [row] } = await probe.query(`
+        SELECT current_database() AS db, current_user AS role, current_setting('royal.chat_load_run_id', true) AS marker,
+          NOT pg_is_in_recovery() AS primary,
+          EXISTS (SELECT 1 FROM pg_namespace WHERE nspname = 'royal_game' AND nspowner = current_user::regrole) AS owned_schema`);
+      requireCondition(row.db === databaseName && row.role === databaseName && row.marker === runId && row.primary && row.owned_schema,
+        'stand_database_identity_mismatch');
+    }
   } finally { await probe.end(); }
 
   // The application singleton is initialized after this guard. No payment, provider or production config is inherited.
@@ -392,7 +398,7 @@ async function serveWallet(config: Config) {
   const lifetime = new AbortController();
   const parentClosed = once(process, 'disconnect').then(() => lifetime.abort());
   const emit = (packet: ServerMessage) => { if (process.connected) process.send?.(packet); };
-  await authorizeStand(config.runId);
+  await authorizeStand(config.runId, config.gameIdentity);
   requireWalletOwner();
   const { accounts } = await import('../server/accounts');
   const [{ installDemoWallet }, { installClubFineRoutes }] = await Promise.all([
@@ -500,7 +506,7 @@ async function main() {
   let stopWallet: (() => Promise<void>) | undefined;
   try {
     lifetime.signal.throwIfAborted();
-    await authorizeStand(config.runId);
+    await authorizeStand(config.runId, config.gameIdentity);
     lifetime.signal.throwIfAborted();
     const { child, signal: walletSignal, stop } = startWalletProcess(args);
     stopWallet = stop;
