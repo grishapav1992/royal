@@ -9,9 +9,10 @@ import type { PvpUI } from './PvpUI';
 import type { ClubHost } from '../ClubHost';
 import type { RoomScene } from '../game/RoomScene';
 import { LobbyClient, type ConnectionStatus } from '../network/LobbyClient';
+import { ChatOutbox, type ChatOutboxEntry } from '../network/ChatOutbox';
 import { HALLS, type ChatMessage, type PlayerView } from '../shared/world';
 import { getIntoxication } from '../shared/intoxication';
-import { CHAT_CONFIRMATION_TIMEOUT_MS, CHAT_PENDING_LIMIT, type ChatResult, type ChatVisit } from '../shared/chat';
+import { CHAT_CONFIRMATION_TIMEOUT_MS, CHAT_PENDING_LIMIT, normalizeChatV2Text, type ChatResult, type ChatVisit, type ChatV2Visit } from '../shared/chat';
 import { maskChatText } from '../shared/chatConduct';
 import { progression } from '../wallet/ProgressionClient';
 import './chat-delivery.css';
@@ -21,6 +22,7 @@ type OutgoingMessage = {
   text: string;
   time: number;
   roomId: string;
+  roomEpoch?: string;
   visitId: number;
   status: 'sending' | 'queued' | 'published' | 'rejected' | 'cancelled' | 'uncertain';
   message?: string;
@@ -39,6 +41,10 @@ export class SocialUI {
   private messages = new Map<string, ChatMessage>();
   private chatVisit?: ChatVisit | null;
   private chatReady = false;
+  private chatAccount?: string;
+  private chatAccountGeneration = 0;
+  private chatV2 = false;
+  private chatV2Visit?: ChatV2Visit | null;
   private chatDock: HTMLElement;
   private dialog: HTMLDialogElement;
   private list: HTMLDivElement;
@@ -56,7 +62,13 @@ export class SocialUI {
   private gameChat: ReturnType<typeof installGameChat>;
   private outgoing = new Map<string, OutgoingMessage>();
   private outbox = document.createElement('div');
+  private privateOutbox = document.createElement('section');
   private deliveryStatus = document.createElement('p');
+  private durableChat = new ChatOutbox({
+    send: (accountId, envelope) => this.client.sendChatV2(accountId, envelope),
+    resume: (accountId, request) => this.client.resumeChatV2(accountId, request),
+    changed: () => this.renderOutbox(),
+  });
   constructor(private scene: ClubHost, private toast: (message: string) => void) {
     window.addEventListener('royal-skin-loaded', () => {
       const portrait = document.querySelector<HTMLImageElement>('#player-portrait img');
@@ -80,6 +92,9 @@ export class SocialUI {
     this.list = chat.querySelector<HTMLDivElement>('#chat-log')!;
     this.outbox.className = 'chat-outbox'; this.outbox.dataset.chatAnchor = 'outbox'; this.outbox.hidden = true;
     this.list.append(this.outbox);
+    this.privateOutbox.id = 'chat-private-outbox'; this.privateOutbox.hidden = true;
+    this.privateOutbox.setAttribute('aria-label', translateText('Доставка не подтверждена'));
+    document.querySelector('.room-panel')!.append(this.privateOutbox);
     this.deliveryStatus.id = 'chat-delivery-status'; this.deliveryStatus.className = 'chat-delivery-status';
     this.deliveryStatus.setAttribute('role', 'status'); this.deliveryStatus.hidden = true;
     this.list.before(this.deliveryStatus);
@@ -91,9 +106,8 @@ export class SocialUI {
     this.list.addEventListener('scroll', () => this.saveChatPosition());
     new ResizeObserver(()=>this.restoreChatPosition()).observe(this.list);
     this.input = chat.querySelector<HTMLInputElement>('#chat-input')!;
-    this.media = new ChatMedia(chat, this.input, text => {
-      return this.sendChat(text);
-    }, value => this.scene.setTyping(value));
+    this.media = new ChatMedia(chat, this.input, (text, saved) => { this.sendChat(text, saved, true); },
+      value => this.scene.setTyping(value));
     this.invite = document.createElement('button'); this.invite.className = 'invite-button'; this.invite.id='invite'; this.invite.textContent = translateText('Пригласить'); this.invite.title = this.invite.textContent; this.invite.disabled = true;
     document.querySelector('.room-tools')!.prepend(this.invite);
     this.invite.addEventListener('click', async () => {
@@ -145,10 +159,28 @@ export class SocialUI {
       },
       players: (players, selfId) => this.updatePlayers(players, selfId),
       chatVisit: visit => {
+        this.chatV2 = false;
         this.chatReady = true;
         this.setChatVisit(visit);
         this.chatAvailability();
       },
+      chatV2Ready: (accountId, ready) => {
+        if (this.auth.account?.id !== accountId) return;
+        this.selectChatAccount(accountId);
+        this.chatV2 = true;
+        this.chatV2Visit = undefined;
+        this.setChatVisit(undefined);
+        this.durableChat.connect(accountId, ready);
+      },
+      chatV2Visit: visit => {
+        if (!this.chatV2 || !this.chatAccount) return;
+        if (this.chatV2Visit?.roomEpoch !== visit?.roomEpoch) this.setChatVisit(undefined);
+        this.chatV2Visit = visit;
+        this.chatReady = true;
+        this.setChatVisit(visit ? { id: visit.visitId, hall: visit.location } : null);
+        this.durableChat.setVisit(visit);
+      },
+      chatV2Result: (accountId, result) => this.durableChat.receive(accountId, result),
       chat: message => {
         const fresh = this.addMessage(message);
         if (fresh && !message.system && message.senderId !== this.selfId) this.gameChat.messageReceived();
@@ -161,9 +193,13 @@ export class SocialUI {
       pvpResult:value=>this.pvp?.client.rejected(value),
       note: note => this.activities?.receive(note),
     });
+    window.addEventListener('royal-account', () => this.selectChatAccount(this.auth.account?.id));
     chat.querySelector('form')!.addEventListener('submit', event => {
-      event.preventDefault(); const text = this.input.value.trim();
-      if (this.sendChat(text)) { this.input.value = ''; this.input.dispatchEvent(new Event('input', { bubbles: true })); this.input.focus(); }
+      event.preventDefault(); const draft = this.input.value;
+      this.sendChat(draft, () => {
+        if (this.input.value !== draft) return;
+        this.input.value = ''; this.input.dispatchEvent(new Event('input', { bubbles: true })); this.input.focus();
+      });
     });
     this.input.addEventListener('input', () => this.chatAvailability());
     this.input.addEventListener('focus', () => this.scene.setTyping(true));
@@ -177,10 +213,31 @@ export class SocialUI {
     document.querySelector('.npc-count')!.textContent = '';
     this.scene.setLocked(true);
   }
+  private selectChatAccount(accountId?: string) {
+    if (accountId === this.chatAccount) return;
+    const prior = this.chatAccount;
+    this.chatAccount = accountId;
+    this.chatAccountGeneration++;
+    this.chatReady = false;
+    this.chatV2 = false;
+    this.chatV2Visit = undefined;
+    for (const entry of this.outgoing.values()) clearTimeout(entry.timer);
+    this.outgoing.clear();
+    if (prior) {
+      this.input.value = '';
+      this.roomId = '';
+      this.selfId = '';
+    }
+    this.durableChat.selectAccount(accountId);
+    this.setChatVisit(undefined);
+    if (prior && this.client.status !== 'disconnected') this.client.leave();
+  }
   private connectionStatus(status: ConnectionStatus) {
     this.pvp?.client.setConnected(status==='connected');
     if (status !== 'connected') {
       this.chatReady = false;
+      this.chatV2Visit = undefined;
+      this.durableChat.disconnect();
       for (const entry of this.outgoing.values()) if (entry.status === 'sending' || entry.status === 'queued') {
         clearTimeout(entry.timer); entry.timer = undefined; entry.status = 'uncertain';
         entry.message = translateText('Связь прервалась. Доставка не подтверждена. Текст сохранён.');
@@ -219,28 +276,51 @@ export class SocialUI {
     this.showLatest();
   }
   private isCurrentChatVisit(entry: OutgoingMessage) {
+    if (entry.roomEpoch) return this.chatV2 && this.chatV2Visit?.roomEpoch === entry.roomEpoch && this.chatV2Visit.visitId === entry.visitId;
+    if (this.chatV2) return false;
     return !!this.chatVisit && entry.roomId === this.roomId && entry.visitId === this.chatVisit.id;
   }
   private chatAvailability() {
     const disabled = this.client.status !== 'connected' || !this.chatReady || this.sanctioned || !this.chatVisit;
     this.input.disabled = disabled;
-    this.media?.setDisabled(disabled);
+    this.durableChat.setBlocked(this.sanctioned);
     this.input.placeholder = this.sanctioned ? translateText('Подожди, охранник обращается к тебе') : translateText('Напиши что-нибудь…');
     const waiting = this.pendingChatCount();
-    document.querySelector<HTMLButtonElement>('#send-chat')!.disabled = disabled || waiting >= CHAT_PENDING_LIMIT || !this.input.value.trim();
-    const uncertain = [...this.outgoing.values()].some(entry => entry.status === 'uncertain');
-    this.deliveryStatus.textContent = uncertain ? translateText('Доставка не подтверждена. Проверь историю перед повторной отправкой.')
+    const noCapacity = this.chatV2 ? !this.durableChat.canSend : waiting >= CHAT_PENDING_LIMIT;
+    this.media?.setDisabled(disabled || (this.chatV2 && noCapacity), disabled);
+    document.querySelector<HTMLButtonElement>('#send-chat')!.disabled = disabled || noCapacity || !this.input.value.trim();
+    const uncertain = this.chatV2 ? this.durableChat.entries.some(entry => !entry.result && entry.status === 'uncertain')
+      : [...this.outgoing.values()].some(entry => entry.status === 'uncertain');
+    this.deliveryStatus.textContent = uncertain ? translateText(this.chatV2 ? 'Ответ задерживается. Доставка не подтверждена. Текст сохранён.'
+      : 'Доставка не подтверждена. Проверь историю перед повторной отправкой.')
       : waiting >= CHAT_PENDING_LIMIT ? translateText('Дождись доставки предыдущих сообщений.') : '';
     this.deliveryStatus.hidden = !this.deliveryStatus.textContent;
     for (const button of Array.from(this.outbox.querySelectorAll<HTMLButtonElement>('[data-chat-retry]'))) button.disabled = disabled || waiting >= CHAT_PENDING_LIMIT;
   }
   private pendingChatCount() {
+    if (this.chatV2) return this.durableChat.pendingCount;
     return [...this.outgoing.values()].filter(entry => entry.status === 'sending' || entry.status === 'queued' || entry.status === 'uncertain').length;
   }
-  private sendChat(text: string): boolean {
+  private sendChat(text: string, onSaved?: () => void, sticker = false): boolean {
     text = text.trim();
     const visit = this.chatVisit;
     if (!text || !visit || this.input.disabled || this.client.status !== 'connected' || this.sanctioned) return false;
+    if (this.chatV2) {
+      if (!this.durableChat.canSend) return false;
+      if (this.durableChat.hasPending(normalizeChatV2Text(text))) {
+        this.toast(translateText('Это сообщение ещё не подтверждено. Проверь историю перед повтором.')); return false;
+      }
+      const accountGeneration = this.chatAccountGeneration;
+      const storageFailed = () => this.toast(translateText(sticker ? 'Сообщение не отправлено.' : 'Сообщение не отправлено. Текст сохранён.'));
+      void this.durableChat.submit(text).then(result => {
+        if (accountGeneration !== this.chatAccountGeneration) return;
+        if (result === 'saved') { onSaved?.(); this.showLatest(); }
+        else if (result === 'storage_failed') storageFailed();
+      }).catch(() => {
+        if (accountGeneration === this.chatAccountGeneration) storageFailed();
+      });
+      return true;
+    }
     if (this.pendingChatCount() >= CHAT_PENDING_LIMIT) {
       this.toast(translateText('Сначала дождись ответа на сохранённые сообщения.')); return false;
     }
@@ -258,7 +338,7 @@ export class SocialUI {
     }, CHAT_CONFIRMATION_TIMEOUT_MS);
     this.showLatest(); this.renderOutbox();
     try {
-      if (this.client.sendChat({ id, text, visitId: visit.id })) return true;
+      if (this.client.sendChat({ id, text, visitId: visit.id })) { onSaved?.(); return true; }
       clearTimeout(entry.timer); this.outgoing.delete(id); this.renderOutbox();
       this.toast(translateText('Нет подключения. Текст остался в поле.')); return false;
     } catch {
@@ -294,11 +374,28 @@ export class SocialUI {
     this.input.value = entry.text;
     this.input.dispatchEvent(new Event('input', { bubbles: true }));
     this.input.focus({ preventScroll: true });
-    if (entry.status === 'uncertain') this.toast(translateText('Доставка не подтверждена. Проверь историю перед повторной отправкой.'));
+    if (entry.status === 'uncertain' && !entry.roomEpoch) this.toast(translateText('Доставка не подтверждена. Проверь историю перед повторной отправкой.'));
+  }
+  private durableRow({ envelope, time, status, result }: ChatOutboxEntry): OutgoingMessage {
+    const { messageId: id, text, visitId, roomEpoch } = envelope;
+    const detail = result?.reasonCode === 'spam' ? 'Сообщение отклонено за спам.'
+      : result?.reasonCode === 'profanity' ? 'Сообщение отклонено из-за избытка грубых слов.'
+      : result?.reasonCode === 'rate_limited' ? 'Слишком быстро. Продолжение спама вызовет охранника.'
+      : result?.reasonCode === 'visit_changed' ? 'Локация изменилась. Отправь сообщение снова.'
+      : result?.status === 'expired' || (!result && status === 'uncertain')
+        ? 'Ответ задерживается. Доставка не подтверждена. Текст сохранён.' : undefined;
+    const delivery = result?.status === 'expired' ? 'uncertain' : result?.status === 'cancelled' ? 'cancelled'
+      : result ? 'rejected' : status === 'accepted' ? 'queued' : status;
+    return { id, text, time, roomId: '', roomEpoch, visitId, message: detail && translateText(detail), status: delivery };
   }
   private renderOutbox() {
     this.saveChatPosition(); this.outbox.replaceChildren();
-    for (const entry of this.outgoing.values()) {
+    const outside = this.chatV2 && this.chatVisit === null;
+    const container = outside ? this.privateOutbox : this.list;
+    if (this.outbox.parentElement !== container) container.append(this.outbox);
+    const accountGeneration = this.chatAccountGeneration;
+    for (const entry of [...this.outgoing.values(), ...this.durableChat.entries.map(entry => this.durableRow(entry))]) {
+      if (outside && !entry.roomEpoch) continue;
       const current = this.isCurrentChatVisit(entry);
       const state = entry.status;
       const failed = state === 'rejected' || state === 'cancelled' || state === 'uncertain';
@@ -312,27 +409,38 @@ export class SocialUI {
       row.dataset.requestId = entry.id; row.dataset.delivery = state;
       if (failed) {
         const status = document.createElement('strong'); status.className = 'chat-outgoing-status';
-        status.textContent = !current ? translateText('Черновик из другой локации') : {
+        status.textContent = !current && !outside ? translateText('Черновик из другой локации') : {
           rejected: translateText('Не опубликовано'), cancelled: translateText('Отправка отменена'),
           uncertain: translateText('Доставка не подтверждена'),
         }[state];
         row.append(status);
         if (entry.message) { const detail = document.createElement('p'); detail.className = 'chat-outgoing-detail'; detail.textContent = entry.message; row.append(detail); }
         const actions = document.createElement('div'); actions.className = 'chat-outgoing-actions';
-        const restore = document.createElement('button'); restore.type = 'button'; restore.dataset.chatRestore = entry.id;
-        restore.textContent = translateText('Вернуть в поле'); restore.addEventListener('click', () => this.restoreDraft(entry)); actions.append(restore);
-        if (current && state !== 'uncertain') {
+        if (!outside) {
+          const restore = document.createElement('button'); restore.type = 'button'; restore.dataset.chatRestore = entry.id;
+          restore.textContent = translateText('Вернуть в поле'); restore.addEventListener('click', () => {
+            if (accountGeneration === this.chatAccountGeneration) this.restoreDraft(entry);
+          }); actions.append(restore);
+        }
+        if (current && state !== 'uncertain' && !entry.roomEpoch) {
           const retry = document.createElement('button'); retry.type = 'button'; retry.dataset.chatRetry = entry.id;
           retry.textContent = translateText('Повторить');
-          retry.addEventListener('click', () => { if (this.sendChat(entry.text)) this.removeOutgoing(entry.id); }); actions.append(retry);
+          retry.addEventListener('click', () => {
+            if (accountGeneration === this.chatAccountGeneration) this.sendChat(entry.text, () => this.removeOutgoing(entry.id));
+          }); actions.append(retry);
         }
         const remove = document.createElement('button'); remove.type = 'button'; remove.dataset.chatDismiss = entry.id;
-        remove.textContent = translateText('Убрать'); remove.addEventListener('click', () => this.removeOutgoing(entry.id)); actions.append(remove);
+        remove.textContent = translateText('Убрать'); remove.addEventListener('click', () => {
+          if (accountGeneration !== this.chatAccountGeneration) return;
+          if (entry.roomEpoch) void this.durableChat.dismiss(entry.id);
+          else this.removeOutgoing(entry.id);
+        }); actions.append(remove);
         row.append(actions);
       }
       this.outbox.append(row);
     }
     this.outbox.hidden = !this.outbox.childElementCount;
+    this.privateOutbox.hidden = !outside || this.outbox.hidden;
     this.media?.prune(); this.chatAvailability(); this.restoreChatPosition();
   }
   private updatePlayers(players: PlayerView[], selfId: string) {
@@ -393,7 +501,7 @@ export class SocialUI {
       if (existing.has(item.id)) continue;
       const row = this.chatRow(item);
       row.dataset.messageId = item.id;
-      this.list.insertBefore(row, this.outbox);
+      this.list.insertBefore(row, this.outbox.parentElement === this.list ? this.outbox : null);
     }
     // Reorder only nodes that moved, keeping the current reading position intact.
     const rows = new Map(Array.from(this.list.querySelectorAll<HTMLElement>(':scope > [data-message-id]'), row => [row.dataset.messageId!, row]));

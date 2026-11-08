@@ -12,7 +12,11 @@ import { savedSession, savedRoom, rememberSession, forgetSession } from './sessi
 import { configureReconnection, lobbyMatchmakingFetch } from './reconnection';
 import { LOBBY_RECOVERY_WINDOW_MS } from '../shared/lobbyConnection';
 import type { CabinetPlayResult } from '../shared/cabinetSeating';
-import { isChatLocation, ROOM_CHAT_PROTOCOL, type ChatRequest, type ChatResult, type ChatVisit } from '../shared/chat';
+import {
+  isChatLocation, parseChatV2Ready, parseChatV2Result, parseChatV2ResumeResponse, parseChatV2Visit,
+  ROOM_CHAT_PROTOCOL, ROOM_CHAT_PROTOCOL_V2, type ChatRequest, type ChatResult, type ChatVisit,
+  type ChatV2Ready, type ChatV2ResumeRequest, type ChatV2ResumeResult, type ChatV2Result, type ChatV2Send, type ChatV2Visit,
+} from '../shared/chat';
 import type { PvpSnapshot } from '../shared/pvp';
 import type { PlayerRecoveryResult } from '../shared/playerRecovery';
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
@@ -36,6 +40,9 @@ export class LobbyClient {
   private releaseCabinetWhenConnected = false;
   private pendingCabinet?: { id: string; requestId: number; finish: (accepted: boolean) => void; timer: ReturnType<typeof setTimeout> };
   private capture?: { session: string; pursuitId: string; escorted: boolean };
+  private chatProtocol?: typeof ROOM_CHAT_PROTOCOL | typeof ROOM_CHAT_PROTOCOL_V2;
+  private chatV2Offer?: ReturnType<typeof setTimeout>;
+  private chatV2Account?: string;
   status: ConnectionStatus = 'disconnected';
   constructor(private events: {
     npcTime: (simulationAt: number, guestsAt: number) => void;
@@ -54,13 +61,16 @@ export class LobbyClient {
     chat: (message: ChatMessage) => void;
     chatVisit?: (visit: ChatVisit | null) => void;
     delivery?: (result: ChatResult) => void;
+    chatV2Ready?: (accountId: string, ready: ChatV2Ready) => void;
+    chatV2Visit?: (visit: ChatV2Visit | null) => void;
+    chatV2Result?: (accountId: string, result: ChatV2Result | ChatV2ResumeResult) => void;
     pvp?:(value:PvpSnapshot)=>void;
     pvpResult?:(value:{requestId:string;error:string;rejected:boolean})=>void;
     history: (messages: ChatMessage[]) => void;
     notice: (message: string) => void;
     activities: (state: ActivitiesState) => void;
     note: (note: PianoNote) => void;
-  }) {}
+  }, private readonly chatV2Enabled = import.meta.env.VITE_CHAT_PROTOCOL_V2 === '1') {}
   join(roomId?: string, returningToRoom = false, accountId?: string): Promise<void> {
     if (this.recovery) return this.recovery;
     if (this.joining) return this.joining;
@@ -142,17 +152,46 @@ export class LobbyClient {
       // Older servers can still emit this packet during a host update.
       onMessage('chat-check', () => {});
       onMessage('chat-result', (result: ChatResult) => {
-        if (result && typeof result.id === 'string' && ['queued', 'published', 'rejected', 'cancelled'].includes(result.status)) {
+        if (this.chatProtocol !== ROOM_CHAT_PROTOCOL_V2 && result && typeof result.id === 'string'
+          && ['queued', 'published', 'rejected', 'cancelled'].includes(result.status)) {
           this.events.delivery?.({ ...result, message: result.message ? translateText(result.message) : undefined });
         }
       });
-      onMessage('chat', message => this.events.chat(message as ChatMessage));
+      onMessage('chat', message => { if (this.chatProtocol === ROOM_CHAT_PROTOCOL) this.events.chat(message as ChatMessage); });
       onMessage('chat-visit', (visit: ChatVisit | null) => {
-        if (visit === null || (visit && Number.isSafeInteger(visit.id) && visit.id > 0 && isChatLocation(visit.hall))) {
+        if ((this.chatProtocol === ROOM_CHAT_PROTOCOL || this.chatV2Offer)
+          && (visit === null || (visit && Number.isSafeInteger(visit.id) && visit.id > 0 && isChatLocation(visit.hall)))) {
+          if (this.chatV2Offer) this.selectChatV1();
           this.events.chatVisit?.(visit);
         }
       });
-      onMessage('history', messages => { if (Array.isArray(messages)) this.events.history(messages as ChatMessage[]); });
+      onMessage('history', messages => {
+        if (this.chatProtocol === ROOM_CHAT_PROTOCOL && Array.isArray(messages)) this.events.history(messages as ChatMessage[]);
+      });
+      onMessage('chat.ready', value => {
+        if (!this.chatV2Offer || !accountId || this.status !== 'connected') return;
+        const ready = parseChatV2Ready(value);
+        if (!ready) return;
+        clearTimeout(this.chatV2Offer); this.chatV2Offer = undefined;
+        this.chatProtocol = ROOM_CHAT_PROTOCOL_V2;
+        this.chatV2Account = accountId;
+        this.events.chatV2Ready?.(accountId, ready);
+      });
+      onMessage('chat.visit', value => {
+        if (this.chatProtocol !== ROOM_CHAT_PROTOCOL_V2) return;
+        const visit = parseChatV2Visit(value);
+        if (visit !== undefined) this.events.chatV2Visit?.(visit);
+      });
+      onMessage('chat.result', value => {
+        if (this.chatProtocol !== ROOM_CHAT_PROTOCOL_V2 || !accountId) return;
+        const result = parseChatV2Result(value);
+        if (result) this.events.chatV2Result?.(accountId, result);
+      });
+      onMessage('chat.resume', value => {
+        if (this.chatProtocol !== ROOM_CHAT_PROTOCOL_V2 || !accountId) return;
+        const response = parseChatV2ResumeResponse(value);
+        for (const result of response?.results ?? []) this.events.chatV2Result?.(accountId, result);
+      });
       onMessage('notice', message => this.events.notice(translateText(String(message))));
       onMessage('pvp',(value:PvpSnapshot)=>this.events.pvp?.(value));
       onMessage('pvp-result',(value:{requestId:string;error:string;rejected:boolean})=>this.events.pvpResult?.(value));
@@ -219,7 +258,7 @@ export class LobbyClient {
         if (state.mira) this.events.mira({ x: state.mira.x, y: state.mira.y, facing: state.mira.facing as MiraView['facing'], action: state.mira.action as MiraView['action'], progress: state.mira.progress });
       });
       room.onDrop(() => { if (current()) this.setStatus('reconnecting'); });
-      room.onReconnect(() => { if (!current()) return; queueMicrotask(() => { if (current()) rememberSession(room, accountId); }); this.events.npcTime(0,0);this.activities=undefined; this.setStatus('connected'); room.send('stop'); this.requestChatHistory(); room.send('activities'); });
+      room.onReconnect(() => { if (!current()) return; queueMicrotask(() => { if (current()) rememberSession(room, accountId); }); this.events.npcTime(0,0);this.activities=undefined; this.setStatus('connected'); room.send('stop'); this.negotiateChat(accountId, current); room.send('activities'); });
       room.onLeave(code => {
         if (!current()) return;
         this.lastCloseCode = code;
@@ -239,7 +278,7 @@ export class LobbyClient {
       if (recovered) { room.send('stop'); if (!recovering) room.send('playing', false); }
       this.events.joined(room.roomId, room.sessionId, recovering);
       this.setStatus('connected');
-      this.requestChatHistory();
+      this.negotiateChat(accountId, current);
       room.send('activities');
     } catch (error) {
       if (generation !== this.generation) return;
@@ -276,6 +315,11 @@ export class LobbyClient {
   }
   private setStatus(status: ConnectionStatus) {
     this.status = status;
+    if (status !== 'connected') {
+      clearTimeout(this.chatV2Offer); this.chatV2Offer = undefined;
+      this.chatProtocol = undefined;
+      this.chatV2Account = undefined;
+    }
     if (status !== 'connected') this.finishElevator(false);
     if (status !== 'connected') this.finishPlayerRecovery(false);
     if (status !== 'connected' && this.pendingCabinet) {
@@ -354,8 +398,33 @@ export class LobbyClient {
     this.room.send(type, type==='inputs'?{revision:this.revision,inputs:data}:type==='target'||type==='move'||type==='stair-window'?{...data as object,revision:this.revision}:data);
     return true;
   }
-  sendChat(request: ChatRequest): boolean { return this.send('chat', request); }
-  requestChatHistory(): boolean { return this.send('history', { version: ROOM_CHAT_PROTOCOL }); }
+  private negotiateChat(accountId: string | undefined, current: () => boolean) {
+    if (!this.chatV2Enabled || !accountId || !this.events.chatV2Ready) {
+      this.selectChatV1();
+      this.requestChatHistory();
+      return;
+    }
+    // V1 servers close sockets for unregistered packet types. Offer V2 on the existing history request.
+    this.chatV2Offer = setTimeout(() => {
+      if (!current() || this.status !== 'connected') return;
+      this.selectChatV1();
+      this.requestChatHistory();
+    }, 1000);
+    this.send('history', { version: ROOM_CHAT_PROTOCOL, offerVersion: ROOM_CHAT_PROTOCOL_V2 });
+  }
+  private selectChatV1() {
+    clearTimeout(this.chatV2Offer); this.chatV2Offer = undefined;
+    this.chatProtocol = ROOM_CHAT_PROTOCOL;
+    this.chatV2Account = undefined;
+  }
+  sendChat(request: ChatRequest): boolean { return this.chatProtocol === ROOM_CHAT_PROTOCOL && this.send('chat', request); }
+  requestChatHistory(): boolean { return this.chatProtocol === ROOM_CHAT_PROTOCOL && this.send('history', { version: ROOM_CHAT_PROTOCOL }); }
+  sendChatV2(accountId: string, request: ChatV2Send): boolean {
+    return this.chatProtocol === ROOM_CHAT_PROTOCOL_V2 && this.chatV2Account === accountId && this.send('chat.send', request);
+  }
+  resumeChatV2(accountId: string, request: ChatV2ResumeRequest): boolean {
+    return this.chatProtocol === ROOM_CHAT_PROTOCOL_V2 && this.chatV2Account === accountId && this.send('chat.resume', request);
+  }
   getState() { return { status: this.status, roomId: this.room?.roomId, selfId: this.room?.sessionId, lastCloseCode: this.lastCloseCode, recoveryAttempts: this.recoveryAttempts }; }
   leave() {
     this.generation++;

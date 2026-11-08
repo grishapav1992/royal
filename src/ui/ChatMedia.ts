@@ -39,7 +39,7 @@ export class ChatMedia {
     this.refreshAnimations();
   });
 
-  constructor(private chat: HTMLElement, private input: HTMLInputElement, private send: (text: string) => boolean, typing: (value: boolean) => void) {
+  constructor(private chat: HTMLElement, private input: HTMLInputElement, private send: (text: string, saved: () => void) => void, typing: (value: boolean) => void) {
     try {
       const stored: unknown = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
       if (Array.isArray(stored)) this.recent = [...new Set(stored.filter((id): id is string => typeof id === 'string' && Boolean(chatStickerFromId(id) || chatEmojiFromText(id))))].slice(0, 20);
@@ -89,11 +89,11 @@ export class ChatMedia {
     document.addEventListener('visibilitychange', () => this.refreshAnimations());
   }
 
-  setDisabled(disabled: boolean) {
+  setDisabled(disabled: boolean, close = disabled) {
     this.toggle.disabled = disabled;
     this.search.disabled = disabled;
     for (const button of Array.from(this.grid.querySelectorAll<HTMLButtonElement>('button'))) button.disabled = disabled;
-    if (disabled) this.close(false);
+    if (close) this.close(false);
   }
 
   close(focus: boolean) {
@@ -129,7 +129,10 @@ export class ChatMedia {
         });
       } else {
         button.append(animal(entry)); button.className = 'chat-media-sticker-choice'; button.dataset.chatSticker = entry.id;
-        button.addEventListener('click', () => { if (!this.input.disabled && this.send(entry.text)) { this.remember(entry.id); this.close(true); } });
+        button.addEventListener('click', () => {
+          if (this.input.disabled) return;
+          this.send(entry.text, () => { this.remember(entry.id); this.close(true); });
+        });
       }
       this.grid.append(button);
     }

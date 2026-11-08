@@ -1,9 +1,13 @@
 import { test, expect, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { resolve, sep } from 'node:path';
-import { CHAT_CONFIRMATION_TIMEOUT_MS, ROOM_CHAT_PROTOCOL } from '../src/shared/chat';
+import {
+  CHAT_CONFIRMATION_TIMEOUT_MS, CHAT_V2_FIRST_ADMISSION_MS, ROOM_CHAT_PROTOCOL, ROOM_CHAT_PROTOCOL_V2, type ChatV2Send,
+} from '../src/shared/chat';
 
 const visitId = 7;
+const roomEpoch = '601c144d-7064-4e29-8ce0-91f0829946f0';
+const publicationId = '56708784-314f-4f7a-8d61-a931ac924440';
 type Packet = { type: string; value: unknown };
 type BrowserFixture = {
   packets: Packet[];
@@ -12,14 +16,16 @@ type BrowserFixture = {
   reconnect: () => void;
   disconnect: () => void;
   legacy: () => Promise<void>;
+  switchAccount: (accountId: string) => Promise<void>;
+  useLocalMovement: () => void;
 };
-declare global { interface Window { __chatFixture: BrowserFixture; royalDemo: { getNetworkState: () => unknown } } }
+declare global { interface Window { __chatFixture: BrowserFixture; royalDemo: { getNetworkState: () => unknown; isWorldLoaded: () => boolean } } }
 
 test.beforeEach(async ({ baseURL }) => {
   test.skip(baseURL !== 'http://127.0.0.1:4180', 'Run with playwright.chat-delivery.config.ts to keep every connection local.');
 });
 
-async function host(page: Page, supportsChatVisits = true) {
+async function host(page: Page, supportsChatVisits = true, v2?: { accountId: string; ready?: boolean }) {
   const context = page.context(), writes: string[] = [], errors: string[] = [];
   let entrySession = true;
   page.on('pageerror', error => errors.push(error.message));
@@ -62,15 +68,21 @@ async function host(page: Page, supportsChatVisits = true) {
   }
   expect(socialId, 'the test changes only the real host transport through the debugger').toBeTruthy();
   const installed = await cdp.send('Runtime.callFunctionOn', { objectId: socialId!, awaitPromise: true, returnByValue: true,
-    arguments: [{ value: supportsChatVisits }, { value: ROOM_CHAT_PROTOCOL }, { value: visitId }],
-    functionDeclaration: `async function(supportsChatVisits, protocol, visitId) {
+    arguments: [{ value: supportsChatVisits }, { value: ROOM_CHAT_PROTOCOL }, { value: visitId }, { value: v2 ?? null }, { value: roomEpoch }],
+    functionDeclaration: `async function(supportsChatVisits, protocol, visitId, v2, roomEpoch) {
       const handlers = new Map(), packets = [];
       let drop, reconnect, leave;
       const room = {
         roomId: 'chat-fixture-room', sessionId: 'chat-fixture-self', reconnection: {},
         send(type, value) {
           packets.push({type,value});
+          if (type.startsWith('chat.') && (!v2 || v2.ready === false)) throw new Error('V1 rejected an unregistered packet: ' + type);
           if (type === 'history') {
+            if (v2 && v2.ready !== false && value?.offerVersion === 2) {
+              handlers.get('chat.ready')?.({ version: 2, serverTimeMs: Date.now() });
+              handlers.get('chat.visit')?.({ roomEpoch, visitId, location: 'arcade', initialCursor: 0 });
+              return;
+            }
             if (supportsChatVisits && value?.version === protocol) handlers.get('chat-visit')?.({ id: visitId, hall: 'arcade' });
             const legacy = { id: 'legacy-history', senderId: 'other', name: 'Игрок', text: 'Общая история', time: Date.now() };
             handlers.get('history')?.(supportsChatVisits ? [] : [legacy]);
@@ -81,11 +93,18 @@ async function host(page: Page, supportsChatVisits = true) {
         onLeave(callback) { leave = callback; }, leave() { leave(1000); },
       };
       this.client.client = { joinOrCreate: async () => room };
-      await this.client.join();
-      this.scene.network = undefined;
+      const switchAccount = async accountId => {
+        this.auth.account = { id: accountId, name: 'Тест', skin: 0, email: 'chat@example.test' };
+        await this.client.join(undefined, false, accountId);
+      };
+      if (v2) {
+        this.client.chatV2Enabled = true;
+        await switchAccount(v2.accountId);
+      } else await this.client.join();
       window.__chatFixture = {
         packets, receive: (type, value) => handlers.get(type)?.(value), drop, reconnect,
-        disconnect: () => leave(1000),
+        disconnect: () => leave(1000), switchAccount,
+        useLocalMovement: () => { this.scene.world.network = undefined; },
         legacy: async () => {
           const { LobbyClient } = await import('/src/network/LobbyClient.ts');
           const noop = () => {};
@@ -99,7 +118,7 @@ async function host(page: Page, supportsChatVisits = true) {
       return {account:this.auth.account,status:this.client.status};
     }` });
   expect(installed.exceptionDetails).toBeUndefined();
-  expect(installed.result.value).toEqual({ account: null, status: 'connected' });
+  expect(installed.result.value).toMatchObject({ account: v2 ? { id: v2.accountId } : null, status: 'connected' });
   await expect(page.locator('#join-dialog')).toBeHidden();
   if (supportsChatVisits) await expect(page.locator('#chat-input')).toBeEnabled();
   else await expect(page.locator('#chat-input')).toBeDisabled();
@@ -113,6 +132,194 @@ async function send(page: Page, text: string) {
 const receive = (page: Page, type: string, value: unknown) => page.evaluate(({ type, value }) => window.__chatFixture.receive(type, value), { type, value });
 const chatPackets = (page: Page) => page.evaluate(() => window.__chatFixture.packets.filter(packet => packet.type === 'chat') as Array<{ type: 'chat'; value: { id: string; text: string; visitId: number } }>);
 const historyRequests = (page: Page) => page.evaluate(() => window.__chatFixture.packets.filter(packet => packet.type === 'history').map(packet => packet.value));
+const v2Packets = (page: Page, type: string) => page.evaluate(type => window.__chatFixture.packets.filter(packet => packet.type === type).map(packet => packet.value), type);
+
+async function sendV2(page: Page, text: string) {
+  const before = (await v2Packets(page, 'chat.send')).length;
+  await page.locator('#chat-input').fill(text); await page.locator('#send-chat').click();
+  await expect.poll(async () => (await v2Packets(page, 'chat.send')).length).toBe(before + 1);
+  return (await v2Packets(page, 'chat.send')).at(-1)! as ChatV2Send;
+}
+
+test('V2 saves a masked outgoing message, retries its original envelope and recovers a lost receipt after reload', async ({ page }) => {
+  const accountId = 'v2-reload';
+  await page.clock.install();
+  const proof = await host(page, true, { accountId });
+  const first = await sendV2(page, 'Fuck, проверка восстановления');
+  expect(first.messageId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+  expect(first).toMatchObject({ text: 'Fuck, проверка восстановления', roomEpoch, visitId });
+  const outgoing = page.locator(`[data-request-id="${first.messageId}"]`);
+  await expect(outgoing).toContainText('F**k, проверка восстановления');
+  await expect(outgoing.locator('.chat-outgoing-status')).toHaveCount(0);
+  await expect(page.locator('#chat-delivery-status')).toBeHidden();
+  await expect(page.locator('#chat-input')).toHaveValue('');
+  expect(await historyRequests(page)).toEqual([{ version: ROOM_CHAT_PROTOCOL, offerVersion: ROOM_CHAT_PROTOCOL_V2 }]);
+  expect(await v2Packets(page, 'chat.ready')).toHaveLength(0);
+  expect(await chatPackets(page)).toHaveLength(0);
+
+  await page.clock.fastForward(CHAT_CONFIRMATION_TIMEOUT_MS + 100);
+  await expect(outgoing).toHaveAttribute('data-delivery', 'uncertain');
+  expect((await v2Packets(page, 'chat.resume'))[0]).toEqual({ messageIds: [first.messageId] });
+  await receive(page, 'chat.resume', { results: [{ messageId: first.messageId, status: 'not_found' }] });
+  await page.clock.fastForward(3000);
+  await expect.poll(() => v2Packets(page, 'chat.send')).toEqual([first, first]);
+  await receive(page, 'chat.result', { messageId: first.messageId, status: 'accepted' });
+
+  const priorResumes = (await v2Packets(page, 'chat.resume')).length;
+  await page.evaluate(() => { window.__chatFixture.drop(); window.__chatFixture.reconnect(); });
+  await expect.poll(async () => (await v2Packets(page, 'chat.resume'))[priorResumes]).toEqual({ messageIds: [first.messageId] });
+  expect(await v2Packets(page, 'chat.send')).toEqual([first, first]);
+
+  await host(page, true, { accountId });
+  await expect.poll(async () => (await v2Packets(page, 'chat.resume'))[0]).toEqual({ messageIds: [first.messageId] });
+  expect(await v2Packets(page, 'chat.send')).toHaveLength(0);
+  await receive(page, 'chat.resume', { results: [{ messageId: first.messageId, status: 'published', publicationId }] });
+  await expect(outgoing).toHaveCount(0);
+  await expect(page.locator('#chat-delivery-status')).toBeHidden();
+  await host(page, true, { accountId });
+  await expect(page.locator('#send-chat')).toBeDisabled();
+  expect(await v2Packets(page, 'chat.resume')).toHaveLength(0);
+  expect(proof).toEqual({ writes: [], errors: [] });
+});
+
+test('V2 respects retry delay and keeps a moved draft private when accounts switch', async ({ page }) => {
+  const accountId = 'v2-owner', other = 'v2-other';
+  await page.clock.install();
+  const proof = await host(page, true, { accountId });
+  const first = await sendV2(page, 'Сохранить только у владельца');
+  await receive(page, 'chat.result', { messageId: first.messageId, status: 'retry_later', reasonCode: 'commit_unknown', retryAfterMs: 5000 });
+  await page.clock.fastForward(4000);
+  expect(await v2Packets(page, 'chat.resume')).toHaveLength(0);
+  await page.clock.fastForward(2000);
+  await expect.poll(() => v2Packets(page, 'chat.resume')).toEqual([{ messageIds: [first.messageId] }]);
+  await receive(page, 'chat.visit', { roomEpoch, visitId: visitId + 1, location: 'tables', initialCursor: 0 });
+  await receive(page, 'chat.resume', { results: [{ messageId: first.messageId, status: 'not_found' }] });
+  await page.clock.fastForward(4000);
+  expect(await v2Packets(page, 'chat.send')).toEqual([first]);
+  const outgoing = page.locator(`[data-request-id="${first.messageId}"]`);
+  await expect(outgoing).toContainText('Черновик из другой локации');
+  await expect(outgoing).not.toContainText(first.text);
+  await outgoing.locator('[data-chat-restore]').click();
+  await expect(page.locator('#chat-input')).toHaveValue(first.text);
+  const priorResumes = (await v2Packets(page, 'chat.resume')).length;
+  await page.evaluate(id => window.__chatFixture.switchAccount(id), other);
+  await expect(outgoing).toHaveCount(0);
+  await expect(page.locator('#chat-input')).toHaveValue('');
+  await page.clock.fastForward(20000);
+  expect((await v2Packets(page, 'chat.resume')).length).toBe(priorResumes);
+  await receive(page, 'chat.result', { messageId: first.messageId, status: 'rejected', reasonCode: 'spam' });
+  await expect(outgoing).toHaveCount(0);
+  await page.evaluate(id => window.__chatFixture.switchAccount(id), accountId);
+  await expect.poll(async () => (await v2Packets(page, 'chat.resume')).at(-1)).toEqual({ messageIds: [first.messageId] });
+  expect(await v2Packets(page, 'chat.send')).toEqual([first]);
+  expect(proof).toEqual({ writes: [], errors: [] });
+});
+
+test('V2 keeps the composer text and sticker picker open when storage fails', async ({ page }) => {
+  const proof = await host(page, true, { accountId: 'v2-storage-failure' });
+  const restoreStorage = await page.evaluateHandle(() => {
+    const transaction = IDBDatabase.prototype.transaction;
+    IDBDatabase.prototype.transaction = function (...args) {
+      if (this.name === 'royal-chat-outbox' && args[1] === 'readwrite') throw new DOMException('Fixture storage failure', 'QuotaExceededError');
+      return transaction.apply(this, args);
+    };
+    return () => { IDBDatabase.prototype.transaction = transaction; };
+  });
+  await page.locator('#chat-input').fill('Текст остаётся в поле'); await page.locator('#send-chat').click();
+  await expect(page.getByText('Сообщение не отправлено. Текст сохранён.', { exact: true })).toBeVisible();
+  await expect(page.locator('#chat-input')).toHaveValue('Текст остаётся в поле');
+  expect(await v2Packets(page, 'chat.send')).toHaveLength(0);
+  await page.locator('#chat-media-toggle').click(); await page.locator('[data-chat-pack="duck"]').click();
+  const sticker = page.locator('[data-chat-sticker]').first();
+  await sticker.click();
+  await expect(page.getByText('Сообщение не отправлено.', { exact: true })).toBeVisible();
+  await expect(sticker).toBeVisible();
+  await expect(page.locator('#chat-input')).toHaveValue('Текст остаётся в поле');
+  expect(await v2Packets(page, 'chat.send')).toHaveLength(0);
+  await restoreStorage.evaluate(restore => restore());
+  await sticker.click();
+  await expect(page.locator('#chat-media-panel')).toBeHidden();
+  await expect(page.locator('[data-request-id] [data-sticker-id]')).toHaveCount(1);
+  expect(await v2Packets(page, 'chat.send')).toHaveLength(1);
+  expect(proof).toEqual({ writes: [], errors: [] });
+});
+
+test('V2 keeps private delivery status on the street without exposing the draft or chat', async ({ page }) => {
+  const proof = await host(page, true, { accountId: 'v2-street' });
+  const first = await sendV2(page, 'Сохранить этот черновик в тайне');
+  await receive(page, 'chat.visit', null);
+  await expect(page.locator('.chat-dock')).toBeHidden();
+  await expect(page.locator('#chat-input')).toBeDisabled();
+  const panel = page.locator('#chat-private-outbox'), row = panel.locator(`[data-request-id="${first.messageId}"]`);
+  await expect(row).toBeVisible();
+  await expect(row).toHaveAttribute('data-delivery', 'uncertain');
+  await expect(row).not.toContainText(first.text);
+  await expect(row.locator('[data-chat-restore], [data-chat-retry]')).toHaveCount(0);
+  await receive(page, 'chat.result', { messageId: first.messageId, status: 'rejected', reasonCode: 'spam' });
+  await expect(row).toContainText('Сообщение отклонено за спам.');
+  await row.locator('[data-chat-dismiss]').click();
+  await expect(panel).toBeHidden();
+  expect(await v2Packets(page, 'chat.send')).toEqual([first]);
+  expect(proof).toEqual({ writes: [], errors: [] });
+});
+
+test('V2 automatically reloads saved deliveries after a transient storage read failure', async ({ page }) => {
+  const accountId = 'v2-storage-recovery';
+  await page.clock.install();
+  const proof = await host(page, true, { accountId });
+  const first = await sendV2(page, 'Восстановить сохранённую отправку');
+  await page.addInitScript(() => {
+    const transaction = IDBDatabase.prototype.transaction;
+    let failNextRead = true;
+    IDBDatabase.prototype.transaction = function (...args) {
+      if (failNextRead && this.name === 'royal-chat-outbox' && args[1] === 'readonly') {
+        failNextRead = false;
+        document.documentElement.setAttribute('data-fixture-storage-read-failed', '');
+        throw new DOMException('Fixture transient read failure', 'UnknownError');
+      }
+      return transaction.apply(this, args);
+    };
+  });
+  const reloaded = await host(page, true, { accountId });
+  await expect(page.locator('html')).toHaveAttribute('data-fixture-storage-read-failed', '');
+  await page.clock.fastForward(2_000);
+  await expect(page.locator(`[data-request-id="${first.messageId}"]`)).toBeVisible();
+  await page.clock.fastForward(100);
+  await expect.poll(async () => (await v2Packets(page, 'chat.resume'))[0]).toEqual({ messageIds: [first.messageId] });
+  expect(await v2Packets(page, 'chat.send')).toHaveLength(0);
+  expect(proof).toEqual({ writes: [], errors: [] });
+  expect(reloaded).toEqual({ writes: [], errors: [] });
+});
+
+test('V2 checks durable status but does not retransmit when retry backoff crosses the UUID deadline', async ({ page }) => {
+  await page.clock.install();
+  const proof = await host(page, true, { accountId: 'v2-expired' });
+  const first = await sendV2(page, 'Черновик с истёкшим сроком');
+  await page.clock.fastForward(CHAT_V2_FIRST_ADMISSION_MS - 700);
+  await expect.poll(() => v2Packets(page, 'chat.resume')).toHaveLength(1);
+  await receive(page, 'chat.resume', { results: [{ messageId: first.messageId, status: 'not_found' }] });
+  await page.clock.fastForward(2000);
+  await expect.poll(() => v2Packets(page, 'chat.resume')).toHaveLength(2);
+  expect(await v2Packets(page, 'chat.send')).toEqual([first]);
+  await receive(page, 'chat.resume', { results: [{ messageId: first.messageId, status: 'expired', reasonCode: 'message_id_expired' }] });
+  const row = page.locator(`[data-request-id="${first.messageId}"]`);
+  await expect(row).toHaveAttribute('data-delivery', 'uncertain');
+  await expect(row).not.toContainText('Не опубликовано');
+  await page.clock.fastForward(30000);
+  expect(await v2Packets(page, 'chat.resume')).toHaveLength(2);
+  expect(proof).toEqual({ writes: [], errors: [] });
+});
+
+test('an unacknowledged V2 offer falls back to V1 and ignores a late V2 response', async ({ page }) => {
+  const proof = await host(page, true, { accountId: 'v2-v1-fallback', ready: false });
+  expect(await v2Packets(page, 'chat.ready')).toHaveLength(0);
+  expect(await historyRequests(page)).toEqual([{ version: ROOM_CHAT_PROTOCOL, offerVersion: ROOM_CHAT_PROTOCOL_V2 }]);
+  await receive(page, 'chat.ready', { version: ROOM_CHAT_PROTOCOL_V2, serverTimeMs: Date.now() });
+  await receive(page, 'chat.visit', { roomEpoch, visitId: visitId + 1, location: 'tables', initialCursor: 0 });
+  expect(await send(page, 'Сообщение через V1')).toMatchObject({ visitId });
+  expect(await v2Packets(page, 'chat.send')).toHaveLength(0);
+  expect(proof).toEqual({ writes: [], errors: [] });
+});
 
 test('a masked message appears immediately without a checking indicator and is replaced on delivery', async ({ page }) => {
   const proof = await host(page);
@@ -255,16 +462,21 @@ test('a sticker uses the same tracked protocol and keeps a typed draft', async (
   expect(proof).toEqual({ writes: [], errors: [] });
 });
 
-for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }]) test(`real host game chat keeps pending text and composition in bounds at ${viewport.width}px`, async ({ page }) => {
+for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }]) test(`real host game chat keeps pending text and composition in bounds at ${viewport.width}px`, async ({ page }, testInfo) => {
   await page.setViewportSize(viewport); const proof = await host(page);
   await expect(page.locator('#loading')).toHaveCount(0, { timeout: 20000 });
+  await page.waitForFunction(() => window.royalDemo.isWorldLoaded());
+  await page.evaluate(() => window.__chatFixture.useLocalMovement());
   // Open through the real catalog, walking, seating and host game window.
   await page.locator('#games-tab').click();
-  const cabinet = page.locator('[data-studio="royal-dice"], [data-cabinet="royal-dice"]').first();
+  const cabinet = page.locator('[data-cabinet="original-jackie-chan"]');
   await cabinet.scrollIntoViewIfNeeded(); await cabinet.click();
-  if (await page.locator('#panel-close').isVisible()) await page.locator('#panel-close').click();
-  await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id', 'royal-dice', { timeout: 20000 });
-  await expect(page.locator('#mini-dialog #club-chat-dock')).toBeVisible();
+  const dialog = page.locator('#mini-dialog');
+  await dialog.locator('[data-platform-game="royal-roulette"]').click();
+  await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id', 'royal-roulette', { timeout: 20000 });
+  const dock = dialog.locator('#club-chat-dock');
+  if (viewport.width === 390) await dialog.locator('.game-chat-toggle').click();
+  await expect(dock).toBeVisible();
   const first = await send(page, 'Сообщение в игровом окне'); await receive(page, 'chat-result', { id: first.id, status: 'queued' });
   await page.locator('#chat-input').fill('Следующее сообщение');
   await expect(page.locator('#chat-input')).toBeInViewport(); await expect(page.locator('#send-chat')).toBeInViewport();
@@ -277,6 +489,6 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
     const bottom = await page.locator('#chat-input').evaluate(element => element.getBoundingClientRect().bottom);
     expect(bottom).toBeLessThanOrEqual(500);
   }
-  await page.screenshot({ path: `artifacts/chat-delivery-${viewport.width}.png` });
+  await page.screenshot({ path: testInfo.outputPath(`chat-delivery-${viewport.width}.png`) });
   expect(proof).toEqual({ writes: [], errors: [] });
 });

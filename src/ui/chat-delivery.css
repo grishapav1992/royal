@@ -1,4 +1,5 @@
 .chat-dock[data-chat-unavailable]{display:none!important}
+#chat-private-outbox{position:absolute;right:10px;bottom:55px;z-index:5;width:min(270px,calc(100% - 20px));max-height:30%;overflow:auto}
 .chat-delivery-status{flex-shrink:0;margin:5px 0 0;color:#b8c7d5;font-size:10px;line-height:1.4;overflow-wrap:anywhere}
 .chat-outgoing-status{display:block;color:#bfd3e9;font-size:10px;line-height:1.4}
 .chat-outgoing[data-delivery=uncertain],.chat-outgoing[data-delivery=rejected],.chat-outgoing[data-delivery=cancelled]{border-color:#a57b52}
