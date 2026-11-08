@@ -2,7 +2,8 @@ import { identifier, type PostgresDatabase } from '../database';
 import { reconcileStoredPvpMatch } from './check-pvp';
 import type { AuditScope } from './contract';
 import { isReplayId, type ReplayEvent } from './replay-package';
-import { buildChessTurnReplay, type CapturedChessReplay } from './replay-pvp-turn';
+import { replayCaptureWriter } from './replay-capture-writer';
+import { buildChessTurnReplay, chessTurnReplayDefinition, type CapturedChessReplay } from './replay-pvp-turn';
 import { AuditReplayStore } from './replay-store';
 
 /** Correlate recorded gameplay with the same dataset's committed wallet result. */
@@ -45,22 +46,8 @@ export async function persistCapturedChessReplay(
 
 /** Limit memory and background database work. The lobby never waits for a replay write. */
 export function chessReplayWriter(audit: PostgresDatabase, scope: AuditScope, gameSchema: string) {
-  let tail = Promise.resolve(), pending = 0, accepting = true;
-  const gap = (reason: string) => {
-    console.warn(JSON.stringify({ event: 'audit-chess-replay-gap', datasetId: scope.datasetId, reason }));
-  };
-  return {
-    record(recording: CapturedChessReplay) {
-      if (!accepting || pending >= 8) { gap('queue-unavailable'); return; }
-      pending++;
-      tail = tail.then(async () => {
-        const result = await persistCapturedChessReplay(audit, scope, gameSchema, recording);
-        if (result !== 'recorded' && result !== 'replayed') gap(result);
-      }).catch(() => gap('write-failed')).finally(() => { pending--; });
-    },
-    async stop() {
-      accepting = false;
-      await tail;
-    },
-  };
+  return replayCaptureWriter<CapturedChessReplay>(audit, scope, gameSchema, {
+    event: 'audit-chess-replay-gap', capacity: 8, definition: () => chessTurnReplayDefinition,
+    persist: recording => persistCapturedChessReplay(audit, scope, gameSchema, recording),
+  });
 }

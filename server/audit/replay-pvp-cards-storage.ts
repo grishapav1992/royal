@@ -4,9 +4,10 @@ import { validPvpRequest } from '../../src/shared/pvp';
 import { identifier, type PostgresDatabase } from '../database';
 import { reconcileStoredPvpMatch } from './check-pvp';
 import type { AuditScope } from './contract';
+import { replayCaptureWriter } from './replay-capture-writer';
 import { isReplayId, isReplayScope, type ReplayEvent } from './replay-package';
 import {
-  buildCardTurnReplay, cardParticipantSeat, cardReplayAction, cardReplayState, isCardTurnReplayGame, verifyCardTurnReplay,
+  buildCardTurnReplay, cardParticipantSeat, cardReplayAction, cardReplayState, cardTurnReplayDefinitions, isCardTurnReplayGame, verifyCardTurnReplay,
   type CapturedCardReplay, type CardReplayReceipt, type CardTurnState,
 } from './replay-pvp-cards';
 import { AuditReplayStore } from './replay-store';
@@ -145,20 +146,9 @@ export async function persistCapturedCardReplay(audit: PostgresDatabase, scope: 
 
 /** The wallet and lobby never await the capped audit-only queue. */
 export function cardsReplayWriter(audit: PostgresDatabase, scope: AuditScope, gameSchema: string) {
-  let tail = Promise.resolve(), pending = 0, accepting = true;
-  const gap = (reason: string) => console.warn(JSON.stringify({ event: 'audit-cards-replay-gap', datasetId: scope.datasetId, reason }));
-  return {
-    record(recording: CapturedCardReplay) {
-      if (!accepting || pending >= 8) { gap('queue-unavailable'); return; }
-      pending++;
-      tail = tail.then(async () => {
-        const result = await persistCapturedCardReplay(audit, scope, gameSchema, recording);
-        if (result !== 'recorded' && result !== 'replayed' && result !== 'not-captured') gap(result);
-      }).catch(() => gap('write-failed')).finally(() => { pending--; });
-    },
-    async stop() {
-      accepting = false;
-      await tail;
-    },
-  };
+  return replayCaptureWriter<CapturedCardReplay>(audit, scope, gameSchema, {
+    event: 'audit-cards-replay-gap', capacity: 8,
+    definition: recording => cardTurnReplayDefinitions.find(definition => definition.gameId === recording.gameId),
+    persist: recording => persistCapturedCardReplay(audit, scope, gameSchema, recording),
+  });
 }

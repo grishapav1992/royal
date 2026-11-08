@@ -3,6 +3,7 @@ import { isPoolIdleTimeout } from '../../src/shared/pool';
 import { identifier, type PostgresDatabase } from '../database';
 import { reconcileStoredPvpMatch } from './check-pvp';
 import type { AuditScope } from './contract';
+import { replayCaptureWriter } from './replay-capture-writer';
 import {
   createReplayPackage, isReplayId, isReplayScope, type ReplayEvent, type ReplayManifest, type SportGame, type SportReplayFrame,
 } from './replay-package';
@@ -285,17 +286,9 @@ export async function persistCapturedSportReplay(audit: PostgresDatabase, scope:
 
 /** At most two full packages await the background writer. Live room processing does not await PostgreSQL. */
 export function sportReplayWriter(audit: PostgresDatabase, scope: AuditScope, gameSchema: string) {
-  let tail = Promise.resolve(), pending = 0, accepting = true;
-  const gap = (reason: string) => console.warn(JSON.stringify({ event: 'audit-sport-replay-gap', datasetId: scope.datasetId, reason }));
-  return {
-    record(recording: CapturedSportReplay) {
-      if (!accepting || pending >= 2) { gap('queue-unavailable'); return; }
-      pending++;
-      tail = tail.then(async () => {
-        const result = await persistCapturedSportReplay(audit, scope, gameSchema, recording);
-        if (result !== 'recorded' && result !== 'replayed') gap(result);
-      }).catch(() => gap('write-failed')).finally(() => { pending--; });
-    },
-    async stop() { accepting = false; await tail; },
-  };
+  return replayCaptureWriter<CapturedSportReplay>(audit, scope, gameSchema, {
+    event: 'audit-sport-replay-gap', capacity: 2,
+    definition: recording => sportReplayDefinitions.find(definition => definition.gameId === recording.gameId),
+    persist: recording => persistCapturedSportReplay(audit, scope, gameSchema, recording),
+  });
 }

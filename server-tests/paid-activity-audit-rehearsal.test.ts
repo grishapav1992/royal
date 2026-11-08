@@ -78,21 +78,26 @@ function localArchiveSettings(env: NodeJS.ProcessEnv) {
     LC_ALL: 'C', PGSSLMODE: 'disable', PGPASSWORD: env.PGPASSWORD }, timeout: 20_000, maxBuffer: 4 * 1024 * 1024 };
 }
 
-function localArchiveTool(tool: 'pg_dump' | 'pg_restore', databaseEnv: NodeJS.ProcessEnv, args: string[]) {
+function localArchiveDump(databaseEnv: NodeJS.ProcessEnv, args: string[]) {
   const { bin, port, ...options } = localArchiveSettings(databaseEnv);
-  return exec(join(bin, tool + (process.platform === 'win32' ? '.exe' : '')), [
+  return exec(join(bin, 'pg_dump' + (process.platform === 'win32' ? '.exe' : '')), [
     '--host=127.0.0.1', '--port=' + port, '--username=finance_schema_owner', '--dbname=royal_test', '--no-password', ...args,
   ], options);
 }
 
-async function archiveCatalog(databaseEnv: NodeJS.ProcessEnv, snapshot: string) {
+function runArchiveCheck(databaseEnv: NodeJS.ProcessEnv, mode: 'snapshot' | 'restore', args: string[]) {
   const { bin, port, ...options } = localArchiveSettings(databaseEnv);
-  const { stdout } = await exec('python3', ['-B',
-    fileURLToPath(new URL('../deployment/finance/test-audit-archive-catalog.py', import.meta.url)), bin, port, snapshot,
+  return exec('python3', ['-B',
+    fileURLToPath(new URL('../deployment/finance/test-audit-archive-catalog.py', import.meta.url)), mode, bin, port, ...args,
   ], options);
+}
+
+async function archiveCatalog(databaseEnv: NodeJS.ProcessEnv, snapshot: string) {
+  const { stdout } = await runArchiveCheck(databaseEnv, 'snapshot', [snapshot]);
   return JSON.parse(stdout) as {
     catalog: { roles: string[]; active_sources: string[] };
     roleSql: string;
+    fingerprint: { tables: { table: string }[]; sha256: string; bytes: number };
   };
 }
 
@@ -341,12 +346,13 @@ test('isolated rehearsal settles accepted games and preserves payments through o
       const expected = await archiveSnapshot(originalGame, async client => {
         const snapshot = await exportSnapshot(client);
         const state = await inspect(client);
-        const { catalog, roleSql } = await archiveCatalog(originalEnv, snapshot);
+        const archiveCatalogState = await archiveCatalog(originalEnv, snapshot);
         const dumpScope = [...scope, '--snapshot=' + snapshot];
-        const ddl = await localArchiveTool('pg_dump', originalEnv, [...dumpScope, '--schema-only']);
-        await localArchiveTool('pg_dump', originalEnv, [...dumpScope, '--format=custom', '--file=' + archive]);
-        return { state, catalog, roleSql, schema: schemaFingerprint(ddl.stdout), archive: sha256(await readFile(archive)) };
+        const ddl = await localArchiveDump(originalEnv, [...dumpScope, '--schema-only']);
+        await localArchiveDump(originalEnv, [...dumpScope, '--format=custom', '--file=' + archive]);
+        return { state, ...archiveCatalogState, schema: schemaFingerprint(ddl.stdout), archive: sha256(await readFile(archive)) };
       });
+      assert(expected.fingerprint.bytes > 0);
       assert.deepEqual(expected.catalog.roles, [group, 'royal_audit_recorder']);
       assert.deepEqual(expected.catalog.active_sources, [
         'royal_game.capro_pending_ledger', 'royal_game.demo_ledger', 'royal_payments.crypto_ledger',
@@ -359,7 +365,9 @@ test('isolated rehearsal settles accepted games and preserves payments through o
       const owner = new pg.Client(databaseConfig(restored.env));
       try { await owner.connect(); await owner.query(expected.roleSql + ' ' + operatorSql); }
       finally { await owner.end(); }
-      await localArchiveTool('pg_restore', restored.env, ['--single-transaction', '--exit-on-error', archive]);
+      await assert.rejects(runArchiveCheck(restored.env, 'restore', [archive, '0'.repeat(64)]),
+        { stderr: /^backup_checksum_mismatch\s*$/ });
+      await runArchiveCheck(restored.env, 'restore', [archive, expected.archive]);
       assert.equal(sha256(await readFile(archive)), expected.archive);
       connectionEnv = restored.env;
       const config = databaseConfig(connectionEnv);
@@ -368,9 +376,10 @@ test('isolated rehearsal settles accepted games and preserves payments through o
       payments = new PostgresDatabase(originalPayments.schema, { existingSchema: true, config });
       connections.add(game).add(audit).add(payments);
       await Promise.all([game.ready, audit.ready, payments.ready]);
-      const { catalog: restoredCatalog } = await archiveSnapshot(game,
+      const { catalog: restoredCatalog, fingerprint: restoredFingerprint } = await archiveSnapshot(game,
         async client => archiveCatalog(connectionEnv, await exportSnapshot(client)));
       assert.deepEqual(restoredCatalog, expected.catalog);
+      assert.deepEqual(restoredFingerprint, expected.fingerprint);
       const recorderPassword = randomUUID();
       recorderFile = join(privateRoot, 'recorder-url');
       await audit.exec(`ALTER ROLE royal_audit_recorder PASSWORD '${recorderPassword}'`);
@@ -381,7 +390,7 @@ test('isolated rehearsal settles accepted games and preserves payments through o
       assert.deepEqual((await readdir(privateRoot)).sort(), filesBeforeDenied);
       await audit.exec(membershipSql);
       assert.deepEqual(await archiveSnapshot(game, inspect), expected.state);
-      assert.equal(schemaFingerprint((await localArchiveTool('pg_dump', connectionEnv, [...scope, '--schema-only'])).stdout), expected.schema);
+      assert.equal(schemaFingerprint((await localArchiveDump(connectionEnv, [...scope, '--schema-only'])).stdout), expected.schema);
       assert.deepEqual(await testPaymentEvent(), pendingPayment);
       assert.deepEqual(await archivedReports(connectionEnv, 'restored'), before);
       const operatorFile = join(privateRoot, 'operator-url');
@@ -389,7 +398,7 @@ test('isolated rehearsal settles accepted games and preserves payments through o
       await writeLocalArchiveCredential(operatorFile, restored.env.PGPORT, operator, password);
       const { stdout } = await exec(process.execPath, ['--import', 'tsx',
         fileURLToPath(new URL('../scripts/audit.ts', import.meta.url)), 'replay', '--schema', reportScope.schema,
-        '--dataset', reportScope.datasetId, '--replay', archived.replay.replayId, '--output', cliReplay], {
+        '--dataset', reportScope.datasetId, '--game', 'hockey', '--match', archived.replay.replayId, '--output', cliReplay], {
         env: { PATH: process.env.PATH, SystemRoot: process.env.SystemRoot, NODE_ENV: 'test',
           ROYAL_AUDIT_DB_URL_FILE: operatorFile, ROYAL_AUDIT_PGSSLMODE: 'disable' }, timeout: 15_000,
       });
@@ -404,7 +413,7 @@ test('isolated rehearsal settles accepted games and preserves payments through o
       };
       verifyOriginal = async () => {
         assert.deepEqual(await archiveSnapshot(originalGame, inspect), expected.state);
-        assert.equal(schemaFingerprint((await localArchiveTool('pg_dump', originalEnv, [...scope, '--schema-only'])).stdout), expected.schema);
+        assert.equal(schemaFingerprint((await localArchiveDump(originalEnv, [...scope, '--schema-only'])).stdout), expected.schema);
       };
       ({ wallet, bank, pvp } = await openStores(game));
       ({ credits, outbox, crypto } = openPaymentStores());

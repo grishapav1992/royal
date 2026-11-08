@@ -1,6 +1,6 @@
 import type { ClientConfig } from 'pg';
 import { writeAuditJson } from './export-json';
-import { AuditPlayerReportError, openAuditReportReader, runAuditReport } from './report-player';
+import { AuditPlayerReportError, openAuditReportReader, runAuditReport, type ReplayReportFilters } from './report-player';
 import { isReplayId, verifyReplayPackage } from './replay-package';
 import { chessTurnReplayDefinition, verifyChessTurnReplay } from './replay-pvp-turn';
 import { combatReplayDefinition, reconstructCombatReplay } from './replay-pvp-realtime-engine';
@@ -8,9 +8,15 @@ import { isCardTurnReplayGame, verifyCardTurnReplay } from './replay-pvp-cards';
 import { reconstructSportReplay, sportReplayDefinitions } from './replay-pvp-sport-engine';
 import { tsuTurnReplayDefinition, verifyTsuTurnReplay } from './replay-pvp-tsu';
 
-export type ReplayReportFilters = { replayId: string };
+export type { ReplayReportFilters } from './report-player';
 const maxFileBytes = 12 * 1024 * 1024;
 const timeoutMs = 30_000;
+
+export function isReplayEntity(gameId: string, entityKind: string, entityId: string) {
+  return typeof gameId === 'string' && /^[a-z0-9][a-z0-9._-]{0,127}$/.test(gameId) &&
+    (entityKind === 'match' ? isReplayId(entityId)
+      : entityKind === 'round' && (isReplayId(entityId) || /^ft1-[0-9]{1,16}$/.test(entityId)));
+}
 
 function verificationFailure(status: 'corrupt' | 'unsupported' | 'too-large' | 'incomplete', jobId: string): never {
   const code = {
@@ -19,16 +25,21 @@ function verificationFailure(status: 'corrupt' | 'unsupported' | 'too-large' | '
   throw new AuditPlayerReportError(code[status], jobId);
 }
 
-function verifyReplayCandidate(input: unknown, datasetId: string, replayId: string, jobId: string) {
+function verifyReplayCandidate(input: unknown, datasetId: string, filters: ReplayReportFilters, jobId: string) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) return verificationFailure('corrupt', jobId);
   const row = input as { status?: unknown; manifest?: unknown; fragments?: unknown };
   if (row.status === 'absent') throw new AuditPlayerReportError('replay-absent', jobId);
+  if (row.status === 'capture-gap') throw new AuditPlayerReportError('replay-not-recorded', jobId);
+  if (row.status === 'ambiguous') throw new AuditPlayerReportError('replay-ambiguous', jobId);
   if (row.status !== 'candidate') return verificationFailure('corrupt', jobId);
   const structural = verifyReplayPackage({ manifest: row.manifest, fragments: row.fragments });
   if (structural.status !== 'verified') return verificationFailure(structural.status, jobId);
   const pack = structural.value, { manifest, fragments } = pack;
-  if (manifest.scope.datasetId !== datasetId || manifest.replayId !== replayId) return verificationFailure('corrupt', jobId);
   const { game } = manifest;
+  const matches = 'replayId' in filters ? manifest.replayId === filters.replayId
+    : manifest.entityId === filters.entityId && game.gameId === filters.gameId &&
+      (filters.entityKind === 'match' ? game.category === 'pvp' : game.category !== 'pvp');
+  if (manifest.scope.datasetId !== datasetId || !matches) return verificationFailure('corrupt', jobId);
   const chess = game.gameId === chessTurnReplayDefinition.gameId;
   const combat = game.gameId === combatReplayDefinition.gameId;
   const events = fragments.flatMap(fragment => fragment.events);
@@ -64,7 +75,9 @@ export async function exportAuditReplay(config: ClientConfig, input: {
   schema: string; datasetId: string; filters: ReplayReportFilters; destination: string;
   signal?: AbortSignal; fixtureStandbyPort?: number;
 }) {
-  if (!isReplayId(input.datasetId) || !isReplayId(input.filters.replayId)) throw new Error('Invalid audit replay identity');
+  const { filters } = input;
+  if (!isReplayId(input.datasetId) || !('replayId' in filters ? isReplayId(filters.replayId)
+    : isReplayEntity(filters.gameId, filters.entityKind, filters.entityId))) throw new Error('Invalid audit replay identity');
   return runAuditReport(config, input, 'replay', timeoutMs, async (settings, schema, jobId, signal, publish) => {
     const { query, finish } = await openAuditReportReader(settings, jobId, signal);
     let candidate: unknown;
@@ -77,7 +90,7 @@ export async function exportAuditReplay(config: ClientConfig, input: {
       await finish();
     }
     signal.throwIfAborted();
-    const { pack, engineVerified, rowCount } = verifyReplayCandidate(candidate, input.datasetId, input.filters.replayId, jobId);
+    const { pack, engineVerified, rowCount } = verifyReplayCandidate(candidate, input.datasetId, filters, jobId);
     const { manifest } = pack;
     const written = await writeAuditJson({ destination: input.destination, value: pack, maxBytes: maxFileBytes, signal, publish });
     return { ...written, rowCount, replayId: manifest.replayId, datasetId: manifest.scope.datasetId,

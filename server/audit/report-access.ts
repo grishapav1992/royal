@@ -30,8 +30,9 @@ export async function installAuditReportAccess(db: PostgresDatabase, readerRole:
   const resultReasons = "'time-limit','row-limit','scan-limit','byte-limit','source-unavailable','output-error','internal-error','permission-denied'";
   const investigationReasons = resultReasons + ",'replay-absent','replay-corrupt','replay-incomplete','replay-unsupported'";
   const exportKinds = "'player','summary','replay'";
+  const replayIdPattern = '^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$';
 
-  const beginSql = (version: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) => `CREATE ${version > 1 ? 'OR REPLACE ' : ''}FUNCTION ${begin}(p_dataset uuid,p_kind text,p_filters jsonb) RETURNS uuid
+  const beginSql = (version: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10) => `CREATE ${version > 1 ? 'OR REPLACE ' : ''}FUNCTION ${begin}(p_dataset uuid,p_kind text,p_filters jsonb) RETURNS uuid
       LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
       DECLARE
         v_from bigint;
@@ -46,9 +47,20 @@ export async function installAuditReportAccess(db: PostgresDatabase, readerRole:
           RAISE EXCEPTION 'Invalid audit export filters' USING ERRCODE='22023';
         END IF;
 ${version >= 3 ? `        IF p_kind='replay' THEN
-          IF (p_filters - 'replayId')<>'{}'::jsonb OR
+          ${version >= 10 ? `IF p_filters ? 'entityKind' THEN
+            IF (p_filters - ARRAY['gameId','entityKind','entityId'])<>'{}'::jsonb OR
+               pg_catalog.jsonb_typeof(p_filters->'gameId') IS DISTINCT FROM 'string' OR
+               (p_filters->>'gameId') !~ '^[a-z0-9][a-z0-9._-]{0,127}$' OR
+               pg_catalog.jsonb_typeof(p_filters->'entityKind') IS DISTINCT FROM 'string' OR
+               (p_filters->>'entityKind') NOT IN ('round','match') OR
+               pg_catalog.jsonb_typeof(p_filters->'entityId') IS DISTINCT FROM 'string' OR
+               ((p_filters->>'entityId') !~ '${replayIdPattern}' AND
+                 NOT (p_filters->>'entityKind'='round' AND (p_filters->>'entityId') ~ '^ft1-[0-9]{1,16}$')) THEN
+              RAISE EXCEPTION 'Invalid audit replay filter' USING ERRCODE='22023';
+            END IF;
+          ELSIF` : 'IF'} (p_filters - 'replayId')<>'{}'::jsonb OR
              pg_catalog.jsonb_typeof(p_filters->'replayId') IS DISTINCT FROM 'string' OR
-             (p_filters->>'replayId') !~ '^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$' THEN
+             (p_filters->>'replayId') !~ '${replayIdPattern}' THEN
             RAISE EXCEPTION 'Invalid audit replay filter' USING ERRCODE='22023';
           END IF;
 ${version >= 5 ? `        ELSIF p_kind='reconcile' AND (p_filters ? 'fromMs' OR p_filters ? 'toMs') THEN
@@ -154,7 +166,7 @@ ${version >= 9 ? `        IF p_kind IN (${exportKinds}) THEN
       END
       $audit$`;
 
-  const finishSql = (expanded: boolean, physicalSlot = false) => `CREATE ${expanded ? 'OR REPLACE ' : ''}FUNCTION ${finish}(p_job uuid,p_outcome text,p_row_count bigint,p_byte_count bigint,p_reason text) RETURNS void
+  const finishSql = (expanded: boolean, physicalSlot = false, replayEntity = false) => `CREATE ${expanded ? 'OR REPLACE ' : ''}FUNCTION ${finish}(p_job uuid,p_outcome text,p_row_count bigint,p_byte_count bigint,p_reason text) RETURNS void
       LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,pg_temp AS $audit$
       DECLARE
         v_now timestamptz := pg_catalog.clock_timestamp();
@@ -163,7 +175,7 @@ ${version >= 9 ? `        IF p_kind IN (${exportKinds}) THEN
            p_row_count NOT BETWEEN 0 AND ${maximumSafeInteger} OR
            p_byte_count NOT BETWEEN 0 AND ${maximumSafeInteger} OR
            (p_outcome='succeeded' AND (p_row_count IS NULL OR p_byte_count IS NULL OR p_reason IS NOT NULL)) OR
-           (p_outcome='failed' AND (p_reason IS NULL OR p_reason NOT IN (${expanded ? investigationReasons : resultReasons}${physicalSlot ? ",'report-busy'" : ''}))) OR
+           (p_outcome='failed' AND (p_reason IS NULL OR p_reason NOT IN (${expanded ? investigationReasons : resultReasons}${physicalSlot ? ",'report-busy'" : ''}${replayEntity ? ",'replay-ambiguous','replay-not-recorded'" : ''}))) OR
            (p_outcome='cancelled' AND p_reason IS DISTINCT FROM 'cancelled') THEN
           RAISE EXCEPTION 'Invalid audit export outcome' USING ERRCODE='22023';
         END IF;
@@ -345,4 +357,5 @@ ${version >= 9 ? `        IF p_kind IN (${exportKinds}) THEN
     `REVOKE ALL ON FUNCTION ${beginExport}(uuid,text,jsonb),${authorizePrimaryPublish}(uuid) FROM PUBLIC`,
     `GRANT EXECUTE ON FUNCTION ${beginExport}(uuid,text,jsonb),${authorizePrimaryPublish}(uuid) TO ${reader}`,
   ] });
+  await applySchemaMigration(db, { id: 'paid-activity-audit-replay-entity-access-v1', statements: [beginSql(10), finishSql(true, true, true)] });
 }

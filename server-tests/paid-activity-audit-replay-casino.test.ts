@@ -5,7 +5,7 @@ import test, { type TestContext } from 'node:test';
 import { AuditDatasets } from '../server/audit/datasets';
 import { AuditPostingReader } from '../server/audit/postings';
 import { buildCapturedCasinoReplay, persistCapturedCasinoReplay } from '../server/audit/replay-casino';
-import { planReplaySeek, verifyReplayPackage } from '../server/audit/replay-package';
+import { planReplaySeek, verifyReplayPackage, type ReplayEvent } from '../server/audit/replay-package';
 import { AuditReplayStore } from '../server/audit/replay-store';
 import { installAuditReportAccess } from '../server/audit/report-access';
 import { installAuditDetailReport } from '../server/audit/report-detail-source';
@@ -19,6 +19,7 @@ import { demoBalanceUnits } from '../server/demoWalletAmounts';
 import { cardEngine } from '../server/games/cardEngine';
 import { ROYAL_PLATFORM_GAMES } from '../src/shared/arcadeCatalog';
 import { CARIBBEAN_GAME, caribbeanInitialCost } from '../src/shared/caribbeanTreasures';
+import { CASCADE_DATA } from '../src/shared/floodedTempleCascadeMath';
 import { settingsFor } from '../scripts/game-math/stake-runtime.mjs';
 import { cascadeRandom } from '../scripts/game-math/rtp-temple-cascade-model.mjs';
 
@@ -36,13 +37,21 @@ async function fixture(t: TestContext, draw: (max: number) => number = () => 0) 
   const account = await createPlayer();
   const datasets = new AuditDatasets(audit, { game: game.schema });
   const { datasetId, environment } = await datasets.startTest();
-  const refs = async (operationId: string, player = account) => (await game.prepare(`SELECT id::text,entry_type,amount_units::text
+  const refs = async (operationId: string, player: string = account) => (await game.prepare(`SELECT id::text,entry_type,amount_units::text
     FROM demo_ledger WHERE account_id=? AND operation_id=? ORDER BY demo_ledger.id`).all(player, operationId))
     .map(row => ({ type: row.entry_type, units: row.amount_units, posting: { namespace: game.schema + '.demo_ledger', rowId: row.id } }));
   const request = async (operationId: string, player = account) => ({
     datasetId, gameSchema: game.schema, posting: (await refs(operationId, player))[0].posting, replayId: randomUUID(),
   });
   return { game, audit, account, createPlayer, wallet, datasets, scope: { datasetId, environment }, refs, request };
+}
+
+function replayCasinoSteps(events: readonly ReplayEvent[]) {
+  return events.map(({ data }) => {
+    if (data.kind === 'action' && data.action.profile === 'casino-steps') return data.action.code;
+    if ('state' in data && data.state.profile === 'casino-steps') return data.state.visible;
+    return null;
+  });
 }
 
 test('instant replay retains the accepted selection, server outcome, zero payout and precision receipt', async t => {
@@ -113,9 +122,7 @@ test('Caribbean paid start and free bonus steps follow saved revisions rather th
   const free = events.filter(event => event.data.kind === 'action' && event.data.action.code === 'move');
   assert.equal(free.length, 14);
   assert(free.every(event => !event.money && !event.postings.length && event.atMs === 0));
-  const boards = events.filter(event => event.data.kind !== 'action')
-    .flatMap(event => event.data.kind !== 'action' && event.data.state.profile === 'casino-steps' && event.data.state.visible.length
-      ? [event.data.state.visible] : []);
+  const boards = replayCasinoSteps(events).filter(step => Array.isArray(step) && step.length > 0);
   assert.deepEqual(boards, session.view.caribbean!.spins.map(spin => spin.frame.grid));
   const settledPosting = (await f.refs(moveIds.at(-1)!))[0].posting;
   assert.deepEqual(events.at(-1)?.money, [{ movement: 'payout', units: session.returnedUnits, posting: settledPosting }]);
@@ -128,6 +135,52 @@ test('Caribbean paid start and free bonus steps follow saved revisions rather th
   assert.equal(incomplete.value.manifest.coverage, 'partial');
   assert.deepEqual(incomplete.value.manifest.gaps, ['event-gap', 'terminal-unavailable']);
   assert.equal(incomplete.value.fragments[0].events.length, 1);
+});
+
+test('Flooded Temple replay preserves every server fall in each accepted operation', async t => {
+  const firstBoard: number[] = [];
+  for (const [column, reel] of CASCADE_DATA.baseReels.entries()) {
+    for (let row = 2; row >= 0; row--) {
+      const symbol = column < 3 ? 8 : (column * 3 + row) % 7;
+      firstBoard.push(reel.slice(0, symbol).reduce((sum, weight) => sum + weight, 0));
+    }
+  }
+  const seeded = cascadeRandom(713029);
+  const f = await fixture(t, maximum => firstBoard.shift() ?? (maximum <= 0x1_0000_0000 ? seeded(maximum) : 0));
+  const id = randomUUID(), gameId = 'studio-flooded-temple';
+  const operate = (operation: unknown) => f.wallet.expansion.operate(f.account, operation,
+    2, true, true, true, true, true, true, true, true, 2, 4, true, false, 2, false, 2);
+  let { session } = await operate({
+    id, gameId, action: 'start', stakeUnits: '1000', stakePolicyVersion: 1, settings: { temple: { mode: 'cascades' } },
+  });
+  assert.equal(session.state, 'active');
+  const input = await f.request(id);
+  const observed = [session.view.templeCascade!.frames];
+  let settlementId = id;
+  while (session.state === 'active') {
+    assert(observed.length < 128, 'fixture must settle within the replay budget');
+    settlementId = randomUUID();
+    ({ session } = await operate({
+      id: settlementId, gameId, action: 'move', sessionId: id, move: 'temple-cascade',
+      revision: session.view.templeCascade!.revision,
+    }));
+    observed.push(session.view.templeCascade!.frames);
+  }
+  assert(observed.some(frames => frames.length > 1 && frames.some(frame => frame.mode === 'free')));
+  const replay = await buildCapturedCasinoReplay(f.audit, input);
+  assert.equal(replay.status, 'built');
+  assert.equal(replay.value.manifest.coverage, 'complete');
+  const events = replay.value.fragments.flatMap(fragment => fragment.events);
+  assert.deepEqual(replayCasinoSteps(events),
+    observed.flatMap((frames, index) => [index ? 'move' : 'start', ...frames.map(frame => frame.grid)]));
+  assert.deepEqual(events.flatMap(({ data }) => 'state' in data && data.state.profile === 'casino-steps' ? [data.state.revision] : []),
+    observed.flatMap((frames, index) => frames.map(() => index + 1)));
+  assert.deepEqual(events[0].money, [{ movement: 'stake', units: '-1000', posting: input.posting }]);
+  assert(events.slice(1, -1).every(event => !event.money && !event.postings.length));
+  assert.deepEqual(events.at(-1)?.money, [{ movement: 'payout', units: session.returnedUnits,
+    posting: (await f.refs(settlementId))[0].posting }]);
+  assert(!JSON.stringify(replay).includes('"operations"'));
+  assert.equal(verifyReplayPackage(replay.value, [{ ...replay.value.manifest.game, formatVersion: 2 }]).status, 'verified');
 });
 
 test('both natural Caribbean tactics preserve the accepted choice, free spins and single settlement for every line count', async t => {
@@ -177,8 +230,7 @@ test('both natural Caribbean tactics preserve the accepted choice, free spins an
       ...spinIds.map(() => ({ profile: 'casino-steps', code: 'move', selection: [1] })),
     ]);
     const boards = session.view.caribbean!.spins.map(spin => spin.frame.grid);
-    assert.deepEqual(events.flatMap(event => event.data.kind !== 'action' && event.data.state.profile === 'casino-steps'
-      ? [event.data.state.visible] : []), [boards[0], ...boards]);
+    assert.deepEqual(replayCasinoSteps(events).filter(Array.isArray), [boards[0], ...boards]);
     const postings = await f.game.prepare(`SELECT id::text,operation_id,entry_type,amount_units::text
       FROM demo_ledger WHERE account_id=? AND operation_id=ANY(?::text[]) ORDER BY demo_ledger.id`)
       .all(f.account, [id, choice.id, ...spinIds]);
@@ -327,6 +379,20 @@ test('purchased casino bonuses preserve each free continuation and the final pos
     const continuation = events.filter(event => event.data.kind === 'action' && event.data.action.code === 'move');
     assert.equal(continuation.length, commands.length);
     assert(continuation.every(event => !event.money && !event.postings.length));
+    if (choice === 'deep-echo') {
+      const spins = session.view.luelon!.history;
+      assert(spins.some(spin => spin.frames.length === 2), 'fixture must include a second echo outcome');
+      assert.deepEqual(replayCasinoSteps(events),
+        ['start', [], ...spins.flatMap(spin => ['move', ...spin.frames.map(frame => frame.gridAfter)])]);
+    }
+    if (view === 'caramel') {
+      const spins = session.view.caramel!.history;
+      assert(spins.some(spin => spin.frames.length > 1), 'fixture must include a scored cascade');
+      const boards = spins.flatMap(spin => ['move', spin.initialGrid, ...spin.frames.flatMap((frame, index) =>
+        index < spin.frames.length - 1 || frame.after.some((symbol, position) => symbol !== frame.before[position])
+          ? [frame.after] : [])]);
+      assert.deepEqual(replayCasinoSteps(events), ['start', [], ...boards]);
+    }
     const last = commands.at(-1)!;
     assert.deepEqual(events.at(-1)?.money, [{ movement: 'payout', units: session.returnedUnits,
       posting: (await f.refs(last.id, player))[0].posting }]);

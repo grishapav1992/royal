@@ -5,6 +5,7 @@ import type { AuditSourceRef } from './contract';
 import type { AuditSourceSchemas } from './datasets';
 import { auditPostingProjectionSql } from './report-player-source';
 import type { AuditDetailLookupFilters } from './report-player';
+import { auditReplayCaptureGap } from './report-replay-source';
 
 export const AUDIT_DETAIL_MAX_BYTES = 262144;
 const maxPostings = 128;
@@ -499,6 +500,15 @@ export async function installAuditDetailReport(db: PostgresDatabase, readerRole:
             'attempts',CASE WHEN jsonb_array_length(v_attempts)>0 THEN 'partial' ELSE 'not-recorded' END));
         IF v_match_accounts IS NOT NULL THEN
           v_report := jsonb_set(v_report,'{coverage,linkedPostingScope}','"match"'::jsonb);
+        END IF;
+        IF v_source=${demo} AND v_anchor.category='pvp' AND v_anchor.entity_id IS NOT NULL
+          AND EXISTS (SELECT 1 FROM (${auditReplayCaptureGap(a, sources.game, 'v_anchor.entity_id')}) gap
+            WHERE gap.game_id=v_anchor.game_id)
+          AND NOT EXISTS (SELECT 1 FROM ${a}.audit_replay_packages
+            WHERE dataset_id=j.dataset_id AND manifest->>'entityId'=v_anchor.entity_id
+              AND manifest #>> '{game,gameId}'=v_anchor.game_id AND manifest #>> '{game,category}'='pvp'
+              AND manifest #>> '{scope,datasetId}'=j.dataset_id::text AND manifest #>> '{scope,environment}'=j.environment) THEN
+          v_report := jsonb_set(v_report,'{coverage,replay}','"not-recorded"'::jsonb);
         END IF;
         IF octet_length(v_report::text)>${AUDIT_DETAIL_MAX_BYTES} THEN
           RAISE EXCEPTION 'Audit detail byte limit exceeded' USING ERRCODE='54000';

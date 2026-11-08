@@ -8,6 +8,7 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { AuditDatasets } from '../server/audit/datasets';
+import { AuditEvidence } from '../server/audit/evidence';
 import { buildCapturedCasinoReplay } from '../server/audit/replay-casino';
 import { persistCapturedChessReplay } from '../server/audit/replay-chess-storage';
 import { createReplayPackage, type ReplayPackage, type ReplayState } from '../server/audit/replay-package';
@@ -16,7 +17,9 @@ import { tsuTurnReplayDefinition } from '../server/audit/replay-pvp-tsu';
 import { AuditReplayStore } from '../server/audit/replay-store';
 import { persistCapturedToteReplay } from '../server/audit/replay-tote';
 import { installAuditReportAccess } from '../server/audit/report-access';
-import { exportAuditReplay } from '../server/audit/report-replay';
+import { installAuditDetailReport } from '../server/audit/report-detail-source';
+import { readAuditDetail } from '../server/audit/report-investigation';
+import { exportAuditReplay, type ReplayReportFilters } from '../server/audit/report-replay';
 import { installAuditReplayReport } from '../server/audit/report-replay-source';
 import { ChessGame } from '../server/chessGame';
 import { databaseConfig, identifier, PostgresDatabase } from '../server/database';
@@ -56,6 +59,7 @@ test('named operators export only authorized canonical replay packages and journ
     CREATE ROLE ${alice} LOGIN PASSWORD '${password}'; CREATE ROLE ${bob} LOGIN PASSWORD '${password}';
     GRANT ${group} TO ${alice},${bob}; ALTER ROLE ${alice} SET temp_file_limit='64MB'; ALTER ROLE ${bob} SET temp_file_limit='64MB'`);
   await installAuditReportAccess(audit, group);
+  await installAuditDetailReport(audit, group, { game: game.schema });
   await installAuditReplayReport(audit, group, { game: game.schema });
   await audit.prepare('INSERT INTO audit_report_acl VALUES (?,?,?),(?,?,?)').run(alice, datasetId, demo, bob, datasetId, pending);
   const login = (name: string) => databaseConfig({ ...process.env, DATABASE_URL: '', DATABASE_URL_FILE: '', PGUSER: name,
@@ -66,14 +70,17 @@ test('named operators export only authorized canonical replay packages and journ
     return db;
   };
   const aliceDb = raw(alice), bobDb = raw(bob);
-  const begin = (db: PostgresDatabase, replayId: string, dataset = datasetId) => db.prepare(
-    `SELECT ${a}.audit_report_begin(?,'replay',?::jsonb) AS id`).get(dataset, JSON.stringify({ replayId })).then(row => row!.id as string);
+  const begin = (db: PostgresDatabase, selector: string | ReplayReportFilters, dataset = datasetId) => db.prepare(
+    `SELECT ${a}.audit_report_begin(?,'replay',?::jsonb) AS id`)
+    .get(dataset, JSON.stringify(typeof selector === 'string' ? { replayId: selector } : selector)).then(row => row!.id as string);
   const read = (db: PostgresDatabase, job: string) => db.prepare(`SELECT ${a}.audit_report_replay(?) AS replay`)
     .get(job).then(row => row!.replay as unknown);
   const cancel = (db: PostgresDatabase, job: string) => db.prepare(
     `SELECT ${a}.audit_report_finish(?,'cancelled',0,0,'cancelled')`).get(job);
   const run = (name: string, replayId: string, file: string, dataset = datasetId) =>
     exportAuditReplay(login(name), { schema, datasetId: dataset, filters: { replayId }, destination: join(scratch, file) });
+  const runEntity = (name: string, filters: ReplayReportFilters, file: string, dataset = datasetId) =>
+    exportAuditReplay(login(name), { schema, datasetId: dataset, filters, destination: join(scratch, file) });
   const replayStore = new AuditReplayStore(audit);
   const persist = async (pack: ReplayPackage, headerOnly = false) => {
     assert.equal(await replayStore.writeManifest(pack.manifest), 'recorded');
@@ -135,6 +142,11 @@ test('named operators export only authorized canonical replay packages and journ
     assert.ok(recording);
     assert.equal(await persistCapturedChessReplay(audit, scope, game.schema, recording), 'recorded');
     const pinned = await run(alice, match, 'chess.json');
+    const chessSelector = { gameId: 'chess', entityKind: 'match', entityId: match } as const;
+    const byMatch = await runEntity(alice, chessSelector, 'by-match.json');
+    assert.equal(byMatch.replayId, match);
+    assert.deepEqual(await readFile(join(scratch, 'by-match.json')), await readFile(join(scratch, 'chess.json')));
+    await rm(join(scratch, 'by-match.json'));
     const packageFile = JSON.parse(await readFile(join(scratch, 'chess.json'), 'utf8')) as ReplayPackage;
     assert.equal(pinned.engineVerified, true);
     assert.equal(packageFile.manifest.scope.environment, 'test');
@@ -147,6 +159,7 @@ test('named operators export only authorized canonical replay packages and journ
       event.data.kind === 'terminal' ? { ...event, data: { ...event.data, winnerSeat: 2 } } : event));
     await persist(inconsistent);
     await assert.rejects(run(alice, inconsistent.manifest.replayId, 'inconsistent.json'), { code: 'replay-corrupt' });
+    await assert.rejects(runEntity(alice, chessSelector, 'duplicate-match.json'), { code: 'replay-ambiguous' });
 
     let poolClock = (Math.floor(Date.now() / TOTE_TIMING.period) + 1) * TOTE_TIMING.period;
     const tote = new FlagToteStore(game, account => wallet.snapshotInTransaction(account), wallet.ready, () => poolClock, () => 0);
@@ -165,6 +178,33 @@ test('named operators export only authorized canonical replay packages and journ
     assert.equal(poolPackage.manifest.formatVersion, 3);
     assert.equal(poolPackage.manifest.entityId, round.id);
     assert.equal(prepareViewerReplay(poolPackage).status, 'ready');
+    const byPool = await runEntity(alice, { gameId: 'flag-tote', entityKind: 'round', entityId: round.id }, 'by-pool.json');
+    assert.equal(byPool.replayId, toteReplay);
+    assert.deepEqual(await readFile(join(scratch, 'by-pool.json')), await readFile(join(scratch, 'tote.json')));
+    await rm(join(scratch, 'by-pool.json'));
+  });
+
+  await t.test('selects an exact dataset, game and round without revealing packages outside operator grants', async () => {
+    const selector = { gameId: 'royal-roulette', entityKind: 'round', entityId: playId } as const;
+    const byRound = await runEntity(alice, selector, 'by-round.json');
+    assert.notEqual(byRound.replayId, playId);
+    assert.deepEqual(await readFile(join(scratch, 'by-round.json')), await readFile(join(scratch, 'legacy.json')));
+    await rm(join(scratch, 'by-round.json'));
+    const absent = { code: 'replay-absent' };
+    await assert.rejects(runEntity(alice, { ...selector, gameId: 'royal-blackjack' }, 'other-game.json'), absent);
+    await assert.rejects(runEntity(alice, { ...selector, entityKind: 'match' }, 'wrong-kind.json'), absent);
+    await assert.rejects(runEntity(bob, selector, 'without-grant.json'), absent);
+    await assert.rejects(runEntity(alice, selector, 'other-dataset.json', randomUUID()), { code: 'permission-denied' });
+    const foreign = randomUUID();
+    await audit.prepare("INSERT INTO audit_datasets VALUES(?,'test',0,1)").run(foreign);
+    await audit.prepare('INSERT INTO audit_dataset_sources VALUES(?,?)').run(foreign, demo);
+    await audit.prepare('INSERT INTO audit_report_acl VALUES (?,?,?)').run(alice, foreign, demo);
+    await assert.rejects(runEntity(alice, selector, 'empty-dataset.json', foreign), absent);
+    for (const invalid of [
+      { ...selector, replayId: original.manifest.replayId },
+      { ...selector, gameId: 'ROYAL-ROULETTE' },
+      { ...selector, entityKind: 'match', entityId: 'ft1-42' },
+    ] as const) await assert.rejects(begin(aliceDb, invalid), { code: '22023' });
   });
 
   await t.test('requires a committed owned job and a live grant for each captured posting source', async () => {
@@ -197,6 +237,8 @@ test('named operators export only authorized canonical replay packages and journ
       ? { ...event, postings: [...event.postings, { namespace: pending, rowId: id }] } : event);
     const mixed = legacy(randomUUID(), playId, crossEvents);
     await persist(mixed);
+    await assert.rejects(runEntity(alice, { gameId: 'royal-roulette', entityKind: 'round', entityId: playId },
+      'hidden-duplicate.json'), { code: 'replay-absent' });
     const job = await begin(aliceDb, mixed.manifest.replayId);
     try {
       assert.deepEqual(await read(aliceDb, job), { status: 'absent' });
@@ -245,7 +287,7 @@ test('named operators export only authorized canonical replay packages and journ
     try {
       await assert.rejects(promisify(execFile)(process.execPath, ['--import', 'tsx',
         fileURLToPath(new URL('../scripts/audit.ts', import.meta.url)), 'replay', '--schema', schema,
-        '--dataset', datasetId, '--replay', replayId, '--output', destination], {
+        '--dataset', datasetId, '--game', 'tsu-e-fa', '--match', matchId, '--output', destination], {
         env: { ...process.env, ROYAL_AUDIT_DB_URL_FILE: operatorFile, ROYAL_AUDIT_PGSSLMODE: 'disable' }, timeout: 15_000,
       }), (error: { code: number; stderr: string }) => {
         assert.equal(error.code, 1);
@@ -291,9 +333,29 @@ test('named operators export only authorized canonical replay packages and journ
     await pvp.adjudicate(roomId, match, players[1], 'win', now + 200);
     capture.observeAdjudication(match, players[1], 'win', now + 200);
     assert(recording);
+    const evidence = new AuditEvidence(audit, schema);
+    const failure = {
+      schemaVersion: 1, scope, occurredAtMs: now + 200, type: 'replay', replayId: 'capture-gap:' + match,
+      entity: { category: 'pvp', kind: 'match', gameId: 'chess', modeId: 'stake', rulesVersion: null, ticketId: null,
+        source: { namespace: game.schema + '.pvp_matches', rowId: match } },
+      profile: 'pvp-turn-based', engineVersion: 'royal-chess', formatVersion: 2, coverage: 'not-recorded',
+      firstSequence: null, lastSequence: null, terminalEventId: null, sha256: null,
+    } as const;
+    assert.equal(await evidence.record(failure), 'recorded');
+    const selector = { gameId: 'chess', entityKind: 'match', entityId: match } as const;
+    await assert.rejects(run(alice, match, 'gap-by-id.json'), { code: 'replay-not-recorded' });
+    await assert.rejects(runEntity(alice, selector, 'gap-by-match.json'), { code: 'replay-not-recorded' });
+    await assert.rejects(runEntity(alice, { ...selector, gameId: 'pool' }, 'gap-wrong-game.json'), { code: 'replay-absent' });
+    await assert.rejects(runEntity(bob, selector, 'gap-without-grant.json'), { code: 'replay-absent' });
+    const gapJob = await audit.prepare(`SELECT status,reason,row_count,byte_count FROM audit_export_jobs
+      WHERE operator_name=? AND filters->>'entityId'=? AND reason='replay-not-recorded'`).get(alice, match);
+    assert.deepEqual(gapJob, { status: 'failed', reason: 'replay-not-recorded', row_count: 0, byte_count: 0 });
+    const detailInput = { schema, datasetId, filters: { source: demo, lookupKind: 'match', lookupId: match } } as const;
+    assert.equal((await readAuditDetail(login(alice), detailInput)).coverage.replay, 'not-recorded');
     assert.equal(await persistCapturedChessReplay(audit, scope, game.schema, recording), 'recorded');
+    assert.equal((await readAuditDetail(login(alice), detailInput)).coverage.replay, undefined);
 
-    const result = await run(alice, match, 'chess-partial.json');
+    const result = await runEntity(alice, selector, 'chess-partial.json');
     assert.equal(result.coverage, 'partial');
     assert.equal(result.engineVerified, false);
     const exported = JSON.parse(await readFile(join(scratch, 'chess-partial.json'), 'utf8')) as ReplayPackage;

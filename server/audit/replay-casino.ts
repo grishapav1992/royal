@@ -149,8 +149,7 @@ function consecutiveMoves(moves: readonly Move[], initialRevision: number) {
   return moves.every((move, index) => move.revision === initialRevision + index);
 }
 
-// Preserve only observed display symbols and decisions. Never serialize entropy tapes, seeds or private engine state.
-function checkpointFrames(s: ExpansionState, start: Start, accepted: Move[]): number[][] | null {
+function singleCheckpointFrames(s: ExpansionState, start: Start, accepted: Move[]): number[][] | null {
   const v = s.view;
   if (v.flags) {
     const flags = v.flags, countries = flagCountries(flagViewMode(flags)).map(country => country.id);
@@ -175,25 +174,6 @@ function checkpointFrames(s: ExpansionState, start: Start, accepted: Move[]): nu
         }
         return visible;
       }) : null;
-  }
-  if (v.templeCascade) {
-    const c = v.templeCascade;
-    if (!consecutiveMoves(accepted, 1) || accepted.some(move => move.move !== 'temple-cascade')) return null;
-    const cascade = initialCascadeState();
-    return c.operations.map(operation => {
-      let grid: number[] = [];
-      for (const tape of operation) {
-        let consumed = 0;
-        const frame = advanceCascade(cascade, maximum => {
-          const value = tape[consumed++];
-          if (!Number.isSafeInteger(value) || value < 0 || value >= maximum) throw new Error('Invalid saved cascade tape');
-          return value;
-        });
-        if (!frame || consumed !== tape.length) throw new Error('Invalid saved cascade frame');
-        grid = frame.grid;
-      }
-      return grid;
-    });
   }
   if (v.temple) {
     const t = v.temple;
@@ -226,19 +206,50 @@ function checkpointFrames(s: ExpansionState, start: Start, accepted: Move[]): nu
       ordinal(shot.risk ?? combat.risk, risks), ...(shot.zone === undefined ? [] : [shot.zone])]);
     return banked ? [...frames, frames.at(-1)!] : frames;
   }
-  if (v.neopolis || v.dracona || v.wildNudge) {
+  if (v.wildNudge) {
     if (!consecutiveMoves(accepted, 1)) return null;
-    if (v.wildNudge) return v.wildNudge.spins.map(spin => spin.grid);
-    return (v.neopolis ?? v.dracona)!.history.map(spin => spin.result.grid);
-  }
-  const slot = v.caramel ?? v.convoy ?? v.nitro ?? v.afterglow;
-  const spins = slot?.history ?? (v.luelon?.decisions.length === 0 ? v.luelon.history : null);
-  if (spins) {
-    const baseSpin = spins[0]?.kind === 'base';
-    if (!consecutiveMoves(accepted, baseSpin ? 1 : 0)) return null;
-    return [...(baseSpin ? [] : [[]]), ...spins.map(spin => spin.finalGrid)];
+    return v.wildNudge.spins.map(spin => spin.grid);
   }
   return null;
+}
+
+// Each accepted operation can produce several visible checkpoints. Only public boards leave the source.
+function operationCheckpoints(s: ExpansionState, start: Start, accepted: Move[]): number[][][] | null {
+  const v = s.view;
+  if (v.templeCascade) {
+    if (!consecutiveMoves(accepted, 1) || accepted.some(move => move.move !== 'temple-cascade')) return null;
+    const cascade = initialCascadeState();
+    return v.templeCascade.operations.map(operation => operation.map(tape => {
+      let consumed = 0;
+      const frame = advanceCascade(cascade, maximum => {
+        const value = tape[consumed++];
+        if (!Number.isSafeInteger(value) || value < 0 || value >= maximum) throw new Error('Invalid saved cascade tape');
+        return value;
+      });
+      if (!frame || consumed !== tape.length) throw new Error('Invalid saved cascade frame');
+      return frame.grid;
+    }));
+  }
+  if (v.neopolis || v.dracona) {
+    if (!consecutiveMoves(accepted, 1)) return null;
+    return v.neopolis?.history.map(spin => spin.result.frames.map(frame => frame.grid))
+      ?? v.dracona?.history.map(spin => spin.result.steps.map(step => step.grid)) ?? null;
+  }
+  const slot = v.caramel ?? v.convoy ?? v.nitro ?? v.afterglow;
+  const luelon = v.luelon?.decisions.length === 0 ? v.luelon : undefined;
+  const spins = slot?.history.map(spin => {
+    const boards = spin.frames.map(frame => frame.before);
+    const last = boards.at(-1);
+    if (last && spin.finalGrid.some((symbol, position) => symbol !== last[position])) boards.push(spin.finalGrid);
+    return boards;
+  }) ?? luelon?.history.map(spin => spin.frames.map(frame => frame.gridAfter));
+  if (spins) {
+    const baseSpin = (slot ?? luelon)?.history[0]?.kind === 'base';
+    if (!consecutiveMoves(accepted, baseSpin ? 1 : 0)) return null;
+    // A purchased bonus can open before its first spin generates a board.
+    return baseSpin ? spins : [[[]], ...spins];
+  }
+  return singleCheckpointFrames(s, start, accepted)?.map(visible => [visible]) ?? null;
 }
 
 const compact = (value: number): number[] => [Math.floor(value / 1000), value % 1000];
@@ -287,19 +298,26 @@ async function expansion(audit: PostgresDatabase, checked: Checked, input: Reque
       || new Set(acceptedMoves.map(move => move.revision)).size !== acceptedMoves.length) return built(header, events, incomplete);
   acceptedMoves.sort((a, b) => (a.revision ?? 0) - (b.revision ?? 0));
   const selections = acceptedMoves.map(moveSelection);
-  let frames: number[][] | null;
-  try { frames = checkpointFrames(saved, start, acceptedMoves); } catch { frames = null; }
-  if (!frames || frames.length !== acceptedMoves.length + 1 || !frames.every(visibleSafe)
+  let operations: number[][][] | null;
+  try { operations = operationCheckpoints(saved, start, acceptedMoves); } catch { operations = null; }
+  if (!operations || operations.length !== acceptedMoves.length + 1
+    || operations.some(frames => !frames.length || !frames.every(visibleSafe))
     || selections.some(picks => picks === null || !visibleSafe(picks))) return built(header, events, incomplete);
 
   const settled = checked.result.state === 'settled';
   const payout = settled ? money(checked.result.payout, namespace, 'payout') : null;
   if (settled && !payout) return built(header, events, incomplete);
-  for (const [index, visible] of frames.entries()) {
+  for (const [index, frames] of operations.entries()) {
     const move = acceptedMoves[index - 1];
     if (move) collect(events, action(move.move === 'cashout' ? 'cashout' : 'move', selections[index - 1]!));
-    if (settled && index === frames.length - 1) collect(events, terminal(index + 1, visible), payout!, saved.precision);
-    else collect(events, { kind: 'checkpoint', state: state(index + 1, visible) });
+    const revision = index + 1;
+    for (const [frame, visible] of frames.entries()) {
+      if (settled && index === operations.length - 1 && frame === frames.length - 1) {
+        collect(events, terminal(revision, visible), payout!, saved.precision);
+      } else {
+        collect(events, { kind: 'checkpoint', state: state(revision, visible) });
+      }
+    }
   }
   return built(header, events, settled ? [] : ['terminal-unavailable']);
 }

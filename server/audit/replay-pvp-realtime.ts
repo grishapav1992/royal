@@ -5,6 +5,7 @@ import type { CombatEscrow } from '../combatWallet';
 import { identifier, type PostgresDatabase } from '../database';
 import { reconcileStoredPvpMatch } from './check-pvp';
 import type { AuditScope } from './contract';
+import { replayCaptureWriter } from './replay-capture-writer';
 import { createReplayPackage, isReplayId, type ReplayEvent, type ReplayPackage } from './replay-package';
 import { AuditReplayStore } from './replay-store';
 import { combatReplayButtonMask, combatReplayDefinition, combatReplayFrame, combatReplayNaturalEnd, combatReplaySeatOf,
@@ -242,17 +243,8 @@ export async function persistCapturedCombatReplay(audit: PostgresDatabase, scope
 }
 
 export function combatReplayWriter(audit: PostgresDatabase, scope: AuditScope, gameSchema: string) {
-  let tail = Promise.resolve(), pending = 0, accepting = true;
-  const gap = (reason: string) => console.warn(JSON.stringify({ event: 'audit-combat-replay-gap', datasetId: scope.datasetId, reason }));
-  return {
-    record(recording: CapturedCombatReplay) {
-      if (!accepting || pending >= 4) { gap('queue-unavailable'); return; }
-      pending++;
-      tail = tail.then(async () => {
-        const result = await persistCapturedCombatReplay(audit, scope, gameSchema, recording);
-        if (result !== 'recorded' && result !== 'replayed') gap(result);
-      }).catch(() => gap('write-failed')).finally(() => { pending--; });
-    },
-    async stop() { accepting = false; await tail; },
-  };
+  return replayCaptureWriter<CapturedCombatReplay>(audit, scope, gameSchema, {
+    event: 'audit-combat-replay-gap', capacity: 4, definition: () => combatReplayDefinition,
+    persist: recording => persistCapturedCombatReplay(audit, scope, gameSchema, recording),
+  });
 }

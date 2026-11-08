@@ -1,8 +1,9 @@
 import { identifier, type PostgresDatabase } from '../database';
 import { reconcileStoredPvpMatch } from './check-pvp';
 import type { AuditScope } from './contract';
+import { replayCaptureWriter } from './replay-capture-writer';
 import { isReplayId, isReplayScope, type ReplayEvent } from './replay-package';
-import { buildTsuTurnReplay, type CapturedTsuReplay } from './replay-pvp-tsu';
+import { buildTsuTurnReplay, tsuTurnReplayDefinition, type CapturedTsuReplay } from './replay-pvp-tsu';
 import { AuditReplayStore } from './replay-store';
 
 export async function persistCapturedTsuReplay(audit: PostgresDatabase, scope: AuditScope, gameSchema: string,
@@ -64,20 +65,8 @@ export async function persistCapturedTsuReplay(audit: PostgresDatabase, scope: A
 }
 
 export function tsuReplayWriter(audit: PostgresDatabase, scope: AuditScope, gameSchema: string) {
-  let tail = Promise.resolve(), pending = 0, accepting = true;
-  const gap = (reason: string) => console.warn(JSON.stringify({ event: 'audit-tsu-replay-gap', datasetId: scope.datasetId, reason }));
-  return {
-    record(recording: CapturedTsuReplay) {
-      if (!accepting || pending >= 8) { gap('queue-unavailable'); return; }
-      pending++;
-      tail = tail.then(async () => {
-        const result = await persistCapturedTsuReplay(audit, scope, gameSchema, recording);
-        if (result !== 'recorded' && result !== 'replayed') gap(result);
-      }).catch(() => gap('write-failed')).finally(() => { pending--; });
-    },
-    async stop() {
-      accepting = false;
-      await tail;
-    },
-  };
+  return replayCaptureWriter<CapturedTsuReplay>(audit, scope, gameSchema, {
+    event: 'audit-tsu-replay-gap', capacity: 8, definition: () => tsuTurnReplayDefinition,
+    persist: recording => persistCapturedTsuReplay(audit, scope, gameSchema, recording),
+  });
 }

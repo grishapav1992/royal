@@ -10,6 +10,20 @@ async function exists(db: PostgresDatabase, schema: string, table: string) {
   return (await db.prepare('SELECT pg_catalog.to_regclass(?) IS NOT NULL AS present').get(schema + '.' + table))?.present === true;
 }
 
+export function auditReplayCaptureGap(a: string, gameSchema: string, entity: string) {
+  return `SELECT e.payload #>> '{entity,gameId}' AS game_id FROM ${a}.audit_evidence e
+    WHERE e.dataset_id=j.dataset_id AND e.kind='replay' AND e.evidence_id='capture-gap:'||${entity}
+      AND e.account_id IS NULL AND e.payload->>'replayId'=e.evidence_id
+      AND e.payload->'schemaVersion'='1'::jsonb AND e.payload->>'type'='replay'
+      AND e.payload->>'occurredAtMs'=e.occurred_at_ms::text
+      AND e.payload #>> '{scope,datasetId}'=j.dataset_id::text AND e.payload #>> '{scope,environment}'=j.environment
+      AND e.payload->>'coverage'='not-recorded' AND e.payload #>> '{entity,category}'='pvp'
+      AND e.payload #>> '{entity,kind}'='match' AND e.payload #>> '{entity,modeId}'='stake'
+      AND e.payload #>> '{entity,source,rowId}'=${entity}
+      AND e.payload #>> '{entity,source,namespace}'=CASE WHEN e.payload #>> '{entity,gameId}'='mortal-kombat'
+        THEN '${gameSchema}.combat_matches' ELSE '${gameSchema}.pvp_matches' END`;
+}
+
 /** Only a committed job and independently captured game entity can authorize a replay. */
 export async function installAuditReplayReport(db: PostgresDatabase, readerRole: string, sources: AuditSourceSchemas) {
   const schemas = [db.schema, sources.game, ...(sources.payments ? [sources.payments] : [])];
@@ -54,7 +68,7 @@ export async function installAuditReplayReport(db: PostgresDatabase, readerRole:
 
   await db.transaction(async () => {
     // The byte preflight, fragment aggregation and authorization read the same snapshot.
-    await db.exec(`CREATE OR REPLACE FUNCTION ${projection}(p_job uuid) RETURNS jsonb
+    await db.exec(`CREATE OR REPLACE FUNCTION ${projection}(p_job uuid,p_replay uuid) RETURNS jsonb
       LANGUAGE plpgsql STABLE SECURITY INVOKER SET search_path=pg_catalog,pg_temp
       SET plan_cache_mode=force_custom_plan AS $replay_projection$
       DECLARE
@@ -67,6 +81,7 @@ export async function installAuditReplayReport(db: PostgresDatabase, readerRole:
         v_game text;
         v_account text;
         v_authorized boolean;
+        v_capture_gap boolean := false;
         v_bytes bigint;
         v_absent CONSTANT jsonb := '{"status":"absent"}'::jsonb;
       BEGIN
@@ -74,16 +89,27 @@ export async function installAuditReplayReport(db: PostgresDatabase, readerRole:
         IF NOT EXISTS (SELECT 1 FROM ${acl} WHERE operator_name=session_user AND dataset_id=j.dataset_id
           AND source_namespace=${demo} AND ${auditExportSourcePinned('source_namespace')}) THEN RETURN v_absent; END IF;
 
-        v_replay_id := (j.filters->>'replayId')::uuid;
-        SELECT manifest INTO v_manifest FROM ${a}.audit_replay_packages
-        WHERE dataset_id=j.dataset_id AND replay_id=v_replay_id AND octet_length(manifest::text)<=131072;
-        IF NOT FOUND OR v_manifest #>> '{scope,datasetId}' IS DISTINCT FROM j.dataset_id::text
-          OR v_manifest #>> '{scope,environment}' IS DISTINCT FROM j.environment
-          OR v_manifest->>'replayId' IS DISTINCT FROM v_replay_id::text THEN RETURN v_absent; END IF;
-        v_entity := v_manifest->>'entityId';
-        v_category := v_manifest #>> '{game,category}';
-        v_game := v_manifest #>> '{game,gameId}';
+        v_replay_id := p_replay;
+        SELECT CASE WHEN octet_length(manifest::text)<=131072 THEN manifest END INTO v_manifest
+        FROM ${a}.audit_replay_packages WHERE dataset_id=j.dataset_id AND replay_id=v_replay_id;
+        IF NOT FOUND THEN
+          v_entity := v_replay_id::text;
+          v_category := 'pvp';
+          SELECT gap.game_id INTO v_game FROM (${auditReplayCaptureGap(a, sources.game, 'v_entity')}) gap;
+          IF NOT FOUND THEN RETURN v_absent; END IF;
+          v_capture_gap := true;
+        ELSE
+          IF v_manifest #>> '{scope,datasetId}' IS DISTINCT FROM j.dataset_id::text
+            OR v_manifest #>> '{scope,environment}' IS DISTINCT FROM j.environment
+            OR v_manifest->>'replayId' IS DISTINCT FROM v_replay_id::text THEN RETURN v_absent; END IF;
+          v_entity := v_manifest->>'entityId';
+          v_category := v_manifest #>> '{game,category}';
+          v_game := v_manifest #>> '{game,gameId}';
+        END IF;
         IF v_game IS NULL OR v_game !~ '^[a-z0-9][a-z0-9._-]{0,127}$' THEN RETURN v_absent; END IF;
+        IF j.filters ? 'entityKind' AND (v_game IS DISTINCT FROM j.filters->>'gameId'
+          OR v_entity IS DISTINCT FROM j.filters->>'entityId'
+          OR (v_category='pvp') IS DISTINCT FROM (j.filters->>'entityKind'='match')) THEN RETURN v_absent; END IF;
 
         IF v_category='casino' AND v_entity ~ '${uuidPattern}' THEN
           -- A casino operation or session key belongs to an account. Reject ambiguous reused keys.
@@ -128,6 +154,7 @@ export async function installAuditReplayReport(db: PostgresDatabase, readerRole:
           )) INTO v_authorized;
         END IF;
         IF v_authorized IS DISTINCT FROM true THEN RETURN v_absent; END IF;
+        IF v_capture_gap THEN RETURN '{"status":"capture-gap"}'::jsonb; END IF;
 
         SELECT COALESCE(sum(octet_length(fragment::text)),0) INTO v_bytes FROM ${a}.audit_replay_fragments
         WHERE dataset_id=j.dataset_id AND replay_id=v_replay_id;
@@ -190,6 +217,45 @@ export async function installAuditReplayReport(db: PostgresDatabase, readerRole:
         RETURN jsonb_build_object('status','candidate','manifest',v_manifest,'fragments',v_fragments);
       END
       $replay_projection$;
+      REVOKE ALL ON FUNCTION ${projection}(uuid,uuid) FROM PUBLIC,${reader};
+
+      CREATE OR REPLACE FUNCTION ${projection}(p_job uuid) RETURNS jsonb
+      LANGUAGE plpgsql STABLE SECURITY INVOKER SET search_path=pg_catalog,pg_temp
+      SET plan_cache_mode=force_custom_plan AS $replay_selector$
+      DECLARE
+        j record;
+        v_matches uuid[];
+        v_first jsonb;
+        v_second jsonb;
+        v_absent CONSTANT jsonb := '{"status":"absent"}'::jsonb;
+      BEGIN
+        ${authorizeJob}
+        IF j.filters ? 'replayId' THEN
+          RETURN ${projection}(p_job,(j.filters->>'replayId')::uuid);
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM ${acl} WHERE operator_name=session_user AND dataset_id=j.dataset_id
+          AND source_namespace=${demo} AND ${auditExportSourcePinned('source_namespace')}) THEN RETURN v_absent; END IF;
+        SELECT ARRAY(
+          SELECT replay_id FROM ${a}.audit_replay_packages
+          WHERE dataset_id=j.dataset_id AND manifest->>'entityId'=j.filters->>'entityId'
+            AND manifest #>> '{game,gameId}'=j.filters->>'gameId'
+            AND (CASE WHEN j.filters->>'entityKind'='match' THEN manifest #>> '{game,category}'='pvp'
+              ELSE manifest #>> '{game,category}' IN ('casino','totalizator') END)
+          ORDER BY replay_id LIMIT 2
+        ) INTO v_matches;
+        IF cardinality(v_matches)=0 THEN
+          IF j.filters->>'entityKind'='match' THEN RETURN ${projection}(p_job,(j.filters->>'entityId')::uuid); END IF;
+          RETURN v_absent;
+        END IF;
+        v_first := ${projection}(p_job,v_matches[1]);
+        IF cardinality(v_matches)=1 THEN RETURN v_first; END IF;
+        IF v_first=v_absent THEN RETURN v_absent; END IF;
+        v_second := ${projection}(p_job,v_matches[2]);
+        -- A duplicate is visible only if both packages pass the existing source checks.
+        IF v_second=v_absent THEN RETURN v_absent; END IF;
+        RETURN '{"status":"ambiguous"}'::jsonb;
+      END
+      $replay_selector$;
       REVOKE ALL ON FUNCTION ${projection}(uuid) FROM PUBLIC,${reader};
 
       CREATE OR REPLACE FUNCTION ${fn}(p_job uuid) RETURNS jsonb

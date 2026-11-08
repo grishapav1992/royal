@@ -3,7 +3,7 @@ import { databaseConfig } from '../server/database';
 import { AuditPlayerReportError, exportAuditPlayer, type AuditDetailLookupFilters, type AuditReportFilters } from '../server/audit/report-player';
 import { readAuditDetail, requestAuditPeriodReconcile, requestAuditReconcile, requestAuditReconcilePage } from '../server/audit/report-investigation';
 import { isReplayId } from '../server/audit/replay-package';
-import { exportAuditReplay } from '../server/audit/report-replay';
+import { exportAuditReplay, isReplayEntity, type ReplayReportFilters } from '../server/audit/report-replay';
 import { readAuditSummary } from '../server/audit/report-summary';
 
 const scope = '--schema <audit-schema> --dataset <uuid>';
@@ -15,7 +15,7 @@ const usage = 'npm run audit -- player ' + period + ' --account <id> --output <n
   'npm run audit -- detail ' + anchor + '\n' +
   'npm run audit -- detail ' + scope + ' --source <ledger namespace> ' +
     '(--operation <id> | --round <id> | --match <uuid> | --ticket <uuid>) [--account <id>]\n' +
-  'npm run audit -- replay ' + scope + ' --replay <uuid> --output <new JSON file>\n' +
+  'npm run audit -- replay ' + scope + ' (--replay <uuid> | --game <id> (--round <id> | --match <uuid>)) --output <new JSON file>\n' +
   'npm run audit -- reconcile ' + anchor + ' [--wait] [--refresh]\n' +
   'npm run audit -- reconcile ' + period + ' --source <ledger namespace> [--account <id>] [--wait] [--refresh]\n' +
   'npm run audit -- reconcile ' + period + ' --source <ledger namespace> --paged [--account <id>] [--wait] [--refresh | [--cursor <uuid>] [--retry]]';
@@ -113,8 +113,19 @@ async function main() {
         result = await readAuditDetail(config, { ...input, filters });
       }
     } else if (kind === 'replay') {
-      if (!permits('replay','output') || !replay || !/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(replay) || !output) throw invalid();
-      result = await exportAuditReplay(config, { ...input, filters: { replayId: replay.toLowerCase() }, destination: output });
+      if (!output) throw invalid();
+      let filters: ReplayReportFilters;
+      if (replay !== undefined) {
+        const replayId = replay.toLowerCase();
+        if (!permits('replay','output') || !isReplayId(replayId)) throw invalid();
+        filters = { replayId };
+      } else {
+        const entityKind = values.match !== undefined ? 'match' : 'round';
+        const entityId = values[entityKind]?.toLowerCase();
+        if (!permits('game', entityKind, 'output') || !game || !entityId || !isReplayEntity(game, entityKind, entityId)) throw invalid();
+        filters = { gameId: game, entityKind, entityId };
+      }
+      result = await exportAuditReplay(config, { ...input, filters, destination: output });
     } else throw invalid();
     console.log(JSON.stringify(result));
   } finally {

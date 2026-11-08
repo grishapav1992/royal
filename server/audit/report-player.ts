@@ -22,6 +22,8 @@ export type AuditReconcilePeriodFilters = { source: string; fromMs: number; toMs
 export type AuditReconcilePageFilters = AuditReconcilePeriodFilters & { paged: true; cursor?: string; retry?: true };
 export type AuditDetailLookupFilters = { source: string; lookupKind: 'operation' | 'round' | 'match' | 'ticket';
   lookupId: string; accountId?: string };
+export type ReplayReportFilters = { replayId: string } |
+  { gameId: string; entityKind: 'round' | 'match'; entityId: string };
 export type AuditReportKind = 'player' | 'summary' | 'detail' | 'replay' | 'reconcile';
 
 type Limits = { maxRows: number; maxBytes: number; maxScanned: number; timeoutMs: number; pageSize: number };
@@ -31,7 +33,8 @@ const units = new Set<keyof PlayerReportRow>(['schema_version', 'posting_id', 's
   'expected_balance_units', 'stored_balance_units', 'pending_delta_units', 'stored_pending_units']);
 type ReaderConfig = ClientConfig & { fixtureReplayLsn?: string };
 type Failure = 'cancelled' | 'time-limit' | 'row-limit' | 'scan-limit' | 'byte-limit' | 'source-unavailable' | 'output-error' |
-  'internal-error' | 'permission-denied' | 'report-busy' | 'replay-absent' | 'replay-corrupt' | 'replay-incomplete' | 'replay-unsupported';
+  'internal-error' | 'permission-denied' | 'report-busy' | 'replay-absent' | 'replay-ambiguous' |
+  'replay-not-recorded' | 'replay-corrupt' | 'replay-incomplete' | 'replay-unsupported';
 
 export class AuditPlayerReportError extends Error {
   constructor(readonly code: Failure | 'journal-unavailable', readonly jobId: string | null) { super(code); }
@@ -163,7 +166,7 @@ async function* pages(config: ReaderConfig, fn: string, jobId: string, limits: L
 export async function runAuditReport<T extends { rowCount: number; bytes: number }>(
   config: ClientConfig, input: { schema: string; datasetId: string;
     filters: AuditReportFilters | AuditPostingReportFilters | AuditReconcilePeriodFilters | AuditReconcilePageFilters |
-      AuditDetailLookupFilters | { replayId: string };
+      AuditDetailLookupFilters | ReplayReportFilters;
     signal?: AbortSignal; fixtureStandbyPort?: number }, kind: AuditReportKind, timeoutMs: number,
   run: (settings: ReaderConfig, schema: string, jobId: string, signal: AbortSignal,
     authorizePublication?: AuditOutputPublisher) => Promise<T>,

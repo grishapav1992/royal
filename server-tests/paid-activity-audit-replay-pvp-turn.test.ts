@@ -7,6 +7,7 @@ import { ChessGame } from '../server/chessGame';
 import { buildChessTurnReplay, ChessTurnReplayCapture, verifyChessTurnReplay,
   type CapturedChessReplay } from '../server/audit/replay-pvp-turn';
 import { createReplayPackage, type ReplayEvent } from '../server/audit/replay-package';
+import { isAuditRecord } from '../server/audit/contract';
 import { prepareViewerReplay } from '../src/audit/replay-viewer-model';
 
 const white = 'white-session-secret';
@@ -269,7 +270,7 @@ test('paid chess and v4 duels record real LobbyRoom matches with settled scoped 
   skip: process.env.NODE_ENV !== 'test',
 }, async t => {
   const [{ LobbyRoom, configureLobbyChessReplay, configureLobbyPvpReplays }, { accounts }, { PostgresDatabase }, { AuditDatasets },
-    { AuditReplayStore }, { persistCapturedChessReplay }, { pvpSeat }] = await Promise.all([
+    { AuditReplayStore }, { chessReplayWriter, persistCapturedChessReplay }, { pvpSeat }] = await Promise.all([
     import('../server/LobbyRoom'), import('../server/accounts'), import('../server/database'), import('../server/audit/datasets'),
     import('../server/audit/replay-store'), import('../server/audit/replay-chess-storage'), import('../src/shared/pvpSeats'),
   ]);
@@ -345,6 +346,33 @@ test('paid chess and v4 duels record real LobbyRoom matches with settled scoped 
   assert.equal((await accounts.wallet.snapshot(logins[1].account.id)).balance, 10.9);
 
   const storageScope = { datasetId: dataset.datasetId, environment: 'test' } as const;
+  await t.test('a failed manifest write records an idempotent scoped capture gap', async () => {
+    await audit.exec(`CREATE FUNCTION reject_replay_manifest() RETURNS trigger LANGUAGE plpgsql AS $$
+      BEGIN RAISE EXCEPTION 'Fixture replay write failure'; END $$;
+      CREATE TRIGGER reject_replay_manifest BEFORE INSERT ON audit_replay_packages
+      FOR EACH ROW EXECUTE FUNCTION reject_replay_manifest()`);
+    const writer = chessReplayWriter(audit, storageScope, accounts.schema);
+    try {
+      writer.record(recording);
+      writer.record(recording);
+      writer.record({ ...recording, matchId: randomUUID() });
+      await writer.stop();
+      const markers = await audit.prepare(`SELECT evidence_id,account_id,payload FROM audit_evidence
+        WHERE dataset_id=? AND kind='replay'`).all(dataset.datasetId);
+      assert.equal(markers.length, 1);
+      const marker = markers[0];
+      assert.equal(marker.evidence_id, 'capture-gap:' + recording.matchId);
+      assert.equal(marker.account_id, null);
+      assert(isAuditRecord(marker.payload) && marker.payload.type === 'replay');
+      assert.equal(marker.payload.replayId, marker.evidence_id);
+      assert.equal(marker.payload.coverage, 'not-recorded');
+      assert.deepEqual(marker.payload.entity.source, { namespace: accounts.schema + '.pvp_matches', rowId: recording.matchId });
+      assert.deepEqual(await new AuditReplayStore(audit).read(storageScope, recording.matchId), { status: 'not-found' });
+    } finally {
+      await writer.stop();
+      await audit.exec('DROP TRIGGER reject_replay_manifest ON audit_replay_packages; DROP FUNCTION reject_replay_manifest()');
+    }
+  });
   assert.equal(await persistCapturedChessReplay(audit, storageScope, accounts.schema, recording), 'recorded');
   const verified = await new AuditReplayStore(audit).read(storageScope, recording.matchId);
   assert.equal(verified.status, 'verified');
