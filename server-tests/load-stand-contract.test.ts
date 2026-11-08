@@ -126,6 +126,42 @@ test('V2 readiness requires every authenticated client and exact worker shard co
     runId, 4, 4, chatV2), /invalid-stand-chat-readiness/);
 });
 
+test('an explicit moving subset binds attestation, readiness and results to each shard including zero movers', () => {
+  const startAtUnixMs = now + 2_000, profile = { ...chatV2, movingClients: 1 };
+  const manifest = parseStandManifest({ ...fixture(), chatV2: profile }, now);
+  const status = { ...manifest, tokens: undefined, secret: undefined };
+  verifyStandStatus(status, manifest);
+  assert.throws(() => verifyStandStatus({ ...status, chatV2 }, manifest), /stand-chat-attestation-mismatch/);
+  for (const movingClients of [-1, 1.5, 5, '1', null]) {
+    assert.throws(() => parseStandManifest({ ...fixture(), chatV2: { ...profile, movingClients } }, now));
+  }
+  const admission = { ...preparation(), ready: preparation().ready.map((row, index) => ({ ...row, chatV2Ready: 1, movingClients: Number(index === 0) })) };
+  const prepared = parseStandPrepared(admission, runId, 4, 4, profile);
+  assert.throws(() => parseStandPrepared(admission, runId, 4, 4, chatV2), /invalid-stand-moving-readiness/);
+  const swapped = { ...admission, ready: admission.ready.map((row, index) => ({ ...row, movingClients: Number(index === 1) })) };
+  assert.throws(() => parseStandPrepared(swapped, runId, 4, 4, profile), /invalid-stand-moving-readiness/);
+  const noSamples = { count: 0, p50: 0, p95: 0, p99: 0, max: 0 };
+  const results = prepared.ready.map((_, index) => {
+    const plan = new ChatV2WorkloadPlan(profile, { index, count: 4 });
+    const plannedClients = plan.movingClients;
+    return { ...result(index), ...(plannedClients ? {} : { packetsSent: 0, inputPacketsPerSecond: 0, ackMs: noSamples, stateIntervalMs: noSamples }),
+      offeredInputPacketsPerSecond: plannedClients * 30, offeredInputStepsPerSecond: plannedClients * 60,
+      chatV2: { startAtUnixMs, summary: new ChatV2WorkloadLedger(plan).summary() },
+      movement: { plannedClients, sentClients: plannedClients, connectedClients: plannedClients } };
+  });
+  const finished = parseStandFinished({ runId, results }, runId, prepared, 2, startAtUnixMs);
+  assert.deepEqual(finished.results.map(row => row.movement?.plannedClients), [1, 0, 0, 0]);
+  assert.equal(finished.results[1].connectedClients, 1);
+  const expectation = { profile, shard: { index: 0, count: 4 }, startAtUnixMs };
+  for (const changed of [{ movement: undefined }, { movement: { ...results[0].movement, sentClients: 0 } },
+    { movement: { ...results[0].movement, extra: true } }, { movement: { ...results[0].movement, connectedClients: 2 } },
+    { offeredInputPacketsPerSecond: 120 }, { offeredInputStepsPerSecond: 30 }]) {
+    assert.throws(() => parseStandResult({ ...results[0], ...changed }, 4, expectation));
+  }
+  assert.throws(() => parseStandResult({ ...results[1], packetsSent: 2, inputPacketsPerSecond: 1 }, 4,
+    { ...expectation, shard: { index: 1, count: 4 } }), /inconsistent-stand-moving-result/);
+});
+
 test('V2 results must reconcile with the expected start, shard counts and exact aggregate schema', () => {
   const startAtUnixMs = now + 2_000, roomEpoch = 'b98e89c0-4a94-4ad1-9af0-3f5dd9959282';
   const prepared = parseStandPrepared({ ...preparation(), ready: preparation().ready.map(row => ({ ...row, chatV2Ready: 1 })) }, runId, 4, 4, chatV2);

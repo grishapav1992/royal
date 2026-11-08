@@ -68,6 +68,7 @@ test('CLI rejects oversized profiles before temporary database, sockets or bundl
 test('Chat V2 CLI requires an isolated manifest and a bounded, explicit workload', async () => {
   const stand = ['--stand-manifest', '/unused-test-manifest', '--clients', '20', '--seconds', '2'];
   assert.equal(await cliFailure(['--chat-v2-rate', '1']), 'chat-v2-needs-stand');
+  assert.equal(await cliFailure(['--chat-v2-moving-clients', '0']), 'chat-v2-needs-stand');
   assert.equal(await cliFailure([...stand, '--chat-v2-burst', '20']), 'chat-v2-burst-needs-count-and-time');
   assert.equal(await cliFailure([...stand, '--chat-v2-burst-at-second', '0']), 'chat-v2-burst-needs-count-and-time');
   assert.equal(await cliFailure([...stand, '--chat-v2-rate', '334']), 'invalid-cli-number');
@@ -76,6 +77,8 @@ test('Chat V2 CLI requires an isolated manifest and a bounded, explicit workload
   assert.equal(await cliFailure([...stand, '--chat-v2-burst', '20', '--chat-v2-burst-at-second', '2']), 'invalid-cli-number');
   assert.equal(await cliFailure([...stand, '--chat-v2-burst', '20', '--chat-v2-burst-at-second', '1']), 'use-temporary-postgresql-wrapper');
   assert.equal(await cliFailure([...stand, '--chat-v2-rate', '333']), 'use-temporary-postgresql-wrapper');
+  assert.equal(await cliFailure([...stand, '--chat-v2-rate', '333', '--chat-v2-moving-clients', '0']), 'use-temporary-postgresql-wrapper');
+  assert.equal(await cliFailure([...stand, '--chat-v2-rate', '333', '--chat-v2-moving-clients', '21']), 'invalid-cli-number');
 });
 
 test('Chat V2 pilot verdict requires the planned offer rate and complete self-witnessed delivery', () => {

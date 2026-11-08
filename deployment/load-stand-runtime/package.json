@@ -1,0 +1,11 @@
+{
+  "name": "royal-isolated-load-runtime",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@colyseus/core": "0.18.18",
+    "@colyseus/redis-driver": "0.18.5",
+    "@colyseus/redis-presence": "0.18.5",
+    "ioredis": "5.11.1"
+  }
+}

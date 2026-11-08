@@ -1,9 +1,10 @@
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:net';
-import { mkdtemp, rm } from 'node:fs/promises';
-import { join } from 'node:path';
+import { mkdtemp, realpath, rm } from 'node:fs/promises';
+import { basename, dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { Redis } from 'ioredis';
+import { LOAD_RUN_REDIS_KEY } from './load-stand-ownership';
 
 export async function freeLocalPort() {
   const server = createServer();
@@ -13,9 +14,21 @@ export async function freeLocalPort() {
   return port;
 }
 
-export async function temporaryRedis() {
-  const directory = await mkdtemp(join(tmpdir(), 'royal-redis-'));
+export async function temporaryRedis(runId: string) {
   const port = await freeLocalPort();
+  const temporaryRoot = await realpath(tmpdir());
+  const directory = await mkdtemp(join(temporaryRoot, 'royal-redis-'));
+  const removeDirectory = async () => {
+    const target = await realpath(directory).catch(error => {
+      if (error.code === 'ENOENT') return undefined;
+      throw error;
+    });
+    if (!target) return;
+    if (target !== directory || dirname(target) !== temporaryRoot || !basename(target).startsWith('royal-redis-')) {
+      throw new Error('Unexpected temporary Redis directory');
+    }
+    await rm(target, { recursive: true, force: true });
+  };
   const child = spawn(process.env.ROYAL_REDIS_SERVER_BINARY || 'redis-server', [
     '--bind', '127.0.0.1', '--protected-mode', 'yes', '--port', String(port),
     '--save', '', '--appendonly', 'no', '--dir', directory, '--loglevel', 'warning',
@@ -23,7 +36,7 @@ export async function temporaryRedis() {
   let spawnError: Error | undefined;
   child.on('error', error => { spawnError = error; });
   const url = 'redis://127.0.0.1:' + port;
-  const client = new Redis(url, { lazyConnect: true, enableOfflineQueue: false, retryStrategy: null, connectTimeout: 500, maxRetriesPerRequest: 1 });
+  const client = new Redis(url, { lazyConnect: true, enableOfflineQueue: false, retryStrategy: null, connectTimeout: 500, commandTimeout: 1500, maxRetriesPerRequest: 1 });
   client.on('error', () => {});
   const stop = async () => {
     if (!child.pid || child.exitCode !== null || child.signalCode !== null) return;
@@ -41,8 +54,12 @@ export async function temporaryRedis() {
         if (await client.ping() === 'PONG') break;
       } catch { client.disconnect(); await new Promise(resolve => setTimeout(resolve, 50)); }
     }
-    return { url, port, stop, cleanup: async () => { client.disconnect(); await stop(); await rm(directory, { recursive: true, force: true }); } };
+    const runningPid = /(?:^|\r?\n)process_id:(\d+)(?:\r?\n|$)/.exec(await client.info('server'))?.[1];
+    if (!child.pid || Number(runningPid) !== child.pid || await client.set(LOAD_RUN_REDIS_KEY, runId, 'NX') !== 'OK') {
+      throw new Error('Temporary Redis ownership could not be verified');
+    }
+    return { url, port, stop, cleanup: async () => { client.disconnect(); await stop(); await removeDirectory(); } };
   } catch (error) {
-    client.disconnect(); await stop(); await rm(directory, { recursive: true, force: true }); throw error;
+    client.disconnect(); await stop(); await removeDirectory(); throw error;
   }
 }

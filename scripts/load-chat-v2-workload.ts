@@ -8,6 +8,7 @@ export type ChatV2WorkloadProfile = Readonly<{
   clients: number;
   seconds: number;
   steadyPerSecond: number;
+  movingClients?: number;
   burst?: Readonly<{ count: number; atSecond: number }>;
 }>;
 type Cohort = 'steady' | 'burst';
@@ -27,24 +28,34 @@ const burstFrameMs = 20;
 export class ChatV2WorkloadPlan {
   readonly profile: ChatV2WorkloadProfile;
   readonly shard: Shard;
+  readonly clientsInShard: number;
+  readonly movingClients: number;
   readonly planned: Readonly<Record<Cohort, number>>;
   private readonly totals: Readonly<Record<Cohort, number>>;
 
   constructor(profile: ChatV2WorkloadProfile, shard: Shard = { index: 0, count: 1 }) {
-    const { clients, seconds, steadyPerSecond, burst } = profile;
+    const { clients, seconds, steadyPerSecond, movingClients, burst } = profile;
     if (!isInteger(clients, 1, 10_000) || !isInteger(seconds, 1, MAX_MEASUREMENT_SECONDS)
       || !isInteger(steadyPerSecond, 0, 333) || (!steadyPerSecond && !burst)
+      || (movingClients !== undefined && !isInteger(movingClients, 0, clients))
       || (burst && (!isInteger(burst.count, 1, clients) || !isInteger(burst.atSecond, 0, seconds - 1)))
       || !isInteger(shard.count, 1, clients) || !isInteger(shard.index, 0, shard.count - 1)) {
       throw new RangeError('Invalid V2 workload profile or shard');
     }
-    this.profile = { clients, seconds, steadyPerSecond, burst: burst && { ...burst } };
+    this.profile = { clients, seconds, steadyPerSecond, ...(movingClients === undefined ? {} : { movingClients }), burst: burst && { ...burst } };
     this.shard = { ...shard };
     const steady = seconds * steadyPerSecond;
     this.totals = { steady, burst: burst?.count ?? 0 };
     const shardSize = (accounts: number) => Math.floor((accounts + shard.count - 1 - shard.index) / shard.count);
-    this.planned = { steady: Math.floor(steady / clients) * shardSize(clients) + shardSize(steady % clients),
+    this.clientsInShard = shardSize(clients);
+    this.movingClients = shardSize(movingClients ?? clients);
+    this.planned = { steady: Math.floor(steady / clients) * this.clientsInShard + shardSize(steady % clients),
       burst: shardSize(this.totals.burst) };
+  }
+
+  moves(accountIndex: number) {
+    const cutoff = this.profile.movingClients ?? this.profile.clients;
+    return isInteger(accountIndex, 0, cutoff - 1) && accountIndex % this.shard.count === this.shard.index;
   }
 
   slot(cohort: Cohort, index: number): ChatV2WorkloadSlot {

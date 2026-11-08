@@ -10,9 +10,12 @@ const args = process.argv.slice(2);
 const options = {};
 for (let index = 0; index < args.length; index += 2) {
   const key = args[index], value = args[index + 1];
-  if (!['--out-dir', '--runtime-lock'].includes(key) || !value || value.startsWith('--') || options[key]) throw new Error('Usage: node scripts/build-load-stand.mjs [--out-dir PATH] [--runtime-lock PATH]');
+  if (!['--out-dir', '--runtime-lock', '--stand-runtime'].includes(key) || !value || value.startsWith('--') || options[key]) {
+    throw new Error('Usage: node scripts/build-load-stand.mjs [--out-dir PATH] [--runtime-lock PATH | --stand-runtime PATH]');
+  }
   options[key] = value;
 }
+if (options['--runtime-lock'] && options['--stand-runtime']) throw new Error('Choose one stand runtime source');
 const output = resolve(options['--out-dir'] ?? resolve(project, 'dist-load'));
 const require = createRequire(import.meta.url);
 const hash = data => createHash('sha256').update(data).digest('hex');
@@ -20,6 +23,8 @@ const lockBytes = await readFile(resolve(project, 'package-lock.json'));
 const lock = JSON.parse(lockBytes);
 const baseBytes = options['--runtime-lock'] ? await readFile(resolve(options['--runtime-lock'])) : undefined;
 const base = baseBytes ? JSON.parse(baseBytes) : undefined;
+const isolatedRuntime = baseBytes ? undefined : resolve(options['--stand-runtime'] ?? resolve(project, 'deployment/load-stand-runtime'));
+const isolatedLockPath = resolve(project, 'deployment/load-stand-runtime/package-lock.json');
 const allowedSupplements = new Set(['@colyseus/redis-driver', '@colyseus/redis-presence', '@ioredis/commands',
   'cluster-key-slot', 'denque', 'ioredis', 'redis-errors', 'redis-parser', 'standard-as-callback']);
 const supplements = [];
@@ -32,9 +37,9 @@ function pureJavaScriptFile(path, data) {
     || [0x7f454c46, 0xfeedface, 0xfeedfacf, 0xcefaedfe, 0xcffaedfe, 0xcafebabe, 0xbebafeca].includes(magic)
     || data[0] === 0x4d && data[1] === 0x5a) throw new Error('Native supplement file refused: ' + path);
 }
-async function copySupplement(name, item) {
-  const source = join(project, 'node_modules', name), destination = join(output, 'supplements', 'node_modules', name);
-  if (!(await lstat(source)).isDirectory()) throw new Error('Supplement package must be a regular directory: ' + name);
+async function copySupplement(name, item, modules = join(project, 'node_modules')) {
+  const source = join(modules, name), destination = join(output, 'supplements', 'node_modules', name);
+  if (!(await lstat(source)).isDirectory() || await realpath(source) !== source) throw new Error('Supplement package must be a regular directory: ' + name);
   const installed = JSON.parse(await readFile(join(source, 'package.json'), 'utf8'));
   if (installed.name !== name || installed.version !== item.version) throw new Error('Installed supplement version mismatch: ' + name);
   const files = []; let totalBytes = 0;
@@ -94,13 +99,48 @@ function plugins(name) {
       return { contents: source.replace(metricsGuard, 'if (false) {'), loader: 'ts', resolveDir: dirname(path) };
     });
     if (name === 'database') context.onResolve({ filter: /^(?:embedded-postgres|async-exit-hook)$/ }, ({ path }) => ({ path: require.resolve(path) }));
+    if (isolatedRuntime) context.onResolve({ filter: /^@noble\/hashes(?:\/|$)/ }, ({ path }) => ({ path: require.resolve(path) }));
   } }];
 }
 
 await mkdir(output, { recursive: true });
 if (!(await lstat(output)).isDirectory() || await realpath(output) !== output) throw new Error('Build output directory must not resolve through symlinks');
-if (base) {
-  if (!base.packages || !lock.packages) throw new Error('Runtime lock package map required');
+let isolatedLockBytes;
+if (isolatedRuntime) {
+  if (await realpath(isolatedRuntime) !== isolatedRuntime) throw new Error('Isolated runtime directory must not resolve through symlinks');
+  isolatedLockBytes = await readFile(isolatedLockPath);
+  const manifestPath = resolve(project, 'deployment/load-stand-runtime/package.json');
+  for (const [name, expected] of [['package.json', await readFile(manifestPath)], ['package-lock.json', isolatedLockBytes]]) {
+    const file = join(isolatedRuntime, name);
+    if (await realpath(file) !== file || !(await readFile(file)).equals(expected)) throw new Error('Isolated runtime pin mismatch: ' + name);
+  }
+  const modules = join(isolatedRuntime, 'node_modules');
+  const actualModules = await realpath(modules).catch(error => {
+    if (error.code === 'ENOENT') throw new Error('Install the isolated runtime lock with npm ci before building the stand');
+    throw error;
+  });
+  if (actualModules !== modules) throw new Error('Isolated runtime modules must not resolve through symlinks');
+  const isolated = JSON.parse(isolatedLockBytes);
+  const missing = new Map();
+  for (const [path, item] of Object.entries(isolated.packages)) {
+    if (!path) continue;
+    const name = path.slice('node_modules/'.length);
+    if (!path.startsWith('node_modules/') || !/^(?:@[a-z0-9_.-]+\/)?[a-z0-9_.-]+$/.test(name)
+      || !item.version || !item.integrity || item.dev === true) throw new Error('Invalid isolated runtime package: ' + path);
+    const shared = lock.packages[path];
+    if (shared) {
+      if (shared.dev === true || shared.version !== item.version || shared.integrity !== item.integrity) throw new Error('Shared isolated runtime pin mismatch: ' + name);
+    } else {
+      if (!allowedSupplements.has(name)) throw new Error('Unapproved isolated runtime supplement: ' + name);
+      missing.set(name, item);
+    }
+  }
+  if ([...allowedSupplements].some(name => !missing.has(name))) throw new Error('Incomplete isolated runtime supplements');
+  await refreshOwnedSupplements();
+  for (const [name, item] of [...missing].sort(([a], [b]) => a.localeCompare(b))) supplements.push(await copySupplement(name, item, modules));
+}
+if (baseBytes) {
+  if (!base?.packages || !lock.packages) throw new Error('Runtime lock package map required');
   const missing = [];
   for (const [path, item] of Object.entries(lock.packages)) {
     if (!path.startsWith('node_modules/') || item.dev === true) continue;
@@ -117,7 +157,9 @@ if (base) {
   for (const [name, item] of missing.sort(([a], [b]) => a.localeCompare(b))) supplements.push(await copySupplement(name, item));
 }
 const outputs = {}, inputs = new Map(), requirements = new Map();
-for (const [name, entry] of [['cluster', 'load-websocket-cluster.ts'], ['metrics', 'load-server-metrics.ts'], ['database', 'load-stand-database.ts']]) {
+const entries = [['cluster', 'load-websocket-cluster.ts'], ['metrics', 'load-server-metrics.ts'], ['database', 'load-stand-database.ts']];
+if (isolatedRuntime) entries.push(['lobby-server', 'load-lobby-server.ts'], ['account-probe', 'load-account-probe.ts']);
+for (const [name, entry] of entries) {
   const outfile = resolve(output, name + '.mjs');
   const result = await build({ absWorkingDir: project, entryPoints: [resolve(project, 'scripts', entry)], outfile,
     bundle: true, platform: 'node', target: 'node22', format: 'esm', packages: 'external', metafile: true,
@@ -129,12 +171,14 @@ for (const [name, entry] of [['cluster', 'load-websocket-cluster.ts'], ['metrics
   for (const dependency of external) {
     if (dependency.startsWith('node:') || require('node:module').isBuiltin(dependency)) continue;
     const packageName = dependency.startsWith('@') ? dependency.split('/').slice(0, 2).join('/') : dependency.split('/')[0];
+    if (supplements.some(item => item.package === packageName)) continue;
     const binary = packageName.startsWith('@embedded-postgres/');
     const item = lock.packages['node_modules/' + packageName];
     if (!item?.version || !item.integrity) throw new Error('Missing locked runtime dependency: ' + packageName);
     if (!binary && item.dev === true) throw new Error('Non-production runtime dependency: ' + packageName);
     requirements.set(packageName, { package: packageName, version: item.version, integrity: item.integrity,
-      provision: binary ? 'offline platform binary package, verified against package-lock.json' : 'production node_modules from the exact immutable application image' });
+      provision: binary ? 'offline platform binary package, verified against package-lock.json'
+        : isolatedRuntime ? 'locked application package installed in the isolated image' : 'production node_modules from the exact immutable application image' });
   }
   for (const input of Object.keys(result.metafile.inputs)) inputs.set(input, hash(await readFile(resolve(project, input))));
   outputs[name + '.mjs'] = { bytes: bytes.length, sha256: hash(bytes), externalImports: external };
@@ -144,14 +188,18 @@ for (const item of supplements) requirements.set(item.package, { package: item.p
 const metadata = { protocol: 1, purpose,
   target: 'node22', format: 'esm', packages: 'external', lockSha256: hash(lockBytes),
   ...(baseBytes ? { sourceLockSha256: hash(lockBytes), baseImageLockSha256: hash(baseBytes), runtimeSupplements: supplements } : {}),
+  ...(isolatedLockBytes ? { isolatedRuntimeLockSha256: hash(isolatedLockBytes), runtimeSupplements: supplements } : {}),
   bundledDatabaseLibraries: ['embedded-postgres', 'async-exit-hook'].map(name => ({ package: name, version: lock.packages['node_modules/' + name].version })),
   outputs, inputs: Object.fromEntries([...inputs].sort(([a], [b]) => a.localeCompare(b))),
   runtimeRequirements: [...requirements.values()].sort((a, b) => a.package.localeCompare(b.package)),
   notes: ['No npm install, network fetch, production credentials or server startup occurs during this build.',
     'Copy only the appropriate @embedded-postgres platform package into runtime node_modules. The build leaves native PostgreSQL binaries external.',
     'Start server-only cluster mode with --stand-manifest and --metrics-script metrics.mjs; run SDK generators on the client machine.',
-    'The immutable application image must also provide the compatible production dependencies required by the separately frozen server bundle.'] };
+    isolatedRuntime ? 'The isolated image supplies the lobby-server bundle and the hash-listed Redis supplements.'
+      : 'The immutable application image must also provide the compatible production dependencies required by the separately frozen server bundle.'] };
 await writeFile(resolve(output, 'metadata.json'), JSON.stringify(metadata, null, 2) + '\n');
 console.log(JSON.stringify({ output: relative(project, output), lockSha256: metadata.lockSha256,
-  ...(baseBytes ? { baseImageLockSha256: metadata.baseImageLockSha256, supplements: supplements.map(item => ({ package: item.package, version: item.version, bytes: item.bytes, files: item.files.length, treeSha256: item.treeSha256 })) } : {}),
+  ...(baseBytes ? { baseImageLockSha256: metadata.baseImageLockSha256 } : {}),
+  ...(isolatedLockBytes ? { isolatedRuntimeLockSha256: metadata.isolatedRuntimeLockSha256 } : {}),
+  ...(supplements.length ? { supplements: supplements.map(item => ({ package: item.package, version: item.version, bytes: item.bytes, files: item.files.length, treeSha256: item.treeSha256 })) } : {}),
   outputs: Object.fromEntries(Object.entries(outputs).map(([name, item]) => [name, { bytes: item.bytes, sha256: item.sha256 }])) }, null, 2));

@@ -1,13 +1,15 @@
 import { spawn, type ChildProcess } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
 import { realpath, stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { temporaryDatabase } from './database-test';
 import { installLoopbackNetworking } from './load-server-metrics';
 import { DEFAULT_GAME_PROCESSES, standDatabaseConnectionLimit } from './load-stand-limits';
+import { setLoadDatabaseRun } from './load-stand-ownership';
 import { createGeneratorCompletionHold, generatorCompletionExitCode, generatorCompletionOptions } from './load-generator-completion';
 
 async function stop(child: ChildProcess) {
-  if (child.exitCode !== null || child.signalCode !== null) return;
+  if (!child.pid || child.exitCode !== null || child.signalCode !== null) return;
   const exited = new Promise<void>(done => child.once('exit', () => done()));
   child.kill('SIGTERM');
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -18,13 +20,13 @@ async function stop(child: ChildProcess) {
 
 async function run() {
   if (process.argv.includes('--help')) {
-    console.log('node dist-load/database.mjs dist-load/cluster.mjs --metrics-script dist-load/metrics.mjs --server-bundle dist-server/index.js --stand-manifest /private/path/stand.json [cluster options]'); return;
+    console.log('node dist-load/database.mjs dist-load/cluster.mjs --metrics-script dist-load/metrics.mjs --server-bundle dist-load/lobby-server.mjs --stand-manifest /private/path/stand.json [cluster options]'); return;
   }
   const entry = process.argv[2] && await realpath(resolve(process.argv[2]));
   if (!entry || !entry.endsWith('.mjs') || !(await stat(entry)).isFile()) throw new Error('A prebuilt .mjs Node entrypoint is required');
   const options = generatorCompletionOptions(process.argv.slice(3));
   const env: NodeJS.ProcessEnv = {};
-  for (const key of ['PATH', 'HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'TZ', 'ROYAL_REDIS_SERVER_BINARY', 'ROYAL_CADDY_BINARY']) {
+  for (const key of ['PATH', 'HOME', 'SystemRoot', 'WINDIR', 'TEMP', 'TMP', 'TMPDIR', 'LANG', 'LC_ALL', 'TZ', 'ROYAL_REDIS_SERVER_BINARY', 'ROYAL_CADDY_BINARY']) {
     if (process.env[key] !== undefined) env[key] = process.env[key];
   }
   // Embedded PostgreSQL subprocesses inherit this process environment too.
@@ -41,7 +43,10 @@ async function run() {
   const interrupt = () => { interrupted = true; child?.kill('SIGTERM'); };
   process.once('SIGINT', interrupt); process.once('SIGTERM', interrupt);
   try {
-    child = spawn(process.execPath, [entry, ...options.args], { stdio: 'inherit', env: { ...env, ...database.env } });
+    const childEnv = { ...env, ...database.env, LOAD_LOBBY_RUN_ID: randomUUID() };
+    await setLoadDatabaseRun(childEnv);
+    if (interrupted) throw new Error('Temporary database stand interrupted');
+    child = spawn(process.execPath, [entry, ...options.args], { stdio: 'inherit', env: childEnv });
     code = await new Promise<number>((done, reject) => { child!.once('error', reject); child!.once('exit', result => done(result ?? 1)); });
   } finally {
     if (child) await stop(child);

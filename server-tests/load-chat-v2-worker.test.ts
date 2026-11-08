@@ -30,12 +30,13 @@ function request(worker: ChildProcess, command: object): Promise<any> {
   });
 }
 
-test('actual load worker negotiates V2, binds slots to authenticated sessions and resumes the same reservation', { timeout: 35_000 }, async () => {
-  const tokens = new Map(['slow', 'fast', 'legacy'].map(name => [randomBytes(32).toString('hex'), name]));
-  const [slowToken, fastToken, legacyToken] = tokens.keys();
+test('actual load worker separates movers from chat clients and resumes the same V2 reservation', { timeout: 35_000 }, async () => {
+  const tokens = new Map(['slow', 'fast', 'legacy', 'idle', 'implicit'].map(name => [randomBytes(32).toString('hex'), name]));
+  const [slowToken, fastToken, legacyToken, idleToken, implicitToken] = tokens.keys();
   const epoch = randomUUID(), workers: ChildProcess[] = [];
   const joins: string[] = [], offers: { name: string; senderId: string; messageId: string; text: string; at: number }[] = [];
   const resumed: { senderId: string; messageIds: string[] }[] = [];
+  const inputFrames = new Map<string, number>();
   let legacyPackets = 0;
   class SyntheticRoom extends Room<{ state: LobbyState }> {
     private readonly publications = new Map<string, ChatV2Publication>();
@@ -50,6 +51,8 @@ test('actual load worker negotiates V2, binds slots to authenticated sessions an
       this.onMessage('inputs', (client, payload) => {
         const player = this.state.players.get(client.sessionId);
         if (player) player.inputSeq = payload.inputs.at(-1).seq;
+        const name = client.auth as string;
+        inputFrames.set(name, (inputFrames.get(name) ?? 0) + 1);
       });
       this.onMessage('stop', () => {});
       this.onMessage('chat.send', (client, packet) => {
@@ -112,27 +115,35 @@ test('actual load worker negotiates V2, binds slots to authenticated sessions an
     const address = transport.server!.address();
     assert(address && typeof address !== 'string');
     const endpoint = 'http://127.0.0.1:' + address.port;
-    const chatV2 = { profile: { clients: 4, seconds: 1, steadyPerSecond: 4 }, shard: { index: 1, count: 2 } };
+    const chatV2 = { profile: { clients: 4, seconds: 1, steadyPerSecond: 4, movingClients: 2 }, shard: { index: 1, count: 2 } };
     const legacy = startWorker(false);
     assert.equal((await request(legacy, { kind: 'connect', endpoint, tokens: [legacyToken], chatV2 })).kind, 'error');
     assert.deepEqual(joins, []);
     const legacyReady = await request(legacy, { kind: 'connect', endpoint, tokens: [legacyToken] });
     assert.equal(legacyReady.connectedClients, 1);
-    assert(!('chatV2Ready' in legacyReady));
+    assert(!('chatV2Ready' in legacyReady) && !('movingClients' in legacyReady));
     const movement = await request(legacy, { kind: 'measure', seconds: 1 });
-    assert(movement.packetsSent > 0 && movement.errorCount === 0 && !('chatV2' in movement));
+    assert(movement.packetsSent > 0 && movement.errorCount === 0 && !('chatV2' in movement) && !('movement' in movement));
     assert.equal(legacyPackets, 0);
 
     const worker = startWorker(true);
     assert.equal((await request(worker, { kind: 'connect', endpoint: 'http://192.0.2.1:9999', tokens: [slowToken, fastToken], chatV2 })).kind, 'error');
     const ready = await request(worker, { kind: 'connect', endpoint, tokens: [slowToken, fastToken], concurrency: 2, chatV2 });
     assert.equal(ready.chatV2Ready, 2);
+    assert.equal(ready.movingClients, 1);
     assert.deepEqual(joins.slice(1), ['fast', 'slow']);
-    assert.equal((await request(worker, { kind: 'measure', seconds: 1, startAtUnixMs: Date.now() - 1 })).kind, 'error');
+    assert.equal((await request(worker, { kind: 'measure', seconds: 1, startAtUnixMs: Date.now() - 1, stepsPerPacket: 2 })).kind, 'error');
+    assert.equal((await request(worker, { kind: 'measure', seconds: 1, startAtUnixMs: Date.now() + 500, stepsPerPacket: 3 })).kind, 'error');
     const startAtUnixMs = Date.now() + 500;
-    const result = await request(worker, { kind: 'measure', seconds: 1, startAtUnixMs, drainMs: 750 });
+    const result = await request(worker, { kind: 'measure', seconds: 1, startAtUnixMs, drainMs: 750, stepsPerPacket: 2, inputMode: 'browser-window' });
     assert.equal(result.errorCount, 0);
     assert.equal(result.connectedClients, 2);
+    assert.deepEqual(result.movement, { plannedClients: 1, sentClients: 1, connectedClients: 1 });
+    assert.equal(result.offeredInputPacketsPerSecond, 30);
+    assert.equal(result.offeredInputStepsPerSecond, 60);
+    assert(result.packetsSent > 0 && result.ackMs.count > 0);
+    assert.equal(inputFrames.get('slow'), result.packetsSent);
+    assert(!inputFrames.has('fast'));
     assert.equal(result.chatV2.startAtUnixMs, startAtUnixMs);
     assert.equal(result.chatV2.summary.unmatchedPublications, 0);
     assert.deepEqual(offers.map(row => [row.name, row.text]), [['slow', 'Synthetic load steady message 2'], ['fast', 'Synthetic load steady message 4']]);
@@ -148,6 +159,34 @@ test('actual load worker negotiates V2, binds slots to authenticated sessions an
     assert.equal(unavailable.errors['chat-v2-unavailable'], 1);
     assert.equal((await request(unsupported, { kind: 'measure', seconds: 1, startAtUnixMs: Date.now() + 500 })).kind, 'error');
     assert.equal(offers.length, 2);
+
+    const idleWorker = startWorker(true);
+    const idleReady = await request(idleWorker, { kind: 'connect', endpoint, tokens: [idleToken],
+      chatV2: { ...chatV2, shard: { index: 2, count: 4 } } });
+    assert.equal(idleReady.chatV2Ready, 1);
+    assert.equal(idleReady.movingClients, 0);
+    const idle = await request(idleWorker, { kind: 'measure', seconds: 1, startAtUnixMs: Date.now() + 500, drainMs: 250, stepsPerPacket: 2 });
+    assert.equal(idle.errorCount, 0);
+    assert.deepEqual(idle.movement, { plannedClients: 0, sentClients: 0, connectedClients: 0 });
+    assert.equal(idle.connectedClients, 1);
+    assert.equal(idle.packetsSent, 0);
+    assert.equal(idle.ackMs.count, 0);
+    assert.equal(idle.timing.timerTicks, 0);
+    assert(!inputFrames.has('idle'));
+    assert.equal(idle.chatV2.summary.steady.published, 1);
+    assert.equal(offers.at(-1)?.name, 'idle');
+
+    const implicitWorker = startWorker(true);
+    const implicitReady = await request(implicitWorker, { kind: 'connect', endpoint, tokens: [implicitToken],
+      chatV2: { profile: { clients: 4, seconds: 1, steadyPerSecond: 4 }, shard: { index: 3, count: 4 } } });
+    assert.equal(implicitReady.chatV2Ready, 1);
+    assert(!('movingClients' in implicitReady));
+    const implicit = await request(implicitWorker, { kind: 'measure', seconds: 1, startAtUnixMs: Date.now() + 500, drainMs: 250 });
+    assert.equal(implicit.errorCount, 0);
+    assert(!('movement' in implicit));
+    assert(implicit.packetsSent > 0);
+    assert.equal(inputFrames.get('implicit'), implicit.packetsSent);
+    assert.equal(implicit.chatV2.summary.steady.published, 1);
   } finally {
     await Promise.all(workers.map(async worker => {
       if (!worker.pid || worker.exitCode !== null || worker.signalCode !== null) return;

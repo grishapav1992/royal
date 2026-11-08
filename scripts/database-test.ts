@@ -6,7 +6,10 @@ import { randomBytes } from 'node:crypto';
 import { createServer } from 'node:net';
 import { spawn, type ChildProcess } from 'node:child_process';
 
-export async function temporaryDatabase() {
+export async function temporaryDatabase({ maxConnections }: { maxConnections?: number } = {}) {
+  if (maxConnections !== undefined && (!Number.isSafeInteger(maxConnections) || maxConnections < 10 || maxConnections > 250)) {
+    throw new RangeError('Invalid temporary database connection limit');
+  }
   const directory = await mkdtemp(join(tmpdir(), 'royal-pg-'));
   const server = createServer();
   await new Promise<void>((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
@@ -14,7 +17,9 @@ export async function temporaryDatabase() {
   await new Promise<void>(resolve => server.close(() => resolve()));
   const password = randomBytes(32).toString('hex');
   const postgres = new EmbeddedPostgres({ databaseDir: directory, port, user: 'postgres', password, persistent: true,
-    authMethod: 'scram-sha-256', initdbFlags: ['--encoding=UTF8', '--locale=C'], postgresFlags: ['-h', '127.0.0.1'], onLog: () => {}, onError: () => {} });
+    authMethod: 'scram-sha-256', initdbFlags: ['--encoding=UTF8', '--locale=C'],
+    postgresFlags: ['-h', '127.0.0.1', ...(maxConnections === undefined ? [] : ['-c', `max_connections=${maxConnections}`])],
+    onLog: () => {}, onError: () => {} });
   await postgres.initialise(); await postgres.start(); await postgres.createDatabase('royal_test');
   return { directory, env: { NODE_ENV: 'test', DATABASE_URL: '', DATABASE_URL_FILE: '', PGHOST: '127.0.0.1', PGPORT: String(port), PGDATABASE: 'royal_test', PGUSER: 'postgres', PGPASSWORD: password, PGPASSWORD_FILE: '', PGSSLMODE: 'disable', CODEX_SALE_API_KEY: '' },
     cleanup: async () => {

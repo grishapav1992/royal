@@ -23,6 +23,7 @@ type NodeSocket = { readableLength: number; writableLength: number; bytesRead: n
   on(type: 'data', callback: (data: unknown) => void): void; off(type: 'data', callback: (data: unknown) => void): void };
 type Socket = { bufferedAmount: number; terminate?: () => void; close?: () => void; _socket?: NodeSocket; _receiver?: { _bufferedBytes?: number; writableLength?: number } };
 type Member = { room: Room<LobbyState>; seq: number; tracker: PacketTracker; window?: BrowserInputWindow; lastPatch: number; lastMessage: number; lastTcpChunk: number; left: boolean;
+  moving: boolean; sentInput?: boolean;
   bufferGuard: OutboundBufferGuard; cleanup: () => void; chat?: LoadChatV2Session; chatFailed?: boolean;
   byteBaseline?: { tcp: NodeSocket; read: number; written: number }; priorTcpRead?: number; priorTcpWritten?: number };
 type InputMode = 'stress' | 'browser-window';
@@ -106,7 +107,7 @@ function collectTcpMeasurement(member: Member) {
   member.priorTcpWritten = (member.priorTcpWritten ?? 0) + Math.max(0, baseline.tcp.bytesWritten - baseline.written);
   member.byteBaseline = undefined;
 }
-const connected = () => members.filter(member => !member.left && member.room.connection.isOpen).length;
+const connected = (group = members) => group.filter(member => !member.left && member.room.connection.isOpen).length;
 const chatReady = () => members.filter(member => !member.left && member.chat?.visitReady).length;
 function rooms() {
   const counts = new Map<string, { count: number; owner: string }>();
@@ -141,7 +142,7 @@ function reserveChatAccounts(command: ConnectCommand) {
   const { profile, shard } = command.chatV2;
   if (!profile || !shard) throw new Error('Invalid isolated V2 worker profile');
   const plan = new ChatV2WorkloadPlan(parseStandChatV2(profile, profile.clients, profile.seconds), shard);
-  const expected = Math.floor((plan.profile.clients + shard.count - 1 - shard.index) / shard.count);
+  const expected = plan.clientsInShard;
   if (chatRun && (JSON.stringify(chatRun.plan.profile) !== JSON.stringify(plan.profile)
     || chatRun.plan.shard.index !== plan.shard.index || chatRun.plan.shard.count !== plan.shard.count)) {
     throw new Error('V2 worker profile changed');
@@ -156,6 +157,7 @@ function reserveChatAccounts(command: ConnectCommand) {
 function attachChat(member: Member, run: ChatRun, accountIndex: number, resetDiagnostics: (connected: boolean) => void) {
   const { room } = member;
   const senderId = room.sessionId, roomId = room.roomId;
+  member.moving = run.plan.moves(accountIndex);
   const session = new LoadChatV2Session(accountIndex, run.ledger, () => performance.now() - (run.startedAt ?? 0), () => performance.now());
   member.chat = session;
   run.byAccount.set(accountIndex, member);
@@ -230,12 +232,12 @@ async function connect(command: ConnectCommand) {
         try { room = await timeout(pending, joinTimeoutMs); } catch (failure) { expired = true; throw failure; }
         room.reconnection.enabled = false;
         const member: Member = { room, seq: 0, tracker: new PacketTracker(0, 3), lastPatch: 0, lastMessage: 0, lastTcpChunk: 0,
-          left: false, bufferGuard: new OutboundBufferGuard(), cleanup: () => {} };
+          left: false, moving: true, bufferGuard: new OutboundBufferGuard(), cleanup: () => {} };
         members.push(member); const removeWildcard = room.onMessage('*', () => {});
         const onError = (code: number, message?: string) => { error('room-' + code); reason(errorReasons, message); };
         const onLeave = (code: number, message?: string) => { member.left = true; if (measuring) { error('disconnect-' + code); reason(closeReasons, message); } member.cleanup(); };
         const onState = () => {
-          if (!measuring) return;
+          if (!measuring || !member.moving) return;
           const now = performance.now(), ack = room.state.players?.get(room.sessionId)?.inputSeq ?? 0;
           if (member.lastPatch) intervals.add(now - member.lastPatch); member.lastPatch = now;
           member.window?.acknowledge(ack); member.tracker.acknowledge(ack, now, value => acks.add(value));
@@ -280,7 +282,8 @@ async function connect(command: ConnectCommand) {
   }));
   send({ kind: 'ready', count: members.length, connectedClients: connected(), rooms: rooms(), errors,
     requestedBatch: tokens.length, joinedBatch: members.length - before, connectionAttempts, connectionRetries, retryCodes, transport: transportDescription,
-    ...(chat ? { chatV2Ready: chatReady() } : {}) });
+    ...(chat ? { chatV2Ready: chatReady() } : {}),
+    ...(chat?.run.plan.profile.movingClients === undefined ? {} : { movingClients: connected(members.filter(member => member.moving)) }) });
 }
 function startChatMeasurement(run: ChatRun, started: number, stopAt: number, drainMs: number) {
   const slots = run.plan.slots(), recovering = new Set<Member>();
@@ -322,6 +325,7 @@ async function measure(seconds: number, stepsPerPacket = 3, drainMs = 150, input
   if (inputMode !== 'stress' && inputMode !== 'browser-window') throw new Error('invalid input mode');
   const chat = chatRun;
   if (chat) {
+    if (chat.plan.profile.movingClients !== undefined && stepsPerPacket !== 2) throw new Error('Mixed movement requires two steps per frame');
     const localNow = performance.now();
     const leadMs = (startAtUnixMs ?? 0) - Date.now();
     if (!Number.isSafeInteger(startAtUnixMs) || leadMs <= 0 || leadMs > STAND_CHAT_START_MAX_LEAD_MS || chat.startedAt !== undefined
@@ -338,17 +342,24 @@ async function measure(seconds: number, stepsPerPacket = 3, drainMs = 150, input
   errors = previouslyBlocked ? { 'generator-buffer-limit': previouslyBlocked } : {};
   closeReasons = {}; errorReasons = {}; acks = new BoundedSamples(); intervals = new BoundedSamples();
   diagnostics = freshDiagnostics(); receivedBytes = packetsSent = maxClientBufferedBytes = 0;
-  for (const member of members) {
+  const movers = members.filter(member => member.moving);
+  const plannedMovement = chat?.plan.profile.movingClients === undefined ? undefined : chat.plan.movingClients;
+  for (const member of movers) {
     member.seq = Math.max(member.seq, member.room.state.players?.get(member.room.sessionId)?.inputSeq ?? 0);
     member.tracker = new PacketTracker(member.seq, inputMode === 'stress' ? stepsPerPacket : undefined);
-    member.window = inputMode === 'browser-window' ? new BrowserInputWindow(member.seq) : undefined; member.lastPatch = member.lastMessage = member.lastTcpChunk = 0;
+    member.window = inputMode === 'browser-window' ? new BrowserInputWindow(member.seq) : undefined;
+    member.lastPatch = 0; member.sentInput = false;
+  }
+  for (const member of members) {
+    member.lastMessage = member.lastTcpChunk = 0;
     member.priorTcpRead = member.priorTcpWritten = 0; startTcpMeasurement(member);
   }
   const started = chat?.startedAt ?? performance.now(), stopAt = started + seconds * 1_000;
-  const beforeCount = connected(), cpuStarted = process.cpuUsage(); measuring = true;
+  const movingBudget = plannedMovement ?? connected(movers);
+  const cpuStarted = process.cpuUsage(); measuring = true;
   const loop = monitorEventLoopDelay({ resolution: 10 }); loop.enable();
   const pacer = new TimerPacer(started), timerLateness = new BoundedSamples(), tickCost = new BoundedSamples();
-  let generatedInputSteps = 0, sentInputSteps = 0, skippedWindowSteps = 0, windowBlockedPacketOpportunities = 0;
+  let generatedInputSteps = 0, sentInputSteps = 0, sentMovingClients = 0, skippedWindowSteps = 0, windowBlockedPacketOpportunities = 0;
   let unavailableClientOpportunities = 0, missingStateOpportunities = 0, blockedBufferClientOpportunities = 0, clientOpportunities = 0, maxPendingSteps = 0, maxOutgoingSteps = 0;
   let heartbeatAt = started, heartbeatPackets = 0;
   const tick = () => {
@@ -357,7 +368,7 @@ async function measure(seconds: number, stepsPerPacket = 3, drainMs = 150, input
     if (chat && tickStarted >= stopAt) return;
     const timing = pacer.tick(tickStarted); timerLateness.add(timing.lateMs);
     const direction = Math.floor((tickStarted - started) / 2000) % 2 ? 1 : -1;
-    for (const member of members) {
+    for (const member of movers) {
       clientOpportunities++;
       if (member.bufferGuard.blocked) { blockedBufferClientOpportunities++; continue; }
       if (member.left || !member.room.connection.isOpen || (member.chat && member.room.reconnection.isReconnecting)) { unavailableClientOpportunities++; continue; }
@@ -369,6 +380,7 @@ async function measure(seconds: number, stepsPerPacket = 3, drainMs = 150, input
           const now = performance.now(); member.room.send('inputs', { revision: player.hallRevision, inputs });
           diagnostics.packetSendMs.add(performance.now() - now);
           member.tracker.record(inputs[inputs.length - 1].seq, now); packetsSent++; sentInputSteps += inputs.length; sampleBuffers(member);
+          if (plannedMovement !== undefined && !member.sentInput) { member.sentInput = true; sentMovingClients++; }
           bufferReady(member);
         };
         if (member.window) {
@@ -388,7 +400,7 @@ async function measure(seconds: number, stepsPerPacket = 3, drainMs = 150, input
     tickCost.add(performance.now() - tickStarted);
     inputTimer = setTimeout(tick, Math.max(0, pacer.nextAt - performance.now()));
   };
-  inputTimer = setTimeout(tick, Math.max(0, pacer.nextAt - performance.now()));
+  if (movers.length) inputTimer = setTimeout(tick, Math.max(0, pacer.nextAt - performance.now()));
   if (chat) startChatMeasurement(chat, started, stopAt, drainMs);
   heartbeatTimer = setInterval(() => {
     const now = performance.now();
@@ -398,16 +410,18 @@ async function measure(seconds: number, stepsPerPacket = 3, drainMs = 150, input
   await delay(chat ? Math.max(0, stopAt - performance.now()) : seconds * 1000);
   clearTimeout(inputTimer); clearInterval(heartbeatTimer); inputTimer = heartbeatTimer = undefined;
   const sendDuration = performance.now() - started;
-  const outstanding = () => members.reduce((total, member) => total + member.tracker.outstandingPackets, 0);
+  const outstanding = () => movers.reduce((total, member) => total + member.tracker.outstandingPackets, 0);
   const unacknowledgedAtEndOfSending = outstanding(), packetsAtEndOfSending = packetsSent;
   const drainStarted = performance.now();
   while (!shuttingDown && (chat || outstanding() > 0) && performance.now() - drainStarted < drainMs) await delay(Math.min(10, drainMs));
   clearTimeout(chatTimer); chatTimer = undefined;
   const unacknowledgedPackets = outstanding(), duration = performance.now() - started;
   let oldestUnacknowledgedMs = 0, oldestUnacknowledgedTimingExact = true, rawTcpBytesRead = 0, rawTcpBytesWritten = 0;
-  for (const member of members) {
+  for (const member of movers) {
     const oldest = member.tracker.oldest(performance.now()); oldestUnacknowledgedMs = Math.max(oldestUnacknowledgedMs, oldest.ms);
     oldestUnacknowledgedTimingExact &&= oldest.exact;
+  }
+  for (const member of members) {
     collectTcpMeasurement(member);
     rawTcpBytesRead += member.priorTcpRead ?? 0; rawTcpBytesWritten += member.priorTcpWritten ?? 0;
   }
@@ -420,29 +434,29 @@ async function measure(seconds: number, stepsPerPacket = 3, drainMs = 150, input
     }
   }
   const cpu = process.cpuUsage(cpuStarted), memory = process.memoryUsage(); loop.disable();
-  for (const member of members) if (!member.left && member.room.connection.isOpen) {
+  for (const member of movers) if (!member.left && member.room.connection.isOpen) {
     if (member.bufferGuard.blocked) continue;
     try { member.room.send('stop'); } catch { error('stop'); }
   }
   send({ kind: 'result', count: members.length, connectedClients: connected(), rooms: rooms(),
     durationSeconds: sendDuration / 1000, observationSeconds: duration / 1000, packetsSent,
     inputPacketsPerSecond: packetsSent * 1000 / sendDuration,
-    inputPacketsPerClientPerSecond: packetsSent * 1000 / sendDuration / Math.max(1, beforeCount),
+    inputPacketsPerClientPerSecond: packetsSent * 1000 / sendDuration / Math.max(1, movingBudget),
     receivedBytes, receivedBytesPerSecond: receivedBytes * 1000 / duration, maxClientBufferedBytes,
     ackMs: acks.summary(), stateIntervalMs: intervals.summary(), unacknowledgedPackets, unacknowledgedAtEndOfSending, packetsAtEndOfSending,
     drainSeconds: (duration - sendDuration) / 1000, oldestUnacknowledgedMs,
-    oldestUnacknowledgedTimingExact, inputMode, offeredInputPacketsPerSecond: beforeCount * 30, offeredInputStepsPerSecond: beforeCount * 30 * stepsPerPacket,
+    oldestUnacknowledgedTimingExact, inputMode, offeredInputPacketsPerSecond: movingBudget * 30, offeredInputStepsPerSecond: movingBudget * 30 * stepsPerPacket,
     generatedInputSteps, generatedInputStepsPerSecond: generatedInputSteps * 1000 / sendDuration, sentInputSteps, sentInputStepsPerSecond: sentInputSteps * 1000 / sendDuration,
-    acknowledgedInputSteps: members.reduce((total, member) => total + member.tracker.acknowledgedSteps, 0),
-    acknowledgedInputStepsPerSecond: members.reduce((total, member) => total + member.tracker.acknowledgedSteps, 0) * 1000 / duration,
+    acknowledgedInputSteps: movers.reduce((total, member) => total + member.tracker.acknowledgedSteps, 0),
+    acknowledgedInputStepsPerSecond: movers.reduce((total, member) => total + member.tracker.acknowledgedSteps, 0) * 1000 / duration,
     window: { enabled: inputMode === 'browser-window', throttled: skippedWindowSteps > 0 || windowBlockedPacketOpportunities > 0, ...browserInputLimits, maxPendingSteps, maxOutgoingSteps,
       skippedInputSteps: skippedWindowSteps, blockedPacketOpportunities: windowBlockedPacketOpportunities,
       definition: 'MovementPrediction queue limits only; fixed 30 Hz flush opportunities, without browser rendering or its 50 ms flush cadence' },
-    timing: { timerTicks: pacer.ticks, skippedTimerTicks: pacer.skippedTicks, nominalClientOpportunities: Math.floor(sendDuration * 30 / 1000) * beforeCount,
+    timing: { timerTicks: pacer.ticks, skippedTimerTicks: pacer.skippedTicks, nominalClientOpportunities: Math.floor(sendDuration * 30 / 1000) * movingBudget,
       deliveredClientOpportunities: clientOpportunities, unavailableClientOpportunities, missingStateOpportunities, blockedBufferClientOpportunities,
-      skippedTimerClientOpportunities: pacer.skippedTicks * beforeCount, timerLatenessMs: timerLateness.summary(), tickWorkMs: tickCost.summary() },
-    tracking: { maxPacketsPerClient: 512, maxTrackedPacketsPerClient: Math.max(0, ...members.map(member => member.tracker.maxTrackedPackets)),
-      latencyTimingSamplesDropped: members.reduce((total, member) => total + member.tracker.timingSamplesDropped, 0), quantileSampleLimit: 8192,
+      skippedTimerClientOpportunities: pacer.skippedTicks * movingBudget, timerLatenessMs: timerLateness.summary(), tickWorkMs: tickCost.summary() },
+    tracking: { maxPacketsPerClient: 512, maxTrackedPacketsPerClient: Math.max(0, ...movers.map(member => member.tracker.maxTrackedPackets)),
+      latencyTimingSamplesDropped: movers.reduce((total, member) => total + member.tracker.timingSamplesDropped, 0), quantileSampleLimit: 8192,
       residualCountsExact: true, definition: 'Stress residual uses contiguous fixed-size packet sequences; latency storage keeps the latest 512 unacknowledged packets per client' },
     diagnostics: { webSocketSendCalls: diagnostics.webSocketSendCalls, inputFrameSendCalls: diagnostics.inputFrameSendCalls,
       outboundBufferLimitBytes: OUTBOUND_BUFFER_LIMIT_BYTES, bufferBlockedClients: members.filter(member => member.bufferGuard.blocked).length,
@@ -461,6 +475,7 @@ async function measure(seconds: number, stepsPerPacket = 3, drainMs = 150, input
     generator: { cpuPercent: (cpu.user + cpu.system) / (duration * 10), rssMiB: memory.rss / 1024 ** 2,
       eventLoopP99Ms: loop.percentile(99) / 1e6, eventLoopMaxMs: loop.max / 1e6 },
     ...(chat ? { chatV2: { startAtUnixMs, summary: chat.ledger.summary() } } : {}),
+    ...(plannedMovement === undefined ? {} : { movement: { plannedClients: plannedMovement, sentClients: sentMovingClients, connectedClients: connected(movers) } }),
     errorCount: Object.values(errors).reduce((total, count) => total + count, 0), errors, closeReasons, errorReasons, transport: transportDescription });
 }
 async function shutdown() {

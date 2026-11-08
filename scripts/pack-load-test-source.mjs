@@ -8,20 +8,23 @@ import { fileURLToPath } from 'node:url';
 import { createGzip } from 'node:zlib';
 
 const project = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const exactFiles = ['Dockerfile.load', '.dockerignore', 'package.json', 'package-lock.json', 'tsconfig.json', 'vite.config.ts', 'index.html',
-  'scripts/build-load-stand.mjs', 'scripts/crypto-reconcile.ts', 'scripts/database-test.ts', 'scripts/load-stand-database.ts', 'scripts/load-generator-completion.ts', 'scripts/load-account-probe.ts',
+const exactFiles = ['Dockerfile.load', '.dockerignore', 'package.json', 'package-lock.json', 'tsconfig.json',
+  'deployment/load-stand-runtime/package.json', 'deployment/load-stand-runtime/package-lock.json',
+  'scripts/build-load-stand.mjs', 'scripts/database-test.ts', 'scripts/load-stand-database.ts', 'scripts/load-generator-completion.ts', 'scripts/load-account-probe.ts',
   'scripts/load-websocket-cluster.ts', 'scripts/load-server-metrics.ts', 'scripts/temporary-redis.ts',
-  'scripts/load-stand-control.ts', 'scripts/load-stand-contract.ts', 'scripts/load-stand-limits.ts',
-  'scripts/websocket-server-diagnostics.ts', 'scripts/load-websocket-diagnostics.ts', 'scripts/load-chat-v2-workload.ts'];
-const trees = ['src', 'server', 'public'];
-const extensions = new Set(['.ts', '.tsx', '.js', '.mjs', '.css', '.json', '.html', '.svg', '.png', '.jpg', '.jpeg',
-  '.webp', '.gif', '.ico', '.woff', '.woff2', '.ttf', '.ogg', '.mp3', '.wav', '.webm', '.go', '.mod', '.sum', '.md', '.txt', '.sql', '.php']);
+  'scripts/load-stand-control.ts', 'scripts/load-stand-contract.ts', 'scripts/load-stand-limits.ts', 'scripts/load-stand-ownership.ts',
+  'scripts/websocket-server-diagnostics.ts', 'scripts/load-websocket-diagnostics.ts', 'scripts/load-chat-v2-workload.ts', 'scripts/load-lobby-server.ts'];
+const trees = ['src', 'server'];
+const extensions = new Set(['.ts', '.tsx', '.js', '.mjs', '.json', '.sql']);
 const prohibited = /^(?:\.env(?:\..*)?|\.git|node_modules|artifacts|backups?|data|runtime|dist(?:-.*)?|secrets?|\.ssh)$/i;
 const sha = data => createHash('sha256').update(data).digest('hex');
 
 export async function collectLoadSource(root = project) {
   root = resolve(root); if (await realpath(root) !== root) throw Error('source-root-symlink-refused');
-  const selected = [...exactFiles];
+  const selected = new Set(exactFiles);
+  const scriptDir = resolve(root, 'scripts');
+  if (await realpath(scriptDir) !== scriptDir) throw Error('source-symlink-refused');
+  for (const name of await readdir(scriptDir)) if (/^load-lobby-[a-z0-9-]+\.ts$/.test(name)) selected.add('scripts/' + name);
   async function walk(tree) {
     const info = await lstat(resolve(root, tree));
     if (!info.isDirectory() || info.isSymbolicLink()) throw Error('source-directory-required');
@@ -30,15 +33,17 @@ export async function collectLoadSource(root = project) {
       const relative = tree + '/' + name, info = await lstat(resolve(root, relative));
       if (info.isSymbolicLink()) throw Error('source-symlink-refused');
       if (info.isDirectory()) await walk(relative);
-      else if (info.isFile() && (extensions.has(extname(name).toLowerCase()) || name === 'LICENSE')) selected.push(relative);
+      else if (info.isFile() && extensions.has(extname(name).toLowerCase())) selected.add(relative);
       else if (!info.isFile()) throw Error('source-special-file-refused');
     }
   }
   for (const tree of trees) await walk(tree);
   const files = []; let bytes = 0;
-  for (const path of selected.sort()) {
+  for (const path of [...selected].sort()) {
     if (path.length > 255 || path.split('/').some(part => !part || part === '..' || part === '.') || files.length >= 10000) throw Error('source-path-limit');
-    const handle = await open(resolve(root, path), constants.O_RDONLY | constants.O_NOFOLLOW);
+    const source = resolve(root, path);
+    if (await realpath(source) !== source) throw Error('source-symlink-refused');
+    const handle = await open(source, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
     try {
       const info = await handle.stat();
       if (!info.isFile() || info.nlink !== 1 || info.size > 64 * 1024 ** 2) throw Error('regular-bounded-source-required');

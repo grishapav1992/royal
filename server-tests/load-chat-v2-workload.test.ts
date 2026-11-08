@@ -8,12 +8,13 @@ const publicationId = 'bcf0f919-3c62-4307-b61b-530f8559f2c2';
 const envelope = (text = 'Test message'): ChatV2Send => ({ messageId: createChatMessageId(1_800_000_000_000), roomEpoch, visitId: 1, text });
 
 test('the mixed plan has exact per-second cadence and a one-second burst across disjoint shards', () => {
-  const profile = { clients: 10_000, seconds: 1_800, steadyPerSecond: 333, burst: { count: 10_000, atSecond: 700 } };
+  const profile = { clients: 10_000, seconds: 1_800, steadyPerSecond: 333, movingClients: 1_000, burst: { count: 10_000, atSecond: 700 } };
   const steadySeen = new Uint8Array(599_400), burstSeen = new Uint8Array(10_000);
   const steadySeconds = new Uint16Array(profile.seconds), burstFrames = new Uint16Array(50);
+  let assignedMovers = 0;
   for (let index = 0; index < 13; index++) {
     const plan = new ChatV2WorkloadPlan(profile, { index, count: 13 });
-    let previousDue = -1, steady = 0, burst = 0;
+    let previousDue = -1, steady = 0, burst = 0, observedMovers = 0;
     for (const slot of plan.slots()) {
       assert(slot.dueAtMs >= previousDue && slot.dueAtMs < slot.offerBeforeMs);
       assert.equal(slot.accountIndex % 13, index);
@@ -24,6 +25,8 @@ test('the mixed plan has exact per-second cadence and a one-second burst across 
         assert.equal(slot.dueAtMs % 20, 0);
         burstFrames[(slot.dueAtMs - 700_000) / 20]++;
         assert.equal(burstSeen[slot.index]++, 0);
+        assert.equal(plan.moves(slot.accountIndex), slot.accountIndex < profile.movingClients);
+        observedMovers += Number(plan.moves(slot.accountIndex));
         burst++;
       } else {
         assert.equal(slot.accountIndex, slot.index % profile.clients);
@@ -33,11 +36,16 @@ test('the mixed plan has exact per-second cadence and a one-second burst across 
       }
     }
     assert.deepEqual(plan.planned, { steady, burst });
+    assert.equal(plan.clientsInShard, burst);
+    assert.equal(plan.movingClients, observedMovers);
+    assert(!plan.moves((index + 1) % 13));
+    assignedMovers += observedMovers;
   }
   assert(steadySeen.every(count => count === 1));
   assert(burstSeen.every(count => count === 1));
   assert(steadySeconds.every(count => count === 333));
   assert(burstFrames.every(count => count === 200));
+  assert.equal(assignedMovers, 1_000);
 });
 
 test('invalid profile, shard, and slot are rejected and empty local cohorts are valid', () => {
@@ -47,7 +55,14 @@ test('invalid profile, shard, and slot are rejected and empty local cohorts are 
   assert.deepEqual([...plan.slots()], []);
   assert.throws(() => plan.slot('burst', 0), /does not belong/);
   assert.throws(() => new ChatV2WorkloadPlan(profile, { count: 4, index: 4 }), RangeError);
+  assert.equal(plan.movingClients, 1);
+  assert(plan.moves(3));
+  const chatOnly = new ChatV2WorkloadPlan({ ...profile, movingClients: 0 });
+  assert.equal(chatOnly.movingClients, 0);
+  assert(!chatOnly.moves(0));
+  assert.deepEqual(chatOnly.planned, { steady: 1, burst: 1 });
   const invalid: Partial<ChatV2WorkloadProfile>[] = [{ clients: 10_001 }, { seconds: 1_801 }, { steadyPerSecond: 334 },
+    { movingClients: -1 }, { movingClients: 1.5 }, { movingClients: 5 },
     { burst: { count: 5, atSecond: 0 } }, { burst: { count: 4, atSecond: 1 } }];
   for (const override of invalid) assert.throws(() => new ChatV2WorkloadPlan({ ...profile, ...override }), RangeError);
 });

@@ -10,6 +10,7 @@ import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import type { Redis } from 'ioredis';
 import { installLoopbackNetworking, type ServerMetrics, type RoomTraffic } from './load-server-metrics';
+import { assertOwnedLoadDatabase, LOAD_RUN_REDIS_KEY } from './load-stand-ownership';
 import type { AccountStore } from '../server/accounts';
 import { createStandControl, type StandControl } from './load-stand-control';
 import { encodeStandServerReport, loopbackEndpoint, parseStandChatV2, parseStandFinished, parseStandPrepared, standErrorDiagnostics, standHost, standReportForControl, STAND_ROLE,
@@ -25,7 +26,7 @@ type Ready = { kind: 'ready'; count: number; connectedClients: number; rooms: Oc
 type Result = { kind: 'result'; count: number; connectedClients: number; rooms: Occupancy[]; durationSeconds: number; observationSeconds: number;
   packetsSent: number; inputPacketsPerSecond: number; receivedBytes: number; maxClientBufferedBytes: number; ackMs: Quantiles; stateIntervalMs: Quantiles;
   unacknowledgedPackets: number; unacknowledgedAtEndOfSending: number; oldestUnacknowledgedMs: number; drainSeconds: number;
-  tracking?: { latencyTimingSamplesDropped: number }; chatV2?: StandResult['chatV2'];
+  tracking?: { latencyTimingSamplesDropped: number }; chatV2?: StandResult['chatV2']; movement?: StandResult['movement'];
   errorCount: number; errors: Record<string, number>; generator: { cpuPercent: number; rssMiB: number; eventLoopP99Ms: number; eventLoopMaxMs: number } };
 type Cli = { bundle: string; output: string; proxyBinary?: string; metricsScript?: string; standManifest?: string; clientOrigin?: string;
   inputMode: 'stress' | 'browser-window'; frameDiagnostics: boolean; resourceDiagnostics: boolean; sdkWebSocket: 'ws' | 'native'; clients: number; gameProcesses: number; seconds: number;
@@ -38,7 +39,7 @@ const exited = (child: ChildProcess) => child.exitCode !== null || child.signalC
 
 function cli(): Cli | undefined {
   if (process.argv.includes('--help')) {
-    console.log('Run with temporary PostgreSQL: node --import tsx scripts/database-test.ts --import tsx scripts/load-websocket-cluster.ts --server-bundle dist-server/index.js --proxy-binary /path/to/caddy --output artifacts/websocket-simulation/load.json --clients 1000 --seconds 70 --60hz');
+    console.log('Run with temporary PostgreSQL: node dist-load/database.mjs dist-load/cluster.mjs --metrics-script dist-load/metrics.mjs --proxy-binary /path/to/caddy --stand-manifest /private/path/stand.json --output artifacts/websocket-simulation/load.json --clients 1000 --seconds 70 --60hz');
     console.log('Optional local test budgets: --min-rate-percent 90 --ack-p95-ms 250 --ack-p99-ms 500 --max-unacknowledged-percent 1');
     console.log('Use a native loopback Caddy proxy with --proxy-binary /path/to/caddy or ROYAL_CADDY_BINARY. The Node proxy fallback is restricted to smoke tests of at most 100 clients.');
     console.log('The SDK generator uses ws by default. Optional diagnostics: --frame-diagnostics and --sdk-websocket native; diagnostics are off for performance comparisons.');
@@ -47,12 +48,13 @@ function cli(): Cli | undefined {
     console.log('Game processes: --game-processes 4 (default), 1 to 24; each admits ten rooms of thirty players. Up to 6000 clients, requiring at least twenty game processes.');
     console.log('Server-only stand: --stand-manifest /private/path/stand.json --client-origin http://127.0.0.1:17100. Run load-websocket-generators.ts separately through SSH loopback port forwards.');
     console.log('For an isolated Chat V2 pilot, use --chat-v2-rate 333, --chat-v2-burst 100 --chat-v2-burst-at-second 2, or both. Requires --stand-manifest and a compatible server bundle.');
+    console.log('For a mixed Chat V2 pilot, --chat-v2-moving-clients sets how many connected clients also send movement input. By default all move.');
     console.log('Input mode: --input-mode stress (default) or browser-window. A throttled input rate never passes the same load budget.');
     return;
   }
   const values: Record<string, string> = {};
   const known = new Set(['--server-bundle', '--output', '--proxy-binary', '--metrics-script', '--sdk-websocket', '--stand-manifest', '--client-origin', '--input-mode', '--clients', '--game-processes', '--seconds', '--min-rate-percent', '--ack-p95-ms', '--ack-p99-ms', '--max-unacknowledged-percent',
-    '--chat-v2-rate', '--chat-v2-burst', '--chat-v2-burst-at-second']);
+    '--chat-v2-rate', '--chat-v2-burst', '--chat-v2-burst-at-second', '--chat-v2-moving-clients']);
   let frameDiagnostics = false, resourceDiagnostics = false;
   for (let index = 2; index < process.argv.length; index++) {
     const key = process.argv[index];
@@ -78,16 +80,18 @@ function cli(): Cli | undefined {
   const seconds = number('--seconds', 70, 1, MAX_MEASUREMENT_SECONDS);
   const hasBurst = values['--chat-v2-burst'] !== undefined, hasBurstAt = values['--chat-v2-burst-at-second'] !== undefined;
   let chatV2: StandManifest['chatV2'];
-  if (values['--chat-v2-rate'] !== undefined || hasBurst || hasBurstAt) {
+  const hasMoving = values['--chat-v2-moving-clients'] !== undefined;
+  if (values['--chat-v2-rate'] !== undefined || hasBurst || hasBurstAt || hasMoving) {
     if (!values['--stand-manifest']) throw new HarnessError('chat-v2-needs-stand');
     if (hasBurst !== hasBurstAt) throw new HarnessError('chat-v2-burst-needs-count-and-time');
     const steadyPerSecond = number('--chat-v2-rate', 0, 0, 333);
     const burst = hasBurst ? { count: number('--chat-v2-burst', 0, 1, clients),
       atSecond: number('--chat-v2-burst-at-second', 0, 0, seconds - 1) } : undefined;
-    try { chatV2 = parseStandChatV2({ clients, seconds, steadyPerSecond, ...(burst ? { burst } : {}) }, clients, seconds); }
+    const movement = hasMoving ? { movingClients: number('--chat-v2-moving-clients', clients, 0, clients) } : {};
+    try { chatV2 = parseStandChatV2({ clients, seconds, steadyPerSecond, ...(burst ? { burst } : {}), ...movement }, clients, seconds); }
     catch { throw new HarnessError('invalid-stand-chat-profile'); }
   }
-  return { bundle: resolve(values['--server-bundle'] ?? 'dist-server/index.js'),
+  return { bundle: resolve(values['--server-bundle'] ?? 'dist-load/lobby-server.mjs'),
     metricsScript: values['--metrics-script'] ? resolve(values['--metrics-script']) : undefined,
     standManifest: values['--stand-manifest'] ? resolve(values['--stand-manifest']) : undefined,
     clientOrigin: values['--client-origin'] ? loopbackEndpoint(values['--client-origin']) : undefined, inputMode,
@@ -227,8 +231,11 @@ async function run() {
   const config = cli(); if (!config) return;
   const profile = standLoadProfile(config.clients, config.gameProcesses), ids = profile.owners;
   if (config.clients > 100 && !config.proxyBinary) throw new HarnessError('native-proxy-required-above-100-clients');
-  if (process.env.NODE_ENV !== 'test' || process.env.PGHOST !== '127.0.0.1' || process.env.PGDATABASE !== 'royal_test'
-    || !process.env.PGPORT || !process.env.PGPASSWORD) throw new HarnessError('use-temporary-postgresql-wrapper');
+  installLoopbackNetworking();
+  const loadRunId = await assertOwnedLoadDatabase().catch(error => {
+    throw new HarnessError(error instanceof Error && error.message === 'use-temporary-postgresql-wrapper'
+      ? 'use-temporary-postgresql-wrapper' : 'load-database-not-owned');
+  });
   await mkdir(dirname(config.output), { recursive: true });
   try { await stat(config.output); throw new HarnessError('output-already-exists'); }
   catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; }
@@ -245,20 +252,20 @@ async function run() {
     try { await stat(config.standManifest); throw new HarnessError('stand-manifest-already-exists'); }
     catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; }
   }
-  installLoopbackNetworking();
   // Account preparation and all child processes must ignore inherited provider credentials.
   for (const key of Object.keys(process.env)) if (/^(?:NOWPAYMENTS_|CASINOAPIPRO_|NILE_|CODEX_SALE_)/.test(key)) delete process.env[key];
   Object.assign(process.env, { AUTH_DB_PATH: 'royal_websocket_load', DATABASE_URL: '', DATABASE_URL_FILE: '', PGPASSWORD_FILE: '',
     NODE_ENV: 'test', PGSSLMODE: 'disable', PGPOOL_MAX: '10', CODEX_SALE_API_KEY: '', NOWPAYMENTS_ENABLED: 'false', CASINOAPIPRO_ENABLED: 'false' });
   const baseEnv: NodeJS.ProcessEnv = {};
-  for (const key of ['PATH', 'HOME', 'TMPDIR', 'LANG', 'LC_ALL', 'TZ', 'NODE_ENV', 'PGHOST', 'PGPORT', 'PGDATABASE', 'PGUSER', 'PGPASSWORD', 'PGSSLMODE']) {
+  for (const key of ['PATH', 'HOME', 'SystemRoot', 'WINDIR', 'TEMP', 'TMP', 'TMPDIR', 'LANG', 'LC_ALL', 'TZ', 'NODE_ENV', 'PGHOST', 'PGPORT', 'PGDATABASE', 'PGUSER', 'PGPASSWORD', 'PGSSLMODE']) {
     if (process.env[key] !== undefined) baseEnv[key] = process.env[key];
   }
-  Object.assign(baseEnv, { AUTH_DB_PATH: 'royal_websocket_load', DATABASE_URL: '', DATABASE_URL_FILE: '', PGPASSWORD_FILE: '',
+  Object.assign(baseEnv, { LOAD_LOBBY_RUN_ID: loadRunId, AUTH_DB_PATH: 'royal_websocket_load', DATABASE_URL: '', DATABASE_URL_FILE: '', PGPASSWORD_FILE: '',
     CODEX_SALE_API_KEY: '', NOWPAYMENTS_ENABLED: 'false', CASINOAPIPRO_ENABLED: 'false',
     LOBBY_MAX_ROOMS: String(STAND_MAX_ROOMS_PER_PROCESS), WS_MAX_CONNECTIONS: String(STAND_MAX_CONNECTIONS_PER_PROCESS), WS_MAX_BUFFERED_BYTES: '262144', LOBBY_MATCHMAKING_RATE: '30', LOBBY_MATCHMAKING_BURST: '60',
     LOAD_FRAME_DIAGNOSTICS: config.frameDiagnostics ? '1' : '0', LOAD_SDK_WEBSOCKET: config.sdkWebSocket });
 
+  const movingClients = config.chatV2?.movingClients ?? config.clients;
   const report: Record<string, any> = { productionTraffic: false, setup: 'Temporary local PostgreSQL and Valkey, configured game processes and independent SDK generators; loopback TCP only, no .env files',
     bundle: { path: bundle, sha256: bundleSha256 }, host: standHost(),
     generatorLocation: config.standManifest ? 'separate-runner' : 'same-host',
@@ -266,7 +273,8 @@ async function run() {
     targetClients: config.clients, gameProcesses: config.gameProcesses, capacity: { maxSeats: profile.maxSeats, maxRooms: profile.maxRooms }, measurementSeconds: config.seconds, proxy: { kind: proxyBinary ? 'native-caddy' : 'node-tcp', tcpNoDelay: true },
     frameDiagnostics: config.frameDiagnostics, resourceDiagnostics: config.resourceDiagnostics, sdkWebSocket: config.sdkWebSocket,
     workload: { packetsPerClientPerSecond: 30, stepsPerPacket: 2, targetInputStepsPerClientPerSecond: 60, browserPredictionSendWindow: config.inputMode === 'browser-window', inputMode: config.inputMode,
-      movement: 'Horizontal input direction alternates every two seconds; collisions can prevent actual displacement', admissionBatchSize: 4, maximumNewJoinsPerSecond: 20, maxJoinRetries: 3, ackDrainLimitMs: 2000 },
+      ...(config.chatV2?.movingClients !== undefined ? { movingClients, targetInputPacketsPerSecond: movingClients * 30 } : {}),
+      movement: 'Horizontal input direction alternates every two seconds; collisions can prevent actual displacement', admissionBatchSize: 4, maximumNewJoinsPerSecond: 20, maxJoinRetries: 3, ackDrainLimitMs: config.chatV2 ? 5000 : 2000 },
     localTestBudgets: { minInputRatePercent: config.minRatePercent, maxWorkerAckP95Ms: config.ackP95Ms, maxWorkerAckP99Ms: config.ackP99Ms, maxUnacknowledgedPercent: config.maxUnacknowledgedPercent },
     metricDefinitions: { ackMs: 'Send to SDK state callback observing inputSeq advancement; cumulative sequence observation, not network RTT or proof every input was applied',
       stateIntervalMs: 'Intervals between SDK state callbacks in a generator process', receivedBytes: 'WebSocket application message payload only, excluding framing, TCP and TLS',
@@ -324,11 +332,16 @@ async function run() {
   try {
     // Guard argument-only invocations before loading the dedicated cluster runtime.
     const [{ Redis }, { RedisDriver }, { temporaryRedis, freeLocalPort }, { READY_PROCESSES_KEY, parseReadyProcess }] = await Promise.all([
-      import('ioredis'), import('@colyseus/redis-driver'), import('./temporary-redis'), import('../server/clusterRegistry'),
+      import('ioredis'), import('@colyseus/redis-driver'), import('./temporary-redis'), import('./load-lobby-owners'),
     ]).catch(error => { throw new HarnessError('cluster-runtime-unavailable', standErrorDiagnostics(error)); });
-    redis = await temporaryRedis(); check();
-    observer = new Redis(redis.url, { enableOfflineQueue: false, maxRetriesPerRequest: 1, connectTimeout: 2000, commandTimeout: 2000 });
-    observer.on('error', () => { if (!cleaning) controller.abort(); });
+    redis = await temporaryRedis(loadRunId); check();
+    observer = new Redis(redis.url, { lazyConnect: true, enableOfflineQueue: false, retryStrategy: null,
+      maxRetriesPerRequest: 1, connectTimeout: 2000, commandTimeout: 2000 });
+    const redisUnavailable = () => { if (!cleaning) controller.abort(); };
+    observer.on('error', redisUnavailable);
+    observer.on('close', redisUnavailable);
+    await observer.connect();
+    if (await observer.get(LOAD_RUN_REDIS_KEY) !== loadRunId) throw new HarnessError('load-redis-not-owned');
     const accountModule = await import('../server/accounts'); accounts = accountModule.accounts;
     const accountFailure = (code: string, error: unknown) => new HarnessError(code,
       standErrorDiagnostics(error, error instanceof accountModule.AuthError ? error.status : undefined));
@@ -525,7 +538,7 @@ async function run() {
         rssMiB: memory.rss / 1024 ** 2, heapMiB: memory.heapUsed / 1024 ** 2, eventLoopP99Ms: parentLoop.percentile(99) / 1e6, eventLoopMaxMs: parentLoop.max / 1e6 });
       parentLastCpu = cpu; parentLastTime = now; parentLastWall = wall; parentLoop.reset();
     }, 1000);
-    console.error(`Measuring ${config.clients} clients for ${config.seconds}s at 60 input steps/s on ${config.gameProcesses} game processes.`);
+    console.error(`Measuring ${config.clients} clients for ${config.seconds}s with ${movingClients} sending 60 input steps/s on ${config.gameProcesses} game processes.`);
     let results: Result[];
     if (standControl) {
       if (standChatStartAtUnixMs === undefined) standControl.start();
@@ -557,12 +570,22 @@ async function run() {
     clearInterval(parentTimer); parentTimer = undefined; parentLoop.disable();
     const measuredClients = observedClients(results, roomOwners, ids);
     const perSecond = results.reduce((sum, result) => sum + result.inputPacketsPerSecond, 0), packets = results.reduce((sum, result) => sum + result.packetsSent, 0);
+    const moversByGenerator = results.map(result => result.movement?.plannedClients ?? result.count);
+    const ratePercentByGenerator = results.map((result, index) => {
+      const target = moversByGenerator[index] * 30;
+      return target > 0 ? result.inputPacketsPerSecond / target * 100 : null;
+    });
     const afterDrain = results.reduce((sum, result) => sum + result.unacknowledgedPackets, 0), atEnd = results.reduce((sum, result) => sum + result.unacknowledgedAtEndOfSending, 0);
     const health = await Promise.all(ids.map(async id => { try { return (await fetch('http://127.0.0.1:' + ports.get(id) + '/healthz', { signal: AbortSignal.timeout(2000) })).ok; } catch { return false; } }));
     report.summary = { connectedClients: results.reduce((sum, result) => sum + result.connectedClients, 0), errorCount: results.reduce((sum, result) => sum + result.errorCount, 0),
-      inputPacketsPerSecond: round(perSecond), inputRateTargetPercent: round(perSecond / (config.clients * 30) * 100),
-      inputRateTargetPercentByGenerator: results.map(result => round(result.inputPacketsPerSecond / Math.max(1, result.count * 30) * 100)),
-      ackP95MsByGenerator: results.map(result => result.ackMs.p95), ackP99MsByGenerator: results.map(result => result.ackMs.p99),
+      inputPacketsPerSecond: round(perSecond), inputRateTargetPercent: movingClients ? round(perSecond / (movingClients * 30) * 100) : null,
+      inputRateTargetPercentByGenerator: ratePercentByGenerator.map(rate => rate === null ? null : round(rate)),
+      ackP95MsByGenerator: results.map((result, index) => moversByGenerator[index] ? result.ackMs.p95 : null),
+      ackP99MsByGenerator: results.map((result, index) => moversByGenerator[index] ? result.ackMs.p99 : null),
+      ...(config.chatV2?.movingClients !== undefined ? { movement: {
+        plannedClients: movingClients, sentClients: results.reduce((sum, result) => sum + (result.movement?.sentClients ?? 0), 0),
+        connectedClients: results.reduce((sum, result) => sum + (result.movement?.connectedClients ?? 0), 0),
+      } } : {}),
       maxAckMs: Math.max(...results.map(result => result.ackMs.max)), unacknowledgedAtEndOfSending: atEnd, unacknowledgedAfterDrain: afterDrain,
       unacknowledgedPercentAfterDrain: round(afterDrain / Math.max(1, packets) * 100), oldestUnacknowledgedMs: round(Math.max(...results.map(result => result.oldestUnacknowledgedMs))),
       rooms: listings.length, activeRoomProcesses: counts.size, roomsByProcess: Object.fromEntries(counts),
@@ -586,8 +609,11 @@ async function run() {
           && traffic.rollingWindowOverflows === 0 && (traffic.inputFrames === 0 || traffic.coverage.inputQueueClients > 0
             && traffic.coverage.inputSeqClients > 0 && traffic.coverage.tickRooms > 0 && traffic.coverage.dispatchRooms > 0)),
       resourceSamplesAvailable: !config.resourceDiagnostics || ((!proxy || proxyMetrics.length > 0) && (process.platform !== 'darwin' || !!hostBefore && !!hostAfter) && resourceErrors.length === 0),
-      generatorSustainedTarget: results.every(result => result.count > 0 && result.inputPacketsPerSecond / (result.count * 30) * 100 >= config.minRatePercent),
-      ackSamplesAvailable: results.every(result => result.ackMs.count > 0),
+      generatorSustainedTarget: ratePercentByGenerator.every((rate, index) => rate === null
+        ? results[index].packetsSent === 0 && results[index].inputPacketsPerSecond === 0 : rate >= config.minRatePercent),
+      ...(config.chatV2?.movingClients !== undefined ? { movementCoverage: results.every(({ movement }) => movement !== undefined
+        && movement.sentClients === movement.plannedClients && movement.connectedClients === movement.plannedClients) } : {}),
+      ackSamplesAvailable: results.every((result, index) => moversByGenerator[index] === 0 || result.ackMs.count > 0),
       ackLatencyWithinLocalBudget: results.every(result => result.ackMs.p95 <= config.ackP95Ms && result.ackMs.p99 <= config.ackP99Ms),
       ackResidualWithinLocalBudget: afterDrain / Math.max(1, packets) * 100 <= config.maxUnacknowledgedPercent,
       ...chatPilot?.checks };
@@ -598,7 +624,7 @@ async function run() {
       : !report.checks.processesHealthy || !report.checks.childProcessesAlive ? 'failed-processes'
       : !report.checks.metricSamplesAvailable || !report.checks.resourceSamplesAvailable || !report.checks.ackTimingTrackingComplete
         || !report.checks.serverDiagnosticCoverageComplete ? 'inconclusive-metrics'
-      : !report.checks.generatorSustainedTarget ? 'inconclusive-generator-rate'
+      : !report.checks.generatorSustainedTarget || report.checks.movementCoverage === false ? 'inconclusive-generator-rate'
       : chatPilot && !chatPilot.checks.chatV2OfferedAtTarget ? 'inconclusive-chat-v2-offer-rate'
       : chatPilot && !chatPilot.checks.chatV2DeliveryComplete ? 'failed-chat-v2-delivery'
       : !report.checks.serverInputDeliveryComplete ? 'failed-input-delivery' : 'failed-local-checks';

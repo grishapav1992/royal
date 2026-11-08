@@ -21,18 +21,19 @@ export type StandManifest = {
 export type StandOccupancy = { id: string; count: number; owner: string };
 export type StandReady = { kind: 'ready'; count: number; connectedClients: number; rooms: StandOccupancy[];
   errors: Record<string, number>; requestedBatch: number; joinedBatch: number; connectionAttempts: number;
-  connectionRetries: number; retryCodes: Record<string, number>; transport?: unknown; chatV2Ready?: number };
+  connectionRetries: number; retryCodes: Record<string, number>; transport?: unknown; chatV2Ready?: number; movingClients?: number };
 export type StandQuantiles = { count: number; p50: number; p95: number; p99: number; max: number;
   sampleCount?: number; sampling?: 'complete' | 'bounded-reservoir'; mean?: number };
 type StandChatV2Summary = ReturnType<ChatV2WorkloadLedger['summary']>;
 type StandChatV2Result = { startAtUnixMs: number; summary: StandChatV2Summary };
 type StandChatV2Expectation = { profile: ChatV2WorkloadProfile; shard: { index: number; count: number }; startAtUnixMs: number };
+type StandMovementResult = { plannedClients: number; sentClients: number; connectedClients: number };
 export type StandResult = { kind: 'result'; count: number; connectedClients: number; rooms: StandOccupancy[];
   durationSeconds: number; observationSeconds: number; packetsSent: number; inputPacketsPerSecond: number;
   receivedBytes: number; maxClientBufferedBytes: number; ackMs: StandQuantiles; stateIntervalMs: StandQuantiles;
   unacknowledgedPackets: number; unacknowledgedAtEndOfSending: number; oldestUnacknowledgedMs: number; drainSeconds: number;
   errorCount: number; errors: Record<string, number>; generator: { cpuPercent: number; rssMiB: number; eventLoopP99Ms: number; eventLoopMaxMs: number };
-  chatV2?: StandChatV2Result; [key: string]: unknown };
+  chatV2?: StandChatV2Result; movement?: StandMovementResult; [key: string]: unknown };
 export type StandPrepared = { runId: string; ready: StandReady[]; gameProcesses?: number; clientHost: StandHost; inputMode: 'stress' | 'browser-window';
   connectionPhase: { durationSeconds: number; batches: number; connectionAttempts: number; connectionRetries: number }; chatV2?: ChatV2WorkloadProfile };
 export type StandFinished = { runId: string; results: StandResult[] };
@@ -109,17 +110,18 @@ export function parseStandChatV2(value: unknown, clients: number, seconds: numbe
   const profile = object(value);
   number(clients, 4, MAX_STAND_CLIENTS, true);
   number(seconds, 1, MAX_MEASUREMENT_SECONDS, true);
-  if (!hasKeys(profile, ['clients', 'seconds', 'steadyPerSecond'], ['burst']) || profile.clients !== clients || profile.seconds !== seconds) {
+  if (!hasKeys(profile, ['clients', 'seconds', 'steadyPerSecond'], ['burst', 'movingClients']) || profile.clients !== clients || profile.seconds !== seconds) {
     throw new StandError('invalid-stand-chat-profile');
   }
   const steadyPerSecond = number(profile.steadyPerSecond, 0, 333, true);
+  const movingClients = profile.movingClients === undefined ? undefined : number(profile.movingClients, 0, clients, true);
   let burst: ChatV2WorkloadProfile['burst'];
   if (profile.burst !== undefined) {
     const raw = object(profile.burst);
     if (!hasKeys(raw, ['count', 'atSecond'])) throw new StandError('invalid-stand-chat-burst');
     burst = { count: number(raw.count, 1, clients, true), atSecond: number(raw.atSecond, 0, seconds - 1, true) };
   }
-  const chat = { clients, seconds, steadyPerSecond, ...(burst ? { burst } : {}) };
+  const chat = { clients, seconds, steadyPerSecond, ...(movingClients === undefined ? {} : { movingClients }), ...(burst ? { burst } : {}) };
   try { new ChatV2WorkloadPlan(chat); } catch { throw new StandError('invalid-stand-chat-profile'); }
   return chat;
 }
@@ -184,7 +186,8 @@ export function parseStandReady(value: unknown, gameProcesses = DEFAULT_GAME_PRO
   const rooms = occupancy(ready.rooms, gameProcesses), count = number(ready.count, 1, Math.min(MAX_STAND_CLIENTS, gameProcesses * STAND_MAX_ROOMS_PER_PROCESS * STAND_ROOM_CAPACITY), true), connectedClients = number(ready.connectedClients, 0, count, true);
   if (rooms.reduce((sum, room) => sum + room.count, 0) !== connectedClients) throw new StandError('invalid-stand-ready-occupancy');
   const chatV2Ready = ready.chatV2Ready === undefined ? {} : { chatV2Ready: number(ready.chatV2Ready, 0, connectedClients, true) };
-  return { kind: 'ready', count, connectedClients, rooms, errors: counts(ready.errors), ...chatV2Ready,
+  const moving = ready.movingClients === undefined ? {} : { movingClients: number(ready.movingClients, 0, connectedClients, true) };
+  return { kind: 'ready', count, connectedClients, rooms, errors: counts(ready.errors), ...chatV2Ready, ...moving,
     requestedBatch: number(ready.requestedBatch, 1, 4, true), joinedBatch: number(ready.joinedBatch, 0, 4, true),
     connectionAttempts: number(ready.connectionAttempts, 0, MAX_CONNECTION_ATTEMPTS, true), connectionRetries: number(ready.connectionRetries, 0, MAX_CONNECTION_ATTEMPTS, true),
     retryCodes: counts(ready.retryCodes), transport: ready.transport };
@@ -200,9 +203,14 @@ export function parseStandPrepared(value: unknown, runId: string, clients: numbe
   if (ready.reduce((sum, item) => sum + item.count, 0) !== clients || ready.some(item => item.count !== item.connectedClients
     || Object.values(item.errors).some(count => count > 0))) throw new StandError('incomplete-stand-admission');
   const profile = chatV2 && parseStandChatV2(chatV2, clients, chatV2.seconds);
-  if (ready.some((item, index) => profile
-    ? item.chatV2Ready !== item.count || item.count !== Math.floor((clients + ready.length - 1 - index) / ready.length)
-    : item.chatV2Ready !== undefined)) throw new StandError('invalid-stand-chat-readiness');
+  for (const [index, item] of ready.entries()) {
+    const plan = profile && new ChatV2WorkloadPlan(profile, { index, count: ready.length });
+    if (plan ? item.chatV2Ready !== item.count || item.count !== plan.clientsInShard : item.chatV2Ready !== undefined) {
+      throw new StandError('invalid-stand-chat-readiness');
+    }
+    const movingClients = profile?.movingClients === undefined ? undefined : plan?.movingClients;
+    if (item.movingClients !== movingClients) throw new StandError('invalid-stand-moving-readiness');
+  }
   return { runId, ready, gameProcesses, clientHost: parseStandHost(prepared.clientHost), inputMode: prepared.inputMode as StandPrepared['inputMode'],
     ...(profile ? { chatV2: profile } : {}),
     connectionPhase: { durationSeconds: number(connection.durationSeconds, 0, 900), batches: number(connection.batches, 1, MAX_STAND_CLIENTS, true),
@@ -247,17 +255,35 @@ function parseStandChatCohort(value: unknown, planned: number): StandChatV2Summa
   return { ...counters, offerLag, acknowledgement: chatQuantiles(row.acknowledgement, acknowledgements), delivery: chatQuantiles(row.delivery, witnessed) };
 }
 
-function parseStandChatResult(value: unknown, expected: StandChatV2Expectation, count: number): StandChatV2Result {
-  const row = object(value), { profile, shard, startAtUnixMs } = expected;
+function parseStandChatResult(value: unknown, plan: ChatV2WorkloadPlan, startAtUnixMs: number, count: number): StandChatV2Result {
+  const row = object(value);
   if (!hasKeys(row, ['startAtUnixMs', 'summary']) || row.startAtUnixMs !== startAtUnixMs
     || !Number.isSafeInteger(startAtUnixMs) || startAtUnixMs <= 0) throw new StandError('stand-chat-result-start-mismatch');
-  const plan = new ChatV2WorkloadPlan(profile, shard);
-  if (count !== Math.floor((profile.clients + shard.count - 1 - shard.index) / shard.count)) throw new StandError('invalid-stand-chat-shard-count');
+  if (count !== plan.clientsInShard) throw new StandError('invalid-stand-chat-shard-count');
   const summary = object(row.summary);
   if (!hasKeys(summary, ['steady', 'burst', 'unmatchedPublications'])) throw new StandError('invalid-stand-chat-summary');
   const steady = parseStandChatCohort(summary.steady, plan.planned.steady), burst = parseStandChatCohort(summary.burst, plan.planned.burst);
   return { startAtUnixMs, summary: { steady, burst,
     unmatchedPublications: number(summary.unmatchedPublications, 0, steady.planned + burst.planned - steady.published - burst.published, true) } };
+}
+
+function parseStandMovement(result: Record<string, unknown>, plan: ChatV2WorkloadPlan | undefined, connected: number,
+  packetsSent: number, inputRate: number, ackMs: StandQuantiles, intervals: StandQuantiles): StandMovementResult | undefined {
+  if (!plan || plan.profile.movingClients === undefined) {
+    if (result.movement !== undefined) throw new StandError('unexpected-stand-moving-result');
+    return;
+  }
+  const movement = object(result.movement), plannedClients = plan.movingClients;
+  if (!hasKeys(movement, ['plannedClients', 'sentClients', 'connectedClients']) || movement.plannedClients !== plannedClients) {
+    throw new StandError('invalid-stand-moving-shard-count');
+  }
+  const sentClients = number(movement.sentClients, 0, Math.min(packetsSent, plannedClients), true);
+  const connectedClients = number(movement.connectedClients, 0, Math.min(connected, plannedClients), true);
+  if ((packetsSent > 0 && sentClients === 0) || inputRate > plannedClients * 60 || ackMs.count > packetsSent
+    || (!ackMs.count && ackMs.max !== 0) || (plannedClients === 0 && (intervals.count !== 0 || intervals.max !== 0))
+    || result.offeredInputPacketsPerSecond !== plannedClients * 30
+    || result.offeredInputStepsPerSecond !== plannedClients * 60) throw new StandError('inconsistent-stand-moving-result');
+  return { plannedClients, sentClients, connectedClients };
 }
 
 export function parseStandResult(value: unknown, gameProcesses = DEFAULT_GAME_PROCESSES, expectedChat?: StandChatV2Expectation): StandResult {
@@ -271,11 +297,14 @@ export function parseStandResult(value: unknown, gameProcesses = DEFAULT_GAME_PR
   if (Object.values(errors).reduce((sum, n) => sum + n, 0) !== errorCount) throw new StandError('inconsistent-stand-errors');
   if (result.tracking !== undefined) number(object(result.tracking).latencyTimingSamplesDropped, 0, MAX_RESULT_SAMPLES, true);
   if (!expectedChat && result.chatV2 !== undefined) throw new StandError('unexpected-stand-chat-result');
-  const chat = expectedChat ? { chatV2: parseStandChatResult(result.chatV2, expectedChat, count) } : {};
+  const plan = expectedChat && new ChatV2WorkloadPlan(expectedChat.profile, expectedChat.shard);
+  const chat = expectedChat && plan ? { chatV2: parseStandChatResult(result.chatV2, plan, expectedChat.startAtUnixMs, count) } : {};
+  const ackMs = quantiles(result.ackMs), stateIntervalMs = quantiles(result.stateIntervalMs);
+  const movement = parseStandMovement(result, plan, connectedClients, packetsSent, inputPacketsPerSecond, ackMs, stateIntervalMs);
   // Preserve bounded diagnostics from our worker while validating fields used for the verdict.
-  return { ...result, ...chat, kind: 'result', count, connectedClients, rooms, durationSeconds, observationSeconds, packetsSent, inputPacketsPerSecond,
+  return { ...result, ...chat, ...(movement ? { movement } : {}), kind: 'result', count, connectedClients, rooms, durationSeconds, observationSeconds, packetsSent, inputPacketsPerSecond,
     receivedBytes: number(result.receivedBytes), maxClientBufferedBytes: number(result.maxClientBufferedBytes),
-    ackMs: quantiles(result.ackMs), stateIntervalMs: quantiles(result.stateIntervalMs), unacknowledgedPackets: number(result.unacknowledgedPackets, 0, packetsSent, true),
+    ackMs, stateIntervalMs, unacknowledgedPackets: number(result.unacknowledgedPackets, 0, packetsSent, true),
     unacknowledgedAtEndOfSending: number(result.unacknowledgedAtEndOfSending, 0, packetsSent, true),
     oldestUnacknowledgedMs: number(result.oldestUnacknowledgedMs, 0, 3600000), drainSeconds: number(result.drainSeconds, 0, 15), errorCount, errors,
     generator: { cpuPercent: number(generator.cpuPercent, 0, 100000), rssMiB: number(generator.rssMiB),
@@ -299,7 +328,8 @@ export function verifyStandStatus(value: unknown, manifest: StandManifest) {
     || (status.gameProcesses ?? DEFAULT_GAME_PROCESSES) !== (manifest.gameProcesses ?? DEFAULT_GAME_PROCESSES)) throw new StandError('stand-attestation-mismatch');
   if (parseStandHost(status.serverHost).hostFingerprint !== manifest.serverHost.hostFingerprint) throw new StandError('stand-host-mismatch');
   const expected = manifest.chatV2, chat = status.chatV2 === undefined ? undefined : parseStandChatV2(status.chatV2, manifest.clients, manifest.seconds);
-  if (Boolean(chat) !== Boolean(expected) || chat?.steadyPerSecond !== expected?.steadyPerSecond || chat?.burst?.count !== expected?.burst?.count
+  if (Boolean(chat) !== Boolean(expected) || chat?.steadyPerSecond !== expected?.steadyPerSecond || chat?.movingClients !== expected?.movingClients
+    || chat?.burst?.count !== expected?.burst?.count
     || chat?.burst?.atSecond !== expected?.burst?.atSecond) throw new StandError('stand-chat-attestation-mismatch');
 }
 
