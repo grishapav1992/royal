@@ -161,6 +161,48 @@ test('fresh paid create and accept read the wallet once and retries read the set
     await c.close();
   }
 });
+for (const scenario of ['cancel', 'creator-resigns', 'opponent-resigns'] as const) test(`direct PvP ${scenario} reads only the required wallets`, async t => {
+  const c = await fixture();
+  try {
+    const opened = await c.store.command(c.aa, {
+      id: randomUUID(), action: 'create', gameId: 'chess', stakeUnits: '50000000', targetId: c.b,
+    }, c.now);
+    assert(opened.active);
+    const challengeId = opened.active.id;
+    await c.store.command(c.bb, { id: randomUUID(), action: 'accept', challengeId }, c.now);
+    if (scenario !== 'cancel') for (const actor of [c.aa, c.bb]) {
+      await c.store.command(actor, { id: randomUUID(), action: 'ready', challengeId }, c.now);
+    }
+    const historical = scenario === 'cancel' ? await seedDemoTower(c.db, c.a, savedTower([])) : null;
+    const actor = scenario === 'opponent-resigns' ? c.bb : c.aa;
+    const command = { id: randomUUID(), action: scenario === 'cancel' ? 'cancel' : 'resign', challengeId };
+    const walletReads = t.mock.method(c.ledger, 'wallet');
+    const settled = await c.store.command(actor, command, c.now + 1);
+    const reads = walletReads.mock.calls.map(call => call.arguments[0]);
+    assert(validVirtualPvpWallet(settled.wallet));
+    assert.equal(settled.wallet.balanceUnits, scenario === 'cancel' ? '200000000' : '150000000');
+    assert.equal(settled.wallet.reservedUnits, '0');
+    assert.equal(settled.active?.reason, command.action);
+    if (historical) {
+      assert.equal(settled.wallet.wallet.entries.filter(entry => entry.operationId === historical.id && entry.kind === 'refund').length, 1);
+      assert.equal((await c.db.prepare('SELECT reason FROM removed_casino_settlements WHERE account_id=? AND session_id=?')
+        .get(actor.accountId, historical.id))?.reason, 'refund');
+    }
+    assert.deepEqual(settled.wallet, await c.ledger.wallet(actor.accountId));
+
+    await c.common.operate(actor.accountId, { id: randomUUID(), kind: 'deposit', amount: 1 });
+    walletReads.mock.resetCalls();
+    const retried = await c.store.command(actor, command, c.now + 2);
+    assert.deepEqual(walletReads.mock.calls.map(call => call.arguments[0]), [actor.accountId]);
+    assert.equal(Object.getOwnPropertyDescriptor(retried, 'replayed')?.value, true);
+    assert(validVirtualPvpWallet(retried.wallet));
+    assert.equal(retried.wallet.balanceUnits, scenario === 'cancel' ? '201000000' : '151000000');
+    assert.deepEqual(retried.wallet, await c.ledger.wallet(actor.accountId));
+    assert.deepEqual(reads, actor.accountId === c.a ? [c.a] : [c.a, c.b]);
+  } finally {
+    await c.close();
+  }
+});
 for (const action of ['cancel', 'resign'] as const) test(`PvP ${action} saves match and receipt in one query and rolls back a failed receipt`, async t => {
   const c = await fixture();
   try {
