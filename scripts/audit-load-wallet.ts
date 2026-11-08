@@ -1,11 +1,14 @@
 import { fork } from 'node:child_process';
 import { once } from 'node:events';
+import type { AddressInfo } from 'node:net';
 import { resolve } from 'node:path';
 import { setTimeout as pause } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import { startAuditAttemptRuntime } from '../server/audit/attempts';
 import { auditHttpAttempts } from '../server/audit/http-attempts';
+import { pvpSeat } from '../src/shared/pvpSeats';
+import { activityHall } from '../src/shared/world';
 
 const file = fileURLToPath(import.meta.url);
 const gameSchema = 'test_audit_load_game';
@@ -14,7 +17,7 @@ const commandTimeoutMs = 5000;
 const datasetUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 type Command = { kind: 'start'; datasetId: string } | { kind: 'stop' };
 type Request = (Command & { id: number }) | { kind: 'shutdown' };
-type Reply = { kind: 'ready'; port: number } | { kind: 'result'; id: number; ok: boolean };
+type Reply = { kind: 'ready'; port: number; wsPort: number } | { kind: 'result'; id: number; ok: boolean };
 
 function fixtureEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
   const { NODE_ENV, PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD, PGSSLMODE } = env;
@@ -24,6 +27,13 @@ function fixtureEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
     throw new Error('Expected credentials for the disposable audit wallet database');
   }
   return { NODE_ENV, PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD, PGSSLMODE, AUTH_DB_PATH: gameSchema, PGPOOL_MAX: '8' };
+}
+
+function loopbackPort(address: AddressInfo | string | null | undefined) {
+  if (!address || typeof address === 'string' || address.address !== '127.0.0.1') {
+    throw new Error('Expected an isolated loopback listener');
+  }
+  return address.port;
 }
 
 function send(reply: Reply) {
@@ -37,12 +47,15 @@ async function serve() {
   }
   let accounts: (typeof import('../server/accounts'))['accounts'] | undefined;
   let server: ReturnType<express.Application['listen']> | undefined;
+  let realtime: { gracefullyShutdown(exit: boolean): Promise<void> } | undefined;
+  let configureLobbyAudit: (typeof import('../server/LobbyRoom'))['configureLobbyAuditAttempts'] | undefined;
   let capture: ReturnType<typeof startAuditAttemptRuntime>;
   let active: Promise<void> = Promise.resolve();
   let closing = false, ready = false, busy = false, lastId = 0;
   const stopCapture = async () => {
     const previous = capture;
     capture = undefined;
+    configureLobbyAudit?.(undefined);
     await previous?.close();
   };
   const stop = () => {
@@ -51,11 +64,15 @@ async function serve() {
     void active.then(async () => {
       try { await stopCapture(); }
       finally {
-        if (server) await new Promise<void>(done => {
-          server!.close(() => done());
-          server!.closeAllConnections();
-        });
-        await accounts?.close();
+        try {
+          await realtime?.gracefullyShutdown(false);
+        } finally {
+          if (server) await new Promise<void>(done => {
+            server!.close(() => done());
+            server!.closeAllConnections();
+          });
+          await accounts?.close();
+        }
       }
     }).catch(() => { process.exitCode = 1; }).finally(() => {
       if (process.connected) process.disconnect?.();
@@ -77,6 +94,7 @@ async function serve() {
       if (request.kind === 'start') {
         capture = startAuditAttemptRuntime({ ...env, ROYAL_AUDIT_SCHEMA: auditSchema, ROYAL_AUDIT_TEST_DATASET_ID: request.datasetId }, gameSchema);
         if (!capture || !await capture.ready) throw new Error('Isolated audit wallet capture did not start');
+        configureLobbyAudit?.(capture.record);
       } else await stopCapture();
       send({ kind: 'result', id: request.id, ok: true });
     })().catch(() => {
@@ -97,11 +115,35 @@ async function serve() {
     installDemoWallet(app);
     server = app.listen(0, '127.0.0.1');
     await once(server, 'listening');
-    const address = server.address();
-    if (!address || typeof address === 'string' || address.address !== '127.0.0.1') throw new Error('Expected isolated loopback HTTP');
+    const port = loopbackPort(server.address());
+    if (closing) return;
+    const [{ defineServer, defineRoom, ServerError }, { WebSocketTransport }, { LobbyRoom, configureLobbyAuditAttempts }] = await Promise.all([
+      import('@colyseus/core'), import('@colyseus/ws-transport'), import('../server/LobbyRoom'),
+    ]);
+    configureLobbyAudit = configureLobbyAuditAttempts;
+    class AuditLoadLobby extends LobbyRoom {
+      maxClients = 2;
+
+      override async onJoin(...[client, options, auth]: Parameters<typeof LobbyRoom.prototype.onJoin>) {
+        const fixture = options as { auditLoadSeat?: unknown; activityProtocol?: unknown } | null;
+        const seat = fixture?.auditLoadSeat;
+        if ((seat !== 0 && seat !== 1) || fixture?.activityProtocol !== 1) {
+          throw new ServerError(400, 'Invalid isolated PvP seat');
+        }
+        await super.onJoin(client, options, auth);
+        const player = this.state.players.get(client.sessionId);
+        if (!player) throw new Error('Missing isolated PvP player');
+        Object.assign(player, { hall: activityHall('chess'), ...pvpSeat('chess', seat) });
+      }
+    }
+    const transport = new WebSocketTransport({ maxPayload: 8192, pingInterval: 5000, pingMaxRetries: 3 });
+    const lobbyServer = defineServer({ transport, rooms: { lobby: defineRoom(AuditLoadLobby) }, greet: false, gracefullyShutdown: false });
+    realtime = lobbyServer;
+    await lobbyServer.listen(0, '127.0.0.1');
+    const wsPort = loopbackPort(transport.server?.address());
     if (!closing) {
       ready = true;
-      send({ kind: 'ready', port: address.port });
+      send({ kind: 'ready', port, wsPort });
     }
   })().catch(() => { process.exitCode = 1; stop(); });
 }
@@ -140,13 +182,13 @@ export async function startAuditLoadWallet(clusterEnv: NodeJS.ProcessEnv, signal
     finished.signal, AbortSignal.timeout(commandTimeoutMs), ...(signal ? [signal] : []),
   ]);
   const startup = new AbortController();
-  let port: number;
+  let port: number, wsPort: number;
   try {
     const ready = await receive(deadline(startup));
-    if (ready?.kind !== 'ready' || !Number.isInteger(ready.port) || ready.port < 1 || ready.port > 65_535) {
+    if (ready?.kind !== 'ready' || ![ready.port, ready.wsPort].every(value => Number.isInteger(value) && value > 0 && value <= 65_535)) {
       throw new Error('Isolated audit wallet failed to start');
     }
-    port = ready.port;
+    ({ port, wsPort } = ready);
   } catch (error) {
     await close().catch(() => {});
     throw error;
@@ -168,6 +210,7 @@ export async function startAuditLoadWallet(clusterEnv: NodeJS.ProcessEnv, signal
   };
   return {
     baseUrl: 'http://127.0.0.1:' + port,
+    wsBaseUrl: 'http://127.0.0.1:' + wsPort,
     startCapture: (datasetId: string) => run({ kind: 'start', datasetId }),
     stopCapture: () => run({ kind: 'stop' }),
     close,

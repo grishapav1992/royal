@@ -27,6 +27,7 @@ import { DemoWalletStore } from '../server/demoWallet';
 import { verifyGameRound } from '../server/games/core';
 import { VirtualPvpLedger } from '../server/pvp/virtual-wallet';
 import { gameBetCents } from '../src/shared/gameStakes';
+import { validVirtualPvpWallet, type PvpRequest } from '../src/shared/pvp';
 import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
 import { auditMixedHistoryPeriod, auditReportMonthMs, matchesMixedHistoryTotals, mixedHistoryAccountCount, seedMixedAuditHistory,
   type MixedHistoryPosting } from './audit-load-mixed-history';
@@ -37,6 +38,7 @@ import { drainAuditLoadStandbyReport, findAuditLoadBlockedStandbyPage, grantAudi
 import { auditLoadMonotonicMs, startAuditLoadReportConsumer } from './audit-load-report-consumer';
 import { seedAuditLoadReplay } from './audit-load-replay-fixture';
 import { startAuditLoadWallet } from './audit-load-wallet';
+import { openAuditLoadPvpPairs } from './audit-load-pvp-client';
 import { temporaryDatabase } from './database-test';
 
 type Budget = { stakeP95Ms?: number; settlementP95Ms?: number; readerStopMs?: number };
@@ -49,7 +51,10 @@ type Sample = { from: number; to: number; ok: boolean };
 type Leg = [account: string, operation: string, entry: string, units: string];
 type Pair = [string, string];
 type LoadPlayers = [left: string, right: string, casino: string];
-type CasinoBalance = { accountId: string; units: string; rowId: string };
+type WireBalance = { accountId: string; units: string; rowId: string };
+type PvpBalance = WireBalance & { matchId: string; postingOperationId: string; entryType: 'bet' | 'refund' | 'win' };
+type PvpPhase = Awaited<ReturnType<typeof openAuditLoadPvpPairs>>;
+type Decision = 'accepted' | 'replayed';
 type PlayerInput = Parameters<typeof exportAuditPlayer>[1];
 type ReportLogin = Parameters<typeof exportAuditPlayer>[0];
 type Standby = Awaited<ReturnType<typeof startAuditLoadStandby>>;
@@ -130,12 +135,12 @@ async function waitFor<T>(probe: () => Promise<T | undefined>, timeoutMs: number
   }
 }
 
-async function workload(game: PostgresDatabase, wallet: VirtualPvpLedger, baseUrl: string, agent: Agent,
+async function workload(game: PostgresDatabase, peers: PvpPhase['pairs'], baseUrl: string, agent: Agent,
   tokens: ReadonlyMap<string, string>, workers: LoadPlayers[], rounds: number, signal?: AbortSignal) {
   const samples: Record<Metric, Sample[]> = { stake: [], settlement: [], casinoRound: [], retry: [] };
-  const expected: Leg[] = [], matchIds: string[] = [];
-  const casinoBalances = new Map<string, CasinoBalance>();
-  let expectedFees = 0, completedRounds = 0;
+  const expected: Leg[] = [], expectedBanks = new Map<string, string | null>();
+  const casinoBalances = new Map<string, WireBalance>(), pvpBalances = new Map<string, PvpBalance>();
+  let completedRounds = 0;
   const timed = async <T>(kind: Metric, work: () => Promise<T>) => {
     signal?.throwIfAborted();
     const from = auditLoadMonotonicMs();
@@ -175,27 +180,67 @@ async function workload(game: PostgresDatabase, wallet: VirtualPvpLedger, baseUr
         units === undefined || snapshot === null) throw new Error('Fixture casino result or wallet snapshot is invalid');
     return { gameRound, balance: { accountId, units: String(units), rowId: snapshot.rowId } };
   };
-  const pvpRound = async (a: string, b: string, round: number) => {
-    const matchId = randomUUID();
-    matchIds.push(matchId);
-    const terms = { matchId, gameId: 'chess', stakeUnits: '1000000' };
-    for (const account of [a, b]) {
-      await timed('stake', () => wallet.pvpHold(account, terms));
-      expected.push([account, 'pvp:' + matchId + ':hold', 'bet', '-100']);
+  const pvpRound = async (peer: PvpPhase['pairs'][number], a: string, b: string, round: number) => {
+    const winnerId = round % 2 ? (round % 4 === 1 ? a : b) : null;
+    const send = async (side: 0 | 1, command: PvpRequest, decision: Decision = 'accepted', afterPayout = false) => {
+      const snapshot = await peer.command(side, command);
+      const wallet = snapshot.wallet;
+      if (!validVirtualPvpWallet(wallet)) throw new Error('Expected virtual PvP wallet');
+      const head = auditDemoLedgerSnapshot(game.schema, wallet.wallet);
+      const units = gameBetCents(wallet.wallet.balance);
+      const matchId = 'challengeId' in command ? command.challengeId : snapshot.active?.id;
+      const entryType = afterPayout ? 'win' : command.action === 'cancel' ? 'refund' : 'bet';
+      const terminal = entryType !== 'bet' || command.action === 'resign';
+      if (!head || units === undefined || !matchId || wallet.reservedUnits !== (terminal ? '0' : '1000000')) {
+        throw new Error('Expected PvP wallet head and exact reserve');
+      }
+      pvpBalances.set(command.id + ':' + decision, { accountId: side === 0 ? a : b,
+        units: String(units), rowId: head.rowId, matchId, postingOperationId: 'pvp:' + matchId + (entryType === 'bet' ? ':hold' : ':final'),
+        entryType });
+      return snapshot;
+    };
+    const create = { id: randomUUID(), action: 'create', gameId: 'chess', stakeUnits: '1000000', targetId: b } as const;
+    const opened = await timed('stake', () => send(0, create));
+    const matchId = opened.active?.id;
+    if (!matchId || opened.active?.status !== 'open' || opened.active.creatorId !== a) {
+      throw new Error('Expected newly opened PvP challenge');
     }
-    await timed('retry', async () => {
-      if (!(await wallet.pvpHold(a, terms)).replayed) throw new Error('Fixture hold replay was not recognized');
-    });
-    const winnerId = round % 2 ? a : null;
-    const settlement = { matchId, winnerId, reason: winnerId ? 'win' : 'draw' };
-    await timed('settlement', () => wallet.pvpFinish(a, settlement));
+    expectedBanks.set(matchId, winnerId);
+    expected.push([a, 'pvp:' + matchId + ':hold', 'bet', '-100']);
+    if (!winnerId) {
+      const replayedOpen = await timed('retry', () => send(0, create, 'replayed'));
+      if (replayedOpen.active?.id !== matchId) throw new Error('Fixture PvP replay changed the challenge');
+    }
+    const accept = { id: randomUUID(), action: 'accept', challengeId: matchId } as const;
+    const accepted = await timed('stake', () => send(1, accept));
+    if (accepted.active?.id !== matchId || accepted.active.status !== 'arriving' || accepted.active.opponentId !== b) {
+      throw new Error('Expected accepted PvP challenge');
+    }
+    expected.push([b, 'pvp:' + matchId + ':hold', 'bet', '-100']);
     if (winnerId) {
+      await send(0, { id: randomUUID(), action: 'ready', challengeId: matchId });
+      const playing = await send(1, { id: randomUUID(), action: 'ready', challengeId: matchId });
+      if (playing.active?.id !== matchId || playing.active.status !== 'playing') throw new Error('Expected playing PvP challenge');
       expected.push([winnerId, 'pvp:' + matchId + ':final', 'win', '190']);
-      expectedFees += 10;
     } else for (const account of [a, b]) expected.push([account, 'pvp:' + matchId + ':final', 'refund', '100']);
+    const settlement = { id: randomUUID(), action: winnerId ? 'resign' : 'cancel', challengeId: matchId } as const;
+    const actor = winnerId === a ? 1 : 0;
+    const assertSettled = (result: Awaited<ReturnType<typeof send>>) => {
+      const match = result.challenges.find(challenge => challenge.id === matchId);
+      if (!match || match.winnerId !== winnerId || match.reason !== settlement.action ||
+          match.status !== (winnerId ? 'finished' : 'cancelled')) throw new Error('Expected exact PvP settlement');
+    };
+    await timed('settlement', async () => assertSettled(await send(actor, settlement)));
     await timed('retry', async () => {
-      if (!(await wallet.pvpFinish(a, settlement)).replayed) throw new Error('Fixture settlement replay was not recognized');
+      assertSettled(await send(actor, settlement, 'replayed'));
     });
+    if (winnerId) {
+      // The winner's old command returns the current wallet head, which now includes the payout.
+      await timed('retry', async () => {
+        const side = winnerId === a ? 0 : 1;
+        assertSettled(await send(side, side === 0 ? create : accept, 'replayed', true));
+      });
+    }
   };
   const casinoRound = async (accountId: string) => {
     const command = playRequest();
@@ -208,10 +253,10 @@ async function workload(game: PostgresDatabase, wallet: VirtualPvpLedger, baseUr
     casinoBalances.set(command.id, outcome.balance);
   };
   const started = performance.now();
-  await Promise.all(workers.map(async ([a, b, casino]) => {
+  await Promise.all(workers.map(async ([a, b, casino], index) => {
     for (let round = 0; round < rounds; round++) {
       // The failed step is counted by timed(). Wait for both lanes before stopping this worker.
-      const steps = await Promise.allSettled([pvpRound(a, b, round), casinoRound(casino)]);
+      const steps = await Promise.allSettled([pvpRound(peers[index], a, b, round), casinoRound(casino)]);
       if (steps.some(step => step.status === 'rejected')) return;
       completedRounds++;
     }
@@ -225,42 +270,62 @@ async function workload(game: PostgresDatabase, wallet: VirtualPvpLedger, baseUr
   const actualKeys = actual.map(row => JSON.stringify([row.account_id, row.operation_id, row.entry_type, row.amount_units])).sort();
   const balances = await game.prepare(`SELECT account_id,(balance*100+fraction_units)::text AS units
     FROM demo_wallets WHERE account_id=ANY(?::text[])`).all(accounts);
-  const bank = await game.prepare(`SELECT count(*)::int AS n,COALESCE(sum(fee_units),0)::text AS fee,
-    count(*) FILTER (WHERE state='open')::int AS open FROM virtual_pvp_banks WHERE match_id=ANY(?::text[])`).get(matchIds);
+  const banks = await game.prepare(`SELECT match_id,state,winner_id,reason,fee_units::text FROM virtual_pvp_banks
+    WHERE match_id=ANY(?::text[])`).all([...expectedBanks.keys()]);
+  const banksVerified = banks.length === completedRounds && banks.every(row => {
+    const winner = expectedBanks.get(row.match_id);
+    return winner !== undefined && row.winner_id === winner && row.state === (winner ? 'settled' : 'refunded') &&
+      row.reason === (winner ? 'resign' : 'cancel') && row.fee_units === (winner ? '10' : '0');
+  });
   const casinoWallets = actual.filter(row => row.entry_type === 'win' && casinoBalances.has(row.operation_id));
   const casinoBalancesVerified = casinoWallets.length === completedRounds && casinoWallets.every(row => {
     const balance = casinoBalances.get(row.operation_id);
     return balance?.accountId === row.account_id && balance.units === row.balance_units && balance.rowId === row.id;
   });
-  const noDoubleMoney = completedRounds === workers.length * rounds && casinoBalancesVerified &&
+  const byPostingId = new Map(actual.map(row => [row.id, row]));
+  const pvpBalancesVerified = [...pvpBalances.values()].every(balance => {
+    const row = byPostingId.get(balance.rowId);
+    return row?.account_id === balance.accountId && row.operation_id === balance.postingOperationId &&
+      row.entry_type === balance.entryType && row.balance_units === balance.units;
+  });
+  const receipts = await game.prepare('SELECT account_id,id,match_id FROM pvp_requests WHERE account_id=ANY(?::text[])').all(accounts);
+  const acceptedPvpCommands = [...pvpBalances.keys()].filter(key => key.endsWith(':accepted')).length;
+  const receiptsVerified = receipts.length === acceptedPvpCommands && receipts.every(row => {
+    const command = pvpBalances.get(row.id + ':accepted');
+    return command?.accountId === row.account_id && command.matchId === row.match_id;
+  });
+  const noDoubleMoney = completedRounds === workers.length * rounds && casinoBalancesVerified && pvpBalancesVerified && receiptsVerified &&
     JSON.stringify(expectedKeys) === JSON.stringify(actualKeys) && balances.length === accounts.length &&
     balances.every(row => initialCents + expected.filter(leg => leg[0] === row.account_id)
       .reduce((sum, leg) => sum + BigInt(leg[3]), 0n) === BigInt(row.units)) &&
-    bank?.n === completedRounds && bank.fee === String(expectedFees) && bank.open === 0;
+    banksVerified;
   const metrics = { stake: stats(samples.stake), settlement: stats(samples.settlement),
     casinoRound: stats(samples.casinoRound), retry: stats(samples.retry) };
   return { samples, metrics, elapsedMs, completedRounds, expectedPostings: expected.length, actualPostings: actual.length,
-    noDoubleMoney, casinoBalances, casinoBalancesVerified };
+    noDoubleMoney, casinoBalances, casinoBalancesVerified, pvpBalances, pvpBalancesVerified };
 }
 
-async function verifyCasinoAttempts(audit: PostgresDatabase, datasetId: string, source: string,
-  expected: ReadonlyMap<string, CasinoBalance>) {
-  const rows = await audit.prepare("SELECT payload FROM audit_evidence WHERE dataset_id=? AND kind='attempt'").all(datasetId);
+async function verifyLoadAttempts(audit: PostgresDatabase, datasetId: string, source: string, transport: 'http' | 'websocket',
+  expected: ReadonlyMap<string, WireBalance>) {
+  const rows = await audit.prepare(`SELECT payload FROM audit_evidence
+    WHERE dataset_id=? AND kind='attempt' AND payload->>'transport'=?`).all(datasetId, transport);
+  const http = transport === 'http';
   const seen = new Set<string>();
   for (const { payload } of rows) {
     if (!isAuditRecord(payload) || payload.type !== 'attempt' || !payload.operationId ||
-        payload.transport !== 'http' || payload.route !== auditCommandRoutes.core || payload.statusCode !== 200 ||
+        payload.transport !== transport || payload.route !== (http ? auditCommandRoutes.core : auditCommandRoutes.pvp) ||
+        payload.statusCode !== (http ? 200 : null) ||
         payload.response !== 'formed' || payload.delivery !== 'handed-off' ||
         (payload.decision !== 'accepted' && payload.decision !== 'replayed')) return false;
-    const balance = expected.get(payload.operationId);
     const key = payload.operationId + ':' + payload.decision;
+    const balance = expected.get(key);
     if (!balance || seen.has(key) || payload.accountId !== balance.accountId || payload.balance.state !== 'value' ||
         payload.balance.units !== balance.units || payload.balance.asset.code !== 'VIRTUAL_USD' ||
         payload.balance.asset.contour !== 'virtual' || payload.balance.asset.scale !== 2 ||
         payload.balance.snapshot?.namespace !== source || payload.balance.snapshot.rowId !== balance.rowId) return false;
     seen.add(key);
   }
-  return seen.size === expected.size * 2;
+  return seen.size === expected.size;
 }
 
 /** Fixture-only bulk history. Capture comes from the normal source trigger, not a seeded reference table. */
@@ -624,6 +689,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
   let standby: Standby | undefined;
   let reportConsumer: Awaited<ReturnType<typeof startAuditLoadReportConsumer>> | undefined;
   let walletHttp: Awaited<ReturnType<typeof startAuditLoadWallet>> | undefined;
+  let pvpPhase: PvpPhase | undefined;
   try {
     directory = await mkdtemp(join(tmpdir(), 'royal-audit-load-'));
     const config = databaseConfig({ ...cluster.env, PGPOOL_MAX: '8' });
@@ -641,7 +707,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       ...(scaleAccounts ?? []), ...(replayPair ?? [])];
     const wallet = new DemoWalletStore(game, () => 0), pvp = new VirtualPvpLedger(game, wallet);
     for (const accountId of accounts) {
-      await game.prepare('INSERT INTO accounts(id,email,name,password,created_at) VALUES (?,?,?,?,?)')
+      await game.prepare('INSERT INTO accounts(id,email,name,password,created_at,skin) VALUES (?,?,?,?,?,0)')
         .run(accountId, accountId + '@example.invalid', 'Audit fixture', '', 0);
       await wallet.operate(accountId, { id: randomUUID(), kind: 'deposit', amount: Number(initialCents / 100n) });
     }
@@ -654,7 +720,18 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       tokens.set(accountId, token);
     }
     const http = walletHttp;
-    const baseline = await workload(game, pvp, http.baseUrl, loopbackAgent, tokens, baselineWorkers, options.roundsPerWorker, signal);
+    const preparePvp = async (workers: LoadPlayers[]) => {
+      if (pvpPhase) throw new Error('Previous PvP phase is still open');
+      pvpPhase = await openAuditLoadPvpPairs(http.wsBaseUrl, workers.map(([a, b]) => [a, b]), tokens, signal);
+      return pvpPhase.pairs;
+    };
+    const closePvp = async () => {
+      await pvpPhase?.close();
+      pvpPhase = undefined;
+    };
+    const baselinePvp = await preparePvp(baselineWorkers);
+    const baseline = await workload(game, baselinePvp, http.baseUrl, loopbackAgent, tokens, baselineWorkers, options.roundsPerWorker, signal);
+    await closePvp();
     const sources = { game: game.schema };
     const { datasetId, startedAtMs, environment } = await new AuditDatasets(audit, sources).startTest();
     const group = 'audit_load_read', reader = 'audit_load_player', summaryReader = 'audit_load_summary';
@@ -706,11 +783,13 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     let controlNodeCpu: NodeJS.CpuUsage | null = null;
     const runControl = async () => {
       if (standby && !standbyBeforeControl) standbyBeforeControl = await verifyStandby(standby, audit!, signal);
+      await http.startCapture(datasetId);
+      const controlPvp = await preparePvp(controlWorkers);
       const beforeControl = await databaseActivity(audit!, game!);
       const standbyControl = standby ? await standbyActivity(standby) : null;
       const beforeControlCpu = process.cpuUsage();
-      await http.startCapture(datasetId);
-      const measured = await workload(game!, pvp, http.baseUrl, loopbackAgent, tokens, controlWorkers, options.roundsPerWorker, signal);
+      const measured = await workload(game!, controlPvp, http.baseUrl, loopbackAgent, tokens, controlWorkers, options.roundsPerWorker, signal);
+      await closePvp();
       await http.stopCapture();
       controlNodeCpu = process.cpuUsage(beforeControlCpu);
       controlActivity = activityDelta(beforeControl, await databaseActivity(audit!, game!));
@@ -718,10 +797,11 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       return measured;
     };
     if (options.pilotGate && !options.controlAfterReports) control = await runControl();
+    await http.startCapture(datasetId);
+    const activePvp = await preparePvp(activeWorkers);
     const beforeReports = options.pilotGate ? await databaseActivity(audit, game) : null;
     const standbyBeforeReports = standby ? await standbyActivity(standby) : null;
     const beforeReportsCpu = process.cpuUsage();
-    await http.startCapture(datasetId);
     const period = { fromMs: widePeriod?.toMs ?? startedAtMs, toMs: Date.now() + 60_000 };
     // The narrow report uses seeded rows in both phase orders. Only the paired wallets vary during the run.
     const narrowFilters = options.pilotGate ? { ...period, accountId: reportAccount } : period;
@@ -788,12 +868,13 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       return { csv, summary, atLimit, wide, replay };
     };
     const [activeResult, reportsResult] = await Promise.allSettled([
-      workload(game, pvp, http.baseUrl, loopbackAgent, tokens, activeWorkers, options.roundsPerWorker, signal),
+      workload(game, activePvp, http.baseUrl, loopbackAgent, tokens, activeWorkers, options.roundsPerWorker, signal),
       remainingReports(),
     ]);
     if (activeResult.status === 'rejected') throw activeResult.reason;
     if (reportsResult.status === 'rejected') throw reportsResult.reason;
     const { value: active } = activeResult, { value: { csv, summary, atLimit, wide, replay } } = reportsResult;
+    await closePvp();
     await http.stopCapture();
     const reportsNodeCpu = process.cpuUsage(beforeReportsCpu);
     const reportActivity = beforeReports ? activityDelta(beforeReports, await databaseActivity(audit, game)) : null;
@@ -891,11 +972,23 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     }
     const retainedHistory = retained && scaleAccounts && widePeriod
       ? await verifyRetainedAuditHistory(audit, game, datasetId, scaleAccounts[0], retained, widePeriod) : null;
-    const expectedAttempts = options.workers * options.roundsPerWorker * 2 * (control ? 2 : 1);
-    const casinoBalances = new Map([...(control?.casinoBalances ?? []), ...active.casinoBalances]);
+    const auditedWorkers = options.workers * (control ? 2 : 1);
+    const expectedCasinoAttempts = auditedWorkers * options.roundsPerWorker * 2;
+    const expectedPvpAttempts = auditedWorkers * (options.roundsPerWorker * 5 + Math.floor(options.roundsPerWorker / 2) * 2);
+    const expectedAttempts = expectedCasinoAttempts + expectedPvpAttempts;
+    const casinoBalances = new Map<string, WireBalance>();
+    for (const phase of control ? [control, active] : [active]) {
+      for (const [id, balance] of phase.casinoBalances) {
+        casinoBalances.set(id + ':accepted', balance);
+        casinoBalances.set(id + ':replayed', balance);
+      }
+    }
+    const pvpBalances = new Map([...(control?.pvpBalances ?? []), ...active.pvpBalances]);
+    const ledgerSource = game.schema + '.demo_ledger';
     const casinoAttemptsVerified = active.casinoBalancesVerified && (control?.casinoBalancesVerified ?? true) &&
-      casinoBalances.size * 2 === expectedAttempts &&
-      await verifyCasinoAttempts(audit, datasetId, game.schema + '.demo_ledger', casinoBalances);
+      casinoBalances.size === expectedCasinoAttempts && await verifyLoadAttempts(audit, datasetId, ledgerSource, 'http', casinoBalances);
+    const pvpAttemptsVerified = active.pvpBalancesVerified && (control?.pvpBalancesVerified ?? true) &&
+      pvpBalances.size === expectedPvpAttempts && await verifyLoadAttempts(audit, datasetId, ledgerSource, 'websocket', pvpBalances);
     const expectedPostings = active.expectedPostings + (control?.expectedPostings ?? 0) +
       options.seedRounds * 2 + (scale?.fixturePostings ?? 0) + (replayFixture?.postings ?? 0) + (retained?.rows ?? 0);
     const csvMatches = csv.result.rowCount === (scaleAccounts ? scalePlayerRows : options.seedRounds * 2) &&
@@ -906,7 +999,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     const observedOverlap = !!firstReportOverlap && firstReportOverlap.overlappingStakeCalls > 0 &&
       firstReportOverlap.overlappingSettlementCalls > 0 && overlappingCasinoCalls > 0;
     const captureOk = stopped && records.postingRefs.rows === expectedPostings &&
-      records.attemptPayloads.rows === expectedAttempts && captureGaps === '0' && casinoAttemptsVerified;
+      records.attemptPayloads.rows === expectedAttempts && captureGaps === '0' && casinoAttemptsVerified && pvpAttemptsVerified;
     const cancellationOk = cancellation.outcome === 'cancelled' && cancellation.noPartialOutput &&
       cancellation.readerStopped && cancellation.journalCancelled && (replayCancellation === null ||
         (replayCancellation.journalCancelled && replayCancellation.noPartialOutput)) && (activeCancellation === null ||
@@ -926,7 +1019,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
         narrowSummaryMatches && (scale?.ok ?? true) && (retainedHistory?.ok ?? true) && (budget?.ok ?? true) &&
         (control?.noDoubleMoney ?? true) && replayVerified && (detail?.verified ?? true) && pilotPassed,
       runtime: { node: process.version, postgres, platform: process.platform, architecture: process.arch },
-      transport: { casino: 'authenticated-http', pvp: 'ledger' },
+      transport: { casino: 'authenticated-http', pvp: 'authenticated-websocket' },
       workload: { workers: options.workers, roundsPerWorker: options.roundsPerWorker, seedRounds: options.seedRounds },
       ...(retainedHistory ? { retainedHistory } : {}),
       ...(scale ? { scale } : {}), ...(budget ? { budget: {
@@ -949,16 +1042,17 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       baseline: { metrics: baseline.metrics, elapsedMs: baseline.elapsedMs, noDoubleMoney: baseline.noDoubleMoney, postings: baseline.actualPostings },
       withAudit: { metrics: active.metrics, elapsedMs: active.elapsedMs, noDoubleMoney: active.noDoubleMoney, postings: active.actualPostings },
       reports: report, cancellation, capture: { stopped, expectedAttempts, expectedPostings, gaps: Number(captureGaps),
-        casinoAttemptsVerified, ...records },
+        expectedCasinoAttempts, expectedPvpAttempts, casinoAttemptsVerified, pvpAttemptsVerified, ...records },
       disk: { before, after, growth: { databaseBytes: after.databaseBytes - before.databaseBytes,
         gameLedgerBytes: after.gameLedgerBytes - before.gameLedgerBytes, auditRelationsBytes: after.auditRelationsBytes - before.auditRelationsBytes } } };
   } finally {
     loopbackAgent.destroy();
     try {
-      await Promise.allSettled([walletHttp?.close(), reportConsumer?.close()]).then(outcomes => {
+      try { await pvpPhase?.close(); }
+      finally { await Promise.allSettled([walletHttp?.close(), reportConsumer?.close()]).then(outcomes => {
         const failed = outcomes.find(outcome => outcome.status === 'rejected');
         if (failed?.status === 'rejected') throw failed.reason;
-      });
+      }); }
     } finally {
       try { await Promise.all([game?.close(), audit?.close()]); }
       finally {

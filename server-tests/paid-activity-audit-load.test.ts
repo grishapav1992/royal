@@ -16,6 +16,21 @@ const run = (args: string[], env = process.env, execArgs: string[] = []) => prom
 const fixtureFiles = async (directory: string) => (await readdir(directory))
   .filter(name => /^royal-(pg|audit-load|audit-standby)-/.test(name));
 
+function assertCapturedWalletAttempts(capture: {
+  stopped: boolean; gaps: number; expectedAttempts: number; expectedCasinoAttempts: number; expectedPvpAttempts: number;
+  casinoAttemptsVerified: boolean; pvpAttemptsVerified: boolean; attemptPayloads: { rows: number };
+}, auditedPhases: 1 | 2) {
+  // Each of the two workers runs three rounds: two cancellations and one resignation.
+  assert.equal(capture.expectedCasinoAttempts, 12 * auditedPhases);
+  assert.equal(capture.expectedPvpAttempts, 34 * auditedPhases);
+  assert.equal(capture.expectedAttempts, 46 * auditedPhases);
+  assert.equal(capture.attemptPayloads.rows, 46 * auditedPhases);
+  assert.equal(capture.casinoAttemptsVerified, true);
+  assert.equal(capture.pvpAttemptsVerified, true);
+  assert.equal(capture.stopped, true);
+  assert.equal(capture.gaps, 0);
+}
+
 test('audit load measures both wallet phases, preserves money and stops cancelled database work', { timeout: 35_000 }, async () => {
   const { stdout } = await run(['--workers', '2', '--rounds', '3', '--seed', '40'], {
     ...process.env,
@@ -28,7 +43,7 @@ test('audit load measures both wallet phases, preserves money and stops cancelle
   assert.equal(report.schemaVersion, 1);
   assert.equal(report.environment, 'isolated-local-postgresql');
   assert.equal(report.capacityConfirmed, false);
-  assert.deepEqual(report.transport, { casino: 'authenticated-http', pvp: 'ledger' });
+  assert.deepEqual(report.transport, { casino: 'authenticated-http', pvp: 'authenticated-websocket' });
   assert.equal(report.ok, true);
   assert.equal(report.scale, undefined);
   assert.equal(report.budget, undefined);
@@ -58,11 +73,7 @@ test('audit load measures both wallet phases, preserves money and stops cancelle
   assert(report.cancellation.databaseReaderStopMs >= report.cancellation.cancellationMs);
   assert.equal(report.cancellation.journalCancelled, true);
   assert.equal(report.cancellation.noPartialOutput, true);
-  assert.equal(report.capture.stopped, true);
-  assert.equal(report.capture.gaps, 0);
-  assert.equal(report.capture.expectedAttempts, 12);
-  assert.equal(report.capture.attemptPayloads.rows, 12);
-  assert.equal(report.capture.casinoAttemptsVerified, true);
+  assertCapturedWalletAttempts(report.capture, 1);
   assert.equal(report.capture.expectedPostings, 114);
   assert.equal(report.capture.postingRefs.rows, 114);
   assert(report.capture.attemptPayloads.averageBytes > 0);
@@ -140,7 +151,7 @@ test('audit load verifies both report limits, exact CSV balances and concurrent 
   assert.deepEqual(report.reports.admission, { serialVerified: true,
     order: ['audit_load_player', 'audit_load_summary', 'audit_load_limit', 'audit_load_wide'] });
   assert.equal(report.capture.postingRefs.rows, 20_115);
-  assert.equal(report.capture.gaps, 0);
+  assertCapturedWalletAttempts(report.capture, 1);
   assert.equal(report.cancellation.noPartialOutput, true);
   assert.equal(report.budget.ok, true);
   assert.equal(report.budget.readerStopTarget, 'primary-active-query');
@@ -160,6 +171,7 @@ test('audit load returns a failed budget result and disposes of its fixture', { 
     const report = JSON.parse(failure.stdout ?? '{}');
     assert.equal(report.ok, false);
     assert.equal(report.withAudit.noDoubleMoney, true);
+    assertCapturedWalletAttempts(report.capture, 1);
     assert.equal(report.budget.ok, false);
     assert.equal(report.budget.readerStopTarget, 'primary-active-query');
     assert.deepEqual(report.budget.checks, [{ metric: 'readerStopMs',
@@ -222,6 +234,7 @@ test('summary-first pilot starts wallets against the observed boundary query and
     order: ['audit_load_limit', 'audit_load_player', 'audit_load_summary', 'audit_load_wide'] });
   assert.equal(report.reports.player.rows, 10_000);
   assert.equal(report.scale.overLimit.outcome, 'scan-limit');
+  assertCapturedWalletAttempts(report.capture, 2);
 });
 
 test('mixed history verifies exact category totals, commissions and the focused CSV in the pilot', { timeout: 35_000 }, async t => {
@@ -260,7 +273,7 @@ test('mixed history verifies exact category totals, commissions and the focused 
   ]);
   assert.equal(report.pilotGate.maxP95GrowthPercent, 10);
   assert.equal(report.pilotGate.noWalletErrorsOrTimeouts, true);
-  assert.equal(report.capture.gaps, 0);
+  assertCapturedWalletAttempts(report.capture, 2);
   assert.equal(report.reports.admission.serialVerified, true);
   assert.equal(report.ok, report.pilotGate.ok);
   assert.equal(exitCode, report.ok ? 0 : 1);
@@ -299,7 +312,7 @@ test('the monthly reports exclude retained history and use the player balance be
   assert.equal(report.scale.ok, true);
   assert.equal(report.capture.expectedPostings, 22_085);
   assert.equal(report.capture.postingRefs.rows, 22_085);
-  assert.equal(report.capture.gaps, 0);
+  assertCapturedWalletAttempts(report.capture, 2);
   assert.equal(report.withAuditWithoutReports.noDoubleMoney, true);
   assert.equal(report.withAudit.noDoubleMoney, true);
   assert.equal(report.pilotGate.noWalletErrorsOrTimeouts, true);
@@ -331,10 +344,7 @@ for (const reverse of [false, true]) test(`pilot gate uses equal fixtures with t
   assert.equal(report.withAuditWithoutReports.postings, 34);
   assert.equal(report.withAudit.postings, 34);
   assert.equal(report.capture.postingRefs.rows, 20_149);
-  assert.equal(report.capture.expectedAttempts, 24);
-  assert.equal(report.capture.attemptPayloads.rows, 24);
-  assert.equal(report.capture.casinoAttemptsVerified, true);
-  assert.equal(report.capture.gaps, 0);
+  assertCapturedWalletAttempts(report.capture, 2);
   const expected = assessAuditPilotGate(report.withAuditWithoutReports.metrics, report.withAudit.metrics);
   const { databaseActivity, firstReport, firstQueryObserved, observedOverlap, overlappingCasinoCalls, phaseOrder,
     ...gate } = report.pilotGate;
@@ -416,7 +426,7 @@ for (const standby of [false, true]) test(
   assert.equal(report.reportProcess.requests, 5);
   assert.deepEqual(report.reports.admission, { serialVerified: true,
     order: ['audit_load_replay', 'audit_load_player', 'audit_load_summary', 'audit_load_limit', 'audit_load_wide'] });
-  assert.equal(report.capture.gaps, 0);
+  assertCapturedWalletAttempts(report.capture, 2);
   assert.equal(!!report.standby, standby);
   if (standby) {
     assert.equal(report.standby.beforeControl.streaming, true);
@@ -447,7 +457,7 @@ test('standby pilot cancels both WAL wait and an active query, budgeting the act
     assert.deepEqual(await fixtureFiles(directory), []);
     assert.equal(report.capacityConfirmed, false);
     assert.equal(report.scale.ok, true);
-    assert.equal(report.capture.gaps, 0);
+    assertCapturedWalletAttempts(report.capture, 2);
     assert.equal(report.pilotGate.noWalletErrorsOrTimeouts, true);
     assert.equal(report.standby.sameHost, true);
     assert.equal(report.standby.beforeControl.streaming, true);
