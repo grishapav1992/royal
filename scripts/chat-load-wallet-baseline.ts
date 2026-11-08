@@ -7,12 +7,14 @@ import { setTimeout as pause } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import pg from 'pg';
+import { ChatGameAuthorization, type ChatGameSession } from '../server/chatGameAuthorization';
 import { databaseConfig, PostgresDatabase } from '../server/database';
 import { verifyGameRound } from '../server/games/core';
 import type { WalletResult } from '../src/shared/demoWallet';
 import type { GamePlayRequest, RouletteRound } from '../src/shared/gameCore';
 import { CLUB_FINE_SOURCE, type ClubFineReceipt, type ClubFineRequest, type ClubFineResponse } from '../src/shared/security';
 import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
+import { authorizationBatchBudget, authorizationSessionCount, measureGameAuthorization } from './chat-load-game-authorization';
 
 const databaseName = 'royal_chat_load_game';
 const freshRate = 25;
@@ -37,7 +39,7 @@ function requireWalletOwner() {
 }
 
 function options(args: string[]) {
-  const allowed = ['--run-id', '--phase', '--duration-seconds', '--output', '--start-at-ms'];
+  const allowed = ['--run-id', '--phase', '--duration-seconds', '--output', '--start-at-ms', '--authorization-rate'];
   const values = new Map<string, string>();
   for (let index = 0; index < args.length; index += 2) {
     const key = args[index], value = args[index + 1];
@@ -49,12 +51,14 @@ function options(args: string[]) {
   const phase = values.get('--phase') ?? 'baseline';
   const durationSeconds = Number(values.get('--duration-seconds') ?? 1800);
   const startAt = values.has('--start-at-ms') ? Number(values.get('--start-at-ms')) : undefined;
+  const authorizationRate = values.has('--authorization-rate') ? Number(values.get('--authorization-rate')) : undefined;
   requireCondition(runId && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(runId)
     && output && ['baseline', 'chat-on'].includes(phase)
     && Number.isSafeInteger(durationSeconds) && durationSeconds >= 1 && durationSeconds <= 1800
+    && (authorizationRate === undefined || Number.isSafeInteger(authorizationRate) && authorizationRate >= 1 && authorizationRate <= 333)
     && (startAt === undefined || Number.isSafeInteger(startAt) && startAt > Date.now() && startAt <= Date.now() + 15 * 60000),
   'invalid_arguments');
-  return { runId, output, phase, durationSeconds, startAt };
+  return { runId, output, phase, durationSeconds, startAt, authorizationRate };
 }
 
 async function authorizeStand(runId: string) {
@@ -102,12 +106,10 @@ function fixture(): Fixture {
   return { accountId: randomUUID(), token: randomBytes(32).toString('hex'), depositId: randomUUID() };
 }
 
-async function seedFixtures(store: AccountStore, fixtures: Fixture[]) {
+async function seedSessions(store: AccountStore, references: readonly ChatGameSession[]) {
   requireWalletOwner();
   const db = store.financeAdmin.db;
-  const rows = JSON.stringify(fixtures.map(({ accountId, token }) => ({
-    id: accountId, session_hash: createHash('sha256').update(token).digest('hex'),
-  })));
+  const rows = JSON.stringify(references.map(({ accountId, sessionHash }) => ({ id: accountId, session_hash: sessionHash })));
   const now = Date.now();
   await db.transaction(async () => {
     requireWalletOwner();
@@ -118,6 +120,12 @@ async function seedFixtures(store: AccountStore, fixtures: Fixture[]) {
     await db.prepare(`INSERT INTO sessions (hash,account_id,expires)
       SELECT session_hash,id,? FROM jsonb_to_recordset(?::jsonb) AS rows(id text, session_hash text)`).run(now + 3600000, rows);
   }, { lockKey: 'chat-load-wallet-fixtures' });
+}
+
+async function seedFixtures(store: AccountStore, fixtures: Fixture[]) {
+  await seedSessions(store, fixtures.map(({ accountId, token }) => ({
+    accountId, sessionHash: createHash('sha256').update(token).digest('hex'),
+  })));
   for (let index = 0; index < fixtures.length; index += 8) {
     requireWalletOwner();
     await Promise.all(fixtures.slice(index, index + 8).map(({ accountId, depositId }) =>
@@ -309,12 +317,14 @@ async function audit(db: PostgresDatabase, fixtures: Fixture[], operations: Oper
 }
 
 type Config = ReturnType<typeof options>;
+type AuthorizationMetrics = Awaited<ReturnType<typeof measureGameAuthorization>>;
 type ServerMessage =
   | { kind: 'ready'; port: number; dropToken: string; rouletteFixtures: Fixture[]; fines: Fine[];
     recoveryRound: Roulette; recoveryFine: Fine; fixtures: Fixture[] }
   | { kind: 'dropped'; payload: unknown }
   | { kind: 'measuring' }
-  | { kind: 'metrics'; peakPoolWaiting: number; peakPoolConnections: number; poolMax: number | undefined };
+  | { kind: 'metrics'; peakPoolWaiting: number; peakPoolConnections: number; poolMax: number | undefined;
+    authorization: AuthorizationMetrics | null };
 
 function receive<K extends ServerMessage['kind']>(child: ChildProcess, signal: AbortSignal, kind: K, timeoutMs = 5000) {
   return new Promise<Extract<ServerMessage, { kind: K }>>((resolve, reject) => {
@@ -379,7 +389,8 @@ function startWalletProcess(args: string[]) {
 
 async function serveWallet(config: Config) {
   requireWalletOwner();
-  const parentClosed = once(process, 'disconnect');
+  const lifetime = new AbortController();
+  const parentClosed = once(process, 'disconnect').then(() => lifetime.abort());
   const emit = (packet: ServerMessage) => { if (process.connected) process.send?.(packet); };
   await authorizeStand(config.runId);
   requireWalletOwner();
@@ -406,6 +417,8 @@ async function serveWallet(config: Config) {
   installClubFineRoutes(app);
   let server: Server | undefined;
   let sampler: ReturnType<typeof setInterval> | undefined;
+  let authorization: ChatGameAuthorization | undefined;
+  let authorizationWork: Promise<AuthorizationMetrics | null> | undefined;
   try {
     await accounts.ready;
     requireWalletOwner();
@@ -422,6 +435,15 @@ async function serveWallet(config: Config) {
     await seedFixtures(accounts, fixtures);
     const fines = await prepareFines(accounts, fineFixtures, config.startAt ?? Date.now());
     const [recoveryFine] = await prepareFines(accounts, [recoveryFineFixture], Date.now());
+    const authSessions = config.authorizationRate === undefined ? [] : Array.from({ length: authorizationSessionCount },
+      (): ChatGameSession => ({ accountId: randomUUID(), sessionHash: randomBytes(32).toString('hex') }));
+    if (authSessions.length) {
+      await seedSessions(accounts, authSessions);
+      if (config.phase === 'chat-on') {
+        authorization = new ChatGameAuthorization(accounts.schema, accounts.ready, authorizationBatchBudget);
+        await authorization.ready;
+      }
+    }
     requireWalletOwner();
     let peakPoolWaiting = 0, peakPoolConnections = 0;
     const { pool } = accounts.financeAdmin.db;
@@ -430,25 +452,33 @@ async function serveWallet(config: Config) {
       peakPoolConnections = Math.max(peakPoolConnections, pool.totalCount);
     };
     process.on('message', command => {
-      if (command === 'measure' && !sampler) {
+      if (command && typeof command === 'object' && 'kind' in command && command.kind === 'measure'
+        && 'startAt' in command && typeof command.startAt === 'number' && !sampler) {
         sample();
         sampler = setInterval(sample, 50);
+        if (authorization && config.authorizationRate !== undefined) {
+          authorizationWork = measureGameAuthorization(authorization, authSessions, command.startAt, config.durationSeconds,
+            config.authorizationRate, lifetime.signal).catch(() => null);
+        }
         emit({ kind: 'measuring' });
       } else if (command === 'metrics') {
-        clearInterval(sampler);
-        sample();
-        emit({ kind: 'metrics', peakPoolWaiting, peakPoolConnections, poolMax: pool.options.max });
+        void (authorizationWork ?? Promise.resolve(null)).then(authorization => {
+          clearInterval(sampler);
+          sample();
+          emit({ kind: 'metrics', peakPoolWaiting, peakPoolConnections, poolMax: pool.options.max, authorization });
+        });
       }
     });
     emit({ kind: 'ready', port: address.port, dropToken, rouletteFixtures, fines, recoveryRound, recoveryFine, fixtures });
     await parentClosed;
   } finally {
     clearInterval(sampler);
+    await authorizationWork;
     await Promise.all([new Promise<void>((resolve, reject) => {
       if (!server) { resolve(); return; }
       server.close(error => error ? reject(new BaselineError('wallet_listener_shutdown_failed')) : resolve());
       server.closeAllConnections();
-    }), accounts.close()]);
+    }), accounts.close(), authorization?.close()]);
   }
 }
 
@@ -461,9 +491,20 @@ async function main() {
     await serveWallet(config);
     return;
   }
-  await authorizeStand(config.runId);
-  const { child, signal, stop } = startWalletProcess(args);
+  const lifetime = new AbortController();
+  const interrupt = () => lifetime.abort(new BaselineError('wallet_run_interrupted'));
+  process.once('disconnect', interrupt);
+  process.once('SIGINT', interrupt);
+  process.once('SIGTERM', interrupt);
+  if (process.send && !process.connected) interrupt();
+  let stopWallet: (() => Promise<void>) | undefined;
   try {
+    lifetime.signal.throwIfAborted();
+    await authorizeStand(config.runId);
+    lifetime.signal.throwIfAborted();
+    const { child, signal: walletSignal, stop } = startWalletProcess(args);
+    stopWallet = stop;
+    const signal = AbortSignal.any([walletSignal, lifetime.signal]);
     const { port, dropToken, rouletteFixtures, fines, recoveryRound, recoveryFine, fixtures } = await receive(child, signal, 'ready', 300000);
     requireCondition(Number.isSafeInteger(port) && port > 0 && port <= 65535, 'invalid_wallet_listener');
     const origin = 'http://127.0.0.1:' + port;
@@ -499,12 +540,13 @@ async function main() {
 
     const attempts = plan(rouletteFixtures, fines);
     const measuring = receive(child, signal, 'measuring');
-    child.send('measure');
+    const startAt = config.startAt ?? Date.now() + 250;
+    child.send({ kind: 'measure', startAt });
     await measuring;
-    const measured = await measure(attempts, config.startAt, send, signal);
+    const measured = await measure(attempts, startAt, send, signal);
     const metricsResult = receive(child, signal, 'metrics');
     child.send('metrics');
-    const { kind: _kind, ...poolMetrics } = await metricsResult;
+    const { kind: _kind, authorization, ...poolMetrics } = await metricsResult;
     await stop();
     const providedProfile = measured.dispatched === measured.planned && measured.completed === measured.planned;
     let audited: Awaited<ReturnType<typeof audit>> | null = null, auditError: string | null = null;
@@ -515,19 +557,26 @@ async function main() {
     } catch (error) {
       auditError = error instanceof BaselineError ? error.message : 'audit_failed';
     } finally { await db.close(); }
-    const passed = providedProfile && audited !== null;
-    const externalChatWorkloadLabel = config.phase === 'chat-on';
+    signal.throwIfAborted();
+    const authorizationEnabled = config.authorizationRate !== undefined && config.phase === 'chat-on';
+    const passed = providedProfile && audited !== null && (!authorizationEnabled || authorization?.passed === true);
+    const externalChatWorkloadLabel = config.phase === 'chat-on' && !authorizationEnabled;
     const report = { format: 1, ...config, output: undefined, startedAt, completedAt: new Date().toISOString(),
       rate, expectedFreshOpsPerSecond: freshRate, expectedReplayOpsPerSecond: replayRate, expectedAuditCoverage: 1,
       openLoop: true, separateWalletProcess: true, walletServerCleanExit: true, externalChatWorkloadLabel,
+      measurementStartAtMs: startAt, measurementEndAtMs: startAt + config.durationSeconds * 1_000,
       chatTrafficGeneratedOrVerified: false,
+      authorizationSessions: config.authorizationRate === undefined ? 0 : authorizationSessionCount, authorization,
       exactStakeCents: stakeCents, maxInFlight, requestTimeoutMs, poolMetrics,
       measured, ledger: audited, auditError, lostReplyRecovery: { roulette: true, fine: true }, passed };
     await writeFile(config.output, JSON.stringify(report, null, 2) + '\n', { flag: 'wx' });
-    console.log(JSON.stringify({ passed, phase: config.phase, externalChatWorkloadLabel, ...measured, ledger: audited, auditError }));
+    console.log(JSON.stringify({ passed, phase: config.phase, externalChatWorkloadLabel, ...measured, ledger: audited, auditError, authorization }));
     if (!passed) process.exitCode = 1;
   } finally {
-    await stop().catch(() => { /* Preserve the primary failure after bounded cleanup. */ });
+    await stopWallet?.().catch(() => { /* Preserve the primary failure after bounded cleanup. */ });
+    process.off('disconnect', interrupt);
+    process.off('SIGINT', interrupt);
+    process.off('SIGTERM', interrupt);
   }
 }
 

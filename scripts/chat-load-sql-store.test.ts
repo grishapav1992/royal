@@ -19,6 +19,8 @@ test('owned synchronous SQL probe persists unique admissions, fences leases and 
       await assert.rejects(ChatSqlProbe.open(stand.chat, randomUUID()), /requires the owned synchronous primary/);
       const store = await ChatSqlProbe.open(stand.chat, stand.runId, 1_000);
       try {
+        const clientAt = (port = stand.chat.port) => new pg.Client({ host: '127.0.0.1', port, database: stand.chat.role,
+          user: stand.chat.role, password: stand.chat.password, ssl: false });
         const roomEpoch = randomUUID();
         const request = (accountId: string, text: string, originSeq: number): SqlProbeRequest => ({
           accountId, location: 'arcade', originSeq,
@@ -37,8 +39,7 @@ test('owned synchronous SQL probe persists unique admissions, fences leases and 
         assert.equal((await store.admit([{ ...first, envelope: { ...first.envelope, text: 'Изменённый текст' } }]))[0].status, 'id_conflict');
         const claims = (await Promise.all([store.claim(4), store.claim(4)])).flat();
         assert.deepEqual(new Set(claims.map(row => row.messageId)), new Set([first.envelope.messageId, third.envelope.messageId]));
-        const locker = new pg.Client({ host: '127.0.0.1', port: stand.chat.port, database: stand.chat.role,
-          user: stand.chat.role, password: stand.chat.password, ssl: false });
+        const locker = clientAt();
         try {
           await locker.connect();
           await locker.query('BEGIN');
@@ -70,15 +71,63 @@ test('owned synchronous SQL probe persists unique admissions, fences leases and 
           store.admit([request(sameBucketPeer, 'Второй новый участник', 7)]),
         ])).flat().map(row => row.status), ['accepted', 'accepted']);
         assert.equal((await store.finish(await store.claim(4))).length, 2);
+        const lateChannel = request('channel-wait', 'Ожидание свободного канала', 8);
+        assert.equal((await store.admit([lateChannel]))[0].status, 'accepted');
+        const channelLocker = clientAt();
+        try {
+          await channelLocker.connect();
+          await channelLocker.query('BEGIN');
+          await channelLocker.query("SELECT next_seq FROM chat_sql_probe.channel WHERE room_epoch=$1 AND location='arcade' FOR UPDATE", [roomEpoch]);
+          const claims = await store.claim(4);
+          const waiting = store.finish(claims);
+          const deadline = performance.now() + 750;
+          let blocked = false;
+          while (!blocked && performance.now() < deadline) {
+            blocked = (await store.sample()).lockWaits === 1;
+            if (!blocked) await delay(20);
+          }
+          await delay(1_100);
+          await channelLocker.query('COMMIT');
+          assert(blocked, 'Finish did not wait for the channel row');
+          assert.deepEqual((await waiting).map(row => row.status), ['stale']);
+        } finally {
+          await channelLocker.end();
+        }
+        assert.deepEqual((await store.finish(await store.claim(4))).map(row => row.status), ['published']);
+        const interrupted = request('interrupted', 'Сообщение при отказе реплики', 9);
+        await stand.withReplicaStopped(async () => {
+          assert.equal((await store.sample()).replicaReady, false);
+          const control = clientAt();
+          try {
+            await control.connect();
+            const outcome = store.admit([interrupted]).catch((error: unknown) => error);
+            const deadline = performance.now() + 4_000;
+            let cancelled = false;
+            while (!cancelled && performance.now() < deadline) {
+              const { rows } = await control.query(`SELECT pg_cancel_backend(pid) AS cancelled FROM pg_stat_activity
+                WHERE application_name='royal/chat-sql-probe' AND wait_event='SyncRep' AND query='COMMIT'`);
+              cancelled = rows.some(row => row.cancelled);
+              if (!cancelled) await delay(25);
+            }
+            const result = await outcome;
+            assert(cancelled && result instanceof Error);
+            assert.match(result.message, /lost synchronous confirmation/);
+          } finally {
+            await control.end();
+          }
+        });
+        assert.equal((await store.admit([interrupted]))[0].status, 'duplicate');
+        assert.deepEqual((await store.finish(await store.claim(4))).map(row => row.status), ['published']);
         const stats = await store.stats();
-        assert.deepEqual({ ...stats, walLsn: undefined }, { accepted: 6, pending: 0, published: 5, rejected: 1, outbox: 1, walLsn: undefined });
-        const inspector = new pg.Client({ host: '127.0.0.1', port: stand.chat.port, database: stand.chat.role,
-          user: stand.chat.role, password: stand.chat.password, ssl: false });
+        const { databaseBytes, walLsn, ...counts } = stats;
+        assert.deepEqual(counts, { accepted: 8, pending: 0, published: 7, rejected: 1, outbox: 1, feed: 7 });
+        assert(databaseBytes > 0 && walLsn);
+        const inspector = clientAt();
         try {
           await inspector.connect();
           const feed = (await inspector.query(`
             SELECT publication_seq::int AS sequence, message_id, body FROM chat_sql_probe.feed ORDER BY publication_seq`)).rows;
-          assert.deepEqual(feed.map(row => row.sequence), [1, 2, 3, 4, 5]);
+          assert.deepEqual(feed.map(row => row.sequence), [1, 2, 3, 4, 5, 6, 7]);
           const publishedFirst = feed.find(row => row.message_id === first.envelope.messageId);
           assert.equal(publishedFirst?.body, 'What the f**k');
           assert.equal((await inspector.query('SELECT count(*)::int AS n FROM chat_sql_probe.request WHERE body IS NOT NULL')).rows[0].n, 0);
@@ -86,8 +135,7 @@ test('owned synchronous SQL probe persists unique admissions, fences leases and 
         } finally {
           await inspector.end();
         }
-        const replica = new pg.Client({ host: '127.0.0.1', port: stand.replicaPort, database: stand.chat.role,
-          user: stand.chat.role, password: stand.chat.password, ssl: false });
+        const replica = clientAt(stand.replicaPort);
         try {
           await replica.connect();
           const deadline = performance.now() + 5_000;
@@ -98,7 +146,7 @@ test('owned synchronous SQL probe persists unique admissions, fences leases and 
                 SELECT (SELECT count(*)::int FROM chat_sql_probe.request WHERE body IS NULL) AS finalized,
                   (SELECT count(*)::int FROM chat_sql_probe.feed) AS published,
                   (SELECT count(*)::int FROM chat_sql_probe.outbox) AS outbox`);
-              replicated = counts.finalized === 6 && counts.published === 5 && counts.outbox === 1;
+              replicated = counts.finalized === 8 && counts.published === 7 && counts.outbox === 1;
             }
             if (!replicated) await delay(50);
           }

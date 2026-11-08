@@ -83,6 +83,7 @@ async function bootstrap(cluster: Cluster, role: string, runId: string, createRe
     await client.query(`ALTER DATABASE ${role} SET royal.chat_load_run_id = '${runId}'`);
     if (replicationPassword) {
       await client.query(`CREATE ROLE ${replicationRole} REPLICATION LOGIN PASSWORD '${replicationPassword}'`);
+      await client.query(`GRANT pg_read_all_stats TO ${role}`);
     }
   });
   return { database, replicationPassword };
@@ -219,17 +220,18 @@ export async function startLocalChatLoadStand(parentDirectory: string, signal?: 
     await start(standby);
 
     const admin = { port: primary.port, role: 'postgres', password: primary.bootstrapPassword };
+    const waitForReplica = (client: pg.Client) => waitFor(async () => {
+      const row = (await client.query(`
+        SELECT state, sync_state FROM pg_stat_replication WHERE application_name = $1`, [standbyName])).rows[0];
+      return row?.state === 'streaming' && row.sync_state === 'sync' ? row : undefined;
+    }, 'Synchronous chat replica did not become ready', signal);
     const replication = await connect(admin, async client => {
       const primaryConfig = (await client.query(`
         SELECT pg_is_in_recovery() AS recovery, current_setting('fsync') AS fsync,
           current_setting('synchronous_commit') AS synchronous_commit, current_setting('max_connections')::int AS max_connections`
       )).rows[0];
       assert.deepEqual(primaryConfig, { recovery: false, fsync: 'on', synchronous_commit: 'on', max_connections: maxConnections });
-      return waitFor(async () => {
-        const row = (await client.query(`
-          SELECT state, sync_state FROM pg_stat_replication WHERE application_name = $1`, [standbyName])).rows[0];
-        return row?.state === 'streaming' && row.sync_state === 'sync' ? row : undefined;
-      }, 'Synchronous chat replica did not become ready', signal);
+      return waitForReplica(client);
     }, 'postgres');
     const commitMs = await connect(chat, async client => {
       await client.query('CREATE TABLE stand_probe (id uuid PRIMARY KEY)');
@@ -247,9 +249,17 @@ export async function startLocalChatLoadStand(parentDirectory: string, signal?: 
         return result.rowCount === 1 ? true : undefined;
       }, 'Committed chat WAL did not reach the standby', signal);
     });
+    const withReplicaStopped = async (action: () => Promise<void>) => {
+      await stop(standby, true);
+      try { await action(); }
+      finally {
+        await start(standby);
+        await connect(admin, waitForReplica, 'postgres');
+      }
+    };
     const disk = await statfs(parent);
     return {
-      runId, game, chat, replicaPort: standby.port, cleanup,
+      runId, game, chat, replicaPort: standby.port, withReplicaStopped, cleanup,
       report: { sameHost: true, separateFailureDomains: false, cpuCount: availableParallelism(), ramBytes: totalmem(),
         freeRamBytes: freemem(), freeDiskBytes: disk.bavail * disk.bsize, maxConnections, replication, commitMs },
     };
@@ -260,7 +270,7 @@ export async function startLocalChatLoadStand(parentDirectory: string, signal?: 
   }
 }
 
-function walletEnvironment(game: Database): NodeJS.ProcessEnv {
+export function walletEnvironment(game: Database): NodeJS.ProcessEnv {
   return {
     ...subprocessEnv(), NODE_ENV: 'test', PGHOST: loopback, PGPORT: String(game.port),
     PGUSER: game.role, PGDATABASE: game.role, PGPASSWORD: game.password, PGSSLMODE: 'disable',

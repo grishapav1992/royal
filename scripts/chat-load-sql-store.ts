@@ -4,6 +4,7 @@ import pg from 'pg';
 import { evaluateChatModeration, CHAT_MODERATION_RULES_VERSION, type ChatModerationState } from '../server/chatModerationRules';
 import { fingerprintChatV2Envelope } from '../server/chatProtocolV2';
 import { chatV2FirstAdmissionAge, isChatLocation, parseChatV2Send, type ChatLocation, type ChatV2Send } from '../src/shared/chat';
+import { seedChatSqlProbe } from './chat-load-sql-prefill';
 
 export type SqlProbeRequest = Readonly<{ accountId: string; envelope: ChatV2Send; location: ChatLocation; originSeq: number }>;
 type ReceiptKey = Readonly<{ accountId: string; messageId: string }>;
@@ -12,6 +13,9 @@ export type SqlProbeCompletion = ReceiptKey & { status: 'published' | 'rejected'
 export type SqlProbeClaim = ReceiptKey & Readonly<{
   sequence: number; fence: number; receivedAt: number; originSeq: number;
   roomEpoch: string; location: ChatLocation; text: string; rulesVersion: number; state: ChatModerationState;
+}>;
+export type SqlProbeTiming = Readonly<{
+  phase: 'admit' | 'claim' | 'idleClaim' | 'finish'; items: number; poolMs: number; workMs: number; commitMs: number;
 }>;
 
 const role = 'royal_chat_load_chat';
@@ -88,9 +92,11 @@ function probeRows(rows: readonly SqlProbeRequest[]) {
  * entrypoint and never accepts an external connection string.
  */
 export class ChatSqlProbe {
-  private constructor(private readonly pool: pg.Pool, private readonly leaseMs: number) {}
+  private constructor(private readonly pool: pg.Pool, private readonly leaseMs: number,
+    private readonly onTiming?: (timing: SqlProbeTiming) => void) {}
 
-  static async open(chat: { port: number; role: string; password: string }, runId: string, leaseMs = 15_000) {
+  static async open(chat: { port: number; role: string; password: string }, runId: string, leaseMs = 15_000,
+    onTiming?: (timing: SqlProbeTiming) => void) {
     assert(chat.role === role && Number.isInteger(chat.port) && chat.port > 0 && chat.port <= 65535
       && /^[a-f0-9]{64}$/.test(chat.password) && /^[a-f0-9-]{36}$/.test(runId)
       && Number.isSafeInteger(leaseMs) && leaseMs >= 10 && leaseMs <= 30_000, 'Invalid owned SQL probe configuration');
@@ -98,7 +104,7 @@ export class ChatSqlProbe {
       ssl: false, max: 16, connectionTimeoutMillis: 3000, statement_timeout: 5000, query_timeout: 8000,
       application_name: 'royal/chat-sql-probe', options: '-c search_path=' + schema + ',pg_catalog' });
     pool.on('error', () => { /* Operations surface connection failures. */ });
-    const store = new ChatSqlProbe(pool, leaseMs);
+    const store = new ChatSqlProbe(pool, leaseMs, onTiming);
     try {
       const evidence = (await pool.query(`
         SELECT current_user AS role, current_database() AS database, current_setting('royal.chat_load_run_id', true) AS marker,
@@ -115,8 +121,10 @@ export class ChatSqlProbe {
     }
   }
 
-  private async transaction<T>(operation: (client: pg.PoolClient) => Promise<T>) {
+  private async transaction<T>(operation: (client: pg.PoolClient) => Promise<T>, phase?: 'admit' | 'claim' | 'finish') {
+    const started = performance.now();
     const client = await this.pool.connect();
+    const acquired = performance.now();
     let commitStarted = false, warnedDuringCommit = false, destroyed = false;
     const notice = (message: { severity?: string }) => {
       if (commitStarted && message.severity === 'WARNING') warnedDuringCommit = true;
@@ -126,10 +134,15 @@ export class ChatSqlProbe {
       await client.query('BEGIN');
       const result = await operation(client);
       commitStarted = true;
+      const committing = performance.now();
       await client.query('COMMIT');
       // PostgreSQL can commit locally while warning that the standby wait was
       // cancelled. A successful command tag alone is not a durable receipt.
       if (warnedDuringCommit) throw new Error('SQL probe commit lost synchronous confirmation');
+      if (phase && this.onTiming && Array.isArray(result)) {
+        this.onTiming({ phase: phase === 'claim' && !result.length ? 'idleClaim' : phase, items: result.length,
+          poolMs: acquired - started, workMs: committing - acquired, commitMs: performance.now() - committing });
+      }
       return result;
     } catch (error) {
       if (!commitStarted) {
@@ -198,17 +211,21 @@ export class ChatSqlProbe {
         fingerprints.set(id, row.fingerprint);
         results.push({ accountId, messageId, status: 'accepted' });
       }
-      if (fresh.length) await client.query(`
-        INSERT INTO request (account_id,message_id,account_seq,fingerprint,room_epoch,location,visit_id,origin_seq,received_at,rules_version,body)
-        SELECT * FROM jsonb_to_recordset($1::jsonb) AS i(account_id text,message_id uuid,account_seq bigint,
-          fingerprint text,room_epoch uuid,location text,visit_id bigint,origin_seq bigint,received_at bigint,rules_version int,body text)`, [json(fresh)]);
       if (changedLanes.size) await client.query(`
-        UPDATE lane l SET next_seq=i.next_seq, received_at=i.received_at, pending=i.pending, lease_until=i.lease_until
-        FROM jsonb_to_recordset($1::jsonb) AS i(account_id text,next_seq bigint,received_at bigint,pending int,lease_until bigint)
-        WHERE i.account_id=l.account_id`, [json([...changedLanes.values()])]);
-      await this.saveQuotas(client, changedBuckets);
+        WITH admitted AS (
+          INSERT INTO request (account_id,message_id,account_seq,fingerprint,room_epoch,location,visit_id,origin_seq,received_at,rules_version,body)
+          SELECT * FROM jsonb_to_recordset($1::jsonb) AS i(account_id text,message_id uuid,account_seq bigint,
+            fingerprint text,room_epoch uuid,location text,visit_id bigint,origin_seq bigint,received_at bigint,rules_version int,body text)
+        ), advanced AS (
+          UPDATE lane l SET next_seq=i.next_seq,received_at=i.received_at,pending=i.pending,lease_until=i.lease_until
+          FROM jsonb_to_recordset($2::jsonb) AS i(account_id text,next_seq bigint,received_at bigint,pending int,lease_until bigint)
+          WHERE i.account_id=l.account_id
+        )
+        UPDATE quota q SET pending=i.pending FROM jsonb_to_recordset($3::jsonb) AS i(bucket int,pending int)
+        WHERE q.bucket=i.bucket`, [json(fresh), json([...changedLanes.values()]),
+        json([...changedBuckets].map(([bucket, pending]) => ({ bucket, pending })))]);
       return results;
-    });
+    }, 'admit');
   }
 
   async claim(limit: number): Promise<SqlProbeClaim[]> {
@@ -234,7 +251,7 @@ export class ChatSqlProbe {
         sequence: integer(row.head_seq), fence: integer(row.fence), receivedAt: integer(row.received_at),
         originSeq: integer(row.origin_seq), roomEpoch: row.room_epoch, location: row.location, rulesVersion: row.rules_version,
         text: row.body, state: row.conduct }));
-    });
+    }, 'claim');
   }
 
   async finish(claims: readonly SqlProbeClaim[]): Promise<SqlProbeCompletion[]> {
@@ -253,24 +270,17 @@ export class ChatSqlProbe {
         const row = current.get(claim.accountId);
         return row && row.pending > 0 && integer(row.head_seq) === claim.sequence && integer(row.fence) === claim.fence;
       });
-      const buckets = await this.lockQuotas(client, fenced.map(({ claim }) => current.get(claim.accountId)!));
+      await this.lockQuotas(client, fenced.map(({ claim }) => current.get(claim.accountId)!));
       const now = integer((await client.query(`SELECT ${timeMs} AS now`)).rows[0].now);
       const active = fenced.filter(({ claim }) => integer(current.get(claim.accountId)!.lease_until) > now);
-      if (active.length) {
-        const changed = new Map<number, number>();
-        for (const { claim } of active) {
-          const bucket = current.get(claim.accountId)!.bucket;
-          changed.set(bucket, (changed.get(bucket) ?? buckets.get(bucket)!) - 1);
-        }
-        await this.writeOutcomes(client, active);
-        await this.saveQuotas(client, changed);
-      }
-      const outcomes = new Map(active.map(({ claim, decision }) => [claim.accountId, decision.outcome]));
+      const written = active.length ? await this.writeOutcomes(client, active) : new Set<string>();
+      const outcomes = new Map(active.filter(({ claim }) => written.has(claim.accountId))
+        .map(({ claim, decision }) => [claim.accountId, decision.outcome]));
       return claims.map(({ accountId, messageId }) => {
         const outcome = outcomes.get(accountId);
         return { accountId, messageId, status: outcome === undefined ? 'stale' : outcome === 'publish' ? 'published' : 'rejected' };
       });
-    });
+    }, 'finish');
   }
 
   private async writeOutcomes(client: pg.PoolClient,
@@ -290,32 +300,45 @@ export class ChatSqlProbe {
       await client.query(`SELECT c.room_epoch FROM channel c JOIN (
         SELECT DISTINCT room_epoch,location FROM ${feedInput}
       ) s USING (room_epoch,location) ORDER BY c.room_epoch,c.location FOR UPDATE OF c`, [payload]);
-      await client.query(`
-        WITH items AS (SELECT * FROM ${feedInput}),
-        sizes AS (SELECT room_epoch,location,count(*) AS n FROM items GROUP BY room_epoch,location),
-        allocated AS (
-          UPDATE channel c SET next_seq=c.next_seq+s.n FROM sizes s
-          WHERE c.room_epoch=s.room_epoch AND c.location=s.location RETURNING c.room_epoch,c.location,c.next_seq-s.n AS start
-        )
+    }
+    const input = `jsonb_to_recordset($1::jsonb) AS i(account_id text,message_id uuid,account_seq bigint,
+      room_epoch uuid,location text,outcome text,conduct jsonb,origin_seq bigint,body text,publication_id uuid)`;
+    const { rows: [written] } = await client.query(`
+      WITH checked_at AS MATERIALIZED (SELECT ${timeMs} AS now), items AS MATERIALIZED (
+        SELECT i.*,l.bucket FROM ${input} JOIN lane l USING (account_id) CROSS JOIN checked_at
+        WHERE l.lease_until > checked_at.now
+      ), sizes AS (
+        SELECT room_epoch,location,count(*) AS n FROM items WHERE outcome='publish' GROUP BY room_epoch,location
+      ), allocated AS (
+        UPDATE channel c SET next_seq=c.next_seq+s.n FROM sizes s WHERE c.room_epoch=s.room_epoch AND c.location=s.location
+        RETURNING c.room_epoch,c.location,c.next_seq-s.n AS start
+      ), completed AS (
+        UPDATE request r SET outcome=i.outcome,body=NULL,finalized_at=${timeMs} FROM items i
+        WHERE r.account_id=i.account_id AND r.message_id=i.message_id AND r.account_seq=i.account_seq AND r.outcome IS NULL
+        RETURNING r.account_id,r.message_id,r.room_epoch,r.visit_id,r.outcome
+      ), published AS (
         INSERT INTO feed (publication_id,room_epoch,location,publication_seq,account_id,message_id,origin_seq,body)
         SELECT i.publication_id,i.room_epoch,i.location,a.start+row_number() OVER (
           PARTITION BY i.room_epoch,i.location ORDER BY i.account_id,i.message_id)-1,i.account_id,i.message_id,i.origin_seq,i.body
-        FROM items i JOIN allocated a USING (room_epoch,location)`, [payload]);
-    }
-    const input = `jsonb_to_recordset($1::jsonb) AS i(account_id text,message_id uuid,account_seq bigint,
-      room_epoch uuid,outcome text,conduct jsonb)`;
-    const finished = await client.query(`
-      UPDATE request r SET outcome=i.outcome,body=NULL,finalized_at=${timeMs} FROM ${input}
-      WHERE r.account_id=i.account_id AND r.message_id=i.message_id AND r.account_seq=i.account_seq AND r.outcome IS NULL`, [json(rows)]);
-    assert.equal(finished.rowCount, rows.length, 'SQL probe completion lost its original request');
-    await client.query(`
-      INSERT INTO outbox (account_id,message_id,room_epoch,visit_id,reason)
-      SELECT r.account_id,r.message_id,r.room_epoch,r.visit_id,i.outcome FROM ${input}
-      JOIN request r USING (account_id,message_id) WHERE i.outcome IN ('spam','profanity')`, [json(rows)]);
-    await client.query(`
-      UPDATE lane l SET head_seq=l.head_seq+1,pending=l.pending-1,conduct=i.conduct,
-        lease_until=COALESCE((SELECT received_at FROM request WHERE account_id=l.account_id AND account_seq=l.head_seq+1),0),
-        sanction_pending=i.outcome IN ('spam','profanity') FROM ${input} WHERE l.account_id=i.account_id`, [json(rows)]);
+        FROM items i JOIN allocated a USING (room_epoch,location) WHERE i.outcome='publish' RETURNING 1
+      ), sanctions AS (
+        INSERT INTO outbox (account_id,message_id,room_epoch,visit_id,reason)
+        SELECT account_id,message_id,room_epoch,visit_id,outcome FROM completed WHERE outcome IN ('spam','profanity')
+      ), advanced AS (
+        UPDATE lane l SET head_seq=l.head_seq+1,pending=l.pending-1,conduct=i.conduct,
+          lease_until=COALESCE((SELECT received_at FROM request WHERE account_id=l.account_id AND account_seq=l.head_seq+1),0),
+          sanction_pending=i.outcome IN ('spam','profanity') FROM items i WHERE l.account_id=i.account_id
+      ), budgets AS (
+        UPDATE quota q SET pending=q.pending-i.n FROM (
+          SELECT bucket,count(*)::int AS n FROM items GROUP BY bucket
+        ) i WHERE q.bucket=i.bucket
+      )
+      SELECT ARRAY(SELECT account_id FROM completed) AS completed,(SELECT count(*) FROM items) AS eligible,
+        (SELECT count(*) FROM published) AS published,(SELECT count(*) FROM items WHERE outcome='publish') AS expected_publications`,
+    [json(rows)]);
+    assert.equal(written.completed.length, integer(written.eligible), 'SQL probe completion lost its original request');
+    assert.equal(integer(written.published), integer(written.expected_publications), 'SQL probe completion lost a publication');
+    return new Set<string>(written.completed);
   }
 
   private async lockQuotas(client: pg.PoolClient, lanes: readonly LaneRow[]) {
@@ -325,28 +348,48 @@ export class ChatSqlProbe {
     return new Map(result.rows.map(row => [row.bucket, row.pending]));
   }
 
-  private async saveQuotas(client: pg.PoolClient, quotas: Map<number, number>) {
-    if (quotas.size) await client.query(`
-      UPDATE quota q SET pending=i.pending FROM jsonb_to_recordset($1::jsonb) AS i(bucket int,pending int)
-      WHERE q.bucket=i.bucket`, [json([...quotas].map(([bucket, pending]) => ({ bucket, pending })))]);
+  prefill(accounts: readonly string[], roomEpochs: readonly string[], count: number) {
+    return this.transaction(async client => {
+      const result = await seedChatSqlProbe(client, accounts, roomEpochs, count);
+      await client.query('ANALYZE lane, request, channel, feed');
+      return result;
+    });
   }
 
-  async stats(): Promise<{ accepted: number; pending: number; published: number; rejected: number; outbox: number; walLsn: string }> {
+  async sample() {
+    const pool = { total: this.pool.totalCount, idle: this.pool.idleCount, waiting: this.pool.waitingCount };
+    const { rows: [row] } = await this.pool.query(`
+      WITH clients AS (
+        SELECT wait_event_type,wait_event FROM pg_stat_activity WHERE datname=current_database()
+          AND application_name='royal/chat-sql-probe' AND pid<>pg_backend_pid() AND state='active'
+      )
+      SELECT (SELECT count(*) FROM clients) AS active,
+        (SELECT count(*) FROM clients WHERE wait_event_type='Lock') AS lock_waits,
+        (SELECT count(*) FROM clients WHERE wait_event='SyncRep') AS sync_waits,
+        (SELECT sum(pending) FROM quota) AS pending,
+        greatest(0, pg_wal_lsn_diff(pg_current_wal_insert_lsn(), flush_lsn)) AS flush_lag,
+        greatest(0, pg_wal_lsn_diff(pg_current_wal_insert_lsn(), replay_lsn)) AS replay_lag,
+        coalesce(state='streaming' AND sync_state='sync' AND flush_lsn IS NOT NULL AND replay_lsn IS NOT NULL,false) AS replica_ready
+      FROM (SELECT 1) AS sample LEFT JOIN pg_stat_replication ON application_name='royal_chat_load_standby'`);
+    return { pool, active: integer(row.active), lockWaits: integer(row.lock_waits), syncWaits: integer(row.sync_waits),
+      pending: integer(row.pending), replicaReady: row.replica_ready === true,
+      flushLagBytes: row.replica_ready ? integer(row.flush_lag) : null,
+      replayLagBytes: row.replica_ready ? integer(row.replay_lag) : null };
+  }
+
+  async stats() {
     const result = (await this.pool.query(`
       SELECT count(*) AS accepted, count(*) FILTER (WHERE outcome IS NULL) AS pending,
         count(*) FILTER (WHERE outcome='publish') AS published,
         count(*) FILTER (WHERE outcome IS NOT NULL AND outcome <> 'publish') AS rejected,
         (SELECT count(*) FROM outbox) AS outbox, (SELECT sum(pending) FROM quota) AS quota,
-        (SELECT count(*) FROM feed) AS feed, pg_current_wal_insert_lsn()::text AS wal_lsn FROM request`)).rows[0];
+        (SELECT count(*) FROM feed) AS feed, pg_current_wal_insert_lsn()::text AS wal_lsn,
+        pg_database_size(current_database()) AS database_bytes FROM request`)).rows[0];
     assert.equal(integer(result.pending), integer(result.quota), 'SQL probe quota mismatch');
-    assert.equal(integer(result.published), integer(result.feed), 'SQL probe feed mismatch');
     return { accepted: integer(result.accepted), pending: integer(result.pending), published: integer(result.published),
-      rejected: integer(result.rejected), outbox: integer(result.outbox), walLsn: result.wal_lsn };
+      rejected: integer(result.rejected), outbox: integer(result.outbox), feed: integer(result.feed),
+      databaseBytes: integer(result.database_bytes), walLsn: result.wal_lsn as string };
   }
 
   close() { return this.pool.end(); }
-}
-
-export function openChatSqlProbe(chat: { port: number; role: string; password: string }, runId: string) {
-  return ChatSqlProbe.open(chat, runId);
 }
