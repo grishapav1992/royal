@@ -49,6 +49,7 @@ async function serve() {
   let server: ReturnType<express.Application['listen']> | undefined;
   let realtime: { gracefullyShutdown(exit: boolean): Promise<void> } | undefined;
   let configureLobbyAudit: (typeof import('../server/LobbyRoom'))['configureLobbyAuditAttempts'] | undefined;
+  let configureChessReplay: (typeof import('../server/LobbyRoom'))['configureLobbyChessReplay'] | undefined;
   let capture: ReturnType<typeof startAuditAttemptRuntime>;
   let active: Promise<void> = Promise.resolve();
   let closing = false, ready = false, busy = false, lastId = 0;
@@ -56,6 +57,7 @@ async function serve() {
     const previous = capture;
     capture = undefined;
     configureLobbyAudit?.(undefined);
+    configureChessReplay?.(undefined);
     await previous?.close();
   };
   const stop = () => {
@@ -92,9 +94,15 @@ async function serve() {
     busy = true;
     active = (async () => {
       if (request.kind === 'start') {
-        capture = startAuditAttemptRuntime({ ...env, ROYAL_AUDIT_SCHEMA: auditSchema, ROYAL_AUDIT_TEST_DATASET_ID: request.datasetId }, gameSchema);
-        if (!capture || !await capture.ready) throw new Error('Isolated audit wallet capture did not start');
+        capture = startAuditAttemptRuntime({
+          ...env,
+          ROYAL_AUDIT_SCHEMA: auditSchema,
+          ROYAL_AUDIT_TEST_DATASET_ID: request.datasetId,
+          ROYAL_AUDIT_CHESS_REPLAY: '1',
+        }, gameSchema);
+        if (!capture?.recordChess || !await capture.ready) throw new Error('Isolated audit wallet capture did not start');
         configureLobbyAudit?.(capture.record);
+        configureChessReplay?.(capture.recordChess);
       } else await stopCapture();
       send({ kind: 'result', id: request.id, ok: true });
     })().catch(() => {
@@ -117,10 +125,13 @@ async function serve() {
     await once(server, 'listening');
     const port = loopbackPort(server.address());
     if (closing) return;
-    const [{ defineServer, defineRoom, ServerError }, { WebSocketTransport }, { LobbyRoom, configureLobbyAuditAttempts }] = await Promise.all([
+    const [{ defineServer, defineRoom, ServerError }, { WebSocketTransport }, {
+      LobbyRoom, configureLobbyAuditAttempts, configureLobbyChessReplay,
+    }] = await Promise.all([
       import('@colyseus/core'), import('@colyseus/ws-transport'), import('../server/LobbyRoom'),
     ]);
     configureLobbyAudit = configureLobbyAuditAttempts;
+    configureChessReplay = configureLobbyChessReplay;
     class AuditLoadLobby extends LobbyRoom {
       maxClients = 2;
 

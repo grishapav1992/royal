@@ -19,6 +19,7 @@ const fixtureFiles = async (directory: string) => (await readdir(directory))
 function assertCapturedWalletAttempts(capture: {
   stopped: boolean; gaps: number; expectedAttempts: number; expectedCasinoAttempts: number; expectedPvpAttempts: number;
   casinoAttemptsVerified: boolean; pvpAttemptsVerified: boolean; attemptPayloads: { rows: number };
+  pvpReplays: { expected: number; recorded: number; verified: boolean };
 }, auditedPhases: 1 | 2) {
   // Each of the two workers runs three rounds: two cancellations and one resignation.
   assert.equal(capture.expectedCasinoAttempts, 12 * auditedPhases);
@@ -27,6 +28,7 @@ function assertCapturedWalletAttempts(capture: {
   assert.equal(capture.attemptPayloads.rows, 46 * auditedPhases);
   assert.equal(capture.casinoAttemptsVerified, true);
   assert.equal(capture.pvpAttemptsVerified, true);
+  assert.deepEqual(capture.pvpReplays, { expected: 2 * auditedPhases, recorded: 2 * auditedPhases, verified: true });
   assert.equal(capture.stopped, true);
   assert.equal(capture.gaps, 0);
 }

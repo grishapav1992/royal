@@ -13,6 +13,8 @@ import { isAuditRecord } from '../server/audit/contract';
 import { AuditDatasets } from '../server/audit/datasets';
 import { auditCommandRoutes } from '../server/audit/intents';
 import { verifyReplayPackage } from '../server/audit/replay-package';
+import { chessTurnReplayDefinition, verifyChessTurnReplay } from '../server/audit/replay-pvp-turn';
+import { AuditReplayStore } from '../server/audit/replay-store';
 import { installAuditReportAccess } from '../server/audit/report-access';
 import { installAuditDetailReport } from '../server/audit/report-detail-source';
 import { readAuditDetail } from '../server/audit/report-investigation';
@@ -53,6 +55,7 @@ type Pair = [string, string];
 type LoadPlayers = [left: string, right: string, casino: string];
 type WireBalance = { accountId: string; units: string; rowId: string };
 type PvpBalance = WireBalance & { matchId: string; postingOperationId: string; entryType: 'bet' | 'refund' | 'win' };
+type PvpReplayProof = { winnerSeat: 1 | 2; holds: string[]; payout: string | undefined };
 type PvpPhase = Awaited<ReturnType<typeof openAuditLoadPvpPairs>>;
 type Decision = 'accepted' | 'replayed';
 type PlayerInput = Parameters<typeof exportAuditPlayer>[1];
@@ -124,13 +127,14 @@ function playRequest() {
     input: { rows: 12, risk: 'easy' }, rulesVersion: 1, stakePolicyVersion: 1 };
 }
 
-async function waitFor<T>(probe: () => Promise<T | undefined>, timeoutMs: number, signal?: AbortSignal): Promise<T> {
+async function waitFor<T>(observation: string, probe: () => Promise<T | undefined>, timeoutMs: number,
+  signal?: AbortSignal): Promise<T> {
   const deadline = performance.now() + timeoutMs;
   for (;;) {
     signal?.throwIfAborted();
     const found = await probe();
     if (found !== undefined) return found;
-    if (performance.now() >= deadline) throw new Error('Isolated audit load observation deadline');
+    if (performance.now() >= deadline) throw new Error('Timed out observing ' + observation + ' in the isolated audit load');
     await pause(2, undefined, { signal });
   }
 }
@@ -138,7 +142,8 @@ async function waitFor<T>(probe: () => Promise<T | undefined>, timeoutMs: number
 async function workload(game: PostgresDatabase, peers: PvpPhase['pairs'], baseUrl: string, agent: Agent,
   tokens: ReadonlyMap<string, string>, workers: LoadPlayers[], rounds: number, signal?: AbortSignal) {
   const samples: Record<Metric, Sample[]> = { stake: [], settlement: [], casinoRound: [], retry: [] };
-  const expected: Leg[] = [], expectedBanks = new Map<string, string | null>();
+  const expected: Leg[] = [];
+  const expectedBanks = new Map<string, { accounts: [string, string]; winnerId: string | null }>();
   const casinoBalances = new Map<string, WireBalance>(), pvpBalances = new Map<string, PvpBalance>();
   let completedRounds = 0;
   const timed = async <T>(kind: Metric, work: () => Promise<T>) => {
@@ -205,7 +210,7 @@ async function workload(game: PostgresDatabase, peers: PvpPhase['pairs'], baseUr
     if (!matchId || opened.active?.status !== 'open' || opened.active.creatorId !== a) {
       throw new Error('Expected newly opened PvP challenge');
     }
-    expectedBanks.set(matchId, winnerId);
+    expectedBanks.set(matchId, { accounts: [a, b], winnerId });
     expected.push([a, 'pvp:' + matchId + ':hold', 'bet', '-100']);
     if (!winnerId) {
       const replayedOpen = await timed('retry', () => send(0, create, 'replayed'));
@@ -273,14 +278,23 @@ async function workload(game: PostgresDatabase, peers: PvpPhase['pairs'], baseUr
   const banks = await game.prepare(`SELECT match_id,state,winner_id,reason,fee_units::text FROM virtual_pvp_banks
     WHERE match_id=ANY(?::text[])`).all([...expectedBanks.keys()]);
   const banksVerified = banks.length === completedRounds && banks.every(row => {
-    const winner = expectedBanks.get(row.match_id);
+    const winner = expectedBanks.get(row.match_id)?.winnerId;
     return winner !== undefined && row.winner_id === winner && row.state === (winner ? 'settled' : 'refunded') &&
       row.reason === (winner ? 'resign' : 'cancel') && row.fee_units === (winner ? '10' : '0');
+  });
+  const holds = await game.prepare(`SELECT match_id,account_id,state,stake_units::text FROM virtual_pvp_holds
+    WHERE match_id=ANY(?::text[]) OR (account_id=ANY(?::text[]) AND state='held')`).all([...expectedBanks.keys()], accounts);
+  // The table's (match_id, account_id) key makes two valid holds per match exhaustive.
+  const holdsVerified = holds.length === completedRounds * 2 && holds.every(row => {
+    const bank = expectedBanks.get(row.match_id);
+    return bank !== undefined && bank.accounts.includes(row.account_id) && row.stake_units === '100' &&
+      row.state === (bank.winnerId ? 'settled' : 'refunded');
   });
   const casinoWallets = actual.filter(row => row.entry_type === 'win' && casinoBalances.has(row.operation_id));
   const casinoBalancesVerified = casinoWallets.length === completedRounds && casinoWallets.every(row => {
     const balance = casinoBalances.get(row.operation_id);
-    return balance?.accountId === row.account_id && balance.units === row.balance_units && balance.rowId === row.id;
+    return balance !== undefined && balance.accountId === row.account_id &&
+      balance.units === row.balance_units && balance.rowId === row.id;
   });
   const byPostingId = new Map(actual.map(row => [row.id, row]));
   const pvpBalancesVerified = [...pvpBalances.values()].every(balance => {
@@ -292,17 +306,52 @@ async function workload(game: PostgresDatabase, peers: PvpPhase['pairs'], baseUr
   const acceptedPvpCommands = [...pvpBalances.keys()].filter(key => key.endsWith(':accepted')).length;
   const receiptsVerified = receipts.length === acceptedPvpCommands && receipts.every(row => {
     const command = pvpBalances.get(row.id + ':accepted');
-    return command?.accountId === row.account_id && command.matchId === row.match_id;
+    return command !== undefined && command.accountId === row.account_id && command.matchId === row.match_id;
   });
   const noDoubleMoney = completedRounds === workers.length * rounds && casinoBalancesVerified && pvpBalancesVerified && receiptsVerified &&
     JSON.stringify(expectedKeys) === JSON.stringify(actualKeys) && balances.length === accounts.length &&
     balances.every(row => initialCents + expected.filter(leg => leg[0] === row.account_id)
       .reduce((sum, leg) => sum + BigInt(leg[3]), 0n) === BigInt(row.units)) &&
-    banksVerified;
+    banksVerified && holdsVerified;
   const metrics = { stake: stats(samples.stake), settlement: stats(samples.settlement),
     casinoRound: stats(samples.casinoRound), retry: stats(samples.retry) };
+  const expectedReplays = new Map<string, PvpReplayProof>();
+  for (const [matchId, bank] of expectedBanks) {
+    if (!bank.winnerId) continue;
+    expectedReplays.set(matchId, {
+      winnerSeat: bank.winnerId === bank.accounts[0] ? 1 : 2,
+      holds: actual.filter(row => row.operation_id === 'pvp:' + matchId + ':hold').map(row => String(row.id)).sort(),
+      payout: actual.find(row => row.operation_id === 'pvp:' + matchId + ':final' && row.entry_type === 'win')?.id,
+    });
+  }
   return { samples, metrics, elapsedMs, completedRounds, expectedPostings: expected.length, actualPostings: actual.length,
-    noDoubleMoney, casinoBalances, casinoBalancesVerified, pvpBalances, pvpBalancesVerified };
+    noDoubleMoney, casinoBalances, casinoBalancesVerified, pvpBalances, pvpBalancesVerified, expectedReplays };
+}
+
+async function verifyLoadPvpReplays(audit: PostgresDatabase, datasetId: string, source: string,
+  expected: ReadonlyMap<string, PvpReplayProof>, expectedCount: number, seededReplayId?: string) {
+  const stored = (await audit.prepare('SELECT replay_id::text FROM audit_replay_packages WHERE dataset_id=?').all(datasetId))
+    .filter(row => row.replay_id !== seededReplayId);
+  const store = new AuditReplayStore(audit);
+  let verifiedCount = 0;
+  for (const { replay_id } of stored) {
+    const evidence = expected.get(replay_id);
+    if (!evidence || evidence.holds.length !== 2 || !evidence.payout) continue;
+    const result = await store.read({ datasetId, environment: 'test' }, replay_id, [chessTurnReplayDefinition]);
+    if (result.status !== 'verified' || result.value.manifest.coverage !== 'complete' ||
+        result.value.manifest.entityId !== replay_id || verifyChessTurnReplay(result.value).status !== 'verified') continue;
+    const [start, resign, terminal, ...extra] = result.value.fragments.flatMap(fragment => fragment.events);
+    const holds = start?.money?.map(leg =>
+      leg.movement === 'reserve' && leg.units === '-100' && leg.posting.namespace === source ? leg.posting.rowId : null).sort();
+    const payout = terminal?.money?.[0];
+    if (extra.length === 0 && start?.data.kind === 'checkpoint' && JSON.stringify(holds) === JSON.stringify(evidence.holds) &&
+        resign?.data.kind === 'action' && resign.data.action.code === 'resign' && resign.data.action.seat !== evidence.winnerSeat &&
+        terminal?.data.kind === 'terminal' && terminal.data.outcome === 'forfeited' && terminal.data.winnerSeat === evidence.winnerSeat &&
+        terminal.money?.length === 1 && payout?.movement === 'payout' && payout.units === '190' &&
+        payout.posting.namespace === source && payout.posting.rowId === evidence.payout) verifiedCount++;
+  }
+  return { expected: expectedCount, recorded: stored.length,
+    verified: expected.size === expectedCount && stored.length === expectedCount && verifiedCount === expectedCount };
 }
 
 async function verifyLoadAttempts(audit: PostgresDatabase, datasetId: string, source: string, transport: 'http' | 'websocket',
@@ -477,7 +526,7 @@ async function verifyStandby(standby: Standby, audit: PostgresDatabase, signal?:
   const connection = standby.connect();
   try {
     await connection.connect();
-    return await waitFor(async () => {
+    return await waitFor('standby WAL streaming', async () => {
       const { rows: [row] } = await connection.query(`SELECT pg_is_in_recovery() AS standby,
         EXISTS (SELECT 1 FROM pg_stat_wal_receiver WHERE status='streaming') AS streaming,
         current_setting('server_version') AS postgres, pg_last_wal_replay_lsn()::text AS replay_lsn,
@@ -495,7 +544,7 @@ async function waitForStandbyDrain(standby: Standby, audit: PostgresDatabase, jo
   const connection = standby.connect();
   try {
     await connection.connect();
-    await waitFor(async () => await drainAuditLoadStandbyReport(audit.pool, connection, audit.schema, jobId)
+    await waitFor('standby report slot drain', async () => await drainAuditLoadStandbyReport(audit.pool, connection, audit.schema, jobId)
       ? true : undefined, 3000, signal);
   } finally { await connection.end(); }
 }
@@ -539,7 +588,7 @@ async function cancelReport(game: PostgresDatabase, audit: PostgresDatabase, ope
     pending = exportAuditPlayer(operator, { ...input, signal }).then(() => ({ code: 'unexpected-success', jobId: null }),
       error => ({ code: error instanceof AuditPlayerReportError ? error.code : 'unexpected-error',
         jobId: error instanceof AuditPlayerReportError ? error.jobId : null }));
-    const backend = await waitFor(async () => {
+    const backend = await waitFor('blocked primary CSV page and staged file', async () => {
       const row = await audit.prepare(`SELECT pid FROM pg_stat_activity
         WHERE application_name='royal/audit-player' AND wait_event_type='Lock'
           AND query LIKE '%audit_report_player_page%'`).get();
@@ -551,7 +600,7 @@ async function cancelReport(game: PostgresDatabase, audit: PostgresDatabase, ope
     const result = await pending;
     const cancellationMs = rounded(performance.now() - started);
     // Observe the server exit independently of the cancelled client while the fixture keeps the lock.
-    await waitFor(async () => await audit.prepare('SELECT 1 FROM pg_stat_activity WHERE pid=?').get(backend)
+    await waitFor('cancelled primary reader exit', async () => await audit.prepare('SELECT 1 FROM pg_stat_activity WHERE pid=?').get(backend)
       ? undefined : true, 3000, abort);
     const databaseReaderStopMs = rounded(performance.now() - started);
     const journal = result.jobId ? await audit.prepare('SELECT status,reason FROM audit_export_jobs WHERE id=?').get(result.jobId) : null;
@@ -576,7 +625,7 @@ async function observeActiveReport(audit: PostgresDatabase, standby: Standby | u
       AND usename=$1 AND application_name=$2 AND state='active' AND query LIKE $3 LIMIT 1`;
     const projection = report === 'player' ? 'audit_report_player_page' : 'audit_report_' + report;
     const parameters = [operator, 'royal/audit-' + report, `%${projection}%`];
-    return await waitFor(async () => {
+    return await waitFor('active ' + report + ' on ' + (standby ? 'standby' : 'primary'), async () => {
       const rows = (await (connection ?? audit.pool).query(sql, parameters)).rows;
       return rows.length ? true : undefined;
     }, 2000, signal);
@@ -591,7 +640,7 @@ async function measureStandbyReaderStop(observer: ReturnType<Standby['connect']>
   options.controller.abort();
   const [{ result, cancellationMs }, databaseReaderStopMs] = await Promise.all([
     options.pending.then(result => ({ result, cancellationMs: rounded(performance.now() - started) })),
-    waitFor(async () => (await observer.query(
+    waitFor('cancelled standby reader exit', async () => (await observer.query(
       'SELECT 1 FROM pg_stat_activity WHERE pid=$1 AND backend_start=$2::timestamptz', [backend.pid, backend.backend_start])).rowCount
       ? undefined : rounded(performance.now() - started), options.observationMs, options.signal),
   ]);
@@ -608,10 +657,10 @@ async function cancelStandbyReplayWait(standby: Standby, audit: PostgresDatabase
     await observer.connect();
     await observer.query('SELECT pg_wal_replay_pause()');
     replayPaused = true;
-    await waitFor(async () => (await observer.query('SELECT pg_get_wal_replay_pause_state() AS state')).rows[0]?.state === 'paused'
+    await waitFor('standby WAL pause', async () => (await observer.query('SELECT pg_get_wal_replay_pause_state() AS state')).rows[0]?.state === 'paused'
       ? true : undefined, 2000, signal);
     pending = exportAuditPlayer(operator, { ...input, signal }).then(() => null, error => error);
-    const backend = await waitFor(async () => (await observer.query<{ pid: number; backend_start: string }>(
+    const backend = await waitFor('standby reader waiting for WAL', async () => (await observer.query<{ pid: number; backend_start: string }>(
       `SELECT pid,backend_start::text FROM pg_stat_activity
       WHERE usename=$1 AND application_name='royal/audit-player' AND query LIKE '%pg_last_wal_replay_lsn%'`,
       [operator.user])).rows[0], 2000, signal);
@@ -650,7 +699,8 @@ async function cancelActiveStandbyReport(standby: Standby, audit: PostgresDataba
     locked = true;
     pending = exportAuditPlayer(operator, { ...input, limits: { ...input.limits, pageSize: 1 }, signal })
       .then(() => null, error => error);
-    const backend = await waitFor(() => findAuditLoadBlockedStandbyPage(observer, operatorName), 3000, signal);
+    const backend = await waitFor('blocked standby CSV continuation', () => findAuditLoadBlockedStandbyPage(observer, operatorName),
+      3000, signal);
     const partial = (await readdir(directory)).find(file => file.endsWith('.part'));
     const stagedRowObserved = !!partial &&
       (await readFile(join(directory, partial), 'utf8')).includes(JSON.stringify(input.filters.accountId));
@@ -764,7 +814,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       scaleAccounts ? await seedScaleHistory(game, scaleAccounts[0], scaleAccounts[1], startedAtMs) : null;
     if (widePeriod) {
       // Keep the live workload in a separate narrow interval even if the fixture is seeded within two milliseconds.
-      await waitFor(async () => Date.now() >= widePeriod.toMs ? true : undefined, 2000, signal);
+      await waitFor('historical report window boundary', async () => Date.now() >= widePeriod.toMs ? true : undefined, 2000, signal);
       await game.exec('ANALYZE demo_ledger');
       await audit.exec('ANALYZE audit_posting_refs');
     }
@@ -851,7 +901,8 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
         firstQueryObserved = await observeActiveReport(audit, standby, firstReplay ? replayReader : options.summaryFirst ? limitReader : reader,
           firstReplay ? 'replay' : options.summaryFirst ? 'summary' : 'player', signal);
       } else {
-        await waitFor(async () => (await readdir(directory!)).some(file => file.endsWith('.part')) ? true : undefined, 2000, signal);
+        await waitFor('first CSV staging file', async () => (await readdir(directory!)).some(file => file.endsWith('.part'))
+          ? true : undefined, 2000, signal);
       }
     } catch (error) {
       await first;
@@ -911,7 +962,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
         result.anchor?.category === 'pvp' && result.anchor.movement === 'payout' && result.anchor.amountUnits === '1900' &&
         result.outcome?.kind === 'pvp-bank' && result.outcome.state === 'settled' && result.outcome.feeUnits === '100' };
     }
-    const stopped = await waitFor(async () => await audit!.prepare(
+    const stopped = await waitFor('attempt recorder connections to close', async () => await audit!.prepare(
       "SELECT 1 FROM pg_stat_activity WHERE application_name='royal/audit-attempts' LIMIT 1").get() ? undefined : true, 1000, signal);
     const cancellation = await cancelReport(game, audit, operator(reader),
       { ...reportInput, fixtureStandbyPort: undefined, destination: join(directory, 'cancelled.csv') }, directory, signal);
@@ -989,6 +1040,9 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       casinoBalances.size === expectedCasinoAttempts && await verifyLoadAttempts(audit, datasetId, ledgerSource, 'http', casinoBalances);
     const pvpAttemptsVerified = active.pvpBalancesVerified && (control?.pvpBalancesVerified ?? true) &&
       pvpBalances.size === expectedPvpAttempts && await verifyLoadAttempts(audit, datasetId, ledgerSource, 'websocket', pvpBalances);
+    const pvpReplays = await verifyLoadPvpReplays(audit, datasetId, ledgerSource,
+      new Map([...(control?.expectedReplays ?? []), ...active.expectedReplays]),
+      auditedWorkers * Math.floor(options.roundsPerWorker / 2), replayFixture?.replayId);
     const expectedPostings = active.expectedPostings + (control?.expectedPostings ?? 0) +
       options.seedRounds * 2 + (scale?.fixturePostings ?? 0) + (replayFixture?.postings ?? 0) + (retained?.rows ?? 0);
     const csvMatches = csv.result.rowCount === (scaleAccounts ? scalePlayerRows : options.seedRounds * 2) &&
@@ -999,7 +1053,8 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     const observedOverlap = !!firstReportOverlap && firstReportOverlap.overlappingStakeCalls > 0 &&
       firstReportOverlap.overlappingSettlementCalls > 0 && overlappingCasinoCalls > 0;
     const captureOk = stopped && records.postingRefs.rows === expectedPostings &&
-      records.attemptPayloads.rows === expectedAttempts && captureGaps === '0' && casinoAttemptsVerified && pvpAttemptsVerified;
+      records.attemptPayloads.rows === expectedAttempts && captureGaps === '0' && casinoAttemptsVerified && pvpAttemptsVerified &&
+      pvpReplays.verified;
     const cancellationOk = cancellation.outcome === 'cancelled' && cancellation.noPartialOutput &&
       cancellation.readerStopped && cancellation.journalCancelled && (replayCancellation === null ||
         (replayCancellation.journalCancelled && replayCancellation.noPartialOutput)) && (activeCancellation === null ||
@@ -1009,7 +1064,11 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
     const budget = assessBudget(options.budget, { stakeP95Ms: active.metrics.stake.p95Ms,
       settlementP95Ms: active.metrics.settlement.p95Ms, readerStopMs });
     const readerStopTarget = standby ? 'standby-active-query' : 'primary-active-query';
-    const pilot = control ? assessAuditPilotGate(control.metrics, active.metrics) : null;
+    const timingGate = control ? assessAuditPilotGate(control.metrics, active.metrics) : null;
+    const walletRoundsComplete = active.completedRounds === options.workers * options.roundsPerWorker &&
+      (!control || control.completedRounds === options.workers * options.roundsPerWorker);
+    const pilot = timingGate && { ...timingGate, noWalletErrorsOrTimeouts: timingGate.noWalletErrorsOrTimeouts && walletRoundsComplete,
+      ok: timingGate.ok && walletRoundsComplete };
     const pilotPassed = pilot ? pilot.ok && firstQueryObserved && observedOverlap && serialVerified : true;
     const postgres = (await audit.prepare('SHOW server_version').get())!.server_version as string;
     const narrowSummaryMatches = options.pilotGate ? report.summary.scanned === options.seedRounds * 2
@@ -1042,7 +1101,7 @@ export async function runAuditLoad(input: LoadOptions = defaults, signal?: Abort
       baseline: { metrics: baseline.metrics, elapsedMs: baseline.elapsedMs, noDoubleMoney: baseline.noDoubleMoney, postings: baseline.actualPostings },
       withAudit: { metrics: active.metrics, elapsedMs: active.elapsedMs, noDoubleMoney: active.noDoubleMoney, postings: active.actualPostings },
       reports: report, cancellation, capture: { stopped, expectedAttempts, expectedPostings, gaps: Number(captureGaps),
-        expectedCasinoAttempts, expectedPvpAttempts, casinoAttemptsVerified, pvpAttemptsVerified, ...records },
+        expectedCasinoAttempts, expectedPvpAttempts, casinoAttemptsVerified, pvpAttemptsVerified, pvpReplays, ...records },
       disk: { before, after, growth: { databaseBytes: after.databaseBytes - before.databaseBytes,
         gameLedgerBytes: after.gameLedgerBytes - before.gameLedgerBytes, auditRelationsBytes: after.auditRelationsBytes - before.auditRelationsBytes } } };
   } finally {
