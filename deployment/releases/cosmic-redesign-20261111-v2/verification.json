@@ -1,0 +1,117 @@
+{
+  "format": 1,
+  "release": "cosmic-redesign-20261111-v2",
+  "publishedAt": "2026-11-10T23:16:52Z",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "scope": "modules",
+  "module": "studio-cosmic-escape",
+  "productionBase": "f64d0a292e8c655df1931cee9f308d936df8090e",
+  "installs": [
+    {
+      "release": "cosmic-redesign-20261111-v1",
+      "sourceCommit": "4de1ac2492d12b2564e9e55840cf8cc8b5a9a067",
+      "version": "1.1.1-600146d72022",
+      "manifestSha256": "61f9050eaa5a7f166f6a1e7cb8a44de2fa5de6818008adc4d5dbbc3a73a4ea74",
+      "beforeActiveSha256": "e317da3d53d59a77d041f017c6f4c64e2de9c5320e30d6b5bcc28416e322fd5a",
+      "afterActiveSha256": "276ee93c17f451f59538a26db5a53ffd707fa29230a25043cb8b04a2eab0c2e2",
+      "history": "/opt/royal-game-modules-state/history/20261110T225619-0aaadc9e21d04485842df7c8ea430846.json",
+      "backup": {
+        "directory": "/opt/royal-backups/cosmic-redesign-20261111-v1",
+        "activeJsonSha256": "e317da3d53d59a77d041f017c6f4c64e2de9c5320e30d6b5bcc28416e322fd5a",
+        "sourceTgzBytes": 150114,
+        "sourceTgzSha256": "0a360dea2887933fa5e687255dbd2061c4c08be930e8486e2483ab7cd9906522"
+      },
+      "imageTag": "royal-game:before-cosmic-redesign-20261111-v1"
+    },
+    {
+      "release": "cosmic-redesign-20261111-v2",
+      "sourceCommit": "52b25d5c78d908d7bbb31db4c8b9a61464bf09d8",
+      "version": "1.1.1-2c38e829bf2a",
+      "manifestSha256": "86b0d9b6ef403f099c6c6daecee9a49468501cccc8098fc38ae4ac61264ad203",
+      "beforeActiveSha256": "276ee93c17f451f59538a26db5a53ffd707fa29230a25043cb8b04a2eab0c2e2",
+      "afterActiveSha256": "c4719d7cb484eb698575c0618380ebec2b7ac9067152d832b32644143ffc3ab7",
+      "history": "/opt/royal-game-modules-state/history/20261110T231652-6d24904d290043ada720c973f99ec221.json",
+      "backup": {
+        "directory": "/opt/royal-backups/cosmic-redesign-20261111-v2",
+        "activeJsonSha256": "276ee93c17f451f59538a26db5a53ffd707fa29230a25043cb8b04a2eab0c2e2"
+      },
+      "imageTag": "royal-game:before-cosmic-redesign-20261111-v2"
+    }
+  ],
+  "previousVersion": "1.1.1-2274f1d3bf58",
+  "installer": {
+    "path": "/opt/royal/scripts/game-module-release.py",
+    "sha256": "bc5589c8f96e452841d4fbeb8661783194f29cee5b8b32bb72b18a108c471a7a",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false
+  },
+  "hostContract": {
+    "apiVersion": 1,
+    "rulesVersion": 2,
+    "progressVersion": 1
+  },
+  "container": {
+    "image": "sha256:d3abb3de1eeadf1545f97f432910a066a92f1d888290d2d1510d23a007b96525",
+    "startedAt": "2026-11-07T22:58:54.466413394Z",
+    "restartCount": 0,
+    "health": "healthy"
+  },
+  "checks": {
+    "release": {
+      "prepare": "passed, githubVerified true",
+      "verify": "passed, githubVerified true",
+      "rtp": {
+        "verified": 38,
+        "stakePoliciesVerified": 20,
+        "stakeAdmissionVerified": 20,
+        "legacyNotQualified": 114
+      }
+    },
+    "wallet": {
+      "command": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts",
+      "tests": 19,
+      "pass": 19,
+      "fail": 0
+    },
+    "localHost": {
+      "stand": "scripts/game-layout-preview.ts, real backend, connected chat, temporary PostgreSQL",
+      "cosmic": "field and actions at 8 sizes; settings, autoplay panel, Stop, one accepted 0.10 debit, close/reopen, lost reply retried with the same UUID; natural bonus in both phone orientations; moving symbols through rotation",
+      "velvetReign": "passed",
+      "guestHeader": "settings gear visible without chat (v2)",
+      "knownUnrelated": "Caramel Carnival, Last Convoy, Nitro RUN and GIRLHUB fail [data-cc-stake]: blocked in the shared cc stake field, unchanged here"
+    },
+    "public": {
+      "healthz": 200,
+      "activePointerCacheControl": "no-store",
+      "activePointerSha256": "c4719d7cb484eb698575c0618380ebec2b7ac9067152d832b32644143ffc3ab7",
+      "packageFiles": "9 of 9 match",
+      "retainedVersions": {
+        "1.1.1-600146d72022": 200,
+        "1.1.1-2274f1d3bf58": 200
+      },
+      "guestBrowser": "Chromium opened 1.1.1-2c38e829bf2a through the hall games list at 1440x900, 393x852 and 852x393, no JavaScript errors",
+      "productionAccountsOrWagers": false
+    }
+  },
+  "maintenance": {
+    "service": "royal-dev-app-retention.service",
+    "status": "completed",
+    "startedAt": "2026-11-10T23:17:58Z",
+    "finishedAt": "2026-11-10T23:19:47Z",
+    "timer": "enabled, active",
+    "healthOk": true,
+    "freeAfterBytes": 12751212544
+  },
+  "catalogue": "unchanged; no game added, restored or hidden",
+  "rollback": "python3 scripts/game-module-release.py rollback --game studio-cosmic-escape --version 1.1.1-2274f1d3bf58 --expected-sha <current active.json sha256>; rules and progress contracts are unchanged, so accepted rounds remain compatible",
+  "notVerified": [
+    "physical iPhone and Android",
+    "Safari/WebKit",
+    "listening to sound",
+    "signed-in production play"
+  ],
+  "notes": [
+    "Unbounded and Manrope load from Google Fonts at runtime; self-hosting is recommended."
+  ]
+}
