@@ -5,6 +5,9 @@ export async function enterGameHall(page:Page,path:string){
  await expect(page.getByLabel('Почта',{exact:true})).toBeVisible({timeout:30000});
  await page.getByLabel('Почта',{exact:true}).fill(`layout-${crypto.randomUUID()}@example.test`);
  await page.getByLabel('Пароль',{exact:true}).fill('Royal-layout-check-123!');await page.getByRole('button',{name:'Продолжить',exact:true}).click();
+ // Since the entry-mode release a new account first chooses between the club and the casino catalogue.
+ const club=page.locator('[data-entry-mode="club"]');
+ await expect(club.or(page.locator('#character-step'))).toBeVisible();if(await club.isVisible())await club.click();
  await expect(page.locator('#character-step')).toBeVisible();await page.getByRole('button',{name:'Войти в зал',exact:true}).click();
  await expect(page.locator('#join-dialog')).toBeHidden();
  await expect.poll(()=>page.evaluate(()=>{try{return (window as any).royalDemo?.getState()?.online;}catch{return false;}})).toBe(true);

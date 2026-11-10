@@ -13,6 +13,11 @@ export class CosmicEscapeBoard extends SlotReelBoard {
   constructor(host:HTMLElement,info:LuelonSlotInfo,theme:LuelonTheme,onStop:(column:number)=>void,artworkReady=true) {
     super(host,info,theme,onStop,{symbol:cosmicSymbol,name:cosmicSymbolName},artworkReady,false);
   }
+  /** Winning cells keep full strength; the rest of the field is dimmed by the cabinet styles. */
+  override highlight(positions:readonly number[],line?:number[]){super.highlight(positions,line);this.host.dataset.win=String(positions.length>0);}
+  canHurry(){return this.moving&&!this.fast;}
+  /** Quick stop only shortens the reel motion. The confirmed grid and payout are unchanged. */
+  hurry(){if(!this.canHurry())return false;this.fast=true;if(this.final)this.stopAt=Math.min(this.stopAt,performance.now());return true;}
   async effect(event:LuelonSlotEvent,after:readonly number[],fast:boolean,motion:boolean,current:()=>boolean){this.host.dataset.feature=event.kind;const duration=fast?330:900;this.features.replaceChildren();if(!motion)return current();const positions=event.positions.filter(pos=>pos>=0&&pos<this.grid.length);const animations:Promise<void>[]=[];
     if(event.kind==='expand'){
       const columns=[...new Set(positions.map(position=>position%this.info.cols))];
