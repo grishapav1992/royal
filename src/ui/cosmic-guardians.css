@@ -91,6 +91,8 @@
 #mini-dialog:has(#mini-game > .cx-game) .mini-top > button:hover { background: #2A2140; }
 #mini-dialog:has(#mini-game > .cx-game) .mini-top > button:focus-visible { outline: 3px solid #5BE4DF; outline-offset: 2px; }
 #mini-dialog:has(#mini-game > .cx-game) .mini-top > button.settings-shortcut { width: 40px; padding: 0; font-size: 0; }
+/* The club settings button shows a gear in every host layout, also without the connected chat. */
+#mini-dialog:has(#mini-game > .cx-game) .mini-top > button.settings-shortcut::after { content: '⚙'; font: 20px/1 system-ui, sans-serif; }
 @media (max-width: 520px) {
   #mini-dialog:has(#mini-game > .cx-game) .mini-top { padding: 0 6px 0 10px; gap: 6px; }
   #mini-dialog:has(#mini-game > .cx-game) .mini-top h2 { font-size: 12px; }
