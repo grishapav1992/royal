@@ -92,15 +92,17 @@ for(const id of games)test('settings, Stop and one accepted ten-cent round: '+id
  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
  await page.locator('.slot-settings-button').click();
  if(process.env.LAYOUT_DEBUG==='1')console.log(await page.locator('.slot-secondary-controls').evaluate(root=>[root,...root.children,...root.querySelectorAll('.ce-sidebar>*')].map(e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return{node:e.className,display:s.display,flexDirection:s.flexDirection,contain:s.contain,columns:s.gridTemplateColumns,rows:s.gridTemplateRows,area:s.gridArea,position:s.position,height:r.height,width:r.width,left:r.left,top:r.top};})));
- // The redesigned Cosmic Escape keeps speed and autoplay on the cabinet: a speed control and an autoplay panel.
- const cosmic=id==='studio-cosmic-escape';
- const fastSpeed=()=>cosmic?expect(page.locator('#mini-game [data-cx-speed="fast"]')).toHaveAttribute('aria-checked','true'):expect(page.locator(`[data-${p}-speed]`)).toHaveAttribute('aria-pressed','true');
+ // The redesigned Cosmic Escape and Caramel Carnival keep speed and autoplay on the cabinet: a speed control and an autoplay panel.
+ const cosmic=id==='studio-cosmic-escape'||id==='studio-caramel-carnival',caramel=id==='studio-caramel-carnival';
+ const cabinet=caramel?{fast:'[data-cc-speed-option="fast"]',cycle:'[data-cc-speed-cycle]',panel:'[data-cc-auto-panel]',count:'[data-cc-auto-count="25"]',start:'[data-cc-auto-start]',purchase:'[data-cc-buy]'}
+  :{fast:'[data-cx-speed="fast"]',cycle:'[data-cx-speed-cycle]',panel:'[data-cx-auto-panel]',count:'[data-cx-auto-count="25"]',start:'[data-cx-auto-start]',purchase:'[data-cosmic-missions]'};
+ const fastSpeed=()=>cosmic?expect(page.locator('#mini-game '+cabinet.fast)).toHaveAttribute('aria-checked','true'):expect(page.locator(`[data-${p}-speed]`)).toHaveAttribute('aria-pressed','true');
  if(!cosmic){await page.locator(`[data-${p}-auto-count]`).selectOption('25');await page.locator(`[data-${p}-speed]`).click();}
  expect(errors).toEqual([]);
  if(!cosmic)await fastSpeed();
  if(id==='studio-velvet-reign'||id==='studio-afterglow')await page.screenshot({path:out+'/'+id+'-options.png'});
  await page.setViewportSize({width:852,height:393});await page.keyboard.press('Escape');await expect(page.locator('.slot-settings-dialog')).toBeHidden();await expect(page.locator('.slot-settings-button')).toBeFocused();
- if(cosmic){await page.locator('#mini-game [data-cx-speed-cycle]').click();await fastSpeed();}
+ if(cosmic){await page.locator('#mini-game '+cabinet.cycle).click();await fastSpeed();}
  await fit(page,id);await page.setViewportSize({width:1440,height:900});await fit(page,id);
  await fastSpeed();
  if(!cosmic)await expect(page.locator(`[data-${p}-auto-count]`)).toHaveValue('25');await page.setViewportSize({width:393,height:852});
@@ -109,7 +111,7 @@ for(const id of games)test('settings, Stop and one accepted ten-cent round: '+id
  await page.route('**/api/demo-wallet/expansion',async route=>{if(route.request().method()==='POST'){request=route.request().postDataJSON();await gate;}await route.continue();});
  const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');
  await page.locator(`[data-${p}-auto]`).click();
- if(cosmic){const panel=page.locator('#mini-game [data-cx-auto-panel]');await expect(panel).toBeVisible();await panel.locator('[data-cx-auto-count="25"]').click();await panel.locator('[data-cx-auto-start]').click();await expect(panel).toBeHidden();}
+ if(cosmic){const panel=page.locator('#mini-game '+cabinet.panel);await expect(panel).toBeVisible();await panel.locator(cabinet.count).click();await panel.locator(cabinet.start).click();await expect(panel).toBeHidden();}
  await expect.poll(()=>!!request).toBe(true);expect(request.stakeUnits).toBe('10');
  await expect(page.locator(`[data-${p}-auto]`)).toContainText('Стоп');await page.setViewportSize({width:852,height:393});await fit(page,id);
  await page.locator(`[data-${p}-auto]`).click();release();const paid=await response;expect(paid.ok(),await paid.text()).toBe(true);
@@ -118,8 +120,8 @@ for(const id of games)test('settings, Stop and one accepted ten-cent round: '+id
  await open(page,id);await finish(page,id);expect((await walletSnapshot(page)).entries).toEqual(snapshot.entries);await fit(page,id);
  for(const kind of ['info','history','purchase']){
   const selector=kind==='purchase'?'[data-cc-buy],[data-cosmic-missions],[data-velvet-missions]':`[data-${p}-${kind}]`;
-  // Cosmic Escape keeps missions on the cabinet strip under the reels.
-  if(cosmic&&kind==='purchase')await page.locator('#mini-game').locator(selector).click();
+  // Cosmic Escape keeps missions and Caramel Carnival keeps the festival purchase on the cabinet.
+  if(cosmic&&kind==='purchase')await page.locator('#mini-game').locator(cabinet.purchase).click();
   else{await page.locator('.slot-settings-button').click();await page.locator('.slot-settings-dialog').locator(selector).click();}
   await expect(page.locator('.slot-settings-dialog')).toBeHidden();
   await expect(page.locator('#mini-game :is(.cc-dialog,.ce-dialog)')).toBeVisible();
@@ -142,7 +144,7 @@ test('moving symbols retain their field through both phone orientations',async({
  test.setTimeout(240000);await enterGameHall(page,roomPath);
  for(const id of ['studio-cosmic-escape','studio-caramel-carnival','studio-velvet-reign','studio-afterglow']){
   await page.setViewportSize({width:393,height:852});await open(page,id);const p=family(id);await page.emulateMedia({reducedMotion:'no-preference'});
-  await page.locator(`[data-${p}-spin]`).click();await expect(page.locator('#mini-game > .slot-priority-game, #mini-game > .cx-game')).not.toHaveAttribute('data-phase','idle');
+  await page.locator(`[data-${p}-spin]`).click();await expect(page.locator('#mini-game > .slot-priority-game, #mini-game > .cx-game, #mini-game > .cc-game.ccf')).not.toHaveAttribute('data-phase','idle');
   await page.setViewportSize({width:852,height:393});await fit(page,id);await page.setViewportSize({width:393,height:852});await fit(page,id);
   await page.emulateMedia({reducedMotion:'reduce'});await finish(page,id);
  }
