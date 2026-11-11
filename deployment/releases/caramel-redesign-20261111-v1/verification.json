@@ -1,0 +1,97 @@
+{
+  "format": 1,
+  "release": "caramel-redesign-20261111-v1",
+  "publishedAt": "2026-11-11T07:31:30Z",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "scope": "modules",
+  "module": "studio-caramel-carnival",
+  "productionBase": "f64d0a292e8c655df1931cee9f308d936df8090e",
+  "sourceCommit": "d8d45145a798f5e19678bf4b281ca5f90ba9c2d0",
+  "version": "1.1.1-a4f6188ed42e",
+  "previousVersion": "1.1.1-faefb8ca47ca",
+  "releaseManifestSha256": "b8f646bab0c16112ab15d8837d9c4ad8d76400b12405f7a3170262cbf16c35d8",
+  "moduleManifestSha256": "15856b7ce7b3d29e7dd86d1607c74ba466439e9f5d8c9fcf212c65ae611bbee5",
+  "beforeActiveSha256": "1f1bfb68a97246dc5e01f0a348e0274106b8f47d811ef44e728231ad69239728",
+  "afterActiveSha256": "96087d766703d96971452ab61c2419c87173ed0e0ec3ed851d36e135ff5f123d",
+  "history": "/opt/royal-game-modules-state/history/20261111T073130-76d2f92b8ed94f37875c06639be955bb.json",
+  "backup": {
+    "directory": "/opt/royal-backups/caramel-redesign-20261111-v1",
+    "activeJsonSha256": "1f1bfb68a97246dc5e01f0a348e0274106b8f47d811ef44e728231ad69239728",
+    "sourceTgzBytes": 173844,
+    "sourceTgzSha256": "3389d0d6ae7ed28f0b59b364ca5886e855433c6957b0cb92e75931e25f4d49dd"
+  },
+  "imageTag": "royal-game:before-caramel-redesign-20261111-v1",
+  "installer": {
+    "path": "/opt/royal/scripts/game-module-release.py",
+    "sha256": "bc5589c8f96e452841d4fbeb8661783194f29cee5b8b32bb72b18a108c471a7a",
+    "check": "passed",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false
+  },
+  "hostContract": {
+    "apiVersion": 1,
+    "rulesVersion": 2,
+    "progressVersion": 1
+  },
+  "container": {
+    "image": "sha256:d3abb3de1eeadf1545f97f432910a066a92f1d888290d2d1510d23a007b96525",
+    "startedAt": "2026-11-07T22:58:54.466413394Z",
+    "restartCount": 0,
+    "health": "healthy"
+  },
+  "checks": {
+    "release": {
+      "prepare": "passed, githubVerified true",
+      "verify": "passed, githubVerified true",
+      "rtp": {
+        "verified": 38,
+        "stakePoliciesVerified": 20,
+        "stakeAdmissionVerified": 20,
+        "legacyNotQualified": 114
+      }
+    },
+    "wallet": {
+      "command": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts",
+      "tests": 19,
+      "pass": 19,
+      "fail": 0
+    },
+    "localHost": {
+      "stand": "scripts/game-layout-preview.ts, real backend, connected chat, temporary PostgreSQL, prepared bytes 1.1.1-a4f6188ed42e",
+      "caramel": "field and actions at 8 sizes; settings, autoplay panel, Stop, one accepted 0.10 debit, close/reopen, lost reply retried without a second debit; natural festival with pause in both phone orientations; moving symbols through rotation",
+      "fixtureNote": "the scenarios ran from a temporary copy of tests/game-layout-slots.spec.ts whose room fixture entered the hall at / because the stand does not proxy Colyseus matchmaking; the copy was deleted"
+    },
+    "public": {
+      "healthz": 200,
+      "activePointerCacheControl": "no-store",
+      "activePointerSha256": "96087d766703d96971452ab61c2419c87173ed0e0ec3ed851d36e135ff5f123d",
+      "packageFiles": "8 of 8 match",
+      "retainedVersions": {
+        "1.1.1-faefb8ca47ca": 200
+      },
+      "guestBrowser": "Chrome guest mode opened 1.1.1-a4f6188ed42e through the hall games list at 1440x900, 393x852 and 852x393, no JavaScript errors",
+      "productionAccountsOrWagers": false
+    }
+  },
+  "maintenance": {
+    "service": "royal-dev-app-retention.service",
+    "status": "completed",
+    "startedAt": "2026-11-11T07:34:33Z",
+    "finishedAt": "2026-11-11T07:36:14Z",
+    "timer": "enabled, active",
+    "healthOk": true,
+    "freeAfterBytes": 12737511424
+  },
+  "catalogue": "unchanged; no game added, restored or hidden",
+  "rollback": "python3 scripts/game-module-release.py rollback --game studio-caramel-carnival --version 1.1.1-faefb8ca47ca --expected-sha <current active.json sha256>; rules and progress contracts are unchanged, so accepted rounds remain compatible",
+  "notVerified": [
+    "physical iPhone and Android",
+    "Safari/WebKit",
+    "listening to sound",
+    "signed-in production play"
+  ],
+  "notes": [
+    "Lobster, Nunito and Rubik load from Google Fonts at runtime; self-hosting is recommended."
+  ]
+}
