@@ -822,6 +822,7 @@ test('captain blinks and looks at the field, deduplicates reactions and releases
  });
  const captain=()=>page.evaluate(()=>(window as any).__ctCaptain.state());
  await expect.poll(async()=>(await captain()).ready,{timeout:20000}).toBe(true);
+ await page.clock.pauseAt(await page.evaluate(()=>Date.now())+1000);
  await page.evaluate(()=>(window as any).__ctCaptain.context(true,false,false));
  await page.clock.runFor(5200);expect((await captain()).pose).toBe('blink');
  await page.clock.runFor(125);expect((await captain()).pose).toBe('idle');
@@ -834,11 +835,58 @@ test('captain blinks and looks at the field, deduplicates reactions and releases
  expect((await captain()).animations).toBe(0);await expect(page.locator('.ct-captain-caption')).toHaveText('Part of the cost returned.');
  await page.clock.runFor(1200);expect((await captain()).pose).toBe('idle');expect((await captain()).timers).toBe(0);
  await page.evaluate(()=>{const c=(window as any).__ctCaptain;c.context(true,false,false);c.begin();c.react('bigwin','round:2:bigwin');c.finish();});
- expect((await captain()).pose).toBe('laugh');await page.clock.runFor(1300);expect((await captain()).pose).toBe('win');
- await page.evaluate(()=>(window as any).__ctCaptain.context(false,false,false));
+ expect((await captain()).pose).toBe('laugh');await page.clock.runFor(1299);expect((await captain()).pose).toBe('laugh');
+ await page.clock.runFor(1);expect((await captain()).pose).toBe('win');await page.clock.runFor(649);expect((await captain()).pose).toBe('win');
+ await page.clock.runFor(1);expect((await captain()).pose).toBe('idle');
+ await page.evaluate(()=>{const c=(window as any).__ctCaptain;c.context(true,true,false);c.begin();c.react('bigwin','round:3:bigwin');c.finish();});
+ expect((await captain()).pose).toBe('laugh');expect((await captain()).animations).toBe(0);
+ await page.clock.runFor(1099);expect((await captain()).pose).toBe('laugh');await page.clock.runFor(1);expect((await captain()).pose).toBe('idle');expect((await captain()).timers).toBe(0);
+ await page.evaluate(()=>{const c=(window as any).__ctCaptain;c.context(true,false,false);c.react('bigwin','round:4:bigwin');c.context(false,false,false);});
  await page.clock.runFor(30000);expect((await captain()).pose).toBe('idle');expect((await captain()).timers).toBe(0);expect((await captain()).animations).toBe(0);
  await page.evaluate(()=>{const c=(window as any).__ctCaptain;c.context(true,false,false);c.destroy();c.react('win','after-close');});
  await page.clock.runFor(30000);expect((await captain()).history).toEqual([]);expect((await captain()).timers).toBe(0);expect((await captain()).animations).toBe(0);
+});
+
+test('captain executes the registered facade profile poses and hold times',async({page})=>{
+ await page.goto('/tests/fixtures/caribbean-audio.html');
+ await page.evaluate(async()=>{
+  const captainPath='/games/caribbean-treasures/CaribbeanCaptain.ts',facadePath='/src/game/characterAnimationFacade.ts';
+  const {CaribbeanCaptain}=await import(/* @vite-ignore */captainPath);
+  const {slotCharacterAnimationFacade:facade}=await import(/* @vite-ignore */facadePath);
+  const original=facade.getProfile('studio-caribbean-treasures');
+  const root=document.createElement('section');root.innerHTML='<span class="ct-portrait-gesture"><img class="ct-portrait-layer"><img class="ct-portrait-layer"></span><span class="ct-captain-caption" hidden></span>';document.body.append(root);
+  const captain=new CaribbeanCaptain(root);await captain.select('amara');
+  (window as any).__facadeTest={captain,facade,original,root};
+ });
+ const captain=()=>page.evaluate(()=>(window as any).__facadeTest.captain.state());
+ await page.clock.install();await page.clock.pauseAt(await page.evaluate(()=>Date.now())+1000);
+ try{
+  await page.evaluate(()=>{
+   const {captain,facade,original}=(window as any).__facadeTest;
+   facade.registerProfile({...original,steps:{...original.steps,win:[{frame:4,durationMs:2375},{frame:6,durationMs:425}]}});
+   captain.context(true,false,false);captain.begin();captain.react('win','facade:win');captain.finish();
+  });
+  expect(await captain()).toMatchObject({character:'amara',pose:'surprise',timers:1,history:[{cue:'win',pose:'surprise',variant:0,key:'facade:win'}]});
+  await expect(page.locator('.ct-current')).toHaveAttribute('src',/amara-surprise\.webp$/);
+  await expect(page.locator('.ct-captain-caption')).toHaveText('Добыча твоя!');
+  await page.clock.runFor(2374);expect((await captain()).pose).toBe('surprise');
+  await page.clock.runFor(1);expect((await captain()).pose).toBe('soft');expect((await captain()).timers).toBe(1);
+  await page.clock.runFor(424);expect((await captain()).pose).toBe('soft');
+  await page.clock.runFor(1);expect((await captain()).pose).toBe('idle');
+  await page.evaluate(()=>{
+   const {captain}=(window as any).__facadeTest;captain.reset(true);captain.begin();
+   for(let variant=0;variant<5;variant++)captain.react('stop','facade:stop:'+variant,variant);
+  });
+  expect((await captain()).animations).toBe(0);expect((await captain()).history.map((entry:any)=>entry.variant)).toEqual([0,1,2,3,4]);
+  await page.evaluate(()=>(window as any).__facadeTest.captain.react('stop','facade:stop:5',5));
+  expect((await captain()).animations).toBe(1);expect((await captain()).timers).toBe(0);
+ }finally{
+  await page.evaluate(()=>{
+   const {captain,facade,original,root}=(window as any).__facadeTest;
+   facade.registerProfile(original);captain.destroy();root.remove();
+  });
+ }
+ expect(await captain()).toMatchObject({timers:0,animations:0,history:[]});
 });
 
 test('saved complete rounds give distinct captain reactions in the real host',async({browser,roomPath})=>{
