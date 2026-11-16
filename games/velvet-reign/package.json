@@ -1,6 +1,6 @@
 {
   "name": "@royal/velvet-reign",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "private": true,
   "gameId": "studio-velvet-reign",
   "apiVersion": 1,
@@ -16,7 +16,7 @@
     "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
   },
   "preload": [
-    "velvet-rebuild/v1/symbols.webp",
-    "velvet-rebuild/v1/background.webp"
+    "velvet-rebuild/dressing-room/background.webp",
+    "velvet-rebuild/dressing-room/evelyn.webp"
   ]
 }
