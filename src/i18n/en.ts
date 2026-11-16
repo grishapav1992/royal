@@ -3,14 +3,6 @@ import { progressionEnglish } from './progressionEn';
 import { streetEnglish } from './streetEn';
 
 export const english: Record<string, string> = {
-  'Ставка · USDT за вращение':'Stake · USDT per spin',
-  '{0} символов → {1} USDT':'{0} symbols → {1} USDT',
-  'УСКОРИТЬ':'SPEED UP',
-  'С каждой новой ставкой начинается с ×1':'Starts at ×1 with each new stake',
-  'Ставка и расчёт':'Stake and settlement',
-  'Совпадения от восьми символов · До 20 каскадов':'Matches of eight or more symbols · Up to 20 cascades',
-  'Одна ставка и одна итоговая выплата. При обрыве связи проверяется прежний ход, новая ставка не нужна. Закрытие, скрытие окна и ошибка останавливают авто. Фестиваль можно продолжить из сохранённого состояния.':'One stake and one final payout. After a connection loss the previous move is checked; no new stake is needed. Closing or hiding the window, or an error, stops autoplay. The festival can resume from its saved state.',
-
   'Ранее принятый заказ: {0}, ${1}.':'Previously accepted order: {0}, ${1}.',
   'Жора':'Zhora',
   'Жора: образы':'Zhora: outfits',

@@ -35,7 +35,7 @@
   box-sizing: border-box;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr) auto auto;
+  grid-template-rows: minmax(0, 1fr) auto;
   width: 100%;
   max-width: none;
   height: var(--slot-layout-height, 640px);
@@ -85,7 +85,7 @@
 }
 #mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top > button:hover { background: #2E1E33; }
 #mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top > button:focus-visible { outline: 3px solid #FFC98A; outline-offset: 2px; }
-#mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top > button.settings-shortcut { display: none; }
+#mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top > button.settings-shortcut { width: 44px; padding: 0; font-size: 0; }
 #mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top > button.settings-shortcut::after { content: '⚙'; font: 20px/1 system-ui, sans-serif; }
 #mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top .icon-button svg { width: 18px; height: 18px; }
 @media (max-width: 520px) {
@@ -125,10 +125,10 @@
 
 /* Scene: brand and tickets on the left, the awning and board in the middle, energy and festival on the right. */
 .ccf-scene {
-  position: relative; grid-row: 1; min-height: 0; display: grid;
+  position: relative; min-height: 0; display: grid;
   grid-template-columns: var(--ccf-side) minmax(0, 1fr) var(--ccf-side);
-  grid-template-rows: auto minmax(0, 1fr);
-  grid-template-areas: "left stage tools" "left stage right";
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas: "left stage tools" "left stage right" "left outcome right";
   column-gap: clamp(12px, 1.2vw, 24px); row-gap: 12px;
   padding: 8px clamp(16px, 2.6vw, 40px) 28px;
   container: ccf-scene / size;
@@ -265,13 +265,12 @@
 .ccf-win:has(.ccf-cascade[hidden]) { padding-left: 20px; }
 .ccf-win-label { font-size: 12px; font-weight: 900; letter-spacing: .12em; color: var(--cc-ink-2); white-space: nowrap; }
 .ccf-win > strong { font: 700 28px/1.2 var(--ccf-num); color: var(--cc-win); white-space: nowrap; }
-.ccf-groups { display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; overflow: visible; }
+.ccf-groups { display: flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; }
 .ccf-groups:empty { display: none; }
 .ccf-group { display: flex; align-items: center; gap: 6px; flex: none; height: 32px; padding: 0 12px 0 4px; border-radius: 999px; background: var(--cc-cell); font-size: 14px; font-weight: 800; }
 .ccf-group .cc-symbol { width: 28px; height: 28px; flex: none; }
 .cc-game.ccf .ccf-group .cc-symbol > b { display: none; }
 .ccf-group b { font: 600 14px/1 var(--ccf-num); white-space: nowrap; }
-.ccf-win { flex-wrap: wrap; justify-content: center; padding: 8px 12px; border-radius: 20px; }
 /* The status line shows narration; a confirmed win replaces it, except between free festival spins. */
 .cc-game.ccf[data-has-win="true"]:not([data-phase="spinning"], [data-phase="preparing"], [data-phase="accelerating"], [data-phase="stopping"]) .ccf-status { display: none; }
 .cc-game.ccf:not([data-has-win="true"]) .ccf-win,
@@ -292,13 +291,13 @@
 /* Energy card. */
 .ccf-energy { gap: 12px; transition: border-color .2s, box-shadow .2s; }
 .cc-game.ccf:is([data-charging="true"], [data-energy="true"]) .ccf-energy { border-color: var(--cc-mint); box-shadow: 0 0 24px rgba(127,224,194,.2); }
-.ccf-energy-main { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; min-width: 0; }
+.ccf-energy-main { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .ccf-top { width: 72px; height: 72px; flex: none; display: flex; }
 .ccf-top .cc-symbol { width: 100%; height: 100%; transform-origin: 50% 55%; }
 .cc-game.ccf[data-charging="true"] .ccf-top .cc-symbol { animation: cc-top-spin .55s ease-in-out infinite; }
 .ccf-energy-main > strong { font: 700 56px/60px var(--ccf-num); color: var(--cc-mint); white-space: nowrap; }
 .ccf-energy-chip {
-  margin-left: 0; display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--cc-mint);
+  margin-left: auto; display: inline-flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--cc-mint);
   color: #A8F0DA; font-size: 13px; font-weight: 900; white-space: nowrap;
 }
 .ccf-meter { position: relative; height: 34px; }
@@ -344,7 +343,7 @@
 
 /* Bottom control bar. */
 .ccf-bar {
-  position: relative; grid-row: 3; z-index: 3; box-sizing: border-box; height: var(--ccf-bar-height);
+  position: relative; z-index: 3; box-sizing: border-box; height: var(--ccf-bar-height);
   display: flex; align-items: center; gap: clamp(12px, 1.7vw, 24px); padding: 0 clamp(16px, 2.2vw, 32px);
   background: var(--cc-bar); border-top: 1px solid var(--cc-line-soft); container: ccf-bar / inline-size;
 }
@@ -415,8 +414,8 @@
 }
 .ccf-spin-face > span { font-size: 12px; font-weight: 900; letter-spacing: .08em; line-height: 1.2; }
 .ccf-spin-face > strong { font: 700 26px/28px var(--ccf-num); }
-.ccf-spin-face > strong:empty, .cc-game.ccf .cc-spin :is(.ccf-stop-icon, .ccf-accelerate-icon) { display: none; }
-.cc-game.ccf[data-spin-state="auto"] .cc-spin .ccf-stop-icon, .cc-game.ccf[data-spin-state="spinning"] .cc-spin .ccf-accelerate-icon { display: block; }
+.ccf-spin-face > strong:empty, .cc-game.ccf .cc-spin .ccf-stop-icon { display: none; }
+.cc-game.ccf:is([data-spin-state="spinning"], [data-spin-state="auto"]) .cc-spin .ccf-stop-icon { display: block; }
 .cc-game.ccf:is([data-spin-state="spinning"], [data-spin-state="auto"], [data-spin-state="bonus"]) .cc-spin .ccf-spin-icon { display: none; }
 .cc-game.ccf[data-spin-state="auto"] .ccf-spin-face > strong { font-size: 18px; line-height: 20px; }
 .cc-game.ccf[data-spin-state="auto"] .ccf-stop-icon { width: 20px; height: 20px; }
@@ -428,11 +427,11 @@
 }
 .cc-game.ccf:not([data-spin-state="bonus"]) .cc-spin:disabled .ccf-spin-face { background: #8C6A52; }
 
-/* Wallet help occupies its own row between the scene and controls. */
+/* Wallet help sits above the bar without moving the field. */
 .ccf-wallet-help {
-  position: relative; grid-row: 2; z-index: 3; margin: 0; transform: none;
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 14px; width: 100%; max-width: none; box-sizing: border-box;
-  padding: 6px 12px; border: 0; border-top: 1px solid var(--cc-line); border-radius: 0; background: var(--cc-panel); font-size: 14px; text-align: center;
+  position: absolute; left: 50%; bottom: calc(var(--ccf-bar-height) + 12px); z-index: 6; transform: translateX(-50%);
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; max-width: min(560px, calc(100% - 32px)); box-sizing: border-box;
+  padding: 12px 14px; border: 1px solid var(--cc-line); border-radius: 14px; background: var(--cc-panel); font-size: 14px; text-align: center;
 }
 .ccf-wallet-help a, .cc-game.ccf .ccf-wallet-help button {
   display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border: 2px solid var(--cc-caramel-hi); border-radius: 12px;
@@ -560,15 +559,6 @@
   .ccf-top, .ccf-fest-art { width: 56px; height: 56px; }
   .ccf-energy-main > strong { font-size: 44px; line-height: 48px; }
 }
-@container ccf-scene (max-height: 480px) {
-  .cc-game.ccf[data-slot-priority="full"] .ccf-wordmark { font-size: 36px; line-height: 36px; }
-  .cc-game.ccf[data-slot-priority="full"] :is(.ccf-left, .ccf-right) { gap: 8px; padding-top: 0; margin-bottom: 0; }
-  .cc-game.ccf[data-slot-priority="full"] .ccf-slots > span { width: 38px; height: 44px; }
-  .cc-game.ccf[data-slot-priority="full"] .ccf-slots > span .cc-symbol { width: 40px; height: 40px; }
-  .cc-game.ccf[data-slot-priority="full"] .ccf-fest-head { display: none; }
-  .cc-game.ccf[data-slot-priority="full"] .ccf-card { padding: 10px 12px; gap: 8px; }
-  .cc-game.ccf[data-slot-priority="full"] .ccf-card p { font-size: 12px; line-height: 16px; }
-}
 /* Beside the connected chat the left column is narrower: the rules list gives way to its link. */
 @container ccf-scene (max-height: 780px) and (max-width: 1240px) {
   .ccf-howto ul { display: none; }
@@ -601,7 +591,7 @@
 .cc-game.ccf[data-slot-priority="portrait"] .ccf-brand { grid-area: brand; align-self: center; padding: 0; min-width: 0; }
 .cc-game.ccf[data-slot-priority="portrait"] .ccf-mode { min-height: 26px; padding: 2px 12px; font-size: 13px; max-width: 100%; }
 .cc-game.ccf[data-slot-priority="portrait"] .ccf-tools { gap: 4px; }
-.cc-game.ccf[data-slot-priority="portrait"] .ccf-tools [data-cc-rules] { display: inline-flex; }
+.cc-game.ccf[data-slot-priority="portrait"] .ccf-tools [data-cc-rules] { display: none; }
 .cc-game.ccf[data-slot-priority="portrait"] .ccf-fair { --ccf-frame-width: min(100cqw - 12px, (100cqh - var(--ccf-awning-height)) * 370 / 318); width: calc(var(--ccf-frame-width) + 12px); }
 .cc-game.ccf[data-slot-priority="portrait"] .ccf-stage { align-items: center; }
 .cc-game.ccf[data-slot-priority="portrait"] .ccf-rail { height: 6px; }
@@ -665,7 +655,7 @@
 .cc-game.ccf[data-slot-priority="portrait"] :is(.ccf-money, .ccf-lastwin) > strong { font-size: 20px; }
 .cc-game.ccf[data-slot-priority="portrait"] :is(.ccf-divider, .ccf-spacer, .ccf-speed-group) { display: none; }
 .cc-game.ccf[data-slot-priority="portrait"] .ccf-stake { grid-area: stake; }
-.cc-game.ccf[data-slot-priority="portrait"] .ccf-stake > label { position: static; width: auto; height: auto; overflow: visible; clip: auto; font-size: 12px; letter-spacing: 0; }
+.cc-game.ccf[data-slot-priority="portrait"] .ccf-stake > label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .cc-game.ccf[data-slot-priority="portrait"] .ccf-stepper { height: 56px; }
 .cc-game.ccf[data-slot-priority="portrait"] .ccf-stepper button { width: 64px; height: 54px; }
 .cc-game.ccf[data-slot-priority="portrait"] .ccf-stepper select { flex: 1 1 auto; width: auto; min-width: 0; height: 54px; line-height: 54px; }
@@ -679,28 +669,7 @@
   box-shadow: 0 0 0 100vmax rgba(10,6,14,.72);
 }
 .cc-game.ccf[data-slot-priority="portrait"] .ccf-auto-panel::before { content: ''; align-self: center; width: 40px; height: 4px; border-radius: 2px; background: var(--cc-line); }
-.cc-game.ccf[data-slot-priority="portrait"] .ccf-wallet-help { bottom: auto; }
-/* Medium-width windows reserve more height for the board than a phone control sheet. */
-.cc-game.ccf[data-tablet="true"] { --ccf-bar-height: 148px; }
-.cc-game.ccf[data-tablet="true"] .ccf-bar {
-  grid-template-columns: minmax(80px, 1fr) minmax(80px, 1fr) minmax(180px, 1.6fr) 98px;
-  grid-template-areas: "money lastwin stake spin" "auto speed stake spin";
-  min-height: 148px; gap: 8px 14px; padding: 12px 16px;
-}
-.cc-game.ccf[data-tablet="true"] :is(.ccf-auto, .ccf-speed-cycle) { min-height: 44px; }
-.cc-game.ccf[data-tablet="true"] .ccf-stake { align-self: center; }
-.cc-game.ccf[data-tablet="true"] .ccf-scene { grid-template-rows: auto minmax(0, 1fr) auto auto; }
-.cc-game.ccf[data-slot-priority="full"] .ccf-stage { flex-direction: column; align-items: center; gap: 12px; }
-.cc-game.ccf[data-slot-priority="full"] .ccf-fair {
-  --ccf-frame-width: min(100cqw - 32px, (100cqh - var(--ccf-awning-height) - var(--ccf-outcome-height, 48px) - 12px) * 696 / 588);
-  flex: none;
-}
-.cc-game.ccf[data-slot-priority="full"] .ccf-outcome { flex: none; }
-.cc-game.ccf .ccf-buy small { font-size: 12px; }
-.cc-game.ccf .ccf-stepper [data-stake-field] { height: 100%; }
-.cc-game.ccf .ccf-stepper [data-manual-stake] { text-align: center; }
-.cc-game.ccf .ccf-spin-face > span { letter-spacing: 0; }
-
+.cc-game.ccf[data-slot-priority="portrait"] .ccf-wallet-help { bottom: calc(var(--ccf-bar-height) + 8px); }
 /* Short portrait windows keep the board, the strip and the controls; the bar and the top row compress first. */
 @media (max-height: 760px) {
   .cc-game.ccf[data-slot-priority="portrait"] { --ccf-bar-height: 206px; }
@@ -748,7 +717,7 @@
 
 /* Phone landscape: board on the left, tickets, energy, festival and status in the middle, controls on the right. */
 .cc-game.ccf[data-slot-priority="landscape"] {
-  grid-template-columns: minmax(0, 1fr) clamp(220px, 30%, 250px); grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) clamp(220px, 30%, 250px); grid-template-rows: minmax(0, 1fr);
   --ccf-bar-height: 0px; --ccf-stripe: 29.833px; --ccf-gap: 4px; --ccf-awning-height: 26px;
 }
 .cc-game.ccf[data-slot-priority="landscape"] .ccf-scene {
@@ -761,7 +730,7 @@
 .cc-game.ccf[data-slot-priority="landscape"] :is(.ccf-left, .ccf-right) { display: contents; overflow: visible; }
 .cc-game.ccf[data-slot-priority="landscape"] :is(.ccf-brand, .ccf-howto) { display: none; }
 .cc-game.ccf[data-slot-priority="landscape"] .ccf-tools { position: absolute; top: 14px; right: 18px; z-index: 4; gap: 4px; }
-.cc-game.ccf[data-slot-priority="landscape"] .ccf-tools [data-cc-rules] { display: inline-flex; }
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-tools [data-cc-rules] { display: none; }
 .cc-game.ccf[data-slot-priority="landscape"] .ccf-fair { --ccf-frame-width: min(100cqw - 8px, (100cqh - var(--ccf-awning-height)) * 358 / 304); width: calc(var(--ccf-frame-width) + 8px); }
 .cc-game.ccf[data-slot-priority="landscape"] .ccf-stage { align-items: center; }
 .cc-game.ccf[data-slot-priority="landscape"] .ccf-rail { height: 5px; }
@@ -821,7 +790,7 @@
 .cc-game.ccf[data-slot-priority="landscape"] .ccf-money small { display: none; }
 .cc-game.ccf[data-slot-priority="landscape"] :is(.ccf-divider, .ccf-spacer, .ccf-speed-group) { display: none; }
 .cc-game.ccf[data-slot-priority="landscape"] .ccf-stake { grid-area: stake; }
-.cc-game.ccf[data-slot-priority="landscape"] .ccf-stake > label { position: static; width: auto; height: auto; overflow: visible; clip: auto; font-size: 12px; letter-spacing: 0; }
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-stake > label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .cc-game.ccf[data-slot-priority="landscape"] .ccf-stepper { height: 50px; }
 .cc-game.ccf[data-slot-priority="landscape"] .ccf-stepper button { width: 48px; height: 48px; }
 .cc-game.ccf[data-slot-priority="landscape"] .ccf-stepper select { flex: 1 1 auto; width: auto; min-width: 0; height: 48px; line-height: 48px; font-size: 17px; }
@@ -839,7 +808,7 @@
   box-shadow: 0 0 0 100vmax rgba(10,6,14,.72);
 }
 .cc-game.ccf[data-slot-priority="landscape"] .ccf-limits { gap: 8px; }
-.cc-game.ccf[data-slot-priority="landscape"] .ccf-wallet-help { grid-column: 1 / -1; left: auto; bottom: auto; }
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-wallet-help { left: calc((100% - clamp(220px, 30%, 250px)) / 2); bottom: 12px; }
 .cc-game.ccf[data-slot-priority="landscape"] .ccf-feedback { position: absolute; left: calc((100% - clamp(220px, 30%, 250px)) / 2); top: 8px; z-index: 6; transform: translateX(-50%); max-width: 60%; }
 /* Very short landscape windows (568 x 320): one money line, the stepper and the actions. */
 @media (max-height: 360px) {
@@ -863,25 +832,6 @@
 @container ccf-scene (max-height: 250px) {
   .cc-game.ccf[data-slot-priority="landscape"] .ccf-outcome > :is(.ccf-status, .ccf-win) { display: none !important; }
 }
-
-/* In a very short guest preview, keep the stake and the sign-in action readable. */
-@media (max-height: 360px) {
-  .cc-game.ccf[data-guest="true"][data-slot-priority="landscape"] .ccf-wallet-help > span { display: none; }
-  .cc-game.ccf[data-guest="true"][data-slot-priority="landscape"] .ccf-wallet-help { padding: 0 8px; }
-  .cc-game.ccf[data-guest="true"][data-slot-priority="landscape"] .ccf-wallet-help a { border: 0; padding: 0 8px; }
-  .cc-game.ccf[data-guest="true"][data-slot-priority="landscape"] .ccf-card { padding: 4px 8px; gap: 4px; }
-  .cc-game.ccf[data-guest="true"][data-slot-priority="landscape"] .ccf-scene { row-gap: 6px; }
-  .cc-game.ccf[data-guest="true"][data-slot-priority="landscape"] .ccf-fest { padding: 0; }
-  .cc-game.ccf[data-guest="true"][data-slot-priority="landscape"] .ccf-buy { min-height: 44px; }
-  .cc-game.ccf[data-guest="true"][data-slot-priority="landscape"] .ccf-slots > span { width: 18px; height: 20px; }
-  .cc-game.ccf[data-guest="true"][data-slot-priority="landscape"] .ccf-slots > span .cc-symbol { width: 20px; height: 20px; }
-  .cc-game.ccf[data-guest="true"][data-slot-priority="landscape"] .ccf-bar {
-    grid-template-columns: minmax(0, 1fr) 72px; grid-template-areas: "stake spin";
-    gap: 8px; padding: 56px 8px 8px;
-  }
-  .cc-game.ccf[data-guest="true"][data-slot-priority="landscape"] :is(.ccf-money, .ccf-lastwin, .ccf-auto, .ccf-speed-cycle, .ccf-stepper > button) { display: none; }
-}
-.cc-game.ccf:is([data-slot-priority="portrait"], [data-slot-priority="landscape"]) .ccf-buy > span { white-space: normal; line-height: 14px; text-align: left; }
 
 /* Phone dialogs keep the main action in view without scrolling. */
 .cc-game.ccf:is([data-slot-priority="landscape"], [data-slot-priority="portrait"]) .cc-dialog-backdrop { padding: 10px 12px; }
