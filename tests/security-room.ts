@@ -10,7 +10,7 @@ export async function securityRoom(request: APIRequestContext, cookie?: string) 
   cookie=response.headers()['set-cookie'].split(';')[0];
   await request.post('/api/auth/character',{data:{skin:0}});
  }
- const client=new Client(process.env.TEST_BASE_URL||'http://127.0.0.1:2567',{headers:{Cookie:cookie},fetchFn:async(url,options)=>{
+ const client=new Client(process.env.LAYOUT_MATCHMAKING_URL||process.env.TEST_BASE_URL||'http://127.0.0.1:2567',{headers:{Cookie:cookie},fetchFn:async(url,options)=>{
   const response=await request.fetch(String(url),{method:options?.method,headers:Object.fromEntries(new Headers(options?.headers)),data:options?.body as string});
   return new Response(await response.body(),{status:response.status(),headers:response.headers()});
  }});

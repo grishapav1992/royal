@@ -19,7 +19,7 @@ export function platformGameCabinet(id: string, seat: Cabinet): Cabinet {
   const studio = isStudioGame(id) ? STUDIO_INFO[id] : undefined;
   const existing = GAME_CABINETS.find(c => c.id === id);
   return {...seat, id, name:studio ? studioCatalogName(studio.id) : existing?.name ?? 'Casino API Pro',
-    subtitle:studio?.subtitle ?? existing?.subtitle ?? '', demo:false, provider:false, wallet:!!studio || !!existing?.wallet,
+    subtitle:id==='studio-caramel-carnival'?t('Совпадения от восьми символов · До 20 каскадов'):studio?.subtitle ?? existing?.subtitle ?? '', demo:false, provider:false, wallet:!!studio || !!existing?.wallet,
     github:!studio && id !== 'studio-wild-nudge' && id !== 'flag-battle' && id !== 'flag-tote' && id !== 'studio-forest-heart' && id !== 'studio-flooded-temple' && id !== CARIBBEAN_GAME && id !== 'casinoapipro' && id !== 'royal-roulette', defaultGameId:undefined,collection:undefined};
 }
 const kindNames: Record<string,string> = {
