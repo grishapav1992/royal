@@ -5,10 +5,16 @@ import type {LuelonTheme} from './LuelonArtwork';
 import {VELVET_ASSETS} from './VelvetReignAssets';
 import {VELVET_NAMES,VELVET_STARS} from '../shared/velvetReign';
 export const velvetSymbolName=(id:number)=>VELVET_NAMES[id]??translateText('Пустая ячейка');
-const ART_RECTS=[[1,8,363,337],[380,15,352,329],[762,14,326,329],[1090,15,358,321],[4,345,362,342],[368,342,361,345],[740,345,347,341],[1088,343,360,343],[0,689,405,389],[379,689,354,389],[724,689,363,389],[1086,688,362,391]];
-let artSerial=0;
+const SYMBOL_ASSETS = [VELVET_ASSETS.mask, VELVET_ASSETS.fan, VELVET_ASSETS.perfume, VELVET_ASSETS.crown, VELVET_ASSETS.gem, VELVET_ASSETS.wild];
+const symbolAsset=(cell:number)=>cell===11?VELVET_ASSETS.encore:SYMBOL_ASSETS[cell]??SYMBOL_ASSETS[0];
 const STAR_ASSETS=[VELVET_ASSETS.star0,VELVET_ASSETS.star1,VELVET_ASSETS.star2,VELVET_ASSETS.star3,VELVET_ASSETS.star4];
-export function velvetArt(cell:number,ready=true,fill=false){if(cell>=6&&cell<=10)return `<svg class="vr-portrait" viewBox="0 0 1024 1536" preserveAspectRatio="${fill?'xMidYMin slice':'xMidYMax meet'}" aria-hidden="true"><image data-velvet-portrait="${cell-6}"${ready?` href="${STAR_ASSETS[cell-6]}"`:''} width="1024" height="1536"/></svg>`;const clip="vr-art-"+(artSerial++),rect=ART_RECTS[cell]??ART_RECTS[0];return `<svg viewBox="${rect.join(' ')}" preserveAspectRatio="xMidYMid meet" aria-hidden="true" style="overflow:hidden"><defs><clipPath id="${clip}"><rect x="${rect[0]}" y="${rect[1]}" width="${rect[2]}" height="${rect[3]}"/></clipPath></defs><image clip-path="url(#${clip})" data-velvet-symbol-image${ready?` href="${VELVET_ASSETS.symbols}"`:''} width="1448" height="1086"/></svg>`;}
+export function velvetArt(cell:number,ready=true,fill=false){
+  if(cell>=6&&cell<=10)return `<svg class="vr-portrait" viewBox="0 0 1024 1536" preserveAspectRatio="${fill?'xMidYMin slice':'xMidYMax meet'}" aria-hidden="true"><image data-velvet-portrait="${cell-6}"${ready?` href="${STAR_ASSETS[cell-6]}"`:''} width="1024" height="1536"/></svg>`;
+  return `<svg viewBox="0 0 400 400" aria-hidden="true"><image data-velvet-art="${cell}"${ready?` href="${symbolAsset(cell)}"`:''} width="400" height="400"/></svg>`;
+}
+export function velvetEnableArt(root:HTMLElement){
+  root.querySelectorAll<SVGImageElement>('[data-velvet-art]').forEach(image=>image.setAttribute('href',symbolAsset(Number(image.dataset.velvetArt))));
+}
 export function velvetSymbol(id:number,ready=true){if(id<0)return '';if(id<4)return `<span class="lg-symbol vr-letter vr-letter-${id}" aria-hidden="true"><span>${['J','Q','K','A'][id]}</span></span>`;const cell=id<8?id-4:id===8?5:4;return `<span class="lg-symbol vr-symbol" aria-hidden="true">${velvetArt(cell,ready)}${id===8?'<b>WILD</b>':''}</span>`;}
 export class VelvetReignBoard extends SlotReelBoard {
   constructor(host:HTMLElement,info:LuelonSlotInfo,theme:LuelonTheme,onStop:(column:number)=>void,artworkReady=true) {
