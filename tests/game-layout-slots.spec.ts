@@ -42,7 +42,8 @@ async function fit(page:Page,id:string,action?:string,modal=false){
   const root=host.firstElementChild!,selectors=[`[data-${prefix}-board]`,primary,`[data-${prefix}-stake]`,`[data-${prefix}-cost]`,'.slot-settings-button',`[data-${prefix}-auto]`,'.slot-feature-strip'];
   const failures:string[]=[];
   for(const selector of selectors){
-   const el=root.querySelector<HTMLElement>(selector);if(!el){failures.push(selector+': missing');continue;}
+   // A cabinet may place its rules, sound and settings buttons in the dialog header row (Caramel Carnival does).
+   const el=root.querySelector<HTMLElement>(selector)??host.closest('#mini-dialog')?.querySelector<HTMLElement>(selector)??null;if(!el){failures.push(selector+': missing');continue;}
    if(!el.getClientRects().length)continue;
    const box=el.getBoundingClientRect();if(!box.width||!box.height){failures.push(selector+': empty');continue;}
    for(let parent=el.parentElement;parent;parent=parent.parentElement){
@@ -59,7 +60,7 @@ async function fit(page:Page,id:string,action?:string,modal=false){
  },{prefix,primary,modal});
  expect(failures).toEqual([]);
  for(const selector of [primary,`[data-${prefix}-stake]`,'.slot-settings-button']){
-  const box=await page.locator('#mini-game '+selector).boundingBox();expect(box).not.toBeNull();expect(box!.height).toBeGreaterThanOrEqual(44);
+  const box=await page.locator('#mini-dialog '+selector).boundingBox();expect(box).not.toBeNull();expect(box!.height).toBeGreaterThanOrEqual(44);
  }
 }
 async function currentSession(page:Page,id:string){return page.evaluate(async id=>{const path='/src/wallet/ExpansionClient.ts';return(await import(/* @vite-ignore */path)).expansionClient.sessions.find((s:any)=>s.gameId===id);},id);}

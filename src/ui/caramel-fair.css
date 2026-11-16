@@ -25,7 +25,7 @@
   --ccf-font: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --ccf-num: 'Rubik', 'Nunito', system-ui, sans-serif;
   --ccf-bar-height: 120px;
-  --ccf-side: clamp(212px, 21%, 300px);
+  --ccf-side: clamp(212px, 22.06%, 300px);
   --ccf-awning: var(--cc-berry);
   --ccf-frame: var(--cc-gold);
   --ccf-stripe: 60px;
@@ -305,8 +305,8 @@
 .ccf-track > i { display: block; height: 100%; width: 2%; border-radius: 6px; background: var(--cc-mint); transition: width .4s; }
 .ccf-meter > span { position: absolute; top: 18px; font-size: 12px; font-weight: 800; color: var(--cc-ink-2); }
 .ccf-meter > span:nth-of-type(1) { left: 0; }
-.ccf-meter > span:nth-of-type(2) { left: 20%; transform: translateX(-50%); }
-.ccf-meter > span:nth-of-type(3) { left: 50%; transform: translateX(-50%); }
+.ccf-meter > span:nth-of-type(2) { left: 18%; }
+.ccf-meter > span:nth-of-type(3) { left: 48%; }
 .ccf-meter > span:nth-of-type(4) { right: 0; }
 
 /* Festival card: an offer in the base game, progress while the festival runs. */
@@ -361,8 +361,8 @@
 .cc-game.ccf .ccf-stake { display: flex; flex-direction: column; gap: 6px; flex: none; min-width: 0; }
 .ccf-stake[data-locked="true"] .ccf-stepper { opacity: .45; }
 .ccf-stepper { display: flex; align-items: center; height: 52px; box-sizing: border-box; border: 1px solid var(--cc-line); border-radius: 14px; background: var(--cc-surface); }
-.cc-game.ccf .ccf-stepper > button:first-child { border-radius: 13px 0 0 13px; }
-.cc-game.ccf .ccf-stepper > button:last-child { border-radius: 0 13px 13px 0; }
+.cc-game.ccf .ccf-stepper > [data-cc-stake-step="-1"] { border-radius: 13px 0 0 13px; }
+.cc-game.ccf .ccf-stepper > [data-cc-stake-step="1"] { border-radius: 0 13px 13px 0; }
 .cc-game.ccf .ccf-stepper button {
   display: flex; align-items: center; justify-content: center; flex: none; width: 52px; height: 50px; min-height: 44px; padding: 0;
   border: 0; border-radius: 0; background: transparent; color: var(--cc-ink);
@@ -533,22 +533,21 @@
 .cc-game.ccf .cc-history b { font-family: var(--ccf-num); color: var(--cc-win); }
 
 /* A desktop window that shares its width with the chat keeps every bar control inside the cabinet. */
-@container ccf-bar (max-width: 1240px) {
-  .ccf-money > strong, .ccf-lastwin > strong { font-size: 20px; }
-  .ccf-money { min-width: 0; }
-  .ccf-lastwin { min-width: 80px; }
-  .cc-game.ccf .ccf-speed button { min-width: 0; padding: 0 10px; }
-  .cc-game.ccf .ccf-auto { padding: 0 14px; }
+@container ccf-bar (max-width: 1300px) {
+  .cc-game.ccf:not([data-slot-priority="portrait"], [data-slot-priority="landscape"]) :is(.ccf-money, .ccf-lastwin) > strong { font-size: 20px; }
+  .cc-game.ccf:not([data-slot-priority="portrait"], [data-slot-priority="landscape"]) .ccf-money { min-width: 0; }
+  .cc-game.ccf:not([data-slot-priority="portrait"], [data-slot-priority="landscape"]) .ccf-lastwin { min-width: 80px; }
+  .cc-game.ccf:not([data-slot-priority="portrait"], [data-slot-priority="landscape"]) .ccf-speed button { min-width: 0; padding: 0 10px; }
+  .cc-game.ccf:not([data-slot-priority="portrait"], [data-slot-priority="landscape"]) .ccf-auto { padding: 0 14px; }
 }
-@container ccf-bar (max-width: 1080px) {
-  .ccf-divider, .cc-game.ccf .ccf-auto svg { display: none; }
-  .ccf-money small { display: none; }
-  .ccf-stake > label { letter-spacing: .06em; }
+@container ccf-bar (max-width: 1120px) {
+  .cc-game.ccf:not([data-slot-priority="portrait"], [data-slot-priority="landscape"]) :is(.ccf-divider, .ccf-auto svg, .ccf-money small) { display: none; }
+  .cc-game.ccf:not([data-slot-priority="portrait"], [data-slot-priority="landscape"]) .ccf-stake > label { letter-spacing: .06em; }
 }
-@container ccf-bar (max-width: 960px) {
-  .ccf-speed-group { display: none; }
-  .cc-game.ccf .ccf-speed-cycle { display: flex; align-self: flex-end; margin-bottom: 21px; }
-  .ccf-money > strong, .ccf-lastwin > strong { font-size: 18px; }
+@container ccf-bar (max-width: 980px) {
+  .cc-game.ccf:not([data-slot-priority="portrait"], [data-slot-priority="landscape"]) .ccf-speed-group { display: none; }
+  .cc-game.ccf:not([data-slot-priority="portrait"], [data-slot-priority="landscape"]) .ccf-speed-cycle { display: flex; align-self: flex-end; margin-bottom: 21px; }
+  .cc-game.ccf:not([data-slot-priority="portrait"], [data-slot-priority="landscape"]) :is(.ccf-money, .ccf-lastwin) > strong { font-size: 18px; }
 }
 /* Narrow desktop scenes keep the field first: the "how to play" card gives way before the board shrinks. */
 @container ccf-scene (max-height: 640px) {
@@ -629,9 +628,10 @@
 .cc-game.ccf[data-slot-priority="portrait"] .ccf-buy > span { font-size: 12px; font-weight: 900; letter-spacing: .08em; color: #FFC2D2; text-transform: uppercase; }
 .cc-game.ccf[data-slot-priority="portrait"] .ccf-buy > span { font-size: 0; }
 .cc-game.ccf[data-slot-priority="portrait"] .ccf-buy > span::before { content: attr(data-short); font-size: 12px; }
-.cc-game.ccf[data-slot-priority="portrait"] .ccf-buy > .cc-symbol { display: inline-block; position: absolute; right: 8px; bottom: 6px; width: 26px; height: 26px; }
-.cc-game.ccf[data-slot-priority="portrait"] .ccf-buy > b { display: block; font: 600 16px/1.2 var(--ccf-num); }
-.cc-game.ccf[data-slot-priority="portrait"] .ccf-buy { position: relative; }
+.cc-game.ccf[data-slot-priority="portrait"] .ccf-buy { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "label label" "icon price"; align-items: center; justify-items: start; column-gap: 4px; }
+.cc-game.ccf[data-slot-priority="portrait"] .ccf-buy > span { grid-area: label; }
+.cc-game.ccf[data-slot-priority="portrait"] .ccf-buy > .cc-symbol { display: inline-block; grid-area: icon; width: 26px; height: 26px; }
+.cc-game.ccf[data-slot-priority="portrait"] .ccf-buy > b { display: block; grid-area: price; font: 600 16px/1.2 var(--ccf-num); color: var(--cc-ink); }
 .cc-game.ccf[data-slot-priority="portrait"] .ccf-fest-live { gap: 4px; }
 .cc-game.ccf[data-slot-priority="portrait"] .ccf-fest-live > header strong { display: none; }
 .cc-game.ccf[data-slot-priority="portrait"] .ccf-fest-live h3 { font-size: 0; }
@@ -857,4 +857,164 @@
 @media (prefers-reduced-motion: reduce) {
   .cc-game.ccf .ccf-loader-ring, .cc-game.ccf .ccf-top .cc-symbol { animation: none; }
   .cc-game.ccf .cc-cell, .cc-game.ccf .cc-spin, .cc-game.ccf .ccf-frame { transition: none; }
+}
+
+/* ===== Canvas alignment, 16 November 2026: the live cabinet follows the approved canvas artboards. ===== */
+
+/* Desktop grid of the canvas: 40 | 300 | 16 | awning 728 | 16 | 300 | 40, 8 px above the awning and under the status pill. */
+.cc-game.ccf[data-header-tools="true"]:not([data-slot-priority="portrait"], [data-slot-priority="landscape"]) .ccf-scene {
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas: "left stage right" "left outcome right";
+  column-gap: 16px; row-gap: 12px; padding: 8px clamp(16px, 2.8vw, 40px) 8px;
+}
+.cc-game.ccf[data-header-tools="true"]:not([data-slot-priority="portrait"], [data-slot-priority="landscape"]) .ccf-right { padding-top: 16px; }
+.ccf-outcome { justify-content: center; }
+.ccf-vmeter { display: none; }
+.ccf-stepper { position: relative; }
+.ccf-stepper-label { display: none; }
+.cc-game.ccf .ccf-stepper > [data-stake-field] { align-self: stretch; flex: 0 0 96px; width: 96px !important; border-left: 1px solid var(--cc-line); border-right: 1px solid var(--cc-line); border-radius: 0 !important; background: transparent !important; }
+.cc-game.ccf .ccf-stepper > [data-stake-field] > input { text-align: center; padding: 0 0 0 24px !important; font: 600 18px/1 var(--ccf-num) !important; color: var(--cc-ink) !important; }
+.cc-game.ccf .ccf-stepper > [data-stake-field] > input:focus-visible { outline: 3px solid var(--cc-caramel-hi); outline-offset: -3px; }
+.cc-game.ccf .ccf-stepper > [data-stake-field] > select { border: 0; height: auto; align-self: stretch; }
+.cc-game.ccf .ccf-stepper > [data-stake-field] > span[aria-hidden] { color: var(--cc-ink-2) !important; font-size: 12px; }
+
+/* Rules, sound and settings sit in the dark header row, as on the canvas. The host's own gear is not drawn there:
+   sound, music and volume live in the game settings dialog. */
+#mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top > .ccf-headbar { display: flex; flex: none; align-items: center; gap: 12px; margin-left: auto; min-width: 0; }
+#mini-dialog .mini-top > .ccf-headbar::after { content: ''; flex: none; width: 1px; height: 28px; margin: 0 4px; background: #4E3550; }
+#mini-dialog .ccf-headbar .ccf-tools { display: flex; align-items: center; gap: 12px; }
+#mini-dialog .ccf-headbar :is(.ccf-icon, .slot-settings-button) {
+  display: inline-flex; align-items: center; justify-content: center; flex: none; width: 44px; height: 44px; min-height: 44px; padding: 0;
+  border: 1px solid #4E3550; border-radius: 10px; background: transparent; color: #FFF3E6; font-size: 20px; line-height: 1; box-shadow: none; cursor: pointer;
+}
+#mini-dialog .ccf-headbar :is(.ccf-icon, .slot-settings-button):hover:not(:disabled) { background: #2E1E33; }
+#mini-dialog .ccf-headbar :is(.ccf-icon, .slot-settings-button):disabled { opacity: .45; cursor: default; }
+#mini-dialog .ccf-headbar :is(.ccf-icon, .slot-settings-button):focus-visible { outline: 3px solid #FFC98A; outline-offset: 2px; }
+#mini-dialog .ccf-headbar [data-cc-sound-quick] [data-ccf-sound-off], #mini-dialog .ccf-headbar [data-cc-sound-quick][aria-pressed="false"] [data-ccf-sound-on] { display: none; }
+#mini-dialog .ccf-headbar [data-cc-sound-quick][aria-pressed="false"] [data-ccf-sound-off] { display: block; }
+#mini-dialog .ccf-headbar .ccf-head-mode {
+  display: none; align-items: center; height: 24px; padding: 0 10px; border: 1px solid #4E3550; border-radius: 999px;
+  color: #F3E3EC; font: 800 12px/1 'Nunito', system-ui, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+}
+#mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top { gap: 12px; justify-content: flex-start; }
+#mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top > div:first-child { flex: none; }
+#mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top > .settings-shortcut { display: none; }
+#mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top > :is(#studio-game-list, .game-chat-toggle) { display: inline-flex; align-items: center; gap: 8px; }
+#mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top > :is(#studio-game-list, .game-chat-toggle)::before {
+  content: ''; display: inline-block; flex: none; width: 18px; height: 18px; background: currentColor;
+  -webkit-mask: var(--ccf-head-icon) center / contain no-repeat; mask: var(--ccf-head-icon) center / contain no-repeat;
+}
+#mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top > #studio-game-list {
+  --ccf-head-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Crect x='4' y='4' width='6' height='6' rx='1'/%3E%3Crect x='14' y='4' width='6' height='6' rx='1'/%3E%3Crect x='4' y='14' width='6' height='6' rx='1'/%3E%3Crect x='14' y='14' width='6' height='6' rx='1'/%3E%3C/svg%3E");
+}
+#mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top > .game-chat-toggle {
+  --ccf-head-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M4 5h16v11H9l-5 4V5z'/%3E%3C/svg%3E");
+}
+/* Phones: borderless 44 px icons; the host buttons keep their names for assistive technology. */
+@media (max-width: 520px) {
+  #mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top { gap: 0; padding-left: 12px; }
+  #mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top h2 { font-size: 19px; }
+  #mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top > .ccf-headbar { gap: 0; }
+  #mini-dialog .mini-top > .ccf-headbar::after { display: none; }
+  #mini-dialog .ccf-headbar .ccf-tools { gap: 0; }
+  #mini-dialog .ccf-headbar [data-cc-rules] { display: none; }
+  #mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top > :is(button, .ccf-headbar button) { border-color: transparent; background: transparent; }
+  #mini-dialog .ccf-headbar :is(.ccf-icon, .slot-settings-button) { border-color: transparent; }
+  #mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top > :is(#studio-game-list, .game-chat-toggle) { width: 44px; padding: 0; font-size: 0; justify-content: center; }
+}
+/* Landscape phones: the mode pill joins the header row next to the wordmark, as on the canvas. */
+#mini-dialog:has(#mini-game > .cc-game.ccf[data-slot-priority="landscape"]) .mini-top { min-height: 44px; }
+#mini-dialog:has(#mini-game > .cc-game.ccf[data-slot-priority="landscape"]) .mini-top > .ccf-headbar { flex: 1 1 auto; margin-left: 0; }
+#mini-dialog:has(#mini-game > .cc-game.ccf[data-slot-priority="landscape"]) .ccf-headbar .ccf-head-mode { display: inline-flex; margin-right: auto; }
+#mini-dialog:has(#mini-game > .cc-game.ccf[data-slot-priority="landscape"]) .ccf-headbar [data-cc-rules] { display: inline-flex; }
+#mini-dialog:has(#mini-game > .cc-game.ccf[data-slot-priority="landscape"]) .mini-top > .ccf-headbar::after { display: none; }
+#mini-dialog:has(#mini-game > .cc-game.ccf[data-slot-priority="landscape"]) .mini-top .game-mode-badge { display: none; }
+#mini-dialog:has(#mini-game > .cc-game.ccf[data-slot-priority="landscape"]) .mini-top > :is(button, .ccf-headbar button) { border-color: transparent; background: transparent; }
+#mini-dialog:has(#mini-game > .cc-game.ccf[data-slot-priority="landscape"]) .ccf-headbar :is(.ccf-icon, .slot-settings-button) { border-color: transparent; }
+#mini-dialog:has(#mini-game > .cc-game.ccf[data-slot-priority="landscape"]) .mini-top > :is(#studio-game-list, .game-chat-toggle) { width: 44px; padding: 0; font-size: 0; justify-content: center; }
+
+/* Phone portrait canvas: centred mode pill, the awning and board across the width, the three-card strip, the status pill and the sheet. */
+.cc-game.ccf[data-slot-priority="portrait"][data-header-tools="true"] .ccf-scene {
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  grid-template-areas: "brand brand brand" "stage stage stage" "tickets energy fest" "outcome outcome outcome";
+  row-gap: 10px; padding: 8px 4px 8px;
+}
+/* The awning overhangs the 370 px frame by 6 px on each side; the strip and the status keep the frame's edges. */
+.cc-game.ccf[data-slot-priority="portrait"][data-header-tools="true"] .ccf-tickets { margin-left: 6px; }
+.cc-game.ccf[data-slot-priority="portrait"][data-header-tools="true"] .ccf-fest { margin-right: 6px; }
+.cc-game.ccf[data-slot-priority="portrait"][data-header-tools="true"] .ccf-outcome { padding: 0 6px; }
+.cc-game.ccf[data-slot-priority="portrait"] .ccf-brand { align-items: center; margin-bottom: -2px; }
+.cc-game.ccf[data-slot-priority="portrait"] .ccf-card { min-height: 72px; }
+.cc-game.ccf[data-slot-priority="portrait"] .ccf-buy { min-height: 72px; }
+.cc-game.ccf:is([data-slot-priority="portrait"], [data-slot-priority="landscape"]) .ccf-money > span { font-size: 0; }
+.cc-game.ccf:is([data-slot-priority="portrait"], [data-slot-priority="landscape"]) .ccf-money > span::after { content: attr(data-short); font-size: 12px; }
+.cc-game.ccf[data-slot-priority="portrait"] .ccf-money small { display: inline; font-size: 12px; }
+.cc-game.ccf:is([data-slot-priority="portrait"], [data-slot-priority="landscape"]) .ccf-stepper-label {
+  display: block; position: absolute; left: 50%; top: 7px; transform: translateX(-50%); z-index: 1; pointer-events: none;
+  font-size: 12px; font-weight: 900; letter-spacing: .12em; color: var(--cc-ink-2); line-height: 1;
+}
+.cc-game.ccf:is([data-slot-priority="portrait"], [data-slot-priority="landscape"]) .ccf-stepper > [data-stake-field] > input { padding: 16px 0 0 24px !important; }
+.cc-game.ccf[data-slot-priority="portrait"] .ccf-stepper > [data-stake-field],
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-stepper > [data-stake-field] { flex: 1 1 auto; width: auto !important; }
+
+/* Phone landscape canvas: board left, tickets, energy, festival and status in the middle, a 230 px control panel on the right. */
+.cc-game.ccf[data-slot-priority="landscape"][data-header-tools="true"] { grid-template-columns: minmax(0, 1fr) clamp(220px, 27.3%, 250px); }
+.cc-game.ccf[data-slot-priority="landscape"][data-header-tools="true"] .ccf-scene {
+  grid-template-columns: minmax(0, 1fr) clamp(150px, 34%, 206px);
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+  grid-template-areas: "stage tickets" "stage energy" "stage fest" "stage outcome";
+  column-gap: 16px; row-gap: 8px; padding: 6px 0 8px 8px;
+}
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-outcome { justify-content: flex-start; }
+.cc-game.ccf[data-slot-priority="landscape"] :is(.ccf-money, .ccf-lastwin) > span::after,
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-lastwin > span { letter-spacing: .04em; white-space: nowrap; }
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-energy { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "top title meter" "top value meter"; column-gap: 10px; row-gap: 0; }
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-energy-main { display: contents; }
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-energy h3 { display: block; grid-area: title; align-self: end; }
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-top { grid-area: top; width: 44px; height: 44px; }
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-energy-main > strong { grid-area: value; }
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-energy-chip { display: none; }
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-vmeter { display: flex; grid-area: meter; align-items: flex-end; width: 6px; height: 44px; border-radius: 3px; background: var(--cc-cell); overflow: hidden; }
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-vmeter > i { display: block; width: 6px; height: 6%; border-radius: 3px; background: var(--cc-mint); transition: height .4s; }
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-buy { min-height: 52px; gap: 8px; }
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-status { justify-content: flex-start; text-align: left; font-weight: 700; line-height: 19px; border: 0; background: rgba(20,12,26,.86); }
+.cc-game.ccf[data-slot-priority="landscape"][data-header-tools="true"] .ccf-bar {
+  grid-template-columns: minmax(0, 1fr) 100px;
+  grid-template-areas: "money lastwin" "stake stake" "auto spin" "speed spin";
+  align-content: start; row-gap: 10px; column-gap: 12px; padding: 12px; margin: 8px 8px 8px 0;
+}
+.cc-game.ccf[data-slot-priority="landscape"][data-header-tools="true"] .ccf-bar > :is(.ccf-auto, .ccf-speed-cycle) { min-height: 52px; width: 100%; }
+.cc-game.ccf[data-slot-priority="landscape"][data-header-tools="true"] .ccf-auto { align-self: end; }
+.cc-game.ccf[data-slot-priority="landscape"][data-header-tools="true"] .ccf-speed-cycle { align-self: start; }
+.cc-game.ccf[data-slot-priority="landscape"][data-header-tools="true"] .cc-spin { width: 100px; height: 100px; align-self: center; justify-self: end; }
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-stepper { height: 52px; }
+.cc-game.ccf[data-slot-priority="landscape"] .ccf-stepper button { height: 50px; }
+@media (max-height: 360px) {
+  .cc-game.ccf[data-slot-priority="landscape"][data-header-tools="true"] .ccf-bar { grid-template-areas: "money money" "stake stake" "auto spin" "speed spin"; grid-template-columns: minmax(0, 1fr) 76px; row-gap: 8px; padding: 10px; }
+  .cc-game.ccf[data-slot-priority="landscape"][data-header-tools="true"] .cc-spin { width: 76px; height: 76px; }
+  .cc-game.ccf[data-slot-priority="landscape"][data-header-tools="true"] .ccf-bar > :is(.ccf-auto, .ccf-speed-cycle) { min-height: 44px; }
+  .cc-game.ccf[data-slot-priority="landscape"] .ccf-stepper { height: 46px; }
+  .cc-game.ccf[data-slot-priority="landscape"] .ccf-stepper button { height: 44px; }
+  .cc-game.ccf[data-slot-priority="landscape"] .ccf-stepper-label { display: none; }
+  .cc-game.ccf[data-slot-priority="landscape"] .ccf-stepper > [data-stake-field] > input { padding-top: 0 !important; }
+}
+@container ccf-scene (max-height: 420px) {
+  .cc-game.ccf[data-slot-priority="portrait"][data-header-tools="true"] .ccf-fair { --ccf-frame-width: min(100cqw - 12px, (100cqh - var(--ccf-awning-height)) * 370 / 318); }
+}
+
+/* Header: the game group joins the host buttons on the right, as on the canvas. */
+#mini-dialog:has(#mini-game > [data-caramel-game]) .mini-top > :is(#studio-game-list, .game-chat-toggle, [data-close]) { margin-left: 0; }
+#mini-dialog:has(#mini-game > .cc-game.ccf:not([data-slot-priority="landscape"])) .mini-top > .ccf-headbar { margin-left: auto; }
+
+/* Desktop: the board row is sized from the column width, so the status pill stays right under the board when the
+   connected chat narrows the cabinet; any spare height stays below the status. At 1440 x 900 this is the canvas. */
+.cc-game.ccf { container: ccf-root / size; --ccf-pad: clamp(16px, 2.8vw, 40px); }
+.cc-game.ccf[data-header-tools="true"]:not([data-slot-priority="portrait"], [data-slot-priority="landscape"]) {
+  --ccf-side: clamp(212px, (100cqw - 2 * var(--ccf-pad)) * .2206, 300px);
+  --ccf-mid: calc(100cqw - 2 * var(--ccf-pad) - 2 * var(--ccf-side) - 32px);
+}
+.cc-game.ccf[data-header-tools="true"]:not([data-slot-priority="portrait"], [data-slot-priority="landscape"]) .ccf-scene {
+  grid-template-rows: minmax(0, calc((var(--ccf-mid) - 32px) * 588 / 696 + 60px)) auto minmax(0, 1fr);
+  grid-template-areas: "left stage right" "left outcome right" "left . right";
+  padding-left: var(--ccf-pad); padding-right: var(--ccf-pad);
 }
