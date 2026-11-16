@@ -631,3 +631,147 @@
 /* In landscape the status floats over the top of the field so the strip and its buttons stay reachable. */
 .cx-game[data-slot-priority="landscape"] .cx-feedback { position: absolute; left: calc((100% - clamp(232px, 36%, 300px)) / 2); top: 10px; z-index: 6; transform: translateX(-50%); max-width: 60%; }
 .cx-game[data-slot-priority="landscape"] .cx-feedback .lg-status { font-size: 12px; padding: 4px 10px; }
+
+/* Prototype pass: one top bar, compact phone header, free-spin line and prototype labels. */
+.cx-game .cx-short, .cx-game .cx-tiny { display: none; }
+.cx-game .cx-star-icon { display: none; }
+
+/* Rules, sound and settings move into the window bar (outside .cx-game, so colours are literal). */
+#mini-dialog:has(#mini-game > .cx-game) .mini-top > .settings-shortcut { display: none; }
+#mini-dialog .mini-top > .cx-header-tools {
+  display: flex; align-items: center; gap: 8px; margin-left: auto; padding-right: 12px; border-right: 1px solid #4A3D5C;
+}
+#mini-dialog .mini-top > .cx-header-tools > button {
+  display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; min-height: 40px; min-width: 40px; padding: 0;
+  border: 1px solid #4A3D5C; border-radius: 10px; background: transparent; color: #FFF1D6; box-shadow: none; cursor: pointer;
+}
+#mini-dialog .mini-top > .cx-header-tools > button:hover:not(:disabled) { background: #2A2140; }
+#mini-dialog .mini-top > .cx-header-tools > button:disabled { opacity: .45; cursor: default; }
+#mini-dialog .mini-top > .cx-header-tools > button:focus-visible { outline: 3px solid #5BE4DF; outline-offset: 2px; }
+#mini-dialog .mini-top > .cx-header-tools [data-cx-sound-off], #mini-dialog .mini-top > .cx-header-tools .cx-menu-icon { display: none; }
+#mini-dialog .mini-top > .cx-header-tools [data-cx-sound][aria-pressed="false"] [data-cx-sound-on] { display: none; }
+#mini-dialog .mini-top > .cx-header-tools [data-cx-sound][aria-pressed="false"] [data-cx-sound-off] { display: block; }
+.cx-game[data-header-tools="true"] .cx-scene > .cx-tools { display: none; }
+#mini-dialog:has(#mini-game > .cx-game) .mini-top .game-mode-badge { gap: 6px; }
+#mini-dialog:has(#mini-game > .cx-game) .mini-top .game-mode-badge::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #5BE4DF; }
+#mini-dialog:has(#mini-game > .cx-game) .mini-top > :is(#studio-game-list, .game-chat-toggle) { display: inline-flex; align-items: center; gap: 8px; }
+#mini-dialog:has(#mini-game > .cx-game) .mini-top > :is(#studio-game-list, .game-chat-toggle)::before {
+  content: ''; flex: none; width: 18px; height: 18px; background: currentColor;
+  -webkit-mask: var(--cx-icon) center / contain no-repeat; mask: var(--cx-icon) center / contain no-repeat;
+}
+#mini-dialog:has(#mini-game > .cx-game) .mini-top > #studio-game-list {
+  --cx-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Crect x='4' y='4' width='6' height='6' rx='1'/%3E%3Crect x='14' y='4' width='6' height='6' rx='1'/%3E%3Crect x='4' y='14' width='6' height='6' rx='1'/%3E%3Crect x='14' y='14' width='6' height='6' rx='1'/%3E%3C/svg%3E");
+}
+#mini-dialog:has(#mini-game > .cx-game) .mini-top > .game-chat-toggle {
+  --cx-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M4 5h16v11H9l-5 4V5z'/%3E%3C/svg%3E");
+}
+/* Phones: icons only, settings as a menu button, rules and sound live inside it. */
+#mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top { padding: 0 6px 0 14px; gap: 4px; }
+#mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top h2 { font-size: 13px; }
+#mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top > :is(#studio-game-list, .game-chat-toggle, .icon-button) {
+  width: 44px; min-width: 44px; height: 44px; min-height: 44px; padding: 0; justify-content: center; border: 0; font-size: 0; background: transparent;
+}
+#mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top > :is(#studio-game-list, .game-chat-toggle)::before { width: 20px; height: 20px; }
+#mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top > .cx-header-tools { padding-right: 0; border-right: 0; gap: 0; }
+#mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top > .cx-header-tools > :is([data-cx-rules], [data-cx-sound]) { display: none; }
+#mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top > .cx-header-tools > button { width: 44px; height: 44px; min-height: 44px; border: 0; }
+#mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top > .cx-header-tools .cx-gear-icon { display: none; }
+#mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top > .cx-header-tools .cx-menu-icon { display: block; }
+#mini-dialog:has(#mini-game > .cx-game[data-slot-priority="portrait"]) .mini-top { min-height: 52px; }
+#mini-dialog:has(#mini-game > .cx-game[data-slot-priority="landscape"]) .mini-top { min-height: 44px; }
+
+/* Stake: amount only, the whole-round price stays available to assistive technology. */
+.cx-stake { position: relative; }
+.cx-game .cx-stake > small[data-lg-cost] {
+  position: absolute; left: 0; bottom: 0; width: 1px; height: 1px; margin: 0; padding: 0; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+.cx-game .cx-energy > div { min-width: 0; }
+.cx-game .cx-energy small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Free spins: one line under the reels instead of the win block, the side card is not shown. */
+.cx-game .cx-bonus { display: none !important; }
+.cx-fs {
+  display: flex; align-items: center; gap: 16px; padding: 6px 8px 6px 24px; border: 1px solid var(--ce-cyan); border-radius: 999px;
+  background: rgba(14,10,22,.9); font-size: 16px; font-weight: 600; white-space: nowrap;
+}
+.cx-fs[hidden] { display: none; }
+.cx-fs > [data-cx-fs-spin] { color: #9DF2EE; font-weight: 800; }
+.cx-fs-total { color: #E3DAEC; }
+.cx-fs-total b { color: var(--ce-win); }
+.cx-game .cx-fs > button {
+  min-height: 44px; padding: 0 14px; border: 1px solid var(--ce-line); border-radius: 999px; background: var(--ce-surface); color: var(--ce-ink); font-size: 14px;
+}
+.cx-game[data-bonus="true"] .cx-win { display: none; }
+.cx-game[data-bonus="true"]:not([data-phase="feature"]) .cx-status { display: none; }
+
+/* Autoplay limits: short labels in the popover, long labels with USDT in phone sheets. */
+.cx-field { position: relative; display: flex; }
+.cx-field input { flex: 1 1 auto; width: 100%; }
+.cx-field > i { display: none; }
+.cx-game[data-slot-priority="portrait"] .cx-limits .cx-long { display: inline; }
+.cx-game[data-slot-priority="portrait"] .cx-limits .cx-short { display: none; }
+.cx-game:not([data-slot-priority="portrait"]) .cx-limits .cx-long { display: none; }
+.cx-game:not([data-slot-priority="portrait"]) .cx-limits .cx-short { display: inline; }
+.cx-game[data-slot-priority="portrait"] .cx-field > i { display: block; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-style: normal; font-weight: 700; color: var(--ce-ink-2); pointer-events: none; }
+.cx-game[data-slot-priority="portrait"] .cx-field input { padding-right: 64px; height: 48px; }
+.cx-game[data-slot-priority="portrait"] .cx-auto-panel h2 { font-size: 18px; }
+.cx-game[data-slot-priority="portrait"] .cx-chips button { min-height: 48px; }
+.cx-game[data-slot-priority="portrait"] .cx-primary { min-height: 56px; }
+
+/* Phone portrait: short energy label, missions star, title without the in-scene settings button. */
+.cx-game[data-slot-priority="portrait"] .cx-energy .cx-long { display: none; }
+.cx-game[data-slot-priority="portrait"] .cx-energy .cx-short { display: inline; }
+.cx-game[data-slot-priority="portrait"] .cx-star-icon { display: block; width: 20px; height: 20px; margin: 0 auto 4px; }
+.cx-game[data-slot-priority="portrait"] .cx-missions { flex-direction: column; gap: 0; }
+.cx-game[data-slot-priority="portrait"] .cx-missions b { font-size: 13px; }
+.cx-game[data-slot-priority="portrait"][data-header-tools="true"] .cx-alien { right: -4px; }
+.cx-game[data-slot-priority="portrait"] .cx-fs { gap: 10px; padding: 4px 4px 4px 14px; font-size: 14px; }
+
+/* Phone landscape: no status line under the strip, no in-panel settings, speed shows its value. */
+.cx-game[data-slot-priority="landscape"] .cx-energy .cx-long { display: none; }
+.cx-game[data-slot-priority="landscape"] .cx-energy .cx-tiny { display: inline; }
+.cx-game[data-slot-priority="landscape"] .cx-energy h3 { display: block; }
+.cx-game[data-slot-priority="landscape"] .cx-status { display: none; }
+.cx-game[data-slot-priority="landscape"][data-header-tools="true"] .cx-bar { padding-top: 12px; }
+.cx-game[data-slot-priority="landscape"] .cx-speed-cycle span { display: none; }
+.cx-game[data-slot-priority="landscape"] .cx-fs { gap: 8px; padding: 2px 2px 2px 12px; font-size: 13px; }
+.cx-game[data-slot-priority="landscape"] .cx-fs > button { min-height: 44px; padding: 0 10px; font-size: 13px; }
+/* Phone bar order as in the prototype: title, badge, games, chat, menu, close. */
+#mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top > div { min-width: 0; }
+#mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top h2 { font-size: 12px; letter-spacing: .02em; }
+#mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top .game-mode-badge { padding: 0 8px; }
+#mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top .game-mode-badge::before { display: none; }
+#mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top > #studio-game-list { order: 1; margin-left: auto; }
+#mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top > .game-chat-toggle { order: 2; }
+#mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top > .cx-header-tools { order: 3; margin-left: 0; }
+#mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top > .icon-button { order: 4; }
+/* In landscape the paused-series hint would cover the field; the bonus ring and line already say it. */
+.cx-game[data-slot-priority="landscape"][data-bonus="true"] .cx-feedback .lg-status { display: none; }
+/* The host gives every bar div flex: 1; the toolbar keeps its own width. */
+#mini-dialog .mini-top > div.cx-header-tools { flex: none; }
+#mini-dialog:has(#mini-game > .cx-game[data-slot-priority="full"]) .mini-top > div.cx-header-tools { margin-left: auto; }
+/* Phone strip: compact portal header, short reward, no energy track. */
+.cx-game[data-slot-priority="portrait"] .cx-portals { overflow: hidden; }
+.cx-game[data-slot-priority="portrait"] .cx-portals h3 { letter-spacing: .06em; }
+.cx-game[data-slot-priority="portrait"] .cx-portals > header { flex-wrap: nowrap; white-space: nowrap; }
+.cx-game[data-slot-priority="portrait"] .cx-ladder li::before { color: inherit; }
+.cx-game[data-slot-priority="portrait"] .cx-energy-track { display: none; }
+/* Phone free-spin line wraps onto two rows so the pause stays on screen. */
+.cx-game[data-slot-priority="portrait"] .cx-fs { flex-wrap: wrap; justify-content: center; white-space: normal; border-radius: 16px; padding: 6px 8px; gap: 2px 10px; max-width: 100%; box-sizing: border-box; text-align: center; }
+.cx-game[data-slot-priority="portrait"] .cx-fs > button { min-height: 44px; }
+.cx-game[data-slot-priority="portrait"] .cx-portals { flex: 1 1 0; }
+.cx-game[data-slot-priority="portrait"][data-bonus="true"] .cx-feedback .lg-status { display: none; }
+.cx-game[data-slot-priority="portrait"] .cx-side { display: grid; grid-template-columns: minmax(0, 1fr) 72px 80px; }
+.cx-game[data-slot-priority="portrait"] .cx-side > :is(.cx-energy, .cx-missions) { width: auto; min-width: 0; }
+.cx-game[data-slot-priority="portrait"] .cx-missions svg.cx-star-icon { display: block; }
+/* Touch targets stay at least 44 px, two pixels above the prototype's 40 px header buttons. */
+#mini-dialog .mini-top > div.cx-header-tools > button { width: 44px; height: 44px; min-width: 44px; min-height: 44px; }
+/* Landscape free-spin line stays inside the field column; very short windows keep the spin count and the pause. */
+.cx-game[data-slot-priority="landscape"] .cx-fs { max-width: 100%; box-sizing: border-box; overflow: hidden; }
+@media (max-height: 360px) {
+  .cx-game[data-slot-priority="landscape"] .cx-fs-total { display: none; }
+  .cx-game[data-slot-priority="landscape"] .cx-fs { font-size: 12px; gap: 6px; padding-left: 10px; }
+}
+/* Phone bar: the game list stays (it switches games), so the title is a little smaller. */
+#mini-dialog:has(#mini-game > .cx-game[data-slot-priority="portrait"]) .mini-top h2 { font-size: 11px; letter-spacing: 0; }
