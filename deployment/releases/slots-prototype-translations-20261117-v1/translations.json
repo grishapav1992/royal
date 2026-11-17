@@ -1,0 +1,13 @@
+{
+  "Миссию открыли порталы: {0} из 5": "The mission was opened by {0} of 5 portals",
+  "Выигрыш бонуса": "Bonus win",
+  "(с WILD)": "(with WILD)",
+  "· зачислено на баланс": "· credited to the balance",
+  "· выплата после миссии": "· paid after the mission",
+  "ЭНЕРГ.": "ENERGY",
+  "ЭН": "EN",
+  "Остановить, если баланс уменьшится на": "Stop if the balance falls by",
+  "Стоп при выигрыше": "Stop on a win of",
+  "БАЛАНС · ДЕМО": "BALANCE · DEMO",
+  "Авто выполняет выбранные 10, 25, 50 или 100 платных вращений. Можно задать остановку при потере суммы с начала автоигры и при выигрыше раунда от заданной суммы; лимиты проверяются между раундами, начатый раунд всегда завершается. По умолчанию авто останавливается при входе в фестиваль. Скорость «Быстро» сокращает анимацию, «Турбо» сразу показывает итог вращения. Результат и выплата от скорости не зависят.": "Autoplay runs the selected 10, 25, 50 or 100 paid spins. You can set a stop when the balance falls by a chosen amount since autoplay began and when a round wins at least a chosen amount; limits are checked between rounds and a started round always finishes. By default autoplay stops when the festival starts. Fast shortens the animation and Turbo shows the spin outcome at once. The result and payout do not depend on the speed."
+}
