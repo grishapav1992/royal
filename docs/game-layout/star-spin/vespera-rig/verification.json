@@ -1,0 +1,149 @@
+{
+  "date": "2026-11-17",
+  "sourceSha256": "5c1c8eedc4616fea4215c09303c81830318233aab7dea47efd8eec024a63d8e4",
+  "sourceLayerCount": 24,
+  "reconstructedPartCount": 19,
+  "visibleSourcePixels": 833267,
+  "maximumVisibleChannelDifference": 0,
+  "allSourcePixelsAssignedOnce": true,
+  "allReconstructedPartsHaveAlphaAndTransparentPadding": true,
+  "generatedCellEdgesCheckedDuringExport": true,
+  "visualReview": "Contact sheets inspected on a checker background. Reconstruction changes detail and scale; rig fitting and motion validation remain to be done.",
+  "filesBeforeThisReport": 79,
+  "totalBytesBeforeThisReport": 24289010,
+  "parts": [
+    {
+      "id": "head",
+      "width": 265,
+      "height": 406,
+      "visiblePixels": 78676,
+      "borderAlpha": 0
+    },
+    {
+      "id": "torso",
+      "width": 295,
+      "height": 424,
+      "visiblePixels": 85852,
+      "borderAlpha": 0
+    },
+    {
+      "id": "pelvis",
+      "width": 369,
+      "height": 374,
+      "visiblePixels": 109057,
+      "borderAlpha": 0
+    },
+    {
+      "id": "upper_arm_r",
+      "width": 210,
+      "height": 406,
+      "visiblePixels": 45973,
+      "borderAlpha": 0
+    },
+    {
+      "id": "forearm_r",
+      "width": 194,
+      "height": 401,
+      "visiblePixels": 40084,
+      "borderAlpha": 0
+    },
+    {
+      "id": "hand_r",
+      "width": 200,
+      "height": 369,
+      "visiblePixels": 47403,
+      "borderAlpha": 0
+    },
+    {
+      "id": "upper_arm_l",
+      "width": 294,
+      "height": 391,
+      "visiblePixels": 57503,
+      "borderAlpha": 0
+    },
+    {
+      "id": "forearm_l",
+      "width": 296,
+      "height": 366,
+      "visiblePixels": 44863,
+      "borderAlpha": 0
+    },
+    {
+      "id": "hand_l",
+      "width": 354,
+      "height": 187,
+      "visiblePixels": 44631,
+      "borderAlpha": 0
+    },
+    {
+      "id": "thigh_r",
+      "width": 262,
+      "height": 423,
+      "visiblePixels": 61469,
+      "borderAlpha": 0
+    },
+    {
+      "id": "thigh_l",
+      "width": 209,
+      "height": 432,
+      "visiblePixels": 66740,
+      "borderAlpha": 0
+    },
+    {
+      "id": "shin_r",
+      "width": 246,
+      "height": 426,
+      "visiblePixels": 47225,
+      "borderAlpha": 0
+    },
+    {
+      "id": "shin_l",
+      "width": 153,
+      "height": 411,
+      "visiblePixels": 41101,
+      "borderAlpha": 0
+    },
+    {
+      "id": "boot_r",
+      "width": 235,
+      "height": 376,
+      "visiblePixels": 47281,
+      "borderAlpha": 0
+    },
+    {
+      "id": "boot_l",
+      "width": 166,
+      "height": 387,
+      "visiblePixels": 41091,
+      "borderAlpha": 0
+    },
+    {
+      "id": "cape_back",
+      "width": 553,
+      "height": 623,
+      "visiblePixels": 195828,
+      "borderAlpha": 0
+    },
+    {
+      "id": "hair_back",
+      "width": 449,
+      "height": 628,
+      "visiblePixels": 184117,
+      "borderAlpha": 0
+    },
+    {
+      "id": "tabard",
+      "width": 113,
+      "height": 606,
+      "visiblePixels": 52151,
+      "borderAlpha": 0
+    },
+    {
+      "id": "saber",
+      "width": 475,
+      "height": 613,
+      "visiblePixels": 166041,
+      "borderAlpha": 0
+    }
+  ]
+}

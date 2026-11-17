@@ -1,0 +1,838 @@
+{
+  "version": 1,
+  "character": "Darth Vespera",
+  "game": "Star Spin",
+  "source": "games/wild-nudge/assets/characters/vespera.png",
+  "sourceSha256": "5c1c8eedc4616fea4215c09303c81830318233aab7dea47efd8eec024a63d8e4",
+  "canvas": {
+    "width": 1024,
+    "height": 1536
+  },
+  "sideConvention": "Anatomical right is viewer left",
+  "sourceParts": [
+    {
+      "id": "hand_l",
+      "label": "Кисть на бедре",
+      "parent": "forearm_l",
+      "file": "source-parts/hand_l.png",
+      "alignedFile": "aligned/hand_l.png",
+      "x": 465,
+      "y": 507,
+      "width": 153,
+      "height": 96,
+      "pivotCanvas": [
+        590,
+        568
+      ],
+      "pivotLocal": [
+        125,
+        61
+      ],
+      "visiblePixels": 7546,
+      "sha256": "1b0802ed9806b03312313417b4919d7c1bc96892bc6d952ff5dbfb24602c1723",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "hand_r",
+      "label": "Кисть с мечом",
+      "parent": "forearm_r",
+      "file": "source-parts/hand_r.png",
+      "alignedFile": "aligned/hand_r.png",
+      "x": 219,
+      "y": 715,
+      "width": 75,
+      "height": 118,
+      "pivotCanvas": [
+        263,
+        742
+      ],
+      "pivotLocal": [
+        44,
+        27
+      ],
+      "visiblePixels": 4922,
+      "sha256": "8832c8e6c84cddc1ee67349369cfc828c9898e8ce381b974f91085fbc9a987ba",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "cape_clasp",
+      "label": "Застёжка плаща",
+      "parent": "torso",
+      "file": "source-parts/cape_clasp.png",
+      "alignedFile": "aligned/cape_clasp.png",
+      "x": 518,
+      "y": 276,
+      "width": 57,
+      "height": 63,
+      "pivotCanvas": [
+        548,
+        306
+      ],
+      "pivotLocal": [
+        30,
+        30
+      ],
+      "visiblePixels": 1235,
+      "sha256": "9a65737da2a283a93647c7b6a14653f10ffd05c316fabbed8c2dce717f3858cc",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "head",
+      "label": "Голова и шея",
+      "parent": "torso",
+      "file": "source-parts/head.png",
+      "alignedFile": "aligned/head.png",
+      "x": 387,
+      "y": 55,
+      "width": 180,
+      "height": 232,
+      "pivotCanvas": [
+        463,
+        247
+      ],
+      "pivotLocal": [
+        76,
+        192
+      ],
+      "visiblePixels": 28323,
+      "sha256": "0d773d6928bd5c22a03a76dc8b7901fc800f4a102a63fae27e75a0ba7a3198cf",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "saber_hilt",
+      "label": "Рукоять меча",
+      "parent": "hand_r",
+      "file": "source-parts/saber_hilt.png",
+      "alignedFile": "aligned/saber_hilt.png",
+      "x": 211,
+      "y": 703,
+      "width": 113,
+      "height": 171,
+      "pivotCanvas": [
+        257,
+        803
+      ],
+      "pivotLocal": [
+        46,
+        100
+      ],
+      "visiblePixels": 4001,
+      "sha256": "cf9a14e29e80e7262f21e91b0a04c3ecae996b64659b1c47eea894cda3d0ff2c",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "saber_blade",
+      "label": "Клинок и свечение",
+      "parent": "saber_hilt",
+      "file": "source-parts/saber_blade.png",
+      "alignedFile": "aligned/saber_blade.png",
+      "x": 38,
+      "y": 832,
+      "width": 213,
+      "height": 431,
+      "pivotCanvas": [
+        231,
+        857
+      ],
+      "pivotLocal": [
+        193,
+        25
+      ],
+      "visiblePixels": 21817,
+      "sha256": "fdd705268eb4f373a4c6dd9dfc3651331c3ad8ad5ad18e72fb229b39df94f91e",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "forearm_l",
+      "label": "Левое предплечье",
+      "parent": "upper_arm_l",
+      "file": "source-parts/forearm_l.png",
+      "alignedFile": "aligned/forearm_l.png",
+      "x": 597,
+      "y": 460,
+      "width": 151,
+      "height": 139,
+      "pivotCanvas": [
+        718,
+        492
+      ],
+      "pivotLocal": [
+        121,
+        32
+      ],
+      "visiblePixels": 8016,
+      "sha256": "bb31b20a05a3192409a0f1c27f69ac04424bd1f80928c3519e542a7a3472e0f1",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "upper_arm_l",
+      "label": "Левое плечо",
+      "parent": "torso",
+      "file": "source-parts/upper_arm_l.png",
+      "alignedFile": "aligned/upper_arm_l.png",
+      "x": 597,
+      "y": 364,
+      "width": 141,
+      "height": 118,
+      "pivotCanvas": [
+        640,
+        400
+      ],
+      "pivotLocal": [
+        43,
+        36
+      ],
+      "visiblePixels": 6372,
+      "sha256": "72c8d45acfc91275cfeebdb92d8a8268d46f0fb4be8c85d60207849463358b56",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "forearm_r",
+      "label": "Правое предплечье",
+      "parent": "upper_arm_r",
+      "file": "source-parts/forearm_r.png",
+      "alignedFile": "aligned/forearm_r.png",
+      "x": 236,
+      "y": 562,
+      "width": 97,
+      "height": 169,
+      "pivotCanvas": [
+        308,
+        585
+      ],
+      "pivotLocal": [
+        72,
+        23
+      ],
+      "visiblePixels": 6270,
+      "sha256": "a76aae437805a408ceef3a020d82c60f682bb2a0ba94007a8f920d428e4125df",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "upper_arm_r",
+      "label": "Правое плечо",
+      "parent": "torso",
+      "file": "source-parts/upper_arm_r.png",
+      "alignedFile": "aligned/upper_arm_r.png",
+      "x": 285,
+      "y": 365,
+      "width": 75,
+      "height": 214,
+      "pivotCanvas": [
+        334,
+        389
+      ],
+      "pivotLocal": [
+        49,
+        24
+      ],
+      "visiblePixels": 8594,
+      "sha256": "2238860271b3b815041351468680a669707d7a25da9b83114c75ad0fed2688aa",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "tabard",
+      "label": "Передняя ткань",
+      "parent": "pelvis",
+      "file": "source-parts/tabard.png",
+      "alignedFile": "aligned/tabard.png",
+      "x": 389,
+      "y": 608,
+      "width": 123,
+      "height": 552,
+      "pivotCanvas": [
+        417,
+        623
+      ],
+      "pivotLocal": [
+        28,
+        15
+      ],
+      "visiblePixels": 38091,
+      "sha256": "2939f0caf23e5beaede9938d7b88fa81f0c7bf0f8492cb16afa6a996bc0519df",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "boot_r",
+      "label": "Правый сапог",
+      "parent": "shin_r",
+      "file": "source-parts/boot_r.png",
+      "alignedFile": "aligned/boot_r.png",
+      "x": 116,
+      "y": 1272,
+      "width": 162,
+      "height": 241,
+      "pivotCanvas": [
+        220,
+        1344
+      ],
+      "pivotLocal": [
+        104,
+        72
+      ],
+      "visiblePixels": 19957,
+      "sha256": "d2cc831c34566d06abec57324d45c111b0b874ded3db4ba1e1f335de3ae39b51",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "boot_l",
+      "label": "Левый сапог",
+      "parent": "shin_l",
+      "file": "source-parts/boot_l.png",
+      "alignedFile": "aligned/boot_l.png",
+      "x": 623,
+      "y": 1268,
+      "width": 116,
+      "height": 253,
+      "pivotCanvas": [
+        682,
+        1343
+      ],
+      "pivotLocal": [
+        59,
+        75
+      ],
+      "visiblePixels": 20256,
+      "sha256": "a6694df2d0e5877c7d05bc95804ca4fb2ebf1f08c819db0cec936ff026f1f4b4",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "knee_r",
+      "label": "Правый наколенник",
+      "parent": "thigh_r",
+      "file": "source-parts/knee_r.png",
+      "alignedFile": "aligned/knee_r.png",
+      "x": 258,
+      "y": 943,
+      "width": 96,
+      "height": 150,
+      "pivotCanvas": [
+        305,
+        1010
+      ],
+      "pivotLocal": [
+        47,
+        67
+      ],
+      "visiblePixels": 8749,
+      "sha256": "7d9d46bc5ffb8417dd90057386f0ac53f6f3a8c6742f5a1b88c65c89be4ef723",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "knee_l",
+      "label": "Левый наколенник",
+      "parent": "thigh_l",
+      "file": "source-parts/knee_l.png",
+      "alignedFile": "aligned/knee_l.png",
+      "x": 583,
+      "y": 949,
+      "width": 95,
+      "height": 146,
+      "pivotCanvas": [
+        630,
+        1015
+      ],
+      "pivotLocal": [
+        47,
+        66
+      ],
+      "visiblePixels": 9241,
+      "sha256": "9825ae1674c0a792bb50b5cacb297daeb7cc75db6993e615b3e2c8a7066087d1",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "shin_r",
+      "label": "Правая голень",
+      "parent": "knee_r",
+      "file": "source-parts/shin_r.png",
+      "alignedFile": "aligned/shin_r.png",
+      "x": 174,
+      "y": 1041,
+      "width": 162,
+      "height": 291,
+      "pivotCanvas": [
+        296,
+        1074
+      ],
+      "pivotLocal": [
+        122,
+        33
+      ],
+      "visiblePixels": 15785,
+      "sha256": "36cef83a31092e6a71c54f65723bf79532a7be4def969f3b681fdc7610fdb930",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "shin_l",
+      "label": "Левая голень",
+      "parent": "knee_l",
+      "file": "source-parts/shin_l.png",
+      "alignedFile": "aligned/shin_l.png",
+      "x": 587,
+      "y": 1044,
+      "width": 126,
+      "height": 281,
+      "pivotCanvas": [
+        639,
+        1071
+      ],
+      "pivotLocal": [
+        52,
+        27
+      ],
+      "visiblePixels": 18927,
+      "sha256": "4044dd18cccfc665f9b63d4418588ccd8fabbd422996e2ecb3ec8e2c3ea3f25e",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "thigh_r",
+      "label": "Правое бедро",
+      "parent": "pelvis",
+      "file": "source-parts/thigh_r.png",
+      "alignedFile": "aligned/thigh_r.png",
+      "x": 275,
+      "y": 718,
+      "width": 128,
+      "height": 258,
+      "pivotCanvas": [
+        365,
+        762
+      ],
+      "pivotLocal": [
+        90,
+        44
+      ],
+      "visiblePixels": 20410,
+      "sha256": "f7c702d9b754e5bc76a2672d10de3e05e8f240e7dcafc32308676943a628fd67",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "thigh_l",
+      "label": "Левое бедро",
+      "parent": "pelvis",
+      "file": "source-parts/thigh_l.png",
+      "alignedFile": "aligned/thigh_l.png",
+      "x": 471,
+      "y": 716,
+      "width": 196,
+      "height": 278,
+      "pivotCanvas": [
+        545,
+        756
+      ],
+      "pivotLocal": [
+        74,
+        40
+      ],
+      "visiblePixels": 24592,
+      "sha256": "1b8624785592a4c68f1341b63d1b88495919915d4e8cc25e786ff009de387fd9",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "pelvis",
+      "label": "Таз и пояс",
+      "parent": "root",
+      "file": "source-parts/pelvis.png",
+      "alignedFile": "aligned/pelvis.png",
+      "x": 309,
+      "y": 561,
+      "width": 319,
+      "height": 229,
+      "pivotCanvas": [
+        442,
+        625
+      ],
+      "pivotLocal": [
+        133,
+        64
+      ],
+      "visiblePixels": 35115,
+      "sha256": "81b72dafa0f2736c3995bfc913323e5f7c1c6c9825373ccb8bf557790d66c609",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "cape_shoulder",
+      "label": "Наплечная складка плаща",
+      "parent": "torso",
+      "file": "source-parts/cape_shoulder.png",
+      "alignedFile": "aligned/cape_shoulder.png",
+      "x": 325,
+      "y": 259,
+      "width": 444,
+      "height": 224,
+      "pivotCanvas": [
+        566,
+        291
+      ],
+      "pivotLocal": [
+        241,
+        32
+      ],
+      "visiblePixels": 24138,
+      "sha256": "001c2eaf251d15ac36d265c7d250340d69d9d166b882d61b508463bc302e5125",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "torso",
+      "label": "Корпус",
+      "parent": "pelvis",
+      "file": "source-parts/torso.png",
+      "alignedFile": "aligned/torso.png",
+      "x": 316,
+      "y": 241,
+      "width": 264,
+      "height": 348,
+      "pivotCanvas": [
+        453,
+        598
+      ],
+      "pivotLocal": [
+        137,
+        357
+      ],
+      "visiblePixels": 48782,
+      "sha256": "9fef120b53a32202d826b85c799f401beda8c31892a394d830a268789cd4cf54",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "hair_back",
+      "label": "Хвост и задние волосы",
+      "parent": "head",
+      "file": "source-parts/hair_back.png",
+      "alignedFile": "aligned/hair_back.png",
+      "x": 254,
+      "y": 10,
+      "width": 323,
+      "height": 512,
+      "pivotCanvas": [
+        455,
+        63
+      ],
+      "pivotLocal": [
+        201,
+        53
+      ],
+      "visiblePixels": 38485,
+      "sha256": "2011fe6f7736ca068adb871a72b0d1cd9e04c038da439e507e675dcd995d6be9",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    },
+    {
+      "id": "cape_back",
+      "label": "Задний плащ и оставшиеся края",
+      "parent": "root",
+      "file": "source-parts/cape_back.png",
+      "alignedFile": "aligned/cape_back.png",
+      "x": 46,
+      "y": 34,
+      "width": 949,
+      "height": 1489,
+      "pivotCanvas": [
+        582,
+        304
+      ],
+      "pivotLocal": [
+        536,
+        270
+      ],
+      "visiblePixels": 413643,
+      "sha256": "a6c6692cbdec4578456814f4feca91df1b5345d3f5bb8fc124d67d5e8619aa26",
+      "kind": "original-visible-pixels",
+      "hiddenSurfacesRestored": false
+    }
+  ],
+  "reconstructedParts": [
+    {
+      "id": "head",
+      "file": "parts/head.png",
+      "width": 265,
+      "height": 406,
+      "sha256": "1b0d0c2a5fe74058e25e2c4a827921daaa1604fc3f97c5a3396e0e64eb09e793",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/upper.png",
+      "sourceCell": {
+        "column": 0,
+        "row": 0
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "torso",
+      "file": "parts/torso.png",
+      "width": 295,
+      "height": 424,
+      "sha256": "71a3a2728b783f0423dad8fffe9f6afaf8153c3627bbd28a6cddabf675431700",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/upper.png",
+      "sourceCell": {
+        "column": 1,
+        "row": 0
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "pelvis",
+      "file": "parts/pelvis.png",
+      "width": 369,
+      "height": 374,
+      "sha256": "00f8998c75a7b60d7febc8640aaedd37be6593cbd442cb2d7b9532543441368e",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/upper.png",
+      "sourceCell": {
+        "column": 2,
+        "row": 0
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "upper_arm_r",
+      "file": "parts/upper_arm_r.png",
+      "width": 210,
+      "height": 406,
+      "sha256": "ce3f063042177e5f3b30d7c8a285703c36021a8bc2b3686fd70dbb045c89a0e6",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/upper.png",
+      "sourceCell": {
+        "column": 0,
+        "row": 1
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "forearm_r",
+      "file": "parts/forearm_r.png",
+      "width": 194,
+      "height": 401,
+      "sha256": "3e8da4af5e9854d76ebf2ff6c923fb536452d8ce92e9c15cab3999f6b5ae454f",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/upper.png",
+      "sourceCell": {
+        "column": 1,
+        "row": 1
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "hand_r",
+      "file": "parts/hand_r.png",
+      "width": 200,
+      "height": 369,
+      "sha256": "f2e57ed92af5b6c010d57168e57e65daa947c10ea577a723beeea110c60154da",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/upper.png",
+      "sourceCell": {
+        "column": 2,
+        "row": 1
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "upper_arm_l",
+      "file": "parts/upper_arm_l.png",
+      "width": 294,
+      "height": 391,
+      "sha256": "b8bf08c8a85c463ce06eefb290136b0e3cd6b6e1ae3541fac32586b266924a3b",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/upper.png",
+      "sourceCell": {
+        "column": 0,
+        "row": 2
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "forearm_l",
+      "file": "parts/forearm_l.png",
+      "width": 296,
+      "height": 366,
+      "sha256": "45d7563cedece64fdc1f7c55bddefd32a14287123e03f03ec8bba9b648683136",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/upper.png",
+      "sourceCell": {
+        "column": 1,
+        "row": 2
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "hand_l",
+      "file": "parts/hand_l.png",
+      "width": 354,
+      "height": 187,
+      "sha256": "462e76edacddcc4c7e65e64b147a5b8797e5eaa2f34f0b6da8206296308bcac3",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/upper.png",
+      "sourceCell": {
+        "column": 2,
+        "row": 2
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "thigh_r",
+      "file": "parts/thigh_r.png",
+      "width": 262,
+      "height": 423,
+      "sha256": "71f1e26985ce8a9d3104160308f6286ea1a589e695233155da19b2602f3cb406",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/lower.png",
+      "sourceCell": {
+        "column": 0,
+        "row": 0
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "thigh_l",
+      "file": "parts/thigh_l.png",
+      "width": 209,
+      "height": 432,
+      "sha256": "6c22a05526465a0001392d2eb4225533ebed58e167cce6e26b3ddea2b77eeeec",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/lower.png",
+      "sourceCell": {
+        "column": 1,
+        "row": 0
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "shin_r",
+      "file": "parts/shin_r.png",
+      "width": 246,
+      "height": 426,
+      "sha256": "6d55b1bd156157a7e28a42ebdfcc5c818f168fb8007f74f7f688d8b7c3b3ebdd",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/lower.png",
+      "sourceCell": {
+        "column": 0,
+        "row": 1
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "shin_l",
+      "file": "parts/shin_l.png",
+      "width": 153,
+      "height": 411,
+      "sha256": "ad62ae8a1ed44f3d7bbb27f5692042cb873df0775a9e764f2fa4a103d40b1e44",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/lower.png",
+      "sourceCell": {
+        "column": 1,
+        "row": 1
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "boot_r",
+      "file": "parts/boot_r.png",
+      "width": 235,
+      "height": 376,
+      "sha256": "40998190c0ed738727648dc46e8efd8d41b562fb80e387431d9358c806c0be25",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/lower.png",
+      "sourceCell": {
+        "column": 0,
+        "row": 2
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "boot_l",
+      "file": "parts/boot_l.png",
+      "width": 166,
+      "height": 387,
+      "sha256": "f8cb732d848fb9d224dd7397fafa636ef2d1bccc9751caa26d231df6b8169fcc",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/lower.png",
+      "sourceCell": {
+        "column": 1,
+        "row": 2
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "cape_back",
+      "file": "parts/cape_back.png",
+      "width": 553,
+      "height": 623,
+      "sha256": "3481ef583ea22be25dd10f4e2d4b145d8fc52be3c86664ddd9e7dc8c6c037c66",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/accessories.png",
+      "sourceCell": {
+        "column": 0,
+        "row": 0
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "hair_back",
+      "file": "parts/hair_back.png",
+      "width": 449,
+      "height": 628,
+      "sha256": "d96e79345f42dd39a0f811f3962c7d4bc25bef275f53b694ae48a713656280d5",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/accessories.png",
+      "sourceCell": {
+        "column": 1,
+        "row": 0
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "tabard",
+      "file": "parts/tabard.png",
+      "width": 113,
+      "height": 606,
+      "sha256": "40f5bc02286c05074c5da88247bda6a5ff746ac95433c378a258149e7a55731b",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/accessories.png",
+      "sourceCell": {
+        "column": 0,
+        "row": 1
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    },
+    {
+      "id": "saber",
+      "file": "parts/saber.png",
+      "width": 475,
+      "height": 613,
+      "sha256": "94f5ffd1506e9fb5cc81fbecd1977213d5b41d89514830659410899caedbdb7b",
+      "kind": "imagegen-reconstructed",
+      "sourceSheet": "sheets/accessories.png",
+      "sourceCell": {
+        "column": 1,
+        "row": 1
+      },
+      "placement": "Fit to source reference and set joints before binding; scales differ between cells"
+    }
+  ],
+  "sourceVerification": {
+    "maximumVisibleChannelDifference": 0,
+    "eachVisiblePixelAssignedExactlyOnce": true
+  }
+}
