@@ -341,5 +341,25 @@
     "Physical phones, Safari and subjective audio quality were not tested.",
     "Original publication preparation receipts were not retained. This audit reconstructs both packages from Git and verifies their public bytes, rather than asserting that historical preparation steps were recorded.",
     "The shared production graph has partial source coverage. Package provenance here is established by the reconstructed compiled input maps and byte comparison."
-  ]
+  ],
+  "projectBrain": {
+    "status": "ready",
+    "snapshotId": "a9f87930efb7d4057c37283840c02c47111b05ad15192c0dd583939c578e7cc3",
+    "runtimeFingerprint": "b1dc3915016999df36ed536bd96d940da3c07075d9ab7891aee5e0596d16ab28",
+    "lastFullVerificationAt": "2026-11-17T06:46:18Z",
+    "identityCheckedAt": "2026-11-17T06:49:04Z",
+    "partialSourceCoverageRemains": true
+  },
+  "serverTemporaryCleanup": {
+    "removed": [
+      {
+        "path": "/tmp/slots-prototype-translations-20261117-v1.tgz",
+        "bytes": 2389173,
+        "sha256": "1d54ad83fd20228de2baa558dc046a29f5dd919e5e533356e8390071803debf0"
+      }
+    ],
+    "freeBefore": 12499750912,
+    "freeAfter": 12502142976,
+    "financialBackupsAndRollbackPreserved": true
+  }
 }
