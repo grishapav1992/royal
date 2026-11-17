@@ -1,4 +1,5 @@
 import type {CaribbeanCue} from './CaribbeanAudio';
+import {CARIBBEAN_ANIMATION_POSES,getCaribbeanAnimationSteps,getCaribbeanAnimationTrigger} from '../../src/game/caribbeanAnimationAdapter';
 import {CAPTAIN_POSES,DEFAULT_CAPTAIN,crewMember,crewPortrait,type CaptainPose,type CrewId} from './CaribbeanCrew';
 export {CAPTAIN_POSES,type CaptainPose} from './CaribbeanCrew';
 type Beat={pose:CaptainPose;ms:number};
@@ -88,15 +89,13 @@ export class CaribbeanCaptain{
   this.seen.add(key);if(this.seen.size>200)this.seen.delete(this.seen.values().next().value!);
   this.clearTimer();this.sequence=[];this.holding=false;this.reaction=cue;
   const take=cue==='stop'?variant:this.variation++%3;
-  const pose:CaptainPose=cue==='cannon'?'surprise':cue==='bonus'?'bonus':cue==='loss'||cue==='partial'?'soft':cue==='win'?'win':cue==='bigwin'?'laugh':cue==='return'?'idle':'focus';
-  this.show(pose);this.say(cue);if(cue!=='stop'||variant===5)this.gesture(cue,take);
+  const steps=getCaribbeanAnimationSteps(getCaribbeanAnimationTrigger(cue),this.reduced);
+  if(!steps.length)return;
+  this.show(CARIBBEAN_ANIMATION_POSES[steps[0].frame]);this.say(cue);if(cue!=='stop'||variant===5)this.gesture(cue,take);
   this.history.push({cue,pose:this.pose,variant:take,key,wallTimeMs:Date.now()});if(this.history.length>200)this.history.shift();
-  if(['stop','giant','line','click'].includes(cue))return;
-  this.holding=true;
-  this.sequence=cue==='bigwin'&&!this.reduced?[{pose:'laugh',ms:1300},{pose:'win',ms:650}]
-   :cue==='cannon'&&!this.reduced?[{pose:'surprise',ms:300},{pose:'focus',ms:420}]
-   :[{pose,ms:cue==='win'?1500:cue==='bonus'?1300:cue==='cannon'?800:1100}];
-  this.nextBeat();
+  this.sequence=steps.map(step=>({pose:CARIBBEAN_ANIMATION_POSES[step.frame],ms:step.durationMs}));
+  if(!this.sequence.some(beat=>beat.ms>0)){this.sequence=[];return;}
+  this.holding=true;this.nextBeat();
  }
  private nextBeat(){
   if(this.dead||!this.active)return;
