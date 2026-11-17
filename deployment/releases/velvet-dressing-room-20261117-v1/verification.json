@@ -1,0 +1,244 @@
+{
+  "release": "velvet-dressing-room-20261117-v1",
+  "published": true,
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "applicationSourceCommit": "1982af70eddb487af20493e66954a622417db089",
+  "reviewedDesignCommit": "65e5b0e50ffa2633eb571ad3cf68ecfccbf4f3e9",
+  "completionHelperCommit": "ddae5eafe5e8ed026987951b6779dc5bdc704271",
+  "productionBaseCommit": "f64d0a292e8c655df1931cee9f308d936df8090e",
+  "image": "sha256:43f9e639570ce612404902ec3aa14c7b596a9fbb7423996e56a6874bba15da18",
+  "containerId": "b2fb0d424b2da696797445bcec1963bc595d91489e01255944b8e72fbbb5222c",
+  "startedAt": "2026-11-17T04:56:38.483563364Z",
+  "previousImage": "sha256:d3abb3de1eeadf1545f97f432910a066a92f1d888290d2d1510d23a007b96525",
+  "module": {
+    "gameId": "studio-velvet-reign",
+    "previousVersion": "1.1.1-286b92f7fe2a",
+    "version": "1.3.0-90e55a534a4e",
+    "contract": {
+      "host": 1,
+      "rules": 2,
+      "progress": 1
+    },
+    "pointerBeforeSha256": "7d68db73639b57de7a64bccf15c5d2dd28df393600a969773c7916b1baee5ecd",
+    "pointerAfterSha256": "4244f7830c393796d3276131412f37259ec6b697a3e3a5bd31e630b69b3da866",
+    "manifestSha256": "0325afc2a0180f4427e00e77ef81ec71b155837e95eedbfd0ced1e80865a9ea0",
+    "sourceSha256": "90e55a534a4eaa3d9d4f3d5a663548caf3a9b224ce6857db209da4697bec8a6c",
+    "files": 28,
+    "bytes": 5791363,
+    "hostRestartedForModule": false,
+    "databaseTouchedByModule": false
+  },
+  "releaseManifestSha256": "f28a9bb600f2acdc202fe81a9f3f420475fe090f620080add4220b07f6ebf856",
+  "checks": {
+    "wallet": {
+      "tests": 19,
+      "pass": 19
+    },
+    "browser": {
+      "desktopScenarios": 4,
+      "touchScenarios": 1,
+      "minimumLedgerScenarios": 1,
+      "screens": "all screens across 8 viewport sizes",
+      "minimumDebit": -0.1,
+      "productionBackendSha256": "5e94ef5f22439ea7c63ad219117a491aa51752ca34255a97183cfd961ae0c577",
+      "english": "new host translations rendered successfully"
+    },
+    "installerTests": {
+      "platform": "Linux",
+      "tests": 20,
+      "pass": 20
+    },
+    "transport": {
+      "archiveSha256": "56efa8912fccd4cbd76d677da3a95be4ec092c78012cb13fbf2d3f8907c2419a",
+      "macMetadataRemoved": 71,
+      "applicationBytesChangedByRemoval": false
+    },
+    "build": {
+      "sourceCommit": "1982af70eddb487af20493e66954a622417db089",
+      "scope": "application with production host projection",
+      "moduleVersion": "1.3.0-90e55a534a4e",
+      "dictionaryEntriesAdded": 23,
+      "sourceFilesChanged": 1,
+      "hostDeltaFiles": 9,
+      "backendDeltaFiles": 0
+    },
+    "rtp": {
+      "verified": 38,
+      "stakePoliciesVerified": 20,
+      "stakeAdmissionVerified": 20,
+      "legacyNotQualified": 114
+    },
+    "typecheck": "passed",
+    "viewports": [
+      [
+        1440,
+        900
+      ],
+      [
+        1024,
+        768
+      ],
+      [
+        768,
+        1024
+      ],
+      [
+        700,
+        900
+      ],
+      [
+        393,
+        852
+      ],
+      [
+        852,
+        393
+      ],
+      [
+        320,
+        568
+      ],
+      [
+        568,
+        320
+      ]
+    ],
+    "scope": "Built projected host and exact running production backend, temporary PostgreSQL, connected chat. All windows, paid modes, Spotlight and Super Encore continuations, history, retry and close/reopen.",
+    "publicHttp": {
+      "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+      "version": "1.3.0-90e55a534a4e",
+      "healthz": 200,
+      "activePointerSha256": "4244f7830c393796d3276131412f37259ec6b697a3e3a5bd31e630b69b3da866",
+      "manifestSha256": "0325afc2a0180f4427e00e77ef81ec71b155837e95eedbfd0ced1e80865a9ea0",
+      "packageFilesVerified": 28,
+      "hostDeltaFilesVerified": 9,
+      "retainedPreviousVersion": "1.1.1-286b92f7fe2a",
+      "previousEntryAndStylesAvailable": true,
+      "checkedAt": "2026-11-17T05:12:07.359Z"
+    },
+    "publicBrowser": {
+      "version": "1.3.0-90e55a534a4e",
+      "viewports": [
+        [
+          1440,
+          900
+        ],
+        [
+          768,
+          1024
+        ],
+        [
+          393,
+          852
+        ],
+        [
+          852,
+          393
+        ]
+      ],
+      "languages": [
+        "ru",
+        "en"
+      ],
+      "englishSubtitle": "VELVET CROWN · 14 LINES",
+      "javascriptErrors": [],
+      "productionAccountsOrWagers": false,
+      "initialClubSmokeTimeoutSeconds": 45,
+      "completedClubSmokeTimeoutSeconds": 120
+    },
+    "comparison": {
+      "sourceChanged": [
+        "src/i18n/en.ts"
+      ],
+      "backendUnchanged": true,
+      "catalogueCount": 19,
+      "catalogueUnchanged": true,
+      "addedGames": [],
+      "restoredGames": [],
+      "newModuleFiles": 29,
+      "otherModulesUnchanged": true,
+      "configurationUnchanged": true,
+      "otherServicesUnchanged": true,
+      "health": "healthy"
+    },
+    "programFiles": 8692,
+    "externalModuleFiles": 5450,
+    "catalogue": [
+      "flag-battle",
+      "github-crash",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "royal-plinko",
+      "royal-roulette",
+      "studio-afterglow",
+      "studio-caramel-carnival",
+      "studio-caribbean-treasures",
+      "studio-cosmic-escape",
+      "studio-dracona",
+      "studio-flooded-temple",
+      "studio-forest-heart",
+      "studio-last-convoy",
+      "studio-meme-overload",
+      "studio-neopolis",
+      "studio-nitro-run",
+      "studio-velvet-reign",
+      "studio-wild-nudge"
+    ]
+  },
+  "recovery": {
+    "directory": "/opt/royal-backups/velvet-dressing-room-20261117-v1",
+    "sourceArchiveBytes": 130837,
+    "sourceArchiveSha256": "07089e85f0b89c5a368c1bef61c096cf79a39e2abd4d735c2ada40e7d17574f5",
+    "financialDumpBytes": 48080995,
+    "financialDumpSha256": "8e7cfd5fc3bbb1033280632749670c4162307d8bbeb34a59b9bcf314bfb2d212",
+    "previousModulePointerAndManifestSaved": true,
+    "previousModuleAssetsRetained": true,
+    "databaseRestored": false
+  },
+  "installationRecovery": {
+    "reason": "Docker serialized an absent custom DNS setting as null instead of the previous empty array. Original installer rejected the representation change after starting the verified candidate.",
+    "completion": {
+      "completed": true,
+      "helperSourceCommit": "ddae5eafe5e8ed026987951b6779dc5bdc704271",
+      "applicationSourceCommit": "1982af70eddb487af20493e66954a622417db089",
+      "rawDns": null,
+      "previousDns": [],
+      "rawProfileSha256": "4185cf6a1def7a97e4f47af7dbda0d7f6132447c202e6e21866df1a6c173e532",
+      "canonicalProfileSha256": "766c2c3466e9a17cb00cd7846f50e5bd0037ba8ed1b577bc64667bdc50b06d68",
+      "containerRestartedByCompletion": false,
+      "databaseRestored": false,
+      "originalEvidenceChanged": false
+    },
+    "allOtherHostConfigurationEqual": true,
+    "originalInstallerAndEvidenceUnchanged": true,
+    "secondRestart": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "startedAt": "2026-11-17T05:12:12.057Z",
+    "finishedAt": "2026-11-17T05:13:19.721Z",
+    "currentImage": "sha256:43f9e639570ce612404902ec3aa14c7b596a9fbb7423996e56a6874bba15da18",
+    "rollbackImage": "sha256:d3abb3de1eeadf1545f97f432910a066a92f1d888290d2d1510d23a007b96525",
+    "freeBefore": 12547166208,
+    "freeAfter": 12566511616,
+    "healthOk": true,
+    "containersUnchanged": true,
+    "timerEnabled": true,
+    "timerActive": true
+  },
+  "serverTemporaryCleanup": {
+    "freeBefore": 12566286336,
+    "archiveBytes": 7866130,
+    "testFolderBytes": 70899,
+    "removed": [
+      "/opt/royal-releases/velvet-dressing-room-20261117-v1.tgz",
+      "/opt/royal-releases/velvet-dressing-room-20261117-v1-tests"
+    ],
+    "freeAfter": 12574265344
+  },
+  "limitations": [
+    "Desktop Chrome and emulated tablet/mobile viewports were tested. Physical devices and Safari were not tested.",
+    "Public guest checks do not place wagers. Monetary recovery was verified on a temporary database with the exact production backend.",
+    "The first public guest club checks exceeded 45 seconds during initialization; the final Russian and English checks completed with a 120 second guard and no JavaScript errors."
+  ]
+}
