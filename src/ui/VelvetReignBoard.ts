@@ -8,8 +8,8 @@ export const velvetSymbolName=(id:number)=>VELVET_NAMES[id]??translateText('Пу
 const SYMBOL_ASSETS = [VELVET_ASSETS.mask, VELVET_ASSETS.fan, VELVET_ASSETS.perfume, VELVET_ASSETS.crown, VELVET_ASSETS.gem, VELVET_ASSETS.wild];
 const symbolAsset=(cell:number)=>cell===11?VELVET_ASSETS.encore:SYMBOL_ASSETS[cell]??SYMBOL_ASSETS[0];
 const STAR_ASSETS=[VELVET_ASSETS.star0,VELVET_ASSETS.star1,VELVET_ASSETS.star2,VELVET_ASSETS.star3,VELVET_ASSETS.star4];
-export function velvetArt(cell:number,ready=true,fill=false){
-  if(cell>=6&&cell<=10)return `<svg class="vr-portrait" viewBox="0 0 1024 1536" preserveAspectRatio="${fill?'xMidYMin slice':'xMidYMax meet'}" aria-hidden="true"><image data-velvet-portrait="${cell-6}"${ready?` href="${STAR_ASSETS[cell-6]}"`:''} width="1024" height="1536"/></svg>`;
+export function velvetArt(cell:number,ready=true,fill=false,face=false){
+  if(cell>=6&&cell<=10)return `<svg class="vr-portrait" viewBox="${face?'128 0 768 768':'0 0 1024 1536'}" preserveAspectRatio="${face?'xMidYMid slice':fill?'xMidYMin slice':'xMidYMax meet'}" aria-hidden="true"><image data-velvet-portrait="${cell-6}"${ready?` href="${STAR_ASSETS[cell-6]}"`:''} width="1024" height="1536"/></svg>`;
   return `<svg viewBox="0 0 400 400" aria-hidden="true"><image data-velvet-art="${cell}"${ready?` href="${symbolAsset(cell)}"`:''} width="400" height="400"/></svg>`;
 }
 export function velvetEnableArt(root:HTMLElement){
@@ -23,7 +23,6 @@ export class VelvetReignBoard extends SlotReelBoard {
   async effect(event:LuelonSlotEvent,_after:readonly number[],fast:boolean,motion:boolean,current:()=>boolean){
     this.features.replaceChildren();if(!motion)return current();const promises:Promise<void>[]=[];
     if(event.kind==='collect'||event.kind==='scatter')for(const position of event.positions){const token=this.tokenAt(position,9);promises.push(this.animate(token,[{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:'translate(-50%,-220%) scale(.25)',opacity:0}],fast?220:620));}
-    else if(event.kind==='retrigger'){const badge=document.createElement('div');badge.className='vr-star-arrival';badge.textContent=tr`НОВАЯ ЗВЕЗДА · +${event.value} ВРАЩЕНИЯ`;this.features.append(badge);promises.push(this.animate(badge,[{opacity:0,transform:'translate(-50%,-50%) scale(.7)'},{opacity:1,transform:'translate(-50%,-50%) scale(1)',offset:.35},{opacity:1,transform:'translate(-50%,-50%) scale(1)'}],fast?400:1000));}
     await Promise.all(promises);this.features.replaceChildren();return current();
   }
   stars(wilds:readonly {column:number;factor:number}[],animate=false,from=0){this.heldLayer.replaceChildren();wilds.forEach((w,i)=>{const star=document.createElement('div');star.className='vr-held-star';star.dataset.star=String(i);star.style.left=`${w.column*20}%`;star.setAttribute('role','img');star.setAttribute('aria-label',`${VELVET_STARS[i]} WILD ×${w.factor}`);star.innerHTML=`<div class="vr-star-portrait">${velvetArt(6+i,this.artworkReady,true)}</div><div class="vr-star-caption"><small>${VELVET_STARS[i]}</small><span>WILD</span><strong>×${w.factor}</strong></div>`;this.heldLayer.append(star);if(animate&&i>=from)void this.animate(star,[{opacity:0,transform:'translateY(-20%) scale(.8)'},{opacity:1,transform:'translateY(0) scale(1)'}],650);});}

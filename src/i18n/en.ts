@@ -3,6 +3,17 @@ import { progressionEnglish } from './progressionEn';
 import { streetEnglish } from './streetEn';
 
 export const english: Record<string, string> = {
+  "ТРУППА":"TROUPE",
+  "до новой звезды":"until a new star",
+  "ВЫИГРЫШ БОНУСА":"BONUS WIN",
+  "БЕСПЛАТНЫЕ ВРАЩЕНИЯ":"FREE SPINS",
+  "НОВАЯ ЗВЕЗДА ОТКРЫТА":"NEW STAR UNLOCKED",
+  "присоединяется к труппе и выходит на сцену":"joins the troupe and takes the stage",
+  "Занимает весь барабан до конца бонуса":"Fills a reel until the bonus ends",
+  "Бесплатных вращений добавлено":"Free spins added",
+  "Труппа":"Troupe",
+  "На сцену!":"Take the stage!",
+  "Продолжение бесплатно. Новая ставка не нужна.":"Continue for free. No new stake is needed.",
   'Ранее принятый заказ: {0}, ${1}.':'Previously accepted order: {0}, ${1}.',
   'Жора':'Zhora',
   'Жора: образы':'Zhora: outfits',
