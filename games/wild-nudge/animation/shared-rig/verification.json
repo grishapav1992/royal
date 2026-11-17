@@ -59,10 +59,12 @@
     },
     {
       "slot": "forearm_l",
-      "vertices": 4,
-      "triangles": 2,
+      "vertices": 117,
+      "triangles": 192,
       "tendons": [
-        "forearm_l"
+        "upper_arm_l",
+        "forearm_l",
+        "hand_l"
       ],
       "rect": [
         336,
@@ -73,10 +75,12 @@
     },
     {
       "slot": "forearm_r",
-      "vertices": 4,
-      "triangles": 2,
+      "vertices": 117,
+      "triangles": 192,
       "tendons": [
-        "forearm_r"
+        "upper_arm_r",
+        "forearm_r",
+        "hand_r"
       ],
       "rect": [
         147,
@@ -87,10 +91,12 @@
     },
     {
       "slot": "upper_arm_l",
-      "vertices": 4,
-      "triangles": 2,
+      "vertices": 91,
+      "triangles": 144,
       "tendons": [
-        "upper_arm_l"
+        "clavicle_l",
+        "upper_arm_l",
+        "forearm_l"
       ],
       "rect": [
         326,
@@ -100,9 +106,41 @@
       ]
     },
     {
+      "slot": "head",
+      "vertices": 153,
+      "triangles": 256,
+      "tendons": [
+        "head",
+        "neck",
+        "chest"
+      ],
+      "rect": [
+        241,
+        31,
+        115,
+        176
+      ]
+    },
+    {
+      "slot": "upper_arm_r",
+      "vertices": 91,
+      "triangles": 144,
+      "tendons": [
+        "clavicle_r",
+        "upper_arm_r",
+        "forearm_r"
+      ],
+      "rect": [
+        178,
+        221,
+        57,
+        153
+      ]
+    },
+    {
       "slot": "torso",
-      "vertices": 117,
-      "triangles": 192,
+      "vertices": 231,
+      "triangles": 400,
       "tendons": [
         "chest",
         "spine",
@@ -116,37 +154,9 @@
       ]
     },
     {
-      "slot": "head",
-      "vertices": 4,
-      "triangles": 2,
-      "tendons": [
-        "head"
-      ],
-      "rect": [
-        241,
-        31,
-        115,
-        176
-      ]
-    },
-    {
-      "slot": "upper_arm_r",
-      "vertices": 4,
-      "triangles": 2,
-      "tendons": [
-        "upper_arm_r"
-      ],
-      "rect": [
-        178,
-        221,
-        57,
-        153
-      ]
-    },
-    {
       "slot": "tabard",
-      "vertices": 75,
-      "triangles": 112,
+      "vertices": 105,
+      "triangles": 160,
       "tendons": [
         "pelvis",
         "cloth_01",
@@ -176,9 +186,10 @@
     },
     {
       "slot": "boot_r",
-      "vertices": 4,
-      "triangles": 2,
+      "vertices": 105,
+      "triangles": 168,
       "tendons": [
+        "shin_r",
         "foot_r"
       ],
       "rect": [
@@ -190,9 +201,10 @@
     },
     {
       "slot": "boot_l",
-      "vertices": 4,
-      "triangles": 2,
+      "vertices": 105,
+      "triangles": 168,
       "tendons": [
+        "shin_l",
         "foot_l"
       ],
       "rect": [
@@ -204,10 +216,12 @@
     },
     {
       "slot": "shin_r",
-      "vertices": 4,
-      "triangles": 2,
+      "vertices": 119,
+      "triangles": 192,
       "tendons": [
-        "shin_r"
+        "thigh_r",
+        "shin_r",
+        "foot_r"
       ],
       "rect": [
         106,
@@ -218,10 +232,12 @@
     },
     {
       "slot": "shin_l",
-      "vertices": 4,
-      "triangles": 2,
+      "vertices": 119,
+      "triangles": 192,
       "tendons": [
-        "shin_l"
+        "thigh_l",
+        "shin_l",
+        "foot_l"
       ],
       "rect": [
         367,
@@ -232,10 +248,12 @@
     },
     {
       "slot": "thigh_r",
-      "vertices": 4,
-      "triangles": 2,
+      "vertices": 119,
+      "triangles": 192,
       "tendons": [
-        "thigh_r"
+        "pelvis",
+        "thigh_r",
+        "shin_r"
       ],
       "rect": [
         167,
@@ -246,10 +264,12 @@
     },
     {
       "slot": "thigh_l",
-      "vertices": 4,
-      "triangles": 2,
+      "vertices": 119,
+      "triangles": 192,
       "tendons": [
-        "thigh_l"
+        "pelvis",
+        "thigh_l",
+        "shin_l"
       ],
       "rect": [
         305,
@@ -260,8 +280,8 @@
     },
     {
       "slot": "hair_back",
-      "vertices": 135,
-      "triangles": 224,
+      "vertices": 189,
+      "triangles": 320,
       "tendons": [
         "head",
         "hair_01",
@@ -277,8 +297,8 @@
     },
     {
       "slot": "cape_back",
-      "vertices": 247,
-      "triangles": 432,
+      "vertices": 325,
+      "triangles": 576,
       "tendons": [
         "chest",
         "cape_01",
@@ -300,9 +320,9 @@
     "docs/game-layout/star-spin/vespera-rig/parts/forearm_l.png": "45d7563cedece64fdc1f7c55bddefd32a14287123e03f03ec8bba9b648683136",
     "docs/game-layout/star-spin/vespera-rig/parts/forearm_r.png": "3e8da4af5e9854d76ebf2ff6c923fb536452d8ce92e9c15cab3999f6b5ae454f",
     "docs/game-layout/star-spin/vespera-rig/parts/upper_arm_l.png": "b8bf08c8a85c463ce06eefb290136b0e3cd6b6e1ae3541fac32586b266924a3b",
-    "docs/game-layout/star-spin/vespera-rig/parts/torso.png": "71a3a2728b783f0423dad8fffe9f6afaf8153c3627bbd28a6cddabf675431700",
     "docs/game-layout/star-spin/vespera-rig/parts/head.png": "1b0d0c2a5fe74058e25e2c4a827921daaa1604fc3f97c5a3396e0e64eb09e793",
     "docs/game-layout/star-spin/vespera-rig/parts/upper_arm_r.png": "ce3f063042177e5f3b30d7c8a285703c36021a8bc2b3686fd70dbb045c89a0e6",
+    "docs/game-layout/star-spin/vespera-rig/parts/torso.png": "71a3a2728b783f0423dad8fffe9f6afaf8153c3627bbd28a6cddabf675431700",
     "docs/game-layout/star-spin/vespera-rig/parts/tabard.png": "40f5bc02286c05074c5da88247bda6a5ff746ac95433c378a258149e7a55731b",
     "docs/game-layout/star-spin/vespera-rig/parts/pelvis.png": "00f8998c75a7b60d7febc8640aaedd37be6593cbd442cb2d7b9532543441368e",
     "docs/game-layout/star-spin/vespera-rig/parts/boot_r.png": "40998190c0ed738727648dc46e8efd8d41b562fb80e387431d9358c806c0be25",
@@ -313,11 +333,11 @@
     "docs/game-layout/star-spin/vespera-rig/parts/thigh_l.png": "6c22a05526465a0001392d2eb4225533ebed58e167cce6e26b3ddea2b77eeeec",
     "docs/game-layout/star-spin/vespera-rig/parts/hair_back.png": "d96e79345f42dd39a0f811f3962c7d4bc25bef275f53b694ae48a713656280d5",
     "docs/game-layout/star-spin/vespera-rig/parts/cape_back.png": "3481ef583ea22be25dd10f4e2d4b145d8fc52be3c86664ddd9e7dc8c6c037c66",
-    "games/wild-nudge/animation/shared-rig/build.mjs": "54ca8a58c5c7007cf9b104e010a92ae812bc355c1778da7e26530731cdb0db5c",
-    "games/wild-nudge/animation/shared-rig/verify.mjs": "a26537b9749725eb0b75c81e36f17fd9c6ed8f6b81f6e3a7147a6f9aa4ffae55",
-    "games/wild-nudge/animation/shared-rig/skeleton.json": "c02ed64aa54e11c6cefc26fa27ff95e5c3c8af255072fab70d635b05ac7d17e1",
-    "games/wild-nudge/animation/shared-rig/skins/vespera.json": "f1c0935116bbb7fa11c2788c54b3902a3710a1cf25cba2ea8c9bddc158a6667c",
-    "games/wild-nudge/animation/shared-rig/scene.rml": "a27ae7d66095f13ff885fbf15bfd8906b6e761b6ff195f9caf2f7bf5a591eb57",
+    "games/wild-nudge/animation/shared-rig/build.mjs": "7743c39e273f2719ae3c6720326a11bd25c457bc9ff8b42aac0def3014c0845d",
+    "games/wild-nudge/animation/shared-rig/verify.mjs": "01cdea4accb0b325abf2257cdf6e28068d04a00df4ea1ed29f12799c71d1a9b4",
+    "games/wild-nudge/animation/shared-rig/skeleton.json": "5825794ba9be41511948702abf648a14443ac223443d52db99d0e805dccaba0a",
+    "games/wild-nudge/animation/shared-rig/skins/vespera.json": "5c10a7577d5bec7cd7f153e9acb5290a563563cda2afd6a2ffd509baa97ee172",
+    "games/wild-nudge/animation/shared-rig/scene.rml": "cc2ae035ea38a7d5946772a051532cf7d00e3d4fc9610020d87e069b7ab18e5a",
     "games/wild-nudge/animation/shared-rig/rive.yaml": "038dbd637f2e7134054f7e7920f0ee45d2b66ba02da93e21ab304dc0d80bc718"
   },
   "verify": {
@@ -326,7 +346,7 @@
     "data": {
       "riv": null,
       "bytes": 0,
-      "buildMs": 263.8,
+      "buildMs": 521.5,
       "problems": []
     },
     "errors": [],
@@ -342,16 +362,16 @@
     "artboards": [
       {
         "name": "Vespera",
-        "objects": 4628,
+        "objects": 7642,
         "types": {
           "AnimationState": 7,
           "AnyState": 1,
           "Artboard": 1,
           "BindablePropertyNumber": 42,
           "Bone": 22,
-          "ContourMeshVertex": 240,
+          "ContourMeshVertex": 708,
           "CubicEaseInterpolator": 1085,
-          "DataBindContext": 98,
+          "DataBindContext": 110,
           "Ellipse": 35,
           "EntryState": 1,
           "ExitState": 1,
@@ -364,10 +384,11 @@
           "LayoutComponentStyle": 1,
           "LinearAnimation": 7,
           "Mesh": 19,
-          "MeshVertex": 394,
-          "Node": 40,
+          "MeshVertex": 1413,
+          "Node": 46,
           "Rectangle": 31,
           "RootBone": 9,
+          "RotationConstraint": 1,
           "Shape": 66,
           "Skin": 19,
           "SolidColor": 66,
@@ -375,24 +396,34 @@
           "StateMachineLayer": 1,
           "StateTransition": 43,
           "Stroke": 4,
-          "Tendon": 30,
+          "Tendon": 50,
           "TransitionPropertyViewModelComparator": 42,
           "TransitionValueNumberComparator": 42,
           "TransitionViewModelCondition": 42,
-          "Weight": 634
+          "TranslationConstraint": 1,
+          "Weight": 2121
         }
       }
     ],
     "events": [],
     "roots": {
-      "objects": 64,
+      "objects": 102,
       "types": {
         "Backboard": 1,
+        "DataBindContext": 2,
+        "DataConverterFormula": 2,
+        "FormulaTokenArgumentSeparator": 1,
+        "FormulaTokenFunction": 1,
+        "FormulaTokenInput": 2,
+        "FormulaTokenOperation": 2,
+        "FormulaTokenParenthesisClose": 2,
+        "FormulaTokenParenthesisOpen": 1,
+        "FormulaTokenValue": 3,
         "ImageAsset": 19,
         "ViewModel": 1,
         "ViewModelInstance": 1,
-        "ViewModelInstanceNumber": 21,
-        "ViewModelPropertyNumber": 21
+        "ViewModelInstanceNumber": 32,
+        "ViewModelPropertyNumber": 32
       }
     }
   },

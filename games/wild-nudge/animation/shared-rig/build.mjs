@@ -39,7 +39,7 @@ for (const bone of bones) {
   bone.localY = -Math.sin(a) * dx + Math.cos(a) * dy;
   bone.kind = parent && Math.hypot(x - parent.to[0], y - parent.to[1]) < 0.0001 ? 'Bone' : 'RootBone';
 }
-const properties = [['mode', 0], ['rigOpacity', 0], ['skinOpacity', 1], ['ikFeet', 0], ['ikHands', 0]];
+const properties = [['mode', 0], ['rigOpacity', 0], ['skinOpacity', 1], ['ikFeet', 0], ['ikHands', 0], ['hipLock', 1]];
 const goals = [
   ['hand_r', 'forearm_r', 'ikHands', true], ['hand_l', 'forearm_l', 'ikHands', true],
   ['foot_r', 'shin_r', 'ikFeet', true], ['foot_l', 'shin_l', 'ikFeet', true]
@@ -49,15 +49,25 @@ const goals = [
   return {name, constrained, strength, invert, position, id: id(300 + i)};
 });
 const propertyId = name => id(701 + properties.findIndex(([key]) => key === name));
-const bind = (name, key) => `<DataBindContext sourcePathIds="0:700-${propertyId(name)}" propertyKey="${key}"/>`;
+const bind = (name, key, converter) => `<DataBindContext sourcePathIds="0:700-${propertyId(name)}" propertyKey="${key}"${converter ? ` converterId="${converter}"` : ''}/>`;
 for (const goal of goals) properties.push([`${goal.name}_tip_x`, 0], [`${goal.name}_tip_y`, 0]);
+const diagnosticNames = ['hip_l', 'hip_fingers_l', 'palm_l', 'grip_r', 'saber_grip'];
+for (const name of diagnosticNames) properties.push([`${name}_x`, 0], [`${name}_y`, 0]);
+const probe = (name, x = 0, y = 0) => `<Node name="probe_${name}" x="${n(x)}" y="${n(y)}"><DataBindContext sourcePathIds="0:700-${propertyId(`${name}_x`)}" propertyKey="808" direction="true"/><DataBindContext sourcePathIds="0:700-${propertyId(`${name}_y`)}" propertyKey="809" direction="true"/></Node>`;
 const color = name => name.includes('_r') ? 'FF55CFE4' : name.includes('_l') ? 'FFFFC76B' : name.startsWith('cape') || name.startsWith('cloth') || name.startsWith('hair') ? 'FFD697F5' : 'FF9BE5BC';
 function drawBone(bone) {
   const guide = `<Node name="guide_${bone.name}">${bind('rigOpacity', 18)}<Shape name="joint_${bone.name}"><Ellipse width="7" height="7"/><Fill><SolidColor colorValue="${color(bone.name)}"/></Fill></Shape><Shape x="${n(bone.length / 2)}" name="axis_${bone.name}"><Rectangle width="${n(bone.length)}" height="2.5"/><Fill><SolidColor colorValue="${color(bone.name)}"/></Fill></Shape></Node>`;
   const goal = goals.find(value => value.constrained === bone.name);
-  const constraint = goal ? `<IKConstraint targetId="${goal.id}" parentBoneCount="1" invertDirection="${goal.invert}" strength="0" name="ik_${goal.name}">${bind(goal.strength, 172)}</IKConstraint><Node x="${n(bone.length)}" name="probe_${goal.name}"><DataBindContext sourcePathIds="0:700-${propertyId(`${goal.name}_tip_x`)}" propertyKey="808" direction="true"/><DataBindContext sourcePathIds="0:700-${propertyId(`${goal.name}_tip_y`)}" propertyKey="809" direction="true"/></Node>` : '';
+  const constraint = goal ? `<IKConstraint targetId="${goal.id}" parentBoneCount="1" invertDirection="${goal.invert}" strength="0" name="ik_${goal.name}">${bind(goal.strength, 172, goal.name === 'hand_l' ? '0:901' : undefined)}</IKConstraint><Node x="${n(bone.length)}" name="probe_${goal.name}"><DataBindContext sourcePathIds="0:700-${propertyId(`${goal.name}_tip_x`)}" propertyKey="808" direction="true"/><DataBindContext sourcePathIds="0:700-${propertyId(`${goal.name}_tip_y`)}" propertyKey="809" direction="true"/></Node>` : '';
+  const hipAnchor = bone.name === 'pelvis' ? (() => {
+    const hand = byName.get('hand_l'), dx = hand.from[0] - bone.from[0], dy = hand.from[1] - bone.from[1];
+    const c = Math.cos(bone.angle), s = Math.sin(bone.angle);
+    return `<Node id="0:305" name="contact_hand_l" x="${n(c * dx + s * dy)}" y="${n(-s * dx + c * dy)}" rotation="${n(hand.angle - bone.angle)}">${probe('hip_l')}${probe('hip_fingers_l', hand.length)}</Node>`;
+  })() : '';
+  const wristLock = bone.name === 'hand_l' ? `<RotationConstraint name="hip_wrist_orientation" targetId="0:305" strength="1">${bind('ikHands', 172, '0:900')}</RotationConstraint>` : '';
+  const contactProbe = bone.name === 'hand_l' ? probe('palm_l', bone.length) : bone.name === 'hand_r' ? probe('grip_r', bone.length) : bone.name === 'weapon_r' ? probe('saber_grip') : '';
   const position = bone.kind === 'RootBone' ? ` x="${n(bone.localX)}" y="${n(bone.localY)}"` : '';
-  return `<${bone.kind} id="${bone.id}" name="${bone.name}"${position} length="${n(bone.length)}" rotation="${n(bone.localAngle)}">${guide}${constraint}${bones.filter(child => child.parent === bone.name).map(drawBone).join('')}</${bone.kind}>`;
+  return `<${bone.kind} id="${bone.id}" name="${bone.name}"${position} length="${n(bone.length)}" rotation="${n(bone.localAngle)}">${guide}${constraint}${hipAnchor}${wristLock}${contactProbe}${bones.filter(child => child.parent === bone.name).map(drawBone).join('')}</${bone.kind}>`;
 }
 function varints(values) {
   const bytes = [];
@@ -67,12 +77,16 @@ function varints(values) {
   }
   return Buffer.from(bytes).toString('base64');
 }
-function packedWeights(v, count) {
-  const position = Math.max(0, Math.min(count - 1, v * (count - 1)));
-  const lower = Math.floor(position), upper = Math.min(count - 1, lower + 1);
-  if (lower === upper) return {indices: lower + 1, values: 255};
-  const hi = Math.round((position - lower) * 255), lo = 255 - hi;
-  return {indices: (lower + 1) + ((upper + 1) << 8), values: lo + (hi << 8)};
+function packedWeights(position, part) {
+  const stops = part.weightStops || part.bones.map((name, index) => [index / Math.max(1, part.bones.length - 1), name]);
+  if (stops.some(([at, name], i) => !Number.isFinite(at) || !part.bones.includes(name) || (i && at <= stops[i - 1][0]))) throw Error('Invalid weight stops');
+  const upper = stops.findIndex(([at]) => at >= position);
+  const a = upper <= 0 ? stops[upper < 0 ? stops.length - 1 : 0] : stops[upper - 1];
+  const b = upper <= 0 ? a : stops[upper];
+  const first = part.bones.indexOf(a[1]) + 1, second = part.bones.indexOf(b[1]) + 1;
+  if (first === second) return {indices: first, values: 255};
+  const hi = Math.round(Math.max(0, Math.min(1, (position - a[0]) / (b[0] - a[0]))) * 255);
+  return {indices: first + (second << 8), values: (255 - hi) + (hi << 8)};
 }
 const assetNodes = [], meshes = [], inputHashes = {};
 for (const [index, slot] of spec.slotsFrontToBack.entries()) {
@@ -104,7 +118,11 @@ for (const [index, slot] of spec.slotsFrontToBack.entries()) {
   const assetId = id(500 + index);
   assetNodes.push(`<ImageAsset id="${assetId}" file="${xml(relative(project, file).replaceAll('\\', '/'))}" name="vespera_${slot}"/>`);
   const vertices = points.map(({column, row}, i) => {
-    const u = column / nx, v = row / ny, weights = packedWeights(v, part.bones.length), type = i < contourCount ? 'ContourMeshVertex' : 'MeshVertex';
+    const u = column / nx, v = row / ny;
+    const px = x + u * width + v * (part.shearX || 0), py = y + v * height;
+    const axis = part.weightAxis?.map(name => byName.get(name).from);
+    const projected = axis ? ((px - axis[0][0]) * (axis[1][0] - axis[0][0]) + (py - axis[0][1]) * (axis[1][1] - axis[0][1])) / ((axis[1][0] - axis[0][0]) ** 2 + (axis[1][1] - axis[0][1]) ** 2) : v;
+    const weights = packedWeights(projected, part), type = i < contourCount ? 'ContourMeshVertex' : 'MeshVertex';
     return `<${type} x="${n(x + u * width + v * (part.shearX || 0))}" y="${n(y + v * height)}" u="${u}" v="${v}"><Weight indices="${weights.indices}" values="${weights.values}"/></${type}>`;
   }).join('');
   const tendons = part.bones.map(name => {
@@ -139,9 +157,11 @@ const animations = spec.modes.map((name, mode) => {
   }).join('');
   return `<LinearAnimation name="${name}" id="${id(850 + mode)}" fps="60" duration="${duration}" loopValue="${loop ? 'loop' : 'oneShot'}">${tracks}</LinearAnimation>`;
 }).join('\n');
-const goalNodes = goals.map(goal => `<Node id="${goal.id}" x="${goal.position[0]}" y="${goal.position[1]}" name="target_${goal.name}">${bind(`${goal.name}_x`, 13)}${bind(`${goal.name}_y`, 14)}<Shape name="handle_${goal.name}" opacity="0">${bind('rigOpacity', 18)}<Ellipse width="16" height="16"/><Stroke thickness="2"><SolidColor colorValue="${color(goal.name)}"/></Stroke></Shape></Node>`).join('');
+const goalNodes = goals.map(goal => `<Node id="${goal.id}" x="${goal.position[0]}" y="${goal.position[1]}" name="target_${goal.name}">${bind(`${goal.name}_x`, 13)}${bind(`${goal.name}_y`, 14)}${goal.name === 'hand_l' ? `<TranslationConstraint name="hip_contact_position" targetId="0:305">${bind('ikHands', 172, '0:900')}</TranslationConstraint>` : ''}<Shape name="handle_${goal.name}" opacity="0">${bind('rigOpacity', 18)}<Ellipse width="16" height="16"/><Stroke thickness="2"><SolidColor colorValue="${color(goal.name)}"/></Stroke></Shape></Node>`).join('');
+// Manual hand IK releases the hip contact; both strengths stay in [0, 1].
+const converters = `<DataConverterFormula id="0:900" name="Hip contact strength"><FormulaTokenValue>${bind('hipLock', 777)}</FormulaTokenValue><FormulaTokenOperation operationType="multiply"/><FormulaTokenParenthesisOpen/><FormulaTokenValue operationValue="1"/><FormulaTokenOperation operationType="subtract"/><FormulaTokenInput/><FormulaTokenParenthesisClose/></DataConverterFormula><DataConverterFormula id="0:901" name="Left hand IK strength"><FormulaTokenFunction functionType="max"/><FormulaTokenInput/><FormulaTokenArgumentSeparator/><FormulaTokenValue>${bind('hipLock', 777)}</FormulaTokenValue><FormulaTokenParenthesisClose/></DataConverterFormula>`;
 const viewModel = `<ViewModel name="Character" id="0:700" defaultInstanceId="0:740">${properties.map(([name]) => `<ViewModelPropertyNumber name="${name}" id="${propertyId(name)}"/>`).join('')}<ViewModelInstance name="Default" id="0:740" exports="true">${properties.map(([name, value]) => `<ViewModelInstanceNumber viewModelPropertyId="${propertyId(name)}" propertyValue="${value}"/>`).join('')}</ViewModelInstance></ViewModel>`;
-const scene = `<Rive version="1" kind="fragment"><Artboard name="${skin.artboard}" id="0:2" width="640" height="960" styleId="0:3" defaultStateMachineId="0:800" viewModelId="0:700" viewModelInstanceId="0:740"><LayoutComponentStyle id="0:3" name="Character canvas"/>${bones.filter(bone => !bone.parent).map(drawBone).join('')}${goalNodes}<Node name="Texture slots">${bind('skinOpacity', 18)}${spec.slotsFrontToBack.map(slot => skin.parts[slot].rml).join('\n')}</Node>${machine}${animations}</Artboard>${viewModel}${assetNodes.join('\n')}</Rive>\n`;
+const scene = `<Rive version="1" kind="fragment"><Artboard name="${skin.artboard}" id="0:2" width="640" height="960" styleId="0:3" defaultStateMachineId="0:800" viewModelId="0:700" viewModelInstanceId="0:740"><LayoutComponentStyle id="0:3" name="Character canvas"/>${bones.filter(bone => !bone.parent).map(drawBone).join('')}${goalNodes}<Node name="Texture slots">${bind('skinOpacity', 18)}${spec.slotsFrontToBack.map(slot => skin.parts[slot].rml).join('\n')}</Node>${machine}${animations}</Artboard>${viewModel}${converters}${assetNodes.join('\n')}</Rive>\n`;
 await writeFile(resolve(project, 'scene.rml'), scene);
 const verify = JSON.parse(await run([project, '--verify', '--format=json']));
 const inspection = JSON.parse(await run(['inspect', project, '--summary']));

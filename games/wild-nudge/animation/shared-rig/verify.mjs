@@ -38,7 +38,19 @@ for (const weight of nodes.filter(object => object.type === 'Weight')) {
 const qa = resolve(project, 'build/qa');
 await mkdir(qa, {recursive: true});
 const file = name => resolve(qa, name);
-const commands = ['advance 1', `screenshot ${file('rest.png')}`, `data-dump ${file('rest.json')}`, 'advance 360', `screenshot ${file('loop.png')}`];
+const sweep = [];
+const commands = [];
+for (let mode = 0; mode < 7; mode++) {
+  commands.push('reload', `data mode=${mode}`);
+  const samples = [0, 1, 4].includes(mode) ? 60 : 15;
+  for (let sample = 0; sample <= samples; sample++) {
+    const name = `sync-${mode}-${sample}.json`;
+    commands.push(sample ? 'advance 6' : 'advance 1', `data-dump ${file(name)}`);
+    sweep.push({mode, sample, name});
+  }
+}
+commands.push('reload', 'data hipLock=0', 'data mode=3', 'advance 36', `data-dump ${file('contact-released.json')}`);
+commands.push('reload', 'advance 1', `screenshot ${file('rest.png')}`, `data-dump ${file('rest.json')}`, 'advance 360', `screenshot ${file('loop.png')}`);
 for (let mode = 0; mode < 7; mode++) {
   commands.push('reload', `data mode=${mode}`, 'advance 36', `screenshot ${file(`mode-${mode}.png`)}`, `data-dump ${file(`mode-${mode}.json`)}`);
 }
@@ -69,6 +81,26 @@ const difference = async (first, second) => {
   }
   return {meanAbsoluteChannelDifference: sum / a.length, changedPixels: pixels};
 };
+const synchronization = spec.modes.map(mode => ({mode, samples: 0, wristErrorPx: 0, fingersErrorPx: 0, saberGripErrorPx: 0, ankleDriftPx: 0}));
+const valuesAt = async name => Object.fromEntries(JSON.parse(await readFile(file(name), 'utf8')).viewModel.properties.map(property => [property.path, property.value]));
+const rest = await valuesAt('rest.json');
+for (const {mode, name} of sweep) {
+  const v = await valuesAt(name), row = synchronization[mode]; row.samples++;
+  const pairError = (first, second) => Math.hypot(v[`${first}_x`] - v[`${second}_x`], v[`${first}_y`] - v[`${second}_y`]);
+  row.wristErrorPx = Math.max(row.wristErrorPx, pairError('hand_l_tip', 'hip_l'));
+  row.fingersErrorPx = Math.max(row.fingersErrorPx, pairError('palm_l', 'hip_fingers_l'));
+  row.saberGripErrorPx = Math.max(row.saberGripErrorPx, pairError('grip_r', 'saber_grip'));
+  for (const side of ['r', 'l']) row.ankleDriftPx = Math.max(row.ankleDriftPx, Math.hypot(v[`foot_${side}_tip_x`] - rest[`foot_${side}_tip_x`], v[`foot_${side}_tip_y`] - rest[`foot_${side}_tip_y`]));
+}
+for (const row of synchronization) {
+  assert.ok(row.wristErrorPx < .01, `Hip wrist slid: ${JSON.stringify(row)}`);
+  assert.ok(row.fingersErrorPx < .01, `Wrist orientation slid: ${JSON.stringify(row)}`);
+  assert.ok(row.saberGripErrorPx < .01, `Saber left its grip: ${JSON.stringify(row)}`);
+  assert.ok(row.ankleDriftPx < .01, `Feet slid during FK: ${JSON.stringify(row)}`);
+}
+const released = await valuesAt('contact-released.json');
+const releasedContactErrorPx = Math.hypot(released.hand_l_tip_x - released.hip_l_x, released.hand_l_tip_y - released.hip_l_y);
+assert.ok(releasedContactErrorPx > .3, 'hipLock=0 did not release the pose');
 const loop = await difference(file('rest.png'), file('loop.png'));
 assert.ok(loop.meanAbsoluteChannelDifference < .2, `Idle loop does not return: ${JSON.stringify(loop)}`);
 const modeDifferences = [];
@@ -105,7 +137,7 @@ for (let mode = 0; mode < 7; mode++) {
 tiles.push({input: await sharp(file('ik-moved.png')).resize(240, 360).extend({top: 30, bottom: 0, left: 0, right: 0, background: '#1d1d1d'}).png().toBuffer(), left: 720, top: 390});
 await sharp({create: {width: 960, height: 780, channels: 3, background: '#1d1d1d'}}).composite(tiles).png().toFile(resolve(project, 'states-overview.png'));
 await run('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', '15', '-i', file('frame-%03d.png'), '-vf', 'scale=480:720', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '20', '-movflags', '+faststart', resolve(project, 'preview.mp4')]);
-const result = {format: 'star-spin-rig-native-qa-v1', cliVersion: spec.cliVersion, verificationSha256: createHash('sha256').update(await readFile(resolve(project, 'verification.json'))).digest('hex'), loop, modeDifferences, ikErrors, ikRestPicture, interruptionReturnedToIdle: true, debugOverlayChanges: overlay.changedPixels, movie: 'preview.mp4', coverage: 'Native CLI at 640x960. Authoring controls and seven states only; no host, wallet, browser runtime or physical device check.'};
+const result = {format: 'star-spin-rig-native-qa-v2', synchronization, releasedContactErrorPx, cliVersion: spec.cliVersion, verificationSha256: createHash('sha256').update(await readFile(resolve(project, 'verification.json'))).digest('hex'), loop, modeDifferences, ikErrors, ikRestPicture, interruptionReturnedToIdle: true, debugOverlayChanges: overlay.changedPixels, movie: 'preview.mp4', coverage: 'Native CLI at 640x960. Authoring controls and seven states only; no host, wallet, browser runtime or physical device check.'};
 await writeFile(resolve(project, 'native-qa.json'), JSON.stringify(result, null, 2) + '\n');
 await rm(qa, {recursive: true});
 console.log(JSON.stringify(result, null, 2));

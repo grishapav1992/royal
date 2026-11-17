@@ -324,7 +324,31 @@
         176
       ],
       "bones": [
-        "head"
+        "head",
+        "neck",
+        "chest"
+      ],
+      "mesh": [
+        8,
+        16
+      ],
+      "weightStops": [
+        [
+          0,
+          "head"
+        ],
+        [
+          0.7,
+          "head"
+        ],
+        [
+          0.86,
+          "neck"
+        ],
+        [
+          1,
+          "chest"
+        ]
       ]
     },
     "torso": {
@@ -340,8 +364,30 @@
         "pelvis"
       ],
       "mesh": [
-        8,
-        12
+        10,
+        20
+      ],
+      "weightStops": [
+        [
+          0,
+          "chest"
+        ],
+        [
+          0.42,
+          "chest"
+        ],
+        [
+          0.75,
+          "spine"
+        ],
+        [
+          0.93,
+          "pelvis"
+        ],
+        [
+          1,
+          "pelvis"
+        ]
       ]
     },
     "pelvis": {
@@ -363,7 +409,39 @@
         153
       ],
       "bones": [
-        "upper_arm_r"
+        "clavicle_r",
+        "upper_arm_r",
+        "forearm_r"
+      ],
+      "mesh": [
+        6,
+        12
+      ],
+      "weightStops": [
+        [
+          -0.5,
+          "clavicle_r"
+        ],
+        [
+          0,
+          "clavicle_r"
+        ],
+        [
+          0.25,
+          "upper_arm_r"
+        ],
+        [
+          0.85,
+          "upper_arm_r"
+        ],
+        [
+          1.12,
+          "forearm_r"
+        ]
+      ],
+      "weightAxis": [
+        "upper_arm_r",
+        "forearm_r"
       ]
     },
     "forearm_r": {
@@ -374,7 +452,35 @@
         134
       ],
       "bones": [
-        "forearm_r"
+        "upper_arm_r",
+        "forearm_r",
+        "hand_r"
+      ],
+      "mesh": [
+        8,
+        12
+      ],
+      "weightStops": [
+        [
+          -0.3,
+          "upper_arm_r"
+        ],
+        [
+          0.18,
+          "forearm_r"
+        ],
+        [
+          0.82,
+          "forearm_r"
+        ],
+        [
+          1.12,
+          "hand_r"
+        ]
+      ],
+      "weightAxis": [
+        "forearm_r",
+        "hand_r"
       ]
     },
     "hand_r": {
@@ -396,7 +502,39 @@
         147
       ],
       "bones": [
-        "upper_arm_l"
+        "clavicle_l",
+        "upper_arm_l",
+        "forearm_l"
+      ],
+      "mesh": [
+        6,
+        12
+      ],
+      "weightStops": [
+        [
+          -0.5,
+          "clavicle_l"
+        ],
+        [
+          0,
+          "clavicle_l"
+        ],
+        [
+          0.25,
+          "upper_arm_l"
+        ],
+        [
+          0.85,
+          "upper_arm_l"
+        ],
+        [
+          1.12,
+          "forearm_l"
+        ]
+      ],
+      "weightAxis": [
+        "upper_arm_l",
+        "forearm_l"
       ]
     },
     "forearm_l": {
@@ -407,7 +545,35 @@
         90
       ],
       "bones": [
-        "forearm_l"
+        "upper_arm_l",
+        "forearm_l",
+        "hand_l"
+      ],
+      "mesh": [
+        8,
+        12
+      ],
+      "weightStops": [
+        [
+          -0.3,
+          "upper_arm_l"
+        ],
+        [
+          0.18,
+          "forearm_l"
+        ],
+        [
+          0.82,
+          "forearm_l"
+        ],
+        [
+          1.12,
+          "hand_l"
+        ]
+      ],
+      "weightAxis": [
+        "forearm_l",
+        "hand_l"
       ]
     },
     "hand_l": {
@@ -429,7 +595,39 @@
         230
       ],
       "bones": [
-        "thigh_r"
+        "pelvis",
+        "thigh_r",
+        "shin_r"
+      ],
+      "mesh": [
+        6,
+        16
+      ],
+      "weightStops": [
+        [
+          -0.4,
+          "pelvis"
+        ],
+        [
+          -0.05,
+          "pelvis"
+        ],
+        [
+          0.18,
+          "thigh_r"
+        ],
+        [
+          0.85,
+          "thigh_r"
+        ],
+        [
+          1.12,
+          "shin_r"
+        ]
+      ],
+      "weightAxis": [
+        "thigh_r",
+        "shin_r"
       ]
     },
     "thigh_l": {
@@ -440,9 +638,41 @@
         232
       ],
       "bones": [
-        "thigh_l"
+        "pelvis",
+        "thigh_l",
+        "shin_l"
       ],
-      "shearX": 30
+      "shearX": 30,
+      "mesh": [
+        6,
+        16
+      ],
+      "weightStops": [
+        [
+          -0.4,
+          "pelvis"
+        ],
+        [
+          -0.05,
+          "pelvis"
+        ],
+        [
+          0.18,
+          "thigh_l"
+        ],
+        [
+          0.85,
+          "thigh_l"
+        ],
+        [
+          1.12,
+          "shin_l"
+        ]
+      ],
+      "weightAxis": [
+        "thigh_l",
+        "shin_l"
+      ]
     },
     "shin_r": {
       "rect": [
@@ -452,7 +682,35 @@
         232
       ],
       "bones": [
-        "shin_r"
+        "thigh_r",
+        "shin_r",
+        "foot_r"
+      ],
+      "mesh": [
+        6,
+        16
+      ],
+      "weightStops": [
+        [
+          -0.2,
+          "thigh_r"
+        ],
+        [
+          0.12,
+          "shin_r"
+        ],
+        [
+          0.85,
+          "shin_r"
+        ],
+        [
+          1.15,
+          "foot_r"
+        ]
+      ],
+      "weightAxis": [
+        "shin_r",
+        "foot_r"
       ]
     },
     "shin_l": {
@@ -463,7 +721,35 @@
         238
       ],
       "bones": [
-        "shin_l"
+        "thigh_l",
+        "shin_l",
+        "foot_l"
+      ],
+      "mesh": [
+        6,
+        16
+      ],
+      "weightStops": [
+        [
+          -0.2,
+          "thigh_l"
+        ],
+        [
+          0.12,
+          "shin_l"
+        ],
+        [
+          0.85,
+          "shin_l"
+        ],
+        [
+          1.15,
+          "foot_l"
+        ]
+      ],
+      "weightAxis": [
+        "shin_l",
+        "foot_l"
       ]
     },
     "boot_r": {
@@ -474,9 +760,36 @@
         180
       ],
       "bones": [
+        "shin_r",
         "foot_r"
       ],
-      "shearX": 18
+      "shearX": 18,
+      "mesh": [
+        6,
+        14
+      ],
+      "weightStops": [
+        [
+          0.65,
+          "shin_r"
+        ],
+        [
+          0.92,
+          "shin_r"
+        ],
+        [
+          1.12,
+          "foot_r"
+        ],
+        [
+          1.7,
+          "foot_r"
+        ]
+      ],
+      "weightAxis": [
+        "shin_r",
+        "foot_r"
+      ]
     },
     "boot_l": {
       "rect": [
@@ -486,6 +799,33 @@
         180
       ],
       "bones": [
+        "shin_l",
+        "foot_l"
+      ],
+      "mesh": [
+        6,
+        14
+      ],
+      "weightStops": [
+        [
+          0.65,
+          "shin_l"
+        ],
+        [
+          0.92,
+          "shin_l"
+        ],
+        [
+          1.12,
+          "foot_l"
+        ],
+        [
+          1.7,
+          "foot_l"
+        ]
+      ],
+      "weightAxis": [
+        "shin_l",
         "foot_l"
       ]
     },
@@ -504,7 +844,29 @@
       ],
       "mesh": [
         12,
-        18
+        24
+      ],
+      "weightStops": [
+        [
+          0,
+          "chest"
+        ],
+        [
+          0.13,
+          "chest"
+        ],
+        [
+          0.4,
+          "cape_01"
+        ],
+        [
+          0.7,
+          "cape_02"
+        ],
+        [
+          1,
+          "cape_03"
+        ]
       ]
     },
     "hair_back": {
@@ -522,7 +884,29 @@
       ],
       "mesh": [
         8,
-        14
+        20
+      ],
+      "weightStops": [
+        [
+          0,
+          "head"
+        ],
+        [
+          0.25,
+          "head"
+        ],
+        [
+          0.5,
+          "hair_01"
+        ],
+        [
+          0.76,
+          "hair_02"
+        ],
+        [
+          1,
+          "hair_03"
+        ]
       ]
     },
     "tabard": {
@@ -540,7 +924,29 @@
       ],
       "mesh": [
         4,
-        14
+        20
+      ],
+      "weightStops": [
+        [
+          0,
+          "pelvis"
+        ],
+        [
+          0.1,
+          "pelvis"
+        ],
+        [
+          0.4,
+          "cloth_01"
+        ],
+        [
+          0.7,
+          "cloth_02"
+        ],
+        [
+          1,
+          "cloth_03"
+        ]
       ]
     },
     "saber": {
