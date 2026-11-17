@@ -39,7 +39,7 @@ async function fit(page:Page,id:string,action?:string,modal=false){
  const prefix=family(id),primary=action||`[data-${prefix}-spin]`;
  await page.evaluate(()=>new Promise<void>(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r()))));
  const failures=await page.locator('#mini-game').evaluate((host,{prefix,primary,modal})=>{
-  const root=host.firstElementChild!,selectors=[`[data-${prefix}-board]`,primary,`[data-${prefix}-stake]`,`[data-${prefix}-cost]`,'.slot-settings-button',`[data-${prefix}-auto]`,'.slot-feature-strip'];
+  const root=host.firstElementChild!,stakeControl=root.querySelector('input[data-manual-stake]')?'input[data-manual-stake]':`[data-${prefix}-stake]`,selectors=[`[data-${prefix}-board]`,primary,stakeControl,`[data-${prefix}-cost]`,'.slot-settings-button',`[data-${prefix}-auto]`,'.slot-feature-strip'];
   const failures:string[]=[];
   for(const selector of selectors){
    // Cosmic Escape moves its settings button into the window bar, as in its approved prototype.
@@ -59,7 +59,8 @@ async function fit(page:Page,id:string,action?:string,modal=false){
   return failures;
  },{prefix,primary,modal});
  expect(failures).toEqual([]);
- for(const selector of [primary,`[data-${prefix}-stake]`,'.slot-settings-button']){
+ const stakeControl=await page.locator('#mini-game input[data-manual-stake]').count()?'input[data-manual-stake]':`[data-${prefix}-stake]`;
+ for(const selector of [primary,stakeControl,'.slot-settings-button']){
   const box=await page.locator((selector==='.slot-settings-button'?'#mini-dialog ':'#mini-game ')+selector).boundingBox();expect(box).not.toBeNull();expect(box!.height).toBeGreaterThanOrEqual(44);
  }
 }
