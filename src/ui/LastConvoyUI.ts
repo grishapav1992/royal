@@ -10,13 +10,14 @@ import {SlotPlayback, type SlotOperation} from './slotKit/SlotPlayback';
 import {SlotSessions, type NativeSlotSession} from './slotKit/SlotSessions';
 import {bindSlotLifecycle} from './slotKit/SlotLifecycle';
 import {convoySlot} from './slotKit/nativeSlots';
-import {CONVOY_GAME,CONVOY_PAYTABLE,CONVOY_NAMES,type ConvoyView,type ConvoySpin} from '../shared/lastConvoy';
+import {CONVOY_GAME,CONVOY_PAYTABLE,CONVOY_NAMES,type ConvoyView} from '../shared/lastConvoy';
 import {expansionClient as client} from '../wallet/ExpansionClient';
 import {demoWallet} from '../wallet/WalletClient';
 import {observeExpansionOutcome,resetGameOutcomes} from './gameReactions';
 import {LastConvoyAssets,CONVOY_ASSETS,type ConvoyAssetState} from './LastConvoyAssets';
 import {LastConvoyAudio} from './LastConvoyAudio';
 import {ConvoyBoard} from './ConvoyBoard';
+import {ConvoyMotion,type ConvoyMotionFactory,type ConvoyMotionPort} from './ConvoyMotion';
 import {convoySymbol} from './ConvoyArtwork';
 import './last-convoy.css';
 import {ConvoyHeroine} from './ConvoyHeroine';
@@ -30,22 +31,26 @@ const preview=Array.from({length:30},(_,i)=>(i+2*Math.floor(i/6))%7);
 /** Presentation consumes confirmed frames. Reopening and retries remain static. */
 export class LastConvoyUI {
  private settings?:SlotSettings;
+ private motionFacade:ConvoyMotionPort;
  private heroine:ConvoyHeroine;
  private progress=new ConvoyProgressClient();private progressSession='';private progressChanged=()=>{if(!this.destroyed){this.heroine.setBusy(!!this.live);this.heroine.setProgress(client.accountId,this.progress.profile,this.progress.error);}};
  private root:HTMLElement;private dialogShell!:SlotDialog;private stakeControls!:SlotStakeControls;private soundControls!:SlotAudioControls;private board:ConvoyBoard;private audio=new LastConvoyAudio();private assets:LastConvoyAssets;
- private owner=client.accountId;private destroyed=false;private entered=false;private stake = '10';private fast=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');private manualReduced=false;
+ private owner=client.accountId;private destroyed=false;private paused=false;private entered=false;private stake = '10';private fast=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');private manualReduced=false;
  private dialog:Dialog='intro';private shown='';private lastWin='0';private error='';private live?:Live;private playback=new SlotPlayback({account:()=>client.accountId,hidden:()=>document.hidden});private sessions=new SlotSessions(convoySlot);private autoRemaining=0;private bonusRunning=false;private unsubscribe=()=>{};
  private change=()=>this.sync();private visibility=()=>{if(document.hidden){this.cancel();this.audio.pause();}this.sync();};private motionChanged=()=>{this.cancel();this.sync();};
   private keyboard=(event:KeyboardEvent)=>{
     if(!slotOwnsKeyboard(this.root,event)||this.dialogShell.keyboard(event,this.dialog==='bonus-help'||this.dialog==='looks'?'info':this.dialog))return;
     if(event.code==='Space'&&this.entered&&!['INPUT','SELECT','BUTTON','TEXTAREA'].includes((event.target as HTMLElement)?.tagName)){event.preventDefault();void this.play();}
   };
- constructor(private host:HTMLElement){
+ constructor(private host:HTMLElement,createMotion:ConvoyMotionFactory=options=>new ConvoyMotion(options)){
   try{this.manualReduced=localStorage.getItem('royal-convoy-reduced')==='1';}catch{}
   host.innerHTML=this.markup();this.root=host.querySelector('[data-convoy-game]')!;
   this.heroine=new ConvoyHeroine(this.root,()=>{if(this.dialog==='looks')this.renderLooks();});
   this.assets=new LastConvoyAssets(state=>this.assetState(state));
-  this.board=new ConvoyBoard(this.find('[data-cc-board]'),{phase:value=>{if(this.live)this.root.dataset.phase=value;},stop:col=>{if(this.live)this.audio.stopReel(col);}});
+  this.board=new ConvoyBoard(this.find('[data-cc-board]'),{phase:value=>this.motionFacade?.phase(value),stop:col=>this.motionFacade?.land(col)});
+  this.motionFacade=createMotion({root:this.root,board:this.board,audio:this.audio,
+   current:operation=>this.valid(operation),delay:(ms,operation)=>this.playback.delay(ms,()=>this.valid(operation)),
+   total:value=>this.setTotal(value),factor:value=>this.factor(value),tickets:(count,free)=>this.tickets(count,free),features:view=>this.features(view)});
   this.bind();this.settings=new SlotSettings(this.root,this.find('.cc-footer'),this.find('.cc-tools'),()=>{this.stopAuto();this.controls();});this.unsubscribe=bindSlotLifecycle({changed:this.change,visibility:this.visibility,keyboard:this.keyboard,motion:this.reduced,motionChanged:this.motionChanged,audioChanged:()=>this.controls()});
   this.progressSession=this.session()?.state==='settled'?this.session()!.id:'';this.progress.addEventListener('change',this.progressChanged);this.progress.setAccount(client.accountId);
   this.sync();this.openDialog('intro');void this.assets.load();
@@ -55,11 +60,10 @@ export class LastConvoyUI {
  private key(session:Session){return this.sessions.key(session);}
  private balance(){return this.sessions.balance(client,demoWallet);}
  private motion(){return !(this.reduced.matches||this.manualReduced);}
- private blocked(){return this.destroyed||!this.assets.ready||!!this.live||client.busy||client.loading||!!client.pending||demoWallet.busy||!!demoWallet.pending||demoWallet.hasExternalBusy('expansion')||document.hidden||!client.accountId;}
- private valid(live:Live){return !this.destroyed&&this.playback.current(live,this.live);}
- private delay(ms:number,live:Live){return this.playback.delay(ms,()=>this.valid(live));}
+ private blocked(){return this.destroyed||this.paused||!this.assets.ready||!!this.live||client.busy||client.loading||!!client.pending||demoWallet.busy||!!demoWallet.pending||demoWallet.hasExternalBusy('expansion')||document.hidden||!client.accountId;}
+ private valid(live:SlotOperation){return !this.destroyed&&!this.paused&&this.playback.current(live,this.live);}
  private stopAuto(){this.autoRemaining=0;this.bonusRunning=false;this.playback.cancelScheduled();}
- private cancel(){this.playback.cancel();this.stopAuto();this.live=undefined;this.board.cancel();this.audio.stopSpin();this.shown='';this.root.dataset.phase='idle';this.root.dataset.charging='false';resetGameOutcomes(this.root);}
+ private cancel(){this.playback.cancel();this.stopAuto();this.live=undefined;this.motionFacade.cancel();this.shown='';resetGameOutcomes(this.root);}
  private assetState(state:ConvoyAssetState){
   if(this.destroyed)return;
   this.root.dataset.assetState=state.status;
@@ -102,7 +106,7 @@ export class LastConvoyUI {
   this.find<HTMLInputElement>('[data-cv-reduce]').onchange=e=>{this.manualReduced=(e.target as HTMLInputElement).checked;try{localStorage.setItem('royal-convoy-reduced',this.manualReduced?'1':'0');}catch{}this.cancel();this.sync();};
  }
  private controls(){
-  if(this.destroyed)return;this.heroine.setBusy(!!this.live);this.heroine.setProgress(client.accountId,this.progress.profile,this.progress.error);this.heroine.pause(!!this.dialog);this.find<HTMLButtonElement>('[data-cv-looks]').disabled=!!this.live||client.busy||!!this.dialog||!this.assets.ready;const s=this.session(),active=s?.state==='active',blocked=this.blocked();if(active)this.stake=s.stakeUnits;
+  if(this.destroyed)return;this.heroine.setBusy(!!this.live);this.heroine.setProgress(client.accountId,this.progress.profile,this.progress.error);this.heroine.pause(this.paused||!!this.dialog);this.find<HTMLButtonElement>('[data-cv-looks]').disabled=!!this.live||client.busy||!!this.dialog||!this.assets.ready;const s=this.session(),active=s?.state==='active',blocked=this.blocked();if(active)this.stake=s.stakeUnits;
   this.find<HTMLInputElement>('[data-cv-reduce]').checked=this.manualReduced;this.find<HTMLInputElement>('[data-cv-reduce]').disabled=!!this.live||client.busy||!!client.pending;this.root.dataset.reducedMotion=String(!this.motion());this.root.dataset.autoRemaining=String(this.autoRemaining);this.root.dataset.remaining=String(s?.view.convoy.bonus?.remaining??0);this.root.setAttribute('aria-busy',String(!this.assets.ready||!!this.live||client.busy));
   this.find('[data-cc-balance]').textContent=coins((this.live?.balance??this.balance())*100);this.find('[data-cc-last]').textContent=coins(this.lastWin);
   this.find<HTMLButtonElement>('[data-cc-spin]').disabled=blocked||!this.entered||!!this.dialog;this.find('[data-cc-spin-label]').textContent=this.live?translateText('ВРАЩАЕТСЯ'):active?translateText('ПРОДОЛЖИТЬ'):translateText('ВРАЩАТЬ');
@@ -134,38 +138,21 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
  private async request(mode:'normal'){
   if(this.blocked()||!this.entered||this.dialog)return;const previous=this.session(),active=previous?.state==='active',cost=active?0:Number(this.stake)/100;
   if(this.balance()<cost){this.error=translateText('Недостаточно USDT · Демо для выбранной ставки.');this.stopAuto();this.controls();return;}
-  void this.audio.enter();const live:Live={...this.playback.capture(client.accountId!),operationId:'',balance:this.balance(),motion:this.motion(),fast:this.fast,before:previous};this.live=live;this.error='';this.root.dataset.animationToken=live.token;this.find('[data-cc-groups]').replaceChildren();this.board.highlight([]);observeExpansionOutcome(this.root,CONVOY_GAME,previous,client.accountId,true,true);
+  void this.audio.enter();const live:Live={...this.playback.capture(client.accountId!),operationId:'',balance:this.balance(),motion:this.motion(),fast:this.fast,before:previous};this.live=live;this.error='';observeExpansionOutcome(this.root,CONVOY_GAME,previous,client.accountId,true,true);
   if(!active&&this.autoRemaining)this.autoRemaining--;
-  {this.root.dataset.phase='spinning';this.board.setPins(active?previous!.view.convoy.bonus?.pins??[]:[]);this.board.begin(live.token,live.motion,live.fast);void this.audio.begin(live.token);}this.controls();
+  this.motionFacade.begin(live,active?previous!.view.convoy.bonus?.pins??[]:[]);this.controls();
   try{
    const action=this.sessions.operation(this.stake,mode,previous);
    const promise=client.act(action);live.operationId=client.pending?.id??'';await promise;if(!this.valid(live))return;
    const s=this.session();if(!this.sessions.confirmed(s,previous,live.operationId))throw Error(translateText('Ход не подтверждён. Проверь прежнюю операцию.'));
-   await this.present(s,live);if(!this.valid(live))return;
-   this.live=undefined;this.root.dataset.phase='idle';this.root.dataset.animationToken='';this.shown=this.key(s);if(s.state==='settled')this.lastWin=s.returnedUnits;this.features(s.view.convoy);this.setTotal(confirmedPayout(s,s.view.convoy.totalPayoutUnits));this.controls();observeExpansionOutcome(this.root,CONVOY_GAME,s,client.accountId,false,false);
+   const presented=await this.motionFacade.present(s,live);if(!this.valid(live))return;
+   if(!presented){this.cancel();this.sync();return;}
+   this.motionFacade.finish(live);this.live=undefined;this.shown=this.key(s);if(s.state==='settled')this.lastWin=s.returnedUnits;this.features(s.view.convoy);this.setTotal(confirmedPayout(s,s.view.convoy.totalPayoutUnits));this.controls();observeExpansionOutcome(this.root,CONVOY_GAME,s,client.accountId,false,false);
    const v=s.view.convoy;if(s.state==='active'&&(!v.spin||v.spin.kind==='base')){this.stopAuto();this.openDialog('bonus');return;}
    if(s.state==='settled'&&v.history.some(spin=>spin.kind==='free')){this.bonusRunning=false;this.openDialog('complete');return;}
    if(s.state==='active'&&this.bonusRunning||s.state==='settled'&&this.autoRemaining>0)this.schedule();
-  }catch(e){if(this.valid(live)){this.error=(e as Error).message;this.stopAuto();this.live=undefined;this.board.cancel();this.audio.stopSpin();this.shown='';this.sync();}}
-  finally{if(this.live===live&&!this.valid(live)){this.live=undefined;this.audio.stopSpin();}}
- }
- private async present(s:Session,live:Live){
-  const v=s.view.convoy,spin=v.spin;this.root.dataset.sessionId=s.id;this.root.dataset.revision=String(v.revision);
-  if(!spin){this.audio.stopSpin();this.features(v);return;}
-  let total=Number(v.totalPayoutUnits)-Number(spin.payoutUnits);this.setTotal(total);this.factor(spin.multiplierBefore);
-  if(!await this.board.settle(live.token,spin.initialGrid)||!this.valid(live))return;this.audio.stopSpin();this.tickets(spin.initialGrid.filter(n=>n===7).length,spin.kind==='free');
-  for(const frame of spin.frames){
-   if(!this.valid(live))return;this.board.clearOverlay();this.board.show(frame.before);this.board.highlight(frame.wins.flatMap(w=>w.positions));
-   if(frame.addedPins.length){this.root.dataset.phase='energy';this.root.dataset.charging='true';this.find('[data-cc-message]').textContent=tr`Баррикады добавляют +${frame.addedPins.length} к защите`;this.audio.feature('barricade');if(live.motion&&!await this.delay(live.fast?220:550,live))return;this.factor(frame.multiplierAfter);this.root.dataset.charging='false';}
-   if(!frame.wins.length)break;
-   this.root.dataset.phase='winning';this.find('[data-cc-message]').textContent=tr`КАСКАД ${frame.index+1} · МНОЖИТЕЛЬ ×${frame.multiplierAfter}`;this.find('[data-cc-groups]').innerHTML=frame.wins.map(w=>`<span>${convoySymbol(w.symbol)}<b>${coins(w.payoutUnits)}</b></span>`).join('');total+=Number(frame.payoutUnits);this.setTotal(total);this.audio.cascade(frame.index);
-   if(live.motion&&!await this.delay(live.fast?120:380,live))return;
-   if(frame.removed.length){this.root.dataset.phase='bursting';this.board.remove(frame.removed);if(live.motion&&!await this.delay(live.fast?100:230,live))return;this.root.dataset.phase='falling';this.audio.drop();if(live.motion){this.board.gravity(frame,live.fast);if(!await this.delay(live.fast?260:560,live))return;}this.board.clearOverlay();this.board.show(frame.after);this.board.highlight([]);this.tickets(frame.after.filter(n=>n===7).length,spin.kind==='free');}
-  }
-  if(!this.valid(live))return;this.board.clearOverlay();this.board.show(spin.finalGrid);this.board.highlight([]);this.features(v);this.setTotal(confirmedPayout(s,v.totalPayoutUnits));
-  if(spin.freeAward){this.root.dataset.phase='tickets';this.find('[data-cc-message]').textContent=spin.kind==='free'?tr`ЕЩЁ ${spin.freeAward} БЕСПЛАТНЫХ ВРАЩЕНИЯ`:translateText('СИГНАЛ ПРИНЯТ · КОНВОЙ В ПУТИ');this.audio.tickets();if(live.motion&&!await this.delay(live.fast?250:850,live))return;}
-  else this.find('[data-cc-message]').textContent=v.capped?translateText('ДОСТИГНУТ ПРЕДЕЛ ВЫИГРЫША'):spin.frames.at(-1)?.stop==='cascade-limit'?translateText('20 КАСКАДОВ · ВЫИГРЫШ СОХРАНЁН'):Number(spin.payoutUnits)>0?translateText('ВЫИГРЫШ ПРИНЯТ'):s.state==='active'?translateText('ЭВАКУАЦИЯ ПРОДОЛЖАЕТСЯ'):translateText('ПРОДОЛЖАЕМ ПОИСК ПРИПАСОВ');
-  this.audio.outcome(Number(spin.payoutUnits)>0);if(live.motion)await this.delay(live.fast?100:300,live);
+  }catch(e){if(this.valid(live)){this.error=(e as Error).message;this.stopAuto();this.motionFacade.cancel();this.live=undefined;this.shown='';this.sync();}}
+  finally{if(this.live===live&&!this.valid(live)){this.motionFacade.cancel();this.live=undefined;}}
  }
  private schedule(){this.playback.schedule(this.fast?140:500,()=>{if(!this.dialog&&!this.blocked()&&(this.bonusRunning||this.autoRemaining))void this.request('normal');});}
  private async retry(){if(this.destroyed||!this.assets.ready||this.live||client.busy||!client.pending||document.hidden)return;this.stopAuto();this.error='';resetGameOutcomes(this.root);try{await client.retry();void this.progress.refresh();}catch(e){this.error=(e as Error).message;}if(!this.destroyed){this.shown='';this.sync();}}
@@ -186,6 +173,8 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
  private renderLooks(){const box=this.find('[data-cc-dialog]');const focused=box.contains(document.activeElement)?(document.activeElement as HTMLElement).getAttribute('data-cc-action'):null;box.innerHTML=this.heroine.gallery();if(focused)box.querySelectorAll<HTMLButtonElement>('[data-cc-action]').forEach(button=>{if(button.getAttribute('data-cc-action')===focused&&!button.disabled)button.focus();});}
  private closeDialog(){this.dialog='';this.controls();this.dialogShell.hide();}
  private async dialogAction(action:string){if(this.destroyed||!this.assets.ready)return;if(action.startsWith('look:')){await this.heroine.select(action.slice(5));if(!this.destroyed&&this.dialog==='looks')this.find('[data-cc-dialog]').querySelectorAll<HTMLButtonElement>('[data-cc-action]').forEach(button=>{if(button.getAttribute('data-cc-action')===action&&!button.disabled)button.focus();});return;}if(action==='enter'){this.entered=true;this.closeDialog();void this.audio.enter();if(this.session()?.state==='active'){this.bonusRunning=true;await this.request('normal');}}else if(action==='bonus'){this.closeDialog();this.bonusRunning=true;await this.request('normal');}else{this.closeDialog();if(action==='complete'&&this.autoRemaining)this.schedule();}}
+ pause(){if(this.destroyed)return;this.paused=true;this.cancel();this.audio.pause();this.sync();}
+ resume(){if(this.destroyed)return;this.paused=false;this.sync();}
  getAudioState(){return this.audio.state();}
- destroy(){if(this.destroyed)return;this.destroyed=true;this.cancel();this.progress.removeEventListener('change',this.progressChanged);this.progress.destroy();this.heroine.destroy();this.assets.destroy();this.board.destroy();this.audio.destroy();this.unsubscribe();this.settings?.destroy();this.dialogShell.destroy();this.stakeControls.destroy();this.soundControls.destroy();this.playback.destroy();this.host.replaceChildren();}
+ destroy(){if(this.destroyed)return;this.destroyed=true;this.cancel();this.progress.removeEventListener('change',this.progressChanged);this.progress.destroy();this.heroine.destroy();this.assets.destroy();this.motionFacade.destroy();this.board.destroy();this.audio.destroy();this.unsubscribe();this.settings?.destroy();this.dialogShell.destroy();this.stakeControls.destroy();this.soundControls.destroy();this.playback.destroy();this.host.replaceChildren();}
 }
