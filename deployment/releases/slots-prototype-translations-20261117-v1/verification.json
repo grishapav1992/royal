@@ -1,0 +1,345 @@
+{
+  "release": "slots-prototype-translations-20261117-v1",
+  "published": true,
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "f905735f7e188b24ac9de4375258ba19c0023137",
+  "baseCommit": "1982af70eddb487af20493e66954a622417db089",
+  "image": "sha256:dfb305d5d56e7086b922988be5711ae646d006a778f9c7ab9e963059f0458740",
+  "previousImage": "sha256:43f9e639570ce612404902ec3aa14c7b596a9fbb7423996e56a6874bba15da18",
+  "containerId": "e5c088e4ad065a38e4deb12e74c5cb990e00d355b515f5e372f8b4f23cdcd93a",
+  "startedAt": "2026-11-17T06:41:53.762246954Z",
+  "releaseManifestSha256": "2ce25aadc68102a8923b2804657c006d241789505adfe232024ca253748da3db",
+  "publication": {
+    "published": true,
+    "preparedImage": "sha256:dfb305d5d56e7086b922988be5711ae646d006a778f9c7ab9e963059f0458740",
+    "runningImage": "sha256:dfb305d5d56e7086b922988be5711ae646d006a778f9c7ab9e963059f0458740",
+    "containerRestarted": true,
+    "sourceCommit": "f905735f7e188b24ac9de4375258ba19c0023137",
+    "changedSources": 1,
+    "clientDeltaFiles": 9,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 0,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 10
+  },
+  "recovery": {
+    "directory": "/opt/royal-backups/slots-prototype-translations-20261117-v1",
+    "sourceArchiveBytes": 131447,
+    "sourceArchiveSha256": "375b6b7c079e8611b892e694dfdd762e7da7f99a04d36557dc3d092d16c35468",
+    "financialBackup": {
+      "path": "/opt/royal-backups/slots-prototype-translations-20261117-v1/financial.dump",
+      "sha256": "09669fb98ce12ea31834fa0594baad39b99001d5ded3a29b04e25ec0ff46b3c4",
+      "bytes": 48100481,
+      "databaseRestored": false
+    },
+    "rollbackImage": "sha256:43f9e639570ce612404902ec3aa14c7b596a9fbb7423996e56a6874bba15da18"
+  },
+  "checks": {
+    "checkedAt": "2026-11-17T06:42:36.557Z",
+    "sourceCommit": "f905735f7e188b24ac9de4375258ba19c0023137",
+    "rtp": {
+      "verified": 38,
+      "stakePoliciesVerified": 20,
+      "stakeAdmissionVerified": 20,
+      "legacyNotQualified": 114
+    },
+    "wallet": {
+      "command": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts",
+      "pass": 19,
+      "fail": 0
+    },
+    "browser": {
+      "builtHost": true,
+      "exactProductionBackend": "5e94ef5f22439ea7c63ad219117a491aa51752ca34255a97183cfd961ae0c577",
+      "temporaryPostgreSQL": true,
+      "connectedChat": true,
+      "desktopScenarios": 6,
+      "touchScenarios": 2,
+      "englishScenario": 1,
+      "viewports": [
+        [
+          1440,
+          900
+        ],
+        [
+          1280,
+          720
+        ],
+        [
+          768,
+          1024
+        ],
+        [
+          1024,
+          768
+        ],
+        [
+          393,
+          852
+        ],
+        [
+          852,
+          393
+        ],
+        [
+          320,
+          568
+        ],
+        [
+          568,
+          320
+        ]
+      ],
+      "minimumStakeDebit": -0.1,
+      "autoplayStop": true,
+      "lostResponseRecovery": true,
+      "closeReopen": true,
+      "rotationDuringAnimation": true,
+      "naturalBonuses": true,
+      "bonusPause": true,
+      "freeContinuationsWithoutAdditionalStake": true,
+      "allElevenNewEnglishEntriesRendered": true
+    },
+    "typecheck": "passed",
+    "installerTests": {
+      "platform": "macOS",
+      "pass": 20,
+      "fail": 0
+    },
+    "ci": {
+      "status": "pre_existing_failure",
+      "run": "https://github.com/grishapav1992/royal/actions/runs/44031411843",
+      "baselineRun": "https://github.com/grishapav1992/royal/actions/runs/44023280614",
+      "unrelatedCommand": "npm run test:forest-heart-math",
+      "failures": [
+        "invalid inputs, unavailable turns, invalid held roots and unbounded continuations are rejected",
+        "archived exact model is reproducible, covers all actions, held states and stakes, and stays inside its target"
+      ],
+      "mathematicalPolicyOrEvidenceChangedToBypassCI": false
+    },
+    "publicHttp": {
+      "checkedAt": "2026-11-17T06:43:03.968Z",
+      "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+      "files": [
+        {
+          "path": "assets/ActivitiesUI-BYTq9EVz.js",
+          "sha256": "825835ca476092ad3eb6470c6ca31109599978a256ebe07821b8df57188b0a55",
+          "bytes": 7020
+        },
+        {
+          "path": "assets/ClubWorld-CPC_hYlk.js",
+          "sha256": "18d8c869bf2733cbc2a0c14cb97f92837d3a258e7ef8449755667c533dd21144",
+          "bytes": 288400
+        },
+        {
+          "path": "assets/GameHostRuntime-CQnrPjhI.js",
+          "sha256": "232a96508f829df305baab371d9ce756e16cd37ec1877426abb866a8a848b5dc",
+          "bytes": 19547
+        },
+        {
+          "path": "assets/index-YggQewsm.js",
+          "sha256": "0375c853eff796212f91708b5ae9c03d27ff6aefd21b2878f2b3b298192f1f86",
+          "bytes": 480966
+        },
+        {
+          "path": "assets/main-DRp2TyiX.js",
+          "sha256": "682a35d1393c1461a2f9386c6bc9dd04d70ff8aa70efbc21a0618efa6fdc2c12",
+          "bytes": 943596
+        },
+        {
+          "path": "assets/phaser-Cvv30an4.js",
+          "sha256": "72b59824f936e4d18313c4c7eb4201df08f2a74edd2989ecdbcd93d1d2c17c1d",
+          "bytes": 1208010
+        },
+        {
+          "path": "assets/playerLevelStatus-BWxDL_Qa.js",
+          "sha256": "64ad253f68f2c8e81f16aac8dd25186ac5955cb6d75046a7ef847f91cd9f82b8",
+          "bytes": 1650
+        },
+        {
+          "path": "assets/PvpUI-Co4mbllU.js",
+          "sha256": "ba9184a610e4220b6ecd41ea7da33eb45f767d7a2272322b2625077849b00c05",
+          "bytes": 33410
+        },
+        {
+          "path": "index.html",
+          "sha256": "1f6631b0ff3bd468080ef942be1dec075d685ebce210337d9a7b5ef70902d570",
+          "bytes": 708
+        }
+      ],
+      "healthz": 200
+    },
+    "publicModuleHttp": {
+      "checkedAt": "2026-11-17T06:30:29.157Z",
+      "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+      "games": {
+        "studio-cosmic-escape": {
+          "version": "1.1.1-fbffcd451192",
+          "activePointerSha256": "e35924d11c41ac58a54adc7005dfdc0397f27c438afde8d3e530850ca4caa6f3",
+          "manifestSha256": "a41c2279bd8844679e11dbe2f98d2e1eb2f907b7d8362ddbc28ba0cac0b1eb2a",
+          "sourceSha256": "fbffcd451192c693e92e719e97e02f2e22dfe95b8f2c27ab8733440014a61bbd",
+          "files": [
+            {
+              "name": "entry-55d8eb702c3c0704.js",
+              "sha256": "55d8eb702c3c0704eee1801b286c107892d63e8c4d4857ead9d65355916b3ec0",
+              "bytes": 226147
+            },
+            {
+              "name": "media/cosmic-guardians/v1/alien.webp",
+              "sha256": "188bd8973f446976b01b9805880b958df5761f1dd545e0c5e7a6418f60a19599",
+              "bytes": 349800
+            },
+            {
+              "name": "media/cosmic-guardians/v1/background.webp",
+              "sha256": "0e185ec675a1bcc7b4fc7bdf43d6bb4c5adc15f3a7141075cf6549471829689c",
+              "bytes": 471798
+            },
+            {
+              "name": "media/cosmic-guardians/v1/symbols-v2.webp",
+              "sha256": "6e5d58ecb7d3cc3d2e95c57838cd6ef06b5ccecdb35e3a7f26a6e75792e8bce9",
+              "bytes": 581038
+            },
+            {
+              "name": "media/cosmic-rebuild/load-v2/background.webp",
+              "sha256": "0296ec45a7307fc69b4a0da58ec46805f9ff2bd6a9dc1b85552e53ce563abe37",
+              "bytes": 149346
+            },
+            {
+              "name": "media/studio/space-world.webp",
+              "sha256": "0a9a41dd898f368f43c562c58523bb622b96c778ad927ce9ed8f3aba17512f3d",
+              "bytes": 466310
+            },
+            {
+              "name": "media/studio/symbols.webp",
+              "sha256": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+              "bytes": 1480190
+            },
+            {
+              "name": "style-c3e38064ab36e87a.css",
+              "sha256": "c3e38064ab36e87a0252c7e22a77d2157809062238280c94897ccb158b496095",
+              "bytes": 209641
+            }
+          ],
+          "previousVersion": "1.1.1-2c38e829bf2a",
+          "previousManifestSha256": "86b0d9b6ef403f099c6c6daecee9a49468501cccc8098fc38ae4ac61264ad203",
+          "previousFilesVerified": 8,
+          "contract": {
+            "api": 1,
+            "rules": 2,
+            "progress": 1
+          }
+        },
+        "studio-caramel-carnival": {
+          "version": "1.1.1-0dd7ee4087e2",
+          "activePointerSha256": "cb516a53dbfe5d3fe6013ffb353826eccc6b4fba673555df7a7e63c8fbfcf0c4",
+          "manifestSha256": "d254a94256957a36b691a40c3eb728838f912e4d30dd3fc0d6e958609516f4dc",
+          "sourceSha256": "0dd7ee4087e2f981bcd9dbc7f89c137d906b97417de6a8d245afafad118d723c",
+          "files": [
+            {
+              "name": "entry-c49a7747ce5c0df1.js",
+              "sha256": "c49a7747ce5c0df13852e4032a96f6729776aec84c17a94cc243690a5bf464af",
+              "bytes": 212648
+            },
+            {
+              "name": "media/caramel-rebuild/v1/background.webp",
+              "sha256": "4bdcfce4cd3decbe1e7850645de7e0ac8edd636a7ff5299269b457c4639e5998",
+              "bytes": 230782
+            },
+            {
+              "name": "media/caramel-rebuild/v1/symbols.webp",
+              "sha256": "6dc3292aa4518e1f6bf08093391f6826eb74656c5d10fbc31914d5499f7f32f6",
+              "bytes": 365938
+            },
+            {
+              "name": "media/studio/candy-world.webp",
+              "sha256": "5aebbe2ba16cb4d40260655c8f5889f49b91c2347a56773b9413de308cf8f5c0",
+              "bytes": 350920
+            },
+            {
+              "name": "media/studio/space-world.webp",
+              "sha256": "0a9a41dd898f368f43c562c58523bb622b96c778ad927ce9ed8f3aba17512f3d",
+              "bytes": 466310
+            },
+            {
+              "name": "media/studio/symbols.webp",
+              "sha256": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+              "bytes": 1480190
+            },
+            {
+              "name": "style-6deb1c1313a93a63.css",
+              "sha256": "6deb1c1313a93a6360a202be0d650ff07d229b40438f010bdd75345de0d23ed4",
+              "bytes": 177828
+            }
+          ],
+          "previousVersion": "1.1.1-a4f6188ed42e",
+          "previousManifestSha256": "15856b7ce7b3d29e7dd86d1607c74ba466439e9f5d8c9fcf212c65ae611bbee5",
+          "previousFilesVerified": 7,
+          "contract": {
+            "api": 1,
+            "rules": 2,
+            "progress": 1
+          }
+        }
+      },
+      "healthz": 200
+    },
+    "publicBrowser": {
+      "languages": [
+        "ru",
+        "en"
+      ],
+      "viewports": [
+        [
+          1440,
+          900
+        ],
+        [
+          768,
+          1024
+        ],
+        [
+          393,
+          852
+        ],
+        [
+          852,
+          393
+        ]
+      ],
+      "errors": [],
+      "productionAccountsOrWagers": false
+    },
+    "comparison": {
+      "hostSourceFiles": [
+        "src/i18n/en.ts"
+      ],
+      "hostDeltaFiles": 9,
+      "backendChanged": false,
+      "gamePackagesChanged": false,
+      "catalogueUnchanged": true,
+      "catalogueCount": 19,
+      "otherServicesUnchanged": true,
+      "configurationAndVolumesPreserved": true
+    },
+    "programFilesVerified": 8700,
+    "externalModuleFilesVerified": 5467
+  },
+  "maintenance": {
+    "status": "completed",
+    "finishedAt": "2026-11-17T06:46:19.182Z",
+    "healthOk": true,
+    "timerEnabled": true,
+    "timerActive": true,
+    "freeBytes": 12498907136,
+    "currentImage": "sha256:dfb305d5d56e7086b922988be5711ae646d006a778f9c7ab9e963059f0458740",
+    "rollbackImage": "sha256:43f9e639570ce612404902ec3aa14c7b596a9fbb7423996e56a6874bba15da18",
+    "containersUnchanged": true
+  },
+  "limitations": [
+    "Physical phones, Safari and subjective audio quality were not tested.",
+    "Original publication preparation receipts were not retained. This audit reconstructs both packages from Git and verifies their public bytes, rather than asserting that historical preparation steps were recorded.",
+    "The shared production graph has partial source coverage. Package provenance here is established by the reconstructed compiled input maps and byte comparison."
+  ]
+}

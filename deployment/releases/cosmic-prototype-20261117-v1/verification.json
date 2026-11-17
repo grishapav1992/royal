@@ -1,0 +1,250 @@
+{
+  "release": "cosmic-prototype-20261117-v1",
+  "published": true,
+  "originalInstalledAt": "2026-11-17T05:23:46Z",
+  "reviewedDesignCommit": "6b06061828c16c6058d434f039ae0ada76653a85",
+  "checkedAt": "2026-11-17T06:48:30.500Z",
+  "sourceCommit": "99e4e23e47b5c95d4798efeee5c6653b060383f4",
+  "reconstructedBuildCommit": "f905735f7e188b24ac9de4375258ba19c0023137",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "verifiedAfterOriginalInstallation": true,
+  "originalPreparationReceiptsAvailable": false,
+  "qualification": {
+    "verified": 38,
+    "stakePoliciesVerified": 20,
+    "stakeAdmissionVerified": 20,
+    "legacyNotQualified": 114
+  },
+  "wallet": {
+    "command": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts",
+    "pass": 19,
+    "fail": 0
+  },
+  "browser": {
+    "builtHost": true,
+    "exactProductionBackend": "5e94ef5f22439ea7c63ad219117a491aa51752ca34255a97183cfd961ae0c577",
+    "temporaryPostgreSQL": true,
+    "connectedChat": true,
+    "desktopScenarios": 6,
+    "touchScenarios": 2,
+    "englishScenario": 1,
+    "viewports": [
+      [
+        1440,
+        900
+      ],
+      [
+        1280,
+        720
+      ],
+      [
+        768,
+        1024
+      ],
+      [
+        1024,
+        768
+      ],
+      [
+        393,
+        852
+      ],
+      [
+        852,
+        393
+      ],
+      [
+        320,
+        568
+      ],
+      [
+        568,
+        320
+      ]
+    ],
+    "minimumStakeDebit": -0.1,
+    "autoplayStop": true,
+    "lostResponseRecovery": true,
+    "closeReopen": true,
+    "rotationDuringAnimation": true,
+    "naturalBonuses": true,
+    "bonusPause": true,
+    "freeContinuationsWithoutAdditionalStake": true,
+    "allElevenNewEnglishEntriesRendered": true
+  },
+  "publicBrowser": {
+    "languages": [
+      "ru",
+      "en"
+    ],
+    "viewports": [
+      [
+        1440,
+        900
+      ],
+      [
+        768,
+        1024
+      ],
+      [
+        393,
+        852
+      ],
+      [
+        852,
+        393
+      ]
+    ],
+    "javascriptErrors": [],
+    "productionAccountsOrWagers": false
+  },
+  "catalogue": {
+    "count": 19,
+    "ids": [
+      "flag-battle",
+      "github-crash",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "royal-plinko",
+      "royal-roulette",
+      "studio-afterglow",
+      "studio-caramel-carnival",
+      "studio-caribbean-treasures",
+      "studio-cosmic-escape",
+      "studio-dracona",
+      "studio-flooded-temple",
+      "studio-forest-heart",
+      "studio-last-convoy",
+      "studio-meme-overload",
+      "studio-neopolis",
+      "studio-nitro-run",
+      "studio-velvet-reign",
+      "studio-wild-nudge"
+    ],
+    "addedGames": [],
+    "restoredGames": [],
+    "sameBeforeAndAfterCompletion": true
+  },
+  "completionRelease": "slots-prototype-translations-20261117-v1",
+  "completionImage": "sha256:dfb305d5d56e7086b922988be5711ae646d006a778f9c7ab9e963059f0458740",
+  "maintenance": {
+    "status": "completed",
+    "finishedAt": "2026-11-17T06:46:19.182Z",
+    "healthOk": true,
+    "timerEnabled": true,
+    "timerActive": true,
+    "freeBytes": 12498907136
+  },
+  "ci": {
+    "status": "pre_existing_failure",
+    "run": "https://github.com/grishapav1992/royal/actions/runs/44031411843",
+    "baselineRun": "https://github.com/grishapav1992/royal/actions/runs/44023280614",
+    "unrelatedCommand": "npm run test:forest-heart-math",
+    "failures": [
+      "invalid inputs, unavailable turns, invalid held roots and unbounded continuations are rejected",
+      "archived exact model is reproducible, covers all actions, held states and stakes, and stays inside its target"
+    ],
+    "mathematicalPolicyOrEvidenceChangedToBypassCI": false
+  },
+  "limitations": [
+    "Physical phones, Safari and subjective audio quality were not tested.",
+    "Original publication preparation receipts were not retained. This audit reconstructs both packages from Git and verifies their public bytes, rather than asserting that historical preparation steps were recorded.",
+    "The shared production graph has partial source coverage. Package provenance here is established by the reconstructed compiled input maps and byte comparison."
+  ],
+  "module": {
+    "gameId": "studio-cosmic-escape",
+    "version": "1.1.1-fbffcd451192",
+    "activePointerSha256": "e35924d11c41ac58a54adc7005dfdc0397f27c438afde8d3e530850ca4caa6f3",
+    "manifestSha256": "a41c2279bd8844679e11dbe2f98d2e1eb2f907b7d8362ddbc28ba0cac0b1eb2a",
+    "sourceSha256": "fbffcd451192c693e92e719e97e02f2e22dfe95b8f2c27ab8733440014a61bbd",
+    "files": [
+      {
+        "name": "entry-55d8eb702c3c0704.js",
+        "sha256": "55d8eb702c3c0704eee1801b286c107892d63e8c4d4857ead9d65355916b3ec0",
+        "bytes": 226147
+      },
+      {
+        "name": "media/cosmic-guardians/v1/alien.webp",
+        "sha256": "188bd8973f446976b01b9805880b958df5761f1dd545e0c5e7a6418f60a19599",
+        "bytes": 349800
+      },
+      {
+        "name": "media/cosmic-guardians/v1/background.webp",
+        "sha256": "0e185ec675a1bcc7b4fc7bdf43d6bb4c5adc15f3a7141075cf6549471829689c",
+        "bytes": 471798
+      },
+      {
+        "name": "media/cosmic-guardians/v1/symbols-v2.webp",
+        "sha256": "6e5d58ecb7d3cc3d2e95c57838cd6ef06b5ccecdb35e3a7f26a6e75792e8bce9",
+        "bytes": 581038
+      },
+      {
+        "name": "media/cosmic-rebuild/load-v2/background.webp",
+        "sha256": "0296ec45a7307fc69b4a0da58ec46805f9ff2bd6a9dc1b85552e53ce563abe37",
+        "bytes": 149346
+      },
+      {
+        "name": "media/studio/space-world.webp",
+        "sha256": "0a9a41dd898f368f43c562c58523bb622b96c778ad927ce9ed8f3aba17512f3d",
+        "bytes": 466310
+      },
+      {
+        "name": "media/studio/symbols.webp",
+        "sha256": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+        "bytes": 1480190
+      },
+      {
+        "name": "style-c3e38064ab36e87a.css",
+        "sha256": "c3e38064ab36e87a0252c7e22a77d2157809062238280c94897ccb158b496095",
+        "bytes": 209641
+      }
+    ],
+    "previousVersion": "1.1.1-2c38e829bf2a",
+    "previousManifestSha256": "86b0d9b6ef403f099c6c6daecee9a49468501cccc8098fc38ae4ac61264ad203",
+    "previousFilesVerified": 8,
+    "contract": {
+      "api": 1,
+      "rules": 2,
+      "progress": 1
+    }
+  },
+  "installationHistory": {
+    "release": "cosmic-prototype-20261117-v1",
+    "history": {
+      "operation": "install",
+      "before": {
+        "format": 1,
+        "gameId": "studio-cosmic-escape",
+        "manifest": "/game-modules/studio-cosmic-escape/versions/1.1.1-2c38e829bf2a/manifest.json",
+        "sha256": "86b0d9b6ef403f099c6c6daecee9a49468501cccc8098fc38ae4ac61264ad203"
+      },
+      "after": {
+        "format": 1,
+        "gameId": "studio-cosmic-escape",
+        "manifest": "/game-modules/studio-cosmic-escape/versions/1.1.1-fbffcd451192/manifest.json",
+        "sha256": "a41c2279bd8844679e11dbe2f98d2e1eb2f907b7d8362ddbc28ba0cac0b1eb2a"
+      },
+      "beforeSha256": "c4719d7cb484eb698575c0618380ebec2b7ac9067152d832b32644143ffc3ab7"
+    },
+    "historySha256": "ad366c4985067dd9d4704dcab5cd1388d5275cfc01888b4c18e0d25af5cd04a0",
+    "sourceArchiveBytes": 147429,
+    "sourceArchiveSha256": "891254f1eea87d839de0db9a578ef830dabda5762427c05dbef3a39b40227041",
+    "sourceFiles": {
+      "src/ui/CosmicEscapeUI.ts": "3e1c23cd3ec81bdedb1efea391822e28cc0b25fc3cb6a6e425434c87917f592f",
+      "src/ui/cosmic-guardians.css": "d00cf273b21befd72aba087dc9a0b14a2fe107f01f04e8ec621bf67c452dc705",
+      "src/i18n/en.ts": "f49f491ad1b9eda91f78128b53ff734e5e18617b48e10265041026e3a9399ef2"
+    }
+  },
+  "recovery": {
+    "priorPointerSha256": "c4719d7cb484eb698575c0618380ebec2b7ac9067152d832b32644143ffc3ab7",
+    "priorManifestSha256": "86b0d9b6ef403f099c6c6daecee9a49468501cccc8098fc38ae4ac61264ad203",
+    "priorVersion": "1.1.1-2c38e829bf2a",
+    "allPriorPackageFilesVerified": 8,
+    "sourceArchiveBytes": 147429,
+    "sourceArchiveSha256": "891254f1eea87d839de0db9a578ef830dabda5762427c05dbef3a39b40227041",
+    "sourceCommitForPriorVersion": "52b25d5c78d908d7bbb31db4c8b9a61464bf09d8",
+    "cosmicPriorPointerRecoveredFromImmutableHistory": true,
+    "originalArchiveNotRewritten": true,
+    "databaseRestored": false
+  }
+}

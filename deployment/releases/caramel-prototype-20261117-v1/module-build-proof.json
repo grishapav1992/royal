@@ -1,0 +1,128 @@
+{
+  "gameId": "studio-caramel-carnival",
+  "version": "1.1.1-0dd7ee4087e2",
+  "sourceSha256": "0dd7ee4087e2f981bcd9dbc7f89c137d906b97417de6a8d245afafad118d723c",
+  "sourceFiles": {
+    "games/caramel-carnival/entry.ts": "761a7a68f1ca39712b263bcfaab9bacb901f1784a543b7c6896986c15ab41e70",
+    "games/caramel-carnival/tsconfig.json": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de",
+    "src/modules/GameHostContract.ts": "47e6960da87ccab2dcb81c808ad019a82ee587f097754f1ab20a9c4dfcb3631b",
+    "src/shared/afterglow.ts": "eedcc278d149ae66b59d79afeef85d17a3fa5eb7f8d80bf5b5caf73c77b18035",
+    "src/shared/caramelCarnival.ts": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b",
+    "src/shared/caribbeanTreasuresMath.ts": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+    "src/shared/cosmicEscapeBets.ts": "a810b0f394e290eae0ccbf2f1745ada20f280bb08bd176eb534d0390871f99c7",
+    "src/shared/demoWallet.ts": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
+    "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+    "src/shared/gameCore.ts": "3e59b987bd47e61137af39aace7717bc7490e3dabf52193de8668fbcca5ca737",
+    "src/shared/gameStakes.ts": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b",
+    "src/shared/luelonSlots.ts": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
+    "src/shared/luelonSlotsLines.ts": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee",
+    "src/shared/luelonSlotsModels.ts": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74",
+    "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+    "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+    "src/shared/nitroRun.ts": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+    "src/shared/roundPrecision.ts": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
+    "src/shared/studioGames.ts": "5be1d552e408e7a2fe1d1cff923b70bdda059a57847c46db09c96dc2ae63e29a",
+    "src/shared/velvetReign.ts": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+    "src/shared/velvetReignHistory.ts": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+    "src/shared/walletAccount.ts": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560",
+    "src/ui/CaramelArtwork.ts": "cbc1ddaced3cfd215307e33e3b7aecc5cb00c9860b1a12536097166e5f971bcc",
+    "src/ui/CaramelBoard.ts": "cd3d3c73f4362397fb771c67f028e3621c5278624e0e70cca2bf447bc6757736",
+    "src/ui/CaramelCarnivalAssets.ts": "f70864f02a1c8ffe68714d55f382320f9c56a03ad0505b6b1e18dafeaabd7cb1",
+    "src/ui/CaramelCarnivalAudio.ts": "1705c37de6702f2c3e5618863f68d1dc342d3c069aaa435a1be09cdf46e3044c",
+    "src/ui/CaramelCarnivalUI.ts": "a6ec70848ce9d9f0f60bf480eb73ede27a382c503120a2c6011014268503fb0b",
+    "src/ui/CascadeArtwork.ts": "7c7d104aa1145ab1537c57c1806e209efee0eee8a5f38614cfec5ad649f75391",
+    "src/ui/CascadeBoard.ts": "06a62ad6af7786851c836148f9401936a6ca092cd08b05e4524510f848c5fb84",
+    "src/ui/CascadeSlotUI.ts": "d05cdc0759b085d1f6cc918fbf75dca0990b1de715880b2a9ec1efbdc42c9d1a",
+    "src/ui/GameLayoutPolicy.ts": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c",
+    "src/ui/LuelonGameRouter.ts": "5289f1211170916a80960eb039b8a0e762bd253c50638f9e0f570976c0e0ea9a",
+    "src/ui/StudioMotion.ts": "519c0c560226b0dee1de035703320de520a1e3ff376738b8643a2527c495f6c7",
+    "src/ui/active-game-viewport.css": "493e85699b284319a6e0dcaf6aa178c308ef2640bb7dc180625c052a4b6d60c7",
+    "src/ui/caramel-carnival.css": "2e0078654fb9754e15c09e837aaea32f08aa10e4947dffe6b7eb342a0b1a3bb6",
+    "src/ui/caramel-fair.css": "ab08ad99fc0d2e123fe20c4affa81026b0c3d5cddd6f24bf49201ca4fc602bd5",
+    "src/ui/cascade-slot.css": "11077582105b04dc2e7b25fcde30d3b1199a2ae1de666b7626b7ec91036aa128",
+    "src/ui/operationFeedback.ts": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17",
+    "src/ui/slotKit/SlotAssets.ts": "8bbd409578830ee7f3f025340003155335af03ce684bcae23bc913acb02052d2",
+    "src/ui/slotKit/SlotAudio.ts": "7f7c3536e0202ebd39dd79bcd36c886882332c6d5e84e4a73831d46e06aefbc0",
+    "src/ui/slotKit/SlotCascadeBoard.ts": "96d48c3a96c8bc40044d7748630024f9bbee1b8950544106c31dce2167049cf9",
+    "src/ui/slotKit/SlotControls.ts": "9ed5c3c6830d500441bba90888f0a693f6a342909ff6886f3c00eaef6b1c297a",
+    "src/ui/slotKit/SlotDialog.ts": "69351de658c231671feea17ef923595143f47e886f09beeb4533f1ae0cb0337d",
+    "src/ui/slotKit/SlotGeometry.ts": "9050e51c87d77646845e206f2618a1ab6a3887e008f17abb0b1fbd29303ee90f",
+    "src/ui/slotKit/SlotLifecycle.ts": "33c227f915cbff994e7218a7e98410f7ae4d1fee129dfd013f531092e9eee71f",
+    "src/ui/slotKit/SlotPlayback.ts": "b16043b19396cabe7cf67d8864400ccb8f20c5a916565eb6c90ca148cc3d6954",
+    "src/ui/slotKit/SlotPriorityLayout.ts": "947932d761ede2150900d9fd0278a2560b032aec8c9372f0085b717f1af796f2",
+    "src/ui/slotKit/SlotScreens.ts": "59140beebcb205fa8e52c3e35f0f2283a0746ebd42b08ef54122598fd986756a",
+    "src/ui/slotKit/SlotSessions.ts": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2",
+    "src/ui/slotKit/SlotSettings.ts": "e9ca94a9ea09d3fb1789fb18ba5d87457f210aedc00b99570bb92ee3df1472dd",
+    "src/ui/slotKit/nativeSlotImages.ts": "20e93c94b87b767d25d9f41a5d033275e76947eab02f0299032b583800e5da9f",
+    "src/ui/slotKit/nativeSlots.ts": "fc823e2892a7fcc49d32b8fa21bd938498ac1762d4444213f8c624bec21cf6f7",
+    "src/ui/slotKit/slot-priorities.css": "05266abd09f5f3cbfbe91dde79ac8188f74b6d333bc2acb9e3884530f4aaee5f",
+    "src/ui/slotKit/slot-settings.css": "a9bc7aabfd5f8649a3220820199d709f57b8cd260205c3d18cfa5236ea854f5b",
+    "src/ui/stakeRules.ts": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df",
+    "src/ui/stakeSelection.ts": "a504e218ad8683f493e68345b26003a33711a07e6231290910054cd31d72c631",
+    "src/ui/studio-games.css": "0a3c6fc2d4655e9814b349952d5c9578d49c194d483cdaba0e9a76eb23b12259",
+    "src/ui/studio-motion.css": "6b0c392dc87cfde2f16e3ac932378d39a2062ccc700307c179d044553aba903c",
+    "tsconfig.json": "ac92a48aa49e6d4a13a2ce4191379133d7156d219b8b3f10723921ad695f8888"
+  },
+  "compilation": {
+    "format": 1,
+    "projected": false,
+    "configurations": {
+      "tsconfig.json": "ac92a48aa49e6d4a13a2ce4191379133d7156d219b8b3f10723921ad695f8888",
+      "games/caramel-carnival/tsconfig.json": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de"
+    },
+    "helperSha256": "544c1d2583d0f3abad37a54012a98a4f9b46d4763f65c842116e67cc012d9f28"
+  },
+  "hostSingletonsExternalized": true,
+  "hostBridges": [
+    "royal-host:src/game/GameAudio",
+    "royal-host:src/i18n/index",
+    "royal-host:src/ui/gameReactions",
+    "royal-host:src/wallet/ExpansionClient",
+    "royal-host:src/wallet/WalletClient"
+  ],
+  "nativeImplementations": [
+    "CaramelCarnivalUI"
+  ],
+  "serverImplementationIncluded": false,
+  "sharedMathInputs": [],
+  "assetRoots": [
+    "studio",
+    "caramel-rebuild"
+  ],
+  "assetFiles": [],
+  "mediaReferences": [
+    "caramel-rebuild/v1/background.webp",
+    "caramel-rebuild/v1/symbols.webp",
+    "studio/candy-world.webp",
+    "studio/space-world.webp",
+    "studio/symbols.webp"
+  ],
+  "dynamicMediaDirectories": [],
+  "startupImages": [
+    "media/caramel-rebuild/v1/symbols.webp",
+    "media/caramel-rebuild/v1/background.webp"
+  ],
+  "bytes": 3284616,
+  "files": 7,
+  "cache": {
+    "format": 1,
+    "fingerprint": "32ead0e815c2765ccff007a46865932d018baa0a9077a06510b885322c61328e",
+    "outputs": {
+      "entry-c49a7747ce5c0df1.js": "c49a7747ce5c0df13852e4032a96f6729776aec84c17a94cc243690a5bf464af",
+      "style-6deb1c1313a93a63.css": "6deb1c1313a93a6360a202be0d650ff07d229b40438f010bdd75345de0d23ed4",
+      "media/caramel-rebuild/v1/background.webp": "4bdcfce4cd3decbe1e7850645de7e0ac8edd636a7ff5299269b457c4639e5998",
+      "media/caramel-rebuild/v1/symbols.webp": "6dc3292aa4518e1f6bf08093391f6826eb74656c5d10fbc31914d5499f7f32f6",
+      "media/studio/candy-world.webp": "5aebbe2ba16cb4d40260655c8f5889f49b91c2347a56773b9413de308cf8f5c0",
+      "media/studio/space-world.webp": "0a9a41dd898f368f43c562c58523bb622b96c778ad927ce9ed8f3aba17512f3d",
+      "media/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+      "manifest.json": "d254a94256957a36b691a40c3eb728838f912e4d30dd3fc0d6e958609516f4dc"
+    }
+  },
+  "audit": {
+    "sourceCommit": "99e4e23e47b5c95d4798efeee5c6653b060383f4",
+    "reconstructedAt": "2026-11-17T06:41:32.726Z",
+    "reconstructionCommit": "f905735f7e188b24ac9de4375258ba19c0023137",
+    "allTrackedCompiledInputsMatchSourceCommit": true,
+    "publicPackageByteIdentityVerified": true
+  }
+}
