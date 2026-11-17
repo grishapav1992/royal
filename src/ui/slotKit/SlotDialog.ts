@@ -1,5 +1,5 @@
 import {stakeRulesHtml} from '../stakeRules';
-export type SlotDialogKind = '' | 'intro' | 'info' | 'history' | 'buy' | 'bonus' | 'complete';
+export type SlotDialogKind = '' | 'intro' | 'info' | 'history' | 'buy' | 'bonus' | 'complete' | 'star';
 
 /** Club chat and other panels own their keys even while a slot screen is open. */
 export function slotOwnsKeyboard(root: HTMLElement, event: KeyboardEvent) {
@@ -61,7 +61,7 @@ export class SlotDialog {
     if (event.key === 'Escape') {
       event.preventDefault();
       event.stopPropagation();
-      if (['info', 'history', 'buy', 'complete'].includes(kind)) this.close();
+      if (['info', 'history', 'buy', 'complete', 'star'].includes(kind)) this.close();
     }
     if (event.key === 'Tab') {
       const elements = this.focusable(), first = elements[0], last = elements.at(-1);

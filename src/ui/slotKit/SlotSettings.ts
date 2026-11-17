@@ -7,9 +7,9 @@ export class SlotSettings {
   private readonly dialog = document.createElement('dialog');
   private readonly button = document.createElement('button');
   private readonly placeholder = document.createComment('slot settings');
-  private readonly layout: SlotPriorityLayout;
+  private readonly layout?: SlotPriorityLayout;
 
-  constructor(root: HTMLElement, private readonly footer: HTMLElement, tools: HTMLElement, onOpen: () => void) {
+  constructor(root: HTMLElement, private readonly footer: HTMLElement, tools: HTMLElement, onOpen: () => void, moduleLayout = false) {
     footer.before(this.placeholder);
     this.button.type = 'button';
     this.button.className = 'slot-settings-button';
@@ -22,7 +22,7 @@ export class SlotSettings {
     this.dialog.append(footer);
     root.append(this.dialog);
     tools.append(this.button);
-    this.layout = new SlotPriorityLayout(root,this.dialog,footer,()=>this.close());
+    if (!moduleLayout) this.layout = new SlotPriorityLayout(root,this.dialog,footer,()=>this.close());
     this.button.onclick = () => {
       if (this.dialog.open) return;
       onOpen();
@@ -69,7 +69,7 @@ export class SlotSettings {
 
   destroy() {
     this.close();
-    this.layout.destroy();
+    this.layout?.destroy();
     this.button.onclick = null;
     this.button.remove();
     this.placeholder.replaceWith(this.footer);
