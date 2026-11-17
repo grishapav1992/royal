@@ -1018,3 +1018,8 @@
   grid-template-areas: "left stage right" "left outcome right" "left . right";
   padding-left: var(--ccf-pad); padding-right: var(--ccf-pad);
 }
+
+/* Ticket slots share the card width: 56 x 72 as drawn, narrower when the side column is narrower (guest window,
+   connected chat), so the fourth slot never leaves its card. */
+.cc-game.ccf:not([data-slot-priority="portrait"], [data-slot-priority="landscape"]) .ccf-slots > span { flex: 0 1 56px; min-width: 0; }
+.cc-game.ccf:not([data-slot-priority="portrait"], [data-slot-priority="landscape"]) .ccf-slots > span .cc-symbol { width: min(60px, 107%); height: auto; aspect-ratio: 1; }
