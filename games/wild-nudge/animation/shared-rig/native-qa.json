@@ -1,0 +1,68 @@
+{
+  "format": "star-spin-rig-native-qa-v1",
+  "cliVersion": "1.9.2",
+  "verificationSha256": "566482b57812888441ab5faa129fd37c3d4ee017c0db6c8b2ca9e7330bdc6f62",
+  "loop": {
+    "meanAbsoluteChannelDifference": 0.1251584201388889,
+    "changedPixels": 1
+  },
+  "modeDifferences": [
+    {
+      "mode": "idle",
+      "meanAbsoluteChannelDifference": 3.9682177734375,
+      "changedPixels": 139891
+    },
+    {
+      "mode": "spin_wait",
+      "meanAbsoluteChannelDifference": 2.4307682291666666,
+      "changedPixels": 119584
+    },
+    {
+      "mode": "wild_align",
+      "meanAbsoluteChannelDifference": 9.644203016493055,
+      "changedPixels": 180632
+    },
+    {
+      "mode": "bonus_enter",
+      "meanAbsoluteChannelDifference": 10.903996310763889,
+      "changedPixels": 190678
+    },
+    {
+      "mode": "bonus_idle",
+      "meanAbsoluteChannelDifference": 4.217130533854166,
+      "changedPixels": 142236
+    },
+    {
+      "mode": "round_win",
+      "meanAbsoluteChannelDifference": 10.372750651041667,
+      "changedPixels": 186657
+    },
+    {
+      "mode": "select",
+      "meanAbsoluteChannelDifference": 8.605723198784721,
+      "changedPixels": 172029
+    }
+  ],
+  "ikErrors": {
+    "ik-rest": {
+      "hand_r": 0.0000970824391832497,
+      "hand_l": 0.00003099999997857594,
+      "foot_r": 0.0005926921629512259,
+      "foot_l": 0.0003284950532713902
+    },
+    "ik-moved": {
+      "hand_r": 0.00003443835069204417,
+      "hand_l": 0,
+      "foot_r": 0.000091999999995096,
+      "foot_l": 0.00011038568745167198
+    }
+  },
+  "ikRestPicture": {
+    "meanAbsoluteChannelDifference": 0.15983072916666666,
+    "changedPixels": 1179
+  },
+  "interruptionReturnedToIdle": true,
+  "debugOverlayChanges": 13305,
+  "movie": "preview.mp4",
+  "coverage": "Native CLI at 640x960. Authoring controls and seven states only; no host, wallet, browser runtime or physical device check."
+}

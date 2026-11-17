@@ -1,0 +1,401 @@
+{
+  "format": "star-spin-character-rig-v1",
+  "cliVersion": "1.9.2",
+  "artboard": "Vespera",
+  "stateMachine": "Character",
+  "viewModel": "Character",
+  "modes": [
+    "idle",
+    "spin_wait",
+    "wild_align",
+    "bonus_enter",
+    "bonus_idle",
+    "round_win",
+    "select"
+  ],
+  "bones": 31,
+  "slots": [
+    {
+      "slot": "hand_l",
+      "vertices": 4,
+      "triangles": 2,
+      "tendons": [
+        "hand_l"
+      ],
+      "rect": [
+        277,
+        321,
+        100,
+        53
+      ]
+    },
+    {
+      "slot": "hand_r",
+      "vertices": 4,
+      "triangles": 2,
+      "tendons": [
+        "hand_r"
+      ],
+      "rect": [
+        139,
+        450,
+        43,
+        79
+      ]
+    },
+    {
+      "slot": "saber",
+      "vertices": 4,
+      "triangles": 2,
+      "tendons": [
+        "weapon_r"
+      ],
+      "rect": [
+        10,
+        437,
+        190,
+        350
+      ]
+    },
+    {
+      "slot": "forearm_l",
+      "vertices": 4,
+      "triangles": 2,
+      "tendons": [
+        "forearm_l"
+      ],
+      "rect": [
+        336,
+        292,
+        105,
+        90
+      ]
+    },
+    {
+      "slot": "forearm_r",
+      "vertices": 4,
+      "triangles": 2,
+      "tendons": [
+        "forearm_r"
+      ],
+      "rect": [
+        147,
+        349,
+        66,
+        134
+      ]
+    },
+    {
+      "slot": "upper_arm_l",
+      "vertices": 4,
+      "triangles": 2,
+      "tendons": [
+        "upper_arm_l"
+      ],
+      "rect": [
+        326,
+        184,
+        120,
+        147
+      ]
+    },
+    {
+      "slot": "torso",
+      "vertices": 117,
+      "triangles": 192,
+      "tendons": [
+        "chest",
+        "spine",
+        "pelvis"
+      ],
+      "rect": [
+        190,
+        145,
+        176,
+        253
+      ]
+    },
+    {
+      "slot": "head",
+      "vertices": 4,
+      "triangles": 2,
+      "tendons": [
+        "head"
+      ],
+      "rect": [
+        241,
+        31,
+        115,
+        176
+      ]
+    },
+    {
+      "slot": "upper_arm_r",
+      "vertices": 4,
+      "triangles": 2,
+      "tendons": [
+        "upper_arm_r"
+      ],
+      "rect": [
+        178,
+        221,
+        57,
+        153
+      ]
+    },
+    {
+      "slot": "tabard",
+      "vertices": 75,
+      "triangles": 112,
+      "tendons": [
+        "pelvis",
+        "cloth_01",
+        "cloth_02",
+        "cloth_03"
+      ],
+      "rect": [
+        244,
+        385,
+        65,
+        347
+      ]
+    },
+    {
+      "slot": "pelvis",
+      "vertices": 4,
+      "triangles": 2,
+      "tendons": [
+        "pelvis"
+      ],
+      "rect": [
+        186,
+        325,
+        202,
+        185
+      ]
+    },
+    {
+      "slot": "boot_r",
+      "vertices": 4,
+      "triangles": 2,
+      "tendons": [
+        "foot_r"
+      ],
+      "rect": [
+        60,
+        777,
+        102,
+        180
+      ]
+    },
+    {
+      "slot": "boot_l",
+      "vertices": 4,
+      "triangles": 2,
+      "tendons": [
+        "foot_l"
+      ],
+      "rect": [
+        386,
+        777,
+        83,
+        180
+      ]
+    },
+    {
+      "slot": "shin_r",
+      "vertices": 4,
+      "triangles": 2,
+      "tendons": [
+        "shin_r"
+      ],
+      "rect": [
+        106,
+        613,
+        103,
+        232
+      ]
+    },
+    {
+      "slot": "shin_l",
+      "vertices": 4,
+      "triangles": 2,
+      "tendons": [
+        "shin_l"
+      ],
+      "rect": [
+        367,
+        615,
+        81,
+        238
+      ]
+    },
+    {
+      "slot": "thigh_r",
+      "vertices": 4,
+      "triangles": 2,
+      "tendons": [
+        "thigh_r"
+      ],
+      "rect": [
+        167,
+        430,
+        94,
+        230
+      ]
+    },
+    {
+      "slot": "thigh_l",
+      "vertices": 4,
+      "triangles": 2,
+      "tendons": [
+        "thigh_l"
+      ],
+      "rect": [
+        305,
+        432,
+        112,
+        232
+      ]
+    },
+    {
+      "slot": "hair_back",
+      "vertices": 135,
+      "triangles": 224,
+      "tendons": [
+        "head",
+        "hair_01",
+        "hair_02",
+        "hair_03"
+      ],
+      "rect": [
+        168,
+        10,
+        187,
+        261
+      ]
+    },
+    {
+      "slot": "cape_back",
+      "vertices": 247,
+      "triangles": 432,
+      "tendons": [
+        "chest",
+        "cape_01",
+        "cape_02",
+        "cape_03"
+      ],
+      "rect": [
+        40,
+        148,
+        465,
+        785
+      ]
+    }
+  ],
+  "inputHashes": {
+    "docs/game-layout/star-spin/vespera-rig/parts/hand_l.png": "462e76edacddcc4c7e65e64b147a5b8797e5eaa2f34f0b6da8206296308bcac3",
+    "docs/game-layout/star-spin/vespera-rig/parts/hand_r.png": "f2e57ed92af5b6c010d57168e57e65daa947c10ea577a723beeea110c60154da",
+    "docs/game-layout/star-spin/vespera-rig/parts/saber.png": "94f5ffd1506e9fb5cc81fbecd1977213d5b41d89514830659410899caedbdb7b",
+    "docs/game-layout/star-spin/vespera-rig/parts/forearm_l.png": "45d7563cedece64fdc1f7c55bddefd32a14287123e03f03ec8bba9b648683136",
+    "docs/game-layout/star-spin/vespera-rig/parts/forearm_r.png": "3e8da4af5e9854d76ebf2ff6c923fb536452d8ce92e9c15cab3999f6b5ae454f",
+    "docs/game-layout/star-spin/vespera-rig/parts/upper_arm_l.png": "b8bf08c8a85c463ce06eefb290136b0e3cd6b6e1ae3541fac32586b266924a3b",
+    "docs/game-layout/star-spin/vespera-rig/parts/torso.png": "71a3a2728b783f0423dad8fffe9f6afaf8153c3627bbd28a6cddabf675431700",
+    "docs/game-layout/star-spin/vespera-rig/parts/head.png": "1b0d0c2a5fe74058e25e2c4a827921daaa1604fc3f97c5a3396e0e64eb09e793",
+    "docs/game-layout/star-spin/vespera-rig/parts/upper_arm_r.png": "ce3f063042177e5f3b30d7c8a285703c36021a8bc2b3686fd70dbb045c89a0e6",
+    "docs/game-layout/star-spin/vespera-rig/parts/tabard.png": "40f5bc02286c05074c5da88247bda6a5ff746ac95433c378a258149e7a55731b",
+    "docs/game-layout/star-spin/vespera-rig/parts/pelvis.png": "00f8998c75a7b60d7febc8640aaedd37be6593cbd442cb2d7b9532543441368e",
+    "docs/game-layout/star-spin/vespera-rig/parts/boot_r.png": "40998190c0ed738727648dc46e8efd8d41b562fb80e387431d9358c806c0be25",
+    "docs/game-layout/star-spin/vespera-rig/parts/boot_l.png": "f8cb732d848fb9d224dd7397fafa636ef2d1bccc9751caa26d231df6b8169fcc",
+    "docs/game-layout/star-spin/vespera-rig/parts/shin_r.png": "6d55b1bd156157a7e28a42ebdfcc5c818f168fb8007f74f7f688d8b7c3b3ebdd",
+    "docs/game-layout/star-spin/vespera-rig/parts/shin_l.png": "ad62ae8a1ed44f3d7bbb27f5692042cb873df0775a9e764f2fa4a103d40b1e44",
+    "docs/game-layout/star-spin/vespera-rig/parts/thigh_r.png": "71f1e26985ce8a9d3104160308f6286ea1a589e695233155da19b2602f3cb406",
+    "docs/game-layout/star-spin/vespera-rig/parts/thigh_l.png": "6c22a05526465a0001392d2eb4225533ebed58e167cce6e26b3ddea2b77eeeec",
+    "docs/game-layout/star-spin/vespera-rig/parts/hair_back.png": "d96e79345f42dd39a0f811f3962c7d4bc25bef275f53b694ae48a713656280d5",
+    "docs/game-layout/star-spin/vespera-rig/parts/cape_back.png": "3481ef583ea22be25dd10f4e2d4b145d8fc52be3c86664ddd9e7dc8c6c037c66",
+    "games/wild-nudge/animation/shared-rig/build.mjs": "54ca8a58c5c7007cf9b104e010a92ae812bc355c1778da7e26530731cdb0db5c",
+    "games/wild-nudge/animation/shared-rig/verify.mjs": "a26537b9749725eb0b75c81e36f17fd9c6ed8f6b81f6e3a7147a6f9aa4ffae55",
+    "games/wild-nudge/animation/shared-rig/skeleton.json": "c02ed64aa54e11c6cefc26fa27ff95e5c3c8af255072fab70d635b05ac7d17e1",
+    "games/wild-nudge/animation/shared-rig/skins/vespera.json": "f1c0935116bbb7fa11c2788c54b3902a3710a1cf25cba2ea8c9bddc158a6667c",
+    "games/wild-nudge/animation/shared-rig/scene.rml": "a27ae7d66095f13ff885fbf15bfd8906b6e761b6ff195f9caf2f7bf5a591eb57",
+    "games/wild-nudge/animation/shared-rig/rive.yaml": "038dbd637f2e7134054f7e7920f0ee45d2b66ba02da93e21ab304dc0d80bc718"
+  },
+  "verify": {
+    "success": true,
+    "command": "verify",
+    "data": {
+      "riv": null,
+      "bytes": 0,
+      "buildMs": 263.8,
+      "problems": []
+    },
+    "errors": [],
+    "warnings": [],
+    "allowance": null,
+    "credits": null,
+    "workspace": null
+  },
+  "inspection": {
+    "schema": 1,
+    "summary": true,
+    "problems": [],
+    "artboards": [
+      {
+        "name": "Vespera",
+        "objects": 4628,
+        "types": {
+          "AnimationState": 7,
+          "AnyState": 1,
+          "Artboard": 1,
+          "BindablePropertyNumber": 42,
+          "Bone": 22,
+          "ContourMeshVertex": 240,
+          "CubicEaseInterpolator": 1085,
+          "DataBindContext": 98,
+          "Ellipse": 35,
+          "EntryState": 1,
+          "ExitState": 1,
+          "Fill": 62,
+          "IKConstraint": 4,
+          "Image": 19,
+          "KeyFrameDouble": 1085,
+          "KeyedObject": 217,
+          "KeyedProperty": 217,
+          "LayoutComponentStyle": 1,
+          "LinearAnimation": 7,
+          "Mesh": 19,
+          "MeshVertex": 394,
+          "Node": 40,
+          "Rectangle": 31,
+          "RootBone": 9,
+          "Shape": 66,
+          "Skin": 19,
+          "SolidColor": 66,
+          "StateMachine": 1,
+          "StateMachineLayer": 1,
+          "StateTransition": 43,
+          "Stroke": 4,
+          "Tendon": 30,
+          "TransitionPropertyViewModelComparator": 42,
+          "TransitionValueNumberComparator": 42,
+          "TransitionViewModelCondition": 42,
+          "Weight": 634
+        }
+      }
+    ],
+    "events": [],
+    "roots": {
+      "objects": 64,
+      "types": {
+        "Backboard": 1,
+        "ImageAsset": 19,
+        "ViewModel": 1,
+        "ViewModelInstance": 1,
+        "ViewModelInstanceNumber": 21,
+        "ViewModelPropertyNumber": 21
+      }
+    }
+  },
+  "runtimeExport": "not exported: CLI 1.9.2 requires a Rive login for local publishing",
+  "status": "local authoring prototype, not connected to game runtime"
+}

@@ -1,0 +1,572 @@
+{
+  "id": "vespera",
+  "artboard": "Vespera",
+  "sourceDirectory": "docs/game-layout/star-spin/vespera-rig",
+  "textureDirectory": "parts",
+  "pose": {
+    "root": [
+      [
+        290,
+        935
+      ],
+      [
+        290,
+        934
+      ]
+    ],
+    "pelvis": [
+      [
+        277,
+        390
+      ],
+      [
+        277,
+        365
+      ]
+    ],
+    "spine": [
+      [
+        277,
+        365
+      ],
+      [
+        282,
+        280
+      ]
+    ],
+    "chest": [
+      [
+        282,
+        280
+      ],
+      [
+        290,
+        191
+      ]
+    ],
+    "neck": [
+      [
+        290,
+        191
+      ],
+      [
+        290,
+        155
+      ]
+    ],
+    "head": [
+      [
+        290,
+        155
+      ],
+      [
+        298,
+        90
+      ]
+    ],
+    "clavicle_r": [
+      [
+        282,
+        238
+      ],
+      [
+        209,
+        243
+      ]
+    ],
+    "upper_arm_r": [
+      [
+        209,
+        243
+      ],
+      [
+        193,
+        366
+      ]
+    ],
+    "forearm_r": [
+      [
+        193,
+        366
+      ],
+      [
+        164,
+        464
+      ]
+    ],
+    "hand_r": [
+      [
+        164,
+        464
+      ],
+      [
+        160,
+        500
+      ]
+    ],
+    "weapon_r": [
+      [
+        160,
+        500
+      ],
+      [
+        132,
+        558
+      ]
+    ],
+    "clavicle_l": [
+      [
+        304,
+        240
+      ],
+      [
+        358,
+        231
+      ]
+    ],
+    "upper_arm_l": [
+      [
+        358,
+        231
+      ],
+      [
+        430,
+        307
+      ]
+    ],
+    "forearm_l": [
+      [
+        430,
+        307
+      ],
+      [
+        366,
+        353
+      ]
+    ],
+    "hand_l": [
+      [
+        366,
+        353
+      ],
+      [
+        314,
+        344
+      ]
+    ],
+    "weapon_l": [
+      [
+        314,
+        344
+      ],
+      [
+        293,
+        331
+      ]
+    ],
+    "thigh_r": [
+      [
+        228,
+        476
+      ],
+      [
+        191,
+        631
+      ]
+    ],
+    "shin_r": [
+      [
+        191,
+        631
+      ],
+      [
+        138,
+        840
+      ]
+    ],
+    "foot_r": [
+      [
+        138,
+        840
+      ],
+      [
+        109,
+        932
+      ]
+    ],
+    "thigh_l": [
+      [
+        341,
+        473
+      ],
+      [
+        394,
+        634
+      ]
+    ],
+    "shin_l": [
+      [
+        394,
+        634
+      ],
+      [
+        426,
+        839
+      ]
+    ],
+    "foot_l": [
+      [
+        426,
+        839
+      ],
+      [
+        432,
+        940
+      ]
+    ],
+    "hair_01": [
+      [
+        285,
+        40
+      ],
+      [
+        236,
+        120
+      ]
+    ],
+    "hair_02": [
+      [
+        236,
+        120
+      ],
+      [
+        200,
+        212
+      ]
+    ],
+    "hair_03": [
+      [
+        200,
+        212
+      ],
+      [
+        180,
+        300
+      ]
+    ],
+    "cape_01": [
+      [
+        354,
+        184
+      ],
+      [
+        397,
+        383
+      ]
+    ],
+    "cape_02": [
+      [
+        397,
+        383
+      ],
+      [
+        440,
+        614
+      ]
+    ],
+    "cape_03": [
+      [
+        440,
+        614
+      ],
+      [
+        465,
+        894
+      ]
+    ],
+    "cloth_01": [
+      [
+        261,
+        389
+      ],
+      [
+        273,
+        506
+      ]
+    ],
+    "cloth_02": [
+      [
+        273,
+        506
+      ],
+      [
+        293,
+        610
+      ]
+    ],
+    "cloth_03": [
+      [
+        293,
+        610
+      ],
+      [
+        300,
+        707
+      ]
+    ]
+  },
+  "parts": {
+    "head": {
+      "rect": [
+        241,
+        31,
+        115,
+        176
+      ],
+      "bones": [
+        "head"
+      ]
+    },
+    "torso": {
+      "rect": [
+        190,
+        145,
+        176,
+        253
+      ],
+      "bones": [
+        "chest",
+        "spine",
+        "pelvis"
+      ],
+      "mesh": [
+        8,
+        12
+      ]
+    },
+    "pelvis": {
+      "rect": [
+        186,
+        325,
+        202,
+        185
+      ],
+      "bones": [
+        "pelvis"
+      ]
+    },
+    "upper_arm_r": {
+      "rect": [
+        178,
+        221,
+        57,
+        153
+      ],
+      "bones": [
+        "upper_arm_r"
+      ]
+    },
+    "forearm_r": {
+      "rect": [
+        147,
+        349,
+        66,
+        134
+      ],
+      "bones": [
+        "forearm_r"
+      ]
+    },
+    "hand_r": {
+      "rect": [
+        139,
+        450,
+        43,
+        79
+      ],
+      "bones": [
+        "hand_r"
+      ]
+    },
+    "upper_arm_l": {
+      "rect": [
+        326,
+        184,
+        120,
+        147
+      ],
+      "bones": [
+        "upper_arm_l"
+      ]
+    },
+    "forearm_l": {
+      "rect": [
+        336,
+        292,
+        105,
+        90
+      ],
+      "bones": [
+        "forearm_l"
+      ]
+    },
+    "hand_l": {
+      "rect": [
+        277,
+        321,
+        100,
+        53
+      ],
+      "bones": [
+        "hand_l"
+      ]
+    },
+    "thigh_r": {
+      "rect": [
+        167,
+        430,
+        94,
+        230
+      ],
+      "bones": [
+        "thigh_r"
+      ]
+    },
+    "thigh_l": {
+      "rect": [
+        305,
+        432,
+        112,
+        232
+      ],
+      "bones": [
+        "thigh_l"
+      ],
+      "shearX": 30
+    },
+    "shin_r": {
+      "rect": [
+        106,
+        613,
+        103,
+        232
+      ],
+      "bones": [
+        "shin_r"
+      ]
+    },
+    "shin_l": {
+      "rect": [
+        367,
+        615,
+        81,
+        238
+      ],
+      "bones": [
+        "shin_l"
+      ]
+    },
+    "boot_r": {
+      "rect": [
+        60,
+        777,
+        102,
+        180
+      ],
+      "bones": [
+        "foot_r"
+      ],
+      "shearX": 18
+    },
+    "boot_l": {
+      "rect": [
+        386,
+        777,
+        83,
+        180
+      ],
+      "bones": [
+        "foot_l"
+      ]
+    },
+    "cape_back": {
+      "rect": [
+        40,
+        148,
+        465,
+        785
+      ],
+      "bones": [
+        "chest",
+        "cape_01",
+        "cape_02",
+        "cape_03"
+      ],
+      "mesh": [
+        12,
+        18
+      ]
+    },
+    "hair_back": {
+      "rect": [
+        168,
+        10,
+        187,
+        261
+      ],
+      "bones": [
+        "head",
+        "hair_01",
+        "hair_02",
+        "hair_03"
+      ],
+      "mesh": [
+        8,
+        14
+      ]
+    },
+    "tabard": {
+      "rect": [
+        244,
+        385,
+        65,
+        347
+      ],
+      "bones": [
+        "pelvis",
+        "cloth_01",
+        "cloth_02",
+        "cloth_03"
+      ],
+      "mesh": [
+        4,
+        14
+      ]
+    },
+    "saber": {
+      "rect": [
+        10,
+        437,
+        190,
+        350
+      ],
+      "bones": [
+        "weapon_r"
+      ]
+    }
+  },
+  "motion": {
+    "idleFrames": 360,
+    "bodyDegrees": 0.4,
+    "headDegrees": 0.6,
+    "hairDegrees": 1.2,
+    "capeDegrees": 0.45,
+    "clothDegrees": 0.7,
+    "gestureDegrees": 4
+  },
+  "limitations": [
+    "Reconstructed raster artwork has a fixed camera angle.",
+    "Facial expressions and independent fingers need additional textures.",
+    "The first skin is an authoring prototype; inspect seams across the intended range before game integration."
+  ]
+}

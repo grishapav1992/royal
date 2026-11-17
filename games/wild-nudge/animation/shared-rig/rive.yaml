@@ -1,0 +1,4 @@
+name: star-spin-shared-rig
+logs:
+  file: build/rive.log
+  problems: build/problems.log
