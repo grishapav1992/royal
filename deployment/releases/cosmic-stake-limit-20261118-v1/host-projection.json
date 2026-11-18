@@ -510,10 +510,10 @@
       "sha256": "30c5fb0aa6cbee1cdef1bd5a6e062e91c7b8ea94b69fbaacabc74dbbf7da630a"
     },
     "src/wallet/ExpansionClient.ts": {
-      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "commit": "3069713d845b2938f2fc22dc2222752b21b448e9",
       "path": "src/wallet/ExpansionClient.ts",
-      "baseSha256": "bfc97155743dbc78fe9d0e5beb0cb9eb9f3fe7828ec45da13d43d58c86933a36",
-      "sha256": "bfc97155743dbc78fe9d0e5beb0cb9eb9f3fe7828ec45da13d43d58c86933a36"
+      "baseSha256": "9a34b5377a4b54b7ed9d469f0d11b2eac5db0a3c2163e894e7de2467d815577f",
+      "sha256": "9a34b5377a4b54b7ed9d469f0d11b2eac5db0a3c2163e894e7de2467d815577f"
     },
     "src/wallet/MinesClient.ts": {
       "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
@@ -2542,6 +2542,12 @@
       "path": "src/ui/club-fine.css",
       "baseSha256": "925e6b50bd9459db6fb121d2e1db04a847ecaf5603404f091a11b5fc3b7b8a7e",
       "sha256": "925e6b50bd9459db6fb121d2e1db04a847ecaf5603404f091a11b5fc3b7b8a7e"
+    },
+    "src/shared/cosmicStakeProtocol.ts": {
+      "commit": "3069713d845b2938f2fc22dc2222752b21b448e9",
+      "path": "src/shared/cosmicStakeProtocol.ts",
+      "baseSha256": "22ff09ee59049b2307d8057f034221d417f5eda39796321d72f0415dc71da318",
+      "sha256": "22ff09ee59049b2307d8057f034221d417f5eda39796321d72f0415dc71da318"
     }
   }
 }

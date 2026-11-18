@@ -84,7 +84,7 @@ def validate(base, guard, scope):
     require(proof['gameId'] == package['gameId'] == GAME and proof['version'] == package['version'] == module['version']
             and proof['hostSingletonsExternalized'] and not proof['serverImplementationIncluded']
             and proof['sourceSha256'] == package['sourceSha256'], 'Module proof differs')
-    for name in set(scope['module']) | (set(scope['host']) & set(scope['backend'])) | {'src/modules/GameHostContract.ts'}:
+    for name in scope['moduleBindings']:
         require(proof['sourceFiles'].get(name) == base.CHANGES[name], 'Module source is unbound: ' + name)
     folder = f"module-dist/{GAME}/versions/{module['version']}/"
     require(module['files'] == {'manifest.json': guard.sha(ROOT / 'package/manifest.json'), **package['files']}
@@ -104,13 +104,12 @@ def module_options(base, publisher):
     return args
 
 
-def switch_module(base, publisher):
+def switch_module(base, publisher, args):
     host = read('after.json')
     current = base.snapshot()
     comparable = lambda state: {k: v for k, v in state.items() if k not in {'at', 'availableBytes'}}
     require(comparable(current) == comparable(host) and current['container']['health'] == 'healthy'
             and current['sourceCommit'] == base.M['sourceCommit'], 'Published host changed')
-    args = module_options(base, publisher)
     module = base.M['module']
     previous = json.loads(POINTER.read_text())
     old_manifest = MODULES / previous['manifest'].removeprefix('/game-modules/')
@@ -165,12 +164,12 @@ def main():
     try:
         with guard.publication_locks():
             base.payload()
+            args = module_options(base, publisher)
             if sys.argv[1] != 'module':
-                module_options(base, publisher)
                 if sys.argv[1] == 'release':
                     print(json.dumps(base.build()), flush=True)
                 print(json.dumps(base.publish()), flush=True)
-            print(json.dumps(switch_module(base, publisher)), flush=True)
+            print(json.dumps(switch_module(base, publisher, args)), flush=True)
     except guard.PublicationBusy as error:
         print(json.dumps({'status': 'publication_busy', 'error': str(error)}), file=sys.stderr)
         sys.exit(75)

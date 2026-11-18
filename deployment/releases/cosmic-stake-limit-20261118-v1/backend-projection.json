@@ -42,10 +42,10 @@
       ]
     },
     "server/demoWalletRoutes.ts": {
-      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "commit": "3069713d845b2938f2fc22dc2222752b21b448e9",
       "path": "server/demoWalletRoutes.ts",
-      "baseSha256": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
-      "sha256": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82"
+      "baseSha256": "bd5f1e44ec0030a41d845ba9beaf45e02636e66cbf00fec883e785862519c08b",
+      "sha256": "bd5f1e44ec0030a41d845ba9beaf45e02636e66cbf00fec883e785862519c08b"
     },
     "server/progressionRoutes.ts": {
       "commit": "358e5f9392da540740f5fcb9be9617b157837b68",
@@ -1766,6 +1766,12 @@
       "path": "src/shared/chatConduct.ts",
       "baseSha256": "00fffaeef49a7520e6b4ec4eeaafdc9847462c325118e6f0f7fab61a6508c7ab",
       "sha256": "00fffaeef49a7520e6b4ec4eeaafdc9847462c325118e6f0f7fab61a6508c7ab"
+    },
+    "src/shared/cosmicStakeProtocol.ts": {
+      "commit": "3069713d845b2938f2fc22dc2222752b21b448e9",
+      "path": "src/shared/cosmicStakeProtocol.ts",
+      "baseSha256": "22ff09ee59049b2307d8057f034221d417f5eda39796321d72f0415dc71da318",
+      "sha256": "22ff09ee59049b2307d8057f034221d417f5eda39796321d72f0415dc71da318"
     }
   }
 }
