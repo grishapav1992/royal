@@ -6,6 +6,7 @@ export const DEFAULT_GAME_STAKE = '10';
 export const DEFAULT_GAME_BET = 0.1;
 export const MIN_GAME_STAKE_CENTS = 10;
 export const MAX_GAME_STAKE_CENTS = 5000;
+export const gameStakeMaximum = (game: string): number => game === 'studio-cosmic-escape' ? 10000 : MAX_GAME_STAKE_CENTS;
 /** Parse canonical transport money without multiplying a binary fraction. */
 export function gameBetCents(value: unknown): number | undefined {
   if (typeof value !== 'number' || !Number.isFinite(value)) return undefined;
@@ -15,11 +16,11 @@ export function gameBetCents(value: unknown): number | undefined {
   return Number.isSafeInteger(cents) ? cents : undefined;
 }
 /** Player input accepts a dot or comma, with at most two decimal places. */
-export function parseGameStake(value: string): string | undefined {
+export function parseGameStake(value: string, maximumCents = MAX_GAME_STAKE_CENTS): string | undefined {
   const match = /^(\d+)(?:[.,](\d{1,2}))?$/.exec(value.trim());
   if (!match) return undefined;
   const cents = BigInt(match[1]) * 100n + BigInt((match[2] ?? '').padEnd(2, '0'));
-  return cents >= BigInt(MIN_GAME_STAKE_CENTS) && cents <= BigInt(MAX_GAME_STAKE_CENTS) ? String(cents) : undefined;
+  return cents >= BigInt(MIN_GAME_STAKE_CENTS) && cents <= BigInt(maximumCents) ? String(cents) : undefined;
 }
 // This policy does not register, publish or enable games.
 const games = new Set(['studio-cosmic-escape', 'studio-caramel-carnival', 'studio-velvet-reign',
@@ -28,8 +29,8 @@ const games = new Set(['studio-cosmic-escape', 'studio-caramel-carnival', 'studi
   'original-cr-vs-leo', 'original-jackie-chan', 'studio-caribbean-treasures', 'studio-flooded-temple',
   'royal-roulette', 'flag-battle', 'tsu-e-fa', 'studio-wild-nudge']);
 export const usesGameStakes = (game: string): boolean => games.has(game);
-export const validGameStake = (value: unknown): value is string => typeof value === 'string' && /^[1-9]\d{0,3}$/.test(value)
-  && Number(value) >= MIN_GAME_STAKE_CENTS && Number(value) <= MAX_GAME_STAKE_CENTS;
+export const validGameStake = (value: unknown, maximumCents = MAX_GAME_STAKE_CENTS): value is string => typeof value === 'string' && /^[1-9]\d{0,14}$/.test(value)
+  && Number(value) >= MIN_GAME_STAKE_CENTS && Number(value) <= maximumCents;
 export const validGameBet = (value: unknown): value is number => {
   const cents = gameBetCents(value);
   return cents !== undefined && cents >= MIN_GAME_STAKE_CENTS && cents <= MAX_GAME_STAKE_CENTS;
