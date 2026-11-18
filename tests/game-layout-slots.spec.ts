@@ -87,6 +87,47 @@ for(const id of games)test('field and actions without scrolling: '+id,async({pag
  for(const [width,height]of sizes)await test.step(width+'x'+height,async()=>{await page.setViewportSize({width,height});await fit(page,id);});
 });
 
+test('Last Convoy keeps its radio and stake legible in the connected host',async({page,roomPath})=>{
+ const game='studio-last-convoy';
+ await enterGameHall(page,roomPath);await open(page,game);
+ const root=page.locator('#mini-game > .cv-game');
+ const chat=page.locator('#club-chat-dock');
+ if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
+ await expect(chat.locator('#chat-input')).toBeVisible();
+ await fit(page,game);
+ await expect(root.locator('[data-cv-heroine]')).toHaveJSProperty('complete',true);
+
+ await page.setViewportSize({width:393,height:700});
+ if(await chat.isVisible())await chat.locator('.game-chat-close').click();
+ const layout=await root.evaluate(game=>{
+  const radio=game.querySelector('.cv-radio')!;
+  const message=radio.querySelector('[data-cc-message]')!;
+  message.textContent='Баррикады усиливают защиту. Эвакуация продолжается бесплатно. Держитесь ближе к фонарям.';
+  const text=document.createRange();
+  text.selectNodeContents(message);
+  const controls=game.querySelector('.cv-controls')!.getBoundingClientRect();
+  const board=game.querySelector('[data-cc-board]')!.getBoundingClientRect();
+  const portrait=radio.querySelector('.cv-portrait')!.getBoundingClientRect();
+  return {
+   boardBottom:board.bottom,radioTop:radio.getBoundingClientRect().top,
+   radioBottom:radio.getBoundingClientRect().bottom,controlsTop:controls.top,
+   messageBottom:text.getBoundingClientRect().bottom,portraitBottom:portrait.bottom,
+   stake:game.querySelector<HTMLInputElement>('[data-manual-stake]')!.value,
+  };
+ });
+ expect(layout.boardBottom).toBeLessThanOrEqual(layout.radioTop);
+ expect(Math.max(layout.radioBottom,layout.messageBottom,layout.portraitBottom)).toBeLessThan(layout.controlsTop);
+ expect(layout.stake).toBe('0,10');
+ await fit(page,game);
+ const stake=root.locator('[data-manual-stake]');
+ await stake.fill('0,11');
+ await expect(root.locator('[data-cc-stake]')).toHaveValue('11');
+ await stake.fill('0,10');
+ await expect(root.locator('[data-cc-stake]')).toHaveValue('10');
+ await page.locator('#mini-dialog .game-chat-toggle').click();
+ await expect(chat.locator('#chat-input')).toBeVisible();
+});
+
 test('Cosmic Escape keeps results in the controls and the reel frame still',async({page,roomPath})=>{
  await enterGameHall(page,roomPath);
  await open(page,'studio-cosmic-escape');
