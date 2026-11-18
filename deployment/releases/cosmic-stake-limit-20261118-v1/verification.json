@@ -1,0 +1,265 @@
+{
+  "release": "cosmic-stake-limit-20261118-v1",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+  "productionBaseCommit": "f905735f7e188b24ac9de4375258ba19c0023137",
+  "releaseManifestSha256": "4ce17b8f76803c88c83139e4da19d0cd7f11e3b377e3772347f7d29599036ac9",
+  "backendSha256": "2ec94f1142f5ca9eab2cb9280adfdc47399454592fd88ceba33562d4ed284257",
+  "publishedHost": {
+    "published": true,
+    "preparedImage": "sha256:2cc23838241e398f8b83a5f2166aff41868e82f7e258bc0c2598a0616b8a0574",
+    "runningImage": "sha256:2cc23838241e398f8b83a5f2166aff41868e82f7e258bc0c2598a0616b8a0574",
+    "sourceCommit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+    "containerRestarted": true,
+    "changedSources": 15,
+    "clientDeltaFiles": 9,
+    "backendDeltaFiles": 1,
+    "gameDataPreserved": true,
+    "oldAssetsPreserved": true,
+    "configurationsAndMountsPreserved": true,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "otherPersistentServicesPreserved": 10,
+    "completion": {
+      "helperSourceCommit": "bc6c18a1eb2c988210f1f0375e922d37a04ab632",
+      "verifiedRuntimeDifference": {
+        "field": "Dns",
+        "before": [],
+        "after": null,
+        "effectiveConfiguration": "Docker default"
+      },
+      "candidateReused": true,
+      "additionalRestart": false
+    }
+  },
+  "publishedModule": {
+    "verified": true,
+    "gameId": "studio-cosmic-escape",
+    "version": "1.1.1-70b0fc1c8174",
+    "bytes": 3924775,
+    "files": 8,
+    "beforeSha256": "e35924d11c41ac58a54adc7005dfdc0397f27c438afde8d3e530850ca4caa6f3",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "d08f5830eb4c831009c957e8daebcda8c3c9fd2c76555bf9459b31f716efd1e1",
+    "history": "/opt/royal-game-modules-state/history/20261118T154613-ed836a85a0b64997add3b702043f2c83.json",
+    "sourceCommit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+    "previousManifest": {
+      "format": 1,
+      "gameId": "studio-cosmic-escape",
+      "manifest": "/game-modules/studio-cosmic-escape/versions/1.1.1-fbffcd451192/manifest.json",
+      "sha256": "a41c2279bd8844679e11dbe2f98d2e1eb2f907b7d8362ddbc28ba0cac0b1eb2a"
+    },
+    "freeAfter": 12338069504
+  },
+  "rollback": {
+    "image": "sha256:dfb305d5d56e7086b922988be5711ae646d006a778f9c7ab9e963059f0458740",
+    "previousModule": "1.1.1-fbffcd451192",
+    "manifestSha256": "a41c2279bd8844679e11dbe2f98d2e1eb2f907b7d8362ddbc28ba0cac0b1eb2a",
+    "sourceBackupSha256": "cae2ea76c23efa99470d16a3796d13526ef99fdb0b4a0d6caa90e0445e0c1c78",
+    "sourceBackupBytes": 180468,
+    "financialBackup": {
+      "path": "/opt/royal-backups/cosmic-stake-limit-20261118-v1/financial.dump",
+      "sha256": "3486239cfc22782280b3dc41c9368375faca2ff6a6e6faf830029cb826437722",
+      "bytes": 48183275,
+      "databaseRestored": false
+    }
+  },
+  "verification": {
+    "rtp": {
+      "profiles": 38,
+      "stakePolicies": 20,
+      "stakeAdmissions": 20
+    },
+    "walletTestsPassed": 19,
+    "walletHttpTestsPassed": 2,
+    "browser": {
+      "desktopPassed": 8,
+      "mobilePassed": 3,
+      "connectedChat": true,
+      "limitUnits": 10000,
+      "upperBoundRejectedUnits": 10001,
+      "recoveryStakeUnits": 5001,
+      "originalOperationReused": true,
+      "debitedOnce": true
+    },
+    "catalogue": [
+      "flag-battle",
+      "github-crash",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "royal-plinko",
+      "royal-roulette",
+      "studio-afterglow",
+      "studio-caramel-carnival",
+      "studio-caribbean-treasures",
+      "studio-cosmic-escape",
+      "studio-dracona",
+      "studio-flooded-temple",
+      "studio-forest-heart",
+      "studio-last-convoy",
+      "studio-meme-overload",
+      "studio-neopolis",
+      "studio-nitro-run",
+      "studio-velvet-reign",
+      "studio-wild-nudge"
+    ],
+    "layoutChecks": [
+      {
+        "width": 1440,
+        "height": 900,
+        "prices": [
+          "10",
+          "20",
+          "50",
+          "100",
+          "200",
+          "500",
+          "1000",
+          "2000",
+          "5000",
+          "10000"
+        ],
+        "speeds": 2,
+        "windowFit": {
+          "x": 327.390625,
+          "y": 230.28125,
+          "width": 713.609375,
+          "height": 409.015625
+        }
+      },
+      {
+        "width": 393,
+        "height": 852,
+        "prices": [
+          "10",
+          "20",
+          "50",
+          "100",
+          "200",
+          "500",
+          "1000",
+          "2000",
+          "5000",
+          "10000"
+        ],
+        "speeds": 2,
+        "windowFit": {
+          "x": 21,
+          "y": 133.296875,
+          "width": 351,
+          "height": 280.796875
+        }
+      },
+      {
+        "width": 852,
+        "height": 393,
+        "prices": [
+          "10",
+          "20",
+          "50",
+          "100",
+          "200",
+          "500",
+          "1000",
+          "2000",
+          "5000",
+          "10000"
+        ],
+        "speeds": 2,
+        "windowFit": {
+          "x": 80.015625,
+          "y": 64,
+          "width": 397.15625,
+          "height": 223.984375
+        }
+      }
+    ],
+    "oldClientRefreshVerified": true,
+    "publicModuleFiles": 8
+  },
+  "maintenance": {
+    "startedAt": 1795016830.2743204,
+    "status": "completed",
+    "freeBefore": 12338040832,
+    "release": "cosmic-stake-limit-20261118-v1",
+    "sourceCommit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+    "currentImage": "sha256:2cc23838241e398f8b83a5f2166aff41868e82f7e258bc0c2598a0616b8a0574",
+    "rollbackImage": "sha256:dfb305d5d56e7086b922988be5711ae646d006a778f9c7ab9e963059f0458740",
+    "plannedEntries": 23,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 220,
+    "retainedHistoryReasons": {
+      "/opt/royal-releases/hall-elevator-20261101-v1-final.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/forest-heart-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-compact.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/royal-roulette-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/hall-elevator-20261101-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-delta.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-snapshot.py": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v3.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/character-motion-20261027-v1.failed.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-ui-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/girlhub-feedback-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v2.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before-final.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/caramel-redesign-20261111-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-card-scale-20261023": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/caramel-prototype-20261117-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub"
+    },
+    "removedEntries": 23,
+    "removedImageTags": 5,
+    "dockerRetainedImages": [],
+    "freeAfter": 12348723200,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:dfb305d5d56e7086b922988be5711ae646d006a778f9c7ab9e963059f0458740",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "f2c24034f147c3011f6fb8c859ad83dbf363f96e1409008f50d63b5c5f30c019",
+      "files": 8700
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "bee2c26c6753a7513df69e6a59034d09efd202b49bb086e866a1c6a3b213f76d",
+      "receipt": "/var/lib/royal-project-brain/receipts/bee2c26c6753a7513df69e6a59034d09efd202b49bb086e866a1c6a3b213f76d.json",
+      "queued": true
+    },
+    "finishedAt": 1795016909.2748194,
+    "durationSeconds": 79
+  },
+  "transportArchive": {
+    "archiveBytes": 6649098,
+    "archiveSha256": "0e34ea28e067b085ef5a8df8ddae9d1c9017e3fca3cd721b8e13e2da7a890aa9",
+    "stagedPath": "/opt/royal-releases/cosmic-stake-limit-20261118-v1"
+  }
+}
