@@ -1,4 +1,4 @@
-@import './caramel-carnival.css';
+@import '../../src/ui/caramel-carnival.css';
 
 .cc-game.cv-game {
   --cc-gold: #f2bf71;

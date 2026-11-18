@@ -1,4 +1,4 @@
-import { LastConvoyUI } from '../../src/ui/LastConvoyUI';
+import { LastConvoyUI } from './LastConvoyUI';
 import { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';
 import '../../src/ui/studio-games.css';
 export const gameId = 'studio-last-convoy';

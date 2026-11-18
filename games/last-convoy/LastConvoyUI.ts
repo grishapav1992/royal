@@ -1,32 +1,41 @@
-import {canRecoverOperation} from './operationFeedback';
-import {confirmedPayout} from '../shared/roundPrecision';
-import {GAME_STAKE_UNITS as CONVOY_BETS} from '../shared/gameStakes';
-import { t as translateText, tr, locale } from '../i18n/index';
-import {SlotSettings} from './slotKit/SlotSettings';
-import {SlotDialog, slotOwnsKeyboard} from './slotKit/SlotDialog';
-import {SlotStakeControls, SlotAudioControls, slotStakeStep, updateSlotTransport} from './slotKit/SlotControls';
-import {slotCoins as coins, slotEscape as escape, slotSpinNumber, renderSlotLedger, renderSlotHistory, renderSlotInfo, renderSlotResult, renderSlotPaytable, renderSlotPaylines} from './slotKit/SlotScreens';
-import {SlotPlayback, type SlotOperation} from './slotKit/SlotPlayback';
-import {SlotSessions, type NativeSlotSession} from './slotKit/SlotSessions';
-import {bindSlotLifecycle} from './slotKit/SlotLifecycle';
-import {convoySlot} from './slotKit/nativeSlots';
-import {CONVOY_GAME,CONVOY_PAYTABLE,CONVOY_NAMES,type ConvoyView,type ConvoySpin} from '../shared/lastConvoy';
-import {expansionClient as client} from '../wallet/ExpansionClient';
-import {demoWallet} from '../wallet/WalletClient';
-import {observeExpansionOutcome,resetGameOutcomes} from './gameReactions';
-import {LastConvoyAssets,CONVOY_ASSETS,type ConvoyAssetState} from './LastConvoyAssets';
-import {LastConvoyAudio} from './LastConvoyAudio';
-import {ConvoyBoard} from './ConvoyBoard';
-import {convoySymbol} from './ConvoyArtwork';
+import {canRecoverOperation} from '../../src/ui/operationFeedback';
+import {confirmedPayout} from '../../src/shared/roundPrecision';
+import {GAME_STAKE_UNITS as CONVOY_BETS} from '../../src/shared/gameStakes';
+import { t as translateText, tr, locale, language } from '../../src/i18n/index';
+import {SlotSettings} from '../../src/ui/slotKit/SlotSettings';
+import {SlotDialog, slotOwnsKeyboard} from '../../src/ui/slotKit/SlotDialog';
+import {SlotStakeControls, SlotAudioControls, slotStakeStep, updateSlotTransport} from '../../src/ui/slotKit/SlotControls';
+import {slotCoins as coins, slotEscape as escape, slotSpinNumber, renderSlotLedger, renderSlotHistory, renderSlotInfo, renderSlotResult, renderSlotPaytable, renderSlotPaylines} from '../../src/ui/slotKit/SlotScreens';
+import {SlotPlayback, type SlotOperation} from '../../src/ui/slotKit/SlotPlayback';
+import {SlotSessions, type NativeSlotSession} from '../../src/ui/slotKit/SlotSessions';
+import {bindSlotLifecycle} from '../../src/ui/slotKit/SlotLifecycle';
+import {convoySlot} from '../../src/ui/slotKit/nativeSlots';
+import {CONVOY_GAME,CONVOY_PAYTABLE,CONVOY_NAMES,type ConvoyView,type ConvoySpin} from '../../src/shared/lastConvoy';
+import {expansionClient as client} from '../../src/wallet/ExpansionClient';
+import {demoWallet} from '../../src/wallet/WalletClient';
+import {observeExpansionOutcome,resetGameOutcomes} from '../../src/ui/gameReactions';
+import {LastConvoyAssets,CONVOY_ASSETS,type ConvoyAssetState} from '../../src/ui/LastConvoyAssets';
+import {LastConvoyAudio} from '../../src/ui/LastConvoyAudio';
+import {ConvoyBoard} from '../../src/ui/ConvoyBoard';
+import {convoySymbol} from '../../src/ui/ConvoyArtwork';
 import './last-convoy.css';
-import {ConvoyHeroine} from './ConvoyHeroine';
-import {ConvoyProgressClient} from '../wallet/ConvoyProgressClient';
-import {gameContentLayout} from './GameLayoutPolicy';
+import {ConvoyHeroine} from '../../src/ui/ConvoyHeroine';
+import {ConvoyProgressClient} from '../../src/wallet/ConvoyProgressClient';
+import {gameContentLayout} from '../../src/ui/GameLayoutPolicy';
 
 type Session=NativeSlotSession<'convoy'>;
 type Dialog=''|'intro'|'info'|'history'|'bonus'|'bonus-help'|'looks'|'complete';
 type Live=SlotOperation&{operationId:string;balance:number;motion:boolean;fast:boolean;before?:Session};
 const preview=Array.from({length:30},(_,i)=>(i+2*Math.floor(i/6))%7);
+// Cabinet labels travel with the module because the installed host owns the shared dictionary.
+const copy=language==='en'?{
+ beacons:'Beacons', defense:'Convoy defense', win:'Round win', radio:'Radio', maya:'Maya · Spark',
+ controls:'Controls', stake:'Stake per spin', free:'Free', spinning:'Spinning', last:'Last win',
+}:{
+ beacons:'Маяки', defense:'Защита конвоя', win:'Выигрыш раунда', radio:'Радиосвязь', maya:'Майя · Искра',
+ controls:'Управление', stake:'Ставка за ход', free:'Бесплатно', spinning:'Вращается', last:'Последний выигрыш',
+};
+
 
 /** Presentation consumes confirmed frames. Reopening and retries remain static. */
 export class LastConvoyUI {
@@ -80,9 +89,9 @@ export class LastConvoyUI {
   <div class="cc-loader" role="status"><span class="cc-loader-spark">✦</span><strong data-cc-load-title>ГОТОВИМ ЭВАКУАЦИЮ</strong><p data-cc-load-note>Изображения: 0 из 3</p><progress data-cc-load-progress max="3" value="0" aria-label="Загрузка оформления"></progress><button type="button" data-cc-load-retry hidden>Повторить загрузку</button></div>
   <div class="cv-layout">
    <div class="cv-hud slot-feature-strip" aria-label="Состояние раунда">
-    <div class="cv-stat"><span>Маяки</span><div><div class="cc-ticket-slots" data-cc-tickets aria-hidden="true">${Array.from({length:3},()=>`<span>${convoySymbol(7)}</span>`).join('')}</div><strong data-cc-ticket-count>0 / 3</strong></div></div>
-    <div class="cv-stat cv-defense"><span>Защита конвоя</span><div><strong data-cc-factor>×1</strong><span class="cv-factor-max">/ 7</span></div><div class="cc-energy-meter" aria-hidden="true"><i data-cc-energy-fill></i></div></div>
-    <div class="cv-stat cv-win"><span>Выигрыш раунда</span><div><strong data-cc-total data-units="0">0,00</strong></div></div>
+    <div class="cv-stat"><span>${copy.beacons}</span><div><div class="cc-ticket-slots" data-cc-tickets aria-hidden="true">${Array.from({length:3},()=>`<span>${convoySymbol(7)}</span>`).join('')}</div><strong data-cc-ticket-count>0 / 3</strong></div></div>
+    <div class="cv-stat cv-defense"><span>${copy.defense}</span><div><strong data-cc-factor>×1</strong><span class="cv-factor-max">/ 7</span></div><div class="cc-energy-meter" aria-hidden="true"><i data-cc-energy-fill></i></div></div>
+    <div class="cv-stat cv-win"><span>${copy.win}</span><div><strong data-cc-total data-units="0">0,00</strong></div></div>
    </div>
    <div class="cv-stage">
     <div class="cc-board-frame"><div class="cc-board" data-cc-board role="group" aria-label="Шесть барабанов, пять рядов припасов"></div></div>
@@ -91,20 +100,20 @@ export class LastConvoyUI {
      <div class="cc-feedback" data-cc-feedback><p data-cc-status role="status"></p><p data-cc-error role="alert"></p><button type="button" data-cc-retry hidden>Проверить прежний ход</button></div>
     </div>
    </div>
-   <aside class="cv-radio" aria-label="Радиосвязь">
+   <aside class="cv-radio" aria-label="${copy.radio}">
     <div class="cv-portrait"><div class="cv-hero-body"><img data-cv-heroine alt="Майя, выживальщица с рацией" width="1024" height="1536"><canvas data-cv-frames width="512" height="768" aria-hidden="true"></canvas></div></div>
     <div class="cv-radio-copy">
-     <strong>Майя · Искра</strong>
+     <strong>${copy.maya}</strong>
      <p data-cc-message>Нажми вращение, чтобы собрать припасы</p>
      <p class="cv-free" data-cc-free>Ждём сигнал</p>
      <div class="cc-groups" data-cc-groups></div>
     </div>
    </aside>
-   <section class="cc-controls cv-controls" aria-label="Управление">
+   <section class="cc-controls cv-controls" aria-label="${copy.controls}">
     <div class="cv-balance"><span>Баланс</span><strong data-cc-balance>0,00</strong></div>
     <div class="cc-stake cv-stake">
      <div class="cv-stake-value">
-      <label for="cc-stake" data-cc-cost>Ставка за ход</label>
+      <label for="cc-stake" data-cc-cost>${copy.stake}</label>
       <select id="cc-stake" data-cc-stake aria-label="Ставка">${CONVOY_BETS.map(n=>`<option value="${n}">${coins(n)}</option>`).join('')}</select>
      </div>
      <button type="button" data-cc-stake-step="-1" aria-label="Уменьшить ставку">−</button><button type="button" data-cc-stake-step="1" aria-label="Увеличить ставку">+</button>
@@ -116,7 +125,7 @@ export class LastConvoyUI {
   </div>
   <footer class="cc-footer">
    <div class="slot-secondary-controls cv-secondary">
-    <div class="cv-summary"><span>Последний выигрыш</span><strong data-cc-last>0,00</strong></div>
+    <div class="cv-summary"><span>${copy.last}</span><strong data-cc-last>0,00</strong></div>
     <button type="button" data-cc-buy>Как открыть эвакуацию?</button>
     <button type="button" data-cc-speed aria-pressed="false">ОБЫЧНО ×1</button>
     <label>Число платных автовращений <select data-cc-auto-count aria-label="Число платных автовращений"><option>10</option><option>25</option><option>50</option></select></label>
@@ -158,13 +167,13 @@ export class LastConvoyUI {
   this.find('[data-cc-balance]').textContent=coins((this.live?.balance??this.balance())*100);this.find('[data-cc-last]').textContent=coins(this.lastWin);
   const spin=this.find<HTMLButtonElement>('[data-cc-spin]');
   spin.disabled=blocked||!this.entered||!!this.dialog;
-  const label=translateText(this.live?'Вращается':active?'Продолжить':'Вращать');
+  const label=this.live?copy.spinning:translateText(active?'Продолжить':'Вращать');
   this.find('[data-cc-spin-label]').textContent=label;
   spin.setAttribute('aria-label',label);
   this.stakeControls.update();
   const typed=this.root.querySelector<HTMLInputElement>('.cv-stake [data-manual-stake]');
   if(typed&&document.activeElement!==typed&&typed.checkValidity())typed.value=coins(this.stake);
-  this.find('[data-cc-cost]').textContent=translateText(active?'Бесплатно':'Ставка за ход');
+  this.find('[data-cc-cost]').textContent=active?copy.free:copy.stake;
   this.find<HTMLButtonElement>('[data-cc-buy]').disabled=!!this.live||client.busy||client.loading||!!this.dialog||!this.assets.ready;
      updateSlotTransport(this.root,'cc',{blocked,active,live:!!this.live,dialog:!!this.dialog,entered:this.entered,fast:this.fast,autoRemaining:this.autoRemaining,bonusRunning:this.bonusRunning,paidBonus:false,pending:!!client.pending,busy:client.busy,loading:client.loading,hidden:document.hidden,ready:this.assets.ready});
    this.find('[data-cc-error]').textContent=this.error||client.error;this.find('[data-cc-feedback]').dataset.error=String(!!(this.error||client.error));
