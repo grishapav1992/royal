@@ -378,10 +378,15 @@
     "oneDebit": true
   },
   "acceptedCommonPolicy": {
-    "passed": false,
-    "cases": 45,
-    "continuations": 90,
-    "allPresetsAndPaidChoices": false,
-    "sha256": "3ca4bccdfb7de8bba33c2e8afd4888b265dde70dba92a8a8edb4db751e8d0ef7"
+    "passed": true,
+    "cases": 846,
+    "continuations": 1389,
+    "allPresetsAndPaidChoices": true,
+    "sha256": "62efbe1355484d930682255de89da46ced521b3f9d156fdd3b31f43190357c4a"
+  },
+  "legacySkinPriceMigration": {
+    "passed": true,
+    "amountUnits": "10000000",
+    "journalBalanced": true
   }
 }

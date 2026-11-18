@@ -3,8 +3,8 @@
   "gameId": "studio-afterglow",
   "rulesVersion": 2,
   "progressVersion": 4,
-  "startedAt": "2026-11-18T13:48:59.025Z",
-  "completedAt": "2026-11-18T13:49:13.412Z",
+  "startedAt": "2026-11-18T13:58:04.366Z",
+  "completedAt": "2026-11-18T13:58:08.984Z",
   "sourceHashes": {
     "src/shared/gameStakes.ts": "89e82a44d9761a22d611f6bf97f830940ce3cd80b4fb60b7954f3a37d850b220",
     "src/shared/roundPrecision.ts": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
@@ -41,7 +41,7 @@
     "scripts/game-math/manual-stake-case.mjs": "fa868d135fd361c26c4bcc41c6e2b0831c0adf2d1744b34fa3a6c237664cebf4",
     "scripts/game-math/manual-stake-pool.mjs": "fc675e82956b25f436dfba08ec1e8893cfeb41772b7b6bd71ab9134095d01596",
     "scripts/game-math/manual-stake-worker.mjs": "54d7257363c6d1cd4ff071197e42a99f9e6a644344a58708d66f11a59ddad5c4",
-    "docs/game-math/skin-offers-20261105/round-compatibility.json": "865939bee55db36fca32a462095c63c696036578de6942f5c58217c2ea36b2ee",
+    "docs/game-math/skin-offers-20261105/round-compatibility.json": "536e7b52b3535787d6322f04431bd0d4f1b7220123e94e1bfc2a19fee970c901",
     "docs/game-math/skin-offers-20261105/accepted-rounds.test.ts": "6c43a57dbb468ff86cfcdab37c3020d31bd0daa7d34f951bc96ccdb24568d964",
     "docs/game-math/skin-offers-20261105/native-projection.json": "bd81138fd3e50cc8e750b82cd265efabdfc8b64802755200f2db16d8ab8900d0",
     "scripts/game-math/rtp-stakes.mjs": "a885087bc907189f46a1a1dcc54f807733fcf8cbfae818a64a9fe9f2aed6de52"
