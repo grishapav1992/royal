@@ -175,7 +175,8 @@
 .cx-game .cx-frame .lg-win-lines polyline { stroke: #FFE0A3; stroke-width: 4; filter: drop-shadow(0 0 6px #FFB45C); }
 .cx-game[data-bonus="true"] .cx-frame .lg-cell.lg-held { border: 2px solid var(--ce-wild); }
 
-.cx-outcome { grid-area: outcome; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; min-height: 52px; }
+/* Reserve the space used by a result card regardless of which outcome is visible. */
+.cx-outcome { grid-area: outcome; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; height: 92px; min-height: 0; }
 .cx-status {
   padding: 10px 20px; border-radius: 999px; background: rgba(14,10,22,.8); color: var(--ce-ink);
   font-size: 16px; font-weight: 600; text-align: center;
@@ -348,7 +349,9 @@
   position: absolute; left: 50%; bottom: calc(var(--cx-bar-height) + 12px); z-index: 6; transform: translateX(-50%);
   max-width: min(560px, calc(100% - 32px)); box-sizing: border-box;
 }
-.cx-feedback { max-width: 100%; box-sizing: border-box; }
+.cx-feedback {
+  position: absolute; z-index: 12; inset: 6px 0 auto; width: max-content; max-width: 100%; margin-inline: auto; box-sizing: border-box;
+}
 .cx-feedback:not(:has(.lg-status:not(:empty), .lg-error:not(:empty), .lg-recovery button:not([hidden]))) { display: none; }
 .cx-feedback { display: flex; flex-direction: column; gap: 6px; align-items: center; pointer-events: none; }
 .cx-feedback > *, .cx-feedback .lg-recovery button { pointer-events: auto; }
@@ -438,7 +441,7 @@
 .cx-game[data-slot-priority="portrait"] .cx-bonus span { display: none; }
 .cx-game[data-slot-priority="portrait"] .cx-missions { flex: none; width: 80px; min-height: 0; flex-direction: column; justify-content: center; padding: 6px; text-align: center; border-radius: 14px; }
 .cx-game[data-slot-priority="portrait"] .cx-missions small, .cx-game[data-slot-priority="portrait"] .cx-missions svg { display: none; }
-.cx-game[data-slot-priority="portrait"] .cx-outcome { min-height: 0; align-items: flex-start; }
+.cx-game[data-slot-priority="portrait"] .cx-outcome { height: auto; align-items: flex-start; }
 .cx-game[data-slot-priority="portrait"] .cx-status { padding: 0 8px; background: none; font-size: 14px; text-shadow: 0 1px 8px rgba(0,0,0,.9); }
 .cx-game[data-slot-priority="portrait"] .cx-win { gap: 12px; padding: 6px 14px; border-radius: 16px; }
 .cx-game[data-slot-priority="portrait"] .cx-win-amount > strong { font-size: 24px; line-height: 30px; }
@@ -514,7 +517,7 @@
 .cx-game[data-slot-priority="landscape"] .cx-bonus span { display: none; }
 .cx-game[data-slot-priority="landscape"] .cx-missions { flex: none; min-height: 44px; padding: 0 12px; border-radius: 12px; }
 .cx-game[data-slot-priority="landscape"] .cx-missions small, .cx-game[data-slot-priority="landscape"] .cx-missions svg { display: none; }
-.cx-game[data-slot-priority="landscape"] .cx-outcome { min-height: 0; }
+.cx-game[data-slot-priority="landscape"] .cx-outcome { height: 50px; }
 .cx-game[data-slot-priority="landscape"] .cx-status { padding: 2px 10px; font-size: 14px; }
 .cx-game[data-slot-priority="landscape"] .cx-win { gap: 10px; padding: 4px 12px; border-radius: 12px; }
 .cx-game[data-slot-priority="landscape"] .cx-win-amount > span { display: none; }
@@ -628,8 +631,6 @@
 @media (max-height: 360px) {
   .cx-game[data-slot-priority="landscape"] [data-dialog="bonus"] p:not(:first-of-type), .cx-game[data-slot-priority="landscape"] [data-dialog="bonus"] .ce-dialog-note { display: none; }
 }
-/* In landscape the status floats over the top of the field so the strip and its buttons stay reachable. */
-.cx-game[data-slot-priority="landscape"] .cx-feedback { position: absolute; left: calc((100% - clamp(232px, 36%, 300px)) / 2); top: 10px; z-index: 6; transform: translateX(-50%); max-width: 60%; }
 .cx-game[data-slot-priority="landscape"] .cx-feedback .lg-status { font-size: 12px; padding: 4px 10px; }
 
 /* Prototype pass: one top bar, compact phone header, free-spin line and prototype labels. */
@@ -704,6 +705,7 @@
 }
 .cx-game[data-bonus="true"] .cx-win { display: none; }
 .cx-game[data-bonus="true"]:not([data-phase="feature"]) .cx-status { display: none; }
+.cx-game[data-bonus="true"] .cx-status { padding-block: 3px; }
 
 /* Autoplay limits: short labels in the popover, long labels with USDT in phone sheets. */
 .cx-field { position: relative; display: flex; }

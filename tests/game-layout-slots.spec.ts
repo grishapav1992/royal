@@ -87,6 +87,59 @@ for(const id of games)test('field and actions without scrolling: '+id,async({pag
  for(const [width,height]of sizes)await test.step(width+'x'+height,async()=>{await page.setViewportSize({width,height});await fit(page,id);});
 });
 
+test('Cosmic Escape keeps the reel frame still as messages and results change',async({page,roomPath})=>{
+ await enterGameHall(page,roomPath);
+ await open(page,'studio-cosmic-escape');
+ const root=page.locator('#mini-game > .cx-game');
+ for(const [width,height,layout] of [[1440,900,'full'],[393,852,'portrait'],[852,393,'landscape'],[568,320,'landscape']] as const){
+  await test.step(`${width}x${height}`,async()=>{
+   await page.setViewportSize({width,height});
+   await expect(root).toHaveAttribute('data-slot-priority',layout);
+   const chat=page.locator('#club-chat-dock');
+   if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
+   await expect(chat.locator('#chat-input')).toBeVisible();
+   const {idle,frames,retryVisible}=await root.evaluate(game=>{
+    const frame=game.querySelector('.cx-frame')!;
+    const message=game.querySelector<HTMLElement>('[data-lg-message]')!;
+    const error=game.querySelector<HTMLElement>('[data-lg-error]')!;
+    const retry=game.querySelector<HTMLButtonElement>('[data-lg-retry]')!;
+    const win=game.querySelector<HTMLElement>('[data-cx-win]')!;
+    const free=game.querySelector<HTMLElement>('[data-cx-fs]')!;
+    const rect=()=>{
+     const {x,y,width,height}=frame.getBoundingClientRect();
+     return {x,y,width,height};
+    };
+    const idle=rect(),originalMessage=message.textContent;
+    message.textContent='';
+    const spinning=rect();
+    message.textContent='ПОРТАЛ ОТКРЫТ · БЕСПЛАТНЫЕ ВРАЩЕНИЯ ГОТОВЫ К ЗАПУСКУ';
+    const feature=rect();
+    game.dataset.hasWin='true';
+    win.hidden=false;
+    const winning=rect();
+    win.hidden=true;
+    game.dataset.hasWin='false';
+    game.dataset.bonus='true';
+    free.hidden=false;
+    const bonus=rect();
+    game.dataset.bonus='false';
+    free.hidden=true;
+    error.textContent='Не удалось получить ответ. Проверь сохранённый раунд.';
+    retry.hidden=false;
+    const recovery=rect(),retryVisible=retry.getBoundingClientRect().height>=44;
+    retry.hidden=true;
+    error.textContent='';
+    message.textContent=originalMessage;
+    return {idle,frames:{spinning,feature,winning,bonus,recovery},retryVisible};
+   });
+   expect(idle.width).toBeGreaterThan(0);
+   for(const [state,frame] of Object.entries(frames))expect(frame,state).toEqual(idle);
+   expect(retryVisible).toBe(true);
+   if(layout!=='full')await chat.locator('.game-chat-close').click();
+  });
+ }
+});
+
 for(const id of games)test('settings, Stop and one accepted ten-cent round: '+id,async({page,roomPath})=>{
  test.skip(process.env.LAYOUT_BROWSER==='webkit'&&!['studio-cosmic-escape','studio-caramel-carnival','studio-afterglow','studio-velvet-reign'].includes(id),'All seven flows run in Chromium; four distinct presentations also run with WebKit touch.');
  await enterGameHall(page,roomPath);await page.setViewportSize({width:393,height:852});await open(page,id);const p=family(id);
