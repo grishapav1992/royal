@@ -100,14 +100,14 @@
 }
 #mini-dialog:has(#mini-game > .cx-game) .mini-top .icon-button svg { width: 18px; height: 18px; }
 
-/* Scene: title, reels, outcome and the side column. */
+/* Scene: title, reels and the side column. */
 .cx-scene {
   position: relative;
   min-height: 0;
   display: grid;
   grid-template-columns: clamp(96px, 16%, 300px) minmax(0, 1fr) clamp(216px, 20%, 256px);
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  grid-template-areas: "alien title tools" "alien reels side" "alien outcome side";
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas: "alien title tools" "alien reels side";
   column-gap: 24px;
   row-gap: 12px;
   padding: 16px 24px 28px 0;
@@ -175,28 +175,6 @@
 .cx-game .cx-frame .lg-win-lines polyline { stroke: #FFE0A3; stroke-width: 4; filter: drop-shadow(0 0 6px #FFB45C); }
 .cx-game[data-bonus="true"] .cx-frame .lg-cell.lg-held { border: 2px solid var(--ce-wild); }
 
-/* Reserve the space used by a result card regardless of which outcome is visible. */
-.cx-outcome { grid-area: outcome; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 6px; height: 92px; min-height: 0; }
-.cx-status {
-  padding: 10px 20px; border-radius: 999px; background: rgba(14,10,22,.8); color: var(--ce-ink);
-  font-size: 16px; font-weight: 600; text-align: center;
-}
-.cx-status:empty { display: none; }
-.cx-win {
-  display: flex; align-items: center; gap: 20px; padding: 10px 28px 10px 24px; border: 1px solid var(--ce-brass); border-radius: 20px;
-  background: rgba(14,10,22,.9);
-}
-.cx-win[hidden] { display: none; }
-.cx-win-amount { display: flex; flex-direction: column; }
-.cx-win-amount > span { font-size: 12px; font-weight: 800; letter-spacing: .12em; color: var(--ce-amber-hi); }
-.cx-win-amount > strong { font: 700 44px/52px var(--cx-display); color: var(--ce-win); }
-.cx-win-detail { display: flex; flex-direction: column; gap: 4px; padding-left: 20px; border-left: 1px solid var(--ce-line); font-size: 14px; color: #E3DAEC; }
-.cx-win-detail > b { color: var(--ce-ink); }
-.cx-win-detail > :empty { display: none; }
-/* The message and the win block share one line: a confirmed win replaces the idle message. */
-.cx-game[data-has-win="true"]:is([data-phase="idle"], [data-phase="winning"]) .cx-status { display: none; }
-.cx-game:not([data-has-win="true"]) .cx-win, .cx-game:is([data-phase="spinning"], [data-phase="preparing"], [data-phase="feature"]) .cx-win { display: none; }
-
 .cx-side { grid-area: side; display: flex; flex-direction: column; gap: 12px; min-height: 0; overflow: hidden; padding: 2px; }
 .cx-card { box-sizing: border-box; padding: 14px; border: 1px solid var(--ce-line); border-radius: 18px; background: var(--ce-card); }
 .cx-card h3 { font-size: 12px; font-weight: 800; letter-spacing: .12em; }
@@ -227,12 +205,6 @@
 .cx-energy-track { grid-column: 1 / -1; height: 4px; margin-top: 8px; border-radius: 2px; background: var(--ce-surface); overflow: hidden; }
 .cx-energy-track i { display: block; height: 100%; background: linear-gradient(90deg, var(--ce-cyan), var(--ce-amber-hi)); }
 .cx-game:not([data-bonus="true"]) .cx-energy-track { display: none; }
-.cx-bonus { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border-color: var(--ce-cyan); }
-.cx-bonus > div { display: flex; flex-direction: column; min-width: 0; }
-.cx-bonus span { font-size: 12px; font-weight: 800; letter-spacing: .08em; color: #9DF2EE; }
-.cx-bonus small { font-size: 13px; color: var(--ce-ink-2); }
-.cx-bonus small b { font: 700 16px/1 var(--cx-display); color: var(--ce-ink); }
-.cx-game .cx-bonus button { min-height: 44px; padding: 0 12px; border: 1px solid var(--ce-line); border-radius: 12px; background: var(--ce-surface); color: var(--ce-ink); font-size: 14px; }
 .cx-game .cx-missions {
   display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 56px; padding: 0 16px; text-align: left;
   border: 1.5px solid var(--ce-brass); border-radius: 16px; background: var(--ce-card); color: var(--ce-amber-hi);
@@ -257,7 +229,7 @@
 .cx-money small { font: 600 14px/1 var(--cx-font); color: var(--ce-ink-2); }
 .cx-money output { font: inherit; }
 .cx-lastwin > strong { color: var(--ce-ink-2); }
-.cx-lastwin > strong[data-positive="true"] { color: var(--ce-win); }
+.cx-lastwin [data-positive="true"] { color: var(--ce-win); }
 .cx-divider { width: 1px; height: 56px; background: var(--ce-line-soft); flex: none; }
 .cx-stake { display: flex; flex-direction: column; gap: 6px; flex: none; }
 .cx-stake[data-locked="true"] .cx-stepper { opacity: .45; }
@@ -292,6 +264,7 @@
   display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 18px; flex: none;
   border: 1.5px solid var(--ce-brass); border-radius: 14px; background: transparent; color: var(--ce-amber-hi); font-size: 15px; font-weight: 800; white-space: nowrap;
 }
+.cx-game [data-lg-pause] { overflow: hidden; white-space: normal; line-height: 1.15; }
 .cx-game .cx-auto-button:hover:not(:disabled), .cx-game .cx-auto-button[aria-expanded="true"] { background: rgba(240,169,71,.16); }
 .cx-game .cx-auto-button[aria-pressed="true"] { border-color: var(--ce-amber); background: rgba(240,169,71,.16); }
 .cx-game .cx-spin {
@@ -305,6 +278,7 @@
 .cx-game .cx-spin:disabled { opacity: .55; }
 .cx-spin > span { font-size: 12px; font-weight: 800; letter-spacing: .08em; }
 .cx-spin > strong { font: 700 24px/1 var(--cx-display); }
+.cx-game[data-spin-state="spinning"] .cx-spin:has(> strong:not(:empty)) > strong { font-size: 14px; }
 .cx-spin > strong:empty, .cx-spin .cx-stop-icon { display: none; }
 .cx-game[data-spin-state="spinning"] .cx-spin .cx-stop-icon { display: block; }
 .cx-game:is([data-spin-state="spinning"], [data-spin-state="auto"], [data-spin-state="bonus"]) .cx-spin .cx-spin-icon { display: none; }
@@ -400,8 +374,8 @@
 .cx-game[data-slot-priority="portrait"] { --cx-bar-height: 252px; }
 .cx-game[data-slot-priority="portrait"] .cx-scene {
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: auto auto auto minmax(0, 1fr);
-  grid-template-areas: "title tools" "reels reels" "side side" "outcome outcome";
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas: "title tools" "reels reels" "side side";
   column-gap: 8px; row-gap: 10px; padding: 10px 10px 8px; align-content: start;
 }
 .cx-game[data-slot-priority="portrait"] .cx-title { align-items: flex-start; text-align: left; gap: 2px; }
@@ -413,8 +387,7 @@
 .cx-game[data-slot-priority="portrait"] .cx-alien img { position: static; height: 100%; animation: none; }
 .cx-game[data-slot-priority="portrait"] .cx-tools [data-cx-rules],
 .cx-game[data-slot-priority="portrait"] .cx-tools [data-cx-sound] { display: none; }
-.cx-game[data-slot-priority="portrait"] .cx-reels { container-type: inline-size; display: block; }
-.cx-game[data-slot-priority="portrait"] .cx-frame { width: 100%; aspect-ratio: 370 / 262; padding: 8px; border-radius: 16px; box-shadow: 0 0 0 4px rgba(201,142,79,.18), 0 16px 40px rgba(0,0,0,.55); }
+.cx-game[data-slot-priority="portrait"] .cx-frame { width: min(100cqw, 100cqh * 5 / 4); aspect-ratio: 5 / 4; padding: 8px; border-radius: 16px; box-shadow: 0 0 0 4px rgba(201,142,79,.18), 0 16px 40px rgba(0,0,0,.55); }
 .cx-game[data-slot-priority="portrait"] .cx-frame .lg-board,
 .cx-game[data-slot-priority="portrait"] .cx-frame .lg-reel-static { gap: 5px; }
 .cx-game[data-slot-priority="portrait"] .cx-frame .lg-cell { border-radius: 9px; padding: 5%; }
@@ -436,16 +409,8 @@
 .cx-game[data-slot-priority="portrait"] .cx-energy small { display: none; }
 .cx-game[data-slot-priority="portrait"] .cx-energy > strong { font-size: 18px; }
 .cx-game[data-slot-priority="portrait"] .cx-energy-track { width: 100%; margin-top: 4px; }
-.cx-game[data-slot-priority="portrait"] .cx-bonus { flex: none; flex-direction: column; padding: 6px 8px; gap: 4px; }
-.cx-game[data-slot-priority="portrait"] .cx-bonus button { min-height: 44px; padding: 0 8px; font-size: 13px; }
-.cx-game[data-slot-priority="portrait"] .cx-bonus span { display: none; }
 .cx-game[data-slot-priority="portrait"] .cx-missions { flex: none; width: 80px; min-height: 0; flex-direction: column; justify-content: center; padding: 6px; text-align: center; border-radius: 14px; }
 .cx-game[data-slot-priority="portrait"] .cx-missions small, .cx-game[data-slot-priority="portrait"] .cx-missions svg { display: none; }
-.cx-game[data-slot-priority="portrait"] .cx-outcome { height: auto; align-items: flex-start; }
-.cx-game[data-slot-priority="portrait"] .cx-status { padding: 0 8px; background: none; font-size: 14px; text-shadow: 0 1px 8px rgba(0,0,0,.9); }
-.cx-game[data-slot-priority="portrait"] .cx-win { gap: 12px; padding: 6px 14px; border-radius: 16px; }
-.cx-game[data-slot-priority="portrait"] .cx-win-amount > strong { font-size: 24px; line-height: 30px; }
-.cx-game[data-slot-priority="portrait"] .cx-win-detail { padding-left: 12px; font-size: 12px; }
 .cx-game[data-slot-priority="portrait"] .cx-bar {
   display: grid; height: auto; min-height: var(--cx-bar-height);
   grid-template-columns: minmax(0, 1fr) 92px minmax(0, 1fr);
@@ -486,8 +451,8 @@
 .cx-game[data-slot-priority="landscape"] .cx-scene {
   grid-column: 1; grid-row: 1;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr) auto auto;
-  grid-template-areas: "reels" "side" "outcome";
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas: "reels" "side";
   row-gap: 6px; padding: 8px 6px 6px 10px;
 }
 .cx-game[data-slot-priority="landscape"] :is(.cx-alien, .cx-title) { display: none; }
@@ -513,17 +478,8 @@
 .cx-game[data-slot-priority="landscape"] .cx-energy small, .cx-game[data-slot-priority="landscape"] .cx-energy-track { display: none; }
 .cx-game[data-slot-priority="landscape"] .cx-energy h3 { font-size: 12px; letter-spacing: .04em; }
 .cx-game[data-slot-priority="landscape"] .cx-energy > strong { font-size: 15px; }
-.cx-game[data-slot-priority="landscape"] .cx-bonus { flex: none; padding: 0 6px; }
-.cx-game[data-slot-priority="landscape"] .cx-bonus span { display: none; }
 .cx-game[data-slot-priority="landscape"] .cx-missions { flex: none; min-height: 44px; padding: 0 12px; border-radius: 12px; }
 .cx-game[data-slot-priority="landscape"] .cx-missions small, .cx-game[data-slot-priority="landscape"] .cx-missions svg { display: none; }
-.cx-game[data-slot-priority="landscape"] .cx-outcome { height: 50px; }
-.cx-game[data-slot-priority="landscape"] .cx-status { padding: 2px 10px; font-size: 14px; }
-.cx-game[data-slot-priority="landscape"] .cx-win { gap: 10px; padding: 4px 12px; border-radius: 12px; }
-.cx-game[data-slot-priority="landscape"] .cx-win-amount > span { display: none; }
-.cx-game[data-slot-priority="landscape"] .cx-win-amount > strong { font-size: 18px; line-height: 24px; }
-.cx-game[data-slot-priority="landscape"] .cx-win-detail { padding-left: 10px; font-size: 12px; }
-.cx-game[data-slot-priority="landscape"] .cx-win-detail > span { display: none; }
 .cx-game[data-slot-priority="landscape"] .cx-bar {
   grid-column: 2; grid-row: 1; height: auto; margin: 8px 10px 8px 4px; border: 1px solid var(--ce-line-soft); border-radius: 18px;
   display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -549,9 +505,6 @@
   box-shadow: 0 0 0 100vmax rgba(6,4,10,.62);
 }
 .cx-game[data-slot-priority="landscape"] .cx-wallet-help { left: calc((100% - clamp(232px, 36%, 300px)) / 2); bottom: 56px; }
-@container cx-scene (max-height: 240px) {
-  .cx-game[data-slot-priority="landscape"] .cx-outcome { display: none; }
-}
 
 @keyframes cx-idle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 @media (prefers-reduced-motion: reduce) {
@@ -592,27 +545,26 @@
   .cx-game .cx-bar .cx-speed-cycle { display: flex; }
   .cx-money > strong, .cx-lastwin > strong { font-size: 18px; }
 }
-/* Very short landscape windows (for example 568 x 320): one money line beside the settings button, the stepper and the actions. */
+/* Very short landscape windows keep the balance, last win, stepper and actions in view. */
 @media (max-height: 360px) {
   .cx-game[data-slot-priority="landscape"] .cx-bar {
-    grid-template-areas: "money money money" "stake stake stake" "auto spin speed"; gap: 8px; padding: 10px 10px 10px;
+    grid-template-areas: "money money lastwin" "stake stake stake" "auto spin speed"; gap: 8px; padding: 10px 10px 10px;
   }
   .cx-game[data-slot-priority="landscape"] .cx-tools { top: 14px; right: 20px; }
-  .cx-game[data-slot-priority="landscape"] .cx-lastwin, .cx-game[data-slot-priority="landscape"] .cx-stake > label { display: none; }
+  .cx-game[data-slot-priority="landscape"] .cx-stake > label { display: none; }
   .cx-game[data-slot-priority="landscape"] .cx-money { min-height: 44px; justify-content: center; }
-  .cx-game[data-slot-priority="landscape"] .cx-money > span { font-size: 12px; }
+  .cx-game[data-slot-priority="landscape"] :is(.cx-money, .cx-lastwin) > span { font-size: 11px; }
   .cx-game[data-slot-priority="landscape"] .cx-stake > small { grid-column: 1 / -1; grid-row: 3; text-align: center; }
   .cx-game[data-slot-priority="landscape"] .cx-stepper { grid-row: 2; height: 46px; }
   .cx-game[data-slot-priority="landscape"] .cx-stepper button { width: 40px; height: 44px; }
   .cx-game[data-slot-priority="landscape"] .cx-spin { width: 72px; height: 72px; border-width: 3px; }
   .cx-game[data-slot-priority="landscape"] .cx-spin > span { font-size: 12px; letter-spacing: 0; }
-  .cx-game[data-slot-priority="landscape"] .cx-spin .cx-spin-icon { width: 22px; height: 22px; }
+  .cx-game[data-slot-priority="landscape"] .cx-spin :is(.cx-spin-icon, .cx-stop-icon) { width: 22px; height: 22px; }
   .cx-game[data-slot-priority="landscape"] .cx-auto-button, .cx-game[data-slot-priority="landscape"] .cx-speed-cycle { min-height: 44px; font-size: 13px; }
   .cx-game[data-slot-priority="landscape"] .cx-speed-cycle span { display: none; }
   .cx-game[data-slot-priority="landscape"] .cx-orbs { display: none; }
   .cx-game[data-slot-priority="landscape"] .cx-portals > header { flex-wrap: nowrap; white-space: nowrap; }
   .cx-game[data-slot-priority="landscape"] .cx-energy h3 { display: none; }
-  .cx-game[data-slot-priority="landscape"] .cx-status { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 }
 
 /* Dialog buttons use the cabinet amber; cosmic-escape.css sets a gradient with !important for Velvet Reign. */
@@ -690,23 +642,6 @@
 .cx-game .cx-energy > div { min-width: 0; }
 .cx-game .cx-energy small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Free spins: one line under the reels instead of the win block, the side card is not shown. */
-.cx-game .cx-bonus { display: none !important; }
-.cx-fs {
-  display: flex; align-items: center; gap: 16px; padding: 6px 8px 6px 24px; border: 1px solid var(--ce-cyan); border-radius: 999px;
-  background: rgba(14,10,22,.9); font-size: 16px; font-weight: 600; white-space: nowrap;
-}
-.cx-fs[hidden] { display: none; }
-.cx-fs > [data-cx-fs-spin] { color: #9DF2EE; font-weight: 800; }
-.cx-fs-total { color: #E3DAEC; }
-.cx-fs-total b { color: var(--ce-win); }
-.cx-game .cx-fs > button {
-  min-height: 44px; padding: 0 14px; border: 1px solid var(--ce-line); border-radius: 999px; background: var(--ce-surface); color: var(--ce-ink); font-size: 14px;
-}
-.cx-game[data-bonus="true"] .cx-win { display: none; }
-.cx-game[data-bonus="true"]:not([data-phase="feature"]) .cx-status { display: none; }
-.cx-game[data-bonus="true"] .cx-status { padding-block: 3px; }
-
 /* Autoplay limits: short labels in the popover, long labels with USDT in phone sheets. */
 .cx-field { position: relative; display: flex; }
 .cx-field input { flex: 1 1 auto; width: 100%; }
@@ -728,17 +663,13 @@
 .cx-game[data-slot-priority="portrait"] .cx-missions { flex-direction: column; gap: 0; }
 .cx-game[data-slot-priority="portrait"] .cx-missions b { font-size: 13px; }
 .cx-game[data-slot-priority="portrait"][data-header-tools="true"] .cx-alien { right: -4px; }
-.cx-game[data-slot-priority="portrait"] .cx-fs { gap: 10px; padding: 4px 4px 4px 14px; font-size: 14px; }
 
-/* Phone landscape: no status line under the strip, no in-panel settings, speed shows its value. */
+/* Phone landscape: compact energy and speed labels. */
 .cx-game[data-slot-priority="landscape"] .cx-energy .cx-long { display: none; }
 .cx-game[data-slot-priority="landscape"] .cx-energy .cx-tiny { display: inline; }
 .cx-game[data-slot-priority="landscape"] .cx-energy h3 { display: block; }
-.cx-game[data-slot-priority="landscape"] .cx-status { display: none; }
 .cx-game[data-slot-priority="landscape"][data-header-tools="true"] .cx-bar { padding-top: 12px; }
 .cx-game[data-slot-priority="landscape"] .cx-speed-cycle span { display: none; }
-.cx-game[data-slot-priority="landscape"] .cx-fs { gap: 8px; padding: 2px 2px 2px 12px; font-size: 13px; }
-.cx-game[data-slot-priority="landscape"] .cx-fs > button { min-height: 44px; padding: 0 10px; font-size: 13px; }
 /* Phone bar order as in the prototype: title, badge, games, chat, menu, close. */
 #mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top > div { min-width: 0; }
 #mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top h2 { font-size: 12px; letter-spacing: .02em; }
@@ -748,8 +679,6 @@
 #mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top > .game-chat-toggle { order: 2; }
 #mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top > .cx-header-tools { order: 3; margin-left: 0; }
 #mini-dialog:has(#mini-game > .cx-game:not([data-slot-priority="full"])) .mini-top > .icon-button { order: 4; }
-/* In landscape the paused-series hint would cover the field; the bonus ring and line already say it. */
-.cx-game[data-slot-priority="landscape"][data-bonus="true"] .cx-feedback .lg-status { display: none; }
 /* The host gives every bar div flex: 1; the toolbar keeps its own width. */
 #mini-dialog .mini-top > div.cx-header-tools { flex: none; }
 #mini-dialog:has(#mini-game > .cx-game[data-slot-priority="full"]) .mini-top > div.cx-header-tools { margin-left: auto; }
@@ -760,20 +689,11 @@
 .cx-game[data-slot-priority="portrait"] .cx-ladder li::before { color: inherit; }
 .cx-game[data-slot-priority="portrait"] .cx-energy-track { display: none; }
 /* Phone free-spin line wraps onto two rows so the pause stays on screen. */
-.cx-game[data-slot-priority="portrait"] .cx-fs { flex-wrap: wrap; justify-content: center; white-space: normal; border-radius: 16px; padding: 6px 8px; gap: 2px 10px; max-width: 100%; box-sizing: border-box; text-align: center; }
-.cx-game[data-slot-priority="portrait"] .cx-fs > button { min-height: 44px; }
 .cx-game[data-slot-priority="portrait"] .cx-portals { flex: 1 1 0; }
-.cx-game[data-slot-priority="portrait"][data-bonus="true"] .cx-feedback .lg-status { display: none; }
 .cx-game[data-slot-priority="portrait"] .cx-side { display: grid; grid-template-columns: minmax(0, 1fr) 72px 80px; }
 .cx-game[data-slot-priority="portrait"] .cx-side > :is(.cx-energy, .cx-missions) { width: auto; min-width: 0; }
 .cx-game[data-slot-priority="portrait"] .cx-missions svg.cx-star-icon { display: block; }
 /* Touch targets stay at least 44 px, two pixels above the prototype's 40 px header buttons. */
 #mini-dialog .mini-top > div.cx-header-tools > button { width: 44px; height: 44px; min-width: 44px; min-height: 44px; }
-/* Landscape free-spin line stays inside the field column; very short windows keep the spin count and the pause. */
-.cx-game[data-slot-priority="landscape"] .cx-fs { max-width: 100%; box-sizing: border-box; overflow: hidden; }
-@media (max-height: 360px) {
-  .cx-game[data-slot-priority="landscape"] .cx-fs-total { display: none; }
-  .cx-game[data-slot-priority="landscape"] .cx-fs { font-size: 12px; gap: 6px; padding-left: 10px; }
-}
 /* Phone bar: the game list stays (it switches games), so the title is a little smaller. */
 #mini-dialog:has(#mini-game > .cx-game[data-slot-priority="portrait"]) .mini-top h2 { font-size: 11px; letter-spacing: 0; }

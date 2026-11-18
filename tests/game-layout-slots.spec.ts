@@ -87,53 +87,41 @@ for(const id of games)test('field and actions without scrolling: '+id,async({pag
  for(const [width,height]of sizes)await test.step(width+'x'+height,async()=>{await page.setViewportSize({width,height});await fit(page,id);});
 });
 
-test('Cosmic Escape keeps the reel frame still as messages and results change',async({page,roomPath})=>{
+test('Cosmic Escape keeps results in the controls and the reel frame still',async({page,roomPath})=>{
  await enterGameHall(page,roomPath);
  await open(page,'studio-cosmic-escape');
  const root=page.locator('#mini-game > .cx-game');
+ const speed=root.locator('[data-cx-speed-cycle]');
+ await expect(root.locator('[data-cx-speed]')).toHaveCount(2);
  for(const [width,height,layout] of [[1440,900,'full'],[393,852,'portrait'],[852,393,'landscape'],[568,320,'landscape']] as const){
   await test.step(`${width}x${height}`,async()=>{
    await page.setViewportSize({width,height});
    await expect(root).toHaveAttribute('data-slot-priority',layout);
+   if(await speed.isVisible()){
+    await speed.click();
+    await expect(root).toHaveAttribute('data-speed','fast');
+    await speed.click();
+    await expect(root).toHaveAttribute('data-speed','normal');
+   }
    const chat=page.locator('#club-chat-dock');
    if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
    await expect(chat.locator('#chat-input')).toBeVisible();
-   const {idle,frames,retryVisible}=await root.evaluate(game=>{
+   await expect(root.locator('.cx-scene > .cx-outcome, [data-lg-message]')).toHaveCount(0);
+   await expect(root.locator('.cx-bar [data-cosmic-lastwin]')).toBeVisible();
+   const {idle,recovery,retryVisible}=await root.evaluate(game=>{
     const frame=game.querySelector('.cx-frame')!;
-    const message=game.querySelector<HTMLElement>('[data-lg-message]')!;
     const error=game.querySelector<HTMLElement>('[data-lg-error]')!;
     const retry=game.querySelector<HTMLButtonElement>('[data-lg-retry]')!;
-    const win=game.querySelector<HTMLElement>('[data-cx-win]')!;
-    const free=game.querySelector<HTMLElement>('[data-cx-fs]')!;
-    const rect=()=>{
-     const {x,y,width,height}=frame.getBoundingClientRect();
-     return {x,y,width,height};
-    };
-    const idle=rect(),originalMessage=message.textContent;
-    message.textContent='';
-    const spinning=rect();
-    message.textContent='ПОРТАЛ ОТКРЫТ · БЕСПЛАТНЫЕ ВРАЩЕНИЯ ГОТОВЫ К ЗАПУСКУ';
-    const feature=rect();
-    game.dataset.hasWin='true';
-    win.hidden=false;
-    const winning=rect();
-    win.hidden=true;
-    game.dataset.hasWin='false';
-    game.dataset.bonus='true';
-    free.hidden=false;
-    const bonus=rect();
-    game.dataset.bonus='false';
-    free.hidden=true;
+    const idle=frame.getBoundingClientRect().toJSON();
     error.textContent='Не удалось получить ответ. Проверь сохранённый раунд.';
     retry.hidden=false;
-    const recovery=rect(),retryVisible=retry.getBoundingClientRect().height>=44;
+    const recovery=frame.getBoundingClientRect().toJSON(),retryVisible=retry.getBoundingClientRect().height>=44;
     retry.hidden=true;
     error.textContent='';
-    message.textContent=originalMessage;
-    return {idle,frames:{spinning,feature,winning,bonus,recovery},retryVisible};
+    return {idle,recovery,retryVisible};
    });
    expect(idle.width).toBeGreaterThan(0);
-   for(const [state,frame] of Object.entries(frames))expect(frame,state).toEqual(idle);
+   expect(recovery).toEqual(idle);
    expect(retryVisible).toBe(true);
    if(layout!=='full')await chat.locator('.game-chat-close').click();
   });
@@ -223,7 +211,7 @@ test('album, photo and themed menu remain accessible from the compact panel',asy
 
 test('natural bonuses keep counters and free continuation visible in both orientations',async({page,roomPath})=>{
  test.setTimeout(process.env.LAYOUT_BROWSER==='webkit'?900000:300000);await mkdir(out,{recursive:true});await enterGameHall(page,roomPath);
- for(const id of games){
+ for(const id of process.env.LAYOUT_GAMES?.split(',')??games){
   await test.step(id,async()=>{
    await page.setViewportSize({width:393,height:852});await open(page,id);const p=family(id),attribute=p==='lg'?'data-lg-dialog-action':'data-cc-action';
    const fixture=await page.request.post('/__test/layout/bonus',{data:{gameId:id}});expect(fixture.ok(),await fixture.text()).toBe(true);

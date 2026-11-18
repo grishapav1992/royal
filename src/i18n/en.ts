@@ -3457,6 +3457,7 @@ export const english: Record<string, string> = {
   "×{0} от ставки": "×{0} the stake",
   "Порталов на поле: {0} из 5": "Portals on the field: {0} of 5",
   "Виртуальные USDT · Вход без ставки": "Virtual USDT · Entry without a stake",
+  "Скорость «Быстро» сокращает анимацию. Результат и выплата от скорости не зависят.": "Fast shortens the animation. Speed does not affect the result or payout.",
   "Скорость «Быстро» сокращает анимацию, «Турбо» сразу показывает итог вращения. Результат и выплата от скорости не зависят.": "Fast shortens the animation and Turbo shows the spin outcome at once. The result and payout do not depend on the speed.",
   "Проверь соединение и попробуй ещё раз. Загрузка не списывает монеты.": "Check your connection and try again. Loading does not debit coins.",
   "Космический побег": "Cosmic Escape",
