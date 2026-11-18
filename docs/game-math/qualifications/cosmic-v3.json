@@ -3,15 +3,15 @@
   "gameId": "studio-cosmic-escape",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-10-31T21:05:55.138Z",
-  "completedAt": "2026-10-31T21:08:38.866Z",
+  "startedAt": "2026-11-18T13:38:18.340Z",
+  "completedAt": "2026-11-18T13:39:11.755Z",
   "sourceHashes": {
     "src/shared/luelonSlotsModels.ts": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74",
-    "src/shared/luelonSlots.ts": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
+    "src/shared/luelonSlots.ts": "958478d3739ad1d071eea260a64b5089bc8560e66ffcd2a2138392b17b1a1731",
     "src/shared/luelonSlotsLines.ts": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee",
-    "src/shared/cosmicEscapeBets.ts": "a810b0f394e290eae0ccbf2f1745ada20f280bb08bd176eb534d0390871f99c7",
+    "src/shared/cosmicEscapeBets.ts": "a9b3de1af132b20a02d5b9090c0563080d3e5de8516090a7af05fce5f541153d",
     "server/games/luelonSlots.ts": "be78b2715aa850d3801445edf0f714b89dcb76ed98719e5589fcac71dc7fe3f2",
-    "scripts/game-math/rtp-cosmic.mjs": "8618269fa84facb04bfab04be75a55e7fde4df62357d9090f8b24359c5a32151"
+    "scripts/game-math/rtp-cosmic.mjs": "e35424dde412c0a5998bb36d6a79c1a6831ae46debac2b9aabcb158969097e04"
   },
   "policySha256": "7dd2e7fa2dfb42605ef19a14cb18747669c4ee47841714a9e3ab890abac5e464",
   "serverReplayChecks": 6656,

@@ -6,7 +6,7 @@ Casino games also accept any manually entered amount from $0.10 to $50.00 in ste
 
 Cosmic Escape uses the same cent entry and quick presets with an authorized $100 maximum. Its range is registered and verified against the per-game maximum. Paid missions still show their complete purchase price separately.
 
-Register `manualStakeRange: {minimumCents: 10, maximumCents: 5000, stepCents: 1}` in each casino stake policy. Bind `scripts/game-math/manual-stakes.mjs`, which replays every accepted cent against the complete-round normalized reward and final settlement. The real wallet also exercises non-preset cents, replay and restart. Parse numeric core-wallet amounts with `gameBetCents`; multiplying a floating amount by 100 is not an exact integer transport.
+Register `manualStakeRange: {minimumCents: 10, maximumCents: 5000, stepCents: 1}` in each casino stake policy with the default ceiling. Bind `scripts/game-math/manual-stakes.mjs`, which replays every accepted cent against the complete-round normalized reward and final settlement. The real wallet also exercises non-preset cents, replay and restart. Parse numeric core-wallet amounts with `gameBetCents`; multiplying a floating amount by 100 is not an exact integer transport.
 
 `src/shared/gameStakes.ts` supplies the denominations, default and validation. Add the authorized game identity to its shared runtime registration; import these values in the client and common backend instead of defining another scale. Monetary requests use exact integer units, with a validated adapter if the existing wallet protocol has a different unit scale. Keep the host wallet and serialized transport. Registering a monetary policy does not register a visible game or grant production access.
 

@@ -3,16 +3,16 @@
   "gameId": "studio-cosmic-escape",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-11-05T14:49:50.067Z",
-  "completedAt": "2026-11-05T14:50:46.935Z",
+  "startedAt": "2026-11-18T13:40:05.913Z",
+  "completedAt": "2026-11-18T13:42:32.900Z",
   "sourceHashes": {
-    "src/shared/gameStakes.ts": "116b0782d8e41f9380e3b11f2d4e979883f32738c31438fae328a0cf1dc6a99b",
+    "src/shared/gameStakes.ts": "89e82a44d9761a22d611f6bf97f830940ce3cd80b4fb60b7954f3a37d850b220",
     "src/shared/roundPrecision.ts": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
     "src/shared/casinoExpansion.ts": "ad1474233c750035eecbf54544c9c6f3a6eb9ae47bbe6319703b2383c211100d",
     "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
     "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
     "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
-    "server/demoExpansion.ts": "edaa12803beca8288d3595ebb21063ceb9f0bb030fd949adda56f8b78ad53297",
+    "server/demoExpansion.ts": "5eb63c071a574d9bbc584b3459281376b4010cc2097ba12c717517dfeb461dff",
     "server/demoWallet.ts": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
     "server/demoWalletAmounts.ts": "f1f0a88915a232f134b83203b670e51ea1d5e81273ae0ccdcb4ac1c521b52cce",
     "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
@@ -24,22 +24,22 @@
     "scripts/game-math/rtp-stakes-worker.mjs": "f5db2c6be7cc4c68bb07c719eea5ba3db3f0d237d7bf8cd75736c891f91a218d",
     "server-tests/game-stakes.test.ts": "d8fb3859601228535ac49ba2876865f139bf59549d4b77b1f4fb9e3c7a7b8fe1",
     "server-tests/round-precision.test.ts": "d48a631f198636a97db8e70952c600a47b9cb1d04b20ebc6d08cbfa2cd452abb",
-    "src/shared/cosmicEscapeBets.ts": "a810b0f394e290eae0ccbf2f1745ada20f280bb08bd176eb534d0390871f99c7",
-    "src/shared/luelonSlots.ts": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
+    "src/shared/cosmicEscapeBets.ts": "a9b3de1af132b20a02d5b9090c0563080d3e5de8516090a7af05fce5f541153d",
+    "src/shared/luelonSlots.ts": "958478d3739ad1d071eea260a64b5089bc8560e66ffcd2a2138392b17b1a1731",
     "src/shared/luelonSlotsModels.ts": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74",
     "server/games/luelonSlots.ts": "be78b2715aa850d3801445edf0f714b89dcb76ed98719e5589fcac71dc7fe3f2",
-    "scripts/game-math/rtp-cosmic.mjs": "8618269fa84facb04bfab04be75a55e7fde4df62357d9090f8b24359c5a32151",
+    "scripts/game-math/rtp-cosmic.mjs": "e35424dde412c0a5998bb36d6a79c1a6831ae46debac2b9aabcb158969097e04",
     "scripts/game-math/stake-runtime.mjs": "47d762e18c698ab4241a6499497b8f58087132da2489494a2172f60dd0fede61",
     "src/shared/luelonSlotsLines.ts": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee",
     "scripts/game-math/stakes-wallet.ts": "5fdd9b03cbc3b1835e9128d4a2d4bb49875f4535bfec34db6a008677a701e141",
     "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
-    "scripts/game-math/manual-stakes.mjs": "10cd9f2e0edcd8412a91d99ac1716efe33710b49f401e14f4815e404a473bae1",
-    "scripts/game-math/manual-stake-case.mjs": "d1b6ed70273ff173bb6d01ae50580658b210fe564318f5925e8218a6d0712b62",
-    "scripts/game-math/manual-stake-pool.mjs": "162b9fdfc7e5e0552240a029b29635c25c6a822fa394e34f1d68f28927e34728",
+    "scripts/game-math/manual-stakes.mjs": "c24a92e5507588f080a640a1f76353d7d223ab2ef13ccee3355457c59c125471",
+    "scripts/game-math/manual-stake-case.mjs": "fa868d135fd361c26c4bcc41c6e2b0831c0adf2d1744b34fa3a6c237664cebf4",
+    "scripts/game-math/manual-stake-pool.mjs": "fc675e82956b25f436dfba08ec1e8893cfeb41772b7b6bd71ab9134095d01596",
     "scripts/game-math/manual-stake-worker.mjs": "54d7257363c6d1cd4ff071197e42a99f9e6a644344a58708d66f11a59ddad5c4",
     "scripts/game-math/rtp-stakes.mjs": "a885087bc907189f46a1a1dcc54f807733fcf8cbfae818a64a9fe9f2aed6de52"
   },
-  "policySha256": "1afa6bf6b12ee03daa4c485b60d8361721cc5481ea3ed14f51ae7c9c80913a48",
+  "policySha256": "bcc1544a07b5f9d05370bd12b8dbbdcb99827dcedf72773a2ec0b19d78a2f40d",
   "method": "full-round-unbiased-cent-policy-v1",
   "precisionLaw": {
     "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
@@ -451,7 +451,7 @@
   "evidence": {
     "reference": {
       "path": "docs/game-math/qualifications/cosmic-v3.json",
-      "sha256": "b1fbe4033ef949699a67c71ff646333c69e005b4f3ff50d4fd8b2f65860d4baa"
+      "sha256": "a3931392ae03b0add2288de669b0ac9e29206b2bba58d22c15280ea595870f25"
     }
   },
   "replay": {
@@ -793,44 +793,44 @@
       "journalBalanced": true
     },
     "gameId": "studio-cosmic-escape",
-    "cases": 68,
-    "freeContinuationChecks": 629,
-    "replayAndRestartCases": 68,
+    "cases": 76,
+    "freeContinuationChecks": 703,
+    "replayAndRestartCases": 76,
     "oneDebitAndCredit": true,
     "clientVerified": true,
-    "sha256": "c6096de8c254ab4b3a5e9cf3d5faa226cdb79cd350f2d9f7eb5b76de06f388a5"
+    "sha256": "3a845b92159e96d9075695a26950aae99f3198f898072986f4b8e6850bba93f9"
   },
   "manualStakes": {
     "range": {
       "minimumCents": 10,
-      "maximumCents": 5000,
+      "maximumCents": 10000,
       "stepCents": 1
     },
-    "checks": 19964,
+    "checks": 39964,
     "cases": [
       {
         "choice": "normal",
         "seed": 6371291,
-        "denominations": 4991,
-        "sha256": "ade92528b41162f1a8345a7733c3b742d556a105b7f315183d2b7f8f5be23693"
+        "denominations": 9991,
+        "sha256": "5760fccdc553b645af6870261dc8ecf13b9527f95090365ebbfe456cf66a5518"
       },
       {
         "choice": "cosmic-chaos",
         "seed": 6379210,
-        "denominations": 4991,
-        "sha256": "4a2928dcb6112223076edec20971c7e4212d140220d030582935497fded90902"
+        "denominations": 9991,
+        "sha256": "725902f08dccd08d789a8f0c904eb6f4bb1b98bb81f222b827c4b842472dcdcf"
       },
       {
         "choice": "ufo-invasion",
         "seed": 6387129,
-        "denominations": 4991,
-        "sha256": "39245ad88ecb9c412e29082fd96227140b106ae0e344595269ba27e5226aaacb"
+        "denominations": 9991,
+        "sha256": "53be9e7989695d948d78f27c6a7a11513dd48d4321fccb802eaaaa119f3db032"
       },
       {
         "choice": "deep-echo",
         "seed": 6395048,
-        "denominations": 4991,
-        "sha256": "b145de6cdbf6623f3d59fd94f8337b6054a97055e50ccbbab98f13123c680716"
+        "denominations": 9991,
+        "sha256": "45b7d6f9169b555e371ec861f1dbcf6f8672062f559e339624da6a2d629819a9"
       }
     ],
     "interpretation": "Exhaustive accepted-cent runtime replay per allowed mode or choice. The reviewed stake-independent latent full-round model and exact rational final-ticket identity apply to every accepted cent. Bought Caribbean rounds normalize to the actual charged integer price. These replays are compatibility and scaling checks, not a statistical RTP estimate."
