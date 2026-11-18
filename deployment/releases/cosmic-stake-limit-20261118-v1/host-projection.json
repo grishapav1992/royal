@@ -876,10 +876,20 @@
       "sha256": "3570f80c6c5c76741c61caa766cc437747a1a58ff10f195e3f21dc22bd0ebd22"
     },
     "src/modules/GameHostRuntime.ts": {
-      "commit": "3a060d94e14c33623080552818a4d297fd7727a2",
+      "commit": "60b13bb8dde910919057835ed056a98257b78857",
       "path": "src/modules/GameHostRuntime.ts",
-      "baseSha256": "dfb25367ee14e9c2e24c74d0a685396bdbd8f7dce198ba9c1bf6fa832bb86845",
-      "sha256": "dfb25367ee14e9c2e24c74d0a685396bdbd8f7dce198ba9c1bf6fa832bb86845"
+      "baseSha256": "e9a236cdd3fea0cda5b40fa9ac6b288ab0fa3f4b7f6b8bea0e83d6387894c09a",
+      "sha256": "b49e9451aa11cafb0c19d48c4aa56ced8732c7c2de27946f511a150e1abeaa18",
+      "patches": [
+        {
+          "from": "apiVersion: 1, expansionClient",
+          "to": "apiVersion: 1, manualStakes: 1, expansionClient"
+        },
+        {
+          "from": "apiVersion: 1, manualStakes: 1,",
+          "to": "apiVersion: 1, manualStakes: 1, cosmicStakeLimit: 1,"
+        }
+      ]
     },
     "src/wallet/CryptoClient.ts": {
       "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
