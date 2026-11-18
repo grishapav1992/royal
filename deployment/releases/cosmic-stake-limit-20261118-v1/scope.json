@@ -1,0 +1,27 @@
+{
+  "host": [
+    "src/i18n/en.ts",
+    "src/modules/GameHostContract.ts",
+    "src/modules/GameHostRuntime.ts",
+    "src/shared/cosmicEscapeBets.ts",
+    "src/shared/gameStakes.ts",
+    "src/shared/luelonSlots.ts"
+  ],
+  "backend": [
+    "server/demoExpansion.ts",
+    "src/shared/cosmicEscapeBets.ts",
+    "src/shared/gameStakes.ts",
+    "src/shared/luelonSlots.ts"
+  ],
+  "module": [
+    "games/cosmic-escape/entry.ts",
+    "src/ui/CosmicEscapeUI.ts",
+    "src/ui/cosmic-guardians.css",
+    "src/ui/slotKit/SlotControls.ts",
+    "src/ui/stakeSelection.ts"
+  ],
+  "preservedBackendInputs": {
+    "src/i18n/en.ts": "8f3990b31f85037221688e4d906d41225ad5649a62f5c98834ce55bbec6e65c7",
+    "src/i18n/progressionEn.ts": "66c68ac05b3b362c4ef1dae60afaeb1c484d6ada0887adefd9954a4de12c1ba4"
+  }
+}
