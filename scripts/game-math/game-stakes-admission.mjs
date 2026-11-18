@@ -41,7 +41,7 @@ export function validateStakeAdmission(catalog, legacyGames, registry, runtime) 
     assert.equal(policy.stakePolicyVersion, 1, 'Use the qualified common stake policy: ' + id);
     assert.deepEqual(policy.stakes, runtime.GAME_STAKE_CENTS, 'Every common denomination must be qualified: ' + id);
     if(policy.kind!=='pvp'){
-      assert.deepEqual(policy.manualStakeRange,{minimumCents:10,maximumCents:5000,stepCents:1},'Qualify the complete manual stake range: '+id);
+      assert.deepEqual(policy.manualStakeRange,{minimumCents:10,maximumCents:runtime.gameStakeMaximum(id),stepCents:1},'Qualify the complete manual stake range: '+id);
       assert(policy.sources.includes('scripts/game-math/manual-stakes.mjs'),'Bind manual stake qualification: '+id);
     }
     assert.equal(policy.ordinaryStakeBasis ?? 'total-round', 'total-round', 'The ordinary stake funds the complete round, including every selected line: ' + id);

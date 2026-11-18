@@ -15,8 +15,9 @@ export async function runManualStakeTasks(tasks,{runtimeModule,workers,onProgres
   const results=Array(tasks.length),threads=[];
   const record=(id,result,durationMs)=>{
     const task=tasks[id],choice=task.policy.choices[task.index];
+    const {minimumCents,maximumCents,stepCents}=task.policy.manualStakeRange;
     assert(result&&result.choice===choice&&result.seed===((task.policy.seeds[1]+task.index*7919)>>>0)
-      &&result.denominations===4991&&/^[a-f0-9]{64}$/.test(result.sha256),'Incomplete manual-stake worker result');
+      &&result.denominations===(maximumCents-minimumCents)/stepCents+1&&/^[a-f0-9]{64}$/.test(result.sha256),'Incomplete manual-stake worker result');
     assert(results[id]===undefined,'Duplicate manual-stake worker result');results[id]=result;
     onProgress?.({phase:'manual-choice',gameId:task.game,choice,index:task.index,status:'passed',durationMs});
   };

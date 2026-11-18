@@ -3590,7 +3590,7 @@
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },

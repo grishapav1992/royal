@@ -32,7 +32,7 @@ for(const native of [false,true])test(`${native?'USDT financial socket':'common 
   const login=await accounts.login('shared-http-'+randomUUID()+'@example.test','Royal-shared-stakes-42!');
   const c=native?await pvpFixture([login.account.id,randomUUID()]):undefined;
   const socket=process.platform==='win32'?'\\\\.\\pipe\\royal-stakes-'+randomUUID():join(tmpdir(),'royal-stakes-'+randomUUID()+'.sock');let finance:ReturnType<typeof createNilePlayServer>|undefined;
-  if(c){await c.source.ingest(block(102,'1000000000000',c.config.source.addresses.find(a=>a.userId==='reserve')!.address));await c.ledger.sync(c.source,await c.reconciliation());finance=createNilePlayServer(c.ledger);await new Promise<void>(r=>finance!.listen(socket,r));}
+  if(c){await c.source.ingest(block(102,game==='studio-cosmic-escape'?'2000000000000':'1000000000000',c.config.source.addresses.find(a=>a.userId==='reserve')!.address));await c.ledger.sync(c.source,await c.reconciliation());finance=createNilePlayServer(c.ledger);await new Promise<void>(r=>finance!.listen(socket,r));}
   else await accounts.wallet.operate(login.account.id,{id:randomUUID(),kind:'deposit',amount:100000});
   const app=express();native?installGameWallet(app,socket):installDemoWallet(app);const server=app.listen(0,'127.0.0.1');await once(server,'listening');
   const address=server.address();assert(address&&typeof address!=='string');const url='http://127.0.0.1:'+address.port+'/api/'+(native?'game-wallet':'demo-wallet');
@@ -61,6 +61,26 @@ for(const native of [false,true])test(`${native?'USDT financial socket':'common 
    const paid=core?reply.gameRound.payoutUnits:reply.session.returnedUnits,expected=Math.round(before*100)-10+Number(paid);assert.equal(Math.round(reply.wallet.balance*100),expected);
    const repeat=await post(path,last);assert.equal(repeat.status,200);const saved:any=await repeat.json();const stable=(s:any)=>{const copy=structuredClone(s);delete copy.serverNow;return copy;};assert.deepEqual(stable(core?saved.gameRound:saved.session),stable(core?reply.gameRound:reply.session));assert.equal(Math.round(saved.wallet.balance*100),expected);
    assert.equal(saved.wallet.entries.filter((e:any)=>e.kind==='bet'&&e.source===game).length,1);assert.equal(saved.wallet.entries.filter((e:any)=>e.kind==='win'&&e.source===game).length,1);
+   if(game==='studio-cosmic-escape'){
+    const beforeMax=await balance();
+    for(const stakeUnits of ['10001','15000']){
+     const rejected=await post(path,{...op,id:randomUUID(),stakeUnits});
+     assert.equal(rejected.status,400);
+     assert.equal(await balance(),beforeMax);
+    }
+    const maximum={...op,id:randomUUID(),stakeUnits:'10000'};
+    const accepted=await post(path,maximum);
+    assert.equal(accepted.status,200,await accepted.clone().text());
+    const first=await accepted.json();
+    assert(verify(first.session));
+    assert.equal(first.session.spentUnits,'10000');
+    assert.equal(first.wallet.entries.filter((e:any)=>e.kind==='bet'&&e.source===game&&e.amount===-100).length,1);
+    const retry=await post(path,maximum);
+    assert.equal(retry.status,200);
+    const replay=await retry.json();
+    assert.deepEqual(replay.session,first.session);
+    assert.equal(replay.wallet.balance,first.wallet.balance);
+   }
    if(c)await c.ledger.audit();
   }finally{await new Promise<void>(r=>server.close(()=>r()));if(finance)await new Promise<void>(r=>finance!.close(()=>r()));await c?.close();}
  }

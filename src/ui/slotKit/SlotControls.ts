@@ -6,6 +6,7 @@ import {syncStakeSelect} from '../stakeSelection';
 
 interface StakeOptions {
   values: readonly string[];
+  maximumCents?: number;
   select: HTMLSelectElement;
   steps: readonly HTMLButtonElement[];
   direction: (button: HTMLButtonElement) => number;
@@ -36,7 +37,7 @@ export class SlotStakeControls {
 
   private select(value: string | undefined) {
     const {values, locked, changed} = this.options;
-    if (this.disposed || locked() || value === undefined || !validGameStake(value)) {
+    if (this.disposed || locked() || value === undefined || !validGameStake(value, this.options.maximumCents)) {
       this.update();
       return false;
     }
@@ -47,7 +48,7 @@ export class SlotStakeControls {
   update() {
     if (this.disposed) return;
     const {select, steps, values, current, direction, locked} = this.options;
-    const value = syncStakeSelect(select, current(), values, locked());
+    const value = syncStakeSelect(select, current(), values, locked(), 100, this.options.maximumCents);
     if (value !== current()) { this.options.changed(value); return; }
     for (const button of steps) {
       const delta = direction(button);

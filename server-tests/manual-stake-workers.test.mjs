@@ -6,6 +6,7 @@ import {prepareManualStakeChecks,qualifyManualStakes,validateManualStakes,MANUAL
 
 const moduleUrl=source=>'data:text/javascript;base64,'+Buffer.from(source).toString('base64');
 const fixture=`
+export const gameStakeMaximum=()=>5000;
 export const validGameStake=units=>/^[0-9]+$/.test(units)&&Number(units)>=10&&Number(units)<=5000;
 export const gameBetCents=stake=>Math.round(stake*100);
 export const parseGameStake=value=>String(Math.round(Number(value.replace(',','.'))*100));

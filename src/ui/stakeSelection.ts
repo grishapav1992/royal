@@ -1,4 +1,4 @@
-import {parseGameStake, validGameStake, gameBetCents} from '../shared/gameStakes';
+import {parseGameStake, validGameStake, gameBetCents, MAX_GAME_STAKE_CENTS} from '../shared/gameStakes';
 
 interface StakeField { input: HTMLInputElement; current: string; }
 const fields = new WeakMap<HTMLSelectElement, StakeField>();
@@ -22,7 +22,7 @@ export function validStakeDraft(root: HTMLElement, report = false): boolean {
   return !invalid;
 }
 
-function fieldFor(select: HTMLSelectElement, scale: number, locked: boolean): StakeField {
+function fieldFor(select: HTMLSelectElement, scale: number, locked: boolean, maximumCents: number): StakeField {
   const doc = select.ownerDocument;
   if (locked) drafts.delete(doc);
   const existing = fields.get(select);
@@ -43,7 +43,8 @@ function fieldFor(select: HTMLSelectElement, scale: number, locked: boolean): St
   input.type = 'text'; input.inputMode = 'decimal'; input.required = true; input.maxLength = 12;
   input.autocomplete = 'off'; input.spellcheck = false; input.dataset.manualStake = 'true';
   input.setAttribute('aria-label', select.getAttribute('aria-label') || (en ? 'Total stake, USDT' : 'Общая ставка, USDT'));
-  input.title = en ? '0.10 to 50.00 USDT, in steps of 0.01' : 'От 0,10 до 50,00 USDT с шагом 0,01';
+  const maximum = (maximumCents / 100).toFixed(2).replace('.', en ? '.' : ',');
+  input.title = en ? `0.10 to ${maximum} USDT, in steps of 0.01` : `От 0,10 до ${maximum} USDT с шагом 0,01`;
   input.style.cssText = 'box-sizing:border-box;flex:1 1 0;min-width:0;width:0;margin:0;padding:4px 2px;color:inherit;background:transparent;border:1px solid transparent;border-radius:inherit;';
   input.style.font = style.font; input.style.color = style.color;
   if(select.id){input.id=select.id+'-manual';for(const label of Array.from(select.labels??[]))if(label.htmlFor===select.id)label.htmlFor=input.id;}
@@ -59,9 +60,9 @@ function fieldFor(select: HTMLSelectElement, scale: number, locked: boolean): St
   input.addEventListener('focus',()=>drafts.set(doc,{input,key}));
   input.addEventListener('input', () => {
     if(input.disabled||input.readOnly)return;
-    const cents = parseGameStake(input.value), message = en
-      ? 'Enter a stake from 0.10 to 50.00, with at most two decimal places.'
-      : 'Введи ставку от 0,10 до 50,00, не больше двух знаков после запятой.';
+    const cents = parseGameStake(input.value, maximumCents), message = en
+      ? `Enter a stake from 0.10 to ${maximum}, with at most two decimal places.`
+      : `Введи ставку от 0,10 до ${maximum}, не больше двух знаков после запятой.`;
     input.setCustomValidity(cents === undefined ? message : '');
     input.setAttribute('aria-invalid', String(cents === undefined));
     input.style.borderColor = cents === undefined ? '#ff7979' : 'transparent';
@@ -127,11 +128,11 @@ function setOption(select: HTMLSelectElement, value: string, historical: boolean
 }
 
 /** Presets and manual input share the accepted stake and the existing operation transport. */
-export function syncStakeSelect(select: HTMLSelectElement, current: string, values: readonly (string | number)[], locked: boolean, scale = 100): string {
+export function syncStakeSelect(select: HTMLSelectElement, current: string, values: readonly (string | number)[], locked: boolean, scale = 100, maximumCents = MAX_GAME_STAKE_CENTS): string {
   const choices = values.map(String), cents = scale === 100 ? current : String(gameBetCents(Number(current)));
-  const allowed = validGameStake(cents), value = !locked && !allowed && !choices.includes(current) ? choices[0] : current;
+  const allowed = validGameStake(cents, maximumCents), value = !locked && !allowed && !choices.includes(current) ? choices[0] : current;
   setOption(select, value, locked && !allowed, scale); select.value = value; select.disabled = locked;
-  const field = fieldFor(select, scale, locked); field.input.disabled = locked;
+  const field = fieldFor(select, scale, locked, maximumCents); field.input.disabled = locked;
   field.input.readOnly=!supportedHost();
   if(field.input.readOnly)field.input.title='Обнови страницу сайта, чтобы вводить свою ставку. / Refresh the page to enter a custom stake.';
   if (select.ownerDocument.activeElement !== field.input && (field.current !== value || locked)) {
