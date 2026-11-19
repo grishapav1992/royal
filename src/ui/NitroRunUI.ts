@@ -2,7 +2,7 @@ import {canRecoverOperation} from './operationFeedback';
 import {validStakeDraft} from './stakeSelection';
 import {confirmedPayout} from '../shared/roundPrecision';
 import {GAME_STAKE_UNITS as NITRO_BETS} from '../shared/gameStakes';
-import { t as translateText, tr, locale } from '../i18n/index';
+import { t as translateText, tr, locale, language } from '../i18n/index';
 import {SlotSettings} from './slotKit/SlotSettings';
 import {SlotDialog, slotOwnsKeyboard} from './slotKit/SlotDialog';
 import {SlotStakeControls, SlotAudioControls, slotStakeStep, updateSlotTransport} from './slotKit/SlotControls';
@@ -29,6 +29,17 @@ type Dialog=''|'intro'|'info'|'history'|'bonus'|'complete';
 type Live=SlotOperation&{operationId:string;balance:number;motion:boolean;fast:boolean;before?:Session};
 const preview=Array.from({length:30},(_,i)=>(i+2*Math.floor(i/6))%6);
 const AUTO_COUNTS=[10,25,50] as const;
+// New module labels also work with the currently installed host dictionary.
+const NITRO_ENGLISH:Record<string,string>={
+ 'НОЧНОЙ ЗАЕЗД':'NIGHT CIRCUIT',
+ 'КАСКАДЫ · 20 ЛИНИЙ · ДО ×5':'CASCADES · 20 LINES · UP TO ×5',
+ 'Звуки':'Sounds',
+ 'Платных вращений':'Paid spins',
+ 'Ставка за вращение':'Stake per spin',
+ 'Сумма ставок за серию':'Total stakes for the series',
+ 'Ставка списывается перед каждым вращением. При бонусе или нехватке баланса серия остановится.':'The stake is debited before each spin. The series stops when a bonus starts or the balance is insufficient.',
+};
+const nitroText=(source:string)=>language==='en'&&NITRO_ENGLISH[source]||translateText(source);
 
 /** Presentation consumes confirmed frames. Reopening and retries remain static. */
 export class NitroRunUI {
@@ -72,7 +83,7 @@ export class NitroRunUI {
  }
  private markup(){return tr`<section class="cc-game nr-game" data-nitro-game data-studio-game="${NITRO_GAME}" data-asset-state="loading" data-phase="idle" aria-label="Нитро-заезд">
   <div class="cc-loader" role="status"><span class="cc-loader-spark">↗</span><strong data-cc-load-title>ГОТОВИМ НОЧНОЙ ЗАЕЗД</strong><p data-cc-load-note>Изображения: 0 из 2</p><progress data-cc-load-progress max="2" value="0" aria-label="Загрузка оформления"></progress><button type="button" data-cc-load-retry hidden>Повторить загрузку</button></div>
-  <div class="nr-cabinet"><header class="cc-heading nr-heading"><div class="nr-wordmark"><small>ROYAL STREET SERIES</small><h2>NITRO <em>RUN</em><i aria-hidden="true">///</i></h2></div><div class="nr-track-label"><span class="nr-live-dot" aria-hidden="true"></span><span>НОЧНОЙ ЗАЕЗД<small>КАСКАДЫ · 20 ЛИНИЙ · ДО ×5</small></span><b aria-hidden="true">01</b></div></header>
+  <div class="nr-cabinet"><header class="cc-heading nr-heading"><div class="nr-wordmark"><small>ROYAL STREET SERIES</small><h2>NITRO <em>RUN</em><i aria-hidden="true">///</i></h2></div><div class="nr-track-label"><span class="nr-live-dot" aria-hidden="true"></span><span>${nitroText('НОЧНОЙ ЗАЕЗД')}<small>${nitroText('КАСКАДЫ · 20 ЛИНИЙ · ДО ×5')}</small></span><b aria-hidden="true">01</b></div></header>
   <div class="cc-scene nr-scene">
    <div class="nr-hud slot-feature-strip" aria-label="Состояние раунда">
     <section class="cc-factor-card nr-gear-card"><div class="nr-card-heading"><h3>ПЕРЕДАЧА</h3><span data-nr-gear-index>01 / 05</span></div><div class="nr-dial"><div class="nr-dial-ticks" aria-hidden="true"></div><i class="nr-needle" aria-hidden="true"></i><span data-cc-top-factor>×1</span></div><strong data-cc-factor>×1</strong><div class="cc-energy-meter"><i data-cc-energy-fill></i></div><small data-cc-factor-note>Новое вращение начинает с ×1</small></section>
@@ -84,14 +95,14 @@ export class NitroRunUI {
   <div class="nr-console"><div class="cc-results nr-results"><div class="nr-race-message"><span class="nr-result-marker" aria-hidden="true">↗</span><p data-cc-message>Нажми «Старт», чтобы выйти на ночную трассу</p></div><div class="nr-round-total"><span>ВЫИГРЫШ РАУНДА <strong data-cc-total data-units="0">0,00</strong></span><div class="cc-groups" data-cc-groups></div></div></div>
   <div class="cc-controls nr-controls"><div class="cc-balance"><small>БАЛАНС <span>USDT</span></small><strong data-cc-balance>0,00</strong></div><div class="cc-last" hidden><strong data-cc-last>0,00</strong></div><div class="cc-stake"><label for="nr-stake">СТАВКА <span>USDT</span></label><div><button type="button" data-cc-stake-step="-1" aria-label="Уменьшить ставку">−</button><select id="nr-stake" data-cc-stake aria-label="Ставка">${NITRO_BETS.map(n=>`<option value="${n}">${coins(n)}</option>`).join('')}</select><button type="button" data-cc-stake-step="1" aria-label="Увеличить ставку">+</button></div><small data-cc-cost>За ход: 0,10</small></div><button type="button" class="cc-spin nr-start" data-cc-spin aria-label="Начать заезд"><b aria-hidden="true">↗</b><span data-cc-spin-label>СТАРТ</span><small aria-hidden="true">START ENGINE</small></button><div class="cc-auto-controls"><button type="button" data-cc-auto aria-haspopup="dialog" aria-controls="nr-auto-panel" aria-expanded="false" aria-pressed="false">Авто</button><button type="button" data-cc-pause disabled hidden>На паузе</button></div><div class="cc-tools"></div></div>
   <div class="cc-wallet-help" data-cc-wallet-help><span data-cc-wallet-note></span><a href="/" data-cc-login>Войти в клуб для тестовой игры</a><button type="button" data-cc-wallet>Открыть тестовый кошелёк</button></div><div class="cc-feedback" data-cc-feedback><p data-cc-status role="status"></p><p data-cc-error role="alert"></p><button type="button" data-cc-retry hidden>Проверить прежний ход</button></div>
-  </div></div><footer class="cc-footer"><div class="nr-options"><button type="button" data-cc-speed aria-pressed="false">ОБЫЧНО ×1</button><button type="button" data-cc-info aria-label="Правила игры">Правила игры</button><button type="button" data-cc-history aria-label="История игры">История игры</button><button type="button" data-cc-music aria-label="Выключить музыку">Музыка</button><button type="button" data-cc-sound aria-label="Выключить звук">Звуки</button><button type="button" class="cc-buy" data-cc-buy>Бонусная гонка ⓘ</button></div><label>Громкость <input type="range" min="0" max="100" data-cc-volume aria-label="Громкость игры"></label><label><input type="checkbox" data-nr-reduce> Показ без анимаций</label><span>Собственная игра Royal · виртуальные USDT</span><button type="button" data-cc-refresh>Проверить состояние</button></footer>${this.autoMarkup()}<div class="cc-dialog-backdrop" data-cc-backdrop><div class="cc-dialog" data-cc-dialog role="dialog" aria-modal="true" aria-labelledby="cc-dialog-title"></div></div></section>`;}
+  </div></div><footer class="cc-footer"><div class="nr-options"><button type="button" data-cc-speed aria-pressed="false">ОБЫЧНО ×1</button><button type="button" data-cc-info aria-label="Правила игры">Правила игры</button><button type="button" data-cc-history aria-label="История игры">История игры</button><button type="button" data-cc-music aria-label="Выключить музыку">Музыка</button><button type="button" data-cc-sound aria-label="Выключить звук">${nitroText('Звуки')}</button><button type="button" class="cc-buy" data-cc-buy>Бонусная гонка ⓘ</button></div><label>Громкость <input type="range" min="0" max="100" data-cc-volume aria-label="Громкость игры"></label><label><input type="checkbox" data-nr-reduce> Показ без анимаций</label><span>Собственная игра Royal · виртуальные USDT</span><button type="button" data-cc-refresh>Проверить состояние</button></footer>${this.autoMarkup()}<div class="cc-dialog-backdrop" data-cc-backdrop><div class="cc-dialog" data-cc-dialog role="dialog" aria-modal="true" aria-labelledby="cc-dialog-title"></div></div></section>`;}
  private autoMarkup(){return tr`<dialog class="nr-auto-panel" id="nr-auto-panel" data-nr-auto-panel aria-labelledby="nr-auto-title" aria-describedby="nr-auto-note">
   <header><div><small>NITRO RUN</small><h2 id="nr-auto-title">Автоигра</h2></div><button type="button" data-nr-auto-close aria-label="Закрыть автоигру">×</button></header>
   <div class="nr-auto-counts" role="radiogroup" aria-label="Число платных автовращений">${AUTO_COUNTS.map(count=>`<button type="button" role="radio" data-nr-auto-count="${count}" aria-checked="${count===this.autoCount}" tabindex="${count===this.autoCount?0:-1}">${count}</button>`).join('')}</div>
-  <p class="nr-auto-count-label">Платных вращений</p><select data-cc-auto-count hidden aria-hidden="true" tabindex="-1">${AUTO_COUNTS.map(count=>`<option>${count}</option>`).join('')}</select>
-  <div class="nr-auto-stake"><span>Ставка за вращение</span><strong><span data-nr-auto-stake></span> USDT</strong></div>
-  <div class="nr-auto-total" aria-live="polite" aria-atomic="true"><span>Сумма ставок за серию</span><strong><span data-nr-auto-total></span> <small>USDT</small></strong></div>
-  <p id="nr-auto-note">Ставка списывается перед каждым вращением. При бонусе или нехватке баланса серия остановится.</p>
+  <p class="nr-auto-count-label">${nitroText('Платных вращений')}</p><select data-cc-auto-count hidden aria-hidden="true" tabindex="-1">${AUTO_COUNTS.map(count=>`<option>${count}</option>`).join('')}</select>
+  <div class="nr-auto-stake"><span>${nitroText('Ставка за вращение')}</span><strong><span data-nr-auto-stake></span> USDT</strong></div>
+  <div class="nr-auto-total" aria-live="polite" aria-atomic="true"><span>${nitroText('Сумма ставок за серию')}</span><strong><span data-nr-auto-total></span> <small>USDT</small></strong></div>
+  <p id="nr-auto-note">${nitroText('Ставка списывается перед каждым вращением. При бонусе или нехватке баланса серия остановится.')}</p>
   <p class="nr-auto-error" data-nr-auto-error role="status"></p>
   <div class="nr-auto-actions"><button type="button" class="nr-auto-start" data-nr-auto-start></button><button type="button" data-nr-auto-close>Отмена</button></div>
  </dialog>`;}
