@@ -20,6 +20,7 @@ import {observeExpansionOutcome,resetGameOutcomes} from './gameReactions';
 import {CosmicEscapeAudio} from './CosmicEscapeAudio';
 import {CosmicEscapeAssets,COSMIC_ESCAPE_ASSETS,type CosmicAssetState} from './CosmicEscapeAssets';
 import {CosmicEscapeBoard,cosmicSymbol,cosmicSymbolName} from './CosmicEscapeBoard';
+import {CosmicEscapeRacer, cosmicRacerOutcome} from './CosmicEscapeRacer';
 import {luelonTheme,type LuelonTheme} from './LuelonArtwork';
 import './luelon-games.css';
 import './cosmic-escape.css';
@@ -52,6 +53,7 @@ function limitUnits(raw:string){const text=raw.trim().replace(/\s/g,'').replace(
 /** A dedicated cosmic cabinet. Every stage displays a confirmed server result. */
 export class CosmicEscapeUI {
   private settings?:SlotSettings;
+  private readonly racer: CosmicEscapeRacer;
   private assets:CosmicEscapeAssets;private root:HTMLElement;private dialogShell!:SlotDialog;private stakeControls!:SlotStakeControls;private soundControls!:SlotAudioControls;private info:LuelonSlotInfo;private theme:LuelonTheme;private audio:CosmicEscapeAudio;private board:CosmicEscapeBoard;private owner=client.accountId;private stake=COSMIC_ESCAPE_DEFAULT_STAKE;private mode='normal';private entered=false;private speed:Speed='normal';private manualReduced=false;private destroyed=false;private playback=new SlotPlayback({account:()=>client.accountId,hidden:()=>document.hidden});private sessions=new SlotSessions(cosmicSlot);private live?:Live;private shown='';private portals=0;private error='';private dialog:Dialog='intro';private autoRemaining=0;private bonusRunning=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');private unsubscribe:()=>void;private layout:ResizeObserver;
   private tools!:HTMLElement;private toolsHome?:Comment;private autoNotice='';
   private autoCount:number=25;private autoLoss:number|null=null;private autoWin:number|null=null;private autoStopBonus=true;private autoStartUnits=0;private autoOpen=false;
@@ -68,13 +70,15 @@ export class CosmicEscapeUI {
     this.info=info;this.theme=luelonTheme(game);this.audio=new CosmicEscapeAudio();this.assets=new CosmicEscapeAssets(state=>this.assetState(state));
     try{this.manualReduced=localStorage.getItem('royal-luelon-reduced')==='1';}catch{}
     host.innerHTML=this.markup();this.root=host.querySelector('[data-luelon-game]')!;
+    this.racer = new CosmicEscapeRacer(this.find('[data-cosmic-alien]'));
     for(const[key,value]of Object.entries({accent:this.theme.accent,secondary:this.theme.secondary,background:this.theme.background,ink:this.theme.ink}))this.root.style.setProperty('--lg-'+key,value);
     this.root.dataset.motif=this.theme.motif;this.root.dataset.reducedMotion=String(this.motionReduced());
     this.board=new CosmicEscapeBoard(this.find('[data-lg-board]'),info,this.theme,col=>{if(this.live)this.audio.stopReel(col);},false);
     this.tools=this.find('.cx-tools');this.bind();
     // The shared settings dialog is mounted in its own empty host. The cabinet keeps one layout of its own,
     // so the shared priority profiles never move portals, energy or missions away from the field.
-    this.settings=new SlotSettings(this.find('[data-cx-settings-host]'),this.find('[data-cx-settings]'),this.tools,()=>{this.stopAuto();this.closeAuto(false);this.controls();});
+    this.settings=new SlotSettings(this.find('[data-cx-settings-host]'),this.find('[data-cx-settings]'),this.tools,()=>{this.stopAuto();this.closeAuto(false);this.controls();this.racer.context(false,false);});
+    this.root.addEventListener('close',()=>this.updateRacer(),true);
     const gear=this.root.querySelector<HTMLButtonElement>('.slot-settings-button');if(gear){gear.innerHTML=ICON.gear.replace('<svg','<svg class="cx-gear-icon"')+ICON.menu;gear.setAttribute('aria-label',translateText('Настройки: правила, история, звук и громкость'));}
     this.mountHeaderTools();
     this.layout=new ResizeObserver(()=>this.profile());this.layout.observe(this.root);this.profile();
@@ -91,14 +95,14 @@ export class CosmicEscapeUI {
   private unmountHeaderTools(){if(!this.toolsHome)return;this.tools.classList.remove('cx-header-tools');this.toolsHome.replaceWith(this.tools);this.toolsHome=undefined;delete this.root.dataset.headerTools;}
   private tool<T extends HTMLElement=HTMLButtonElement>(selector:string){return this.tools.querySelector<T>(selector)!;}
   /** The host keeps native slots at the full stage height once a layout profile is present. */
-  private profile(){const {width,height}=this.root.getBoundingClientRect();if(!width||!height)return;const profile=gameContentLayout(width,height);if(this.root.dataset.slotPriority!==profile)this.root.dataset.slotPriority=profile;}
+  private profile(){const {width,height}=this.root.getBoundingClientRect();if(!width||!height)return;const profile=gameContentLayout(width,height);if(this.root.dataset.slotPriority!==profile){this.root.dataset.slotPriority=profile;this.updateRacer();}}
   private assetState(state:CosmicAssetState){
     if(this.destroyed)return;
     if(state.status==='ready'){
       this.board.enableArtwork();
       this.root.style.setProperty('--cx-scene-art', `url("${COSMIC_ESCAPE_ASSETS.background}")`);
       this.root.querySelectorAll<SVGImageElement>('[data-cosmic-symbol-image]').forEach(image=>image.setAttribute('href',COSMIC_ESCAPE_ASSETS.symbols));
-      this.find<HTMLImageElement>('[data-cosmic-alien]').src=COSMIC_ESCAPE_ASSETS.alien;
+      this.racer.showArtwork();
     }
     this.root.dataset.assetState=state.status;
     this.find<HTMLProgressElement>('[data-cosmic-load-progress]').value=state.loaded;
@@ -115,6 +119,14 @@ export class CosmicEscapeUI {
   private balance(){return this.sessions.balance(client,demoWallet);}
   private blocked(){return this.destroyed||!this.assets.ready||!!this.live||client.busy||!!client.pending||client.loading||demoWallet.busy||!!demoWallet.pending||demoWallet.hasExternalBusy('expansion')||document.hidden||!client.accountId;}
   private motionReduced(){return this.reduced.matches||this.manualReduced;}
+  private updateRacer() {
+    const visible = !this.destroyed && this.assets.ready && this.entered && !document.hidden &&
+      this.root.dataset.slotPriority !== 'landscape' && !this.autoOpen &&
+      !this.root.querySelector('.slot-settings-dialog[open]') &&
+      (!this.dialog || this.dialog === 'bonus' || this.dialog === 'complete');
+    this.racer.context(visible, visible && !this.motionReduced());
+    if (visible && this.live) this.racer.show('focus');
+  }
   private selectedMode(){return this.info.modes.find(mode=>mode.id===this.mode)??this.info.modes[0];}
   private symbol(id:number){return cosmicSymbol(id,this.assets.ready);}
   private speedLabel(speed:Speed){return speed==='fast'?translateText('Быстро'):translateText('Обычно');}
@@ -252,6 +264,7 @@ export class CosmicEscapeUI {
   }
   private choice(_view:LuelonSlotView){this.find('[data-lg-choice]').hidden=true;}
   private controls(){
+    this.updateRacer();
     if(this.destroyed)return;
     const session=this.session(),active=session?.state==='active',blocked=this.blocked();
     if(active){this.stake=session.stakeUnits;this.mode=session.view.luelon.mode;}
@@ -325,7 +338,7 @@ export class CosmicEscapeUI {
   private valid(live:Live){return !this.destroyed&&this.playback.current(live,this.live);}
   private delay(ms:number,live:Live){return this.playback.delay(ms,()=>this.valid(live));}
   private stopAuto(){this.autoRemaining=0;this.bonusRunning=false;this.playback.cancelScheduled();}
-  private cancel(){this.playback.cancel();this.stopAuto();this.live=undefined;this.board.cancel();this.audio.stopSpin();this.shown='';resetGameOutcomes(this.root);this.root.dataset.phase='idle';this.root.dataset.shipActive='false';this.root.dataset.echo='false';}
+  private cancel(){this.playback.cancel();this.stopAuto();this.live=undefined;this.racer.show('idle');this.board.cancel();this.audio.stopSpin();this.shown='';resetGameOutcomes(this.root);this.root.dataset.phase='idle';this.root.dataset.shipActive='false';this.root.dataset.echo='false';}
   private primary(){
     if(this.live){if(this.board.hurry()){this.live.fast=true;this.controls();}return;}
     if(this.autoRemaining){this.stopAuto();this.controls();return;}
@@ -338,6 +351,7 @@ export class CosmicEscapeUI {
   }
   private closeAuto(focus:boolean){
     if(!this.autoOpen)return;this.autoOpen=false;this.find('[data-cx-auto-panel]').hidden=true;
+    this.updateRacer();
     this.find('[data-lg-auto]').setAttribute('aria-expanded','false');if(focus)this.find<HTMLButtonElement>('[data-lg-auto]').focus();
   }
   private startAuto(){
@@ -378,13 +392,15 @@ export class CosmicEscapeUI {
       this.setTotal(session.state==='settled'?session.returnedUnits:session.view.luelon.totalPayoutUnits);this.controls();
       observeExpansionOutcome(this.root,this.game,session,client.accountId,false,false);
       const view=session.view.luelon;
+      const startsMission = view.phase==='bonus' && (!view.spin || view.spin.kind==='base' && !!view.spin.triggerAwards);
+      this.racer.show(startsMission ? 'bonus' : session.state==='settled' ? cosmicRacerOutcome(session.spentUnits, session.returnedUnits) : 'idle');
       if(view.phase==='choice'){this.bonusRunning=false;return;}
-      if(view.phase==='bonus'&&(!view.spin||view.spin.kind==='base'&&view.spin.triggerAwards)){if(view.spin?.kind==='base'&&this.autoStopBonus)this.autoRemaining=0;this.bonusRunning=false;this.openDialog('bonus');return;}
+      if(startsMission){if(view.spin?.kind==='base'&&this.autoStopBonus)this.autoRemaining=0;this.bonusRunning=false;this.openDialog('bonus');return;}
       if(view.phase==='complete'&&view.history.some(spin=>spin.kind!=='base')){this.bonusRunning=false;this.openDialog('complete');return;}
       if(session.state==='active'&&this.bonusRunning||session.state==='settled'&&this.autoContinues(session))this.scheduleNext();
       else this.controls();
-    }catch(error){if(this.valid(live)){this.error=(error as Error).message;this.stopAuto();this.live=undefined;this.board.cancel();this.audio.stopSpin();this.shown='';this.sync();}}
-    finally{if(this.live===live&&!this.valid(live)){this.live=undefined;this.audio.stopSpin();}}
+    }catch(error){if(this.valid(live)){this.error=(error as Error).message;this.stopAuto();this.live=undefined;this.racer.show('idle');this.board.cancel();this.audio.stopSpin();this.shown='';this.sync();}}
+    finally{if(this.live===live&&!this.valid(live)){this.live=undefined;this.racer.show('idle');this.audio.stopSpin();}}
   }
   private async present(session:Session,live:Live){
     const view=session.view.luelon,spin=view.spin;
@@ -476,5 +492,5 @@ export class CosmicEscapeUI {
     if(action==='complete'){this.closeDialog();const session=this.session();if(session&&this.autoContinues(session))this.scheduleNext();this.controls();}
   }
   getAudioState(){return this.audio.state();}
-  destroy(){if(this.destroyed)return;this.destroyed=true;this.unmountHeaderTools();document.removeEventListener('pointerdown',this.outside,true);this.layout.disconnect();this.assets.destroy();this.cancel();this.audio.destroy();this.board.destroy();this.unsubscribe();this.settings?.destroy();this.dialogShell.destroy();this.stakeControls.destroy();this.soundControls.destroy();this.playback.destroy();this.host.replaceChildren();}
+  destroy(){if(this.destroyed)return;this.destroyed=true;this.unmountHeaderTools();document.removeEventListener('pointerdown',this.outside,true);this.layout.disconnect();this.assets.destroy();this.cancel();this.racer.destroy();this.audio.destroy();this.board.destroy();this.unsubscribe();this.settings?.destroy();this.dialogShell.destroy();this.stakeControls.destroy();this.soundControls.destroy();this.playback.destroy();this.host.replaceChildren();}
 }
