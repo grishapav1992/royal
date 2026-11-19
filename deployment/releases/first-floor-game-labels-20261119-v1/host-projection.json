@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "productionCommit": "937263b70c549b1ad53756888cefc667cec69035",
+  "productionCommit": "9a7ed1f88b88b97411a41ccd9f399bea72ba69f1",
   "entries": [
     "index.html"
   ],
@@ -24,16 +24,16 @@
       "sha256": "841b789e4e0ba8f3a6f2f399758ade90d900824457d2b2e5d0408546269943c8"
     },
     "src/ui/EntryLogin.ts": {
-      "commit": "9fd1a539dc53e154f2d7dc329a98de5ccb57af7d",
+      "commit": "523f3cbdaafdbe3d380c0e3388081a2134ea0547",
       "path": "src/ui/EntryLogin.ts",
-      "baseSha256": "3da6abcdaeb3b63ade868509e2d933ba3cc19ec4489b1dc0e360d28a7e71b8d3",
-      "sha256": "3da6abcdaeb3b63ade868509e2d933ba3cc19ec4489b1dc0e360d28a7e71b8d3"
+      "baseSha256": "6ab37b6175de3d76de0d3b4078ab526b1ada9360eab06463f310f80c9d052be2",
+      "sha256": "6ab37b6175de3d76de0d3b4078ab526b1ada9360eab06463f310f80c9d052be2"
     },
     "src/ui/EntryModes.ts": {
-      "commit": "9fd1a539dc53e154f2d7dc329a98de5ccb57af7d",
+      "commit": "523f3cbdaafdbe3d380c0e3388081a2134ea0547",
       "path": "src/ui/EntryModes.ts",
-      "baseSha256": "ada814f164a03e436eb17bcfd6b16d794fc449f8d375780e774fcd405fbd73fa",
-      "sha256": "ada814f164a03e436eb17bcfd6b16d794fc449f8d375780e774fcd405fbd73fa"
+      "baseSha256": "640ec930209f291439c31603e1ffcedfd0bdb892c3719464dfdff31df3c6d039",
+      "sha256": "640ec930209f291439c31603e1ffcedfd0bdb892c3719464dfdff31df3c6d039"
     },
     "src/i18n/index.ts": {
       "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
@@ -77,7 +77,7 @@
       "commit": "e3f532b1d4ef8113afe0f257425760320e913f29",
       "path": "src/i18n/en.ts",
       "baseSha256": "325a454d4997f1fa68b900e2bf2cf50b5a95bec6debaca59c13a445447fb6296",
-      "sha256": "53c5f07ddd83b2beccdad40ae5548075a4a994ca6d23e2f7e6cadfd146ef5334",
+      "sha256": "c581c252a7b612c217e76c88e777ac6ff2963d9a7d56e23724fdb80757c324cc",
       "patches": [
         {
           "from": "  'Резервируем ${0}…':'Reserving ${0}…',\n  'Возвращаем ${0}…':'Refunding ${0}…',\n\n  ...streetEnglish,\n  'Улица казино':'Casino street',\n  'ВХОД':'ENTRANCE',\n",
@@ -122,6 +122,10 @@
         {
           "from": "export const english: Record<string, string> = {\n",
           "to": "export const english: Record<string, string> = {\n  \"Скорость «Быстро» сокращает анимацию. Результат и выплата от скорости не зависят.\": \"Fast shortens the animation. Speed does not affect the result or payout.\",\n"
+        },
+        {
+          "from": "  \"Осмотреться одному\": \"Explore on your own\",\n",
+          "to": ""
         }
       ]
     },
@@ -144,10 +148,10 @@
       "sha256": "25102e6edaf60c493c355bd4fd20bd71ead209cccc1cddf8e8cd8ce94d6bd4d7"
     },
     "src/ui/entry-modes.css": {
-      "commit": "9fd1a539dc53e154f2d7dc329a98de5ccb57af7d",
+      "commit": "523f3cbdaafdbe3d380c0e3388081a2134ea0547",
       "path": "src/ui/entry-modes.css",
-      "baseSha256": "162f96da2f25bad7968c99a894ae55402fc2508ca48df25f3bce96a19c345cfd",
-      "sha256": "162f96da2f25bad7968c99a894ae55402fc2508ca48df25f3bce96a19c345cfd"
+      "baseSha256": "6edcb18a39d98f41491651998295fa3b896712c68ef87ea0f97984b206ba7961",
+      "sha256": "6edcb18a39d98f41491651998295fa3b896712c68ef87ea0f97984b206ba7961"
     },
     "src/ui/PlayerRecoverySettings.ts": {
       "commit": "60834b76153ece2f4fc0ce4c03c6a8ff7e929e56",
@@ -418,16 +422,16 @@
       "sha256": "030e067106fb80b734826c5d080739c9dd0347afacadd83ec75c71c8ca2eb73f"
     },
     "src/style.css": {
-      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "commit": "523f3cbdaafdbe3d380c0e3388081a2134ea0547",
       "path": "src/style.css",
-      "baseSha256": "d4823bafd1cc130ceac4610efc1a6e83d9ca2b50965279c245d7a510398f12a6",
-      "sha256": "d4823bafd1cc130ceac4610efc1a6e83d9ca2b50965279c245d7a510398f12a6"
+      "baseSha256": "a14b905ae89bd11f910e7d42e4c32f872bc5dd14d29448b49197f3114a3e219f",
+      "sha256": "a14b905ae89bd11f910e7d42e4c32f872bc5dd14d29448b49197f3114a3e219f"
     },
     "src/paper-theme.css": {
-      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "commit": "523f3cbdaafdbe3d380c0e3388081a2134ea0547",
       "path": "src/paper-theme.css",
-      "baseSha256": "c2618a4b9fee4b3e28ae07c1292ed59dc0ce4b1fed7fa80f7146c2dfe2f6a1c6",
-      "sha256": "c2618a4b9fee4b3e28ae07c1292ed59dc0ce4b1fed7fa80f7146c2dfe2f6a1c6"
+      "baseSha256": "5890158b9a8663e6d3aeeb614ba464aceaffceadebca5b3ec06196e796824c0c",
+      "sha256": "5890158b9a8663e6d3aeeb614ba464aceaffceadebca5b3ec06196e796824c0c"
     },
     "src/own-cabinets.css": {
       "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
@@ -655,7 +659,7 @@
       "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
       "path": "src/ui/AuthUI.ts",
       "baseSha256": "18b1f2c295d6b553c00f05b6edebaf93011bbf1723b67213a1736847528689a5",
-      "sha256": "3dff9879ae5e8a5063bd822d1620e54766c3a629c471bbaf2409f9d0928aee93",
+      "sha256": "a22b9212433c7ad8063bddb31d4ad2d4e301f06ddda7b3aa25c508511a1930e4",
       "patches": [
         {
           "from": "import { gameAudio } from '../game/GameAudio';\nimport {forgetSession} from '../network/sessionRecovery';\nimport { appearanceFromLegacy, normalizeAppearance } from '../shared/appearance';\nimport { CharacterEditor } from './CharacterEditor';\nimport { SkinStudioUI } from './SkinStudioUI';\nimport type { Account } from '../../server/accounts';\nimport type { RoomScene } from '../game/RoomScene';\n\nexport class AuthUI {\n  readonly dialog = document.createElement('dialog');\n  readonly error: HTMLParagraphElement;\n",
@@ -680,6 +684,10 @@
         {
           "from": "  private async logout() {\n    await this.perform(async () => {\n      await this.api('/logout',{});\n      const url = new URL(location.href); url.searchParams.delete('room'); history.replaceState(null,'',url);\n      this.leave(); this.account = null; this.showLogin();\n    });\n  }\n  showRejoin() {\n    this.inRoom = false; this.nameDialog.close();\n",
           "to": "  private async logout() {\n    await this.perform(async () => {\n      await this.api('/logout',{});\n      const url = new URL(location.href); url.searchParams.delete('room'); history.replaceState(null,'',url);\n      this.leave(); this.account = null;\n      location.reload();\n    });\n  }\n  showRejoin() {\n    this.inRoom = false; this.nameDialog.close();\n"
+        },
+        {
+          "from": "\n      <a class=\"offline-link\" href=\"/?offline=1\">Осмотреться одному</a>",
+          "to": ""
         }
       ]
     },
@@ -2706,7 +2714,7 @@
       "sha256": "2614d92f91ac4cf8f88e6216109b31bdab9bed28d50b485d685d3888f9923125"
     },
     "games/flag-battle/FlagPhysics.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "commit": "523f3cbdaafdbe3d380c0e3388081a2134ea0547",
       "path": "games/flag-battle/FlagPhysics.ts",
       "baseSha256": "75ed3208db8f377316dac255059a7c68c52b33db6f0283ba4f4b2e887713f625",
       "sha256": "75ed3208db8f377316dac255059a7c68c52b33db6f0283ba4f4b2e887713f625"
@@ -5174,6 +5182,12 @@
       "path": "src/ui/nitro-run-layout.css",
       "baseSha256": "8e932f4da8af34f91ee305d5d6308e668f32bb051675f0b4053897ba5dcc6407",
       "sha256": "8e932f4da8af34f91ee305d5d6308e668f32bb051675f0b4053897ba5dcc6407"
+    },
+    "src/ui/FlagBattlePreview.ts": {
+      "commit": "523f3cbdaafdbe3d380c0e3388081a2134ea0547",
+      "path": "src/ui/FlagBattlePreview.ts",
+      "baseSha256": "5580790202f3b5d8f649795e10c75169ead2540e8dfccfc6e7c78c23da5e1a44",
+      "sha256": "5580790202f3b5d8f649795e10c75169ead2540e8dfccfc6e7c78c23da5e1a44"
     }
   },
   "moduleGames": [
