@@ -1,0 +1,409 @@
+{
+  "release": "entry-previews-20261119-v2",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "9a7ed1f88b88b97411a41ccd9f399bea72ba69f1",
+  "productionBaseCommit": "937263b70c549b1ad53756888cefc667cec69035",
+  "githubMainAtVerification": "9a7ed1f88b88b97411a41ccd9f399bea72ba69f1",
+  "releaseManifestSha256": "748029229ebbecef9a401f46ee9d85d6568ffadc81e99b9429aee81c1ffbc623",
+  "publishedHost": {
+    "published": true,
+    "preparedImage": "sha256:23a634ac17c94684c90dce20bd0cfabd8d0ce992d7db4a1046de4ca751b6b171",
+    "runningImage": "sha256:23a634ac17c94684c90dce20bd0cfabd8d0ce992d7db4a1046de4ca751b6b171",
+    "containerRestarted": true,
+    "sourceCommit": "9a7ed1f88b88b97411a41ccd9f399bea72ba69f1",
+    "changedSources": 10,
+    "clientDeltaFiles": 13,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 0,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 10
+  },
+  "hostProjection": {
+    "verifiedInputs": 314,
+    "sources": {
+      "src/i18n/en.ts": "c581c252a7b612c217e76c88e777ac6ff2963d9a7d56e23724fdb80757c324cc",
+      "src/paper-theme.css": "5890158b9a8663e6d3aeeb614ba464aceaffceadebca5b3ec06196e796824c0c",
+      "src/style.css": "a14b905ae89bd11f910e7d42e4c32f872bc5dd14d29448b49197f3114a3e219f",
+      "src/ui/AuthUI.ts": "a22b9212433c7ad8063bddb31d4ad2d4e301f06ddda7b3aa25c508511a1930e4",
+      "src/ui/EntryLogin.ts": "6ab37b6175de3d76de0d3b4078ab526b1ada9360eab06463f310f80c9d052be2",
+      "src/ui/EntryModes.ts": "640ec930209f291439c31603e1ffcedfd0bdb892c3719464dfdff31df3c6d039",
+      "src/ui/FlagBattlePreview.ts": "5580790202f3b5d8f649795e10c75169ead2540e8dfccfc6e7c78c23da5e1a44",
+      "src/ui/entry-modes.css": "6edcb18a39d98f41491651998295fa3b896712c68ef87ea0f97984b206ba7961",
+      "src/ui/entry-previews/club.mp4": "9ef4c2bec40a0ad03397f149401f393eb67902c7c18ad373fa169628278eb0b1",
+      "src/ui/entry-previews/club.webp": "a68e575534d13ff9f8b2d0062893f8edb2a88b7a482968ec8e1b7fc18a355c04"
+    },
+    "backendSha256": "347b10a5191da839142cafb6459d14e607190a32af3a97107f73cd392de3807f"
+  },
+  "rollback": {
+    "image": "sha256:582161b28242a20718b2be8fffef2295c4a8f3deb872b27dd4c0af80b3e0c3d5",
+    "sourceBytes": 419270,
+    "sourceSha256": "741c33d5de518e114c6fefe3ca093694326cef025f655027ea28b59428b8ab9a",
+    "financialBackup": {
+      "path": "/opt/royal-backups/entry-previews-20261119-v2/financial.dump",
+      "sha256": "3b6a361e0c0522d6be68de354377cf41bfd7ff49ccc3528931f58a836da043d3",
+      "bytes": 48237835,
+      "databaseRestored": false
+    },
+    "programFiles": 8738,
+    "retainedModuleFiles": 5556
+  },
+  "verification": {
+    "build": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 118293
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 7404
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 172198
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 13298
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 75
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 19
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 25
+      }
+    ],
+    "walletTestsPassed": 19,
+    "installerTestsPassed": 20,
+    "walletTestCommand": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts",
+    "candidateBrowser": {
+      "passed": 8,
+      "checks": [
+        {
+          "title": "mode selection precedes sign-in and opens the real casino without loading the world",
+          "passed": true
+        },
+        {
+          "title": "mode switching keeps the same session and chat draft, with live chat across the two modes",
+          "passed": true
+        },
+        {
+          "title": "casino games use the common wallet and recover a lost response without a second debit",
+          "passed": true
+        },
+        {
+          "title": "phone catalogue and chat stay usable in both orientations",
+          "passed": true
+        },
+        {
+          "title": "phone chooses before login even with a mode link and a saved preference from an earlier version",
+          "passed": true
+        },
+        {
+          "title": "a failed session check offers retry before asking for credentials",
+          "passed": true
+        },
+        {
+          "title": "club video loops and the flag preview starts another demo round after one winner",
+          "passed": true
+        },
+        {
+          "title": "mobile entry only loads a clip when its card is in view",
+          "passed": true
+        }
+      ],
+      "walletRecovery": true,
+      "command": "ENTRY_TEST_URL=http://127.0.0.1:5292 node_modules/.bin/playwright test --config playwright.entry.config.ts",
+      "preparedHost": true,
+      "temporaryPostgreSQL": true,
+      "productionBackendSha256": "347b10a5191da839142cafb6459d14e607190a32af3a97107f73cd392de3807f",
+      "sameOperationOnRecovery": true,
+      "oneDebitCents": 10,
+      "catalogue": {
+        "before": {
+          "catalogue": [
+            "flag-battle",
+            "github-crash",
+            "original-cr-vs-leo",
+            "original-jackie-chan",
+            "royal-plinko",
+            "royal-roulette",
+            "studio-afterglow",
+            "studio-caramel-carnival",
+            "studio-caribbean-treasures",
+            "studio-cosmic-escape",
+            "studio-dracona",
+            "studio-flooded-temple",
+            "studio-forest-heart",
+            "studio-last-convoy",
+            "studio-meme-overload",
+            "studio-neopolis",
+            "studio-nitro-run",
+            "studio-velvet-reign",
+            "studio-wild-nudge"
+          ],
+          "connectedChat": true
+        },
+        "candidate": {
+          "catalogue": [
+            "flag-battle",
+            "github-crash",
+            "original-cr-vs-leo",
+            "original-jackie-chan",
+            "royal-plinko",
+            "royal-roulette",
+            "studio-afterglow",
+            "studio-caramel-carnival",
+            "studio-caribbean-treasures",
+            "studio-cosmic-escape",
+            "studio-dracona",
+            "studio-flooded-temple",
+            "studio-forest-heart",
+            "studio-last-convoy",
+            "studio-meme-overload",
+            "studio-neopolis",
+            "studio-nitro-run",
+            "studio-velvet-reign",
+            "studio-wild-nudge"
+          ],
+          "connectedChat": true
+        }
+      }
+    },
+    "publicBrowser": {
+      "health": true,
+      "client": {
+        "/assets/ActivitiesUI-BxI_l3my.js": "bebf26fcc5576ec915346ca06a654fc688dfa32ce9c2dccbdc5a09e2739b4269",
+        "/assets/club-DQiR3lTy.webp": "a68e575534d13ff9f8b2d0062893f8edb2a88b7a482968ec8e1b7fc18a355c04",
+        "/assets/club-QgMPgV6k.mp4": "9ef4c2bec40a0ad03397f149401f393eb67902c7c18ad373fa169628278eb0b1",
+        "/assets/ClubWorld-CoKSVD3y.js": "f5f991a9037a3470a49e1f0ee9741814cc1a812713563b9a0f877ec05faa9a6b",
+        "/assets/GameHostRuntime-BZhgBp2x.js": "14f3492d536bfd2ca576d0a5c31659f785864212419d077eee1347f0573b9854",
+        "/assets/index-cazWNH8S.js": "fda9cdc7de7f68845bf730df39ce93700eedafe0c45dee0046531863f5b5be00",
+        "/assets/index-CQNlQUnN.css": "baa75ca81b93aee04545119dc028ce0d57b2c5be7601e19a2bbe13e4a5790271",
+        "/assets/main-Dmxb_i90.js": "7a7957037e18b6da1b5862833a9c7079c9d2a4256817d350b949496ea057e481",
+        "/assets/main-qEPUV9tX.css": "5135445cfe872ec0a126d67cca92370a0e00417cdcfcf8e8ec17d66d4d5dec87",
+        "/assets/phaser-wTrQ8Dgh.js": "7e375b79482adc706d3e17c5cf2c5b84947767cced30f05709511ae105f90186",
+        "/assets/playerLevelStatus-CW_zry4j.js": "d77a26a691d05a65f1c513b617042cb0a274d207ffd668112e741eb0093fd73b",
+        "/assets/PvpUI-BRvWre5g.js": "637962d910eea150436bfbc16ff1de0b6202c33f4ab264dd597174515ee7a6b5",
+        "/": "c56ed3c8ce0e8253fe2795e7d0fc7beb1305c9f8e52c0af746dc8a0dc06e18ef"
+      },
+      "modulePointers": {
+        "/game-modules/flag-battle/active.json": "2dbf07d4069cbaa5a790d79e278a4698a70bae9c150998151f5a5632fbd12f33",
+        "/game-modules/github-crash/active.json": "deef44e1e5d1a3ae7610f3a846067fef3549216ebcab1a556dd08affb5a8858e",
+        "/game-modules/original-cr-vs-leo/active.json": "7c8c0df5a2d8d94c17a0d018fb0b7e30f8f854c7e4032ad3e4fd180e5116fcc3",
+        "/game-modules/original-jackie-chan/active.json": "ca36ab41e1f8b0dfffe070688dcdc0eec38c7135cafd710a918824019d450b95",
+        "/game-modules/royal-plinko/active.json": "726bab895825baeb53f0b3b3119ed7af7ae249eae2682d281c7fb62b59f42558",
+        "/game-modules/royal-roulette/active.json": "fb49365877d997d59454df7a5f28742b51f5afe9f751aaa86126661222f1a651",
+        "/game-modules/studio-afterglow/active.json": "48d928e8147918acdd69422c30c0bac1dc3d906ab3e0efdb967bb332d79a808f",
+        "/game-modules/studio-caramel-carnival/active.json": "af4d06609e324e50f45b5f4b5bef3003052f2f53a55cacbfbc37ec7eb402b302",
+        "/game-modules/studio-caribbean-treasures/active.json": "cc502ab15de4752e6d632062d29073adc4a3110dca076f7b17042fa130fa6d85",
+        "/game-modules/studio-cosmic-escape/active.json": "a6a0cf0b3fce5011d28c5961390e7db6a59d688c1098fb1e2d4b39aa293ef361",
+        "/game-modules/studio-dracona/active.json": "c10e0d66ac72313bb9e3c5b36e00c12093bbc891dab1eec462b070bb39baeca0",
+        "/game-modules/studio-flooded-temple/active.json": "272e43214f4c4f2911033118819ee970d0f2a43a38a8611f4862e311d0a49fe5",
+        "/game-modules/studio-forest-heart/active.json": "241693e84688d259e4116fada2384987ee53b8cce65e08efc5a066592bd29462",
+        "/game-modules/studio-last-convoy/active.json": "06971912b53da27586eaa051ab0d14f4a400f65fb0c9cce9b901d58df5ba7815",
+        "/game-modules/studio-meme-overload/active.json": "35e183b47cd02dde634043691b015f777aef38e670ce17ca054928b1209b99ba",
+        "/game-modules/studio-neopolis/active.json": "b4922363b9af39c9196de85fa02c06f59ca8a11fea928732a32864ea0714e358",
+        "/game-modules/studio-nitro-run/active.json": "3519df77a2ee770204fc70e4f929e852dcb8afb323a1c59aceb6d69da1b5e1e6",
+        "/game-modules/studio-velvet-reign/active.json": "4244f7830c393796d3276131412f37259ec6b697a3e3a5bd31e630b69b3da866",
+        "/game-modules/studio-wild-nudge/active.json": "45f58382424e564dc0aae819214ddd91ce8d9e0a7083c49e960947417d54ec2c"
+      },
+      "scenarios": [
+        {
+          "name": "desktop",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "winnerCount": 1,
+          "nextRoundCount": 12,
+          "clubSeconds": 15.833333,
+          "clubLoops": true,
+          "gameplayRequestsBeforeChoice": 0,
+          "signInAfterChoice": true,
+          "soloLinkAbsent": true,
+          "javascriptErrors": 0
+        },
+        {
+          "name": "mobile",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "winnerCount": 1,
+          "nextRoundCount": 12,
+          "clubSeconds": 15.833333,
+          "clubLoops": true,
+          "gameplayRequestsBeforeChoice": 0,
+          "signInAfterChoice": true,
+          "soloLinkAbsent": true,
+          "javascriptErrors": 0
+        }
+      ],
+      "productionAccountsOrRoundsCreated": false
+    },
+    "activeGames": [
+      "flag-battle",
+      "github-crash",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "royal-plinko",
+      "royal-roulette",
+      "studio-afterglow",
+      "studio-caramel-carnival",
+      "studio-caribbean-treasures",
+      "studio-cosmic-escape",
+      "studio-dracona",
+      "studio-flooded-temple",
+      "studio-forest-heart",
+      "studio-last-convoy",
+      "studio-meme-overload",
+      "studio-neopolis",
+      "studio-nitro-run",
+      "studio-velvet-reign",
+      "studio-wild-nudge"
+    ],
+    "addedGames": [],
+    "restoredGames": [],
+    "launchAndRoundAdmissionSourcePreserved": true
+  },
+  "maintenance": {
+    "status": "completed",
+    "healthOk": true,
+    "freeBefore": 11984744448,
+    "freeAfter": 11996045312,
+    "finishedAt": "2026-11-19T20:33:14.864Z",
+    "removedEntries": 26,
+    "removedImageTags": 3,
+    "timerEnabled": true,
+    "timerActive": true,
+    "deletionInventory": {
+      "entries": [
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/after.json",
+          "allocatedBytes": 4026368
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/build-result.json",
+          "allocatedBytes": 1187840
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/build.log",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/deploy.py",
+          "allocatedBytes": 8192
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/dist-delta",
+          "allocatedBytes": 3477504
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/engine-build.py",
+          "allocatedBytes": 8192
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/image_metadata.py",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/install-manifest.json",
+          "allocatedBytes": 4083712
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/overlay-base.py",
+          "allocatedBytes": 28672
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/production-guard.py",
+          "allocatedBytes": 16384
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/published.json",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/quiesce-base.cjs",
+          "allocatedBytes": 12288
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/quiesce.cjs",
+          "allocatedBytes": 8192
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/release-github.json",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/release-manifest.json",
+          "allocatedBytes": 1077248
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/runtime-context",
+          "allocatedBytes": 3493888
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/runtime-inventory.cjs",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/scope.json",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/server-delta",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/snapshot-base.py",
+          "allocatedBytes": 16384
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/snapshot.py",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-releases/entry-chooser-20261119-v1/source",
+          "allocatedBytes": 512000
+        },
+        {
+          "path": "/opt/royal-releases/last-convoy-auto-2k-20261119-v1",
+          "allocatedBytes": 16384
+        },
+        {
+          "path": "/opt/royal-releases/nitro-run-redesign-20261119-v1",
+          "allocatedBytes": 16384
+        },
+        {
+          "path": "/opt/royal-backups/entry-chooser-20261119-v1/index.html",
+          "allocatedBytes": 4096
+        },
+        {
+          "path": "/opt/royal-backups/entry-chooser-20261119-v1/source.tgz",
+          "allocatedBytes": 8192
+        }
+      ],
+      "plannedAllocatedBytes": 18034688
+    }
+  },
+  "transport": {
+    "bytes": 4399740,
+    "sha256": "22267eb6df37aac6a855d634a4d260aa783549129a9b5aca41fa5cc50d3a0f4b",
+    "serverArchiveRemoved": true
+  }
+}
