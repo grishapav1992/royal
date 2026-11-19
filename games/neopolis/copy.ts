@@ -2,7 +2,7 @@ const ru = {
   combination: 'Комбинация', linesPaid: 'Линий: {n}', payout: 'Выплата', roundPayout: 'Выплата за раунд',
   roundWin: 'Победа!', bigWin: 'Большая победа!', epicWin: 'Грандиозная победа!', netResult: 'Итог сверх ставки', showTotal: 'Показать итог',
   partialReturn: 'Часть ставки возвращена', evenReturn: 'Ставка возвращена', noPayout: 'Раунд без выплаты', roundNet: 'Итог раунда',
-  title: 'Стражи Неополиса', subtitle: 'ГОРОД ЖДЁТ СВОИХ ГЕРОЕВ', prototype: 'Прототип · Демомонеты',
+  title: 'Стражи Неополиса', subtitle: 'ГОРОД ЖДЁТ СВОИХ ГЕРОЕВ', prototype: 'Виртуальные монеты',
   team: 'Твоя команда', choose: 'Выбери первого героя', starter: 'Первый герой', locked: 'Сигнал связи', active: 'В команде',
   granite: 'Гранит', impulse: 'Импульс', prism: 'Призма',
   granitePower: 'Удар титана', impulsePower: 'Энергоколонна', prismPower: 'Сдвиг реальности',
@@ -15,9 +15,9 @@ const ru = {
   rulesLegacy: 'Этот сохранённый бонус начат по прежним правилам: только Нуль, 3 щита и 3 энергоузла. Активации героев снимают один сегмент за спин. После щита силы усилены. Победа даёт центральную WILD-колонну ×2 и +3 спина. Следующий новый бонус откроет кампанию из трёх боссов.',
   awaiting: 'Собери команду. Впереди Нуль, Веспера и Эон.', teamReady: 'Команда в сборе. Три символа Нуля откроют кампанию.',
   field: 'Поле: 5 барабанов и 4 ряда', lines: '40 ЛИНИЙ', cascade: 'КАСКАД', base: 'ОСНОВНАЯ ИГРА', bonus: 'БОСС-КАМПАНИЯ',
-  balance: 'Баланс', bet: 'Ставка', win: 'Выигрыш', coins: 'демомонет', spin: 'Вращать', freeSpin: 'Бесплатный спин', retry: 'Проверить ход',
-  waiting: 'Подтверждаем ход…', spinning: 'Стражи вступают в бой', settled: 'Результат сохранён', signin: 'Войди в аккаунт Royal для игры на демомонеты.',
-  otherPending: 'Сначала проверь незавершённый ход в другой игре.', lowBalance: 'Недостаточно демомонет.',
+  balance: 'Баланс', bet: 'Ставка', win: 'Выигрыш', coins: 'виртуальных монет', spin: 'Вращать', freeSpin: 'Бесплатный спин', retry: 'Проверить ход',
+  waiting: 'Подтверждаем ход…', spinning: 'Стражи вступают в бой', settled: 'Результат сохранён', signin: 'Войди в аккаунт Royal для игры на виртуальные монеты.',
+  otherPending: 'Сначала проверь незавершённый ход в другой игре.', lowBalance: 'Недостаточно виртуальных монет.',
   saved: 'Сохранённый бой восстановлен. Продолжение бесплатно.', remaining: 'Осталось вращений',
   total: 'Вся серия', credited: 'Начислено в общий кошелёк', held: 'Начисление после завершения бонуса',
   unlocked: 'Новый герой в команде', triggered: 'Нуль обнаружен. Начинается сражение!',
@@ -33,14 +33,14 @@ const ru = {
   rulesTeam: 'Выбери первого героя. Эмблемы поверх символов заполняют связь с двумя остальными: 3 эмблемы открывают героя. Эмблема доступного героя активирует его умение, максимум один раз за оплаченный спин со всеми каскадами. Третья эмблема нового героя тоже запускает умение. Прогресс сохраняется в аккаунте. Стартовый герой закреплён на весь цикл сбора команды. Ставку можно менять между платными вращениями, сохраняя команду. Таблица выплат зависит от прогресса команды перед платным вращением и сохраняется на всё его бесплатное продолжение.',
   rulesHeroes: 'Гранит разрушает обычные символы участка 2×2. Призма заменяет до 5 обычных символов. Импульс делает один из трёх центральных барабанов WILD, сохраняя символы Нуля. При нескольких готовых способностях они срабатывают по очереди: Гранит, Призма, Импульс. Каждое изменение поля проверяется на выигрыши.',
   rulesBoss: 'После сбора команды 3 символа Нуля открывают 10 бесплатных вращений. Спин с активацией героя снимает один сегмент щита, а после его разрушения один энергоузел, максимум одно повреждение за спин. У Нуля 3 щита и 3 узла, у Весперы 4 и 4, у Эона 5 и 5. Каждый сломанный щит усиливает способности со следующего спина: удар 3×3, до 8 замен, WILD-колонна ×2 для использующих её линий. Победа над каждым боссом создаёт центральную WILD-колонну ×2, каскады и +3 спина. Затем меняются арена и костюмы: Веспера добавляет ещё 12 спинов, Эон ещё 14. Остаток вращений переносится. Новый босс возвращает обычные силы до разрушения своего щита. Все три победы завершают кампанию; оставшиеся спины доигрываются бесплатно. Все выигрыши сохраняются и при неудаче.',
-  rulesMoney: 'Одна ставка оплачивает исходный спин и весь выпавший бонус. Бонус продолжается кнопкой без новых списаний. Выплата всей серии поступает в общий кошелёк в конце. Денежный результат округляется вниз до 0,01 демомонеты за спин. Предел серии 3000 ставок завершает раунд. После бонуса сбор команды начинается заново. Для новых раундов целевой RTP 96%. Это долгосрочный ориентир, а не обещание результата отдельной сессии. Сохранённые раунды завершаются по своей версии правил.',
+  rulesMoney: 'Одна ставка оплачивает исходный спин и весь выпавший бонус. Бонус продолжается кнопкой без новых списаний. Выплата всей серии поступает в общий кошелёк в конце. Денежный результат округляется вниз до 0,01 виртуальной монеты за спин. Предел серии 3000 ставок завершает раунд. После бонуса сбор команды начинается заново. Для новых раундов целевой RTP 96%. Это долгосрочный ориентир, а не обещание результата отдельной сессии. Сохранённые раунды завершаются по своей версии правил.',
   error: 'Ход не подтверждён. Проверь сохранённую операцию.',
 };
 const en: Record<keyof typeof ru, string> = {
   combination: 'Combination', linesPaid: 'Paylines: {n}', payout: 'Payout', roundPayout: 'Full round payout',
   roundWin: 'Victory!', bigWin: 'Big victory!', epicWin: 'Epic victory!', netResult: 'Net gain', showTotal: 'Show total',
   partialReturn: 'Part of the stake returned', evenReturn: 'Stake returned', noPayout: 'Round with no payout', roundNet: 'Round net result',
-  title: 'Guardians of Neopolis', subtitle: 'THE CITY NEEDS ITS HEROES', prototype: 'Prototype · Demo coins',
+  title: 'Guardians of Neopolis', subtitle: 'THE CITY NEEDS ITS HEROES', prototype: 'Virtual coins',
   team: 'Your team', choose: 'Choose your first hero', starter: 'First hero', locked: 'Link signal', active: 'On the team',
   granite: 'Granite', impulse: 'Impulse', prism: 'Prism',
   granitePower: 'Titan strike', impulsePower: 'Energy column', prismPower: 'Reality shift',
@@ -53,9 +53,9 @@ const en: Record<keyof typeof ru, string> = {
   rulesLegacy: 'This saved bonus uses the previous rules: Null only, with 3 shield segments and 3 energy nodes. Hero activations remove one segment per spin. Powers upgrade after the shield breaks. Victory gives a central ×2 WILD reel and +3 spins. Your next new bonus will use the three-boss campaign.',
   awaiting: 'Assemble your team to face Null, Vespera and Aeon.', teamReady: 'Team assembled. Three Null symbols trigger the campaign.',
   field: 'Grid: 5 reels and 4 rows', lines: '40 PAYLINES', cascade: 'CASCADE', base: 'BASE GAME', bonus: 'BOSS CAMPAIGN',
-  balance: 'Balance', bet: 'Stake', win: 'Win', coins: 'demo coins', spin: 'Spin', freeSpin: 'Free spin', retry: 'Check move',
-  waiting: 'Confirming your move…', spinning: 'The guardians enter the fight', settled: 'Result saved', signin: 'Sign in to Royal to play with demo coins.',
-  otherPending: 'Check the pending move in the other game first.', lowBalance: 'Not enough demo coins.',
+  balance: 'Balance', bet: 'Stake', win: 'Win', coins: 'virtual coins', spin: 'Spin', freeSpin: 'Free spin', retry: 'Check move',
+  waiting: 'Confirming your move…', spinning: 'The guardians enter the fight', settled: 'Result saved', signin: 'Sign in to Royal to play with virtual coins.',
+  otherPending: 'Check the pending move in the other game first.', lowBalance: 'Not enough virtual coins.',
   saved: 'Saved battle restored. Continue for free.', remaining: 'Spins remaining',
   total: 'Full round', credited: 'Credited to the shared wallet', held: 'Credited when the bonus ends',
   unlocked: 'A new hero joins the team', triggered: 'Null located. The battle begins!',
@@ -71,7 +71,7 @@ const en: Record<keyof typeof ru, string> = {
   rulesTeam: 'Choose your first hero. Emblems over regular symbols build links to the other two: 3 emblems unlock a hero. An available hero emblem activates their power, once per paid spin including all cascades. The third unlocking emblem also activates that hero. Progress is saved to your account. The first hero stays locked for the entire collection cycle. Change the stake between paid spins while keeping your team. The paytable depends on team progress before the paid spin and stays fixed throughout its free continuations.',
   rulesHeroes: 'Granite smashes regular symbols in a 2×2 area. Prism replaces up to 5 regular symbols. Impulse turns one of the three middle reels into WILDs, preserving Null symbols. Queued powers resolve in order: Granite, Prism, Impulse. Every changed grid is checked for wins.',
   rulesBoss: 'Three Null symbols after assembling the team trigger 10 free spins. A spin with a hero activation removes one shield segment, then one energy node after the shield breaks, at most one damage per spin. Null has 3 shield segments and 3 nodes, Vespera 4 and 4, Aeon 5 and 5. Breaking each shield upgrades powers from the next spin: a 3×3 strike, up to 8 replacements and a ×2 WILD reel for lines using it. Defeating each boss creates a central ×2 WILD reel, cascades and +3 spins. The next arena and costumes then unlock: Vespera adds another 12 spins, Aeon another 14. Unused spins carry over. Each new boss restores normal powers until its shield breaks. Defeating all three completes the campaign; remaining spins play for free. All wins are kept even if the campaign is unfinished.',
-  rulesMoney: 'One stake covers the initial spin and its entire bonus. Continue free spins with the button, without another debit. The full round is credited to the shared wallet at the end. Each spin payout is rounded down to 0.01 demo coin. A 3000× stake round cap ends play. Team collection resets after the bonus. New rounds target 96% RTP. This is a long-term target, not a promise for an individual session. Saved rounds finish under their original rules.',
+  rulesMoney: 'One stake covers the initial spin and its entire bonus. Continue free spins with the button, without another debit. The full round is credited to the shared wallet at the end. Each spin payout is rounded down to 0.01 virtual coin. A 3000× stake round cap ends play. Team collection resets after the bonus. New rounds target 96% RTP. This is a long-term target, not a promise for an individual session. Saved rounds finish under their original rules.',
   error: 'Move not confirmed. Check the saved operation.',
 };
 export const neopolisCopy = (language: string, nile = false): Record<keyof typeof ru, string> => {
@@ -80,5 +80,5 @@ export const neopolisCopy = (language: string, nile = false): Record<keyof typeo
   return { ...copy, prototype: language === 'en' ? 'Test USDT · Nile' : 'Тестовый USDT · Nile', coins: 'USDT',
     signin: language === 'en' ? 'Sign in to Royal to play with test USDT on Nile.' : 'Войди в Royal для игры на тестовые USDT в сети Nile.',
     lowBalance: language === 'en' ? 'Not enough test USDT.' : 'Недостаточно тестовых USDT.',
-    rulesMoney: copy.rulesMoney.replace(language === 'en' ? '0.01 demo coin' : '0,01 демомонеты', language === 'en' ? '0.01 USDT' : '0,01 USDT') };
+    rulesMoney: copy.rulesMoney.replace(language === 'en' ? '0.01 virtual coin' : '0,01 виртуальной монеты', language === 'en' ? '0.01 USDT' : '0,01 USDT') };
 };

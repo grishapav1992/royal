@@ -234,16 +234,16 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound, 
     $('.mini-bottom>span').textContent = translateText('Общий тестовый кошелёк клуба');
   } else if (isVariantGame(cabinet.id) || isExpansionGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / ТЕСТОВЫЙ КОШЕЛЁК');
-    $('.mini-bottom>span').textContent = translateText('Общий игровой баланс · Демо');
+    $('.mini-bottom>span').textContent = translateText('Общий тестовый кошелёк клуба');
   } else if (isSessionGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / СТАВКИ');
-    $('.mini-bottom>span').textContent = translateText('Общий игровой баланс · Демо');
+    $('.mini-bottom>span').textContent = translateText('Общий тестовый кошелёк клуба');
   } else if (cabinet.github && isGithubGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / УЧЕБНЫЕ ИГРЫ');
     $('.mini-bottom>span').textContent = translateText('Бесплатные игры с отдельными учебными фишками');
   } else if (cabinet.wallet) {
     $('.mini-top .eyebrow').textContent = translateText('РОЯЛЬ / ИГРОВОЙ БАЛАНС');
-    $('.mini-bottom>span').textContent = translateText('Общий игровой баланс · Демо');
+    $('.mini-bottom>span').textContent = translateText(cabinetHall(cabinet) === 'arcade' ? 'Общий тестовый кошелёк клуба' : 'Общий игровой баланс · Демо');
   } else if (cabinet.demo) {
     $('.mini-bottom>span').textContent = translateText('Звук и управление внутри игры');
   }

@@ -125,7 +125,7 @@ this.find('[data-cc-cost]').textContent=active?translateText('Продолжен
      updateSlotTransport(this.root,'cc',{blocked,active,live:!!this.live,dialog:!!this.dialog,entered:this.entered,fast:this.fast,autoRemaining:this.autoRemaining,bonusRunning:this.bonusRunning,paidBonus:false,pending:!!client.pending,busy:client.busy,loading:client.loading,hidden:document.hidden,ready:this.assets.ready});
    this.find('[data-cc-error]').textContent=this.error||client.error||this.wardrobe.error;this.find('[data-cc-feedback]').dataset.error=String(!!(this.error||client.error||this.wardrobe.error));
 this.find('[data-cc-status]').textContent=client.loading?translateText('Проверяем сохранённую фотосессию…'):this.live?'':canRecoverOperation(client)?translateText('Ход сохранён. Подтверди прежнюю операцию.'):this.autoRemaining?tr`Платных вращений осталось: ${this.autoRemaining}`:active?this.bonusRunning?translateText('Фотосессия продолжается бесплатно.'):translateText('Фотосессия на паузе. Нажми «Продолжить».'):'';
-  this.find('[data-cc-wallet-help]').hidden=!!client.accountId&&(active||this.balance()>=Number(this.stake)/100);this.find('[data-cc-wallet-note]').textContent=client.accountId?translateText('Недостаточно USDT · Демо для ставки.'):translateText('Для игры нужен общий баланс USDT.');this.find('[data-cc-login]').hidden=!!client.accountId;this.find('[data-cc-wallet]').hidden=!client.accountId;
+  this.find('[data-cc-wallet-help]').hidden=!!client.accountId&&(active||this.balance()>=Number(this.stake)/100);this.find('[data-cc-wallet-note]').textContent=client.accountId?translateText('Недостаточно USDT для ставки.'):translateText('Для игры нужен общий баланс USDT.');this.find('[data-cc-login]').hidden=!!client.accountId;this.find('[data-cc-wallet]').hidden=!client.accountId;
    this.soundControls?.update();this.voiceControls();
   const enter=this.root.querySelector<HTMLButtonElement>('[data-cc-action="enter"]');if(enter){enter.disabled=!this.assets.ready;enter.textContent=active?translateText('ПРОДОЛЖИТЬ ФОТОСЕССИЮ'):translateText('ВОЙТИ В СТУДИЮ');}
  }
@@ -161,7 +161,7 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
  private async play(){if(this.blocked()||!this.entered||this.dialog)return;this.bonusRunning=this.session()?.state==='active';await this.request('normal');}
  private async request(mode:'normal'){
   if(this.blocked()||!this.entered||this.dialog)return;const previous=this.session(),active=previous?.state==='active',cost=active?0:Number(this.stake)/100;
-  if(this.balance()<cost){this.error=translateText('Недостаточно USDT · Демо для выбранной ставки.');this.stopAuto();this.controls();return;}
+  if(this.balance()<cost){this.error=translateText('Недостаточно USDT для ставки.');this.stopAuto();this.controls();return;}
   const playedGirl=this.wardrobe.profile?.selectedGirl??AFTER_STARTER_GIRL,wasOpen=this.wardrobe.profile?.unlocked[playedGirl]??false,wasAvailable=afterAlbumUnlocked(this.wardrobe.profile?.albumUnits??0);
   this.feedback.cancel();this.feedback.focusBoard();void this.audio.enter();const live:Live={...this.playback.capture(client.accountId!),operationId:'',balance:this.balance(),motion:this.motion(),fast:this.fast,before:previous};this.live=live;this.error='';this.root.dataset.animationToken=live.token;this.find('[data-cc-groups]').replaceChildren();this.board.highlight([]);observeExpansionOutcome(this.root,AFTER_GAME,previous,client.accountId,true,true);
   if(!active&&this.autoRemaining)this.autoRemaining--;

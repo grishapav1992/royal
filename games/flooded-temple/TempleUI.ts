@@ -104,7 +104,7 @@ export class TempleUI {
   private get blocked(){return this.timeline.active||this.timeline.paused||this.sending||this.client.busy||this.client.loading||this.wallet.busy||!!this.wallet.pending||this.wallet.hasExternalBusy('expansion')||!!this.client.pending&&this.client.pending.gameId!==TEMPLE_GAME;}
   private get connected(){return !!this.owner&&this.wallet.accountId===this.owner&&!!this.wallet.wallet;}
   private money(units:string){return (Number(units)/100).toLocaleString(this.en?'en-US':'ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});}
-  private get asset(){return this.wallet.wallet?.asset==='USDT_NILE_TEST'?'USDT':this.text('демомонеты','demo coins');}
+  private get asset(){return this.wallet.wallet?.asset==='USDT_NILE_TEST'?'USDT':this.text('виртуальные монеты','virtual coins');}
   private sync(){
     if(this.disposed)return;
     if(this.owner!==this.client.accountId){this.stopAuto('account',false);this.operationEpoch++;this.sending=false;this.timeline.cancel();this.beat=undefined;this.frozenView=undefined;this.owner=this.client.accountId;this.marker='';this.selected=null;this.inspected=null;this.rope=false;this.tab='base';this.localError='';this.dialog.close();}

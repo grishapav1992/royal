@@ -50,7 +50,7 @@ export class RoyalPlatformCatalog {
   private search: HTMLInputElement;
   private genre: HTMLSelectElement;
   private updateBalance = () => {
-    const label = `USDT · ${t('Демо')}`;
+    const label = this.collection === 'royal' ? 'USDT' : `USDT · ${t('Демо')}`;
     this.host.querySelector('[data-platform-wallet]')!.textContent = demoWallet.wallet
       ? `${coins(demoWallet.wallet.balance)} ${label}`
       : label;
