@@ -63,6 +63,12 @@
 - Register the game in the shared stake runtime and `rtp-policy.json` stake policies, qualify every common denomination, paid mode, bonus continuation and player choice, and run `npm run check:rtp`. Follow `docs/game-stakes.md`. A new wagered module without common-stake qualification must fail application and independent module builds. An old source definition or historical compatibility exception does not authorize first publication or restoration with separate stake terms.
 - Verify the actual host with connected chat on desktop and mobile: a minimum normal start debits exactly ten cents, all selected lines are included, bonus costs are explicit, and retry, reconnect and close/reopen never create an extra debit. This policy does not add games or reopen inactive games.
 
+## Default autoplay mechanics
+
+- When a game offers autoplay, the Auto button opens a panel whose only setting is the number of paid spins. Use 10, 25, 50 and 100 as the default presets. Start the series only when the player presses Start.
+- Count one spin for each accepted paid round. Free spins and other bonus continuations are part of that round and leave the paid count unchanged. Preserve the remaining count during the bonus and resume the series after the bonus ends and the player confirms the result.
+- Keep a manual Stop control. Use the shared wallet and recover any accepted round under its original operation UUID and rules. Follow [the autoplay implementation and verification rules](docs/game-modules.md#autoplay).
+
 ## Game animation and sound
 
 - Before designing or changing game animation and audio, read `docs/game-feedback.md`. Use its event specification and verification guidance together with the game's existing design and module boundaries. Preserve choices already authorized by the user.

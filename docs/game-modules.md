@@ -40,6 +40,16 @@ Cosmic Escape, Caramel Carnival and Velvet Reign finish saved legacy rounds befo
 
 The seven native Studio games use server rules 2; generic Studio games, LAST EXIT and the other packages use their existing rules contract 1. GIRLHUB retains progress contract 3. The other packages use interface progress contract 1, including games with no separate cosmetic progress protocol. These metadata values describe compatibility with the host and do not migrate server data.
 
+## Autoplay
+
+For games with autoplay, open the Auto panel with a single paid spin count setting and a separate Start button. The default choices are 10, 25, 50 and 100. Opening the panel, changing the selection and dismissing the panel leave the wallet untouched.
+
+Use the selected count as the budget for paid round starts. Each accepted paid round consumes one spin. Complete all free spins and other bonus continuations within that round using the original stake and rules. Preserve the remaining paid count while the player makes any required bonus choices. Resume an active series after the bonus settles and the player confirms its result. Dismissing the result ends the paid series.
+
+Keep a manual Stop control during the series. Stop on window hiding, game close, account change, insufficient balance or an operation error. Recover a pending or accepted round using the original operation UUID and rules. Recovery and reopening leave further paid spins to the player's next explicit start.
+
+Verify desktop and mobile in the actual host with connected chat. Check that the panel starts no wager before confirmation, the entire series accepts the selected number of paid rounds, and free continuations neither debit the wallet nor consume the paid count. Also verify manual Stop, response loss and reopening with a saved round.
+
 ## Context and lifecycle
 
 All cabinet routes use `IndependentGameUI`. A module receives an optional context for score updates, title changes or provider room callbacks. Arcade modules return start, restart, pause, resume and diagnostics commands while sharing the host's Phaser implementation. Closing destroys their own game instance.
