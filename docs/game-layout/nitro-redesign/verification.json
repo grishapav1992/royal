@@ -1,10 +1,10 @@
 {
-  "checkedAt": "2026-11-19T17:04:51.681Z",
-  "sourceCommit": "399bd8401e07f23d4ebdc28dd827c34575c4f3e4",
-  "moduleVersion": "1.2.2-5510fce81ce1",
-  "moduleSourceSha256": "5510fce81ce1f8cbed3ae962330f8e5a95af8b9f1615999198b8ad77c268f1b7",
+  "checkedAt": "2026-11-19T17:50:09.783Z",
+  "sourceCommit": "5a0b5634a42ad16104897e662eebc89867afd50a",
+  "moduleVersion": "1.2.2-2551448802c8",
+  "moduleSourceSha256": "2551448802c8d065274495ddf75c0224fc4da88e85cc9b508299f85684a545fb",
   "verifiedSourceFiles": 42,
-  "moduleBytes": 2624239,
+  "moduleBytes": 2627079,
   "typecheck": "passed",
   "moduleBuildWithRtpGate": "passed",
   "chromiumConnectedHost": {
@@ -12,7 +12,7 @@
     "failed": 0,
     "flaky": 0,
     "skipped": 0,
-    "durationMs": 106591.953,
+    "durationMs": 150422.321,
     "sizes": [
       [
         1440,
@@ -47,7 +47,9 @@
         320
       ]
     ],
-    "mobileChatOverlay": "passed"
+    "mobileChatOverlay": "passed",
+    "host": "Exact production client and backend bytes with disposable PostgreSQL",
+    "loopbackProductionPaths": true
   },
   "sharedWalletCrossModuleRecovery": "passed",
   "autoplay": {
@@ -88,9 +90,8 @@
     "frameWidthGrowthPercent": 20.95079884692432
   },
   "mathAndServerRulesChanged": false,
-  "productionPublished": false,
+  "productionPublished": true,
   "physicalDevicesAndListeningTested": false,
-  "developmentStandWarnings": [
-    "Existing Vite public-asset import warning for cat/walk-v3-frames.json; outside the Nitro Run change."
-  ]
+  "verifiedProjectedInputs": 44,
+  "englishPanelWithInstalledHostDictionary": "passed"
 }
