@@ -1,7 +1,7 @@
 import {canRecoverOperation} from './operationFeedback';
 import {confirmedPayout} from '../shared/roundPrecision';
 import {GAME_STAKE_UNITS, gameStakeMaximum} from '../shared/gameStakes';
-import { t as translateText, tr, locale } from '../i18n/index';
+import { t as translateText, tr, locale, language } from '../i18n/index';
 import {SlotSettings} from './slotKit/SlotSettings';
 import {SlotDialog, slotOwnsKeyboard} from './slotKit/SlotDialog';
 import {SlotStakeControls, SlotAudioControls, slotStakeStep} from './slotKit/SlotControls';
@@ -48,15 +48,13 @@ const ICON={
   star:svg('<path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.4 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/>').replace('<svg','<svg class="cx-star-icon"'),
 };
 const units=(value:string|number)=>Number(value)||0;
-/** Exact cents from a typed limit. Empty means no limit; anything else malformed is rejected. */
-function limitUnits(raw:string){const text=raw.trim().replace(/\s/g,'').replace(',','.');if(!text)return null;if(!/^\d{1,7}(\.\d{1,2})?$/.test(text))return undefined;const [whole,fraction='']=text.split('.');return Number(whole)*100+Number((fraction+'00').slice(0,2));}
 /** A dedicated cosmic cabinet. Every stage displays a confirmed server result. */
 export class CosmicEscapeUI {
   private settings?:SlotSettings;
   private readonly racer: CosmicEscapeRacer;
   private assets:CosmicEscapeAssets;private root:HTMLElement;private dialogShell!:SlotDialog;private stakeControls!:SlotStakeControls;private soundControls!:SlotAudioControls;private info:LuelonSlotInfo;private theme:LuelonTheme;private audio:CosmicEscapeAudio;private board:CosmicEscapeBoard;private owner=client.accountId;private stake=COSMIC_ESCAPE_DEFAULT_STAKE;private mode='normal';private entered=false;private speed:Speed='normal';private manualReduced=false;private destroyed=false;private playback=new SlotPlayback({account:()=>client.accountId,hidden:()=>document.hidden});private sessions=new SlotSessions(cosmicSlot);private live?:Live;private shown='';private portals=0;private error='';private dialog:Dialog='intro';private autoRemaining=0;private bonusRunning=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');private unsubscribe:()=>void;private layout:ResizeObserver;
-  private tools!:HTMLElement;private toolsHome?:Comment;private autoNotice='';
-  private autoCount:number=25;private autoLoss:number|null=null;private autoWin:number|null=null;private autoStopBonus=true;private autoStartUnits=0;private autoOpen=false;
+  private tools!:HTMLElement;private toolsHome?:Comment;
+  private autoCount=25;private autoOpen=false;
   private change=()=>this.sync();private visibility=()=>{if(document.hidden){this.cancel();this.audio.pause();}this.sync();};private motionChange=()=>{this.cancel();this.root.dataset.reducedMotion=String(this.motionReduced());this.sync();};
   private keyboard=(event:KeyboardEvent)=>{
     if(this.autoOpen&&event.key==='Escape'){event.preventDefault();this.closeAuto(true);return;}
@@ -131,7 +129,7 @@ export class CosmicEscapeUI {
   private symbol(id:number){return cosmicSymbol(id,this.assets.ready);}
   private speedLabel(speed:Speed){return speed==='fast'?translateText('Быстро'):translateText('Обычно');}
   private bind(){
-    this.dialogShell=new SlotDialog(this.find('[data-lg-dialog]'),this.find('[data-lg-dialog-backdrop]'),'data-lg-dialog-action',action=>void this.dialogAction(action),()=>this.closeDialog());
+    this.dialogShell=new SlotDialog(this.find('[data-lg-dialog]'),this.find('[data-lg-dialog-backdrop]'),'data-lg-dialog-action',action=>void this.dialogAction(action),()=>{if(this.dialog==='complete')this.stopAuto();this.closeDialog();});
     this.stakeControls=new SlotStakeControls({
       values:COSMIC_ESCAPE_BET_UNITS,maximumCents:maximumStakeCents,select:this.find<HTMLSelectElement>('[data-lg-stake]'),
       steps:Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-cosmic-stake]')),
@@ -171,7 +169,6 @@ export class CosmicEscapeUI {
       if(target.closest('[data-cx-auto-start]'))this.startAuto();
     };
     panel.onkeydown=event=>{if(event.key!=='Tab')return;const items=Array.from(panel.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled)'));const first=items[0],last=items.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}};
-    this.find<HTMLInputElement>('[data-cx-auto-bonus]').onchange=event=>{this.autoStopBonus=(event.target as HTMLInputElement).checked;};
     this.find<HTMLButtonElement>('[data-lg-retry]').onclick=()=>void this.retry();
     this.find<HTMLButtonElement>('[data-lg-refresh]').onclick=()=>void this.refresh();
     this.find('[data-lg-dialog]').onchange=event=>{const target=event.target as HTMLInputElement;if(!target.matches('[data-lg-reduce]'))return;this.manualReduced=target.checked;try{localStorage.setItem('royal-luelon-reduced',this.manualReduced?'1':'0');}catch{}this.motionChange();};
@@ -214,9 +211,6 @@ export class CosmicEscapeUI {
 <div class="cx-auto-panel" id="cx-auto-panel" data-cx-auto-panel role="dialog" aria-labelledby="cx-auto-title" hidden>
 <header><h2 id="cx-auto-title">Автоигра</h2><button type="button" class="cx-icon" data-cx-auto-close aria-label="Закрыть автоигру">${ICON.close}</button></header>
 <fieldset><legend>Количество вращений</legend><div class="cx-chips">${counts}</div></fieldset>
-<div class="cx-limits"><label><span class="cx-long">Остановить, если баланс уменьшится на</span><span class="cx-short">Стоп при потере</span><span class="cx-field"><input data-cx-auto-loss inputmode="decimal" autocomplete="off" value="${coins(500)}" placeholder="Без лимита"><i aria-hidden="true">USDT</i></span></label><label><span class="cx-long">Остановить при выигрыше от</span><span class="cx-short">Стоп при выигрыше</span><span class="cx-field"><input data-cx-auto-win inputmode="decimal" autocomplete="off" value="${coins(1000)}" placeholder="Без лимита"><i aria-hidden="true">USDT</i></span></label></div>
-<label class="cx-check"><input type="checkbox" data-cx-auto-bonus checked>Остановить при запуске бонуса</label>
-<p class="cx-auto-error" data-cx-auto-error role="alert"></p>
 <button type="button" class="cx-primary" data-cx-auto-start></button>
 </div>
 <div class="cx-settings-host" data-cx-settings-host></div>
@@ -230,7 +224,7 @@ export class CosmicEscapeUI {
     if(this.owner!==client.accountId){
       this.cancel();this.audio.pause();this.owner=client.accountId;delete this.root.dataset.sessionId;delete this.root.dataset.revision;this.shown='';this.stake=COSMIC_ESCAPE_DEFAULT_STAKE;this.mode='normal';this.entered=false;this.error='';this.setTotal(0);
       this.find('[data-lg-factor]').textContent='×1';this.find('[data-cosmic-lastwin]').textContent='0,00';this.find('[data-cosmic-energy-fill]').style.width='2%';
-      this.root.dataset.bonus='false';this.root.dataset.multiplier='1';this.paintPortals([]);this.autoNotice='';this.setTotal(0);
+      this.root.dataset.bonus='false';this.root.dataset.multiplier='1';this.paintPortals([]);this.setTotal(0);
       const ordinary=this.info.symbols.filter(symbol=>symbol.role==='ordinary');this.board.show(Array.from({length:this.info.cols*this.info.rows},(_,i)=>ordinary[i%ordinary.length].id),this.info.rows);
       this.openDialog('intro');
     }
@@ -300,7 +294,7 @@ export class CosmicEscapeUI {
     this.find<HTMLButtonElement>('[data-cosmic-missions]').disabled=blocked||active||this.autoRemaining>0||!!this.dialog||!this.entered;
     this.transport(blocked,active,!!mode.bonus,free);
     this.find('[data-lg-error]').textContent=this.error||client.error;this.find('[data-cosmic-feedback]').dataset.error=String(!!(this.error||client.error));
-    this.find('[data-lg-status]').textContent=client.loading?translateText('Проверяем сохранённый раунд…'):this.live?'':canRecoverOperation(client)?translateText('Ход сохранён. Проверь прежнюю операцию.'):this.autoNotice;
+    this.find('[data-lg-status]').textContent=client.loading?translateText('Проверяем сохранённый раунд…'):this.live?'':canRecoverOperation(client)?translateText('Ход сохранён. Проверь прежнюю операцию.'):'';
     this.root.dataset.autoRemaining=String(this.autoRemaining);this.root.dataset.remaining=String(session?.view.luelon.bonus?.remaining??0);
     this.root.setAttribute('aria-busy',String(this.assets.state.status==='loading'||!!this.live||client.busy));
     const buy=this.root.querySelector<HTMLButtonElement>('[data-lg-dialog-action="buy"]');if(buy)buy.disabled=blocked||active||this.balance()<Number(this.stake)*mode.cost/100;
@@ -346,7 +340,7 @@ export class CosmicEscapeUI {
   }
   private openAuto(){
     const auto=this.find<HTMLButtonElement>('[data-lg-auto]');if(auto.disabled||this.blocked()||!this.entered||this.dialog)return;
-    this.autoOpen=true;this.find('[data-cx-auto-panel]').hidden=false;this.find('[data-cx-auto-error]').textContent='';
+    this.autoOpen=true;this.find('[data-cx-auto-panel]').hidden=false;
     this.controls();this.root.querySelector<HTMLButtonElement>(`[data-cx-auto-count="${this.autoCount}"]`)?.focus();
   }
   private closeAuto(focus:boolean){
@@ -355,20 +349,9 @@ export class CosmicEscapeUI {
     this.find('[data-lg-auto]').setAttribute('aria-expanded','false');if(focus)this.find<HTMLButtonElement>('[data-lg-auto]').focus();
   }
   private startAuto(){
-    const loss=limitUnits(this.find<HTMLInputElement>('[data-cx-auto-loss]').value),win=limitUnits(this.find<HTMLInputElement>('[data-cx-auto-win]').value);
-    if(loss===undefined||win===undefined||loss===0||win===0){this.find('[data-cx-auto-error]').textContent=translateText('Укажи сумму больше нуля, например 5,00, или оставь поле пустым.');return;}
-    if(this.blocked()||!this.entered||this.dialog)return;
-    this.autoLoss=loss;this.autoWin=win;this.autoStopBonus=this.find<HTMLInputElement>('[data-cx-auto-bonus]').checked;
-    this.autoStartUnits=Math.round(this.balance()*100);this.autoRemaining=this.autoCount;this.bonusRunning=true;
+    if(!this.autoOpen||this.blocked()||!this.entered||this.dialog||this.session()?.state==='active')return;
+    this.autoRemaining=this.autoCount;
     this.closeAuto(false);this.find<HTMLButtonElement>('[data-lg-spin]').focus();void this.request();this.controls();
-  }
-  /** Player limits are checked between whole rounds only; an accepted round always finishes. */
-  private autoContinues(session:Session){
-    if(this.autoRemaining<=0)return false;
-    const spent=this.autoStartUnits-Math.round(this.balance()*100);
-    if(this.autoLoss!==null&&spent>=this.autoLoss){this.stopAuto();this.autoNotice=translateText('Автоигра остановлена: достигнут лимит потери');return false;}
-    if(this.autoWin!==null&&session.state==='settled'&&units(session.returnedUnits)>=this.autoWin){this.stopAuto();this.autoNotice=translateText('Автоигра остановлена: выигрыш достиг лимита');return false;}
-    return true;
   }
   private async play(){if(this.blocked()||!this.entered||this.dialog)return;const active=this.session()?.state==='active';if(!active)this.mode='normal';if(!active&&this.selectedMode().bonus){this.stopAuto();this.openDialog('buy');return;}this.bonusRunning=!!active;await this.request();}
   private async request(pick?:number){
@@ -377,7 +360,7 @@ export class CosmicEscapeUI {
     if(this.balance()<cost){this.error=translateText('Недостаточно USDT (Nile) для выбранной ставки.');this.stopAuto();this.controls();return;}
     void this.audio.enter();
     const live:Live={...this.playback.capture(client.accountId!),operationId:'',balance:this.balance(),motion:!this.motionReduced(),fast:this.speed==='fast',before:previous};
-    this.live=live;this.error='';this.autoNotice='';this.root.dataset.phase=active?'preparing':'spinning';this.root.dataset.animationToken=live.token;
+    this.live=live;this.error='';this.root.dataset.phase=active?'preparing':'spinning';this.root.dataset.animationToken=live.token;
     observeExpansionOutcome(this.root,this.game,previous,client.accountId,true,true);
     if(!active&&this.autoRemaining)this.autoRemaining--;
     if(pick===undefined&&!active&&!mode.bonus){this.board.begin(live.token,live.motion,live.fast,undefined,undefined);void this.audio.begin(live.token);}
@@ -395,9 +378,9 @@ export class CosmicEscapeUI {
       const startsMission = view.phase==='bonus' && (!view.spin || view.spin.kind==='base' && !!view.spin.triggerAwards);
       this.racer.show(startsMission ? 'bonus' : session.state==='settled' ? cosmicRacerOutcome(session.spentUnits, session.returnedUnits) : 'idle');
       if(view.phase==='choice'){this.bonusRunning=false;return;}
-      if(startsMission){if(view.spin?.kind==='base'&&this.autoStopBonus)this.autoRemaining=0;this.bonusRunning=false;this.openDialog('bonus');return;}
+      if(startsMission){this.bonusRunning=false;this.openDialog('bonus');return;}
       if(view.phase==='complete'&&view.history.some(spin=>spin.kind!=='base')){this.bonusRunning=false;this.openDialog('complete');return;}
-      if(session.state==='active'&&this.bonusRunning||session.state==='settled'&&this.autoContinues(session))this.scheduleNext();
+      if(session.state==='active'&&this.bonusRunning||session.state==='settled'&&this.autoRemaining>0)this.scheduleNext();
       else this.controls();
     }catch(error){if(this.valid(live)){this.error=(error as Error).message;this.stopAuto();this.live=undefined;this.racer.show('idle');this.board.cancel();this.audio.stopSpin();this.shown='';this.sync();}}
     finally{if(this.live===live&&!this.valid(live)){this.live=undefined;this.racer.show('idle');this.audio.stopSpin();}}
@@ -476,7 +459,7 @@ export class CosmicEscapeUI {
     if(kind==='bonus')element.innerHTML=tr`<span class="lg-eyebrow">ПОРТАЛ ОТКРЫТ</span><h2 id="lg-dialog-title">${escape(this.info.modes.find(item=>item.id===view?.bonus?.id)?.name??translateText('Звёздная миссия'))}</h2><div class="ce-bonus-orbit">${this.symbol(8)}<strong>${view?.bonus?.remaining??0}</strong></div><p>Бесплатных вращений</p><p>Энергия начинается с ×${view?.bonus?.features.multiplier??1} и может увеличиться перед вращением до ×50.</p><button type="button" class="lg-primary ce-primary" data-lg-dialog-action="bonus">ВПЕРЁД В МИССИЮ</button><small class="ce-dialog-note">Ставка уже принята. Продолжение бесплатно.</small>`;
     if(kind==='complete'&&session&&view)element.innerHTML=renderSlotResult({style:'lg',eyebrow:translateText('ВОЗВРАЩЕНИЕ ДОМОЙ'),title:translateText('МИССИЯ ЗАВЕРШЕНА'),returned:session.returnedUnits,ledger:this.ledger(session),note:translateText('Выигрыш уже зачислен в кошелёк.'),label:translateText('ПРОДОЛЖИТЬ')});
     if(kind==='history')element.innerHTML=renderSlotHistory({style:'lg',eyebrow:translateText('БОРТОВОЙ ЖУРНАЛ'),title:translateText('ИСТОРИЯ МИССИИ'),ledger:session&&view?this.ledger(session):undefined,status:session?.state==='active'?translateText('Серия сохранена. Выплата поступит после завершения.'):translateText('Раунд завершён. Выплата зачислена один раз.'),empty:translateText('Здесь появится история твоего раунда.'),rows:view?.history.map(spin=>({title:`${spin.kind==='base'?translateText('Основное вращение'):translateText('Бесплатное вращение')} ${slotSpinNumber(spin,view!.history)}`,detail:`${spin.kind==='base'?tr`Стоимость ${coins(session!.spentUnits)}`:translateText('Стоимость 0,00')} · ${spin.frames.length>1?translateText('ЭХО · '):''}×${spin.featuresAfter.multiplier}`,payoutUnits:spin.payoutUnits}))??[]});
-    if(kind==='info')element.innerHTML=renderSlotInfo({style:'lg',eyebrow:translateText('КАРТА КОСМИЧЕСКОГО ПОБЕГА'),title:translateText('ПРАВИЛА И ВЫПЛАТЫ'),reduced:this.manualReduced,bodyHtml:tr`<p>Пять барабанов, три ряда, 20 фиксированных линий. Все линии всегда активны. На каждой оплачивается только наибольшая выплата за совпадение из трёх и более символов слева. Значения таблицы умножаются на общую ставку.</p><p>WILD заменяет обычные символы. Портал не участвует в линиях: 3, 4 и 5 порталов в основной игре открывают 10, 12 и 15 бесплатных вращений.</p><p>В миссии энергия усиливает все выигрышные линии. Перед бесплатным вращением она может увеличиться и сохраняется между вращениями до ×50. Луч материнского корабля создаёт целый WILD-барабан. Второй отголосок даёт второе поле с текущим множителем без новой ставки.</p>${renderSlotPaytable('lg',this.info.symbols.map(symbol=>({symbolHtml:this.symbol(symbol.id),name:cosmicSymbolName(symbol.id),values:[Object.entries(symbol.pays).map(([count,pay])=>`${count}: ${(pay/100).toLocaleString(locale)}×`).join(' · ')||(symbol.role==='scatter'?'3 / 4 / 5: 10 / 12 / 15 FS':translateText('Заменяет обычные символы'))]})))}<details open><summary>20 фиксированных линий</summary>${renderSlotPaylines(this.info.paylines,3)}</details><p>Миссии: Звёздный хаос (40 ставок, 10 вращений, ×1), Вторжение (75 ставок, 12 вращений, ×1, до двух лучей), Дальнее эхо (135 ставок, 15 вращений, ×3, эхо встречается чаще).</p><p>Максимум за раунд: ${this.info.maxWin.toLocaleString(locale)} базовых ставок. Выплаты округляются вниз до 0,01 USDT. Ставка списывается один раз, весь выигрыш серии зачисляется один раз по окончании.</p><p>Авто выполняет конечное число платных вращений: 10, 25, 50 или 100. Можно задать остановку при потере суммы с начала автоигры и при выигрыше раунда от заданной суммы; лимиты проверяются между раундами, начатый раунд всегда завершается. По умолчанию авто останавливается при входе в естественную миссию. Скрытие окна, выход, смена аккаунта или ошибка останавливают авто. Миссия сохраняется на сервере и продолжается без повторной ставки.</p><p>Скорость «Быстро» сокращает анимацию. Результат и выплата от скорости не зависят.</p><p>Расчётный возврат новых ставок: около 96% на длинной дистанции. Отдельный раунд может завершиться без выплаты.</p><p class="lg-math-note">Собственная версия Royal: свои изображения, звуки и частоты событий. Вероятности исходной игры не опубликованы.</p>`});
+    if(kind==='info')element.innerHTML=renderSlotInfo({style:'lg',eyebrow:translateText('КАРТА КОСМИЧЕСКОГО ПОБЕГА'),title:translateText('ПРАВИЛА И ВЫПЛАТЫ'),reduced:this.manualReduced,bodyHtml:tr`<p>Пять барабанов, три ряда, 20 фиксированных линий. Все линии всегда активны. На каждой оплачивается только наибольшая выплата за совпадение из трёх и более символов слева. Значения таблицы умножаются на общую ставку.</p><p>WILD заменяет обычные символы. Портал не участвует в линиях: 3, 4 и 5 порталов в основной игре открывают 10, 12 и 15 бесплатных вращений.</p><p>В миссии энергия усиливает все выигрышные линии. Перед бесплатным вращением она может увеличиться и сохраняется между вращениями до ×50. Луч материнского корабля создаёт целый WILD-барабан. Второй отголосок даёт второе поле с текущим множителем без новой ставки.</p>${renderSlotPaytable('lg',this.info.symbols.map(symbol=>({symbolHtml:this.symbol(symbol.id),name:cosmicSymbolName(symbol.id),values:[Object.entries(symbol.pays).map(([count,pay])=>`${count}: ${(pay/100).toLocaleString(locale)}×`).join(' · ')||(symbol.role==='scatter'?'3 / 4 / 5: 10 / 12 / 15 FS':translateText('Заменяет обычные символы'))]})))}<details open><summary>20 фиксированных линий</summary>${renderSlotPaylines(this.info.paylines,3)}</details><p>Миссии: Звёздный хаос (40 ставок, 10 вращений, ×1), Вторжение (75 ставок, 12 вращений, ×1, до двух лучей), Дальнее эхо (135 ставок, 15 вращений, ×3, эхо встречается чаще).</p><p>Максимум за раунд: ${this.info.maxWin.toLocaleString(locale)} базовых ставок. Выплаты округляются вниз до 0,01 USDT. Ставка списывается один раз, весь выигрыш серии зачисляется один раз по окончании.</p><p>${language==='en'?'Choose 10, 25, 50 or 100 paid spins. After the mission, confirm the result to resume the series. Hiding the window, leaving the game, switching accounts or an error stops autoplay. A saved mission can be resumed for free.':'Выбери 10, 25, 50 или 100 платных вращений. После миссии подтверди результат, чтобы продолжить серию. Скрытие окна, выход, смена аккаунта или ошибка останавливают авто. Сохранённую миссию можно продолжить бесплатно.'}</p><p>Скорость «Быстро» сокращает анимацию. Результат и выплата от скорости не зависят.</p><p>Расчётный возврат новых ставок: около 96% на длинной дистанции. Отдельный раунд может завершиться без выплаты.</p><p class="lg-math-note">Собственная версия Royal: свои изображения, звуки и частоты событий. Вероятности исходной игры не опубликованы.</p>`});
     this.controls();this.dialogShell.focus(kind==='info');
   }
   private ledger(session:Session){return renderSlotLedger('lg',session.spentUnits,session.state==='active'?session.view.luelon.totalPayoutUnits:session.returnedUnits,session.state==='active');}
@@ -489,7 +472,7 @@ export class CosmicEscapeUI {
     if(action==='close'){this.closeDialog();return;}
     if(action==='buy'){if(this.blocked())return;const selected=this.mode;this.closeDialog();this.mode=selected;this.bonusRunning=false;await this.request();return;}
     if(action==='bonus'){this.closeDialog();this.bonusRunning=true;await this.request();return;}
-    if(action==='complete'){this.closeDialog();const session=this.session();if(session&&this.autoContinues(session))this.scheduleNext();this.controls();}
+    if(action==='complete'){this.closeDialog();if(this.autoRemaining>0)this.scheduleNext();}
   }
   getAudioState(){return this.audio.state();}
   destroy(){if(this.destroyed)return;this.destroyed=true;this.unmountHeaderTools();document.removeEventListener('pointerdown',this.outside,true);this.layout.disconnect();this.assets.destroy();this.cancel();this.racer.destroy();this.audio.destroy();this.board.destroy();this.unsubscribe();this.settings?.destroy();this.dialogShell.destroy();this.stakeControls.destroy();this.soundControls.destroy();this.playback.destroy();this.host.replaceChildren();}

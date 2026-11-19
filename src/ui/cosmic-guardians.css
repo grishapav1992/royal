@@ -314,22 +314,11 @@
 .cx-auto-panel > header { display: flex; align-items: center; justify-content: space-between; }
 .cx-auto-panel h2 { font-size: 18px; font-weight: 800; }
 .cx-auto-panel fieldset { margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px; }
-.cx-auto-panel legend, .cx-limits label { font-size: 14px; font-weight: 700; color: var(--ce-ink-2); }
+.cx-auto-panel legend { font-size: 14px; font-weight: 700; color: var(--ce-ink-2); }
 .cx-auto-panel legend { padding: 0; margin-bottom: 8px; }
 .cx-chips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .cx-game .cx-chips button { min-height: 44px; border: 1px solid #5A4B70; border-radius: 12px; background: transparent; color: var(--ce-ink); font-size: 16px; font-weight: 800; }
 .cx-game .cx-chips button[aria-pressed="true"] { border-color: var(--ce-amber); background: rgba(240,169,71,.16); color: var(--ce-win); }
-.cx-limits { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; gap: 12px; }
-.cx-limits label { display: flex; flex-direction: column; gap: 6px; }
-.cx-limits input {
-  height: 44px; box-sizing: border-box; min-width: 0; padding: 0 12px; border: 1px solid #5A4B70; border-radius: 12px;
-  background: var(--ce-bg); color: var(--ce-ink); font: 700 16px/1 var(--cx-font);
-}
-.cx-limits input::placeholder { color: #9F93AD; font-weight: 600; }
-.cx-check { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 14px; font-weight: 600; }
-.cx-check input { width: 20px; height: 20px; margin: 0; accent-color: var(--ce-amber); }
-.cx-auto-error { font-size: 14px; color: #FFB3A1; }
-.cx-auto-error:empty { display: none; }
 .cx-game .cx-primary { min-height: 52px; border: 0; border-radius: 14px; background: var(--ce-amber); color: #2A1606; font-size: 16px; font-weight: 800; }
 .cx-game .cx-primary:hover:not(:disabled) { background: #F2BD63; }
 
@@ -452,7 +441,6 @@
   box-shadow: 0 0 0 100vmax rgba(6,4,10,.62);
 }
 .cx-game[data-slot-priority="portrait"] .cx-auto-panel::before { content: ''; align-self: center; width: 40px; height: 4px; border-radius: 2px; background: #5A4B70; }
-.cx-game[data-slot-priority="portrait"] .cx-limits { grid-template-columns: minmax(0, 1fr); }
 .cx-game[data-slot-priority="portrait"] .cx-wallet-help { bottom: calc(var(--cx-bar-height) + 8px); }
 /* Short portrait windows give the field and controls priority over the decorative title. */
 @container cx-scene (max-height: 470px) {
@@ -656,16 +644,6 @@
 .cx-game .cx-energy > div { min-width: 0; }
 .cx-game .cx-energy small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Autoplay limits: short labels in the popover, long labels with USDT in phone sheets. */
-.cx-field { position: relative; display: flex; }
-.cx-field input { flex: 1 1 auto; width: 100%; }
-.cx-field > i { display: none; }
-.cx-game[data-slot-priority="portrait"] .cx-limits .cx-long { display: inline; }
-.cx-game[data-slot-priority="portrait"] .cx-limits .cx-short { display: none; }
-.cx-game:not([data-slot-priority="portrait"]) .cx-limits .cx-long { display: none; }
-.cx-game:not([data-slot-priority="portrait"]) .cx-limits .cx-short { display: inline; }
-.cx-game[data-slot-priority="portrait"] .cx-field > i { display: block; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-style: normal; font-weight: 700; color: var(--ce-ink-2); pointer-events: none; }
-.cx-game[data-slot-priority="portrait"] .cx-field input { padding-right: 64px; height: 48px; }
 .cx-game[data-slot-priority="portrait"] .cx-auto-panel h2 { font-size: 18px; }
 .cx-game[data-slot-priority="portrait"] .cx-chips button { min-height: 48px; }
 .cx-game[data-slot-priority="portrait"] .cx-primary { min-height: 56px; }
