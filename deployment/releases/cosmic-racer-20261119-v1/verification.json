@@ -1,0 +1,147 @@
+{
+  "release": "cosmic-racer-20261119-v1",
+  "sourceCommit": "648d13a6561ad1b254e5477d167df170b900a26d",
+  "installerCommit": "eb6f0576b7a6bdbb1e47a9d8148ffd63caa3bdd2",
+  "githubMainAtVerification": "5a0b5634a42ad16104897e662eebc89867afd50a",
+  "hostSourceCommit": "937263b70c549b1ad53756888cefc667cec69035",
+  "hostImage": "sha256:582161b28242a20718b2be8fffef2295c4a8f3deb872b27dd4c0af80b3e0c3d5",
+  "version": "1.1.1-866ceaacbb3b",
+  "previousVersion": "1.1.1-54c413b92117",
+  "packageManifestSha256": "7061a69aefafefa7977eeeeb81ad1ef4029a33c961001a10a3e31ec6d46bd7f4",
+  "previousPackageManifestSha256": "ce6fb7a2f24184271a5440095581510fb3605065dd4922c04c15887044f132e1",
+  "activeSha256": "a6a0cf0b3fce5011d28c5961390e7db6a59d688c1098fb1e2d4b39aa293ef361",
+  "previousActiveSha256": "de8d31f4dc33f849b40f4d641db93c800524dbdb0b870559f438129d444b24e5",
+  "releaseManifestSha256": "22d710f3e65ee351e1d6b2c028b774df4c1a6f4423fb3dd74691fe9ba2e07793",
+  "packageBytes": 9782295,
+  "hostContract": {
+    "apiVersion": 1,
+    "rulesVersion": 2,
+    "progressVersion": 1
+  },
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8738,
+  "servicesPreserved": 11,
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/cosmic-racer-20261119-v1/source.tgz",
+    "sha256": "bb9c823ed4c3c000db677ed1435e682dc5b9c6dbb967b609f577d70bd3f1577b",
+    "bytes": 30209,
+    "oldVersion": "1.1.1-54c413b92117",
+    "imageTag": "royal-game:before-cosmic-racer-20261119-v1",
+    "image": "sha256:582161b28242a20718b2be8fffef2295c4a8f3deb872b27dd4c0af80b3e0c3d5",
+    "oldPackageHardlinked": true
+  },
+  "checks": {
+    "release": {
+      "githubVerified": true,
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 306679
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 8285
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 98410
+        }
+      ],
+      "projectedModule": "aec4009d377e013b362b6ce070e085b17b57f3b0a6ee29358f4127106b789df8"
+    },
+    "installer": {
+      "lockingTestsPassed": 20,
+      "stagedInputCheck": true
+    },
+    "wallet": {
+      "testsPassed": 19,
+      "recoveredOneDebitAfterLostResponse": true
+    },
+    "racer": {
+      "unitTestsPassed": 2,
+      "animatedCues": [
+        "idle",
+        "focus",
+        "calm",
+        "win",
+        "big-win",
+        "bonus"
+      ],
+      "largeReturnMultiplier": 20
+    },
+    "connectedHost": {
+      "browser": "Chrome",
+      "passed": 5,
+      "temporaryPostgres": true,
+      "desktopAndMobile": true,
+      "portrait": {
+        "width": 393,
+        "height": 852
+      }
+    },
+    "public": {
+      "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+      "healthy": true,
+      "cacheControl": "no-store",
+      "files": 20,
+      "previousManifestAccessible": true,
+      "catalogue": [
+        "flag-battle",
+        "github-crash",
+        "original-cr-vs-leo",
+        "original-jackie-chan",
+        "royal-plinko",
+        "royal-roulette",
+        "studio-afterglow",
+        "studio-caramel-carnival",
+        "studio-caribbean-treasures",
+        "studio-cosmic-escape",
+        "studio-dracona",
+        "studio-flooded-temple",
+        "studio-forest-heart",
+        "studio-last-convoy",
+        "studio-meme-overload",
+        "studio-neopolis",
+        "studio-nitro-run",
+        "studio-velvet-reign",
+        "studio-wild-nudge"
+      ],
+      "portraitChecks": [
+        {
+          "width": 393,
+          "height": 852,
+          "visible": false,
+          "gameHeight": 742,
+          "sceneHeight": 473.40625,
+          "actorDisplay": "none"
+        },
+        {
+          "width": 430,
+          "height": 932,
+          "visible": true,
+          "gameHeight": 822,
+          "sceneHeight": 553.40625,
+          "actorDisplay": "block"
+        }
+      ]
+    },
+    "maintenance": {
+      "status": "completed",
+      "resultEpoch": 1795109877,
+      "timerEnabled": "enabled",
+      "timerActive": "active",
+      "health": "healthy",
+      "freeBytes": 12066299904,
+      "rollbackVerified": true,
+      "resultAt": "2026-11-19T17:37:57.000Z"
+    }
+  },
+  "freeBefore": 12082544640,
+  "freeAfterInstall": 12072615936,
+  "transport": "streamed without an archive file"
+}
