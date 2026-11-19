@@ -47,7 +47,7 @@
   background: var(--ce-bg);
 }
 .lg-game.ce-game.cx-game[data-asset-state="ready"] {
-  background: url('/assets/cosmic-guardians/v1/background.webp') center / cover no-repeat var(--ce-bg);
+  background: var(--cx-scene-art, none) center / cover no-repeat var(--ce-bg);
 }
 .lg-game.ce-game.cx-game::before {
   content: '';
@@ -121,11 +121,20 @@
 }
 .cx-alien {
   grid-area: alien; position: relative; align-self: end; justify-self: start; z-index: 0;
-  width: 100%; height: min(500px, 100%); pointer-events: none;
+  height: min(500px, 100%); aspect-ratio: 25 / 48; pointer-events: none;
+}
+.cx-game[data-slot-priority="full"][data-asset-state="ready"] .cx-alien::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* Every racer pose shares the same deck contact points. */
+  background:
+    radial-gradient(ellipse 9% 1.6% at 27% 94.3%, #080b11dc 12%, #080b1190 58%, transparent),
+    radial-gradient(ellipse 13% 1.7% at 64% 92.7%, #080b11dc 12%, #080b1190 58%, transparent),
+    radial-gradient(ellipse 39% 4% at 46% 94%, #080b115c, transparent);
 }
 .cx-alien img {
-  position: absolute; left: 0; bottom: 0; height: 100%; width: auto; max-width: none;
-  filter: drop-shadow(0 12px 24px rgba(0,0,0,.55)); animation: cx-idle 6s ease-in-out infinite;
+  position: absolute; inset: 0; height: 100%; width: 100%; max-width: none;
 }
 .cx-game:not([data-asset-state="ready"]) .cx-alien img { visibility: hidden; }
 .cx-title {
@@ -388,9 +397,10 @@
 .cx-game[data-slot-priority="portrait"] .cx-logo { font-size: 22px; line-height: 28px; letter-spacing: .05em; white-space: normal; max-width: 9em; }
 .cx-game[data-slot-priority="portrait"] .cx-mode { font-size: 12px; font-weight: 700; }
 .cx-game[data-slot-priority="portrait"] .cx-alien {
-  grid-area: auto; position: absolute; right: 64px; top: 0; width: auto; height: 132px; align-self: auto; justify-self: auto;
+  grid-area: auto; position: absolute; right: 64px; top: 0; width: 88px; height: 84px; align-self: auto; justify-self: auto;
+  overflow: hidden; mask-image: linear-gradient(#000 65%, transparent);
 }
-.cx-game[data-slot-priority="portrait"] .cx-alien img { position: static; height: 100%; animation: none; }
+.cx-game[data-slot-priority="portrait"] .cx-alien img { position: static; display: block; height: auto; }
 .cx-game[data-slot-priority="portrait"] .cx-tools [data-cx-rules],
 .cx-game[data-slot-priority="portrait"] .cx-tools [data-cx-sound] { display: none; }
 .cx-game[data-slot-priority="portrait"] .cx-frame { width: min(100cqw, 100cqh * 5 / 4); aspect-ratio: 5 / 4; padding: 8px; border-radius: 16px; box-shadow: 0 0 0 4px rgba(201,142,79,.18), 0 16px 40px rgba(0,0,0,.55); }
@@ -512,12 +522,10 @@
 }
 .cx-game[data-slot-priority="landscape"] .cx-wallet-help { left: calc((100% - clamp(232px, 36%, 300px)) / 2); bottom: 56px; }
 
-@keyframes cx-idle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 @media (prefers-reduced-motion: reduce) {
-  .cx-game .cx-alien img, .cx-game .lg-cell.lg-winning .lg-symbol { animation: none; }
+  .cx-game .lg-cell.lg-winning .lg-symbol { animation: none; }
   .cx-game .cx-frame .lg-cell, .cx-game .cx-spin { transition: none; }
 }
-.cx-game[data-reduced-motion="true"] .cx-alien img,
 .cx-game[data-reduced-motion="true"] .lg-cell.lg-winning .lg-symbol { animation: none; }
 .cx-game[data-reduced-motion="true"] .cx-frame .lg-cell,
 .cx-game[data-reduced-motion="true"] .cx-spin { transition: none; }
