@@ -1,3 +1,4 @@
+import { selectEntryMode } from './entry-mode';
 import {test,expect,type Page} from '@playwright/test';
 import {GUARD_STOPS} from '../server/guardRoutine';
 import {worldPoint} from './room-ui';
@@ -7,7 +8,7 @@ const guard=async(p:Page)=>(await state(p))?.guards?.[0];
 async function register(page:Page,room:string){
  await page.request.post('/api/auth/login',{data:{email:`guard-life-${crypto.randomUUID()}@example.test`,password:'Royal-test-123!'}});
  await page.request.post('/api/auth/character',{data:{skin:0,name:'Проверка обхода'}});
- await page.goto('/?mode=club&lang=ru&room='+room);await expect(page.locator('#chat-input')).toBeEnabled({timeout:15000});
+ await page.goto('/?mode=club&lang=ru&room='+room);await selectEntryMode(page);await expect(page.locator('#chat-input')).toBeEnabled({timeout:15000});
  await expect.poll(()=>guard(page),{timeout:15000}).toBeDefined();
 }
 test('two viewers and a late joiner see the same patrol, conversation and window visit; an offense interrupts leisure',async({browser,request},info)=>{
@@ -24,7 +25,7 @@ test('two viewers and a late joiner see the same patrol, conversation and window
   const reply=(await guard(b)).reply;
   await b.screenshot({path:info.outputPath('guard-life-bar.png')});
   expect(await b.locator('#chat-log').textContent()).not.toContain(reply);
-  await b.reload();await expect(b.locator('#chat-input')).toBeEnabled();
+  await b.reload(); await selectEntryMode(b);await expect(b.locator('#chat-input')).toBeEnabled();
   await expect.poll(async()=>(await guard(b))?.phase,{timeout:20000}).toBe('patrol');
   const start=await guard(b);await expect.poll(async()=>{const g=await guard(b);return Math.hypot(g.x-start.x,g.y-start.y);}).toBeGreaterThan(15);
   const windowStop=GUARD_STOPS.arcade.find(stop=>stop.id==='window')!;

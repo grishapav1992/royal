@@ -1,3 +1,4 @@
+import { selectEntryMode } from './entry-mode';
 import {expect,type Page} from '@playwright/test';
 import {test} from './themed-room';
 import {chooseGame} from './game-layout-host';
@@ -10,10 +11,9 @@ async function open(page:Page){
  await page.locator('[data-lg-dialog-action=enter]').click();
 }
 async function enter(page:Page,path:string){
- await page.emulateMedia({reducedMotion:'reduce'});await page.goto(path);
+ await page.emulateMedia({reducedMotion:'reduce'});await page.goto(path);await selectEntryMode(page,'casino');
  await page.getByLabel('Почта',{exact:true}).fill(`velvet-${crypto.randomUUID()}@example.test`);
  await page.getByLabel('Пароль',{exact:true}).fill('Royal-layout-123!');await page.getByRole('button',{name:'Продолжить',exact:true}).click();
- await page.locator('[data-entry-mode=casino]').click();
  await expect(page.locator('#casino-catalog [data-platform-game="studio-velvet-reign"]')).toBeVisible({timeout:30000});
  expect((await page.request.post('/__test/layout/topup')).ok()).toBe(true);
  await page.evaluate(async()=>{const path='/src/wallet/WalletClient.ts';await(await import(/* @vite-ignore */path)).demoWallet.refresh();});

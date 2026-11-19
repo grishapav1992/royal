@@ -1,19 +1,23 @@
+import { selectEntryMode } from './entry-mode';
 import {expect,type Page} from '@playwright/test';
 
 export async function enterGameHall(page:Page,path:string){
  await page.emulateMedia({reducedMotion:'reduce'});await page.goto(path);
+ const club=page.locator('[data-entry-mode="club"]');
+ const email=page.getByLabel('Почта',{exact:true});
+ await expect(club.or(email)).toBeVisible({timeout:30000});
+ if(await club.isVisible())await selectEntryMode(page);
  await expect(page.getByLabel('Почта',{exact:true})).toBeVisible({timeout:30000});
  await page.getByLabel('Почта',{exact:true}).fill(`layout-${crypto.randomUUID()}@example.test`);
  await page.getByLabel('Пароль',{exact:true}).fill('Royal-layout-check-123!');await page.getByRole('button',{name:'Продолжить',exact:true}).click();
- // Since the entry-mode release a new account first chooses between the club and the casino catalogue.
- const club=page.locator('[data-entry-mode="club"]');
+ // The live host may still use the previous sign-in order.
  await expect(club.or(page.locator('#character-step'))).toBeVisible();if(await club.isVisible())await club.click();
  await expect(page.locator('#character-step')).toBeVisible();await page.getByRole('button',{name:'Войти в зал',exact:true}).click();
  await expect(page.locator('#join-dialog')).toBeHidden();
  await expect.poll(()=>page.evaluate(()=>{try{return (window as any).royalDemo?.getState()?.online;}catch{return false;}})).toBe(true);
  if(process.env.LAYOUT_PUBLIC!=='1'){
   const credit=await page.request.post('/__test/layout/topup');expect(credit.ok(),await credit.text()).toBe(true);
-  if(process.env.LAYOUT_BUILT==='1'){await page.reload();await expect.poll(()=>page.evaluate(()=>{try{return (window as any).royalDemo?.getState()?.online;}catch{return false;}}),{timeout:30000}).toBe(true);}
+  if(process.env.LAYOUT_BUILT==='1'){await page.reload();await selectEntryMode(page);await expect.poll(()=>page.evaluate(()=>{try{return (window as any).royalDemo?.getState()?.online;}catch{return false;}}),{timeout:30000}).toBe(true);}
   else await page.evaluate(async()=>{const module='/src/wallet/WalletClient.ts';await(await import(/* @vite-ignore */module)).demoWallet.refresh();});
  }
  if(await page.locator('#room-overview').getAttribute('aria-pressed')!=='true')await page.locator('#room-overview').click();

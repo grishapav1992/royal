@@ -1,3 +1,4 @@
+import { selectEntryMode } from './entry-mode';
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 import {ROOM_CHAT_PROTOCOL,type ChatVisit} from '../src/shared/chat';
@@ -27,7 +28,7 @@ roomSession:async({request},use)=>{
 const state=(page:Page)=>page.evaluate(()=>{try{return(window as any).royalDemo?.getState()??{};}catch{return{};}});
 async function enter(page:Page,path:string,email=`ct-player-${crypto.randomUUID()}@example.test`){
  await page.route('https://luelonplay.com/demo-api/**',route=>route.fulfill({json:{games:[]}}));
- await page.emulateMedia({reducedMotion:'reduce'});await page.goto(path);
+ await page.emulateMedia({reducedMotion:'reduce'});await page.goto(path);await selectEntryMode(page);
  await page.getByLabel('Почта',{exact:true}).fill(email);await page.getByLabel('Пароль',{exact:true}).fill('Royal-ct-check-123!');
  await page.getByRole('button',{name:'Продолжить',exact:true}).click();
  await expect.poll(async()=>await page.locator('#character-step').isVisible()||(await state(page)).online,{timeout:30000}).toBe(true);
@@ -251,7 +252,7 @@ test('crew collection earns free tokens, unlocks a chosen captain and persists b
  await expect(page.locator('.ct-crew-status')).toContainText('В команде пополнение!');
  await page.locator('[data-crew-id=amara]').click();await expect(page.locator('.ct-backdrop')).toBeHidden();await expect.poll(async()=>(await mini()).captain.character).toBe('amara');
  expect((await wallet(page)).entries).toEqual(before.entries);
- await close(page);await page.evaluate(()=>localStorage.clear());await page.reload();
+ await close(page);await page.evaluate(()=>localStorage.clear());await page.reload();await selectEntryMode(page);
  await expect.poll(async()=>(await state(page)).online,{timeout:20000}).toBe(true);await open(page);
  await expect.poll(async()=>(await mini()).captain.character).toBe('amara');expect((await mini()).captain.history).toEqual([]);
  await page.setViewportSize({width:390,height:844});await page.locator('[data-ct-action=crew]').click();
@@ -684,7 +685,7 @@ test('both purchased tactics show the accepted price and recover after a full re
   const shownPrice=Number((await page.locator('.ct-buy-price').innerText()).replace(/[^\d,.]/g,'').replace(',','.'));
   const started=await action(page,`[data-ct-modal=${mode}]`);expect(started.view.caribbean.remaining).toBe(spins);
   expect(started.view.caribbean.settings.mode).toBe(mode);expect(shownPrice).toBe(Number(started.spentUnits)/100);expect(Math.round((await wallet(page)).balance*100)).toBe(Math.round(before.balance*100)-Number(started.spentUnits));
-  await page.reload();await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});await expect.poll(async()=>(await state(page)).online).toBe(true);await open(page);
+  await page.reload();await selectEntryMode(page);await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});await expect.poll(async()=>(await state(page)).online).toBe(true);await open(page);
   expect((await session(page)).id).toBe(started.id);await expect(page.locator('[data-ct-lines]')).toHaveValue('1');await expect(page.locator('[data-ct-action=buy]')).toBeDisabled();
   const done=await finish(page);expect(Math.round((await wallet(page)).balance*100)).toBe(Math.round(before.balance*100)-Number(done.spentUnits)+Number(done.returnedUnits));
  }
@@ -693,10 +694,10 @@ test('both purchased tactics show the accepted price and recover after a full re
 test('switching accounts hides the previous series and restores it only for its owner',async({page,roomPath})=>{
  const email=await enter(page,roomPath);await topup(page);await open(page);await page.locator('[data-ct-lines]').selectOption('1');
  await page.request.post('/__test/caribbean/force-bonus');const original=await action(page,'[data-ct-action=play]');await close(page);
- await page.getByRole('button',{name:'Выйти',exact:true}).click();await expect(page.getByLabel('Почта',{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Выйти',exact:true}).click();await selectEntryMode(page);await expect(page.getByLabel('Почта',{exact:true})).toBeVisible();
  await enter(page,roomPath);await open(page);expect(await session(page)).toBeUndefined();await expect(page.locator('.ct-choice')).toBeHidden();
  await expect(page.locator('[data-ct-lines]')).toHaveValue('20');await expect(page.locator('[data-ct-lines]')).toBeEnabled();await close(page);
- await page.getByRole('button',{name:'Выйти',exact:true}).click();await expect(page.getByLabel('Почта',{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Выйти',exact:true}).click();await selectEntryMode(page);await expect(page.getByLabel('Почта',{exact:true})).toBeVisible();
  await enter(page,roomPath,email);await open(page);expect((await session(page)).id).toBe(original.id);
  await expect(page.locator('[data-ct-lines]')).toHaveValue('1');await action(page,'[data-ct-action=choose-flagship]');await finish(page);
 });
@@ -758,7 +759,7 @@ test('extreme stakes, rapid double click, mobile purchase and English recovery k
  if(started.view.caribbean.phase==='choice'){await action(page,'[data-ct-action=choose-flagship]');await finish(page);}
  expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet').length-before.entries.filter((e:any)=>e.kind==='bet').length).toBe(1);
  await page.setViewportSize({width:390,height:844});await page.locator('[data-ct-action=buy]').click();const bought=await action(page,'[data-ct-modal=buy-flagship]');expect(bought.view.caribbean.settings.lines).toBe(20);expect(bought.stakeUnits).toBe('1000');
- await page.goto(roomPath+'&lang=en');
+ await page.goto(roomPath+'&lang=en');await selectEntryMode(page);
  // A full navigation can reach the hall before its previous presence lease expires.
  await expect.poll(async()=>{if((await state(page)).online)return true;const retry=page.locator('#retry-entry');if(await retry.isVisible()&&await retry.isEnabled())await retry.click();return false;},{timeout:35000,intervals:[1000,5000]}).toBe(true);
  await open(page);await expect(page.locator('.ct-heading h2')).toHaveText('Caribbean Treasures');

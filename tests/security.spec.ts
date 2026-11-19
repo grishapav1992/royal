@@ -1,3 +1,4 @@
+import { selectEntryMode } from './entry-mode';
 import { test, expect, type Page } from '@playwright/test';
 import type { ChatResult } from '../src/shared/chat';
 import type { ClubCaptureDecision } from '../src/shared/security';
@@ -24,6 +25,7 @@ test('an observer sees masked profanity and the first confirmed spam capture whi
     for (const page of [player, observer]) {
       await register(page);
       await page.goto('/?mode=club&lang=ru&room=' + host.roomId);
+      await selectEntryMode(page);
       await expect(page.locator('#chat-input')).toBeEnabled();
     }
     const { selfId } = await network(player);
@@ -56,6 +58,7 @@ test('an observer sees masked profanity and the first confirmed spam capture whi
 
     await player.setViewportSize({ width: 390, height: 844 });
     await player.reload();
+    await selectEntryMode(player);
     await expect.poll(async () => (await network(player))?.status, { timeout: 30000 }).toBe('connected');
     await expect.poll(async () => (await state(player))?.hall).toBe('street');
     await expect(player.locator('#join-dialog')).toBeHidden();

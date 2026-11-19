@@ -1,3 +1,4 @@
+import { selectEntryMode } from './entry-mode';
 import { test, expect, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { resolve, sep } from 'node:path';
@@ -45,6 +46,7 @@ async function host(page: Page, supportsChatVisits = true) {
   });
   await context.routeWebSocket('**/*', socket => socket.close());
   await page.goto('/?mode=club&lang=ru');
+  await selectEntryMode(page);
   await page.waitForFunction(() => typeof window.royalDemo?.getNetworkState === 'function');
   await expect(page.locator('#join-dialog')).toBeVisible();
   const cdp = await context.newCDPSession(page);

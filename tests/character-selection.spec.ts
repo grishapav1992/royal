@@ -1,3 +1,4 @@
+import { selectEntryMode } from './entry-mode';
 import { test, expect, type Page } from '@playwright/test';
 import { DEFAULT_APPEARANCE } from '../src/shared/appearance';
 import { PLAYER_CHARACTERS } from '../src/shared/characters';
@@ -14,6 +15,7 @@ const savedAccount = async (page: Page) => {
 
 async function login(page: Page) {
   await page.goto('/', { waitUntil: 'commit' });
+  await selectEntryMode(page);
   await expect(page.locator('#login-form')).toBeVisible({ timeout: 30000 });
   await page.getByLabel('Почта', { exact: true }).fill(email());
   await page.getByLabel('Пароль', { exact: true }).fill(password);
@@ -33,6 +35,7 @@ async function createAccount(page: Page, character: object) {
   const characterResponse = await page.request.post('/api/auth/character', { data: character });
   expect(characterResponse.ok()).toBe(true);
   await page.goto('/', { waitUntil: 'commit' });
+  await selectEntryMode(page);
   await expectConnected(page);
 }
 
@@ -74,6 +77,7 @@ test('new account selects a ready-made character and keeps it after reloading', 
   expect(await savedAccount(page)).toMatchObject({ skin: 12, name: 'Гас из клуба', appearance: null });
 
   await page.reload({ waitUntil: 'domcontentloaded' });
+  await selectEntryMode(page);
   await expectConnected(page);
   await expect.poll(async () => (await state(page)).skin).toBe(12);
   expect((await state(page)).texture).toBe('citizen-12');
@@ -140,6 +144,7 @@ test('renaming a legacy custom character preserves its appearance', async ({ pag
   expect((await state(page)).texture).toBe(beforeTexture);
 
   await page.reload({ waitUntil: 'domcontentloaded' });
+  await selectEntryMode(page);
   await expectConnected(page);
   await expect.poll(async () => JSON.parse((await state(page)).appearance || '{}')).toEqual(appearance);
   expect((await state(page)).texture).toBe(beforeTexture);
@@ -165,6 +170,7 @@ test('explicitly choosing Eddie replaces a legacy custom character with skin zer
   expect(await savedAccount(page)).toMatchObject({ skin: 0, name: 'Кастомный гость', appearance: null });
 
   await page.reload({ waitUntil: 'domcontentloaded' });
+  await selectEntryMode(page);
   await expectConnected(page);
   await expect.poll(async () => (await state(page)).texture).toBe('citizen-0');
   expect((await state(page)).appearance).toBe('');

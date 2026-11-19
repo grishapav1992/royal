@@ -1,3 +1,4 @@
+import { selectEntryMode } from './entry-mode';
 import {test,expect,type Page} from '@playwright/test';
 import {HALL_DOORS} from '../src/shared/world';
 import {OFFENSIVE_CHAT_BURST,securityRoom} from './security-room';
@@ -6,7 +7,7 @@ const state=(page:Page)=>page.evaluate(()=>(window as any).royalDemo?.getState()
 async function join(page:Page,room:string){
  await page.request.post('/api/auth/login',{data:{email:`guard-halls-${crypto.randomUUID()}@example.test`,password:'Royal-test-123!'}});
  await page.request.post('/api/auth/character',{data:{skin:1,name:'Проверка перехода'}});
- await page.goto('/?mode=club&lang=ru&room='+room);await expect.poll(async()=>(await state(page))?.online).toBe(true);
+ await page.goto('/?mode=club&lang=ru&room='+room);await selectEntryMode(page);await expect.poll(async()=>(await state(page))?.online).toBe(true);
  await page.locator('#room-overview').click();
 }
 test('one guard walks through both doors, remains shared after reload, and returns for an offense',async({browser,request},info)=>{
@@ -29,7 +30,7 @@ test('one guard walks through both doors, remains shared after reload, and retur
   const tablesEntry=crossings.find(crossing=>crossing.hall==='tables')!;
   expect(tablesEntry.x).toBeCloseTo(HALL_DOORS.tables.entry.x,0);
   expect(tablesEntry.y).toBeGreaterThan(HALL_DOORS.tables.arrival.y);
-  await b.bringToFront();await b.reload();
+  await b.bringToFront();await b.reload(); await selectEntryMode(b);
   await expect.poll(async()=>(await state(b))?.guards?.length,{timeout:20000}).toBe(1);
   await expect.poll(async()=>(await state(b))?.hall).toBe('tables');
   await expect.poll(async()=>{

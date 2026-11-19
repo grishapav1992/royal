@@ -1,3 +1,4 @@
+import { selectEntryMode } from './entry-mode';
 import {test,expect,type Page} from '@playwright/test';
 import {GUARD_STOPS} from '../server/guardRoutine';
 import {worldPoint} from './room-ui';
@@ -7,7 +8,7 @@ const network=(p:Page)=>p.evaluate(()=>(window as any).royalDemo?.getNetworkStat
 async function join(page:Page,room:string){
  await page.request.post('/api/auth/login',{data:{email:`bump-${crypto.randomUUID()}@example.test`,password:'Royal-test-123!'}});
  await page.request.post('/api/auth/character',{data:{skin:1,name:'Проверка толчков'}});
- await page.goto('/?mode=club&lang=ru&room='+room);await expect.poll(async()=>(await state(page))?.online).toBe(true);
+ await page.goto('/?mode=club&lang=ru&room='+room);await selectEntryMode(page);await expect.poll(async()=>(await state(page))?.online).toBe(true);
  await page.locator('#room-overview').click();await page.locator('#game').focus();
 }
 test('solid guard shows a fist to both players; holding does not multiply hits and ten contacts eject',async({browser,request},info)=>{
@@ -47,7 +48,7 @@ test('solid guard shows a fist to both players; holding does not multiply hits a
   expect(await network(a)).toMatchObject({status:'connected',roomId:host.roomId,selfId});
   await expect(a.locator('#club-chat-dock')).toBeHidden();
   await expect(a.locator('#security-dialog')).toBeHidden();
-  await a.reload();await expect.poll(async()=>(await network(a))?.status,{timeout:30000}).toBe('connected');
+  await a.reload(); await selectEntryMode(a);await expect.poll(async()=>(await network(a))?.status,{timeout:30000}).toBe('connected');
   await expect.poll(async()=>(await state(a))?.hall).toBe('street');
   await expect(a.locator('#join-dialog')).toBeHidden();
   await expect(a.locator('#club-fine-open')).toBeVisible();

@@ -1,3 +1,4 @@
+import { selectEntryMode } from './entry-mode';
 import { test, expect, type Page } from '@playwright/test';
 import { ROYAL_PLATFORM_GAMES } from '../src/shared/arcadeCatalog';
 
@@ -5,6 +6,7 @@ const rewardSlotsInCatalogue = ['royal-coins', 'royal-fruits'].every(game => ROY
 
 async function enter(page: Page, waitForProgression = true) {
   await page.goto('/?mode=club');
+  await selectEntryMode(page);
   await page.getByLabel('Почта', { exact: true }).fill('progression-player-' + crypto.randomUUID() + '@example.test');
   await page.getByLabel('Пароль', { exact: true }).fill('Progression-host-test-42!');
   await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
@@ -142,13 +144,13 @@ test('reward windows follow milestone order and resume at the first unconfirmed 
     url.searchParams.set('mode', 'casino');
     history.replaceState(history.state, '', url);
   });
-  await page.reload();
+  await page.reload(); await selectEntryMode(page, 'casino');
   await expect(notice.getByRole('heading')).toHaveText('Награды за 10-й уровень', { timeout: 25000 });
   await expect(page.locator('body')).toHaveAttribute('data-entry-mode', 'casino');
   expect(await page.evaluate(() => (window as any).royalDemo.isWorldLoaded())).toBe(false);
   await notice.getByRole('button', { name: 'OK' }).click();
   await expect(notice).toBeHidden();
-  await page.reload();
+  await page.reload(); await selectEntryMode(page, 'casino');
   await expect(page.locator('#join-dialog')).toBeHidden({ timeout: 25000 });
   await expect(page.locator('#progression-button')).toHaveText('Уровень 10');
   await expect(notice).toBeHidden();
@@ -277,7 +279,7 @@ test('a lost accepted reward survives reload and replays its original operation 
   await page.locator('[data-progression-grant]').first().click();
   await expect(page.locator('[data-progression-retry]')).toBeVisible();
   await expect(page.locator('[data-progression-retry]')).toBeEnabled();
-  await page.reload(); await expect(page.locator('#join-dialog')).toBeHidden({ timeout: 25000 }); await open(page);
+  await page.reload(); await selectEntryMode(page); await expect(page.locator('#join-dialog')).toBeHidden({ timeout: 25000 }); await open(page);
   const response = page.waitForResponse(reply => reply.url().endsWith('/api/progression/spins') && reply.request().method() === 'POST');
   await page.locator('[data-progression-retry]').click(); const retried = await response; expect(retried.request().postDataJSON()).toEqual(original);
   const receipt = await retried.json(); expect(receipt.replayed).toBe(true); expect(receipt.gameRound).toEqual(saved.gameRound);
@@ -305,7 +307,7 @@ test('a level reward opens the real atelier, recovers a lost accepted request an
   let accepted:any;
   await page.route('**/api/skin-studio/generations',async route=>{accepted=route.request().postDataJSON();const response=await route.fetch();expect(response.ok()).toBe(true);await route.abort('failed');},{times:1});
   await page.locator('#skin-prompt').fill('Космонавт в красном костюме');await page.locator('.skin-generate-slot button').click();
-  await expect.poll(()=>accepted?.rewardGrantId).toBe(before.skinGrants[0].id);await page.reload();await expect(page.locator('#join-dialog')).toBeHidden({timeout:25000});
+  await expect.poll(()=>accepted?.rewardGrantId).toBe(before.skinGrants[0].id);await page.reload(); await selectEntryMode(page);await expect(page.locator('#join-dialog')).toBeHidden({timeout:25000});
   await page.getByRole('button',{name:'Образы',exact:true}).click();
   await expect(page.locator('#skin-studio-dialog .skin-results')).toBeVisible({timeout:25000});
   await expect(page.locator('[data-select-skin]')).toHaveCount(2);
@@ -383,7 +385,7 @@ test('a lost normal-window spin blocks another game and recovers the same game a
   await page.route('**/api/progression/spins',async route=>{original=route.request().postDataJSON();const response=await route.fetch();expect(response.ok()).toBe(true);accepted=await response.json();await route.abort('failed');},{times:1});
   await page.locator('#coins-spin').click();await expect(page.locator('#coins-spin')).toHaveText('Проверить бесплатный спин');
   await expect(page.locator('#coins-spin')).toBeEnabled();await openSlot(page,'royal-fruits');await expect(page.locator('[data-fruits-spin]')).toBeDisabled();
-  await page.reload();await expect(page.locator('#join-dialog')).toBeHidden({timeout:25000});await openSlot(page,'royal-coins');
+  await page.reload(); await selectEntryMode(page);await expect(page.locator('#join-dialog')).toBeHidden({timeout:25000});await openSlot(page,'royal-coins');
   const received=page.waitForResponse(r=>r.url().endsWith('/api/progression/spins')&&r.request().method()==='POST');
   await page.locator('#coins-spin').click();const response=await received;expect(response.request().postDataJSON()).toEqual(original);
   const replay=await response.json();expect(replay.replayed).toBe(true);expect(replay.gameRound).toEqual(accepted.gameRound);

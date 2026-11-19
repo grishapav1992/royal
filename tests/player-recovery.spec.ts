@@ -1,3 +1,4 @@
+import { selectEntryMode } from './entry-mode';
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
 import { OFFENSIVE_CHAT_BURST } from './security-room';
 
@@ -39,7 +40,7 @@ for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
     expect(login.ok()).toBe(true);await login.json();
     await page.request.post('/api/auth/character',{data:{skin:0}});
     const funded=await page.request.post('/__test/recovery/fund');expect(funded.ok(),await funded.text()).toBe(true);
-    await page.goto('/?mode=club&lang=ru',{waitUntil:'domcontentloaded'});await expect(page.locator('#loading')).toHaveCount(0);await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});
+    await page.goto('/?mode=club&lang=ru',{waitUntil:'domcontentloaded'});await selectEntryMode(page);await expect(page.locator('#loading')).toHaveCount(0);await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});
     await expect.poll(async()=>(await state(page)).online).toBe(true);
     await expect(page.locator('#recover-player')).toBeHidden();
     await openGame(page,info);
@@ -78,6 +79,7 @@ test('guard capture closes an occupied paid game and reentry recovers the accept
   expect((await page.request.post('/api/auth/character', { data: { skin: 0 } })).ok()).toBe(true);
   expect((await page.request.post('/__test/recovery/fund')).ok()).toBe(true);
   await page.goto('/?mode=club&lang=ru');
+  await selectEntryMode(page);
   await expect(page.locator('#chat-input')).toBeEnabled({ timeout: 30000 });
   await openGame(page);
 

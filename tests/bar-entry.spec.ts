@@ -1,3 +1,4 @@
+import { selectEntryMode } from './entry-mode';
 import { expect, test, type Page } from '@playwright/test';
 
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
@@ -45,6 +46,7 @@ test('the first bar click survives the initial authoritative room state arriving
   await account(page, email(), 0);
   await mira(page);
   await page.goto('/');
+  await selectEntryMode(page);
   await expect.poll(async () => (await network(page))?.status).toBe('connected');
   await expect.poll(() => page.evaluate(() => (window as any).__heldRoomStates())).toBeGreaterThan(0);
   expect((await state(page)).serverX).toBeUndefined();
@@ -63,11 +65,13 @@ test('changing accounts closes the old bar and the new player can consume a conf
   await account(page, email(), 0);
   await mira(page);
   await page.goto('/');
+  await selectEntryMode(page);
   await expect.poll(async () => (await network(page))?.status).toBe('connected');
   await expect.poll(async () => (await state(page)).serverX).toBeDefined();
   await page.locator('#visit-bar').click();
   await expect(page.locator('#bar-dialog')).toBeVisible({ timeout: 15000 });
   await page.getByRole('button', { name: 'Выйти', exact: true }).click();
+  await selectEntryMode(page);
   await expect(page.locator('#login-step')).toBeVisible();
   await expect(page.locator('#bar-dialog')).toBeHidden();
   await page.locator('#email').fill(nextAddress);

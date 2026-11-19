@@ -1,11 +1,19 @@
 import './i18n/paymentMethodsEn';
 import { requireEntryAccount } from './ui/EntryLogin';
-import { chooseEntryMode } from './ui/EntryModes';
+import { chooseEntryMode, type EntryMode } from './ui/EntryModes';
 import { t } from './i18n/index';
 
 async function boot() {
-  if (new URL(location.href).searchParams.get('offline') !== '1') await requireEntryAccount();
-  const mode = await chooseEntryMode();
+  const url = new URL(location.href);
+  let mode: EntryMode = 'club';
+  if (url.searchParams.get('offline') !== '1') {
+    mode = await chooseEntryMode();
+    while (!(await requireEntryAccount())) mode = await chooseEntryMode(mode);
+    if (url.searchParams.has('mode') && url.searchParams.get('mode') !== mode) {
+      url.searchParams.set('mode', mode);
+      history.replaceState(history.state, '', url);
+    }
+  }
   const { startRoyal } = await import('./main');
   await startRoyal(mode);
 }
