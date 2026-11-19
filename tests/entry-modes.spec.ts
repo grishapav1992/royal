@@ -241,32 +241,35 @@ test('a failed session check offers retry before asking for credentials', async 
   await expect(page.locator('.entry-login #login-form')).toHaveCount(0);
 });
 
-test('entry previews loop without a pause button, and reduced motion keeps the stills', async ({ page }) => {
+test('club video loops and the flag preview starts another demo round after one winner', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
+  const gameplayRequests: string[] = [];
+  page.on('request', request => {
+    const path = new URL(request.url()).pathname;
+    if (path.startsWith('/api/') || path.startsWith('/game-modules/')) gameplayRequests.push(path);
+  });
   await page.goto('/');
-  const clips = page.locator('.entry-preview-motion');
-  await expect(clips).toHaveCount(2);
-  const clipStates = () => clips.evaluateAll(elements => elements.map(element => {
-    const video = element as HTMLVideoElement;
-    return { paused: video.paused, ended: video.ended, loop: video.loop, time: video.currentTime, source: video.getAttribute('src') };
-  }));
-  expect(await clipStates()).toEqual([
-    { paused: true, ended: false, loop: true, time: 0, source: null },
-    { paused: true, ended: false, loop: true, time: 0, source: null },
-  ]);
+  const club = page.locator('.entry-club video');
+  const flags = page.locator('.entry-casino canvas');
+  const clipState = () => club.evaluate((video: HTMLVideoElement) => ({ paused: video.paused, ended: video.ended,
+    loop: video.loop, time: video.currentTime, source: video.getAttribute('src') }));
+  expect(await clipState()).toEqual({ paused: true, ended: false, loop: true, time: 0, source: null });
+  expect(await flags.getAttribute('data-round')).toBeNull();
 
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  await expect.poll(async () => (await clipStates()).every(clip => !clip.paused && clip.time > 0)).toBe(true);
+  await expect.poll(async () => { const clip = await clipState(); return !clip.paused && clip.time > 0; }).toBe(true);
   await expect(page.getByRole('button', { name: 'Приостановить анимацию' })).toHaveCount(0);
-  await clips.evaluateAll(elements => elements.forEach(element => {
-    const video = element as HTMLVideoElement;
-    video.currentTime = video.duration - 0.25;
-  }));
-  await expect.poll(async () => (await clipStates()).every(clip => clip.loop && !clip.ended && !clip.paused && clip.time < 1)).toBe(true);
+  await club.evaluate((video: HTMLVideoElement) => { video.currentTime = video.duration - .25; });
+  await expect.poll(async () => { const clip = await clipState(); return clip.loop && !clip.ended && !clip.paused && clip.time < 1; }).toBe(true);
+  await expect(flags).toHaveAttribute('data-phase', 'winner', { timeout: 12000 });
+  await expect(flags).toHaveAttribute('data-remaining', '1');
+  await expect(flags).toHaveAttribute('data-round', '2');
+  await expect(flags).toHaveAttribute('data-remaining', '12');
+  expect(gameplayRequests).toEqual([]);
 
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await expect(clips.first()).toBeHidden();
-  await expect(clips.last()).toBeHidden();
+  await expect(club).toBeHidden();
+  await expect(flags).toBeHidden();
   await selectEntryMode(page, 'casino');
   await expect(page.locator('#login-form')).toBeVisible();
 });
@@ -275,9 +278,9 @@ test('mobile entry only loads a clip when its card is in view', async ({ page })
   await page.setViewportSize({ width: 320, height: 400 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
-  const casino = page.locator('.entry-casino video');
+  const casino = page.locator('.entry-casino canvas');
   const club = page.locator('.entry-club video');
-  await expect.poll(() => casino.evaluate(clip => (clip as HTMLVideoElement).currentTime)).toBeGreaterThan(0);
+  await expect(casino).toHaveAttribute('data-has-frame', '');
   expect(await club.getAttribute('src')).toBeNull();
   await club.scrollIntoViewIfNeeded();
   await expect.poll(() => club.evaluate(clip => (clip as HTMLVideoElement).currentTime)).toBeGreaterThan(0);

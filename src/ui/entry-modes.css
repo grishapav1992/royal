@@ -74,7 +74,7 @@ body:has(.entry-page) { margin: 0; }
   overflow: hidden;
 }
 .entry-casino-art { background: radial-gradient(ellipse at 17% 15%, #537364, transparent 74%), #17352c; }
-.entry-casino-art :is(img, video) {
+.entry-casino-art :is(img, canvas) {
   position: absolute;
   display: block;
   height: auto;

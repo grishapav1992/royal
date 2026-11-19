@@ -1,10 +1,10 @@
 import '../i18n/entryModesEn';
 import { installLanguageSwitcher, t } from '../i18n/index';
-import barPreview from './entry-previews/bar.webp';
+import clubPreview from './entry-previews/club.webp';
 import catalogPreview from './entry-previews/catalog.webp';
 import flagBattlePreview from './entry-previews/flag-battle.webp';
 import clubMotion from './entry-previews/club.mp4';
-import flagBattleMotion from './entry-previews/flag-battle.mp4';
+import { createFlagBattlePreview } from './FlagBattlePreview';
 import './entry-modes.css';
 
 export type EntryMode = 'club' | 'casino';
@@ -26,39 +26,38 @@ export function renderEntryPage(content: string) {
 }
 
 function installPreviewMotion(app: HTMLElement) {
-  const clips = Array.from(app.querySelectorAll<HTMLVideoElement>('.entry-preview-motion'));
+  const clip = app.querySelector<HTMLVideoElement>('.entry-club video')!;
+  const flags = app.querySelector<HTMLCanvasElement>('.entry-casino canvas')!;
+  const demo = createFlagBattlePreview(flags);
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const visibleClips = new Set<HTMLVideoElement>();
+  const visible = new Set<Element>();
   const visibleThreshold = 0.4;
   const listeners = new AbortController();
   const { signal } = listeners;
 
   const update = () => {
-    for (const clip of clips) {
-      if (document.hidden || reducedMotion.matches || !visibleClips.has(clip)) {
-        clip.pause();
-        continue;
-      }
+    const allowMotion = !document.hidden && !reducedMotion.matches;
+    if (allowMotion && visible.has(flags)) demo?.play();
+    else demo?.pause();
+    if (allowMotion && visible.has(clip)) {
       if (!clip.getAttribute('src')) clip.src = clip.dataset.clip!;
       if (clip.paused) void clip.play().catch(() => { /* The poster stays visible if playback is blocked. */ });
-    }
+    } else clip.pause();
   };
 
   const observer = new IntersectionObserver(entries => {
     if (signal.aborted) return;
     for (const { target, intersectionRatio } of entries) {
-      const clip = target as HTMLVideoElement;
-      if (intersectionRatio >= visibleThreshold) visibleClips.add(clip);
-      else visibleClips.delete(clip);
+      if (intersectionRatio >= visibleThreshold) visible.add(target);
+      else visible.delete(target);
     }
     update();
   }, { threshold: visibleThreshold });
 
-  for (const clip of clips) {
-    clip.muted = true;
-    clip.addEventListener('playing', () => { clip.dataset.hasFrame = ''; }, { signal });
-    observer.observe(clip);
-  }
+  clip.muted = true;
+  clip.addEventListener('playing', () => { clip.dataset.hasFrame = ''; }, { signal });
+  observer.observe(clip);
+  observer.observe(flags);
   reducedMotion.addEventListener('change', update, { signal });
   document.addEventListener('visibilitychange', update, { signal });
   update();
@@ -66,7 +65,8 @@ function installPreviewMotion(app: HTMLElement) {
   return () => {
     observer.disconnect();
     listeners.abort();
-    for (const clip of clips) clip.pause();
+    demo?.pause();
+    clip.pause();
   };
 }
 
@@ -83,7 +83,7 @@ export function chooseEntryMode(focusMode?: EntryMode): Promise<EntryMode> {
           <span class="entry-art entry-casino-art" aria-hidden="true">
             <img class="entry-catalog-preview" src="${catalogPreview}" alt="" width="550" height="340">
             <img class="entry-game-preview" src="${flagBattlePreview}" alt="" width="568" height="350">
-            <video class="entry-game-preview entry-preview-motion" data-clip="${flagBattleMotion}" width="568" height="350" muted loop playsinline preload="none"></video>
+            <canvas class="entry-game-preview entry-preview-motion" width="568" height="350"></canvas>
           </span>
           <span class="entry-copy">
             ${fromLink('casino')}
@@ -96,7 +96,7 @@ export function chooseEntryMode(focusMode?: EntryMode): Promise<EntryMode> {
         </button>
         <button type="button" class="entry-option entry-club" data-entry-mode="club" aria-labelledby="entry-club-title" aria-describedby="entry-club-description">
           <span class="entry-art entry-club-art" aria-hidden="true">
-            <img src="${barPreview}" alt="" width="640" height="336">
+            <img src="${clubPreview}" alt="" width="640" height="336">
             <video class="entry-preview-motion" data-clip="${clubMotion}" width="640" height="336" muted loop playsinline preload="none"></video>
           </span>
           <span class="entry-copy">
