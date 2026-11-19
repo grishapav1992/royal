@@ -1,0 +1,370 @@
+{
+  "release": "caramel-stake-limit-20261119-v1",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "f98493253d78169e4eec8b559fdc3606f75ddde5",
+  "productionBaseCommit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+  "releaseManifestSha256": "02d74c076c98ef483991860ab2e87b8cdff2ef6fc783f21738efb493d8c82016",
+  "githubMainAtVerification": "f98493253d78169e4eec8b559fdc3606f75ddde5",
+  "backendSha256": "347b10a5191da839142cafb6459d14e607190a32af3a97107f73cd392de3807f",
+  "publishedHost": {
+    "published": true,
+    "preparedImage": "sha256:4a1233a6cb52908a696d25ab23606643536498992261e56bef66a33a9f8a4362",
+    "runningImage": "sha256:4a1233a6cb52908a696d25ab23606643536498992261e56bef66a33a9f8a4362",
+    "containerRestarted": true,
+    "sourceCommit": "f98493253d78169e4eec8b559fdc3606f75ddde5",
+    "changedSources": 9,
+    "clientDeltaFiles": 9,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 1,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 10
+  },
+  "publishedModule": {
+    "verified": true,
+    "gameId": "studio-caramel-carnival",
+    "version": "1.1.1-a3ebebc403b3",
+    "bytes": 3286123,
+    "files": 7,
+    "beforeSha256": "cb516a53dbfe5d3fe6013ffb353826eccc6b4fba673555df7a7e63c8fbfcf0c4",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "af4d06609e324e50f45b5f4b5bef3003052f2f53a55cacbfbc37ec7eb402b302",
+    "history": "/opt/royal-game-modules-state/history/20261119T144755-8d8ee86b69f64d8280b23c8628a7bbe9.json",
+    "sourceCommit": "f98493253d78169e4eec8b559fdc3606f75ddde5",
+    "previousManifest": {
+      "format": 1,
+      "gameId": "studio-caramel-carnival",
+      "manifest": "/game-modules/studio-caramel-carnival/versions/1.1.1-0dd7ee4087e2/manifest.json",
+      "sha256": "d254a94256957a36b691a40c3eb728838f912e4d30dd3fc0d6e958609516f4dc"
+    },
+    "freeAfter": 12181979136
+  },
+  "rollback": {
+    "image": "sha256:2cc23838241e398f8b83a5f2166aff41868e82f7e258bc0c2598a0616b8a0574",
+    "previousModule": "1.1.1-0dd7ee4087e2",
+    "sourceBackupSha256": "730ad65d2bab593e20bba23cdd0ebba71d7738b4330e9f780ec99976ed4ea0a1",
+    "sourceBackupBytes": 24750,
+    "financialBackup": {
+      "path": "/opt/royal-backups/caramel-stake-limit-20261119-v1/financial.dump",
+      "sha256": "153a248a2df7cacce3e2b652367911ac61ff1d59ccd8299f4d592d749c811c93",
+      "bytes": 48200503,
+      "databaseRestored": false
+    }
+  },
+  "verification": {
+    "rtp": {
+      "profiles": 38,
+      "stakePolicies": 20,
+      "stakeAdmissions": 20
+    },
+    "wallet": {
+      "command": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts server-tests/game-stakes-http.test.ts",
+      "pass": 21,
+      "fail": 0
+    },
+    "installerTestsPassed": 20,
+    "browser": {
+      "builtHost": true,
+      "builtBackend": true,
+      "temporaryPostgreSQL": true,
+      "mobileEmulation": "Chromium touch",
+      "scriptSha256": "d978b2c8f90b31b416bb7d871a9a7e438521d939d69f4bb771678a876c5d5133",
+      "scenarios": [
+        {
+          "touch": false,
+          "connectedChat": true,
+          "moduleVersion": "1.1.1-a3ebebc403b3",
+          "maximumCents": 10000,
+          "rejectedCents": 10001,
+          "recoveredCents": 5001,
+          "sameOperation": true,
+          "normalSpin": {
+            "frames": 339,
+            "animated": 131,
+            "shift": 0,
+            "phases": [
+              "idle",
+              "accelerating",
+              "spinning",
+              "stopping"
+            ]
+          },
+          "festival": {
+            "frames": 1930,
+            "animated": 1525,
+            "shift": 0,
+            "phases": [
+              "idle",
+              "preparing",
+              "accelerating",
+              "spinning",
+              "stopping",
+              "energy",
+              "winning",
+              "bursting",
+              "falling"
+            ]
+          },
+          "oneDebitPerRound": true
+        },
+        {
+          "touch": true,
+          "connectedChat": true,
+          "moduleVersion": "1.1.1-a3ebebc403b3",
+          "maximumCents": 10000,
+          "rejectedCents": 10001,
+          "recoveredCents": 5001,
+          "sameOperation": true,
+          "normalSpin": {
+            "frames": 398,
+            "animated": 203,
+            "shift": 0,
+            "phases": [
+              "idle",
+              "accelerating",
+              "spinning",
+              "stopping",
+              "winning",
+              "bursting",
+              "falling"
+            ]
+          },
+          "festival": {
+            "frames": 2118,
+            "animated": 1712,
+            "shift": 0,
+            "phases": [
+              "idle",
+              "preparing",
+              "accelerating",
+              "spinning",
+              "stopping",
+              "energy",
+              "winning",
+              "bursting",
+              "falling"
+            ]
+          },
+          "oneDebitPerRound": true
+        }
+      ]
+    },
+    "catalogue": [
+      "flag-battle",
+      "github-crash",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "royal-plinko",
+      "royal-roulette",
+      "studio-afterglow",
+      "studio-caramel-carnival",
+      "studio-caribbean-treasures",
+      "studio-cosmic-escape",
+      "studio-dracona",
+      "studio-flooded-temple",
+      "studio-forest-heart",
+      "studio-last-convoy",
+      "studio-meme-overload",
+      "studio-neopolis",
+      "studio-nitro-run",
+      "studio-velvet-reign",
+      "studio-wild-nudge"
+    ],
+    "publicBefore": [
+      {
+        "gameId": "flag-battle",
+        "pointerSha256": "2dbf07d4069cbaa5a790d79e278a4698a70bae9c150998151f5a5632fbd12f33"
+      },
+      {
+        "gameId": "github-crash",
+        "pointerSha256": "deef44e1e5d1a3ae7610f3a846067fef3549216ebcab1a556dd08affb5a8858e"
+      },
+      {
+        "gameId": "original-cr-vs-leo",
+        "pointerSha256": "7c8c0df5a2d8d94c17a0d018fb0b7e30f8f854c7e4032ad3e4fd180e5116fcc3"
+      },
+      {
+        "gameId": "original-jackie-chan",
+        "pointerSha256": "ca36ab41e1f8b0dfffe070688dcdc0eec38c7135cafd710a918824019d450b95"
+      },
+      {
+        "gameId": "royal-plinko",
+        "pointerSha256": "726bab895825baeb53f0b3b3119ed7af7ae249eae2682d281c7fb62b59f42558"
+      },
+      {
+        "gameId": "royal-roulette",
+        "pointerSha256": "fb49365877d997d59454df7a5f28742b51f5afe9f751aaa86126661222f1a651"
+      },
+      {
+        "gameId": "studio-afterglow",
+        "pointerSha256": "48d928e8147918acdd69422c30c0bac1dc3d906ab3e0efdb967bb332d79a808f"
+      },
+      {
+        "gameId": "studio-caramel-carnival",
+        "version": "1.1.1-0dd7ee4087e2",
+        "pointerSha256": "cb516a53dbfe5d3fe6013ffb353826eccc6b4fba673555df7a7e63c8fbfcf0c4",
+        "manifestSha256": "d254a94256957a36b691a40c3eb728838f912e4d30dd3fc0d6e958609516f4dc",
+        "files": 8
+      },
+      {
+        "gameId": "studio-caribbean-treasures",
+        "pointerSha256": "cc502ab15de4752e6d632062d29073adc4a3110dca076f7b17042fa130fa6d85"
+      },
+      {
+        "gameId": "studio-cosmic-escape",
+        "pointerSha256": "d08f5830eb4c831009c957e8daebcda8c3c9fd2c76555bf9459b31f716efd1e1"
+      },
+      {
+        "gameId": "studio-dracona",
+        "pointerSha256": "c10e0d66ac72313bb9e3c5b36e00c12093bbc891dab1eec462b070bb39baeca0"
+      },
+      {
+        "gameId": "studio-flooded-temple",
+        "pointerSha256": "272e43214f4c4f2911033118819ee970d0f2a43a38a8611f4862e311d0a49fe5"
+      },
+      {
+        "gameId": "studio-forest-heart",
+        "pointerSha256": "241693e84688d259e4116fada2384987ee53b8cce65e08efc5a066592bd29462"
+      },
+      {
+        "gameId": "studio-last-convoy",
+        "pointerSha256": "409a4ddce39a09fc463a1072676171249f60a299153e7fd3ea7a7127d184d311"
+      },
+      {
+        "gameId": "studio-meme-overload",
+        "pointerSha256": "35e183b47cd02dde634043691b015f777aef38e670ce17ca054928b1209b99ba"
+      },
+      {
+        "gameId": "studio-neopolis",
+        "pointerSha256": "b4922363b9af39c9196de85fa02c06f59ca8a11fea928732a32864ea0714e358"
+      },
+      {
+        "gameId": "studio-nitro-run",
+        "pointerSha256": "2f1db276d4e4fc80b04d7ca208c55ea8e0d6d67905eeeae1158e8e1de1b1a45e"
+      },
+      {
+        "gameId": "studio-velvet-reign",
+        "pointerSha256": "4244f7830c393796d3276131412f37259ec6b697a3e3a5bd31e630b69b3da866"
+      },
+      {
+        "gameId": "studio-wild-nudge",
+        "pointerSha256": "45f58382424e564dc0aae819214ddd91ce8d9e0a7083c49e960947417d54ec2c"
+      }
+    ],
+    "publicAfter": [
+      {
+        "gameId": "flag-battle",
+        "pointerSha256": "2dbf07d4069cbaa5a790d79e278a4698a70bae9c150998151f5a5632fbd12f33"
+      },
+      {
+        "gameId": "github-crash",
+        "pointerSha256": "deef44e1e5d1a3ae7610f3a846067fef3549216ebcab1a556dd08affb5a8858e"
+      },
+      {
+        "gameId": "original-cr-vs-leo",
+        "pointerSha256": "7c8c0df5a2d8d94c17a0d018fb0b7e30f8f854c7e4032ad3e4fd180e5116fcc3"
+      },
+      {
+        "gameId": "original-jackie-chan",
+        "pointerSha256": "ca36ab41e1f8b0dfffe070688dcdc0eec38c7135cafd710a918824019d450b95"
+      },
+      {
+        "gameId": "royal-plinko",
+        "pointerSha256": "726bab895825baeb53f0b3b3119ed7af7ae249eae2682d281c7fb62b59f42558"
+      },
+      {
+        "gameId": "royal-roulette",
+        "pointerSha256": "fb49365877d997d59454df7a5f28742b51f5afe9f751aaa86126661222f1a651"
+      },
+      {
+        "gameId": "studio-afterglow",
+        "pointerSha256": "48d928e8147918acdd69422c30c0bac1dc3d906ab3e0efdb967bb332d79a808f"
+      },
+      {
+        "gameId": "studio-caramel-carnival",
+        "version": "1.1.1-a3ebebc403b3",
+        "pointerSha256": "af4d06609e324e50f45b5f4b5bef3003052f2f53a55cacbfbc37ec7eb402b302",
+        "manifestSha256": "99ebbdad4c6c2178f5a3e1051bb1a7c93f82507042bfba1b7273949c4d90ec8f",
+        "files": 8
+      },
+      {
+        "gameId": "studio-caribbean-treasures",
+        "pointerSha256": "cc502ab15de4752e6d632062d29073adc4a3110dca076f7b17042fa130fa6d85"
+      },
+      {
+        "gameId": "studio-cosmic-escape",
+        "pointerSha256": "d08f5830eb4c831009c957e8daebcda8c3c9fd2c76555bf9459b31f716efd1e1"
+      },
+      {
+        "gameId": "studio-dracona",
+        "pointerSha256": "c10e0d66ac72313bb9e3c5b36e00c12093bbc891dab1eec462b070bb39baeca0"
+      },
+      {
+        "gameId": "studio-flooded-temple",
+        "pointerSha256": "272e43214f4c4f2911033118819ee970d0f2a43a38a8611f4862e311d0a49fe5"
+      },
+      {
+        "gameId": "studio-forest-heart",
+        "pointerSha256": "241693e84688d259e4116fada2384987ee53b8cce65e08efc5a066592bd29462"
+      },
+      {
+        "gameId": "studio-last-convoy",
+        "pointerSha256": "409a4ddce39a09fc463a1072676171249f60a299153e7fd3ea7a7127d184d311"
+      },
+      {
+        "gameId": "studio-meme-overload",
+        "pointerSha256": "35e183b47cd02dde634043691b015f777aef38e670ce17ca054928b1209b99ba"
+      },
+      {
+        "gameId": "studio-neopolis",
+        "pointerSha256": "b4922363b9af39c9196de85fa02c06f59ca8a11fea928732a32864ea0714e358"
+      },
+      {
+        "gameId": "studio-nitro-run",
+        "pointerSha256": "2f1db276d4e4fc80b04d7ca208c55ea8e0d6d67905eeeae1158e8e1de1b1a45e"
+      },
+      {
+        "gameId": "studio-velvet-reign",
+        "pointerSha256": "4244f7830c393796d3276131412f37259ec6b697a3e3a5bd31e630b69b3da866"
+      },
+      {
+        "gameId": "studio-wild-nudge",
+        "pointerSha256": "45f58382424e564dc0aae819214ddd91ce8d9e0a7083c49e960947417d54ec2c"
+      }
+    ],
+    "healthy": true,
+    "publicHostFiles": 9,
+    "rollbackModuleFiles": 8,
+    "addedGames": [],
+    "restoredGames": [],
+    "productionAccountsCreated": false,
+    "productionWagersPlaced": false
+  },
+  "githubCI": {
+    "run": "https://github.com/grishapav1992/royal/actions/runs/44543798677",
+    "conclusion": "failure",
+    "preExistingFailures": "Two Forest Heart math tests",
+    "matchingEarlierRun": "https://github.com/grishapav1992/royal/actions/runs/44023280614"
+  },
+  "maintenance": {
+    "status": "completed",
+    "startedAt": 1795099726.4713619,
+    "currentImage": "sha256:4a1233a6cb52908a696d25ab23606643536498992261e56bef66a33a9f8a4362",
+    "rollbackImage": "sha256:2cc23838241e398f8b83a5f2166aff41868e82f7e258bc0c2598a0616b8a0574",
+    "freeBefore": 12181954560,
+    "freeAfter": 12199981056,
+    "timerEnabled": true,
+    "timerActive": true
+  },
+  "transportArchive": {
+    "path": "/tmp/caramel-stake-limit-20261119-v1.tgz",
+    "bytes": 5885558,
+    "sha256": "3d5d9ce3e77687ecb39e50c7e6ab8807ce7bc5f2f5396f5c9eecad8bcb1a7927",
+    "removed": true
+  }
+}
