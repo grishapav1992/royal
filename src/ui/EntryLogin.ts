@@ -1,4 +1,4 @@
-import { language, t, translateMessage } from '../i18n/index';
+import { t, translateMessage } from '../i18n/index';
 import { AuthRequestError, requestAuth } from '../network/AccountClient';
 import { renderEntryPage } from './EntryModes';
 import { bindLoginForm, loginFormMarkup } from './LoginForm';
@@ -54,7 +54,6 @@ export async function requireEntryAccount(): Promise<boolean> {
         <p id="join-error" role="alert" hidden></p>
       </div>
       ${backButton()}
-      <a class="entry-login-offline" href="/?offline=1&amp;lang=${language}">${t('Осмотреться одному')}</a>
     </section>`);
   const panel = app.querySelector<HTMLElement>('.entry-login')!;
   const feedback = panel.querySelector<HTMLParagraphElement>('#join-error')!;

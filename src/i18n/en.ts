@@ -883,7 +883,6 @@ export const english: Record<string, string> = {
   "Другой аккаунт": "Switch account",
   "Входим в зал с сохранённым персонажем.": "Entering the hall with your saved character.",
   "Войти в другой зал": "Enter another hall",
-  "Осмотреться одному": "Explore on your own",
   "РОЯЛЬ / ТВОЙ ПРОФИЛЬ": "ROYAL / YOUR PROFILE",
   "Новое игровое имя": "New player name",
   "От 1 до 24 символов. Имя увидят другие игроки.": "1 to 24 characters. Other players will see your name.",

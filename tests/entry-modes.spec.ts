@@ -46,6 +46,7 @@ test('mode selection precedes sign-in and opens the real casino without loading 
   await expect(page.getByText('Войти в клуб', { exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'Сразу к играм', exact: true }).press('Enter');
   await expect(page.locator('#login-form')).toBeVisible();
+  await expect(page.locator('#join-dialog a[href*="offline=1"]')).toHaveCount(0);
   expect(sessionChecks).toHaveLength(1);
   const email = `entry-choice-${crypto.randomUUID()}@example.test`;
   await page.locator('#email').fill(email);
@@ -53,6 +54,7 @@ test('mode selection precedes sign-in and opens the real casino without loading 
   await page.locator('#login-button').click();
   await connected(page);
   await expect(page.locator('.casino-panel')).toBeVisible();
+  await expect(page.locator('dialog#join-dialog a[href*="offline=1"]')).toHaveCount(0);
   expect(await page.evaluate(() => (window as any).royalDemo.isWorldLoaded())).toBe(false);
   expect(worldRequests).toEqual([]);
   await expect(page.locator('#game canvas')).toHaveCount(0);

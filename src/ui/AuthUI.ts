@@ -56,8 +56,7 @@ export class AuthUI {
         <button id="connection-logout" class="text-button" type="button">Другой аккаунт</button>
       </section>
       <p id="join-error" role="alert" hidden></p>
-      <button id="new-room" class="text-button" type="button" hidden>Войти в другой зал</button>
-      <a class="offline-link" href="/?offline=1">Осмотреться одному</a>`);
+      <button id="new-room" class="text-button" type="button" hidden>Войти в другой зал</button>`);
     installLanguageSwitcher(this.dialog);
     document.body.append(this.dialog);
     this.nameDialog.id = 'name-dialog'; this.nameDialog.className = 'join-dialog auth-dialog';

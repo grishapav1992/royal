@@ -303,13 +303,7 @@ body:has(.entry-page) { margin: 0; }
   color: #a12e2e;
 }
 
-.entry-login-offline {
-  display: inline-block;
-  color: #4f624f;
-  font-size: 13px;
-}
-
-.entry-login :is(input, button, a):focus-visible {
+.entry-login :is(input, button):focus-visible {
   outline: 2px solid #96723c;
   outline-offset: 2px;
 }

@@ -31,7 +31,7 @@ button:active{translate:1px 1px;box-shadow:none}
 .footer.room-dock{padding-bottom:max(8px,env(safe-area-inset-bottom))}
 ::backdrop{background:#263e3bad;backdrop-filter:none}
 dialog{background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:5px;box-shadow:7px 7px 0 #26352b66}
-.text-button,.offline-link{color:#386451}.text-button:hover,.offline-link:hover{color:#a54332}
+.text-button{color:#386451}.text-button:hover{color:#a54332}
 .help-dialog>.eyebrow,.help-steps span,.mini-top .eyebrow,.featured .card-kicker{color:#936335}
 kbd{background:#f5e5bf;color:#554330;border:1px solid #867153;box-shadow:0 2px #b8a17d;border-radius:2px}
 .cabinet-card,.cabinet-card.featured,.shared-cards>button{background:#f4e3b9;border:2px solid #746247;border-radius:3px;color:var(--ink);box-shadow:2px 2px 0 #cbb68c}
@@ -52,7 +52,7 @@ kbd{background:#f5e5bf;color:#554330;border:1px solid #867153;box-shadow:0 2px #
 .chess-board{border-color:#734a32;border-radius:3px;box-shadow:3px 3px 0 #342f2a55}.chess-square.light{background:#f3dfac}.chess-square.dark{background:#799b78}.chess-square.selected{box-shadow:inset 0 0 0 4px #e6a32e}.chess-square.in-check{background:#df6851}.piece-w .chess-piece,.piece-b .chess-piece{filter:none}.chess-promotion button{background:#e4d1a0;color:var(--ink);border:2px solid #655139}.toast{background:#f6d778;color:var(--ink);border:2px solid var(--ink);border-radius:4px;box-shadow:3px 3px 0 #342f2a55}
 @media(max-width:700px){.chat-heading{padding-bottom:4px}.chat-dock,.room-panel{border-width:2px}.lounge-controls button{box-shadow:1px 1px 0 var(--ink)}}
 @media(prefers-reduced-motion:reduce){button{transition:none}button:active{translate:none}}
-.join-dialog .eyebrow{color:#88612f}.join-dialog input:focus{border-color:#497867;outline:2px solid #497867;outline-offset:2px}.join-dialog .offline-link{color:#386451;text-decoration:underline;text-underline-offset:3px}.chat-heading>span{color:#a7d8c5}.person-tag.away{opacity:.7}
+.join-dialog .eyebrow{color:#88612f}.join-dialog input:focus{border-color:#497867;outline:2px solid #497867;outline-offset:2px}.chat-heading>span{color:#a7d8c5}.person-tag.away{opacity:.7}
 
 /* Warm labels stay readable against the night-time room shell. */
 .chat-dock :is(.chat-footnote,.chat-meta,.chat-meta time,.chat-system p),.workspace .sidebar>.sidebar-intro{color:#c6b4c2}
