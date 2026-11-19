@@ -1,0 +1,201 @@
+{
+  "release": "nitro-run-redesign-20261119-v1",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "5a0b5634a42ad16104897e662eebc89867afd50a",
+  "hostSourceCommit": "937263b70c549b1ad53756888cefc667cec69035",
+  "hostImage": "sha256:582161b28242a20718b2be8fffef2295c4a8f3deb872b27dd4c0af80b3e0c3d5",
+  "version": "1.2.2-2551448802c8",
+  "previousVersion": "1.1.1-732024019c85",
+  "packageManifestSha256": "7f141fd62f8f76758aa4000431cf3aa9ac9ac39a7ecea373721dee63f6054ce2",
+  "previousPackageManifestSha256": "4ca8671aaf95e4c9510b6d3ec4ae3412176b3edee07d4dd7cb7a543811a0003f",
+  "activeSha256": "3519df77a2ee770204fc70e4f929e852dcb8afb323a1c59aceb6d69da1b5e1e6",
+  "previousActiveSha256": "2f1db276d4e4fc80b04d7ca208c55ea8e0d6d67905eeeae1158e8e1de1b1a45e",
+  "releaseManifestSha256": "af3a36903b65fb997aa1b7247a8315b215811a1985be3de165c906b66a58a8e8",
+  "moduleProjectionSha256": "47af527200cb8ff5fb27d300562dfb20c058d3d7b078fffe0a6f1952d63e0be6",
+  "compiledSourceFiles": 42,
+  "verifiedGitInputs": 44,
+  "hostContract": {
+    "apiVersion": 1,
+    "rulesVersion": 2,
+    "progressVersion": 1
+  },
+  "publishedModule": {
+    "verified": true,
+    "gameId": "studio-nitro-run",
+    "version": "1.2.2-2551448802c8",
+    "bytes": 2627079,
+    "files": 5,
+    "beforeSha256": "2f1db276d4e4fc80b04d7ca208c55ea8e0d6d67905eeeae1158e8e1de1b1a45e",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "3519df77a2ee770204fc70e4f929e852dcb8afb323a1c59aceb6d69da1b5e1e6",
+    "history": "/opt/royal-game-modules-state/history/20261119T174744-d72fc52c68234505bb53423a6f229489.json"
+  },
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8738,
+  "servicesPreserved": 11,
+  "sourceMetadataFiles": 2,
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/nitro-run-redesign-20261119-v1/source.tgz",
+    "sha256": "478359112316db596576c72bd50c4da5ab2920cfd4cbacd72a234becfb97efbd",
+    "bytes": 2022,
+    "oldVersion": "1.1.1-732024019c85",
+    "imageTag": "royal-game:before-nitro-run-redesign-20261119-v1",
+    "image": "sha256:582161b28242a20718b2be8fffef2295c4a8f3deb872b27dd4c0af80b3e0c3d5",
+    "oldPackageHardlinked": true
+  },
+  "checks": {
+    "build": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 319742
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 15284
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 230191
+      }
+    ],
+    "rtpProfiles": 38,
+    "stakePolicies": 20,
+    "stakeAdmissions": 20,
+    "walletTests": 19,
+    "linuxInstallerTests": 23,
+    "connectedHost": {
+      "browser": "Chrome",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "durationMs": 150422.321,
+      "hostFiles": 117,
+      "hostBytes": 22810200,
+      "backendSha256": "347b10a5191da839142cafb6459d14e607190a32af3a97107f73cd392de3807f",
+      "exactProductionClientAndBackend": true,
+      "temporaryPostgreSQL": true,
+      "loopbackProductionPathProxy": true,
+      "sizes": [
+        [
+          1440,
+          900
+        ],
+        [
+          1280,
+          720
+        ],
+        [
+          768,
+          1024
+        ],
+        [
+          1024,
+          768
+        ],
+        [
+          393,
+          852
+        ],
+        [
+          852,
+          393
+        ],
+        [
+          320,
+          568
+        ],
+        [
+          568,
+          320
+        ]
+      ],
+      "oneAcceptedBetUnits": "10",
+      "stopPreservesAcceptedRound": true,
+      "lostResponseRecoveryAndReopen": true,
+      "freeBonusHasNoExtraDebit": true
+    },
+    "englishPanel": {
+      "passed": true,
+      "installedHostDictionary": true,
+      "paidRequests": 0,
+      "moduleVersion": "1.2.2-2551448802c8"
+    },
+    "crossModuleWalletRecovery": "passed",
+    "public": {
+      "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+      "healthy": true,
+      "version": "1.2.2-2551448802c8",
+      "previousVersion": "1.1.1-732024019c85",
+      "pointerSha256": "3519df77a2ee770204fc70e4f929e852dcb8afb323a1c59aceb6d69da1b5e1e6",
+      "manifestSha256": "7f141fd62f8f76758aa4000431cf3aa9ac9ac39a7ecea373721dee63f6054ce2",
+      "cacheControl": "no-store",
+      "currentFiles": 6,
+      "previousFiles": 6,
+      "hostClientPreserved": true,
+      "backendAndCatalogueBoundToGuardedInventory": true,
+      "productionAccountsOrWagersCreated": false,
+      "checkedAt": "2026-11-19T17:48:45.286Z"
+    }
+  },
+  "catalogue": {
+    "games": [
+      "flag-battle",
+      "github-crash",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "royal-plinko",
+      "royal-roulette",
+      "studio-afterglow",
+      "studio-caramel-carnival",
+      "studio-caribbean-treasures",
+      "studio-cosmic-escape",
+      "studio-dracona",
+      "studio-flooded-temple",
+      "studio-forest-heart",
+      "studio-last-convoy",
+      "studio-meme-overload",
+      "studio-neopolis",
+      "studio-nitro-run",
+      "studio-velvet-reign",
+      "studio-wild-nudge"
+    ],
+    "added": [],
+    "restored": [],
+    "verification": "Connected-host catalogue and unchanged production host/backend/config inventories; catalogue code and new-round admission were not changed."
+  },
+  "concurrentUpdate": {
+    "initialGuardStoppedBeforeMutation": true,
+    "changedInventoryOnly": "moduleFiles",
+    "preservedGame": "studio-cosmic-escape",
+    "preservedVersion": "1.1.1-866ceaacbb3b",
+    "newSnapshotReviewed": true,
+    "nitroArtifactRebuiltForBaselineRefresh": false
+  },
+  "maintenance": {
+    "maintenance": "completed",
+    "timerEnabled": "enabled",
+    "timerActive": "active",
+    "health": "healthy",
+    "currentImage": "sha256:582161b28242a20718b2be8fffef2295c4a8f3deb872b27dd4c0af80b3e0c3d5",
+    "rollbackImage": "sha256:11695c77704445b8b434b6b011d361f044d5e766c819203632acc945439f192d",
+    "maintenanceFreeBefore": 12049043456,
+    "maintenanceFreeAfter": 12069851136,
+    "transportArchiveRemovedBytes": 3564094,
+    "freeBeforeTransportCleanup": 12056944640,
+    "freeAfterTransportCleanup": 12060512256
+  },
+  "mathRulesAndStakeTermsChanged": false,
+  "physicalDevicesTested": false,
+  "productionAccountsOrWagersCreated": false,
+  "verifiedAt": "2026-11-19T17:53:24.108Z"
+}
