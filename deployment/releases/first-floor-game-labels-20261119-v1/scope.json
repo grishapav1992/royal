@@ -77,7 +77,8 @@
     "src/ui/NitroRunUI.ts": "e44a5dc8b8d884bfd3897f39a646a7bcd686076a1a9e2ac72bf05531dc5fea87",
     "src/ui/nitro-run-layout.css": "8e932f4da8af34f91ee305d5d6308e668f32bb051675f0b4053897ba5dcc6407",
     "src/ui/nitro-run.css": "689e346f5cf25f629e1bde94468f20c3ce5c346661cf2456bfc9e026d4cbfe42",
-    "src/ui/slotKit/SlotControls.ts": "0af9662f583bb4ae2fc9f284fc301075f8304b3da47f24a4c0d2782320a46fb7"
+    "src/ui/slotKit/SlotControls.ts": "0af9662f583bb4ae2fc9f284fc301075f8304b3da47f24a4c0d2782320a46fb7",
+    "src/ui/CaramelBoard.ts": "cd3d3c73f4362397fb771c67f028e3621c5278624e0e70cca2bf447bc6757736"
   },
   "originals": {
     "src/main.ts": {
