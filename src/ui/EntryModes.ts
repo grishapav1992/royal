@@ -2,9 +2,9 @@ import '../i18n/entryModesEn';
 import { installLanguageSwitcher, t } from '../i18n/index';
 import barPreview from './entry-previews/bar.webp';
 import catalogPreview from './entry-previews/catalog.webp';
-import roulettePreview from './entry-previews/roulette.webp';
+import flagBattlePreview from './entry-previews/flag-battle.webp';
 import clubMotion from './entry-previews/club.mp4';
-import rouletteMotion from './entry-previews/roulette.mp4';
+import flagBattleMotion from './entry-previews/flag-battle.mp4';
 import './entry-modes.css';
 
 export type EntryMode = 'club' | 'casino';
@@ -92,8 +92,8 @@ export function chooseEntryMode(focusMode?: EntryMode): Promise<EntryMode> {
         <button type="button" class="entry-option entry-casino" data-entry-mode="casino" aria-labelledby="entry-casino-action" aria-describedby="entry-casino-description">
           <span class="entry-art entry-casino-art" aria-hidden="true">
             <img class="entry-catalog-preview" src="${catalogPreview}" alt="" width="550" height="340">
-            <img class="entry-game-preview" src="${roulettePreview}" alt="" width="565" height="348">
-            <video class="entry-game-preview entry-preview-motion" data-clip="${rouletteMotion}" width="568" height="350" muted loop playsinline preload="none"></video>
+            <img class="entry-game-preview" src="${flagBattlePreview}" alt="" width="568" height="350">
+            <video class="entry-game-preview entry-preview-motion" data-clip="${flagBattleMotion}" width="568" height="350" muted loop playsinline preload="none"></video>
           </span>
           <span class="entry-copy">
             ${fromLink('casino')}
@@ -104,9 +104,8 @@ export function chooseEntryMode(focusMode?: EntryMode): Promise<EntryMode> {
         </button>
         <button type="button" class="entry-option entry-club" data-entry-mode="club" aria-labelledby="entry-club-action" aria-describedby="entry-club-description">
           <span class="entry-art entry-club-art" aria-hidden="true">
-            <img src="${barPreview}" alt="" width="370" height="220">
+            <img src="${barPreview}" alt="" width="640" height="336">
             <video class="entry-preview-motion" data-clip="${clubMotion}" width="640" height="336" muted loop playsinline preload="none"></video>
-            <span class="entry-scene-label">${t('Рояль Бар')}</span>
           </span>
           <span class="entry-copy">
             ${fromLink('club')}

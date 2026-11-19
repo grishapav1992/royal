@@ -11,7 +11,6 @@ Object.assign(english, {
   'В клуб с персонажем': 'Enter as your character',
   'Приостановить анимацию': 'Pause animations',
   'Включить анимацию': 'Play animations',
-  'Рояль Бар': 'Royal Bar',
   'Найди игру в каталоге и открой её в игровом окне. Общий чат будет рядом.': 'Find a game in the catalogue and open it in its own window, with the shared chat alongside.',
   'Гуляй по залам, загляни в бар, общайся и открывай игры прямо из клуба.': 'Explore the rooms, stop by the bar, chat and open games from inside the club.',
   'Режим из ссылки': 'Mode from your link',
