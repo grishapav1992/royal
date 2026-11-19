@@ -1,0 +1,16 @@
+{
+  "client": [
+    "src/i18n/en.ts",
+    "src/paper-theme.css",
+    "src/style.css",
+    "src/ui/AuthUI.ts",
+    "src/ui/EntryLogin.ts",
+    "src/ui/EntryModes.ts",
+    "src/ui/FlagBattlePreview.ts",
+    "src/ui/entry-modes.css"
+  ],
+  "previews": [
+    "src/ui/entry-previews/club.mp4",
+    "src/ui/entry-previews/club.webp"
+  ]
+}
