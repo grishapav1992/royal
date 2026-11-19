@@ -170,15 +170,35 @@ body:has(.entry-page) { margin: 0; }
   display: none;
 }
 
-.entry-header select {
+.entry-header .language-switcher {
+  position: relative;
+}
+
+.entry-header .language-switcher select {
+  appearance: none;
   min-height: 44px;
-  padding: 8px 12px;
+  padding-block: 8px;
+  padding-inline: 16px 36px;
   border: 1px solid #c6b8a3;
   border-radius: 6px;
   background: #faf6ee;
   color: #342a34;
-  font: 14px system-ui;
+  font: 14px/1.25 system-ui, sans-serif;
   cursor: pointer;
+}
+
+.entry-header .language-switcher::after {
+  content: '';
+  position: absolute;
+  inset-block-start: calc(50% - 2px);
+  inset-inline-end: 16px;
+  box-sizing: border-box;
+  inline-size: 8px;
+  block-size: 8px;
+  border: solid currentColor;
+  border-width: 0 1.5px 1.5px 0;
+  transform: translateY(-50%) rotate(45deg);
+  pointer-events: none;
 }
 
 .entry-header select:focus-visible {
