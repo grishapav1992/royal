@@ -1,0 +1,96 @@
+{
+  "checkedAt": "2026-11-19T17:04:51.681Z",
+  "sourceCommit": "399bd8401e07f23d4ebdc28dd827c34575c4f3e4",
+  "moduleVersion": "1.2.2-5510fce81ce1",
+  "moduleSourceSha256": "5510fce81ce1f8cbed3ae962330f8e5a95af8b9f1615999198b8ad77c268f1b7",
+  "verifiedSourceFiles": 42,
+  "moduleBytes": 2624239,
+  "typecheck": "passed",
+  "moduleBuildWithRtpGate": "passed",
+  "chromiumConnectedHost": {
+    "passed": 5,
+    "failed": 0,
+    "flaky": 0,
+    "skipped": 0,
+    "durationMs": 106591.953,
+    "sizes": [
+      [
+        1440,
+        900
+      ],
+      [
+        1280,
+        720
+      ],
+      [
+        768,
+        1024
+      ],
+      [
+        1024,
+        768
+      ],
+      [
+        393,
+        852
+      ],
+      [
+        852,
+        393
+      ],
+      [
+        320,
+        568
+      ],
+      [
+        568,
+        320
+      ]
+    ],
+    "mobileChatOverlay": "passed"
+  },
+  "sharedWalletCrossModuleRecovery": "passed",
+  "autoplay": {
+    "counts": [
+      10,
+      25,
+      50
+    ],
+    "previewAndCancellationPaidRequests": 0,
+    "totalExamples": [
+      {
+        "count": 25,
+        "stakeUnits": "10",
+        "totalStakeUnits": "250"
+      },
+      {
+        "count": 25,
+        "stakeUnits": "123",
+        "totalStakeUnits": "3075"
+      },
+      {
+        "count": 50,
+        "stakeUnits": "5000",
+        "totalStakeUnits": "250000"
+      }
+    ],
+    "explicitStart": "passed",
+    "stopAfterAcceptedRound": "passed",
+    "escapeCancelAndFocus": "passed",
+    "invalidStakeDraft": "passed",
+    "nativeDialogFitsEightSizes": "passed"
+  },
+  "composition": {
+    "previousDesktopFrameWidth": 639.59375,
+    "desktopFrameWidth": 773.59375,
+    "desktopFrameHeight": 646.984375,
+    "hudToFieldGap": 12,
+    "frameWidthGrowthPercent": 20.95079884692432
+  },
+  "mathAndServerRulesChanged": false,
+  "productionPublished": false,
+  "physicalDevicesAndListeningTested": false,
+  "developmentStandWarnings": [
+    "Existing Vite public-asset import warning for cat/walk-v3-frames.json; outside the Nitro Run change."
+  ]
+}
