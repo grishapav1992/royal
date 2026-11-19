@@ -597,10 +597,10 @@
       "sha256": "d753df5f08e1c6717c4ba3fdbe1b0202013177859995751296a8a900f6a5f1a1"
     },
     "src/shared/caramelCarnival.ts": {
-      "commit": "1bcb505d7aabf0aab79bca5ca4ddb1da96ab17d6",
+      "commit": "049483820e65c47a16b602d816887d5a1df3940f",
       "path": "src/shared/caramelCarnival.ts",
-      "baseSha256": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b",
-      "sha256": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b"
+      "baseSha256": "2e7d5cdfffee645635b58611a1a52d76047e0e669efda62674293b697f89e9f4",
+      "sha256": "2e7d5cdfffee645635b58611a1a52d76047e0e669efda62674293b697f89e9f4"
     },
     "src/shared/cardTables.ts": {
       "commit": "1bcb505d7aabf0aab79bca5ca4ddb1da96ab17d6",
@@ -2357,10 +2357,10 @@
       "sha256": "a4c54488171ad734558f916a45efb9b14a45d4316d784fbe84f25c568d92ae5f"
     },
     "src/shared/gameStakes.ts": {
-      "commit": "0e6b79cc2bf48cd95e0513f96c680bc398b300d8",
+      "commit": "049483820e65c47a16b602d816887d5a1df3940f",
       "path": "src/shared/gameStakes.ts",
-      "baseSha256": "89e82a44d9761a22d611f6bf97f830940ce3cd80b4fb60b7954f3a37d850b220",
-      "sha256": "89e82a44d9761a22d611f6bf97f830940ce3cd80b4fb60b7954f3a37d850b220"
+      "baseSha256": "a8357bd91b07d33e991867b770341f6668760ac9a54c1e58efce98b932c29d4e",
+      "sha256": "a8357bd91b07d33e991867b770341f6668760ac9a54c1e58efce98b932c29d4e"
     },
     "server/mira.ts": {
       "commit": "1bcb505d7aabf0aab79bca5ca4ddb1da96ab17d6",

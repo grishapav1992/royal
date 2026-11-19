@@ -1453,7 +1453,7 @@
       "samplerGame": "studio-caramel-carnival",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -2475,7 +2475,7 @@
       "samplerGame": "studio-caramel-carnival",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },

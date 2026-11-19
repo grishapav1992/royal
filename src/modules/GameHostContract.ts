@@ -26,6 +26,7 @@ export interface GameHostV1 {
  readonly apiVersion: 1;
  readonly manualStakes?: 1;
  readonly cosmicStakeLimit?: 1;
+ readonly caramelStakeLimit?: 1;
  readonly flagToteClient?: typeof flagToteClient;
  readonly expansionClient: typeof expansionClient;
  readonly demoWallet: typeof demoWallet;
@@ -83,4 +84,21 @@ export function readGameHost(): GameHostV1 {
  const value = (globalThis as unknown as Record<symbol, GameHostV1>)[GAME_HOST_KEY];
  if (!value || value.apiVersion !== 1) throw Error('Game host version is incompatible');
  return value;
+}
+
+export function mountGameHostRefresh(host: HTMLElement, gameName: string, language: string): GameModuleInstance {
+ const document = host.ownerDocument;
+ const panel = document.createElement('div');
+ panel.style.cssText = 'padding:32px;text-align:center;color:inherit';
+ const message = document.createElement('p');
+ message.setAttribute('role', 'alert');
+ const english = language === 'en';
+ message.textContent = english ? `Refresh the page to play ${gameName}.` : `Обнови страницу, чтобы играть в ${gameName}.`;
+ const refresh = document.createElement('button');
+ refresh.type = 'button';
+ refresh.textContent = english ? 'Refresh page' : 'Обновить страницу';
+ refresh.onclick = () => document.defaultView?.location.reload();
+ panel.append(message, refresh);
+ host.replaceChildren(panel);
+ return { destroy: () => panel.remove() };
 }

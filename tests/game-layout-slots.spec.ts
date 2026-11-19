@@ -128,6 +128,74 @@ test('Last Convoy keeps its radio and stake legible in the connected host',async
  await expect(chat.locator('#chat-input')).toBeVisible();
 });
 
+test('Caramel Carnival keeps the reel frame still as feedback and festival state change',async({page,roomPath})=>{
+ await enterGameHall(page,roomPath);
+ await open(page,'studio-caramel-carnival');
+ const game=page.locator('#mini-game > .ccf');
+ const chat=page.locator('#club-chat-dock');
+ for(const [width,height,layout] of [[1280,720,'full'],[393,852,'portrait'],[320,568,'portrait'],[852,393,'landscape']] as const){
+  await test.step(`${width}x${height}`,async()=>{
+   await page.setViewportSize({width,height});
+   await expect(game).toHaveAttribute('data-slot-priority',layout);
+   if(layout==='full'){
+    if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
+    await expect(chat.locator('#chat-input')).toBeVisible();
+   }else if(await chat.locator('.game-chat-close').isVisible()){
+    await chat.locator('.game-chat-close').click();
+   }
+   await page.evaluate(async()=>{await document.fonts.ready;await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));});
+   const {idle,spinning,recovery,notice,festival,retryHeight}=await game.evaluate(root=>{
+    const frame=root.querySelector('.ccf-frame')!;
+    const message=root.querySelector('[data-cc-message]')!;
+    const error=root.querySelector('[data-cc-error]')!;
+    const retry=root.querySelector<HTMLButtonElement>('[data-cc-retry]')!;
+    const phaseTitle=root.querySelector('[data-cc-phase-title]')!;
+    const originalMessage=message.textContent;
+    const originalTitle=phaseTitle.textContent;
+    const originalState={phase:root.dataset.phase,hasWin:root.dataset.hasWin,notice:root.dataset.notice,festival:root.dataset.festival};
+    const rect=()=>frame.getBoundingClientRect().toJSON();
+    const idle=rect();
+    try{
+     message.textContent='';
+     root.dataset.phase='spinning';
+     const spinning=rect();
+     error.textContent='Не удалось получить ответ. Проверь сохранённый раунд.';
+     retry.hidden=false;
+     const recovery=rect();
+     const retryHeight=retry.getBoundingClientRect().height;
+     error.textContent='';
+     retry.hidden=true;
+     root.dataset.phase='idle';
+     root.dataset.hasWin='true';
+     root.dataset.notice='true';
+     message.textContent='Автоигра остановлена: выигрыш достиг лимита';
+     const notice=rect();
+     root.dataset.notice='false';
+     root.dataset.festival='true';
+     message.textContent='Фестиваль идёт сам · множитель ×50 сохраняется между вращениями';
+     phaseTitle.textContent='Фестиваль · вращение 25 из 30';
+     return {idle,spinning,recovery,notice,festival:rect(),retryHeight};
+    }finally{
+     message.textContent=originalMessage;
+     phaseTitle.textContent=originalTitle;
+     error.textContent='';
+     retry.hidden=true;
+     for(const [key,value] of Object.entries(originalState)){
+      if(value===undefined) delete root.dataset[key];
+      else root.dataset[key]=value;
+     }
+    }
+   });
+   expect(idle.width).toBeGreaterThan(0);
+   expect(spinning).toEqual(idle);
+   expect(recovery).toEqual(idle);
+   expect(notice).toEqual(idle);
+   expect(festival).toEqual(idle);
+   expect(retryHeight).toBeGreaterThanOrEqual(44);
+  });
+ }
+});
+
 test('Cosmic Escape keeps results in the controls and the reel frame still',async({page,roomPath})=>{
  await enterGameHall(page,roomPath);
  await open(page,'studio-cosmic-escape');
@@ -169,12 +237,16 @@ test('Cosmic Escape keeps results in the controls and the reel frame still',asyn
  }
 });
 
-test('Cosmic Escape accepts 100 USDT as a whole-round stake and rejects the next cent',async({page,roomPath})=>{
- const game='studio-cosmic-escape';
+for(const game of ['studio-cosmic-escape','studio-caramel-carnival'])test(game+' accepts 100 USDT as a whole-round stake and rejects the next cent',async({page,roomPath})=>{
  await enterGameHall(page,roomPath);
  await open(page,game);
- const stake=page.locator('#mini-game [data-manual-stake]'),spin=page.locator('[data-lg-spin]');
- await expect(page.locator('[data-lg-stake] option[value="10000"]')).toHaveCount(1);
+ const prefix=family(game),chat=page.locator('#club-chat-dock');
+ if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
+ await expect(chat.locator('#chat-input')).toBeVisible();
+ if(process.env.LAYOUT_TOUCH==='1')await chat.locator('.game-chat-close').click();
+ const stake=page.locator('#mini-game [data-manual-stake]'),spin=page.locator(`[data-${prefix}-spin]`);
+ const stakes=page.locator(`[data-${prefix}-stake]`);
+ await expect(stakes.locator('option[value="10000"]')).toHaveCount(1);
  const before=await walletSnapshot(page);
  await stake.fill('100,01');
  await expect(stake).toHaveAttribute('aria-invalid','true');
@@ -182,7 +254,10 @@ test('Cosmic Escape accepts 100 USDT as a whole-round stake and rejects the next
  expect((await walletSnapshot(page)).entries).toEqual(before.entries);
  await stake.fill('100,00');
  await expect(stake).toHaveAttribute('aria-invalid','false');
- await expect(page.locator('[data-lg-stake]')).toHaveValue('10000');
+ await expect(stakes).toHaveValue('10000');
+ if(game==='studio-caramel-carnival'){
+  await expect(page.locator('[data-cc-buy-price]')).toHaveText(/3[\s\u00a0\u202f]*500[,.]00/);
+ }
  const paid=page.waitForResponse(response=>response.url().endsWith('/api/demo-wallet/expansion')&&response.request().method()==='POST');
  await spin.click();
  const response=await paid;

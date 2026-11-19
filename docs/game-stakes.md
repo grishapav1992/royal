@@ -4,7 +4,7 @@ Every newly added wagered game uses the shared stake mechanics. The ordinary sta
 
 Casino games also accept any manually entered amount from $0.10 to $50.00 in steps of $0.01. The nine common choices remain quick presets. Use `syncStakeSelect` from `src/ui/stakeSelection.ts`, or the shared `SlotStakeControls`, to provide the same editable field, preset picker, locked accepted stake and draft validation. A dot and comma are accepted decimal separators. Never silently wager the last valid amount when the field contains an invalid draft. A compatible host advertises `manualStakes: 1`; an older open host keeps presets and requires a page refresh before custom entry. The separate qualified PvP contract retains its existing denominations and commission.
 
-Cosmic Escape uses the same cent entry and quick presets with an authorized $100 maximum. Its range is registered and verified against the per-game maximum. Paid missions still show their complete purchase price separately.
+Caramel Carnival and Cosmic Escape accept stakes from $0.10 to $100.00 in cent increments and include $100 as a quick preset. The maximum applies to the ordinary spin. Caramel's festival and Cosmic Escape's missions display their full purchase price separately.
 
 Register `manualStakeRange: {minimumCents: 10, maximumCents: 5000, stepCents: 1}` in each casino stake policy with the default ceiling. Bind `scripts/game-math/manual-stakes.mjs`, which replays every accepted cent against the complete-round normalized reward and final settlement. The real wallet also exercises non-preset cents, replay and restart. Parse numeric core-wallet amounts with `gameBetCents`; multiplying a floating amount by 100 is not an exact integer transport.
 
