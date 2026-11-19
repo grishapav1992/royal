@@ -27,29 +27,20 @@ export function renderEntryPage(content: string) {
 
 function installPreviewMotion(app: HTMLElement) {
   const clips = Array.from(app.querySelectorAll<HTMLVideoElement>('.entry-preview-motion'));
-  const toggle = app.querySelector<HTMLButtonElement>('.entry-preview-toggle')!;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const visibleClips = new Set<HTMLVideoElement>();
   const visibleThreshold = 0.4;
   const listeners = new AbortController();
   const { signal } = listeners;
-  let paused = false;
 
   const update = () => {
-    toggle.hidden = reducedMotion.matches;
-    toggle.textContent = t(paused ? 'Включить анимацию' : 'Приостановить анимацию');
     for (const clip of clips) {
-      if (paused || document.hidden || reducedMotion.matches || !visibleClips.has(clip)) {
+      if (document.hidden || reducedMotion.matches || !visibleClips.has(clip)) {
         clip.pause();
         continue;
       }
       if (!clip.getAttribute('src')) clip.src = clip.dataset.clip!;
-      if (clip.paused) void clip.play().catch((error: unknown) => {
-        if (!signal.aborted && error instanceof DOMException && error.name === 'NotAllowedError') {
-          paused = true;
-          update();
-        }
-      });
+      if (clip.paused && !clip.ended) void clip.play().catch(() => { /* The poster stays visible if playback is blocked. */ });
     }
   };
 
@@ -68,7 +59,6 @@ function installPreviewMotion(app: HTMLElement) {
     clip.addEventListener('playing', () => { clip.dataset.hasFrame = ''; }, { signal });
     observer.observe(clip);
   }
-  toggle.addEventListener('click', () => { paused = !paused; update(); }, { signal });
   reducedMotion.addEventListener('change', update, { signal });
   document.addEventListener('visibilitychange', update, { signal });
   update();
@@ -89,33 +79,36 @@ export function chooseEntryMode(focusMode?: EntryMode): Promise<EntryMode> {
     <section class="entry-content" aria-labelledby="entry-title">
       <h1 id="entry-title">${t('Как будешь играть?')}</h1>
       <div class="entry-options">
-        <button type="button" class="entry-option entry-casino" data-entry-mode="casino" aria-labelledby="entry-casino-action" aria-describedby="entry-casino-description">
+        <button type="button" class="entry-option entry-casino" data-entry-mode="casino" aria-labelledby="entry-casino-title" aria-describedby="entry-casino-description">
           <span class="entry-art entry-casino-art" aria-hidden="true">
             <img class="entry-catalog-preview" src="${catalogPreview}" alt="" width="550" height="340">
             <img class="entry-game-preview" src="${flagBattlePreview}" alt="" width="568" height="350">
-            <video class="entry-game-preview entry-preview-motion" data-clip="${flagBattleMotion}" width="568" height="350" muted loop playsinline preload="none"></video>
+            <video class="entry-game-preview entry-preview-motion" data-clip="${flagBattleMotion}" width="568" height="350" muted playsinline preload="none"></video>
           </span>
           <span class="entry-copy">
             ${fromLink('casino')}
-            <strong>${t('Сразу к играм')}</strong>
+            <span class="entry-card-heading">
+              <strong id="entry-casino-title">${t('Сразу к играм')}</strong>
+              <span aria-hidden="true">↗</span>
+            </span>
             <span class="entry-description" id="entry-casino-description">${t('Найди игру в каталоге и открой её в игровом окне. Общий чат будет рядом.')}</span>
-            <b class="entry-action" id="entry-casino-action">${t('Открыть казино')} <span aria-hidden="true">↗</span></b>
           </span>
         </button>
-        <button type="button" class="entry-option entry-club" data-entry-mode="club" aria-labelledby="entry-club-action" aria-describedby="entry-club-description">
+        <button type="button" class="entry-option entry-club" data-entry-mode="club" aria-labelledby="entry-club-title" aria-describedby="entry-club-description">
           <span class="entry-art entry-club-art" aria-hidden="true">
             <img src="${barPreview}" alt="" width="640" height="336">
-            <video class="entry-preview-motion" data-clip="${clubMotion}" width="640" height="336" muted loop playsinline preload="none"></video>
+            <video class="entry-preview-motion" data-clip="${clubMotion}" width="640" height="336" muted playsinline preload="none"></video>
           </span>
           <span class="entry-copy">
             ${fromLink('club')}
-            <strong>${t('В клуб с персонажем')}</strong>
+            <span class="entry-card-heading">
+              <strong id="entry-club-title">${t('В клуб с персонажем')}</strong>
+              <span aria-hidden="true">↗</span>
+            </span>
             <span class="entry-description" id="entry-club-description">${t('Гуляй по залам, загляни в бар, общайся и открывай игры прямо из клуба.')}</span>
-            <b class="entry-action" id="entry-club-action">${t('Войти в клуб')} <span aria-hidden="true">↗</span></b>
           </span>
         </button>
       </div>
-      <button type="button" class="entry-preview-toggle" hidden></button>
       <p class="entry-status" role="status"></p>
     </section>`);
 
@@ -129,7 +122,6 @@ export function chooseEntryMode(focusMode?: EntryMode): Promise<EntryMode> {
         const mode = button.dataset.entryMode;
         if (!isEntryMode(mode)) return;
         stopPreviewMotion();
-        app.querySelector('.entry-preview-toggle')?.remove();
         for (const option of buttons) option.disabled = true;
         status.textContent = t('Проверяем вход…');
         resolve(mode);
