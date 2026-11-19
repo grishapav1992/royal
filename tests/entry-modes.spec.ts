@@ -241,7 +241,7 @@ test('a failed session check offers retry before asking for credentials', async 
   await expect(page.locator('.entry-login #login-form')).toHaveCount(0);
 });
 
-test('entry previews play once without a pause button, and reduced motion keeps the stills', async ({ page }) => {
+test('entry previews loop without a pause button, and reduced motion keeps the stills', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   const clips = page.locator('.entry-preview-motion');
@@ -251,14 +251,18 @@ test('entry previews play once without a pause button, and reduced motion keeps 
     return { paused: video.paused, ended: video.ended, loop: video.loop, time: video.currentTime, source: video.getAttribute('src') };
   }));
   expect(await clipStates()).toEqual([
-    { paused: true, ended: false, loop: false, time: 0, source: null },
-    { paused: true, ended: false, loop: false, time: 0, source: null },
+    { paused: true, ended: false, loop: true, time: 0, source: null },
+    { paused: true, ended: false, loop: true, time: 0, source: null },
   ]);
 
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await expect.poll(async () => (await clipStates()).every(clip => !clip.paused && clip.time > 0)).toBe(true);
   await expect(page.getByRole('button', { name: 'Приостановить анимацию' })).toHaveCount(0);
-  await expect.poll(async () => (await clipStates()).every(clip => clip.ended && clip.paused && !clip.loop), { timeout: 12000 }).toBe(true);
+  await clips.evaluateAll(elements => elements.forEach(element => {
+    const video = element as HTMLVideoElement;
+    video.currentTime = video.duration - 0.25;
+  }));
+  await expect.poll(async () => (await clipStates()).every(clip => clip.loop && !clip.ended && !clip.paused && clip.time < 1)).toBe(true);
 
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(clips.first()).toBeHidden();

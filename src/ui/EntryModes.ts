@@ -40,7 +40,7 @@ function installPreviewMotion(app: HTMLElement) {
         continue;
       }
       if (!clip.getAttribute('src')) clip.src = clip.dataset.clip!;
-      if (clip.paused && !clip.ended) void clip.play().catch(() => { /* The poster stays visible if playback is blocked. */ });
+      if (clip.paused) void clip.play().catch(() => { /* The poster stays visible if playback is blocked. */ });
     }
   };
 
@@ -83,7 +83,7 @@ export function chooseEntryMode(focusMode?: EntryMode): Promise<EntryMode> {
           <span class="entry-art entry-casino-art" aria-hidden="true">
             <img class="entry-catalog-preview" src="${catalogPreview}" alt="" width="550" height="340">
             <img class="entry-game-preview" src="${flagBattlePreview}" alt="" width="568" height="350">
-            <video class="entry-game-preview entry-preview-motion" data-clip="${flagBattleMotion}" width="568" height="350" muted playsinline preload="none"></video>
+            <video class="entry-game-preview entry-preview-motion" data-clip="${flagBattleMotion}" width="568" height="350" muted loop playsinline preload="none"></video>
           </span>
           <span class="entry-copy">
             ${fromLink('casino')}
@@ -97,7 +97,7 @@ export function chooseEntryMode(focusMode?: EntryMode): Promise<EntryMode> {
         <button type="button" class="entry-option entry-club" data-entry-mode="club" aria-labelledby="entry-club-title" aria-describedby="entry-club-description">
           <span class="entry-art entry-club-art" aria-hidden="true">
             <img src="${barPreview}" alt="" width="640" height="336">
-            <video class="entry-preview-motion" data-clip="${clubMotion}" width="640" height="336" muted playsinline preload="none"></video>
+            <video class="entry-preview-motion" data-clip="${clubMotion}" width="640" height="336" muted loop playsinline preload="none"></video>
           </span>
           <span class="entry-copy">
             ${fromLink('club')}
