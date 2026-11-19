@@ -3,8 +3,8 @@
   "gameId": "studio-wild-nudge",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-11-18T15:03:17.684Z",
-  "completedAt": "2026-11-18T15:03:21.110Z",
+  "startedAt": "2026-11-19T06:25:06.676Z",
+  "completedAt": "2026-11-19T06:25:11.017Z",
   "sourceHashes": {
     "src/shared/wildNudgeData.json": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8",
     "src/shared/wildNudgeMath.ts": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74",
@@ -16,22 +16,22 @@
     "scripts/game-math/wild-nudge-wallet.ts": "64711f88c1c225d1e09cc2ca149c7c308e2c94df499c10932fb49f3fc92b27ec",
     "src/shared/casinoExpansion.ts": "ad1474233c750035eecbf54544c9c6f3a6eb9ae47bbe6319703b2383c211100d",
     "server/demoExpansion.ts": "5eb63c071a574d9bbc584b3459281376b4010cc2097ba12c717517dfeb461dff",
-    "server/demoWalletRoutes.ts": "bd5f1e44ec0030a41d845ba9beaf45e02636e66cbf00fec883e785862519c08b",
+    "server/demoWalletRoutes.ts": "43709d3a2fe7a289bcc4a8023b8a5f597f05ab68d482b3c4485832ad011c3ff0",
     "server/gameWalletRoutes.ts": "72ff61a04ad69685baeb63c41abfa70268fe3aa751ade69006043183243ae5af",
     "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
     "server/demoWallet.ts": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
     "server/demoWalletAmounts.ts": "f1f0a88915a232f134b83203b670e51ea1d5e81273ae0ccdcb4ac1c521b52cce",
     "server/database.ts": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8",
-    "src/wallet/ExpansionClient.ts": "9a34b5377a4b54b7ed9d469f0d11b2eac5db0a3c2163e894e7de2467d815577f",
+    "src/wallet/ExpansionClient.ts": "fb9978cdadb3419006c4757f36cce649c8a735c8e31a43dbd896e92b090cd177",
     "src/shared/arcadeCatalog.ts": "946d05c1c450086d48efa318d7d65df6bdd5641f2edcd05599b67f7499a0a55a",
-    "src/shared/gameStakes.ts": "89e82a44d9761a22d611f6bf97f830940ce3cd80b4fb60b7954f3a37d850b220",
+    "src/shared/gameStakes.ts": "a8357bd91b07d33e991867b770341f6668760ac9a54c1e58efce98b932c29d4e",
     "src/shared/roundPrecision.ts": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
     "src/shared/wildNudgeStakes.ts": "b038121718a674dd88578b9ace2c219e6f226a05372919a87e87b2dcc5afb54f",
     "scripts/game-math/rtp-stakes.mjs": "a885087bc907189f46a1a1dcc54f807733fcf8cbfae818a64a9fe9f2aed6de52",
     "scripts/game-math/stake-runtime.mjs": "47d762e18c698ab4241a6499497b8f58087132da2489494a2172f60dd0fede61",
     "scripts/game-math/stakes-wallet.ts": "5fdd9b03cbc3b1835e9128d4a2d4bb49875f4535bfec34db6a008677a701e141",
     "server-tests/star-spin-stakes.test.ts": "758af7057bb9a42f62031058662ddb7bac09a855ed0c844cdbc1a6429cf49d74",
-    "docs/game-math/qualifications/wild-nudge-v1.json": "512d637650c549c7a751353e5a83fcfc6b16fbbb09578318b6d663ba007cfb96",
+    "docs/game-math/qualifications/wild-nudge-v1.json": "b9b4e0e9ed1804644ad3a690576aa62587cd62432c50f592e915a06516bbec79",
     "scripts/game-math/manual-stakes.mjs": "c24a92e5507588f080a640a1f76353d7d223ab2ef13ccee3355457c59c125471",
     "scripts/game-math/manual-stake-case.mjs": "fa868d135fd361c26c4bcc41c6e2b0831c0adf2d1744b34fa3a6c237664cebf4",
     "scripts/game-math/manual-stake-pool.mjs": "fc675e82956b25f436dfba08ec1e8893cfeb41772b7b6bd71ab9134095d01596",
@@ -161,7 +161,7 @@
   "evidence": {
     "reference": {
       "path": "docs/game-math/qualifications/wild-nudge-v1.json",
-      "sha256": "512d637650c549c7a751353e5a83fcfc6b16fbbb09578318b6d663ba007cfb96"
+      "sha256": "b9b4e0e9ed1804644ad3a690576aa62587cd62432c50f592e915a06516bbec79"
     }
   },
   "replay": {
