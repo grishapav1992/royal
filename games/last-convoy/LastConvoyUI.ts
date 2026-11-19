@@ -26,13 +26,6 @@ import {validStakeDraft} from '../../src/ui/stakeSelection';
 
 type Session=NativeSlotSession<'convoy'>;
 type Dialog=''|'intro'|'info'|'history'|'bonus'|'bonus-help'|'looks'|'complete'|'auto';
-type AutoRun = {
- remaining: number;
- netUnits: bigint;
- lossLimit: bigint | null;
- winLimit: bigint | null;
- stopAtBonus: boolean;
-};
 const AUTO_COUNTS = [10, 25, 50, 100];
 type Live=SlotOperation&{operationId:string;balance:number;motion:boolean;fast:boolean;before?:Session};
 const preview=Array.from({length:30},(_,i)=>(i+2*Math.floor(i/6))%7);
@@ -40,32 +33,14 @@ const preview=Array.from({length:30},(_,i)=>(i+2*Math.floor(i/6))%7);
 const copy=language==='en'?{
  beacons:'Beacons', defense:'Convoy defense', win:'Round win', radio:'Radio', maya:'Maya · Spark',
  controls:'Controls', stake:'Stake per spin', free:'Free', spinning:'Spinning', last:'Last win',
- autoplay:'Autoplay', closeAuto:'Close autoplay', rounds:'Number of spins', loss:'Stop on loss', winLimit:'Stop on win',
- stopAtBonus:'Stop when a bonus starts', startAuto:(count:number)=>`Start ${count} spins`,
- limitHelp:'Limits apply to the total result of completed autoplay rounds. Leave a field empty for no limit.',
- invalidLimit:'Enter a positive amount with up to two decimal places, or leave the field empty.',
- lossReached:'Autoplay stopped at the loss limit.', winReached:'Autoplay stopped at the win limit.',
- autoRules:'Set the number of spins and optional stop limits under Autoplay. Limits are checked after the round and its free spins finish.',
+ autoplay:'Autoplay', closeAuto:'Close autoplay', rounds:'Number of spins', startAuto:(count:number)=>`Start ${count} spins`,
+ autoRules:'Choose the number of paid spins in Autoplay. After an evacuation, confirm the result to resume the series.',
 }:{
  beacons:'Маяки', defense:'Защита конвоя', win:'Выигрыш раунда', radio:'Радиосвязь', maya:'Майя · Искра',
  controls:'Управление', stake:'Ставка за ход', free:'Бесплатно', spinning:'Вращается', last:'Последний выигрыш',
- autoplay:'Автоигра', closeAuto:'Закрыть автоигру', rounds:'Количество вращений', loss:'Стоп при потере', winLimit:'Стоп при выигрыше',
- stopAtBonus:'Остановить при запуске бонуса', startAuto:(count:number)=>`Запустить ${count} вращений`,
- limitHelp:'Лимиты считаются по общему итогу завершённых раундов серии. Пустое поле отключает лимит.',
- invalidLimit:'Введи сумму больше нуля с точностью до копейки или оставь поле пустым.',
- lossReached:'Автоигра остановлена по лимиту потери.', winReached:'Автоигра остановлена по лимиту выигрыша.',
- autoRules:'В окне «Автоигра» можно выбрать число вращений и лимиты остановки. Лимиты проверяются после раунда со всеми бесплатными вращениями.',
+ autoplay:'Автоигра', closeAuto:'Закрыть автоигру', rounds:'Количество вращений', startAuto:(count:number)=>`Запустить ${count} вращений`,
+ autoRules:'В окне «Автоигра» выбери количество платных вращений. После эвакуации подтверди результат, чтобы продолжить серию.',
 };
-
-/** Optional limits are in cents and use the same decimal separators as the stake control. */
-function autoLimit(raw: string): bigint | null | undefined {
- const text = raw.trim();
- if (!text) return null;
- const match = /^(\d{1,9})(?:[.,](\d{1,2}))?$/.exec(text);
- if (!match) return undefined;
- const cents = BigInt(match[1]) * 100n + BigInt((match[2] ?? '').padEnd(2, '0'));
- return cents > 0n ? cents : undefined;
-}
 
 /** Presentation consumes confirmed frames. Reopening and retries remain static. */
 export class LastConvoyUI {
@@ -76,9 +51,7 @@ export class LastConvoyUI {
  private root:HTMLElement;private dialogShell!:SlotDialog;private stakeControls!:SlotStakeControls;private soundControls!:SlotAudioControls;private board:ConvoyBoard;private audio=new LastConvoyAudio();private assets:LastConvoyAssets;
  private owner=client.accountId;private destroyed=false;private entered=false;private stake = '10';private fast=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');private manualReduced=false;
  private dialog:Dialog='intro';private shown='';private lastWin='0';private error='';private live?:Live;private playback=new SlotPlayback({account:()=>client.accountId,hidden:()=>document.hidden});private sessions=new SlotSessions(convoySlot);private bonusRunning=false;private unsubscribe=()=>{};
- private autoplay?: AutoRun;
- private autoNotice = '';
- private get autoRemaining(){return this.autoplay?.remaining ?? 0;}
+ private autoRemaining=0;
  private get shellDialog(){return this.dialog==='auto'||this.dialog==='bonus-help'||this.dialog==='looks'?'info':this.dialog;}
  private change=()=>this.sync();private visibility=()=>{if(document.hidden){this.cancel();this.audio.pause();}this.sync();};private motionChanged=()=>{this.cancel();this.sync();};
   private keyboard=(event:KeyboardEvent)=>{
@@ -108,8 +81,8 @@ export class LastConvoyUI {
  private blocked(){return this.destroyed||!this.assets.ready||!!this.live||client.busy||client.loading||!!client.pending||demoWallet.busy||!!demoWallet.pending||demoWallet.hasExternalBusy('expansion')||document.hidden||!client.accountId;}
  private valid(live:Live){return !this.destroyed&&this.playback.current(live,this.live);}
  private delay(ms:number,live:Live){return this.playback.delay(ms,()=>this.valid(live));}
- private stopAuto(){this.autoplay=undefined;this.bonusRunning=false;this.playback.cancelScheduled();}
- private cancel(){this.playback.cancel();this.stopAuto();this.autoNotice='';this.live=undefined;this.board.cancel();this.audio.stopSpin();this.shown='';this.root.dataset.phase='idle';this.root.dataset.charging='false';resetGameOutcomes(this.root);}
+ private stopAuto(){this.autoRemaining=0;this.bonusRunning=false;this.playback.cancelScheduled();}
+ private cancel(){this.playback.cancel();this.stopAuto();this.live=undefined;this.board.cancel();this.audio.stopSpin();this.shown='';this.root.dataset.phase='idle';this.root.dataset.charging='false';resetGameOutcomes(this.root);}
  private assetState(state:ConvoyAssetState){
   if(this.destroyed)return;
   this.root.dataset.assetState=state.status;
@@ -173,7 +146,7 @@ export class LastConvoyUI {
   <div class="cc-dialog-backdrop" data-cc-backdrop><div class="cc-dialog" data-cc-dialog role="dialog" aria-modal="true" aria-labelledby="cc-dialog-title"></div></div>
  </section>`;}
  private bind(){
-    this.dialogShell=new SlotDialog(this.find('[data-cc-dialog]'),this.find('[data-cc-backdrop]'),'data-cc-action',action=>void this.dialogAction(action),()=>this.closeDialog());
+    this.dialogShell=new SlotDialog(this.find('[data-cc-dialog]'),this.find('[data-cc-backdrop]'),'data-cc-action',action=>void this.dialogAction(action),()=>{if(this.dialog==='complete')this.stopAuto();this.closeDialog();});
     this.stakeControls=new SlotStakeControls({
       values:CONVOY_BETS,select:this.find<HTMLSelectElement>('[data-cc-stake]'),
       steps:Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-cc-stake-step]')),
@@ -211,7 +184,7 @@ export class LastConvoyUI {
      updateSlotTransport(this.root,'cc',{blocked,active,live:!!this.live,dialog:!!this.dialog,entered:this.entered,fast:this.fast,autoRemaining:this.autoRemaining,bonusRunning:this.bonusRunning,paidBonus:false,pending:!!client.pending,busy:client.busy,loading:client.loading,hidden:document.hidden,ready:this.assets.ready});
    this.find('[data-cc-auto]').setAttribute('aria-expanded',String(this.dialog==='auto'));
    this.find('[data-cc-error]').textContent=this.error||client.error;this.find('[data-cc-feedback]').dataset.error=String(!!(this.error||client.error));
-this.find('[data-cc-status]').textContent=client.loading?translateText('Проверяем сохранённую эвакуацию…'):this.live?'':canRecoverOperation(client)?translateText('Ход сохранён. Подтверди прежнюю операцию.'):this.autoRemaining?tr`Платных вращений осталось: ${this.autoRemaining}`:this.autoNotice|| (active?this.bonusRunning?translateText('Эвакуация продолжается бесплатно.'):translateText('Эвакуация на паузе. Нажми «Продолжить».'):'');
+this.find('[data-cc-status]').textContent=client.loading?translateText('Проверяем сохранённую эвакуацию…'):this.live?'':canRecoverOperation(client)?translateText('Ход сохранён. Подтверди прежнюю операцию.'):this.autoRemaining?tr`Платных вращений осталось: ${this.autoRemaining}`:(active?this.bonusRunning?translateText('Эвакуация продолжается бесплатно.'):translateText('Эвакуация на паузе. Нажми «Продолжить».'):'');
   this.find('[data-cc-wallet-help]').hidden=!!client.accountId&&(active||this.balance()>=Number(this.stake)/100);this.find('[data-cc-wallet-note]').textContent=client.accountId?translateText('Недостаточно USDT для ставки.'):translateText('Для игры нужен общий баланс USDT.');this.find('[data-cc-login]').hidden=!!client.accountId;this.find('[data-cc-wallet]').hidden=!client.accountId;
    this.soundControls?.update();
   const enter=this.root.querySelector<HTMLButtonElement>('[data-cc-action="enter"]');if(enter){enter.disabled=!this.assets.ready;enter.textContent=active?translateText('ПРОДОЛЖИТЬ ЭВАКУАЦИЮ'):translateText('НАЧАТЬ ВЫЛАЗКУ');}
@@ -248,8 +221,8 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
  private async request(mode:'normal'){
   if(this.blocked()||!this.entered||this.dialog)return;const previous=this.session(),active=previous?.state==='active',cost=active?0:Number(this.stake)/100;
   if(this.balance()<cost){this.error=translateText('Недостаточно USDT для ставки.');this.stopAuto();this.controls();return;}
-  void this.audio.enter();const live:Live={...this.playback.capture(client.accountId!),operationId:'',balance:this.balance(),motion:this.motion(),fast:this.fast,before:previous};this.live=live;this.error='';this.autoNotice='';this.root.dataset.animationToken=live.token;this.find('[data-cc-groups]').replaceChildren();this.board.highlight([]);observeExpansionOutcome(this.root,CONVOY_GAME,previous,client.accountId,true,true);
-  if(!active&&this.autoplay)this.autoplay.remaining--;
+  void this.audio.enter();const live:Live={...this.playback.capture(client.accountId!),operationId:'',balance:this.balance(),motion:this.motion(),fast:this.fast,before:previous};this.live=live;this.error='';this.root.dataset.animationToken=live.token;this.find('[data-cc-groups]').replaceChildren();this.board.highlight([]);observeExpansionOutcome(this.root,CONVOY_GAME,previous,client.accountId,true,true);
+  if(!active&&this.autoRemaining)this.autoRemaining--;
   {this.root.dataset.phase='spinning';this.board.setPins(active?previous!.view.convoy.bonus?.pins??[]:[]);this.board.begin(live.token,live.motion,live.fast);void this.audio.begin(live.token);}this.controls();
   try{
    const action=this.sessions.operation(this.stake,mode,previous);
@@ -261,15 +234,12 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
    if(s.state==='settled'){
     this.lastWin=s.returnedUnits;
     this.bonusRunning=false;
-    this.settleAutoRound(s);
    }
    this.features(v);this.setTotal(confirmedPayout(s,v.totalPayoutUnits));this.controls();observeExpansionOutcome(this.root,CONVOY_GAME,s,client.accountId,false,false);
    if(s.state==='active'&&(!v.spin||v.spin.kind==='base')){
-    if(!this.autoplay||this.autoplay.stopAtBonus){this.stopAuto();this.openDialog('bonus');return;}
-    this.bonusRunning=true;
-    this.controls();
+    this.bonusRunning=false;this.openDialog('bonus');return;
    }
-   if(s.state==='settled'&&!this.autoRemaining&&v.history.some(spin=>spin.kind==='free')){this.openDialog('complete');return;}
+   if(s.state==='settled'&&v.history.some(spin=>spin.kind==='free')){this.openDialog('complete');return;}
    if(s.state==='active'&&this.bonusRunning||s.state==='settled'&&this.autoRemaining>0)this.schedule();
   }catch(e){if(this.valid(live)){this.error=(e as Error).message;this.stopAuto();this.live=undefined;this.board.cancel();this.audio.stopSpin();this.shown='';this.sync();}}
   finally{if(this.live===live&&!this.valid(live)){this.live=undefined;this.audio.stopSpin();}}
@@ -316,7 +286,7 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
   this.controls();this.dialogShell.focus(kind==='info');
  }
  private toggleAuto(){
-  if(this.autoplay){this.stopAuto();this.controls();return;}
+  if(this.autoRemaining){this.stopAuto();this.controls();return;}
   if(this.blocked()||this.dialog||!this.entered||this.session()?.state==='active'||!validStakeDraft(this.root,true))return;
   this.openDialog('auto');
  }
@@ -328,13 +298,6 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
    <fieldset><legend>${copy.rounds}</legend><div class="cv-auto-counts">
     ${AUTO_COUNTS.map(count=>`<label><input type="radio" name="count" value="${count}" ${count===25?'checked':''}><span>${count}</span></label>`).join('')}
    </div></fieldset>
-   <div class="cv-auto-limits">
-    <label>${copy.loss}<input name="loss" type="text" inputmode="decimal" autocomplete="off" maxlength="12" value="${coins(500)}" aria-describedby="cv-auto-help"></label>
-    <label>${copy.winLimit}<input name="win" type="text" inputmode="decimal" autocomplete="off" maxlength="12" value="${coins(1000)}" aria-describedby="cv-auto-help"></label>
-   </div>
-   <label class="cv-auto-bonus"><input type="checkbox" name="stopAtBonus" checked>${copy.stopAtBonus}</label>
-   <p id="cv-auto-help">${copy.limitHelp}</p>
-   <p class="cv-auto-error" role="alert" hidden></p>
    <button type="submit" class="cc-primary" data-cv-auto-start>${copy.startAuto(25)}</button>
   </form>`;
   const form=this.find<HTMLFormElement>('[data-cv-auto-form]');
@@ -344,30 +307,11 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
 
  private startAuto(form: HTMLFormElement){
   if(this.dialog!=='auto'||this.blocked()||!this.entered||this.session()?.state==='active')return;
-  const fields=new FormData(form);
-  const count=Number(fields.get('count'));
+  const count=Number(new FormData(form).get('count'));
   if(!AUTO_COUNTS.includes(count))return;
-  const loss=autoLimit(String(fields.get('loss')??'')),win=autoLimit(String(fields.get('win')??''));
-  if(loss===undefined||win===undefined){
-   const error=this.find('.cv-auto-error');
-   error.hidden=false;
-   error.textContent=copy.invalidLimit;
-   form.querySelector<HTMLInputElement>(loss===undefined?'[name="loss"]':'[name="win"]')?.focus();
-   return;
-  }
-  this.autoplay={remaining:count,netUnits:0n,lossLimit:loss,winLimit:win,stopAtBonus:fields.has('stopAtBonus')};
+  this.autoRemaining=count;
   this.closeDialog();
   void this.request('normal');
- }
-
- private settleAutoRound(session: Session){
-  const run=this.autoplay;
-  if(!run)return;
-  run.netUnits+=BigInt(session.returnedUnits)-BigInt(session.spentUnits);
-  if(run.lossLimit!==null&&-run.netUnits>=run.lossLimit)this.autoNotice=copy.lossReached;
-  if(run.winLimit!==null&&run.netUnits>=run.winLimit)this.autoNotice=copy.winReached;
-  if(this.autoNotice||!run.remaining)this.stopAuto();
-  if(this.autoNotice)this.find('[data-cc-message]').textContent=this.autoNotice;
  }
 
  private renderLooks(){const box=this.find('[data-cc-dialog]');const focused=box.contains(document.activeElement)?(document.activeElement as HTMLElement).getAttribute('data-cc-action'):null;box.innerHTML=this.heroine.gallery();if(focused)box.querySelectorAll<HTMLButtonElement>('[data-cc-action]').forEach(button=>{if(button.getAttribute('data-cc-action')===focused&&!button.disabled)button.focus();});}

@@ -479,9 +479,8 @@
   border: 0;
   margin: 0;
 }
-.cv-auto-form legend { margin-bottom: 6px; }
-.cv-auto-form legend, .cv-auto-limits label, #cv-auto-help { color: var(--cv-muted); }
-.cv-auto-counts, .cv-auto-limits { display: grid; gap: calc(7 * var(--cv-unit)); }
+.cv-auto-form legend { margin-bottom: 6px; color: var(--cv-muted); }
+.cv-auto-counts { display: grid; gap: calc(7 * var(--cv-unit)); }
 .cv-auto-counts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .cv-auto-counts label { position: relative; cursor: pointer; }
 .cv-auto-counts input { position: absolute; width: 1px; height: 1px; opacity: 0; }
@@ -500,43 +499,11 @@
   background: #332d1d;
 }
 .cv-auto-counts input:focus-visible + span { outline: 2px solid #a5d6c8; outline-offset: 2px; }
-.cv-auto-limits { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.cv-auto-limits label { display: grid; min-width: 0; gap: 5px; align-content: start; }
-.cv-auto-limits input {
-  width: 100%;
-  min-height: calc(44 * var(--cv-unit));
-  padding: 5px 9px;
-  border: 1px solid var(--cv-line);
-  border-radius: 8px;
-  background: #08191f;
-  color: var(--cv-ink);
-  font: inherit;
-  font-weight: 750;
-  font-variant-numeric: tabular-nums;
-}
-.cv-auto-bonus {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  min-height: 44px;
-  cursor: pointer;
-}
-.cv-auto-bonus input { width: 20px; height: 20px; accent-color: var(--cc-gold); flex-shrink: 0; }
-.cv-auto-form p { margin: 0; font-size: .9em; }
-.cv-auto-form .cv-auto-error { color: #ffcdad; }
 .cv-game .cc-dialog .cv-auto-form .cc-primary {
   min-height: calc(44 * var(--cv-unit));
   width: 100%;
   margin: 0;
   font-size: inherit;
-}
-
-@container convoy (min-width: 470px) and (max-height: 480px) {
-  .cv-game .cc-dialog:has(.cv-auto-form) { width: min(100%, 540px); padding: 10px; }
-  .cv-auto-form { grid-template-columns: 1fr 1fr; align-items: end; gap: 6px 12px; font-size: 12px; }
-  .cv-auto-limits { align-items: end; }
-  .cv-auto-form > :is(header, .cv-auto-error, .cc-primary) { grid-column: 1 / -1; }
-  .cv-auto-form > .cv-auto-bonus, .cv-auto-form > #cv-auto-help { align-self: center; }
 }
 
 @container convoy (min-width: 1040px) and (min-height: 820px) {

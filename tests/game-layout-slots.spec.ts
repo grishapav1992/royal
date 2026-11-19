@@ -286,7 +286,7 @@ test('Caramel Carnival keeps the reel frame still as feedback and festival state
      root.dataset.phase='idle';
      root.dataset.hasWin='true';
      root.dataset.notice='true';
-     message.textContent='Автоигра остановлена: выигрыш достиг лимита';
+     message.textContent='Достигнут предел выигрыша';
      const notice=rect();
      root.dataset.notice='false';
      root.dataset.festival='true';
@@ -561,31 +561,32 @@ test('Last Convoy scales the field, Maya and controls at 2K and 4K',async({page,
  expect(Math.abs((await measure()).width-withChat.width)).toBeLessThan(4);
 });
 
-test('Last Convoy opens autoplay without charging and keeps the dialog accessible on phones',async({page,roomPath})=>{
- const game='studio-last-convoy';
+const countOnlyGames=['studio-last-convoy','studio-cosmic-escape','studio-caramel-carnival'];
+
+for(const game of countOnlyGames)test('count-only autoplay fits the connected host: '+game,async({page,roomPath})=>{
  await enterGameHall(page,roomPath);
  await open(page,game);
  const chat=page.locator('#club-chat-dock');
  if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
  await expect(chat.locator('#chat-input')).toBeVisible();
- const auto=page.locator('[data-cc-auto]');
- const dialog=page.getByRole('dialog',{name:'Автоигра'});
+ const auto=page.locator(`[data-${family(game)}-auto]`);
+ const dialog=page.getByRole('dialog',{name:'Автоигра',exact:true});
  const before=await walletSnapshot(page);
- const stake=page.locator('[data-manual-stake]');
- await stake.fill('0,001');
+ if(game==='studio-last-convoy'){
+  const stake=page.locator('[data-manual-stake]');
+  await stake.fill('0,001');
+  await auto.click();
+  await expect(dialog).toBeHidden();
+  await stake.fill('0,10');
+ }
  await auto.click();
- await expect(dialog).toBeHidden();
- await stake.fill('0,10');
- await auto.click();
- await expect(dialog.getByRole('radio')).toHaveCount(4);
+ await expect(dialog.getByRole('textbox')).toHaveCount(0);
+ await expect(dialog.getByRole('checkbox')).toHaveCount(0);
+ await expect(dialog.getByRole('button',{name:'Запустить 25 вращений'})).toBeVisible();
  for(const count of [10,50,100,25]){
   await dialog.getByText(String(count),{exact:true}).click();
-  await expect(dialog.getByRole('radio',{name:String(count),exact:true})).toBeChecked();
   await expect(dialog.getByRole('button',{name:`Запустить ${count} вращений`})).toBeVisible();
  }
- await dialog.getByRole('textbox',{name:'Стоп при потере'}).fill('1,001');
- await dialog.getByRole('button',{name:'Запустить 25 вращений'}).click();
- await expect(dialog.getByRole('alert')).toContainText('до копейки');
  await page.keyboard.press('Escape');
  await expect(dialog).toBeHidden();
  await expect(auto).toBeFocused();
@@ -600,76 +601,36 @@ test('Last Convoy opens autoplay without charging and keeps the dialog accessibl
  expect((await walletSnapshot(page)).entries).toEqual(before.entries);
 });
 
-for(const outcome of ['loss','win'])test(`Last Convoy stops after a confirmed ${outcome} limit`,async({page,roomPath})=>{
- const game='studio-last-convoy';
+for(const game of countOnlyGames)test('autoplay completes ten paid spins through a natural bonus: '+game,async({page,roomPath})=>{
  await enterGameHall(page,roomPath);
  await open(page,game);
- const fixture=await page.request.post('/__test/layout/bonus',{data:{gameId:game,scenario:outcome}});
+ const fixture=await page.request.post('/__test/layout/bonus',{data:{gameId:game}});
  expect(fixture.ok(),await fixture.text()).toBe(true);
- await page.locator('[data-cc-auto]').click();
- const dialog=page.getByRole('dialog',{name:'Автоигра'});
- await dialog.getByRole('textbox',{name:'Стоп при потере'}).fill(outcome==='loss'?'0,01':'');
- await dialog.getByRole('textbox',{name:'Стоп при выигрыше'}).fill(outcome==='win'?'0.01':'');
- const accepted=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');
- await dialog.getByRole('button',{name:'Запустить 25 вращений'}).click();
- expect((await accepted).ok()).toBe(true);
- await expect(page.locator('[data-cc-message]')).toContainText(outcome==='loss'?'лимиту потери':'лимиту выигрыша');
- await expect(page.locator('[data-cc-auto]')).toHaveAttribute('aria-pressed','false');
- const bets=(await walletSnapshot(page)).entries.filter((entry:{kind:string})=>entry.kind==='bet');
- expect(bets).toHaveLength(1);
- expect(bets[0].amount).toBe(-0.1);
-});
+ const prefix=family(game),action=prefix==='lg'?'data-lg-dialog-action':'data-cc-action';
+ const root=page.locator('#mini-game > [data-auto-remaining]');
+ const bonus=page.locator(`[${action}="bonus"]`);
+ const complete=page.locator(`[${action}="complete"]`);
+ const bets=async()=>(await walletSnapshot(page)).entries.filter((entry:{kind:string})=>entry.kind==='bet');
+ await page.locator(`[data-${prefix}-auto]`).click();
+ const dialog=page.getByRole('dialog',{name:'Автоигра',exact:true});
+ await dialog.getByText('10',{exact:true}).click();
+ await dialog.getByRole('button',{name:'Запустить 10 вращений'}).click();
+ await expect(bonus).toBeVisible();
+ await expect(root).toHaveAttribute('data-auto-remaining','9');
+ expect(await bets()).toHaveLength(1);
+ await bonus.click();
+ await expect(complete).toBeVisible({timeout:60000});
+ await expect(root).toHaveAttribute('data-auto-remaining','9');
+ expect(await bets()).toHaveLength(1);
+ await complete.click();
 
-test('Last Convoy can pause paid autoplay at evacuation or keep it after free spins',async({page,roomPath})=>{
- const game='studio-last-convoy';
- await enterGameHall(page,roomPath);
- await open(page,game);
- const seed=async()=>{
-  const fixture=await page.request.post('/__test/layout/bonus',{data:{gameId:game}});
-  expect(fixture.ok(),await fixture.text()).toBe(true);
- };
- const auto=page.locator('[data-cc-auto]');
- const dialog=page.getByRole('dialog',{name:'Автоигра'});
- const start=dialog.getByRole('button',{name:'Запустить 25 вращений'});
- const starts=()=>walletSnapshot(page).then(value=>value.entries.filter((entry:{kind:string})=>entry.kind==='bet').length);
- await seed();
- await auto.click();
- await expect(dialog.getByRole('checkbox')).toBeChecked();
- await start.click();
- await expect(page.locator('[data-cc-action="bonus"]')).toBeVisible();
- await expect(page.locator('.cv-game')).toHaveAttribute('data-auto-remaining','0');
+ await expect.poll(async()=>{
+  if(await bonus.isVisible())await bonus.click();
+  if(await complete.isVisible())await complete.click();
+  return Number(await root.getAttribute('data-auto-remaining'));
+ },{timeout:90000}).toBe(0);
  await finish(page,game);
- expect(await starts()).toBe(1);
-
- await seed();
- await auto.click();
- await dialog.getByRole('checkbox').uncheck();
- await dialog.getByRole('textbox',{name:'Стоп при потере'}).fill('');
- await dialog.getByRole('textbox',{name:'Стоп при выигрыше'}).fill('');
- let paid=0,free=0;
- let release!:()=>void;
- const held=new Promise<void>(resolve=>release=resolve);
- await page.route('**/api/demo-wallet/expansion',async route=>{
-  if(route.request().method()==='POST'){
-   const action=route.request().postDataJSON().action;
-   if(action==='move')free++;
-   if(action==='start'&&++paid===2)await held;
-  }
-  await route.continue();
- });
- try {
-  await start.click();
-  await expect.poll(()=>paid,{timeout:40000}).toBe(2);
-  expect(free).toBeGreaterThanOrEqual(10);
-  expect(await starts()).toBe(2);
-  await auto.click();
-  const accepted=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');
-  release();
-  expect((await accepted).ok()).toBe(true);
-  await finish(page,game);
-  expect(await starts()).toBe(3);
- } finally {
-  release();
-  await page.unroute('**/api/demo-wallet/expansion');
- }
+ const paid=await bets();
+ expect(paid).toHaveLength(10);
+ expect(paid.every((entry:{amount:number})=>entry.amount===-0.1)).toBe(true);
 });

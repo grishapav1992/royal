@@ -1,7 +1,7 @@
 import {canRecoverOperation} from './operationFeedback';
 import {confirmedPayout} from '../shared/roundPrecision';
 import {GAME_STAKE_UNITS, gameStakeMaximum} from '../shared/gameStakes';
-import { t as translateText, tr, locale } from '../i18n/index';
+import { t as translateText, tr, locale, language } from '../i18n/index';
 import {SlotSettings} from './slotKit/SlotSettings';
 import {SlotDialog, slotOwnsKeyboard} from './slotKit/SlotDialog';
 import {SlotStakeControls, SlotAudioControls} from './slotKit/SlotControls';
@@ -48,7 +48,6 @@ const ICON={
 };
 const units=(value:string|number)=>Number(value)||0;
 /** Exact cents from a typed limit. Empty means no limit; anything else malformed is rejected. */
-function limitUnits(raw:string){const text=raw.trim().replace(/\s/g,'').replace(',','.');if(!text)return null;if(!/^\d{1,7}(\.\d{1,2})?$/.test(text))return undefined;const [whole,fraction='']=text.split('.');return Number(whole)*100+Number((fraction+'00').slice(0,2));}
 
 /** Presentation consumes confirmed frames. Reopening and retries remain static. */
 export class CaramelCarnivalUI {
@@ -56,7 +55,7 @@ export class CaramelCarnivalUI {
  private root:HTMLElement;private dialogShell!:SlotDialog;private stakeControls!:SlotStakeControls;private soundControls!:SlotAudioControls;private board:CaramelBoard;private audio=new CaramelCarnivalAudio();private assets:CaramelCarnivalAssets;
  private owner=client.accountId;private destroyed=false;private entered=false;private stake = '10';private speed:Speed='normal';private reduced=matchMedia('(prefers-reduced-motion: reduce)');private manualReduced=false;
  private dialog:Dialog='intro';private shown='';private lastWin='0';private error='';private live?:Live;private playback=new SlotPlayback({account:()=>client.accountId,hidden:()=>document.hidden});private sessions=new SlotSessions(caramelSlot);private autoRemaining=0;private bonusRunning=false;private unsubscribe=()=>{};
- private headbar?:HTMLElement;private headMode?:HTMLElement;private toolsHome?:Comment;private autoCount:number=25;private autoLoss:number|null=null;private autoWin:number|null=null;private autoStopFestival=true;private autoStartUnits=0;private autoOpen=false;private layout:ResizeObserver;
+ private headbar?:HTMLElement;private headMode?:HTMLElement;private toolsHome?:Comment;private autoCount=25;private autoOpen=false;private layout:ResizeObserver;
  private change=()=>this.sync();private visibility=()=>{if(document.hidden){this.cancel();this.audio.pause();}this.sync();};private motionChanged=()=>{this.cancel();this.sync();};
   private keyboard=(event:KeyboardEvent)=>{
     if(this.autoOpen&&event.key==='Escape'){event.preventDefault();this.closeAuto(true);return;}
@@ -157,18 +156,14 @@ export class CaramelCarnivalUI {
 <div class="ccf-auto-panel" id="ccf-auto-panel" data-cc-auto-panel role="dialog" aria-labelledby="ccf-auto-title" hidden>
 <header><h2 id="ccf-auto-title">Автоигра</h2><button type="button" class="ccf-icon" data-cc-auto-close aria-label="Закрыть автоигру">${ICON.close}</button></header>
 <div class="ccf-field"><span id="ccf-auto-count">ПЛАТНЫХ ВРАЩЕНИЙ</span><div class="ccf-chips" role="radiogroup" aria-labelledby="ccf-auto-count">${counts}</div></div>
-<div class="ccf-limits"><label>Стоп при потере<input data-cc-auto-loss inputmode="decimal" autocomplete="off" placeholder="Без лимита"></label><label>Стоп при выигрыше от<input data-cc-auto-win inputmode="decimal" autocomplete="off" placeholder="Без лимита"></label></div>
-<label class="ccf-check"><input type="checkbox" data-cc-auto-festival checked>Остановить при входе в фестиваль</label>
-<p class="ccf-auto-error" data-cc-auto-error role="alert"></p>
 <button type="button" class="ccf-primary" data-cc-auto-start></button>
-<p class="ccf-auto-note" data-cc-auto-note></p>
 </div>
 <div class="ccf-settings-host" data-cc-settings-host></div>
 <div class="ccf-settings" data-cc-settings><div class="ccf-settings-row"><button type="button" data-cc-info>Правила и выплаты</button><button type="button" data-cc-history>История раунда</button></div><div class="ccf-settings-row"><button type="button" data-cc-sound aria-pressed="true">Звук</button><button type="button" data-cc-music aria-pressed="true">Музыка</button></div><label class="ccf-volume">Громкость <input type="range" min="0" max="100" data-cc-volume aria-label="Громкость игры"></label><label class="ccf-check"><input type="checkbox" data-cc-reduce>Меньше анимации</label><button type="button" data-cc-refresh>Проверить состояние</button><small>Собственная версия Royal · тестовые виртуальные USDT</small></div>
 <div class="cc-dialog-backdrop" data-cc-backdrop><div class="cc-dialog" data-cc-dialog role="dialog" aria-modal="true" aria-labelledby="cc-dialog-title"></div></div>
 </section>`;}
  private bind(){
-    this.dialogShell=new SlotDialog(this.find('[data-cc-dialog]'),this.find('[data-cc-backdrop]'),'data-cc-action',action=>void this.dialogAction(action),()=>this.closeDialog());
+    this.dialogShell=new SlotDialog(this.find('[data-cc-dialog]'),this.find('[data-cc-backdrop]'),'data-cc-action',action=>void this.dialogAction(action),()=>{if(this.dialog==='complete')this.stopAuto();this.closeDialog();});
     this.stakeControls=new SlotStakeControls({
       values:CARAMEL_BETS,maximumCents:maximumStakeCents,select:this.find<HTMLSelectElement>('[data-cc-stake]'),
       steps:Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-cc-stake-step]')),
@@ -213,7 +208,6 @@ export class CaramelCarnivalUI {
     const items=Array.from(panel.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled)')).filter(item=>item.tabIndex>=0),first=items[0],last=items.at(-1);
     if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}
   };
-  this.find<HTMLInputElement>('[data-cc-auto-festival]').onchange=event=>{this.autoStopFestival=(event.target as HTMLInputElement).checked;};
   this.find<HTMLButtonElement>('[data-cc-retry]').onclick=()=>void this.retry();this.find<HTMLButtonElement>('[data-cc-refresh]').onclick=()=>void this.refresh();this.find<HTMLButtonElement>('[data-cc-wallet]').onclick=()=>{this.stopAuto();window.dispatchEvent(new Event('royal-open-wallet'));};
   this.find<HTMLInputElement>('[data-cc-reduce]').onchange=event=>{this.manualReduced=(event.target as HTMLInputElement).checked;try{localStorage.setItem('royal-caramel-reduced',this.manualReduced?'1':'0');}catch{}this.cancel();this.sync();};
  }
@@ -263,7 +257,6 @@ export class CaramelCarnivalUI {
   if(this.autoOpen&&auto.disabled&&!this.autoRemaining)this.closeAuto(false);
   for(const button of Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-cc-auto-count]'))){const checked=Number(button.dataset.ccAutoCount)===this.autoCount;button.setAttribute('aria-checked',String(checked));button.tabIndex=checked?0:-1;}
   this.find('[data-cc-auto-start]').textContent=tr`Запустить ${this.autoCount} вращений`;
-  this.find('[data-cc-auto-note]').textContent=tr`Авто останавливается при скрытии окна, ошибке связи и по лимитам выше. Ставка за вращение: ${coins(this.stake)} USDT.`;
   const pause=this.find<HTMLButtonElement>('[data-cc-pause]');pause.disabled=!this.bonusRunning;pause.textContent=this.bonusRunning?translateText('Пауза'):translateText('На паузе');
   for(const selector of ['[data-cc-info]','[data-cc-history]','[data-cc-refresh]','[data-cc-rules]','[data-cc-rules-link]'])this.find<HTMLButtonElement>(selector).disabled=live||client.busy;
   const retry=this.find<HTMLButtonElement>('[data-cc-retry]');retry.hidden=!canRecoverOperation(client);retry.disabled=!this.assets.ready||live||client.busy||document.hidden;
@@ -328,7 +321,7 @@ export class CaramelCarnivalUI {
  }
  private openAuto(){
   const auto=this.find<HTMLButtonElement>('[data-cc-auto]');if(auto.disabled||this.blocked()||!this.entered||this.dialog)return;
-  this.autoOpen=true;this.find('[data-cc-auto-panel]').hidden=false;this.find('[data-cc-auto-error]').textContent='';
+  this.autoOpen=true;this.find('[data-cc-auto-panel]').hidden=false;
   this.controls();this.root.querySelector<HTMLButtonElement>(`[data-cc-auto-count="${this.autoCount}"]`)?.focus();
  }
  private closeAuto(focus:boolean){
@@ -336,22 +329,10 @@ export class CaramelCarnivalUI {
   this.find('[data-cc-auto]').setAttribute('aria-expanded','false');if(focus)this.find<HTMLButtonElement>('[data-cc-auto]').focus();
  }
  private startAuto(){
-  const loss=limitUnits(this.find<HTMLInputElement>('[data-cc-auto-loss]').value),win=limitUnits(this.find<HTMLInputElement>('[data-cc-auto-win]').value);
-  if(loss===undefined||win===undefined||loss===0||win===0){this.find('[data-cc-auto-error]').textContent=translateText('Укажи сумму больше нуля, например 5,00, или оставь поле пустым.');return;}
-  if(this.blocked()||!this.entered||this.dialog||this.session()?.state==='active')return;
-  this.autoLoss=loss;this.autoWin=win;this.autoStopFestival=this.find<HTMLInputElement>('[data-cc-auto-festival]').checked;
-  this.autoStartUnits=Math.round(this.balance()*100);this.autoRemaining=this.autoCount;
+  if(!this.autoOpen||this.blocked()||!this.entered||this.dialog||this.session()?.state==='active')return;
+  this.autoRemaining=this.autoCount;
   this.closeAuto(false);this.find<HTMLButtonElement>('[data-cc-spin]').focus();void this.request('normal');this.controls();
  }
- /** Player limits are checked between whole rounds only; an accepted round always finishes. */
- private autoContinues(session:Session){
-  if(this.autoRemaining<=0)return false;
-  const spent=this.autoStartUnits-Math.round(this.balance()*100);
-  if(this.autoLoss!==null&&spent>=this.autoLoss){this.stopAuto();this.outcome(translateText('Автоигра остановлена: достигнут лимит потери'),true);return false;}
-  if(this.autoWin!==null&&session.state==='settled'&&units(session.returnedUnits)>=this.autoWin){this.stopAuto();this.outcome(translateText('Автоигра остановлена: выигрыш достиг лимита'),true);return false;}
-  return true;
- }
- /** A notice (autoplay limits, the win cap) stays visible next to the win line. */
  private outcome(text:string,notice=false){this.root.dataset.outcome=text;this.root.dataset.notice=String(notice);this.message(text);}
  private async play(){if(this.blocked()||!this.entered||this.dialog)return;this.bonusRunning=this.session()?.state==='active';await this.request('normal');}
  private async request(mode:'normal'|'festival'){
@@ -369,11 +350,10 @@ export class CaramelCarnivalUI {
    this.live=undefined;this.root.dataset.phase='idle';this.root.dataset.animationToken='';delete this.root.dataset.cascade;this.shown=this.key(s);if(s.state==='settled')this.lastWin=s.returnedUnits;this.features(s.view.caramel);this.setTotal(confirmedPayout(s,s.view.caramel.totalPayoutUnits));this.controls();observeExpansionOutcome(this.root,CARAMEL_GAME,s,client.accountId,false,false);
    const v=s.view.caramel;
    if(s.state==='active'&&(!v.spin||v.spin.kind==='base')){
-    // A natural festival stops autoplay by default; otherwise paid autoplay resumes after the festival result.
-    if(!v.spin||this.autoStopFestival)this.autoRemaining=0;this.bonusRunning=false;this.playback.cancelScheduled();this.openDialog('bonus');return;
+    this.bonusRunning=false;this.openDialog('bonus');return;
    }
    if(s.state==='settled'&&v.history.some(spin=>spin.kind==='free')){this.bonusRunning=false;this.openDialog('complete');return;}
-   if(s.state==='active'&&this.bonusRunning||s.state==='settled'&&this.autoContinues(s))this.schedule();
+   if(s.state==='active'&&this.bonusRunning||s.state==='settled'&&this.autoRemaining>0)this.schedule();
    this.controls();
   }catch(e){if(this.valid(live)){this.error=(e as Error).message;this.stopAuto();this.live=undefined;this.board.cancel();this.audio.stopSpin();this.shown='';delete this.root.dataset.cascade;this.sync();}}
   finally{if(this.live===live&&!this.valid(live)){this.live=undefined;this.audio.stopSpin();}}
@@ -412,11 +392,11 @@ export class CaramelCarnivalUI {
   if(kind==='bonus')box.innerHTML=tr`<small>ФЕСТИВАЛЬ ОТКРЫТ</small><h2 id="cc-dialog-title">СЛАДКИЙ ФЕСТИВАЛЬ</h2><div class="cc-bonus-art">${caramelSymbol(7)}<strong>${v?.bonus?.remaining??10}<small>БЕСПЛАТНЫХ ВРАЩЕНИЙ</small></strong>${caramelSymbol(8)}</div><p>Множитель сохраняется между вращениями. Три билета добавляют ещё три вращения, до 30 в сумме.</p><button type="button" class="cc-primary" data-cc-action="bonus">НАЧАТЬ ФЕСТИВАЛЬ</button><p class="cc-dialog-note">Ставка принята. Продолжение бесплатно.</p>`;
     if(kind==='complete'&&s)box.innerHTML=renderSlotResult({style:'cc',eyebrow:translateText('ПРАЗДНИК ЗАВЕРШЁН'),title:translateText('ИТОГ ФЕСТИВАЛЯ'),returned:s.returnedUnits,ledger:this.ledger(s),note:translateText('Выплата уже зачислена в кошелёк один раз.'),label:translateText('ПРОДОЛЖИТЬ')});
     if(kind==='history')box.innerHTML=renderSlotHistory({style:'cc',eyebrow:translateText('ЖУРНАЛ ЯРМАРКИ'),title:translateText('ИСТОРИЯ РАУНДА'),ledger:s?this.ledger(s):undefined,status:s?.state==='active'?translateText('Фестиваль сохранён. Выплата поступит после завершения.'):translateText('Раунд завершён. Выплата зачислена один раз.'),empty:translateText('Здесь появится подтверждённая история твоего раунда.'),rows:v?.history.map(spin=>({title:tr`${spin.kind==='base'?translateText('Основное'):translateText('Бесплатное')} вращение ${slotSpinNumber(spin,v!.history)}`,detail:tr`${spin.frames.filter(f=>f.wins.length).length} каскадов · ×${spin.multiplierAfter} · ${spin.tickets} билетов${spin.freeAward?tr` · +${spin.freeAward} вращений`:''}`,payoutUnits:spin.payoutUnits}))??[]});
-    if(kind==='info')box.innerHTML=renderSlotInfo({style:'cc',eyebrow:translateText('ПРАВИЛА ЯРМАРКИ'),title:translateText('КАК ИГРАЕТ CARAMEL'),reduced:this.manualReduced,motionSetting:false,bodyHtml:tr`<h3>Совпадения в любом месте</h3><p>Поле 6×5. Восемь и более одинаковых конфет выигрывают независимо от расположения. Они исчезают, остальные падают вниз, свободные ячейки заполняются. До 20 выигрышных каскадов за вращение. Билет и волчок сами не оплачиваются.</p><h3>Энергия до ×50</h3><p>Волчки +2, +3, +5 и +10 на выигрышном поле добавляют энергию до выплаты этого каскада, затем исчезают вместе с выигрышными конфетами. Например, ×1 и +2 дают ×3. Без выигрышной группы волчки не срабатывают. Обычное вращение начинает с ×1, фестиваль сохраняет множитель между бесплатными вращениями.</p><h3>Билеты и фестиваль</h3><p>Считаются билеты на конечном поле, после каскадов. Четыре и более дают 10 бесплатных вращений. Фестиваль начинается с ×1. Внутри три и более билета добавляют три вращения, максимум 30 за весь фестиваль. Билеты не накапливаются между отдельными обычными ставками.</p><h3>Выплаты от общей ставки, до множителя</h3>${renderSlotPaytable('cc',CARAMEL_PAYTABLE.map((pay,i)=>({symbolHtml:caramelSymbol(i),name:CARAMEL_NAMES[i],values:pay.map(n=>`${(n/100).toLocaleString(locale)}×`)})),[translateText('Конфета'),'8-9','10-11','12+'])}<p>Покупка фестиваля стоит 35 ставок, списывается один раз. Максимальная выплата всего раунда вместе с бесплатными вращениями: 5 000 базовых ставок. При достижении предела оставшиеся каскады и вращения заканчиваются. Выплаты округляются вниз до 0,01 USDT.</p><p>Одна ставка и одна итоговая выплата. При обрыве связи подтверждается прежний UUID, новая ставка не нужна. Закрытие, скрытие окна и ошибка останавливают авто. Фестиваль можно продолжить из сохранённого состояния.</p><p>Авто выполняет выбранные 10, 25, 50 или 100 платных вращений. Можно задать остановку при потере суммы с начала автоигры и при выигрыше раунда от заданной суммы; лимиты проверяются между раундами, начатый раунд всегда завершается. По умолчанию авто останавливается при входе в фестиваль. Скорость «Быстро» сокращает анимацию, «Турбо» сразу показывает итог вращения. Результат и выплата от скорости не зависят.</p><p class="cc-dialog-note">Собственная версия Royal: свои иллюстрации, звуки и вероятности событий. Демонстрационная игра на тестовые виртуальные USDT.</p>`});
+    if(kind==='info')box.innerHTML=renderSlotInfo({style:'cc',eyebrow:translateText('ПРАВИЛА ЯРМАРКИ'),title:translateText('КАК ИГРАЕТ CARAMEL'),reduced:this.manualReduced,motionSetting:false,bodyHtml:tr`<h3>Совпадения в любом месте</h3><p>Поле 6×5. Восемь и более одинаковых конфет выигрывают независимо от расположения. Они исчезают, остальные падают вниз, свободные ячейки заполняются. До 20 выигрышных каскадов за вращение. Билет и волчок сами не оплачиваются.</p><h3>Энергия до ×50</h3><p>Волчки +2, +3, +5 и +10 на выигрышном поле добавляют энергию до выплаты этого каскада, затем исчезают вместе с выигрышными конфетами. Например, ×1 и +2 дают ×3. Без выигрышной группы волчки не срабатывают. Обычное вращение начинает с ×1, фестиваль сохраняет множитель между бесплатными вращениями.</p><h3>Билеты и фестиваль</h3><p>Считаются билеты на конечном поле, после каскадов. Четыре и более дают 10 бесплатных вращений. Фестиваль начинается с ×1. Внутри три и более билета добавляют три вращения, максимум 30 за весь фестиваль. Билеты не накапливаются между отдельными обычными ставками.</p><h3>Выплаты от общей ставки, до множителя</h3>${renderSlotPaytable('cc',CARAMEL_PAYTABLE.map((pay,i)=>({symbolHtml:caramelSymbol(i),name:CARAMEL_NAMES[i],values:pay.map(n=>`${(n/100).toLocaleString(locale)}×`)})),[translateText('Конфета'),'8-9','10-11','12+'])}<p>Покупка фестиваля стоит 35 ставок, списывается один раз. Максимальная выплата всего раунда вместе с бесплатными вращениями: 5 000 базовых ставок. При достижении предела оставшиеся каскады и вращения заканчиваются. Выплаты округляются вниз до 0,01 USDT.</p><p>Одна ставка и одна итоговая выплата. При обрыве связи подтверждается прежний UUID, новая ставка не нужна. Закрытие, скрытие окна и ошибка останавливают авто. Фестиваль можно продолжить из сохранённого состояния.</p><p>${language==='en'?'Choose 10, 25, 50 or 100 paid spins. After the festival, confirm the result to resume the series. Quick play shortens the animation. Turbo shows the result immediately. Speed does not affect the result or payout.':'Выбери 10, 25, 50 или 100 платных вращений. После фестиваля подтверди результат, чтобы продолжить серию. Скорость «Быстро» сокращает анимацию, «Турбо» сразу показывает итог вращения. Результат и выплата от скорости не зависят.'}</p><p class="cc-dialog-note">Собственная версия Royal: свои иллюстрации, звуки и вероятности событий. Демонстрационная игра на тестовые виртуальные USDT.</p>`});
   this.controls();this.dialogShell.focus(kind==='info');
  }
  private closeDialog(){this.dialog='';this.controls();this.dialogShell.hide();}
- private async dialogAction(action:string){if(this.destroyed||!this.assets.ready)return;if(action==='enter'){this.entered=true;this.closeDialog();void this.audio.enter();if(this.session()?.state==='active'){this.bonusRunning=true;await this.request('normal');}}else if(action==='buy'){if(this.blocked())return;this.closeDialog();await this.request('festival');}else if(action==='bonus'){this.closeDialog();this.bonusRunning=true;await this.request('normal');}else{this.closeDialog();if(action==='complete'){const s=this.session();if(s&&this.autoContinues(s))this.schedule();this.controls();}}}
+ private async dialogAction(action:string){if(this.destroyed||!this.assets.ready)return;if(action==='enter'){this.entered=true;this.closeDialog();void this.audio.enter();if(this.session()?.state==='active'){this.bonusRunning=true;await this.request('normal');}}else if(action==='buy'){if(this.blocked())return;this.closeDialog();await this.request('festival');}else if(action==='bonus'){this.closeDialog();this.bonusRunning=true;await this.request('normal');}else{this.closeDialog();if(action==='complete'&&this.autoRemaining>0)this.schedule();}}
  getAudioState(){return this.audio.state();}
  destroy(){if(this.destroyed)return;this.destroyed=true;this.cancel();this.undock();document.removeEventListener('pointerdown',this.outside,true);this.layout.disconnect();this.assets.destroy();this.board.destroy();this.audio.destroy();this.unsubscribe();this.settings?.destroy();this.dialogShell.destroy();this.stakeControls.destroy();this.soundControls.destroy();this.playback.destroy();this.host.replaceChildren();}
 }
