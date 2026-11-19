@@ -128,6 +128,51 @@ test('Last Convoy keeps its radio and stake legible in the connected host',async
  await expect(chat.locator('#chat-input')).toBeVisible();
 });
 
+test('Nitro Run keeps its field and instruments stable with connected chat',async({page,roomPath})=>{
+ await mkdir(out,{recursive:true});const report:unknown[]=[];
+ await enterGameHall(page,roomPath);await open(page,'studio-nitro-run');
+ const game=page.locator('#mini-game > .nr-game'),chat=page.locator('#club-chat-dock');
+ for(const [width,height]of sizes){
+  await test.step(`${width}x${height}`,async()=>{
+   await page.setViewportSize({width,height});
+   if(width>=1080&&height>=600){
+    if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
+    await expect(chat.locator('#chat-input')).toBeVisible();
+   }else if(await chat.locator('.game-chat-close').isVisible())await chat.locator('.game-chat-close').click();
+   await fit(page,'studio-nitro-run');
+   const state=await game.evaluate(root=>{
+    const frame=root.querySelector('.cc-board-frame')!,message=root.querySelector('[data-cc-message]')!;
+    const error=root.querySelector('[data-cc-error]')!,retry=root.querySelector<HTMLButtonElement>('[data-cc-retry]')!;
+    const initial={message:message.textContent,error:error.textContent,hidden:retry.hidden,phase:root.dataset.phase,charge:root.dataset.nitroCharge,multiplier:root.dataset.multiplier};
+    const measure=()=>frame.getBoundingClientRect().toJSON(),idle=measure();
+    try{
+     root.dataset.phase='spinning';message.textContent='';const spinning=measure();
+     error.textContent='Не удалось получить ответ. Проверь сохранённый раунд.';retry.hidden=false;
+     const recovery=measure(),retryHeight=retry.getBoundingClientRect().height;
+     root.dataset.nitroCharge='2';root.dataset.multiplier='5';
+     message.textContent='БОНУСНАЯ ГОНКА ПРОДОЛЖАЕТСЯ';const charged=measure();
+     const panels=[...root.querySelectorAll<HTMLElement>('.nr-hud>section,.nr-hud>aside')].map(el=>el.getBoundingClientRect().toJSON());
+     return {idle,spinning,recovery,charged,retryHeight,panels};
+    }finally{
+     message.textContent=initial.message;error.textContent=initial.error;retry.hidden=initial.hidden;
+     for(const [key,value]of Object.entries({phase:initial.phase,nitroCharge:initial.charge,multiplier:initial.multiplier})){
+      if(value===undefined)delete root.dataset[key];else root.dataset[key]=value;
+     }
+    }
+   });
+   expect(state.spinning).toEqual(state.idle);expect(state.recovery).toEqual(state.idle);expect(state.charged).toEqual(state.idle);
+   expect(state.retryHeight).toBeGreaterThanOrEqual(44);
+   report.push({width,height,field:state.idle,stableDuringSpinRecoveryAndCharge:true});
+   if([1440,393,852,320].includes(width))await page.screenshot({path:out+`/nitro-run-${width}x${height}.png`});
+   for(let i=0;i<state.panels.length;i++)for(let j=i+1;j<state.panels.length;j++){
+    const a=state.panels[i],b=state.panels[j];
+    expect(a.right<=b.left+1||b.right<=a.left+1||a.bottom<=b.top+1||b.bottom<=a.top+1,'instruments must not overlap').toBe(true);
+   }
+  });
+ }
+ await writeFile(out+'/nitro-run-layout.json',JSON.stringify({connectedHost:true,rows:report},null,2));
+});
+
 test('Caramel Carnival keeps the reel frame still as feedback and festival state change',async({page,roomPath})=>{
  await enterGameHall(page,roomPath);
  await open(page,'studio-caramel-carnival');
