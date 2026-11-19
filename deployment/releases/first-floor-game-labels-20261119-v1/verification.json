@@ -1,0 +1,494 @@
+{
+  "release": "first-floor-game-labels-20261119-v1",
+  "sourceCommit": "5856e284f572e5d93e32aceb736d5431a6bb5d0a",
+  "productionBaseCommit": "9a7ed1f88b88b97411a41ccd9f399bea72ba69f1",
+  "githubMainAtVerification": "5856e284f572e5d93e32aceb736d5431a6bb5d0a",
+  "releaseManifestSha256": "f7ef0d324eaef407f3325fb61bf813894bdff6d9d3197ca3835c486084ee82f5",
+  "install": {
+    "published": true,
+    "preparedImage": "sha256:f8db3bfa5c0445b9f4db77505cda967c72478fa334a1330aa9048dc972f371d7",
+    "runningImage": "sha256:f8db3bfa5c0445b9f4db77505cda967c72478fa334a1330aa9048dc972f371d7",
+    "containerRestarted": true,
+    "sourceCommit": "5856e284f572e5d93e32aceb736d5431a6bb5d0a",
+    "changedSources": 19,
+    "clientDeltaFiles": 9,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 0,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 10,
+    "updatedModules": [
+      "studio-caramel-carnival",
+      "studio-cosmic-escape",
+      "studio-dracona",
+      "flag-battle",
+      "studio-flooded-temple",
+      "studio-forest-heart",
+      "studio-afterglow",
+      "studio-last-convoy",
+      "studio-meme-overload",
+      "studio-neopolis",
+      "studio-nitro-run",
+      "royal-roulette",
+      "studio-velvet-reign"
+    ],
+    "addedGames": [],
+    "restoredGames": []
+  },
+  "rollback": {
+    "image": "sha256:23a634ac17c94684c90dce20bd0cfabd8d0ce992d7db4a1046de4ca751b6b171",
+    "sourceArchive": "/opt/royal-backups/first-floor-game-labels-20261119-v1/source.tgz",
+    "sourceArchiveSha256": "c017809ae8e24354a704cf1091299411b8127a09d7c49ac2f25bf3be108cc924",
+    "sourceArchiveBytes": 168439,
+    "financialBackup": {
+      "path": "/opt/royal-backups/first-floor-game-labels-20261119-v1/financial.dump",
+      "sha256": "4f7bd876edfb745e79f316969f5c9d1473493a190b4142f9f330fcad9992d6d7",
+      "bytes": 48238013,
+      "databaseRestored": false
+    }
+  },
+  "verification": {
+    "build": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 299596
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 9865
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 240637
+      },
+      {
+        "name": "projected-modules",
+        "passed": true,
+        "durationMs": 109170
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 9712
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 161
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 22
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 24
+      }
+    ],
+    "rtpProfiles": 38,
+    "stakePolicies": 20,
+    "stakeAdmissions": 20,
+    "standardWalletTests": 19,
+    "applicationInstallerTests": 20,
+    "modulePublisherTests": 11,
+    "browser": {
+      "desktop": {
+        "passed": true,
+        "results": [
+          {
+            "id": "flag-battle",
+            "version": "2.1.2-45a4cbf1ef31"
+          },
+          {
+            "id": "github-crash",
+            "version": "1.1.1-878ddc306d18"
+          },
+          {
+            "id": "original-cr-vs-leo",
+            "version": "1.1.1-fcfffa623d83"
+          },
+          {
+            "id": "original-jackie-chan",
+            "version": "1.2.1-e9b60e76ef5e"
+          },
+          {
+            "id": "royal-plinko",
+            "version": "1.1.1-f5fdc9a645bc"
+          },
+          {
+            "id": "royal-roulette",
+            "version": "1.6.2-d24b98396299"
+          },
+          {
+            "id": "studio-afterglow",
+            "version": "1.3.1-8d71e0873e25"
+          },
+          {
+            "id": "studio-caramel-carnival",
+            "version": "1.1.1-53d58127ee22"
+          },
+          {
+            "id": "studio-caribbean-treasures",
+            "version": "1.7.1-a78e99ebf8e2"
+          },
+          {
+            "id": "studio-cosmic-escape",
+            "version": "1.1.1-3239a1e0c0f8"
+          },
+          {
+            "id": "studio-dracona",
+            "version": "1.2.1-b1c1e33ecbca"
+          },
+          {
+            "id": "studio-flooded-temple",
+            "version": "0.10.1-605d06b96d24"
+          },
+          {
+            "id": "studio-forest-heart",
+            "version": "1.16.1-3095d609707c"
+          },
+          {
+            "id": "studio-last-convoy",
+            "version": "1.1.1-43f2f8bdda0d"
+          },
+          {
+            "id": "studio-meme-overload",
+            "version": "1.1.1-d8f62eddb26b"
+          },
+          {
+            "id": "studio-neopolis",
+            "version": "0.6.1-03d616f4c8f9"
+          },
+          {
+            "id": "studio-nitro-run",
+            "version": "1.2.2-fc365f5126f9"
+          },
+          {
+            "id": "studio-velvet-reign",
+            "version": "1.1.1-1fd37ed35c96"
+          },
+          {
+            "id": "studio-wild-nudge",
+            "version": "1.6.0-cf68e8a8b2b2"
+          }
+        ],
+        "lostReplyRecovered": true,
+        "singleDebitCents": 10
+      },
+      "mobile": {
+        "passed": true,
+        "results": [
+          {
+            "id": "flag-battle",
+            "version": "2.1.2-45a4cbf1ef31"
+          },
+          {
+            "id": "github-crash",
+            "version": "1.1.1-878ddc306d18"
+          },
+          {
+            "id": "original-cr-vs-leo",
+            "version": "1.1.1-fcfffa623d83"
+          },
+          {
+            "id": "original-jackie-chan",
+            "version": "1.2.1-e9b60e76ef5e"
+          },
+          {
+            "id": "royal-plinko",
+            "version": "1.1.1-f5fdc9a645bc"
+          },
+          {
+            "id": "royal-roulette",
+            "version": "1.6.2-d24b98396299"
+          },
+          {
+            "id": "studio-afterglow",
+            "version": "1.3.1-8d71e0873e25"
+          },
+          {
+            "id": "studio-caramel-carnival",
+            "version": "1.1.1-53d58127ee22"
+          },
+          {
+            "id": "studio-caribbean-treasures",
+            "version": "1.7.1-a78e99ebf8e2"
+          },
+          {
+            "id": "studio-cosmic-escape",
+            "version": "1.1.1-3239a1e0c0f8"
+          },
+          {
+            "id": "studio-dracona",
+            "version": "1.2.1-b1c1e33ecbca"
+          },
+          {
+            "id": "studio-flooded-temple",
+            "version": "0.10.1-605d06b96d24"
+          },
+          {
+            "id": "studio-forest-heart",
+            "version": "1.16.1-3095d609707c"
+          },
+          {
+            "id": "studio-last-convoy",
+            "version": "1.1.1-43f2f8bdda0d"
+          },
+          {
+            "id": "studio-meme-overload",
+            "version": "1.1.1-d8f62eddb26b"
+          },
+          {
+            "id": "studio-neopolis",
+            "version": "0.6.1-03d616f4c8f9"
+          },
+          {
+            "id": "studio-nitro-run",
+            "version": "1.2.2-fc365f5126f9"
+          },
+          {
+            "id": "studio-velvet-reign",
+            "version": "1.1.1-1fd37ed35c96"
+          },
+          {
+            "id": "studio-wild-nudge",
+            "version": "1.6.0-cf68e8a8b2b2"
+          }
+        ],
+        "lostReplyRecovered": true,
+        "singleDebitCents": 10
+      },
+      "connectedChat": true,
+      "temporaryPostgreSQL": true,
+      "productionBackendSha256": "347b10a5191da839142cafb6459d14e607190a32af3a97107f73cd392de3807f"
+    },
+    "public": {
+      "health": true,
+      "host": {
+        "/assets/ActivitiesUI-DmQuzp1n.js": "032a311e15026971435891f9347e6e05a177a212df2bb87ac827cd0bcab0c7b0",
+        "/assets/GameHostRuntime-BVv0GAPd.js": "4885913f9893412d07473d6af729bac5d6905857958a841c39831797caafb3bb",
+        "/assets/ClubWorld-BnPRof0X.js": "8b2c230bbe1a6bcb99d25232ebf0d9ee564fd114a773ca28ed15432df32e85a0",
+        "/assets/playerLevelStatus-BRURc9Px.js": "34a9e29c54e7f4f42068e4cfd472009009d0df8c18a30ea1ebf35120266bef79",
+        "/assets/PvpUI-CPhmpR52.js": "11799325be2c43297cdb91d3ff7cb4c98f9436512be8a0076bb1d1932af2efa8",
+        "/assets/index-C6eV-ORR.js": "30c745b5a67ed63c50cbcccc04ae01267609ef7f429757bf504b4fc9cb091b1d",
+        "/": "9c87b238bb17d2a4f2416147e106d95b35c97e3c7a3162e189d57df87cf29259",
+        "/assets/phaser-XpLupOZx.js": "07ece3f667b3b4c22ceeb1bcb5fd0a73bd18deb80bec4168002b78f02f64607c",
+        "/assets/main-eRNKN5Pw.js": "dd523e339fe52f7b911e1ccbd71bbabc43e3fd324d7d03a5079954dc23b69042"
+      },
+      "modules": {
+        "github-crash": {
+          "pointerSha256": "deef44e1e5d1a3ae7610f3a846067fef3549216ebcab1a556dd08affb5a8858e",
+          "manifestSha256": "9b59012b46801b9b32b89925e8227131f68dc2f45a021fc844461747804397ad",
+          "version": "1.1.1-878ddc306d18",
+          "updated": false
+        },
+        "flag-battle": {
+          "pointerSha256": "1f40ca6df2c7807cc4fdeff4c5c6e0c4933d02540da1a7ffffc9d6b42f983841",
+          "manifestSha256": "c0202a41784a7f149320667c3d7fa1b25bfd610e4c52c3478706fdcda282df0b",
+          "version": "2.1.2-45a4cbf1ef31",
+          "updated": true
+        },
+        "original-cr-vs-leo": {
+          "pointerSha256": "7c8c0df5a2d8d94c17a0d018fb0b7e30f8f854c7e4032ad3e4fd180e5116fcc3",
+          "manifestSha256": "eec5a28731b861a9b807c348b5250644a8a2957c009ecdcf4b4d036b0b1d4d3e",
+          "version": "1.1.1-fcfffa623d83",
+          "updated": false
+        },
+        "original-jackie-chan": {
+          "pointerSha256": "ca36ab41e1f8b0dfffe070688dcdc0eec38c7135cafd710a918824019d450b95",
+          "manifestSha256": "eb7acc4ac043c37b4c4be05115823d6f020eb1884fafce003f311795c06a5fc3",
+          "version": "1.2.1-e9b60e76ef5e",
+          "updated": false
+        },
+        "studio-caribbean-treasures": {
+          "pointerSha256": "cc502ab15de4752e6d632062d29073adc4a3110dca076f7b17042fa130fa6d85",
+          "manifestSha256": "6db5c4772206db5685ceae11c700b189e64ce4d1a186aa05b97a33f5e734343a",
+          "version": "1.7.1-a78e99ebf8e2",
+          "updated": false
+        },
+        "royal-plinko": {
+          "pointerSha256": "726bab895825baeb53f0b3b3119ed7af7ae249eae2682d281c7fb62b59f42558",
+          "manifestSha256": "88f50ee2ec8a8ea7a58021cf784566459022e5fd5194a4bb76c77d4889990719",
+          "version": "1.1.1-f5fdc9a645bc",
+          "updated": false
+        },
+        "royal-roulette": {
+          "pointerSha256": "fc41554fbff06a62d35dddd2db41fe0226b5d12e44166c06563403d8ac1a2a55",
+          "manifestSha256": "536b31be75dc201826d5a20f4bbd531d51016d6bbec21212be5b7fc3b7e3ff65",
+          "version": "1.6.2-d24b98396299",
+          "updated": true
+        },
+        "studio-caramel-carnival": {
+          "pointerSha256": "153f996b4541432f16ef680c767d01eff458ac031865b641a856a9340d6b7ee0",
+          "manifestSha256": "74c87b6d3e21b724ed62f9dc88603e0d0c491d642a31c508cb62a5c1b101770f",
+          "version": "1.1.1-53d58127ee22",
+          "updated": true
+        },
+        "studio-afterglow": {
+          "pointerSha256": "dd3b6df2d6eeca57af9002330c5d033cc6223713f3d05d1c1e07f4b91e661f65",
+          "manifestSha256": "9b86bfe7e35e6deaa73a5376bb4809e1bf8d1ef1c4c9af315f70a8f706ed95c9",
+          "version": "1.3.1-8d71e0873e25",
+          "updated": true
+        },
+        "studio-flooded-temple": {
+          "pointerSha256": "4aa62f0eed32be8f347b2fdba78d23edd9e236116cadc62c198d18a464084c7f",
+          "manifestSha256": "c9193db2e1ec4aae1a6b82872d0d3d4e0914e3dffd10d5806a904c490c16f9be",
+          "version": "0.10.1-605d06b96d24",
+          "updated": true
+        },
+        "studio-cosmic-escape": {
+          "pointerSha256": "e443c3ec0a1268db6e9d25c83fd7d3507b6a894d492db84a6e2d6adbd2fe1f78",
+          "manifestSha256": "9ffc8facc3ebb08d944048004374770fd5bc727790d530af877a9a356c5e887e",
+          "version": "1.1.1-3239a1e0c0f8",
+          "updated": true
+        },
+        "studio-dracona": {
+          "pointerSha256": "3082253d4bb7e6ea2aa2cc91cdaca8bbae4b4231fa947f240ae40c0eb77239b4",
+          "manifestSha256": "dac450efa0462ce6fd4105873bd45caf59d39e7932253fb6578f77d4e1955ae2",
+          "version": "1.2.1-b1c1e33ecbca",
+          "updated": true
+        },
+        "studio-last-convoy": {
+          "pointerSha256": "b1f199e9606ba6b87c1644c68bc4e2e2f139bb8c4c48db79b3c3d94aa5f49bfb",
+          "manifestSha256": "ea3bb2f1f03aefb9b8640b42a966b8720913fcd9d4500b9eb0ff36d587f62c6a",
+          "version": "1.1.1-43f2f8bdda0d",
+          "updated": true
+        },
+        "studio-forest-heart": {
+          "pointerSha256": "f72f638d6a4ce1e6900716dc824edf40e04553621596b02f731a159f754e8f1d",
+          "manifestSha256": "322b95874ddc399ef875922f658f8666345703721ba22af943a09c40eb201330",
+          "version": "1.16.1-3095d609707c",
+          "updated": true
+        },
+        "studio-wild-nudge": {
+          "pointerSha256": "45f58382424e564dc0aae819214ddd91ce8d9e0a7083c49e960947417d54ec2c",
+          "manifestSha256": "a45d54123c5ac83aae56e4c0e33eb50302e3c73507e2c94d5f73e4dc9d707430",
+          "version": "1.6.0-cf68e8a8b2b2",
+          "updated": false
+        },
+        "studio-nitro-run": {
+          "pointerSha256": "dec64c50dc5d0b03db7747e3fc54422e441a7126e7e25850a4276fa6040ff342",
+          "manifestSha256": "669134bffd4ae4d8b1eaeeef0d5e44873b0201e17d1b4d74dc7fe2b9d28609f0",
+          "version": "1.2.2-fc365f5126f9",
+          "updated": true
+        },
+        "studio-meme-overload": {
+          "pointerSha256": "939328aa6f66335cf9e37444bbf818d37ac8b942c235b8a5340c6f2d6cfa10e9",
+          "manifestSha256": "553cfe25b921b21777620aeb5e1cdfd54fa87c3a2791b76070558fb79ea569a5",
+          "version": "1.1.1-d8f62eddb26b",
+          "updated": true
+        },
+        "studio-velvet-reign": {
+          "pointerSha256": "dc12479b5ec74a88cfbf926ef04d52bc0e53a45f9258ac00c09c51be9ac8d448",
+          "manifestSha256": "795c98c52bff22fa3d6ad5100fbdac3806183dfdfdc1d92da6a48f20ed40827f",
+          "version": "1.1.1-1fd37ed35c96",
+          "updated": true
+        },
+        "studio-neopolis": {
+          "pointerSha256": "12ebba8d7be8e3ec6130dc74bfa756fb60f07cc87a09f8c7e903b9172a90bb43",
+          "manifestSha256": "a55a278af20745adab90e6b34d5310cf8528cf4d34a11fa8bd54ac478e41951f",
+          "version": "0.6.1-03d616f4c8f9",
+          "updated": true
+        }
+      },
+      "browser": [
+        "1440x900: catalogue and roulette opened",
+        "393x852: catalogue and roulette opened"
+      ]
+    },
+    "productionAccountsOrRoundsCreated": false
+  },
+  "maintenance": {
+    "startedAt": 1795122540.1297433,
+    "status": "completed",
+    "freeBefore": 11785637888,
+    "release": "first-floor-game-labels-20261119-v1",
+    "sourceCommit": "5856e284f572e5d93e32aceb736d5431a6bb5d0a",
+    "currentImage": "sha256:f8db3bfa5c0445b9f4db77505cda967c72478fa334a1330aa9048dc972f371d7",
+    "rollbackImage": "sha256:23a634ac17c94684c90dce20bd0cfabd8d0ce992d7db4a1046de4ca751b6b171",
+    "plannedEntries": 24,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 240,
+    "retainedHistoryReasons": {
+      "/opt/royal-releases/hall-elevator-20261101-v1-final.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/forest-heart-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-compact.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/royal-roulette-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/hall-elevator-20261101-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-delta.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-snapshot.py": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v3.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/character-motion-20261027-v1.failed.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-ui-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/girlhub-feedback-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v2.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before-final.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/caramel-redesign-20261111-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-card-scale-20261023": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/caramel-prototype-20261117-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub"
+    },
+    "removedEntries": 24,
+    "removedImageTags": 6,
+    "dockerRetainedImages": [],
+    "freeAfter": 11798335488,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "verificationPasses": 2,
+    "rollbackImageProof": {
+      "reused": true,
+      "format": 1,
+      "image": "sha256:23a634ac17c94684c90dce20bd0cfabd8d0ce992d7db4a1046de4ca751b6b171",
+      "platform": "Linux/x86_64",
+      "readerSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "inventorySha256": "7c345ac0678eb3cf7fc96eab8ea2580afb72318c3e121a6122da496ba18020b2",
+      "files": 8750
+    },
+    "projectBrain": {
+      "status": "pending",
+      "runtimeFingerprint": "368b1f94b7cbace3e4d008462dbfca773f2bba4307bc4b5b9330c51b62ba2ad8",
+      "receipt": "/var/lib/royal-project-brain/receipts/368b1f94b7cbace3e4d008462dbfca773f2bba4307bc4b5b9330c51b62ba2ad8.json",
+      "queued": true
+    },
+    "finishedAt": 1795122627.9858701,
+    "durationSeconds": 87.86,
+    "enabledTimer": "enabled",
+    "activeTimer": "active",
+    "freeVerified": 11799359488,
+    "healthyRuntime": "healthy"
+  },
+  "obsoletePackage": {
+    "removedPath": "/opt/royal-releases/.rejected-first-floor-game-labels-20261119-v1",
+    "bytes": 81272573,
+    "freeBefore": 11703480320,
+    "freeAfter": 11785854976
+  }
+}
