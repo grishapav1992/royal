@@ -63,7 +63,11 @@ async function fit(page:Page,id:string,action?:string,modal=false){
   const box=await page.locator((selector==='.slot-settings-button'?'#mini-dialog ':'#mini-game ')+selector).boundingBox();expect(box).not.toBeNull();expect(box!.height).toBeGreaterThanOrEqual(44);
  }
 }
-async function currentSession(page:Page,id:string){return page.evaluate(async id=>{const path='/src/wallet/ExpansionClient.ts';return(await import(/* @vite-ignore */path)).expansionClient.sessions.find((s:any)=>s.gameId===id);},id);}
+async function currentSession(page:Page,id:string){return page.evaluate(id=>{
+ const host=(globalThis as any)[Symbol.for('royal.game-host.v1')];
+ if(!host)throw Error('The connected game host is not installed');
+ return host.expansionClient.sessions.find((s:any)=>s.gameId===id);
+},id);}
 async function finish(page:Page,id:string){
  const p=family(id),attribute=p==='lg'?'data-lg-dialog-action':'data-cc-action';
  await expect.poll(async()=>{
@@ -75,6 +79,13 @@ async function finish(page:Page,id:string){
   }
   const session=await currentSession(page,id),spin=page.locator(`[data-${p}-spin]`);
   if(session?.state==='settled'&&await spin.isEnabled())return true;
+  if(id==='studio-nitro-run'&&session?.state==='active'){
+   // Resume a paused bonus once. Its own scheduler completes the free spins;
+   // a second manual click can otherwise race the final free-spin settlement.
+   const pause=page.locator('[data-cc-pause]');
+   if(await pause.isVisible()&&!await pause.isEnabled()&&await spin.isEnabled())await spin.click();
+   return false;
+  }
   if(session?.state==='active'&&await spin.isEnabled()){
    // A scheduled free spin can start between the readiness check and the click.
    try{await spin.click({timeout:process.env.LAYOUT_BROWSER==='webkit'?5000:1000});}catch(error){if(!(error instanceof Error)||error.name!=='TimeoutError')throw error;}
@@ -135,10 +146,11 @@ test('Nitro Run keeps its field and instruments stable with connected chat',asyn
  for(const [width,height]of sizes){
   await test.step(`${width}x${height}`,async()=>{
    await page.setViewportSize({width,height});
+   await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));
    if(width>=1080&&height>=600){
     if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
     await expect(chat.locator('#chat-input')).toBeVisible();
-   }else if(await chat.locator('.game-chat-close').isVisible())await chat.locator('.game-chat-close').click();
+   }else await expect(page.locator('#mini-dialog')).toHaveAttribute('data-game-chat','closed');
    await fit(page,'studio-nitro-run');
    const state=await game.evaluate(root=>{
     const frame=root.querySelector('.cc-board-frame')!,message=root.querySelector('[data-cc-message]')!;

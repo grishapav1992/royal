@@ -1,0 +1,54 @@
+{
+  "checkedAt": "2026-11-19T15:31:44.447Z",
+  "sourceCommit": "9a50f51e",
+  "moduleVersion": "1.2.0-cb57048d2e6e",
+  "moduleSourceSha256": "cb57048d2e6ecd627acbd1abd22392ed1663d0f81830630e8be5b8413f25575a",
+  "verifiedSourceFiles": 41,
+  "moduleBytes": 2606747,
+  "typecheck": "passed",
+  "moduleBuildWithRtpGate": "passed",
+  "chromiumConnectedHost": {
+    "passed": 4,
+    "failed": 0,
+    "flaky": 0,
+    "durationMs": 80274.586,
+    "sizes": [
+      [
+        1440,
+        900
+      ],
+      [
+        1280,
+        720
+      ],
+      [
+        768,
+        1024
+      ],
+      [
+        1024,
+        768
+      ],
+      [
+        393,
+        852
+      ],
+      [
+        852,
+        393
+      ],
+      [
+        320,
+        568
+      ],
+      [
+        568,
+        320
+      ]
+    ]
+  },
+  "sharedWalletCrossModuleRecovery": "passed",
+  "mathAndServerRulesChanged": false,
+  "productionPublished": false,
+  "physicalDevicesAndListeningTested": false
+}

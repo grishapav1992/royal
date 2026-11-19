@@ -1,0 +1,126 @@
+{
+  "connectedHost": true,
+  "moduleVersion": "1.2.0-cb57048d2e6e",
+  "rows": [
+    {
+      "width": 1440,
+      "height": 900,
+      "field": {
+        "x": 328.609375,
+        "y": 160.671875,
+        "width": 639.59375,
+        "height": 535.65625,
+        "top": 160.671875,
+        "right": 968.203125,
+        "bottom": 696.328125,
+        "left": 328.609375
+      },
+      "stableDuringSpinRecoveryAndCharge": true
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "field": {
+        "x": 375,
+        "y": 160.671875,
+        "width": 423.59375,
+        "height": 355.65625,
+        "top": 160.671875,
+        "right": 798.59375,
+        "bottom": 516.328125,
+        "left": 375
+      },
+      "stableDuringSpinRecoveryAndCharge": true
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "field": {
+        "x": 28.203125,
+        "y": 222.015625,
+        "width": 711.59375,
+        "height": 594.984375,
+        "top": 222.015625,
+        "right": 739.796875,
+        "bottom": 817,
+        "left": 28.203125
+      },
+      "stableDuringSpinRecoveryAndCharge": true
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "field": {
+        "x": 365.40625,
+        "y": 160.671875,
+        "width": 481.1875,
+        "height": 403.65625,
+        "top": 160.671875,
+        "right": 846.59375,
+        "bottom": 564.328125,
+        "left": 365.40625
+      },
+      "stableDuringSpinRecoveryAndCharge": true
+    },
+    {
+      "width": 393,
+      "height": 852,
+      "field": {
+        "x": 13,
+        "y": 279.578125,
+        "width": 367,
+        "height": 307.828125,
+        "top": 279.578125,
+        "right": 380,
+        "bottom": 587.40625,
+        "left": 13
+      },
+      "stableDuringSpinRecoveryAndCharge": true
+    },
+    {
+      "width": 852,
+      "height": 393,
+      "field": {
+        "x": 242,
+        "y": 114.171875,
+        "width": 276,
+        "height": 231.65625,
+        "top": 114.171875,
+        "right": 518,
+        "bottom": 345.828125,
+        "left": 242
+      },
+      "stableDuringSpinRecoveryAndCharge": true
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "field": {
+        "x": 34.59375,
+        "y": 190.5,
+        "width": 250.796875,
+        "height": 210.984375,
+        "top": 190.5,
+        "right": 285.390625,
+        "bottom": 401.484375,
+        "left": 34.59375
+      },
+      "stableDuringSpinRecoveryAndCharge": true
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "field": {
+        "x": 143.796875,
+        "y": 114.171875,
+        "width": 188.390625,
+        "height": 158.65625,
+        "top": 114.171875,
+        "right": 332.1875,
+        "bottom": 272.828125,
+        "left": 143.796875
+      },
+      "stableDuringSpinRecoveryAndCharge": true
+    }
+  ]
+}
