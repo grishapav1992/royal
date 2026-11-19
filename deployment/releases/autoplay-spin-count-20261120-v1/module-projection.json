@@ -51,6 +51,12 @@
       "baseSha256": "43740517fa6963cd1228e43582bf02ce615e97cc0bb53abd258ecbfda8a4640f",
       "sha256": "43740517fa6963cd1228e43582bf02ce615e97cc0bb53abd258ecbfda8a4640f"
     },
+    "games/caramel-carnival/package.json": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/caramel-carnival/package.json",
+      "baseSha256": "93005011116a974ce8763880c7cfb7845771e1db393a16dbdfef8198ca0dbd1a",
+      "sha256": "93005011116a974ce8763880c7cfb7845771e1db393a16dbdfef8198ca0dbd1a"
+    },
     "games/caramel-carnival/tsconfig.json": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "games/caramel-carnival/tsconfig.json",
@@ -62,6 +68,12 @@
       "path": "games/cosmic-escape/entry.ts",
       "baseSha256": "d13bd69ca539016751954c6c6851dd801f922623582edf5ffdc49a174448bea7",
       "sha256": "d13bd69ca539016751954c6c6851dd801f922623582edf5ffdc49a174448bea7"
+    },
+    "games/cosmic-escape/package.json": {
+      "commit": "28b6ab52c1fbaa3b93838009a672714f93e7ae3a",
+      "path": "games/cosmic-escape/package.json",
+      "baseSha256": "956e9ba0854a10de250c1d86af94c7f7d320228ca86688b846dc06146716f81c",
+      "sha256": "956e9ba0854a10de250c1d86af94c7f7d320228ca86688b846dc06146716f81c"
     },
     "games/cosmic-escape/tsconfig.json": {
       "commit": "28b6ab52c1fbaa3b93838009a672714f93e7ae3a",
@@ -86,6 +98,12 @@
       "path": "games/last-convoy/LastConvoyUI.ts",
       "baseSha256": "1bf136d2f286f7e4d2b5656a1e73ef0498c466d48635382a281973a6b1e74e87",
       "sha256": "1bf136d2f286f7e4d2b5656a1e73ef0498c466d48635382a281973a6b1e74e87"
+    },
+    "games/last-convoy/package.json": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "games/last-convoy/package.json",
+      "baseSha256": "5bdbaaec8bf13d20a830235c2239705794259daaeb0e1b0df1877491db7d5536",
+      "sha256": "5bdbaaec8bf13d20a830235c2239705794259daaeb0e1b0df1877491db7d5536"
     },
     "games/last-convoy/tsconfig.json": {
       "commit": "196cb75a0deafd332cfd28f36178ec1e2b90cd95",
