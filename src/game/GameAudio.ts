@@ -7,12 +7,14 @@ export type AudioPreferences={muted:boolean;volume:number;casinoEnabled:boolean}
 export class GameAudio {
   context?:AudioContext;
   output?:GainNode;
+  roomOutput?:GainNode;
   private ambience?:GainNode;
   private analyser?:AnalyserNode;
   private engine?:{osc:OscillatorNode;gain:GainNode};
   private muted=false;
   private volume=.35;
   private game='';
+  private cabinetOpen=false;
   private hall='arcade';
   private casino?:CasinoAudio;
   private tables?:TableAudio;
@@ -47,10 +49,16 @@ export class GameAudio {
   }
   private cancelSlots(){for(const owner of this.slotOwners)owner.cancel();}
   setHall(hall:string){this.hall=hall;this.syncAmbience();}
+  setCabinetOpen(open:boolean){
+    if(this.cabinetOpen===open)return;
+    this.cabinetOpen=open;
+    if(this.context&&this.roomOutput)this.roomOutput.gain.setValueAtTime(open?0:1,this.context.currentTime);
+    this.syncAmbience();
+  }
   private syncAmbience(){
     const enabled=!this.muted&&this.volume>0&&!document.hidden&&this.context?.state==='running';
     const duck=this.slotDucks.size?.22:1;
-    this.casino?.update(this.hall,this.game,enabled&&this.casinoEnabled,duck);
+    this.casino?.update(this.hall,this.game,enabled&&this.casinoEnabled&&!this.cabinetOpen,duck);
     if(this.context&&this.ambience)this.ambience.gain.setTargetAtTime((this.game==='demo'?0:this.game?.004:.012)*duck,this.context.currentTime,.2);
   }
   private buffer?:AudioBuffer;
@@ -64,12 +72,13 @@ export class GameAudio {
       if(!this.context){
         this.context=new AudioContext();const c=this.context;
         this.output=c.createGain();this.output.gain.value=this.muted?0:this.volume;const limiter=c.createDynamicsCompressor();limiter.threshold.value=-12;limiter.ratio.value=5;this.analyser=c.createAnalyser();this.analyser.fftSize=256;this.output.connect(this.analyser);this.analyser.connect(limiter);limiter.connect(c.destination);
+        this.roomOutput=c.createGain();this.roomOutput.gain.value=this.cabinetOpen?0:1;this.roomOutput.connect(this.output);
         this.buffer=c.createBuffer(1,c.sampleRate*2,c.sampleRate);const data=this.buffer.getChannelData(0);let brown=0;for(let i=0;i<data.length;i++){brown=(brown+(Math.random()*2-1)*.025)/1.025;data[i]=brown*5;}
         const noise=c.createBufferSource();noise.buffer=this.buffer;noise.loop=true;
         const filter=c.createBiquadFilter();filter.type='lowpass';filter.frequency.value=700;
-        this.ambience=c.createGain();this.ambience.gain.value=0;noise.connect(filter);filter.connect(this.ambience);this.ambience.connect(this.output);noise.start();
-        this.casino=new CasinoAudio(c,this.output,kind=>{const key='casino-'+kind;this.counts[key]=(this.counts[key]||0)+1;});
-        this.tables=new TableAudio(c,this.output);
+        this.ambience=c.createGain();this.ambience.gain.value=0;noise.connect(filter);filter.connect(this.ambience);this.ambience.connect(this.roomOutput);noise.start();
+        this.casino=new CasinoAudio(c,this.output,this.roomOutput,kind=>{const key='casino-'+kind;this.counts[key]=(this.counts[key]||0)+1;});
+        this.tables=new TableAudio(c,this.roomOutput);
         c.addEventListener('statechange',()=>{if(c.state!=='running')this.cancelSlots();this.syncAmbience();});
       }
       if(this.context.state==='suspended'||String(this.context.state)==='interrupted')await this.context.resume();
@@ -104,18 +113,19 @@ export class GameAudio {
     if(game==='drift'&&this.context&&this.output){const c=this.context,osc=c.createOscillator(),gain=c.createGain();osc.type='sawtooth';osc.frequency.value=48;gain.gain.value=.032;const filter=c.createBiquadFilter();filter.type='lowpass';filter.frequency.value=170;osc.connect(filter);filter.connect(gain);gain.connect(this.output);osc.start();osc.onended=()=>{osc.disconnect();filter.disconnect();gain.disconnect();};this.engine={osc,gain};}
   }
   engineSpeed(speed:number){if(this.engine&&this.context)this.engine.osc.frequency.setTargetAtTime(48+Math.min(1,speed)*55,this.context.currentTime,.2);}
-  private tone(frequency:number,end:number,duration:number,level:number,type:OscillatorType='sine',delay=0){
+  private tone(frequency:number,end:number,duration:number,level:number,type:OscillatorType='sine',delay=0,output=this.output!){
     const c=this.context!;const osc=c.createOscillator(),gain=c.createGain(),at=c.currentTime+delay;
-    osc.type=type;osc.frequency.setValueAtTime(frequency,at);osc.frequency.exponentialRampToValueAtTime(Math.max(20,end),at+duration);gain.gain.setValueAtTime(.001,at);gain.gain.linearRampToValueAtTime(level,at+.005);gain.gain.exponentialRampToValueAtTime(.001,at+duration);osc.connect(gain);gain.connect(this.output!);osc.start(at);osc.stop(at+duration+.02);this.active++;osc.onended=()=>{osc.disconnect();gain.disconnect();this.active--;};
+    osc.type=type;osc.frequency.setValueAtTime(frequency,at);osc.frequency.exponentialRampToValueAtTime(Math.max(20,end),at+duration);gain.gain.setValueAtTime(.001,at);gain.gain.linearRampToValueAtTime(level,at+.005);gain.gain.exponentialRampToValueAtTime(.001,at+duration);osc.connect(gain);gain.connect(output);osc.start(at);osc.stop(at+duration+.02);this.active++;osc.onended=()=>{osc.disconnect();gain.disconnect();this.active--;};
   }
-  private noise(duration:number,level:number,frequency:number){const c=this.context!,source=c.createBufferSource(),gain=c.createGain(),filter=c.createBiquadFilter();source.buffer=this.buffer!;filter.type='bandpass';filter.frequency.value=frequency;filter.Q.value=.6;gain.gain.setValueAtTime(level,c.currentTime);gain.gain.exponentialRampToValueAtTime(.001,c.currentTime+duration);source.connect(filter);filter.connect(gain);gain.connect(this.output!);source.start();source.stop(c.currentTime+duration+.01);this.active++;source.onended=()=>{source.disconnect();filter.disconnect();gain.disconnect();this.active--;};}
+  private noise(duration:number,level:number,frequency:number,output=this.output!){const c=this.context!,source=c.createBufferSource(),gain=c.createGain(),filter=c.createBiquadFilter();source.buffer=this.buffer!;filter.type='bandpass';filter.frequency.value=frequency;filter.Q.value=.6;gain.gain.setValueAtTime(level,c.currentTime);gain.gain.exponentialRampToValueAtTime(.001,c.currentTime+duration);source.connect(filter);filter.connect(gain);gain.connect(output);source.start();source.stop(c.currentTime+duration+.01);this.active++;source.onended=()=>{source.disconnect();filter.disconnect();gain.disconnect();this.active--;};}
   effect(kind:Sound,level=1,table?:TableSoundSet){
+    if(this.cabinetOpen&&(kind==='step'||table))return;
     if(this.context?.state!=='running'||this.muted||this.volume===0||document.hidden||this.active+(this.tables?.getState().active??0)>40)return;
     const set=table??(['hockey','pool','chess'].includes(this.game)?this.game as TableSoundSet:undefined),key=(set?set+':':'')+kind;
     const now=performance.now();if(now-(this.last.get(key)??-1000)<(kind==='step'?65:kind==='laser'?100:35))return;this.last.set(key,now);this.counts[kind]=(this.counts[kind]||0)+1;
     const v=Math.min(1,Math.max(0,level))*(this.game&&kind==='step'?.22:1)*(this.slotDucks.size&&kind==='step'?.22:1);
     if(set&&this.tables?.play(set,kind,v))return;
-    if(kind==='step'){this.noise(.065,.11*v,240);this.tone(92,55,.075,.055*v);}
+    if(kind==='step'){this.noise(.065,.11*v,240,this.roomOutput);this.tone(92,55,.075,.055*v,'sine',0,this.roomOutput);}
     else if(kind==='cabinet'||kind==='coin'||kind==='win'||kind==='start')this.casino?.play(kind,v);
     else if(kind==='laser')this.tone(1200,180,.09,.045*v,'triangle');
     else if(kind==='crash'||kind==='explosion'){this.noise(.28,.34*v,430);this.tone(90,32,.3,.12*v);}
