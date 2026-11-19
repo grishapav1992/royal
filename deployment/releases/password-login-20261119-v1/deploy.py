@@ -58,6 +58,11 @@ def validate(base, guard, scope):
         require(projection == release['build'][name] and projection['productionCommit'] == manifest['baseCommit'],
                 'Projection differs: ' + name)
         guard.validate_inputs(base.CHANGES, projection, before, scope[scope_key], preserved)
+    for game, file in scope['qualifications'].items():
+        proof = read('source/' + file)
+        require(proof['gameId'] == game and proof['serverReplayChecks'] > 0
+                and proof['sourceHashes']['server/accounts.ts'] == release['backendProjection']['inputs']['server/accounts.ts'],
+                'Qualification is not bound to account sources: ' + game)
     backend_path = 'dist-server/index.js'
     require(release['backendProjection']['output']['path'] == backend_path
             and release['backendProjection']['output']['sha256'] == release['files'][backend_path]
@@ -82,7 +87,7 @@ def main():
     spec = importlib.util.spec_from_file_location('production_guard', ROOT / 'production-guard.py')
     guard = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(guard)
-    guard.ROOT, guard.NAME, guard.SOURCES = ROOT, NAME, set(scope['host'] + scope['backend'])
+    guard.ROOT, guard.NAME, guard.SOURCES = ROOT, NAME, set(scope['host'] + scope['backend'] + list(scope['qualifications'].values()))
     guard.payload = lambda base: validate(base, guard, scope)
     try:
         guard.main()

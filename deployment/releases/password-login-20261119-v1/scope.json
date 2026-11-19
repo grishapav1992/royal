@@ -39,5 +39,9 @@
     "studio-nitro-run",
     "studio-velvet-reign",
     "studio-wild-nudge"
-  ]
+  ],
+  "qualifications": {
+    "royal-coins": "docs/game-math/qualifications/royal-coins-rewards-v1.json",
+    "royal-fruits": "docs/game-math/qualifications/royal-fruits-rewards-v1.json"
+  }
 }

@@ -47,6 +47,19 @@ for (const [kind, retained] of [['host', {}], ['backend', scope.retainedBackendI
     sources.set(file, bytes);
   }
 }
+for (const [game, file] of Object.entries(scope.qualifications)) {
+  const bytes = committed(file);
+  const proof = JSON.parse(bytes);
+  assert.equal(proof.gameId, game);
+  assert(proof.serverReplayChecks > 0);
+  assert.equal(proof.sourceHashes['server/accounts.ts'], release.backendProjection.inputs['server/accounts.ts']);
+  for (const [input, digest] of Object.entries(proof.sourceHashes)) {
+    assert((release.backendProjection.inputs[input]
+      ? [release.backendProjection.inputs[input]]
+      : [before.source[input], before.sourceLF[input]]).includes(digest), game + ': ' + input);
+  }
+  sources.set(file, bytes);
+}
 const dist = Object.entries(release.files).filter(([file, digest]) => file.startsWith('dist/') && before.program[file] !== digest);
 assert(dist.some(([file]) => file === 'dist/index.html'));
 for (const [file] of dist) {
