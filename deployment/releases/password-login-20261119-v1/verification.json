@@ -1,0 +1,192 @@
+{
+  "release": "password-login-20261119-v1",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "e97289c4491f4cf380ea442a52a872fa798f4edf",
+  "baseCommit": "5856e284f572e5d93e32aceb736d5431a6bb5d0a",
+  "image": "sha256:2287b9485cdbdcf781439464080d1763277ee2707c252986dbf5d94d99264996",
+  "previousImage": "sha256:f8db3bfa5c0445b9f4db77505cda967c72478fa334a1330aa9048dc972f371d7",
+  "backendSha256": "285424c6630cf7636c138166fdbc9883e51230e70b779332080f913a753cd793",
+  "previousBackendSha256": "347b10a5191da839142cafb6459d14e607190a32af3a97107f73cd392de3807f",
+  "sourceFiles": 12,
+  "clientFiles": 10,
+  "programFiles": 8767,
+  "externalModuleFiles": 5822,
+  "configurationPreserved": true,
+  "gameDataPreserved": true,
+  "sourceBackupSha256": "31884ad2d3e79d6e0b34bba48b282c0e1c96e4c9b8261eaaf0af59a22fe7c33b",
+  "sourceBackupBytes": 28694,
+  "financialBackupBytes": 48259174,
+  "financialBackupSha256": "79ca639eb6b62c8f2a85bc938e6458da9850ae865d296a0f62a7ee101e459e59",
+  "releaseManifestSha256": "d99a0597dafccb3ac2244d2e001fae41531640edeb1dd288a4197e7571a93fde",
+  "verification": {
+    "applicationBuild": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 265709
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 15057
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 265411
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 19578
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 8513
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 37
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 27
+      }
+    ],
+    "githubVerified": true,
+    "exactBuiltBackend": true,
+    "walletAndAccountTestsPassed": 27,
+    "progressionTestsPassed": 17,
+    "guardedInstallerTestsPassed": 20,
+    "browserEntryTestsPassed": 8,
+    "walletRecovery": {
+      "sameOperationId": true,
+      "oneDebitCents": 10,
+      "closeReopen": true
+    },
+    "motionChecksRetestedWithExactFlagAssets": true,
+    "candidate": {
+      "publicSite": false,
+      "health": true,
+      "mockDisabled": true,
+      "layouts": [
+        "desktop",
+        "mobile"
+      ],
+      "registrationPolicy": "weakRejectedStrongRegistered",
+      "catalogue": [
+        "flag-battle",
+        "github-crash",
+        "original-cr-vs-leo",
+        "original-jackie-chan",
+        "royal-plinko",
+        "royal-roulette",
+        "studio-afterglow",
+        "studio-caramel-carnival",
+        "studio-caribbean-treasures",
+        "studio-cosmic-escape",
+        "studio-dracona",
+        "studio-flooded-temple",
+        "studio-forest-heart",
+        "studio-last-convoy",
+        "studio-meme-overload",
+        "studio-neopolis",
+        "studio-nitro-run",
+        "studio-velvet-reign",
+        "studio-wild-nudge"
+      ],
+      "importedSessionPreserved": true,
+      "legacyPasswordPreserved": true,
+      "lockout": {
+        "threshold": 5,
+        "minutes": 30,
+        "sharedBrowsers": true,
+        "afterExpiry": true
+      },
+      "characterEditorPreserved": true,
+      "connectedChat": true
+    },
+    "public": {
+      "publicSite": true,
+      "health": true,
+      "mockDisabled": true,
+      "layouts": [
+        "desktop",
+        "mobile"
+      ],
+      "registrationPolicy": "weakRejected",
+      "verifiedClientFiles": 10,
+      "verifiedActivePointers": 19
+    },
+    "publicAccountsOrRoundsCreated": false,
+    "activeGames": [
+      "flag-battle",
+      "github-crash",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "royal-plinko",
+      "royal-roulette",
+      "studio-afterglow",
+      "studio-caramel-carnival",
+      "studio-caribbean-treasures",
+      "studio-cosmic-escape",
+      "studio-dracona",
+      "studio-flooded-temple",
+      "studio-forest-heart",
+      "studio-last-convoy",
+      "studio-meme-overload",
+      "studio-neopolis",
+      "studio-nitro-run",
+      "studio-velvet-reign",
+      "studio-wild-nudge"
+    ],
+    "addedGames": [],
+    "restoredGames": [],
+    "launchAndRoundAdmissionSourcePreserved": true,
+    "qualifications": {
+      "royal-coins": {
+        "passed": true,
+        "file": "docs/game-math/qualifications/royal-coins-rewards-v1.json",
+        "serverReplayChecks": 3792,
+        "exactPaidReturn": [
+          24,
+          25
+        ]
+      },
+      "royal-fruits": {
+        "passed": true,
+        "file": "docs/game-math/qualifications/royal-fruits-rewards-v1.json",
+        "serverReplayChecks": 129792,
+        "exactPaidReturn": [
+          97,
+          100
+        ]
+      }
+    }
+  },
+  "maintenance": {
+    "status": "completed",
+    "release": "password-login-20261119-v1",
+    "sourceCommit": "e97289c4491f4cf380ea442a52a872fa798f4edf",
+    "currentImage": "sha256:2287b9485cdbdcf781439464080d1763277ee2707c252986dbf5d94d99264996",
+    "rollbackImage": "sha256:f8db3bfa5c0445b9f4db77505cda967c72478fa334a1330aa9048dc972f371d7",
+    "healthOk": true,
+    "freeBefore": 11708026880,
+    "freeAfter": 11792478208,
+    "removedEntries": 26,
+    "removedImageTags": 3,
+    "preservedFinancialFiles": 244,
+    "finishedAt": 1795123756.7371242,
+    "durationSeconds": 70.04,
+    "timerEnabled": true,
+    "timerActive": true,
+    "transportBytesRemoved": 2903986,
+    "transportSha256": "ff7e2fe6d0f73ca72f7764c35a0444d0dcb64c57d2e280ff34432e45a58dc077",
+    "freeBeforeTransportCleanup": 11780231168,
+    "freeAfterTransportCleanup": 11783135232,
+    "verifiedRollback": true
+  }
+}
