@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "productionCommit": "9a7ed1f88b88b97411a41ccd9f399bea72ba69f1",
+  "productionCommit": "5856e284f572e5d93e32aceb736d5431a6bb5d0a",
   "entries": [
     "server/index.ts"
   ],
