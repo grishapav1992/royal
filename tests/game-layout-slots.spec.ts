@@ -152,6 +152,23 @@ test('Nitro Run keeps its field and instruments stable with connected chat',asyn
     await expect(chat.locator('#chat-input')).toBeVisible();
    }else await expect(page.locator('#mini-dialog')).toHaveAttribute('data-game-chat','closed');
    await fit(page,'studio-nitro-run');
+   const composition=await game.evaluate(root=>{
+    const rect=(selector:string)=>root.querySelector(selector)!.getBoundingClientRect().toJSON();
+    return {profile:root.dataset.slotPriority,cabinet:rect('.nr-cabinet'),stage:rect('.nr-stage'),hud:rect('.nr-hud'),header:rect('.nr-heading'),frame:rect('.cc-board-frame'),console:rect('.nr-console'),root:root.getBoundingClientRect().toJSON()};
+   });
+   const c=composition;
+   expect(Math.abs((c.cabinet.left-c.root.left)-(c.root.right-c.cabinet.right)),'cabinet has balanced outer margins').toBeLessThanOrEqual(2);
+   if(c.profile==='full'){
+    expect(c.frame.left-c.hud.right,'instruments touch the field through one short gutter').toBeGreaterThanOrEqual(10);
+    expect(c.frame.left-c.hud.right).toBeLessThanOrEqual(14);
+    expect(Math.abs(c.header.left-c.hud.left)).toBeLessThanOrEqual(2);
+    expect(Math.abs(c.console.left-c.hud.left)).toBeLessThanOrEqual(2);
+    expect(Math.abs(c.console.right-c.frame.right)).toBeLessThanOrEqual(2);
+    expect(c.console.top-c.frame.bottom,'no empty result band below the field').toBeLessThanOrEqual(12);
+    if(width===1440&&height===900)expect(c.frame.width).toBeGreaterThan(700);
+   }else if(c.profile==='portrait'){
+    expect(c.console.top-c.frame.bottom,'field and console stay together on phones').toBeLessThanOrEqual(10);
+   }else expect(c.console.left-c.frame.right,'landscape console stays beside the field').toBeLessThanOrEqual(16);
    const state=await game.evaluate(root=>{
     const frame=root.querySelector('.cc-board-frame')!,message=root.querySelector('[data-cc-message]')!;
     const error=root.querySelector('[data-cc-error]')!,retry=root.querySelector<HTMLButtonElement>('[data-cc-retry]')!;
@@ -174,8 +191,17 @@ test('Nitro Run keeps its field and instruments stable with connected chat',asyn
    });
    expect(state.spinning).toEqual(state.idle);expect(state.recovery).toEqual(state.idle);expect(state.charged).toEqual(state.idle);
    expect(state.retryHeight).toBeGreaterThanOrEqual(44);
-   report.push({width,height,field:state.idle,stableDuringSpinRecoveryAndCharge:true});
+   report.push({width,height,field:state.idle,composition,stableDuringSpinRecoveryAndCharge:true});
    if([1440,393,852,320].includes(width))await page.screenshot({path:out+`/nitro-run-${width}x${height}.png`});
+   if(width===393&&height===852){
+    const before=await game.locator('.cc-board-frame').boundingBox();
+    await page.locator('#mini-dialog .game-chat-toggle').click();
+    await expect(chat.locator('#chat-input')).toBeVisible();
+    await expect(page.locator('#mini-dialog .game-chat-game')).toHaveJSProperty('inert',true);
+    await chat.locator('.game-chat-close').click();
+    await expect(page.locator('#mini-dialog')).toHaveAttribute('data-game-chat','closed');
+    expect(await game.locator('.cc-board-frame').boundingBox()).toEqual(before);
+   }
    for(let i=0;i<state.panels.length;i++)for(let j=i+1;j<state.panels.length;j++){
     const a=state.panels[i],b=state.panels[j];
     expect(a.right<=b.left+1||b.right<=a.left+1||a.bottom<=b.top+1||b.bottom<=a.top+1,'instruments must not overlap').toBe(true);
