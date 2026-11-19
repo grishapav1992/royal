@@ -1,0 +1,96 @@
+{
+  "sourceCommit": "8f3f7960792ceff02b5dabbcb81980d186dcc950",
+  "sources": {
+    "games/dracona/DraconaUI.ts": "4627c5e03eb0c7336740ed2ecf6487b36d1e2df570e3756dbaaa23b3f7e1440e",
+    "games/dracona/styles.ts": "c59b71346cf049bd7c88ab0ac0ee55b843dd04e99070e398034a25fb9d28da47",
+    "games/flag-battle/FlagBattleUI.ts": "2614d92f91ac4cf8f88e6216109b31bdab9bed28d50b485d685d3888f9923125",
+    "games/flooded-temple/CascadeUI.ts": "f95a707c8c81e13715577405280c9021e97fdcf70d274b784e8f356cf72a5871",
+    "games/flooded-temple/TempleUI.ts": "346bb32ecfe3835472ec0a628d997a616b8e007c9648d32bf77120ea1c7eeb9c",
+    "games/forest-heart/ForestHeartUI.ts": "430bb1a0a06dfe36432dfa68afecb422d1a86b9f5163d5cffc60547748a92f29",
+    "games/forest-heart/styles.ts": "0d9a5ac227cc5400432ac29d1b24b7c9cbb043fdbb419fe64345fcb506d2cb7e",
+    "games/last-convoy/LastConvoyUI.ts": "319781d8af23971a1aef2f5613fe596d61b0c905dc7141e6ad08e77dec0b2391",
+    "games/neopolis/copy.ts": "2e66c49c9470909a3506ae6c05fe897565880943c66be4861e00400f69a545d4",
+    "games/royal-roulette/RoyalRoulette.ts": "58e2b07c7924d99c4a28466cbc2ebb0ab7eef0f3477dfe7dfc4c15a55f5fd6da",
+    "src/i18n/volcanicPlinkoEn.ts": "c38efa72ad793718570cc2831bc91785c7df07ee2a6bdc84b0c11f196d6757a5",
+    "src/main.ts": "3bdf30b272220bd30950454d7feab22095753ca7e766ef6b1a8ea72b41c139da",
+    "src/ui/AfterglowUI.ts": "9145af42db09c87660560e7643f7048917b2acaefee284756f1a6cf9decdef2f",
+    "src/ui/CaramelCarnivalUI.ts": "791c2eb014778b56ad9c27175c201775f6cf592d1dde2180c45b59b946cb6c91",
+    "src/ui/CascadeSlotUI.ts": "0280ba5f9026c07a57a8af4ac74d75d3c35940978317d58781cdaa069b4e769d",
+    "src/ui/NitroRunUI.ts": "d683e62e1d78419ad8fc4861e4b80a5a820bf151fac9603e75acba52ab5c5e48",
+    "src/ui/RoyalPlatformCatalog.ts": "d2dec9f9309f54e12fc813faf772d57f4b3592178d1614d32af3790cd66380f1",
+    "src/ui/StudioSlotUI.ts": "4e61a7dbbe08704c9325b1752a3b83b58b6f5b45224b30b9ae7c5b6a2ed1b186",
+    "src/ui/slotKit/SlotScreens.ts": "5d56c02017271f9bb8ecab4da1665388a842783fec64dd62f5cf0b122d911b32"
+  },
+  "host": [
+    "src/i18n/volcanicPlinkoEn.ts",
+    "src/main.ts",
+    "src/ui/RoyalPlatformCatalog.ts"
+  ],
+  "games": [
+    "studio-caramel-carnival",
+    "studio-cosmic-escape",
+    "studio-dracona",
+    "flag-battle",
+    "studio-flooded-temple",
+    "studio-forest-heart",
+    "studio-afterglow",
+    "studio-last-convoy",
+    "studio-meme-overload",
+    "studio-neopolis",
+    "studio-nitro-run",
+    "royal-roulette",
+    "studio-velvet-reign"
+  ],
+  "activeGames": [
+    "flag-battle",
+    "github-crash",
+    "original-cr-vs-leo",
+    "original-jackie-chan",
+    "royal-plinko",
+    "royal-roulette",
+    "studio-afterglow",
+    "studio-caramel-carnival",
+    "studio-caribbean-treasures",
+    "studio-cosmic-escape",
+    "studio-dracona",
+    "studio-flooded-temple",
+    "studio-forest-heart",
+    "studio-last-convoy",
+    "studio-meme-overload",
+    "studio-neopolis",
+    "studio-nitro-run",
+    "studio-velvet-reign",
+    "studio-wild-nudge"
+  ],
+  "inputExceptions": {
+    "games/cosmic-escape/package.json": "956e9ba0854a10de250c1d86af94c7f7d320228ca86688b846dc06146716f81c",
+    "games/cosmic-escape/tsconfig.json": "7cb9a18e59b2e2e03af9ebb762d9349704ca82f57e37fd48a85f894a5d16e32d",
+    "src/ui/CosmicEscapeAssets.ts": "ed35139ff219e2ee669131d17ef75819a37e6df041056d5d61f2099a7c4c3744",
+    "src/ui/CosmicEscapeBoard.ts": "4eb222af95683af1ac08725928ec0469029ab8fa1e652da6e525428c9e5a07fd",
+    "src/ui/CosmicEscapeUI.ts": "7fe25544c098dded53a422b703d3783e107e5c9e850bad1c0ffd921cfb0c4b08",
+    "src/ui/cosmic-guardians.css": "2a81ea6fd60be41c489592eea3452a400ab59498e44773cc54eeadfe10504ffc",
+    "src/ui/slotKit/SlotDialog.ts": "69351de658c231671feea17ef923595143f47e886f09beeb4533f1ae0cb0337d",
+    "src/ui/slotKit/SlotSettings.ts": "e9ca94a9ea09d3fb1789fb18ba5d87457f210aedc00b99570bb92ee3df1472dd",
+    "tsconfig.json": "ac92a48aa49e6d4a13a2ce4191379133d7156d219b8b3f10723921ad695f8888",
+    "src/ui/CosmicEscapeRacer.ts": "8414d7fff2096f1590073b3e6d95c08db8e4eae8cd3fd09e68270e6d6bea2b26",
+    "src/ui/NitroRunLayout.ts": "4cbee421e40ab72279248cbacdaf51367de5f503cac0ceab83356509e5257f17",
+    "src/ui/NitroRunUI.ts": "e44a5dc8b8d884bfd3897f39a646a7bcd686076a1a9e2ac72bf05531dc5fea87",
+    "src/ui/nitro-run-layout.css": "8e932f4da8af34f91ee305d5d6308e668f32bb051675f0b4053897ba5dcc6407",
+    "src/ui/nitro-run.css": "689e346f5cf25f629e1bde94468f20c3ce5c346661cf2456bfc9e026d4cbfe42",
+    "src/ui/slotKit/SlotControls.ts": "0af9662f583bb4ae2fc9f284fc301075f8304b3da47f24a4c0d2782320a46fb7"
+  },
+  "originals": {
+    "src/main.ts": {
+      "expectedSourceSha256": "8e8f92fa50a2b8472b0fee75ca5ef42dfdd941c6bcc508dc3ebfa4bb6f80d423",
+      "committedSourceSha256": "f3945641b3996df8e0f7e8658584549cbbcb9be77329ad6127300ab30ec1de6b"
+    },
+    "src/ui/AfterglowUI.ts": {
+      "expectedSourceSha256": "26ddcc3e45595314f904190d7705bd59e5bd084056198febd7fecc4525242053",
+      "committedSourceSha256": "0e60b43403d2f079228ea6b5e05309c5e996eb0dc6593339dbec421ede649ae5"
+    },
+    "src/ui/RoyalPlatformCatalog.ts": {
+      "expectedSourceSha256": "5222f1a535e2c9cb1564365285521ada6795b010bef38f807440ae24e793696a",
+      "committedSourceSha256": "e0ad6a566bad3963a5c48717dcb8ac11991f0303fece787dc6a4446bc5bb950f"
+    }
+  }
+}
