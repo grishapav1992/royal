@@ -1,0 +1,37 @@
+{
+  "host": [
+    "src/modules/GameHostContract.ts",
+    "src/modules/GameHostRuntime.ts",
+    "src/shared/caramelCarnival.ts",
+    "src/shared/gameStakes.ts",
+    "src/wallet/ExpansionClient.ts"
+  ],
+  "backend": [
+    "server/demoWalletRoutes.ts",
+    "src/shared/caramelCarnival.ts",
+    "src/shared/gameStakes.ts"
+  ],
+  "module": [
+    "games/caramel-carnival/entry.ts",
+    "src/ui/CaramelCarnivalUI.ts",
+    "src/ui/caramel-fair.css"
+  ],
+  "preservedBackendInputs": {
+    "src/i18n/en.ts": "8f3990b31f85037221688e4d906d41225ad5649a62f5c98834ce55bbec6e65c7",
+    "src/i18n/progressionEn.ts": "66c68ac05b3b362c4ef1dae60afaeb1c484d6ada0887adefd9954a4de12c1ba4"
+  },
+  "moduleBindings": [
+    "games/caramel-carnival/entry.ts",
+    "src/ui/CaramelCarnivalUI.ts",
+    "src/ui/caramel-fair.css",
+    "src/modules/GameHostContract.ts",
+    "src/shared/caramelCarnival.ts",
+    "src/shared/gameStakes.ts"
+  ],
+  "moduleProductionInputs": {
+    "src/shared/cosmicEscapeBets.ts": "a9b3de1af132b20a02d5b9090c0563080d3e5de8516090a7af05fce5f541153d",
+    "src/shared/luelonSlots.ts": "958478d3739ad1d071eea260a64b5089bc8560e66ffcd2a2138392b17b1a1731",
+    "src/ui/slotKit/SlotControls.ts": "86a28790a78ec87952e309c057686d766006431079f630ca0afe50820984bddb",
+    "src/ui/stakeSelection.ts": "8b055ae732911fb5ac4eba3aed7e024eec5ab4b7289c6336d6297bb1802e1dc1"
+  }
+}
