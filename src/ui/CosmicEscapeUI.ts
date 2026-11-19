@@ -96,6 +96,7 @@ export class CosmicEscapeUI {
     if(this.destroyed)return;
     if(state.status==='ready'){
       this.board.enableArtwork();
+      this.root.style.setProperty('--cx-scene-art', `url("${COSMIC_ESCAPE_ASSETS.background}")`);
       this.root.querySelectorAll<SVGImageElement>('[data-cosmic-symbol-image]').forEach(image=>image.setAttribute('href',COSMIC_ESCAPE_ASSETS.symbols));
       this.find<HTMLImageElement>('[data-cosmic-alien]').src=COSMIC_ESCAPE_ASSETS.alien;
     }
