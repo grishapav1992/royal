@@ -3748,10 +3748,10 @@
       "sha256": "cbc1ddaced3cfd215307e33e3b7aecc5cb00c9860b1a12536097166e5f971bcc"
     },
     "src/ui/CaramelBoard.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "commit": "f98493253d78169e4eec8b559fdc3606f75ddde5",
       "path": "src/ui/CaramelBoard.ts",
-      "baseSha256": "9e3f0f5962ceda7ab7d9f3e04029c5538fc4b6a6b6884701c0fb502a772df2a0",
-      "sha256": "9e3f0f5962ceda7ab7d9f3e04029c5538fc4b6a6b6884701c0fb502a772df2a0"
+      "baseSha256": "cd3d3c73f4362397fb771c67f028e3621c5278624e0e70cca2bf447bc6757736",
+      "sha256": "cd3d3c73f4362397fb771c67f028e3621c5278624e0e70cca2bf447bc6757736"
     },
     "src/ui/CaramelCarnivalAssets.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
