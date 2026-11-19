@@ -1,0 +1,278 @@
+{
+  "format": 1,
+  "productionCommit": "937263b70c549b1ad53756888cefc667cec69035",
+  "moduleGames": [
+    "nitro-run"
+  ],
+  "moduleAssets": {
+    "public/assets/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+    "public/assets/nitro-run/v1/symbols.webp": "305fc74526282421f9d98be3925841c57dd72c85e45782f50696b1aeee0486a8",
+    "public/assets/nitro-run/v1/background.webp": "929fd8f685a95ef471ad9c83de55fa0b0e469724abac58c9d8df38fe760c438f"
+  },
+  "files": {
+    "games/nitro-run/entry.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "games/nitro-run/entry.ts",
+      "baseSha256": "749cd4b22eb5837419329a0b7a985d983531990d198779edc4ba3946ac6a0cce",
+      "sha256": "749cd4b22eb5837419329a0b7a985d983531990d198779edc4ba3946ac6a0cce"
+    },
+    "games/nitro-run/package.json": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "games/nitro-run/package.json",
+      "baseSha256": "185e5c52e55657257fee020e7c36e59a804eb4bb4b511e8938c252b9380c8d8a",
+      "sha256": "185e5c52e55657257fee020e7c36e59a804eb4bb4b511e8938c252b9380c8d8a"
+    },
+    "games/nitro-run/tsconfig.json": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "games/nitro-run/tsconfig.json",
+      "baseSha256": "05be6826262722500c06b94d01bb41eed0a818e1df437e1d892ad57ed5cb82b5",
+      "sha256": "05be6826262722500c06b94d01bb41eed0a818e1df437e1d892ad57ed5cb82b5"
+    },
+    "src/modules/GameHostContract.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/modules/GameHostContract.ts",
+      "baseSha256": "8eed9b514ebe11c794cdecd042356a212b5e4756b5bdca4ccf6b35579bcda93c",
+      "sha256": "8eed9b514ebe11c794cdecd042356a212b5e4756b5bdca4ccf6b35579bcda93c"
+    },
+    "src/modules/GameModuleCatalog.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/modules/GameModuleCatalog.ts",
+      "baseSha256": "201bb0e465c8de8993981131c757c7da2288519ae1bc290b4a389676f346732f",
+      "sha256": "201bb0e465c8de8993981131c757c7da2288519ae1bc290b4a389676f346732f"
+    },
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/shared/caribbeanTreasuresMath.ts",
+      "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+      "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+    },
+    "src/shared/forestHeartMath.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/shared/forestHeartMath.ts",
+      "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+      "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
+    },
+    "src/shared/gameStakes.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/shared/gameStakes.ts",
+      "baseSha256": "a8357bd91b07d33e991867b770341f6668760ac9a54c1e58efce98b932c29d4e",
+      "sha256": "a8357bd91b07d33e991867b770341f6668760ac9a54c1e58efce98b932c29d4e"
+    },
+    "src/shared/neopolisMath.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/shared/neopolisMath.ts",
+      "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+    },
+    "src/shared/neopolisStakePayouts.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/shared/neopolisStakePayouts.ts",
+      "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+      "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+    },
+    "src/shared/nitroRun.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/shared/nitroRun.ts",
+      "baseSha256": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+      "sha256": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a"
+    },
+    "src/shared/roundPrecision.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/shared/roundPrecision.ts",
+      "baseSha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
+      "sha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8"
+    },
+    "src/ui/GameLayoutPolicy.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/GameLayoutPolicy.ts",
+      "baseSha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c",
+      "sha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c"
+    },
+    "src/ui/NitroArtwork.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/NitroArtwork.ts",
+      "baseSha256": "a5e2acf4c2e02d327cd4bb1e0d1ef012eed0d1d0468c9913fd7688e7196392c8",
+      "sha256": "a5e2acf4c2e02d327cd4bb1e0d1ef012eed0d1d0468c9913fd7688e7196392c8"
+    },
+    "src/ui/NitroBoard.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/NitroBoard.ts",
+      "baseSha256": "b61d322fc4cb4cd400c4810a5951a150c9618a46047553bd74d2af92f03d5a3f",
+      "sha256": "b61d322fc4cb4cd400c4810a5951a150c9618a46047553bd74d2af92f03d5a3f"
+    },
+    "src/ui/NitroRunAssets.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/NitroRunAssets.ts",
+      "baseSha256": "7f0fdca72880c4c0a8d437d633ae9571244bd91eeb935ebb4b51b294ed3a45e8",
+      "sha256": "7f0fdca72880c4c0a8d437d633ae9571244bd91eeb935ebb4b51b294ed3a45e8"
+    },
+    "src/ui/NitroRunAudio.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/NitroRunAudio.ts",
+      "baseSha256": "67af60dffd0e66eeeb9901082fe6f402cc18d5cf681dce5a9deeb975491c6c38",
+      "sha256": "67af60dffd0e66eeeb9901082fe6f402cc18d5cf681dce5a9deeb975491c6c38"
+    },
+    "src/ui/NitroRunLayout.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/NitroRunLayout.ts",
+      "baseSha256": "4cbee421e40ab72279248cbacdaf51367de5f503cac0ceab83356509e5257f17",
+      "sha256": "4cbee421e40ab72279248cbacdaf51367de5f503cac0ceab83356509e5257f17"
+    },
+    "src/ui/NitroRunUI.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/NitroRunUI.ts",
+      "baseSha256": "908724cdde0219cadb7d2b063629e28719fb8333bec67bdaebaaf17deac67d09",
+      "sha256": "908724cdde0219cadb7d2b063629e28719fb8333bec67bdaebaaf17deac67d09"
+    },
+    "src/ui/active-game-viewport.css": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/active-game-viewport.css",
+      "baseSha256": "493e85699b284319a6e0dcaf6aa178c308ef2640bb7dc180625c052a4b6d60c7",
+      "sha256": "493e85699b284319a6e0dcaf6aa178c308ef2640bb7dc180625c052a4b6d60c7"
+    },
+    "src/ui/caramel-carnival.css": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/caramel-carnival.css",
+      "baseSha256": "2e0078654fb9754e15c09e837aaea32f08aa10e4947dffe6b7eb342a0b1a3bb6",
+      "sha256": "2e0078654fb9754e15c09e837aaea32f08aa10e4947dffe6b7eb342a0b1a3bb6"
+    },
+    "src/ui/nitro-run-layout.css": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/nitro-run-layout.css",
+      "baseSha256": "8e932f4da8af34f91ee305d5d6308e668f32bb051675f0b4053897ba5dcc6407",
+      "sha256": "8e932f4da8af34f91ee305d5d6308e668f32bb051675f0b4053897ba5dcc6407"
+    },
+    "src/ui/nitro-run.css": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/nitro-run.css",
+      "baseSha256": "689e346f5cf25f629e1bde94468f20c3ce5c346661cf2456bfc9e026d4cbfe42",
+      "sha256": "689e346f5cf25f629e1bde94468f20c3ce5c346661cf2456bfc9e026d4cbfe42"
+    },
+    "src/ui/operationFeedback.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/operationFeedback.ts",
+      "baseSha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17",
+      "sha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17"
+    },
+    "src/ui/slotKit/SlotAssets.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/slotKit/SlotAssets.ts",
+      "baseSha256": "8bbd409578830ee7f3f025340003155335af03ce684bcae23bc913acb02052d2",
+      "sha256": "8bbd409578830ee7f3f025340003155335af03ce684bcae23bc913acb02052d2"
+    },
+    "src/ui/slotKit/SlotAudio.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/slotKit/SlotAudio.ts",
+      "baseSha256": "7f7c3536e0202ebd39dd79bcd36c886882332c6d5e84e4a73831d46e06aefbc0",
+      "sha256": "7f7c3536e0202ebd39dd79bcd36c886882332c6d5e84e4a73831d46e06aefbc0"
+    },
+    "src/ui/slotKit/SlotCascadeBoard.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/slotKit/SlotCascadeBoard.ts",
+      "baseSha256": "96d48c3a96c8bc40044d7748630024f9bbee1b8950544106c31dce2167049cf9",
+      "sha256": "96d48c3a96c8bc40044d7748630024f9bbee1b8950544106c31dce2167049cf9"
+    },
+    "src/ui/slotKit/SlotControls.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/slotKit/SlotControls.ts",
+      "baseSha256": "86a28790a78ec87952e309c057686d766006431079f630ca0afe50820984bddb",
+      "sha256": "86a28790a78ec87952e309c057686d766006431079f630ca0afe50820984bddb"
+    },
+    "src/ui/slotKit/SlotDialog.ts": {
+      "commit": "00cd85d28384db1afe8ce1c1a8cb220ffadfd80e",
+      "path": "src/ui/slotKit/SlotDialog.ts",
+      "baseSha256": "80dd75c5d120200d85f5b39a55272f5d3f7a671b0b5f6647f783265149fde9f9",
+      "sha256": "80dd75c5d120200d85f5b39a55272f5d3f7a671b0b5f6647f783265149fde9f9"
+    },
+    "src/ui/slotKit/SlotGeometry.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/slotKit/SlotGeometry.ts",
+      "baseSha256": "9050e51c87d77646845e206f2618a1ab6a3887e008f17abb0b1fbd29303ee90f",
+      "sha256": "9050e51c87d77646845e206f2618a1ab6a3887e008f17abb0b1fbd29303ee90f"
+    },
+    "src/ui/slotKit/SlotLifecycle.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/slotKit/SlotLifecycle.ts",
+      "baseSha256": "33c227f915cbff994e7218a7e98410f7ae4d1fee129dfd013f531092e9eee71f",
+      "sha256": "33c227f915cbff994e7218a7e98410f7ae4d1fee129dfd013f531092e9eee71f"
+    },
+    "src/ui/slotKit/SlotPlayback.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/slotKit/SlotPlayback.ts",
+      "baseSha256": "b16043b19396cabe7cf67d8864400ccb8f20c5a916565eb6c90ca148cc3d6954",
+      "sha256": "b16043b19396cabe7cf67d8864400ccb8f20c5a916565eb6c90ca148cc3d6954"
+    },
+    "src/ui/slotKit/SlotPriorityLayout.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/slotKit/SlotPriorityLayout.ts",
+      "baseSha256": "947932d761ede2150900d9fd0278a2560b032aec8c9372f0085b717f1af796f2",
+      "sha256": "947932d761ede2150900d9fd0278a2560b032aec8c9372f0085b717f1af796f2"
+    },
+    "src/ui/slotKit/SlotScreens.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/slotKit/SlotScreens.ts",
+      "baseSha256": "59140beebcb205fa8e52c3e35f0f2283a0746ebd42b08ef54122598fd986756a",
+      "sha256": "59140beebcb205fa8e52c3e35f0f2283a0746ebd42b08ef54122598fd986756a"
+    },
+    "src/ui/slotKit/SlotSessions.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/slotKit/SlotSessions.ts",
+      "baseSha256": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2",
+      "sha256": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2"
+    },
+    "src/ui/slotKit/SlotSettings.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/slotKit/SlotSettings.ts",
+      "baseSha256": "e9ca94a9ea09d3fb1789fb18ba5d87457f210aedc00b99570bb92ee3df1472dd",
+      "sha256": "e9ca94a9ea09d3fb1789fb18ba5d87457f210aedc00b99570bb92ee3df1472dd"
+    },
+    "src/ui/slotKit/nativeSlotImages.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/slotKit/nativeSlotImages.ts",
+      "baseSha256": "20e93c94b87b767d25d9f41a5d033275e76947eab02f0299032b583800e5da9f",
+      "sha256": "20e93c94b87b767d25d9f41a5d033275e76947eab02f0299032b583800e5da9f"
+    },
+    "src/ui/slotKit/nativeSlots.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/slotKit/nativeSlots.ts",
+      "baseSha256": "fc823e2892a7fcc49d32b8fa21bd938498ac1762d4444213f8c624bec21cf6f7",
+      "sha256": "fc823e2892a7fcc49d32b8fa21bd938498ac1762d4444213f8c624bec21cf6f7"
+    },
+    "src/ui/slotKit/slot-priorities.css": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/slotKit/slot-priorities.css",
+      "baseSha256": "05266abd09f5f3cbfbe91dde79ac8188f74b6d333bc2acb9e3884530f4aaee5f",
+      "sha256": "05266abd09f5f3cbfbe91dde79ac8188f74b6d333bc2acb9e3884530f4aaee5f"
+    },
+    "src/ui/slotKit/slot-settings.css": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/slotKit/slot-settings.css",
+      "baseSha256": "a9bc7aabfd5f8649a3220820199d709f57b8cd260205c3d18cfa5236ea854f5b",
+      "sha256": "a9bc7aabfd5f8649a3220820199d709f57b8cd260205c3d18cfa5236ea854f5b"
+    },
+    "src/ui/stakeRules.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/stakeRules.ts",
+      "baseSha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df",
+      "sha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df"
+    },
+    "src/ui/stakeSelection.ts": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/stakeSelection.ts",
+      "baseSha256": "8b055ae732911fb5ac4eba3aed7e024eec5ab4b7289c6336d6297bb1802e1dc1",
+      "sha256": "8b055ae732911fb5ac4eba3aed7e024eec5ab4b7289c6336d6297bb1802e1dc1"
+    },
+    "src/ui/studio-games.css": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "src/ui/studio-games.css",
+      "baseSha256": "0a3c6fc2d4655e9814b349952d5c9578d49c194d483cdaba0e9a76eb23b12259",
+      "sha256": "0a3c6fc2d4655e9814b349952d5c9578d49c194d483cdaba0e9a76eb23b12259"
+    },
+    "tsconfig.json": {
+      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "path": "tsconfig.json",
+      "baseSha256": "ac92a48aa49e6d4a13a2ce4191379133d7156d219b8b3f10723921ad695f8888",
+      "sha256": "ac92a48aa49e6d4a13a2ce4191379133d7156d219b8b3f10723921ad695f8888"
+    }
+  }
+}
