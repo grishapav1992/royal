@@ -144,7 +144,7 @@ export class CaramelCarnivalUI {
 </div>
 <div class="ccf-wallet-help" data-cc-wallet-help><span data-cc-wallet-note></span><a href="/" data-cc-login>Войти в клуб для тестовой игры</a><button type="button" data-cc-wallet>Открыть тестовый кошелёк</button></div>
 <footer class="ccf-bar">
-<div class="ccf-money"><span data-short="БАЛАНС · ДЕМО">БАЛАНС</span><strong><output data-cc-balance>0,00</output> <small>USDT</small></strong></div>
+<div class="ccf-money"><span data-short="БАЛАНС">БАЛАНС</span><strong><output data-cc-balance>0,00</output> <small>USDT</small></strong></div>
 <div class="ccf-lastwin"><span data-cc-last-label>ВЫИГРЫШ</span><strong data-cc-last>0,00</strong></div>
 <div class="ccf-divider" aria-hidden="true"></div>
 <div class="cc-stake ccf-stake" data-ccf-stake><label for="cc-stake" data-cc-cost>Ставка · за вращение</label><div class="ccf-stepper"><button type="button" data-cc-stake-step="-1" aria-label="Уменьшить ставку">${ICON.minus}</button><select id="cc-stake" data-cc-stake>${stakes}</select><button type="button" data-cc-stake-step="1" aria-label="Увеличить ставку">${ICON.plus}</button><span class="ccf-stepper-label" aria-hidden="true">СТАВКА</span></div></div>
