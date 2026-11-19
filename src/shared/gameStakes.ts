@@ -6,7 +6,8 @@ export const DEFAULT_GAME_STAKE = '10';
 export const DEFAULT_GAME_BET = 0.1;
 export const MIN_GAME_STAKE_CENTS = 10;
 export const MAX_GAME_STAKE_CENTS = 5000;
-export const gameStakeMaximum = (game: string): number => game === 'studio-cosmic-escape' ? 10000 : MAX_GAME_STAKE_CENTS;
+export const gameStakeMaximum = (game: string): number =>
+  game === 'studio-cosmic-escape' || game === 'studio-caramel-carnival' ? 10000 : MAX_GAME_STAKE_CENTS;
 /** Parse canonical transport money without multiplying a binary fraction. */
 export function gameBetCents(value: unknown): number | undefined {
   if (typeof value !== 'number' || !Number.isFinite(value)) return undefined;

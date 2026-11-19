@@ -237,12 +237,16 @@ test('Cosmic Escape keeps results in the controls and the reel frame still',asyn
  }
 });
 
-test('Cosmic Escape accepts 100 USDT as a whole-round stake and rejects the next cent',async({page,roomPath})=>{
- const game='studio-cosmic-escape';
+for(const game of ['studio-cosmic-escape','studio-caramel-carnival'])test(game+' accepts 100 USDT as a whole-round stake and rejects the next cent',async({page,roomPath})=>{
  await enterGameHall(page,roomPath);
  await open(page,game);
- const stake=page.locator('#mini-game [data-manual-stake]'),spin=page.locator('[data-lg-spin]');
- await expect(page.locator('[data-lg-stake] option[value="10000"]')).toHaveCount(1);
+ const prefix=family(game),chat=page.locator('#club-chat-dock');
+ if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
+ await expect(chat.locator('#chat-input')).toBeVisible();
+ if(process.env.LAYOUT_TOUCH==='1')await chat.locator('.game-chat-close').click();
+ const stake=page.locator('#mini-game [data-manual-stake]'),spin=page.locator(`[data-${prefix}-spin]`);
+ const stakes=page.locator(`[data-${prefix}-stake]`);
+ await expect(stakes.locator('option[value="10000"]')).toHaveCount(1);
  const before=await walletSnapshot(page);
  await stake.fill('100,01');
  await expect(stake).toHaveAttribute('aria-invalid','true');
@@ -250,7 +254,10 @@ test('Cosmic Escape accepts 100 USDT as a whole-round stake and rejects the next
  expect((await walletSnapshot(page)).entries).toEqual(before.entries);
  await stake.fill('100,00');
  await expect(stake).toHaveAttribute('aria-invalid','false');
- await expect(page.locator('[data-lg-stake]')).toHaveValue('10000');
+ await expect(stakes).toHaveValue('10000');
+ if(game==='studio-caramel-carnival'){
+  await expect(page.locator('[data-cc-buy-price]')).toHaveText(/3[\s\u00a0\u202f]*500[,.]00/);
+ }
  const paid=page.waitForResponse(response=>response.url().endsWith('/api/demo-wallet/expansion')&&response.request().method()==='POST');
  await spin.click();
  const response=await paid;
