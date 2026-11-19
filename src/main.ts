@@ -146,7 +146,7 @@ function showPlatformCatalog() {
   if (mode === 'casino') { miniDialog.close(); return; }
   if (!platformCabinet?.collection || platformCabinet.collection==='luelon') return;
   const selected = selectedPlatformGame;
-  clearPlatformView(); gameAudio.setGame('');
+  clearPlatformView(); gameAudio.setGame(''); gameAudio.setCabinetOpen(false);
   miniDialog.classList.remove('demo-mode', 'card-table-mode');
   miniDialog.classList.add('wallet-game-mode', 'originals-mode');
   miniDialog.dataset.game = 'royal-catalog';
@@ -204,7 +204,7 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound, 
   if (switchPlatform) clearPlatformView();
   if (platformCabinet) selectedPlatformGame = choice ?? {gameId:cabinet.id};
   $('#studio-game-list').hidden = !platformCabinet;
-  activeGameId = cabinet.id;gameAudio.effect('cabinet');gameAudio.setGame(cabinet.demo ? 'demo' : cabinet.id);
+  activeGameId = cabinet.id;
   miniDialog.classList.toggle('demo-mode', !!cabinet.demo);
   miniDialog.classList.toggle('wallet-game-mode', !!cabinet.wallet);
   miniDialog.classList.toggle('originals-mode', !!platformCabinet || cabinet.wallet === true || cabinet.github === true);
@@ -219,6 +219,7 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound, 
   $('#mini-title').textContent = cabinet.name;
   document.querySelector('.mini-bottom>span')!.textContent = cabinet.id==='pixel'?translateText('Стрелки или касание клетки'):cabinet.id==='drift'?translateText('← → или касание полосы'):translateText('Мышь, палец или ← →');
   room.setLocked(true); miniDialog.showModal(); $('#mini-message').hidden = false;
+  gameAudio.setCabinetOpen(true); gameAudio.setGame(cabinet.demo ? 'demo' : cabinet.id);
   $('#mini-message-title').textContent = translateText('Загружаем автомат…'); $('#mini-message-copy').textContent = ''; $('#start-game').hidden = true;
   const version = ++openVersion;
   if(isCardGame(cabinet.id)){
@@ -434,7 +435,7 @@ for (const dialog of [miniDialog, helpDialog, barDialog]) {
       cardDealerStage?.destroy();cardDealerStage=undefined;
       $('#card-dealer-stage').hidden=true;$('#card-dealer-stage').replaceChildren();
     }
-    if (dialog === miniDialog) { room.endCabinet(); openVersion++; mini?.destroy(); mini = undefined; gameAudio.setGame(''); $('#mini-game').replaceChildren(); }
+    if (dialog === miniDialog) { room.endCabinet(); openVersion++; mini?.destroy(); mini = undefined; gameAudio.setGame(''); gameAudio.setCabinetOpen(false); $('#mini-game').replaceChildren(); }
     room.setLocked(Boolean(document.querySelector('dialog[open]'))); $('#game').focus({ preventScroll: true });
   });
 }

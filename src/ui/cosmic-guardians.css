@@ -113,6 +113,12 @@
   padding: 16px 24px 28px 0;
   container: cx-scene / size;
 }
+.cx-game[data-slot-priority="full"] .cx-scene {
+  box-sizing: border-box;
+  place-self: center;
+  width: min(100%, 1800px);
+  height: min(100%, 820px);
+}
 .cx-alien {
   grid-area: alien; position: relative; align-self: end; justify-self: start; z-index: 0;
   width: 100%; height: min(500px, 100%); pointer-events: none;

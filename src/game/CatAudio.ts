@@ -16,7 +16,7 @@ export async function catPurr(duration = 2.4) {
   lastPurr = performance.now();
   const generation=++purrGeneration;
   await gameAudio.unlock();
-  const c = gameAudio.context, output = gameAudio.output;
+  const c = gameAudio.context, output = gameAudio.roomOutput;
   if (!c || !output || c.state !== 'running' || document.hidden || generation!==purrGeneration) return;
   const buffer = c.createBuffer(1,Math.floor(c.sampleRate*duration),c.sampleRate);
   const samples = buffer.getChannelData(0);

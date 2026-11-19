@@ -282,6 +282,28 @@ test('Cosmic Escape keeps results in the controls and the reel frame still',asyn
  }
 });
 
+test('Cosmic Escape keeps its 2K reel size when the chat column closes',async({page,roomPath})=>{
+ const game='studio-cosmic-escape';
+ await enterGameHall(page,roomPath);
+ await open(page,game);
+ await page.setViewportSize({width:2560,height:1440});
+ const chat=page.locator('#club-chat-dock');
+ const toggle=page.locator('#mini-dialog .game-chat-toggle');
+ if(!await chat.isVisible())await toggle.click();
+ await expect(chat.locator('#chat-input')).toBeVisible();
+ await fit(page,game);
+ const frame=page.locator('#mini-game .cx-frame');
+ const openBox=(await frame.boundingBox())!;
+ expect(openBox.width).toBeLessThanOrEqual(1280);
+
+ await toggle.click();
+ await expect(chat).toBeHidden();
+ await fit(page,game);
+ const closedBox=(await frame.boundingBox())!;
+ expect(closedBox.width).toBe(openBox.width);
+ expect(closedBox.height).toBe(openBox.height);
+});
+
 for(const game of ['studio-cosmic-escape','studio-caramel-carnival'])test(game+' accepts 100 USDT as a whole-round stake and rejects the next cent',async({page,roomPath})=>{
  await enterGameHall(page,roomPath);
  await open(page,game);

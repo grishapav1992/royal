@@ -12,7 +12,8 @@ test('hall, footsteps and all four arcades emit sound; mute silences the output 
   const before=(await audio(page)).counts[event]||0;
   await page.locator('#games-tab').click();await page.locator(`[data-cabinet="${id}"]`).click();await expect(page.locator('#mini-dialog')).toBeVisible({timeout:15000});await page.locator('#start-game').click();
   if(id==='drift')await expect.poll(async()=>(await audio(page)).engine).toBe(true);
-  expect((await audio(page)).casino.level).toBe(.2);
+  expect((await audio(page)).casino.level).toBe(0);
+  expect((await audio(page)).casino.scheduled).toBe(false);
   if(id==='pixel'){await page.keyboard.down('ArrowRight');await page.waitForTimeout(350);await page.keyboard.up('ArrowRight');}
   await expect.poll(async()=>(await audio(page)).counts[event]||0,{timeout:10000}).toBeGreaterThan(before);
   await expect.poll(async()=>(await audio(page)).rms).toBeGreaterThan(.00001);
