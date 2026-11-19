@@ -8,7 +8,7 @@ import { ROOM_CHAT_PROTOCOL, type ChatResult } from '../src/shared/chat';
 const endpoint = process.env.SERVER_URL || 'http://127.0.0.1:2567';
 const cookies: string[] = [];
 async function authenticatedClient(index: number) {
-  const response = await fetch(endpoint + '/api/auth/login', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:'load-'+crypto.randomUUID()+'@example.test',password:crypto.randomUUID()})});
+  const response = await fetch(endpoint + '/api/auth/login', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:'load-'+crypto.randomUUID()+'@example.test',password:'Aa1!'+crypto.randomUUID()})});
   assert(response.ok,'Test account login must succeed');
   const cookie = response.headers.get('set-cookie')!.split(';')[0]; cookies.push(cookie);
   const profile = await fetch(endpoint + '/api/auth/character',{method:'POST',headers:{'Content-Type':'application/json',Cookie:cookie},body:JSON.stringify({skin:index%6})});

@@ -16,12 +16,14 @@ import { defineServer, defineRoom } from '@colyseus/core';
 import { WebSocketTransport } from '@colyseus/ws-transport';
 import express from 'express';
 import { resolve } from 'node:path';
+import { appendFile } from 'node:fs/promises';
 import { LobbyRoom } from './LobbyRoom';
 import { installAuth } from './authRoutes';
 import { accounts } from './accounts';
 import { installFinanceAdmin } from './admin/routes';
 
 const port = Number(process.env.PORT || 2567);
+const recoveryMailbox = process.env.NODE_ENV === 'test' ? process.env.ROYAL_PASSWORD_RECOVERY_MAILBOX : undefined;
 let stopTote: (() => void) | undefined;
 let stopCrypto: (() => void) | undefined;
 let stopSandbox: (() => void) | undefined;
@@ -40,7 +42,11 @@ const server = defineServer({
       next();
     });
     installPaymentMethods(app);
-    installAuth(app);
+    installAuth(app, {
+      sendRecoveryCode: recoveryMailbox ? async (email, code) => {
+        await appendFile(recoveryMailbox, JSON.stringify({ email, code, sentAt: new Date().toISOString() }) + '\n', { mode: 0o600 });
+      } : undefined,
+    });
     installCaribbeanCrew(app);
     installStarSpinCollection(app);
     installFinanceAdmin(app);

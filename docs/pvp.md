@@ -48,7 +48,7 @@ Rule references: [Podkidnoy Durak](https://www.pagat.com/beating/podkidnoy_durak
 
 ## Local verification
 
-Build with `npm run build`. Start an isolated synthetic stand with `node --import tsx scripts/pvp-local.ts` and open `http://127.0.0.1:5191`. It creates disposable PostgreSQL, account and token fixtures. The two accounts are `pvp-local-a@example.test` and `pvp-local-b@example.test`, password `test-password!`. Use `127.0.0.1` and `localhost` in separate browser tabs to isolate their cookies. Stop by typing `stop` in its terminal. No production RPC, funds or user data are used.
+Build with `npm run build`. Start an isolated synthetic stand with `node --import tsx scripts/pvp-local.ts` and open `http://127.0.0.1:5191`. It creates disposable PostgreSQL, account and token fixtures. The two accounts are `pvp-local-a@example.test` and `pvp-local-b@example.test`, password `Test-password-42!`. Use `127.0.0.1` and `localhost` in separate browser tabs to isolate their cookies. Stop by typing `stop` in its terminal. No production RPC, funds or user data are used.
 
 Targeted checks:
 

@@ -6,7 +6,7 @@ import {createServer as createVite} from 'vite';
 // Isolated development stand: all accounts, tokens and PostgreSQL data are disposable.
 const database=await temporaryDatabase();Object.assign(process.env,database.env,{AUTH_DB_PATH:'pvp_local_accounts'});
 const {accounts}=await import('../server/accounts');
-const a=await accounts.login('pvp-local-a@example.test','test-password!'),b=await accounts.login('pvp-local-b@example.test','test-password!');
+const a=await accounts.login('pvp-local-a@example.test','Test-password-42!'),b=await accounts.login('pvp-local-b@example.test','Test-password-42!');
 await accounts.select(a.account.id,0,'Анна');await accounts.select(b.account.id,1,'Борис');
 for(const id of[a.account.id,b.account.id])await accounts.wallet.operate(id,{id:randomUUID(),kind:'deposit',amount:200});
 // The seed process must release its sweep timer and connections before the real server owns this schema.

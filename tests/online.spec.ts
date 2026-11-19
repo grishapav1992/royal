@@ -230,7 +230,7 @@ test('character validation and repeated password attempts are limited', async ({
   expect((await request.post('/api/auth/character',{data:{skin:6}})).status()).toBe(400);
   expect((await request.post('/api/auth/character',{data:{skin:99}})).status()).toBe(400);
   expect((await request.post('/api/auth/character',{data:{skin:'2'}})).status()).toBe(400);
-  for(let i=0;i<9;i++) expect((await request.post('/api/auth/login',{data:{email:address,password:'incorrect-password'}})).status()).toBe(401);
+  for(let i=0;i<4;i++) expect((await request.post('/api/auth/login',{data:{email:address,password:'incorrect-password'}})).status()).toBe(401);
   expect((await request.post('/api/auth/login',{data:{email:address,password:'incorrect-password'}})).status()).toBe(429);
   await request.post('/api/auth/logout');
 });

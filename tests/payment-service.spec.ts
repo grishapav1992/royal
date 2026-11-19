@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 async function login(page: Page) {
   await page.goto('/');
   await page.getByLabel('Почта', { exact: true }).fill('separate-payment-' + crypto.randomUUID() + '@example.test');
-  await page.getByLabel('Пароль', { exact: true }).fill('Separate-payment-password!');
+  await page.getByLabel('Пароль', { exact: true }).fill('Separate-payment-password-42!');
   await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Войти в зал', exact: true })).toBeVisible();
   if (await page.locator('#character-grid button').count()) await page.locator('#character-grid button').first().click();

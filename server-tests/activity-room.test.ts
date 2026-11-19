@@ -22,7 +22,7 @@ test('activity routing isolates halls, supports old pages and sends fresh snapsh
   room.onCreate();
   try{
     for(const [id,protocol] of [['pianist',1],['listener',1],['table-player',1],['old-page',0]] as const){
-      const login=await accounts.login(`activity-${id}-${crypto.randomUUID()}@example.test`,'activity-room-password');logins.push(login);
+      const login=await accounts.login(`activity-${id}-${crypto.randomUUID()}@example.test`,'Activity-room-password-42!');logins.push(login);
       await accounts.select(login.account.id,0);const auth=(await accounts.session(login.token))!;packets.set(id,[]);
       const client:any={sessionId:id,auth,send(type:string,value:unknown){packets.get(id)!.push({type,value:structuredClone(value)});},leave(){}};
       await room.onJoin(client,{activityProtocol:protocol},auth);room.clients.push(client);clients.push(client);

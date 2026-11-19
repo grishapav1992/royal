@@ -76,7 +76,7 @@ test('security reaches outdoor players through the real door and escorts them on
 });
 
 test('server owns street transitions, pins movement revisions and refuses travel during play', async context => {
-  const session = await accounts.login(`street-${crypto.randomUUID()}@example.test`, 'Street-test-password!');
+  const session = await accounts.login(`street-${crypto.randomUUID()}@example.test`, 'Street-test-password-42!');
   await accounts.select(session.account.id, 0);
   const client: any = { sessionId: 'street-test', auth: await accounts.session(session.token), send() {}, leave() {} };
   const room = new LobbyRoom(), handlers = new Map<string, (client: any, data: unknown) => void>();

@@ -8,7 +8,7 @@ import { VARIANT_DEFAULTS,isVariantGame } from '../src/shared/casinoVariants';
 import { validCasinoSession,type CasinoSession } from '../src/shared/casinoSessions';
 import { worldPoint } from './room-ui';
 
-const directory='artifacts/card-floor-20261011',password='Royal-card-floor-isolated-password!';
+const directory='artifacts/card-floor-20261011',password='Royal-card-floor-isolated-password-42!';
 const expansionEndpoint='/api/demo-wallet/expansion',casinoEndpoint='/api/demo-wallet/casino-sessions';
 const expansionGames=CARD_GAME_IDS.filter(isExpansionGame);
 type Wallet={balance:number;entries:{operationId:string;kind:string;amount:number}[]};

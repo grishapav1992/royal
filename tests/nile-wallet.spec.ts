@@ -6,7 +6,7 @@ const assigned = () => ({ ...NILE_WALLET_SCOPE, state: 'assigned', address, bala
 async function login(page: Page) {
   await page.goto('/');
   await page.getByLabel('Почта', { exact: true }).fill(`nile-ui-${crypto.randomUUID()}@example.test`);
-  await page.getByLabel('Пароль', { exact: true }).fill('Nile-UI-test-password!');
+  await page.getByLabel('Пароль', { exact: true }).fill('Nile-UI-test-password-42!');
   await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
   await expect(page.locator('#character-step')).toBeVisible();
   await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();

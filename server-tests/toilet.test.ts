@@ -71,7 +71,7 @@ test('roof window keeps the perimeter open, has reciprocal links and safe offset
 });
 
 test('the salon door transfers to floor three and back without held keys causing a return or accepting stale input',async context=>{
-  const session=await accounts.login(`toilet-door-${crypto.randomUUID()}@example.test`,'Toilet-door-password!');await accounts.select(session.account.id,0);
+  const session=await accounts.login(`toilet-door-${crypto.randomUUID()}@example.test`,'Toilet-door-password-42!');await accounts.select(session.account.id,0);
   const client:any={sessionId:'toilet-door-test',auth:await accounts.session(session.token),send(){},leave(){}};
   const room=new LobbyRoom(),handlers=new Map<string,(client:any,data:unknown)=>void>();
   context.mock.method(room,'onMessage',(name:string,callback:any)=>{handlers.set(name,callback);});
@@ -93,7 +93,7 @@ test('the salon door transfers to floor three and back without held keys causing
 });
 
 test('server transfers through the window, preserves identity and rejects stale movement and busy admission',async context=>{
-  const session=await accounts.login(`toilet-${crypto.randomUUID()}@example.test`,'Toilet-test-password!');await accounts.select(session.account.id,0);
+  const session=await accounts.login(`toilet-${crypto.randomUUID()}@example.test`,'Toilet-test-password-42!');await accounts.select(session.account.id,0);
   const client:any={sessionId:'toilet-test',auth:await accounts.session(session.token),send(){},leave(){}};
   const room=new LobbyRoom(),handlers=new Map<string,(client:any,data:unknown)=>void>();
   context.mock.method(room,'onMessage',(name:string,callback:any)=>{handlers.set(name,callback);});

@@ -4,7 +4,7 @@ import { COINS_THEMES } from '../src/shared/gameThemes';
 async function loginAndFund(page: Page) {
   await page.goto('/');
   await page.getByLabel('Почта', { exact: true }).fill(`game-core-${crypto.randomUUID()}@example.test`);
-  await page.getByLabel('Пароль', { exact: true }).fill('Game-core-password!');
+  await page.getByLabel('Пароль', { exact: true }).fill('Game-core-password-42!');
   await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
   await expect(page.locator('#character-step')).toBeVisible();
   await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();

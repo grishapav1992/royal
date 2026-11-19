@@ -120,7 +120,7 @@ test('two online visitors use independent cabins and receive authoritative arriv
   async function join(visitor: Page) {
     await loaded(visitor, '/');
     await visitor.getByLabel('Почта', { exact: true }).fill(`elevator-${crypto.randomUUID()}@example.test`);
-    await visitor.getByLabel('Пароль', { exact: true }).fill('Elevator-browser-password!');
+    await visitor.getByLabel('Пароль', { exact: true }).fill('Elevator-browser-password-42!');
     await visitor.getByRole('button', { name: 'Продолжить', exact: true }).click();
     await expect(visitor.locator('#character-step')).toBeVisible();
     await visitor.getByRole('button', { name: 'Войти в зал', exact: true }).click();

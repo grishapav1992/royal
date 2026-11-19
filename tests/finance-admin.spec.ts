@@ -12,7 +12,7 @@ test('owner follows money from summary to a player, adjusts once after a lost re
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto('/admin.html',{waitUntil:'domcontentloaded'});
   await page.getByLabel('Почта',{exact:true}).fill('owner@admin-fixture.test');
-  await page.getByLabel('Пароль',{exact:true}).fill('fixture-admin-password');await page.getByRole('button',{name:'Войти в кабинет'}).click();
+  await page.getByLabel('Пароль',{exact:true}).fill('Fixture-admin-password-42!');await page.getByRole('button',{name:'Войти в кабинет'}).click();
   await expect(page.getByRole('heading',{name:'Финансы казино'})).toBeVisible();
   await expect(page.locator('.environment')).toHaveText('ТЕСТОВЫЕ СРЕДСТВА');
   await expect(page.locator('.undated')).toContainText('дата не сохранена');
@@ -27,7 +27,7 @@ test('owner follows money from summary to a player, adjusts once after a lost re
   await page.getByRole('button',{name:'Корректировать баланс',exact:true}).click();
   await page.getByLabel('Сумма, USDT',{exact:true}).fill('2,125');
   await page.getByLabel('Причина',{exact:true}).fill('Проверка начисления с потерей ответа');
-  await page.getByLabel('Твой пароль для подтверждения').fill('fixture-admin-password');
+  await page.getByLabel('Твой пароль для подтверждения').fill('Fixture-admin-password-42!');
   let once=true;const sent:any[]=[];await page.route('**/api/admin/actions',async route=>{
     sent.push(route.request().postDataJSON());
     const response=await route.fetch({url:apiUrl+'/api/admin/actions'});
@@ -50,7 +50,7 @@ test('owner follows money from summary to a player, adjusts once after a lost re
   await page.reload({waitUntil:'domcontentloaded'});
   await page.getByRole('button',{name:'Проверить тем же номером',exact:true}).click();
   await expect(page.getByLabel('Сумма, USDT',{exact:true})).toHaveValue('2,125');
-  await page.getByLabel('Твой пароль для подтверждения').fill('fixture-admin-password');
+  await page.getByLabel('Твой пароль для подтверждения').fill('Fixture-admin-password-42!');
   await page.getByRole('button',{name:'Повторить то же действие',exact:true}).click();
   await expect(page.locator('#modal')).not.toBeVisible();
   expect(await saved()).toHaveLength(0);expect(sent.slice(0,3).every(op=>op.id===sent[0].id)).toBe(true);
@@ -62,13 +62,13 @@ test('owner follows money from summary to a player, adjusts once after a lost re
   await page.getByRole('button',{name:'Корректировать баланс',exact:true}).click();
   await page.getByLabel('Сумма, USDT',{exact:true}).fill('1000000');
   await page.getByLabel('Причина',{exact:true}).fill('Проверка подтверждённого отказа резерва');
-  await page.getByLabel('Твой пароль для подтверждения').fill('fixture-admin-password');
+  await page.getByLabel('Твой пароль для подтверждения').fill('Fixture-admin-password-42!');
   await page.getByRole('button',{name:'Подтвердить действие',exact:true}).click();
   await expect(page.locator('#modal')).not.toBeVisible();expect(await saved()).toHaveLength(0);
   expect(sent[3].id).not.toBe(sent[0].id);
   await page.getByRole('button',{name:'Приостановить денежные операции',exact:true}).click();
   await page.getByLabel('Причина',{exact:true}).fill('Проверка приостановки платных игр');
-  await page.getByLabel('Твой пароль для подтверждения').fill('fixture-admin-password');
+  await page.getByLabel('Твой пароль для подтверждения').fill('Fixture-admin-password-42!');
   await page.getByRole('button',{name:'Подтвердить действие',exact:true}).click();
   await expect(page.locator('#profile > .badge')).toContainText('приостановлены');
   await page.getByRole('button',{name:'Закрыть карточку'}).click();
@@ -87,6 +87,6 @@ test('owner follows money from summary to a player, adjusts once after a lost re
 });
 
 test('ordinary player cannot access financial APIs',async({request})=>{
-  await request.post(apiUrl+'/api/auth/login',{data:{email:'player@admin-fixture.test',password:'fixture-player-password'}});
+  await request.post(apiUrl+'/api/auth/login',{data:{email:'player@admin-fixture.test',password:'Fixture-player-password-42!'}});
   expect((await request.get(apiUrl+'/api/admin/session')).status()).toBe(403);
 });

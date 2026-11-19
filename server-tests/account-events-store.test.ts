@@ -26,7 +26,7 @@ test('another account process resolves stale profile, drinking and security even
   try {
     await Promise.all([first.ready, second.ready]);
     await Promise.all([first.events.connect(presence), second.events.connect(presence)]);
-    const login = await first.login('account-events@example.test', 'account-event-password');
+    const login = await first.login('account-events@example.test', 'Account-event-password-42!');
     await first.select(login.account.id, 4, 'Актуальное имя'); await drained(first, second);
     const id = login.account.id;
 
@@ -62,7 +62,7 @@ test('an active session ignores a stale remote logout, while committed revocatio
   try {
     await Promise.all([first.ready, second.ready]);
     await Promise.all([first.events.connect(presence), second.events.connect(presence)]);
-    const login = await first.login('account-logout@example.test', 'account-event-password');
+    const login = await first.login('account-logout@example.test', 'Account-event-password-42!');
     const session = (await first.session(login.token))!;
     let count = 0; second.events.on('logout', () => count++);
     first.events.emit('logout', session.hash); await drained(first, second);

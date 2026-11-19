@@ -60,7 +60,7 @@ test('Presentation HTTP endpoint retains cookie, account, origin and current-pha
   const {accounts}=await import('../server/accounts'),{installDemoWallet}=await import('../server/demoWalletRoutes');
   const app=express();installDemoWallet(app);const server=app.listen(0,'127.0.0.1');await once(server,'listening');
   const address=server.address();assert(address&&typeof address!=='string');const origin='http://127.0.0.1:'+address.port;
-  const alice=await accounts.login('studio-presentation-alice-'+randomUUID()+'@example.test','Synthetic-metadata-test!'),bob=await accounts.login('studio-presentation-bob-'+randomUUID()+'@example.test','Synthetic-metadata-test!');
+  const alice=await accounts.login('studio-presentation-alice-'+randomUUID()+'@example.test','Synthetic-metadata-test-42!'),bob=await accounts.login('studio-presentation-bob-'+randomUUID()+'@example.test','Synthetic-metadata-test-42!');
   const headers={Cookie:'royal_session='+alice.token,[WALLET_ACCOUNT_HEADER]:alice.account.id};
   try{
     await accounts.wallet.operate(alice.account.id,{id:randomUUID(),kind:'deposit',amount:1000});

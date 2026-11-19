@@ -36,7 +36,7 @@ function fixture(context: TestContext) {
   const { activities, guards, pvp } = room as unknown as { activities: Activities; guards: Guards; pvp: PvpRoom };
 
   const join = async () => {
-    const login = await accounts.login(`club-wager-${randomUUID()}@example.test`, 'Club-wager-test-password!');
+    const login = await accounts.login(`club-wager-${randomUUID()}@example.test`, 'Club-wager-test-password-42!');
     const accountId = login.account.id;
     context.after(() => accounts.logout(login.token));
     await accounts.select(accountId, 0);

@@ -78,7 +78,7 @@ async function roomVisit(context: TestContext, token: string, duringJoin?: () =>
 }
 
 async function markedAccount(context: TestContext) {
-  const login = await accounts.login(`club-disguise-${randomUUID()}@example.test`, 'Club-disguise-test-password!');
+  const login = await accounts.login(`club-disguise-${randomUUID()}@example.test`, 'Club-disguise-test-password-42!');
   const accountId = login.account.id;
   context.after(() => accounts.logout(login.token));
   await accounts.select(accountId, 0);

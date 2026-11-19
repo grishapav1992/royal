@@ -30,8 +30,8 @@ test('stale and unsafe snapshots, duplicate owners and bad amounts fail closed',
 });
 test('HTTP authentication, owner isolation, stale files, query injection and all writes are guarded', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'royal-wallet-route-')), file = join(directory, 'wallets.json');
-  const owner = await accounts.login(`nile-owner-${randomUUID()}@example.test`, 'test-password!');
-  const other = await accounts.login(`nile-other-${randomUUID()}@example.test`, 'test-password!');
+  const owner = await accounts.login(`nile-owner-${randomUUID()}@example.test`, 'Test-password-42!');
+  const other = await accounts.login(`nile-other-${randomUUID()}@example.test`, 'Test-password-42!');
   const app = express(); installNileWallet(app, file);
   const server = app.listen(0, '127.0.0.1'); await new Promise<void>(resolve => server.once('listening', resolve));
   const endpoint = `http://127.0.0.1:${(server.address() as any).port}/api/nile-wallet`;

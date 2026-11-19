@@ -5,7 +5,7 @@ import { appendFileSync } from 'node:fs';
 let host:Room,room='';
 const record=(account:{id:string;email:string})=>{if(process.env.ROYAL_EXPANSION_URL)appendFileSync(process.env.ROYAL_EXPANSION_RECORDS||'artifacts/casino-wave2/public-test-accounts.jsonl',JSON.stringify(account)+'\n');};
 test.beforeAll(async({request})=>{
-  const auth=await request.post('/api/auth/login',{data:{email:`expansion2-host-${crypto.randomUUID()}@example.test`,password:'Expansion-test-wallet-password!'}});expect(auth.ok()).toBe(true);record((await auth.json()).account);
+  const auth=await request.post('/api/auth/login',{data:{email:`expansion2-host-${crypto.randomUUID()}@example.test`,password:'Expansion-test-wallet-password-42!'}});expect(auth.ok()).toBe(true);record((await auth.json()).account);
   await request.post('/api/auth/character',{data:{skin:0}});
   const cookie=auth.headers()['set-cookie'].split(';')[0];
   host=await new Client(process.env.ROYAL_EXPANSION_URL||'http://127.0.0.1:2598',{headers:{Cookie:cookie},fetchFn:async(url,options)=>{
@@ -16,7 +16,7 @@ test.beforeAll(async({request})=>{
 });
 test.afterAll(async()=>{await host?.leave();});
 async function login(page:Page){
-  await page.goto('/?room='+room);await page.getByLabel('Почта',{exact:true}).fill(`expansion2-${crypto.randomUUID()}@example.test`);await page.getByLabel('Пароль',{exact:true}).fill('Expansion-test-wallet-password!');const auth=page.waitForResponse(r=>r.url().endsWith('/api/auth/login')&&r.request().method()==='POST');await page.getByRole('button',{name:'Продолжить',exact:true}).click();record((await(await auth).json()).account);
+  await page.goto('/?room='+room);await page.getByLabel('Почта',{exact:true}).fill(`expansion2-${crypto.randomUUID()}@example.test`);await page.getByLabel('Пароль',{exact:true}).fill('Expansion-test-wallet-password-42!');const auth=page.waitForResponse(r=>r.url().endsWith('/api/auth/login')&&r.request().method()==='POST');await page.getByRole('button',{name:'Продолжить',exact:true}).click();record((await(await auth).json()).account);
   await expect(page.locator('#character-step')).toBeVisible();await page.getByRole('button',{name:'Войти в зал',exact:true}).click();await expect(page.locator('#join-dialog')).toBeHidden({timeout:15000});
   if(await page.locator('#room-overview').getAttribute('aria-pressed')!=='true')await page.locator('#room-overview').click();
   await page.getByRole('button',{name:'Открыть демокошелёк'}).click();await page.getByRole('button',{name:'Пополнить демобаланс',exact:true}).click();await expect(page.locator('#wallet-balance')).toHaveText(/1\s000/);await page.getByRole('button',{name:'Закрыть кошелёк'}).click();

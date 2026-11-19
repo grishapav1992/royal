@@ -6,7 +6,7 @@ import type { FlightResult } from '../src/shared/flightGame';
 async function login(page: Page, roomPath: string) {
   await page.goto(roomPath);
   await page.getByLabel('Почта', { exact: true }).fill(`themed-${crypto.randomUUID()}@example.test`);
-  await page.getByLabel('Пароль', { exact: true }).fill('Royal-themed-password!');
+  await page.getByLabel('Пароль', { exact: true }).fill('Royal-themed-password-42!');
   await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
   await expect(page.locator('#character-step')).toBeVisible();
   await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();

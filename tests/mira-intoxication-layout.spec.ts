@@ -30,7 +30,7 @@ for (const viewport of [{width:1440,height:1000},{width:667,height:375},{width:5
 }
 
 test('an old Mira dialogue cannot animate a rejected drink after logging in elsewhere', async ({ page }) => {
-  const request = page.context().request, password = 'Synthetic-mira-check-123';
+  const request = page.context().request, password = 'Synthetic-mira-check-123!';
   const email = `mira-order-${crypto.randomUUID()}@example.test`;
   expect((await request.post('/api/auth/login',{data:{email,password}})).ok()).toBe(true);
   expect((await request.post('/api/auth/character',{data:{skin:0}})).ok()).toBe(true);
@@ -83,7 +83,7 @@ test('maximum intoxication persists offline', async ({ page }) => {
 test('the current chess game accepts a strongly intoxicated player', async ({ page }) => {
   test.setTimeout(70000);
   const request = page.context().request;
-  expect((await request.post('/api/auth/login',{data:{email:`mira-chess-${crypto.randomUUID()}@example.test`,password:'Synthetic-mira-check-123'}})).ok()).toBe(true);
+  expect((await request.post('/api/auth/login',{data:{email:`mira-chess-${crypto.randomUUID()}@example.test`,password:'Synthetic-mira-check-123!'}})).ok()).toBe(true);
   expect((await request.post('/api/auth/character',{data:{skin:0}})).ok()).toBe(true);
   await page.route('**/api/npc/mira', route => route.fulfill({json:{reply:'Решай сам.',turns:[],emotion:'neutral'}}));
   await page.goto('/');

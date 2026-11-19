@@ -20,7 +20,7 @@ test('real Unix socket bridge uses the session owner, claims once and settles an
   const financial=createNilePlayServer(context.ledger);await new Promise<void>(resolve=>financial.listen(socket,resolve));
   const app=express();installNilePlay(app,socket);const server=app.listen(0,'127.0.0.1');await new Promise<void>(resolve=>server.once('listening',resolve));
   const endpoint=`http://127.0.0.1:${(server.address() as any).port}/api/nile-play`;
-  const owner=await accounts.login(`play-owner-${randomUUID()}@example.test`,'Play-test-password!'),other=await accounts.login(`play-other-${randomUUID()}@example.test`,'Play-test-password!');
+  const owner=await accounts.login(`play-owner-${randomUUID()}@example.test`,'Play-test-password-42!'),other=await accounts.login(`play-other-${randomUUID()}@example.test`,'Play-test-password-42!');
   const headers={Cookie:'royal_session='+owner.token,'Content-Type':'application/json',[WALLET_ACCOUNT_HEADER]:owner.account.id},otherHeaders={...headers,Cookie:'royal_session='+other.token,[WALLET_ACCOUNT_HEADER]:other.account.id},post=(path:string,value:unknown,h: Record<string,string>=headers)=>fetch(endpoint+path,{method:'POST',headers:h,body:JSON.stringify(value)});
   try{
     assert.equal((await fetch(endpoint+'/wallet')).status,401);
@@ -55,7 +55,7 @@ test('automatic deposits allocate distinct addresses using authenticated owners 
   const financial=createNilePlayServer(ledger);await new Promise<void>(resolve=>financial.listen(socket,resolve));
   const app=express();installNilePlay(app,socket);const server=app.listen(0,'127.0.0.1');await new Promise<void>(resolve=>server.once('listening',resolve));
   const endpoint=`http://127.0.0.1:${(server.address() as any).port}/api/nile-play`;
-  const owner=await accounts.login(`deposit-owner-${randomUUID()}@example.test`,'Deposit-test-password!'),other=await accounts.login(`deposit-other-${randomUUID()}@example.test`,'Deposit-test-password!');
+  const owner=await accounts.login(`deposit-owner-${randomUUID()}@example.test`,'Deposit-test-password-42!'),other=await accounts.login(`deposit-other-${randomUUID()}@example.test`,'Deposit-test-password-42!');
   const h=(session:typeof owner)=>({Cookie:'royal_session='+session.token,'Content-Type':'application/json',[WALLET_ACCOUNT_HEADER]:session.account.id});
   const post=(data:unknown,headers: Record<string,string>=h(owner))=>fetch(endpoint+'/deposit',{method:'POST',headers,body:JSON.stringify(data)});
   try{

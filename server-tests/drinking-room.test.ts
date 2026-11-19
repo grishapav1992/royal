@@ -6,7 +6,7 @@ import { BAR_APPROACH } from '../src/shared/world';
 import { addDrink, MAX_SOBER_TIME_MS } from '../src/shared/intoxication';
 
 test('only accepted bar orders consume a dose and cancelling animation cannot bypass the account cooldown', async context => {
-  const login = await accounts.login(`drinking-room-${crypto.randomUUID()}@example.test`, 'room-test-password');
+  const login = await accounts.login(`drinking-room-${crypto.randomUUID()}@example.test`, 'Room-test-password-42!');
   (await accounts.select(login.account.id, 0));
   const auth = (await accounts.session(login.token))!;
   const client: any = { sessionId: 'drinking-client', auth, send() {}, leave() {} };
@@ -57,7 +57,7 @@ test('only accepted bar orders consume a dose and cancelling animation cannot by
 });
 
 test('drinking events update room state fixtures and listeners are removed on disposal', async context => {
-  const login = await accounts.login(`drinking-multi-${crypto.randomUUID()}@example.test`, 'room-test-password');
+  const login = await accounts.login(`drinking-multi-${crypto.randomUUID()}@example.test`, 'Room-test-password-42!');
   (await accounts.select(login.account.id, 0));
   const rooms = [new LobbyRoom(), new LobbyRoom()];
   const baseline = accounts.events.listenerCount('drinking');
@@ -98,7 +98,7 @@ test('drinking events update room state fixtures and listeners are removed on di
 });
 
 test('movement uses room access state and logout cancels an uncommitted asynchronous drink', async context => {
-  const login = await accounts.login(`drinking-logout-${crypto.randomUUID()}@example.test`, 'room-test-password');
+  const login = await accounts.login(`drinking-logout-${crypto.randomUUID()}@example.test`, 'Room-test-password-42!');
   await accounts.select(login.account.id, 0);
   const auth = (await accounts.session(login.token))!;
   const client: any = { sessionId: 'drinking-logout', auth, send() {}, leave() {} };
@@ -128,7 +128,7 @@ test('movement uses room access state and logout cancels an uncommitted asynchro
 });
 
 test('removed sofa and stool identifiers cannot teleport or seat an authenticated guest', async context => {
-  const login = await accounts.login(`removed-seats-${crypto.randomUUID()}@example.test`, 'room-test-password');
+  const login = await accounts.login(`removed-seats-${crypto.randomUUID()}@example.test`, 'Room-test-password-42!');
   (await accounts.select(login.account.id, 0));
   const auth = (await accounts.session(login.token))!;
   const client: any = { sessionId: 'removed-seat-client', auth, send() {}, leave() {} };

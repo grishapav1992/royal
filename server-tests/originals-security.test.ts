@@ -29,8 +29,8 @@ async function serve(options?: DemoWalletRequestLimitOptions) {
 }
 
 test('Originals HTTP rejects data theft, forged outcomes, excessive bodies and replay floods', { timeout: 25000 }, async t => {
-  const alice = await accounts.login(`security-alice-${randomUUID()}@example.test`, 'Security-test-password!');
-  const bob = await accounts.login(`security-bob-${randomUUID()}@example.test`, 'Security-test-password!');
+  const alice = await accounts.login(`security-alice-${randomUUID()}@example.test`, 'Security-test-password-42!');
+  const bob = await accounts.login(`security-bob-${randomUUID()}@example.test`, 'Security-test-password-42!');
   for (const owner of [alice, bob]) (await accounts.wallet.operate(owner.account.id, { id: randomUUID(), kind: 'deposit', amount: 1000 }));
   const headers = (owner = alice) => ({ Cookie: `royal_session=${owner.token}`, [WALLET_ACCOUNT_HEADER]: owner.account.id, 'Content-Type': 'application/json' });
   const server = await serve();

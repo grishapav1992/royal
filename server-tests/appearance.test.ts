@@ -10,7 +10,7 @@ test('custom appearance persists across stores and account events use current da
   const store = new AccountStore(`appearance-${randomUUID()}`), remote = new AccountStore(store.schema), presence = new LocalPresence();
   try {
     await Promise.all([store.ready, remote.ready]); await Promise.all([store.events.connect(presence), remote.events.connect(presence)]);
-    const login = await store.login(`appearance-${randomUUID()}@example.test`, 'appearance-test-password');
+    const login = await store.login(`appearance-${randomUUID()}@example.test`, 'Appearance-test-password-42!');
     const value = { ...DEFAULT_APPEARANCE, gender: 1, body: 2, earrings: 4, tattoo: 5, makeup: 5, makeupColor: 3 };
     const updates: unknown[] = []; remote.events.on('appearance', (_id, appearance) => updates.push(appearance));
     await store.select(login.account.id, undefined, 'Мой персонаж', value);
@@ -33,7 +33,7 @@ test('saved outfits from before makeup keep every selection and default to no ma
   const store = new AccountStore(`appearance-compat-${randomUUID()}`), db = new PostgresDatabase(store.schema);
   try {
     await store.ready;
-    const login = await store.login(`appearance-compat-${randomUUID()}@example.test`, 'appearance-test-password');
+    const login = await store.login(`appearance-compat-${randomUUID()}@example.test`, 'Appearance-test-password-42!');
     const { makeup, makeupColor, ...old } = { ...DEFAULT_APPEARANCE, gender: 1, body: 1, hair: 2, hat: 5, earrings: 4 };
     const expected = { ...old, makeup: 0, makeupColor: 0 };
     await db.prepare('UPDATE accounts SET skin=0,appearance=?::jsonb WHERE id=?').run(JSON.stringify(old), login.account.id);

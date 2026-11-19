@@ -34,7 +34,7 @@ test('all six cabinets keep their complete game traffic on the Royal origin', as
     else networkPaths.add(url.pathname);
   });
 
-  const password = 'Security-only-local-test-password!';
+  const password = 'Security-only-local-test-password-42!';
   await page.goto('/');
   await page.getByLabel('Почта', { exact: true }).fill(`egress-${crypto.randomUUID()}@example.test`);
   await page.getByLabel('Пароль', { exact: true }).fill(password);

@@ -9,7 +9,7 @@ test.beforeAll(async () => {
 });
 test.afterEach(async ({ page }) => { await page.request.post('/api/auth/logout').catch(() => {}); });
 async function account(page: Page) {
-  const response = await page.request.post('/api/auth/login', { data: { email: `entry-${crypto.randomUUID()}@example.test`, password: 'EntryLocal2026' } });
+  const response = await page.request.post('/api/auth/login', { data: { email: `entry-${crypto.randomUUID()}@example.test`, password: 'EntryLocal2026!' } });
   expect(response.ok()).toBe(true);
   expect((await page.request.post('/api/auth/character', { data: { skin: 0, name: 'Гость проверки' } })).ok()).toBe(true);
   expect((await page.request.post('/__local/entry-credit')).ok()).toBe(true);
@@ -50,7 +50,7 @@ test('mode selection precedes sign-in and opens the real casino without loading 
   expect(sessionChecks).toHaveLength(1);
   const email = `entry-choice-${crypto.randomUUID()}@example.test`;
   await page.locator('#email').fill(email);
-  await page.locator('#password').fill('EntryLocal2026');
+  await page.locator('#password').fill('EntryLocal2026!');
   await page.locator('#login-button').click();
   await connected(page);
   await expect(page.locator('.casino-panel')).toBeVisible();
@@ -94,7 +94,7 @@ test('mode selection precedes sign-in and opens the real casino without loading 
   await page.locator('#login-button').click();
   await expect(page.locator('#join-error')).toHaveText('Неверная почта или пароль.');
   await expect(page.locator('[data-entry-mode]')).toHaveCount(0);
-  await page.locator('#password').fill('EntryLocal2026');
+  await page.locator('#password').fill('EntryLocal2026!');
   await page.locator('#login-button').click();
   await connected(page);
   await expect(page.locator('body')).toHaveAttribute('data-entry-mode', 'casino');
@@ -206,7 +206,7 @@ test('phone chooses before login even with a mode link and a saved preference fr
   await expect(page.locator('#login-form')).toBeVisible();
   await expect(page.locator('#casino-catalog')).toHaveCount(0);
   await page.locator('#email').fill(`new-entry-${crypto.randomUUID()}@example.test`);
-  await page.locator('#password').fill('EntryLocal2026'); await page.locator('#login-button').click();
+  await page.locator('#password').fill('EntryLocal2026!'); await page.locator('#login-button').click();
   await connected(page);
   await expect(page.locator('#join-dialog')).toBeHidden();
   const identity = await (await page.request.get('/api/auth/me')).json(); expect(identity.account.skin).toBe(0);
@@ -220,7 +220,7 @@ test('phone chooses before login even with a mode link and a saved preference fr
   await page.getByRole('button', { name: 'Straight to the games', exact: true }).click();
   await connected(page);
   await expect(page.getByRole('heading', { name: 'Royal games' })).toBeVisible();
-  await expect(page.locator('#casino-catalog [data-platform-wallet]')).toHaveText(/USDT · Demo/);
+  await expect(page.locator('#casino-catalog [data-platform-wallet]')).toHaveText('0 USDT');
   await expect(page.getByRole('searchbox', { name: 'Find a game' })).toBeVisible();
   const englishGenre = page.getByRole('combobox', { name: 'Genre' });
   await expect(englishGenre.locator('option:checked')).toHaveText('All genres');

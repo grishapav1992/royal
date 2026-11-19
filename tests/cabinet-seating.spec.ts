@@ -9,7 +9,7 @@ async function enter(page: Page, path: string) {
   await page.route('https://luelonplay.com/**', route => route.fulfill({ json: { games: [] } }));
   await page.goto(path);
   await page.getByLabel('Почта', { exact: true }).fill(`seated-${crypto.randomUUID()}@example.test`);
-  await page.getByLabel('Пароль', { exact: true }).fill('Cabinet-test-password!');
+  await page.getByLabel('Пароль', { exact: true }).fill('Cabinet-test-password-42!');
   await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
   await expect(page.locator('#character-step')).toBeVisible();
   await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();

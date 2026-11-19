@@ -61,8 +61,8 @@ export async function requireEntryAccount(): Promise<boolean> {
 
   return new Promise(resolve => {
     back.onclick = () => resolve(false);
-    const { form, password, submit } = bindLoginForm(panel, async credentials => {
-      submit.disabled = true;
+    const { form, password, setBusy, showFailure } = bindLoginForm(panel, async credentials => {
+      setBusy(true);
       back.disabled = true;
       form.setAttribute('aria-busy', 'true');
       feedback.hidden = true;
@@ -72,11 +72,10 @@ export async function requireEntryAccount(): Promise<boolean> {
         password.value = '';
         resolve(true);
       } catch (error) {
-        feedback.textContent = loginError(error);
-        feedback.hidden = false;
+        showFailure(error);
       } finally {
         form.removeAttribute('aria-busy');
-        submit.disabled = false;
+        setBusy(false);
         back.disabled = false;
       }
     });

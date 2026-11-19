@@ -1,6 +1,9 @@
 /** Disposable local stand. No production credentials, providers or databases. */
 import { randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { createServer } from 'vite';
 import { temporaryDatabase } from './database-test';
 import { PostgresDatabase } from '../server/database';
@@ -10,8 +13,10 @@ if (process.env.NODE_ENV === 'production') throw Error('Local preview cannot run
 const webPort = Number(process.env.ENTRY_WEB_PORT || 5198), apiPort = Number(process.env.ENTRY_API_PORT || 2698);
 const api = `http://127.0.0.1:${apiPort}`;
 const database = await temporaryDatabase();
+const mailboxDirectory = process.env.ENTRY_PASSWORD_MAILBOX ? undefined : await mkdtemp(join(tmpdir(), 'royal-entry-mail-'));
+const mailbox = process.env.ENTRY_PASSWORD_MAILBOX || join(mailboxDirectory!, 'password-recovery.jsonl');
 Object.assign(process.env, database.env, {
-  AUTH_DB_PATH: 'entry_local', PORT: String(apiPort), PUBLIC_ORIGIN: '', NILE_PLAY_SOCKET_FILE: '',
+  AUTH_DB_PATH: 'entry_local', ROYAL_PASSWORD_RECOVERY_MAILBOX: mailbox, PORT: String(apiPort), PUBLIC_ORIGIN: '', NILE_PLAY_SOCKET_FILE: '',
   NOWPAYMENTS_ENABLED: 'false', NOWPAYMENTS_GAMES_ENABLED: 'false', NOWPAYMENTS_WITHDRAWALS_ENABLED: 'false',
   CASINOAPIPRO_ENABLED: 'false', REDIS_URL: '', LOBBY_WORKER_ONLY: 'false', LOBBY_WORKER_ID: '',
   PAYMENTS_SERVICE_URL: '', PAYMENTS_REQUEST_SECRET: '', PAYMENTS_EVENT_SECRET: '',
@@ -56,6 +61,7 @@ async function stop() {
     const timer = setTimeout(resolve, 3000); backend.once('exit', () => { clearTimeout(timer); resolve(); });
   });
   await walletDb?.close(); await database.cleanup();
+  if (mailboxDirectory) await rm(mailboxDirectory, { recursive: true, force: true });
 }
 process.once('SIGINT', () => { void stop().then(() => process.exit(0)); });
 process.once('SIGTERM', () => { void stop().then(() => process.exit(0)); });
@@ -68,7 +74,7 @@ try {
     await new Promise(resolve => setTimeout(resolve, 200));
   }
   if (!ready) throw Error('Local backend did not start: ' + log);
-  const login = await fetch(api + '/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'guest@royal.local', password: 'RoyalLocal2026' }) });
+  const login = await fetch(api + '/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'guest@royal.local', password: 'RoyalLocal2026!' }) });
   if (!login.ok) throw Error('Local preview account could not be created');
   const { account } = await login.json();
   const character = await fetch(api + '/api/auth/character', { method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: login.headers.get('set-cookie')!.split(';')[0] }, body: JSON.stringify({ skin: 0, name: 'Гость Royal' }) });
@@ -76,5 +82,6 @@ try {
   await credit(account.id);
   await vite.listen();
   console.log(`Local Royal ready: http://127.0.0.1:${webPort}`);
-  console.log('Preview login: guest@royal.local / RoyalLocal2026. Test balance: 50 USDT.');
+  console.log(`Test recovery mailbox: ${mailbox}`);
+  console.log('Preview login: guest@royal.local / RoyalLocal2026!. Test balance: 50 USDT.');
 } catch (error) { await stop(); throw error; }

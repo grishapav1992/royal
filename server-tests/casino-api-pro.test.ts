@@ -201,7 +201,7 @@ test('catalogue pagination, token reuse and launch validate account, currency an
 });
 
 test('HTTP launch requires a real signed wallet balance call and callbacks cannot use browser auth',async()=>{
-  const store=new AccountStore(':memory:'),account=await store.login('capro-test@example.test','Capro-test-password!');
+  const store=new AccountStore(':memory:'),account=await store.login('capro-test@example.test','Capro-test-password-42!');
   const app=express();installCasinoApiPro(app,config,store,async(input,init)=>{
     if(String(input).endsWith('/auth/token')) return Response.json({environment:'SANDBOX',access_token:'test-token',expires_in:3600});
     if(String(input).includes('/games/')) return Response.json({data:[fixtureGame],has_more:false,next_cursor:null});
@@ -230,7 +230,7 @@ test('HTTP launch requires a real signed wallet balance call and callbacks canno
     assert.equal((await (await callback('credit',{...bet,transactionId:'http-win',amount:'20.50'})).json()).balance,'1010.25');
     const repeated=await (await callback('debit',bet)).json();assert.equal(repeated.duplicate,true);assert.equal(repeated.balance,'989.75');
     assert.equal((await store.wallet.snapshot(account.account.id)).balance,1010.25);
-    const other=await store.login('capro-other@example.test','Capro-test-password!');
+    const other=await store.login('capro-other@example.test','Capro-test-password-42!');
     const otherHeaders={...browserHeaders,Cookie:`royal_session=${other.token}`};
     const otherState=await (await fetch(base+'/api/casinoapipro/status',{method:'POST',headers:otherHeaders,body:'{}'})).json();
     assert.equal(otherState.walletConnected,true);assert.equal(otherState.balance,'0.00');assert.notEqual(otherState.playerId,state.playerId);

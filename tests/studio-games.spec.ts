@@ -3,7 +3,7 @@ import { appendFileSync,writeFileSync } from 'node:fs';
 import { Client,type Room } from '@colyseus/sdk';
 import { STUDIO_GAMES,STUDIO_INFO,STUDIO_DEFAULTS,studioScore,studioPayFrame,validStudioSettlement,type StudioGameId } from '../src/shared/studioGames';
 import type { ExpansionSession,ExpansionAction } from '../src/shared/casinoExpansion';
-const password='Royal-studio-isolated-password!';
+const password='Royal-studio-isolated-password-42!';
 const endpoint='/api/demo-wallet/expansion',directory='artifacts/royal-studio-20261011';
 let host:Room,room='';
 type Reply={session:ExpansionSession;wallet:{balance:number;entries:{operationId:string;kind:string}[]};replayed:boolean};

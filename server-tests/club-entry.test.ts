@@ -25,7 +25,7 @@ async function markedVisitor(context: TestContext, oldBan = false) {
   const reserve = context.mock.method(room, 'allowReconnection', async () => {});
   room.onCreate();
 
-  const login = await accounts.login(`club-entry-${randomUUID()}@example.test`, 'Club-entry-test-password!');
+  const login = await accounts.login(`club-entry-${randomUUID()}@example.test`, 'Club-entry-test-password-42!');
   context.after(async () => {
     room.onDispose();
     room.clock.clear();

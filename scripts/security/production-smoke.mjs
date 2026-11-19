@@ -51,7 +51,7 @@ try {
   assert.ok(healthy, 'Production server must become healthy');
   const headers = { Origin: publicOrigin, 'X-Forwarded-Proto': 'https', 'Content-Type': 'application/json' };
   const login = await fetch(origin + '/api/auth/login', {
-    method: 'POST', headers, body: JSON.stringify({ email: `production-smoke-${randomUUID()}@example.test`, password: 'Only-synthetic-smoke-password!' }),
+    method: 'POST', headers, body: JSON.stringify({ email: `production-smoke-${randomUUID()}@example.test`, password: 'Only-synthetic-smoke-password-42!' }),
   });
   assert.equal(login.status, 200);
   const account = (await login.json()).account;

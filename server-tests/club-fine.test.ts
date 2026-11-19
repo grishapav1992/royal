@@ -15,7 +15,7 @@ async function fixture(context: TestContext, balanceCents: number) {
   let store = new AccountStore(':memory:');
   context.after(() => store.close());
   await store.ready;
-  const { account } = await store.login('club-fine@example.test', 'test-password');
+  const { account } = await store.login('club-fine@example.test', 'Test-password-42!');
   const accountId = account.id;
   await saveDemoUnits(store.financeAdmin.db, accountId, balanceCents);
   return {

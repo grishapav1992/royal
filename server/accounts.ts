@@ -24,7 +24,7 @@ import { NileCombatEscrow } from './finance/combat-escrow';
 import { isPlayerCharacter } from '../src/shared/characters';
 import { PostgresDatabase } from './database';
 import { applyAccountSchemaMigrations } from './game-database-migrations';
-import { randomBytes, randomUUID, scrypt, timingSafeEqual, createHash } from 'node:crypto';
+import { randomBytes, randomInt, randomUUID, scrypt, timingSafeEqual, createHash } from 'node:crypto';
 import { EventEmitter } from 'node:events';
 import { FinanceAdminStore } from './admin/store';
 import { ProgressionStore } from './progression/store';
@@ -33,8 +33,38 @@ import { LiveFreeSpinService } from './progression/freeSpins';
 import { FreeSkinGenerations } from './progression/skinGenerations';
 
 export type Account = { id: string; email: string; name: string; skin: number | null; appearance?: CharacterAppearance | null };
-type StoredAccount = Account & { password: string };
-export class AuthError extends Error { constructor(public status: number, message: string) { super(message); } }
+type StoredAccount = Account & { password: string; failed_logins: number; locked_until: number | null };
+export class AuthError extends Error {
+  constructor(public status: number, message: string, public code?: string, public retryAt?: number) { super(message); }
+}
+export type SendRecoveryCode = (email: string, code: string) => Promise<void>;
+
+const LOGIN_FAILURE_LIMIT = 5;
+const LOGIN_LOCK_MS = 30 * 60 * 1000;
+const CODE_FAILURE_LIMIT = 5;
+const CODE_TTL_MS = 10 * 60 * 1000;
+const CODE_RESEND_MS = 60 * 1000;
+const RESET_TTL_MS = 10 * 60 * 1000;
+const PASSWORD_RULES = 'Пароль должен содержать от 8 до 128 символов, прописную и строчную буквы, цифру и спецсимвол.';
+
+function accountEmail(raw: unknown) {
+  if (typeof raw !== 'string') throw new AuthError(400, 'Введи почту и пароль.');
+  const email = raw.trim().toLowerCase();
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new AuthError(400, 'Проверь адрес почты.');
+  return email;
+}
+
+function newPassword(value: unknown) {
+  if (typeof value !== 'string' || [...value].length < 8 || value.length > 128 ||
+      !/\p{Lu}/u.test(value) || !/\p{Ll}/u.test(value) || !/\p{Nd}/u.test(value) || !/[\p{P}\p{S}]/u.test(value)) {
+    throw new AuthError(400, PASSWORD_RULES, 'password_requirements');
+  }
+  return value;
+}
+
+const lockedError = (until: number) => new AuthError(429, 'Пять неверных попыток. Вход заблокирован на 30 минут.', 'login_locked', until);
+const invalidCode = () => new AuthError(400, 'Код неверный или устарел. Проверь его или запроси новый.');
+const invalidReset = () => new AuthError(400, 'Время смены пароля истекло. Запроси новый код.', 'reset_expired');
 function gameName(value: unknown) {
   if (typeof value !== 'string') throw new AuthError(400, 'Введи игровое имя.');
   const name = value.normalize('NFC').trim().replace(/\s+/gu, ' ');
@@ -47,6 +77,15 @@ const digest = (token: string) => createHash('sha256').update(token).digest('hex
 const derive = (password: string, salt: string) => new Promise<Buffer>((resolve, reject) => {
   scrypt(password, salt, 64, { N: 16384, r: 8, p: 1 }, (error, key) => error ? reject(error) : resolve(key));
 });
+async function secretHash(value: string) {
+  const salt = randomBytes(16).toString('hex');
+  return `${salt}:${(await derive(value, salt)).toString('hex')}`;
+}
+async function matchesSecret(value: string, stored: string) {
+  const [salt, expected] = stored.split(':');
+  return timingSafeEqual(await derive(value, salt), Buffer.from(expected, 'hex'));
+}
+
 export const SESSION_AGE = 30 * 24 * 60 * 60 * 1000;
 export class AccountStore {
   private db: PostgresDatabase;
@@ -133,30 +172,100 @@ export class AccountStore {
   }
   async login(rawEmail: unknown, rawPassword: unknown) {
     await this.ready;
-    if (typeof rawEmail !== 'string' || typeof rawPassword !== 'string') throw new AuthError(400, 'Введи почту и пароль.');
-    const email = rawEmail.trim().toLowerCase();
-    if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new AuthError(400, 'Проверь адрес почты.');
-    if (rawPassword.length < 8 || rawPassword.length > 128) throw new AuthError(400, 'Пароль должен содержать от 8 до 128 символов.');
-    const fields = 'id,email,name,password,skin,appearance';
-    let row = (await this.db.prepare(`SELECT ${fields} FROM accounts WHERE email = ?`).get(email)) as StoredAccount | undefined;
-    if (!row) {
-      const salt = randomBytes(16).toString('hex');
-      const password = `${salt}:${(await derive(rawPassword, salt)).toString('hex')}`;
-      const id = randomUUID();
-      row = await this.db.transaction(async () => {
-        const inserted = await this.db.prepare(`INSERT INTO accounts (id,email,name,password,created_at) VALUES (?,?,?,?,?) ON CONFLICT(email) DO NOTHING RETURNING ${fields}`)
-          .get(id, email, `Игрок ${id.slice(0,6).toUpperCase()}`, password, Date.now());
-        return (inserted ?? await this.db.prepare(`SELECT ${fields} FROM accounts WHERE email = ?`).get(email)) as StoredAccount;
-      }, { lockKey: 'email:'+email });
+    const email = accountEmail(rawEmail);
+    if (typeof rawPassword !== 'string' || !rawPassword.length || rawPassword.length > 128) {
+      throw new AuthError(400, 'Введи пароль длиной до 128 символов.');
     }
-    const [salt, expected] = row.password.split(':');
-    const actual = await derive(rawPassword, salt);
-    if (!timingSafeEqual(actual, Buffer.from(expected, 'hex'))) throw new AuthError(401, 'Неверная почта или пароль.');
-    const token = randomBytes(32).toString('hex');
     await this.clearExpiredSessions(Date.now());
-    (await this.db.prepare('INSERT INTO sessions (hash,account_id,expires) VALUES (?,?,?)').run(digest(token), row.id, Date.now() + SESSION_AGE));
-    return { token, account: this.publicAccount(row) };
+    const result = await this.db.transaction(async () => {
+      const fields = 'id,email,name,password,skin,appearance,failed_logins,locked_until';
+      let row = await this.db.prepare(`SELECT ${fields} FROM accounts WHERE email = ?`).get(email) as StoredAccount | undefined;
+      const now = Date.now();
+      if (!row) {
+        const password = await secretHash(newPassword(rawPassword));
+        const id = randomUUID();
+        row = await this.db.prepare(`INSERT INTO accounts (id,email,name,password,created_at) VALUES (?,?,?,?,?) RETURNING ${fields}`)
+          .get(id, email, `Игрок ${id.slice(0,6).toUpperCase()}`, password, now) as StoredAccount;
+      } else {
+        if (row.locked_until !== null && row.locked_until > now) return lockedError(row.locked_until);
+        if (!(await matchesSecret(rawPassword, row.password))) {
+          const failures = row.locked_until === null ? row.failed_logins + 1 : 1;
+          const until = failures >= LOGIN_FAILURE_LIMIT ? Date.now() + LOGIN_LOCK_MS : null;
+          await this.db.prepare('UPDATE accounts SET failed_logins=?,locked_until=? WHERE id=?').run(failures, until, row.id);
+          return until === null ? new AuthError(401, 'Неверная почта или пароль.', 'invalid_credentials') : lockedError(until);
+        }
+        if (row.failed_logins) await this.db.prepare('UPDATE accounts SET failed_logins=0,locked_until=NULL WHERE id=?').run(row.id);
+      }
+      const token = randomBytes(32).toString('hex');
+      await this.db.prepare('INSERT INTO sessions (hash,account_id,expires) VALUES (?,?,?)').run(digest(token), row.id, Date.now() + SESSION_AGE);
+      return { token, account: this.publicAccount(row) };
+    }, { lockKey: 'email:' + email });
+    if (result instanceof AuthError) throw result;
+    return result;
   }
+
+  async requestPasswordCode(rawEmail: unknown, send: SendRecoveryCode) {
+    await this.ready;
+    const email = accountEmail(rawEmail);
+    // Do the same password-hashing work even when the address is unknown or a resend is suppressed.
+    const code = randomInt(1000000).toString().padStart(6, '0');
+    const hash = await secretHash(code);
+    await this.db.transaction(async () => {
+      const account = await this.db.prepare('SELECT id FROM accounts WHERE email=?').get(email);
+      if (!account) return;
+      const previous = await this.db.prepare('SELECT issued_at FROM password_recovery WHERE account_id=?').get(account.id);
+      const now = Date.now();
+      if (previous && previous.issued_at + CODE_RESEND_MS > now) return;
+      await this.db.prepare(`
+        INSERT INTO password_recovery (account_id,code_hash,issued_at,code_expires)
+        VALUES (?,?,?,?)
+        ON CONFLICT (account_id) DO UPDATE SET code_hash=EXCLUDED.code_hash, issued_at=EXCLUDED.issued_at,
+          code_expires=EXCLUDED.code_expires, failed_codes=0
+      `).run(account.id, hash, now, now + CODE_TTL_MS);
+      await send(email, code);
+    }, { lockKey: 'email:' + email });
+  }
+
+  async verifyPasswordCode(rawEmail: unknown, code: unknown) {
+    await this.ready;
+    const email = accountEmail(rawEmail);
+    if (typeof code !== 'string' || !/^\d{6}$/.test(code)) throw invalidCode();
+    const token = await this.db.transaction(async () => {
+      const row = await this.db.prepare(`
+        SELECT r.* FROM password_recovery r JOIN accounts a ON a.id=r.account_id WHERE a.email=?
+      `).get(email);
+      if (!row?.code_hash || row.code_expires <= Date.now() || row.failed_codes >= CODE_FAILURE_LIMIT) return;
+      if (!(await matchesSecret(code, row.code_hash))) {
+        await this.db.prepare('UPDATE password_recovery SET failed_codes=failed_codes+1 WHERE account_id=?').run(row.account_id);
+        return;
+      }
+      const grant = randomBytes(32).toString('hex');
+      await this.db.prepare('UPDATE password_recovery SET code_hash=NULL,reset_hash=?,reset_expires=? WHERE account_id=?')
+        .run(digest(grant), Date.now() + RESET_TTL_MS, row.account_id);
+      return grant;
+    }, { lockKey: 'email:' + email });
+    if (!token) throw invalidCode();
+    return token;
+  }
+
+  async resetPassword(rawEmail: unknown, token: unknown, rawPassword: unknown) {
+    await this.ready;
+    const email = accountEmail(rawEmail);
+    if (typeof token !== 'string' || !/^[a-f0-9]{64}$/.test(token)) throw invalidReset();
+    const sessions = await this.db.transaction(async () => {
+      const row = await this.db.prepare(`
+        SELECT r.account_id FROM password_recovery r JOIN accounts a ON a.id=r.account_id
+        WHERE a.email=? AND r.reset_hash=? AND r.reset_expires>?
+      `).get(email, digest(token), Date.now());
+      if (!row) throw invalidReset();
+      const password = await secretHash(newPassword(rawPassword));
+      await this.db.prepare('UPDATE accounts SET password=?,failed_logins=0,locked_until=NULL WHERE id=?').run(password, row.account_id);
+      await this.db.prepare('DELETE FROM password_recovery WHERE account_id=?').run(row.account_id);
+      return this.db.prepare('DELETE FROM sessions WHERE account_id=? RETURNING hash').all(row.account_id);
+    }, { lockKey: 'email:' + email });
+    for (const { hash } of sessions) this.events.emit('logout', hash);
+  }
+
   private async clearExpiredSessions(now: number) {
     if (this.sessionCleanup) { await this.sessionCleanup; return; }
     if (now < this.nextSessionCleanup) return;
@@ -184,8 +293,7 @@ export class AccountStore {
     if(typeof value!=='string'||value.length<8||value.length>128)throw new AuthError(401,'Подтверди действие паролем своего аккаунта.');
     const row=await this.db.prepare('SELECT password FROM accounts WHERE id=?').get(id);
     if(!row)throw new AuthError(401,'Аккаунт не найден.');
-    const[salt,expected]=String(row.password).split(':');
-    if(!timingSafeEqual(await derive(value,salt),Buffer.from(expected,'hex')))throw new AuthError(401,'Неверный пароль подтверждения.');
+    if (!(await matchesSecret(value, row.password)))throw new AuthError(401,'Неверный пароль подтверждения.');
   }
   async health() { await this.ready; await this.db.prepare('SELECT 1').get(); }
   async select(id: string, skin: unknown, rawName?: unknown, rawAppearance?: unknown) {

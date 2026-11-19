@@ -8,7 +8,7 @@ import { PostgresDatabase } from '../server/database';
 import { LobbyRoom } from '../server/LobbyRoom';
 
 async function fixture(store: AccountStore) {
-  const login = await store.login(`lease-${randomUUID()}@example.test`, 'Lease-test-password!');
+  const login = await store.login(`lease-${randomUUID()}@example.test`, 'Lease-test-password-42!');
   await store.select(login.account.id, 0);
   const auth = (await store.session(login.token))!;
   return { login, auth };
@@ -48,7 +48,7 @@ test('revoked or expired authentication cannot obtain or renew a lease', async (
     assert.equal((await store.lobbyLeases.renew([lease])).size, 0);
     assert.equal(await store.lobbyLeases.claim(auth.account.id, auth.hash, 'other-room', 'other-client'), undefined);
     await store.lobbyLeases.release([lease]);
-    const valid = await store.login(login.account.email, 'Lease-test-password!');
+    const valid = await store.login(login.account.email, 'Lease-test-password-42!');
     const active = (await store.session(valid.token))!;
     await database.prepare('UPDATE sessions SET expires=0 WHERE hash=?').run(active.hash);
     assert.equal(await store.lobbyLeases.claim(active.account.id, active.hash, 'room', 'client'), undefined);

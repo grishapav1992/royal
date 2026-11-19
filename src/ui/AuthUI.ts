@@ -26,6 +26,7 @@ export class AuthUI {
   private entrySelector = new CharacterSelector('entry');
   private settingsSelector = new CharacterSelector('settings');
   private busy = false;
+  private loginForm: ReturnType<typeof bindLoginForm>;
   private inRoom = false;
   private logoutButton = document.createElement('button');
   private renameButton = document.createElement('button');
@@ -84,10 +85,12 @@ export class AuthUI {
     this.nameDialog.querySelector('#settings-character-selection')!.append(this.settingsSelector.element);
     this.dialog.addEventListener('cancel', event => event.preventDefault());
     this.dialog.addEventListener('close', () => { scene.setLocked(false); });
-    const { password } = bindLoginForm(this.dialog, credentials => {
+    this.loginForm = bindLoginForm(this.dialog, credentials => {
       void this.perform(async () => {
-        const result = await this.api('/login', credentials);
-        password.value = ''; this.account = result.account; await this.continueEntry();
+        try { this.account = (await this.api('/login', credentials)).account; }
+        catch (error) { this.loginForm.showFailure(error); return; }
+        this.loginForm.password.value = '';
+        await this.continueEntry();
       });
     });
     this.dialog.querySelector('#join-button')!.addEventListener('click', () => { void this.perform(async () => {
@@ -142,7 +145,7 @@ export class AuthUI {
   private async perform(action: () => Promise<void>) {
     if (this.busy) return;
     const errorElement = this.nameDialog.open ? this.nameDialog.querySelector<HTMLParagraphElement>('#name-error')! : this.error;
-    this.busy = true; errorElement.hidden = true; this.renderSelection();
+    this.busy = true; delete errorElement.dataset.loginFeedback; errorElement.hidden = true; this.renderSelection();
     try { await action(); } catch (error) {
       const message = error instanceof Error ? error.message : '';
       errorElement.textContent = isUserMessage(message) ? translateMessage(message) : translateText('Не удалось подключиться. Проверь интернет или попробуй другой зал.');
@@ -153,7 +156,7 @@ export class AuthUI {
   private renderSelection() {
     this.entrySelector.setBusy(this.busy); this.settingsSelector.setBusy(this.busy);
     this.dialog.querySelector<HTMLButtonElement>('#join-button')!.disabled = this.busy;
-    this.dialog.querySelector<HTMLButtonElement>('#login-button')!.disabled = this.busy;
+    this.loginForm.setBusy(this.busy);
     this.dialog.querySelector<HTMLButtonElement>('#switch-account')!.disabled = this.busy;
     for (const id of ['retry-entry', 'connection-logout', 'new-room']) this.dialog.querySelector<HTMLButtonElement>(`#${id}`)!.disabled = this.busy;
     this.dialog.querySelector('#retry-entry')!.textContent = this.busy ? translateText('Подключаемся…') : translateText('Войти в зал');

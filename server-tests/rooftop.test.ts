@@ -118,7 +118,7 @@ test('security can reach a roof visitor and finish without crossing a parapet', 
 });
 
 test('server controls roof ascent and return, blocks busy visitors and ignores old movement packets', async context => {
-  const session = await accounts.login(`roof-${crypto.randomUUID()}@example.test`, 'Roof-test-password!');
+  const session = await accounts.login(`roof-${crypto.randomUUID()}@example.test`, 'Roof-test-password-42!');
   await accounts.select(session.account.id, 0);
   const client: any = { sessionId: 'roof-test', auth: await accounts.session(session.token), send() {}, leave() {} };
   const room = new LobbyRoom(), handlers = new Map<string, (client: any, data: unknown) => void>();

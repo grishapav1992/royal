@@ -10,7 +10,7 @@ import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
 
 if(process.env.NODE_ENV!=='test')throw new Error('The admin browser fixture requires an isolated test database');
 await accounts.ready;
-const owner=await accounts.login('owner@admin-fixture.test','fixture-admin-password'),player=await accounts.login('player@admin-fixture.test','fixture-player-password');
+const owner=await accounts.login('owner@admin-fixture.test','Fixture-admin-password-42!'),player=await accounts.login('player@admin-fixture.test','Fixture-player-password-42!');
 await accounts.rename(owner.account.id,'Владелец');await accounts.rename(player.account.id,'Мария Волкова');
 process.env.FINANCE_ADMIN_ACCOUNT_IDS=owner.account.id;
 const nile=await playTestSetup(':memory:',()=>Math.floor(Math.random()*5));

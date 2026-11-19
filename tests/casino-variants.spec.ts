@@ -9,7 +9,7 @@ import type { ExpansionSession } from '../src/shared/casinoExpansion';
 import type { DemoWallet } from '../src/shared/demoWallet';
 
 type Reply = { session: ExpansionSession; wallet: DemoWallet; sessions: ExpansionSession[]; replayed: boolean };
-const password = 'Variant-test-wallet-password!';
+const password = 'Variant-test-wallet-password-42!';
 const endpoint = '/api/demo-wallet/expansion';
 let host: Room, room = '';
 

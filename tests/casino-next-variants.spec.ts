@@ -9,7 +9,7 @@ import type { DemoWallet } from '../src/shared/demoWallet';
 type Reply = { session: ExpansionSession; wallet: DemoWallet; sessions: ExpansionSession[]; replayed: boolean };
 const games = ['variant-keno','variant-color','variant-keys','variant-fruits','variant-duel','variant-war'] as const;
 type NextGame = typeof games[number];
-const password = 'Next-variant-test-wallet-password!';
+const password = 'Next-variant-test-wallet-password-42!';
 const endpoint = '/api/demo-wallet/expansion';
 const board = '.casino-next-variants';
 let host: Room, room = '';

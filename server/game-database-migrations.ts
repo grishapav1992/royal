@@ -10,6 +10,18 @@ export const applyAccountSchemaMigrations = async (db: PostgresDatabase) => {
     id: 'game-account-appearance-v1', indexes: [],
     statements: ['ALTER TABLE accounts ADD COLUMN IF NOT EXISTS appearance JSONB'],
   });
+  await applySchemaMigration(db, {
+    id: 'game-account-recovery-v1', indexes: [],
+    statements: [
+      'ALTER TABLE accounts ADD COLUMN IF NOT EXISTS failed_logins INTEGER NOT NULL DEFAULT 0',
+      'ALTER TABLE accounts ADD COLUMN IF NOT EXISTS locked_until BIGINT',
+      `CREATE TABLE IF NOT EXISTS password_recovery (
+        account_id TEXT PRIMARY KEY REFERENCES accounts(id) ON DELETE CASCADE,
+        code_hash TEXT, issued_at BIGINT NOT NULL, code_expires BIGINT NOT NULL,
+        failed_codes INTEGER NOT NULL DEFAULT 0, reset_hash TEXT, reset_expires BIGINT
+      )`,
+    ],
+  });
 };
 
 export const applyProviderWalletSchemaMigrations = (db: PostgresDatabase) => applySchemaMigration(db, {

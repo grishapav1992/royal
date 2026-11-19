@@ -8,7 +8,7 @@ import type { DemoWallet } from '../src/shared/demoWallet';
 
 type Reply = { session: ExpansionSession; wallet: DemoWallet; sessions: ExpansionSession[]; replayed: boolean };
 type PersistentGame = 'variant-mines' | 'variant-color' | 'variant-keys';
-const password = 'Casino-fault-audit-local-password!';
+const password = 'Casino-fault-audit-local-password-42!';
 const endpoint = '/api/demo-wallet/expansion';
 const routePattern = '**/api/demo-wallet/expansion';
 const boards = '.casino-variants,.casino-next-variants';

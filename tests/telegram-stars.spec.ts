@@ -19,7 +19,7 @@ for (const width of [1440, 390]) test(`Stars checkout shows the fixed USDT amoun
   });
   await page.goto('/');
   await page.getByLabel('Почта', { exact: true }).fill(`stars-${crypto.randomUUID()}@example.test`);
-  await page.getByLabel('Пароль', { exact: true }).fill('Stars-test-password!');
+  await page.getByLabel('Пароль', { exact: true }).fill('Stars-test-password-42!');
   await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
   await expect(page.locator('#character-step')).toBeVisible();
   await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();

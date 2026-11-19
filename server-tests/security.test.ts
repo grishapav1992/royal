@@ -19,7 +19,7 @@ test('warnings and bans survive reload, are account-scoped, expire and reset aft
   const dir = mkdtempSync(join(tmpdir(),'royal-security-')), file = join(dir,'accounts.sqlite');
   let store = new AccountStore(file);
   try {
-    const {account} = await store.login('guard@example.test','test-password');
+    const {account} = await store.login('guard@example.test','Test-password-42!');
     const first = (await store.moderation.record(account.id,1000));
     assert.deepEqual(first,{kind:'warning',until:1000+SECURITY_WARNING_MS});
     (await store.close()); store = new AccountStore(file);

@@ -45,7 +45,7 @@ test('ambient guests remain visible online and agree between two visitors',async
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   await page.route('https://luelonplay.com/**',route=>route.fulfill({json:{games:[]}}));
   await page.goto(roomPath);
-  await page.getByLabel('Почта',{exact:true}).fill('explore-'+crypto.randomUUID()+'@example.test');await page.getByLabel('Пароль',{exact:true}).fill('Explore-club-password!');
+  await page.getByLabel('Почта',{exact:true}).fill('explore-'+crypto.randomUUID()+'@example.test');await page.getByLabel('Пароль',{exact:true}).fill('Explore-club-password-42!');
   await page.getByRole('button',{name:'Продолжить',exact:true}).click();await expect(page.locator('#character-step')).toBeVisible();await page.getByRole('button',{name:'Войти в зал',exact:true}).click();
   await expect(page.locator('#join-dialog')).toBeHidden({timeout:15000});await expect.poll(async()=>(await state(page)).online).toBe(true);
   await expect.poll(async()=>(await state(page)).guests.length).toBe(10);
@@ -54,7 +54,7 @@ test('ambient guests remain visible online and agree between two visitors',async
   // A second account joins the same persistent club with independent cookies.
   const otherContext=await browser.newContext(),other=await otherContext.newPage();
   await other.route('https://luelonplay.com/**',route=>route.fulfill({json:{games:[]}}));await other.goto(new URL(roomPath,page.url()).href);
-  await other.getByLabel('Почта',{exact:true}).fill('explore-other-'+crypto.randomUUID()+'@example.test');await other.getByLabel('Пароль',{exact:true}).fill('Explore-other-password!');
+  await other.getByLabel('Почта',{exact:true}).fill('explore-other-'+crypto.randomUUID()+'@example.test');await other.getByLabel('Пароль',{exact:true}).fill('Explore-other-password-42!');
   await other.getByRole('button',{name:'Продолжить',exact:true}).click();await expect(other.locator('#character-step')).toBeVisible();await other.getByRole('button',{name:'Войти в зал',exact:true}).click();
   await expect.poll(async()=>{try{return (await state(other)).online;}catch{return false;}},{timeout:20000}).toBe(true);
   await expect.poll(async()=>(await state(other)).guests.length).toBe(10);

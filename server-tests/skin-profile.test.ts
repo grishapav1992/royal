@@ -11,7 +11,7 @@ test('a selected generated skin persists and reaches active players through acco
   await accounts.ready;
   const remote = new AccountStore(accounts.schema), db = new PostgresDatabase(accounts.schema);
   await remote.ready;
-  const login = await accounts.login('skin-profile-' + randomUUID() + '@example.test', 'skin-profile-password');
+  const login = await accounts.login('skin-profile-' + randomUUID() + '@example.test', 'Skin-profile-password-42!');
   await accounts.select(login.account.id, 0);
   const auth = (await accounts.session(login.token))!;
   const room = new LobbyRoom(), client: any = { sessionId: randomUUID(), state: ClientState.JOINING, readyState: 1, auth, send() {}, leave() {} };

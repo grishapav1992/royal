@@ -23,7 +23,7 @@ test('Mira API initializes its memory in the account PostgreSQL schema and persi
   const nativeFetch = fetch;
   context.mock.method(globalThis, 'fetch', async () => output({ reply: 'Джаз запомню.', facts: ['Гость любит джаз'], impression: '', tone: 'interest', choices: [], endConversation: false }));
   const app = express(); await installMira(app);
-  const login = await accounts.login(`mira-route-${crypto.randomUUID()}@example.test`, 'Mira-test-password!');
+  const login = await accounts.login(`mira-route-${crypto.randomUUID()}@example.test`, 'Mira-test-password-42!');
   const memory = new MiraMemoryStore(accounts.schema, accounts.ready);
   const server = app.listen(0, '127.0.0.1'); await new Promise<void>(resolve => server.once('listening', resolve));
   const endpoint = `http://127.0.0.1:${(server.address() as { port: number }).port}/api/npc/mira`;

@@ -24,7 +24,7 @@ const request = (risk, amount = 10) => ({ id: randomUUID(), kind: 'play', gameId
 const report = { date: '2026-10-20', environment: 'Existing isolated local PostgreSQL test API', base, production: 'untouched', sessions: [] };
 for (const risk of ['easy', 'medium', 'hard']) {
   const api = client();
-  const login = await api.call('/api/auth/login', { email: `plinko-player-audit-${randomUUID()}@example.test`, password: 'Royal-player-audit-local-password!' });
+  const login = await api.call('/api/auth/login', { email: `plinko-player-audit-${randomUUID()}@example.test`, password: 'Royal-player-audit-local-password-42!' });
   assert.equal(login.status, 200); api.setAccount(login.data.account.id);
   const deposit = await api.call('/api/demo-wallet/operations', { id: randomUUID(), kind: 'deposit', amount: 1000 }); assert.equal(deposit.status, 200);
   let balanceUnits = 100000, last, lastResult; const counts = { profit: 0, stakeReturned: 0, partialReturnLoss: 0, totalLoss: 0 }, path = [1000];
@@ -54,7 +54,7 @@ for (const risk of ['easy', 'medium', 'hard']) {
     replay: 'same outcome, no second debit', conflictingReplayStatus: changed.status, concurrentDuplicate: 'one stake', invalidRowsStatus: invalid.status, tamperedPayoutStatus: tampered.status, mismatchedAccountStatus: otherAccount.status, finalAfterConcurrencyCoins: balanceUnits / 100 });
   console.log(JSON.stringify(report.sessions.at(-1)));
 }
-const empty = client(); const login = await empty.call('/api/auth/login', { email: `plinko-empty-${randomUUID()}@example.test`, password: 'Royal-player-audit-local-password!' });
+const empty = client(); const login = await empty.call('/api/auth/login', { email: `plinko-empty-${randomUUID()}@example.test`, password: 'Royal-player-audit-local-password-42!' });
 assert.equal(login.status, 200); empty.setAccount(login.data.account.id);
 const denied = await empty.call('/api/demo-wallet/operations', request('easy')); assert.equal(denied.status, 400);
 const snapshot = await empty.call('/api/demo-wallet'); assert.equal(snapshot.status, 200); assert.equal(snapshot.data.balance, 0); assert.equal(snapshot.data.entries.length, 0);

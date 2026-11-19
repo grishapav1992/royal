@@ -5,7 +5,7 @@ import { BATCH_VARIANT_GAMES, type BatchVariantGameId } from '../src/shared/casi
 import type { ExpansionSession } from '../src/shared/casinoExpansion';
 import { worldPoint } from './room-ui';
 
-const password = 'Casino-batch-isolated-password!';
+const password = 'Casino-batch-isolated-password-42!';
 const endpoint = '/api/demo-wallet/expansion';
 const artifactDir = process.env.ROYAL_BATCH_ARTIFACTS_DIR || 'artifacts/casino-batch-20261011';
 let host: Room, room = '';

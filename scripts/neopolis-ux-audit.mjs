@@ -12,7 +12,7 @@ const report={checkedAt:new Date().toISOString(),scope:'Isolated temporary datab
 try{
  for(const lang of ['ru','en']){
   const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
-  const login=await context.request.post(base+'/api/auth/login',{data:{email:'neopolis-zero-'+randomUUID()+'@example.test',password:randomUUID()+'!'}});assert(login.ok());
+  const login=await context.request.post(base+'/api/auth/login',{data:{email:'neopolis-zero-'+randomUUID()+'@example.test',password:'Aa1!'+randomUUID()}});assert(login.ok());
   const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(base+'/tests/fixtures/neopolis-preview.html?lang='+lang);
   const spin=page.locator('[data-np=spin]');await expect(spin).toBeVisible({timeout:30000});

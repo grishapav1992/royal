@@ -11,7 +11,7 @@ import { nileBase58, nileHex, nilePublicKeyAddress } from '../server/finance/nil
 const directory = mkdtempSync(join(tmpdir(), 'royal-mainnet-ui-')), dbFile = join(directory, 'ledger.sqlite'), socket = join(directory, 'mainnet.sock');
 process.env.AUTH_DB_PATH = join(directory, 'accounts.sqlite');
 const { accounts } = await import('../server/accounts');
-const email = 'mainnet-ui@example.test', password = 'Mainnet-ui-test-password!';
+const email = 'mainnet-ui@example.test', password = 'Mainnet-ui-test-password-42!';
 const { account } = await accounts.login(email, password);
 await accounts.close();
 const address = (n: number) => { const key = createECDH('secp256k1'); key.setPrivateKey(Buffer.from(n.toString(16).padStart(64, '0'), 'hex')); return nileBase58(nilePublicKeyAddress(key.getPublicKey('hex', 'uncompressed'))); };

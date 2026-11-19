@@ -27,11 +27,11 @@ async function players(browser:Browser,audioTrace=false){
     new MutationObserver(()=>{if(document.querySelector('[data-chant]')?.textContent==='Три!'){const score=document.querySelector('.td-score')?.textContent??'';if(!trace.visual.some(row=>row.score===score))trace.visual.push({score,at:performance.now()});}}).observe(document,{subtree:true,childList:true,characterData:true});
   });
   for(const p of[a,b]){p.on('pageerror',e=>errors.push(e.message));await p.context().route('**/*',route=>new URL(route.request().url()).hostname==='127.0.0.1'?route.continue():route.abort());}
-  const seed=await browser.newContext(),login=await seed.request.post(base+'/api/auth/login',{data:{email:`tsu-room-${crypto.randomUUID()}@example.test`,password:'test-password!'}});
+  const seed=await browser.newContext(),login=await seed.request.post(base+'/api/auth/login',{data:{email:`tsu-room-${crypto.randomUUID()}@example.test`,password:'Test-password-42!'}});
   await seed.request.post(base+'/api/auth/character',{data:{skin:0}});
   const room=await new Client(process.env.PVP_TEST_API_URL||base,{headers:{Cookie:login.headers()['set-cookie'].split(';')[0]}}).create('lobby');room.onMessage('*',()=>{});
   try{for(const[i,p]of[a,b].entries()){
-    expect((await p.context().request.post(base+'/api/auth/login',{data:{email:`pvp-local-${i?'b':'a'}@example.test`,password:'test-password!'}})).ok()).toBe(true);
+    expect((await p.context().request.post(base+'/api/auth/login',{data:{email:`pvp-local-${i?'b':'a'}@example.test`,password:'Test-password-42!'}})).ok()).toBe(true);
     await p.goto(base+'/?room='+room.roomId);await connected(p);
   }}catch(e){await Promise.all(contexts.map(c=>c.close()));throw e;}finally{await room.leave();await seed.close();}
   return{a,b,errors,close:()=>Promise.all(contexts.map(c=>c.close()))};

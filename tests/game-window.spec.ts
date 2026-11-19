@@ -107,7 +107,7 @@ test('hall opens the compact window, switches a variant and seats a card player'
 });
 test('a real saved game result stays on screen and its rules remain usable', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 });
-  const response = await page.request.post('/api/auth/login', { data: { email: `window-${crypto.randomUUID()}@example.test`, password: 'Window-layout-isolated-password!' } });
+  const response = await page.request.post('/api/auth/login', { data: { email: `window-${crypto.randomUUID()}@example.test`, password: 'Window-layout-isolated-password-42!' } });
   expect(response.ok()).toBe(true); const { account } = await response.json();
   expect((await page.request.post('/api/auth/character', { data: { skin: 0 } })).ok()).toBe(true);
   const headers = { 'X-Royal-Account-Id': account.id };

@@ -40,7 +40,7 @@ test('server authorizes direct travel, rejects stale/remote/busy commands and ke
   const sessions: { token: string; client: any; results: any[] }[] = [];
   try {
     for (let i = 0; i < 2; i++) {
-      const login = await accounts.login(`lift-${crypto.randomUUID()}@example.test`, 'Elevator-test-password!');
+      const login = await accounts.login(`lift-${crypto.randomUUID()}@example.test`, 'Elevator-test-password-42!');
       await accounts.select(login.account.id, i);
       const results: any[] = [], auth = (await accounts.session(login.token))!;
       const client: any = { sessionId: `lift-${i}`, auth, send(type: string, value: unknown) { if (type === 'elevator-result') results.push(value); }, leave() {} };

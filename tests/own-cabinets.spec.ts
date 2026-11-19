@@ -6,7 +6,7 @@ test('six upstream game cabinets open and fully custom games are absent', async 
   page.on('pageerror', error => { errors.push(error.message); console.error('Cabinet browser error:', error.message); });
   await page.goto(roomPath);
   await page.getByLabel('Почта', { exact: true }).fill(`cabinets-${crypto.randomUUID()}@example.test`);
-  await page.getByLabel('Пароль', { exact: true }).fill('Royal-cabinet-password!');
+  await page.getByLabel('Пароль', { exact: true }).fill('Royal-cabinet-password-42!');
   await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
   await expect(page.locator('#character-step')).toBeVisible();
   await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();

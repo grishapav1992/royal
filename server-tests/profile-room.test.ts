@@ -19,7 +19,7 @@ async function drained(...stores: AccountStore[]) {
   throw new Error('Account event bridge did not drain');
 }
 async function login(remote: AccountStore) {
-  const result = await accounts.login(`profile-room-${randomUUID()}@example.test`, 'profile-test-password');
+  const result = await accounts.login(`profile-room-${randomUUID()}@example.test`, 'Profile-test-password-42!');
   await accounts.select(result.account.id, 0, 'Первое имя');
   await drained(accounts, remote);
   return { ...result, auth: (await accounts.session(result.token))! };

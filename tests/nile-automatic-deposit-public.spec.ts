@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 async function login(page:Page){
   await page.goto('/');
   await page.getByLabel('Почта',{exact:true}).fill(`nile-address-check-${crypto.randomUUID()}@example.test`);
-  await page.getByLabel('Пароль',{exact:true}).fill('Nile-address-check-password!');
+  await page.getByLabel('Пароль',{exact:true}).fill('Nile-address-check-password-42!');
   const authenticated=page.waitForResponse(r=>r.url().endsWith('/api/auth/login')&&r.request().method()==='POST');
   await page.getByRole('button',{name:'Продолжить',exact:true}).click();
   expect((await authenticated).ok()).toBe(true);
@@ -34,7 +34,7 @@ test('published automatic addresses remain private and stable without a manual i
   const secondContext=await browser.newContext({baseURL:process.env.TEST_BASE_URL});
   try{
     const second=await secondContext.newPage();
-    const loggedIn=await second.request.post('/api/auth/login',{data:{email:`nile-address-owner-${crypto.randomUUID()}@example.test`,password:'Nile-address-check-password!'}});
+    const loggedIn=await second.request.post('/api/auth/login',{data:{email:`nile-address-owner-${crypto.randomUUID()}@example.test`,password:'Nile-address-check-password-42!'}});
     expect(loggedIn.status()).toBe(200);const secondId=(await loggedIn.json()).account.id as string;
     const secondHeaders={'X-Royal-Account-Id':secondId};
     const before=await second.request.get('/api/nile-play/wallet',{headers:secondHeaders});
@@ -53,7 +53,7 @@ test('an existing public test wallet explains a missing payout reserve and keeps
   test.skip(!process.env.TEST_BASE_URL||!process.env.NILE_AUTO_QA_ACCOUNT_FILE,'Provide an existing synthetic QA account to avoid allocating another address.');
   const {email}=JSON.parse(readFileSync(process.env.NILE_AUTO_QA_ACCOUNT_FILE!,'utf8'));
   expect(email).toMatch(/^nile-address-check-[a-f0-9-]+@example\.test$/);
-  const authenticated=await page.request.post('/api/auth/login',{data:{email,password:'Nile-address-check-password!'}});
+  const authenticated=await page.request.post('/api/auth/login',{data:{email,password:'Nile-address-check-password-42!'}});
   expect(authenticated.status()).toBe(200);const headers={'X-Royal-Account-Id':(await authenticated.json()).account.id as string};
   const before=await(await page.request.get('/api/nile-play/wallet',{headers})).json();
   expect(before.state).toBe('assigned');expect(before.balanceUnits).toBe('0');

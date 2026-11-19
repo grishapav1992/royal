@@ -79,7 +79,7 @@ test('connected doors preserve travel direction and both approaches are reachabl
 });
 
 test('all casino cabinets authorize play in their own hall and reject other halls',async context=>{
- const login=await accounts.login(`luelon-hall-${crypto.randomUUID()}@example.test`,'luelon-room-password');
+ const login=await accounts.login(`luelon-hall-${crypto.randomUUID()}@example.test`,'Luelon-room-password-42!');
  (await accounts.select(login.account.id,0));
  const results:any[]=[];
  const client:any={sessionId:'luelon-hall',auth:(await accounts.session(login.token))!,send(type:string,value:unknown){if(type==='cabinet-play-result')results.push(value);},leave(){}};

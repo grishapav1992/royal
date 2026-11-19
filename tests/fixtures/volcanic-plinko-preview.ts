@@ -59,7 +59,7 @@ async function connect() {
     if (result.account) { demoWallet.setAccount(result.account.id); tools.replaceChildren(); return; }
     tools.innerHTML = '<span>Локальный тестовый сервер</span><button type="button">Создать тестовый аккаунт</button>';
     tools.querySelector('button')!.onclick = async () => {
-      const response = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: `plinko-${crypto.randomUUID()}@example.test`, password: 'Royal-plinko-test-password!' }) });
+      const response = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: `plinko-${crypto.randomUUID()}@example.test`, password: 'Royal-plinko-test-password-42!' }) });
       const value = await response.json(); if (!response.ok) throw new Error(value.error);
       demoWallet.setAccount(value.account.id); await demoWallet.refresh();
       tools.innerHTML = '<span>Пополни тестовый баланс через NOWPayments Sandbox в клубе, затем обнови превью.</span><a href="/" target="_blank" rel="noopener">Открыть клуб</a>';

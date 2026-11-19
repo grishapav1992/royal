@@ -49,8 +49,8 @@ test('wallet requests stay bound to the account that created them', { timeout: 2
   const address = server.address();
   assert(address && typeof address !== 'string');
   const origin = `http://127.0.0.1:${address.port}`;
-  const alice = await accounts.login(`wallet-alice-${randomUUID()}@example.test`, 'Wallet-test-password!');
-  const bob = await accounts.login(`wallet-bob-${randomUUID()}@example.test`, 'Wallet-test-password!');
+  const alice = await accounts.login(`wallet-alice-${randomUUID()}@example.test`, 'Wallet-test-password-42!');
+  const bob = await accounts.login(`wallet-bob-${randomUUID()}@example.test`, 'Wallet-test-password-42!');
   (await accounts.wallet.operate(alice.account.id, { id: randomUUID(), kind: 'deposit', amount: 1000 }));
   (await accounts.wallet.operate(bob.account.id, { id: randomUUID(), kind: 'deposit', amount: 2000 }));
   const storage = storageFixture();

@@ -6,7 +6,7 @@ import type { ExpansionSession } from '../src/shared/casinoExpansion';
 
 const directory = 'artifacts/neon-slot-20261012';
 const endpoint = '/api/demo-wallet/expansion';
-const password = 'Royal-neon-isolated-browser-password!';
+const password = 'Royal-neon-isolated-browser-password-42!';
 const game = 'studio-neon-crown';
 type Reply = { session: ExpansionSession; wallet: { balance: number; entries: { operationId: string; kind: string }[] }; replayed: boolean };
 let host: Room;

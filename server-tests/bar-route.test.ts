@@ -7,7 +7,7 @@ import { atBar, BAR_APPROACH } from '../src/shared/world';
 import { MAX_SOBER_TIME_MS } from '../src/shared/intoxication';
 
 test('an intoxicated approach resumes after a passing guard instead of losing the route', async context => {
-  const login = await accounts.login(`bar-route-${crypto.randomUUID()}@example.test`, 'bar-route-password');
+  const login = await accounts.login(`bar-route-${crypto.randomUUID()}@example.test`, 'Bar-route-password-42!');
   (await accounts.select(login.account.id, 0));
   const client: any = { sessionId:'bar-route',auth:(await accounts.session(login.token))!,send(){},leave(){} };
   const room = new LobbyRoom(), handlers = new Map<string,any>();

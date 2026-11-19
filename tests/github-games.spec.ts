@@ -64,7 +64,7 @@ test('online first floor authorizes the relocated casino cabinets', async ({ pag
   await page.route('https://luelonplay.com/**', route => route.fulfill({ json: { games: [] } }));
   await page.goto(roomPath);
   await page.getByLabel('Почта', { exact: true }).fill(`github-room-${crypto.randomUUID()}@example.test`);
-  await page.getByLabel('Пароль', { exact: true }).fill('Github-room-password!');
+  await page.getByLabel('Пароль', { exact: true }).fill('Github-room-password-42!');
   await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
   await expect(page.locator('#character-step')).toBeVisible();
   await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();

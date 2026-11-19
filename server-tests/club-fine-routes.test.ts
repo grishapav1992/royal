@@ -39,7 +39,7 @@ async function serve(context: TestContext, options?: DemoWalletRequestLimitOptio
 }
 
 async function guest(context: TestContext, deposit = 0): Promise<Credentials> {
-  const login = await accounts.login(`club-fine-routes-${randomUUID()}@example.test`, 'Club-fine-routes-password!');
+  const login = await accounts.login(`club-fine-routes-${randomUUID()}@example.test`, 'Club-fine-routes-password-42!');
   context.after(() => accounts.logout(login.token));
   await accounts.select(login.account.id, 0);
   if (deposit > 0) await accounts.wallet.operate(login.account.id, { id: randomUUID(), kind: 'deposit', amount: deposit });

@@ -453,8 +453,8 @@ test('Flight and Wheel HTTP inherit account ownership, origin, bounded parsing a
   process.env.AUTH_DB_PATH = ':memory:';
   const { accounts } = await import('../server/accounts');
   const { installDemoWallet } = await import('../server/demoWalletRoutes');
-  const alice = await accounts.login(`flight-alice-${randomUUID()}@example.test`, 'Flight-test-password!');
-  const bob = await accounts.login(`flight-bob-${randomUUID()}@example.test`, 'Flight-test-password!');
+  const alice = await accounts.login(`flight-alice-${randomUUID()}@example.test`, 'Flight-test-password-42!');
+  const bob = await accounts.login(`flight-bob-${randomUUID()}@example.test`, 'Flight-test-password-42!');
   for (const owner of [alice, bob]) (await accounts.wallet.operate(owner.account.id, { id: randomUUID(), kind: 'deposit', amount: 1000 }));
   const app = express();
   installDemoWallet(app);

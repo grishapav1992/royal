@@ -15,7 +15,7 @@ const EXPECTED_TRIPLE_RETURNS = [5, 10, 30, 140] as const;
 async function loginAndFund(page: Page) {
   await page.goto('/');
   await page.getByLabel('Почта', { exact: true }).fill(`fruits-${crypto.randomUUID()}@example.test`);
-  await page.getByLabel('Пароль', { exact: true }).fill('Royal-fruits-password!');
+  await page.getByLabel('Пароль', { exact: true }).fill('Royal-fruits-password-42!');
   await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
   await expect(page.locator('#character-step')).toBeVisible();
   await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();

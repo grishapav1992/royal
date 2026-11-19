@@ -118,7 +118,7 @@ test('Nile funding reports player and reserve legs once, with independent attrib
 
 test('signed admin adjustment crosses payment service and reaches game credit mirror once',async()=>{
   const game=new AccountStore(':memory:'),db=new PostgresDatabase(':memory:');await game.ready;
-  const owner=await game.login('signed-owner@example.test','correct-password'),player=await game.login('signed-player@example.test','correct-password');
+  const owner=await game.login('signed-owner@example.test','Correct-password-42!'),player=await game.login('signed-player@example.test','Correct-password-42!');
   const old=process.env.FINANCE_ADMIN_ACCOUNT_IDS;process.env.FINANCE_ADMIN_ACCOUNT_IDS=owner.account.id;
   const secret='c'.repeat(64),eventSecret='d'.repeat(64),app=express();installPaymentCredits(app,game.paymentCredits,eventSecret);
   const gameServer=await listen(app);await db.exec('CREATE TABLE accounts(id TEXT PRIMARY KEY)');await db.prepare('INSERT INTO accounts VALUES(?)').run(player.account.id);
@@ -189,10 +189,10 @@ test('Nile reports both PvP participants, escrow, exact 5% fee, cancellations an
 
 test('admin API identifies only durably rejected commands, keeping password failures and conflicts ambiguous',async()=>{
   const store=new AccountStore(':memory:');await store.ready;
-  const owner=await store.login('reject-owner@example.test','correct-password'),player=await store.login('reject-player@example.test','correct-password');
+  const owner=await store.login('reject-owner@example.test','Correct-password-42!'),player=await store.login('reject-player@example.test','Correct-password-42!');
   let attempts=0;store.cryptoWallet.admin=async()=>{attempts++;throw new CryptoError(400,'Недостаточно свободного резерва.');};
   const app=express();installFinanceAdmin(app,store,{FINANCE_ADMIN_ACCOUNT_IDS:owner.account.id});const server=await listen(app);
-  const op={id:randomUUID(),source:'payments',action:'adjust',playerId:player.account.id,deltaUnits:'1000000',reason:'Проверка отказа резерва',password:'correct-password'};
+  const op={id:randomUUID(),source:'payments',action:'adjust',playerId:player.account.id,deltaUnits:'1000000',reason:'Проверка отказа резерва',password:'Correct-password-42!'};
   const call=(body:unknown)=>fetch(server.url+'/api/admin/actions',{method:'POST',headers:{Cookie:'royal_session='+owner.token,'Content-Type':'application/json',Origin:'http://localhost:5173','x-royal-admin-account':owner.account.id},body:JSON.stringify(body)});
   try{
     let response=await call(op);assert.equal(response.status,400);assert.equal((await response.json()).rejectedCommandId,op.id);
@@ -229,7 +229,7 @@ test('all native paid games and atelier purchases are read only from their Nile 
 
 test('admin API requires owner, current account header, same origin and password; controls and audit are durable',async()=>{
   const store=new AccountStore(':memory:');await store.ready;
-  const owner=await store.login('owner@example.test','correct-password'),other=await store.login('other@example.test','correct-password');
+  const owner=await store.login('owner@example.test','Correct-password-42!'),other=await store.login('other@example.test','Correct-password-42!');
   const app=express();installFinanceAdmin(app,store,{FINANCE_ADMIN_ACCOUNT_IDS:owner.account.id});
   app.post('/api/nile-play/rounds',(_req,res)=>res.json({ok:true}));const server=await listen(app);
   const call=(path:string,body?:unknown,token=owner.token,headers:Record<string,string>={})=>fetch(server.url+'/api/admin/'+path,{method:body===undefined?'GET':'POST',
@@ -239,12 +239,12 @@ test('admin API requires owner, current account header, same origin and password
     assert.equal((await call('session',undefined,'')).status,401);assert.equal((await call('search',{query:'other'},owner.token,{'x-royal-admin-account':other.account.id})).status,403);
     assert.equal((await call('search',{query:'other'},owner.token,{Origin:'https://evil.example'})).status,403);
     const op={id:randomUUID(),source:'nile',action:'block',playerId:other.account.id,reason:'Проверка денежных операций',password:'wrong-password'};
-    assert.equal((await call('actions',op)).status,401);op.password='correct-password';
+    assert.equal((await call('actions',op)).status,401);op.password='Correct-password-42!';
     assert.equal((await call('actions',op)).status,200);assert.equal((await call('actions',op)).status,200);
     assert.equal((await store.financeAdmin.player(other.account.id))!.blocked,true);
     const response=await fetch(server.url+'/api/nile-play/rounds',{method:'POST',headers:{Cookie:'royal_session='+other.token}});assert.equal(response.status,403);
     for(const path of ['/api/nile-play/ROUNDS','/api/nile-play/rounds/'])assert.equal((await fetch(server.url+path,{method:'POST',headers:{Cookie:'royal_session='+other.token}})).status,403);
-    const history=await(await call('audit',{page:1,playerId:other.account.id})).json();assert.equal(history.count,2);assert(!JSON.stringify(history).includes('correct-password'));
+    const history=await(await call('audit',{page:1,playerId:other.account.id})).json();assert.equal(history.count,2);assert(!JSON.stringify(history).includes('Correct-password-42!'));
     await assert.rejects(()=>store.financeAdmin.db.exec('DELETE FROM finance_admin_audit'),/immutable/);
     assert.equal((await call('actions',{...op,id:randomUUID(),action:'unblock'})).status,200);
     assert.equal((await store.financeAdmin.player(other.account.id))!.blocked,false);

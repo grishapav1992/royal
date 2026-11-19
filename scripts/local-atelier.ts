@@ -73,7 +73,12 @@ for (let i = 0; i < 60; i++) {
   if (i === 59) { await stop(); throw new Error('Local game did not start'); }
   await new Promise(done => setTimeout(done, 500));
 }
-const login = await fetch('http://127.0.0.1:2587/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: 'tailor@atelier.local', password: 'AtelierLocal2026' }) });
+const loginTailor = (password: string) => fetch('http://127.0.0.1:2587/api/auth/login', {
+  method: 'POST', headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email: 'tailor@atelier.local', password }),
+});
+let login = await loginTailor('AtelierLocal2026!');
+if (login.status === 401) login = await loginTailor('AtelierLocal2026');
 if (!login.ok) { await stop(); throw new Error('Local test account could not be created'); }
 const { account } = await login.json() as { account: { id: string; skin: number | null } };
 if (account.skin === null) await fetch('http://127.0.0.1:2587/api/auth/character', { method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: login.headers.get('set-cookie')!.split(';')[0] }, body: JSON.stringify({ skin: 0, name: 'Гость ателье' }) });

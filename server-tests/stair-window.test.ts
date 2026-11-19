@@ -142,7 +142,7 @@ test('side input never reverses a chosen climb or descent after passing the balc
 });
 
 test('manual window admission verifies height, revision and busy state, then preserves progress and identity',async context=>{
-  const session=await accounts.login(`stair-window-${crypto.randomUUID()}@example.test`,'Stair-window-test-password!');await accounts.select(session.account.id,0);
+  const session=await accounts.login(`stair-window-${crypto.randomUUID()}@example.test`,'Stair-window-test-password-42!');await accounts.select(session.account.id,0);
   const client:any={sessionId:'stair-window-test',auth:await accounts.session(session.token),send(){},leave(){}};
   const room=new LobbyRoom(),handlers=new Map<string,(client:any,data:unknown)=>void>();
   context.mock.method(room,'onMessage',(name:string,callback:any)=>{handlers.set(name,callback);});
