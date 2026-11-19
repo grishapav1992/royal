@@ -235,3 +235,43 @@ test('a failed session check offers retry before asking for credentials', async 
   await connected(page);
   await expect(page.locator('.entry-login #login-form')).toHaveCount(0);
 });
+
+test('entry previews can pause and resume, and reduced motion keeps the stills', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const clips = page.locator('.entry-preview-motion');
+  await expect(clips).toHaveCount(2);
+  const clipStates = () => clips.evaluateAll(elements => elements.map(element => {
+    const video = element as HTMLVideoElement;
+    return { paused: video.paused, time: video.currentTime, source: video.getAttribute('src') };
+  }));
+  expect(await clipStates()).toEqual([
+    { paused: true, time: 0, source: null },
+    { paused: true, time: 0, source: null },
+  ]);
+
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await expect.poll(async () => (await clipStates()).every(clip => !clip.paused && clip.time > 0)).toBe(true);
+  await page.getByRole('button', { name: 'Приостановить анимацию' }).click();
+  await expect.poll(async () => (await clipStates()).every(clip => clip.paused)).toBe(true);
+  await page.getByRole('button', { name: 'Включить анимацию' }).click();
+  await expect.poll(async () => (await clipStates()).every(clip => !clip.paused)).toBe(true);
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(page.getByRole('button', { name: 'Приостановить анимацию' })).toHaveCount(0);
+  await expect.poll(async () => (await clipStates()).every(clip => clip.paused)).toBe(true);
+  await selectEntryMode(page, 'casino');
+  await expect(page.locator('#login-form')).toBeVisible();
+});
+
+test('mobile entry only loads a clip when its card is in view', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 480 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/');
+  const casino = page.locator('.entry-casino video');
+  const club = page.locator('.entry-club video');
+  await expect.poll(() => casino.evaluate(clip => (clip as HTMLVideoElement).currentTime)).toBeGreaterThan(0);
+  expect(await club.getAttribute('src')).toBeNull();
+  await club.scrollIntoViewIfNeeded();
+  await expect.poll(() => club.evaluate(clip => (clip as HTMLVideoElement).currentTime)).toBeGreaterThan(0);
+});

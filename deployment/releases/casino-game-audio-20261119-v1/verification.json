@@ -1,0 +1,200 @@
+{
+  "release": "casino-game-audio-20261119-v1",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "ebc69ad843fb28559cb150c4e689e4a483f227fb",
+  "productionBaseCommit": "f98493253d78169e4eec8b559fdc3606f75ddde5",
+  "githubMainAtVerification": "e4a035db495c1741370f77eb17147b94ae111785",
+  "releaseManifestSha256": "f8274fa0d178c33652e0730cd78a15ed1bb68872734c666eb7597ce2c0cc440b",
+  "publishedHost": {
+    "published": true,
+    "preparedImage": "sha256:11695c77704445b8b434b6b011d361f044d5e766c819203632acc945439f192d",
+    "runningImage": "sha256:11695c77704445b8b434b6b011d361f044d5e766c819203632acc945439f192d",
+    "containerRestarted": true,
+    "sourceCommit": "ebc69ad843fb28559cb150c4e689e4a483f227fb",
+    "changedSources": 5,
+    "clientDeltaFiles": 9,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 0,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 10
+  },
+  "hostProjection": {
+    "verifiedInputs": 312,
+    "sources": {
+      "src/game/CasinoAudio.ts": "9ec83656b2a3cea7fa3a07539b375524761992fe9bab2517d193f4dfce5ec5fb",
+      "src/game/CatAudio.ts": "1ce5b38ed27d2d73817b38b113e6bd1100406afcdc4a9539ee7795e9d3575025",
+      "src/game/GameAudio.ts": "e371a239694d66dbe97b953c6c8ca394e71728b28e5aefc1f5ec875f5e949f18",
+      "src/game/PianoAudio.ts": "62ba5c5449f1452772fe827b864fff687522667a57100e8058784188ef08cae0",
+      "src/main.ts": "8e8f92fa50a2b8472b0fee75ca5ef42dfdd941c6bcc508dc3ebfa4bb6f80d423"
+    }
+  },
+  "rollback": {
+    "sourceBytes": 19524,
+    "sourceSha256": "38be102ebe60787faa50fc1895737d0e7cb977e527224d25d023932e4ad1b0e6",
+    "image": "sha256:4a1233a6cb52908a696d25ab23606643536498992261e56bef66a33a9f8a4362",
+    "programFiles": 8724,
+    "retainedModuleFiles": 5511,
+    "backendSha256": "347b10a5191da839142cafb6459d14e607190a32af3a97107f73cd392de3807f",
+    "financialBackup": {
+      "path": "/opt/royal-backups/casino-game-audio-20261119-v1/financial.dump",
+      "sha256": "2de2489c31561ccf36e1b093b8957790a04a237d0d054b57f64c700f301dd438",
+      "bytes": 48214851,
+      "databaseRestored": false
+    }
+  },
+  "verification": {
+    "rtp": {
+      "profiles": 38,
+      "stakePolicies": 20,
+      "stakeAdmissions": 20
+    },
+    "audioTestsPassed": 27,
+    "walletTests": {
+      "command": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts",
+      "passed": 19
+    },
+    "installerTestsPassed": 20,
+    "candidateBrowser": {
+      "preparedHost": true,
+      "productionBackendSha256": "347b10a5191da839142cafb6459d14e607190a32af3a97107f73cd392de3807f",
+      "temporaryPostgreSQL": true,
+      "sameOperationOnRecovery": true,
+      "oneDebitCents": 10,
+      "mobileEmulation": "Chrome touch",
+      "scenarios": [
+        {
+          "mode": "local",
+          "surface": "desktop",
+          "game": "studio-cosmic-escape",
+          "version": "1.1.1-54c413b92117",
+          "catalogue": 19,
+          "roomGainInGame": 0,
+          "roomGainAfterExit": 1,
+          "gameMusic": true,
+          "connectedChat": true,
+          "lostReplyRecovery": true,
+          "javascriptErrors": 0
+        },
+        {
+          "mode": "local",
+          "surface": "mobile",
+          "game": "studio-cosmic-escape",
+          "version": "1.1.1-54c413b92117",
+          "catalogue": 19,
+          "roomGainInGame": 0,
+          "roomGainAfterExit": 1,
+          "gameMusic": true,
+          "connectedChat": true,
+          "lostReplyRecovery": true,
+          "javascriptErrors": 0
+        }
+      ]
+    },
+    "publicBrowser": {
+      "scenarios": [
+        {
+          "mode": "public",
+          "surface": "desktop",
+          "game": "studio-cosmic-escape",
+          "version": "1.1.1-54c413b92117",
+          "catalogue": 19,
+          "roomGainInGame": 0,
+          "roomGainAfterExit": 1,
+          "gameMusic": true,
+          "connectedChat": false,
+          "lostReplyRecovery": false,
+          "javascriptErrors": 0
+        },
+        {
+          "mode": "public",
+          "surface": "mobile",
+          "game": "studio-cosmic-escape",
+          "version": "1.1.1-54c413b92117",
+          "catalogue": 19,
+          "roomGainInGame": 0,
+          "roomGainAfterExit": 1,
+          "gameMusic": true,
+          "connectedChat": false,
+          "lostReplyRecovery": false,
+          "javascriptErrors": 0
+        }
+      ],
+      "productionAccountOrPaidRoundCreated": false
+    },
+    "publicBytes": {
+      "health": true,
+      "client": {
+        "assets/ActivitiesUI-C-qIKjZ-.js": "150be986d0d24de4cbf4eef23998bf5c53d653bd24d416f3b8fefb5ae7e015ef",
+        "assets/ClubWorld-DM7fNEOM.js": "c7e88b17753ff3608b7b5986e3d78be36f2aa8f02c81cbd7fc3da84615f1e7ff",
+        "assets/GameHostRuntime-BLAXKjtY.js": "aa2482cfca7c9ea839e637a689a850b61a386c01dec158ec6f8b4c9e5b186977",
+        "assets/index-C60k0jVj.js": "4aa89aa315f9ae7e9bff18a4381af50aa852ea5ffcefde0fb13f1f7f500e534b",
+        "assets/main-BnsF6cBD.js": "8b92735fc8aa18ced9f0b336097f6c2f99e948faa28614acf0879fb19ad1dc41",
+        "assets/phaser-BRKMJArr.js": "cc6dba6e87eb304744f7011ccb4e994504a4d7c8c05a162fd178b599b0883d4f",
+        "assets/playerLevelStatus-KzoAhqsk.js": "948c53d7feec7e84d80efc5a0d988f643b87f848e2ef194b2e0470c8003033e0",
+        "assets/PvpUI-BqGcVZKD.js": "90d4a6a4dbd6b747c88b0f05cbe2be40a745251e9828a0f3ec2e0096ec8279bb",
+        "index.html": "fc500f7e26a09c626c47b73d73471b551de271b75111c6ea21ea98fe861ebe6d"
+      },
+      "modulePointers": {
+        "/game-modules/flag-battle/active.json": "2dbf07d4069cbaa5a790d79e278a4698a70bae9c150998151f5a5632fbd12f33",
+        "/game-modules/github-crash/active.json": "deef44e1e5d1a3ae7610f3a846067fef3549216ebcab1a556dd08affb5a8858e",
+        "/game-modules/original-cr-vs-leo/active.json": "7c8c0df5a2d8d94c17a0d018fb0b7e30f8f854c7e4032ad3e4fd180e5116fcc3",
+        "/game-modules/original-jackie-chan/active.json": "ca36ab41e1f8b0dfffe070688dcdc0eec38c7135cafd710a918824019d450b95",
+        "/game-modules/royal-plinko/active.json": "726bab895825baeb53f0b3b3119ed7af7ae249eae2682d281c7fb62b59f42558",
+        "/game-modules/royal-roulette/active.json": "fb49365877d997d59454df7a5f28742b51f5afe9f751aaa86126661222f1a651",
+        "/game-modules/studio-afterglow/active.json": "48d928e8147918acdd69422c30c0bac1dc3d906ab3e0efdb967bb332d79a808f",
+        "/game-modules/studio-caramel-carnival/active.json": "af4d06609e324e50f45b5f4b5bef3003052f2f53a55cacbfbc37ec7eb402b302",
+        "/game-modules/studio-caribbean-treasures/active.json": "cc502ab15de4752e6d632062d29073adc4a3110dca076f7b17042fa130fa6d85",
+        "/game-modules/studio-cosmic-escape/active.json": "de8d31f4dc33f849b40f4d641db93c800524dbdb0b870559f438129d444b24e5",
+        "/game-modules/studio-dracona/active.json": "c10e0d66ac72313bb9e3c5b36e00c12093bbc891dab1eec462b070bb39baeca0",
+        "/game-modules/studio-flooded-temple/active.json": "272e43214f4c4f2911033118819ee970d0f2a43a38a8611f4862e311d0a49fe5",
+        "/game-modules/studio-forest-heart/active.json": "241693e84688d259e4116fada2384987ee53b8cce65e08efc5a066592bd29462",
+        "/game-modules/studio-last-convoy/active.json": "409a4ddce39a09fc463a1072676171249f60a299153e7fd3ea7a7127d184d311",
+        "/game-modules/studio-meme-overload/active.json": "35e183b47cd02dde634043691b015f777aef38e670ce17ca054928b1209b99ba",
+        "/game-modules/studio-neopolis/active.json": "b4922363b9af39c9196de85fa02c06f59ca8a11fea928732a32864ea0714e358",
+        "/game-modules/studio-nitro-run/active.json": "2f1db276d4e4fc80b04d7ca208c55ea8e0d6d67905eeeae1158e8e1de1b1a45e",
+        "/game-modules/studio-velvet-reign/active.json": "4244f7830c393796d3276131412f37259ec6b697a3e3a5bd31e630b69b3da866",
+        "/game-modules/studio-wild-nudge/active.json": "45f58382424e564dc0aae819214ddd91ce8d9e0a7083c49e960947417d54ec2c"
+      },
+      "activeGames": [
+        "flag-battle",
+        "github-crash",
+        "original-cr-vs-leo",
+        "original-jackie-chan",
+        "royal-plinko",
+        "royal-roulette",
+        "studio-afterglow",
+        "studio-caramel-carnival",
+        "studio-caribbean-treasures",
+        "studio-cosmic-escape",
+        "studio-dracona",
+        "studio-flooded-temple",
+        "studio-forest-heart",
+        "studio-last-convoy",
+        "studio-meme-overload",
+        "studio-neopolis",
+        "studio-nitro-run",
+        "studio-velvet-reign",
+        "studio-wild-nudge"
+      ]
+    },
+    "addedGames": [],
+    "restoredGames": [],
+    "backendAndModuleContractsVerifiedUnchanged": true
+  },
+  "maintenance": {
+    "status": "completed",
+    "finishedAt": "2026-11-19T15:41:57.722Z",
+    "timerEnabled": true,
+    "timerActive": true,
+    "healthOk": true,
+    "freeBefore": 12118102016,
+    "freeAfter": 12147097600
+  },
+  "transport": {
+    "bytes": 2282321,
+    "sha256": "8c524f5ea8c7a2fc17b5bba7285e221cfefa142a8a67ea647051bdb9aeee8600",
+    "serverArchiveRemoved": true
+  }
+}
