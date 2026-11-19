@@ -8,6 +8,7 @@ export class NitroRunLayout {
  }
  private resize() {
   const {width,height} = this.root.getBoundingClientRect();
+  this.root.dataset.compact = String(height < 570);
   this.root.dataset.slotPriority = width > height && height < 500 ? 'landscape'
    : width >= 780 && height >= 500 ? 'full' : 'portrait';
  }

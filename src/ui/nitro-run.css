@@ -200,6 +200,13 @@
 .nr-game[data-slot-priority='portrait'] .cc-tools { grid-column:1; grid-row:2; width:44px; justify-self:end; }
 .nr-game[data-slot-priority='portrait'] .cc-auto-controls { grid-column:1; grid-row:2; width:calc(100% - 50px); }
 .nr-game[data-slot-priority='portrait'] .cc-wallet-help,.nr-game[data-slot-priority='portrait'] .cc-feedback { bottom:142px; left:10px; right:10px; }
+.nr-game[data-slot-priority='portrait'][data-compact='true'] { grid-template-rows:44px minmax(0,1fr) 42px 114px; padding-bottom:6px; }
+.nr-game[data-slot-priority='portrait'][data-compact='true'] .nr-heading h2 { font-size:26px; }
+.nr-game[data-slot-priority='portrait'][data-compact='true'] .nr-wordmark small,.nr-game[data-slot-priority='portrait'][data-compact='true'] .nr-track-label { display:none; }
+.nr-game[data-slot-priority='portrait'][data-compact='true'] .nr-results { height:42px; gap:1px; }
+.nr-game[data-slot-priority='portrait'][data-compact='true'] .nr-controls { height:114px; grid-template-rows:52px 44px; gap:4px 8px; padding-block:6px; }
+.nr-game[data-slot-priority='portrait'][data-compact='true'] .nr-stage-caption { display:none; }
+.nr-game[data-slot-priority='portrait'][data-compact='true'] .nr-scene { gap:8px; }
 /* Short displays put the console beside the field, preserving a usable 44px action. */
 .nr-game[data-slot-priority='landscape'] { grid-template-columns:minmax(0,1fr) 182px; grid-template-rows:30px minmax(0,1fr) 32px; grid-template-areas:'heading controls' 'scene controls' 'results controls'; padding:8px 10px; gap:0 16px; }
 .nr-game[data-slot-priority='landscape'] .nr-heading { padding:0; }
@@ -249,6 +256,16 @@
 .nr-game[data-slot-priority='landscape'] .nr-start>span { font-size:13px; }
 .nr-game[data-slot-priority='landscape'] .nr-start>small { font-size:6px; }
 .nr-game[data-slot-priority='landscape'] .cc-feedback,.nr-game[data-slot-priority='landscape'] .cc-wallet-help { bottom:8px; left:10px; right:208px; }
+.nr-game[data-slot-priority='landscape'] .cc-dialog-backdrop { padding:8px; }
+.nr-game[data-slot-priority='landscape'] .cc-dialog { padding:12px; max-height:calc(100cqh - 16px); }
+.nr-game[data-slot-priority='landscape'] .cc-dialog h2 { font-size:23px; line-height:27px; margin:4px 0; }
+.nr-game[data-slot-priority='landscape'] .cc-dialog>small { font-size:8px; }
+.nr-game[data-slot-priority='landscape'] .cc-dialog>p { font-size:11px; line-height:15px; margin:4px 0; }
+.nr-game[data-slot-priority='landscape'] .cc-bonus-art { height:58px; margin:4px auto; gap:8px; }
+.nr-game[data-slot-priority='landscape'] .cc-bonus-art>.cc-symbol { width:58px; height:58px; }
+.nr-game[data-slot-priority='landscape'] .cc-bonus-art>strong { font-size:30px; }
+.nr-game[data-slot-priority='landscape'] .cc-bonus-art small { font-size:7px; line-height:11px; }
+.nr-game .cc-dialog:is([data-dialog='bonus'],[data-dialog='complete']) .cc-primary { position:sticky; bottom:0; z-index:12; min-height:44px; margin-block:6px 0; }
 /* Very short panes trade decorative labels for the confirmed field. */
 @container nitro-cabinet (height < 290px) {
  .nr-game[data-slot-priority='landscape'] .nr-gear-card { padding-block:5px; }

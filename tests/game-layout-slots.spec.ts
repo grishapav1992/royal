@@ -170,7 +170,7 @@ test('Nitro Run keeps its field and instruments stable with connected chat',asyn
    }
   });
  }
- await writeFile(out+'/nitro-run-layout.json',JSON.stringify({connectedHost:true,rows:report},null,2));
+ await writeFile(out+'/nitro-run-layout.json',JSON.stringify({connectedHost:true,moduleVersion:await page.locator('#mini-game').getAttribute('data-game-module-version'),rows:report},null,2));
 });
 
 test('Caramel Carnival keeps the reel frame still as feedback and festival state change',async({page,roomPath})=>{
