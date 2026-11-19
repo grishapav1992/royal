@@ -1,4 +1,5 @@
 import {canRecoverOperation} from './operationFeedback';
+import {validStakeDraft} from './stakeSelection';
 import {confirmedPayout} from '../shared/roundPrecision';
 import {GAME_STAKE_UNITS as NITRO_BETS} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
@@ -27,6 +28,7 @@ type Session=NativeSlotSession<'nitro'>;
 type Dialog=''|'intro'|'info'|'history'|'bonus'|'complete';
 type Live=SlotOperation&{operationId:string;balance:number;motion:boolean;fast:boolean;before?:Session};
 const preview=Array.from({length:30},(_,i)=>(i+2*Math.floor(i/6))%6);
+const AUTO_COUNTS=[10,25,50] as const;
 
 /** Presentation consumes confirmed frames. Reopening and retries remain static. */
 export class NitroRunUI {
@@ -35,9 +37,10 @@ export class NitroRunUI {
  private root:HTMLElement;private dialogShell!:SlotDialog;private stakeControls!:SlotStakeControls;private soundControls!:SlotAudioControls;private board:NitroBoard;private audio=new NitroRunAudio();private assets:NitroRunAssets;
  private owner=client.accountId;private destroyed=false;private entered=false;private stake = '10';private fast=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');private manualReduced=false;
  private dialog:Dialog='intro';private shown='';private lastWin='0';private error='';private live?:Live;private playback=new SlotPlayback({account:()=>client.accountId,hidden:()=>document.hidden});private sessions=new SlotSessions(nitroSlot);private autoRemaining=0;private bonusRunning=false;private unsubscribe=()=>{};
+ private autoCount=10;
  private change=()=>this.sync();private visibility=()=>{if(document.hidden){this.cancel();this.audio.pause();}this.sync();};private motionChanged=()=>{this.cancel();this.sync();};
   private keyboard=(event:KeyboardEvent)=>{
-    if(!slotOwnsKeyboard(this.root,event)||this.dialogShell.keyboard(event,this.dialog))return;
+    if(!slotOwnsKeyboard(this.root,event)||this.autoPanel().open||this.dialogShell.keyboard(event,this.dialog))return;
     if(event.code==='Space'&&this.entered&&!['INPUT','SELECT','BUTTON','TEXTAREA'].includes((event.target as HTMLElement)?.tagName)){event.preventDefault();void this.play();}
   };
  constructor(private host:HTMLElement){
@@ -57,7 +60,7 @@ export class NitroRunUI {
  private valid(live:Live){return !this.destroyed&&this.playback.current(live,this.live);}
  private delay(ms:number,live:Live){return this.playback.delay(ms,()=>this.valid(live));}
  private stopAuto(){this.autoRemaining=0;this.bonusRunning=false;this.playback.cancelScheduled();}
- private cancel(){this.playback.cancel();this.stopAuto();this.live=undefined;this.board.cancel();this.audio.stopSpin();this.shown='';this.root.dataset.phase='idle';this.root.dataset.charging='false';resetGameOutcomes(this.root);}
+ private cancel(){this.closeAuto(false);this.playback.cancel();this.stopAuto();this.live=undefined;this.board.cancel();this.audio.stopSpin();this.shown='';this.root.dataset.phase='idle';this.root.dataset.charging='false';resetGameOutcomes(this.root);}
  private assetState(state:NitroAssetState){
   if(this.destroyed)return;
   this.root.dataset.assetState=state.status;
@@ -79,16 +82,76 @@ export class NitroRunUI {
    <div class="cc-stage nr-stage"><div class="cc-stage-heading"><span><i class="nr-live-dot" aria-hidden="true"></i><span data-cc-phase-title>ОСНОВНАЯ ИГРА</span></span><b>6 × 5 <i>/</i> 20 ЛИНИЙ</b></div><div class="cc-board-frame"><div class="cc-board" data-cc-board role="group" aria-label="Шесть барабанов, пять рядов"></div></div><div class="nr-stage-caption" aria-hidden="true"><span>STREET CIRCUIT</span><i></i><span>NIGHT SESSION / 01</span></div></div>
   </div>
   <div class="nr-console"><div class="cc-results nr-results"><div class="nr-race-message"><span class="nr-result-marker" aria-hidden="true">↗</span><p data-cc-message>Нажми «Старт», чтобы выйти на ночную трассу</p></div><div class="nr-round-total"><span>ВЫИГРЫШ РАУНДА <strong data-cc-total data-units="0">0,00</strong></span><div class="cc-groups" data-cc-groups></div></div></div>
-  <div class="cc-controls nr-controls"><div class="cc-balance"><small>БАЛАНС <span>USDT</span></small><strong data-cc-balance>0,00</strong></div><div class="cc-last" hidden><strong data-cc-last>0,00</strong></div><div class="cc-stake"><label for="nr-stake">СТАВКА <span>USDT</span></label><div><button type="button" data-cc-stake-step="-1" aria-label="Уменьшить ставку">−</button><select id="nr-stake" data-cc-stake aria-label="Ставка">${NITRO_BETS.map(n=>`<option value="${n}">${coins(n)}</option>`).join('')}</select><button type="button" data-cc-stake-step="1" aria-label="Увеличить ставку">+</button></div><small data-cc-cost>За ход: 0,10</small></div><button type="button" class="cc-spin nr-start" data-cc-spin aria-label="Начать заезд"><b aria-hidden="true">↗</b><span data-cc-spin-label>СТАРТ</span><small aria-hidden="true">START ENGINE</small></button><div class="cc-auto-controls"><button type="button" data-cc-auto aria-pressed="false">Авто</button><button type="button" data-cc-pause disabled hidden>На паузе</button></div><div class="cc-tools"></div></div>
+  <div class="cc-controls nr-controls"><div class="cc-balance"><small>БАЛАНС <span>USDT</span></small><strong data-cc-balance>0,00</strong></div><div class="cc-last" hidden><strong data-cc-last>0,00</strong></div><div class="cc-stake"><label for="nr-stake">СТАВКА <span>USDT</span></label><div><button type="button" data-cc-stake-step="-1" aria-label="Уменьшить ставку">−</button><select id="nr-stake" data-cc-stake aria-label="Ставка">${NITRO_BETS.map(n=>`<option value="${n}">${coins(n)}</option>`).join('')}</select><button type="button" data-cc-stake-step="1" aria-label="Увеличить ставку">+</button></div><small data-cc-cost>За ход: 0,10</small></div><button type="button" class="cc-spin nr-start" data-cc-spin aria-label="Начать заезд"><b aria-hidden="true">↗</b><span data-cc-spin-label>СТАРТ</span><small aria-hidden="true">START ENGINE</small></button><div class="cc-auto-controls"><button type="button" data-cc-auto aria-haspopup="dialog" aria-controls="nr-auto-panel" aria-expanded="false" aria-pressed="false">Авто</button><button type="button" data-cc-pause disabled hidden>На паузе</button></div><div class="cc-tools"></div></div>
   <div class="cc-wallet-help" data-cc-wallet-help><span data-cc-wallet-note></span><a href="/" data-cc-login>Войти в клуб для тестовой игры</a><button type="button" data-cc-wallet>Открыть тестовый кошелёк</button></div><div class="cc-feedback" data-cc-feedback><p data-cc-status role="status"></p><p data-cc-error role="alert"></p><button type="button" data-cc-retry hidden>Проверить прежний ход</button></div>
-  </div></div><footer class="cc-footer"><div class="nr-options"><button type="button" data-cc-speed aria-pressed="false">ОБЫЧНО ×1</button><label>Автоигра<select data-cc-auto-count aria-label="Число платных автовращений"><option>10</option><option>25</option><option>50</option></select></label><button type="button" data-cc-info aria-label="Правила игры">Правила игры</button><button type="button" data-cc-history aria-label="История игры">История игры</button><button type="button" data-cc-music aria-label="Выключить музыку">Музыка</button><button type="button" data-cc-sound aria-label="Выключить звук">Звуки</button><button type="button" class="cc-buy" data-cc-buy>Бонусная гонка ⓘ</button></div><label>Громкость <input type="range" min="0" max="100" data-cc-volume aria-label="Громкость игры"></label><label><input type="checkbox" data-nr-reduce> Показ без анимаций</label><span>Собственная игра Royal · виртуальные USDT</span><button type="button" data-cc-refresh>Проверить состояние</button></footer><div class="cc-dialog-backdrop" data-cc-backdrop><div class="cc-dialog" data-cc-dialog role="dialog" aria-modal="true" aria-labelledby="cc-dialog-title"></div></div></section>`;}
+  </div></div><footer class="cc-footer"><div class="nr-options"><button type="button" data-cc-speed aria-pressed="false">ОБЫЧНО ×1</button><button type="button" data-cc-info aria-label="Правила игры">Правила игры</button><button type="button" data-cc-history aria-label="История игры">История игры</button><button type="button" data-cc-music aria-label="Выключить музыку">Музыка</button><button type="button" data-cc-sound aria-label="Выключить звук">Звуки</button><button type="button" class="cc-buy" data-cc-buy>Бонусная гонка ⓘ</button></div><label>Громкость <input type="range" min="0" max="100" data-cc-volume aria-label="Громкость игры"></label><label><input type="checkbox" data-nr-reduce> Показ без анимаций</label><span>Собственная игра Royal · виртуальные USDT</span><button type="button" data-cc-refresh>Проверить состояние</button></footer>${this.autoMarkup()}<div class="cc-dialog-backdrop" data-cc-backdrop><div class="cc-dialog" data-cc-dialog role="dialog" aria-modal="true" aria-labelledby="cc-dialog-title"></div></div></section>`;}
+ private autoMarkup(){return tr`<dialog class="nr-auto-panel" id="nr-auto-panel" data-nr-auto-panel aria-labelledby="nr-auto-title" aria-describedby="nr-auto-note">
+  <header><div><small>NITRO RUN</small><h2 id="nr-auto-title">Автоигра</h2></div><button type="button" data-nr-auto-close aria-label="Закрыть автоигру">×</button></header>
+  <div class="nr-auto-counts" role="radiogroup" aria-label="Число платных автовращений">${AUTO_COUNTS.map(count=>`<button type="button" role="radio" data-nr-auto-count="${count}" aria-checked="${count===this.autoCount}" tabindex="${count===this.autoCount?0:-1}">${count}</button>`).join('')}</div>
+  <p class="nr-auto-count-label">Платных вращений</p><select data-cc-auto-count hidden aria-hidden="true" tabindex="-1">${AUTO_COUNTS.map(count=>`<option>${count}</option>`).join('')}</select>
+  <div class="nr-auto-stake"><span>Ставка за вращение</span><strong><span data-nr-auto-stake></span> USDT</strong></div>
+  <div class="nr-auto-total" aria-live="polite" aria-atomic="true"><span>Сумма ставок за серию</span><strong><span data-nr-auto-total></span> <small>USDT</small></strong></div>
+  <p id="nr-auto-note">Ставка списывается перед каждым вращением. При бонусе или нехватке баланса серия остановится.</p>
+  <p class="nr-auto-error" data-nr-auto-error role="status"></p>
+  <div class="nr-auto-actions"><button type="button" class="nr-auto-start" data-nr-auto-start></button><button type="button" data-nr-auto-close>Отмена</button></div>
+ </dialog>`;}
+ private autoPanel(){return this.find<HTMLDialogElement>('[data-nr-auto-panel]');}
+ private bindAuto(){
+  const panel=this.autoPanel();
+  panel.onclick=event=>{
+   const target=event.target as HTMLElement,choice=target.closest<HTMLButtonElement>('[data-nr-auto-count]');
+   if(choice&&!choice.disabled){this.autoCount=Number(choice.dataset.nrAutoCount);this.controls();return;}
+   if(target.closest('[data-nr-auto-close]')){this.closeAuto();return;}
+   if(target.closest('[data-nr-auto-start]')){this.startAuto();return;}
+   if(target===panel){const r=panel.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)this.closeAuto();}
+  };
+  panel.oncancel=event=>{event.preventDefault();event.stopPropagation();this.closeAuto();};
+  panel.onclose=()=>{this.find('[data-cc-auto]').setAttribute('aria-expanded','false');this.controls();};
+  panel.onkeydown=event=>{
+   event.stopPropagation();
+   const chip=(event.target as HTMLElement).closest<HTMLButtonElement>('[data-nr-auto-count]');
+   const step=event.key==='ArrowRight'||event.key==='ArrowDown'?1:event.key==='ArrowLeft'||event.key==='ArrowUp'?-1:0;
+   if(chip&&step&&!chip.disabled){event.preventDefault();const at=AUTO_COUNTS.findIndex(count=>count===this.autoCount);this.autoCount=AUTO_COUNTS[(at+step+AUTO_COUNTS.length)%AUTO_COUNTS.length];this.controls();this.find<HTMLButtonElement>(`[data-nr-auto-count="${this.autoCount}"]`).focus();}
+   if(event.key!=='Tab')return;
+   const items=Array.from(panel.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')).filter(item=>item.tabIndex>=0),first=items[0],last=items.at(-1);
+   if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}
+  };
+ }
+ private autoControls(){
+  const open=this.autoPanel().open,locked=this.blocked()||!!this.dialog||!this.entered||this.session()?.state==='active'||this.autoRemaining>0;
+  this.find('[data-cc-auto]').setAttribute('aria-expanded',String(open));
+  this.find<HTMLSelectElement>('[data-cc-auto-count]').value=String(this.autoCount);
+  for(const button of Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-nr-auto-count]'))){const checked=Number(button.dataset.nrAutoCount)===this.autoCount;button.setAttribute('aria-checked',String(checked));button.tabIndex=checked?0:-1;button.disabled=locked;}
+  this.find('[data-nr-auto-stake]').textContent=coins(this.stake);
+  this.find('[data-nr-auto-total]').textContent=coins(String(BigInt(this.stake)*BigInt(this.autoCount)));
+  this.find('[data-nr-auto-start]').textContent=tr`Запустить ${this.autoCount} вращений`;
+  const insufficient=this.balance()<Number(this.stake)/100;
+  this.find<HTMLButtonElement>('[data-nr-auto-start]').disabled=locked||insufficient;
+  this.find('[data-nr-auto-error]').textContent=insufficient?translateText('Недостаточно USDT · Демо для выбранной ставки.'):'';
+ }
+ private openAuto(){
+  if(this.autoPanel().open||this.blocked()||this.dialog||!this.entered||this.session()?.state==='active'||!validStakeDraft(this.root,true))return;
+  this.settings?.close();this.autoPanel().showModal();this.controls();
+  this.find<HTMLButtonElement>(`[data-nr-auto-count="${this.autoCount}"]`).focus();
+ }
+ private closeAuto(focus=true){
+  if(!this.autoPanel().open)return;this.autoPanel().close();this.controls();
+  if(focus&&!this.destroyed)this.find<HTMLButtonElement>('[data-cc-auto]').focus({preventScroll:true});
+ }
+ private startAuto(){
+  if(!this.autoPanel().open||this.blocked()||this.dialog||!this.entered||this.session()?.state==='active'||!AUTO_COUNTS.some(count=>count===this.autoCount))return;
+  if(this.balance()<Number(this.stake)/100){this.controls();return;}
+  this.closeAuto(false);if(!validStakeDraft(this.root,true))return;
+  this.autoRemaining=this.autoCount;void this.request('normal');
+  this.find<HTMLButtonElement>('[data-cc-auto]').focus({preventScroll:true});
+ }
  private bind(){
     this.dialogShell=new SlotDialog(this.find('[data-cc-dialog]'),this.find('[data-cc-backdrop]'),'data-cc-action',action=>void this.dialogAction(action),()=>this.closeDialog());
     this.stakeControls=new SlotStakeControls({
       values:NITRO_BETS,select:this.find<HTMLSelectElement>('[data-cc-stake]'),
       steps:Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-cc-stake-step]')),
       direction:button=>Number(button.getAttribute('data-cc-stake-step')),current:()=>this.stake,
-      locked:()=>this.blocked()||this.session()?.state==='active'||this.autoRemaining>0||!!this.dialog,
+      locked:()=>this.blocked()||this.session()?.state==='active'||this.autoRemaining>0||!!this.dialog||this.autoPanel().open,
       changed:stake=>{this.stake=stake;this.controls();},
     });
     this.soundControls=new SlotAudioControls({
@@ -96,9 +159,10 @@ export class NitroRunUI {
       volume:this.find<HTMLInputElement>('[data-cc-volume]'),audio:this.audio,entered:()=>this.entered,dynamicGlyph:false,
     });
 
+  this.bindAuto();
   this.find<HTMLButtonElement>('[data-cc-load-retry]').onclick=()=>void this.assets.load();this.find<HTMLButtonElement>('[data-cc-spin]').onclick=()=>void this.play();
   this.find<HTMLButtonElement>('[data-cc-buy]').onclick=()=>{this.stopAuto();this.openDialog('info');};this.find<HTMLButtonElement>('[data-cc-pause]').onclick=()=>{this.bonusRunning=false;this.playback.cancelScheduled();this.controls();};
-  this.find<HTMLButtonElement>('[data-cc-speed]').onclick=()=>{this.fast=!this.fast;this.controls();};this.find<HTMLButtonElement>('[data-cc-auto]').onclick=()=>{if(this.autoRemaining){this.stopAuto();this.controls();}else if(!this.blocked()&&!this.dialog&&this.entered&&this.session()?.state!=='active'){this.autoRemaining=Number(this.find<HTMLSelectElement>('[data-cc-auto-count]').value);void this.request('normal');}};
+  this.find<HTMLButtonElement>('[data-cc-speed]').onclick=()=>{this.fast=!this.fast;this.controls();};this.find<HTMLButtonElement>('[data-cc-auto]').onclick=()=>{if(this.autoRemaining){this.stopAuto();this.controls();}else this.openAuto();};
   this.find<HTMLButtonElement>('[data-cc-info]').onclick=()=>{this.stopAuto();this.openDialog('info');};this.find<HTMLButtonElement>('[data-cc-history]').onclick=()=>{this.stopAuto();this.openDialog('history');};
   this.find<HTMLButtonElement>('[data-cc-retry]').onclick=()=>void this.retry();this.find<HTMLButtonElement>('[data-cc-refresh]').onclick=()=>void this.refresh();this.find<HTMLButtonElement>('[data-cc-wallet]').onclick=()=>{this.stopAuto();window.dispatchEvent(new Event('royal-open-wallet'));};
   this.find<HTMLInputElement>('[data-nr-reduce]').onchange=e=>{this.manualReduced=(e.target as HTMLInputElement).checked;try{localStorage.setItem('royal-nitro-reduced',this.manualReduced?'1':'0');}catch{}this.cancel();this.sync();};
@@ -107,14 +171,14 @@ export class NitroRunUI {
   if(this.destroyed)return;const s=this.session(),active=s?.state==='active',blocked=this.blocked();if(active)this.stake=s.stakeUnits;
   this.find<HTMLInputElement>('[data-nr-reduce]').checked=this.manualReduced;this.find<HTMLInputElement>('[data-nr-reduce]').disabled=!!this.live||client.busy||!!client.pending;this.root.dataset.reducedMotion=String(!this.motion());this.root.dataset.autoRemaining=String(this.autoRemaining);this.root.dataset.remaining=String(s?.view.nitro.bonus?.remaining??0);this.root.setAttribute('aria-busy',String(!this.assets.ready||!!this.live||client.busy));
   this.find('[data-cc-balance]').textContent=coins((this.live?.balance??this.balance())*100);this.find('[data-cc-last]').textContent=coins(this.lastWin);
-  this.find<HTMLButtonElement>('[data-cc-spin]').disabled=blocked||!this.entered||!!this.dialog;this.find('[data-cc-spin-label]').textContent=this.live?translateText('ЗАЕЗД'):active?translateText('ПРОДОЛЖИТЬ'):translateText('СТАРТ');
+  this.find<HTMLButtonElement>('[data-cc-spin]').disabled=blocked||!this.entered||!!this.dialog||this.autoPanel().open;this.find('[data-cc-spin-label]').textContent=this.live?translateText('ЗАЕЗД'):active?translateText('ПРОДОЛЖИТЬ'):translateText('СТАРТ');
      this.stakeControls.update();
 this.find('[data-cc-cost]').textContent=active?translateText('Продолжение бесплатно'):tr`За ход: ${coins(this.stake)}`;this.find<HTMLButtonElement>('[data-cc-buy]').disabled=blocked||active||!!this.dialog||this.autoRemaining>0||!this.entered;
-     updateSlotTransport(this.root,'cc',{blocked,active,live:!!this.live,dialog:!!this.dialog,entered:this.entered,fast:this.fast,autoRemaining:this.autoRemaining,bonusRunning:this.bonusRunning,paidBonus:false,pending:!!client.pending,busy:client.busy,loading:client.loading,hidden:document.hidden,ready:this.assets.ready});
+     updateSlotTransport(this.root,'cc',{blocked,active,live:!!this.live,dialog:!!this.dialog||this.autoPanel().open,entered:this.entered,fast:this.fast,autoRemaining:this.autoRemaining,bonusRunning:this.bonusRunning,paidBonus:false,pending:!!client.pending,busy:client.busy,loading:client.loading,hidden:document.hidden,ready:this.assets.ready});
    this.find('[data-cc-error]').textContent=this.error||client.error;this.find('[data-cc-feedback]').dataset.error=String(!!(this.error||client.error));
 this.find('[data-cc-status]').textContent=client.loading?translateText('Проверяем сохранённую гонку…'):this.live?'':canRecoverOperation(client)?translateText('Ход сохранён. Подтверди прежнюю операцию.'):this.autoRemaining?tr`Платных вращений осталось: ${this.autoRemaining}`:active?this.bonusRunning?translateText('Гонка продолжается бесплатно.'):translateText('Гонка на паузе. Нажми «Продолжить».'):'';
   this.find('[data-cc-wallet-help]').hidden=!!client.accountId&&(active||this.balance()>=Number(this.stake)/100);this.find('[data-cc-wallet-note]').textContent=client.accountId?translateText('Недостаточно USDT · Демо для ставки.'):translateText('Для игры нужен общий баланс USDT.');this.find('[data-cc-login]').hidden=!!client.accountId;this.find('[data-cc-wallet]').hidden=!client.accountId;
-   this.soundControls?.update();
+   this.autoControls();this.soundControls?.update();
   const enter=this.root.querySelector<HTMLButtonElement>('[data-cc-action="enter"]');if(enter){enter.disabled=!this.assets.ready;enter.textContent=active?translateText('ПРОДОЛЖИТЬ ГОНКУ'):translateText('ВЫЙТИ НА СТАРТ');}
  }
  private sync(){
@@ -133,9 +197,9 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
  private charge(value:number,used:boolean){this.root.dataset.nitroCharge=String(value);this.find('[data-nr-charge]').textContent=used?translateText('НИТРО ИСПОЛЬЗОВАНО'):tr`НИТРО ${value} / 2`;this.find('[data-nr-nitro-help]').textContent=used?translateText('Один рывок за вращение'):value===2?translateText('Рывок сработает при остановке серии'):translateText('Баллоны собираются при выигрыше');}
  private features(view?:NitroView){const bonus=view?.bonus,active=!!bonus?.remaining,spin=view?.spin,frame=spin?.frames.at(-1);this.factor(spin?.multiplierAfter??1);this.charge(frame?.nitroAfter??0,frame?.nitroUsedAfter??false);this.tickets(spin?.flags??0,spin?.kind==='free');this.find('[data-cc-phase-title]').textContent=active?tr`БОНУСНАЯ ГОНКА · ${bonus!.played} / ${bonus!.awarded}`:translateText('ОСНОВНАЯ ИГРА');this.find('[data-cc-free]').textContent=active?tr`${bonus!.remaining} бесплатных вращений`:translateText('Бесплатная гонка');this.find('[data-cc-factor-note]').textContent=active?translateText('Каждое бесплатное вращение начинает с ×2'):translateText('Новое вращение начинает с ×1');}
 
- private async play(){if(this.blocked()||!this.entered||this.dialog)return;this.bonusRunning=this.session()?.state==='active';await this.request('normal');}
+ private async play(){if(this.blocked()||!this.entered||this.dialog||this.autoPanel().open)return;this.bonusRunning=this.session()?.state==='active';await this.request('normal');}
  private async request(mode:'normal'){
-  if(this.blocked()||!this.entered||this.dialog)return;const previous=this.session(),active=previous?.state==='active',cost=active?0:Number(this.stake)/100;
+  if(this.blocked()||!this.entered||this.dialog||this.autoPanel().open)return;const previous=this.session(),active=previous?.state==='active',cost=active?0:Number(this.stake)/100;
   if(this.balance()<cost){this.error=translateText('Недостаточно USDT · Демо для выбранной ставки.');this.stopAuto();this.controls();return;}
   void this.audio.enter();const live:Live={...this.playback.capture(client.accountId!),operationId:'',balance:this.balance(),motion:this.motion(),fast:this.fast,before:previous};this.live=live;this.error='';this.root.dataset.animationToken=live.token;this.find('[data-cc-groups]').replaceChildren();this.board.highlight([]);observeExpansionOutcome(this.root,NITRO_GAME,previous,client.accountId,true,true);
   if(!active&&this.autoRemaining)this.autoRemaining--;
@@ -184,7 +248,7 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
  private async retry(){if(this.destroyed||!this.assets.ready||this.live||client.busy||!client.pending||document.hidden)return;this.stopAuto();this.error='';resetGameOutcomes(this.root);try{await client.retry();}catch(e){this.error=(e as Error).message;}if(!this.destroyed){this.shown='';this.sync();}}
  private async refresh(){if(this.destroyed||!this.assets.ready||this.live||client.busy||client.loading)return;this.stopAuto();this.error='';resetGameOutcomes(this.root);await client.refresh();if(!this.destroyed){this.shown='';this.sync();}}
  private ledger(session:Session){return renderSlotLedger('cc',session.spentUnits,session.state==='active'?session.view.nitro.totalPayoutUnits:session.returnedUnits,session.state==='active');}
- private openDialog(kind:Dialog){this.settings?.close();
+ private openDialog(kind:Dialog){this.closeAuto(false);this.settings?.close();
   this.dialog=kind;this.dialogShell.begin(kind);if(!kind)return;const box=this.find('[data-cc-dialog]'),s=this.session(),v=s?.view.nitro;
   if(kind==='intro')box.innerHTML=tr`<small>ПОЛНОЧЬ. МОКРЫЙ АСФАЛЬТ. ПОЛНЫЙ БАК.</small><h2 id="cc-dialog-title">NITRO <em>RUN</em></h2><div class="cc-intro-cards"><article><div>${nitroSymbol(4)}${nitroSymbol(5)}</div><h3>20 ЛИНИЙ И КАСКАДЫ</h3><p>Три символа слева дают выигрыш. WILD помогает. Выигрышные символы падают каскадом.</p></article><article><div>${nitroSymbol(8)}<strong>×5</strong></div><h3>РАЗГОН И НИТРО</h3><p>Каждый выигрыш повышает следующую передачу. Два баллона на выигрышных полях дают один бесплатный рывок.</p></article><article><div>${nitroSymbol(7)}</div><h3>БОНУСНАЯ ГОНКА</h3><p>3 / 4 / 5+ флагов в конце дают 8 / 10 / 12 вращений. Каждое начинает со второй передачи.</p></article></div><button type="button" class="cc-primary" data-cc-action="enter">ВЫЙТИ НА СТАРТ</button><p class="cc-dialog-note">Виртуальные USDT · вход без ставки</p>`;
   if(kind==='bonus')box.innerHTML=tr`<small>ФИНИШНЫЕ ФЛАГИ СОБРАНЫ</small><h2 id="cc-dialog-title">БОНУСНАЯ ГОНКА</h2><div class="cc-bonus-art">${nitroSymbol(7)}<strong>${v?.bonus?.remaining??8}<small>БЕСПЛАТНЫХ ВРАЩЕНИЙ</small></strong>${nitroSymbol(8)}</div><p>Каждое вращение начинает со второй передачи ×2. Три флага на конечном поле добавляют ещё два вращения, максимум 20 за весь раунд. Нитро заряжается заново в каждом вращении.</p><button type="button" class="cc-primary" data-cc-action="bonus">НАЧАТЬ ГОНКУ</button><p class="cc-dialog-note">Продолжение бесплатно. Ставка уже принята.</p>`;

@@ -211,6 +211,41 @@ test('Nitro Run keeps its field and instruments stable with connected chat',asyn
  await writeFile(out+'/nitro-run-layout.json',JSON.stringify({connectedHost:true,moduleVersion:await page.locator('#mini-game').getAttribute('data-game-module-version'),rows:report},null,2));
 });
 
+test('Nitro Run previews autoplay costs without placing a bet',async({page,roomPath})=>{
+ await mkdir(out,{recursive:true});await enterGameHall(page,roomPath);await open(page,'studio-nitro-run');
+ const panel=page.locator('[data-nr-auto-panel]'),auto=page.locator('[data-cc-auto]'),stake=page.locator('#mini-game [data-manual-stake]');
+ const before=await walletSnapshot(page);let paidRequests=0;
+ page.on('request',request=>{if(request.method()==='POST'&&request.url().endsWith('/api/demo-wallet/expansion'))paidRequests++;});
+ await auto.click();await expect(panel).toBeVisible();await expect(panel.locator('[data-nr-auto-count="10"]')).toBeFocused();
+ await expect(panel.locator('[data-nr-auto-stake]')).toHaveText('0,10');await expect(panel.locator('[data-nr-auto-total]')).toHaveText('1,00');
+ await page.keyboard.press('ArrowRight');await expect(panel.locator('[data-nr-auto-count="25"]')).toBeFocused();
+ await expect(panel.locator('[data-nr-auto-total]')).toHaveText('2,50');
+ await panel.locator('[data-nr-auto-count="50"]').click();await expect(panel.locator('[data-nr-auto-total]')).toHaveText('5,00');
+ await page.keyboard.press('Escape');await expect(panel).toBeHidden();await expect(auto).toBeFocused();
+ await stake.fill('1,23');await auto.click();await expect(panel.locator('[data-nr-auto-total]')).toHaveText('61,50');
+ await panel.locator('[data-nr-auto-count="25"]').click();await expect(panel.locator('[data-nr-auto-total]')).toHaveText('30,75');
+ for(const [width,height]of sizes){
+  await page.setViewportSize({width,height});
+  await expect(panel.locator('[data-nr-auto-start]')).toBeInViewport({ratio:1});
+  await expect(panel.locator('[data-nr-auto-close]').last()).toBeInViewport({ratio:1});
+  const geometry=await panel.evaluate(dialog=>{
+   const r=dialog.getBoundingClientRect();return{left:r.left,right:r.right,top:r.top,bottom:r.bottom,viewport:[innerWidth,innerHeight],scroll:dialog.scrollHeight-dialog.clientHeight};
+  });
+  expect(geometry.left).toBeGreaterThanOrEqual(0);expect(geometry.right).toBeLessThanOrEqual(width);
+  expect(geometry.top).toBeGreaterThanOrEqual(0);expect(geometry.bottom).toBeLessThanOrEqual(height);
+  expect(geometry.scroll,'autoplay choices, cost and actions fit together').toBeLessThanOrEqual(1);
+  if(width===1440||width===393)await page.screenshot({path:out+`/nitro-run-auto-${width}x${height}.png`});
+ }
+ const cancel=panel.locator('[data-nr-auto-close]').last();await cancel.focus();await page.keyboard.press('Tab');
+ await expect(panel.locator('[data-nr-auto-close]').first()).toBeFocused();await page.keyboard.press('Shift+Tab');await expect(cancel).toBeFocused();
+ await cancel.click();await expect(panel).toBeHidden();await expect(auto).toBeFocused();
+ await stake.fill('50,00');await auto.click();await panel.locator('[data-nr-auto-count="50"]').click();
+ await expect(panel.locator('[data-nr-auto-total]')).toHaveText(/2\s500,00/);await panel.locator('[data-nr-auto-close]').first().click();
+ await stake.fill('0,09');await auto.click();await expect(panel).toBeHidden();
+ expect(paidRequests).toBe(0);expect((await walletSnapshot(page)).entries).toEqual(before.entries);
+ await stake.fill('0,10');
+});
+
 test('Caramel Carnival keeps the reel frame still as feedback and festival state change',async({page,roomPath})=>{
  await enterGameHall(page,roomPath);
  await open(page,'studio-caramel-carnival');
@@ -382,11 +417,11 @@ for(const id of games)test('settings, Stop and one accepted ten-cent round: '+id
  await page.locator('.slot-settings-button').click();
  if(process.env.LAYOUT_DEBUG==='1')console.log(await page.locator('.slot-secondary-controls').evaluate(root=>[root,...root.children,...root.querySelectorAll('.ce-sidebar>*')].map(e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return{node:e.className,display:s.display,flexDirection:s.flexDirection,contain:s.contain,columns:s.gridTemplateColumns,rows:s.gridTemplateRows,area:s.gridArea,position:s.position,height:r.height,width:r.width,left:r.left,top:r.top};})));
  // The redesigned Cosmic Escape and Caramel Carnival keep speed and autoplay on the cabinet: a speed control and an autoplay panel.
- const cosmic=id==='studio-cosmic-escape'||id==='studio-caramel-carnival',caramel=id==='studio-caramel-carnival';
+ const cosmic=id==='studio-cosmic-escape'||id==='studio-caramel-carnival',caramel=id==='studio-caramel-carnival',nitro=id==='studio-nitro-run';
  const cabinet=caramel?{fast:'[data-cc-speed-option="fast"]',cycle:'[data-cc-speed-cycle]',panel:'[data-cc-auto-panel]',count:'[data-cc-auto-count="25"]',start:'[data-cc-auto-start]',purchase:'[data-cc-buy]'}
   :{fast:'[data-cx-speed="fast"]',cycle:'[data-cx-speed-cycle]',panel:'[data-cx-auto-panel]',count:'[data-cx-auto-count="25"]',start:'[data-cx-auto-start]',purchase:'[data-cosmic-missions]'};
  const fastSpeed=()=>cosmic?expect(page.locator('#mini-game '+cabinet.fast)).toHaveAttribute('aria-checked','true'):expect(page.locator(`[data-${p}-speed]`)).toHaveAttribute('aria-pressed','true');
- if(!cosmic){await page.locator(`[data-${p}-auto-count]`).selectOption('25');await page.locator(`[data-${p}-speed]`).click();}
+ if(!cosmic){if(!nitro)await page.locator(`[data-${p}-auto-count]`).selectOption('25');await page.locator(`[data-${p}-speed]`).click();}
  expect(errors).toEqual([]);
  if(!cosmic)await fastSpeed();
  if(id==='studio-velvet-reign'||id==='studio-afterglow')await page.screenshot({path:out+'/'+id+'-options.png'});
@@ -394,12 +429,13 @@ for(const id of games)test('settings, Stop and one accepted ten-cent round: '+id
  if(cosmic){await page.locator('#mini-game '+cabinet.cycle).click();await fastSpeed();}
  await fit(page,id);await page.setViewportSize({width:1440,height:900});await fit(page,id);
  await fastSpeed();
- if(!cosmic)await expect(page.locator(`[data-${p}-auto-count]`)).toHaveValue('25');await page.setViewportSize({width:393,height:852});
+ if(!cosmic&&!nitro)await expect(page.locator(`[data-${p}-auto-count]`)).toHaveValue('25');await page.setViewportSize({width:393,height:852});
  await page.locator('.slot-settings-button').click();await fastSpeed();await page.keyboard.press('Escape');
  let release!:()=>void;const gate=new Promise<void>(r=>release=r);let request:any;
  await page.route('**/api/demo-wallet/expansion',async route=>{if(route.request().method()==='POST'){request=route.request().postDataJSON();await gate;}await route.continue();});
  const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');
  await page.locator(`[data-${p}-auto]`).click();
+ if(nitro){const panel=page.locator('[data-nr-auto-panel]');await expect(panel).toBeVisible();await panel.locator('[data-nr-auto-count="25"]').click();expect(request).toBeUndefined();await expect(panel.locator('[data-nr-auto-total]')).toHaveText('2,50');await panel.locator('[data-nr-auto-start]').click();await expect(panel).toBeHidden();}
  if(cosmic){const panel=page.locator('#mini-game '+cabinet.panel);await expect(panel).toBeVisible();await panel.locator(cabinet.count).click();await panel.locator(cabinet.start).click();await expect(panel).toBeHidden();}
  await expect.poll(()=>!!request).toBe(true);expect(request.stakeUnits).toBe('10');
  await expect(page.locator(`[data-${p}-auto]`)).toContainText('Стоп');await page.setViewportSize({width:852,height:393});await fit(page,id);
