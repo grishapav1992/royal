@@ -1,0 +1,42 @@
+{
+  "host": [
+    "src/i18n/entryModesEn.ts",
+    "src/network/AccountClient.ts",
+    "src/ui/AuthUI.ts",
+    "src/ui/EntryLogin.ts",
+    "src/ui/LoginForm.ts",
+    "src/ui/PasswordRecovery.ts",
+    "src/ui/password-recovery.css"
+  ],
+  "backend": [
+    "server/accounts.ts",
+    "server/authRoutes.ts",
+    "server/game-database-migrations.ts"
+  ],
+  "retainedBackendInputs": {
+    "src/i18n/en.ts": "8f3990b31f85037221688e4d906d41225ad5649a62f5c98834ce55bbec6e65c7",
+    "src/i18n/progressionEn.ts": "66c68ac05b3b362c4ef1dae60afaeb1c484d6ada0887adefd9954a4de12c1ba4"
+  },
+  "oldBackendDigest": "347b10a5191da839142cafb6459d14e607190a32af3a97107f73cd392de3807f",
+  "activeGames": [
+    "flag-battle",
+    "github-crash",
+    "original-cr-vs-leo",
+    "original-jackie-chan",
+    "royal-plinko",
+    "royal-roulette",
+    "studio-afterglow",
+    "studio-caramel-carnival",
+    "studio-caribbean-treasures",
+    "studio-cosmic-escape",
+    "studio-dracona",
+    "studio-flooded-temple",
+    "studio-forest-heart",
+    "studio-last-convoy",
+    "studio-meme-overload",
+    "studio-neopolis",
+    "studio-nitro-run",
+    "studio-velvet-reign",
+    "studio-wild-nudge"
+  ]
+}
