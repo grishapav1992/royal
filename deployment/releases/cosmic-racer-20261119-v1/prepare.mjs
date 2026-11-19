@@ -20,7 +20,7 @@ const sourceNames = [
     [cue + '.webp', cue + '-still.webp'].map(name => 'public/assets/' + racer + name)),
 ];
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
-const git = args => execFileSync(process.env.ROYAL_GIT_BINARY || 'git', args, {cwd: root});
+const git = args => execFileSync(process.env.ROYAL_GIT_BINARY || 'git', args, {cwd: root, maxBuffer: 32 * 1024 * 1024});
 const load = path => readFile(path).then(JSON.parse);
 const put = async (name, bytes) => {
   const file = resolve(destination, name);
