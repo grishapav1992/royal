@@ -1,17 +1,17 @@
 {
-  "checkedAt": "2026-11-19T15:31:44.447Z",
-  "sourceCommit": "9a50f51e",
-  "moduleVersion": "1.2.0-cb57048d2e6e",
-  "moduleSourceSha256": "cb57048d2e6ecd627acbd1abd22392ed1663d0f81830630e8be5b8413f25575a",
-  "verifiedSourceFiles": 41,
-  "moduleBytes": 2606747,
+  "checkedAt": "2026-11-19T16:05:01.969Z",
+  "sourceCommit": "aefa72ff0aef897e26393f7e8cf0d695d6d116fa",
+  "moduleVersion": "1.2.1-8636ac5becb0",
+  "moduleSourceSha256": "8636ac5becb0f2b940f60b862d9eb50a9e2092e10af12672339a5c2a86c1c3e8",
+  "verifiedSourceFiles": 42,
+  "moduleBytes": 2616184,
   "typecheck": "passed",
   "moduleBuildWithRtpGate": "passed",
   "chromiumConnectedHost": {
     "passed": 4,
     "failed": 0,
     "flaky": 0,
-    "durationMs": 80274.586,
+    "durationMs": 89718.432,
     "sizes": [
       [
         1440,
@@ -45,9 +45,17 @@
         568,
         320
       ]
-    ]
+    ],
+    "mobileChatOverlay": "passed"
   },
   "sharedWalletCrossModuleRecovery": "passed",
+  "composition": {
+    "previousDesktopFrameWidth": 639.59375,
+    "desktopFrameWidth": 773.59375,
+    "desktopFrameHeight": 646.984375,
+    "hudToFieldGap": 12,
+    "frameWidthGrowthPercent": 20.95079884692432
+  },
   "mathAndServerRulesChanged": false,
   "productionPublished": false,
   "physicalDevicesAndListeningTested": false
