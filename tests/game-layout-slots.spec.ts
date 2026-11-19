@@ -303,7 +303,11 @@ for(const id of games)test('settings, Stop and one accepted ten-cent round: '+id
  const cabinet=caramel?{fast:'[data-cc-speed-option="fast"]',cycle:'[data-cc-speed-cycle]',panel:'[data-cc-auto-panel]',count:'[data-cc-auto-count="25"]',start:'[data-cc-auto-start]',purchase:'[data-cc-buy]'}
   :{fast:'[data-cx-speed="fast"]',cycle:'[data-cx-speed-cycle]',panel:'[data-cx-auto-panel]',count:'[data-cx-auto-count="25"]',start:'[data-cx-auto-start]',purchase:'[data-cosmic-missions]'};
  const fastSpeed=()=>cosmic?expect(page.locator('#mini-game '+cabinet.fast)).toHaveAttribute('aria-checked','true'):expect(page.locator(`[data-${p}-speed]`)).toHaveAttribute('aria-pressed','true');
- if(!cosmic){await page.locator(`[data-${p}-auto-count]`).selectOption('25');await page.locator(`[data-${p}-speed]`).click();}
+ const convoy=id==='studio-last-convoy';
+ if(!cosmic){
+  if(!convoy)await page.locator(`[data-${p}-auto-count]`).selectOption('25');
+  await page.locator(`[data-${p}-speed]`).click();
+ }
  expect(errors).toEqual([]);
  if(!cosmic)await fastSpeed();
  if(id==='studio-velvet-reign'||id==='studio-afterglow')await page.screenshot({path:out+'/'+id+'-options.png'});
@@ -311,13 +315,19 @@ for(const id of games)test('settings, Stop and one accepted ten-cent round: '+id
  if(cosmic){await page.locator('#mini-game '+cabinet.cycle).click();await fastSpeed();}
  await fit(page,id);await page.setViewportSize({width:1440,height:900});await fit(page,id);
  await fastSpeed();
- if(!cosmic)await expect(page.locator(`[data-${p}-auto-count]`)).toHaveValue('25');await page.setViewportSize({width:393,height:852});
+ if(!cosmic&&!convoy)await expect(page.locator(`[data-${p}-auto-count]`)).toHaveValue('25');await page.setViewportSize({width:393,height:852});
  await page.locator('.slot-settings-button').click();await fastSpeed();await page.keyboard.press('Escape');
  let release!:()=>void;const gate=new Promise<void>(r=>release=r);let request:any;
  await page.route('**/api/demo-wallet/expansion',async route=>{if(route.request().method()==='POST'){request=route.request().postDataJSON();await gate;}await route.continue();});
  const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');
  await page.locator(`[data-${p}-auto]`).click();
  if(cosmic){const panel=page.locator('#mini-game '+cabinet.panel);await expect(panel).toBeVisible();await panel.locator(cabinet.count).click();await panel.locator(cabinet.start).click();await expect(panel).toBeHidden();}
+ if(convoy){
+  const panel=page.getByRole('dialog',{name:'Автоигра'});
+  await expect(panel.getByRole('radio',{name:'25'})).toBeChecked();
+  await panel.getByRole('button',{name:'Запустить 25 вращений'}).click();
+  await expect(panel).toBeHidden();
+ }
  await expect.poll(()=>!!request).toBe(true);expect(request.stakeUnits).toBe('10');
  await expect(page.locator(`[data-${p}-auto]`)).toContainText('Стоп');await page.setViewportSize({width:852,height:393});await fit(page,id);
  await page.locator(`[data-${p}-auto]`).click();release();const paid=await response;expect(paid.ok(),await paid.text()).toBe(true);
@@ -391,5 +401,154 @@ test('natural bonuses keep counters and free continuation visible in both orient
    await page.screenshot({path:out+'/'+id+'-bonus-landscape.png'});await finish(page,id);
    expect((await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(debits);
   });
+ }
+});
+
+test('Last Convoy scales the field, Maya and controls at 2K and 4K',async({page,roomPath})=>{
+ const game='studio-last-convoy';
+ await enterGameHall(page,roomPath);
+ await open(page,game);
+ const root=page.locator('#mini-game > .cv-game');
+ const chat=page.locator('#club-chat-dock');
+ const toggle=page.locator('#mini-dialog .game-chat-toggle');
+ if(!await chat.isVisible())await toggle.click();
+ await expect(chat.locator('#chat-input')).toBeVisible();
+ const measure=async()=>root.evaluate(e=>{
+  const board=e.querySelector('[data-cc-board]')!.getBoundingClientRect();
+  const character=e.querySelector('.cv-portrait')!.getBoundingClientRect();
+  const spin=e.querySelector('[data-cc-spin]')!.getBoundingClientRect();
+  return {width:board.width,height:board.height,character:character.height,spin:spin.height,
+   type:parseFloat(getComputedStyle(e.querySelector('.cv-radio-copy')!).fontSize)};
+ });
+ await fit(page,game);
+ const base=await measure();
+ for(const [width,height] of [[2560,1440],[3840,2160]]){
+  await page.setViewportSize({width,height});
+  await fit(page,game);
+  const expanded=await measure();
+  expect(expanded.width).toBeGreaterThan(base.width*1.25);
+  expect(expanded.type).toBeGreaterThan(base.type*1.25);
+  expect(expanded.character).toBeGreaterThan(base.character);
+  expect(expanded.spin).toBeGreaterThan(base.spin);
+  expect(expanded.width/expanded.height).toBeCloseTo(1.2,2);
+ }
+ await page.setViewportSize({width:2560,height:1440});
+ await fit(page,game);
+ const withChat=await measure();
+ await chat.locator('.game-chat-close').click();
+ await fit(page,game);
+ expect(Math.abs((await measure()).width-withChat.width)).toBeLessThan(4);
+});
+
+test('Last Convoy opens autoplay without charging and keeps the dialog accessible on phones',async({page,roomPath})=>{
+ const game='studio-last-convoy';
+ await enterGameHall(page,roomPath);
+ await open(page,game);
+ const chat=page.locator('#club-chat-dock');
+ if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
+ await expect(chat.locator('#chat-input')).toBeVisible();
+ const auto=page.locator('[data-cc-auto]');
+ const dialog=page.getByRole('dialog',{name:'Автоигра'});
+ const before=await walletSnapshot(page);
+ const stake=page.locator('[data-manual-stake]');
+ await stake.fill('0,001');
+ await auto.click();
+ await expect(dialog).toBeHidden();
+ await stake.fill('0,10');
+ await auto.click();
+ await expect(dialog.getByRole('radio')).toHaveCount(4);
+ for(const count of [10,50,100,25]){
+  await dialog.getByText(String(count),{exact:true}).click();
+  await expect(dialog.getByRole('radio',{name:String(count),exact:true})).toBeChecked();
+  await expect(dialog.getByRole('button',{name:`Запустить ${count} вращений`})).toBeVisible();
+ }
+ await dialog.getByRole('textbox',{name:'Стоп при потере'}).fill('1,001');
+ await dialog.getByRole('button',{name:'Запустить 25 вращений'}).click();
+ await expect(dialog.getByRole('alert')).toContainText('до копейки');
+ await page.keyboard.press('Escape');
+ await expect(dialog).toBeHidden();
+ await expect(auto).toBeFocused();
+ for(const [width,height] of [[393,852],[852,393],[568,320]]){
+  await page.setViewportSize({width,height});
+  if(await chat.isVisible())await chat.locator('.game-chat-close').click();
+  await auto.click();
+  await expect(dialog).toBeInViewport({ratio:1});
+  await expect(dialog.getByRole('button',{name:'Запустить 25 вращений'})).toBeInViewport({ratio:1});
+  await page.keyboard.press('Escape');
+ }
+ expect((await walletSnapshot(page)).entries).toEqual(before.entries);
+});
+
+for(const outcome of ['loss','win'])test(`Last Convoy stops after a confirmed ${outcome} limit`,async({page,roomPath})=>{
+ const game='studio-last-convoy';
+ await enterGameHall(page,roomPath);
+ await open(page,game);
+ const fixture=await page.request.post('/__test/layout/bonus',{data:{gameId:game,scenario:outcome}});
+ expect(fixture.ok(),await fixture.text()).toBe(true);
+ await page.locator('[data-cc-auto]').click();
+ const dialog=page.getByRole('dialog',{name:'Автоигра'});
+ await dialog.getByRole('textbox',{name:'Стоп при потере'}).fill(outcome==='loss'?'0,01':'');
+ await dialog.getByRole('textbox',{name:'Стоп при выигрыше'}).fill(outcome==='win'?'0.01':'');
+ const accepted=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');
+ await dialog.getByRole('button',{name:'Запустить 25 вращений'}).click();
+ expect((await accepted).ok()).toBe(true);
+ await expect(page.locator('[data-cc-message]')).toContainText(outcome==='loss'?'лимиту потери':'лимиту выигрыша');
+ await expect(page.locator('[data-cc-auto]')).toHaveAttribute('aria-pressed','false');
+ const bets=(await walletSnapshot(page)).entries.filter((entry:{kind:string})=>entry.kind==='bet');
+ expect(bets).toHaveLength(1);
+ expect(bets[0].amount).toBe(-0.1);
+});
+
+test('Last Convoy can pause paid autoplay at evacuation or keep it after free spins',async({page,roomPath})=>{
+ const game='studio-last-convoy';
+ await enterGameHall(page,roomPath);
+ await open(page,game);
+ const seed=async()=>{
+  const fixture=await page.request.post('/__test/layout/bonus',{data:{gameId:game}});
+  expect(fixture.ok(),await fixture.text()).toBe(true);
+ };
+ const auto=page.locator('[data-cc-auto]');
+ const dialog=page.getByRole('dialog',{name:'Автоигра'});
+ const start=dialog.getByRole('button',{name:'Запустить 25 вращений'});
+ const starts=()=>walletSnapshot(page).then(value=>value.entries.filter((entry:{kind:string})=>entry.kind==='bet').length);
+ await seed();
+ await auto.click();
+ await expect(dialog.getByRole('checkbox')).toBeChecked();
+ await start.click();
+ await expect(page.locator('[data-cc-action="bonus"]')).toBeVisible();
+ await expect(page.locator('.cv-game')).toHaveAttribute('data-auto-remaining','0');
+ await finish(page,game);
+ expect(await starts()).toBe(1);
+
+ await seed();
+ await auto.click();
+ await dialog.getByRole('checkbox').uncheck();
+ await dialog.getByRole('textbox',{name:'Стоп при потере'}).fill('');
+ await dialog.getByRole('textbox',{name:'Стоп при выигрыше'}).fill('');
+ let paid=0,free=0;
+ let release!:()=>void;
+ const held=new Promise<void>(resolve=>release=resolve);
+ await page.route('**/api/demo-wallet/expansion',async route=>{
+  if(route.request().method()==='POST'){
+   const action=route.request().postDataJSON().action;
+   if(action==='move')free++;
+   if(action==='start'&&++paid===2)await held;
+  }
+  await route.continue();
+ });
+ try {
+  await start.click();
+  await expect.poll(()=>paid,{timeout:40000}).toBe(2);
+  expect(free).toBeGreaterThanOrEqual(10);
+  expect(await starts()).toBe(2);
+  await auto.click();
+  const accepted=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');
+  release();
+  expect((await accepted).ok()).toBe(true);
+  await finish(page,game);
+  expect(await starts()).toBe(3);
+ } finally {
+  release();
+  await page.unroute('**/api/demo-wallet/expansion');
  }
 });

@@ -10,7 +10,7 @@ import { PostgresDatabase, databaseConfig } from '../server/database';
 import { DemoWalletStore } from '../server/demoWallet';
 import { DemoExpansionStore } from '../server/demoExpansion';
 import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
-import {layoutSlots,layoutBonusSeed,layoutDraw} from './game-layout-scenarios';
+import {layoutSlots,layoutBonusSeed,layoutConvoyLimitSeed,layoutDraw} from './game-layout-scenarios';
 import {layoutIframes,layoutIframeSeed} from './game-layout-iframe-scenarios';
 import {layoutSeries,layoutSeriesSeed} from './game-layout-series-scenarios';
 
@@ -46,8 +46,9 @@ const vite=await createServer({configFile:false,root:process.cwd(),optimizeDeps:
     if(path==='/__test/layout/bonus'){
      if(!layoutSlots.includes(body.gameId)&&!layoutIframes.includes(body.gameId)&&!layoutSeries.includes(body.gameId))throw Error('Unsupported fixture game');
      if(!db){db=new PostgresDatabase(schema,{existingSchema:true,config:databaseConfig(environment)});wallet=new DemoWalletStore(db);}
-     const seed=layoutSeries.includes(body.gameId)?layoutSeriesSeed():layoutIframes.includes(body.gameId)?layoutIframeSeed(body.gameId,body.scenario==='legacy'):layoutBonusSeed(body.gameId);scenarios.set(key,new DemoExpansionStore(db,id=>wallet.snapshot(id),wallet.ready,async()=>{},layoutDraw(seed)));
-     res.setHeader('Content-Type','application/json');res.end(JSON.stringify({seed,gameId:body.gameId,naturalBonus:true}));return;
+     const convoyLimit=body.gameId==='studio-last-convoy'&&(body.scenario==='loss'||body.scenario==='win')?body.scenario:undefined;
+     const seed=convoyLimit?layoutConvoyLimitSeed(convoyLimit):layoutSeries.includes(body.gameId)?layoutSeriesSeed():layoutIframes.includes(body.gameId)?layoutIframeSeed(body.gameId,body.scenario==='legacy'):layoutBonusSeed(body.gameId);scenarios.set(key,new DemoExpansionStore(db,id=>wallet.snapshot(id),wallet.ready,async()=>{},layoutDraw(seed)));
+     res.setHeader('Content-Type','application/json');res.end(JSON.stringify({seed,gameId:body.gameId,naturalBonus:!convoyLimit}));return;
     }
     const store=scenarios.get(key);
     if(store){

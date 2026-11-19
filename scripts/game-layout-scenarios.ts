@@ -23,3 +23,13 @@ export function layoutBonusSeed(id:string){
  }
  throw Error('No bonus fixture found within search budget');
 }
+
+/** Natural settled rounds for the disposable Convoy autoplay tests. */
+export function layoutConvoyLimitSeed(outcome: 'loss' | 'win') {
+ for (let seed = 1; seed < 1000; seed++) {
+  const round = startConvoy({convoy:{mode:'normal'}}, '10', layoutDraw(seed));
+  const net = Number(round.view.totalPayoutUnits) - 10;
+  if (round.ended && (outcome === 'loss' ? net < 0 : net > 0)) return seed;
+ }
+ throw Error('No Convoy limit fixture found within search budget');
+}

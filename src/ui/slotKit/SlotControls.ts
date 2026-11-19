@@ -136,7 +136,8 @@ export function updateSlotTransport(root: HTMLElement, prefix: 'lg' | 'cc', stat
   auto.textContent = autoRemaining ? tr`Стоп · ${autoRemaining}` : translateText('Авто');
   auto.disabled = !autoRemaining && (blocked || active || dialog || !entered || state.paidBonus);
   auto.setAttribute('aria-pressed', String(autoRemaining > 0));
-  root.querySelector<HTMLSelectElement>(`[data-${prefix}-auto-count]`)!.disabled = live || active || autoRemaining > 0 || dialog;
+  const autoCount = root.querySelector<HTMLSelectElement>(`[data-${prefix}-auto-count]`);
+  if (autoCount) autoCount.disabled = live || active || autoRemaining > 0 || dialog;
   const pause = button('pause');
   pause.disabled = !bonusRunning;
   pause.textContent = bonusRunning ? translateText('Пауза серии') : translateText('На паузе');
