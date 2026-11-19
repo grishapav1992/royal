@@ -18,6 +18,6 @@
   "preload": [
     "cosmic-guardians/v1/symbols-v2.webp",
     "cosmic-guardians/v1/alien.webp",
-    "cosmic-guardians/v1/landing-deck.webp"
+    "cosmic-guardians/v1/background.webp"
   ]
 }

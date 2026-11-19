@@ -7,7 +7,7 @@ export const cosmicSlot = {
   assets: {
   symbols: '/assets/cosmic-guardians/v1/symbols-v2.webp',
   alien: '/assets/cosmic-guardians/v1/alien.webp',
-  background: '/assets/cosmic-guardians/v1/landing-deck.webp',
+  background: '/assets/cosmic-guardians/v1/background.webp',
 },
   audio: {musicStorageKey: 'royal-cosmic-music', musicChords: [[220,261.63,329.63,440],[174.61,220,261.63,349.23],[196,246.94,293.66,392],[164.81,207.65,246.94,329.63]],
     melody: [0,2,3,2,1,2,3,1], spinNotes: [440,523.25,659.26,880,659.26,523.25,493.88,587.33], musicIntervalMs: 370, spinIntervalMs: 85, featureCues:{expand:'expand',energy:'silent',echo:'echo',scatter:'tickets'}},

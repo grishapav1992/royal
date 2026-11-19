@@ -47,9 +47,8 @@
   background: var(--ce-bg);
 }
 .lg-game.ce-game.cx-game[data-asset-state="ready"] {
-  background: var(--cx-scene-art, none) var(--cx-scene-position, center) / cover no-repeat var(--ce-bg);
+  background: var(--cx-scene-art, none) center / cover no-repeat var(--ce-bg);
 }
-.cx-game[data-slot-priority="full"] { --cx-scene-position: left center; }
 .lg-game.ce-game.cx-game::before {
   content: '';
   position: absolute;
