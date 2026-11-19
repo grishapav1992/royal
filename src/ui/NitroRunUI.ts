@@ -31,6 +31,11 @@ const preview=Array.from({length:30},(_,i)=>(i+2*Math.floor(i/6))%6);
 const AUTO_COUNTS=[10,25,50] as const;
 // New module labels also work with the currently installed host dictionary.
 const NITRO_ENGLISH:Record<string,string>={
+ 'Автоигра':'Autoplay',
+ 'Закрыть автоигру':'Close autoplay',
+ 'Число платных автовращений':'Number of paid auto spins',
+ 'Отмена':'Cancel',
+ 'Запустить {0} вращений':'Start {0} spins',
  'НОЧНОЙ ЗАЕЗД':'NIGHT CIRCUIT',
  'КАСКАДЫ · 20 ЛИНИЙ · ДО ×5':'CASCADES · 20 LINES · UP TO ×5',
  'Звуки':'Sounds',
@@ -97,14 +102,14 @@ export class NitroRunUI {
   <div class="cc-wallet-help" data-cc-wallet-help><span data-cc-wallet-note></span><a href="/" data-cc-login>Войти в клуб для тестовой игры</a><button type="button" data-cc-wallet>Открыть тестовый кошелёк</button></div><div class="cc-feedback" data-cc-feedback><p data-cc-status role="status"></p><p data-cc-error role="alert"></p><button type="button" data-cc-retry hidden>Проверить прежний ход</button></div>
   </div></div><footer class="cc-footer"><div class="nr-options"><button type="button" data-cc-speed aria-pressed="false">ОБЫЧНО ×1</button><button type="button" data-cc-info aria-label="Правила игры">Правила игры</button><button type="button" data-cc-history aria-label="История игры">История игры</button><button type="button" data-cc-music aria-label="Выключить музыку">Музыка</button><button type="button" data-cc-sound aria-label="Выключить звук">${nitroText('Звуки')}</button><button type="button" class="cc-buy" data-cc-buy>Бонусная гонка ⓘ</button></div><label>Громкость <input type="range" min="0" max="100" data-cc-volume aria-label="Громкость игры"></label><label><input type="checkbox" data-nr-reduce> Показ без анимаций</label><span>Собственная игра Royal · виртуальные USDT</span><button type="button" data-cc-refresh>Проверить состояние</button></footer>${this.autoMarkup()}<div class="cc-dialog-backdrop" data-cc-backdrop><div class="cc-dialog" data-cc-dialog role="dialog" aria-modal="true" aria-labelledby="cc-dialog-title"></div></div></section>`;}
  private autoMarkup(){return tr`<dialog class="nr-auto-panel" id="nr-auto-panel" data-nr-auto-panel aria-labelledby="nr-auto-title" aria-describedby="nr-auto-note">
-  <header><div><small>NITRO RUN</small><h2 id="nr-auto-title">Автоигра</h2></div><button type="button" data-nr-auto-close aria-label="Закрыть автоигру">×</button></header>
-  <div class="nr-auto-counts" role="radiogroup" aria-label="Число платных автовращений">${AUTO_COUNTS.map(count=>`<button type="button" role="radio" data-nr-auto-count="${count}" aria-checked="${count===this.autoCount}" tabindex="${count===this.autoCount?0:-1}">${count}</button>`).join('')}</div>
+  <header><div><small>NITRO RUN</small><h2 id="nr-auto-title">${nitroText('Автоигра')}</h2></div><button type="button" data-nr-auto-close aria-label="${nitroText('Закрыть автоигру')}">×</button></header>
+  <div class="nr-auto-counts" role="radiogroup" aria-label="${nitroText('Число платных автовращений')}">${AUTO_COUNTS.map(count=>`<button type="button" role="radio" data-nr-auto-count="${count}" aria-checked="${count===this.autoCount}" tabindex="${count===this.autoCount?0:-1}">${count}</button>`).join('')}</div>
   <p class="nr-auto-count-label">${nitroText('Платных вращений')}</p><select data-cc-auto-count hidden aria-hidden="true" tabindex="-1">${AUTO_COUNTS.map(count=>`<option>${count}</option>`).join('')}</select>
   <div class="nr-auto-stake"><span>${nitroText('Ставка за вращение')}</span><strong><span data-nr-auto-stake></span> USDT</strong></div>
   <div class="nr-auto-total" aria-live="polite" aria-atomic="true"><span>${nitroText('Сумма ставок за серию')}</span><strong><span data-nr-auto-total></span> <small>USDT</small></strong></div>
   <p id="nr-auto-note">${nitroText('Ставка списывается перед каждым вращением. При бонусе или нехватке баланса серия остановится.')}</p>
   <p class="nr-auto-error" data-nr-auto-error role="status"></p>
-  <div class="nr-auto-actions"><button type="button" class="nr-auto-start" data-nr-auto-start></button><button type="button" data-nr-auto-close>Отмена</button></div>
+  <div class="nr-auto-actions"><button type="button" class="nr-auto-start" data-nr-auto-start></button><button type="button" data-nr-auto-close>${nitroText('Отмена')}</button></div>
  </dialog>`;}
  private autoPanel(){return this.find<HTMLDialogElement>('[data-nr-auto-panel]');}
  private bindAuto(){
@@ -135,7 +140,7 @@ export class NitroRunUI {
   for(const button of Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-nr-auto-count]'))){const checked=Number(button.dataset.nrAutoCount)===this.autoCount;button.setAttribute('aria-checked',String(checked));button.tabIndex=checked?0:-1;button.disabled=locked;}
   this.find('[data-nr-auto-stake]').textContent=coins(this.stake);
   this.find('[data-nr-auto-total]').textContent=coins(String(BigInt(this.stake)*BigInt(this.autoCount)));
-  this.find('[data-nr-auto-start]').textContent=tr`Запустить ${this.autoCount} вращений`;
+  this.find('[data-nr-auto-start]').textContent=nitroText('Запустить {0} вращений').replace('{0}',String(this.autoCount));
   const insufficient=this.balance()<Number(this.stake)/100;
   this.find<HTMLButtonElement>('[data-nr-auto-start]').disabled=locked||insufficient;
   this.find('[data-nr-auto-error]').textContent=insufficient?translateText('Недостаточно USDT · Демо для выбранной ставки.'):'';
