@@ -162,6 +162,35 @@ test('Neon ducks hall noise only while the owner is active and disposal restores
   }finally{owner.dispose();f.restore();}
 });
 
+test('opening a cabinet silences the room while the shared slot output stays live',async()=>{
+  const f=gameFixture(),owner=f.audio.createSlotAudio('studio-neon-crown');
+  try{
+    f.audio.setGame('');
+    await f.audio.unlock();
+    assert.equal(f.audio.getState().casino.scheduled,true);
+    assert.equal(f.audio.roomOutput!.gain.value,1);
+
+    f.audio.setCabinetOpen(true);
+    f.audio.setGame(owner.gameId);
+    owner.begin('cabinet-round');await flush();
+    f.audio.effect('step');
+    f.audio.effect('cue',1,'pool');
+    assert.equal(f.audio.getState().casino.scheduled,false);
+    assert.equal(f.audio.roomOutput!.gain.value,0);
+    assert.equal(f.audio.getState().counts.step,undefined);
+    assert.equal(f.audio.getState().table.played['pool:cue'],undefined);
+    assert.equal(f.audio.getState().slot.played.click,1);
+    assert.equal(f.audio.output!.gain.value,.35);
+
+    f.audio.setGame('');
+    assert.equal(f.audio.getState().casino.scheduled,false);
+    f.audio.setCabinetOpen(false);
+    assert.equal(f.audio.roomOutput!.gain.value,1);
+    assert.equal(f.audio.getState().casino.scheduled,true);
+    assert.equal(f.store.has('royal-casino-ambience'),false);
+  }finally{owner.dispose();f.restore();}
+});
+
 test('five-reel slots wait for the fifth stop, deduplicate effects and preserve semantic presentation order',async()=>{
   for(const game of ['studio-cosmic-escape','studio-velvet-reign'] as const){
     const f=fixture(undefined,game);try{

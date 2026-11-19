@@ -8,7 +8,7 @@ export class PianoAudio {
   async unlock(){
     try{
       await gameAudio.unlock();
-      if(!this.context&&gameAudio.context&&gameAudio.output){this.context=gameAudio.context;this.master=this.context.createGain();this.master.gain.value=.3;this.master.connect(gameAudio.output);}
+      if(!this.context&&gameAudio.context&&gameAudio.roomOutput){this.context=gameAudio.context;this.master=this.context.createGain();this.master.gain.value=.3;this.master.connect(gameAudio.roomOutput);}
       if(this.context?.state==='suspended')await this.context.resume();
     }catch{/* The next user gesture can retry audio activation. */}
   }

@@ -11,10 +11,10 @@ export class CasinoAudio {
   private sequence = 0;
   private backgroundLevel = 0;
 
-  constructor(private context: AudioContext, private output: GainNode, private onAmbient: (sound: CasinoSound) => void) {
+  constructor(private context: AudioContext, private output: GainNode, roomOutput: AudioNode, private onAmbient: (sound: CasinoSound) => void) {
     this.background = context.createGain();
     this.background.gain.value = 0;
-    this.background.connect(output);
+    this.background.connect(roomOutput);
     this.noise = context.createBuffer(1, Math.ceil(context.sampleRate * .25), context.sampleRate);
     const data = this.noise.getChannelData(0);
     for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
