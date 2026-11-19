@@ -1,0 +1,191 @@
+{
+  "release": "last-convoy-auto-2k-20261119-v1",
+  "gameId": "studio-last-convoy",
+  "sourceCommit": "1cf8ff4a587b6ebb95e170d359013e210795f299",
+  "hostSourceCommit": "937263b70c549b1ad53756888cefc667cec69035",
+  "hostImage": "sha256:582161b28242a20718b2be8fffef2295c4a8f3deb872b27dd4c0af80b3e0c3d5",
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8738,
+  "servicesPreserved": 11,
+  "previousVersion": "1.1.1-b03f455f9882",
+  "version": "1.1.1-5400df887901",
+  "hostContract": {
+    "apiVersion": 1,
+    "rulesVersion": 2,
+    "progressVersion": 1
+  },
+  "previousActiveSha256": "409a4ddce39a09fc463a1072676171249f60a299153e7fd3ea7a7127d184d311",
+  "activeSha256": "06971912b53da27586eaa051ab0d14f4a400f65fb0c9cce9b901d58df5ba7815",
+  "previousManifestSha256": "6cafdc9a321d22669d60bbcdfec111bf7d886a5016c99b377a5dc23f12684aa5",
+  "manifestSha256": "a96e33ae374f61e2d1c91f79a7d590cb687fef14aa738fe74e37bb1df1676e9b",
+  "releaseManifestSha256": "f393047dfce2b7ecd0464decce130fa304135861edcdcd9d17eb1b882d591f19",
+  "githubMainAtVerification": "1cf8ff4a587b6ebb95e170d359013e210795f299",
+  "preparedFiles": {
+    "module-dist/studio-last-convoy/active.json": "06971912b53da27586eaa051ab0d14f4a400f65fb0c9cce9b901d58df5ba7815",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/entry-51f8e6fae55f4a8c.js": "51f8e6fae55f4a8cbfa6d99a340dc2074fb4a4e63388c441a1f23603e4dc2154",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/manifest.json": "a96e33ae374f61e2d1c91f79a7d590cb687fef14aa738fe74e37bb1df1676e9b",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/media/last-convoy/v1/background.webp": "7ebf774898b39b08bbc55dad56a38b2bc43accaf7337d3d25576265a93cb0b64",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/media/last-convoy/v1/heroine.webp": "ca0764d8faa9d3fe7ac55684d519863bd1738a0417a459bd53644c0f6db788c0",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/media/last-convoy/v1/symbols.webp": "e299b4685392808f9a8a0ad730ba3750900d6068f619a56df8d7f3c21ddf7a37",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/media/last-convoy/v2/commander.webp": "b92627ec6f890660b5e5989d95f7f5391a96b30e1d4fb8b7155853bce98f9eaa",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/media/last-convoy/v2/medic.webp": "b6f3dd981aa6b0494fe3097371cba57e172c385b361fbb6b4e7d5ecf70b3464a",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/media/last-convoy/v2/pilot.webp": "925c55d74191267861ecfef519b8629d9dbb3813a6af2a8a665f7a847a87fd4c",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/media/last-convoy/v2/recon.webp": "7a028e4c6dc9b25499ba0a1fb898020b65611971b9c7d7daf7c87d95a11af1ad",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/media/last-convoy/v2/urban.webp": "a70de414fff04d63e818ee1a323243229bb128d9a4d934526015140a098be7cb",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/media/last-convoy/v3/commander-gesture.webp": "b587d8f94742c57c68336dd8f132b18d11b8e242e2687d53e1aceae0dea32096",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/media/last-convoy/v3/medic-gesture.webp": "47d39d041f80cc8edc1fa0f484698ff3fb9ca31f923e825a36f97372d259e67c",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/media/last-convoy/v3/pilot-gesture.webp": "911f1904e4509a5ea230b95a18d00b549995e5a5da777406b02bd019c52cbfc7",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/media/last-convoy/v3/recon-gesture.webp": "7e6bcaaa49500fcb3f37a36b4fe745686de32c7f910d75820b94674a60ca4012",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/media/last-convoy/v3/survivor-gesture.webp": "6f2f365da0981923e0bf30f05658751722a6680b90530a9463eae5ed4ed375b3",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/media/last-convoy/v3/urban-gesture.webp": "9008153633ad50114d0f400c9812fc9a6c6b94de63e55b5bf05db5d928f9150b",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/media/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+    "module-dist/studio-last-convoy/versions/1.1.1-5400df887901/style-2ffd7cad3870e7f4.css": "2ffd7cad3870e7f4aefdc8b59b2ea8385f56c602d16234cd49f10194a50673f6"
+  },
+  "installedSourceFiles": {
+    "games/last-convoy/LastConvoyUI.ts": "664f9e6e0cf10f88ce9a5577dfe5de94a5d57b6df0cde880dd9fcccd6efecb18",
+    "games/last-convoy/last-convoy.css": "123a50393fad12b05b6cf9bdc545755a5971f3a01ab514163099d584a8bb7e37"
+  },
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/last-convoy-auto-2k-20261119-v1/source.tgz",
+    "sha256": "ed4b3e79c99f4555ccd73946f9f1a02eee97d773a6cd6f8c2346429952434477",
+    "bytes": 18409,
+    "oldVersion": "1.1.1-b03f455f9882",
+    "imageTag": "royal-game:before-last-convoy-auto-2k-20261119-v1",
+    "image": "sha256:582161b28242a20718b2be8fffef2295c4a8f3deb872b27dd4c0af80b3e0c3d5",
+    "oldPackageHardlinked": true
+  },
+  "verification": {
+    "prepareCommand": "npm run release:prepare -- --base 937263b70c549b1ad53756888cefc667cec69035 --modules last-convoy --module-projection deployment/releases/last-convoy-auto-2k-20261119-v1/module-projection.json",
+    "verifyCommand": "npm run release:verify -- --github",
+    "rtpProfiles": 38,
+    "stakePolicies": 20,
+    "stakeAdmissions": 20,
+    "typecheckPassed": true,
+    "wallet": {
+      "command": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts",
+      "passed": 19
+    },
+    "installerTestsPassed": 20,
+    "scopedLockContentionReleasedAllLocks": true,
+    "builtHost": {
+      "verifiedHostAndBackendFiles": {
+        "dist-server/index.js": "347b10a5191da839142cafb6459d14e607190a32af3a97107f73cd392de3807f",
+        "dist/assets/ActivitiesUI-wII5mI73.js": "504c0c999353de9cdd6592981f4a620d32de5ef3f71ff8a1ef637e5668c2e023",
+        "dist/assets/ClubWorld-CDy4mgxw.js": "2b04a4ebba3e4532c1a0e5e69d1a92067278f75a000cc6b123eb16e7c9e9ed5f",
+        "dist/assets/ClubWorld-CMWrANY1.css": "735c82081d55adb719e6c5206389b5e92238b0ddca36657b3aff741619ff01f4",
+        "dist/assets/GameHostRuntime-oIkTFvz6.js": "b6ad1bc25c5aa998ccdf97f6d7a7a8a218f3c207a3a7fc7230ebb6f4b8ba7f54",
+        "dist/assets/PvpUI-Ca57woml.js": "e689fff694f5ed4311d46465962be535bc5dea81efcb9d9d1e6c568470619ce2",
+        "dist/assets/PvpUI-bkoZRrZ4.css": "65f2cf79faad47113d16adcd51fd2ad7449bdca75410c49ecef87b2db8f9c053",
+        "dist/assets/index-BKjjsGHD.js": "f5be01b421c284a690d2c1da88ed0fb34ae363afac6ed29cbca5fc81ce6f5ebe",
+        "dist/assets/index-CLkwPRW3.css": "28b7b0068f53de3cb1a2d6c60ec2bbcc1ccbf189f21c07e5c0b21827ce1961ee",
+        "dist/assets/main-5lA1s7Yr.css": "478b06152730769c4048d5cd84d94f378c849c28a665fea84b21a3ced652ef0a",
+        "dist/assets/main-DbSWf4Ix.js": "c361514ca7f72ce105263e981e60fc1acf91d4d2832cd7d690ef32fec160155a",
+        "dist/assets/phaser-FpisAY-I.js": "18cc4080856892bbbba0568c8a332b1592bc9abba801d3b6372fd0e5b7037426",
+        "dist/assets/playerLevelStatus-Bj43Ux4M.js": "6ee89bdd3a6bbe585c99499a15f408eee0f13b93ad07956f54f8c011aa97ff5f",
+        "dist/favicon.svg": "b380600d8427af334d7ea4f1cc4843aa505f2ab15ed3298ed21aca1ccc8f8b01",
+        "dist/index.html": "85a49d3e0c3bdaae10ab2c85cb8da8531acac7c973afe0a3bab61ee30ac5cbd8"
+      },
+      "browser": "Chrome",
+      "passed": 10,
+      "chatConnected": true,
+      "acceptedStakeCents": 10,
+      "acceptedDebitOnce": true,
+      "sameUuidAfterLostReply": true,
+      "closeAndReopenRecovered": true,
+      "limitsAndBonusStop": true,
+      "freeMovesWithoutExtraDebit": true,
+      "dialogFits568x320": true,
+      "tested2KAnd4K": true
+    },
+    "public": {
+      "catalogueBeforeAndAfter": [
+        "flag-battle",
+        "github-crash",
+        "original-cr-vs-leo",
+        "original-jackie-chan",
+        "royal-plinko",
+        "royal-roulette",
+        "studio-afterglow",
+        "studio-caramel-carnival",
+        "studio-caribbean-treasures",
+        "studio-cosmic-escape",
+        "studio-dracona",
+        "studio-flooded-temple",
+        "studio-forest-heart",
+        "studio-last-convoy",
+        "studio-meme-overload",
+        "studio-neopolis",
+        "studio-nitro-run",
+        "studio-velvet-reign",
+        "studio-wild-nudge"
+      ],
+      "added": [],
+      "restored": [],
+      "currentFilesVerified": 17,
+      "previousFilesVerified": 17,
+      "before2K": {
+        "boardWidth": 606,
+        "boardHeight": 505,
+        "spinHeight": 44,
+        "radioFont": 13
+      },
+      "views": [
+        {
+          "width": 2560,
+          "height": 1440,
+          "lang": "ru",
+          "measures": {
+            "boardWidth": 708.53125,
+            "boardHeight": 590.4375,
+            "spinHeight": 51.265625,
+            "radioFont": 15.15
+          },
+          "errors": []
+        },
+        {
+          "width": 393,
+          "height": 852,
+          "lang": "en",
+          "measures": {
+            "boardWidth": 345,
+            "boardHeight": 287.5,
+            "spinHeight": 44,
+            "radioFont": 12
+          },
+          "errors": []
+        },
+        {
+          "width": 852,
+          "height": 393,
+          "lang": "ru",
+          "measures": {
+            "boardWidth": 222.09375,
+            "boardHeight": 185.078125,
+            "spinHeight": 44,
+            "radioFont": 11
+          },
+          "errors": []
+        }
+      ],
+      "productionAccountOrPaidRoundCreated": false
+    },
+    "maintenance": {
+      "status": "completed",
+      "verificationPasses": 2,
+      "finishedAt": "2026-11-19T18:11:16.143109+00:00",
+      "timerEnabledAndActive": true,
+      "healthOk": true,
+      "freeBefore": 12047867904,
+      "freeAfter": 12044558336,
+      "rollbackImage": "sha256:11695c77704445b8b434b6b011d361f044d5e766c819203632acc945439f192d",
+      "preservedFinancialFiles": 232,
+      "transportArchiveCleanup": {
+        "archiveBytesRemoved": 7314373,
+        "freeBefore": 12045426688,
+        "freeAfter": 12052742144
+      }
+    }
+  }
+}
