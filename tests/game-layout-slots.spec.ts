@@ -63,7 +63,11 @@ async function fit(page:Page,id:string,action?:string,modal=false){
   const box=await page.locator((selector==='.slot-settings-button'?'#mini-dialog ':'#mini-game ')+selector).boundingBox();expect(box).not.toBeNull();expect(box!.height).toBeGreaterThanOrEqual(44);
  }
 }
-async function currentSession(page:Page,id:string){return page.evaluate(async id=>{const path='/src/wallet/ExpansionClient.ts';return(await import(/* @vite-ignore */path)).expansionClient.sessions.find((s:any)=>s.gameId===id);},id);}
+async function currentSession(page:Page,id:string){return page.evaluate(id=>{
+ const host=(globalThis as any)[Symbol.for('royal.game-host.v1')];
+ if(!host)throw Error('The connected game host is not installed');
+ return host.expansionClient.sessions.find((s:any)=>s.gameId===id);
+},id);}
 async function finish(page:Page,id:string){
  const p=family(id),attribute=p==='lg'?'data-lg-dialog-action':'data-cc-action';
  await expect.poll(async()=>{
@@ -75,6 +79,13 @@ async function finish(page:Page,id:string){
   }
   const session=await currentSession(page,id),spin=page.locator(`[data-${p}-spin]`);
   if(session?.state==='settled'&&await spin.isEnabled())return true;
+  if(id==='studio-nitro-run'&&session?.state==='active'){
+   // Resume a paused bonus once. Its own scheduler completes the free spins;
+   // a second manual click can otherwise race the final free-spin settlement.
+   const pause=page.locator('[data-cc-pause]');
+   if(await pause.isVisible()&&!await pause.isEnabled()&&await spin.isEnabled())await spin.click();
+   return false;
+  }
   if(session?.state==='active'&&await spin.isEnabled()){
    // A scheduled free spin can start between the readiness check and the click.
    try{await spin.click({timeout:process.env.LAYOUT_BROWSER==='webkit'?5000:1000});}catch(error){if(!(error instanceof Error)||error.name!=='TimeoutError')throw error;}
@@ -126,6 +137,113 @@ test('Last Convoy keeps its radio and stake legible in the connected host',async
  await expect(root.locator('[data-cc-stake]')).toHaveValue('10');
  await page.locator('#mini-dialog .game-chat-toggle').click();
  await expect(chat.locator('#chat-input')).toBeVisible();
+});
+
+test('Nitro Run keeps its field and instruments stable with connected chat',async({page,roomPath})=>{
+ await mkdir(out,{recursive:true});const report:unknown[]=[];
+ await enterGameHall(page,roomPath);await open(page,'studio-nitro-run');
+ const game=page.locator('#mini-game > .nr-game'),chat=page.locator('#club-chat-dock');
+ for(const [width,height]of sizes){
+  await test.step(`${width}x${height}`,async()=>{
+   await page.setViewportSize({width,height});
+   await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));
+   if(width>=1080&&height>=600){
+    if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
+    await expect(chat.locator('#chat-input')).toBeVisible();
+   }else await expect(page.locator('#mini-dialog')).toHaveAttribute('data-game-chat','closed');
+   await fit(page,'studio-nitro-run');
+   const composition=await game.evaluate(root=>{
+    const rect=(selector:string)=>root.querySelector(selector)!.getBoundingClientRect().toJSON();
+    return {profile:root.dataset.slotPriority,cabinet:rect('.nr-cabinet'),stage:rect('.nr-stage'),hud:rect('.nr-hud'),header:rect('.nr-heading'),frame:rect('.cc-board-frame'),console:rect('.nr-console'),root:root.getBoundingClientRect().toJSON()};
+   });
+   const c=composition;
+   expect(Math.abs((c.cabinet.left-c.root.left)-(c.root.right-c.cabinet.right)),'cabinet has balanced outer margins').toBeLessThanOrEqual(2);
+   if(c.profile==='full'){
+    expect(c.frame.left-c.hud.right,'instruments touch the field through one short gutter').toBeGreaterThanOrEqual(10);
+    expect(c.frame.left-c.hud.right).toBeLessThanOrEqual(14);
+    expect(Math.abs(c.header.left-c.hud.left)).toBeLessThanOrEqual(2);
+    expect(Math.abs(c.console.left-c.hud.left)).toBeLessThanOrEqual(2);
+    expect(Math.abs(c.console.right-c.frame.right)).toBeLessThanOrEqual(2);
+    expect(c.console.top-c.frame.bottom,'no empty result band below the field').toBeLessThanOrEqual(12);
+    if(width===1440&&height===900)expect(c.frame.width).toBeGreaterThan(700);
+   }else if(c.profile==='portrait'){
+    expect(c.console.top-c.frame.bottom,'field and console stay together on phones').toBeLessThanOrEqual(10);
+   }else expect(c.console.left-c.frame.right,'landscape console stays beside the field').toBeLessThanOrEqual(16);
+   const state=await game.evaluate(root=>{
+    const frame=root.querySelector('.cc-board-frame')!,message=root.querySelector('[data-cc-message]')!;
+    const error=root.querySelector('[data-cc-error]')!,retry=root.querySelector<HTMLButtonElement>('[data-cc-retry]')!;
+    const initial={message:message.textContent,error:error.textContent,hidden:retry.hidden,phase:root.dataset.phase,charge:root.dataset.nitroCharge,multiplier:root.dataset.multiplier};
+    const measure=()=>frame.getBoundingClientRect().toJSON(),idle=measure();
+    try{
+     root.dataset.phase='spinning';message.textContent='';const spinning=measure();
+     error.textContent='Не удалось получить ответ. Проверь сохранённый раунд.';retry.hidden=false;
+     const recovery=measure(),retryHeight=retry.getBoundingClientRect().height;
+     root.dataset.nitroCharge='2';root.dataset.multiplier='5';
+     message.textContent='БОНУСНАЯ ГОНКА ПРОДОЛЖАЕТСЯ';const charged=measure();
+     const panels=[...root.querySelectorAll<HTMLElement>('.nr-hud>section,.nr-hud>aside')].map(el=>el.getBoundingClientRect().toJSON());
+     return {idle,spinning,recovery,charged,retryHeight,panels};
+    }finally{
+     message.textContent=initial.message;error.textContent=initial.error;retry.hidden=initial.hidden;
+     for(const [key,value]of Object.entries({phase:initial.phase,nitroCharge:initial.charge,multiplier:initial.multiplier})){
+      if(value===undefined)delete root.dataset[key];else root.dataset[key]=value;
+     }
+    }
+   });
+   expect(state.spinning).toEqual(state.idle);expect(state.recovery).toEqual(state.idle);expect(state.charged).toEqual(state.idle);
+   expect(state.retryHeight).toBeGreaterThanOrEqual(44);
+   report.push({width,height,field:state.idle,composition,stableDuringSpinRecoveryAndCharge:true});
+   if([1440,393,852,320].includes(width))await page.screenshot({path:out+`/nitro-run-${width}x${height}.png`});
+   if(width===393&&height===852){
+    const before=await game.locator('.cc-board-frame').boundingBox();
+    await page.locator('#mini-dialog .game-chat-toggle').click();
+    await expect(chat.locator('#chat-input')).toBeVisible();
+    await expect(page.locator('#mini-dialog .game-chat-game')).toHaveJSProperty('inert',true);
+    await chat.locator('.game-chat-close').click();
+    await expect(page.locator('#mini-dialog')).toHaveAttribute('data-game-chat','closed');
+    expect(await game.locator('.cc-board-frame').boundingBox()).toEqual(before);
+   }
+   for(let i=0;i<state.panels.length;i++)for(let j=i+1;j<state.panels.length;j++){
+    const a=state.panels[i],b=state.panels[j];
+    expect(a.right<=b.left+1||b.right<=a.left+1||a.bottom<=b.top+1||b.bottom<=a.top+1,'instruments must not overlap').toBe(true);
+   }
+  });
+ }
+ await writeFile(out+'/nitro-run-layout.json',JSON.stringify({connectedHost:true,moduleVersion:await page.locator('#mini-game').getAttribute('data-game-module-version'),rows:report},null,2));
+});
+
+test('Nitro Run previews autoplay costs without placing a bet',async({page,roomPath})=>{
+ await mkdir(out,{recursive:true});await enterGameHall(page,roomPath);await open(page,'studio-nitro-run');
+ const panel=page.locator('[data-nr-auto-panel]'),auto=page.locator('[data-cc-auto]'),stake=page.locator('#mini-game [data-manual-stake]');
+ const before=await walletSnapshot(page);let paidRequests=0;
+ page.on('request',request=>{if(request.method()==='POST'&&request.url().endsWith('/api/demo-wallet/expansion'))paidRequests++;});
+ await auto.click();await expect(panel).toBeVisible();await expect(panel.locator('[data-nr-auto-count="10"]')).toBeFocused();
+ await expect(panel.locator('[data-nr-auto-stake]')).toHaveText('0,10');await expect(panel.locator('[data-nr-auto-total]')).toHaveText('1,00');
+ await page.keyboard.press('ArrowRight');await expect(panel.locator('[data-nr-auto-count="25"]')).toBeFocused();
+ await expect(panel.locator('[data-nr-auto-total]')).toHaveText('2,50');
+ await panel.locator('[data-nr-auto-count="50"]').click();await expect(panel.locator('[data-nr-auto-total]')).toHaveText('5,00');
+ await page.keyboard.press('Escape');await expect(panel).toBeHidden();await expect(auto).toBeFocused();
+ await stake.fill('1,23');await auto.click();await expect(panel.locator('[data-nr-auto-total]')).toHaveText('61,50');
+ await panel.locator('[data-nr-auto-count="25"]').click();await expect(panel.locator('[data-nr-auto-total]')).toHaveText('30,75');
+ for(const [width,height]of sizes){
+  await page.setViewportSize({width,height});
+  await expect(panel.locator('[data-nr-auto-start]')).toBeInViewport({ratio:1});
+  await expect(panel.locator('[data-nr-auto-close]').last()).toBeInViewport({ratio:1});
+  const geometry=await panel.evaluate(dialog=>{
+   const r=dialog.getBoundingClientRect();return{left:r.left,right:r.right,top:r.top,bottom:r.bottom,viewport:[innerWidth,innerHeight],scroll:dialog.scrollHeight-dialog.clientHeight};
+  });
+  expect(geometry.left).toBeGreaterThanOrEqual(0);expect(geometry.right).toBeLessThanOrEqual(width);
+  expect(geometry.top).toBeGreaterThanOrEqual(0);expect(geometry.bottom).toBeLessThanOrEqual(height);
+  expect(geometry.scroll,'autoplay choices, cost and actions fit together').toBeLessThanOrEqual(1);
+  if(width===1440||width===393)await page.screenshot({path:out+`/nitro-run-auto-${width}x${height}.png`});
+ }
+ const cancel=panel.locator('[data-nr-auto-close]').last();await cancel.focus();await page.keyboard.press('Tab');
+ await expect(panel.locator('[data-nr-auto-close]').first()).toBeFocused();await page.keyboard.press('Shift+Tab');await expect(cancel).toBeFocused();
+ await cancel.click();await expect(panel).toBeHidden();await expect(auto).toBeFocused();
+ await stake.fill('50,00');await auto.click();await panel.locator('[data-nr-auto-count="50"]').click();
+ await expect(panel.locator('[data-nr-auto-total]')).toHaveText(/2\s500,00/);await panel.locator('[data-nr-auto-close]').first().click();
+ await stake.fill('0,09');await auto.click();await expect(panel).toBeHidden();
+ expect(paidRequests).toBe(0);expect((await walletSnapshot(page)).entries).toEqual(before.entries);
+ await stake.fill('0,10');
 });
 
 test('Caramel Carnival keeps the reel frame still as feedback and festival state change',async({page,roomPath})=>{
@@ -299,13 +417,14 @@ for(const id of games)test('settings, Stop and one accepted ten-cent round: '+id
  await page.locator('.slot-settings-button').click();
  if(process.env.LAYOUT_DEBUG==='1')console.log(await page.locator('.slot-secondary-controls').evaluate(root=>[root,...root.children,...root.querySelectorAll('.ce-sidebar>*')].map(e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return{node:e.className,display:s.display,flexDirection:s.flexDirection,contain:s.contain,columns:s.gridTemplateColumns,rows:s.gridTemplateRows,area:s.gridArea,position:s.position,height:r.height,width:r.width,left:r.left,top:r.top};})));
  // The redesigned Cosmic Escape and Caramel Carnival keep speed and autoplay on the cabinet: a speed control and an autoplay panel.
- const cosmic=id==='studio-cosmic-escape'||id==='studio-caramel-carnival',caramel=id==='studio-caramel-carnival';
+ const cosmic=id==='studio-cosmic-escape'||id==='studio-caramel-carnival',caramel=id==='studio-caramel-carnival',nitro=id==='studio-nitro-run';
  const cabinet=caramel?{fast:'[data-cc-speed-option="fast"]',cycle:'[data-cc-speed-cycle]',panel:'[data-cc-auto-panel]',count:'[data-cc-auto-count="25"]',start:'[data-cc-auto-start]',purchase:'[data-cc-buy]'}
   :{fast:'[data-cx-speed="fast"]',cycle:'[data-cx-speed-cycle]',panel:'[data-cx-auto-panel]',count:'[data-cx-auto-count="25"]',start:'[data-cx-auto-start]',purchase:'[data-cosmic-missions]'};
  const fastSpeed=()=>cosmic?expect(page.locator('#mini-game '+cabinet.fast)).toHaveAttribute('aria-checked','true'):expect(page.locator(`[data-${p}-speed]`)).toHaveAttribute('aria-pressed','true');
  const convoy=id==='studio-last-convoy';
+ const usesSettingsCount=!cosmic&&!nitro&&!convoy;
  if(!cosmic){
-  if(!convoy)await page.locator(`[data-${p}-auto-count]`).selectOption('25');
+  if(usesSettingsCount)await page.locator(`[data-${p}-auto-count]`).selectOption('25');
   await page.locator(`[data-${p}-speed]`).click();
  }
  expect(errors).toEqual([]);
@@ -315,12 +434,14 @@ for(const id of games)test('settings, Stop and one accepted ten-cent round: '+id
  if(cosmic){await page.locator('#mini-game '+cabinet.cycle).click();await fastSpeed();}
  await fit(page,id);await page.setViewportSize({width:1440,height:900});await fit(page,id);
  await fastSpeed();
- if(!cosmic&&!convoy)await expect(page.locator(`[data-${p}-auto-count]`)).toHaveValue('25');await page.setViewportSize({width:393,height:852});
+ if(usesSettingsCount)await expect(page.locator(`[data-${p}-auto-count]`)).toHaveValue('25');
+ await page.setViewportSize({width:393,height:852});
  await page.locator('.slot-settings-button').click();await fastSpeed();await page.keyboard.press('Escape');
  let release!:()=>void;const gate=new Promise<void>(r=>release=r);let request:any;
  await page.route('**/api/demo-wallet/expansion',async route=>{if(route.request().method()==='POST'){request=route.request().postDataJSON();await gate;}await route.continue();});
  const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');
  await page.locator(`[data-${p}-auto]`).click();
+ if(nitro){const panel=page.locator('[data-nr-auto-panel]');await expect(panel).toBeVisible();await panel.locator('[data-nr-auto-count="25"]').click();expect(request).toBeUndefined();await expect(panel.locator('[data-nr-auto-total]')).toHaveText('2,50');await panel.locator('[data-nr-auto-start]').click();await expect(panel).toBeHidden();}
  if(cosmic){const panel=page.locator('#mini-game '+cabinet.panel);await expect(panel).toBeVisible();await panel.locator(cabinet.count).click();await panel.locator(cabinet.start).click();await expect(panel).toBeHidden();}
  if(convoy){
   const panel=page.getByRole('dialog',{name:'Автоигра'});
