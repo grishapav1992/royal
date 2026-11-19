@@ -145,10 +145,10 @@
       "sha256": "4cbee421e40ab72279248cbacdaf51367de5f503cac0ceab83356509e5257f17"
     },
     "src/ui/NitroRunUI.ts": {
-      "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
+      "commit": "30e38f499da93357c27b9dbe8da0d4e1e2f42531",
       "path": "src/ui/NitroRunUI.ts",
-      "baseSha256": "908724cdde0219cadb7d2b063629e28719fb8333bec67bdaebaaf17deac67d09",
-      "sha256": "908724cdde0219cadb7d2b063629e28719fb8333bec67bdaebaaf17deac67d09"
+      "baseSha256": "e44a5dc8b8d884bfd3897f39a646a7bcd686076a1a9e2ac72bf05531dc5fea87",
+      "sha256": "e44a5dc8b8d884bfd3897f39a646a7bcd686076a1a9e2ac72bf05531dc5fea87"
     },
     "src/ui/active-game-viewport.css": {
       "commit": "cbaa009b34e21e4e57f2fc48f26a29abc2350b13",
