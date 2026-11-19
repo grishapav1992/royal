@@ -1,3 +1,4 @@
+import { selectEntryMode } from './entry-mode';
 import { test, expect } from '@playwright/test';
 import { selectHall } from './room-ui';
 
@@ -35,10 +36,12 @@ test('an old Mira dialogue cannot animate a rejected drink after logging in else
   expect((await request.post('/api/auth/character',{data:{skin:0}})).ok()).toBe(true);
   await page.route('**/api/npc/mira', route => route.fulfill({json:{reply:'Решай сам.',turns:[],emotion:'neutral'}}));
   await page.goto('/');
+  await selectEntryMode(page);
   await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getNetworkState()?.status)).toBe('connected');
   await page.locator('#visit-bar').click();
   await expect(page.locator('#bar-dialog')).toBeVisible({timeout:15000});
   await page.getByRole('button',{name:'Выйти',exact:true}).click();
+  await selectEntryMode(page);
   await page.locator('#email').fill(`mira-order-new-${crypto.randomUUID()}@example.test`);
   await page.locator('#password').fill(password);
   await page.locator('#login-button').click();
@@ -84,6 +87,7 @@ test('the current chess game accepts a strongly intoxicated player', async ({ pa
   expect((await request.post('/api/auth/character',{data:{skin:0}})).ok()).toBe(true);
   await page.route('**/api/npc/mira', route => route.fulfill({json:{reply:'Решай сам.',turns:[],emotion:'neutral'}}));
   await page.goto('/');
+  await selectEntryMode(page);
   await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getNetworkState()?.status)).toBe('connected');
   await page.locator('#visit-bar').click();
   await expect(page.locator('#bar-dialog')).toBeVisible({timeout:15000});
@@ -92,6 +96,7 @@ test('the current chess game accepts a strongly intoxicated player', async ({ pa
   for (let i=0;i<3;i++) { await expect(whisky).toBeEnabled({timeout:5000}); await whisky.click(); await expect(whisky).toBeDisabled(); }
   await page.getByRole('button',{name:'Уйти',exact:true}).click();
   await page.reload();
+  await selectEntryMode(page);
   await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getNetworkState()?.status)).toBe('connected');
   await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().intoxication.stage)).toBe(3);
   await page.locator('#visit-bar').click();

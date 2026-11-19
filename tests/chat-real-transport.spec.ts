@@ -1,3 +1,4 @@
+import { selectEntryMode } from './entry-mode';
 import { test, expect, type APIRequestContext, type Page, type Route } from '@playwright/test';
 import { Client } from '@colyseus/sdk';
 import type { ChatRequest, ChatResult } from '../src/shared/chat';
@@ -76,6 +77,7 @@ test('real chat masks profanity and delivers insults below the threshold regardl
     await register(sender, 'Тест отправки'); await register(observer, 'Тест наблюдения');
     for (const page of [sender, observer]) {
       await page.goto('/?mode=club&room=' + host.roomId + '&lang=en');
+      await selectEntryMode(page);
       await expect(page.locator('#club-chat-dock')).toHaveAttribute('data-chat-hall', 'arcade', { timeout: 30000 });
       await expect(page.locator('#chat-input')).toBeEnabled();
     }
@@ -118,6 +120,7 @@ test('the tenth offensive word triggers a capture and street escort in the same 
   try {
     await register(page, 'Проверка порога');
     await page.goto('/?mode=club&room=' + host.roomId + '&lang=en');
+    await selectEntryMode(page);
     const input = page.locator('#chat-input'), send = page.locator('#send-chat');
     await expect(input).toBeEnabled({ timeout: 30000 });
     const transport = await captureRealTransport(page);
@@ -143,6 +146,7 @@ test('the tenth offensive word triggers a capture and street escort in the same 
     await page.evaluate(() => (window as any).__realChat.leave());
     await transport.detach();
     await page.reload();
+    await selectEntryMode(page);
     await expect.poll(() => page.evaluate(() => (window as any).royalDemo?.getNetworkState().status), { timeout: 30000 }).toBe('connected');
     await expect(page.locator('#club-chat-dock')).toHaveAttribute('data-chat-unavailable', '');
     expect(await page.evaluate(() => (window as any).royalDemo.getNetworkState().selfId)).not.toBe(originalSession);
@@ -160,6 +164,7 @@ test('the first confirmed spam episode immediately dispatches the guard', async 
   try {
     await register(page, 'Проверка спама');
     await page.goto('/?mode=club&room=' + host.roomId + '&lang=en');
+    await selectEntryMode(page);
     const input = page.locator('#chat-input'), send = page.locator('#send-chat');
     const text = 'Check the announcements t.me/ExampleChannel';
     const rows = page.locator('#chat-log > [data-message-id]').filter({ hasText: text });
@@ -195,6 +200,7 @@ test('Zhora privately offers a disguise after a confirmed restroom violation', a
   try {
     await register(page, 'Гость у Жоры');
     await page.goto('/?mode=club&room=' + host.roomId + '&lang=en');
+    await selectEntryMode(page);
     const dock = page.locator('#club-chat-dock'), input = page.locator('#chat-input');
     await expect(input).toBeEnabled({ timeout: 30000 });
     const transport = await captureRealTransport(page);
@@ -238,6 +244,7 @@ test('paying on the street recovers a lost response after reload without a secon
     await db.prepare(`INSERT INTO demo_wallets (account_id,balance,fraction_units) VALUES (?,25,37)
       ON CONFLICT(account_id) DO UPDATE SET balance=excluded.balance,fraction_units=excluded.fraction_units`).run(account);
     await page.goto('/?mode=club&room=' + host.roomId + '&lang=en');
+    await selectEntryMode(page);
     const input = page.locator('#chat-input'), trigger = page.locator('#club-fine-open');
     await expect(input).toBeEnabled({ timeout: 30000 });
     await expect(trigger).toBeHidden();
@@ -283,6 +290,7 @@ test('paying on the street recovers a lost response after reload without a secon
 
     await page.setViewportSize({ width: 844, height: 390 });
     await page.reload();
+    await selectEntryMode(page);
     await expect.poll(() => page.evaluate(() => (window as any).royalDemo?.getNetworkState()?.status), { timeout: 30000 }).toBe('connected');
     await expect(trigger).toBeVisible();
     await trigger.click();
@@ -329,6 +337,7 @@ test('real chat follows each floor visit and closes on the street', async ({ bro
     await register(sender, 'Гость на этажах'); await register(observer, 'Гость первого этажа');
     for (const page of [sender, observer]) {
       await page.goto('/?mode=club&room=' + host.roomId + '&lang=en');
+      await selectEntryMode(page);
       await expect(page.locator('#club-chat-dock')).toHaveAttribute('data-chat-hall', 'arcade', { timeout: 30000 });
       await expect(page.locator('#chat-input')).toBeEnabled();
     }

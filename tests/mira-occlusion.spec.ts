@@ -1,3 +1,4 @@
+import { selectEntryMode } from './entry-mode';
 import {test,expect,type Browser,type Page,type BrowserContext} from '@playwright/test';
 import {ROYAL_BAR_PROPS} from '../src/game/royalBarLayers';
 import {sampleMiraFrame} from '../src/game/miraAnimation';
@@ -87,7 +88,7 @@ async function guest(browser:Browser,baseURL:string,viewport:{width:number;heigh
   expect((await context.request.post('/api/auth/login',{data:{email:`mira-layer-${crypto.randomUUID()}@example.test`,password:crypto.randomUUID()}})).ok()).toBe(true);
   expect((await context.request.post('/api/auth/character',{data:{skin:0,name:'Гость бара'}})).ok()).toBe(true);
   const page=await context.newPage();await page.route('**/api/npc/mira',route=>route.fulfill({json:route.request().method()==='GET'?{turns:[{role:'assistant',content:'Ну? Чем удивишь?'}]}:{reply:'Я слушаю. Сначала расскажи про свой вечер, а затем я приготовлю тебе что-нибудь освежающее.',emotion:'smile'}}));
-  await page.goto(room?'/?mode=club&room='+room:'/?mode=club');await ready(page);
+  await page.goto(room?'/?mode=club&room='+room:'/?mode=club');await selectEntryMode(page);await ready(page);
   await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getNetworkState()?.status)).toBe('connected');
   await page.evaluate(()=>(window as any).royalMiraAudit?.focus());
   return {context,page};

@@ -1,3 +1,4 @@
+import { selectEntryMode } from './entry-mode';
 import {test,expect} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 test('persistent chat fits with the game and a reduced mobile viewport',async({page,request},testInfo)=>{
@@ -8,6 +9,7 @@ test('persistent chat fits with the game and a reduced mobile viewport',async({p
   expect(visitor.ok()).toBe(true);
   expect((await page.request.post('/api/auth/character',{data:{skin:0}})).ok()).toBe(true);
   await page.goto('/?mode=club&room='+host.roomId+'&lang=ru');
+  await selectEntryMode(page);
   await expect(page.locator('#club-chat-dock')).toHaveAttribute('data-chat-hall','arcade',{timeout:30000});
   await expect(page.locator('#chat-input')).toBeEnabled();
   await page.setViewportSize({width:390,height:844});await expect(page.locator('#chat-input')).toBeInViewport();

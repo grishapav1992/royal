@@ -1,0 +1,246 @@
+{
+  "release": "cosmic-2k-20261119-v1",
+  "sourceCommit": "e1fecf1bfef05901a170c49384c6b10d04875765",
+  "installerCommit": "25f99e290c3311caa11f7ecb08a145323544e82b",
+  "githubMainAtVerification": "e1fecf1bfef05901a170c49384c6b10d04875765",
+  "hostSourceCommit": "f98493253d78169e4eec8b559fdc3606f75ddde5",
+  "hostImage": "sha256:4a1233a6cb52908a696d25ab23606643536498992261e56bef66a33a9f8a4362",
+  "version": "1.1.1-54c413b92117",
+  "previousVersion": "1.1.1-70b0fc1c8174",
+  "packageManifestSha256": "ce6fb7a2f24184271a5440095581510fb3605065dd4922c04c15887044f132e1",
+  "previousPackageManifestSha256": "55bb2e34a78ade337cce3b9a0fc23032270f42292f6ac19848ca74cdbbc9d48d",
+  "activeSha256": "de8d31f4dc33f849b40f4d641db93c800524dbdb0b870559f438129d444b24e5",
+  "previousActiveSha256": "d08f5830eb4c831009c957e8daebcda8c3c9fd2c76555bf9459b31f716efd1e1",
+  "releaseManifestSha256": "73da0607a4a96bb518c4a9cf41cb8c819df2c0cb49fde8b70db91b6a5bce5efb",
+  "hostContract": {
+    "apiVersion": 1,
+    "rulesVersion": 2,
+    "progressVersion": 1
+  },
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8716,
+  "servicesPreserved": 11,
+  "compiledStyles": [
+    "style-2e994027398217ba.css"
+  ],
+  "identicalMediaFiles": 6,
+  "javaScriptChanges": "versioned module media paths",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/cosmic-2k-20261119-v1/source.tgz",
+    "sha256": "9d6d1840a511d0fc52627273eaba3cc09bde61c0b2deaee8d37930ba92e4fd53",
+    "bytes": 12095,
+    "oldVersion": "1.1.1-70b0fc1c8174",
+    "imageTag": "royal-game:before-cosmic-2k-20261119-v1",
+    "image": "sha256:4a1233a6cb52908a696d25ab23606643536498992261e56bef66a33a9f8a4362",
+    "oldPackageHardlinked": true
+  },
+  "checks": {
+    "release": {
+      "githubVerified": true,
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true
+        },
+        {
+          "name": "typecheck",
+          "passed": true
+        },
+        {
+          "name": "modules",
+          "passed": true
+        }
+      ]
+    },
+    "installer": {
+      "testsPassed": 20
+    },
+    "wallet": {
+      "testsPassed": 19,
+      "recoveredOneDebitAfterLostResponse": true
+    },
+    "connectedHost": {
+      "browser": "Chrome",
+      "passed": 4,
+      "temporaryPostgres": true,
+      "desktopAndMobile": true,
+      "chatOpenAndClosedAt2560": true
+    },
+    "public": {
+      "healthy": true,
+      "pointerSha256": "de8d31f4dc33f849b40f4d641db93c800524dbdb0b870559f438129d444b24e5",
+      "cacheControl": "no-store",
+      "files": 9,
+      "previousFiles": 9,
+      "version": "1.1.1-54c413b92117",
+      "previousVersion": "1.1.1-70b0fc1c8174",
+      "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+      "catalogue": [
+        "flag-battle",
+        "github-crash",
+        "original-cr-vs-leo",
+        "original-jackie-chan",
+        "royal-plinko",
+        "royal-roulette",
+        "studio-afterglow",
+        "studio-caramel-carnival",
+        "studio-caribbean-treasures",
+        "studio-cosmic-escape",
+        "studio-dracona",
+        "studio-flooded-temple",
+        "studio-forest-heart",
+        "studio-last-convoy",
+        "studio-meme-overload",
+        "studio-neopolis",
+        "studio-nitro-run",
+        "studio-velvet-reign",
+        "studio-wild-nudge"
+      ],
+      "chat": "public host layout with a local empty chat panel",
+      "before": [
+        {
+          "width": 1440,
+          "height": 900,
+          "chat": "column",
+          "frame": [
+            199.61,
+            269.75,
+            642.2,
+            368.08
+          ],
+          "overflow": [
+            0,
+            0
+          ]
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "chat": "closed",
+          "frame": [
+            252.59,
+            201.48,
+            880.41,
+            504.61
+          ],
+          "overflow": [
+            0,
+            0
+          ]
+        },
+        {
+          "width": 2560,
+          "height": 1440,
+          "chat": "column",
+          "frame": [
+            327,
+            275,
+            1566,
+            897.58
+          ],
+          "overflow": [
+            0,
+            0
+          ]
+        },
+        {
+          "width": 2560,
+          "height": 1440,
+          "chat": "closed",
+          "frame": [
+            327,
+            171.83,
+            1926,
+            1103.92
+          ],
+          "overflow": [
+            0,
+            0
+          ]
+        }
+      ],
+      "after": [
+        {
+          "width": 1440,
+          "height": 900,
+          "chat": "column",
+          "frame": [
+            199.61,
+            269.75,
+            642.2,
+            368.08
+          ],
+          "overflow": [
+            0,
+            0
+          ]
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "chat": "closed",
+          "frame": [
+            252.59,
+            201.48,
+            880.41,
+            504.61
+          ],
+          "overflow": [
+            0,
+            0
+          ]
+        },
+        {
+          "width": 2560,
+          "height": 1440,
+          "chat": "column",
+          "frame": [
+            508.16,
+            383.38,
+            1187.84,
+            680.83
+          ],
+          "overflow": [
+            0,
+            0
+          ]
+        },
+        {
+          "width": 2560,
+          "height": 1440,
+          "chat": "closed",
+          "frame": [
+            688.16,
+            383.38,
+            1187.84,
+            680.83
+          ],
+          "overflow": [
+            0,
+            0
+          ]
+        }
+      ],
+      "matched1440Layout": true,
+      "productionAccountsCreated": 0,
+      "productionBetsPlaced": 0,
+      "pageErrors": []
+    },
+    "maintenance": {
+      "status": "completed",
+      "timerEnabled": true,
+      "timerActive": true,
+      "healthy": true,
+      "availableBytes": 12185133056,
+      "hostImage": "sha256:4a1233a6cb52908a696d25ab23606643536498992261e56bef66a33a9f8a4362",
+      "completedAt": 1795101584.3627362
+    }
+  },
+  "transportArchive": {
+    "sha256": "2b285461f4dc08b1d56cb2102c6b9db94084b594f779f96b7d745990c37d12dc",
+    "bytes": 4733677,
+    "removed": true
+  }
+}

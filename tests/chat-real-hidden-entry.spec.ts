@@ -1,3 +1,4 @@
+import { selectEntryMode } from './entry-mode';
 import { test, expect, type Page } from '@playwright/test';
 import { PostgresDatabase } from '../server/database';
 import { projectStreetPoint, StreetView } from '../src/game/streetView';
@@ -93,6 +94,7 @@ test('a marked guest enters by the roof toilet and the exterior balcony window w
     };
 
     await page.goto('/?mode=club&room=' + host.room.roomId + '&lang=en');
+    await selectEntryMode(page);
     await expect.poll(async () => (await network(page))?.status, { timeout: 30000 }).toBe('connected');
     const joined = await network(page);
     const hall = async (location: HallId, timeout = 25000) => {
