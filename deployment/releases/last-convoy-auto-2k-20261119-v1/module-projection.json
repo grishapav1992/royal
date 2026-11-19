@@ -1,0 +1,320 @@
+{
+  "format": 1,
+  "productionCommit": "937263b70c549b1ad53756888cefc667cec69035",
+  "moduleGames": [
+    "last-convoy"
+  ],
+  "moduleAssets": {
+    "public/assets/last-convoy/v1/background.webp": "7ebf774898b39b08bbc55dad56a38b2bc43accaf7337d3d25576265a93cb0b64",
+    "public/assets/last-convoy/v1/heroine.webp": "ca0764d8faa9d3fe7ac55684d519863bd1738a0417a459bd53644c0f6db788c0",
+    "public/assets/last-convoy/v1/symbols.webp": "e299b4685392808f9a8a0ad730ba3750900d6068f619a56df8d7f3c21ddf7a37",
+    "public/assets/last-convoy/v2/commander.webp": "b92627ec6f890660b5e5989d95f7f5391a96b30e1d4fb8b7155853bce98f9eaa",
+    "public/assets/last-convoy/v2/medic.webp": "b6f3dd981aa6b0494fe3097371cba57e172c385b361fbb6b4e7d5ecf70b3464a",
+    "public/assets/last-convoy/v2/pilot.webp": "925c55d74191267861ecfef519b8629d9dbb3813a6af2a8a665f7a847a87fd4c",
+    "public/assets/last-convoy/v2/recon.webp": "7a028e4c6dc9b25499ba0a1fb898020b65611971b9c7d7daf7c87d95a11af1ad",
+    "public/assets/last-convoy/v2/urban.webp": "a70de414fff04d63e818ee1a323243229bb128d9a4d934526015140a098be7cb",
+    "public/assets/last-convoy/v3/commander-gesture.webp": "b587d8f94742c57c68336dd8f132b18d11b8e242e2687d53e1aceae0dea32096",
+    "public/assets/last-convoy/v3/medic-gesture.webp": "47d39d041f80cc8edc1fa0f484698ff3fb9ca31f923e825a36f97372d259e67c",
+    "public/assets/last-convoy/v3/pilot-gesture.webp": "911f1904e4509a5ea230b95a18d00b549995e5a5da777406b02bd019c52cbfc7",
+    "public/assets/last-convoy/v3/recon-gesture.webp": "7e6bcaaa49500fcb3f37a36b4fe745686de32c7f910d75820b94674a60ca4012",
+    "public/assets/last-convoy/v3/survivor-gesture.webp": "6f2f365da0981923e0bf30f05658751722a6680b90530a9463eae5ed4ed375b3",
+    "public/assets/last-convoy/v3/urban-gesture.webp": "9008153633ad50114d0f400c9812fc9a6c6b94de63e55b5bf05db5d928f9150b",
+    "public/assets/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406"
+  },
+  "files": {
+    "games/last-convoy/LastConvoyUI.ts": {
+      "commit": "33d27af2d07a8132430cb1eb10dbfe52a4516ba5",
+      "path": "games/last-convoy/LastConvoyUI.ts",
+      "baseSha256": "664f9e6e0cf10f88ce9a5577dfe5de94a5d57b6df0cde880dd9fcccd6efecb18",
+      "sha256": "664f9e6e0cf10f88ce9a5577dfe5de94a5d57b6df0cde880dd9fcccd6efecb18"
+    },
+    "games/last-convoy/entry.ts": {
+      "commit": "196cb75a0deafd332cfd28f36178ec1e2b90cd95",
+      "path": "games/last-convoy/entry.ts",
+      "baseSha256": "2a1b9f81d227da0dfc863b5c07b6e0aa7ca67a1da5c34f4dca0165c4bcf5aa2e",
+      "sha256": "2a1b9f81d227da0dfc863b5c07b6e0aa7ca67a1da5c34f4dca0165c4bcf5aa2e"
+    },
+    "games/last-convoy/last-convoy.css": {
+      "commit": "33d27af2d07a8132430cb1eb10dbfe52a4516ba5",
+      "path": "games/last-convoy/last-convoy.css",
+      "baseSha256": "123a50393fad12b05b6cf9bdc545755a5971f3a01ab514163099d584a8bb7e37",
+      "sha256": "123a50393fad12b05b6cf9bdc545755a5971f3a01ab514163099d584a8bb7e37"
+    },
+    "games/last-convoy/package.json": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "games/last-convoy/package.json",
+      "baseSha256": "5bdbaaec8bf13d20a830235c2239705794259daaeb0e1b0df1877491db7d5536",
+      "sha256": "5bdbaaec8bf13d20a830235c2239705794259daaeb0e1b0df1877491db7d5536"
+    },
+    "games/last-convoy/tsconfig.json": {
+      "commit": "196cb75a0deafd332cfd28f36178ec1e2b90cd95",
+      "path": "games/last-convoy/tsconfig.json",
+      "baseSha256": "e9c06723f490fa879a86d1d5d7be97b6ca499623e2dc0adc61c0c9e843b1377d",
+      "sha256": "e9c06723f490fa879a86d1d5d7be97b6ca499623e2dc0adc61c0c9e843b1377d"
+    },
+    "src/modules/GameHostContract.ts": {
+      "commit": "33d27af2d07a8132430cb1eb10dbfe52a4516ba5",
+      "path": "src/modules/GameHostContract.ts",
+      "baseSha256": "8eed9b514ebe11c794cdecd042356a212b5e4756b5bdca4ccf6b35579bcda93c",
+      "sha256": "8eed9b514ebe11c794cdecd042356a212b5e4756b5bdca4ccf6b35579bcda93c"
+    },
+    "src/modules/GameModuleCatalog.ts": {
+      "commit": "196cb75a0deafd332cfd28f36178ec1e2b90cd95",
+      "path": "src/modules/GameModuleCatalog.ts",
+      "baseSha256": "201bb0e465c8de8993981131c757c7da2288519ae1bc290b4a389676f346732f",
+      "sha256": "201bb0e465c8de8993981131c757c7da2288519ae1bc290b4a389676f346732f"
+    },
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/shared/caribbeanTreasuresMath.ts",
+      "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+      "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+    },
+    "src/shared/convoyWardrobe.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/shared/convoyWardrobe.ts",
+      "baseSha256": "e00ff55831b480cfc785354d0bddebef35bd58f754c8bb3dc26fdbd1fe8b60fa",
+      "sha256": "e00ff55831b480cfc785354d0bddebef35bd58f754c8bb3dc26fdbd1fe8b60fa"
+    },
+    "src/shared/forestHeartMath.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/shared/forestHeartMath.ts",
+      "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+      "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
+    },
+    "src/shared/gameStakes.ts": {
+      "commit": "33d27af2d07a8132430cb1eb10dbfe52a4516ba5",
+      "path": "src/shared/gameStakes.ts",
+      "baseSha256": "a8357bd91b07d33e991867b770341f6668760ac9a54c1e58efce98b932c29d4e",
+      "sha256": "a8357bd91b07d33e991867b770341f6668760ac9a54c1e58efce98b932c29d4e"
+    },
+    "src/shared/lastConvoy.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/shared/lastConvoy.ts",
+      "baseSha256": "3785225275083c74d12bf61eb5855b8ae544e72eaefadc6f172bc51f305d6978",
+      "sha256": "3785225275083c74d12bf61eb5855b8ae544e72eaefadc6f172bc51f305d6978"
+    },
+    "src/shared/neopolisMath.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/shared/neopolisMath.ts",
+      "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+    },
+    "src/shared/neopolisStakePayouts.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/shared/neopolisStakePayouts.ts",
+      "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+      "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+    },
+    "src/shared/roundPrecision.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/shared/roundPrecision.ts",
+      "baseSha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
+      "sha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8"
+    },
+    "src/shared/walletAccount.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/shared/walletAccount.ts",
+      "baseSha256": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560",
+      "sha256": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560"
+    },
+    "src/ui/ConvoyArtwork.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/ConvoyArtwork.ts",
+      "baseSha256": "2fe04a440fb3d6260506baddccf462c63785e5ba995a4b927f886a175967a3a8",
+      "sha256": "2fe04a440fb3d6260506baddccf462c63785e5ba995a4b927f886a175967a3a8"
+    },
+    "src/ui/ConvoyBoard.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/ConvoyBoard.ts",
+      "baseSha256": "34616fef7e1bc2d53418d371e009a5f767c2ee5ddbb648baff982938dfa5b1af",
+      "sha256": "34616fef7e1bc2d53418d371e009a5f767c2ee5ddbb648baff982938dfa5b1af"
+    },
+    "src/ui/ConvoyHeroine.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/ConvoyHeroine.ts",
+      "baseSha256": "808191d0a8926441c80d21eede20c066685506dc15a5b8f0f49eed67d9118dd6",
+      "sha256": "808191d0a8926441c80d21eede20c066685506dc15a5b8f0f49eed67d9118dd6"
+    },
+    "src/ui/ConvoyPortraitAnimation.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/ConvoyPortraitAnimation.ts",
+      "baseSha256": "66040221e403a88f4b81e1ff82d92e1a7c4d2b8381ab3cb65e3d8c63d674e14c",
+      "sha256": "66040221e403a88f4b81e1ff82d92e1a7c4d2b8381ab3cb65e3d8c63d674e14c"
+    },
+    "src/ui/GameLayoutPolicy.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/GameLayoutPolicy.ts",
+      "baseSha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c",
+      "sha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c"
+    },
+    "src/ui/LastConvoyAssets.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/LastConvoyAssets.ts",
+      "baseSha256": "5c768a0f88cfd16ff2f60ec0a898bfe3101bccf8e7ac65df0d08506afde39b78",
+      "sha256": "5c768a0f88cfd16ff2f60ec0a898bfe3101bccf8e7ac65df0d08506afde39b78"
+    },
+    "src/ui/LastConvoyAudio.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/LastConvoyAudio.ts",
+      "baseSha256": "f3bc53b3546e4e442b7ac6139de5e98fb4b673822f171c0a030cedc7d55803c0",
+      "sha256": "f3bc53b3546e4e442b7ac6139de5e98fb4b673822f171c0a030cedc7d55803c0"
+    },
+    "src/ui/active-game-viewport.css": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/active-game-viewport.css",
+      "baseSha256": "493e85699b284319a6e0dcaf6aa178c308ef2640bb7dc180625c052a4b6d60c7",
+      "sha256": "493e85699b284319a6e0dcaf6aa178c308ef2640bb7dc180625c052a4b6d60c7"
+    },
+    "src/ui/caramel-carnival.css": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/caramel-carnival.css",
+      "baseSha256": "2e0078654fb9754e15c09e837aaea32f08aa10e4947dffe6b7eb342a0b1a3bb6",
+      "sha256": "2e0078654fb9754e15c09e837aaea32f08aa10e4947dffe6b7eb342a0b1a3bb6"
+    },
+    "src/ui/convoy-heroine.css": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/convoy-heroine.css",
+      "baseSha256": "8aed278e5870cfb12853d281c1dfb45722b992c8724fcb1b069a33c0fe1649dd",
+      "sha256": "8aed278e5870cfb12853d281c1dfb45722b992c8724fcb1b069a33c0fe1649dd"
+    },
+    "src/ui/operationFeedback.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/operationFeedback.ts",
+      "baseSha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17",
+      "sha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17"
+    },
+    "src/ui/slotKit/SlotAssets.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/slotKit/SlotAssets.ts",
+      "baseSha256": "8bbd409578830ee7f3f025340003155335af03ce684bcae23bc913acb02052d2",
+      "sha256": "8bbd409578830ee7f3f025340003155335af03ce684bcae23bc913acb02052d2"
+    },
+    "src/ui/slotKit/SlotAudio.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/slotKit/SlotAudio.ts",
+      "baseSha256": "7f7c3536e0202ebd39dd79bcd36c886882332c6d5e84e4a73831d46e06aefbc0",
+      "sha256": "7f7c3536e0202ebd39dd79bcd36c886882332c6d5e84e4a73831d46e06aefbc0"
+    },
+    "src/ui/slotKit/SlotCascadeBoard.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/slotKit/SlotCascadeBoard.ts",
+      "baseSha256": "96d48c3a96c8bc40044d7748630024f9bbee1b8950544106c31dce2167049cf9",
+      "sha256": "96d48c3a96c8bc40044d7748630024f9bbee1b8950544106c31dce2167049cf9"
+    },
+    "src/ui/slotKit/SlotControls.ts": {
+      "commit": "33d27af2d07a8132430cb1eb10dbfe52a4516ba5",
+      "path": "src/ui/slotKit/SlotControls.ts",
+      "baseSha256": "0af9662f583bb4ae2fc9f284fc301075f8304b3da47f24a4c0d2782320a46fb7",
+      "sha256": "0af9662f583bb4ae2fc9f284fc301075f8304b3da47f24a4c0d2782320a46fb7"
+    },
+    "src/ui/slotKit/SlotDialog.ts": {
+      "commit": "196cb75a0deafd332cfd28f36178ec1e2b90cd95",
+      "path": "src/ui/slotKit/SlotDialog.ts",
+      "baseSha256": "69351de658c231671feea17ef923595143f47e886f09beeb4533f1ae0cb0337d",
+      "sha256": "69351de658c231671feea17ef923595143f47e886f09beeb4533f1ae0cb0337d"
+    },
+    "src/ui/slotKit/SlotGeometry.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/slotKit/SlotGeometry.ts",
+      "baseSha256": "9050e51c87d77646845e206f2618a1ab6a3887e008f17abb0b1fbd29303ee90f",
+      "sha256": "9050e51c87d77646845e206f2618a1ab6a3887e008f17abb0b1fbd29303ee90f"
+    },
+    "src/ui/slotKit/SlotLifecycle.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/slotKit/SlotLifecycle.ts",
+      "baseSha256": "33c227f915cbff994e7218a7e98410f7ae4d1fee129dfd013f531092e9eee71f",
+      "sha256": "33c227f915cbff994e7218a7e98410f7ae4d1fee129dfd013f531092e9eee71f"
+    },
+    "src/ui/slotKit/SlotPlayback.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/slotKit/SlotPlayback.ts",
+      "baseSha256": "b16043b19396cabe7cf67d8864400ccb8f20c5a916565eb6c90ca148cc3d6954",
+      "sha256": "b16043b19396cabe7cf67d8864400ccb8f20c5a916565eb6c90ca148cc3d6954"
+    },
+    "src/ui/slotKit/SlotPriorityLayout.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/slotKit/SlotPriorityLayout.ts",
+      "baseSha256": "947932d761ede2150900d9fd0278a2560b032aec8c9372f0085b717f1af796f2",
+      "sha256": "947932d761ede2150900d9fd0278a2560b032aec8c9372f0085b717f1af796f2"
+    },
+    "src/ui/slotKit/SlotScreens.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/slotKit/SlotScreens.ts",
+      "baseSha256": "59140beebcb205fa8e52c3e35f0f2283a0746ebd42b08ef54122598fd986756a",
+      "sha256": "59140beebcb205fa8e52c3e35f0f2283a0746ebd42b08ef54122598fd986756a"
+    },
+    "src/ui/slotKit/SlotSessions.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/slotKit/SlotSessions.ts",
+      "baseSha256": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2",
+      "sha256": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2"
+    },
+    "src/ui/slotKit/SlotSettings.ts": {
+      "commit": "196cb75a0deafd332cfd28f36178ec1e2b90cd95",
+      "path": "src/ui/slotKit/SlotSettings.ts",
+      "baseSha256": "e9ca94a9ea09d3fb1789fb18ba5d87457f210aedc00b99570bb92ee3df1472dd",
+      "sha256": "e9ca94a9ea09d3fb1789fb18ba5d87457f210aedc00b99570bb92ee3df1472dd"
+    },
+    "src/ui/slotKit/nativeSlotImages.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/slotKit/nativeSlotImages.ts",
+      "baseSha256": "20e93c94b87b767d25d9f41a5d033275e76947eab02f0299032b583800e5da9f",
+      "sha256": "20e93c94b87b767d25d9f41a5d033275e76947eab02f0299032b583800e5da9f"
+    },
+    "src/ui/slotKit/nativeSlots.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/slotKit/nativeSlots.ts",
+      "baseSha256": "fc823e2892a7fcc49d32b8fa21bd938498ac1762d4444213f8c624bec21cf6f7",
+      "sha256": "fc823e2892a7fcc49d32b8fa21bd938498ac1762d4444213f8c624bec21cf6f7"
+    },
+    "src/ui/slotKit/slot-priorities.css": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/slotKit/slot-priorities.css",
+      "baseSha256": "05266abd09f5f3cbfbe91dde79ac8188f74b6d333bc2acb9e3884530f4aaee5f",
+      "sha256": "05266abd09f5f3cbfbe91dde79ac8188f74b6d333bc2acb9e3884530f4aaee5f"
+    },
+    "src/ui/slotKit/slot-settings.css": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/slotKit/slot-settings.css",
+      "baseSha256": "a9bc7aabfd5f8649a3220820199d709f57b8cd260205c3d18cfa5236ea854f5b",
+      "sha256": "a9bc7aabfd5f8649a3220820199d709f57b8cd260205c3d18cfa5236ea854f5b"
+    },
+    "src/ui/stakeRules.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/stakeRules.ts",
+      "baseSha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df",
+      "sha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df"
+    },
+    "src/ui/stakeSelection.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/stakeSelection.ts",
+      "baseSha256": "8b055ae732911fb5ac4eba3aed7e024eec5ab4b7289c6336d6297bb1802e1dc1",
+      "sha256": "8b055ae732911fb5ac4eba3aed7e024eec5ab4b7289c6336d6297bb1802e1dc1"
+    },
+    "src/ui/studio-games.css": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/studio-games.css",
+      "baseSha256": "0a3c6fc2d4655e9814b349952d5c9578d49c194d483cdaba0e9a76eb23b12259",
+      "sha256": "0a3c6fc2d4655e9814b349952d5c9578d49c194d483cdaba0e9a76eb23b12259"
+    },
+    "src/vite-env.d.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/vite-env.d.ts",
+      "baseSha256": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+      "sha256": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5"
+    },
+    "src/wallet/ConvoyProgressClient.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/wallet/ConvoyProgressClient.ts",
+      "baseSha256": "292f57d2807fa8a522b8c51b52a11fef4c32f763ee1b0177981a71ed96decb1a",
+      "sha256": "292f57d2807fa8a522b8c51b52a11fef4c32f763ee1b0177981a71ed96decb1a"
+    },
+    "tsconfig.json": {
+      "commit": "196cb75a0deafd332cfd28f36178ec1e2b90cd95",
+      "path": "tsconfig.json",
+      "baseSha256": "ac92a48aa49e6d4a13a2ce4191379133d7156d219b8b3f10723921ad695f8888",
+      "sha256": "ac92a48aa49e6d4a13a2ce4191379133d7156d219b8b3f10723921ad695f8888"
+    }
+  }
+}
