@@ -118,6 +118,7 @@ def read_inputs():
                                    'pointer': f'module-dist/{GAME}/active.json'}], 'Unexpected module package')
     require(release['sourceCommit'] == op['sourceCommit'] == receipt['sourceCommit']
             and re.fullmatch('[a-f0-9]{40}', receipt['remoteMain'])
+            and re.fullmatch('[a-f0-9]{40}', op['installerCommit'])
             and receipt['manifestSha256'] == op['releaseManifestSha256'], 'Invalid GitHub receipt')
     require(release['baseCommit'] == before['sourceCommit'] and set(op['source']) == SOURCES, 'Unexpected source baseline')
     for name, digest in op['source'].items():
@@ -158,6 +159,13 @@ def backup_source_and_module(old, old_sources, pointer_bytes, before, publisher)
             'oldVersion': old.name, 'imageTag': tag, 'image': image, 'oldPackageHardlinked': True}
 
 
+def program_bytes(directory, metadata):
+    program = bytes_at(directory / metadata['entry'])
+    prefix = f'/game-modules/{GAME}/versions/{metadata["version"]}/media/'.encode()
+    require(prefix in program, 'Expected versioned media references are missing')
+    return program.replace(prefix, b'/media/')
+
+
 def publish(op, before, files):
     require(not (ROOT / 'published.json').exists() and not BACKUP.exists(), 'Publication already attempted')
     current = snapshot()
@@ -177,11 +185,13 @@ def publish(op, before, files):
     prior, _ = publisher.verify(old, CONTRACT, GAME)
     require(sha(bytes_at(old / 'manifest.json')) == op['priorManifestSha256'], 'Previous manifest differs')
     candidate = load_json(ROOT / 'package/manifest.json')
-    for key in ('entry', 'preload'):
-        require(prior[key] == candidate[key], f'CSS update changed {key}')
-    previous_files = {name: digest for name, digest in prior['files'].items() if name not in prior['styles']}
-    current_files = {name: digest for name, digest in candidate['files'].items() if name not in candidate['styles']}
-    require(previous_files == current_files, 'CSS update changed JavaScript or media')
+    require(prior['preload'] == candidate['preload'], 'CSS update changed media preload')
+    previous_files = {name: digest for name, digest in prior['files'].items() if name.startswith('media/')}
+    current_files = {name: digest for name, digest in candidate['files'].items() if name.startswith('media/')}
+    require(previous_files == current_files and len(prior['files']) == len(candidate['files']) == len(previous_files) + 2,
+            'CSS update changed media inventory')
+    require(program_bytes(old, prior) == program_bytes(ROOT / 'package', candidate),
+            'CSS update changed JavaScript beyond the versioned media paths')
     require(prior['styles'] != candidate['styles'], 'The stylesheet must change')
     old_sources = {}
     for name in sorted(SOURCES):
