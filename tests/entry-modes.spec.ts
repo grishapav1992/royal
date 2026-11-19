@@ -41,7 +41,10 @@ test('mode selection precedes sign-in and opens the real casino without loading 
     images.every(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0))).toBe(true);
   expect(sessionChecks).toHaveLength(0);
   await page.screenshot({ path: proof + '/entry-desktop.png' });
-  await selectEntryMode(page, 'casino');
+  await expect(page.getByRole('button', { name: 'В клуб с персонажем', exact: true })).toBeVisible();
+  await expect(page.getByText('Открыть казино', { exact: true })).toHaveCount(0);
+  await expect(page.getByText('Войти в клуб', { exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Сразу к играм', exact: true }).press('Enter');
   await expect(page.locator('#login-form')).toBeVisible();
   expect(sessionChecks).toHaveLength(1);
   const email = `entry-choice-${crypto.randomUUID()}@example.test`;
@@ -212,7 +215,7 @@ test('phone chooses before login even with a mode link and a saved preference fr
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.goto('/');
   await expect(page.getByRole('combobox', { name: 'Language' })).toHaveValue('en');
-  await page.getByRole('button', { name: /Open the casino/ }).click();
+  await page.getByRole('button', { name: 'Straight to the games', exact: true }).click();
   await connected(page);
   await expect(page.getByRole('heading', { name: 'Royal games' })).toBeVisible();
   await expect(page.locator('#casino-catalog [data-platform-wallet]')).toHaveText(/USDT · Demo/);
@@ -236,36 +239,34 @@ test('a failed session check offers retry before asking for credentials', async 
   await expect(page.locator('.entry-login #login-form')).toHaveCount(0);
 });
 
-test('entry previews can pause and resume, and reduced motion keeps the stills', async ({ page }) => {
+test('entry previews play once without a pause button, and reduced motion keeps the stills', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   const clips = page.locator('.entry-preview-motion');
   await expect(clips).toHaveCount(2);
   const clipStates = () => clips.evaluateAll(elements => elements.map(element => {
     const video = element as HTMLVideoElement;
-    return { paused: video.paused, time: video.currentTime, source: video.getAttribute('src') };
+    return { paused: video.paused, ended: video.ended, loop: video.loop, time: video.currentTime, source: video.getAttribute('src') };
   }));
   expect(await clipStates()).toEqual([
-    { paused: true, time: 0, source: null },
-    { paused: true, time: 0, source: null },
+    { paused: true, ended: false, loop: false, time: 0, source: null },
+    { paused: true, ended: false, loop: false, time: 0, source: null },
   ]);
 
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await expect.poll(async () => (await clipStates()).every(clip => !clip.paused && clip.time > 0)).toBe(true);
-  await page.getByRole('button', { name: 'Приостановить анимацию' }).click();
-  await expect.poll(async () => (await clipStates()).every(clip => clip.paused)).toBe(true);
-  await page.getByRole('button', { name: 'Включить анимацию' }).click();
-  await expect.poll(async () => (await clipStates()).every(clip => !clip.paused)).toBe(true);
+  await expect(page.getByRole('button', { name: 'Приостановить анимацию' })).toHaveCount(0);
+  await expect.poll(async () => (await clipStates()).every(clip => clip.ended && clip.paused && !clip.loop), { timeout: 12000 }).toBe(true);
 
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await expect(page.getByRole('button', { name: 'Приостановить анимацию' })).toHaveCount(0);
-  await expect.poll(async () => (await clipStates()).every(clip => clip.paused)).toBe(true);
+  await expect(clips.first()).toBeHidden();
+  await expect(clips.last()).toBeHidden();
   await selectEntryMode(page, 'casino');
   await expect(page.locator('#login-form')).toBeVisible();
 });
 
 test('mobile entry only loads a clip when its card is in view', async ({ page }) => {
-  await page.setViewportSize({ width: 320, height: 480 });
+  await page.setViewportSize({ width: 320, height: 400 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
   const casino = page.locator('.entry-casino video');

@@ -100,51 +100,28 @@ body:has(.entry-page) { margin: 0; }
   flex: 1;
   flex-direction: column;
   width: 100%;
-  padding: 20px clamp(15px, 2.4vw, 25px) 11px;
+  padding: 20px clamp(15px, 2.4vw, 25px);
   box-sizing: border-box;
 }
-.entry-copy > strong { font-size: clamp(24px, 3.4vw, 32px); font-weight: 400; line-height: 1.12; letter-spacing: -0.025em; }
+.entry-card-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.entry-card-heading > span { flex: none; color: #876331; font-size: 21px; }
+.entry-card-heading > strong { font-size: clamp(24px, 3.4vw, 32px); font-weight: 400; line-height: 1.12; letter-spacing: -0.025em; }
 .entry-description {
-  flex: 1;
   max-width: 36ch;
-  margin: 8px 0 17px;
+  margin: 8px 0 0;
   color: #6c5d63;
   font: 14px/1.55 system-ui, sans-serif;
 }
-.entry-action {
-  display: flex;
-  flex: none;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 44px;
-  max-width: none;
-  margin: 0;
-  border-top: 1px solid #e0d4bf;
-  color: var(--mode-ink);
-  font: 650 14px/1.4 system-ui, sans-serif;
-}
-.entry-action > span { color: #876331; font-size: 21px; }
 .entry-mode-hint {
   margin-bottom: 5px;
   color: #745b38;
   font: 600 12px/1.4 system-ui, sans-serif;
 }
-.entry-preview-toggle {
-  display: block;
-  min-height: 44px;
-  margin: 6px auto 0;
-  padding: 0 8px;
-  border: 0;
-  background: transparent;
-  color: #61462c;
-  font: 13px/1.4 system-ui, sans-serif;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  cursor: pointer;
-}
-.entry-preview-toggle[hidden] { display: none; }
-.entry-preview-toggle:focus-visible { outline: 2px solid #876331; outline-offset: 2px; }
 .entry-status {
   min-height: 20px;
   margin: 12px 0 0;
@@ -174,8 +151,8 @@ body:has(.entry-page) { margin: 0; }
   .entry-art { height: clamp(132px, 41vw, 180px); }
   .entry-catalog-preview { width: min(55%, 238px); top: 10%; left: 9%; }
   .entry-game-preview { width: min(55%, 238px); bottom: 8%; left: auto; right: 6%; }
-  .entry-copy { padding: 12px 15px 4px; }
-  .entry-description { max-width: 42ch; margin: 5px 0 9px; font-size: 13px; }
+  .entry-copy { padding: 12px 15px 15px; }
+  .entry-description { max-width: 42ch; margin: 5px 0 0; font-size: 13px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .entry-option { transition: none; }
