@@ -1,4 +1,4 @@
-import { DRAGON_PATH_GAME, DRAGON_PATH_RULES_VERSION, DRAGON_PATH_TITLE } from '../shared/dragonPathProtocol';
+import { DRAGON_PATH_GAME, DRAGON_PATH_RULES_VERSION, DRAGON_PATH_TITLE } from '../shared/dragonPathProtocol.ts';
 
 /** Independent client packages supported by this host release. */
 export const STUDIO_GAME_MODULES = [
