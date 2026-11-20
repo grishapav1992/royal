@@ -17,6 +17,32 @@ async function saveMetadata(file, value) {
   } finally { await rm(temporary, { force: true }); }
 }
 
+// The server restore check proved these exact bytes, not only the transfer.
+export const restoreVerified = meta => meta.encrypted_verified === true && meta.server_restore?.ok === true
+  && typeof meta.sha256 === 'string' && meta.server_restore?.sha256 === meta.sha256;
+
+// Keep the newest copy and the newest copy that passed a server restore check. Copies with unreadable
+// or unverified metadata stay for inspection; only complete authenticated copies are removed.
+export async function pruneOffsiteCopies(backups, newest) {
+  const copies = [];
+  for (const name of await readdir(backups)) {
+    if (!name.endsWith('.dump.json') || !backupFilenamePattern.test(name.slice(0, -5))) continue;
+    copies.push({ name, meta: await metadataAt(path.join(backups, name)) });
+  }
+  copies.sort((a, b) => a.name.localeCompare(b.name));
+  const keep = new Set([newest + '.json']);
+  const verified = copies.filter(copy => restoreVerified(copy.meta)).at(-1);
+  if (verified) keep.add(verified.name);
+  const removed = [];
+  for (const { name, meta } of copies) {
+    if (keep.has(name) || meta.encrypted_verified !== true) continue;
+    await rm(path.join(backups, name.slice(0, -5) + '.aes256gcm'), { force: true });
+    await rm(path.join(backups, name), { force: true });
+    removed.push(name.slice(0, -5));
+  }
+  return removed;
+}
+
 // download writes only to the supplied private staging path. Existing copies are authenticated on every pass.
 export async function ensureOffsiteCopy(latest, backups, key, download) {
   const meta = latest.metadata;
@@ -47,15 +73,7 @@ export async function ensureOffsiteCopy(latest, backups, key, download) {
     const stored = { ...meta, copied_at: now, verified_at: now, encrypted_verified: true,
       encryption: 'AES-256-GCM', server_restore: latest.restore, ...(repair ? { repaired_at: now } : {}) };
     await saveMetadata(metadataFile, stored);
-    const cutoff = Date.now() - 30 * 86400_000;
-    for (const name of await readdir(backups)) {
-      if (!name.endsWith('.dump.json') || !backupFilenamePattern.test(name.slice(0, -5)) || name === path.basename(metadataFile)) continue;
-      const old = await metadataAt(path.join(backups, name));
-      if (old.encrypted_verified && Date.parse(old.copied_at) < cutoff) {
-        await rm(path.join(backups, name.slice(0, -5) + '.aes256gcm'), { force: true });
-        await rm(path.join(backups, name), { force: true });
-      }
-    }
+    await pruneOffsiteCopies(backups, meta.file);
     return stored;
   } finally {
     for (const file of [temporary, temporaryEncrypted, temporaryRestored]) await rm(file, { force: true });
