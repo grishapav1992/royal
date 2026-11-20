@@ -1,0 +1,98 @@
+{
+  "release": "last-convoy-result-line-20261121-v2",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "7c54fbf8d26dcc36b15fc492686787eec656c5a2",
+  "installerCommit": "faaeba3bc24fae22ca35de49591ec23a63b68802",
+  "baseCommit": "e97289c4491f4cf380ea442a52a872fa798f4edf",
+  "runningImage": "sha256:2287b9485cdbdcf781439464080d1763277ee2707c252986dbf5d94d99264996",
+  "releaseManifestSha256": "17aed761bac76b367aa48cf74d48722529144b2ba05b960ec3af96a5d73c3f04",
+  "samePackageAs": "last-convoy-result-line-20261121-v1",
+  "module": {
+    "verified": true,
+    "gameId": "studio-last-convoy",
+    "version": "1.1.1-e7123e72f84b",
+    "bytes": 6348289,
+    "files": 17,
+    "beforeSha256": "37a3d149ebac77d902f9663a3ecd6e2dbd2e7ad731dab34cd8475078966b795a",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "4de707f1eaebb4f1b99d92cd2ebc2d6d605a6e2a961c506da027c8c365f2de75",
+    "history": "/opt/royal-game-modules-state/history/20261120T224708-e8fa5b6a3fb1413fb62f3808aa09ba8e.json"
+  },
+  "priorManifestSha256": "ce7e6e80947e6c859758cd6c3c69236ed0d5b48e3e2440a959f7448425befb6c",
+  "installedSourceFiles": {
+    "games/last-convoy/LastConvoyUI.ts": "f82d734e26976cc31279e6f226492227d29e62c2cd0198509bc584ec29e52120",
+    "games/last-convoy/last-convoy.css": "107c6cfc38d249b19d4910f7c1170231e5fdd5e20492dfb2d29655ed3be97bcf"
+  },
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/last-convoy-result-line-20261121-v2/source.tgz",
+    "sha256": "6db68003142fcc483522187aaff8b83836173b7791755a0830d787cb365bfd8e",
+    "bytes": 19798,
+    "oldVersion": "1.1.1-339adbc4c939",
+    "imageTag": "royal-game:before-last-convoy-result-line-20261121-v2",
+    "image": "sha256:2287b9485cdbdcf781439464080d1763277ee2707c252986dbf5d94d99264996",
+    "oldPackageHardlinked": true
+  },
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "runtimeFilesPreserved": 8767,
+  "servicesPreserved": 11,
+  "otherModulesPreserved": true,
+  "freeBefore": 12402012160,
+  "freeAfter": 12401946624,
+  "v1Rollback": {
+    "rolledBack": true,
+    "release": "last-convoy-result-line-20261121-v1",
+    "reason": "Republish with the single-game installer so retention can verify the successor",
+    "module": {
+      "verified": true,
+      "gameId": "studio-last-convoy",
+      "version": "1.1.1-339adbc4c939",
+      "bytes": 6347571,
+      "files": 17,
+      "beforeSha256": "4de707f1eaebb4f1b99d92cd2ebc2d6d605a6e2a961c506da027c8c365f2de75",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "rollback",
+      "activeSha256": "37a3d149ebac77d902f9663a3ecd6e2dbd2e7ad731dab34cd8475078966b795a",
+      "history": "/opt/royal-game-modules-state/history/20261120T223920-7fdbbc3667e142fc92d7f12e9d821d6f.json"
+    },
+    "pointerSha256": "37a3d149ebac77d902f9663a3ecd6e2dbd2e7ad731dab34cd8475078966b795a",
+    "restoredSources": {
+      "games/last-convoy/LastConvoyUI.ts": "1bf136d2f286f7e4d2b5656a1e73ef0498c466d48635382a281973a6b1e74e87",
+      "games/last-convoy/last-convoy.css": "93cbfb90ffa4da6c5c7d7dd1fc20d7480f619824d8c12b5a581b2e8c4a336d49"
+    },
+    "hostRestarted": false,
+    "databaseTouched": false,
+    "availableBytes": 12413906944
+  },
+  "maintenanceAfterRollback": {
+    "status": "completed",
+    "healthOk": true
+  },
+  "live": {
+    "health": true,
+    "moduleHostEntries": 124,
+    "unchangedModulePointers": 123,
+    "changedModulePointers": [
+      "studio-last-convoy"
+    ],
+    "packageFilesVerified": 17,
+    "hostIndexUnchanged": true
+  },
+  "verification": "Same package bytes, release manifest, GitHub receipt and browser and wallet evidence as v1 (see its verification.json)",
+  "maintenance": {
+    "status": "error",
+    "reason": "Live source differs without a verified current module publication: src/ui/CaramelCarnivalUI.ts",
+    "cause": "The installed maintenance code comes from 07d90d9022600ecb124f21066879b695dd63ea8f (cleanup-release-history.py 64e3c3071e85...). Scoped successor support for a published module set was added in e841ee18 and has not been installed.",
+    "timerEnabled": true,
+    "timerActive": true,
+    "healthyHost": true,
+    "resolved": false
+  }
+}
