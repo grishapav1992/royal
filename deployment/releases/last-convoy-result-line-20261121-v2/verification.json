@@ -87,12 +87,59 @@
   },
   "verification": "Same package bytes, release manifest, GitHub receipt and browser and wallet evidence as v1 (see its verification.json)",
   "maintenance": {
-    "status": "error",
-    "reason": "Live source differs without a verified current module publication: src/ui/CaramelCarnivalUI.ts",
-    "cause": "The installed maintenance code comes from 07d90d9022600ecb124f21066879b695dd63ea8f (cleanup-release-history.py 64e3c3071e85...). Scoped successor support for a published module set was added in e841ee18 and has not been installed.",
+    "status": "completed",
+    "release": "password-login-20261119-v1",
+    "durationSeconds": 59.15,
+    "healthOk": true,
+    "currentImage": "sha256:2287b9485cdbdcf781439464080d1763277ee2707c252986dbf5d94d99264996",
+    "rollbackImage": "sha256:f8db3bfa5c0445b9f4db77505cda967c72478fa334a1330aa9048dc972f371d7",
+    "freeBefore": 12398440448,
+    "freeAfter": 12424359936,
     "timerEnabled": true,
     "timerActive": true,
-    "healthyHost": true,
-    "resolved": false
+    "resolved": true,
+    "earlierError": "Live source differs without a verified current module publication: src/ui/CaramelCarnivalUI.ts",
+    "cause": "Installed maintenance code from 07d90d90 predated scoped successor support (e841ee18)"
+  },
+  "maintenanceUpdate": {
+    "installer": "deployment/maintenance/install-retention.py",
+    "sourceCommit": "e50cb6ef4323807e46d112fc3ca1beb4e6fc6aea",
+    "files": {
+      "automatic-retention.py": "5ce40ab935a17f6558265d69367228172dcc8b2a2bf94360c507a1729303d5a4",
+      "cleanup-release-history.py": "28d405cd869af7d23753ec42cd94fa7cf9dcb9084b082f40c83ee7b8ffd1ba1e",
+      "retention-runtime.py": "f54f29ab3a659d6be5c8b28628643afddfabd713ed0d3e45b5a83fe68f64de71",
+      "production-graph-receipt.py": "e9b3d2ef62b3b3f3c68a4368b542148446feddd08185f19bb4b68e42b8bec991",
+      "royal-dev-app-retention.service": "5fc869fcc77f20b4abb4b35f6d00c81b1e170e2ef67f195f863be2dc8a879107",
+      "royal-dev-app-retention.timer": "e94fefc752774b5f78bec8877bd8324c278ac92fb45527a9d6c7a38dabf44472",
+      "install-retention.py": "ca6eb6b6eeac0875c2da049d9a1284729a0f8c25242b9cf7e446250955cf960c"
+    },
+    "expectedBefore": {
+      "automatic-retention.py": "5ce40ab935a17f6558265d69367228172dcc8b2a2bf94360c507a1729303d5a4",
+      "cleanup-release-history.py": "64e3c3071e856ef94658aee6d16077a13e0bcc707933dbc009f119a960865c3f",
+      "production-graph-receipt.py": "e9b3d2ef62b3b3f3c68a4368b542148446feddd08185f19bb4b68e42b8bec991",
+      "retention-runtime.py": "f54f29ab3a659d6be5c8b28628643afddfabd713ed0d3e45b5a83fe68f64de71",
+      "royal-dev-app-retention.service": "5fc869fcc77f20b4abb4b35f6d00c81b1e170e2ef67f195f863be2dc8a879107",
+      "royal-dev-app-retention.timer": "e94fefc752774b5f78bec8877bd8324c278ac92fb45527a9d6c7a38dabf44472"
+    },
+    "changedInstalledFiles": [
+      "cleanup-release-history.py"
+    ],
+    "original": "/opt/royal-maintenance/updates/scoped-successors-e50cb6ef/original",
+    "pendingAutoRestartCancelled": true,
+    "timerDisabled": false,
+    "localTests": {
+      "passedSuites": [
+        "test_scoped_module_successors",
+        "test_module_set_retention",
+        "test_install_retention",
+        "test_installation_locks",
+        "test_installation_baseline"
+      ],
+      "note": "test_production_graph_receipt needs hashlib.file_digest (Python 3.11+); the local macOS Python is 3.9 and that file is unchanged"
+    }
+  },
+  "liveAfterMaintenance": {
+    "health": true,
+    "packageFilesVerified": 17
   }
 }
