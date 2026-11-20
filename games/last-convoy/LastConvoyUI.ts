@@ -31,12 +31,12 @@ type Live=SlotOperation&{operationId:string;balance:number;motion:boolean;fast:b
 const preview=Array.from({length:30},(_,i)=>(i+2*Math.floor(i/6))%7);
 // Cabinet labels travel with the module because the installed host owns the shared dictionary.
 const copy=language==='en'?{
- beacons:'Beacons', defense:'Convoy defense', win:'Round win', radio:'Radio', maya:'Maya · Spark',
+ beacons:'Beacons', defense:'Convoy defense', win:'Round win', radio:'Radio',
  controls:'Controls', stake:'Stake per spin', free:'Free', spinning:'Spinning', last:'Last win',
  autoplay:'Autoplay', closeAuto:'Close autoplay', rounds:'Number of spins', startAuto:(count:number)=>`Start ${count} spins`,
  autoRules:'Choose the number of paid spins in Autoplay. After an evacuation, confirm the result to resume the series.',
 }:{
- beacons:'Маяки', defense:'Защита конвоя', win:'Выигрыш раунда', radio:'Радиосвязь', maya:'Майя · Искра',
+ beacons:'Маяки', defense:'Защита конвоя', win:'Выигрыш раунда', radio:'Радиосвязь',
  controls:'Управление', stake:'Ставка за ход', free:'Бесплатно', spinning:'Вращается', last:'Последний выигрыш',
  autoplay:'Автоигра', closeAuto:'Закрыть автоигру', rounds:'Количество вращений', startAuto:(count:number)=>`Запустить ${count} вращений`,
  autoRules:'В окне «Автоигра» выбери количество платных вращений. После эвакуации подтверди результат, чтобы продолжить серию.',
@@ -107,14 +107,13 @@ export class LastConvoyUI {
      <div class="cc-feedback" data-cc-feedback><p data-cc-status role="status"></p><p data-cc-error role="alert"></p><button type="button" data-cc-retry hidden>Проверить прежний ход</button></div>
     </div>
    </div>
+   <div class="cv-result">
+    <p class="cv-free" data-cc-free></p>
+    <p data-cc-message>Нажми вращение, чтобы собрать припасы</p>
+    <div class="cc-groups" data-cc-groups></div>
+   </div>
    <aside class="cv-radio" aria-label="${copy.radio}">
     <div class="cv-portrait"><div class="cv-hero-body"><img data-cv-heroine alt="Майя, выживальщица с рацией" width="1024" height="1536"><canvas data-cv-frames width="512" height="768" aria-hidden="true"></canvas></div></div>
-    <div class="cv-radio-copy">
-     <strong>${copy.maya}</strong>
-     <p data-cc-message>Нажми вращение, чтобы собрать припасы</p>
-     <p class="cv-free" data-cc-free>Ждём сигнал</p>
-     <div class="cc-groups" data-cc-groups></div>
-    </div>
    </aside>
    <section class="cc-controls cv-controls" aria-label="${copy.controls}">
     <div class="cv-balance"><span>Баланс</span><strong data-cc-balance>0,00</strong></div>
