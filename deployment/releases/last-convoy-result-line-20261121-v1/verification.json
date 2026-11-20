@@ -1,0 +1,86 @@
+{
+  "release": "last-convoy-result-line-20261121-v1",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "7c54fbf8d26dcc36b15fc492686787eec656c5a2",
+  "codeCommit": "6fdf954aa573397466cd640bad81ab40e13fe059",
+  "baseCommit": "e97289c4491f4cf380ea442a52a872fa798f4edf",
+  "runningImage": "sha256:2287b9485cdbdcf781439464080d1763277ee2707c252986dbf5d94d99264996",
+  "releaseManifestSha256": "17aed761bac76b367aa48cf74d48722529144b2ba05b960ec3af96a5d73c3f04",
+  "games": {
+    "studio-last-convoy": {
+      "previousVersion": "1.1.1-339adbc4c939",
+      "version": "1.1.1-e7123e72f84b",
+      "previousPointerSha256": "37a3d149ebac77d902f9663a3ecd6e2dbd2e7ad731dab34cd8475078966b795a",
+      "pointerSha256": "4de707f1eaebb4f1b99d92cd2ebc2d6d605a6e2a961c506da027c8c365f2de75",
+      "previousManifestSha256": "ce7e6e80947e6c859758cd6c3c69236ed0d5b48e3e2440a959f7448425befb6c",
+      "manifestSha256": "e862d68279a40982ee87056a139d07592ec1e5886d7378984ebdb072049291d0",
+      "hostContract": {
+        "apiVersion": 1,
+        "rulesVersion": 2,
+        "progressVersion": 1
+      }
+    }
+  },
+  "installedSourceFiles": {
+    "games/last-convoy/LastConvoyUI.ts": "f82d734e26976cc31279e6f226492227d29e62c2cd0198509bc584ec29e52120",
+    "games/last-convoy/last-convoy.css": "107c6cfc38d249b19d4910f7c1170231e5fdd5e20492dfb2d29655ed3be97bcf"
+  },
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/last-convoy-result-line-20261121-v1/source.tgz",
+    "sha256": "77134ae79a3e949958c9718056f084416c1b09f170728ac0fc54bcb3a2e37b5f",
+    "bytes": 19754,
+    "oldVersions": {
+      "studio-last-convoy": "1.1.1-339adbc4c939"
+    },
+    "imageTag": "royal-game:before-last-convoy-result-line-20261121-v1",
+    "image": "sha256:2287b9485cdbdcf781439464080d1763277ee2707c252986dbf5d94d99264996",
+    "oldPackagesHardlinked": true
+  },
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "runtimeFilesPreserved": 8767,
+  "servicesPreserved": 11,
+  "otherModulesPreserved": true,
+  "freeBefore": 12422377472,
+  "freeAfter": 12415893504,
+  "verification": {
+    "rtpProfiles": 38,
+    "stakePolicies": 20,
+    "stakeAdmissions": 20,
+    "typecheck": true,
+    "githubVerified": true,
+    "walletTests": 19,
+    "connectedBrowserTests": 6,
+    "browserScenarios": [
+      "Last Convoy keeps its result line and stake legible in the connected host",
+      "Last Convoy scales the field, Maya and controls at 2K and 4K",
+      "natural bonuses keep counters and free continuation visible in both orientations",
+      "settings, Stop and one accepted ten-cent round: studio-last-convoy",
+      "count-only autoplay fits the connected host: studio-last-convoy",
+      "autoplay completes ten paid spins through a natural bonus: studio-last-convoy"
+    ],
+    "browserReportSha256": "6974bfcb0671ab61fdaf2a7bb1ef6c7150d49356e44eb9d68d0839c7d6e9b084",
+    "hostUsedForBrowserTests": "local connected host from main sources with a temporary PostgreSQL (scripts/game-layout-preview.ts), serving the exact prepared module bytes",
+    "live": {
+      "health": true,
+      "moduleHostEntries": 124,
+      "unchangedModulePointers": 123,
+      "changedModulePointers": [
+        "studio-last-convoy"
+      ],
+      "packageFilesVerified": 17,
+      "previousPackageServed": true,
+      "hostIndexUnchanged": true
+    },
+    "productionAccountsOrRoundsCreated": false
+  },
+  "maintenance": {
+    "status": "error",
+    "reason": "Live source differs without a verified current module publication: src/ui/CaramelCarnivalUI.ts",
+    "cause": "The installer followed the multi-module record format (published.modules, operator.packages, archive members under the game folder). Retention accepts a later scoped publication of one game only in the single-module format (published.module, operator.pointerSha256, active.json and prior-manifest.json at the archive root), so the autoplay release can no longer prove its Cosmic Escape and Caramel Carnival sources once the Last Convoy pointer moved.",
+    "timerEnabled": true,
+    "timerActive": true,
+    "healthyHost": true,
+    "resolved": false
+  }
+}
