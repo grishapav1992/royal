@@ -1,3 +1,5 @@
+import { DRAGON_PATH_GAME, DRAGON_PATH_RULES_VERSION, DRAGON_PATH_TITLE } from '../shared/dragonPathProtocol';
+
 /** Independent client packages supported by this host release. */
 export const STUDIO_GAME_MODULES = [
  { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },
@@ -140,7 +142,8 @@ export const PVP_GAME_MODULES=[
  {gameId:'crazy-eights',slug:'crazy-eights',apiVersion:1,rulesVersion:1,progressVersion:1},
  {gameId:'tsu-e-fa',slug:'tsu-e-fa',apiVersion:1,rulesVersion:4,progressVersion:1},
 ] as const;
-export const GAME_MODULES = [...STUDIO_GAME_MODULES, ...CASINO_GAME_MODULES, ...ACTIVITY_GAME_MODULES, ...ARCADE_GAME_MODULES, ...PROVIDER_GAME_MODULES,...PVP_GAME_MODULES] as const;
+export const DRAGON_PATH = { gameId: DRAGON_PATH_GAME, slug: 'panda-dragon', apiVersion: 1, rulesVersion: DRAGON_PATH_RULES_VERSION, progressVersion: 2, title: DRAGON_PATH_TITLE } as const;
+export const GAME_MODULES = [...STUDIO_GAME_MODULES, ...CASINO_GAME_MODULES, ...ACTIVITY_GAME_MODULES, ...ARCADE_GAME_MODULES, ...PROVIDER_GAME_MODULES,...PVP_GAME_MODULES, DRAGON_PATH] as const;
 
 export type IndependentGameId = typeof GAME_MODULES[number]['gameId'];
 export interface GameModuleContract {

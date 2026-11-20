@@ -1,6 +1,6 @@
 # Independently published games
 
-Every retained game definition has an independent client package. The catalogue contains 124 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 123 visible machines:
+Технический реестр содержит 125 модулей для действующих и сохранённых исторических игр. Наличие записи само по себе не означает доступность игры в зале или допуск к ставкам:
 
 | Family | Module identities |
 | --- | ---: |
@@ -10,6 +10,7 @@ Every retained game definition has an independent client package. The catalogue 
 | Durak, transfer Durak, Crazy Eights and Tsu-e-fa PvP | 4 |
 | Breaker, Orbit, Drift and Pixel legacy arcade games | 4 |
 | Luelon and Casino API Pro provider adapters | 2 |
+| [«Путь дракона», общий виртуальный кошелёк](../games/panda-dragon/README.md) | 1 |
 
 Supported identities and host contracts are in `src/modules/GameModuleCatalog.ts`. Each `games/<slug>/` directory contains its entry, package metadata and TypeScript configuration. GIRLHUB keeps slug `girlhub` and identity `studio-afterglow`. LAST EXIT keeps identity `github-crash` and uses slug `last-exit`. CR vs. Leo keeps its production identity `original-cr-vs-leo` in package `cr-vs-leo`; Royal Plinko keeps the current «Завеса ночи» implementation and its assets. Hong Kong Warrior uses identity `original-jackie-chan`, slug `jackie-chan` and API/rules contracts 1 plus progress contract 2, with the shared CR vs. Leo engine and a separate cosmetic collection. The arcade Orbit uses identity `orbit` and slug `arcade-orbit`, distinct from `studio-orbit`.
 

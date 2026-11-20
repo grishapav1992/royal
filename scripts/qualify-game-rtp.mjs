@@ -28,7 +28,7 @@ import {qualifyJackie} from './game-math/rtp-jackie.mjs';
 import {preflightAfterglow,simulateAfterglow} from './game-math/rtp-afterglow.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url)), args = process.argv.slice(2);
 const index = args.indexOf('--game'), gameId = index < 0 ? undefined : args[index + 1];
-const added=['studio-caramel-carnival','studio-last-convoy','studio-nitro-run','studio-meme-overload','studio-velvet-reign','royal-plinko','github-crash','original-cr-vs-leo'];
+const added=['panda-dragon-preview','studio-caramel-carnival','studio-last-convoy','studio-nitro-run','studio-meme-overload','studio-velvet-reign','royal-plinko','github-crash','original-cr-vs-leo'];
 assert([...added,'flag-tote','variant-keys','github-hilo','royal-coins','royal-fruits','studio-wild-nudge','tsu-e-fa','flag-battle','original-jackie-chan','royal-roulette','studio-forest-heart','studio-flooded-temple','studio-afterglow','studio-caribbean-treasures','studio-neopolis','studio-dracona','studio-cosmic-escape','mortal-kombat','hockey','pool','chess','durak','transfer-durak','crazy-eights'].includes(gameId), 'Choose a registered paid game');
 const registry=JSON.parse(await readFile(resolve(root,'scripts/game-math/rtp-policy.json'),'utf8'));
 const requestedRules=args.indexOf('--rules');

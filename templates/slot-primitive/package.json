@@ -1,0 +1,21 @@
+{
+  "name": "@royal/slot-primitive",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "exports": {
+    ".": "./dist/index.js",
+    "./actions": "./dist/actions.js",
+    "./view": "./dist/view.js",
+    "./view.css": "./view.css",
+    "./paylines": "./dist/paylines.js"
+  },
+  "files": ["dist/index.*", "dist/actions.*", "dist/view.*", "dist/paylines.*", "view.css"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "test:browser": "npm run build && node test/browser.mjs"
+  },
+  "devDependencies": { "@playwright/test": "1.62.1", "typescript": "5.9.3" }
+}

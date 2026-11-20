@@ -23,6 +23,12 @@ test('current allowlist includes build inputs but excludes env, data and generat
   assert.ok(current.some(file => file.path === 'scripts/build-load-stand.mjs'));
   assert.ok(current.some(file => file.path === 'scripts/load-account-probe.ts'));
   assert.ok(current.some(file => file.path === 'scripts/load-generator-completion.ts'));
+  assert.deepEqual(current.filter(file => file.path.startsWith('templates/')).map(file => file.path), [
+    'templates/slot-primitive/src/actions.ts',
+    'templates/slot-primitive/src/index.ts',
+    'templates/slot-primitive/src/view.ts',
+    'templates/slot-primitive/view.css',
+  ]);
   assert.equal(current.some(file => file.path.split('/').some(part => /^(?:\.env(?:\..*)?|node_modules|artifacts|backups?|data|runtime|dist(?:-.*)?|\._.*)$/.test(part))), false);
 });
 test('every local Docker COPY source and both runtime card engines are present in the isolated build context', () => {
