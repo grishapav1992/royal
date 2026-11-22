@@ -3,26 +3,28 @@
   "gameId": "royal-plinko",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-11-19T06:23:32.872Z",
-  "completedAt": "2026-11-19T06:24:46.115Z",
+  "startedAt": "2026-11-22T19:38:02.956Z",
+  "completedAt": "2026-11-22T19:39:33.876Z",
   "sourceHashes": {
-    "src/shared/gameStakes.ts": "a8357bd91b07d33e991867b770341f6668760ac9a54c1e58efce98b932c29d4e",
+    "server/royalStakeTransport.ts": "8ba026c2dbc9e47e6ef3b982b943b8884120b17daa4d28b970bb55b8aade07be",
+    "server/gameWalletRoutes.ts": "1c446f7c814bd0bd5c1c8427a20d83e3c52b5f252f7794a05a6f38928edff007",
+    "src/shared/gameStakes.ts": "a83f372dbb71ac3c08093d6ffeb41746da4aea610034d6ecdaec8a22dc29bf30",
     "src/shared/roundPrecision.ts": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
     "src/shared/casinoExpansion.ts": "ad1474233c750035eecbf54544c9c6f3a6eb9ae47bbe6319703b2383c211100d",
     "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
     "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
     "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
-    "server/demoExpansion.ts": "5eb63c071a574d9bbc584b3459281376b4010cc2097ba12c717517dfeb461dff",
-    "server/demoWallet.ts": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
+    "server/demoExpansion.ts": "5ba9f8e40813d3308af662babc9797369b450d7bec2aed1b0e6aa1914f87088b",
+    "server/demoWallet.ts": "b8428ee4e297863398034eb992e1606ba77713fbbd3b1158c09fd3e2b9ea2b21",
     "server/demoWalletAmounts.ts": "f1f0a88915a232f134b83203b670e51ea1d5e81273ae0ccdcb4ac1c521b52cce",
-    "server/demoWalletRoutes.ts": "43709d3a2fe7a289bcc4a8023b8a5f597f05ab68d482b3c4485832ad011c3ff0",
-    "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
-    "server/afterglowProgress.ts": "4a7f5d07ca6be6afbcec0c5ff2c7d91bb4da82f81438aa35c8a418cc939134b9",
-    "src/wallet/ExpansionClient.ts": "fb9978cdadb3419006c4757f36cce649c8a735c8e31a43dbd896e92b090cd177",
-    "src/wallet/WalletClient.ts": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
+    "server/demoWalletRoutes.ts": "9fc3c1ebed17fff83d7653e25f8e8146536897cbfc9cd08101b92e8cfe0659ea",
+    "server/finance/nile-game-runtime.ts": "fd8aebc6d96472fce25ab7b040382d2b749c428bed16cfabdb51629495053118",
+    "server/afterglowProgress.ts": "aacf0aeaa90cece3d2460426bbd442324f99038b0eab42b8c564184c6a87641e",
+    "src/wallet/ExpansionClient.ts": "cfae68f3d4a121c10f1691fe11ad3ca6c536e4cf2c88bb1221da9b3916cc265c",
+    "src/wallet/WalletClient.ts": "55f58e6cc8d348a35316a942d42e918923c3a5b3f34e4ea65c69381f7ade743e",
     "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d",
     "scripts/game-math/rtp-stakes-worker.mjs": "f5db2c6be7cc4c68bb07c719eea5ba3db3f0d237d7bf8cd75736c891f91a218d",
-    "server-tests/game-stakes.test.ts": "d8fb3859601228535ac49ba2876865f139bf59549d4b77b1f4fb9e3c7a7b8fe1",
+    "server-tests/game-stakes.test.ts": "88746b3ea9f26a3c6af228fd3c422d3aeeab7b1eb0034dcb19959bbc90055ea1",
     "server-tests/round-precision.test.ts": "d48a631f198636a97db8e70952c600a47b9cb1d04b20ebc6d08cbfa2cd452abb",
     "src/shared/originalGames.ts": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
     "server/games/originals.ts": "a40c038406cf6a7ffbb0fa7b92af2937c40a7012626bc2ab06a232d03c152d45",
@@ -38,7 +40,7 @@
     "scripts/game-math/manual-stake-worker.mjs": "54d7257363c6d1cd4ff071197e42a99f9e6a644344a58708d66f11a59ddad5c4",
     "scripts/game-math/rtp-stakes.mjs": "a885087bc907189f46a1a1dcc54f807733fcf8cbfae818a64a9fe9f2aed6de52"
   },
-  "policySha256": "cc5e6f532978878a62724f7b87a2bf934c90e88b4859c04085d76b117034a1e6",
+  "policySha256": "d901902d4485d56c526ff1740fe778ee7b8c9a8025aebbab9e5bd80ba00c9ec1",
   "method": "full-round-unbiased-cent-policy-v1",
   "precisionLaw": {
     "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
@@ -8386,236 +8388,236 @@
       "journalBalanced": true
     },
     "gameId": "royal-plinko",
-    "cases": 612,
+    "cases": 684,
     "freeContinuationChecks": 0,
-    "replayAndRestartCases": 612,
+    "replayAndRestartCases": 684,
     "oneDebitAndCredit": true,
     "clientVerified": true,
-    "sha256": "ed75fd18178cbc1aa8623eeed27c22d22308d5e419e413ba0dc6b1844e8ad8b3"
+    "sha256": "e6b553431e035d31d210d2b21bdbacd695a4ed780b3fc9e4408a16d47c7016a1"
   },
   "manualStakes": {
     "range": {
       "minimumCents": 10,
-      "maximumCents": 5000,
+      "maximumCents": 10000,
       "stepCents": 1
     },
-    "checks": 179676,
+    "checks": 359676,
     "cases": [
       {
         "choice": "8:easy",
         "seed": 6371291,
-        "denominations": 4991,
-        "sha256": "0b89097c03b4175c09f64566f1925a4cf3a170dd2d7d0e82410a796dfd6faad0"
+        "denominations": 9991,
+        "sha256": "6a328ec70ca7f58699f7507492aa32b894ce22fff708abb40f3ec7dc1946e7f0"
       },
       {
         "choice": "8:medium",
         "seed": 6379210,
-        "denominations": 4991,
-        "sha256": "e59d1de6c80ce00a2dd8e8ee6c480f1ac4cb998916c6ea3f1dcc43d19ca4b904"
+        "denominations": 9991,
+        "sha256": "4e3d050314866e2d81e24b7e277c609e66603beae35b908c7ac4165becd697b0"
       },
       {
         "choice": "8:hard",
         "seed": 6387129,
-        "denominations": 4991,
-        "sha256": "f4750b74c149a31976ca11d3e5ac228501878bd241f2216dd3d4595e8e46d85e"
+        "denominations": 9991,
+        "sha256": "e631fb68f3948498947aabac1b8cb39ab10243d3932ccd9eed3a57fba9dfa42b"
       },
       {
         "choice": "8:expert",
         "seed": 6395048,
-        "denominations": 4991,
-        "sha256": "612754533d7d1ca1779937572b002b5a552918953c8403440ffeb9c309ecfdd8"
+        "denominations": 9991,
+        "sha256": "6dfa2737a23962591d536151dfd41abd0ac7ec9ff53287c4ce13b4819f3bb677"
       },
       {
         "choice": "9:easy",
         "seed": 6402967,
-        "denominations": 4991,
-        "sha256": "7a2c3dbc9ea62904820012788035ea46a636c867b05f0319cba066628c9a0f22"
+        "denominations": 9991,
+        "sha256": "550252b53d5b2d5c6c420223e919d2398b48c770fa54b580843e4687ec4c738a"
       },
       {
         "choice": "9:medium",
         "seed": 6410886,
-        "denominations": 4991,
-        "sha256": "0b89097c03b4175c09f64566f1925a4cf3a170dd2d7d0e82410a796dfd6faad0"
+        "denominations": 9991,
+        "sha256": "6a328ec70ca7f58699f7507492aa32b894ce22fff708abb40f3ec7dc1946e7f0"
       },
       {
         "choice": "9:hard",
         "seed": 6418805,
-        "denominations": 4991,
-        "sha256": "f4750b74c149a31976ca11d3e5ac228501878bd241f2216dd3d4595e8e46d85e"
+        "denominations": 9991,
+        "sha256": "e631fb68f3948498947aabac1b8cb39ab10243d3932ccd9eed3a57fba9dfa42b"
       },
       {
         "choice": "9:expert",
         "seed": 6426724,
-        "denominations": 4991,
-        "sha256": "5cb22f957695fb2e6b10ba59b8f6cb4dd491d8f19e79a5d889316186f4870440"
+        "denominations": 9991,
+        "sha256": "16c71af68e353a385802603ba7597161d7e2eef43c391ba3ad6af8f72e807789"
       },
       {
         "choice": "10:easy",
         "seed": 6434643,
-        "denominations": 4991,
-        "sha256": "638667ae92625380777925dd70d43ebf3811a05f8250d05e7b7989a3113aad9d"
+        "denominations": 9991,
+        "sha256": "e669715ae52867e5cc3ee404e6a40ac887407d6486646bc9747a0dca2e825be6"
       },
       {
         "choice": "10:medium",
         "seed": 6442562,
-        "denominations": 4991,
-        "sha256": "8e77f3f7c1dc6deb181da7131f55415647fe9b4b7851c2f51ecd124251b1e3e0"
+        "denominations": 9991,
+        "sha256": "db79312b9fd3db9dd1740ecd64474ae4b5524a07fc73f204afa1598e40f1e30f"
       },
       {
         "choice": "10:hard",
         "seed": 6450481,
-        "denominations": 4991,
-        "sha256": "67ee099c49d42b62c676a974972ee82763e26487157b90b0726e6c1851d2471a"
+        "denominations": 9991,
+        "sha256": "547f3e5e564c5bbda99809085db93ec45b76c4063ec7228bc93ed40d0b2353b6"
       },
       {
         "choice": "10:expert",
         "seed": 6458400,
-        "denominations": 4991,
-        "sha256": "e17dc98eda11502c3ef3d36b941ac1e3396f11bea993d260819689103a257186"
+        "denominations": 9991,
+        "sha256": "8ab5435f6a649be1481d477fd57ccf5427c27c75b609364a04159d23553765ed"
       },
       {
         "choice": "11:easy",
         "seed": 6466319,
-        "denominations": 4991,
-        "sha256": "8e9fc8428279176dcd45ac1d63f1c2bfc0dc71ffe35feda95f0c91e396169ffa"
+        "denominations": 9991,
+        "sha256": "4d0873cd48e345afcbebc81f0ad1477c67f54545727f9798c4579bcc42162c4e"
       },
       {
         "choice": "11:medium",
         "seed": 6474238,
-        "denominations": 4991,
-        "sha256": "baeebfe6722c1d94cb9d6464a3fb451c5dba0c26237c2e1fdda5309c90a7dea5"
+        "denominations": 9991,
+        "sha256": "505b994f18c680677c838329814e1c0ab62478f27d72370249268cdf46db576a"
       },
       {
         "choice": "11:hard",
         "seed": 6482157,
-        "denominations": 4991,
-        "sha256": "29b5b75db9e1b1d6edab949faefd8a846c1706a6b123e32c0ae19842852271b7"
+        "denominations": 9991,
+        "sha256": "7a652b0694b2085823cfd650f4c6d4e4223621bbcbacdf63285a85aea3172d17"
       },
       {
         "choice": "11:expert",
         "seed": 6490076,
-        "denominations": 4991,
-        "sha256": "9edafa7b05b6ae0c2dcb66ea2f16f4f2ba1964c3c7826401296b0fcc09396fcf"
+        "denominations": 9991,
+        "sha256": "8d199af3df255538935f9b8822c53a1798cbb47150451448130643050117e372"
       },
       {
         "choice": "12:easy",
         "seed": 6497995,
-        "denominations": 4991,
-        "sha256": "638667ae92625380777925dd70d43ebf3811a05f8250d05e7b7989a3113aad9d"
+        "denominations": 9991,
+        "sha256": "e669715ae52867e5cc3ee404e6a40ac887407d6486646bc9747a0dca2e825be6"
       },
       {
         "choice": "12:medium",
         "seed": 6505914,
-        "denominations": 4991,
-        "sha256": "fbab3bb0d5d77debe8df15133c9aaa9924fc72f5e40b11d0d53cc96f7594f663"
+        "denominations": 9991,
+        "sha256": "5dfaaa1c8814503dd559eb2c6385c9d7bcc75b2ce6df192508f97ec3d89dcc29"
       },
       {
         "choice": "12:hard",
         "seed": 6513833,
-        "denominations": 4991,
-        "sha256": "dd1f6ab8f74b445444c195cdf423d72785135233af77eea5077a3aad889a596f"
+        "denominations": 9991,
+        "sha256": "d4cd15c2654645b19a3e34165bbd0a38d5b37ff686acdaf7f26585ae50f4be5c"
       },
       {
         "choice": "12:expert",
         "seed": 6521752,
-        "denominations": 4991,
-        "sha256": "f44d4e3c8273800cde773d86bf7b0659ae51a2dd1914dbc622b15925401324e6"
+        "denominations": 9991,
+        "sha256": "a001fea00587f2c8f1ef5a6779c415f7c8aed0e0312c3c354132fd281035c38e"
       },
       {
         "choice": "13:easy",
         "seed": 6529671,
-        "denominations": 4991,
-        "sha256": "19b1a2b72fbd0585501ad0910ea6d0e7ef8a2b46e59b3926821fc39286835738"
+        "denominations": 9991,
+        "sha256": "8ffd184f9d791fffb2284dd963f3295190279222b9c3c0920b130c63c869b70c"
       },
       {
         "choice": "13:medium",
         "seed": 6537590,
-        "denominations": 4991,
-        "sha256": "99449fffd0036057bec39fd7f4814caea00570993a10beeecb3f463ab65c27c8"
+        "denominations": 9991,
+        "sha256": "12fb6aa0f86bcde8061d665e3b4476cdb436cf45f7936ebd22b5de87b88a0fee"
       },
       {
         "choice": "13:hard",
         "seed": 6545509,
-        "denominations": 4991,
-        "sha256": "cb3adf8cc239ab56295b0dad71a9a20b17acc8400ce1bb7714ffe7a0e707a2e0"
+        "denominations": 9991,
+        "sha256": "8f9fe65f0e6bf0d85e9989b3f6cfd47e756690271b9785f2d7eab515962d7894"
       },
       {
         "choice": "13:expert",
         "seed": 6553428,
-        "denominations": 4991,
-        "sha256": "e7bb1d67e783e40875584a23ccf004333abf1dd7b54ecbe8fd61040e00ca0632"
+        "denominations": 9991,
+        "sha256": "9276b4ddcf37613f4af8717061568df207761afb16758e5e09baac48e6bc019f"
       },
       {
         "choice": "14:easy",
         "seed": 6561347,
-        "denominations": 4991,
-        "sha256": "638667ae92625380777925dd70d43ebf3811a05f8250d05e7b7989a3113aad9d"
+        "denominations": 9991,
+        "sha256": "e669715ae52867e5cc3ee404e6a40ac887407d6486646bc9747a0dca2e825be6"
       },
       {
         "choice": "14:medium",
         "seed": 6569266,
-        "denominations": 4991,
-        "sha256": "638667ae92625380777925dd70d43ebf3811a05f8250d05e7b7989a3113aad9d"
+        "denominations": 9991,
+        "sha256": "e669715ae52867e5cc3ee404e6a40ac887407d6486646bc9747a0dca2e825be6"
       },
       {
         "choice": "14:hard",
         "seed": 6577185,
-        "denominations": 4991,
-        "sha256": "5ba1d53050462399b845141bb8c8328ba1bfac3fc3b1106562c1533a5a1af177"
+        "denominations": 9991,
+        "sha256": "c0d5c161c082d9a24459874d6762c3c7c4a0be33fb5f60ff6bb9185e69c4cb55"
       },
       {
         "choice": "14:expert",
         "seed": 6585104,
-        "denominations": 4991,
-        "sha256": "cb3adf8cc239ab56295b0dad71a9a20b17acc8400ce1bb7714ffe7a0e707a2e0"
+        "denominations": 9991,
+        "sha256": "8f9fe65f0e6bf0d85e9989b3f6cfd47e756690271b9785f2d7eab515962d7894"
       },
       {
         "choice": "15:easy",
         "seed": 6593023,
-        "denominations": 4991,
-        "sha256": "19b1a2b72fbd0585501ad0910ea6d0e7ef8a2b46e59b3926821fc39286835738"
+        "denominations": 9991,
+        "sha256": "8ffd184f9d791fffb2284dd963f3295190279222b9c3c0920b130c63c869b70c"
       },
       {
         "choice": "15:medium",
         "seed": 6600942,
-        "denominations": 4991,
-        "sha256": "cd8f7882f080765dae576970b3903e6f1770dd84ae15b0a49ea13842f733a8ab"
+        "denominations": 9991,
+        "sha256": "4ef25183ea6cce2ed6de1315c9c74ae7487e1c38635d4a3b7d2af6107d5f9429"
       },
       {
         "choice": "15:hard",
         "seed": 6608861,
-        "denominations": 4991,
-        "sha256": "44a9710f1543effa28faa7b31bb1292b7500bc55a35ce25fed226793560c0c84"
+        "denominations": 9991,
+        "sha256": "e585c83a5a07dbb070254ded3cf1b8a238da04f858a4382eddb9776de9977fb8"
       },
       {
         "choice": "15:expert",
         "seed": 6616780,
-        "denominations": 4991,
-        "sha256": "9edafa7b05b6ae0c2dcb66ea2f16f4f2ba1964c3c7826401296b0fcc09396fcf"
+        "denominations": 9991,
+        "sha256": "8d199af3df255538935f9b8822c53a1798cbb47150451448130643050117e372"
       },
       {
         "choice": "16:easy",
         "seed": 6624699,
-        "denominations": 4991,
-        "sha256": "ce66c0fec89d6b8b9aaebd4ab402a92899ebbc1a9437dfb51ea2ebae521d726d"
+        "denominations": 9991,
+        "sha256": "6267b1b6e00720d5965c15294d882f476d5a2b92737ffba0fd7b6afc1e6bffbb"
       },
       {
         "choice": "16:medium",
         "seed": 6632618,
-        "denominations": 4991,
-        "sha256": "0b89097c03b4175c09f64566f1925a4cf3a170dd2d7d0e82410a796dfd6faad0"
+        "denominations": 9991,
+        "sha256": "6a328ec70ca7f58699f7507492aa32b894ce22fff708abb40f3ec7dc1946e7f0"
       },
       {
         "choice": "16:hard",
         "seed": 6640537,
-        "denominations": 4991,
-        "sha256": "950b988280142966f347ac99ecfb8858ae12786fc24f603cc61b766e13d440c6"
+        "denominations": 9991,
+        "sha256": "a28e6c35c12cbe22211d49dcea02caa6e4b0f4f34b639cc87c5252306505a436"
       },
       {
         "choice": "16:expert",
         "seed": 6648456,
-        "denominations": 4991,
-        "sha256": "8c076af12c6bf3bb0b363803ea6ef9791301244ebc8d3ad37fa0f6b819652384"
+        "denominations": 9991,
+        "sha256": "80a99c42aea6cf03669e8d71469413c0fc2abe7200cf7467e1a456339ccf484f"
       }
     ],
     "interpretation": "Exhaustive accepted-cent runtime replay per allowed mode or choice. The reviewed stake-independent latent full-round model and exact rational final-ticket identity apply to every accepted cent. Bought Caribbean rounds normalize to the actual charged integer price. These replays are compatibility and scaling checks, not a statistical RTP estimate."

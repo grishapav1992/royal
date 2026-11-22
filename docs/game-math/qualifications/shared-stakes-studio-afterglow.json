@@ -3,26 +3,28 @@
   "gameId": "studio-afterglow",
   "rulesVersion": 2,
   "progressVersion": 4,
-  "startedAt": "2026-11-19T06:35:53.839Z",
-  "completedAt": "2026-11-19T06:35:59.079Z",
+  "startedAt": "2026-11-22T19:48:50.035Z",
+  "completedAt": "2026-11-22T19:48:53.190Z",
   "sourceHashes": {
-    "src/shared/gameStakes.ts": "a8357bd91b07d33e991867b770341f6668760ac9a54c1e58efce98b932c29d4e",
+    "server/royalStakeTransport.ts": "8ba026c2dbc9e47e6ef3b982b943b8884120b17daa4d28b970bb55b8aade07be",
+    "server/gameWalletRoutes.ts": "1c446f7c814bd0bd5c1c8427a20d83e3c52b5f252f7794a05a6f38928edff007",
+    "src/shared/gameStakes.ts": "a83f372dbb71ac3c08093d6ffeb41746da4aea610034d6ecdaec8a22dc29bf30",
     "src/shared/roundPrecision.ts": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
     "src/shared/casinoExpansion.ts": "ad1474233c750035eecbf54544c9c6f3a6eb9ae47bbe6319703b2383c211100d",
     "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
     "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
     "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
-    "server/demoExpansion.ts": "5eb63c071a574d9bbc584b3459281376b4010cc2097ba12c717517dfeb461dff",
-    "server/demoWallet.ts": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
+    "server/demoExpansion.ts": "5ba9f8e40813d3308af662babc9797369b450d7bec2aed1b0e6aa1914f87088b",
+    "server/demoWallet.ts": "b8428ee4e297863398034eb992e1606ba77713fbbd3b1158c09fd3e2b9ea2b21",
     "server/demoWalletAmounts.ts": "f1f0a88915a232f134b83203b670e51ea1d5e81273ae0ccdcb4ac1c521b52cce",
-    "server/demoWalletRoutes.ts": "43709d3a2fe7a289bcc4a8023b8a5f597f05ab68d482b3c4485832ad011c3ff0",
-    "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
-    "server/afterglowProgress.ts": "4a7f5d07ca6be6afbcec0c5ff2c7d91bb4da82f81438aa35c8a418cc939134b9",
-    "src/wallet/ExpansionClient.ts": "fb9978cdadb3419006c4757f36cce649c8a735c8e31a43dbd896e92b090cd177",
-    "src/wallet/WalletClient.ts": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
+    "server/demoWalletRoutes.ts": "9fc3c1ebed17fff83d7653e25f8e8146536897cbfc9cd08101b92e8cfe0659ea",
+    "server/finance/nile-game-runtime.ts": "fd8aebc6d96472fce25ab7b040382d2b749c428bed16cfabdb51629495053118",
+    "server/afterglowProgress.ts": "aacf0aeaa90cece3d2460426bbd442324f99038b0eab42b8c564184c6a87641e",
+    "src/wallet/ExpansionClient.ts": "cfae68f3d4a121c10f1691fe11ad3ca6c536e4cf2c88bb1221da9b3916cc265c",
+    "src/wallet/WalletClient.ts": "55f58e6cc8d348a35316a942d42e918923c3a5b3f34e4ea65c69381f7ade743e",
     "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d",
     "scripts/game-math/rtp-stakes-worker.mjs": "f5db2c6be7cc4c68bb07c719eea5ba3db3f0d237d7bf8cd75736c891f91a218d",
-    "server-tests/game-stakes.test.ts": "d8fb3859601228535ac49ba2876865f139bf59549d4b77b1f4fb9e3c7a7b8fe1",
+    "server-tests/game-stakes.test.ts": "88746b3ea9f26a3c6af228fd3c422d3aeeab7b1eb0034dcb19959bbc90055ea1",
     "server-tests/round-precision.test.ts": "d48a631f198636a97db8e70952c600a47b9cb1d04b20ebc6d08cbfa2cd452abb",
     "src/shared/afterglow.ts": "eedcc278d149ae66b59d79afeef85d17a3fa5eb7f8d80bf5b5caf73c77b18035",
     "server/games/afterglow.ts": "732c928d299e6a6adb501d1682e80ec2ea02e510884812771c757f5173013258",
@@ -41,12 +43,12 @@
     "scripts/game-math/manual-stake-case.mjs": "fa868d135fd361c26c4bcc41c6e2b0831c0adf2d1744b34fa3a6c237664cebf4",
     "scripts/game-math/manual-stake-pool.mjs": "fc675e82956b25f436dfba08ec1e8893cfeb41772b7b6bd71ab9134095d01596",
     "scripts/game-math/manual-stake-worker.mjs": "54d7257363c6d1cd4ff071197e42a99f9e6a644344a58708d66f11a59ddad5c4",
-    "docs/game-math/skin-offers-20261105/round-compatibility.json": "05bffd2287a6eb15da31a956a12853f40db03b1c9ffc5a2b08bf0f83b9f25b30",
+    "docs/game-math/skin-offers-20261105/round-compatibility.json": "46feb8d19e296d9a2f7babd59c23b18c02fa9c99c62ac844c61b60afe562389a",
     "docs/game-math/skin-offers-20261105/accepted-rounds.test.ts": "6c43a57dbb468ff86cfcdab37c3020d31bd0daa7d34f951bc96ccdb24568d964",
     "docs/game-math/skin-offers-20261105/native-projection.json": "c264b33750cef7301b9bac759b49d8392e9883eaaafb468c7c816e0c5359b8ec",
     "scripts/game-math/rtp-stakes.mjs": "a885087bc907189f46a1a1dcc54f807733fcf8cbfae818a64a9fe9f2aed6de52"
   },
-  "policySha256": "39601ab588eff53313f13106c8499c4b13c18b8626c49ce1b390711538d5f813",
+  "policySha256": "18a0a843969fb1dcf917d8148697ebe973f6f91c9b1fff17058c4dcea8ef4a47",
   "method": "full-round-unbiased-cent-policy-v1",
   "precisionLaw": {
     "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
@@ -170,7 +172,7 @@
   "evidence": {
     "reference": {
       "path": "docs/game-math/qualifications/girlhub-progress-v4.json",
-      "sha256": "4be68250ee8278172d1da1081b5003c7e63796b97162f230a4901e131e93a796"
+      "sha256": "c9f445e55f7caa35c723f067c2d0382629df5a554aa0c8724f61f4dcd57c5be0"
     }
   },
   "replay": {
@@ -269,26 +271,26 @@
       "journalBalanced": true
     },
     "gameId": "studio-afterglow",
-    "cases": 17,
+    "cases": 19,
     "freeContinuationChecks": 0,
-    "replayAndRestartCases": 17,
+    "replayAndRestartCases": 19,
     "oneDebitAndCredit": true,
     "clientVerified": true,
-    "sha256": "ec5f390bc24dd6f1cfc80e9ca9cd44d93e346256444da57826c59f16b1ce8aa9"
+    "sha256": "8fd5dd50b2b72461e4cbcaa049fc8be8992dc564dedcb5e3b3e0cc1b024a56f1"
   },
   "manualStakes": {
     "range": {
       "minimumCents": 10,
-      "maximumCents": 5000,
+      "maximumCents": 10000,
       "stepCents": 1
     },
-    "checks": 4991,
+    "checks": 9991,
     "cases": [
       {
         "choice": "normal",
         "seed": 6371291,
-        "denominations": 4991,
-        "sha256": "ae1f49dcc916543764eb6f2385050ee277c7178011a5413364d671b429c76b2f"
+        "denominations": 9991,
+        "sha256": "edf53f96914a8a6e2ef018a67116215c106964ddadc2077ed39ce32d1fd46ac0"
       }
     ],
     "interpretation": "Exhaustive accepted-cent runtime replay per allowed mode or choice. The reviewed stake-independent latent full-round model and exact rational final-ticket identity apply to every accepted cent. Bought Caribbean rounds normalize to the actual charged integer price. These replays are compatibility and scaling checks, not a statistical RTP estimate."

@@ -25,14 +25,18 @@ export const CARIBBEAN_QUALIFICATION_METHOD = 'exact-caribbean-giant-round-v1';
 // See docs/game-math/star-spin-v2-source-review.md and regenerated full replay evidence.
 // Reviewed 2026-11-18: the higher validated stake is restricted to Cosmic Escape.
 // Caribbean retains the same cents, dispatch, pricing and settlement.
+// Reviewed 2026-11-22: the Royal admission range extends to 100 USDT.
+// The legacy per-line price and the current total-round price calculation, engine
+// dispatch, bonus choices, cap and settlement are unchanged. The wallet verifies
+// the range and calculates reserve coverage from exact integer cents.
 export const CARIBBEAN_REVIEWED_SOURCES = {
   "src/shared/caribbeanTreasuresMath.ts": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
   "src/shared/caribbeanTreasures.ts": "8e987b2de8799b444dd01fe2fcb3a567dd7921a8c1dee4b139e00e13ee3e03bb",
   "server/games/caribbeanTreasures.ts": "bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99",
   "src/shared/caribbeanTransport.ts": "8623c8e5f4f7eef28997a3b9630873e86c4c7fa7f1ff1b790490802d9fd9415a",
   "src/shared/casinoExpansion.ts": "ad1474233c750035eecbf54544c9c6f3a6eb9ae47bbe6319703b2383c211100d",
-  "server/demoExpansion.ts": "5eb63c071a574d9bbc584b3459281376b4010cc2097ba12c717517dfeb461dff",
-  "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96"
+  "server/demoExpansion.ts": "5ba9f8e40813d3308af662babc9797369b450d7bec2aed1b0e6aa1914f87088b",
+  "server/finance/nile-game-runtime.ts": "fd8aebc6d96472fce25ab7b040382d2b749c428bed16cfabdb51629495053118"
 };
 const WEIGHTS = [30,24,18,13,9,6];
 const PAYS = [[2,6,20,60],[4,10,30,100],[6,16,40,150],[8,24,60,200],[10,30,100,400],[16,50,200,1000]];
