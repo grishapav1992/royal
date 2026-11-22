@@ -171,21 +171,29 @@ test('Nitro Run keeps its field and instruments stable with connected chat',asyn
    await fit(page,'studio-nitro-run');
    const composition=await game.evaluate(root=>{
     const rect=(selector:string)=>root.querySelector(selector)!.getBoundingClientRect().toJSON();
-    return {profile:root.dataset.slotPriority,cabinet:rect('.nr-cabinet'),stage:rect('.nr-stage'),hud:rect('.nr-hud'),header:rect('.nr-heading'),frame:rect('.cc-board-frame'),console:rect('.nr-console'),root:root.getBoundingClientRect().toJSON()};
+    return {profile:root.dataset.slotPriority,cabinet:rect('.nr-cabinet'),stage:rect('.nr-stage'),hud:rect('.nr-hud'),header:rect('.nr-heading'),frame:rect('.cc-board-frame'),status:rect('.nr-status'),console:rect('.nr-console'),root:root.getBoundingClientRect().toJSON()};
    });
    const c=composition;
    expect(Math.abs((c.cabinet.left-c.root.left)-(c.root.right-c.cabinet.right)),'cabinet has balanced outer margins').toBeLessThanOrEqual(2);
+   for(const part of [c.frame,c.status,c.console])expect(part.bottom,'cabinet parts stay inside the module').toBeLessThanOrEqual(c.root.bottom+1);
    if(c.profile==='full'){
-    expect(c.frame.left-c.hud.right,'instruments touch the field through one short gutter').toBeGreaterThanOrEqual(10);
-    expect(c.frame.left-c.hud.right).toBeLessThanOrEqual(14);
+    expect(c.hud.left-c.frame.right,'the instrument rail meets the field through one short gutter').toBeGreaterThanOrEqual(10);
+    expect(c.hud.left-c.frame.right).toBeLessThanOrEqual(18);
     expect(Math.abs(c.header.left-c.hud.left)).toBeLessThanOrEqual(2);
     expect(Math.abs(c.console.left-c.hud.left)).toBeLessThanOrEqual(2);
-    expect(Math.abs(c.console.right-c.frame.right)).toBeLessThanOrEqual(2);
-    expect(c.console.top-c.frame.bottom,'no empty result band below the field').toBeLessThanOrEqual(12);
+    expect(Math.abs(c.console.right-c.hud.right)).toBeLessThanOrEqual(2);
+    expect(c.console.top-c.hud.bottom,'instruments and console do not overlap').toBeGreaterThanOrEqual(0);
+    expect(Math.abs(c.status.left-c.frame.left)).toBeLessThanOrEqual(2);
+    expect(Math.abs(c.status.right-c.frame.right)).toBeLessThanOrEqual(2);
+    expect(c.status.top-c.frame.bottom,'status line sits directly below the field').toBeLessThanOrEqual(14);
     if(width===1440&&height===900)expect(c.frame.width).toBeGreaterThan(700);
    }else if(c.profile==='portrait'){
-    expect(c.console.top-c.frame.bottom,'field and console stay together on phones').toBeLessThanOrEqual(10);
-   }else expect(c.console.left-c.frame.right,'landscape console stays beside the field').toBeLessThanOrEqual(16);
+    expect(c.status.top-c.frame.bottom,'status line stays under the field on phones').toBeLessThanOrEqual(12);
+    expect(c.console.top-c.status.bottom,'console stays below the status line').toBeGreaterThanOrEqual(0);
+   }else{
+    expect(c.console.left-c.frame.right,'landscape console stays beside the field').toBeLessThanOrEqual(16);
+    expect(c.console.left-c.frame.right).toBeGreaterThanOrEqual(0);
+   }
    const state=await game.evaluate(root=>{
     const frame=root.querySelector('.cc-board-frame')!,message=root.querySelector('[data-cc-message]')!;
     const error=root.querySelector('[data-cc-error]')!,retry=root.querySelector<HTMLButtonElement>('[data-cc-retry]')!;

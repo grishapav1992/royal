@@ -1,170 +1,205 @@
-/* One fitted cabinet: gaps belong between controls, never inside an oversized scene column. */
+/* One fitted cabinet sized by NitroRunLayout from the module root left after host chat. */
 .nr-game.nr-game[data-slot-priority] {
  display:grid; grid-template:minmax(0,1fr)/minmax(0,1fr); grid-template-areas:none;
  padding:var(--nr-layout-pad,12px); gap:0; place-items:center;
 }
-.nr-cabinet {
- position:relative; isolation:isolate; min-width:0; min-height:0;
- width:var(--nr-layout-width); height:var(--nr-layout-height);
- display:grid; column-gap:12px; row-gap:var(--nr-layout-gap);
+.nr-cabinet { position:relative; isolation:isolate; min-width:0; min-height:0; width:var(--nr-layout-width); height:var(--nr-layout-height); display:grid; }
+.nr-game .nr-cabinet .nr-stage { width:var(--nr-layout-frame); height:var(--nr-layout-stage); }
+.nr-game .nr-scene { display:contents; }
+
+/* Wide: field and status on the left, wordmark, instruments and console in one rail. */
+.nr-game[data-slot-priority='full'] .nr-cabinet { grid-template-columns:var(--nr-layout-frame) var(--nr-layout-rail); column-gap:var(--nr-layout-gap); }
+.nr-game[data-slot-priority='full'] .nr-track { display:flex; flex-direction:column; justify-content:center; gap:12px; min-height:0; }
+.nr-game[data-slot-priority='full'] .nr-status { flex:none; height:var(--nr-layout-message); }
+.nr-game[data-slot-priority='full'] .nr-rail { display:flex; flex-direction:column; gap:12px; min-height:0; min-width:0; }
+.nr-game[data-slot-priority='full'] .nr-heading { flex:none; height:58px; }
+.nr-game[data-slot-priority='full'] .nr-hud { flex:none; }
+.nr-game[data-slot-priority='full'] .nr-console { flex:none; margin-top:auto; }
+@container nitro-cabinet (height < 860px) {
+ .nr-game[data-slot-priority='full'] :is([data-nr-nitro-help],[data-cc-ticket-help]) { display:none; }
 }
-.nr-cabinet::before {
- content:''; position:absolute; inset:-7px; z-index:-1; pointer-events:none;
- border:1px solid #8bafc12b; border-radius:12px;
- background:linear-gradient(140deg,#081725eb,#07131bba); box-shadow:0 12px 48px #0007;
+@container nitro-cabinet (height < 780px) {
+ .nr-game[data-slot-priority='full'] .nr-heading { height:44px; }
+ .nr-game[data-slot-priority='full'] .nr-heading h2 { font-size:30px; }
+ .nr-game[data-slot-priority='full'] .nr-wordmark .nr-checker { width:132px; height:5px; margin-top:5px; }
+ .nr-game[data-slot-priority='full'] :is(.nr-hud,.nr-rail) { gap:10px; }
+ .nr-game[data-slot-priority='full'] :is(.nr-hud>section,.nr-bonus-card) { padding:12px 14px; gap:8px; }
+ .nr-game[data-slot-priority='full'] .nr-gear-card { display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; column-gap:12px; }
+ .nr-game[data-slot-priority='full'] .nr-gear-card>.nr-card-heading { grid-column:1/-1; }
+ .nr-game[data-slot-priority='full'] .nr-gear-card>[data-cc-factor] { font-size:38px; line-height:40px; }
+ .nr-game[data-slot-priority='full'] .nr-gear-card>small { display:none; }
+ .nr-game[data-slot-priority='full'] .cc-ticket-slots { height:36px; }
+ .nr-game[data-slot-priority='full'] .nr-console { padding:14px; }
+ .nr-game[data-slot-priority='full'] .nr-controls { gap:12px 8px; }
+ .nr-game[data-slot-priority='full'] .nr-start { height:64px; }
+ .nr-game[data-slot-priority='full'] .nr-start>span { font-size:26px; }
 }
-.nr-game .nr-cabinet .nr-stage {
- width:var(--nr-layout-frame); height:var(--nr-layout-stage); min-height:0;
- align-self:stretch; justify-self:stretch; margin:0;
-}
-.nr-game .nr-cabinet .nr-stage-caption { display:none; }
-.nr-game .nr-console {
- grid-area:console; min-width:0; min-height:0; position:relative;
- display:grid; grid-template-rows:var(--nr-layout-message) var(--nr-layout-controls);
- border:1px solid var(--nr-line); border-radius:9px; background:#0b1b29;
-}
-.nr-game .nr-console .nr-results {
- grid-area:auto; height:var(--nr-layout-message); padding:0 14px; margin:0;
- background:#112535; border-bottom:1px solid #93b4ca22; border-radius:8px 8px 0 0;
-}
-.nr-game .nr-console .nr-controls {
- grid-area:auto; height:var(--nr-layout-controls); border:0; border-radius:0 0 8px 8px; box-shadow:none;
-}
-.nr-game .nr-console .cc-feedback,.nr-game .nr-console .cc-wallet-help {
- left:0; right:0; bottom:var(--nr-layout-controls); margin:0; min-height:44px; padding:0 10px;
-}
-.nr-game[data-slot-priority='full'] .nr-cabinet {
- grid-template-columns:var(--nr-layout-side) var(--nr-layout-frame);
- grid-template-rows:62px minmax(0,1fr) calc(var(--nr-layout-message) + var(--nr-layout-controls));
- grid-template-areas:'heading stage' 'hud stage' 'console console';
-}
-.nr-game[data-slot-priority='full'] .nr-scene { display:contents; }
-.nr-game[data-slot-priority='full'] .nr-heading { padding:0 2px; justify-content:flex-start; border-bottom:1px solid var(--nr-line); }
-.nr-game[data-slot-priority='full'] .nr-heading h2 { font-size:calc(var(--nr-layout-side)*.158); letter-spacing:-1.5px; }
-.nr-game[data-slot-priority='full'] .nr-wordmark small { font-size:6.5px; letter-spacing:2px; margin-bottom:5px; }
-.nr-game[data-slot-priority='full'] .nr-track-label,.nr-game[data-slot-priority='full'] .nr-heading h2>i { display:none; }
-.nr-game[data-slot-priority='full'] .nr-hud {
- grid-area:hud; height:100%; max-height:none; align-self:stretch;
- display:grid; grid-template-rows:minmax(0,1.45fr) minmax(0,.8fr) minmax(0,1fr); gap:10px;
-}
-.nr-game[data-slot-priority='full'] .nr-hud>section,.nr-game[data-slot-priority='full'] .nr-bonus-card { min-height:0; }
-.nr-game[data-slot-priority='full'] .nr-gear-card { display:flex; flex-direction:column; justify-content:space-between; padding:14px 12px; }
-.nr-game[data-slot-priority='full'] .nr-dial { flex:none; transform:scale(1.25); margin:auto; }
-.nr-game[data-slot-priority='full'] .nr-gear-card>small { font-size:10px; }
-.nr-game[data-slot-priority='full'] .nr-nitro-card { padding:12px; grid-template-columns:36px minmax(0,1fr); gap:8px; }
-.nr-game[data-slot-priority='full'] .nr-nitro-card strong { font-size:12px; }
-.nr-game[data-slot-priority='full'] .nr-nitro-card p { font-size:10px; }
-.nr-game[data-slot-priority='full'] .nr-charge-cells>i { height:7px; }
-.nr-game[data-slot-priority='full'] .nr-bonus-card { padding:12px; justify-content:space-between; gap:6px; }
-.nr-game[data-slot-priority='full'] .nr-bonus-card h3 { font-size:10px; }
-.nr-game[data-slot-priority='full'] .nr-bonus-card>p { font-size:10px; }
-.nr-game[data-slot-priority='full'] .cc-ticket-slots,.nr-game[data-slot-priority='full'] .cc-ticket-slots>span { height:48px; }
-.nr-game[data-slot-priority='full'] .cc-series>strong { font-size:11px; }
-.nr-game[data-slot-priority='full'] [data-cc-ticket-count] { font-size:15px; }
-.nr-game[data-slot-priority='full'] .nr-stage { grid-area:stage; }
-.nr-game[data-slot-priority='full'] .cc-stage-heading { height:28px; flex:none; padding:0 2px 7px; font-size:11px; }
-.nr-game[data-slot-priority='full'] .cc-stage-heading b { font-size:10px; }
-.nr-game[data-slot-priority='full'] .cc-board-frame { padding:6px; }
-.nr-game[data-slot-priority='full'] .nr-controls { grid-template-columns:minmax(96px,1fr) minmax(164px,1.2fr) 144px 66px 44px; gap:10px; padding:10px 12px; }
-.nr-game[data-slot-priority='full'] .nr-race-message>p { font-size:11px; }
-.nr-game[data-slot-priority='full'] .nr-round-total>span { font-size:9px; }
-.nr-game[data-slot-priority='portrait'] .nr-cabinet {
- grid-template-columns:minmax(0,1fr);
- grid-template-rows:var(--nr-layout-header) minmax(0,1fr) calc(var(--nr-layout-message) + var(--nr-layout-controls));
- grid-template-areas:'heading' 'scene' 'console'; row-gap:var(--nr-layout-gap);
-}
-.nr-game[data-slot-priority='portrait'] .nr-heading { padding:0; justify-content:center; }
-.nr-game[data-slot-priority='portrait'] .nr-track-label,.nr-game[data-slot-priority='portrait'] .nr-heading h2>i { display:none; }
-.nr-game[data-slot-priority='portrait'] .nr-scene { justify-content:flex-start; gap:var(--nr-layout-gap); }
-.nr-game[data-slot-priority='portrait'] .nr-hud { height:var(--nr-layout-hud); }
-.nr-game[data-slot-priority='portrait'] .nr-stage { align-self:center; }
-.nr-game[data-slot-priority='portrait'] .cc-stage-heading { height:22px; }
-.nr-game[data-slot-priority='portrait'] .cc-board-frame { padding:5px; }
-.nr-game[data-slot-priority='portrait'] .nr-console .nr-results { flex-direction:row; justify-content:space-between; gap:10px; padding:0 10px; }
-.nr-game[data-slot-priority='portrait'] .nr-race-message { flex:1; }
-.nr-game[data-slot-priority='portrait'] .nr-race-message>p { font-size:8px; line-height:11px; }
-.nr-game[data-slot-priority='portrait'] .nr-result-marker { display:none; }
-.nr-game[data-slot-priority='portrait'] .nr-round-total { flex:none; }
-.nr-game[data-slot-priority='portrait'] .nr-round-total>span { display:flex; flex-direction:column; align-items:flex-end; gap:1px; font-size:6px; }
-.nr-game[data-slot-priority='portrait'] .nr-round-total strong { font-size:20px; line-height:21px; margin:0; }
-.nr-game[data-slot-priority='portrait'][data-compact='true'] .cc-stage-heading { height:18px; }
-.nr-game[data-slot-priority='portrait'][data-compact='true'] .cc-board-frame { padding:4px; }
-.nr-game[data-slot-priority='landscape'] .nr-cabinet {
- grid-template-columns:minmax(0,1fr) 182px; grid-template-rows:30px minmax(0,1fr);
- grid-template-areas:'heading console' 'scene console'; column-gap:14px; row-gap:6px;
-}
-.nr-game[data-slot-priority='landscape'] .nr-heading { padding:0; }
-.nr-game[data-slot-priority='landscape'] .nr-scene { grid-template-columns:94px var(--nr-layout-frame); gap:12px; align-items:stretch; }
-.nr-game[data-slot-priority='landscape'] .nr-hud { align-self:stretch; max-height:none; height:100%; display:grid; grid-template-rows:minmax(0,1.3fr) minmax(0,.75fr) minmax(0,1fr); gap:6px; }
-.nr-game[data-slot-priority='landscape'] .nr-gear-card { display:flex; flex-direction:column; justify-content:space-between; gap:2px; }
-.nr-game[data-slot-priority='landscape'] .nr-gear-card>small { display:block; font-size:7px; line-height:1.3; }
-.nr-game[data-slot-priority='landscape'] .nr-gear-card>[data-cc-factor] { font-size:30px; line-height:32px; }
-.nr-game[data-slot-priority='landscape'] .nr-nitro-card { align-content:center; }
-.nr-game[data-slot-priority='landscape'] .nr-bonus-card { justify-content:space-between; }
-.nr-game[data-slot-priority='landscape'] .nr-stage { grid-area:1/2; }
-.nr-game[data-slot-priority='landscape'] .cc-stage-heading { height:20px; }
-.nr-game[data-slot-priority='landscape'] .cc-board-frame { padding:4px; }
-.nr-game[data-slot-priority='landscape'] .nr-console .nr-results { flex-direction:column; justify-content:center; gap:2px; padding:3px 8px; }
-.nr-game[data-slot-priority='landscape'] .nr-race-message>p { font-size:7px; line-height:10px; text-align:center; }
-.nr-game[data-slot-priority='landscape'] .nr-round-total>span { font-size:7px; }
-.nr-game[data-slot-priority='landscape'] .nr-round-total strong { font-size:20px; margin-left:5px; }
-.nr-game[data-slot-priority='landscape'] .nr-console .nr-controls { grid-template-rows:32px 70px 52px 44px; gap:6px; padding:8px; }
-.nr-game[data-slot-priority='landscape'] .nr-console .cc-feedback,.nr-game[data-slot-priority='landscape'] .nr-console .cc-wallet-help { left:calc(182px - var(--nr-layout-width)); right:0; bottom:var(--nr-layout-controls); }
-@container nitro-cabinet (height < 700px) {
- .nr-game[data-slot-priority='full'] .nr-dial { transform:none; }
- .nr-game[data-slot-priority='full'] .nr-gear-card { padding:10px; }
- .nr-game[data-slot-priority='full'] .nr-gear-card>small,.nr-game[data-slot-priority='full'] .nr-bonus-card>p { display:none; }
- .nr-game[data-slot-priority='full'] .nr-bonus-card { padding:8px; gap:4px; }
- .nr-game[data-slot-priority='full'] .cc-ticket-slots,.nr-game[data-slot-priority='full'] .cc-ticket-slots>span { height:36px; }
-}
-@container nitro-cabinet (height < 290px) {
- .nr-game[data-slot-priority='landscape'] .nr-race-message { display:none; }
- .nr-game[data-slot-priority='landscape'] .nr-gear-card>small { display:none; }
- .nr-game[data-slot-priority='landscape'] .nr-console .nr-controls { grid-template-rows:24px 60px 44px 44px; gap:5px; padding:6px; }
+@container nitro-cabinet (height < 660px) {
+ .nr-game[data-slot-priority='full'] .nr-heading { height:34px; }
+ .nr-game[data-slot-priority='full'] .nr-heading h2 { font-size:26px; }
+ .nr-game[data-slot-priority='full'] .nr-wordmark .nr-checker { display:none; }
+ .nr-game[data-slot-priority='full'] .nr-nitro-icon { width:24px; height:24px; }
+ .nr-game[data-slot-priority='full'] .nr-start>small { display:none; }
 }
 
-/* Autoplay is configured before any paid operation is submitted. */
-.nr-game .nr-auto-panel {
- box-sizing:border-box; width:min(420px,calc(100vw - 24px)); max-width:none;
- max-height:calc(100dvh - 24px); margin:auto; padding:24px; overflow:auto;
- border:1px solid #7597ad66; border-top:3px solid var(--nr-orange); border-radius:12px;
- color:#edf4f8; background:linear-gradient(150deg,#172d40,#0b1825 65%);
- box-shadow:0 20px 80px #000a; font:500 14px/1.4 system-ui,sans-serif; text-align:left;
+/* Portrait: wordmark, one instrument strip, field, status; console under the thumb. */
+.nr-game[data-slot-priority='portrait'] .nr-track,.nr-game[data-slot-priority='portrait'] .nr-rail { display:contents; }
+.nr-game[data-slot-priority='portrait'] .nr-cabinet {
+ grid-template-columns:minmax(0,1fr);
+ grid-template-rows:var(--nr-layout-header) var(--nr-layout-hud) var(--nr-layout-stage) var(--nr-layout-message) minmax(0,1fr) var(--nr-layout-console);
+ grid-template-areas:'heading' 'hud' 'stage' 'status' '.' 'console'; row-gap:var(--nr-layout-gap);
 }
-.nr-auto-panel::backdrop { background:#020a12b8; }
-.nr-auto-panel header { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:20px; }
-.nr-auto-panel header small { color:var(--nr-orange); font-size:9px; font-weight:800; letter-spacing:2px; }
-.nr-auto-panel h2 { margin:2px 0 0; font-size:26px; line-height:1.1; font-weight:800; }
-.nr-auto-panel header button { flex:none; width:44px; font-size:24px; }
-.nr-auto-counts { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
-.nr-game .nr-auto-counts button { min-height:52px; font-size:20px; font-weight:750; }
-.nr-game .nr-auto-counts button[aria-checked='true'] { color:#ffac7f; border-color:var(--nr-orange); background:#ff82451c; box-shadow:inset 0 -2px var(--nr-orange); }
-.nr-auto-panel .nr-auto-count-label { margin:7px 0 18px; color:var(--nr-muted); font-size:11px; }
-.nr-auto-stake { display:flex; justify-content:space-between; gap:12px; font-size:12px; color:var(--nr-muted); }
-.nr-auto-stake strong { color:#e2edf4; font-size:13px; white-space:nowrap; }
-.nr-auto-total { margin-top:14px; padding:16px; border:1px solid #64e5ed30; border-radius:8px; background:#061522a6; }
-.nr-auto-total>span { display:block; font-size:11px; color:#b4c8d6; }
-.nr-auto-total>strong { display:block; margin-top:4px; color:var(--nr-cyan); font-size:32px; font-weight:800; font-variant-numeric:tabular-nums; line-height:1.2; }
-.nr-auto-total small { font-size:11px; font-weight:600; color:#a8bfcd; }
-.nr-auto-panel #nr-auto-note { margin:14px 0; font-size:11px; line-height:1.5; color:var(--nr-muted); }
-.nr-auto-error { color:#ffb1a2; font-size:12px; }
-.nr-auto-error:empty { display:none; }
-.nr-auto-actions { display:grid; gap:8px; margin-top:16px; }
-.nr-game .nr-auto-actions .nr-auto-start { min-height:48px; color:#20150c; border-color:#ffb476; background:linear-gradient(120deg,#ffbb77,#f77d37); font-size:14px; font-weight:800; }
-.nr-game .nr-auto-panel button:disabled { opacity:.45; cursor:default; }
-@media (max-height:460px) {
- .nr-game .nr-auto-panel { width:min(620px,calc(100vw - 24px)); padding:12px 16px; }
- .nr-game .nr-auto-panel[open] { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); column-gap:16px; }
- .nr-auto-panel header { grid-column:1/-1; margin-bottom:8px; }
- .nr-auto-panel h2 { font-size:20px; }
- .nr-auto-panel header small { display:none; }
- .nr-auto-counts { grid-column:1; grid-row:2/4; align-self:start; }
- .nr-auto-panel .nr-auto-count-label { grid-column:1; grid-row:2/4; align-self:end; margin:0; }
- .nr-auto-stake { grid-column:2; grid-row:2; font-size:11px; }
- .nr-auto-total { grid-column:2; grid-row:3; margin-top:6px; padding:8px 12px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
- .nr-auto-total>strong { margin:0; font-size:25px; }
- .nr-auto-panel #nr-auto-note { grid-column:1/-1; margin:8px 0; }
- .nr-auto-error { grid-column:1/-1; }
- .nr-auto-actions { grid-column:1/-1; grid-template-columns:minmax(0,1fr) 100px; margin-top:8px; }
- .nr-game .nr-auto-counts button { min-height:44px; font-size:17px; }
+.nr-game[data-slot-priority='portrait'][data-compact='true'] .nr-cabinet {
+ grid-template-rows:var(--nr-layout-hud) var(--nr-layout-stage) var(--nr-layout-message) minmax(0,1fr) var(--nr-layout-console);
+ grid-template-areas:'hud' 'stage' 'status' '.' 'console';
+}
+.nr-game[data-slot-priority='portrait'][data-compact='true'] .nr-heading { display:none; }
+.nr-game[data-slot-priority='portrait'] .nr-heading { grid-area:heading; }
+.nr-game[data-slot-priority='portrait'] .nr-heading h2 { font-size:26px; }
+.nr-game[data-slot-priority='portrait'] .nr-wordmark .nr-checker { width:112px; height:5px; margin-top:4px; background-size:10px 10px; }
+.nr-game[data-slot-priority='portrait'] .nr-hud { grid-area:hud; display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:0; padding:10px 12px; border:1px solid var(--nr-line); border-radius:14px; background:#141418f0; }
+.nr-game[data-slot-priority='portrait'] :is(.nr-hud>section,.nr-bonus-card) { padding:0 0 0 12px; border:0; border-left:1px solid var(--nr-line); border-radius:0; background:none; justify-content:space-between; gap:4px; }
+.nr-game[data-slot-priority='portrait'] .nr-gear-card { padding-left:0; border-left:0; display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-rows:auto auto; align-items:center; }
+.nr-game[data-slot-priority='portrait'] .nr-gear-card>.nr-card-heading>span,
+.nr-game[data-slot-priority='portrait'] .nr-hud small,.nr-game[data-slot-priority='portrait'] .nr-hud p,
+.nr-game[data-slot-priority='portrait'] .nr-nitro-icon { display:none; }
+.nr-game[data-slot-priority='portrait'] .nr-gear-card>[data-cc-factor] { grid-area:1/2; font-size:24px; line-height:26px; }
+.nr-game[data-slot-priority='portrait'] .nr-shift { grid-column:1/-1; gap:4px; }
+.nr-game[data-slot-priority='portrait'] .nr-shift>i { height:10px; border-radius:4px; font-size:0; }
+.nr-game[data-slot-priority='portrait'] .nr-card-heading h3,.nr-game[data-slot-priority='portrait'] [data-nr-charge] { font-size:12px; letter-spacing:.06em; }
+.nr-game[data-slot-priority='portrait'] .nr-charge-cells { gap:4px; }
+.nr-game[data-slot-priority='portrait'] .nr-charge-cells>i { height:10px; }
+.nr-game[data-slot-priority='portrait'] [data-cc-ticket-count] { font-size:14px; }
+.nr-game[data-slot-priority='portrait'] .nr-bonus-card .nr-long { display:none; }
+.nr-game[data-slot-priority='portrait'] .nr-bonus-card .nr-short { display:inline; }
+.nr-game[data-slot-priority='portrait'] .cc-ticket-slots { height:10px; gap:4px; }
+.nr-game[data-slot-priority='portrait'] .cc-ticket-slots>span { padding:0; border-radius:3px; background:#22222a; box-shadow:inset 0 0 0 1px #34343e; }
+.nr-game[data-slot-priority='portrait'] .cc-ticket-slots>span>.cc-symbol { display:none; }
+.nr-game[data-slot-priority='portrait'] .cc-ticket-slots>span.cc-collected { background:repeating-conic-gradient(var(--nr-ink) 0 25%,var(--nr-bg) 0 50%) 0 0/6px 6px; box-shadow:inset 0 0 0 1px var(--nr-signal); }
+.nr-game[data-slot-priority='portrait'] .cc-series { display:none!important; }
+.nr-game[data-slot-priority='portrait'] .nr-stage { grid-area:stage; justify-self:center; }
+.nr-game[data-slot-priority='portrait'] .cc-board-frame { padding:5px; border-radius:16px; }
+.nr-game[data-slot-priority='portrait'] .cc-board,.nr-game[data-slot-priority='portrait'] .cc-static { gap:3px; }
+.nr-game[data-slot-priority='portrait'] :is(.cc-cell,.cc-reel) { border-radius:7px; }
+.nr-game[data-slot-priority='portrait'] .nr-status { grid-area:status; }
+.nr-game[data-slot-priority='portrait'] .nr-results { padding:0 14px; gap:10px; border-radius:14px; }
+.nr-game[data-slot-priority='portrait'] .nr-result-marker { width:8px; height:8px; }
+.nr-game[data-slot-priority='portrait'] .nr-race-message { gap:10px; }
+.nr-game[data-slot-priority='portrait'] .nr-race-message>p { font-size:14px; }
+.nr-game[data-slot-priority='portrait'] .nr-round-total { flex-direction:column; align-items:flex-end; gap:2px; }
+.nr-game[data-slot-priority='portrait'] .nr-round-total>span { font-size:12px; letter-spacing:.06em; }
+.nr-game[data-slot-priority='portrait'] .nr-round-total strong { font-size:24px; }
+.nr-game[data-slot-priority='portrait'] .nr-console { grid-area:console; padding:12px; border-radius:14px; }
+.nr-game[data-slot-priority='portrait'] .nr-controls { height:100%; grid-template-columns:76px repeat(4,minmax(0,1fr)) 56px; grid-template-rows:minmax(0,1fr) 64px; grid-template-areas:'balance balance stake stake stake stake' 'auto spin spin spin spin tools'; gap:10px 8px; }
+.nr-game[data-slot-priority='portrait'] .cc-balance { flex-direction:column; align-items:flex-start; justify-content:flex-end; gap:2px; }
+.nr-game[data-slot-priority='portrait'] .cc-balance>strong { font-size:20px; }
+.nr-game[data-slot-priority='portrait'] .cc-stake { gap:4px; align-self:end; grid-template-columns:minmax(0,1fr); grid-template-areas:'cost' 'field'; }
+.nr-game[data-slot-priority='portrait'] .cc-stake>label { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+.nr-game[data-slot-priority='portrait'] .cc-controls .cc-stake>small { justify-self:center; text-align:center; }
+.nr-game[data-slot-priority='portrait'] .cc-stake>div { grid-template-columns:44px minmax(0,1fr) 44px; gap:6px; }
+.nr-game[data-slot-priority='portrait'] .cc-stake button { width:44px; height:44px; }
+.nr-game[data-slot-priority='portrait'] :is(.cc-stake select,.cc-stake input[data-manual-stake]) { height:44px; font-size:18px!important; }
+.nr-game[data-slot-priority='portrait'] .nr-start { height:64px; }
+.nr-game[data-slot-priority='portrait'] .nr-start>span { font-size:24px; }
+.nr-game[data-slot-priority='portrait'] .nr-start>small { display:none; }
+.nr-game[data-slot-priority='portrait'] :is(.cc-auto-controls>button,.cc-tools,.cc-tools button) { width:100%; height:64px; }
+.nr-game[data-slot-priority='portrait'][data-compact='true'] .nr-controls { grid-template-rows:minmax(0,1fr) 56px; }
+.nr-game[data-slot-priority='portrait'][data-compact='true'] :is(.nr-start,.cc-auto-controls>button,.cc-tools,.cc-tools button) { height:56px; }
+.nr-game[data-slot-priority='portrait'][data-compact='true'] .nr-race-message>p { font-size:13px; }
+.nr-game[data-slot-priority='portrait'][data-compact='true'] .nr-round-total strong { font-size:20px; }
+.nr-game[data-slot-priority='portrait'][data-compact='true'] .cc-board-frame { padding:5px; }
+@container nitro-cabinet (width < 360px) {
+ .nr-game[data-slot-priority='portrait'] .nr-hud { padding:8px 10px; }
+ .nr-game[data-slot-priority='portrait'] :is(.nr-hud>section,.nr-bonus-card) { padding-left:8px; }
+ .nr-game[data-slot-priority='portrait'] .nr-gear-card { padding-left:0; }
+ .nr-game[data-slot-priority='portrait'] .nr-controls { grid-template-columns:64px repeat(4,minmax(0,1fr)) 48px; }
+ .nr-game[data-slot-priority='portrait'] .cc-balance>strong { font-size:17px; }
+ .nr-game[data-slot-priority='portrait'] .nr-gear-card h3 { display:none; }
+ .nr-game[data-slot-priority='portrait'] :is(.nr-card-heading h3,[data-nr-charge]) { letter-spacing:0; white-space:nowrap; }
+ .nr-game[data-slot-priority='portrait'] .cc-stage-heading b { display:none; }
+ .nr-game[data-slot-priority='portrait'] .nr-start>span { font-size:20px; }
+ .nr-game[data-slot-priority='portrait'] .cc-stake>div { gap:4px; }
+ .nr-game[data-slot-priority='portrait'] .cc-stake select { padding:0 2px; font-size:16px; }
+ .nr-game[data-slot-priority='portrait'] .cc-stake input[data-manual-stake] { padding-left:4px!important; font-size:16px!important; }
+}
+
+/* Phone landscape: instruments, field, then status and console. */
+.nr-game[data-slot-priority='landscape'] .nr-track,.nr-game[data-slot-priority='landscape'] .nr-rail { display:contents; }
+.nr-game[data-slot-priority='landscape'] .nr-cabinet {
+ grid-template-columns:var(--nr-layout-side) var(--nr-layout-frame) var(--nr-layout-rail);
+ grid-template-rows:auto minmax(0,1fr); grid-template-areas:'heading stage status' 'hud stage console'; gap:8px var(--nr-layout-gap);
+}
+.nr-game[data-slot-priority='landscape'] .nr-heading { grid-area:heading; align-self:center; }
+.nr-game[data-slot-priority='landscape'] .nr-heading h2 { font-size:22px; }
+.nr-game[data-slot-priority='landscape'] .nr-wordmark .nr-checker { width:96px; height:5px; margin-top:4px; background-size:10px 10px; }
+.nr-game[data-slot-priority='landscape'] .nr-hud { grid-area:hud; gap:8px; min-height:0; }
+.nr-game[data-slot-priority='landscape'] :is(.nr-hud>section,.nr-bonus-card) { padding:10px; gap:6px; border-radius:12px; }
+.nr-game[data-slot-priority='landscape'] .nr-gear-card>.nr-card-heading>span,
+.nr-game[data-slot-priority='landscape'] .nr-hud small,.nr-game[data-slot-priority='landscape'] .nr-hud p,
+.nr-game[data-slot-priority='landscape'] .nr-nitro-icon { display:none; }
+.nr-game[data-slot-priority='landscape'] .nr-card-heading h3,.nr-game[data-slot-priority='landscape'] [data-nr-charge] { font-size:12px; letter-spacing:.04em; }
+.nr-game[data-slot-priority='landscape'] .nr-gear-card>[data-cc-factor] { font-size:28px; line-height:30px; }
+.nr-game[data-slot-priority='landscape'] .nr-shift { gap:3px; }
+.nr-game[data-slot-priority='landscape'] .nr-shift>i { height:8px; font-size:0; border-radius:4px; }
+.nr-game[data-slot-priority='landscape'] .nr-charge-cells>i { height:10px; }
+.nr-game[data-slot-priority='landscape'] [data-cc-ticket-count] { font-size:14px; }
+.nr-game[data-slot-priority='landscape'] .nr-bonus-card .nr-long { display:none; }
+.nr-game[data-slot-priority='landscape'] .nr-bonus-card .nr-short { display:inline; }
+.nr-game[data-slot-priority='landscape'] .cc-ticket-slots { height:10px; gap:4px; }
+.nr-game[data-slot-priority='landscape'] .cc-ticket-slots>span { padding:0; border-radius:3px; background:#22222a; box-shadow:inset 0 0 0 1px #34343e; }
+.nr-game[data-slot-priority='landscape'] .cc-ticket-slots>span>.cc-symbol { display:none; }
+.nr-game[data-slot-priority='landscape'] .cc-ticket-slots>span.cc-collected { background:repeating-conic-gradient(var(--nr-ink) 0 25%,var(--nr-bg) 0 50%) 0 0/6px 6px; box-shadow:inset 0 0 0 1px var(--nr-signal); }
+.nr-game[data-slot-priority='landscape'] .cc-series>strong { font-size:12px; }
+.nr-game[data-slot-priority='landscape'] .nr-stage { grid-area:stage; align-self:center; }
+.nr-game[data-slot-priority='landscape'] .cc-board-frame { padding:4px; border-radius:14px; }
+.nr-game[data-slot-priority='landscape'] .cc-board,.nr-game[data-slot-priority='landscape'] .cc-static { gap:3px; }
+.nr-game[data-slot-priority='landscape'] :is(.cc-cell,.cc-reel) { border-radius:6px; }
+.nr-game[data-slot-priority='landscape'] .nr-status { grid-area:status; min-height:64px; }
+.nr-game[data-slot-priority='landscape'] .nr-results { flex-direction:column; align-items:stretch; justify-content:center; padding:8px 12px; border-radius:12px; gap:4px; }
+.nr-game[data-slot-priority='landscape'] .nr-result-marker { display:none; }
+.nr-game[data-slot-priority='landscape'] .nr-race-message { flex:none; }
+.nr-game[data-slot-priority='landscape'] .nr-race-message>p { font-size:13px; line-height:1.3; }
+.nr-game[data-slot-priority='landscape'] .nr-round-total { justify-content:space-between; gap:8px; }
+.nr-game[data-slot-priority='landscape'] .nr-round-total>span { font-size:12px; letter-spacing:.04em; }
+.nr-game[data-slot-priority='landscape'] .nr-round-total strong { font-size:22px; }
+.nr-game[data-slot-priority='landscape'] .nr-console { grid-area:console; padding:10px; border-radius:12px; display:flex; flex-direction:column; }
+.nr-game[data-slot-priority='landscape'] .nr-controls { flex:1; grid-template-columns:minmax(0,1fr) 48px; grid-template-rows:auto auto minmax(44px,1fr) 44px; grid-template-areas:'balance balance' 'stake stake' 'spin spin' 'auto tools'; gap:6px; align-items:end; }
+.nr-game[data-slot-priority='landscape'] .cc-balance>strong { font-size:18px; }
+.nr-game[data-slot-priority='landscape'] .cc-stage-heading b { display:none; }
+.nr-game[data-slot-priority='landscape'] .cc-stage-heading>span { overflow:hidden; text-overflow:ellipsis; }
+.nr-game[data-slot-priority='landscape'] .cc-stake { grid-template-columns:minmax(0,1fr); grid-template-areas:'cost' 'field'; gap:4px; }
+.nr-game[data-slot-priority='landscape'] .cc-stake>label { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+.nr-game[data-slot-priority='landscape'] .cc-controls .cc-stake>small { justify-self:start; text-align:left; }
+.nr-game[data-slot-priority='landscape'] .cc-stake>div { grid-template-columns:44px minmax(0,1fr) 44px; gap:6px; }
+.nr-game[data-slot-priority='landscape'] .cc-stake button { width:44px; height:44px; }
+.nr-game[data-slot-priority='landscape'] :is(.cc-stake select,.cc-stake input[data-manual-stake]) { height:44px; font-size:18px!important; }
+.nr-game[data-slot-priority='landscape'] .nr-start { height:100%; min-height:44px; max-height:60px; padding:0 8px!important; }
+.nr-game[data-slot-priority='landscape'] .nr-start>span { font-size:22px; }
+.nr-game[data-slot-priority='landscape'] .nr-start>small { display:none; }
+.nr-game[data-slot-priority='landscape'] :is(.cc-auto-controls>button,.cc-tools,.cc-tools button) { width:100%; height:44px; font-size:13px; }
+.nr-game[data-slot-priority='landscape'] .cc-tools button { font-size:20px; }
+.nr-game[data-slot-priority='landscape'] .cc-dialog-backdrop { padding:8px; }
+.nr-game[data-slot-priority='landscape'] .cc-dialog { padding:12px; max-height:calc(100cqh - 16px); }
+.nr-game[data-slot-priority='landscape'] .cc-dialog h2 { font-size:23px; line-height:27px; margin:4px 0; }
+.nr-game[data-slot-priority='landscape'] .cc-dialog>small { font-size:12px; }
+.nr-game[data-slot-priority='landscape'] .cc-dialog>p { font-size:12px; line-height:16px; margin:4px 0; }
+.nr-game[data-slot-priority='landscape'] .cc-bonus-art { height:58px; margin:4px auto; gap:8px; }
+.nr-game[data-slot-priority='landscape'] .cc-bonus-art>.cc-symbol { width:58px; height:58px; }
+.nr-game[data-slot-priority='landscape'] .cc-bonus-art>strong { font-size:30px; }
+.nr-game[data-slot-priority='landscape'] .cc-bonus-art small { font-size:12px; line-height:14px; }
+@container nitro-cabinet (height < 300px) {
+ .nr-game[data-slot-priority='landscape'] .nr-heading { display:none; }
+ .nr-game[data-slot-priority='landscape'] .nr-cabinet { grid-template-areas:'status stage console' 'hud stage console'; row-gap:6px; }
+ .nr-game[data-slot-priority='landscape'] .nr-race-message { display:none; }
+ .nr-game[data-slot-priority='landscape'] .nr-status { min-height:0; }
+ .nr-game[data-slot-priority='landscape'] .nr-results { padding:6px 10px; }
+ .nr-game[data-slot-priority='landscape'] .nr-round-total { flex-direction:column; align-items:flex-start; gap:2px; }
+ .nr-game[data-slot-priority='landscape'] .nr-round-total>span { white-space:normal; letter-spacing:0; line-height:1.15; }
+ .nr-game[data-slot-priority='landscape'] .nr-round-total strong { font-size:20px; }
+ .nr-game[data-slot-priority='landscape'] .nr-hud { gap:6px; }
+ .nr-game[data-slot-priority='landscape'] :is(.nr-hud>section,.nr-bonus-card) { padding:8px 10px; gap:5px; }
+ .nr-game[data-slot-priority='landscape'] .nr-gear-card>.nr-card-heading { display:none; }
+ .nr-game[data-slot-priority='landscape'] .nr-gear-card>[data-cc-factor] { font-size:24px; line-height:26px; }
+ .nr-game[data-slot-priority='landscape'] .nr-console { padding:8px; }
+ .nr-game[data-slot-priority='landscape'] .nr-controls { gap:4px; }
 }

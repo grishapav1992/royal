@@ -8,35 +8,33 @@ export class NitroRunLayout {
  }
  private resize() {
   const {width,height} = this.root.getBoundingClientRect();
+  if(!width||!height)return;
   const compact=height<570;
-  const profile=width>height&&height<620?'landscape':width>=780&&height>=620?'full':'portrait';
+  const profile=width>=780&&height>=560?'full':width>height&&height<560?'landscape':'portrait';
   this.root.dataset.compact=String(compact);
   this.root.dataset.slotPriority=profile;
-  let pad:number,side=0,frame:number,stage:number,contentWidth:number,contentHeight:number;
-  let header:number,message:number,controls:number,hud=0,gap:number,inset:number;
+  // The six reels keep a 6:5 board; `inset` is the frame padding and border around it.
+  let pad:number,gap:number,head:number,inset:number,side=0,rail=0,header=0,hud=0,message=0,console=0;
+  let board:number,contentWidth:number,contentHeight:number;
   if(profile==='full'){
-   pad=12;side=Math.min(176,Math.max(148,width*.16));header=62;message=40;controls=96;gap=10;inset=14;
-   const stageBudget=height-pad*2-message-controls-gap;
-   frame=Math.min(width-pad*2-side-12,(stageBudget-28-inset)*1.2+inset);
-   stage=28+(frame-inset)/1.2+inset;
-   contentWidth=side+12+frame;contentHeight=stage+gap+message+controls;
+   pad=16;gap=14;head=36;inset=14;message=64;rail=Math.min(288,Math.max(244,width*.24));
+   const vertical=12;
+   board=Math.min(width-pad*2-rail-gap-inset,(height-pad*2-message-vertical-head-inset)*1.2);
+   contentWidth=board+inset+gap+rail;
+   contentHeight=Math.max(head+board/1.2+inset+vertical+message,Math.min(height-pad*2,600));
   }else if(profile==='portrait'){
-   pad=compact?8:10;header=compact?30:44;message=compact?36:42;controls=compact?114:122;
-   hud=compact?56:78;gap=compact?6:8;inset=compact?10:12;
-   const title=compact?18:22;
-   const frameBudget=height-pad*2-header-message-controls-gap*2-hud-gap-title;
-   frame=Math.min(width-pad*2,(frameBudget-inset)*1.2+inset);
-   stage=title+(frame-inset)/1.2+inset;
-   contentWidth=width-pad*2;contentHeight=header+hud+gap+stage+message+controls+gap*2;
+   pad=compact?8:12;gap=compact?6:10;head=compact?22:28;inset=12;
+   header=compact?0:40;hud=compact?58:76;message=compact?48:56;console=compact?150:164;
+   const rows=compact?4:5;
+   board=Math.min(width-pad*2-inset,(height-pad*2-header-hud-message-console-gap*rows-head-inset)*1.2);
+   contentWidth=width-pad*2;contentHeight=height-pad*2;
   }else{
-   pad=8;side=94;header=30;message=height<290?40:48;gap=6;inset=10;
-   const frameBudget=height-pad*2-header-gap-20;
-   frame=Math.min(width-pad*2-182-14-side-12,(frameBudget-inset)*1.2+inset);
-   stage=20+(frame-inset)/1.2+inset;
-   contentWidth=side+12+frame+14+182;contentHeight=header+gap+stage;
-   controls=contentHeight-message;
+   pad=8;gap=10;head=22;inset=10;side=width<700?100:140;rail=width<700?184:250;
+   board=Math.min(width-pad*2-side-rail-gap*2-inset,(height-pad*2-head-inset)*1.2);
+   contentWidth=side+board+inset+rail+gap*2;contentHeight=height-pad*2;
   }
-  for(const [name,value]of Object.entries({pad,side,frame,stage,width:contentWidth,height:contentHeight,header,message,controls,hud,gap})){
+  const frame=board+inset,stage=head+board/1.2+inset;
+  for(const [name,value]of Object.entries({pad,gap,head,side,rail,header,hud,message,console,frame,stage,width:contentWidth,height:contentHeight})){
    this.root.style.setProperty('--nr-layout-'+name,Math.max(0,value).toFixed(3)+'px');
   }
  }
