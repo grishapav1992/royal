@@ -363,7 +363,9 @@
 .cv-game .cv-stake-value select { width: 100%; min-height: 44px; cursor: pointer; }
 .cv-game .cv-stake-value select:disabled { cursor: default; }
 .cv-game .cv-stake-value select option { background: #102128; color: var(--cv-ink); }
-.cv-game .cv-stake-value [data-stake-field] { min-width: 0 !important; width: 100% !important; background: transparent !important; }
+/* The amount keeps its width when the label above it is short ("Бесплатно" during the evacuation). */
+.cv-game .cv-stake-value { grid-template-columns: minmax(0, 1fr); }
+.cv-game .cv-stake-value [data-stake-field] { justify-self: stretch; min-width: 0 !important; width: 100% !important; background: transparent !important; }
 .cv-game .cv-stake-value input[data-manual-stake] { font: 800 1.25em/1.15 system-ui, sans-serif !important; font-variant-numeric: tabular-nums !important; }
 .cv-game .cv-stake-value input[data-manual-stake]:focus-visible { outline-offset: -1px; }
 .cv-game .cv-stake > button { width: 100%; height: max(44px, 2.7em); align-self: center; padding: 0; border-radius: .6em; border: 1px solid #ffffff24; background: #ffffff0d; font-size: 1.3em; }

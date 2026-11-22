@@ -577,6 +577,15 @@ test('natural bonuses keep counters and free continuation visible in both orient
     await bonus.click();await expect(page.locator(`[data-${p}-pause]`)).toBeVisible({timeout:15000});await fit(page,id,`[data-${p}-pause]`);
    await page.locator(`[data-${p}-pause]`).click();await page.setViewportSize({width:393,height:852});await fit(page,id);
    const before=await walletSnapshot(page),debits=before.entries.filter((e:any)=>e.kind==='bet').length;
+   if(id==='studio-last-convoy')for(const [width,height]of [[393,852],[1512,862]]){
+    // The locked stake keeps its whole amount under the short "Free" label, and the spin count is declined.
+    await page.setViewportSize({width,height});await fit(page,id);
+    const stake=await page.locator('#mini-game [data-manual-stake]').evaluate((input:HTMLInputElement)=>({value:input.value,scroll:input.scrollWidth,client:input.clientWidth}));
+    expect(stake.value).toBe('0,10');expect(stake.scroll,`${width}x${height}: stake text is clipped`).toBeLessThanOrEqual(stake.client);
+    const free=(await page.locator('#mini-game [data-cc-free]').textContent())??'',count=Number(free.split(' ')[0]),form=({one:'бесплатное вращение',few:'бесплатных вращения'} as Record<string,string>)[new Intl.PluralRules('ru').select(count)]??'бесплатных вращений';
+    expect(free).toBe(`${count} ${form}`);
+   }
+   if(id==='studio-last-convoy'){await page.setViewportSize({width:393,height:852});await fit(page,id);}
    await page.screenshot({path:out+'/'+id+'-bonus-portrait.png'});await page.setViewportSize({width:852,height:393});await fit(page,id);
    await page.screenshot({path:out+'/'+id+'-bonus-landscape.png'});await finish(page,id);
    expect((await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(debits);
