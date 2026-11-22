@@ -11,9 +11,11 @@ const baseline = JSON.parse(await readFile(new URL('../scripts/game-math/rtp-leg
 const runtime = await stakeAdmissionRuntime(root);
 const id = 'future-qualified-slot';
 function futureGame() {
+  const policy = structuredClone(registry.stakePolicies['royal-roulette']);
+  policy.manualStakeRange.maximumCents = runtime.DEFAULT_MAX_GAME_STAKE_CENTS;
   return {
     catalog: [{gameId: id, rulesVersion: 1, progressVersion: 1}],
-    registry: {profiles: {[id]: {target: .96}}, nonWagered: {}, stakePolicies: {[id]: structuredClone(registry.stakePolicies['royal-roulette'])}},
+    registry: {profiles: {[id]: {target: .96}}, nonWagered: {}, stakePolicies: {[id]: policy}},
     runtime: {...runtime, ROYAL_PLATFORM_GAMES: [], usesGameStakes: value => value === id},
   };
 }

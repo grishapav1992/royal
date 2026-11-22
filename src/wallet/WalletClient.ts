@@ -1,4 +1,4 @@
-import {usesGameStakes} from '../shared/gameStakes';
+import {ROYAL_STAKE_LIMIT_HEADER, usesGameStakes} from '../shared/gameStakes';
 import { isUserMessage, t as translateText, locale } from '../i18n/index';
 import {validProviderBalance,type DemoWallet,type WalletOperation,type WalletResult} from '../shared/demoWallet';
 import type { GameId, GameInput } from '../shared/gameCore';
@@ -89,7 +89,7 @@ export class WalletClient extends EventTarget {
     this.pending = operation; this.busy = true; this.error = ''; this.readVersion++; this.notify();
     try {
       const response = await fetch('/api/demo-wallet/operations', {
-        method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', [WALLET_ACCOUNT_HEADER]: accountId },
+        method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', [WALLET_ACCOUNT_HEADER]: accountId, [ROYAL_STAKE_LIMIT_HEADER]: '1' },
         body: JSON.stringify(operation), signal: AbortSignal.timeout(15000),
       });
       const result = await response.json();

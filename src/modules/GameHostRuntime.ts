@@ -15,7 +15,7 @@ import Phaser from 'phaser';
 import { progression } from '../wallet/ProgressionClient';
 import { GAME_HOST_KEY, type GameHostV1 } from './GameHostContract';
 
-const runtime: GameHostV1 = Object.freeze({ apiVersion: 1, manualStakes: 1, cosmicStakeLimit: 1, caramelStakeLimit: 1, flagToteClient, expansionClient, demoWallet, progression,
+const runtime: GameHostV1 = Object.freeze({ apiVersion: 1, manualStakes: 1, royalStakeLimit: 1, cosmicStakeLimit: 1, caramelStakeLimit: 1, flagToteClient, expansionClient, demoWallet, progression,
  walletCoins: coins, gameAudio, i18n, reactions, demoGames, minesClient, casinoClients,
  nilePlay, usdtWallet, cryptoWallet, flightClient, Phaser });
 

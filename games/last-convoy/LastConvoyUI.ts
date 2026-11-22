@@ -1,6 +1,6 @@
 import {canRecoverOperation} from '../../src/ui/operationFeedback';
 import {confirmedPayout} from '../../src/shared/roundPrecision';
-import {GAME_STAKE_UNITS as CONVOY_BETS} from '../../src/shared/gameStakes';
+import {ROYAL_GAME_STAKE_UNITS} from '../../src/shared/gameStakes';
 import { t as translateText, tr, locale, language } from '../../src/i18n/index';
 import {SlotSettings} from '../../src/ui/slotKit/SlotSettings';
 import {SlotDialog, slotOwnsKeyboard} from '../../src/ui/slotKit/SlotDialog';
@@ -22,10 +22,11 @@ import './last-convoy.css';
 import {ConvoyHeroine} from '../../src/ui/ConvoyHeroine';
 import {ConvoyProgressClient} from '../../src/wallet/ConvoyProgressClient';
 import {gameContentLayout} from '../../src/ui/GameLayoutPolicy';
-import {validStakeDraft} from '../../src/ui/stakeSelection';
+import {stakeFieldMaximum, validStakeDraft} from '../../src/ui/stakeSelection';
 
 type Session=NativeSlotSession<'convoy'>;
 type Dialog=''|'intro'|'info'|'history'|'bonus'|'bonus-help'|'looks'|'complete'|'auto';
+const CONVOY_BETS = ROYAL_GAME_STAKE_UNITS.filter(stake => Number(stake) <= stakeFieldMaximum());
 const AUTO_COUNTS = [10, 25, 50, 100];
 type Live=SlotOperation&{operationId:string;balance:number;motion:boolean;fast:boolean;before?:Session};
 const preview=Array.from({length:30},(_,i)=>(i+2*Math.floor(i/6))%7);

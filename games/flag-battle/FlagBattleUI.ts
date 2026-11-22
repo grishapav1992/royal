@@ -2,7 +2,7 @@ import {canRecoverOperation} from '../../src/ui/operationFeedback';
 import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import { GamePriorityPanel } from '../../src/ui/GamePriorityPanel';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
-import {GAME_STAKE_UNITS as FLAG_BETS} from '../../src/shared/gameStakes';
+import {ROYAL_GAME_STAKE_UNITS as FLAG_BETS} from '../../src/shared/gameStakes';
 import { FLAG_GAME, FLAG_COUNTRIES, FLAG_MODES, flagCountries, flagModeInfo, flagViewMode, flagPayout, validFlagSettings, type FlagMode, type FlagCountry, type FlagView } from '../../src/shared/flagBattle';
 import { expansionClient as client } from '../../src/wallet/ExpansionClient';
 import { demoWallet } from '../../src/wallet/WalletClient';

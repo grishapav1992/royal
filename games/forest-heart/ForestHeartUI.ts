@@ -1,7 +1,7 @@
 import {canRecoverOperation} from '../../src/ui/operationFeedback';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
 import {syncStakeSelect} from '../../src/ui/stakeSelection';
-import {GAME_STAKE_CENTS as FOREST_HEART_STAKES, validGameStake} from '../../src/shared/gameStakes';
+import {ROYAL_GAME_STAKE_CENTS as FOREST_HEART_STAKES, validGameStake} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import { FOREST_HEART_GAME, validForestHeartSession, type ForestHeartView } from '../../src/shared/forestHeart';
 import { FOREST_HEART_ROTORS, forestHeartFlowerPayout } from '../../src/shared/forestHeartMath';

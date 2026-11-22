@@ -1,12 +1,16 @@
-import {parseGameStake, validGameStake, gameBetCents, MAX_GAME_STAKE_CENTS} from '../shared/gameStakes';
+import {parseGameStake, validGameStake, gameBetCents, DEFAULT_MAX_GAME_STAKE_CENTS, MAX_GAME_STAKE_CENTS} from '../shared/gameStakes';
 
 interface StakeField { input: HTMLInputElement; current: string; }
 const fields = new WeakMap<HTMLSelectElement, StakeField>();
 const guarded = new WeakSet<HTMLElement>();
 const drafts = new WeakMap<Document, {input: HTMLInputElement; key: string}>();
-function supportedHost() {
-  const host=(globalThis as unknown as Record<symbol,{manualStakes?:1}>)[Symbol.for('royal.game-host.v1')];
-  return !host||host.manualStakes===1;
+function gameHost() {
+  return (globalThis as unknown as Record<symbol,{manualStakes?:1; royalStakeLimit?:1}>)[Symbol.for('royal.game-host.v1')];
+}
+
+export function stakeFieldMaximum(maximumCents?: number): number {
+  const host = gameHost();
+  return maximumCents ?? (!host || host.royalStakeLimit === 1 ? MAX_GAME_STAKE_CENTS : DEFAULT_MAX_GAME_STAKE_CENTS);
 }
 function wagerButton(target: Element) {
   const button=target.closest('button');
@@ -128,12 +132,17 @@ function setOption(select: HTMLSelectElement, value: string, historical: boolean
 }
 
 /** Presets and manual input share the accepted stake and the existing operation transport. */
-export function syncStakeSelect(select: HTMLSelectElement, current: string, values: readonly (string | number)[], locked: boolean, scale = 100, maximumCents = MAX_GAME_STAKE_CENTS): string {
-  const choices = values.map(String), cents = scale === 100 ? current : String(gameBetCents(Number(current)));
+export function syncStakeSelect(select: HTMLSelectElement, current: string, values: readonly (string | number)[], locked: boolean, scale = 100, maximumCents = stakeFieldMaximum()): string {
+  const choices = values.map(String).filter(value => (gameBetCents(Number(value) / scale) ?? Infinity) <= maximumCents), cents = scale === 100 ? current : String(gameBetCents(Number(current)));
   const allowed = validGameStake(cents, maximumCents), value = !locked && !allowed && !choices.includes(current) ? choices[0] : current;
-  setOption(select, value, locked && !allowed, scale); select.value = value; select.disabled = locked;
+  setOption(select, value, locked && !allowed, scale);
+  for (const option of Array.from(select.options)) {
+    option.hidden = option.value !== value && (gameBetCents(Number(option.value) / scale) ?? Infinity) > maximumCents;
+  }
+  select.value = value; select.disabled = locked;
   const field = fieldFor(select, scale, locked, maximumCents); field.input.disabled = locked;
-  field.input.readOnly=!supportedHost();
+  const host = gameHost();
+  field.input.readOnly = !!host && host.manualStakes !== 1;
   if(field.input.readOnly)field.input.title='Обнови страницу сайта, чтобы вводить свою ставку. / Refresh the page to enter a custom stake.';
   if (select.ownerDocument.activeElement !== field.input && (field.current !== value || locked)) {
     field.input.value = (Number(value) / scale).toFixed(2);

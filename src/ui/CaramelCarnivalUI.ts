@@ -1,6 +1,6 @@
 import {canRecoverOperation} from './operationFeedback';
 import {confirmedPayout} from '../shared/roundPrecision';
-import {GAME_STAKE_UNITS, gameStakeMaximum} from '../shared/gameStakes';
+import {ROYAL_GAME_STAKE_UNITS, gameStakeMaximum} from '../shared/gameStakes';
 import { t as translateText, tr, locale, language } from '../i18n/index';
 import {SlotSettings} from './slotKit/SlotSettings';
 import {SlotDialog, slotOwnsKeyboard} from './slotKit/SlotDialog';
@@ -32,7 +32,7 @@ const SPEEDS:readonly Speed[]=['normal','fast','turbo'];
 const AUTO_COUNTS=[10,25,50,100] as const;
 const FESTIVAL_PRICE=35;
 const maximumStakeCents=gameStakeMaximum(CARAMEL_GAME);
-const CARAMEL_BETS=[...GAME_STAKE_UNITS,String(maximumStakeCents)];
+const CARAMEL_BETS=ROYAL_GAME_STAKE_UNITS;
 const svg=(body:string,size=20)=>`<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${body}</svg>`;
 const ICON={
   info:svg('<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>'),

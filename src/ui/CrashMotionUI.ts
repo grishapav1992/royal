@@ -1,6 +1,6 @@
 import {syncStakeSelect} from './stakeSelection';
 import {stakeRulesHtml} from './stakeRules';
-import {GAME_BETS as DEMO_BETS} from '../shared/gameStakes';
+import {ROYAL_GAME_BETS as DEMO_BETS} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import { } from '../shared/demoWallet';
 import type { ExpansionSession } from '../shared/casinoExpansion';

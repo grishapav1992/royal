@@ -25,6 +25,7 @@ export const GAME_HOST_KEY = Symbol.for('royal.game-host.v1');
 export interface GameHostV1 {
  readonly apiVersion: 1;
  readonly manualStakes?: 1;
+ readonly royalStakeLimit?: 1;
  readonly cosmicStakeLimit?: 1;
  readonly caramelStakeLimit?: 1;
  readonly flagToteClient?: typeof flagToteClient;

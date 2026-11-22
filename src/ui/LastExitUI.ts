@@ -1,7 +1,7 @@
 import {canRecoverOperation} from './operationFeedback';
 import {ActionGameLayout} from './ActionGameLayout';
 import {language,locale} from '../i18n/index';
-import {GAME_BETS as DEMO_BETS,GAME_STAKE_UNITS} from '../shared/gameStakes';
+import {ROYAL_GAME_BETS as DEMO_BETS,ROYAL_GAME_STAKE_UNITS} from '../shared/gameStakes';
 import {syncStakeSelect} from './stakeSelection';
 import {stakeRulesHtml} from './stakeRules';
 import type {ExpansionSession} from '../shared/casinoExpansion';
@@ -91,7 +91,7 @@ export class LastExitUI {
   }else{this.anchor=undefined;this.resync=undefined;}
   this.root.dataset.sessionId=s?.id??'';this.root.dataset.state=s?.state??'idle';this.root.dataset.reducedMotion=String(this.reduced);this.root.setAttribute('aria-busy',String(!this.scene.ready||client.busy||!!client.pending||this.actionHeld));
   this.find('[data-balance]').textContent=balance===undefined?'...':money(String(Math.round(balance*100)));
-  const stake=this.find<HTMLSelectElement>('[data-stake]');if(active)this.stake=s.stakeUnits;this.stake=syncStakeSelect(stake,this.stake,GAME_STAKE_UNITS,!!active||blocked);
+  const stake=this.find<HTMLSelectElement>('[data-stake]');if(active)this.stake=s.stakeUnits;this.stake=syncStakeSelect(stake,this.stake,ROYAL_GAME_STAKE_UNITS,!!active||blocked);
   const start=this.find<HTMLButtonElement>('[data-start]');start.hidden=!!active;start.disabled=blocked||!ready||Number(this.stake)>(balance??0)*100;
   start.querySelector('span')!.textContent=s?text('ЕЩЁ ОДИН ЗАЕЗД','ONE MORE RUN'):text('НАЧАТЬ ЗАЕЗД','START YOUR RUN');
   const cash=this.find<HTMLButtonElement>('[data-cashout]');cash.hidden=!active;cash.disabled=postBlocked||!ready||!s||!validRaceTime(s)||s.serverNow!<s.startedAt!;

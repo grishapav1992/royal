@@ -1,6 +1,6 @@
 import {canRecoverOperation} from '../../src/ui/operationFeedback';
 import {confirmedPayout} from '../../src/shared/roundPrecision';
-import {GAME_STAKE_UNITS as AFTER_BETS} from '../../src/shared/gameStakes';
+import {ROYAL_GAME_STAKE_UNITS as AFTER_BETS} from '../../src/shared/gameStakes';
 import {locale} from '../../src/i18n/index';
 import {afterText as translateText,afterTr as tr} from '../../src/ui/AfterglowText';
 import {AfterglowWardrobeClient} from '../../src/wallet/AfterglowWardrobeClient';

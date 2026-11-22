@@ -2,7 +2,7 @@ import {canRecoverOperation} from './operationFeedback';
 import {ActionGameLayout} from './ActionGameLayout';
 import {syncStakeSelect} from './stakeSelection';
 import {stakeRulesHtml} from './stakeRules';
-import {GAME_STAKE_UNITS as PENALTY_BETS} from '../shared/gameStakes';
+import {ROYAL_GAME_STAKE_UNITS as PENALTY_BETS} from '../shared/gameStakes';
 import { PENALTY_GAME, PENALTY_RISKS, penaltyPathQuote, type PenaltyHero, type PenaltyRisk, type PenaltyView } from '../shared/crLeo';
 import { expansionClient as client } from '../wallet/ExpansionClient';
 import { demoWallet } from '../wallet/WalletClient';

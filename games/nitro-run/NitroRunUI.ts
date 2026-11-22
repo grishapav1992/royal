@@ -1,7 +1,7 @@
 import {canRecoverOperation} from '../../src/ui/operationFeedback';
 import {validStakeDraft} from '../../src/ui/stakeSelection';
 import {confirmedPayout} from '../../src/shared/roundPrecision';
-import {GAME_STAKE_UNITS as NITRO_BETS} from '../../src/shared/gameStakes';
+import {ROYAL_GAME_STAKE_UNITS as NITRO_BETS} from '../../src/shared/gameStakes';
 import { t as translateText, tr, locale, language } from '../../src/i18n/index';
 import {SlotSettings} from '../../src/ui/slotKit/SlotSettings';
 import {SlotDialog, slotOwnsKeyboard} from '../../src/ui/slotKit/SlotDialog';
