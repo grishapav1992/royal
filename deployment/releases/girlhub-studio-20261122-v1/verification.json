@@ -1,0 +1,110 @@
+{
+  "release": "girlhub-studio-20261122-v1",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "6397c5b287b5a9c333147d8874a2b0046e90e4b7",
+  "codeCommit": "bb249f30ae0528ee77f2f4a7f90e74465f3fa2e9",
+  "installerCommit": "bb69cf14d9c3b7c6efe083fa0fe1f13ebb7a86ec",
+  "baseCommit": "e97289c4491f4cf380ea442a52a872fa798f4edf",
+  "runningImage": "sha256:2287b9485cdbdcf781439464080d1763277ee2707c252986dbf5d94d99264996",
+  "releaseManifestSha256": "54a8eacf948f71b43e664955afe017d760ecad983813a474c54b696d7939f0bb",
+  "beforeSnapshotSha256": "88c6c1822594853c066593392476c0fb0aad6090a5ac70b09214f9a988869029",
+  "module": {
+    "verified": true,
+    "gameId": "studio-afterglow",
+    "version": "1.4.0-e86f8ddd9282",
+    "previousVersion": "1.3.1-8d71e0873e25",
+    "contract": {"apiVersion": 1, "rulesVersion": 2, "progressVersion": 3},
+    "bytes": 3257409,
+    "files": 21,
+    "manifestSha256": "f340711485c4a28b5214601a9f268391e0c7a38aafb7dac79a275f64b6407122",
+    "beforeSha256": "dd3b6df2d6eeca57af9002330c5d033cc6223713f3d05d1c1e07f4b91e661f65",
+    "activeSha256": "2e4bfaa859516c7e42bc446ee8672ae80f5bc32d256c9ae9fa4a97a86dc1325e",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "history": "/opt/royal-game-modules-state/history/20261122T182442-880d140a929a4b5e97c819343ceb0a5d.json"
+  },
+  "priorManifestSha256": "9b86bfe7e35e6deaa73a5376bb4809e1bf8d1ef1c4c9af315f70a8f706ed95c9",
+  "installedSources": [
+    "games/girlhub/entry.ts",
+    "games/girlhub/package.json",
+    "games/girlhub/tsconfig.json",
+    "games/girlhub/AfterglowUI.ts",
+    "games/girlhub/GirlhubLayout.ts",
+    "games/girlhub/girlhub.css",
+    "games/girlhub/girlhubText.ts"
+  ],
+  "projection": {
+    "wardrobeProtocol": 3,
+    "reason": "The installed backend, src/shared/afterglowWardrobe.ts and the host module catalogue are the protocol 3 versions from b1eeea9f; the backend answers any other progress version with 409. Main keeps progress 4 for the unreleased rarity order.",
+    "installedSourcesTakenAsIs": ["src/modules/GameModuleCatalog.ts", "src/shared/afterglowWardrobe.ts"],
+    "patchedModuleSources": {
+      "games/girlhub/package.json": "progressVersion 4 -> 3",
+      "games/girlhub/entry.ts": "progressVersion 4 -> 3",
+      "games/girlhub/AfterglowUI.ts": "Alice is the starter heroine, unlock notices keep index order, the three rarity-order sentences are replaced by the installed wording"
+    }
+  },
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/girlhub-studio-20261122-v1/source.tgz",
+    "sha256": "366e03d51114efee609dae6e2e3f7b3dea5574845653f06986181eb6a548a3e1",
+    "bytes": 3067,
+    "oldVersion": "1.3.1-8d71e0873e25",
+    "imageTag": "royal-game:before-girlhub-studio-20261122-v1",
+    "image": "sha256:2287b9485cdbdcf781439464080d1763277ee2707c252986dbf5d94d99264996",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/girlhub/AfterglowUI.ts",
+      "games/girlhub/GirlhubLayout.ts",
+      "games/girlhub/girlhub.css",
+      "games/girlhub/girlhubText.ts"
+    ]
+  },
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "runtimeFilesPreserved": 8767,
+  "servicesPreserved": 11,
+  "otherModulesPreserved": true,
+  "freeBefore": 12418740224,
+  "freeAfter": 12415197184,
+  "firstAttempt": "exit 1 while reading inputs, before any lock or change: the installer from 6cc0fa53..6397c5b2 still expected progress 4. The installer was pinned to 3 in bb69cf14, the unused bundle was replaced and the run succeeded.",
+  "verification": {
+    "rtp": "passed in release:prepare (verified 38, stakePoliciesVerified 20, legacyNotQualified 114)",
+    "typecheck": true,
+    "projectedTypecheck": "tsc for games/girlhub with the projected AfterglowUI.ts, entry.ts and protocol 3 afterglowWardrobe.ts passed",
+    "githubVerified": true,
+    "walletTests": 19,
+    "connectedBrowserTests": 4,
+    "scenarios": [
+      "field and actions without scrolling: studio-afterglow (8 sizes)",
+      "settings, Stop and one accepted ten-cent round: studio-afterglow (one 0.10 debit, lost response recovered without a second debit)",
+      "album and photo from the cabinet at 393, 320 and 568 px without wallet changes",
+      "natural photo-shoot entry and the running photo shoot on desktop, phone and landscape phone"
+    ],
+    "browserReportSha256": "d9b705cdf1bd02dfdaf5179fd2352c25f723af6e5421b843f5cead14519bc191",
+    "hostUsedForBrowserTests": "local connected host from main sources with a temporary PostgreSQL (scripts/game-layout-preview.ts), with server/afterglowWardrobe.ts, src/shared/afterglowWardrobe.ts and the GIRLHUB catalogue entry temporarily set to the installed protocol 3 versions, serving the exact prepared module bytes 1.4.0-e86f8ddd9282",
+    "notRun": [
+      "album, photo and themed menu remain accessible on a phone; moving symbols retain their field through both phone orientations: they open Meme Overload, Caramel Carnival and Velvet Reign, whose module builds fail on main with the image type error fixed for GIRLHUB in this change",
+      "tests/girlhub-feedback.spec.ts: two scenarios stop at the old sign-in order of the host, the third receives a fixture response that fails operation confirmation; the file predates the current host and operation protocol"
+    ],
+    "live": {
+      "health": true,
+      "moduleHostEntries": 124,
+      "unchangedModulePointers": 123,
+      "changedModulePointers": ["studio-afterglow"],
+      "packageFilesVerified": 21,
+      "previousPackageServed": true,
+      "hostProgramUnchanged": true,
+      "catalogueUnchanged": true
+    },
+    "maintenance": {
+      "status": "completed",
+      "durationSeconds": 75.6,
+      "timerEnabled": true,
+      "timerActive": true,
+      "freeBytesAfter": 12408639488
+    },
+    "productionAccountsOrRoundsCreated": false
+  }
+}
