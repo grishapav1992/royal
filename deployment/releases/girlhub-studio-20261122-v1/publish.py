@@ -25,7 +25,7 @@ MODULES = Path('/opt/royal-game-modules')
 STATE = Path('/opt/royal-game-modules-state')
 BACKUP = Path('/opt/royal-backups') / NAME
 POINTER = MODULES / GAME / 'active.json'
-CONTRACT = {'apiVersion': 1, 'rulesVersion': 2, 'progressVersion': 4}
+CONTRACT = {'apiVersion': 1, 'rulesVersion': 2, 'progressVersion': 3}
 # The presentation moved from src/ui into the module folder: four files are created, three replaced.
 NEW_SOURCES = {f'games/{SLUG}/{name}' for name in ('AfterglowUI.ts', 'GirlhubLayout.ts', 'girlhub.css', 'girlhubText.ts')}
 SOURCES = NEW_SOURCES | {f'games/{SLUG}/{name}' for name in ('entry.ts', 'package.json', 'tsconfig.json')}
