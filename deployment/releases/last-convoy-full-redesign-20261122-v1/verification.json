@@ -1,0 +1,87 @@
+{
+  "release": "last-convoy-full-redesign-20261122-v1",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "8b3309bc4471ed985c466a7e4cc6f8b1a00675b5",
+  "codeCommit": "e1962380c1e96ef9c5db5e874dc5b6e9bf681870",
+  "installerCommit": "8b3309bc4471ed985c466a7e4cc6f8b1a00675b5",
+  "baseCommit": "e97289c4491f4cf380ea442a52a872fa798f4edf",
+  "runningImage": "sha256:2287b9485cdbdcf781439464080d1763277ee2707c252986dbf5d94d99264996",
+  "releaseManifestSha256": "d074f0a133194715f523f91a867e793dcc9cabcc93ac9a59105c420ba259917b",
+  "module": {
+    "verified": true,
+    "gameId": "studio-last-convoy",
+    "version": "1.1.1-1c18149f4dc4",
+    "bytes": 6356420,
+    "files": 17,
+    "beforeSha256": "4de707f1eaebb4f1b99d92cd2ebc2d6d605a6e2a961c506da027c8c365f2de75",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "8b1ae13daafc3643978a2c3111b6107058a86b8f6230bba81838a2684d151b1c",
+    "history": "/opt/royal-game-modules-state/history/20261122T111031-73359f803a8f42618e3377ebfe8a1b5a.json"
+  },
+  "priorManifestSha256": "e862d68279a40982ee87056a139d07592ec1e5886d7378984ebdb072049291d0",
+  "installedSourceFiles": {
+    "games/last-convoy/LastConvoyUI.ts": "47726cdc78cdb239c05d13dc4f2c9b3f0df2c6359a1ca35f84d5f7bd74c70bca",
+    "games/last-convoy/last-convoy.css": "c1ca948aa0347cf8d5e7c5798faf5b98ef06939c18808d2dac9be2681f21cae1"
+  },
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/last-convoy-full-redesign-20261122-v1/source.tgz",
+    "sha256": "dbb3a2065d0cb12ae7db6de7d8f5ab66b700a38815c76ce6cd042c19c108e57a",
+    "bytes": 20288,
+    "oldVersion": "1.1.1-e7123e72f84b",
+    "imageTag": "royal-game:before-last-convoy-full-redesign-20261122-v1",
+    "image": "sha256:2287b9485cdbdcf781439464080d1763277ee2707c252986dbf5d94d99264996",
+    "oldPackageHardlinked": true
+  },
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "runtimeFilesPreserved": 8767,
+  "servicesPreserved": 11,
+  "otherModulesPreserved": true,
+  "freeBefore": 12458663936,
+  "freeAfter": 12452167680,
+  "verification": {
+    "rtp": "passed in release:prepare",
+    "typecheck": true,
+    "githubVerified": true,
+    "walletTests": 19,
+    "connectedBrowserTests": 8,
+    "scenarios": [
+      "measure the seven active slots in their connected host",
+      "field and actions without scrolling: studio-last-convoy (8 sizes)",
+      "Last Convoy keeps its result line and stake legible in the connected host (quick amounts, no debit)",
+      "settings, Stop and one accepted ten-cent round: studio-last-convoy",
+      "natural bonuses keep counters and free continuation visible in both orientations",
+      "Last Convoy scales the field, Maya and controls at 2K and 4K",
+      "count-only autoplay fits the connected host: studio-last-convoy",
+      "autoplay completes ten paid spins through a natural bonus: studio-last-convoy"
+    ],
+    "browserReportSha256": "b4fab1231e27e8c245a74a17e1719c57caafa0fbf88542e672ab7668cac06b0e",
+    "hostUsedForBrowserTests": "local connected host from main sources with a temporary PostgreSQL (scripts/game-layout-preview.ts), serving the exact prepared module bytes",
+    "live": {
+      "health": true,
+      "moduleHostEntries": 124,
+      "unchangedModulePointers": 123,
+      "changedModulePointers": [
+        "studio-last-convoy"
+      ],
+      "packageFilesVerified": 17,
+      "previousPackageServed": true,
+      "hostIndexUnchanged": true
+    },
+    "productionAccountsOrRoundsCreated": false
+  },
+  "knownIssue": "During free spins the locked stake field can show 0,1 instead of 0,10; the same display existed in the previous package.",
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 68.14,
+    "healthOk": true,
+    "freeBefore": 12448034816,
+    "freeAfter": 12444471296,
+    "timerEnabled": true,
+    "timerActive": true
+  }
+}
