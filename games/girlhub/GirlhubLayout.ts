@@ -30,6 +30,12 @@ export class GirlhubLayout {
   }
   board=Math.max(120,Math.floor(board));
   const frame=board+insetX,stage=head+board/1.2+insetY;
+  // Below the smallest readable field the cabinet scrolls inside the module instead of clipping the dock.
+  const needWidth=profile==='full'?pad*2+model+frame+hud+gap*2:profile==='portrait'?pad*2+frame:pad*2+frame+side+rail+gap*2;
+  const needHeight=profile==='full'?pad*2+stage+status+12+dock
+   :profile==='portrait'?pad*2+strip+hud+stage+status+dock+gap*(compact?4:5)
+   :pad*2+Math.max(stage,compact?240:260);
+  this.root.dataset.cramped=String(needWidth>width+1||needHeight>height+1);
   for(const [name,value] of Object.entries({pad,gap,head,model,hud,strip,status,dock,side,rail,board,frame,stage})){
    this.root.style.setProperty('--ag-layout-'+name,Math.max(0,value).toFixed(2)+'px');
   }

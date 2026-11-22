@@ -702,3 +702,29 @@ for(const game of countOnlyGames)test('autoplay completes ten paid spins through
  expect(paid).toHaveLength(10);
  expect(paid.every((entry:{amount:number})=>entry.amount===-0.1)).toBe(true);
 });
+
+test('GIRLHUB keeps autoplay results visible and scrolls in tiny windows',async({page,roomPath})=>{
+ test.setTimeout(240000);await enterGameHall(page,roomPath);await page.setViewportSize({width:1440,height:900});await open(page,'studio-afterglow');
+ // Between autoplay spins the progress note is announced but must not cover the confirmed result line.
+ await page.locator('[data-cc-auto]').click();
+ const between=await page.waitForFunction(()=>{
+  const status=document.querySelector('[data-cc-status]')?.textContent??'';if(!status.includes('Платных вращений осталось'))return false;
+  const message=document.querySelector<HTMLElement>('[data-cc-message]')!,box=message.getBoundingClientRect();
+  const hit=document.elementFromPoint(box.left+Math.min(24,box.width/2),box.top+box.height/2);
+  return {status,message:message.textContent,covered:!message.contains(hit)};
+ },undefined,{timeout:60000,polling:50});
+ const seen=await between.jsonValue() as {covered:boolean;message:string};
+ expect(seen.covered,seen.message).toBe(false);
+ await page.locator('[data-cc-auto]').click();await expect(page.locator('[data-cc-auto]')).not.toContainText('Стоп');await finish(page,'studio-afterglow');
+ // A window smaller than the smallest readable cabinet scrolls inside the module instead of clipping the dock.
+ for(const [width,height]of [[400,480],[480,300]]){
+  await page.setViewportSize({width,height});await page.evaluate(()=>new Promise<void>(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r()))));
+  const root=page.locator('#mini-game > .ag-game');await expect(root).toHaveAttribute('data-cramped','true');
+  const spin=page.locator('[data-cc-spin]');await spin.scrollIntoViewIfNeeded();
+  const reachable=await spin.evaluate(button=>{const box=button.getBoundingClientRect(),root=button.closest('.ag-game')!.getBoundingClientRect();
+   const hit=document.elementFromPoint(box.left+box.width/2,box.top+box.height/2);
+   return !!hit&&button.contains(hit)&&box.top>=root.top-1&&box.bottom<=root.bottom+1;});
+  expect(reachable,width+'x'+height).toBe(true);
+ }
+ await page.setViewportSize({width:1440,height:900});await expect(page.locator('#mini-game > .ag-game')).toHaveAttribute('data-cramped','false');
+});
