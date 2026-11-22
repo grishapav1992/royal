@@ -93,6 +93,12 @@
   ],
   "prior": "deployment/releases/password-login-20261119-v1",
   "preservedModuleInputs": {
-    "src/ui/CosmicEscapeRacer.ts": "8414d7fff2096f1590073b3e6d95c08db8e4eae8cd3fd09e68270e6d6bea2b26"
+    "src/ui/CosmicEscapeRacer.ts": "8414d7fff2096f1590073b3e6d95c08db8e4eae8cd3fd09e68270e6d6bea2b26",
+    "src/ui/CaramelBoard.ts": "cd3d3c73f4362397fb771c67f028e3621c5278624e0e70cca2bf447bc6757736",
+    "src/ui/CosmicEscapeAssets.ts": "ed35139ff219e2ee669131d17ef75819a37e6df041056d5d61f2099a7c4c3744",
+    "src/ui/CosmicEscapeBoard.ts": "4eb222af95683af1ac08725928ec0469029ab8fa1e652da6e525428c9e5a07fd",
+    "src/ui/slotKit/SlotDialog.ts": "69351de658c231671feea17ef923595143f47e886f09beeb4533f1ae0cb0337d",
+    "src/ui/slotKit/SlotSettings.ts": "e9ca94a9ea09d3fb1789fb18ba5d87457f210aedc00b99570bb92ee3df1472dd",
+    "games/cosmic-escape/tsconfig.json": "7cb9a18e59b2e2e03af9ebb762d9349704ca82f57e37fd48a85f894a5d16e32d"
   }
 }

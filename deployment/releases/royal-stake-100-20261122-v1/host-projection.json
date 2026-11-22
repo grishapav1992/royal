@@ -2890,10 +2890,10 @@
       "sha256": "0c1d5210395fd71d39424d95b51225abf01e3fdbd8e39f900774b0c92b13f89a"
     },
     "games/cosmic-escape/tsconfig.json": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "commit": "28b6ab52c1fbaa3b93838009a672714f93e7ae3a",
       "path": "games/cosmic-escape/tsconfig.json",
-      "baseSha256": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de",
-      "sha256": "9bf7880ce15ef5bda3ff061afdaec36fb1ed677e7ddf28b4f5e731deea9c26de"
+      "baseSha256": "7cb9a18e59b2e2e03af9ebb762d9349704ca82f57e37fd48a85f894a5d16e32d",
+      "sha256": "7cb9a18e59b2e2e03af9ebb762d9349704ca82f57e37fd48a85f894a5d16e32d"
     },
     "games/cr-vs-leo/entry.ts": {
       "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
@@ -7284,10 +7284,10 @@
       "sha256": "cbc1ddaced3cfd215307e33e3b7aecc5cb00c9860b1a12536097166e5f971bcc"
     },
     "src/ui/CaramelBoard.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "commit": "f98493253d78169e4eec8b559fdc3606f75ddde5",
       "path": "src/ui/CaramelBoard.ts",
-      "baseSha256": "9e3f0f5962ceda7ab7d9f3e04029c5538fc4b6a6b6884701c0fb502a772df2a0",
-      "sha256": "9e3f0f5962ceda7ab7d9f3e04029c5538fc4b6a6b6884701c0fb502a772df2a0"
+      "baseSha256": "cd3d3c73f4362397fb771c67f028e3621c5278624e0e70cca2bf447bc6757736",
+      "sha256": "cd3d3c73f4362397fb771c67f028e3621c5278624e0e70cca2bf447bc6757736"
     },
     "src/ui/CaramelCarnivalAssets.ts": {
       "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
@@ -7476,10 +7476,10 @@
       "sha256": "66040221e403a88f4b81e1ff82d92e1a7c4d2b8381ab3cb65e3d8c63d674e14c"
     },
     "src/ui/CosmicEscapeAssets.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "commit": "28b6ab52c1fbaa3b93838009a672714f93e7ae3a",
       "path": "src/ui/CosmicEscapeAssets.ts",
-      "baseSha256": "d70ff9c4ef88bed7422999f4e314594982338d28f894a03d6faf293452a578e6",
-      "sha256": "d70ff9c4ef88bed7422999f4e314594982338d28f894a03d6faf293452a578e6"
+      "baseSha256": "ed35139ff219e2ee669131d17ef75819a37e6df041056d5d61f2099a7c4c3744",
+      "sha256": "ed35139ff219e2ee669131d17ef75819a37e6df041056d5d61f2099a7c4c3744"
     },
     "src/ui/CosmicEscapeAudio.ts": {
       "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
@@ -7488,10 +7488,10 @@
       "sha256": "04ffe7016d5df2ca1a096d7886e1c639b5d4f722986042d54aa33c3165f6abd6"
     },
     "src/ui/CosmicEscapeBoard.ts": {
-      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
       "path": "src/ui/CosmicEscapeBoard.ts",
-      "baseSha256": "7376725a93559e9464dea2dda25eab58ea7a208255fac54318d1ecec6b050155",
-      "sha256": "7376725a93559e9464dea2dda25eab58ea7a208255fac54318d1ecec6b050155"
+      "baseSha256": "4eb222af95683af1ac08725928ec0469029ab8fa1e652da6e525428c9e5a07fd",
+      "sha256": "4eb222af95683af1ac08725928ec0469029ab8fa1e652da6e525428c9e5a07fd"
     },
     "src/ui/CosmicEscapeUI.ts": {
       "commit": "b77a6010f4fc3c02e4620c040d2397d4769a716d",
@@ -8440,10 +8440,10 @@
       "sha256": "200b1a4c4340480b75831ba074a7afeaa09ca1f53948f429f9d516120dcf8893"
     },
     "src/ui/slotKit/SlotDialog.ts": {
-      "commit": "fa99661b2dc8e86dcc40e993d28eced2406692ab",
+      "commit": "196cb75a0deafd332cfd28f36178ec1e2b90cd95",
       "path": "src/ui/slotKit/SlotDialog.ts",
-      "baseSha256": "80dd75c5d120200d85f5b39a55272f5d3f7a671b0b5f6647f783265149fde9f9",
-      "sha256": "80dd75c5d120200d85f5b39a55272f5d3f7a671b0b5f6647f783265149fde9f9"
+      "baseSha256": "69351de658c231671feea17ef923595143f47e886f09beeb4533f1ae0cb0337d",
+      "sha256": "69351de658c231671feea17ef923595143f47e886f09beeb4533f1ae0cb0337d"
     },
     "src/ui/slotKit/SlotGeometry.ts": {
       "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
@@ -8494,10 +8494,10 @@
       "sha256": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2"
     },
     "src/ui/slotKit/SlotSettings.ts": {
-      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
       "path": "src/ui/slotKit/SlotSettings.ts",
-      "baseSha256": "6b8ba3cb19aead9fa589ad65d4cd563fa3f3d6600384bdbec8f7e24072dd149b",
-      "sha256": "6b8ba3cb19aead9fa589ad65d4cd563fa3f3d6600384bdbec8f7e24072dd149b"
+      "baseSha256": "e9ca94a9ea09d3fb1789fb18ba5d87457f210aedc00b99570bb92ee3df1472dd",
+      "sha256": "e9ca94a9ea09d3fb1789fb18ba5d87457f210aedc00b99570bb92ee3df1472dd"
     },
     "src/ui/slotKit/nativeSlotImages.ts": {
       "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
