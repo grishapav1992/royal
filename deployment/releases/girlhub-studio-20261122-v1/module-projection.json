@@ -26,6 +26,13 @@
     "public/assets/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406"
   },
   "moduleDependencies": {},
+  "moduleContracts": {
+    "studio-afterglow": {
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 3
+    }
+  },
   "files": {
     "games/girlhub/AfterglowUI.ts": {
       "path": "games/girlhub/AfterglowUI.ts",
