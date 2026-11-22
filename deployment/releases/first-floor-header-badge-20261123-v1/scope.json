@@ -1,0 +1,6 @@
+{
+  "client": [
+    "src/ui/GameChat.ts"
+  ],
+  "previews": []
+}
