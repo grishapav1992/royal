@@ -34,7 +34,7 @@ const copy=language==='en'?{
  beacons:'Beacons', defense:'Convoy defense', win:'Round win', radio:'Radio',
  subtitle:'Survive until dawn', basePhase:'BASE GAME', baseRule:'8+ matching anywhere', bonusPhase:'EVACUATION', bonusRule:'stake already accepted',
  tools:'Game tools', rules:'Game rules', history:'Game history', beaconTitle:'Evacuation beacons', defenseNote:'each barricade +1, up to ×7',
- tier:(count:string)=>`for ${count}`, howOpen:'How to open the evacuation', presets:'Quick stake', balance:'Balance',
+ tier:(count:string)=>`for ${count}`, howOpen:'How to open the evacuation', stakeList:'Stake amounts', customStake:'Custom amount', balance:'Balance',
  controls:'Controls', stake:'Stake per spin', free:'Free', spinning:'Spinning', last:'Last win',
  autoplay:'Autoplay', closeAuto:'Close autoplay', rounds:'Number of spins', startAuto:(count:number)=>`Start ${count} spins`,
  autoRules:'Choose the number of paid spins in Autoplay. After an evacuation, confirm the result to resume the series.',
@@ -42,7 +42,7 @@ const copy=language==='en'?{
  beacons:'Маяки', defense:'Защита конвоя', win:'Выигрыш раунда', radio:'Радиосвязь',
  subtitle:'Последний конвой', basePhase:'ОСНОВНАЯ ИГРА', baseRule:'8+ одинаковых в любом месте', bonusPhase:'ЭВАКУАЦИЯ', bonusRule:'ставка уже принята',
  tools:'Инструменты игры', rules:'Правила игры', history:'История игры', beaconTitle:'Маяки эвакуации', defenseNote:'каждая баррикада +1, до ×7',
- tier:(count:string)=>`за ${count}`, howOpen:'Как открыть эвакуацию', presets:'Быстрый выбор ставки', balance:'Баланс',
+ tier:(count:string)=>`за ${count}`, howOpen:'Как открыть эвакуацию', stakeList:'Суммы ставки', customStake:'Своя сумма', balance:'Баланс',
  controls:'Управление', stake:'Ставка за ход', free:'Бесплатно', spinning:'Вращается', last:'Последний выигрыш',
  autoplay:'Автоигра', closeAuto:'Закрыть автоигру', rounds:'Количество вращений', startAuto:(count:number)=>`Запустить ${count} вращений`,
  autoRules:'В окне «Автоигра» выбери количество платных вращений. После эвакуации подтверди результат, чтобы продолжить серию.',
@@ -55,7 +55,7 @@ export class LastConvoyUI {
  private heroine:ConvoyHeroine;
  private progress=new ConvoyProgressClient();private progressSession='';private progressChanged=()=>{if(!this.destroyed){this.heroine.setBusy(!!this.live);this.heroine.setProgress(client.accountId,this.progress.profile,this.progress.error);}};
  private root:HTMLElement;private dialogShell!:SlotDialog;private stakeControls!:SlotStakeControls;private soundControls!:SlotAudioControls;private board:ConvoyBoard;private audio=new LastConvoyAudio();private assets:LastConvoyAssets;
- private owner=client.accountId;private destroyed=false;private entered=false;private stake = '10';private fast=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');private manualReduced=false;
+ private owner=client.accountId;private destroyed=false;private stakeMenuEvents=new AbortController();private entered=false;private stake = '10';private fast=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');private manualReduced=false;
  private dialog:Dialog='intro';private shown='';private lastWin='0';private error='';private live?:Live;private playback=new SlotPlayback({account:()=>client.accountId,hidden:()=>document.hidden});private sessions=new SlotSessions(convoySlot);private bonusRunning=false;private unsubscribe=()=>{};
  private autoRemaining=0;
  private get shellDialog(){return this.dialog==='auto'||this.dialog==='bonus-help'||this.dialog==='looks'?'info':this.dialog;}
@@ -134,7 +134,6 @@ export class LastConvoyUI {
    <section class="cc-controls cv-controls" aria-label="${copy.controls}">
     <div class="cv-balance"><span>${copy.balance}</span><strong data-cc-balance>0,00</strong></div>
     <div class="cv-win"><span>${copy.win}</span><strong data-cc-total data-units="0">0,00</strong></div>
-    <div class="cv-presets" role="group" aria-label="${copy.presets}">${CONVOY_BETS.map(n=>`<button type="button" data-cv-preset="${n}" aria-pressed="false">${coins(n)}</button>`).join('')}</div>
     <div class="cc-stake cv-stake">
      <div class="cv-stake-value">
       <label for="cc-stake" data-cc-cost>${copy.stake}</label>
@@ -142,6 +141,7 @@ export class LastConvoyUI {
      </div>
      <button type="button" data-cc-stake-step="-1" aria-label="Уменьшить ставку">−</button><button type="button" data-cc-stake-step="1" aria-label="Увеличить ставку">+</button>
     </div>
+    <div class="cv-stake-menu" data-cv-stake-menu hidden><div class="cv-stake-options" id="cv-stake-menu" role="listbox" aria-label="${copy.stakeList}">${CONVOY_BETS.map(n=>`<button type="button" role="option" tabindex="-1" data-cv-stake-option="${n}" aria-selected="false">${coins(n)}</button>`).join('')}</div><button type="button" tabindex="-1" class="cv-stake-custom" data-cv-stake-custom>${copy.customStake}</button></div>
     <button type="button" class="cc-spin" data-cc-spin aria-label="Вращать припасы"><span aria-hidden="true">⟳</span><span data-cc-spin-label>Вращать</span></button>
     <div class="cv-auto"><button type="button" data-cc-auto aria-pressed="false" aria-haspopup="dialog" aria-expanded="false">Авто</button><button type="button" data-cc-pause hidden disabled>На паузе</button></div>
    </section>
@@ -173,7 +173,7 @@ export class LastConvoyUI {
       volume:this.find<HTMLInputElement>('[data-cc-volume]'),audio:this.audio,entered:()=>this.entered,dynamicGlyph:false,
     });
 
-  this.root.querySelectorAll<HTMLButtonElement>('[data-cv-preset]').forEach(button=>{button.onclick=()=>this.preset(button.dataset.cvPreset??'');});
+  this.bindStakeMenu();
   this.find<HTMLButtonElement>('[data-cv-looks]').onclick=()=>{this.stopAuto();this.bonusRunning=false;this.openDialog('looks');};
   this.find<HTMLButtonElement>('[data-cc-load-retry]').onclick=()=>void this.assets.load();this.find<HTMLButtonElement>('[data-cc-spin]').onclick=()=>void this.play();
   this.find<HTMLButtonElement>('[data-cc-buy]').onclick=()=>{this.stopAuto();this.openDialog('bonus-help');};this.find<HTMLButtonElement>('[data-cc-pause]').onclick=()=>{this.stopAuto();this.controls();};
@@ -182,12 +182,99 @@ export class LastConvoyUI {
   this.find<HTMLButtonElement>('[data-cc-retry]').onclick=()=>void this.retry();this.find<HTMLButtonElement>('[data-cc-refresh]').onclick=()=>void this.refresh();this.find<HTMLButtonElement>('[data-cc-wallet]').onclick=()=>{this.stopAuto();window.dispatchEvent(new Event('royal-open-wallet'));};
   this.find<HTMLInputElement>('[data-cv-reduce]').onchange=e=>{this.manualReduced=(e.target as HTMLInputElement).checked;try{localStorage.setItem('royal-convoy-reduced',this.manualReduced?'1':'0');}catch{}this.cancel();this.sync();};
  }
- /** A quick amount goes through the same manual stake field, so its range and round locks still apply. */
- private preset(value:string){
-  const typed=this.root.querySelector<HTMLInputElement>('.cv-stake [data-manual-stake]');
-  if(!typed||typed.disabled||typed.readOnly||!/^[0-9]+$/.test(value))return;
-  typed.value=(Number(value)/100).toFixed(2);
+ private typedStake(){return this.root.querySelector<HTMLInputElement>('.cv-stake [data-manual-stake]');}
+ private stakeLocked(){const typed=this.typedStake();return !typed||typed.disabled||typed.readOnly;}
+ /** Pressing the stake field opens the list of common amounts; typing an exact amount still works. */
+ private bindStakeMenu(){
+  const field=this.find<HTMLElement>('.cv-stake-value'),menu=this.find<HTMLElement>('[data-cv-stake-menu]');
+  const options=()=>Array.from(menu.querySelectorAll<HTMLButtonElement>('button'));
+  // The hidden native list behind the caret opens the same game list instead of the browser picker.
+  // A tap on the amount opens the list without raising the phone keyboard; "Custom amount" types an exact stake.
+  const native=(event:Event)=>event.target instanceof HTMLSelectElement;
+  const quiet=(event:Event)=>native(event)||event.target===this.typedStake();
+  field.addEventListener('pointerdown',event=>{
+   if(!native(event)&&!(event.pointerType==='touch'&&quiet(event)))return;
+   event.preventDefault();
+   if(this.stakeLocked())return;
+   if(menu.hidden)this.openStakeMenu();else this.closeStakeMenu();
+  });
+  field.addEventListener('mousedown',event=>{if(native(event))event.preventDefault();});
+  field.addEventListener('touchstart',event=>{if(quiet(event))event.preventDefault();},{passive:false});
+  field.addEventListener('click',event=>{
+   if(native(event)){event.preventDefault();return;}
+   // The label would move focus into the amount and raise a phone keyboard.
+   if(event.target!==this.typedStake())event.preventDefault();
+   if(this.stakeLocked())return;
+   if(event.target===this.typedStake()&&!menu.hidden)return;
+   if(menu.hidden)this.openStakeMenu();else this.closeStakeMenu();
+  });
+  field.addEventListener('keydown',event=>{
+   if(event.target!==this.typedStake())return;
+   if(event.key==='ArrowDown'||event.key==='ArrowUp'){event.preventDefault();this.openStakeMenu(true);}
+   else if(event.key==='Tab')this.closeStakeMenu();
+  });
+  field.addEventListener('input',event=>{if(event.isTrusted)this.closeStakeMenu();});
+  // The shared field rewrites the amount on blur; show it again in the game's number format.
+  field.addEventListener('focusout',()=>setTimeout(()=>this.controls()));
+  for(const option of Array.from(menu.querySelectorAll<HTMLButtonElement>('[data-cv-stake-option]')))option.onclick=(event:MouseEvent)=>this.chooseStake(option.dataset.cvStakeOption??'',event.detail===0);
+  this.find<HTMLButtonElement>('[data-cv-stake-custom]').onclick=()=>{
+   const typed=this.typedStake();if(!typed||this.stakeLocked())return;
+   this.closeStakeMenu();typed.focus();typed.select();
+  };
+  menu.addEventListener('keydown',event=>{
+   const list=options(),index=list.indexOf(document.activeElement as HTMLButtonElement);
+   const move:{[key:string]:number}={ArrowRight:1,ArrowLeft:-1,ArrowDown:3,ArrowUp:-3};
+   if(event.key in move){event.preventDefault();list[Math.min(list.length-1,Math.max(0,index+move[event.key]))]?.focus();}
+   else if(event.key==='Home'||event.key==='End'){event.preventDefault();list[event.key==='Home'?0:list.length-1]?.focus();}
+   else if(event.key==='Tab')this.closeStakeMenu();
+  });
+  // Escape closes only the open list, not the game window around it.
+  document.addEventListener('keydown',event=>{
+   if(event.key!=='Escape'||menu.hidden)return;
+   event.preventDefault();event.stopImmediatePropagation();
+   this.closeStakeMenu(menu.contains(document.activeElement)||document.activeElement===this.typedStake());
+  },{capture:true,signal:this.stakeMenuEvents.signal});
+  document.addEventListener('pointerdown',event=>{
+   const target=event.target as Node;
+   if(!menu.hidden&&!menu.contains(target)&&!field.contains(target))this.closeStakeMenu();
+  },{signal:this.stakeMenuEvents.signal});
+ }
+ private openStakeMenu(focus=false){
+  const menu=this.find<HTMLElement>('[data-cv-stake-menu]'),field=this.find<HTMLElement>('.cv-stake-value');
+  if(this.stakeLocked())return;
+  menu.hidden=false;this.typedStake()?.setAttribute('aria-expanded','true');
+  const dock=this.find<HTMLElement>('.cv-controls').getBoundingClientRect(),box=field.getBoundingClientRect(),game=this.root.getBoundingClientRect();
+  menu.style.minWidth=`${box.width}px`;
+  const {width,height}=menu.getBoundingClientRect(),gap=6,edge=4;
+  const clamp=(value:number,low:number,high:number)=>Math.max(low,Math.min(value,high));
+  // Above the field when it fits, then below, otherwise beside it (a short landscape phone).
+  let side='above',top=box.top-gap-height,left=clamp(box.left,game.left+edge,game.right-width-edge);
+  if(top<game.top+edge){
+   if(box.bottom+gap+height<=game.bottom-edge){side='below';top=box.bottom+gap;}
+   else{side='beside';top=clamp(box.top+box.height/2-height/2,game.top+edge,game.bottom-height-edge);left=clamp(box.left-gap-width,game.left+edge,game.right-width-edge);}
+  }
+  menu.style.left=`${left-dock.left}px`;menu.style.top=`${top-dock.top}px`;menu.style.bottom='auto';
+  menu.dataset.side=side;
+  this.markStakeOptions();
+  if(focus)(menu.querySelector<HTMLButtonElement>('[aria-selected="true"]')??menu.querySelector<HTMLButtonElement>('[data-cv-stake-option]'))?.focus();
+ }
+ private closeStakeMenu(returnFocus=false){
+  const menu=this.root.querySelector<HTMLElement>('[data-cv-stake-menu]');
+  if(!menu||menu.hidden)return;
+  const inside=menu.contains(document.activeElement);
+  menu.hidden=true;this.typedStake()?.setAttribute('aria-expanded','false');
+  if(returnFocus)this.typedStake()?.focus();else if(inside)(document.activeElement as HTMLElement|null)?.blur();
+ }
+ private markStakeOptions(){
+  this.root.querySelectorAll<HTMLButtonElement>('[data-cv-stake-option]').forEach(option=>option.setAttribute('aria-selected',String(option.dataset.cvStakeOption===this.stake)));
+ }
+ /** A listed amount goes through the same manual stake field, so its range and round locks still apply. */
+ private chooseStake(value:string,keyboard:boolean){
+  const typed=this.typedStake();
+  if(!typed||this.stakeLocked()||!/^[0-9]+$/.test(value))return;
+  typed.value=coins(value);
   typed.dispatchEvent(new Event('input',{bubbles:true}));
+  this.closeStakeMenu(keyboard);
   this.controls();
  }
  private controls(){
@@ -202,8 +289,9 @@ export class LastConvoyUI {
   this.stakeControls.update();
   const typed=this.root.querySelector<HTMLInputElement>('.cv-stake [data-manual-stake]');
   if(typed&&document.activeElement!==typed&&typed.checkValidity())typed.value=coins(this.stake);
-  const presetsLocked=!typed||typed.disabled||typed.readOnly;
-  this.root.querySelectorAll<HTMLButtonElement>('[data-cv-preset]').forEach(button=>{button.disabled=presetsLocked;button.setAttribute('aria-pressed',String(button.dataset.cvPreset===this.stake));});
+  if(typed){typed.setAttribute('aria-haspopup','listbox');typed.setAttribute('aria-controls','cv-stake-menu');if(!typed.hasAttribute('aria-expanded'))typed.setAttribute('aria-expanded','false');}
+  if(this.stakeLocked())this.closeStakeMenu();
+  this.markStakeOptions();
   this.find('[data-cc-cost]').textContent=active?copy.free:copy.stake;
   this.find<HTMLButtonElement>('[data-cc-buy]').disabled=!!this.live||client.busy||client.loading||!!this.dialog||!this.assets.ready;
      updateSlotTransport(this.root,'cc',{blocked,active,live:!!this.live,dialog:!!this.dialog,entered:this.entered,fast:this.fast,autoRemaining:this.autoRemaining,bonusRunning:this.bonusRunning,paidBonus:false,pending:!!client.pending,busy:client.busy,loading:client.loading,hidden:document.hidden,ready:this.assets.ready});
@@ -343,5 +431,5 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
  private closeDialog(){this.dialog='';this.controls();this.dialogShell.hide();}
  private async dialogAction(action:string){if(this.destroyed||!this.assets.ready)return;if(action.startsWith('look:')){await this.heroine.select(action.slice(5));if(!this.destroyed&&this.dialog==='looks')this.find('[data-cc-dialog]').querySelectorAll<HTMLButtonElement>('[data-cc-action]').forEach(button=>{if(button.getAttribute('data-cc-action')===action&&!button.disabled)button.focus();});return;}if(action==='enter'){this.entered=true;this.closeDialog();void this.audio.enter();if(this.session()?.state==='active'){this.bonusRunning=true;await this.request('normal');}}else if(action==='bonus'){this.closeDialog();this.bonusRunning=true;await this.request('normal');}else{this.closeDialog();if(action==='complete'&&this.autoRemaining)this.schedule();}}
  getAudioState(){return this.audio.state();}
- destroy(){if(this.destroyed)return;this.destroyed=true;this.layout.disconnect();this.cancel();this.progress.removeEventListener('change',this.progressChanged);this.progress.destroy();this.heroine.destroy();this.assets.destroy();this.board.destroy();this.audio.destroy();this.unsubscribe();this.settings?.destroy();this.dialogShell.destroy();this.stakeControls.destroy();this.soundControls.destroy();this.playback.destroy();this.host.replaceChildren();}
+ destroy(){if(this.destroyed)return;this.destroyed=true;this.layout.disconnect();this.cancel();this.progress.removeEventListener('change',this.progressChanged);this.progress.destroy();this.heroine.destroy();this.assets.destroy();this.board.destroy();this.audio.destroy();this.unsubscribe();this.settings?.destroy();this.dialogShell.destroy();this.stakeControls.destroy();this.stakeMenuEvents.abort();this.soundControls.destroy();this.playback.destroy();this.host.replaceChildren();}
 }
