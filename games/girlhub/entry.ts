@@ -1,4 +1,4 @@
-import { AfterglowUI } from '../../src/ui/AfterglowUI';
+import { AfterglowUI } from './AfterglowUI';
 import { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';
 import '../../src/ui/studio-games.css';
 export const gameId = 'studio-afterglow';

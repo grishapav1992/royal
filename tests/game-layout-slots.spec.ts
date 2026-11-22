@@ -508,19 +508,19 @@ test('moving symbols retain their field through both phone orientations',async({
  test.setTimeout(240000);await enterGameHall(page,roomPath);
  for(const id of ['studio-cosmic-escape','studio-caramel-carnival','studio-velvet-reign','studio-afterglow']){
   await page.setViewportSize({width:393,height:852});await open(page,id);const p=family(id);await page.emulateMedia({reducedMotion:'no-preference'});
-  await page.locator(`[data-${p}-spin]`).click();await expect(page.locator('#mini-game > .slot-priority-game, #mini-game > .cx-game, #mini-game > .cc-game.ccf')).not.toHaveAttribute('data-phase','idle');
+  await page.locator(`[data-${p}-spin]`).click();await expect(page.locator('#mini-game > .slot-priority-game, #mini-game > .cx-game, #mini-game > .cc-game.ccf, #mini-game > .ag-game')).not.toHaveAttribute('data-phase','idle');
   await page.setViewportSize({width:852,height:393});await fit(page,id);await page.setViewportSize({width:393,height:852});await fit(page,id);
   await page.emulateMedia({reducedMotion:'reduce'});await finish(page,id);
  }
 });
 
-test('album, photo and themed menu remain accessible from the compact panel',async({page,roomPath})=>{
+test('album, photo and themed menu remain accessible on a phone',async({page,roomPath})=>{
  await enterGameHall(page,roomPath);await page.setViewportSize({width:393,height:852});await open(page,'studio-afterglow');
  const before=(await walletSnapshot(page)).entries;
- await page.locator('.slot-settings-button').click();await page.screenshot({path:out+'/studio-afterglow-options.png'});await page.locator('.slot-settings-dialog [data-ag-album]').click();
- await expect(page.locator('.slot-settings-dialog')).toBeHidden();await expect(page.getByRole('heading',{name:'АЛЬБОМ ГЕРОИНЬ',exact:true})).toBeVisible();
- await page.keyboard.press('Escape');await page.locator('.slot-settings-button').click();await page.locator('.slot-settings-dialog [data-ag-photo]').click();
- await expect(page.locator('.slot-settings-dialog')).toBeHidden();await expect(page.locator('.slot-photo-viewer')).toBeVisible();
+ // The studio cabinet keeps the heroine strip with photo and album above the field on phones.
+ await page.locator('.slot-settings-button').click();await page.screenshot({path:out+'/studio-afterglow-options.png'});await page.keyboard.press('Escape');
+ await page.locator('#mini-game [data-ag-album]').click();await expect(page.getByRole('heading',{name:'АЛЬБОМ ГЕРОИНЬ',exact:true})).toBeVisible();
+ await page.keyboard.press('Escape');await page.locator('#mini-game [data-ag-photo]').click();await expect(page.locator('.slot-photo-viewer')).toBeVisible();
  await page.setViewportSize({width:852,height:393});await expect(page.locator('.slot-photo-viewer [aria-label="Закрыть фото"]')).toBeInViewport({ratio:1});
  await page.keyboard.press('Escape');await expect(page.locator('.slot-photo-viewer')).toBeHidden();await fit(page,'studio-afterglow');
  await open(page,'studio-meme-overload');
