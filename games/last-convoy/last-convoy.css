@@ -292,8 +292,9 @@
   grid-area: controls;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-areas: "balance win" "presets presets" "stake stake" "spin auto";
+  grid-template-areas: "balance win" "stake stake" "spin auto";
   align-items: center;
+  position: relative;
   gap: .45em .6em;
   margin: 0;
   padding: .5em .6em;
@@ -310,19 +311,34 @@
 .cv-game :is(.cv-balance, .cv-win) > span, .cv-game .cv-stake-value > label { font-size: .75em; line-height: 1.2; letter-spacing: .04em; color: var(--cv-muted); }
 .cv-game :is(.cv-balance, .cv-win) > strong { font-size: 1.3em; font-weight: 800; line-height: 1.15; overflow-wrap: anywhere; }
 .cv-game .cv-win > strong { color: var(--cv-amber); }
-.cv-presets { grid-area: presets; display: flex; gap: .35em; overflow-x: auto; scrollbar-width: none; }
-.cv-game .cv-presets button {
-  flex: none;
-  min-height: max(32px, 2.2em);
-  padding: 0 .75em;
-  border: 1px solid #ffffff24;
-  border-radius: 999px;
-  background: #ffffff0d;
-  font-size: .82em;
-  font-weight: 700;
+/* The stake list opens from the stake field, above it when there is room. */
+.cv-game .cv-stake-menu {
+  position: absolute;
+  z-index: 30;
+  display: grid;
+  gap: .35em;
+  padding: .45em;
+  border: 1px solid #f5a52466;
+  border-radius: .8em;
+  background: #0b1418f7;
+  box-shadow: 0 .8em 2em #000000a6;
 }
-.cv-game .cv-presets button[aria-pressed="true"] { border-color: var(--cv-amber); background: var(--cv-amber); color: #1a1306; }
-.cv-game .cv-presets button:disabled { opacity: .45; }
+.cv-game .cv-stake-menu[hidden] { display: none; }
+.cv-game .cv-stake-options { display: grid; grid-template-columns: repeat(3, minmax(4.6em, 1fr)); gap: .35em; }
+.cv-game .cv-stake-menu .cv-stake-custom { font-weight: 600; color: var(--cv-muted); }
+.cv-game .cv-stake-menu button {
+  min-height: max(40px, 2.5em);
+  padding: 0 .5em;
+  border: 1px solid #ffffff24;
+  border-radius: .55em;
+  background: #ffffff0d;
+  color: var(--cv-ink);
+  font: 700 .95em/1 system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.cv-game .cv-stake-menu button:hover { border-color: #f5a52499; }
+.cv-game .cv-stake-menu button:focus-visible { outline: 2px solid var(--cv-amber); outline-offset: 1px; }
+.cv-game .cv-stake-menu button[aria-selected="true"] { border-color: var(--cv-amber); background: var(--cv-amber); color: #1a1306; }
 .cv-game .cv-stake {
   grid-area: stake;
   display: grid;
@@ -343,6 +359,7 @@
   box-shadow: inset 0 0 0 1px #ffffff2e;
 }
 .cv-game .cv-stake-value:focus-within { outline: 2px solid var(--cv-amber); outline-offset: 1px; }
+.cv-game .cv-stake-value { cursor: pointer; }
 .cv-game .cv-stake-value select { width: 100%; min-height: 44px; cursor: pointer; }
 .cv-game .cv-stake-value select:disabled { cursor: default; }
 .cv-game .cv-stake-value select option { background: #102128; color: var(--cv-ink); }
@@ -392,11 +409,6 @@
 .cv-game .cv-secondary button, .cv-game .cv-secondary select { min-height: 44px; padding: 5px 8px; }
 .cv-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; }
 
-/* Quick amounts appear on phones only when the field keeps its room. */
-@container convoy (max-height: 760px) {
-  .cv-game:not([data-slot-priority="full"]) .cv-presets { display: none; }
-  .cv-game:not([data-slot-priority="full"]) .cc-controls.cv-controls { grid-template-areas: "balance win" "stake stake" "spin auto"; }
-}
 @container convoy (max-width: 350px) {
   .cv-game .cv-stake { grid-template-columns: minmax(0, 1fr); }
   .cv-game .cv-stake > button, .cv-game .cv-stat .cc-ticket-slots, .cv-game .cv-controls .cc-spin > span:first-child, .cv-brand { display: none; }
@@ -451,8 +463,7 @@
 .cv-game[data-slot-priority="full"] :is(.cv-balance, .cv-win) { min-width: 7em; }
 .cv-game[data-slot-priority="full"] .cv-win { align-items: flex-start; text-align: left; }
 .cv-game[data-slot-priority="full"] :is(.cv-balance, .cv-win) > strong { font-size: 1.5em; }
-.cv-game[data-slot-priority="full"] .cv-presets { flex-wrap: wrap; overflow: visible; max-width: 21em; margin-left: auto; }
-.cv-game[data-slot-priority="full"] .cv-stake { width: 16em; grid-template-columns: minmax(0, 1fr) max(44px, 2.8em) max(44px, 2.8em); }
+.cv-game[data-slot-priority="full"] .cv-stake { margin-left: auto; width: 16em; grid-template-columns: minmax(0, 1fr) max(44px, 2.8em) max(44px, 2.8em); }
 .cv-game[data-slot-priority="full"] .cv-controls .cc-spin {
   flex-direction: column;
   gap: .1em;
@@ -472,7 +483,6 @@
     grid-template-areas: "head head" "field hud" "result hud" "controls controls";
   }
   .cv-game[data-slot-priority="full"] :is(.cv-radio, .cv-sub) { display: none; }
-  .cv-game[data-slot-priority="full"] .cv-presets { display: none; }
 }
 @container convoy (max-height: 700px) {
   .cv-game[data-slot-priority="full"] :is(.cv-stat-note, .cv-tiers) { display: none; }
@@ -489,7 +499,6 @@
 }
 .cv-game[data-slot-priority="landscape"] .cv-brand { display: none; }
 .cv-game[data-slot-priority="landscape"] .cv-top-tools { margin-left: auto; }
-.cv-game[data-slot-priority="landscape"] .cv-presets { display: none; }
 .cv-game[data-slot-priority="landscape"] .cc-controls.cv-controls { grid-template-areas: "balance win" "stake stake" "spin auto"; padding: .4em; gap: .35em .4em; }
 .cv-game[data-slot-priority="landscape"] .cv-controls .cc-spin, .cv-game[data-slot-priority="landscape"] .cv-controls .cv-auto button { min-height: 44px; }
 .cv-game[data-slot-priority="landscape"] .cv-result { align-self: start; padding: .3em .5em; border-radius: .8em; font-size: .85em; }
