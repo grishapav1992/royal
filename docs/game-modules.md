@@ -69,6 +69,8 @@ Verify the ready and active states in the real host with connected chat, includi
 
 The six games appear here in Royal catalogue order. Their design records show different ways to apply the same hierarchy.
 
+Update these references only after production verification confirms that players receive the changed design. As part of documenting the verified release, refresh the affected game's row, cite the published version and its verification, and revise any shared design rules affected by the change. Use the same process when a verified production rollback restores a different design.
+
 | Game | Design decision | Reference |
 | --- | --- | --- |
 | Cosmic Escape | A brass-framed space console keeps portals, energy and missions beside the reels, with a compact strip on phones. A highlighted payline and its breakdown explain the result. | [Brief and layouts](game-layout/cosmic-redesign/BRIEF.md) |
