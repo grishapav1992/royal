@@ -140,7 +140,19 @@ test('Last Convoy keeps its result line and stake legible in the connected host'
  await expect(root.locator('[data-cc-stake]')).toHaveValue('11');
  await stake.fill('0,10');
  await expect(root.locator('[data-cc-stake]')).toHaveValue('10');
- await page.locator('#mini-dialog .game-chat-toggle').click();
+ // Quick amounts use the same manual stake path and never place a bet.
+ const debits=(await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet').length;
+ await page.setViewportSize({width:1440,height:900});
+ if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
+ await fit(page,game);
+ await root.locator('[data-cv-preset="50"]').click();
+ await expect(root.locator('[data-cc-stake]')).toHaveValue('50');
+ await expect(root.locator('[data-cv-preset="50"]')).toHaveAttribute('aria-pressed','true');
+ await expect(stake).toHaveValue('0,50');
+ await root.locator('[data-cv-preset="10"]').click();
+ await expect(root.locator('[data-cc-stake]')).toHaveValue('10');
+ expect((await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(debits);
+ if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
  await expect(chat.locator('#chat-input')).toBeVisible();
 });
 
@@ -463,7 +475,9 @@ for(const id of games)test('settings, Stop and one accepted ten-cent round: '+id
  for(const kind of ['info','history','purchase']){
   const selector=kind==='purchase'?'[data-cc-buy],[data-cosmic-missions],[data-velvet-missions]':`[data-${p}-${kind}]`;
   // Cosmic Escape keeps missions and Caramel Carnival keeps the festival purchase on the cabinet.
+  // Last Convoy keeps rules and history in its header and the evacuation help in the beacon card.
   if(cosmic&&kind==='purchase')await page.locator('#mini-game').locator(cabinet.purchase).click();
+  else if(convoy)await page.locator('#mini-game').locator(selector).click();
   else{await page.locator('.slot-settings-button').click();await page.locator('.slot-settings-dialog').locator(selector).click();}
   await expect(page.locator('.slot-settings-dialog')).toBeHidden();
   await expect(page.locator('#mini-game :is(.cc-dialog,.ce-dialog)')).toBeVisible();

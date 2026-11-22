@@ -32,11 +32,17 @@ const preview=Array.from({length:30},(_,i)=>(i+2*Math.floor(i/6))%7);
 // Cabinet labels travel with the module because the installed host owns the shared dictionary.
 const copy=language==='en'?{
  beacons:'Beacons', defense:'Convoy defense', win:'Round win', radio:'Radio',
+ subtitle:'Survive until dawn', basePhase:'BASE GAME', baseRule:'8+ matching anywhere', bonusPhase:'EVACUATION', bonusRule:'stake already accepted',
+ tools:'Game tools', rules:'Game rules', history:'Game history', beaconTitle:'Evacuation beacons', defenseNote:'each barricade +1, up to ×7',
+ tier:(count:string)=>`for ${count}`, howOpen:'How to open the evacuation', presets:'Quick stake', balance:'Balance',
  controls:'Controls', stake:'Stake per spin', free:'Free', spinning:'Spinning', last:'Last win',
  autoplay:'Autoplay', closeAuto:'Close autoplay', rounds:'Number of spins', startAuto:(count:number)=>`Start ${count} spins`,
  autoRules:'Choose the number of paid spins in Autoplay. After an evacuation, confirm the result to resume the series.',
 }:{
  beacons:'Маяки', defense:'Защита конвоя', win:'Выигрыш раунда', radio:'Радиосвязь',
+ subtitle:'Последний конвой', basePhase:'ОСНОВНАЯ ИГРА', baseRule:'8+ одинаковых в любом месте', bonusPhase:'ЭВАКУАЦИЯ', bonusRule:'ставка уже принята',
+ tools:'Инструменты игры', rules:'Правила игры', history:'История игры', beaconTitle:'Маяки эвакуации', defenseNote:'каждая баррикада +1, до ×7',
+ tier:(count:string)=>`за ${count}`, howOpen:'Как открыть эвакуацию', presets:'Быстрый выбор ставки', balance:'Баланс',
  controls:'Управление', stake:'Ставка за ход', free:'Бесплатно', spinning:'Вращается', last:'Последний выигрыш',
  autoplay:'Автоигра', closeAuto:'Закрыть автоигру', rounds:'Количество вращений', startAuto:(count:number)=>`Запустить ${count} вращений`,
  autoRules:'В окне «Автоигра» выбери количество платных вращений. После эвакуации подтверди результат, чтобы продолжить серию.',
@@ -95,11 +101,21 @@ export class LastConvoyUI {
  private markup(){return tr`<section class="cc-game cv-game" data-convoy-game data-studio-game="${CONVOY_GAME}" data-slot-priority="portrait" data-asset-state="loading" data-phase="idle" aria-label="Последний конвой">
   <div class="cc-loader" role="status"><span class="cc-loader-spark">✦</span><strong data-cc-load-title>ГОТОВИМ ЭВАКУАЦИЮ</strong><p data-cc-load-note>Изображения: 0 из 3</p><progress data-cc-load-progress max="3" value="0" aria-label="Загрузка оформления"></progress><button type="button" data-cc-load-retry hidden>Повторить загрузку</button></div>
   <div class="cv-layout">
-   <div class="cv-hud slot-feature-strip" aria-label="Состояние раунда">
-    <div class="cv-stat"><span>${copy.beacons}</span><div><div class="cc-ticket-slots" data-cc-tickets aria-hidden="true">${Array.from({length:3},()=>`<span>${convoySymbol(7)}</span>`).join('')}</div><strong data-cc-ticket-count>0 / 3</strong></div></div>
-    <div class="cv-stat cv-defense"><span>${copy.defense}</span><div><strong data-cc-factor>×1</strong><span class="cv-factor-max">/ 7</span></div><div class="cc-energy-meter" aria-hidden="true"><i data-cc-energy-fill></i></div></div>
-    <div class="cv-stat cv-win"><span>${copy.win}</span><div><strong data-cc-total data-units="0">0,00</strong></div></div>
-   </div>
+   <header class="cv-head">
+    <div class="cv-brand"><span class="cv-logo">LAST <b>CONVOY</b></span><span class="cv-sub">${copy.subtitle}</span></div>
+    <div class="cv-pill"><i aria-hidden="true"></i><strong class="cv-base-only">${copy.basePhase}</strong><span class="cv-base-only">${copy.baseRule}</span><strong class="cv-bonus-only">${copy.bonusPhase}</strong><span class="cv-bonus-only">${copy.bonusRule}</span></div>
+    <nav class="cv-top-tools" aria-label="${copy.tools}">
+     <button type="button" class="cv-icon" data-cc-info aria-label="${copy.rules}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><path d="M12 7.5v.01"/></svg></button>
+     <button type="button" class="cv-icon" data-cc-history aria-label="${copy.history}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v4h4"/><path d="M12 8v4l3 2"/></svg></button>
+     <div class="cv-tools"></div>
+    </nav>
+   </header>
+   <aside class="cv-hud slot-feature-strip" aria-label="Состояние раунда">
+    <section class="cv-stat cv-defense"><h3>${copy.defense}</h3><div class="cv-stat-value"><strong data-cc-factor>×1</strong><span class="cv-factor-max">/ 7</span></div><div class="cc-energy-meter" aria-hidden="true"><i data-cc-energy-fill></i></div><small class="cv-stat-note">${copy.defenseNote}</small></section>
+    <section class="cv-stat cv-beacons"><h3><span class="cv-long">${copy.beaconTitle}</span><span class="cv-short">${copy.beacons}</span></h3><div class="cv-stat-value"><div class="cc-ticket-slots" data-cc-tickets aria-hidden="true">${Array.from({length:3},()=>`<span>${convoySymbol(7)}</span>`).join('')}</div><strong data-cc-ticket-count>0 / 3</strong></div>
+     <div class="cv-tiers">${[['10','3'],['12','4'],['15','5+']].map(([spins,count])=>`<div><b>${spins}</b><span>${copy.tier(count)}</span></div>`).join('')}</div>
+     <button type="button" class="cv-link" data-cc-buy>${copy.howOpen}</button></section>
+   </aside>
    <div class="cv-stage">
     <div class="cc-board-frame"><div class="cc-board" data-cc-board role="group" aria-label="Шесть барабанов, пять рядов припасов"></div></div>
     <div class="cv-notices">
@@ -116,7 +132,9 @@ export class LastConvoyUI {
     <div class="cv-portrait"><div class="cv-hero-body"><img data-cv-heroine alt="Майя, выживальщица с рацией" width="1024" height="1536"><canvas data-cv-frames width="512" height="768" aria-hidden="true"></canvas></div></div>
    </aside>
    <section class="cc-controls cv-controls" aria-label="${copy.controls}">
-    <div class="cv-balance"><span>Баланс</span><strong data-cc-balance>0,00</strong></div>
+    <div class="cv-balance"><span>${copy.balance}</span><strong data-cc-balance>0,00</strong></div>
+    <div class="cv-win"><span>${copy.win}</span><strong data-cc-total data-units="0">0,00</strong></div>
+    <div class="cv-presets" role="group" aria-label="${copy.presets}">${CONVOY_BETS.map(n=>`<button type="button" data-cv-preset="${n}" aria-pressed="false">${coins(n)}</button>`).join('')}</div>
     <div class="cc-stake cv-stake">
      <div class="cv-stake-value">
       <label for="cc-stake" data-cc-cost>${copy.stake}</label>
@@ -126,15 +144,12 @@ export class LastConvoyUI {
     </div>
     <button type="button" class="cc-spin" data-cc-spin aria-label="Вращать припасы"><span aria-hidden="true">⟳</span><span data-cc-spin-label>Вращать</span></button>
     <div class="cv-auto"><button type="button" data-cc-auto aria-pressed="false" aria-haspopup="dialog" aria-expanded="false">Авто</button><button type="button" data-cc-pause hidden disabled>На паузе</button></div>
-    <div class="cv-tools"></div>
    </section>
   </div>
   <footer class="cc-footer">
    <div class="slot-secondary-controls cv-secondary">
     <div class="cv-summary"><span>${copy.last}</span><strong data-cc-last>0,00</strong></div>
-    <button type="button" data-cc-buy>Как открыть эвакуацию?</button>
     <button type="button" data-cc-speed aria-pressed="false">ОБЫЧНО ×1</button>
-    <button type="button" data-cc-info aria-label="Правила игры">Правила игры</button><button type="button" data-cc-history>История игры</button>
     <button type="button" data-cc-music aria-label="Выключить музыку">Музыка</button><button type="button" data-cc-sound aria-label="Выключить звук">Звук</button>
    </div>
    <button type="button" data-cv-looks aria-label="Выбрать образ Майи">Образы Майи</button>
@@ -158,6 +173,7 @@ export class LastConvoyUI {
       volume:this.find<HTMLInputElement>('[data-cc-volume]'),audio:this.audio,entered:()=>this.entered,dynamicGlyph:false,
     });
 
+  this.root.querySelectorAll<HTMLButtonElement>('[data-cv-preset]').forEach(button=>{button.onclick=()=>this.preset(button.dataset.cvPreset??'');});
   this.find<HTMLButtonElement>('[data-cv-looks]').onclick=()=>{this.stopAuto();this.bonusRunning=false;this.openDialog('looks');};
   this.find<HTMLButtonElement>('[data-cc-load-retry]').onclick=()=>void this.assets.load();this.find<HTMLButtonElement>('[data-cc-spin]').onclick=()=>void this.play();
   this.find<HTMLButtonElement>('[data-cc-buy]').onclick=()=>{this.stopAuto();this.openDialog('bonus-help');};this.find<HTMLButtonElement>('[data-cc-pause]').onclick=()=>{this.stopAuto();this.controls();};
@@ -165,6 +181,14 @@ export class LastConvoyUI {
   this.find<HTMLButtonElement>('[data-cc-info]').onclick=()=>{this.stopAuto();this.openDialog('info');};this.find<HTMLButtonElement>('[data-cc-history]').onclick=()=>{this.stopAuto();this.openDialog('history');};
   this.find<HTMLButtonElement>('[data-cc-retry]').onclick=()=>void this.retry();this.find<HTMLButtonElement>('[data-cc-refresh]').onclick=()=>void this.refresh();this.find<HTMLButtonElement>('[data-cc-wallet]').onclick=()=>{this.stopAuto();window.dispatchEvent(new Event('royal-open-wallet'));};
   this.find<HTMLInputElement>('[data-cv-reduce]').onchange=e=>{this.manualReduced=(e.target as HTMLInputElement).checked;try{localStorage.setItem('royal-convoy-reduced',this.manualReduced?'1':'0');}catch{}this.cancel();this.sync();};
+ }
+ /** A quick amount goes through the same manual stake field, so its range and round locks still apply. */
+ private preset(value:string){
+  const typed=this.root.querySelector<HTMLInputElement>('.cv-stake [data-manual-stake]');
+  if(!typed||typed.disabled||typed.readOnly||!/^[0-9]+$/.test(value))return;
+  typed.value=(Number(value)/100).toFixed(2);
+  typed.dispatchEvent(new Event('input',{bubbles:true}));
+  this.controls();
  }
  private controls(){
   if(this.destroyed)return;this.heroine.setBusy(!!this.live);this.heroine.setProgress(client.accountId,this.progress.profile,this.progress.error);this.heroine.pause(!!this.dialog);this.find<HTMLButtonElement>('[data-cv-looks]').disabled=!!this.live||client.busy||!!this.dialog||!this.assets.ready;const s=this.session(),active=s?.state==='active',blocked=this.blocked();if(active)this.stake=s.stakeUnits;
@@ -178,6 +202,8 @@ export class LastConvoyUI {
   this.stakeControls.update();
   const typed=this.root.querySelector<HTMLInputElement>('.cv-stake [data-manual-stake]');
   if(typed&&document.activeElement!==typed&&typed.checkValidity())typed.value=coins(this.stake);
+  const presetsLocked=!typed||typed.disabled||typed.readOnly;
+  this.root.querySelectorAll<HTMLButtonElement>('[data-cv-preset]').forEach(button=>{button.disabled=presetsLocked;button.setAttribute('aria-pressed',String(button.dataset.cvPreset===this.stake));});
   this.find('[data-cc-cost]').textContent=active?copy.free:copy.stake;
   this.find<HTMLButtonElement>('[data-cc-buy]').disabled=!!this.live||client.busy||client.loading||!!this.dialog||!this.assets.ready;
      updateSlotTransport(this.root,'cc',{blocked,active,live:!!this.live,dialog:!!this.dialog,entered:this.entered,fast:this.fast,autoRemaining:this.autoRemaining,bonusRunning:this.bonusRunning,paidBonus:false,pending:!!client.pending,busy:client.busy,loading:client.loading,hidden:document.hidden,ready:this.assets.ready});
