@@ -69,6 +69,11 @@
 - Count one spin for each accepted paid round. Free spins and other bonus continuations are part of that round and leave the paid count unchanged. Preserve the remaining count during the bonus and resume the series after the bonus ends and the player confirms the result.
 - Keep a manual Stop control. Use the shared wallet and recover any accepted round under its original operation UUID and rules. Follow [the autoplay implementation and verification rules](docs/game-modules.md#autoplay).
 
+## Game interface design
+
+- For every new game and visual redesign, follow the [game interface design rules](docs/game-modules.md#game-interface-design). Keep the playing field, primary action and round status prominent. Give each game its own visual theme and use it to explain the mechanics.
+- Plan desktop, portrait and landscape layouts for the actual host window with connected chat. Scope theme styles to the game module and verify active play, results, bonuses and recovery in the host.
+
 ## Game animation and sound
 
 - Before designing or changing game animation and audio, read `docs/game-feedback.md`. Use its event specification and verification guidance together with the game's existing design and module boundaries. Preserve choices already authorized by the user.
