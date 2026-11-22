@@ -1,4 +1,4 @@
-import { NitroRunUI } from '../../src/ui/NitroRunUI';
+import { NitroRunUI } from './NitroRunUI';
 import { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';
 import '../../src/ui/studio-games.css';
 export const gameId = 'studio-nitro-run';

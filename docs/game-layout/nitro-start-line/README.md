@@ -2,7 +2,7 @@
 
 Заменяет оформление [Night Circuit](../nitro-redesign/README.md). Пакет `@royal/nitro-run` 1.3.0, совместимость host/rules/progress 1/2/1 не изменилась. Утверждённый макет: [Nitro Run: редизайн](https://claude.ai/artifact/8BfJGAggfSMM3FEf2o5aCd).
 
-Изменено только представление: разметка `NitroRunUI`, расчёт `NitroRunLayout`, стили `nitro-run.css` и `nitro-run-layout.css`. Математика, правила, ставки, кошелёк, протокол, символы и фон не менялись.
+Изменено только представление: разметка `NitroRunUI`, расчёт `NitroRunLayout`, стили `nitro-run.css` и `nitro-run-layout.css`. Эти четыре файла перенесены из `src/ui/` в `games/nitro-run/`, как интерфейс Last Convoy: host их не импортирует, и одиночный выпуск модуля меняет только исходники своей папки. Математика, правила, ставки, кошелёк, протокол, символы и фон не менялись.
 
 ## Визуальное направление
 
