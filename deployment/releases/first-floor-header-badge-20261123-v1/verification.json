@@ -1,0 +1,178 @@
+{
+  "release": "first-floor-header-badge-20261123-v1",
+  "sourceCommit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+  "baseCommit": "44a96b5c35131c597a215be165eb4065d3856ed8",
+  "githubSourceProof": "9dd942948a3a0deaec5a09e9800d8f4333c646ca38da8a0e1cb3a0ea098751e5",
+  "host": {
+    "image": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+    "rollbackImage": "sha256:025b3eca69ee9465862c14d7bca0bb9cc58ab31ad0c5e8212128ecc8d2cd344d",
+    "sourceBackupSha256": "f765ebcf14505fff32466562d4c00e27e2f1caa56f34e7ae509ae458faf37b47",
+    "sourceBackupBytes": 2719,
+    "sourceFiles": [
+      "src/ui/GameChat.ts"
+    ],
+    "clientFiles": {
+      "/assets/ActivitiesUI-BPXdQMF-.js": "6a8899fa615950794aac2f731363d755f11acecb8905374da7a6984d102f2c92",
+      "/assets/GameHostRuntime-ChV9nCbd.js": "9c40850b04dbf9830ed1a65ef0cb4d4eef685220eba9260db19ebc2e2620f9f1",
+      "/assets/playerLevelStatus-xMBYuOQV.js": "2eb9a6036f079a26e3bdbd7fc84b4bc7194c1eb51f07442fe5671463c7843892",
+      "/assets/index-D1SaN5ZI.js": "446544a0d253ca8845c9b992bbe6b26d176ecc1185a546d87c40d019dd883251",
+      "/assets/PvpUI-DbNugYTV.js": "a38a12e43ad5144642b5dc9e63830f41cea397b5c5ea07457480e911b123afaf",
+      "/": "60b884493a3df36726f2b51d7ad585231d756d29c20ed050c76d1873d9e947fa",
+      "/assets/main-KNZp3yya.js": "7f58d4b985a4d64f31b11d9a8f237b64df91fa28d15d2b1fb570d4bb3def022a",
+      "/assets/phaser-QvKimlNf.js": "7a763c7c5f92eed771329103dec2c321b52741090059566c6c03aaa156f2f31b",
+      "/assets/ClubWorld-DqDUFnrU.js": "b789d5d8e5bf6ace593d261c9c506ee30fbdd22a5811d2113549b6ee4633c43c"
+    },
+    "backendFiles": 0,
+    "gameDataPreserved": true
+  },
+  "firstFloor": {
+    "games": {
+      "studio-caramel-carnival": {
+        "version": "1.1.1-082dc535cc78",
+        "pointerSha256": "22e4736e121f80a2acee940bfef792aa45517b9eb84585519e606963d8f53a54"
+      },
+      "studio-cosmic-escape": {
+        "version": "1.1.1-c74908ef7937",
+        "pointerSha256": "8d03f0f9a1fd1946791d6b6b8aa16c4d2bd157de800941d840bd61ed0b77f735"
+      },
+      "studio-nitro-run": {
+        "version": "1.3.0-7438b7eedc41",
+        "pointerSha256": "9234d63c4f83913a107a8d2dc2ed15cb7fb322ad8a777a5eed22bba899ecec89"
+      },
+      "studio-last-convoy": {
+        "version": "1.1.1-715efedfa7bd",
+        "pointerSha256": "0c6b3680143d364dec788b168c40b09f6c776c37739feee2318bfbfd817e5fed"
+      },
+      "studio-afterglow": {
+        "version": "1.4.0-cb8ff6685f89",
+        "pointerSha256": "1eb42fe5036a87ccdfdf6a5ac2142009bc97b073ff7189fc8f8548384e3648a6"
+      },
+      "studio-velvet-reign": {
+        "version": "1.1.1-0c60356904bd",
+        "pointerSha256": "24aab489945414f1407325e378878e1dd3575a909432d95a8fdbb5b3fb6b400d"
+      },
+      "studio-dracona": {
+        "version": "1.2.1-6505fff88684",
+        "pointerSha256": "fce544cfb6413a9dce51adc787a96126cf91d07f5c10a95906d58e963b411c39"
+      },
+      "studio-forest-heart": {
+        "version": "1.16.1-62ec551350a8",
+        "pointerSha256": "c70bd5d08dea728b21e3864e93654caf253e38449a4cba4db459aabec0cb644d"
+      },
+      "studio-neopolis": {
+        "version": "0.6.1-4099506305f7",
+        "pointerSha256": "19de6423b3337cc2a01b1e15be0a2b2189cbcc6590849a33029a0210bf24089e"
+      },
+      "github-crash": {
+        "version": "1.1.1-42a51227e934",
+        "pointerSha256": "74b7f78c29be1685ef13de0113ab60175a5144bd40588f3fe19e5ccdb02768d1"
+      },
+      "studio-meme-overload": {
+        "version": "1.1.1-801b99460fdd",
+        "pointerSha256": "0432e5218c8b62b249412bbdb0cf531626288ec74ca604c251a50de8b5f98aea"
+      },
+      "royal-plinko": {
+        "version": "1.1.1-f34942f07f1d",
+        "pointerSha256": "2565cde0c72da3637c24bba76f15a621c6b564f0f327aa092860fb74d512251b"
+      },
+      "original-jackie-chan": {
+        "version": "1.2.1-dab19ae62e75",
+        "pointerSha256": "45a6318b54e95aad98c2c1bafde9daf5205389b3c035d3347a9c47026b57803d"
+      },
+      "original-cr-vs-leo": {
+        "version": "1.1.1-b2fd5fb2a417",
+        "pointerSha256": "a4154ddf85dacb31734d82a8ae58688026b59363e4073f667a2a3ab2d70ab401"
+      },
+      "studio-flooded-temple": {
+        "version": "0.10.1-af661ae908a0",
+        "pointerSha256": "f33ec8b42b60aab21ceac6f30c25f78bfd224bcf25f1005d73dc46abf52728e0"
+      },
+      "studio-caribbean-treasures": {
+        "version": "1.7.1-826034d95efa",
+        "pointerSha256": "85ae7e8b24e358759978da721c1baf2f9b7379ee9b9460cf813631253d597762"
+      },
+      "royal-roulette": {
+        "version": "1.6.2-3d23a9065856",
+        "pointerSha256": "43df4ba8c80258de68715654ddba836ef1ba7c5359a8464842ccf3946797831c"
+      },
+      "studio-wild-nudge": {
+        "version": "1.6.0-62f793156f10",
+        "pointerSha256": "75ef8258ad0ac5db5abaa992fc525c66e103955f98041367b9e86f7e7eda4ec4"
+      },
+      "flag-battle": {
+        "version": "2.1.2-d394fd4b64a0",
+        "pointerSha256": "a969d79f42969943a43ed04e80b1f07e3121d113a80dee11a439ef50ccf8b470"
+      }
+    },
+    "addedGames": [],
+    "restoredGames": [],
+    "catalogueHeaderBadgeRemoved": true,
+    "previousCosmicEscapeBadgeReproduced": true,
+    "browsers": [
+      {
+        "language": "ru",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "connectedChat": true,
+        "recoveredOriginalOperation": true,
+        "singleDebitCents": 10,
+        "gamesChecked": 19
+      },
+      {
+        "language": "en",
+        "viewport": {
+          "width": 393,
+          "height": 852
+        },
+        "connectedChat": true,
+        "recoveredOriginalOperation": true,
+        "singleDebitCents": 10,
+        "gamesChecked": 19
+      }
+    ]
+  },
+  "walletTestsPassed": 19,
+  "applicationChecks": [
+    {
+      "name": "rtp",
+      "passed": true
+    },
+    {
+      "name": "typecheck",
+      "passed": true
+    },
+    {
+      "name": "modules",
+      "passed": true
+    },
+    {
+      "name": "host",
+      "passed": true
+    },
+    {
+      "name": "backend",
+      "passed": true
+    },
+    {
+      "name": "reconciliation",
+      "passed": true
+    },
+    {
+      "name": "payments",
+      "passed": true
+    }
+  ],
+  "publicHealth": true,
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 67.44,
+    "freeBytes": 12047282176,
+    "rollbackImage": "sha256:025b3eca69ee9465862c14d7bca0bb9cc58ab31ad0c5e8212128ecc8d2cd344d",
+    "hourlyTimer": {
+      "enabled": "enabled",
+      "active": "active"
+    }
+  }
+}

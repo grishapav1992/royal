@@ -1,6 +1,14 @@
 import { t } from '../i18n/index';
+import { isPlatformGame } from '../shared/arcadeCatalog';
 import { gameLayoutPolicy } from './GameLayoutPolicy';
 import './game-chat.css';
+
+type ChatWindow = {
+  game: HTMLElement;
+  toggle: HTMLButtonElement;
+  scrim: HTMLElement;
+  badge?: { title: Element; element: HTMLSpanElement };
+};
 
 let registerDialog: ((dialog: HTMLDialogElement) => () => void) | undefined;
 export const registerGameChatDialog = (dialog: HTMLDialogElement) => registerDialog?.(dialog) ?? (() => {});
@@ -10,7 +18,7 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
   const home = document.createComment('Club chat position');
   dock.before(home);
   dock.id = 'club-chat-dock';
-  const windows = new Map<HTMLDialogElement, { game: HTMLElement; toggle: HTMLButtonElement; scrim: HTMLElement }>();
+  const windows = new Map<HTMLDialogElement, ChatWindow>();
   let active: HTMLDialogElement | undefined;
   let overlayOpen = false;
   let columnHidden = false;
@@ -30,6 +38,12 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
     const next = [...windows.keys()].filter(window => window.isConnected && window.open && !window.hasAttribute('data-game-chat-suspended')).at(-1);
     if (next !== active) { overlayOpen = false; active = next; }
     for (const [window, entry] of windows) {
+      if (entry.badge) {
+        const gameId = window.dataset.game ?? '';
+        const { title, element } = entry.badge;
+        if (gameId === 'royal-catalog' || isPlatformGame(gameId)) element.remove();
+        else if (!element.parentElement) title.append(element);
+      }
       const policy = policyFor(window);
       const overlay = policy.chat === 'overlay';
       const visible = window === active && (overlay ? overlayOpen : !columnHidden);
@@ -77,8 +91,10 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
     const settings = toolbar.querySelector('.settings-shortcut');
     if (settings) toolbar.insertBefore(settings, toggle);
     const title = toolbar.querySelector(':scope > div');
-    if (title) {
-      const mode = document.createElement('span'); mode.className = 'game-mode-badge'; mode.textContent = t('Демо'); title.append(mode);
+    const badge = title ? { title, element: document.createElement('span') } : undefined;
+    if (badge) {
+      badge.element.className = 'game-mode-badge';
+      badge.element.textContent = t('Демо');
     }
     const scrim = document.createElement('div'); scrim.className = 'game-chat-scrim'; scrim.hidden = true;
     scrim.addEventListener('click', hide); window.append(scrim);
@@ -89,7 +105,7 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
       if (!dock.hidden && overlay) close.focus({ preventScroll: true });
     });
     const observer = new MutationObserver(sync);
-    observer.observe(window, { attributes: true, attributeFilter: ['open', 'data-game-chat-suspended'] });
+    observer.observe(window, { attributes: true, attributeFilter: ['open', 'data-game', 'data-game-chat-suspended'] });
     const resize = new ResizeObserver(() => {
       const hadFocus = dock.contains(document.activeElement);
       sync();
@@ -118,7 +134,7 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
       }
     };
     window.addEventListener('keydown', onKey, true);
-    windows.set(window, { game, toggle, scrim }); sync();
+    windows.set(window, { game, toggle, scrim, badge }); sync();
     return () => {
       observer.disconnect(); resize.disconnect(); window.removeEventListener('close', onClose);
       window.removeEventListener('keydown', onKey, true); windows.delete(window); sync();
