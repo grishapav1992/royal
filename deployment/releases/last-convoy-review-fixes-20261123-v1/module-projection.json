@@ -70,13 +70,13 @@
     "games/last-convoy/last-convoy.css": {
       "path": "games/last-convoy/last-convoy.css",
       "commit": "d6fe2accd57af6003169ec4dfd74607b5566adcd",
-      "baseSha256": "9acd4abac04bf3ec5ed9f36a2be71dbdc5590b377bdf3d6b04a1a30d5a945ab5",
+      "baseSha256": "43d1c654e56c411478b7dc7f035899363ed57952ac49f7035244533dcb2631cf",
       "sha256": "43d1c654e56c411478b7dc7f035899363ed57952ac49f7035244533dcb2631cf"
     },
     "games/last-convoy/LastConvoyUI.ts": {
       "path": "games/last-convoy/LastConvoyUI.ts",
       "commit": "d6fe2accd57af6003169ec4dfd74607b5566adcd",
-      "baseSha256": "1eff9a8530e04d84bdae9afafb4e9e3274c18d264b42673e2adb661ba8c3af68",
+      "baseSha256": "46912a1c697a15054ca5565579d8adef2efba2141ffead36ecd155598d610af5",
       "sha256": "46912a1c697a15054ca5565579d8adef2efba2141ffead36ecd155598d610af5"
     },
     "games/last-convoy/package.json": {
