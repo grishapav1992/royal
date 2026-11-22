@@ -3112,10 +3112,10 @@
       "sha256": "caea1e30fa2d49b1eab48d7d89387ca327d9c8cd86bef2c6f62c6582d3948564"
     },
     "games/flag-battle/FlagBattleUI.ts": {
-      "commit": "b77a6010f4fc3c02e4620c040d2397d4769a716d",
+      "commit": "29100935ec6ebe094f595f2f2bfd5fa46fc99739",
       "path": "games/flag-battle/FlagBattleUI.ts",
-      "baseSha256": "49bf5535d66515db9279163610412b31d3858ddac67772f0094ca0c6a2f9501a",
-      "sha256": "49bf5535d66515db9279163610412b31d3858ddac67772f0094ca0c6a2f9501a"
+      "baseSha256": "0108bb73daced75af465ea267b3114ca3d5ac79bca6ab2f5bdd6d880a662a606",
+      "sha256": "0108bb73daced75af465ea267b3114ca3d5ac79bca6ab2f5bdd6d880a662a606"
     },
     "games/flag-battle/FlagSoundTimeline.ts": {
       "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
@@ -8702,6 +8702,12 @@
       "path": "server/royalStakeTransport.ts",
       "baseSha256": "8ba026c2dbc9e47e6ef3b982b943b8884120b17daa4d28b970bb55b8aade07be",
       "sha256": "8ba026c2dbc9e47e6ef3b982b943b8884120b17daa4d28b970bb55b8aade07be"
+    },
+    "src/ui/CosmicEscapeRacer.ts": {
+      "commit": "28b6ab52c1fbaa3b93838009a672714f93e7ae3a",
+      "path": "src/ui/CosmicEscapeRacer.ts",
+      "baseSha256": "8414d7fff2096f1590073b3e6d95c08db8e4eae8cd3fd09e68270e6d6bea2b26",
+      "sha256": "8414d7fff2096f1590073b3e6d95c08db8e4eae8cd3fd09e68270e6d6bea2b26"
     }
   },
   "moduleGames": [

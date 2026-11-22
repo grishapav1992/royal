@@ -44,7 +44,7 @@
   "sources": {
     "games/caribbean-treasures/CaribbeanUI.ts": "be2edba2eae8f218040860817d8b3d3c7531f9b499a567e2f665a87262aa3e0e",
     "games/dracona/DraconaUI.ts": "2a089fd17b7bf4cf3736e218cbf38bde0b8b4dad20804fbd425102dbe32ee8b7",
-    "games/flag-battle/FlagBattleUI.ts": "49bf5535d66515db9279163610412b31d3858ddac67772f0094ca0c6a2f9501a",
+    "games/flag-battle/FlagBattleUI.ts": "0108bb73daced75af465ea267b3114ca3d5ac79bca6ab2f5bdd6d880a662a606",
     "games/flooded-temple/CascadeUI.ts": "d41ac3bab4e3f497291d652077664c1528e33c5cf1bb1376177298bf8e8d6af8",
     "games/forest-heart/ForestHeartUI.ts": "4d48f0b797abf3175d07daf7c145f756d76fd6f364842b9a170913d8fe0aff6d",
     "games/girlhub/AfterglowUI.ts": "db9daf9bc81e7ebf86954d983fef8a9b83c6482f04ee8ac37c3c48894c970eb4",
@@ -91,5 +91,8 @@
     "src/shared/wildNudgeStakes.ts",
     "server/royalStakeTransport.ts"
   ],
-  "prior": "deployment/releases/password-login-20261119-v1"
+  "prior": "deployment/releases/password-login-20261119-v1",
+  "preservedModuleInputs": {
+    "src/ui/CosmicEscapeRacer.ts": "8414d7fff2096f1590073b3e6d95c08db8e4eae8cd3fd09e68270e6d6bea2b26"
+  }
 }
