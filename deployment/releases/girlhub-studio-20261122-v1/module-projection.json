@@ -31,7 +31,41 @@
       "path": "games/girlhub/AfterglowUI.ts",
       "commit": "bb249f30ae0528ee77f2f4a7f90e74465f3fa2e9",
       "baseSha256": "56476e3c3a1b1ceed4e62221d3e98873dd86573e005f2f0e81b98807093450ac",
-      "sha256": "56476e3c3a1b1ceed4e62221d3e98873dd86573e005f2f0e81b98807093450ac"
+      "sha256": "2ee086d84aa50135f9e7810363fee1effe517e15e5ffe6f623f3630dc2ce324b",
+      "patches": [
+        {
+          "from": "import {AFTER_LOOK_TARGET_UNITS,AFTER_ALBUM_MAX_UNITS,AFTER_STARTER_GIRL,afterAlbumUnlocked,",
+          "to": "const AFTER_STARTER_GIRL=0;\nimport {AFTER_LOOK_TARGET_UNITS,AFTER_ALBUM_MAX_UNITS,afterAlbumUnlocked,"
+        },
+        {
+          "from": "aria-label=\"Посмотреть фото: Мия\"",
+          "to": "aria-label=\"Посмотреть фото: Алиса\""
+        },
+        {
+          "from": "<h3 data-ag-girl-name>МИЯ</h3>",
+          "to": "<h3 data-ag-girl-name>АЛИСА</h3>"
+        },
+        {
+          "from": "<progress data-ag-progress max=\"100000\"",
+          "to": "<progress data-ag-progress max=\"400000\""
+        },
+        {
+          "from": "const nowAvailable=afterAlbumUnlocked(this.wardrobe.profile?.albumUnits??0);this.newlyUnlocked=AFTER_GALLERY_ORDER.filter(index=>nowAvailable[index]&&!wasAvailable[index]);",
+          "to": "this.newlyUnlocked=afterAlbumUnlocked(this.wardrobe.profile?.albumUnits??0).flatMap((open,index)=>open&&!wasAvailable[index]?[index]:[]);"
+        },
+        {
+          "from": "<p>${translateText('Героини открываются по очереди: Мия (обычная), Наоми (редкая), Ева (эпическая), Алиса (легендарная). Следующая героиня открывается по общему прогрессу только после предыдущих.')} Второй образ каждой героини",
+          "to": "<p>Героини открываются по общему прогрессу. Второй образ каждой героини"
+        },
+        {
+          "from": "<p>${translateText('Героини открываются по очереди: Мия (обычная), Наоми (редкая), Ева (эпическая), Алиса (легендарная). Следующая героиня открывается по общему прогрессу только после предыдущих.')} Прогресс зависит от суммы",
+          "to": "<p>Прогресс зависит от суммы"
+        },
+        {
+          "from": "<p>${translateText('Героини открываются по очереди: Мия (обычная), Наоми (редкая), Ева (эпическая), Алиса (легендарная). Следующая героиня открывается по общему прогрессу только после предыдущих.')} У каждой героини есть",
+          "to": "<p>Общий прогресс альбома открывает новых героинь. У каждой героини есть"
+        }
+      ]
     },
     "games/girlhub/GirlhubLayout.ts": {
       "path": "games/girlhub/GirlhubLayout.ts",
@@ -43,7 +77,13 @@
       "path": "games/girlhub/entry.ts",
       "commit": "bb249f30ae0528ee77f2f4a7f90e74465f3fa2e9",
       "baseSha256": "c655f50c89d24344efbcae2f3707774928ef0ab0bbc05773def3584ec82cb7dd",
-      "sha256": "c655f50c89d24344efbcae2f3707774928ef0ab0bbc05773def3584ec82cb7dd"
+      "sha256": "0710ad10f5538be9b4b9d7c542555118819e721054b7a901c067d6a6aacce6b9",
+      "patches": [
+        {
+          "from": "export const progressVersion = 4;",
+          "to": "export const progressVersion = 3;"
+        }
+      ]
     },
     "games/girlhub/girlhub.css": {
       "path": "games/girlhub/girlhub.css",
@@ -61,7 +101,13 @@
       "path": "games/girlhub/package.json",
       "commit": "bb249f30ae0528ee77f2f4a7f90e74465f3fa2e9",
       "baseSha256": "4dcf1c88229509d43071a401da95cddd4176b6103e9cf9bda9b1803077b1a8f8",
-      "sha256": "4dcf1c88229509d43071a401da95cddd4176b6103e9cf9bda9b1803077b1a8f8"
+      "sha256": "d857fa9deb01e69345642b0718309bfe93f7a75bf541ee6baf6bde10184d27cd",
+      "patches": [
+        {
+          "from": "\"progressVersion\": 4",
+          "to": "\"progressVersion\": 3"
+        }
+      ]
     },
     "games/girlhub/tsconfig.json": {
       "path": "games/girlhub/tsconfig.json",
@@ -76,10 +122,36 @@
       "sha256": "8eed9b514ebe11c794cdecd042356a212b5e4756b5bdca4ccf6b35579bcda93c"
     },
     "src/modules/GameModuleCatalog.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/modules/GameModuleCatalog.ts",
-      "commit": "e97289c4491f4cf380ea442a52a872fa798f4edf",
-      "baseSha256": "201bb0e465c8de8993981131c757c7da2288519ae1bc290b4a389676f346732f",
-      "sha256": "201bb0e465c8de8993981131c757c7da2288519ae1bc290b4a389676f346732f"
+      "baseSha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82",
+      "sha256": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1",
+      "patches": [
+        {
+          "from": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },",
+          "to": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },"
+        },
+        {
+          "from": "ion:1},\n] as con",
+          "to": "ion:1},\n {gameId:'tsu-e-fa',slug:'tsu-e-fa',apiVersion:1,rulesVersion:1,progressVersion:1},\n] as con"
+        },
+        {
+          "from": "iVersion:1,rulesVersion:1,progressVersion:1},\n] a",
+          "to": "iVersion:1,rulesVersion:2,progressVersion:1},\n] a"
+        },
+        {
+          "from": ":2,",
+          "to": ":3,"
+        },
+        {
+          "from": ":3,",
+          "to": ":4,"
+        },
+        {
+          "from": "export const STUDIO_GAME_MODULES = [\n",
+          "to": "export const STUDIO_GAME_MODULES = [\n { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },\n"
+        }
+      ]
     },
     "src/shared/afterglow.ts": {
       "path": "src/shared/afterglow.ts",
@@ -89,9 +161,9 @@
     },
     "src/shared/afterglowWardrobe.ts": {
       "path": "src/shared/afterglowWardrobe.ts",
-      "commit": "e97289c4491f4cf380ea442a52a872fa798f4edf",
-      "baseSha256": "a70b0f4c6c8ca76c7906ea6d9c2062f57cc5e5dc8c13ffc6546667e261ad8e61",
-      "sha256": "a70b0f4c6c8ca76c7906ea6d9c2062f57cc5e5dc8c13ffc6546667e261ad8e61"
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "baseSha256": "6dace1ede72ee479115b5cbf2d1d512c9e8800fd315be407cea787377362dc1f",
+      "sha256": "6dace1ede72ee479115b5cbf2d1d512c9e8800fd315be407cea787377362dc1f"
     },
     "src/shared/caribbeanTreasuresMath.ts": {
       "path": "src/shared/caribbeanTreasuresMath.ts",
