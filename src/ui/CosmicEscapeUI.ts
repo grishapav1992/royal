@@ -122,8 +122,7 @@ export class CosmicEscapeUI {
       this.root.dataset.slotPriority !== 'landscape' && !this.autoOpen &&
       !this.root.querySelector('.slot-settings-dialog[open]') &&
       (!this.dialog || this.dialog === 'bonus' || this.dialog === 'complete');
-    this.racer.context(visible, visible && !this.motionReduced());
-    if (visible && this.live) this.racer.show('focus');
+    this.racer.context(visible, visible && !this.motionReduced(), !!this.live);
   }
   private selectedMode(){return this.info.modes.find(mode=>mode.id===this.mode)??this.info.modes[0];}
   private symbol(id:number){return cosmicSymbol(id,this.assets.ready);}
@@ -365,20 +364,23 @@ export class CosmicEscapeUI {
     if(!active&&this.autoRemaining)this.autoRemaining--;
     if(pick===undefined&&!active&&!mode.bonus){this.board.begin(live.token,live.motion,live.fast,undefined,undefined);void this.audio.begin(live.token);}
     this.controls();
+    if(active)this.racer.prepareFeatures();
     try{
       const operation=this.sessions.operation(this.stake,this.mode,previous,pick);const promise=client.act(operation);live.operationId=client.pending?.id??'';await promise;
       if(!this.valid(live))return;
       const session=this.session();if(!this.sessions.confirmed(session,previous,live.operationId))throw Error(translateText('Ход не подтверждён. Проверь прежнюю операцию.'));
+      const view=session.view.luelon;
+      const startsMission = view.phase==='bonus' && (!view.spin || view.spin.kind==='base' && !!view.spin.triggerAwards);
+      const reaction = startsMission ? 'bonus' : session.state==='settled' ? cosmicRacerOutcome(session.spentUnits, session.returnedUnits) : 'idle';
+      this.racer.prepare(reaction);
       await this.present(session,live);if(!this.valid(live))return;
       this.live=undefined;this.root.dataset.phase='idle';this.root.dataset.animationToken='';this.shown=this.key(session);if(session.state==='settled')this.mode='normal';
       this.features(session.view.luelon,session.view.luelon.spin?.featuresAfter??session.view.luelon.bonus?.features);this.choice(session.view.luelon);
       this.setTotal(session.state==='settled'?session.returnedUnits:session.view.luelon.totalPayoutUnits);this.controls();
       observeExpansionOutcome(this.root,this.game,session,client.accountId,false,false);
-      const view=session.view.luelon;
-      const startsMission = view.phase==='bonus' && (!view.spin || view.spin.kind==='base' && !!view.spin.triggerAwards);
-      this.racer.show(startsMission ? 'bonus' : session.state==='settled' ? cosmicRacerOutcome(session.spentUnits, session.returnedUnits) : 'idle');
+      this.racer.show(reaction);
       if(view.phase==='choice'){this.bonusRunning=false;return;}
-      if(startsMission){this.bonusRunning=false;this.openDialog('bonus');return;}
+      if(startsMission){this.racer.prepareFeatures();this.bonusRunning=false;this.openDialog('bonus');return;}
       if(view.phase==='complete'&&view.history.some(spin=>spin.kind!=='base')){this.bonusRunning=false;this.openDialog('complete');return;}
       if(session.state==='active'&&this.bonusRunning||session.state==='settled'&&this.autoRemaining>0)this.scheduleNext();
       else this.controls();
@@ -407,7 +409,12 @@ export class CosmicEscapeUI {
         if(frame.index===0&&spin.kind==='free-spin'&&event.kind==='energy')continue;
         this.root.dataset.phase='feature';this.audio.feature(event.kind);
         this.root.dataset.shipActive=String(event.kind==='expand'||event.kind==='energy');
-        if(event.kind==='echo'){this.find('[data-lg-factor]').textContent=`×${event.after}`;this.find('[data-lg-factor-note]').textContent=translateText('Эхо: тот же множитель');}
+        if(event.kind==='echo'){
+          this.racer.show('echo');
+          this.find('[data-lg-factor]').textContent=`×${event.after}`;
+          this.find('[data-lg-factor-note]').textContent=translateText('Эхо: тот же множитель');
+        }
+        if(event.kind==='expand')this.racer.show('wild');
         if(event.kind==='energy'){if(!await this.energy(event.before,event.after,live))return;}
         else if(!await this.board.effect(event,frame.gridAfter,live.fast,live.motion,()=>this.valid(live)))return;
         if(event.kind==='expand')this.board.transform(frame.gridAfter,event.positions);
@@ -430,6 +437,7 @@ export class CosmicEscapeUI {
     this.audio.outcome(Number(spin.payoutUnits)>0);if(live.motion)await this.delay(live.fast?150:400,live);
   }
   private async energy(before:number,after:number,live:Live){
+    if(after>before)this.racer.show('energy');
     this.root.dataset.multiplier=String(after);const element=this.find('[data-lg-factor]');
     if(!live.motion){element.textContent=`×${after}`;this.find('[data-cosmic-energy-fill]').style.width=`${after/50*100}%`;return this.valid(live);}
     this.audio.energy();const steps=Math.min(after-before,12),duration=live.fast?450:1000;

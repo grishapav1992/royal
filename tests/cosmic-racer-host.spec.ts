@@ -23,12 +23,12 @@ test('Cosmic Escape racer reacts to confirmed outcomes and the portal in the con
   await expect(actor).toHaveAttribute('data-racer-animated', 'false');
   await page.emulateMedia({reducedMotion: 'no-preference'});
   await expect(actor).toHaveAttribute('data-racer-animated', 'true');
-  await expect(actor).toHaveJSProperty('naturalWidth', 272);
+  await expect(actor).toHaveJSProperty('naturalWidth', 640);
   expect(await actor.evaluate(el => getComputedStyle(el.parentElement!, '::before').backgroundImage)).toContain('radial-gradient');
   expect(await game.evaluate(el => getComputedStyle(el).backgroundImage)).toContain('/cosmic-guardians/v1/background.webp');
   await game.locator('[data-cx-speed=fast]').click();
 
-  for (const cue of ['calm', 'win', 'big-win']) {
+  for (const cue of ['calm', 'even', 'win', 'big-win']) {
     const seed = await page.request.post('/__test/layout/bonus', {data: {gameId, scenario: cue}});
     expect(seed.ok()).toBe(true);
     await spin.click();
@@ -39,19 +39,32 @@ test('Cosmic Escape racer reacts to confirmed outcomes and the portal in the con
   }
   const snapshot = await walletSnapshot(page);
   const bets = snapshot.entries.filter((entry: {kind: string}) => entry.kind === 'bet');
-  expect(bets).toHaveLength(3);
-  expect(bets.map((entry: {amount: number}) => entry.amount)).toEqual([-.1, -.1, -.1]);
+  expect(bets.map((entry: {amount: number}) => entry.amount)).toEqual([-.1, -.1, -.1, -.1]);
 
   await page.setViewportSize({width: 393, height: 852});
   await expect(game).toHaveAttribute('data-slot-priority', 'portrait');
   if (await chat.isVisible()) await chat.locator('.game-chat-close').click();
   await expect(actor).toBeVisible();
-  const portal = await page.request.post('/__test/layout/bonus', {data: {gameId}});
+  const portal = await page.request.post('/__test/layout/bonus', {data: {gameId, scenario: 'features'}});
   expect(portal.ok()).toBe(true);
   await spin.click();
   await expect(actor).toHaveAttribute('data-racer-cue', 'bonus', {timeout: 15000});
   await expect(actor).toHaveAttribute('data-racer-animated', 'true');
-  await expect(game.locator('[data-lg-dialog=bonus], .ce-dialog[data-dialog=bonus]')).toBeVisible();
+  const mission = game.locator('[data-lg-dialog=bonus], .ce-dialog[data-dialog=bonus]');
+  await expect(mission).toBeVisible();
+  await actor.evaluate(el => {
+    const image = el as HTMLImageElement;
+    new MutationObserver(() => {
+      if (image.dataset.racerAnimated !== 'true') return;
+      const cue = image.dataset.racerCue;
+      const seen = image.dataset.testAnimatedCues?.split(',') ?? [];
+      if (cue && !seen.includes(cue)) image.dataset.testAnimatedCues = [...seen, cue].join(',');
+    }).observe(image, {attributeFilter: ['data-racer-cue', 'data-racer-animated']});
+  });
+  await mission.locator('[data-lg-dialog-action=bonus]').click();
+  await expect(actor).toHaveAttribute('data-test-animated-cues', /\benergy\b.*\bwild\b.*\becho\b/, {timeout: 15000});
+  const missionSnapshot = await walletSnapshot(page);
+  expect(missionSnapshot.entries.filter((entry: {kind: string}) => entry.kind === 'bet')).toHaveLength(5);
   await page.emulateMedia({reducedMotion: 'reduce'});
   await expect(actor).toHaveAttribute('data-racer-animated', 'false');
 
