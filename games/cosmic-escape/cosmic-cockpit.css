@@ -428,6 +428,9 @@
 .cx-lastwin { width: 132px; }
 .cx-money > span, .cx-lastwin > span, .cx-stake > label { font-size: 14px; font-weight: 500; color: var(--ce-ink-2); letter-spacing: 0; text-transform: none; white-space: nowrap; }
 .cx-money > strong, .cx-lastwin > strong { font: 700 23px/1.2 var(--cx-display); }
+.cx-game :is(.cx-money, .cx-lastwin) > strong { display: block; height: 1.2em; }
+.cx-game :is(.cx-money, .cx-lastwin) output[data-long="true"] { font-size: .72em; }
+.cx-game .cx-amount[data-long="true"] { font-size: 24px; }
 .cx-money > strong small { font: 600 12px/1 var(--cx-font); color: var(--ce-ink-2); }
 .cx-money output { font: inherit; }
 .cx-lastwin > strong { color: var(--ce-ink-2); }
@@ -447,9 +450,10 @@
 .cx-game .cx-speed-cycle { display: none; flex: none; flex-direction: column; align-items: center; justify-content: center; width: 96px; min-height: 56px; padding: 0 6px; border: 0; border-radius: 14px; background: #2A2138; color: var(--ce-ink); }
 .cx-speed-cycle span { font-size: 12px; font-weight: 600; color: var(--ce-ink-2); }
 .cx-speed-cycle b { font-size: 15px; font-weight: 700; }
-.cx-game .cx-auto-button { box-sizing: border-box; flex: none; display: flex; align-items: center; justify-content: center; gap: 8px; width: 136px; min-height: 56px; padding: 0 8px; border: 2px solid var(--ce-amber-hi); border-radius: 14px; background: transparent; color: var(--ce-amber-hi); font-size: 16px; font-weight: 700; line-height: 1.15; }
+.cx-game .cx-auto-button { box-sizing: border-box; flex: none; display: flex; align-items: center; justify-content: center; gap: 8px; width: 136px; height: 56px; min-height: 0; padding: 0 8px; overflow: hidden; border: 2px solid var(--ce-amber-hi); border-radius: 14px; background: transparent; color: var(--ce-amber-hi); font-size: 16px; font-weight: 700; line-height: 1.15; }
 .cx-game .cx-auto-button[hidden] { display: none; }
 .cx-auto-button svg { flex: none; }
+.cx-auto-button > span { min-width: 0; max-height: 100%; overflow: hidden; }
 .cx-game .cx-auto-button:hover:not(:disabled), .cx-game .cx-auto-button:is([aria-expanded="true"], [aria-pressed="true"]) { background: rgba(240,169,71,.16); }
 .cx-game[data-bonus="true"] .cx-auto-button[data-lg-pause] { border-color: var(--ce-cyan); color: var(--ce-cyan); }
 
@@ -587,7 +591,7 @@
 .cx-game[data-slot-priority="portrait"] .cx-short { display: inline; }
 .cx-game[data-slot-priority="portrait"] .cx-stepper { height: 52px; }
 .cx-game[data-slot-priority="portrait"] .cx-stepper button { width: 64px; height: 52px; }
-.cx-game[data-slot-priority="portrait"] .cx-auto-button { grid-area: auto; width: 100%; min-height: 58px; }
+.cx-game[data-slot-priority="portrait"] .cx-auto-button { grid-area: auto; width: 100%; height: 58px; }
 .cx-game[data-slot-priority="portrait"] .cx-speed-cycle { grid-area: speed; display: flex; width: 100%; min-height: 58px; }
 .cx-game[data-slot-priority="portrait"] .cx-spin { --core: 120px; grid-area: spin; margin: 0; align-self: center; }
 .cx-game[data-slot-priority="portrait"] .cx-auto-panel {
@@ -631,9 +635,12 @@
   .cx-game[data-slot-priority="portrait"] .cx-bar { grid-template-columns: minmax(0, 1fr) 88px minmax(0, 1fr); grid-template-rows: auto 46px 88px; gap: 6px 10px; padding: 4px 10px 6px; }
   .cx-game[data-slot-priority="portrait"] .cx-spin { --core: 88px; }
   .cx-game[data-slot-priority="portrait"] .cx-stepper, .cx-game[data-slot-priority="portrait"] .cx-stepper button { height: 46px; }
-  .cx-game[data-slot-priority="portrait"] :is(.cx-auto-button, .cx-speed-cycle) { min-height: 48px; font-size: 14px; }
+  .cx-game[data-slot-priority="portrait"] .cx-auto-button { height: 48px; font-size: 14px; }
+  .cx-game[data-slot-priority="portrait"] .cx-speed-cycle { min-height: 48px; font-size: 14px; }
   .cx-game[data-slot-priority="portrait"] :is(.cx-money, .cx-lastwin) > strong { font-size: 15px; }
 }
+
+@media (max-width: 360px) { .cx-game[data-slot-priority="portrait"] .cx-stake > label { clip-path: inset(50%); } }
 
 /* Phone landscape: field and one status row on the left, controls in a column on the right. */
 .lg-game.ce-game.cx-game[data-slot-priority="landscape"] { grid-template-columns: minmax(0, 1fr) clamp(228px, 34%, 300px); grid-template-rows: minmax(0, 1fr); --cx-bar-height: 0px; }
@@ -642,7 +649,7 @@
   --strip: 48px;
   --fw: min(calc(100cqw - 14px), calc((100cqh - var(--strip) - 20px) * 858 / 500));
   --fh: calc(var(--fw) * 500 / 858);
-  grid-template-columns: minmax(0, 1fr) auto auto auto; grid-template-rows: var(--fh) var(--strip);
+  grid-template-columns: minmax(0, 1fr) 122px 62px 78px; grid-template-rows: var(--fh) var(--strip);
   grid-template-areas: "reels reels reels reels" "result portals energy missions";
   gap: 6px; padding: 7px 4px 7px 10px; justify-content: stretch; align-content: center;
 }
@@ -684,7 +691,7 @@
 .cx-game[data-slot-priority="landscape"] .cx-stake > label { font-size: 12px; }
 .cx-game[data-slot-priority="landscape"] .cx-stepper { height: 48px; }
 .cx-game[data-slot-priority="landscape"] .cx-stepper button { width: 46px; height: 48px; }
-.cx-game[data-slot-priority="landscape"] .cx-auto-button { grid-area: auto; width: 100%; min-height: 48px; padding: 0 4px; font-size: 14px; }
+.cx-game[data-slot-priority="landscape"] .cx-auto-button { grid-area: auto; width: 100%; height: 48px; padding: 0 4px; font-size: 14px; }
 .cx-game[data-slot-priority="landscape"] .cx-auto-button svg { display: none; }
 .cx-game[data-slot-priority="landscape"] .cx-speed-cycle { grid-area: speed; display: flex; width: 100%; min-height: 48px; padding: 0 2px; }
 .cx-game[data-slot-priority="landscape"] .cx-speed-cycle span { display: none; }
@@ -709,7 +716,9 @@
   .cx-game[data-slot-priority="landscape"] .cx-spin { --core: 80px; }
   .cx-game[data-slot-priority="landscape"] .cx-stake > label { display: none; }
   .cx-game[data-slot-priority="landscape"] .cx-stepper, .cx-game[data-slot-priority="landscape"] .cx-stepper button { height: 46px; }
-  .cx-game[data-slot-priority="landscape"] :is(.cx-auto-button, .cx-speed-cycle) { min-height: 46px; font-size: 13px; }
+  .cx-game[data-slot-priority="landscape"] .cx-auto-button { height: 46px; font-size: 13px; }
+  .cx-game[data-slot-priority="landscape"] .cx-speed-cycle { min-height: 46px; font-size: 13px; }
+  .cx-game[data-slot-priority="landscape"] .cx-deck { grid-template-columns: minmax(0, 1fr) 58px 60px 76px; }
   .cx-game[data-slot-priority="landscape"] .cx-portals h3 { display: none; }
   .cx-game[data-slot-priority="landscape"] .cx-result-text span { display: none; }
 }

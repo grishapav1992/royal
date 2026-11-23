@@ -436,6 +436,98 @@ test('Cosmic Escape keeps its 2K reel size when the chat column closes',async({p
  expect(closedBox.height).toBe(openBox.height);
 });
 
+/** Records every distinct position of the Cosmic field, result strip and controls on every frame. */
+async function watchCosmicCockpit(page:Page){
+ await page.evaluate(()=>{
+  const root=document.querySelector<HTMLElement>('#mini-game > .cx-game')!,seen=new Map<string,string>(),phases=new Set<string>();
+  const parts=['.cx-frame','[data-lg-board]','.cx-result','.cx-energy','.cx-portals','.cx-bar','.cx-money','.cx-lastwin','.cx-stepper'];
+  let running=true,frames=0;
+  const sample=()=>{
+   if(!running)return;
+   frames++;phases.add(root.dataset.phase+(root.dataset.bonus==='true'?'+mission':''));
+   const note=(key:string)=>{if(!seen.has(key))seen.set(key,root.dataset.phase+'/'+root.dataset.bonus);};
+   for(const part of parts){const b=root.querySelector(part)!.getBoundingClientRect();note(part+' '+[b.x,b.y,b.width,b.height].map(v=>v.toFixed(1)).join(','));}
+   // The pressed reactor scales for a moment; its layout box must stay.
+   const spin=root.querySelector<HTMLElement>('[data-lg-spin]')!;note('[data-lg-spin] '+[spin.offsetLeft,spin.offsetTop,spin.offsetWidth,spin.offsetHeight].join(','));
+   // Auto and the series pause share one slot.
+   const slot=[...root.querySelectorAll<HTMLElement>('[data-lg-auto],[data-lg-pause]')].find(e=>!e.hidden)!.getBoundingClientRect();note('auto '+[slot.x,slot.y,slot.width,slot.height].map(v=>v.toFixed(1)).join(','));
+   requestAnimationFrame(sample);
+  };
+  (window as any).cosmicCockpit=()=>{running=false;return {frames,phases:[...phases],places:[...seen].map(([key,phase])=>key+' @'+phase),parts:parts.length+2};};
+  sample();
+ });
+ return ()=>page.evaluate(()=>(window as any).cosmicCockpit() as {frames:number;phases:string[];places:string[];parts:number});
+}
+for(const [width,height,chatOpen] of [[1440,900,true],[1440,900,false],[1280,720,false],[393,852,false],[852,393,false],[320,568,false],[568,320,false]] as const)test(`Cosmic Escape cockpit never moves through real rounds: ${width}x${height}${chatOpen?' with chat':''}`,async({page,roomPath})=>{
+ test.setTimeout(240000);await enterGameHall(page,roomPath);await page.setViewportSize({width,height});
+ const id='studio-cosmic-escape',chat=page.locator('#club-chat-dock');await open(page,id);
+ if(await chat.isVisible()!==chatOpen){if(chatOpen||width>=1080)await page.locator('#mini-dialog .game-chat-toggle').click();else await chat.locator('.game-chat-close').click();}
+ await page.evaluate(()=>document.fonts.ready.then(()=>new Promise<void>(r=>setTimeout(r,400))));
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ const game=page.locator('#mini-game > .cx-game'),stop=await watchCosmicCockpit(page);
+ const seed=async(scenario?:string)=>{const fixture=await page.request.post('/__test/layout/bonus',{data:{gameId:id,scenario}});expect(fixture.ok(),await fixture.text()).toBe(true);};
+ for(const [scenario,kind] of [['calm','none'],['win','win'],['big-win','win']] as const){
+  await seed(scenario);await page.locator('[data-lg-spin]').click();
+  await expect(game).not.toHaveAttribute('data-phase','idle');
+  await expect.poll(()=>game.evaluate(e=>e.dataset.phase==='idle'&&!e.dataset.animationToken),{timeout:60000}).toBe(true);
+  if(kind==='win'){await expect(game.locator('[data-cx-result]')).toHaveAttribute('data-kind','win');await expect(game.locator('[data-cx-result-amount]')).not.toBeEmpty();}
+ }
+ await seed('features');await page.locator('[data-lg-spin]').click();
+ const bonus=page.locator('[data-lg-dialog-action="bonus"]');await expect(bonus).toBeVisible({timeout:60000});await bonus.click();
+ await expect(page.locator('[data-lg-pause]')).toBeEnabled({timeout:15000});await page.waitForTimeout(3500);await page.locator('[data-lg-pause]').click();
+ await expect(game).toHaveAttribute('data-phase','idle',{timeout:30000});
+ // The reactor segments show the free spin that the count names.
+ const [next,awarded]=(await game.locator('[data-cx-spin-count]').textContent())!.match(/\d+/g)!;
+ await expect(game.locator('.cx-core')).toHaveAttribute('data-segments',awarded);await expect(game.locator('.cx-core')).toHaveAttribute('data-lit',next);
+ const result=await stop();expect(result.frames).toBeGreaterThan(60);
+ for(const phase of ['spinning','winning','idle','idle+mission'])expect(result.phases).toContain(phase);
+ expect(result.places,JSON.stringify(result.places,null,1)).toHaveLength(result.parts);
+ await page.emulateMedia({reducedMotion:'reduce'});await finish(page,id);
+});
+
+test('Cosmic Escape cockpit ignores the length of every changing text',async({page,roomPath})=>{
+ test.setTimeout(120000);await enterGameHall(page,roomPath);await open(page,'studio-cosmic-escape');
+ for(const [width,height] of [[2560,1440],[1440,900],[1280,720],[1024,768],[768,1024],[393,852],[852,393],[320,568],[568,320]])await test.step(width+'x'+height,async()=>{
+  await page.setViewportSize({width,height});await page.evaluate(()=>new Promise<void>(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r()))));
+  const moved=await page.locator('#mini-game > .cx-game').evaluate(root=>{
+   const place=()=>['.cx-frame','[data-lg-board]','.cx-result','.cx-energy','.cx-bar','.cx-money','.cx-lastwin','.cx-stepper','[data-lg-spin]','[data-lg-cell="0"]'].map(part=>{const b=root.querySelector(part)!.getBoundingClientRect();return part+' '+[b.x,b.y,b.width,b.height].map(v=>v.toFixed(1)).join(',');}).join(' | ');
+   const before=place(),moved:string[]=[],long='Очень длинная подпись, которая занимает несколько строк и в другом языке бывает ещё длиннее. '.repeat(4);
+   const parts=['[data-cx-result-title]','[data-cx-result-note]','[data-cx-mode]','[data-lg-status]','[data-lg-error]','[data-lg-factor-note]','[data-cosmic-wallet-note]','[data-lg-cost]','[data-cx-spin-count]','[data-lg-spin-label]','[data-cx-auto-label]','[data-lg-pause]'];
+   const texts=[...parts.map(part=>[part,long]),...['[data-lg-balance]','[data-cosmic-lastwin]','[data-cx-result-amount]'].map(part=>[part,'9 999 999,99']),['[data-lg-factor]','×50']];
+   for(const [part,text] of texts){
+    const el=root.querySelector<HTMLElement>(part)!,html=el.innerHTML,hidden=el.hidden,strip=root.querySelector<HTMLElement>('[data-cx-result]')!,kind=strip.dataset.kind,state={...root.dataset};
+    for(const value of ['',text])for(const [next,bonus,spin] of [['idle','false','idle'],['spin','false','spinning'],['win','false','idle'],['win','true','bonus'],['return','false','auto'],['portal','false','idle']]){
+     el.hidden=false;el.textContent=value;strip.dataset.kind=next;Object.assign(root.dataset,{bonus,spinState:spin});
+     if(place()!==before)moved.push(part+' "'+value.slice(0,6)+'" '+next+'/'+bonus+': '+before+' -> '+place());
+    }
+    el.innerHTML=html;el.hidden=hidden;strip.dataset.kind=kind;Object.assign(root.dataset,state);
+   }
+   return moved;
+  });
+  expect(moved).toEqual([]);
+ });
+});
+
+test('Cosmic Escape shows the full price of every mission and charges it once',async({page,roomPath})=>{
+ await enterGameHall(page,roomPath);await open(page,'studio-cosmic-escape');
+ const game=page.locator('#mini-game > .cx-game'),prices=game.locator('[data-cx-price]');
+ const before=await walletSnapshot(page);
+ for(const [width,height] of [[1440,900],[393,852],[852,393],[320,568],[568,320]]){
+  await page.setViewportSize({width,height});await game.locator('[data-cosmic-missions]').click();
+  await expect(prices).toHaveCount(3);await expect(prices).toHaveText([/4,00/,/7,50/,/13,50/]);
+  for(const button of await prices.all()){await button.scrollIntoViewIfNeeded();expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44);}
+  expect(await game.locator('[data-lg-dialog]').evaluate(e=>e.scrollWidth-e.clientWidth)).toBeLessThanOrEqual(1);
+  await page.keyboard.press('Escape');await expect(prices.first()).toBeHidden();
+ }
+ expect((await walletSnapshot(page)).entries).toEqual(before.entries);
+ await page.setViewportSize({width:1440,height:900});await game.locator('[data-cosmic-missions]').click();
+ const paid=page.waitForResponse(response=>response.url().endsWith('/api/demo-wallet/expansion')&&response.request().method()==='POST');
+ await game.locator('[data-lg-dialog-action="buy:ufo-invasion"]').dblclick({noWaitAfter:true}).catch(()=>{});
+ expect((await paid).ok()).toBe(true);await finish(page,'studio-cosmic-escape');
+ const bets=(await walletSnapshot(page)).entries.filter((entry:any)=>entry.kind==='bet');
+ expect(bets).toHaveLength(1);expect(bets[0].amount).toBe(-7.5);
+});
+
 /** Collects every distinct position of the Caramel box, board, lid, outcome line and controls, frame by frame. */
 async function watchCaramelBox(page:Page){
  await page.evaluate(()=>{

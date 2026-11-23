@@ -272,7 +272,7 @@ export class CosmicEscapeUI {
     this.find('[data-cosmic-login]').hidden=!!client.accountId;this.find('[data-cosmic-wallet]').hidden=!client.accountId;
     this.find('[data-cosmic-wallet-note]').textContent=client.accountId?translateText('На счёте не хватает USDT (Nile) для ставки.'):translateText('Для игры нужен общий баланс USDT.');
     if(this.dialog==='intro'){const enter=this.root.querySelector<HTMLButtonElement>('[data-lg-dialog-action="enter"]');if(enter){enter.disabled=!this.assets.ready;enter.textContent=active?translateText('ПРОДОЛЖИТЬ МИССИЮ'):translateText('НАЧАТЬ ПУТЕШЕСТВИЕ');}}
-    this.find('[data-lg-balance]').textContent=coins((this.live?.balance??this.balance())*100);
+    this.money(this.find('[data-lg-balance]'),coins((this.live?.balance??this.balance())*100));
     // Primary action: spin, quick stop while reels move, stop autoplay, or continue a saved free-spin series.
     const spin=this.find<HTMLButtonElement>('[data-lg-spin]'),state=this.live?'spinning':free?'bonus':this.autoRemaining?'auto':'idle';
     this.root.dataset.spinState=state;
@@ -339,10 +339,11 @@ export class CosmicEscapeUI {
   private result(kind:'idle'|'spin'|'none'|'win'|'return'|'portal',title:string,note='',amount=''){
     const strip=this.find('[data-cx-result]');strip.dataset.kind=kind;
     for(const [part,text] of [['title',title],['note',note],['amount',amount]] as const){const element=this.find(`[data-cx-result-${part}]`);if(element.textContent!==text)element.textContent=text;}
+    this.find('[data-cx-result-amount]').dataset.long=String(amount.length>9);
   }
   private idleResult(){this.result('idle',translateText('Нажми «Вращать», чтобы начать путешествие'));}
   private missionNote(view:LuelonSlotView,total:string|number,settled:boolean){
-    return settled?tr`За миссию ${coins(total)} · зачислено на баланс`:tr`За миссию ${coins(total)} · зачислим в конце миссии`;
+    return settled?tr`Миссия ${coins(total)} · зачислено на баланс`:tr`Миссия ${coins(total)} · зачислим в конце`;
   }
   /** Only a confirmed spin reaches the strip. The amount belongs to this spin, the note names the whole round. */
   private describe(view:LuelonSlotView,spin:LuelonSlotSpin,stake:string,settled:boolean,total:string|number){
@@ -350,7 +351,7 @@ export class CosmicEscapeUI {
     const played=view.history.filter(item=>item.kind!=='base'&&item.index<=spin.index).length;
     if(!paid){
       if(spin.triggerAwards)this.result('portal',translateText('Порталы открыты'),tr`${spin.triggerAwards} бесплатных вращений`);
-      else this.result('none',translateText('Нет выигрышной линии'),free&&bonus?tr`Вращение ${played} из ${bonus.awarded} · за миссию ${coins(total)}`:'');
+      else this.result('none',translateText('Нет выигрышной линии'),free&&bonus?tr`Вращение ${played} из ${bonus.awarded} · миссия ${coins(total)}`:'');
       return;
     }
     const wins=spin.frames.flatMap(frame=>frame.wins.map(win=>({win,grid:frame.gridAfter})));
@@ -358,15 +359,17 @@ export class CosmicEscapeUI {
     const wild=best.win.symbol!==7&&best.win.positions.some(position=>best.grid[position]===7)?translateText(' с WILD'):'';
     const energy=best.win.factor>1?tr`, энергия ×${best.win.factor}`:'';
     const name=cosmicSymbolName(best.win.symbol);
-    const line=wins.length===1&&best.win.line!==null?tr`Линия ${best.win.line+1} · ${best.win.count} × ${name}`:tr`Выигрышных линий: ${wins.length} · ${best.win.count} × ${name}`;
+    const line=wins.length===1&&best.win.line!==null?tr`Линия ${best.win.line+1} · ${best.win.count} × ${name}`:tr`Линий: ${wins.length} · ${best.win.count} × ${name}`;
     const share=(paid/Number(stake)).toLocaleString(locale,{maximumFractionDigits:2});
     const partial=!free&&settled&&paid<Number(stake);
     const note=free?this.missionNote(view,total,settled):settled?tr`×${share} от ставки · зачислено на баланс`:tr`×${share} от ставки`;
     this.result(partial?'return':'win',(partial?translateText('Возврат части ставки')+' · ':'')+line+wild+energy,note,coins(paid));
   }
+  /** Long amounts shrink inside their fixed cell. */
+  private money(element:HTMLElement,text:string){if(element.textContent!==text)element.textContent=text;element.dataset.long=String(text.length>9);}
   private setTotal(value:string|number){
     const amount=this.find('[data-cosmic-lastwin]'),text=coins(value);
-    if(amount.textContent!==text)amount.textContent=text;
+    this.money(amount,text);
     amount.dataset.positive=String(units(value)>0);
   }
   private valid(live:Live){return !this.destroyed&&this.playback.current(live,this.live);}
