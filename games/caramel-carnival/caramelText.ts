@@ -17,6 +17,8 @@ const english: Record<string, string> = {
   'Фестиваль, 10 вращений': 'Festival, 10 spins',
   'Купить': 'Buy',
   'Фестиваль идёт': 'Festival in progress',
+  'Фестиваль, сыграно {0} из {1}': 'Festival, {0} of {1} spins played',
+  'Продолжить фестиваль, сыграно {0} из {1}': 'Continue the festival, {0} of {1} spins played',
   'Стоп': 'Stop',
   'Бесплатно': 'Free',
   'Ускорить': 'Speed up',

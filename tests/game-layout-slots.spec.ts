@@ -479,6 +479,60 @@ for(const [width,height,chatOpen] of [[1440,900,true],[1440,900,false],[393,852,
  await page.emulateMedia({reducedMotion:'reduce'});await finish(page,id);
 });
 
+test('Caramel Carnival shows the same progress when a purchased festival is paused and resumed',async({page,roomPath})=>{
+ await enterGameHall(page,roomPath);
+ const id='studio-caramel-carnival';
+ await open(page,id);
+ const chat=page.locator('#club-chat-dock');
+ if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
+ await expect(chat.locator('#chat-input')).toBeVisible();
+ const spin=page.locator('[data-cc-spin]'),pause=page.locator('[data-cc-pause]');
+ const cardCount=page.locator('[data-cc-fest-count]'),spinCount=page.locator('[data-cc-spin-count]');
+ const expectProgress=async(played:number,awarded:number)=>{
+  const progress=`${played} / ${awarded}`;
+  await expect(cardCount).toHaveText(progress);
+  await expect(spinCount).toHaveText(progress);
+  await expect(page.locator('[data-cc-fest-dots] .ccf-done')).toHaveCount(played);
+ };
+ await page.locator('[data-cc-buy]').click();
+ await page.locator('[data-cc-action="buy"]').click();
+ const start=page.locator('[data-cc-action="bonus"]');
+ await expect(start).toBeVisible();
+ await expectProgress(0,10);
+ let awarded=10;
+ for(const played of [1,2]){
+  let release!:()=>void;
+  const gate=new Promise<void>(resolve=>{release=resolve;});
+  const url='**/api/demo-wallet/expansion';
+  const handler=async(route:import('@playwright/test').Route)=>{
+   if(route.request().method()==='POST')await gate;
+   await route.continue();
+  };
+  await page.route(url,handler);
+  try{
+   const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');
+   await (played===1?start:spin).click();
+   await pause.click();
+   await expectProgress(played-1,awarded);
+   release();
+   expect((await response).ok()).toBe(true);
+   await expect(spin).toBeEnabled();
+  }finally{
+   release();
+   await page.unroute(url,handler);
+  }
+  const session=await currentSession(page,id);
+  expect(session.view.caramel.bonus.played).toBe(played);
+  awarded=session.view.caramel.bonus.awarded;
+  await expectProgress(played,awarded);
+  await expect(spin).toHaveAccessibleName(`Продолжить фестиваль, сыграно ${played} из ${awarded}`);
+  if(played===1)await page.setViewportSize({width:393,height:852});
+ }
+ const bets=(await walletSnapshot(page)).entries.filter((entry:{kind:string})=>entry.kind==='bet');
+ expect(bets).toHaveLength(1);
+ expect(bets[0].amount).toBe(-3.5);
+});
+
 test('Caramel Carnival box ignores the length of every changing text',async({page,roomPath})=>{
  test.setTimeout(120000);await enterGameHall(page,roomPath);await open(page,'studio-caramel-carnival');
  for(const [width,height] of [[1440,900],[1280,720],[1024,768],[768,1024],[393,852],[852,393],[320,568],[568,320]])await test.step(width+'x'+height,async()=>{

@@ -208,13 +208,18 @@ export class CaramelCarnivalUI {
   this.find<HTMLInputElement>('[data-cc-reduce]').onchange=event=>{this.manualReduced=(event.target as HTMLInputElement).checked;try{localStorage.setItem('royal-caramel-reduced',this.manualReduced?'1':'0');}catch{}this.cancel();this.sync();};
  }
  private controls(){
-  if(this.destroyed)return;const s=this.session(),active=s?.state==='active',blocked=this.blocked(),bonus=active?s.view.caramel.bonus:null,festival=!!bonus?.remaining;if(active)this.stake=s.stakeUnits;
+  if(this.destroyed)return;const s=this.session(),active=s?.state==='active',blocked=this.blocked();if(active)this.stake=s.stakeUnits;
+  const displayed=this.live?this.live.before:s;
+  const festivalView=displayed?.state==='active'?displayed.view.caramel:undefined;
+  const bonus=festivalView?.bonus??null;
+  const festivalWin=festivalView&&bonus?.remaining?this.festivalWin(festivalView):0;
+  const progress=this.festival(bonus,festivalWin);
   this.root.dataset.reducedMotion=String(!this.motion());this.root.dataset.autoRemaining=String(this.autoRemaining);this.root.dataset.remaining=String(s?.view.caramel.bonus?.remaining??0);this.root.setAttribute('aria-busy',String(!this.assets.ready||!!this.live||client.busy));
   this.find('[data-cc-balance]').textContent=coins((this.live?.balance??this.balance())*100);
-  const last=festival?this.festivalWin(s!.view.caramel):this.live?units(this.find('[data-cc-total]').dataset.units??0):this.lastWin;
-  this.find('[data-cc-last-label]').textContent=festival?translateText('Фестиваль'):translateText('Выигрыш');
+  const last=progress?festivalWin:this.live?units(this.find('[data-cc-total]').dataset.units??0):this.lastWin;
+  this.find('[data-cc-last-label]').textContent=progress?translateText('Фестиваль'):translateText('Выигрыш');
   const lastValue=this.find('[data-cc-last]');lastValue.textContent=coins(last);lastValue.dataset.positive=String(units(last)>0);
-  this.spinButton(blocked,active,bonus);
+  this.spinButton(blocked,active,bonus,progress);
   this.stakeControls.update();
   this.find('[data-ccf-stake]').dataset.locked=String(active||this.autoRemaining>0);
   const price=coins(Number(this.stake)*FESTIVAL_PRICE);this.find('[data-cc-buy-price]').textContent=price;
@@ -225,19 +230,21 @@ export class CaramelCarnivalUI {
   this.find('[data-cc-wallet-help]').hidden=!!client.accountId&&(active||this.balance()>=Number(this.stake)/100);this.find('[data-cc-wallet-note]').textContent=client.accountId?translateText('Недостаточно USDT (Nile) для ставки.'):translateText('Для игры нужен общий баланс USDT.');this.find('[data-cc-login]').hidden=!!client.accountId;this.find('[data-cc-wallet]').hidden=!client.accountId;
   this.audioControls();
   this.find<HTMLInputElement>('[data-cc-reduce]').checked=this.manualReduced;
-  if(!this.live&&!this.root.dataset.cascade)this.idleMessage(s);
+  if(!this.live){
+   this.phaseText=bonus?.remaining?tr`Фестиваль, сыграно ${bonus.played} из ${bonus.awarded}`:translateText('8+ одинаковых в любом месте');
+   if(!this.root.dataset.cascade)this.idleMessage(s);
+  }
   const enter=this.root.querySelector<HTMLButtonElement>('[data-cc-action="enter"]');if(enter){enter.disabled=!this.assets.ready;enter.textContent=active?translateText('ПРОДОЛЖИТЬ ФЕСТИВАЛЬ'):translateText('ОТКРЫТЬ КОРОБКУ');}
   const confirm=this.root.querySelector<HTMLButtonElement>('[data-cc-action="buy"]');if(confirm)confirm.disabled=blocked||active||this.balance()<Number(this.stake)*FESTIVAL_PRICE/100;
  }
  /** Primary action: spin, hurry the running cascade, stop autoplay, or continue a saved festival. */
- private spinButton(blocked:boolean,active:boolean,bonus:CaramelView['bonus']){
+ private spinButton(blocked:boolean,active:boolean,bonus:CaramelView['bonus'],progress:string){
   const spin=this.find<HTMLButtonElement>('[data-cc-spin]'),count=this.find('[data-cc-spin-count]'),label=this.find('[data-cc-spin-label]');
-  const festival=active&&!!bonus?.remaining,state=festival?'bonus':this.autoRemaining?'auto':this.live?'spinning':'idle';
+  const state=progress?'bonus':this.autoRemaining?'auto':this.live?'spinning':'idle';
   this.root.dataset.spinState=state;
   if(state==='bonus'&&bonus){
-   const next=Math.min(bonus.played+1,bonus.awarded);
-   spin.disabled=blocked||!this.entered||!!this.dialog||this.bonusRunning;count.textContent=`${next} / ${bonus.awarded}`;label.textContent=this.bonusRunning?translateText('Бесплатно'):translateText('Продолжить');
-   spin.setAttribute('aria-label',this.bonusRunning?tr`Фестиваль, вращение ${next} из ${bonus.awarded}`:tr`Продолжить фестиваль, вращение ${next} из ${bonus.awarded}`);
+   spin.disabled=blocked||!this.entered||!!this.dialog||this.bonusRunning;count.textContent=progress;label.textContent=this.bonusRunning?translateText('Бесплатно'):translateText('Продолжить');
+   spin.setAttribute('aria-label',this.bonusRunning?tr`Фестиваль, сыграно ${bonus.played} из ${bonus.awarded}`:tr`Продолжить фестиваль, сыграно ${bonus.played} из ${bonus.awarded}`);
   }else if(state==='auto'){spin.disabled=false;count.textContent=String(this.autoRemaining);label.textContent=translateText('Стоп');spin.setAttribute('aria-label',tr`Остановить автоигру, осталось ${this.autoRemaining}`);}
   else if(state==='spinning'){spin.disabled=!!this.live?.fast||!this.live?.motion;count.textContent='';label.textContent=translateText('Ускорить');spin.setAttribute('aria-label',translateText('Показать каскады быстрее'));}
   else{spin.disabled=blocked||!this.entered||!!this.dialog;count.textContent='';label.textContent=active?translateText('Продолжить'):translateText('Вращать');spin.setAttribute('aria-label',active?translateText('Продолжить раунд'):translateText('Вращать'));}
@@ -295,19 +302,22 @@ export class CaramelCarnivalUI {
   slots.forEach((slot,i)=>{slot.hidden=i>=need;slot.classList.toggle('cc-collected',i<count);});
  }
  private festivalWin(v:CaramelView){return v.history.filter(spin=>spin.kind==='free').reduce((sum,spin)=>sum+units(spin.payoutUnits),0);}
- private festival(v?:CaramelView){
-  const bonus=v?.bonus,active=!!bonus?.remaining;this.root.dataset.festival=String(active);
-  if(!active||!bonus||!v)return;
-  this.find('[data-cc-fest-count]').textContent=`${bonus.played} / ${bonus.awarded}`;
-  this.find('[data-cc-fest-dots]').innerHTML=Array.from({length:bonus.awarded},(_,i)=>`<i${i<bonus.played?' class="ccf-done"':''}></i>`).join('');
-  this.find('[data-cc-fest-win]').textContent=coins(this.festivalWin(v));
+ private festival(bonus:CaramelView['bonus'],win:number){
+  this.root.dataset.festival=String(!!bonus?.remaining);
+  if(!bonus?.remaining)return '';
+  const progress=`${bonus.played} / ${bonus.awarded}`;
+  const count=this.find('[data-cc-fest-count]'),dots=this.find('[data-cc-fest-dots]');
+  if(count.textContent!==progress||dots.childElementCount!==bonus.awarded){
+   count.textContent=progress;
+   dots.innerHTML=Array.from({length:bonus.awarded},(_,i)=>`<i${i<bonus.played?' class="ccf-done"':''}></i>`).join('');
+  }
+  this.find('[data-cc-fest-win]').textContent=coins(win);
+  return progress;
  }
  private features(view?:CaramelView){
   const bonus=view?.bonus,active=!!bonus?.remaining;
   this.factor(active?bonus.multiplier:view?.spin?.multiplierAfter??1);
   this.tickets(view?.spin?.tickets??0,view?.spin?.kind==='free'||view?.mode==='festival'&&!view.spin);
-  this.festival(view);
-  this.phaseText=active?tr`Фестиваль, вращение ${Math.min(bonus!.played+1,bonus!.awarded)} из ${bonus!.awarded}`:translateText('8+ одинаковых в любом месте');
   this.find('[data-cc-factor-note]').textContent=active?translateText('Сохраняется до конца фестиваля'):translateText('С каждой новой ставки начинается с ×1');
  }
  private primary(){
