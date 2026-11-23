@@ -405,7 +405,8 @@
 .cx-result-text span:empty { display: none; }
 .cx-mode { flex: none; font-size: 15px; color: var(--ce-ink-2); }
 .cx-result:not([data-kind="idle"], [data-kind="none"], [data-kind="spin"]) .cx-mode { display: none; }
-.cx-feedback { position: absolute; inset: 0; z-index: 3; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 14px; padding: 0 16px; background: var(--ce-panel); white-space: normal; }
+/* Errors and recovery lie over the strip in the same grid cell. They never change its box. */
+.cx-feedback { grid-area: result; position: relative; z-index: 3; box-sizing: border-box; min-width: 0; height: var(--strip); display: flex; align-items: center; justify-content: center; gap: 14px; padding: 0 16px; border: 2px solid var(--ce-line); border-radius: 22px; background: var(--ce-panel); overflow: hidden; white-space: normal; }
 .cx-feedback:not(:has(.lg-status:not(:empty), .lg-error:not(:empty), .lg-recovery button:not([hidden]))) { display: none; }
 .cx-feedback .lg-status, .cx-feedback .lg-error { flex: 0 1 auto; min-width: 0; max-height: 100%; margin: 0; padding: 0; overflow: auto; background: none; font-size: 15px; line-height: 1.3; text-align: left; color: var(--ce-ink); }
 .cx-feedback .lg-status:empty, .cx-feedback .lg-error:empty, .cx-feedback .lg-recovery:not(:has(button:not([hidden]))) { display: none; }
@@ -530,8 +531,6 @@
   .cx-game .cx-bar .cx-stepper > [data-stake-field] > input { font-size: 16px !important; }
   .cx-bar { column-gap: 14px; padding: 0 16px; }
   .cx-bar-left, .cx-bar-right { gap: 8px; }
-  .cx-game .cx-bar .cx-speed { display: none; }
-  .cx-game .cx-bar .cx-speed-cycle { display: flex; }
 }
 /* Low desktop windows give their height to the field. */
 @container cx-scene (max-height: 600px) {
@@ -676,8 +675,7 @@
 .cx-game[data-slot-priority="landscape"] .cx-result:is([data-kind="idle"], [data-kind="none"], [data-kind="spin"]) .cx-result-text b { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; white-space: normal; font-size: 12px; }
 .cx-game[data-slot-priority="landscape"] .cx-result-text span { font-size: 12px; line-height: 1.2; }
 /* Errors use the whole status row, so the retry action keeps its touch size. */
-.cx-game[data-slot-priority="landscape"] .cx-result:has(.lg-error:not(:empty), .lg-status:not(:empty), .lg-recovery button:not([hidden])) { grid-column: 1 / -1; z-index: 2; }
-.cx-game[data-slot-priority="landscape"] .cx-feedback { padding: 0 8px; }
+.cx-game[data-slot-priority="landscape"] .cx-feedback { grid-column: 1 / -1; grid-row: 2; padding: 0 8px; border-radius: 12px; }
 .cx-game[data-slot-priority="landscape"] .cx-feedback :is(.lg-status, .lg-error) { font-size: 12px; }
 .cx-game[data-slot-priority="landscape"] .cx-bar {
   grid-column: 2; grid-row: 1; height: auto; margin: 7px 10px 7px 2px; border: 2px solid var(--ce-brass); border-radius: 18px;
