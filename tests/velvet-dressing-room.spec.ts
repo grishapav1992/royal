@@ -175,3 +175,45 @@ test('Super Encore and populated history use the same complete responsive cabine
  for(const[width,height]of sizes){await page.setViewportSize({width,height});await dialogFits(page);await page.screenshot({path:`${out}/history-populated-${width}x${height}.png`});}
  await ui(page,'closeDialog');
 });
+test('reel frame keeps its place for wins, notices and the bonus',async({page,roomPath})=>{
+ test.setTimeout(240000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await exposeVelvet(page);await enter(page,roomPath);
+ const all=[[1920,1080],[1366,768],[1280,720],[430,932],[375,667],...sizes];
+ // Presentation fixture: set a text state and read the layout in one task, so a background wallet refresh cannot interleave.
+ const measure=(name:string)=>page.evaluate(name=>{
+  const u=(window as any).__velvetTestRouter.child,retry=u.root.querySelector('[data-lg-retry]'),help=u.find('[data-velvet-wallet-help]');
+  if(name!=='keep'){
+   u.error='';u.controls();retry.hidden=true;help.hidden=true;u.renderWins();
+   u.find('[data-lg-message]').textContent=name==='long'?'НОВАЯ ЗВЕЗДА · +2 ВРАЩЕНИЯ · ВЫХОД СО СЛЕДУЮЩЕГО СПИНА ПОСЛЕ ДЛИННОГО СООБЩЕНИЯ':'';u.setTotal(name==='long'?123456789:0);
+   if(name==='one'||name==='many')u.renderWins({wins:Array.from({length:name==='one'?1:8},(_,line)=>({line,symbol:0,positions:[0,1,2],factor:4,payoutUnits:'12345'}))});
+   if(name==='status')u.find('[data-lg-status]').textContent='Автовращений осталось: 25';
+   if(name==='error'||name==='retry'){u.error='Связь прервалась. Проверьте прежний ход, прежде чем продолжать.';u.controls();retry.hidden=name!=='retry';}
+   if(name==='help')help.hidden=false;
+  }
+  const box=(selector:string)=>u.root.querySelector(selector).getBoundingClientRect();
+  const target=({error:'[data-lg-error]',retry:'[data-lg-retry]',help:'[data-velvet-wallet]',long:'[data-lg-total]'} as Record<string,string>)[name];
+  let onTop=true;
+  if(target){const el=u.root.querySelector(target),b=el.getBoundingClientRect(),r=u.root.getBoundingClientRect(),hit=document.elementFromPoint(b.x+b.width/2,b.y+b.height/2);onTop=b.width>0&&b.left>=r.left-1&&b.right<=r.right+1&&b.top>=r.top-1&&b.bottom<=r.bottom+1&&!!hit&&el.contains(hit);}
+  return {onTop,place:['.ce-metal-frame','.ce-results','[data-lg-spin]'].map(selector=>{const b=box(selector);return [b.x,b.y,b.width,b.height].map(Math.round).join(',');}).join(' | ')};
+ },name);
+ const base=new Map<string,string>();
+ for(const[width,height]of all){
+  await page.setViewportSize({width,height});await measure('empty');await geometry(page);await page.waitForTimeout(350);
+  const frame=(await page.locator('.ce-metal-frame').boundingBox())!,start=(await measure('empty')).place;base.set(width+'x'+height,start);
+  expect(frame.width,'field width at '+width+'x'+height).toBeGreaterThan(Math.min(width,height)*.45);
+  for(const name of ['one','many','long','status','error','retry','help']){
+   expect(await measure(name),name+' at '+width+'x'+height).toEqual({onTop:true,place:start});
+  }
+  await measure('empty');
+ }
+ await page.setViewportSize({width:1440,height:900});await page.emulateMedia({reducedMotion:'no-preference'});
+ const seeded=await page.request.post('/__test/layout/bonus',{data:{gameId:game}});expect(seeded.ok()).toBe(true);
+ await page.evaluate(()=>{const w=window as any,seen=w.__velvetFrames=new Set<string>(),read=()=>{const b=document.querySelector('[data-velvet-reign] .ce-metal-frame')?.getBoundingClientRect();if(b)seen.add([b.x,b.y,b.width,b.height].map(Math.round).join(','));requestAnimationFrame(read);};read();});
+ await page.locator('[data-lg-spin]').click();await expect(page.locator('[data-lg-dialog-action=bonus]')).toBeVisible({timeout:60000});await page.locator('[data-lg-dialog-action=bonus]').click();
+ await expect.poll(()=>page.evaluate(()=>(window as any).__velvetTestRouter.child.session()?.view.luelon.bonus?.played??0),{timeout:60000}).toBeGreaterThan(0);
+ await expect(page.locator('[data-lg-pause]')).toBeEnabled({timeout:60000});await page.locator('[data-lg-pause]').click();
+ await expect(page.locator('[data-lg-spin]')).toBeEnabled({timeout:60000});
+ expect(await page.evaluate(()=>[...(window as any).__velvetFrames])).toHaveLength(1);
+ for(const[width,height]of all){await page.setViewportSize({width,height});await geometry(page,true);await expect.poll(async()=>(await measure('keep')).place,{message:'bonus at '+width+'x'+height,timeout:3000}).toBe(base.get(width+'x'+height));}
+ await page.emulateMedia({reducedMotion:'reduce'});await finish(page);
+ expect((await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(1);expect(errors).toEqual([]);
+});

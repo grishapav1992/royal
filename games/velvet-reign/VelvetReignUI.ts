@@ -36,7 +36,7 @@ export class VelvetReignUI {
  private layout(){
    const {width,height}=this.root.getBoundingClientRect();
    const profile=height<600&&width>height?'landscape':width<680?'portrait':width<1000?'tablet':'wide';
-   this.root.dataset.vrLayout=profile;this.root.dataset.vrShort=String(height<620);
+   this.root.dataset.vrLayout=profile;this.root.dataset.vrShort=String(height<620);this.root.dataset.vrSide=String(profile==='tablet'&&height<width);
    const modes=this.find('.vr-mode-switch'),target=this.find('.ce-console');
    if(modes.parentElement!==target)target.append(modes);
    const strip=this.find('.vr-feature-strip'),side=this.find('.vr-side');
