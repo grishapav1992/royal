@@ -1,0 +1,218 @@
+{
+  "published": true,
+  "release": "cosmic-racer-hd-20261123-v1",
+  "sourceCommit": "7cf883895637bd966e7a0ff66657d4488a6bbdfe",
+  "baseCommit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/cosmic-racer-hd-20261123-v1/source.tgz",
+    "sha256": "9f0a2dcff8c688df95390a7a5cef1367862bd478cf25b207fe7c585a1bfdff07",
+    "bytes": 2789,
+    "oldVersion": "1.1.1-c74908ef7937",
+    "imageTag": "royal-game:before-cosmic-racer-hd-20261123-v1",
+    "image": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+    "oldPackageHardlinked": true
+  },
+  "module": {
+    "verified": true,
+    "gameId": "studio-cosmic-escape",
+    "version": "1.1.1-578c5bff2f3f",
+    "bytes": 20737239,
+    "files": 28,
+    "beforeSha256": "8d03f0f9a1fd1946791d6b6b8aa16c4d2bd157de800941d840bd61ed0b77f735",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "36b8217f2676b1683501ff838b7c2b6e159a2c4a480955382a1d89186bb71243",
+    "history": "/opt/royal-game-modules-state/history/20261123T093707-59360eb097604b20abffa7ddc411a904.json"
+  },
+  "freeBefore": 12011511808,
+  "freeAfter": 11990622208,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8783,
+  "servicesPreserved": 11,
+  "hostImage": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+  "sourceReceipt": {
+    "format": 1,
+    "sourceCommit": "7cf883895637bd966e7a0ff66657d4488a6bbdfe",
+    "manifestSha256": "ba65e40a85314f17d6e58328c14e2036cbd1ab3085caa2a0b5543148416a9f41",
+    "remoteMain": "7cf883895637bd966e7a0ff66657d4488a6bbdfe",
+    "checkedAt": "2026-11-23T09:35:59.522Z"
+  },
+  "checkedBuild": {
+    "version": "1.1.1-578c5bff2f3f",
+    "sourceCommit": "7cf883895637bd966e7a0ff66657d4488a6bbdfe",
+    "moduleManifestSha256": "27a788dd247ca90dda8932b3ef602c821261c879b42394219a779d192a97cd42",
+    "connectedHostPassed": true,
+    "recoveryPassed": true,
+    "walletTestsPassed": 19,
+    "racerUnitTestsPassed": 3,
+    "installerTestsPassed": 20,
+    "gameModuleFiles": 28,
+    "browser": "Chrome",
+    "temporaryPostgres": true,
+    "cases": {
+      "desktop": [
+        "Cosmic Escape racer reacts to confirmed outcomes and the portal in the connected host",
+        "field and actions without scrolling: studio-cosmic-escape",
+        "Cosmic Escape keeps results in the controls and the reel frame still",
+        "Cosmic Escape keeps its 2K reel size when the chat column closes",
+        "settings, Stop and one accepted ten-cent round: studio-cosmic-escape"
+      ],
+      "touch": [
+        "field and actions without scrolling: studio-cosmic-escape",
+        "Cosmic Escape keeps results in the controls and the reel frame still"
+      ]
+    },
+    "buildSteps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 235143
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 6609
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 127272
+      }
+    ]
+  },
+  "public": {
+    "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "healthy": true,
+    "hostSha256": "60b884493a3df36726f2b51d7ad585231d756d29c20ed050c76d1873d9e947fa",
+    "checkedPointers": 124,
+    "version": "1.1.1-578c5bff2f3f",
+    "manifestSha256": "27a788dd247ca90dda8932b3ef602c821261c879b42394219a779d192a97cd42",
+    "previousManifestAccessible": true,
+    "previousPointer": "8d03f0f9a1fd1946791d6b6b8aa16c4d2bd157de800941d840bd61ed0b77f735",
+    "checkedFiles": 28,
+    "racerMedia": 20,
+    "catalogue": [
+      "flag-battle",
+      "github-crash",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "royal-plinko",
+      "royal-roulette",
+      "studio-afterglow",
+      "studio-caramel-carnival",
+      "studio-caribbean-treasures",
+      "studio-cosmic-escape",
+      "studio-dracona",
+      "studio-flooded-temple",
+      "studio-forest-heart",
+      "studio-last-convoy",
+      "studio-meme-overload",
+      "studio-neopolis",
+      "studio-nitro-run",
+      "studio-velvet-reign",
+      "studio-wild-nudge"
+    ],
+    "guest": [
+      {
+        "host": "https://stealth-spark-gokmxooi.expresshost.cloud",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "version": "1.1.1-578c5bff2f3f",
+        "catalogue": [
+          "flag-battle",
+          "github-crash",
+          "original-cr-vs-leo",
+          "original-jackie-chan",
+          "royal-plinko",
+          "royal-roulette",
+          "studio-afterglow",
+          "studio-caramel-carnival",
+          "studio-caribbean-treasures",
+          "studio-cosmic-escape",
+          "studio-dracona",
+          "studio-flooded-temple",
+          "studio-forest-heart",
+          "studio-last-convoy",
+          "studio-meme-overload",
+          "studio-neopolis",
+          "studio-nitro-run",
+          "studio-velvet-reign",
+          "studio-wild-nudge"
+        ],
+        "asset": {
+          "width": 640,
+          "height": 1229,
+          "visible": true,
+          "url": "https://stealth-spark-gokmxooi.expresshost.cloud/game-modules/studio-cosmic-escape/versions/1.1.1-578c5bff2f3f/media/cosmic-guardians/racer-v2/idle-still.webp"
+        },
+        "readOnly": true
+      },
+      {
+        "host": "https://stealth-spark-gokmxooi.expresshost.cloud",
+        "viewport": {
+          "width": 430,
+          "height": 932
+        },
+        "version": "1.1.1-578c5bff2f3f",
+        "catalogue": [
+          "flag-battle",
+          "github-crash",
+          "original-cr-vs-leo",
+          "original-jackie-chan",
+          "royal-plinko",
+          "royal-roulette",
+          "studio-afterglow",
+          "studio-caramel-carnival",
+          "studio-caribbean-treasures",
+          "studio-cosmic-escape",
+          "studio-dracona",
+          "studio-flooded-temple",
+          "studio-forest-heart",
+          "studio-last-convoy",
+          "studio-meme-overload",
+          "studio-neopolis",
+          "studio-nitro-run",
+          "studio-velvet-reign",
+          "studio-wild-nudge"
+        ],
+        "asset": {
+          "width": 640,
+          "height": 1229,
+          "visible": true,
+          "url": "https://stealth-spark-gokmxooi.expresshost.cloud/game-modules/studio-cosmic-escape/versions/1.1.1-578c5bff2f3f/media/cosmic-guardians/racer-v2/idle-still.webp"
+        },
+        "readOnly": true
+      }
+    ]
+  },
+  "maintenance": {
+    "status": "completed",
+    "startedAt": 1795426669.0222504,
+    "finishedAt": 1795426753.3979332,
+    "currentImage": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+    "rollbackImage": "sha256:025b3eca69ee9465862c14d7bca0bb9cc58ab31ad0c5e8212128ecc8d2cd344d",
+    "freeBefore": 11986370560,
+    "freeAfter": 11982929920,
+    "durationSeconds": 84.38,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "timerEnabled": "enabled",
+    "timerActive": "active",
+    "containerHealth": "healthy",
+    "freeBytes": 11984093184,
+    "projectBrainStatus": "pending"
+  },
+  "serverTransportCleanup": {
+    "transportRemoved": true,
+    "bytes": 21577334,
+    "freeBefore": 11969859584,
+    "freeAfter": 11991437312
+  }
+}

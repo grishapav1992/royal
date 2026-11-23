@@ -60,6 +60,10 @@ test('Royal: десять сотых, потеря ответа, восстан�
   await expect(presets.locator('option:not(:disabled)')).toHaveCount(9);
   const playBar = mini.locator('.panda-bar');
   const playBarHeight = (await playBar.boundingBox())!.height;
+  await stake.fill('100,00');
+  await expect(stake).toHaveAttribute('aria-invalid', 'false');
+  await stake.fill('100,01');
+  await expect(stake).toHaveAttribute('aria-invalid', 'true');
   await stake.fill('0,101');
   await expect(stake).toHaveAccessibleDescription('0,10–100,00, шаг 0,01');
   await expect(spin).toBeDisabled();
