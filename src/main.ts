@@ -15,7 +15,7 @@ import './ui/floor-navigation.css';
 import { ElevatorUI } from './ui/ElevatorUI';
 import { isStudioGame } from './shared/studioGames';
 import { isVariantGame } from './shared/casinoVariants';
-import { ROYAL_PLATFORM_GAMES, isCollectionGame, isRetiredArcadeGame } from './shared/arcadeCatalog';
+import { collectionGames, isRetiredArcadeGame } from './shared/arcadeCatalog';
 import { RetiredArcadeRounds, RetiredArcadeRoundGuard, ownsRetiredArcadeRound, retiredGameName, type RetiredArcadeRound } from './ui/RetiredArcadeRounds';
 import { isExpansionGame, EXPANSION_NAMES } from './shared/casinoExpansion';
 import { isSessionGame } from './shared/casinoSessions';
@@ -64,7 +64,7 @@ const icons = {
 };
 const icon = (name: keyof typeof icons, cls = '') => `<svg class="icon ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name]}</svg>`;
 const catalogCabinets = cabinetsInHall('arcade');
-const hallGameCount = (hall: HallId) => hall === 'arcade' ? ROYAL_PLATFORM_GAMES.length : cabinetsInHall(hall).length + (hall === 'tables'||hall==='github' ? 3 : 0);
+const hallGameCount = (hall: HallId) => hall === 'arcade' ? collectionGames('royal').length : cabinetsInHall(hall).length + (hall === 'tables'||hall==='github' ? 3 : 0);
 const cabinetCards = (cabinets: Cabinet[]) => cabinets.map(cabinet => {
   const index = catalogCabinets.indexOf(cabinet);
   return tr`<button id="${'cabinet-' + cabinet.id}" class="cabinet-card" data-cabinet="${cabinet.id}" data-hall="${cabinetHall(cabinet)}" aria-label="Подойти к автомату ${cabinet.name}"><div class="cabinet-art art-${index}" id="art-${index}"></div><div class="cabinet-copy">${cabinet.demo ? translateText('<span class="card-kicker">ДЕМО</span>') : ''}<strong>${cabinet.name}</strong><small>${cabinet.subtitle}</small></div>${icon('arrow', 'card-arrow')}</button>`;
@@ -162,7 +162,7 @@ function showPlatformCatalog() {
   platformSelection = new RoyalPlatformCatalog($('#mini-game'), choice => { void selectPlatformGame(choice); }, platformCabinet.collection, selected);
 }
 async function selectPlatformGame(choice: PlatformChoice) {
-  if (!platformCabinet?.collection || platformCabinet.collection==='luelon' || !miniDialog.open || !isCollectionGame(platformCabinet.collection,choice.gameId)) return;
+  if (!platformCabinet?.collection || platformCabinet.collection==='luelon' || !miniDialog.open || !collectionGames(platformCabinet.collection).includes(choice.gameId)) return;
   prepareCabinet(choice.gameId);
   await openCabinetGame(platformGameCabinet(choice.gameId, platformCabinet), undefined, true, choice);
 }
@@ -197,7 +197,7 @@ async function play(cabinet: Cabinet) {
 }
 async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound, switchPlatform = false, choice?: PlatformChoice) {
   if (!offline && (!social || social.client.status !== 'connected') || room.getState().security) { toast(translateText('Войди в клуб, чтобы открыть игру.')); return; }
-  if (switchPlatform && (!platformCabinet || !miniDialog.open || !platformCabinet.collection || platformCabinet.collection==='luelon' || !isCollectionGame(platformCabinet.collection,cabinet.id))) return;
+  if (switchPlatform && (!platformCabinet || !miniDialog.open || !platformCabinet.collection || platformCabinet.collection==='luelon' || !collectionGames(platformCabinet.collection).includes(cabinet.id))) return;
   if (isRetiredArcadeGame(cabinet.id) && (!recovery || recovery.gameId !== cabinet.id || !ownsRetiredArcadeRound(recovery))) return;
   if (!cabinet.playable) { toast(tr`${cabinet.name} пока недоступен.`); return; }
   if (miniDialog.open && !switchPlatform) return;
@@ -494,7 +494,7 @@ async function changeMode(next: EntryMode) {
     room.cancelMovement(); room.endCabinet(); social?.client.releaseCabinet();
     room.setLocked(true); worldGame?.loop.sleep();
     if (!casinoCatalog) casinoCatalog = new RoyalPlatformCatalog($('#casino-catalog'), choice => {
-      if (!isCollectionGame('royal', choice.gameId) || isRetiredArcadeGame(choice.gameId)) return;
+      if (!collectionGames('royal').includes(choice.gameId) || isRetiredArcadeGame(choice.gameId)) return;
       const base: Cabinet = { id: 'casino-catalog', name: 'Royal', subtitle: '', x: 0, y: 0, color: 0, playable: true, collection: 'royal' };
       platformCabinet = base;
       void openCabinetGame(platformGameCabinet(choice.gameId, base), undefined, false, choice);

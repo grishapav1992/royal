@@ -1,5 +1,6 @@
 import { t } from '../i18n/index';
 import { isPlatformGame } from '../shared/arcadeCatalog';
+import { DRAGON_PATH_GAME } from '../shared/dragonPathProtocol';
 import { gameLayoutPolicy } from './GameLayoutPolicy';
 import './game-chat.css';
 
@@ -41,8 +42,12 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
       if (entry.badge) {
         const gameId = window.dataset.game ?? '';
         const { title, element } = entry.badge;
-        if (gameId === 'royal-catalog' || isPlatformGame(gameId)) element.remove();
-        else if (!element.parentElement) title.append(element);
+        if (gameId !== DRAGON_PATH_GAME && (gameId === 'royal-catalog' || isPlatformGame(gameId))) element.remove();
+        else {
+          const label = t(gameId === DRAGON_PATH_GAME ? 'Виртуальные ставки' : 'Демо');
+          if (element.textContent !== label) element.textContent = label;
+          if (!element.parentElement) title.append(element);
+        }
       }
       const policy = policyFor(window);
       const overlay = policy.chat === 'overlay';
@@ -92,10 +97,7 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
     if (settings) toolbar.insertBefore(settings, toggle);
     const title = toolbar.querySelector(':scope > div');
     const badge = title ? { title, element: document.createElement('span') } : undefined;
-    if (badge) {
-      badge.element.className = 'game-mode-badge';
-      badge.element.textContent = t('Демо');
-    }
+    if (badge) badge.element.className = 'game-mode-badge';
     const scrim = document.createElement('div'); scrim.className = 'game-chat-scrim'; scrim.hidden = true;
     scrim.addEventListener('click', hide); window.append(scrim);
     toggle.addEventListener('click', () => {

@@ -1,0 +1,14 @@
+{
+  "format": 1,
+  "gameId": "studio-cosmic-escape",
+  "sdkVersion": "0.1.0",
+  "apiVersion": 1,
+  "rulesVersion": 2,
+  "progressVersion": 1,
+  "sandboxProtocolVersion": 1,
+  "capabilities": ["start", "free", "recover"],
+  "entry": "src/cosmic/entry.ts",
+  "stylesheet": "cosmic.css",
+  "assets": [],
+  "artwork": "Условные рисунки комплекта в src/cosmic/artwork.ts. Исходный арт Royal не включён."
+}

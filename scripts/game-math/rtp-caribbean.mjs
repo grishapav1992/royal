@@ -29,13 +29,14 @@ export const CARIBBEAN_QUALIFICATION_METHOD = 'exact-caribbean-giant-round-v1';
 // The legacy per-line price and the current total-round price calculation, engine
 // dispatch, bonus choices, cap and settlement are unchanged. The wallet verifies
 // the range and calculates reserve coverage from exact integer cents.
+// The virtual Dragon Path branch leaves Caribbean dispatch, capability positions, pricing and settlement unchanged.
 export const CARIBBEAN_REVIEWED_SOURCES = {
   "src/shared/caribbeanTreasuresMath.ts": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
   "src/shared/caribbeanTreasures.ts": "8e987b2de8799b444dd01fe2fcb3a567dd7921a8c1dee4b139e00e13ee3e03bb",
   "server/games/caribbeanTreasures.ts": "bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99",
   "src/shared/caribbeanTransport.ts": "8623c8e5f4f7eef28997a3b9630873e86c4c7fa7f1ff1b790490802d9fd9415a",
-  "src/shared/casinoExpansion.ts": "ad1474233c750035eecbf54544c9c6f3a6eb9ae47bbe6319703b2383c211100d",
-  "server/demoExpansion.ts": "5ba9f8e40813d3308af662babc9797369b450d7bec2aed1b0e6aa1914f87088b",
+  "src/shared/casinoExpansion.ts": "8fa30fdaafd9ac3272da9820ff5e277b9b7f34e143756fa9084223b0a8a5a2ed",
+  "server/demoExpansion.ts": "d7cb8d53b9d15d82e7f3a84015065cac5ab30b0f844397c1b375a9439822bfc3",
   "server/finance/nile-game-runtime.ts": "fd8aebc6d96472fce25ab7b040382d2b749c428bed16cfabdb51629495053118"
 };
 const WEIGHTS = [30,24,18,13,9,6];

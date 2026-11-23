@@ -9,6 +9,7 @@ import { createGzip } from 'node:zlib';
 
 const project = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const exactFiles = ['Dockerfile.load', '.dockerignore', 'package.json', 'package-lock.json', 'tsconfig.json', 'vite.config.ts', 'index.html',
+  'templates/slot-primitive/src/view.ts', 'templates/slot-primitive/src/actions.ts', 'templates/slot-primitive/src/index.ts', 'templates/slot-primitive/view.css',
   'scripts/build-load-stand.mjs', 'scripts/crypto-reconcile.ts', 'scripts/database-test.ts', 'scripts/load-stand-database.ts', 'scripts/load-generator-completion.ts', 'scripts/load-account-probe.ts',
   'scripts/load-websocket-cluster.ts', 'scripts/load-server-metrics.ts', 'scripts/temporary-redis.ts',
   'scripts/load-stand-control.ts', 'scripts/load-stand-contract.ts', 'scripts/load-stand-limits.ts',
