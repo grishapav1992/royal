@@ -1,7 +1,8 @@
 import { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';
 import { Dracona } from './DraconaUI';
 import { styles } from './styles';
-import {requestStyles} from './requestStyles';
+import { requestStyles } from './requestStyles';
+import { draconaText } from './text';
 import './shell.css';
 
 export const gameId = 'studio-dracona';
@@ -12,7 +13,7 @@ export const progressVersion = 2;
 export const mount: GameModuleV1['mount'] = host => {
   readGameHost();
   const frame = host.ownerDocument.createElement('iframe');
-  frame.title = 'Дракона: Наследие Малфоев';
+  frame.title = draconaText('Дракона: Наследие Малфоев');
   frame.className = 'dracona-frame';
   let disposed = false;
   let paused = false;
@@ -46,7 +47,7 @@ export const mount: GameModuleV1['mount'] = host => {
   host.replaceChildren(frame);
   return {
     getState: () => game?.getState() ?? { gameId, loading: true },
-    pause() { paused=true;syncRequest(); },
+    pause() { paused=true;syncRequest();game?.pause(); },
     resume() { paused=false;syncRequest(); },
     destroy() { disposed = true; feedbackLifetime.abort(); resize.disconnect(); game?.destroy(); frame.remove(); },
   };

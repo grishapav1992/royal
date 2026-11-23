@@ -65,10 +65,11 @@ for(const id of ids)test('iframe field and essential actions fit: '+id,async({pa
 for(const id of ids)test('iframe settings, accepted round and recovery: '+id,async({page,roomPath})=>{
  await enterGameHall(page,roomPath);await page.setViewportSize({width:393,height:852});let frame=await open(page,id);
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
- const gear=()=>frame.locator(id==='studio-dracona'?'.frame-options-button':id==='studio-forest-heart'?'[data-fh=settings]':'[data-ft=settings]');
- const panel=()=>frame.locator(id==='studio-dracona'?'.frame-options':id==='studio-forest-heart'?'.fh-dialog':'.ft-dialog');
+ // Dracona keeps every control in view. Its only panel opens autoplay.
+ const gear=()=>frame.locator(id==='studio-dracona'?'#autoplay':id==='studio-forest-heart'?'[data-fh=settings]':'[data-ft=settings]');
+ const panel=()=>frame.locator(id==='studio-dracona'?'#auto-dialog':id==='studio-forest-heart'?'.fh-dialog':'.ft-dialog');
  await gear().click();
- if(id==='studio-dracona'){await frame.locator('#speed').selectOption('turbo');await frame.locator('#autoplay-count').selectOption('25');}
+ if(id==='studio-dracona')await frame.locator('[data-auto-count="25"]').click();
  else if(id==='studio-forest-heart')await frame.locator('[data-fh=fast]').check();
  else{await panel().locator('[data-ft=fast]').click();await panel().locator('[data-ft=auto-count]').selectOption('25');}
  await page.screenshot({path:out+'/'+id+'-options.png'});await page.setViewportSize({width:852,height:393});await frame.locator('body').press('Escape');await expect(panel()).toBeHidden();await expect(gear()).toBeFocused();
@@ -78,6 +79,7 @@ for(const id of ids)test('iframe settings, accepted round and recovery: '+id,asy
  const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');
  const auto=frame.locator(id==='studio-dracona'?'#autoplay':'[data-ft=auto]');
  if(id==='studio-forest-heart')await frame.locator(profiles[id].primary).click();else await auto.click();
+ if(id==='studio-dracona'){expect(seen).toBe(false);await frame.locator('#autoplay-start').click();}
  await expect.poll(()=>seen).toBe(true);await page.setViewportSize({width:852,height:393});await fit(page,frame,id);
  if(id!=='studio-forest-heart'){await expect(auto).toContainText(/СТОП|Стоп/);await auto.click();}
  release();const paid=await response;expect(paid.ok(),await paid.text()).toBe(true);await finish(page,frame,id);await page.unroute('**/api/demo-wallet/expansion');
@@ -94,7 +96,7 @@ test('natural bonuses and Forest Heart choices retain their controls through rot
  test.setTimeout(process.env.LAYOUT_BROWSER==='webkit'?600000:300000);await mkdir(out,{recursive:true});await enterGameHall(page,roomPath);
  for(const id of ids)await test.step(id,async()=>{
   await page.setViewportSize({width:393,height:852});const frame=await open(page,id);
-  if(id==='studio-dracona'){await frame.locator('.frame-options-button').click();await frame.locator('#speed').selectOption('turbo');await frame.locator('body').press('Escape');}
+  if(id==='studio-dracona')await frame.locator('#speed').selectOption('turbo');
   const fixture=await page.request.post('/__test/layout/bonus',{data:{gameId:id}});expect(fixture.ok(),await fixture.text()).toBe(true);
   let release!:()=>void;const gate=new Promise<void>(r=>release=r);
   if(id==='studio-flooded-temple')await page.route('**/api/demo-wallet/expansion',async route=>{if(route.request().method()==='POST'&&route.request().postDataJSON().action==='move')await gate;await route.continue();});
@@ -144,4 +146,36 @@ test('iframe animations keep their field and actions through both orientations',
   await page.setViewportSize({width:852,height:393});await fit(page,frame,id);await page.setViewportSize({width:393,height:852});await fit(page,frame,id);
   await page.emulateMedia({reducedMotion:'reduce'});await finish(page,frame,id);
  }
+});
+
+test('Dracona closes its doors for the request and counts only paid rounds in autoplay',async({page,roomPath})=>{
+ test.setTimeout(300000);await mkdir(out,{recursive:true});await enterGameHall(page,roomPath);const id='studio-dracona',frame=await open(page,id);
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ await frame.locator('#speed').selectOption('turbo');await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ let held=false,release!:()=>void;const gate=new Promise<void>(r=>release=r);
+ await page.route('**/api/demo-wallet/expansion',async route=>{if(!held&&route.request().method()==='POST'){held=true;await gate;}await route.continue();});
+ await frame.locator('#spin').click();await expect.poll(()=>held).toBe(true);
+ await expect(frame.locator('.game')).toHaveAttribute('data-shut','true');await expect(frame.locator('.spin-label')).toHaveText('МАГИЯ');await expect(frame.locator('.win-mark')).toHaveCount(0);
+ expect(await frame.locator('.leaves').evaluate(e=>e.getAnimations({subtree:true}).filter(a=>a instanceof CSSAnimation&&a.animationName==='dracona-request-seam'&&a.playState==='running').length)).toBe(1);
+ await page.screenshot({path:out+'/dracona-request.png'});release();await finish(page,frame,id);await page.unroute('**/api/demo-wallet/expansion');
+ await expect(frame.locator('.game')).toHaveAttribute('data-shut','false');
+ const before=(await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet').length;
+ const fixture=await page.request.post('/__test/layout/bonus',{data:{gameId:id}});expect(fixture.ok(),await fixture.text()).toBe(true);
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await frame.locator('#autoplay').click();await expect(frame.locator('#auto-dialog')).toBeVisible();await frame.locator('[data-auto-count="25"]').click();await page.screenshot({path:out+'/dracona-autoplay.png'});
+ await frame.locator('#auto-cancel').click();await expect(frame.locator('#auto-dialog')).toBeHidden();await expect(frame.locator('#autoplay')).toBeFocused();
+ await frame.locator('#autoplay').click();await frame.locator('[data-auto-count="10"]').click();
+ expect((await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(before);
+ await frame.locator('#autoplay-start').click();let bonuses=0;
+ await expect.poll(async()=>{
+  if(await frame.locator('#dialog').isVisible()){bonuses++;await frame.locator('#dialog-continue').click();return 'dialog';}
+  return await frame.locator('#autoplay').getAttribute('data-active')==='true'?'running':await frame.locator('#spin').isEnabled()?'done':'waiting';
+ },{timeout:180000,intervals:[150]}).toBe('done');
+ expect(bonuses).toBeGreaterThanOrEqual(2);
+ const bets=(await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet');expect(bets).toHaveLength(before+10);expect(bets.every((e:any)=>e.amount===-0.1)).toBe(true);
+ // Stop finishes the accepted round and starts nothing else.
+ await page.emulateMedia({reducedMotion:'no-preference'});await frame.locator('#autoplay').click();await frame.locator('#autoplay-start').click();await expect(frame.locator('#autoplay')).toContainText('Стоп');await frame.locator('#autoplay').click();
+ await expect(frame.locator('#autoplay')).toHaveAttribute('data-active','false',{timeout:30000});await finish(page,frame,id);await page.waitForTimeout(1500);
+ expect((await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet').length).toBeLessThanOrEqual(before+11);expect(errors).toEqual([]);
 });
