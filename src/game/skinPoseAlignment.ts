@@ -34,6 +34,8 @@ export function alignSkinWalkingPoses(pixels: Uint8ClampedArray): SkinPoseAlignm
       let bestScore = Infinity;
       for (const mirrored of [false, true]) for (const scale of [.88, .92, .96, 1, 1.04, 1.08, 1.12]) {
         const offsetY = ref.bottom - box.bottom * scale;
+        // Compare upper silhouettes at the same height while keeping the drawn feet grounded.
+        const headOffsetY = ref.top - box.top * scale;
         for (let offsetX = -4; offsetX <= 4; offsetX += .5) {
           const left = mirrored ? W - 1 - box.right : box.left, right = mirrored ? W - 1 - box.left : box.right;
           if (16 + (left - 16) * scale + offsetX < 0 || 16 + (right - 16) * scale + offsetX >= W
@@ -42,7 +44,7 @@ export function alignSkinWalkingPoses(pixels: Uint8ClampedArray): SkinPoseAlignm
           for (let y = Math.max(0, ref.top - 1); y <= headBottom; y++) for (let x = Math.max(0, ref.left - 2); x <= Math.min(W - 1, ref.right + 2); x++) {
             let sx = Math.round((x - 16 - offsetX) / scale + 16);
             if (mirrored) sx = W - 1 - sx;
-            const sy = Math.round((y - offsetY) / scale), at = (y * W + x) * 4;
+            const sy = Math.round((y - headOffsetY) / scale), at = (y * W + x) * 4;
             const source = sx >= 0 && sx < W && sy >= 0 && sy < H ? (sy * W + sx) * 4 : -1;
             const alpha = reference[at + 3], otherAlpha = source < 0 ? 0 : candidate[source + 3];
             error += Math.abs(alpha - otherAlpha) * 2;

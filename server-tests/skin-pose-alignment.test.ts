@@ -53,3 +53,19 @@ test('a slight silhouette change does not mirror a small mark during a front-fac
   const frontSteps = alignSkinWalkingPoses(data).slice(1, 3);
   assert.deepEqual(frontSteps.map(step => [step.pose, step.mirrored]), [[1, false], [2, false]]);
 });
+
+test('a raised head keeps its size when the feet stay on the ground', () => {
+  const data = new Uint8ClampedArray(128 * 192 * 4);
+  for (const pose of [0, 1, 2]) {
+    const rise = pose === 0 ? 0 : 2;
+    for (let y = 8 - rise; y < 24 - rise; y++) for (let x = 8; x < 24; x++) {
+      data.set([215, 170, 130, 255], (y * 128 + pose * 32 + x) * 4);
+    }
+    for (let y = 22 - rise; y < 44; y++) for (let x = 11; x < 21; x++) {
+      data.set([90, 70, 80, 255], (y * 128 + pose * 32 + x) * 4);
+    }
+    data.set([166, 37, 29, 255], ((13 - rise) * 128 + pose * 32 + 21) * 4);
+  }
+  const frontSteps = alignSkinWalkingPoses(data).slice(1, 3);
+  assert.deepEqual(frontSteps.map(({ pose, scale, y }) => [pose, scale, y]), [[1, 1, 0], [2, 1, 0]]);
+});
