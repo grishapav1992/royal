@@ -1,0 +1,129 @@
+{
+  "release": "ready-character-picker-20261124-v1",
+  "sourceCommit": "8ff427eba1bca9c285134cc06bbb2aba4c66bc5a",
+  "baseCommit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+  "githubSourceProof": "c6adc1cc3ba01b1eb31cb0030acf32e00796132c10d1bcd3d280b4de5fcd4456",
+  "host": {
+    "image": "sha256:f40a06e1ae88820e66590d43ec1e132afcd6ee2db070276a34b6c2820d47200c",
+    "rollbackImage": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+    "sourceBackupSha256": "c6ba2cd361f41031d7d9706332b2fd3a1abddcf15d528f231d6766804ee431c2",
+    "sourceBackupBytes": 4091,
+    "sourceFiles": [
+      "src/ui/AuthUI.ts",
+      "src/ui/CharacterSelector.ts",
+      "src/ui/character-selector.css"
+    ],
+    "clientFiles": {
+      "/": "2cd8770337339de89dd25dececf416df86acb78f4e4d6ac7d8e294ef04d77e33",
+      "/assets/ActivitiesUI-BWqRLPly.js": "a2a494bc0ff6d1ae7c4913870792d8bdee4e49d86fc5dcf537beb1af970b39d5",
+      "/assets/ClubWorld-B_H9vWii.js": "0f9d1c912626caa4e1028d72f8d5e02edf081612d5cca91f4652461577a26564",
+      "/assets/GameHostRuntime-CHrzfo7U.js": "efbf214d7b5ef594241116f6fa44922cc171d25a40611322205060c2c004a18a",
+      "/assets/index-mbJcOE7r.js": "f69d753e4baed73ef9cd410689cfb66115d1935cc0b5969cf62f159f2a46f8ea",
+      "/assets/main-BjgMoLpC.css": "8666b362a704c02d720400c2e3e77c1335405a11d8b23cfc2a0b799e1b0ae98d",
+      "/assets/main-DJ-MWukc.js": "1ece16af5ff85a8678af0be11971c0c1c1814f7924c53002a39bb0c12c903e54",
+      "/assets/phaser-DF6brjvp.js": "bc1defbd5c822694ec8229d99353face3b958100157824893a2b2798a37fc8ef",
+      "/assets/playerLevelStatus-D4MGscFZ.js": "e046f07e68cd460a29a4e5a700f89ad6f62d15feb339d817eca41d1328a40044",
+      "/assets/PvpUI-SZQ6Hykv.js": "9400189f9d9b1b38d8d130fe259d2bdf02030676b8bb2af8ed6def5421791b8d"
+    },
+    "backendFiles": 0,
+    "gameDataPreserved": true
+  },
+  "catalogue": {
+    "firstFloorGames": 19,
+    "unchangedModulePointers": 124,
+    "addedGames": [],
+    "restoredGames": []
+  },
+  "checks": {
+    "releaseBuild": [
+      {
+        "name": "rtp",
+        "passed": true
+      },
+      {
+        "name": "typecheck",
+        "passed": true
+      },
+      {
+        "name": "modules",
+        "passed": true
+      },
+      {
+        "name": "host",
+        "passed": true
+      },
+      {
+        "name": "backend",
+        "passed": true
+      },
+      {
+        "name": "reconciliation",
+        "passed": true
+      },
+      {
+        "name": "payments",
+        "passed": true
+      }
+    ],
+    "characterSelection": {
+      "command": "playwright test --config playwright.character-selection.config.ts",
+      "passed": 8,
+      "desktop": 4,
+      "mobile": 4,
+      "readyMadeCharacters": 12
+    },
+    "walletServerChecks": 19,
+    "installerChecks": 20,
+    "walletRecovery": [
+      {
+        "walletRecovery": true,
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "chatConnected": true,
+        "sameOperation": true,
+        "singleDebitCents": 10,
+        "presentation": "club"
+      },
+      {
+        "walletRecovery": true,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "chatConnected": true,
+        "sameOperation": true,
+        "singleDebitCents": 10,
+        "presentation": "casino"
+      }
+    ],
+    "mobileWalletFixtureNote": "The club navigation fixture timed out opening the cabinet. The same host completed wallet recovery through the casino catalogue.",
+    "testedBackend": "d549a9dfdec49d406959b34d4702118253f3bcfee483d29ec11d71b796e7b15e",
+    "firstFloorGames": 19,
+    "publicBrowser": {
+      "client": "picker",
+      "readyMadeCharacters": 12,
+      "firstFloorGames": 19,
+      "realLogin": false
+    }
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 73.61,
+    "freeBefore": 11902177280,
+    "freeAfter": 11912871936,
+    "removedEntries": 29
+  },
+  "timer": {
+    "enabled": true,
+    "active": true
+  },
+  "availableBytes": 11901857792,
+  "transportCleanup": {
+    "archive": "/opt/royal-incoming/ready-character-picker-20261124-v1.tgz",
+    "archiveBytes": 2331590,
+    "freeBefore": 11899523072,
+    "freeAfter": 11901857792
+  }
+}
