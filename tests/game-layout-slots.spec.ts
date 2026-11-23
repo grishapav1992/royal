@@ -60,6 +60,8 @@ async function fit(page:Page,id:string,action?:string,modal=false){
  },{prefix,primary,modal});
  expect(failures).toEqual([]);
  for(const selector of [primary,`[data-${prefix}-stake]`,'.slot-settings-button']){
+  // Last Convoy shows the accepted stake instead of the stake field during its evacuation.
+  if(selector===`[data-${prefix}-stake]`&&id==='studio-last-convoy'&&await page.locator('#mini-game > [data-bonus="true"]').count())continue;
   const box=await page.locator((selector==='.slot-settings-button'?'#mini-dialog ':'#mini-game ')+selector).boundingBox();expect(box).not.toBeNull();expect(box!.height).toBeGreaterThanOrEqual(44);
  }
 }
@@ -578,10 +580,24 @@ test('natural bonuses keep counters and free continuation visible in both orient
    await page.locator(`[data-${p}-pause]`).click();await page.setViewportSize({width:393,height:852});await fit(page,id);
    const before=await walletSnapshot(page),debits=before.entries.filter((e:any)=>e.kind==='bet').length;
    if(id==='studio-last-convoy')for(const [width,height]of [[393,852],[1512,862]]){
-    // The locked stake keeps its whole amount under the short "Free" label, and the spin count is declined.
+    // The accepted stake replaces the stake field during the evacuation, and the spin count is declined.
     await page.setViewportSize({width,height});await fit(page,id);
-    const stake=await page.locator('#mini-game [data-manual-stake]').evaluate((input:HTMLInputElement)=>({value:input.value,scroll:input.scrollWidth,client:input.clientWidth}));
-    expect(stake.value).toBe('0,10');expect(stake.scroll,`${width}x${height}: stake text is clipped`).toBeLessThanOrEqual(stake.client);
+    await expect(page.locator('#mini-game [data-cc-stake]')).toBeHidden();
+    const accepted=page.locator('#mini-game [data-cv-accepted]');
+    await expect(accepted).toBeVisible();await expect(accepted).toHaveText('Ставка 0,10 уже принята. Вращения эвакуации бесплатны.');
+    const plate=await accepted.evaluate(e=>({scroll:e.scrollWidth,client:e.clientWidth}));expect(plate.scroll,`${width}x${height}: accepted stake is clipped`).toBeLessThanOrEqual(plate.client);
+    await expect(page.locator('#mini-game [data-cc-pause]')).toHaveAttribute('aria-pressed','false');
+    await expect(page.locator('#mini-game [data-cc-spin]')).toHaveAccessibleName('Далее');
+    if(width===1512){
+     // The mechanics column shows the evacuation cards of the mockup: spins, locked defense and the evacuation win.
+     const session=await currentSession(page,id),bonusView=session.view.convoy.bonus;
+     await expect(page.locator('#mini-game .cv-freecard')).toBeVisible();await expect(page.locator('#mini-game .cv-beacons')).toBeHidden();await expect(page.locator('#mini-game .cv-round')).toBeHidden();
+     await expect(page.locator('#mini-game [data-cv-played]')).toHaveText(String(bonusView.played));await expect(page.locator('#mini-game [data-cv-awarded]')).toHaveText(String(bonusView.awarded));
+     await expect(page.locator('#mini-game [data-cv-fsegs] > i')).toHaveCount(bonusView.awarded);
+     await expect(page.locator('#mini-game .cv-defense .cv-tag')).toBeVisible();
+     await expect(page.locator('#mini-game [data-cv-evac]')).toHaveText((await page.locator('#mini-game [data-cc-total]').textContent())!);
+     for(const card of ['.cv-freecard','.cv-defense','.cv-evac']){const box=await page.locator('#mini-game '+card).evaluate(e=>({scroll:e.scrollWidth,client:e.clientWidth}));expect(box.scroll,card+' overflows').toBeLessThanOrEqual(box.client);}
+    }
     const free=(await page.locator('#mini-game [data-cc-free]').textContent())??'',count=Number(free.split(' ')[0]),form=({one:'бесплатное вращение',few:'бесплатных вращения'} as Record<string,string>)[new Intl.PluralRules('ru').select(count)]??'бесплатных вращений';
     expect(free).toBe(`${count} ${form}`);
    }
@@ -627,6 +643,18 @@ test('Last Convoy scales the field, Maya and controls at 2K and 4K',async({page,
  await chat.locator('.game-chat-close').click();
  await fit(page,game);
  expect(Math.abs((await measure()).width-withChat.width)).toBeLessThan(4);
+ // The mockup's display face, round log and dock toggles are in place.
+ await page.evaluate(()=>document.fonts.ready);
+ expect(await page.evaluate(()=>document.fonts.check('700 32px "Convoy Oswald"','LAST CONVOY ЭВАКУАЦИЯ'))).toBe(true);
+ expect(await root.locator('.cv-logo').evaluate(e=>getComputedStyle(e).fontFamily)).toContain('Convoy Oswald');
+ await expect(root.locator('.cv-round')).toBeVisible();
+ const fast=root.locator('[data-cv-fast]');await expect(fast).toBeVisible();await expect(fast).toHaveAttribute('aria-pressed','false');
+ await fast.click();await expect(fast).toHaveAttribute('aria-pressed','true');await expect(root.locator('[data-cc-speed]')).toHaveAttribute('aria-pressed','true');
+ await fast.click();await expect(fast).toHaveAttribute('aria-pressed','false');
+ await expect(root.locator('[data-cc-auto]')).toHaveText(/Авто · 25/);
+ // A short desktop window without the chat sets Maya aside and gives her space to the field.
+ const short=async()=>{await page.setViewportSize({width:1280,height:680});await fit(page,game);return root.evaluate(e=>({maya:getComputedStyle(e.querySelector('.cv-radio')!).display,round:getComputedStyle(e.querySelector('.cv-round')!).display,board:e.querySelector('[data-cc-board]')!.getBoundingClientRect().height}));};
+ const closed=await short();expect(closed.maya).toBe('none');expect(closed.round).toBe('none');expect(closed.board).toBeGreaterThan(395);
 });
 
 const countOnlyGames=['studio-last-convoy','studio-cosmic-escape','studio-caramel-carnival'];

@@ -1,5 +1,9 @@
 @import '../../src/ui/caramel-carnival.css';
 
+/* Oswald, as on the redesign canvas: logo, phase, figures and the spin label (OFL, see OSWALD-LICENSE.txt). */
+@font-face { font-family: "Convoy Oswald"; src: url('/assets/last-convoy/v1/oswald-cyrillic.woff2') format('woff2'); font-weight: 500 700; font-display: swap; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: "Convoy Oswald"; src: url('/assets/last-convoy/v1/oswald-latin.woff2') format('woff2'); font-weight: 500 700; font-display: swap; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
 /* Last Convoy cabinet, as on the approved redesign canvas.
    One markup for every screen: the shared policy sets data-slot-priority
    (full, landscape, portrait) from the real space left by the host and chat.
@@ -16,6 +20,7 @@
   --cv-line: #ffffff1a;
   --cv-panel: #0a1115db;
   --cv-tile: #182d35;
+  --cv-display: "Convoy Oswald", Impact, 'Arial Narrow', sans-serif;
   container: convoy / size;
   height: 100%;
   min-height: 0;
@@ -66,8 +71,8 @@
 /* Header */
 .cv-head { grid-area: head; display: flex; align-items: center; gap: 1em; min-height: 0; }
 .cv-brand { display: flex; align-items: baseline; gap: .6em; min-width: 0; white-space: nowrap; overflow: hidden; }
-.cv-logo { font: 400 1.6em/1 Impact, 'Arial Narrow', sans-serif; letter-spacing: .06em; }
-.cv-logo b { font-weight: 400; color: var(--cv-amber); }
+.cv-logo { font: 700 1.6em/1 var(--cv-display); letter-spacing: .08em; }
+.cv-logo b { font-weight: 700; color: var(--cv-amber); }
 .cv-sub { display: none; font-size: .85em; color: var(--cv-muted); }
 .cv-pill {
   display: none;
@@ -81,9 +86,9 @@
   white-space: nowrap;
 }
 .cv-pill i { width: .55em; height: .55em; border-radius: 50%; background: #7ddc8a; }
-.cv-pill strong { font-size: .9em; font-weight: 800; letter-spacing: .1em; }
+.cv-pill strong { font: 600 .95em/1.2 var(--cv-display); letter-spacing: .12em; }
 .cv-pill span { font-size: .85em; color: var(--cv-muted); }
-.cv-game:not([data-bonus="true"]) .cv-bonus-only, .cv-game[data-bonus="true"] .cv-base-only { display: none; }
+.cv-game:not([data-bonus="true"]) .cv-bonus-only, .cv-game[data-bonus="true"] .cv-base-only { display: none !important; }
 .cv-game[data-bonus="true"] .cv-pill { background: #f5a52429; border-color: #f5a52499; }
 .cv-game[data-bonus="true"] .cv-pill i { background: var(--cv-amber); }
 .cv-game[data-bonus="true"] .cv-pill strong { color: #ffcf7a; }
@@ -223,9 +228,9 @@
 .cv-defense h3 { padding-right: 0; }
 .cv-long, .cv-stat-note, .cv-tiers { display: none; }
 .cv-stat-value { display: flex; align-items: center; gap: .4em; min-width: 0; }
-.cv-game .cv-defense strong { font-size: 1.6em; font-weight: 800; line-height: 1; color: var(--cv-cyan); }
+.cv-game .cv-defense strong { font: 700 1.6em/1 var(--cv-display); color: var(--cv-cyan); }
 .cv-factor-max { font-size: .85em; color: var(--cv-muted); }
-.cv-game .cv-beacons strong { margin-left: auto; font-size: 1.35em; font-weight: 800; line-height: 1; color: var(--cv-amber); white-space: nowrap; }
+.cv-game .cv-beacons strong { margin-left: auto; font: 600 1.35em/1 var(--cv-display); color: var(--cv-amber); white-space: nowrap; }
 .cv-game .cv-stat .cc-energy-meter {
   position: relative;
   width: 100%;
@@ -283,16 +288,40 @@
 .cv-game .cv-beacons .cv-link::after { content: "?"; position: absolute; inset: 0; display: grid; place-items: center; color: var(--cv-amber); font-weight: 800; }
 .cv-tiers { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .4em; text-align: center; }
 .cv-tiers > div { padding: .4em 0; border-radius: .5em; background: #ffffff0d; }
-.cv-tiers b { display: block; font-size: 1.1em; }
+.cv-tiers b { display: block; font: 600 1.1em/1.2 var(--cv-display); }
 .cv-tiers span { font-size: .72em; color: var(--cv-muted); }
 .cv-stat-note { font-size: .75em; color: var(--cv-muted2); }
+.cv-game .cv-stat small.cv-stat-note { line-height: 1.45; }
+
+/* Evacuation: spins played, locked defense and the win paid after the last spin. */
+.cv-game .cv-freecard { border-color: #f5a52473; }
+.cv-game .cv-freecard strong { font: 700 1.6em/1 var(--cv-display); color: #ffcf7a; }
+.cv-of { font: 500 .95em/1 var(--cv-display); color: var(--cv-muted); }
+.cv-left, .cv-pins { margin-left: auto; font-size: .75em; color: var(--cv-muted); white-space: nowrap; }
+.cv-game .cv-stat :is(.cv-left, .cv-pins, .cv-tag) { display: none; }
+.cv-fsegs { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: .2em; }
+.cv-fsegs > i { height: .5em; border-radius: .2em; background: #ffffff1f; }
+.cv-fsegs > i.cv-done { background: var(--cv-amber); }
+.cv-fsegs > i.cv-now { background: #ffe2a8; box-shadow: 0 0 .5em #ffd278cc; }
+.cv-tag { margin-left: auto; padding: .25em .45em; border-radius: .4em; background: var(--cv-cyan); color: #06141c; font-size: .9em; letter-spacing: .04em; }
+.cv-defense h3 { display: flex; align-items: center; gap: .5em; white-space: nowrap; }
+.cv-game[data-bonus="true"] .cv-defense h3 { letter-spacing: .03em; gap: .35em; }
+.cv-tag { letter-spacing: 0; font-size: .82em; padding: .2em .35em; }
+.cv-round, .cv-evac { display: none; }
+.cv-game .cv-evac strong { font: 700 2.1em/1.1 var(--cv-display); color: var(--cv-amber); }
+.cv-round-log { display: grid; gap: .45em; }
+.cv-round-log > p { display: flex; align-items: center; gap: .5em; margin: 0; font-size: .85em; }
+.cv-round-row .cv-symbol { flex: none; width: 1.7em; height: 1.7em; }
+.cv-round-row > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cv-round-row > b { margin-left: auto; font: 600 1.05em/1 var(--cv-display); color: var(--cv-amber); }
+.cv-round-empty { color: var(--cv-muted2); }
 
 /* Controls */
 .cc-game.cv-game .cv-controls {
   grid-area: controls;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-areas: "balance win" "stake stake" "spin auto";
+  grid-template-areas: "balance win" "stake stake" "spin autoplay";
   align-items: center;
   position: relative;
   gap: .45em .6em;
@@ -309,7 +338,8 @@
 .cv-win { grid-area: win; align-items: flex-end; text-align: right; }
 .cv-game .cv-stake-value > label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cv-game :is(.cv-balance, .cv-win) > span, .cv-game .cv-stake-value > label { font-size: .75em; line-height: 1.2; letter-spacing: .04em; color: var(--cv-muted); }
-.cv-game :is(.cv-balance, .cv-win) > strong { font-size: 1.3em; font-weight: 800; line-height: 1.15; overflow-wrap: anywhere; }
+.cv-game :is(.cv-balance, .cv-win) > strong { font: 600 1.3em/1.15 var(--cv-display); overflow-wrap: anywhere; }
+.cv-game :is(.cv-balance, .cv-win) > small { display: none; font-size: .7em; letter-spacing: normal; color: var(--cv-muted2); }
 .cv-game .cv-win > strong { color: var(--cv-amber); }
 /* The stake list opens from the stake field, above it when there is room. */
 .cv-game .cv-stake-menu {
@@ -366,7 +396,7 @@
 /* The amount keeps its width when the label above it is short ("Бесплатно" during the evacuation). */
 .cv-game .cv-stake-value { grid-template-columns: minmax(0, 1fr); }
 .cv-game .cv-stake-value [data-stake-field] { justify-self: stretch; min-width: 0 !important; width: 100% !important; background: transparent !important; }
-.cv-game .cv-stake-value input[data-manual-stake] { font: 800 1.25em/1.15 system-ui, sans-serif !important; font-variant-numeric: tabular-nums !important; }
+.cv-game .cv-stake-value input[data-manual-stake] { font: 600 1.25em/1.15 var(--cv-display) !important; font-variant-numeric: tabular-nums !important; }
 .cv-game .cv-stake-value input[data-manual-stake]:focus-visible { outline-offset: -1px; }
 .cv-game .cv-stake > button { width: 100%; height: max(44px, 2.7em); align-self: center; padding: 0; border-radius: .6em; border: 1px solid #ffffff24; background: #ffffff0d; font-size: 1.3em; }
 .cv-game .cv-controls .cc-spin {
@@ -390,9 +420,15 @@
 }
 .cv-game[data-bonus="true"] .cv-controls .cc-spin { box-shadow: 0 0 0 .3em #f5a52440, 0 0 1.6em #f58c248c; }
 .cv-game .cv-controls .cc-spin:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-.cv-game .cv-controls .cc-spin > span { margin: 0; font-size: 1.05em; font-weight: 800; line-height: 1.1; letter-spacing: .04em; }
+.cv-game .cv-controls .cc-spin > span { margin: 0; font: 700 1.05em/1.1 var(--cv-display); letter-spacing: .06em; text-transform: uppercase; }
 .cv-game .cv-controls .cc-spin > span:first-child { font-size: 1.4em; font-weight: 600; }
-.cv-auto { grid-area: auto; display: grid; }
+.cv-game[data-bonus="true"] .cv-controls .cv-stake { display: none; }
+.cv-accepted { grid-area: stake; display: flex; align-items: center; gap: .6em; margin: 0; padding: .6em .9em; border-radius: .8em; background: #ffffff0d; font-size: .85em; line-height: 1.4; color: var(--cv-ink); }
+.cv-accepted svg { flex: none; width: 1.4em; height: 1.4em; color: #7ddc8a; }
+.cv-auto { grid-area: autoplay; display: grid; gap: .4em; }
+.cv-game .cv-controls .cv-auto button { display: inline-flex; align-items: center; justify-content: center; gap: .45em; white-space: nowrap; }
+.cv-game .cv-controls .cv-auto button svg { flex: none; width: 1.15em; height: 1.15em; }
+.cv-game .cv-controls .cv-auto .cv-fast { display: none; }
 .cv-auto:has([data-cc-pause]:not([hidden])) [data-cc-auto] { display: none; }
 .cv-game .cv-controls .cv-auto button { width: 100%; height: 100%; min-height: 48px; padding: 0 .6em; border: 1px solid #ffffff29; border-radius: .8em; background: #ffffff0d; font-weight: 700; }
 .cv-game .cv-controls .cv-auto button[aria-pressed="true"] { border-color: var(--cv-amber); background: #f5a5242e; color: #ffe2a8; }
@@ -434,6 +470,17 @@
 .cv-game[data-slot-priority="full"] :is(.cv-long, .cv-stat-note) { display: block; }
 .cv-game[data-slot-priority="full"] .cv-short { display: none; }
 .cv-game[data-slot-priority="full"] .cv-tiers { display: grid; }
+.cv-game[data-slot-priority="full"] :is(.cv-round, .cv-evac) { display: flex; }
+.cv-game[data-slot-priority="full"]:not([data-bonus="true"]) .cv-evac, .cv-game[data-slot-priority="full"][data-bonus="true"] .cv-round { display: none; }
+.cv-game[data-slot-priority="full"] .cv-stat :is(.cv-left, .cv-pins, .cv-tag) { display: inline; }
+.cv-game[data-slot-priority="full"] .cv-freecard strong { font-size: 3em; }
+.cv-game[data-slot-priority="full"] .cv-of { font-size: 1.5em; }
+.cv-game[data-slot-priority="full"] .cv-freecard .cv-stat-value, .cv-game[data-slot-priority="full"] .cv-defense .cv-stat-value { align-items: baseline; }
+.cv-game[data-slot-priority="full"] .cv-fsegs > i { height: .6em; }
+.cv-game[data-slot-priority="full"] :is(.cv-balance, .cv-win) > small { display: block; }
+.cv-game[data-slot-priority="full"] .cv-accepted { margin-left: auto; max-width: 24em; }
+.cv-game[data-slot-priority="full"] .cv-controls .cv-auto .cv-fast { display: inline-flex; }
+.cv-game[data-slot-priority="full"][data-bonus="true"] .cv-controls .cv-auto .cv-fast { display: none; }
 .cv-game[data-slot-priority="full"] .cv-defense strong { font-size: 3em; }
 .cv-game[data-slot-priority="full"] .cv-defense .cv-stat-value { align-items: baseline; }
 .cv-game[data-slot-priority="full"] .cv-stat .cc-energy-meter { height: .7em; }
@@ -476,8 +523,8 @@
 }
 .cv-game[data-slot-priority="full"] .cv-controls .cc-spin > span { font-size: .72em; letter-spacing: .08em; text-transform: uppercase; }
 .cv-game[data-slot-priority="full"] .cv-controls .cc-spin > span:first-child { font-size: 1.9em; text-transform: none; }
-.cv-game[data-slot-priority="full"] .cv-auto { width: 7em; }
-.cv-game[data-slot-priority="full"] .cv-controls .cv-auto button { min-height: 44px; height: max(44px, 2.9em); }
+.cv-game[data-slot-priority="full"] .cv-auto { min-width: 7em; }
+.cv-game[data-slot-priority="full"] .cv-controls .cv-auto button { min-height: 44px; height: max(44px, 2.7em); padding: 0 1em; }
 /* A narrower or shorter desktop window drops the portrait first. */
 @container convoy (max-width: 1050px) {
   .cv-game[data-slot-priority="full"] .cv-layout {
@@ -486,8 +533,19 @@
   }
   .cv-game[data-slot-priority="full"] :is(.cv-radio, .cv-sub) { display: none; }
 }
-@container convoy (max-height: 700px) {
-  .cv-game[data-slot-priority="full"] :is(.cv-stat-note, .cv-tiers) { display: none; }
+@container convoy (max-height: 720px) {
+  .cv-game[data-slot-priority="full"] .cv-layout {
+    padding: .5em 1em .7em;
+    gap: .6em 1.1em;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 15em);
+    grid-template-areas: "head head" "field hud" "result hud" "controls controls";
+  }
+  .cv-game[data-slot-priority="full"] :is(.cv-radio, .cv-sub, .cv-stat-note, .cv-tiers) { display: none; }
+  .cv-game[data-slot-priority="full"]:not([data-bonus="true"]) .cv-round { display: none; }
+  .cv-game[data-slot-priority="full"] .cc-controls.cv-controls { padding: .5em 1.1em; }
+  .cv-game[data-slot-priority="full"] .cv-controls .cc-spin { width: max(64px, 4.6em); height: max(64px, 4.6em); }
+  .cv-game[data-slot-priority="full"] .cv-auto { grid-auto-flow: column; }
+  .cv-game[data-slot-priority="full"] .cv-result { min-height: 40px; padding-block: .2em; }
 }
 
 /* Landscape phone: mechanics above the field, a narrow control column beside it. */
@@ -496,12 +554,17 @@
   padding: .4em .5em;
   gap: .4em .6em;
   grid-template-columns: minmax(0, 1fr) minmax(12.5em, 16.5em);
-  grid-template-rows: auto auto minmax(0, 1fr);
-  grid-template-areas: "hud head" "field controls" "field result";
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-areas: "field head" "field hud" "field controls" "result controls";
 }
+.cv-game[data-slot-priority="landscape"] .cc-controls.cv-controls { align-self: end; }
+/* The narrow column keeps the counts; the accepted-stake note and button icons step aside. */
+.cv-game[data-slot-priority="landscape"] :is(.cv-accepted, .cv-stat .cc-ticket-slots, .cv-controls .cv-auto button svg) { display: none; }
+.cv-game[data-slot-priority="landscape"] .cv-controls .cv-auto button { padding: 0 .4em; }
+.cv-game[data-slot-priority="landscape"] .cv-auto-long, .cv-game:not([data-slot-priority="landscape"]) .cv-auto-short { display: none; }
 .cv-game[data-slot-priority="landscape"] .cv-brand { display: none; }
 .cv-game[data-slot-priority="landscape"] .cv-top-tools { margin-left: auto; }
-.cv-game[data-slot-priority="landscape"] .cc-controls.cv-controls { grid-template-areas: "balance win" "stake stake" "spin auto"; padding: .4em; gap: .35em .4em; }
+.cv-game[data-slot-priority="landscape"] .cc-controls.cv-controls { grid-template-areas: "balance win" "stake stake" "spin autoplay"; padding: .4em; gap: .35em .4em; }
 .cv-game[data-slot-priority="landscape"] .cv-controls .cc-spin, .cv-game[data-slot-priority="landscape"] .cv-controls .cv-auto button { min-height: 44px; }
 .cv-game[data-slot-priority="landscape"] .cv-result { align-self: start; padding: .3em .5em; border-radius: .8em; font-size: .85em; }
 .cv-game[data-slot-priority="landscape"] .cv-stat { padding: .35em .6em .45em; }
