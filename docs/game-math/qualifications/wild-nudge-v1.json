@@ -3,8 +3,8 @@
   "gameId": "studio-wild-nudge",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-11-23T08:44:36.561Z",
-  "completedAt": "2026-11-23T08:44:41.110Z",
+  "startedAt": "2026-11-23T11:42:17.150Z",
+  "completedAt": "2026-11-23T11:42:20.540Z",
   "sourceHashes": {
     "src/shared/wildNudgeData.json": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8",
     "src/shared/wildNudgeMath.ts": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74",
@@ -12,7 +12,7 @@
     "scripts/game-math/rational.mjs": "18e762bcf6b3790f0e191f2f774cbdb1ba94b7f4674c5c7caec8fd3257a85d62",
     "src/shared/wildNudge.ts": "de36b83b823d2fd48f69bb2aa0c383a44ffbb80ec287e759dd1115db23775624",
     "server/games/wildNudge.ts": "7d66b6ba4c76045de00b34a780ce26103d4367f6f39143930ee8f0fe6f12aa9e",
-    "scripts/game-math/wild-nudge-model.mjs": "da28188057c963500975637c3ebaaa763f31089445701049d85af0d1073e1ef8",
+    "scripts/game-math/wild-nudge-model.mjs": "2375a329a9289736795472057ff8f0f4924b6b6a4b241ecc588f0b38363c3fa8",
     "scripts/game-math/wild-nudge-wallet.ts": "64711f88c1c225d1e09cc2ca149c7c308e2c94df499c10932fb49f3fc92b27ec",
     "src/shared/casinoExpansion.ts": "8fa30fdaafd9ac3272da9820ff5e277b9b7f34e143756fa9084223b0a8a5a2ed",
     "server/demoExpansion.ts": "d7cb8d53b9d15d82e7f3a84015065cac5ab30b0f844397c1b375a9439822bfc3",
@@ -24,7 +24,7 @@
     "server/database.ts": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8",
     "src/wallet/ExpansionClient.ts": "6498e048b086ee56f2a122093d45db30e832da4c5ac2a5d5904c15a2a0f47b39",
     "src/shared/arcadeCatalog.ts": "3d10bf2732a6dc1d910cc8b15018b4da242f34bcd0789504fc62346c41d6c144",
-    "scripts/game-math/rtp-wild-nudge.mjs": "a6a147ad2732d61d27631d05f34459ce15668ec723171dd55bf22ab5b423f9de"
+    "scripts/game-math/rtp-wild-nudge.mjs": "45fc35140178c67c1fbf87f9fb5d940ed7a15bf4914cc9ac40e639ca3928c48b"
   },
   "policySha256": "dad51321ed23931270d6699ef975a092bc8526cb7df9cb7bef3d99ac4d32150b",
   "serverReplayChecks": 3072,

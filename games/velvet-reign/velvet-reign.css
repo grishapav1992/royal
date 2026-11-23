@@ -9,8 +9,8 @@
  --lg-accent:#d9b46a!important;--lg-secondary:#f3dda2!important;--lg-background:#070914!important;--lg-ink:#f2e8d3!important;
  --lg-mint:#d9b46a;--lg-cream:#f2e8d3;--lg-lilac:#c9b48a;
  position:relative;isolation:isolate;box-sizing:border-box;display:grid;width:100%;max-width:none;height:100%;min-height:0;min-width:0;margin:0;padding:12px 20px 0;gap:8px 18px;border:0;border-radius:0;overflow:hidden;
- grid-template-columns:minmax(150px,.5fr) minmax(0,1.6fr) minmax(212px,.62fr);grid-template-rows:52px minmax(0,1fr) auto 104px auto auto;
- grid-template-areas:"heading heading heading" "mirror board side" "mirror results side" "controls controls controls" "funds funds funds" "status status status";
+ grid-template-columns:minmax(150px,.5fr) minmax(0,1.6fr) minmax(212px,.62fr);grid-template-rows:52px minmax(0,1fr) 107px 104px;
+ grid-template-areas:"heading heading heading" "mirror board side" "mirror results side" "controls controls controls";
  color:#f2e8d3;font:400 14px/1.4 Velvet Jost,Arial,sans-serif;
  background:linear-gradient(180deg,#070914b8 0%,#0709144d 24%,#07091461 58%,#070914eb 86%,#070914),url('/assets/velvet-rebuild/dressing-room/background.webp') center 30%/cover #070914;container:velvet/size;
 }
@@ -105,18 +105,19 @@
 .vr-troupe-row small{max-width:100%;overflow:hidden;font-size:10px;line-height:12px;color:#a7a08e;white-space:nowrap;text-overflow:ellipsis}.vr-troupe-row b{font-size:11px;line-height:13px;color:#6e6a5e}
 .vr-troupe-row>.vr-onstage .vr-portrait{border:2px solid #6fcabd;opacity:1;filter:none;box-shadow:0 0 12px #6fcabd73}.vr-troupe-row>.vr-onstage small{color:#f2e8d3}.vr-troupe-row>.vr-onstage b{color:#6fcabd}
 .vr-game.ce-game .vr-troupe>small{font-size:11px;line-height:1.4;color:#cfc6ae;text-align:center}
-/* Win panel under the reels. */
-.vr-game.ce-game .ce-results{grid-area:results;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:100%;height:auto;min-height:0;margin:0;padding:10px 16px;overflow:hidden;border:1px solid #d9b46a73;border-radius:12px;background:#070914d1}
-.vr-game.ce-game .ce-results .lg-message{display:block;flex:none;width:100%;height:17px;min-height:0;max-height:17px;margin:0;padding:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#cfc6ae;font-size:13px;font-weight:400;line-height:17px;text-align:center}
-.vr-game.ce-game .ce-results .lg-win-bar{flex:none;display:flex;flex-direction:column;flex-wrap:nowrap;justify-content:center;align-items:center;gap:4px;width:100%;height:auto;max-height:none;min-height:0;padding:0;margin:0;border:0;background:none}
-.vr-game.ce-game .lg-win-bar>div:first-child{display:flex;align-items:baseline;justify-content:center;gap:12px;min-width:0}
+/* Win panel under the reels. Fixed rows: a message or a line breakdown never moves the reels. */
+.vr-game.ce-game .ce-results{grid-area:results;position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:17px 32px 28px;align-content:center;justify-items:center;gap:4px;width:100%;height:100%;max-height:none;min-height:0;margin:0;padding:0 16px;overflow:hidden;border:1px solid #d9b46a73;border-radius:12px;background:#070914d1}
+.vr-game.ce-game .ce-results .lg-message{grid-area:1/1;display:block;width:100%;height:17px;min-width:0;min-height:0;max-height:17px;margin:0;padding:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#cfc6ae;font-size:13px;font-weight:400;line-height:17px;text-align:center}
+.vr-game.ce-game .ce-results .lg-win-bar{display:contents}
+.vr-game.ce-game .lg-win-bar>div:first-child{grid-area:2/1;display:flex;align-items:baseline;justify-content:center;gap:12px;min-width:0;max-width:100%;height:100%;overflow:hidden}
 .vr-game.ce-game .lg-win-bar>div:first-child>span{font-size:11px;font-weight:500;letter-spacing:.26em;color:#c9b48a}
 .vr-game.ce-game .lg-win-bar>div:first-child>strong{font:400 32px/1 Velvet Forum,Georgia,serif;color:#f3dda2;white-space:nowrap}
-.vr-game.ce-game .ce-results .lg-win-groups{display:flex;justify-content:safe center;gap:8px;width:100%;height:28px;max-height:28px;min-width:0;overflow:auto;scrollbar-width:none}
+.vr-game.ce-game .ce-results .lg-win-groups{grid-area:3/1;display:flex;justify-content:safe center;gap:8px;width:100%;height:28px;max-height:28px;min-width:0;margin:0;padding:0;overflow:auto;scrollbar-width:none;scrollbar-gutter:auto}
 .vr-game.ce-game .lg-win-groups:empty{display:none}
 .vr-game.ce-game .lg-win-groups>.vr-line-win{display:flex;flex:none;align-items:center;gap:6px;height:28px;margin:0;padding:0 10px 0 4px;border:1px solid #d9b46a73;border-radius:14px;background:#f3dda21a;color:#f2e8d3;font-size:12px}
 .vr-game.ce-game .vr-line-win>.lg-symbol{width:22px;height:22px;flex:0 0 22px}.vr-game.ce-game .vr-line-win>small{font-size:11px;color:#cfc6ae}.vr-game.ce-game .vr-line-win>b{font-size:12px;color:#f3dda2}
-.vr-game.ce-game .lg-win-bar>[data-lg-settlement]{display:block;margin:0;min-height:0;color:#a7a08e;font-size:11px;line-height:14px;text-align:center}
+.vr-game.ce-game .lg-win-bar>[data-lg-settlement]{grid-area:3/1;align-self:center;display:block;width:auto;max-width:100%;margin:0;min-height:0;overflow:hidden;color:#a7a08e;font-size:11px;line-height:14px;text-align:center;white-space:nowrap;text-overflow:ellipsis}
+.vr-game.ce-game .lg-win-groups:not(:empty)+[data-lg-settlement]{opacity:0}
 /* Control bar with the gold spin medallion. */
 .vr-game.ce-game .ce-console{grid-area:controls;position:relative;z-index:3;display:grid;grid-template-columns:auto auto minmax(112px,1fr) auto auto;grid-template-rows:minmax(0,1fr);grid-template-areas:"balance stake . modes autoplay";align-items:center;gap:0 16px;width:auto;height:104px;min-height:0;margin:0 -20px;padding:0 20px;border:0;border-top:1px solid #d9b46ab3;border-radius:0;background:#060812f5}
 .vr-game.ce-game .ce-console>*{min-width:0}
@@ -150,9 +151,13 @@
 .vr-game.ce-game .ce-right-controls .lg-autoplay{display:flex;align-items:center;gap:6px;width:auto;min-width:0}
 .vr-game.ce-game .ce-right-controls select{width:54px;min-width:0;height:44px;padding:0 6px;border:1px solid #d9b46a73;border-radius:22px;background:#0f1328;color:#f2e8d3;font-size:13px;text-align:center}
 .vr-game.ce-game[data-bonus=true] .ce-right-controls{display:none}
-.vr-game.ce-game .ce-wallet-help{grid-area:funds;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;height:auto;min-height:0;margin:0 -20px;padding:4px 20px;background:#060812f5;font-size:11px;color:#cfc6ae}.vr-game.ce-game .ce-wallet-help a{color:#f3dda2}
+/* Errors, recovery and the wallet notice cover the result panel. Routine status stays available to screen readers only. */
+.vr-game.ce-game :is(.ce-wallet-help,.ce-feedback){grid-area:results;position:absolute;inset:auto 0 0;z-index:2;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 10px;width:auto;height:auto;min-width:0;min-height:100%;margin:0;padding:6px 16px;overflow:hidden;border:1px solid #d9b46ab3;border-radius:12px;background:#0a0d1c}
+.vr-game.ce-game .ce-wallet-help{font-size:12px;color:#cfc6ae}.vr-game.ce-game .ce-wallet-help a{color:#f3dda2}
 .vr-game.ce-game .ce-wallet-help button{min-height:36px;padding:4px 12px;border:1px solid #d9b46a8c;border-radius:18px;background:transparent;color:#f3dda2;font-size:11px}
-.vr-game.ce-game .ce-feedback{grid-area:status;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;height:auto;min-height:0;margin:0 -20px;padding:0 20px;overflow:hidden;background:#060812f5}.vr-game.ce-game .ce-feedback p{margin:0;padding:0;font-size:11px;line-height:15px;color:#cfc6ae}.vr-game.ce-game .ce-feedback p:empty{display:none}.vr-game.ce-game .ce-feedback .lg-error{color:#f0a99a}
+.vr-game.ce-game .ce-feedback:not([data-error=true]):not(:has([data-lg-retry]:not([hidden]))){width:1px;height:1px;min-height:0;padding:0;border:0;overflow:hidden;clip-path:inset(50%);pointer-events:none}
+.vr-game.ce-game:has(.ce-wallet-help:not([hidden])) .ce-feedback:not(:has([data-lg-retry]:not([hidden]))),.vr-game.ce-game:has([data-lg-retry]:not([hidden])) .ce-wallet-help{width:1px;height:1px;min-height:0;padding:0;border:0;overflow:hidden;clip-path:inset(50%);pointer-events:none}
+.vr-game.ce-game .ce-feedback p{max-height:none;margin:0;padding:0;font-size:12px;line-height:16px;color:#cfc6ae;text-align:center}.vr-game.ce-game .ce-feedback p:empty{display:none}.vr-game.ce-game .ce-feedback .lg-error{color:#f0a99a}
 .vr-game.ce-game [data-lg-retry]{min-height:44px;margin:0;padding:4px 14px;border:0;border-radius:22px;background:#d9b46a;color:#0a0d1c;font-size:12px}
 /* Held stars cover their whole reel with name and multiplier. */
 .vr-game.ce-game .vr-held-star{position:absolute;top:0;bottom:0;width:20%;display:block;overflow:hidden;border-radius:8px;background:#141936;box-shadow:inset 0 0 0 2px #f3dda2,0 0 24px #6fcabd59;pointer-events:none}.vr-star-portrait{position:absolute;inset:0}.vr-star-portrait>.vr-portrait{display:block;width:100%;height:100%}
@@ -202,7 +207,7 @@
 @container velvet (height < 800px){.vr-game.ce-game[data-vr-layout=wide] .vr-ticket-desc{display:none}.vr-game.ce-game[data-vr-layout=wide] .vr-ticket{gap:8px 10px;padding:10px 12px 8px}.vr-game.ce-game[data-vr-layout=wide] .vr-ticket-buy{margin:0 -12px;padding:8px 12px 0}.vr-game.ce-game[data-vr-layout=wide] .vr-troupe>small{display:none}.vr-game.ce-game[data-vr-layout=wide] .vr-side{gap:10px}}
 @container velvet (width < 1180px){.vr-game.ce-game[data-vr-layout=wide] .vr-ticket>:is(.lg-symbol,svg){width:42px;height:42px}.vr-game.ce-game[data-vr-layout=wide] .vr-ticket{grid-template-columns:42px minmax(0,1fr)}.vr-game.ce-game[data-vr-layout=wide] .vr-ticket-title>b{font-size:21px}.vr-game.ce-game[data-vr-layout=wide] .vr-ticket-buy>small{font-size:11px}.vr-game.ce-game[data-vr-layout=wide] .vr-ticket-buy>strong{padding:0 12px;font-size:13px}.vr-game.ce-game[data-vr-layout=wide] .vr-troupe-row .vr-portrait{width:34px;height:34px}.vr-game.ce-game[data-vr-layout=wide] .vr-mode-switch button{padding:0 9px;font-size:12px}.vr-game.ce-game[data-vr-layout=wide] .vr-mode-switch button small{font-size:12px}.vr-game.ce-game[data-vr-layout=wide] .ce-right-controls>button,.vr-game.ce-game[data-vr-layout=wide] .ce-right-controls .lg-autoplay>button{padding:0 10px;font-size:11px}.vr-game.ce-game[data-vr-layout=wide] .ce-console{gap:0 12px}}
 /* Tablet and phone portrait: star strip on top, tickets in a row, two-row control bar. */
-.vr-game.ce-game.lg-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]){grid-template-columns:minmax(0,1fr);grid-template-rows:48px 76px minmax(0,1fr) auto auto 132px auto auto;grid-template-areas:"heading" "mirror" "board" "side" "results" "controls" "funds" "status";padding:10px 16px 0;gap:8px}
+.vr-game.ce-game.lg-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]){grid-template-columns:minmax(0,1fr);grid-template-rows:48px 76px minmax(0,1fr) 72px 107px 132px;grid-template-areas:"heading" "mirror" "board" "side" "results" "controls";padding:10px 16px 0;gap:8px}
 .vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]) .vr-host .vr-mirror{position:relative;display:flex;align-items:center;gap:12px;height:100%;padding:0 14px;border:1px solid #d9b46a99;border-radius:12px;background:#070914cc}
 .vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]) .vr-host .vr-figure{display:none}
 .vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]) .vr-host .vr-face{display:block;flex:none;width:56px;height:56px;overflow:hidden;border:2px solid #d9b46a;border-radius:50%;background:#1a1f3a}
@@ -222,16 +227,17 @@
 .vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]) .vr-feature-strip .ce-energy{flex-direction:row;align-items:center;padding:8px 12px}
 .vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]) .vr-collection{flex-direction:row;gap:10px;text-align:left}
 .vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]) .vr-feature-strip .ce-free-spins{padding:8px 12px}
-.vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]) .ce-results{padding:8px 12px}
+.vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]) .ce-results{padding:0 12px}
 .vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]) .ce-console{grid-template-columns:minmax(0,1fr) 96px minmax(0,1fr);grid-template-rows:52px 52px;grid-template-areas:"balance spin stake" "modes spin autoplay";align-content:center;gap:8px 14px;height:132px;padding:0 16px;margin:0 -16px}
 .vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]) .ce-spin.lg-spin{grid-area:spin;position:relative;left:auto;top:auto;align-self:center;justify-self:center;transform:none}
 .vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]) .ce-stake{justify-self:end;align-items:flex-end;padding-left:0;border-left:0}
 .vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]) .ce-stake>small{display:none}
 .vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]) .vr-mode-switch{justify-self:start;max-width:100%}
 .vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]) .ce-right-controls{justify-self:end}
-.vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]) :is(.ce-wallet-help,.ce-feedback){margin:0 -16px;padding-left:16px;padding-right:16px}
+/* The bonus collector takes the place of the tickets, so the reels keep their size. */
+.vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]) :is(.vr-offers,.vr-feature-strip){height:100%;min-height:0}
 /* Phone portrait: compact tickets and thumb-sized controls. */
-.vr-game.ce-game.lg-game[data-vr-layout=portrait]{grid-template-rows:44px 64px minmax(0,1fr) auto auto 146px auto auto;padding:8px 10px 0;gap:6px}
+.vr-game.ce-game.lg-game[data-vr-layout=portrait]{grid-template-rows:44px 64px minmax(0,1fr) 78px 91px 146px;padding:8px 10px 0;gap:6px}
 .vr-game.ce-game[data-vr-layout=portrait] .ce-wordmark>span{font-size:20px}.vr-game.ce-game[data-vr-layout=portrait] .ce-wordmark>small{font-size:8px;letter-spacing:.14em}
 .vr-game.ce-game[data-vr-layout=portrait] .ce-tools{gap:6px}
 .vr-game.ce-game[data-vr-layout=portrait] .vr-host .vr-mirror{gap:10px;padding:0 10px}
@@ -251,9 +257,9 @@
 .vr-game.ce-game[data-vr-layout=portrait] .vr-ticket-buy>strong{height:26px;padding:0 10px;font-size:11px;line-height:26px}
 .vr-game.ce-game[data-vr-layout=portrait] .vr-feature-strip .ce-energy{padding:6px 10px}.vr-game.ce-game[data-vr-layout=portrait] .vr-gem-slots{gap:6px}.vr-game.ce-game[data-vr-layout=portrait] .vr-gem-slots>span{width:32px;height:32px;padding:3px}.vr-game.ce-game[data-vr-layout=portrait] .vr-collection p{font-size:10px}
 .vr-game.ce-game[data-vr-layout=portrait] .vr-feature-strip .ce-free-spins{padding:6px 10px;gap:8px}.vr-game.ce-game[data-vr-layout=portrait] .ce-free-spins [data-lg-remaining]{font-size:20px}
-.vr-game.ce-game[data-vr-layout=portrait] .ce-results{gap:2px;padding:6px 10px}.vr-game.ce-game[data-vr-layout=portrait] .ce-results .lg-message{font-size:11px}
+.vr-game.ce-game[data-vr-layout=portrait] .ce-results{grid-template-rows:17px 26px 28px;gap:3px;padding:0 10px}.vr-game.ce-game[data-vr-layout=portrait] .ce-results .lg-message{font-size:11px}
 .vr-game.ce-game[data-vr-layout=portrait] .lg-win-bar>div:first-child>strong{font-size:24px}.vr-game.ce-game[data-vr-layout=portrait] .lg-win-bar>div:first-child>span{font-size:9px;letter-spacing:.18em}
-.vr-game.ce-game[data-vr-layout=portrait] .lg-win-bar>[data-lg-settlement]{display:none}
+.vr-game.ce-game[data-vr-layout=portrait] .lg-win-bar>[data-lg-settlement]{font-size:10px}
 .vr-game.ce-game[data-vr-layout=portrait] .ce-console{grid-template-columns:minmax(0,1fr) 84px minmax(0,1fr);grid-template-rows:40px 84px;grid-template-areas:"balance stake stake" "modes spin autoplay";gap:6px 8px;height:146px;padding:0 10px;margin:0 -10px}
 .vr-game.ce-game[data-vr-layout=portrait] .ce-spin.lg-spin{width:84px;height:84px}
 .vr-game.ce-game[data-vr-layout=portrait] :is(.ce-money,.ce-lastwin)>strong{font-size:19px}.vr-game.ce-game[data-vr-layout=portrait] :is(.ce-money,.ce-lastwin)>span,.vr-game.ce-game[data-vr-layout=portrait] .ce-stake>label{font-size:9px;letter-spacing:.18em}
@@ -262,18 +268,17 @@
 .vr-game.ce-game[data-vr-layout=portrait] .vr-mode-switch [data-vr-paid-mode=booster]:after{content:"×2"}.vr-game.ce-game[data-vr-layout=portrait] .vr-mode-switch [data-vr-paid-mode=hyper]:after{content:"×10"}
 .vr-game.ce-game[data-vr-layout=portrait] .vr-mode-switch button{font-size:0}.vr-game.ce-game[data-vr-layout=portrait] .vr-mode-switch button:after,.vr-game.ce-game[data-vr-layout=portrait] .vr-mode-switch [data-vr-paid-mode=normal]{font-size:12px}
 .vr-game.ce-game[data-vr-layout=portrait] .ce-right-controls{gap:4px}.vr-game.ce-game[data-vr-layout=portrait] .ce-right-controls>button,.vr-game.ce-game[data-vr-layout=portrait] .ce-right-controls .lg-autoplay>button{padding:0 9px;font-size:10px}
-.vr-game.ce-game[data-vr-layout=portrait] :is(.ce-wallet-help,.ce-feedback){margin:0 -10px;padding-left:10px;padding-right:10px}
-.vr-game.ce-game.lg-game[data-vr-layout=portrait][data-vr-short=true]{grid-template-rows:40px 52px minmax(0,1fr) auto auto 132px auto auto}
+.vr-game.ce-game.lg-game[data-vr-layout=portrait][data-vr-short=true]{grid-template-rows:40px 52px minmax(0,1fr) 58px 44px 132px}
 .vr-game.ce-game[data-vr-layout=portrait][data-vr-short=true] .vr-host .vr-face{width:38px;height:38px}
 .vr-game.ce-game[data-vr-layout=portrait][data-vr-short=true] .vr-mirror-caption>[data-vr-mirror-progress],.vr-game.ce-game[data-vr-layout=portrait][data-vr-short=true] .ce-cabinet-heading{display:none}
 .vr-game.ce-game[data-vr-layout=portrait][data-vr-short=true] .ce-metal-frame{width:min(100cqw,calc((100cqh - 14px)*1.25 + 14px))}
 .vr-game.ce-game[data-vr-layout=portrait][data-vr-short=true] .ce-console{grid-template-rows:38px 76px;height:132px}
 .vr-game.ce-game[data-vr-layout=portrait][data-vr-short=true] .ce-spin.lg-spin{width:76px;height:76px}
-.vr-game.ce-game.lg-game[data-vr-layout=portrait][data-vr-short=true][data-bonus=true]{grid-template-rows:40px 0 minmax(0,1fr) auto auto 132px auto auto}
+.vr-game.ce-game.lg-game[data-vr-layout=portrait][data-vr-short=true][data-bonus=true]{grid-template-rows:40px 52px minmax(0,1fr) 58px 44px 132px}
 .vr-game.ce-game[data-vr-layout=portrait][data-vr-short=true][data-bonus=true] .vr-host{display:none}
 @container velvet (width < 350px){.vr-game.ce-game[data-vr-layout=portrait] .ce-wordmark>span{font-size:17px}.vr-game.ce-game[data-vr-layout=portrait] .ce-wordmark>small{font-size:7px;letter-spacing:.08em}.vr-game.ce-game[data-vr-layout=portrait] .ce-tools{gap:4px}.vr-game.ce-game[data-vr-layout=portrait] .ce-tools button,.vr-game.ce-game[data-vr-layout=portrait] .slot-settings-button{width:40px;min-width:40px;height:40px;min-height:40px}.vr-game.ce-game[data-vr-layout=portrait] .ce-console{grid-template-columns:minmax(0,1fr) 72px minmax(0,1fr)}.vr-game.ce-game[data-vr-layout=portrait] .ce-spin.lg-spin{width:72px;height:72px}.vr-game.ce-game[data-vr-layout=portrait] .vr-mirror-roster{display:none}.vr-game.ce-game[data-vr-layout=portrait] .vr-ticket{grid-template-columns:28px minmax(0,1fr)}.vr-game.ce-game[data-vr-layout=portrait] .vr-ticket>:is(.lg-symbol,svg){width:28px;height:28px}.vr-game.ce-game[data-vr-layout=portrait] .vr-ticket-title>b{font-size:14px}.vr-game.ce-game[data-vr-layout=portrait] .vr-ticket-title>small{display:none}.vr-game.ce-game[data-vr-layout=portrait] .ce-right-controls{flex-direction:column;align-items:stretch;justify-content:center;gap:4px}.vr-game.ce-game[data-vr-layout=portrait] .ce-right-controls>button,.vr-game.ce-game[data-vr-layout=portrait] .ce-right-controls .lg-autoplay>button{width:100%;min-height:34px;height:34px}.vr-game.ce-game[data-vr-layout=portrait] .ce-right-controls .lg-autoplay{width:100%}}
 /* Phone landscape: figure, reels and a control rail. */
-.vr-game.ce-game.lg-game[data-vr-layout=landscape]{grid-template-columns:minmax(90px,.55fr) minmax(120px,1fr) 196px;grid-template-rows:30px minmax(0,1fr) auto auto auto auto;grid-template-areas:"mirror heading controls" "mirror board controls" "mirror side controls" "mirror results controls" "funds funds funds" "status status status";padding:6px 10px;gap:4px 12px}
+.vr-game.ce-game.lg-game[data-vr-layout=landscape]{grid-template-columns:minmax(90px,.55fr) minmax(120px,1fr) 196px;grid-template-rows:30px minmax(0,1fr) 44px 32px;grid-template-areas:"mirror heading controls" "mirror board controls" "mirror side controls" "mirror results controls";padding:6px 10px;gap:4px 12px}
 .vr-game.ce-game[data-vr-layout=landscape] .ce-header{justify-content:center}.vr-game.ce-game[data-vr-layout=landscape] .ce-wordmark>span{font-size:clamp(15px,2.4cqw,20px)}.vr-game.ce-game[data-vr-layout=landscape] .ce-wordmark>small{display:none}
 .vr-game.ce-game[data-vr-layout=landscape] .vr-host .vr-figure{left:-20%;right:-20%;bottom:44px}
 .vr-game.ce-game[data-vr-layout=landscape] .vr-host .vr-mirror-caption{bottom:4px;gap:2px;padding:5px 6px}
@@ -290,8 +295,8 @@
 .vr-game.ce-game[data-vr-layout=landscape] .vr-ticket-title>b{font-size:14px}
 .vr-game.ce-game[data-vr-layout=landscape] .vr-ticket-buy{margin:0;padding:0;border-top:0}.vr-game.ce-game[data-vr-layout=landscape] .vr-ticket-buy:before,.vr-game.ce-game[data-vr-layout=landscape] .vr-ticket-buy:after,.vr-game.ce-game[data-vr-layout=landscape] .vr-ticket-buy>small{display:none}
 .vr-game.ce-game[data-vr-layout=landscape] .vr-ticket-buy>strong{height:26px;padding:0 8px;font-size:10px;line-height:26px}
-.vr-game.ce-game[data-vr-layout=landscape] .ce-results{padding:4px 8px;gap:0;border-radius:10px}.vr-game.ce-game[data-vr-layout=landscape] .ce-results .lg-message{height:14px;max-height:14px;font-size:10px;line-height:14px}
-.vr-game.ce-game[data-vr-layout=landscape] .lg-win-bar>div:first-child>strong{font-size:20px}.vr-game.ce-game[data-vr-layout=landscape] .lg-win-bar>div:first-child>span{font-size:8px;letter-spacing:.14em}.vr-game.ce-game[data-vr-layout=landscape] .lg-win-bar>[data-lg-settlement]{display:none}
+.vr-game.ce-game[data-vr-layout=landscape] .ce-results{border-radius:10px}.vr-game.ce-game[data-vr-layout=landscape] .ce-results .lg-message{height:14px;max-height:14px;font-size:10px;line-height:14px}
+.vr-game.ce-game[data-vr-layout=landscape] .lg-win-bar>div:first-child>strong{font-size:20px}.vr-game.ce-game[data-vr-layout=landscape] .lg-win-bar>div:first-child>span{font-size:8px;letter-spacing:.14em}
 .vr-game.ce-game[data-vr-layout=landscape] .ce-results .lg-win-groups{height:22px;max-height:22px}.vr-game.ce-game[data-vr-layout=landscape] .lg-win-groups>.vr-line-win{height:22px;font-size:10px}
 .vr-game.ce-game[data-vr-layout=landscape] .ce-console{height:100%;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(48px,1fr) auto auto auto auto;grid-template-areas:"balance" "stake" "spin" "modes" "features" "autoplay" "tools";align-content:stretch;gap:4px;margin:0;padding:6px;border:1px solid #d9b46a8c;border-radius:16px}
 .vr-game.ce-game[data-vr-layout=landscape] .ce-money{flex-direction:row;justify-content:space-between;align-items:baseline}.vr-game.ce-game[data-vr-layout=landscape] .ce-money>span{font-size:8px;letter-spacing:.14em}.vr-game.ce-game[data-vr-layout=landscape] .ce-money>strong{font-size:17px}
@@ -305,7 +310,7 @@
 .vr-game.ce-game[data-vr-layout=landscape] .ce-console>.vr-feature-strip{grid-area:features;display:flex;flex-direction:column;gap:4px}
 .vr-game.ce-game[data-vr-layout=landscape] .ce-console>.vr-feature-strip .ce-energy{padding:4px 6px;gap:4px}.vr-game.ce-game[data-vr-layout=landscape] .vr-gem-slots>span{width:26px;height:26px;padding:2px}.vr-game.ce-game[data-vr-layout=landscape] .vr-gem-slots{gap:4px}.vr-game.ce-game[data-vr-layout=landscape] .vr-collection{gap:2px}.vr-game.ce-game[data-vr-layout=landscape] .vr-collection p{font-size:9px;line-height:11px}
 .vr-game.ce-game[data-vr-layout=landscape] .ce-console>.vr-feature-strip .ce-free-spins{padding:4px 6px;gap:4px}.vr-game.ce-game[data-vr-layout=landscape] .ce-free-spins [data-lg-remaining]{font-size:18px}.vr-game.ce-game[data-vr-layout=landscape] .ce-free-spins button{min-height:36px;padding:2px 8px;font-size:10px}
-.vr-game.ce-game[data-vr-layout=landscape] :is(.ce-wallet-help,.ce-feedback){margin:0;padding:0}
+.vr-game.ce-game[data-vr-layout=landscape] :is(.ce-wallet-help,.ce-feedback){padding:4px 8px;border-radius:10px}.vr-game.ce-game[data-vr-layout=landscape] .ce-feedback p{font-size:11px;line-height:14px}
 @container velvet (height < 340px){.vr-game.ce-game[data-vr-layout=landscape] .ce-money>span{display:none}.vr-game.ce-game[data-vr-layout=landscape] .ce-money{justify-content:center}.vr-game.ce-game[data-vr-layout=landscape] .ce-stake>div{grid-template-columns:36px minmax(0,1fr) 36px}.vr-game.ce-game[data-vr-layout=landscape] .ce-stake button{width:36px;height:36px;min-height:36px}.vr-game.ce-game[data-vr-layout=landscape] .ce-spin.lg-spin{width:48px;height:48px}.vr-game.ce-game[data-vr-layout=landscape] .ce-spin>svg{width:18px;height:18px}.vr-game.ce-game[data-vr-layout=landscape] .ce-spin>small{font-size:10px}.vr-game.ce-game[data-vr-layout=landscape] .ce-console{gap:3px;padding:4px}.vr-game.ce-game[data-vr-layout=landscape] .vr-mode-switch button,.vr-game.ce-game[data-vr-layout=landscape] .ce-right-controls>button,.vr-game.ce-game[data-vr-layout=landscape] .ce-right-controls .lg-autoplay>button,.vr-game.ce-game[data-vr-layout=landscape] .ce-console>.ce-tools button{min-height:32px;height:32px}.vr-game.ce-game[data-vr-layout=landscape] .ce-results .lg-message{display:none}}
 .vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]) .ce-reels-wrap{justify-content:center}
 .vr-game.ce-game[data-vr-layout=landscape] .vr-ticket-buy>strong{font-size:0}.vr-game.ce-game[data-vr-layout=landscape] .vr-ticket-buy>strong>span{font-size:11px}
@@ -345,14 +350,65 @@
 .vr-game.ce-game[data-vr-layout=landscape] .ce-dialog[data-dialog=star] .ce-primary.lg-primary{padding:10px 24px}
 .vr-game.ce-game[data-vr-layout=portrait] .vr-collection [data-vr-gem-note]{display:none}
 .vr-game.ce-game[data-vr-layout=portrait] .ce-dialog[data-dialog=star] .vr-reveal-mirror{width:100%;padding:14px 0 0;justify-content:center}.vr-game.ce-game[data-vr-layout=portrait] .ce-dialog[data-dialog=star] .vr-reveal-mirror .vr-mirror{width:min(200px,70%);margin:0 auto}
-.vr-game.ce-game[data-vr-layout=portrait][data-vr-short=true] .ce-results .lg-message,.vr-game.ce-game[data-vr-layout=portrait][data-vr-short=true] .vr-ticket-title>small{display:none}
+.vr-game.ce-game[data-vr-layout=portrait][data-vr-short=true] .vr-ticket-title>small{display:none}
 .vr-game.ce-game[data-vr-layout=landscape][data-bonus=true] .vr-offers{display:none}
 .vr-game.ce-game[data-vr-layout=landscape] .ce-spin>span{font-size:7px;letter-spacing:0}
 @container velvet (height < 340px){.vr-game.ce-game[data-vr-layout=landscape] .vr-collection [data-vr-gem-note],.vr-game.ce-game[data-vr-layout=landscape] .ce-free-spins [data-lg-bonus-name]{display:none}.vr-game.ce-game[data-vr-layout=landscape] .ce-console>.vr-feature-strip{gap:3px}.vr-game.ce-game[data-vr-layout=landscape] .ce-console>.vr-feature-strip .ce-energy{padding:3px 6px;gap:2px}.vr-game.ce-game[data-vr-layout=landscape] .ce-console>.vr-feature-strip .ce-free-spins{padding:3px 6px}.vr-game.ce-game[data-vr-layout=landscape] .ce-free-spins button{min-height:28px;height:28px}.vr-game.ce-game[data-vr-layout=landscape] .ce-console>.ce-tools button,.vr-game.ce-game[data-vr-layout=landscape] .ce-console>.ce-tools .slot-settings-button{height:30px;min-height:30px}}
 @container velvet (width < 350px){.vr-game.ce-game[data-vr-layout=portrait] .vr-feature-strip{grid-template-columns:minmax(0,1fr);gap:4px}.vr-game.ce-game[data-vr-layout=portrait] .vr-feature-strip .ce-energy{justify-content:center}}
 .vr-game.ce-game[data-reduced-motion=true] *{scroll-behavior:auto}
-
 .vr-game.ce-game .vr-reveal-copy>p,.vr-game.ce-game .vr-reveal-troupe>div:first-child>span{font-family:Velvet Forum,Georgia,serif;font-weight:400}
 .vr-game.ce-game .ce-intro-cards h3,.vr-game.ce-game .ce-intro-cards p{overflow-wrap:anywhere}
-
 .vr-game.ce-game[data-vr-layout=landscape] .vr-bonus-cards>button{padding:8px}.vr-game.ce-game[data-vr-layout=landscape] .vr-bonus-cards>button>div{width:50px;height:38px}.vr-game.ce-game[data-vr-layout=landscape] .vr-bonus-cards h3{font-size:14px;min-height:0;margin:4px 0}.vr-game.ce-game[data-vr-layout=landscape] .vr-bonus-cards strong{font-size:26px;line-height:1.1}.vr-game.ce-game[data-vr-layout=landscape] .vr-bonus-cards strong small{font-size:7px;margin-top:2px;line-height:1.2}.vr-game.ce-game[data-vr-layout=landscape] .vr-bonus-cards p{font-size:9px;min-height:0;margin:6px 0;line-height:1.3}.vr-game.ce-game[data-vr-layout=landscape] .vr-bonus-cards b{font-size:10px}.vr-game.ce-game[data-vr-layout=landscape] .vr-bonus-cards>button>span{font-size:9px}
+/* One-row result panel for short phones: total on the left, message or line wins on the right. */
+.vr-game.ce-game:is([data-vr-layout=landscape],[data-vr-layout=portrait][data-vr-short=true]) .ce-results{grid-template-columns:auto minmax(0,1fr);grid-template-rows:minmax(0,1fr);align-content:stretch;align-items:center;gap:0 10px;padding:0 8px}
+.vr-game.ce-game:is([data-vr-layout=landscape],[data-vr-layout=portrait][data-vr-short=true]) .lg-win-bar>div:first-child{grid-area:1/1;align-items:center;gap:6px}
+.vr-game.ce-game:is([data-vr-layout=landscape],[data-vr-layout=portrait][data-vr-short=true]) .ce-results :is(.lg-message,.lg-win-groups){grid-area:1/2}
+.vr-game.ce-game:is([data-vr-layout=landscape],[data-vr-layout=portrait][data-vr-short=true]) .ce-results:has(.lg-win-groups:not(:empty)) .lg-message{opacity:0}
+.vr-game.ce-game:is([data-vr-layout=landscape],[data-vr-layout=portrait][data-vr-short=true]) .lg-win-bar>[data-lg-settlement],.vr-game.ce-game[data-vr-layout=portrait][data-vr-short=true] .lg-win-bar>div:first-child>span{display:none}
+@container velvet (height < 340px){.vr-game.ce-game[data-vr-layout=landscape] .lg-win-bar>div:first-child>span{display:none}}
+/* Short phone portrait in the bonus: the collector stands in for the star strip, the counter for the tickets. */
+.vr-game.ce-game[data-vr-layout=portrait][data-vr-short=true] .vr-ticket{padding:4px 8px}
+.vr-game.ce-game[data-vr-layout=portrait][data-vr-short=true][data-bonus=true] :is(.vr-side,.vr-feature-strip){display:contents}
+.vr-game.ce-game[data-vr-layout=portrait][data-vr-short=true][data-bonus=true] .vr-feature-strip .ce-energy{grid-area:mirror;height:100%;justify-content:center}
+.vr-game.ce-game[data-vr-layout=portrait][data-vr-short=true][data-bonus=true] .vr-feature-strip .ce-free-spins{grid-area:side;height:100%}
+/* Phone landscape in the bonus: the cast keeps the ticket row. */
+.vr-game.ce-game[data-vr-layout=landscape] .vr-side{height:100%}
+.vr-game.ce-game[data-vr-layout=landscape][data-bonus=true] .vr-troupe{display:flex;justify-content:center;height:100%;padding:0 8px;border-radius:10px}
+.vr-game.ce-game[data-vr-layout=landscape] :is(.vr-troupe-head,.vr-troupe>small,.vr-troupe-row small){display:none}
+.vr-game.ce-game[data-vr-layout=landscape] .vr-troupe-row>span{flex-direction:row;justify-content:center;gap:4px}.vr-game.ce-game[data-vr-layout=landscape] .vr-troupe-row .vr-portrait{width:28px;height:28px;flex:none}
+/* Tablet tickets in one compact row. */
+.vr-game.ce-game[data-vr-layout=tablet] .vr-ticket-desc{display:none}
+.vr-game.ce-game[data-vr-layout=tablet]:not([data-vr-side=true]) .vr-ticket{grid-template-columns:44px minmax(0,1fr) auto;grid-template-areas:"icon title buy";height:100%;padding:6px 12px}
+.vr-game.ce-game[data-vr-layout=tablet] .vr-ticket>:is(.lg-symbol,svg){width:44px;height:44px}
+.vr-game.ce-game[data-vr-layout=tablet]:not([data-vr-side=true]) .vr-ticket-buy{margin:0;padding:0;border-top:0}.vr-game.ce-game[data-vr-layout=tablet]:not([data-vr-side=true]) .vr-ticket-buy:before,.vr-game.ce-game[data-vr-layout=tablet]:not([data-vr-side=true]) .vr-ticket-buy:after,.vr-game.ce-game[data-vr-layout=tablet]:not([data-vr-side=true]) .vr-ticket-buy>small{display:none}
+/* Short desktop windows and landscape tablets: the side column stays beside the reels. */
+.vr-game.ce-game.lg-game[data-vr-layout=tablet][data-vr-side=true]{grid-template-columns:minmax(0,1fr) 236px;grid-template-rows:48px 64px minmax(0,1fr) 107px 132px;grid-template-areas:"heading heading" "board mirror" "board side" "results side" "controls controls";gap:8px 16px}
+.vr-game.ce-game[data-vr-layout=tablet][data-vr-side=true] .vr-mirror-roster{display:none}
+.vr-game.ce-game[data-vr-layout=tablet][data-vr-side=true] .vr-mirror-caption>[data-vr-mirror-progress]{display:none}
+.vr-game.ce-game[data-vr-layout=tablet][data-vr-side=true] .vr-host .vr-face{width:48px;height:48px}
+.vr-game.ce-game[data-vr-layout=tablet][data-vr-side=true] .vr-side{gap:8px;overflow:hidden}
+.vr-game.ce-game[data-vr-layout=tablet][data-vr-side=true]:not([data-bonus=true]) .vr-offers{display:flex;flex-direction:column;gap:8px;height:auto}
+.vr-game.ce-game[data-vr-layout=tablet][data-vr-side=true] .vr-feature-strip{display:flex;flex-direction:column;height:auto}
+.vr-game.ce-game[data-vr-layout=tablet][data-vr-side=true] .vr-feature-strip:not(:has(>:not([hidden]))){display:none}
+.vr-game.ce-game[data-vr-layout=tablet][data-vr-side=true] .vr-ticket{grid-template-columns:44px minmax(0,1fr);gap:6px 10px;padding:8px 12px}.vr-game.ce-game[data-vr-layout=tablet][data-vr-side=true] .vr-ticket-buy{margin:0 -12px;padding:8px 12px 0}
+.vr-game.ce-game[data-vr-layout=tablet][data-vr-side=true] .vr-troupe{display:flex;gap:6px;padding:8px 12px}.vr-game.ce-game[data-vr-layout=tablet][data-vr-side=true] .vr-troupe>small{display:none}.vr-game.ce-game[data-vr-layout=tablet][data-vr-side=true] .vr-troupe-row .vr-portrait{width:32px;height:32px}
+/* Phone details: line wins scroll in one row, the collector fits beside the counter. */
+.vr-game.ce-game .ce-results .lg-win-groups{flex-flow:row nowrap}
+.vr-game.ce-game:is([data-vr-layout=tablet],[data-vr-layout=portrait]):not([data-bonus=true]) .vr-feature-strip{display:none}
+.vr-game.ce-game[data-vr-layout=portrait] .vr-feature-strip{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
+.vr-game.ce-game[data-vr-layout=portrait] .ce-spin>span{font-size:8px;letter-spacing:0}
+.vr-game.ce-game[data-vr-layout=landscape] .ce-spin>span{display:none}
+/* The shared short-window rule hides the message; the one-row panel has its own place for it. */
+#mini-dialog .vr-game.ce-game:is([data-vr-layout=landscape],[data-vr-layout=portrait][data-vr-short=true]) .ce-results .lg-message{display:block!important;align-self:center;text-align:left}
+@container velvet (width < 350px){.vr-game.ce-game[data-vr-layout=portrait] .vr-mode-switch button{min-width:28px;padding:0 3px}}
+.vr-game.ce-game[data-vr-layout=tablet]:not([data-vr-side=true]) .vr-ticket-title>b{font-size:20px}.vr-game.ce-game[data-vr-layout=tablet]:not([data-vr-side=true]) .vr-ticket-title>small{font-size:11px}.vr-game.ce-game[data-vr-layout=tablet]:not([data-vr-side=true]) .vr-ticket-buy>strong{padding:0 12px;font-size:12px}
+@container velvet (width < 740px){.vr-game.ce-game[data-vr-layout=tablet]:not([data-vr-side=true]) .vr-ticket{grid-template-columns:36px minmax(0,1fr) auto;gap:8px;padding:6px 10px}.vr-game.ce-game[data-vr-layout=tablet]:not([data-vr-side=true]) .vr-ticket>:is(.lg-symbol,svg){width:36px;height:36px}.vr-game.ce-game[data-vr-layout=tablet]:not([data-vr-side=true]) .vr-ticket-title>b{font-size:18px}.vr-game.ce-game[data-vr-layout=tablet]:not([data-vr-side=true]) .vr-ticket-buy>strong{padding:0 9px;font-size:11px}}
+.vr-game.ce-game[data-vr-layout=portrait] .ce-free-spins [data-lg-bonus-name]{font-size:9px;letter-spacing:.06em}.vr-game.ce-game[data-vr-layout=portrait] .ce-free-spins button{padding:4px 8px;font-size:10px}
+#mini-dialog .vr-game.ce-game :is(.ce-wallet-help,.ce-feedback){margin:0!important}
+/* Phone landscape: the bonus collector is as tall as the mode and autoplay rows it replaces, so Spin stays in place. */
+.vr-game.ce-game[data-vr-layout=landscape] .ce-console>.vr-feature-strip:has(>:not([hidden])){height:72px}
+.vr-game.ce-game[data-vr-layout=landscape] .ce-console>.vr-feature-strip>:not([hidden]){flex:1;min-height:0}
+.vr-game.ce-game[data-vr-layout=landscape] .ce-console>.vr-feature-strip .ce-energy{justify-content:center}
+.vr-game.ce-game[data-vr-layout=landscape] .vr-collection{flex-direction:row;justify-content:center;gap:8px}.vr-game.ce-game[data-vr-layout=landscape] .vr-collection [data-vr-gem-note]{display:none}
+.vr-game.ce-game[data-vr-layout=landscape] .ce-console>.vr-feature-strip .ce-energy{padding:2px 6px}.vr-game.ce-game[data-vr-layout=landscape] .ce-console>.vr-feature-strip .ce-free-spins{padding:2px 6px}.vr-game.ce-game[data-vr-layout=landscape] .ce-free-spins button{min-height:28px;height:28px}
+#mini-dialog .vr-game.ce-game[data-vr-layout=portrait][data-vr-short=false] .lg-win-bar>[data-lg-settlement]{display:block!important}

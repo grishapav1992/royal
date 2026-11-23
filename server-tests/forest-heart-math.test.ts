@@ -82,6 +82,11 @@ test('complete varied paid series match the independent oracle for all stakes an
     }
   }
 });
+test('manual stakes use the common cent range without requiring a preset',()=>{
+  for(const [stake,payout] of [[10,6n],[999,630n],[1001,631n],[10000,6310n]] as const){
+    assert.equal(forestHeartFlowerPayout(stake,1),payout);
+  }
+});
 test('invalid inputs, unavailable turns, invalid held roots and unbounded continuations are rejected',()=>{
   for(const bits of [-1,4096,NaN,1.2])assert.throws(()=>forestHeartBoard(bits));
   for(const board of [Array(24).fill(0),Array(25).fill(16),new Array(25)])assert.throws(()=>forestHeartFlow(board));
@@ -90,7 +95,7 @@ test('invalid inputs, unavailable turns, invalid held roots and unbounded contin
   for(const state of [-1,243,NaN])assert.throws(()=>forestHeartHeld(state));
   assert.throws(()=>forestHeartHeldState({mask:0,values:1}));
   assert.throws(()=>forestHeartHeldState({mask:1,values:0}));
-  for(const stake of [0,1,999,1001,Number.MAX_SAFE_INTEGER])assert.throws(()=>forestHeartFlowerPayout(stake,1));
+  for(const stake of [0,9,10.1,10001,50001,Number.MAX_SAFE_INTEGER])assert.throws(()=>forestHeartFlowerPayout(stake,1),/Invalid Forest Heart stake/);
   assert.throws(()=>forestHeartFlowerPayout(1000,3));
   const valid={stakeUnits:1000,bits:0,energy:1,ability:false,rotation:null,bonusAwarded:false,bonus:[]};
   assert.throws(()=>forestHeartRound({...valid,bonusAwarded:true}));

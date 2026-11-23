@@ -11,7 +11,8 @@ export const NUDGE_RUNTIME_REVIEWED_SOURCES={
   "src/shared/wildNudge.ts": "de36b83b823d2fd48f69bb2aa0c383a44ffbb80ec287e759dd1115db23775624",
   "server/games/wildNudge.ts": "7d66b6ba4c76045de00b34a780ce26103d4367f6f39143930ee8f0fe6f12aa9e",
   "scripts/game-math/wild-nudge-reference.mjs": "93c3e272abe11523ddd77985c9d733b76b06089a054aac5cf5a9ce4e762e7bb5",
-  "scripts/game-math/wild-nudge-model.mjs": "da28188057c963500975637c3ebaaa763f31089445701049d85af0d1073e1ef8"
+  // The archived report selects rules v1; the analyzer and runtime replay are unchanged.
+  "scripts/game-math/wild-nudge-model.mjs": "2375a329a9289736795472057ff8f0f4924b6b6a4b241ecc588f0b38363c3fa8"
 };
 export const NUDGE_WALLET_EXPECTED=['capability-before-entropy','concurrent-paid-start','request-identity-and-ownership','saved-round-and-hidden-future','free-continuation-and-stale-revision','eight-free-spins-one-credit','lost-final-response','all-stakes-integer-journal','atomic-rollback-and-retry','invalid-input-before-entropy','reserve-before-randomness','common-wallet-regression'];
 let cached;
