@@ -1,0 +1,80 @@
+{
+  "release": "velvet-stable-frame-20261123-v1",
+  "published": true,
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "7a4637ef5a5875093cbf62f491e48dc3cbd35a97",
+  "codeCommit": "1f31af45d05e10ff1a08ded3aa6b1e635e87907e",
+  "installerCommit": "7a4637ef5a5875093cbf62f491e48dc3cbd35a97",
+  "baseCommit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+  "runningImage": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+  "releaseManifestSha256": "2523ab8afad90482a069687bb68ebff319c604d67b9c7eaa505dad0d13bce890",
+  "module": {
+    "verified": true,
+    "gameId": "studio-velvet-reign",
+    "version": "1.4.1-cae74f3018a9",
+    "bytes": 5823646,
+    "files": 28,
+    "beforeSha256": "90ff15d33933d0915466c4237816017f10ac3ec7c4f5404304907f1d34e8b549",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "7d17880adb7695ea7d84c5c734b2f2a0d82ddfa8edf2b1a242ed5e52a4491e18",
+    "history": "/opt/royal-game-modules-state/history/20261123T125055-8df65da939024650a261c8fd80424944.json"
+  },
+  "priorManifestSha256": "cbd677766f80340b20cd927e482e14b845e7ae33e0c169817afa3d169f6932a1",
+  "installedSourceFiles": {
+    "games/velvet-reign/VelvetReignUI.ts": "ad447a50ef50c0774d8aab4e9409735ac83e5c67b7b1168edcd69e411eef493c",
+    "games/velvet-reign/velvet-reign.css": "ba38b80566bb5409defcc5eefd2c2bfab6ec553b123e08b3b2112a21c6727ff1",
+    "games/velvet-reign/package.json": "b121dd56f9ceaa5717876730191821b28fbf43d2227e008e016ffaa49cfae319"
+  },
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/velvet-stable-frame-20261123-v1/source.tgz",
+    "sha256": "1e616f5c6517b949883b96568b2ed83bb9c543e7e040a9b4178cf86e605e1369",
+    "bytes": 30855,
+    "oldVersion": "1.4.0-ad7581736f91",
+    "imageTag": "royal-game:before-velvet-stable-frame-20261123-v1",
+    "image": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+    "oldPackageHardlinked": true
+  },
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "runtimeFilesPreserved": 8783,
+  "servicesPreserved": 11,
+  "otherModulesPreserved": true,
+  "freeBefore": 12016406528,
+  "freeAfter": 12010381312,
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "projection": "shared inputs pinned to production 1eae5668",
+  "verification": {
+    "rtp": "passed in release:prepare",
+    "typecheck": true,
+    "githubVerified": true,
+    "walletTests": 19,
+    "connectedBrowserTests": 5,
+    "frameSizes": 13,
+    "browserReportSha256": "c673139047e6d9f1c8048e924fe73b82569c6e5aaf5a1147f3eb07f985a7168c",
+    "hostUsedForBrowserTests": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact module bytes",
+    "live": {
+      "health": 200,
+      "moduleHostEntries": 124,
+      "unchangedModulePointers": 123,
+      "changedModulePointers": [
+        "studio-velvet-reign"
+      ],
+      "packageFilesVerified": 29,
+      "packageFilesIncludeManifest": true,
+      "previousPackageFilesVerified": 29
+    },
+    "publicSignedInPlayChecked": false,
+    "productionAccountsOrRoundsCreated": false
+  },
+  "maintenance": {
+    "status": "error",
+    "reason": "Live source differs without a verified current module publication: games/velvet-reign/entry.ts",
+    "resolution": "superseded by velvet-stable-frame-20261123-v2, which lists every Velvet source that differs from the host release"
+  }
+}

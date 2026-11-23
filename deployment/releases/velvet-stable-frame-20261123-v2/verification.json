@@ -1,0 +1,96 @@
+{
+  "release": "velvet-stable-frame-20261123-v2",
+  "published": true,
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "da620a43e791515a74c08bc31acf63298c84e8b8",
+  "codeCommit": "1f31af45d05e10ff1a08ded3aa6b1e635e87907e",
+  "installerCommit": "da620a43e791515a74c08bc31acf63298c84e8b8",
+  "baseCommit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+  "runningImage": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+  "releaseManifestSha256": "f5db807ba3f1149c59d6d7ef4bd5a2f9292cfdff916dbda7ee9650062d24ce77",
+  "module": {
+    "verified": true,
+    "gameId": "studio-velvet-reign",
+    "version": "1.4.2-3731693cacc3",
+    "bytes": 5823646,
+    "files": 28,
+    "beforeSha256": "7d17880adb7695ea7d84c5c734b2f2a0d82ddfa8edf2b1a242ed5e52a4491e18",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "e5a4ca655d644520e96216a68c1d103f8f240456c8c0bf93b7c1c63b4652c952",
+    "history": "/opt/royal-game-modules-state/history/20261123T130822-6df2aaf8492e4521941dcf2e554c380e.json"
+  },
+  "priorManifestSha256": "07079c1d938135d61c67ff7e903ac38b88c613ed7bfa74510fa12351ab9a0c39",
+  "installedSourceFiles": {
+    "games/velvet-reign/entry.ts": "2381b6648feae8b7c1f394261d9bf3117b3590a866318caee7114eefcf0d008b",
+    "games/velvet-reign/package.json": "d232e9a524922a42d9d22e6eb5402e2150e6a8271cf4d24a8f5a5bf5dcaa1d26",
+    "games/velvet-reign/VelvetReignUI.ts": "ad447a50ef50c0774d8aab4e9409735ac83e5c67b7b1168edcd69e411eef493c",
+    "games/velvet-reign/VelvetReignBoard.ts": "32a19064c616e307a5e02714114c220505cc911b9f0e2fb0388ba83af48799c8",
+    "games/velvet-reign/VelvetReignAssets.ts": "8e7600d8f3e507a642667b735d3d74c755fdb0e529c0eea72be94007639823a1",
+    "games/velvet-reign/VelvetReignAudio.ts": "ac03dc4ad7e7c43ec90ca1f7367988ba86e144fa62e721fdd00ffdbfd02fbdbf",
+    "games/velvet-reign/velvetReignText.ts": "959570ca6cb41ebb6bf67d2ddd32d8b28928a2b6bda46e484cd40b745242e14d",
+    "games/velvet-reign/velvet-reign.css": "ba38b80566bb5409defcc5eefd2c2bfab6ec553b123e08b3b2112a21c6727ff1"
+  },
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/velvet-stable-frame-20261123-v2/source.tgz",
+    "sha256": "1eceae217841acaf2ee236feed6906b2aaaec1916b4fdd6cfea7900f2772d54f",
+    "bytes": 35253,
+    "oldVersion": "1.4.1-cae74f3018a9",
+    "imageTag": "royal-game:before-velvet-stable-frame-20261123-v2",
+    "image": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+    "oldPackageHardlinked": true
+  },
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "runtimeFilesPreserved": 8783,
+  "servicesPreserved": 11,
+  "otherModulesPreserved": true,
+  "freeBefore": 11997642752,
+  "freeAfter": 11991625728,
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "projection": "shared inputs pinned to production 1eae5668",
+  "verification": {
+    "rtp": "passed in release:prepare",
+    "typecheck": true,
+    "githubVerified": true,
+    "walletTests": 19,
+    "connectedBrowserTests": 5,
+    "frameSizes": 13,
+    "browserReportSha256": "5554cfdbcbec0f22cb50d2ad3e47ae782e5a979e0ea5467c142229d6962eee4d",
+    "hostUsedForBrowserTests": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact module bytes",
+    "live": {
+      "health": 200,
+      "moduleHostEntries": 124,
+      "unchangedModulePointers": 123,
+      "changedModulePointers": [
+        "studio-velvet-reign"
+      ],
+      "packageFilesVerified": 29,
+      "packageFilesIncludeManifest": true,
+      "previousPackageFilesVerified": 29
+    },
+    "publicSignedInPlayChecked": false,
+    "productionAccountsOrRoundsCreated": false
+  },
+  "context": "Same code as 1.4.1. The package version changes so that the current receipt covers all eight Velvet sources.",
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 83.21,
+    "healthOk": true,
+    "freeBefore": 11987288064,
+    "freeAfter": 11998588928,
+    "removedHistoryEntries": 3,
+    "supersededServerHistoryAbsent": [
+      "velvet-premiere-20261123-v1",
+      "velvet-stable-frame-20261123-v1"
+    ],
+    "timerEnabled": true,
+    "timerActive": true,
+    "productionGraph": "pending, indexing queued"
+  }
+}
