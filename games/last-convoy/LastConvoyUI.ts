@@ -10,7 +10,7 @@ import {SlotPlayback, type SlotOperation} from '../../src/ui/slotKit/SlotPlaybac
 import {SlotSessions, type NativeSlotSession} from '../../src/ui/slotKit/SlotSessions';
 import {bindSlotLifecycle} from '../../src/ui/slotKit/SlotLifecycle';
 import {convoySlot} from '../../src/ui/slotKit/nativeSlots';
-import {CONVOY_GAME,CONVOY_PAYTABLE,CONVOY_NAMES,type ConvoyView,type ConvoySpin} from '../../src/shared/lastConvoy';
+import {CONVOY_GAME,CONVOY_PAYTABLE,CONVOY_NAMES,type ConvoyView} from '../../src/shared/lastConvoy';
 import {expansionClient as client} from '../../src/wallet/ExpansionClient';
 import {demoWallet} from '../../src/wallet/WalletClient';
 import {observeExpansionOutcome,resetGameOutcomes} from '../../src/ui/gameReactions';
@@ -45,6 +45,10 @@ const copy=language==='en'?{
  pinned:'Locked', defenseShort:'Defense', barricades:(count:number)=>`${count} of 6 barricades`, evacWin:'Evacuation win', evacNote:'paid to the balance after the last spin', afterLast:'after the last spin',
  roundTitle:'This round', roundEmpty:'No winning groups yet', roundRow:(count:number,name:string,factor:number)=>`${count} × ${name}, ×${factor}`,
  testCoins:'test USDT', paidOnce:'paid once', accepted:(stake:string)=>`Stake ${stake} already accepted. Evacuation spins are free.`,
+ paused:'Evacuation paused. Next plays one free spin.', searching:'SEARCHING FOR SUPPLIES', freeSearching:(number:number,awarded:number)=>`EVACUATION SPIN ${number} OF ${awarded}`,
+ won:(amount:string)=>`WIN ${amount}`, returnedPart:(amount:string,stake:string)=>`RETURNED ${amount} OF THE ${stake} STAKE`, returnedStake:(stake:string)=>`STAKE ${stake} RETURNED`, spinWon:(amount:string)=>`THIS SPIN ADDED ${amount}`,
+ settledPaid:'Round complete. The payout is already in the wallet.', settledEmpty:'Round complete without a payout.', partNote:'The payout is below the stake. It was credited once.', evenNote:'The payout equals the stake. It was credited once.', emptyNote:'This round ended without a payout.',
+ roundEarlier:(count:number)=>`${count} earlier group${count===1?'':'s'}`, roundCents:'Cent fractions',
  next:'Next', autoplayShort:'Auto', fastToggle:'Fast', autoToEnd:'Auto to the end', autoLabel:(count:number)=>`Auto · ${count}`,
 }:{
  beacons:'Маяки', defense:'Защита конвоя', win:'Выигрыш раунда', radio:'Радиосвязь',
@@ -60,6 +64,10 @@ const copy=language==='en'?{
  pinned:'Закреплена', defenseShort:'Защита', barricades:(count:number)=>`${count} ${({one:'баррикада',few:'баррикады'} as Record<string,string>)[new Intl.PluralRules('ru').select(count)]??'баррикад'} из 6`, evacWin:'Выигрыш эвакуации', evacNote:'поступит на баланс после последнего вращения', afterLast:'после последнего вращения',
  roundTitle:'Этот раунд', roundEmpty:'Выигрышных групп пока нет', roundRow:(count:number,name:string,factor:number)=>`${count} × ${name}, ×${factor}`,
  testCoins:'тестовые USDT', paidOnce:'зачислится один раз', accepted:(stake:string)=>`Ставка ${stake} уже принята. Вращения эвакуации бесплатны.`,
+ paused:'Эвакуация на паузе. Кнопка «Далее» играет одно бесплатное вращение.', searching:'ИЩЕМ ПРИПАСЫ', freeSearching:(number:number,awarded:number)=>`ВРАЩЕНИЕ ЭВАКУАЦИИ ${number} ИЗ ${awarded}`,
+ won:(amount:string)=>`ВЫИГРЫШ ${amount}`, returnedPart:(amount:string,stake:string)=>`ВОЗВРАТ ${amount} ИЗ СТАВКИ ${stake}`, returnedStake:(stake:string)=>`СТАВКА ${stake} ВОЗВРАЩЕНА`, spinWon:(amount:string)=>`ВРАЩЕНИЕ ПРИНЕСЛО ${amount}`,
+ settledPaid:'Раунд завершён. Выплата уже в кошельке.', settledEmpty:'Раунд завершён без выплаты.', partNote:'Выплата меньше ставки. Она зачислена один раз.', evenNote:'Выплата равна ставке. Она зачислена один раз.', emptyNote:'Раунд завершён без выплаты.',
+ roundEarlier:(count:number)=>`Ещё ${count} ${({one:'группа',few:'группы'} as Record<string,string>)[new Intl.PluralRules('ru').select(count)]??'групп'}`, roundCents:'Доли цента',
  next:'Далее', autoplayShort:'Авто', fastToggle:'Быстро', autoToEnd:'Авто до конца', autoLabel:(count:number)=>`Авто · ${count}`,
 };
 const icons={
@@ -204,7 +212,7 @@ export class LastConvoyUI {
   this.find<HTMLButtonElement>('[data-cc-load-retry]').onclick=()=>void this.assets.load();this.find<HTMLButtonElement>('[data-cc-spin]').onclick=()=>void this.play();
   this.find<HTMLButtonElement>('[data-cc-buy]').onclick=()=>{this.stopAuto();this.openDialog('bonus-help');};
   // "Auto to the end" pauses a running evacuation and resumes a paused one; every free spin stays free.
-  this.find<HTMLButtonElement>('[data-cc-pause]').onclick=()=>{if(this.bonusRunning){this.stopAuto();this.controls();}else void this.play();};
+  this.find<HTMLButtonElement>('[data-cc-pause]').onclick=()=>{if(this.bonusRunning){this.stopAuto();this.controls();}else void this.playToEnd();};
   this.find<HTMLButtonElement>('[data-cv-fast]').onclick=()=>{if(this.live)return;this.fast=!this.fast;this.controls();};
   this.find<HTMLButtonElement>('[data-cc-speed]').onclick=()=>{this.fast=!this.fast;this.controls();};this.find<HTMLButtonElement>('[data-cc-auto]').onclick=()=>this.toggleAuto();
   this.find<HTMLButtonElement>('[data-cc-info]').onclick=()=>{this.stopAuto();this.openDialog('info');};this.find<HTMLButtonElement>('[data-cc-history]').onclick=()=>{this.stopAuto();this.openDialog('history');};
@@ -311,7 +319,7 @@ export class LastConvoyUI {
   this.find<HTMLInputElement>('[data-cv-reduce]').checked=this.manualReduced;this.find<HTMLInputElement>('[data-cv-reduce]').disabled=!!this.live||client.busy||!!client.pending;this.root.dataset.reducedMotion=String(!this.motion());this.root.dataset.autoRemaining=String(this.autoRemaining);this.root.dataset.remaining=String(s?.view.convoy.bonus?.remaining??0);this.root.setAttribute('aria-busy',String(!this.assets.ready||!!this.live||client.busy));
   this.find('[data-cc-balance]').textContent=coins((this.live?.balance??this.balance())*100);this.find('[data-cc-last]').textContent=coins(this.lastWin);
   const spin=this.find<HTMLButtonElement>('[data-cc-spin]');
-  spin.disabled=blocked||!this.entered||!!this.dialog||!!this.autoRemaining;
+  spin.disabled=blocked||!this.entered||!!this.dialog||!!this.autoRemaining||this.seriesRunning();
   const label=this.live?copy.spinning:active?copy.next:translateText('Вращать');
   this.find('[data-cc-spin-label]').textContent=label;
   spin.setAttribute('aria-label',label);
@@ -328,7 +336,7 @@ export class LastConvoyUI {
    this.transport(active,blocked);
    this.find('[data-cv-accepted]').textContent=active?copy.accepted(coins(this.stake)):'';
    this.find('[data-cc-error]').textContent=this.error||client.error;this.find('[data-cc-feedback]').dataset.error=String(!!(this.error||client.error));
-this.find('[data-cc-status]').textContent=client.loading?translateText('Проверяем сохранённую эвакуацию…'):this.live?'':canRecoverOperation(client)?translateText('Ход сохранён. Подтверди прежнюю операцию.'):this.autoRemaining?tr`Платных вращений осталось: ${this.autoRemaining}`:(active?this.bonusRunning?translateText('Эвакуация продолжается бесплатно.'):translateText('Эвакуация на паузе. Нажми «Продолжить».'):'');
+this.find('[data-cc-status]').textContent=client.loading?translateText('Проверяем сохранённую эвакуацию…'):this.live?'':canRecoverOperation(client)?translateText('Ход сохранён. Подтверди прежнюю операцию.'):this.autoRemaining?tr`Платных вращений осталось: ${this.autoRemaining}`:(active?this.bonusRunning?translateText('Эвакуация продолжается бесплатно.'):copy.paused:'');
   this.find('[data-cc-wallet-help]').hidden=!!client.accountId&&(active||this.balance()>=Number(this.stake)/100);this.find('[data-cc-wallet-note]').textContent=client.accountId?translateText('Недостаточно USDT для ставки.'):translateText('Для игры нужен общий баланс USDT.');this.find('[data-cc-login]').hidden=!!client.accountId;this.find('[data-cc-wallet]').hidden=!client.accountId;
    this.soundControls?.update();
   const enter=this.root.querySelector<HTMLButtonElement>('[data-cc-action="enter"]');if(enter){enter.disabled=!this.assets.ready;enter.textContent=active?translateText('ПРОДОЛЖИТЬ ЭВАКУАЦИЮ'):translateText('НАЧАТЬ ВЫЛАЗКУ');}
@@ -338,7 +346,7 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
   if(this.owner!==client.accountId){this.cancel();this.audio.pause();this.owner=client.accountId;this.progressSession=this.session()?.state==='settled'?this.session()!.id:'';this.progress.setAccount(client.accountId);this.entered=false;this.lastWin='0';this.stake = '10';this.openDialog('intro');}
   const s=this.session();if(!this.live&&(!s||this.shown!==this.key(s))){
    this.board.clearOverlay();this.board.highlight([]);this.board.show(s?.view.convoy.spin?.finalGrid??preview);this.root.dataset.phase='idle';this.root.dataset.charging='false';
-   if(s){this.shown=this.key(s);this.root.dataset.sessionId=s.id;this.root.dataset.revision=String(s.view.convoy.revision);if(s.state==='settled')this.lastWin=s.returnedUnits;this.setTotal(confirmedPayout(s,s.view.convoy.totalPayoutUnits));this.features(s.view.convoy);this.roundLog(s.view.convoy.spin);this.find('[data-cc-message]').textContent=s.state==='active'?translateText('Эвакуация сохранена. Продолжение без ставки.'):translateText('Раунд завершён. Выплата уже в кошельке.');}
+   if(s){this.shown=this.key(s);this.root.dataset.sessionId=s.id;this.root.dataset.revision=String(s.view.convoy.revision);if(s.state==='settled')this.lastWin=s.returnedUnits;this.setTotal(confirmedPayout(s,s.view.convoy.totalPayoutUnits));this.features(s.view.convoy);this.roundLog(s.view.convoy,Infinity,s);this.find('[data-cc-message]').textContent=s.state==='active'?translateText('Эвакуация сохранена. Продолжение без ставки.'):Number(s.returnedUnits)>0?copy.settledPaid:copy.settledEmpty;}
    else{this.shown='';this.setTotal('0');this.features();this.roundLog();this.find('[data-cc-message]').textContent=translateText('Нажми вращение, чтобы собрать припасы');}
   }
   if(s?.state==='settled'&&s.id!==this.progressSession){this.progressSession=s.id;if(!this.progress.profile||this.progress.profile.completedRounds<200)void this.progress.refresh();}
@@ -354,10 +362,38 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
   fast.setAttribute('aria-pressed',String(this.fast));fast.disabled=!!this.live;
  }
  private setTotal(value:string|number){this.find('[data-cc-total]').textContent=coins(value);this.find('[data-cc-total]').dataset.units=String(value);this.find('[data-cv-evac]').textContent=coins(value);}
- /** Winning groups of the shown spin, newest last; the list follows the cascades as they are presented. */
- private roundLog(spin?:ConvoySpin,frames=spin?.frames.length??0){
-  const rows=(spin?.frames.slice(0,frames)??[]).flatMap(frame=>frame.wins.map(win=>({win,factor:win.factor}))).slice(-4);
-  this.find('[data-cv-round]').innerHTML=rows.length?rows.map(({win,factor})=>`<p class="cv-round-row">${convoySymbol(win.symbol)}<span>${escape(copy.roundRow(win.positions.length,CONVOY_NAMES[win.symbol],factor))}</span><b>${coins(win.payoutUnits)}</b></p>`).join(''):`<p class="cv-round-empty">${copy.roundEmpty}</p>`;
+ /** The whole paid round against its full accepted stake; free spins never have an outcome of their own. */
+ private outcome(s:Session):'active'|'none'|'part'|'even'|'win'{
+  if(s.state!=='settled')return 'active';
+  const spent=BigInt(s.spentUnits),returned=BigInt(s.returnedUnits);
+  return returned===0n?'none':returned<spent?'part':returned===spent?'even':'win';
+ }
+ private outcomeText(s:Session){
+  const outcome=this.outcome(s),amount=coins(s.returnedUnits),stake=coins(s.spentUnits);
+  return outcome==='win'?copy.won(amount):outcome==='even'?copy.returnedStake(stake):outcome==='part'?copy.returnedPart(amount,stake):translateText('ПРОДОЛЖАЕМ ПОИСК ПРИПАСОВ');
+ }
+ private outcomeNote(s:Session){
+  const outcome=this.outcome(s);
+  return outcome==='part'?copy.partNote:outcome==='even'?copy.evenNote:outcome==='none'?copy.emptyNote:translateText('Выплата зачислена в тестовый кошелёк один раз.');
+ }
+ /** Clear the previous result before the request, without showing anything of the next one. */
+ private startLine(evacuation?:Session){
+  const bonus=evacuation?.view.convoy.bonus;
+  this.find('[data-cc-message]').textContent=bonus?copy.freeSearching(bonus.played+1,bonus.awarded):copy.searching;
+  if(!bonus){this.setTotal('0');this.factor(1);this.tickets(0);}
+ }
+ /** Winning groups of the paid round, newest last. The rows always add up to the shown total. */
+ private roundLog(view?:ConvoyView,frames=Infinity,session?:Session){
+  const history=view?.history??[];
+  const wins=history.flatMap((spin,index)=>(index===history.length-1?spin.frames.slice(0,frames):spin.frames).flatMap(frame=>frame.wins));
+  const shown=wins.length>4?wins.slice(-3):wins,earlier=wins.slice(0,wins.length-shown.length);
+  const sum=(list:typeof wins)=>list.reduce((total,win)=>total+BigInt(win.payoutUnits),0n);
+  const line=(icon:string,text:string,units:bigint|string)=>`<p class="cv-round-row">${icon}<span>${escape(text)}</span><b>${coins(String(units))}</b></p>`;
+  const cents=session?.state==='settled'?BigInt(session.returnedUnits)-sum(wins):0n;
+  this.find('[data-cv-round]').innerHTML=!wins.length?`<p class="cv-round-empty">${copy.roundEmpty}</p>`
+   :(earlier.length?line('',copy.roundEarlier(earlier.length),sum(earlier)):'')
+   +shown.map(win=>line(convoySymbol(win.symbol),copy.roundRow(win.positions.length,CONVOY_NAMES[win.symbol],win.factor),win.payoutUnits)).join('')
+   +(cents>0n?line('',copy.roundCents,cents):'');
  }
  private factor(value:number){
   this.root.dataset.multiplier=String(value);
@@ -382,11 +418,14 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
   this.find('[data-cv-pins]').textContent=active?copy.barricades(bonus!.pins.length):'';
   this.find('[data-cv-pill-free]').textContent=active&&played?copy.freeOf(played,awarded):copy.bonusRule;
  }
- private async play(){if(this.blocked()||!this.entered||this.dialog||this.autoRemaining)return;this.bonusRunning=this.session()?.state==='active';await this.request('normal');}
+ /** One spin: a paid round, or a single free spin of a paused evacuation. */
+ private async play(){if(this.blocked()||!this.entered||this.dialog||this.autoRemaining||this.seriesRunning())return;this.bonusRunning=false;await this.request('normal');}
+ private seriesRunning(){return this.bonusRunning&&this.session()?.state==='active';}
+ private async playToEnd(){if(this.blocked()||!this.entered||this.dialog||this.session()?.state!=='active')return;this.bonusRunning=true;await this.request('normal');}
  private async request(mode:'normal'){
-  if(this.blocked()||!this.entered||this.dialog)return;const previous=this.session(),active=previous?.state==='active',cost=active?0:Number(this.stake)/100;
+  if(this.blocked()||!this.entered||this.dialog){if(!this.live){this.bonusRunning=false;this.controls();}return;}const previous=this.session(),active=previous?.state==='active',cost=active?0:Number(this.stake)/100;
   if(this.balance()<cost){this.error=translateText('Недостаточно USDT для ставки.');this.stopAuto();this.controls();return;}
-  void this.audio.enter();const live:Live={...this.playback.capture(client.accountId!),operationId:'',balance:this.balance(),motion:this.motion(),fast:this.fast,before:previous};this.live=live;this.error='';this.root.dataset.animationToken=live.token;this.find('[data-cc-groups]').replaceChildren();this.roundLog();this.board.highlight([]);observeExpansionOutcome(this.root,CONVOY_GAME,previous,client.accountId,true,true);
+  void this.audio.enter();const live:Live={...this.playback.capture(client.accountId!),operationId:'',balance:this.balance(),motion:this.motion(),fast:this.fast,before:previous};this.live=live;this.error='';this.root.dataset.animationToken=live.token;this.find('[data-cc-groups]').replaceChildren();this.roundLog();this.startLine(active?previous:undefined);this.board.highlight([]);observeExpansionOutcome(this.root,CONVOY_GAME,previous,client.accountId,true,true);
   if(!active&&this.autoRemaining)this.autoRemaining--;
   {this.root.dataset.phase='spinning';this.board.setPins(active?previous!.view.convoy.bonus?.pins??[]:[]);this.board.begin(live.token,live.motion,live.fast);void this.audio.begin(live.token);}this.controls();
   try{
@@ -418,14 +457,16 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
    if(!this.valid(live))return;this.board.clearOverlay();this.board.show(frame.before);this.board.highlight(frame.wins.flatMap(w=>w.positions));
    if(frame.addedPins.length){this.root.dataset.phase='energy';this.root.dataset.charging='true';this.find('[data-cc-message]').textContent=tr`Баррикады добавляют +${frame.addedPins.length} к защите`;this.audio.feature('barricade');if(live.motion&&!await this.delay(live.fast?220:550,live))return;this.factor(frame.multiplierAfter);this.root.dataset.charging='false';}
    if(!frame.wins.length)break;
-   this.root.dataset.phase='winning';this.find('[data-cc-message]').textContent=tr`КАСКАД ${frame.index+1} · МНОЖИТЕЛЬ ×${frame.multiplierAfter}`;this.find('[data-cc-groups]').innerHTML=frame.wins.map(w=>`<span>${convoySymbol(w.symbol)}<b>${coins(w.payoutUnits)}</b></span>`).join('');total+=Number(frame.payoutUnits);this.setTotal(total);this.roundLog(spin,frame.index+1);this.audio.cascade(frame.index);
+   this.root.dataset.phase='winning';this.find('[data-cc-message]').textContent=tr`КАСКАД ${frame.index+1} · МНОЖИТЕЛЬ ×${frame.multiplierAfter}`;this.find('[data-cc-groups]').innerHTML=frame.wins.map(w=>`<span>${convoySymbol(w.symbol)}<b>${coins(w.payoutUnits)}</b></span>`).join('');total+=Number(frame.payoutUnits);this.setTotal(total);this.roundLog(v,frame.index+1);this.audio.cascade(frame.index);
    if(live.motion&&!await this.delay(live.fast?120:380,live))return;
    if(frame.removed.length){this.root.dataset.phase='bursting';this.board.remove(frame.removed);if(live.motion&&!await this.delay(live.fast?100:230,live))return;this.root.dataset.phase='falling';this.audio.drop();if(live.motion){this.board.gravity(frame,live.fast);if(!await this.delay(live.fast?260:560,live))return;}this.board.clearOverlay();this.board.show(frame.after);this.board.highlight([]);this.tickets(frame.after.filter(n=>n===7).length);}
   }
-  if(!this.valid(live))return;this.board.clearOverlay();this.board.show(spin.finalGrid);this.board.highlight([]);this.features(v);this.setTotal(confirmedPayout(s,v.totalPayoutUnits));this.roundLog(spin);
+  if(!this.valid(live))return;this.board.clearOverlay();this.board.show(spin.finalGrid);this.board.highlight([]);this.features(v);this.setTotal(confirmedPayout(s,v.totalPayoutUnits));this.roundLog(v,Infinity,s);
+  // The last cascade's chips would read as the amount of the whole spin.
+  this.find('[data-cc-groups]').replaceChildren();
   if(spin.freeAward){this.root.dataset.phase='tickets';this.find('[data-cc-message]').textContent=spin.kind==='free'?tr`ЕЩЁ ${spin.freeAward} БЕСПЛАТНЫХ ВРАЩЕНИЯ`:translateText('СИГНАЛ ПРИНЯТ · КОНВОЙ В ПУТИ');this.audio.tickets();if(live.motion&&!await this.delay(live.fast?250:850,live))return;}
-  else this.find('[data-cc-message]').textContent=v.capped?translateText('ДОСТИГНУТ ПРЕДЕЛ ВЫИГРЫША'):spin.frames.at(-1)?.stop==='cascade-limit'?translateText('20 КАСКАДОВ · ВЫИГРЫШ СОХРАНЁН'):Number(spin.payoutUnits)>0?translateText('ВЫИГРЫШ ПРИНЯТ'):s.state==='active'?translateText('ЭВАКУАЦИЯ ПРОДОЛЖАЕТСЯ'):translateText('ПРОДОЛЖАЕМ ПОИСК ПРИПАСОВ');
-  this.audio.outcome(Number(spin.payoutUnits)>0);if(live.motion)await this.delay(live.fast?100:300,live);
+  else this.find('[data-cc-message]').textContent=v.capped?translateText('ДОСТИГНУТ ПРЕДЕЛ ВЫИГРЫША'):spin.frames.at(-1)?.stop==='cascade-limit'?translateText('20 КАСКАДОВ · ВЫИГРЫШ СОХРАНЁН'):s.state==='settled'?this.outcomeText(s):Number(spin.payoutUnits)>0?copy.spinWon(coins(spin.payoutUnits)):translateText('ЭВАКУАЦИЯ ПРОДОЛЖАЕТСЯ');
+  this.audio.outcome(this.outcome(s)==='win');if(live.motion)await this.delay(live.fast?100:300,live);
  }
  private schedule(){
   this.playback.schedule(this.fast?140:500,()=>{
@@ -445,7 +486,7 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
   if(kind==='intro')box.innerHTML=tr`<small>ДОЖИТЬ ДО РАССВЕТА</small><h2 id="cc-dialog-title">ПОСЛЕДНИЙ <em>КОНВОЙ</em></h2><div class="cv-intro-hero"><img src="${CONVOY_ASSETS.heroine}" alt="Майя, позывной Искра"><p>«Собирай припасы. Я вызову конвой».<br><small>Майя · выживальщица, связист</small></p></div><div class="cc-intro-cards"><article><div>${convoySymbol(0)}${convoySymbol(4)}</div><h3>8+ ПРИПАСОВ</h3><p>Совпадения в любом месте. После выигрыша припасы падают каскадом.</p></article><article><div>${convoySymbol(8)}<strong>×7</strong></div><h3>БАРРИКАДЫ</h3><p>Закрепляются и усиливают выплаты. В эвакуации остаются между вращениями.</p></article><article><div>${convoySymbol(7)}</div><h3>МАЯКИ СПАСЕНИЯ</h3><p>3 / 4 / 5+ маяков открывают 10 / 12 / 15 бесплатных вращений.</p></article></div><button type="button" class="cc-primary" data-cc-action="enter">ПРИСОЕДИНИТЬСЯ К МАЙЕ</button><p class="cc-dialog-note">Тестовый кошелёк клуба · вход без ставки</p>`;
   if(kind==='bonus-help')box.innerHTML=tr`<small>БЕСПЛАТНЫЙ БОНУС</small><h2 id="cc-dialog-title">КАК ОТКРЫТЬ ЭВАКУАЦИЮ</h2><div class="cv-bonus-help"><p>Собери маяки на конечном поле одного вращения, после всех каскадов. Бонус включится автоматически.</p><div class="cv-bonus-awards">${[[3,10],[4,12],[5,15]].map(([beacons,spins])=>tr`<div>${convoySymbol(7)}<strong>${beacons===5?translateText('5+ маяков'):tr`${beacons} маяка`}</strong><span>${spins} бесплатных вращений</span></div>`).join('')}</div><p>Во время эвакуации баррикады сохраняются и усиливают выплаты до ×7. Выпадение 3 и более маяков добавляет 2 вращения, до 20 за раунд.</p><p>Маяки между разными вращениями не накапливаются. Дополнительная ставка для запуска бонуса не нужна.</p></div><button type="button" class="cc-primary" data-cc-action="close">ПОНЯТНО</button>`;
   if(kind==='bonus')box.innerHTML=tr`<small>СИГНАЛ ПРИНЯТ</small><h2 id="cc-dialog-title">КОНВОЙ В ПУТИ</h2><div class="cc-bonus-art">${convoySymbol(7)}<strong>${v?.bonus?.remaining??10}<small>БЕСПЛАТНЫХ ВРАЩЕНИЙ</small></strong>${convoySymbol(8)}</div><p>Баррикады эвакуации начинают с нуля, затем сохраняют свои клетки между бесплатными вращениями. До шести баррикад, множитель до ×7. Три маяка добавляют ещё два вращения, до 20 всего.</p><button type="button" class="cc-primary" data-cc-action="bonus">НАЧАТЬ ЭВАКУАЦИЮ</button><p class="cc-dialog-note">Ставка уже принята. Продолжение бесплатно.</p>`;
-  if(kind==='complete'&&s)box.innerHTML=renderSlotResult({style:'cc',eyebrow:translateText('МЫ ДОБРАЛИСЬ'),title:translateText('КОНВОЙ ПРИБЫЛ'),returned:s.returnedUnits,ledger:this.ledger(s),note:translateText('Выплата зачислена в тестовый кошелёк один раз.'),label:translateText('ПРОДОЛЖИТЬ')});
+  if(kind==='complete'&&s)box.innerHTML=renderSlotResult({style:'cc',eyebrow:translateText('МЫ ДОБРАЛИСЬ'),title:translateText('КОНВОЙ ПРИБЫЛ'),returned:s.returnedUnits,ledger:this.ledger(s),note:this.outcomeNote(s),label:translateText('ПРОДОЛЖИТЬ')});
   if(kind==='history')box.innerHTML=renderSlotHistory({style:'cc',eyebrow:translateText('РАДИОЖУРНАЛ'),title:translateText('ИСТОРИЯ КОНВОЯ'),ledger:s?this.ledger(s):undefined,status:s?.state==='active'?translateText('Эвакуация сохранена. Выплата поступит после завершения.'):translateText('Раунд завершён. Выплата зачислена один раз.'),empty:translateText('Здесь появятся подтверждённые результаты.'),rows:v?.history.map(spin=>({title:tr`${spin.kind==='base'?translateText('Основное'):translateText('Бесплатное')} вращение ${slotSpinNumber(spin,v!.history)}`,detail:tr`${spin.frames.filter(f=>f.wins.length).length} каскадов · ×${spin.multiplierAfter} · ${spin.beacons} маяков · ${spin.pinsAfter.length} баррикад${spin.freeAward?tr` · +${spin.freeAward} вращений`:''}`,payoutUnits:spin.payoutUnits}))??[]});
   if(kind==='info')box.innerHTML=renderSlotInfo({style:'cc',eyebrow:translateText('ПЛАН ВЫЖИВАНИЯ'),title:translateText('КАК ИГРАЕТ КОНВОЙ'),reduced:this.manualReduced,motionSetting:false,bodyHtml:tr`<h3>Припасы и каскады</h3><p>Поле 6×5. Восемь и более одинаковых обычных символов в любом месте дают выплату. Выигравшие символы исчезают, остальные падают в свободные клетки. До 20 выигрышных каскадов за вращение. На последнем каскаде поле остаётся на месте.</p><h3>Закреплённые баррикады</h3><p>Баррикада не заменяет символы и сама не оплачивается. Она закрепляется в своей клетке, увеличивая общий множитель на 1 до выплаты текущего каскада. До шести баррикад, общий множитель от ×1 до ×7. В обычном вращении новые баррикады собираются заново. В эвакуации они остаются на всех последующих вращениях. При входе в эвакуацию баррикады обычного вращения сбрасываются.</p><h3>Эвакуация</h3><p>На конечном поле после каскадов 3 / 4 / 5 и более маяков дают 10 / 12 / 15 бесплатных вращений. Внутри эвакуации 3 и более маяков добавляют ещё 2 вращения, максимум 20 за раунд. Маяки между разными вращениями не накапливаются. Покупки бонуса нет.</p><h3>Выплаты от общей ставки, до множителя</h3>${renderSlotPaytable('cc',CONVOY_PAYTABLE.map((pay,i)=>({symbolHtml:convoySymbol(i),name:CONVOY_NAMES[i],values:pay.map(n=>`${(n/100).toLocaleString(locale)}×`)})),[translateText('Припасы'),'8-9','10-11','12+'])}<p>Общий выигрыш ограничен 5000 базовых ставок. При достижении предела раунд заканчивается. Ставка от 0,10 до ${coins(stakeFieldMaximum())} USDT с шагом 0,01, выплаты точны до 0,01 USDT.</p><p>Одна ставка и одна итоговая выплата. При потере ответа проверяется прежняя операция. Закрытие игры и скрытие окна останавливают авто. Сохранённую эвакуацию можно продолжить бесплатно. ${copy.autoRules}</p><p>Оценка долгосрочного возврата: около 95,7% от всех ставок. Это среднее на длинной серии, а не обещание результата отдельного раунда.</p><p class="cc-dialog-note">Оригинальная игра Royal: свои иллюстрации, звуки и вероятности. Только тестовые виртуальные USDT.</p>`});
   this.controls();this.dialogShell.focus(kind==='info');

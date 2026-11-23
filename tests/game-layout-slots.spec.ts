@@ -609,6 +609,79 @@ test('natural bonuses keep counters and free continuation visible in both orient
  }
 });
 
+test('Last Convoy reports its own round, plays one spin with Next and keeps its actions clear',async({page,roomPath})=>{
+ test.setTimeout(300000);
+ const game='studio-last-convoy',root=page.locator('#mini-game > .cv-game'),chat=page.locator('#club-chat-dock');
+ await enterGameHall(page,roomPath);await page.emulateMedia({reducedMotion:'no-preference'});await page.setViewportSize({width:1440,height:900});
+ await chooseGame(page,game);await expect(root).toHaveAttribute('data-asset-state','ready',{timeout:40000});
+ if(await chat.isVisible())await chat.locator('.game-chat-close').click();
+ // The dialog action has its own row: it neither covers the explanation nor leaves the dialog.
+ const clear=async(kind:string,content:string)=>{
+  for(const [width,height]of [[1440,900],[852,393],[667,375],[568,320],[393,852],[390,664],[320,568]]){
+   await page.setViewportSize({width,height});await page.evaluate(()=>new Promise<void>(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r()))));
+   const state=await root.locator('.cc-dialog').evaluate((dialog,{kind,content})=>{
+    const box=dialog.getBoundingClientRect(),action=dialog.querySelector('[data-cc-action="'+kind+'"]')!.getBoundingClientRect(),body=dialog.querySelector(content)!,area=body.getBoundingClientRect();
+    return {covers:area.bottom>action.top+1,outside:action.bottom>box.bottom+1||area.top<box.top-1,height:action.height,hidden:body.scrollHeight-body.clientHeight,shown:area.height};
+   },{kind,content});
+   expect(state.covers,kind+' '+width+'x'+height+': the action covers '+content).toBe(false);
+   expect(state.outside,kind+' '+width+'x'+height+': content leaves the dialog').toBe(false);
+   expect(state.height).toBeGreaterThanOrEqual(44);
+   if(width===852)expect(state.hidden,kind+' fits a landscape phone without scrolling').toBeLessThanOrEqual(1);
+   expect(state.shown).toBeGreaterThan(30);
+  }
+  await page.setViewportSize({width:1440,height:900});
+ };
+ await clear('enter','.cc-intro-cards');
+ await page.locator('[data-cc-action="enter"]').click();await expect(root.locator('.cc-dialog-backdrop')).toBeHidden();
+ // The help target and the beacon count never share pixels.
+ for(const [width,height]of [[393,852],[390,664],[360,640],[320,568],[852,393],[667,375],[568,320],[768,1024]]){
+  await page.setViewportSize({width,height});await fit(page,game);
+  const plate=await root.locator('.cv-beacons').evaluate(card=>{
+   const box=(selector:string)=>{const node=card.querySelector(selector)!,range=document.createRange();range.selectNodeContents(node);const r=range.getBoundingClientRect();return {left:r.left,right:r.right};};
+   const link=card.querySelector('.cv-link')!.getBoundingClientRect();
+   return {width:link.width,height:link.height,left:link.left,count:box('[data-cc-ticket-count]'),title:box('.cv-short'),cardLeft:card.getBoundingClientRect().left};
+  });
+  expect(plate.width,width+'x'+height).toBeGreaterThanOrEqual(44);expect(plate.height,width+'x'+height).toBeGreaterThanOrEqual(44);
+  expect(plate.count.right,width+'x'+height+': the count runs under the help button').toBeLessThanOrEqual(plate.left);
+  expect(plate.title.right,width+'x'+height+': the title runs under the help button').toBeLessThanOrEqual(plate.left+8);
+  expect(plate.count.left).toBeGreaterThanOrEqual(plate.cardLeft);
+ }
+ await page.setViewportSize({width:1440,height:900});
+ const spin=root.locator('[data-cc-spin]'),message=root.locator('[data-cc-message]'),total=root.locator('[data-cc-total]');
+ const cue=async(scenario?:string)=>{const reply=await page.request.post('/__test/layout/bonus',{data:{gameId:game,...(scenario?{scenario}:{})}});expect(reply.ok(),await reply.text()).toBe(true);};
+ const settled=()=>expect.poll(()=>root.evaluate(e=>(e as HTMLElement).dataset.phase+e.getAttribute('aria-busy')),{timeout:60000}).toBe('idlefalse');
+ const cents=(text:string|null)=>Math.round(Number((text??'').replace(/\s/g,'').replace(',','.'))*100);
+ const rows=async()=>(await root.locator('[data-cv-round] .cv-round-row > b').allTextContents()).reduce((sum,text)=>sum+cents(text),0);
+ await cue('win');await spin.click();await settled();
+ expect(await message.textContent()).toBe('ВЫИГРЫШ '+await total.textContent());
+ await expect(root.locator('[data-cc-groups]')).toBeEmpty();
+ expect(await rows(),'the round list adds up to the round win').toBe(cents(await total.textContent()));
+ // The next round starts from a clean line, and a return below the stake is not announced as a win.
+ await cue('part');await spin.click();
+ await expect(message).toHaveText('ИЩЕМ ПРИПАСЫ');await expect(total).toHaveText('0,00');await settled();
+ const part=await currentSession(page,game);expect(Number(part.returnedUnits)).toBeGreaterThan(0);expect(Number(part.returnedUnits)).toBeLessThan(Number(part.spentUnits));
+ await expect(message).toHaveText('ВОЗВРАТ '+await total.textContent()+' ИЗ СТАВКИ 0,10');
+ expect(await rows()).toBe(cents(await total.textContent()));
+ await cue();await spin.click();await root.locator('[data-cc-action="bonus"]').waitFor({timeout:60000});
+ await clear('bonus','.cc-dialog > p:not(.cc-dialog-note)');
+ await root.locator('[data-cc-action="bonus"]').click();
+ const pause=root.locator('[data-cc-pause]');
+ await expect(pause).toHaveAttribute('aria-pressed','true');await expect(spin).toBeDisabled();
+ await pause.click();await settled();await expect(spin).toBeEnabled();
+ const played=async()=>Number(await root.locator('[data-cv-played]').textContent());
+ const before=await played(),debits=(await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet').length;
+ await spin.click();await expect(message).toHaveText(new RegExp('^ВРАЩЕНИЕ ЭВАКУАЦИИ '+(before+1)+' ИЗ '));await settled();
+ expect(await played()).toBe(before+1);await page.waitForTimeout(2500);
+ expect(await played(),'Next plays a single free spin').toBe(before+1);await expect(pause).toHaveAttribute('aria-pressed','false');
+ await pause.click();await expect(pause).toHaveAttribute('aria-pressed','true');
+ await expect.poll(played,{timeout:30000}).toBeGreaterThanOrEqual(before+3);
+ await root.locator('[data-cc-action="complete"]').waitFor({timeout:120000});
+ await clear('complete','.cc-ledger');
+ await root.locator('[data-cc-action="complete"]').click();
+ expect(await rows(),'after the evacuation the list still adds up to the whole round').toBe(cents(await total.textContent()));
+ expect((await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(debits);
+});
+
 test('Last Convoy scales the field, Maya and controls at 2K and 4K',async({page,roomPath})=>{
  const game='studio-last-convoy';
  await enterGameHall(page,roomPath);

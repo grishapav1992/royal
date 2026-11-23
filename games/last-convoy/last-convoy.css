@@ -224,8 +224,7 @@
 }
 .cv-defense { border-color: #5cc8ff66; }
 .cv-beacons { border-color: #f5a52473; }
-.cv-stat h3 { margin: 0; padding-right: 2.2em; font-size: .72em; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--cv-muted); }
-.cv-defense h3 { padding-right: 0; }
+.cv-stat h3 { margin: 0; font-size: .72em; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--cv-muted); }
 .cv-long, .cv-stat-note, .cv-tiers { display: none; }
 .cv-stat-value { display: flex; align-items: center; gap: .4em; min-width: 0; }
 .cv-game .cv-defense strong { font: 700 1.6em/1 var(--cv-display); color: var(--cv-cyan); }
@@ -267,25 +266,39 @@
 }
 .cv-game .cv-stat .cc-ticket-slots > .cc-collected { opacity: 1; filter: none; background: #f5a52429; box-shadow: inset 0 0 0 1px #f5a52499, 0 0 .6em #f5a52466; }
 .cv-game .cv-stat .cc-ticket-slots .cv-symbol { width: 100%; height: 100%; }
-/* On phones the explanation stays one tap away as a small help button. */
+/* On phones the explanation is one tap away: a full-height touch target in its own column of the plate. */
+.cv-game:not([data-slot-priority="full"]) .cv-beacons { padding-right: calc(44px + .3em); }
 .cv-game .cv-beacons .cv-link {
   position: absolute;
-  top: .3em;
-  right: .3em;
-  width: 2.2em;
-  height: 2.2em;
-  min-width: 28px;
-  min-height: 28px;
+  inset: 0 0 0 auto;
+  width: 44px;
+  min-height: 44px;
   padding: 0;
-  border-radius: 50%;
-  border: 1px solid #f5a52466;
-  background: #f5a5241f;
+  border: 0;
+  border-radius: 0 .8em .8em 0;
+  background: none;
   color: transparent;
   font-size: 1em;
   overflow: hidden;
   white-space: nowrap;
 }
-.cv-game .cv-beacons .cv-link::after { content: "?"; position: absolute; inset: 0; display: grid; place-items: center; color: var(--cv-amber); font-weight: 800; }
+.cv-game .cv-beacons .cv-link::after {
+  content: "?";
+  position: absolute;
+  inset: 0;
+  width: 24px;
+  height: 24px;
+  margin: auto;
+  border: 1px solid #f5a52466;
+  border-radius: 50%;
+  background: #f5a5241f;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  color: var(--cv-amber);
+  font-size: 14px;
+  font-weight: 800;
+}
 .cv-tiers { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .4em; text-align: center; }
 .cv-tiers > div { padding: .4em 0; border-radius: .5em; background: #ffffff0d; }
 .cv-tiers b { display: block; font: 600 1.1em/1.2 var(--cv-display); }
@@ -466,7 +479,7 @@
 .cv-game[data-slot-priority="full"] .cv-radio { display: block; }
 .cv-game[data-slot-priority="full"] .cv-hud { display: flex; flex-direction: column; gap: .75em; }
 .cv-game[data-slot-priority="full"] .cv-stat { gap: .6em; padding: .9em 1em 1em; border-radius: .9em; }
-.cv-game[data-slot-priority="full"] .cv-stat h3 { padding-right: 0; font-size: .75em; letter-spacing: .1em; }
+.cv-game[data-slot-priority="full"] .cv-stat h3 { font-size: .75em; letter-spacing: .1em; }
 .cv-game[data-slot-priority="full"] :is(.cv-long, .cv-stat-note) { display: block; }
 .cv-game[data-slot-priority="full"] .cv-short { display: none; }
 .cv-game[data-slot-priority="full"] .cv-tiers { display: grid; }
@@ -568,6 +581,11 @@
 .cv-game[data-slot-priority="landscape"] .cv-controls .cc-spin, .cv-game[data-slot-priority="landscape"] .cv-controls .cv-auto button { min-height: 44px; }
 .cv-game[data-slot-priority="landscape"] .cv-result { align-self: start; padding: .3em .5em; border-radius: .8em; font-size: .85em; }
 .cv-game[data-slot-priority="landscape"] .cv-stat { padding: .35em .6em .45em; }
+/* The count keeps its line clear of the help column in the narrow plate. */
+.cv-game[data-slot-priority="landscape"]:not([data-bonus="true"]) .cv-hud { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); }
+.cv-game[data-slot-priority="landscape"] .cv-beacons { padding-right: 44px; }
+.cv-game[data-slot-priority="landscape"] .cv-beacons h3 { letter-spacing: 0; }
+.cv-game[data-slot-priority="landscape"] .cv-beacons strong { margin-left: 0; }
 .cv-game[data-slot-priority="landscape"] .cv-stake { grid-template-columns: minmax(0, 1fr) 40px 40px; gap: .3em; }
 .cv-game[data-slot-priority="landscape"] .cv-stake > .cv-stake-value { padding: .15em .4em; }
 .cv-game[data-slot-priority="landscape"] .cv-stake-value input[data-manual-stake] { font-size: 1.1em !important; }
@@ -587,11 +605,13 @@
   border-radius: 7px;
   box-shadow: 0 4px #3a5b4b;
 }
-.cv-game .cc-dialog :is([data-cc-action="enter"], [data-cc-action="bonus"], [data-cc-action="complete"]) {
-  position: sticky;
-  z-index: 2;
-  bottom: 0;
-}
+/* Entry, evacuation and result: the action has its own row, the explanation scrolls above it if it has to. */
+.cv-game .cc-dialog:is([data-dialog="intro"], [data-dialog="bonus"], [data-dialog="complete"]) { display: flex; flex-direction: column; overflow: hidden; }
+.cv-game .cc-dialog:is([data-dialog="intro"], [data-dialog="bonus"], [data-dialog="complete"]) > * { flex: none; }
+.cv-game .cc-dialog[data-dialog="intro"] > .cc-intro-cards,
+.cv-game .cc-dialog[data-dialog="bonus"] > p:not(.cc-dialog-note),
+.cv-game .cc-dialog[data-dialog="complete"] > p { flex: 0 1 auto; min-height: 0; overflow: auto; }
+.cv-game .cc-dialog:is([data-dialog="intro"], [data-dialog="bonus"], [data-dialog="complete"]) > .cc-primary { align-self: center; }
 .cv-game .cc-intro-cards article { background: #10272ec9; border-color: #8f9b72; border-radius: 9px; }
 .cv-game :is(.cc-intro-cards h3, .cc-info-scroll > h3) { color: #d4d9ae; }
 .cv-game .cc-info-scroll > p { color: #d1dfda; }
@@ -683,3 +703,25 @@
 @container convoy (min-width: 1040px) and (min-height: 820px) {
   .cv-game .cc-dialog-backdrop { --cv-unit: clamp(1px, min(calc(100cqw / 1040), calc(100cqh / 820)), 1.9px); }
 }
+
+/* Landscape phone: entry, evacuation and result fit in one short screen. */
+.cv-game[data-slot-priority="landscape"] .cc-dialog:is([data-dialog="intro"], [data-dialog="bonus"], [data-dialog="complete"]) { padding: 8px 14px; border-radius: 10px; }
+.cv-game[data-slot-priority="landscape"] .cc-dialog:is([data-dialog="intro"], [data-dialog="bonus"], [data-dialog="complete"]) > small,
+.cv-game[data-slot-priority="landscape"] .cc-dialog > .cv-intro-hero { display: none; }
+.cv-game[data-slot-priority="landscape"] .cc-dialog:is([data-dialog="intro"], [data-dialog="bonus"], [data-dialog="complete"]) h2 { margin: 2px 0 6px; font-size: 22px; line-height: 1.15; }
+.cv-game[data-slot-priority="landscape"] .cc-dialog h2 em { display: inline; }
+.cv-game[data-slot-priority="landscape"] .cc-dialog:is([data-dialog="intro"], [data-dialog="bonus"], [data-dialog="complete"]) > p { margin: 4px auto; line-height: 1.4; }
+.cv-game[data-slot-priority="landscape"] .cc-dialog:is([data-dialog="intro"], [data-dialog="bonus"], [data-dialog="complete"]) > .cc-primary { min-height: 44px; margin: 6px auto 2px; padding: 6px 18px; font-size: 16px; }
+.cv-game[data-slot-priority="landscape"] .cc-intro-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.cv-game[data-slot-priority="landscape"] .cc-intro-cards article { display: block; min-height: 0; padding: 6px 8px; text-align: center; }
+.cv-game[data-slot-priority="landscape"] .cc-intro-cards article > div { height: 48px; flex-wrap: nowrap; }
+.cv-game[data-slot-priority="landscape"] .cc-intro-cards article .cc-symbol { width: 46px; height: 46px; }
+.cv-game[data-slot-priority="landscape"] .cc-intro-cards article strong { font-size: 24px; }
+.cv-game[data-slot-priority="landscape"] .cc-intro-cards h3 { margin: 3px 0; font-size: 13px; }
+.cv-game[data-slot-priority="landscape"] .cc-intro-cards p { font-size: 12px; line-height: 1.35; }
+.cv-game[data-slot-priority="landscape"] .cc-bonus-art { margin: 2px auto; }
+.cv-game[data-slot-priority="landscape"] .cc-bonus-art > .cc-symbol { width: 60px; height: 60px; }
+.cv-game[data-slot-priority="landscape"] .cc-bonus-art > strong { font-size: 36px; }
+.cv-game[data-slot-priority="landscape"] .cc-prize { font-size: 34px; line-height: 1.1; }
+.cv-game[data-slot-priority="landscape"] .cc-dialog .cc-ledger { width: 100%; margin: 6px auto; }
+.cv-game[data-slot-priority="landscape"] .cc-dialog .cc-ledger > span { padding: 5px 4px; }

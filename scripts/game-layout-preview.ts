@@ -47,7 +47,7 @@ const vite=await createServer({configFile:false,root:process.cwd(),optimizeDeps:
      if(!layoutSlots.includes(body.gameId)&&!layoutIframes.includes(body.gameId)&&!layoutSeries.includes(body.gameId))throw Error('Unsupported fixture game');
      if(!db){db=new PostgresDatabase(schema,{existingSchema:true,config:databaseConfig(environment)});wallet=new DemoWalletStore(db);}
      const cue=body.scenario;
-     const convoyLimit=body.gameId==='studio-last-convoy'&&(cue==='loss'||cue==='win')?cue:undefined;
+     const convoyLimit=body.gameId==='studio-last-convoy'&&(cue==='loss'||cue==='win'||cue==='part')?cue:undefined;
      const isCosmic=body.gameId==='studio-cosmic-escape';
      const isRacer=isCosmic&&(cue==='calm'||cue==='even'||cue==='win'||cue==='big-win');
      const seed=convoyLimit?layoutConvoyLimitSeed(convoyLimit):isRacer?layoutCosmicRacerSeed(cue)
