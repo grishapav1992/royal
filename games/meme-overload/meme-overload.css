@@ -179,8 +179,8 @@
 #mini-dialog:has(#mini-game > .mo-game) .mini-top .eyebrow { display: none; }
 #mini-dialog:has(#mini-game > .mo-game) .mini-top h2 { margin: 0; font-size: 0; line-height: 0; white-space: nowrap; }
 #mini-dialog:has(#mini-game > .mo-game) .mini-top h2::before, #mini-dialog:has(#mini-game > .mo-game) .mini-top h2::after { font: 900 23px/1.1 'Arial Black', Arial, sans-serif; letter-spacing: -1.2px; text-transform: none; }
-#mini-dialog:has(#mini-game > .mo-game) .mini-top h2::before { content: 'MEME\00a0'; color: #151515; }
-#mini-dialog:has(#mini-game > .mo-game) .mini-top h2::after { content: 'OVERLOAD.exe'; color: #213a98; }
+#mini-dialog:has(#mini-game > .mo-game) .mini-top h2::before { content: 'MEME\00a0'; content: 'MEME\00a0' / ''; color: #151515; }
+#mini-dialog:has(#mini-game > .mo-game) .mini-top h2::after { content: 'OVERLOAD.exe'; content: 'OVERLOAD.exe' / ''; color: #213a98; }
 #mini-dialog:has(#mini-game > .mo-game) .mini-top > button { flex: none; min-width: 44px; height: 44px; min-height: 44px; margin: 0; padding: 0 12px; border: 2px solid; border-color: #fff #555 #555 #fff; border-radius: 0; background: #c6c6c6; color: #171717; box-shadow: none; font: 700 14px/1 Arial, sans-serif; text-shadow: none; }
 #mini-dialog:has(#mini-game > .mo-game) .mini-top > button:is([aria-pressed="true"], [aria-expanded="true"]) { border-color: #555 #fff #fff #555; background: #dedede; }
 #mini-dialog:has(#mini-game > .mo-game) .mini-top > .icon-button { width: 44px; padding: 0; }
@@ -198,7 +198,7 @@
 #mini-dialog:has(#mini-game > .mo-game[data-slot-priority="landscape"]) .mini-top { min-height: 46px; }
 #mini-dialog:has(#mini-game > .mo-game[data-slot-priority="landscape"]) .mini-top h2::before, #mini-dialog:has(#mini-game > .mo-game[data-slot-priority="landscape"]) .mini-top h2::after { font-size: 18px; }
 #mini-dialog:has(#mini-game > .mo-game[data-slot-priority="portrait"]) .mini-top h2::before, #mini-dialog:has(#mini-game > .mo-game[data-slot-priority="portrait"]) .mini-top h2::after { font-size: 14px; letter-spacing: -.8px; }
-#mini-dialog:has(#mini-game > .mo-game[data-slot-priority="portrait"]) .mini-top h2::after { content: 'OVERLOAD'; }
+#mini-dialog:has(#mini-game > .mo-game[data-slot-priority="portrait"]) .mini-top h2::after { content: 'OVERLOAD'; content: 'OVERLOAD' / ''; }
 #mini-dialog:has(#mini-game > .mo-game:not([data-slot-priority="full"])) .mini-top > button { padding: 0 9px; font-size: 13px; }
 @media (max-width: 350px) {
   #mini-dialog:has(#mini-game > .mo-game) .mini-top h2 { white-space: normal; }
@@ -217,6 +217,51 @@
 .cc-game.mo-game[data-slot-priority="full"] { container: mo-root / inline-size; }
 @container mo-root (max-width: 1080px) { .cc-game.mo-game .mo-bar { gap: 8px; } .cc-game.mo-game .mo-actions { gap: 8px; } .cc-game.mo-game .mo-speed { width: 96px; font-size: 12px; } .cc-game.mo-game .mo-stake .mo-stake-text { width: 80px; } .cc-game.mo-game .cc-spin.mo-spin > span { font-size: 15px; } .cc-game.mo-game .cc-spin.mo-spin { gap: 8px; } .cc-game.mo-game .cc-spin.mo-spin > svg { width: 24px; height: 24px; } }
 @container mo-root (max-width: 960px) { .cc-game.mo-game .mo-last { display: none; } }
+
+/* Large desktop: the texts grow with the field. */
+.cc-game.mo-game[data-large="true"] :is(.mo-window > h3, .mo-title) { font-size: 19px; padding: 0 14px; }
+.cc-game.mo-game[data-large="true"] .mo-window-body { padding: 18px; gap: 14px; }
+.cc-game.mo-game[data-large="true"] .mo-window-body p { font-size: 18px; }
+.cc-game.mo-game[data-large="true"] .mo-value { gap: 18px; }
+.cc-game.mo-game[data-large="true"] :is(.mo-value strong, .mo-net .mo-value strong) { font-size: 42px; }
+.cc-game.mo-game[data-large="true"] .mo-virus .mo-value > strong { font-size: 46px; }
+.cc-game.mo-game[data-large="true"] .mo-cpu .mo-window-body > strong { font-size: 110px; }
+.cc-game.mo-game[data-large="true"] .mo-blocks > i { height: 50px; }
+.cc-game.mo-game[data-large="true"] .mo-virus .mo-blocks > i { height: 36px; }
+.cc-game.mo-game[data-large="true"] .mo-gears > i { font-size: 20px; }
+.cc-game.mo-game[data-large="true"] .mo-slots { max-height: 190px; }
+.cc-game.mo-game[data-large="true"] .mo-net-icon { width: 84px; height: 84px; }
+.cc-game.mo-game[data-large="true"] .mo-net-icon > svg { width: 52px; }
+.cc-game.mo-game[data-large="true"] .mo-mini-folder { width: 42px; height: 32px; }
+.cc-game.mo-game[data-large="true"] .mo-side :is([data-cc-buy], [data-cc-pause]) { min-height: 60px; font-size: 18px; }
+.cc-game.mo-game[data-large="true"] .mo-status-main > [data-cc-message] { font-size: 19px; }
+.cc-game.mo-game[data-large="true"] [data-mo-cascade-sum] { font-size: 28px; }
+.cc-game.mo-game[data-large="true"] .mo-line { height: 40px; font-size: 18px; }
+.cc-game.mo-game[data-large="true"] .mo-line > .mo-symbol { width: 34px; height: 34px; }
+.cc-game.mo-game[data-large="true"] .mo-round { min-width: 260px; font-size: 18px; }
+.cc-game.mo-game[data-large="true"] .mo-round strong { font-size: 26px; }
+.cc-game.mo-game[data-large="true"] .mo-notice { font-size: 17px; }
+.cc-game.mo-game[data-large="true"] .mo-notice :is(button, a) { min-height: 42px; font-size: 16px; }
+.cc-game.mo-game[data-large="true"] .mo-bar { gap: 18px; }
+.cc-game.mo-game[data-large="true"] .mo-actions { gap: 18px; }
+.cc-game.mo-game[data-large="true"] :is(.mo-money, .mo-stake) { height: 82px; padding: 0 16px; }
+.cc-game.mo-game[data-large="true"] .mo-money { flex-basis: 210px; }
+.cc-game.mo-game[data-large="true"] .mo-money > span { font-size: 16px; }
+.cc-game.mo-game[data-large="true"] .mo-money > strong { font-size: 29px; }
+.cc-game.mo-game[data-large="true"] .mo-stake .mo-stake-text { width: 128px; }
+.cc-game.mo-game[data-large="true"] .mo-stake :is(label, small) { font-size: 16px; }
+.cc-game.mo-game[data-large="true"] .mo-stake .mo-stepper { height: 62px; }
+.cc-game.mo-game[data-large="true"] .mo-stepper > button { width: 60px; height: 62px; font-size: 30px; }
+.cc-game.mo-game[data-large="true"] .mo-stepper > [data-stake-field] { flex-basis: 160px !important; width: 160px !important; }
+.cc-game.mo-game[data-large="true"] .mo-stepper > [data-stake-field] > input { font-size: 28px !important; }
+.cc-game.mo-game[data-large="true"] .mo-speed { width: 170px; height: 82px; font-size: 18px; }
+.cc-game.mo-game[data-large="true"] .mo-auto { width: 140px; height: 82px; font-size: 20px; }
+.cc-game.mo-game[data-large="true"] .cc-spin.mo-spin { flex-basis: 320px; width: 320px; height: 90px; }
+.cc-game.mo-game[data-large="true"] .cc-spin.mo-spin > span { font-size: 26px; }
+.cc-game.mo-game[data-large="true"] .cc-spin.mo-spin > svg { width: 42px; height: 42px; }
+.cc-game.mo-game[data-large="true"] .mo-auto-panel { width: max(380px, var(--mo-side)); }
+.cc-game.mo-game[data-large="true"] .mo-counts > button { height: 64px; font-size: 24px; }
+.cc-game.mo-game[data-large="true"] .mo-auto-panel .mo-go { min-height: 68px; font-size: 20px; }
 
 /* Phone held upright. */
 .cc-game.mo-game[data-slot-priority="portrait"] .mo-scene { grid-template-columns: calc(var(--mo-board) + 12px); grid-template-rows: var(--mo-strip) auto auto; grid-template-areas: "side" "field" "status"; row-gap: 0; align-content: start; }
@@ -352,6 +397,16 @@
 .cc-game.mo-game[data-tight="true"] .mo-stake .mo-stake-text { flex-wrap: nowrap; }
 .cc-game.mo-game[data-tight="true"] .mo-stake small { overflow: hidden; text-overflow: ellipsis; }
 .cc-game.mo-game[data-tight="true"] .mo-bar { padding: 5px; gap: 5px; }
+/* The smallest landscape window lends the counters' column to a saved round or an error. The field and the total stay uncovered. */
+.cc-game.mo-game[data-tight="true"] .mo-scene { position: relative; }
+.cc-game.mo-game[data-tight="true"]:has(.mo-notice:not([hidden])) :is(.mo-status, .mo-status-main) { position: static; overflow: visible; contain: none; }
+.cc-game.mo-game[data-tight="true"] .mo-notice { inset: var(--mo-pad) var(--mo-pad) calc(var(--mo-pad) + 34px) auto; width: var(--mo-side); border: 2px solid; border-color: var(--mo-edge); font-size: 12px; }
+.cc-game.mo-game:is([data-slot-priority="landscape"], [data-slot-priority="portrait"][data-compact="false"]) .mo-notice :is(button, a) { min-height: 44px; }
+.cc-game.mo-game[data-slot-priority="portrait"] .mo-notice { font-size: 12px; line-height: 1.15; }
+.cc-game.mo-game[data-slot-priority="portrait"] .mo-notice :is(button, a) { max-width: 124px; }
+.cc-game.mo-game[data-slot-priority="portrait"][data-compact="true"] .mo-notice:has([data-cc-retry]:not([hidden])) [data-cc-error] { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.cc-game.mo-game[data-slot-priority="portrait"][data-compact="true"] .mo-notice:has([data-cc-retry]:not([hidden])) [data-cc-status] { display: block; font-weight: 700; color: #90211b; }
+.cc-game.mo-game[data-slot-priority="portrait"][data-compact="true"] .mo-notice :is(button, a) { min-height: 36px; font-size: 12px; padding: 0 5px; max-width: 92px; }
 .cc-game.mo-game[data-tight="true"] .mo-side .mo-window-body { min-height: 24px; padding: 0 6px; gap: 6px; }
 .cc-game.mo-game[data-tight="true"] .mo-side .mo-value strong, .cc-game.mo-game[data-tight="true"] .mo-cpu .mo-window-body > strong { font-size: 14px; }
 .cc-game.mo-game[data-tight="true"] .mo-side > .mo-window > h3 { height: 18px; padding: 0 5px; }

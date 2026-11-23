@@ -876,3 +876,40 @@ test('Meme Overload shows English labels in every window',async({page,roomPath})
   expect(clipped,width+'x'+height).toEqual([]);
  }
 });
+
+test('Meme Overload restores the same round after a lost reply without a second debit',async({page,roomPath})=>{
+ const game='studio-meme-overload';await enterGameHall(page,roomPath);await open(page,game);
+ const before=(await walletSnapshot(page)).entries.filter((entry:{kind:string})=>entry.kind==='bet').length,ids:string[]=[];
+ let lose=true;
+ await page.route('**/api/demo-wallet/expansion',async route=>{
+  if(route.request().method()!=='POST'){await route.continue();return;}
+  ids.push(route.request().postDataJSON().id);
+  if(lose){lose=false;await route.fetch();await route.abort('connectionreset');return;}
+  await route.continue();
+ });
+ await page.locator('[data-cc-spin]').click();
+ const retry=page.locator('[data-cc-retry]');await expect(retry).toBeVisible({timeout:60000});
+ for(const [width,height] of [[1440,900],[393,852],[852,393],[320,568],[568,320]]){
+  await page.setViewportSize({width,height});await expect(retry).toBeInViewport({ratio:1});
+  const rows=await page.locator('#mini-game > .mo-game').evaluate(element=>{
+   const box=(name:string)=>element.querySelector(name)!.getBoundingClientRect(),notice=box('[data-cc-feedback]'),board=box('.cc-board'),total=box('[data-cc-total]');
+   const over=(a:DOMRect,b:DOMRect)=>Math.min(a.right,b.right)-Math.max(a.left,b.left)>1&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>1;
+   return {board:over(notice,board),total:over(notice,total)};
+  });
+  expect(rows,width+'x'+height).toEqual({board:false,total:false});
+ }
+ await page.setViewportSize({width:1440,height:900});await retry.click();await expect(retry).toBeHidden({timeout:30000});
+ await finish(page,game);
+ expect(new Set(ids).size).toBe(1);
+ expect((await walletSnapshot(page)).entries.filter((entry:{kind:string})=>entry.kind==='bet').length).toBe(before+1);
+});
+
+test('Meme Overload looks the same after other themed slots',async({page,roomPath})=>{
+ await enterGameHall(page,roomPath);const game='studio-meme-overload',root=page.locator('#mini-game > .mo-game');
+ const look=()=>root.evaluate(element=>['','.mo-title','.cc-board','.cc-cell','.mo-status','.mo-status-main','.mo-round','.mo-window','.mo-window h3','[data-cc-factor]','.mo-bar','.mo-money','.mo-stake','[data-manual-stake]','[data-cc-stake-step]','.mo-speed','.mo-auto','.cc-spin'].map(name=>{
+  const node=name?element.querySelector<HTMLElement>(name)!:element as HTMLElement,style=getComputedStyle(node),box=node.getBoundingClientRect();
+  return [name,Math.round(box.width),Math.round(box.height),style.fontFamily,style.fontSize,style.fontWeight,style.color,style.backgroundColor,style.borderRadius,style.borderWidth,style.padding,style.letterSpacing,style.boxShadow,style.transform].join('|');
+ }));
+ await open(page,game);await expect(page.getByRole('heading',{name:'MEME OVERLOAD',exact:true})).toBeVisible();const clean=await look();
+ for(const other of ['studio-caramel-carnival','studio-nitro-run']){await open(page,other);await open(page,game);expect(await look(),other).toEqual(clean);}
+});
