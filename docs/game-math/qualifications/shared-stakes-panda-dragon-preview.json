@@ -1,0 +1,528 @@
+{
+  "schemaVersion": 1,
+  "gameId": "panda-dragon-preview",
+  "rulesVersion": 1,
+  "progressVersion": 2,
+  "startedAt": "2026-11-23T08:31:02.575Z",
+  "completedAt": "2026-11-23T08:31:06.703Z",
+  "sourceHashes": {
+    "src/shared/dragonPathLayout.ts": "022647095aff9d7e2b9df39c90b277cfb60f3176d93ac504207d2d5167b93458",
+    "src/shared/dragonPathMath.ts": "55cb7062fb8098ad58b228e0648b61a040c98c58e4c054b08c124dffa71de80e",
+    "src/shared/dragonPathProtocol.ts": "aa0e20250aa15c724e38ca611418c7e435f30ff15244af689cf19865f8ef4fca",
+    "src/shared/dragonPathRound.ts": "74ee227cdc25ad276671c0f07f1363647f6c54e8e918b3f3527a62d347ad8794",
+    "src/shared/dragonPathTransport.ts": "939035237a3b26132771f14fb00e1800f58fc851761afbb76bc1953821ff4372",
+    "server/games/dragonPath.ts": "0c34b942dea56d5f9729fe0175749b84ad279e1901d7df43bf8e695c7b4fff24",
+    "src/shared/gameStakes.ts": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b",
+    "src/shared/casinoExpansion.ts": "8fa30fdaafd9ac3272da9820ff5e277b9b7f34e143756fa9084223b0a8a5a2ed",
+    "src/shared/roundPrecision.ts": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870",
+    "src/shared/arcadeCatalog.ts": "3d10bf2732a6dc1d910cc8b15018b4da242f34bcd0789504fc62346c41d6c144",
+    "server/demoExpansion.ts": "d7cb8d53b9d15d82e7f3a84015065cac5ab30b0f844397c1b375a9439822bfc3",
+    "server/demoWallet.ts": "b8428ee4e297863398034eb992e1606ba77713fbbd3b1158c09fd3e2b9ea2b21",
+    "server/demoWalletAmounts.ts": "f1f0a88915a232f134b83203b670e51ea1d5e81273ae0ccdcb4ac1c521b52cce",
+    "server/demoWalletRoutes.ts": "e1e80a812b665c31dff412d42640deb4edf4c5ca805c7380a028ee3281ef80d7",
+    "server/finance/nile-game-runtime.ts": "fd8aebc6d96472fce25ab7b040382d2b749c428bed16cfabdb51629495053118",
+    "src/wallet/ExpansionClient.ts": "6498e048b086ee56f2a122093d45db30e832da4c5ac2a5d5904c15a2a0f47b39",
+    "src/wallet/WalletClient.ts": "55f58e6cc8d348a35316a942d42e918923c3a5b3f34e4ea65c69381f7ade743e",
+    "scripts/game-math/dragon-path-model.mjs": "62fa0835b3548b3b1b61a93ce7c071723e1662331bc24eee5ed9bbd95069edac",
+    "scripts/game-math/stake-runtime.mjs": "fcefdf0ea8724c7e1cf76fa2134a52348dab765504a46dfb43f10bfba62572d5",
+    "scripts/game-math/stakes-wallet.ts": "2923161534d6015f0be64c9467ce4921550f7a50152b2d7b77c0f7939056c0af",
+    "scripts/game-math/manual-stakes.mjs": "c24a92e5507588f080a640a1f76353d7d223ab2ef13ccee3355457c59c125471",
+    "scripts/game-math/manual-stake-case.mjs": "fa868d135fd361c26c4bcc41c6e2b0831c0adf2d1744b34fa3a6c237664cebf4",
+    "scripts/game-math/manual-stake-pool.mjs": "fc675e82956b25f436dfba08ec1e8893cfeb41772b7b6bd71ab9134095d01596",
+    "scripts/game-math/manual-stake-worker.mjs": "54d7257363c6d1cd4ff071197e42a99f9e6a644344a58708d66f11a59ddad5c4",
+    "server-tests/dragon-path-rules.test.ts": "9b0385518394ef738ce890d9b77bc1dc0641de3d4a3386e2394ddc4fb864de1a",
+    "server-tests/dragon-path-wallet.test.ts": "bff0a52eeef8b4536da861d5f15c36d6cbe30272be83ff3f81a69dba1d4cbe3f",
+    "src/modules/RoyalSlotServices.ts": "c7633d95a92c99d1f2b9dea601202e28de2faca49458782f7e16e95d4c0912ad",
+    "games/panda-dragon/wallet-binding.ts": "6e4400682b38e2c9007fb05853d08c9012b28907da2b46b698ddceabcfd9161e",
+    "scripts/game-math/rtp-stakes.mjs": "f1c5c680f5e5f913e430fe050f50596f149a57fb3b7b0834ab8bd6dca8f6240d"
+  },
+  "policySha256": "9fabf77bdec46fcf62f101f3b7469f04754bc17f0c9cce623dbd1d18afd8c474",
+  "method": "full-round-unbiased-cent-policy-v1",
+  "precisionLaw": {
+    "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
+    "identity": "For exact reward n/d, let q=floor(n/d), r=n mod d and uniform U in {0,...,d-1}. Pay q+1 if U<r, otherwise q. The sum over all tickets is q*d+r=n.",
+    "stopping": "The ticket is drawn only after the final player choice and every free continuation. No future rounding ticket is exposed to adaptive choices.",
+    "preservation": "Every intermediate discarded fraction is restored before the final ticket. For a fixed consumed path the expected credit equals its capped exact reward, and the actual credit never falls below the original sum of floors.",
+    "caps": "Nonnegative rewards couple every denomination to the same latent capped paid round. Stopping a presentation after its floor reaches the cap does not change that round reward.",
+    "compatibility": "Only starts pinned to stakePolicyVersion=1 use this receipt. Accepted historical rounds and UUID replays retain their original rules and committed credit.",
+    "confidence": "Exact analytical bounds and statistical intervals are labelled separately. A statistical estimate is not an exact RTP. Conditional estimates are per case, not simultaneous confidence guarantees."
+  },
+  "results": [
+    {
+      "choice": "2",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    },
+    {
+      "choice": "2",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    },
+    {
+      "choice": "2",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    },
+    {
+      "choice": "2",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    },
+    {
+      "choice": "2",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    },
+    {
+      "choice": "2",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    },
+    {
+      "choice": "2",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    },
+    {
+      "choice": "2",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    },
+    {
+      "choice": "2",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    },
+    {
+      "choice": "3",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    },
+    {
+      "choice": "3",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    },
+    {
+      "choice": "3",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    },
+    {
+      "choice": "3",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    },
+    {
+      "choice": "3",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    },
+    {
+      "choice": "3",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    },
+    {
+      "choice": "3",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    },
+    {
+      "choice": "3",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    },
+    {
+      "choice": "3",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.9605517034683811,
+      "rtpBounds": [
+        0.9605517034683811,
+        0.9605517034683811
+      ],
+      "fraction": {
+        "numerator": "147204120233642762131104192355166523367983242910105600000",
+        "denominator": "153249554086588885835834702715030918361873912218360217600"
+      },
+      "bonusProbability": 0.042040223806211946
+    }
+  ],
+  "evidence": {},
+  "replay": {
+    "coverage": [
+      {
+        "choice": "2",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "030658e69c6ed11e2fdb707385cff43d6794139f41200574fed3566b97da2ff8"
+      },
+      {
+        "choice": "2",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "ba55b03ed495e60259dc788b5f48bd5382ccdca66de9358bf569f1fb5a0d5f32"
+      },
+      {
+        "choice": "2",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "a4e5fc025a7b7492785afed4a32c8872ddbdee863e2d353d392f51bbff09315c"
+      },
+      {
+        "choice": "2",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "e4950e54476e2a0d4879d228a67911202d1098091c7642e668cd31b488b49318"
+      },
+      {
+        "choice": "2",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "e7de96580a4db2b74e6b1966afda985a77e812194a9771acb9c82464948172ab"
+      },
+      {
+        "choice": "2",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "29dfcc80d92ea5b297cdc9e3eb336aeb1620b763dd568a11a64b511cb744d162"
+      },
+      {
+        "choice": "2",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "a05bcd365d82f375b8f8afda3f7052a88c49600fe813272148a0e4ef8b0532ed"
+      },
+      {
+        "choice": "2",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "f5add09cfafae4fab3593699534a30cd5129858699b36c0761bf7d5e0877dd6e"
+      },
+      {
+        "choice": "2",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "5604bc753c8389cbd28b342aadab938c684a5807ed83e24af66c99e4dfe5beb7"
+      },
+      {
+        "choice": "3",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "030658e69c6ed11e2fdb707385cff43d6794139f41200574fed3566b97da2ff8"
+      },
+      {
+        "choice": "3",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "ba55b03ed495e60259dc788b5f48bd5382ccdca66de9358bf569f1fb5a0d5f32"
+      },
+      {
+        "choice": "3",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "a4e5fc025a7b7492785afed4a32c8872ddbdee863e2d353d392f51bbff09315c"
+      },
+      {
+        "choice": "3",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "e4950e54476e2a0d4879d228a67911202d1098091c7642e668cd31b488b49318"
+      },
+      {
+        "choice": "3",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "e7de96580a4db2b74e6b1966afda985a77e812194a9771acb9c82464948172ab"
+      },
+      {
+        "choice": "3",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "29dfcc80d92ea5b297cdc9e3eb336aeb1620b763dd568a11a64b511cb744d162"
+      },
+      {
+        "choice": "3",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "a05bcd365d82f375b8f8afda3f7052a88c49600fe813272148a0e4ef8b0532ed"
+      },
+      {
+        "choice": "3",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "f5add09cfafae4fab3593699534a30cd5129858699b36c0761bf7d5e0877dd6e"
+      },
+      {
+        "choice": "3",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 133,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "5604bc753c8389cbd28b342aadab938c684a5807ed83e24af66c99e4dfe5beb7"
+      }
+    ]
+  },
+  "serverReplayChecks": 2304,
+  "walletEvidence": {
+    "passed": true,
+    "native": {
+      "passed": true,
+      "virtualOnly": true,
+      "journalBalanced": true
+    },
+    "gameId": "panda-dragon-preview",
+    "cases": 38,
+    "freeContinuationChecks": 76,
+    "replayAndRestartCases": 38,
+    "oneDebitAndCredit": true,
+    "clientVerified": true,
+    "sha256": "dec317057b24d8299601b65e6c45f54f40b2c3e4587ec5469571fd5b4cee3483"
+  },
+  "manualStakes": {
+    "range": {
+      "minimumCents": 10,
+      "maximumCents": 10000,
+      "stepCents": 1
+    },
+    "checks": 19982,
+    "cases": [
+      {
+        "choice": "2",
+        "seed": 8703631,
+        "denominations": 9991,
+        "sha256": "5760fccdc553b645af6870261dc8ecf13b9527f95090365ebbfe456cf66a5518"
+      },
+      {
+        "choice": "3",
+        "seed": 8711550,
+        "denominations": 9991,
+        "sha256": "e7ef640b91ba345939ef48d9c44b8268406c0d45e916ea6db11429e56fa9581f"
+      }
+    ],
+    "interpretation": "Exhaustive accepted-cent runtime replay per allowed mode or choice. The reviewed stake-independent latent full-round model and exact rational final-ticket identity apply to every accepted cent. Bought Caribbean rounds normalize to the actual charged integer price. These replays are compatibility and scaling checks, not a statistical RTP estimate."
+  }
+}

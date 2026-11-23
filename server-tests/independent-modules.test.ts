@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { readHostProjection } from '../scripts/build-host-projection.mjs';
 import { resolve } from 'node:path';
-import { GAME_MODULES, type IndependentGameId } from '../src/modules/GameModuleCatalog';
+import { GAME_MODULES, DRAGON_PATH, type IndependentGameId } from '../src/modules/GameModuleCatalog';
 import { moduleRoot, validModuleManifest, validModulePointer } from '../src/modules/GameModuleManifest';
 import { STUDIO_GAMES } from '../src/shared/studioGames';
 import { EXPANSION_GAMES } from '../src/shared/casinoExpansion';
@@ -34,7 +34,8 @@ test('every defined game has a distinct module package and matching public contr
   ...EXPANSION_GAMES, ...SESSION_GAMES, ...GITHUB_GAME_IDS, ...GAME_CATALOG.map(game => game.id),
   ...Object.keys(ACTIVITIES), TOTE_GAME, 'casinoapipro', 'luelon', 'breaker', 'orbit', 'drift', 'pixel',
  ])].sort();
- assert.equal(required.length, 124); // Shared Flag totalizator adds its own independent contract.
+ assert.equal(required.length, 125);
+ assert.ok(CABINETS.every(cabinet => cabinet.id !== DRAGON_PATH.gameId));
  assert(required.includes('studio-forest-heart')&&required.includes('studio-flooded-temple')&&required.includes('original-jackie-chan'));
  assert.deepEqual(GAME_MODULES.map(game => game.gameId).sort(), required);
  assert.ok(STUDIO_GAMES.every(id => required.includes(id)));
@@ -51,6 +52,11 @@ test('every defined game has a distinct module package and matching public contr
   for (const key of ['gameId', 'apiVersion', 'rulesVersion', 'progressVersion'] as const) assert.equal(config[key], game[key], `${game.gameId} ${key}`);
   assert.ok(config.entry);
  }
+});
+
+test('манифест старого сценарного пакета «Пути дракона» несовместим с новым хостом', () => {
+ const game = DRAGON_PATH.gameId;
+ assert.equal(validModuleManifest({ ...manifest(game), progressVersion: 1 }, moduleRoot(version, game) + 'manifest.json', game), false);
 });
 
 test('manifests and active pointers are bound to the requested game', () => {
@@ -132,7 +138,7 @@ test('the hall bundle contains host services without importing any independent g
   for (const match of source.matchAll(/from\s+['"]\.\.\/\.\.\/(src\/(?:ui|game)\/[^'"]+)['"]/g)) implementations.add(match[1].endsWith('.ts') ? match[1] : match[1] + '.ts');
  }
  assert.ok(implementations.size > 20, 'The inventory must identify actual renderer boundaries');
- const result = await build({ entryPoints: ['src/main.ts'], bundle: true, write: false, metafile: true, packages: 'external', platform: 'browser', format: 'esm', loader: { '.css': 'empty', '.webp': 'dataurl' }, logLevel: 'silent' });
- const eager = Object.keys(result.metafile!.inputs).filter(name => implementations.has(name));
+ const result = await build({ entryPoints: ['src/main.ts'], bundle: true, write: false, metafile: true, packages: 'external', platform: 'browser', format: 'esm', loader: { '.css': 'empty', '.webp': 'dataurl', '.mp4': 'dataurl' }, logLevel: 'silent' });
+ const eager = Object.keys(result.metafile!.inputs).filter(name => implementations.has(name) || name.startsWith('games/panda-dragon/'));
  assert.deepEqual(eager, [], 'Independent game implementations must enter through their versioned packages');
 });

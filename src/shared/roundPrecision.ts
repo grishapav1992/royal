@@ -2,6 +2,8 @@ import {NEOPOLIS_MATH} from './neopolisMath.ts';
 import {NEOPOLIS_PAYOUT_SCALE,neopolisTeamPayout} from './neopolisStakePayouts.ts';
 import {CARIBBEAN_PROFILE} from './caribbeanTreasuresMath.ts';
 import {forestHeartBase,forestHeartPopcount} from './forestHeartMath.ts';
+import {DRAGON_PATH_GAME} from './dragonPathProtocol.ts';
+import {dragonPathAwardParts} from './dragonPathRound.ts';
 const multiplierRatio=(value:number)=>{const text=String(value);if(!Number.isFinite(value)||value<0||!/^\d+(?:\.\d{1,4})?$/.test(text))throw Error('Invalid exact multiplier');const [whole,fraction='']=text.split('.');return {numerator:BigInt(whole+fraction),denominator:10n**BigInt(fraction.length)};};
 
 export type ExactAward = {numerator:bigint;denominator:bigint};
@@ -17,6 +19,11 @@ const capped=(a:ExactAward,cap:bigint)=>a.numerator>cap*a.denominator?exactAward
 /** Exact pre-cent reward from the consumed, server-validated complete transcript. */
 export function expansionExactAward(s:{gameId:string;stakeUnits:string;returnedUnits:string;multiplier?:number;view:any}):ExactAward {
  const stake=BigInt(s.stakeUnits),v=s.view;
+ if(s.gameId===DRAGON_PATH_GAME){
+  const round=v.dragonPath?.round;
+  if(round?.stakeUnits!==s.stakeUnits)throw Error('Параметры сохранённой ставки не совпадают.');
+  const {numerator,denominator}=dragonPathAwardParts(round);return exactAward(numerator,denominator);
+ }
  if(v.wildNudge)return exactAward(stake*v.wildNudge.spins.reduce((sum:bigint,spin:any)=>sum+BigInt(spin.points),0n),100n);
  if(v.forestHeart){
   const f=v.forestHeart,b=f.base,base=forestHeartBase(b.bits,b.ability,b.rotation);

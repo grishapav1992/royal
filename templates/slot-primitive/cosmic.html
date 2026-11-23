@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Cosmic Escape | Primitive</title>
+  <link rel="stylesheet" href="cosmic.css">
+  <link rel="stylesheet" href="cosmic-demo.css">
+</head>
+<body>
+  <main class="preview-shell">
+    <div class="preview-heading"><h1>Primitive <span>Автономный стенд</span></h1><a href="index.html">Лаборатория линий</a></div>
+    <div class="preview-controls" aria-label="Управление стендом">
+      <label>Сценарий<select id="cosmic-scenario"></select></label>
+      <label>Контейнер<select id="cosmic-size">
+        <option value="auto">По окну</option><option value="desktop">Широкий</option>
+        <option value="portrait">390 × 710</option><option value="short">844 × 320</option>
+      </select></label>
+      <button type="button" id="cosmic-reset">Сбросить</button>
+      <button type="button" id="cosmic-reopen">Закрыть экран</button>
+    </div>
+    <div id="cosmic-host" aria-label="Область игрового модуля"></div>
+    <p class="preview-note">Только тестовые единицы. Суммы исходов фиксированы и не масштабируются при смене ставки. Сеть Royal не используется.</p>
+  </main>
+  <script type="module" src="dist/cosmic-demo.js"></script>
+</body>
+</html>

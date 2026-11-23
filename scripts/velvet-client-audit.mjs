@@ -12,11 +12,11 @@ import {startVelvet} from '../server/games/velvetReign.ts';
 import {seededRandom} from '../src/shared/draconaMath.ts';
 import {VELVET_INFO} from '../src/shared/velvetReign.ts';
 const output=process.argv[2]||'docs/game-math/velvet-client-audit-20261024.json';
-const db=new PostgresDatabase(':memory:'),streams=[],sourcePaths=['src/ui/VelvetReignUI.ts','src/ui/slotKit/SlotSessions.ts','src/ui/slotKit/SlotScreens.ts','src/wallet/WalletClient.ts','src/wallet/ExpansionClient.ts','server/games/velvetReign.ts','server/games/velvetMath.ts','server/demoExpansion.ts'];
+const db=new PostgresDatabase(':memory:'),streams=[],sourcePaths=['games/velvet-reign/VelvetReignUI.ts','src/ui/slotKit/SlotSessions.ts','src/ui/slotKit/SlotScreens.ts','src/wallet/WalletClient.ts','src/wallet/ExpansionClient.ts','server/games/velvetReign.ts','server/games/velvetMath.ts','server/demoExpansion.ts'];
 const sourceHashes=Object.fromEntries(await Promise.all(sourcePaths.map(async p=>[p,createHash('sha256').update(await readFile(p)).digest('hex')])));
 let draw=()=>0,account='',wallet,operations=[],server,browser;
 const seeded=seed=>{const r=seededRandom(seed);return max=>Math.floor(r()*max);};
-const script=()=>`import {VelvetReignUI} from '/src/ui/VelvetReignUI.ts';import {demoWallet} from '/src/wallet/WalletClient.ts';import {expansionClient} from '/src/wallet/ExpansionClient.ts';
+const script=()=>`import {VelvetReignUI} from '/games/velvet-reign/VelvetReignUI.ts';import {demoWallet} from '/src/wallet/WalletClient.ts';import {expansionClient} from '/src/wallet/ExpansionClient.ts';
 window.audit={wallet:demoWallet,client:expansionClient};demoWallet.setAccount(${JSON.stringify(account)});await expansionClient.refresh();window.audit.ui=new VelvetReignUI(document.querySelector('main'));`;
 try{
  await db.exec('CREATE TABLE accounts(id TEXT PRIMARY KEY)');

@@ -1,0 +1,27 @@
+.slot-primitive { border-block: 2px solid currentColor; padding-block: .5rem; }
+.slot-primitive [data-slot-grid] {
+  display: grid;
+  grid-template-columns: repeat(var(--slot-columns, 1), minmax(0, 1fr));
+  gap: .25rem;
+  background: #d5dce6;
+  padding: .5rem;
+  min-block-size: 5rem;
+  align-items: center;
+}
+.slot-primitive [data-slot-grid] span {
+  display: grid;
+  place-items: center;
+  min-height: 2.5rem;
+  background: #fff;
+  color: #172842;
+  font: 600 1.25rem ui-monospace, monospace;
+}
+.slot-primitive [data-slot-form] { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; }
+.slot-primitive [hidden] { display: none !important; }
+.slot-primitive [data-highlighted] { background: #ffd978; }
+.slot-primitive [data-removed] { text-decoration: line-through; }
+.slot-primitive [data-held] { box-shadow: inset 0 0 0 3px #183fc9; }
+.slot-primitive [data-void] { visibility: hidden; }
+.slot-primitive [data-slot-picks] { display: flex; flex-wrap: wrap; gap: .75rem; }
+.slot-primitive [data-slot-picks] label { display: flex; align-items: center; }
+.slot-primitive [data-slot-error] { color: #bf3951; }

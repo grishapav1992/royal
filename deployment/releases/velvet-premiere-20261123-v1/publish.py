@@ -26,10 +26,10 @@ STATE = Path('/opt/royal-game-modules-state')
 BACKUP = Path('/opt/royal-backups') / NAME
 POINTER = MODULES / GAME / 'active.json'
 CONTRACT = {'apiVersion': 1, 'rulesVersion': 2, 'progressVersion': 1}
-# The package labels file is created, the reviewed Velvet presentation and package metadata are replaced.
-NEW_SOURCES = {'src/ui/velvetReignText.ts'}
-SOURCES = NEW_SOURCES | {f'src/ui/{name}' for name in ('VelvetReignUI.ts', 'VelvetReignBoard.ts', 'VelvetReignAssets.ts', 'velvet-reign.css')} | {
-    f'games/{SLUG}/package.json'}
+# The presentation moved from src/ui into the module folder: six files are created, two replaced.
+NEW_SOURCES = {f'games/{SLUG}/{name}' for name in (
+    'VelvetReignUI.ts', 'VelvetReignBoard.ts', 'VelvetReignAssets.ts', 'VelvetReignAudio.ts', 'velvetReignText.ts', 'velvet-reign.css')}
+SOURCES = NEW_SOURCES | {f'games/{SLUG}/{name}' for name in ('entry.ts', 'package.json')}
 MIN_FREE = 5 * 1024**3
 LOCKS = (ROOT.parent / 'themed-publish.lock', LIVE / '.client-presentation-deploy.lock', STATE / 'module.lock')
 sys.dont_write_bytecode = True
@@ -107,7 +107,6 @@ def read_inputs():
         ROOT / 'before.json': op['beforeSha256'],
         ROOT / 'release-manifest.json': op['releaseManifestSha256'],
         ROOT / 'release-github.json': op['receiptSha256'],
-        ROOT / 'module-proof.json': op['moduleProofSha256'],
         LIVE / 'scripts/game-module-release.py': op['publisherSha256'],
     }
     require(set(op['helpers']) == {'snapshot.py', 'snapshot-base.py', 'image_metadata.py'}, 'Unexpected inventory helpers')
@@ -124,11 +123,8 @@ def read_inputs():
             and re.fullmatch('[a-f0-9]{40}', receipt['remoteMain'])
             and receipt['manifestSha256'] == op['releaseManifestSha256'], 'Invalid GitHub receipt')
     require(release['baseCommit'] == before['sourceCommit'] and set(op['source']) == SOURCES, 'Unexpected source baseline')
-    require('moduleProjection' not in release, 'Unexpected module projection')
-    proof = load_json(ROOT / 'module-proof.json')
-    require(proof['gameId'] == GAME and proof['version'] == op['version'], 'Module proof describes another package')
     for name, digest in op['source'].items():
-        require((name.endswith('/package.json') or proof['sourceFiles'][name] == digest)
+        require(release['moduleProjection']['inputs'][name] == digest
                 and sha(bytes_at(ROOT / 'source' / name)) == digest, f'Unverified source: {name}')
     metadata = load_json(ROOT / 'package/manifest.json')
     require(metadata['version'] == op['version'] and metadata['gameId'] == GAME

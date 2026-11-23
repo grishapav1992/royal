@@ -1,6 +1,6 @@
 # Independently published games
 
-Every retained game definition has an independent client package. The catalogue contains 124 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 123 visible machines:
+Технический реестр содержит 125 модулей для действующих и сохранённых исторических игр. Наличие записи само по себе не означает доступность игры в зале или допуск к ставкам:
 
 | Family | Module identities |
 | --- | ---: |
@@ -10,6 +10,7 @@ Every retained game definition has an independent client package. The catalogue 
 | Durak, transfer Durak, Crazy Eights and Tsu-e-fa PvP | 4 |
 | Breaker, Orbit, Drift and Pixel legacy arcade games | 4 |
 | Luelon and Casino API Pro provider adapters | 2 |
+| [«Путь дракона», общий виртуальный кошелёк](../games/panda-dragon/README.md) | 1 |
 
 Supported identities and host contracts are in `src/modules/GameModuleCatalog.ts`. Each `games/<slug>/` directory contains its entry, package metadata and TypeScript configuration. GIRLHUB keeps slug `girlhub` and identity `studio-afterglow`. LAST EXIT keeps identity `github-crash` and uses slug `last-exit`. CR vs. Leo keeps its production identity `original-cr-vs-leo` in package `cr-vs-leo`; Royal Plinko keeps the current «Завеса ночи» implementation and its assets. Hong Kong Warrior uses identity `original-jackie-chan`, slug `jackie-chan` and API/rules contracts 1 plus progress contract 2, with the shared CR vs. Leo engine and a separate cosmetic collection. The arcade Orbit uses identity `orbit` and slug `arcade-orbit`, distinct from `studio-orbit`.
 
@@ -75,12 +76,12 @@ Update these references only after production verification confirms that players
 | --- | --- | --- |
 | Cosmic Escape | A brass-framed space console keeps portals, energy and missions beside the reels, with a compact strip on phones. A highlighted payline and its breakdown explain the result. The HD racer has ten animations and reacts to confirmed outcomes, energy, WILD beams and Echo. | [Brief and layouts](game-layout/cosmic-redesign/BRIEF.md), [Racer release 1.1.1-578c5bff2f3f](../deployment/releases/cosmic-racer-hd-20261123-v1/verification.json) |
 | Caramel Carnival | The striped awning and garland frame the evening fair. Tickets and top energy explain progress. The festival changes the awning and frame accents while the board stays in place. | [Brief and layouts](game-layout/caramel-redesign/BRIEF.md) |
-| Velvet Reign | A dressing-room mirror with bulbs frames the star. Spotlight and Super Encore add cast and gem progress. A new star has a reveal screen with the earned benefit before play continues. | [Dressing-room redesign and screenshots](game-layout/velvet-dressing-room.md) |
+| Velvet Reign | A theatre playbill with a full-length star beside the reels. Two large tickets carry the bonus purchases with their price, and the troupe row shows the stars and their multipliers. Published version `1.4.0-ad7581736f91`. | [Premiere design](game-layout/velvet-premiere.md), [release verification](../deployment/releases/velvet-premiere-20261123-v1/verification.json) |
 | Last Convoy | Warning tape and Maya frame the supply field. The defense scale and evacuation beacons show progress. The result has its own row and the presets open from the stake control. | [Full redesign verification](../deployment/releases/last-convoy-full-redesign-20261122-v1/verification.json), [stake list verification](../deployment/releases/last-convoy-stake-list-20261122-v1/verification.json) |
 | Nitro RUN | The start-line layout combines a yellow Start action with gear shift lamps, nitro and flag counters. The phone moves the instruments to a compact strip and the bonus has a purple game-state accent. | [Start Line design and screenshots](game-layout/nitro-start-line/README.md) |
 | GIRLHUB | The field is a camera viewfinder and Spin resembles a shutter. Light, cameras and WILD are distinct indicators. The portrait and album stay accessible in a compact strip on phones. | [Studio design and screenshots](game-layout/girlhub-studio/README.md) |
 
-The Velvet Reign dressing-room release is a reference for the approved redesign. On 22 November 2026 its public pointer served `1.1.1-1fd37ed35c96`, while the dressing-room record documents `1.3.0-90e55a534a4e`.
+The [dressing-room design](game-layout/velvet-dressing-room.md) of Velvet Reign is historical. Its package `1.3.0-90e55a534a4e` was replaced by `1.1.1-1fd37ed35c96` on 19 November 2026. The Premiere package is the published design since 23 November 2026.
 
 ## Autoplay
 

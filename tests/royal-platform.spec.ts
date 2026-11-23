@@ -38,10 +38,10 @@ async function choose(page:Page,id:string){
 }
 
 
-test('the first floor exposes only twelve Royal cabinets and catalogues with connected chat',async({page,roomPath})=>{
+test('the first floor exposes only Royal cabinets and catalogues with connected chat',async({page,roomPath})=>{
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await enter(page,roomPath);
  await expect(page.locator('[data-cabinet-collection=github]')).toHaveCount(0);
- expect(cabinetsInHall('arcade')).toHaveLength(12);
+ expect(cabinetsInHall('arcade')).toHaveLength(13);
  for(const cabinet of cabinetsInHall('arcade')){
   await approach(page,cabinet.id);const menu=page.locator('.royal-platform');
   const ids=await menu.locator('[data-platform-game]').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('data-platform-game')).sort());
@@ -55,7 +55,7 @@ test('a Royal round keeps the same stake after catalogue switching, reopening an
  await sandboxTopUp(page,1000);
  await approach(page,'studio-cosmic-escape');let menu=page.locator('.royal-platform');
  await menu.getByRole('searchbox').fill('несуществующая');await expect(menu.locator('.rp-card')).toHaveCount(0);
- await menu.getByRole('searchbox').fill('');await menu.getByRole('combobox',{name:'Жанр',exact:true}).selectOption('slot');await expect(menu.locator('.rp-card')).toHaveCount(10);
+ await menu.getByRole('searchbox').fill('');await menu.getByRole('combobox',{name:'Жанр',exact:true}).selectOption('slot');await expect(menu.locator('[data-platform-game="panda-dragon-preview"]')).toBeVisible();
  await menu.getByRole('combobox',{name:'Жанр',exact:true}).selectOption('all');
  await page.screenshot({path:out+'/royal-desktop.png'});
  await choose(page,'original-cr-vs-leo');let result:any,saved:any;

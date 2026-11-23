@@ -17,6 +17,8 @@ COPY package.json package-lock.json ./
 RUN npm ci --include=dev --include=optional
 COPY tsconfig.json vite.config.ts index.html ./
 COPY src ./src
+COPY templates/slot-primitive/src/view.ts templates/slot-primitive/src/actions.ts templates/slot-primitive/src/index.ts ./templates/slot-primitive/src/
+COPY templates/slot-primitive/view.css ./templates/slot-primitive/
 COPY server ./server
 COPY public ./public
 COPY scripts/build-load-stand.mjs scripts/crypto-reconcile.ts scripts/database-test.ts \

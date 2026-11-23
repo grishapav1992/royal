@@ -1,5 +1,6 @@
 import { t, language } from '../i18n/index';
 import { ARCADE_GITHUB_GAMES, collectionGames, type CabinetCollection } from '../shared/arcadeCatalog';
+import { DRAGON_PATH } from '../modules/GameModuleCatalog';
 import { GAME_CABINETS, type Cabinet } from '../shared/cabinets';
 import { isStudioGame, STUDIO_INFO } from '../shared/studioGames';
 import { CARIBBEAN_GAME } from '../shared/caribbeanTreasures';
@@ -16,6 +17,10 @@ type Entry = PlatformChoice & {name:string; subtitle:string; kind:string; source
 const github = new Set<string>(ARCADE_GITHUB_GAMES);
 export function platformGameCabinet(id: string, seat: Cabinet): Cabinet {
   if (id === 'casinoapipro') return {...seat, id, name:'Casino API Pro', subtitle:'', demo:false, provider:false, wallet:true, github:false, defaultGameId:undefined,collection:undefined};
+  if (id === DRAGON_PATH.gameId) return {
+    ...seat, id, name: t(DRAGON_PATH.title), subtitle: t('Виртуальные ставки'),
+    demo: false, provider: false, wallet: true, github: false, defaultGameId: undefined, collection: undefined,
+  };
   const studio = isStudioGame(id) ? STUDIO_INFO[id] : undefined;
   const existing = GAME_CABINETS.find(c => c.id === id);
   return {...seat, id, name:studio ? studioCatalogName(studio.id) : existing?.name ?? 'Casino API Pro',
@@ -30,6 +35,10 @@ const classicKinds: Record<string,string> = {'flag-tote':'instant','royal-coins'
 const sourceNames: Record<Source,string> = {royal:'RoyalGames',casinoapipro:'Casino API Pro',github:t('GitHub-игры')};
 function localEntry(id: string): Entry {
   const game = platformGameCabinet(id, {id, name:id, subtitle:'', x:0,y:0,color:0,playable:true});
+  if (id === DRAGON_PATH.gameId) return {
+    gameId: id, name: game.name, subtitle: game.subtitle, kind: 'slot', source: 'royal',
+    art: '/assets/panda-dragon/sym-panda.v3.webp', keywords: 'Панда Panda Dragon Path',
+  };
   const studio = isStudioGame(id) ? STUDIO_INFO[id] : undefined;
   const theme = github.has(id) && Object.hasOwn(FIRST_FLOOR_GAME_THEMES,id) ? FIRST_FLOOR_ART[FIRST_FLOOR_GAME_THEMES[id as keyof typeof FIRST_FLOOR_GAME_THEMES]] : undefined;
   return {gameId:id, name:game.name, subtitle:theme?.title[language === 'en' ? 1 : 0] ?? game.subtitle,
