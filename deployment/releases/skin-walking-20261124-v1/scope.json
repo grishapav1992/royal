@@ -1,0 +1,6 @@
+{
+  "client": [
+    "src/game/skinPoseAlignment.ts"
+  ],
+  "previews": []
+}
