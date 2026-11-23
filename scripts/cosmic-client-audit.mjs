@@ -14,7 +14,7 @@ import {LUELON_SLOT_INFO} from '../src/shared/luelonSlotsModels.ts';
 import {COSMIC_ESCAPE_BET_UNITS} from '../src/shared/cosmicEscapeBets.ts';
 
 const game='studio-cosmic-escape',info=LUELON_SLOT_INFO[game],output=process.argv.slice(2).find(arg=>!arg.startsWith('--'))||'docs/game-math/cosmic-client-audit-20261025.json';
-const sourcePaths=['scripts/cosmic-client-audit.mjs','src/ui/CosmicEscapeUI.ts','src/ui/CosmicEscapeBoard.ts','src/ui/slotKit/SlotSessions.ts','src/ui/slotKit/SlotScreens.ts','src/ui/slotKit/SlotPlayback.ts','src/wallet/WalletClient.ts','src/wallet/ExpansionClient.ts','server/games/luelonSlots.ts','src/shared/luelonSlots.ts','src/shared/luelonSlotsLines.ts','src/shared/luelonSlotsModels.ts','src/shared/cosmicEscapeBets.ts','server/demoExpansion.ts','server/demoWallet.ts'];
+const sourcePaths=['scripts/cosmic-client-audit.mjs','games/cosmic-escape/CosmicEscapeUI.ts','games/cosmic-escape/CosmicEscapeBoard.ts','src/ui/slotKit/SlotSessions.ts','src/ui/slotKit/SlotScreens.ts','src/ui/slotKit/SlotPlayback.ts','src/wallet/WalletClient.ts','src/wallet/ExpansionClient.ts','server/games/luelonSlots.ts','src/shared/luelonSlots.ts','src/shared/luelonSlotsLines.ts','src/shared/luelonSlotsModels.ts','src/shared/cosmicEscapeBets.ts','server/demoExpansion.ts','server/demoWallet.ts'];
 const sourceHashes=Object.fromEntries(await Promise.all(sourcePaths.map(async p=>[p,createHash('sha256').update(await readFile(p)).digest('hex')])));
 const db=new PostgresDatabase(':memory:'),results=[];
 let draw=()=>0,draws=0,account='',wallet,operations=[],fault=null,faultTriggered=false,server,browser;
@@ -33,7 +33,7 @@ scenarios.push({...cases.find(c=>c.id==='cosmic-chaos'),stake:20,viewport:{width
  {...cases.find(c=>c.id==='natural-3'),stake:20,viewport:{width:1440,height:1000},fault:'move'},
  {...cases.find(c=>c.id==='deep-echo'),stake:20,viewport:{width:390,height:844},fault:'final'});
 
-const script=()=>`import {CosmicEscapeUI} from '/src/ui/CosmicEscapeUI.ts';import {demoWallet} from '/src/wallet/WalletClient.ts';import {expansionClient} from '/src/wallet/ExpansionClient.ts';
+const script=()=>`import {CosmicEscapeUI} from '/games/cosmic-escape/CosmicEscapeUI.ts';import {demoWallet} from '/src/wallet/WalletClient.ts';import {expansionClient} from '/src/wallet/ExpansionClient.ts';
 window.audit={wallet:demoWallet,client:expansionClient};demoWallet.setAccount(${JSON.stringify(account)});await expansionClient.refresh();window.audit.ui=new CosmicEscapeUI(document.querySelector('main'));`;
 const units=text=>Math.round(Number(String(text).replace(/^[^\d-]*/,'').replace(/[\s\u00a0\u202f]/g,'').replace(',','.'))*100);
 try{

@@ -1,4 +1,4 @@
-import { CosmicEscapeUI } from '../../src/ui/CosmicEscapeUI';
+import { CosmicEscapeUI } from './CosmicEscapeUI';
 import { mountGameHostRefresh, readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';
 import '../../src/ui/studio-games.css';
 import { StudioSlotUI } from '../../src/ui/StudioSlotUI';

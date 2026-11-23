@@ -1,4 +1,4 @@
-import {gameReactionForAmounts} from './gameReactions';
+import {gameReactionForAmounts} from '../../src/ui/gameReactions';
 
 const racerMedia = '/assets/cosmic-guardians/racer-v2';
 export const COSMIC_RACER_IDLE = racerMedia + '/idle-still.webp';

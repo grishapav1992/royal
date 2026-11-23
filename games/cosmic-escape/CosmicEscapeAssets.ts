@@ -1,5 +1,5 @@
-import {SlotAssets, type SlotAssetState} from './slotKit/SlotAssets';
-import {cosmicSlot} from './slotKit/nativeSlots';
+import {SlotAssets, type SlotAssetState} from '../../src/ui/slotKit/SlotAssets';
+import {cosmicSlot} from '../../src/ui/slotKit/nativeSlots';
 import {COSMIC_RACER_IDLE} from './CosmicEscapeRacer';
 
 export const COSMIC_ESCAPE_ASSETS = {...cosmicSlot.assets, alien: COSMIC_RACER_IDLE};

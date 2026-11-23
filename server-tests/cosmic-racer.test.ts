@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {setImmediate as flush} from 'node:timers/promises';
 import {test} from 'node:test';
-import {CosmicEscapeRacer, cosmicRacerOutcome} from '../src/ui/CosmicEscapeRacer';
+import {CosmicEscapeRacer, cosmicRacerOutcome} from '../games/cosmic-escape/CosmicEscapeRacer';
 
 test('the racer reads the complete round amount before celebrating', () => {
   for (const returned of ['0', '39']) assert.equal(cosmicRacerOutcome('40', returned), 'calm');
