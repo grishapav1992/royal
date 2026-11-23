@@ -86,7 +86,7 @@ export function nudgeRtpError(report,policy){
 }
 const root=new URL('../../',import.meta.url);
 export async function wildNudgeModelReport(){
-  const registry=JSON.parse(await readFile(new URL('scripts/game-math/rtp-policy.json',root),'utf8')),policy=registry.profiles['studio-wild-nudge'];
+  const registry=JSON.parse(await readFile(new URL('scripts/game-math/rtp-policy.json',root),'utf8')),policy=registry.versionProfiles['studio-wild-nudge'][1];
   assert(['model-only','qualified'].includes(policy.releaseStatus));assert.equal(policy.rulesVersion,1);assert.equal(policy.progressVersion,1);
   assert.deepEqual(policy.stakes,WILD_NUDGE_STAKES.map(Number));assert.deepEqual(policy.choices,['normal']);
   assert.equal(policy.target,.96);assert.equal(policy.tolerance,.002);

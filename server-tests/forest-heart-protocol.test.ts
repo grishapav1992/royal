@@ -61,13 +61,18 @@ test('stale revisions, unavailable moves and tampered history are rejected befor
 test('strict public actions reject client outcomes, invalid stakes, extra fields and unsupported revisions',()=>{
   const start={id:randomUUID(),action:'start',gameId:FOREST_HEART_GAME,stakeUnits:'1000',settings};
   assert(validExpansionAction(start));
+  assert(validExpansionAction({...start,stakeUnits:'1001',stakePolicyVersion:1}));
   assert(!validExpansionAction({...start,seed:1}));
   assert(!validExpansionAction({...start,settings:{forestHeart:{mode:'normal',payoutUnits:'999'}}}));
   const move={id:randomUUID(),action:'move',gameId:FOREST_HEART_GAME,sessionId:start.id,move:'forest-turn-11',revision:1};
   assert(validExpansionAction(move));
   for(const changed of [{...move,picks:[1]},{...move,payoutUnits:'1'},{...move,revision:0},{...move,revision:6},{...move,move:'forest-turn-12'}])assert(!validExpansionAction(changed));
+  assert(!validExpansionAction({...start,stakeUnits:'10.1',stakePolicyVersion:1}));
   let draws=0;
-  assert.throws(()=>startForestHeart(settings,'1001',()=>{draws++;return 0;}));assert.equal(draws,0);
+  for(const stake of ['9','10001','10.1']){
+    assert.throws(()=>startForestHeart(settings,stake,()=>{draws++;return 0;}),/Недопустимая ставка/);
+  }
+  assert.equal(draws,0);
   for(const invalid of [-1,4096,NaN,1.5])assert.throws(()=>startForestHeart(settings,'1000',()=>invalid));
   const settled=startForestHeart(settings,'1000',programmed([132,0,1,1]).draw);
   const session={gameId:FOREST_HEART_GAME,rulesVersion:1,state:'settled',stakeUnits:'1000',spentUnits:'1000',returnedUnits:String(settled.credit),
