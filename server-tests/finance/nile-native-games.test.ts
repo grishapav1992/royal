@@ -19,7 +19,7 @@ test('published Neopolis restores all three bosses and settles its campaign once
  const c=await setup();try{
   const random=seededRandom(95),draw=(max:number)=>Math.floor(random()*max);
   let games=new NileGameRuntime(c.ledger,draw),reply:any;
-  const start=()=>({id:randomUUID(),action:'start',gameId:'studio-neopolis',stakeUnits:'1000',settings:{neopolis:{hero:'granite'}}});
+  const start=()=>({id:randomUUID(),action:'start',gameId:'studio-neopolis',stakeUnits:'1000',stakePolicyVersion:1,settings:{neopolis:{hero:'granite'}}});
   await assert.rejects(games.run(c.a,command('/expansion',start())),/refresh/);
   let expected=200000000n,previous:any;
   for(let i=0;i<35;i++){
@@ -53,11 +53,14 @@ for(const seed of [1,5])test(`rebalanced Dracona seed ${seed} retains exact cent
  const c=await setup();try{
   const random=seededRandom(seed);let draws:number=0;
   let games=new NileGameRuntime(c.ledger,max=>{draws++;return Math.floor(random()*max);});
-  const start={id:randomUUID(),action:'start',gameId:'studio-dracona',stakeUnits:'1000',settings:{dracona:{mode:'normal'}}};
+  const start={id:randomUUID(),action:'start',gameId:'studio-dracona',stakeUnits:'1000',stakePolicyVersion:1,settings:{dracona:{mode:'normal'}}};
   await assert.rejects(games.run(c.a,command('/expansion',start)),/Обнови|refresh/);assert.equal(draws,0);
   const initial=await games.run(c.a,draconaCommand(start))as any;
   assert(validDraconaSession(initial.session));assert.equal(initial.session.rulesVersion,3);
-  if(seed===5){assert.equal(initial.session.returnedUnits,'1118');assert.equal(initial.wallet.balanceUnits,'201180000');}
+  if(seed===5){
+   assert.deepEqual(initial.session.precision,{version:1,numerator:'44757',denominator:'40',ticket:'3',baseUnits:'1118',creditedUnits:'1119'});
+   assert.equal(initial.session.returnedUnits,'1119');assert.equal(initial.wallet.balanceUnits,'201190000');
+  }
   else {assert.equal(initial.session.state,'active');assert.equal(initial.wallet.balanceUnits,'190000000');}
   // A new runtime recovers the accepted history, including free spins and runes.
   games=new NileGameRuntime(c.ledger,max=>{draws++;return Math.floor(random()*max);});
@@ -165,7 +168,7 @@ test('GirlHUB bonus credits Mia once and unlocks Naomi in the common wallet',asy
   const games=new NileGameRuntime(c.ledger,draw);await games.ready;
   const initial=await games.run(c.a,command('/afterglow-wardrobe'))as any;assert.equal(initial.selectedGirl,1);
   await c.ledger.db.prepare('INSERT INTO demo_afterglow_stake_album VALUES(?,15900)').run(c.a);
-  let reply=await games.run(c.a,command('/expansion',{id:randomUUID(),action:'start',gameId:'studio-afterglow',stakeUnits:'100',settings:{afterglow:{mode:'normal'}},appearance:{girl:1,look:0,revision:0}}))as any;
+  let reply=await games.run(c.a,command('/expansion',{id:randomUUID(),action:'start',gameId:'studio-afterglow',stakeUnits:'100',stakePolicyVersion:1,settings:{afterglow:{mode:'normal'}},appearance:{girl:1,look:0,revision:0}}))as any;
   assert(validAfterSession(reply.session));assert.equal(reply.session.state,'active');assert.equal(reply.wallet.balanceUnits,'199000000');
   assert.equal((await games.run(c.a,command('/afterglow-wardrobe'))as any).albumUnits,15900);
   let last:unknown;

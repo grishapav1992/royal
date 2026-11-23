@@ -7,6 +7,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {pvpFixture} from './finance/helpers/nile-pvp-fixture';
 import {block} from './finance/helpers/nile-play-fixture';
+import {seedAcceptedNileExpansion} from './finance/helpers/accepted-nile-expansion';
 import {createNilePlayServer} from '../server/finance/nile-play-service';
 import {NileGameRuntime} from '../server/finance/nile-game-runtime';
 import {TEMPLE_GAME,TEMPLE_CLIENT_HEADER,validTempleSession} from '../src/shared/floodedTemple';
@@ -22,10 +23,10 @@ test('the real common-wallet HTTP route restores the Temple and preserves protoc
   const c=await pvpFixture([login.account.id,randomUUID()]);
   const socket=process.platform==='win32'?'\\\\.\\pipe\\royal-temple-http-'+randomUUID():join(tmpdir(),'royal-temple-'+randomUUID()+'.sock');
   await c.source.ingest(block(102,'1000000000000',c.config.source.addresses.find(a=>a.userId==='reserve')!.address));await c.ledger.sync(c.source,await c.reconciliation());
-  // Seed one accepted bonus through the real runtime; HTTP then resumes it without future entropy.
-  const values=[0,0,0,98,0,0];const seeded=new NileGameRuntime(c.ledger,()=>values.shift()!);
+  const values=[0,0,0,98,0,0];
   const start={id:randomUUID(),action:'start',gameId:TEMPLE_GAME,stakeUnits:'1000',settings:{temple:{mode:'normal'}}};
-  await seeded.run(c.a,{path:'/expansion',body:start,method:'POST',flags:Array(9).fill(false),rules:2,query:{},templeRules:1});
+  await seedAcceptedNileExpansion(c.ledger,c.a,start.id,()=>values.shift()!,wallet=>
+    wallet.expansion.operate(c.a,start,2,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true));
   const finance=createNilePlayServer(c.ledger);await new Promise<void>(resolve=>finance.listen(socket,resolve));
   const app=express();installGameWallet(app,socket);const server=app.listen(0,'127.0.0.1');await once(server,'listening');
   const address=server.address();assert(address&&typeof address!=='string');const url=`http://127.0.0.1:${address.port}/api/game-wallet/expansion`;
@@ -44,10 +45,8 @@ test('the real common-wallet HTTP route restores the Temple and preserves protoc
     }
     assert.equal(reply.wallet.asset,'USDT_NILE_TEST');assert.equal(reply.wallet.balanceUnits,'207500000');assert.equal(reply.wallet.reservedUnits,'0');
     const repeated=await(await post(last)).json();assert(repeated.replayed);assert.deepEqual(repeated.session,session);assert.equal(repeated.wallet.balanceUnits,reply.wallet.balanceUnits);
-    const fresh={...start,id:randomUUID()},response=await post(fresh);assert.equal(response.status,200);let freshReply=await response.json();assert(validTempleSession(freshReply.session));
-    if(freshReply.session.state==='active')freshReply=await(await post({id:randomUUID(),action:'move',gameId:TEMPLE_GAME,sessionId:fresh.id,revision:1,move:'temple-finish'})).json();
-    const expected=207500000n-10000000n+BigInt(freshReply.session.returnedUnits)*10000n;
-    assert.equal(freshReply.wallet.balanceUnits,String(expected));assert(validTempleSession(freshReply.session));await c.ledger.audit();
+    assert.equal((await post({...start,id:randomUUID()})).status,409);
+    assert.equal((await c.ledger.wallet(c.a) as any).balanceUnits,'207500000');await c.ledger.audit();
   }finally{await new Promise<void>(resolve=>server.close(()=>resolve()));await new Promise<void>(resolve=>finance.close(()=>resolve()));await c.close();}
 });
 
@@ -57,7 +56,7 @@ test('cascade rules 2 resume through real HTTP and the common financial service 
   await c.source.ingest(block(102,'1000000000000',c.config.source.addresses.find(a=>a.userId==='reserve')!.address));await c.ledger.sync(c.source,await c.reconciliation());
   const stops:number[]=[];for(let col=0;col<5;col++)for(let row=2;row>=0;row--){const symbol=col<3?8:(col*3+row)%7;stops.push(CASCADE_DATA.baseReels[col].slice(0,symbol).reduce((a,b)=>a+b,0));}
   let v=73191;const seeded=new NileGameRuntime(c.ledger,max=>stops.length?stops.shift()!:(v=(Math.imul(v,1664525)+1013904223)>>>0)%max);
-  const op={id:randomUUID(),action:'start',gameId:TEMPLE_GAME,stakeUnits:'1000',settings:{temple:{mode:'cascades'}}};
+  const op={id:randomUUID(),action:'start',gameId:TEMPLE_GAME,stakeUnits:'1000',stakePolicyVersion:1,settings:{temple:{mode:'cascades'}}};
   const initial=BigInt((await c.ledger.wallet(c.a)as any).balanceUnits);
   await seeded.run(c.a,{path:'/expansion',body:op,method:'POST',flags:Array(9).fill(false),rules:2,query:{},templeRules:2});
   const finance=createNilePlayServer(c.ledger);await new Promise<void>(resolve=>finance.listen(socket,resolve));

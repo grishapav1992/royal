@@ -3,11 +3,15 @@ import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
 import {pvpFixture} from './helpers/nile-pvp-fixture';
 import {block} from './helpers/nile-play-fixture';
+import {seedAcceptedNileExpansion} from './helpers/accepted-nile-expansion';
 import {NileGameRuntime,type NativeCommand} from '../../server/finance/nile-game-runtime';
 import {TEMPLE_GAME,validTempleSession} from '../../src/shared/floodedTemple';
 import {validCascadeSession} from '../../src/shared/floodedTempleCascade';
 const command=(body:unknown=null,capable=true):NativeCommand=>({path:'/expansion',method:body===null?'GET':'POST',body,flags:[true,true,true,true,true,true,true,true,2],rules:2,query:{},templeRules:capable?1:0});
 const start=()=>({id:randomUUID(),action:'start',gameId:TEMPLE_GAME,stakeUnits:'1000',settings:{temple:{mode:'normal'}}});
+const acceptLegacy=(c:Awaited<ReturnType<typeof setup>>,op:ReturnType<typeof start>)=>
+  seedAcceptedNileExpansion(c.ledger,c.a,op.id,c.draw,wallet=>
+    wallet.expansion.operate(c.a,op,2,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true));
 const move=(session:any,to?:number,rope=false)=>({id:randomUUID(),action:'move',gameId:TEMPLE_GAME,sessionId:session.id,revision:session.view.temple.revision,move:to===undefined?'temple-finish':rope?'temple-rope':'temple-step',...(to===undefined?{}:{picks:[to]})});
 async function setup(){
   const c=await pvpFixture();await c.source.ingest(block(102,'1000000000000',c.config.source.addresses.find(a=>a.userId==='reserve')!.address));await c.ledger.sync(c.source,await c.reconciliation());
@@ -17,8 +21,11 @@ async function setup(){
 test('Temple uses the common journal, preserves recovery and credits the complete six-step bonus once',async()=>{
   const c=await setup();try{
     const action=start(),initial=BigInt((await c.ledger.wallet(c.a)as any).balanceUnits);
-    await assert.rejects(c.games.run(c.a,command(action,false)),/Обнови/);assert.equal(c.draws(),0);
+    await assert.rejects(c.games.run(c.a,command(action)),/общей системы ставок/);assert.equal(c.draws(),0);
+    await acceptLegacy(c,action);
+    await assert.rejects(c.games.run(c.a,command(action,false)),/Обнови/);
     const replies=await Promise.all(Array.from({length:4},()=>c.games.run(c.a,command(action))))as any[];
+    assert(replies.every(reply=>reply.replayed));
     let session=replies[0].session;assert(validTempleSession(session));assert.equal(c.draws(),6);
     assert.equal(replies[0].wallet.asset,'USDT_NILE_TEST');assert.equal(replies[0].wallet.balanceUnits,String(initial-10000000n));
     const restored=new NileGameRuntime(c.ledger,c.draw);
@@ -40,7 +47,7 @@ test('Temple uses the common journal, preserves recovery and credits the complet
 test('native cascade starts debit once, cap once and survive a rejected financial journal append',async()=>{
   const c=await setup();try{
     let draws=0;const games=new NileGameRuntime(c.ledger,()=>{draws++;return 0;});
-    const op={...start(),settings:{temple:{mode:'cascades'}}},native={...command(op),templeRules:2 as const};
+    const op={...start(),stakePolicyVersion:1,settings:{temple:{mode:'cascades'}}},native={...command(op),templeRules:2 as const};
     const before=await c.ledger.wallet(c.a),initial=BigInt((before as any).balanceUnits);
     await c.ledger.db.exec("CREATE FUNCTION reject_cascade_native_fn() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.kind='native' THEN RAISE EXCEPTION 'cascade native append failure'; END IF; RETURN NEW; END $$;CREATE TRIGGER reject_cascade_native BEFORE INSERT ON events FOR EACH ROW EXECUTE FUNCTION reject_cascade_native_fn()");
     await assert.rejects(games.run(c.a,native),/cascade native append failure/);assert.deepEqual(await c.ledger.wallet(c.a),before);
@@ -53,7 +60,8 @@ test('native cascade starts debit once, cap once and survive a rejected financia
 });
 test('a rejected financial event rolls back the Temple move, reserve and receipt together',async()=>{
   const c=await setup();try{
-    const begun=await c.games.run(c.a,command(start()))as any,end=move(begun.session);
+    const action=start();await acceptLegacy(c,action);
+    const begun=await c.games.run(c.a,command(action))as any,end=move(begun.session);
     const before=await c.ledger.wallet(c.a);
     await c.ledger.db.exec("CREATE FUNCTION reject_temple_native_fn() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.kind='native' THEN RAISE EXCEPTION 'injected temple native failure'; END IF; RETURN NEW; END $$;CREATE TRIGGER reject_temple_native BEFORE INSERT ON events FOR EACH ROW EXECUTE FUNCTION reject_temple_native_fn()");
     await assert.rejects(c.games.run(c.a,command(end)),/injected temple native failure/);

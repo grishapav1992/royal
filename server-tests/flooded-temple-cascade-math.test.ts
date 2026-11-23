@@ -14,8 +14,9 @@ test('cascade inputs freeze twenty distinct lines, seven ordinary symbols and le
   assert(CASCADE_DATA.paylines.every(l=>l.length===5&&l.every(r=>r>=0&&r<3)));
   assert.equal(CASCADE_DATA.paytable.length,7);assert.equal(CASCADE_DATA.baseReels[0][7],0);assert.equal(CASCADE_DATA.baseReels[4][7],0);
   for(const reels of[CASCADE_DATA.baseReels,CASCADE_DATA.freeReels]){assert.equal(reels[3][8],0);assert.equal(reels[4][8],0);}
-  for(const n of CASCADE_DATA.stakes){assert(validCascadeStake(String(n)));assert.equal(n%20,0);}
-  assert(validCascadeSettings({temple:{mode:'cascades'}}));assert(!validCascadeSettings({temple:{mode:'cascades',buy:true}}));assert(!validCascadeStake('1001'));
+  assert.deepEqual(CASCADE_DATA.stakes,[...Array.from({length:9991},(_,i)=>i+10),20000,50000]);
+  assert(validCascadeSettings({temple:{mode:'cascades'}}));assert(!validCascadeSettings({temple:{mode:'cascades',buy:true}}));
+  assert(validCascadeStake('1001'));assert(!validCascadeStake('10.1'));assert(!validCascadeStake('10001'));
 });
 test('twenty overlapping wins pay once per line and remove the union once; bonus lines have no cash award',()=>{
   const wins=scoreCascadeGrid(Array(15).fill(0));assert.equal(wins.wins.length,20);assert.equal(wins.points,20*CASCADE_DATA.paytable[0][2]);assert.equal(wins.removeMask,32767);

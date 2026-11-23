@@ -6,7 +6,7 @@ import {DemoWalletStore} from '../server/demoWallet';
 import {DemoExpansionStore} from '../server/demoExpansion';
 import {demoBalanceUnits,demoReservedUnits} from '../server/demoWalletAmounts';
 import {CASCADE_DATA} from '../src/shared/floodedTempleCascadeMath';
-import {GAME_STAKE_CENTS} from '../src/shared/gameStakes';
+import {ROYAL_GAME_STAKE_CENTS} from '../src/shared/gameStakes';
 import {validCascadeSession} from '../src/shared/floodedTempleCascade';
 // @ts-ignore independent mathematical fixture source.
 import {cascadeRandom} from '../scripts/game-math/rtp-temple-cascade-model.mjs';
@@ -43,13 +43,13 @@ test('v2 bonus restores across stores, hides from legacy readers, retries once a
     assert.deepEqual(ledger.map(r=>[r.kind,Number(r.n)]).sort(),[['bet',1],['win',1]]);
   }finally{await f.db.close();}
 });
-test('all common and historical v2 presets cap and credit once; invalid settings and amended UUIDs never redraw',async()=>{
+test('all current v2 presets cap and credit once; invalid settings and amended UUIDs never redraw',async()=>{
   const f=await fixture();try{
     const store=f.create();let expected=await demoBalanceUnits(f.db,'a');
     await assert.rejects(f.run(store,{...start(),settings:{temple:{mode:'cascades',buy:true}}}));assert.equal(f.count(),0);
     // Manual cent amounts are covered by stake qualification; this wallet scenario covers every preset.
-    for(const stake of [...new Set([...GAME_STAKE_CENTS,...CASCADE_DATA.stakes.filter(stake=>stake>5000)])]){
-      f.set(Array(15).fill(0));const op=start(String(stake)),reply=await f.run(store,op);assert(validCascadeSession(reply.session));assert.equal(reply.session.returnedUnits,String(stake*500));expected+=stake*499;
+    for(const stake of ROYAL_GAME_STAKE_CENTS){
+      f.set(Array(15).fill(0));const op={...start(String(stake)),stakePolicyVersion:1},reply=await f.run(store,op);assert(validCascadeSession(reply.session));assert.equal(reply.session.returnedUnits,String(stake*500));expected+=stake*499;
       const count=f.count();await f.run(store,op);assert.equal(f.count(),count);assert.equal(await demoBalanceUnits(f.db,'a'),expected);await assert.rejects(f.run(store,{...op,stakeUnits:'2000',settings:{temple:{mode:'normal'}}}));assert.equal(f.count(),count);
     }
   }finally{await f.db.close();}
