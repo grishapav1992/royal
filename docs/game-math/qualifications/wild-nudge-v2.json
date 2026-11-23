@@ -3,8 +3,8 @@
   "gameId": "studio-wild-nudge",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-11-23T09:01:39.988Z",
-  "completedAt": "2026-11-23T09:01:43.374Z",
+  "startedAt": "2026-11-23T11:42:21.041Z",
+  "completedAt": "2026-11-23T11:42:23.870Z",
   "sourceHashes": {
     "server/royalStakeTransport.ts": "8ba026c2dbc9e47e6ef3b982b943b8884120b17daa4d28b970bb55b8aade07be",
     "server/gameWalletRoutes.ts": "1c446f7c814bd0bd5c1c8427a20d83e3c52b5f252f7794a05a6f38928edff007",
@@ -14,7 +14,7 @@
     "scripts/game-math/rational.mjs": "18e762bcf6b3790f0e191f2f774cbdb1ba94b7f4674c5c7caec8fd3257a85d62",
     "src/shared/wildNudge.ts": "de36b83b823d2fd48f69bb2aa0c383a44ffbb80ec287e759dd1115db23775624",
     "server/games/wildNudge.ts": "7d66b6ba4c76045de00b34a780ce26103d4367f6f39143930ee8f0fe6f12aa9e",
-    "scripts/game-math/wild-nudge-model.mjs": "da28188057c963500975637c3ebaaa763f31089445701049d85af0d1073e1ef8",
+    "scripts/game-math/wild-nudge-model.mjs": "2375a329a9289736795472057ff8f0f4924b6b6a4b241ecc588f0b38363c3fa8",
     "scripts/game-math/wild-nudge-wallet.ts": "64711f88c1c225d1e09cc2ca149c7c308e2c94df499c10932fb49f3fc92b27ec",
     "src/shared/casinoExpansion.ts": "8fa30fdaafd9ac3272da9820ff5e277b9b7f34e143756fa9084223b0a8a5a2ed",
     "server/demoExpansion.ts": "d7cb8d53b9d15d82e7f3a84015065cac5ab30b0f844397c1b375a9439822bfc3",
@@ -32,7 +32,7 @@
     "scripts/game-math/stake-runtime.mjs": "fcefdf0ea8724c7e1cf76fa2134a52348dab765504a46dfb43f10bfba62572d5",
     "scripts/game-math/stakes-wallet.ts": "2923161534d6015f0be64c9467ce4921550f7a50152b2d7b77c0f7939056c0af",
     "server-tests/star-spin-stakes.test.ts": "758af7057bb9a42f62031058662ddb7bac09a855ed0c844cdbc1a6429cf49d74",
-    "docs/game-math/qualifications/wild-nudge-v1.json": "5b9ecc0f43785838173deee7eeb6891c4fccf1fa40d3efeac8c24a7c54360f88",
+    "docs/game-math/qualifications/wild-nudge-v1.json": "cb7c16edcde16be0b8b6a76561127022a2aeccaa337bc666f9d8aa4ddaf7f67a",
     "scripts/game-math/manual-stakes.mjs": "c24a92e5507588f080a640a1f76353d7d223ab2ef13ccee3355457c59c125471",
     "scripts/game-math/manual-stake-case.mjs": "fa868d135fd361c26c4bcc41c6e2b0831c0adf2d1744b34fa3a6c237664cebf4",
     "scripts/game-math/manual-stake-pool.mjs": "fc675e82956b25f436dfba08ec1e8893cfeb41772b7b6bd71ab9134095d01596",
@@ -162,7 +162,7 @@
   "evidence": {
     "reference": {
       "path": "docs/game-math/qualifications/wild-nudge-v1.json",
-      "sha256": "5b9ecc0f43785838173deee7eeb6891c4fccf1fa40d3efeac8c24a7c54360f88"
+      "sha256": "cb7c16edcde16be0b8b6a76561127022a2aeccaa337bc666f9d8aa4ddaf7f67a"
     }
   },
   "replay": {

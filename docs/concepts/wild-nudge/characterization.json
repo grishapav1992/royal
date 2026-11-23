@@ -178,5 +178,5 @@
     "observedMaximumInStakes": 306,
     "interpretation": "Observed characterization of full paid rounds, not exact hit/profit probabilities or certification. The normal RTP interval may underrepresent rare tails. Exact RTP and maximum come from the finite model, independently of this sample. Any payout includes returns below stake; only payout above cost is net positive."
   },
-  "sourceSha256": "d5fbcdc7f793bf46b18be88793ad55886b2edb67f9f67edd0e5ccfc5944e197f"
+  "sourceSha256": "4024a46c74567cb59da93f326662b7a261cd9161784000acbd96866fe585b07b"
 }

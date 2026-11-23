@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {wildNudgeModelReport,nudgeRtpError} from '../scripts/game-math/wild-nudge-model.mjs';
 import {rtpInputs,validateRtpProof,checkGameRtp} from '../scripts/game-math/rtp-gate.mjs';
 import {GAME_MODULES} from '../src/modules/GameModuleCatalog.ts';
-const policy=JSON.parse(await readFile(new URL('../scripts/game-math/rtp-policy.json',import.meta.url),'utf8')).profiles['studio-wild-nudge'];
+const policy=JSON.parse(await readFile(new URL('../scripts/game-math/rtp-policy.json',import.meta.url),'utf8')).versionProfiles['studio-wild-nudge'][1];
 
 test('the exact complete-round evidence is reproducible on every stake and includes a reachable global maximum',async()=>{
   const report=await wildNudgeModelReport(),archived=JSON.parse(await readFile(new URL('../docs/concepts/wild-nudge/math-model.json',import.meta.url),'utf8'));

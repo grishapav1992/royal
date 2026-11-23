@@ -68,7 +68,7 @@ export function characterizeWildNudge(seeds,roundsPerSeed){
 }
 const root=new URL('../../',import.meta.url);
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
-  const policy=JSON.parse(await readFile(new URL('scripts/game-math/rtp-policy.json',root),'utf8')).profiles['studio-wild-nudge'];
+  const policy=JSON.parse(await readFile(new URL('scripts/game-math/rtp-policy.json',root),'utf8')).versionProfiles['studio-wild-nudge'][1];
   const report={replay:replayWildNudgeModel(policy.seeds,policy.modelReplayRoundsPerSeed),characterization:characterizeWildNudge(policy.seeds,125000)};
   report.sourceSha256=createHash('sha256').update((await readFile(new URL('scripts/game-math/wild-nudge-characterize.mjs',root),'utf8')).replace(/\r\n/g,'\n')).digest('hex');
   if(process.argv.includes('--write'))await writeFile(new URL('docs/concepts/wild-nudge/characterization.json',root),JSON.stringify(report,null,2)+'\n');
