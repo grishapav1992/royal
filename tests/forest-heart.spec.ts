@@ -699,45 +699,45 @@ test('the full host uses the available monitor and keeps the board, elf and paid
   const records=[];
   for(const viewport of [{width:2507,height:1100},{width:2560,height:1440},{width:2006,height:880},{width:1920,height:1080},{width:1366,height:768},{width:1280,height:720},{width:1024,height:768},{width:1024,height:1366},{width:768,height:1024},{width:390,height:844},{width:320,height:780},{width:844,height:390},{width:667,height:375},{width:1920,height:1080}]){
     await page.setViewportSize(viewport);
-    await expect.poll(async()=>{
-      return page.locator('.forest-heart-frame').evaluate(frame=>{
-        const content=frame.getBoundingClientRect(),stage=frame.closest('.mini-stage')!.getBoundingClientRect();
-        return Math.max(Math.abs(content.width-stage.width),Math.abs(content.height-stage.height));
+    // The host resizes the iframe before the module's own layout frame runs.
+    await expect(async()=>{
+      const outer=await page.locator('.forest-heart-frame').evaluate(frame=>({frame:frame.getBoundingClientRect().toJSON(),stage:frame.closest('.mini-stage')!.getBoundingClientRect().toJSON(),mode:frame.closest('#mini-dialog')!.getAttribute('data-game-viewport')}));
+      const inner=await game(page).locator('.fh').evaluate(async root=>{
+        await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));
+        const box=(selector:string)=>root.querySelector(selector)!.getBoundingClientRect().toJSON();
+        const logo=root.querySelector<HTMLImageElement>('.fh-title-logo')!;
+        return{width:root.clientWidth,height:root.clientHeight,layout:(root as HTMLElement).dataset.layout,header:box('.fh-top'),world:box('.fh-world'),logo:{...logo.getBoundingClientRect().toJSON(),fit:getComputedStyle(logo).objectFit},board:box('.fh-board'),machine:box('.fh-machine'),character:box('.fh-character'),portrait:box('.fh-character-canvas'),controls:box('.fh-controls'),status:box('.fh-status-band'),spin:box('[data-fh=spin]'),flowers:[...root.querySelectorAll('.fh-flower')].map(flower=>({image:flower.querySelector('img')!.getBoundingClientRect().toJSON(),value:flower.querySelector('.fh-flower-value')!.getBoundingClientRect().toJSON(),font:parseFloat(getComputedStyle(flower.querySelector('.fh-flower-value')!).fontSize),fits:flower.querySelector('.fh-flower-value')!.scrollWidth<=flower.querySelector('.fh-flower-value')!.clientWidth+1})),scrollWidth:root.ownerDocument.documentElement.scrollWidth,scrollHeight:root.ownerDocument.documentElement.scrollHeight};
       });
-    }).toBeLessThanOrEqual(2);
-    const outer=await page.locator('.forest-heart-frame').evaluate(frame=>({frame:frame.getBoundingClientRect().toJSON(),stage:frame.closest('.mini-stage')!.getBoundingClientRect().toJSON(),mode:frame.closest('#mini-dialog')!.getAttribute('data-game-viewport')}));
-    const inner=await game(page).locator('.fh').evaluate(root=>{
-      const box=(selector:string)=>root.querySelector(selector)!.getBoundingClientRect().toJSON();
-      const logo=root.querySelector<HTMLImageElement>('.fh-title-logo')!;
-      return{width:root.clientWidth,height:root.clientHeight,layout:(root as HTMLElement).dataset.layout,header:box('.fh-top'),world:box('.fh-world'),logo:{...logo.getBoundingClientRect().toJSON(),fit:getComputedStyle(logo).objectFit},board:box('.fh-board'),machine:box('.fh-machine'),character:box('.fh-character'),portrait:box('.fh-character-canvas'),controls:box('.fh-controls'),status:box('.fh-status-band'),spin:box('[data-fh=spin]'),flowers:[...root.querySelectorAll('.fh-flower')].map(flower=>({image:flower.querySelector('img')!.getBoundingClientRect().toJSON(),value:flower.querySelector('.fh-flower-value')!.getBoundingClientRect().toJSON(),font:parseFloat(getComputedStyle(flower.querySelector('.fh-flower-value')!).fontSize),fits:flower.querySelector('.fh-flower-value')!.scrollWidth<=flower.querySelector('.fh-flower-value')!.clientWidth+1})),scrollWidth:root.ownerDocument.documentElement.scrollWidth,scrollHeight:root.ownerDocument.documentElement.scrollHeight};
-    });
-    await page.screenshot({path:out+`/responsive-${viewport.width}x${viewport.height}.png`});
-    records.push({viewport,outer,inner});await writeFile(out+'/responsive-metrics.json',JSON.stringify(records,null,2));
-    expect(Math.abs(outer.frame.height-outer.stage.height)).toBeLessThanOrEqual(2);
-    expect(inner.scrollWidth).toBeLessThanOrEqual(inner.width+1);expect(inner.scrollHeight).toBeLessThanOrEqual(inner.height+1);
-    for(const box of [inner.board,inner.controls,inner.spin]){
-      expect(box.x).toBeGreaterThanOrEqual(0);expect(box.y).toBeGreaterThanOrEqual(0);
-      expect(box.right).toBeLessThanOrEqual(inner.width+1);expect(box.bottom).toBeLessThanOrEqual(inner.height+1);
-    }
-    expect(inner.board.width).toBeGreaterThanOrEqual(viewport.height<500?150:180);
-    expect(inner.logo.fit).toBe('contain');
-    expect(inner.logo.top).toBeGreaterThanOrEqual(inner.header.top-1);expect(inner.logo.bottom).toBeLessThanOrEqual(inner.header.bottom+1);
-    if(inner.layout==='wide'){
-      expect(inner.machine.top).toBeGreaterThanOrEqual(inner.header.bottom);
-      expect(inner.machine.bottom).toBeLessThanOrEqual(inner.status.top+1);
-      expect(inner.height-inner.controls.bottom).toBeLessThanOrEqual(19);
-      for(const flower of inner.flowers){
-        expect(flower.value.left).toBeGreaterThanOrEqual(inner.board.right);
-        expect(flower.value.right).toBeLessThanOrEqual(inner.width);
-        expect(flower.value.bottom).toBeLessThanOrEqual(inner.status.top);
-        expect(flower.font).toBeGreaterThanOrEqual(16);expect(flower.fits).toBe(true);
-        if(inner.board.width>=450)expect(flower.image.height).toBeGreaterThanOrEqual(96);
+      expect(Math.abs(outer.frame.width-outer.stage.width)).toBeLessThanOrEqual(2);
+      expect(Math.abs(outer.frame.height-outer.stage.height)).toBeLessThanOrEqual(2);
+      expect(inner.scrollWidth).toBeLessThanOrEqual(inner.width+1);expect(inner.scrollHeight).toBeLessThanOrEqual(inner.height+1);
+      for(const box of [inner.board,inner.controls,inner.spin]){
+        expect(box.x).toBeGreaterThanOrEqual(0);expect(box.y).toBeGreaterThanOrEqual(0);
+        expect(box.right).toBeLessThanOrEqual(inner.width+1);expect(box.bottom).toBeLessThanOrEqual(inner.height+1);
       }
-      expect(Math.abs(inner.character.top-inner.machine.top)).toBeLessThanOrEqual(2);
-      expect(inner.portrait.height).toBeGreaterThanOrEqual(inner.board.height*.95);
-      expect(inner.portrait.width/inner.portrait.height).toBeCloseTo(5/6,1);
-      expect(inner.character.left).toBeGreaterThanOrEqual(inner.machine.right);
-    }
+      expect(inner.board.width).toBeGreaterThanOrEqual(viewport.height<500?150:180);
+      expect(inner.logo.fit).toBe('contain');
+      expect(inner.logo.top).toBeGreaterThanOrEqual(inner.header.top-1);expect(inner.logo.bottom).toBeLessThanOrEqual(inner.header.bottom+1);
+      if(inner.layout==='wide'){
+        expect(inner.machine.top).toBeGreaterThanOrEqual(inner.header.bottom);
+        expect(inner.machine.bottom).toBeLessThanOrEqual(inner.status.top+1);
+        expect(inner.height-inner.controls.bottom).toBeLessThanOrEqual(19);
+        for(const flower of inner.flowers){
+          expect(flower.value.left).toBeGreaterThanOrEqual(inner.board.right);
+          expect(flower.value.right).toBeLessThanOrEqual(inner.width);
+          expect(flower.value.bottom).toBeLessThanOrEqual(inner.status.top);
+          expect(flower.font).toBeGreaterThanOrEqual(16);expect(flower.fits).toBe(true);
+          if(inner.board.width>=450)expect(flower.image.height).toBeGreaterThanOrEqual(96);
+        }
+        expect(Math.abs(inner.character.top-inner.machine.top)).toBeLessThanOrEqual(2);
+        expect(inner.portrait.height).toBeGreaterThanOrEqual(inner.board.height*.95);
+        expect(inner.portrait.width/inner.portrait.height).toBeCloseTo(5/6,1);
+        expect(inner.character.left).toBeGreaterThanOrEqual(inner.machine.right);
+      }
+      records.push({viewport,outer,inner});
+    }).toPass({timeout:5000});
+    await page.screenshot({path:out+`/responsive-${viewport.width}x${viewport.height}.png`});
+    await writeFile(out+'/responsive-metrics.json',JSON.stringify(records,null,2));
     await expectConnectedChat(page);
   }
   await act(page);await expect(game(page).locator('[data-cell]:enabled')).toHaveCount(12);
@@ -749,8 +749,11 @@ test('the full host uses the available monitor and keeps the board, elf and paid
   for(const viewport of [{width:667,height:375},{width:844,height:390}]){
     await page.setViewportSize(viewport);
     await expect.poll(()=>game(page).locator('.fh-board').evaluate(e=>e.clientWidth)).toBeGreaterThanOrEqual(150);
-    const boxes=await game(page).locator('.fh').evaluate(root=>({height:root.clientHeight,button:root.querySelector('[data-fh=spin]')!.getBoundingClientRect().toJSON(),bonus:root.querySelector('.fh-bonus')!.getBoundingClientRect().toJSON()}));
-    expect(boxes.button.bottom).toBeLessThanOrEqual(boxes.height);expect(boxes.bonus.bottom).toBeLessThanOrEqual(boxes.height);
+    await expect.poll(() => game(page).locator('.fh').evaluate(root => {
+      const spin=root.querySelector('[data-fh=spin]')!.getBoundingClientRect();
+      const bonus=root.querySelector('.fh-bonus')!.getBoundingClientRect();
+      return Math.max(spin.bottom,bonus.bottom)-root.clientHeight;
+    })).toBeLessThanOrEqual(0);
     await expect(game(page).locator('[data-fh=spin]')).toContainText(/БЕСПЛАТН/i);
     expect(await game(page).locator('.fh-button-label').evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
     await page.screenshot({path:out+`/responsive-bonus-${viewport.width}.png`});
