@@ -1,0 +1,127 @@
+{
+  "published": true,
+  "release": "caramel-candy-box-20261123-v1",
+  "sourceCommit": "a7d04842f95d70cc09d9e855a60497646285a360",
+  "baseCommit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/caramel-candy-box-20261123-v1/source.tgz",
+    "sha256": "6d7f59c49eedb11f1f63194b2add46b1e529be246612d2691fc8e805917bc8f8",
+    "bytes": 2486,
+    "oldVersion": "1.1.1-082dc535cc78",
+    "imageTag": "royal-game:before-caramel-candy-box-20261123-v1",
+    "image": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/caramel-carnival/CaramelArtwork.ts",
+      "games/caramel-carnival/CaramelBoard.ts",
+      "games/caramel-carnival/CaramelCarnivalAssets.ts",
+      "games/caramel-carnival/CaramelCarnivalAudio.ts",
+      "games/caramel-carnival/CaramelCarnivalUI.ts",
+      "games/caramel-carnival/caramel-candy.css",
+      "games/caramel-carnival/caramelText.ts"
+    ]
+  },
+  "module": {
+    "verified": true,
+    "gameId": "studio-caramel-carnival",
+    "version": "1.2.0-870ac75ad162",
+    "bytes": 3272835,
+    "files": 7,
+    "beforeSha256": "22e4736e121f80a2acee940bfef792aa45517b9eb84585519e606963d8f53a54",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "a922674ea7cd0c947590d759c63b22233cd436882b29542c2be1d7ce0f278316",
+    "history": "/opt/royal-game-modules-state/history/20261123T163131-cf5a1796918a4ceaa1c385807c6edbeb.json"
+  },
+  "freeBefore": 11996340224,
+  "freeAfter": 11992842240,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8783,
+  "servicesPreserved": 11,
+  "wrapperSourceCommit": "a7d04842f95d70cc09d9e855a60497646285a360",
+  "gameSourceCommit": "ac060131bfa5f084782988ce21e94e4fbdb4c3ad",
+  "previousVersion": "1.1.1-082dc535cc78",
+  "manifestSha256": "84527a2eea21cf9a3c1bfe9380bc960f34104cfb67da26b2d723556a3d9d8589",
+  "pointerSha256": "a922674ea7cd0c947590d759c63b22233cd436882b29542c2be1d7ce0f278316",
+  "priorPointerSha256": "22e4736e121f80a2acee940bfef792aa45517b9eb84585519e606963d8f53a54",
+  "releaseManifestSha256": "ab5df32863181f5e2053b90f66ad4be0e5c2655af29df78760676ee4816a73e4",
+  "receiptSha256": "26149cad9c6b2825aefbff521f16fcabbf9655eaaedaa1e271e8b276dfba38cc",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "projection": "shared inputs pinned to production 1eae5668; GameModuleCatalog as in velvet-stable-frame-20261123-v2",
+  "verification": {
+    "rtp": "passed in release:prepare",
+    "typecheck": true,
+    "githubVerified": true,
+    "walletTests": 19,
+    "browser": "Google Chrome through Playwright",
+    "connectedBrowserTests": 15,
+    "browserReport": {
+      "release": "caramel-candy-box-20261123-v1",
+      "version": "1.2.0-870ac75ad162",
+      "sourceCommit": "a7d04842f95d70cc09d9e855a60497646285a360",
+      "moduleManifestSha256": "84527a2eea21cf9a3c1bfe9380bc960f34104cfb67da26b2d723556a3d9d8589",
+      "connectedHostPassed": true,
+      "recoveryPassed": true,
+      "walletTestsPassed": 19,
+      "host": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact module bytes",
+      "browser": "Google Chrome",
+      "scenarios": [
+        "field and actions without scrolling",
+        "frame stays still as feedback and festival change",
+        "box never moves through real rounds: 1440x900 with chat, 1440x900, 393x852, 852x393, 320x568, 568x320",
+        "box ignores the length of every changing text",
+        "accepts 100 USDT and rejects the next cent (passed after the test closed the host level reward window that interrupted the first run)",
+        "settings, Stop and one accepted ten-cent round with a lost response and one debit",
+        "count-only autoplay window",
+        "ten paid autoplay spins through a natural bonus",
+        "natural bonus counters in both orientations",
+        "moving symbols through both phone orientations"
+      ],
+      "english": "host dictionary of 1eae5668: no Russian labels in intro, idle, spin, result, autoplay, purchase, settings; one hidden host strip label excepted",
+      "notChecked": [
+        "physical phones",
+        "Safari",
+        "listening quality"
+      ]
+    },
+    "browserReportSha256": "e9bcaaeff9a81662c6a38d0ff6c94ceac18d473c53b88e602450fd81b80d6674",
+    "reruns": [
+      "The 100 USDT scenario timed out once because the host level reward window covered the game. It passed after the temporary test copy closed that window.",
+      "The shared orientation scenario stops on Velvet Reign, whose root no longer matches its selector. It passed with Caramel Carnival alone."
+    ],
+    "live": {
+      "health": 200,
+      "moduleHostEntries": 124,
+      "unchangedModulePointers": 123,
+      "changedModulePointers": [
+        "studio-caramel-carnival"
+      ],
+      "packageFilesVerified": 8,
+      "packageFilesIncludeManifest": true,
+      "previousPackageFilesVerified": 8,
+      "hostIndexUnchanged": true
+    },
+    "publicSignedInPlayChecked": false,
+    "publicGuestPlayChecked": false,
+    "publicGuestPlayReason": "The public site requires signing in before the catalogue.",
+    "productionAccountsOrRoundsCreated": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 82.28,
+    "healthOk": true,
+    "freeBefore": 11988566016,
+    "freeAfter": 11985100800,
+    "removedEntries": 0,
+    "timerEnabled": true,
+    "timerActive": true,
+    "productionGraph": "pending, indexing queued"
+  }
+}
