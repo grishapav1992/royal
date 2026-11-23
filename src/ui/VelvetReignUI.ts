@@ -1,7 +1,8 @@
 import {canRecoverOperation} from './operationFeedback';
 import {confirmedPayout} from '../shared/roundPrecision';
 import {ROYAL_GAME_STAKE_UNITS as COSMIC_ESCAPE_BET_UNITS} from '../shared/gameStakes';
-import { t as translateText, tr, locale } from '../i18n/index';
+import { locale } from '../i18n/index';
+import {velvetText as translateText, velvetMarkup as tr} from './velvetReignText';
 import {SlotSettings} from './slotKit/SlotSettings';
 import {SlotDialog, slotOwnsKeyboard} from './slotKit/SlotDialog';
 import {SlotStakeControls, SlotAudioControls, slotStakeStep, updateSlotTransport} from './slotKit/SlotControls';
