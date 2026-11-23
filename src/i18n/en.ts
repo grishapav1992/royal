@@ -4519,7 +4519,7 @@ export const english: Record<string, string> = {
   "Возврат": "Return",
   "Быстрый выбор ставки": "Quick stakes",
   "Ставка от 0.10 до 50.00": "Enter a stake from 0.10 to 50.00 with up to two decimal places",
-  "0,10–50,00, шаг 0,01": "0.10–50.00, step 0.01",
+  "0,10–100,00, шаг 0,01": "0.10–100.00, step 0.01",
   "Бесплатно": "Free",
   "Фриспин": "Free spin",
   "Выберите награду": "Choose a reward",

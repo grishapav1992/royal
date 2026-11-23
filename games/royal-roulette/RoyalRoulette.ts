@@ -1,7 +1,7 @@
 import {ActionGameLayout} from '../../src/ui/ActionGameLayout';
 import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
-import {GAME_BETS as DEMO_BETS, validGameBet, gameBetCents} from '../../src/shared/gameStakes';
+import {ROYAL_GAME_BETS as DEMO_BETS, validGameBet, gameBetCents} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import { type WalletResult } from '../../src/shared/demoWallet';
 import { rouletteRedNumbers, type RouletteInput, type RouletteRound } from '../../src/shared/gameCore';

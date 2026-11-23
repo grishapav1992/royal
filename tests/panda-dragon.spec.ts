@@ -61,7 +61,7 @@ test('Royal: десять сотых, потеря ответа, восстан�
   const playBar = mini.locator('.panda-bar');
   const playBarHeight = (await playBar.boundingBox())!.height;
   await stake.fill('0,101');
-  await expect(stake).toHaveAccessibleDescription('0,10–50,00, шаг 0,01');
+  await expect(stake).toHaveAccessibleDescription('0,10–100,00, шаг 0,01');
   await expect(spin).toBeDisabled();
   expect((await playBar.boundingBox())!.height).toBe(playBarHeight);
   await stake.press('Enter');

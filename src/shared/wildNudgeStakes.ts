@@ -1,11 +1,11 @@
 /** Common-stake rules 2. Historical rules 1 stay in wildNudge.ts unchanged. */
-import {GAME_STAKE_UNITS,validGameStake} from './gameStakes';
+import {ROYAL_GAME_STAKE_UNITS,validGameStake} from './gameStakes';
 import {precisionBaseSession} from './roundPrecision';
 import {WILD_NUDGE_DATA,drawWildNudgeSpin,wildNudgeSpin,type NudgeSpin,type WildNudgeRandom} from './wildNudgeMath';
 import {validWildNudgeSettings,validWildNudgeSession as validLegacySession,validWildNudgeStake as validLegacyStake,WildNudgeMoveError,type WildNudgeView as LegacyView,type WildNudgeResult as LegacyResult} from './wildNudge';
 export {WILD_NUDGE_GAME,WILD_NUDGE_CLIENT_HEADER,WILD_NUDGE_RESERVE_MULTIPLIER,WildNudgeMoveError,validWildNudgeSettings} from './wildNudge';
 export type {WildNudgeSettings} from './wildNudge';
-export const STAR_SPIN_STAKES=GAME_STAKE_UNITS;
+export const STAR_SPIN_STAKES=ROYAL_GAME_STAKE_UNITS;
 export type StarSpinView=Omit<LegacyView,'version'>&{version:2};
 export type WildNudgeView=LegacyView|StarSpinView;
 export type WildNudgeResult=Omit<LegacyResult,'view'>&{view:WildNudgeView};

@@ -8,7 +8,8 @@ import {tmpdir} from 'node:os';
 import express from 'express';
 import {ExpansionClient} from '../src/wallet/ExpansionClient';
 import {COSMIC_STAKE_LIMIT_HEADER} from '../src/shared/cosmicStakeProtocol';
-import {CARAMEL_GAME,CARAMEL_STAKE_LIMIT_HEADER} from '../src/shared/caramelCarnival';
+import {CARAMEL_STAKE_LIMIT_HEADER} from '../src/shared/caramelCarnival';
+import {ROYAL_STAKE_LIMIT_HEADER} from '../src/shared/gameStakes';
 import {verifyGameRound} from '../server/games/core';
 import {pvpFixture} from './finance/helpers/nile-pvp-fixture';
 import {block} from './finance/helpers/nile-play-fixture';
@@ -20,22 +21,21 @@ const {accounts}=await import('../server/accounts');
 const {installDemoWallet}=await import('../server/demoWalletRoutes');
 const {installGameWallet}=await import('../server/gameWalletRoutes');
 const policies=JSON.parse(readFileSync(new URL('../scripts/game-math/rtp-policy.json',import.meta.url),'utf8')).stakePolicies;
-const capabilities={[COSMIC_STAKE_LIMIT_HEADER]:'1',[CARAMEL_STAKE_LIMIT_HEADER]:'1','X-Royal-Wild-Nudge':'1','X-Royal-Card-Rules':'2','X-Royal-Caramel-Rules':'1','X-Royal-Velvet-Rules':'1','X-Royal-Convoy-Rules':'1','X-Royal-Nitro-Rules':'1','X-Royal-Afterglow-Rules':'1','X-Royal-Afterglow-Progress':'4','X-Royal-Meme-Rules':'1','X-Royal-Cr-Leo':'1','X-Royal-Neopolis-Rules':'4','X-Royal-Dracona-Rules':'2','X-Royal-Flag-Battle':'2','X-Royal-Jackie':'2','X-Royal-Temple-Rules':'2','X-Royal-Forest-Heart-Rules':'1','X-Royal-Caribbean-Treasures':'1'};
+const capabilities={[ROYAL_STAKE_LIMIT_HEADER]:'1',[COSMIC_STAKE_LIMIT_HEADER]:'1',[CARAMEL_STAKE_LIMIT_HEADER]:'1','X-Royal-Wild-Nudge':'1','X-Royal-Card-Rules':'2','X-Royal-Caramel-Rules':'1','X-Royal-Velvet-Rules':'1','X-Royal-Convoy-Rules':'1','X-Royal-Nitro-Rules':'1','X-Royal-Afterglow-Rules':'1','X-Royal-Afterglow-Progress':'4','X-Royal-Meme-Rules':'1','X-Royal-Cr-Leo':'1','X-Royal-Neopolis-Rules':'4','X-Royal-Dracona-Rules':'2','X-Royal-Flag-Battle':'2','X-Royal-Jackie':'2','X-Royal-Temple-Rules':'2','X-Royal-Forest-Heart-Rules':'1','X-Royal-Caribbean-Treasures':'1'};
 const next=(s:any)=>{
  const v=s.view,name=v.forestHeart?.stage==='choice'?'forest-pass':v.caribbean?.phase==='choice'?'caribbean-choose-raid':v.actions.find((a:any)=>a.move==='cashout')?.move??v.actions.find((a:any)=>a.cost===0)?.move;
- assert(name);const revision=v.templeCascade?.revision??v.caribbean?.revision??v.forestHeart?.revision??v.neopolis?.revision??v.dracona?.revision??v.afterglow?.revision??v.nitro?.revision??v.convoy?.revision??v.caramel?.revision??v.luelon?.revision??v.penalty?.revision??v.jackie?.combat.revision;
+ assert(name);const revision=v.wildNudge?.revision??v.templeCascade?.revision??v.caribbean?.revision??v.forestHeart?.revision??v.neopolis?.revision??v.dracona?.revision??v.afterglow?.revision??v.nitro?.revision??v.convoy?.revision??v.caramel?.revision??v.luelon?.revision??v.penalty?.revision??v.jackie?.combat.revision;
  return{id:randomUUID(),gameId:s.gameId,action:'move',sessionId:s.id,move:name,...(revision===undefined?{}:{revision})};
 };
 test.after(async()=>{await accounts.close();});
-for(const native of [false,true])test(`${native?'USDT financial socket':'common demo wallet'} accepts ten-cent total rounds in all 19 casino games and never duplicates money`,{timeout:240000},async()=>{
+for(const native of [false,true])test(`${native?'USDT financial socket':'common demo wallet'} accepts 0.10 through 100 USDT in the 19 Royal games and never duplicates money`,{timeout:240000},async()=>{
  const client=new ExpansionClient(2),verify=(s:any)=>Reflect.get(client,'checkedSession').call(client,s);
  // Negotiated Tsu-e-fa rounds use the PvP transport and its dedicated stake tests.
  for(const [game,p]of Object.entries(policies).filter(([game])=>game!=='tsu-e-fa'&&game!=='panda-dragon-preview')as [string,any][]){
   const login=await accounts.login('shared-http-'+randomUUID()+'@example.test','Royal-shared-stakes-42!');
   const c=native?await pvpFixture([login.account.id,randomUUID()]):undefined;
   const socket=process.platform==='win32'?'\\\\.\\pipe\\royal-stakes-'+randomUUID():join(tmpdir(),'royal-stakes-'+randomUUID()+'.sock');let finance:ReturnType<typeof createNilePlayServer>|undefined;
-  const extendedMaximum=game==='studio-cosmic-escape'||game===CARAMEL_GAME;
-  if(c){await c.source.ingest(block(102,extendedMaximum?'2000000000000':'1000000000000',c.config.source.addresses.find(a=>a.userId==='reserve')!.address));await c.ledger.sync(c.source,await c.reconciliation());finance=createNilePlayServer(c.ledger);await new Promise<void>(r=>finance!.listen(socket,r));}
+  if(c){await c.source.ingest(block(102,'100000000000000',c.config.source.addresses.find(a=>a.userId==='reserve')!.address));await c.ledger.sync(c.source,await c.reconciliation());finance=createNilePlayServer(c.ledger);await new Promise<void>(r=>finance!.listen(socket,r));}
   else await accounts.wallet.operate(login.account.id,{id:randomUUID(),kind:'deposit',amount:100000});
   const app=express();native?installGameWallet(app,socket):installDemoWallet(app);const server=app.listen(0,'127.0.0.1');await once(server,'listening');
   const address=server.address();assert(address&&typeof address!=='string');const url='http://127.0.0.1:'+address.port+'/api/'+(native?'game-wallet':'demo-wallet');
@@ -64,48 +64,62 @@ for(const native of [false,true])test(`${native?'USDT financial socket':'common 
    const paid=core?reply.gameRound.payoutUnits:reply.session.returnedUnits,expected=Math.round(before*100)-10+Number(paid);assert.equal(Math.round(reply.wallet.balance*100),expected);
    const repeat=await post(path,last);assert.equal(repeat.status,200);const saved:any=await repeat.json();const stable=(s:any)=>{const copy=structuredClone(s);delete copy.serverNow;return copy;};assert.deepEqual(stable(core?saved.gameRound:saved.session),stable(core?reply.gameRound:reply.session));assert.equal(Math.round(saved.wallet.balance*100),expected);
    assert.equal(saved.wallet.entries.filter((e:any)=>e.kind==='bet'&&e.source===game).length,1);assert.equal(saved.wallet.entries.filter((e:any)=>e.kind==='win'&&e.source===game).length,1);
-   if(extendedMaximum){
-    const beforeMax=await balance();
-    for(const stakeUnits of ['10001','15000']){
-     const rejected=await post(path,{...op,id:randomUUID(),stakeUnits});
-     assert.equal(rejected.status,400);
-     assert.equal(await balance(),beforeMax);
-    }
-    if(!native&&game===CARAMEL_GAME){
-     const oldHeaders=new Headers(headers);
-     oldHeaders.delete(CARAMEL_STAKE_LIMIT_HEADER);
-     const custom={...op,id:randomUUID(),stakeUnits:'5001'};
-     assert.equal((await post(path,custom,oldHeaders)).status,409);
-     assert.equal(await balance(),beforeMax);
-     const accepted=await post(path,custom);
-     assert.equal(accepted.status,200,await accepted.clone().text());
-     let current=await accepted.json();
-     assert.equal(current.session.spentUnits,'5001');
-     const stale=await fetch(url+path,{headers:oldHeaders});
-     assert.equal(stale.status,200);
-     assert.equal((await stale.json()).sessions.some((s:any)=>s.id===custom.id),false);
-     const retry=await post(path,custom,oldHeaders);
-     assert.equal(retry.status,200);
-     assert.equal((await retry.json()).wallet.balance,current.wallet.balance);
-     while(current.session.state==='active'){
-      const moved=await post(path,next(current.session));
-      assert.equal(moved.status,200,await moved.clone().text());
-      current=await moved.json();
+   const wager=(cents:number)=>({...op,id:randomUUID(),...(core?{amount:cents/100}:{stakeUnits:String(cents)})});
+   const beforeMax=await balance();
+   for(const cents of [10001,15000]){
+    const rejected=await post(path,wager(cents));
+    assert.equal(rejected.status,400,game+': '+await rejected.clone().text());
+    assert.equal(await balance(),beforeMax);
+   }
+   const oldHeaders=new Headers(headers);
+   oldHeaders.delete(ROYAL_STAKE_LIMIT_HEADER);
+   oldHeaders.delete(CARAMEL_STAKE_LIMIT_HEADER);
+   oldHeaders.delete(COSMIC_STAKE_LIMIT_HEADER);
+   const custom=wager(5007);
+   assert.equal((await post(path,custom,oldHeaders)).status,409,game);
+   assert.equal(await balance(),beforeMax);
+   for(const [request,cents] of [[custom,5007],[wager(10000),10000]] as const){
+    const accepted=await post(path,request);
+    assert.equal(accepted.status,200,game+': '+await accepted.clone().text());
+    let first=await accepted.json();
+    if(core){
+     assert(verifyGameRound(first.gameRound));
+     assert.equal(first.gameRound.stakeUnits,String(cents));
+    }else{
+     assert(verify(first.session));
+     assert.equal(first.session.spentUnits,String(cents));
+     if(cents===5007){
+      const stale=await fetch(url+path,{headers:oldHeaders});
+      assert.equal(stale.status,200);
+      assert.equal((await stale.json()).sessions.some((session:any)=>session.id===request.id),false);
      }
-     assert.equal(current.wallet.entries.filter((e:any)=>e.kind==='bet'&&e.source===game&&e.amount===-50.01).length,1);
     }
-    const maximum={...op,id:randomUUID(),stakeUnits:'10000'};
-    const accepted=await post(path,maximum);
-    assert.equal(accepted.status,200,await accepted.clone().text());
-    const first=await accepted.json();
-    assert(verify(first.session));
-    assert.equal(first.session.spentUnits,'10000');
-    assert.equal(first.wallet.entries.filter((e:any)=>e.kind==='bet'&&e.source===game&&e.amount===-100).length,1);
-    const retry=await post(path,maximum);
-    assert.equal(retry.status,200);
+    const retry=await post(path,request,cents===5007?oldHeaders:headers);
+    assert.equal(retry.status,200,game+': '+await retry.clone().text());
     const replay=await retry.json();
-    assert.deepEqual(replay.session,first.session);
+    assert.deepEqual(stable(core?replay.gameRound:replay.session),stable(core?first.gameRound:first.session));
     assert.equal(replay.wallet.balance,first.wallet.balance);
+    if(!core){
+     let moves=0;
+     while(first.session.state==='active'){
+      assert(moves++<10000);
+      if(game==='github-crash'){
+       const delay=Math.max(0,first.session.startedAt-Date.now()+20);
+       assert(delay<10000);if(delay)await new Promise(r=>setTimeout(r,delay));
+      }
+      const moved=await post(path,next(first.session));
+      if(game==='github-crash'&&moved.status===409){
+       const recovered=await(await fetch(url+path,{headers})).json();
+       const settled=recovered.sessions.find((session:any)=>session.id===request.id);
+       assert.equal(settled?.state,'settled');
+       first={wallet:recovered.wallet,session:settled};
+      }else{
+       assert.equal(moved.status,200,game+': '+await moved.clone().text());
+       first=await moved.json();
+      }
+     }
+    }
+    assert.equal(first.wallet.entries.filter((entry:any)=>entry.kind==='bet'&&entry.source===game&&entry.amount===-cents/100).length,1);
    }
    if(c)await c.ledger.audit();
   }finally{await new Promise<void>(r=>server.close(()=>r()));if(finance)await new Promise<void>(r=>finance!.close(()=>r()));await c?.close();}

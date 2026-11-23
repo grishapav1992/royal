@@ -1,0 +1,94 @@
+{
+  "release": "nitro-run-start-line-20261122-v1",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "156525ced04e3db6805355b7507a340048cc89be",
+  "codeCommit": "570761d4a6556cf7853083e99ee71083155b4947",
+  "installerCommit": "156525ced04e3db6805355b7507a340048cc89be",
+  "baseCommit": "e97289c4491f4cf380ea442a52a872fa798f4edf",
+  "runningImage": "sha256:2287b9485cdbdcf781439464080d1763277ee2707c252986dbf5d94d99264996",
+  "releaseManifestSha256": "80f7afe1e4f0b21f532a07a30aa6220c5303a97d21cba6cfe9e2275fa9f3577e",
+  "beforeSnapshotSha256": "d35ae2178ae928ff9016ca5644bf155760f9dd304af72614fef4e3fca9f19516",
+  "module": {
+    "verified": true,
+    "gameId": "studio-nitro-run",
+    "version": "1.3.0-ed4087983a4b",
+    "bytes": 2623482,
+    "files": 5,
+    "beforeSha256": "dec64c50dc5d0b03db7747e3fc54422e441a7126e7e25850a4276fa6040ff342",
+    "activeSha256": "c2053a42c1a5d53f0b79d53a1618bef5dfa4e71689ad992997e3732fb55deb44",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "history": "/opt/royal-game-modules-state/history/20261122T130517-7cf93bf7bdb6404cb006774738465171.json"
+  },
+  "priorManifestSha256": "669134bffd4ae4d8b1eaeeef0d5e44873b0201e17d1b4d74dc7fe2b9d28609f0",
+  "installedSources": [
+    "games/nitro-run/entry.ts",
+    "games/nitro-run/package.json",
+    "games/nitro-run/NitroRunUI.ts",
+    "games/nitro-run/NitroRunLayout.ts",
+    "games/nitro-run/nitro-run.css",
+    "games/nitro-run/nitro-run-layout.css"
+  ],
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/nitro-run-start-line-20261122-v1/source.tgz",
+    "sha256": "d6d2d7305af565499102792ba330843acd0344fd897b3960a48652facb1ae0f4",
+    "bytes": 2193,
+    "oldVersion": "1.2.2-fc365f5126f9",
+    "imageTag": "royal-game:before-nitro-run-start-line-20261122-v1",
+    "image": "sha256:2287b9485cdbdcf781439464080d1763277ee2707c252986dbf5d94d99264996",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/nitro-run/NitroRunLayout.ts",
+      "games/nitro-run/NitroRunUI.ts",
+      "games/nitro-run/nitro-run-layout.css",
+      "games/nitro-run/nitro-run.css"
+    ]
+  },
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "runtimeFilesPreserved": 8767,
+  "servicesPreserved": 11,
+  "otherModulesPreserved": true,
+  "freeBefore": 12441841664,
+  "freeAfter": 12439048192,
+  "firstAttempt": "exit 75: the hourly retention service held the publication locks; nothing changed. It finished with status completed and the installer was rerun.",
+  "verification": {
+    "rtp": "passed in release:prepare (verified 38, stakePoliciesVerified 20, legacyNotQualified 114)",
+    "typecheck": true,
+    "githubVerified": true,
+    "walletTests": 19,
+    "connectedBrowserTests": 5,
+    "scenarios": [
+      "field and actions without scrolling: studio-nitro-run (8 sizes)",
+      "Nitro Run keeps its field and instruments stable with connected chat (8 sizes, mobile chat open and close)",
+      "Nitro Run previews autoplay costs without placing a bet",
+      "settings, Stop and one accepted ten-cent round: studio-nitro-run",
+      "natural bonuses keep counters and free continuation visible in both orientations"
+    ],
+    "browserReportSha256": "3bd4adbc4d4d81daf9a4c1c58494c615a9e2d2358e59c60885e06f57925ace55",
+    "hostUsedForBrowserTests": "local connected host from main sources with a temporary PostgreSQL (scripts/game-layout-preview.ts), serving the exact prepared module bytes 1.3.0-ed4087983a4b",
+    "notRun": "tests/independent-game-modules.spec.ts wallet lock scenario: it also opens Saffron Spin, whose module build fails on main (missing games/wild-nudge/assets/catalog-cover.webp)",
+    "live": {
+      "health": true,
+      "moduleHostEntries": 124,
+      "unchangedModulePointers": 123,
+      "changedModulePointers": [
+        "studio-nitro-run"
+      ],
+      "packageFilesVerified": 6,
+      "previousPackageServed": true,
+      "hostProgramUnchanged": true
+    },
+    "maintenance": {
+      "status": "completed",
+      "durationSeconds": 76.74,
+      "timerEnabled": true,
+      "timerActive": true,
+      "freeBytesAfter": 12432531456
+    },
+    "productionAccountsOrRoundsCreated": false
+  }
+}

@@ -1,7 +1,7 @@
 import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {canRecoverOperation} from '../../src/ui/operationFeedback';
 import {confirmedPayout} from '../../src/shared/roundPrecision';
-import {DEFAULT_GAME_STAKE, GAME_STAKE_UNITS as CARIBBEAN_LINE_STAKES, validGameStake} from '../../src/shared/gameStakes';
+import {DEFAULT_GAME_STAKE, ROYAL_GAME_STAKE_UNITS as CARIBBEAN_LINE_STAKES, validGameStake} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import {
   CARIBBEAN_GAME, caribbeanInitialCost, validCaribbeanStake,

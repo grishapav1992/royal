@@ -1,6 +1,6 @@
 import {canRecoverOperation} from '../../src/ui/operationFeedback';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
-import {GAME_BETS as DRACONA_BETS, validGameBet, gameBetCents} from '../../src/shared/gameStakes';
+import {ROYAL_GAME_BETS as DRACONA_BETS, validGameBet, gameBetCents} from '../../src/shared/gameStakes';
 import { COLS, CREST, PORTAL, SIZE, SYMBOLS, DRACONA_MATH, type Grid, type Movement, type Step } from '../../src/shared/draconaMath';
 import { CharacterDirector } from './character';
 import { MagicEffects } from './effects';

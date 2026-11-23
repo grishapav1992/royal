@@ -1,0 +1,99 @@
+{
+  "release": "girlhub-review-fixes-20261123-v1",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "a3779e68a60323debee665dca65248cdf74fb02a",
+  "codeCommit": "5d6fb24c3e63d21a4f2a8a574db5497f00526483",
+  "installerCommit": "a3779e68a60323debee665dca65248cdf74fb02a",
+  "baseCommit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+  "runningImage": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+  "releaseManifestSha256": "b987596aae2932d9e3b61df347ee42d287f74b91126a9c0738226a4cd5bf77b2",
+  "beforeSnapshotSha256": "fe2e06af8f0010eb6860893d3b56bc4ec3e93c67bd09308524a41622a6f5f695",
+  "afterSnapshotSha256": "2181f230072316944ecb8d7fcf651c11f0d87d16ea80dccb6e360ec9b5a6ce4c",
+  "changes": [
+    "Routine autoplay and photo-shoot status is announced to assistive technology but no longer covers the spin result",
+    "Windows smaller than the smallest readable cabinet scroll inside the module, so the dock and spin button stay reachable"
+  ],
+  "module": {
+    "verified": true,
+    "gameId": "studio-afterglow",
+    "version": "1.4.1-d4d8130969b8",
+    "previousVersion": "1.4.0-cb8ff6685f89",
+    "contract": {"apiVersion": 1, "rulesVersion": 2, "progressVersion": 3},
+    "bytes": 3258460,
+    "files": 21,
+    "manifestSha256": "bb4e163ccdc430d04b36e7fa95101757434f964e1fb2c77ad7f7a6733b52e5f9",
+    "beforeSha256": "1eb42fe5036a87ccdfdf6a5ac2142009bc97b073ff7189fc8f8548384e3648a6",
+    "activeSha256": "f677ce3b23b9453f14e6b5c54734a9f4176b60d1cb1fd852b9c2e47c9a13dfec",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "history": "/opt/royal-game-modules-state/history/20261123T054930-25466b5fc5854aa897e6d5a35831da0f.json"
+  },
+  "priorManifestSha256": "77114a3d3bcf9a50b1fb9ca5f7c9646f4c2982044abe8da32003cb8ed534628b",
+  "installedSources": [
+    "games/girlhub/AfterglowUI.ts",
+    "games/girlhub/GirlhubLayout.ts",
+    "games/girlhub/girlhub.css",
+    "games/girlhub/package.json"
+  ],
+  "projection": {
+    "wardrobeProtocol": 3,
+    "reason": "The installed backend, src/shared/afterglowWardrobe.ts and the host module catalogue remain the protocol 3 versions from b1eeea9f. Main keeps progress 4 for the unreleased rarity order.",
+    "installedSourcesTakenAsIs": ["src/modules/GameModuleCatalog.ts", "src/shared/afterglowWardrobe.ts"],
+    "patchedModuleSources": "the same package.json, entry.ts and AfterglowUI.ts patches as girlhub-studio-20261122-v1, each matching exactly once",
+    "sharedInputsSinceInstalledBuild": "unchanged between 44a96b5c (stake-100 build of 1.4.0-cb8ff6685f89) and 1eae5668 for every shared module input and games/girlhub",
+    "installedAfterglowUIReproduced": "1eae5668:games/girlhub/AfterglowUI.ts with the protocol 3 patches equals the installed file, so the source delta is this fix only"
+  },
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/girlhub-review-fixes-20261123-v1/source.tgz",
+    "sha256": "8135e2b61ffd7a1a4129037464b31f7551c7b80c4cfbfeb6062bf608a31ed7d2",
+    "bytes": 31372,
+    "oldVersion": "1.4.0-cb8ff6685f89",
+    "imageTag": "royal-game:before-girlhub-review-fixes-20261123-v1",
+    "image": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+    "oldPackageHardlinked": true
+  },
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "runtimeFilesPreserved": 8783,
+  "servicesPreserved": 11,
+  "otherModulesPreserved": true,
+  "freeBefore": 12075216896,
+  "freeAfter": 12071755776,
+  "verification": {
+    "rtp": "passed in release:prepare (verified 38, stakePoliciesVerified 20, stakeAdmissionVerified 20, legacyNotQualified 114)",
+    "typecheck": true,
+    "githubVerified": true,
+    "walletTests": 19,
+    "connectedBrowserTests": {
+      "passed": [
+        "field and actions without scrolling: studio-afterglow (8 sizes)",
+        "settings, Stop and one accepted ten-cent round: studio-afterglow (one 0.10 debit, lost response recovered without a second debit)",
+        "GIRLHUB keeps autoplay results visible and scrolls in tiny windows (autoplay status does not cover the result; 400x480 and 480x300 scroll to a reachable spin; 1440x900 not cramped)"
+      ],
+      "failedOutsideGirlhub": "album, photo and themed menu remain accessible on a phone: the GIRLHUB album, photo, landscape close button and fit steps passed; the test then stopped opening Meme Overload, whose module does not build on main because of the image type error noted in girlhub-studio-20261122-v1"
+    },
+    "browserReportSha256": "4d6dd8fb43f6a35da238e4784b00222449f8a00495c539e5721ad7f98fe189c7",
+    "hostUsedForBrowserTests": "local connected host with chat from main sources with a temporary PostgreSQL (scripts/game-layout-preview.ts), with server/afterglowWardrobe.ts, src/shared/afterglowWardrobe.ts and the GIRLHUB catalogue entry temporarily set to the installed protocol 3 versions, serving the exact prepared module bytes 1.4.1-d4d8130969b8",
+    "live": {
+      "health": true,
+      "moduleHostEntries": 124,
+      "unchangedModulePointers": 123,
+      "changedModulePointers": ["studio-afterglow"],
+      "packageFilesVerified": 21,
+      "previousPackageServed": true,
+      "hostProgramUnchanged": true,
+      "catalogueUnchanged": true
+    },
+    "maintenance": {
+      "status": "completed",
+      "durationSeconds": 81.73,
+      "timerEnabled": true,
+      "timerActive": true,
+      "freeBytesAfter": 12065210368
+    },
+    "productionAccountsOrRoundsCreated": false
+  }
+}

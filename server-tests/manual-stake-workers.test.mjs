@@ -71,7 +71,7 @@ test('fresh parallel real-server replays equal the original exhaustive evidence 
   const records=['github-crash','flag-battle'].map(game=>({game,policy:registry.stakePolicies[game]}));
   const serial=records.map(({game,policy})=>qualifyManualStakes(game,policy));
   const first=await prepareManualStakeChecks(records,{workers:2});
-  assert.equal(first.policies,2);assert.equal(first.choices,4);assert.equal(first.checks,4*4991);
+  assert.equal(first.policies,2);assert.equal(first.choices,4);assert.equal(first.checks,4*9991);
   for(const [index,{game,policy}]of records.entries()){
     const proof=JSON.parse(await readFile(new URL('../'+policy.proof,import.meta.url),'utf8')).manualStakes;
     assert.deepEqual(qualifyManualStakes(game,policy),serial[index]);assert(validateManualStakes(game,policy,proof));

@@ -33,9 +33,11 @@ export async function enterGameHall(page:Page,path:string){
   return page.locator('#mini-dialog').isVisible();
  },{timeout:60000,intervals:[1000,4000]}).toBe(true);
  await expect(page.locator('.royal-platform')).toBeVisible();
+ await expect(page.locator('#mini-dialog .mini-top .game-mode-badge')).toHaveCount(0);
 }
 export async function chooseGame(page:Page,id:string){
  if(await page.locator('#mini-dialog').getAttribute('data-game')!=='royal-catalog')await page.locator('#studio-game-list').click();
  await page.locator(`[data-platform-game="${id}"]`).click();await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id',id);
  await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));
+ await expect(page.locator('#mini-dialog .mini-top .game-mode-badge')).toHaveCount(0);
 }

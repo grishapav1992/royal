@@ -60,6 +60,8 @@ async function fit(page:Page,id:string,action?:string,modal=false){
  },{prefix,primary,modal});
  expect(failures).toEqual([]);
  for(const selector of [primary,`[data-${prefix}-stake]`,'.slot-settings-button']){
+  // Last Convoy shows the accepted stake instead of the stake field during its evacuation.
+  if(selector===`[data-${prefix}-stake]`&&id==='studio-last-convoy'&&await page.locator('#mini-game > [data-bonus="true"]').count())continue;
   const box=await page.locator((selector==='.slot-settings-button'?'#mini-dialog ':'#mini-game ')+selector).boundingBox();expect(box).not.toBeNull();expect(box!.height).toBeGreaterThanOrEqual(44);
  }
 }
@@ -140,7 +142,51 @@ test('Last Convoy keeps its result line and stake legible in the connected host'
  await expect(root.locator('[data-cc-stake]')).toHaveValue('11');
  await stake.fill('0,10');
  await expect(root.locator('[data-cc-stake]')).toHaveValue('10');
- await page.locator('#mini-dialog .game-chat-toggle').click();
+ // Pressing the stake opens the list of amounts; a choice uses the manual stake path and never places a bet.
+ const debits=(await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet').length;
+ const menu=root.locator('[data-cv-stake-menu]');
+ await expect(root.locator('[data-cv-preset]')).toHaveCount(0);
+ for(const [width,height] of [[1440,900],[390,844],[844,390]] as const){
+  await page.setViewportSize({width,height});
+  if(width>800&&height>800&&!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
+  if(width<800&&await chat.isVisible())await chat.locator('.game-chat-close').click();
+  await fit(page,game);
+  await expect(menu).toBeHidden();
+  await stake.click();
+  await expect(menu).toBeVisible();
+  await expect(stake).toHaveAttribute('aria-expanded','true');
+  const inside=await menu.evaluate(element=>{const box=element.getBoundingClientRect(),game=element.closest('.cv-game')!.getBoundingClientRect();return box.top>=game.top&&box.bottom<=game.bottom&&box.left>=game.left&&box.right<=game.right;});
+  expect(inside,`${width}x${height}: the stake list stays inside the game`).toBe(true);
+  await menu.locator('[data-cv-stake-option="50"]').click();
+  await expect(menu).toBeHidden();
+  await expect(root.locator('[data-cc-stake]')).toHaveValue('50');
+  await expect(stake).toHaveValue('0,50');
+  await stake.click();
+  await expect(menu.locator('[data-cv-stake-option="50"]')).toHaveAttribute('aria-selected','true');
+  await page.keyboard.press('Escape');
+  await expect(menu).toBeHidden();
+  await stake.press('ArrowDown');
+  await expect(menu.locator('[data-cv-stake-option="50"]')).toBeFocused();
+  await page.keyboard.press('ArrowLeft');
+  await page.keyboard.press('ArrowLeft');
+  await page.keyboard.press('Enter');
+  await expect(root.locator('[data-cc-stake]')).toHaveValue('10');
+  await expect(menu).toBeHidden();
+  await root.locator('.cv-stake-value > label').click();
+  await expect(menu).toBeVisible();
+  await menu.locator('[data-cv-stake-custom]').click();
+  await expect(menu).toBeHidden();
+  await expect(stake).toBeFocused();
+  await stake.fill('0,12');
+  await expect(root.locator('[data-cc-stake]')).toHaveValue('12');
+  await stake.fill('0,10');
+  await expect(root.locator('[data-cc-stake]')).toHaveValue('10');
+  await page.mouse.click(1,1);
+ }
+ expect((await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(debits);
+ await page.setViewportSize({width:1440,height:900});
+ await fit(page,game);
+ if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();
  await expect(chat.locator('#chat-input')).toBeVisible();
 });
 
@@ -159,21 +205,29 @@ test('Nitro Run keeps its field and instruments stable with connected chat',asyn
    await fit(page,'studio-nitro-run');
    const composition=await game.evaluate(root=>{
     const rect=(selector:string)=>root.querySelector(selector)!.getBoundingClientRect().toJSON();
-    return {profile:root.dataset.slotPriority,cabinet:rect('.nr-cabinet'),stage:rect('.nr-stage'),hud:rect('.nr-hud'),header:rect('.nr-heading'),frame:rect('.cc-board-frame'),console:rect('.nr-console'),root:root.getBoundingClientRect().toJSON()};
+    return {profile:root.dataset.slotPriority,cabinet:rect('.nr-cabinet'),stage:rect('.nr-stage'),hud:rect('.nr-hud'),header:rect('.nr-heading'),frame:rect('.cc-board-frame'),status:rect('.nr-status'),console:rect('.nr-console'),root:root.getBoundingClientRect().toJSON()};
    });
    const c=composition;
    expect(Math.abs((c.cabinet.left-c.root.left)-(c.root.right-c.cabinet.right)),'cabinet has balanced outer margins').toBeLessThanOrEqual(2);
+   for(const part of [c.frame,c.status,c.console])expect(part.bottom,'cabinet parts stay inside the module').toBeLessThanOrEqual(c.root.bottom+1);
    if(c.profile==='full'){
-    expect(c.frame.left-c.hud.right,'instruments touch the field through one short gutter').toBeGreaterThanOrEqual(10);
-    expect(c.frame.left-c.hud.right).toBeLessThanOrEqual(14);
+    expect(c.hud.left-c.frame.right,'the instrument rail meets the field through one short gutter').toBeGreaterThanOrEqual(10);
+    expect(c.hud.left-c.frame.right).toBeLessThanOrEqual(18);
     expect(Math.abs(c.header.left-c.hud.left)).toBeLessThanOrEqual(2);
     expect(Math.abs(c.console.left-c.hud.left)).toBeLessThanOrEqual(2);
-    expect(Math.abs(c.console.right-c.frame.right)).toBeLessThanOrEqual(2);
-    expect(c.console.top-c.frame.bottom,'no empty result band below the field').toBeLessThanOrEqual(12);
+    expect(Math.abs(c.console.right-c.hud.right)).toBeLessThanOrEqual(2);
+    expect(c.console.top-c.hud.bottom,'instruments and console do not overlap').toBeGreaterThanOrEqual(0);
+    expect(Math.abs(c.status.left-c.frame.left)).toBeLessThanOrEqual(2);
+    expect(Math.abs(c.status.right-c.frame.right)).toBeLessThanOrEqual(2);
+    expect(c.status.top-c.frame.bottom,'status line sits directly below the field').toBeLessThanOrEqual(14);
     if(width===1440&&height===900)expect(c.frame.width).toBeGreaterThan(700);
    }else if(c.profile==='portrait'){
-    expect(c.console.top-c.frame.bottom,'field and console stay together on phones').toBeLessThanOrEqual(10);
-   }else expect(c.console.left-c.frame.right,'landscape console stays beside the field').toBeLessThanOrEqual(16);
+    expect(c.status.top-c.frame.bottom,'status line stays under the field on phones').toBeLessThanOrEqual(12);
+    expect(c.console.top-c.status.bottom,'console stays below the status line').toBeGreaterThanOrEqual(0);
+   }else{
+    expect(c.console.left-c.frame.right,'landscape console stays beside the field').toBeLessThanOrEqual(16);
+    expect(c.console.left-c.frame.right).toBeGreaterThanOrEqual(0);
+   }
    const state=await game.evaluate(root=>{
     const frame=root.querySelector('.cc-board-frame')!,message=root.querySelector('[data-cc-message]')!;
     const error=root.querySelector('[data-cc-error]')!,retry=root.querySelector<HTMLButtonElement>('[data-cc-retry]')!;
@@ -463,7 +517,9 @@ for(const id of games)test('settings, Stop and one accepted ten-cent round: '+id
  for(const kind of ['info','history','purchase']){
   const selector=kind==='purchase'?'[data-cc-buy],[data-cosmic-missions],[data-velvet-missions]':`[data-${p}-${kind}]`;
   // Cosmic Escape keeps missions and Caramel Carnival keeps the festival purchase on the cabinet.
+  // Last Convoy keeps rules and history in its header and the evacuation help in the beacon card.
   if(cosmic&&kind==='purchase')await page.locator('#mini-game').locator(cabinet.purchase).click();
+  else if(convoy)await page.locator('#mini-game').locator(selector).click();
   else{await page.locator('.slot-settings-button').click();await page.locator('.slot-settings-dialog').locator(selector).click();}
   await expect(page.locator('.slot-settings-dialog')).toBeHidden();
   await expect(page.locator('#mini-game :is(.cc-dialog,.ce-dialog)')).toBeVisible();
@@ -486,19 +542,19 @@ test('moving symbols retain their field through both phone orientations',async({
  test.setTimeout(240000);await enterGameHall(page,roomPath);
  for(const id of ['studio-cosmic-escape','studio-caramel-carnival','studio-velvet-reign','studio-afterglow']){
   await page.setViewportSize({width:393,height:852});await open(page,id);const p=family(id);await page.emulateMedia({reducedMotion:'no-preference'});
-  await page.locator(`[data-${p}-spin]`).click();await expect(page.locator('#mini-game > .slot-priority-game, #mini-game > .cx-game, #mini-game > .cc-game.ccf')).not.toHaveAttribute('data-phase','idle');
+  await page.locator(`[data-${p}-spin]`).click();await expect(page.locator('#mini-game > .slot-priority-game, #mini-game > .cx-game, #mini-game > .cc-game.ccf, #mini-game > .ag-game')).not.toHaveAttribute('data-phase','idle');
   await page.setViewportSize({width:852,height:393});await fit(page,id);await page.setViewportSize({width:393,height:852});await fit(page,id);
   await page.emulateMedia({reducedMotion:'reduce'});await finish(page,id);
  }
 });
 
-test('album, photo and themed menu remain accessible from the compact panel',async({page,roomPath})=>{
+test('album, photo and themed menu remain accessible on a phone',async({page,roomPath})=>{
  await enterGameHall(page,roomPath);await page.setViewportSize({width:393,height:852});await open(page,'studio-afterglow');
  const before=(await walletSnapshot(page)).entries;
- await page.locator('.slot-settings-button').click();await page.screenshot({path:out+'/studio-afterglow-options.png'});await page.locator('.slot-settings-dialog [data-ag-album]').click();
- await expect(page.locator('.slot-settings-dialog')).toBeHidden();await expect(page.getByRole('heading',{name:'АЛЬБОМ ГЕРОИНЬ',exact:true})).toBeVisible();
- await page.keyboard.press('Escape');await page.locator('.slot-settings-button').click();await page.locator('.slot-settings-dialog [data-ag-photo]').click();
- await expect(page.locator('.slot-settings-dialog')).toBeHidden();await expect(page.locator('.slot-photo-viewer')).toBeVisible();
+ // The studio cabinet keeps the heroine strip with photo and album above the field on phones.
+ await page.locator('.slot-settings-button').click();await page.screenshot({path:out+'/studio-afterglow-options.png'});await page.keyboard.press('Escape');
+ await page.locator('#mini-game [data-ag-album]').click();await expect(page.getByRole('heading',{name:'АЛЬБОМ ГЕРОИНЬ',exact:true})).toBeVisible();
+ await page.keyboard.press('Escape');await page.locator('#mini-game [data-ag-photo]').click();await expect(page.locator('.slot-photo-viewer')).toBeVisible();
  await page.setViewportSize({width:852,height:393});await expect(page.locator('.slot-photo-viewer [aria-label="Закрыть фото"]')).toBeInViewport({ratio:1});
  await page.keyboard.press('Escape');await expect(page.locator('.slot-photo-viewer')).toBeHidden();await fit(page,'studio-afterglow');
  await open(page,'studio-meme-overload');
@@ -523,6 +579,29 @@ test('natural bonuses keep counters and free continuation visible in both orient
     await bonus.click();await expect(page.locator(`[data-${p}-pause]`)).toBeVisible({timeout:15000});await fit(page,id,`[data-${p}-pause]`);
    await page.locator(`[data-${p}-pause]`).click();await page.setViewportSize({width:393,height:852});await fit(page,id);
    const before=await walletSnapshot(page),debits=before.entries.filter((e:any)=>e.kind==='bet').length;
+   if(id==='studio-last-convoy')for(const [width,height]of [[393,852],[1512,862]]){
+    // The accepted stake replaces the stake field during the evacuation, and the spin count is declined.
+    await page.setViewportSize({width,height});await fit(page,id);
+    await expect(page.locator('#mini-game [data-cc-stake]')).toBeHidden();
+    const accepted=page.locator('#mini-game [data-cv-accepted]');
+    await expect(accepted).toBeVisible();await expect(accepted).toHaveText('Ставка 0,10 уже принята. Вращения эвакуации бесплатны.');
+    const plate=await accepted.evaluate(e=>({scroll:e.scrollWidth,client:e.clientWidth}));expect(plate.scroll,`${width}x${height}: accepted stake is clipped`).toBeLessThanOrEqual(plate.client);
+    await expect(page.locator('#mini-game [data-cc-pause]')).toHaveAttribute('aria-pressed','false');
+    await expect(page.locator('#mini-game [data-cc-spin]')).toHaveAccessibleName('Далее');
+    if(width===1512){
+     // The mechanics column shows the evacuation cards of the mockup: spins, locked defense and the evacuation win.
+     const session=await currentSession(page,id),bonusView=session.view.convoy.bonus;
+     await expect(page.locator('#mini-game .cv-freecard')).toBeVisible();await expect(page.locator('#mini-game .cv-beacons')).toBeHidden();await expect(page.locator('#mini-game .cv-round')).toBeHidden();
+     await expect(page.locator('#mini-game [data-cv-played]')).toHaveText(String(bonusView.played));await expect(page.locator('#mini-game [data-cv-awarded]')).toHaveText(String(bonusView.awarded));
+     await expect(page.locator('#mini-game [data-cv-fsegs] > i')).toHaveCount(bonusView.awarded);
+     await expect(page.locator('#mini-game .cv-defense .cv-tag')).toBeVisible();
+     await expect(page.locator('#mini-game [data-cv-evac]')).toHaveText((await page.locator('#mini-game [data-cc-total]').textContent())!);
+     for(const card of ['.cv-freecard','.cv-defense','.cv-evac']){const box=await page.locator('#mini-game '+card).evaluate(e=>({scroll:e.scrollWidth,client:e.clientWidth}));expect(box.scroll,card+' overflows').toBeLessThanOrEqual(box.client);}
+    }
+    const free=(await page.locator('#mini-game [data-cc-free]').textContent())??'',count=Number(free.split(' ')[0]),form=({one:'бесплатное вращение',few:'бесплатных вращения'} as Record<string,string>)[new Intl.PluralRules('ru').select(count)]??'бесплатных вращений';
+    expect(free).toBe(`${count} ${form}`);
+   }
+   if(id==='studio-last-convoy'){await page.setViewportSize({width:393,height:852});await fit(page,id);}
    await page.screenshot({path:out+'/'+id+'-bonus-portrait.png'});await page.setViewportSize({width:852,height:393});await fit(page,id);
    await page.screenshot({path:out+'/'+id+'-bonus-landscape.png'});await finish(page,id);
    expect((await walletSnapshot(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(debits);
@@ -564,6 +643,18 @@ test('Last Convoy scales the field, Maya and controls at 2K and 4K',async({page,
  await chat.locator('.game-chat-close').click();
  await fit(page,game);
  expect(Math.abs((await measure()).width-withChat.width)).toBeLessThan(4);
+ // The mockup's display face, round log and dock toggles are in place.
+ await page.evaluate(()=>document.fonts.ready);
+ expect(await page.evaluate(()=>document.fonts.check('700 32px "Convoy Oswald"','LAST CONVOY ЭВАКУАЦИЯ'))).toBe(true);
+ expect(await root.locator('.cv-logo').evaluate(e=>getComputedStyle(e).fontFamily)).toContain('Convoy Oswald');
+ await expect(root.locator('.cv-round')).toBeVisible();
+ const fast=root.locator('[data-cv-fast]');await expect(fast).toBeVisible();await expect(fast).toHaveAttribute('aria-pressed','false');
+ await fast.click();await expect(fast).toHaveAttribute('aria-pressed','true');await expect(root.locator('[data-cc-speed]')).toHaveAttribute('aria-pressed','true');
+ await fast.click();await expect(fast).toHaveAttribute('aria-pressed','false');
+ await expect(root.locator('[data-cc-auto]')).toHaveText(/Авто · 25/);
+ // A short desktop window without the chat sets Maya aside and gives her space to the field.
+ const short=async()=>{await page.setViewportSize({width:1280,height:680});await fit(page,game);return root.evaluate(e=>({maya:getComputedStyle(e.querySelector('.cv-radio')!).display,round:getComputedStyle(e.querySelector('.cv-round')!).display,board:e.querySelector('[data-cc-board]')!.getBoundingClientRect().height}));};
+ const closed=await short();expect(closed.maya).toBe('none');expect(closed.round).toBe('none');expect(closed.board).toBeGreaterThan(395);
 });
 
 const countOnlyGames=['studio-last-convoy','studio-cosmic-escape','studio-caramel-carnival'];
@@ -638,4 +729,30 @@ for(const game of countOnlyGames)test('autoplay completes ten paid spins through
  const paid=await bets();
  expect(paid).toHaveLength(10);
  expect(paid.every((entry:{amount:number})=>entry.amount===-0.1)).toBe(true);
+});
+
+test('GIRLHUB keeps autoplay results visible and scrolls in tiny windows',async({page,roomPath})=>{
+ test.setTimeout(240000);await enterGameHall(page,roomPath);await page.setViewportSize({width:1440,height:900});await open(page,'studio-afterglow');
+ // Between autoplay spins the progress note is announced but must not cover the confirmed result line.
+ await page.locator('[data-cc-auto]').click();
+ const between=await page.waitForFunction(()=>{
+  const status=document.querySelector('[data-cc-status]')?.textContent??'';if(!status.includes('Платных вращений осталось'))return false;
+  const message=document.querySelector<HTMLElement>('[data-cc-message]')!,box=message.getBoundingClientRect();
+  const hit=document.elementFromPoint(box.left+Math.min(24,box.width/2),box.top+box.height/2);
+  return {status,message:message.textContent,covered:!message.contains(hit)};
+ },undefined,{timeout:60000,polling:50});
+ const seen=await between.jsonValue() as {covered:boolean;message:string};
+ expect(seen.covered,seen.message).toBe(false);
+ await page.locator('[data-cc-auto]').click();await expect(page.locator('[data-cc-auto]')).not.toContainText('Стоп');await finish(page,'studio-afterglow');
+ // A window smaller than the smallest readable cabinet scrolls inside the module instead of clipping the dock.
+ for(const [width,height]of [[400,480],[480,300]]){
+  await page.setViewportSize({width,height});await page.evaluate(()=>new Promise<void>(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r()))));
+  const root=page.locator('#mini-game > .ag-game');await expect(root).toHaveAttribute('data-cramped','true');
+  const spin=page.locator('[data-cc-spin]');await spin.scrollIntoViewIfNeeded();
+  const reachable=await spin.evaluate(button=>{const box=button.getBoundingClientRect(),root=button.closest('.ag-game')!.getBoundingClientRect();
+   const hit=document.elementFromPoint(box.left+box.width/2,box.top+box.height/2);
+   return !!hit&&button.contains(hit)&&box.top>=root.top-1&&box.bottom<=root.bottom+1;});
+  expect(reachable,width+'x'+height).toBe(true);
+ }
+ await page.setViewportSize({width:1440,height:900});await expect(page.locator('#mini-game > .ag-game')).toHaveAttribute('data-cramped','false');
 });

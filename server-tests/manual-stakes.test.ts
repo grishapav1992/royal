@@ -8,15 +8,15 @@ import {startStarSpin,moveStarSpin} from '../src/shared/wildNudgeStakes';
 import {expansionExactAward,makeRoundPrecision} from '../src/shared/roundPrecision';
 import {startCaribbean} from '../server/games/caribbeanTreasures';
 
-test('all 4991 cent amounts round trip through player and transport money',()=>{
-  for(let cents=10;cents<=5000;cents++){
+test('all 9991 cent amounts round trip through player and transport money',()=>{
+  for(let cents=10;cents<=10000;cents++){
     const decimal=(cents/100).toFixed(2);
     assert.equal(parseGameStake(decimal),String(cents));assert.equal(parseGameStake(decimal.replace('.',',')),String(cents));
     assert.equal(gameBetCents(cents/100),cents);assert(validGameBet(cents/100));assert(validGameStake(String(cents)));
   }
-  for(const input of ['','0.09','50.01','-1','1e1','NaN','1.001','1,2.3'])assert.equal(parseGameStake(input),undefined,input);
-  for(const input of [0.1+0.2,0.09,50.01,NaN,Infinity,'0.15'])assert(!validGameBet(input));
-  for(const input of ['015','15.0','15e0','9','5001'])assert(!validGameStake(input));
+  for(const input of ['','0.09','100.01','-1','1e1','NaN','1.001','1,2.3'])assert.equal(parseGameStake(input),undefined,input);
+  for(const input of [0.1+0.2,0.09,100.01,NaN,Infinity,'0.15'])assert(!validGameBet(input));
+  for(const input of ['015','15.0','15e0','9','10001'])assert(!validGameStake(input));
 });
 
 test('non-preset Star Spin bonus keeps every fraction through all eight free spins',()=>{
@@ -46,7 +46,7 @@ test('awkward binary fractions debit exact cents and replay once after wallet re
     await db.exec("CREATE TABLE IF NOT EXISTS accounts(id TEXT PRIMARY KEY); INSERT INTO accounts VALUES('manual-stake') ON CONFLICT DO NOTHING");
     let wallet=new DemoWalletStore(db,()=>{draws++;return 7;});
     await wallet.operate('manual-stake',{id:randomUUID(),kind:'deposit',amount:1000});
-    for(const amount of [.11,.15,.29,.57,2.35,49.99]){
+    for(const amount of [.11,.15,.29,.57,2.35,49.99,50.07,99.99,100]){
       const request={id:randomUUID(),kind:'play' as const,gameId:'royal-roulette',rulesVersion:1,stakePolicyVersion:1 as const,amount,input:{bet:'number',number:7}};
       const before=(await wallet.snapshot('manual-stake')).balance,first=await wallet.operate('manual-stake',request),cents=gameBetCents(amount)!;
       assert.equal(first.gameRound!.stakeUnits,String(cents));assert.equal(Math.round(first.wallet.balance*100),Math.round(before*100)-cents+cents*36);

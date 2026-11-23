@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { DRAGON_PATH_LAYOUT as layout } from '../src/shared/dragonPathLayout.ts';
-import { GAME_STAKE_CENTS } from '../src/shared/gameStakes.ts';
+import { gameStakeMaximum, GAME_STAKE_CENTS } from '../src/shared/gameStakes.ts';
+import { DRAGON_PATH_GAME } from '../src/shared/dragonPathProtocol.ts';
 import { makeRoundPrecision, validRoundPrecision } from '../src/shared/roundPrecision.ts';
 // @ts-expect-error Независимая модель используется также штатной программой квалификации.
 import { analyzeDragonPath } from '../scripts/game-math/dragon-path-model.mjs';
@@ -79,7 +80,7 @@ test('спин без бонуса завершается в первой рев
   assert.equal(result.round.revision, 1);
   assert.deepEqual(result.actions, []);
   assert.throws(() => moveDragonPath(result.round, 1, DRAGON_PATH_FREE_SPIN, undefined, noDraw));
-  for (const stake of ['9', '5001', '0.10', '010']) assert.throws(() => startDragonPath(stake, noDraw));
+  for (const stake of ['9', '10001', '0.10', '010']) assert.throws(() => startDragonPath(stake, noDraw));
 });
 
 test('один бесплатный спин и косметический выбор сохраняются по ревизиям', () => {
@@ -117,7 +118,7 @@ test('один бесплатный спин и косметический вы�
 });
 
 test('полный раунд передаёт точную сумму в общий расчёт центов для всего диапазона', () => {
-  for (let stake = GAME_STAKE_CENTS[0]; stake <= GAME_STAKE_CENTS.at(-1)!; stake++) {
+  for (let stake = GAME_STAKE_CENTS[0]; stake <= gameStakeMaximum(DRAGON_PATH_GAME); stake++) {
     const base = startDragonPath(String(stake), scriptedDraw(bonusStartGrid()));
     const free = moveDragonPath(base.round, 1, DRAGON_PATH_FREE_SPIN, undefined, scriptedDraw(winningFreeGrid()));
     for (const choice of DRAGON_PATH_REWARDS) {

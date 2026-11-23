@@ -2,7 +2,7 @@ import {canRecoverOperation} from '../../src/ui/operationFeedback';
 import {ActionGameLayout} from '../../src/ui/ActionGameLayout';
 import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
-import {GAME_STAKE_UNITS as JACKIE_BETS} from '../../src/shared/gameStakes';
+import {ROYAL_GAME_STAKE_UNITS as JACKIE_BETS} from '../../src/shared/gameStakes';
 import { expansionClient as client } from '../../src/wallet/ExpansionClient';
 import { demoWallet } from '../../src/wallet/WalletClient';
 import { language } from '../../src/i18n/index';

@@ -1,0 +1,226 @@
+{
+  "release": "royal-stake-100-20261122-v2",
+  "sourceCommit": "44a96b5c35131c597a215be165eb4065d3856ed8",
+  "precedingHostCommit": "e97289c4491f4cf380ea442a52a872fa798f4edf",
+  "image": "sha256:025b3eca69ee9465862c14d7bca0bb9cc58ab31ad0c5e8212128ecc8d2cd344d",
+  "rollbackImage": "sha256:2287b9485cdbdcf781439464080d1763277ee2707c252986dbf5d94d99264996",
+  "qualification": {
+    "command": "npm run check:rtp",
+    "profiles": 38,
+    "policies": 20,
+    "admissionRules": 20,
+    "activeGames": 19,
+    "manualCents": {
+      "min": 10,
+      "max": 10000,
+      "increment": 1
+    }
+  },
+  "checks": {
+    "stakeAndPrecisionTests": 30,
+    "commonWalletTests": 19,
+    "rtpGateTests": 48,
+    "releaseToolingTests": 54,
+    "publicationGuardTests": 20,
+    "retentionToolTests": 85,
+    "historicalCompatibilityTests": 4,
+    "browser": [
+      {
+        "width": 1440,
+        "height": 900,
+        "connectedChat": true,
+        "checkedGames": 19,
+        "acceptedOneHundred": true,
+        "rejectedOneHundredAndOneCent": true,
+        "exactOperationOnReopen": true,
+        "oneDebitOnReopen": true,
+        "caramelSpinCompleted": true
+      },
+      {
+        "width": 393,
+        "height": 852,
+        "connectedChat": true,
+        "checkedGames": 19,
+        "acceptedOneHundred": true,
+        "rejectedOneHundredAndOneCent": true,
+        "exactOperationOnReopen": true,
+        "oneDebitOnReopen": true,
+        "caramelSpinCompleted": true
+      }
+    ]
+  },
+  "catalogue": {
+    "active": [
+      "studio-cosmic-escape",
+      "studio-caramel-carnival",
+      "studio-velvet-reign",
+      "studio-last-convoy",
+      "studio-nitro-run",
+      "studio-afterglow",
+      "studio-meme-overload",
+      "studio-dracona",
+      "studio-neopolis",
+      "studio-forest-heart",
+      "github-crash",
+      "royal-plinko",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "studio-caribbean-treasures",
+      "studio-flooded-temple",
+      "royal-roulette",
+      "flag-battle",
+      "studio-wild-nudge"
+    ],
+    "added": [],
+    "restored": []
+  },
+  "githubReceiptSha256": "04ab15102ad4b256a53ee39af94b1cc068fde9657e813bb13bb3ea746391ab9a",
+  "releaseManifestSha256": "51b2181e36c9773f2007cdf57f8d2e9ac06aff9404550e7e34c144ed595e33fd",
+  "backendSha256": "d549a9dfdec49d406959b34d4702118253f3bcfee483d29ec11d71b796e7b15e",
+  "public": {
+    "checkedAt": "2026-11-22T20:55:08.415Z",
+    "sourceCommit": "44a96b5c35131c597a215be165eb4065d3856ed8",
+    "health": 200,
+    "host": {
+      "/assets/GameHostRuntime-CkCY4hG9.js": "e07705337828c131c0ba3a63e79ad7cefb11029bc8188905d6e42faabaf79caf",
+      "/assets/ActivitiesUI-CSYx_zNc.js": "419280ec861dbae4a3955bfe02d2e6ae2b0f443b3a51ec98cef0323645d9b69d",
+      "/assets/playerLevelStatus-BH8Bs6sl.js": "9231109311813b0098abbf6e1e881e46d334b0e52120dd0d6e98411b1978f6df",
+      "/assets/PvpUI-i6KTqqwJ.js": "7249c5ca1ac0abccaf3ec905225b072f2af596e62d2cba1c9ab4bb514b4863a1",
+      "/assets/ClubWorld-Da27SAKJ.js": "acb379eab347b0623b53338be66079547f8e1a0a353485fae1b647298ae8341e",
+      "/": "875e693b61a13dbb75815e187d320b51f5647e36d1ec7a7ec59be070bb42041b",
+      "/assets/phaser-CL2awqqO.js": "d3528b93cc93a73d01633741b138750cb9bde1ba870d681d5e0decd507f09647",
+      "/assets/index-BIXKGxLw.js": "02b4a381a56e33c15312f8b1ccbdc6600d672900a209dd34138fdc77f3126fc2",
+      "/assets/main-xkrPmc4z.js": "f132f8ba396f4928332c4920d1f23a19da77f98a24189619ae716224d8454247"
+    },
+    "pointers": {
+      "studio-cosmic-escape": {
+        "version": "1.1.1-c74908ef7937",
+        "sha256": "8d03f0f9a1fd1946791d6b6b8aa16c4d2bd157de800941d840bd61ed0b77f735"
+      },
+      "studio-caramel-carnival": {
+        "version": "1.1.1-082dc535cc78",
+        "sha256": "22e4736e121f80a2acee940bfef792aa45517b9eb84585519e606963d8f53a54"
+      },
+      "studio-last-convoy": {
+        "version": "1.1.1-715efedfa7bd",
+        "sha256": "0c6b3680143d364dec788b168c40b09f6c776c37739feee2318bfbfd817e5fed"
+      },
+      "studio-velvet-reign": {
+        "version": "1.1.1-0c60356904bd",
+        "sha256": "24aab489945414f1407325e378878e1dd3575a909432d95a8fdbb5b3fb6b400d"
+      },
+      "studio-nitro-run": {
+        "version": "1.3.0-7438b7eedc41",
+        "sha256": "9234d63c4f83913a107a8d2dc2ed15cb7fb322ad8a777a5eed22bba899ecec89"
+      },
+      "studio-afterglow": {
+        "version": "1.4.0-cb8ff6685f89",
+        "sha256": "1eb42fe5036a87ccdfdf6a5ac2142009bc97b073ff7189fc8f8548384e3648a6"
+      },
+      "studio-neopolis": {
+        "version": "0.6.1-4099506305f7",
+        "sha256": "19de6423b3337cc2a01b1e15be0a2b2189cbcc6590849a33029a0210bf24089e"
+      },
+      "studio-forest-heart": {
+        "version": "1.16.1-84f4e8de6d47",
+        "sha256": "bc163ab964638dc87c0d790a355c9f56f61c964dc56fc39dbe9d319b69958677"
+      },
+      "studio-meme-overload": {
+        "version": "1.1.1-801b99460fdd",
+        "sha256": "0432e5218c8b62b249412bbdb0cf531626288ec74ca604c251a50de8b5f98aea"
+      },
+      "studio-dracona": {
+        "version": "1.2.1-b8619fcd50e0",
+        "sha256": "d3154e17095fbfdf7c69ba601be210c2497d7445192e96db20bac33964dc9d14"
+      },
+      "github-crash": {
+        "version": "1.1.1-42a51227e934",
+        "sha256": "74b7f78c29be1685ef13de0113ab60175a5144bd40588f3fe19e5ccdb02768d1"
+      },
+      "original-cr-vs-leo": {
+        "version": "1.1.1-b2fd5fb2a417",
+        "sha256": "a4154ddf85dacb31734d82a8ae58688026b59363e4073f667a2a3ab2d70ab401"
+      },
+      "studio-caribbean-treasures": {
+        "version": "1.7.1-826034d95efa",
+        "sha256": "85ae7e8b24e358759978da721c1baf2f9b7379ee9b9460cf813631253d597762"
+      },
+      "royal-plinko": {
+        "version": "1.1.1-f34942f07f1d",
+        "sha256": "2565cde0c72da3637c24bba76f15a621c6b564f0f327aa092860fb74d512251b"
+      },
+      "studio-flooded-temple": {
+        "version": "0.10.1-af661ae908a0",
+        "sha256": "f33ec8b42b60aab21ceac6f30c25f78bfd224bcf25f1005d73dc46abf52728e0"
+      },
+      "studio-wild-nudge": {
+        "version": "1.6.0-62f793156f10",
+        "sha256": "75ef8258ad0ac5db5abaa992fc525c66e103955f98041367b9e86f7e7eda4ec4"
+      },
+      "flag-battle": {
+        "version": "2.1.2-d394fd4b64a0",
+        "sha256": "a969d79f42969943a43ed04e80b1f07e3121d113a80dee11a439ef50ccf8b470"
+      },
+      "royal-roulette": {
+        "version": "1.6.2-3d23a9065856",
+        "sha256": "43df4ba8c80258de68715654ddba836ef1ba7c5359a8464842ccf3946797831c"
+      },
+      "original-jackie-chan": {
+        "version": "1.2.1-dab19ae62e75",
+        "sha256": "45a6318b54e95aad98c2c1bafde9daf5205389b3c035d3347a9c47026b57803d"
+      }
+    },
+    "moduleFileCount": 503,
+    "moduleMediaCount": 446
+  },
+  "maintenance": {
+    "release": "royal-stake-100-20261122-v2",
+    "sourceCommit": "44a96b5c35131c597a215be165eb4065d3856ed8",
+    "status": "completed",
+    "currentImage": "sha256:025b3eca69ee9465862c14d7bca0bb9cc58ab31ad0c5e8212128ecc8d2cd344d",
+    "rollbackImage": "sha256:2287b9485cdbdcf781439464080d1763277ee2707c252986dbf5d94d99264996",
+    "finishedAt": 1795380923.0466921,
+    "freeBefore": 11976564736,
+    "freeAfter": 11989422080,
+    "verificationPasses": 2,
+    "projectBrain": {
+      "status": "pending",
+      "queued": true
+    },
+    "hourlyTimer": "enabled",
+    "hourlyTimerState": "active",
+    "hostHealth": "healthy",
+    "availableBytes": 11990589440
+  },
+  "installerCommit": "0d2d1633837e5f05b57dba6b21fb23abd7aee0a8",
+  "installerReceiptSha256": "9c72bd47a17920f8f2c0a059a562208899051f44c57caf001e02a78f207b8a56",
+  "previousAttempt": {
+    "release": "royal-stake-100-20261122-v1",
+    "stoppedDuringModuleSwitch": true,
+    "recoverySha256": "c2a6b6f93676ff8395db4aed09126b964136d2da571b3cdb6caeeacb4b83b226",
+    "recoveredWithoutRestart": true,
+    "restoredPointers": [
+      "github-crash",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "royal-plinko",
+      "studio-afterglow",
+      "studio-caramel-carnival",
+      "studio-caribbean-treasures",
+      "studio-cosmic-escape",
+      "studio-dracona",
+      "studio-forest-heart",
+      "studio-last-convoy",
+      "studio-meme-overload",
+      "studio-neopolis",
+      "studio-nitro-run",
+      "studio-velvet-reign"
+    ],
+    "verifiedBuildReused": true
+  },
+  "temporaryServerArchive": {
+    "bytes": 148338253,
+    "freeBeforeBytes": 12102316032,
+    "freeAfterBytes": 12250660864
+  }
+}

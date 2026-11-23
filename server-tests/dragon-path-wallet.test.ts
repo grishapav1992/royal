@@ -7,6 +7,7 @@ import { DRAGON_PATH_WEIGHTS } from '../src/shared/dragonPathMath';
 import {
   DRAGON_PATH_CHOOSE_REWARD, DRAGON_PATH_CLIENT_HEADER, DRAGON_PATH_FREE_SPIN, DRAGON_PATH_GAME, DRAGON_PATH_REWARDS,
 } from '../src/shared/dragonPathProtocol';
+import { ROYAL_STAKE_LIMIT_HEADER } from '../src/shared/gameStakes';
 import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
 import { ExpansionClient, expansionClient } from '../src/wallet/ExpansionClient';
 import { demoWallet } from '../src/wallet/WalletClient';
@@ -25,7 +26,7 @@ test('виртуальный HTTP-кошелёк: списание один ра
     return {
       id: identity.account.id,
       headers: { Cookie: `royal_session=${identity.token}`, [WALLET_ACCOUNT_HEADER]: identity.account.id,
-        'Content-Type': 'application/json', [DRAGON_PATH_CLIENT_HEADER]: '1' },
+        'Content-Type': 'application/json', [DRAGON_PATH_CLIENT_HEADER]: '1', [ROYAL_STAKE_LIMIT_HEADER]: '1' },
     };
   }
   const player = await login(), other = await login();
@@ -63,6 +64,7 @@ test('виртуальный HTTP-кошелёк: списание один ра
   try {
     const compatible = player.headers;
     const old = { ...compatible, [DRAGON_PATH_CLIENT_HEADER]: '0' };
+    const oldLimit = { ...compatible, [ROYAL_STAKE_LIMIT_HEADER]: '0' };
     for (const reward of DRAGON_PATH_REWARDS) {
       const stake = reward === 2 ? 10 : 15;
       const start = { id: randomUUID(), gameId: DRAGON_PATH_GAME, action: 'start', stakeUnits: String(stake), settings: {}, stakePolicyVersion: 1 };
@@ -70,7 +72,11 @@ test('виртуальный HTTP-кошелёк: списание один ра
       const { stakePolicyVersion: _policy, ...legacy } = start;
       assert.equal((await post(legacy)).status, 409);
       assert.equal((await post(start, old)).status, 409);
-      assert.equal((await post({ ...start, stakeUnits: '5001' })).status, 400);
+      assert.equal((await post({ ...start, stakeUnits: '10001' })).status, 400);
+      assert.equal((await post({ ...start, stakeUnits: '10000' }, oldLimit)).status, 409);
+      const atLimit = await post({ ...start, stakeUnits: '10000' });
+      assert.equal(atLimit.status, 409);
+      assert.match((await atLimit.json()).error, /недостаточно/i);
       assert.equal(Math.round((await get()).wallet.balance * 100), before);
       assert.equal(draws, beforeDraws);
       const ticket = (symbol: number) => DRAGON_PATH_WEIGHTS.slice(0, symbol).reduce((sum, w) => sum + w, 0);

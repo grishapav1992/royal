@@ -3,7 +3,7 @@ import {canRecoverOperation} from './operationFeedback';
 import {stakeRulesHtml} from './stakeRules';
 import { GamePriorityPanel } from './GamePriorityPanel';
 import './volcanic-plinko-priorities.css';
-import {GAME_BETS as DEMO_BETS, gameBetCents, validGameBet} from '../shared/gameStakes';
+import {ROYAL_GAME_BETS as DEMO_BETS, gameBetCents, validGameBet} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import './volcanic-plinko.css';
 import { demoWallet, type WalletClient, type WalletSettlement } from '../wallet/WalletClient';

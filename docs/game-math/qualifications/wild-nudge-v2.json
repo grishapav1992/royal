@@ -3,9 +3,11 @@
   "gameId": "studio-wild-nudge",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-11-20T17:02:15.385Z",
-  "completedAt": "2026-11-20T17:02:17.811Z",
+  "startedAt": "2026-11-23T09:01:39.988Z",
+  "completedAt": "2026-11-23T09:01:43.374Z",
   "sourceHashes": {
+    "server/royalStakeTransport.ts": "8ba026c2dbc9e47e6ef3b982b943b8884120b17daa4d28b970bb55b8aade07be",
+    "server/gameWalletRoutes.ts": "1c446f7c814bd0bd5c1c8427a20d83e3c52b5f252f7794a05a6f38928edff007",
     "src/shared/wildNudgeData.json": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8",
     "src/shared/wildNudgeMath.ts": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74",
     "scripts/game-math/wild-nudge-reference.mjs": "93c3e272abe11523ddd77985c9d733b76b06089a054aac5cf5a9ce4e762e7bb5",
@@ -15,29 +17,28 @@
     "scripts/game-math/wild-nudge-model.mjs": "da28188057c963500975637c3ebaaa763f31089445701049d85af0d1073e1ef8",
     "scripts/game-math/wild-nudge-wallet.ts": "64711f88c1c225d1e09cc2ca149c7c308e2c94df499c10932fb49f3fc92b27ec",
     "src/shared/casinoExpansion.ts": "8fa30fdaafd9ac3272da9820ff5e277b9b7f34e143756fa9084223b0a8a5a2ed",
-    "server/demoExpansion.ts": "372f126f513fce6bfbcc494bffe8b74c214dbf1d611445ebc556dce3c2c0fa7a",
-    "server/demoWalletRoutes.ts": "347960035a80291f5903afcaac83456e4db05c03080851340d962fc770d848c8",
-    "server/gameWalletRoutes.ts": "72ff61a04ad69685baeb63c41abfa70268fe3aa751ade69006043183243ae5af",
-    "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
-    "server/demoWallet.ts": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
+    "server/demoExpansion.ts": "d7cb8d53b9d15d82e7f3a84015065cac5ab30b0f844397c1b375a9439822bfc3",
+    "server/demoWalletRoutes.ts": "e1e80a812b665c31dff412d42640deb4edf4c5ca805c7380a028ee3281ef80d7",
+    "server/finance/nile-game-runtime.ts": "fd8aebc6d96472fce25ab7b040382d2b749c428bed16cfabdb51629495053118",
+    "server/demoWallet.ts": "b8428ee4e297863398034eb992e1606ba77713fbbd3b1158c09fd3e2b9ea2b21",
     "server/demoWalletAmounts.ts": "f1f0a88915a232f134b83203b670e51ea1d5e81273ae0ccdcb4ac1c521b52cce",
     "server/database.ts": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8",
-    "src/wallet/ExpansionClient.ts": "c9bcbe7811237717a41dd83954c7562b2c091f80a7b9b4f461a81d9f084610c7",
+    "src/wallet/ExpansionClient.ts": "6498e048b086ee56f2a122093d45db30e832da4c5ac2a5d5904c15a2a0f47b39",
     "src/shared/arcadeCatalog.ts": "3d10bf2732a6dc1d910cc8b15018b4da242f34bcd0789504fc62346c41d6c144",
-    "src/shared/gameStakes.ts": "b8d31b4ace8218ba80bba06e6bf57e3386359b8d0a4ed0712a19375f7a4ab754",
+    "src/shared/gameStakes.ts": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b",
     "src/shared/roundPrecision.ts": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870",
-    "src/shared/wildNudgeStakes.ts": "b038121718a674dd88578b9ace2c219e6f226a05372919a87e87b2dcc5afb54f",
+    "src/shared/wildNudgeStakes.ts": "0feb85f4642cdf5cd88c0a5b69df24d7583fc8d1eae301540b8425ea54c4da61",
     "scripts/game-math/rtp-stakes.mjs": "f1c5c680f5e5f913e430fe050f50596f149a57fb3b7b0834ab8bd6dca8f6240d",
     "scripts/game-math/stake-runtime.mjs": "fcefdf0ea8724c7e1cf76fa2134a52348dab765504a46dfb43f10bfba62572d5",
     "scripts/game-math/stakes-wallet.ts": "2923161534d6015f0be64c9467ce4921550f7a50152b2d7b77c0f7939056c0af",
     "server-tests/star-spin-stakes.test.ts": "758af7057bb9a42f62031058662ddb7bac09a855ed0c844cdbc1a6429cf49d74",
-    "docs/game-math/qualifications/wild-nudge-v1.json": "b9a615cfdc34d92baf38d459a9a74209ee1cd387a6eaee5cda4762f49a368020",
+    "docs/game-math/qualifications/wild-nudge-v1.json": "5b9ecc0f43785838173deee7eeb6891c4fccf1fa40d3efeac8c24a7c54360f88",
     "scripts/game-math/manual-stakes.mjs": "c24a92e5507588f080a640a1f76353d7d223ab2ef13ccee3355457c59c125471",
     "scripts/game-math/manual-stake-case.mjs": "fa868d135fd361c26c4bcc41c6e2b0831c0adf2d1744b34fa3a6c237664cebf4",
     "scripts/game-math/manual-stake-pool.mjs": "fc675e82956b25f436dfba08ec1e8893cfeb41772b7b6bd71ab9134095d01596",
     "scripts/game-math/manual-stake-worker.mjs": "54d7257363c6d1cd4ff071197e42a99f9e6a644344a58708d66f11a59ddad5c4"
   },
-  "policySha256": "e307f5d1af391fe7931484cbbe1892ab7318894ac4cb571c9e58151fd46c4be5",
+  "policySha256": "2dc3bd31f97b1197334ba3e754dfb2ae0b8ae15658d5fe6ad137315791a4f62f",
   "method": "full-round-unbiased-cent-policy-v1",
   "precisionLaw": {
     "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
@@ -161,7 +162,7 @@
   "evidence": {
     "reference": {
       "path": "docs/game-math/qualifications/wild-nudge-v1.json",
-      "sha256": "b9a615cfdc34d92baf38d459a9a74209ee1cd387a6eaee5cda4762f49a368020"
+      "sha256": "5b9ecc0f43785838173deee7eeb6891c4fccf1fa40d3efeac8c24a7c54360f88"
     }
   },
   "replay": {
@@ -260,26 +261,26 @@
       "journalBalanced": true
     },
     "gameId": "studio-wild-nudge",
-    "cases": 17,
+    "cases": 19,
     "freeContinuationChecks": 0,
-    "replayAndRestartCases": 17,
+    "replayAndRestartCases": 19,
     "oneDebitAndCredit": true,
     "clientVerified": true,
-    "sha256": "514b8207d25c1558a51e082bcd4f6312d9053999fa14a31d7f1aa17793a52f3c"
+    "sha256": "cd3bc5f7440983e51a3b2a58effe8f2b9b26415bf96d34743c2eb904554092ed"
   },
   "manualStakes": {
     "range": {
       "minimumCents": 10,
-      "maximumCents": 5000,
+      "maximumCents": 10000,
       "stepCents": 1
     },
-    "checks": 4991,
+    "checks": 9991,
     "cases": [
       {
         "choice": "normal",
         "seed": 2026110337,
-        "denominations": 4991,
-        "sha256": "ade92528b41162f1a8345a7733c3b742d556a105b7f315183d2b7f8f5be23693"
+        "denominations": 9991,
+        "sha256": "5760fccdc553b645af6870261dc8ecf13b9527f95090365ebbfe456cf66a5518"
       }
     ],
     "interpretation": "Exhaustive accepted-cent runtime replay per allowed mode or choice. The reviewed stake-independent latent full-round model and exact rational final-ticket identity apply to every accepted cent. Bought Caribbean rounds normalize to the actual charged integer price. These replays are compatibility and scaling checks, not a statistical RTP estimate."

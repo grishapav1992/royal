@@ -1,6 +1,6 @@
 import {canRecoverOperation} from './operationFeedback';
 import {confirmedPayout} from '../shared/roundPrecision';
-import {GAME_STAKE_UNITS as COSMIC_ESCAPE_BET_UNITS} from '../shared/gameStakes';
+import {ROYAL_GAME_STAKE_UNITS as COSMIC_ESCAPE_BET_UNITS} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import {SlotSettings} from './slotKit/SlotSettings';
 import {SlotDialog, slotOwnsKeyboard} from './slotKit/SlotDialog';

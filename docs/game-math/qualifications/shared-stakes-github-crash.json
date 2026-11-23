@@ -3,26 +3,28 @@
   "gameId": "github-crash",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-11-20T17:05:58.740Z",
-  "completedAt": "2026-11-20T17:06:04.738Z",
+  "startedAt": "2026-11-23T09:09:17.127Z",
+  "completedAt": "2026-11-23T09:09:24.459Z",
   "sourceHashes": {
-    "src/shared/gameStakes.ts": "b8d31b4ace8218ba80bba06e6bf57e3386359b8d0a4ed0712a19375f7a4ab754",
+    "server/royalStakeTransport.ts": "8ba026c2dbc9e47e6ef3b982b943b8884120b17daa4d28b970bb55b8aade07be",
+    "server/gameWalletRoutes.ts": "1c446f7c814bd0bd5c1c8427a20d83e3c52b5f252f7794a05a6f38928edff007",
+    "src/shared/gameStakes.ts": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b",
     "src/shared/roundPrecision.ts": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870",
     "src/shared/casinoExpansion.ts": "8fa30fdaafd9ac3272da9820ff5e277b9b7f34e143756fa9084223b0a8a5a2ed",
     "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
     "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
     "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
-    "server/demoExpansion.ts": "372f126f513fce6bfbcc494bffe8b74c214dbf1d611445ebc556dce3c2c0fa7a",
-    "server/demoWallet.ts": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
+    "server/demoExpansion.ts": "d7cb8d53b9d15d82e7f3a84015065cac5ab30b0f844397c1b375a9439822bfc3",
+    "server/demoWallet.ts": "b8428ee4e297863398034eb992e1606ba77713fbbd3b1158c09fd3e2b9ea2b21",
     "server/demoWalletAmounts.ts": "f1f0a88915a232f134b83203b670e51ea1d5e81273ae0ccdcb4ac1c521b52cce",
-    "server/demoWalletRoutes.ts": "347960035a80291f5903afcaac83456e4db05c03080851340d962fc770d848c8",
-    "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
-    "server/afterglowProgress.ts": "4a7f5d07ca6be6afbcec0c5ff2c7d91bb4da82f81438aa35c8a418cc939134b9",
-    "src/wallet/ExpansionClient.ts": "c9bcbe7811237717a41dd83954c7562b2c091f80a7b9b4f461a81d9f084610c7",
-    "src/wallet/WalletClient.ts": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
+    "server/demoWalletRoutes.ts": "e1e80a812b665c31dff412d42640deb4edf4c5ca805c7380a028ee3281ef80d7",
+    "server/finance/nile-game-runtime.ts": "fd8aebc6d96472fce25ab7b040382d2b749c428bed16cfabdb51629495053118",
+    "server/afterglowProgress.ts": "aacf0aeaa90cece3d2460426bbd442324f99038b0eab42b8c564184c6a87641e",
+    "src/wallet/ExpansionClient.ts": "6498e048b086ee56f2a122093d45db30e832da4c5ac2a5d5904c15a2a0f47b39",
+    "src/wallet/WalletClient.ts": "55f58e6cc8d348a35316a942d42e918923c3a5b3f34e4ea65c69381f7ade743e",
     "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d",
     "scripts/game-math/rtp-stakes-worker.mjs": "f5db2c6be7cc4c68bb07c719eea5ba3db3f0d237d7bf8cd75736c891f91a218d",
-    "server-tests/game-stakes.test.ts": "d8fb3859601228535ac49ba2876865f139bf59549d4b77b1f4fb9e3c7a7b8fe1",
+    "server-tests/game-stakes.test.ts": "88746b3ea9f26a3c6af228fd3c422d3aeeab7b1eb0034dcb19959bbc90055ea1",
     "server-tests/round-precision.test.ts": "d48a631f198636a97db8e70952c600a47b9cb1d04b20ebc6d08cbfa2cd452abb",
     "server/games/rush/crash.ts": "18182aa65f5babc4bf693b234aeec8a239646c41d33d4c3126b3abefc7b15a94",
     "scripts/game-math/stake-runtime.mjs": "fcefdf0ea8724c7e1cf76fa2134a52348dab765504a46dfb43f10bfba62572d5",
@@ -34,7 +36,7 @@
     "scripts/game-math/manual-stake-worker.mjs": "54d7257363c6d1cd4ff071197e42a99f9e6a644344a58708d66f11a59ddad5c4",
     "scripts/game-math/rtp-stakes.mjs": "f1c5c680f5e5f913e430fe050f50596f149a57fb3b7b0834ab8bd6dca8f6240d"
   },
-  "policySha256": "83c95c5686d7d0f82e42d15a0f935092a851f44235f5f7273ae56a67556ea95b",
+  "policySha256": "fcac79cb80210a7cfdb0fa954d4dde56e34d7c0c20b626f1be09fdf14f2e8273",
   "method": "full-round-unbiased-cent-policy-v1",
   "precisionLaw": {
     "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
@@ -297,26 +299,26 @@
       "journalBalanced": true
     },
     "gameId": "github-crash",
-    "cases": 17,
-    "freeContinuationChecks": 17,
-    "replayAndRestartCases": 17,
+    "cases": 19,
+    "freeContinuationChecks": 19,
+    "replayAndRestartCases": 19,
     "oneDebitAndCredit": true,
     "clientVerified": true,
-    "sha256": "919a88071702fd788770996106b433372befdbe150df7ecc6162cccbc9ab3d12"
+    "sha256": "dd1d802f6bdc4488927a307b46caf10c35d98b3a838401261544284d9ad77203"
   },
   "manualStakes": {
     "range": {
       "minimumCents": 10,
-      "maximumCents": 5000,
+      "maximumCents": 10000,
       "stepCents": 1
     },
-    "checks": 4991,
+    "checks": 9991,
     "cases": [
       {
         "choice": "all-server-cashout-times",
         "seed": 6371291,
-        "denominations": 4991,
-        "sha256": "14bd3cd8357b90c8502262bfcad565ae9489722ece1fe185d67f6cb885ef9eb7"
+        "denominations": 9991,
+        "sha256": "afc9ba8949e1a4c534e29b26e23bbae1abf870cd39d8795736dc3e9a4254fdd5"
       }
     ],
     "interpretation": "Exhaustive accepted-cent runtime replay per allowed mode or choice. The reviewed stake-independent latent full-round model and exact rational final-ticket identity apply to every accepted cent. Bought Caribbean rounds normalize to the actual charged integer price. These replays are compatibility and scaling checks, not a statistical RTP estimate."

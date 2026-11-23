@@ -1,7 +1,15 @@
 import { t } from '../i18n/index';
+import { isPlatformGame } from '../shared/arcadeCatalog';
 import { DRAGON_PATH_GAME } from '../shared/dragonPathProtocol';
 import { gameLayoutPolicy } from './GameLayoutPolicy';
 import './game-chat.css';
+
+type ChatWindow = {
+  game: HTMLElement;
+  toggle: HTMLButtonElement;
+  scrim: HTMLElement;
+  badge?: { title: Element; element: HTMLSpanElement };
+};
 
 let registerDialog: ((dialog: HTMLDialogElement) => () => void) | undefined;
 export const registerGameChatDialog = (dialog: HTMLDialogElement) => registerDialog?.(dialog) ?? (() => {});
@@ -11,7 +19,7 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
   const home = document.createComment('Club chat position');
   dock.before(home);
   dock.id = 'club-chat-dock';
-  const windows = new Map<HTMLDialogElement, { game: HTMLElement; toggle: HTMLButtonElement; scrim: HTMLElement; mode?: HTMLElement }>();
+  const windows = new Map<HTMLDialogElement, ChatWindow>();
   let active: HTMLDialogElement | undefined;
   let overlayOpen = false;
   let columnHidden = false;
@@ -31,16 +39,22 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
     const next = [...windows.keys()].filter(window => window.isConnected && window.open && !window.hasAttribute('data-game-chat-suspended')).at(-1);
     if (next !== active) { overlayOpen = false; active = next; }
     for (const [window, entry] of windows) {
+      if (entry.badge) {
+        const gameId = window.dataset.game ?? '';
+        const { title, element } = entry.badge;
+        if (gameId !== DRAGON_PATH_GAME && (gameId === 'royal-catalog' || isPlatformGame(gameId))) element.remove();
+        else {
+          const label = t(gameId === DRAGON_PATH_GAME ? 'Виртуальные ставки' : 'Демо');
+          if (element.textContent !== label) element.textContent = label;
+          if (!element.parentElement) title.append(element);
+        }
+      }
       const policy = policyFor(window);
       const overlay = policy.chat === 'overlay';
       const visible = window === active && (overlay ? overlayOpen : !columnHidden);
       window.dataset.gameChat = overlay ? (visible ? 'overlay' : 'closed') : (visible ? 'column' : 'closed');
       window.dataset.gameComposition = policy.composition;
       entry.game.inert = visible && overlay;
-      if (entry.mode) {
-        const label = t(window.dataset.game === DRAGON_PATH_GAME ? 'Виртуальные ставки' : 'Демо');
-        if (entry.mode.textContent !== label) entry.mode.textContent = label;
-      }
       entry.scrim.hidden = !visible || !overlay;
       entry.toggle.setAttribute('aria-expanded', String(visible));
       entry.toggle.setAttribute('aria-label', t(visible ? 'Свернуть чат' : 'Открыть чат') + (unread ? ` (${unread})` : ''));
@@ -82,8 +96,8 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
     const settings = toolbar.querySelector('.settings-shortcut');
     if (settings) toolbar.insertBefore(settings, toggle);
     const title = toolbar.querySelector(':scope > div');
-    const mode = title ? document.createElement('span') : undefined;
-    if (mode) { mode.className = 'game-mode-badge'; title?.append(mode); }
+    const badge = title ? { title, element: document.createElement('span') } : undefined;
+    if (badge) badge.element.className = 'game-mode-badge';
     const scrim = document.createElement('div'); scrim.className = 'game-chat-scrim'; scrim.hidden = true;
     scrim.addEventListener('click', hide); window.append(scrim);
     toggle.addEventListener('click', () => {
@@ -122,7 +136,7 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
       }
     };
     window.addEventListener('keydown', onKey, true);
-    windows.set(window, { game, toggle, scrim, mode }); sync();
+    windows.set(window, { game, toggle, scrim, badge }); sync();
     return () => {
       observer.disconnect(); resize.disconnect(); window.removeEventListener('close', onClose);
       window.removeEventListener('keydown', onKey, true); windows.delete(window); sync();

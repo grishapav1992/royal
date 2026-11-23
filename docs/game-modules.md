@@ -41,6 +41,48 @@ Cosmic Escape, Caramel Carnival and Velvet Reign finish saved legacy rounds befo
 
 The seven native Studio games use server rules 2; generic Studio games, LAST EXIT and the other packages use their existing rules contract 1. GIRLHUB retains progress contract 3. The other packages use interface progress contract 1, including games with no separate cosmetic progress protocol. These metadata values describe compatibility with the host and do not migrate server data.
 
+## Game interface design
+
+Apply these rules to new games and visual redesigns. Adapt the field, primary action and round states to the genre. In a slot these are the reels, Spin and the relevant spin and bonus states.
+
+### Visual direction and information hierarchy
+
+- Pick one visual setting and carry it through the field frame, main action, progress indicators and dialogs. Use quiet surfaces behind the symbols and counters. Reserve display typography for the title and selected accents, and use readable type for controls and amounts. Define local tokens for surfaces, text, controls, win, bonus and error states. Give each accent a consistent meaning and pair state colors with a label, icon or number.
+- Give the field the largest useful area and keep its proportions and symbols readable. Place the main action next to the stake and balance. Give the confirmed result and any amounts or combinations that explain it a dedicated area near the field.
+- Use compact cards or counters for mechanics the player needs during a round. Show the current multiplier, collected items, remaining steps and next reward where they apply. Give characters and scenery their own space. On smaller screens collapse decorative art before reducing the field or losing access to a functional feature such as an album.
+- Keep rules, history, sound and other secondary controls in a compact header or settings panel. Make repeated actions easy to reach. Use one stake control with a visible full-round price, presets and manual entry where required by the [stake rules](game-stakes.md). Show the full price of optional paid modes before confirmation. Where offered, follow the [autoplay rules](#autoplay).
+
+### Layout and round states
+
+- Size to the area the host actually gives the game after arranging chat. On wide screens place mechanics and character art alongside the field where they fit. In portrait use a compact strip for mechanics and put the primary controls within reach below the field. In a short landscape window give the controls a dedicated side column. Keep the primary action, field and applicable price, progress and result visible without scrolling the game. Long rules and history may scroll within their dialogs.
+- Reserve space for results, errors and recovery prompts. At a fixed game-window size, keep field geometry stable through loading, play, cascade or win, bonus and recovery. Fit large desktop windows without stretching the field or leaving the main controls far from it.
+- Make each result legible on the field. Highlight confirmed winning symbols, lines or groups, keep them unobscured, and place the amount and breakdown beside or below them. Give bonus play a distinct treatment with a clear mode label, remaining continuations and applicable progress or multiplier. Keep a free continuation distinguishable from a paid start. Follow the [animation and sound rules](game-feedback.md) for confirmation and recovery.
+- Keep controls and dialogs readable in Russian and English. Give icon buttons accessible names, keep keyboard focus visible, and return focus when closing a dialog. Use touch targets of at least 44×44 CSS pixels for primary actions. Keep the result and underlying state clear with reduced motion and muted sound.
+- Keep game-specific components, CSS and assets within the module, with selectors scoped to its root. Use the existing host controls and services where they fit. Open the game after another themed module to check for style leaks. For a visual-only redesign, preserve the rules, payouts, wallet flow and accepted-round behavior.
+
+### Design review
+
+Before implementation, define the visual direction and the desktop, phone portrait and short landscape layouts. Cover the ready state, active play, confirmed result, applicable bonus and purchase states, and any settings or autoplay panel. Use the same theme across those states and retain the labels and controls needed to complete each flow.
+
+Verify the ready and active states in the real host with connected chat, including opening and closing chat. Use 1440×900, 393×852 and 852×393 as reference viewport sizes, plus 320×568 and 568×320 for tight layouts. Check a tablet and large desktop when they have separate compositions. Compare the field and the action positions between phases, exercise touch and keyboard controls, and check both languages. Use test rounds to verify result, bonus, pause, recovery and reopening. Include screenshots of the representative layouts and any changed state that is difficult to assess from the main screen.
+
+### Reference redesigns
+
+The six games appear here in Royal catalogue order. Their design records show different ways to apply the same hierarchy.
+
+Update these references only after production verification confirms that players receive the changed design. As part of documenting the verified release, refresh the affected game's row, cite the published version and its verification, and revise any shared design rules affected by the change. Use the same process when a verified production rollback restores a different design.
+
+| Game | Design decision | Reference |
+| --- | --- | --- |
+| Cosmic Escape | A brass-framed space console keeps portals, energy and missions beside the reels, with a compact strip on phones. A highlighted payline and its breakdown explain the result. | [Brief and layouts](game-layout/cosmic-redesign/BRIEF.md) |
+| Caramel Carnival | The striped awning and garland frame the evening fair. Tickets and top energy explain progress. The festival changes the awning and frame accents while the board stays in place. | [Brief and layouts](game-layout/caramel-redesign/BRIEF.md) |
+| Velvet Reign | A dressing-room mirror with bulbs frames the star. Spotlight and Super Encore add cast and gem progress. A new star has a reveal screen with the earned benefit before play continues. | [Dressing-room redesign and screenshots](game-layout/velvet-dressing-room.md) |
+| Last Convoy | Warning tape and Maya frame the supply field. The defense scale and evacuation beacons show progress. The result has its own row and the presets open from the stake control. | [Full redesign verification](../deployment/releases/last-convoy-full-redesign-20261122-v1/verification.json), [stake list verification](../deployment/releases/last-convoy-stake-list-20261122-v1/verification.json) |
+| Nitro RUN | The start-line layout combines a yellow Start action with gear shift lamps, nitro and flag counters. The phone moves the instruments to a compact strip and the bonus has a purple game-state accent. | [Start Line design and screenshots](game-layout/nitro-start-line/README.md) |
+| GIRLHUB | The field is a camera viewfinder and Spin resembles a shutter. Light, cameras and WILD are distinct indicators. The portrait and album stay accessible in a compact strip on phones. | [Studio design and screenshots](game-layout/girlhub-studio/README.md) |
+
+The Velvet Reign dressing-room release is a reference for the approved redesign. On 22 November 2026 its public pointer served `1.1.1-1fd37ed35c96`, while the dressing-room record documents `1.3.0-90e55a534a4e`.
+
 ## Autoplay
 
 For games with autoplay, open the Auto panel with a single paid spin count setting and a separate Start button. The default choices are 10, 25, 50 and 100. Opening the panel, changing the selection and dismissing the panel leave the wallet untouched.

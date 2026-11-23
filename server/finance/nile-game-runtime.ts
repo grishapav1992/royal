@@ -1,5 +1,6 @@
 import {isUnpublishedArcadeGame} from '../../src/shared/arcadeCatalog';
-import {validGameBet,usesGameStakes} from '../../src/shared/gameStakes';
+import {gameBetCents,gameStakeMaximum,usesGameStakes,validGameBet,validGameStake} from '../../src/shared/gameStakes';
+import {extendedRoyalWager} from '../royalStakeTransport';
 import {createHash} from 'node:crypto';
 import { SKIN_UUID } from '../../src/shared/skinStudio';
 import {DemoWalletStore,WalletError} from '../demoWallet';
@@ -16,7 +17,7 @@ import {FLIGHT_MAX_MULTIPLIER} from '../../src/shared/flightGame';
 import {validAfterWardrobe,type AfterWardrobe} from '../../src/shared/afterglowWardrobe';
 import {validConvoyProgress,type ConvoyProgress} from '../../src/shared/convoyWardrobe';
 
-export type NativeCommand={path:string;method:'GET'|'POST';body:unknown;flags:(boolean|2)[];rules:1|2;query:Record<string,string>;neopolisRules?:0|1|2|3|4;wildNudgeRules?:0|1;forestHeartRules?:0|1;caribbeanRules?:0|1;flagRules?:0|1|2;jackieRules?:0|1|2;templeRules?:0|1|2;legacy?:{wardrobe:AfterWardrobe;convoy:ConvoyProgress}|null};
+export type NativeCommand={path:string;method:'GET'|'POST';body:unknown;flags:(boolean|2)[];rules:1|2;query:Record<string,string>;neopolisRules?:0|1|2|3|4;wildNudgeRules?:0|1;forestHeartRules?:0|1;caribbeanRules?:0|1;flagRules?:0|1|2;jackieRules?:0|1|2;templeRules?:0|1|2;royalStakeLimit?:boolean;legacy?:{wardrobe:AfterWardrobe;convoy:ConvoyProgress}|null};
 const fail=(message:string):never=>{throw new WalletError(409,message);};
 /** Existing engines keep a cents projection inside the financial transaction. Only the Nile journal owns money. */
 export class NileGameRuntime{
@@ -63,7 +64,9 @@ export class NileGameRuntime{
   const op=command.body as any;if(command.method!=='POST'||!op)return 0n;
   if(command.path==='/operations'&&(op.kind==='play'||op.kind==='spin')){
    const game=op.kind==='spin'?prepareGame('royal-coins',1,{}):prepareGame(op.gameId,op.rulesVersion,op.input);
-   if(!(Number.isSafeInteger(op.amount)&&op.amount>=1||validGameBet(op.amount)))return 0n;return BigInt(op.amount*100)*BigInt(game.maxMultiplier);
+   const cents=gameBetCents(op.amount);
+   if(cents===undefined||cents<1)return 0n;
+   return BigInt(cents)*BigInt(game.maxMultiplier);
   }
   if(op.action!=='start')return 0n;
   if(command.path==='/expansion'&&isExpansionGame(op.gameId)&&typeof op.stakeUnits==='string'&&/^\d{1,12}$/.test(op.stakeUnits))return BigInt(op.stakeUnits)*BigInt(Math.max(expansionMax(op.gameId,1,op.settings),expansionMax(op.gameId,2,op.settings)));
@@ -74,10 +77,11 @@ export class NileGameRuntime{
  }
  async run(account:string,value:unknown):Promise<unknown>{
   const c=value as NativeCommand;
-  if(!c||!['body,flags,method,path,query,rules','body,flags,legacy,method,path,query,rules'].includes(Object.keys(c).filter(key=>key!=='wildNudgeRules'&&key!=='neopolisRules'&&key!=='caribbeanRules'&&key!=='forestHeartRules'&&key!=='flagRules'&&key!=='jackieRules'&&key!=='templeRules').sort().join(','))||!['GET','POST'].includes(c.method)
+  if(!c||!['body,flags,method,path,query,rules','body,flags,legacy,method,path,query,rules'].includes(Object.keys(c).filter(key=>key!=='wildNudgeRules'&&key!=='neopolisRules'&&key!=='caribbeanRules'&&key!=='forestHeartRules'&&key!=='flagRules'&&key!=='jackieRules'&&key!=='templeRules'&&key!=='royalStakeLimit').sort().join(','))||!['GET','POST'].includes(c.method)
    ||!['/','/operations','/mines','/flight','/casino-sessions','/expansion','/expansion/presentation','/convoy-progress','/afterglow-wardrobe'].includes(c.path)
    ||!Array.isArray(c.flags)||c.flags.length!==9||!c.flags.every((flag,index)=>typeof flag==='boolean'||index===8&&flag===2)||![1,2].includes(c.rules)||!c.query||typeof c.query!=='object'||Array.isArray(c.query)
    ||c.wildNudgeRules!==undefined&&![0,1].includes(c.wildNudgeRules)||c.neopolisRules!==undefined&&![0,1,2,3,4].includes(c.neopolisRules)||c.forestHeartRules!==undefined&&![0,1].includes(c.forestHeartRules)||c.flagRules!==undefined&&![0,1,2].includes(c.flagRules)||c.caribbeanRules!==undefined&&![0,1].includes(c.caribbeanRules)||c.templeRules!==undefined&&![0,1,2].includes(c.templeRules)||c.jackieRules!==undefined&&![0,1,2].includes(c.jackieRules))throw new WalletError(400,'Некорректный запрос игрового баланса.');
+  if(c.royalStakeLimit!==undefined&&typeof c.royalStakeLimit!=='boolean')throw new WalletError(400,'Некорректный лимит ставки.');
   if(c.path!=='/expansion/presentation'&&Object.keys(c.query).length)throw new WalletError(400,'Параметры запроса не поддерживаются.');
   if((c.body as any)?.kind==='deposit')throw new WalletError(400,'Пополняй общий баланс тестовым USDT через кошелёк Nile.');
   await this.ready;
@@ -99,6 +103,11 @@ export class NileGameRuntime{
    const op=c.body as any,replay=await this.replay(account,op?.id);
    if(!replay&&c.method==='POST'&&op?.action==='start'&&isUnpublishedArcadeGame(op.gameId))throw new WalletError(410,'Эта игра недоступна. Новая ставка не принята.');
    if(!replay&&c.method==='POST'&&(op?.action==='start'||op?.kind==='play')&&usesGameStakes(op.gameId)&&op.stakePolicyVersion!==1)throw new WalletError(409,'Обнови страницу для общей системы ставок. Ставка не списана.');
+   if(!replay&&c.method==='POST'&&usesGameStakes(op?.gameId)){
+    const maximum=gameStakeMaximum(op.gameId);
+    if(op.action==='start'&&!validGameStake(op.stakeUnits,maximum)||op.kind==='play'&&!validGameBet(op.amount,maximum))throw new WalletError(400,'Недопустимая ставка.');
+    if(c.royalStakeLimit===false&&extendedRoyalWager(op))return fail('Обнови страницу для ставок до 100 USDT. Ставка не списана.');
+   }
    if(!replay&&c.method==='POST'&&(op?.action==='start'||op?.kind==='play'||op?.kind==='spin')){
     if(!context.ready)return fail('Подтверждение тестового USDT временно недоступно.');
     let coverage:bigint;try{coverage=this.coverage(c)*10000n;}catch{throw new WalletError(400,'Некорректная игра или ставка.');}

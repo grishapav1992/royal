@@ -2,7 +2,7 @@ import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import { GamePriorityPanel } from '../../src/ui/GamePriorityPanel';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
 import {confirmedPayout} from '../../src/shared/roundPrecision';
-import {GAME_BETS as NEOPOLIS_BETS, gameBetCents} from '../../src/shared/gameStakes';
+import {ROYAL_GAME_BETS as NEOPOLIS_BETS, gameBetCents} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import { NEOPOLIS_GAME, neopolisPointUnits, neopolisPaytable } from '../../src/shared/neopolis';
 import { BOSSES, HEROES, initialTeam, readyTeam, type Hero, type Team, type Battle, type Frame } from '../../src/shared/neopolisMath';

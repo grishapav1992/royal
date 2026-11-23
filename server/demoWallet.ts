@@ -1,5 +1,5 @@
 import {coreExactAward,makeRoundPrecision} from '../src/shared/roundPrecision';
-import {gameBetCents, validGameBet, usesGameStakes} from '../src/shared/gameStakes';
+import {gameBetCents, gameStakeMaximum, validGameBet, usesGameStakes} from '../src/shared/gameStakes';
 import { FlagToteStore } from './flagTote';
 import { randomInt } from 'node:crypto';
 import type { PostgresDatabase } from './database';
@@ -75,9 +75,9 @@ export class DemoWalletStore {
     await this.ready;
     const op = value as WalletOperation | undefined;
     if (!op || typeof op !== 'object' || Array.isArray(op) || typeof op.id !== 'string' || !/^[a-f0-9-]{36}$/i.test(op.id)
-      || !['deposit','spin','play'].includes(op.kind) || !(Number.isSafeInteger(op.amount) || op.kind === 'play' && usesGameStakes(op.gameId) && validGameBet(op.amount))
+      || !['deposit','spin','play'].includes(op.kind) || !(Number.isSafeInteger(op.amount) || op.kind === 'play' && usesGameStakes(op.gameId) && validGameBet(op.amount, gameStakeMaximum(op.gameId)))
       || Object.keys(op).filter(key=>key!=='stakePolicyVersion').sort().join(',') !== (op.kind === 'play' ? 'amount,gameId,id,input,kind,rulesVersion' : 'amount,id,kind')) throw new WalletError(400, 'Некорректная операция.');
-    if (op.kind === 'deposit' ? op.amount < 1 || op.amount > 100000 : !((op.kind === 'play' && usesGameStakes(op.gameId) && validGameBet(op.amount)) || (DEMO_BETS as readonly number[]).includes(op.amount))) throw new WalletError(400, 'Недопустимая сумма.');
+    if (op.kind === 'deposit' ? op.amount < 1 || op.amount > 100000 : !((op.kind === 'play' && usesGameStakes(op.gameId) && validGameBet(op.amount, gameStakeMaximum(op.gameId))) || (DEMO_BETS as readonly number[]).includes(op.amount))) throw new WalletError(400, 'Недопустимая сумма.');
     if ('stakePolicyVersion' in op && (op.kind!=='play'||op.stakePolicyVersion!==1||!usesGameStakes(op.gameId))) throw new WalletError(400,'Некорректная политика ставки.');
     let game: ReturnType<typeof prepareGame> | undefined;
     if (op.kind !== 'deposit') {
@@ -103,7 +103,7 @@ export class DemoWalletStore {
         const result = { ...saved, wallet: await this.rawSnapshot(accountId) };
         return result;
       }
-      if (op.kind === 'play' && usesGameStakes(op.gameId) && op.stakePolicyVersion===1 && !validGameBet(op.amount)) throw new WalletError(400, 'Недопустимая ставка.');
+      if (op.kind === 'play' && usesGameStakes(op.gameId) && op.stakePolicyVersion===1 && !validGameBet(op.amount, gameStakeMaximum(op.gameId))) throw new WalletError(400, 'Недопустимая ставка.');
       const recent = (await this.db.prepare('SELECT COUNT(*) AS n FROM (SELECT 1 FROM demo_ledger WHERE account_id=? AND created_at>? LIMIT 120) recent').get(accountId, Date.now() - 60000));
       if (Number(recent?.n) >= 120) throw new WalletError(429, 'Слишком много операций. Подожди минуту и повтори запрос.');
       (await this.db.prepare('INSERT INTO demo_wallets(account_id) VALUES (?) ON CONFLICT(account_id) DO NOTHING').run(accountId));

@@ -3,32 +3,34 @@
   "gameId": "studio-caribbean-treasures",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-11-20T17:09:30.834Z",
-  "completedAt": "2026-11-20T17:10:49.325Z",
+  "startedAt": "2026-11-23T09:06:25.408Z",
+  "completedAt": "2026-11-23T09:08:46.045Z",
   "sourceHashes": {
-    "src/shared/gameStakes.ts": "b8d31b4ace8218ba80bba06e6bf57e3386359b8d0a4ed0712a19375f7a4ab754",
+    "server/royalStakeTransport.ts": "8ba026c2dbc9e47e6ef3b982b943b8884120b17daa4d28b970bb55b8aade07be",
+    "server/gameWalletRoutes.ts": "1c446f7c814bd0bd5c1c8427a20d83e3c52b5f252f7794a05a6f38928edff007",
+    "src/shared/gameStakes.ts": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b",
     "src/shared/roundPrecision.ts": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870",
     "src/shared/casinoExpansion.ts": "8fa30fdaafd9ac3272da9820ff5e277b9b7f34e143756fa9084223b0a8a5a2ed",
     "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
     "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
     "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
-    "server/demoExpansion.ts": "372f126f513fce6bfbcc494bffe8b74c214dbf1d611445ebc556dce3c2c0fa7a",
-    "server/demoWallet.ts": "1df4248f4a863b232fe60aad95fa9f380eefaae653593fe3b85b8ad866b2eb61",
+    "server/demoExpansion.ts": "d7cb8d53b9d15d82e7f3a84015065cac5ab30b0f844397c1b375a9439822bfc3",
+    "server/demoWallet.ts": "b8428ee4e297863398034eb992e1606ba77713fbbd3b1158c09fd3e2b9ea2b21",
     "server/demoWalletAmounts.ts": "f1f0a88915a232f134b83203b670e51ea1d5e81273ae0ccdcb4ac1c521b52cce",
-    "server/demoWalletRoutes.ts": "347960035a80291f5903afcaac83456e4db05c03080851340d962fc770d848c8",
-    "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
-    "server/afterglowProgress.ts": "4a7f5d07ca6be6afbcec0c5ff2c7d91bb4da82f81438aa35c8a418cc939134b9",
-    "src/wallet/ExpansionClient.ts": "c9bcbe7811237717a41dd83954c7562b2c091f80a7b9b4f461a81d9f084610c7",
-    "src/wallet/WalletClient.ts": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
+    "server/demoWalletRoutes.ts": "e1e80a812b665c31dff412d42640deb4edf4c5ca805c7380a028ee3281ef80d7",
+    "server/finance/nile-game-runtime.ts": "fd8aebc6d96472fce25ab7b040382d2b749c428bed16cfabdb51629495053118",
+    "server/afterglowProgress.ts": "aacf0aeaa90cece3d2460426bbd442324f99038b0eab42b8c564184c6a87641e",
+    "src/wallet/ExpansionClient.ts": "6498e048b086ee56f2a122093d45db30e832da4c5ac2a5d5904c15a2a0f47b39",
+    "src/wallet/WalletClient.ts": "55f58e6cc8d348a35316a942d42e918923c3a5b3f34e4ea65c69381f7ade743e",
     "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d",
     "scripts/game-math/rtp-stakes-worker.mjs": "f5db2c6be7cc4c68bb07c719eea5ba3db3f0d237d7bf8cd75736c891f91a218d",
-    "server-tests/game-stakes.test.ts": "d8fb3859601228535ac49ba2876865f139bf59549d4b77b1f4fb9e3c7a7b8fe1",
+    "server-tests/game-stakes.test.ts": "88746b3ea9f26a3c6af228fd3c422d3aeeab7b1eb0034dcb19959bbc90055ea1",
     "server-tests/round-precision.test.ts": "d48a631f198636a97db8e70952c600a47b9cb1d04b20ebc6d08cbfa2cd452abb",
     "src/shared/caribbeanTreasures.ts": "8e987b2de8799b444dd01fe2fcb3a567dd7921a8c1dee4b139e00e13ee3e03bb",
     "src/shared/caribbeanTreasuresMath.ts": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
     "src/shared/caribbeanTransport.ts": "8623c8e5f4f7eef28997a3b9630873e86c4c7fa7f1ff1b790490802d9fd9415a",
     "server/games/caribbeanTreasures.ts": "bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99",
-    "scripts/game-math/rtp-caribbean.mjs": "cc309e1812aeabb6a3118bf3a07530d012d0ef0a470e3adadc84596f2eb6f2ac",
+    "scripts/game-math/rtp-caribbean.mjs": "5e78fc40a379460dcd6cf731b4021ae9d40c8f65ad9ba43190c5af27435614cb",
     "scripts/game-math/stake-runtime.mjs": "fcefdf0ea8724c7e1cf76fa2134a52348dab765504a46dfb43f10bfba62572d5",
     "scripts/game-math/stakes-wallet.ts": "2923161534d6015f0be64c9467ce4921550f7a50152b2d7b77c0f7939056c0af",
     "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
@@ -38,7 +40,7 @@
     "scripts/game-math/manual-stake-worker.mjs": "54d7257363c6d1cd4ff071197e42a99f9e6a644344a58708d66f11a59ddad5c4",
     "scripts/game-math/rtp-stakes.mjs": "f1c5c680f5e5f913e430fe050f50596f149a57fb3b7b0834ab8bd6dca8f6240d"
   },
-  "policySha256": "2d21c9e1124ac4993c7b7f87f89045ae3c28e34da18fdbec070edad899eaeca6",
+  "policySha256": "185b8f452153f560b75d69698c8a1f6a0c7c11e31151ecdfb980f300544d17ec",
   "method": "full-round-unbiased-cent-policy-v1",
   "precisionLaw": {
     "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
@@ -1638,7 +1640,7 @@
   "evidence": {
     "reference": {
       "path": "docs/game-math/qualifications/caribbean-treasures-v1.json",
-      "sha256": "a2f58b10fa81a39de9bffc81bad833c2d2018a3dde64556887732416fbf8075b"
+      "sha256": "1192cd47a1b678d2bd3f29b73f66b9b63c9c153b2f18e66a427c4f448ab65e44"
     }
   },
   "replay": {
@@ -2952,116 +2954,116 @@
       "journalBalanced": true
     },
     "gameId": "studio-caribbean-treasures",
-    "cases": 272,
-    "freeContinuationChecks": 1397,
-    "replayAndRestartCases": 272,
+    "cases": 304,
+    "freeContinuationChecks": 1550,
+    "replayAndRestartCases": 304,
     "oneDebitAndCredit": true,
     "clientVerified": true,
-    "sha256": "bebeda0e448f7f0cf1f2e7c4f19d767458a9bad54c181f9f0f5903d563026dba"
+    "sha256": "940ba3735d9cedf09334654198ce129ec1fa34272f2626eb08f8d4acca8049f0"
   },
   "manualStakes": {
     "range": {
       "minimumCents": 10,
-      "maximumCents": 5000,
+      "maximumCents": 10000,
       "stepCents": 1
     },
-    "checks": 79856,
+    "checks": 159856,
     "cases": [
       {
         "choice": "lines-1-normal-raid",
         "seed": 6371291,
-        "denominations": 4991,
-        "sha256": "ade92528b41162f1a8345a7733c3b742d556a105b7f315183d2b7f8f5be23693"
+        "denominations": 9991,
+        "sha256": "5760fccdc553b645af6870261dc8ecf13b9527f95090365ebbfe456cf66a5518"
       },
       {
         "choice": "lines-1-normal-flagship",
         "seed": 6379210,
-        "denominations": 4991,
-        "sha256": "ade92528b41162f1a8345a7733c3b742d556a105b7f315183d2b7f8f5be23693"
+        "denominations": 9991,
+        "sha256": "5760fccdc553b645af6870261dc8ecf13b9527f95090365ebbfe456cf66a5518"
       },
       {
         "choice": "lines-1-buy-raid",
         "seed": 6387129,
-        "denominations": 4991,
-        "sha256": "6d6780199ef2967fe72acbb79d6772813f06a5d3d360486acf463ced39d2b4e8"
+        "denominations": 9991,
+        "sha256": "ca62fcbf261a005095a7a105eb6d9a89fbb09c773c3bf97ddb10907c9557c809"
       },
       {
         "choice": "lines-1-buy-flagship",
         "seed": 6395048,
-        "denominations": 4991,
-        "sha256": "fef99bcbaf7de0db644a25a11f91be98552889825c6230649249358fb75914c3"
+        "denominations": 9991,
+        "sha256": "3be8583b47d21d382f4b3469a1dda264e2ba74d3b7df4c55b5386c095ed8b51b"
       },
       {
         "choice": "lines-5-normal-raid",
         "seed": 6402967,
-        "denominations": 4991,
-        "sha256": "ade92528b41162f1a8345a7733c3b742d556a105b7f315183d2b7f8f5be23693"
+        "denominations": 9991,
+        "sha256": "5760fccdc553b645af6870261dc8ecf13b9527f95090365ebbfe456cf66a5518"
       },
       {
         "choice": "lines-5-normal-flagship",
         "seed": 6410886,
-        "denominations": 4991,
-        "sha256": "ade92528b41162f1a8345a7733c3b742d556a105b7f315183d2b7f8f5be23693"
+        "denominations": 9991,
+        "sha256": "5760fccdc553b645af6870261dc8ecf13b9527f95090365ebbfe456cf66a5518"
       },
       {
         "choice": "lines-5-buy-raid",
         "seed": 6418805,
-        "denominations": 4991,
-        "sha256": "d45145a1eb293eea8ff748c991b29b82ee417eaa26eec2e3e1aa0d07968197ef"
+        "denominations": 9991,
+        "sha256": "11d365bfc6809e3b14836405c630db5190214bac21cf05b69120ad716c855e84"
       },
       {
         "choice": "lines-5-buy-flagship",
         "seed": 6426724,
-        "denominations": 4991,
-        "sha256": "843cc2c9338561207bebd3b10d7cec69a15c2e97db6c969b6439e29341d6918b"
+        "denominations": 9991,
+        "sha256": "60dc8be2374a682ca939741214913ddf975999e910c74ba1eb0aad09b02d6e0b"
       },
       {
         "choice": "lines-10-normal-raid",
         "seed": 6434643,
-        "denominations": 4991,
-        "sha256": "ade92528b41162f1a8345a7733c3b742d556a105b7f315183d2b7f8f5be23693"
+        "denominations": 9991,
+        "sha256": "5760fccdc553b645af6870261dc8ecf13b9527f95090365ebbfe456cf66a5518"
       },
       {
         "choice": "lines-10-normal-flagship",
         "seed": 6442562,
-        "denominations": 4991,
-        "sha256": "23ec4f9bb57ea14422da0e68c2e47b729562e043cfd608b8ced9e8f69a35cf79"
+        "denominations": 9991,
+        "sha256": "f966544d818aec72efefd18cd8e198b94cda32ddc389298eeeba9d783cf24343"
       },
       {
         "choice": "lines-10-buy-raid",
         "seed": 6450481,
-        "denominations": 4991,
-        "sha256": "c23d3cc6366385254eaeb5044649401fdc093ca980586782c59d4d6de2c31dd6"
+        "denominations": 9991,
+        "sha256": "2e8e0efc19cd3e872412e7e1d3d6d48a491ad2edd4f9845aaba5ce16cc6b6f73"
       },
       {
         "choice": "lines-10-buy-flagship",
         "seed": 6458400,
-        "denominations": 4991,
-        "sha256": "bb2282bb371beee70b01af285aad6fea0be285cbac024a3b3b7713793e8c7683"
+        "denominations": 9991,
+        "sha256": "d989412d2c68af186e079b9f6c2bfb6eb06860b056986a74aa9d18ebd0cfd158"
       },
       {
         "choice": "lines-20-normal-raid",
         "seed": 6466319,
-        "denominations": 4991,
-        "sha256": "ade92528b41162f1a8345a7733c3b742d556a105b7f315183d2b7f8f5be23693"
+        "denominations": 9991,
+        "sha256": "5760fccdc553b645af6870261dc8ecf13b9527f95090365ebbfe456cf66a5518"
       },
       {
         "choice": "lines-20-normal-flagship",
         "seed": 6474238,
-        "denominations": 4991,
-        "sha256": "baeebfe6722c1d94cb9d6464a3fb451c5dba0c26237c2e1fdda5309c90a7dea5"
+        "denominations": 9991,
+        "sha256": "505b994f18c680677c838329814e1c0ab62478f27d72370249268cdf46db576a"
       },
       {
         "choice": "lines-20-buy-raid",
         "seed": 6482157,
-        "denominations": 4991,
-        "sha256": "f5dc00fa6b15d09eccdf5576c6ad41ecd2fd391600b52a0d1d730ca2bf94e788"
+        "denominations": 9991,
+        "sha256": "52424e6514f9d7cbde7cc88cbc4de32212cd5b530c2f1cdaad502dab596b518e"
       },
       {
         "choice": "lines-20-buy-flagship",
         "seed": 6490076,
-        "denominations": 4991,
-        "sha256": "6610467dd58f01092fc6722d8db85aa5aea74ec6f615e5122cf2144c24aa6e9a"
+        "denominations": 9991,
+        "sha256": "da3ec121771120f759a28ebead0a28aea8bd4570ddbf914bbb33a4cb070220c4"
       }
     ],
     "interpretation": "Exhaustive accepted-cent runtime replay per allowed mode or choice. The reviewed stake-independent latent full-round model and exact rational final-ticket identity apply to every accepted cent. Bought Caribbean rounds normalize to the actual charged integer price. These replays are compatibility and scaling checks, not a statistical RTP estimate."

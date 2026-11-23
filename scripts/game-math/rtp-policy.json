@@ -47,7 +47,7 @@
         "src/modules/RoyalSlotServices.ts",
         "games/panda-dragon/wallet-binding.ts"
       ],
-      "manualStakeRange": { "minimumCents": 10, "maximumCents": 5000, "stepCents": 1 },
+      "manualStakeRange": { "minimumCents": 10, "maximumCents": 10000, "stepCents": 1 },
       "note": "Одна виртуальная ставка за полный раунд, два бесплатных продолжения и одна итоговая проводка. Денежный маршрут не принимает эту игру. Оба выбора награды имеют одинаковый RTP."
     },
     "studio-forest-heart": {
@@ -215,6 +215,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-caribbean-treasures.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -249,7 +251,7 @@
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -1054,6 +1056,8 @@
       "proof": "docs/game-math/qualifications/wild-nudge-v2.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/wildNudgeData.json",
         "src/shared/wildNudgeMath.ts",
         "scripts/game-math/wild-nudge-reference.mjs",
@@ -1088,7 +1092,7 @@
       "note": "Same independent reels, deterministic WILD multipliers and eight free continuations as historical rules 1. Every common stake funds all 20 lines. Rules 2 accumulate rational rewards through the complete paid round, then use the shared unbiased final cent settlement. Historical rules and UUID replays retain their original credit.",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -1462,6 +1466,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-caramel-carnival.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -1540,6 +1546,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-last-convoy.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -1580,7 +1588,7 @@
       "samplerGame": "studio-last-convoy",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -1618,6 +1626,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-nitro-run.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -1658,7 +1668,7 @@
       "samplerGame": "studio-nitro-run",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -1696,6 +1706,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-meme-overload.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -1737,7 +1749,7 @@
       "samplerGame": "studio-nitro-run",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -1779,6 +1791,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-velvet-reign.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -1822,7 +1836,7 @@
       "samplerGame": "studio-velvet-reign",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -1860,6 +1874,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-original-cr-vs-leo.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -1891,7 +1907,7 @@
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -1964,6 +1980,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-royal-plinko.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -2074,7 +2092,7 @@
       },
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -2112,6 +2130,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-github-crash.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -2142,7 +2162,7 @@
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     }
@@ -2495,7 +2515,7 @@
         "src/modules/RoyalSlotServices.ts",
         "games/panda-dragon/wallet-binding.ts"
       ],
-      "manualStakeRange": { "minimumCents": 10, "maximumCents": 5000, "stepCents": 1 },
+      "manualStakeRange": { "minimumCents": 10, "maximumCents": 10000, "stepCents": 1 },
       "note": "Одна виртуальная ставка за полный раунд, два бесплатных продолжения и одна итоговая проводка. Денежный маршрут не принимает эту игру. Оба выбора награды имеют одинаковый RTP."
     },
     "studio-caramel-carnival": {
@@ -2533,6 +2553,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-caramel-carnival.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -2611,6 +2633,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-last-convoy.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -2651,7 +2675,7 @@
       "samplerGame": "studio-last-convoy",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -2689,6 +2713,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-nitro-run.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -2729,7 +2755,7 @@
       "samplerGame": "studio-nitro-run",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -2767,6 +2793,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-meme-overload.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -2808,7 +2836,7 @@
       "samplerGame": "studio-nitro-run",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -2850,6 +2878,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-velvet-reign.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -2893,7 +2923,7 @@
       "samplerGame": "studio-velvet-reign",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -2931,6 +2961,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-original-cr-vs-leo.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -2962,7 +2994,7 @@
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -3000,6 +3032,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-original-jackie-chan.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -3033,7 +3067,7 @@
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -3106,6 +3140,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-royal-plinko.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -3216,7 +3252,7 @@
       },
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -3254,6 +3290,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-royal-roulette.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -3286,7 +3324,7 @@
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -3324,6 +3362,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-github-crash.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -3354,7 +3394,7 @@
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -3394,6 +3434,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-flag-battle.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -3425,7 +3467,7 @@
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -3476,6 +3518,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-forest-heart.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -3525,7 +3569,7 @@
       },
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -3578,6 +3622,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-caribbean-treasures.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -3612,7 +3658,7 @@
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -3653,6 +3699,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-cosmic-escape.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -3726,6 +3774,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-flooded-temple.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -3760,7 +3810,7 @@
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -3798,6 +3848,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-afterglow.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -3846,7 +3898,7 @@
       "compatibilityQualificationSource": "docs/game-math/skin-offers-20261105/accepted-rounds.test.ts",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -3884,6 +3936,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-dracona.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -3917,7 +3971,7 @@
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -3957,6 +4011,8 @@
       "proof": "docs/game-math/qualifications/shared-stakes-studio-neopolis.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/gameStakes.ts",
         "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
@@ -3989,7 +4045,7 @@
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     },
@@ -4085,6 +4141,8 @@
       "proof": "docs/game-math/qualifications/wild-nudge-v2.json",
       "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "server/royalStakeTransport.ts",
+        "server/gameWalletRoutes.ts",
         "src/shared/wildNudgeData.json",
         "src/shared/wildNudgeMath.ts",
         "scripts/game-math/wild-nudge-reference.mjs",
@@ -4119,7 +4177,7 @@
       "note": "Same independent reels, deterministic WILD multipliers and eight free continuations as historical rules 1. Every common stake funds all 20 lines. Rules 2 accumulate rational rewards through the complete paid round, then use the shared unbiased final cent settlement. Historical rules and UUID replays retain their original credit.",
       "manualStakeRange": {
         "minimumCents": 10,
-        "maximumCents": 5000,
+        "maximumCents": 10000,
         "stepCents": 1
       }
     }

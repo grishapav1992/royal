@@ -45,6 +45,6 @@ export function StakeControl({ draft, cents, presets, disabled, invalid, onDraft
         <Icon name="plus" />
       </button>
     </div>
-    <p className="panda-stake-error" id={`${id}-error`} aria-live="polite">{invalid && t('0,10–50,00, шаг 0,01')}</p>
+    <p className="panda-stake-error" id={`${id}-error`} aria-live="polite">{invalid && t('0,10–100,00, шаг 0,01')}</p>
   </div>;
 }

@@ -1,7 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
-import {GAME_STAKE_CENTS, GAME_STAKE_UNITS, GAME_BETS, validGameStake, validGameBet, usesGameStakes} from '../src/shared/gameStakes';
+import {GAME_STAKE_CENTS, GAME_STAKE_UNITS, GAME_BETS, MAX_GAME_STAKE_CENTS, ROYAL_GAME_STAKE_CENTS, gameStakeMaximum, validGameStake, validGameBet, usesGameStakes} from '../src/shared/gameStakes';
+import {ROYAL_PLATFORM_GAMES} from '../src/shared/arcadeCatalog';
 import {prepareGame, verifyGameRound} from '../server/games/core';
 import {PostgresDatabase} from '../server/database';
 import {DemoWalletStore, WalletError} from '../server/demoWallet';
@@ -12,14 +13,18 @@ test('one exact denomination list starts at ten cents and rejects malformed mone
   assert.equal(String(GAME_BETS[i]*100),GAME_STAKE_UNITS[i]);
   assert(validGameStake(GAME_STAKE_UNITS[i]));assert(validGameBet(GAME_BETS[i]));
  }
- for(const v of [null,0,10,NaN,'0','1','9','10.0','010','1e1','10000'])assert(!validGameStake(v));
- for(const v of [null,'0.1',0,0.01,0.09,0.1000000001,NaN,Infinity,100])assert(!validGameBet(v));
+ for(const v of [null,0,10,NaN,'0','1','9','10.0','010','1e1','10001'])assert(!validGameStake(v));
+ for(const v of [null,'0.1',0,0.01,0.09,0.1000000001,NaN,Infinity,100.01])assert(!validGameBet(v));
  for(const id of ['royal-coins','royal-fruits','flag-tote','github-tower','not-a-game'])assert(!usesGameStakes(id));
+ assert.deepEqual(ROYAL_GAME_STAKE_CENTS,[...GAME_STAKE_CENTS,10000]);
+ for(const game of ROYAL_PLATFORM_GAMES)assert.equal(gameStakeMaximum(game),MAX_GAME_STAKE_CENTS);
+ assert.equal(gameStakeMaximum('tsu-e-fa'),5000);
+ assert.equal(gameStakeMaximum('flag-tote'),5000);
  assert(usesGameStakes('studio-wild-nudge'));
 });
 
 test('roulette and plinko settle the minimum stake in integer cents',()=>{
- for(const stake of GAME_STAKE_CENTS){
+ for(const stake of ROYAL_GAME_STAKE_CENTS){
   for(let number=0;number<37;number++){
    const game=prepareGame('royal-roulette',1,{bet:'number',number});
    const round=game.play(BigInt(stake),()=>number);

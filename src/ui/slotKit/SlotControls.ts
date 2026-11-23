@@ -2,7 +2,7 @@ import {canRecoverOperation} from '../operationFeedback';
 import { t as translateText, tr } from '../../i18n/index';
 import {gameAudio} from '../../game/GameAudio';
 import {validGameStake} from '../../shared/gameStakes';
-import {syncStakeSelect} from '../stakeSelection';
+import {stakeFieldMaximum, syncStakeSelect} from '../stakeSelection';
 
 interface StakeOptions {
   values: readonly string[];
@@ -31,13 +31,18 @@ export class SlotStakeControls {
   }
 
   step(direction: number) {
-    const {values, current} = this.options;
+    const {current} = this.options;
+    const values = this.availableStakes();
     return this.select(slotStakeStep(values, current(), direction));
   }
 
+  private availableStakes() {
+    return this.options.values.filter(value => validGameStake(value, stakeFieldMaximum(this.options.maximumCents)));
+  }
+
   private select(value: string | undefined) {
-    const {values, locked, changed} = this.options;
-    if (this.disposed || locked() || value === undefined || !validGameStake(value, this.options.maximumCents)) {
+    const {locked, changed} = this.options;
+    if (this.disposed || locked() || value === undefined || !validGameStake(value, stakeFieldMaximum(this.options.maximumCents))) {
       this.update();
       return false;
     }
@@ -47,7 +52,8 @@ export class SlotStakeControls {
 
   update() {
     if (this.disposed) return;
-    const {select, steps, values, current, direction, locked} = this.options;
+    const {select, steps, current, direction, locked} = this.options;
+    const values = this.availableStakes();
     const value = syncStakeSelect(select, current(), values, locked(), 100, this.options.maximumCents);
     if (value !== current()) { this.options.changed(value); return; }
     for (const button of steps) {

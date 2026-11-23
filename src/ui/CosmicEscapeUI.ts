@@ -1,6 +1,6 @@
 import {canRecoverOperation} from './operationFeedback';
 import {confirmedPayout} from '../shared/roundPrecision';
-import {GAME_STAKE_UNITS, gameStakeMaximum} from '../shared/gameStakes';
+import {ROYAL_GAME_STAKE_UNITS, gameStakeMaximum} from '../shared/gameStakes';
 import { t as translateText, tr, locale, language } from '../i18n/index';
 import {SlotSettings} from './slotKit/SlotSettings';
 import {SlotDialog, slotOwnsKeyboard} from './slotKit/SlotDialog';
@@ -32,7 +32,7 @@ type Dialog='intro'|'info'|'history'|'buy'|'bonus'|'complete'|'';
 const SPEEDS:readonly Speed[]=['normal','fast'];
 const AUTO_COUNTS=[10,25,50,100] as const;
 const maximumStakeCents=gameStakeMaximum('studio-cosmic-escape');
-const COSMIC_ESCAPE_BET_UNITS=[...GAME_STAKE_UNITS,String(maximumStakeCents)];
+const COSMIC_ESCAPE_BET_UNITS=ROYAL_GAME_STAKE_UNITS;
 const PORTAL_LADDER=[[3,10],[4,12],[5,15]] as const;
 const svg=(body:string,size=20)=>`<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${body}</svg>`;
 const ICON={

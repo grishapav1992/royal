@@ -11,10 +11,11 @@ const baseline = JSON.parse(await readFile(new URL('../scripts/game-math/rtp-leg
 const runtime = await stakeAdmissionRuntime(root);
 const id = 'future-qualified-slot';
 function futureGame() {
+  const policy = structuredClone(registry.stakePolicies['royal-roulette']);
   return {
     catalog: [{gameId: id, rulesVersion: 1, progressVersion: 1}],
-    registry: {profiles: {[id]: {target: .96}}, nonWagered: {}, stakePolicies: {[id]: structuredClone(registry.stakePolicies['royal-roulette'])}},
-    runtime: {...runtime, ROYAL_PLATFORM_GAMES: [], usesGameStakes: value => value === id},
+    registry: {profiles: {[id]: {target: .96}}, nonWagered: {}, stakePolicies: {[id]: policy}},
+    runtime: {...runtime, ROYAL_PLATFORM_GAMES: [], usesGameStakes: value => value === id, gameStakeMaximum: () => runtime.MAX_GAME_STAKE_CENTS},
   };
 }
 const check = fixture => validateStakeAdmission(fixture.catalog, [], fixture.registry, fixture.runtime);
@@ -44,6 +45,7 @@ test('new games inherit the whole-round default and must bind the common money s
     f => { delete f.registry.stakePolicies[id].manualStakeRange; },
     f => { f.registry.stakePolicies[id].manualStakeRange.stepCents = 10; },
     f => { f.runtime.usesGameStakes = () => false; },
+    f => { f.runtime.gameStakeMaximum = () => runtime.DEFAULT_MAX_GAME_STAKE_CENTS; },
     f => { f.runtime.DEFAULT_GAME_STAKE = '100'; },
     f => { f.runtime.DEFAULT_GAME_BET = 1; },
     f => { f.runtime.GAME_STAKE_CENTS = [100, 200, 500]; },

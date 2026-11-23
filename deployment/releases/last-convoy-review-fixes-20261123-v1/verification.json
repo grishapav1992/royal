@@ -1,0 +1,91 @@
+{
+  "release": "last-convoy-review-fixes-20261123-v1",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "66da16033488ccda1fc07b27aa218767c67aa90f",
+  "codeCommit": "d6fe2accd57af6003169ec4dfd74607b5566adcd",
+  "installerCommit": "66da16033488ccda1fc07b27aa218767c67aa90f",
+  "baseCommit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+  "runningImage": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+  "releaseManifestSha256": "20521955a985e5b5ffeec7dc45d381dacf55ef9aebb66697365f925a8b69ad2e",
+  "module": {
+    "verified": true,
+    "gameId": "studio-last-convoy",
+    "version": "1.1.1-f67a83a044fc",
+    "bytes": 6361368,
+    "files": 17,
+    "beforeSha256": "0c6b3680143d364dec788b168c40b09f6c776c37739feee2318bfbfd817e5fed",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "a12e4d0f5273ae8dd69d782f0762436fd27f3192c5a5eab73580495fdd6f5b02",
+    "history": "/opt/royal-game-modules-state/history/20261122T235719-f28dd81efa8749819cd7b0d823e1eb10.json"
+  },
+  "priorManifestSha256": "fa1c6f89d9a471a022e20e80c2312116605ddb57be343c2837abd3b40609fd3a",
+  "installedSourceFiles": {
+    "games/last-convoy/LastConvoyUI.ts": "46912a1c697a15054ca5565579d8adef2efba2141ffead36ecd155598d610af5",
+    "games/last-convoy/last-convoy.css": "43d1c654e56c411478b7dc7f035899363ed57952ac49f7035244533dcb2631cf"
+  },
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/last-convoy-review-fixes-20261123-v1/source.tgz",
+    "sha256": "ae2bcad7bf95211e54197ad101fa2235edf0ecd10b1efcf71354fdb3e403340d",
+    "bytes": 24137,
+    "oldVersion": "1.1.1-715efedfa7bd",
+    "imageTag": "royal-game:before-last-convoy-review-fixes-20261123-v1",
+    "image": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+    "oldPackageHardlinked": true
+  },
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "runtimeFilesPreserved": 8783,
+  "servicesPreserved": 11,
+  "otherModulesPreserved": true,
+  "freeBefore": 12060942336,
+  "freeAfter": 12054437888,
+  "projection": "all shared inputs pinned to production 1eae5668 (bytes equal to 44a96b5c), only games/last-convoy/LastConvoyUI.ts and last-convoy.css from d6fe2acc",
+  "fixes": [
+    "locked stake no longer clipped to 0,1 under the short Free label",
+    "free spin count declined in Russian (1 бесплатное вращение, 2-4 бесплатных вращения, 5+ бесплатных вращений)",
+    "rules state the stake range from 0,10 to the host maximum in steps of 0,01 and fix the test USDT typo"
+  ],
+  "verification": {
+    "rtp": "passed in release:prepare",
+    "typecheck": true,
+    "githubVerified": true,
+    "walletTests": 19,
+    "connectedBrowserTests": 8,
+    "scenarios": [
+      "measure the seven active slots in their connected host",
+      "field and actions without scrolling: studio-last-convoy (8 sizes)",
+      "Last Convoy keeps its result line and stake legible in the connected host",
+      "settings, Stop and one accepted ten-cent round: studio-last-convoy",
+      "natural bonuses keep counters and free continuation visible in both orientations (unclipped 0,10 stake and declined spin count at 393x852 and 1512x862)",
+      "Last Convoy scales the field, Maya and controls at 2K and 4K",
+      "count-only autoplay fits the connected host: studio-last-convoy",
+      "autoplay completes ten paid spins through a natural bonus: studio-last-convoy"
+    ],
+    "browserReportSha256": "6fa0e567e818df55bc5f1c8bf4c513fbe40bd5e1ed58dc55401f133967ea7f31",
+    "hostUsedForBrowserTests": "local connected host from main sources with a temporary PostgreSQL (scripts/game-layout-preview.ts), serving the exact prepared module bytes",
+    "live": {
+      "health": true,
+      "moduleHostEntries": 124,
+      "unchangedModulePointers": 123,
+      "changedModulePointers": [
+        "studio-last-convoy"
+      ],
+      "packageFilesVerified": 17,
+      "previousPackageServed": true
+    },
+    "productionAccountsOrRoundsCreated": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 67.06,
+    "healthOk": true,
+    "freeBefore": 12050198528,
+    "freeAfter": 12046753792,
+    "timerEnabled": true,
+    "timerActive": true
+  }
+}

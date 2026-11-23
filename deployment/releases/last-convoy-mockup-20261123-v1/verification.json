@@ -1,0 +1,101 @@
+{
+  "release": "last-convoy-mockup-20261123-v1",
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "318a3174522e6f6e4039c7c6c34e004fa678afd9",
+  "codeCommit": "31385f94ab52744544c941551bdcd789e1d5886c",
+  "installerCommit": "318a3174522e6f6e4039c7c6c34e004fa678afd9",
+  "baseCommit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+  "runningImage": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+  "releaseManifestSha256": "f1eda67f8803339d9058d2143eaf7317aaa42367ba009e923897365930c40c78",
+  "module": {
+    "verified": true,
+    "gameId": "studio-last-convoy",
+    "version": "1.1.1-d9f0bfd91e37",
+    "bytes": 6406672,
+    "files": 19,
+    "beforeSha256": "a12e4d0f5273ae8dd69d782f0762436fd27f3192c5a5eab73580495fdd6f5b02",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "f6cacea137d2c5afa311c0f038989706875006681f1c72c4c98d83fecf785863",
+    "history": "/opt/royal-game-modules-state/history/20261123T064510-9a44e32ff8f5414fb3be0d7dafa6cd81.json"
+  },
+  "priorManifestSha256": "ace6812c5ef763da8616452128af526eca87412c4586708534a2f7f04dd56dc8",
+  "installedSourceFiles": {
+    "games/last-convoy/LastConvoyUI.ts": "c1a42b574961a2950b6fbf64c3777d94a298fb1c37e44d45e037ad624c043d69",
+    "games/last-convoy/last-convoy.css": "7587410cef8fce2f9c4140cc3bd5755291172a38b792d251082077435298a48d"
+  },
+  "newModuleAssets": {
+    "public/assets/last-convoy/v1/oswald-cyrillic.woff2": "514ecf75b904f66460a1160531fb2626f3e886118ecdb7d2611e88fe1bc578a1",
+    "public/assets/last-convoy/v1/oswald-latin.woff2": "9dde3797547520f762f4ba3a822d417a0872b962bc78753a7ee9f955382b6b85"
+  },
+  "fontLicense": "public/assets/last-convoy/v1/OSWALD-LICENSE.txt (SIL Open Font License 1.1, files unchanged from Google Fonts, downloaded with the owner approval)",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/last-convoy-mockup-20261123-v1/source.tgz",
+    "sha256": "fa916cf456fda07f07b89c1401ddb65f431b67424e4e28e5a843065a9cd9d921",
+    "bytes": 24323,
+    "oldVersion": "1.1.1-f67a83a044fc",
+    "imageTag": "royal-game:before-last-convoy-mockup-20261123-v1",
+    "image": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+    "oldPackageHardlinked": true
+  },
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "runtimeFilesPreserved": 8783,
+  "servicesPreserved": 11,
+  "otherModulesPreserved": true,
+  "freeBefore": 12057686016,
+  "freeAfter": 12051124224,
+  "projection": "all shared inputs pinned to production 1eae5668 (bytes equal to 44a96b5c); LastConvoyUI.ts, last-convoy.css and the two Oswald files from 31385f94",
+  "changes": [
+    "evacuation cards: free spins played of awarded, locked defense with barricade count, evacuation win",
+    "This round card with the winning groups of the shown spin",
+    "accepted stake plate, Next and Auto to the end during the evacuation",
+    "Auto shows the preselected count, Fast toggle on large screens",
+    "landscape phone field at full height",
+    "short desktop windows hide Maya and the round log and compact the dock",
+    "Oswald display face",
+    "stake list closes on resize"
+  ],
+  "verification": {
+    "rtp": "passed in release:prepare",
+    "typecheck": true,
+    "githubVerified": true,
+    "walletTests": 19,
+    "connectedBrowserTests": 8,
+    "scenarios": [
+      "measure the seven active slots in their connected host",
+      "field and actions without scrolling: studio-last-convoy (8 sizes)",
+      "Last Convoy keeps its result line and stake legible in the connected host",
+      "settings, Stop and one accepted ten-cent round: studio-last-convoy",
+      "natural bonuses keep counters and free continuation visible in both orientations (accepted stake plate, Next, Auto to the end; evacuation cards at 1512x862)",
+      "Last Convoy scales the field, Maya and controls at 2K and 4K (Oswald loaded, round card, Fast toggle, 1280x680 without Maya and field 402 px)",
+      "count-only autoplay fits the connected host: studio-last-convoy",
+      "autoplay completes ten paid spins through a natural bonus: studio-last-convoy"
+    ],
+    "browserReportSha256": "c637a325ab0fcd8c14f7d1348999eb21f71fbfbb251451a6dd44e9b5338852cc",
+    "hostUsedForBrowserTests": "local connected host from main sources with a temporary PostgreSQL (scripts/game-layout-preview.ts), serving the exact prepared module bytes",
+    "live": {
+      "health": true,
+      "moduleHostEntries": 124,
+      "unchangedModulePointers": 123,
+      "changedModulePointers": [
+        "studio-last-convoy"
+      ],
+      "packageFilesVerified": 19,
+      "previousPackageServed": true
+    },
+    "productionAccountsOrRoundsCreated": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 64.6,
+    "healthOk": true,
+    "freeBefore": 12046876672,
+    "freeAfter": 12043452416,
+    "timerEnabled": true,
+    "timerActive": true
+  }
+}
