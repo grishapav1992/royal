@@ -77,7 +77,7 @@ export class CosmicEscapeUI {
     this.root.dataset.motif=this.theme.motif;this.root.dataset.reducedMotion=String(this.motionReduced());
     this.board=new CosmicEscapeBoard(this.find('[data-lg-board]'),info,this.theme,col=>{if(this.live)this.audio.stopReel(col);},false);
     this.reactor=new CosmicReactor(this.find('.cx-core'));
-    this.tools=this.find('.cx-tools');this.bind();this.idleResult();
+    this.tools=this.find('.cx-tools');this.bind();this.idleResult();this.setTotal(0);
     // The shared settings dialog is mounted in its own empty host. The cabinet keeps one layout of its own,
     // so the shared priority profiles never move portals, energy or missions away from the field.
     this.settings=new SlotSettings(this.find('[data-cx-settings-host]'),this.find('[data-cx-settings]'),this.tools,()=>{this.stopAuto();this.closeAuto(false);this.controls();this.racer.context(false,false);});

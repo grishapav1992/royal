@@ -2,6 +2,7 @@ import {language, t, tr as hostTr} from '../../src/i18n/index';
 
 // Cockpit labels travel with the package. The installed host dictionary can predate them.
 const english: Record<string, string> = {
+  'базовых ставок. Выплаты округляются вниз до 0,01 USDT. Ставка списывается один раз, весь выигрыш серии зачисляется один раз по окончании.': 'base bets. Payouts are rounded down to 0.01 USDT. The bet is charged once, and the whole series win is credited once when it ends.',
   'Вращать': 'Spin',
   'Стоп': 'Stop',
   'Энергия': 'Energy',
