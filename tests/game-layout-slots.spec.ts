@@ -436,6 +436,72 @@ test('Cosmic Escape keeps its 2K reel size when the chat column closes',async({p
  expect(closedBox.height).toBe(openBox.height);
 });
 
+/** Collects every distinct position of the Caramel box, board, lid, outcome line and controls, frame by frame. */
+async function watchCaramelBox(page:Page){
+ await page.evaluate(()=>{
+  const root=document.querySelector<HTMLElement>('#mini-game > .ccf')!,seen=new Map<string,string>(),phases=new Set<string>();
+  const parts=['.ccf-frame','[data-cc-board]','.ccf-lid','.ccf-outcome','.ccf-bar','.ccf-stepper'];
+  let running=true,frames=0;
+  const sample=()=>{
+   if(!running)return;
+   frames++;phases.add(root.dataset.phase+(root.dataset.festival==='true'?'+festival':''));
+   for(const part of parts){const b=root.querySelector(part)!.getBoundingClientRect(),key=part+' '+[b.x,b.y,b.width,b.height].map(v=>v.toFixed(1)).join(',');if(!seen.has(key))seen.set(key,String(root.dataset.phase));}
+   const spin=root.querySelector<HTMLElement>('[data-cc-spin]')!,key='[data-cc-spin] '+[spin.offsetLeft,spin.offsetTop,spin.offsetWidth,spin.offsetHeight].join(',');if(!seen.has(key))seen.set(key,String(root.dataset.phase));
+   requestAnimationFrame(sample);
+  };
+  (window as any).caramelBox=()=>{running=false;return {frames,phases:[...phases],places:[...seen].map(([key,phase])=>key+' @'+phase),parts:parts.length+1};};
+  sample();
+ });
+ return ()=>page.evaluate(()=>(window as any).caramelBox() as {frames:number;phases:string[];places:string[];parts:number});
+}
+for(const [width,height,chatOpen] of [[1440,900,true],[1440,900,false],[393,852,false],[852,393,false],[320,568,false],[568,320,false]] as const)test(`Caramel Carnival box never moves through real rounds: ${width}x${height}${chatOpen?' with chat':''}`,async({page,roomPath})=>{
+ test.setTimeout(240000);await enterGameHall(page,roomPath);await page.setViewportSize({width,height});await open(page,'studio-caramel-carnival');
+ const id='studio-caramel-carnival',chat=page.locator('#club-chat-dock');
+ if(await chat.isVisible()!==chatOpen){if(chatOpen||width>=1080)await page.locator('#mini-dialog .game-chat-toggle').click();else await chat.locator('.game-chat-close').click();}
+ await page.evaluate(()=>document.fonts.ready.then(()=>new Promise<void>(r=>setTimeout(r,400))));
+ await page.emulateMedia({reducedMotion:'no-preference'});const stop=await watchCaramelBox(page);
+ const game=page.locator('#mini-game > .ccf');
+ for(let round=0;round<3;round++){
+  const paid=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');
+  // While the reels move the same button hurries the cascade, so the round ends by its phase and token.
+  await page.locator('[data-cc-spin]').click();expect((await paid).ok()).toBe(true);
+  await expect.poll(async()=>(await page.locator('[data-cc-action="bonus"]').isVisible())||await game.evaluate(e=>e.dataset.phase==='idle'&&!e.dataset.animationToken),{timeout:60000}).toBe(true);
+  if(await page.locator('[data-cc-action="bonus"]').isVisible()){await page.emulateMedia({reducedMotion:'reduce'});await finish(page,id);await page.emulateMedia({reducedMotion:'no-preference'});}
+ }
+ // A real natural festival: award dialog, free spins, pause, continuation and result.
+ const fixture=await page.request.post('/__test/layout/bonus',{data:{gameId:id}});expect(fixture.ok(),await fixture.text()).toBe(true);
+ await page.locator('[data-cc-spin]').click();const bonus=page.locator('[data-cc-action="bonus"]');await expect(bonus).toBeVisible({timeout:60000});await bonus.click();
+ await expect(page.locator('[data-cc-pause]')).toBeEnabled({timeout:15000});await page.waitForTimeout(2500);await page.locator('[data-cc-pause]').click();
+ await expect(game).toHaveAttribute('data-phase','idle',{timeout:30000});await page.waitForTimeout(400);
+ const result=await stop();expect(result.frames).toBeGreaterThan(60);
+ for(const phase of ['spinning','idle','idle+festival'])expect(result.phases).toContain(phase);
+ expect(result.places,JSON.stringify(result.places,null,1)).toHaveLength(result.parts);
+ await page.emulateMedia({reducedMotion:'reduce'});await finish(page,id);
+});
+
+test('Caramel Carnival box ignores the length of every changing text',async({page,roomPath})=>{
+ test.setTimeout(120000);await enterGameHall(page,roomPath);await open(page,'studio-caramel-carnival');
+ for(const [width,height] of [[1440,900],[1280,720],[1024,768],[768,1024],[393,852],[852,393],[320,568],[568,320]])await test.step(width+'x'+height,async()=>{
+  await page.setViewportSize({width,height});await page.evaluate(()=>new Promise<void>(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r()))));
+  const moved=await page.locator('#mini-game > .ccf').evaluate(root=>{
+   const place=()=>['.ccf-frame','[data-cc-board]','.ccf-outcome','.ccf-bar','[data-cc-cell="0"]'].map(part=>{const b=root.querySelector(part)!.getBoundingClientRect();return [b.x,b.y,b.width,b.height].map(v=>v.toFixed(1)).join(',');}).join(' | ');
+   const status=root.querySelector('.ccf-status')!.getBoundingClientRect(),line=root.querySelector('.ccf-outcome')!.getBoundingClientRect();
+   if(status.width<100||status.left<line.left-1||status.right>line.right+1||status.bottom>line.bottom+1)return ['status text is not readable in its own line'];
+   const before=place(),moved:string[]=[],long='Очень длинная подпись, которая занимает несколько строк и в другом языке бывает ещё длиннее. '.repeat(4);
+   for(const name of ['message','phase-title','ticket-help','factor-note','energy-chip','cascade','total','groups','status','error','last','last-label','balance','cost','spin-count','spin-label','fest-win','fest-count','ticket-count','wallet-note']){
+    const el=root.querySelector<HTMLElement>(`[data-cc-${name}]`)!,html=el.innerHTML,hidden=el.hidden,state={...root.dataset};
+    for(const text of ['',long])for(const [phase,win,festival,notice] of [['idle','false','false','false'],['spinning','false','false','false'],['winning','true','false','false'],['idle','true','true','false'],['idle','true','false','true']]){
+     el.hidden=false;el.textContent=text;Object.assign(root.dataset,{phase,hasWin:win,festival,notice});
+     if(place()!==before)moved.push(name+' "'+text.slice(0,6)+'" '+phase+'/'+festival+': '+before+' -> '+place());
+    }
+    el.innerHTML=html;el.hidden=hidden;Object.assign(root.dataset,state);
+   }
+   return moved;
+  });
+  expect(moved).toEqual([]);
+ });
+});
+
 for(const game of ['studio-cosmic-escape','studio-caramel-carnival'])test(game+' accepts 100 USDT as a whole-round stake and rejects the next cent',async({page,roomPath})=>{
  await enterGameHall(page,roomPath);
  await open(page,game);
