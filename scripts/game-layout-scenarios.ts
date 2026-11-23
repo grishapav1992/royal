@@ -8,10 +8,13 @@ import {startAfter} from '../server/games/afterglow';
 
 export const layoutSlots=['studio-cosmic-escape','studio-velvet-reign','studio-caramel-carnival','studio-last-convoy','studio-nitro-run','studio-afterglow','studio-meme-overload'] as const;
 export function layoutDraw(seed:number){const random=seededRandom(seed);return(max:number)=>Math.floor(random()*max);}
-export function layoutCosmicRacerSeed(cue: 'calm' | 'win' | 'big-win') {
+// A natural mission whose first free spin contains energy growth, a WILD beam and Echo.
+export const layoutCosmicFeaturesSeed = 25524;
+
+export function layoutCosmicRacerSeed(cue: 'calm' | 'even' | 'win' | 'big-win') {
  for (let seed = 1; seed < 100000; seed++) {
   const {ended, credit} = startLuelonSlotGame('studio-cosmic-escape', {luelon: {mode: 'normal'}}, '10', layoutDraw(seed));
-  const result = credit <= 10 ? 'calm' : credit >= 200 ? 'big-win' : 'win';
+  const result = credit < 10 ? 'calm' : credit === 10 ? 'even' : credit >= 200 ? 'big-win' : 'win';
   if (ended && result === cue) return seed;
  }
  throw Error('No racer fixture found within search budget');
