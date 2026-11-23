@@ -1,5 +1,5 @@
-import {SlotAssets, type SlotAssetState} from './slotKit/SlotAssets';
-import {caramelSlot} from './slotKit/nativeSlots';
+import {SlotAssets, type SlotAssetState} from '../../src/ui/slotKit/SlotAssets';
+import {caramelSlot} from '../../src/ui/slotKit/nativeSlots';
 
 export const CARAMEL_ASSETS = caramelSlot.assets;
 export type CaramelAssetState = SlotAssetState;

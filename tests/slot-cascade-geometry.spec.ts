@@ -9,7 +9,7 @@ test.beforeAll(async () => {
     stdin: { contents: `
       import {NitroBoard} from './src/ui/NitroBoard';
       import {MemeBoard} from './src/ui/MemeBoard';
-      import {CaramelBoard} from './src/ui/CaramelBoard';
+      import {CaramelBoard} from './games/caramel-carnival/CaramelBoard';
       import {ConvoyBoard} from './src/ui/ConvoyBoard';
       import {AfterglowBoard} from './src/ui/AfterglowBoard';
       window.cascadeBoards={nr:NitroBoard,mo:MemeBoard,cc:CaramelBoard,cv:ConvoyBoard,ag:AfterglowBoard};

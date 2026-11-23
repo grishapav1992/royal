@@ -1,4 +1,4 @@
-import { CaramelCarnivalUI } from '../../src/ui/CaramelCarnivalUI';
+import { CaramelCarnivalUI } from './CaramelCarnivalUI';
 import { mountGameHostRefresh, readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';
 import '../../src/ui/studio-games.css';
 import { CascadeSlotUI } from '../../src/ui/CascadeSlotUI';

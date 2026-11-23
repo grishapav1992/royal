@@ -24,7 +24,7 @@
 
 Не меняются: математика, RTP, таблица выплат, серверный протокол, кошелёк, рисунки `caramel-rebuild/v1/symbols.webp` и `background.webp`, общий файл `caramel-carnival.css`. Игровой идентификатор и контракт 1/2/1 прежние.
 
-Меняются: `src/ui/CaramelCarnivalUI.ts` (разметка и подписи), `src/ui/caramel-candy.css` вместо `src/ui/caramel-fair.css` (стили только Caramel), `src/i18n/en.ts`, тесты раскладки.
+Меняются: `games/caramel-carnival/CaramelCarnivalUI.ts` (разметка и подписи), `games/caramel-carnival/caramel-candy.css` вместо `src/ui/caramel-fair.css` (стили только Caramel), `src/i18n/en.ts`, тесты раскладки.
 
 Действующие правила сохраняются: ставка 0,10-100 USDT с ручным вводом и списком сумм, одна настройка автоигры (10, 25, 50, 100), без приписок «Демо».
 

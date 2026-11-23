@@ -1,5 +1,5 @@
 import '../../src/ui/active-game-viewport.css';
-import {SlotCascadeBoard,type SlotCascadeCallbacks} from './slotKit/SlotCascadeBoard';
+import {SlotCascadeBoard,type SlotCascadeCallbacks} from '../../src/ui/slotKit/SlotCascadeBoard';
 import {caramelSymbol,caramelSymbolName} from './CaramelArtwork';
 
 /** Artwork adapter for the shared 6x5 cascade player. */

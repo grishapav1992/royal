@@ -19,7 +19,7 @@ try{writeFileSync(new URL('OWNER.txt',outputFolder),"Owner: Caramel audit runner
 
 assert.equal(process.env.NODE_ENV,'test');assert.equal(process.env.PGHOST,'127.0.0.1');
 const root=fileURLToPath(new URL('../../../',import.meta.url)),game='studio-caramel-carnival';
-const sources=['server/games/caramelCarnival.ts','src/shared/caramelCarnival.ts','server/demoWallet.ts','server/demoExpansion.ts','server/demoWalletAmounts.ts','src/ui/CaramelCarnivalUI.ts','src/wallet/ExpansionClient.ts','src/ui/slotKit/SlotScreens.ts','src/ui/gameReactions.ts','src/ui/slotKit/SlotAudio.ts'];
+const sources=['server/games/caramelCarnival.ts','src/shared/caramelCarnival.ts','server/demoWallet.ts','server/demoExpansion.ts','server/demoWalletAmounts.ts','games/caramel-carnival/CaramelCarnivalUI.ts','src/wallet/ExpansionClient.ts','src/ui/slotKit/SlotScreens.ts','src/ui/gameReactions.ts','src/ui/slotKit/SlotAudio.ts'];
 const hashes=()=>Object.fromEntries(sources.map(path=>[path,createHash('sha256').update(readFileSync(root+path)).digest('hex')]));
 const sourceHashes=hashes(),sourceCommit=execFileSync(process.env.ROYAL_GIT_BINARY||'git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
 

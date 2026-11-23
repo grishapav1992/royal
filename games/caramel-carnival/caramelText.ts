@@ -1,4 +1,4 @@
-import {language, t, tr as hostTr} from '../i18n/index';
+import {language, t, tr as hostTr} from '../../src/i18n/index';
 
 // Candy box labels travel with the package. The installed host dictionary can predate them.
 const english: Record<string, string> = {

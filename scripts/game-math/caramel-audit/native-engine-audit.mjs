@@ -171,6 +171,6 @@ test('Invalid stakes and settings are refused before RNG',()=>{
  for(const settings of [{caramel:{mode:'other'}},{caramel:{mode:'festival',extra:true}},{caramel:{mode:'normal'},extra:true}])assert.throws(()=>startCaramel(settings,'100',()=>{throw Error('RNG used');}),CaramelMoveError);
 });
 
-const files=['server/games/caramelCarnival.ts','src/shared/caramelCarnival.ts','src/ui/CaramelCarnivalUI.ts'];
+const files=['server/games/caramelCarnival.ts','src/shared/caramelCarnival.ts','games/caramel-carnival/CaramelCarnivalUI.ts'];
 const report={generatedAt:new Date().toISOString(),gameId:'studio-caramel-carnival',method:'Controlled entropy through actual server start/move, serialized full-history validation, no database or production writes.',modes:[{id:'normal',costMultiplier:1},{id:'festival',costMultiplier:35}],stakes:CARAMEL_BETS,passed:tests.length,tests,sourceHashes:Object.fromEntries(files.map(file=>[file,createHash('sha256').update(readFileSync(resolve(root,file))).digest('hex')]))};
 const output=fileURLToPath(new URL('native-engine-results.json',outputFolder));writeFileSync(output,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({passed:tests.length,output}));
