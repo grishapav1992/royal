@@ -10,7 +10,7 @@ import { PostgresDatabase, databaseConfig } from '../server/database';
 import { DemoWalletStore } from '../server/demoWallet';
 import { DemoExpansionStore } from '../server/demoExpansion';
 import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
-import {layoutSlots,layoutBonusSeed,layoutConvoyLimitSeed,layoutCosmicRacerSeed,layoutDraw} from './game-layout-scenarios';
+import {layoutSlots,layoutBonusSeed,layoutConvoyLimitSeed,layoutCosmicFeaturesSeed,layoutCosmicRacerSeed,layoutDraw} from './game-layout-scenarios';
 import {layoutIframes,layoutIframeSeed} from './game-layout-iframe-scenarios';
 import {layoutSeries,layoutSeriesSeed} from './game-layout-series-scenarios';
 
@@ -48,8 +48,10 @@ const vite=await createServer({configFile:false,root:process.cwd(),optimizeDeps:
      if(!db){db=new PostgresDatabase(schema,{existingSchema:true,config:databaseConfig(environment)});wallet=new DemoWalletStore(db);}
      const cue=body.scenario;
      const convoyLimit=body.gameId==='studio-last-convoy'&&(cue==='loss'||cue==='win')?cue:undefined;
-     const isRacer=body.gameId==='studio-cosmic-escape'&&(cue==='calm'||cue==='win'||cue==='big-win');
+     const isCosmic=body.gameId==='studio-cosmic-escape';
+     const isRacer=isCosmic&&(cue==='calm'||cue==='even'||cue==='win'||cue==='big-win');
      const seed=convoyLimit?layoutConvoyLimitSeed(convoyLimit):isRacer?layoutCosmicRacerSeed(cue)
+      :isCosmic&&cue==='features'?layoutCosmicFeaturesSeed
       :layoutSeries.includes(body.gameId)?layoutSeriesSeed():layoutIframes.includes(body.gameId)?layoutIframeSeed(body.gameId,cue==='legacy'):layoutBonusSeed(body.gameId);
      scenarios.set(key,new DemoExpansionStore(db,id=>wallet.snapshot(id),wallet.ready,async()=>{},layoutDraw(seed)));
      res.setHeader('Content-Type','application/json');res.end(JSON.stringify({seed,gameId:body.gameId,naturalBonus:!convoyLimit}));return;
