@@ -75,6 +75,21 @@ test('a failed spin releases the series and a new series resets its counter', as
   assert.equal(auto.state.total, 25);
 });
 
+test('free continuations and confirmation run after a counted spin, including the final spin', async () => {
+  const proof = deferred();
+  let starts = 0;
+  const auto = new Autoplay(async () => { starts++; return true; }, () => {}, () => proof.promise.then(() => {}));
+  const series = auto.start(1);
+  await Promise.resolve();
+  assert.equal(auto.state.completed, 1);
+  assert.equal(auto.state.active, true);
+  assert.equal(starts, 1);
+  proof.resolve(true);
+  await series;
+  assert.equal(auto.state.active, false);
+  assert.equal(starts, 1);
+});
+
 test('invalid series lengths never start a spin', async () => {
   let calls = 0;
   const auto = new Autoplay(async () => { calls++; return true; }, () => {});

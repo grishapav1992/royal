@@ -4,7 +4,9 @@ import { CABINETS, cabinetsInHall } from '../src/shared/cabinets';
 import { ARCADE_GITHUB_GAMES, ARCADE_CABINET_SPECS, ROYAL_COLLECTION_GAMES, ROYAL_PLATFORM_GAMES, collectionGames, isCollectionGame } from '../src/shared/arcadeCatalog';
 import { CLUB_ZONES } from '../src/shared/clubLayout';
 import { cabinetSeat } from '../src/shared/cabinetSeating';
-import { gameModuleContract } from '../src/modules/GameModuleCatalog';
+import { gameModuleContract, DRAGON_PATH } from '../src/modules/GameModuleCatalog';
+import { isExpansionGame } from '../src/shared/casinoExpansion';
+import { usesGameStakes } from '../src/shared/gameStakes';
 
 test('twelve collection seats keep Royal and GitHub separate on the common USDT wallet', () => {
   const cabinets=cabinetsInHall('arcade');
@@ -35,6 +37,16 @@ test('the source collections are disjoint, complete and prohibit cross-collectio
     }
     for(const id of ['luelon','variant-double-mines','github-blackjack','hockey'])assert.equal(isCollectionGame(source,id),false);
   }
+});
+
+test('Путь дракона зарегистрирован для виртуальных ставок только в Royal', () => {
+  const id = DRAGON_PATH.gameId;
+  assert.equal(collectionGames('royal').filter(game => game === id).length, 1);
+  assert.equal(isCollectionGame('github', id), false);
+  assert.equal(isCollectionGame('casinoapipro', id), false);
+  assert.equal(usesGameStakes(id), true);
+  assert.equal(isExpansionGame(id), true);
+  assert.ok(gameModuleContract(id));
 });
 
 test('each collection fits its own nonoverlapping carpet, including the seats and entry paths',()=>{

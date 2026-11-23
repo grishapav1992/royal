@@ -1,4 +1,5 @@
 import { t } from '../i18n/index';
+import { DRAGON_PATH_GAME } from '../shared/dragonPathProtocol';
 import { gameLayoutPolicy } from './GameLayoutPolicy';
 import './game-chat.css';
 
@@ -10,7 +11,7 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
   const home = document.createComment('Club chat position');
   dock.before(home);
   dock.id = 'club-chat-dock';
-  const windows = new Map<HTMLDialogElement, { game: HTMLElement; toggle: HTMLButtonElement; scrim: HTMLElement }>();
+  const windows = new Map<HTMLDialogElement, { game: HTMLElement; toggle: HTMLButtonElement; scrim: HTMLElement; mode?: HTMLElement }>();
   let active: HTMLDialogElement | undefined;
   let overlayOpen = false;
   let columnHidden = false;
@@ -36,6 +37,10 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
       window.dataset.gameChat = overlay ? (visible ? 'overlay' : 'closed') : (visible ? 'column' : 'closed');
       window.dataset.gameComposition = policy.composition;
       entry.game.inert = visible && overlay;
+      if (entry.mode) {
+        const label = t(window.dataset.game === DRAGON_PATH_GAME ? 'Виртуальные ставки' : 'Демо');
+        if (entry.mode.textContent !== label) entry.mode.textContent = label;
+      }
       entry.scrim.hidden = !visible || !overlay;
       entry.toggle.setAttribute('aria-expanded', String(visible));
       entry.toggle.setAttribute('aria-label', t(visible ? 'Свернуть чат' : 'Открыть чат') + (unread ? ` (${unread})` : ''));
@@ -77,9 +82,8 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
     const settings = toolbar.querySelector('.settings-shortcut');
     if (settings) toolbar.insertBefore(settings, toggle);
     const title = toolbar.querySelector(':scope > div');
-    if (title) {
-      const mode = document.createElement('span'); mode.className = 'game-mode-badge'; mode.textContent = t('Демо'); title.append(mode);
-    }
+    const mode = title ? document.createElement('span') : undefined;
+    if (mode) { mode.className = 'game-mode-badge'; title?.append(mode); }
     const scrim = document.createElement('div'); scrim.className = 'game-chat-scrim'; scrim.hidden = true;
     scrim.addEventListener('click', hide); window.append(scrim);
     toggle.addEventListener('click', () => {
@@ -89,7 +93,7 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
       if (!dock.hidden && overlay) close.focus({ preventScroll: true });
     });
     const observer = new MutationObserver(sync);
-    observer.observe(window, { attributes: true, attributeFilter: ['open', 'data-game-chat-suspended'] });
+    observer.observe(window, { attributes: true, attributeFilter: ['open', 'data-game', 'data-game-chat-suspended'] });
     const resize = new ResizeObserver(() => {
       const hadFocus = dock.contains(document.activeElement);
       sync();
@@ -118,7 +122,7 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
       }
     };
     window.addEventListener('keydown', onKey, true);
-    windows.set(window, { game, toggle, scrim }); sync();
+    windows.set(window, { game, toggle, scrim, mode }); sync();
     return () => {
       observer.disconnect(); resize.disconnect(); window.removeEventListener('close', onClose);
       window.removeEventListener('keydown', onKey, true); windows.delete(window); sync();

@@ -1,0 +1,888 @@
+.panda-page {
+  --radius: 0.75rem;
+  /* Лакированное дерево, золото, нефрит – палитра кунг-фу храма */
+  --background: oklch(0.2 0.06 205);
+  --foreground: oklch(0.95 0.03 85);
+  --card: oklch(0.26 0.07 205);
+  --card-foreground: oklch(0.95 0.03 85);
+  --popover: oklch(0.26 0.07 205);
+  --popover-foreground: oklch(0.95 0.03 85);
+  --primary: oklch(0.83 0.14 82);
+  --primary-foreground: oklch(0.22 0.06 205);
+  --secondary: oklch(0.55 0.11 160);
+  --secondary-foreground: oklch(0.97 0.02 85);
+  --muted: oklch(0.3 0.07 205);
+  --muted-foreground: oklch(0.8 0.04 70);
+  --accent: oklch(0.56 0.2 27);
+  --accent-foreground: oklch(0.97 0.02 85);
+  --destructive: oklch(0.58 0.22 27);
+  --destructive-foreground: oklch(0.97 0.02 85);
+  --destructive-soft: oklch(0.8 0.12 40);
+  --border: oklch(0.83 0.14 82 / 35%);
+  --input: oklch(0.83 0.14 82 / 45%);
+  --ring: oklch(0.88 0.15 88);
+  --gold: oklch(0.83 0.14 82);
+  --gold-deep: oklch(0.6 0.13 65);
+  --jade: oklch(0.62 0.13 160);
+  --lacquer: oklch(0.32 0.07 205);
+  --lacquer-deep: oklch(0.16 0.05 205);
+  --gradient-gold: linear-gradient(
+    180deg,
+    oklch(0.92 0.12 92),
+    oklch(0.78 0.15 75) 55%,
+    oklch(0.6 0.13 60)
+  );
+  --gradient-lacquer: linear-gradient(180deg, oklch(0.36 0.07 205), oklch(0.22 0.07 205));
+  --shadow-glow: 0 0 0 2px oklch(0.88 0.15 88), 0 0 24px oklch(0.85 0.16 85 / 70%);
+  --font-display: Georgia, serif;
+  --radius-md: 0.5rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+}
+
+.panda-page {
+  container: panda / inline-size;
+  --panda-field-limit: 552px;
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: clamp(8px, 1.4vw, 16px);
+  color: var(--foreground);
+  background: var(--background);
+}
+.panda-valley {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: url('/assets/panda-dragon/valley-bg.webp') center / cover no-repeat, var(--background);
+}
+.panda-valley::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, oklch(0.16 0.05 205 / 38%), oklch(0.16 0.05 205 / 58%) 68%, var(--lacquer-deep));
+}
+.panda-valley-motion {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.panda-valley-water { animation: panda-current 1.55s linear infinite; }
+.panda-valley-canopy { animation: panda-canopy 5.8s ease-in-out infinite alternate; }
+.panda-valley-mist { animation: panda-mist 8s ease-in-out infinite alternate; }
+.panda-valley-petals use {
+  animation: panda-petal var(--time, 9s) linear var(--delay, -3s) infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.panda-valley-petals use:nth-child(2n) { --time: 12s; --delay: -8s; }
+.panda-valley-petals use:nth-child(3n) { --time: 10s; --delay: -6s; }
+.panda-valley-petals use:nth-child(4n + 1) { --time: 11s; --delay: -2s; }
+.panda-valley[data-paused] * { animation-play-state: paused; }
+@keyframes panda-current { to { transform: translateY(72px); } }
+@keyframes panda-canopy { to { transform: translate(3px, 1px); } }
+@keyframes panda-mist {
+  from { transform: translateX(-11px); opacity: .5; }
+  to { transform: translateX(22px); opacity: .85; }
+}
+@keyframes panda-petal {
+  0% { transform: translate(-65px, -20px) rotate(-65deg); opacity: 0; }
+  18% { opacity: .8; }
+  62% { transform: translate(26px, 95px) rotate(118deg); }
+  82% { opacity: .65; }
+  100% { transform: translate(92px, 155px) rotate(200deg); opacity: 0; }
+}
+#mini-dialog[data-game-viewport="layout"] #mini-game > .panda-page {
+  --panda-field-limit: min(552px, calc(var(--slot-layout-height) - 275px));
+  container-type: size;
+  height: 100%;
+  display: grid;
+  align-items: center;
+  overflow: auto;
+}
+.panda-page :is(button, input, select, summary):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.panda-game {
+  display: grid;
+  gap: clamp(10px, 2cqw, 22px);
+  align-items: center;
+  justify-content: center;
+  grid-template-columns: minmax(0, min(var(--panda-field-limit), 100%));
+}
+.panda-icon-btn.panda-hero-toggle { display: none; }
+@container panda (min-width: 680px) {
+  .panda-game:not([data-hero="off"]) {
+    grid-template-columns: minmax(0, min(24cqw, 230px)) minmax(0, min(var(--panda-field-limit), 70cqw));
+  }
+  .panda-icon-btn.panda-hero-toggle { display: grid; }
+}
+.panda-board {
+  container: panda-board / inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(5px, 1.15cqw, 10px);
+  min-width: 0;
+}
+
+.panda-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.panda-topbar h1 {
+  font-size: clamp(1.4rem, 5vw, 2.2rem);
+  line-height: 1;
+  text-shadow:
+    0 2px 0 var(--gold-deep),
+    0 4px 14px oklch(0.1 0.04 205);
+}
+.panda-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 9999px;
+  flex: none;
+  background: var(--gradient-gold);
+  color: var(--primary-foreground);
+  border: 3px solid var(--lacquer);
+  box-shadow:
+    0 0 0 2px var(--gold-deep),
+    0 6px 14px oklch(0.1 0.04 205 / 60%);
+}
+.panda-icon-btn svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+/* Поле */
+.panda-frame {
+  position: relative;
+  padding: clamp(0.4rem, 1.6vw, 0.75rem);
+  border-radius: var(--radius-2xl);
+  background: var(--gradient-gold);
+  box-shadow:
+    0 24px 60px oklch(0.1 0.04 205 / 70%),
+    inset 0 2px 0 oklch(1 0 0 / 40%);
+}
+.panda-frame[data-celebrate] {
+  animation: panda-shake 0.5s ease-in-out 2;
+}
+.panda-grid {
+  --gap: clamp(2px, 0.65cqw, 6px);
+  position: relative;
+  display: grid;
+  aspect-ratio: 1;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  gap: var(--gap);
+  padding: var(--gap);
+  border-radius: var(--radius-xl);
+  background: radial-gradient(circle at 50% 30%, var(--lacquer), var(--lacquer-deep));
+  box-shadow: inset 0 0 30px oklch(0.08 0.03 205 / 90%);
+}
+.panda-reel {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  min-height: 0;
+  background: oklch(0.2 0.07 205 / 70%);
+  box-shadow:
+    inset 0 10px 12px -8px oklch(0.05 0.02 205 / 90%),
+    inset 0 -10px 12px -8px oklch(0.05 0.02 205 / 90%);
+}
+.panda-column,
+.panda-strip {
+  display: grid;
+  gap: var(--gap);
+}
+.panda-column {
+  height: 100%;
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+}
+.panda-strip {
+  animation: panda-reel 0.32s linear infinite;
+  filter: blur(1.5px) brightness(0.9);
+}
+.panda-column[data-landed] {
+  animation: panda-land 0.42s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+
+.panda-cell {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  transition:
+    filter 0.25s ease,
+    transform 0.25s ease;
+}
+.panda-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  user-select: none;
+  display: block;
+}
+.panda-empty {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 4vw, 2rem);
+  color: oklch(0.83 0.14 82 / 18%);
+}
+.panda-grid[data-dim] .panda-cell:not([data-highlighted]) {
+  filter: brightness(0.45) saturate(0.6);
+}
+.panda-cell[data-highlighted] {
+  z-index: 1;
+  box-shadow: var(--shadow-glow);
+  border-radius: var(--radius-md);
+}
+
+/* Живые персонажи: персонажи только моргают; предметы статичны. */
+/* Пар над пельменями: три струйки поднимаются и тают. */
+.panda-steam {
+  position: absolute;
+  inset: 0 0 45% 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+.panda-steam i {
+  position: absolute;
+  bottom: 0;
+  width: 22%;
+  height: 55%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, oklch(0.98 0.01 90 / 75%), transparent);
+  filter: blur(3px);
+  opacity: 0;
+  animation: panda-steam 2.6s ease-out infinite;
+}
+.panda-steam i:nth-child(1) {
+  left: 24%;
+  animation-delay: var(--delay, 0ms);
+}
+.panda-steam i:nth-child(2) {
+  left: 44%;
+  animation-delay: calc(var(--delay, 0ms) + 0.9s);
+}
+.panda-steam i:nth-child(3) {
+  left: 62%;
+  animation-delay: calc(var(--delay, 0ms) + 1.7s);
+}
+.panda-cell[data-highlighted]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 2px var(--gold),
+    0 0 18px oklch(0.85 0.16 85 / 80%);
+  animation: panda-pulse 1.1s ease-in-out infinite;
+}
+
+/* Линии выигрыша – только сыгравшие клетки, по их центрам. */
+.panda-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  overflow: visible;
+}
+/* Разрез от удара посоха: вспышка клинка проходит по всей линии и оставляет светящийся след. */
+.panda-cut polyline {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.panda-cut-glow {
+  stroke: oklch(0.85 0.16 80 / 70%);
+  stroke-width: 14;
+  filter: blur(5px);
+  animation:
+    panda-cut 0.28s cubic-bezier(0.7, 0, 0.2, 1) both,
+    panda-cut-fade 1.4s ease-out both;
+}
+.panda-cut-core {
+  stroke: oklch(0.99 0.03 90);
+  stroke-width: 3.5;
+  animation:
+    panda-cut 0.28s cubic-bezier(0.7, 0, 0.2, 1) both,
+    panda-cut-thin 0.9s ease-out both;
+}
+
+.panda-bigwin {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  text-align: center;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background: radial-gradient(circle, oklch(0.85 0.16 85 / 35%), transparent 65%);
+}
+.panda-bigwin span {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8vw, 4rem);
+  color: var(--primary);
+  text-shadow:
+    0 4px 0 var(--gold-deep),
+    0 0 30px oklch(0.85 0.16 85);
+  animation: panda-pop 0.6s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+
+/* Персонаж */
+.panda-hero-wrap {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+}
+@container panda (min-width: 680px) {
+  .panda-hero-wrap {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+}
+.panda-hero-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 336 / 440;
+}
+.panda-hero {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 10px 14px oklch(0.1 0.04 205 / 80%));
+  transform-origin: bottom center;
+  transition: opacity 0.08s;
+}
+.panda-hero-strike {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  opacity: 0;
+}
+/* Вращение: панда крадётся на цыпочках – шаг, подъём на носки, лёгкий наклон корпуса. */
+.panda-hero-tiptoe {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  opacity: 0;
+}
+.panda-hero-stage[data-tiptoe]:not([data-striking]) .panda-hero:not(.panda-hero-tiptoe) {
+  opacity: 0;
+}
+.panda-hero-stage[data-tiptoe]:not([data-striking]) .panda-hero-tiptoe {
+  opacity: 1;
+}
+.panda-hero-stage[data-striking] .panda-hero:not(.panda-hero-strike) {
+  opacity: 0;
+}
+.panda-hero-stage[data-striking] .panda-hero-strike {
+  opacity: 1;
+  animation: panda-lunge 0.42s ease-out both;
+}
+.panda-hero[data-mood="spin"] {
+  animation: panda-bob 0.5s ease-in-out infinite;
+}
+.panda-hero:is([data-mood="win"], [data-mood="bigwin"], [data-mood="bonus"]) {
+  animation: panda-jump 0.7s ease-out 1;
+}
+/* Посох проходит вдоль линии выигрыша, следом рисуется зачёркивание. */
+.panda-bubble {
+  position: relative;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius-xl);
+  background: var(--foreground);
+  color: var(--primary-foreground);
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 8px 20px oklch(0.1 0.04 205 / 60%);
+}
+.panda-bubble:is([data-mood="win"], [data-mood="bigwin"]) {
+  background: var(--gradient-gold);
+}
+
+/* Выбор награды */
+.panda-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+.panda-choice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  font-size: 0.9rem;
+}
+.panda-choice:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Нижняя панель */
+.panda-bar {
+  container: panda-console / inline-size;
+  min-width: 0;
+  padding: 0.55rem clamp(6px, 1.6cqw, 12px);
+  border-radius: var(--radius-2xl);
+  background: linear-gradient(160deg, var(--lacquer), var(--lacquer-deep) 82%);
+  border: 1px solid var(--border);
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 8%),
+    0 14px 30px oklch(0.1 0.04 205 / 55%);
+}
+.panda-console {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content 6.35rem;
+  grid-template-areas: 'totals stake play';
+  align-items: center;
+  gap: clamp(6px, 1.6cqw, 14px);
+}
+.panda-stat {
+  display: grid;
+  grid-area: totals;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.3rem 0.65rem;
+  min-width: 0;
+}
+.panda-stat dt,
+.panda-stake label {
+  font: 600 0.72rem/1.15 system-ui, sans-serif;
+  color: var(--muted-foreground);
+}
+.panda-stat dd {
+  font: 700 clamp(0.95rem, 3.4cqw, 1.22rem)/1.15 var(--font-display);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.panda-stake {
+  grid-area: stake;
+  display: grid;
+  grid-template-rows: auto auto 1em;
+  gap: 0.2rem;
+  min-width: 0;
+}
+.panda-stake-error {
+  margin: 0;
+  font: 0.68rem/1 system-ui, sans-serif;
+  color: var(--destructive-soft);
+}
+
+.panda-spin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.28rem;
+  width: 100%;
+  min-height: 3rem;
+  border-radius: var(--radius-xl);
+  background: var(--gradient-gold);
+  color: var(--primary-foreground);
+  font: 700 0.82rem/1.1 system-ui, sans-serif;
+  padding: 0.25rem 0.45rem;
+  text-align: center;
+  border: 1px solid var(--gold-deep);
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 45%), 0 3px 12px oklch(0.1 0.04 205 / 55%);
+  transition:
+    transform 0.15s ease,
+    filter 0.15s ease;
+  cursor: pointer;
+}
+.panda-spin-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+  stroke-width: 2.6;
+}
+.panda-spin-icon[data-active] {
+  animation: panda-rotate 0.6s linear infinite;
+}
+.panda-spin:hover:not(:disabled) {
+  transform: scale(1.04);
+  filter: brightness(1.08);
+}
+.panda-spin:active:not(:disabled) {
+  transform: scale(0.95);
+}
+.panda-spin:disabled {
+  filter: grayscale(0.4) brightness(0.75);
+  cursor: not-allowed;
+}
+.panda-spin[data-mode="continue"] {
+  background: linear-gradient(180deg, oklch(0.75 0.13 160), oklch(0.5 0.11 160));
+  color: var(--primary-foreground);
+}
+.panda-spin[data-mode="recover"] {
+  background: linear-gradient(180deg, oklch(0.85 0.14 65), oklch(0.73 0.16 53));
+  color: var(--primary-foreground);
+}
+
+.panda-step {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2.4rem;
+  border-radius: var(--radius-md);
+  flex: none;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  color: var(--primary);
+}
+.panda-step svg {
+  width: 1rem;
+  height: 1rem;
+}
+.panda-step:disabled {
+  opacity: 0.45;
+}
+.panda-input {
+  min-width: 0;
+  height: 2.4rem;
+  padding-inline: 0.18rem;
+  border-radius: var(--radius-md);
+  text-align: center;
+  background: var(--lacquer-deep);
+  border: 1px solid var(--input);
+  color: var(--foreground);
+  font: 600 1rem/1 system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.panda-input:disabled {
+  opacity: 0.7;
+}
+.panda-input[aria-invalid="true"] {
+  border-color: var(--destructive-soft);
+}
+
+/* Окно «Об игре» */
+.panda-info {
+  background: var(--gradient-lacquer);
+  border-color: var(--gold-deep);
+}
+.panda-info-sym {
+  display: block;
+  width: 3.25rem;
+  height: 3.25rem;
+  flex: none;
+}
+.panda-info-sym img {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-md);
+}
+
+@keyframes panda-reel {
+  from {
+    transform: translateY(-50%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes panda-land {
+  0% {
+    transform: translateY(-14%);
+  }
+  70% {
+    transform: translateY(3%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+@keyframes panda-cut {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes panda-cut-fade {
+  0%,
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.55;
+  }
+}
+@keyframes panda-cut-thin {
+  0%,
+  30% {
+    stroke-width: 5;
+  }
+  100% {
+    stroke-width: 2.5;
+  }
+}
+@keyframes panda-steam {
+  0% {
+    transform: translateY(40%) scale(0.6);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-90%) translateX(8%) scale(1.3);
+    opacity: 0;
+  }
+}
+@keyframes panda-lunge {
+  from {
+    transform: translateX(-12px) rotate(-2deg);
+  }
+  60% {
+    transform: translateX(18px);
+  }
+  to {
+    transform: translateX(8px);
+  }
+}
+@keyframes panda-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes panda-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+@keyframes panda-pop {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes panda-shake {
+  25% {
+    transform: translateX(-4px) rotate(-0.4deg);
+  }
+  75% {
+    transform: translateX(4px) rotate(0.4deg);
+  }
+}
+@keyframes panda-tiptoe {
+  0% {
+    transform: translateX(-10px) translateY(0) rotate(-2deg) scale(1, 1);
+  }
+  12% {
+    transform: translateX(-7px) translateY(2px) rotate(-1deg) scale(1.02, 0.97);
+  }
+  30% {
+    transform: translateX(0) translateY(-17px) rotate(3deg) scale(0.99, 1.02);
+  }
+  50% {
+    transform: translateX(22px) translateY(0) rotate(3deg) scale(1, 1);
+  }
+  62% {
+    transform: translateX(7px) translateY(2px) rotate(1deg) scale(1.02, 0.97);
+  }
+  80% {
+    transform: translateX(0) translateY(-17px) rotate(-3deg) scale(0.99, 1.02);
+  }
+  100% {
+    transform: translateX(-22px) translateY(0) rotate(-3deg) scale(1, 1);
+  }
+}
+@keyframes panda-bob {
+  50% {
+    transform: translateY(-5px) rotate(-1deg);
+  }
+}
+@keyframes panda-jump {
+  40% {
+    transform: translateY(-14px) scale(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panda-page *,
+  .panda-page *::before,
+  .panda-page *::after,
+  .panda-info * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .panda-cut polyline {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+  .panda-strip {
+    filter: brightness(0.6);
+  }
+}
+.panda-topbar-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Обязательная награда поверх поля, без сдвига нижней панели. */
+.panda-reward-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  border-radius: inherit;
+  background: color-mix(in oklch, var(--lacquer-deep) 88%, transparent);
+}
+.panda-reward-panel {
+  width: min(100%, 24rem);
+  display: grid;
+  gap: 1rem;
+}
+.panda-reward-title {
+  width: 100%;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: var(--gold);
+  font-size: 1.5rem;
+}
+.panda-reward-panel .panda-choice {
+  min-height: 4.25rem;
+  box-shadow: var(--shadow-glow);
+  animation: panda-reward-glow 1.6s ease-in-out infinite;
+}
+@keyframes panda-reward-glow {
+  50% {
+    box-shadow:
+      0 0 0 1px var(--gold-deep),
+      0 0 10px var(--gold-deep);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .panda-reward-panel .panda-choice {
+    animation: none;
+  }
+}
+
+.panda-topbar h1, .panda-reward-title { font-family: var(--font-display); color: var(--primary); }
+.panda-mode { color: var(--muted-foreground); font-size: 0.75rem; }
+.panda-stat, .panda-stat dd, .panda-topbar h1 { margin: 0; }
+.panda-stat dd { color: var(--gold); }
+.panda-stake-controls { display: flex; align-items: center; gap: 0.25rem; }
+.panda-stake-field { display: grid; grid-template-columns: minmax(0, 1fr) 2.75rem; width: clamp(6.25rem, 21cqw, 7rem); }
+.panda-stake-field .panda-input { width: 100%; border-start-end-radius: 0; border-end-end-radius: 0; }
+.panda-stake-presets { min-width: 0; min-height: 2.75rem; border: 1px solid var(--border); border-radius: 0 var(--radius-md) var(--radius-md) 0; appearance: none; padding: 0; text-align: center; background: var(--muted); color: var(--primary); }
+.panda-stake-presets:disabled { opacity: 0.45; }
+.panda-round-totals { display: grid; grid-template-columns: 1fr auto; gap: 0.4rem 1rem; }
+.panda-round-totals dd { margin: 0; color: var(--gold); font-variant-numeric: tabular-nums; }
+.panda-choice-image { width: 2.5rem; height: 2.5rem; border-radius: 0.375rem; }
+.panda-feedback { min-height: 2.5em; font: 0.85rem/1.25 system-ui, sans-serif; text-align: center; }
+.panda-status, .panda-error { margin: 0; overflow-wrap: anywhere; }
+.panda-status { color: var(--gold); }
+.panda-error { color: var(--destructive-soft); }
+.panda-bonus-ribbon {
+  position: absolute;
+  inset: 0.65rem 0.65rem auto;
+  z-index: 7;
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--radius-md);
+  background: var(--lacquer-deep);
+  color: var(--gold);
+  font-size: 0.8rem;
+  text-align: center;
+  pointer-events: none;
+}
+.panda-cut[data-static] polyline { animation: none; stroke-dasharray: none; stroke-dashoffset: 0; opacity: .85; }
+.panda-info { width: min(36rem, calc(100% - 1.5rem)); max-height: 85dvh; padding: 1rem; color: var(--foreground); }
+.panda-info h2 { color: var(--gold); font-family: var(--font-display); margin-top: 0.25rem; }
+.panda-info-close { float: right; min-height: 2.75rem; padding: 0.25rem 0.65rem; background: var(--muted); color: var(--foreground); border: 1px solid var(--border); border-radius: 0.5rem; }
+.panda-info p { margin: 0.75rem 0; }
+.panda-info details { border-top: 1px solid var(--border); }
+.panda-info summary { padding: 0.75rem 0; cursor: pointer; color: var(--gold); }
+.panda-paytable { width: 100%; border-collapse: collapse; font-size: clamp(11px, 2.9vw, 14px); }
+.panda-paytable :is(th, td) { padding: 0.4rem 0.2rem; border-bottom: 1px solid var(--border); text-align: right; }
+.panda-paytable th:first-child { text-align: left; }
+.panda-paytable th div { display: flex; align-items: center; gap: 0.4rem; }
+.panda-paytable th small { display: block; color: var(--muted-foreground); font-weight: 400; }
+.panda-paytable .panda-info-sym { width: clamp(24px, 7vw, 40px); height: auto; aspect-ratio: 1; }
+.panda-paylines { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.35rem; padding: 0; list-style: none; }
+.panda-paylines li { padding: 0.25rem; background: var(--lacquer-deep); border-radius: var(--radius-md); text-align: center; color: var(--gold); }
+.panda-paylines li div { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; margin: 0 auto; max-width: 3.2rem; }
+.panda-paylines i { aspect-ratio: 1; background: var(--muted); border-radius: 1px; }
+.panda-paylines i[data-path] { background: var(--gold); }
+.panda-play-buttons { grid-area: play; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.3rem; }
+.panda-play-buttons > :is(.panda-spin, .panda-auto) { inline-size: 100%; }
+.panda-auto { min-width: 3.5rem; min-height: 44px; padding: 0.25rem 0.6rem; border: 1px solid var(--gold-deep); border-radius: var(--radius-md); color: var(--gold); background: var(--lacquer-deep); font: 600 .78rem/1.1 system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+.panda-auto:disabled { opacity: 0.48; }
+.panda-auto-form, .panda-auto-form label { display: grid; gap: 0.75rem; }
+.panda-auto-form select { min-height: 44px; padding: 0.25rem 0.6rem; color: var(--gold); background: var(--lacquer-deep); border: 1px solid var(--border); border-radius: var(--radius-md); }
+.panda-dialog-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 0.5rem; }
+.panda-step, .panda-input { min-height: 2.75rem; }
+.panda-step { min-width: 2.75rem; }
+@container panda-console (max-width: 365px) {
+  .panda-console {
+    grid-template-columns: minmax(0, 1fr) 5.5rem;
+    grid-template-areas: 'totals totals' 'stake play';
+    gap: 0.35rem;
+  }
+  .panda-stat { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .panda-stake-controls { display: grid; grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem; gap: 0.2rem; }
+  .panda-stake-field { width: 100%; }
+  .panda-spin { padding-inline: 0.15rem; font-size: 0.76rem; }
+  .panda-spin-icon { width: 1rem; height: 1rem; }
+}
+@container panda-board (max-width: 450px) {
+  .panda-topbar h1 { font-size: clamp(1.1rem, 5cqw, 1.4rem); }
+  .panda-topbar, .panda-topbar-actions { gap: 0.35rem; }
+  .panda-mode { display: block; }
+}
+@container panda (min-width: 500px) and (max-height: 570px) {
+  .panda-game:not([data-hero="off"]), .panda-game { grid-template-columns: minmax(0, min(780px, 100%)); }
+  .panda-game .panda-icon-btn.panda-hero-toggle, .panda-game .panda-hero-wrap { display: none; }
+  .panda-board {
+    display: grid;
+    grid-template-columns: minmax(0, min(50%, 100cqh)) minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-areas: 'field title' 'field controls' 'field status';
+    align-items: center;
+    column-gap: clamp(10px, 2cqw, 18px);
+  }
+  .panda-topbar { grid-area: title; gap: 0.25rem; }
+  .panda-topbar h1 { font-size: clamp(1rem, 3.15cqw, 1.8rem); }
+  .panda-topbar-actions { gap: 0.3rem; }
+  .panda-mode { display: none; }
+  .panda-frame { grid-area: field; align-self: start; width: 100%; }
+  .panda-bar { grid-area: controls; }
+  .panda-feedback { grid-area: status; align-self: start; }
+}
+@container panda (500px <= width <= 610px) and (max-height: 570px) {
+  .panda-board { grid-template-columns: min(43%, 100cqh) minmax(0, 1fr); }
+}
+@media (max-width: 430px) {
+  #mini-dialog[data-game="panda-dragon-preview"] .game-mode-badge { display: none; }
+}
+@container panda (max-width: 350px) {
+  .panda-choices { gap: 0.35rem; padding-inline: 0.35rem; }
+  .panda-choice { flex-direction: column; justify-content: center; }
+}

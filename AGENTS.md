@@ -81,6 +81,11 @@
 - Preserve the host game window, responsive sizing and the connected chat beside the game. Verify the real host with chat enabled on desktop and mobile; mounting a game in an isolated fixture is not sufficient for layout verification.
 - Before publishing a new module or update, build and verify its package, confirm that wallet recovery and close/reopen behavior remain correct, and follow the production and GitHub requirements below. A new incompatible host contract requires a compatible host release before independent publication.
 
+### Автономная разработка визуала слотов
+
+- Для работы над шаблоном прочитайте [инструкции агента](templates/slot-primitive/AGENTS.md) и [состав комплекта для стороннего разработчика](templates/slot-primitive/README.md#что-нужно-стороннему-разработчику). Держите инструкции в репозитории: при переносе `templates/slot-primitive/` в отдельный проект его `AGENTS.md` должен лежать в корне рядом с `package.json`. `CLAUDE.md` подключает тот же текст без дублирования.
+- Визуал разрабатывается на моках через `SlotActionsV1`. Переносите в `games/<slug>/` только игровой код, локальные стили и ресурсы по [порядку подключения](docs/slot-primitive.md#от-копии-до-модуля-royal). Моки, редактор линий и оболочка стенда остаются в шаблоне. Автономная проверка не заменяет проверку в штатном хосте Royal.
+
 ## Production server access
 
 - Read deployment/SERVER.md before deploying.

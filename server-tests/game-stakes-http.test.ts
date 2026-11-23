@@ -30,7 +30,7 @@ test.after(async()=>{await accounts.close();});
 for(const native of [false,true])test(`${native?'USDT financial socket':'common demo wallet'} accepts ten-cent total rounds in all 19 casino games and never duplicates money`,{timeout:240000},async()=>{
  const client=new ExpansionClient(2),verify=(s:any)=>Reflect.get(client,'checkedSession').call(client,s);
  // Negotiated Tsu-e-fa rounds use the PvP transport and its dedicated stake tests.
- for(const [game,p]of Object.entries(policies).filter(([game])=>game!=='tsu-e-fa')as [string,any][]){
+ for(const [game,p]of Object.entries(policies).filter(([game])=>game!=='tsu-e-fa'&&game!=='panda-dragon-preview')as [string,any][]){
   const login=await accounts.login('shared-http-'+randomUUID()+'@example.test','Royal-shared-stakes-42!');
   const c=native?await pvpFixture([login.account.id,randomUUID()]):undefined;
   const socket=process.platform==='win32'?'\\\\.\\pipe\\royal-stakes-'+randomUUID():join(tmpdir(),'royal-stakes-'+randomUUID()+'.sock');let finance:ReturnType<typeof createNilePlayServer>|undefined;

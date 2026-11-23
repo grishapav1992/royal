@@ -1,3 +1,5 @@
+import { DRAGON_PATH_GAME } from './dragonPathProtocol.ts';
+
 // Monetary values cross the game transport as integer cents.
 export const GAME_STAKE_CENTS: readonly number[] = Object.freeze([10, 20, 50, 100, 200, 500, 1000, 2000, 5000]);
 export const GAME_STAKE_UNITS: readonly string[] = Object.freeze(GAME_STAKE_CENTS.map(String));
@@ -28,7 +30,7 @@ const games = new Set(['studio-cosmic-escape', 'studio-caramel-carnival', 'studi
   'studio-last-convoy', 'studio-nitro-run', 'studio-afterglow', 'studio-meme-overload',
   'studio-dracona', 'studio-neopolis', 'studio-forest-heart', 'github-crash', 'royal-plinko',
   'original-cr-vs-leo', 'original-jackie-chan', 'studio-caribbean-treasures', 'studio-flooded-temple',
-  'royal-roulette', 'flag-battle', 'tsu-e-fa', 'studio-wild-nudge']);
+  'royal-roulette', 'flag-battle', 'tsu-e-fa', 'studio-wild-nudge', DRAGON_PATH_GAME]);
 export const usesGameStakes = (game: string): boolean => games.has(game);
 export const validGameStake = (value: unknown, maximumCents = MAX_GAME_STAKE_CENTS): value is string => typeof value === 'string' && /^[1-9]\d{0,14}$/.test(value)
   && Number(value) >= MIN_GAME_STAKE_CENTS && Number(value) <= maximumCents;

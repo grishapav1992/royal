@@ -18,6 +18,8 @@ import {prepareGame} from '../../server/games/core.ts';
 import {startStarSpin,moveStarSpin} from '../../src/shared/wildNudgeStakes.ts';
 import {expansionExactAward,coreExactAward,makeRoundPrecision} from '../../src/shared/roundPrecision.ts';
 import {cascadeRandom} from './rtp-temple-cascade-model.mjs';
+import { startDragonPath, moveDragonPath } from '../../server/games/dragonPath.ts';
+import { DRAGON_PATH_CHOOSE_REWARD, DRAGON_PATH_FREE_SPIN, DRAGON_PATH_GAME, validDragonPathReward } from '../../src/shared/dragonPathProtocol.ts';
 
 export function settingsFor(game,choice){
  if(game==='studio-wild-nudge')return {wildNudge:{mode:'normal'}};
@@ -39,6 +41,19 @@ export function settingsFor(game,choice){
 export function runtimeRound(game,choice,stakeUnits,seed){
  const rng=cascadeRandom(seed),tape=[];const draw=max=>{const value=rng(max);tape.push([max,value]);return value;};
  const settings=settingsFor(game,choice);let result,key,move;
+ if(game===DRAGON_PATH_GAME){
+  const reward=Number(choice);
+  assert(validDragonPathReward(reward));
+  let result=startDragonPath(stakeUnits,draw);
+  if(!result.ended){
+   result=moveDragonPath(result.round,result.round.revision,DRAGON_PATH_FREE_SPIN,undefined,draw);
+   result=moveDragonPath(result.round,result.round.revision,DRAGON_PATH_CHOOSE_REWARD,[reward],draw);
+  }
+  assert(result.ended);
+  const base=result.baseCreditUnits,exact=expansionExactAward({gameId:game,stakeUnits,returnedUnits:base,view:{dragonPath:{round:result.round}}});
+  const coin=cascadeRandom(seed+710107),precision=makeRoundPrecision(exact,base,max=>Math.floor(coin(4294967296)/4294967296*max));
+  return {exact,base,precision,tape,spins:result.round.free?2:1,view:result.round,settings};
+ }
  if(game==='royal-plinko'||game==='royal-roulette'){
   const [rows,risk]=choice.split(':'),input=game==='royal-plinko'?{rows:Number(rows),risk}:{bet:'number',number:7};
   const round=prepareGame(game,1,input).play(BigInt(stakeUnits),draw),a=coreExactAward(round),precision=makeRoundPrecision(a,round.payoutUnits,max=>Math.floor((cascadeRandom(seed+710107)(4294967296)/4294967296)*max));

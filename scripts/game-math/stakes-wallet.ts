@@ -8,6 +8,7 @@ import {DemoWalletStore} from '../../server/demoWallet';
 import {DemoExpansionStore} from '../../server/demoExpansion';
 import {demoBalanceUnits,demoReservedUnits} from '../../server/demoWalletAmounts';
 import {ExpansionClient} from '../../src/wallet/ExpansionClient';
+import { DRAGON_PATH_CHOOSE_REWARD, DRAGON_PATH_GAME } from '../../src/shared/dragonPathProtocol';
 import {forestHeartBestRotation} from '../../src/shared/forestHeartMath';
 import {seededRandom} from '../../src/shared/draconaMath';
 // The qualification driver and this child share case names, not wallet accounting.
@@ -25,8 +26,9 @@ function nextAction(s:any,choice:string){
  }
  if(v.caribbean?.phase==='choice')name=choice.endsWith('-flagship')?'caribbean-choose-flagship':'caribbean-choose-raid';
  const action=name??v.actions.find((a:any)=>a.cost===0)?.move;assert(action,'A continuation cannot create another paid stake');
- const revision=v.wildNudge?.revision??v.templeCascade?.revision??v.caribbean?.revision??v.forestHeart?.revision??v.neopolis?.revision??v.dracona?.revision??v.afterglow?.revision??v.nitro?.revision??v.convoy?.revision??v.caramel?.revision??v.luelon?.revision??v.penalty?.revision??v.jackie?.combat.revision;
- return {id:randomUUID(),gameId:s.gameId,action:'move',sessionId:s.id,move:action,...(revision===undefined?{}:{revision})};
+ const revision=v.dragonPath?.round.revision??v.wildNudge?.revision??v.templeCascade?.revision??v.caribbean?.revision??v.forestHeart?.revision??v.neopolis?.revision??v.dracona?.revision??v.afterglow?.revision??v.nitro?.revision??v.convoy?.revision??v.caramel?.revision??v.luelon?.revision??v.penalty?.revision??v.jackie?.combat.revision;
+ return {id:randomUUID(),gameId:s.gameId,action:'move',sessionId:s.id,move:action,...(revision===undefined?{}:{revision}),
+  ...(action===DRAGON_PATH_CHOOSE_REWARD?{picks:[Number(choice)]}:{})};
 }
 async function nativeProof(gameId:string,p:any){
  const {pvpFixture}=await import('../../server-tests/finance/helpers/nile-pvp-fixture');
@@ -40,7 +42,15 @@ async function nativeProof(gameId:string,p:any){
   const core=gameId==='royal-roulette'||gameId==='royal-plinko',parts=choice.split(':');
   const op=core?{id:randomUUID(),kind:'play',gameId,rulesVersion:1,amount:.1,stakePolicyVersion:1,input:gameId==='royal-plinko'?{rows:Number(parts[0]),risk:parts[1]}:{bet:'number',number:7}}:{id:randomUUID(),action:'start',gameId,stakeUnits:'10',stakePolicyVersion:1,settings:settingsFor(gameId,choice)};
   const command=(body:unknown=null):any=>({path:core?'/operations':'/expansion',body,method:body===null?'GET':'POST',flags:[true,true,true,true,true,true,true,true,2],rules:2,query:{},neopolisRules:4,caribbeanRules:1,forestHeartRules:1,flagRules:2,jackieRules:2,templeRules:2,wildNudgeRules:1});
-  const before=BigInt((await c.ledger.wallet(c.a)as any).balanceUnits);let reply:any=await games.run(c.a,command(op));
+  const before=BigInt((await c.ledger.wallet(c.a)as any).balanceUnits);
+  if(gameId===DRAGON_PATH_GAME){
+   await assert.rejects(games.run(c.a,command(op)),{status:409,message:/Путь дракона/});
+   const after=await c.ledger.wallet(c.a)as any;
+   assert.equal(after.balanceUnits,String(before));assert.equal(after.reservedUnits,'0');assert.equal(calls,0);
+   await c.ledger.audit();
+   return {passed:true,virtualOnly:true,journalBalanced:true};
+  }
+  let reply:any=await games.run(c.a,command(op));
   while(!core&&reply.session.state==='active'){
    if(gameId==='github-crash'){time+=100000;const snapshot:any=await games.run(c.a,command());reply={wallet:snapshot.wallet,session:snapshot.sessions.find((s:any)=>s.id===op.id)};}
    else reply=await games.run(c.a,command(nextAction(reply.session,choice)));
@@ -53,14 +63,20 @@ async function nativeProof(gameId:string,p:any){
 }
 async function runWallet(gameId:string,p:any){
  const db=new PostgresDatabase(':memory:'),digest=createHash('sha256'),rows:any[]=[];let clock=1000000,draws=0;
- const random=seededRandom(p.seeds[0]),draw=(max:number)=>{draws++;return Math.floor(random()*max);};
+ let startDraw=0;
+ const random=seededRandom(p.seeds[0]),draw=(max:number)=>{
+  draws++;
+  const ticket=Math.floor(random()*max);
+  return gameId===DRAGON_PATH_GAME&&draws-startDraw<=3?0:ticket;
+ };
  const client=new ExpansionClient(2),verify=(s:any)=>Reflect.get(client,'checkedSession').call(client,s);
  try{
   await db.exec('CREATE TABLE IF NOT EXISTS accounts(id TEXT PRIMARY KEY)');
   let wallet=new DemoWalletStore(db,draw,()=>clock);await wallet.ready;
   const create=()=>new DemoExpansionStore(db,id=>wallet.snapshot(id),wallet.ready,async()=>{},draw,()=>clock,undefined,()=>2);
   let store=create();await store.ready;
-  const operate=(account:string,op:unknown)=>store.operate(account,op,2,true,true,true,true,true,true,true,true,2,4,true,true,2,2,2,true);
+  const dragonPath=gameId===DRAGON_PATH_GAME;
+  const operate=(account:string,op:unknown)=>store.operate(account,op,2,true,true,true,true,true,true,true,true,2,4,true,true,2,2,2,true,dragonPath);
   let index=0;
   for(const choice of p.choices)for(const stake of walletStakes(p)){
    const account='precision-'+index++;await db.prepare('INSERT INTO accounts(id) VALUES(?)').run(account);
@@ -78,9 +94,11 @@ async function runWallet(gameId:string,p:any){
     const record={choice,stakeUnits:stake,spentUnits:stake,returnedUnits:paid,replayed:true,winEntries:1};digest.update(JSON.stringify(record)+'\n');rows.push(record);continue;
    }
    const op={id,gameId,action:'start',stakeUnits:String(stake),stakePolicyVersion:1,settings:settingsFor(gameId,choice)};
+   startDraw=draws;
    let reply=await operate(account,op);assert(verify(reply.session),'Real client verification of accepted start');assert.equal(reply.session.stakeUnits,String(stake));last=op;
+   if(dragonPath){assert.equal(reply.session.state,'active');assert.equal(await demoBalanceUnits(db,account),before-stake);}
    const count=draws,repeated=await operate(account,op);assert.equal(draws,count);assert(repeated.replayed);assert.equal(repeated.wallet.balance,reply.wallet.balance);
-   store=create();await store.ready;const recovered=await store.active(account,true,true,true,true,true,true,true,2,4,true,true,2,2,2,true);assert.deepEqual(recovered.sessions.find(s=>s.id===id),reply.session);
+   store=create();await store.ready;const recovered=await store.active(account,true,true,true,true,true,true,true,2,4,true,true,2,2,2,true,dragonPath);assert.deepEqual(recovered.sessions.find(s=>s.id===id),reply.session);
    let continuations=0;
    while(reply.session.state==='active'){
     assert(continuations++<10000);const prior=await demoBalanceUnits(db,account);assert(!reply.session.precision,'No future precision ticket may be exposed');
@@ -89,6 +107,7 @@ async function runWallet(gameId:string,p:any){
     if(reply.session.state==='active')assert.equal(await demoBalanceUnits(db,account),prior,'Every bonus continuation is free');
    }
    assert(reply.session.precision);const spent=Number(reply.session.spentUnits),paid=Number(reply.session.returnedUnits);
+   if(dragonPath){assert.equal(spent,stake);assert.equal(reply.session.view.dragonPath?.round.reward,Number(choice));}
    assert.equal(await demoBalanceUnits(db,account),before-spent+paid);assert.equal(await demoReservedUnits(db,account),0);
    const countAfter=draws;const finalReplay=await operate(account,last);assert.equal(draws,countAfter);assert(finalReplay.replayed);assert.deepEqual(finalReplay.session,reply.session);
    const entries=await db.prepare("SELECT entry_type,count(*) AS n FROM demo_ledger WHERE account_id=? AND operation_id IN (SELECT id FROM demo_casino_requests WHERE account_id=? AND session_id=?) GROUP BY entry_type").all(account,account,id);

@@ -6,6 +6,8 @@ import {fileURLToPath} from 'node:url';
 import {analyzeForestHeart} from './forest-heart-model.mjs';
 import {qualifyTsuDuelStakes,validateTsuDuelStakes} from './rtp-tsu-duel-stakes.mjs';
 import {qualifyManualStakes,validateManualStakes,walletStakes} from './manual-stakes.mjs';
+import { analyzeDragonPath } from './dragon-path-model.mjs';
+import { DRAGON_PATH_GAME, DRAGON_PATH_REWARDS } from '../../src/shared/dragonPathProtocol.ts';
 export const STAKE_PRECISION_METHOD='full-round-unbiased-cent-policy-v1';
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const hash=value=>createHash('sha256').update(value).digest('hex');
@@ -59,6 +61,13 @@ function checkEstimate(p,row){
 }
 function models(game,p,evidence){
  const rows=[],push=(choice,fields)=>{for(const stakeUnits of stakes)rows.push({choice,stakeUnits,...fields});};
+ if(p.kind==='dragon-path'){
+  assert.equal(game,DRAGON_PATH_GAME);assert.deepEqual(p.choices,DRAGON_PATH_REWARDS.map(String));
+  const {numerator,denominator,value,bonusProbability}=analyzeDragonPath({verifyRuntime:true});
+  assert(Math.abs(value-p.target)<=p.tolerance,'RTP «Пути дракона» вне допустимого диапазона');
+  for(const choice of p.choices)push(choice,{kind:'exact',rtp:value,rtpBounds:[value,value],fraction:{numerator:String(numerator),denominator:String(denominator)},bonusProbability});
+  return rows;
+ }
  if(p.kind==='series'){
   for(const stake of stakes){let paths=0;let maximumDenominator=0n;
    const visit=(depth,n,d)=>{if(depth){paths++;const numerator=BigInt(stake)*99n*100n**BigInt(depth),denominator=100n*n;
@@ -128,6 +137,10 @@ export function validateStakeProof(game,inputs,proof){
  assert.equal(proof.replay.coverage.length,p.choices.length*stakes.length);let checks=0;
  for(const choice of p.choices)for(const stake of stakes){const r=proof.replay.coverage.find(r=>r.choice===choice&&r.stakeUnits===stake);assert(r);assert.equal(r.paidRounds,p.seeds.length*p.serverReplayRoundsPerSeed);assert(r.spins>=r.paidRounds);assert.match(r.sha256,/^[a-f0-9]{64}$/);assert(r.minimumExtraUnits>=0);checks+=r.paidRounds;}
  assert.equal(proof.serverReplayChecks,checks);assert(proof.walletEvidence?.passed&&proof.walletEvidence.gameId===game,'Fresh common-wallet precision evidence is required');assert.match(proof.walletEvidence.sha256,/^[a-f0-9]{64}$/);assert.equal(proof.walletEvidence.cases,p.choices.length*walletStakes(p).length);assert.equal(proof.walletEvidence.replayAndRestartCases,proof.walletEvidence.cases);assert(proof.walletEvidence.oneDebitAndCredit&&proof.walletEvidence.clientVerified&&proof.walletEvidence.native?.passed&&proof.walletEvidence.native.journalBalanced);
+ if(p.kind==='dragon-path'){
+  assert.equal(proof.walletEvidence.native.virtualOnly,true);
+  assert.equal(proof.walletEvidence.freeContinuationChecks,2*proof.walletEvidence.cases);
+ }
  if(p.manualStakeRange)validateManualStakes(game,p,proof.manualStakes);
  return true;
 }

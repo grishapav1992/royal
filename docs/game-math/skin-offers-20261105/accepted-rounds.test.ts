@@ -9,7 +9,8 @@ const{verifyNativeBuild}=await import('../../../deployment/releases/shared-stake
 const oldDir=resolve(process.env.ROYAL_STAKE_OLD_RUNTIME!),newDir=resolve(process.env.ROYAL_STAKE_NEW_RUNTIME!);assert(process.env.ROYAL_STAKE_OLD_RUNTIME&&process.env.ROYAL_STAKE_NEW_RUNTIME);
 const oldProof=await verifyNativeBuild(root,oldDir),newProof=await verifyNativeBuild(root,newDir);
 const{NileGameRuntime:Old}=await import(pathToFileURL(resolve(oldDir,'runtime.mjs')).href),{NileGameRuntime:Current}=await import(pathToFileURL(resolve(newDir,'runtime.mjs')).href);
-const policies=JSON.parse(readFileSync('scripts/game-math/rtp-policy.json','utf8')).stakePolicies;
+const policies=Object.fromEntries(Object.entries(JSON.parse(readFileSync('scripts/game-math/rtp-policy.json','utf8')).stakePolicies)
+ .filter(([game])=>game!=='panda-dragon-preview'));
 const stable=(s:any)=>{const v=structuredClone(s);delete v.serverNow;return v;};
 function continuation(s:any){const v=s.view;
  const move=v.temple?'temple-finish':v.forestHeart?.stage==='choice'?'forest-pass':v.caribbean?.phase==='choice'?'caribbean-choose-raid':v.actions.find((a:any)=>a.move==='cashout')?.move??v.actions.find((a:any)=>a.cost===0)?.move;assert(move);
