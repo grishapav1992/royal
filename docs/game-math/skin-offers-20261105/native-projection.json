@@ -2199,10 +2199,10 @@
       "sha256": "e2c0986f796a3dcec167019e5f7c674580785e0938dcadb9f35f3eddb724d6d0"
     },
     "package.json": {
-      "commit": "d5b4a28f15a3a6d0050927bcc5fc190e3f4c094a",
+      "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
       "path": "package.json",
-      "baseSha256": "a5d1f48b1b3c7192c571b49d400387e04fc9cccc905b21ba87b1f069509b9919",
-      "sha256": "a5d1f48b1b3c7192c571b49d400387e04fc9cccc905b21ba87b1f069509b9919"
+      "baseSha256": "bade7130c5b6969b46e7efb5dbdabee528a711e3cf512ea11973e1e53179b278",
+      "sha256": "bade7130c5b6969b46e7efb5dbdabee528a711e3cf512ea11973e1e53179b278"
     },
     "server/index.ts": {
       "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
