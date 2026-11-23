@@ -20,7 +20,7 @@ test('interrupting a reaction discards delayed animation and releases active res
 
   const image = {dataset: {} as DOMStringMap, src: ''} as HTMLImageElement;
   const racer = new CosmicEscapeRacer(image);
-  const deliver = (cue: string) => requests.get('/assets/cosmic-guardians/racer-v2/' + cue + '.webp')!(new Response('clip'));
+  const deliver = (cue: string) => requests.get('/assets/cosmic-guardians/silver-heroine/' + cue + '.webp')!(new Response('clip'));
   racer.showArtwork();
   racer.context(true, true);
   deliver('idle');

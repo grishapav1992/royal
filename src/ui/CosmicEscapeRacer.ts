@@ -1,6 +1,6 @@
 import {gameReactionForAmounts} from './gameReactions';
 
-const racerMedia = '/assets/cosmic-guardians/racer-v2';
+const racerMedia = '/assets/cosmic-guardians/silver-heroine';
 export const COSMIC_RACER_IDLE = racerMedia + '/idle-still.webp';
 
 const cues = {

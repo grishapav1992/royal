@@ -17,7 +17,7 @@
   },
   "preload": [
     "cosmic-guardians/v1/symbols-v2.webp",
-    "cosmic-guardians/racer-v2/idle-still.webp",
+    "cosmic-guardians/silver-heroine/idle-still.webp",
     "cosmic-guardians/v1/background.webp"
   ]
 }
