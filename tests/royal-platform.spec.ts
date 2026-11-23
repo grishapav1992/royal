@@ -38,10 +38,10 @@ async function choose(page:Page,id:string){
 }
 
 
-test('the first floor exposes only twelve Royal cabinets and catalogues with connected chat',async({page,roomPath})=>{
+test('the first floor exposes only Royal cabinets and catalogues with connected chat',async({page,roomPath})=>{
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await enter(page,roomPath);
  await expect(page.locator('[data-cabinet-collection=github]')).toHaveCount(0);
- expect(cabinetsInHall('arcade')).toHaveLength(12);
+ expect(cabinetsInHall('arcade')).toHaveLength(13);
  for(const cabinet of cabinetsInHall('arcade')){
   await approach(page,cabinet.id);const menu=page.locator('.royal-platform');
   const ids=await menu.locator('[data-platform-game]').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('data-platform-game')).sort());
