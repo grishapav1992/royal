@@ -1,9 +1,9 @@
-import { t as translateText, tr } from '../i18n/index';
-import {SlotReelBoard} from './slotKit/SlotReelBoard';
-import {luelonSlotCellMultiplier,type LuelonSlotInfo,type LuelonSlotFeatures,type LuelonSlotFrame,type LuelonSlotEvent} from '../shared/luelonSlots';
-import type {LuelonTheme} from './LuelonArtwork';
+import { t as translateText, tr } from '../../src/i18n/index';
+import {SlotReelBoard} from '../../src/ui/slotKit/SlotReelBoard';
+import {luelonSlotCellMultiplier,type LuelonSlotInfo,type LuelonSlotFeatures,type LuelonSlotFrame,type LuelonSlotEvent} from '../../src/shared/luelonSlots';
+import type {LuelonTheme} from '../../src/ui/LuelonArtwork';
 import {VELVET_ASSETS} from './VelvetReignAssets';
-import {VELVET_NAMES,VELVET_STARS} from '../shared/velvetReign';
+import {VELVET_NAMES,VELVET_STARS} from '../../src/shared/velvetReign';
 export const velvetSymbolName=(id:number)=>VELVET_NAMES[id]??translateText('Пустая ячейка');
 const SYMBOL_ASSETS = [VELVET_ASSETS.mask, VELVET_ASSETS.fan, VELVET_ASSETS.perfume, VELVET_ASSETS.crown, VELVET_ASSETS.gem, VELVET_ASSETS.wild];
 const symbolAsset=(cell:number)=>cell===11?VELVET_ASSETS.encore:SYMBOL_ASSETS[cell]??SYMBOL_ASSETS[0];

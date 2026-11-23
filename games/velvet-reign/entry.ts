@@ -1,4 +1,4 @@
-import { VelvetReignUI } from '../../src/ui/VelvetReignUI';
+import { VelvetReignUI } from './VelvetReignUI';
 import { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';
 import '../../src/ui/studio-games.css';
 import { StudioSlotUI } from '../../src/ui/StudioSlotUI';

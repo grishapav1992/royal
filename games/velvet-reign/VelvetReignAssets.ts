@@ -1,5 +1,5 @@
-import {SlotAssets, type SlotAssetState} from './slotKit/SlotAssets';
-import {velvetSlot} from './slotKit/nativeSlots';
+import {SlotAssets, type SlotAssetState} from '../../src/ui/slotKit/SlotAssets';
+import {velvetSlot} from '../../src/ui/slotKit/nativeSlots';
 
 const dressing = '/assets/velvet-rebuild/dressing-room/';
 export const VELVET_ASSETS = {
