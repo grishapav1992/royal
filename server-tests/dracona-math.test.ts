@@ -78,7 +78,8 @@ test('seeded spins replay exactly, settle integer payouts, and stay within event
 });
 
 test('invalid stakes and malformed rune state cannot start a spin', () => {
-  for (const bet of [0, -1, 1.5, NaN, Infinity]) assert.throws(() => playSpin({ bet, random: seededRandom(1) }));
+  assert.doesNotThrow(() => playSpin({ bet: 1.5, random: seededRandom(1) }));
+  for (const bet of [0, -1, 1.501, NaN, Infinity]) assert.throws(() => playSpin({ bet, random: seededRandom(1) }));
   assert.throws(() => playSpin({ bet: 100, random: seededRandom(1), runes: [2] }));
 });
 

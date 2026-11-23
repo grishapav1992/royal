@@ -16,15 +16,16 @@ for (const mode of ['normal','buy-raid','buy-flagship'] as const)
       await c.source.ingest(block(102,'1000000000000',c.config.source.addresses.find(address => address.userId === 'reserve')!.address));
       await c.ledger.sync(c.source,await c.reconciliation());
       let draws = 0, games = new NileGameRuntime(c.ledger,() => { draws++; return 0; });
-      const op = {id:randomUUID(),action:'start',gameId:CARIBBEAN_GAME,stakeUnits:'100',
-        settings:{caribbean:{lines:1,mode}}};
+      const op = {id:randomUUID(),action:'start',gameId:CARIBBEAN_GAME,stakeUnits:'100',stakePolicyVersion:1,
+        settings:{caribbean:{lines:1,mode,stakeBasis:'total'}}};
       const before = BigInt((await c.ledger.wallet(c.a) as any).balanceUnits);
       await assert.rejects(games.run(c.a,{...command(op),caribbeanRules:0}));assert.equal(draws,0);
       let reply:any = await games.run(c.a,command(op));
       assert(validCaribbeanSession(reply.session));
+      assert.equal(reply.session.rulesVersion,2);
       const spent = BigInt(reply.session.spentUnits) * 10000n;
       assert.equal(BigInt(reply.wallet.balanceUnits),before - spent);
-      const maximum = mode === 'normal' ? 15000n : mode === 'buy-raid' ? 14000n : 6000n;
+      const maximum = mode === 'normal' ? 15000n : mode === 'buy-raid' ? 14140n : 6060n;
       assert.equal(BigInt(reply.wallet.reservedUnits),100n * maximum * 10000n);
       const startDraws = draws;
       const retry:any = await games.run(c.a,command(op));

@@ -71,8 +71,8 @@ const fixture: Plugin = { name: 'forest-heart-isolated-entropy', configureServer
 } };
 backend.stdout.on('data', bytes => { log = (log + bytes.toString()).slice(-6000); });
 backend.stderr.on('data', bytes => { log = (log + bytes.toString()).slice(-6000); });
-const vite = await createServer({ configFile: false, root: process.cwd(), plugins: [fixture],
-  server: { host: '127.0.0.1', port: webPort, strictPort: true,
+const vite = await createServer({ configFile: false, root: process.cwd(), plugins: [fixture], optimizeDeps: { entries: ['index.html'] },
+  server: { host: '127.0.0.1', port: webPort, strictPort: true, hmr: false,
     watch: { ignored: ['**/module-dist/**', '**/module-build/**', '**/artifacts/**', '**/dist/**', '**/dist-server/**'] },
     proxy: { '/api': api, '/game-modules': api, '/multiplayer': { target: api, ws: true, rewrite: path => path.replace(/^\/multiplayer/, '') },
       ...(preparedHost ? { '/matchmake':api, '^/[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+(?:\\?.*)?$': { target:api, ws:true } } : {}) },

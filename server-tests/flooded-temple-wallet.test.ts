@@ -84,12 +84,12 @@ test('failed shared ledger append rolls back the final move and can be retried e
 test('every allowed stake spends the exact integer amount and invalid starts never draw',async()=>{
   const f=await fixture(false);try{
     let expected=await demoBalanceUnits(f.db,'alice');
-    await assert.rejects(f.operate('alice',{...f.start(),stakeUnits:'1001'}));
+    await assert.rejects(f.operate('alice',{...f.start(),stakeUnits:'10.1'}));
     await assert.rejects(f.operate('bob',f.start()));assert.equal(f.draws(),0);
-    for(const stake of[1000,2000,5000,10000,20000,50000]){
+    for(const stake of[1000,1001,2000,5000,10000,20000,50000]){
       const action={...f.start(),stakeUnits:String(stake)},reply=await f.operate('alice',action);expected-=stake;
       assert(validTempleSession(reply.session));assert.equal(reply.session.spentUnits,String(stake));assert.equal(reply.session.returnedUnits,'0');assert.equal(await demoBalanceUnits(f.db,'alice'),expected);
     }
-    assert.equal(f.draws(),24);assert.equal(await demoReservedUnits(f.db,'alice'),0);
+    assert.equal(f.draws(),28);assert.equal(await demoReservedUnits(f.db,'alice'),0);
   }finally{await f.db.close();}
 });

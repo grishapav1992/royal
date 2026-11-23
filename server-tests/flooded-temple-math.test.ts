@@ -20,8 +20,9 @@ test('weighted draws use exact half-open intervals and reject broken entropy',()
 });
 test('settings and stakes reject extra costs, fractional units and alternate modes',()=>{
   assert(validTempleSettings(settings));for(const v of [{},{temple:{mode:'buy'}},{temple:{mode:'normal',cost:0}},{...settings,bonus:true}])assert(!validTempleSettings(v));
-  for(const s of ['0','01000','1001','99999999999',1000])assert(!validTempleStake(s));
-  assert.throws(()=>startTemple(settings,'1001'),TempleMoveError);
+  assert(validTempleStake('1001'));
+  for(const s of ['0','01000','10.1','10001','99999999999',1000])assert(!validTempleStake(s));
+  assert.throws(()=>startTemple(settings,'10.1'),TempleMoveError);
 });
 test('a blank paid board settles immediately and a rare relic starts exactly one bonus',()=>{
   const empty=startTemple(settings,'1000',()=>0);assert.equal(empty.ended,true);assert.equal(empty.credit,0);assert.equal(empty.view.bonusMap,null);assert(validTempleView('1000',empty.view));
