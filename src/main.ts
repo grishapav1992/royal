@@ -279,6 +279,7 @@ function ensureWorld() {
   worldPromise = (async () => {
   const { createClubWorld } = await import('./game/ClubWorld');
   const { scene, game } = await createClubWorld({
+  offline,
   onNear: cabinet => {
     $('#interaction').hidden = !cabinet;
     document.querySelectorAll<HTMLButtonElement>('[data-cabinet]').forEach(el => el.classList.toggle('near', el.dataset.cabinet === cabinet?.id));
@@ -309,7 +310,10 @@ function ensureWorld() {
       const i=CABINETS.indexOf(c);
       const img = document.createElement('img'); img.src = game.textures.getBase64(`cabinet-${i}`); img.alt = ''; document.querySelector(`#art-${artIndex}`)?.append(img);
     });
-    const portrait = document.createElement('img'); portrait.src = game.textures.getBase64('citizen-0', 'down-6'); portrait.alt = ''; $('#player-portrait').append(portrait);
+    const portrait = document.createElement('img');
+    const portraitFrame = room.getPortraitFrame('idle', 0);
+    if (portraitFrame) portrait.src = portraitFrame;
+    portrait.alt = ''; $('#player-portrait').append(portrait);
     if (offline) scene.onActivity=()=>toast(translateText('Войди в онлайн-зал, чтобы играть вместе и слушать рояль.'));
     new CatUI(scene);
     if (offline) {

@@ -3,6 +3,8 @@ import { SecurityUI } from './SecurityUI';
 import { installGameChat } from './GameChat';
 import { ChatMedia } from './ChatMedia';
 import { prefetchDemoGames } from '../game/demoGames';
+import { loadSkinSheet } from '../game/generatedSkinArt';
+import { generatedAppearance } from '../shared/skinStudio';
 import { AuthUI } from './AuthUI';
 import type { ActivitiesUI } from './ActivitiesUI';
 import type { PvpUI } from './PvpUI';
@@ -60,7 +62,8 @@ export class SocialUI {
   constructor(private scene: ClubHost, private toast: (message: string) => void) {
     window.addEventListener('royal-skin-loaded', () => {
       const portrait = document.querySelector<HTMLImageElement>('#player-portrait img');
-      if (portrait) portrait.src = scene.getPortraitFrame('idle', 0);
+      const frame = portrait && scene.getPortraitFrame('idle', 0);
+      if (frame) portrait.src = frame;
     });
     const sidebar = document.querySelector<HTMLElement>('.sidebar')!;
     const catalog = document.createElement('div'); catalog.className = 'catalog-panel'; catalog.id = 'catalog-panel';
@@ -102,6 +105,8 @@ export class SocialUI {
       catch { window.prompt(translateText('Ссылка для приглашения в этот клуб:'), url.toString()); }
     });
     this.auth = new AuthUI(scene, async () => {
+      const skin = generatedAppearance(this.auth.account?.appearance);
+      if (scene.presentation === 'club' && skin) void loadSkinSheet(skin.skinId).catch(() => {});
       const roomId = new URL(location.href).searchParams.get('room') || undefined;
       await this.client.join(roomId, Boolean(roomId && history.state?.royalJoinedRoom === roomId), this.auth.account?.id);
     }, () => this.client.leave());
@@ -346,8 +351,11 @@ export class SocialUI {
     if (self) { this.sanctioned = Boolean(self.security); this.chatAvailability(); }
     const portrait = document.querySelector<HTMLImageElement>('#player-portrait img');
     if (self && portrait && portrait.dataset.appearance !== `${self.skin}:${self.appearance ?? ''}`) {
-      portrait.src = this.scene.getPortraitFrame('idle', 0);
-      portrait.dataset.appearance = `${self.skin}:${self.appearance ?? ''}`;
+      const frame = this.scene.getPortraitFrame('idle', 0);
+      if (frame) {
+        portrait.src = frame;
+        portrait.dataset.appearance = `${self.skin}:${self.appearance ?? ''}`;
+      }
     }
     this.activities?.updatePlayers(players,selfId);
     this.pvp?.updatePlayers(players,selfId);

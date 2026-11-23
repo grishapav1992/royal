@@ -34,7 +34,7 @@ import { plantTexture, drawHallIdentity } from './interiorArt';
 import { FURNITURE, PLANTS } from '../shared/furniture';
 import { createCharacters, createCharacterPortrait, characterTexture, characterScaleY, pruneCharacterTextures, CHARACTER_SCALE, type Facing } from './characters';
 import { parseGeneratedAppearance } from '../shared/skinStudio';
-import { hasSkinSheet } from './generatedSkinArt';
+import { hasSkinSheet, loadSkinSheet } from './generatedSkinArt';
 import { advanceCharacterMotion, characterRestScale, createCharacterMotion, type CharacterMotion } from './characterAnimation';
 import { Bar } from './Bar';
 import { preloadRoyalBarArt } from './royalBarArt';
@@ -159,12 +159,15 @@ export class RoomScene extends Phaser.Scene {
   private reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   private nextTextureCleanup = 0;
   private portraitFrames = new Map<string, string>();
+  private initialSkinId?: string;
+  private readonly offline: boolean;
   private sobrietyBadgeAt = 0;
   private onNear: (cabinet: Cabinet | null) => void;
   private onPlay: (cabinet: Cabinet) => void;
   private onReady: () => void;
-  constructor(options: { onNear: (cabinet: Cabinet | null) => void; onPlay: (cabinet: Cabinet) => void; onReady: () => void }) {
+  constructor(options: { offline: boolean; onNear: (cabinet: Cabinet | null) => void; onPlay: (cabinet: Cabinet) => void; onReady: () => void }) {
     super('room'); this.onNear = options.onNear; this.onPlay = options.onPlay; this.onReady = options.onReady;
+    this.offline = options.offline;
   }
   preload() {
     preloadToiletResident(this);
@@ -218,6 +221,10 @@ export class RoomScene extends Phaser.Scene {
     this.marker = this.add.circle(0, 0, 12, COLORS.lime, .08).setStrokeStyle(1.5, COLORS.lime, .8).setVisible(false).setDepth(1);
     this.halo = this.add.ellipse(540, 572, 48, 19, COLORS.lime, .11).setStrokeStyle(1, COLORS.lime, .7);
     this.player = this.actor(540, 570, 0, translateText('Вы'), true);
+    this.player.sprite.setVisible(this.offline);
+    this.player.shadow.setVisible(this.offline);
+    this.player.label?.setVisible(this.offline);
+    this.halo.setVisible(this.offline);
     this.cameras.main.setBounds(0,HALL_WALL.viewTop,WORLD.width,WORLD.height-HALL_WALL.viewTop).startFollow(this.player.sprite,false,1,1);
     this.scale.on(Phaser.Scale.Events.RESIZE,this.resizeView,this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>{this.onElevatorCancel();this.clickTargets.cancel();this.afterMovement=undefined;this.scale.off(Phaser.Scale.Events.RESIZE,this.resizeView,this);});
@@ -707,7 +714,7 @@ export class RoomScene extends Phaser.Scene {
     return { skin: this.player?.skin ?? 0, appearance: this.player?.appearance ?? '', soberAt: this.player?.soberAt ?? 0, action: this.player?.action ?? 'idle', drink: this.player?.drink ?? '', name: this.networkSelf?.name ?? translateText('Ты') };
   }
   getPortraitFrame(action: 'idle' | 'drink', index: number) {
-    if (!this.player) return '';
+    if (!this.player || !this.playerAppearanceReady()) return '';
     const stage = getIntoxication(this.player.soberAt).stage;
     const frameIndex = action === 'drink' ? 11 + index % 6 : 6 + index % 4;
     const generated = parseGeneratedAppearance(this.player.appearance);
@@ -716,6 +723,9 @@ export class RoomScene extends Phaser.Scene {
     const cached = this.portraitFrames.get(key); if (cached) return cached;
     const canvas = createCharacterPortrait(this.player.skin, this.player.appearance, frameIndex, stage);
     const result = canvas.toDataURL(); this.portraitFrames.set(key, result); return result;
+  }
+  private playerAppearanceReady() {
+    return this.offline || Boolean(this.networkSelf && (!this.initialSkinId || hasSkinSheet(this.initialSkinId)));
   }
   syncGuests(views:AmbientGuestView[]){
     this.guestViews=views;
@@ -866,6 +876,15 @@ export class RoomScene extends Phaser.Scene {
       const firstState = !this.networkSelf;
       if (firstState) { this.player.x = self.x; this.player.y = self.y; }
       this.networkSelf = self;
+      const appearance = self.appearance ?? '';
+      if (firstState || (this.initialSkinId && this.player.appearance !== appearance)) {
+        const skinId = parseGeneratedAppearance(appearance)?.skinId;
+        this.initialSkinId = skinId;
+        if (skinId) {
+          const reveal = () => { if (this.initialSkinId === skinId) this.initialSkinId = undefined; };
+          void loadSkinSheet(skinId).then(reveal, reveal);
+        }
+      }
       if(!this.prediction.active){this.player.stairStep=self.stairStep??0;this.player.stairDirection=self.stairDirection??1;}
       if (firstState && this.pendingLounge === 'bar') this.goTo(BAR_APPROACH);
       this.player.soberAt = self.soberAt;
@@ -883,11 +902,11 @@ export class RoomScene extends Phaser.Scene {
           const action = this.afterMovement; this.afterMovement = undefined; action?.();
         }
       }
-      if (this.player.skin !== self.skin || this.player.appearance !== (self.appearance ?? '')) {
-        this.player.sprite.anims.stop(); this.player.sprite.setTexture(characterTexture(this, self.skin, self.appearance), `${self.facing}-6`).setScale(CHARACTER_SCALE, characterScaleY(self.appearance));
+      if (this.player.skin !== self.skin || this.player.appearance !== appearance) {
+        this.player.sprite.anims.stop(); this.player.sprite.setTexture(characterTexture(this, self.skin, appearance), `${self.facing}-6`).setScale(CHARACTER_SCALE, characterScaleY(appearance));
         this.portraitFrames.clear();
       }
-      this.player.appearance = self.appearance ?? '';
+      this.player.appearance = appearance;
       this.player.skin = self.skin;
       updatePlayerLabel(this.player.label, self, tr`${self.name} · вы${self.ears?' 🙉':''}`, '#f5d369');
     }
@@ -1205,7 +1224,8 @@ export class RoomScene extends Phaser.Scene {
       drawn.x=Phaser.Math.Linear(from.x,drawn.x,t);drawn.y=Phaser.Math.Linear(from.y,drawn.y,t);
     }
     const {x,y}=drawn;
-    const visible=!exterior||actor===this.player||this.streetView.visible(actor);actor.sprite.setVisible(visible);actor.shadow.setVisible(visible);actor.label?.setVisible(visible&&(!exterior||(actor.stairStep??0)>0||!this.streetView.occluded(actor)));
+    const visible = actor === this.player ? this.playerAppearanceReady() : !exterior || this.streetView.visible(actor);
+    actor.sprite.setVisible(visible);actor.shadow.setVisible(visible);actor.label?.setVisible(visible&&(!exterior||(actor.stairStep??0)>0||!this.streetView.occluded(actor)));
     const distance = Math.hypot(x - actor.visualX, y - actor.visualY);
     const elapsed = time - actor.visualAt;
     const travel = distance < 24 && elapsed > 0 && elapsed < 150 ? distance : 0;
