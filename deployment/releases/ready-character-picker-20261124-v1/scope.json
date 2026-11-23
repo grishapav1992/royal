@@ -1,0 +1,8 @@
+{
+  "client": [
+    "src/ui/AuthUI.ts",
+    "src/ui/CharacterSelector.ts",
+    "src/ui/character-selector.css"
+  ],
+  "previews": []
+}
