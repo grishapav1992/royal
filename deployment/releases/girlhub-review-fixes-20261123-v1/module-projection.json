@@ -1,0 +1,428 @@
+{
+  "format": 1,
+  "productionCommit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+  "moduleGames": [
+    "girlhub"
+  ],
+  "moduleAssets": {
+    "public/assets/afterglow/audio/v1/laugh-1.mp3": "fff6df47947edc00aa5a21c90e6888dfa991f21696e350b36cf425d4c2a57982",
+    "public/assets/afterglow/audio/v1/laugh-2.mp3": "99c3762857337f56dea6114b648ab1f2c10f306a88e3916903d8121634da810f",
+    "public/assets/afterglow/audio/v1/laugh-3.mp3": "e5309e1e51a63dc839dcd9e3f3ae4369fd37f1b8b63580e74cdafb68671675ad",
+    "public/assets/afterglow/audio/v1/laugh-4.mp3": "e959ee4a972d43d754a2e933e363d9865a77eb344abd3615f5828bc6f0beb7b7",
+    "public/assets/afterglow/audio/v1/unlock.mp3": "d4fc67cd79bbc5e19d87e2759720b4018c433a8510eb37aceba102dc6a57816a",
+    "public/assets/afterglow/audio/v2/win-1.mp3": "151c42720eb200187294e1ce25f4f03a06802b8a4b924b35d309a8d07d2e15ad",
+    "public/assets/afterglow/audio/v2/win-2.mp3": "1965cd8c4560edbff8d14662d1e302ab4ec0eac1e9c3adeeabc6842b55ac0085",
+    "public/assets/afterglow/audio/v2/win-3.mp3": "04cb450cffb0cc1ee5e39b6d49647cc725367eb3617725635d5eab436b817179",
+    "public/assets/afterglow/v1/background-studio-v3.webp": "72c66ad7c649a56cfb0ca1b49154e5bb66d6fda86a00407189141e029eb013aa",
+    "public/assets/afterglow/v1/symbols.webp": "eb98a828cd992874300de3f5d0e8b0ef70cbf4374e84b7c4c5510c32168c6e64",
+    "public/assets/afterglow/v3/base-0.webp": "3b6a1e232f4b674bd2bf1c1cc369f6c7ff94b564a2398b0368924b39bd9b3246",
+    "public/assets/afterglow/v3/base-1.webp": "e4db61d6b633a4f38d3256dbd9e7f94711e40ee2e2709b3f7ecec57c91a3e542",
+    "public/assets/afterglow/v3/base-2.webp": "8d3d45d58fb1480c410921264700e8039973bc9e901523c4137528b46002c8d0",
+    "public/assets/afterglow/v3/base-3.webp": "673f95c71b608bf378a9fe66ca8e5f7f331decea9341690f96288edd6a55a70b",
+    "public/assets/afterglow/v3/look-1-user.webp": "0f1960fef60f293fda3086c7609efdd883844f4e1a21422de72808788ce8eff0",
+    "public/assets/afterglow/v3/look-2-user.webp": "7e4effff686b458984e813a161925a8c57a62d33adf483d5878615a73c3ebaf1",
+    "public/assets/afterglow/v3/look-3-user.webp": "82e0c7197af5781ff2e0e116d974266806a2680a411392613a7c3fae8d8fe7e2",
+    "public/assets/afterglow/v4/look-0-legendary.webp": "c6aa7af2551b2781e5d3782481e18372f3596519a5c35a18c325c1be5ed5f57a",
+    "public/assets/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406"
+  },
+  "moduleDependencies": {},
+  "files": {
+    "games/girlhub/AfterglowUI.ts": {
+      "path": "games/girlhub/AfterglowUI.ts",
+      "commit": "5d6fb24c3e63d21a4f2a8a574db5497f00526483",
+      "baseSha256": "34608aa785487d367a01c5ecc5162e36dd82f597c141a703fd3e797b037909e2",
+      "sha256": "98c4ce3d868cd97fbbff694ea5d9eab0cdaf470e3be934b51872dccb3ef90a08",
+      "patches": [
+        {
+          "from": "import {AFTER_LOOK_TARGET_UNITS,AFTER_ALBUM_MAX_UNITS,AFTER_STARTER_GIRL,afterAlbumUnlocked,",
+          "to": "const AFTER_STARTER_GIRL=0;\nimport {AFTER_LOOK_TARGET_UNITS,AFTER_ALBUM_MAX_UNITS,afterAlbumUnlocked,"
+        },
+        {
+          "from": "aria-label=\"Посмотреть фото: Мия\"",
+          "to": "aria-label=\"Посмотреть фото: Алиса\""
+        },
+        {
+          "from": "<h3 data-ag-girl-name>МИЯ</h3>",
+          "to": "<h3 data-ag-girl-name>АЛИСА</h3>"
+        },
+        {
+          "from": "<progress data-ag-progress max=\"100000\"",
+          "to": "<progress data-ag-progress max=\"400000\""
+        },
+        {
+          "from": "const nowAvailable=afterAlbumUnlocked(this.wardrobe.profile?.albumUnits??0);this.newlyUnlocked=AFTER_GALLERY_ORDER.filter(index=>nowAvailable[index]&&!wasAvailable[index]);",
+          "to": "this.newlyUnlocked=afterAlbumUnlocked(this.wardrobe.profile?.albumUnits??0).flatMap((open,index)=>open&&!wasAvailable[index]?[index]:[]);"
+        },
+        {
+          "from": "<p>${translateText('Героини открываются по очереди: Мия (обычная), Наоми (редкая), Ева (эпическая), Алиса (легендарная). Следующая героиня открывается по общему прогрессу только после предыдущих.')} Второй образ каждой героини",
+          "to": "<p>Героини открываются по общему прогрессу. Второй образ каждой героини"
+        },
+        {
+          "from": "<p>${translateText('Героини открываются по очереди: Мия (обычная), Наоми (редкая), Ева (эпическая), Алиса (легендарная). Следующая героиня открывается по общему прогрессу только после предыдущих.')} Прогресс зависит от суммы",
+          "to": "<p>Прогресс зависит от суммы"
+        },
+        {
+          "from": "<p>${translateText('Героини открываются по очереди: Мия (обычная), Наоми (редкая), Ева (эпическая), Алиса (легендарная). Следующая героиня открывается по общему прогрессу только после предыдущих.')} У каждой героини есть",
+          "to": "<p>Общий прогресс альбома открывает новых героинь. У каждой героини есть"
+        }
+      ]
+    },
+    "games/girlhub/GirlhubLayout.ts": {
+      "path": "games/girlhub/GirlhubLayout.ts",
+      "commit": "5d6fb24c3e63d21a4f2a8a574db5497f00526483",
+      "baseSha256": "c3e80fd7b2f16a597ce3dc6700565a2101700317aa4905ae23b769168c74a11f",
+      "sha256": "c3e80fd7b2f16a597ce3dc6700565a2101700317aa4905ae23b769168c74a11f"
+    },
+    "games/girlhub/entry.ts": {
+      "path": "games/girlhub/entry.ts",
+      "commit": "5d6fb24c3e63d21a4f2a8a574db5497f00526483",
+      "baseSha256": "c655f50c89d24344efbcae2f3707774928ef0ab0bbc05773def3584ec82cb7dd",
+      "sha256": "0710ad10f5538be9b4b9d7c542555118819e721054b7a901c067d6a6aacce6b9",
+      "patches": [
+        {
+          "from": "export const progressVersion = 4;",
+          "to": "export const progressVersion = 3;"
+        }
+      ]
+    },
+    "games/girlhub/girlhub.css": {
+      "path": "games/girlhub/girlhub.css",
+      "commit": "5d6fb24c3e63d21a4f2a8a574db5497f00526483",
+      "baseSha256": "882a1e109a93737652073dd105cf31f6a5eda3e426a59c16dd6077ae7f6ee4e8",
+      "sha256": "882a1e109a93737652073dd105cf31f6a5eda3e426a59c16dd6077ae7f6ee4e8"
+    },
+    "games/girlhub/girlhubText.ts": {
+      "path": "games/girlhub/girlhubText.ts",
+      "commit": "5d6fb24c3e63d21a4f2a8a574db5497f00526483",
+      "baseSha256": "9fdcebc852e90e711434a8bd02a6553ffa30e9d42399662d6eb15895365b076d",
+      "sha256": "9fdcebc852e90e711434a8bd02a6553ffa30e9d42399662d6eb15895365b076d"
+    },
+    "games/girlhub/package.json": {
+      "path": "games/girlhub/package.json",
+      "commit": "5d6fb24c3e63d21a4f2a8a574db5497f00526483",
+      "baseSha256": "1cc57712459b89cc47017ed15a5ff4d06a5ed4182ff409fa52b9ba1df60d5950",
+      "sha256": "36fd6760ccbbdbee83ff900596b9d76e0196dc906595efb4343623ff523203e2",
+      "patches": [
+        {
+          "from": "\"progressVersion\": 4",
+          "to": "\"progressVersion\": 3"
+        }
+      ]
+    },
+    "games/girlhub/tsconfig.json": {
+      "path": "games/girlhub/tsconfig.json",
+      "commit": "5d6fb24c3e63d21a4f2a8a574db5497f00526483",
+      "baseSha256": "e9c06723f490fa879a86d1d5d7be97b6ca499623e2dc0adc61c0c9e843b1377d",
+      "sha256": "e9c06723f490fa879a86d1d5d7be97b6ca499623e2dc0adc61c0c9e843b1377d"
+    },
+    "src/modules/GameHostContract.ts": {
+      "path": "src/modules/GameHostContract.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0",
+      "sha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0"
+    },
+    "src/modules/GameModuleCatalog.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/modules/GameModuleCatalog.ts",
+      "baseSha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82",
+      "sha256": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1",
+      "patches": [
+        {
+          "from": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },",
+          "to": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },"
+        },
+        {
+          "from": "ion:1},\n] as con",
+          "to": "ion:1},\n {gameId:'tsu-e-fa',slug:'tsu-e-fa',apiVersion:1,rulesVersion:1,progressVersion:1},\n] as con"
+        },
+        {
+          "from": "iVersion:1,rulesVersion:1,progressVersion:1},\n] a",
+          "to": "iVersion:1,rulesVersion:2,progressVersion:1},\n] a"
+        },
+        {
+          "from": ":2,",
+          "to": ":3,"
+        },
+        {
+          "from": ":3,",
+          "to": ":4,"
+        },
+        {
+          "from": "export const STUDIO_GAME_MODULES = [\n",
+          "to": "export const STUDIO_GAME_MODULES = [\n { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },\n"
+        }
+      ]
+    },
+    "src/shared/afterglow.ts": {
+      "path": "src/shared/afterglow.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "eedcc278d149ae66b59d79afeef85d17a3fa5eb7f8d80bf5b5caf73c77b18035",
+      "sha256": "eedcc278d149ae66b59d79afeef85d17a3fa5eb7f8d80bf5b5caf73c77b18035"
+    },
+    "src/shared/afterglowWardrobe.ts": {
+      "path": "src/shared/afterglowWardrobe.ts",
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "baseSha256": "6dace1ede72ee479115b5cbf2d1d512c9e8800fd315be407cea787377362dc1f",
+      "sha256": "6dace1ede72ee479115b5cbf2d1d512c9e8800fd315be407cea787377362dc1f"
+    },
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "path": "src/shared/caribbeanTreasuresMath.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+      "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+    },
+    "src/shared/forestHeartMath.ts": {
+      "path": "src/shared/forestHeartMath.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+      "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
+    },
+    "src/shared/gameStakes.ts": {
+      "path": "src/shared/gameStakes.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "a83f372dbb71ac3c08093d6ffeb41746da4aea610034d6ecdaec8a22dc29bf30",
+      "sha256": "a83f372dbb71ac3c08093d6ffeb41746da4aea610034d6ecdaec8a22dc29bf30"
+    },
+    "src/shared/neopolisMath.ts": {
+      "path": "src/shared/neopolisMath.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+    },
+    "src/shared/neopolisStakePayouts.ts": {
+      "path": "src/shared/neopolisStakePayouts.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+      "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+    },
+    "src/shared/nitroRun.ts": {
+      "path": "src/shared/nitroRun.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+      "sha256": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a"
+    },
+    "src/shared/roundPrecision.ts": {
+      "path": "src/shared/roundPrecision.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
+      "sha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8"
+    },
+    "src/shared/walletAccount.ts": {
+      "path": "src/shared/walletAccount.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560",
+      "sha256": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560"
+    },
+    "src/ui/AfterglowArtwork.ts": {
+      "path": "src/ui/AfterglowArtwork.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "fe2592598277af9d9b0d40ac3a135bb67602cee87c45c9b99615e0db9c3c3295",
+      "sha256": "fe2592598277af9d9b0d40ac3a135bb67602cee87c45c9b99615e0db9c3c3295"
+    },
+    "src/ui/AfterglowAssets.ts": {
+      "path": "src/ui/AfterglowAssets.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "b7ffc3ed03191f2ffd738a2bbabe1a3a5fc88357954bbbf822cea0c727e9d444",
+      "sha256": "b7ffc3ed03191f2ffd738a2bbabe1a3a5fc88357954bbbf822cea0c727e9d444"
+    },
+    "src/ui/AfterglowAudio.ts": {
+      "path": "src/ui/AfterglowAudio.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "31b555c4883fece6e12ffd8b08e1a6643796c604506893b1e447790684ac1e05",
+      "sha256": "31b555c4883fece6e12ffd8b08e1a6643796c604506893b1e447790684ac1e05"
+    },
+    "src/ui/AfterglowBoard.ts": {
+      "path": "src/ui/AfterglowBoard.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "b693ef127a2c76244f1d448846d84b8271c195e0510a1a89809ff727cefa0e3b",
+      "sha256": "b693ef127a2c76244f1d448846d84b8271c195e0510a1a89809ff727cefa0e3b"
+    },
+    "src/ui/AfterglowFeedback.ts": {
+      "path": "src/ui/AfterglowFeedback.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "5a8d1eec80ba7d59813f5d8021e323bbb592c3d049c7170bcbbb0622f48756c8",
+      "sha256": "5a8d1eec80ba7d59813f5d8021e323bbb592c3d049c7170bcbbb0622f48756c8"
+    },
+    "src/ui/AfterglowText.ts": {
+      "path": "src/ui/AfterglowText.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "a916db0534fa5c09dfb24ede4894180a6decbaf296a693c4dd781cb67585318e",
+      "sha256": "a916db0534fa5c09dfb24ede4894180a6decbaf296a693c4dd781cb67585318e"
+    },
+    "src/ui/AfterglowVoices.ts": {
+      "path": "src/ui/AfterglowVoices.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "2b7375d6dee3d2866e26f563ed4b7d091bbdd75879d6375946baa208f9e5c8ce",
+      "sha256": "2b7375d6dee3d2866e26f563ed4b7d091bbdd75879d6375946baa208f9e5c8ce"
+    },
+    "src/ui/GameLayoutPolicy.ts": {
+      "path": "src/ui/GameLayoutPolicy.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c",
+      "sha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c"
+    },
+    "src/ui/active-game-viewport.css": {
+      "path": "src/ui/active-game-viewport.css",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "493e85699b284319a6e0dcaf6aa178c308ef2640bb7dc180625c052a4b6d60c7",
+      "sha256": "493e85699b284319a6e0dcaf6aa178c308ef2640bb7dc180625c052a4b6d60c7"
+    },
+    "src/ui/operationFeedback.ts": {
+      "path": "src/ui/operationFeedback.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17",
+      "sha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17"
+    },
+    "src/ui/slotKit/SlotAssets.ts": {
+      "path": "src/ui/slotKit/SlotAssets.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "8bbd409578830ee7f3f025340003155335af03ce684bcae23bc913acb02052d2",
+      "sha256": "8bbd409578830ee7f3f025340003155335af03ce684bcae23bc913acb02052d2"
+    },
+    "src/ui/slotKit/SlotAudio.ts": {
+      "path": "src/ui/slotKit/SlotAudio.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "7f7c3536e0202ebd39dd79bcd36c886882332c6d5e84e4a73831d46e06aefbc0",
+      "sha256": "7f7c3536e0202ebd39dd79bcd36c886882332c6d5e84e4a73831d46e06aefbc0"
+    },
+    "src/ui/slotKit/SlotCascadeBoard.ts": {
+      "path": "src/ui/slotKit/SlotCascadeBoard.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "96d48c3a96c8bc40044d7748630024f9bbee1b8950544106c31dce2167049cf9",
+      "sha256": "96d48c3a96c8bc40044d7748630024f9bbee1b8950544106c31dce2167049cf9"
+    },
+    "src/ui/slotKit/SlotControls.ts": {
+      "path": "src/ui/slotKit/SlotControls.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "1086c93d67bb6f6970ec77137a36e65651a7d0ce54a3af02254cf73cc339dc4f",
+      "sha256": "1086c93d67bb6f6970ec77137a36e65651a7d0ce54a3af02254cf73cc339dc4f"
+    },
+    "src/ui/slotKit/SlotDialog.ts": {
+      "path": "src/ui/slotKit/SlotDialog.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "69351de658c231671feea17ef923595143f47e886f09beeb4533f1ae0cb0337d",
+      "sha256": "69351de658c231671feea17ef923595143f47e886f09beeb4533f1ae0cb0337d"
+    },
+    "src/ui/slotKit/SlotGeometry.ts": {
+      "path": "src/ui/slotKit/SlotGeometry.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "9050e51c87d77646845e206f2618a1ab6a3887e008f17abb0b1fbd29303ee90f",
+      "sha256": "9050e51c87d77646845e206f2618a1ab6a3887e008f17abb0b1fbd29303ee90f"
+    },
+    "src/ui/slotKit/SlotLifecycle.ts": {
+      "path": "src/ui/slotKit/SlotLifecycle.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "33c227f915cbff994e7218a7e98410f7ae4d1fee129dfd013f531092e9eee71f",
+      "sha256": "33c227f915cbff994e7218a7e98410f7ae4d1fee129dfd013f531092e9eee71f"
+    },
+    "src/ui/slotKit/SlotPhotoViewer.ts": {
+      "path": "src/ui/slotKit/SlotPhotoViewer.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "a81a111181059ee94cc2cc68bd142bd83ba2556a3dd184644753924638fd8235",
+      "sha256": "a81a111181059ee94cc2cc68bd142bd83ba2556a3dd184644753924638fd8235"
+    },
+    "src/ui/slotKit/SlotPlayback.ts": {
+      "path": "src/ui/slotKit/SlotPlayback.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "b16043b19396cabe7cf67d8864400ccb8f20c5a916565eb6c90ca148cc3d6954",
+      "sha256": "b16043b19396cabe7cf67d8864400ccb8f20c5a916565eb6c90ca148cc3d6954"
+    },
+    "src/ui/slotKit/SlotPriorityLayout.ts": {
+      "path": "src/ui/slotKit/SlotPriorityLayout.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "947932d761ede2150900d9fd0278a2560b032aec8c9372f0085b717f1af796f2",
+      "sha256": "947932d761ede2150900d9fd0278a2560b032aec8c9372f0085b717f1af796f2"
+    },
+    "src/ui/slotKit/SlotScreens.ts": {
+      "path": "src/ui/slotKit/SlotScreens.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "5d56c02017271f9bb8ecab4da1665388a842783fec64dd62f5cf0b122d911b32",
+      "sha256": "5d56c02017271f9bb8ecab4da1665388a842783fec64dd62f5cf0b122d911b32"
+    },
+    "src/ui/slotKit/SlotSessions.ts": {
+      "path": "src/ui/slotKit/SlotSessions.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2",
+      "sha256": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2"
+    },
+    "src/ui/slotKit/SlotSettings.ts": {
+      "path": "src/ui/slotKit/SlotSettings.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "e9ca94a9ea09d3fb1789fb18ba5d87457f210aedc00b99570bb92ee3df1472dd",
+      "sha256": "e9ca94a9ea09d3fb1789fb18ba5d87457f210aedc00b99570bb92ee3df1472dd"
+    },
+    "src/ui/slotKit/nativeSlotImages.ts": {
+      "path": "src/ui/slotKit/nativeSlotImages.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "20e93c94b87b767d25d9f41a5d033275e76947eab02f0299032b583800e5da9f",
+      "sha256": "20e93c94b87b767d25d9f41a5d033275e76947eab02f0299032b583800e5da9f"
+    },
+    "src/ui/slotKit/nativeSlots.ts": {
+      "path": "src/ui/slotKit/nativeSlots.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "fc823e2892a7fcc49d32b8fa21bd938498ac1762d4444213f8c624bec21cf6f7",
+      "sha256": "fc823e2892a7fcc49d32b8fa21bd938498ac1762d4444213f8c624bec21cf6f7"
+    },
+    "src/ui/slotKit/slot-photo-viewer.css": {
+      "path": "src/ui/slotKit/slot-photo-viewer.css",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "bfe9a0202038e5e4beb26c2372aecd39a4dbe0a4dc3405d665b8d3ed73f760a8",
+      "sha256": "bfe9a0202038e5e4beb26c2372aecd39a4dbe0a4dc3405d665b8d3ed73f760a8"
+    },
+    "src/ui/slotKit/slot-priorities.css": {
+      "path": "src/ui/slotKit/slot-priorities.css",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "05266abd09f5f3cbfbe91dde79ac8188f74b6d333bc2acb9e3884530f4aaee5f",
+      "sha256": "05266abd09f5f3cbfbe91dde79ac8188f74b6d333bc2acb9e3884530f4aaee5f"
+    },
+    "src/ui/slotKit/slot-settings.css": {
+      "path": "src/ui/slotKit/slot-settings.css",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "a9bc7aabfd5f8649a3220820199d709f57b8cd260205c3d18cfa5236ea854f5b",
+      "sha256": "a9bc7aabfd5f8649a3220820199d709f57b8cd260205c3d18cfa5236ea854f5b"
+    },
+    "src/ui/stakeRules.ts": {
+      "path": "src/ui/stakeRules.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df",
+      "sha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df"
+    },
+    "src/ui/stakeSelection.ts": {
+      "path": "src/ui/stakeSelection.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86",
+      "sha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86"
+    },
+    "src/ui/studio-games.css": {
+      "path": "src/ui/studio-games.css",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "0a3c6fc2d4655e9814b349952d5c9578d49c194d483cdaba0e9a76eb23b12259",
+      "sha256": "0a3c6fc2d4655e9814b349952d5c9578d49c194d483cdaba0e9a76eb23b12259"
+    },
+    "src/vite-env.d.ts": {
+      "path": "src/vite-env.d.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+      "sha256": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5"
+    },
+    "src/wallet/AfterglowWardrobeClient.ts": {
+      "path": "src/wallet/AfterglowWardrobeClient.ts",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "195fadd07996dd60a0c07a2ba59e0fcc9ca9d64e0da42260f6dffcb676d22aab",
+      "sha256": "195fadd07996dd60a0c07a2ba59e0fcc9ca9d64e0da42260f6dffcb676d22aab"
+    },
+    "tsconfig.json": {
+      "path": "tsconfig.json",
+      "commit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+      "baseSha256": "ac92a48aa49e6d4a13a2ce4191379133d7156d219b8b3f10723921ad695f8888",
+      "sha256": "ac92a48aa49e6d4a13a2ce4191379133d7156d219b8b3f10723921ad695f8888"
+    }
+  },
+  "moduleContracts": {
+    "studio-afterglow": {
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 3
+    }
+  }
+}
