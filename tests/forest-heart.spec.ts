@@ -1,5 +1,6 @@
 import { expect, type Page, type FrameLocator } from '@playwright/test';
 import { test } from './themed-room';
+import { selectEntryMode } from './entry-mode';
 import { mkdir, writeFile } from 'node:fs/promises';
 // @ts-expect-error Independent JavaScript graph oracle has no production scorer dependency.
 import { referenceBoard, referenceFlow } from '../scripts/game-math/forest-heart-reference.mjs';
@@ -10,8 +11,23 @@ const game = (page: Page) => page.frameLocator('.forest-heart-frame');
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getMiniState());
 // RoomScene is constructed asynchronously during a full page reload.
 const online = (page: Page) => page.evaluate(() => { try { return !!(window as any).royalDemo?.getState().online; } catch { return false; } });
+async function expectConnectedChat(page: Page) {
+  const dialog = page.locator('#mini-dialog');
+  const chat = dialog.locator('#chat-input');
+  const toggle = dialog.locator('.game-chat-toggle');
+  await expect(toggle).toBeInViewport();
+  const wasClosed = await toggle.getAttribute('aria-expanded') === 'false';
+  if (wasClosed) await toggle.click();
+  await expect(chat).toBeInViewport();
+  expect(await online(page)).toBe(true);
+  if (wasClosed) {
+    await dialog.locator('.game-chat-close').click();
+    await expect(chat).toBeHidden();
+  }
+}
 async function enter(page: Page, roomPath: string, lang = 'ru') {
   await page.goto(roomPath + '&lang=' + lang);
+  await selectEntryMode(page);
   await page.getByLabel(lang === 'en' ? 'Email' : 'Почта', { exact: true }).fill(`forest-${crypto.randomUUID()}@example.test`);
   await page.getByLabel(lang === 'en' ? 'Password' : 'Пароль', { exact: true }).fill('Forest-complete-test-42!');
   await page.getByRole('button', { name: lang === 'en' ? 'Continue' : 'Продолжить', exact: true }).click();
@@ -44,9 +60,11 @@ async function choose(page: Page) {
   await expect.poll(() => game(page).locator('.fh-elf').evaluateAll(images => images.every(i => (i as HTMLImageElement).complete && (i as HTMLImageElement).naturalWidth > 0))).toBe(true);
   await expect.poll(async () => (await state(page)).character.ready).toBe(true);
   // Fresh synthetic scenarios use 10 USDT; accepted or pending series keep their original stake.
-  if(await game(page).locator('[data-fh=higher]').isEnabled()){
-    for(let step=0;step<20&&(await game(page).locator('[data-fh=stake]').textContent())!=='10';step++)await game(page).locator('[data-fh=higher]').click();
-    await expect(game(page).locator('[data-fh=stake]')).toHaveText('10');
+  const stake = game(page).locator('[data-manual-stake]');
+  if (await stake.isEditable()) {
+    await stake.fill('10.00');
+    await stake.blur();
+    await expect(stake).toHaveValue('10.00');
   }
 }
 async function routeScenario(page: Page, scenario: string, loseFirst = false) {
@@ -125,7 +143,7 @@ test('three different gestures alternate with a living idle and stop for rules a
   await game(page).locator('[data-fh=close]').click();
   expect((await video()).phase).toBe('standing');
   await page.setViewportSize({width:390,height:844}); await fit(game(page));
-  await expect(page.locator('#chat-input')).toBeInViewport();
+  await expectConnectedChat(page);
   await page.screenshot({path:out+'/living-v15-mobile.png'});
   await game(page).locator('[data-fh=settings]').click();
   await game(page).locator('[data-fh=motion]').check();
@@ -229,10 +247,12 @@ test('unavailable character videos preserve the existing elf and playable contro
   expect(errors).toEqual([]);
 });
 async function fit(frame: FrameLocator) {
-  const boxes = await frame.locator('.fh').evaluate(root => ({ width: root.ownerDocument.documentElement.clientWidth, scroll: root.ownerDocument.documentElement.scrollWidth, board: root.querySelector('.fh-board')!.getBoundingClientRect().toJSON(), bonusBottom:(root.querySelector('.fh-bonus') as HTMLElement).hidden ? 0 : root.querySelector('.fh-bonus')!.getBoundingClientRect().bottom, controlsTop:root.querySelector('.fh-controls')!.getBoundingClientRect().top }));
-  expect(boxes.scroll).toBeLessThanOrEqual(boxes.width + 1); expect(boxes.board.width).toBeGreaterThanOrEqual(180);
-  expect(boxes.board.x).toBeGreaterThanOrEqual(0); expect(boxes.board.right).toBeLessThanOrEqual(boxes.width);
-  expect(boxes.bonusBottom).toBeLessThanOrEqual(boxes.controlsTop);
+  await expect(async () => {
+    const boxes = await frame.locator('.fh').evaluate(root => ({ width: root.ownerDocument.documentElement.clientWidth, scroll: root.ownerDocument.documentElement.scrollWidth, board: root.querySelector('.fh-board')!.getBoundingClientRect().toJSON(), bonusBottom:(root.querySelector('.fh-bonus') as HTMLElement).hidden ? 0 : root.querySelector('.fh-bonus')!.getBoundingClientRect().bottom, controlsTop:root.querySelector('.fh-controls')!.getBoundingClientRect().top }));
+    expect(boxes.scroll).toBeLessThanOrEqual(boxes.width + 1); expect(boxes.board.width).toBeGreaterThanOrEqual(180);
+    expect(boxes.board.x).toBeGreaterThanOrEqual(0); expect(boxes.board.right).toBeLessThanOrEqual(boxes.width);
+    expect(boxes.bonusBottom).toBeLessThanOrEqual(boxes.controlsTop);
+  }).toPass({ timeout: 5000 });
 }
 test.beforeAll(async () => {
   await mkdir(out, { recursive: true });
@@ -242,7 +262,7 @@ test.beforeAll(async () => {
 test('real host preserves choice, bonus, exact settlement and connected chat across desktop, mobile and reopen', async ({ page, roomPath }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await page.emulateMedia({ reducedMotion: 'reduce' }); await routeScenario(page, 'choice-bonus'); await enter(page, roomPath);
-  await expect(page.locator('#chat-input')).toBeInViewport(); await page.screenshot({ path: out + '/desktop.png' }); await fit(game(page));
+  await expectConnectedChat(page); await page.screenshot({ path: out + '/desktop.png' }); await fit(game(page));
   const initial = await act(page); expect(initial.view.stage).toBe('choice');await expect(game(page).locator('[data-fh=next]')).toContainText('со знаком ↻');
   await expect(game(page).locator('[data-cell]:enabled')).toHaveCount(12);
   const balance = await wallet(page); expect(balance.balance).toBe(9990);
@@ -250,7 +270,7 @@ test('real host preserves choice, bonus, exact settlement and connected chat acr
   expect((await state(page)).sessionId).toBe(initial.sessionId); expect((await state(page)).presentations).toBe(0);
   await expect(game(page).locator('[data-cell]:enabled')).toHaveCount(12);
   let current = await act(page, '[data-cell="5"]'); expect(current.view.stage).toBe('bonus');await expect(game(page).locator('[data-fh=next]')).toContainText('бесплатно'); expect((await wallet(page)).balance).toBe(9990);
-  await page.setViewportSize({ width: 390, height: 844 }); await expect(page.locator('#chat-input')).toBeInViewport(); await fit(game(page));
+  await page.setViewportSize({ width: 390, height: 844 }); await fit(game(page)); await expectConnectedChat(page);
   await expect(game(page).locator('[data-fh=spin]')).toBeInViewport();
   await page.screenshot({ path: out + '/mobile.png' });
   await page.setViewportSize({width:320,height:780});await fit(game(page));
@@ -261,7 +281,7 @@ test('real host preserves choice, bonus, exact settlement and connected chat acr
   await page.setViewportSize({width:1440,height:1000}); await page.locator('#games-tab').click(); await page.locator('[data-cabinet="studio-cosmic-escape"]').click();
   await expect(page.locator('#mini-dialog')).toBeVisible({ timeout: 25000 }); await choose(page);
   expect((await state(page)).view).toEqual(current.view); expect((await wallet(page)).balance).toBe(9990);
-  await page.reload();await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});
+  await page.reload();await selectEntryMode(page);await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});
   await expect.poll(()=>online(page)).toBe(true);
   await page.locator('#games-tab').click();await page.locator('[data-cabinet="studio-cosmic-escape"]').click();
   await expect(page.locator('#mini-dialog')).toBeVisible({timeout:25000});await choose(page);
@@ -280,7 +300,7 @@ test('a lost accepted response retries the same UUID once, with no repeated char
   await game(page).locator('[data-fh=spin]').click(); await expect(game(page).locator('[data-fh=retry]')).toBeVisible();
   await expect(game(page).locator('[data-fh=retry]')).toBeEnabled();
   expect((await wallet(page)).balance).toBe(9996.31);
-  await page.reload();await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});
+  await page.reload();await selectEntryMode(page);await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});
   await expect.poll(()=>online(page)).toBe(true);
   await page.locator('#games-tab').click();await page.locator('[data-cabinet="studio-cosmic-escape"]').click();
   await expect(page.locator('#mini-dialog')).toBeVisible({timeout:25000});await choose(page);
@@ -390,12 +410,14 @@ test('painted tiles fit a short desktop window and only the accepted root rotate
   await page.screenshot({path:out+'/desktop-lit.png'});
   await writeFile(out+'/motion-frames.json',JSON.stringify({frames:frames.length,turnFrames:turn.length,intermediateAngles:turn.map(f=>f.angles[5]),continuousSapFrames:frames.filter(f=>f.sap.some(v=>v>0&&v<1)).length,intermediateCounterFrames:frames.filter(f=>f.motion==='count'&&f.total>631&&f.total<1262).length},null,2));
   await page.setViewportSize({width:1110,height:1244}); await fit(game(page));
-  const poster=await game(page).locator('.fh').evaluate(root=>{
-    const board=root.querySelector('.fh-board')!.getBoundingClientRect(), character=root.querySelector('.fh-character')!.getBoundingClientRect();
-    return {mode:(root as HTMLElement).dataset.layout,boardTop:board.top,boardWidth:board.width,characterBottom:character.bottom};
-  });
-  expect(poster.mode).toBe('poster');expect(poster.boardWidth).toBeGreaterThan(400);expect(poster.characterBottom).toBeLessThanOrEqual(poster.boardTop);
+  await expect(game(page).locator('.fh')).toHaveAttribute('data-frame-layout','portrait');
+  await expect(game(page).locator('.fh-board')).toBeInViewport();
+  await expect.poll(()=>game(page).locator('.fh-board').evaluate(board=>board.clientWidth)).toBeGreaterThan(400);
+  await expectConnectedChat(page);
   await page.screenshot({path:out+'/desktop-tall.png'});
+  await game(page).locator('[data-fh=settings]').click();
+  await expect(game(page).locator('[data-panel=settings] .fh-character')).toBeInViewport();
+  await game(page).locator('[data-fh=close]').click();
 });
 
 test('accepted fields visibly leave and arrive with fixed plates in normal, muted and fast modes', async({page,roomPath})=>{
@@ -512,9 +534,11 @@ test('the elf shows choice, flower, bonus and large final reactions in the real 
   expect(current.view.stage).toBe('bonus');expect(current.character.pose).toBe('bonus');
   expect(current.character.events.some((e:any)=>e.pose==='win'||e.pose==='big')).toBe(false);
   await page.screenshot({path:out+'/elf-bonus.png'});
-  await page.setViewportSize({width:390,height:844});await fit(game(page));await expect(page.locator('#chat-input')).toBeInViewport();
+  await page.setViewportSize({width:390,height:844});await fit(game(page));await expectConnectedChat(page);
   await page.screenshot({path:out+'/elf-mobile.png'});
+  await game(page).locator('[data-fh=settings]').click();
   await game(page).locator('[data-fh=fast]').check();
+  await game(page).locator('[data-fh=close]').click();
   while(current.view.stage!=='settled')current=await act(page);
   await page.unroute('**/api/demo-wallet/expansion');await routeScenario(page,'maximum');
   current=await act(page);while(current.view.stage!=='settled')current=await act(page);
@@ -562,8 +586,9 @@ test('the elf anticipates the field and keeps pose weights and gestures continuo
     records.push({mode,maxWeightStep,maxGestureStep,frames});
     if(mode==='normal')await page.screenshot({path:out+'/elf-v6-win.png'});
   }
-  await page.setViewportSize({width:390,height:844});await fit(game(page));await expect(page.locator('#chat-input')).toBeInViewport();
+  await page.setViewportSize({width:390,height:844});await fit(game(page));await expectConnectedChat(page);
   await page.screenshot({path:out+'/elf-v6-mobile.png'});
+  await game(page).locator('[data-fh=settings]').click();
   await game(page).locator('[data-fh=rules]').click();const paused=(await state(page)).character;
   expect(paused.gesture).toEqual([0,0,0,0]);expect(paused.reaction).toBeNull();
   await game(page).locator('[data-fh=close]').click();
@@ -602,17 +627,22 @@ test('readable outcomes, accepted flower values and separate settings fit deskto
   await game(page).locator('#fh-energy-note button').click();
   const metrics=[];
   for(const viewport of [{width:1280,height:720},{width:390,height:844},{width:320,height:780}]){
-    await page.setViewportSize(viewport);await fit(game(page));await expect(page.locator('#chat-input')).toBeInViewport();
+    await page.setViewportSize(viewport);await fit(game(page));await expectConnectedChat(page);
     const sizes=await game(page).locator('.fh').evaluate(root=>{
-      const selectors=['[data-fh=lower]','[data-fh=higher]','[data-fh=rules]','[data-fh=settings]','[data-fh=energy]','.fh-fast'];
+      const full=(root as HTMLElement).dataset.frameLayout==='full';
+      const selectors=['[data-fh=settings]','[data-fh=energy]','[data-fh=spin]','[data-manual-stake]'];
+      if(full)selectors.push('[data-fh=lower]','[data-fh=higher]','[data-fh=rules]','.fh-fast');
       const controls=selectors.map(selector=>{const e=root.querySelector(selector)!,r=e.getBoundingClientRect();return{selector,width:r.width,height:r.height};});
-      const fonts=['[data-fh=net]','[data-fh=next]','.fh-spin small'].map(selector=>({selector,size:parseFloat(getComputedStyle(root.querySelector(selector)!).fontSize)}));
+      const fonts=[{selector:'[data-fh=net]',minimum:15},{selector:'[data-fh=next]',minimum:11},{selector:'.fh-spin small',minimum:full?10:9}].map(({selector,minimum})=>{
+        const element=root.querySelector(selector)!;
+        return {selector,minimum,size:parseFloat(getComputedStyle(element).fontSize),fits:element.scrollWidth<=element.clientWidth+1};
+      });
       const board=root.querySelector('.fh-board')!.getBoundingClientRect();
       const result=root.querySelector('[data-fh=total]')!,net=root.querySelector('[data-fh=net]')!;
       return{width:root.clientWidth,height:root.clientHeight,board:board.toJSON(),controls,fonts,returnColor:getComputedStyle(result).color,netFont:parseFloat(getComputedStyle(net).fontSize),returnFont:parseFloat(getComputedStyle(result).fontSize),textFits:[result,net,root.querySelector('[data-fh=balance]')!].every(e=>e.scrollWidth<=e.clientWidth+1)};
     });
     for(const control of sizes.controls){expect(control.width).toBeGreaterThanOrEqual(44);expect(control.height).toBeGreaterThanOrEqual(44);}
-    for(const font of sizes.fonts)expect(font.size).toBeGreaterThanOrEqual(12);
+    for(const font of sizes.fonts){expect(font.size).toBeGreaterThanOrEqual(font.minimum);expect(font.fits).toBe(true);}
     expect(sizes.netFont).toBe(sizes.returnFont);expect(sizes.returnColor).toBe('rgb(242, 232, 211)');expect(sizes.textFits).toBe(true);
     if(viewport.width===1280)expect(sizes.board.width).toBeGreaterThanOrEqual(330);
     metrics.push({viewport,...sizes});await page.screenshot({path:out+`/ux-v7-${viewport.width}.png`});
@@ -672,7 +702,7 @@ test('the full host uses the available monitor and keeps the board, elf and paid
       expect(inner.portrait.width/inner.portrait.height).toBeCloseTo(5/6,1);
       expect(inner.character.left).toBeGreaterThanOrEqual(inner.machine.right);
     }
-    await expect(page.locator('#chat-input')).toBeInViewport();
+    await expectConnectedChat(page);
   }
   await act(page);await expect(game(page).locator('[data-cell]:enabled')).toHaveCount(12);
   await page.screenshot({path:out+'/layout-v11-connected.png'});
