@@ -1,4 +1,4 @@
-import {gameAudio} from '../game/GameAudio';
+import {gameAudio} from '../../src/game/GameAudio';
 
 export const MEME_CLIPS=['wow','nice','boom','error','bruh','bonus'] as const;
 export type MemeClip=typeof MEME_CLIPS[number];

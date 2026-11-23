@@ -1,4 +1,4 @@
-import { MemeOverloadUI } from '../../src/ui/MemeOverloadUI';
+import { MemeOverloadUI } from './MemeOverloadUI';
 import { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';
 import '../../src/ui/studio-games.css';
 export const gameId = 'studio-meme-overload';

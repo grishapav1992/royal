@@ -1,6 +1,6 @@
-import {SlotAudio} from './slotKit/SlotAudio';
-import {memeSlot} from './slotKit/nativeSlots';
-import {gameAudio} from '../game/GameAudio';
+import {SlotAudio} from '../../src/ui/slotKit/SlotAudio';
+import {memeSlot} from '../../src/ui/slotKit/nativeSlots';
+import {gameAudio} from '../../src/game/GameAudio';
 import {MemeReactions,type MemeClip} from './MemeReactions';
 /** Quiet frequent cues plus a single channel of original meme recordings. */
 export class MemeAudio extends SlotAudio {
