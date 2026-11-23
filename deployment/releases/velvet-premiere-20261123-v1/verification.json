@@ -1,0 +1,114 @@
+{
+  "release": "velvet-premiere-20261123-v1",
+  "published": true,
+  "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "sourceCommit": "90593435e68c91704e5a8dece0ce278ba2d4ee4a",
+  "codeCommit": "90ddf657e7083aa119c26fb013cf0a95228a369d",
+  "installerCommit": "90593435e68c91704e5a8dece0ce278ba2d4ee4a",
+  "baseCommit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+  "runningImage": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+  "releaseManifestSha256": "f2776f32efd5a8c15400d2ad802caa4207c6b66b1cbdd3f8a49bab056827cda0",
+  "module": {
+    "verified": true,
+    "gameId": "studio-velvet-reign",
+    "version": "1.4.0-ad7581736f91",
+    "bytes": 5815910,
+    "files": 28,
+    "beforeSha256": "24aab489945414f1407325e378878e1dd3575a909432d95a8fdbb5b3fb6b400d",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "90ff15d33933d0915466c4237816017f10ac3ec7c4f5404304907f1d34e8b549",
+    "history": "/opt/royal-game-modules-state/history/20261123T111948-d92cc5d1eb214db58918c7114ff7845a.json"
+  },
+  "priorManifestSha256": "ed38c3dcd15a54ba2c47dcb07e73c083f94b953ab0e1a99a805807ca1166b725",
+  "installedSourceFiles": {
+    "games/velvet-reign/entry.ts": "2381b6648feae8b7c1f394261d9bf3117b3590a866318caee7114eefcf0d008b",
+    "games/velvet-reign/package.json": "dfbd002e786408db0066972aae1b7415b3220592ec0fa20632f6509ef4f54aa5",
+    "games/velvet-reign/VelvetReignUI.ts": "35000f41fee998f86295ea96e13e80bc40e2efad96eb450a22607d01a93ca91e",
+    "games/velvet-reign/VelvetReignBoard.ts": "32a19064c616e307a5e02714114c220505cc911b9f0e2fb0388ba83af48799c8",
+    "games/velvet-reign/VelvetReignAssets.ts": "8e7600d8f3e507a642667b735d3d74c755fdb0e529c0eea72be94007639823a1",
+    "games/velvet-reign/VelvetReignAudio.ts": "ac03dc4ad7e7c43ec90ca1f7367988ba86e144fa62e721fdd00ffdbfd02fbdbf",
+    "games/velvet-reign/velvetReignText.ts": "959570ca6cb41ebb6bf67d2ddd32d8b28928a2b6bda46e484cd40b745242e14d",
+    "games/velvet-reign/velvet-reign.css": "07e9b167f55304f9705368b47cb517be602f4216005771ef06a28d4a7484c4c8"
+  },
+  "createdSourceFiles": [
+    "games/velvet-reign/VelvetReignAssets.ts",
+    "games/velvet-reign/VelvetReignAudio.ts",
+    "games/velvet-reign/VelvetReignBoard.ts",
+    "games/velvet-reign/VelvetReignUI.ts",
+    "games/velvet-reign/velvet-reign.css",
+    "games/velvet-reign/velvetReignText.ts"
+  ],
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/velvet-premiere-20261123-v1/source.tgz",
+    "sha256": "d2cba520537634cf440a6a37e48bc143e4fd0eab2beac494063da741a06307cf",
+    "bytes": 2690,
+    "oldVersion": "1.1.1-0c60356904bd",
+    "imageTag": "royal-game:before-velvet-premiere-20261123-v1",
+    "image": "sha256:89dc2f89075dfe06d0dd54067e83dcbcc93b476d2b8ba09d3cc42013110bb30a",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/velvet-reign/VelvetReignAssets.ts",
+      "games/velvet-reign/VelvetReignAudio.ts",
+      "games/velvet-reign/VelvetReignBoard.ts",
+      "games/velvet-reign/VelvetReignUI.ts",
+      "games/velvet-reign/velvet-reign.css",
+      "games/velvet-reign/velvetReignText.ts"
+    ]
+  },
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "runtimeFilesPreserved": 8783,
+  "servicesPreserved": 11,
+  "otherModulesPreserved": true,
+  "freeBefore": 12024057856,
+  "freeAfter": 12017938432,
+  "projection": "shared inputs pinned to production 1eae5668; Velvet presentation, entry and package metadata from the code commit",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "context": "The dressing-room package 1.3.0-90e55a534a4e was replaced on 2026-11-19 by 1.1.1-1fd37ed35c96 rebuilt from older sources in first-floor-game-labels-20261119-v1. The owner asked to publish the Premiere redesign on 2026-11-23.",
+  "verification": {
+    "rtp": "passed in release:prepare",
+    "typecheck": true,
+    "githubVerified": true,
+    "walletTests": 19,
+    "connectedBrowserTests": 4,
+    "scenarios": [
+      "all controls at 8 sizes and one accepted ten-cent round with a lost response, one debit and reopening",
+      "Spotlight: stars, free continuation and one debit across close and reopen",
+      "all windows and a confirmed new star at 8 sizes",
+      "Super Encore and populated history at 8 sizes"
+    ],
+    "english": "no Russian text at 1440x900, 393x852, 852x393 and 320x568; every label also checked against the installed production dictionary",
+    "browserReportSha256": "1b1b8e92938f973c9b486501a9073f9918ec9f8224e09cd372ceee3fa4178154",
+    "hostUsedForBrowserTests": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact prepared module bytes",
+    "live": {
+      "health": 200,
+      "moduleHostEntries": 124,
+      "unchangedModulePointers": 123,
+      "changedModulePointers": [
+        "studio-velvet-reign"
+      ],
+      "packageFilesVerified": 29,
+      "packageFilesIncludeManifest": true,
+      "previousPackageServed": true,
+      "previousPackageFilesVerified": 13
+    },
+    "publicSignedInPlayChecked": false,
+    "productionAccountsOrRoundsCreated": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 75.46,
+    "healthOk": true,
+    "freeBefore": 12013670400,
+    "freeAfter": 12010225664,
+    "timerEnabled": true,
+    "timerActive": true,
+    "productionGraph": "pending, indexing queued"
+  }
+}

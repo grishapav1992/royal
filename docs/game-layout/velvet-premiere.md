@@ -20,3 +20,4 @@
 - RTP: `npm run check:rtp`, 38 профилей, 20 политик ставок, 20 проверок допуска.
 - Сервер: `server-tests/round-precision.test.ts` и `server-tests/studio-presentation.test.ts`, 8 из 8.
 - Браузер: `playwright.velvet-dressing-room.config.ts` на готовом пакете в настоящем хосте с подключённым чатом, 4 из 4. Размеры 1440×900, 1024×768, 768×1024, 700×900, 393×852, 852×393, 320×568, 568×320. Проверены основная игра, все окна, вход в бонус, новая звезда, итог, Spotlight, Super Encore, потерянный ответ с одним списанием ставки и повторное открытие игры.
+- Публикация: выпуск `velvet-premiere-20261123-v1`, пакет `1.4.0-ad7581736f91`. [Проверки выпуска](../../deployment/releases/velvet-premiere-20261123-v1/verification.json).
