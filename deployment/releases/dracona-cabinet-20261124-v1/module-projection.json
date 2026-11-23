@@ -1,0 +1,246 @@
+{
+  "format": 1,
+  "productionCommit": "8ff427eba1bca9c285134cc06bbb2aba4c66bc5a",
+  "moduleGames": [
+    "dracona"
+  ],
+  "moduleAssets": {
+    "public/assets/dracona/crest.webp": "662d94234ea08fa1fade6626211d893df327dda43492163c773c2cec80e72a31",
+    "public/assets/dracona/hero-cast-b.webp": "4b87df33e9bb1ebdbd2f13808a7fd2c87e4131a7aab0f27b0e4e5f6ddca3d44f",
+    "public/assets/dracona/hero-cast.webp": "e92053e3c40949fcd6bb864e86ef8c4ec4607309f222d32886882023371ea07b",
+    "public/assets/dracona/hero-idle-a.png": "dec46a557ca5db976e6e2ff4f06069fe988aa4edceb453d827e2c21766d7e08b",
+    "public/assets/dracona/hero-idle-b.png": "d9ef8ce6c857fbc863e92871834af45a6565cedb3ba53997f2e6eea663bd0432",
+    "public/assets/dracona/hero-stance-ab.webp": "95d7ee19443fe77abe502283676a03d54df63505d5bbaa2d46363b97ad510435",
+    "public/assets/dracona/hero-stance-ba.webp": "7ae42f0010e1963e0cb80cad0240d11f81338e6ed44dce637d9ed012bfb98b6d",
+    "public/assets/dracona/hero-wink.png": "c74003e7338e8893536c47d716b0b0d3b366ce040fa9551c2d91497a92386f6b",
+    "public/assets/dracona/manor.webp": "bb090a95d109ca6d9a4d41caea929da8939e4d609f67ecba38ef200d7ea3d6d0",
+    "public/assets/dracona/audio/bonus.mp3": "f36ba468685e2b9f513d0008702ceb8a0bdfdce6b1e804d000252f07ec080b1c",
+    "public/assets/dracona/audio/cascade-quick.mp3": "3d5daa7e83fbb981f100f9d39f7bb522d6274d3b71cb764c16dc0a08ac26e576",
+    "public/assets/dracona/audio/cascade.mp3": "d94902466cbbcaf2a187ff381322749c789a1e780663c02c46fa7f5a88df8494",
+    "public/assets/dracona/audio/cast-quick.mp3": "0f19f980a13447461584687335b44e9227b881e53e1a672268cc0ad2d602f1a3",
+    "public/assets/dracona/audio/cast.mp3": "599e63f751d60ef955c0a3765245c9b7ebece307c47e30e6d8c6243b00f444b6",
+    "public/assets/dracona/audio/finish.mp3": "3aeaa18bd06a38eb66d6038f6176ababd0dd6abd5fb8205c3239906f2c5c073b",
+    "public/assets/dracona/audio/fizzle.mp3": "6231fcf8787b4667c89cc5277f58775e9a06886a917be29fffce43a5eab43212",
+    "public/assets/dracona/audio/palette.json": "007481fd82810ac3be693adb006d1ba11c3d23f65a6ff3b3ca39eb61518d3a14",
+    "public/assets/dracona/audio/portal-quick.mp3": "2d40e49dd5e465c15a855ffb3233c1bc41d876c884867ceb566328d2c0ff4737",
+    "public/assets/dracona/audio/portal.mp3": "c45c4577c09782c6caebeab948cd53289799230790a46b8e795781e05c0d5d12",
+    "public/assets/dracona/audio/settle.mp3": "c43e3f8f4bc7620f1160629fc7bf3b19c4b0859a33e0f647c81f202061e0a8a0",
+    "public/assets/dracona/book.webp": "adf5763bd391cc941d7b7610937cfb5448f3939e18fe4da9fbd5b791f698a836",
+    "public/assets/dracona/cabinet.webp": "63209e9eaf707f953ae108ff7eb1609b36888161cb7d3695a77b5f0a8012b4e6",
+    "public/assets/dracona/feather.webp": "e9a0301264d382a1c01e3df1a20c79952c9f90a499580d068aa8811584c1ef04",
+    "public/assets/dracona/gem.webp": "369b1345b10b83f2a3b2a8f93680540d2200226e015d89377ebc35c873527212",
+    "public/assets/dracona/key.webp": "df125508a46d84d1cd5c6cbad3ce87e1d152de628b9c918b459765bcb51eb985",
+    "public/assets/dracona/potion.webp": "ea130bfd10c2f8ee3f9f0862ba41743089ddf739b28213c37fc80ebd21291d16",
+    "public/assets/dracona/ring.webp": "e23f601f0ff97b458461a7ac4e4f6a3f8ce9f7c3f7eac4d9e4bab325777ec433"
+  },
+  "moduleDependencies": {},
+  "moduleContracts": {
+    "studio-dracona": {
+      "apiVersion": 1,
+      "rulesVersion": 3,
+      "progressVersion": 2
+    }
+  },
+  "files": {
+    "games/dracona/DraconaUI.ts": {
+      "path": "games/dracona/DraconaUI.ts",
+      "commit": "fb92c22a5d09c4dcb4b7413c8862505e0488796f",
+      "baseSha256": "a45312977fa6cc39fe42b8b85eb285a609e6e61a6bf364e5ac19df9503c9a44a",
+      "sha256": "a45312977fa6cc39fe42b8b85eb285a609e6e61a6bf364e5ac19df9503c9a44a"
+    },
+    "games/dracona/audio.ts": {
+      "path": "games/dracona/audio.ts",
+      "commit": "fb92c22a5d09c4dcb4b7413c8862505e0488796f",
+      "baseSha256": "0eedf0bb4ae6f707475d844c877d82e5cf4a45c42dc0cc932010f902205bc546",
+      "sha256": "0eedf0bb4ae6f707475d844c877d82e5cf4a45c42dc0cc932010f902205bc546"
+    },
+    "games/dracona/autoplay.ts": {
+      "path": "games/dracona/autoplay.ts",
+      "commit": "fb92c22a5d09c4dcb4b7413c8862505e0488796f",
+      "baseSha256": "2b4cda9360d5acfee1d75ce235b0097a6b92fcf96c7d0e1061530cea0a4881e4",
+      "sha256": "2b4cda9360d5acfee1d75ce235b0097a6b92fcf96c7d0e1061530cea0a4881e4"
+    },
+    "games/dracona/board.ts": {
+      "path": "games/dracona/board.ts",
+      "commit": "fb92c22a5d09c4dcb4b7413c8862505e0488796f",
+      "baseSha256": "0bfd1b0e16c212371b1756866ef565ba929af158633553fe0c2a7d4f778ad270",
+      "sha256": "0bfd1b0e16c212371b1756866ef565ba929af158633553fe0c2a7d4f778ad270"
+    },
+    "games/dracona/character.ts": {
+      "path": "games/dracona/character.ts",
+      "commit": "fb92c22a5d09c4dcb4b7413c8862505e0488796f",
+      "baseSha256": "4a4c6280f8a89e1ae8defc374d0db21ab2d69ea3458d5d4fa18faece0170c479",
+      "sha256": "4a4c6280f8a89e1ae8defc374d0db21ab2d69ea3458d5d4fa18faece0170c479"
+    },
+    "games/dracona/effects.ts": {
+      "path": "games/dracona/effects.ts",
+      "commit": "fb92c22a5d09c4dcb4b7413c8862505e0488796f",
+      "baseSha256": "d1f4f64a62b69f124d0d070eca8540bd8c3e8f5825c96a02192546e3c5797606",
+      "sha256": "d1f4f64a62b69f124d0d070eca8540bd8c3e8f5825c96a02192546e3c5797606"
+    },
+    "games/dracona/entry.ts": {
+      "path": "games/dracona/entry.ts",
+      "commit": "fb92c22a5d09c4dcb4b7413c8862505e0488796f",
+      "baseSha256": "7e2d672b34b6f2fcd0d2d90040e78aa80af7446b9917f647223ac1f6e1d693c0",
+      "sha256": "7e2d672b34b6f2fcd0d2d90040e78aa80af7446b9917f647223ac1f6e1d693c0"
+    },
+    "games/dracona/layout.ts": {
+      "path": "games/dracona/layout.ts",
+      "commit": "fb92c22a5d09c4dcb4b7413c8862505e0488796f",
+      "baseSha256": "6a82e7ad4960e4d493cf35bae2c84441501c20f48e71fb8cf2cf6ae0f13b3c23",
+      "sha256": "6a82e7ad4960e4d493cf35bae2c84441501c20f48e71fb8cf2cf6ae0f13b3c23"
+    },
+    "games/dracona/package.json": {
+      "path": "games/dracona/package.json",
+      "commit": "fb92c22a5d09c4dcb4b7413c8862505e0488796f",
+      "baseSha256": "e47b01ebd5e5e38002133dff13edd161c5eeb8a9c70dd508ce2e0443bad775e3",
+      "sha256": "e47b01ebd5e5e38002133dff13edd161c5eeb8a9c70dd508ce2e0443bad775e3"
+    },
+    "games/dracona/requestStyles.ts": {
+      "path": "games/dracona/requestStyles.ts",
+      "commit": "fb92c22a5d09c4dcb4b7413c8862505e0488796f",
+      "baseSha256": "081cc8ef9bd7a52539feecccce46d638fece9869436a96b65040122b931c3f91",
+      "sha256": "081cc8ef9bd7a52539feecccce46d638fece9869436a96b65040122b931c3f91"
+    },
+    "games/dracona/shell.css": {
+      "path": "games/dracona/shell.css",
+      "commit": "fb92c22a5d09c4dcb4b7413c8862505e0488796f",
+      "baseSha256": "0e54d5e5431b632bddf5a9b62e47f0de5b2d6839e80176668e6807250e6c6501",
+      "sha256": "0e54d5e5431b632bddf5a9b62e47f0de5b2d6839e80176668e6807250e6c6501"
+    },
+    "games/dracona/styles.ts": {
+      "path": "games/dracona/styles.ts",
+      "commit": "fb92c22a5d09c4dcb4b7413c8862505e0488796f",
+      "baseSha256": "45bb94e8546a8a4f671d5158fa08be0c0f54ba132cfcf90ebbabca6ba7ddedc6",
+      "sha256": "45bb94e8546a8a4f671d5158fa08be0c0f54ba132cfcf90ebbabca6ba7ddedc6"
+    },
+    "games/dracona/text.ts": {
+      "path": "games/dracona/text.ts",
+      "commit": "fb92c22a5d09c4dcb4b7413c8862505e0488796f",
+      "baseSha256": "b33a09d90948bbf6e7907ddd92ad196024cdd51f21967afde0a704d32b3d34b4",
+      "sha256": "b33a09d90948bbf6e7907ddd92ad196024cdd51f21967afde0a704d32b3d34b4"
+    },
+    "games/dracona/tsconfig.json": {
+      "path": "games/dracona/tsconfig.json",
+      "commit": "fb92c22a5d09c4dcb4b7413c8862505e0488796f",
+      "baseSha256": "7e367c19158fa90e77d59ff08828c0b1b5c19eecb1138f34b47d43ebd76db9ce",
+      "sha256": "7e367c19158fa90e77d59ff08828c0b1b5c19eecb1138f34b47d43ebd76db9ce"
+    },
+    "src/modules/GameHostContract.ts": {
+      "commit": "b77a6010f4fc3c02e4620c040d2397d4769a716d",
+      "path": "src/modules/GameHostContract.ts",
+      "baseSha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0",
+      "sha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0"
+    },
+    "src/modules/GameModuleCatalog.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/modules/GameModuleCatalog.ts",
+      "baseSha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82",
+      "sha256": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1",
+      "patches": [
+        {
+          "from": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },",
+          "to": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },"
+        },
+        {
+          "from": "ion:1},\n] as con",
+          "to": "ion:1},\n {gameId:'tsu-e-fa',slug:'tsu-e-fa',apiVersion:1,rulesVersion:1,progressVersion:1},\n] as con"
+        },
+        {
+          "from": "iVersion:1,rulesVersion:1,progressVersion:1},\n] a",
+          "to": "iVersion:1,rulesVersion:2,progressVersion:1},\n] a"
+        },
+        {
+          "from": ":2,",
+          "to": ":3,"
+        },
+        {
+          "from": ":3,",
+          "to": ":4,"
+        },
+        {
+          "from": "export const STUDIO_GAME_MODULES = [\n",
+          "to": "export const STUDIO_GAME_MODULES = [\n { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },\n"
+        }
+      ]
+    },
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/caribbeanTreasuresMath.ts",
+      "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+      "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+    },
+    "src/shared/dracona.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/dracona.ts",
+      "baseSha256": "ee182b2547a155c80978ebbbabcc28c9dd2fd88224a7015eb9d03973132e0137",
+      "sha256": "ee182b2547a155c80978ebbbabcc28c9dd2fd88224a7015eb9d03973132e0137"
+    },
+    "src/shared/draconaMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/draconaMath.ts",
+      "baseSha256": "7b73a84f00df88ebce06e8eca1676b90ca457b36d3db4329b723cc66e9977583",
+      "sha256": "7b73a84f00df88ebce06e8eca1676b90ca457b36d3db4329b723cc66e9977583"
+    },
+    "src/shared/draconaMathV1.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/draconaMathV1.ts",
+      "baseSha256": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21",
+      "sha256": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21"
+    },
+    "src/shared/gameStakes.ts": {
+      "commit": "b77a6010f4fc3c02e4620c040d2397d4769a716d",
+      "path": "src/shared/gameStakes.ts",
+      "baseSha256": "a83f372dbb71ac3c08093d6ffeb41746da4aea610034d6ecdaec8a22dc29bf30",
+      "sha256": "a83f372dbb71ac3c08093d6ffeb41746da4aea610034d6ecdaec8a22dc29bf30"
+    },
+    "src/shared/neopolisMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/neopolisMath.ts",
+      "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+    },
+    "src/shared/neopolisStakePayouts.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/neopolisStakePayouts.ts",
+      "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+      "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+    },
+    "src/shared/roundPrecision.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/roundPrecision.ts",
+      "baseSha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
+      "sha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8"
+    },
+    "src/ui/GameLayoutPolicy.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/ui/GameLayoutPolicy.ts",
+      "baseSha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c",
+      "sha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c"
+    },
+    "src/ui/operationFeedback.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/operationFeedback.ts",
+      "baseSha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17",
+      "sha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17"
+    },
+    "src/ui/stakeRules.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/stakeRules.ts",
+      "baseSha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df",
+      "sha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df"
+    },
+    "src/ui/stakeSelection.ts": {
+      "commit": "b77a6010f4fc3c02e4620c040d2397d4769a716d",
+      "path": "src/ui/stakeSelection.ts",
+      "baseSha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86",
+      "sha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86"
+    },
+    "tsconfig.json": {
+      "commit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+      "path": "tsconfig.json",
+      "baseSha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+      "sha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b"
+    }
+  }
+}
