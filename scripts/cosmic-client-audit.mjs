@@ -89,9 +89,9 @@ try{
   assert.deepEqual(await page.locator('[data-lg-stake] option').evaluateAll(elements=>elements.map(e=>e.value)),[...COSMIC_ESCAPE_BET_UNITS]);
   await page.locator('[data-lg-stake]').selectOption(String(spec.stake));let displayedPurchaseCost=null;
   if(spec.mode!=='normal'){
-   await page.locator('[data-cosmic-missions]').click();await page.locator('[data-lg-dialog-action="mission:'+spec.mode+'"]').click();
-   displayedPurchaseCost=units(await page.locator('.ce-confirm strong').textContent());assert.equal(displayedPurchaseCost,spec.stake*spec.cost);assert.equal(units(await page.locator('[data-lg-dialog-action="buy"]').textContent()),spec.stake*spec.cost);
-   await page.locator('[data-lg-dialog-action="buy"]').click();
+   await page.locator('[data-cosmic-missions]').click();const buy=page.locator('[data-lg-dialog-action="buy:'+spec.mode+'"]');
+   displayedPurchaseCost=units(await buy.textContent());assert.equal(displayedPurchaseCost,spec.stake*spec.cost);
+   await buy.click();
   }else{assert.equal(units((await read()).costText),spec.stake);await page.locator('[data-lg-spin]').click();}
   await stable();let initial;
   if(spec.fault==='start')initial=await recoverPending();else{await page.waitForFunction(()=>window.audit.client.sessions[0]?.state==='active'&&!window.audit.ui.live&&!window.audit.client.busy);initial=await read();}
