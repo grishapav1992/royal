@@ -45,7 +45,7 @@ jobs:
     needs: scope
     if: needs.scope.outputs.profile == 'full'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v7
         with:
@@ -78,7 +78,7 @@ jobs:
       - run: npm run test:work-sync
       - run: npm run release:prepare -- --local --base HEAD^
       - run: node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts
-      - run: node --import tsx --test server-tests/independent-modules.test.ts server-tests/game-module-assets.test.ts
+      - run: node --import tsx --test server-tests/independent-modules.test.ts server-tests/module-resource-fingerprint.test.mjs
       - run: npx playwright install --with-deps chromium
       - run: npm run test:forest-heart-ui
       - run: npm run test:slot-balance

@@ -49,10 +49,11 @@ test('altered payout, symbols, entropy, bonus counter and revision are rejected'
   assert.throws(() => moveDracona(result.view, '10000', result.view.revision + 1, random(2)));
 });
 
-test('only declared stakes, modes and revision-bound free moves are accepted', () => {
+test('manual cents, declared modes and revision-bound free moves validate', () => {
   assert(validDraconaSettings(settings));
   assert.equal(validDraconaSettings({ dracona: { mode: 'normal', free: true } }), false);
-  for (const stake of ['0', '123', '10001', '100000000']) assert.throws(() => startDracona(settings, stake, random(1)));
+  assert(validDraconaView('123', startDracona(settings, '123', random(1)).view));
+  for (const stake of ['0', '9', '10.1', '10001', '100000000']) assert.throws(() => startDracona(settings, stake, random(1)));
   const action = { id: '11111111-1111-4111-8111-111111111111', gameId: DRACONA_GAME, action: 'move', sessionId: '22222222-2222-4222-8222-222222222222', move: 'dracona-spin', revision: 1 };
   assert(validExpansionAction(action));
   for (const changed of [{ ...action, revision: 0 }, { ...action, picks: [0] }, { ...action, move: 'studio-spin' }, { ...action, gameId: 'github-blackjack' }]) assert.equal(validExpansionAction(changed), false);

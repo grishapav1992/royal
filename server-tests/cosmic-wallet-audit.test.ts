@@ -6,13 +6,17 @@ import express from 'express';
 import {PostgresDatabase} from '../server/database';
 import {DemoWalletStore} from '../server/demoWallet';
 import {demoBalanceUnits,demoReservedUnits} from '../server/demoWalletAmounts';
-import {COSMIC_ESCAPE_BET_UNITS} from '../src/shared/cosmicEscapeBets';
+import {ROYAL_GAME_STAKE_UNITS} from '../src/shared/gameStakes';
 import {seededRandom} from '../src/shared/draconaMath';
 import {validLuelonSlotSettlement,validLuelonSlotEnvelope,type LuelonSlotView} from '../src/shared/luelonSlots';
+import {precisionBaseSession} from '../src/shared/roundPrecision';
 
 const GAME='studio-cosmic-escape' as const;
 const MODES={normal:1,'cosmic-chaos':40,'ufo-invasion':75,'deep-echo':135} as const;
-const validLuelonSlotSession=(s:any)=>s.gameId===GAME&&s.rulesVersion===2&&validLuelonSlotSettlement(GAME,s.state,s.stakeUnits,s.spentUnits,s.returnedUnits,s.view.luelon)&&validLuelonSlotEnvelope(GAME,s.state,s.view);
+const validLuelonSlotSession=(value:any)=>{
+ const s=precisionBaseSession(value);
+ return !!s&&s.gameId===GAME&&s.rulesVersion===2&&validLuelonSlotSettlement(GAME,s.state,s.stakeUnits,s.spentUnits,s.returnedUnits,s.view.luelon)&&validLuelonSlotEnvelope(GAME,s.state,s.view);
+};
 type Mode=keyof typeof MODES;
 type Draw=(max:number)=>number;
 const start=(mode:Mode,stake='20')=>({id:randomUUID(),action:'start' as const,gameId:GAME,stakeUnits:stake,settings:{luelon:{mode}}});
@@ -49,14 +53,14 @@ async function finish(wallet:DemoWalletStore,session:any,account='cosmic-player'
  return {session,last};
 }
 
-test('Cosmic wallet charges each of 26 stakes at all four actual mode costs and reserves the whole paid round',async()=>{
+test('Cosmic wallet charges every preset and representative manual stakes at all four actual mode costs',async()=>{
  const f=await fixture(()=>0);let cases=0;
  try {
-  assert.equal(COSMIC_ESCAPE_BET_UNITS.length,26);
-  for(const [mode,cost] of Object.entries(MODES))for(const stake of COSMIC_ESCAPE_BET_UNITS) {
+  const stakes=[...ROYAL_GAME_STAKE_UNITS,'999','1001'];
+  for(const [mode,cost] of Object.entries(MODES))for(const stake of stakes) {
    const account='grid-'+cases++,paid=Number(stake)*cost;
    await f.db.prepare('INSERT INTO accounts(id) VALUES(?)').run(account);await fund(f.wallet,account,paid);
-   const before=await demoBalanceUnits(f.db,account),op=start(mode as Mode,stake),reply=await f.wallet.expansion.operate(account,op);
+   const before=await demoBalanceUnits(f.db,account),op={...start(mode as Mode,stake),stakePolicyVersion:1},reply=await f.wallet.expansion.operate(account,op);
    assert(validLuelonSlotSession(reply.session));assert.equal(reply.session.state,'active');
    assert.equal(reply.session.stakeUnits,stake);assert.equal(reply.session.spentUnits,String(paid));assert.equal(reply.session.returnedUnits,'0');
    assert.equal(await demoBalanceUnits(f.db,account),before-paid);
@@ -66,7 +70,7 @@ test('Cosmic wallet charges each of 26 stakes at all four actual mode costs and 
    const saved=await f.db.prepare('SELECT payload FROM demo_casino_sessions WHERE account_id=? AND id=?').get(account,op.id);
    assert.equal(JSON.parse(saved!.payload).mathProfileVersion,3);
   }
-  assert.equal(cases,104);
+  assert.equal(cases,48);
  }finally{await f.close();}
 });
 
@@ -97,11 +101,11 @@ test('Cosmic natural three, four and five portals debit one base stake and settl
 });
 
 test('Cosmic capped second echo frame pays exactly 10000 base stakes at the minimum and maximum stake',async()=>{
- for(const stake of ['20','200000']) {
+ for(const stake of ['10','10000']) {
   const entropy=echoCap(),f=await fixture(entropy.draw);
   try {
    const paid=Number(stake)*135;await fund(f.wallet,'cosmic-player',paid);
-   const before=await demoBalanceUnits(f.db,'cosmic-player'),op=start('deep-echo',stake),begun=await f.wallet.expansion.operate('cosmic-player',op);
+   const before=await demoBalanceUnits(f.db,'cosmic-player'),op={...start('deep-echo',stake),stakePolicyVersion:1},begun=await f.wallet.expansion.operate('cosmic-player',op);
    assert.equal(entropy.used(),0);assert.equal(begun.session.view.luelon!.history.length,0);
    const step=move(op.id,0),attempts=[step,{...step,id:randomUUID()}];
    const replies=await Promise.allSettled(attempts.map(action=>f.wallet.expansion.operate('cosmic-player',action)));
@@ -185,7 +189,7 @@ test('Cosmic real demo-wallet HTTP route enforces authentication, new-start rule
    const base={'Cookie':'royal_session='+login.token,'X-Royal-Account-Id':login.account.id,'Content-Type':'application/json','X-Royal-Card-Rules':'2'};
    const random=seeded(mode==='normal'?75:1);let draws=0;Reflect.set(accounts.wallet.expansion,'draw',(max:number)=>{draws++;return random(max);});
    const post=(op:unknown,headers:Record<string,string>={})=>fetch(url,{method:'POST',headers:{...base,...headers},body:JSON.stringify(op)});
-   const op=start(mode),before=await accounts.wallet.snapshot(login.account.id);
+   const op={...start(mode),stakePolicyVersion:1},before=await accounts.wallet.snapshot(login.account.id);
    assert.equal((await post(op,{'X-Royal-Account-Id':randomUUID()})).status,401);
    assert.equal((await post(op,{'X-Royal-Card-Rules':'1'})).status,409);assert.equal(draws,0);
    assert.deepEqual(await accounts.wallet.snapshot(login.account.id),before);
