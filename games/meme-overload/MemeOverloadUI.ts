@@ -31,7 +31,7 @@ type Session=NativeSlotSession<'nitro'>;
 type Dialog=''|'intro'|'info'|'history'|'bonus'|'complete'|'bigwin';
 type Live=SlotOperation&{operationId:string;balance:number;motion:boolean;fast:boolean;before?:Session};
 const AUTO_COUNTS=[10,25,50,100] as const;
-const SHOWN_LINES:Record<MemeProfile,number>={full:4,portrait:3,landscape:2};
+const SHOWN_LINES:Record<MemeProfile,number>={full:3,portrait:3,landscape:2};
 const icon=(body:string,size=20)=>`<svg width="${size}" height="${size}" viewBox="0 0 20 20" aria-hidden="true" focusable="false">${body}</svg>`;
 const ICON={
  sound:icon('<path d="M2 7h4l5-4v14l-5-4H2z" fill="currentColor"/><path data-mo-waves d="M14 6c2 2 2 6 0 8M16 3c4 4 4 10 0 14" fill="none" stroke="currentColor" stroke-width="2"/><path data-mo-mute d="M14 7l5 6M19 7l-5 6" stroke="currentColor" stroke-width="2"/>'),
@@ -75,6 +75,8 @@ export class MemeOverloadUI {
   if(full){this.find('.mo-virus .mo-window-body').append(pause);this.find('[data-cc-auto]').before(speed);this.dock();}
   else{this.undock();this.find('[data-cc-auto]').after(pause);this.find('[data-mo-speed-home]').append(speed);}
   if(!full)this.settings?.close();this.closeAuto(false);
+  if(!this.live&&!this.session())this.message(this.ready());
+  if(this.settings)this.controls();
  }
  private dock(){
   if(this.headbar)return;const top=this.root.closest('dialog')?.querySelector<HTMLElement>('.mini-top'),tools=this.root.querySelector<HTMLElement>('.mo-tools');if(!top||!tools)return;
@@ -105,10 +107,10 @@ export class MemeOverloadUI {
 <div class="mo-loader" role="status"><div class="mo-window"><h3>meme_overload.exe</h3><div class="mo-window-body"><strong data-cc-load-title>ЗАГРУЖАЕМ ИНТЕРНЕТ</strong><p data-cc-load-note>Изображения загружаются</p><progress data-cc-load-progress max="6" value="0" aria-label="Загрузка оформления"></progress><button type="button" class="mo-go" data-cc-load-retry hidden>Повторить загрузку</button></div></div></div>
 <div class="mo-scene">
 <section class="mo-field" aria-label="Игровое поле"><div class="mo-title"><span data-cc-phase-title>Основная игра</span><span>20 линий</span></div><div class="mo-frame"><div class="cc-board" data-cc-board role="group" aria-label="Шесть барабанов, пять рядов"></div></div></section>
-<div class="mo-status"><div class="mo-status-main"><p data-cc-message role="status">Система готова. Нажми «Крутить», чтобы загрузить мемы.</p><strong data-mo-cascade-sum hidden></strong><div class="mo-groups" data-cc-groups></div><div class="mo-notice" data-cc-feedback hidden><p data-cc-status role="status"></p><p data-cc-error role="alert"></p><button type="button" data-cc-retry hidden>Проверить прежний ход</button></div><div class="mo-notice" data-cc-wallet-help hidden><p data-cc-wallet-note></p><a href="/" data-cc-login>Войти в клуб для тестовой игры</a><button type="button" data-cc-wallet>Открыть тестовый кошелёк</button></div></div><p class="mo-round"><span>Выигрыш раунда</span><strong data-cc-total data-units="0">0,00</strong></p></div>
-<aside class="mo-side" aria-label="Состояние раунда">
+<div class="mo-status"><div class="mo-status-main"><p data-cc-message role="status">Система готова. Нажми «Крутить», чтобы загрузить мемы.</p><strong data-mo-cascade-sum hidden></strong><div class="mo-groups" data-cc-groups></div><div class="mo-notice" data-cc-feedback hidden><p data-cc-status role="status"></p><p data-cc-error role="alert"></p><button type="button" data-cc-retry hidden>Проверить прежний ход</button></div><div class="mo-notice" data-cc-wallet-help hidden><p data-cc-wallet-note></p><a href="/" data-cc-login>Войти в клуб для тестовой игры</a><button type="button" data-cc-wallet>Открыть тестовый кошелёк</button></div></div><p class="mo-round"><span class="mo-round-long">Выигрыш раунда</span><span class="mo-round-short">Раунд</span><strong data-cc-total data-units="0">0,00</strong></p></div>
+<aside class="mo-side slot-feature-strip" aria-label="Состояние раунда">
 <section class="mo-window mo-folders"><h3><span class="mo-long">Папка «Не открывать»</span><span class="mo-short">Папки</span></h3><div class="mo-window-body"><div class="mo-slots" data-cc-tickets>${Array.from({length:3},()=>`<span>${memeSymbol(7)}</span>`).join('')}</div><div class="mo-value"><strong data-cc-ticket-count>0 / 3</strong><p class="mo-long" data-cc-ticket-help>3 / 4 / 5+ папок = 8 / 10 / 12 вращений</p><p class="mo-short">на 8 вращений</p></div><button type="button" class="mo-long" data-cc-buy aria-label="Как открыть бесплатные вращения">Вирусный режим ⓘ</button></div></section>
-<section class="mo-window mo-virus"><h3><span class="mo-long">Вирусный режим</span><span class="mo-short">Вращения</span></h3><div class="mo-window-body"><div class="mo-value"><strong data-mo-free-count></strong><p data-cc-free></p></div><div class="mo-blocks" data-mo-free-blocks aria-hidden="true"></div><p class="mo-virus-note"><span class="mo-long" data-mo-free-note></span><span class="mo-short" data-mo-free-short></span></p><button type="button" data-cc-pause disabled>На паузе</button></div></section>
+<section class="mo-window mo-virus"><h3><span class="mo-long">Вирусный режим</span><span class="mo-short">Вращения</span></h3><div class="mo-window-body"><div class="mo-value"><strong data-mo-free-count></strong><p data-cc-free></p></div><div class="mo-blocks" data-mo-free-blocks aria-hidden="true"></div><p class="mo-virus-note"><span class="mo-mini-folder mo-long">${memeSymbol(7)}</span><span class="mo-long" data-mo-free-note></span><span class="mo-short" data-mo-free-short></span></p><button type="button" data-cc-pause disabled>На паузе</button></div></section>
 <section class="mo-window mo-cpu"><h3>Разгон</h3><div class="mo-window-body"><strong data-cc-factor>×1</strong><div class="mo-blocks mo-gears" data-mo-gears aria-hidden="true">${blocks(5)}</div><p class="mo-long" data-cc-factor-note>Новое вращение начинает с ×1</p><p class="mo-short">до ×5</p></div></section>
 <section class="mo-window mo-net"><h3>Сеть</h3><div class="mo-window-body"><div class="mo-value"><span class="mo-net-icon mo-long">${MEME_RELOAD}</span><div class="mo-blocks" data-mo-net aria-hidden="true">${blocks(2)}</div><strong data-nr-charge>0 / 2</strong></div><p class="mo-long" data-nr-nitro-help></p><p class="mo-short">значки сети</p></div></section>
 </aside>
@@ -164,7 +166,7 @@ export class MemeOverloadUI {
   this.find('[data-cc-balance]').textContent=coins((this.live?.balance??this.balance())*100);this.find('[data-cc-last]').textContent=coins(this.lastWin);
   this.find<HTMLButtonElement>('[data-cc-spin]').disabled=blocked||!this.entered||!!this.dialog;this.find('[data-cc-spin-label]').textContent=this.live?translateText('ЗАГРУЗКА'):active?translateText('ПРОДОЛЖИТЬ'):translateText('КРУТИТЬ');
      this.stakeControls.update();
-this.find('[data-cc-cost]').textContent=active?translateText('Продолжение бесплатно'):tr`За ход: ${coins(this.stake)}`;this.find('.mo-stake').dataset.locked=String(active||this.autoRemaining>0||!!this.live);this.find<HTMLButtonElement>('[data-cc-buy]').disabled=blocked||active||!!this.dialog||this.autoRemaining>0||!this.entered;
+this.find('[data-cc-cost]').textContent=active?this.profile==='full'||this.root.clientWidth>=380&&this.root.dataset.tight!=='true'?translateText('Продолжение бесплатно'):translateText('Бесплатно'):tr`За ход: ${coins(this.stake)}`;this.find('.mo-stake').dataset.locked=String(active||this.autoRemaining>0||!!this.live);this.find<HTMLButtonElement>('[data-cc-buy]').disabled=blocked||active||!!this.dialog||this.autoRemaining>0||!this.entered;
      updateSlotTransport(this.root,'cc',{blocked,active,live:!!this.live,dialog:!!this.dialog,entered:this.entered,fast:this.fast,autoRemaining:this.autoRemaining,bonusRunning:this.bonusRunning,paidBonus:false,pending:!!client.pending,busy:client.busy,loading:client.loading,hidden:document.hidden,ready:this.assets.ready});
    this.transport(blocked,active);
    this.find('[data-cc-error]').textContent=this.error||client.error;
@@ -184,9 +186,12 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
   for(const button of Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-mo-auto-count]'))){const checked=Number(button.dataset.moAutoCount)===this.autoCount;button.setAttribute('aria-checked',String(checked));button.tabIndex=checked?0:-1;}
   this.find('[data-mo-auto-start]').textContent=tr`Запустить ${this.autoCount} вращений`;
   this.find('[data-mo-auto-note]').textContent=tr`По ${coins(this.stake)} за вращение. Бесплатные вращения в счёт не входят. Серию можно остановить в любой момент.`;
-  const pause=this.find<HTMLButtonElement>('[data-cc-pause]');pause.textContent=this.bonusRunning?translateText('Пауза'):translateText('На паузе');
-  if(!this.live&&active)this.message(this.bonusRunning?translateText('Вирусный режим продолжается бесплатно.'):translateText('Вирусный режим на паузе. Нажми «Продолжить».'));
+  const pause=this.find<HTMLButtonElement>('[data-cc-pause]');pause.textContent=this.bonusRunning?translateText('Пауза'):translateText('На паузе');pause.hidden=this.root.dataset.virus!=='true';
+  if(!this.live&&active)this.message(this.bonusRunning?translateText('Вирусный режим продолжается бесплатно.'):this.roomy()?translateText('Вирусный режим на паузе. Нажми «Продолжить».'):translateText('Вирусный режим на паузе'));
  }
+ /** Tight windows get the short greeting, so it never loses its end. */
+ private roomy(){return this.profile==='full'&&this.root.clientWidth>=1090;}
+ private ready(){return this.roomy()?translateText('Система готова. Нажми «Крутить», чтобы загрузить мемы.'):translateText('Система готова. Нажми «Крутить».');}
  private message(text:string){this.find('[data-cc-message]').textContent=text;}
  /** Stops the paid series. A running virus mode keeps playing for free. */
  private endSeries(){this.autoRemaining=0;if(this.session()?.state!=='active')this.playback.cancelScheduled();this.controls();}
@@ -208,8 +213,8 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
   if(this.owner!==client.accountId){this.cancel();this.closeAuto(false);this.audio.pause();this.owner=client.accountId;this.entered=false;this.lastWin='0';this.stake = '10';this.openDialog('intro');}
   const s=this.session();if(!this.live&&(!s||this.shown!==this.key(s))){
    this.board.clearOverlay();this.board.highlight([]);this.board.show(s?.view.nitro.spin?.finalGrid??preview);this.root.dataset.phase='idle';this.root.dataset.charging='false';this.lines();
-   if(s){this.shown=this.key(s);this.root.dataset.sessionId=s.id;this.root.dataset.revision=String(s.view.nitro.revision);if(s.state==='settled')this.lastWin=s.returnedUnits;this.setTotal(confirmedPayout(s,s.view.nitro.totalPayoutUnits));this.features(s.view.nitro);this.find('[data-cc-message]').textContent=s.state==='active'?translateText('Игра сохранена. Продолжение без ставки.'):translateText('Раунд завершён. Выплата уже в кошельке.');}
-   else{this.shown='';this.setTotal('0');this.features();this.find('[data-cc-message]').textContent=translateText('Система готова. Нажми «Крутить», чтобы загрузить мемы.');}
+   if(s){this.shown=this.key(s);this.root.dataset.sessionId=s.id;this.root.dataset.revision=String(s.view.nitro.revision);if(s.state==='settled')this.lastWin=s.returnedUnits;this.setTotal(confirmedPayout(s,s.view.nitro.totalPayoutUnits));this.features(s.view.nitro);this.message(s.state==='active'?translateText('Игра сохранена. Продолжение без ставки.'):translateText('Раунд завершён. Выплата уже в кошельке.'));}
+   else{this.shown='';this.setTotal('0');this.features();this.message(this.ready());}
   }
   this.controls();observeExpansionOutcome(this.root,MEME_GAME,s,client.accountId,!!this.live||client.busy,!!client.pending);
  }
@@ -270,10 +275,10 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
   for(const frame of spin.frames){
    if(!this.valid(live))return;this.board.clearOverlay();this.board.show(frame.before);this.factor(frame.multiplierBefore);this.charge(frame.nitroBefore,frame.nitroUsedBefore);this.board.highlight(frame.wins.flatMap(w=>w.positions));
    if(frame.wins.length){
-    this.root.dataset.phase='winning';this.message(frame.energy?tr`Каскад ${frame.index+1} · ×${frame.multiplierBefore} · сеть +${frame.energy}`:tr`Каскад ${frame.index+1} · ×${frame.multiplierBefore}`);
+    this.root.dataset.phase='winning';this.message(tr`Каскад ${frame.index+1} · ×${frame.multiplierBefore}`);if(frame.energy)this.find('[data-nr-nitro-help]').textContent=tr`Сеть +${frame.energy}`;
     this.lines(frame);this.find('[data-cc-factor-note]').textContent=tr`Следующий каскад: ×${frame.multiplierAfter}`;total+=Number(frame.payoutUnits);this.setTotal(total);this.audio.cascade(frame.index);
     if(live.motion&&!await this.delay(live.fast?160:500,live))return;
-    this.factor(frame.multiplierAfter);this.charge(frame.nitroAfter,frame.nitroUsedAfter);if(frame.multiplierAfter>frame.multiplierBefore)this.audio.gear(frame.multiplierAfter);
+    this.factor(frame.multiplierAfter);this.charge(frame.nitroAfter,frame.nitroUsedAfter);this.find('[data-cc-factor-note]').textContent=tr`Каскад ${frame.index+2} · ×${frame.multiplierAfter}`;if(frame.multiplierAfter>frame.multiplierBefore)this.audio.gear(frame.multiplierAfter);
    }
    if(frame.stop==='nitro'){
     this.root.dataset.phase='nitro';this.root.dataset.charging='true';this.lines();this.message(translateText('СОЕДИНЕНИЕ ПОТЕРЯНО · ПЕРЕПОДКЛЮЧЕНИЕ БЕЗ СТАВКИ'));this.audio.boost();this.charge(0,true);

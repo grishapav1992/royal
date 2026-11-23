@@ -3,6 +3,7 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import {test} from './themed-room';
 import {enterGameHall,chooseGame} from './game-layout-host';
 import {walletSnapshot} from './wallet-snapshot';
+import {selectEntryMode} from './entry-mode';
 
 const out=process.env.LAYOUT_ARTIFACTS_DIR||'artifacts/work/game-layout-slots';
 const games=['studio-cosmic-escape','studio-velvet-reign','studio-caramel-carnival','studio-last-convoy','studio-nitro-run','studio-afterglow','studio-meme-overload'];
@@ -723,7 +724,7 @@ test('Last Convoy scales the field, Maya and controls at 2K and 4K',async({page,
  const closed=await short();expect(closed.maya).toBe('none');expect(closed.round).toBe('none');expect(closed.board).toBeGreaterThan(395);
 });
 
-const countOnlyGames=['studio-last-convoy','studio-cosmic-escape','studio-caramel-carnival'];
+const countOnlyGames=['studio-last-convoy','studio-cosmic-escape','studio-caramel-carnival','studio-meme-overload'];
 
 for(const game of countOnlyGames)test('count-only autoplay fits the connected host: '+game,async({page,roomPath})=>{
  await enterGameHall(page,roomPath);
@@ -821,4 +822,57 @@ test('GIRLHUB keeps autoplay results visible and scrolls in tiny windows',async(
   expect(reachable,width+'x'+height).toBe(true);
  }
  await page.setViewportSize({width:1440,height:900});await expect(page.locator('#mini-game > .ag-game')).toHaveAttribute('data-cramped','false');
+});
+
+test('Meme Overload keeps the field in place through real rounds and the virus mode',async({page,roomPath})=>{
+ const game='studio-meme-overload';test.setTimeout(240000);await page.emulateMedia({reducedMotion:'no-preference'});
+ await enterGameHall(page,roomPath);await page.emulateMedia({reducedMotion:'no-preference'});await open(page,game);
+ const root=page.locator('#mini-game > .mo-game'),spin=page.locator('[data-cc-spin]'),bonus=page.locator('[data-cc-action="bonus"]'),complete=page.locator('[data-cc-action="complete"]');
+ for(const [width,height] of [[1440,900],[393,852],[852,393]]){
+  await page.setViewportSize({width,height});await fit(page,game);
+  await root.evaluate(element=>{
+   const box=()=>['.cc-board','.mo-status','.mo-round','.cc-spin','.mo-stake'].map(name=>{const b=element.querySelector(name)!.getBoundingClientRect();return [b.x,b.y,b.width,b.height].map(Math.round).join();});
+   const start=box(),moved=new Set<string>();(element as any).moved=moved;(element as any).watching=true;
+   const tick=()=>{if(!(element as any).watching)return;box().forEach((value,i)=>{if(value!==start[i])moved.add(i+': '+start[i]+' > '+value+' '+(element as HTMLElement).dataset.phase);});requestAnimationFrame(tick);};tick();
+  });
+  const fixture=await page.request.post('/__test/layout/bonus',{data:{gameId:game}});expect(fixture.ok(),await fixture.text()).toBe(true);
+  await spin.click();await expect(bonus).toBeVisible({timeout:40000});await bonus.click();
+  await expect(root).toHaveAttribute('data-virus','true');await expect(page.locator('[data-mo-free-count]')).toContainText(' из 8');
+  await expect(complete).toBeVisible({timeout:120000});await complete.click();await expect(spin).toBeEnabled();
+  expect(await root.evaluate(element=>{(element as any).watching=false;return [...(element as any).moved];}),width+'x'+height).toEqual([]);
+ }
+});
+
+test('Meme Overload shows English labels in every window',async({page,roomPath})=>{
+ const game='studio-meme-overload';test.setTimeout(180000);await enterGameHall(page,roomPath);
+ await page.goto(roomPath+'&lang=en');await selectEntryMode(page);
+ // A full navigation can reach the hall before its previous presence lease expires.
+ await expect.poll(async()=>{
+  if(await page.evaluate(()=>{try{return (window as any).royalDemo?.getState()?.online;}catch{return false;}}))return true;
+  const retry=page.locator('#retry-entry');if(await retry.isVisible()&&await retry.isEnabled())await retry.click();return false;
+ },{timeout:60000,intervals:[1000,5000]}).toBe(true);
+ await expect.poll(async()=>{
+  if(await page.locator('#mini-dialog').isVisible())return true;
+  try{
+   if(await page.locator('#room-overview').getAttribute('aria-pressed')!=='true')await page.locator('#room-overview').click({timeout:4000});
+   const cabinet=page.locator('[data-cabinet="studio-cosmic-escape"]');if(!await cabinet.isVisible())await page.locator('#games-tab').click({timeout:4000});
+   await cabinet.click({timeout:4000});
+  }catch(error){if(!(error instanceof Error&&error.name==='TimeoutError'))throw error;}
+  return page.locator('#mini-dialog').isVisible();
+ },{timeout:60000,intervals:[1000,4000]}).toBe(true);
+ await chooseGame(page,game);const root=page.locator('#mini-game > .mo-game');await expect(root).toHaveAttribute('data-asset-state','ready',{timeout:40000});
+ const cyrillic=/[А-Яа-яЁё]/,labels=async(selector:string)=>page.locator(selector).evaluateAll(nodes=>nodes.flatMap(node=>[node as HTMLElement,...node.querySelectorAll<HTMLElement>('*')]).flatMap(node=>[...node.childNodes].filter(child=>child.nodeType===3).map(child=>child.textContent!.trim()).concat(node.getAttribute('aria-label')??'')).filter(Boolean));
+ const english=async(selector:string)=>expect((await labels(selector)).filter(text=>cyrillic.test(text))).toEqual([]);
+ await english('#mini-game > .mo-game');await english('.mo-headbar');
+ await page.locator('[data-cc-action="enter"]').click();await english('#mini-game > .mo-game');
+ const fixture=await page.request.post('/__test/layout/bonus',{data:{gameId:game}});expect(fixture.ok(),await fixture.text()).toBe(true);
+ await page.locator('[data-cc-auto]').click();await english('[data-mo-auto-panel]');await page.keyboard.press('Escape');
+ await page.locator('[data-mo-quick="info"]').click();await english('[data-cc-dialog]');await page.keyboard.press('Escape');
+ await page.locator('[data-cc-spin]').click();await expect(page.locator('[data-cc-action="bonus"]')).toBeVisible({timeout:40000});await english('#mini-game > .mo-game');
+ await page.locator('[data-cc-action="bonus"]').click();await expect(page.locator('[data-cc-action="complete"]')).toBeVisible({timeout:120000});await english('#mini-game > .mo-game');
+ for(const [width,height] of [[393,852],[852,393],[320,568],[568,320]]){
+  await page.setViewportSize({width,height});
+  const clipped=await root.evaluate(element=>[...element.querySelectorAll<HTMLElement>('.mo-bar button, .mo-window h3, .mo-round, .mo-stake-text, .cc-primary')].filter(node=>node.getClientRects().length&&node.scrollWidth>node.clientWidth+1).map(node=>node.className+': '+node.textContent));
+  expect(clipped,width+'x'+height).toEqual([]);
+ }
 });
