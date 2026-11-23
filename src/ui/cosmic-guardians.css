@@ -121,25 +121,19 @@
 }
 .cx-alien {
   grid-area: alien; position: relative; align-self: end; justify-self: start; z-index: 0;
-  pointer-events: none;
-}
-.cx-game[data-slot-priority="full"] .cx-alien {
-  width: min(260px, calc(100% + 18px));
-  max-height: 100%;
-  aspect-ratio: 640 / 1229;
+  height: min(500px, 100%); aspect-ratio: 25 / 48; pointer-events: none;
 }
 .cx-game[data-slot-priority="full"][data-asset-state="ready"] .cx-alien::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 39% 2.4% at 52% 95.2%, #080b11a6 18%, #080b115c 56%, transparent);
+  background: radial-gradient(ellipse 39% 2.4% at 46.6% 94.4%, #080b11a6 18%, #080b115c 56%, transparent);
 }
 .cx-alien img {
   position: absolute; inset: 0; height: 100%; width: 100%; max-width: none;
-}
-.cx-game[data-slot-priority="full"] .cx-alien img {
-  object-fit: contain;
-  object-position: center bottom;
+  /* Match the yellow racer's visible idle height and deck position inside the same canvas. */
+  transform-origin: 51.4% 95.2%;
+  transform: translate(-5.4%, -0.8%) scale(1.047);
 }
 .cx-game:not([data-asset-state="ready"]) .cx-alien img { visibility: hidden; }
 .cx-title {
