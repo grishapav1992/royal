@@ -1,0 +1,455 @@
+{
+  "format": 1,
+  "productionCommit": "1eae5668e75b336014bbbe74c2e2d8c00b868aba",
+  "moduleGames": [
+    "cosmic-escape"
+  ],
+  "moduleContracts": {
+    "studio-cosmic-escape": {
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1
+    }
+  },
+  "moduleAssets": {
+    "public/assets/cosmic-guardians/v1/alien.webp": "188bd8973f446976b01b9805880b958df5761f1dd545e0c5e7a6418f60a19599",
+    "public/assets/cosmic-guardians/v1/background.webp": "0e185ec675a1bcc7b4fc7bdf43d6bb4c5adc15f3a7141075cf6549471829689c",
+    "public/assets/cosmic-guardians/v1/symbols-v2.webp": "6e5d58ecb7d3cc3d2e95c57838cd6ef06b5ccecdb35e3a7f26a6e75792e8bce9",
+    "public/assets/cosmic-rebuild/load-v2/background.webp": "0296ec45a7307fc69b4a0da58ec46805f9ff2bd6a9dc1b85552e53ce563abe37",
+    "public/assets/studio/space-world.webp": "0a9a41dd898f368f43c562c58523bb622b96c778ad927ce9ed8f3aba17512f3d",
+    "public/assets/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+    "public/assets/cosmic-guardians/racer-v2/big-win-still.webp": "4d2265b39b896f107f45696a8b19b4d6bc9a1ac374a95856fe09dd611ca0f831",
+    "public/assets/cosmic-guardians/racer-v2/big-win.webp": "1019e7a476dbb4f1f0bc4c0e38a8592312f3f8f08fcd9d5d30b265dc081d8d3a",
+    "public/assets/cosmic-guardians/racer-v2/bonus-still.webp": "6f7c2416e6bf72b3f9497b39520c8d03c4a157dec4ba253565f487a178877984",
+    "public/assets/cosmic-guardians/racer-v2/bonus.webp": "d75913ed265ddb853503fedb5088fbbe4c12644c8071887796b816e391ae0d59",
+    "public/assets/cosmic-guardians/racer-v2/calm-still.webp": "84859da8e569c3e60a80d48f0d6757c2101806c128e479caec1554c45c755505",
+    "public/assets/cosmic-guardians/racer-v2/calm.webp": "77aa29768f4ab7f3d4184053c1b87066c8a316e1df31e7410be78e07d3ffec7c",
+    "public/assets/cosmic-guardians/racer-v2/echo-still.webp": "18e2d216e29a58981aa2da61eebb5a0db08340bda3073aa1cf19cafafc4e0791",
+    "public/assets/cosmic-guardians/racer-v2/echo.webp": "c9fe962de5f05ad70a8c890ff0e4ec515ee4143d5563c18ad479c1626fa993f9",
+    "public/assets/cosmic-guardians/racer-v2/energy-still.webp": "77054fc5a15b8c5ed924ad5eb1762b33949bcd25a13f9539702e31e195e1f56b",
+    "public/assets/cosmic-guardians/racer-v2/energy.webp": "a9bf2a7dddb451abbee4ade337818c315718558c16707c4b5b04314534454903",
+    "public/assets/cosmic-guardians/racer-v2/even-still.webp": "945ad3baafb3d25bd20b7fa0a317746ce0b701c442565fef11631bf92e4ec9b0",
+    "public/assets/cosmic-guardians/racer-v2/even.webp": "b8f30875b3cda421bef916de2b483a769cb4c576c642c563a069a7c5f1ea0154",
+    "public/assets/cosmic-guardians/racer-v2/focus-still.webp": "70714baaf8825b9bdbffefd708e90a7c9c5dc374fb6a2df07de97d896d525972",
+    "public/assets/cosmic-guardians/racer-v2/focus.webp": "175c1fe6a7ed70c140395bf511fa90f0126741f3cd20f6fbf85ea37b21f0ea32",
+    "public/assets/cosmic-guardians/racer-v2/idle-still.webp": "a052496a2224dab8435336b3cf9caa3047eb8cccd36f45c701c3ab7584f8cb3f",
+    "public/assets/cosmic-guardians/racer-v2/idle.webp": "40aa72dcb8aade86711765ef929ff377b9717f3a7be21fbc3e626e37a2d3f7b8",
+    "public/assets/cosmic-guardians/racer-v2/wild-still.webp": "cae7471268bc715ce58cd33f2ab2db340230e942a58d164d7b7206307d9d8219",
+    "public/assets/cosmic-guardians/racer-v2/wild.webp": "10b73d72f5f095ec6dc756d6111eb88369e533f58c6cde1758f356a90b43aca4",
+    "public/assets/cosmic-guardians/racer-v2/win-still.webp": "a8a25a2e17b4c570f28abe6ac8711a1f81851620d352fbab6542b0c84f5bef7f",
+    "public/assets/cosmic-guardians/racer-v2/win.webp": "21afe66c2e7c6625ec79c9c46e6c14345f2fc59b8b885720a447dbf981f1c283"
+  },
+  "moduleDependencies": {},
+  "files": {
+    "games/cosmic-escape/entry.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "games/cosmic-escape/entry.ts",
+      "baseSha256": "d13bd69ca539016751954c6c6851dd801f922623582edf5ffdc49a174448bea7",
+      "sha256": "d13bd69ca539016751954c6c6851dd801f922623582edf5ffdc49a174448bea7"
+    },
+    "games/cosmic-escape/package.json": {
+      "commit": "9e3cbb48a51d07a0799ceabf4d0b7d937bb3c513",
+      "path": "games/cosmic-escape/package.json",
+      "baseSha256": "cf6b3c4f03e5d21ba0119107b013f6ab04fefbc01edbbc6bc90f904f780fe90a",
+      "sha256": "cf6b3c4f03e5d21ba0119107b013f6ab04fefbc01edbbc6bc90f904f780fe90a"
+    },
+    "games/cosmic-escape/tsconfig.json": {
+      "commit": "28b6ab52c1fbaa3b93838009a672714f93e7ae3a",
+      "path": "games/cosmic-escape/tsconfig.json",
+      "baseSha256": "7cb9a18e59b2e2e03af9ebb762d9349704ca82f57e37fd48a85f894a5d16e32d",
+      "sha256": "7cb9a18e59b2e2e03af9ebb762d9349704ca82f57e37fd48a85f894a5d16e32d"
+    },
+    "src/modules/GameHostContract.ts": {
+      "commit": "b77a6010f4fc3c02e4620c040d2397d4769a716d",
+      "path": "src/modules/GameHostContract.ts",
+      "baseSha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0",
+      "sha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0"
+    },
+    "src/modules/GameModuleCatalog.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/modules/GameModuleCatalog.ts",
+      "baseSha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82",
+      "sha256": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1",
+      "patches": [
+        {
+          "from": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },",
+          "to": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },"
+        },
+        {
+          "from": "ion:1},\n] as con",
+          "to": "ion:1},\n {gameId:'tsu-e-fa',slug:'tsu-e-fa',apiVersion:1,rulesVersion:1,progressVersion:1},\n] as con"
+        },
+        {
+          "from": "iVersion:1,rulesVersion:1,progressVersion:1},\n] a",
+          "to": "iVersion:1,rulesVersion:2,progressVersion:1},\n] a"
+        },
+        {
+          "from": ":2,",
+          "to": ":3,"
+        },
+        {
+          "from": ":3,",
+          "to": ":4,"
+        },
+        {
+          "from": "export const STUDIO_GAME_MODULES = [\n",
+          "to": "export const STUDIO_GAME_MODULES = [\n { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },\n"
+        }
+      ]
+    },
+    "src/shared/afterglow.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/afterglow.ts",
+      "baseSha256": "eedcc278d149ae66b59d79afeef85d17a3fa5eb7f8d80bf5b5caf73c77b18035",
+      "sha256": "eedcc278d149ae66b59d79afeef85d17a3fa5eb7f8d80bf5b5caf73c77b18035"
+    },
+    "src/shared/caramelCarnival.ts": {
+      "commit": "354083333aeab4b962103d5aaa8fc18a61f0e3cc",
+      "path": "src/shared/caramelCarnival.ts",
+      "baseSha256": "2e7d5cdfffee645635b58611a1a52d76047e0e669efda62674293b697f89e9f4",
+      "sha256": "2e7d5cdfffee645635b58611a1a52d76047e0e669efda62674293b697f89e9f4"
+    },
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/caribbeanTreasuresMath.ts",
+      "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+      "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+    },
+    "src/shared/cosmicEscapeBets.ts": {
+      "commit": "3a060d94e14c33623080552818a4d297fd7727a2",
+      "path": "src/shared/cosmicEscapeBets.ts",
+      "baseSha256": "a9b3de1af132b20a02d5b9090c0563080d3e5de8516090a7af05fce5f541153d",
+      "sha256": "a9b3de1af132b20a02d5b9090c0563080d3e5de8516090a7af05fce5f541153d"
+    },
+    "src/shared/demoWallet.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/demoWallet.ts",
+      "baseSha256": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
+      "sha256": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef"
+    },
+    "src/shared/forestHeartMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/forestHeartMath.ts",
+      "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+      "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
+    },
+    "src/shared/gameCore.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/gameCore.ts",
+      "baseSha256": "3e59b987bd47e61137af39aace7717bc7490e3dabf52193de8668fbcca5ca737",
+      "sha256": "3e59b987bd47e61137af39aace7717bc7490e3dabf52193de8668fbcca5ca737"
+    },
+    "src/shared/gameStakes.ts": {
+      "commit": "b77a6010f4fc3c02e4620c040d2397d4769a716d",
+      "path": "src/shared/gameStakes.ts",
+      "baseSha256": "a83f372dbb71ac3c08093d6ffeb41746da4aea610034d6ecdaec8a22dc29bf30",
+      "sha256": "a83f372dbb71ac3c08093d6ffeb41746da4aea610034d6ecdaec8a22dc29bf30"
+    },
+    "src/shared/luelonSlots.ts": {
+      "commit": "3a060d94e14c33623080552818a4d297fd7727a2",
+      "path": "src/shared/luelonSlots.ts",
+      "baseSha256": "958478d3739ad1d071eea260a64b5089bc8560e66ffcd2a2138392b17b1a1731",
+      "sha256": "958478d3739ad1d071eea260a64b5089bc8560e66ffcd2a2138392b17b1a1731"
+    },
+    "src/shared/luelonSlotsLines.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/luelonSlotsLines.ts",
+      "baseSha256": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee",
+      "sha256": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee"
+    },
+    "src/shared/luelonSlotsModels.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/luelonSlotsModels.ts",
+      "baseSha256": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74",
+      "sha256": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74"
+    },
+    "src/shared/neopolisMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/neopolisMath.ts",
+      "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+    },
+    "src/shared/neopolisStakePayouts.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/neopolisStakePayouts.ts",
+      "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+      "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+    },
+    "src/shared/nitroRun.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/nitroRun.ts",
+      "baseSha256": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+      "sha256": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a"
+    },
+    "src/shared/roundPrecision.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/roundPrecision.ts",
+      "baseSha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
+      "sha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8"
+    },
+    "src/shared/studioGames.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/studioGames.ts",
+      "baseSha256": "5be1d552e408e7a2fe1d1cff923b70bdda059a57847c46db09c96dc2ae63e29a",
+      "sha256": "5be1d552e408e7a2fe1d1cff923b70bdda059a57847c46db09c96dc2ae63e29a"
+    },
+    "src/shared/velvetReign.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/velvetReign.ts",
+      "baseSha256": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+      "sha256": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f"
+    },
+    "src/shared/velvetReignHistory.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/velvetReignHistory.ts",
+      "baseSha256": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+      "sha256": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c"
+    },
+    "src/shared/walletAccount.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/walletAccount.ts",
+      "baseSha256": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560",
+      "sha256": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560"
+    },
+    "src/ui/CosmicEscapeAssets.ts": {
+      "commit": "28b6ab52c1fbaa3b93838009a672714f93e7ae3a",
+      "path": "src/ui/CosmicEscapeAssets.ts",
+      "baseSha256": "ed35139ff219e2ee669131d17ef75819a37e6df041056d5d61f2099a7c4c3744",
+      "sha256": "ed35139ff219e2ee669131d17ef75819a37e6df041056d5d61f2099a7c4c3744"
+    },
+    "src/ui/CosmicEscapeAudio.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/CosmicEscapeAudio.ts",
+      "baseSha256": "04ffe7016d5df2ca1a096d7886e1c639b5d4f722986042d54aa33c3165f6abd6",
+      "sha256": "04ffe7016d5df2ca1a096d7886e1c639b5d4f722986042d54aa33c3165f6abd6"
+    },
+    "src/ui/CosmicEscapeBoard.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/CosmicEscapeBoard.ts",
+      "baseSha256": "4eb222af95683af1ac08725928ec0469029ab8fa1e652da6e525428c9e5a07fd",
+      "sha256": "4eb222af95683af1ac08725928ec0469029ab8fa1e652da6e525428c9e5a07fd"
+    },
+    "src/ui/CosmicEscapeRacer.ts": {
+      "commit": "9e3cbb48a51d07a0799ceabf4d0b7d937bb3c513",
+      "path": "src/ui/CosmicEscapeRacer.ts",
+      "baseSha256": "6c28f45ec93f3f762d62201b94b007d0c454b1ab5d25cac12a7c60853d2fbaf2",
+      "sha256": "6c28f45ec93f3f762d62201b94b007d0c454b1ab5d25cac12a7c60853d2fbaf2"
+    },
+    "src/ui/CosmicEscapeUI.ts": {
+      "commit": "9e3cbb48a51d07a0799ceabf4d0b7d937bb3c513",
+      "path": "src/ui/CosmicEscapeUI.ts",
+      "baseSha256": "1807bca80f03477b419695378bd7fd7a71c947a9aadc5c726b62de1c82797a87",
+      "sha256": "1807bca80f03477b419695378bd7fd7a71c947a9aadc5c726b62de1c82797a87"
+    },
+    "src/ui/GameLayoutPolicy.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/ui/GameLayoutPolicy.ts",
+      "baseSha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c",
+      "sha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c"
+    },
+    "src/ui/LuelonArtwork.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/LuelonArtwork.ts",
+      "baseSha256": "15c36a9c7b40663671bb4358fae58075b891ecb0bb85e10ba4d95fbd8e625419",
+      "sha256": "15c36a9c7b40663671bb4358fae58075b891ecb0bb85e10ba4d95fbd8e625419"
+    },
+    "src/ui/LuelonGameRouter.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/LuelonGameRouter.ts",
+      "baseSha256": "5289f1211170916a80960eb039b8a0e762bd253c50638f9e0f570976c0e0ea9a",
+      "sha256": "5289f1211170916a80960eb039b8a0e762bd253c50638f9e0f570976c0e0ea9a"
+    },
+    "src/ui/StudioMotion.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/StudioMotion.ts",
+      "baseSha256": "519c0c560226b0dee1de035703320de520a1e3ff376738b8643a2527c495f6c7",
+      "sha256": "519c0c560226b0dee1de035703320de520a1e3ff376738b8643a2527c495f6c7"
+    },
+    "src/ui/StudioReels.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/StudioReels.ts",
+      "baseSha256": "24868ea6cdba80fe8f722f448de5f6b6288322b4d350b036526873c77c329c58",
+      "sha256": "24868ea6cdba80fe8f722f448de5f6b6288322b4d350b036526873c77c329c58"
+    },
+    "src/ui/StudioSlotArtwork.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/StudioSlotArtwork.ts",
+      "baseSha256": "735528ddd186b3416231924e58f3771ec556fdec7f0d4fa1ffe788987e547d70",
+      "sha256": "735528ddd186b3416231924e58f3771ec556fdec7f0d4fa1ffe788987e547d70"
+    },
+    "src/ui/StudioSlotUI.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/StudioSlotUI.ts",
+      "baseSha256": "4e61a7dbbe08704c9325b1752a3b83b58b6f5b45224b30b9ae7c5b6a2ed1b186",
+      "sha256": "4e61a7dbbe08704c9325b1752a3b83b58b6f5b45224b30b9ae7c5b6a2ed1b186"
+    },
+    "src/ui/active-game-viewport.css": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/active-game-viewport.css",
+      "baseSha256": "493e85699b284319a6e0dcaf6aa178c308ef2640bb7dc180625c052a4b6d60c7",
+      "sha256": "493e85699b284319a6e0dcaf6aa178c308ef2640bb7dc180625c052a4b6d60c7"
+    },
+    "src/ui/cosmic-escape.css": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/cosmic-escape.css",
+      "baseSha256": "fcd6a695f9cce992fc641a7f02f7fd6169e550ee025afd3a8747b336a3ea1878",
+      "sha256": "fcd6a695f9cce992fc641a7f02f7fd6169e550ee025afd3a8747b336a3ea1878"
+    },
+    "src/ui/cosmic-guardians.css": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/cosmic-guardians.css",
+      "baseSha256": "ea4b03340bacfe7c84cd7212debf8e395dfec5bdb47a7f4ddc8a69ba07a608a4",
+      "sha256": "ea4b03340bacfe7c84cd7212debf8e395dfec5bdb47a7f4ddc8a69ba07a608a4"
+    },
+    "src/ui/luelon-games.css": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/luelon-games.css",
+      "baseSha256": "09cf892dfaefcb008910346daf7cc795cd6d5ce07667b36cc594db8663c983b3",
+      "sha256": "09cf892dfaefcb008910346daf7cc795cd6d5ce07667b36cc594db8663c983b3"
+    },
+    "src/ui/operationFeedback.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/operationFeedback.ts",
+      "baseSha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17",
+      "sha256": "3825708e03b9fb0921d255c5fe06858439c3cc1dea1fba67deb5a1f13fd80f17"
+    },
+    "src/ui/slotKit/SlotAssets.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/slotKit/SlotAssets.ts",
+      "baseSha256": "8bbd409578830ee7f3f025340003155335af03ce684bcae23bc913acb02052d2",
+      "sha256": "8bbd409578830ee7f3f025340003155335af03ce684bcae23bc913acb02052d2"
+    },
+    "src/ui/slotKit/SlotAudio.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/slotKit/SlotAudio.ts",
+      "baseSha256": "7f7c3536e0202ebd39dd79bcd36c886882332c6d5e84e4a73831d46e06aefbc0",
+      "sha256": "7f7c3536e0202ebd39dd79bcd36c886882332c6d5e84e4a73831d46e06aefbc0"
+    },
+    "src/ui/slotKit/SlotControls.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/slotKit/SlotControls.ts",
+      "baseSha256": "86a28790a78ec87952e309c057686d766006431079f630ca0afe50820984bddb",
+      "sha256": "1086c93d67bb6f6970ec77137a36e65651a7d0ce54a3af02254cf73cc339dc4f",
+      "patches": [
+        {
+          "from": "import {canRecoverOperation} from '../operationFeedback';\nimport { t as translateText, tr } from '../../i18n/index';\nimport {gameAudio} from '../../game/GameAudio';\nimport {validGameStake} from '../../shared/gameStakes';\nimport {syncStakeSelect} from '../stakeSelection';\n\ninterface StakeOptions {\n  values: readonly string[];\n  maximumCents?: number;\n  select: HTMLSelectElement;\n  steps: readonly HTMLButtonElement[];\n  direction: (button: HTMLButtonElement) => number;\n  current: () => string;\n  locked: () => boolean;\n  changed: (stake: string) => void;\n}\n\nexport function slotStakeStep(values: readonly string[], current: string, direction: number) {\n  const at = values.indexOf(current);\n  if (direction !== 1 && direction !== -1) return undefined;\n  return at >= 0 ? values[at + direction] : direction === 1\n    ? values.find(value => Number(value) > Number(current)) : [...values].reverse().find(value => Number(value) < Number(current));\n}\n\n/** UI changes never create a wager. Only the existing session driver submits one. */\nexport class SlotStakeControls {\n  private disposed = false;\n  constructor(private options: StakeOptions) {\n    options.select.onchange = () => this.select(options.select.value);\n    for (const button of options.steps) button.onclick = () => this.step(options.direction(button));\n  }\n\n  step(direction: number) {\n    const {values, current} = this.options;\n    return this.select(slotStakeStep(values, current(), direction));\n  }\n\n  private select(value: string | undefined) {\n    const {values, locked, changed} = this.options;\n    if (this.disposed || locked() || value === undefined || !validGameStake(value, this.options.maximumCents)) {\n      this.update();\n      return false;\n    }\n    changed(value);\n    return true;\n  }\n\n  update() {\n    if (this.disposed) return;\n    const {select, steps, values, current, direction, locked} = this.options;\n    const value = syncStakeSelect(select, current(), values, locked(), 100, this.options.maximumCents);\n    if (value !== current()) { this.options.changed(value); return; }\n    for (const button of steps) {\n      const delta = direction(button);\n      button.disabled = select.disabled || slotStakeStep(values, value, delta) === undefined;\n    }\n  }\n\n  destroy() {\n    this.disposed = true;\n    this.options.select.onchange = null;\n    for (const button of this.options.steps) button.onclick = null;\n  }\n}\n\ninterface SlotMusic {\n  enter: () => Promise<unknown>;\n  musicEnabled: () => boolean;\n  setMusic: (enabled: boolean) => void;\n}\ninterface AudioOptions {\n  sound: HTMLButtonElement;\n  music: HTMLButtonElement;\n  volume: HTMLInputElement;\n  audio: SlotMusic;\n  entered: () => boolean;\n  dynamicGlyph?: boolean;\n}\n\nexport class SlotAudioControls {\n  private disposed = false;\n  constructor(private options: AudioOptions, private preferences = gameAudio) {\n    options.sound.onclick = () => {\n      if (this.disposed) return;\n      preferences.setMuted(!preferences.getPreferences().muted);\n      if (!preferences.getPreferences().muted && options.entered()) void options.audio.enter();\n      this.update();\n    };\n    options.music.onclick = () => {\n      if (this.disposed) return;\n      options.audio.setMusic(!options.audio.musicEnabled());\n      if (options.entered()) void options.audio.enter();\n      this.update();\n    };\n    options.volume.oninput = () => {\n      if (this.disposed) return;\n      const value = Number(options.volume.value);\n      if (Number.isFinite(value)) preferences.setVolume(Math.max(0, Math.min(100, value)) / 100);\n    };\n  }\n\n  update() {\n    if (this.disposed) return;\n    const {sound, music, volume, audio, dynamicGlyph} = this.options;\n    const prefs = this.preferences.getPreferences();\n    if (dynamicGlyph) { sound.textContent = prefs.muted ? '♩' : '♪'; music.textContent = '♫'; }\n    sound.setAttribute('aria-label', prefs.muted ? translateText('Включить звук') : translateText('Выключить звук'));\n    sound.setAttribute('aria-pressed', String(!prefs.muted));\n    music.setAttribute('aria-label', audio.musicEnabled() ? translateText('Выключить музыку') : translateText('Включить музыку'));\n    music.setAttribute('aria-pressed', String(audio.musicEnabled()));\n    volume.value = String(Math.round(prefs.volume * 100));\n  }\n\n  destroy() {\n    this.disposed = true;\n    this.options.sound.onclick = null;\n    this.options.music.onclick = null;\n    this.options.volume.oninput = null;\n  }\n}\n\nexport interface SlotTransportState {\n  blocked: boolean; active: boolean; live: boolean; dialog: boolean; entered: boolean;\n  fast: boolean; autoRemaining: number; bonusRunning: boolean; paidBonus: boolean;\n  pending: boolean; busy: boolean; loading?: boolean; hidden: boolean; ready: boolean;\n}\n\nexport function updateSlotTransport(root: HTMLElement, prefix: 'lg' | 'cc', state: SlotTransportState) {\n  const button = (name: string) => root.querySelector<HTMLButtonElement>(`[data-${prefix}-${name}]`)!;\n  const {blocked, active, live, dialog, entered, fast, autoRemaining, bonusRunning} = state;\n  const speed = button('speed');\n  speed.textContent = fast ? translateText('БЫСТРО ×2') : translateText('ОБЫЧНО ×1');\n  speed.disabled = live;\n  speed.setAttribute('aria-pressed', String(fast));\n  const auto = button('auto');\n  auto.textContent = autoRemaining ? tr`Стоп · ${autoRemaining}` : translateText('Авто');\n  auto.disabled = !autoRemaining && (blocked || active || dialog || !entered || state.paidBonus);\n  auto.setAttribute('aria-pressed', String(autoRemaining > 0));\n  root.querySelector<HTMLSelectElement>(`[data-${prefix}-auto-count]`)!.disabled = live || active || autoRemaining > 0 || dialog;\n  const pause = button('pause');\n  pause.disabled = !bonusRunning;\n  pause.textContent = bonusRunning ? translateText('Пауза серии') : translateText('На паузе');\n  if (prefix === 'cc') pause.hidden = !active;\n  for (const id of ['info', 'history', 'refresh']) button(id).disabled = live || state.busy;\n  const retry = button('retry');\n  retry.hidden = !canRecoverOperation(state);\n  retry.disabled = !state.ready || live || state.busy || state.hidden;\n}\n",
+          "to": "import {canRecoverOperation} from '../operationFeedback';\nimport { t as translateText, tr } from '../../i18n/index';\nimport {gameAudio} from '../../game/GameAudio';\nimport {validGameStake} from '../../shared/gameStakes';\nimport {stakeFieldMaximum, syncStakeSelect} from '../stakeSelection';\n\ninterface StakeOptions {\n  values: readonly string[];\n  maximumCents?: number;\n  select: HTMLSelectElement;\n  steps: readonly HTMLButtonElement[];\n  direction: (button: HTMLButtonElement) => number;\n  current: () => string;\n  locked: () => boolean;\n  changed: (stake: string) => void;\n}\n\nexport function slotStakeStep(values: readonly string[], current: string, direction: number) {\n  const at = values.indexOf(current);\n  if (direction !== 1 && direction !== -1) return undefined;\n  return at >= 0 ? values[at + direction] : direction === 1\n    ? values.find(value => Number(value) > Number(current)) : [...values].reverse().find(value => Number(value) < Number(current));\n}\n\n/** UI changes never create a wager. Only the existing session driver submits one. */\nexport class SlotStakeControls {\n  private disposed = false;\n  constructor(private options: StakeOptions) {\n    options.select.onchange = () => this.select(options.select.value);\n    for (const button of options.steps) button.onclick = () => this.step(options.direction(button));\n  }\n\n  step(direction: number) {\n    const {current} = this.options;\n    const values = this.availableStakes();\n    return this.select(slotStakeStep(values, current(), direction));\n  }\n\n  private availableStakes() {\n    return this.options.values.filter(value => validGameStake(value, stakeFieldMaximum(this.options.maximumCents)));\n  }\n\n  private select(value: string | undefined) {\n    const {locked, changed} = this.options;\n    if (this.disposed || locked() || value === undefined || !validGameStake(value, stakeFieldMaximum(this.options.maximumCents))) {\n      this.update();\n      return false;\n    }\n    changed(value);\n    return true;\n  }\n\n  update() {\n    if (this.disposed) return;\n    const {select, steps, current, direction, locked} = this.options;\n    const values = this.availableStakes();\n    const value = syncStakeSelect(select, current(), values, locked(), 100, this.options.maximumCents);\n    if (value !== current()) { this.options.changed(value); return; }\n    for (const button of steps) {\n      const delta = direction(button);\n      button.disabled = select.disabled || slotStakeStep(values, value, delta) === undefined;\n    }\n  }\n\n  destroy() {\n    this.disposed = true;\n    this.options.select.onchange = null;\n    for (const button of this.options.steps) button.onclick = null;\n  }\n}\n\ninterface SlotMusic {\n  enter: () => Promise<unknown>;\n  musicEnabled: () => boolean;\n  setMusic: (enabled: boolean) => void;\n}\ninterface AudioOptions {\n  sound: HTMLButtonElement;\n  music: HTMLButtonElement;\n  volume: HTMLInputElement;\n  audio: SlotMusic;\n  entered: () => boolean;\n  dynamicGlyph?: boolean;\n}\n\nexport class SlotAudioControls {\n  private disposed = false;\n  constructor(private options: AudioOptions, private preferences = gameAudio) {\n    options.sound.onclick = () => {\n      if (this.disposed) return;\n      preferences.setMuted(!preferences.getPreferences().muted);\n      if (!preferences.getPreferences().muted && options.entered()) void options.audio.enter();\n      this.update();\n    };\n    options.music.onclick = () => {\n      if (this.disposed) return;\n      options.audio.setMusic(!options.audio.musicEnabled());\n      if (options.entered()) void options.audio.enter();\n      this.update();\n    };\n    options.volume.oninput = () => {\n      if (this.disposed) return;\n      const value = Number(options.volume.value);\n      if (Number.isFinite(value)) preferences.setVolume(Math.max(0, Math.min(100, value)) / 100);\n    };\n  }\n\n  update() {\n    if (this.disposed) return;\n    const {sound, music, volume, audio, dynamicGlyph} = this.options;\n    const prefs = this.preferences.getPreferences();\n    if (dynamicGlyph) { sound.textContent = prefs.muted ? '♩' : '♪'; music.textContent = '♫'; }\n    sound.setAttribute('aria-label', prefs.muted ? translateText('Включить звук') : translateText('Выключить звук'));\n    sound.setAttribute('aria-pressed', String(!prefs.muted));\n    music.setAttribute('aria-label', audio.musicEnabled() ? translateText('Выключить музыку') : translateText('Включить музыку'));\n    music.setAttribute('aria-pressed', String(audio.musicEnabled()));\n    volume.value = String(Math.round(prefs.volume * 100));\n  }\n\n  destroy() {\n    this.disposed = true;\n    this.options.sound.onclick = null;\n    this.options.music.onclick = null;\n    this.options.volume.oninput = null;\n  }\n}\n\nexport interface SlotTransportState {\n  blocked: boolean; active: boolean; live: boolean; dialog: boolean; entered: boolean;\n  fast: boolean; autoRemaining: number; bonusRunning: boolean; paidBonus: boolean;\n  pending: boolean; busy: boolean; loading?: boolean; hidden: boolean; ready: boolean;\n}\n\nexport function updateSlotTransport(root: HTMLElement, prefix: 'lg' | 'cc', state: SlotTransportState) {\n  const button = (name: string) => root.querySelector<HTMLButtonElement>(`[data-${prefix}-${name}]`)!;\n  const {blocked, active, live, dialog, entered, fast, autoRemaining, bonusRunning} = state;\n  const speed = button('speed');\n  speed.textContent = fast ? translateText('БЫСТРО ×2') : translateText('ОБЫЧНО ×1');\n  speed.disabled = live;\n  speed.setAttribute('aria-pressed', String(fast));\n  const auto = button('auto');\n  auto.textContent = autoRemaining ? tr`Стоп · ${autoRemaining}` : translateText('Авто');\n  auto.disabled = !autoRemaining && (blocked || active || dialog || !entered || state.paidBonus);\n  auto.setAttribute('aria-pressed', String(autoRemaining > 0));\n  const autoCount = root.querySelector<HTMLSelectElement>(`[data-${prefix}-auto-count]`);\n  if (autoCount) autoCount.disabled = live || active || autoRemaining > 0 || dialog;\n  const pause = button('pause');\n  pause.disabled = !bonusRunning;\n  pause.textContent = bonusRunning ? translateText('Пауза серии') : translateText('На паузе');\n  if (prefix === 'cc') pause.hidden = !active;\n  for (const id of ['info', 'history', 'refresh']) button(id).disabled = live || state.busy;\n  const retry = button('retry');\n  retry.hidden = !canRecoverOperation(state);\n  retry.disabled = !state.ready || live || state.busy || state.hidden;\n}\n"
+        }
+      ]
+    },
+    "src/ui/slotKit/SlotDialog.ts": {
+      "commit": "196cb75a0deafd332cfd28f36178ec1e2b90cd95",
+      "path": "src/ui/slotKit/SlotDialog.ts",
+      "baseSha256": "69351de658c231671feea17ef923595143f47e886f09beeb4533f1ae0cb0337d",
+      "sha256": "69351de658c231671feea17ef923595143f47e886f09beeb4533f1ae0cb0337d"
+    },
+    "src/ui/slotKit/SlotGeometry.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/slotKit/SlotGeometry.ts",
+      "baseSha256": "9050e51c87d77646845e206f2618a1ab6a3887e008f17abb0b1fbd29303ee90f",
+      "sha256": "9050e51c87d77646845e206f2618a1ab6a3887e008f17abb0b1fbd29303ee90f"
+    },
+    "src/ui/slotKit/SlotLifecycle.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/slotKit/SlotLifecycle.ts",
+      "baseSha256": "33c227f915cbff994e7218a7e98410f7ae4d1fee129dfd013f531092e9eee71f",
+      "sha256": "33c227f915cbff994e7218a7e98410f7ae4d1fee129dfd013f531092e9eee71f"
+    },
+    "src/ui/slotKit/SlotPlayback.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/slotKit/SlotPlayback.ts",
+      "baseSha256": "b16043b19396cabe7cf67d8864400ccb8f20c5a916565eb6c90ca148cc3d6954",
+      "sha256": "b16043b19396cabe7cf67d8864400ccb8f20c5a916565eb6c90ca148cc3d6954"
+    },
+    "src/ui/slotKit/SlotPriorityLayout.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/slotKit/SlotPriorityLayout.ts",
+      "baseSha256": "947932d761ede2150900d9fd0278a2560b032aec8c9372f0085b717f1af796f2",
+      "sha256": "947932d761ede2150900d9fd0278a2560b032aec8c9372f0085b717f1af796f2"
+    },
+    "src/ui/slotKit/SlotReelBoard.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/slotKit/SlotReelBoard.ts",
+      "baseSha256": "56fcfee9078672cc7c69e810eae575ba2606b0e08430a377bf8b317569766f47",
+      "sha256": "56fcfee9078672cc7c69e810eae575ba2606b0e08430a377bf8b317569766f47"
+    },
+    "src/ui/slotKit/SlotScreens.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/slotKit/SlotScreens.ts",
+      "baseSha256": "5d56c02017271f9bb8ecab4da1665388a842783fec64dd62f5cf0b122d911b32",
+      "sha256": "5d56c02017271f9bb8ecab4da1665388a842783fec64dd62f5cf0b122d911b32"
+    },
+    "src/ui/slotKit/SlotSessions.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/slotKit/SlotSessions.ts",
+      "baseSha256": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2",
+      "sha256": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2"
+    },
+    "src/ui/slotKit/SlotSettings.ts": {
+      "commit": "3d0c4ab77a99e150561a43efdc958ee3e6264d45",
+      "path": "src/ui/slotKit/SlotSettings.ts",
+      "baseSha256": "e9ca94a9ea09d3fb1789fb18ba5d87457f210aedc00b99570bb92ee3df1472dd",
+      "sha256": "e9ca94a9ea09d3fb1789fb18ba5d87457f210aedc00b99570bb92ee3df1472dd"
+    },
+    "src/ui/slotKit/nativeSlotImages.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/slotKit/nativeSlotImages.ts",
+      "baseSha256": "20e93c94b87b767d25d9f41a5d033275e76947eab02f0299032b583800e5da9f",
+      "sha256": "20e93c94b87b767d25d9f41a5d033275e76947eab02f0299032b583800e5da9f"
+    },
+    "src/ui/slotKit/nativeSlots.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/slotKit/nativeSlots.ts",
+      "baseSha256": "fc823e2892a7fcc49d32b8fa21bd938498ac1762d4444213f8c624bec21cf6f7",
+      "sha256": "fc823e2892a7fcc49d32b8fa21bd938498ac1762d4444213f8c624bec21cf6f7"
+    },
+    "src/ui/slotKit/slot-priorities.css": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/slotKit/slot-priorities.css",
+      "baseSha256": "05266abd09f5f3cbfbe91dde79ac8188f74b6d333bc2acb9e3884530f4aaee5f",
+      "sha256": "05266abd09f5f3cbfbe91dde79ac8188f74b6d333bc2acb9e3884530f4aaee5f"
+    },
+    "src/ui/slotKit/slot-settings.css": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/slotKit/slot-settings.css",
+      "baseSha256": "a9bc7aabfd5f8649a3220820199d709f57b8cd260205c3d18cfa5236ea854f5b",
+      "sha256": "a9bc7aabfd5f8649a3220820199d709f57b8cd260205c3d18cfa5236ea854f5b"
+    },
+    "src/ui/stakeRules.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/stakeRules.ts",
+      "baseSha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df",
+      "sha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df"
+    },
+    "src/ui/stakeSelection.ts": {
+      "commit": "b77a6010f4fc3c02e4620c040d2397d4769a716d",
+      "path": "src/ui/stakeSelection.ts",
+      "baseSha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86",
+      "sha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86"
+    },
+    "src/ui/studio-games.css": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/studio-games.css",
+      "baseSha256": "0a3c6fc2d4655e9814b349952d5c9578d49c194d483cdaba0e9a76eb23b12259",
+      "sha256": "0a3c6fc2d4655e9814b349952d5c9578d49c194d483cdaba0e9a76eb23b12259"
+    },
+    "src/ui/studio-motion.css": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/studio-motion.css",
+      "baseSha256": "6b0c392dc87cfde2f16e3ac932378d39a2062ccc700307c179d044553aba903c",
+      "sha256": "6b0c392dc87cfde2f16e3ac932378d39a2062ccc700307c179d044553aba903c"
+    },
+    "src/ui/studio-slot.css": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/studio-slot.css",
+      "baseSha256": "a1081abcb9304f0ff54bf5d0e69a83edc8f85f40f07319af0e186f74e15bdd5f",
+      "sha256": "a1081abcb9304f0ff54bf5d0e69a83edc8f85f40f07319af0e186f74e15bdd5f"
+    },
+    "tsconfig.json": {
+      "commit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+      "path": "tsconfig.json",
+      "baseSha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+      "sha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b"
+    }
+  }
+}
