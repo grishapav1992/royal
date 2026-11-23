@@ -9,6 +9,7 @@ import { ChatSpam } from '../server/chatSpam';
 import { ChatLanguageWindow } from '../server/chatLanguageWindow';
 import { PostgresDatabase } from '../server/database';
 import { Guards } from '../server/guards';
+import { CASINO_EXIT } from '../src/shared/street';
 import { GUARD_STOPS } from '../server/guardRoutine';
 import { LobbyState, Player } from '../server/state';
 import { SECURITY_BAN_MS, SECURITY_WARNING_MS } from '../src/shared/security';
@@ -155,7 +156,7 @@ test('guard can reach and escort visitors from narrow passages by cabinets and b
    guards.tick(.05);const g=state.guards.get('security')!;
    assert(walkable(g.x,g.y,hallObstacles(g.hall)),`${hall}: ${g.x},${g.y}`);
    if(g.phase==='grab'){approached=true;assert(Math.hypot(g.x-x,g.y-y)<40);}
-   if(g.phase==='throw')assert(Math.hypot(g.x-540,g.y-640)<1);
+   if(g.phase==='throw')assert.deepEqual({ hall: g.hall, x: g.x, y: g.y }, { hall: 'arcade', ...CASINO_EXIT.arrival });
   }
   assert(approached,`${hall}: ${x},${y}`);assert(finished);
  }

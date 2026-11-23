@@ -6,8 +6,10 @@ import { LobbyState, Player } from '../server/state';
 import { walkable } from '../src/game/navigation';
 import { GUARD_CONTACT_RADIUS } from '../src/shared/guardCollision';
 import { applyMovementInput } from '../src/shared/movement';
-import { GUARD_EXIT, type SecurityDecision } from '../src/shared/security';
-import { hallObstacles } from '../src/shared/world';
+import type { SecurityDecision } from '../src/shared/security';
+import { CASINO_EXIT } from '../src/shared/street';
+import { HALLS, hallLinkToward, hallObstacles } from '../src/shared/world';
+import { guardPath } from '../server/guardNavigation';
 
 type Pursuit = Parameters<Guards['pursue']>[1];
 const initial = { id: 'initial', sanctionId: 'episode', until: 4_000_000_000_000, reason: 'spam' } as const satisfies Pursuit;
@@ -69,37 +71,72 @@ test('a live pursuit allows movement before contact and confirms one capture bef
   assert.equal(captures.length, 1);
 });
 
-test('a confirmed capture finishes once when a seated guest blocks the escort path', async () => {
-  const { state, guards, guard, player, captures, finished } = fixture();
-  assert.equal(guards.pursue('guest', initial), true);
+test('escorts share each real landing and throw only from the first-floor doorway', async () => {
+  for (const hall of ['arcade', 'tables', 'github'] as const) {
+    const { guards, guard, player, finished } = fixture();
+    Object.assign(player, HALLS[hall].spawn, { hall });
+    Object.assign(guard, { x: player.x + 40, y: player.y, hall });
+    assert(guards.pursue('guest', initial));
+    guards.tick(.05);
+    await setImmediate();
+
+    const visits = [hall as string];
+    let thrown = false;
+    tickUntil(guards, () => {
+      if (visits.at(-1) !== player.hall) {
+        const link = hallLinkToward(visits.at(-1)! as typeof hall, 'arcade')!;
+        assert.equal(guard.hall, player.hall);
+        assert.equal(guard.phase, 'carry');
+        assert.deepEqual({ x: player.x, y: player.y }, link.arrival.entry);
+        assert.equal(player.hallRevision, visits.length);
+        visits.push(player.hall);
+      }
+      if (guard.phase === 'throw') {
+        thrown = true;
+        assert.equal(guard.hall, 'arcade');
+        assert.deepEqual({ x: guard.x, y: guard.y }, CASINO_EXIT.arrival);
+      }
+      return finished.length > 0;
+    }, 'the guard must reach the street door');
+    assert(thrown);
+    const floors = ['github', 'tables', 'arcade'];
+    assert.deepEqual(visits, floors.slice(floors.indexOf(hall)));
+    assert.equal(finished.length, 1);
+  }
+});
+
+test('the guard routes around a seated guest and waits if the door itself is blocked', async () => {
+  const { state, guards, guard, captures, finished } = fixture();
+  assert(guards.pursue('guest', initial));
   tickUntil(guards, () => captures.length > 0, 'the guard must reach contact before the escort');
-  assert.equal(captures[0].hall, player.hall);
-  assert(captures[0].distance <= GUARD_CONTACT_RADIUS);
   await setImmediate();
 
   const start = { x: guard.x, y: guard.y };
-  const dx = GUARD_EXIT.x - start.x, dy = GUARD_EXIT.y - start.y;
-  const length = Math.hypot(dx, dy), gap = GUARD_CONTACT_RADIUS + 1;
-  assert(length > gap);
-  const seat = { x: start.x + dx / length * gap, y: start.y + dy / length * gap };
-  assert(walkable(seat.x, seat.y, hallObstacles(guard.hall)));
-  const blocker = new Player();
-  Object.assign(blocker, { ...seat, hall: guard.hall, seat: 'bar-0' });
-  state.players.set('seated', blocker);
-  tickUntil(guards, () => guard.phase === 'carry', 'the guard must begin the escort');
+  const path = guardPath(start, CASINO_EXIT.arrival, hallObstacles(guard.hall));
+  const position = path.find(point => Math.hypot(point.x - start.x, point.y - start.y) > 110);
+  assert(position);
+  const seated = new Player(), doorway = new Player();
+  Object.assign(seated, position, { seat: 'bar-0' });
+  Object.assign(doorway, CASINO_EXIT.arrival, { seat: 'arcade-lounge' });
+  state.players.set('seated', seated);
 
-  for (let i = 0; i < 39; i++) guards.tick(.05);
+  tickUntil(guards, () => {
+    assert(Math.hypot(guard.x - seated.x, guard.y - seated.y) >= GUARD_CONTACT_RADIUS);
+    return Math.hypot(guard.x - start.x, guard.y - start.y) > 230;
+  }, 'the guard must walk around the seated guest');
+
+  state.players.set('doorway', doorway);
+  for (let i = 0; i < 200; i++) {
+    guards.tick(.05);
+    assert.notEqual(guard.phase, 'throw');
+  }
   assert.equal(guard.phase, 'carry');
-  assert.equal(guard.x, start.x);
-  assert.equal(guard.y, start.y);
   assert.deepEqual(finished, []);
-
-  tickUntil(guards, () => finished.length > 0, 'the stalled escort must finish');
-  for (let i = 0; i < 60; i++) guards.tick(.05);
+  state.players.delete('doorway');
+  tickUntil(guards, () => finished.length > 0, 'the escort must finish after the doorway clears');
   assert.deepEqual(finished, [{ id: 'guest', decision }]);
   assert.equal(captures.length, 1);
-  assert.equal(blocker.x, seat.x);
-  assert.equal(blocker.y, seat.y);
+  assert.deepEqual({ x: seated.x, y: seated.y }, position);
 });
 
 test('patrol notices a marked player in front, while furniture and direction protect hidden players', () => {

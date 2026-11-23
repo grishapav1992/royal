@@ -15,7 +15,6 @@ type ViolationOutcome = { sanction: ClubSanction; opened: boolean; revealedSkinI
 type Capture = { pursuitId: string; sanctionId: string };
 type CaptureOutcome = { sanction: ClubSanction; kind: 'initial' | 'repeat' };
 type EventResult<T> = { outcome: T; replayed: boolean };
-type ActiveSanction = { sanction: ClubSanction; initialPursuitId: string | null };
 type ChargeFine = (accountId: string, operationId: string, amountCents: number) => Promise<boolean>;
 
 export class ClubSanctionStore {
@@ -73,14 +72,14 @@ export class ClubSanctionStore {
 
   async active(accountId: string, now = Date.now()): Promise<ClubSanction | null> {
     await this.ready;
-    return (await this.readActive(accountId, now))?.sanction ?? null;
+    return this.readActive(accountId, now);
   }
 
   async enforcement(accountId: string, now = Date.now()) {
     await this.ready;
     if (this.skinStudioReady) await this.skinStudioReady;
     return this.db.transaction(async () => {
-      const sanction = (await this.readActive(accountId, now))?.sanction ?? null;
+      const sanction = await this.readActive(accountId, now);
       const disguiseSkinId = sanction ? await this.readDisguise(accountId) : null;
       return { sanction, disguiseSkinId };
     }, { readOnly: true });
@@ -91,6 +90,12 @@ export class ClubSanctionStore {
     return !!await this.readDisguise(accountId, skinId);
   }
 
+  async revealedDisguises(accountId: string): Promise<ReadonlySet<string>> {
+    await this.ready;
+    const rows = await this.db.prepare('SELECT skin_id FROM club_disguise_exposures WHERE account_id=?').all(accountId);
+    return new Set(rows.map(row => String(row.skin_id)));
+  }
+
   async pay(accountId: string, value: unknown, now?: number): Promise<ClubFineResult> {
     const request = parseFineRequest(value);
     const charge = this.chargeFine;
@@ -99,7 +104,7 @@ export class ClubSanctionStore {
     return this.db.transaction(async () => {
       const at = now ?? Date.now();
       const { id } = request;
-      const sanction = (await this.readActive(accountId, at))?.sanction ?? null;
+      const sanction = await this.readActive(accountId, at);
       const prior = await this.db.prepare(`SELECT episode_id,revision,amount_cents,paid_at
         FROM club_fine_payments WHERE account_id=? AND operation_id=?`).get(accountId, id);
       if (prior) {
@@ -127,10 +132,10 @@ export class ClubSanctionStore {
       const active = await this.readActive(accountId, at);
       if (active) {
         const revealedSkinId = await this.readDisguise(accountId, violation.equippedSkinId);
-        if (!revealedSkinId) return { sanction: active.sanction, opened: false };
+        if (!revealedSkinId) return { sanction: active, opened: false };
         await this.db.prepare('INSERT INTO club_disguise_exposures (account_id,skin_id,revealed_at) VALUES (?,?,?)')
           .run(accountId, revealedSkinId, at);
-        return { sanction: active.sanction, opened: false, revealedSkinId };
+        return { sanction: active, opened: false, revealedSkinId };
       }
 
       const sanction: ClubSanction = {
@@ -162,14 +167,17 @@ export class ClubSanctionStore {
   recordCapture(accountId: string, capture: Capture, now?: number): Promise<EventResult<CaptureOutcome | null>> {
     return this.applyEvent<CaptureOutcome | null>(accountId, 'capture', capture.pursuitId, now, async at => {
       const active = await this.readActive(accountId, at);
-      if (!active || active.sanction.id !== capture.sanctionId) return null;
-      if (active.initialPursuitId === capture.pursuitId) return { sanction: active.sanction, kind: 'initial' };
+      if (!active || active.id !== capture.sanctionId) return null;
+      const previousCapture = await this.db.prepare(`SELECT 1 FROM club_sanction_events
+        WHERE account_id=? AND kind='capture' AND outcome->'sanction'->>'id'=?
+        LIMIT 1`).get(accountId, active.id);
+      if (!previousCapture) return { sanction: active, kind: 'initial' };
 
       const sanction = {
-        id: active.sanction.id,
-        until: active.sanction.until + REPEAT_DURATION_MS,
-        amountCents: active.sanction.amountCents + REPEAT_AMOUNT_CENTS,
-        revision: active.sanction.revision + 1,
+        id: active.id,
+        until: active.until + REPEAT_DURATION_MS,
+        amountCents: active.amountCents + REPEAT_AMOUNT_CENTS,
+        revision: active.revision + 1,
       };
       await this.db.prepare('UPDATE club_sanctions SET expires_at=?, amount_cents=?, revision=? WHERE account_id=?')
         .run(sanction.until, sanction.amountCents, sanction.revision, accountId);
@@ -177,14 +185,10 @@ export class ClubSanctionStore {
     });
   }
 
-  private async readActive(accountId: string, now: number): Promise<ActiveSanction | null> {
-    const row = await this.db.prepare(`SELECT episode_id, initial_pursuit_id, expires_at, amount_cents, revision
+  private async readActive(accountId: string, now: number): Promise<ClubSanction | null> {
+    const row = await this.db.prepare(`SELECT episode_id, expires_at, amount_cents, revision
       FROM club_sanctions WHERE account_id=? AND expires_at>?`).get(accountId, now);
-    if (!row) return null;
-    return {
-      initialPursuitId: row.initial_pursuit_id as string | null,
-      sanction: { id: String(row.episode_id), until: Number(row.expires_at), amountCents: Number(row.amount_cents), revision: Number(row.revision) },
-    };
+    return row ? { id: String(row.episode_id), until: Number(row.expires_at), amountCents: Number(row.amount_cents), revision: Number(row.revision) } : null;
   }
 
   private async applyEvent<T>(

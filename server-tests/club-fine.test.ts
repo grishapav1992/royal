@@ -147,6 +147,7 @@ test('capture before payment changes the quote and capture after payment cannot 
   const sanctions = store.clubSanctions;
   const first = await mark(store, accountId);
   const stale = quote(first);
+  await sanctions.recordCapture(accountId, { pursuitId: randomUUID(), sanctionId: first.id }, PAY_AT - 1);
   const capture = await sanctions.recordCapture(accountId, { pursuitId: randomUUID(), sanctionId: first.id }, PAY_AT);
   const updated = { ...first, revision: 2, amountCents: 1500, until: first.until + 10 * 60_000 };
   assert.deepEqual(capture, { outcome: { kind: 'repeat', sanction: updated }, replayed: false });

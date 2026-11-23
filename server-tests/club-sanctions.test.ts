@@ -63,10 +63,10 @@ test('the first violation assigns a persistent account sanction before a guard c
     { outcome: first.outcome, replayed: true });
 });
 
-test('the first chase settles without extension and a repeat adds ten minutes to the remaining time once', async context => {
+test('a lost pursuit leaves the first capture unchanged and repeat capture adds ten minutes once', async context => {
   const { store } = await fixture(context);
   const { outcome: { sanction: first } } = await store.recordViolation('a', { id: 'v1', reason: 'collision', pursuitId: 'p1' }, 0);
-  const initial = await store.recordCapture('a', { pursuitId: 'p1', sanctionId: first.id }, MINUTE);
+  const initial = await store.recordCapture('a', { pursuitId: 'p-found-after-p1', sanctionId: first.id }, MINUTE);
   assert.deepEqual(initial, { outcome: { sanction: first, kind: 'initial' }, replayed: false });
   const capture = { pursuitId: 'p2', sanctionId: first.id };
   const attempts = await Promise.all([store.recordCapture('a', capture, 15 * MINUTE), store.recordCapture('a', capture, 15 * MINUTE)]);
@@ -76,12 +76,11 @@ test('the first chase settles without extension and a repeat adds ten minutes to
   assert.deepEqual(await store.active('a', 15 * MINUTE), extended);
 });
 
-test('a first violation in the toilet can be followed by a repeat chase without an initial chase', async context => {
+test('the first catch after a restroom violation keeps the original fine', async context => {
   const { store } = await fixture(context);
   const { outcome } = await store.recordViolation('a', { id: 'toilet', reason: 'profanity' }, 0);
   const result = await store.recordCapture('a', { pursuitId: 'seen-on-floor', sanctionId: outcome.sanction.id }, 3 * MINUTE);
-  assert.equal(result.outcome?.kind, 'repeat');
-  assert.equal(result.outcome?.sanction.until, 30 * MINUTE);
+  assert.deepEqual(result, { outcome: { sanction: outcome.sanction, kind: 'initial' }, replayed: false });
 });
 
 test('expiry clears the payable sanction and stale events cannot change a fresh episode', async context => {
@@ -105,7 +104,7 @@ test('expiry clears the payable sanction and stale events cannot change a fresh 
   assert.deepEqual(await store.active('a', old.until), fresh);
 });
 
-test('concurrent violations create one episode and reserve only the first pursuit as initial', async context => {
+test('concurrent violations share one episode and concurrent captures count as first and repeat', async context => {
   const { db, store } = await fixture(context);
   const otherWorker = new ClubSanctionStore(db);
   const [first, second] = await Promise.all([

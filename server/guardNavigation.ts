@@ -1,5 +1,7 @@
 import { BOUNDS, findPath, walkable, type Obstacle, type Point } from '../src/game/navigation';
 
+export const GUARD_ROUTE_PADDING = 12;
+
 export function guardLineClear(a: Point, b: Point, obstacles: Obstacle[], padding = 0) {
   return !obstacles.some(o => {
     let enter=0, exit=1;
@@ -19,8 +21,9 @@ export function guardLineClear(a: Point, b: Point, obstacles: Obstacle[], paddin
 export function guardPath(from: Point, to: Point, obstacles: Obstacle[]): Point[] {
   if(!walkable(from.x,from.y,obstacles)||!walkable(to.x,to.y,obstacles))return [];
   const grid=findPath(from,to,obstacles);
-  if(grid.length && grid.every((p,i)=>guardLineClear(i?grid[i-1]:from,p,obstacles,12)))return grid;
-  const corners=obstacles.flatMap(o=>[o.x-12.1,o.x+o.w+12.1].flatMap(x=>[o.y-12.1,o.y+o.h+12.1].map(y=>({x,y}))));
+  if(grid.length && grid.every((p,i)=>guardLineClear(i?grid[i-1]:from,p,obstacles,GUARD_ROUTE_PADDING)))return grid;
+  const clearance = GUARD_ROUTE_PADDING + .1;
+  const corners=obstacles.flatMap(o=>[o.x-clearance,o.x+o.w+clearance].flatMap(x=>[o.y-clearance,o.y+o.h+clearance].map(y=>({x,y}))));
   const nodes=[from,to,...corners.filter(p=>p.x>=BOUNDS.left&&p.x<=BOUNDS.right&&p.y>=BOUNDS.top&&p.y<=BOUNDS.bottom&&walkable(p.x,p.y,obstacles))];
   const costs=nodes.map(()=>Infinity),parents=nodes.map(()=>-1),closed=new Set<number>();costs[0]=0;
   for(let n=0;n<nodes.length;n++){
@@ -31,7 +34,7 @@ export function guardPath(from: Point, to: Point, obstacles: Obstacle[]): Point[
     for(let i=0;i<nodes.length;i++){
       if(closed.has(i))continue;
       const cost=costs[current]+Math.hypot(nodes[i].x-nodes[current].x,nodes[i].y-nodes[current].y);
-      if(cost<costs[i]&&guardLineClear(nodes[current],nodes[i],obstacles,12)){costs[i]=cost;parents[i]=current;}
+      if(cost<costs[i]&&guardLineClear(nodes[current],nodes[i],obstacles,GUARD_ROUTE_PADDING)){costs[i]=cost;parents[i]=current;}
     }
   }
   return [];

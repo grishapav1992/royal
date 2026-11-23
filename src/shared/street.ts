@@ -27,6 +27,8 @@ export const STREET_DOOR = {
   entry: STREET.entrance, arrival: STREET.spawn, facing: 'down', click: { x: 840, y: 840 },
   left: 798, right: 882, top: 932, bottom: 952,
 } as const;
+export const STREET_EJECTION_LANDING = { x: STREET.entrance.x, y: 994 } as const;
+
 export const CASINO_EXIT = {
   entry: { x: 180, y: 1300 }, arrival: { x: 180, y: 1230 }, facing: 'up', click: { x: 180, y: 1280 },
   left: 138, right: 222, top: 1290, bottom: 1310,

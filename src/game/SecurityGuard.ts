@@ -280,8 +280,8 @@ export class SecurityGuard {
       const lift = g.phase==='grab'?g.progress:1;
       const flight = g.phase==='throw'?g.progress:0;
       const py = y - 60*lift + flight*135 - Math.sin(flight*Math.PI)*55;
-      person.sprite.setPosition(x+12*lift+flight*18,py).setAngle(80*lift+flight*200).setDepth(depth+1);
-      person.shadow.setPosition(x+flight*18,y+flight*80).setScale(1-flight*.5).setDepth(depth-1);
+      person.sprite.setPosition(x+12*lift*(1-flight),py).setAngle(80*lift+flight*200).setDepth(depth+1);
+      person.shadow.setPosition(x,y+flight*75).setScale(1-flight*.5).setDepth(depth-1);
       person.label?.setVisible(false);
     }
   }

@@ -9,7 +9,7 @@ import { LobbyRoom } from '../server/LobbyRoom';
 import { ROOM_CHAT_PROTOCOL, type ChatResult } from '../src/shared/chat';
 import { ROOF_STAIR_ROUTE } from '../src/shared/rooftop';
 import { parseGeneratedAppearance, SKIN_OFFERS, SKIN_THEME, type SkinOfferId } from '../src/shared/skinStudio';
-import { STREET } from '../src/shared/street';
+import { STREET_EJECTION_LANDING } from '../src/shared/street';
 import { hallLinks, type HallId } from '../src/shared/world';
 
 type Handler = (client: Client, value?: unknown) => void | Promise<void>;
@@ -123,6 +123,7 @@ test('a marked restroom visitor can disguise, be exposed by new misconduct and r
   assert.equal(capture.mock.callCount(), 0);
 
   const firstSkin = await chooseOutfit();
+  assert.equal((await accounts.skinStudio.snapshot(accountId)).wardrobe.find(skin => skin.id === firstSkin)?.disguise, 'usable');
   assert.deepEqual(await accounts.clubSanctions.enforcement(accountId), { sanction, disguiseSkinId: firstSkin });
   await cross('github');
   faceVisitor('up');
@@ -148,6 +149,7 @@ test('a marked restroom visitor can disguise, be exposed by new misconduct and r
   other.guards.tick(0);
   assert.equal(other.guard.target, other.client.sessionId, 'the other room drops its cached disguise immediately after exposure');
   assert.equal(other.packets.filter(packet => packet.type === 'notice' && packet.value === disguiseExposed).length, 1);
+  assert.equal(other.packets.filter(packet => packet.type === 'club-sanction-changed').length, 1);
   assert.deepEqual(await accounts.clubSanctions.enforcement(accountId), { sanction, disguiseSkinId: null });
   assert.equal(parseGeneratedAppearance(player.appearance)?.skinId, firstSkin, 'exposure preserves the appearance');
   guards.tick(0);
@@ -159,10 +161,14 @@ test('a marked restroom visitor can disguise, be exposed by new misconduct and r
   assert.equal(capture.mock.callCount(), 1);
   await capture.mock.calls[0].result;
   await nextTurn();
-  const extended = { ...sanction, until: sanction.until + 10 * 60_000, amountCents: sanction.amountCents + 500, revision: sanction.revision + 1 };
-  assert.deepEqual(await accounts.clubSanctions.active(accountId), extended);
-  for (let step = 0; step < 1200 && player.hall !== 'street'; step++) guards.tick(.05);
-  assert.deepEqual({ hall: player.hall, x: player.x, y: player.y }, { hall: 'street', ...STREET.spawn });
+  assert.deepEqual(await accounts.clubSanctions.active(accountId), sanction);
+  const floors = [player.hall];
+  for (let step = 0; step < 1200 && player.hall !== 'street'; step++) {
+    guards.tick(.05);
+    if (floors.at(-1) !== player.hall) floors.push(player.hall);
+  }
+  assert.deepEqual(floors, ['github', 'tables', 'arcade', 'street']);
+  assert.deepEqual({ hall: player.hall, x: player.x, y: player.y }, { hall: 'street', ...STREET_EJECTION_LANDING });
   assert.equal(packets.filter(packet => packet.type === 'club-capture').length, 1);
   assert.equal(packets.filter(packet => packet.type === 'club-ejected').length, 1);
 
@@ -171,7 +177,7 @@ test('a marked restroom visitor can disguise, be exposed by new misconduct and r
   assert.equal(offers().length, 2, 'the next restroom visit offers a replacement after exposure');
   const wardrobe = await accounts.skinStudio.snapshot(accountId, 'janitor');
   assert.equal(wardrobe.equippedId, firstSkin);
-  assert(wardrobe.wardrobe.some(skin => skin.id === firstSkin));
+  assert.equal(wardrobe.wardrobe.find(skin => skin.id === firstSkin)?.disguise, 'revealed');
   await cross('github');
   faceVisitor('up');
   guards.tick(0);
@@ -181,7 +187,7 @@ test('a marked restroom visitor can disguise, be exposed by new misconduct and r
 
   const replacement = await chooseOutfit();
   assert.notEqual(replacement, firstSkin);
-  assert.deepEqual(await accounts.clubSanctions.enforcement(accountId), { sanction: extended, disguiseSkinId: replacement });
+  assert.deepEqual(await accounts.clubSanctions.enforcement(accountId), { sanction, disguiseSkinId: replacement });
   await cross('github');
   faceVisitor('up');
   guards.tick(0);

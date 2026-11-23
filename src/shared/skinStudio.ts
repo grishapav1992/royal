@@ -27,7 +27,7 @@ export function parseGeneratedAppearance(value: string): GeneratedAppearance | n
 export const normalizeCharacterAppearance = (value: unknown): CharacterAppearance | null => generatedAppearance(value) ?? normalizeAppearance(value);
 export { skinAssetUrl } from './skinAssetUrl';
 export type SkinJobState = 'reserving' | 'generating' | 'capturing' | 'ready' | 'selected' | 'refunding' | 'failed';
-export type SkinCard = { id: string; jobId: string; prompt: string; createdAt: number };
+export type SkinCard = { id: string; jobId: string; prompt: string; createdAt: number; disguise?: 'usable' | 'revealed' };
 export type SkinJob = { id: string; prompt: string; state: SkinJobState; error: string; selectedId: string | null; createdAt: number; variantCount: number; variants: SkinCard[]; funding?: 'paid' | 'reward';offerId?:SkinOfferId;priceUnits?:string };
 export type SkinStudioSnapshot = { theme: typeof SKIN_THEME; priceUnits: string; variantCount: number;offerId?:SkinOfferId; enabled: boolean; job: SkinJob | null; wardrobe: SkinCard[]; equippedId: string | null; freeGenerations?: SkinGenerationGrant[];
   character: { skin: number; appearance: CharacterAppearance | null } };

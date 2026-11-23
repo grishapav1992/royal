@@ -1,34 +1,36 @@
 import { Guard, type LobbyState, type Player as PlayerBody } from './state';
 import { findPath, walkable, type Point } from '../src/game/navigation';
-import { hallObstacles, HALL_DOORS, hallLinks, hallLinkToward, isCasinoFloor, otherHall, type ConnectedHallDoor, type HallId } from '../src/shared/world';
+import { hallObstacles, HALL_DOORS, hallLinks, hallLinkToward, isCasinoFloor, otherHall, type ConnectedHallDoor, type HallId, type HallLink } from '../src/shared/world';
 import { GUARD_EXIT, GUARD_HOME, type ClubPursuit, type SecurityDecision } from '../src/shared/security';
 import { movementFacing, type Facing } from '../src/shared/movement';
-import { guardLineClear, guardPath } from './guardNavigation';
+import { GUARD_ROUTE_PADDING, guardLineClear, guardPath } from './guardNavigation';
 import { GUARD_STOPS, GUARD_BAR_TALKS, type GuardStop } from './guardRoutine';
 import { GUARD_CONTACT_RADIUS } from '../src/shared/guardCollision';
 import { ROOF } from '../src/shared/rooftop';
 import { TOILET } from '../src/shared/toilet';
-import { STREET } from '../src/shared/street';
+import { CASINO_EXIT, STREET } from '../src/shared/street';
 
 const SIGHT_RANGE = 260;
 const LOST_AFTER_SECONDS = 2.5;
 const SEARCH_AFTER_VIOLATION_SECONDS = 12;
 const REPATH_SECONDS = .25;
-const ESCORT_STALL_SECONDS = 2;
+const ESCORT_REPATH_SECONDS = .5;
 const VIEW_DIRECTION: Record<Facing, Point> = {
   down: { x: 0, y: 1 }, up: { x: 0, y: -1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 },
 };
 type Chase = {
   pursuit: ClubPursuit; hall: string; player: PlayerBody; lastKnown: Point;
-  unseen: number; sighted: boolean; repath: number; pending: boolean; caught: boolean; escortStall: number;
+  unseen: number; sighted: boolean; repath: number; pending: boolean; caught: boolean;
 };
 type Job = { id: string; decision: SecurityDecision; chase?: Chase };
 type Enforcement = {
   marked: (id: string) => ClubPursuit | undefined;
   capture: (id: string, pursuit: ClubPursuit) => Promise<SecurityDecision | null>;
+  escortEntered?: (id: string, hall: HallId) => void;
 };
 type Resume = {elapsed:number;phase:string;progress:number;facing:string;target:string;speech:string;reply:string;routine:string};
-type Duty = { guard: Guard; queue: Job[]; job?: Job; resume?:Resume; path: Point[]; elapsed: number; stops: Record<HallId, GuardStop[]>; remaining: number; transfer?: HallId; transferArrival?: ConnectedHallDoor; transferFrom?: HallId; visit?: GuardStop; duration: number; conversation: number; lastConversation: number };
+type EscortLeg = { goal: Point; link?: HallLink; stalledFor: number };
+type Duty = { guard: Guard; queue: Job[]; job?: Job; escort?: EscortLeg; resume?:Resume; path: Point[]; elapsed: number; stops: Record<HallId, GuardStop[]>; remaining: number; transfer?: HallId; transferArrival?: ConnectedHallDoor; transferFrom?: HallId; visit?: GuardStop; duration: number; conversation: number; lastConversation: number };
 export class Guards {
   private duties: Duty[] = [];
   private touching=new Set<string>();
@@ -108,7 +110,7 @@ export class Guards {
     d.queue.push({
       id, decision: { kind: 'ejecting', until: pursuit.until, reason: pursuit.reason },
       chase: { pursuit, hall: p.hall, player: p, lastKnown: { x: p.x, y: p.y }, unseen: 0,
-        sighted: !pursuit.reason, repath: 0, pending: false, caught: false, escortStall: 0 },
+        sighted: !pursuit.reason, repath: 0, pending: false, caught: false },
     });
     return true;
   }
@@ -123,6 +125,7 @@ export class Guards {
     const player = job && this.state.players.get(job.id);
     if (unlock && player && job && (!job.chase || (job.chase.player === player && job.chase.pending))) player.security = '';
     d.job = undefined;
+    d.escort = undefined;
     d.transfer = undefined;
     d.resume = undefined;
     d.guard.target = '';
@@ -195,11 +198,54 @@ export class Guards {
     return true;
   }
   private phase(d: Duty, phase: string) { d.guard.phase = phase; d.guard.progress = 0; d.guard.reply = ''; d.elapsed = 0; }
+  private localGoal(hall: string, goal: Point) {
+    if (goal !== GUARD_EXIT && goal !== GUARD_HOME) return goal;
+    if (hall === 'street') return STREET.spawn;
+    if (hall === 'roof') return ROOF.spawn;
+    if (hall === 'toilet') return TOILET.spawn;
+    return goal;
+  }
   private route(d: Duty, goal: Point) {
-    if(d.guard.hall==='street'&&(goal===GUARD_EXIT||goal===GUARD_HOME))goal=STREET.spawn;
-    if(d.guard.hall==='roof'&&(goal===GUARD_EXIT||goal===GUARD_HOME))goal=ROOF.spawn;
-    if(d.guard.hall==='toilet'&&(goal===GUARD_EXIT||goal===GUARD_HOME))goal=TOILET.spawn;
-    d.path = guardPath(d.guard, goal, hallObstacles(d.guard.hall));
+    d.path = guardPath(d.guard, this.localGoal(d.guard.hall, goal), hallObstacles(d.guard.hall));
+  }
+  private beginEscortLeg(d: Duty) {
+    const hall = d.guard.hall as HallId;
+    const link = hall !== 'arcade' && isCasinoFloor(hall) ? hallLinkToward(hall, 'arcade') : undefined;
+    const goal = hall === 'arcade' ? CASINO_EXIT.arrival : link?.door.entry ?? this.localGoal(hall, GUARD_EXIT);
+    d.escort = { goal, link, stalledFor: 0 };
+    this.route(d, goal);
+  }
+  private advanceEscort(d: Duty, player: PlayerBody, moved: boolean, dt: number) {
+    const g = d.guard, leg = d.escort!, job = d.job!;
+    Object.assign(player, { x: g.x, y: g.y, facing: g.facing });
+    if (Math.hypot(g.x - leg.goal.x, g.y - leg.goal.y) <= .01) {
+      if (leg.link) {
+        const { target, arrival } = leg.link;
+        Object.assign(g, arrival.entry, { hall: target, facing: arrival.facing });
+        Object.assign(player, arrival.entry, { hall: target, facing: arrival.facing, stairStep: 0, stairDirection: 1 });
+        player.hallRevision++;
+        this.enforcement?.escortEntered?.(job.id, target);
+        this.beginEscortLeg(d);
+        return;
+      }
+      this.phase(d, 'throw');
+      g.facing = 'down';
+      g.speech = job.decision.reason === 'collision' ? 'Больше не толкайся.'
+        : job.decision.reason ? 'Соблюдай правила чата.' : 'На выход.';
+      return;
+    }
+    leg.stalledFor = moved ? 0 : leg.stalledFor + dt;
+    if (leg.stalledFor >= ESCORT_REPATH_SECONDS) {
+      leg.stalledFor = 0;
+      const obstacles = [...hallObstacles(g.hall)];
+      const radius = GUARD_CONTACT_RADIUS - GUARD_ROUTE_PADDING;
+      for (const [id, other] of this.state.players) {
+        if (id !== job.id && other.connected && other.hall === g.hall && (other.seat || other.playing || other.activity)) {
+          obstacles.push({ x: other.x - radius, y: other.y - radius, w: radius * 2, h: radius * 2 });
+        }
+      }
+      d.path = guardPath(g, leg.goal, obstacles);
+    }
   }
   private nextVisit(d: Duty) {
     if (!d.remaining) { this.transfer(d,d.guard.hall==='tables'&&d.transferFrom==='arcade'?'github':otherHall(d.guard.hall)); return; }
@@ -325,13 +371,9 @@ export class Guards {
           if (step === length) d.path.shift();
         }
         if(g.phase==='enter')g.progress=Math.min(1,d.elapsed/.25);
-        if (g.phase === 'carry' && d.job) {
-          const p = this.state.players.get(d.job.id)!;
-          p.x = g.x; p.y = g.y; p.facing = g.facing;
-          if (chase) {
-            chase.escortStall = g.x === beforeX && g.y === beforeY ? chase.escortStall + dt : 0;
-            if (chase.escortStall >= ESCORT_STALL_SECONDS) d.path = [];
-          }
+        if (g.phase === 'carry' && job) {
+          this.advanceEscort(d, this.state.players.get(job.id)!, g.x !== beforeX || g.y !== beforeY, dt);
+          continue;
         }
         if (g.phase === 'approach' && job && chase) {
           this.tryCapture(d, job, chase);
@@ -349,7 +391,6 @@ export class Guards {
             g.facing = 'down'; this.phase(d, d.job!.decision.kind === 'warning' ? 'warn' : 'grab');
             g.speech = d.job!.decision.kind === 'warning' ? 'Первое предупреждение!\nЕщё раз в течение суток: выход на 10 минут.' : 'Пора проветриться.';
           } else if (g.phase === 'patrol') { this.settle(d); }
-          else if (g.phase === 'carry') { this.phase(d, 'throw'); g.facing = 'down'; g.speech = d.job?.decision.reason==='collision'?'Больше не толкайся.':'Соблюдай правила чата.'; }
           else { this.phase(d, 'idle'); g.facing = 'down'; }
         }
       } else if(g.phase==='bump') {
@@ -366,7 +407,7 @@ export class Guards {
         const duration = g.phase === 'warn' ? 3.5 : g.phase === 'grab' ? .7 : 1.2;
         g.progress = Math.min(1, d.elapsed / duration);
         if (d.elapsed >= duration) {
-          if (g.phase === 'grab') { this.route(d, GUARD_EXIT); this.phase(d, 'carry'); g.speech = ''; }
+          if (g.phase === 'grab') { this.beginEscortLeg(d); this.phase(d, 'carry'); g.speech = ''; }
           else {
             const job = d.job!;
             const p = this.state.players.get(job.id);

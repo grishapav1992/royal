@@ -40,6 +40,7 @@ export class SkinStudioUI {
   private trying = '';
   private fittingJob = '';
   private requestId = 0;
+  private disguiseRefresh = false;
   constructor(private scene: PlayerControls, private account: () => Account | null, private accountChanged: () => Promise<void>) {
     this.fitting = new SkinFittingRoom(() => this.scene.getReducedMotion?.() ?? window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     this.button.type = 'button'; this.button.className = 'logout-button'; this.button.textContent = 'Образы'; this.button.hidden = true;
@@ -91,13 +92,18 @@ export class SkinStudioUI {
       });
     });
     document.body.append(this.dialog);
+    window.addEventListener('royal-club-sanction', () => {
+      if (!this.dialog.open) return;
+      this.disguiseRefresh = true;
+      this.schedule();
+    });
     window.addEventListener('royal-account', () => {
       const id = this.account()?.id ?? null;
       this.button.hidden = !id || this.account()?.skin === null;
       if (id === this.accountId) return;
       this.epoch++; this.busy = false; this.accountId = id; this.data = undefined; this.pending = undefined; this.selected = ''; this.prompt.value = '';
       this.trying = ''; this.fittingJob = ''; this.fitting.setSkin('', '');
-      this.message = ''; this.failedRequest = false; clearTimeout(this.poll); clearTimeout(this.walletPoll); this.dialog.close();
+      this.message = ''; this.failedRequest = false; this.disguiseRefresh = false; clearTimeout(this.poll); clearTimeout(this.walletPoll); this.dialog.close();
       if (id) try { this.pending = JSON.parse(sessionStorage.getItem(this.key()) || 'null') ?? undefined; } catch { /* No stored request. */ }
     });
   }
@@ -152,12 +158,13 @@ export class SkinStudioUI {
     clearTimeout(this.poll);
     const pendingDescription = [...(this.data?.job?.variants ?? []), ...(this.data?.wardrobe ?? [])].some(card => card.descriptionPending);
     const generating = this.data?.job && ['reserving', 'generating', 'capturing', 'refunding'].includes(this.data.job.state);
-    if (this.dialog.open && (pendingDescription || generating)) this.poll = setTimeout(() => {
+    if (this.dialog.open && (this.disguiseRefresh || pendingDescription || generating)) this.poll = setTimeout(() => {
       if (this.busy) { this.schedule(); return; }
+      this.disguiseRefresh = false;
       if (generating) void this.perform(() => this.refresh());
       // Caption arrival must preserve the focused selection and never overwrite a later choice response.
       else void this.refresh().catch(() => this.schedule());
-    }, 2500);
+    }, this.disguiseRefresh && !this.busy ? 0 : 2500);
   }
   private async perform(action: () => Promise<void>) {
     if (this.busy) return;
@@ -235,6 +242,13 @@ export class SkinStudioUI {
       const summary = article.querySelector<HTMLElement>('.skin-card-description')!;
       summary.textContent = card?.description || (article.closest('.skin-wardrobe') ? card?.prompt ?? '' : '');
       summary.title = summary.textContent; summary.hidden = !summary.textContent;
+      const disguise = article.querySelector<HTMLElement>('.skin-disguise-status');
+      if (disguise) {
+        const status = card?.disguise;
+        disguise.hidden = !status;
+        disguise.dataset.disguise = status ?? '';
+        disguise.textContent = status ? t(status === 'revealed' ? 'Маскировка раскрыта' : 'Подходит для маскировки') : '';
+      }
     });
   }
   private card(card: SkinCard, index: number, owned: boolean) {
@@ -256,7 +270,8 @@ export class SkinStudioUI {
       button.dataset.equipSkin = card.id; button.textContent = card.id === this.data?.equippedId ? 'Сейчас надет' : 'Надеть';
       button.onclick = () => { void this.perform(async () => { await this.send('/equip', { skinId: card.id }); await this.accountChanged(); }); };
       const fitting = document.createElement('button'); fitting.type = 'button'; fitting.className = 'skin-select'; fitting.textContent = 'Примерить'; fitting.onclick = tryOn;
-      article.append(title, preview, description, fitting, button);
+      const disguise = document.createElement('p'); disguise.className = 'skin-disguise-status'; disguise.hidden = true;
+      article.append(title, preview, description, disguise, fitting, button);
     } else {
       button.dataset.selectSkin = card.id; button.textContent = `Примерить вариант ${index + 1}`; button.setAttribute('aria-pressed', 'false');
       button.onclick = () => { this.selected = card.id; tryOn(); };

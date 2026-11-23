@@ -35,7 +35,7 @@ import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLi
 import { canTravelByElevator, elevatorDock } from '../src/shared/elevator';
 import { intoxicatedMovement } from '../src/shared/intoxication';
 import type { DrinkingState } from './intoxicationStore';
-import { STREET } from '../src/shared/street';
+import { STREET, STREET_EJECTION_LANDING } from '../src/shared/street';
 
 type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatRevision: number; chatVersion?: number; inputs: MovementInputs; predicted: boolean; afterMovement?: () => void };
 const CHAT_REQUEST_ID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
@@ -80,6 +80,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (sanction && sanction.until > Date.now()) return { id: randomUUID(), sanctionId: sanction.id, until: sanction.until };
     },
     capture: (id, pursuit) => this.confirmCapture(id, pursuit),
+    escortEntered: (id, hall) => this.updateChatVisit(id, hall),
   });
   private dispatchViolation(client: Client, player: Player, pursuit: ClubPursuit, reason: ClubViolation) {
     const access = this.access.get(client.sessionId);
@@ -136,7 +137,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     const player = this.state.players.get(id);
     if (!player) return;
     this.stop(id);
-    Object.assign(player, STREET.spawn, { hall: 'street', facing: 'down', stairStep: 0, stairDirection: 1, security: '' });
+    Object.assign(player, STREET_EJECTION_LANDING, { hall: 'street', facing: 'down', stairStep: 0, stairDirection: 1, security: '' });
     player.hallRevision++;
     this.updateChatVisit(id, player.hall);
     const capture = this.access.get(id)?.capture;
@@ -233,8 +234,9 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     const previous = access.sanction;
     const newEpisode = !access.closedSanctions?.has(sanction.id) && previous?.id !== sanction.id;
     access.sanctionRevision = (access.sanctionRevision ?? 0) + 1;
-    if (newEpisode || (previous?.id === sanction.id && previous.revision < sanction.revision)) {
-      access.sanction = sanction;
+    const sanctionChanged = newEpisode || (previous?.id === sanction.id && previous.revision < sanction.revision);
+    if (sanctionChanged) access.sanction = sanction;
+    if (sanctionChanged || revealedSkinId) {
       client.send('club-sanction-changed', {});
     }
     if (revealedSkinId) {

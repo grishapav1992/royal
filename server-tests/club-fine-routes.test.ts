@@ -11,7 +11,7 @@ import { installDemoWallet } from '../server/demoWalletRoutes';
 import type { Guards } from '../server/guards';
 import { LobbyRoom } from '../server/LobbyRoom';
 import { CLUB_FINE_SOURCE, type ClubFineRequest, type ClubFineResponse, type ClubFineStatus, type ClubSanction } from '../src/shared/security';
-import { STREET, STREET_DOOR } from '../src/shared/street';
+import { STREET, STREET_DOOR, STREET_EJECTION_LANDING } from '../src/shared/street';
 import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
 
 type Credentials = { token: string; accountId: string };
@@ -147,6 +147,7 @@ test('paying the current fine stops matching pursuits in all rooms and lets a co
   const quoted = await body<ClubFineStatus>(await request(owner));
   assert.deepEqual(quoted.sanction, first);
   const stalePayment = quote(first);
+  await accounts.clubSanctions.recordCapture(owner.accountId, { pursuitId: randomUUID(), sanctionId: first.id });
 
   const chasing = [await joinRoom(context, owner), await joinRoom(context, owner)];
   for (const room of chasing) {
@@ -195,7 +196,7 @@ test('paying the current fine stops matching pursuits in all rooms and lets a co
   assert.equal(escort.guard.target, escort.client.sessionId);
   assert.equal(escort.player.security, 'ejecting');
   for (let step = 0; step < 1200 && escort.player.hall !== 'street'; step++) escort.guards.tick(.05);
-  assert.deepEqual({ hall: escort.player.hall, x: escort.player.x, y: escort.player.y }, { hall: 'street', ...STREET.spawn });
+  assert.deepEqual({ hall: escort.player.hall, x: escort.player.x, y: escort.player.y }, { hall: 'street', ...STREET_EJECTION_LANDING });
   assert.equal(escort.packets.filter(packet => packet === 'club-ejected').length, 1);
 
   const newer = await mark(owner.accountId);

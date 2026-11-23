@@ -20,7 +20,8 @@ export class SkinStudioStore {
   constructor(private db: PostgresDatabase, private payments: SkinPayments, private images: SkinImageGenerator,
     private paymentEnabled: () => boolean, private changed: (accountId: string, appearance: unknown) => void,
     prerequisite: Promise<void> = Promise.resolve(), private now = Date.now, private descriptions?: SkinDescriptionGenerator,
-    private freeGenerations?: FreeSkinGenerations) {
+    private freeGenerations?: FreeSkinGenerations,
+    private revealedDisguises?: (accountId: string) => Promise<ReadonlySet<string>>) {
     this.ready = prerequisite.then(() => applySchemaMigration(db, { id: 'skin-studio-v1', statements: [
       `CREATE TABLE IF NOT EXISTS skin_jobs(id TEXT PRIMARY KEY,account_id TEXT NOT NULL REFERENCES accounts(id),theme TEXT NOT NULL,
         prompt TEXT NOT NULL,reference BYTEA,state TEXT NOT NULL CHECK(state IN ('reserving','generating','capturing','ready','selected','refunding','failed')),
@@ -64,10 +65,17 @@ export class SkinStudioStore {
       const variants = row.state === 'ready' ? await this.db.prepare(`SELECT ${CARD_FIELDS} FROM generated_skins s JOIN skin_jobs j ON j.id=s.job_id WHERE j.id=? ORDER BY variant`).all(row.id) : [];
       job = { id: row.id, prompt: row.prompt, state: row.state, error: row.error, selectedId: row.selected_id, createdAt: Number(row.created_at), variantCount: Number(row.variant_count), variants: variants.map(s => this.card(s)), funding:row.reward_grant_id?'reward':'paid',offerId:row.offer_id,priceUnits:row.reward_grant_id?'0':row.price_units };
     }
-    const wardrobe = await this.db.prepare(`SELECT ${CARD_FIELDS} FROM generated_skins s JOIN skin_jobs j ON j.id=s.job_id
+    const wardrobe = await this.db.prepare(`SELECT ${CARD_FIELDS},j.offer_id FROM generated_skins s JOIN skin_jobs j ON j.id=s.job_id
       WHERE j.account_id=? AND j.theme=? AND j.selected_id=s.id AND j.state='selected' ORDER BY j.created_at DESC LIMIT 200`).all(accountId, SKIN_THEME.id);
+    const revealed = wardrobe.some(row => row.offer_id === 'janitor') ? await this.revealedDisguises?.(accountId) : undefined;
+    const owned: SkinDescribedSnapshot['wardrobe'] = wardrobe.map(row => {
+      const card = this.card(row);
+      return row.offer_id === 'janitor' && revealed
+        ? { ...card, disguise: revealed.has(card.id) ? 'revealed' : 'usable' }
+        : card;
+    });
     const account = await this.db.prepare('SELECT skin,appearance FROM accounts WHERE id=?').get(accountId);
-    return { theme: SKIN_THEME, offerId,priceUnits: SKIN_OFFERS[offerId].priceUnits, variantCount: SKIN_OFFERS[offerId].variantCount, enabled: this.enabled(), job, wardrobe: wardrobe.map(s => this.card(s)), equippedId: generatedAppearance(account?.appearance)?.skinId ?? null,
+    return { theme: SKIN_THEME, offerId,priceUnits: SKIN_OFFERS[offerId].priceUnits, variantCount: SKIN_OFFERS[offerId].variantCount, enabled: this.enabled(), job, wardrobe: owned, equippedId: generatedAppearance(account?.appearance)?.skinId ?? null,
       freeGenerations:offerId==='atelier'?(await this.freeGenerations?.available(accountId)??[]):[],
       character: { skin: Number(account?.skin ?? 0), appearance: normalizeCharacterAppearance(account?.appearance) } };
   }
