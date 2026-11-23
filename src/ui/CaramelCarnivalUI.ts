@@ -1,7 +1,8 @@
 import {canRecoverOperation} from './operationFeedback';
 import {confirmedPayout} from '../shared/roundPrecision';
 import {ROYAL_GAME_STAKE_UNITS, gameStakeMaximum} from '../shared/gameStakes';
-import { t as translateText, tr, locale, language } from '../i18n/index';
+import {locale, language} from '../i18n/index';
+import {caramelText as translateText, caramelMarkup as tr} from './CaramelCarnivalText';
 import {SlotSettings} from './slotKit/SlotSettings';
 import {SlotDialog, slotOwnsKeyboard} from './slotKit/SlotDialog';
 import {SlotStakeControls, SlotAudioControls} from './slotKit/SlotControls';
