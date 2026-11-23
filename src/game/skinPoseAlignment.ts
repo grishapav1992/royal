@@ -1,6 +1,7 @@
 /** Alignment is measured on a 32x48 thumbnail of each complete generated pose. */
 export type SkinPoseAlignment = { pose: number; scale: number; x: number; y: number; mirrored: boolean };
 const W = 32, H = 48, SHEET_W = W * 4;
+const MIRROR_MIN_IMPROVEMENT = .015;
 const identity = (pose: number): SkinPoseAlignment => ({ pose, scale: 1, x: 0, y: 0, mirrored: false });
 
 export function alignSkinWalkingPoses(pixels: Uint8ClampedArray): SkinPoseAlignment[] {
@@ -30,6 +31,7 @@ export function alignSkinWalkingPoses(pixels: Uint8ClampedArray): SkinPoseAlignm
       const candidate = cell(pose), box = bounds(candidate);
       if (box.count < 40) { result[row * 4 + pose] = identity(0); continue; }
       let best = { ...identity(pose), error: Infinity };
+      let bestScore = Infinity;
       for (const mirrored of [false, true]) for (const scale of [.88, .92, .96, 1, 1.04, 1.08, 1.12]) {
         const offsetY = ref.bottom - box.bottom * scale;
         for (let offsetX = -4; offsetX <= 4; offsetX += .5) {
@@ -47,9 +49,13 @@ export function alignSkinWalkingPoses(pixels: Uint8ClampedArray): SkinPoseAlignm
             if (source >= 0) for (let c = 0; c < 3; c++) error += Math.min(alpha, otherAlpha) / 255 * Math.abs(reference[at + c] - candidate[source + c]) / 3;
             count++;
           }
-          // Prefer the unmodified drawing when differences are only raster rounding.
-          error = error / (count * 765) + Math.abs(1 - scale) * .008 + Math.abs(offsetX) * .0002 + (mirrored ? .003 : 0);
-          if (error < best.error) best = { pose, scale, x: offsetX, y: offsetY, mirrored, error };
+          error = error / (count * 765) + Math.abs(1 - scale) * .008 + Math.abs(offsetX) * .0002;
+          // A slightly better silhouette match is weak evidence for flipping a scar or accessory.
+          const score = error + (mirrored ? MIRROR_MIN_IMPROVEMENT : 0);
+          if (score < bestScore) {
+            bestScore = score;
+            best = { pose, scale, x: offsetX, y: offsetY, mirrored, error };
+          }
         }
       }
       // A different face or view cannot be repaired by alignment. Keep a complete
