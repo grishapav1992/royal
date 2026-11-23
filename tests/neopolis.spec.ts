@@ -291,14 +291,14 @@ test('Dracona displays fractional payouts and restores its complete bonus withou
   const before=await page.evaluate(()=>(window as any).neopolisPreview.wallet.wallet.balance);
   let current=await play();expect(current.state).toBe('active');expect(current.view.dracona.remaining).toBe(8);
   const balance=await page.evaluate(()=>(window as any).neopolisPreview.wallet.wallet.balance);
-  expect(balance).toBe(before-100);
+  expect(balance).toBeCloseTo(before-.1,2);
   current=await play();const revision=current.view.dracona.revision;
   await page.reload();game=page.frameLocator('iframe.dracona-frame');
   await expect(game.locator('#spin')).toBeEnabled();expect((await getSession()).view.dracona.revision).toBe(revision);
   await game.locator('#speed').selectOption('turbo');
   while(current.state==='active'){
-    current=await play();expect(current.spentUnits).toBe('2000');
-    if(current.state==='active')expect(await page.evaluate(()=>(window as any).neopolisPreview.wallet.wallet.balance)).toBe(balance);
+    current=await play();expect(current.spentUnits).toBe('10');
+    if(current.state==='active')expect(await page.evaluate(()=>(window as any).neopolisPreview.wallet.wallet.balance)).toBeCloseTo(balance,2);
   }
   expect(current.view.dracona.version).toBe(2);expect(current.view.dracona.freePlayed).toBeLessThanOrEqual(20);
   expect(await page.evaluate(()=>(window as any).neopolisPreview.wallet.wallet.balance)).toBeCloseTo(balance+Number(current.returnedUnits)/100,2);

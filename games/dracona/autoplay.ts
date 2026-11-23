@@ -1,1 +1,1 @@
-export { Autoplay, type AutoplayState } from '../../src/ui/slotKit/SlotAutoplay';
+export { Autoplay, AUTO_SPIN_COUNTS, type AutoplayState } from '../../src/ui/slotKit/SlotAutoplay';
