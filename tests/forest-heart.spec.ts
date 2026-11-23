@@ -666,8 +666,10 @@ test('the full host uses the available monitor and keeps the board, elf and paid
   for(const viewport of [{width:2507,height:1100},{width:2560,height:1440},{width:2006,height:880},{width:1920,height:1080},{width:1366,height:768},{width:1280,height:720},{width:1024,height:768},{width:1024,height:1366},{width:768,height:1024},{width:390,height:844},{width:320,height:780},{width:844,height:390},{width:667,height:375},{width:1920,height:1080}]){
     await page.setViewportSize(viewport);
     await expect.poll(async()=>{
-      const boxes=await page.locator('.forest-heart-frame').evaluate(frame=>({width:frame.getBoundingClientRect().width,stage:frame.closest('.mini-stage')!.getBoundingClientRect().width}));
-      return Math.abs(boxes.width-boxes.stage);
+      return page.locator('.forest-heart-frame').evaluate(frame=>{
+        const content=frame.getBoundingClientRect(),stage=frame.closest('.mini-stage')!.getBoundingClientRect();
+        return Math.max(Math.abs(content.width-stage.width),Math.abs(content.height-stage.height));
+      });
     }).toBeLessThanOrEqual(2);
     const outer=await page.locator('.forest-heart-frame').evaluate(frame=>({frame:frame.getBoundingClientRect().toJSON(),stage:frame.closest('.mini-stage')!.getBoundingClientRect().toJSON(),mode:frame.closest('#mini-dialog')!.getAttribute('data-game-viewport')}));
     const inner=await game(page).locator('.fh').evaluate(root=>{
