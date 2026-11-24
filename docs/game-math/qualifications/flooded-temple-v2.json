@@ -3,20 +3,20 @@
   "gameId": "studio-flooded-temple",
   "rulesVersion": 2,
   "progressVersion": 2,
-  "startedAt": "2026-11-23T08:31:55.021Z",
-  "completedAt": "2026-11-23T08:37:14.136Z",
+  "startedAt": "2026-11-24T19:31:16.589Z",
+  "completedAt": "2026-11-24T19:31:17.081Z",
   "sourceHashes": {
     "src/shared/floodedTempleCascadeData.json": "5aa05b4cca0476f48d84e70402204ec9029949a8da3c8d2c7a95b6a5456fc07a",
     "src/shared/floodedTempleCascadeMath.ts": "cf9b490bb9bb7f96f18f53e8662c9f931b5e308ca9a291acf8e66d483e352604",
     "src/shared/floodedTempleCascade.ts": "4eeca742538d793bb5efdf79c9b15389ad827716e8728f385e0c9090ec727cde",
     "server/games/floodedTempleCascade.ts": "8d7814d13dd390a72b9e64650e0da025bedc484e2c53f010c8966b8d5b7abe94",
     "scripts/game-math/rtp-temple-cascade-model.mjs": "b08395ab6ca615fa81190d84371d9941b9c51705c68540bfdf2d7ba4da22e399",
-    "src/shared/casinoExpansion.ts": "8fa30fdaafd9ac3272da9820ff5e277b9b7f34e143756fa9084223b0a8a5a2ed",
-    "server/demoExpansion.ts": "d7cb8d53b9d15d82e7f3a84015065cac5ab30b0f844397c1b375a9439822bfc3",
-    "server/demoWalletRoutes.ts": "e1e80a812b665c31dff412d42640deb4edf4c5ca805c7380a028ee3281ef80d7",
-    "server/gameWalletRoutes.ts": "1c446f7c814bd0bd5c1c8427a20d83e3c52b5f252f7794a05a6f38928edff007",
-    "server/finance/nile-game-runtime.ts": "fd8aebc6d96472fce25ab7b040382d2b749c428bed16cfabdb51629495053118",
-    "src/wallet/ExpansionClient.ts": "6498e048b086ee56f2a122093d45db30e832da4c5ac2a5d5904c15a2a0f47b39",
+    "src/shared/casinoExpansion.ts": "3733f1435defe99d978123ba5952fb909042f2d9fc18cf4064f025812d16b860",
+    "server/demoExpansion.ts": "42654de0c953845185fb82e0df5825c4ede03cae978fd61c97416d6394c0923f",
+    "server/demoWalletRoutes.ts": "4255e4e1204762e76212ee46e36295f548cb1d9439f8110f0e4e94e5077a4851",
+    "server/gameWalletRoutes.ts": "430130bd5d99ea2fc8656cd1bd12da336ab8ee20a3ffc863aece6d4b502c1957",
+    "server/finance/nile-game-runtime.ts": "30ec8d5b14a3c1e72f2875ac99b24eeb2077708cfe1ee8a58f85d5d00b46cd45",
+    "src/wallet/ExpansionClient.ts": "a1339edfe656e0145eda1190e6d70b65fbe4da487f44f75173678c0324d2b74e",
     "scripts/game-math/rtp-temple-cascade-worker.mjs": "fe4f9c82b9c14b00f0b3035351efa42ea27cc56e935aae5699e4d99ef8780899",
     "scripts/game-math/rtp-temple-cascade.mjs": "03c60d9badf327f29666b5f6c582f3603229942ef5be5769b19521a1c06b44c2"
   },
@@ -214,5 +214,6 @@
         "sha256": "3c694bfe5cdb64b3e0f08d6738f29490f621d64300490ba805f90b421189cdf9"
       }
     ]
-  }
+  },
+  "unchangedModelSampleCommit": "b67b2661d3478581250055cb09e70b667a2ae0e2"
 }

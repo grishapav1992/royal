@@ -54,6 +54,8 @@ test('Russian and English modules fit desktop and phone, with localized rules an
     await page.locator('[data-np=rules]').click();
     await expect(page.locator('.np-dialog h2')).toHaveText(lang === 'en' ? 'Game rules' : 'Правила игры');
     await expect(page.locator('.np-dialog tbody tr')).toHaveCount(6);
+    await expect(page.locator('.np-dialog')).toContainText(lang === 'en' ? 'trigger 8 free spins' : 'открывают 8 бесплатных вращений');
+    await expect(page.locator('.np-dialog')).toContainText(lang === 'en' ? 'Fractional wins carry across all spins' : 'Дробные части выигрышей сохраняются на всех вращениях');
     if (lang === 'en') expect(await page.locator('.np').innerText()).not.toMatch(/[А-Яа-яЁё]/);
     await page.locator('[data-np=close]').click();
     for (const [width, height] of [[1920,1080],[1366,768],[900,900],[390,844],[360,740]]) {
