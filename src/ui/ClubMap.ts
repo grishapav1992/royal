@@ -18,30 +18,52 @@ export class ClubMap {
   private root=document.createElement('aside');
   private canvas=document.createElement('canvas');
   private title=document.createElement('span');
+  private toggle=document.createElement('button');
+  private expanded=true;
+  private toiletExpanded=false;
   constructor(private scene:RoomScene){
     this.root.className='club-map';this.root.setAttribute('aria-label',translateText('Карта этажа'));
     const header=document.createElement('div');header.className='club-map-header';
-    const toggle=document.createElement('button');toggle.type='button';toggle.textContent=translateText('Карта зала');toggle.setAttribute('aria-expanded','true');toggle.setAttribute('aria-label',translateText('Свернуть карту этажа'));
-    header.append(this.title,toggle);this.root.append(header,this.canvas);
+    this.toggle.type='button';this.toggle.textContent=translateText('Карта зала');
+    header.append(this.title,this.toggle);this.root.append(header,this.canvas);
     this.canvas.width=432;this.canvas.height=Math.round(this.canvas.width*WORLD.height/WORLD.width);this.canvas.tabIndex=0;this.canvas.setAttribute('role','button');this.canvas.setAttribute('aria-label',translateText('Открыть весь этаж'));
     this.canvas.title=translateText('Нажми, чтобы посмотреть весь этаж');
     const overview=()=>{const button=document.querySelector<HTMLButtonElement>('#room-overview')!;if(button.getAttribute('aria-pressed')!=='true')button.click();};
     this.canvas.onclick=overview;this.canvas.onkeydown=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();overview();}};
-    toggle.onclick=()=>{const visible=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(visible));toggle.setAttribute('aria-label',visible?translateText('Свернуть карту этажа'):translateText('Показать карту этажа'));this.canvas.hidden=!visible;};
+    this.toggle.onclick=()=>{
+      const toilet=this.root.dataset.location==='toilet';
+      if(toilet)this.toiletExpanded=!this.toiletExpanded;
+      else this.expanded=!this.expanded;
+      this.updateVisibility(toilet);
+      this.draw();
+    };
+    this.updateVisibility(false);
     document.querySelector('#game')!.parentElement!.append(this.root);
     const update=()=>{if(scene.player&&!document.hidden)this.draw();};
     const timer=window.setInterval(update,200);scene.events.once('shutdown',()=>{clearInterval(timer);this.root.remove();});update();
   }
+  private updateVisibility(toilet:boolean){
+    const expanded=toilet?this.toiletExpanded:this.expanded;
+    this.toggle.setAttribute('aria-expanded',String(expanded));
+    this.toggle.setAttribute('aria-label',expanded?translateText('Свернуть карту этажа'):translateText('Показать карту этажа'));
+    this.canvas.hidden=!expanded;
+    this.root.classList.toggle('club-map-compact',toilet&&!expanded);
+  }
   private draw(){
     const state=this.scene.getState(),size=state.hall==='toilet'?TOILET:state.hall==='roof'?ROOF:state.hall==='street'?STREET:state.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
+    if(this.root.dataset.location!==state.hall){
+      this.root.dataset.location=state.hall;
+      this.updateVisibility(state.hall==='toilet');
+    }
     const height=Math.round(this.canvas.width*size.height/size.width);
     if(this.canvas.height!==height)this.canvas.height=height;
     const ctx=this.canvas.getContext('2d')!,sx=this.canvas.width/size.width,sy=this.canvas.height/size.height;
     const definition=HALLS[state.hall];this.title.textContent=!isCasinoFloor(state.hall)?definition.name:translateText('Этаж ')+definition.floor+' · '+definition.number;
     this.root.setAttribute('aria-label',translateText(state.hall==='toilet'?'Карта туалета':state.hall==='roof'?'Карта крыши':state.hall==='street'?'Карта улицы':'Карта этажа'));
-    this.root.querySelector('button')!.textContent=translateText(state.hall==='toilet'?'Карта туалета':state.hall==='roof'?'Карта крыши':state.hall==='street'?'Карта улицы':'Карта зала');
+    this.toggle.textContent=translateText(state.hall==='toilet'?'Карта туалета':state.hall==='roof'?'Карта крыши':state.hall==='street'?'Карта улицы':'Карта зала');
     this.canvas.setAttribute('aria-label',translateText(state.hall==='toilet'?'Открыть весь туалет':state.hall==='roof'?'Открыть всю крышу':state.hall==='street'?'Открыть всю улицу':'Открыть весь этаж'));
     this.canvas.title=translateText(state.hall==='toilet'?'Нажми, чтобы посмотреть весь туалет':state.hall==='roof'?'Нажми, чтобы посмотреть всю крышу':state.hall==='street'?'Нажми, чтобы посмотреть всю улицу':'Нажми, чтобы посмотреть весь этаж');
+    if(this.canvas.hidden)return;
     ctx.clearRect(0,0,this.canvas.width,this.canvas.height);ctx.save();ctx.scale(sx,sy);
     if(state.hall==='toilet'){
       const art=this.scene.getToiletMapArt();if(art)ctx.drawImage(art,0,0,TOILET.width,TOILET.height);

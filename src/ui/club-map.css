@@ -5,3 +5,6 @@
 .room-panel[data-location=street] .flag-tote-announcement,.room-panel[data-location=roof] .flag-tote-announcement,.room-panel[data-location=toilet] .flag-tote-announcement{display:none}
 .room-panel[data-overview=true] .interaction,.room-panel[data-overview=true] .lounge-controls{display:none}
 @media(max-width:600px){.club-map{top:36px}}
+.club-map-compact{width:auto;padding:3px}
+.club-map-compact .club-map-header{margin-bottom:0}
+.club-map-compact .club-map-header span{display:none}
