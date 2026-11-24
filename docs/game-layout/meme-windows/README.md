@@ -1,6 +1,6 @@
 # Meme Overload: окна на рабочем столе
 
-Новое оформление Meme Overload (`studio-meme-overload`). Пакет `@royal/meme-overload` 1.2.0, совместимость host/rules/progress 1/2/1 не изменилась. Утверждённый макет: [Meme Overload: редизайн](https://claude.ai/artifact/7NBoXNvFtufdxrfzvcG5SX). Статус: не опубликовано.
+Новое оформление Meme Overload (`studio-meme-overload`). Пакет `@royal/meme-overload` 1.2.0, совместимость host/rules/progress 1/2/1 не изменилась. Утверждённый макет: [Meme Overload: редизайн](https://claude.ai/artifact/7NBoXNvFtufdxrfzvcG5SX). Статус: опубликовано 24 ноября 2026, пакет `1.2.0-f2fd592093db`, выпуск `meme-windows-20261124-v1`.
 
 Изменено представление. Математика, правила, выплаты, ставки, кошелёк, протокол, восстановление хода, звуки и мемные реакции не менялись. Порядок автоигры приведён к общему правилу проекта.
 

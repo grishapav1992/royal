@@ -1,0 +1,129 @@
+{
+  "published": true,
+  "release": "meme-windows-20261124-v1",
+  "sourceCommit": "187ec1cd9bd19d586c48548ded2196d69c0ca8bd",
+  "baseCommit": "7f831f1e412fa5de0088c3a3579dffce889e239c",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/meme-windows-20261124-v1/source.tgz",
+    "sha256": "e594c34d734c0ec60430532cf108fd0b5c512deb9a1fcabf44e058b94b82e0c1",
+    "bytes": 2857,
+    "oldVersion": "1.1.1-801b99460fdd",
+    "imageTag": "royal-game:before-meme-windows-20261124-v1",
+    "image": "sha256:375af56d5cfc96e5d8d54c82353d9e5778518e3880320f626f93375fe2ceacdd",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/meme-overload/MemeArtwork.ts",
+      "games/meme-overload/MemeAssets.ts",
+      "games/meme-overload/MemeAudio.ts",
+      "games/meme-overload/MemeBoard.ts",
+      "games/meme-overload/MemeLayout.ts",
+      "games/meme-overload/MemeOverloadUI.ts",
+      "games/meme-overload/MemeReactions.ts",
+      "games/meme-overload/meme-overload.css",
+      "games/meme-overload/memeText.ts"
+    ]
+  },
+  "module": {
+    "verified": true,
+    "gameId": "studio-meme-overload",
+    "version": "1.2.0-f2fd592093db",
+    "bytes": 3693216,
+    "files": 22,
+    "beforeSha256": "0432e5218c8b62b249412bbdb0cf531626288ec74ca604c251a50de8b5f98aea",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "2af41a1e0d8524f449bcbbbf736639a15f80902c9d362c04cefeb1fac686c9d4",
+    "history": "/opt/royal-game-modules-state/history/20261124T062819-151baa763db34ce9a8d13dd514f99591.json"
+  },
+  "freeBefore": 11702538240,
+  "freeAfter": 11698548736,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8821,
+  "servicesPreserved": 11,
+  "wrapperSourceCommit": "187ec1cd9bd19d586c48548ded2196d69c0ca8bd",
+  "previousVersion": "1.1.1-801b99460fdd",
+  "manifestSha256": "ad093b2a3556b8058cfe680b21095b9f9dfe41b1b12c44ac4873d52af9f6a033",
+  "pointerSha256": "2af41a1e0d8524f449bcbbbf736639a15f80902c9d362c04cefeb1fac686c9d4",
+  "priorPointerSha256": "0432e5218c8b62b249412bbdb0cf531626288ec74ca604c251a50de8b5f98aea",
+  "releaseManifestSha256": "72243185b8cab2f019081dfad590bde1f5af34c74fd1ce4fc972b38dcaf87966",
+  "receiptSha256": "ed58d255cb4e038bcf08090be870d22ac377c5959fe95f2b8689101061755ae2",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "projection": "shared inputs as in the live host 7f831f1e; SlotDialog, SlotSettings and the contract catalog as in the previous single-game packages",
+  "verification": {
+    "rtp": "passed in release:prepare (39 profiles, 21 stake policies)",
+    "typecheck": true,
+    "githubVerified": true,
+    "walletTests": 19,
+    "cascadeGeometryTests": 10,
+    "connectedBrowserTests": 9,
+    "browserReport": {
+      "release": "meme-windows-20261124-v1",
+      "version": "1.2.0-f2fd592093db",
+      "sourceCommit": "187ec1cd9bd19d586c48548ded2196d69c0ca8bd",
+      "moduleManifestSha256": "ad093b2a3556b8058cfe680b21095b9f9dfe41b1b12c44ac4873d52af9f6a033",
+      "connectedHostPassed": true,
+      "recoveryPassed": true,
+      "walletTestsPassed": 19,
+      "cascadeGeometryTestsPassed": 10,
+      "connectedBrowserTests": 9,
+      "host": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact module bytes",
+      "browser": "Google Chrome",
+      "expectTimeoutMs": 45000,
+      "scenarios": [
+        "field and actions without scrolling on eight sizes",
+        "natural bonus counters in both orientations",
+        "count-only autoplay window places no wager",
+        "ten paid autoplay spins through a natural bonus, ten debits of 0.10",
+        "field, status, stake and spin never move in every frame of three bonus rounds: 1440x900 with chat, 393x852, 852x393",
+        "English labels in every window, no clipped labels on four compact sizes",
+        "lost response restores the same operation with one debit, notice never covers the field or the total on five sizes",
+        "identical look after Caramel Carnival and Nitro RUN",
+        "reopening a saved bonus without a second debit, 100 USDT accepted, 100.01 rejected"
+      ],
+      "notChecked": [
+        "physical phones",
+        "Safari",
+        "listening quality",
+        "a live ERROR 777 payout: its window was checked with the confirmed result of another round"
+      ]
+    },
+    "runs": [
+      "The label check failed once on a frame measured right after a viewport resize. Fifty settled measurements showed no clipped labels, and the check now waits for two frames.",
+      "The package was prepared again after the Dragon Path release changed the production host."
+    ],
+    "live": {
+      "health": 200,
+      "hostIndexUnchanged": true,
+      "modulePointers": 125,
+      "unchangedModulePointers": 124,
+      "changedModulePointers": [
+        "studio-meme-overload"
+      ],
+      "packageFilesVerified": 22,
+      "manifestVerified": true,
+      "previousPackageFilesVerified": 16,
+      "changedSources": 11,
+      "otherSourcesChanged": 0
+    },
+    "publicSignedInPlayChecked": false,
+    "publicGuestPlayChecked": false,
+    "publicGuestPlayReason": "The public site requires signing in before the catalogue.",
+    "productionAccountsOrRoundsCreated": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 66.57,
+    "healthOk": true,
+    "freeBefore": 11694243840,
+    "freeAfter": 11690573824,
+    "timerEnabled": true,
+    "timerActive": true
+  }
+}
