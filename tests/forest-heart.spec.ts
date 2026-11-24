@@ -817,6 +817,9 @@ test('the full host uses the available monitor and keeps the board, elf and paid
     expect(await game(page).locator('.fh-spin .fh-button-label').evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
     await page.screenshot({path:out+`/responsive-bonus-${viewport.width}.png`});
   }
+  // Rotating with a focused control must never leave the scene scrolled.
+  await game(page).locator('[data-fh=spin]').focus();
+  expect(await game(page).locator('.fh').evaluate(async root=>{root.scrollLeft=85;root.scrollTop=20;await new Promise(done=>setTimeout(done,120));return [root.scrollLeft,root.scrollTop];})).toEqual([0,0]);
   // Every caption of the main button fits, including the animation skip.
   await page.emulateMedia({reducedMotion:'no-preference'});
   for(const viewport of [{width:320,height:568},{width:393,height:852},{width:568,height:320},{width:852,height:393},{width:1280,height:720}]){

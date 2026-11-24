@@ -4,7 +4,7 @@ const baseStyles=String.raw`
 button,input,select{font:inherit;color:inherit}button{cursor:pointer}button:disabled{cursor:default}button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,.fh-fast:focus-within{outline:2px solid #b5ffe1;outline-offset:2px}[hidden]{display:none!important}img{max-width:none}
 svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;width:20px;height:20px;display:block}
 .fh-sr{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden;clip-path:inset(50%)}
-.fh{--e:#63f5d0;--gem:none;--halo:.8;--halo-glow:.4;position:relative;width:100%;height:100dvh;min-height:0;overflow:hidden;background:#071511;isolation:isolate;user-select:none;-webkit-user-select:none;outline:0}
+.fh{--e:#63f5d0;--gem:none;--halo:.8;--halo-glow:.4;position:relative;width:100%;height:100dvh;min-height:0;overflow:hidden;overflow:clip;background:#071511;isolation:isolate;user-select:none;-webkit-user-select:none;outline:0}
 .fh>canvas{position:absolute;pointer-events:none;display:block}canvas[data-layer=backdrop]{z-index:2}canvas[data-layer=frame]{z-index:5}canvas[data-layer=field]{z-index:6}canvas[data-layer=bloom]{z-index:7}canvas[data-layer=front]{z-index:30}
 .fh-forest{position:absolute;inset:-14px;z-index:0;background:url('/assets/forest-heart/v1/background.webp') center/cover;animation:fh-drift 26s ease-in-out infinite alternate}
 .fh-shade{position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,#03100df2,#04100d55 26%,transparent 55%,#08142355)}

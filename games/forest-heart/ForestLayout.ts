@@ -86,8 +86,11 @@ export class ForestLayout {
   current: ForestGeometry;
   constructor(private root: HTMLElement, private changed: (geometry: ForestGeometry) => void) {
     this.observer = new ResizeObserver(() => this.schedule()); this.observer.observe(root);
+    root.addEventListener('scroll', this.unscroll);
     this.current = this.fit();
   }
+  /** A browser may scroll a focused control into view while the window rotates. The scene itself never scrolls. */
+  private unscroll = () => { if (this.root.scrollLeft || this.root.scrollTop) { this.root.scrollLeft = 0; this.root.scrollTop = 0; } };
   private schedule() {
     const win = this.root.ownerDocument.defaultView!;
     if (!this.raf) this.raf = win.requestAnimationFrame(() => { this.raf = 0; this.fit(); });
@@ -111,7 +114,7 @@ export class ForestLayout {
     this.root.querySelectorAll<HTMLElement>('[data-bud]').forEach((seed, i) => { seed.style.left = g.seeds[i].x - g.seeds[0].x + 'px'; seed.style.top = '0'; seed.style.width = seed.style.height = g.seed + 'px'; });
     place('.fh-bonus', { x: g.seeds[0].x, y: g.seeds[0].y, w: g.seeds[3].x - g.seeds[0].x, h: 1 });
     const title = find('.fh-title'); title.classList.toggle('fh-sr', !g.title); if (g.title) { place('.fh-title', g.title); title.style.setProperty('--title', g.title.w + 'px'); }
-    this.current = g; this.changed(g); return g;
+    this.current = g; this.changed(g); this.unscroll(); return g;
   }
-  destroy() { this.observer.disconnect(); if (this.raf) this.root.ownerDocument.defaultView!.cancelAnimationFrame(this.raf); }
+  destroy() { this.observer.disconnect(); this.root.removeEventListener('scroll', this.unscroll); if (this.raf) this.root.ownerDocument.defaultView!.cancelAnimationFrame(this.raf); }
 }
