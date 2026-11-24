@@ -165,3 +165,15 @@ test('routes bind the session account, reject strangers and report failures with
     const failed = await fetch(url, {headers: {...cookie, [WALLET_ACCOUNT_HEADER]: 'alice'}}); assert.equal(failed.status, 503); assert.deepEqual(await failed.json(), {error: 'crew-unavailable'});
   } finally { server.close(); await f.db.close().catch(() => {}); }
 });
+
+test('a migration stopped by startup is repeated by the next request', async () => {
+  const f = await fixture();
+  await f.db.exec('ALTER TABLE progression_outbox RENAME TO progression_outbox_held');
+  const crew = f.crew();
+  await assert.rejects(crew.ready);
+  await f.db.exec('ALTER TABLE progression_outbox_held RENAME TO progression_outbox');
+  assert.deepEqual((await crew.snapshot('alice')).unlocked, ['racer']);
+  await settle(f, 'alice', 100);
+  assert.equal((await crew.snapshot('alice')).points, 3);
+  await f.db.close();
+});

@@ -13,9 +13,12 @@ const rateSql = 'CASE ' + [...COSMIC_CREW_RATES].reverse().map(rate => `WHEN pai
  * inside the settlement transaction. The crew keeps its own credited list, so a failure here cannot touch money.
  */
 export class CosmicCrewStore {
-  readonly ready: Promise<void>;
-  constructor(private db: PostgresDatabase, prerequisite: Promise<unknown>, private now: () => number = Date.now) {
-    this.ready = prerequisite.then(() => applySchemaMigration(db, {
+  private schema?: Promise<void>;
+  constructor(private db: PostgresDatabase, private prerequisite: Promise<unknown>, private now: () => number = Date.now) { this.ready.catch(() => {}); }
+
+  /** A lock held during startup must not disable the crew until the next restart: a failed attempt is repeated. */
+  get ready(): Promise<void> {
+    return this.schema ??= this.prerequisite.then(() => applySchemaMigration(this.db, {
       id: 'cosmic-crew-v1',
       indexes: [{name: 'progression_outbox_account_time', table: 'progression_outbox', columns: ['account_id', 'created_at']}],
       statements: [
@@ -28,8 +31,7 @@ export class CosmicCrewStore {
         `CREATE TABLE cosmic_crew_revealed(account_id TEXT NOT NULL REFERENCES cosmic_crew_profiles(account_id) ON DELETE CASCADE,character_id TEXT NOT NULL,
           revealed_at BIGINT NOT NULL,PRIMARY KEY(account_id,character_id))`,
       ],
-    }));
-    this.ready.catch(() => {});
+    })).catch(error => { this.schema = undefined; throw error; });
   }
 
   private async credit(account: string) {
