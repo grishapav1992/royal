@@ -1,6 +1,6 @@
 {
   "name": "@royal/meme-overload",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "private": true,
   "gameId": "studio-meme-overload",
   "apiVersion": 1,
@@ -15,12 +15,11 @@
     "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
   },
   "preload": [
-    "meme-overload/v1/doge.jpg",
-    "meme-overload/v1/harold.jpg",
-    "meme-overload/v1/grumpy.jpg",
-    "meme-overload/v1/smudge.jpg",
-    "meme-overload/v2/stonks-66695dba5cfb.webp",
-    "meme-overload/v1/pepe.jpg",
-    "meme-overload/v1/desktop.svg"
+    "meme-overload/v3/doge-07910af7826e.webp",
+    "meme-overload/v3/harold-838d5dcd9023.webp",
+    "meme-overload/v3/grumpy-2290352b815b.webp",
+    "meme-overload/v3/smudge-258bfb8fcf43.webp",
+    "meme-overload/v3/stonks-78348f9b6f1c.webp",
+    "meme-overload/v3/pepe-e4b64a86cdc9.webp"
   ]
 }

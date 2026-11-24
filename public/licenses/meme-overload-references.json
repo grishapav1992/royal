@@ -45,5 +45,79 @@
     }
   ],
   "originalFilesPreserved": true,
-  "releaseRightsCleared": false
+  "releaseRightsCleared": false,
+  "crops": [
+    {
+      "file": "assets/meme-overload/v3/doge-07910af7826e.webp",
+      "source": "assets/meme-overload/v1/doge.jpg",
+      "crop": {
+        "x": 20,
+        "y": 0,
+        "side": 580
+      },
+      "sha256": "07910af7826eb0109aac1eea174825a64c353972d48e9aa88b387332e434fba6",
+      "bytes": 15058,
+      "rights": "Square crop of the uncleared reference image. The source rights status applies."
+    },
+    {
+      "file": "assets/meme-overload/v3/harold-838d5dcd9023.webp",
+      "source": "assets/meme-overload/v1/harold.jpg",
+      "crop": {
+        "x": 1120,
+        "y": 40,
+        "side": 800
+      },
+      "sha256": "838d5dcd902382a851eb3218ac47122cf5b9274252a349426d6a9faf715adc35",
+      "bytes": 23746,
+      "rights": "Square crop of the uncleared reference image. The source rights status applies."
+    },
+    {
+      "file": "assets/meme-overload/v3/grumpy-2290352b815b.webp",
+      "source": "assets/meme-overload/v1/grumpy.jpg",
+      "crop": {
+        "x": 0,
+        "y": 30,
+        "side": 500
+      },
+      "sha256": "2290352b815be8fd9c3a7284bfd057fadc6cc45cf4170013d6eae0ff8cbe3eed",
+      "bytes": 27658,
+      "rights": "Square crop of the uncleared reference image. The source rights status applies."
+    },
+    {
+      "file": "assets/meme-overload/v3/smudge-258bfb8fcf43.webp",
+      "source": "assets/meme-overload/v1/smudge.jpg",
+      "crop": {
+        "x": 368,
+        "y": 112,
+        "side": 300
+      },
+      "sha256": "258bfb8fcf43f20acefb29f451aa579851cc3c9a5b9c993f416c73675e1656e1",
+      "bytes": 10304,
+      "rights": "Square crop of the uncleared reference image. The source rights status applies."
+    },
+    {
+      "file": "assets/meme-overload/v3/stonks-78348f9b6f1c.webp",
+      "source": "assets/meme-overload/v2/stonks-66695dba5cfb.webp",
+      "crop": {
+        "x": 170,
+        "y": 0,
+        "side": 1304
+      },
+      "sha256": "78348f9b6f1c165b2ce63c4a036f470784dbc4c9119b3f38c60c5b3cbbf9d661",
+      "bytes": 30422,
+      "rights": "Square crop of the uncleared reference image. The source rights status applies."
+    },
+    {
+      "file": "assets/meme-overload/v3/pepe-e4b64a86cdc9.webp",
+      "source": "assets/meme-overload/v1/pepe.jpg",
+      "crop": {
+        "x": 10,
+        "y": 18,
+        "side": 564
+      },
+      "sha256": "e4b64a86cdc95a21774249e90f43aa80f9ce2ebcb2a1c2cc1d9379ce63b4a93e",
+      "bytes": 18458,
+      "rights": "Square crop of the uncleared reference image. The source rights status applies."
+    }
+  ]
 }

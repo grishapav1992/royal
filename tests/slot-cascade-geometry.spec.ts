@@ -8,15 +8,15 @@ test.beforeAll(async () => {
   const bundle = await build({
     stdin: { contents: `
       import {NitroBoard} from './src/ui/NitroBoard';
-      import {MemeBoard} from './src/ui/MemeBoard';
+      import {MemeBoard} from './games/meme-overload/MemeBoard';
       import {CaramelBoard} from './games/caramel-carnival/CaramelBoard';
       import {ConvoyBoard} from './src/ui/ConvoyBoard';
       import {AfterglowBoard} from './src/ui/AfterglowBoard';
       window.cascadeBoards={nr:NitroBoard,mo:MemeBoard,cc:CaramelBoard,cv:ConvoyBoard,ag:AfterglowBoard};
-    `, resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife',
+    `, resolveDir: process.cwd() }, bundle: true, write: false, format: 'iife', loader: { '.css': 'empty' },
   });
   script = bundle.outputFiles[0].text;
-  styles = (await Promise.all(['caramel-carnival', 'nitro-run', 'meme-overload', 'last-convoy', 'afterglow'].map(name => readFile(`src/ui/${name}.css`, 'utf8')))).join('\n');
+  styles = (await Promise.all(['src/ui/caramel-carnival', 'games/nitro-run/nitro-run', 'games/meme-overload/meme-overload', 'games/last-convoy/last-convoy', 'games/girlhub/girlhub'].map(name => readFile(`${name}.css`, 'utf8')))).join('\n');
 });
 
 const grid = Array.from({ length: 30 }, (_, i) => i % 6);
