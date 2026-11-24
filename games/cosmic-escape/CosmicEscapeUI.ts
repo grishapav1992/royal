@@ -63,7 +63,7 @@ export class CosmicEscapeUI {
   private readonly racer: CosmicEscapeRacer;
   private assets:CosmicEscapeAssets;private root:HTMLElement;private dialogShell!:SlotDialog;private stakeControls!:SlotStakeControls;private soundControls!:SlotAudioControls;private info:LuelonSlotInfo;private theme:LuelonTheme;private audio:CosmicEscapeAudio;private board:CosmicEscapeBoard;private owner=client.accountId;private stake=COSMIC_ESCAPE_DEFAULT_STAKE;private mode='normal';private entered=false;private speed:Speed='normal';private manualReduced=false;private destroyed=false;private playback=new SlotPlayback({account:()=>client.accountId,hidden:()=>document.hidden});private sessions=new SlotSessions(cosmicSlot);private live?:Live;private shown='';private portals=0;private error='';private dialog:Dialog='intro';private autoRemaining=0;private bonusRunning=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');private unsubscribe:()=>void;private layout:ResizeObserver;
   private tools!:HTMLElement;private toolsHome?:Comment;
-  private autoCount=25;private autoOpen=false;private reactor!:CosmicReactor;private crew=new CosmicCrewClient();private crewView:CosmicCrewId='racer';private crewNew?:CosmicCrewId;private crewHtml='';private crewSeen?:{account:string;points:number};private crewChanged=()=>this.paintCrew();
+  private autoCount=25;private autoOpen=false;private reactor!:CosmicReactor;private crew=new CosmicCrewClient();private crewView:CosmicCrewId='racer';private crewNew?:CosmicCrewId;private crewHtml='';private crewNarrow=false;private crewSeen?:{account:string;points:number};private crewChanged=()=>this.paintCrew();
   private change=()=>this.sync();private visibility=()=>{if(document.hidden){this.cancel();this.audio.pause();}this.sync();};private motionChange=()=>{this.cancel();this.root.dataset.reducedMotion=String(this.motionReduced());this.sync();};
   private keyboard=(event:KeyboardEvent)=>{
     if(this.autoOpen&&event.key==='Escape'){event.preventDefault();this.closeAuto(true);return;}
@@ -106,7 +106,8 @@ export class CosmicEscapeUI {
   /** The host keeps native slots at the full stage height once a layout profile is present. */
   private profile(){const {width,height}=this.root.getBoundingClientRect();if(!width||!height)return;const profile=gameContentLayout(width,height);if(this.root.dataset.slotPriority!==profile){this.root.dataset.slotPriority=profile;this.updateRacer();}
     // Where the plate has no room, the same entry stands in the window bar.
-    this.root.dataset.crewPlace=getComputedStyle(this.find('[data-cx-crew]')).display==='none'?'bar':'plate';}
+    const crew=this.find('[data-cx-crew]'),narrow=crew.offsetWidth>0&&crew.offsetWidth<200;this.root.dataset.crewPlace=getComputedStyle(crew).display==='none'?'bar':'plate';
+    if(narrow!==this.crewNarrow){this.crewNarrow=narrow;this.paintCrew();}}
   private assetState(state:CosmicAssetState){
     if(this.destroyed)return;
     if(state.status==='ready'){
@@ -565,7 +566,7 @@ export class CosmicEscapeUI {
   }
   private paintCrew(){
     if(this.destroyed)return;
-    const profile=this.crew.profile,plate=crewPlate(profile,this.crew.failed),button=this.find('[data-cx-crew]'),ring=this.tool('[data-cx-crew-ring]');
+    const profile=this.crew.profile,button=this.find('[data-cx-crew]'),plate=crewPlate(profile,this.crew.failed,this.crewNarrow),ring=this.tool('[data-cx-crew-ring]');
     for(const [part,text] of [['title',plate.title],['count',plate.count],['note',plate.note]] as const){const element=this.find(`[data-cx-crew-${part}]`);if(element.textContent!==text)element.textContent=text;}
     this.find('[data-cx-crew-fill]').style.width=plate.fill+'%';ring.style.setProperty('--crew',String(plate.fill));
     const label=[translateText('Экипаж'),plate.title,plate.count,plate.note].filter((text,i,list)=>text&&list.indexOf(text)===i).join('. ');

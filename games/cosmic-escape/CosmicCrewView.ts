@@ -17,13 +17,13 @@ const money = (cents: number) => (cents / 100).toFixed(2).replace('.', language 
 
 export type CrewPlate = {state: 'none' | 'ready' | 'new' | 'full'; title: string; count: string; note: string; fill: number};
 /** Everything the pedestal plate shows. Only a confirmed profile reaches it. */
-export function crewPlate(profile: CosmicCrewProfile | undefined, failed: boolean): CrewPlate {
-  if (!profile) return {state: 'none', title: crewShortName('racer'), count: t('Экипаж'), note: failed ? t('Прогресс недоступен') : '', fill: 0};
-  const count = tr`Экипаж ${profile.unlocked.length} из ${COSMIC_CREW_CAPSULES}`;
+export function crewPlate(profile: CosmicCrewProfile | undefined, failed: boolean, narrow = false): CrewPlate {
+  if (!profile) return {state: 'none', title: narrow ? t('Экипаж') : crewShortName('racer'), count: narrow ? '' : t('Экипаж'), note: failed ? t('Прогресс недоступен') : '', fill: 0};
+  const opened = profile.unlocked.length, count = narrow ? tr`${opened} из ${COSMIC_CREW_CAPSULES}` : tr`Экипаж ${opened} из ${COSMIC_CREW_CAPSULES}`, title = narrow ? t('Экипаж') : crewShortName(profile.selected);
   if (profile.unlocked.some(id => !profile.revealed.includes(id))) return {state: 'new', title: t('Новый персонаж'), count: '', note: t('Открыть капсулу'), fill: 100};
   const next = COSMIC_CREW.find(member => member.points > profile.points);
-  if (!next) return {state: 'full', title: crewShortName(profile.selected), count, note: t('Новые персонажи скоро'), fill: 100};
-  return {state: 'ready', title: crewShortName(profile.selected), count, note: crewRemaining(next.points - profile.points), fill: Math.floor(profile.points / next.points * 100)};
+  if (!next) return {state: 'full', title, count, note: narrow ? t('Скоро новые') : t('Новые персонажи скоро'), fill: 100};
+  return {state: 'ready', title, count, note: crewRemaining(next.points - profile.points), fill: Math.floor(profile.points / next.points * 100)};
 }
 export const crewNewcomer = (profile: CosmicCrewProfile | undefined) => profile?.unlocked.find(id => !profile.revealed.includes(id));
 
@@ -41,7 +41,7 @@ export function crewDialog(profile: CosmicCrewProfile | undefined, options: {vie
   const rates = COSMIC_CREW_RATES.map((rate, i) => { const next = COSMIC_CREW_RATES[i + 1]; return `<li><span>${next ? `${money(rate.from)}–${money(next.from - 1)}` : tr`от ${money(rate.from)}`}</span><b>+${rate.points}</b></li>`; }).join('');
   const message = options.refused === 'round-active' || open && !mine && options.locked ? t('Сменить персонажа можно после завершения раунда.') : options.refused ? t('Выбор не сохранён. Попробуй ещё раз.') : options.failed && !profile ? t('Не удалось загрузить прогресс. Игра продолжает работать.') : '';
   const label = mine ? t('Выбрана') : open ? t('Выбрать') : t('Пока закрыта');
-  return `<div class="cx-crew-figure" data-open="${open}"><img src="${still(view)}" alt="" decoding="async"><div><b>${open ? crewName(view) : t('Закрытая капсула')}</b><button type="button" class="lg-primary ce-primary" data-lg-dialog-action="crew-choose:${view}" ${mine || !open || options.busy || options.locked || !profile ? 'disabled' : ''}>${label}</button></div></div>
+  return `<div class="cx-crew-figure" data-open="${open}"><img src="${still(view)}" alt="" decoding="async"><div><b>${open ? crewName(view) : t('Закрытая капсула')}</b><span class="cx-crew-opened">${tr`Открыто ${profile?.unlocked.length ?? 1} из ${COSMIC_CREW_CAPSULES}`}</span><button type="button" class="lg-primary ce-primary" data-lg-dialog-action="crew-choose:${view}" ${mine || !open || options.busy || options.locked || !profile ? 'disabled' : ''}>${label}</button></div></div>
 <div class="cx-crew-main"><header><h2 id="lg-dialog-title">${t('Экипаж')}</h2><span>${tr`Открыто ${profile?.unlocked.length ?? 1} из ${COSMIC_CREW_CAPSULES}`}</span><strong>${profile ? crewPoints(points) : ''}</strong><button type="button" class="cx-icon" data-lg-dialog-action="close" aria-label="${t('Закрыть экипаж')}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
 <div class="cx-pods">${pods}</div><p class="cx-crew-message" role="status">${message}</p>
 <section class="cx-rates"><h3>${t('Очки за завершённый раунд')}</h3><ul>${rates}</ul></section>
