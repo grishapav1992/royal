@@ -112,7 +112,7 @@ async function controlledLastExit(page: Page) {
  await page.evaluate(id => (window as any).moduleHarness.account(id), account);
  return { account, sent, advance(ms: number) { offset += ms; },
   holdNextRead() { let release!: () => void; const wait = new Promise<void>(resolve => { release = resolve; }); held = { entered: false, wait, release }; return held; },
-  finish(loss = false) { if (!current) throw Error('No run'); current.state = 'settled'; current.multiplier = loss ? 0 : 1.5; current.returnedUnits = loss ? '0' : '1500'; if (loss) current.crashAt = 1.15; current.view.ended = true; current.view.actions = []; return current.id; },
+  finish(loss = false, multiplier = 1.5, returned = '1500') { if (!current) throw Error('No run'); current.state = 'settled'; current.multiplier = loss ? 0 : multiplier; current.returnedUnits = loss ? '0' : returned; if (loss) current.crashAt = 1.15; current.view.ended = true; current.view.actions = []; return current.id; },
  };
 }
 const lastExitAudio = (page: Page) => page.locator('.last-exit').evaluate(el => JSON.parse((el as HTMLElement).dataset.audio || '{}'));
@@ -174,12 +174,72 @@ test('LAST EXIT restores seen endings across reopening and reload, while unseen 
  expect(control.sent).toHaveLength(3);
 });
 
+test('LAST EXIT keeps a late exit press from becoming the next paid start', async ({ page }) => {
+ await fixture(page); await page.emulateMedia({ reducedMotion: 'no-preference' }); const control = await controlledLastExit(page);
+ await open(page, 'github-crash'); await expect(page.locator('[data-start]')).toBeEnabled(); await page.locator('[data-start]').click();
+ await expect(page.locator('.last-exit')).toHaveAttribute('data-motion-phase', 'racing'); const box = (await page.locator('[data-cashout]').boundingBox())!;
+ control.finish(true); await expect(page.locator('.last-exit')).toHaveAttribute('data-motion-phase', 'crashed');
+ await expect(page.locator('[data-start]')).toBeDisabled();
+ for (let i = 0; i < 5; i++) { await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2); await page.locator('[data-start]').dispatchEvent('click'); await page.waitForTimeout(60); }
+ expect(control.sent).toHaveLength(1);
+ await expect(page.locator('[data-start]')).toBeEnabled({ timeout: 3000 }); await page.locator('[data-start]').click(); await expect.poll(() => control.sent.length).toBe(2);
+});
+
+test('LAST EXIT titles follow the credited amount and confirmed multiplier', async ({ page }) => {
+ await fixture(page); await page.emulateMedia({ reducedMotion: 'reduce' }); const control = await controlledLastExit(page); await open(page, 'github-crash');
+ for (const [multiplier, returned, tone, title, stunt] of [[1.04, '1000', 'flat', 'СТАВКА ВЕРНУЛАСЬ', 'helicopter'], [1.5, '1500', 'win', 'ТЫ УШЁЛ', 'helicopter'], [3, '3000', 'win', 'ТЫ УШЁЛ', 'cargo-plane'], [9, '9000', 'big', 'ТЫ УШЁЛ', 'tunnel']] as const) {
+  await expect(page.locator('[data-start]')).toBeEnabled(); await page.locator('[data-start]').click(); await expect(page.locator('.last-exit')).toHaveAttribute('data-motion-phase', 'racing');
+  control.finish(false, multiplier, returned); await expect(page.locator('canvas')).toHaveAttribute('data-variant', stunt); await expect(page.locator('[data-card]')).toBeVisible();
+  await expect(page.locator('[data-card]')).toHaveAttribute('data-tone', tone); await expect(page.locator('[data-card-title]')).toHaveText(title);
+  await expect(page.locator('[data-result]')).toHaveText(tone === 'flat' ? 'Возврат 10,00' : 'Выплата +' + (Number(returned) / 100).toFixed(2).replace('.', ','));
+ }
+});
+
+test('LAST EXIT keeps a fixed scene and unclipped labels in both languages', async ({ page }) => {
+ test.setTimeout(150000);
+ for (const language of ['ru', 'en']) {
+  await page.addInitScript(value => localStorage.setItem('royal-language', value), language);
+  await fixture(page); await page.emulateMedia({ reducedMotion: 'reduce' }); const control = await controlledLastExit(page); await open(page, 'github-crash');
+  await expect(page.locator('[data-start]')).toBeEnabled(); await expect(page.locator('[data-start] span')).toHaveText(language === 'en' ? /RUN/ : /ЗАЕЗД/);
+  const stages: Record<string, string[]> = {};
+  const sweep = async (state: string) => {
+   for (const [width, height] of [[1110, 590], [1103, 850], [980, 670], [1018, 718], [762, 970], [387, 802], [846, 343], [314, 518], [562, 270]]) {
+    await page.setViewportSize({ width: Math.max(width, 320), height: Math.max(height, 300) });
+    await page.locator('#primary').evaluate((el, [w, h]) => { el.style.cssText = 'position:relative;width:' + w + 'px;height:' + h + 'px;min-height:0;margin:0;overflow:hidden'; const root = el.querySelector<HTMLElement>('.last-exit')!; root.style.minHeight = '0'; root.style.height = h + 'px'; }, [width, height]);
+    await page.evaluate(() => new Promise<void>(done => setTimeout(done, 160)));
+    const result = await page.evaluate(() => {
+     const root = document.querySelector('.last-exit')!, outer = root.getBoundingClientRect(), problems: string[] = [];
+     const box = (selector: string) => root.querySelector(selector)!.getBoundingClientRect();
+     const cross = (a: DOMRect, b: DOMRect) => !!a.width && !!b.width && a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1;
+     for (const selector of ['.le-logo', '.le-mult', '.le-mult p', '.le-next', '.le-next b', '.le-stop', '.le-wallet strong', '[data-stake-field]', '.le-primary', '.le-primary>span', '.le-primary small', '.le-message', '.le-plate', '.le-tools button', '[data-options]', '.le-card', '.le-card b', '.le-card strong'])
+      for (const el of Array.from(root.querySelectorAll<HTMLElement>(selector))) {
+       if (!el.getClientRects().length) continue; const r = el.getBoundingClientRect();
+       if (r.left < outer.left - 1 || r.top < outer.top - 1 || r.right > outer.right + 1 || r.bottom > outer.bottom + 1) problems.push(selector + ' outside');
+       if (selector !== '.le-stop' && el.clientWidth && el.scrollWidth > el.clientWidth + 1) problems.push(selector + ' cut ' + el.scrollWidth + '>' + el.clientWidth);
+       if (el.matches('button') && (r.width < 44 || r.height < 44)) problems.push(selector + ' small');
+      }
+     for (const [a, b] of [['.le-mult', '.le-logo'], ['.le-mult', '.le-next'], ['.le-card', '.le-mult'], ['.le-foot', '.le-stake']]) if (cross(box(a), box(b))) problems.push(a + ' over ' + b);
+     for (const button of Array.from(root.querySelectorAll('.le-primary'))) { if (!button.getClientRects().length) continue; const label = document.createRange(); label.selectNodeContents(button.querySelector('span')!); if (cross(label.getBoundingClientRect(), button.querySelector('svg')!.getBoundingClientRect())) problems.push('label under arrow'); }
+     const stage = box('.le-stage'); return { problems, stage: Math.round(stage.width) + 'x' + Math.round(stage.height), layout: (root as HTMLElement).dataset.priorityLayout };
+    });
+    expect(result.problems, language + ' ' + state + ' ' + width + 'x' + height + ' ' + result.layout).toEqual([]);
+    (stages[width + 'x' + height] ??= []).push(result.stage);
+   }
+  };
+  await sweep('ready'); await page.locator('[data-start]').click(); await expect(page.locator('.last-exit')).toHaveAttribute('data-motion-phase', 'racing'); await sweep('racing');
+  control.finish(true); await expect(page.locator('[data-card]')).toBeVisible(); await sweep('loss');
+  await expect(page.locator('[data-start]')).toBeEnabled(); await page.locator('[data-start]').click(); await expect(page.locator('.last-exit')).toHaveAttribute('data-motion-phase', 'racing'); control.finish(false, 9.6, '9600'); await expect(page.locator('[data-card]')).toBeVisible(); await sweep('win');
+  for (const [size, values] of Object.entries(stages)) expect(new Set(values).size, size + ' ' + values.join()).toBe(1);
+  await page.unrouteAll({ behavior: 'ignoreErrors' });
+ }
+});
+
 test('LAST EXIT waits for downloads and decoding, then shows the complete first loss', async ({ page }) => {
  await page.addInitScript(() => {
   const decode = HTMLImageElement.prototype.decode;
   HTMLImageElement.prototype.decode = async function () {
    await decode.call(this);
-   if (this.src.endsWith('/coupe-depth-roll.png')) await new Promise<void>(resolve => { (window as any).releaseLastExitDecode = resolve; });
+   if (this.src.endsWith('/coupe-depth-roll.webp')) await new Promise<void>(resolve => { (window as any).releaseLastExitDecode = resolve; });
   };
  });
  await fixture(page); await page.emulateMedia({ reducedMotion: 'no-preference' });
@@ -187,15 +247,15 @@ test('LAST EXIT waits for downloads and decoding, then shows the complete first 
  const sent = await lastExitWallet(page);
  let release!: () => void;
  const download = new Promise<void>(resolve => { release = resolve; });
- await page.route('**/media/last-exit/v2d/coupe-yaw.png', async route => { await download; await route.continue(); });
+ await page.route('**/media/last-exit/v3/coupe-yaw.webp', async route => { await download; await route.continue(); });
  try {
   await open(page, 'github-crash');
   await expect(page.locator('[data-loading]')).toBeVisible();
-  await expect(page.locator('[data-loading-count]')).toHaveText('14 / 16');
+  await expect(page.locator('[data-loading-count]')).toHaveText('11 / 13');
   await expect(page.locator('[data-start]')).toBeDisabled();
   expect(await page.locator('canvas').getAttribute('data-frames')).toBeNull();
   await page.locator('[data-start]').dispatchEvent('click'); expect(sent).toHaveLength(0);
-  release(); await expect(page.locator('[data-loading-count]')).toHaveText('15 / 16');
+  release(); await expect(page.locator('[data-loading-count]')).toHaveText('12 / 13');
   await expect(page.locator('[data-start]')).toBeDisabled();
   await page.evaluate(() => (window as any).releaseLastExitDecode());
   await expect(page.locator('.last-exit')).toHaveAttribute('data-asset-state', 'ready');
@@ -205,7 +265,7 @@ test('LAST EXIT waits for downloads and decoding, then shows the complete first 
   await expect(page.locator('canvas')).toHaveAttribute('data-cinematic', 'intercept');
   await expect(page.locator('canvas')).toHaveAttribute('data-cinematic', 'depth-rollover');
   await expect(page.locator('canvas')).toHaveAttribute('data-cinematic', 'explosion');
-  await expect(page.locator('[data-result]')).toHaveText('ВЫПЛАТА 0,00');
+  await expect(page.locator('[data-result]')).toHaveText('Ставка 0,10 проиграна');
   await expect(page.locator('[data-value]')).toHaveText('1.00×');
   await expect(page.locator('[data-value-fine]')).toBeHidden();
   expect(errors).toEqual([]);
@@ -247,7 +307,7 @@ test('LAST EXIT keeps starts blocked after an asset error and retries the missin
  await page.locator('[data-start]').dispatchEvent('click'); expect(sent).toHaveLength(0);
  fail = false; await page.locator('[data-loading-retry]').click();
  await expect(page.locator('.last-exit')).toHaveAttribute('data-asset-state', 'ready');
- await expect(page.locator('canvas')).toHaveAttribute('data-assets', '16');
+ await expect(page.locator('canvas')).toHaveAttribute('data-assets', '13');
  await expect(page.locator('[data-start]')).toBeEnabled();
 });
 
@@ -256,13 +316,13 @@ test('LAST EXIT closing during decoding cannot revive the disposed scene', async
   const decode = HTMLImageElement.prototype.decode;
   HTMLImageElement.prototype.decode = async function () {
    await decode.call(this);
-   if (this.src.endsWith('/coupe-depth-roll.png') && !(window as any).lastExitReleased)
+   if (this.src.endsWith('/coupe-depth-roll.webp') && !(window as any).lastExitReleased)
     await new Promise<void>(resolve => { (window as any).releaseLastExitDecode = resolve; });
   };
  });
  await fixture(page); await lastExitWallet(page);
  const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
- await open(page, 'github-crash'); await expect(page.locator('[data-loading-count]')).toHaveText('15 / 16');
+ await open(page, 'github-crash'); await expect(page.locator('[data-loading-count]')).toHaveText('12 / 13');
  await page.evaluate(() => (window as any).moduleHarness.close());
  await page.evaluate(() => { (window as any).lastExitReleased = true; (window as any).releaseLastExitDecode(); });
  await expect(page.locator('.last-exit')).toHaveCount(0);

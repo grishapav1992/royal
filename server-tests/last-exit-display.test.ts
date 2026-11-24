@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import type {ExpansionSession} from '../src/shared/casinoExpansion';
-import {raceAnchor,raceDisplay,validRaceTime,RACE_CONNECTION_GRACE_MS,type RaceAnchor} from '../src/ui/lastExitModel';
+import {raceAnchor,raceDisplay,validRaceTime,RACE_CONNECTION_GRACE_MS,type RaceAnchor} from '../games/last-exit/model';
 const session=(state:'active'|'settled'='active'):ExpansionSession=>({id:'a',gameId:'github-crash',rulesVersion:1,state,stakeUnits:'1000',spentUnits:'1000',returnedUnits:'0',startedAt:10000,serverNow:15000,multiplier:Math.exp(.06*5),view:{player:[],dealer:[],community:[],actions:[],phase:1,ended:state==='settled',message:''}});
 test('live presentation projects elapsed time only within its connection budget',()=>{
  const s=session(),a=raceAnchor(s,undefined,0);

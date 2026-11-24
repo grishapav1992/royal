@@ -1,6 +1,6 @@
 {
   "name": "@royal/last-exit",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "private": true,
   "gameId": "github-crash",
   "apiVersion": 1,
@@ -12,5 +12,11 @@
   ],
   "scripts": {
     "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
-  }
+  },
+  "preload": [
+    "last-exit/v1/coupe.webp",
+    "last-exit/v3/route-industrial.webp",
+    "last-exit/v1/patrol.webp",
+    "last-exit/v3/route-props.webp"
+  ]
 }

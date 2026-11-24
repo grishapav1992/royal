@@ -1,6 +1,20 @@
-import {routeProfiles} from './lastExitRoute';
-
-const files:Record<string,string>={highway:'v1/highway.webp',coupe:'v1/coupe.webp',patrol:'v1/patrol.webp',explosion:'v1/explosion.webp',helicopter:'v2d/helicopter.png',props:'v2d/props.png',side:'v2d/coupe-side.png',yaw:'v2d/coupe-yaw.png',depthRoll:'v2d/coupe-depth-roll.png',plane:'v2d/cargo-plane.png',ram:'v2d/patrol-ram.png',routeProps:'v2d/route-props.png',...Object.fromEntries(routeProfiles.map(p=>['route-'+p.key,'v2d/route-'+p.key+'.png']))};
+/** Literal paths keep the package to the files this game draws. */
+const files: Record<string, string> = {
+ coupe: '/assets/last-exit/v1/coupe.webp',
+ patrol: '/assets/last-exit/v1/patrol.webp',
+ explosion: '/assets/last-exit/v1/explosion.webp',
+ helicopter: '/assets/last-exit/v3/helicopter.webp',
+ 'cargo-plane': '/assets/last-exit/v3/cargo-plane.webp',
+ 'coupe-yaw': '/assets/last-exit/v3/coupe-yaw.webp',
+ 'coupe-depth-roll': '/assets/last-exit/v3/coupe-depth-roll.webp',
+ 'patrol-ram': '/assets/last-exit/v3/patrol-ram.webp',
+ 'route-props': '/assets/last-exit/v3/route-props.webp',
+ 'route-industrial': '/assets/last-exit/v3/route-industrial.webp',
+ 'route-interchange': '/assets/last-exit/v3/route-interchange.webp',
+ 'route-highway': '/assets/last-exit/v3/route-highway.webp',
+ 'route-last-exit': '/assets/last-exit/v3/route-last-exit.webp',
+};
+export const assetCount = Object.keys(files).length;
 export type LastExitAssetState={status:'loading'|'ready'|'error';loaded:number;total:number};
 
 /** Decode every route and ending before accepting a new run. */
@@ -11,6 +25,7 @@ export class LastExitAssets {
  private status:LastExitAssetState['status']='loading';
  get state():LastExitAssetState{return {status:this.status,loaded:this.images.size,total:Object.keys(files).length};}
  get ready(){return !this.disposed&&this.status==='ready';}
+ get names(){return Object.keys(files);}
  get(name:string){return this.images.get(name);}
  async load(changed:(state:LastExitAssetState)=>void){
   if(this.disposed)return false;
@@ -36,7 +51,7 @@ export class LastExitAssets {
       finish();
      }catch{finish(Error('Image decoding failed'));}
     };
-    image.src='/assets/last-exit/'+file;
+    image.src=file;
    })));
    if(this.disposed||generation!==this.generation)return false;
    // Exercise the canvas image path before the first outcome uses its sprites.

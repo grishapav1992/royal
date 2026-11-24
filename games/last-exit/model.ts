@@ -1,4 +1,4 @@
-import type {ExpansionSession} from '../shared/casinoExpansion';
+import type {ExpansionSession} from '../../src/shared/casinoExpansion';
 
 export type RaceAnchor={id:string;from:number;to:number;at:number;heardAt:number};
 export type RacePhase='idle'|'waiting'|'racing'|'escaped'|'crashed';

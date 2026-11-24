@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {raceDisplay,raceHundredths} from '../src/ui/lastExitModel';
+import {raceDisplay,raceHundredths} from '../games/last-exit/model';
 import type {ExpansionSession} from '../src/shared/casinoExpansion';
 import {ExpansionClient} from '../src/wallet/ExpansionClient';
 import {demoWallet} from '../src/wallet/WalletClient';
