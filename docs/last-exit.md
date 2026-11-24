@@ -1,5 +1,7 @@
 # LAST EXIT
 
+Текущее представление с ноября 2026 года описано в [кадре из боевика](game-layout/last-exit-action/README.md). Разделы ниже о 2D-сценах, путях `src/ui/LastExit*`, порядке финалов и смене локаций растворением относятся к прежним версиям. Описание сервера и задержки принятия выхода остаётся в силе.
+
 Original daytime Hollywood-style pursuit presentation for the existing `github-crash` game. The cabinet is named LAST EXIT. Its persistent game ID is retained so existing runs and the shared wallet continue to work. This is a presentation replacement for Crash, not an additional independent wallet or a second Crash entry.
 
 The player chooses a stake, starts a two-second countdown, then takes the exit before the server's crash deadline. Reaching 100x pays automatically. Manual exit uses the server's accepted timestamp, a multiplier rounded down to a hundredth, and a payout floored to 0.01 coin. Late exits lose. Saved due runs settle on the next wallet or game request. The renderer never receives a future crash point. Its live counter projects elapsed time between server replies; only the server confirms an outcome and paid multiplier.

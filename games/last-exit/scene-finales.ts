@@ -558,7 +558,7 @@ export abstract class SceneFinales extends SceneEffects {
   }
  }
  protected endingCars(dt: number, t: number, flow: number, chw: number) {
-  if (t < 1.5 && this.phase === 'escaped')
+  if (t < (this.variant === 'helicopter' ? 2.2 : 1.5) && this.phase === 'escaped')
    for (const side of [-1, 1])
     if (!this.sim.cop(side) && !this.fired.has('lost' + side))
      this.sim.make('cop', { side, x: side * this.sim.laneX, z: .7, v: flow + 6, tx: side * this.sim.laneX, hw: chw });
@@ -617,7 +617,7 @@ export abstract class SceneFinales extends SceneEffects {
      c.tx = t < 2.35 ? c.side * (park + .04) : -c.side * .1;
      c.nose = t > 2.2 ? -c.side * .75 : 0;
     }
-    if (Math.abs(A.x - B.x) < chw * (2 + 1.8 * Math.sin(.75)) + .05 && t > 2.35)
+    if (Math.abs(A.x - B.x) < chw * (2 + 1.8 * Math.sin(.75)) + .05 && t > 2.35 || t > 3.1)
      this.once('meet', () => { this.sound?.('hit', 1.4, 0); this.sparks(0, .14, 1.14, 60, 1.3, 0); this.glass(0, .2, 1.14, 26, 0); this.panels(0, .2, 1.14, 9, 0); this.beacon(A); this.beacon(B); this.shake = .85; this.stop = .05; B.state = 'spin'; B.damage = 2; B.vx = R(.4, .6); B.w = -1.6; B.v = flow; B.brake = 1; this.sim.trip(A, -1, .8); A.vx = -.5; A.vy = .62; A.v = flow; A.burn = 1; this.blast(-.12, 1.2, .55, 0); });
    }
    const K = this.sim.cars.find(c => c.kind === 'cop' && c.side === -1 && c.hop);
