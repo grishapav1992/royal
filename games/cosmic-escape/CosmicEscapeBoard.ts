@@ -1,7 +1,7 @@
-import { t as translateText, tr, locale } from '../i18n/index';
-import {SlotReelBoard} from './slotKit/SlotReelBoard';
-import {luelonSlotCellMultiplier,type LuelonSlotInfo,type LuelonSlotFeatures,type LuelonSlotFrame,type LuelonSlotEvent} from '../shared/luelonSlots';
-import type {LuelonTheme} from './LuelonArtwork';
+import { t as translateText, tr, locale } from '../../src/i18n/index';
+import {SlotReelBoard} from '../../src/ui/slotKit/SlotReelBoard';
+import {luelonSlotCellMultiplier,type LuelonSlotInfo,type LuelonSlotFeatures,type LuelonSlotFrame,type LuelonSlotEvent} from '../../src/shared/luelonSlots';
+import type {LuelonTheme} from '../../src/ui/LuelonArtwork';
 import {COSMIC_ESCAPE_ASSETS} from './CosmicEscapeAssets';
 const NAMES=[translateText('Капитан Астэр'),translateText('Принцесса Вега'),translateText('Робот Тин'),translateText('Кольцевая планета'),translateText('Красная ракета'),translateText('Синий кристалл'),translateText('Космическое щупальце'),translateText('Корабль WILD'),translateText('Портал')];
 export const cosmicSymbolName=(id:number)=>NAMES[id]??translateText('Пустая ячейка');

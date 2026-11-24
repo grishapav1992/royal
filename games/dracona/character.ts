@@ -6,11 +6,6 @@ export const CHARACTER_ASSETS = {
   castB: '/assets/dracona/hero-cast-b.webp',
   stanceAB: '/assets/dracona/hero-stance-ab.webp',
   stanceBA: '/assets/dracona/hero-stance-ba.webp',
-  reactions: {
-    neutral: { a: '/assets/dracona/hero-idle-a.png', b: '/assets/dracona/hero-idle-b.png' },
-    win: { a: '/assets/dracona/hero-idle-a.png', b: '/assets/dracona/hero-idle-b.png' },
-    bonus: { a: '/assets/dracona/hero-idle-a.png', b: '/assets/dracona/hero-idle-b.png' },
-  },
 } as const;
 
 const CLIP_MS = { cast: 1250, castB: 1042, stanceAB: 542, stanceBA: 709 };
@@ -35,10 +30,10 @@ export class CharacterDirector {
   private blink: HTMLImageElement;
   private fades: Animation[] = [];
 
-  constructor(private host: HTMLElement) {
+  constructor(private host: HTMLElement, label: string) {
     this.layers = Array.from(host.querySelectorAll<HTMLImageElement>('img'));
     this.host.setAttribute('role', 'img');
-    this.host.setAttribute('aria-label', 'Героиня с волшебной палочкой');
+    this.host.setAttribute('aria-label', label);
     this.layers.forEach(image => { image.alt = ''; image.setAttribute('aria-hidden', 'true'); });
     this.blink = new Image();
     this.blink.className = 'hero-blink';
@@ -46,7 +41,7 @@ export class CharacterDirector {
     this.blink.src = CHARACTER_ASSETS.wink;
     this.host.append(this.blink);
     this.host.dataset.characterState = 'idle';
-    const assets = [CHARACTER_ASSETS.idleA, CHARACTER_ASSETS.idleB, CHARACTER_ASSETS.wink, CHARACTER_ASSETS.cast, CHARACTER_ASSETS.castB, CHARACTER_ASSETS.stanceAB, CHARACTER_ASSETS.stanceBA, ...Object.values(CHARACTER_ASSETS.reactions).flatMap(poses => Object.values(poses))];
+    const assets = [CHARACTER_ASSETS.idleA, CHARACTER_ASSETS.idleB, CHARACTER_ASSETS.wink, CHARACTER_ASSETS.cast, CHARACTER_ASSETS.castB, CHARACTER_ASSETS.stanceAB, CHARACTER_ASSETS.stanceBA];
     for (const asset of new Set(assets)) void this.load(asset).catch(() => {});
     this.scheduleBlink();
     this.scheduleStance();
@@ -86,7 +81,8 @@ export class CharacterDirector {
       this.layers[next] = image;
       this.urls[next] = url;
       const started = performance.now();
-      const duration = this.reduced ? 0 : 120;
+      // Clips begin and end on the resting poses. Only the first frame of the cast differs slightly.
+      const duration = !this.reduced && asset === CHARACTER_ASSETS.cast ? 80 : 0;
       const timing: KeyframeAnimationOptions = { duration, easing: 'linear', fill: 'both' };
       const incomingFade = image.animate([{ opacity: 0 }, { opacity: 1 }], timing);
       const outgoingFade = outgoing.animate([{ opacity: 1 }, { opacity: 0 }], timing);
@@ -140,15 +136,22 @@ export class CharacterDirector {
     return this.motionTask;
   }
 
-  async react(kind: keyof typeof CHARACTER_ASSETS.reactions) {
+  /** A win or a bonus changes the stance. Short presentations keep the pose. */
+  async react(kind: 'neutral' | 'win' | 'bonus', brief = false) {
     await this.motionTask.catch(() => {});
     if (this.destroyed) return;
     const action = ++this.action;
     this.host.dataset.characterState = 'reaction';
     this.host.dataset.reaction = kind;
-    await this.show(CHARACTER_ASSETS.reactions[kind][this.pose]);
-    if (kind === 'win') await this.wink(action);
-    await pause(this.reduced ? 0 : 500);
+    if (kind !== 'neutral' && !brief && !this.reduced) {
+      this.motionTask = this.moveTo(this.pose === 'a' ? 'b' : 'a');
+      await this.motionTask.catch(() => {});
+      this.host.dataset.characterState = 'reaction';
+    } else {
+      await this.show(this.pose === 'a' ? CHARACTER_ASSETS.idleA : CHARACTER_ASSETS.idleB);
+      if (kind === 'win') await this.wink(action);
+      await pause(this.reduced ? 0 : brief ? 120 : 260);
+    }
     if (this.destroyed || action !== this.action) return;
     delete this.host.dataset.reaction;
     this.busy = false;

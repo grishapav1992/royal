@@ -1,0 +1,133 @@
+{
+  "published": true,
+  "release": "cosmic-cockpit-20261124-v1",
+  "sourceCommit": "38193b59e7a02da3d8c40bd9fe4664eed4d84bf8",
+  "baseCommit": "68ebb4bd6ceaa6979a5f64222eecfc54242cf70b",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/cosmic-cockpit-20261124-v1/source.tgz",
+    "sha256": "ea7578c4d6922a8f20bc1f4a57176ec19f2e5d8a3a34fbabaace6ff2678229c2",
+    "bytes": 3907,
+    "oldVersion": "1.1.1-578c5bff2f3f",
+    "imageTag": "royal-game:before-cosmic-cockpit-20261124-v1",
+    "image": "sha256:d7e80c51cc12561f9b2b552fedccc971e20cbbb668a88bd3223906b993fd3dbf",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/cosmic-escape/CosmicEscapeAssets.ts",
+      "games/cosmic-escape/CosmicEscapeAudio.ts",
+      "games/cosmic-escape/CosmicEscapeBoard.ts",
+      "games/cosmic-escape/CosmicEscapeRacer.ts",
+      "games/cosmic-escape/CosmicEscapeUI.ts",
+      "games/cosmic-escape/CosmicReactor.ts",
+      "games/cosmic-escape/cosmic-cockpit.css",
+      "games/cosmic-escape/cosmicText.ts"
+    ]
+  },
+  "module": {
+    "verified": true,
+    "gameId": "studio-cosmic-escape",
+    "version": "1.2.0-caa6eafc6387",
+    "bytes": 20756440,
+    "files": 28,
+    "beforeSha256": "36b8217f2676b1683501ff838b7c2b6e159a2c4a480955382a1d89186bb71243",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "8f86bb2310e94d274a0976dd45d29b959552adb7f446aaea6dd2fd5e1134272d",
+    "history": "/opt/royal-game-modules-state/history/20261123T232447-52291204312840ad9e1327909f2eead6.json"
+  },
+  "freeBefore": 11805814784,
+  "freeAfter": 11784724480,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8800,
+  "servicesPreserved": 11,
+  "wrapperSourceCommit": "38193b59e7a02da3d8c40bd9fe4664eed4d84bf8",
+  "previousVersion": "1.1.1-578c5bff2f3f",
+  "manifestSha256": "bf8c3c06a325672e979a359bc43669936edeb6df6d059155e6317dc87264510a",
+  "pointerSha256": "8f86bb2310e94d274a0976dd45d29b959552adb7f446aaea6dd2fd5e1134272d",
+  "priorPointerSha256": "36b8217f2676b1683501ff838b7c2b6e159a2c4a480955382a1d89186bb71243",
+  "releaseManifestSha256": "ee6ff9daa6c1816e8e4d862abee263a86b0a1e47296800377365865c8c281c41",
+  "receiptSha256": "e565de47897bbe8d72a4a667ee0e7dd41ffa381db6458fd6221684fa589e1c8b",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "projection": "shared inputs as in cosmic-racer-hd-20261123-v1, production base 68ebb4bd; only SlotDialog and SlotSettings differ from the live host sources, as in the previous Cosmic package",
+  "verification": {
+    "rtp": "passed in release:prepare (39 profiles, 21 stake policies)",
+    "typecheck": true,
+    "githubVerified": true,
+    "walletTests": 19,
+    "cosmicServerTests": 39,
+    "connectedBrowserTests": 20,
+    "browserReport": {
+      "release": "cosmic-cockpit-20261124-v1",
+      "version": "1.2.0-caa6eafc6387",
+      "sourceCommit": "38193b59e7a02da3d8c40bd9fe4664eed4d84bf8",
+      "moduleManifestSha256": "bf8c3c06a325672e979a359bc43669936edeb6df6d059155e6317dc87264510a",
+      "connectedHostPassed": true,
+      "recoveryPassed": true,
+      "walletTestsPassed": 19,
+      "cosmicServerTestsPassed": 39,
+      "connectedBrowserTests": 20,
+      "host": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact module bytes",
+      "browser": "Google Chrome",
+      "expectTimeoutMs": 45000,
+      "scenarios": [
+        "cockpit never moves through real rounds: 1440x900 with chat, 1440x900, 1280x720, 393x852, 852x393, 320x568, 568x320",
+        "cockpit ignores the length of every changing text on nine sizes",
+        "reel frame stays still while errors and retry appear",
+        "2K reel size with and without chat",
+        "field and actions without scrolling on eight sizes",
+        "settings, Stop and one accepted ten-cent round with a lost response and one debit",
+        "accepts 100 USDT and rejects the next cent",
+        "every mission shows its full price, one debit for a bought mission",
+        "count-only autoplay",
+        "ten paid autoplay spins through a natural bonus",
+        "natural bonus counters in both orientations",
+        "racer reactions",
+        "moving symbols through both phone orientations (Cosmic Escape alone)"
+      ],
+      "english": "host dictionary of main: no Russian labels in intro, idle, win, autoplay, purchase, settings, rules, bonus and mission",
+      "notChecked": [
+        "physical phones",
+        "Safari",
+        "listening quality",
+        "other games in the shared orientation scenario: their modules were not built here"
+      ]
+    },
+    "browserReportSha256": "f50f738a749acb768b0dfd95b7f5b6b9536575aad4a6bc2c94afd361b0f3b175",
+    "runs": [
+      "The first complete runs found that an error stretched the result strip on a landscape phone and that Auto and the series pause shared a cell by chance. Both were fixed before the package was prepared.",
+      "Local runs waited up to 45 seconds for the host because other builds loaded the computer. The checks themselves were unchanged."
+    ],
+    "github": "application checks, RTP gate and the Cosmic Escape qualification passed; the Neopolis qualification of the same pull request was still queued at merge, and the release does not touch that game",
+    "live": {
+      "health": 200,
+      "hostIndexUnchanged": true,
+      "moduleHostEntries": 124,
+      "unchangedModulePointers": 123,
+      "changedModulePointers": [
+        "studio-cosmic-escape"
+      ],
+      "packageFilesVerified": 29,
+      "packageFilesIncludeManifest": true,
+      "previousPackageFilesVerified": 29
+    },
+    "publicSignedInPlayChecked": false,
+    "publicGuestPlayChecked": false,
+    "publicGuestPlayReason": "The public site requires signing in before the catalogue.",
+    "productionAccountsOrRoundsCreated": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 60.71,
+    "healthOk": true,
+    "freeBefore": 11780411392,
+    "freeAfter": 11790897152,
+    "timerEnabled": true,
+    "timerActive": true
+  }
+}

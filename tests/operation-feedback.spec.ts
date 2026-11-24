@@ -46,7 +46,7 @@ test('all active house games keep normal requests separate from recovery',async(
    await expect(view.locator(games[id][0])).toBeDisabled();
    expect(await view.locator(games[id][0]).innerText()).not.toMatch(/проверить|проверь|check (?:round|move|result)/i);
    await expect(view.locator(recovery).filter({visible:true})).toHaveCount(0);
-   if(id==='studio-dracona')expect(await view.locator('.board').evaluate(e=>e.getAnimations({subtree:true}).filter(a=>a instanceof CSSAnimation&&a.animationName==='dracona-request-fall'&&a.playState==='running').length)).toBe(20);
+   if(id==='studio-dracona'){await expect(view.locator('.game')).toHaveAttribute('data-shut','true');expect(await view.locator('.leaves').evaluate(e=>e.getAnimations({subtree:true}).filter(a=>a instanceof CSSAnimation&&a.animationName==='dracona-request-seam'&&a.playState==='running').length)).toBe(1);}
   }finally{release();}
   await expect.poll(()=>page.evaluate(()=>{
    const h=(window as any)[Symbol.for('royal.game-host.v1')];return !h.expansionClient.busy&&!h.expansionClient.pending&&!h.demoWallet.busy&&!h.demoWallet.pending;

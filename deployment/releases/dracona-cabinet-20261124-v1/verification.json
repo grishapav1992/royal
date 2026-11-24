@@ -1,0 +1,120 @@
+{
+  "published": true,
+  "release": "dracona-cabinet-20261124-v1",
+  "sourceCommit": "4dd531f9fed553538444085078f1276c92201bfe",
+  "baseCommit": "68ebb4bd6ceaa6979a5f64222eecfc54242cf70b",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/dracona-cabinet-20261124-v1/source.tgz",
+    "sha256": "0fcc073ccc0905980f4002c08d8fe9cb6094121adae738dbef652b4ffcd4aee0",
+    "bytes": 25927,
+    "oldVersion": "1.2.1-6505fff88684",
+    "imageTag": "royal-game:before-dracona-cabinet-20261124-v1",
+    "image": "sha256:d7e80c51cc12561f9b2b552fedccc971e20cbbb668a88bd3223906b993fd3dbf",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/dracona/board.ts",
+      "games/dracona/layout.ts",
+      "games/dracona/text.ts"
+    ]
+  },
+  "module": {
+    "verified": true,
+    "gameId": "studio-dracona",
+    "version": "1.3.0-da82d0e14fdc",
+    "bytes": 5101077,
+    "files": 29,
+    "beforeSha256": "fce544cfb6413a9dce51adc787a96126cf91d07f5c10a95906d58e963b411c39",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "d5d54905132eaf8620f6a8ebfd843a7622daee23e3ebcfad6a882a2e28b72a21",
+    "history": "/opt/royal-game-modules-state/history/20261123T230809-aeafbc218c644438835c097df1efad2d.json"
+  },
+  "freeBefore": 11837292544,
+  "freeAfter": 11831980032,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8800,
+  "servicesPreserved": 11,
+  "wrapperSourceCommit": "4dd531f9fed553538444085078f1276c92201bfe",
+  "gameSourceCommit": "fb92c22a5d09c4dcb4b7413c8862505e0488796f",
+  "previousVersion": "1.2.1-6505fff88684",
+  "manifestSha256": "a69d32c94e5f350e24b6e9626103d08e98ca6332d99fac450eaf875f218b753d",
+  "pointerSha256": "d5d54905132eaf8620f6a8ebfd843a7622daee23e3ebcfad6a882a2e28b72a21",
+  "priorPointerSha256": "fce544cfb6413a9dce51adc787a96126cf91d07f5c10a95906d58e963b411c39",
+  "releaseManifestSha256": "7b90a1eb4666e1228bd092329323e603a37d567f1c28597db4ec79f2f2446466",
+  "receiptSha256": "8f0e16be51921fc2d54e04af9efa30ca90e733c8d753c0da539180558a179d3f",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "projection": "shared inputs and GameModuleCatalog as in desktop-stake-lists-20261123-v1, production 68ebb4bd; the unused compactStyles.ts and priorityStyles.ts stay on the server unchanged",
+  "verification": {
+    "rtp": "passed in release:prepare",
+    "typecheck": true,
+    "githubVerified": true,
+    "walletTests": 19,
+    "draconaServerTests": 34,
+    "browser": "Google Chrome through Playwright",
+    "connectedBrowserTests": 5,
+    "browserReport": {
+      "release": "dracona-cabinet-20261124-v1",
+      "version": "1.3.0-da82d0e14fdc",
+      "sourceCommit": "4dd531f9fed553538444085078f1276c92201bfe",
+      "moduleManifestSha256": "a69d32c94e5f350e24b6e9626103d08e98ca6332d99fac450eaf875f218b753d",
+      "connectedHostPassed": true,
+      "recoveryPassed": true,
+      "walletTestsPassed": 19,
+      "host": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact module bytes",
+      "browser": "Google Chrome",
+      "scenarios": [
+        "field and essential actions fit on eight sizes from 1440x900 to 568x320",
+        "autoplay window, accepted ten-cent round, Stop, lost response with one debit, reopening",
+        "natural bonus and its controls through both orientations",
+        "animations keep the field and actions through both orientations",
+        "closed doors during a held request, ten paid autoplay spins through a natural bonus with exactly ten debits, Stop"
+      ],
+      "earlierOnSameGameSource": [
+        "bonus reload without another stake (neopolis stand)",
+        "34 Dracona server tests with a temporary PostgreSQL",
+        "English: no Russian labels in idle, play, transfer, bonus, dialogs, rules, autoplay and recovery (module stand)"
+      ],
+      "notChecked": [
+        "physical phones",
+        "Safari",
+        "listening quality"
+      ],
+      "packageBytes": "identical to the package built from 210c8c934dd2bcb8d27fd01681d0a9680f166a83 and checked in the browser"
+    },
+    "browserReportSha256": "2d2f209d3a6b632907e65d028e374a925a0d60d217e059abf7f1cb411967c0ae",
+    "retargeted": "The package was prepared from 210c8c93 over 8ff427eb first. Another release replaced the host before publication, so it was prepared again from 4dd531f9 over 68ebb4bd with identical package bytes.",
+    "live": {
+      "health": 200,
+      "moduleHostEntries": 124,
+      "unchangedModulePointers": 123,
+      "changedModulePointers": [
+        "studio-dracona"
+      ],
+      "packageFilesVerified": 29,
+      "manifestVerified": true,
+      "previousPackageFilesVerified": 29,
+      "hostIndexUnchanged": true
+    },
+    "publicSignedInPlayChecked": false,
+    "publicGuestPlayChecked": false,
+    "publicGuestPlayReason": "The public site requires signing in before the catalogue.",
+    "productionAccountsOrRoundsCreated": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 74.17,
+    "healthOk": true,
+    "freeBefore": 11827703808,
+    "freeAfter": 11824250880,
+    "removedEntries": 0,
+    "timerEnabled": true,
+    "timerActive": true
+  }
+}

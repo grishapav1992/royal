@@ -1,0 +1,131 @@
+{
+  "release": "skin-walking-20261124-v1",
+  "sourceCommit": "68ebb4bd6ceaa6979a5f64222eecfc54242cf70b",
+  "baseCommit": "8ff427eba1bca9c285134cc06bbb2aba4c66bc5a",
+  "githubSourceProof": "5d2cb3f57f03f6b553f1032e8c7f337b15d67327c3177bf3849d3ccaa920050c",
+  "host": {
+    "image": "sha256:d7e80c51cc12561f9b2b552fedccc971e20cbbb668a88bd3223906b993fd3dbf",
+    "rollbackImage": "sha256:f40a06e1ae88820e66590d43ec1e132afcd6ee2db070276a34b6c2820d47200c",
+    "sourceBackupSha256": "cf54b30f4c1b4265b90bbebfd59d4e4cdef9cf360f04377620bdbac0a0b3a692",
+    "sourceBackupBytes": 1710,
+    "sourceFiles": [
+      "src/game/skinPoseAlignment.ts"
+    ],
+    "clientFiles": {
+      "/assets/ActivitiesUI-CAHUYooe.js": "57bd210972cfd3765c48f712ddeb01cf1c6e626e766e05dfda01efe803d2506e",
+      "/assets/ClubWorld-On5mbWIm.js": "e304d4c670503dfe5e17f27780d723d716f2cc456a61ae55d350581327c522f0",
+      "/assets/GameHostRuntime-iQ0aGz0M.js": "96679ffc0ef2ed0c27632d25d1fa0aba5ba7cd6f675407dcbf9c0a1d7ff83824",
+      "/assets/index-DOTz6EOE.js": "ab96f3850680d656f7d3845df70f878c632be71d30492403083381a045f4f462",
+      "/assets/main-CRIOJyLR.js": "922f55a137f01e554729620a065cb72c5afedbba0718c54cd1a53df259206a7e",
+      "/assets/phaser-BMxfREJ8.js": "6d84a37d60ae2dcc9405214210bef9d8168d4818880b72e0758728443e098fdb",
+      "/assets/playerLevelStatus-DwOIaHFj.js": "8fdd8fa14f7ae695937610733418f82fae2fa49c0c47a702f2c892d84bf41634",
+      "/assets/PvpUI-BpiqFTjI.js": "156a342bae9bd2022b6c263cc2a0fb1ba89ba181618fd736f74efa412374975a",
+      "/": "d0c43d529882d3296b749f084a89fb77f7f72c9fd70510174f973b022a413766"
+    },
+    "backendFiles": 0,
+    "gameDataPreserved": true
+  },
+  "catalogue": {
+    "firstFloorGames": 19,
+    "unchangedModulePointers": 124,
+    "addedGames": [],
+    "restoredGames": []
+  },
+  "checks": {
+    "releaseBuild": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 1145057
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 27632
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 620690
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 23531
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 67
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 21
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 31
+      }
+    ],
+    "walletServerChecks": 19,
+    "installerChecks": 20,
+    "poseAlignmentChecks": 4,
+    "browser": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "soldierStepScale": 1,
+        "markedStepsKeepOrientation": true,
+        "chatConnected": true,
+        "walletRecovery": true,
+        "sameOperation": true,
+        "singleDebitCents": 10
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "soldierStepScale": 1,
+        "markedStepsKeepOrientation": true,
+        "chatConnected": true,
+        "walletRecovery": true,
+        "sameOperation": true,
+        "singleDebitCents": 10
+      }
+    ],
+    "testedBackend": "d549a9dfdec49d406959b34d4702118253f3bcfee483d29ec11d71b796e7b15e",
+    "publicHealth": 200
+  },
+  "financialBackup": {
+    "path": "/opt/royal-backups/skin-walking-20261124-v1/financial.dump",
+    "sha256": "fea4b5e6d6037c619b771652c8b505c3151f4e97d6210d9517fe47aa9c29ebc6",
+    "bytes": 50409215,
+    "databaseRestored": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 76.08,
+    "release": "skin-walking-20261124-v1",
+    "sourceCommit": "68ebb4bd6ceaa6979a5f64222eecfc54242cf70b",
+    "freeBefore": 11847041024,
+    "freeAfter": 11857805312,
+    "removedEntries": 24
+  },
+  "timer": {
+    "enabled": true,
+    "active": true
+  },
+  "maintenanceFreeBytes": 11859005440,
+  "availableBytes": 11846737920,
+  "transportCleanup": {
+    "archive": "/opt/royal-incoming/skin-walking-20261124-v1.tgz",
+    "archiveBytes": 2294258,
+    "freeBefore": 11844440064,
+    "freeAfter": 11846737920
+  }
+}
