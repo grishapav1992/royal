@@ -1,0 +1,106 @@
+{
+  "published": true,
+  "release": "cosmic-crew-module-20261124-v1",
+  "sourceCommit": "b97848bf2d267d7ccc255d28621bddd9fcbd83ee",
+  "baseCommit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/cosmic-crew-module-20261124-v1/source.tgz",
+    "sha256": "e74a43d0520a382a516cfef3e10bbabfe14e89b3d9f93bf76aa9ebbc6ecf7d96",
+    "bytes": 41373,
+    "oldVersion": "1.2.0-caa6eafc6387",
+    "imageTag": "royal-game:before-cosmic-crew-module-20261124-v1",
+    "image": "sha256:2a3b9ebfb37444da4a752c803fbb742d203b74315df83b38da2d7890b8f79e99",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/cosmic-escape/CosmicCrewClient.ts",
+      "games/cosmic-escape/CosmicCrewView.ts"
+    ]
+  },
+  "module": {
+    "verified": true,
+    "gameId": "studio-cosmic-escape",
+    "version": "1.3.0-8d19b794f255",
+    "bytes": 39079960,
+    "files": 48,
+    "beforeSha256": "8f86bb2310e94d274a0976dd45d29b959552adb7f446aaea6dd2fd5e1134272d",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "6e808f8923489ee0a2f1e56f3ec6b3d94f5705c7df0514cdec4f27b4d5ab2ade",
+    "history": "/opt/royal-game-modules-state/history/20261124T123442-053362b527b14666bcb615b1b1209fa7.json"
+  },
+  "freeBefore": 11562356736,
+  "freeAfter": 11523002368,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8821,
+  "servicesPreserved": 11,
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "projection": "shared inputs as in meme-windows-20261124-v1 for the live host; only GameModuleCatalog, SlotDialog and SlotSettings keep the bytes of the previous Cosmic package",
+  "verification": {
+    "release": "cosmic-crew-module-20261124-v1",
+    "version": "1.3.0-8d19b794f255",
+    "sourceCommit": "b97848bf2d267d7ccc255d28621bddd9fcbd83ee",
+    "moduleManifestSha256": "302fa9d999c6c9bc96e333d523d9804b066e325a0b80b7befda58e71c0ae4347",
+    "connectedHostPassed": true,
+    "recoveryPassed": true,
+    "serverTestsPassed": 70,
+    "connectedBrowserTests": 19,
+    "englishPassed": true,
+    "backend": "dist-server/index.js 0f11c58d9849df918373e028a91f6e7effcd6d397bb6045e36e316be6c313656, the bytes running in production",
+    "host": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact module bytes",
+    "browser": "Google Chrome",
+    "expectTimeoutMs": 45000,
+    "scenarios": [
+      "field and actions without scrolling",
+      "results stay in the controls and the reel frame is still",
+      "2K reel size with and without chat",
+      "cockpit, crew plate, podium and heroine never move through real rounds: 1440x900 with chat, 1440x900, 1280x720, 393x852, 852x393, 320x568, 568x320",
+      "cockpit ignores the length of every changing text on nine sizes",
+      "three full mission prices and one debit",
+      "crew: one point for a ten cent round, locked capsule and 403, new character, reveal, lost reply of a saved choice, closed during reels and a mission, kept after reopening and reload, no wallet entries",
+      "crew service failure leaves the game playable",
+      "100 USDT and the next cent",
+      "settings, Stop and one ten cent round",
+      "count-only autoplay",
+      "ten paid spins through a natural bonus",
+      "racer reactions",
+      "English without Russian labels on the crew screens"
+    ]
+  },
+  "public": {
+    "health": 200,
+    "home": 200,
+    "filesVerified": 48,
+    "manifest": true,
+    "pointers": 125,
+    "unchangedPointers": 124,
+    "changed": [
+      "studio-cosmic-escape"
+    ],
+    "previousPackageServed": true,
+    "guestHomeWithoutErrors": [
+      "1440x900",
+      "393x852"
+    ]
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 75.45,
+    "timer": "enabled and active",
+    "freeBefore": 11558625280,
+    "freeAfter": 11555069952,
+    "removedEntries": 0,
+    "removedImageTags": 0
+  },
+  "notChecked": [
+    "signed-in play on the public site",
+    "physical phones",
+    "Safari"
+  ]
+}
