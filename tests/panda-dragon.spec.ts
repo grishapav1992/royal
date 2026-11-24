@@ -43,6 +43,7 @@ test('Royal: десять сотых, потеря ответа, восстан�
   page.on('pageerror', error => errorMessages.push(error.message));
   page.on('request', request => { if (request.url().includes('lovable.app')) externalMedia.push(request.url()); });
   const headers = await enterRoyal(page);
+  await expect(page.locator('#casino-catalog [data-platform-game]').first()).toHaveAttribute('data-platform-game', gameId);
   const mini = await openDragonPath(page);
   await expect(mini.locator('#chat-input')).toBeVisible();
   await mini.locator('#chat-input').fill('Проверка чата рядом с «Путём дракона»');
