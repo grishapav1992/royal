@@ -459,7 +459,7 @@ async function watchCosmicCockpit(page:Page){
  });
  return ()=>page.evaluate(()=>(window as any).cosmicCockpit() as {frames:number;phases:string[];places:string[];parts:number});
 }
-for(const [width,height,chatOpen] of [[1440,900,true],[1440,900,false],[1280,720,false],[393,852,false],[852,393,false],[320,568,false],[568,320,false]] as const)test(`Cosmic Escape cockpit never moves through real rounds: ${width}x${height}${chatOpen?' with chat':''}`,async({page,roomPath})=>{
+for(const [width,height,chatOpen] of [[1440,900,true],[1280,720,true],[1440,900,false],[1280,720,false],[393,852,false],[852,393,false],[320,568,false],[568,320,false]] as const)test(`Cosmic Escape cockpit never moves through real rounds: ${width}x${height}${chatOpen?' with chat':''}`,async({page,roomPath})=>{
  test.setTimeout(240000);await enterGameHall(page,roomPath);await page.setViewportSize({width,height});
  const id='studio-cosmic-escape',chat=page.locator('#club-chat-dock');await open(page,id);
  if(await chat.isVisible()!==chatOpen){if(chatOpen||width>=1080)await page.locator('#mini-dialog .game-chat-toggle').click();else await chat.locator('.game-chat-close').click();}
@@ -507,6 +507,41 @@ test('Cosmic Escape cockpit ignores the length of every changing text',async({pa
   });
   expect(moved).toEqual([]);
  });
+});
+
+test('Cosmic Escape labels stay whole beside the open chat',async({page,roomPath})=>{
+ test.setTimeout(180000);await enterGameHall(page,roomPath);await page.setViewportSize({width:1440,height:900});
+ const id='studio-cosmic-escape';await open(page,id);const game=page.locator('#mini-game > .cx-game'),chat=page.locator('#club-chat-dock');
+ await expect(game).toHaveAttribute('data-crew','ready');if(!await chat.isVisible())await page.locator('#mini-dialog .game-chat-toggle').click();await expect(chat).toBeVisible();
+ const sizes=[[1920,1080],[1600,1000],[1600,900],[1440,900],[1366,768],[1280,800],[1280,720],[1250,1000]];
+ const whole=async(state:string)=>{for(const [width,height] of sizes){
+  await page.setViewportSize({width,height});await page.evaluate(()=>document.fonts.ready.then(()=>new Promise<void>(r=>setTimeout(r,250))));
+  expect(await game.evaluate(root=>{
+   const box=(s:string)=>root.querySelector(s)!.getBoundingClientRect(),problems:string[]=[];
+   for(const e of root.querySelectorAll<HTMLElement>('[data-cx-crew-title],[data-cx-crew-count],[data-cx-crew-note],[data-cx-crew-gain],[data-cx-newcomer],[data-cx-mode],.cx-portals h3,.cx-portals header strong,.cx-ladder li,.cx-ladder li span,.cx-missions b,.cx-missions small,.cx-energy h3,[data-lg-factor],[data-cx-result-amount],[data-cx-result-title],[data-cx-result-note],[data-lg-balance]')){
+    if(!e.offsetParent||!e.textContent!.trim())continue;
+    if(e.scrollWidth>e.clientWidth+1&&e.clientWidth||e.scrollHeight>e.clientHeight+3&&e.clientHeight&&getComputedStyle(e).overflowY!=='visible')problems.push((e.className||e.getAttributeNames().find(n=>n.startsWith('data-'))||e.tagName)+': '+e.textContent);
+   }
+   const clear=(a:string,b:string,gap:number)=>{const p=box(a),q=box(b);if(p.right+gap>q.left&&q.right+gap>p.left&&p.bottom+gap>q.top&&q.bottom+gap>p.top)problems.push(a+' touches '+b);};
+   clear('.cx-stepper','[data-lg-spin]',4);clear('.cx-portals','.cx-missions',8);clear('.cx-portals','.cx-frame',8);clear('.cx-result','.cx-frame',8);clear('[data-cx-crew]','.cx-result',4);clear('[data-cx-crew]','.cx-money',4);
+   if(box('.cx-energy').right>box('.cx-scene').right||box('.cx-missions').right>box('.cx-scene').right||box('.cx-portals').top<box('.cx-scene').top)problems.push('outside the scene');
+   // The heroine keeps at least half of the scene height beside the chat.
+   if(box('.cx-alien').height<box('.cx-scene').height*.5)problems.push('small heroine '+box('.cx-alien').height);
+   return problems;
+  }),state+' '+width+'x'+height).toEqual([]);
+ }await page.setViewportSize({width:1440,height:900});};
+ const round=async()=>{await page.locator('[data-lg-spin]').click();await expect(game).not.toHaveAttribute('data-phase','idle');await expect.poll(()=>game.evaluate(e=>e.dataset.phase==='idle'&&!e.dataset.animationToken),{timeout:60000}).toBe(true);};
+ const points=async(...cents:number[])=>expect((await page.request.post('/__test/layout/crew',{data:{cents}})).ok()).toBe(true);
+ await points(...Array(4).fill(1000));await round();await expect(game.locator('[data-cx-crew-gain]')).toHaveText('+33');await whole('progress');
+ expect((await page.request.post('/__test/layout/bonus',{data:{gameId:id,scenario:'win'}})).ok()).toBe(true);await round();await whole('win');
+ await game.evaluate(root=>{const set=(s:string,t:string)=>{root.querySelector(s)!.textContent=t;};root.querySelector<HTMLElement>('[data-cx-result]')!.dataset.kind='return';set('[data-cx-result-amount]','1 234,56');set('[data-cx-result-title]','Возврат части ставки · Линия 18 · 3 × Космическое щупальце с WILD');set('[data-cx-result-note]','×0,2 от ставки · зачислено на баланс');});await whole('longest result');
+ await points(...Array(6).fill(5000));await round();await expect(game).toHaveAttribute('data-crew','new');await whole('new character');
+ await game.locator('[data-cx-crew]').click();await game.locator('[data-lg-dialog-action="crew-choose:silver"]').click();await expect(game).toHaveAttribute('data-crew','full');await whole('silver');
+ // A lost reply takes the row without touching portals, missions or the field.
+ await page.setViewportSize({width:1280,height:720});await page.route('**/api/demo-wallet/expansion',route=>route.abort(),{times:1});await page.locator('[data-lg-spin]').click();
+ const retry=page.locator('[data-lg-retry]');await expect(retry).toBeVisible();
+ expect(await game.locator('.cx-feedback').evaluate(e=>[...e.querySelectorAll<HTMLElement>('.lg-error,.lg-status,button')].filter(n=>n.offsetParent&&n.scrollHeight>n.clientHeight+3).map(n=>n.textContent))).toEqual([]);
+ await retry.click();await finish(page,id);
 });
 
 test('Cosmic Escape shows the full price of every mission and charges it once',async({page,roomPath})=>{

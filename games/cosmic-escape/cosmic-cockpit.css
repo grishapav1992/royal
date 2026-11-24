@@ -339,12 +339,6 @@
 .cx-crew [data-cx-crew-gain] { flex: none; min-width: 30px; height: 1.3em; color: var(--ce-amber-hi); text-align: right; }
 .cx-crew > .cx-crew-bar { flex: none; display: block; height: 6px; border-radius: 3px; overflow: hidden; background: #3A3048; }
 .cx-crew-bar i { display: block; height: 100%; background: var(--cx-crew-tone); transition: width .4s ease; }
-@container cx-scene (max-width: 1250px) {
-  .cx-game[data-slot-priority="full"] .cx-crew { padding: 8px; font-size: 12px; }
-  .cx-game[data-slot-priority="full"] .cx-crew > span:first-child,   .cx-game[data-slot-priority="full"] .cx-crew > .cx-crew-bar + span { height: 18px; }
-  .cx-game[data-slot-priority="full"] .cx-crew [data-cx-crew-title] { font-size: 13px; }
-  .cx-game[data-slot-priority="full"] .cx-crew [data-cx-crew-gain] { min-width: 22px; }
-}
 .cx-newcomer { flex: none; padding: 8px 14px; border-radius: 12px; background: rgba(91,228,223,.16); color: var(--ce-cyan); font-size: 15px; font-weight: 700; }
 .cx-newcomer[hidden], .cx-game:not([data-slot-priority="full"]) .cx-newcomer { display: none; }
 .cx-result:has(.cx-newcomer:not([hidden])) .cx-mode { display: none; }
@@ -687,6 +681,10 @@
   .cx-bar { column-gap: 14px; padding: 0 16px; }
   .cx-bar-left, .cx-bar-right { gap: 8px; }
 }
+@container cx-bar (max-width: 1000px) {
+  .cx-money { width: 98px; } .cx-lastwin { width: 66px; }
+  .cx-game .cx-bar .cx-stepper > [data-stake-field] { flex-basis: 96px; width: 96px !important; }
+}
 /* Low desktop windows give their height to the field. */
 @container cx-scene (max-height: 600px) {
   .cx-game[data-slot-priority="full"] .cx-deck { --top: 12px; --strip: 60px; --dome: 58px; --plate: 66px; }
@@ -695,6 +693,61 @@
   .cx-game[data-slot-priority="full"] .cx-result-text span { font-size: 14px; }
   .cx-game[data-slot-priority="full"] .cx-ladder-note { display: none; }
   .cx-game[data-slot-priority="full"] .cx-ladder li { padding: 4px 10px; }
+}
+
+/* Narrow desktop scenes, usually beside the open chat. Portals and missions leave the side column, its width goes to the heroine. */
+@container cx-scene (max-width: 1250px) {
+  .cx-game[data-slot-priority="full"] .cx-deck {
+    --alien: min(250px, calc(clamp(112px, 33cqw - 234px, 330px) + clamp(146px, 12.2cqw, 178px) + var(--gap)));
+    /* The side column is gone together with its gap: the podium and the heroine keep their formulas. */
+    --side: calc(0px - var(--gap));
+    --band: 76px;
+    --fw: min(calc(100cqw - var(--alien) - var(--gauge) - 2 * var(--gap) - 18px), calc((100cqh - var(--top) - var(--band) - 24px - var(--strip) - var(--dome)) * 858 / 548));
+    grid-template-columns: var(--alien) var(--fw) var(--gauge);
+    grid-template-rows: var(--band) var(--fh) var(--strip);
+    grid-template-areas: "alien band band" "alien reels energy" "alien result result";
+    height: calc(var(--top) + var(--band) + 24px + var(--fh) + var(--strip) + var(--dome));
+  }
+  .cx-game[data-slot-priority="full"] .cx-portals { grid-area: band; margin-right: 146px; flex-direction: row; align-items: center; gap: 14px; padding: 0 16px; border-radius: 22px; }
+  .cx-game[data-slot-priority="full"] .cx-portals > header { flex: none; flex-direction: column; align-items: flex-start; gap: 6px; }
+  .cx-game[data-slot-priority="full"] .cx-orbs { flex: 0 1 150px; min-width: 0; }
+  .cx-game[data-slot-priority="full"] .cx-ladder { flex: 1 1 0; min-width: 0; flex-direction: row; gap: 6px; }
+  .cx-game[data-slot-priority="full"] .cx-ladder li { flex: 1 1 0; min-width: 0; flex-direction: column; align-items: center; gap: 0; padding: 5px 4px; font-size: 13px; line-height: 1.25; }
+  .cx-game[data-slot-priority="full"] .cx-ladder li span:last-child { font: 700 16px/1.2 var(--cx-display); }
+  .cx-game[data-slot-priority="full"] .cx-ladder-note { display: none; }
+  .cx-game[data-slot-priority="full"] .cx-missions { grid-area: band; justify-self: end; width: 134px; min-height: 0; padding: 0 12px; border-radius: 22px; }
+  .cx-game[data-slot-priority="full"] .cx-missions small { font-size: 12px; line-height: 1.25; }
+  .cx-game[data-slot-priority="full"] .cx-result-text b { font-size: 16px; line-height: 1.2; white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .cx-game[data-slot-priority="full"] .cx-result-text span { font-size: 14px; }
+}
+/* No room above the field: portals and missions stand in the result row. */
+@container cx-scene (max-width: 1250px) and ((min-aspect-ratio: 1531/1000) or (max-height: 640px)) {
+  .cx-game[data-slot-priority="full"] .cx-deck {
+    --portals: 150px; --missions: 112px;
+    --fw: min(calc(100cqw - var(--alien) - var(--gauge) - 2 * var(--gap) - 18px), calc((100cqh - var(--top) - 12px - var(--strip) - var(--dome)) * 858 / 548));
+    --tail: calc(var(--missions) - var(--gap) - var(--gauge));
+    grid-template-columns: var(--alien) calc(var(--fw) - var(--portals) - var(--tail) - 2 * var(--gap)) var(--portals) var(--tail) var(--gauge);
+    grid-template-rows: var(--fh) var(--strip);
+    grid-template-areas: "alien reels reels reels energy" "alien result portals missions missions";
+    height: calc(var(--top) + var(--fh) + 12px + var(--strip) + var(--dome));
+  }
+  .cx-game[data-slot-priority="full"] .cx-portals { grid-area: portals; margin: 0; flex-direction: column; justify-content: center; align-items: stretch; gap: 3px; padding: 0 12px; }
+  .cx-game[data-slot-priority="full"] .cx-portals > header { flex-direction: row; align-items: baseline; }
+  .cx-game[data-slot-priority="full"] .cx-portals h3 { font-size: 14px; }
+  .cx-game[data-slot-priority="full"] .cx-orbs { flex: none; }
+  .cx-game[data-slot-priority="full"] .cx-orbs i { flex: 0 0 24px; }
+  .cx-game[data-slot-priority="full"] .cx-ladder { display: none; }
+  .cx-game[data-slot-priority="full"] .cx-missions { grid-area: missions; justify-self: stretch; width: auto; align-items: center; padding: 0 6px; }
+  .cx-game[data-slot-priority="full"] .cx-missions small { display: none; }
+  .cx-game[data-slot-priority="full"] :is(.cx-mode, .cx-newcomer) { display: none; }
+  .cx-game[data-slot-priority="full"] .cx-result { padding: 0 14px; gap: 12px; }
+  .cx-game[data-slot-priority="full"] .cx-result-text { gap: 0; }
+  .cx-game[data-slot-priority="full"] .cx-result-text b { font-size: 12.5px; }
+  .cx-game[data-slot-priority="full"] .cx-result:is([data-kind="idle"], [data-kind="none"], [data-kind="spin"]) .cx-result-text b { font-size: 15px; }
+  .cx-game[data-slot-priority="full"] .cx-result-text span { font-size: 12px; line-height: 1.2; }
+  .cx-game[data-slot-priority="full"] .cx-amount { font-size: 24px; }
+  /* Errors take the whole row, also over portals and missions. */
+  .cx-game[data-slot-priority="full"] .cx-feedback { grid-column: 2 / -1; grid-row: 2; }
 }
 
 /* Phone portrait and narrow tablets: racer and counters above a full-width field. */
