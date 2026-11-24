@@ -213,6 +213,30 @@
       "baseSha256": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
       "sha256": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef"
     },
+    "src/shared/dragonPathLayout.ts": {
+      "path": "src/shared/dragonPathLayout.ts",
+      "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+      "baseSha256": "022647095aff9d7e2b9df39c90b277cfb60f3176d93ac504207d2d5167b93458",
+      "sha256": "022647095aff9d7e2b9df39c90b277cfb60f3176d93ac504207d2d5167b93458"
+    },
+    "src/shared/dragonPathMath.ts": {
+      "path": "src/shared/dragonPathMath.ts",
+      "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+      "baseSha256": "55cb7062fb8098ad58b228e0648b61a040c98c58e4c054b08c124dffa71de80e",
+      "sha256": "55cb7062fb8098ad58b228e0648b61a040c98c58e4c054b08c124dffa71de80e"
+    },
+    "src/shared/dragonPathProtocol.ts": {
+      "path": "src/shared/dragonPathProtocol.ts",
+      "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+      "baseSha256": "aa0e20250aa15c724e38ca611418c7e435f30ff15244af689cf19865f8ef4fca",
+      "sha256": "aa0e20250aa15c724e38ca611418c7e435f30ff15244af689cf19865f8ef4fca"
+    },
+    "src/shared/dragonPathRound.ts": {
+      "path": "src/shared/dragonPathRound.ts",
+      "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+      "baseSha256": "74ee227cdc25ad276671c0f07f1363647f6c54e8e918b3f3527a62d347ad8794",
+      "sha256": "74ee227cdc25ad276671c0f07f1363647f6c54e8e918b3f3527a62d347ad8794"
+    },
     "src/shared/forestHeartMath.ts": {
       "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
       "path": "src/shared/forestHeartMath.ts",
