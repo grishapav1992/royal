@@ -1,0 +1,117 @@
+{
+  "published": true,
+  "release": "forest-living-tree-20261124-v1",
+  "sourceCommit": "925221ea60d085f487988dc483495bf60ea71892",
+  "baseCommit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/forest-living-tree-20261124-v1/source.tgz",
+    "sha256": "c6f7066286dc7cf5a6a68937b74791975cb726cb5cdf11a19296c042501e3585",
+    "bytes": 42305,
+    "oldVersion": "1.16.1-62ec551350a8",
+    "imageTag": "royal-game:before-forest-living-tree-20261124-v1",
+    "image": "sha256:2a3b9ebfb37444da4a752c803fbb742d203b74315df83b38da2d7890b8f79e99",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/forest-heart/ForestEffects.ts",
+      "games/forest-heart/ForestField.ts",
+      "games/forest-heart/ForestFrame.ts",
+      "games/forest-heart/ForestScene.ts",
+      "games/forest-heart/autoplay.ts"
+    ]
+  },
+  "module": {
+    "verified": true,
+    "gameId": "studio-forest-heart",
+    "version": "1.17.0-c57c2cdca5a6",
+    "bytes": 6475486,
+    "files": 25,
+    "beforeSha256": "c70bd5d08dea728b21e3864e93654caf253e38449a4cba4db459aabec0cb644d",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "1b6796dcb1ee5b684d6201055065816fb5130699ae69e97f6b5a090d44fe12c8",
+    "history": "/opt/royal-game-modules-state/history/20261124T160548-58e9c90d50e0400b9e8ee97169d50448.json"
+  },
+  "freeBefore": 11567837184,
+  "freeAfter": 11561107456,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8821,
+  "servicesPreserved": 11,
+  "wrapperSourceCommit": "925221ea60d085f487988dc483495bf60ea71892",
+  "previousVersion": "1.16.1-62ec551350a8",
+  "manifestSha256": "16a47f54aefb32dc64668715719e3a5e6d9268c484aa50864791ae365c2541d9",
+  "pointerSha256": "1b6796dcb1ee5b684d6201055065816fb5130699ae69e97f6b5a090d44fe12c8",
+  "priorPointerSha256": "c70bd5d08dea728b21e3864e93654caf253e38449a4cba4db459aabec0cb644d",
+  "releaseManifestSha256": "519de11cc50912b9500fe3e496c216db63b16535c4c5a29f483d2efb0494c338",
+  "receiptSha256": "20acf0fafcb19380c94848b41c1c823095cee4cbd48dc9af2af1d7e41483cb20",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "projection": "every shared input matches the live host a5ea0803 byte for byte; GameModuleCatalog as in the previous Forest Heart package",
+  "verification": {
+    "rtp": "passed in release:prepare",
+    "typecheck": true,
+    "githubVerified": true,
+    "walletTests": 19,
+    "forestServerTests": 8,
+    "forestMathTests": 10,
+    "browserReport": {
+      "release": "forest-living-tree-20261124-v1",
+      "version": "1.17.0-c57c2cdca5a6",
+      "sourceCommit": "925221ea60d085f487988dc483495bf60ea71892",
+      "moduleManifestSha256": "16a47f54aefb32dc64668715719e3a5e6d9268c484aa50864791ae365c2541d9",
+      "connectedHostPassed": true,
+      "recoveryPassed": true,
+      "walletTestsPassed": 19,
+      "forestServerTestsPassed": 8,
+      "connectedBrowserTests": 28,
+      "host": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact module bytes",
+      "browser": "Google Chrome",
+      "scenarios": [
+        "23 game tests: choice, bonus, exact settlement, reopening, lost response, malformed reply, pause, skip, reduced motion, audio, English, fourteen window sizes",
+        "twelve roots turn before the reply, thirteen joints and held roots stay",
+        "displayed wallet and result wait for the light",
+        "autoplay: no wager before start, rune waits, free pulses cost nothing, Stop, dismissal, rules, ten fields give ten debits, lost reply does not resume",
+        "iframe field and essential actions on eight sizes",
+        "0.10 stake with one debit, lost response and reopening through rotation, ten repeats",
+        "natural rune and bonus through rotation",
+        "animations through both orientations",
+        "uniform request feedback"
+      ],
+      "foundAndFixed": "A focused control could scroll the clipped scene during rotation. The scene now uses overflow clip and resets any scroll.",
+      "notChecked": [
+        "physical phones",
+        "Safari",
+        "listening quality"
+      ]
+    },
+    "browserReportSha256": "96504af5235511fb10b158adcfa4799bee0903732500f002812e6f39635e1365",
+    "live": {
+      "health": 200,
+      "moduleHostEntries": 125,
+      "unchangedModulePointers": 124,
+      "changedModulePointers": [
+        "studio-forest-heart"
+      ],
+      "packageFilesVerified": 25,
+      "manifestVerified": true,
+      "previousPackageFilesVerified": 20
+    },
+    "publicSignedInPlayChecked": false,
+    "productionAccountsOrRoundsCreated": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 84.68,
+    "healthOk": true,
+    "freeBefore": 11556765696,
+    "freeAfter": 11553193984,
+    "removedEntries": 0,
+    "timerEnabled": true,
+    "timerActive": true
+  }
+}
