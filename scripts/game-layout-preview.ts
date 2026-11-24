@@ -66,6 +66,22 @@ const vite=await createServer({configFile:false,root:process.cwd(),optimizeDeps:
     res.statusCode=reply.status;res.setHeader('Content-Type','application/json');res.end(await reply.text());return;
    }catch(error){res.statusCode=400;res.setHeader('Content-Type','application/json');res.end(JSON.stringify({error:error instanceof Error?error.message:'Fixture failed'}));return;}
   }
+  // Committed settlements for the disposable crew fixture, written exactly as the progression outbox stores them.
+  if(path==='/__test/layout/crew'&&req.method==='POST'){
+   try{
+    const identity=await fetch(api+'/api/auth/me',{headers:{Cookie:req.headers.cookie||''}}).then(reply=>reply.json());
+    if(!identity.account)throw Error('Sign in to the local fixture');
+    let raw='';for await(const chunk of req){raw+=chunk;if(raw.length>1024)throw Error('Oversized fixture request');}
+    const rounds=(JSON.parse(raw) as {cents:number[]}).cents;
+    if(!db){db=new PostgresDatabase(schema,{existingSchema:true,config:databaseConfig(environment)});wallet=new DemoWalletStore(db);}
+    for(const cents of rounds){
+     const id=randomUUID(),now=Date.now(),context={sourceType:'paid-game',sourceId:'native:casino:'+id,accountId:identity.account.id,locationId:'south-park',gameId:'studio-cosmic-escape',environment:'VIRTUAL_USD',fundingSource:'cash',acceptedAt:now,policyVersion:'layout-fixture'};
+     await db.prepare("INSERT INTO progression_rounds VALUES(?,?,?,?,'settled')").run('layout-'+id,identity.account.id,'VIRTUAL_USD:south-park',JSON.stringify(context));
+     await db.prepare('INSERT INTO progression_outbox(id,account_id,payload,processed,created_at) VALUES(?,?,?,true,?)').run('layout-'+id,identity.account.id,JSON.stringify({sourceType:'paid-game',sourceId:context.sourceId,accountId:identity.account.id,paidUnits:String(cents*10000),refundedUnits:'0',settledAt:now,outcome:'settled'}),now);
+    }
+    res.setHeader('Content-Type','application/json');res.end(JSON.stringify({rounds:rounds.length}));return;
+   }catch(error){res.statusCode=400;res.setHeader('Content-Type','application/json');res.end(JSON.stringify({error:error instanceof Error?error.message:'Fixture failed'}));return;}
+  }
   if(path==='/__test/layout/stop'&&req.method==='POST'){res.end('stopping');void stop().then(()=>process.exit(0));return;}
   if(path!=='/__test/layout/topup'){next();return;}
   try{

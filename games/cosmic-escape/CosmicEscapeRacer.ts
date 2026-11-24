@@ -1,21 +1,12 @@
 import {gameReactionForAmounts} from '../../src/ui/gameReactions';
+import {COSMIC_CREW_MEDIA} from './CosmicCrewView';
+import type {CosmicCrewId} from '../../src/shared/cosmicCrew';
 
-const racerMedia = '/assets/cosmic-guardians/racer-v2';
-export const COSMIC_RACER_IDLE = racerMedia + '/idle-still.webp';
+export const COSMIC_RACER_IDLE = COSMIC_CREW_MEDIA.racer + '/idle-still.webp';
 
-const cues = {
-  idle: {still: COSMIC_RACER_IDLE, clip: racerMedia + '/idle.webp', hold: 0},
-  focus: {still: racerMedia + '/focus-still.webp', clip: racerMedia + '/focus.webp', hold: 0},
-  calm: {still: racerMedia + '/calm-still.webp', clip: racerMedia + '/calm.webp', hold: 1600},
-  win: {still: racerMedia + '/win-still.webp', clip: racerMedia + '/win.webp', hold: 1800},
-  'big-win': {still: racerMedia + '/big-win-still.webp', clip: racerMedia + '/big-win.webp', hold: 2400},
-  bonus: {still: racerMedia + '/bonus-still.webp', clip: racerMedia + '/bonus.webp', hold: 2150},
-  even: {still: racerMedia + '/even-still.webp', clip: racerMedia + '/even.webp', hold: 1100},
-  energy: {still: racerMedia + '/energy-still.webp', clip: racerMedia + '/energy.webp', hold: 900},
-  wild: {still: racerMedia + '/wild-still.webp', clip: racerMedia + '/wild.webp', hold: 850},
-  echo: {still: racerMedia + '/echo-still.webp', clip: racerMedia + '/echo.webp', hold: 1050},
-} as const;
-export type CosmicRacerCue = keyof typeof cues;
+/** Every crew member has the same ten clips with the same durations. */
+const holds = {idle: 0, focus: 0, calm: 1600, win: 1800, 'big-win': 2400, bonus: 2150, even: 1100, energy: 900, wild: 850, echo: 1050} as const;
+export type CosmicRacerCue = keyof typeof holds;
 
 // Match the large-result multiplier used by Caribbean Treasures presentation.
 export function cosmicRacerOutcome(spent: string, returned: string): CosmicRacerCue {
@@ -36,8 +27,19 @@ export class CosmicEscapeRacer {
   private generation = 0;
   private hold?: ReturnType<typeof setTimeout>;
   private objectUrl?: string;
+  private who: CosmicCrewId = 'racer';
 
   constructor(private readonly image: HTMLImageElement) {}
+
+  /** Only the chosen character's clips are downloaded. */
+  character(id: CosmicCrewId) {
+    if (this.who === id) return;
+    this.who = id;
+    this.loads.clear();
+    this.image.dataset.crew = id;
+    this.draw();
+    this.prepare('focus');
+  }
 
   showArtwork() {
     this.ready = true;
@@ -74,11 +76,11 @@ export class CosmicEscapeRacer {
   private load(cue: CosmicRacerCue) {
     const cached = this.loads.get(cue);
     if (cached) return cached;
-    const load = fetch(cues[cue].clip, {signal: this.pending.signal})
+    const load = fetch(`${COSMIC_CREW_MEDIA[this.who]}/${cue}.webp`, {signal: this.pending.signal})
       .then(response => response.ok ? response.blob() : undefined)
       .catch(() => undefined)
       .then(blob => {
-        if (!blob?.size) this.loads.delete(cue);
+        if (!blob?.size && this.loads.get(cue) === load) this.loads.delete(cue);
         return blob?.size ? blob : undefined;
       });
     this.loads.set(cue, load);
@@ -97,10 +99,10 @@ export class CosmicEscapeRacer {
     this.clear();
     if (!this.ready) return;
     const cue = this.cue;
-    const {still, hold} = cues[cue];
+    const hold = holds[cue];
     this.image.dataset.racerCue = cue;
     this.image.dataset.racerAnimated = 'false';
-    this.image.src = still;
+    this.image.src = `${COSMIC_CREW_MEDIA[this.who]}/${cue}-still.webp`;
     if (!this.active) return;
     if (hold) this.hold = setTimeout(() => this.show(this.rolling ? 'focus' : 'idle'), hold);
     if (!this.animated) return;

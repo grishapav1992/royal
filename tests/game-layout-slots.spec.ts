@@ -441,7 +441,7 @@ test('Cosmic Escape keeps its 2K reel size when the chat column closes',async({p
 async function watchCosmicCockpit(page:Page){
  await page.evaluate(()=>{
   const root=document.querySelector<HTMLElement>('#mini-game > .cx-game')!,seen=new Map<string,string>(),phases=new Set<string>();
-  const parts=['.cx-frame','[data-lg-board]','.cx-result','.cx-energy','.cx-portals','.cx-bar','.cx-money','.cx-lastwin','.cx-stepper'];
+  const parts=['.cx-frame','[data-lg-board]','.cx-result','.cx-energy','.cx-portals','.cx-bar','.cx-money','.cx-lastwin','.cx-stepper','[data-cx-crew]','.cx-podium','.cx-alien'];
   let running=true,frames=0;
   const sample=()=>{
    if(!running)return;
@@ -491,9 +491,9 @@ test('Cosmic Escape cockpit ignores the length of every changing text',async({pa
  for(const [width,height] of [[2560,1440],[1440,900],[1280,720],[1024,768],[768,1024],[393,852],[852,393],[320,568],[568,320]])await test.step(width+'x'+height,async()=>{
   await page.setViewportSize({width,height});await page.evaluate(()=>new Promise<void>(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r()))));
   const moved=await page.locator('#mini-game > .cx-game').evaluate(root=>{
-   const place=()=>['.cx-frame','[data-lg-board]','.cx-result','.cx-energy','.cx-bar','.cx-money','.cx-lastwin','.cx-stepper','[data-lg-spin]','[data-lg-cell="0"]'].map(part=>{const b=root.querySelector(part)!.getBoundingClientRect();return part+' '+[b.x,b.y,b.width,b.height].map(v=>v.toFixed(1)).join(',');}).join(' | ');
+   const place=()=>['.cx-frame','[data-lg-board]','.cx-result','.cx-energy','.cx-bar','.cx-money','.cx-lastwin','.cx-stepper','[data-lg-spin]','[data-lg-cell="0"]','[data-cx-crew]','.cx-crew-bar'].map(part=>{const b=root.querySelector(part)!.getBoundingClientRect();return part+' '+[b.x,b.y,b.width,b.height].map(v=>v.toFixed(1)).join(',');}).join(' | ');
    const before=place(),moved:string[]=[],long='Очень длинная подпись, которая занимает несколько строк и в другом языке бывает ещё длиннее. '.repeat(4);
-   const parts=['[data-cx-result-title]','[data-cx-result-note]','[data-cx-mode]','[data-lg-status]','[data-lg-error]','[data-lg-factor-note]','[data-cosmic-wallet-note]','[data-lg-cost]','[data-cx-spin-count]','[data-lg-spin-label]','[data-cx-auto-label]','[data-lg-pause]'];
+   const parts=['[data-cx-result-title]','[data-cx-result-note]','[data-cx-mode]','[data-lg-status]','[data-lg-error]','[data-lg-factor-note]','[data-cosmic-wallet-note]','[data-lg-cost]','[data-cx-spin-count]','[data-lg-spin-label]','[data-cx-auto-label]','[data-lg-pause]','[data-cx-crew-title]','[data-cx-crew-count]','[data-cx-crew-note]','[data-cx-crew-gain]','[data-cx-newcomer]'];
    const texts=[...parts.map(part=>[part,long]),...['[data-lg-balance]','[data-cosmic-lastwin]','[data-cx-result-amount]'].map(part=>[part,'9 999 999,99']),['[data-lg-factor]','×50']];
    for(const [part,text] of texts){
     const el=root.querySelector<HTMLElement>(part)!,html=el.innerHTML,hidden=el.hidden,strip=root.querySelector<HTMLElement>('[data-cx-result]')!,kind=strip.dataset.kind,state={...root.dataset};
@@ -527,6 +527,70 @@ test('Cosmic Escape shows the full price of every mission and charges it once',a
  expect((await paid).ok()).toBe(true);await finish(page,'studio-cosmic-escape');
  const bets=(await walletSnapshot(page)).entries.filter((entry:any)=>entry.kind==='bet');
  expect(bets).toHaveLength(1);expect(bets[0].amount).toBe(-7.5);
+});
+
+test('Cosmic Escape opens, keeps and changes a character without touching the wallet',async({page,roomPath})=>{
+ test.setTimeout(240000);await enterGameHall(page,roomPath);await page.setViewportSize({width:1440,height:900});
+ const id='studio-cosmic-escape';await open(page,id);
+ const game=page.locator('#mini-game > .cx-game'),plate=game.locator('[data-cx-crew]'),dialog=game.locator('[data-lg-dialog]'),figure=game.locator('[data-cosmic-alien]'),spin=page.locator('[data-lg-spin]');
+ const points=async(...cents:number[])=>expect((await page.request.post('/__test/layout/crew',{data:{cents}})).ok()).toBe(true);
+ const round=async()=>{await spin.click();await expect(game).not.toHaveAttribute('data-phase','idle');await expect.poll(()=>game.evaluate(e=>e.dataset.phase==='idle'&&!e.dataset.animationToken),{timeout:60000}).toBe(true);};
+ await expect(game).toHaveAttribute('data-crew','ready');await expect(game.locator('[data-cx-crew-gain]')).toBeEmpty();
+ // One paid ten cent round earns exactly one point.
+ await round();await expect(game.locator('[data-cx-crew-gain]')).toHaveText('+1');await expect(game.locator('[data-cx-crew-note]')).toContainText('99');
+ // A locked capsule shows its silhouette and cannot be chosen.
+ await plate.click();await expect(dialog).toHaveAttribute('data-dialog','crew');await expect(dialog.locator('.cx-pod')).toHaveCount(4);await expect(dialog.locator('.cx-pod[data-look="soon"]')).toHaveCount(2);
+ await dialog.locator('[data-lg-dialog-action="crew-view:silver"]').click();await expect(dialog.locator('[data-lg-dialog-action="crew-choose:silver"]')).toBeDisabled();
+ await page.keyboard.press('Escape');await expect(dialog).toBeHidden();
+ expect((await page.request.post('/api/cosmic-crew',{data:{action:'select',characterId:'silver'},headers:{'X-Royal-Account-Id':await page.evaluate(async()=>(await (await fetch('/api/auth/me')).json()).account.id)}})).status()).toBe(403);
+ // The threshold is reached while playing. Nothing opens on its own.
+ await points(...Array(9).fill(5000));await round();await expect(game).toHaveAttribute('data-crew','new');await expect(dialog).toBeHidden();await expect(game.locator('[data-cx-newcomer]')).toBeVisible();await expect(figure).toHaveAttribute('data-crew','racer');
+ const before=(await walletSnapshot(page)).entries;
+ await plate.click();await expect(dialog).toHaveAttribute('data-dialog','reveal');await dialog.locator('[data-lg-dialog-action="crew-open"]').click();await expect(dialog).toHaveAttribute('data-dialog','crew');
+ await expect(game).toHaveAttribute('data-crew','full');await expect(game.locator('[data-cx-newcomer]')).toBeHidden();
+ // The choice is saved, its reply is lost. The game reads the saved choice back.
+ await page.route('**/api/cosmic-crew',async route=>{if(route.request().method()!=='POST'){await route.continue();return;}await route.fetch();await route.abort();},{times:1});
+ await dialog.locator('[data-lg-dialog-action="crew-choose:silver"]').click();
+ await expect(figure).toHaveAttribute('data-crew','silver');await expect(dialog.locator('.cx-pod[data-look="chosen"] b')).toHaveText('Серебряная героиня');await expect(dialog.locator('.cx-crew-message')).toBeEmpty();
+ expect(await dialog.evaluate(e=>[e.scrollWidth-e.clientWidth,e.scrollHeight-e.clientHeight])).toEqual([0,0]);
+ await page.keyboard.press('Escape');await expect(dialog).toBeHidden();
+ expect((await walletSnapshot(page)).entries).toEqual(before);
+ // Reels, autoplay and a mission keep the entry closed.
+ await page.emulateMedia({reducedMotion:'no-preference'});await spin.click();await expect(game).not.toHaveAttribute('data-phase','idle');
+ await expect(plate).toHaveAttribute('aria-disabled','true');await plate.click({force:true});await expect(dialog).toBeHidden();
+ await expect.poll(()=>game.evaluate(e=>e.dataset.phase==='idle'&&!e.dataset.animationToken),{timeout:60000}).toBe(true);
+ await page.emulateMedia({reducedMotion:'reduce'});
+ expect((await page.request.post('/__test/layout/bonus',{data:{gameId:id,scenario:'features'}})).ok()).toBe(true);await spin.click();
+ const bonus=page.locator('[data-lg-dialog-action="bonus"]');await expect(bonus).toBeVisible({timeout:60000});await bonus.click();
+ await expect(plate).toHaveAttribute('aria-disabled','true');await plate.click({force:true});await expect(dialog.and(page.locator('[data-dialog="crew"]'))).toBeHidden();
+ await expect(page.locator('[data-lg-pause]')).toBeEnabled({timeout:15000});await page.locator('[data-lg-pause]').click();await expect(game).toHaveAttribute('data-phase','idle',{timeout:30000});
+ if(await game.getAttribute('data-bonus')==='true'){
+  // A paused mission shows the crew and keeps the character.
+  await plate.click();await expect(dialog).toHaveAttribute('data-dialog','crew');await dialog.locator('[data-lg-dialog-action="crew-view:racer"]').click();await expect(dialog.locator('[data-lg-dialog-action="crew-choose:racer"]')).toBeDisabled();await page.keyboard.press('Escape');
+ }
+ await finish(page,id);
+ // Reopening and reloading keep the character.
+ await open(page,id);await expect(figure).toHaveAttribute('data-crew','silver');
+ await page.reload();await selectEntryMode(page);await expect.poll(()=>page.evaluate(()=>{try{return (window as any).royalDemo?.getState()?.online;}catch{return false;}}),{timeout:30000}).toBe(true);
+ if(await page.locator('#room-overview').getAttribute('aria-pressed')!=='true')await page.locator('#room-overview').click();
+ await expect.poll(async()=>{
+  if(await page.locator('#mini-dialog').isVisible())return true;
+  const cabinet=page.locator('[data-cabinet="studio-cosmic-escape"]');
+  try{if(!await cabinet.isVisible())await page.locator('#games-tab').click({timeout:4000});await cabinet.click({timeout:4000});}catch(error){if(!(error instanceof Error&&error.name==='TimeoutError'))throw error;}
+  return page.locator('#mini-dialog').isVisible();
+ },{timeout:60000,intervals:[1000,4000]}).toBe(true);
+ await open(page,id);await expect(figure).toHaveAttribute('data-crew','silver');
+});
+
+test('Cosmic Escape stays playable when the crew service fails',async({page,roomPath})=>{
+ await page.route('**/api/cosmic-crew',route=>route.fulfill({status:503,contentType:'application/json',body:'{"error":"unavailable"}'}));
+ const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+ await enterGameHall(page,roomPath);await page.setViewportSize({width:1440,height:900});await open(page,'studio-cosmic-escape');
+ const game=page.locator('#mini-game > .cx-game');await expect(game).toHaveAttribute('data-crew','none');await expect(game.locator('[data-cosmic-alien]')).toHaveAttribute('data-crew','racer');
+ await page.locator('[data-lg-spin]').click();await expect(game).not.toHaveAttribute('data-phase','idle');await expect.poll(()=>game.evaluate(e=>e.dataset.phase==='idle'&&!e.dataset.animationToken),{timeout:60000}).toBe(true);
+ expect((await walletSnapshot(page)).entries.filter((entry:any)=>entry.kind==='bet')).toHaveLength(1);
+ await game.locator('[data-cx-crew]').click();await expect(game.locator('.cx-crew-message')).not.toBeEmpty();await expect(game.locator('[data-lg-dialog-action^="crew-choose"]')).toBeDisabled();
+ expect(errors).toEqual([]);
 });
 
 /** Collects every distinct position of the Caramel box, board, lid, outcome line and controls, frame by frame. */
