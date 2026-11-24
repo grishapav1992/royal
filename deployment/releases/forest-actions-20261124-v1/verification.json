@@ -1,0 +1,108 @@
+{
+  "published": true,
+  "release": "forest-actions-20261124-v1",
+  "sourceCommit": "2591b6eeade5c2c5484b603e9439ae61c664bb58",
+  "baseCommit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/forest-actions-20261124-v1/source.tgz",
+    "sha256": "e1669f5fa727ea9f674f5578b093d98b8527a1dbb7b28ee184d3710b88981f39",
+    "bytes": 57250,
+    "oldVersion": "1.17.0-c57c2cdca5a6",
+    "imageTag": "royal-game:before-forest-actions-20261124-v1",
+    "image": "sha256:2a3b9ebfb37444da4a752c803fbb742d203b74315df83b38da2d7890b8f79e99",
+    "oldPackageHardlinked": true,
+    "createdSources": []
+  },
+  "module": {
+    "verified": true,
+    "gameId": "studio-forest-heart",
+    "version": "1.18.0-065d090c31df",
+    "bytes": 3262388,
+    "files": 22,
+    "beforeSha256": "1b6796dcb1ee5b684d6201055065816fb5130699ae69e97f6b5a090d44fe12c8",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "c79df0e93035365b3c4c53e123d6f073c94da5ea7d630f407b853eda2e511f6e",
+    "history": "/opt/royal-game-modules-state/history/20261124T203548-c594dbffd7a04454a1bb898b12bc4769.json"
+  },
+  "freeBefore": 11445075968,
+  "freeAfter": 11441610752,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8821,
+  "servicesPreserved": 11,
+  "wrapperSourceCommit": "2591b6eeade5c2c5484b603e9439ae61c664bb58",
+  "previousVersion": "1.17.0-c57c2cdca5a6",
+  "manifestSha256": "5ef3eb7807fec64a1e95d8e18d3f6642181b79482d197c1526694c94ece1420a",
+  "pointerSha256": "c79df0e93035365b3c4c53e123d6f073c94da5ea7d630f407b853eda2e511f6e",
+  "priorPointerSha256": "1b6796dcb1ee5b684d6201055065816fb5130699ae69e97f6b5a090d44fe12c8",
+  "releaseManifestSha256": "91594a0dceb6978ab9791759299a39d1b9403f42abbb59c9db6e09e4b32a04a4",
+  "receiptSha256": "3b101df5f2b10d4b5367ef967939cd90a037721d80b89b8aff5048bf8a4a63f7",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "projection": "shared inputs as in forest-living-tree-20261124-v1; the unused ForestVideo.ts stays on the server unchanged",
+  "verification": {
+    "rtp": "passed in release:prepare",
+    "typecheck": true,
+    "githubVerified": true,
+    "walletTests": 19,
+    "forestServerTests": 8,
+    "browserReport": {
+      "release": "forest-actions-20261124-v1",
+      "version": "1.18.0-065d090c31df",
+      "sourceCommit": "2591b6eeade5c2c5484b603e9439ae61c664bb58",
+      "moduleManifestSha256": "5ef3eb7807fec64a1e95d8e18d3f6642181b79482d197c1526694c94ece1420a",
+      "connectedHostPassed": true,
+      "recoveryPassed": true,
+      "walletTestsPassed": 19,
+      "forestServerTestsPassed": 8,
+      "connectedBrowserTests": 29,
+      "host": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact module bytes",
+      "browser": "Google Chrome",
+      "scenarios": [
+        "24 game tests in one run: no video requests, blinking, one unbroken action from press to result, at most two drawings, loss, partial return, rune hover, turn, bonus, energy, reduced motion, pause, WebGL loss, lost response, malformed reply, reopening, autoplay debits, fourteen window sizes",
+        "iframe field and essential actions on eight sizes",
+        "0.10 stake with one debit, lost response and reopening through rotation",
+        "natural rune and bonus through rotation",
+        "animations through both orientations",
+        "uniform request feedback"
+      ],
+      "timingFailuresUnderLoad": "With other builds running (load above 30) one game test and two layout scenarios exceeded their five second waits. All passed on the idle machine: 24 of 24 in one run and the two layout scenarios four times each.",
+      "notChecked": [
+        "physical phones",
+        "Safari",
+        "listening quality"
+      ]
+    },
+    "browserReportSha256": "2d45c50dd7aea7dec14c3e7c1642f669cd6a40cc85726fc062c3fb73cc525364",
+    "live": {
+      "health": 200,
+      "moduleHostEntries": 125,
+      "unchangedModulePointers": 124,
+      "changedModulePointers": [
+        "studio-forest-heart"
+      ],
+      "packageFilesVerified": 22,
+      "manifestVerified": true,
+      "previousPackageFilesVerified": 25,
+      "videoFilesInPackage": 0
+    },
+    "publicSignedInPlayChecked": false,
+    "productionAccountsOrRoundsCreated": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 78.26,
+    "healthOk": true,
+    "freeBefore": 11437240320,
+    "freeAfter": 11448262656,
+    "removedEntries": 12,
+    "timerEnabled": true,
+    "timerActive": true
+  }
+}
