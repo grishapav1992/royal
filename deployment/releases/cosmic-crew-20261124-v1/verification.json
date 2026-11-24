@@ -1,0 +1,65 @@
+{
+  "release": "cosmic-crew-20261124-v1",
+  "published": true,
+  "preparedImage": "sha256:2a3b9ebfb37444da4a752c803fbb742d203b74315df83b38da2d7890b8f79e99",
+  "runningImage": "sha256:2a3b9ebfb37444da4a752c803fbb742d203b74315df83b38da2d7890b8f79e99",
+  "containerRestarted": true,
+  "sourceCommit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+  "changedSources": 4,
+  "clientDeltaFiles": 0,
+  "configurationsAndMountsPreserved": true,
+  "gameDataPreserved": true,
+  "backendDeltaFiles": 1,
+  "otherBackendProgramsAndModulesPreserved": true,
+  "oldAssetsPreserved": true,
+  "otherPersistentServicesPreserved": 10,
+  "baseCommit": "7f831f1e412fa5de0088c3a3579dffce889e239c",
+  "rollbackImage": "sha256:375af56d5cfc96e5d8d54c82353d9e5778518e3880320f626f93375fe2ceacdd",
+  "sourceBackupSha256": "b244104710b09a4644ed411faa82952328e83e54e2d91d3df6ebdb07848785d4",
+  "financialBackup": {
+    "path": "/opt/royal-backups/cosmic-crew-20261124-v1/financial.dump",
+    "sha256": "0d053a74487ea529db83f32849088168649f9185f4b3b6ed3b78e628cafb28f9",
+    "bytes": 52427113,
+    "databaseRestored": false
+  },
+  "releaseManifestSha256": "ef10541b83b32eb58a9ee70cd511d5218e4a19818d21c02ca72209546a115c8f",
+  "receiptSha256": "a39d22c3cf66aa9573de4b96e49bc6af60d51bd4c9c5d6433f76b0133760bbdf",
+  "backendSha256": "0f11c58d9849df918373e028a91f6e7effcd6d397bb6045e36e316be6c313656",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "migration": {
+    "id": "cosmic-crew-v1",
+    "applied": true,
+    "tables": [
+      "cosmic_crew_start",
+      "cosmic_crew_profiles",
+      "cosmic_crew_rounds",
+      "cosmic_crew_revealed"
+    ],
+    "index": "progression_outbox_account_time"
+  },
+  "checks": {
+    "rtp": "39 profiles, 21 stake policies",
+    "typecheck": true,
+    "githubVerified": true,
+    "hostClientByteIdentical": true,
+    "backendDiff": "additions of the crew and one install line, apart from bundler numbering",
+    "serverTests": 70,
+    "builtBackendScenarios": 19,
+    "pullRequestChecks": "success",
+    "public": {
+      "health": 200,
+      "crewWithoutSession": 401
+    }
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 75.45,
+    "timer": "enabled and active",
+    "freeBefore": 11558625280,
+    "freeAfter": 11555069952,
+    "removedEntries": 0,
+    "removedImageTags": 0
+  }
+}
