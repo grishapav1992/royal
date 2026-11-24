@@ -4,9 +4,13 @@ import type {CosmicCrewId} from '../../src/shared/cosmicCrew';
 
 export const COSMIC_RACER_IDLE = COSMIC_CREW_MEDIA.racer + '/idle-still.webp';
 
-/** Every crew member has the same ten clips with the same durations. */
-const holds = {idle: 0, focus: 0, calm: 1600, win: 1800, 'big-win': 2400, bonus: 2150, even: 1100, energy: 900, wild: 850, echo: 1050} as const;
+const commonHolds = {idle: 0, focus: 0, calm: 1600, win: 1800, 'big-win': 2400, bonus: 2150, even: 1100, energy: 900, wild: 850, echo: 1050} as const;
+const silverHolds = {greet: 1350, start: 800, pause: 1050, pickup: 2900, lean: 1700} as const;
+const holds = {...commonHolds, ...silverHolds};
+const idlePoses = ['pickup', 'lean'] as const;
+const idlePoseDelay = 16000;
 export type CosmicRacerCue = keyof typeof holds;
+type Gesture = 'greet' | 'start' | 'pause';
 
 // Match the large-result multiplier used by Caribbean Treasures presentation.
 export function cosmicRacerOutcome(spent: string, returned: string): CosmicRacerCue {
@@ -26,6 +30,9 @@ export class CosmicEscapeRacer {
   private cue: CosmicRacerCue = 'idle';
   private generation = 0;
   private hold?: ReturnType<typeof setTimeout>;
+  private idleTimer?: ReturnType<typeof setTimeout>;
+  private idlePosesEnabled = false;
+  private nextIdlePose = 0;
   private objectUrl?: string;
   private who: CosmicCrewId = 'racer';
 
@@ -37,8 +44,9 @@ export class CosmicEscapeRacer {
     this.who = id;
     this.loads.clear();
     this.image.dataset.crew = id;
+    if (!this.supports(this.cue)) this.cue = this.rolling ? 'focus' : 'idle';
     this.draw();
-    this.prepare('focus');
+    this.prepareGestures();
   }
 
   showArtwork() {
@@ -46,8 +54,15 @@ export class CosmicEscapeRacer {
     this.draw();
   }
 
-  context(active: boolean, animated: boolean, rolling = false) {
-    if (this.active === active && this.animated === animated && this.rolling === rolling) return;
+  context(active: boolean, animated: boolean, rolling = false, idlePosesEnabled = false) {
+    const idleChanged = this.idlePosesEnabled !== idlePosesEnabled;
+    this.idlePosesEnabled = idlePosesEnabled;
+    const stopIdlePose = (!idlePosesEnabled || !animated) && (this.cue === 'pickup' || this.cue === 'lean');
+    if (this.active === active && this.animated === animated && this.rolling === rolling) {
+      if (stopIdlePose) this.show('idle');
+      else if (idleChanged) this.scheduleIdlePose();
+      return;
+    }
     const resumes = active && !this.active;
     const changedRoundPhase = this.rolling !== rolling;
     this.active = active;
@@ -55,12 +70,13 @@ export class CosmicEscapeRacer {
     this.rolling = rolling;
     if (!active) this.cue = 'idle';
     else if (resumes || changedRoundPhase) this.cue = rolling ? 'focus' : 'idle';
+    else if (stopIdlePose) this.cue = 'idle';
     this.draw();
-    this.prepare('focus');
+    this.prepareGestures();
   }
 
   prepare(cue: CosmicRacerCue) {
-    if (this.active && this.animated) void this.load(cue);
+    if (this.active && this.animated && this.supports(cue)) void this.load(cue);
   }
 
   prepareFeatures() {
@@ -68,9 +84,37 @@ export class CosmicEscapeRacer {
   }
 
   show(cue: CosmicRacerCue) {
-    if (!this.active || this.cue === cue) return;
+    if (!this.active || this.cue === cue || !this.supports(cue)) return;
     this.cue = cue;
     this.draw();
+  }
+
+  gesture(cue: Gesture) {
+    if (Object.hasOwn(commonHolds, this.cue) && this.cue !== 'idle' && this.cue !== 'focus') return;
+    this.show(cue);
+  }
+
+  private supports(cue: CosmicRacerCue) {
+    return this.who === 'silver' || !Object.hasOwn(silverHolds, cue);
+  }
+
+  private prepareGestures() {
+    this.prepare('focus');
+    this.prepare('start');
+    this.prepare('pause');
+  }
+
+  private scheduleIdlePose() {
+    clearTimeout(this.idleTimer);
+    this.idleTimer = undefined;
+    if (!this.ready || !this.active || !this.animated || this.rolling ||
+        !this.idlePosesEnabled || this.who !== 'silver' || this.cue !== 'idle') return;
+    const pose = idlePoses[this.nextIdlePose];
+    this.prepare(pose);
+    this.idleTimer = setTimeout(() => {
+      this.nextIdlePose = (this.nextIdlePose + 1) % idlePoses.length;
+      this.show(pose);
+    }, idlePoseDelay);
   }
 
   private load(cue: CosmicRacerCue) {
@@ -91,6 +135,8 @@ export class CosmicEscapeRacer {
     this.generation++;
     clearTimeout(this.hold);
     this.hold = undefined;
+    clearTimeout(this.idleTimer);
+    this.idleTimer = undefined;
     if (this.objectUrl) URL.revokeObjectURL(this.objectUrl);
     this.objectUrl = undefined;
   }
@@ -106,6 +152,7 @@ export class CosmicEscapeRacer {
     if (!this.active) return;
     if (hold) this.hold = setTimeout(() => this.show(this.rolling ? 'focus' : 'idle'), hold);
     if (!this.animated) return;
+    this.scheduleIdlePose();
 
     const generation = this.generation;
     void this.load(cue).then(blob => {

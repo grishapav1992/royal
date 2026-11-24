@@ -80,3 +80,53 @@ test('a chosen character keeps the pose and downloads only its own clips', async
   assert.ok(requests.length > 0 && requests.every(url => url.includes('/silver-v1/')));
   racer.destroy();
 });
+
+test('only the silver heroine plays gestures, and confirmed reactions take priority', t => {
+  t.mock.timers.enable({apis: ['setTimeout']});
+  const image = {dataset: {} as DOMStringMap, src: ''} as HTMLImageElement;
+  const racer = new CosmicEscapeRacer(image);
+  racer.showArtwork();
+  racer.context(true, false);
+  racer.gesture('greet');
+  assert.equal(image.dataset.racerCue, 'idle');
+  racer.character('silver');
+  racer.gesture('greet');
+  assert.equal(image.dataset.racerCue, 'greet');
+  racer.context(true, false, true);
+  racer.gesture('start');
+  assert.equal(image.dataset.racerCue, 'start');
+  racer.gesture('pause');
+  assert.equal(image.dataset.racerCue, 'pause');
+  racer.show('energy');
+  racer.gesture('pause');
+  assert.equal(image.dataset.racerCue, 'energy');
+  t.mock.timers.tick(900);
+  assert.equal(image.dataset.racerCue, 'focus');
+  racer.destroy();
+});
+
+test('silver idle poses alternate and stop when play starts or the display changes', t => {
+  t.mock.timers.enable({apis: ['setTimeout']});
+  t.mock.method(globalThis, 'fetch', async () => new Response('clip'));
+  const image = {dataset: {} as DOMStringMap, src: ''} as HTMLImageElement;
+  const racer = new CosmicEscapeRacer(image);
+  racer.showArtwork();
+  racer.character('silver');
+  racer.context(true, true, false, true);
+  t.mock.timers.tick(15999);
+  assert.equal(image.dataset.racerCue, 'idle');
+  t.mock.timers.tick(1);
+  assert.equal(image.dataset.racerCue, 'pickup');
+  racer.context(true, true, true);
+  assert.equal(image.dataset.racerCue, 'focus');
+  t.mock.timers.tick(20000);
+  assert.equal(image.dataset.racerCue, 'focus');
+  racer.context(true, true, false, true);
+  t.mock.timers.tick(16000);
+  assert.equal(image.dataset.racerCue, 'lean');
+  racer.context(true, true);
+  assert.equal(image.dataset.racerCue, 'idle');
+  t.mock.timers.tick(20000);
+  assert.equal(image.dataset.racerCue, 'idle');
+  racer.destroy();
+});

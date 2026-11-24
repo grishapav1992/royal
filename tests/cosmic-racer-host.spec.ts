@@ -74,3 +74,75 @@ test('Cosmic Escape racer reacts to confirmed outcomes and the portal in the con
   await expect(actor).toHaveAttribute('data-racer-cue', 'idle');
   expect(errors).toEqual([]);
 });
+
+test('Cosmic Escape plays the additional silver gestures and crew preview', async ({page, roomPath}, testInfo) => {
+  await enterGameHall(page, roomPath);
+  const points = await page.request.post('/__test/layout/crew', {data: {cents: Array(9).fill(5000)}});
+  expect(points.ok()).toBe(true);
+  await chooseGame(page, gameId);
+  const game = page.locator('#mini-game > .cx-game');
+  const actor = game.locator('[data-cosmic-alien]');
+  const spin = game.locator('[data-lg-spin]');
+  const plate = game.locator('[data-cx-crew]');
+  const dialog = game.locator('[data-lg-dialog]');
+  const portrait = dialog.locator('.cx-crew-figure > img');
+  const chat = page.locator('#club-chat-dock');
+  const toggle = page.locator('#mini-dialog .game-chat-toggle');
+  const enter = game.locator('[data-lg-dialog-action=enter]');
+  await enter.click();
+  await expect(game).toHaveAttribute('data-crew', 'new');
+  await expect(actor).toHaveAttribute('data-racer-cue', 'idle');
+
+  await plate.click();
+  await dialog.locator('[data-lg-dialog-action=crew-open]').click();
+  await expect(portrait).toHaveAttribute('src', /silver-v1\/deck-still\.webp$/);
+  await page.emulateMedia({reducedMotion: 'no-preference'});
+  await expect(portrait).toHaveAttribute('src', /silver-v1\/deck\.webp$/);
+  await expect(portrait).toHaveJSProperty('naturalHeight', 1229);
+  await dialog.locator('[data-lg-dialog-action="crew-choose:silver"]').click();
+  await expect(actor).toHaveAttribute('data-crew', 'silver');
+  await page.keyboard.press('Escape');
+  await page.locator('#studio-game-list').click();
+  await chooseGame(page, gameId);
+  await expect(actor).toHaveAttribute('data-crew', 'silver');
+  await enter.click();
+  await expect(actor).toHaveAttribute('data-racer-cue', 'greet');
+  await expect(actor).toHaveAttribute('data-racer-animated', 'true');
+  if (!await chat.isVisible()) await toggle.click();
+  await expect(chat.locator('#chat-input')).toBeVisible();
+  await expect(actor).toHaveAttribute('data-racer-cue', 'pickup', {timeout: 20000});
+  await expect(actor).toHaveAttribute('data-racer-animated', 'true');
+  await page.screenshot({path: testInfo.outputPath('silver-package-desktop.png')});
+  await expect(actor).toHaveAttribute('data-racer-cue', 'lean', {timeout: 23000});
+  await expect(actor).toHaveAttribute('data-racer-animated', 'true');
+
+  const seed = await page.request.post('/__test/layout/bonus', {data: {gameId, scenario: 'win'}});
+  expect(seed.ok()).toBe(true);
+  const endpoint = '**/api/demo-wallet/expansion';
+  let release!: () => void;
+  const reply = new Promise<void>(resolve => { release = resolve; });
+  await page.route(endpoint, async route => {
+    if (route.request().method() === 'POST') await reply;
+    await route.continue();
+  });
+  try {
+    await spin.click();
+    await expect(actor).toHaveAttribute('data-racer-cue', 'start');
+    await spin.click();
+    await expect(actor).toHaveAttribute('data-racer-cue', 'pause');
+  } finally { release(); }
+  await expect(actor).toHaveAttribute('data-racer-cue', 'win', {timeout: 15000});
+  await page.unroute(endpoint);
+  const snapshot = await walletSnapshot(page);
+  expect(snapshot.entries.filter((entry: {kind: string}) => entry.kind === 'bet').map((entry: {amount: number}) => entry.amount)).toEqual([-.1]);
+
+  await page.setViewportSize({width: 393, height: 852});
+  await expect(game).toHaveAttribute('data-slot-priority', 'portrait');
+  if (await chat.isVisible()) await chat.locator('.game-chat-close').click();
+  await plate.click();
+  await expect(portrait).toHaveAttribute('src', /silver-v1\/deck\.webp$/);
+  await expect(portrait).toHaveJSProperty('naturalWidth', 640);
+  await page.screenshot({path: testInfo.outputPath('silver-crew-phone.png')});
+  await page.emulateMedia({reducedMotion: 'reduce'});
+  await expect(portrait).toHaveAttribute('src', /silver-v1\/deck-still\.webp$/);
+});

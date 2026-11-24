@@ -136,7 +136,9 @@ export class CosmicEscapeUI {
       this.root.dataset.slotPriority !== 'landscape' && !this.autoOpen &&
       !this.root.querySelector('.slot-settings-dialog[open]') &&
       (!this.dialog || this.dialog === 'bonus' || this.dialog === 'complete');
-    this.racer.context(visible, visible && !this.motionReduced(), !!this.live);
+    const idlePoses = this.root.dataset.slotPriority === 'full' && !this.dialog && !this.autoRemaining &&
+      !this.bonusRunning && !this.blocked() && this.session()?.state !== 'active';
+    this.racer.context(visible, visible && !this.motionReduced(), !!this.live, idlePoses);
     // A character changes between rounds only, so a reaction never switches its actor.
     const chosen = this.crew.profile?.selected ?? 'racer';
     if (!this.live) this.racer.character(chosen);
@@ -174,9 +176,9 @@ export class CosmicEscapeUI {
       this.root.querySelector<HTMLButtonElement>(`[data-cx-speed="${this.speed}"]`)?.focus();
     };
     this.find<HTMLButtonElement>('[data-cx-speed-cycle]').onclick=()=>{if(this.live)return;this.speed=SPEEDS[(SPEEDS.indexOf(this.speed)+1)%SPEEDS.length];this.controls();};
-    this.find<HTMLButtonElement>('[data-lg-pause]').onclick=()=>{this.stopAuto();this.controls();};
+    this.find<HTMLButtonElement>('[data-lg-pause]').onclick=()=>{this.stopAuto();this.controls();this.racer.gesture('pause');};
     this.find<HTMLSelectElement>('[data-lg-mode]').onchange=event=>{if(this.blocked()||this.session()?.state==='active')return;this.mode=(event.target as HTMLSelectElement).value;this.stopAuto();this.controls();};
-    this.find<HTMLButtonElement>('[data-lg-auto]').onclick=()=>{if(this.autoRemaining){this.stopAuto();this.controls();return;}if(this.autoOpen)this.closeAuto(true);else this.openAuto();};
+    this.find<HTMLButtonElement>('[data-lg-auto]').onclick=()=>{if(this.autoRemaining){this.stopAuto();this.controls();this.racer.gesture('pause');return;}if(this.autoOpen)this.closeAuto(true);else this.openAuto();};
     const panel=this.find('[data-cx-auto-panel]');
     panel.onclick=event=>{
       const target=event.target as HTMLElement;
@@ -250,6 +252,7 @@ export class CosmicEscapeUI {
     const session=this.session();observeExpansionOutcome(this.root,this.game,session,client.accountId,true,!!this.live&&client.pending?.gameId===this.game);
     if(!this.live&&session&&this.key(session)!==this.shown)this.static(session);
     this.controls();
+    if(this.dialog==='crew')this.renderCrew();
   }
   private static(session:Session){
     const view=session.view.luelon;this.shown=this.key(session);this.root.dataset.sessionId=session.id;this.root.dataset.revision=String(view.revision);
@@ -391,8 +394,8 @@ export class CosmicEscapeUI {
   private stopAuto(){this.autoRemaining=0;this.bonusRunning=false;this.playback.cancelScheduled();}
   private cancel(){this.playback.cancel();this.stopAuto();this.live=undefined;this.racer.show('idle');this.board.cancel();this.audio.stopSpin();this.shown='';resetGameOutcomes(this.root);this.root.dataset.phase='idle';this.root.dataset.shipActive='false';this.root.dataset.echo='false';}
   private primary(){
-    if(this.live){if(this.board.hurry()){this.live.fast=true;this.controls();}return;}
-    if(this.autoRemaining){this.stopAuto();this.controls();return;}
+    if(this.live){if(this.board.hurry()){this.live.fast=true;this.controls();this.racer.gesture('pause');}return;}
+    if(this.autoRemaining){this.stopAuto();this.controls();this.racer.gesture('pause');return;}
     void this.play();
   }
   private openAuto(){
@@ -410,8 +413,8 @@ export class CosmicEscapeUI {
     this.autoRemaining=this.autoCount;
     this.closeAuto(false);this.find<HTMLButtonElement>('[data-lg-spin]').focus();void this.request();this.controls();
   }
-  private async play(){if(this.blocked()||!this.entered||this.dialog)return;const active=this.session()?.state==='active';if(!active)this.mode='normal';if(!active&&this.selectedMode().bonus){this.stopAuto();this.openDialog('buy');return;}this.bonusRunning=!!active;await this.request();}
-  private async request(pick?:number){
+  private async play(){if(this.blocked()||!this.entered||this.dialog)return;const active=this.session()?.state==='active';if(!active)this.mode='normal';if(!active&&this.selectedMode().bonus){this.stopAuto();this.openDialog('buy');return;}this.bonusRunning=!!active;await this.request(undefined,!active);}
+  private async request(pick?:number,manualStart=false){
     if(this.blocked()||!this.entered||this.dialog)return;
     const previous=this.session(),active=previous?.state==='active',mode=this.selectedMode(),cost=active?0:Number(this.stake)*mode.cost/100;
     if(this.balance()<cost){this.error=translateText('Недостаточно USDT (Nile) для выбранной ставки.');this.stopAuto();this.controls();return;}
@@ -425,6 +428,7 @@ export class CosmicEscapeUI {
     this.result('spin',series?tr`Бесплатное вращение ${Math.min(series.played+1,series.awarded)} из ${series.awarded}`:translateText('Барабаны вращаются'),series&&previous?this.missionNote(previous.view.luelon,previous.view.luelon.totalPayoutUnits,false):'');
     this.find('[data-cx-crew-gain]').textContent='';
     this.controls();
+    if(manualStart)this.racer.gesture('start');
     if(active)this.racer.prepareFeatures();
     try{
       const operation=this.sessions.operation(this.stake,this.mode,previous,pick);const promise=client.act(operation);live.operationId=client.pending?.id??'';await promise;
@@ -550,7 +554,7 @@ export class CosmicEscapeUI {
   private crewLocked(){return !!this.live||this.session()?.state==='active'||this.autoRemaining>0||client.busy||!!client.pending;}
   private crewMarkup(kind:'crew'|'reveal'){
     const state={busy:this.crew.busy,locked:this.crewLocked(),refused:this.crew.refused};
-    return kind==='reveal'&&this.crewNew?crewReveal(this.crewNew,state):crewDialog(this.crew.profile,{...state,view:this.crewView,failed:this.crew.failed});
+    return kind==='reveal'&&this.crewNew?crewReveal(this.crewNew,state):crewDialog(this.crew.profile,{...state,view:this.crewView,failed:this.crew.failed,animatePreview:!document.hidden&&!this.motionReduced()});
   }
   /** The crew opens between spins. A new character waits for this press, play is never interrupted. */
   private openCrew(){
@@ -592,7 +596,7 @@ export class CosmicEscapeUI {
     if(action.startsWith('crew-view:')&&this.dialog==='crew'){const id=action.slice(10);if(isCosmicCrewId(id)){this.crew.refused='';this.crewView=id;this.renderCrew();}return;}
     if(action.startsWith('crew-choose:')&&(this.dialog==='crew'||this.dialog==='reveal')){const id=action.slice(12),from=this.dialog;if(!isCosmicCrewId(id)||this.crewLocked())return;if(await this.crew.act('select',id)&&!this.destroyed&&from==='reveal'&&this.dialog==='reveal')this.closeDialog();return;}
     if(action.startsWith('stake:')&&this.dialog==='buy'&&!this.blocked()){const next=slotStakeStep(COSMIC_ESCAPE_BET_UNITS,this.stake,Number(action.slice(6)));if(next){this.stake=next;this.openDialog('buy');}return;}
-    if(action==='enter'){this.entered=true;this.closeDialog();void this.audio.enter();if(this.session()?.state==='active'){this.bonusRunning=true;await this.request();}return;}
+    if(action==='enter'){this.entered=true;this.closeDialog();void this.audio.enter();if(this.session()?.state==='active'){this.bonusRunning=true;await this.request();}else this.racer.gesture('greet');return;}
     if(action==='close'){this.closeDialog();return;}
     if(action.startsWith('buy:')&&this.dialog==='buy'){const selected=action.slice(4);if(this.blocked()||!this.info.modes.some(mode=>mode.id===selected&&mode.bonus))return;this.closeDialog();this.mode=selected;this.bonusRunning=false;await this.request();return;}
     if(action==='bonus'){this.closeDialog();this.bonusRunning=true;await this.request();return;}
