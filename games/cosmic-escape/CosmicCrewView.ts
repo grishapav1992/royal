@@ -20,7 +20,7 @@ export type CrewPlate = {state: 'none' | 'ready' | 'new' | 'full'; title: string
 export function crewPlate(profile: CosmicCrewProfile | undefined, failed: boolean, narrow = false): CrewPlate {
   if (!profile) return {state: 'none', title: narrow ? t('Экипаж') : crewShortName('racer'), count: narrow ? '' : t('Экипаж'), note: failed ? t('Прогресс недоступен') : '', fill: 0};
   const opened = profile.unlocked.length, count = narrow ? tr`${opened} из ${COSMIC_CREW_CAPSULES}` : tr`Экипаж ${opened} из ${COSMIC_CREW_CAPSULES}`, title = narrow ? t('Экипаж') : crewShortName(profile.selected);
-  if (profile.unlocked.some(id => !profile.revealed.includes(id))) return {state: 'new', title: t('Новый персонаж'), count: '', note: t('Открыть капсулу'), fill: 100};
+  if (profile.unlocked.some(id => !profile.revealed.includes(id))) return {state: 'new', title: t('Новый персонаж'), count: '', note: narrow ? t('Открыть') : t('Открыть капсулу'), fill: 100};
   const next = COSMIC_CREW.find(member => member.points > profile.points);
   if (!next) return {state: 'full', title, count, note: narrow ? t('Скоро новые') : t('Новые персонажи скоро'), fill: 100};
   return {state: 'ready', title, count, note: crewRemaining(next.points - profile.points), fill: Math.floor(profile.points / next.points * 100)};

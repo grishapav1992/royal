@@ -11,6 +11,7 @@ const english: Record<string, string> = {
   'Серебряная': 'Silver',
   'Новый персонаж': 'New character',
   'Открыть капсулу': 'Open the capsule',
+  'Открыть': 'Open',
   'Прогресс недоступен': 'Progress unavailable',
   'Новые персонажи скоро': 'More characters soon',
   'Скоро новые': 'More soon',
