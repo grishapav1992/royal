@@ -37,7 +37,7 @@ export class NeopolisEffects {
     const resize = () => {
       if (this.width !== stage.clientWidth || this.height !== stage.clientHeight) this.clear();
       this.width = stage.clientWidth; this.height = stage.clientHeight;
-      const scale = Math.min(2, stage.ownerDocument.defaultView!.devicePixelRatio || 1);
+      const scale = Math.min(1.5, stage.ownerDocument.defaultView!.devicePixelRatio || 1);
       this.canvas.width = Math.max(1, Math.round(this.width * scale));
       this.canvas.height = Math.max(1, Math.round(this.height * scale));
       this.ctx?.setTransform(scale, 0, 0, scale, 0, 0);

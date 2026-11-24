@@ -35,6 +35,7 @@ export class NeopolisUI {
   private effects: NeopolisEffects;
   private boss: NeopolisBoss;
   private weather: NeopolisWeather;
+  private arenas: HTMLImageElement[] = [];
   private quake: Animation[] = [];
   private struck: Hero[] = [];
   /** The rescue was already shown before the current spin. */
@@ -105,9 +106,12 @@ export class NeopolisUI {
       + '<dialog class="np-dialog" data-np="dialog"><button type="button" data-np="close" class="np-close" aria-label="' + c.close + '">×</button><div data-np="dialog-body"></div></dialog>';
     host.replaceChildren(this.root); this.dialog = this.find<HTMLDialogElement>('dialog');
     const still = () => this.motionOptions(this.animation.signal).paused(), reduced = () => this.reducedMotion;
+    this.find('cutin').addEventListener('animationend', event => { if (event.target === this.find('cutin')) this.find('cutin').classList.remove('np-cutin-on'); }, { signal: this.life.signal });
     this.effects = new NeopolisEffects(this.root.querySelector('.np-scene')!, still, reduced);
     this.boss = new NeopolisBoss(this.find('arena'), this.find('boss'), this.effects, still, reduced);
     this.weather = new NeopolisWeather(this.root.querySelector('.np-weather')!, () => this.mode === 'rescue' ? 3 : Math.max(0, this.scene), still, reduced);
+    // The next arenas and costumes are decoded before the story needs them.
+    this.arenas = SCENES.flatMap(scene => [scene.background, scene.costumes]).map(source => { const image = new Image(); image.decoding = 'async'; image.src = source; void image.decode().catch(() => {}); return image; });
     this.coverObserver = new ResizeObserver(() => this.placeCover()); this.coverObserver.observe(this.root);
     this.audio = new NeopolisAudio(this.services.gameAudio,doc);
     this.feedback = new NeopolisFeedback(this.root,this.copy,n=>this.money(n),units=>{
@@ -609,7 +613,7 @@ export class NeopolisUI {
   destroy() {
     if (!this.alive) return;
     this.alive = false; this.stopAuto(); this.animation.abort(); this.life.abort(); this.stopAudio?.();
-    this.coverObserver.disconnect(); this.weather.destroy(); this.boss.destroy(); this.effects.destroy();
+    this.arenas = []; this.coverObserver.disconnect(); this.weather.destroy(); this.boss.destroy(); this.effects.destroy();
     this.audio.destroy();
     this.feedback.destroy();
     this.client.removeEventListener('change', this.changed); this.wallet.removeEventListener('change', this.changed);

@@ -39,9 +39,17 @@ export class NeopolisBoss {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D | null;
   private observer: ResizeObserver;
-  private images = SCENES.map(scene => { const image = new Image(); image.decoding = 'async'; image.src = scene.villain; return image; });
+  private images = SCENES.map(scene => { const image = new Image(); image.decoding = 'async'; image.src = scene.villain; void image.decode().catch(() => {}); return image; });
   private layers: { normal: HTMLCanvasElement; dark: HTMLCanvasElement; bright: HTMLCanvasElement }[] = [];
-  private cracks: Segment[][] = [];
+  /** Drawn once per size: cracks, shield plates and node lights are only composed per frame. */
+  private cracks: { left: number; top: number; width: number; height: number; dark: HTMLCanvasElement; glow: HTMLCanvasElement }[] = [];
+  private plates: HTMLCanvasElement[] = [];
+  private lights = new Map<string, HTMLCanvasElement>();
+  private cells: { x: number; y: number; reach: number; angle: number; size: number }[] = [];
+  private scale = 1;
+  private skipped = 0;
+  private warming = 0;
+  private settled = false;
   private request = 0;
   private last = performance.now();
   private time = 0;
@@ -77,7 +85,7 @@ export class NeopolisBoss {
   private get max() { return BOSSES[this.index]; }
 
   private resize() {
-    const scale = Math.min(2, this.arena.ownerDocument.defaultView!.devicePixelRatio || 1);
+    const scale = this.scale = Math.min(1.5, this.arena.ownerDocument.defaultView!.devicePixelRatio || 1);
     this.width = Math.max(1, this.arena.clientWidth); this.height = Math.max(1, this.arena.clientHeight);
     this.canvas.width = Math.round(this.width * scale); this.canvas.height = Math.round(this.height * scale);
     this.ctx?.setTransform(scale, 0, 0, scale, 0, 0);
@@ -88,43 +96,58 @@ export class NeopolisBoss {
     const centre = strip ? W * .6 : panel.left + panel.width / 2 - arena.left + 4;
     this.box = { x: centre - w / 2, y: strip ? 2 : Math.max(-h * .02, Math.min(0, (H - h) * .2)), w, h };
     this.shell = { x: centre, y: this.box.y + h * (strip ? .25 : .34), rx: w * .47, ry: h * (strip ? .27 : .37) };
-    this.layers = [];
+    this.layers = []; this.forget(); this.lights.clear(); this.cells = this.hexes(); this.settled = false;
   }
-  private prepare() {
-    if (this.layers[this.index]) return true;
-    const image = this.images[this.index];
-    if (!image.complete || !image.naturalWidth) return false;
-    const make = () => {
-      const canvas = this.canvas.ownerDocument.createElement('canvas');
-      canvas.width = Math.max(2, Math.round(this.box.w * 1.5)); canvas.height = Math.max(2, Math.round(this.box.h * 1.5));
-      return { canvas, ctx: canvas.getContext('2d')! };
+  private forget() { this.cracks = []; this.plates = []; this.warm(); }
+  /** Prepare one heavy sheet per idle moment, so a hit or a new arena never waits for it. */
+  private warm() {
+    clearTimeout(this.warming);
+    const next = () => {
+      if (!this.alive || !this.prepare()) { if (this.alive) this.warming = window.setTimeout(next, 400); return; }
+      const plate = this.plates.findIndex((ready, i) => i < this.max.shield && !ready), missing = this.plates.length < this.max.shield ? this.plates.length : plate;
+      if (missing >= 0 && missing < this.max.shield) this.plate(missing);
+      else if (this.cracks.length < this.max.core) this.crack(this.cracks.length);
+      else { if (this.index < LOOKS.length - 1) this.prepare(this.index + 1); return; }
+      this.warming = window.setTimeout(next, 120);
     };
-    const base = make(), { width, height } = base.canvas;
+    this.warming = window.setTimeout(next, 600);
+  }
+  private sheet(width: number, height: number, scale = this.scale) {
+    const canvas = this.canvas.ownerDocument.createElement('canvas');
+    canvas.width = Math.max(2, Math.round(width * scale)); canvas.height = Math.max(2, Math.round(height * scale));
+    const ctx = canvas.getContext('2d')!; ctx.scale(canvas.width / width, canvas.height / height);
+    return { canvas, ctx };
+  }
+  private prepare(index = this.index) {
+    if (this.layers[index]) return true;
+    const image = this.images[index];
+    if (!image.complete || !image.naturalWidth) return false;
+    const width = this.box.w, height = this.box.h, make = () => this.sheet(width, height), base = make();
     base.ctx.drawImage(image, 0, 0, width, height); base.ctx.globalCompositeOperation = 'destination-in';
     const sides = base.ctx.createLinearGradient(0, 0, width, 0);
     for (const [at, color] of [[0, 'transparent'], [.2, '#000'], [.8, '#000'], [1, 'transparent']] as const) sides.addColorStop(at, color);
     base.ctx.fillStyle = sides; base.ctx.fillRect(0, 0, width, height);
     const ends = base.ctx.createLinearGradient(0, 0, 0, height);
-    for (const [at, color] of [[0, this.index ? 'transparent' : 'rgba(0,0,0,.5)'], [.06, '#000'], [.66, '#000'], [.97, 'transparent']] as const) ends.addColorStop(at, color);
+    for (const [at, color] of [[0, index ? 'transparent' : 'rgba(0,0,0,.5)'], [.06, '#000'], [.66, '#000'], [.97, 'transparent']] as const) ends.addColorStop(at, color);
     base.ctx.fillStyle = ends; base.ctx.fillRect(0, 0, width, height);
     const tint = (color: string) => {
-      const copy = make(); copy.ctx.drawImage(base.canvas, 0, 0);
+      const copy = make(); copy.ctx.drawImage(base.canvas, 0, 0, width, height);
       copy.ctx.globalCompositeOperation = 'source-atop'; copy.ctx.fillStyle = color; copy.ctx.fillRect(0, 0, width, height);
       return copy.canvas;
     };
-    this.layers[this.index] = { normal: base.canvas, dark: tint('rgba(2,4,9,.9)'), bright: tint('rgba(255,255,255,.9)') };
+    this.layers[index] = { normal: base.canvas, dark: tint('rgba(2,4,9,.9)'), bright: tint('rgba(255,255,255,.9)') };
     return true;
   }
 
   /** `shadow` hides the villain before a battle: 0 is fully lit, 1 is a silhouette. */
   show(index: number, battle: Pick<Battle, 'shield' | 'core'> | null, shadow = 0) {
-    if (this.index !== index) { this.cracks = []; this.phase = 'alive'; }
-    this.index = index; this.shadowTarget = shadow; this.phase = this.phase === 'dying' ? 'dying' : 'alive';
+    if (this.index !== index) { this.forget(); this.lights.clear(); this.phase = 'alive'; }
+    this.index = index; this.shadowTarget = shadow; this.settled = false; this.phase = this.phase === 'dying' ? 'dying' : 'alive';
     this.shield = battle ? battle.shield : this.max.shield; this.core = battle ? battle.core : this.max.core;
   }
   snap() { this.shadow = this.shadowTarget; }
-  enter() { this.phase = 'alive'; this.entrance = 0; this.shadow = 1; this.shadowTarget = 0; this.cracks = []; }
-  hide() { if (this.phase !== 'dying') this.phase = 'gone'; }
+  enter() { this.phase = 'alive'; this.entrance = 0; this.shadow = 1; this.shadowTarget = 0; this.settled = false; }
+  hide() { if (this.phase !== 'dying') { this.phase = 'gone'; this.settled = false; } }
   get shielded() { return this.shield > 0; }
 
   private at(u: number, v: number): Point { return { x: this.box.x + u * this.box.w, y: this.box.y + v * this.box.h }; }
@@ -146,7 +169,7 @@ export class NeopolisBoss {
     const color = rgb(this.look.color);
     if (this.shield > 0) {
       const plate = this.shield - 1, angle = this.plateAngle(plate);
-      for (const hex of this.hexes()) if (this.plateOf(hex.angle) === plate) this.effects.burst(this.onStage(hex), 2, { speed: 230, life: 1150, size: hex.size * .62, color, gravity: 330, shape: 'shard' });
+      for (const hex of this.cells) if (this.plateOf(hex.angle) === plate) this.effects.burst(this.onStage(hex), 2, { speed: 230, life: 1150, size: hex.size * .62, color, gravity: 330, shape: 'shard' });
       this.ripple = { x: this.shell.x + Math.cos(angle) * this.shell.rx * .6, y: this.shell.y + Math.sin(angle) * this.shell.ry * .6, radius: 0, power: 1 };
       this.shieldFlash = 1; this.recoil = .55; this.shield--;
     } else if (this.core > 0) {
@@ -177,59 +200,91 @@ export class NeopolisBoss {
     return out;
   }
   private plateOf(angle: number) { return Math.min(this.max.shield - 1, Math.floor(angle / FULL * this.max.shield)); }
+  private outline(ctx: CanvasRenderingContext2D, hex: { x: number; y: number; size: number }) {
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) ctx.lineTo(hex.x + Math.cos(i * FULL / 6 + FULL / 12) * hex.size * .93, hex.y + Math.sin(i * FULL / 6 + FULL / 12) * hex.size * .93);
+    ctx.closePath();
+  }
+  private plate(index: number) {
+    if (this.plates[index]) return this.plates[index];
+    const { x, y, rx, ry } = this.shell, pad = 10, { canvas, ctx } = this.sheet(rx * 2 + pad * 2, ry * 2 + pad * 2);
+    ctx.translate(pad + rx - x, pad + ry - y); ctx.strokeStyle = ctx.fillStyle = rgb(this.look.color); ctx.lineWidth = 1.3;
+    for (const hex of this.cells) {
+      if (this.plateOf(hex.angle) !== index) continue;
+      const power = .09 + .5 * hex.reach ** 4;
+      this.outline(ctx, hex); ctx.globalAlpha = power; ctx.stroke(); ctx.globalAlpha = power * .22; ctx.fill();
+    }
+    const from = index / this.max.shield * FULL - Math.PI / 2 + .035, to = (index + 1) / this.max.shield * FULL - Math.PI / 2 - .035;
+    ctx.beginPath(); ctx.ellipse(x, y, rx, ry, 0, from, to);
+    ctx.globalAlpha = .75; ctx.lineWidth = 3; ctx.stroke(); ctx.globalAlpha = .22; ctx.lineWidth = 11; ctx.stroke();
+    return this.plates[index] = canvas;
+  }
   private drawShield(ctx: CanvasRenderingContext2D, alpha: number) {
     if (this.shield <= 0 || alpha <= 0) return;
-    const color = rgb(this.look.color);
-    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = color; ctx.fillStyle = color;
-    for (const hex of this.hexes()) {
-      if (this.plateOf(hex.angle) >= this.shield) continue;
-      let power = .09 + .5 * hex.reach ** 4 + .06 * Math.sin(this.time * 1.6 + hex.x * .03 + hex.y * .02) + this.shieldFlash * .35;
-      if (this.ripple) power += Math.max(0, 1 - Math.abs(Math.hypot(hex.x - this.ripple.x, hex.y - this.ripple.y) - this.ripple.radius) / 26) * this.ripple.power;
-      ctx.beginPath();
-      for (let i = 0; i < 6; i++) ctx.lineTo(hex.x + Math.cos(i * FULL / 6 + FULL / 12) * hex.size * .93, hex.y + Math.sin(i * FULL / 6 + FULL / 12) * hex.size * .93);
-      ctx.closePath(); ctx.lineWidth = 1.3; ctx.globalAlpha = Math.max(0, Math.min(1, power)) * alpha; ctx.stroke();
-      ctx.globalAlpha = Math.max(0, Math.min(.6, power * .22)) * alpha; ctx.fill();
-    }
+    const { x, y, rx, ry } = this.shell, pad = 10;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
     for (let i = 0; i < this.shield; i++) {
-      const from = i / this.max.shield * FULL - Math.PI / 2 + .035, to = (i + 1) / this.max.shield * FULL - Math.PI / 2 - .035;
-      ctx.beginPath(); ctx.ellipse(this.shell.x, this.shell.y, this.shell.rx, this.shell.ry, 0, from, to);
-      ctx.globalAlpha = (.6 + .2 * Math.sin(this.time * 2 + i)) * alpha; ctx.lineWidth = 3; ctx.stroke();
-      ctx.globalAlpha = .2 * alpha; ctx.lineWidth = 11; ctx.stroke();
+      ctx.globalAlpha = Math.min(1, (.82 + .14 * Math.sin(this.time * 2 + i) + this.shieldFlash * .4) * alpha);
+      ctx.drawImage(this.plate(i), x - rx - pad, y - ry - pad, rx * 2 + pad * 2, ry * 2 + pad * 2);
+    }
+    // The travelling ripple only exists for a moment after a hit.
+    if (this.ripple) {
+      ctx.strokeStyle = rgb(this.look.color, 60); ctx.lineWidth = 1.6;
+      for (const hex of this.cells) {
+        const near = 1 - Math.abs(Math.hypot(hex.x - this.ripple.x, hex.y - this.ripple.y) - this.ripple.radius) / 26;
+        if (near <= 0 || this.plateOf(hex.angle) >= this.shield) continue;
+        this.outline(ctx, hex); ctx.globalAlpha = near * this.ripple.power * alpha; ctx.stroke();
+      }
     }
     ctx.restore();
+  }
+  private crack(index: number) {
+    if (this.cracks[index]) return this.cracks[index];
+    const { w, h } = this.box, [u, v] = this.look.nodes[index], segments = crackTree(u, v, index + this.index * 10 + 1), pad = 10;
+    const xs = segments.flatMap(([x1, , x2]) => [x1 * w, x2 * w]), ys = segments.flatMap(([, y1, , y2]) => [y1 * h, y2 * h]);
+    const left = Math.min(...xs) - pad, top = Math.min(...ys) - pad, width = Math.max(...xs) + pad - left, height = Math.max(...ys) + pad - top;
+    // One path per branch level and wide faint strokes instead of a blur per segment.
+    const draw = (color: string, passes: readonly (readonly [number, number])[], base: number, step: number) => {
+      const { canvas, ctx } = this.sheet(width, height); ctx.translate(-left, -top); ctx.lineCap = 'round'; ctx.strokeStyle = color;
+      for (const [extra, alpha] of passes) for (let level = 0; level <= 4; level++) {
+        ctx.globalAlpha = alpha * (1 - level * .14); ctx.lineWidth = Math.max(.7, base - level * step) + extra; ctx.beginPath();
+        for (const segment of segments) if (segment[4] === level) { ctx.moveTo(segment[0] * w, segment[1] * h); ctx.lineTo(segment[2] * w, segment[3] * h); }
+        ctx.stroke();
+      }
+      // The armour carries the crack: nothing is drawn beside the figure.
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'destination-in'; ctx.drawImage(this.layers[this.index].normal, 0, 0, w, h);
+      return canvas;
+    };
+    return this.cracks[index] = { left, top, width, height, dark: draw('#020308', [[0, .85]], 4.4, .8), glow: draw(rgb(this.look.color, 80), [[11, .07], [6, .13], [2.4, .24], [0, 1]], 2, .35) };
   }
   private drawCracks(ctx: CanvasRenderingContext2D, alpha: number) {
-    ctx.save(); ctx.lineCap = 'round'; ctx.globalCompositeOperation = 'source-atop';
+    const { x, y } = this.box;
     for (let i = this.core; i < this.max.core; i++) {
-      const [u, v] = this.look.nodes[i];
-      this.cracks[i] ??= crackTree(u, v, i + this.index * 10 + 1);
-      const stroke = (segment: Segment) => {
-        const from = this.at(segment[0], segment[1]), to = this.at(segment[2], segment[3]);
-        ctx.beginPath(); ctx.moveTo(from.x, from.y); ctx.lineTo(to.x, to.y); ctx.stroke();
-      };
-      ctx.strokeStyle = '#020308'; ctx.globalAlpha = .85 * alpha;
-      for (const segment of this.cracks[i]) { ctx.lineWidth = 4.4 - segment[4] * .8; stroke(segment); }
-      ctx.strokeStyle = rgb(this.look.color, 80); ctx.shadowColor = rgb(this.look.color); ctx.shadowBlur = 9;
-      const pulse = .65 + .35 * Math.sin(this.time * 3 + i * 2);
-      for (const segment of this.cracks[i]) { ctx.globalAlpha = pulse * alpha * (1 - segment[4] * .16); ctx.lineWidth = Math.max(.7, 2 - segment[4] * .35); stroke(segment); }
-      ctx.shadowBlur = 0;
+      const crack = this.crack(i);
+      ctx.globalAlpha = alpha; ctx.drawImage(crack.dark, x + crack.left, y + crack.top, crack.width, crack.height);
+      ctx.globalAlpha = (.65 + .35 * Math.sin(this.time * 3 + i * 2)) * alpha; ctx.drawImage(crack.glow, x + crack.left, y + crack.top, crack.width, crack.height);
     }
-    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+  private light(name: string, size: number, stops: readonly (readonly [number, string])[]) {
+    const ready = this.lights.get(name); if (ready) return ready;
+    const { canvas, ctx } = this.sheet(size * 2, size * 2), gradient = ctx.createRadialGradient(size, size, 0, size, size, size);
+    for (const [at, color] of stops) gradient.addColorStop(at, color);
+    ctx.fillStyle = gradient; ctx.fillRect(0, 0, size * 2, size * 2); this.lights.set(name, canvas);
+    return canvas;
   }
   private drawNodes(ctx: CanvasRenderingContext2D, alpha: number) {
+    const open = this.shield === 0, base = this.box.w * .075 * 2.1;
+    const light = this.light('node', base, [[0, 'rgba(255,255,255,.95)'], [.12, 'rgba(255,236,190,.85)'], [.42, rgba(this.look.color, .55)], [1, 'transparent']]);
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
     for (let i = 0; i < this.core; i++) {
-      const [u, v] = this.look.nodes[i], at = this.at(u, v), open = this.shield === 0;
-      const size = (open ? .8 : .46) * this.box.w * .075 * (1 + .12 * Math.sin(this.time * 3.4 + i));
-      const gradient = ctx.createRadialGradient(at.x, at.y, 0, at.x, at.y, size * 2.1);
-      gradient.addColorStop(0, 'rgba(255,255,255,.95)'); gradient.addColorStop(.12, 'rgba(255,236,190,.85)');
-      gradient.addColorStop(.42, rgba(this.look.color, .55)); gradient.addColorStop(1, 'transparent');
-      ctx.globalAlpha = alpha; ctx.fillStyle = gradient; ctx.fillRect(at.x - size * 2.2, at.y - size * 2.2, size * 4.4, size * 4.4);
+      const [u, v] = this.look.nodes[i], at = this.at(u, v), beat = (open ? .8 : .46) * (1 + .12 * Math.sin(this.time * 3.4 + i)), size = base * beat;
+      ctx.globalAlpha = alpha; ctx.drawImage(light, at.x - size, at.y - size, size * 2, size * 2);
       if (!open) continue;
       ctx.strokeStyle = '#ffe9bd'; ctx.lineWidth = 1.6; ctx.globalAlpha = .85 * alpha;
       for (let k = 0; k < 4; k++) {
         const from = this.time * .6 + i + k * Math.PI / 2 + .2;
-        ctx.beginPath(); ctx.arc(at.x, at.y, size * .9, from, from + 1); ctx.stroke();
+        ctx.beginPath(); ctx.arc(at.x, at.y, size / 2.1 * .9, from, from + 1); ctx.stroke();
       }
     }
     ctx.restore();
@@ -239,11 +294,11 @@ export class NeopolisBoss {
     ctx.save();
     if (this.index === 0) { // Null is drawn into his own portal.
       const at = this.at(.545, .3);
-      for (let i = 16; i >= 0; i--) {
-        const k = i / 16, q = Math.max(0, Math.min(1, t * 1.9 - k * .55)), scale = 1 - q * q;
+      for (let i = 10; i >= 0; i--) {
+        const k = i / 10, q = Math.max(0, Math.min(1, t * 1.9 - k * .55)), scale = 1 - q * q;
         if (scale <= .02) continue;
         ctx.save(); ctx.translate(at.x, at.y); ctx.rotate(q * q * 5.5 * (1.15 - k * .4)); ctx.scale(scale, scale);
-        ctx.beginPath(); ctx.arc(0, 0, h * (.1 + k * .95), 0, FULL); ctx.arc(0, 0, i ? h * (.1 + (i - 1) / 16 * .95) : 0, 0, FULL, true); ctx.clip();
+        ctx.beginPath(); ctx.arc(0, 0, h * (.1 + k * .95), 0, FULL); ctx.arc(0, 0, i ? h * (.1 + (i - 1) / 10 * .95) : 0, 0, FULL, true); ctx.clip();
         ctx.globalAlpha = 1 - q * .4; ctx.drawImage(normal, x - at.x, y - at.y, w, h); ctx.restore();
       }
       const open = Math.max(0, Math.sin(Math.min(1, t * 1.05) * Math.PI));
@@ -253,7 +308,7 @@ export class NeopolisBoss {
         ctx.beginPath(); ctx.ellipse(0, 0, w * (.12 + .07 * i) * open, w * (.1 + .05 * i) * open, 0, 0, 5); ctx.stroke(); ctx.restore();
       }
     } else if (this.index === 1) { // Vespera's eclipse goes out and she burns to ash.
-      const cols = 22, rows = 30, sw = normal.width / cols, sh = normal.height / rows, dw = w / cols, dh = h / rows;
+      const cols = 16, rows = 22, sw = normal.width / cols, sh = normal.height / rows, dw = w / cols, dh = h / rows;
       for (let row = 0; row < rows; row++) for (let col = 0; col < cols; col++) {
         const noise = (col * 73 + row * 151) % 37 / 37, k = Math.max(0, Math.min(1, (t * 1.75 - row / rows * .62 - noise * .28) / .32));
         if (k >= 1) continue;
@@ -266,18 +321,15 @@ export class NeopolisBoss {
       ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.max(0, 1 - t * 1.2); ctx.strokeStyle = '#ff8d4d'; ctx.lineWidth = 10 * (1 - t) + .1;
       ctx.beginPath(); ctx.arc(at.x, at.y, Math.max(0, w * .28 * (1 - t * .9)), 0, FULL); ctx.stroke();
     } else { // Aeon's time stops, then the frozen figure shatters.
-      const hold = .32, cols = 9, rows = 13, dw = w / cols, dh = h / rows;
+      const hold = .32, cols = 12, rows = 16, dw = w / cols, dh = h / rows, sw = normal.width / cols, sh = normal.height / rows;
       if (t < hold) {
         ctx.drawImage(normal, x, y, w, h); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .35 * t / hold; ctx.drawImage(bright, x, y, w, h);
-      } else for (let row = 0; row < rows; row++) for (let col = 0; col < cols; col++) for (let half = 0; half < 2; half++) {
-        const noise = (col * 97 + row * 57 + half * 31) % 41 / 41, k = Math.max(0, (t - hold) / (1 - hold) * 1.25 - noise * .25), alpha = 1 - k * 1.05;
+      } else for (let row = 0; row < rows; row++) for (let col = 0; col < cols; col++) {
+        const noise = (col * 97 + row * 57) % 41 / 41, k = Math.max(0, (t - hold) / (1 - hold) * 1.25 - noise * .25), alpha = 1 - k * 1.05;
         if (alpha <= 0) continue;
-        const px = x + col * dw, py = y + row * dh;
         ctx.save(); ctx.globalAlpha = alpha;
-        ctx.translate(px + dw / 2 + (col + .5 - cols / 2) * k * k * 46 + (noise - .5) * 70 * k, py + dh / 2 + k * k * (150 + noise * 240) - k * 36);
-        ctx.rotate((noise - .5) * k * 3); ctx.translate(-px - dw / 2, -py - dh / 2); ctx.beginPath();
-        if (half) { ctx.moveTo(px, py); ctx.lineTo(px + dw + .5, py); ctx.lineTo(px, py + dh + .5); } else { ctx.moveTo(px + dw, py); ctx.lineTo(px + dw, py + dh); ctx.lineTo(px, py + dh); }
-        ctx.closePath(); ctx.clip(); ctx.drawImage(normal, x, y, w, h); ctx.restore();
+        ctx.translate(x + (col + .5) * dw + (col + .5 - cols / 2) * k * k * 34 + (noise - .5) * 70 * k, y + (row + .5) * dh + k * k * (150 + noise * 240) - k * 36);
+        ctx.rotate((noise - .5) * k * 3); ctx.drawImage(normal, col * sw, row * sh, sw, sh, -dw / 2, -dh / 2, dw + .5, dh + .5); ctx.restore();
       }
       const at = this.at(.52, .293), hand = -Math.PI / 2 + Math.min(1, t / hold) * FULL * .94;
       ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = Math.max(0, 1 - t * .95); ctx.strokeStyle = '#d7f4ff'; ctx.lineWidth = 3;
@@ -291,11 +343,14 @@ export class NeopolisBoss {
   private tick = (now: number) => {
     if (!this.alive) return;
     this.request = requestAnimationFrame(this.tick);
-    const delta = Math.min(50, now - this.last); this.last = now;
-    if (this.paused() || !this.ctx) return;
-    const ctx = this.ctx, still = this.reduced();
+    const delta = Math.min(50, now - this.last);
+    if (this.paused() || !this.ctx) { this.last = now; return; }
+    const ctx = this.ctx, still = this.reduced(), moving = this.phase === 'dying' || !!this.ripple || this.recoil > .02 || this.flash > .02 || this.shieldFlash > .02 || this.entrance < 1 || Math.abs(this.shadow - this.shadowTarget) > .01;
+    if (!moving && (this.settled || ++this.skipped % 2)) return;
+    this.last = now;
     ctx.clearRect(0, 0, this.width, this.height);
-    if (this.phase === 'gone' || !this.prepare()) return;
+    if (this.phase === 'gone') { this.settled = true; return; }
+    if (!this.prepare()) return;
     this.time += still ? 0 : delta / 1000;
     this.recoil *= .993 ** delta; this.flash *= .9955 ** delta; this.shieldFlash *= .995 ** delta;
     this.shadow += (this.shadowTarget - this.shadow) * (still ? 1 : Math.min(1, delta / 420));
@@ -319,20 +374,20 @@ export class NeopolisBoss {
     if (dim > .01) { ctx.globalAlpha = dim * this.entrance; ctx.drawImage(layer.dark, x, y, w, h); }
     if (this.flash > .02) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = this.flash * .75; ctx.drawImage(layer.bright, x, y, w, h); ctx.globalCompositeOperation = 'source-over'; }
     if (this.shadow > .3) {
-      const [u, v] = this.look.nodes[0], at = this.at(u, v), size = w * .13, gradient = ctx.createRadialGradient(at.x, at.y, 0, at.x, at.y, size);
-      gradient.addColorStop(0, rgba(this.look.color, .9)); gradient.addColorStop(1, 'transparent');
-      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (.32 + .18 * Math.sin(this.time * 1.8)) * this.shadow; ctx.fillStyle = gradient;
-      ctx.fillRect(at.x - size, at.y - size, size * 2, size * 2); ctx.globalCompositeOperation = 'source-over';
+      const [u, v] = this.look.nodes[0], at = this.at(u, v), size = w * .13, eyes = this.light('eyes', size, [[0, rgba(this.look.color, .9)], [1, 'transparent']]);
+      ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (.32 + .18 * Math.sin(this.time * 1.8)) * this.shadow;
+      ctx.drawImage(eyes, at.x - size, at.y - size, size * 2, size * 2); ctx.globalCompositeOperation = 'source-over';
     }
     const lit = (1 - this.shadow) * this.entrance;
     if (this.core < this.max.core) this.drawCracks(ctx, lit);
     if (lit > .4) this.drawNodes(ctx, lit);
     ctx.restore();
     this.drawShield(ctx, Math.max(0, lit - .25) * 1.33);
+    if (still && !moving) this.settled = true;
     if (!still && damage > 0 && Math.random() < delta / 90 * damage) {
       const node = this.look.nodes[this.core + Math.floor(Math.random() * (this.max.core - this.core))];
       if (node) this.effects.burst(this.onStage(this.at(node[0], node[1])), 1, { speed: 26, life: 1500, size: 15, color: '#1a1c24', gravity: -46, shape: 'smoke', spread: 6 });
     }
   };
-  destroy() { this.alive = false; cancelAnimationFrame(this.request); this.observer.disconnect(); this.canvas.remove(); }
+  destroy() { this.alive = false; clearTimeout(this.warming); cancelAnimationFrame(this.request); this.observer.disconnect(); this.canvas.remove(); }
 }

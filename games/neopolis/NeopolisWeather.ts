@@ -21,6 +21,8 @@ export class NeopolisWeather {
   private tick = (now: number) => {
     if (!this.alive) return;
     this.request = requestAnimationFrame(this.tick);
+    // Thirty frames a second are enough for falling drops.
+    if (now - this.last < 30) return;
     const seconds = Math.min(50, now - this.last) / 1000; this.last = now;
     const ctx = this.ctx; if (!ctx || this.paused()) return;
     const { width, height } = this.canvas, kind = this.kind();

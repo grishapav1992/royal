@@ -7,7 +7,7 @@
   --np-foe: #b697e9; --np-foe-deep: #3a2366;
   --np-line: #31445c; --np-dim: #a6b7cb;
   --np-display: Impact, 'Arial Black', 'Arial Narrow Bold', sans-serif;
-  --np-costumes: url('/assets/neopolis/team-night-v4.webp');
+  --np-costumes: url('/assets/neopolis/team-night-v5.webp');
   --np-rail: 78px; --np-ctl: 84px; --np-out: 48px; --np-foe-w: clamp(218px, 24cqw, 360px); --np-team-w: clamp(164px, 17cqw, 236px);
   position: relative; isolation: isolate; container: np / size; box-sizing: border-box;
   width: 100%; height: 100%; min-height: 0; overflow: clip;
@@ -29,13 +29,12 @@
 /* Scene and backgrounds */
 .np-scene, .np-city, .np-city > *, .np-arena > *, .np-effects { position: absolute; inset: 0; width: 100%; height: 100% }
 .np-city { z-index: 0; overflow: hidden; pointer-events: none }
-.np-city img { object-fit: cover; object-position: 50% 28%; opacity: .82; animation: np-drift 38s ease-in-out infinite alternate }
+.np-city img { object-fit: cover; object-position: 50% 28%; opacity: .82 }
 .np-city .np-city-previous { animation: np-leave 1.4s ease-out forwards }
-@keyframes np-drift { from { transform: scale(1.04) translateX(-.9%) } to { transform: scale(1.09) translateX(1.2%) } }
 @keyframes np-leave { to { opacity: 0 } }
 .np-veil { background: linear-gradient(180deg, #030a12b8, #07101a22 20%, #07101a66 62%, #050a13f2), linear-gradient(90deg, #040b16aa, transparent 24% 80%, #040b1655) }
-.np-dawn { opacity: 0; transition: opacity 2.4s; mix-blend-mode: screen; background: radial-gradient(ellipse 60% 46% at 46% 16%, #ffcf7ab0, #ff8a3d55 45%, transparent 78%), linear-gradient(#ff9a4a3a, transparent 62%) }
-.np[data-mode=rescue] .np-dawn { opacity: 1 }
+.np-dawn { opacity: 0; visibility: hidden; transition: opacity 2.4s; background: radial-gradient(ellipse 60% 46% at 46% 16%, #ffcf7ab0, #ff8a3d55 45%, transparent 78%), linear-gradient(#ff9a4a3a, transparent 62%) }
+.np[data-mode=rescue] .np-dawn { opacity: 1; visibility: visible }
 .np[data-mode=rescue] .np-city img { filter: brightness(1.35) saturate(1.25) sepia(.3) }
 .np-arena { position: absolute; z-index: 1; right: 0; top: calc(var(--np-rail) - 20px); bottom: var(--np-ctl); width: 46cqw; pointer-events: none }
 .np-trio { opacity: 0; transform: translateY(18px); transition: opacity 1.6s .4s, transform 1.6s .4s; background: url('/assets/neopolis/cover-v2.webp') 53% 0 / auto 100% no-repeat; mask-image: linear-gradient(90deg, transparent 8%, #000 46% 80%, transparent), linear-gradient(#000 55%, transparent 90%); mask-composite: intersect; -webkit-mask-image: linear-gradient(90deg, transparent 8%, #000 46% 80%, transparent), linear-gradient(#000 55%, transparent 90%); -webkit-mask-composite: source-in }
@@ -147,7 +146,7 @@
 .np-board[data-falling=true] .np-cell { will-change: transform }
 .np-board[data-presentation=win] .np-cell:not(.np-paying) { opacity: .35 }
 .np-paying { box-shadow: inset 0 0 16px #edcb8530; background: radial-gradient(ellipse, #3e3422 0%, #111a23 75%) }
-.np-paying > :first-child { transform: scale(calc(1 + var(--np-win-pulse, 0) * .09)); filter: brightness(calc(1 + var(--np-win-pulse, 0) * .5)) }
+.np-paying > :first-child { transform: scale(calc(1 + var(--np-win-pulse, 0) * .09)); }
 .np-paylines { position: absolute; inset: var(--np-pad); z-index: 3; width: calc(100% - var(--np-pad) * 2); height: calc(100% - var(--np-pad) * 2); pointer-events: none }
 .np-paylines polyline { fill: none; stroke: #ffe9b4; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 5px #ffd57d) }
 
@@ -213,8 +212,8 @@
 .np-stake select { width: 112px; height: 44px; padding: 0 8px; border: 1px solid var(--np-line); border-radius: 0; background: #060d17; font: 700 17px Arial, Helvetica, sans-serif }
 .np-stake [data-stake-field] { height: 44px; border: 1px solid var(--np-line); padding-left: 8px }
 .np-spin { position: relative; display: flex; align-items: center; justify-content: center; gap: 14px; height: 58px; min-width: 0; padding: 0 26px; overflow: hidden; border: 0; color: #23180a !important; font: 800 16px/1.1 Arial, Helvetica, sans-serif !important; letter-spacing: .5px; text-transform: uppercase; background: linear-gradient(#fff2cb, #e9c887 45%, #c4944d); clip-path: polygon(18px 0, 100% 0, calc(100% - 18px) 100%, 0 100%) }
-.np-spin::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 40%, #fff9 50%, transparent 60%); transform: translateX(-100%); animation: np-sheen 4.2s infinite }
-@keyframes np-sheen { 70% { transform: translateX(-100%) } 100% { transform: translateX(100%) } }
+.np-spin::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 40%, #fff9 50%, transparent 60%); transform: translateX(-100%); animation: np-sheen 1.1s .5s }
+@keyframes np-sheen { to { transform: translateX(100%) } }
 .np-spin em { font: 400 22px/1 var(--np-display); letter-spacing: 0; font-variant-numeric: tabular-nums }
 .np[data-mode=battle] .np-spin { background: linear-gradient(#fff, color-mix(in srgb, var(--np-foe) 80%, #fff) 45%, var(--np-foe)) }
 .np-spin:disabled { filter: saturate(.35) brightness(.62) }
@@ -231,17 +230,26 @@
 .np-primary { width: 100%; min-height: 48px; border: 0; color: #23180a !important; background: linear-gradient(#fff2cb, #e9c887 45%, #c4944d); font: 800 15px Arial, Helvetica, sans-serif !important }
 
 /* Story beats */
-.np-cutin { position: absolute; z-index: 7; left: 0; top: 24%; width: 74cqw; height: 40%; visibility: hidden; pointer-events: none; clip-path: polygon(0 12%, 100% 0, 94% 88%, 0 100%) }
+.np-scene:has(.np-cutin-on) .np-team { opacity: .18 }
+.np-team { transition: opacity .18s }
+.np-cutin { position: absolute; z-index: 7; left: 0; top: 28%; width: 76cqw; height: 34%; visibility: hidden; pointer-events: none }
 .np-cutin-on { visibility: visible; animation: np-cutin .95s both }
-.np-cutin > i { position: absolute; inset: 0; background: linear-gradient(100deg, color-mix(in srgb, var(--np-hero) 60%, #000) 0, color-mix(in srgb, var(--np-hero) 26%, #05080e) 45%, transparent 96%) }
-.np-cutin > i::after { content: ''; position: absolute; inset: 0 0 0 -46px; background: repeating-linear-gradient(96deg, #fff3 0 2px, transparent 2px 46px); animation: np-speed .3s linear infinite }
-.np-cutin .np-costume { position: absolute; left: -3%; top: -9%; height: 215%; filter: drop-shadow(0 0 22px var(--np-hero)); animation: np-cutin-art .95s both }
-.np-cutin div { position: absolute; left: 47%; right: 7%; top: 30%; color: #fff; text-shadow: 0 2px 8px #000, 0 0 18px var(--np-hero) }
-.np-cutin b { display: block; font: 400 clamp(22px, 4.4cqw, 60px)/1 var(--np-display); letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; transform: skewX(-9deg) }
-.np-cutin div span { font: 700 clamp(12px, 1.5cqw, 17px) Arial, Helvetica, sans-serif }
+.np-cutin > i { position: absolute; inset: 0; overflow: hidden; clip-path: polygon(0 10%, 100% 0, 95% 90%, 0 100%); background: linear-gradient(90deg, #04070dfa 0 52%, #04070dcc 74%, transparent) }
+.np-cutin > i::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 38% 120% at 22% 62%, color-mix(in srgb, var(--np-hero) 62%, transparent), color-mix(in srgb, var(--np-hero) 16%, transparent) 55%, transparent 78%) }
+.np-cutin > i::after { content: ''; position: absolute; inset: 0 0 0 -90px; opacity: .5; background: repeating-linear-gradient(97deg, transparent 0 62px, color-mix(in srgb, var(--np-hero) 34%, transparent) 62px 64px, transparent 64px 90px); mask-image: linear-gradient(90deg, transparent, #000 40%, transparent 92%); -webkit-mask-image: linear-gradient(90deg, transparent, #000 40%, transparent 92%); animation: np-speed .4s linear infinite }
+/* Bright edges of the band; the hero stands in front of it and is never cut at the head. */
+.np-cutin::before, .np-cutin::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, var(--np-hero) 16% 58%, transparent 96%) }
+.np-cutin::before { clip-path: polygon(0 10%, 100% 0, 100% 3px, 0 calc(10% + 3px)) }
+.np-cutin::after { clip-path: polygon(0 calc(100% - 3px), 95% calc(90% - 3px), 95% 90%, 0 100%) }
+.np-cutin-art { position: absolute; left: 0; bottom: 1%; width: 46%; height: 146%; overflow: hidden; animation: np-cutin-art .95s both }
+.np-cutin .np-costume { position: absolute; left: 50%; top: 0; height: 168%; transform: translateX(-50%) }
+.np-cutin-art::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 16%; background: linear-gradient(transparent, #04070d) }
+.np-cutin div { position: absolute; left: 46%; right: 4%; top: 34%; color: #fff; text-shadow: 0 2px 8px #000 }
+.np-cutin b { display: block; font: 400 clamp(22px, 4.4cqw, 60px)/1 var(--np-display); letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; transform: skewX(-9deg); color: #fff }
+.np-cutin div span { display: block; margin-top: 6px; font: 700 clamp(12px, 1.5cqw, 17px) Arial, Helvetica, sans-serif; color: var(--np-hero) }
 @keyframes np-cutin { 0% { transform: translateX(-100%) } 18% { transform: none } 80% { transform: none; opacity: 1 } 100% { transform: translateX(30%); opacity: 0 } }
 @keyframes np-cutin-art { from { transform: translateX(-12%) } to { transform: translateX(5%) } }
-@keyframes np-speed { to { transform: translateX(46px) } }
+@keyframes np-speed { to { transform: translateX(90px) } }
 .np-callout { position: absolute; z-index: 9; right: calc(var(--np-foe-w) * .12); top: 38%; max-width: 280px; text-align: center; font: 400 25px/1.05 var(--np-display); letter-spacing: 1px; text-transform: uppercase; color: #fff; text-shadow: 0 0 14px var(--np-foe), 0 2px 5px #000, 0 0 3px #000; opacity: 0; pointer-events: none }
 .np-callout small { display: block; margin-top: 4px; font: 700 13px/1.3 Arial, Helvetica, sans-serif; letter-spacing: 0; text-transform: none; color: #ffe9bd }
 .np-callout-on { animation: np-callout 1.5s both }
@@ -356,8 +364,10 @@
   .np-auto-panel { left: 8px; right: 8px; bottom: clamp(108px, 17.5cqh, 138px); width: auto }
   .np-callout { right: 4px; top: 8%; width: 52cqw; max-width: none; font-size: 19px }
   .np-callout small { font-size: 12px }
-  .np-cutin { width: 100cqw; top: 44%; height: 24% }
-  .np-cutin div { left: 44%; right: 2% }
+  .np-scene:has(.np-cutin-on) .np-team { opacity: 1 }
+  .np-cutin { width: 100cqw; top: 50%; height: 18% }
+  .np-cutin-art { width: 46%; left: -2% }
+  .np-cutin div { left: 43%; right: 2% }
   .np-cutin b { font-size: clamp(17px, 5.9cqw, 28px); letter-spacing: 1px }
 }
 @container np (max-aspect-ratio: 1/1) and (max-height: 620px) {
@@ -450,7 +460,7 @@
   .np-auto-panel { right: 8px; bottom: 58px; width: 260px; padding: 10px }
   .np-callout { right: calc(clamp(128px, 21cqw, 196px) + 8px); top: 26%; width: clamp(96px, 19cqw, 200px); font-size: 16px }
   .np-callout small { font-size: 12px }
-  .np-cutin { width: 62cqw }
+  .np-cutin { width: 62cqw; top: 34% }
   .np-verdict { padding: 12px 16px 14px }
 }
 @container np (max-height: 290px) and (min-aspect-ratio: 1/1) {

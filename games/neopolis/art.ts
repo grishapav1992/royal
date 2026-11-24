@@ -1,9 +1,9 @@
 import { HEROES, type Hero, type BossId } from '../../src/shared/neopolisMath';
 
 export const SCENES = [
-  { id: 'null', background: '/assets/neopolis/city-v2.webp', costumes: '/assets/neopolis/team-night-v4.webp', villain: '/assets/neopolis/null-v2.webp' },
-  { id: 'vespera', background: '/assets/neopolis/citadel-v3.webp', costumes: '/assets/neopolis/team-eclipse-v4.webp', villain: '/assets/neopolis/vespera-v3.webp' },
-  { id: 'aeon', background: '/assets/neopolis/observatory-v3.webp', costumes: '/assets/neopolis/team-chrono-v4.webp', villain: '/assets/neopolis/aeon-v3.webp' },
+  { id: 'null', background: '/assets/neopolis/city-v2.webp', costumes: '/assets/neopolis/team-night-v5.webp', villain: '/assets/neopolis/null-v2.webp' },
+  { id: 'vespera', background: '/assets/neopolis/citadel-v3.webp', costumes: '/assets/neopolis/team-eclipse-v5.webp', villain: '/assets/neopolis/vespera-v3.webp' },
+  { id: 'aeon', background: '/assets/neopolis/observatory-v3.webp', costumes: '/assets/neopolis/team-chrono-v5.webp', villain: '/assets/neopolis/aeon-v3.webp' },
 ] as const;
 
 export function portrait(character: Hero | BossId): string {
