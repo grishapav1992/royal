@@ -97,9 +97,9 @@
     },
     "games/meme-overload/meme-overload.css": {
       "path": "games/meme-overload/meme-overload.css",
-      "commit": "86873cf6d6569481acab6bf6e5173aada549e08a",
-      "baseSha256": "be2458c17214d7b9de3f1156c574babaa302195348275f8e10aba573933ed372",
-      "sha256": "be2458c17214d7b9de3f1156c574babaa302195348275f8e10aba573933ed372"
+      "commit": "1fada9fafe486dc22115f7bccd6adf892e8241fa",
+      "baseSha256": "e707979c44b8920b48791b28bf8766a44e69a1a7ec816e11a682a0279c7e4621",
+      "sha256": "e707979c44b8920b48791b28bf8766a44e69a1a7ec816e11a682a0279c7e4621"
     },
     "games/meme-overload/memeText.ts": {
       "path": "games/meme-overload/memeText.ts",
