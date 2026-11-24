@@ -65,7 +65,10 @@ export class RoyalPlatformCatalog {
       : label;
   };
   constructor(private host: HTMLElement, private select: (choice:PlatformChoice)=>void, private collection:CabinetCollection, private selected?:PlatformChoice, presentation: 'cabinet' | 'casino' = 'cabinet') {
-    this.entries=collectionGames(collection).filter(id=>id!=='casinoapipro').map(localEntry);
+    this.entries = collectionGames(collection)
+      .filter(id => id !== 'casinoapipro')
+      .sort((left, right) => Number(right === DRAGON_PATH.gameId) - Number(left === DRAGON_PATH.gameId))
+      .map(localEntry);
     this.source=collection;
     const title={royal:t('Игры Royal'),github:t('Доработанные GitHub-игры'),casinoapipro:'Casino API PRO'}[collection];
     const casino = presentation === 'casino';

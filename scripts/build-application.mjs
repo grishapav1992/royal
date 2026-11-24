@@ -45,9 +45,18 @@ export async function buildApplication({ root = projectRoot, modules = null, hos
     const node = args => () => run(process.execPath, args, root);
     await step('rtp', node(['scripts/check-game-rtp.mjs']));
     await step('typecheck', node(['node_modules/typescript/bin/tsc', '--noEmit']));
-    await step('modules', node(['scripts/build-game-module.mjs', ...(modules ? ['--games', ...modules] : ['--all']),...(moduleProjection?['--source-projection',moduleProjection]:[])]));
+    const projectedHost = hostProjection && await readHostProjection(root, hostProjection, { strictOrigins: true });
+    const applicationGames = projectedHost?.metadata.applicationModuleGames;
+    if (applicationGames !== undefined) {
+      if (!Array.isArray(applicationGames) || !applicationGames.length || new Set(applicationGames).size !== applicationGames.length
+          || applicationGames.some(game => typeof game !== 'string' || !/^[a-z0-9-]+$/.test(game)) || projectedHost.metadata.moduleGames) {
+        throw Error('Invalid application module selection');
+      }
+    }
+    const selectedGames = modules ?? applicationGames;
+    await step('modules', node(['scripts/build-game-module.mjs', ...(selectedGames ? ['--games', ...selectedGames] : ['--all']),...(moduleProjection?['--source-projection',moduleProjection]:[])]));
     if(moduleProjection)report.moduleProjection=JSON.parse(await readFile(resolve(root,'module-build/source-projection-report.json'),'utf8'));
-    if(hostProjection){const reader=await readHostProjection(root,hostProjection,{strictOrigins:true});const games=reader.metadata.moduleGames;
+    if(projectedHost){const games=projectedHost.metadata.moduleGames;
       if(games){if(!Array.isArray(games)||!games.length||!games.every(n=>/^[a-z0-9-]+$/.test(n)))throw Error('Invalid projected module selection');
         const initialModules=JSON.parse(await readFile(resolve(root,'module-build/build-report.json'),'utf8'));
         await step('projected-modules',node(['scripts/build-game-module.mjs','--games',...games,'--source-projection',hostProjection]));
