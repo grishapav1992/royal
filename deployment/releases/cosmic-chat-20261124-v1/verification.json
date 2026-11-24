@@ -1,0 +1,101 @@
+{
+  "published": true,
+  "release": "cosmic-chat-20261124-v1",
+  "sourceCommit": "781a932fce534f16bfe8a27c8ded0ee250692640",
+  "baseCommit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/cosmic-chat-20261124-v1/source.tgz",
+    "sha256": "705a5996253689c5169be5076a82bc6ddb89a033a691871d197dae4a4f7aecd7",
+    "bytes": 51650,
+    "oldVersion": "1.3.0-8d19b794f255",
+    "imageTag": "royal-game:before-cosmic-chat-20261124-v1",
+    "image": "sha256:2a3b9ebfb37444da4a752c803fbb742d203b74315df83b38da2d7890b8f79e99",
+    "oldPackageHardlinked": true,
+    "createdSources": []
+  },
+  "module": {
+    "verified": true,
+    "gameId": "studio-cosmic-escape",
+    "version": "1.3.1-7a361aa2790c",
+    "bytes": 39083702,
+    "files": 48,
+    "beforeSha256": "6e808f8923489ee0a2f1e56f3ec6b3d94f5705c7df0514cdec4f27b4d5ab2ade",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "1edd7b2e15576d4ed770592643a7287496f12c1c5b228a18f607e91f96cef844",
+    "history": "/opt/royal-game-modules-state/history/20261124T181224-4513844274b64c76b4c96f94c35c29bd.json"
+  },
+  "freeBefore": 11483074560,
+  "freeAfter": 11443740672,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8821,
+  "servicesPreserved": 11,
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "projection": "shared inputs as in cosmic-crew-module-20261124-v1, host a5ea0803 unchanged",
+  "includes": "the intro note removal of 09c8ffca, merged to main by another task",
+  "verification": {
+    "release": "cosmic-chat-20261124-v1",
+    "version": "1.3.1-7a361aa2790c",
+    "sourceCommit": "781a932fce534f16bfe8a27c8ded0ee250692640",
+    "moduleManifestSha256": "47644d322ef43b10655eba498d2e0ce52cdd7a2fbab00dfe7808c4cebe97a2b6",
+    "connectedHostPassed": true,
+    "recoveryPassed": true,
+    "serverTestsPassed": 70,
+    "connectedBrowserTests": 21,
+    "englishLabelsWhole": true,
+    "host": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact module bytes",
+    "browser": "Google Chrome",
+    "expectTimeoutMs": 45000,
+    "scenarios": [
+      "labels stay whole beside the open chat: eight sizes, five states, lost reply row",
+      "cockpit, plate, podium and heroine never move through real rounds: 1440x900 and 1280x720 with chat, 1440x900, 1280x720, 393x852, 852x393, 320x568, 568x320",
+      "text of any length on nine sizes",
+      "crew: points, capsule, lost reply, locks, reload, no wallet entries",
+      "crew service failure",
+      "mission prices and one debit",
+      "100 USDT",
+      "ten cent round, settings and Stop",
+      "count-only autoplay",
+      "ten paid spins through a natural bonus",
+      "racer reactions",
+      "2K reel size",
+      "field without scrolling",
+      "English labels on five chat sizes"
+    ]
+  },
+  "public": {
+    "health": 200,
+    "home": 200,
+    "filesVerified": 48,
+    "manifest": true,
+    "pointers": 125,
+    "changed": [
+      "studio-cosmic-escape"
+    ],
+    "previousPackageServed": true,
+    "guestHomeWithoutErrors": [
+      "1440x900",
+      "393x852"
+    ]
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 92.55,
+    "timer": "enabled and active",
+    "freeBefore": 11479363584,
+    "freeAfter": 11475800064,
+    "removedEntries": 1
+  },
+  "notChecked": [
+    "signed-in play on the public site",
+    "physical phones",
+    "Safari"
+  ]
+}
