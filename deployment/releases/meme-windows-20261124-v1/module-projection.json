@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "productionCommit": "68ebb4bd6ceaa6979a5f64222eecfc54242cf70b",
+  "productionCommit": "7f831f1e412fa5de0088c3a3579dffce889e239c",
   "moduleGames": [
     "meme-overload"
   ],
@@ -129,7 +129,7 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/modules/GameModuleCatalog.ts",
       "baseSha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82",
-      "sha256": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1",
+      "sha256": "d04cb71dd9ea9bd9e868c3da2b4233aa652cefdb682b6ead78c4b3ebab4dfe3b",
       "patches": [
         {
           "from": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },",
@@ -154,6 +154,14 @@
         {
           "from": "export const STUDIO_GAME_MODULES = [\n",
           "to": "export const STUDIO_GAME_MODULES = [\n { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },\n"
+        },
+        {
+          "from": "/** Independent client packages",
+          "to": "import { DRAGON_PATH_GAME, DRAGON_PATH_RULES_VERSION, DRAGON_PATH_TITLE } from '../shared/dragonPathProtocol.ts';\n\n/** Independent client packages"
+        },
+        {
+          "from": "export const GAME_MODULES = [...STUDIO_GAME_MODULES, ...CASINO_GAME_MODULES, ...ACTIVITY_GAME_MODULES, ...ARCADE_GAME_MODULES, ...PROVIDER_GAME_MODULES,...PVP_GAME_MODULES] as const;",
+          "to": "export const DRAGON_PATH = { gameId: DRAGON_PATH_GAME, slug: 'panda-dragon', apiVersion: 1, rulesVersion: DRAGON_PATH_RULES_VERSION, progressVersion: 2, title: DRAGON_PATH_TITLE } as const;\nexport const GAME_MODULES = [...STUDIO_GAME_MODULES, ...CASINO_GAME_MODULES, ...ACTIVITY_GAME_MODULES, ...ARCADE_GAME_MODULES, ...PROVIDER_GAME_MODULES,...PVP_GAME_MODULES, DRAGON_PATH] as const;"
         }
       ]
     },
@@ -163,6 +171,30 @@
       "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
       "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
     },
+    "src/shared/dragonPathLayout.ts": {
+      "path": "src/shared/dragonPathLayout.ts",
+      "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+      "baseSha256": "022647095aff9d7e2b9df39c90b277cfb60f3176d93ac504207d2d5167b93458",
+      "sha256": "022647095aff9d7e2b9df39c90b277cfb60f3176d93ac504207d2d5167b93458"
+    },
+    "src/shared/dragonPathMath.ts": {
+      "path": "src/shared/dragonPathMath.ts",
+      "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+      "baseSha256": "55cb7062fb8098ad58b228e0648b61a040c98c58e4c054b08c124dffa71de80e",
+      "sha256": "55cb7062fb8098ad58b228e0648b61a040c98c58e4c054b08c124dffa71de80e"
+    },
+    "src/shared/dragonPathProtocol.ts": {
+      "path": "src/shared/dragonPathProtocol.ts",
+      "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+      "baseSha256": "aa0e20250aa15c724e38ca611418c7e435f30ff15244af689cf19865f8ef4fca",
+      "sha256": "aa0e20250aa15c724e38ca611418c7e435f30ff15244af689cf19865f8ef4fca"
+    },
+    "src/shared/dragonPathRound.ts": {
+      "path": "src/shared/dragonPathRound.ts",
+      "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+      "baseSha256": "74ee227cdc25ad276671c0f07f1363647f6c54e8e918b3f3527a62d347ad8794",
+      "sha256": "74ee227cdc25ad276671c0f07f1363647f6c54e8e918b3f3527a62d347ad8794"
+    },
     "src/shared/forestHeartMath.ts": {
       "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
       "path": "src/shared/forestHeartMath.ts",
@@ -170,10 +202,10 @@
       "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
     },
     "src/shared/gameStakes.ts": {
-      "commit": "b77a6010f4fc3c02e4620c040d2397d4769a716d",
       "path": "src/shared/gameStakes.ts",
-      "baseSha256": "a83f372dbb71ac3c08093d6ffeb41746da4aea610034d6ecdaec8a22dc29bf30",
-      "sha256": "a83f372dbb71ac3c08093d6ffeb41746da4aea610034d6ecdaec8a22dc29bf30"
+      "commit": "5899e91fd1ec3355f2620324557b5a58d50435e3",
+      "baseSha256": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b",
+      "sha256": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b"
     },
     "src/shared/memeOverload.ts": {
       "path": "src/shared/memeOverload.ts",
@@ -200,10 +232,10 @@
       "sha256": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a"
     },
     "src/shared/roundPrecision.ts": {
-      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
       "path": "src/shared/roundPrecision.ts",
-      "baseSha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8",
-      "sha256": "7bbd2f1bbc9f05443f7cba7db8809b125e61682cab006e1f30a3f88ee9fab3c8"
+      "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+      "baseSha256": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870",
+      "sha256": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870"
     },
     "src/ui/GameLayoutPolicy.ts": {
       "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
