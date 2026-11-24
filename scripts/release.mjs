@@ -63,7 +63,14 @@ export async function verifyRelease(root, path = defaultManifest) {
   if (!manifest.files || !Object.keys(manifest.files).length) throw Error('Empty release');
   if (manifest.hostProjection) {
     if (manifest.scope !== 'application' || manifest.hostProjection.productionCommit !== manifest.baseCommit || JSON.stringify(manifest.hostProjection) !== JSON.stringify(manifest.build.hostProjection)) throw Error('Projection build evidence differs');
-    await verifyHostProjection(root, manifest.hostProjection);
+    const projection = await verifyHostProjection(root, manifest.hostProjection);
+    const games = projection.metadata.applicationModuleGames;
+    if (games) {
+      const built = manifest.packages?.map(({ gameId }) => gameId).sort();
+      const catalogue = (await import('../src/modules/GameModuleCatalog.ts')).GAME_MODULES;
+      const expected = games.map(slug => catalogue.find(game => game.slug === slug)?.gameId).sort();
+      if (expected.includes(undefined) || JSON.stringify(built) !== JSON.stringify(expected)) throw Error('Application module selection differs');
+    }
   } else if (manifest.build.hostProjection) throw Error('Projection evidence missing');
   if (manifest.backendProjection) {
     if (manifest.scope !== 'application' || manifest.backendProjection.productionCommit !== manifest.baseCommit
