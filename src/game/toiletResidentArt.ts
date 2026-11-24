@@ -1,12 +1,14 @@
 import type Phaser from 'phaser';
 import type {ToiletResidentPose} from './toiletResidentPose';
+import {CHARACTER_BODY_HEIGHT} from './characters';
 
 type Paint=CanvasRenderingContext2D;
 type Point={x:number;y:number};
 type Part={x:number;y:number;w:number;h:number;pivot:Point;hand:Point};
 export const TOILET_RESIDENT_RIG_KEY='toilet-visitor-reference-rig-v2';
 export const TOILET_RESIDENT_RIG_URL='/assets/toilet/visitor-rig-v2-161e9417f4a0.png';
-const scale=102/1024,centerX=595,top=27;
+const rigHeight=102,feetY=130;
+const scale=rigHeight/1024,centerX=595,top=27;
 const body={x:330,y:0,w:530,h:1024};
 const left:Part={x:1070,y:584,w:190,h:312,pivot:{x:1147,y:653},hand:{x:1174,y:831}};
 const right:Part={x:1046,y:152,w:185,h:315,pivot:{x:1153,y:221},hand:{x:1125,y:399}};
@@ -43,11 +45,13 @@ function arm(c:Paint,part:Part,pivot:Point,target:Point):Point{
 export function paintToiletResident(c:Paint,pose:ToiletResidentPose){
   if(!rig)return;
   c.save();c.beginPath();c.rect(9,9,82,123);c.clip();
+  const bodyScale=CHARACTER_BODY_HEIGHT/rigHeight;
+  c.translate(50,feetY);c.scale(bodyScale,bodyScale);c.translate(-50,-feetY);
   oval(c,50,129,43,5,'#57635b33','');
   for(const p of [{x:78,y:123},{x:73,y:128}])paper(c,p);
   // The visible seat hugs the seated hips instead of appearing behind the head.
   oval(c,50,106,51,31,'#f3ecd8');oval(c,50,106,44,25,'#829f98');
-  c.save();c.translate(50,130);c.rotate(-pose.lean*.005);c.scale(1,1+pose.breath*.002);c.translate(-50,-130);
+  c.save();c.translate(50,feetY);c.rotate(-pose.lean*.005);c.scale(1,1+pose.breath*.002);c.translate(-50,-feetY);
   const leftPivot=onBody(418,625),rightPivot=onBody(783,625);
   const leftTarget={x:pose.left.x+1,y:pose.left.y*2-51};
   const rightTarget={x:pose.right.x+1+(pose.behindShirt?7:0),y:pose.right.y*2-51};

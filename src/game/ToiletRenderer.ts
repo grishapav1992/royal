@@ -80,6 +80,7 @@ export function paintRoofToiletStep(c:Paint){
   line(c,17,18,42,18,'#d1c2a1');
 }
 function paintCubicle(c:Paint,p:Cubicle){
+  const occupied=p.id===OCCUPIED_TOILET_CUBICLE;
   c.save();c.translate(p.x,p.y);
   paintTiles(c,8,8,84,124,28,31,['#7b9394','#829a9b','#789092'],'#697f82');
   verticalFill(c,8,8,84,36,'#182f3970','#182f3900');
@@ -87,17 +88,17 @@ function paintCubicle(c:Paint,p:Cubicle){
   box(c,33,18,34,16,'#d9ddd1',1.5);
   box(c,33,18,34,5,cream,1);
   box(c,55,25,5,2,'#59797e',0);
-  if(p.id!==OCCUPIED_TOILET_CUBICLE){
+  if(!occupied){
     oval(c,52,58,37,43,'#233c4745');
     oval(c,50,54,34,42,'#e0e4db',ink);
     oval(c,50,53,27,34,'#fffaf0');
     oval(c,50,53,21,27,'#557e87');
     line(c,46,46,54,46,'#c1e1dc',1);
   }
-  const paperY=p.id===OCCUPIED_TOILET_CUBICLE?9:0;
-  box(c,83,49+paperY,9,17,'#465b62',1);
-  box(c,79,51+paperY,10,14,cream,1);
-  box(c,81,62+paperY,7,9,'#fffae9',1);
+  const paperX=occupied?73:79,paperY=occupied?82:51;
+  box(c,paperX+4,paperY-2,88-paperX,17,'#465b62',1);
+  box(c,paperX,paperY,10,14,cream,1);
+  box(c,paperX+2,paperY+11,7,9,'#fffae9',1);
   for(const [x,y,w,h] of [[0,0,100,8],[0,0,8,140],[92,0,8,140],[0,132,18,8],[82,132,18,8]]){
     box(c,x,y,w,h,'#42636b',1.5);
     line(c,x+1,y+1,x+w-1,y+1,'#a0b7ad',1);

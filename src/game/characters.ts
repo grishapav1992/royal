@@ -14,6 +14,8 @@ export type { Facing } from '../shared/movement';
 export const DIRECTIONS: Facing[] = ['down', 'left', 'right', 'up'];
 export const CHARACTER_RESOLUTION = 3;
 export const CHARACTER_SCALE = 1.8 / CHARACTER_RESOLUTION;
+/** Nominal height of the visible body in world units, excluding atlas padding. */
+export const CHARACTER_BODY_HEIGHT = 39 * CHARACTER_RESOLUTION * CHARACTER_SCALE;
 const W = 32, H = 48, TOP_PADDING = 8, ATLAS_COLUMNS = 23;
 
 type Palette = { skin: string; shade: string; hair: string; hairLight: string; shirt: string; light: string; dark: string; pants: string; shoes: string; style: 'hoodie' | 'long' | 'cap' | 'jacket'; bartender?: boolean; look?: 'curls' | 'beanie' | 'punk' | 'buns' | 'baseball' | 'silver'; width?: number; glasses?: boolean };

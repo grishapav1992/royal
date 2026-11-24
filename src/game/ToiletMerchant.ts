@@ -2,11 +2,13 @@ import type Phaser from 'phaser';
 import atlas from '../../docs/concepts/toilet-janitor-animations/animations-v1.json';
 import {TOILET_MERCHANT} from '../shared/toilet';
 import {language} from '../i18n';
+import {CHARACTER_BODY_HEIGHT} from './characters';
 import {ToiletMerchantRoutine} from './toiletMerchantPose';
 
 export const TOILET_MERCHANT_TEXTURE='royal-toilet-janitor-v1';
 export const TOILET_MERCHANT_URL='/assets/toilet/royal-janitor-v1-90a698e1d019.png';
-const scale=.28;
+const [,idleTop,,idleBottom]=atlas.frames[0].alphaBounds;
+const scale=CHARACTER_BODY_HEIGHT/(idleBottom-idleTop);
 const lines={
   ru:{name:'Жора',beckon:'Эй, приятель... Сюда.',trade:[
     'Мыло, бумага... Всё почти новое.',
