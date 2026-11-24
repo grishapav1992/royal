@@ -1,0 +1,37 @@
+{
+  "activeBefore": [
+    "panda-dragon-preview",
+    "studio-cosmic-escape",
+    "studio-caramel-carnival",
+    "studio-velvet-reign",
+    "studio-last-convoy",
+    "studio-nitro-run",
+    "studio-afterglow",
+    "studio-meme-overload",
+    "studio-dracona",
+    "studio-neopolis",
+    "studio-forest-heart",
+    "github-crash",
+    "royal-plinko",
+    "original-cr-vs-leo",
+    "original-jackie-chan",
+    "studio-caribbean-treasures",
+    "studio-flooded-temple",
+    "royal-roulette",
+    "flag-battle",
+    "studio-wild-nudge"
+  ],
+  "backend": {
+    "server/index.ts": "02e2172890c541e672675171f898244e019d525f65df10341f5d79df8c55c777",
+    "server/cosmicCrew.ts": "2157ad0ab36abcf562c1fe7fd95eaf706fdb221e0f96f13ef27d200263c48a5f",
+    "server/cosmicCrewRoutes.ts": "136f410158d5feb48ee9d4b04b918cb2bd712620ec003b32dd167fa99afc4f46",
+    "src/shared/cosmicCrew.ts": "080db6f8cb445b53469c9bfff4a295cf969460564d2af44fa2824735c4b09baf"
+  },
+  "backendBuildInputs": {
+    "package.json": "69b61b2bd2717c3b201f3bdb290ff32be76afc29cf10a1707b8cddbf2902fa17",
+    "src/i18n/en.ts": "8f3990b31f85037221688e4d906d41225ad5649a62f5c98834ce55bbec6e65c7",
+    "tsconfig.json": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+    "src/i18n/progressionEn.ts": "66c68ac05b3b362c4ef1dae60afaeb1c484d6ada0887adefd9954a4de12c1ba4",
+    "src/i18n/volcanicPlinkoEn.ts": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8"
+  }
+}

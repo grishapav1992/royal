@@ -23,6 +23,9 @@ import {CosmicEscapeAudio} from './CosmicEscapeAudio';
 import {CosmicEscapeAssets,COSMIC_ESCAPE_ASSETS,type CosmicAssetState} from './CosmicEscapeAssets';
 import {CosmicEscapeBoard,cosmicSymbol,cosmicSymbolName} from './CosmicEscapeBoard';
 import {CosmicEscapeRacer, cosmicRacerOutcome} from './CosmicEscapeRacer';
+import {CosmicCrewClient} from './CosmicCrewClient';
+import {crewDialog,crewNewcomer,crewPlate,crewReveal} from './CosmicCrewView';
+import {isCosmicCrewId,type CosmicCrewId} from '../../src/shared/cosmicCrew';
 import {luelonTheme,type LuelonTheme} from '../../src/ui/LuelonArtwork';
 import '../../src/ui/luelon-games.css';
 import '../../src/ui/cosmic-escape.css';
@@ -30,7 +33,9 @@ import './cosmic-cockpit.css';
 type Session=NativeSlotSession<'luelon'>;
 type Speed='normal'|'fast';
 type Live=SlotOperation&{operationId:string;balance:number;motion:boolean;fast:boolean;before?:Session;};
-type Dialog='intro'|'info'|'history'|'buy'|'bonus'|'complete'|'';
+type Dialog='intro'|'info'|'history'|'buy'|'bonus'|'complete'|'crew'|'reveal'|'';
+/** Crew windows close like the rules window. */
+const shellKind=(kind:Dialog)=>kind==='crew'||kind==='reveal'?'info':kind;
 const SPEEDS:readonly Speed[]=['normal','fast'];
 const AUTO_COUNTS=[10,25,50,100] as const;
 const maximumStakeCents=gameStakeMaximum('studio-cosmic-escape');
@@ -58,11 +63,11 @@ export class CosmicEscapeUI {
   private readonly racer: CosmicEscapeRacer;
   private assets:CosmicEscapeAssets;private root:HTMLElement;private dialogShell!:SlotDialog;private stakeControls!:SlotStakeControls;private soundControls!:SlotAudioControls;private info:LuelonSlotInfo;private theme:LuelonTheme;private audio:CosmicEscapeAudio;private board:CosmicEscapeBoard;private owner=client.accountId;private stake=COSMIC_ESCAPE_DEFAULT_STAKE;private mode='normal';private entered=false;private speed:Speed='normal';private manualReduced=false;private destroyed=false;private playback=new SlotPlayback({account:()=>client.accountId,hidden:()=>document.hidden});private sessions=new SlotSessions(cosmicSlot);private live?:Live;private shown='';private portals=0;private error='';private dialog:Dialog='intro';private autoRemaining=0;private bonusRunning=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');private unsubscribe:()=>void;private layout:ResizeObserver;
   private tools!:HTMLElement;private toolsHome?:Comment;
-  private autoCount=25;private autoOpen=false;private reactor!:CosmicReactor;
+  private autoCount=25;private autoOpen=false;private reactor!:CosmicReactor;private crew=new CosmicCrewClient();private crewView:CosmicCrewId='racer';private crewNew?:CosmicCrewId;private crewHtml='';private crewNarrow=false;private crewSeen?:{account:string;points:number};private crewChanged=()=>this.paintCrew();
   private change=()=>this.sync();private visibility=()=>{if(document.hidden){this.cancel();this.audio.pause();}this.sync();};private motionChange=()=>{this.cancel();this.root.dataset.reducedMotion=String(this.motionReduced());this.sync();};
   private keyboard=(event:KeyboardEvent)=>{
     if(this.autoOpen&&event.key==='Escape'){event.preventDefault();this.closeAuto(true);return;}
-    if(!slotOwnsKeyboard(this.root,event)||this.dialogShell.keyboard(event,this.dialog))return;
+    if(!slotOwnsKeyboard(this.root,event)||this.dialogShell.keyboard(event,shellKind(this.dialog)))return;
     if(event.code==='Space'&&this.entered&&!this.autoOpen&&!['INPUT','SELECT','BUTTON','TEXTAREA'].includes((event.target as HTMLElement)?.tagName)){event.preventDefault();void this.play();}
   };
   private outside=(event:PointerEvent)=>{if(!this.autoOpen)return;const target=event.target as Node;if(this.find('[data-cx-auto-panel]').contains(target)||this.find('[data-lg-auto]').contains(target))return;this.closeAuto(false);};
@@ -87,6 +92,7 @@ export class CosmicEscapeUI {
     this.layout=new ResizeObserver(()=>this.profile());this.layout.observe(this.root);this.profile();
     this.unsubscribe=bindSlotLifecycle({changed:this.change,visibility:this.visibility,keyboard:this.keyboard,motion:this.reduced,motionChanged:this.motionChange,audioChanged:()=>this.audioControls()});
     document.addEventListener('pointerdown',this.outside,true);
+    this.crew.addEventListener('change',this.crewChanged);this.crew.setAccount(client.accountId);
     this.sync();this.openDialog('intro');void this.assets.load();
   }
   /** The prototype keeps rules, sound and settings in the window's top bar. They return to the cabinet on close. */
@@ -98,7 +104,10 @@ export class CosmicEscapeUI {
   private unmountHeaderTools(){if(!this.toolsHome)return;this.tools.classList.remove('cx-header-tools');this.toolsHome.replaceWith(this.tools);this.toolsHome=undefined;delete this.root.dataset.headerTools;}
   private tool<T extends HTMLElement=HTMLButtonElement>(selector:string){return this.tools.querySelector<T>(selector)!;}
   /** The host keeps native slots at the full stage height once a layout profile is present. */
-  private profile(){const {width,height}=this.root.getBoundingClientRect();if(!width||!height)return;const profile=gameContentLayout(width,height);if(this.root.dataset.slotPriority!==profile){this.root.dataset.slotPriority=profile;this.updateRacer();}}
+  private profile(){const {width,height}=this.root.getBoundingClientRect();if(!width||!height)return;const profile=gameContentLayout(width,height);if(this.root.dataset.slotPriority!==profile){this.root.dataset.slotPriority=profile;this.updateRacer();}
+    // Where the plate has no room, the same entry stands in the window bar.
+    const crew=this.find('[data-cx-crew]'),narrow=crew.offsetWidth>0&&crew.offsetWidth<200;this.root.dataset.crewPlace=getComputedStyle(crew).display==='none'?'bar':'plate';
+    if(narrow!==this.crewNarrow){this.crewNarrow=narrow;this.paintCrew();}}
   private assetState(state:CosmicAssetState){
     if(this.destroyed)return;
     if(state.status==='ready'){
@@ -128,6 +137,9 @@ export class CosmicEscapeUI {
       !this.root.querySelector('.slot-settings-dialog[open]') &&
       (!this.dialog || this.dialog === 'bonus' || this.dialog === 'complete');
     this.racer.context(visible, visible && !this.motionReduced(), !!this.live);
+    // A character changes between rounds only, so a reaction never switches its actor.
+    const chosen = this.crew.profile?.selected ?? 'racer';
+    if (!this.live) this.racer.character(chosen);
   }
   private selectedMode(){return this.info.modes.find(mode=>mode.id===this.mode)??this.info.modes[0];}
   private symbol(id:number){return cosmicSymbol(id,this.assets.ready);}
@@ -145,6 +157,7 @@ export class CosmicEscapeUI {
       sound:this.find<HTMLButtonElement>('[data-lg-sound]'),music:this.find<HTMLButtonElement>('[data-lg-music]'),
       volume:this.find<HTMLInputElement>('[data-lg-volume]'),audio:this.audio,entered:()=>this.entered,
     });
+    this.find<HTMLButtonElement>('[data-cx-crew]').onclick=()=>this.openCrew();this.tool('[data-cx-crew-ring]').onclick=()=>this.openCrew();
     this.find<HTMLButtonElement>('[data-cosmic-load-retry]').onclick=()=>void this.assets.load();
     this.find<HTMLButtonElement>('[data-cosmic-wallet]').onclick=()=>{this.stopAuto();window.dispatchEvent(new Event('royal-open-wallet'));};
     this.find<HTMLButtonElement>('[data-cosmic-missions]').onclick=()=>{if(!this.blocked()){this.stopAuto();this.closeAuto(false);this.openDialog('buy');}};
@@ -189,13 +202,14 @@ export class CosmicEscapeUI {
     return tr`<section class="lg-game ce-game cx-game" data-luelon-game="${this.game}" data-studio-game="${this.game}" data-cosmic-escape data-phase="idle" data-asset-state="loading" data-spin-state="idle" data-speed="normal" aria-label="Cosmic Escape">
 <div class="ce-asset-loading" data-cosmic-loading><div class="ce-loading-orbit" aria-hidden="true"><i></i></div><strong data-cosmic-load-title>ГОТОВИМ КОСМИЧЕСКИЙ ПОБЕГ</strong><progress data-cosmic-load-progress max="3" value="0" aria-label="Загрузка оформления"></progress><p data-cosmic-load-note role="status" aria-live="polite">Изображения: 0 из 3</p><button type="button" data-cosmic-load-retry hidden>Повторить загрузку</button></div>
 <div class="cx-scene"><div class="cx-deck">
-<div class="cx-alien" aria-hidden="true"><img data-cosmic-alien alt=""></div>
-<div class="cx-tools" role="toolbar" aria-label="Правила, звук и настройки"><button type="button" class="cx-icon" data-cx-rules aria-label="Правила и выплаты">${ICON.info}</button><button type="button" class="cx-icon" data-cx-sound aria-label="Выключить звук" aria-pressed="true">${ICON.sound}${ICON.muted}</button></div>
+<i class="cx-podium" aria-hidden="true"></i><div class="cx-alien" aria-hidden="true"><img data-cosmic-alien data-crew="racer" alt=""></div>
+<button type="button" class="cx-crew" data-cx-crew data-state="none" aria-haspopup="dialog" aria-label="Экипаж"><span><b data-cx-crew-title>Гонщица</b><span data-cx-crew-count></span></span><span class="cx-crew-bar"><i data-cx-crew-fill></i></span><span><span data-cx-crew-note></span><b data-cx-crew-gain aria-hidden="true"></b></span></button>
+<div class="cx-tools" role="toolbar" aria-label="Правила, звук и настройки"><button type="button" class="cx-icon" data-cx-crew-ring data-state="none" aria-haspopup="dialog" aria-label="Экипаж"><svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="cx-ring-track" cx="20" cy="20" r="17"/><circle class="cx-ring-fill" cx="20" cy="20" r="17" pathLength="100"/><path d="M20 11a4.500 4.500 0 1 1 0 9 4.500 4.500 0 0 1 0-9zM12 29c0-5 3.500-7 8-7s8 2 8 7"/></svg></button><button type="button" class="cx-icon" data-cx-rules aria-label="Правила и выплаты">${ICON.info}</button><button type="button" class="cx-icon" data-cx-sound aria-label="Выключить звук" aria-pressed="true">${ICON.sound}${ICON.muted}</button></div>
 <div class="cx-frame"><i class="cx-lamp" aria-hidden="true"></i><div data-lg-board role="group" aria-label="Пять барабанов, три ряда"></div><i class="cx-lamp" aria-hidden="true"></i></div>
 <section class="cx-energy" data-cosmic-energy aria-labelledby="cx-energy-title"><h3 id="cx-energy-title">Энергия</h3><strong data-lg-factor>×1</strong><div class="cx-gauge" aria-hidden="true">${gauge}</div><small class="cx-sr" data-lg-factor-note>Множитель всех линий</small></section>
 <section class="cx-portals" data-cosmic-portals aria-labelledby="cx-portals-title"><header><h3 id="cx-portals-title">Порталы</h3><strong data-cosmic-portal-count>0<small> / 5</small></strong></header><div class="cx-orbs" aria-hidden="true">${orbs}</div><ol class="cx-ladder" aria-label="Бесплатные вращения за порталы">${ladder}</ol><p class="cx-ladder-note" aria-hidden="true">Бесплатные вращения за порталы</p></section>
 <button type="button" class="cx-missions" data-cosmic-missions><b>Миссии</b><small>Купить 10, 12 или 15 вращений</small></button>
-<section class="cx-result" data-cx-result data-kind="idle" aria-label="Результат вращения"><strong class="cx-amount" data-cx-result-amount></strong><p class="cx-result-text" role="status" aria-live="polite"><b data-cx-result-title></b><span data-cx-result-note></span></p><span class="cx-mode" data-cx-mode>Основная игра · 20 линий</span></section>
+<section class="cx-result" data-cx-result data-kind="idle" aria-label="Результат вращения"><strong class="cx-amount" data-cx-result-amount></strong><p class="cx-result-text" role="status" aria-live="polite"><b data-cx-result-title></b><span data-cx-result-note></span></p><span class="cx-newcomer" data-cx-newcomer hidden>Новый персонаж</span><span class="cx-mode" data-cx-mode>Основная игра · 20 линий</span></section>
 <div class="cx-feedback" data-cosmic-feedback><p class="lg-status" data-lg-status role="status"></p><p class="lg-error" data-lg-error role="alert"></p><div class="lg-recovery"><button type="button" data-lg-retry hidden>Проверить прежний ход</button></div></div>
 </div></div>
 <div class="cx-wallet-help" data-cosmic-wallet-help hidden><span data-cosmic-wallet-note></span><a href="/" data-cosmic-login>Войти в клуб для тестовой игры</a><button type="button" data-cosmic-wallet>Открыть тестовый кошелёк</button></div>
@@ -227,7 +241,7 @@ export class CosmicEscapeUI {
   private sync(){
     if(this.destroyed)return;
     if(this.owner!==client.accountId){
-      this.cancel();this.audio.pause();this.owner=client.accountId;delete this.root.dataset.sessionId;delete this.root.dataset.revision;this.shown='';this.stake=COSMIC_ESCAPE_DEFAULT_STAKE;this.mode='normal';this.entered=false;this.error='';this.setTotal(0);
+      this.cancel();this.audio.pause();this.owner=client.accountId;this.crew.setAccount(client.accountId);if(this.dialog==='crew'||this.dialog==='reveal')this.closeDialog();delete this.root.dataset.sessionId;delete this.root.dataset.revision;this.shown='';this.stake=COSMIC_ESCAPE_DEFAULT_STAKE;this.mode='normal';this.entered=false;this.error='';this.setTotal(0);
       this.paintEnergy(1);this.find('[data-cosmic-lastwin]').textContent='0,00';this.idleResult();
       this.root.dataset.bonus='false';this.root.dataset.multiplier='1';this.paintPortals([]);this.setTotal(0);
       const ordinary=this.info.symbols.filter(symbol=>symbol.role==='ordinary');this.board.show(Array.from({length:this.info.cols*this.info.rows},(_,i)=>ordinary[i%ordinary.length].id),this.info.rows);
@@ -306,7 +320,7 @@ export class CosmicEscapeUI {
     let short=false;
     for(const buy of Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-cx-price]'))){const missing=this.balance()<Number(buy.dataset.cxPrice)/100;short||=missing;buy.disabled=blocked||active||missing;}
     const funds=this.root.querySelector<HTMLElement>('[data-cosmic-buy-funds]');if(funds)funds.hidden=!short;
-    this.audioControls();
+    this.audioControls();this.crewControls();
   }
   private transport(blocked:boolean,active:boolean,paidBonus:boolean,free:boolean){
     const live=!!this.live;
@@ -409,6 +423,7 @@ export class CosmicEscapeUI {
     if(pick===undefined&&!active&&!mode.bonus){this.board.begin(live.token,live.motion,live.fast,undefined,undefined);void this.audio.begin(live.token);}
     const series=active?previous?.view.luelon.bonus:null;
     this.result('spin',series?tr`Бесплатное вращение ${Math.min(series.played+1,series.awarded)} из ${series.awarded}`:translateText('Барабаны вращаются'),series&&previous?this.missionNote(previous.view.luelon,previous.view.luelon.totalPayoutUnits,false):'');
+    this.find('[data-cx-crew-gain]').textContent='';
     this.controls();
     if(active)this.racer.prepareFeatures();
     try{
@@ -425,6 +440,8 @@ export class CosmicEscapeUI {
       this.setTotal(session.state==='settled'?session.returnedUnits:session.view.luelon.totalPayoutUnits);this.controls();
       observeExpansionOutcome(this.root,this.game,session,client.accountId,false,false);
       this.racer.show(reaction);
+      // Points belong to a confirmed, finished round. The request is separate and never delays the next spin.
+      if(session.state==='settled')void this.crew.refresh();
       if(view.phase==='choice'){this.bonusRunning=false;return;}
       if(startsMission){this.racer.prepareFeatures();this.bonusRunning=false;this.openDialog('bonus');return;}
       if(view.phase==='complete'&&view.history.some(spin=>spin.kind!=='base')){this.bonusRunning=false;this.openDialog('complete');return;}
@@ -507,11 +524,12 @@ export class CosmicEscapeUI {
   private openDialog(kind:Dialog){this.settings?.close();if(kind)this.closeAuto(false);
     this.dialog=kind;
     const element=this.find('[data-lg-dialog]'),session=this.session(),view=session?.view.luelon,mode=this.selectedMode();
-    this.dialogShell.begin(kind);
+    this.dialogShell.begin(shellKind(kind));
     if(!kind)return;
     element.dataset.dialog=kind;
-    if(kind==='intro')element.innerHTML=tr`<div class="ce-intro-title"><small>ПУТЕШЕСТВИЕ НАЧИНАЕТСЯ</small><h2 id="lg-dialog-title">COSMIC <em>ESCAPE</em></h2><p>Поймай сигнал. Открой порталы. Запусти миссию.</p></div><div class="ce-intro-cards"><article><div>${this.symbol(0)}${this.symbol(7)}${this.symbol(2)}</div><h3>20 ЛИНИЙ</h3><p>Три и более совпадения слева. WILD заменяет обычные символы.</p></article><article><div>${this.symbol(8)}${this.symbol(8)}${this.symbol(8)}</div><h3>3 ПОРТАЛА</h3><p>10 бесплатных вращений. Четыре портала дают 12, пять дают 15.</p></article><article><div class="ce-intro-boost">${this.symbol(7)}<strong>×50</strong></div><h3>ЭНЕРГИЯ МИССИИ</h3><p>Луч создаёт целый WILD-барабан. Множитель усиливает все линии.</p></article></div><button type="button" class="lg-primary ce-primary" data-lg-dialog-action="enter">${view?.phase==='bonus'?translateText('ВЕРНУТЬСЯ В МИССИЮ'):translateText('НАЧАТЬ ПУТЕШЕСТВИЕ')}</button><small class="ce-dialog-note">Виртуальные USDT · Вход без ставки</small>`;
+    if(kind==='intro')element.innerHTML=tr`<div class="ce-intro-title"><small>ПУТЕШЕСТВИЕ НАЧИНАЕТСЯ</small><h2 id="lg-dialog-title">COSMIC <em>ESCAPE</em></h2><p>Поймай сигнал. Открой порталы. Запусти миссию.</p></div><div class="ce-intro-cards"><article><div>${this.symbol(0)}${this.symbol(7)}${this.symbol(2)}</div><h3>20 ЛИНИЙ</h3><p>Три и более совпадения слева. WILD заменяет обычные символы.</p></article><article><div>${this.symbol(8)}${this.symbol(8)}${this.symbol(8)}</div><h3>3 ПОРТАЛА</h3><p>10 бесплатных вращений. Четыре портала дают 12, пять дают 15.</p></article><article><div class="ce-intro-boost">${this.symbol(7)}<strong>×50</strong></div><h3>ЭНЕРГИЯ МИССИИ</h3><p>Луч создаёт целый WILD-барабан. Множитель усиливает все линии.</p></article></div><button type="button" class="lg-primary ce-primary" data-lg-dialog-action="enter">${view?.phase==='bonus'?translateText('ВЕРНУТЬСЯ В МИССИЮ'):translateText('НАЧАТЬ ПУТЕШЕСТВИЕ')}</button>`;
     if(kind==='buy')element.innerHTML=this.missionsMarkup();
+    if(kind==='crew'||kind==='reveal')this.crewHtml=element.innerHTML=this.crewMarkup(kind);
     if(kind==='bonus')element.innerHTML=tr`<span class="lg-eyebrow">ПОРТАЛ ОТКРЫТ</span><h2 id="lg-dialog-title">${escape(this.info.modes.find(item=>item.id===view?.bonus?.id)?.name??translateText('Звёздная миссия'))}</h2><div class="ce-bonus-orbit">${this.symbol(8)}<strong>${view?.bonus?.remaining??0}</strong></div><p>Бесплатных вращений</p><p>Энергия начинается с ×${view?.bonus?.features.multiplier??1} и может увеличиться перед вращением до ×50.</p><button type="button" class="lg-primary ce-primary" data-lg-dialog-action="bonus">ВПЕРЁД В МИССИЮ</button><small class="ce-dialog-note">Ставка уже принята. Продолжение бесплатно.</small>`;
     if(kind==='complete'&&session&&view)element.innerHTML=renderSlotResult({style:'lg',eyebrow:translateText('ВОЗВРАЩЕНИЕ ДОМОЙ'),title:translateText('МИССИЯ ЗАВЕРШЕНА'),returned:session.returnedUnits,ledger:this.ledger(session),note:translateText('Выигрыш уже зачислен в кошелёк.'),label:translateText('ПРОДОЛЖИТЬ')});
     if(kind==='history')element.innerHTML=renderSlotHistory({style:'lg',eyebrow:translateText('БОРТОВОЙ ЖУРНАЛ'),title:translateText('ИСТОРИЯ МИССИИ'),ledger:session&&view?this.ledger(session):undefined,status:session?.state==='active'?translateText('Серия сохранена. Выплата поступит после завершения.'):translateText('Раунд завершён. Выплата зачислена один раз.'),empty:translateText('Здесь появится история твоего раунда.'),rows:view?.history.map(spin=>({title:`${spin.kind==='base'?translateText('Основное вращение'):translateText('Бесплатное вращение')} ${slotSpinNumber(spin,view!.history)}`,detail:`${spin.kind==='base'?tr`Стоимость ${coins(session!.spentUnits)}`:translateText('Стоимость 0,00')} · ${spin.frames.length>1?translateText('ЭХО · '):''}×${spin.featuresAfter.multiplier}`,payoutUnits:spin.payoutUnits}))??[]});
@@ -529,8 +547,50 @@ export class CosmicEscapeUI {
   }
   private ledger(session:Session){return renderSlotLedger('lg',session.spentUnits,session.state==='active'?session.view.luelon.totalPayoutUnits:session.returnedUnits,session.state==='active');}
   private closeDialog(){if(this.dialog==='buy'&&this.session()?.state!=='active')this.mode='normal';this.dialog='';this.controls();this.dialogShell.hide();}
+  private crewLocked(){return !!this.live||this.session()?.state==='active'||this.autoRemaining>0||client.busy||!!client.pending;}
+  private crewMarkup(kind:'crew'|'reveal'){
+    const state={busy:this.crew.busy,locked:this.crewLocked(),refused:this.crew.refused};
+    return kind==='reveal'&&this.crewNew?crewReveal(this.crewNew,state):crewDialog(this.crew.profile,{...state,view:this.crewView,failed:this.crew.failed});
+  }
+  /** The crew opens between spins. A new character waits for this press, play is never interrupted. */
+  private openCrew(){
+    if(this.destroyed||!this.assets.ready||!this.entered||this.dialog||this.live||this.autoRemaining>0||this.bonusRunning)return;
+    const newcomer=crewNewcomer(this.crew.profile);this.closeAuto(false);this.crew.refused='';
+    if(newcomer){this.crewNew=newcomer;this.crewView=newcomer;this.openDialog('reveal');void this.crew.act('reveal',newcomer);return;}
+    this.crewView=this.crew.profile?.selected??'racer';this.openDialog('crew');void this.crew.refresh();
+  }
+  private crewControls(){
+    const off=!this.assets.ready||!this.entered||!!this.dialog||!!this.live||this.autoRemaining>0||this.bonusRunning;
+    for(const button of [this.find<HTMLButtonElement>('[data-cx-crew]'),this.tool('[data-cx-crew-ring]')])button.setAttribute('aria-disabled',String(off));
+    this.find('[data-cx-newcomer]').hidden=!crewNewcomer(this.crew.profile)||!!this.live;
+  }
+  private paintCrew(){
+    if(this.destroyed)return;
+    const profile=this.crew.profile,button=this.find('[data-cx-crew]'),plate=crewPlate(profile,this.crew.failed,this.crewNarrow),ring=this.tool('[data-cx-crew-ring]');
+    for(const [part,text] of [['title',plate.title],['count',plate.count],['note',plate.note]] as const){const element=this.find(`[data-cx-crew-${part}]`);if(element.textContent!==text)element.textContent=text;}
+    this.find('[data-cx-crew-fill]').style.width=plate.fill+'%';ring.style.setProperty('--crew',String(plate.fill));
+    const label=[translateText('Экипаж'),plate.title,plate.count,plate.note].filter((text,i,list)=>text&&list.indexOf(text)===i).join('. ');
+    for(const element of [button,ring]){element.dataset.state=plate.state;element.setAttribute('aria-label',label);}
+    this.root.dataset.crew=plate.state;
+    if(profile){
+      const seen=this.crewSeen?.account===profile.accountId?this.crewSeen.points:profile.points;
+      if(profile.points>seen&&!this.live)this.find('[data-cx-crew-gain]').textContent='+'+(profile.points-seen);
+      this.crewSeen={account:profile.accountId,points:profile.points};
+    }else{this.find('[data-cx-crew-gain]').textContent='';this.crewSeen=undefined;}
+    this.crewControls();this.updateRacer();
+    if(this.dialog==='crew'||this.dialog==='reveal')this.renderCrew();
+  }
+  private renderCrew(){
+    const box=this.find('[data-lg-dialog]'),action=box.contains(document.activeElement)?document.activeElement?.getAttribute('data-lg-dialog-action'):undefined;
+    const markup=this.crewMarkup(this.dialog as 'crew'|'reveal');if(this.crewHtml===markup)return;
+    this.crewHtml=box.innerHTML=markup;
+    if(action){const again=box.querySelector<HTMLButtonElement>(`[data-lg-dialog-action="${action}"]`);if(again&&!again.disabled)again.focus();else this.dialogShell.focus();}
+  }
   private async dialogAction(action:string){
     if(this.destroyed||!this.assets.ready)return;
+    if(action==='crew-open'){this.crew.refused='';this.crewView=this.crewNew??this.crew.profile?.selected??'racer';this.openDialog('crew');return;}
+    if(action.startsWith('crew-view:')&&this.dialog==='crew'){const id=action.slice(10);if(isCosmicCrewId(id)){this.crew.refused='';this.crewView=id;this.renderCrew();}return;}
+    if(action.startsWith('crew-choose:')&&(this.dialog==='crew'||this.dialog==='reveal')){const id=action.slice(12),from=this.dialog;if(!isCosmicCrewId(id)||this.crewLocked())return;if(await this.crew.act('select',id)&&!this.destroyed&&from==='reveal'&&this.dialog==='reveal')this.closeDialog();return;}
     if(action.startsWith('stake:')&&this.dialog==='buy'&&!this.blocked()){const next=slotStakeStep(COSMIC_ESCAPE_BET_UNITS,this.stake,Number(action.slice(6)));if(next){this.stake=next;this.openDialog('buy');}return;}
     if(action==='enter'){this.entered=true;this.closeDialog();void this.audio.enter();if(this.session()?.state==='active'){this.bonusRunning=true;await this.request();}return;}
     if(action==='close'){this.closeDialog();return;}
@@ -539,5 +599,5 @@ export class CosmicEscapeUI {
     if(action==='complete'){this.closeDialog();if(this.autoRemaining>0)this.scheduleNext();}
   }
   getAudioState(){return this.audio.state();}
-  destroy(){if(this.destroyed)return;this.destroyed=true;this.unmountHeaderTools();document.removeEventListener('pointerdown',this.outside,true);this.layout.disconnect();this.assets.destroy();this.cancel();this.racer.destroy();this.audio.destroy();this.board.destroy();this.unsubscribe();this.settings?.destroy();this.dialogShell.destroy();this.stakeControls.destroy();this.soundControls.destroy();this.playback.destroy();this.host.replaceChildren();}
+  destroy(){if(this.destroyed)return;this.destroyed=true;this.crew.removeEventListener('change',this.crewChanged);this.crew.destroy();this.unmountHeaderTools();document.removeEventListener('pointerdown',this.outside,true);this.layout.disconnect();this.assets.destroy();this.cancel();this.racer.destroy();this.audio.destroy();this.board.destroy();this.unsubscribe();this.settings?.destroy();this.dialogShell.destroy();this.stakeControls.destroy();this.soundControls.destroy();this.playback.destroy();this.host.replaceChildren();}
 }

@@ -59,3 +59,24 @@ test('a feature pose survives a controls redraw and returns to rolling focus', t
   assert.equal(image.dataset.racerCue, 'idle');
   racer.destroy();
 });
+
+test('a chosen character keeps the pose and downloads only its own clips', async t => {
+  const requests: string[] = [];
+  t.mock.method(globalThis, 'fetch', async (input: string) => { requests.push(input); return new Response('clip'); });
+  t.mock.method(URL, 'createObjectURL', () => 'blob:crew-test');
+  t.mock.method(URL, 'revokeObjectURL', () => undefined);
+  const image = {dataset: {} as DOMStringMap, src: ''} as HTMLImageElement, racer = new CosmicEscapeRacer(image);
+  racer.showArtwork();
+  racer.context(true, true);
+  await flush();
+  assert.ok(requests.every(url => url.includes('/racer-v2/')));
+  requests.length = 0;
+  racer.character('racer');
+  assert.deepEqual(requests, []);
+  racer.character('silver');
+  await flush();
+  assert.equal(image.dataset.crew, 'silver');
+  assert.equal(image.dataset.racerCue, 'idle');
+  assert.ok(requests.length > 0 && requests.every(url => url.includes('/silver-v1/')));
+  racer.destroy();
+});
