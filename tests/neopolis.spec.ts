@@ -34,11 +34,13 @@ async function spin(page: Page) {
   expect(await page.evaluate(() => (window as any).neopolisPreview.client.error)).toBe('');
   const result = await session(page); expect(validNeopolisSession(result)).toBe(true);
   const visible=await state(page);
-  expect(visible.feedback.shownUnits).toBe(Number(result.view.neopolis.totalPayoutUnits));
+  // A settled round shows the confirmed payout, including its fair final rounding.
+  expect(visible.feedback.shownUnits).toBe(Number(result.state==='settled' ? result.returnedUnits : result.view.neopolis.totalPayoutUnits));
   if(result.state==='active') expect(visible.feedback.round).toBeNull();
   else expect(visible.feedback.round).toMatchObject({payout:Number(result.returnedUnits),stake:Number(result.stakeUnits),net:Number(result.returnedUnits)-Number(result.stakeUnits)});
   return result;
 }
+async function startAuto(page: Page) { await page.locator('[data-np=auto]').click(); await expect(page.locator('[data-np=auto-panel]')).toBeVisible(); await page.locator('[data-np=auto-start]').click(); }
 async function closeNotice(page: Page) { if (await page.locator('[data-np=dialog]').isVisible()) await page.locator('[data-np=close]').click(); }
 
 test('Russian and English modules fit desktop and phone, with localized rules and hero selection', async ({ page }) => {
@@ -78,14 +80,14 @@ test('stake changes between paid spins keep the team and hero, and restored play
   await expect(page.locator('[data-np=bet]')).toBeEnabled();
   await expect(page.locator('[data-hero=granite]')).toBeDisabled();
   await expect(page.locator('[data-np=lock]')).toContainText('Ставку можно менять');
-  await page.locator('[data-np=bet]').selectOption('500');
+  await page.locator('[data-np=bet]').selectOption('50');
   const raised = await spin(page);
-  expect(raised.stakeUnits).toBe('50000');
+  expect(raised.stakeUnits).toBe('5000');
   expect(raised.view.neopolis.origin).toEqual(first.view.neopolis.team);
   expect(raised.view.neopolis.origin.starter).toBe('prism');
   await page.evaluate(() => (window as any).neopolisPreview.close());
   await page.evaluate(() => (window as any).neopolisPreview.open());
-  await expect(page.locator('[data-np=bet]')).toHaveValue('500');
+  await expect(page.locator('[data-np=bet]')).toHaveValue('50');
   await expect(page.locator('[data-np=bet]')).toBeEnabled();
   await page.locator('[data-np=bet]').selectOption('20');
   const lowered = await spin(page);
@@ -97,9 +99,12 @@ test('autoplay runs exactly ten paid starts and keeps every accepted operation u
   await ready(page, 'ru'); await page.locator('[data-np=fast]').check();
   const operations: any[] = [];
   page.on('request', req => { if (req.method() === 'POST' && req.url().endsWith('/api/demo-wallet/expansion')) operations.push(req.postDataJSON()); });
-  await page.locator('[data-np=auto]').click();
+  // Opening and closing the panel never starts a paid spin.
+  await page.locator('[data-np=auto]').click(); await expect(page.locator('[data-auto-count="10"]')).toHaveAttribute('aria-pressed','true');
+  await page.keyboard.press('Escape'); await expect(page.locator('[data-np=auto-panel]')).toBeHidden(); expect(operations).toHaveLength(0);
+  await startAuto(page);
   await expect(page.locator('[data-np=bet]')).toBeDisabled();
-  await expect(page.locator('[data-np=auto-count]')).toBeDisabled();
+  await expect(page.locator('[data-np=auto-panel]')).toBeHidden();
   await expect.poll(async () => { const s = await state(page); return !s.autoplay.running && !s.busy; }, { timeout: 120000 }).toBe(true);
   expect(operations.filter(op => op.action === 'start')).toHaveLength(10);
   expect(new Set(operations.map(op => op.id)).size).toBe(operations.length);
@@ -117,7 +122,7 @@ test('autoplay stop finishes an accepted spin and a lost response requires manua
     accepted = await response.json(); await gate; await route.fulfill({ response });
   };
   await page.route('**/api/demo-wallet/expansion', hold);
-  await page.locator('[data-np=auto]').click(); await expect.poll(() => !!accepted).toBe(true);
+  await startAuto(page); await expect.poll(() => !!accepted).toBe(true);
   await expect(page.locator('[data-np=auto]')).toBeEnabled();
   await page.locator('[data-np=auto]').click(); release();
   await expect.poll(async () => (await state(page)).busy).toBe(false);
@@ -132,7 +137,7 @@ test('autoplay stop finishes an accepted spin and a lost response requires manua
     accepted = await response.json(); await route.abort('failed');
   };
   await page.route('**/api/demo-wallet/expansion', lose);
-  await page.locator('[data-np=auto]').click();
+  await startAuto(page);
   await expect.poll(async () => { const s = await state(page); return !s.autoplay.running && !s.busy; }).toBe(true);
   await expect(page.locator('[data-np=spin]')).toContainText('Check move');
   await expect(page.locator('[data-np=auto]')).toBeDisabled();
@@ -146,10 +151,10 @@ test('autoplay stop finishes an accepted spin and a lost response requires manua
 
 test('autoplay bonus continuations keep the paid budget and pause never restarts the series', async ({ page }) => {
   await ready(page); await page.locator('[data-np=fast]').check();
-  await page.locator('[data-np=auto-count]').selectOption('50');
+  await page.locator('[data-np=auto]').click(); await page.locator('[data-auto-count="50"]').click();
   const operations: any[] = [];
   page.on('request', req => { if (req.method() === 'POST' && req.url().endsWith('/api/demo-wallet/expansion')) operations.push(req.postDataJSON()); });
-  await page.locator('[data-np=auto]').click();
+  await page.locator('[data-np=auto-start]').click();
   await expect.poll(() => operations.some(op => op.action === 'move'), { timeout: 120000 }).toBe(true);
   expect((await state(page)).autoplay.remaining).toBe(50 - operations.filter(op => op.action === 'start').length);
   await expect(page.locator('[data-np=dialog]')).not.toBeVisible();
@@ -162,7 +167,7 @@ test('autoplay bonus continuations keep the paid budget and pause never restarts
   await expect(page.locator('[data-np=spin]')).toBeEnabled();
   expect((await state(page)).autoplay.running).toBe(false);
   expect((await session(page)).state).toBe('active');
-  await page.locator('[data-np=auto]').click();
+  await startAuto(page);
   await expect.poll(async () => (await state(page)).autoplay.running).toBe(true);
   await page.locator('[data-np=rules]').click();
   expect((await state(page)).autoplay.running).toBe(false);
@@ -197,7 +202,7 @@ test('real API retries a lost result once, restores collection and bonus, and se
   expect(current.state).toBe('active'); expect(current.view.neopolis.battle.remaining).toBe(10);
   await expect(page.locator('[data-np=bet]')).toBeDisabled();
   await expect(page.locator('[data-np=bet]')).toHaveValue('20');
-  await page.locator('[data-np=bet]').evaluate((select: HTMLSelectElement) => { select.value = '500'; select.dispatchEvent(new Event('change', { bubbles: true })); });
+  await page.locator('[data-np=bet]').evaluate((select: HTMLSelectElement) => { select.value = '50'; select.dispatchEvent(new Event('change', { bubbles: true })); });
   await expect(page.locator('[data-np=bet]')).toHaveValue('20');
   await closeNotice(page);
   await page.locator('[data-np=rules]').click(); await expect(page.locator('.np-dialog h3')).toContainText('current bonus');
@@ -427,6 +432,8 @@ test('three real campaign bosses change arenas and costumes, survive reload and 
         expect(await page.locator('.np').evaluate(root => (root as HTMLElement).style.getPropertyValue('--np-costumes'))).toContain(['team-night','team-eclipse','team-chrono'][index]);
         const background = page.locator('.np-city-current');
         await expect(background).toHaveAttribute('src',new RegExp(['city-v2','citadel-v3','observatory-v3'][index]));
+        await expect(page.locator('[data-boss-index]').nth(index)).toHaveAttribute('data-state','current');
+        await expect(page.locator('[data-boss-index][data-state=defeated]')).toHaveCount(index);
         await background.evaluate(image => (image as HTMLImageElement).decode());
         await page.screenshot({path:'test-results/neopolis/review/campaign-' + index + '-ru.png',fullPage:true});
         await page.setViewportSize({width:390,height:844});
@@ -439,11 +446,14 @@ test('three real campaign bosses change arenas and costumes, survive reload and 
         await page.setViewportSize({width:1440,height:1000});
       }
       await closeNotice(page); current = await spin(page);
-      expect(current.id).toBe(bonusId); expect(current.spentUnits).toBe('2000');
+      expect(current.id).toBe(bonusId); expect(current.spentUnits).toBe(current.stakeUnits);
       if (current.state === 'active') expect(await page.evaluate(() => (window as any).neopolisPreview.wallet.wallet.balance)).toBe(bonusBalance);
     }
     const final = await page.evaluate(() => (window as any).neopolisPreview.wallet.wallet.balance);
     expect(final).toBeCloseTo(bonusBalance+Number(current.returnedUnits)/100,2);
+    await expect(page.locator('[data-np=dialog]')).toHaveAttribute('data-view','summary');
+    await expect(page.locator('.np-fallen [data-state=defeated]')).toHaveCount(current.view.neopolis.battle.defeated);
+    await page.screenshot({path:'test-results/neopolis/review/campaign-summary-ru.png'});
     await closeNotice(page);
   }
   expect([...seen].sort()).toEqual([0,1,2]);
@@ -597,4 +607,70 @@ test('round celebrations use the paid stake, skip without another action and rem
   await page.evaluate(()=>(window as any).neopolisFeedbackReview.destroy());
   await expect.poll(async()=>(await feedbackState(page)).audio.voices).toBe(0);
   expect((await feedbackState(page)).audio.playing).toBe(false);
+});
+
+test('the rescue reward phase has its own state and the field never moves through the campaign', async ({ page }) => {
+  test.setTimeout(420000);
+  const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
+  await ready(page,'ru'); await page.locator('[data-np=fast]').check();
+  const box = () => page.evaluate(() => ['.np-board-shell','.np-spin'].map(name => { const b = document.querySelector(name)!.getBoundingClientRect(); return [b.x,b.y,b.width,b.height].map(Math.round).join(); }).join('|'));
+  const home = await box(), modes = new Set<string>();
+  let current = await session(page);
+  for (let i = 0; i < 70; i++) {
+    const mode = await page.locator('.np').getAttribute('data-mode'); modes.add(mode!);
+    expect(await box()).toBe(home);
+    if (mode === 'rescue') {
+      await expect(page.locator('[data-np=boss-name]')).toHaveText('Неополис спасён');
+      await expect(page.locator('[data-boss-index][data-state=defeated]')).toHaveCount(3);
+      await expect(page.locator('[data-np=remaining]')).toHaveText(String(current.view.neopolis.battle.remaining));
+    }
+    // Base spins are skipped quickly; every battle beat plays in full.
+    await page.emulateMedia({reducedMotion:mode === 'battle' ? 'no-preference' : 'reduce'});
+    await closeNotice(page); current = await spin(page);
+    // The main action has to accept a pointer right after every animation.
+    if (await page.locator('[data-np=dialog]').isHidden()) await page.locator('[data-np=spin]').click({trial:true,timeout:5000});
+    if (current.view.neopolis.team.complete) break;
+  }
+  expect([...modes].sort()).toEqual(['base','battle','rescue']);
+  await page.locator('[data-np=notice-continue]').click();
+  await expect(page.locator('.np')).toHaveAttribute('data-mode','base'); expect(await box()).toBe(home);
+  await page.locator('[data-hero=prism]').click(); expect((await state(page)).selected).toBe('prism');
+  expect(errors).toEqual([]);
+});
+
+for (const resume of [true,false]) test('autoplay keeps its paid budget through a campaign and ' + (resume ? 'resumes after the confirmed result' : 'ends when the result is dismissed'), async ({ page }) => {
+  test.setTimeout(240000);
+  await ready(page,'ru'); await page.locator('[data-np=fast]').check();
+  const operations: any[] = [];
+  page.on('request', req => { if (req.method() === 'POST' && req.url().endsWith('/api/demo-wallet/expansion')) operations.push(req.postDataJSON()); });
+  const paid = () => operations.filter(op => op.action === 'start').length;
+  await page.locator('[data-np=auto]').click(); await page.locator('[data-auto-count="100"]').click(); await page.locator('[data-np=auto-start]').click();
+  await expect(page.locator('[data-np=dialog][data-view=summary]')).toBeVisible({timeout:120000});
+  const spent = paid(); expect((await state(page)).autoplay).toMatchObject({running:true,remaining:100-spent});
+  await page.waitForTimeout(900); expect(paid()).toBe(spent);
+  await page.locator(resume ? '[data-np=notice-continue]' : '[data-np=close]').click();
+  if (resume) { await expect.poll(paid,{timeout:15000}).toBeGreaterThan(spent); await page.locator('[data-np=auto]').click(); }
+  await expect.poll(async () => { const s = await state(page); return s.autoplay.running || s.busy; }).toBe(false);
+  const after = paid(); if (!resume) expect(after).toBe(spent);
+  await page.waitForTimeout(900); expect(paid()).toBe(after);
+});
+
+test('a hero splash shows the confirmed hero, their portrait and power before the field changes', async ({ page }) => {
+  test.setTimeout(120000);
+  await ready(page,'en'); await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.evaluate(() => {
+    (window as any).npSplash = []; const band = document.querySelector('[data-np=cutin]')!;
+    new MutationObserver(() => {
+      if (!band.classList.contains('np-cutin-on')) return;
+      const art = band.querySelector('.np-cutin-art .np-costume') as HTMLElement | null, box = art?.getBoundingClientRect();
+      (window as any).npSplash.push({ hero: art?.dataset.character, shown: !!box && box.width > 40 && box.height > 40, text: band.textContent });
+    }).observe(band,{attributes:true,attributeFilter:['class']});
+  });
+  let hero = '';
+  for (let i = 0; i < 12 && !hero; i++) { await closeNotice(page); const result = await spin(page); hero = result.view.neopolis.history.at(-1).result.activated[0] ?? ''; }
+  expect(hero).not.toBe('');
+  const splash = (await page.evaluate(() => (window as any).npSplash)).at(0);
+  expect(splash).toMatchObject({ hero, shown: true });
+  expect(splash.text).toContain({granite:'Titan strike',impulse:'Energy column',prism:'Reality shift'}[hero]!);
+  expect(splash.text).toContain({granite:'Granite',impulse:'Impulse',prism:'Prism'}[hero]!);
 });

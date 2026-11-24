@@ -111,12 +111,12 @@ async function panelClose(page:Page,trigger:string){
 test('live options survive orientation changes and accepted rounds are recovered once',async({page,roomPath})=>{
  const errors:{phase:string;message:string}[]=[];let phase='entry';page.on('pageerror',e=>errors.push({phase,message:e.message}));
  await enter(page,roomPath);phase='game';await page.setViewportSize({width:393,height:852});await choose(page,'studio-neopolis');
- await page.locator('.np-options').click();await page.locator('.game-options-panel [data-hero="impulse"]').click();
- await page.locator('[data-np="auto-count"]').selectOption('25');await page.locator('[data-np="fast"]').check();
- await page.setViewportSize({width:852,height:393});await page.screenshot({path:out+'/neopolis-options.png'});await panelClose(page,'.np-options');
- await expect(page.locator('.np-options')).toContainText('Импульс');await fit(page,'studio-neopolis');
- await page.locator('.np-options').click();await expect(page.locator('[data-np="auto-count"]')).toHaveValue('25');
- await expect(page.locator('[data-np="fast"]')).toBeChecked();await panelClose(page,'.np-options');
+ await page.locator('[data-hero="impulse"]').click();await page.locator('[data-np="fast"]').check();
+ await page.locator('[data-np="auto"]').click();await page.locator('[data-auto-count="25"]').click();
+ await page.setViewportSize({width:852,height:393});await page.screenshot({path:out+'/neopolis-options.png'});
+ await page.keyboard.press('Escape');await expect(page.locator('[data-np="auto-panel"]')).toBeHidden();await expect(page.locator('#mini-dialog')).toBeVisible();await expect(page.locator('[data-np="auto"]')).toBeFocused();
+ await expect(page.locator('[data-hero="impulse"]')).toHaveAttribute('aria-pressed','true');await fit(page,'studio-neopolis');
+ await expect(page.locator('[data-auto-count="25"]')).toHaveAttribute('aria-pressed','true');await expect(page.locator('[data-np="fast"]')).toBeChecked();
  const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');
  await page.locator('[data-np="spin"]').click();const accepted=await response;expect(accepted.ok()).toBe(true);const session=(await accepted.json()).session;
  expect(session.stakeUnits).toBe('10');await expect(page.locator('[data-np="spin"]')).toBeEnabled({timeout:30000});
@@ -126,7 +126,7 @@ test('live options survive orientation changes and accepted rounds are recovered
  // Delay a real request so Stop can be verified while a paid action is in flight.
  let release!:()=>void;const gate=new Promise<void>(resolve=>release=resolve);let intercepted=false;
  await page.route('**/api/demo-wallet/expansion',async route=>{intercepted=true;await gate;await route.continue();});
- await page.locator('[data-np="auto"]').click();await expect.poll(()=>intercepted).toBe(true);
+ await page.locator('[data-np="auto"]').click();await page.locator('[data-np="auto-start"]').click();await expect.poll(()=>intercepted).toBe(true);
  await expect(page.locator('[data-np="auto"]')).toContainText('Стоп');await page.setViewportSize({width:393,height:852});
  await fit(page,'studio-neopolis','[data-np="auto"]');await page.locator('[data-np="auto"]').click();release();
  await expect.poll(async()=>(await mini(page))?.autoplay.running).toBe(false);

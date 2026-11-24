@@ -1,0 +1,253 @@
+{
+  "format": 1,
+  "productionCommit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+  "moduleGames": [
+    "neopolis"
+  ],
+  "moduleContracts": {
+    "studio-neopolis": {
+      "apiVersion": 1,
+      "rulesVersion": 4,
+      "progressVersion": 4
+    }
+  },
+  "moduleAssets": {
+    "public/assets/neopolis/aeon-v3.webp": "8f8bd9ce3af3ed83b753f0c8411256c053f4c3b3f2d9d6e899c89e64f1fc3650",
+    "public/assets/neopolis/citadel-v3.webp": "504b0ae69957870d862057822e23fb902c35db3cddba72edb6be1f45f0a935d0",
+    "public/assets/neopolis/city-v2.webp": "b741579a1aac129c4b4bae3b13aff90f094ab59cf4b3e3a3116796d45e2f5e2c",
+    "public/assets/neopolis/cover-v2.webp": "f01a85fb9a90b93dd46b184982e9469967d33f6541d64141b6f74ebffea75173",
+    "public/assets/neopolis/null-v2.webp": "b2975fa847149ba0a8c872e3e1244b7afa604b665704c47d1945d6e1fbadf6f7",
+    "public/assets/neopolis/observatory-v3.webp": "3acc713c6d2faabd2bc8dc1475333e67cb0ee45b06ffb4a399835ae1f8d710a4",
+    "public/assets/neopolis/symbols-v2.webp": "cba250836b02bce6facc37388384c1a3ef4a36dbb9d9bbd4de1010c9b44f32e5",
+    "public/assets/neopolis/team-chrono-v4.webp": "11b28760f08538125697f9bdffb093737da9d4a55fbc0058fd1f935de3216678",
+    "public/assets/neopolis/team-eclipse-v4.webp": "644e9799f64497977bd55aa055c9609fc7763218743201a1ae61de4fa4fe972d",
+    "public/assets/neopolis/team-night-v4.webp": "ce1feedc9f992694c1e9e0ed8fbd188c63894fae18574374b5f910e69a62e778",
+    "public/assets/neopolis/vespera-v3.webp": "d0c56f5578c6916c57d64d7aa9c66dbfa3cc3f58c292e78cc28403655b6ffdfb"
+  },
+  "files": {
+    "games/neopolis/NeopolisAudio.ts": {
+      "commit": "52015bac4f21286acb7c153b0c8eda171a6fcacb",
+      "path": "games/neopolis/NeopolisAudio.ts",
+      "baseSha256": "816e7819c0c501ea925942c5534d68bea0566ef773b67e49174e835fb9a9c695",
+      "sha256": "816e7819c0c501ea925942c5534d68bea0566ef773b67e49174e835fb9a9c695"
+    },
+    "games/neopolis/NeopolisBoss.ts": {
+      "commit": "52015bac4f21286acb7c153b0c8eda171a6fcacb",
+      "path": "games/neopolis/NeopolisBoss.ts",
+      "baseSha256": "c2056409e4e59df1e578cdeda252e37a90f49b9959e6b6714d49cf75c90870b7",
+      "sha256": "c2056409e4e59df1e578cdeda252e37a90f49b9959e6b6714d49cf75c90870b7"
+    },
+    "games/neopolis/NeopolisEffects.ts": {
+      "commit": "52015bac4f21286acb7c153b0c8eda171a6fcacb",
+      "path": "games/neopolis/NeopolisEffects.ts",
+      "baseSha256": "020a80dc3d72ee5e140bbc9b024a9e67197b8b3f888cb90542e24e0f435074ca",
+      "sha256": "020a80dc3d72ee5e140bbc9b024a9e67197b8b3f888cb90542e24e0f435074ca"
+    },
+    "games/neopolis/NeopolisFeedback.ts": {
+      "commit": "52015bac4f21286acb7c153b0c8eda171a6fcacb",
+      "path": "games/neopolis/NeopolisFeedback.ts",
+      "baseSha256": "9fb3e5eb3944b967f2cffb79641c4cc482ae86d83e952b6975a6318a1b4ae156",
+      "sha256": "9fb3e5eb3944b967f2cffb79641c4cc482ae86d83e952b6975a6318a1b4ae156"
+    },
+    "games/neopolis/NeopolisMotion.ts": {
+      "commit": "52015bac4f21286acb7c153b0c8eda171a6fcacb",
+      "path": "games/neopolis/NeopolisMotion.ts",
+      "baseSha256": "588e4bb3e0d4b8ec723997db3b8b34a8912791860dc4f36a4e4ceba0e99fb2d8",
+      "sha256": "588e4bb3e0d4b8ec723997db3b8b34a8912791860dc4f36a4e4ceba0e99fb2d8"
+    },
+    "games/neopolis/NeopolisReels.ts": {
+      "commit": "52015bac4f21286acb7c153b0c8eda171a6fcacb",
+      "path": "games/neopolis/NeopolisReels.ts",
+      "baseSha256": "5f7f9c9f1f5b2ce2870de74810c2fec8f1522a5e792dd2123e27b07bc6b24f55",
+      "sha256": "5f7f9c9f1f5b2ce2870de74810c2fec8f1522a5e792dd2123e27b07bc6b24f55"
+    },
+    "games/neopolis/NeopolisUI.ts": {
+      "commit": "52015bac4f21286acb7c153b0c8eda171a6fcacb",
+      "path": "games/neopolis/NeopolisUI.ts",
+      "baseSha256": "37472d1c37bc1a4b785f1d3b9826bcdfc5a61b89b87a5473cf1ba042d7376483",
+      "sha256": "37472d1c37bc1a4b785f1d3b9826bcdfc5a61b89b87a5473cf1ba042d7376483"
+    },
+    "games/neopolis/NeopolisWeather.ts": {
+      "commit": "52015bac4f21286acb7c153b0c8eda171a6fcacb",
+      "path": "games/neopolis/NeopolisWeather.ts",
+      "baseSha256": "ca8440afedd39946b652dd741be505635b20d3314f2b3278e1f8d69d3f92ffff",
+      "sha256": "ca8440afedd39946b652dd741be505635b20d3314f2b3278e1f8d69d3f92ffff"
+    },
+    "games/neopolis/art.ts": {
+      "commit": "52015bac4f21286acb7c153b0c8eda171a6fcacb",
+      "path": "games/neopolis/art.ts",
+      "baseSha256": "e548a72821bf04f206ffb9eae9dff223563610f4d81eb85860fda8a983037935",
+      "sha256": "e548a72821bf04f206ffb9eae9dff223563610f4d81eb85860fda8a983037935"
+    },
+    "games/neopolis/copy.ts": {
+      "commit": "52015bac4f21286acb7c153b0c8eda171a6fcacb",
+      "path": "games/neopolis/copy.ts",
+      "baseSha256": "e0b3442dcf0a75107f679d1677c10d21f6f3334d84c074d7d92ded25dfa818c9",
+      "sha256": "e0b3442dcf0a75107f679d1677c10d21f6f3334d84c074d7d92ded25dfa818c9"
+    },
+    "games/neopolis/entry.ts": {
+      "commit": "52015bac4f21286acb7c153b0c8eda171a6fcacb",
+      "path": "games/neopolis/entry.ts",
+      "baseSha256": "3280be53a23c8adb19affd6d4200c5b791016c5dd129e7ae886894cb5aad15da",
+      "sha256": "3280be53a23c8adb19affd6d4200c5b791016c5dd129e7ae886894cb5aad15da"
+    },
+    "games/neopolis/neopolis.css": {
+      "commit": "52015bac4f21286acb7c153b0c8eda171a6fcacb",
+      "path": "games/neopolis/neopolis.css",
+      "baseSha256": "252e6404e377da404b45966dcf43dec2754bbfaab71d5aa8d217c7fa190dc51a",
+      "sha256": "252e6404e377da404b45966dcf43dec2754bbfaab71d5aa8d217c7fa190dc51a"
+    },
+    "games/neopolis/package.json": {
+      "commit": "52015bac4f21286acb7c153b0c8eda171a6fcacb",
+      "path": "games/neopolis/package.json",
+      "baseSha256": "70da8ef04157cd10c81972145bbb4b4cb494e42ee4c6a402359178d0a3a735bf",
+      "sha256": "70da8ef04157cd10c81972145bbb4b4cb494e42ee4c6a402359178d0a3a735bf"
+    },
+    "games/neopolis/tsconfig.json": {
+      "commit": "52015bac4f21286acb7c153b0c8eda171a6fcacb",
+      "path": "games/neopolis/tsconfig.json",
+      "baseSha256": "03e6f56801f73cceebab161260053bfa6dfded8805d5f3ce89d8af4b2c57df02",
+      "sha256": "03e6f56801f73cceebab161260053bfa6dfded8805d5f3ce89d8af4b2c57df02"
+    },
+    "src/modules/GameHostContract.ts": {
+      "commit": "b77a6010f4fc3c02e4620c040d2397d4769a716d",
+      "path": "src/modules/GameHostContract.ts",
+      "baseSha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0",
+      "sha256": "e604bb622a450f976b0f8736c18a6888b0e493cc2060a91e0ea9060f84e5a4a0"
+    },
+    "src/modules/GameModuleCatalog.ts": {
+      "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "path": "src/modules/GameModuleCatalog.ts",
+      "baseSha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82",
+      "sha256": "9ca9fc2a6d6e666d441e6415d272ab75bced97b548fdd1390196420b7b40a2e1",
+      "patches": [
+        {
+          "from": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },",
+          "to": " { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },"
+        },
+        {
+          "from": "ion:1},\n] as con",
+          "to": "ion:1},\n {gameId:'tsu-e-fa',slug:'tsu-e-fa',apiVersion:1,rulesVersion:1,progressVersion:1},\n] as con"
+        },
+        {
+          "from": "iVersion:1,rulesVersion:1,progressVersion:1},\n] a",
+          "to": "iVersion:1,rulesVersion:2,progressVersion:1},\n] a"
+        },
+        {
+          "from": ":2,",
+          "to": ":3,"
+        },
+        {
+          "from": ":3,",
+          "to": ":4,"
+        },
+        {
+          "from": "export const STUDIO_GAME_MODULES = [\n",
+          "to": "export const STUDIO_GAME_MODULES = [\n { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },\n"
+        }
+      ]
+    },
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/caribbeanTreasuresMath.ts",
+      "baseSha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+      "sha256": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9"
+    },
+    "src/shared/dragonPathLayout.ts": {
+      "path": "src/shared/dragonPathLayout.ts",
+      "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+      "baseSha256": "022647095aff9d7e2b9df39c90b277cfb60f3176d93ac504207d2d5167b93458",
+      "sha256": "022647095aff9d7e2b9df39c90b277cfb60f3176d93ac504207d2d5167b93458"
+    },
+    "src/shared/dragonPathMath.ts": {
+      "path": "src/shared/dragonPathMath.ts",
+      "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+      "baseSha256": "55cb7062fb8098ad58b228e0648b61a040c98c58e4c054b08c124dffa71de80e",
+      "sha256": "55cb7062fb8098ad58b228e0648b61a040c98c58e4c054b08c124dffa71de80e"
+    },
+    "src/shared/dragonPathProtocol.ts": {
+      "path": "src/shared/dragonPathProtocol.ts",
+      "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+      "baseSha256": "aa0e20250aa15c724e38ca611418c7e435f30ff15244af689cf19865f8ef4fca",
+      "sha256": "aa0e20250aa15c724e38ca611418c7e435f30ff15244af689cf19865f8ef4fca"
+    },
+    "src/shared/dragonPathRound.ts": {
+      "path": "src/shared/dragonPathRound.ts",
+      "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+      "baseSha256": "74ee227cdc25ad276671c0f07f1363647f6c54e8e918b3f3527a62d347ad8794",
+      "sha256": "74ee227cdc25ad276671c0f07f1363647f6c54e8e918b3f3527a62d347ad8794"
+    },
+    "src/shared/forestHeartMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/forestHeartMath.ts",
+      "baseSha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+      "sha256": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5"
+    },
+    "src/shared/gameStakes.ts": {
+      "path": "src/shared/gameStakes.ts",
+      "commit": "5899e91fd1ec3355f2620324557b5a58d50435e3",
+      "baseSha256": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b",
+      "sha256": "fc625c18828af6683ca8237058a969ef913b92083f44105c961bd7b749a98f0b"
+    },
+    "src/shared/neopolis.ts": {
+      "commit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+      "path": "src/shared/neopolis.ts",
+      "baseSha256": "2ec8799c72f2038edafcd1f7d6f3031b4866f07f2ecd334728ae77bdb3823488",
+      "sha256": "2ec8799c72f2038edafcd1f7d6f3031b4866f07f2ecd334728ae77bdb3823488"
+    },
+    "src/shared/neopolisMath.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/neopolisMath.ts",
+      "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+    },
+    "src/shared/neopolisMathV1.ts": {
+      "commit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+      "path": "src/shared/neopolisMathV1.ts",
+      "baseSha256": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92",
+      "sha256": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92"
+    },
+    "src/shared/neopolisMathV2.ts": {
+      "commit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+      "path": "src/shared/neopolisMathV2.ts",
+      "baseSha256": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692",
+      "sha256": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692"
+    },
+    "src/shared/neopolisMathV3.ts": {
+      "commit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+      "path": "src/shared/neopolisMathV3.ts",
+      "baseSha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
+      "sha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820"
+    },
+    "src/shared/neopolisStakePayouts.ts": {
+      "commit": "717b56b789236414064b639a6cb516a4d2f441fa",
+      "path": "src/shared/neopolisStakePayouts.ts",
+      "baseSha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+      "sha256": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca"
+    },
+    "src/shared/roundPrecision.ts": {
+      "path": "src/shared/roundPrecision.ts",
+      "commit": "95db186f8e9a5076da25c62eb9cf43612c88aeca",
+      "baseSha256": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870",
+      "sha256": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870"
+    },
+    "src/ui/stakeRules.ts": {
+      "commit": "06642573c4e6e9b0c97e8744a29f514174b40eb7",
+      "path": "src/ui/stakeRules.ts",
+      "baseSha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df",
+      "sha256": "0ff24085b1c6b98b28fa83632e68c572185e0c00a2adcd827773b936035f26df"
+    },
+    "src/ui/stakeSelection.ts": {
+      "commit": "b77a6010f4fc3c02e4620c040d2397d4769a716d",
+      "path": "src/ui/stakeSelection.ts",
+      "baseSha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86",
+      "sha256": "6486d27040a9dbf8ba969eb8c74c37f3e953e402d838c8fb8d7c478ca8c81c86"
+    },
+    "tsconfig.json": {
+      "commit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+      "path": "tsconfig.json",
+      "baseSha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+      "sha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b"
+    }
+  }
+}

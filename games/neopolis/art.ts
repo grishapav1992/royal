@@ -1,9 +1,9 @@
 import { HEROES, type Hero, type BossId } from '../../src/shared/neopolisMath';
 
 export const SCENES = [
-  { id: 'null', background: '/assets/neopolis/city-v2.webp', costumes: '/assets/neopolis/team-night-v3.webp', villain: '/assets/neopolis/null-v2.webp' },
-  { id: 'vespera', background: '/assets/neopolis/citadel-v3.webp', costumes: '/assets/neopolis/team-eclipse-v3.webp', villain: '/assets/neopolis/vespera-v3.webp' },
-  { id: 'aeon', background: '/assets/neopolis/observatory-v3.webp', costumes: '/assets/neopolis/team-chrono-v3.webp', villain: '/assets/neopolis/aeon-v3.webp' },
+  { id: 'null', background: '/assets/neopolis/city-v2.webp', costumes: '/assets/neopolis/team-night-v4.webp', villain: '/assets/neopolis/null-v2.webp' },
+  { id: 'vespera', background: '/assets/neopolis/citadel-v3.webp', costumes: '/assets/neopolis/team-eclipse-v4.webp', villain: '/assets/neopolis/vespera-v3.webp' },
+  { id: 'aeon', background: '/assets/neopolis/observatory-v3.webp', costumes: '/assets/neopolis/team-chrono-v4.webp', villain: '/assets/neopolis/aeon-v3.webp' },
 ] as const;
 
 export function portrait(character: Hero | BossId): string {
@@ -12,14 +12,17 @@ export function portrait(character: Hero | BossId): string {
   return '<img class="np-character" src="' + SCENES.find(scene => scene.id === character)!.villain + '" alt="" draggable="false" decoding="async">';
 }
 
+/** A campaign medal: two halves of one portrait, so a defeated villain can split. */
+export function medal(boss: BossId): string {
+  const half = '<i data-villain="' + boss + '"></i>';
+  return '<span class="np-medal" aria-hidden="true">' + half + half + '</span>';
+}
+
 export function symbolArt(symbol: number): string {
   if (symbol === 6) return '<span class="np-wild" aria-hidden="true"><i></i><b>WILD</b></span>';
   if (symbol === 7) return '<span class="np-scatter" aria-hidden="true">' + portrait('null') + '<b>SCATTER</b></span>';
   return '<span class="np-symbol np-symbol-' + (symbol >= 0 && symbol < 6 ? symbol : 0) + '" aria-hidden="true"></span>';
 }
 
-export function noticeArt(battle: boolean, boss: BossId = 'null'): string {
-  return '<div class="np-notice-art" aria-hidden="true">' + (battle ? portrait(boss) : '<img src="/assets/neopolis/cover-v2.webp" alt="" draggable="false">') + '</div>';
-}
 
-export const skyline = '<div class="np-city" aria-hidden="true"><img class="np-city-current" src="/assets/neopolis/city-v2.webp" alt="" draggable="false" decoding="async"></div><div class="np-atmosphere" aria-hidden="true"></div>';
+export const skyline = '<div class="np-city" aria-hidden="true"><img class="np-city-current" src="/assets/neopolis/city-v2.webp" alt="" draggable="false" decoding="async"><div class="np-veil"></div><div class="np-dawn"></div><canvas class="np-weather"></canvas></div>';
