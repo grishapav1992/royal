@@ -1,0 +1,275 @@
+{
+  "published": true,
+  "release": "slot-entry-notes-20261124-v1",
+  "sourceCommit": "5b03f824ef07bbc708b44c0fdd577848942f41a4",
+  "baseCommit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/slot-entry-notes-20261124-v1/source.tgz",
+    "sha256": "3b5cdee1667fc98663f54c810d2cfdc33ab826ff7a6e0da381ebb2729190e66c",
+    "bytes": 94482,
+    "oldVersions": {
+      "studio-caramel-carnival": "1.2.0-870ac75ad162",
+      "studio-afterglow": "1.4.1-d4d8130969b8",
+      "studio-last-convoy": "1.1.1-d9f0bfd91e37",
+      "studio-meme-overload": "1.2.0-f2fd592093db",
+      "studio-nitro-run": "1.3.0-7438b7eedc41",
+      "studio-velvet-reign": "1.4.2-3731693cacc3"
+    },
+    "imageTag": "royal-game:before-desktop-stake-lists-20261123-v1",
+    "image": "sha256:2a3b9ebfb37444da4a752c803fbb742d203b74315df83b38da2d7890b8f79e99",
+    "oldPackagesHardlinked": true
+  },
+  "modules": [
+    {
+      "verified": true,
+      "gameId": "studio-caramel-carnival",
+      "version": "1.2.0-e8e2ee4c0e2a",
+      "bytes": 3273423,
+      "files": 7,
+      "beforeSha256": "a922674ea7cd0c947590d759c63b22233cd436882b29542c2be1d7ce0f278316",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "install",
+      "activeSha256": "baff456fbb8a0c7a03c1fa2220e4cbfb3c38e666948ce5db27f25727820d440c",
+      "history": "/opt/royal-game-modules-state/history/20261124T182724-b5cf41d68231404cb192aa7a80588084.json"
+    },
+    {
+      "verified": true,
+      "gameId": "studio-afterglow",
+      "version": "1.4.1-93ce0a7f1cde",
+      "bytes": 3259014,
+      "files": 21,
+      "beforeSha256": "f677ce3b23b9453f14e6b5c54734a9f4176b60d1cb1fd852b9c2e47c9a13dfec",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "install",
+      "activeSha256": "4f7771d87191513f6c61e4db1dcfafec17f29664ef253610cac8bd2e61aced8e",
+      "history": "/opt/royal-game-modules-state/history/20261124T182725-321f9d49394442159520764e6762c5bb.json"
+    },
+    {
+      "verified": true,
+      "gameId": "studio-last-convoy",
+      "version": "1.1.1-a2c56b9e52df",
+      "bytes": 6407209,
+      "files": 19,
+      "beforeSha256": "f6cacea137d2c5afa311c0f038989706875006681f1c72c4c98d83fecf785863",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "install",
+      "activeSha256": "d58837d6225d3c279e15cd868ef3eaa27df13cb755e28a0681f14078a35ff8ab",
+      "history": "/opt/royal-game-modules-state/history/20261124T182725-6a91a748505a475c9aa44b0154e54001.json"
+    },
+    {
+      "verified": true,
+      "gameId": "studio-meme-overload",
+      "version": "1.2.0-7b6257800f7e",
+      "bytes": 3693127,
+      "files": 22,
+      "beforeSha256": "2af41a1e0d8524f449bcbbbf736639a15f80902c9d362c04cefeb1fac686c9d4",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "install",
+      "activeSha256": "22fa6e6fff6489f327a4d8a4b1ea3f5dbbc2c9c7a578c7bbfd70210ce9a829b2",
+      "history": "/opt/royal-game-modules-state/history/20261124T182726-8a230078bb994e559799d5d41cf10617.json"
+    },
+    {
+      "verified": true,
+      "gameId": "studio-nitro-run",
+      "version": "1.3.0-63ca20c9ba75",
+      "bytes": 2624451,
+      "files": 5,
+      "beforeSha256": "9234d63c4f83913a107a8d2dc2ed15cb7fb322ad8a777a5eed22bba899ecec89",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "install",
+      "activeSha256": "e66a455aa710a55420904f7eef0309db2f60c8ab50887e58c388604a481090fd",
+      "history": "/opt/royal-game-modules-state/history/20261124T182726-b4807f048438481fb3a89a6c8d648941.json"
+    },
+    {
+      "verified": true,
+      "gameId": "studio-velvet-reign",
+      "version": "1.4.2-10ec0002b747",
+      "bytes": 5823990,
+      "files": 28,
+      "beforeSha256": "e5a4ca655d644520e96216a68c1d103f8f240456c8c0bf93b7c1c63b4652c952",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "install",
+      "activeSha256": "0b6a891c187722164cc70ff1196715f9c40b12bbb2c2bacbec7de73290c82a1b",
+      "history": "/opt/royal-game-modules-state/history/20261124T182726-4c58e47ffbea406997919286faa67499.json"
+    }
+  ],
+  "freeBefore": 11448320000,
+  "freeAfter": 11422498816,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8821,
+  "servicesPreserved": 11,
+  "installerCommit": "5b03f824ef07bbc708b44c0fdd577848942f41a4",
+  "releaseManifestSha256": "756ddf0dc1e7e079b3e89016ba0afafb1ed88e87672c1d84ada8b2fe89753474",
+  "reusedFrom": {
+    "sourceCommit": "f8724a2ca28f5bb97738dfdb47c6fb71ac4e1d28",
+    "manifestSha256": "eba47faf57b3e75149316b5ee66859d99aa215413ba315e1bed1b1e23e9bd22b",
+    "receiptSha256": "8b743fd1250d4bc16f2dc9799ce145d19e7d6c99e06a91e114ba68615bab300f"
+  },
+  "browser": {
+    "sourceCommit": "5b03f824ef07bbc708b44c0fdd577848942f41a4",
+    "games": [
+      "studio-caramel-carnival",
+      "studio-afterglow",
+      "studio-last-convoy",
+      "studio-meme-overload",
+      "studio-nitro-run",
+      "studio-velvet-reign"
+    ],
+    "versions": {
+      "studio-caramel-carnival": "1.2.0-e8e2ee4c0e2a",
+      "studio-afterglow": "1.4.1-93ce0a7f1cde",
+      "studio-last-convoy": "1.1.1-a2c56b9e52df",
+      "studio-meme-overload": "1.2.0-7b6257800f7e",
+      "studio-nitro-run": "1.3.0-63ca20c9ba75",
+      "studio-velvet-reign": "1.4.2-10ec0002b747"
+    },
+    "languages": [
+      "ru",
+      "en"
+    ],
+    "connectedChat": true,
+    "viewports": [
+      [
+        1440,
+        900
+      ],
+      [
+        393,
+        852
+      ],
+      [
+        852,
+        393
+      ]
+    ],
+    "introButtonsOpened": true,
+    "passed": true,
+    "walletTests": 19,
+    "inheritedFrom": {
+      "sourceCommit": "f8724a2ca28f5bb97738dfdb47c6fb71ac4e1d28",
+      "reportSha256": "de9c2c93f9906eba6c79ff105a99a0b6c6f0976fe4960d75c339f25f09d106e3"
+    }
+  },
+  "public": {
+    "site": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "health": 200,
+    "publishedFilesVerified": 114,
+    "entries": [
+      {
+        "game": "studio-caramel-carnival",
+        "version": "1.2.0-e8e2ee4c0e2a",
+        "manifestSha256": "7e60f60e82c4e7ce5f36144ce9266cdad0b3bf977f7f6040bc4534c052a13143",
+        "entryNoteAbsent": true
+      },
+      {
+        "game": "studio-afterglow",
+        "version": "1.4.1-93ce0a7f1cde",
+        "manifestSha256": "2338619f5f2ecb112af8994cd9ca8951191098cd550ac03fb27326764cfdc4ae",
+        "entryNoteAbsent": true
+      },
+      {
+        "game": "studio-last-convoy",
+        "version": "1.1.1-a2c56b9e52df",
+        "manifestSha256": "36d221fb03ecc56a8f05e90767670f6126deb70a1509a995611fbc201ff17098",
+        "entryNoteAbsent": true
+      },
+      {
+        "game": "studio-meme-overload",
+        "version": "1.2.0-7b6257800f7e",
+        "manifestSha256": "32178badb084ef4e96060d69d77a32b99f76b89bb7198568d495e26d1c10cc2f",
+        "entryNoteAbsent": true
+      },
+      {
+        "game": "studio-nitro-run",
+        "version": "1.3.0-63ca20c9ba75",
+        "manifestSha256": "5345dd581c589f663f3d1660e44bc0dcda943d696d909fcc54aceee31c1b143a",
+        "entryNoteAbsent": true
+      },
+      {
+        "game": "studio-velvet-reign",
+        "version": "1.4.2-10ec0002b747",
+        "manifestSha256": "fb7491bf2aac02271d35af743b3196aaf2ce72d4e33a9780cabc6d983241c393",
+        "entryNoteAbsent": true
+      },
+      {
+        "game": "studio-cosmic-escape",
+        "version": "1.3.1-7a361aa2790c",
+        "manifestSha256": "47644d322ef43b10655eba498d2e0ce52cdd7a2fbab00dfe7808c4cebe97a2b6",
+        "entryNoteAbsent": true
+      }
+    ],
+    "previousVersionsVerified": [
+      {
+        "game": "studio-caramel-carnival",
+        "version": "1.2.0-870ac75ad162",
+        "manifestSha256": "84527a2eea21cf9a3c1bfe9380bc960f34104cfb67da26b2d723556a3d9d8589"
+      },
+      {
+        "game": "studio-afterglow",
+        "version": "1.4.1-d4d8130969b8",
+        "manifestSha256": "bb4e163ccdc430d04b36e7fa95101757434f964e1fb2c77ad7f7a6733b52e5f9"
+      },
+      {
+        "game": "studio-last-convoy",
+        "version": "1.1.1-d9f0bfd91e37",
+        "manifestSha256": "60174e0a8e00558bb7409db1f0bedbf258eadee662b7f151e7ae2056f649a72d"
+      },
+      {
+        "game": "studio-meme-overload",
+        "version": "1.2.0-f2fd592093db",
+        "manifestSha256": "ad093b2a3556b8058cfe680b21095b9f9dfe41b1b12c44ac4873d52af9f6a033"
+      },
+      {
+        "game": "studio-nitro-run",
+        "version": "1.3.0-7438b7eedc41",
+        "manifestSha256": "adb5069c59571a73e94fbd806c2552f3fba8bd532b4b45069ce2e78df4fbfad3"
+      },
+      {
+        "game": "studio-velvet-reign",
+        "version": "1.4.2-3731693cacc3",
+        "manifestSha256": "3ea68aeb6e6b2221c6dceb9474a88ec2b41683e4581b2fcb9d2316a489a0e1c6"
+      }
+    ]
+  },
+  "maintenance": {
+    "status": "completed",
+    "release": "cosmic-crew-20261124-v1",
+    "startedAt": 1795544887.3080459,
+    "finishedAt": 1795544985.9288795,
+    "durationSeconds": 98.62,
+    "healthOk": true,
+    "freeBefore": 11418124288,
+    "freeAfter": 11462393856,
+    "removedEntries": 11,
+    "removedImageTags": 0,
+    "currentImage": "sha256:2a3b9ebfb37444da4a752c803fbb742d203b74315df83b38da2d7890b8f79e99",
+    "rollbackImage": "sha256:375af56d5cfc96e5d8d54c82353d9e5778518e3880320f626f93375fe2ceacdd",
+    "timer": "enabled and active"
+  },
+  "activeModulePointers": 125,
+  "catalogueBefore": 20,
+  "catalogueAfter": 20,
+  "addedGames": [],
+  "restoredGames": [],
+  "runningImage": "sha256:2a3b9ebfb37444da4a752c803fbb742d203b74315df83b38da2d7890b8f79e99"
+}
