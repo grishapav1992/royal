@@ -150,6 +150,7 @@ export class RoomScene extends Phaser.Scene {
   private streetApproachCompleting=false;
   private elevatorApproachAt = 0;
   private overview=false;
+  private viewportDensity=1;
   onBar: () => void = () => {};
   onToiletMerchant:()=>void=()=>{this.onNotice('Войди в аккаунт, чтобы заказать образ у Жоры.');};
   onAtelier: () => void = () => { this.onNotice('Войди в аккаунт, чтобы заказать образ в ателье.'); };
@@ -219,9 +220,11 @@ export class RoomScene extends Phaser.Scene {
     this.halo = this.add.ellipse(540, 572, 48, 19, COLORS.lime, .11).setStrokeStyle(1, COLORS.lime, .7);
     this.player = this.actor(540, 570, 0, translateText('Вы'), true);
     this.cameras.main.setBounds(0,HALL_WALL.viewTop,WORLD.width,WORLD.height-HALL_WALL.viewTop).startFollow(this.player.sprite,false,1,1);
+    const viewportObserver=new ResizeObserver(()=>this.resizeViewport());
+    viewportObserver.observe(this.scale.parent);
     this.scale.on(Phaser.Scale.Events.RESIZE,this.resizeView,this);
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>{this.onElevatorCancel();this.clickTargets.cancel();this.afterMovement=undefined;this.scale.off(Phaser.Scale.Events.RESIZE,this.resizeView,this);});
-    this.resizeView();
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>{viewportObserver.disconnect();this.onElevatorCancel();this.clickTargets.cancel();this.afterMovement=undefined;this.scale.off(Phaser.Scale.Events.RESIZE,this.resizeView,this);});
+    this.resizeViewport();
     this.syncGuests(this.guestViews);
     this.keys = this.input.keyboard!.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,E,SPACE,SHIFT') as Record<string, Phaser.Input.Keyboard.Key>;
     this.input.keyboard!.on('keyup',(event:KeyboardEvent)=>this.heldWindowKeys.delete(event.keyCode));
@@ -309,7 +312,7 @@ export class RoomScene extends Phaser.Scene {
     }
     this.street?.setActive(hall==='street');
     this.near=null;this.lastNear='';this.onNear(null);gameAudio.setHall(hall);this.onHall(hall);
-    if(this.player)this.resizeView();
+    if(this.player)this.resizeViewport();
   }
   getTailorState() { return this.atelier?.getState() ?? null; }
   getStreetMapArt() { return this.street?.mapCanvas; }
@@ -331,12 +334,27 @@ export class RoomScene extends Phaser.Scene {
   }
   setOverview(value:boolean){this.overview=value;if(this.hall==='street')this.streetView.configure(this.player,value);document.querySelector<HTMLElement>('.room-panel')!.dataset.overview=String(value);this.resizeView();}
   setDealerAction(gameId: string, action: DealerAction) { this.cardTables?.setAction(gameId, action); }
+  private resizeViewport(){
+    const {clientWidth:width,clientHeight:height}=this.scale.parent;
+    if(width===0||height===0)return;
+    const density=this.hall==='toilet'?Phaser.Math.Clamp(window.devicePixelRatio||1,1,2):1;
+    const renderWidth=Math.round(width*density),renderHeight=Math.round(height*density);
+    this.viewportDensity=renderWidth/width;
+    const style=this.game.canvas.style,widthCss=width+'px',heightCss=height+'px';
+    const resized=this.scale.gameSize.width!==renderWidth||this.scale.gameSize.height!==renderHeight||style.width!==widthCss||style.height!==heightCss;
+    if(resized){
+      style.width=widthCss;style.height=heightCss;
+      this.scale.resize(renderWidth,renderHeight);
+    }else this.resizeView();
+  }
   private resizeView(){
     const width=this.scale.gameSize.width,height=this.scale.gameSize.height;
+    const density=this.viewportDensity;
     const frame=this.hall==='toilet'?TOILET:this.hall==='roof'?ROOF:this.hall==='street'?this.streetView.size:this.overview&&this.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
     const viewTop=this.hall==='toilet'?TOILET.viewTop:HALL_WALL.viewTop;
     const fit=Math.min(width/(frame.width-40),height/(frame.height-viewTop-50));
-    const zoom=this.overview?fit:Math.max(fit,Phaser.Math.Clamp(Math.min(width/1000,height/760),.8,1.3));
+    const followZoom=Phaser.Math.Clamp(Math.min(width/1000,height/760)/density,.8,1.3)*density;
+    const zoom=this.overview?fit:Math.max(fit,followZoom);
     const viewWidth=width/zoom,viewHeight=height/zoom;
     const top=this.hall==='street'&&!this.overview&&this.streetView.side==='rear'?Math.min(HALL_WALL.viewTop,this.streetView.roofEdge-320):viewTop;
     const camera=this.cameras.main.setSize(width,height).setZoom(zoom).setBounds(
