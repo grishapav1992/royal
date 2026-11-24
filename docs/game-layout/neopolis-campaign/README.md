@@ -2,7 +2,7 @@
 
 Новое представление игры `studio-neopolis`, пакет `@royal/neopolis` 0.7.0, совместимость host/rules/progress 1/4/4 не изменилась. Утверждённый макет: https://claude.ai/artifact/CcSkAhH49QYGcnPziZhZiP.
 
-Статус: в ветке `feature/neopolis-redesign`, не опубликовано.
+Статус: опубликовано 24 ноября 2026, пакет `0.7.0-ad225d683ad9`, [выпуск `neopolis-campaign-20261124-v1`](../../../deployment/releases/neopolis-campaign-20261124-v1/verification.json).
 
 ## Границы
 

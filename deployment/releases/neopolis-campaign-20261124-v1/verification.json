@@ -1,0 +1,123 @@
+{
+  "published": true,
+  "release": "neopolis-campaign-20261124-v1",
+  "sourceCommit": "05fa5d5e6e631911beff2c5034fb3c039609de2a",
+  "baseCommit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/neopolis-campaign-20261124-v1/source.tgz",
+    "sha256": "5cb6b8f4e1cb033307ed1a885a8b514f49c54e2d4235132c27ba60922681e8b0",
+    "bytes": 41669,
+    "oldVersion": "0.6.1-4099506305f7",
+    "imageTag": "royal-game:before-neopolis-campaign-20261124-v1",
+    "image": "sha256:2a3b9ebfb37444da4a752c803fbb742d203b74315df83b38da2d7890b8f79e99",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/neopolis/NeopolisBoss.ts",
+      "games/neopolis/NeopolisWeather.ts"
+    ]
+  },
+  "module": {
+    "verified": true,
+    "gameId": "studio-neopolis",
+    "version": "0.7.0-ad225d683ad9",
+    "bytes": 5843086,
+    "files": 13,
+    "beforeSha256": "19de6423b3337cc2a01b1e15be0a2b2189cbcc6590849a33029a0210bf24089e",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "5d88921e2acbf8ab884b875f2be56655f5c236b1ec30ac2782104c23ef79446f",
+    "history": "/opt/royal-game-modules-state/history/20261124T154940-1335f7da8adc48abb738984875f28171.json"
+  },
+  "freeBefore": 11582472192,
+  "freeAfter": 11576442880,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8821,
+  "servicesPreserved": 11,
+  "wrapperSourceCommit": "05fa5d5e6e631911beff2c5034fb3c039609de2a",
+  "previousVersion": "0.6.1-4099506305f7",
+  "manifestSha256": "b6d14c9198800a1e6dd1460deb936ef2eeedb066e3ebbd81a91b48c7f92d7e7c",
+  "pointerSha256": "5d88921e2acbf8ab884b875f2be56655f5c236b1ec30ac2782104c23ef79446f",
+  "priorPointerSha256": "19de6423b3337cc2a01b1e15be0a2b2189cbcc6590849a33029a0210bf24089e",
+  "releaseManifestSha256": "abeb17ab33e59f18e7344963820845f1a9718bd1c6c21d5f8dd6dc8d92577363",
+  "receiptSha256": "d8119ca1660d2049a1b1f2d2624fa98d9abe49f1f4f182d079388093196e96c9",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "projection": "shared inputs equal the live host byte for byte; only GameModuleCatalog keeps the bytes of the previous single-game packages",
+  "verification": {
+    "rtp": "passed in release:prepare (39 profiles, 21 stake policies)",
+    "typecheck": true,
+    "githubVerified": true,
+    "walletTests": 19,
+    "gameServerTests": 50,
+    "browserReport": {
+      "release": "neopolis-campaign-20261124-v1",
+      "version": "0.7.0-ad225d683ad9",
+      "sourceCommit": "05fa5d5e6e631911beff2c5034fb3c039609de2a",
+      "moduleManifestSha256": "b6d14c9198800a1e6dd1460deb936ef2eeedb066e3ebbd81a91b48c7f92d7e7c",
+      "connectedHostPassed": true,
+      "recoveryPassed": true,
+      "walletTestsPassed": 19,
+      "gameServerTestsPassed": 50,
+      "gameBrowserTests": 17,
+      "connectedBrowserTests": 5,
+      "host": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact module bytes",
+      "browser": "Google Chrome",
+      "scenarios": [
+        "field, spin, stake and villain panel without scrolling on eight sizes",
+        "live options, held request, Stop and a recovered round charged once",
+        "eight sizes, close and reopen without a second debit",
+        "lost response restores the same operation with one debit of 0.10 on 1440x900 and 393x852",
+        "100 USDT accepted, 100.01 never sent",
+        "identical look after Cosmic Escape",
+        "three bosses with reload, one entry debit, rescue and summary, the field never moves",
+        "autoplay panel places no wager, ten paid starts, budget kept through a campaign, resumes or ends by the player",
+        "hero splash shows the confirmed hero",
+        "reels, sound, pause, reduced motion and closing during motion",
+        "Russian and English"
+      ],
+      "notChecked": [
+        "physical phones",
+        "Safari",
+        "listening quality",
+        "a saved version 1 bonus in the new screen",
+        "slow devices"
+      ]
+    },
+    "runs": [
+      "One round celebration check missed its short panel while the Mac load average was above 20; it passed three times in a row alone.",
+      "The stake check first waited for the spin button while the host showed a level reward that locks stakes; the check now reads the confirmed debit.",
+      "The package code equals the bytes of the earlier reviewed build 0.7.0-3195d63f2ee1 except for the version in resource paths.",
+      "The old test \"real host opens both published games\" does not pass on main either: its stand does not bring the host online. The connected host was checked with the layout stand."
+    ],
+    "live": {
+      "health": 200,
+      "modulePointers": 125,
+      "unchangedModulePointers": 124,
+      "changedModulePointers": [
+        "studio-neopolis"
+      ],
+      "packageFilesVerified": 13,
+      "manifestVerified": true,
+      "previousPackageFilesVerified": 13,
+      "changedSources": 10,
+      "otherSourcesChanged": 0
+    },
+    "publicSignedInPlayChecked": false,
+    "publicGuestPlayChecked": false,
+    "publicGuestPlayReason": "The public site requires signing in before the catalogue.",
+    "productionAccountsOrRoundsCreated": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 76.71,
+    "timerEnabled": true,
+    "timerActive": true,
+    "freeAfter": 11568549888
+  }
+}
