@@ -81,6 +81,8 @@ export class ForestCharacter {
   private reaction?: ForestReaction;
   private gestureAt = 0;
   private gestureDuration = 0;
+  /** No new idle clip starts while a field is being presented. A running clip still finishes. */
+  occupied = false;
   private gestureKeys: GestureKey[] = [[0,0,0,0,0],[1,0,0,0,0]];
   private events: { pose: ForestPose; reaction: ForestReaction; atMs: number }[] = [];
 
@@ -178,7 +180,7 @@ export class ForestCharacter {
     const motion = this.reduced || this.paused ? 0 : .25 + .75 * (1 - weights[0]);
     gl.uniform1f(this.uniforms.uTime, this.elapsed / 1000); gl.uniform1f(this.uniforms.uMotion, motion);
     gl.drawElements(gl.TRIANGLES, 24 * 32 * 6, gl.UNSIGNED_SHORT, 0); this.frameCount++;
-    this.video.update(this.pose, this.elapsed, this.canvas);
+    this.video.update(this.occupied ? 'occupied' : this.pose, this.elapsed, this.canvas);
   }
   private setPose(pose: ForestPose, immediate = false) {
     if (pose === this.pose && !immediate) return;

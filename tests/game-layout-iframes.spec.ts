@@ -43,6 +43,7 @@ async function finish(page:Page,frame:Frame,id:Id){
  await expect.poll(async()=>{
   const s=await session(page,id);
   if(id==='studio-dracona'&&await frame.locator('#dialog').isVisible()){await frame.locator('#dialog .dialog-primary').click();return false;}
+  if(id==='studio-forest-heart'&&await frame.locator('[data-fh=result-dialog]').isVisible()){await frame.locator('[data-fh=result-confirm]').click();return false;}
   const main=frame.locator(profiles[id].primary).first();
   if(s?.state==='settled'&&await main.isEnabled())return true;
   // Temple advances its free continuations itself. A later click could start a new paid round.
@@ -68,9 +69,10 @@ for(const id of ids)test('iframe settings, accepted round and recovery: '+id,asy
  // Dracona keeps every control in view. Its only panel opens autoplay.
  const gear=()=>frame.locator(id==='studio-dracona'?'#autoplay':id==='studio-forest-heart'?'[data-fh=settings]':'[data-ft=settings]');
  const panel=()=>frame.locator(id==='studio-dracona'?'#auto-dialog':id==='studio-forest-heart'?'.fh-dialog':'.ft-dialog');
+ if(id==='studio-forest-heart')await frame.locator('[data-fh=fast]').check();
  await gear().click();
  if(id==='studio-dracona')await frame.locator('[data-auto-count="25"]').click();
- else if(id==='studio-forest-heart')await frame.locator('[data-fh=fast]').check();
+ else if(id==='studio-forest-heart')await expect(panel()).toBeVisible();
  else{await panel().locator('[data-ft=fast]').click();await panel().locator('[data-ft=auto-count]').selectOption('25');}
  await page.screenshot({path:out+'/'+id+'-options.png'});await page.setViewportSize({width:852,height:393});await frame.locator('body').press('Escape');await expect(panel()).toBeHidden();await expect(gear()).toBeFocused();
  await fit(page,frame,id);await page.setViewportSize({width:1440,height:900});await fit(page,frame,id);await page.setViewportSize({width:393,height:852});
