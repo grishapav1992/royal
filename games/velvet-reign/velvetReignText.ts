@@ -11,7 +11,6 @@ const english: Record<string, string> = {
   'На счёте не хватает USDT (Nile) для ставки.': 'Not enough USDT (Nile) in the account for this stake.',
   'Для игры нужен общий баланс USDT.': 'Playing requires the shared USDT balance.',
   'Недостаточно USDT (Nile) для выбранной ставки.': 'Not enough USDT (Nile) for the selected stake.',
-  'Виртуальные USDT · Вход без ставки': 'Virtual USDT · Entry without a stake',
 };
 const own = (source: string) => {
   const key = source.trim();
