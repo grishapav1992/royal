@@ -2,7 +2,7 @@
   "generator": "Built-in ImageGen",
   "export": "Chrome Canvas WebP, quality 0.94; original dimensions except hall thumbnails",
   "sourceBytes": 39293257,
-  "gameBytes": 7312152,
+  "gameBytes": 8581446,
   "files": [
     {
       "file": "/assets/neopolis/city-v2.webp",
@@ -115,6 +115,28 @@
       "height": 887,
       "bytes": 490136,
       "sha256": "6a3506f93516cb86c2fd0727fd7fb555995b0974b8acc51f0df18b4991d0021a"
+    },
+    {
+      "file": "/assets/neopolis/team-night-v4.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 421746,
+      "sha256": "ce1feedc9f992694c1e9e0ed8fbd188c63894fae18574374b5f910e69a62e778"
+    },
+    {
+      "file": "/assets/neopolis/team-eclipse-v4.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 431102,
+      "sha256": "644e9799f64497977bd55aa055c9609fc7763218743201a1ae61de4fa4fe972d"
+    },
+    {
+      "file": "/assets/neopolis/team-chrono-v4.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 416446,
+      "sha256": "11b28760f08538125697f9bdffb093737da9d4a55fbc0058fd1f935de3216678"
     }
-  ]
+  ],
+  "teamExport": "sharp WebP, quality 90 with alpha; edge-connected black removed from each panel"
 }

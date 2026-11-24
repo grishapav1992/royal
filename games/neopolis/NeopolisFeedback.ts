@@ -31,7 +31,8 @@ export class NeopolisFeedback {
     this.award.innerHTML='<small></small><strong></strong><span></span>';
     this.result=doc.createElement('div'); this.result.className='np-result'; this.result.hidden=true;
     this.result.innerHTML='<div class="np-result-orbit" aria-hidden="true"></div><div class="np-result-panel"><small>'+copy.roundPayout+'</small><h2></h2><strong data-result-amount></strong><span data-result-net></span><button type="button" data-result-skip>'+copy.showTotal+'</button></div>';
-    shell.append(this.award,this.result);
+    // The breakdown sits beside the field, so paying symbols stay visible.
+    (root.querySelector('.np-outcome') ?? shell).append(this.award); shell.append(this.result);
     this.result.querySelector('button')!.addEventListener('click',()=>{this.skip=true;},{signal:this.controller.signal});
   }
   setAmount(units: number) { this.shownUnits=units; this.amount(units); }

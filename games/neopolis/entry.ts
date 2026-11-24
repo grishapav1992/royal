@@ -1,8 +1,6 @@
 import type { GameModuleV1 } from '../../src/modules/GameHostContract';
 import { NeopolisUI } from './NeopolisUI';
 import './neopolis.css';
-import './neopolis-layout.css';
-import './neopolis-priorities.css';
 export const gameId = 'studio-neopolis';
 export const apiVersion = 1;
 export const rulesVersion = 4;

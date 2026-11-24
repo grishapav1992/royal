@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { Client } from '@colyseus/sdk';
+import { selectEntryMode } from './entry-mode';
 import {walletSnapshot,walletHeaders} from './wallet-snapshot';
 import {NEOPOLIS_HEADER} from '../src/shared/neopolis';
 
@@ -36,6 +37,9 @@ test('Neopolis fits the real host, prioritizes the field over chat, and restores
     await page.route('https://luelonplay.com/demo-api/**', route => route.fulfill({ json: { games: [] } }));
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/?room=' + room.roomId);
+    const club = page.locator('[data-entry-mode="club"]'), email = page.getByLabel('Почта', { exact: true });
+    await expect(club.or(email)).toBeVisible({ timeout: 30000 });
+    if (await club.isVisible()) await selectEntryMode(page);
     await page.getByLabel('Почта', { exact: true }).fill('np-player-' + crypto.randomUUID() + '@example.test');
     await page.getByLabel('Пароль', { exact: true }).fill('Neopolis-test-123!');
     await page.getByRole('button', { name: 'Продолжить', exact: true }).click();

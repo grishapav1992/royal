@@ -1,411 +1,493 @@
+/* Guardians of Neopolis: the campaign scene. Every size comes from the area the
+   host gives the module, so the field and the main action never move between
+   phases. Composition: wide, portrait (taller than wide), short landscape. */
 .np {
-  --np-gold: #e9c887;
-  --np-cyan: #8adced;
-  position: relative;
-  isolation: isolate;
-  width: 100%;
-  height: 100%;
-  min-height: 600px;
-  overflow: auto;
-  color: #e8eef4;
-  background: #080e18;
-  font: 14px/1.45 Arial, Helvetica, sans-serif;
-  box-sizing: border-box;
-  padding: 19px clamp(16px, 2.5vw, 44px) 18px;
-  scrollbar-color: #455464 #080e18;
-  color-scheme: dark;
+  --np-gold: #e9c887; --np-gold-hi: #fff0c4; --np-gold-lo: #b98d4b;
+  --np-granite: #ffb957; --np-impulse: #73ecff; --np-prism: #d0a2ff;
+  --np-foe: #b697e9; --np-foe-deep: #3a2366;
+  --np-line: #31445c; --np-dim: #a6b7cb;
+  --np-display: Impact, 'Arial Black', 'Arial Narrow Bold', sans-serif;
+  --np-costumes: url('/assets/neopolis/team-night-v4.webp');
+  --np-rail: 78px; --np-ctl: 84px; --np-out: 48px; --np-foe-w: clamp(218px, 24cqw, 360px); --np-team-w: clamp(164px, 17cqw, 236px);
+  position: relative; isolation: isolate; container: np / size; box-sizing: border-box;
+  width: 100%; height: 100%; min-height: 0; overflow: clip;
+  color: #e8eef4; background: #060b14; font: 14px/1.35 Arial, Helvetica, sans-serif; color-scheme: dark;
+  user-select: none; -webkit-user-select: none;
 }
-.np *, .np *:before, .np *:after { box-sizing: border-box }
-.np button, .np select { font: inherit; touch-action: manipulation }
-.np button { cursor: pointer; color: inherit }
+.np[data-boss=vespera] { --np-foe: #ff9a6a; --np-foe-deep: #6a1710 }
+.np[data-boss=aeon] { --np-foe: #93e5ff; --np-foe-deep: #123a5c; --np-gold: #cfe6f2; --np-gold-hi: #f5ffff; --np-gold-lo: #6f93ad }
+.np[data-mode=rescue] { --np-foe: #ffd68a; --np-foe-deep: #6b4415; --np-gold: #f0cd8a; --np-gold-hi: #fff0c4; --np-gold-lo: #b98d4b }
+.np *, .np *::before, .np *::after { box-sizing: border-box }
+.np button, .np select, .np input { font: inherit; color: inherit; touch-action: manipulation }
+.np button { cursor: pointer }
 .np button:disabled { cursor: default }
-.np button:focus-visible, .np select:focus-visible, .np input:focus-visible { outline: 2px solid #ffe5ac; outline-offset: 4px }
-.np h1, .np h2, .np p { margin: 0 }
-.np-city { position: absolute; z-index: -3; inset: 0; min-height: 100%; overflow: hidden; pointer-events: none }
-.np-city img { width: 100%; height: 100%; object-fit: cover; object-position: center 28%; opacity: .78 }
-.np-city:after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, #030a1266, #07101a15 22%, #07101a88 60%, #050a13f5), linear-gradient(90deg, #040b1680, transparent 22% 78%, #040b1680) }
-.np-atmosphere { position: absolute; z-index: -2; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 48% 47%, #268cad15, transparent 60%) }
-.np[data-battle=true] .np-atmosphere { background: radial-gradient(ellipse at 80% 40%, #833bb344, transparent 75%) }
-.np-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; max-width: 1380px; margin: auto; padding-bottom: 12px; border-bottom: 1px solid #d3dfec26 }
-.np-brand { font-size: 12px; font-weight: 800; letter-spacing: 3px }
-.np-brand b { color: var(--np-gold); font-size: 8px; margin-left: 4px; letter-spacing: 2px }
-.np-brand small { display: block; font-size: 7px; color: #a4b3c1; letter-spacing: 2px; margin-top: 3px }
-.np-prototype { font-size: 9px; letter-spacing: 1px; color: #bec8d2; padding: 5px 10px; border: 1px solid #b5c9dd36; background: #07101b50; border-radius: 2px }
-.np-tools { display: flex; gap: 7px }
-.np-tools button { background: #09121e99; border: 1px solid #b0c7d544; border-radius: 50%; width: 31px; height: 31px; font-weight: 700; color: #d2dce7 }
-.np-tools button:hover { border-color: var(--np-gold); color: var(--np-gold) }
-.np-title { text-align: center; padding: 21px 0 26px }
-.np-title>span { font-size: 8px; letter-spacing: 4px; font-weight: 700; color: #b3c9d6; text-shadow: 0 2px 6px #000 }
-.np-title h1 { font-family: Impact, 'Arial Narrow', 'Arial Black', Arial, sans-serif; font-size: clamp(30px, 3.7vw, 58px); line-height: 1.12; letter-spacing: 1.6px; text-transform: uppercase; margin: 7px 0 12px; color: #f0dec0; background: linear-gradient(#fff8e9 8%, #edc98f 50%, #aa8656 95%); background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 3px 5px #000) }
-.np-title i { display: block; width: 78px; height: 1px; background: linear-gradient(90deg, transparent, #e0bc77, transparent); margin: auto }
-.np-layout { display: grid; grid-template-columns: minmax(180px, 240px) minmax(300px, 720px) minmax(165px, 220px); gap: clamp(16px, 2vw, 30px); align-items: start; justify-content: center; max-width: 1320px; margin: auto }
-.np-section-label { display: flex; align-items: center; gap: 9px; text-transform: uppercase; letter-spacing: 2px; color: #c7d5df; font-size: 9px; font-weight: 700; margin-bottom: 7px }
-.np-section-label>span { color: var(--np-gold); font-size: 8px; border-bottom: 1px solid #cfb37a88; padding: 2px 1px }
-.np-team-hint { font-size: 10px; color: #b2c2ce; min-height: 20px; margin-bottom: 10px!important; text-shadow: 0 1px 4px #000 }
-.np-hero { --hero: #f1b575; position: relative; display: flex; align-items: center; width: 100%; min-height: 145px; padding: 0 10px 0 45%; margin-bottom: 10px; text-align: left; overflow: hidden; border: 1px solid #c1d5df36; border-radius: 3px; background: linear-gradient(100deg, #121c25bd, #101a25f5); box-shadow: 0 5px 15px #0005; transition: border-color .2s, transform .2s }
-.np-hero:after { content: ''; position: absolute; left: 0; top: 16px; bottom: 16px; width: 2px; background: var(--hero); opacity: .5 }
-.np-hero[data-hero=impulse] { --hero: #78ddf8 }
-.np-hero[data-hero=prism] { --hero: #cdadf4 }
-.np-hero[data-active=false] .np-portrait { filter: saturate(.92) brightness(1.1); opacity: 1 }
-.np-hero[data-active=true] { border-color: color-mix(in srgb, var(--hero) 58%, transparent) }
-.np-hero[aria-pressed=true] { border-color: var(--hero); box-shadow: inset 0 0 28px #d3ae5d0c, 0 0 18px #0005 }
-.np-hero[aria-pressed=true]:after { opacity: 1; box-shadow: 0 0 12px var(--hero) }
-.np-hero:not(:disabled):hover { border-color: var(--hero); transform: translateY(-2px) }
-.np-hero:not(:disabled):hover .np-character { transform: scale(1.045) }
-.np-portrait { position: absolute; inset: 0 auto 0 0; width: 57%; overflow: hidden; transition: opacity .2s, filter .2s; mask-image: linear-gradient(90deg, #000 65%, transparent) }
-.np-portrait .np-character { width: 100%; height: 100%; object-fit: cover; object-position: center top; transition: transform .3s }
-.np-hero-copy { position: relative; z-index: 1; display: flex; flex-direction: column; min-width: 0; padding: 13px 0; text-shadow: 0 1px 5px #000 }
-.np-hero-copy>small { font-size: 7px; color: #bbc7d4; letter-spacing: .5px; text-transform: uppercase; margin-bottom: 5px }
-.np-hero-copy>strong { font-size: 21px; line-height: 1.15; color: var(--hero); font-weight: 800; letter-spacing: .2px }
-.np-hero-copy>b { font-size: 10px; color: #ecf2f8; font-weight: 400; margin-top: 5px }
-.np-hero-detail { font-size: 8px; line-height: 1.45; color: #a5bacb; margin: 4px 0 8px }
-.np-pips { display: flex; gap: 4px; margin-top: 2px }
-.np-pips i { width: 22px; height: 4px; background: #243343; border: 1px solid #b1c5d128; transform: skewX(-18deg) }
-.np-pips i[data-filled=true] { background: var(--hero); border-color: var(--hero); box-shadow: 0 0 7px color-mix(in srgb, var(--hero) 40%, transparent) }
-.np-machine { min-width: 0; padding-top: 3px }
-.np-machine-top { display: flex; justify-content: space-between; align-items: center; padding: 0 3px 12px; color: #c4d5df; font-size: 8px; letter-spacing: 2px; text-shadow: 0 1px 5px #000 }
-.np-machine-top b { color: #e5c78e; font-size: 8px; letter-spacing: 1px }
-.np-board-shell { position: relative; padding: 9px; border: 1px solid #bfa26d; border-radius: 6px; background: linear-gradient(130deg, #c8b28755, #151e28 22%, #0a111b 75%, #b09b6f80); box-shadow: 0 0 0 4px #060c1588, 0 18px 45px #000a, inset 0 1px #fbe2b0aa }
-.np-board-shell:before, .np-board-shell:after { content: ''; position: absolute; left: 26px; right: 26px; height: 1px; background: linear-gradient(90deg, transparent, #e8c98c88, transparent); pointer-events: none }
-.np-board-shell:before { top: -4px }
-.np-board-shell:after { bottom: -4px }
-.np-board { display: grid; grid-template-rows: repeat(4, 1fr); gap: 2px; padding: 2px; background: #030913; border: 1px solid #d9c59c22; border-radius: 2px }
-.np-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px }
-.np-cell { position: relative; aspect-ratio: 1.12; display: grid; place-items: center; overflow: hidden; border: 1px solid #91a9bd17; border-radius: 2px; background: #07101c; box-shadow: inset 0 1px #a3c4e508 }
-.np-symbol { display: block; width: 94%; aspect-ratio: 1; background-image: url('/assets/neopolis/symbols-v2.webp'); background-repeat: no-repeat; background-size: 300% 200%; transition: filter .2s; pointer-events: none }
-.np-symbol-0 { background-position: 0 0 }
-.np-symbol-1 { background-position: 50% 0 }
-.np-symbol-2 { background-position: 100% 0 }
-.np-symbol-3 { background-position: 0 100% }
-.np-symbol-4 { background-position: 50% 100% }
-.np-symbol-5 { background-position: 100% 100% }
-.np-cell[data-symbol='6'] { background: radial-gradient(ellipse, #624a29, #10141b 72%) }
-.np-cell[data-symbol='7'] { background: #100d1b }
-.np-wild { position: relative; display: grid; place-items: center; width: 100%; height: 100%; overflow: hidden }
-.np-wild i { position: absolute; width: 56%; aspect-ratio: 1; border: 3px double #f3d79b; transform: rotate(45deg); background: linear-gradient(135deg, #e2c184, #72542d 35%, #f3db9a 50%, #7b5b31 70%, #dcb876); box-shadow: inset 0 0 0 4px #382b19, 0 0 18px #ebc36b55 }
-.np-wild b { z-index: 1; font-family: Impact, 'Arial Black', sans-serif; font-size: clamp(15px, 2.6vw, 32px); letter-spacing: 1px; color: #fff0bd; text-shadow: 0 2px 2px #33200c, 1px 0 #5b431e, -1px 0 #5b431e; transform: skewY(-6deg) }
-.np-scatter { width: 100%; height: 100%; position: relative; overflow: hidden }
-.np-scatter img { width: 100%; height: 100%; object-fit: cover; object-position: center 15%; mask-image: linear-gradient(#000 55%, transparent 95%) }
-.np-scatter b { position: absolute; bottom: 7%; left: 0; right: 0; text-align: center; font-size: clamp(7px, 1vw, 12px); letter-spacing: 1px; color: #e2bdff; text-shadow: 0 1px 5px #000; font-weight: 800 }
-.np-emblem { position: absolute; right: 3px; top: 3px; width: 22px; height: 22px; display: grid; place-items: center; border: 1px solid #f2c77c; border-radius: 50%; background: linear-gradient(145deg, #765338, #271b16); color: #ffdda4; font-size: 14px; font-weight: 800; box-shadow: 0 2px 8px #000a }
-.np-emblem[data-emblem=impulse] { color: #bdedff; background: linear-gradient(145deg, #346477, #11242e); border-color: #71d4f1 }
-.np-emblem[data-emblem=prism] { color: #eadbff; background: linear-gradient(145deg, #725090, #281b38); border-color: #b397e5 }
-.np-hit { border-color: #f9dc94; animation: np-cell-hit .55s ease-out both }
-.np-hit[data-effect=granite] { border-color: #ef9c5d; animation: np-strike .4s ease-out }
-.np-hit[data-effect=prism] { border-color: #c49bff; animation: np-portal .6s ease-out }
-.np-hit[data-effect=impulse] { border-color: #67dfff; box-shadow: inset 0 0 18px #67dfff66 }
-.np-event { position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%) scale(.9); background: linear-gradient(90deg, #06111ae8, #132b3ff5, #06111ae8); color: #f8dfaa; border-block: 1px solid #d2b777; padding: 13px 24px; box-shadow: 0 4px 30px #000b; text-align: center; font-family: Impact, 'Arial Black', sans-serif; text-transform: uppercase; font-size: clamp(15px, 1.9vw, 28px); letter-spacing: 1px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .13s, transform .13s }
-.np-event-visible { opacity: 1; transform: translate(-50%, -50%) scale(1) }
-.np-transmission { display: flex; gap: 9px; align-items: center; margin-top: 15px; min-height: 33px; padding: 0 4px }
-.np-live-dot { width: 5px; height: 5px; flex-shrink: 0; background: #86d7c2; border-radius: 50%; box-shadow: 0 0 6px #7be4b255 }
-.np-transmission p { color: #c8d5e2; font-size: 11px; text-shadow: 0 1px 3px #000 }
-.np-spin-meta { display: flex; justify-content: space-between; gap: 8px; color: #91a7ba; font-size: 8px; letter-spacing: .8px; padding: 6px 4px }
-.np-boss { transition: filter .3s }
-.np-boss[data-active=false] { filter: saturate(.75) }
-.np-boss>.np-section-label { margin-bottom: 13px }
-.np-villain { height: 305px; position: relative; overflow: hidden; border-bottom: 1px solid #ad82c660; background: radial-gradient(ellipse at 50% 75%, #762e5855, transparent 70%); mask-image: linear-gradient(90deg, transparent, #000 8% 92%, transparent) }
-.np-villain>.np-character { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 12%; mask-image: linear-gradient(#000 72%, transparent); z-index: 1 }
-.np-target-ring { position: absolute; width: 170px; height: 170px; border: 1px solid #b177bb45; border-radius: 50%; left: 50%; top: 20px; transform: translateX(-50%) }
-.np-target-ring:after { content: ''; position: absolute; inset: 12px; border: 1px dashed #b177bb45; border-radius: 50% }
-.np-villain-name { position: relative; text-align: center; margin: -28px 0 15px; z-index: 2; text-shadow: 0 2px 8px #000 }
-.np-villain-name small { font-size: 7px; color: #c4a7d3; letter-spacing: 2px }
-.np-villain-name h2 { font-family: Impact, 'Arial Black', sans-serif; font-size: 36px; text-transform: uppercase; letter-spacing: 7px; color: #e7d4f1; line-height: 1.2; margin-top: 3px }
-.np-boss-meters { border-block: 1px solid #bf8cce40; padding: 11px 0; background: linear-gradient(90deg, transparent, #1e112a66, transparent) }
-.np-boss-meters label { display: flex; justify-content: space-between; gap: 5px; color: #c6b2d1; font-size: 9px; margin-bottom: 5px }
-.np-boss-meters label>span { color: #e4cbef; font-size: 8px }
-.np-segments { display: flex; gap: 4px; margin-bottom: 12px }
-.np-segments:last-child { margin: 0 }
-.np-segments i { height: 5px; width: 33.3%; background: linear-gradient(#d5b0ef, #8d5db3); box-shadow: 0 0 7px #c86e9833; transition: opacity .3s; transform: skewX(-15deg) }
-.np-core i { background: linear-gradient(#ffd3a2, #bd8667) }
-.np-segments i[data-destroyed=true] { background: #442c43; box-shadow: none; opacity: .35 }
-.np-boss>p { font-size: 10px; color: #b4a6c0; margin-top: 11px; line-height: 1.6; text-shadow: 0 1px 4px #000 }
-.np[data-battle=true] .np-villain { filter: drop-shadow(0 0 16px #974bd166) }
-.np-controls { display: flex; align-items: center; justify-content: space-between; gap: 20px; max-width: 1080px; margin: 25px auto 0; padding: 17px 24px; background: linear-gradient(110deg, #15212eeb, #08111deb); border: 1px solid #bac8d243; border-top-color: #c8d7df60; border-radius: 4px; box-shadow: 0 8px 25px #0007, inset 0 1px #c8d7df0d; backdrop-filter: blur(12px) }
-.np-value>span, .np-stake>span { display: block; text-transform: uppercase; font-size: 8px; letter-spacing: 1.6px; color: #a4b6c6; margin-bottom: 4px }
-.np-value>strong { display: block; font-size: 26px; line-height: 1.1; letter-spacing: .3px; font-weight: 700; color: #edf4fa; font-variant-numeric: tabular-nums }
-.np-value>small { display: block; color: #a0b1c2; font-size: 8px; margin-top: 3px; max-width: 150px }
-.np-win>strong { color: #f7d78d }
-.np-stake select { background: #0b1522; border: 1px solid #a1b5c24a; border-radius: 3px; color: #eef4fc; padding: 8px 25px 8px 12px; min-width: 88px; font-size: 15px; font-weight: 700 }
-.np-stake select:disabled { opacity: .65 }
-.np-spin { display: flex; justify-content: center; align-items: center; gap: 17px; min-width: 190px; min-height: 57px; padding: 12px 20px; border: 1px solid #f6dfad; border-radius: 3px; background: linear-gradient(115deg, #f6dfad, #d9af6c); color: #182431!important; box-shadow: 0 3px 0 #80643d, 0 0 22px #eecb7618, inset 0 1px #fff6d8; font-size: 14px!important; font-weight: 800!important; text-transform: uppercase; letter-spacing: 1px }
-.np-spin>b { font-size: 29px; line-height: 1; font-weight: 400 }
-.np-spin:not(:disabled):hover { filter: brightness(1.1) }
-.np-spin:disabled { opacity: .48; box-shadow: none }
-.np-fast { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #b0bfce }
-.np-fast input { accent-color: #e8c17b }
-.np-cycle-lock { min-height: 15px; text-align: center; font-size: 9px; color: #91a6b9; padding-top: 9px }
-.np-dialog { color: #e1eafa; background: linear-gradient(145deg, #172b3c, #0a111d); border: 1px solid #d9b87480; border-radius: 5px; max-width: min(700px, calc(100vw - 32px)); max-height: 85vh; padding: 34px; box-shadow: 0 20px 90px #000b; font: 13px/1.7 Arial, Helvetica, sans-serif }
-.np-dialog::backdrop { background: #030915cf; backdrop-filter: blur(5px) }
-.np-close { position: absolute; z-index: 2; top: 9px; right: 12px; border: 0; background: none; color: #c8d8e9; font-size: 25px!important; width: 32px; height: 32px }
-.np-dialog h2 { color: #ffdfa0; font-size: 25px; margin: 9px 0 18px; line-height: 1.2 }
-.np-dialog h3 { color: #f7d78d; margin-top: 22px }
-.np-dialog p { margin: 0 0 14px; color: #b8cadf }
-.np-dialog-kicker { color: #829bb6; font-size: 9px; letter-spacing: 2px }
-.np-dialog table { width: 100%; border-collapse: collapse; font-size: 12px }
-.np-dialog th, .np-dialog td { padding: 8px; text-align: left; border-bottom: 1px solid #6d84a444 }
-.np-dialog td { color: #ffdfa0 }
-.np-notice-continue { padding: 10px 22px; background: #f7cb75; border: 0; border-radius: 3px; color: #182339!important; font-weight: 700!important }
-@keyframes np-cell-hit { 0% { box-shadow: inset 0 0 25px #ffdb9cbb; filter: brightness(1.5) } 100% { box-shadow: inset 0 0 8px #ffdb9c33 } }
-@keyframes np-strike { 0%, 60% { transform: translateX(-3px) } 30%, 80% { transform: translateX(3px) } 100% { transform: translateX(0) } }
-@keyframes np-portal { 0% { transform: scale(.75); filter: brightness(1.8) } 100% { transform: scale(1) } }
-@media (min-width: 1600px) {
-  .np { padding-top: 26px }
-  .np-title { padding: 27px 0 34px }
-  .np-hero { min-height: 163px }
-  .np-villain { height: 350px }
-}
-@media (max-width: 1100px) {
-  .np { padding: 15px 16px 14px }
-  .np-layout { grid-template-columns: 176px minmax(260px, 1fr) 154px; gap: 15px }
-  .np-hero { min-height: 129px; padding-left: 44%; padding-right: 6px }
-  .np-hero-copy>strong { font-size: 17px }
-  .np-hero-copy>b { font-size: 9px }
-  .np-hero-copy>small { font-size: 6px; letter-spacing: 0 }
-  .np-hero-detail { font-size: 7px }
-  .np-pips i { width: 19px }
-  .np-villain { height: 275px }
-  .np-controls { gap: 12px; padding: 14px 18px }
-  .np-spin { min-width: 160px }
-  .np-title h1 { font-size: 37px }
-}
-@media (max-width: 760px) {
-  .np { min-height: 0; padding: 12px 11px 16px }
-  .np-city img { object-position: 46% top }
-  .np-top { padding-bottom: 9px }
-  .np-prototype { font-size: 7px; letter-spacing: 0; padding: 4px 5px }
-  .np-brand { font-size: 10px; letter-spacing: 2px }
-  .np-brand b { font-size: 6px; letter-spacing: 1px }
-  .np-brand small { font-size: 5px; letter-spacing: 1.5px }
-  .np-tools { gap: 4px }
-  .np-tools button { width: 26px; height: 26px }
-  .np-title { padding: 19px 0 21px }
-  .np-title>span { font-size: 6px; letter-spacing: 2.5px }
-  .np-title h1 { font-size: clamp(24px, 6vw, 35px); letter-spacing: .4px; margin: 7px 0 10px }
-  .np-layout { grid-template-columns: 1fr; gap: 15px; max-width: 570px }
-  .np-team { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px }
-  .np-team>.np-section-label { grid-column: 1/-1; margin: 0; font-size: 8px }
-  .np-team-hint { grid-column: 1/-1; grid-row: 2; font-size: 9px; min-height: 0; margin: 0 0 3px!important }
-  .np-hero { grid-row: 3; min-height: 157px; margin: 0; padding: 0 6px; align-items: flex-end; background: #0a131e }
-  .np-portrait { inset: 0; width: 100%; opacity: 1!important; mask-image: linear-gradient(#000 20%, #0009 55%, transparent 86%) }
-  .np-portrait .np-character { object-position: center top; height: 138px }
-  .np-hero[data-active=false] .np-portrait { filter: saturate(.8) }
-  .np-hero-copy { width: 100%; padding: 7px 0 8px }
-  .np-hero-copy>small { font-size: 5px; line-height: 1.4; margin-bottom: 3px; letter-spacing: .2px }
-  .np-hero-copy>strong { font-size: 16px }
-  .np-hero-copy>b { font-size: 7px; margin-top: 3px; line-height: 1.3 }
-  .np-hero-detail { display: none }
-  .np-pips { margin-top: 7px; gap: 3px }
-  .np-pips i { width: 20px; height: 3px }
-  .np-machine-top { font-size: 7px; padding-bottom: 8px }
-  .np-board-shell { padding: 5px }
-  .np-board { padding: 1px; gap: 2px }
-  .np-row { gap: 2px }
-  .np-emblem { width: 17px; height: 17px; font-size: 11px; right: 2px; top: 2px }
-  .np-wild b { font-size: clamp(16px, 5vw, 29px) }
-  .np-wild i { border-width: 2px; box-shadow: inset 0 0 0 2px #382b19, 0 0 12px #ebc36b55 }
-  .np-scatter b { font-size: 6px }
-  .np-boss { display: grid; grid-template-columns: 68px 1fr; column-gap: 12px; position: relative; border-block: 1px solid #ac86bc44; padding: 9px 8px 9px 0; background: linear-gradient(90deg, #1f102a44, #0b111bcc) }
-  .np-boss>.np-section-label, .np-villain-name { display: none }
-  .np-villain { height: 88px; grid-row: 1/3; border: 0; mask-image: linear-gradient(90deg, #000 65%, transparent) }
-  .np-villain>.np-character { object-position: center 10%; mask-image: none }
-  .np-target-ring { display: none }
-  .np-boss-meters { display: grid; grid-template-columns: 1fr 1fr; column-gap: 12px; background: none; border: 0; padding: 0 }
-  .np-boss-meters label { grid-row: 1; font-size: 8px; margin-bottom: 4px }
-  .np-segments { grid-row: 2; margin: 0 }
-  .np-boss>p { margin-top: 7px; font-size: 9px; line-height: 1.4 }
-  .np-transmission { margin-top: 10px; min-height: 29px }
-  .np-transmission p { font-size: 10px }
-  .np-spin-meta { font-size: 7px }
-  .np-controls { max-width: 570px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px 8px; margin-top: 15px; padding: 12px }
-  .np-value>strong { font-size: 21px }
-  .np-value>small { font-size: 7px; max-width: 95px }
-  .np-stake { justify-self: center }
-  .np-stake select { font-size: 14px; padding: 6px 15px 6px 9px; min-width: 75px }
-  .np-win { text-align: right }
-  .np-spin { grid-column: 1/3; width: 100%; min-height: 48px; font-size: 12px!important }
-  .np-fast { justify-self: center; font-size: 10px }
-  .np-value>span, .np-stake>span { font-size: 7px; letter-spacing: 1px }
-  .np-cycle-lock { font-size: 8px; max-width: 570px; margin: auto!important }
-  .np-dialog { padding: 28px 21px }
-  .np-dialog h2 { font-size: 22px }
-  .np-dialog p { font-size: 12px }
-}
-@media (prefers-reduced-motion: reduce) {
-  .np *, .np *:before, .np *:after { animation: none!important; transition: none!important; scroll-behavior: auto!important }
-}
+.np :is(button, select, input):focus-visible, .np-fast:focus-within { outline: 2px solid #ffe5ac; outline-offset: -3px }
+.np :is(h1, h2, h3, p, ol, ul, dl, dd) { margin: 0; padding: 0 }
+.np :is(ol, ul) { list-style: none }
+.np[data-paused=true] *, .np[data-paused=true] *::before, .np[data-paused=true] *::after { animation-play-state: paused !important }
 
-.np[data-power=granite] [data-hero=granite], .np[data-power=impulse] [data-hero=impulse], .np[data-power=prism] [data-hero=prism], .np[data-power=team] .np-hero {
-  border-color: var(--hero);
-  box-shadow: 0 0 25px color-mix(in srgb, var(--hero) 35%, transparent), inset 0 0 16px color-mix(in srgb, var(--hero) 15%, transparent);
-  animation: np-hero-power .7s ease-out;
-}
-.np[data-power=granite] .np-board-shell { box-shadow: 0 0 24px #e4a35d66, 0 18px 45px #000a }
-.np[data-power=impulse] .np-board-shell { box-shadow: 0 0 24px #64d9f366, 0 18px 45px #000a }
-.np[data-power=prism] .np-board-shell, .np[data-power=team] .np-board-shell { box-shadow: 0 0 24px #b38af066, 0 18px 45px #000a }
-.np-notice-art { pointer-events: none; position: relative; height: 225px; margin: -34px -34px 24px; overflow: hidden; background: radial-gradient(ellipse at 50% 90%, #57336c, #080e18 75%); border-bottom: 1px solid #c7a77566 }
-.np-notice-art img { width: 100%; height: 100%; object-fit: cover; object-position: center 32% }
-.np-notice-art .np-character { object-fit: contain; object-position: center top; transform: scale(1.55); transform-origin: center 4% }
-.np-notice-art:after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 55%, #0d182470) }
-@keyframes np-hero-power { 0%, 100% { filter: brightness(1) } 35% { filter: brightness(1.45) } }
-@media (max-width: 760px) { .np-notice-art { height: 180px; margin: -28px -21px 21px } }
-@media (min-width: 761px) and (max-height: 850px) {
-  .np { padding-top: 12px }
-  .np-top { padding-bottom: 9px }
-  .np-title { padding: 10px 0 12px }
-  .np-title h1 { font-size: 36px; margin: 5px 0 8px }
-  .np-layout { max-width: 950px; grid-template-columns: minmax(176px, 195px) minmax(260px, 520px) minmax(154px, 170px); gap: 20px }
-  .np-hero { min-height: 112px; margin-bottom: 8px }
-  .np-hero-copy { padding-block: 8px }
-  .np-hero-copy>strong { font-size: 18px }
-  .np-villain { height: 245px }
-  .np-villain-name h2 { font-size: 30px }
-  .np-boss>p { font-size: 9px }
-  .np-controls { margin-top: 12px; padding-block: 10px }
-  .np-spin { min-height: 46px; padding-block: 9px }
-  .np-transmission { min-height: 29px; margin-top: 10px }
-  .np-value>strong { font-size: 23px }
-}
-/* The result grid retains its geometry and accessibility contract while five
-   clipped visual strips run above it. No page or host layout is replaced. */
-.np-board { position: relative; isolation: isolate; overflow: hidden }
-.np-board.np-rolling>.np-row { visibility: hidden }
-.np-reels { position: absolute; inset: 2px; z-index: 2; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; pointer-events: none }
-.np-reel { position: relative; overflow: hidden; min-width: 0; min-height: 0; background: #07101c }
-.np-reel:after { content: ''; position: absolute; inset: 0; background: linear-gradient(#02071277, transparent 18% 82%, #02071277); transition: opacity .2s; pointer-events: none }
-.np-reel[data-phase=stopped]:after { opacity: 0 }
-.np-reel-track { display: flex; flex-direction: column; gap: 2px; will-change: transform; width: 100% }
-.np-reel-track>.np-cell { aspect-ratio: auto; flex: 0 0 var(--np-reel-cell-height); height: var(--np-reel-cell-height); width: 100% }
-.np-board[data-falling=true] .np-cell { will-change: transform }
-@media (max-width: 760px) { .np-reels { inset: 1px } }
+/* Scene and backgrounds */
+.np-scene, .np-city, .np-city > *, .np-arena > *, .np-effects { position: absolute; inset: 0; width: 100%; height: 100% }
+.np-city { z-index: 0; overflow: hidden; pointer-events: none }
+.np-city img { object-fit: cover; object-position: 50% 28%; opacity: .82; animation: np-drift 38s ease-in-out infinite alternate }
+.np-city .np-city-previous { animation: np-leave 1.4s ease-out forwards }
+@keyframes np-drift { from { transform: scale(1.04) translateX(-.9%) } to { transform: scale(1.09) translateX(1.2%) } }
+@keyframes np-leave { to { opacity: 0 } }
+.np-veil { background: linear-gradient(180deg, #030a12b8, #07101a22 20%, #07101a66 62%, #050a13f2), linear-gradient(90deg, #040b16aa, transparent 24% 80%, #040b1655) }
+.np-dawn { opacity: 0; transition: opacity 2.4s; mix-blend-mode: screen; background: radial-gradient(ellipse 60% 46% at 46% 16%, #ffcf7ab0, #ff8a3d55 45%, transparent 78%), linear-gradient(#ff9a4a3a, transparent 62%) }
+.np[data-mode=rescue] .np-dawn { opacity: 1 }
+.np[data-mode=rescue] .np-city img { filter: brightness(1.35) saturate(1.25) sepia(.3) }
+.np-arena { position: absolute; z-index: 1; right: 0; top: calc(var(--np-rail) - 20px); bottom: var(--np-ctl); width: 46cqw; pointer-events: none }
+.np-trio { opacity: 0; transform: translateY(18px); transition: opacity 1.6s .4s, transform 1.6s .4s; background: url('/assets/neopolis/cover-v2.webp') 53% 0 / auto 100% no-repeat; mask-image: linear-gradient(90deg, transparent 8%, #000 46% 80%, transparent), linear-gradient(#000 55%, transparent 90%); mask-composite: intersect; -webkit-mask-image: linear-gradient(90deg, transparent 8%, #000 46% 80%, transparent), linear-gradient(#000 55%, transparent 90%); -webkit-mask-composite: source-in }
+.np:not([data-mode=rescue]) .np-trio { background-image: none }
+.np[data-mode=rescue] .np-trio { opacity: 1; transform: none }
+.np-scene { overflow: clip }
+.np-effects { z-index: 8; pointer-events: none }
+.np-grid { position: absolute; inset: 0; z-index: 2; display: grid; gap: 8px 14px; padding: 10px 16px 12px; grid-template: "rail rail rail" var(--np-rail) "team field foe" minmax(0, 1fr) "team out foe" var(--np-out) "ctl ctl ctl" var(--np-ctl) / var(--np-team-w) minmax(0, 1fr) var(--np-foe-w) }
 
-/* Campaign scenes and the three wardrobe atlases share the same hero identities. */
-.np { --np-costumes: url('/assets/neopolis/team-night-v3.webp'); --np-scene-accent: #b697e9 }
-.np[data-boss=vespera] { --np-scene-accent: #ffbd74; --np-gold: #f3cc87 }
-.np[data-boss=aeon] { --np-scene-accent: #93e5ff; --np-gold: #cceaf3 }
-.np-layout { position: relative }
-.np-costume { display: block; width: 100%; height: 100%; background-image: var(--np-costumes); background-size: 300% auto; background-position: var(--np-portrait-x) top; background-repeat: no-repeat }
-.np-city-current { display: block }
-.np-city .np-city-previous { position: absolute; inset: 0; animation: np-scene-leave .95s ease-out both }
-.np[data-boss=vespera] .np-atmosphere { background: radial-gradient(ellipse at 75% 30%, #b6311728, transparent 70%) }
-.np[data-boss=aeon] .np-atmosphere { background: radial-gradient(ellipse at 65% 25%, #a9e7ff18, transparent 70%) }
-.np[data-boss=aeon] .np-city:after { background: linear-gradient(#030c1855, #07101a44 25%, #07101aaa 70%, #050a13f5), linear-gradient(90deg, #040b1677, transparent 22% 78%, #040b1677) }
-.np[data-boss=aeon] .np-title h1 { background-image: linear-gradient(#f5ffff 8%, #bed8e9 50%, #6f93ad 95%) }
-.np[data-boss=aeon] .np-board-shell { border-color: #b2cbd8; box-shadow: 0 0 0 4px #060c1588, 0 18px 45px #000a, inset 0 1px #d7f1faaa }
-.np[data-boss=vespera] .np-target-ring { border-color: #e6a05c66 }
-.np[data-boss=aeon] .np-target-ring { border-color: #a5e4f077 }
-.np-campaign-track { display: flex; justify-content: center; gap: 27px; padding: 0; margin: 0; list-style: none; color: #a8b7c8; font-size: 10px; letter-spacing: 1px }
-.np-campaign-track li { position: relative; display: flex; align-items: center; gap: 7px; min-width: 70px }
-.np-campaign-track li:not(:last-child):after { content: ''; position: absolute; left: calc(100% + 6px); width: 15px; height: 1px; background: #d4c09455 }
-.np-campaign-track small { display: grid; place-items: center; width: 21px; height: 21px; border: 1px solid #b7b8c34a; font-size: 7px; background: #08111ca6; border-radius: 50% }
-.np-campaign-track [data-state=current] { color: #f5e6c9 }
-.np-campaign-track [data-state=current] small { border-color: var(--np-scene-accent); box-shadow: 0 0 12px color-mix(in srgb, var(--np-scene-accent) 25%, transparent) }
-.np-campaign-track [data-state=defeated] { color: #9fe2c1 }
-.np-campaign-track [data-state=defeated] small { border-color: #89bca5; background: #163b36bb }
-.np[data-legacy=true] .np-campaign-track li:not(:first-child) { display: none }
-.np-segments i { width: auto; flex: 1 }
-.np-villain-name small { display: block; letter-spacing: 1px; font-size: 8px; line-height: 1.5 }
-.np-villain-name h2 { font-size: clamp(24px, 2.7vw, 36px); letter-spacing: 3px }
-.np-effects { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 6 }
-.np-event { z-index: 9; max-width: 96%; white-space: normal }
-.np-ability-card { position: absolute; z-index: 8; pointer-events: none; left: -18px; bottom: 10px; width: 190px; height: 265px; opacity: 0; transform: translateX(-25px); filter: drop-shadow(0 0 22px #85d5ff44) }
-.np-ability-visible { opacity: 1; transform: translateX(0); animation: np-cameo .7s ease-out both }
-.np-ability-card>.np-character { mask-image: linear-gradient(#000 65%, transparent 98%) }
-.np-ability-card>small, .np-ability-card>strong { position: absolute; left: 0; right: 0; text-align: center; text-shadow: 0 2px 5px #000, 0 0 12px #000; padding-inline: 5px }
-.np-ability-card>small { bottom: 33px; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #d0e4f4 }
-.np-ability-card>strong { bottom: 9px; font-size: 17px; color: #fff1c9; line-height: 1.15 }
-.np-chapter { position: absolute; z-index: 10; left: 50%; top: 50%; width: min(460px, 94%); text-align: center; padding: 24px 15px; color: #f2e6d2; background: linear-gradient(90deg, #060e17c9, #112231f5 50%, #060e17c9); border-block: 1px solid var(--np-scene-accent); box-shadow: 0 12px 55px #000a; transform: translate(-50%, -50%); opacity: 0; pointer-events: none }
-.np-chapter-visible { opacity: 1; animation: np-chapter-enter .65s ease-out both }
-.np-chapter>small { display: block; font-size: 8px; text-transform: uppercase; letter-spacing: 2px; color: #cfdae8 }
-.np-chapter>strong { display: block; font: 44px/1.3 Impact, 'Arial Black', sans-serif; text-transform: uppercase; letter-spacing: 2px; color: var(--np-scene-accent); margin: 7px 0 }
-.np-chapter>span { display: block; font-size: 11px; color: #ebd4b0 }
-.np[data-fx=granite] .np-board-shell { animation: np-ground-impact .4s ease-out }
-.np[data-fx=impulse] .np-board-shell { animation: np-electric-flare .7s ease-out }
-.np[data-fx=prism] .np-board-shell { animation: np-prism-flare .7s ease-out }
-.np[data-fx=finisher] .np-board-shell { animation: np-team-flare .9s ease-out }
-.np[data-fx=boss-hit] .np-villain { animation: np-boss-hit .4s ease-out }
-.np[data-fx=boss-defeated] .np-villain { animation: np-boss-hit .8s ease-out }
-.np[data-fx=boss-arrival] .np-portrait { animation: np-wardrobe-shift 1s ease-out }
-.np[data-paused=true] *, .np[data-paused=true] *:before, .np[data-paused=true] *:after { animation-play-state: paused!important }
-@keyframes np-scene-leave { from { opacity: .78; filter: brightness(1) } to { opacity: 0; filter: brightness(1.6) } }
-@keyframes np-cameo { from { opacity: 0; transform: translateX(-25px); filter: brightness(1.8) drop-shadow(0 0 20px #c9f4ff) } 35% { opacity: 1 } to { opacity: 1; transform: translateX(0); filter: brightness(1) drop-shadow(0 0 12px #c9f4ff77) } }
-@keyframes np-chapter-enter { from { opacity: 0; transform: translate(-50%, -50%) scale(.9) } to { opacity: 1; transform: translate(-50%, -50%) scale(1) } }
-@keyframes np-ground-impact { 0%, 70% { transform: translateY(2px) } 20%, 50% { transform: translate(-3px,-2px) } 35%, 65% { transform: translate(3px,1px) } to { transform: none } }
-@keyframes np-electric-flare { from { box-shadow: 0 0 42px #8cffff99, inset 0 0 20px #5bdbfa77 } to { box-shadow: 0 0 0 4px #060c1588, 0 18px 45px #000a } }
-@keyframes np-prism-flare { from { box-shadow: 0 0 42px #c6a1ffa0; filter: hue-rotate(18deg) } to { box-shadow: 0 0 0 4px #060c1588, 0 18px 45px #000a; filter: none } }
-@keyframes np-team-flare { from { box-shadow: 0 0 60px #fff4dcb0, inset 0 0 40px #b9fcff66 } to { box-shadow: 0 0 0 4px #060c1588, 0 18px 45px #000a } }
-@keyframes np-boss-hit { from { filter: brightness(2) drop-shadow(0 0 18px #ddb4ff); transform: translateX(4px) } 35% { transform: translateX(-3px) } to { filter: none; transform: none } }
-@keyframes np-wardrobe-shift { from { filter: brightness(2.3); opacity: .4 } to { filter: brightness(1); opacity: 1 } }
-@media (max-width: 760px) {
-  .np-campaign-track { gap: 21px; font-size: 9px; letter-spacing: .2px }
-  .np-campaign-track li { min-width: 65px; gap: 5px }
-  .np-campaign-track small { width: 18px; height: 18px; font-size: 6px }
-  .np-campaign-track li:not(:last-child):after { width: 11px }
-  .np-title { padding-block: 15px }
-  .np-ability-card { width: 145px; height: 208px; left: -2px; bottom: 0 }
-  .np-ability-card>strong { font-size: 13px }
-  .np-ability-card>small { font-size: 8px; bottom: 29px }
-  .np-chapter { padding: 17px 10px }
-  .np-chapter>strong { font-size: 33px }
-  .np-chapter>small { font-size: 7px; letter-spacing: 1px }
-  .np-chapter>span { font-size: 9px }
-  .np-boss-meters label { font-size: 7px }
-}
-@media (min-width: 761px) and (max-height: 850px) {
-  .np-title { padding-block: 7px }
-  .np-layout { grid-template-columns: minmax(176px,195px) minmax(260px,500px) minmax(154px,170px) }
-}
-@media (prefers-reduced-motion: reduce) {
-  .np-effects { display: none }
-}
+/* Campaign path */
+.np-rail { grid-area: rail; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 20px; align-items: center; min-width: 0 }
+.np-brand { max-width: 150px; font: 400 21px/1 var(--np-display); letter-spacing: 1px; text-transform: uppercase; background: linear-gradient(var(--np-gold-hi), var(--np-gold) 50%, var(--np-gold-lo)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 2px 3px #000) }
+.np-path { display: grid; grid-template-columns: 6fr 8fr 10fr; gap: 14px; width: 100%; max-width: 820px; justify-self: center }
+.np-path li { display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 2px 9px; align-items: center; min-width: 0 }
+.np-medal { position: relative; display: block; grid-row: 1 / 3; width: 54px; height: 54px; overflow: hidden; border: 2px solid #52647c; border-radius: 50%; background: #05080e; transition: border-color .5s, box-shadow .5s }
+.np-medal i { position: absolute; inset: 0; background-repeat: no-repeat; filter: grayscale(.7) brightness(1.15); transition: filter .6s, transform .7s cubic-bezier(.5, 0, .8, .4) }
+.np-medal i:first-child { clip-path: polygon(0 0, 62% 0, 44% 48%, 58% 60%, 36% 100%, 0 100%) }
+.np-medal i:last-child { clip-path: polygon(62% 0, 100% 0, 100% 100%, 36% 100%, 58% 60%, 44% 48%) }
+.np [data-villain=null] { background-image: url('/assets/neopolis/null-v2.webp') }
+.np [data-villain=vespera] { background-image: url('/assets/neopolis/vespera-v3.webp') }
+.np [data-villain=aeon] { background-image: url('/assets/neopolis/aeon-v3.webp') }
+.np-medal [data-villain] { background-size: 330% }
+.np-medal [data-villain=null] { background-position: 50% 5.5% }
+.np-medal [data-villain=vespera] { background-position: 51.5% 7% }
+.np-medal [data-villain=aeon] { background-position: 44% 3% }
+[data-state=current] > .np-medal { border-color: var(--np-foe); box-shadow: 0 0 0 3px #0008, 0 0 18px color-mix(in srgb, var(--np-foe) 70%, transparent) }
+[data-state=current] > .np-medal i { filter: brightness(1.5) contrast(1.1) }
+[data-state=defeated] > .np-medal { border-color: #7d6a45 }
+[data-state=defeated] > .np-medal i { filter: grayscale(1) brightness(.45) }
+[data-state=defeated] > .np-medal i:first-child { transform: translate(-3px, 2px) rotate(-7deg) }
+[data-state=defeated] > .np-medal i:last-child { transform: translate(3px, -1px) rotate(6deg) }
+.np-path b { align-self: end; overflow: hidden; font: 400 15px/1.1 var(--np-display); letter-spacing: .8px; text-transform: uppercase; white-space: nowrap; color: #b4c2d3 }
+.np-path em { display: none; font-style: normal }
+.np-path [data-state=current] b { color: #fff }
+.np-path [data-state=defeated] b { color: var(--np-gold) }
+.np-path [data-state=defeated] em { display: inline }
+.np-ticks { display: flex; gap: 3px; align-self: start; padding-top: 4px; min-width: 0 }
+.np-ticks u { flex: 1; min-width: 0; max-width: 17px; height: 8px; text-decoration: none; background: #0a1320; border: 1px solid #50627a; transform: skewX(-18deg); transition: background .35s, border-color .35s, box-shadow .35s }
+.np-ticks [data-core] { border-bottom-width: 3px }
+.np-ticks [data-hit=true] { background: linear-gradient(#fff3cf, var(--np-gold-lo)); border-color: #ffe7b0; box-shadow: 0 0 8px #ffd98a88 }
+.np-tools { display: flex; gap: 6px }
+.np-tool { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--np-line); background: #0a1422cc; font-size: 16px; clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px) }
+.np-fast { position: relative; cursor: pointer }
+.np-fast input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer }
+.np-fast:has(input:checked), .np-tool[aria-pressed=false][data-np=sound] { background: #33465f }
+.np-fast:has(input:checked) { color: var(--np-gold-hi) }
 
-/* Payouts use one readable accent, then settle. Character presentation is unchanged. */
+/* Team */
+.np-team { grid-area: team; display: grid; grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 9px; min-height: 0 }
+.np-hero { --np-c: var(--np-granite); position: relative; display: flex; flex-direction: column; justify-content: flex-end; min-width: 0; min-height: 0; overflow: hidden; padding: 0; text-align: left; border: 1px solid color-mix(in srgb, var(--np-c) 35%, #26364a); background: linear-gradient(115deg, #0a1421f0 10%, color-mix(in srgb, var(--np-c) 14%, #0a1421) 100%); clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px); transition: border-color .3s }
+.np-hero[data-hero=impulse] { --np-c: var(--np-impulse) }
+.np-hero[data-hero=prism] { --np-c: var(--np-prism) }
+.np-hero[aria-pressed=true] { border-color: var(--np-c) }
+.np-portrait { position: absolute; inset: 0 0 56px; overflow: hidden; background: linear-gradient(#04070c, #070d16 60%, color-mix(in srgb, var(--np-c) 20%, #070d16)) }
+.np-costume { display: block; background-image: var(--np-costumes); background-size: 300% 100%; background-position: var(--np-portrait-x) 0; background-repeat: no-repeat; aspect-ratio: 591 / 887 }
+.np-portrait .np-costume { position: absolute; left: 50%; top: -3%; height: 250%; transform: translateX(-50%); filter: grayscale(.75) brightness(.5); transition: filter .6s, transform .5s }
+.np-hero[data-active=true] .np-costume { filter: none }
+.np-hero-copy { position: relative; display: block; height: 56px; padding: 6px 10px 5px 12px; border-top: 1px solid color-mix(in srgb, var(--np-c) 45%, #26364a); background: #081019 }
+.np-hero-copy > * { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis }
+.np-hero strong { font: 700 16px/1.1 Arial, Helvetica, sans-serif; color: var(--np-c) }
+.np-hero-copy span { font-size: 12px; line-height: 1.2; color: #bccbdb }
+.np-pips { position: absolute; right: 9px; top: 9px; display: flex; gap: 4px }
+.np-pips i { width: 11px; height: 11px; border: 1px solid color-mix(in srgb, var(--np-c) 60%, #445); background: #05090f; transform: rotate(45deg); transition: background .3s, box-shadow .3s }
+.np-pips [data-filled=true] { background: var(--np-c); box-shadow: 0 0 9px var(--np-c) }
+.np-striking { animation: np-strike .75s }
+.np-striking .np-costume { transform: translateX(-50%) scale(1.14); filter: brightness(1.4) }
+.np-joining { animation: np-join 1s }
+@keyframes np-strike { 30% { transform: translateX(16px); border-color: #fff } }
+@keyframes np-join { 20% { filter: brightness(2.2) } }
+
+/* Field */
+.np-field { grid-area: field; container: np-field / size; display: grid; place-items: center; min-width: 0; min-height: 0 }
+.np-board-shell { position: relative; max-width: 100% }
+.np-field > .np-board-shell { width: min(100cqw, 124cqh); height: min(100cqh, 86cqw) }
+.np-board-shell::before { content: ''; position: absolute; inset: -7px; border: 4px solid color-mix(in srgb, var(--np-foe) 60%, transparent); pointer-events: none; clip-path: polygon(0 0, 34px 0, 34px 4px, 4px 4px, 4px 34px, 0 34px, 0 calc(100% - 34px), 4px calc(100% - 34px), 4px calc(100% - 4px), 34px calc(100% - 4px), 34px 100%, calc(100% - 34px) 100%, calc(100% - 34px) calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) calc(100% - 34px), 100% calc(100% - 34px), 100% 34px, calc(100% - 4px) 34px, calc(100% - 4px) 4px, calc(100% - 34px) 4px, calc(100% - 34px) 0, 100% 0, 100% 100%, 0 100%) }
+.np-board { --np-pad: 6px; position: relative; display: grid; grid-template-rows: repeat(4, minmax(0, 1fr)); gap: 2px; width: 100%; height: 100%; min-height: 240px; padding: var(--np-pad); overflow: hidden; border: 2px solid var(--np-gold-lo); background: #040810; box-shadow: 0 0 0 4px #060c15aa, 0 14px 50px #000c, inset 0 0 0 1px #ffffff14; transition: border-color .8s, box-shadow .8s }
+.np-field .np-board { min-height: 0 }
+.np[data-mode=battle] .np-board { border-color: color-mix(in srgb, var(--np-foe) 75%, #fff); box-shadow: 0 0 0 4px #060c15aa, 0 0 46px color-mix(in srgb, var(--np-foe) 35%, transparent), 0 14px 50px #000c }
+.np[data-empowered=true] .np-board { box-shadow: 0 0 0 4px #060c15aa, 0 0 60px #ffd98a88, 0 14px 50px #000c }
+.np-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; min-height: 0 }
+.np-cell { position: relative; display: grid; place-items: center; min-width: 0; min-height: 0; overflow: hidden; container-type: size; background: radial-gradient(ellipse at 50% 45%, #101d2d, #070e18 75%) }
+.np-symbol { display: block; width: min(96cqw, 96cqh); aspect-ratio: 1; background: url('/assets/neopolis/symbols-v2.webp') 0 0 / 300% 200% no-repeat; mix-blend-mode: lighten; pointer-events: none }
+.np-symbol-1 { background-position: 50% 0 } .np-symbol-2 { background-position: 100% 0 } .np-symbol-3 { background-position: 0 100% } .np-symbol-4 { background-position: 50% 100% } .np-symbol-5 { background-position: 100% 100% }
+.np-symbol-0, .np-symbol-1, .np-symbol-2 { clip-path: inset(0 0 5.5% 0) }
+.np-wild { position: relative; display: grid; place-items: center; width: 100%; height: 100%; background: radial-gradient(ellipse, #624a29, #10141b 72%) }
+.np-wild i { position: absolute; width: min(58cqw, 58cqh); aspect-ratio: 1; border: 3px double #f3d79b; transform: rotate(45deg); background: linear-gradient(135deg, #e2c184, #72542d 35%, #f3db9a 50%, #7b5b31 70%, #dcb876); box-shadow: inset 0 0 0 4px #382b19, 0 0 18px #ebc36b77 }
+.np-wild b { position: relative; font: 400 min(26cqw, 26cqh)/1 var(--np-display); letter-spacing: 1px; color: #fff0bd; text-shadow: 0 2px 2px #33200c, 1px 0 #5b431e, -1px 0 #5b431e; transform: skewY(-6deg) }
+.np-scatter { position: absolute; inset: 0; overflow: hidden; box-shadow: inset 0 0 22px #a46bff88 }
+.np-scatter img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 4%; mask-image: linear-gradient(#000 60%, transparent 96%); -webkit-mask-image: linear-gradient(#000 60%, transparent 96%) }
+.np-scatter b { position: absolute; left: 0; right: 0; bottom: 7%; text-align: center; font: 800 max(8px, min(13cqw, 13cqh))/1 Arial, Helvetica, sans-serif; letter-spacing: 1px; color: #e9ccff; text-shadow: 0 1px 5px #000 }
+.np-emblem { position: absolute; right: 5%; top: 5%; display: grid; place-items: center; width: max(18px, 20cqw); aspect-ratio: 1; border: 1px solid var(--np-granite); border-radius: 50%; background: linear-gradient(145deg, #765338, #271b16); color: #ffdda4; font-size: max(11px, 12cqw); box-shadow: 0 0 10px #ffb95788 }
+.np-emblem[data-emblem=impulse] { border-color: var(--np-impulse); background: linear-gradient(145deg, #346477, #11242e); color: #cff3ff; box-shadow: 0 0 10px #73ecff99 }
+.np-emblem[data-emblem=prism] { border-color: var(--np-prism); background: linear-gradient(145deg, #725090, #281b38); color: #f0e2ff; box-shadow: 0 0 10px #d0a2ff99 }
+.np-hit[data-effect=impulse] > *, .np-hit[data-effect=finisher] > * { animation: np-flip .4s both }
+.np-hit[data-effect=prism] > * { animation: np-warp .55s both }
+.np-row:nth-child(2) .np-hit > * { animation-delay: .09s } .np-row:nth-child(3) .np-hit > * { animation-delay: .18s } .np-row:nth-child(4) .np-hit > * { animation-delay: .27s }
+.np-smashed > *, .np-warping > * { animation: np-gone .3s both }
+@keyframes np-flip { from { transform: scaleX(0); filter: brightness(3) } }
+@keyframes np-warp { from { transform: scale(0) rotate(-200deg); filter: brightness(2.5) } }
+@keyframes np-gone { to { opacity: 0; transform: scale(.5); filter: brightness(3) } }
+.np-board.np-rolling > .np-row { visibility: hidden }
+.np-reels { position: absolute; inset: var(--np-pad); z-index: 2; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; pointer-events: none }
+.np-reel { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: #07101c }
+.np-reel::after { content: ''; position: absolute; inset: 0; background: linear-gradient(#02071277, transparent 18% 82%, #02071277); transition: opacity .2s; pointer-events: none }
+.np-reel[data-phase=stopped]::after { opacity: 0 }
 .np-reel[data-phase=settling] { box-shadow: inset 0 0 18px #edcf8c18 }
-.np-reel[data-phase=settling]:after { opacity: .2 }
-.np-board[data-presentation=win] .np-cell:not(.np-paying) { filter: brightness(.76) saturate(.85) }
-.np-paying { border-color: #eacb8cbb; background: radial-gradient(ellipse, #3e3422 0%, #111a23 75%); box-shadow: inset 0 0 16px #edcb8530 }
-.np-paying>.np-symbol, .np-paying>.np-wild { transform: scale(calc(1 + var(--np-win-pulse, 0) * .045)); filter: brightness(calc(1 + var(--np-win-pulse, 0) * .35)) }
-.np-paylines { position: absolute; inset: 2px; width: calc(100% - 4px); height: calc(100% - 4px); pointer-events: none; z-index: 3; opacity: .72 }
-.np-paylines polyline { fill: none; stroke: #f8daa1; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 4px #ffd57d) }
-.np-board[data-presentation=clear] .np-cell { will-change: transform, opacity }
-.np-cell[data-landed=true] { box-shadow: inset 0 -5px 10px #c6deee14 }
-.np-award { position: absolute; left: 50%; bottom: -47px; z-index: 9; display: flex; align-items: center; justify-content: center; gap: 12px; width: max-content; max-width: calc(100% + 10px); min-height: 34px; padding: 4px 14px; border: 1px solid #d9bc763b; border-radius: 22px; background: #0c1723f7; box-shadow: 0 4px 15px #0005; pointer-events: none; opacity: 0; transform: translate(-50%, 4px); transition: opacity .12s, transform .12s }
-.np-award-visible { opacity: 1; transform: translate(-50%, 0) }
-.np-award small { font-size: 8px; color: #bacbd6; letter-spacing: .7px; text-transform: uppercase }
-.np-award strong { color: #f8dca0; font-size: 20px; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap }
-.np-award span { font-size: 9px; color: #a5bacb; white-space: nowrap }
-.np:has(.np-award-visible) .np-transmission p { opacity: 0 }
-.np-result { position: absolute; inset: 9px; z-index: 11; display: grid; place-items: center; overflow: hidden; padding: 20px; text-align: center; background: radial-gradient(ellipse, #0a1828f5 15%, #08121df0 65%, #07101cd9); border: 1px solid #e5c48366; border-radius: 2px }
+.np-reel-track { display: flex; flex-direction: column; gap: 2px; width: 100%; will-change: transform }
+.np-reel-track > .np-cell { flex: 0 0 var(--np-reel-cell-height); width: 100%; height: var(--np-reel-cell-height) }
+.np-board[data-falling=true] .np-cell { will-change: transform }
+.np-board[data-presentation=win] .np-cell:not(.np-paying) { opacity: .35 }
+.np-paying { box-shadow: inset 0 0 16px #edcb8530; background: radial-gradient(ellipse, #3e3422 0%, #111a23 75%) }
+.np-paying > :first-child { transform: scale(calc(1 + var(--np-win-pulse, 0) * .09)); filter: brightness(calc(1 + var(--np-win-pulse, 0) * .5)) }
+.np-paylines { position: absolute; inset: var(--np-pad); z-index: 3; width: calc(100% - var(--np-pad) * 2); height: calc(100% - var(--np-pad) * 2); pointer-events: none }
+.np-paylines polyline { fill: none; stroke: #ffe9b4; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 5px #ffd57d) }
+
+/* Result row and round result */
+.np-outcome { grid-area: out; position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; padding: 0 14px; border: 1px solid #24354a; background: #07101be6 }
+.np-outcome-text { min-width: 0; display: grid; gap: 1px }
+.np-outcome p, .np-outcome small { overflow: hidden; white-space: nowrap; text-overflow: ellipsis }
+.np-outcome p { font-size: 14px; line-height: 1.25 }
+.np-outcome small { font-size: 11px; line-height: 1.25; color: var(--np-dim) }
+.np-outcome > strong { flex: none; font: 400 24px/1 var(--np-display); color: var(--np-gold); white-space: nowrap; font-variant-numeric: tabular-nums }
+.np-outcome:has(.np-award-visible) > strong { visibility: hidden }
+.np-award { position: absolute; right: 14px; top: 50%; display: flex; align-items: baseline; gap: 10px; max-width: calc(100% - 28px); padding-left: 14px; background: #07101b; opacity: 0; pointer-events: none; transform: translateY(-50%); transition: opacity .12s }
+.np-award-visible { opacity: 1 }
+.np-award small, .np-award span { display: none }
+.np-award strong { font: 400 24px/1 var(--np-display); color: var(--np-gold-hi); white-space: nowrap; font-variant-numeric: tabular-nums }
+.np-result { position: absolute; inset: 0; z-index: 6; display: grid; place-items: center; overflow: hidden; padding: 12px; text-align: center; background: radial-gradient(ellipse, #050a13f2 20%, #050a13d9 70%, #050a13a6) }
 .np-result[hidden] { display: none }
-.np-result-panel { position: relative; z-index: 1; width: 100%; opacity: 0; transform: translateY(8px) scale(.97); transition: opacity .1s ease-out, transform .16s ease-out }
+.np-result-panel { position: relative; z-index: 1; width: 100%; opacity: 0; transform: scale(1.12); transition: opacity .1s, transform .16s }
 .np-result[data-revealed=true] .np-result-panel { opacity: 1; transform: none }
-.np-result-panel>small { color: #bfd2e0; text-transform: uppercase; font-size: 9px; letter-spacing: 2px }
-.np-result-panel h2 { font: clamp(24px, 3.1vw, 42px)/1.15 Impact, 'Arial Black', sans-serif; color: #f1d697; text-transform: uppercase; letter-spacing: 2px; margin: 14px 0 9px; text-wrap: balance }
-.np-result-panel>strong { display: block; color: #fff0be; font-size: clamp(34px, 5.8vw, 78px); font-weight: 800; line-height: 1.15; font-variant-numeric: tabular-nums; letter-spacing: -1px; text-shadow: 0 0 22px #e7bd5930 }
-.np-result-panel>[data-result-net] { display: block; margin-top: 13px; color: #b9d6ca; font-size: 11px }
-.np-result-panel>button { margin-top: 27px; padding: 8px 20px; border: 1px solid #d9be7a66; border-radius: 20px; background: #172633; color: #dfd3b6; font-size: 10px; min-height: 35px }
-.np-result-panel>button:hover { background: #26394a; border-color: #edce8c }
-.np-result-orbit { position: absolute; width: 64%; aspect-ratio: 1; border: 1px solid #efd19024; border-radius: 50%; box-shadow: 0 0 55px #d9b36012, inset 0 0 55px #d9b36012; opacity: 0; transform: scale(calc(.8 + var(--np-result-progress, 0) * .35)); transition: opacity .15s }
-.np-result-orbit:after { content: ''; position: absolute; inset: 13%; border: 1px solid #efd19020; border-radius: 50% }
+.np-result-panel > small { color: #bfd2e0; font-size: 12px }
+.np-result-panel h2 { margin: 4px 0; font: 400 clamp(24px, 5cqw, 52px)/1.1 var(--np-display); letter-spacing: 2px; text-transform: uppercase; color: var(--np-gold) }
+.np-result-panel > strong { display: block; font: 400 clamp(34px, 8cqw, 84px)/1.05 var(--np-display); color: var(--np-gold-hi); text-shadow: 0 0 22px #e7bd5944; font-variant-numeric: tabular-nums }
+.np-result-panel > [data-result-net] { display: block; margin-top: 6px; color: #b9d6ca; font-size: 13px }
+.np-result-panel > button { min-height: 44px; margin-top: 12px; padding: 8px 20px; border: 1px solid #d9be7a66; background: #172633; font-size: 13px }
+.np-result-orbit { position: absolute; width: 64%; aspect-ratio: 1; border: 1px solid #efd19040; border-radius: 50%; opacity: 0; transform: scale(calc(.8 + var(--np-result-progress, 0) * .35)); transition: opacity .15s }
 .np-result[data-revealed=true] .np-result-orbit { opacity: 1 }
-.np-result[data-tier=big] { border-color: #f0cb80a0 }
-.np-result[data-tier=epic] { background: radial-gradient(ellipse, #24303cf7, #08121df0 70%); border-color: #ffe3a7 }
-.np-result[data-tier=epic] .np-result-panel h2 { color: #ffe5b3 }
-.np-result[data-sealed=true] .np-result-panel>strong { text-shadow: 0 0 32px #f0c67470; color: #fff5d7 }
-.np[data-outcome=partial] .np-win>strong, .np[data-outcome=even] .np-win>strong, .np[data-outcome=loss] .np-win>strong { color: #d0dde5 }
-@media (max-width: 760px) {
-  .np-award { bottom: -43px; gap: 8px; padding-inline: 10px; min-height: 30px }
-  .np-award strong { font-size: 17px }
-  .np-award small { font-size: 7px; letter-spacing: .3px }
-  .np-award span { font-size: 8px }
-  .np-result { inset: 5px; padding: 12px }
-  .np-result-panel>small { font-size: 7px; letter-spacing: 1px }
-  .np-result-panel h2 { margin-top: 10px; font-size: 27px; letter-spacing: .8px }
-  .np-result-panel>[data-result-net] { font-size: 9px }
-  .np-result-panel>button { margin-top: 18px }
+
+/* Villain panel */
+.np-foe { grid-area: foe; position: relative; display: flex; flex-direction: column; justify-content: flex-end; min-width: 0; min-height: 0 }
+.np-foe-box { margin-left: -12px; padding: 64px 4px 6px 12px; background: linear-gradient(transparent, #060b14d9 34%, #060b14ee) }
+.np-foe h2 { font: 400 clamp(30px, 4cqw, 50px)/1 var(--np-display); letter-spacing: 5px; text-transform: uppercase; color: #fff; text-shadow: 0 0 22px var(--np-foe), 0 3px 6px #000 }
+.np-foe-title { font-size: 13px; color: color-mix(in srgb, var(--np-foe) 60%, #fff); text-shadow: 0 1px 4px #000 }
+.np-foe-title:empty { display: none }
+.np-boss-meters { min-height: 20px }
+.np-meter { display: none; grid-template-columns: 1fr auto; gap: 4px 8px; margin-top: 9px; font-size: 12px; color: #cbd7e5 }
+.np[data-mode=battle] .np-meter { display: grid }
+.np-meter em { font-style: normal; font-variant-numeric: tabular-nums }
+.np-segments { grid-column: 1 / 3; display: flex; gap: 5px }
+.np-segments i { flex: 1; height: 15px; background: linear-gradient(#fff8, var(--np-foe) 35%, var(--np-foe-deep)); clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%) }
+[data-meter=core] .np-segments i { flex: 0 0 26px; height: 22px; background: radial-gradient(circle, #fff, var(--np-gold) 45%, var(--np-gold-lo)); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%) }
+.np-segments [data-destroyed=true], [data-meter=core] .np-segments [data-destroyed=true] { background: #1a2434; animation: np-break .7s }
+@keyframes np-break { from { background: #fff; transform: scale(1.3) } }
+.np-steps { display: none; gap: 7px; margin-top: 10px; font-size: 13px; line-height: 1.25 }
+.np[data-mode=base] .np-steps { display: grid }
+.np-steps li { display: grid; grid-template-columns: 24px 1fr auto; gap: 10px; align-items: center }
+.np-steps i { display: grid; place-items: center; width: 22px; height: 22px; border: 1px solid #6d7f97; font: 400 13px/1 var(--np-display); font-style: normal }
+.np-steps [data-done=true] i { background: var(--np-gold); border-color: var(--np-gold); color: #23180a }
+.np-steps em { font-style: normal; color: var(--np-gold); font-variant-numeric: tabular-nums }
+.np-rescue-note { display: none; font-size: 13px }
+.np[data-mode=rescue] .np-rescue-note { display: block }
+.np[data-mode=rescue] .np-foe h2 { font-size: clamp(24px, 3cqw, 38px); letter-spacing: 2px }
+.np-spins { display: flex; align-items: baseline; gap: 8px; margin-top: 10px !important; padding-top: 8px !important; border-top: 1px solid #ffffff22; font-size: 13px }
+.np-spins b { font: 400 25px/1 var(--np-display); color: #fff; font-variant-numeric: tabular-nums }
+.np[data-mode=base] .np-spins { display: none }
+
+/* Controls */
+.np-controls { grid-area: ctl; display: grid; grid-template-columns: minmax(90px, 1fr) auto minmax(110px, 1fr) minmax(200px, 340px) auto; gap: 18px; align-items: center; min-width: 0; padding: 0 18px; border: 1px solid #2c3f57; background: linear-gradient(#0d1828f2, #08111df5); clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px) }
+.np-value { min-width: 0 }
+.np-value > span, .np-stake > span:first-child { display: block; font-size: 12px; color: var(--np-dim); white-space: nowrap }
+.np-value strong { display: block; font: 700 23px/1.15 Arial, Helvetica, sans-serif; white-space: nowrap; font-variant-numeric: tabular-nums }
+.np-win strong { color: var(--np-gold) }
+.np-value small { display: block; overflow: hidden; font-size: 11px; color: var(--np-dim); white-space: nowrap; text-overflow: ellipsis }
+.np-stake select { width: 112px; height: 44px; padding: 0 8px; border: 1px solid var(--np-line); border-radius: 0; background: #060d17; font: 700 17px Arial, Helvetica, sans-serif }
+.np-stake [data-stake-field] { height: 44px; border: 1px solid var(--np-line); padding-left: 8px }
+.np-spin { position: relative; display: flex; align-items: center; justify-content: center; gap: 14px; height: 58px; min-width: 0; padding: 0 26px; overflow: hidden; border: 0; color: #23180a !important; font: 800 16px/1.1 Arial, Helvetica, sans-serif !important; letter-spacing: .5px; text-transform: uppercase; background: linear-gradient(#fff2cb, #e9c887 45%, #c4944d); clip-path: polygon(18px 0, 100% 0, calc(100% - 18px) 100%, 0 100%) }
+.np-spin::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 40%, #fff9 50%, transparent 60%); transform: translateX(-100%); animation: np-sheen 4.2s infinite }
+@keyframes np-sheen { 70% { transform: translateX(-100%) } 100% { transform: translateX(100%) } }
+.np-spin em { font: 400 22px/1 var(--np-display); letter-spacing: 0; font-variant-numeric: tabular-nums }
+.np[data-mode=battle] .np-spin { background: linear-gradient(#fff, color-mix(in srgb, var(--np-foe) 80%, #fff) 45%, var(--np-foe)) }
+.np-spin:disabled { filter: saturate(.35) brightness(.62) }
+.np-spin:disabled::after { animation: none }
+.np-auto { min-width: 92px; height: 58px; padding: 0 8px; border: 1px solid var(--np-line); background: #16243a; font: 700 14px Arial, Helvetica, sans-serif !important }
+.np-auto[aria-pressed=true] { background: #5c2226; border-color: #d0797c }
+.np-auto:disabled { opacity: .55 }
+.np-auto-panel { position: absolute; z-index: 12; right: 16px; bottom: calc(var(--np-ctl) + 20px); width: min(290px, calc(100% - 16px)); padding: 14px; border: 1px solid #4b617e; background: #0c1624; box-shadow: 0 18px 60px #000 }
+.np-auto-panel[hidden] { display: none }
+.np-auto-panel h3 { margin-bottom: 10px; font: 700 15px/1.25 Arial, Helvetica, sans-serif }
+.np-auto-counts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px }
+.np-auto-counts button { height: 44px; padding: 0; border: 1px solid var(--np-line); background: #08101b }
+.np-auto-counts [aria-pressed=true] { border-color: var(--np-gold); background: #33465f }
+.np-primary { width: 100%; min-height: 48px; border: 0; color: #23180a !important; background: linear-gradient(#fff2cb, #e9c887 45%, #c4944d); font: 800 15px Arial, Helvetica, sans-serif !important }
+
+/* Story beats */
+.np-cutin { position: absolute; z-index: 7; left: 0; top: 24%; width: 74cqw; height: 40%; visibility: hidden; pointer-events: none; clip-path: polygon(0 12%, 100% 0, 94% 88%, 0 100%) }
+.np-cutin-on { visibility: visible; animation: np-cutin .95s both }
+.np-cutin > i { position: absolute; inset: 0; background: linear-gradient(100deg, color-mix(in srgb, var(--np-hero) 60%, #000) 0, color-mix(in srgb, var(--np-hero) 26%, #05080e) 45%, transparent 96%) }
+.np-cutin > i::after { content: ''; position: absolute; inset: 0 0 0 -46px; background: repeating-linear-gradient(96deg, #fff3 0 2px, transparent 2px 46px); animation: np-speed .3s linear infinite }
+.np-cutin .np-costume { position: absolute; left: -3%; top: -9%; height: 215%; filter: drop-shadow(0 0 22px var(--np-hero)); animation: np-cutin-art .95s both }
+.np-cutin div { position: absolute; left: 47%; right: 7%; top: 30%; color: #fff; text-shadow: 0 2px 8px #000, 0 0 18px var(--np-hero) }
+.np-cutin b { display: block; font: 400 clamp(22px, 4.4cqw, 60px)/1 var(--np-display); letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; transform: skewX(-9deg) }
+.np-cutin div span { font: 700 clamp(12px, 1.5cqw, 17px) Arial, Helvetica, sans-serif }
+@keyframes np-cutin { 0% { transform: translateX(-100%) } 18% { transform: none } 80% { transform: none; opacity: 1 } 100% { transform: translateX(30%); opacity: 0 } }
+@keyframes np-cutin-art { from { transform: translateX(-12%) } to { transform: translateX(5%) } }
+@keyframes np-speed { to { transform: translateX(46px) } }
+.np-callout { position: absolute; z-index: 9; right: calc(var(--np-foe-w) * .12); top: 38%; max-width: 280px; text-align: center; font: 400 25px/1.05 var(--np-display); letter-spacing: 1px; text-transform: uppercase; color: #fff; text-shadow: 0 0 14px var(--np-foe), 0 2px 5px #000, 0 0 3px #000; opacity: 0; pointer-events: none }
+.np-callout small { display: block; margin-top: 4px; font: 700 13px/1.3 Arial, Helvetica, sans-serif; letter-spacing: 0; text-transform: none; color: #ffe9bd }
+.np-callout-on { animation: np-callout 1.5s both }
+@keyframes np-callout { 0% { opacity: 0; transform: scale(1.9) } 12% { opacity: 1; transform: none } 78% { opacity: 1 } 100% { opacity: 0; transform: translateY(-18px) } }
+.np-verdict { position: absolute; z-index: 10; left: 0; right: 0; top: 34%; padding: 22px 16px 24px; text-align: center; visibility: hidden; pointer-events: none; background: linear-gradient(90deg, transparent, #04070df2 16% 84%, transparent); border-block: 2px solid transparent; border-image: linear-gradient(90deg, transparent, var(--np-gold), transparent) 1 }
+.np-verdict-on { visibility: visible; animation: np-verdict 2.2s both }
+.np-verdict b { display: block; font: 400 clamp(32px, 6.6cqw, 76px)/1 var(--np-display); letter-spacing: 3px; text-transform: uppercase; background: linear-gradient(var(--np-gold-hi), var(--np-gold) 50%, var(--np-gold-lo)); -webkit-background-clip: text; background-clip: text; color: transparent }
+.np-verdict span { font: 700 clamp(13px, 1.8cqw, 20px)/1.3 Arial, Helvetica, sans-serif }
+@keyframes np-verdict { 0% { opacity: 0; transform: scale(1.35) } 10% { opacity: 1; transform: none } 86% { opacity: 1 } 100% { opacity: 0 } }
+.np-flash { position: absolute; inset: 0; z-index: 9; background: #fff; opacity: 0; pointer-events: none }
+.np-flash-on { animation: np-flash .6s }
+@keyframes np-flash { from { opacity: .42 } }
+
+/* Dialogs: rules, battle entrance, campaign summary */
+.np-dialog { margin: auto; color: #e1eafa; border: 1px solid #4b617e; background: #0c1624; font: 13px/1.6 Arial, Helvetica, sans-serif }
+.np-dialog[data-view=rules] { width: min(680px, calc(100vw - 24px)); max-height: 85dvh; padding: 28px; overflow: auto }
+.np-dialog::backdrop { background: #030915cf }
+.np-dialog:not([data-view=rules])::backdrop { background: #0000 }
+.np-close { position: absolute; z-index: 3; right: 10px; top: 10px; width: 44px; height: 44px; padding: 0; border: 1px solid var(--np-line); background: #0a1422cc; font-size: 22px }
+.np-dialog h2 { color: var(--np-gold-hi); font-size: 24px; line-height: 1.2; margin: 6px 0 14px }
+.np-dialog h3 { color: var(--np-gold); margin: 18px 0 6px }
+.np-dialog[data-view=rules] p { margin: 0 0 12px; color: #bccbdb }
+.np-dialog-kicker { color: var(--np-dim); font-size: 12px }
+.np-dialog table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums }
+.np-dialog th, .np-dialog td { padding: 4px 6px; text-align: right; border-bottom: 1px solid #22324a }
+.np-dialog th:first-child { text-align: left }
+.np-dialog td { color: var(--np-gold-hi) }
+.np-dialog th .np-symbol { display: inline-block; width: 32px; margin-right: 8px; vertical-align: middle }
+.np-dialog:not([data-view=rules]) { position: fixed; inset: auto; max-width: none; max-height: none; margin: 0; padding: 0; overflow: hidden; border: 0; background: #03060c; container: np-cover / size }
+.np-dialog:not([data-view=rules]) > [data-np=dialog-body] { position: absolute; inset: 0; display: grid; overflow: auto }
+.np-cover-back, .np-cover-art { position: absolute; inset: 0; pointer-events: none }
+.np-cover-back { opacity: .35; background: url('/assets/neopolis/city-v2.webp') 50% 30% / cover }
+.np-cover-art { background-position: 50% 0; background-repeat: no-repeat; background-size: cover; transform-origin: 50% 0; animation: np-zoom 9s ease-out both }
+@keyframes np-zoom { from { transform: scale(1.22) } }
+[data-view=intro] .np-cover-art { left: 34%; mask-image: linear-gradient(90deg, transparent, #000 34%); -webkit-mask-image: linear-gradient(90deg, transparent, #000 34%) }
+[data-view=summary] .np-cover-art { background-image: linear-gradient(#03060c55, #03060ce8 62%), url('/assets/neopolis/cover-v2.webp') }
+.np-cover-box { position: relative; z-index: 2; align-self: center; max-width: 640px; padding: 24px max(24px, 6cqw) }
+.np-cover-box > small { font: 700 13px Arial, Helvetica, sans-serif; color: color-mix(in srgb, var(--np-foe) 70%, #fff) }
+.np-dialog .np-cover-box h2 { margin: 4px 0 6px; font: 400 clamp(44px, 10cqw, 120px)/.95 var(--np-display); letter-spacing: 4px; text-transform: uppercase; color: #fff; text-shadow: 0 0 36px var(--np-foe), 0 4px 10px #000; animation: np-slam .6s .2s both }
+@keyframes np-slam { from { opacity: 0; transform: scale(1.7) } }
+.np-cover-box > p { font-size: 14px; color: #d6e0ea }
+.np-plan { display: flex; flex-wrap: wrap; gap: 10px 26px; margin: 18px 0 22px !important }
+.np-plan li { display: grid; gap: 5px; font-size: 13px; line-height: 1.25; color: #d6e0ea }
+.np-plan b { font: 400 30px/1 var(--np-display); color: #fff }
+.np-cover-box .np-primary { max-width: 300px; clip-path: polygon(16px 0, 100% 0, calc(100% - 16px) 100%, 0 100%) }
+[data-view=summary] .np-cover-box > small { color: #ffd68a }
+[data-view=summary] .np-cover-box { align-self: end; justify-self: center; width: 100%; max-width: 760px; text-align: center }
+.np-dialog[data-view=summary] h2 { font-size: clamp(30px, 6.4cqw, 76px) !important; text-shadow: 0 0 30px #ffb95799, 0 4px 10px #000 !important }
+.np-fallen { display: flex; justify-content: center; gap: clamp(14px, 4cqw, 44px); margin: 14px 0 !important }
+.np-fallen li { display: grid; justify-items: center; gap: 6px; font-size: 13px; line-height: 1.2 }
+.np-fallen .np-medal { width: clamp(50px, 8cqw, 84px); height: clamp(50px, 8cqw, 84px) }
+.np-cover-box dl { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 40px; margin-bottom: 8px }
+.np-cover-box dt { font-size: 12px; color: var(--np-dim) }
+.np-cover-box dd { font: 400 32px/1.1 var(--np-display); font-variant-numeric: tabular-nums }
+.np-sum-pay dd { color: var(--np-gold) }
+[data-view=summary] .np-cover-box .np-primary { margin: 12px auto 0 }
+
+/* Portrait: the battle strip above the field, controls under the thumb */
+@container np (max-aspect-ratio: 1/1) {
+  .np-grid { gap: 6px; padding: 8px 8px 10px; grid-template: "rail" 44px "foe" clamp(80px, 21.4cqh, 178px) "team" clamp(40px, 7.6cqh, 62px) "field" minmax(0, 1fr) "out" clamp(34px, 5.6cqh, 44px) "ctl" clamp(94px, 15.4cqh, 122px) / minmax(0, 1fr) }
+  .np-brand { display: none }
+  .np-rail { grid-template-columns: minmax(0, 1fr) auto; gap: 8px }
+  .np-path { gap: 6px }
+  .np-path li { grid-template-columns: 28px minmax(0, 1fr); gap: 0 4px }
+  .np-medal { width: 28px; height: 28px; border-width: 1px }
+  .np-path b { font-size: 11px; letter-spacing: 0 }
+  .np-path [data-state=defeated] em { display: none }
+  .np-path [data-state=defeated] b { text-decoration: line-through }
+  .np-ticks { gap: 1px; padding-top: 3px }
+  .np-ticks u { height: 6px; transform: none; border-width: 1px }
+  .np-tools { gap: 4px }
+  .np-tool { width: 38px; height: 44px }
+  .np-arena { top: 50px; bottom: auto; width: 66cqw; height: clamp(86px, 22.6cqh, 186px) }
+  .np-foe { justify-content: center; padding-right: 44cqw }
+  .np-foe-box { margin: 0; padding: 0 0 0 4px; background: none }
+  .np-foe h2 { font-size: clamp(22px, 8.4cqw, 34px); letter-spacing: 3px }
+  .np[data-mode=rescue] .np-foe h2 { font-size: clamp(18px, 6cqw, 28px) }
+  .np-foe-title, .np-rescue-note { font-size: 12px }
+  .np-meter { gap: 2px; margin-top: 5px }
+  .np-segments i { height: 10px }
+  [data-meter=core] .np-segments i { flex-basis: 18px; height: 15px }
+  .np-spins { margin-top: 4px !important; padding: 0 !important; border: 0; font-size: 12px }
+  .np-spins b { font-size: 18px }
+  .np-steps { gap: 5px; margin-top: 5px; font-size: 12px }
+  .np-steps li { grid-template-columns: 18px 1fr auto; gap: 8px }
+  .np-steps li + li em { display: none }
+  .np-steps i { width: 18px; height: 18px; font-size: 11px }
+  .np-team { grid-template: none; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px }
+  .np-hero { justify-content: center; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px) }
+  .np-portrait { inset: 0 57% 0 0 }
+  .np-portrait .np-costume { height: 340% }
+  .np-hero-copy { height: auto; padding: 0 2px 0 47%; border: 0; background: none }
+  .np-hero strong { font-size: clamp(11px, 3.1cqw, 14px) }
+  .np-hero-copy span { display: none }
+  .np-pips { position: static; margin: 5px 0 0 48% }
+  .np-pips i { width: 8px; height: 8px }
+  .np-board { --np-pad: 4px }
+  .np-outcome { padding: 0 10px }
+  .np-outcome p { font-size: 13px; line-height: 1.15 }
+  .np-outcome small { font-size: 10px }
+  .np-outcome > strong, .np-award strong { font-size: 19px }
+  .np-award { right: 10px }
+  .np-controls { grid-template: auto 52px / minmax(0, 1fr) auto minmax(0, 1fr); gap: 5px 10px; align-content: center; padding: 6px 10px }
+  .np-value strong { font-size: 17px }
+  .np-value small { display: none }
+  .np-win { text-align: right }
+  .np-stake > span:first-child { display: none }
+  .np-stake select { width: 104px; height: 40px; font-size: 16px }
+  .np-stake [data-stake-field] { height: 40px }
+  .np-spin { grid-column: 1 / 3; height: 100%; padding: 0 18px; gap: 10px; font-size: 14px !important; clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%) }
+  .np-auto { height: 100%; min-width: 0 }
+  .np-auto-panel { left: 8px; right: 8px; bottom: clamp(108px, 17.5cqh, 138px); width: auto }
+  .np-callout { right: 4px; top: 8%; width: 52cqw; max-width: none; font-size: 19px }
+  .np-callout small { font-size: 12px }
+  .np-cutin { width: 100cqw; top: 44%; height: 24% }
+  .np-cutin div { left: 44%; right: 2% }
+  .np-cutin b { font-size: clamp(17px, 5.9cqw, 28px); letter-spacing: 1px }
+}
+@container np (max-aspect-ratio: 1/1) and (max-height: 620px) {
+  .np-grid { gap: 5px; padding: 5px 6px 6px; grid-template-rows: 44px 72px 36px minmax(0, 1fr) 28px 92px }
+  .np-arena { top: 46px; height: 82px }
+  .np-tool { width: 36px }
+  .np-path b, .np-foe-title { display: none }
+  .np-path li { grid-template-columns: 26px minmax(0, 1fr) }
+  .np-medal { grid-row: auto; width: 26px; height: 26px }
+  .np-ticks { align-self: center; padding: 0 }
+  .np-foe h2 { font-size: 20px }
+  .np-meter { grid-template-columns: auto 1fr; gap: 0 6px; align-items: center; margin-top: 2px; font-size: 11px }
+  .np-meter em { display: none }
+  .np-segments { grid-column: 2 }
+  .np-segments i { height: 8px }
+  [data-meter=core] .np-segments i { flex-basis: 14px; height: 12px }
+  .np[data-mode] .np-spins { display: none }
+  .np-foe { padding-right: 40cqw }
+  .np-steps { gap: 3px; margin-top: 2px; font-size: 11px }
+  .np-outcome p { font-size: 12px }
+  .np-outcome small { display: none }
+  .np-outcome > strong, .np-award strong { font-size: 16px }
+  .np-controls { grid-template: 38px 46px / minmax(0, 1fr) 88px minmax(0, 1fr); gap: 3px 8px; padding: 2px 8px }
+  .np-value strong { font-size: 14px }
+  .np-value > span { font-size: 11px }
+  .np-stake select { width: 88px; height: 36px; font-size: 14px }
+  .np-stake [data-stake-field] { height: 36px }
+  .np-hero-copy { padding-left: 44% }
+  .np-hero strong { font-size: 11px; letter-spacing: -.3px; text-overflow: clip }
+  .np-spin { padding: 0 12px; gap: 8px; font-size: 12px !important; letter-spacing: 0 }
+  .np-spin em { font-size: 18px }
+}
+@container np (max-aspect-ratio: 1/1) and (min-width: 600px) {
+  .np-foe { padding-right: 50cqw; padding-left: 12px }
+  .np-field > .np-board-shell { width: min(92cqw, 124cqh); height: min(100cqh, 78cqw) }
+}
+
+/* Short landscape: controls in a side column */
+@container np (max-height: 599px) and (min-aspect-ratio: 1/1) {
+  .np-grid { --np-side: clamp(128px, 21cqw, 196px); gap: 6px 8px; padding: 6px 8px; grid-template: "team field foe rail" 90px "team field foe ctl" minmax(0, 1fr) "team out foe ctl" 36px / clamp(42px, 7.5cqw, 78px) minmax(0, 1fr) clamp(96px, 19cqw, 200px) var(--np-side) }
+  .np-brand { display: none }
+  .np-rail { grid-template: auto auto / 1fr; gap: 4px; align-content: start }
+  .np-path { grid-template-columns: repeat(3, 1fr); gap: 5px }
+  .np-path li { grid-template-columns: 1fr; justify-items: center }
+  .np-medal { grid-row: auto; width: 30px; height: 30px; border-width: 1px }
+  .np-path b { display: none }
+  .np-ticks { width: 100%; gap: 1px; padding-top: 3px }
+  .np-ticks u { height: 5px; transform: none }
+  .np-tools { justify-content: space-between; gap: 4px }
+  .np-tool { flex: 1; width: auto; height: 44px }
+  .np-arena { top: 0; bottom: 0; right: calc(clamp(128px, 21cqw, 196px) - 12px); width: 34cqw }
+  .np-foe h2 { font-size: clamp(17px, 3.2cqw, 30px); letter-spacing: 2px }
+  .np[data-mode=rescue] .np-foe h2 { font-size: clamp(15px, 2.6cqw, 24px); letter-spacing: 1px }
+  .np-foe-title { display: none }
+  .np-foe-box { margin-left: -8px; padding: 30px 2px 2px 8px }
+  .np-meter { gap: 2px; margin-top: 4px; font-size: 11px }
+  .np-segments { gap: 3px }
+  .np-segments i { height: 9px }
+  [data-meter=core] .np-segments i { flex: 0 1 15px; height: 13px }
+  .np-spins { margin-top: 4px !important; padding-top: 4px !important; font-size: 11px }
+  .np-spins b { font-size: 17px }
+  .np-steps { gap: 4px; margin-top: 4px; font-size: 11px }
+  .np-steps li { grid-template-columns: 1fr }
+  .np-steps i, .np-steps li + li em { display: none }
+  .np-hero { clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px) }
+  .np-portrait { inset: 0 }
+  .np-portrait .np-costume { height: 220% }
+  .np-hero-copy { position: absolute; width: 1px; height: 1px; overflow: hidden; padding: 0; border: 0; clip-path: inset(50%) }
+  .np-pips { right: 0; left: 0; top: auto; bottom: 0; justify-content: center; gap: 5px; padding: 4px 0; background: #060b14cc }
+  .np-pips i { width: 8px; height: 8px }
+  .np-board { --np-pad: 3px }
+  .np-board-shell::before { inset: -5px }
+  .np-outcome { padding: 0 8px; gap: 6px }
+  .np-outcome p { font-size: 12px; line-height: 1.15 }
+  .np-outcome small { font-size: 10px; line-height: 1.15 }
+  .np-outcome > strong, .np-award strong { font-size: 17px }
+  .np-award { right: 8px }
+  .np-controls { grid-template: auto auto minmax(44px, 1fr) 44px / 1fr 1fr; gap: 4px 6px; padding: 6px 8px; clip-path: none }
+  .np-value strong { font-size: 14px }
+  .np-value small { display: none }
+  .np-value > span { font-size: 11px }
+  .np-win { grid-area: 1 / 2; text-align: right }
+  .np-stake { grid-area: 2 / 1 / 3 / 3 }
+  .np-stake > span:first-child { display: none }
+  .np-stake select { width: 100%; height: 38px; font-size: 14px }
+  .np-stake [data-stake-field] { width: 100% !important; height: 38px }
+  .np-spin { grid-column: 1 / 3; height: 100%; max-height: 72px; padding: 0 12px; gap: 6px; font-size: 12px !important; letter-spacing: 0; clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%) }
+  .np-spin em { font-size: 18px }
+  .np-auto { grid-column: 1 / 3; height: 44px; min-width: 0 }
+  .np-auto-panel { right: 8px; bottom: 58px; width: 260px; padding: 10px }
+  .np-callout { right: calc(clamp(128px, 21cqw, 196px) + 8px); top: 26%; width: clamp(96px, 19cqw, 200px); font-size: 16px }
+  .np-callout small { font-size: 12px }
+  .np-cutin { width: 62cqw }
+  .np-verdict { padding: 12px 16px 14px }
+}
+@container np (max-height: 290px) and (min-aspect-ratio: 1/1) {
+  .np-grid { grid-template-rows: 78px minmax(0, 1fr) 28px }
+  .np-medal { width: 24px; height: 24px }
+  .np-tool { height: 40px }
+  .np-outcome small { display: none }
+  .np-controls { padding: 3px 6px; gap: 3px 6px; grid-template: auto 34px minmax(44px, 1fr) 36px / 1fr 1fr }
+  .np-stake select, .np-stake [data-stake-field] { height: 34px }
+  .np-auto { height: 36px }
+  .np-value strong { font-size: 12px; line-height: 1.1 }
+  .np-value > span { font-size: 10px; line-height: 1.1 }
+  .np-spin { flex-direction: column; gap: 1px; font-size: 11px !important }
+  .np-foe h2 { font-size: 15px }
+  .np-meter em { display: none }
+  .np-meter { margin-top: 2px; font-size: 10px }
+}
+/* Portrait covers */
+@container np-cover (max-aspect-ratio: 1/1) {
+  [data-view=intro] .np-cover-art { left: 0; bottom: 30%; mask-image: linear-gradient(#000 55%, transparent); -webkit-mask-image: linear-gradient(#000 55%, transparent) }
+  .np-cover-box { align-self: end; padding: 16px 24px 24px }
+  [data-view=summary] .np-cover-art { background-image: linear-gradient(#03060c22 20%, #03060cf2 44%), url('/assets/neopolis/cover-v2.webp'); background-size: 100% 100%, auto 44cqh; background-position: 0 0, 50% 0 }
+}
+@container np-cover (max-height: 600px) {
+  .np-cover-box { padding: 10px 24px }
+  .np-dialog .np-cover-box h2 { font-size: clamp(30px, 8cqw, 60px) }
+  .np-plan { margin: 8px 0 10px !important }
+  .np-plan b { font-size: 22px }
+  .np-fallen { margin: 6px 0 !important }
+  .np-fallen .np-medal { width: 40px; height: 40px }
+  .np-fallen li { gap: 2px; font-size: 12px }
+  .np-cover-box dl { gap: 4px 24px; margin-bottom: 4px }
+  .np-cover-box dd { font-size: 22px }
+  .np-cover-box > p { font-size: 12px }
 }
 @media (prefers-reduced-motion: reduce) {
-  .np-award, .np-result-panel, .np-result-orbit { transition: none; transform: none }
-  .np-award { transform: translateX(-50%) }
-  .np-result-panel { opacity: 1 }
+  .np *, .np *::before, .np *::after { animation: none !important; transition: none !important }
+  .np-result-panel { opacity: 1; transform: none }
   .np-result-orbit { display: none }
 }
