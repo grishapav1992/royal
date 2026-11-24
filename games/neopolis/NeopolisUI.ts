@@ -4,7 +4,7 @@ import {confirmedPayout} from '../../src/shared/roundPrecision';
 import {ROYAL_GAME_BETS as NEOPOLIS_BETS, gameBetCents} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import { NEOPOLIS_GAME, neopolisPointUnits, neopolisPaytable } from '../../src/shared/neopolis';
-import { BOSSES, HEROES, initialTeam, readyTeam, type Hero, type Team, type Battle, type Frame } from '../../src/shared/neopolisMath';
+import { BOSSES, HEROES, NEOPOLIS_RULES_VERSION, neopolisBosses, initialTeam, readyTeam, type Hero, type Team, type Battle, type Frame } from '../../src/shared/neopolisMath';
 import { neopolisCopy } from './copy';
 import { SCENES, medal, portrait, skyline, symbolArt } from './art';
 import { dissolveNeopolisSymbols, dropNeopolisSymbols, NeopolisReels } from './NeopolisReels';
@@ -72,6 +72,7 @@ export class NeopolisUI {
   private get legacy() { return this.view?.version === 1 && !!this.battle; }
   private get mode() { const battle = this.battle; return !battle ? 'base' : battle.won ? 'rescue' : 'battle'; }
   private get stakeLocked() { return this.session?.state === 'active'; }
+  private get rulesVersion() { return this.stakeLocked ? this.view!.version : NEOPOLIS_RULES_VERSION; }
   private get collectionLocked() { return !!this.view && !this.view.team.complete; }
   private get balance() { return this.wallet.accountId === this.client.accountId ? (this.wallet.wallet?.balance ?? this.client.wallet?.balance ?? 0) : 0; }
   private money(n: number) { return n.toLocaleString(this.services.i18n.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
@@ -426,7 +427,7 @@ export class NeopolisUI {
     }
     this.effects.portal(this.boss.centre(), index === 1 ? '#ff7642' : index === 2 ? '#82d7ff' : '#b078ff', 150, 1500);
     if (first && !this.autoRunning) await this.wait(500, signal);
-    else { await this.wait(350, signal); await this.verdict(this.copy[BOSSES[index].id], place + ' · ' + fill(this.copy.spinsAward, { n: BOSSES[index].spins }), 1800, signal); }
+    else { await this.wait(350, signal); await this.verdict(this.copy[BOSSES[index].id], place + ' · ' + fill(this.copy.spinsAward, { n: neopolisBosses(this.view!.version)[index].spins }), 1800, signal); }
   }
   private async present(frame: Frame, signal: AbortSignal) {
     await this.wait(0,signal);
@@ -581,7 +582,7 @@ export class NeopolisUI {
     this.find('notice-continue').focus({ preventScroll: true }); this.updatePause(); this.controls();
   }
   private showIntro() {
-    const c = this.copy, { shield, core, spins, id } = BOSSES[0];
+    const c = this.copy, { shield, core, spins, id } = neopolisBosses(this.view!.version)[0];
     this.openCover('intro', '<div class="np-cover-back" aria-hidden="true"></div><div class="np-cover-art" aria-hidden="true" data-villain="' + id + '"></div><div class="np-cover-box"><small>' + c.introKicker + '</small><h2>' + c[id] + '</h2><p>' + c.nullTitle + '</p><ol class="np-plan"><li><b>' + shield + '</b>' + c.planShield + '</li><li><b>' + core + '</b>' + c.planCore + '</li><li><b>' + spins + '</b>' + c.planSpins + '</li></ol><button type="button" class="np-primary" data-np="notice-continue">' + c.toBattle + '</button></div>');
   }
   /** Resolves with true when the player confirmed the result and may go on. */
@@ -597,10 +598,13 @@ export class NeopolisUI {
   private showRules() {
     this.stopAuto(); this.toggleAuto(false); this.dialog.dataset.view = 'rules'; this.placeCover();
     const c = this.copy, pay = (value: number) => value.toLocaleString(this.services.i18n.locale, { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+    const [nullBoss, vespera, aeon] = neopolisBosses(this.rulesVersion);
+    const campaign = fill(c.rulesBoss, { start: nullBoss.spins, second: vespera.spins, third: aeon.spins });
+    const bonusPay = this.rulesVersion === NEOPOLIS_RULES_VERSION ? c.rulesBonusPay : '';
     this.find('dialog-body').innerHTML = '<span class="np-dialog-kicker">ROYAL ORIGINALS / NEOPOLIS</span><h2>' + c.rules + '</h2>'
-      + stakeRulesHtml() + [c.rulesBase,c.rulesTeam,c.rulesHeroes,this.legacy ? c.rulesLegacy : c.rulesBoss,c.rulesMoney,c.autoHelp].map(text => '<p>' + text + '</p>').join('')
+      + stakeRulesHtml() + [c.rulesBase,c.rulesTeam,c.rulesHeroes,this.legacy ? c.rulesLegacy : campaign,bonusPay,c.rulesMoney,c.autoHelp].filter(Boolean).map(text => '<p>' + text + '</p>').join('')
       + '<h3>' + (this.stakeLocked ? c.bonusPayouts : c.payouts) + '</h3><table><thead><tr><th>' + c.symbol + '</th><th>3</th><th>4</th><th>5</th></tr></thead><tbody>'
-      + neopolisPaytable(this.session?.state === 'active' ? this.view!.version : 4, this.session?.state === 'active' ? this.view!.origin : this.team).map((pays, index) => '<tr><th>' + symbolArt(index) + c[('symbol' + index) as keyof typeof c] + '</th>' + pays.map(value => '<td>×' + pay(value) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
+      + neopolisPaytable(this.rulesVersion, this.stakeLocked ? this.view!.origin : this.team, this.stakeLocked).map((pays, index) => '<tr><th>' + symbolArt(index) + c[('symbol' + index) as keyof typeof c] + '</th>' + pays.map(value => '<td>×' + pay(value) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
     if (!this.dialog.open) this.dialog.showModal(); this.updatePause(); this.controls();
   }
   pause() { this.paused = true; this.updatePause(); this.controls(); }

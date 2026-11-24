@@ -52,29 +52,14 @@ function proofFor(id, inputs, mean = inputs.policy.target) {
     sourceHashes: structuredClone(inputs.sourceHashes), policySha256: inputs.policySha256, results,
     streams: p.choices.flatMap((choice,index) => p.seeds.map(seed => ({choice,seed:id==='studio-neopolis'?seed+index*1000003:seed}))),
     serverReplayChecks: p.stakes.length*p.choices.length*64 };
-  if (p.method==='neopolis-variable-stake-conditional-v4') {
-    proof.method=p.method; proof.serverReplayChecks*=16;
-    const stateMoment=(count,cost=1)=>{
-      const reward=mean*cost,half=(p.confidenceZ??1.96)/Math.sqrt(count-1)/cost;
-      return {samples:count,paidRounds:count*cost,reward:reward*count,cost:cost*count,rewardSquared:(reward*reward+1)*count,
-        rewardCost:reward*cost*count,costSquared:cost*cost*count,rtp:mean,interval95:[mean-half,mean+half]};
-    };
-    proof.stateResults=p.choices.flatMap((choice,index)=>Array.from({length:16},(_,state)=>{
-      const charges=[3,3,3],others=[0,1,2].filter(i=>i!==index);charges[others[0]]=Math.floor(state/4);charges[others[1]]=state%4;
-      const count=p.conditionalSeeds.length*(state===15?p.conditionalReadyRoundsPerSeed:p.conditionalRoundsPerSeed);
-      return p.stakes.map(stakeUnits=>({choice,state,charges,stakeUnits,...stateMoment(count)}));
-    }).flat());
-    proof.conditionalStreams=p.choices.flatMap((hero,index)=>Array.from({length:16},(_,state)=>p.conditionalSeeds.map(seed=>({hero,state,seed:seed+index*1000003+state*7919,paidRounds:state===15?p.conditionalReadyRoundsPerSeed:p.conditionalRoundsPerSeed}))).flat());
-    proof.stakePolicyResults=p.choices.flatMap(choice=>p.stakePolicies.filter(value=>value!=='fixed').flatMap(stakePolicy=>p.stakes.map(stakeUnits=>({choice,stakePolicy,stakeUnits,cycles:p.minCycles,...stateMoment(p.minCycles,p.minPaidRounds/p.minCycles)}))));
-  }
   return proof;
 }
-for(const id of ['studio-neopolis','studio-dracona','studio-afterglow']) {
+for(const id of ['studio-dracona','studio-afterglow']) {
   test(id+' accepts complete, precise evidence for every declared stake and choice',async()=>{
     const inputs=await rtpInputs(root,id); assert(validateRtpProof(id,inputs,proofFor(id,inputs)));
   });
   test(id+' rejects the historical excessive return even with qualified=true',async()=>{
-    const inputs=await rtpInputs(root,id), proof=proofFor(id,inputs,id==='studio-neopolis'?12.6:1.93);
+    const inputs=await rtpInputs(root,id), proof=proofFor(id,inputs,1.93);
     proof.qualified=true; assert.throws(()=>validateRtpProof(id,inputs,proof),/outside the approved budget/);
   });
   test(id+' rejects changed math, missing choices, duplicated stakes and forged totals',async()=>{
@@ -121,12 +106,22 @@ test('combat exact qualification covers every stake and decisive or refunded out
 });
 
 
-test('Neopolis variable-stake qualification requires every conditional state and adaptive policy', async()=>{
-  const inputs=await rtpInputs(root,'studio-neopolis'),original=proofFor('studio-neopolis',inputs);
-  assert(validateRtpProof('studio-neopolis',inputs,original));
-  for(const mutate of [
-    p=>p.stateResults.pop(),p=>{p.stateResults[1]=p.stateResults[0];},p=>{p.stateResults[0].charges=[3,3,3];},
-    p=>{p.stateResults[0].reward*=2;},p=>p.conditionalStreams.pop(),p=>p.stakePolicyResults.pop(),
-    p=>{p.stakePolicyResults[0].reward*=2;},p=>{p.serverReplayChecks/=16;}
-  ]){const changed=structuredClone(original);mutate(changed);assert.throws(()=>validateRtpProof('studio-neopolis',inputs,changed));}
+test('Neopolis v5 qualification checks every state, paid stake, campaign and proof input', async()=>{
+  const inputs=await rtpInputs(root,'studio-neopolis');
+  const proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8'));
+  assert(validateRtpProof('studio-neopolis',inputs,proof));
+  for (const mutate of [
+    p=>p.streams.pop(),
+    p=>{p.streams[0]=p.streams[1];},
+    p=>{p.streams[0].delta=1;},
+    p=>{p.precisionStateResults[0].rtp=12.6;},
+    p=>{p.precisionStateResults[0].charges=[3,3,3];},
+    p=>{p.replay[0].spins++;},
+    p=>{p.serverReplayChecks--;},
+    p=>{p.sourceHashes['src/shared/neopolisMath.ts']='0'.repeat(64);},
+  ]) {
+    const changed=structuredClone(proof);
+    mutate(changed);
+    assert.throws(()=>validateRtpProof('studio-neopolis',inputs,changed));
+  }
 });

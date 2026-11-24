@@ -1,10 +1,10 @@
 {
   "name": "@royal/neopolis",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": true,
   "gameId": "studio-neopolis",
   "apiVersion": 1,
-  "rulesVersion": 4,
+  "rulesVersion": 5,
   "progressVersion": 4,
   "entry": "entry.ts",
   "assetRoots": [

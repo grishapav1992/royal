@@ -118,7 +118,7 @@ test('Neopolis fits the real host, prioritizes the field over chat, and restores
     await page.locator('#mini-dialog .mini-top [data-close]').click();
     await expect(page.locator('#mini-dialog')).toBeHidden();
     await open(page);
-    const snapshot = await page.request.get('/api/demo-wallet/expansion',{headers:{...await walletHeaders(page),[NEOPOLIS_HEADER]:'4'}}); expect(snapshot.ok()).toBe(true);
+    const snapshot = await page.request.get('/api/demo-wallet/expansion',{headers:{...await walletHeaders(page),[NEOPOLIS_HEADER]:'5'}}); expect(snapshot.ok()).toBe(true);
     const restored = (await snapshot.json()).sessions.find((s: any) => s.gameId === 'studio-neopolis');
     expect(restored.id).toBe(changed.id); expect(restored.stakeUnits).toBe(changed.stakeUnits);
     expect((await walletSnapshot(page)).balance).toBe(before.balance);

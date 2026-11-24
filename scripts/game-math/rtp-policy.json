@@ -8,10 +8,29 @@
       "progressVersion": 2,
       "target": 0.96,
       "tolerance": 0.002,
-      "seeds": [6519731, 8703631],
-      "calibrationSeeds": [335641, 872021],
-      "stakes": [10, 20, 50, 100, 200, 500, 1000, 2000, 5000],
-      "choices": ["2", "3"],
+      "seeds": [
+        6519731,
+        8703631
+      ],
+      "calibrationSeeds": [
+        335641,
+        872021
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "2",
+        "3"
+      ],
       "kind": "dragon-path",
       "ordinaryStakeBasis": "total-round",
       "serverReplayRoundsPerSeed": 64,
@@ -47,7 +66,11 @@
         "src/modules/RoyalSlotServices.ts",
         "games/panda-dragon/wallet-binding.ts"
       ],
-      "manualStakeRange": { "minimumCents": 10, "maximumCents": 10000, "stepCents": 1 },
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 10000,
+        "stepCents": 1
+      },
       "note": "Одна виртуальная ставка за полный раунд, два бесплатных продолжения и одна итоговая проводка. Денежный маршрут не принимает эту игру. Оба выбора награды имеют одинаковый RTP."
     },
     "studio-forest-heart": {
@@ -256,71 +279,56 @@
       }
     },
     "studio-neopolis": {
-      "rulesVersion": 4,
+      "rulesVersion": 5,
       "progressVersion": 4,
       "target": 0.96,
       "tolerance": 0.01,
       "maxUpper95": 0.98,
       "maxHalfWidth95": 0.01,
-      "minPaidRounds": 3000000,
-      "minCycles": 60000,
+      "v4ReferenceSha256": "261893a1c433f7d502253f25a0fab0af22c3c507462e38be59105fb04ba227d7",
+      "minimumCampaignWinRate": 0.35,
+      "maximumCampaignWinRate": 0.6,
       "seeds": [
-        27803111,
-        91273407
+        70113451,
+        92411773
       ],
-      "qualificationCyclesPerSeed": 30000,
-      "stakes": [
-        1000,
-        2000,
-        5000,
-        10000,
-        20000,
-        50000
-      ],
+      "roundsPerSeed": 100000,
+      "readyRoundsPerSeed": 550000,
+      "confidenceZ": 2.241402727604947,
       "choices": [
         "granite",
         "impulse",
         "prism"
       ],
-      "proof": "docs/game-math/qualifications/neopolis-v4.json",
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        333,
+        500,
+        1000,
+        2000,
+        5000,
+        10000
+      ],
+      "proof": "docs/game-math/qualifications/neopolis-v5.json",
+      "method": "neopolis-paired-complete-round-v5",
+      "qualificationSource": "scripts/game-math/rtp-neopolis-v5.mjs",
       "sources": [
         "src/shared/neopolisMath.ts",
         "src/shared/neopolisMathV1.ts",
         "src/shared/neopolisMathV2.ts",
-        "src/shared/neopolis.ts",
-        "server/games/neopolis.ts",
         "src/shared/neopolisMathV3.ts",
         "src/shared/neopolisStakePayouts.ts",
-        "src/shared/draconaMath.ts",
-        "scripts/game-math/calibrate-neopolis-stakes.mjs",
-        "docs/game-math/neopolis-v4-calibration.json"
-      ],
-      "method": "neopolis-variable-stake-conditional-v4",
-      "qualificationSource": "scripts/game-math/rtp-neopolis-v4.mjs",
-      "conditionalTarget": 0.96,
-      "conditionalTolerance": 0.01,
-      "conditionalMaxUpper95": 0.98,
-      "conditionalMaxHalfWidth95": 0.01,
-      "stakePolicies": [
-        "fixed",
-        "raise-when-ready",
-        "lower-when-ready",
-        "alternate-extremes",
-        "cycle-stakes"
-      ],
-      "conditionalSeeds": [
-        41971091,
-        83027131
-      ],
-      "conditionalRoundsPerSeed": 500000,
-      "conditionalReadyRoundsPerSeed": 4000000,
-      "calibrationSeeds": [
-        302710111,
-        610829303
-      ],
-      "confidenceZ": 2.241402727604947,
-      "qualificationLooks": 2,
-      "samplingPlan": "Retain the complete first 10000 cycles per seed and extend each stream to exactly 30000 cycles once. Use a two-sided 97.5% normal interval for each of the at most two looks. Do not stop early or discard any seed or prefix. Keep the failed first-look evidence. No further sample extension is authorized by this plan."
+        "src/shared/neopolis.ts",
+        "src/shared/roundPrecision.ts",
+        "server/games/neopolis.ts",
+        "scripts/game-math/neopolis-v5-statistics.mjs",
+        "scripts/game-math/rtp-neopolis-v4.mjs",
+        "docs/game-math/qualifications/neopolis-v4.json"
+      ]
     },
     "studio-dracona": {
       "rulesVersion": 3,
@@ -2477,10 +2485,29 @@
       "progressVersion": 2,
       "target": 0.96,
       "tolerance": 0.002,
-      "seeds": [6519731, 8703631],
-      "calibrationSeeds": [335641, 872021],
-      "stakes": [10, 20, 50, 100, 200, 500, 1000, 2000, 5000],
-      "choices": ["2", "3"],
+      "seeds": [
+        6519731,
+        8703631
+      ],
+      "calibrationSeeds": [
+        335641,
+        872021
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "2",
+        "3"
+      ],
       "kind": "dragon-path",
       "ordinaryStakeBasis": "total-round",
       "serverReplayRoundsPerSeed": 64,
@@ -2516,7 +2543,11 @@
         "src/modules/RoyalSlotServices.ts",
         "games/panda-dragon/wallet-binding.ts"
       ],
-      "manualStakeRange": { "minimumCents": 10, "maximumCents": 10000, "stepCents": 1 },
+      "manualStakeRange": {
+        "minimumCents": 10,
+        "maximumCents": 10000,
+        "stepCents": 1
+      },
       "note": "Одна виртуальная ставка за полный раунд, два бесплатных продолжения и одна итоговая проводка. Денежный маршрут не принимает эту игру. Оба выбора награды имеют одинаковый RTP."
     },
     "studio-caramel-carnival": {
@@ -3886,7 +3917,7 @@
         "scripts/game-math/manual-stake-case.mjs",
         "scripts/game-math/manual-stake-pool.mjs",
         "scripts/game-math/manual-stake-worker.mjs",
-        "docs/game-math/skin-offers-20261105/round-compatibility.json",
+        "docs/game-math/qualifications/neopolis-v5-accepted-rounds.json",
         "docs/game-math/skin-offers-20261105/accepted-rounds.test.ts",
         "docs/game-math/skin-offers-20261105/native-projection.json"
       ],
@@ -3895,7 +3926,7 @@
         3,
         4
       ],
-      "compatibilityEvidence": "docs/game-math/skin-offers-20261105/round-compatibility.json",
+      "compatibilityEvidence": "docs/game-math/qualifications/neopolis-v5-accepted-rounds.json",
       "compatibilityQualificationSource": "docs/game-math/skin-offers-20261105/accepted-rounds.test.ts",
       "manualStakeRange": {
         "minimumCents": 10,
@@ -3979,7 +4010,7 @@
     "studio-neopolis": {
       "method": "full-round-unbiased-cent-policy-v1",
       "stakePolicyVersion": 1,
-      "rulesVersion": 4,
+      "rulesVersion": 5,
       "progressVersion": 4,
       "target": 0.96,
       "tolerance": 0.01,
@@ -4041,7 +4072,10 @@
         "scripts/game-math/manual-stakes.mjs",
         "scripts/game-math/manual-stake-case.mjs",
         "scripts/game-math/manual-stake-pool.mjs",
-        "scripts/game-math/manual-stake-worker.mjs"
+        "scripts/game-math/manual-stake-worker.mjs",
+        "scripts/game-math/rtp-neopolis-v5.mjs",
+        "scripts/game-math/neopolis-v5-statistics.mjs",
+        "docs/game-math/qualifications/neopolis-v5.json"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "manualStakeRange": {

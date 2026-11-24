@@ -23,7 +23,7 @@ const refs={
  'studio-flooded-temple':'docs/game-math/qualifications/flooded-temple-v2.json',
  'studio-afterglow':'docs/game-math/qualifications/girlhub-progress-v4.json',
  'studio-dracona':'docs/game-math/qualifications/dracona-v3.json',
- 'studio-neopolis':'docs/game-math/qualifications/neopolis-v4.json',
+ 'studio-neopolis':'docs/game-math/qualifications/neopolis-v5.json',
  'studio-wild-nudge':'docs/game-math/qualifications/wild-nudge-v1.json',
 };
 export const referencePath=id=>refs[id];

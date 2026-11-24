@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { seededRandom } from '../src/shared/draconaMath';
-import { NEOPOLIS_MATH, BOSSES, MAX_ROUND_SPINS, HEROES, LINES, WILD, SCATTER, evaluateLines, playNeopolisSpin, initialTeam, type Hero } from '../src/shared/neopolisMath';
+import { NEOPOLIS_MATH, NEOPOLIS_RULES_VERSION, neopolisBosses, BOSSES, MAX_ROUND_SPINS, HEROES, LINES, WILD, SCATTER, evaluateLines, playNeopolisSpin, initialTeam, type Hero } from '../src/shared/neopolisMath';
 import { advanceNeopolis, emptyNeopolisView, NEOPOLIS_GAME, NEOPOLIS_BETS, neopolisPointUnits, validNeopolisView, validNeopolisSession, validNeopolisSettings } from '../src/shared/neopolis';
 import { startNeopolis, moveNeopolis } from '../server/games/neopolis';
 import { validExpansionAction } from '../src/shared/casinoExpansion';
@@ -37,7 +37,7 @@ test('recorded entropy replays team collection, all real powers, shield upgrades
       assert.equal(played.empowered, oldBattle.shield === 0);
       const advanced = (next.boss ?? 0) > (oldBattle.boss ?? 0);
       if (!advanced) { assert(oldBattle.shield - next.shield <= 1); assert(oldBattle.core - next.core <= 1); }
-      assert.equal(next.remaining, oldBattle.remaining - 1 + (played.finisher ? 3 : 0) + (advanced ? BOSSES[next.boss!].spins : 0));
+      assert.equal(next.remaining, oldBattle.remaining - 1 + (played.finisher ? 3 : 0) + (advanced ? neopolisBosses(result.view.version)[next.boss!].spins : 0));
       if (played.finisher) {
         finishers++; assert.equal(next.defeated, (oldBattle.defeated ?? 0) + 1);
         if (advanced) { assert.equal(next.shield, BOSSES[next.boss!].shield); assert.equal(next.core, BOSSES[next.boss!].core); }
@@ -69,7 +69,7 @@ test('every allowed stake preserves the collected team while the first hero stay
   for (const bet of NEOPOLIS_BETS) {
     const next = startNeopolis(settings, String(bet * 100), previous, rng(43));
     assert.deepEqual(next.view.origin, first.view.team);
-    assert.equal(next.view.version, 4); assert(validNeopolisView(String(bet * 100), next.view));
+    assert.equal(next.view.version, NEOPOLIS_RULES_VERSION); assert(validNeopolisView(String(bet * 100), next.view));
   }
   assert.throws(() => startNeopolis({ neopolis: { hero: 'prism' } }, '10000', previous));
   assert.equal(startNeopolis(settings, '10000', previous, rng(43)).view.origin.starter, 'granite');
@@ -87,12 +87,30 @@ test('modified frames, charges, payouts, random draws and session envelopes cann
     (v: typeof result.view) => { v.history[0].draws.push(0); },
     (v: typeof result.view) => { v.battle = { remaining: 10, played: 0, shield: 3, core: 3, won: false }; },
   ]) { const value = structuredClone(result.view); mutate(value); assert.equal(validNeopolisView('10000', value), false); }
-  const session = { id: '11111111-1111-4111-8111-111111111111', gameId: NEOPOLIS_GAME, rulesVersion: 4, state: 'settled', stakeUnits: '10000', spentUnits: '10000', returnedUnits: String(result.credit), view: { player: [], dealer: [], community: [], phase: 2, ended: true, actions: [], message: result.message, neopolis: result.view } };
+  const session = { id: '11111111-1111-4111-8111-111111111111', gameId: NEOPOLIS_GAME, rulesVersion: NEOPOLIS_RULES_VERSION, state: 'settled', stakeUnits: '10000', spentUnits: '10000', returnedUnits: String(result.credit), view: { player: [], dealer: [], community: [], phase: 2, ended: true, actions: [], message: result.message, neopolis: result.view } };
   assert(validNeopolisSession(session)); assert.equal(validNeopolisSession({ ...session, returnedUnits: '1' }), false);
   assert.equal(validNeopolisSettings({ neopolis: { hero: 'granite', bonus: true } }), false);
   const action = { id: session.id, gameId: NEOPOLIS_GAME, action: 'start', stakeUnits: '10000', settings };
   assert(validExpansionAction(action)); assert.equal(validExpansionAction({ ...action, payout: 500 }), false);
   assert.equal(validExpansionAction({ id: session.id, gameId: NEOPOLIS_GAME, action: 'move', sessionId: session.id, move: 'studio-spin' }), false);
+});
+
+test('v5 changes free spin budgets and bonus line values while preserving paid spins and saved v4 pricing', () => {
+  const team = { ...initialTeam('granite'), charges: [3,3,3] };
+  const old = advanceNeopolis(emptyNeopolisView(team, 4), '100', () => 4294967295);
+  const current = advanceNeopolis(emptyNeopolisView(team), '100', () => 4294967295);
+  assert.equal(old.view.battle!.remaining, 10);
+  assert.equal(current.view.battle!.remaining, 8);
+  assert.deepEqual(old.view.history[0].draws, current.view.history[0].draws);
+  assert.equal(old.view.history[0].result.points, current.view.history[0].result.points);
+  const oldFree = moveNeopolis(old.view, '100', old.view.revision, rng(1));
+  const currentFree = moveNeopolis(current.view, '100', current.view.revision, rng(1));
+  const oldSpin = oldFree.view.history[1], currentSpin = currentFree.view.history[1];
+  assert.deepEqual(oldSpin.draws, currentSpin.draws);
+  assert(oldSpin.result.points > 0);
+  assert(currentSpin.result.points > oldSpin.result.points);
+  assert(validNeopolisView('100', oldFree.view));
+  assert(validNeopolisView('100', currentFree.view));
 });
 
 test('each hero protects special symbols and abilities are bounded once per spin', () => {
@@ -167,7 +185,7 @@ test('legacy v1 transcripts replay unchanged and settled collection upgrades int
   const old = advanceNeopolis(emptyNeopolisView(initialTeam('granite'),1),'10000',rng(42));
   assert(old.ended && !old.view.team.complete);
   const next = startNeopolis(settings,'10000',{stakeUnits:'10000',view:old.view},rng(11));
-  assert.equal(next.view.version,4); assert.deepEqual(next.view.origin,old.view.team);
+  assert.equal(next.view.version, NEOPOLIS_RULES_VERSION); assert.deepEqual(next.view.origin,old.view.team);
   const tampered = structuredClone(next.view); tampered.history[0].result.battle = {remaining:100,played:0,shield:5,core:5,won:false,boss:2,defeated:2};
   assert(!validNeopolisView('10000',tampered));
 });
@@ -195,7 +213,7 @@ test('the paid-round origin fixes payout scale through all free continuations', 
     const origin = structuredClone(result.view.origin); let expected = 0n;
     for (;;) {
       const spin = result.view.history.at(-1)!;
-      expected += neopolisPointUnits(stake, spin.result.points, 4, origin);
+      expected += neopolisPointUnits(stake, spin.result.points, result.view.version, origin);
       expected = expected > BigInt(stake) * 3000n ? BigInt(stake) * 3000n : expected;
       assert.equal(result.view.totalPayoutUnits, String(expected)); assert.deepEqual(result.view.origin, origin);
       if (result.ended) break;

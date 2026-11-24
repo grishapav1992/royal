@@ -1,4 +1,4 @@
-/** Neopolis campaign rules v4. Points are millionths of the line stake. */
+/** Neopolis campaign rules. Points are millionths of the line stake. */
 export const NEOPOLIS_MATH = { version: 4, symbolWeightScale: 1000, scatterWeight: 1500, payNumerator: 347000, payDenominator: 1000000 } as const;
 export const COLS = 5, ROWS = 4, SIZE = COLS * ROWS, WILD = 6, SCATTER = 7;
 export const HEROES = ['granite', 'impulse', 'prism'] as const;
@@ -9,6 +9,13 @@ export const BOSSES = [
   { id: 'vespera', shield: 4, core: 4, spins: 12 },
   { id: 'aeon', shield: 5, core: 5, spins: 14 },
 ] as const;
+export const NEOPOLIS_RULES_VERSION = 5 as const;
+const BOSSES_V5 = [
+  { ...BOSSES[0], spins: 8 },
+  { ...BOSSES[1], spins: 7 },
+  { ...BOSSES[2], spins: 6 },
+] as const;
+export const neopolisBosses = (version: number) => version >= NEOPOLIS_RULES_VERSION ? BOSSES_V5 : BOSSES;
 export type BossId = typeof BOSSES[number]['id'];
 export const MAX_ROUND_SPINS = 1 + BOSSES.reduce((sum, boss) => sum + boss.spins + 3, 0);
 // Optional campaign fields keep existing v1 transcripts structurally readable.
@@ -17,6 +24,10 @@ export type Win = { line: number; symbol: number; count: number; cells: number[]
 export type Frame = { kind: 'deal' | 'win' | 'cascade' | 'hero' | 'finisher' | 'boss-hit' | 'boss-defeated' | 'boss-arrival'; grid: number[]; emblems: number[]; cells: number[]; wins: Win[]; hero?: Hero; points: number; battle?: Battle | null };
 export type Spin = { frames: Frame[]; grid: number[]; team: Team; battle: Battle | null; activated: Hero[]; unlocked: Hero[]; points: number; free: boolean; triggered: boolean; finished: boolean; finisher: boolean; empowered: boolean };
 export const PAYTABLE = [[5, 15, 40], [6, 20, 50], [8, 25, 70], [10, 35, 100], [12, 50, 150], [15, 75, 250]].map(row => row.map(value => value * NEOPOLIS_MATH.payNumerator));
+const BONUS_PAY_NUMERATOR_V5 = 605000;
+const BONUS_PAYTABLE_V5 = PAYTABLE.map(row => row.map(points => points / NEOPOLIS_MATH.payNumerator * BONUS_PAY_NUMERATOR_V5));
+export const neopolisLinePoints = (version: number, free: boolean) =>
+  version >= NEOPOLIS_RULES_VERSION && free ? BONUS_PAYTABLE_V5 : PAYTABLE;
 export const MAX_CASCADES = 8;
 const patterns = [[0,0,0,0,0], [0,1,2,1,0], [0,3,2,3,0], [0,0,1,0,0], [0,0,3,0,0], [0,1,1,1,0], [0,3,3,3,0], [0,1,2,3,0], [0,3,2,1,0], [0,2,0,2,0]];
 export const LINES = patterns.flatMap(pattern => Array.from({ length: ROWS }, (_, offset) => pattern.map(row => (row + offset) % ROWS)));
@@ -24,20 +35,20 @@ export const readyTeam = (team: Team) => team.charges.every(charge => charge ===
 export function initialTeam(starter: Hero): Team { return { starter, charges: HEROES.map(hero => hero === starter ? 3 : 0), complete: false }; }
 
 const LINE_CELLS = LINES.map(rows => rows.map((row, col) => row * COLS + col));
-export function evaluateLines(grid: number[], boostedColumn = -1): Win[] {
+export function evaluateLines(grid: number[], boostedColumn = -1, paytable = PAYTABLE): Win[] {
   const wins: Win[] = [];
   for (let line = 0; line < LINE_CELLS.length; line++) {
     const cells = LINE_CELLS[line];
     // Only the highest paying interpretation of a Wild line is awarded.
     let best: Win | undefined;
-    const first = grid[cells[0]], from = first < WILD ? first : 0, until = first < WILD ? first + 1 : first === WILD ? PAYTABLE.length : 0;
+    const first = grid[cells[0]], from = first < WILD ? first : 0, until = first < WILD ? first + 1 : first === WILD ? paytable.length : 0;
     for (let symbol = from; symbol < until; symbol++) {
       let count = 0;
       while (count < COLS && (grid[cells[count]] === symbol || grid[cells[count]] === WILD)) count++;
       if (count < 3) continue;
       const matched = cells.slice(0, count);
       const factor = boostedColumn >= 0 && boostedColumn < count && grid[cells[boostedColumn]] === WILD ? 2 : 1;
-      const points = PAYTABLE[symbol][count - 3] * factor;
+      const points = paytable[symbol][count - 3] * factor;
       if (!best || points > best.points) best = { line, symbol, count, cells: matched, points };
     }
     if (best) wins.push(best);
@@ -50,10 +61,10 @@ const SPAWN_MODES = [false, true].map(scatter => [false, true].map(center => {
   weights.push(scatter ? NEOPOLIS_MATH.scatterWeight : 0);
   return { weights, total: weights.reduce((sum, weight) => sum + weight, 0) };
 }));
-export function playNeopolisSpin(sourceTeam: Team, sourceBattle: Battle | null, random: () => number, captureFrames = true): Spin {
+export function playNeopolisSpin(sourceTeam: Team, sourceBattle: Battle | null, random: () => number, captureFrames = true, version: 4 | 5 = 4): Spin {
   const team: Team = { ...sourceTeam, charges: [...sourceTeam.charges] };
   let battle = sourceBattle ? { ...sourceBattle } : null;
-  const free = battle !== null;
+  const free = battle !== null, bosses = neopolisBosses(version), paytable = neopolisLinePoints(version, free);
   if (team.complete || (battle && battle.remaining < 1)) throw Error('Neopolis cycle has ended');
   const empowered = !!battle && battle.shield === 0;
   if (battle) { battle.boss ??= 0; battle.defeated ??= 0; battle.remaining--; battle.played++; }
@@ -99,7 +110,7 @@ export function playNeopolisSpin(sourceTeam: Team, sourceBattle: Battle | null, 
   const resolve = () => {
     for (let cascade = 0; cascade < MAX_CASCADES; cascade++) {
       collect();
-      const wins = evaluateLines(grid, boostedColumn);
+      const wins = evaluateLines(grid, boostedColumn, paytable);
       if (!wins.length) return;
       points += wins.reduce((sum, win) => sum + win.points, 0);
       const cells = [...new Set(wins.flatMap(win => win.cells))].sort((a, b) => a - b);
@@ -139,7 +150,7 @@ export function playNeopolisSpin(sourceTeam: Team, sourceBattle: Battle | null, 
     frame('boss-hit');
     if (battle.core === 0) {
       const defeated = battle.boss!;
-      battle.defeated = defeated + 1; battle.won = defeated === BOSSES.length - 1;
+      battle.defeated = defeated + 1; battle.won = defeated === bosses.length - 1;
       battle.remaining += 3; finisher = true;
       frame('boss-defeated');
       const cells = Array.from({ length: ROWS }, (_, row) => row * COLS + 2);
@@ -148,7 +159,7 @@ export function playNeopolisSpin(sourceTeam: Team, sourceBattle: Battle | null, 
       // Finisher refills can earn an unused hero; it still acts once in this spin.
       activateHeroes();
       if (!battle.won) {
-        const next = BOSSES[defeated + 1];
+        const next = bosses[defeated + 1];
         battle.boss = defeated + 1; battle.shield = next.shield; battle.core = next.core;
         battle.remaining += next.spins;
         frame('boss-arrival');
@@ -156,7 +167,7 @@ export function playNeopolisSpin(sourceTeam: Team, sourceBattle: Battle | null, 
     }
   }
   if (!battle && triggered) {
-    battle = { remaining: BOSSES[0].spins, played: 0, shield: BOSSES[0].shield, core: BOSSES[0].core, won: false, boss: 0, defeated: 0 };
+    battle = { remaining: bosses[0].spins, played: 0, shield: bosses[0].shield, core: bosses[0].core, won: false, boss: 0, defeated: 0 };
     frame('boss-arrival');
   }
   const nextBattle = battle;

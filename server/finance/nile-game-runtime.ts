@@ -17,7 +17,7 @@ import {FLIGHT_MAX_MULTIPLIER} from '../../src/shared/flightGame';
 import {validAfterWardrobe,type AfterWardrobe} from '../../src/shared/afterglowWardrobe';
 import {validConvoyProgress,type ConvoyProgress} from '../../src/shared/convoyWardrobe';
 
-export type NativeCommand={path:string;method:'GET'|'POST';body:unknown;flags:(boolean|2)[];rules:1|2;query:Record<string,string>;neopolisRules?:0|1|2|3|4;wildNudgeRules?:0|1;forestHeartRules?:0|1;caribbeanRules?:0|1;flagRules?:0|1|2;jackieRules?:0|1|2;templeRules?:0|1|2;royalStakeLimit?:boolean;legacy?:{wardrobe:AfterWardrobe;convoy:ConvoyProgress}|null};
+export type NativeCommand={path:string;method:'GET'|'POST';body:unknown;flags:(boolean|2)[];rules:1|2;query:Record<string,string>;neopolisRules?:0|1|2|3|4|5;wildNudgeRules?:0|1;forestHeartRules?:0|1;caribbeanRules?:0|1;flagRules?:0|1|2;jackieRules?:0|1|2;templeRules?:0|1|2;royalStakeLimit?:boolean;legacy?:{wardrobe:AfterWardrobe;convoy:ConvoyProgress}|null};
 const fail=(message:string):never=>{throw new WalletError(409,message);};
 /** Existing engines keep a cents projection inside the financial transaction. Only the Nile journal owns money. */
 export class NileGameRuntime{
@@ -80,7 +80,7 @@ export class NileGameRuntime{
   if(!c||!['body,flags,method,path,query,rules','body,flags,legacy,method,path,query,rules'].includes(Object.keys(c).filter(key=>key!=='wildNudgeRules'&&key!=='neopolisRules'&&key!=='caribbeanRules'&&key!=='forestHeartRules'&&key!=='flagRules'&&key!=='jackieRules'&&key!=='templeRules'&&key!=='royalStakeLimit').sort().join(','))||!['GET','POST'].includes(c.method)
    ||!['/','/operations','/mines','/flight','/casino-sessions','/expansion','/expansion/presentation','/convoy-progress','/afterglow-wardrobe'].includes(c.path)
    ||!Array.isArray(c.flags)||c.flags.length!==9||!c.flags.every((flag,index)=>typeof flag==='boolean'||index===8&&flag===2)||![1,2].includes(c.rules)||!c.query||typeof c.query!=='object'||Array.isArray(c.query)
-   ||c.wildNudgeRules!==undefined&&![0,1].includes(c.wildNudgeRules)||c.neopolisRules!==undefined&&![0,1,2,3,4].includes(c.neopolisRules)||c.forestHeartRules!==undefined&&![0,1].includes(c.forestHeartRules)||c.flagRules!==undefined&&![0,1,2].includes(c.flagRules)||c.caribbeanRules!==undefined&&![0,1].includes(c.caribbeanRules)||c.templeRules!==undefined&&![0,1,2].includes(c.templeRules)||c.jackieRules!==undefined&&![0,1,2].includes(c.jackieRules))throw new WalletError(400,'Некорректный запрос игрового баланса.');
+   ||c.wildNudgeRules!==undefined&&![0,1].includes(c.wildNudgeRules)||c.neopolisRules!==undefined&&![0,1,2,3,4,5].includes(c.neopolisRules)||c.forestHeartRules!==undefined&&![0,1].includes(c.forestHeartRules)||c.flagRules!==undefined&&![0,1,2].includes(c.flagRules)||c.caribbeanRules!==undefined&&![0,1].includes(c.caribbeanRules)||c.templeRules!==undefined&&![0,1,2].includes(c.templeRules)||c.jackieRules!==undefined&&![0,1,2].includes(c.jackieRules))throw new WalletError(400,'Некорректный запрос игрового баланса.');
   if(c.royalStakeLimit!==undefined&&typeof c.royalStakeLimit!=='boolean')throw new WalletError(400,'Некорректный лимит ставки.');
   if(c.path!=='/expansion/presentation'&&Object.keys(c.query).length)throw new WalletError(400,'Параметры запроса не поддерживаются.');
   if((c.body as any)?.kind==='deposit')throw new WalletError(400,'Пополняй общий баланс тестовым USDT через кошелёк Nile.');
@@ -114,7 +114,7 @@ export class NileGameRuntime{
     if(context.house<coverage)return fail('В резерве казино недостаточно USDT для максимального выигрыша. Уменьши ставку.');
    }
    let result:any;const flags=c.flags.slice(0,8) as boolean[], dracona=c.flags[8] as boolean|2;
-   const neopolis=c.neopolisRules===4?4:c.neopolisRules===3?3:c.neopolisRules===2?2:c.neopolisRules===1;
+   const neopolis=c.neopolisRules && c.neopolisRules!==1 ? c.neopolisRules : c.neopolisRules===1;
    if(c.method==='GET'){
     switch(c.path){
      case '/':result=await this.store.snapshot(account);break;

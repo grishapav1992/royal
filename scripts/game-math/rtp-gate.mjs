@@ -1,3 +1,4 @@
+import { NEOPOLIS_V5_METHOD, neopolisV5Results } from './neopolis-v5-statistics.mjs';
 import {STAKE_PRECISION_METHOD,validateStakeProof} from './rtp-stakes.mjs';
 import {TOTE_METHOD,validateToteProof} from './rtp-flag-tote.mjs';
 import {KEYS_METHOD,validateKeysProof} from './rtp-keys.mjs';
@@ -49,9 +50,12 @@ export function validateRtpProof(gameId, inputs, proof) {
   assert.notEqual(p.releaseStatus,'model-only','Mathematical model only: runtime and wallet qualification is still required for '+gameId);
   assert.equal(proof.schemaVersion, 1); assert.equal(proof.gameId, gameId);
   assert.equal(proof.rulesVersion, p.rulesVersion); assert.equal(proof.progressVersion, p.progressVersion);
-  if (gameId==='studio-neopolis' && p.rulesVersion>=4) assert.equal(p.method,'neopolis-variable-stake-conditional-v4','Variable stakes require conditional qualification');
+  if (gameId==='studio-neopolis' && p.rulesVersion>=4) {
+    assert.equal(p.method,p.rulesVersion===4?'neopolis-variable-stake-conditional-v4':NEOPOLIS_V5_METHOD,'Variable stakes require conditional qualification');
+  }
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
+  if(p.method===NEOPOLIS_V5_METHOD)return validateNeopolisV5Proof(gameId,p,proof);
   if(p.method===STAKE_PRECISION_METHOD)return validateStakeProof(gameId,inputs,proof);
   if(p.method===TOTE_METHOD)return validateToteProof(gameId,inputs,proof);
   if(p.method===KEYS_METHOD){assert.equal(gameId,'variant-keys');return validateKeysProof(p,proof);}
@@ -122,6 +126,40 @@ function validateTempleProof(gameId,p,proof){
   return true;
 }
 
+function validateNeopolisV5Proof(gameId,p,proof) {
+  assert.equal(gameId,'studio-neopolis');
+  assert.equal(p.rulesVersion,5); assert.equal(p.progressVersion,4);
+  assert.equal(proof.method,p.method);
+  assert.deepEqual(p.choices,['granite','impulse','prism']);
+  assert.deepEqual(p.stakes,[10,20,50,100,200,333,500,1000,2000,5000,10000]);
+  assert(p.target===.96 && p.tolerance>0 && p.tolerance<=.01 && p.maxUpper95<=.98 && p.maxHalfWidth95<=.01);
+  assert(p.minimumCampaignWinRate>=.30 && p.maximumCampaignWinRate<=.65);
+  assert.equal(new Set(p.seeds).size,2); assert.equal(p.seeds.length,2);
+  assert(p.roundsPerSeed>=100000 && p.readyRoundsPerSeed>=500000 && p.confidenceZ>=1.96);
+  const rows=neopolisV5Results(p,proof.streams);
+  assert.deepEqual(proof.precisionStateResults,rows);
+  for(const row of rows){
+    const key=row.choice+':'+row.state;
+    const half=(row.interval95[1]-row.interval95[0])/2;
+    assert(half>0 && half<=p.maxHalfWidth95,'Neopolis RTP estimate is too imprecise: '+key);
+    assert(Math.abs(row.rtp-p.target)<=p.tolerance && row.interval95[1]<=p.maxUpper95,'Neopolis RTP outside the approved budget: '+key);
+    if(row.state===15){
+      const completion=row.defeats[2]/row.entries;
+      assert(row.entries>=5000 && completion>=p.minimumCampaignWinRate && completion<=p.maximumCampaignWinRate,'Campaign completion outside the approved range: '+key);
+    }
+  }
+  assert.equal(proof.replay.length,p.choices.length*p.stakes.length*3);
+  assert.equal(proof.serverReplayChecks,proof.replay.length);
+  for(const choice of p.choices)for(const stake of p.stakes){
+    const cases=proof.replay.filter(row=>row.choice===choice&&row.stake===stake);
+    assert.deepEqual(cases.map(row=>row.index),[0,1,2]);
+    for(const row of cases){
+      assert(Number.isSafeInteger(row.spins) && row.spins===[8,18,27,30][row.defeated]);
+    }
+  }
+  assert(proof.replay.some(row=>row.defeated===3)&&proof.replay.some(row=>row.defeated<3),'Replay must cover both completed and interrupted campaigns');
+  return true;
+}
 function validateNeopolisVariableStakeProof(p, proof) {
   assert.equal(proof.method, p.method);
   assert.equal(p.rulesVersion, 4); assert.equal(p.progressVersion, 4);

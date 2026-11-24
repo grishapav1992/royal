@@ -1,6 +1,7 @@
 import test from'node:test';import assert from'node:assert/strict';import{readFileSync,writeFileSync}from'node:fs';import{randomUUID,createHash}from'node:crypto';import{resolve}from'node:path';import{pathToFileURL}from'node:url';
 import{pvpFixture}from'../../../server-tests/finance/helpers/nile-pvp-fixture';import{block}from'../../../server-tests/finance/helpers/nile-play-fixture';import{seededRandom}from'../../../src/shared/draconaMath';import{ExpansionClient}from'../../../src/wallet/ExpansionClient';import{verifyGameRound}from'../../../server/games/core';
 import '../../../server/demoWallet';
+import {NEOPOLIS_RULES_VERSION} from '../../../src/shared/neopolisMath';
 // @ts-ignore Checked paid-round case matrix.
 import{settingsFor}from'../../../scripts/game-math/stake-runtime.mjs';
 const root=process.cwd(),folder='docs/game-math/skin-offers-20261105';
@@ -61,11 +62,12 @@ test('actual production rounds resume and replay unchanged through the projected
    if(!core)assert(!actual.session.precision,'Accepted old round must retain its original settlement');
    const normal:any=policies[game],freshSettings=settingsFor(game,normal.choices[0]),fresh:any=core?{...start,id:randomUUID(),amount:.1,stakePolicyVersion:1}:{id:randomUUID(),gameId:game,action:'start',stakeUnits:'10',stakePolicyVersion:1,settings:freshSettings};
    if(map){rows.push({game,choice,legacyUnchanged:true,moves,freshCoveredByCascadeCase:true});continue;}
-   let current:any=await candidate.run(a.a,command(fresh));assert.equal(core?current.gameRound.stakeUnits:current.session.spentUnits,'10');let n=0;
+   const freshCommand=(body:any=null)=>({...command(body),neopolisRules:NEOPOLIS_RULES_VERSION});
+   let current:any=await candidate.run(a.a,freshCommand(fresh));assert.equal(core?current.gameRound.stakeUnits:current.session.spentUnits,'10');let n=0;
    while(current.session?.state==='active'){
     assert(n++<10000);clock=Math.max(clock+100,(current.session.startedAt??0)+1000);
-    if(game==='github-crash'){const snapshot:any=await candidate.run(a.a,command());current={wallet:snapshot.wallet,session:snapshot.sessions.find((s:any)=>s.id===fresh.id)};if(current.session.state==='settled')break;}
-    current=await candidate.run(a.a,command(continuation(current.session)));
+    if(game==='github-crash'){const snapshot:any=await candidate.run(a.a,freshCommand());current={wallet:snapshot.wallet,session:snapshot.sessions.find((s:any)=>s.id===fresh.id)};if(current.session.state==='settled')break;}
+    current=await candidate.run(a.a,freshCommand(continuation(current.session)));
    }
    if(core){assert(current.gameRound.precision);assert(verifyGameRound(current.gameRound));}else{assert(current.session.precision);assert(verify(current.session));}
    if(game==='studio-afterglow'){

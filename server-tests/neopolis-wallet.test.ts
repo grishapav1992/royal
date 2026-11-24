@@ -58,7 +58,7 @@ test('a saved bonus survives store recreation, rejects stale moves and credits t
       if (reply.session.state === 'active') { first = reply.session; break; }
       returned += Number(reply.session.returnedUnits);
     }
-    assert(first); assert.equal(first.view.neopolis!.battle!.remaining, 10);
+    assert(first); assert.equal(first.view.neopolis!.battle!.remaining, 8);
     assert(await demoReservedUnits(f.db, 'alice') > 0);
     await assert.rejects(f.store.operate('alice', f.start()));
     const restored = f.createStore();
@@ -97,7 +97,7 @@ test('a saved bonus survives store recreation, rejects stale moves and credits t
   } finally { await f.db.close(); }
 });
 
-for (const version of [1,2,3] as const) test(`a persisted v${version} bonus completes unchanged while older clients cannot start new rounds`, async () => {
+for (const version of [1,2,3,4] as const) test(`a persisted v${version} bonus completes unchanged while older clients cannot start new rounds`, async () => {
   const f = await setup();
   const oldOperate = (op: Parameters<typeof f.store.operate>[1]) => f.store.operate('alice',op,2,true,true,true,true,true,true,true,true,2,version===1?true:version);
   try {
@@ -115,6 +115,7 @@ for (const version of [1,2,3] as const) test(`a persisted v${version} bonus comp
     assert(!legacy.ended);
     const row = await f.db.prepare('SELECT payload FROM demo_casino_sessions WHERE account_id=? AND id=?').get('alice',current.id);
     const stored = JSON.parse(row!.payload); stored.rulesVersion=version; stored.view.neopolis=legacy.view;
+    if (version === 4) stored.stakePolicyVersion = 1;
     await f.db.prepare('UPDATE demo_casino_sessions SET payload=? WHERE account_id=? AND id=?').run(JSON.stringify(stored),'alice',current.id);
     const restored = f.createStore();
     current = (await restored.active('alice',true,true,true,true,true,true,true,2,version===1?true:version)).sessions.find(session=>session.gameId===NEOPOLIS_GAME)!;
@@ -126,13 +127,14 @@ for (const version of [1,2,3] as const) test(`a persisted v${version} bonus comp
       assert.equal(current.rulesVersion,version); assert(validNeopolisSession(current));
     }
     assert(current.view.neopolis!.revision <= (version===1?14:46));
+    if (version === 4) assert(current.precision);
     assert.equal(current.view.neopolis!.battle!.boss,version===1?undefined:2);
     const finalBalance=await demoBalanceUnits(f.db,'alice'), draws=f.draws();
     await oldOperate(last!);
     assert.equal(await demoBalanceUnits(f.db,'alice'),finalBalance); assert.equal(f.draws(),draws);
     assert.equal(await demoReservedUnits(f.db,'alice'),0);
     const newStart=f.start(), fresh=await restored.operate('alice',newStart);
-    assert.equal(fresh.session.rulesVersion,4); assert.equal(fresh.session.view.neopolis!.version,4);
+    assert.equal(fresh.session.rulesVersion,5); assert.equal(fresh.session.view.neopolis!.version,5);
     const afterNew=await demoBalanceUnits(f.db,'alice');
     await assert.rejects(oldOperate(newStart),/refresh/);
     assert.equal(await demoBalanceUnits(f.db,'alice'),afterNew);

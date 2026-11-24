@@ -199,7 +199,7 @@ test('real API retries a lost result once, restores collection and bonus, and se
   await page.locator('[data-np=bet]').selectOption('20');
   let current = await session(page);
   for (let attempt = 0; current.state !== 'active' && attempt < 75; attempt++) current = await spin(page);
-  expect(current.state).toBe('active'); expect(current.view.neopolis.battle.remaining).toBe(10);
+  expect(current.state).toBe('active'); expect(current.view.neopolis.battle.remaining).toBe(8);
   await expect(page.locator('[data-np=bet]')).toBeDisabled();
   await expect(page.locator('[data-np=bet]')).toHaveValue('20');
   await page.locator('[data-np=bet]').evaluate((select: HTMLSelectElement) => { select.value = '50'; select.dispatchEvent(new Event('change', { bubbles: true })); });

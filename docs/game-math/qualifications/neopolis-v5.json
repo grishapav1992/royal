@@ -1,0 +1,3365 @@
+{
+  "schemaVersion": 1,
+  "gameId": "studio-neopolis",
+  "rulesVersion": 5,
+  "progressVersion": 4,
+  "startedAt": "2026-11-24T19:19:27.611Z",
+  "completedAt": "2026-11-24T19:23:55.727Z",
+  "sourceHashes": {
+    "src/shared/neopolisMath.ts": "968b229a28195c8d006b41f9f5df0d42e2c658ea3958929ce157b186fb48003c",
+    "src/shared/neopolisMathV1.ts": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92",
+    "src/shared/neopolisMathV2.ts": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692",
+    "src/shared/neopolisMathV3.ts": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
+    "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+    "src/shared/neopolis.ts": "fe5df01c7b964f98db2c94a21982457ad45b39f76e692d1b22185038796841fb",
+    "src/shared/roundPrecision.ts": "7a934cedc9342081d349839a7117b2bc41ee13cf558bf632fd19b18bf99be870",
+    "server/games/neopolis.ts": "d8e3a0ac628636293f3317ac61de6ce83054c8b41985fcc8886e78c71e5dfad3",
+    "scripts/game-math/neopolis-v5-statistics.mjs": "78de033507d5cad41d62dbcb306730c1872e330e07cadb55e9f58a9d32c9cbac",
+    "scripts/game-math/rtp-neopolis-v4.mjs": "a4f12b4ac6f2cc64ac59a80f72fb798b9141b5f27ee5bc11f7f3a2cb48627e6a",
+    "docs/game-math/qualifications/neopolis-v4.json": "261893a1c433f7d502253f25a0fab0af22c3c507462e38be59105fb04ba227d7",
+    "scripts/game-math/rtp-neopolis-v5.mjs": "b8100f8e30596987b640947303ae1cd58837f8005e7c5f28817651b909a31ba7"
+  },
+  "policySha256": "c4675991d7d2deee79f9ad29456cd152c1a8cf16565ccf23b90547690d376a7f",
+  "serverReplayChecks": 99,
+  "method": "neopolis-paired-complete-round-v5",
+  "streams": [
+    {
+      "choice": "granite",
+      "state": 0,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 96710.45107010505,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 0,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 95824.99238821783,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 1,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 95858.17088708341,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 1,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 95579.89589979868,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 2,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 22.604644314612443,
+      "deltaSquared": 510.96994459014064,
+      "actual": 96036.72528921883,
+      "entries": 1,
+      "defeats": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 2,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 57.46874331455372,
+      "deltaSquared": 1658.7142244053991,
+      "actual": 95778.49189411518,
+      "entries": 2,
+      "defeats": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 3,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": -33.30736237816399,
+      "deltaSquared": 14630.156420541693,
+      "actual": 95646.91548731626,
+      "entries": 3,
+      "defeats": [
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 3,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 95804.62992208172,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 4,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 94515.83284040316,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 4,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": -43.688457497225045,
+      "deltaSquared": 1908.6813184868392,
+      "actual": 96454.62255402641,
+      "entries": 1,
+      "defeats": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 5,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 32.886948771535714,
+      "deltaSquared": 2781.806557900746,
+      "actual": 95999.19929963179,
+      "entries": 3,
+      "defeats": [
+        3,
+        3,
+        2
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 5,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": -30.69837761655394,
+      "deltaSquared": 942.3903882885401,
+      "actual": 95936.14587087661,
+      "entries": 1,
+      "defeats": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 6,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": -171.6505963968708,
+      "deltaSquared": 25923.40672132298,
+      "actual": 95304.69611884821,
+      "entries": 6,
+      "defeats": [
+        4,
+        4,
+        2
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 6,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": -97.74824264779862,
+      "deltaSquared": 19781.993663564,
+      "actual": 96521.14561207069,
+      "entries": 10,
+      "defeats": [
+        9,
+        8,
+        3
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 7,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 97.82540800607767,
+      "deltaSquared": 5586.604921891912,
+      "actual": 96224.6298980587,
+      "entries": 7,
+      "defeats": [
+        7,
+        7,
+        5
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 7,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 63.90953325093645,
+      "deltaSquared": 20039.958934317972,
+      "actual": 95835.74759689617,
+      "entries": 11,
+      "defeats": [
+        10,
+        10,
+        6
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 8,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 55.71041564960562,
+      "deltaSquared": 3121.7804949953493,
+      "actual": 96432.41168811767,
+      "entries": 2,
+      "defeats": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 8,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 95717.37127065132,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 9,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 83.13031516164025,
+      "deltaSquared": 2306.2433935342797,
+      "actual": 94809.79478034834,
+      "entries": 6,
+      "defeats": [
+        6,
+        6,
+        5
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 9,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 53.83420103834251,
+      "deltaSquared": 3102.4007124192526,
+      "actual": 96368.27770419755,
+      "entries": 5,
+      "defeats": [
+        5,
+        5,
+        4
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 10,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": -72.87919135744765,
+      "deltaSquared": 25927.43739312134,
+      "actual": 95481.46028849595,
+      "entries": 35,
+      "defeats": [
+        32,
+        28,
+        17
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 10,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 255.80916736654262,
+      "deltaSquared": 23910.08840254815,
+      "actual": 96831.4398858779,
+      "entries": 29,
+      "defeats": [
+        27,
+        27,
+        17
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 11,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 375.4863646405677,
+      "deltaSquared": 46415.813674586716,
+      "actual": 96078.19991449342,
+      "entries": 71,
+      "defeats": [
+        68,
+        65,
+        37
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 11,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 111.11017647036311,
+      "deltaSquared": 78180.76758129688,
+      "actual": 97955.85134402008,
+      "entries": 89,
+      "defeats": [
+        84,
+        81,
+        39
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 12,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 95297.52351489759,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 12,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 82.46905776930524,
+      "deltaSquared": 2443.130440398078,
+      "actual": 96345.94222995659,
+      "entries": 3,
+      "defeats": [
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 13,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 94.21384831792466,
+      "deltaSquared": 4487.817487101998,
+      "actual": 95474.65132858536,
+      "entries": 7,
+      "defeats": [
+        7,
+        6,
+        3
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 13,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": -42.80438207485071,
+      "deltaSquared": 1432.0775757543204,
+      "actual": 95004.65371636282,
+      "entries": 6,
+      "defeats": [
+        6,
+        5,
+        3
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 14,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 315.5725583972416,
+      "deltaSquared": 35715.3849876258,
+      "actual": 96148.935594249,
+      "entries": 64,
+      "defeats": [
+        62,
+        61,
+        25
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 14,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 85.4551808147959,
+      "deltaSquared": 66039.31560395005,
+      "actual": 96050.39425722246,
+      "entries": 69,
+      "defeats": [
+        63,
+        63,
+        29
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 15,
+      "seed": 70113451,
+      "paidRounds": 550000,
+      "delta": -270.8926813425764,
+      "deltaSquared": 1526852.3099593478,
+      "actual": 526823.9162597351,
+      "entries": 4711,
+      "defeats": [
+        4275,
+        4030,
+        2167
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 15,
+      "seed": 92411773,
+      "paidRounds": 550000,
+      "delta": 2077.449110297907,
+      "deltaSquared": 1519474.8683495563,
+      "actual": 532398.8037127606,
+      "entries": 4769,
+      "defeats": [
+        4361,
+        4117,
+        2261
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 0,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 96768.49981436391,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 0,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 95824.53257338692,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 1,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 96137.23721322333,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 1,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 96231.20540749359,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 2,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": -72.280487438685,
+      "deltaSquared": 4303.924630986132,
+      "actual": 96860.09640210574,
+      "entries": 2,
+      "defeats": [
+        2,
+        1,
+        1
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 2,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 94884.81315871482,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 3,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": -13.63793989648201,
+      "deltaSquared": 185.99340462005574,
+      "actual": 95293.1739249829,
+      "entries": 1,
+      "defeats": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 3,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 97306.5054063805,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 4,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 96277.73067961224,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 4,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 96078.12887727183,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 5,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 96127.30133314354,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 5,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": -60.242296269079006,
+      "deltaSquared": 5219.388505109621,
+      "actual": 96326.96301740452,
+      "entries": 4,
+      "defeats": [
+        3,
+        3,
+        1
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 6,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": -37.843684353978716,
+      "deltaSquared": 6960.871862976269,
+      "actual": 96300.89688922097,
+      "entries": 6,
+      "defeats": [
+        6,
+        5,
+        4
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 6,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": -12.047014705742896,
+      "deltaSquared": 5442.2473560487215,
+      "actual": 95443.5373168041,
+      "entries": 7,
+      "defeats": [
+        7,
+        7,
+        3
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 7,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": -44.4658955009654,
+      "deltaSquared": 3665.402697710083,
+      "actual": 95181.83551951763,
+      "entries": 10,
+      "defeats": [
+        10,
+        10,
+        2
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 7,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 35.97392563770002,
+      "deltaSquared": 18346.684048711264,
+      "actual": 96802.06643734794,
+      "entries": 14,
+      "defeats": [
+        13,
+        12,
+        6
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 8,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 9.296681771589348,
+      "deltaSquared": 86.42829196220167,
+      "actual": 96498.88043072652,
+      "entries": 1,
+      "defeats": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 8,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 25.751181617767685,
+      "deltaSquared": 663.1233547112563,
+      "actual": 95004.21202086365,
+      "entries": 1,
+      "defeats": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 9,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": -37.39532155468589,
+      "deltaSquared": 21920.756380248604,
+      "actual": 95639.0137936893,
+      "entries": 11,
+      "defeats": [
+        10,
+        7,
+        4
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 9,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 14.071898830369861,
+      "deltaSquared": 6720.854028930242,
+      "actual": 95693.56043357478,
+      "entries": 8,
+      "defeats": [
+        7,
+        7,
+        4
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 10,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 69.48411246878396,
+      "deltaSquared": 29255.996527897398,
+      "actual": 96308.07797641857,
+      "entries": 30,
+      "defeats": [
+        27,
+        26,
+        17
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 10,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 141.431832825924,
+      "deltaSquared": 30957.44045982712,
+      "actual": 97566.74488777878,
+      "entries": 35,
+      "defeats": [
+        33,
+        32,
+        18
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 11,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 168.96935593157497,
+      "deltaSquared": 70742.94498178353,
+      "actual": 97662.52234755413,
+      "entries": 85,
+      "defeats": [
+        78,
+        77,
+        40
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 11,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 97.64415545777655,
+      "deltaSquared": 63302.010251152016,
+      "actual": 95190.15371194144,
+      "entries": 57,
+      "defeats": [
+        51,
+        47,
+        31
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 12,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 26.526356763418747,
+      "deltaSquared": 703.6476031401714,
+      "actual": 96196.48967999774,
+      "entries": 1,
+      "defeats": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 12,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 34.38059735312126,
+      "deltaSquared": 666.6856748079197,
+      "actual": 95643.41311923877,
+      "entries": 2,
+      "defeats": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 13,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 97.18562685774543,
+      "deltaSquared": 8781.629225550449,
+      "actual": 96214.1852489923,
+      "entries": 10,
+      "defeats": [
+        9,
+        9,
+        6
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 13,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": -58.636052782498126,
+      "deltaSquared": 18832.82155723555,
+      "actual": 96204.77066445837,
+      "entries": 15,
+      "defeats": [
+        15,
+        14,
+        9
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 14,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 102.76747486884007,
+      "deltaSquared": 60149.258043558635,
+      "actual": 95589.18079891978,
+      "entries": 68,
+      "defeats": [
+        62,
+        60,
+        37
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 14,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 294.59272299282,
+      "deltaSquared": 51173.57622618577,
+      "actual": 95762.98281205239,
+      "entries": 73,
+      "defeats": [
+        70,
+        67,
+        32
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 15,
+      "seed": 70113451,
+      "paidRounds": 550000,
+      "delta": 1298.84835467032,
+      "deltaSquared": 1468575.9699104214,
+      "actual": 527887.5269556243,
+      "entries": 4694,
+      "defeats": [
+        4295,
+        4049,
+        2181
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 15,
+      "seed": 92411773,
+      "paidRounds": 550000,
+      "delta": -37.625512841644095,
+      "deltaSquared": 1535775.1777821146,
+      "actual": 525586.8503275178,
+      "entries": 4700,
+      "defeats": [
+        4287,
+        4053,
+        2214
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 0,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 95757.89831620784,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 0,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 95507.99996714883,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 1,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 96043.64907848906,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 1,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 96994.5170136435,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 2,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 22.048967449745774,
+      "deltaSquared": 486.15696559994865,
+      "actual": 95890.97374685756,
+      "entries": 1,
+      "defeats": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 2,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 13.175588291434792,
+      "deltaSquared": 173.59612682539358,
+      "actual": 96451.45678714104,
+      "entries": 1,
+      "defeats": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 3,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 47.14457609649837,
+      "deltaSquared": 1264.6724334940222,
+      "actual": 96011.36933383286,
+      "entries": 2,
+      "defeats": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 3,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 95969.97255515683,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 4,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 96467.73051181989,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 4,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 0,
+      "deltaSquared": 0,
+      "actual": 95366.09967240076,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 5,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": -56.456947866690484,
+      "deltaSquared": 3187.386962422207,
+      "actual": 95627.50733030704,
+      "entries": 1,
+      "defeats": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 5,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 6.328148929192494,
+      "deltaSquared": 1355.2151092108425,
+      "actual": 96564.75341112274,
+      "entries": 3,
+      "defeats": [
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 6,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 13.493004168509003,
+      "deltaSquared": 7153.086355816071,
+      "actual": 96055.59933075382,
+      "entries": 9,
+      "defeats": [
+        9,
+        7,
+        4
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 6,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": -23.119421408802125,
+      "deltaSquared": 9627.292099308765,
+      "actual": 95188.71739415881,
+      "entries": 5,
+      "defeats": [
+        4,
+        4,
+        3
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 7,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 38.882777511175206,
+      "deltaSquared": 14909.25642916752,
+      "actual": 96254.97794643944,
+      "entries": 9,
+      "defeats": [
+        8,
+        8,
+        4
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 7,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 35.10793493835958,
+      "deltaSquared": 1038.1834581815626,
+      "actual": 94932.98910444754,
+      "entries": 4,
+      "defeats": [
+        4,
+        4,
+        2
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 8,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": -32.1237584389071,
+      "deltaSquared": 1271.71025985758,
+      "actual": 96362.10632706755,
+      "entries": 2,
+      "defeats": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 8,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 18.029168134197306,
+      "deltaSquared": 325.05090361115555,
+      "actual": 96126.5967968263,
+      "entries": 1,
+      "defeats": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 9,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 160.2150072668295,
+      "deltaSquared": 10977.2727985016,
+      "actual": 95491.85184925127,
+      "entries": 4,
+      "defeats": [
+        4,
+        4,
+        3
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 9,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 244.57443998082246,
+      "deltaSquared": 11455.70706776983,
+      "actual": 97438.98480373324,
+      "entries": 10,
+      "defeats": [
+        10,
+        10,
+        7
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 10,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 298.3861015582898,
+      "deltaSquared": 25483.411788850855,
+      "actual": 97191.38235545332,
+      "entries": 39,
+      "defeats": [
+        39,
+        36,
+        20
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 10,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": -4.388710433165997,
+      "deltaSquared": 23623.811767400053,
+      "actual": 95077.26925236548,
+      "entries": 26,
+      "defeats": [
+        23,
+        22,
+        11
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 11,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": -178.04589103509184,
+      "deltaSquared": 57014.367485241615,
+      "actual": 94385.96148929567,
+      "entries": 50,
+      "defeats": [
+        44,
+        41,
+        19
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 11,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 139.1475547435277,
+      "deltaSquared": 33396.987418671226,
+      "actual": 96180.65167569651,
+      "entries": 62,
+      "defeats": [
+        59,
+        56,
+        30
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 12,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": -29.554392714937975,
+      "deltaSquared": 873.4621287487789,
+      "actual": 96027.75954006522,
+      "entries": 1,
+      "defeats": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 12,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": -27.281796426307665,
+      "deltaSquared": 744.2964162464937,
+      "actual": 95933.32713221923,
+      "entries": 1,
+      "defeats": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 13,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": -34.78793780860748,
+      "deltaSquared": 40496.93191376215,
+      "actual": 95464.58745769825,
+      "entries": 12,
+      "defeats": [
+        10,
+        10,
+        5
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 13,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 204.1039195786212,
+      "deltaSquared": 12124.502446497914,
+      "actual": 95768.47766263309,
+      "entries": 11,
+      "defeats": [
+        11,
+        11,
+        9
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 14,
+      "seed": 70113451,
+      "paidRounds": 100000,
+      "delta": 338.5500632414203,
+      "deltaSquared": 65608.9113036622,
+      "actual": 97116.08337849556,
+      "entries": 79,
+      "defeats": [
+        74,
+        70,
+        35
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 14,
+      "seed": 92411773,
+      "paidRounds": 100000,
+      "delta": 248.22047080597113,
+      "deltaSquared": 60203.77877636667,
+      "actual": 95378.99905903717,
+      "entries": 67,
+      "defeats": [
+        62,
+        59,
+        31
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 15,
+      "seed": 70113451,
+      "paidRounds": 550000,
+      "delta": 511.11314870950343,
+      "deltaSquared": 1579482.1707305056,
+      "actual": 532544.7613042548,
+      "entries": 4762,
+      "defeats": [
+        4334,
+        4118,
+        2224
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 15,
+      "seed": 92411773,
+      "paidRounds": 550000,
+      "delta": 1196.8757348702484,
+      "deltaSquared": 1458911.5392776665,
+      "actual": 529174.3532607727,
+      "entries": 4718,
+      "defeats": [
+        4342,
+        4076,
+        2220
+      ]
+    }
+  ],
+  "precisionStateResults": [
+    {
+      "choice": "granite",
+      "state": 0,
+      "charges": [
+        3,
+        0,
+        0
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9586990292670899,
+      "change": 0,
+      "rtp": 0.9586990292670899,
+      "interval95": [
+        0.9553195469083466,
+        0.9620785116258332
+      ],
+      "directRtp": 0.9626772172916144,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 1,
+      "charges": [
+        3,
+        0,
+        1
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9595032659418562,
+      "change": 0,
+      "rtp": 0.9595032659418562,
+      "interval95": [
+        0.9561335351065331,
+        0.9628729967771793
+      ],
+      "directRtp": 0.9571903339344104,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 2,
+      "charges": [
+        3,
+        0,
+        2
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9613287492095025,
+      "change": 0.0004003669381458308,
+      "rtp": 0.9617291161476483,
+      "interval95": [
+        0.9583498404309613,
+        0.9651083918643354
+      ],
+      "directRtp": 0.9590760859166699,
+      "entries": 3,
+      "defeats": [
+        3,
+        3,
+        2
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 3,
+      "charges": [
+        3,
+        0,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9610198886117922,
+      "change": -0.00016653681189081993,
+      "rtp": 0.9608533517999014,
+      "interval95": [
+        0.9570831820023863,
+        0.9646235215974165
+      ],
+      "directRtp": 0.9572577270469899,
+      "entries": 3,
+      "defeats": [
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 4,
+      "charges": [
+        3,
+        1,
+        0
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9592307882714725,
+      "change": -0.00021844228748612522,
+      "rtp": 0.9590123459839863,
+      "interval95": [
+        0.9554897273466679,
+        0.9625349646213047
+      ],
+      "directRtp": 0.9548522769721478,
+      "entries": 1,
+      "defeats": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 5,
+      "charges": [
+        3,
+        1,
+        1
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9597885819709675,
+      "change": 0.000010942855774908864,
+      "rtp": 0.9597995248267424,
+      "interval95": [
+        0.9559579011678764,
+        0.9636411484856083
+      ],
+      "directRtp": 0.959676725852542,
+      "entries": 4,
+      "defeats": [
+        4,
+        4,
+        2
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 6,
+      "charges": [
+        3,
+        1,
+        2
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9611831702145633,
+      "change": -0.0013469941952233473,
+      "rtp": 0.95983617601934,
+      "interval95": [
+        0.9549211234810263,
+        0.9647512285576537
+      ],
+      "directRtp": 0.9591292086545945,
+      "entries": 16,
+      "defeats": [
+        13,
+        12,
+        5
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 7,
+      "charges": [
+        3,
+        1,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9565988932389632,
+      "change": 0.0008086747062850705,
+      "rtp": 0.9574075679452483,
+      "interval95": [
+        0.9524724737157443,
+        0.9623426621747523
+      ],
+      "directRtp": 0.9603018874747743,
+      "entries": 18,
+      "defeats": [
+        17,
+        17,
+        11
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 8,
+      "charges": [
+        3,
+        2,
+        0
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9607591062220039,
+      "change": 0.0002785520782480281,
+      "rtp": 0.9610376583002519,
+      "interval95": [
+        0.957602781590459,
+        0.9644725350100448
+      ],
+      "directRtp": 0.960748914793845,
+      "entries": 2,
+      "defeats": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 9,
+      "charges": [
+        3,
+        2,
+        1
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9583031463927596,
+      "change": 0.0006848225809999138,
+      "rtp": 0.9589879689737595,
+      "interval95": [
+        0.955115408160664,
+        0.962860529786855
+      ],
+      "directRtp": 0.9558903624227294,
+      "entries": 11,
+      "defeats": [
+        11,
+        11,
+        9
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 10,
+      "charges": [
+        3,
+        2,
+        2
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9632331322951487,
+      "change": 0.0009146498800454748,
+      "rtp": 0.9641477821751943,
+      "interval95": [
+        0.9583728607561152,
+        0.9699227035942733
+      ],
+      "directRtp": 0.9615645008718693,
+      "entries": 64,
+      "defeats": [
+        59,
+        55,
+        34
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 11,
+      "charges": [
+        3,
+        2,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9533878878450295,
+      "change": 0.002432982705554654,
+      "rtp": 0.9558208705505842,
+      "interval95": [
+        0.9482233303472141,
+        0.9634184107539543
+      ],
+      "directRtp": 0.9701702562925675,
+      "entries": 160,
+      "defeats": [
+        152,
+        146,
+        76
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 12,
+      "charges": [
+        3,
+        3,
+        0
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9607991780197372,
+      "change": 0.0004123452888465262,
+      "rtp": 0.9612115233085837,
+      "interval95": [
+        0.9576956613892599,
+        0.9647273852279076
+      ],
+      "directRtp": 0.9582173287242709,
+      "entries": 3,
+      "defeats": [
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 13,
+      "charges": [
+        3,
+        3,
+        1
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9574388513674574,
+      "change": 0.00025704733121536974,
+      "rtp": 0.9576958986986728,
+      "interval95": [
+        0.9534216804212217,
+        0.9619701169761239
+      ],
+      "directRtp": 0.9523965252247409,
+      "entries": 13,
+      "defeats": [
+        13,
+        11,
+        6
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 14,
+      "charges": [
+        3,
+        3,
+        2
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9594928909967142,
+      "change": 0.0020051386960601874,
+      "rtp": 0.9614980296927744,
+      "interval95": [
+        0.9541921642713844,
+        0.9688038951141644
+      ],
+      "directRtp": 0.9609966492573574,
+      "entries": 133,
+      "defeats": [
+        125,
+        124,
+        54
+      ]
+    },
+    {
+      "choice": "granite",
+      "state": 15,
+      "charges": [
+        3,
+        3,
+        3
+      ],
+      "samples": 1100000,
+      "previousSamples": 8000000,
+      "baselineRtp": 0.9634801752773513,
+      "change": 0.0016423240263230277,
+      "rtp": 0.9651224993036743,
+      "interval95": [
+        0.9596306095329964,
+        0.9706143890743523
+      ],
+      "directRtp": 0.9629297454295416,
+      "entries": 9480,
+      "defeats": [
+        8636,
+        8147,
+        4428
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 0,
+      "charges": [
+        0,
+        3,
+        0
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9607181033988238,
+      "change": 0,
+      "rtp": 0.9607181033988238,
+      "interval95": [
+        0.9572961766818295,
+        0.9641400301158181
+      ],
+      "directRtp": 0.9629651619387541,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 1,
+      "charges": [
+        0,
+        3,
+        1
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9631290484147313,
+      "change": 0,
+      "rtp": 0.9631290484147313,
+      "interval95": [
+        0.9597241651918501,
+        0.9665339316376126
+      ],
+      "directRtp": 0.9618422131035846,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 2,
+      "charges": [
+        0,
+        3,
+        2
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9634015942731976,
+      "change": -0.000361402437193425,
+      "rtp": 0.9630401918360042,
+      "interval95": [
+        0.9596078619997123,
+        0.9664725216722961
+      ],
+      "directRtp": 0.9587245478041028,
+      "entries": 2,
+      "defeats": [
+        2,
+        1,
+        1
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 3,
+      "charges": [
+        0,
+        3,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9629587983174659,
+      "change": -0.00006818969948241004,
+      "rtp": 0.9628906086179835,
+      "interval95": [
+        0.9595309406148298,
+        0.9662502766211372
+      ],
+      "directRtp": 0.9629983966568171,
+      "entries": 1,
+      "defeats": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 4,
+      "charges": [
+        1,
+        3,
+        0
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9572396517429885,
+      "change": 0,
+      "rtp": 0.9572396517429885,
+      "interval95": [
+        0.9538569150210096,
+        0.9606223884649675
+      ],
+      "directRtp": 0.9617792977844204,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 5,
+      "charges": [
+        1,
+        3,
+        1
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.962493502486278,
+      "change": -0.00030121148134539503,
+      "rtp": 0.9621922910049325,
+      "interval95": [
+        0.9586356935629061,
+        0.9657488884469589
+      ],
+      "directRtp": 0.9622713217527402,
+      "entries": 4,
+      "defeats": [
+        3,
+        3,
+        1
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 6,
+      "charges": [
+        1,
+        3,
+        2
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9582839007507853,
+      "change": -0.0002494534952986081,
+      "rtp": 0.9580344472554867,
+      "interval95": [
+        0.954152829502237,
+        0.9619160650087364
+      ],
+      "directRtp": 0.9587221710301254,
+      "entries": 13,
+      "defeats": [
+        13,
+        12,
+        7
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 7,
+      "charges": [
+        1,
+        3,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9595185380521382,
+      "change": -0.00004245984931632691,
+      "rtp": 0.9594760782028219,
+      "interval95": [
+        0.9550574658561761,
+        0.9638946905494676
+      ],
+      "directRtp": 0.9599195097843278,
+      "entries": 24,
+      "defeats": [
+        23,
+        22,
+        8
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 8,
+      "charges": [
+        2,
+        3,
+        0
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9615639680865596,
+      "change": 0.00017523931694678516,
+      "rtp": 0.9617392074035064,
+      "interval95": [
+        0.9583547218176198,
+        0.9651236929893929
+      ],
+      "directRtp": 0.9575154622579508,
+      "entries": 2,
+      "defeats": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 9,
+      "charges": [
+        2,
+        3,
+        1
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9584342111122174,
+      "change": -0.00011661711362158016,
+      "rtp": 0.9583175939985958,
+      "interval95": [
+        0.9541533440455835,
+        0.9624818439516082
+      ],
+      "directRtp": 0.9566628711363204,
+      "entries": 19,
+      "defeats": [
+        17,
+        14,
+        8
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 10,
+      "charges": [
+        2,
+        3,
+        2
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9618241553306202,
+      "change": 0.00105457972647354,
+      "rtp": 0.9628787350570936,
+      "interval95": [
+        0.9571182035127961,
+        0.9686392666013912
+      ],
+      "directRtp": 0.9693741143209869,
+      "entries": 65,
+      "defeats": [
+        60,
+        58,
+        35
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 11,
+      "charges": [
+        2,
+        3,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9549181185527938,
+      "change": 0.0013330675569467577,
+      "rtp": 0.9562511861097406,
+      "interval95": [
+        0.948936266948049,
+        0.9635661052714322
+      ],
+      "directRtp": 0.9642633802974778,
+      "entries": 142,
+      "defeats": [
+        129,
+        124,
+        71
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 12,
+      "charges": [
+        3,
+        3,
+        0
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9574136905394585,
+      "change": 0.00030453477058270005,
+      "rtp": 0.9577182253100411,
+      "interval95": [
+        0.9542341148148142,
+        0.961202335805268
+      ],
+      "directRtp": 0.9591995139961826,
+      "entries": 3,
+      "defeats": [
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 13,
+      "charges": [
+        3,
+        3,
+        1
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9562957038337107,
+      "change": 0.00019274787037623653,
+      "rtp": 0.9564884517040869,
+      "interval95": [
+        0.9519747385525404,
+        0.9610021648556334
+      ],
+      "directRtp": 0.9620947795672534,
+      "entries": 25,
+      "defeats": [
+        24,
+        23,
+        15
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 14,
+      "charges": [
+        3,
+        3,
+        2
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9549142848517681,
+      "change": 0.0019868009893083,
+      "rtp": 0.9569010858410764,
+      "interval95": [
+        0.9496447793549888,
+        0.9641573923271639
+      ],
+      "directRtp": 0.9567608180548609,
+      "entries": 141,
+      "defeats": [
+        132,
+        127,
+        69
+      ]
+    },
+    {
+      "choice": "impulse",
+      "state": 15,
+      "charges": [
+        3,
+        3,
+        3
+      ],
+      "samples": 1100000,
+      "previousSamples": 8000000,
+      "baselineRtp": 0.9630379557462793,
+      "change": 0.0011465662198442508,
+      "rtp": 0.9641845219661235,
+      "interval95": [
+        0.9587131206930254,
+        0.9696559232392216
+      ],
+      "directRtp": 0.9577039793483111,
+      "entries": 9394,
+      "defeats": [
+        8582,
+        8102,
+        4395
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 0,
+      "charges": [
+        0,
+        0,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9580886775788676,
+      "change": 0,
+      "rtp": 0.9580886775788676,
+      "interval95": [
+        0.95473607205672,
+        0.9614412831010153
+      ],
+      "directRtp": 0.9563294914167835,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 1,
+      "charges": [
+        0,
+        1,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9614836267321183,
+      "change": 0,
+      "rtp": 0.9614836267321183,
+      "interval95": [
+        0.9579500545819434,
+        0.9650171988822932
+      ],
+      "directRtp": 0.9651908304606628,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 2,
+      "charges": [
+        0,
+        2,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9621756866117528,
+      "change": 0.00017612277870590284,
+      "rtp": 0.9623518093904587,
+      "interval95": [
+        0.9589423165298305,
+        0.9657613022510869
+      ],
+      "directRtp": 0.961712152669993,
+      "entries": 2,
+      "defeats": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 3,
+      "charges": [
+        0,
+        3,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9592587596991939,
+      "change": 0.00023572288048249185,
+      "rtp": 0.9594944825796764,
+      "interval95": [
+        0.9560777815483681,
+        0.9629111836109847
+      ],
+      "directRtp": 0.9599067094449484,
+      "entries": 2,
+      "defeats": [
+        2,
+        2,
+        1
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 4,
+      "charges": [
+        1,
+        0,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9588276642621971,
+      "change": 0,
+      "rtp": 0.9588276642621971,
+      "interval95": [
+        0.9554662051854771,
+        0.9621891233389172
+      ],
+      "directRtp": 0.9591691509211031,
+      "entries": 0,
+      "defeats": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 5,
+      "charges": [
+        1,
+        1,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9564562398491822,
+      "change": -0.00025064399468749,
+      "rtp": 0.9562055958544947,
+      "interval95": [
+        0.9526449671559314,
+        0.959766224553058
+      ],
+      "directRtp": 0.9609613037071489,
+      "entries": 4,
+      "defeats": [
+        4,
+        2,
+        1
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 6,
+      "charges": [
+        1,
+        2,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9576338722012824,
+      "change": -0.00004813208620146561,
+      "rtp": 0.9575857401150809,
+      "interval95": [
+        0.9535338558700187,
+        0.9616376243601431
+      ],
+      "directRtp": 0.9562215836245631,
+      "entries": 14,
+      "defeats": [
+        13,
+        11,
+        7
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 7,
+      "charges": [
+        1,
+        3,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9590296581377507,
+      "change": 0.0003699535622476739,
+      "rtp": 0.9593996116999983,
+      "interval95": [
+        0.9551448536362519,
+        0.9636543697637447
+      ],
+      "directRtp": 0.9559398352544348,
+      "entries": 13,
+      "defeats": [
+        12,
+        12,
+        6
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 8,
+      "charges": [
+        2,
+        0,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9616325450447442,
+      "change": -0.00007047295152354898,
+      "rtp": 0.9615620720932206,
+      "interval95": [
+        0.9582014127866804,
+        0.9649227313997609
+      ],
+      "directRtp": 0.9624435156194693,
+      "entries": 3,
+      "defeats": [
+        3,
+        3,
+        1
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 9,
+      "charges": [
+        2,
+        1,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9605682736948322,
+      "change": 0.0020239472362382598,
+      "rtp": 0.9625922209310704,
+      "interval95": [
+        0.958232796682772,
+        0.9669516451793689
+      ],
+      "directRtp": 0.9646541832649225,
+      "entries": 14,
+      "defeats": [
+        14,
+        14,
+        10
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 10,
+      "charges": [
+        2,
+        2,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9636877800627115,
+      "change": 0.001469986955625619,
+      "rtp": 0.9651577670183371,
+      "interval95": [
+        0.9595211743537602,
+        0.970794359682914
+      ],
+      "directRtp": 0.9613432580390939,
+      "entries": 65,
+      "defeats": [
+        62,
+        58,
+        31
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 11,
+      "charges": [
+        2,
+        3,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9605897576488979,
+      "change": -0.00019449168145782068,
+      "rtp": 0.9603952659674401,
+      "interval95": [
+        0.9533249527250655,
+        0.9674655792098147
+      ],
+      "directRtp": 0.952833065824961,
+      "entries": 112,
+      "defeats": [
+        103,
+        97,
+        49
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 12,
+      "charges": [
+        3,
+        0,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9615720845773116,
+      "change": -0.0002841809457062282,
+      "rtp": 0.9612879036316053,
+      "interval95": [
+        0.9577033251194503,
+        0.9648724821437603
+      ],
+      "directRtp": 0.9598054333614223,
+      "entries": 2,
+      "defeats": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 13,
+      "charges": [
+        3,
+        1,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9541903727397715,
+      "change": 0.0008465799088500685,
+      "rtp": 0.9550369526486215,
+      "interval95": [
+        0.9496138369686249,
+        0.9604600683286182
+      ],
+      "directRtp": 0.9561653256016567,
+      "entries": 23,
+      "defeats": [
+        21,
+        21,
+        14
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 14,
+      "charges": [
+        3,
+        2,
+        3
+      ],
+      "samples": 200000,
+      "previousSamples": 1000000,
+      "baselineRtp": 0.9586813111615519,
+      "change": 0.002933852670236957,
+      "rtp": 0.9616151638317888,
+      "interval95": [
+        0.9541054039390529,
+        0.9691249237245247
+      ],
+      "directRtp": 0.9624754121876636,
+      "entries": 146,
+      "defeats": [
+        136,
+        129,
+        66
+      ]
+    },
+    {
+      "choice": "prism",
+      "state": 15,
+      "charges": [
+        3,
+        3,
+        3
+      ],
+      "samples": 1100000,
+      "previousSamples": 8000000,
+      "baselineRtp": 0.9631559327046602,
+      "change": 0.0015527171668906835,
+      "rtp": 0.9647086498715508,
+      "interval95": [
+        0.9592217640452915,
+        0.9701955356978101
+      ],
+      "directRtp": 0.9651991950591158,
+      "entries": 9480,
+      "defeats": [
+        8676,
+        8194,
+        4444
+      ]
+    }
+  ],
+  "replay": [
+    {
+      "choice": "granite",
+      "stake": 10,
+      "index": 0,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 10,
+      "index": 1,
+      "spins": 18,
+      "defeated": 1
+    },
+    {
+      "choice": "granite",
+      "stake": 10,
+      "index": 2,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 20,
+      "index": 0,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 20,
+      "index": 1,
+      "spins": 18,
+      "defeated": 1
+    },
+    {
+      "choice": "granite",
+      "stake": 20,
+      "index": 2,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 50,
+      "index": 0,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 50,
+      "index": 1,
+      "spins": 18,
+      "defeated": 1
+    },
+    {
+      "choice": "granite",
+      "stake": 50,
+      "index": 2,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 100,
+      "index": 0,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 100,
+      "index": 1,
+      "spins": 18,
+      "defeated": 1
+    },
+    {
+      "choice": "granite",
+      "stake": 100,
+      "index": 2,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 200,
+      "index": 0,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 200,
+      "index": 1,
+      "spins": 18,
+      "defeated": 1
+    },
+    {
+      "choice": "granite",
+      "stake": 200,
+      "index": 2,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 333,
+      "index": 0,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 333,
+      "index": 1,
+      "spins": 18,
+      "defeated": 1
+    },
+    {
+      "choice": "granite",
+      "stake": 333,
+      "index": 2,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 500,
+      "index": 0,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 500,
+      "index": 1,
+      "spins": 18,
+      "defeated": 1
+    },
+    {
+      "choice": "granite",
+      "stake": 500,
+      "index": 2,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 1000,
+      "index": 0,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 1000,
+      "index": 1,
+      "spins": 18,
+      "defeated": 1
+    },
+    {
+      "choice": "granite",
+      "stake": 1000,
+      "index": 2,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 2000,
+      "index": 0,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 2000,
+      "index": 1,
+      "spins": 18,
+      "defeated": 1
+    },
+    {
+      "choice": "granite",
+      "stake": 2000,
+      "index": 2,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 5000,
+      "index": 0,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 5000,
+      "index": 1,
+      "spins": 18,
+      "defeated": 1
+    },
+    {
+      "choice": "granite",
+      "stake": 5000,
+      "index": 2,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 10000,
+      "index": 0,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "granite",
+      "stake": 10000,
+      "index": 1,
+      "spins": 18,
+      "defeated": 1
+    },
+    {
+      "choice": "granite",
+      "stake": 10000,
+      "index": 2,
+      "spins": 8,
+      "defeated": 0
+    },
+    {
+      "choice": "impulse",
+      "stake": 10,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 10,
+      "index": 1,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 10,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "impulse",
+      "stake": 20,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 20,
+      "index": 1,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 20,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "impulse",
+      "stake": 50,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 50,
+      "index": 1,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 50,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "impulse",
+      "stake": 100,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 100,
+      "index": 1,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 100,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "impulse",
+      "stake": 200,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 200,
+      "index": 1,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 200,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "impulse",
+      "stake": 333,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 333,
+      "index": 1,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 333,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "impulse",
+      "stake": 500,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 500,
+      "index": 1,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 500,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "impulse",
+      "stake": 1000,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 1000,
+      "index": 1,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 1000,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "impulse",
+      "stake": 2000,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 2000,
+      "index": 1,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 2000,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "impulse",
+      "stake": 5000,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 5000,
+      "index": 1,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 5000,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "impulse",
+      "stake": 10000,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 10000,
+      "index": 1,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "impulse",
+      "stake": 10000,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 10,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "prism",
+      "stake": 10,
+      "index": 1,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 10,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 20,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "prism",
+      "stake": 20,
+      "index": 1,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 20,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 50,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "prism",
+      "stake": 50,
+      "index": 1,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 50,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 100,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "prism",
+      "stake": 100,
+      "index": 1,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 100,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 200,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "prism",
+      "stake": 200,
+      "index": 1,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 200,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 333,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "prism",
+      "stake": 333,
+      "index": 1,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 333,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 500,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "prism",
+      "stake": 500,
+      "index": 1,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 500,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 1000,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "prism",
+      "stake": 1000,
+      "index": 1,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 1000,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 2000,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "prism",
+      "stake": 2000,
+      "index": 1,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 2000,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 5000,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "prism",
+      "stake": 5000,
+      "index": 1,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 5000,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 10000,
+      "index": 0,
+      "spins": 30,
+      "defeated": 3
+    },
+    {
+      "choice": "prism",
+      "stake": 10000,
+      "index": 1,
+      "spins": 27,
+      "defeated": 2
+    },
+    {
+      "choice": "prism",
+      "stake": 10000,
+      "index": 2,
+      "spins": 27,
+      "defeated": 2
+    }
+  ],
+  "analysis": "Independent paired complete paid rounds estimate the change from the frozen v4 conditional RTP. For triggered rounds the bonus shares random numbers across versions. The payoff includes all continuations and the common cap. Per-state confidence intervals combine the independent v4 and paired-difference variances. Common final cent settlement preserves that expectation for every admitted stake."
+}
