@@ -488,7 +488,7 @@
 .cc-game.mo-game .cc-bonus-art > .mo-symbol { width: 112px; height: 112px; flex: 0 1 112px; }
 .cc-game.mo-game .cc-bonus-art > strong { flex: none; font: 900 72px/1 var(--mo-display); color: #172b8c; }
 .cc-game.mo-game .cc-bonus-art > strong > small { display: block; max-width: none; font: 700 14px/1.4 var(--mo-text); color: var(--mo-ink); }
-.cc-game.mo-game .cc-prize { font: 900 clamp(48px, 8vw, 76px)/1.1 var(--mo-display); letter-spacing: -3px; color: #172b8c; }
+.cc-game.mo-game .cc-prize { font: 900 clamp(48px, 8vw, 76px)/1.3 var(--mo-display); letter-spacing: -3px; color: #172b8c; }
 .cc-game.mo-game .cc-prize small { display: block; font: 700 14px/1.4 var(--mo-text); letter-spacing: 1px; color: inherit; }
 .cc-game.mo-game .cc-ledger { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: 100%; max-width: 600px; margin: 14px auto; }
 .cc-game.mo-game .cc-ledger > span { padding: 10px 4px; border: 2px solid; border-color: var(--mo-down); border-radius: 0; background: #dcdcdc; font-size: 14px; color: var(--mo-ink); }
@@ -525,7 +525,7 @@
 .cc-game.mo-game:not([data-slot-priority="full"]) .cc-dialog > small { margin: 0 -14px; }
 .cc-game.mo-game:not([data-slot-priority="full"]) .cc-dialog > .mo-x { margin-right: -12px; }
 .cc-game.mo-game:not([data-slot-priority="full"])[data-system-error="true"] .cc-dialog { padding-top: 14px; }
-.cc-game.mo-game:not([data-slot-priority="full"])[data-system-error="true"] .cc-dialog > small { margin: 0 auto; font-size: 14px; }
+.cc-game.mo-game:not([data-slot-priority="full"])[data-system-error="true"] .cc-dialog > small { min-height: 0 !important; margin: 0 auto; font-size: 14px; }
 .cc-game.mo-game[data-slot-priority="portrait"] .cc-dialog h2 { font-size: 26px; letter-spacing: -1px; margin: 14px 0 12px; }
 .cc-game.mo-game[data-slot-priority="portrait"] .cc-intro-cards { grid-template-columns: minmax(0, 1fr); gap: 8px; }
 .cc-game.mo-game[data-slot-priority="portrait"] .cc-intro-cards article { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 0 10px; padding: 8px; text-align: left; }
