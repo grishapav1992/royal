@@ -1,0 +1,121 @@
+{
+  "published": true,
+  "release": "neopolis-smooth-20261124-v1",
+  "sourceCommit": "ef112a26427fb1ab109405731c6c15728a014e39",
+  "baseCommit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/neopolis-smooth-20261124-v1/source.tgz",
+    "sha256": "d05378632a23bc17a334918ae1e899ce2d03f91d38c2776cafdb71685e7ab4c9",
+    "bytes": 56153,
+    "oldVersion": "0.7.0-ad225d683ad9",
+    "imageTag": "royal-game:before-neopolis-smooth-20261124-v1",
+    "image": "sha256:2a3b9ebfb37444da4a752c803fbb742d203b74315df83b38da2d7890b8f79e99",
+    "oldPackageHardlinked": true,
+    "createdSources": []
+  },
+  "module": {
+    "verified": true,
+    "gameId": "studio-neopolis",
+    "version": "0.7.1-692d69f18074",
+    "bytes": 5905291,
+    "files": 13,
+    "beforeSha256": "5d88921e2acbf8ab884b875f2be56655f5c236b1ec30ac2782104c23ef79446f",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "b69ee77b9038572d6a91c83fc684d63d4a9306d9c8ef217a9bba63379fb46add",
+    "history": "/opt/royal-game-modules-state/history/20261124T201536-e65875b6d31b43d795fb2da2ce5a23f6.json"
+  },
+  "freeBefore": 11478441984,
+  "freeAfter": 11472400384,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8821,
+  "servicesPreserved": 11,
+  "wrapperSourceCommit": "ef112a26427fb1ab109405731c6c15728a014e39",
+  "previousVersion": "0.7.0-ad225d683ad9",
+  "manifestSha256": "39098f9592d6866b639961a5951a239fedd9c5c2e6a36822739d0ab75a09594c",
+  "pointerSha256": "b69ee77b9038572d6a91c83fc684d63d4a9306d9c8ef217a9bba63379fb46add",
+  "priorPointerSha256": "5d88921e2acbf8ab884b875f2be56655f5c236b1ec30ac2782104c23ef79446f",
+  "releaseManifestSha256": "b62213a0cd180d195577f0f6d1cf3283a455d736bb01e5b40e8f125c2aaa00b4",
+  "receiptSha256": "e26a91634a1f35f2de1a8ceb581bdd5e6476c4ca1a2b7be5156d16d5418f0a86",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "verification": {
+    "rtp": "passed in release:prepare",
+    "typecheck": true,
+    "githubVerified": true,
+    "walletTests": 19,
+    "browserReport": {
+      "release": "neopolis-smooth-20261124-v1",
+      "version": "0.7.1-692d69f18074",
+      "sourceCommit": "ef112a26427fb1ab109405731c6c15728a014e39",
+      "moduleManifestSha256": "39098f9592d6866b639961a5951a239fedd9c5c2e6a36822739d0ab75a09594c",
+      "connectedHostPassed": true,
+      "recoveryPassed": true,
+      "walletTestsPassed": 19,
+      "gameBrowserTests": 17,
+      "connectedBrowserTests": 4,
+      "expectTimeoutMs": 45000,
+      "host": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact module bytes",
+      "browser": "Google Chrome, Apple M1",
+      "framesPerSecond": {
+        "before": {
+          "nullDamaged": 31,
+          "vesperaDamaged": 20,
+          "aeonDamaged": 18
+        },
+        "after": {
+          "nullDamaged": 59,
+          "vesperaDamaged": 60,
+          "aeonDamaged": 60
+        }
+      },
+      "scenarios": [
+        "field, spin, stake and villain panel without scrolling on eight sizes",
+        "eight sizes, close and reopen without a second debit",
+        "lost response restores the same operation with one debit of 0.10 on 1440x900 and 393x852, 100.01 never sent",
+        "three bosses with reload, rescue and summary, the field never moves",
+        "autoplay budget through a campaign",
+        "hero splash of every hero in every arena without torn patches",
+        "a damaged villain is composed from prepared sheets without blur per frame"
+      ],
+      "notChecked": [
+        "physical phones",
+        "Windows computers",
+        "Safari",
+        "listening quality"
+      ]
+    },
+    "runs": [
+      "The first connected runs stopped at the hall entrance because the Mac load average was near 30; they passed with a 45 second expect timeout.",
+      "The package code equals the bytes of the reviewed build 0.7.1-3155ebb1ceeb, which passed the 17 game scenarios, except for the version in resource paths."
+    ],
+    "live": {
+      "health": 200,
+      "modulePointers": 125,
+      "unchangedModulePointers": 124,
+      "changedModulePointers": [
+        "studio-neopolis"
+      ],
+      "packageFilesVerified": 13,
+      "manifestVerified": true,
+      "previousPackageFilesVerified": 13,
+      "changedSources": 7,
+      "otherSourcesChanged": 0
+    },
+    "publicSignedInPlayChecked": false,
+    "productionAccountsOrRoundsCreated": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 76.43,
+    "timerEnabled": true,
+    "timerActive": true,
+    "freeAfter": 11464110080
+  }
+}
