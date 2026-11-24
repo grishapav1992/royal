@@ -134,4 +134,4 @@ npm run build
 
 Представление перестроено вокруг кампании: путь из 24 ударов, щит из пластин, гаснущие узлы и трещины, отдельная гибель каждого злодея, режим спасённого города и итог. Математика, выплаты и протокол прежние. Раскладка, устройство и проверки: [запись редизайна](../../docs/game-layout/neopolis-campaign/README.md).
 
-Портреты команды `team-*-v4.webp` экспортирует `node scripts/build-neopolis-team.mjs` из тех же исходников `assets/source/team-*-v3.png`.
+Портреты команды `team-*-v5.webp` экспортирует `node scripts/build-neopolis-team.mjs` из исходников `assets/source/team-*-v3.png` и силуэтов `assets/source/masks`.

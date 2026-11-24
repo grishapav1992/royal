@@ -674,3 +674,23 @@ test('a hero splash shows the confirmed hero, their portrait and power before th
   expect(splash.text).toContain({granite:'Titan strike',impulse:'Energy column',prism:'Reality shift'}[hero]!);
   expect(splash.text).toContain({granite:'Granite',impulse:'Impulse',prism:'Prism'}[hero]!);
 });
+
+test('a damaged villain is composed from prepared sheets, without blur or text work per frame', async ({ page }) => {
+  test.setTimeout(120000);
+  await page.addInitScript(() => {
+    const count = (window as any).npDraw = { blurred: 0, strokes: 0, frames: 0 }, proto = CanvasRenderingContext2D.prototype;
+    for (const name of ['stroke','fill','fillRect','drawImage'] as const) { const original = proto[name] as any; (proto as any)[name] = function (...args: any[]) { if (this.shadowBlur > 0) count.blurred++; if (name === 'stroke' && this.canvas.classList.contains('np-boss-canvas')) count.strokes++; return original.apply(this,args); }; }
+    const clear = proto.clearRect; proto.clearRect = function (...args: any) { if (this.canvas.classList.contains('np-boss-canvas')) count.frames++; return clear.apply(this,args); };
+  });
+  await ready(page); await page.locator('[data-np=fast]').check();
+  let battle: any;
+  for (let i = 0; i < 60; i++) { await closeNotice(page); battle = (await spin(page)).view.neopolis.battle; if (battle && battle.boss === 2 && battle.shield === 0 && battle.core <= 3) break; }
+  expect(battle).toMatchObject({ boss: 2, shield: 0 });
+  await page.emulateMedia({reducedMotion:'no-preference'}); await page.waitForTimeout(2500);
+  await page.evaluate(() => Object.assign((window as any).npDraw, { blurred: 0, strokes: 0, frames: 0 }));
+  await page.waitForTimeout(1000);
+  const work = await page.evaluate(() => (window as any).npDraw);
+  expect(work.blurred).toBe(0); expect(work.frames).toBeGreaterThan(5); expect(work.frames).toBeLessThan(45);
+  // Only the turning marks of the open nodes are stroked, four arcs per node.
+  expect(work.strokes).toBeLessThanOrEqual(work.frames * battle.core * 4 + 8);
+});

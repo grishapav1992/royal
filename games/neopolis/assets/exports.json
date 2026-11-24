@@ -2,7 +2,7 @@
   "generator": "Built-in ImageGen",
   "export": "Chrome Canvas WebP, quality 0.94; original dimensions except hall thumbnails",
   "sourceBytes": 39293257,
-  "gameBytes": 8581446,
+  "gameBytes": 8640542,
   "files": [
     {
       "file": "/assets/neopolis/city-v2.webp",
@@ -117,26 +117,26 @@
       "sha256": "6a3506f93516cb86c2fd0727fd7fb555995b0974b8acc51f0df18b4991d0021a"
     },
     {
-      "file": "/assets/neopolis/team-night-v4.webp",
+      "file": "/assets/neopolis/team-night-v5.webp",
       "width": 1774,
       "height": 887,
-      "bytes": 421746,
-      "sha256": "ce1feedc9f992694c1e9e0ed8fbd188c63894fae18574374b5f910e69a62e778"
+      "bytes": 431110,
+      "sha256": "5557cd906e68385761e6e835c06d1bcff16090cf64fe8200fa148b274f3abf02"
     },
     {
-      "file": "/assets/neopolis/team-eclipse-v4.webp",
+      "file": "/assets/neopolis/team-eclipse-v5.webp",
       "width": 1774,
       "height": 887,
-      "bytes": 431102,
-      "sha256": "644e9799f64497977bd55aa055c9609fc7763218743201a1ae61de4fa4fe972d"
+      "bytes": 474662,
+      "sha256": "6aeca8655daaa85bf0dada84996ddaa4ab48526ed40ef463c89d3d31a5225ac5"
     },
     {
-      "file": "/assets/neopolis/team-chrono-v4.webp",
+      "file": "/assets/neopolis/team-chrono-v5.webp",
       "width": 1774,
       "height": 887,
-      "bytes": 416446,
-      "sha256": "11b28760f08538125697f9bdffb093737da9d4a55fbc0058fd1f935de3216678"
+      "bytes": 422618,
+      "sha256": "733ff9340c66c4b458c1995410d8ef207c3ac46776037c1ef9a57650c81d7437"
     }
   ],
-  "teamExport": "sharp WebP, quality 90 with alpha; edge-connected black removed from each panel"
+  "teamExport": "sharp WebP, quality 88 with alpha; Apple Vision silhouettes, light outside them kept as transparency"
 }
