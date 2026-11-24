@@ -1,4 +1,4 @@
-"""Publish seven reviewed slot intro copy updates with the existing module guard."""
+"""Publish six reviewed slot intro copy updates with the existing module guard."""
 from contextlib import ExitStack
 import fcntl
 import json
@@ -8,10 +8,10 @@ import sys
 sys.dont_write_bytecode = True
 NAME = 'slot-entry-notes-20261124-v1'
 ROOT = Path('/opt/royal-releases') / NAME
-SLUGS = ('caramel-carnival', 'cosmic-escape', 'girlhub', 'last-convoy', 'meme-overload', 'nitro-run', 'velvet-reign')
+SLUGS = ('caramel-carnival', 'girlhub', 'last-convoy', 'meme-overload', 'nitro-run', 'velvet-reign')
 GAME_IDS = {slug: 'studio-' + ('afterglow' if slug == 'girlhub' else slug) for slug in SLUGS}
 INTRO_FILES = {
-    'games/caramel-carnival/CaramelCarnivalUI.ts', 'games/cosmic-escape/CosmicEscapeUI.ts',
+    'games/caramel-carnival/CaramelCarnivalUI.ts',
     'games/girlhub/AfterglowUI.ts', 'games/last-convoy/LastConvoyUI.ts',
     'games/meme-overload/MemeOverloadUI.ts', 'games/nitro-run/NitroRunUI.ts',
     'games/velvet-reign/VelvetReignUI.ts', 'games/velvet-reign/velvetReignText.ts',
