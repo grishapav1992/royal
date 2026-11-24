@@ -530,7 +530,7 @@ test('Cosmic Escape labels stay whole beside the open chat',async({page,roomPath
    return problems;
   }),state+' '+width+'x'+height).toEqual([]);
  }await page.setViewportSize({width:1440,height:900});};
- const round=async()=>{await page.locator('[data-lg-spin]').click();await expect(game).not.toHaveAttribute('data-phase','idle');await expect.poll(()=>game.evaluate(e=>e.dataset.phase==='idle'&&!e.dataset.animationToken),{timeout:60000}).toBe(true);};
+ const round=async()=>{await page.locator('[data-lg-spin]').click();await expect(game).not.toHaveAttribute('data-phase','idle');await expect.poll(()=>game.evaluate(e=>e.dataset.phase==='idle'&&!e.dataset.animationToken),{timeout:60000}).toBe(true);await finish(page,id);};
  const points=async(...cents:number[])=>expect((await page.request.post('/__test/layout/crew',{data:{cents}})).ok()).toBe(true);
  await points(...Array(4).fill(1000));await round();await expect(game.locator('[data-cx-crew-gain]')).toHaveText('+33');await whole('progress');
  expect((await page.request.post('/__test/layout/bonus',{data:{gameId:id,scenario:'win'}})).ok()).toBe(true);await round();await whole('win');
@@ -569,7 +569,7 @@ test('Cosmic Escape opens, keeps and changes a character without touching the wa
  const id='studio-cosmic-escape';await open(page,id);
  const game=page.locator('#mini-game > .cx-game'),plate=game.locator('[data-cx-crew]'),dialog=game.locator('[data-lg-dialog]'),figure=game.locator('[data-cosmic-alien]'),spin=page.locator('[data-lg-spin]');
  const points=async(...cents:number[])=>expect((await page.request.post('/__test/layout/crew',{data:{cents}})).ok()).toBe(true);
- const round=async()=>{await spin.click();await expect(game).not.toHaveAttribute('data-phase','idle');await expect.poll(()=>game.evaluate(e=>e.dataset.phase==='idle'&&!e.dataset.animationToken),{timeout:60000}).toBe(true);};
+ const round=async()=>{await spin.click();await expect(game).not.toHaveAttribute('data-phase','idle');await expect.poll(()=>game.evaluate(e=>e.dataset.phase==='idle'&&!e.dataset.animationToken),{timeout:60000}).toBe(true);await finish(page,id);};
  await expect(game).toHaveAttribute('data-crew','ready');await expect(game.locator('[data-cx-crew-gain]')).toBeEmpty();
  // One paid ten cent round earns exactly one point.
  await round();await expect(game.locator('[data-cx-crew-gain]')).toHaveText('+1');await expect(game.locator('[data-cx-crew-note]')).toContainText('99');
