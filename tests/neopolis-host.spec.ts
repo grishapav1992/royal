@@ -36,15 +36,16 @@ test('Neopolis fits the real host, prioritizes the field over chat, and restores
   try {
     await page.route('https://luelonplay.com/demo-api/**', route => route.fulfill({ json: { games: [] } }));
     await page.emulateMedia({ reducedMotion: 'reduce' });
+    const player = await page.request.post('/api/auth/login', {
+      data: { email: 'np-player-' + crypto.randomUUID() + '@example.test', password: 'Neopolis-test-123!' },
+    });
+    expect(player.ok()).toBe(true);
     await page.goto('/?room=' + room.roomId);
-    const club = page.locator('[data-entry-mode="club"]'), email = page.getByLabel('Почта', { exact: true });
-    await expect(club.or(email)).toBeVisible({ timeout: 30000 });
-    if (await club.isVisible()) await selectEntryMode(page);
-    await page.getByLabel('Почта', { exact: true }).fill('np-player-' + crypto.randomUUID() + '@example.test');
-    await page.getByLabel('Пароль', { exact: true }).fill('Neopolis-test-123!');
-    await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
-    await expect(page.locator('#character-step')).toBeVisible();
-    await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();
+    await selectEntryMode(page);
+    const character = page.locator('#character-step');
+    await expect.poll(async () => await character.isVisible()
+      || await page.evaluate(() => (window as any).royalDemo?.getState().online ?? false), {timeout:30000}).toBe(true);
+    if (await character.isVisible()) await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();
     await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});
     await expect.poll(() => page.evaluate(() => { try { return (window as any).royalDemo?.getState().online ?? false; } catch { return false; } }), {timeout:30000}).toBe(true);
     const deposit = process.env.LAYOUT_HOST_REGRESSION === '1' ? await page.request.post('/__test/layout/topup')
