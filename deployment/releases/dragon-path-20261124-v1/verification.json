@@ -1,0 +1,142 @@
+{
+  "release": "dragon-path-20261124-v1",
+  "releasedAt": "2026-11-24T05:45:11.100Z",
+  "sourceCommit": "7f831f1e412fa5de0088c3a3579dffce889e239c",
+  "baseCommit": "68ebb4bd6ceaa6979a5f64222eecfc54242cf70b",
+  "image": "sha256:375af56d5cfc96e5d8d54c82353d9e5778518e3880320f626f93375fe2ceacdd",
+  "rollbackImage": "sha256:d7e80c51cc12561f9b2b552fedccc971e20cbbb668a88bd3223906b993fd3dbf",
+  "releaseManifestSha256": "0ddd963d7d7f2c9d6b9d1f7adc0c7cbf641ae9eb0a5e6371967e3c525cdf1fa3",
+  "module": {
+    "verified": true,
+    "gameId": "panda-dragon-preview",
+    "version": "0.4.0-d666fbc02659",
+    "bytes": 3492561,
+    "files": 15,
+    "beforeSha256": "none",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "195ee35bf1fb706b4c319e9298dbe36ba3e60fe75798080b86e1a198f69d7c03",
+    "history": "/opt/royal-game-modules-state/history/20261124T054406-9c62248bdc9c43399af1955fa9a12050.json"
+  },
+  "catalogue": {
+    "added": [
+      "panda-dragon-preview"
+    ],
+    "restored": [],
+    "orderedGames": [
+      "panda-dragon-preview",
+      "studio-cosmic-escape",
+      "studio-caramel-carnival",
+      "studio-velvet-reign",
+      "studio-last-convoy",
+      "studio-nitro-run",
+      "studio-afterglow",
+      "studio-meme-overload",
+      "studio-dracona",
+      "studio-neopolis",
+      "studio-forest-heart",
+      "github-crash",
+      "royal-plinko",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "studio-caribbean-treasures",
+      "studio-flooded-temple",
+      "royal-roulette",
+      "flag-battle",
+      "studio-wild-nudge"
+    ],
+    "unchangedModulePointers": 124
+  },
+  "checks": {
+    "build": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 355334
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 8829
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 106086
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 11387
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 7769
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 79
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 57
+      }
+    ],
+    "rtp": {
+      "rulesProfiles": 39,
+      "stakePolicies": 21,
+      "catalogueAdmissions": 21,
+      "dragonPathExactRtpPercent": 96.05517035
+    },
+    "dragonPathAndWalletTests": 26,
+    "browserReleaseScenarios": 13,
+    "browser": "Chrome desktop and emulated mobile viewports, real Royal chat and isolated PostgreSQL",
+    "browserScope": [
+      "catalogue order",
+      "unpublished game remains unavailable for new rounds",
+      "minimum stake",
+      "lost-response recovery",
+      "close and reopen",
+      "autoplay and free continuation"
+    ],
+    "public": {
+      "health": true,
+      "game": "panda-dragon-preview",
+      "version": "0.4.0-d666fbc02659",
+      "filesVerified": 39
+    }
+  },
+  "rollback": {
+    "sourceBackupSha256": "ed171f98fc449103cf4619ab670a48fd47527e6960b5f9739b8e444d013a8908",
+    "moduleContractBackupSha256": "39e3a737dd901e8d851858065d34c3c4a6b1aefabca8e26cab965aa9b1151aca",
+    "financialBackup": {
+      "path": "/opt/royal-backups/dragon-path-20261124-v1/financial.dump",
+      "sha256": "14fcbb873fed1f2cd8c1fbf7e6f2bb809cac701556fba90b18d5cb9fc59a7868",
+      "bytes": 50409215,
+      "databaseRestored": false
+    },
+    "gameDataPreserved": true
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 68.45,
+    "removedEntries": 26,
+    "removedImageTags": 3,
+    "freeBefore": 11693973504,
+    "freeAfter": 11704287232,
+    "timer": "enabled and active",
+    "graphQueued": true
+  },
+  "transportCleanup": {
+    "archive": "/opt/royal-incoming/dragon-path-20261124-v1.tgz",
+    "bytes": 12773767,
+    "freeBefore": 11701407744,
+    "freeAfter": 11714183168
+  }
+}
