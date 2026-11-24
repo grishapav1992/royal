@@ -1,4 +1,4 @@
-/** Subtle native breathing, hair and cloth. Video frames never use this deformation. */
+/** Subtle native breathing, hair and cloth. */
 export const forestIdleMotion = `
 vec2 forestIdleShift(vec2 uv,float time){
   float hair=smoothstep(.55,.77,uv.x)*smoothstep(.14,.34,uv.y)*(1.-smoothstep(.74,.99,uv.y));

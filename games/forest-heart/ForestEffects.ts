@@ -1,6 +1,9 @@
 import type { ForestGeometry } from './ForestLayout';
 
 interface Particle { petal: boolean; x: number; y: number; vx: number; vy: number; gravity: number; life: number; time: number; radius: number; color: string; angle: number; spin: number; sway: number }
+interface Mote { x0: number; y0: number; cx: number; cy: number; x1: number; y1: number; time: number; life: number; radius: number; color: string }
+interface Stream { from: () => Point | undefined; to: () => Point; color: string; rate: number; pending: number; scatter: number }
+type Point = { x: number; y: number };
 interface Beam { flower: number; progress: number; color: string; opacity: number }
 interface Streak { u: number; t: number; speed: number; length: number }
 interface Blossom { x: number; y: number; radius: number; angle: number; pink: boolean; delay: number }
@@ -17,6 +20,8 @@ export class ForestEffects {
   private geometry?: ForestGeometry;
   private particles: Particle[] = [];
   private beams: Beam[] = [];
+  private motes: Mote[] = [];
+  private streams = new Map<string, Stream>();
   private falls: { x: number; y: number; w: number; h: number; streaks: Streak[] }[] = [];
   private flies: { x: number; y: number; angle: number; speed: number; phase: number; radius: number }[] = [];
   private blossoms: Blossom[] = [];
@@ -48,14 +53,22 @@ export class ForestEffects {
     if (this.reduced) return;
     for (let i = 0; i < count && this.particles.length < 420; i++) this.particles.push({ petal: true, x, y, vx: rnd(-60, 60), vy: rnd(-70, -10), gravity: 120, life: rnd(.6, 1.2), time: 0, radius: rnd(2.5, 5), color: leaves[Math.floor(Math.random() * 3)], angle: rnd(0, 6.28), spin: rnd(-6, 6), sway: 0 });
   }
+  /** Motes that keep flowing from her hand while an action lasts. A missing start point pauses the stream. */
+  stream(name: string, from: () => Point | undefined, to: () => Point, color: string, rate = 26, scatter = 10) { if (!this.reduced) this.streams.set(name, { from, to, color, rate, scatter, pending: 0 }); }
+  stopStream(name?: string) { if (name) this.streams.delete(name); else this.streams.clear(); }
+  burst(from: Point, to: Point, color: string, count: number, scatter = 18) { if (!this.reduced) for (let i = 0; i < count; i++) this.mote(from, to, color, scatter); }
+  private mote(from: Point, to: Point, color: string, scatter: number) {
+    if (this.motes.length > 260) return; const x1 = to.x + rnd(-scatter, scatter), y1 = to.y + rnd(-scatter, scatter);
+    this.motes.push({ x0: from.x + rnd(-6, 6), y0: from.y + rnd(-6, 6), x1, y1, cx: (from.x + x1) / 2 + rnd(-40, 40), cy: (from.y + y1) / 2 - rnd(20, 110), time: 0, life: rnd(.5, .95), radius: rnd(1.5, 3.2), color });
+  }
   /** Petals mostly fall beside the field, so the winning light stays readable. */
   shower(seconds: number) { this.rain = this.reduced ? 0 : seconds; }
   scatter(count: number) { const g = this.geometry; if (g) for (let i = 0; i < count; i++) this.petal(rnd(0, g.width), rnd(-30, g.height * .25), rnd(-20, 20), rnd(10, 60), .9); }
   beam(flower: number, color: string, opacity = 1) { const beam = { flower, color, opacity, progress: 0 }; this.beams.push(beam); return beam; }
   clearBeams() { this.beams = []; }
   setBloom(value: boolean) { this.bloomTarget = value ? 1 : 0; if (this.reduced) this.bloom = this.bloomTarget; }
-  quiet() { this.particles = []; this.rays = 0; this.ring = -1; this.rain = 0; }
-  get active() { return this.particles.length > 0 || this.rays > 0 || this.ring >= 0 || this.rain > 0 || Math.abs(this.bloom - this.bloomTarget) > .001; }
+  quiet() { this.particles = []; this.motes = []; this.streams.clear(); this.rays = 0; this.ring = -1; this.rain = 0; }
+  get active() { return this.particles.length > 0 || this.motes.length > 0 || this.streams.size > 0 || this.rays > 0 || this.ring >= 0 || this.rain > 0 || Math.abs(this.bloom - this.bloomTarget) > .001; }
   paint(now: number, dt: number, warm: boolean) {
     if (!this.geometry) return; this.paintBack(now, dt, warm); this.paintBloom(dt); this.paintFront(now, dt);
   }
@@ -93,6 +106,13 @@ export class ForestEffects {
     if (this.rain > 0) { this.rain -= dt; if (Math.random() < dt * 42) { const beside = Math.random() < .72; this.petal(beside ? Math.random() < .35 ? rnd(0, g.x) : rnd(g.x + g.board, g.width) : rnd(0, g.width), -12, rnd(-16, 16), rnd(30, 80), 1.1); } }
     for (const beam of this.beams) if (beam.progress > 0) this.paintBeam(x, now, beam);
     if (this.ring >= 0 && this.ring <= 1) this.paintRing(x);
+    for (const stream of this.streams.values()) { const from = stream.from(); if (!from) continue; stream.pending += dt * stream.rate; while (stream.pending >= 1) { stream.pending--; this.mote(from, stream.to(), stream.color, stream.scatter); } }
+    this.motes = this.motes.filter(mote => (mote.time += dt) < mote.life);
+    for (const mote of this.motes) for (let tail = 0; tail < 4; tail++) {
+      const u = clamp(mote.time / mote.life - tail * .035), e = u * u * (3 - 2 * u), v = 1 - e, px = v * v * mote.x0 + 2 * v * e * mote.cx + e * e * mote.x1, py = v * v * mote.y0 + 2 * v * e * mote.cy + e * e * mote.y1;
+      x.globalAlpha = Math.sin(Math.PI * clamp(u * .94 + .06)) * (1 - tail * .23); x.fillStyle = tail ? mote.color : '#fff'; x.beginPath(); x.arc(px, py, mote.radius * (1 - tail * .16), 0, 7); x.fill();
+      if (!tail) { x.globalAlpha *= .3; x.fillStyle = mote.color; x.beginPath(); x.arc(px, py, mote.radius * 3, 0, 7); x.fill(); }
+    }
     this.particles = this.particles.filter(particle => (particle.time += dt) < particle.life);
     for (const p of this.particles) {
       p.vy += p.gravity * dt; p.x += (p.vx + (p.sway ? Math.sin(now / 500 + p.sway) * 26 : 0)) * dt; p.y += p.vy * dt; const opacity = clamp((1 - p.time / p.life) * 2);
@@ -119,5 +139,5 @@ export class ForestEffects {
       if (i === 0 && Math.random() < .7) this.spark(px, py, '#ffe39a', 2, 70);
     }
   }
-  state() { return { particles: this.particles.length, beams: this.beams.filter(beam => beam.progress > 0).length, rays: this.rays, ring: this.ring, bloom: this.bloom }; }
+  state() { return { particles: this.particles.length, beams: this.beams.filter(beam => beam.progress > 0).length, motes: this.motes.length, streams: [...this.streams.keys()], rays: this.rays, ring: this.ring, bloom: this.bloom }; }
 }

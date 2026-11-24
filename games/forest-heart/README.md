@@ -1,4 +1,4 @@
-# Forest Heart client 1.17
+# Forest Heart client 1.18
 
 The Living Tree presentation keeps the approved forest, elf, tiles, roots, crystal, flowers and logo, and rebuilds their layout and motion. The design record is in [docs/game-layout/forest-living-tree](../../docs/game-layout/forest-living-tree/README.md).
 
@@ -6,4 +6,4 @@ The Living Tree presentation keeps the approved forest, elf, tiles, roots, cryst
 
 The module retains host API 1, rules 1 and progress 1. The host owns transport, wallet, sessions, language and audio. Rules, paid costs and payout mathematics are unchanged. Presentation reads only the confirmed view and never generates an outcome.
 
-The elf keeps the video-v3 nod, board glance and crystal gesture. Each lasts three seconds, separated by six seconds of quiet idle. No new clip starts while a field is being presented; a running clip finishes. Video texture coordinates are fixed. Source poses differ at the beginning and end, and the premultiplied blend can reveal this mismatch. [Source provenance](../../docs/concepts/forest-heart/video-v3-assets.json) and [rendered verification](../../docs/concepts/forest-heart/stability-v15-review.json) record inputs and limitations.
+Since 1.18 the elf has no video. `ForestCharacter` draws seven approved poses and optional lids, weaves changes in light from the acting hand and keeps one head between both drawings. A started change always finishes and the newest requested pose follows. Sustained actions last until the next event. Magic and the held crystal take the colour of the confirmed energy. The unused video-v3 files stay in the repository for older packages.

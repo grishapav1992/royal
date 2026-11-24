@@ -153,7 +153,11 @@ export class ForestHeartUI {
     this.find('music').addEventListener('change', () => this.audio.setMusic(this.find<HTMLInputElement>('music').checked), { signal: this.controller.signal });
     this.find('fast').addEventListener('change', () => { this.fast = this.find<HTMLInputElement>('fast').checked; }, { signal: this.controller.signal });
     this.root.querySelectorAll<HTMLButtonElement>('[data-cell]').forEach(button => {
-      const cell = Number(button.dataset.cell), hover = (value: boolean) => { this.scene.field.hover(cell, value && !button.disabled); this.scene.wake(); };
+      const cell = Number(button.dataset.cell), hover = (value: boolean) => {
+        const on = value && !button.disabled && this.view?.stage === 'choice'; this.scene.field.hover(cell, on);
+        if (on) { this.character.react('pulse', 520); this.scene.effects.stream('point', () => this.anchor('hand'), () => this.cellPoint(cell), '#ffe39a', 60, 16); } else this.scene.effects.stopStream('point');
+        this.scene.wake();
+      };
       for (const [event, value] of [['pointerenter', true], ['focus', true], ['pointerleave', false], ['blur', false]] as const) button.addEventListener(event, () => hover(value), { signal: this.controller.signal });
       button.addEventListener('click', () => { const rotor = FOREST_HEART_ROTORS.indexOf(cell); if (rotor >= 0) void this.act('forest-turn-' + rotor); }, { signal: this.controller.signal });
       button.addEventListener('keydown', event => {
@@ -236,7 +240,7 @@ export class ForestHeartUI {
     this.find('remaining').textContent = fill(this.c.of, remaining); this.root.querySelector<HTMLElement>('.fh-left')!.hidden = mode !== 'bonus'; this.root.querySelector<HTMLElement>('.fh-net')!.hidden = mode === 'bonus';
   }
   private setEnergy(energy: number) {
-    this.energy = energy; this.scene.setEnergy(energy); const button = this.find('energy'); button.querySelector('b')!.textContent = '×' + energy; button.setAttribute('aria-label', this.c.energy + ': ×' + energy); this.values();
+    this.energy = energy; this.scene.setEnergy(energy); this.character.color(this.scene.color, energy > 1); const button = this.find('energy'); button.querySelector('b')!.textContent = '×' + energy; button.setAttribute('aria-label', this.c.energy + ': ×' + energy); this.values();
   }
   private setTotal(units: number) { this.shownTotal = units; this.find('total').textContent = this.number(units); }
   private say(status: string, hint = '') { this.status = status; this.hint = hint; this.controls(); }
@@ -308,7 +312,7 @@ export class ForestHeartUI {
     if (retry ? this.client.pending?.gameId !== FOREST_HEART_GAME || this.client.busy : this.blocked()) return false;
     const owner = this.owner, prior = this.shown ? structuredClone(this.shown) : undefined, before = this.balance, paid = !retry && !(this.view && this.view.stage !== 'settled'), choice = this.view?.stage === 'choice';
     let accepted = false, finished = false;
-    this.character.reset(this.view?.stage === 'bonus' && !retry ? 'bonus' : 'idle'); this.character.occupied = true;
+    this.character.reset(!retry && (choice || this.view?.stage === 'bonus') ? this.view!.stage as 'choice' | 'bonus' : 'idle'); this.scene.effects.stopStream();
     this.busy = true; this.status = this.hint = ''; this.heldBalance = before; this.root.classList.add('fh-awaiting');
     if (!retry && !choice) this.prepare(paid); this.controls();
     void this.audio.unlock();
@@ -332,14 +336,14 @@ export class ForestHeartUI {
       this.status = this.hint = '';
     } catch (error) { this.autoplay.stop(); if (this.alive && owner === this.client.accountId) { this.status = (error as Error).message; this.hint = ''; } }
     finally {
-      if (this.alive) { this.character.occupied = false; this.busy = this.presenting = false; this.heldBalance = undefined; this.root.classList.remove('fh-awaiting', 'fh-presenting'); delete this.root.dataset.motion; this.paint(); this.sync(); }
+      if (this.alive) { this.character.release(); this.scene.effects.stopStream(); this.busy = this.presenting = false; this.heldBalance = undefined; this.root.classList.remove('fh-awaiting', 'fh-presenting'); delete this.root.dataset.motion; this.paint(); this.sync(); }
     }
     if (finished && this.alive && owner === this.client.accountId && this.shown?.state === 'settled') this.openResult();
     return accepted;
   }
   /** Immediate neutral response. Nothing here depends on the coming result. */
   private prepare(paid: boolean) {
-    if (!this.reduced) this.character.react('awaken', this.fast ? 620 : 1000);
+    if (!this.reduced) { this.setEnergy(1); this.character.react('awaken', Infinity); }
     this.motion.abort(); this.motion = new AbortController(); delete this.root.dataset.celebrate;
     if (this.reduced) return;
     const bonus = this.view?.stage === 'bonus', held = bonus ? forestScene(this.view).lockedCells : [];
@@ -347,10 +351,14 @@ export class ForestHeartUI {
     for (let i = 0; i < 3; i++) this.bloom(i, false, true);
     if (paid) { this.valueStake = this.stake; this.setMode('base', 0); this.scene.field.setHeld([]); this.setTotal(0); }
     else if (bonus) { this.setMode('bonus', Math.max(0, this.remaining - 1)); const bud = this.root.querySelector<HTMLElement>(`[data-bud="${this.remaining}"]`); if (bud) this.pulse(bud, 'fh-bud-spent'); }
-    this.setEnergy(1); this.root.dataset.motion = 'spin'; this.scene.field.spin(new Set(held));
-    for (const cell of FOREST_HEART_ROTORS) if (!held.includes(cell)) { const at = this.scene.field.centre(cell); this.scene.effects.leaf(at.x, at.y, 2); }
+    this.root.dataset.motion = 'spin'; this.scene.field.spin(new Set(held));
+    const turning = FOREST_HEART_ROTORS.filter(cell => !held.includes(cell)); for (const cell of turning) { const at = this.cellPoint(cell); this.scene.effects.leaf(at.x, at.y, 2); }
+    this.scene.effects.stream('spin', () => this.anchor('hand'), () => this.cellPoint(turning[Math.floor(Math.random() * turning.length)]), this.scene.color, 46, 14);
     this.scene.wake();
   }
+  /** Her hand or crystal in scene pixels, only while that part is visible. */
+  private anchor(part: 'hand' | 'crystal') { const { elf } = this.layout.current, [u, v] = this.character.anchor(part), x = elf.x + u * elf.w, y = elf.y + v * elf.h; return elf.visible && x < this.layout.current.width && v * 100 < elf.cut ? { x, y } : undefined; }
+  private cellPoint = (cell: number) => this.scene.field.centre(cell);
   private clock(duration: number, frame: (elapsed: number) => void = () => {}) {
     const signal = this.motion.signal, win = this.doc.defaultView!;
     return new Promise<void>(resolve => {
@@ -389,15 +397,16 @@ export class ForestHeartUI {
       if (this.reduced) { this.setMode(bonusSpin ? 'bonus' : 'base', bonusSpin ? this.view!.remaining : 0); for (let i = 0; i < 3; i++) this.bloom(i, false, false); if (!bonusSpin) this.valueStake = Number(this.shown!.stakeUnits); field.clearLight(); field.unlight(); effects.clearBeams(); this.setEnergy(1); }
       this.setTotal(counterFrom); this.say(bonusSpin ? fill(this.c.freeSpin, 4 - this.view!.remaining) : this.c.searching, bonusSpin ? this.c.heldStay : '');
       this.root.dataset.motion = 'reveal';
-      await this.accent('land', () => { field.show(scene.board); field.setHeld([...carried]); this.scene.wake(); }, 0, this.time(1000, 480), progress => { if (!this.reduced) field.land(scene.board, carried, progress); });
+      await this.accent('land', () => { effects.stopStream('spin'); this.character.react('land', 620); field.show(scene.board); field.setHeld([...carried]); this.scene.wake(); }, 0, this.time(1000, 480), progress => { if (!this.reduced) field.land(scene.board, carried, progress); });
       if (signal.aborted) return;
       this.setEnergy(scene.energy);
-      if (scene.energy > 1) { this.pulse(this.find('energy'), 'fh-energy-pop'); effects.spark(this.layout.current.gem.x, this.layout.current.gem.y, this.scene.color, Math.min(60, 10 + scene.energy), 150); this.say(fill(this.c.energyNow, scene.energy)); await this.clock(this.time(460, 220)); if (signal.aborted) return; }
+      if (scene.energy > 1) { this.pulse(this.find('energy'), 'fh-energy-pop'); effects.spark(this.layout.current.gem.x, this.layout.current.gem.y, this.scene.color, Math.min(60, 10 + scene.energy), 150); this.say(fill(this.c.energyNow, scene.energy)); const strong = scene.energy >= 5; this.character.react(strong ? 'energy' : 'pulse', strong ? Infinity : 700); const crystal = this.anchor('crystal'); if (crystal) effects.burst(this.layout.current.gem, crystal, this.scene.color, strong ? 40 : 16, 16); await this.clock(strong ? this.time(1150, 520) : this.time(460, 220)); if (signal.aborted) return; }
     } else {
       field.setChoice(false); this.root.dataset.motion = changed >= 0 ? 'turn' : 'pass'; this.say(changed >= 0 ? this.c.turning : this.c.turnKeeps, changed >= 0 ? this.c.turnKeeps : '');
       if (changed >= 0) {
+        this.character.react('turn', Infinity); effects.stream('turn', () => this.anchor('hand'), () => this.cellPoint(changed), '#ffe39a', 60, 12);
         const from = rootArtwork(before!.board[changed]).angle, to = from === 90 ? 180 : 90, at = field.centre(changed); effects.leaf(at.x, at.y, 5); effects.clearBeams();
-        await this.accent('turn', () => { field.clearLight(); field.unlight(); field.show(scene.board); effects.spark(at.x, at.y, '#ffe39a', 22, 110); this.scene.wake(); }, 0, this.time(560, 220), progress => { if (this.reduced) return; field.fadeLight(1 - progress * 2.4); field.turn(changed, from, to, Math.max(0, (progress - .2) / .8)); });
+        await this.accent('turn', () => { effects.stopStream('turn'); field.clearLight(); field.unlight(); field.show(scene.board); effects.spark(at.x, at.y, '#ffe39a', 22, 110); this.scene.wake(); }, 0, this.time(560, 220), progress => { if (this.reduced) return; field.fadeLight(1 - progress * 2.4); field.turn(changed, from, to, Math.max(0, (progress - .2) / .8)); });
         if (signal.aborted) return;
       }
     }
@@ -406,13 +415,13 @@ export class ForestHeartUI {
     this.setTotal(scene.totalUnits);
     if (bonusSpin && this.view!.stage === 'bonus') {
       const fresh = scene.lockedCells.filter(cell => !carried.has(cell));
-      if (fresh.length) { field.setHeld(scene.lockedCells, fresh); await this.clock(this.time(650, 260), elapsed => field.grow(fresh, this.reduced ? 1 : Math.min(1, elapsed / Math.max(1, this.time(650, 260))))); field.grow(fresh, 1); for (const cell of fresh) { const at = field.centre(cell); effects.spark(at.x, at.y, '#ffd875', 12, 80); } if (signal.aborted) return; }
+      if (fresh.length) { this.character.react('hold', 900); for (const cell of fresh) { const crystal = this.anchor('crystal'); if (crystal) effects.burst(crystal, this.cellPoint(cell), '#ffd875', 14, 14); } field.setHeld(scene.lockedCells, fresh); await this.clock(this.time(650, 260), elapsed => field.grow(fresh, this.reduced ? 1 : Math.min(1, elapsed / Math.max(1, this.time(650, 260))))); field.grow(fresh, 1); for (const cell of fresh) { const at = field.centre(cell); effects.spark(at.x, at.y, '#ffd875', 12, 80); } if (signal.aborted) return; }
     }
     const stage = this.view?.stage;
-    if (stage === 'choice') { await this.clock(this.time(220, 90)); if (signal.aborted) return; await this.accent('choice', () => { this.character.react('choice', 1650); }); }
+    if (stage === 'choice') { await this.clock(this.time(220, 90)); if (signal.aborted) return; await this.accent('choice', () => { this.character.react('choice', Infinity); }); }
     else if (stage === 'bonus' && !bonusSpin) {
       await this.clock(this.time(320, 120)); if (signal.aborted) return;
-      await this.accent('bonus', () => { this.setMode('bonus', this.view!.remaining); this.character.react('bonus', 1650); this.say(this.c.bonus, this.c.bonusNote); this.root.querySelectorAll<HTMLElement>('[data-bud]').forEach(bud => this.pulse(bud, 'fh-bud-spent')); effects.scatter(34); });
+      await this.accent('bonus', () => { this.setMode('bonus', this.view!.remaining); this.character.react('bonus', Infinity); this.say(this.c.bonus, this.c.bonusNote); this.root.querySelectorAll<HTMLElement>('[data-bud]').forEach(bud => this.pulse(bud, 'fh-bud-spent')); effects.scatter(34); });
       if (signal.aborted) return;
       const shown = this.banner(this.c.bonus, this.c.bonusBanner, this.time(1900, 900)), ring = this.time(1100, 600); await this.clock(ring, elapsed => { if (ring) effects.ring = elapsed / ring; }); effects.ring = -1; await shown;
     }
@@ -421,10 +430,11 @@ export class ForestHeartUI {
     if (tier === 'win' || tier === 'big') {
       this.root.dataset.motion = 'count'; this.say(this.c[tier], tier === 'big' ? fill(this.c.bigNote, (sum / Number(this.shown!.spentUnits)).toLocaleString(this.services.i18n.locale, { maximumFractionDigits: 1 })) : '');
       const big = tier === 'big', length = big ? this.time(1500, 600) : 0;
-      await this.accent(tier, () => { this.setTotal(sum); this.root.dataset.celebrate = tier; this.character.react(tier, big ? 3200 : 2600); this.pulse(this.find('total'), 'fh-bump'); if (big) effects.shower(3.6); else for (let i = 0; i < 16; i++) { const g = this.layout.current; effects.petal(g.x + g.board + Math.random() * g.flower, g.y + Math.random() * g.board * .6, -40 + Math.random() * 60, -20 + Math.random() * 60, .8); } }, 0, length, progress => { if (big && !this.reduced) { effects.rays = progress; this.setTotal(Math.floor(sum * easeRoot(progress))); } });
+      if (big) this.character.react('big', 3200 + length); // she celebrates while the sum grows
+      await this.accent(tier, () => { this.setTotal(sum); this.root.dataset.celebrate = tier; if (!big) this.character.react('win', 2600); this.pulse(this.find('total'), 'fh-bump'); if (big) { effects.shower(3.6); effects.stream('big', () => this.anchor('hand'), () => { const g = this.layout.current; return { x: g.x + g.board * (.1 + Math.random() * .8), y: g.y - g.frame }; }, '#ffd875', 26, 20); } else for (let i = 0; i < 16; i++) { const g = this.layout.current; effects.petal(g.x + g.board + Math.random() * g.flower, g.y + Math.random() * g.board * .6, -40 + Math.random() * 60, -20 + Math.random() * 60, .8); } }, 0, length, progress => { if (big && !this.reduced) { effects.rays = progress; this.setTotal(Math.floor(sum * easeRoot(progress))); } });
       if (signal.aborted) return;
       if (big) { const ring = this.time(1250, 600); await this.clock(ring, elapsed => { if (ring) effects.ring = elapsed / ring; }); effects.ring = -1; }
-    } else if (tier) this.say(this.c[tier], tier === 'loss' ? this.c.lossNext : '');
+    } else if (tier) { this.say(this.c[tier], tier === 'loss' ? this.c.lossNext : ''); this.character.react(tier === 'loss' ? 'loss' : 'partial', tier === 'loss' ? 1500 : 1000); }
     await this.clock(this.time(240, 120)); delete this.root.dataset.pulse;
   }
   /** Light fills connected roots, then every newly reached flower opens and sends its sum to the plate. */
@@ -432,21 +442,21 @@ export class ForestHeartUI {
     const { field, effects } = this.scene, step = this.time(150, 76), color = this.scene.color; let total = counterFrom;
     this.root.dataset.motion = 'flow'; this.say(this.c.lighting, fill(this.c.eachFlower, this.number(this.flowerUnits())));
     const source = effects.beam(-1, color), start = this.time(240, 110), plan = field.startLight(step);
-    await this.accent('flow', () => { this.root.dataset.pulse = 'true'; this.character.react('channel', plan.duration + 520); effects.spark(this.layout.current.gem.x, this.layout.current.gem.y, color, 16, 90); });
+    await this.accent('flow', () => { this.root.dataset.pulse = 'true'; this.character.react('channel', Infinity); effects.stream('flow', () => this.anchor('hand'), () => this.layout.current.gem, color, 30, 10); effects.spark(this.layout.current.gem.x, this.layout.current.gem.y, color, 16, 90); });
     if (signal.aborted) return;
     await this.clock(start, elapsed => { source.progress = start ? elapsed / start : 1; }); source.progress = 1; if (signal.aborted) return;
-    let earliest = 0;
+    let earliest = 0, opened = 0;
     const jobs = [...plan.arrivals].sort((a, b) => a[1] - b[1]).map(async ([index, arrival]) => {
       const paid = !!((scene.paidMask & ~previousFlowers) & (1 << index)), at = paid ? Math.max(arrival, earliest) : arrival; if (paid) earliest = at + (this.reduced ? 0 : 130);
       await this.clock(this.reduced ? 0 : at); if (signal.aborted) return;
       const beam = effects.beam(index, color, paid ? 1 : .6), length = this.time(140, 70); await this.clock(length, elapsed => { beam.progress = length ? elapsed / length : 1; }); beam.progress = 1;
       if (signal.aborted || !paid) return;
-      await this.accent('flower', () => { this.bloom(index, true, true); this.character.react('flower', 950); }, index); if (signal.aborted) return;
+      await this.accent('flower', () => { effects.stopStream('flow'); const first = opened++ === 0; this.bloom(index, true, true); this.character.react(first ? 'flower' : 'pulse', first ? Infinity : 1100); const crystal = this.anchor('crystal'); if (crystal) effects.burst(this.layout.current.flowers[index], crystal, '#ffd875', 12, 12); }, index); if (signal.aborted) return;
       await this.clock(this.time(380, 140)); if (signal.aborted) return;
       await this.fly(index); if (signal.aborted) return; total += this.flowerUnits(); this.setTotal(total); if (!this.reduced) { this.pulse(this.find('total'), 'fh-bump'); effects.spark(this.layout.current.sum.x, this.layout.current.sum.y, '#ffe39a', 8, 60); }
     });
     await this.clock(this.reduced ? 0 : plan.duration + 60, elapsed => field.setLight(elapsed)); if (signal.aborted) return;
-    field.setLight(Infinity); this.scene.wake(); await Promise.all(jobs);
+    effects.stopStream('flow'); field.setLight(Infinity); this.scene.wake(); await Promise.all(jobs);
   }
   private async fly(index: number) {
     const length = this.time(760, 360); if (!length) return;

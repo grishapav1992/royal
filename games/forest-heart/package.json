@@ -1,6 +1,6 @@
 {
   "name": "@royal/forest-heart",
-  "version": "1.17.0",
+  "version": "1.18.0",
   "private": true,
   "gameId": "studio-forest-heart",
   "apiVersion": 1,
@@ -25,7 +25,8 @@
     "forest-heart/v3/elf-bonus.webp",
     "forest-heart/v3/elf-win.webp",
     "forest-heart/v3/elf-big.webp",
-    "forest-heart/v4/tile.webp"
+    "forest-heart/v4/tile.webp",
+    "forest-heart/v3/elf-blink.webp"
   ],
   "scripts": {
     "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
