@@ -330,8 +330,9 @@
 .cx-game .cx-crew[data-state="new"] { border-color: var(--ce-cyan); background: #12303A; box-shadow: 0 0 28px rgba(91,228,223,.5); }
 .cx-game .cx-crew:hover { background: #241B33; }
 .cx-game .cx-crew[data-state="new"]:hover { background: #173C48; }
-.cx-crew > span { min-width: 0; display: flex; align-items: baseline; justify-content: space-between; gap: 6px; white-space: nowrap; }
+.cx-crew > span { flex: none; height: 22px; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 6px; white-space: nowrap; }
 .cx-crew > span > * { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.cx-crew > .cx-crew-bar + span { height: 18px; }
 .cx-crew [data-cx-crew-title] { font-size: 16px; font-weight: 700; }
 .cx-crew[data-state="new"] [data-cx-crew-title] { color: var(--ce-cyan); }
 .cx-crew [data-cx-crew-count], .cx-crew [data-cx-crew-note] { color: var(--ce-ink-2); }
@@ -340,6 +341,7 @@
 .cx-crew-bar i { display: block; height: 100%; background: var(--cx-crew-tone); transition: width .4s ease; }
 @container cx-scene (max-width: 1250px) {
   .cx-game[data-slot-priority="full"] .cx-crew { padding: 8px; font-size: 12px; }
+  .cx-game[data-slot-priority="full"] .cx-crew > span:first-child,   .cx-game[data-slot-priority="full"] .cx-crew > .cx-crew-bar + span { height: 18px; }
   .cx-game[data-slot-priority="full"] .cx-crew [data-cx-crew-title] { font-size: 13px; }
   .cx-game[data-slot-priority="full"] .cx-crew [data-cx-crew-gain] { min-width: 22px; }
 }
@@ -711,6 +713,7 @@
 .cx-game[data-slot-priority="portrait"] .cx-podium { display: none; }
 .cx-game[data-slot-priority="portrait"] .cx-crew { --plate: 62px; position: relative; inset: auto; grid-area: alien; align-self: end; justify-self: center; width: min(100%, 260px); padding: 7px 10px; border-radius: 14px; font-size: 12px; line-height: 1.25; }
 .cx-game[data-slot-priority="portrait"] .cx-crew [data-cx-crew-title] { font-size: 13px; }
+.cx-game[data-slot-priority="portrait"] .cx-crew > span:first-child, .cx-game[data-slot-priority="portrait"] .cx-crew > .cx-crew-bar + span { height: 17px; }
 .cx-game[data-slot-priority="portrait"] .cx-frame { padding: 11px 8px; border-radius: 18px; }
 .cx-game[data-slot-priority="portrait"] .cx-lamp { top: 3px; height: 4px; }
 .cx-game[data-slot-priority="portrait"] .cx-lamp:last-child { top: auto; bottom: 3px; }
