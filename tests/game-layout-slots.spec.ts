@@ -963,7 +963,7 @@ test('Meme Overload shows English labels in every window',async({page,roomPath})
  await page.locator('[data-cc-spin]').click();await expect(page.locator('[data-cc-action="bonus"]')).toBeVisible({timeout:40000});await english('#mini-game > .mo-game');
  await page.locator('[data-cc-action="bonus"]').click();await expect(page.locator('[data-cc-action="complete"]')).toBeVisible({timeout:120000});await english('#mini-game > .mo-game');
  for(const [width,height] of [[393,852],[852,393],[320,568],[568,320]]){
-  await page.setViewportSize({width,height});
+  await page.setViewportSize({width,height});await page.evaluate(()=>new Promise<void>(r=>requestAnimationFrame(()=>requestAnimationFrame(()=>r()))));
   const clipped=await root.evaluate(element=>[...element.querySelectorAll<HTMLElement>('.mo-bar button, .mo-window h3, .mo-round, .mo-stake-text, .cc-primary')].filter(node=>node.getClientRects().length&&node.scrollWidth>node.clientWidth+1).map(node=>node.className+': '+node.textContent));
   expect(clipped,width+'x'+height).toEqual([]);
  }
