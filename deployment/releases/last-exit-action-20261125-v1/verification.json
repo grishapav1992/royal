@@ -1,0 +1,126 @@
+{
+  "published": true,
+  "release": "last-exit-action-20261125-v1",
+  "sourceCommit": "8a074738324be8adfaf853a4db5067d7c3dbe3e3",
+  "baseCommit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/last-exit-action-20261125-v1/source.tgz",
+    "sha256": "77988f8287c2a9f2be58348ff5b53dbfe61e83a001ab48a7d0b260e9c639df55",
+    "bytes": 2874,
+    "oldVersion": "1.1.1-42a51227e934",
+    "imageTag": "royal-game:before-last-exit-action-20261125-v1",
+    "image": "sha256:2a3b9ebfb37444da4a752c803fbb742d203b74315df83b38da2d7890b8f79e99",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/last-exit/LastExitScene.ts",
+      "games/last-exit/LastExitUI.ts",
+      "games/last-exit/assets.ts",
+      "games/last-exit/audio.ts",
+      "games/last-exit/last-exit.css",
+      "games/last-exit/layout.ts",
+      "games/last-exit/model.ts",
+      "games/last-exit/pursuit.ts",
+      "games/last-exit/route.ts",
+      "games/last-exit/scene-actors.ts",
+      "games/last-exit/scene-base.ts",
+      "games/last-exit/scene-bits.ts",
+      "games/last-exit/scene-effects.ts",
+      "games/last-exit/scene-finales.ts",
+      "games/last-exit/scene-kit.ts",
+      "games/last-exit/scene-road.ts",
+      "games/last-exit/scene-sprites.ts",
+      "games/last-exit/stunts.ts",
+      "games/last-exit/text.ts"
+    ]
+  },
+  "module": {
+    "verified": true,
+    "gameId": "github-crash",
+    "version": "1.2.0-7b4b1daf44b6",
+    "bytes": 3283264,
+    "files": 15,
+    "beforeSha256": "74b7f78c29be1685ef13de0113ab60175a5144bd40588f3fe19e5ccdb02768d1",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "446e2a97354adeb5640fe10409663fcf5dd3c938db71c7819e2cf211980b6515",
+    "history": "/opt/royal-game-modules-state/history/20261125T061111-85a8bfdb18594b209d23bf7f926b1caf.json"
+  },
+  "freeBefore": 11445706752,
+  "freeAfter": 11442085888,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8821,
+  "servicesPreserved": 11,
+  "wrapperSourceCommit": "8a074738324be8adfaf853a4db5067d7c3dbe3e3",
+  "previousVersion": "1.1.1-42a51227e934",
+  "manifestSha256": "1f3b6f830e5b33aa4036e136ae0db9016ef44fb8538a0c4527af22b2a01ddee8",
+  "pointerSha256": "446e2a97354adeb5640fe10409663fcf5dd3c938db71c7819e2cf211980b6515",
+  "priorPointerSha256": "74b7f78c29be1685ef13de0113ab60175a5144bd40588f3fe19e5ccdb02768d1",
+  "releaseManifestSha256": "ac3bbed21fb0d6ae83fb3177201e2466d401f5a11c8e7f1d1379cf25435119ce",
+  "receiptSha256": "c8f68637f12103eeabc48dd9a4751f08faa6960844eaac3784c368969b74bc42",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "projection": "shared inputs equal the live host; tsconfig and the contract catalog as in neopolis-smooth-20261124-v1; the unused src/ui LastExit files stay on the server unchanged",
+  "verification": {
+    "rtp": "passed in release:prepare (39 profiles, 21 stake policies)",
+    "typecheck": true,
+    "githubVerified": true,
+    "browserReport": {
+      "release": "last-exit-action-20261125-v1",
+      "version": "1.2.0-7b4b1daf44b6",
+      "sourceCommit": "8a074738324be8adfaf853a4db5067d7c3dbe3e3",
+      "moduleManifestSha256": "1f3b6f830e5b33aa4036e136ae0db9016ef44fb8538a0c4527af22b2a01ddee8",
+      "connectedHostPassed": true,
+      "recoveryPassed": true,
+      "moduleBrowserTests": 11,
+      "hostLayoutTests": 2,
+      "connectedScenarios": 2,
+      "serverAndWalletTests": 32,
+      "host": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact module bytes",
+      "browser": "Google Chrome",
+      "scenarios": [
+        "minimum start debits exactly 0.10 and manual 0.37 debits 0.37; an invalid draft submits nothing",
+        "a held start reply shows neutral engine feedback without recovery",
+        "close and reopen during an accepted run adds no debit",
+        "lost response offers the same operation",
+        "chat toggle, rotation, rules dialog",
+        "four endings, reopened ending without replay, 0.9 s restart lock",
+        "nine sizes with a fixed scene in the host in Russian; Russian and English in the module fixture"
+      ],
+      "notes": [
+        "The first run of three host scenarios failed at sign-in: the local vite dependency cache was outdated. They passed after clearing it.",
+        "The connected scenario first failed on its own last step, an Escape pressed with no dialog open, which closes the game window. Corrected and passed.",
+        "Finale soak of 20 runs per ending on three sizes: helicopter and tunnel 60 of 60; the pursuing patrol of the aircraft ending jumped in 56 of 60. No invalid values."
+      ],
+      "notTested": [
+        "Safari",
+        "physical phones",
+        "audio by listening"
+      ]
+    }
+  },
+  "production": {
+    "publicFilesVerifiedBySha256": 15,
+    "pointerCacheControl": "no-store",
+    "browserTestsOnPublicBytes": 11,
+    "healthz": 200,
+    "publicPagesWithoutJavaScriptErrors": [
+      "1440x900",
+      "393x852"
+    ],
+    "realAccountsOrStakesUsed": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 81,
+    "timerEnabled": true,
+    "timerActive": true,
+    "availableBytes": 11435143168,
+    "hostHealthy": true
+  }
+}

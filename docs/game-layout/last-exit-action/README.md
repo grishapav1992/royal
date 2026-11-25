@@ -1,6 +1,6 @@
 # LAST EXIT: кадр из боевика
 
-Представление игры `github-crash` в модуле `@royal/last-exit` 1.2.0. Совместимость host/rules/progress 1/1/1 прежняя. Утверждённый макет: [Last Exit: кадр из боевика](https://claude.ai/artifact/PxG7CSPSzPCX5McWngBoEt).
+Представление игры `github-crash` в модуле `@royal/last-exit` 1.2.0, опубликовано 25 ноября 2026 года (`1.2.0-7b4b1daf44b6`, [проверки выпуска](../../../deployment/releases/last-exit-action-20261125-v1/verification.json)). Совместимость host/rules/progress 1/1/1 прежняя. Утверждённый макет: [Last Exit: кадр из боевика](https://claude.ai/artifact/PxG7CSPSzPCX5McWngBoEt).
 
 Стиль сохранён: дневная погоня, чёрное купе, патрули, вертолёт, самолёт, четыре локации, логотип, Impact и палитра. Математика, ставки, кошелёк, протокол, задержка принятия выхода на сервере и правила не изменились. Новых рисованных изображений нет.
 
