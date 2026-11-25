@@ -1,0 +1,127 @@
+{
+  "published": true,
+  "release": "cr-leo-stadium-20261125-v1",
+  "sourceCommit": "f23a0548bc1ab9982a330b287b1ebeecde4532d6",
+  "baseCommit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/cr-leo-stadium-20261125-v1/source.tgz",
+    "sha256": "0b477867f25bb74e51b46c4dbdedea165c9584f2c36fa3eab161b681ff435578",
+    "bytes": 2958,
+    "oldVersion": "1.1.1-b2fd5fb2a417",
+    "imageTag": "royal-game:before-cr-leo-stadium-20261125-v1",
+    "image": "sha256:2a3b9ebfb37444da4a752c803fbb742d203b74315df83b38da2d7890b8f79e99",
+    "oldPackageHardlinked": true,
+    "createdSources": [
+      "games/cr-vs-leo/CrLeoAudio.ts",
+      "games/cr-vs-leo/CrLeoScene.ts",
+      "games/cr-vs-leo/CrLeoUI.ts",
+      "games/cr-vs-leo/camera.ts",
+      "games/cr-vs-leo/cr-leo.css",
+      "games/cr-vs-leo/crLeoAssetManifest.ts",
+      "games/cr-vs-leo/crLeoAssets.ts",
+      "games/cr-vs-leo/crLeoBall.ts",
+      "games/cr-vs-leo/crLeoFreeKick.ts",
+      "games/cr-vs-leo/crLeoGoal.ts",
+      "games/cr-vs-leo/crLeoPitch.ts",
+      "games/cr-vs-leo/crLeoTimeline.ts",
+      "games/cr-vs-leo/effects.ts",
+      "games/cr-vs-leo/stands.ts"
+    ]
+  },
+  "module": {
+    "verified": true,
+    "gameId": "original-cr-vs-leo",
+    "version": "1.2.0-4b58154f04b8",
+    "bytes": 7494506,
+    "files": 21,
+    "beforeSha256": "a4154ddf85dacb31734d82a8ae58688026b59363e4073f667a2a3ab2d70ab401",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "73e01b153b921d6d631f82c1da8f6731d20c02a62c5a79e3cc5b822792938b21",
+    "history": "/opt/royal-game-modules-state/history/20261125T100126-5b4a5c1f9fa2413b90d73d17a2e425e8.json"
+  },
+  "freeBefore": 11432108032,
+  "freeAfter": 11424321536,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8821,
+  "servicesPreserved": 11,
+  "wrapperSourceCommit": "f23a0548bc1ab9982a330b287b1ebeecde4532d6",
+  "pointerSha256": "73e01b153b921d6d631f82c1da8f6731d20c02a62c5a79e3cc5b822792938b21",
+  "priorPointerSha256": "a4154ddf85dacb31734d82a8ae58688026b59363e4073f667a2a3ab2d70ab401",
+  "releaseManifestSha256": "55a73b32a627aecf77ab3889954d733e3d5b4a64260508be9195810a99ee7365",
+  "receiptSha256": "92d9ceb1f076df68dc783e95d1086d77836441f5a45a0b2927e58e1a092370c7",
+  "previousVersion": "1.1.1-b2fd5fb2a417",
+  "manifestSha256": "f7289ac6a8e726fd7d352aba63620dee79afaee5efbca2ea5c71bf355017b026",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "projection": "shared inputs equal the live host; tsconfig and the contract catalog as in last-exit-action-20261125-v1; the unused src/ui CR vs. Leo files stay on the server unchanged",
+  "verification": {
+    "rtp": "passed in release:prepare (39 profiles, 21 stake policies)",
+    "typecheck": true,
+    "githubVerified": true,
+    "browserReport": {
+      "release": "cr-leo-stadium-20261125-v1",
+      "version": "1.2.0-4b58154f04b8",
+      "sourceCommit": "f23a0548bc1ab9982a330b287b1ebeecde4532d6",
+      "moduleManifestSha256": "f7289ac6a8e726fd7d352aba63620dee79afaee5efbca2ea5c71bf355017b026",
+      "connectedHostPassed": true,
+      "recoveryPassed": true,
+      "moduleBrowserTests": 21,
+      "hostLayoutTests": 3,
+      "connectedScenarios": 1,
+      "serverAndWalletTests": 66,
+      "host": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact module bytes",
+      "browser": "Google Chrome",
+      "scenarios": [
+        "minimum start debits exactly 0.10 and manual 0.37 debits 0.37; an invalid 0.05 draft submits nothing",
+        "a double click on the kick makes one debit",
+        "lost response offers the same operation and the retry adds no debit",
+        "close and reopen during an accepted series adds no debit",
+        "a complete five-goal series settles from one debit and shows its final title",
+        "eight host sizes without scrolling, settings, rules, rotation, chat",
+        "the scorer never covers the ball in 108 combinations in three windows",
+        "at most three camera flashes per second, reduced motion paints one still frame"
+      ],
+      "notes": [
+        "Six host sizes keep the same layout before the kick, in flight, after a goal and after a spot change; checked on the same sources before packaging.",
+        "cr-leo-review-wallet 'older clients never receive football sessions' fails: it starts github-diamonds, which is removed from the hall. Server files are unchanged by this release.",
+        "operation-feedback.spec.ts stopped on Cosmic Escape before reaching this game; its CR vs. Leo step passed separately."
+      ],
+      "notTested": [
+        "Safari",
+        "physical phones",
+        "audio by listening"
+      ]
+    }
+  },
+  "production": {
+    "publicFilesVerifiedBySha256": 21,
+    "pointerCacheControl": "no-store",
+    "pointersUnchanged": 124,
+    "pointersChanged": [
+      "original-cr-vs-leo"
+    ],
+    "previousPackageStillServed": true,
+    "browserTestsOnPublicBytes": 2,
+    "healthz": 200,
+    "publicPagesWithoutJavaScriptErrors": [
+      "1440x900",
+      "393x852"
+    ],
+    "realAccountsOrStakesUsed": false
+  },
+  "maintenance": {
+    "status": "completed",
+    "durationSeconds": 128.97,
+    "timerEnabled": true,
+    "timerActive": true,
+    "availableBytes": 11415900160,
+    "hostHealthy": true
+  }
+}
