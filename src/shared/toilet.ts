@@ -20,14 +20,16 @@ export const TOILET = {
   bounds:{left:100,right:700,top:264,bottom:520},
 } as const;
 
+export const SERVICE_WINDOW_WIDTH = 120;
+
 export const ROOF_TOILET = {
   body:{x:760,y:410,w:180,h:160},step:{x:820,y:575,w:60,h:24},
   entry:{x:850,y:620},arrival:{x:925,y:665},facing:'down',click:{x:850,y:485},
-  left:832,right:868,top:615,bottom:626,
+  left:850-SERVICE_WINDOW_WIDTH/2,right:850+SERVICE_WINDOW_WIDTH/2,top:610,bottom:642,
 } as const;
 export const TOILET_WINDOW = {
-  entry:{x:156,y:280},arrival:TOILET.spawn,facing:'down',click:{x:156,y:190},
-  left:140,right:172,top:278,bottom:286,
+  entry:{x:156,y:280},arrival:{x:230,y:330},facing:'down',click:{x:156,y:190},
+  left:156-SERVICE_WINDOW_WIDTH/2,right:156+SERVICE_WINDOW_WIDTH/2,top:273,bottom:305,
 } as const;
 
 /** Ordinary doorway to the card salon, separate from the roof window. */

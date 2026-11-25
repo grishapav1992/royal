@@ -1,5 +1,5 @@
 import type Phaser from 'phaser';
-import { TOILET,TOILET_WINDOW,TOILET_HALL_DOOR,CARD_TOILET_DOOR,OCCUPIED_TOILET_CUBICLE,toiletCubicleOpen } from '../shared/toilet';
+import { TOILET,TOILET_WINDOW,TOILET_HALL_DOOR,CARD_TOILET_DOOR,OCCUPIED_TOILET_CUBICLE,SERVICE_WINDOW_WIDTH,toiletCubicleOpen } from '../shared/toilet';
 import {paintToiletResident,toiletResidentRigReady} from './toiletResidentArt';
 import {toiletResidentPose} from './toiletResidentPose';
 import {ToiletMerchant} from './ToiletMerchant';
@@ -23,7 +23,12 @@ export function paintServiceWindow(c:Paint,x:number,y:number,view?:WindowView){
   c.save();c.globalAlpha=.24;c.fillStyle='#87a5a3';c.fillRect(x+8,y+8,88,34);c.restore();
   c.lineWidth=2;c.strokeStyle=ink;c.strokeRect(x+8,y+8,88,34);line(c,x+24,y+30,x+45,y+14,'#c5d7cd');
   box(c,x+6,y+40,92,7,'#b3bdac',2);box(c,x+45,y+41,14,3,'#6e7b74',0);
-  box(c,x-8,y+89,120,8,cream,1.5);line(c,x+20,y+94,x+33,y+94,'#a89d86',1.5);
+  box(c,x-8,y+89,SERVICE_WINDOW_WIDTH,8,cream,1.5);line(c,x+20,y+94,x+33,y+94,'#a89d86',1.5);
+}
+export function addServiceWindowZone(scene:Phaser.Scene,windowCenter:{x:number;y:number},stepBottom:number,activate:()=>void){
+  const top=windowCenter.y-55;
+  scene.add.zone(windowCenter.x,(top+stepBottom)/2,SERVICE_WINDOW_WIDTH,stepBottom-top)
+    .setDepth(700).setInteractive({useHandCursor:true}).on('pointerdown',activate);
 }
 export function paintRoofToilet(c:Paint){
   box(c,0,0,180,160,'#684550',3);box(c,0,0,180,14,'#b2b9ac',2);
@@ -136,7 +141,7 @@ export class ToiletRenderer{
     this.drawResident();scene.add.image(p.x,p.y,residentKey).setOrigin(0).setDisplaySize(100,140).setDepth(14);
     this.doors=scene.add.graphics().setDepth(15);
     this.merchant=new ToiletMerchant(scene,approachMerchant);this.drawDoors();
-    scene.add.zone(TOILET_WINDOW.click.x,TOILET_WINDOW.click.y,120,110).setDepth(700).setInteractive({useHandCursor:true}).on('pointerdown',leave);
+    addServiceWindowZone(scene,TOILET_WINDOW.click,TOILET.step.y+TOILET.step.h,leave);
     if(leaveToHall)scene.add.zone(TOILET_HALL_DOOR.click.x,TOILET_HALL_DOOR.click.y,120,80).setDepth(700).setInteractive({useHandCursor:true}).on('pointerdown',leaveToHall);
   }
   private drawDoors(){

@@ -90,7 +90,7 @@ export class RoomScene extends Phaser.Scene {
   private movementTarget?:Point;
   private rooftop?: RooftopRenderer;
   private toilet?:ToiletRenderer;
-  private windowArrival?:{from:Point;until:number;render?:boolean};
+  private windowArrival?:{from:Point;startedAt:number;duration:number;render?:boolean};
   private heldWindowKeys=new Set<number>();
   private stairWindowApproachAt=0;
   private roofClickTarget?:Point;
@@ -316,17 +316,18 @@ export class RoomScene extends Phaser.Scene {
   getRoofMapArt() { return this.rooftop?.mapCanvas; }
   getToiletMapArt(){return this.toilet?.mapCanvas;}
   private beginWindowArrival(from:HallId,to:HallId){
-    if(from==='github'&&to==='street')this.releaseWindowMovement();
+    const roofToilet=from==='roof'&&to==='toilet'||from==='toilet'&&to==='roof';
+    if(from==='github'&&to==='street'||roofToilet)this.releaseWindowMovement();
     if(this.reducedMotion)return;
     if(from==='street'&&to==='github'){
-      this.windowArrival={from:{x:STAIR_WINDOW.interior.x,y:177},until:this.time.now+500};this.switching=true;return;
+      this.windowArrival={from:{x:STAIR_WINDOW.interior.x,y:177},startedAt:this.time.now,duration:500};this.switching=true;return;
     }
     if(from==='github'&&to==='street'){
       const w=stairWindowFrame(this.streetView);
-      this.windowArrival={from:{x:w.x+128,y:w.y+176},until:this.time.now+500,render:true};this.switching=true;return;
+      this.windowArrival={from:{x:w.x+128,y:w.y+176},startedAt:this.time.now,duration:500,render:true};this.switching=true;return;
     }
-    if(!(from==='roof'&&to==='toilet'||from==='toilet'&&to==='roof'))return;
-    this.windowArrival={from:to==='toilet'?{x:156,y:244}:{x:850,y:530},until:this.time.now+500};
+    if(!roofToilet)return;
+    this.windowArrival={from:to==='toilet'?{x:156,y:244}:{x:850,y:530},startedAt:this.time.now,duration:240};
     this.switching=true;
   }
   setOverview(value:boolean){this.overview=value;if(this.hall==='street')this.streetView.configure(this.player,value);document.querySelector<HTMLElement>('.room-panel')!.dataset.overview=String(value);this.resizeView();}
@@ -465,6 +466,7 @@ export class RoomScene extends Phaser.Scene {
       this.goTo(stairs.foot);
       return;
     }
+    if(link.door===ROOF_TOILET||link.door===TOILET_WINDOW)this.releaseWindowMovement();
     this.goTo(link.door.entry);
   }
   private useRoofStairs(point:Point){
@@ -1194,7 +1196,7 @@ export class RoomScene extends Phaser.Scene {
     const world={x:actor.x+(actor===this.player?this.correction.x:0),y:actor.y+(actor===this.player?this.correction.y:0)};
     let windowProgress=1;
     if(actor===this.player&&this.windowArrival){
-      windowProgress=Phaser.Math.Clamp(1-(this.windowArrival.until-time)/500,0,1);
+      windowProgress=Phaser.Math.Clamp((time-this.windowArrival.startedAt)/this.windowArrival.duration,0,1);
       const t=Phaser.Math.Easing.Cubic.Out(windowProgress),from=this.windowArrival.from;
       if(!this.windowArrival.render){world.x=Phaser.Math.Linear(from.x,world.x,t);world.y=Phaser.Math.Linear(from.y,world.y,t);}
       if(windowProgress===1){this.windowArrival=undefined;this.switching=false;}
