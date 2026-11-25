@@ -293,7 +293,7 @@ export class ForestHeartUI {
     this.find('total-label').textContent = (this.busy || active ? c.pendingTotal : c.total) + (this.layout?.current.kind === 'landscape' ? '' : ', USDT');
     this.find('total').title = !this.view && !this.busy ? '' : settled ? c.credited : c.collected;
     this.find('status').textContent = this.client.error || this.status || (!this.owner ? c.login : waiting ? c.searching : stage === 'choice' ? c.choice : stage === 'bonus' ? this.view!.remaining < 4 ? c.forestWaits : c.bonus : tier ? c[tier] : c.ready);
-    this.find('next').textContent = recover ? c.retry : this.hint || (waiting ? c.waiting : stage === 'choice' ? auto.active ? c.autoChoice : c.nextChoice : stage === 'bonus' ? this.view!.remaining < 4 ? fill(c.freeRemain, this.view!.remaining) : c.bonusNote : tier && this.shown ? this.outcomeNote(tier) : c.nextIdle);
+    this.find('next').textContent = recover ? c.retry : this.hint || (waiting ? c.waiting : stage === 'choice' ? auto.active ? c.autoChoice : c.nextChoice : stage === 'bonus' ? this.view!.remaining < 4 ? fill(c.freeRemain, this.view!.remaining) : c.bonusNote : tier && this.shown ? this.outcomeNote(tier) : (this.layout?.current.plate.w ?? 999) < 380 ? c.nextIdleShort : c.nextIdle);
     this.waiters = this.waiters.filter(waiter => { if (!waiter.test()) return true; waiter.done(); return false; });
   }
   private outcomeNote(tier: ReturnType<typeof forestRoundTier>) {
