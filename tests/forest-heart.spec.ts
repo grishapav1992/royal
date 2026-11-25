@@ -79,7 +79,7 @@ async function act(page: Page, selector = '[data-fh=spin]') {
   expect(current.scene.board).toEqual(board);
   const lit = await game(page).locator('.fh-powered').evaluateAll(cells => cells.map(c => Number((c as HTMLElement).dataset.cell)).sort((a,b)=>a-b));
   expect(lit).toEqual(flow.reachedCells);
-  await expect(game(page).locator('[data-fh=total]')).toHaveText((current.scene.totalUnits / 100).toLocaleString('ru-RU', { maximumFractionDigits: 2 }));
+  await expect(game(page).locator('[data-fh=total]')).toHaveText((current.scene.totalUnits / 100).toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
   // The complete bonus ends with its own confirmed total. Closing it never sends a request.
   const result = game(page).locator('[data-fh=result-dialog]');
   if (before.view?.stage === 'bonus' && v.stage === 'settled') { await expect(result).toBeVisible(); await game(page).locator('[data-fh=result-confirm]').click(); await expect(result).toBeHidden(); }
@@ -129,6 +129,8 @@ test('the elf has no video, breathes and blinks in calm and stops for rules, red
   });
   await expect.poll(async()=>(await state(page)).character.blinks,{timeout:15000}).toBeGreaterThanOrEqual(2);
   const frames=await game(page).locator('.fh-character-canvas').evaluate(c=>(c as any).__frames as {hash:number;lids:number}[]);
+  // The drawing starts within the first percent of its height, so nothing may fade it from above.
+  expect(await game(page).locator('.fh-character').evaluate(e=>getComputedStyle(e).webkitMaskImage)).toMatch(/^linear-gradient\(rgb\(0, 0, 0\)/);
   expect(new Set(frames.map(f=>f.hash)).size).toBeGreaterThan(12);expect(frames.some(f=>f.lids>.8)).toBe(true);expect(frames.filter(f=>f.lids>0).length).toBeLessThan(frames.length*.3);
   expect((await state(page)).character.pose).toBe('idle');expect((await state(page)).character.events).toEqual([]);
   await page.screenshot({path:out+'/elf-calm.png'});
@@ -164,6 +166,8 @@ test('she keeps one unbroken action from the press to the result and never shows
   for(const row of rows){expect(row.weights.filter(w=>w>0).length).toBeLessThanOrEqual(2);expect(row.weights.reduce((a,b)=>a+b,0)).toBeCloseTo(1,6);}
   const settled=await state(page);expect(settled.visual.effects.streams).toEqual([]);
   expect(settled.character.events.map((e:any)=>e.reaction)).toEqual(['awaken','land','channel','flower','pulse','pulse','win']);
+  // The celebration stays for a while after the round and then she calms down.
+  await page.waitForTimeout(3200);expect((await state(page)).character.pose).toBe('win');
   await expect.poll(async()=>(await state(page)).character.pose,{timeout:8000}).toBe('idle');
 });
 
@@ -211,7 +215,7 @@ test('real host preserves choice, bonus, exact settlement and connected chat acr
   await page.locator('#studio-game-list').click(); await choose(page);
   expect((await state(page)).sessionId).toBe(initial.sessionId); expect((await state(page)).presentations).toBe(0);
   await expect(game(page).locator('[data-cell]:enabled')).toHaveCount(12);
-  let current = await act(page, '[data-cell="5"]'); expect(current.view.stage).toBe('bonus');await expect(game(page).locator('[data-fh=next]')).toContainText('бесплатно'); expect((await wallet(page)).balance).toBe(9990);
+  let current = await act(page, '[data-cell="5"]'); expect(current.view.stage).toBe('bonus');await expect(game(page).locator('[data-fh=next]')).toContainText('закрепятся');await expect(game(page).locator('[data-fh=spin]')).toContainText('бесплатно, осталось 4'); expect((await wallet(page)).balance).toBe(9990);
   await page.setViewportSize({ width: 390, height: 844 }); await fit(game(page)); await expectConnectedChat(page);
   await expect(game(page).locator('[data-fh=spin]')).toBeInViewport();
   await page.screenshot({ path: out + '/mobile.png' });
@@ -290,7 +294,7 @@ test('motion and shared audio respect result tiers, mute, pause, rules, skip, an
   expect((await state(page)).audio.activeVoices).toBe(0);
   await game(page).locator('[data-fh=rules]').click(); await expect(game(page).locator('.fh-dialog')).toBeVisible();
   expect((await state(page)).audio.activeVoices).toBe(0);
-  await game(page).locator('[data-fh-tab=settings]').click(); await game(page).locator('[data-fh=music]').uncheck(); await game(page).locator('[data-fh=motion]').check();
+  await game(page).locator('[data-fh=close]').click(); await game(page).locator('[data-fh=settings]').click(); await game(page).locator('[data-fh=music]').uncheck(); await game(page).locator('[data-fh=motion]').check();
   await game(page).locator('[data-fh=close]').click(); expect((await state(page)).reduced).toBe(true);
   await game(page).locator('[data-fh=sound]').click(); await act(page); current = await state(page);
   expect(current.audio.activeVoices).toBe(0); expect(current.audio.played.win).toBe(1);
@@ -326,7 +330,7 @@ test('English rules, zero return and a narrow mobile viewport stay readable',asy
   await game(page).locator('.fh-full-rules summary').click();await expect(game(page).locator('.fh-dialog')).toContainText('95.9942%');expect(await game(page).locator('.fh').innerText()).not.toMatch(/[А-Яа-яЁё]/);
   await game(page).locator('[data-fh=close]').click();await page.setViewportSize({width:320,height:780});await fit(game(page));
   await game(page).locator('[data-fh=spin]').click();await expect(game(page).locator('.fh')).toHaveAttribute('data-outcome','loss');
-  await expect(game(page).locator('[data-fh=total]')).toHaveText('0');expect((await wallet(page)).balance).toBe(9990);
+  await expect(game(page).locator('[data-fh=total]')).toHaveText('0.00');expect((await wallet(page)).balance).toBe(9990);
   expect((await state(page)).audio.played.win).toBeUndefined();expect((await state(page)).audio.played.big).toBeUndefined();
 });
 
@@ -406,7 +410,7 @@ test('twelve straight roots turn before the reply and settle on the confirmed fi
     expect(spin.length).toBeGreaterThan(8);expect(reveal.length).toBeGreaterThan(5);
     for(const cell of rotors)expect(new Set(spin.map(f=>f.angles[cell])).size).toBeGreaterThan(4);
     for(const frame of frames){expect(frame.boxes).toBe(frames[0].boxes);for(let cell=0;cell<25;cell++)if(!rotors.includes(cell))expect(frame.angles[cell]).toBe(frames[0].angles[cell]);}
-    expect(reveal.every(f=>f.total==='0')).toBe(true);
+    expect(reveal.every(f=>f.total==='0,00')).toBe(true);
     await expect(game(page).locator('[data-fh=spin]')).toBeEnabled();expect((await state(page)).scene.board).toEqual(referenceBoard(4095));
     const angles=await game(page).locator('[data-cell]').evaluateAll(cells=>cells.map(c=>parseFloat((c as HTMLElement).style.getPropertyValue('--turn'))));
     for(const cell of rotors)expect(angles[cell]).toBe(90);
@@ -421,7 +425,7 @@ test('twelve straight roots turn before the reply and settle on the confirmed fi
 test('the displayed wallet and result wait for the light, while the server has already settled', async({page,roomPath})=>{
   await routeScenario(page,'win');await enter(page,roomPath);
   await game(page).locator('[data-fh=spin]').click();await expect(game(page).locator('[data-fh=skip]')).toBeVisible();
-  await expect(game(page).locator('[data-fh=balance]')).toHaveText(/^9.990$/);
+  await expect(game(page).locator('[data-fh=balance]')).toHaveText(/^9.990,00$/);
   await expect(game(page).locator('.fh')).toHaveAttribute('data-outcome','');await expect(game(page).locator('[data-fh=net]')).toHaveText('');
   expect((await wallet(page)).balance).toBe(10008.93);
   await expect(game(page).locator('[data-flower][data-paid=true]')).toHaveCount(0);
@@ -447,7 +451,7 @@ test('autoplay starts only on confirmation, waits at the rune, plays free pulses
   await expect(game(page).locator('[data-fh=next]')).toHaveText('Автоигра ждёт твоего выбора.');await expect(auto).toContainText('Стоп 9');
   await expect(game(page).locator('[data-manual-stake]')).toBeDisabled();expect((await state(page)).accepted).toBe(1);
   await game(page).locator('[data-fh=pass]').click();
-  await expect(result).toBeVisible({timeout:60000});await expect(game(page).locator('[data-fh=result-confirm]')).toContainText('ОСТАЛОСЬ 9');
+  await expect(result).toBeVisible({timeout:60000});await expect(game(page).locator('[data-fh=result-confirm]')).toContainText('осталось 9');
   expect(await bets()).toBe(1);expect((await state(page)).accepted).toBe(1);await page.waitForTimeout(1500);expect(await bets()).toBe(1);
   await page.screenshot({path:out+'/autoplay-result.png'});
   await change('loss');await game(page).locator('[data-fh=result-confirm]').click();
@@ -550,6 +554,8 @@ test('the elf shows choice, flower, bonus and large final reactions in the real 
   await expect(game(page).locator('[data-fh=spin]')).toBeEnabled();current=await state(page);
   expect(current.view.stage).toBe('bonus');expect(current.character.pose).toBe('bonus');
   expect(current.character.events.some((e:any)=>e.pose==='win'||e.pose==='big')).toBe(false);
+  // Both flower colours grow on every side of the frame.
+  for(let side=0;side<4;side++)expect(new Set(current.visual.effects.blossoms.filter((_:boolean,i:number)=>i%4===side)).size).toBe(2);
   await page.screenshot({path:out+'/elf-bonus.png'});
   await page.setViewportSize({width:390,height:844});await fit(game(page));await expectConnectedChat(page);
   await page.screenshot({path:out+'/elf-mobile.png'});
@@ -559,6 +565,11 @@ test('the elf shows choice, flower, bonus and large final reactions in the real 
   current=await act(page);while(current.view.stage!=='settled')current=await act(page);
   expect(current.character.events.at(-1).reaction).toBe('big');expect(current.scene.totalUnits).toBe(946500);
   await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:out+'/elf-big.png'});
+  // She celebrates again after a fresh large round and keeps the pose while its result window is open.
+  await page.unroute('**/api/demo-wallet/expansion');await routeScenario(page,'maximum');const result=game(page).locator('[data-fh=result-dialog]');
+  const spin=game(page).locator('[data-fh=spin]');await spin.click();for(let i=0;i<4;i++){await expect(spin).toContainText('осталось '+(4-i),{timeout:20000});await expect(spin).toBeEnabled();await spin.click();}
+  await expect(result).toBeVisible({timeout:20000});await page.waitForTimeout(5500);expect((await state(page)).character.pose).toBe('big');
+  await game(page).locator('[data-fh=result-confirm]').click();await expect.poll(async()=>(await state(page)).character.pose,{timeout:4000}).toBe('idle');
   await writeFile(out+'/character-events.json',JSON.stringify(current.character,null,2));
 });
 
@@ -588,7 +599,8 @@ test('the elf anticipates the field and keeps pose weights and gestures continuo
     await advanceRecordedSpin(page, 12200);
     const frames=await recording;
     expect(frames.some(f=>['spin','reveal'].includes(f.motion)&&f.reaction==='awaken')).toBe(true);
-    expect(frames.some(f=>f.reaction==='awaken'&&f.gesture[0]>.5)).toBe(true);
+    // The fast field lands after 480 ms, so its gesture is cut short and the living sway decides the exact peak.
+    expect(frames.some(f=>f.reaction==='awaken'&&f.gesture[0]>(mode==='fast'?.2:.5))).toBe(true);
     expect(frames.some(f=>f.reaction==='win'&&f.gesture[1]>.85)).toBe(true);
     expect(frames.some(f=>f.reaction==='win'&&f.light>.8)).toBe(true);
     let maxWeightStep=0,maxGestureStep=0;
@@ -635,12 +647,12 @@ test('the original score renders finite unclipped audio and releases its owned v
 
 test('readable outcomes, accepted flower values and separate settings fit desktop and phones with chat',async({page,roomPath})=>{
   await page.emulateMedia({reducedMotion:'reduce'});await routeScenario(page,'partial');await enter(page,roomPath);
-  await expect(game(page).locator('[data-fh=next]')).toContainText('Свет пойдёт от кристалла');
-  await expect(game(page).locator('[data-fh=spin]')).toContainText('Стоимость 10 USDT');
+  await expect(game(page).locator('[data-fh=next]')).toContainText('Свет дойдёт от кристалла');
+  await expect(game(page).locator('[data-fh=spin]')).toContainText('10,00 USDT за поле');
   await act(page);await expect(game(page).locator('[data-fh=total]')).toHaveText('6,31');await expect(game(page).locator('[data-fh=net]')).toHaveText('-3,69');
   await expect(game(page).locator('.fh-flower-value')).toHaveText(['6,31','6,31','6,31']);
   await game(page).locator('[data-fh=higher]').click();
-  await expect(game(page).locator('[data-fh=next]')).toContainText('Ставка поля: 10 USDT');
+  await expect(game(page).locator('[data-fh=next]')).toContainText('Собрано меньше ставки 10,00 USDT');
   await expect(game(page).locator('.fh-flower-value')).toHaveText(['6,31','6,31','6,31']);
   await game(page).locator('[data-fh=energy]').click();await expect(game(page).locator('#fh-energy-note')).toBeVisible();
   await expect(game(page).locator('[data-fh=flower-value-note]')).toContainText('6,31 USDT');
@@ -669,7 +681,7 @@ test('readable outcomes, accepted flower values and separate settings fit deskto
   await game(page).locator('[data-fh=settings]').click();
   await expect(game(page).locator('[data-panel=settings]')).toBeVisible();await expect(game(page).locator('[data-fh=motion]')).toBeInViewport();
   await page.screenshot({path:out+'/ux-v7-settings.png'});
-  await game(page).locator('[data-fh-tab=settings]').press('ArrowLeft');await expect(game(page).locator('.fh-steps li')).toHaveCount(3);
+  await game(page).locator('[data-fh=close]').click();await expect(game(page).locator('[data-fh=settings]')).toBeFocused();await game(page).locator('[data-fh=rules]').click();await expect(game(page).locator('.fh-steps li')).toHaveCount(5);
   await expect(game(page).locator('[data-panel=settings]')).toBeHidden();
   await page.screenshot({path:out+'/ux-v7-rules.png'});
   await game(page).locator('[data-fh=close]').click();expect((await wallet(page)).balance).toBe(9996.31);
@@ -708,7 +720,8 @@ test('the full host uses the available monitor and keeps the board, elf and paid
       else expect(inner.plate.bottom).toBeLessThanOrEqual(inner.controls.top+1);
       if(inner.layout==='wide'){
         expect(inner.logo.top).toBeGreaterThanOrEqual(-1);expect(inner.height-inner.controls.bottom).toBeLessThanOrEqual(90);
-        // The main action stays on the axis of the field.
+        // The plate belongs to the frame and the main action stays on the axis of the field.
+        expect(inner.plate.width).toBeLessThanOrEqual(inner.board.width*1.03);expect(Math.abs((inner.plate.left+inner.plate.right)/2-(inner.board.left+inner.board.right)/2)).toBeLessThanOrEqual(2);
         expect(Math.abs((inner.spin.left+inner.spin.right)/2-(inner.board.left+inner.board.right)/2)).toBeLessThanOrEqual(2);
         for(const flower of inner.flowers){expect(flower.value.left).toBeGreaterThanOrEqual(inner.board.right);expect(flower.font).toBeGreaterThanOrEqual(16);}
         expect(inner.character.height).toBeGreaterThanOrEqual(inner.board.height*.95);

@@ -39,7 +39,7 @@ export class ForestEffects {
     const { x, y, board: b, frame } = g;
     this.blossoms = Array.from({ length: 22 }, (_, i) => {
       const t = (Math.floor(i / 4) + rnd(.15, .85)) / 5.5, depth = frame * rnd(.3, .9), point = i % 4 === 0 ? [x + b * t, y - depth] : i % 4 === 1 ? [x + b + depth, y + b * t] : i % 4 === 2 ? [x + b * t, y + b + depth] : [x - depth, y + b * t];
-      return { x: point[0], y: point[1], radius: frame * rnd(.2, .36), angle: rnd(0, 6.28), pink: i % 2 === 0, delay: rnd(0, .9) };
+      return { x: point[0], y: point[1], radius: frame * rnd(.2, .36), angle: rnd(0, 6.28), pink: (Math.floor(i / 4) + i) % 2 === 0, delay: rnd(0, .9) };
     });
   }
   spark(x: number, y: number, color: string, count = 6, speed = 60) {
@@ -139,5 +139,5 @@ export class ForestEffects {
       if (i === 0 && Math.random() < .7) this.spark(px, py, '#ffe39a', 2, 70);
     }
   }
-  state() { return { particles: this.particles.length, beams: this.beams.filter(beam => beam.progress > 0).length, motes: this.motes.length, streams: [...this.streams.keys()], rays: this.rays, ring: this.ring, bloom: this.bloom }; }
+  state() { return { particles: this.particles.length, beams: this.beams.filter(beam => beam.progress > 0).length, motes: this.motes.length, streams: [...this.streams.keys()], rays: this.rays, ring: this.ring, bloom: this.bloom, blossoms: this.blossoms.map(flower => flower.pink) }; }
 }

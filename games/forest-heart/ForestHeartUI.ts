@@ -80,7 +80,7 @@ export class ForestHeartUI {
     host.innerHTML = `<main class="fh" tabindex="0" data-stage="idle" data-mode="base" data-lang="${en ? 'en' : 'ru'}">
       <div class="fh-forest" aria-hidden="true"></div><div class="fh-shade" aria-hidden="true"></div><div class="fh-dawn" aria-hidden="true"></div><div class="fh-mist" aria-hidden="true"></div>
       <canvas data-layer="backdrop" aria-hidden="true"></canvas><div class="fh-glow" aria-hidden="true"></div>
-      <aside class="fh-character" aria-hidden="true"><div class="fh-aura"></div><div class="fh-runes"><i></i><i></i><i></i><i></i></div><div class="fh-character-energy"><i></i><i></i><i></i><i></i></div></aside>
+      <aside class="fh-character" aria-hidden="true"><div class="fh-character-energy"><i></i><i></i><i></i><i></i></div></aside>
       <canvas data-layer="frame" aria-hidden="true"></canvas><canvas data-layer="field" aria-hidden="true"></canvas><canvas data-layer="bloom" aria-hidden="true"></canvas>
       <div class="fh-board" role="group" aria-label="${c.field}">${Array.from({ length: 25 }, (_, i) => `<button type="button" class="fh-cell" data-cell="${i}" disabled></button>`).join('')}</div>
       <aside class="fh-source" aria-hidden="true"><div class="fh-halo"></div><img src="${crystal}" alt="" draggable="false"><img class="fh-gem" src="${crystal}" alt="" draggable="false"></aside>
@@ -89,7 +89,7 @@ export class ForestHeartUI {
       <div class="fh-title"><h1 id="fh-title" class="${en ? '' : 'fh-sr'}">${c.title}</h1>${en ? '' : '<img class="fh-title-logo" src="/assets/forest-heart/v2/title.webp" alt="" draggable="false">'}</div>
       <div class="fh-bonus" role="img">${[0, 1, 2, 3].map(i => `<i data-bud="${i}"></i>`).join('')}</div>
       <section class="fh-plate" aria-label="${c.total}"><div class="fh-story"><p data-fh="status" role="status" aria-live="polite">${c.ready}</p><p data-fh="next">${c.nextIdle}</p></div>
-        <div class="fh-total"><span data-fh="total-label">${c.total}</span><strong data-fh="total">0</strong></div>
+        <div class="fh-total"><span data-fh="total-label">${c.total}</span><strong data-fh="total"></strong></div>
         <div class="fh-net"><span data-fh="net-label">${c.net}</span><strong data-fh="net"></strong></div><div class="fh-left" hidden><span>${c.freeLeft}</span><strong data-fh="remaining"></strong></div></section>
       <footer class="fh-controls"><div class="fh-bet"><span data-fh="stake-label">${c.stake}</span><div class="fh-bet-row"><button type="button" data-fh="lower" aria-label="${c.lower}">−</button><select data-fh="stake-select" aria-label="${c.stake}">${FOREST_HEART_STAKES.map(value => `<option value="${value}">${this.number(value)}</option>`).join('')}</select><button type="button" data-fh="higher" aria-label="${c.higher}">+</button></div></div>
         <div class="fh-money"><span>${c.balance}</span><strong data-fh="balance">…</strong><small>USDT</small></div>
@@ -101,10 +101,9 @@ export class ForestHeartUI {
       <div class="fh-banner" aria-hidden="true"></div><canvas data-layer="front" aria-hidden="true"></canvas>
       <div id="fh-energy-note" class="fh-energy-note" popover><h2>${c.energy}</h2><p>${c.energyHelp}</p><p data-fh="flower-value-note"></p><button type="button" popovertarget="fh-energy-note" popovertargetaction="hide">${c.close}</button></div>
       <dialog class="fh-dialog" data-fh="dialog" aria-labelledby="fh-dialog-title"><header><h2 id="fh-dialog-title" data-fh="dialog-title">${c.how}</h2><button type="button" class="fh-dialog-close" data-fh="close" aria-label="${c.close}">${icons.close}</button></header>
-      <nav role="tablist" aria-label="${c.info}"><button type="button" role="tab" id="fh-rules-tab" data-fh-tab="rules" aria-controls="fh-rules-panel" aria-selected="true">${c.how}</button><button type="button" role="tab" id="fh-settings-tab" data-fh-tab="settings" aria-controls="fh-settings-panel" aria-selected="false">${c.settings}</button></nav>
-      <section id="fh-rules-panel" data-panel="rules" role="tabpanel" aria-labelledby="fh-rules-tab"><ol class="fh-steps">${[1,2,3].map(n=>`<li><b aria-hidden="true">${n===1?'✧':n===2?'↻':'✿'}</b><div><h3>${[c.step1,c.step2,c.step3][n-1]}</h3><p>${[c.step1Text,c.step2Text,c.step3Text][n-1]}</p></div></li>`).join('')}</ol>
+      <section data-panel="rules"><ul class="fh-steps">${c.steps.map(([name, text]) => `<li><b>${name}</b><span>${text}</span></li>`).join('')}</ul>
       <details class="fh-full-rules"><summary>${c.fullRules}</summary><p>${c.rulesText}</p><p>${c.energyText}</p><p>${c.rtp}</p><p>${c.recovery}</p>${stakeRulesHtml(en)}</details></section>
-      <section id="fh-settings-panel" data-panel="settings" role="tabpanel" aria-labelledby="fh-settings-tab" hidden><label><span>${c.music}</span><input data-fh="music" type="checkbox" checked></label><label><span>${c.motion}</span><input data-fh="motion" type="checkbox"></label></section></dialog>
+      <section data-panel="settings" hidden><label><span>${c.music}</span><input data-fh="music" type="checkbox" checked></label><label><span>${c.motion}</span><input data-fh="motion" type="checkbox"></label></section></dialog>
       <dialog class="fh-window" data-fh="auto-dialog" aria-labelledby="fh-auto-title"><header><h2 id="fh-auto-title">${c.autoTitle}</h2><button type="button" class="fh-dialog-close" data-fh="close-autoplay" aria-label="${c.close}">${icons.close}</button></header><p data-fh="auto-text"></p>
         <div class="fh-counts" role="radiogroup" aria-label="${c.autoCount}">${FOREST_AUTO_COUNTS.map(count => `<button type="button" role="radio" data-auto-count="${count}" aria-checked="${count === this.autoCount}" tabindex="${count === this.autoCount ? 0 : -1}">${count}</button>`).join('')}</div><button type="button" class="fh-confirm" data-fh="auto-start"></button></dialog>
       <dialog class="fh-window fh-result" data-fh="result-dialog" aria-labelledby="fh-result-title"><header><h2 id="fh-result-title">${c.resultTitle}</h2><button type="button" class="fh-dialog-close" data-fh="close-result" aria-label="${c.close}">${icons.close}</button></header><p>${c.resultNote}</p><strong data-fh="result-sum"></strong><p data-fh="result-note"></p><button type="button" class="fh-confirm" data-fh="result-confirm"></button></dialog>
@@ -129,7 +128,7 @@ export class ForestHeartUI {
     bind('auto', () => { if (this.autoplay.state.active) this.autoplay.stop(); else this.openAutoplay(); });
     bind('auto-start', () => this.startAutoplay()); bind('close-autoplay', () => this.autoDialog.close());
     bind('result-confirm', () => this.resultDialog.close('confirm')); bind('close-result', () => this.resultDialog.close(''));
-    this.resultDialog.addEventListener('close', () => { const confirmed = this.resultDialog.returnValue === 'confirm'; this.resultDialog.returnValue = ''; this.scene.effects.rays = 0; const done = this.closeResult; this.closeResult = undefined; if (!confirmed) this.autoplay.stop(); done?.(confirmed); if (this.alive) { this.controls(); this.find('spin').focus({ preventScroll: true }); } }, { signal: this.controller.signal });
+    this.resultDialog.addEventListener('close', () => { const confirmed = this.resultDialog.returnValue === 'confirm'; this.resultDialog.returnValue = ''; this.character.release(); this.scene.effects.rays = 0; const done = this.closeResult; this.closeResult = undefined; if (!confirmed) this.autoplay.stop(); done?.(confirmed); if (this.alive) { this.controls(); this.find('spin').focus({ preventScroll: true }); } }, { signal: this.controller.signal });
     this.autoDialog.addEventListener('close', () => { if (this.alive) this.find('auto').focus({ preventScroll: true }); }, { signal: this.controller.signal });
     const counts = Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-auto-count]'));
     const choose = (button: HTMLButtonElement) => { this.autoCount = Number(button.dataset.autoCount); for (const item of counts) { item.setAttribute('aria-checked', String(item === button)); item.tabIndex = item === button ? 0 : -1; } this.autoTexts(); };
@@ -137,13 +136,7 @@ export class ForestHeartUI {
       button.addEventListener('click', () => choose(button), { signal: this.controller.signal });
       button.addEventListener('keydown', event => { const step = ['ArrowRight','ArrowDown'].includes(event.key) ? 1 : ['ArrowLeft','ArrowUp'].includes(event.key) ? -1 : 0; if (!step) return; event.preventDefault(); const next = counts[(index + step + counts.length) % counts.length]; choose(next); next.focus(); }, { signal: this.controller.signal });
     });
-    this.root.querySelectorAll<HTMLElement>('[data-fh-tab]').forEach(tab => tab.addEventListener('click', () => this.openPanel(tab.dataset.fhTab as 'rules' | 'settings'), { signal: this.controller.signal }));
-    this.root.querySelectorAll<HTMLElement>('[data-fh-tab]').forEach(tab => tab.addEventListener('keydown', event => {
-      if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
-      event.preventDefault(); const panel = event.key === 'Home' ? 'rules' : event.key === 'End' ? 'settings' : tab.dataset.fhTab === 'rules' ? 'settings' : 'rules';
-      this.openPanel(panel); this.root.querySelector<HTMLElement>(`[data-fh-tab="${panel}"]`)!.focus();
-    }, { signal: this.controller.signal }));
-    this.dialog.addEventListener('close', () => {this.resume();this.find('settings').focus({preventScroll:true});}, { signal: this.controller.signal });
+    this.dialog.addEventListener('close', () => {this.resume();this.find(this.panel).focus({preventScroll:true});}, { signal: this.controller.signal });
     this.find<HTMLInputElement>('motion').checked = this.reduced;
     this.find('motion').addEventListener('change', () => {
       this.forceReduced = this.find<HTMLInputElement>('motion').checked;
@@ -175,17 +168,17 @@ export class ForestHeartUI {
     });
     this.paint(); this.sync(); void this.client.refresh();
   }
+  private panel: 'rules' | 'settings' = 'rules';
   private openPanel(panel: 'rules' | 'settings') {
-    this.pause();
+    this.pause(); this.panel = panel;
     this.root.querySelectorAll<HTMLElement>('[data-panel]').forEach(section => { section.hidden = section.dataset.panel !== panel; });
-    this.root.querySelectorAll<HTMLElement>('[data-fh-tab]').forEach(tab => { tab.setAttribute('aria-selected', String(tab.dataset.fhTab === panel)); tab.tabIndex = tab.dataset.fhTab === panel ? 0 : -1; });
     this.find('dialog-title').textContent = panel === 'rules' ? this.c.how : this.c.settings;
     if (!this.dialog.open) this.dialog.showModal();
   }
   private get reduced() { return this.forceReduced || this.media.matches; }
   private get view() { return this.shown?.view.forestHeart; }
   private find<T extends HTMLElement = HTMLElement>(name: string) { return this.root.querySelector<T>(`[data-fh="${name}"]`)!; }
-  private number(units: number) { return (units / 100).toLocaleString(this.services.i18n.locale, { maximumFractionDigits: 2 }); }
+  private number(units: number) { return (units / 100).toLocaleString(this.services.i18n.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
   private snapshot() { return this.client.sessions.find(s => s.gameId === FOREST_HEART_GAME); }
   private get balance() { return this.wallet.accountId === this.owner ? this.wallet.wallet?.balance ?? this.client.wallet?.balance : undefined; }
   private changeStake(delta: number) {
@@ -274,14 +267,13 @@ export class ForestHeartUI {
     else if (!validGameStake(String(this.stake))) this.stake = FOREST_HEART_STAKES[0];
     if (!this.view && !this.busy && this.valueStake !== this.stake) { this.valueStake = this.stake; this.values(); }
     const balance = this.balance, shownBalance = this.busy && this.heldBalance !== undefined ? this.heldBalance : balance, locked = blocked || active || auto.active;
-    this.find('balance').textContent = shownBalance === undefined ? '…' : shownBalance.toLocaleString(this.services.i18n.locale, { maximumFractionDigits: 2 });
+    this.find('balance').textContent = shownBalance === undefined ? '…' : this.number(shownBalance * 100);
     syncStakeSelect(this.find<HTMLSelectElement>('stake-select'),String(this.stake),FOREST_HEART_STAKES,locked);
-    this.find('stake-label').textContent = stage === 'settled' && !this.busy ? c.nextStake : c.stake;
     this.find<HTMLButtonElement>('lower').disabled = locked || this.stake === FOREST_HEART_STAKES[0];
     this.find<HTMLButtonElement>('higher').disabled = locked || this.stake === FOREST_HEART_STAKES.at(-1);
     const spin = this.find<HTMLButtonElement>('spin'), pass = this.find<HTMLButtonElement>('pass'), choosing = stage === 'choice' && !this.presenting;
     spin.hidden = this.presenting || choosing || recover; spin.disabled = blocked || auto.active || !active && (balance === undefined || balance * 100 < this.stake);
-    const label = waiting ? c.spinning : stage === 'bonus' ? this.services.i18n.language === 'en' ? 'CONTINUE' : 'ПРОДОЛЖИТЬ' : c.spin, note = waiting ? c.waiting : stage === 'bonus' ? c.free : c.cost + ' ' + this.number(this.stake) + ' USDT', content = `<span class="fh-button-label">${label}</span><small>${note}</small>`;
+    const label = waiting ? c.spinning : stage === 'bonus' ? this.services.i18n.language === 'en' ? 'CONTINUE' : 'ПРОДОЛЖИТЬ' : c.spin, note = waiting ? c.waiting : stage === 'bonus' ? fill(c.free, this.view!.remaining) : fill(c.perField, this.number(this.stake)), content = `<span class="fh-button-label">${label}</span><small>${note}</small>`;
     if (spin.innerHTML !== content) spin.innerHTML = content;
     this.root.classList.toggle('fh-charging', waiting);
     pass.hidden = !choosing || recover; pass.disabled = blocked;
@@ -300,9 +292,15 @@ export class ForestHeartUI {
     this.find('net').setAttribute('aria-label', settled ? `${c.net}: ${this.find('net').textContent} USDT` : c.atEnd);
     this.find('total-label').textContent = (this.busy || active ? c.pendingTotal : c.total) + (this.layout?.current.kind === 'landscape' ? '' : ', USDT');
     this.find('total').title = !this.view && !this.busy ? '' : settled ? c.credited : c.collected;
-    this.find('status').textContent = this.client.error || this.status || (!this.owner ? c.login : waiting ? c.searching : stage === 'choice' ? c.choice : stage === 'bonus' ? c.bonus : tier ? c[tier] : c.ready);
-    this.find('next').textContent = recover ? c.retry : this.hint || (waiting ? c.waiting : stage === 'choice' ? auto.active ? c.autoChoice : c.nextChoice : stage === 'bonus' ? c.nextBonus : tier === 'loss' ? c.lossNext : tier && this.shown ? `${tier === 'big' ? fill(c.bigNote, (Number(this.shown.returnedUnits) / Number(this.shown.spentUnits)).toLocaleString(this.services.i18n.locale, { maximumFractionDigits: 1 })) + '. ' : ''}${c.confirmedStake} ${this.number(Number(this.shown.stakeUnits))} USDT.` : c.nextIdle);
+    this.find('status').textContent = this.client.error || this.status || (!this.owner ? c.login : waiting ? c.searching : stage === 'choice' ? c.choice : stage === 'bonus' ? this.view!.remaining < 4 ? c.forestWaits : c.bonus : tier ? c[tier] : c.ready);
+    this.find('next').textContent = recover ? c.retry : this.hint || (waiting ? c.waiting : stage === 'choice' ? auto.active ? c.autoChoice : c.nextChoice : stage === 'bonus' ? this.view!.remaining < 4 ? fill(c.freeRemain, this.view!.remaining) : c.bonusNote : tier && this.shown ? this.outcomeNote(tier) : (this.layout?.current.plate.w ?? 999) < 380 ? c.nextIdleShort : c.nextIdle);
     this.waiters = this.waiters.filter(waiter => { if (!waiter.test()) return true; waiter.done(); return false; });
+  }
+  private outcomeNote(tier: ReturnType<typeof forestRoundTier>) {
+    const c = this.c, round = this.shown!;
+    if (tier === 'loss') return c.lossNext;
+    if (tier === 'big') return fill(c.bigNote, (Number(round.returnedUnits) / Number(round.spentUnits)).toLocaleString(this.services.i18n.locale, { maximumFractionDigits: 1 }));
+    return tier === 'even' ? '' : fill(tier === 'partial' ? c.partialNote : c.fieldStake, this.number(Number(round.stakeUnits)));
   }
   private waitFor(test: () => boolean) { return new Promise<void>(done => { if (test()) done(); else this.waiters.push({ test, done }); }); }
   private async act(move?: string, automatic = false): Promise<boolean> {
@@ -336,7 +334,7 @@ export class ForestHeartUI {
       this.status = this.hint = '';
     } catch (error) { this.autoplay.stop(); if (this.alive && owner === this.client.accountId) { this.status = (error as Error).message; this.hint = ''; } }
     finally {
-      if (this.alive) { this.character.release(); this.scene.effects.stopStream(); this.busy = this.presenting = false; this.heldBalance = undefined; this.root.classList.remove('fh-awaiting', 'fh-presenting'); delete this.root.dataset.motion; this.paint(); this.sync(); }
+      if (this.alive) { this.character.release(); this.character.linger(4200); this.scene.effects.stopStream(); this.busy = this.presenting = false; this.heldBalance = undefined; this.root.classList.remove('fh-awaiting', 'fh-presenting'); delete this.root.dataset.motion; this.paint(); this.sync(); }
     }
     if (finished && this.alive && owner === this.client.accountId && this.shown?.state === 'settled') this.openResult();
     return accepted;
@@ -395,12 +393,12 @@ export class ForestHeartUI {
     const previousFlowers = before?.paidMask ?? 0, counterFrom = previous && this.view!.revision > 1 ? forestScene(previous).totalUnits : 0;
     if (!turn) {
       if (this.reduced) { this.setMode(bonusSpin ? 'bonus' : 'base', bonusSpin ? this.view!.remaining : 0); for (let i = 0; i < 3; i++) this.bloom(i, false, false); if (!bonusSpin) this.valueStake = Number(this.shown!.stakeUnits); field.clearLight(); field.unlight(); effects.clearBeams(); this.setEnergy(1); }
-      this.setTotal(counterFrom); this.say(bonusSpin ? fill(this.c.freeSpin, 4 - this.view!.remaining) : this.c.searching, bonusSpin ? this.c.heldStay : '');
+      this.setTotal(counterFrom); this.say(bonusSpin ? fill(this.c.freeSpin, 4 - this.view!.remaining) : this.c.searching, bonusSpin ? this.c.heldStay : this.c.accepted);
       this.root.dataset.motion = 'reveal';
       await this.accent('land', () => { effects.stopStream('spin'); this.character.react('land', 620); field.show(scene.board); field.setHeld([...carried]); this.scene.wake(); }, 0, this.time(1000, 480), progress => { if (!this.reduced) field.land(scene.board, carried, progress); });
       if (signal.aborted) return;
       this.setEnergy(scene.energy);
-      if (scene.energy > 1) { this.pulse(this.find('energy'), 'fh-energy-pop'); effects.spark(this.layout.current.gem.x, this.layout.current.gem.y, this.scene.color, Math.min(60, 10 + scene.energy), 150); this.say(fill(this.c.energyNow, scene.energy)); const strong = scene.energy >= 5; this.character.react(strong ? 'energy' : 'pulse', strong ? Infinity : 700); const crystal = this.anchor('crystal'); if (crystal) effects.burst(this.layout.current.gem, crystal, this.scene.color, strong ? 40 : 16, 16); await this.clock(strong ? this.time(1150, 520) : this.time(460, 220)); if (signal.aborted) return; }
+      if (scene.energy > 1) { this.pulse(this.find('energy'), 'fh-energy-pop'); effects.spark(this.layout.current.gem.x, this.layout.current.gem.y, this.scene.color, Math.min(60, 10 + scene.energy), 150); this.say(fill(this.c.energyNow, scene.energy)); const strong = scene.energy >= 5; this.character.react(strong ? 'energy' : 'pulse', strong ? Infinity : 700); const crystal = this.anchor('crystal'); if (crystal) effects.burst(this.layout.current.gem, crystal, this.scene.color, strong ? 40 : 16, 16); await this.clock(this.time(bonusSpin ? 420 : 520, bonusSpin ? 210 : 260)); if (signal.aborted) return; }
     } else {
       field.setChoice(false); this.root.dataset.motion = changed >= 0 ? 'turn' : 'pass'; this.say(changed >= 0 ? this.c.turning : this.c.turnKeeps, changed >= 0 ? this.c.turnKeeps : '');
       if (changed >= 0) {
@@ -428,20 +426,24 @@ export class ForestHeartUI {
     if (signal.aborted) return;
     const tier = this.shown?.state === 'settled' ? forestRoundTier(Number(this.shown.returnedUnits), Number(this.shown.spentUnits)) : undefined, sum = Number(this.shown?.returnedUnits ?? 0);
     if (tier === 'win' || tier === 'big') {
-      this.root.dataset.motion = 'count'; this.say(this.c[tier], tier === 'big' ? fill(this.c.bigNote, (sum / Number(this.shown!.spentUnits)).toLocaleString(this.services.i18n.locale, { maximumFractionDigits: 1 })) : '');
+      this.root.dataset.motion = 'count'; this.say(this.c[tier], this.outcomeNote(tier));
       const big = tier === 'big', length = big ? this.time(1500, 600) : 0;
-      if (big) this.character.react('big', 3200 + length); // she celebrates while the sum grows
-      await this.accent(tier, () => { this.setTotal(sum); this.root.dataset.celebrate = tier; if (!big) this.character.react('win', 2600); this.pulse(this.find('total'), 'fh-bump'); if (big) { effects.shower(3.6); effects.stream('big', () => this.anchor('hand'), () => { const g = this.layout.current; return { x: g.x + g.board * (.1 + Math.random() * .8), y: g.y - g.frame }; }, '#ffd875', 26, 20); } else for (let i = 0; i < 16; i++) { const g = this.layout.current; effects.petal(g.x + g.board + Math.random() * g.flower, g.y + Math.random() * g.board * .6, -40 + Math.random() * 60, -20 + Math.random() * 60, .8); } }, 0, length, progress => { if (big && !this.reduced) { effects.rays = progress; this.setTotal(Math.floor(sum * easeRoot(progress))); } });
+      if (big) { // she celebrates while the sum grows, the light runs along the frame and petals fall
+        this.character.react('big', 3200 + length); const ring = this.time(1250, 600);
+        void this.clock(ring, elapsed => { if (ring) effects.ring = elapsed / ring; }).then(() => { effects.ring = -1; });
+        if (!this.reduced) { effects.shower(3.6); effects.stream('big', () => this.anchor('hand'), () => { const g = this.layout.current; return { x: g.x + g.board * (.1 + Math.random() * .8), y: g.y - g.frame }; }, '#ffd875', 26, 20); }
+      }
+      await this.accent(tier, () => { this.setTotal(sum); this.root.dataset.celebrate = tier; if (!big) this.character.react('win', 2600); this.pulse(this.find('total'), 'fh-bump'); if (!big) for (let i = 0; i < 16; i++) { const g = this.layout.current; effects.petal(g.x + g.board + Math.random() * g.flower, g.y + Math.random() * g.board * .6, -40 + Math.random() * 60, -20 + Math.random() * 60, .8); } }, 0, length, progress => { if (big && !this.reduced) { effects.rays = progress; this.setTotal(Math.floor(sum * easeRoot(progress))); } });
       if (signal.aborted) return;
-      if (big) { const ring = this.time(1250, 600); await this.clock(ring, elapsed => { if (ring) effects.ring = elapsed / ring; }); effects.ring = -1; }
-    } else if (tier) { this.say(this.c[tier], tier === 'loss' ? this.c.lossNext : ''); this.character.react(tier === 'loss' ? 'loss' : 'partial', tier === 'loss' ? 1500 : 1000); }
+      if (big) await this.clock(this.time(500, 250));
+    } else if (tier) { this.say(this.c[tier], this.outcomeNote(tier)); this.character.react(tier === 'loss' ? 'loss' : 'partial', tier === 'loss' ? 1500 : 1000); }
     await this.clock(this.time(240, 120)); delete this.root.dataset.pulse;
   }
   /** Light fills connected roots, then every newly reached flower opens and sends its sum to the plate. */
   private async flow(scene: ReturnType<typeof forestScene>, previousFlowers: number, counterFrom: number, signal: AbortSignal) {
     const { field, effects } = this.scene, step = this.time(150, 76), color = this.scene.color; let total = counterFrom;
     this.root.dataset.motion = 'flow'; this.say(this.c.lighting, fill(this.c.eachFlower, this.number(this.flowerUnits())));
-    const source = effects.beam(-1, color), start = this.time(240, 110), plan = field.startLight(step);
+    const source = effects.beam(-1, color), start = this.time(260, 110), plan = field.startLight(step);
     await this.accent('flow', () => { this.root.dataset.pulse = 'true'; this.character.react('channel', Infinity); effects.stream('flow', () => this.anchor('hand'), () => this.layout.current.gem, color, 30, 10); effects.spark(this.layout.current.gem.x, this.layout.current.gem.y, color, 16, 90); });
     if (signal.aborted) return;
     await this.clock(start, elapsed => { source.progress = start ? elapsed / start : 1; }); source.progress = 1; if (signal.aborted) return;
@@ -452,14 +454,14 @@ export class ForestHeartUI {
       const beam = effects.beam(index, color, paid ? 1 : .6), length = this.time(140, 70); await this.clock(length, elapsed => { beam.progress = length ? elapsed / length : 1; }); beam.progress = 1;
       if (signal.aborted || !paid) return;
       await this.accent('flower', () => { effects.stopStream('flow'); const first = opened++ === 0; this.bloom(index, true, true); this.character.react(first ? 'flower' : 'pulse', first ? Infinity : 1100); const crystal = this.anchor('crystal'); if (crystal) effects.burst(this.layout.current.flowers[index], crystal, '#ffd875', 12, 12); }, index); if (signal.aborted) return;
-      await this.clock(this.time(380, 140)); if (signal.aborted) return;
+      await this.clock(this.time(420, 140)); if (signal.aborted) return;
       await this.fly(index); if (signal.aborted) return; total += this.flowerUnits(); this.setTotal(total); if (!this.reduced) { this.pulse(this.find('total'), 'fh-bump'); effects.spark(this.layout.current.sum.x, this.layout.current.sum.y, '#ffe39a', 8, 60); }
     });
     await this.clock(this.reduced ? 0 : plan.duration + 60, elapsed => field.setLight(elapsed)); if (signal.aborted) return;
     effects.stopStream('flow'); field.setLight(Infinity); this.scene.wake(); await Promise.all(jobs);
   }
   private async fly(index: number) {
-    const length = this.time(760, 360); if (!length) return;
+    const length = this.time(820, 360); if (!length) return;
     const g = this.layout.current, from = g.flowers[index], element = this.doc.createElement('div'); element.className = 'fh-fly'; element.textContent = '+' + this.number(this.flowerUnits()); element.setAttribute('aria-hidden', 'true'); this.root.append(element); this.flying.add(element);
     const x = Math.min(from.x - element.offsetWidth / 2, g.width - element.offsetWidth - 4); element.style.left = x + 'px'; element.style.top = from.y - 8 + 'px';
     const dx = g.sum.x - x - element.offsetWidth / 2, dy = g.sum.y - from.y;
@@ -477,7 +479,7 @@ export class ForestHeartUI {
     this.find('result-sum').textContent = this.number(sum) + ' USDT';
     this.find('result-note').textContent = fill(this.c.resultMoney, (sum / Number(this.shown!.spentUnits)).toLocaleString(this.services.i18n.locale, { maximumFractionDigits: 2 }));
     this.find('result-confirm').textContent = auto.active && !auto.stopping && left > 0 ? fill(this.c.resultAuto, left) : this.c.resultBack;
-    this.resultDialog.returnValue = ''; this.resultDialog.showModal(); this.find('result-confirm').focus({ preventScroll: true });
+    this.resultDialog.returnValue = ''; this.character.linger(Infinity); this.resultDialog.showModal(); this.find('result-confirm').focus({ preventScroll: true });
   }
   private autoTexts() { this.find('auto-text').textContent = fill(this.c.autoText, this.number(this.stake)); this.find('auto-start').textContent = fill(this.c.autoStart, this.autoCount, this.number(this.stake)); }
   private openAutoplay() {
