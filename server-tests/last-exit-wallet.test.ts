@@ -7,3 +7,36 @@ test('manual exit uses exact payout and concurrent retries never duplicate it',a
 test('cashout at or after the crash deadline cannot win; a saved flight settles on next access',async()=>{const {db,store,setTime}=await fixture(1.15);try{const first=await store.operate('alice',start());setTime(Math.ceil(first.session.startedAt!+Math.log(1.15)/.06*1000));const reply=await store.operate('alice',cash(first.session.id));assert.equal(reply.session.returnedUnits,'0');assert.equal(reply.session.state,'settled');assert.equal(await demoReservedUnits(db,'alice'),0);const replay=await store.operate('alice',cash(first.session.id));assert.equal(replay.wallet.balance,reply.wallet.balance);}finally{await db.close();}});
 test('100x cap is automatically credited once after leaving the game',async()=>{const {db,store,setTime}=await fixture(100);try{const first=await store.operate('alice',start());setTime(first.session.startedAt!+80000);const r=await store.active('alice');assert.equal(r.sessions[0].returnedUnits,'100000');assert.equal(r.sessions[0].state,'settled');const balance=await demoBalanceUnits(db,'alice');await store.active('alice');assert.equal(await demoBalanceUnits(db,'alice'),balance);assert.equal(balance,1099000);}finally{await db.close();}});
 test('another account cannot exit a saved run and a premature exit preserves it',async()=>{const {db,store}=await fixture();try{const first=await store.operate('alice',start());await assert.rejects(store.operate('bob',cash(first.session.id)),/найдена/);await assert.rejects(store.operate('alice',cash(first.session.id)),/начала/);assert.equal((await store.active('alice')).sessions[0].state,'active');}finally{await db.close();}});
+
+test('10.98x credits the rounded payout once and a 16.41x crash loses the stake', async () => {
+  const { db, store, setTime } = await fixture(16.414);
+  const account = 'alice';
+  const action = () => ({ ...start(), stakeUnits: '17', stakePolicyVersion: 1 as const });
+  try {
+    const balance = await demoBalanceUnits(db, account);
+    const first = (await store.operate(account, action())).session;
+    assert.equal(await demoBalanceUnits(db, account), balance - 17);
+    assert.equal(first.crashAt, undefined);
+    setTime(first.startedAt! + 39935);
+    const exit = cash(first.id);
+    // The fixture uses precision ticket zero, so 186.66 cents settles to 187.
+    const paid = (await store.operate(account, exit)).session;
+    assert.equal(paid.multiplier, 10.98);
+    assert.equal(paid.returnedUnits, '187');
+    assert.equal((await store.operate(account, exit)).replayed, true);
+    assert.equal(await demoBalanceUnits(db, account), balance - 17 + 187);
+
+    setTime(first.startedAt! + 100000);
+    const second = (await store.operate(account, action())).session;
+    setTime(second.startedAt! + Math.ceil(Math.log(16.414) / .06 * 1000));
+    const lost = (await store.operate(account, cash(second.id))).session;
+    assert.equal(lost.state, 'settled');
+    assert.equal(lost.multiplier, 0);
+    assert.equal(lost.crashAt?.toFixed(2), '16.41');
+    assert.equal(lost.returnedUnits, '0');
+    assert.equal(await demoBalanceUnits(db, account), balance - 34 + 187);
+    assert.equal(await demoReservedUnits(db, account), 0);
+  } finally {
+    await db.close();
+  }
+});
