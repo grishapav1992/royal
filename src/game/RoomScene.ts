@@ -32,7 +32,7 @@ import { BackgroundImages } from './BackgroundImages';
 import { CABINET_SCALE, CABINET_SIZE } from './cabinetArt';
 import { plantTexture, drawHallIdentity } from './interiorArt';
 import { FURNITURE, PLANTS } from '../shared/furniture';
-import { createCharacters, createCharacterPortrait, characterTexture, characterScaleY, pruneCharacterTextures, CHARACTER_SCALE, type Facing } from './characters';
+import { createCharacters, createCharacterPortrait, characterTexture, characterScaleX, characterScaleY, pruneCharacterTextures, type Facing } from './characters';
 import { parseGeneratedAppearance } from '../shared/skinStudio';
 import { hasSkinSheet } from './generatedSkinArt';
 import { advanceCharacterMotion, characterRestScale, createCharacterMotion, type CharacterMotion } from './characterAnimation';
@@ -334,10 +334,12 @@ export class RoomScene extends Phaser.Scene {
   setDealerAction(gameId: string, action: DealerAction) { this.cardTables?.setAction(gameId, action); }
   private resizeView(){
     const width=this.scale.gameSize.width,height=this.scale.gameSize.height;
+    const displayZoom=this.scale.zoom;
     const frame=this.hall==='toilet'?TOILET:this.hall==='roof'?ROOF:this.hall==='street'?this.streetView.size:this.overview&&this.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
     const viewTop=this.hall==='toilet'?TOILET.viewTop:HALL_WALL.viewTop;
     const fit=Math.min(width/(frame.width-40),height/(frame.height-viewTop-50));
-    const zoom=this.overview?fit:Math.max(fit,Phaser.Math.Clamp(Math.min(width/1000,height/760),.8,1.3));
+    const followZoom=Phaser.Math.Clamp(Math.min(width*displayZoom/1000,height*displayZoom/760),.8,1.3)/displayZoom;
+    const zoom=this.overview?fit:Math.max(fit,followZoom);
     const viewWidth=width/zoom,viewHeight=height/zoom;
     const top=this.hall==='street'&&!this.overview&&this.streetView.side==='rear'?Math.min(HALL_WALL.viewTop,this.streetView.roofEdge-320):viewTop;
     const camera=this.cameras.main.setSize(width,height).setZoom(zoom).setBounds(
@@ -408,9 +410,11 @@ export class RoomScene extends Phaser.Scene {
   }
   private actor(x: number, y: number, skin: number, name?: string, isPlayer = false, appearance = ''): Actor {
     const shadow = this.add.ellipse(x, y - 1, 30, 11, 0x171624, .3);
-    const sprite = this.add.sprite(x, y, characterTexture(this, skin, appearance), 'down-6').setOrigin(.5, 1).setScale(CHARACTER_SCALE, characterScaleY(appearance));
+    const sprite = this.add.sprite(x, y, characterTexture(this, skin, appearance, isPlayer), 'down-6').setOrigin(.5, 1);
+    const scale = characterScaleX(sprite.frame);
+    sprite.setScale(scale, characterScaleY(appearance, scale));
     const blush = this.add.graphics().setVisible(false);
-    const label = name ? this.add.text(x, y - 83, name, { fontFamily: 'Arial, sans-serif', fontSize: '11px', color: '#342f2a', backgroundColor: isPlayer ? '#f5d369' : '#fff4d9', padding: { x: 8, y: 4 } }).setOrigin(.5) : undefined;
+    const label = name ? this.add.text(x, y - 83, name, { fontFamily: 'Arial, sans-serif', fontSize: '11px', resolution: 2, color: '#342f2a', backgroundColor: isPlayer ? '#f5d369' : '#fff4d9', padding: { x: 8, y: 4 } }).setOrigin(.5) : undefined;
     let soberAt = 0;
     if (isPlayer) try { soberAt = Math.min(Date.now() + MAX_SOBER_TIME_MS, Number(localStorage.getItem('royal-offline-sober-at')) || 0); } catch { /* The demo can run without browser storage. */ }
     return { hall:this.hall, x, y, sprite, shadow, blush, label, path: [], phase: (x * 7 + y * 11 + skin * 17 + Array.from(name ?? '').reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) % 997, 0)) % 100, nextMove: 0, facing: 'down', skin, appearance, soberAt, moving: false, lastStep: 0, motion: createCharacterMotion(), visualAt: 0, visualX: x, visualY: y, seat: '', action: 'idle', drink: '', actionUntil: 0, cabinet: '', gameReaction: '', gameReactionUntil: 0, visualSeat: '', seatedAt: 0 };
@@ -886,7 +890,11 @@ export class RoomScene extends Phaser.Scene {
         }
       }
       if (this.player.skin !== self.skin || this.player.appearance !== (self.appearance ?? '')) {
-        this.player.sprite.anims.stop(); this.player.sprite.setTexture(characterTexture(this, self.skin, self.appearance), `${self.facing}-6`).setScale(CHARACTER_SCALE, characterScaleY(self.appearance));
+        const sprite = this.player.sprite;
+        sprite.anims.stop();
+        sprite.setTexture(characterTexture(this, self.skin, self.appearance, true), `${self.facing}-6`);
+        const scale = characterScaleX(sprite.frame);
+        sprite.setScale(scale, characterScaleY(self.appearance, scale));
         this.portraitFrames.clear();
       }
       this.player.appearance = self.appearance ?? '';
@@ -915,7 +923,8 @@ export class RoomScene extends Phaser.Scene {
   }
   private interpolate(actor: Actor, target: PlayerView, dt: number, time: number) {
     if (actor.skin !== target.skin || actor.appearance !== (target.appearance ?? '')) {
-      actor.sprite.anims.stop(); actor.sprite.setTexture(characterTexture(this, target.skin, target.appearance), `${target.facing}-6`).setScale(CHARACTER_SCALE, characterScaleY(target.appearance));
+      actor.sprite.anims.stop();
+      actor.sprite.setTexture(characterTexture(this, target.skin, target.appearance), `${target.facing}-6`);
       actor.appearance = target.appearance ?? '';
       actor.skin = target.skin;
     }
@@ -951,7 +960,7 @@ export class RoomScene extends Phaser.Scene {
     else { this.afterMovement = undefined; action(); }
   }
   getReducedMotion() { return this.reducedMotion; }
-  getState() { const c=this.cameras.main;return { stairNavigation:{path:this.player.path.map(p=>({...p})),pending:this.pendingLounge,waiting:!!this.afterMovement,heldKeys:[...this.heldWindowKeys]}, stairStep:this.networkSelf?.stairStep??this.player.stairStep??0,stairDirection:this.networkSelf?.stairDirection??this.player.stairDirection??1, cat: this.catView, street:this.hall==='street'?this.street?.getState():null, world:this.hall==='toilet'?{width:TOILET.width,height:TOILET.height,bounds:TOILET.bounds}:{...WORLD,bounds:BOUNDS},toilet:this.hall==='toilet'?this.toilet?.getState():null,guests:this.guestViews.filter(v=>v.hall===this.hall).map(v=>({...v})), playing:this.networkSelf?.playing??Boolean(this.player.cabinet), cabinet:this.player.cabinet, gameReaction:this.player.gameReactionUntil>Date.now()?this.player.gameReaction:'', gameReactionUntil:this.player.gameReactionUntil, stools:[...this.cabinetStools.keys()], mira:this.bar?.getState(), guards:this.guard?.getState(), security:this.networkSelf?.security, hall:this.hall,switching:this.switching, view:{width:c.width,height:c.height,zoom:c.zoom,x:c.worldView.x,y:c.worldView.y,overview:this.overview}, x: this.player.x, y: this.player.y, moving: this.player.moving, seat: this.player.seat, action: this.player.action, drink: this.player.drink, actionUntil: this.player.actionUntil, soberAt: this.player.soberAt, intoxication: getIntoxication(this.player.soberAt), near: this.near?.id ?? null, locked: this.locked, online: !!this.network, npcTiming:this.npcTimeline.getState(), guestRenderPositions:[...this.guests].map(([id,actor])=>({id,x:actor.x,y:actor.y,spriteX:actor.sprite.x,spriteY:actor.sprite.y,moving:actor.moving})), predicted: this.prediction.active, pendingInputs: this.prediction.pendingCount, serverX: this.networkSelf?.x, serverY: this.networkSelf?.y, buildingOccluded:this.hall==='street'&&(this.player.stairStep??0)===0&&this.streetView.occluded(this.player), labelVisible:this.player.label?.visible, renderVisible:this.player.sprite.visible, renderBounds:this.player.sprite.getBounds(), halo:{x:this.halo.x,y:this.halo.y,depth:this.halo.depth,visible:this.halo.visible}, renderDepth:this.player.sprite.depth, renderX: this.player.sprite.x, renderY: this.player.sprite.y, renderScaleX: this.player.sprite.scaleX, renderScaleY: this.player.sprite.scaleY, skin: this.player.skin, appearance: this.player.appearance, texture: this.player.sprite.texture.key, remotes: this.remotePlayers.size, remotePositions: [...this.remotePlayers].map(([id, { actor }]) => ({ id, label: actor.label?.text, skin: actor.skin, appearance: actor.appearance, texture: actor.sprite.texture.key, x: actor.x, y: actor.y, seat: actor.seat, cabinet: actor.cabinet, gameReaction:actor.gameReactionUntil>Date.now()?actor.gameReaction:'', gameReactionUntil:actor.gameReactionUntil, action: actor.action, soberAt: actor.soberAt, angle: actor.sprite.angle, frame: actor.sprite.frame.name })), facing: this.player.facing, animation: this.player.sprite.anims.currentAnim?.key, frame: this.player.sprite.frame.name, reducedMotion: this.reducedMotion }; }
+  getState() { const c=this.cameras.main;return { stairNavigation:{path:this.player.path.map(p=>({...p})),pending:this.pendingLounge,waiting:!!this.afterMovement,heldKeys:[...this.heldWindowKeys]}, stairStep:this.networkSelf?.stairStep??this.player.stairStep??0,stairDirection:this.networkSelf?.stairDirection??this.player.stairDirection??1, cat: this.catView, street:this.hall==='street'?this.street?.getState():null, world:this.hall==='toilet'?{width:TOILET.width,height:TOILET.height,bounds:TOILET.bounds}:{...WORLD,bounds:BOUNDS},toilet:this.hall==='toilet'?this.toilet?.getState():null,guests:this.guestViews.filter(v=>v.hall===this.hall).map(v=>({...v})), playing:this.networkSelf?.playing??Boolean(this.player.cabinet), cabinet:this.player.cabinet, gameReaction:this.player.gameReactionUntil>Date.now()?this.player.gameReaction:'', gameReactionUntil:this.player.gameReactionUntil, stools:[...this.cabinetStools.keys()], mira:this.bar?.getState(), guards:this.guard?.getState(), security:this.networkSelf?.security, hall:this.hall,switching:this.switching, view:{width:c.width*this.scale.zoom,height:c.height*this.scale.zoom,zoom:c.zoom*this.scale.zoom,x:c.worldView.x,y:c.worldView.y,overview:this.overview}, x: this.player.x, y: this.player.y, moving: this.player.moving, seat: this.player.seat, action: this.player.action, drink: this.player.drink, actionUntil: this.player.actionUntil, soberAt: this.player.soberAt, intoxication: getIntoxication(this.player.soberAt), near: this.near?.id ?? null, locked: this.locked, online: !!this.network, npcTiming:this.npcTimeline.getState(), guestRenderPositions:[...this.guests].map(([id,actor])=>({id,x:actor.x,y:actor.y,spriteX:actor.sprite.x,spriteY:actor.sprite.y,moving:actor.moving})), predicted: this.prediction.active, pendingInputs: this.prediction.pendingCount, serverX: this.networkSelf?.x, serverY: this.networkSelf?.y, buildingOccluded:this.hall==='street'&&(this.player.stairStep??0)===0&&this.streetView.occluded(this.player), labelVisible:this.player.label?.visible, renderVisible:this.player.sprite.visible, renderBounds:this.player.sprite.getBounds(), halo:{x:this.halo.x,y:this.halo.y,depth:this.halo.depth,visible:this.halo.visible}, renderDepth:this.player.sprite.depth, renderX: this.player.sprite.x, renderY: this.player.sprite.y, renderScaleX: this.player.sprite.scaleX, renderScaleY: this.player.sprite.scaleY, skin: this.player.skin, appearance: this.player.appearance, texture: this.player.sprite.texture.key, remotes: this.remotePlayers.size, remotePositions: [...this.remotePlayers].map(([id, { actor }]) => ({ id, label: actor.label?.text, skin: actor.skin, appearance: actor.appearance, texture: actor.sprite.texture.key, x: actor.x, y: actor.y, seat: actor.seat, cabinet: actor.cabinet, gameReaction:actor.gameReactionUntil>Date.now()?actor.gameReaction:'', gameReactionUntil:actor.gameReactionUntil, action: actor.action, soberAt: actor.soberAt, angle: actor.sprite.angle, frame: actor.sprite.frame.name })), facing: this.player.facing, animation: this.player.sprite.anims.currentAnim?.key, frame: this.player.sprite.frame.name, reducedMotion: this.reducedMotion }; }
   update(time: number, delta: number) {
     if (!this.player) return;
     if(this.hall==='street'&&this.streetView.configure(this.player,this.overview))this.resizeView();
@@ -1213,8 +1222,9 @@ export class RoomScene extends Phaser.Scene {
     const travel = distance < 24 && elapsed > 0 && elapsed < 150 ? distance : 0;
     const motion = advanceCharacterMotion(actor.motion, { mode: mode === 'walk' ? 'walk' : mode === 'idle' || mode === 'sit' ? 'rest' : 'action', distance: travel, time, normalSpeed: PLAYER_SPEED });
     const rest = characterRestScale(actor.motion, time, actor.phase, this.reducedMotion);
-    actor.sprite.setScale(CHARACTER_SCALE * rest.x, characterScaleY(actor.appearance) * rest.y);
-    if(windowProgress<1)actor.sprite.setScale(CHARACTER_SCALE,characterScaleY(actor.appearance)*(.72+.28*windowProgress));
+    const scaleX = characterScaleX(actor.sprite.frame), scaleY = characterScaleY(actor.appearance, scaleX);
+    actor.sprite.setScale(scaleX * rest.x, scaleY * rest.y);
+    if(windowProgress<1)actor.sprite.setScale(scaleX,scaleY*(.72+.28*windowProgress));
     const anim = actor.sprite.anims;
     if (mode === 'walk') {
       if (anim.currentAnim?.key !== key) actor.sprite.play({ key });

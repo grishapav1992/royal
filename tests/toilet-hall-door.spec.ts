@@ -47,6 +47,11 @@ test('toilet door reaches floor three by walking and click, returns without boun
     await expect(page.locator('#floor-links [data-floor-target="roof"]')).toHaveCount(1);await expect(page.locator('#floor-links [data-floor-target="github"]')).toHaveCount(1);
     expect((await state(page)).toilet.resident.artLoaded).toBe(true);expect((await state(page)).toilet.openDoors[1]).toBe(false);
     expect((await state(page)).toilet.merchant.artLoaded).toBe(true);
+    const renderDensity=await page.locator('#game canvas').evaluate((canvas:HTMLCanvasElement)=>({
+      actual:canvas.width/canvas.getBoundingClientRect().width,expected:Math.min(2,window.devicePixelRatio),
+    }));
+    expect(renderDensity.actual).toBeCloseTo(renderDensity.expected,1);
+    expect((await state(page)).toilet.resident.bounds.h).toBeLessThan((await state(page)).renderBounds.height);
     await clickWorld(page,TOILET_MERCHANT.x,TOILET_MERCHANT.y-40);
     await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.serverX-TOILET_MERCHANT.approach.x,s.serverY-TOILET_MERCHANT.approach.y);},{timeout:18000}).toBeLessThan(9);
     await expect.poll(async()=>(await state(page)).toilet.merchant.frame).toBe(15);

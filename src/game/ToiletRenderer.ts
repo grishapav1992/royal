@@ -1,11 +1,12 @@
 import type Phaser from 'phaser';
 import { TOILET,TOILET_WINDOW,TOILET_HALL_DOOR,CARD_TOILET_DOOR,OCCUPIED_TOILET_CUBICLE,SERVICE_WINDOW_WIDTH,toiletCubicleOpen } from '../shared/toilet';
-import {paintToiletResident,toiletResidentRigReady} from './toiletResidentArt';
+import {paintToiletResident,toiletResidentBounds,toiletResidentRigReady} from './toiletResidentArt';
 import {toiletResidentPose} from './toiletResidentPose';
 import {ToiletMerchant} from './ToiletMerchant';
 
 type Paint=CanvasRenderingContext2D;
 const ink='#302f35',cream='#f2ead3',gold='#c9aa70';
+const roomRasterScale=2;
 type WindowView={image:HTMLCanvasElement;x:number;y:number;w:number;h:number};
 let toiletWindowView:HTMLCanvasElement|undefined;
 function box(c:Paint,x:number,y:number,w:number,h:number,color:string,line=1.5,edge=ink){c.fillStyle=color;c.fillRect(x,y,w,h);if(line){c.lineWidth=line;c.strokeStyle=edge;c.strokeRect(x,y,w,h);}}
@@ -131,10 +132,12 @@ export class ToiletRenderer{
   private reducedMotion=false;
   private pose=toiletResidentPose(0,true);
   constructor(scene:Phaser.Scene,leave:()=>void,roofView?:HTMLCanvasElement,leaveToHall?:()=>void,approachMerchant:()=>void=()=>{}){
-    this.base=document.createElement('canvas');this.base.width=TOILET.width;this.base.height=TOILET.height;
-    paintToilet(this.base.getContext('2d')!,roofView);
+    this.base=document.createElement('canvas');this.base.width=TOILET.width*roomRasterScale;this.base.height=TOILET.height*roomRasterScale;
+    const baseContext=this.base.getContext('2d')!;
+    baseContext.scale(roomRasterScale,roomRasterScale);
+    paintToilet(baseContext,roofView);
     const key='casino-toilet-rectangle-v2';if(!scene.textures.exists(key))scene.textures.addCanvas(key,this.base);
-    scene.add.image(0,0,key).setOrigin(0).setDepth(0);
+    scene.add.image(0,0,key).setOrigin(0).setDisplaySize(TOILET.width,TOILET.height).setDepth(0);
     this.mapCanvas=document.createElement('canvas');this.mapCanvas.width=TOILET.width;this.mapCanvas.height=TOILET.height;
     const residentKey='casino-toilet-resident-v2',p=TOILET.cubicles[OCCUPIED_TOILET_CUBICLE];
     this.resident=scene.textures.exists(residentKey)?scene.textures.get(residentKey) as Phaser.Textures.CanvasTexture:scene.textures.createCanvas(residentKey,300,420)!;
@@ -155,7 +158,7 @@ export class ToiletRenderer{
     this.drawMap();
   }
   private drawMap(){
-    const c=this.mapCanvas.getContext('2d')!,p=TOILET.cubicles[OCCUPIED_TOILET_CUBICLE];c.drawImage(this.base,0,0);
+    const c=this.mapCanvas.getContext('2d')!,p=TOILET.cubicles[OCCUPIED_TOILET_CUBICLE];c.drawImage(this.base,0,0,TOILET.width,TOILET.height);
     TOILET.cubicles.forEach((p,i)=>paintDoor(c,p,this.open[i]));c.drawImage(this.resident.canvas,p.x,p.y,100,140);
     this.merchant?.drawMap(c);
   }
@@ -171,5 +174,5 @@ export class ToiletRenderer{
     const frame=reducedMotion?0:Math.floor(this.elapsed*12/1000);
     if(frame!==this.lastFrame){this.lastFrame=frame;this.pose=toiletResidentPose(this.elapsed,reducedMotion);this.drawResident();}
   }
-  getState(){const p=TOILET.cubicles[OCCUPIED_TOILET_CUBICLE];return {variant:1,merchant:this.merchant.getState(),openDoors:[...this.open],occupiedCubicle:p.id,floor:TOILET.floor,resident:{...this.pose,artVersion:2,artLoaded:toiletResidentRigReady(),elapsedMs:this.elapsed,frame:this.lastFrame,cubicle:p.id,interactive:false,reducedMotion:this.reducedMotion,bounds:{x:p.x+9,y:p.y+9,w:82,h:123}}};}
+  getState(){const p=TOILET.cubicles[OCCUPIED_TOILET_CUBICLE];return {variant:1,merchant:this.merchant.getState(),openDoors:[...this.open],occupiedCubicle:p.id,floor:TOILET.floor,resident:{...this.pose,artVersion:2,artLoaded:toiletResidentRigReady(),elapsedMs:this.elapsed,frame:this.lastFrame,cubicle:p.id,interactive:false,reducedMotion:this.reducedMotion,bounds:{...toiletResidentBounds,x:p.x+toiletResidentBounds.x,y:p.y+toiletResidentBounds.y}}};}
 }
