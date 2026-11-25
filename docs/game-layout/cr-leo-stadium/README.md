@@ -57,3 +57,7 @@
 `npx playwright test -c playwright.cr-leo.config.ts`, `server-tests/cr-leo-*.test.ts`, `playwright.game-layout-final.config.ts`, `playwright.modules.config.ts`. Настоящий телефон, динамики и WebKit не проверены.
 
 Ограничения: проверка `older clients never receive football sessions` в `cr-leo-review-wallet.test.ts` не проходит. Она запускает `github-diamonds`, убранную из зала; серверные файлы в этой работе не менялись. Общая проверка отклика `operation-feedback.spec.ts` остановилась на Cosmic Escape; для CR vs. Leo она пройдена отдельно.
+
+## Прототип
+
+Исходник утверждённого макета лежит в `prototype`. Это архив: импорты указывают на файлы `src/ui`, которые переехали в `games/cr-vs-leo`.
