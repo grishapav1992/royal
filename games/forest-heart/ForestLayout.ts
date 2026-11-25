@@ -1,8 +1,9 @@
 import { gameContentLayout } from '../../src/ui/GameLayoutPolicy';
+import { FOREST_HEADROOM } from './ForestCharacter';
 
 export interface ForestBox { x: number; y: number; w: number; h: number }
 export interface ForestGeometry {
-  width: number; height: number; kind: 'full' | 'portrait' | 'landscape'; short: boolean;
+  width: number; height: number; kind: 'full' | 'portrait' | 'landscape'; short: boolean; tight: boolean;
   board: number; frame: number; x: number; y: number; cell: number; pad: number; flower: number;
   gem: { x: number; y: number }; flowers: { x: number; y: number }[];
   plate: ForestBox; controls: ForestBox; tools: { x: number; y: number }; elf: ForestBox & { cut: number; visible: boolean };
@@ -16,7 +17,7 @@ export function forestGeometry(width: number, height: number): ForestGeometry {
   // A tall monitor gives the field more room in the portrait composition.
   const profile = gameContentLayout(width, height), kind = profile === 'full' && height > width ? 'portrait' as const : profile;
   const short = kind === 'portrait' ? height < 640 : kind === 'landscape' && height < 300;
-  let board = 180, frame = 10, x = 0, y = 0, crystal = 80, flower = 30, titleWidth = 0;
+  let tight = false, board = 180, frame = 10, x = 0, y = 0, crystal = 80, flower = 30, titleWidth = 0;
   let plate: ForestBox, controls: ForestBox, tools: { x: number; y: number }, elf: ForestBox & { cut: number; visible: boolean };
   if (kind === 'full') {
     const controlsHeight = 92, plateHeight = 62, over = clamp(height * .075, 46, 84);
@@ -27,22 +28,23 @@ export function forestGeometry(width: number, height: number): ForestGeometry {
     frame = board * .078; crystal = board * .42; flower = board * .2; titleWidth = board * .74;
     const network = crystal * .46 + frame * 2 + board + flower * .86;
     x = 8 + crystal * .46 + frame;
-    // A small field moves away from the edge, so the symmetric controls below keep a usable width.
-    const shift = clamp(376 - (x + board / 2), 0, Math.max(0, width * .765 - network - 8)), elfSpace = width - network - 8 - shift; x += shift;
+    const elfSpace = width - network - 8;
     y = 8 + over + frame;
     y += Math.max(0, height - (y + board + frame * .42 + plateHeight + controlsHeight + 30)) * .4;
-    const centre = x + board / 2, plateWidth = Math.min(clamp(board * 1.02, 540, 760), centre * 2 - 16), half = Math.min(centre - 12, 520), top = y + board + frame * .42;
+    const centre = x + board / 2, plateWidth = Math.min(board * 1.02, 760), half = Math.min(centre - 12, 520), top = y + board + frame * .42;
     plate = { x: centre - plateWidth / 2, y: top, w: plateWidth, h: plateHeight };
-    controls = { x: centre - half, y: top + plateHeight + 30, w: half * 2, h: 72 };
+    // Beside a small field the round buttons share one side, so the stake keeps a usable width and the main action stays on the axis.
+    tight = centre < 354;
+    controls = { x: centre - half, y: top + plateHeight + 30, w: tight ? Math.min(half + 92 + 268, width - 24) : half * 2, h: 72 };
     tools = { x: width - 160, y: 10 };
     const elfHeight = Math.min(height * .93, elfSpace * 3.1), elfWidth = elfHeight * 640 / 768, axis = width - clamp(elfHeight * .222, 120, elfSpace * .72 + 12);
     elf = { x: axis - elfWidth / 2, y: height - elfHeight, w: elfWidth, h: elfHeight, cut: 100, visible: true };
   } else if (kind === 'portrait') {
     const controlsHeight = short ? 126 : 158, plateHeight = short ? 60 : 72, headMin = short ? 56 : 84;
     frame = short ? 8 : clamp(width * .033, 13, 30);
-    const left = width * .115, right = width * .122;
+    const left = width * .104, right = width * .12;
     board = Math.max(180, Math.floor(Math.min(width - left - right - frame * 2 + 8, height - controlsHeight - plateHeight - headMin - frame * 2 - 26)));
-    crystal = board * .36; flower = right * 1.06; titleWidth = short ? 0 : Math.min(board * .72, 300);
+    crystal = board * .34; flower = right * 1.06; titleWidth = short ? 0 : Math.min(board * .72, 300);
     const head = clamp((height - (board + frame * 2 + controlsHeight + plateHeight + 16)) * .9, headMin - 2, 260);
     x = left + frame - 4 + Math.max(0, (width - left - right - frame * 2 - board + 8) / 2); y = head + frame + 4;
     const plateWidth = Math.min(width - 16, 560);
@@ -68,7 +70,7 @@ export function forestGeometry(width: number, height: number): ForestGeometry {
   const titleHeight = titleWidth * 467 / 1400, axis = { x: elf.x + elf.w * .5, y: elf.y + elf.h * .32 }, radius = elf.h * .4;
   const flowerTop = Math.max(0, flowers[0].y - flower * .72);
   return {
-    width, height, kind, short, board, frame, x, y, cell, pad: frame * 1.9, flower, gem, flowers, plate, controls, tools, elf, seed,
+    width, height, kind, short, tight, board, frame, x, y, cell, pad: frame * 1.9, flower, gem, flowers, plate, controls, tools, elf, seed,
     crystal: { x: gem.x - crystalWidth * .51, y: gem.y - crystal * .43, w: crystalWidth, h: crystal },
     energy: { x: full ? gem.x : Math.max(26, gem.x), y: gem.y + crystal * .5 + 2 },
     flowersBox: { x: flowers[0].x - flower * .57, y: flowerTop, w: flower * 1.14, h: Math.min(height, flowers[2].y + flower * .55 + (full ? 40 : 24)) - flowerTop },
@@ -102,10 +104,11 @@ export class ForestLayout {
       if (box.w !== undefined) style.width = box.w + 'px'; if (box.h !== undefined) style.height = box.h + 'px';
     };
     this.root.dataset.frameLayout = g.kind; this.root.dataset.layout = g.kind === 'full' ? 'wide' : g.kind === 'portrait' ? 'mobile' : 'landscape';
-    this.root.dataset.short = String(g.short); this.root.dataset.narrow = String(g.width < 350);
+    this.root.dataset.short = String(g.short); this.root.dataset.tight = String(g.tight); this.root.dataset.plate = g.kind === 'landscape' ? g.plate.h >= 96 ? 'tall' : 'normal' : g.plate.w < 500 ? 'small' : 'normal'; const reach = g.x + g.board / 2 - 20, go = Math.min(184, 2 * (reach - 172)); this.root.style.setProperty('--fh-go', go + 'px'); this.root.style.setProperty('--fh-side', reach - go / 2 + 'px'); this.root.dataset.narrow = String(g.width < 350);
     place('.fh-board', { x: g.x, y: g.y, w: g.board, h: g.board }); place('.fh-plate', g.plate); place('.fh-controls', g.controls); place('.fh-tools', g.tools);
-    place('.fh-character', g.elf); const elf = find('.fh-character').style; elf.visibility = g.elf.visible ? '' : 'hidden';
-    elf.setProperty('--fh-fade-from', (g.elf.cut < 100 ? g.elf.cut - 7 : 80) + '%'); elf.setProperty('--fh-fade-to', (g.elf.cut < 100 ? g.elf.cut : 99) + '%');
+    const room = g.elf.h * FOREST_HEADROOM, fade = (part: number) => (part * g.elf.h + room * 100) / (g.elf.h + room) + '%';
+    place('.fh-character', { x: g.elf.x, y: g.elf.y - room, w: g.elf.w, h: g.elf.h + room }); const elf = find('.fh-character').style; elf.visibility = g.elf.visible ? '' : 'hidden';
+    elf.setProperty('--fh-fade-from', fade(g.elf.cut < 100 ? g.elf.cut - 7 : 76)); elf.setProperty('--fh-fade-to', fade(g.elf.cut < 100 ? g.elf.cut : 99));
     place('.fh-glow', g.aura); place('.fh-source', g.crystal); place('.fh-energy', g.energy); place('.fh-flowers', g.flowersBox); place('.fh-banner', { x: g.x + g.board / 2, y: g.y + g.board * .5 });
     this.root.querySelectorAll<HTMLElement>('.fh-flower').forEach((flower, i) => {
       flower.style.setProperty('--s', g.flower + 'px');

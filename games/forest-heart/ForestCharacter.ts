@@ -29,6 +29,8 @@ const gestures: Partial<Record<ForestReaction, GestureKey[]>> = {
 const eyes: Record<ForestPose, [number, number]> = { idle: [.503,.144], choice: [.503,.132], channel: [.501,.139], flower: [.505,.15], bonus: [.502,.16], win: [.495,.155], big: [.498,.129] };
 const hands: Record<ForestPose, [number, number]> = { idle: [.27,.84], choice: [.165,.6], channel: [.32,.24], flower: [.355,.24], bonus: [.55,.34], win: [.55,.36], big: [.295,.23] };
 const crystals: Record<ForestPose, [number, number]> = { idle: [.715,.64], choice: [.72,.6], channel: [.7,.6], flower: [.71,.62], bonus: [.55,.335], win: [.7,.67], big: [.705,.665] };
+/** Room above the drawing, so a raised head never reaches the edge of the canvas. */
+export const FOREST_HEADROOM = .04;
 const blinkPause = [3400, 4700, 2900, 5300, 3900], blinkLength = 190;
 
 const vertex = `
@@ -36,6 +38,7 @@ attribute vec2 aUv;
 uniform float uTime;
 uniform float uMotion;
 uniform vec4 uGesture;
+#define HEADROOM ${FOREST_HEADROOM.toFixed(3)}
 ${forestIdleMotion}
 varying vec2 vUv;
 void main(){
@@ -50,7 +53,7 @@ void main(){
   p.x+=(-uGesture.x*.024*arm-uGesture.y*.005*upper);
   p.y+=(-uGesture.y*.012*upper-uGesture.x*.018*arm+uGesture.z*.009*head);
   p.x+=hair*.004*uGesture.y*sin(uTime*2.1+aUv.y*6.);
-  gl_Position=vec4(p.x*2.-1.,1.-p.y*2.,0.,1.);
+  gl_Position=vec4(p.x*2.-1.,1.-(p.y+HEADROOM)/(1.+HEADROOM)*2.,0.,1.);
 }`;
 const fragment = `
 #ifdef GL_FRAGMENT_PRECISION_HIGH
@@ -84,7 +87,8 @@ vec4 magic(vec4 art,vec2 uv,vec4 anchors,float swirl){
   vec3 tinted=mix(uRim,vec3(1.),smoothstep(.55,1.,c.r))*level*1.05;
   float wave=.5+.5*sin(uShimmer*5.2-distance(uv,anchors.xy)*26.),beat=.5+.5*sin(uShimmer*2.6);
   c=mix(c,mix(c,tinted,.82),mask*uMagic.y);
-  c*=1.+mask*uMagic.x*(hand*.34*wave+gem*.22*beat);
+  // Light lifts the middle tones only, so a bright crystal keeps its facets.
+  c+=c*(1.-c)*mask*uMagic.x*(hand*(1.-gem)*.5*wave+gem*.3*beat);
   return vec4(c*art.a,art.a);
 }
 void main(){
@@ -159,7 +163,7 @@ export class ForestCharacter {
   constructor(private host: HTMLElement) {
     const document = host.ownerDocument;
     this.canvas = document.createElement('canvas');
-    this.canvas.className = 'fh-character-canvas'; this.canvas.width = 640; this.canvas.height = 768;
+    this.canvas.className = 'fh-character-canvas'; this.canvas.width = 640; this.canvas.height = Math.round(768 * (1 + FOREST_HEADROOM));
     this.canvas.setAttribute('aria-hidden', 'true'); host.prepend(this.canvas);
     this.observer = new ResizeObserver(() => this.resize()); this.observer.observe(host);
     const loads = FOREST_POSES.map(pose => {
@@ -226,7 +230,7 @@ export class ForestCharacter {
     const height = Math.min(this.canvas.clientHeight, this.canvas.clientWidth * 768 / 640);
     const width = Math.max(128, Math.min(640, Math.round(height * dpr * 640 / 768)));
     if (width === this.canvas.width) return;
-    this.canvas.width = width; this.canvas.height = Math.round(width * 768 / 640);
+    this.canvas.width = width; this.canvas.height = Math.round(width * 768 / 640 * (1 + FOREST_HEADROOM));
     this.gl?.viewport(0, 0, this.canvas.width, this.canvas.height); this.draw();
   }
   private fallback() {
@@ -321,6 +325,8 @@ export class ForestCharacter {
   }
   /** Ends a sustained action when its event is over. */
   release() { if (this.holdUntil === Infinity) this.holdUntil = this.elapsed; }
+  /** Keeps the shown celebration after its event. Infinity lasts until release(). */
+  linger(holdMs: number) { if (!this.still && (this.pose === 'win' || this.pose === 'big' || this.queued === 'win' || this.queued === 'big')) { this.holdUntil = Math.max(this.holdUntil, this.elapsed + holdMs); this.run(); } }
   /** Fractions of the picture, for effects that start in her hand or crystal. */
   anchor(part: 'hand' | 'crystal') { return (part === 'hand' ? hands : crystals)[this.progress() > .5 ? this.pose : this.from]; }
   mode(paused: boolean, reduced: boolean) {
