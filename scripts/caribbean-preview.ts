@@ -8,6 +8,8 @@ import { temporaryDatabase } from './database-test';
 import { PostgresDatabase,databaseConfig } from '../server/database';
 import { DemoWalletStore,WalletError } from '../server/demoWallet';
 import { DemoExpansionStore } from '../server/demoExpansion';
+import { ProgressionStore } from '../server/progression/store';
+import { instrumentProgressionWallet } from '../server/progression/sources';
 import { CARIBBEAN_GAME } from '../src/shared/caribbeanTreasures';
 import {CARIBBEAN_CLIENT_HEADER} from '../src/shared/caribbeanTransport';
 
@@ -42,7 +44,7 @@ const plugin:Plugin = {name:'caribbean-local-common-wallet',configureServer(serv
       if (!identity.account) throw new WalletError(401,'Войди в зал.');
       const account = identity.account.id;
       if (req.headers['x-royal-account-id'] && req.headers['x-royal-account-id'] !== account) throw new WalletError(403,'Аккаунт изменился.');
-      if (!db) { db = new PostgresDatabase('caribbean_stage3',{existingSchema:true,config:databaseConfig(environment)}); wallet = new DemoWalletStore(db); }
+      if (!db) { db = new PostgresDatabase('caribbean_stage3',{existingSchema:true,config:databaseConfig(environment)}); const plain = new DemoWalletStore(db); wallet = instrumentProgressionWallet(db,plain,new ProgressionStore(db,{prerequisite:plain.ready})); }
       let body = '';
       if (req.method === 'POST') for await (const bytes of req) {
         body += bytes; if (body.length > 8192) throw Error('Oversized local request');
@@ -53,6 +55,12 @@ const plugin:Plugin = {name:'caribbean-local-common-wallet',configureServer(serv
         const amount = operation?.amount ?? 1000;
         if (!Number.isSafeInteger(amount) || amount <= 0 || amount > 10000) throw Error('Invalid fixture credit');
         reply = await wallet.operate(account,{id:randomUUID(),kind:'deposit',amount});
+      } else if (path === '/__test/caribbean/points' && req.method === 'POST') {
+        // Voyage progress only: the disposable account gets points, never money.
+        const points = operation?.points;
+        if (!Number.isSafeInteger(points) || points < 0 || points > 10000) throw Error('Invalid fixture points');
+        await db.prepare('INSERT INTO caribbean_voyage_profiles(account_id,points,revision) VALUES(?,?,1) ON CONFLICT(account_id) DO UPDATE SET points=EXCLUDED.points,revision=caribbean_voyage_profiles.revision+1').run(account,points);
+        reply = {points};
       } else if (['/__test/caribbean/force-bonus','/__test/caribbean/force-cannon'].includes(path) && req.method === 'POST') {
         force.add(account); reply = {ready:true};
       } else if(path==='/__test/caribbean/force-scenario'&&req.method==='POST'){

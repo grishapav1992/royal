@@ -1,4 +1,12 @@
-# Collection policy: Caribbean crew v1
+# Collection policy: Caribbean voyage
+
+Pirates are cosmetic. Points come from completed paid rounds of `studio-caribbean-treasures`, by the whole amount debited for the round: 0.10 to 0.49 USDT give 1, 0.50 to 0.99 give 2, 1 to 4.99 give 3, 5 to 9.99 give 5, 10 to 49.99 give 8, 50 and more give 12. Free spins, winnings and losses add none. A purchased series counts once, when it ends. Ten pirates open at 100, 250, 450, 700, 1000, 1350, 1750, 2200, 2700 and 3250 points, in the order of the voyage map. Points are never spent.
+
+`server/caribbeanVoyage.ts` reads the committed progression outbox under its own account lock and keeps its own credited list, like the Cosmic crew. It writes neither wallet nor round data, so its failure cannot touch money. Registration is `nonWagered.caribbean-voyage` in `scripts/game-math/rtp-policy.json`; the game mathematics, qualification and settlement stay unchanged. A pirate can be met at any time and changed between rounds. Every pirate has the same game.
+
+The change from the first collection happens once, in the database migration `caribbean-voyage-v1`: one token becomes one point, opened pirates and the chosen one stay. `/api/caribbean-crew` remains readable for packages that are still open; its challenges and token unlocks answer `collection-moved`.
+
+# Earlier policy: Caribbean crew v1 (closed)
 
 This is genuinely non-wagered cosmetic account progress. It accepts no stake, payment, wallet balance, spin, game outcome or random draw. Tokens are free profile points; they cannot be bought, wagered, transferred, redeemed, converted to USDT or returned as prizes. Every captain has the same unchanged qualified wagering game.
 
