@@ -1,0 +1,58 @@
+<title>Карибские сокровища: Плавание</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: a quiet review desk, below it the game at its real window size. The desk commits to one dark sea palette. */
+:root{--bg:#0c1d27;--fg:#f3e6cb;--muted:#a9b9bd;--line:#2d4a57;--gold:#e6b765;--sea:#12303f;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 40px}
+.desk-head{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:end;max-width:1440px;margin:0 auto 14px}
+.desk-head h1{font:700 24px/1.1 Georgia,serif;margin:0 auto 0 0;color:var(--gold);text-wrap:balance}
+.desk-head h1 span{display:block;font:13px/1.4 system-ui,sans-serif;color:var(--muted)}
+.desk-head label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);min-width:0}
+.desk-head select,.desk-head button{font:14px system-ui,sans-serif;color:var(--fg);background:var(--sea);border:1px solid var(--line);border-radius:5px;min-height:38px;padding:4px 10px;max-width:100%}
+.desk-head .row{flex-direction:row;align-items:center;gap:8px;min-height:38px}
+#desk{max-width:1440px;margin:0 auto;overflow:hidden}
+#device{transform-origin:0 0;position:relative}
+.notes{max-width:1440px;margin:14px auto 0;color:var(--muted);font-size:13px}
+.notes p{max-width:80ch;margin:0}
+select:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #fff0c0;outline-offset:2px}
+/*HUD*/
+</style>
+<div class="desk-head">
+  <h1>Карибские сокровища<span>Живой макет «Плавание», версия 2</span></h1>
+  <label>Экран<select id="view"><option value="desktop">Компьютер 1440 с чатом</option><option value="laptop">Ноутбук 1280 с чатом</option><option value="wide">Большой экран 1920 с чатом</option><option value="tablet">Планшет 768</option><option value="phone">Телефон 393</option><option value="land">Телефон боком 852</option><option value="mini">Маленький телефон 320</option><option value="miniland">Маленький боком 568</option></select></label>
+  <label>Следующее вращение<select id="force"><option value="">По правилам игры</option><option value="loss">Без выигрыша</option><option value="win" selected>Выигрыш по линиям</option><option value="symbols">Символы по очереди</option><option value="giant">Гигантский символ</option><option value="cannon">Залп</option><option value="big">Крупный выигрыш</option><option value="bonus">Бонус, выбор тактики</option><option value="offline">Нет ответа сервера</option><option value="funds">Не хватает средств</option><option value="reopen">Возврат в начатую серию</option></select></label>
+  <label>Команда<select id="points"><option value="0">Начало, 0 очков</option><option value="98">Почти Амара, 98</option><option value="239" selected>Одна открыта, 239</option><option value="1340">Пять открыто, 1340</option><option value="3300">Все открыты, 3300</option></select></label>
+  <label>Язык<select id="language"><option value="ru">Русский</option><option value="en">English</option></select></label>
+  <label class="row"><input type="checkbox" id="slow"> Замедлить</label>
+  <label class="row"><input type="checkbox" id="calm"> Меньше движения</label>
+</div>
+<div id="desk"><div id="device" data-view="desktop">
+  <div class="host"><b id="host">Карибские сокровища</b><i id="hall">Все игры</i><i id="chatb">Чат</i><i aria-hidden="true">×</i></div>
+  <div class="chat"><b>Общий чат</b><p>Место чата в зале</p></div>
+  <section class="cv" id="game" aria-label="Карибские сокровища" data-mode="wide" data-sea="day">
+    <canvas id="harbor" aria-hidden="true"></canvas><div class="shade" aria-hidden="true"></div>
+    <div class="rocker"><canvas id="field" role="img" aria-label="Поле шесть на четыре"></canvas></div>
+    <canvas id="pirate" aria-hidden="true"></canvas><canvas id="rain" aria-hidden="true"></canvas>
+    <canvas id="fx" aria-hidden="true"></canvas>
+    <div class="tap" id="tap" aria-hidden="true"></div>
+    <div class="load" id="load">Поднимаем паруса</div><div class="load" id="curtain" hidden></div>
+    <header class="top"><div class="plaque"><strong id="title">Карибские сокровища</strong></div>
+      <button class="crewmini" id="crewmini"><span class="ring"><img alt=""></span><span class="txt"><b></b><small></small></span><span class="pl-add" hidden></span></button>
+      <div class="tools"><button id="sound" class="ti" aria-pressed="false">♪</button><button id="music" class="ti" aria-pressed="false">♫</button><button id="history" class="ti">≡</button><button id="info" class="ti">?</button><button id="lines"></button><button id="menu">☰</button></div></header>
+    <div class="amount" id="amount" hidden><small></small><b></b><em></em></div>
+    <div class="cards" id="cards" hidden></div>
+    <button class="plate" id="plate"><span class="pl-top"><b></b><small></small></span><span class="bar"><i></i></span><span class="pl-next"></span><span class="pl-add" hidden></span></button>
+    <div class="result" id="result"><span class="pieces"><small></small><span><i></i><i></i><i></i></span></span><span class="txt" role="status" aria-live="polite"><b class="say"></b><small class="ledger"></small></span><b class="sum"></b><button class="retry" id="retry" hidden></button></div>
+    <div class="console">
+      <div class="money"><small id="moneylabel"></small><p><b id="balance"></b><button id="fund">+</button></p></div>
+      <div class="stake"><small id="stakelabel"></small><p><button id="less">−</button><button id="stake"></button><button id="more">+</button></p></div>
+      <button class="spin" id="spin"><svg viewBox="-60 -60 120 120" aria-hidden="true"><g class="wheel"></g></svg><span><b></b><small></small></span></button>
+      <button class="auto" id="auto"><b></b><small></small></button>
+      <button class="buy" id="buy"><b></b><small></small></button>
+    </div>
+    <div class="sheet" id="sheet" hidden></div>
+    <div class="voyage" id="voyage" hidden></div>
+  </section>
+</div></div>
+<div class="notes"><p>Раунды считаются настоящими правилами игры, деньги и очки условные. Во время показа красная кнопка сразу открывает итог. Новую пиратку открывает табличка с именем героини.</p></div>
+<script src="mock.js"></script>

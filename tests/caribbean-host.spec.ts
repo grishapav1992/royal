@@ -74,58 +74,182 @@ async function topup(page:Page){
 }
 async function session(page:Page){const r=await page.request.get('/api/demo-wallet/expansion',{headers:{'X-Royal-Caribbean-Treasures':'1'}});expect(r.ok()).toBe(true);return(await r.json()).sessions.find((s:any)=>s.gameId===game);}
 async function wallet(page:Page){return(await(await page.request.get('/api/demo-wallet')).json());}
+const mini=(page:Page)=>page.evaluate(()=>(window as any).royalDemo.getMiniState());
+const quiet=(page:Page)=>expect.poll(async()=>(await mini(page))?.presenting,{timeout:30000}).toBe(false);
 async function action(page:Page,selector:string){
  const reply=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');
- await page.locator(selector).click();const r=await reply;expect(r.ok()).toBe(true);const body=await r.json();
- await expect(page.locator('[data-ct-action=retry]')).toBeHidden();
- await expect.poll(async()=>page.locator('.ct-status').textContent()).not.toContain('Подтверждаем');
- await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.presenting),{timeout:10000}).toBe(false);
+ await page.locator(selector).click();const r=await reply;expect(r.ok(),await r.text()).toBe(true);const body=await r.json();
+ await expect(page.locator('[data-ct-action=retry]')).toBeHidden();await quiet(page);
  return body.session;
 }
+async function play(page:Page){return action(page,'[data-ct-action=play]');}
+async function lines(page:Page,count:number){await page.locator('[data-ct-action=lines]').click();await page.locator(`[data-ct-modal="lines:${count}"]`).click();await page.keyboard.press('Escape');await expect(page.locator('[data-ct-action=lines]')).toContainText(String(count));}
+async function stake(page:Page,cents:number){await page.locator('[data-ct-stake]').selectOption(String(cents));await expect(page.locator('[data-ct-action=play]')).toContainText((cents/100).toFixed(2).replace('.',','));}
+async function buy(page:Page,mode:string){await page.locator('[data-ct-action=buy]').click();await page.locator(`[data-ct-modal="mode:${mode}"]`).click();return action(page,'[data-ct-modal=buy]');}
 async function finish(page:Page){
  let s=await session(page);
- for(let moves=0;s.state==='active'&&moves<15;moves++)s=await action(page,'[data-ct-action=play]');
+ for(let moves=0;s.state==='active'&&moves<16;moves++)s=s.view.caribbean.phase==='choice'?await action(page,'[data-ct-action=choose-flagship]'):await play(page);
  expect(s.state).toBe('settled');return s;
 }
+/** Nothing leaves the window, touch targets stay 44 px and the field keeps its place. */
 async function layout(page:Page,name:string){
- await page.screenshot({path:out+'/'+name+'.png'});
- await expect(page.locator('[data-ct-action=play]')).toBeInViewport();await shellChat(page);
- await expect.poll(async()=>page.locator('.ct-root').evaluate(e=>Math.abs(e.getBoundingClientRect().height-e.closest('.mini-stage')!.getBoundingClientRect().height))).toBeLessThan(2);
- expect(await page.locator('.ct-root').evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
- await expect.poll(async()=>page.locator('.ct-symbol').evaluateAll(nodes=>nodes.every(n=>(n as HTMLImageElement).complete&&(n as HTMLImageElement).naturalWidth>=720))).toBe(true);
- const spin=await page.locator('.ct-play').boundingBox();expect(Math.abs(spin!.width-spin!.height)).toBeLessThan(1);
- const boxes=await page.locator('.ct-board,.ct-giant:not([hidden])').evaluateAll(nodes=>nodes.map(n=>{const b=n.getBoundingClientRect();return{x:b.x,y:b.y,right:b.right,bottom:b.bottom,width:b.width,height:b.height};}));
- if(boxes.length===2){expect(boxes[1].x).toBeGreaterThanOrEqual(boxes[0].x-1);expect(boxes[1].right).toBeLessThanOrEqual(boxes[0].right+1);expect(boxes[1].bottom).toBeLessThanOrEqual(boxes[0].bottom+1);expect(boxes[1].width).toBeGreaterThan(30);}
+ await page.waitForTimeout(150);await shellChat(page);
+ expect(await page.evaluate(()=>{
+  const root=document.querySelector<HTMLElement>('.ct-root')!,stage=root.closest<HTMLElement>('.mini-stage')!,g=root.getBoundingClientRect(),bad:string[]=[];
+  if(Math.abs(g.height-stage.getBoundingClientRect().height)>2)bad.push('height');if(root.scrollTop||root.scrollLeft)bad.push('scrolled');
+  const shown=(e:Element)=>{const r=e.getBoundingClientRect(),c=getComputedStyle(e);return r.width>0&&r.height>0&&c.visibility!=='hidden';};
+  for(const e of root.querySelectorAll<HTMLElement>('button,.ct-result,.ct-board,.ct-console')){
+   if(!shown(e)||e.closest('[hidden]'))continue;const r=e.getBoundingClientRect(),n=e.dataset.ctAction||e.className;
+   if(r.left<g.left-1||r.right>g.right+1||r.top<g.top-1||r.bottom>g.bottom+1)bad.push('outside '+n);
+   if(e instanceof HTMLButtonElement&&(r.width<43.5||r.height<43.5))bad.push('small '+n);
+  }
+  const hit=(a:string,b:string)=>{const x=root.querySelector(a),y=root.querySelector(b);if(!x||!y||!shown(x)||!shown(y))return;const p=x.getBoundingClientRect(),q=y.getBoundingClientRect();if(p.left<q.right-1&&q.left<p.right-1&&p.top<q.bottom-1&&q.top<p.bottom-1)bad.push(a+' over '+b);};
+  for(const [a,b] of [['.ct-result','.ct-console'],['.ct-plate','.ct-result'],['.ct-plate','.ct-console'],['.ct-result','.ct-play'],['.ct-stake','.ct-play'],['.ct-wallet','[data-ct-action=stake-down]'],['.ct-auto','.ct-play'],['.ct-buy','.ct-play'],['.ct-plaque','.ct-tools'],['.ct-crewmini','.ct-tools'],['.ct-plate','.ct-tools']])hit(a,b);
+  const b=root.querySelector('.ct-board')!.getBoundingClientRect();if(Math.abs(b.width/b.height-1.5)>.02||b.width<200)bad.push('field');
+  return bad;
+ })).toEqual([]);
  await page.screenshot({path:out+'/'+name+'.png'});
 }
 
-async function crewState(page:Page){return page.evaluate(()=>(window as any).royalDemo.getMiniState()?.collection);}
-async function crewLessons(page:Page){
- await page.locator('.ct-crew-tabs [data-ct-modal=tasks-tab]').click();
- for(const [id,answer] of [['lesson-lines','0'],['lesson-giant','1'],['lesson-cannon','0'],['lesson-settlement','2'],['lesson-cost','1']]){
-  await page.locator(`[data-ct-modal="answer:${id}:${answer}"]`).click();await expect(page.locator(`[data-challenge-id=${id}]`)).toHaveAttribute('data-completed','true');
+const SIZES:[number,number][]=[[1440,900],[1280,720],[1920,1080],[768,1024],[393,852],[852,393],[320,568],[568,320]];
+test('the field, the controls and the result stay inside the window at every size, in both languages',async({page,roomPath})=>{
+ test.setTimeout(240000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ await enter(page,roomPath);await topup(page);
+ for(const language of ['ru','en']){
+  if(language==='en'){await close(page);await page.evaluate(()=>localStorage.setItem('royal-language','en'));await page.reload();await selectEntryMode(page);await expect.poll(async()=>(await state(page)).online,{timeout:30000}).toBe(true);}
+  await page.setViewportSize({width:1440,height:900});await open(page);
+  for(const [width,height] of SIZES){await page.setViewportSize({width,height});await layout(page,`${language}-ready-${width}`);}
+  await page.setViewportSize({width:1440,height:900});const board=await page.locator('.ct-board').boundingBox();
+  await page.request.post('/__test/caribbean/force-bonus');await play(page);await expect(page.locator('.ct-choice')).toBeVisible();expect(await page.locator('.ct-board').boundingBox()).toEqual(board);
+  for(const [width,height] of SIZES){await page.setViewportSize({width,height});await layout(page,`${language}-choice-${width}`);await expect(page.locator('[data-ct-action=choose-raid]')).toBeInViewport({ratio:.9});}
+  await page.setViewportSize({width:1440,height:900});await action(page,'[data-ct-action=choose-flagship]');await play(page);expect(await page.locator('.ct-board').boundingBox()).toEqual(board);
+  for(const [width,height] of SIZES){await page.setViewportSize({width,height});await layout(page,`${language}-series-${width}`);}
+  await finish(page);
  }
-}
-async function priorityLayout(page:Page){
- await expect.poll(async()=>page.evaluate(()=>{
-  const root=document.querySelector<HTMLElement>('.ct-root')!,stage=root.closest<HTMLElement>('.mini-stage')!;
-  const bounds=root.getBoundingClientRect(),board=root.querySelector('.ct-board')!.getBoundingClientRect();
-  const failures:string[]=[];
-  for(const element of [root,stage])if(element.scrollHeight>element.clientHeight+2||element.scrollWidth>element.clientWidth+2)failures.push('overflow:'+element.className);
-  if(board.width/6<32||Math.abs(board.width/board.height-1.5)>.01)failures.push('field-size');
-  if(board.left-18<bounds.left-1||board.right+18>bounds.right+1||board.top-18<bounds.top-1||board.bottom+18>bounds.bottom+1)failures.push('field-frame');
-  for(const selector of ['.ct-play','.ct-settings-open','[data-ct-action=auto]','.ct-ledger','.ct-choice:not([hidden])']){
-   const element=root.querySelector<HTMLElement>(selector);if(!element||!element.getClientRects().length)continue;
-   const box=element.getBoundingClientRect();
-   if(box.left<bounds.left-1||box.top<bounds.top-1||box.right>bounds.right+1||box.bottom>bounds.bottom+1)failures.push('outside:'+selector);
-   if(element instanceof HTMLButtonElement){
-    if(box.width<44||box.height<44)failures.push('touch:'+selector);
-    const hit=document.elementFromPoint(box.x+box.width/2,box.y+box.height/2);if(hit!==element&&!element.contains(hit))failures.push('covered:'+selector);
-   }
-  }
-  return failures;
- })).toEqual([]);
-}
+ expect(errors).toEqual([]);
+});
+test('a minimum start debits exactly ten cents, shows its price, payout and net, and the balance never tells the result first',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await page.emulateMedia({reducedMotion:'no-preference'});await open(page);
+ for(const [name,kind] of [['partial','quiet'],['loss',''],['positive','win'],['return','quiet']] as const){
+  const before=await wallet(page);await page.request.post('/__test/caribbean/force-scenario',{data:{name}});
+  const reply=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');await page.locator('[data-ct-action=play]').click();const s=(await(await reply).json()).session;
+  expect(s.spentUnits).toBe('10');await page.waitForTimeout(500);
+  const early=Number((await page.locator('[data-ct-balance]').innerText()).replace(/[^\d,.]/g,'').replace(',','.'));expect(early).toBeCloseTo(before.balance-.1,2);
+  if(s.view.caribbean.phase==='complete'){await expect.poll(async()=>page.locator('.ct-result').getAttribute('data-kind')).not.toBe('error');}
+  await quiet(page);if(s.state==='active'){await finish(page);continue;}
+  const paid=Number(s.returnedUnits),net=paid-10;expect(name+' '+await page.locator('.ct-result').getAttribute('data-kind')).toBe(name+' '+(paid>10?'win':paid>0?'quiet':''));
+  await expect(page.locator('.ct-ledger')).toHaveText(`Цена раунда 0,10 · выплата ${(paid/100).toFixed(2).replace('.',',')} · чистый итог ${net>0?'+':net<0?'−':''}${(Math.abs(net)/100).toFixed(2).replace('.',',')}`);
+  expect((await wallet(page)).balance).toBeCloseTo(before.balance+net/100,2);expect(kind).toBeDefined();
+ }
+ const accents=(await mini(page)).accents;expect(accents.length).toBeGreaterThan(6);for(const a of accents)expect(Math.abs(a.deviationMs),a.cue).toBeLessThanOrEqual(50);
+});
+test('an accepted start survives a lost response and reopening without duplicate debit',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await open(page);
+ await page.request.post('/__test/caribbean/force-bonus');const initial=await wallet(page);
+ let lost=false;await page.route('**/api/demo-wallet/expansion',async route=>{
+  if(route.request().method()==='POST'&&!lost){lost=true;const accepted=await route.fetch();expect(accepted.ok(),await accepted.text()).toBe(true);await route.abort('failed');}else await route.continue();
+ });
+ await page.locator('[data-ct-action=play]').click();await expect(page.locator('[data-ct-action=retry]')).toBeVisible();await quiet(page);
+ await expect(page.locator('.ct-say')).toHaveText('Ответ не получен');await expect(page.locator('.ct-ledger')).toHaveText('Повторной ставки не будет');
+ const committed=await session(page),before=await wallet(page);expect(committed.state).toBe('active');expect(before.balance).toBeCloseTo(initial.balance-.1,2);
+ await close(page);await open(page);await expect(page.locator('[data-ct-action=retry]')).toBeVisible();
+ await action(page,'[data-ct-action=retry]');expect((await session(page)).id).toBe(committed.id);expect((await wallet(page)).balance).toBe(before.balance);
+ await action(page,'[data-ct-action=choose-raid]');
+ // The wheel itself checks a lost free spin.
+ lost=false;await page.locator('[data-ct-action=play]').click();await expect(page.locator('[data-ct-action=retry]')).toBeVisible();await quiet(page);await expect(page.locator('[data-ct-action=play]')).toContainText('Проверить');
+ await play(page);await expect(page.locator('.ct-status')).not.toContainText('Ответ не получен');await finish(page);
+ expect((await wallet(page)).entries.filter((e:any)=>e.operationId===committed.id&&e.kind==='bet')).toHaveLength(1);
+});
+test('both purchased tactics show the accepted price and recover after a full reload',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await open(page);
+ for(const [mode,spins] of [['buy-raid',14],['buy-flagship',6]] as const){
+  const before=await wallet(page);await page.locator('[data-ct-action=buy]').click();await expect(page.locator('.ct-buy-price')).toBeVisible();expect((await wallet(page)).balance).toBe(before.balance);
+  const price=Number((await page.locator('.ct-buy-price').innerText()).replace(/[^\d,.]/g,'').replace(',','.'));await page.keyboard.press('Escape');
+  const started=await buy(page,mode);expect(started.view.caribbean.remaining).toBe(spins);expect(price).toBe(Number(started.spentUnits)/100);
+  await expect(page.locator('.ct-held')).toHaveText((Number(started.spentUnits)/100).toFixed(2).replace('.',','));await expect(page.locator('[data-ct-label=stake]')).toHaveText('Цена раунда');
+  await page.reload();await selectEntryMode(page);await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});await expect.poll(async()=>(await state(page)).online).toBe(true);await open(page);
+  expect((await session(page)).id).toBe(started.id);await expect(page.locator('[data-ct-action=buy]')).toBeDisabled();expect((await mini(page)).stage.sea).toBe(mode==='buy-raid'?'raid':'storm');
+  const done=await finish(page);expect(Math.round((await wallet(page)).balance*100)).toBe(Math.round(before.balance*100)-Number(done.spentUnits)+Number(done.returnedUnits));
+ }
+});
+test('switching accounts hides the previous series and restores it only for its owner',async({page,roomPath})=>{
+ const email=await enter(page,roomPath);await topup(page);await open(page);await lines(page,1);
+ await page.request.post('/__test/caribbean/force-bonus');const original=await play(page);await close(page);
+ await page.getByRole('button',{name:'Выйти',exact:true}).click();await selectEntryMode(page);await expect(page.getByLabel('Почта',{exact:true})).toBeVisible();
+ await enter(page,roomPath);await open(page);expect(await session(page)).toBeUndefined();await expect(page.locator('.ct-choice')).toBeHidden();await expect(page.locator('[data-ct-action=lines]')).toContainText('20');await close(page);
+ await page.getByRole('button',{name:'Выйти',exact:true}).click();await selectEntryMode(page);await expect(page.getByLabel('Почта',{exact:true})).toBeVisible();
+ await enter(page,roomPath,email);await open(page);expect((await session(page)).id).toBe(original.id);await expect(page.locator('[data-ct-action=lines]')).toContainText('1');
+ await action(page,'[data-ct-action=choose-flagship]');await finish(page);
+});
+test('stakes: presets, manual amount and an invalid draft that never becomes a bet',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await open(page);const field=page.locator('input[data-manual-stake]');
+ await expect(page.locator('[data-ct-action=stake-down]')).toBeDisabled();await page.locator('[data-ct-action=stake-up]').click();await expect(page.locator('[data-ct-stake]')).toHaveValue('20');
+ await stake(page,1000);await field.fill('12,34');await expect(page.locator('[data-ct-action=play]')).toContainText('12,34');
+ const before=await wallet(page);await field.fill('0,05');await page.locator('[data-ct-action=play]').click();await page.waitForTimeout(400);expect((await wallet(page)).balance).toBe(before.balance);
+ await field.fill('100');await expect(page.locator('[data-ct-action=play]')).toContainText('100,00');await expect(page.locator('[data-ct-action=stake-up]')).toBeDisabled();
+ await field.fill('0,10');await field.blur();const s=await play(page);expect(s.spentUnits).toBe('10');if(s.state==='active')await finish(page);
+});
+test('empty balance explains the disabled spin and live funding enables it',async({page,roomPath})=>{
+ await enter(page,roomPath);await open(page);await expect(page.locator('[data-ct-action=play]')).toHaveAttribute('aria-disabled','true');await expect(page.locator('[data-ct-action=buy]')).toBeDisabled();
+ await expect(page.locator('.ct-say')).toHaveText('Не хватает средств');await expect(page.locator('.ct-ledger')).toContainText('0,10');
+ await page.getByRole('button',{name:'Открыть тестовый кошелёк',exact:true}).click();await expect(page.locator('#wallet-dialog')).toBeVisible();await page.getByRole('button',{name:'Закрыть кошелёк',exact:true}).click();
+ await topup(page);await expect(page.locator('[data-ct-action=play]')).toHaveAttribute('aria-disabled','false');
+});
+test('autoplay: a panel, the paid budget, a tactic, a confirmed result and Stop',async({page,roomPath})=>{
+ test.setTimeout(180000);await enter(page,roomPath);await topup(page);await open(page);const bets=async()=>(await wallet(page)).entries.filter((e:any)=>e.kind==='bet').length;
+ await page.locator('[data-ct-action=auto]').click();await page.locator('[data-ct-modal="count:25"]').click();await page.waitForTimeout(300);expect(await bets()).toBe(0);await page.keyboard.press('Escape');expect((await mini(page)).autoplay.running).toBe(false);
+ await page.request.post('/__test/caribbean/force-bonus');await page.locator('[data-ct-action=auto]').click();await page.locator('[data-ct-modal="count:10"]').click();await page.locator('[data-ct-modal=auto-start]').click();
+ await expect(page.locator('.ct-choice')).toBeVisible({timeout:15000});expect((await mini(page)).autoplay).toMatchObject({running:true,waitingForTactic:true,remaining:9});expect(await bets()).toBe(1);
+ await page.locator('[data-ct-action=choose-flagship]').click();await expect.poll(async()=>(await mini(page)).autoplay.waitingForResult,{timeout:60000}).toBe(true);expect(await bets()).toBe(1);await page.waitForTimeout(1500);expect(await bets()).toBe(1);
+ await page.locator('[data-ct-action=play]').click();await expect.poll(bets,{timeout:15000}).toBeGreaterThan(1);
+ await page.locator('[data-ct-action=auto]').click();await quiet(page);const stopped=await bets();await page.waitForTimeout(1500);expect(await bets()).toBe(stopped);expect((await mini(page)).autoplay.running).toBe(false);
+ if((await session(page))?.state==='active')await finish(page);
+ // closing ends the series and reopening never resumes it
+ await page.locator('[data-ct-action=auto]').click();await page.locator('[data-ct-modal=auto-start]').click();await page.waitForTimeout(200);await close(page);await page.waitForTimeout(800);await open(page);const reopened=await bets();await page.waitForTimeout(1500);expect(await bets()).toBe(reopened);
+});
+test('autoplay stops on a lost response and the replay uses the original UUID',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await open(page);const ids:string[]=[];let lost=false;
+ await page.route('**/api/demo-wallet/expansion',async route=>{const r=route.request();if(r.method()==='POST'){ids.push(r.postDataJSON().id);if(!lost){lost=true;await route.fetch();await route.abort('failed');return;}}await route.continue();});
+ await page.locator('[data-ct-action=auto]').click();await page.locator('[data-ct-modal=auto-start]').click();await expect(page.locator('[data-ct-action=retry]')).toBeVisible();expect((await mini(page)).autoplay.running).toBe(false);
+ await quiet(page);await action(page,'[data-ct-action=retry]');expect(ids).toHaveLength(2);expect(ids[0]).toBe(ids[1]);expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(1);
+});
+test('the wheel opens the confirmed result at once, keyboard focus stays and dialogs return it',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await page.emulateMedia({reducedMotion:'no-preference'});await open(page);const bets=async()=>(await wallet(page)).entries.filter((e:any)=>e.kind==='bet').length;
+ await page.locator('[data-ct-action=play]').focus();await page.request.post('/__test/caribbean/force-scenario',{data:{name:'positive'}});await page.keyboard.press('Enter');
+ await expect.poll(async()=>page.locator('[data-ct-action=play]').getAttribute('class'),{intervals:[30]}).toContain('ct-skip');await page.waitForTimeout(400);expect(await page.evaluate(()=>(document.activeElement as HTMLElement).dataset.ctAction)).toBe('play');
+ const at=Date.now();await page.keyboard.press('Enter');await quiet(page);expect(Date.now()-at).toBeLessThan(1600);expect(await bets()).toBe(1);expect(await page.evaluate(()=>(document.activeElement as HTMLElement).dataset.ctAction)).toBe('play');
+ if((await session(page))?.state==='active')await finish(page);
+ for(const name of ['lines','history','info','auto','buy'])
+ {await page.locator(`[data-ct-action=${name}]`).focus();await page.keyboard.press('Enter');await expect(page.locator('.ct-modal')).toBeVisible();for(let i=0;i<14;i++)await page.keyboard.press('Tab');expect(await page.evaluate(()=>!!document.activeElement?.closest('.ct-modal'))).toBe(true);await page.keyboard.press('Escape');await expect(page.locator('.ct-backdrop')).toBeHidden();await expect(page.locator('#mini-dialog')).toBeVisible();expect(await page.evaluate(()=>(document.activeElement as HTMLElement).dataset.ctAction)).toBe(name);}
+ await page.locator('[data-ct-action=lines]').click();await page.locator('[data-ct-modal=tour]').click();await expect.poll(async()=>(await mini(page)).stage.tour,{timeout:5000}).toBeGreaterThan(0);await page.keyboard.press('Escape');expect((await mini(page)).stage.tour).toBe(null);expect(await bets()).toBe(1);
+});
+test('voyage: a real round earns points, a new pirate is met, chosen and kept',async({page,roomPath})=>{
+ test.setTimeout(120000);await enter(page,roomPath);await topup(page);await open(page);expect((await mini(page)).voyage.points).toBe(0);
+ const first=await play(page);if(first.state==='active')await finish(page);await expect.poll(async()=>(await mini(page)).voyage.points).toBe(1);
+ await page.request.post('/__test/caribbean/points',{data:{points:99}});const second=await play(page);if(second.state==='active')await finish(page);await expect.poll(async()=>(await mini(page)).voyage.points).toBe(100);await expect(page.locator('.ct-plate')).toContainText('Новая пиратка ждёт');
+ const forged=await page.request.post('/api/caribbean-voyage',{headers:{'X-Royal-Account-Id':(await mini(page)).voyage.accountId},data:{action:'select',characterId:'ines'}});expect(forged.status()).toBe(403);
+ await page.emulateMedia({reducedMotion:'no-preference'});await page.locator('.ct-plate').click();await page.locator('.ct-rvskip').click();await expect(page.locator('[data-a=keep]')).toBeVisible();
+ // a refused answer keeps the meeting open
+ await page.route('**/api/caribbean-voyage',async route=>{if(route.request().method()==='POST')await route.fulfill({status:503,json:{error:'voyage-unavailable'}});else await route.continue();});
+ await page.locator('[data-a=pick]').click();await expect(page.locator('.ct-reveal .ct-note')).toContainText('не сохранён');await page.unroute('**/api/caribbean-voyage');
+ await page.locator('[data-a=pick]').click();await expect(page.locator('.ct-reveal')).toBeHidden();await page.screenshot({path:out+'/voyage.png'});await page.keyboard.press('Escape');await expect(page.locator('.ct-voyage')).toBeHidden();
+ await expect.poll(async()=>(await mini(page)).captain.character).toBe('amara');await expect(page.locator('.ct-plate')).toContainText('Амара');await close(page);await open(page);await expect.poll(async()=>(await mini(page)).captain.character).toBe('amara');
+});
+test('a pirate cannot change during a series and an unavailable voyage keeps the game playable',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await open(page);await page.request.post('/__test/caribbean/points',{data:{points:300}});
+ await page.route('**/api/caribbean-voyage',route=>route.fulfill({status:503,json:{error:'voyage-unavailable'}}));await close(page);await open(page);
+ const s=await play(page);if(s.state==='active')await finish(page);expect((await mini(page)).captain.ready).toBe(true);await page.unroute('**/api/caribbean-voyage');
+ await page.locator('.ct-plate').click();await expect(page.locator('.ct-reveal,.ct-chart').first()).toBeVisible();await page.keyboard.press('Escape');
+ await page.request.post('/__test/caribbean/force-bonus');await play(page);await action(page,'[data-ct-action=choose-raid]');
+ const refused=await page.request.post('/api/caribbean-voyage',{headers:{'X-Royal-Account-Id':(await mini(page)).voyage.accountId},data:{action:'select',characterId:'amara'}});expect(refused.status()).toBe(409);
+ await finish(page);
+});
+test('closing, hiding and reopening release the scene and its audio',async({page,roomPath})=>{
+ test.setTimeout(120000);await enter(page,roomPath);await topup(page);await page.emulateMedia({reducedMotion:'no-preference'});const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ for(let i=0;i<4;i++){await open(page);await page.locator('[data-ct-action=play]').click();await page.waitForTimeout(250+i*500);await close(page);expect(await page.locator('.ct-root').count()).toBe(0);}
+ await open(page);await page.waitForTimeout(300);if((await session(page))?.state==='active')await finish(page);const s=await mini(page);expect(s.presenting).toBe(false);expect(s.running).toBe(true);expect(s.loadFailed).toBe(false);expect(s.audio.ownedGraphs).toBeLessThanOrEqual(1);
+ expect(errors).toEqual([]);
+});
 
 test('priority shell keeps phone chat behind a button and preserves messages, draft, focus and desktop preference',async({page,roomPath,roomSession})=>{
  test.setTimeout(120000);
@@ -133,7 +257,7 @@ test('priority shell keeps phone chat behind a button and preserves messages, dr
  const dialog=page.locator('#mini-dialog'),toggle=dialog.locator('.game-chat-toggle'),dock=dialog.locator('#club-chat-dock');
  await expect(dialog.locator('.game-mode-badge')).toBeHidden();
  await expect(dialog.locator('.mini-bottom > span')).toBeHidden();
- await expect(dialog).toHaveAttribute('data-game-chat','closed');await priorityLayout(page);
+ await expect(dialog).toHaveAttribute('data-game-chat','closed');await layout(page,'shell-phone');
  const before=await page.locator('.ct-board').boundingBox(),balance=await wallet(page);
  roomSession.send('Привет из соседнего кресла');
  await expect(page.locator('#chat-log')).toContainText('Привет из соседнего кресла');
@@ -153,7 +277,7 @@ test('priority shell keeps phone chat behind a button and preserves messages, dr
  await expect(page.locator('#chat-log')).toContainText('Сообщение из мобильной игры');
  await dock.locator('.game-chat-close').click();
  for(const viewport of [{width:852,height:393},{width:393,height:852}]){
-  await page.setViewportSize(viewport);await expect(dock).toBeHidden();await priorityLayout(page);
+  await page.setViewportSize(viewport);await expect(dock).toBeHidden();await layout(page,'shell-'+viewport.width);
  }
  await page.setViewportSize({width:1440,height:900});await expect(dialog).toHaveAttribute('data-game-chat','column');
  await expect(dialog.locator('.game-mode-badge')).toBeHidden();
@@ -161,609 +285,6 @@ test('priority shell keeps phone chat behind a button and preserves messages, dr
  await page.setViewportSize({width:852,height:393});await page.setViewportSize({width:1440,height:900});await expect(dock).toBeHidden();
  await toggle.click();await expect(dialog).toHaveAttribute('data-game-chat','column');
  expect((await wallet(page)).entries).toEqual(balance.entries);
-});
-
-test('priority layout keeps the field and actions visible across phone orientations, tablet and desktop',async({page,roomPath})=>{
- test.setTimeout(120000);await enter(page,roomPath);await topup(page);await open(page);
- const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
- for(const [width,height] of [[320,568],[568,320],[360,640],[640,360],[393,852],[852,393],[430,932],[932,430],[768,1024],[1024,768],[1280,720],[1440,900]]){
-  await test.step(`${width}x${height}`,async()=>{
-   await page.setViewportSize({width,height});await priorityLayout(page);await shellChat(page);
-   if(width===393||width===852||width===1440)await page.screenshot({path:out+`/priority-${width}x${height}.png`});
-  });
- }
- await page.setViewportSize({width:320,height:568});await page.locator('[data-ct-action=settings]').click();
- expect((await page.locator('[data-ct-stake]').boundingBox())!.width).toBeGreaterThanOrEqual(64);
- await page.keyboard.press('Escape');
- await page.setViewportSize({width:393,height:852});await page.locator('[data-ct-action=settings]').click();
- await expect(page.locator('.ct-settings-modal')).toBeVisible();
- await page.locator('[data-ct-lines]').selectOption('5');await page.locator('[data-ct-stake]').selectOption('200');
- await page.locator('[data-ct-auto-count]').selectOption('25');await page.locator('[data-ct-action=lines]').click();
- await page.keyboard.press('Escape');await expect(page.locator('[data-ct-action=settings]')).toBeFocused();
- await expect(page.locator('.ct-play')).toContainText('2,00 USDT');await expect(page.locator('[data-ct-cost]')).toHaveText('2,00');
- await expect(page.locator('.ct-paths polyline')).toHaveCount(5);
- await page.setViewportSize({width:852,height:393});await priorityLayout(page);
- await page.locator('[data-ct-action=settings]').click();await expect(page.locator('[data-ct-auto-count]')).toHaveValue('25');
- await page.locator('[data-ct-action=buy]').click();await expect(page.locator('.ct-buy-price')).toBeVisible();
- await page.locator('.ct-modal').press('Escape');await priorityLayout(page);
- expect((await wallet(page)).entries.filter((entry:any)=>entry.kind==='bet')).toEqual([]);expect(errors).toEqual([]);
-});
-
-test('priority rotation preserves an accepted spin, bonus choice and free continuations without another debit',async({page,roomPath})=>{
- test.setTimeout(120000);await page.setViewportSize({width:393,height:852});await enter(page,roomPath);await topup(page);await open(page);
- await page.emulateMedia({reducedMotion:'no-preference'});
- const requests:any[]=[];
- await page.route('**/api/demo-wallet/expansion',async route=>{
-  if(route.request().method()==='POST'){requests.push(route.request().postDataJSON());await new Promise(resolve=>setTimeout(resolve,600));}
-  await route.continue();
- });
- await page.request.post('/__test/caribbean/force-scenario',{data:{name:'loss'}});
- await page.locator('.ct-root').evaluate(element=>(element as any).__priorityIdentity=true);
- const response=page.waitForResponse(reply=>reply.url().endsWith('/api/demo-wallet/expansion')&&reply.request().method()==='POST');
- await page.locator('.ct-play').click();await expect(page.locator('.ct-root')).toHaveAttribute('data-ct-phase','waiting');
- await page.setViewportSize({width:852,height:393});await priorityLayout(page);
- expect((await response).ok()).toBe(true);
- await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.presenting)).toBe(false);
- expect(await page.locator('.ct-root').evaluate(element=>(element as any).__priorityIdentity)).toBe(true);
- expect(requests).toHaveLength(1);expect((await wallet(page)).entries.filter((entry:any)=>entry.kind==='bet')).toHaveLength(1);
- await page.emulateMedia({reducedMotion:'reduce'});
- await page.request.post('/__test/caribbean/force-bonus');await action(page,'.ct-play');
- for (const [width,height] of [[320,568],[568,320],[393,852],[852,393],[1280,720]]) {
-  await page.setViewportSize({width,height});await priorityLayout(page);await expect(page.locator('[data-ct-action=choose-flagship]')).toBeInViewport();
- }
- await action(page,'[data-ct-action=choose-flagship]');const saved=await session(page);
- await page.setViewportSize({width:852,height:393});await priorityLayout(page);await action(page,'.ct-play');
- await close(page);await open(page);expect((await session(page)).id).toBe(saved.id);
- await finish(page);expect((await wallet(page)).entries.filter((entry:any)=>entry.kind==='bet')).toHaveLength(2);
- expect(new Set(requests.map(request=>request.id)).size).toBe(requests.length);
-});
-
-test('priority autoplay Stop stays available through a phone rotation and prevents subsequent charges',async({page,roomPath})=>{
- test.setTimeout(90000);await page.setViewportSize({width:393,height:852});await enter(page,roomPath);await topup(page);await open(page);
- let starts=0;
- await page.route('**/api/demo-wallet/expansion',async route=>{
-  if(route.request().method()==='POST'){
-   starts++;await page.request.post('/__test/caribbean/force-scenario',{data:{name:'loss'}});
-   await new Promise(resolve=>setTimeout(resolve,600));
-  }
-  await route.continue();
- });
- await page.locator('[data-ct-action=auto]').click();
- await expect(page.locator('[data-ct-action=auto]')).toHaveAttribute('aria-pressed','true');
- await expect.poll(()=>starts).toBe(1);
- await page.setViewportSize({width:852,height:393});await priorityLayout(page);
- await page.getByRole('button',{name:'Остановить автокрутку',exact:true}).click();
- await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.presenting)).toBe(false);
- await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.autoplay)).toMatchObject({running:false,timerPending:false});
- expect(starts).toBe(1);expect((await wallet(page)).entries.filter((entry:any)=>entry.kind==='bet')).toHaveLength(1);
-});
-
-test('crew collection earns free tokens, unlocks a chosen captain and persists beyond browser storage',async({page,roomPath})=>{
- test.setTimeout(180000);await enter(page,roomPath);await topup(page);await open(page);
- const mini=()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()),before=await wallet(page);
- await expect.poll(()=>crewState(page)).toMatchObject({tokens:0,owned:['isabella'],selected:'isabella'});
- await page.locator('[data-ct-action=crew]').click();await expect(page.locator('.ct-crew-card')).toHaveCount(11);
- await expect(page.locator('[data-crew-id=amara]')).toHaveAttribute('data-owned','false');await page.screenshot({path:out+'/collection-locked-desktop.png'});
- await page.locator('[data-crew-id=amara]').click();await expect(page.locator('.ct-crew-challenge')).toHaveCount(7);
- await page.locator('[data-ct-modal="answer:lesson-giant:0"]').click();await expect(page.locator('[data-challenge-id=lesson-giant] .ct-crew-feedback')).toContainText('Попробуй другой ответ');await expect(page.locator('[data-challenge-id=lesson-giant] .ct-crew-feedback')).toBeInViewport();expect((await crewState(page)).tokens).toBe(0);
- await crewLessons(page);expect((await crewState(page)).tokens).toBe(100);await page.screenshot({path:out+'/collection-lessons-complete.png'});
- await page.locator('[data-ct-modal=crew-tab]').click();await expect(page.locator('[data-crew-id=amara]')).toContainText('Открыть');
- await page.locator('[data-crew-id=amara]').click();await expect(page.locator('[data-crew-id=amara]')).toHaveAttribute('data-owned','true');expect((await crewState(page)).tokens).toBe(0);
- await expect(page.locator('.ct-crew-status')).toContainText('В команде пополнение!');
- await page.locator('[data-crew-id=amara]').click();await expect(page.locator('.ct-backdrop')).toBeHidden();await expect.poll(async()=>(await mini()).captain.character).toBe('amara');
- expect((await wallet(page)).entries).toEqual(before.entries);
- await close(page);await page.evaluate(()=>localStorage.clear());await page.reload();await selectEntryMode(page);
- await expect.poll(async()=>(await state(page)).online,{timeout:20000}).toBe(true);await open(page);
- await expect.poll(async()=>(await mini()).captain.character).toBe('amara');expect((await mini()).captain.history).toEqual([]);
- await page.setViewportSize({width:390,height:844});await page.locator('[data-ct-action=crew]').click();
- await shellChat(page);await page.screenshot({path:out+'/collection-unlocked-mobile.png'});
- await page.locator('[data-crew-id=ines]').scrollIntoViewIfNeeded();await expect(page.locator('.ct-crew-close')).toBeInViewport();await page.locator('.ct-crew-close').click();await expect(page.locator('[data-ct-action=crew]')).toBeFocused();
- const me=await(await page.request.get('/api/auth/me')).json(),headers={'X-Royal-Account-Id':me.account.id};
- const forged=await page.request.post('/api/caribbean-crew',{headers,data:{id:crypto.randomUUID(),action:'select',characterId:'ines'}});expect(forged.status()).toBe(403);
- expect((await wallet(page)).entries).toEqual(before.entries);
-});
-
-test('spin keeps the portrait frame and lower controls anchored throughout confirmation and reveal',async({page,roomPath})=>{
- test.setTimeout(120000);await enter(page,roomPath);await topup(page);await open(page);
- await page.emulateMedia({reducedMotion:'no-preference'});
- const measurements:any[]=[];
- await page.route('**/api/demo-wallet/expansion',async route=>{
-  if(route.request().method()==='POST')await new Promise(resolve=>setTimeout(resolve,500));
-  await route.continue();
- });
- for(const [width,height]of [[1440,1000],[1280,720],[390,844]]){
-  await page.setViewportSize({width,height});await page.waitForTimeout(150);
-  const positive=width===390;
-  await page.request.post('/__test/caribbean/force-scenario',{data:{name:positive?'positive':'loss'}});
-  await page.evaluate(()=>{
-   const selectors=['.ct-captain','.ct-avatar','.ct-ledger','.ct-controls','.ct-status'];
-   const root=document.querySelector<HTMLElement>('.ct-root')!;
-   const state=(window as any).__ctAnchors={samples:[] as any[],reels:[] as any[],trail:0,running:true};
-   const sample=()=>{
-    state.samples.push(Object.fromEntries(selectors.map(selector=>{const r=document.querySelector(selector)!.getBoundingClientRect();return[selector,{x:r.x,y:r.y,width:r.width,height:r.height}];})));
-    const phase=root.dataset.ctPhase;
-    if(phase==='waiting'||phase==='reels'){
-     const rolling=Array.from(root.querySelectorAll<HTMLElement>('.ct-strip'),strip=>!strip.hidden);
-     const hidden=Array.from(root.querySelectorAll('.ct-cell'),cell=>getComputedStyle(cell).visibility==='hidden');
-     const strip=root.querySelector('.ct-strip:not([hidden])');
-     state.reels.push({phase,rolling,hidden,outcome:root.dataset.outcome,net:root.querySelector('[data-ct-net]')!.textContent,
-      wave:strip?getComputedStyle(strip,'::before').animationName:''});
-    }
-    state.trail=Math.max(state.trail,root.querySelectorAll('.ct-treasure-spark').length);
-    if(state.running)requestAnimationFrame(sample);
-   };sample();
-  });
-  const round=await action(page,'[data-ct-action=play]');
-  const {samples:sample,reels,trail}=await page.evaluate(()=>{const s=(window as any).__ctAnchors;s.running=false;return s;});
-  expect(reels.some((frame:any)=>frame.phase==='waiting'&&frame.rolling.every(Boolean)&&frame.wave==='ct-sea-glint')).toBe(true);
-  expect(reels.some((frame:any)=>frame.phase==='reels'&&frame.rolling.some(Boolean)&&!frame.rolling.every(Boolean))).toBe(true);
-  for(const frame of reels){
-   expect(frame.hidden).toEqual(Array.from({length:24},(_,index)=>frame.rolling[index%6]));
-   expect(frame.outcome).toBe('');expect(frame.net).not.toMatch(/^[+−-]/);
-  }
-  expect(trail).toBe(positive?5:0);
-  if(positive){
-   const net=Number(BigInt(round.returnedUnits)-BigInt(round.spentUnits))/100;
-   expect(net).toBeGreaterThan(0);
-   await expect(page.locator('.ct-status')).toHaveText('Ты выиграл! +'+net.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2})+' USDT');
-   await page.screenshot({path:out+'/positive-mobile.png'});
-  }else await expect(page.locator('.ct-status')).toHaveText('Раунд завершён без выплаты.');
-  const drift=Object.fromEntries(Object.keys(sample[0]).map(selector=>[selector,Math.max(...sample.flatMap((s:any)=>['x','y','width','height'].map(key=>Math.abs(s[selector][key]-sample[0][selector][key]))))]));
-  measurements.push({width,height,frames:sample.length,drift});
- }
- const{writeFile}=await import('node:fs/promises');await writeFile(out+'/spin-anchors.json',JSON.stringify(measurements,null,2));
- for(const m of measurements)for(const[selector,drift]of Object.entries(m.drift))expect(drift,`${m.width} ${selector}`).toBeLessThanOrEqual(.75);
-});
-
-test('finite autoplay runs the selected paid budget once and stops without another debit',async({page,roomPath})=>{
- test.setTimeout(90000);await enter(page,roomPath);await topup(page);await open(page);
- const requests:string[]=[];
- await page.route('**/api/demo-wallet/expansion',async route=>{
-  if(route.request().method()==='POST'){
-   const op=route.request().postDataJSON();expect(op.action).toBe('start');expect(op.settings.caribbean.mode).toBe('normal');requests.push(op.id);
-   await page.request.post('/__test/caribbean/force-scenario',{data:{name:'loss'}});
-  }
-  await route.continue();
- });
- const before=(await wallet(page)).balance;
- await page.locator('[data-ct-auto-count]').selectOption('10');await page.locator('[data-ct-action=auto]').click();
- await expect(page.locator('[data-ct-lines]')).toBeDisabled();await expect(page.locator('[data-ct-stake]')).toBeDisabled();await expect(page.locator('[data-ct-action=buy]')).toBeDisabled();
- await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.autoplay.note),{timeout:45000}).toBe('complete');
- expect(requests).toHaveLength(10);expect(new Set(requests).size).toBe(10);
- expect((await wallet(page)).balance).toBe(before-200);expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(10);
- expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay.timerPending)).toBe(false);
- await page.waitForTimeout(800);expect(requests).toHaveLength(10);
-});
-
-test('autoplay Stop during confirmation preserves the accepted request and prevents following starts',async({page,roomPath})=>{
- await enter(page,roomPath);await topup(page);await open(page);let starts=0;
- await page.route('**/api/demo-wallet/expansion',async route=>{
-  if(route.request().method()==='POST'){starts++;await page.request.post('/__test/caribbean/force-scenario',{data:{name:'loss'}});await new Promise(resolve=>setTimeout(resolve,600));}
-  await route.continue();
- });
- await page.locator('[data-ct-action=auto]').click();await expect.poll(()=>starts).toBe(1);
- await page.locator('[data-ct-action=auto]').click();await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().presenting)).toBe(false);
- await page.waitForTimeout(900);expect(starts).toBe(1);expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(1);
- expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay)).toMatchObject({running:false,timerPending:false,note:'stopped'});
-});
-
-test('autoplay waits for the chosen tactic and free continuations do not spend its paid budget',async({page,roomPath})=>{
- test.setTimeout(90000);await enter(page,roomPath);await topup(page);await open(page);
- let starts=0,chosen=false,free=0;
- await page.route('**/api/demo-wallet/expansion',async route=>{
-  if(route.request().method()==='POST'){
-   const op=route.request().postDataJSON();
-   if(op.action==='start'){starts++;if(starts===1)await page.request.post('/__test/caribbean/force-bonus');else await page.request.post('/__test/caribbean/force-scenario',{data:{name:'loss'}});}
-   else if(op.move==='caribbean-spin'){expect(chosen).toBe(true);free++;}
-  }
-  await route.continue();
- });
- await page.locator('[data-ct-action=auto]').click();await expect(page.locator('[data-ct-action=choose-flagship]')).toBeVisible();
- await page.waitForTimeout(800);expect(starts).toBe(1);expect(free).toBe(0);
- expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay)).toMatchObject({running:true,remaining:9,waitingForTactic:true});
- chosen=true;await page.locator('[data-ct-action=choose-flagship]').click();
- await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay.note),{timeout:45000}).toBe('complete');
- expect(starts).toBe(10);expect(free).toBe(6);expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(10);
-});
-
-test('autoplay stops on a lost response and a manual replay uses the original UUID',async({page,roomPath})=>{
- await enter(page,roomPath);await topup(page);await open(page);const ids:string[]=[];let dropped=false;
- await page.route('**/api/demo-wallet/expansion',async route=>{
-  if(route.request().method()==='POST'){
-   ids.push(route.request().postDataJSON().id);
-   if(!dropped){dropped=true;await page.request.post('/__test/caribbean/force-scenario',{data:{name:'loss'}});await route.fetch();await route.abort('failed');return;}
-  }
-  await route.continue();
- });
- await page.locator('[data-ct-action=auto]').click();await expect(page.locator('[data-ct-action=retry]')).toBeVisible();
- await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay.note)).toBe('error');
- await page.locator('[data-ct-action=retry]').click();await expect(page.locator('[data-ct-action=retry]')).toBeHidden();
- await page.waitForTimeout(900);expect(ids).toHaveLength(2);expect(ids[1]).toBe(ids[0]);expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(1);
- expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay.running)).toBe(false);
-});
-
-test('autoplay stops for funds, blur, account change and closing and never resumes when reopened',async({page,roomPath})=>{
- await enter(page,roomPath);await topup(page);await open(page);
- await page.locator('[data-ct-lines]').selectOption('20');await page.locator('[data-ct-stake]').selectOption('1000');let starts=0;
- await page.route('**/api/demo-wallet/expansion',async route=>{
-  if(route.request().method()==='POST'){starts++;await page.request.post('/__test/caribbean/force-scenario',{data:{name:'loss'}});}
-  await route.continue();
- });
- await page.locator('[data-ct-action=auto]').click();await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay.note),{timeout:30000}).toBe('funds');
- expect(starts).toBe(5);await topup(page);await page.locator('[data-ct-action=auto]').click();await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
- expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay)).toMatchObject({running:false,timerPending:false,note:'paused'});
- await page.locator('[data-ct-action=auto]').click();await close(page);await page.waitForTimeout(800);expect(starts).toBe(5);await open(page);
- expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay)).toMatchObject({running:false,timerPending:false});
- await page.locator('[data-ct-action=auto]').click();
- await page.evaluate(async()=>{const path='/src/wallet/ExpansionClient.ts';(await import(/* @vite-ignore */path)).expansionClient.setAccount(null);});
- expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay)).toMatchObject({running:false,timerPending:false,note:'account'});
- await page.waitForTimeout(800);expect(starts).toBe(5);
-});
-
-test('interrupting a captain reaction preserves its current transform before easing into focus',async({page})=>{
- await page.goto('/?offline=1&mode=club');await page.emulateMedia({reducedMotion:'no-preference'});
- const continuity=await page.evaluate(async()=>{
-  const path='/games/caribbean-treasures/CaribbeanCaptain.ts',module=await import(/* @vite-ignore */path);
-  const root=document.createElement('section');root.innerHTML='<span class="ct-portrait-gesture" style="display:block;width:200px;height:300px"><img class="ct-portrait-layer"><img class="ct-portrait-layer"></span><span class="ct-captain-caption" hidden></span>';document.body.append(root);
-  const captain=new module.CaribbeanCaptain(root);await captain.select('isabella');captain.context(true,false,false);captain.react('bigwin','continuity');
-  await new Promise(resolve=>setTimeout(resolve,250));
-  const node=root.querySelector('.ct-portrait-gesture')!,before=new DOMMatrix(getComputedStyle(node).transform);
-  captain.begin();const after=new DOMMatrix(getComputedStyle(node).transform);
-  const displacement=Math.hypot(after.e-before.e,after.f-before.f);captain.destroy();root.remove();
-  return{displacement,animations:captain.state().animations,timers:captain.state().timers};
- });
- expect(continuity.displacement).toBeLessThanOrEqual(.75);expect(continuity.animations).toBe(0);expect(continuity.timers).toBe(0);
-});
-
-test('a lost cosmetic unlock response preserves tokens, paid bonus and account ownership',async({page,roomPath})=>{
- await enter(page,roomPath);await topup(page);await open(page);await expect.poll(()=>crewState(page)).not.toBeNull();
- await page.request.post('/__test/caribbean/force-bonus');const paid=await action(page,'[data-ct-action=play]');expect(paid.view.caribbean.phase).toBe('choice');const before=await wallet(page);
- await page.locator('[data-ct-action=crew]').click();await crewLessons(page);await page.locator('[data-ct-modal=crew-tab]').click();
- let lost=false;await page.route('**/api/caribbean-crew',async route=>{const r=route.request(),body=r.method()==='POST'?r.postDataJSON():null;if(!lost&&body?.action==='unlock'){lost=true;await route.fetch();await route.abort();}else await route.continue();});
- await page.locator('[data-crew-id=mei]').click();await expect(page.locator('.ct-crew-status')).toContainText('Не удалось подтвердить');await page.locator('[data-ct-modal=crew-refresh]').click();
- await expect(page.locator('[data-crew-id=mei]')).toHaveAttribute('data-owned','true');expect((await crewState(page)).tokens).toBe(0);await page.locator('[data-crew-id=mei]').click();await expect(page.locator('.ct-backdrop')).toBeHidden();
- const restored=await session(page);expect(restored.id).toBe(paid.id);expect(restored.view.caribbean.phase).toBe('choice');expect(restored.spentUnits).toBe(paid.spentUnits);expect((await wallet(page)).entries).toEqual(before.entries);
- await close(page);await open(page);await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().captain.character)).toBe('mei');
- await action(page,'[data-ct-action=choose-flagship]');await finish(page);expect((await wallet(page)).entries.filter((entry:any)=>entry.kind==='bet')).toHaveLength(1);
-});
-
-test('collection outage keeps the slot playable and recovers without resetting the account',async({page,roomPath})=>{
- await page.route('**/api/caribbean-crew',route=>route.fulfill({status:503,json:{error:'collection-unavailable'}}));
- await enter(page,roomPath);await topup(page);await open(page);await page.locator('[data-ct-action=crew]').click();
- await expect(page.locator('.ct-crew-status')).toContainText('Не удалось подтвердить');await page.locator('.ct-crew-close').click();
- await page.request.post('/__test/caribbean/force-scenario',{data:{name:'partial'}});const paid=await action(page,'[data-ct-action=play]');expect(paid.state).toBe('settled');
- await page.unroute('**/api/caribbean-crew');await page.locator('[data-ct-action=crew]').click();await expect(page.locator('[data-crew-id=isabella]')).toHaveAttribute('data-owned','true');expect((await crewState(page)).tokens).toBe(0);
- expect((await wallet(page)).entries.filter((entry:any)=>entry.kind==='bet')).toHaveLength(1);
-});
-
-test('closing a captain selection before a failed confirmation keeps the saved identity during a spin',async({page,roomPath})=>{
- await enter(page,roomPath);await topup(page);await open(page);
- await page.locator('[data-ct-action=crew]').click();await crewLessons(page);await page.locator('[data-ct-modal=crew-tab]').click();
- await page.locator('[data-crew-id=amara]').click();await expect(page.locator('[data-crew-id=amara]')).toHaveAttribute('data-owned','true');
- let release!:()=>void;const held=new Promise<void>(resolve=>{release=resolve;});let requested=false;
- await page.route('**/api/caribbean-crew',async route=>{
-  if(route.request().method()==='POST'&&route.request().postDataJSON()?.action==='select'){requested=true;await held;await route.fulfill({status:503,json:{error:'collection-unavailable'}});}
-  else await route.continue();
- });
- try{
-  await page.locator('[data-crew-id=amara]').click();await expect.poll(()=>requested).toBe(true);
-  await page.locator('.ct-crew-close').click();await page.request.post('/__test/caribbean/force-scenario',{data:{name:'partial'}});
-  const round=await action(page,'[data-ct-action=play]');expect(round.state).toBe('settled');release();
-  await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().captain.character)).toBe('isabella');
-  expect((await crewState(page)).selected).toBe('isabella');
-  const me=(await(await page.request.get('/api/auth/me')).json()).account;
-  const saved=await page.request.get('/api/caribbean-crew',{headers:{'X-Royal-Account-Id':me.id}});expect((await saved.json()).selected).toBe('isabella');
-  expect((await wallet(page)).entries.filter((entry:any)=>entry.kind==='bet')).toHaveLength(1);
- }finally{release();}
-});
-
-test('a late accepted captain selection waits until paid presentation ends',async({page,roomPath})=>{
- await enter(page,roomPath);await topup(page);await open(page);
- await page.locator('[data-ct-action=crew]').click();await crewLessons(page);await page.locator('[data-ct-modal=crew-tab]').click();
- await page.locator('[data-crew-id=amara]').click();await expect(page.locator('[data-crew-id=amara]')).toHaveAttribute('data-owned','true');
- let release!:()=>void;const held=new Promise<void>(resolve=>{release=resolve;});let accepted=false;
- await page.route('**/api/caribbean-crew',async route=>{
-  if(route.request().method()==='POST'&&route.request().postDataJSON()?.action==='select'){const response=await route.fetch();accepted=true;await held;await route.fulfill({response});}
-  else await route.continue();
- });
- try{
-  await page.locator('[data-crew-id=amara]').click();await expect.poll(()=>accepted).toBe(true);
-  await expect(page.locator('[data-ct-modal=crew-refresh]')).toBeDisabled();
-  await page.locator('.ct-crew-close').click();await page.emulateMedia({reducedMotion:'no-preference'});
-  await page.request.post('/__test/caribbean/force-scenario',{data:{name:'partial'}});await page.locator('[data-ct-action=play]').click();
-  await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().visualPhase)).toBe('reels');release();
-  await expect.poll(async()=>(await crewState(page)).selected).toBe('amara');
-  expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().captain.character)).toBe('isabella');
-  await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().presenting)).toBe(false);
-  await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().captain.character)).toBe('amara');
-  await close(page);await open(page);await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().captain.character)).toBe('amara');
-  expect((await wallet(page)).entries.filter((entry:any)=>entry.kind==='bet')).toHaveLength(1);
- }finally{release();}
-});
-
-test('crew loading failure, cancellation and every captain reaction retain a consistent identity',async({page})=>{
- await page.goto('/tests/fixtures/caribbean-audio.html');
- await page.evaluate(async()=>{
-  const root=document.createElement('section');root.innerHTML='<span class="ct-portrait-gesture"><img class="ct-portrait-layer"><img class="ct-portrait-layer"></span><span class="ct-captain-caption" hidden></span>';document.body.append(root);
-  const path='/games/caribbean-treasures/CaribbeanCaptain.ts';const {CaribbeanCaptain}=await import(/* @vite-ignore */path);(window as any).__crewCaptain=new CaribbeanCaptain(root);
- });
- const captain=()=>page.evaluate(()=>(window as any).__crewCaptain.state());
- await expect.poll(async()=>(await captain()).ready).toBe(true);
- await page.route('**/crew/mei-surprise.webp',route=>route.abort());
- expect(await page.evaluate(()=>(window as any).__crewCaptain.select('mei'))).toBe(false);expect((await captain()).character).toBe('isabella');expect((await captain()).loading).toBe(false);
- await page.unroute('**/crew/mei-surprise.webp');
- const results=await page.evaluate(async()=>{
-  const c=(window as any).__crewCaptain,results=[];
-  for(const id of ['amara','mei','priya','yasmin','zahara','catalina','moana','freya','rowan','ines']){
-   if(!await c.select(id))throw Error('Captain did not decode: '+id);c.context(true,true,false);
-   const poses=[];
-   for(const [cue,expected] of [['cannon','surprise'],['bonus','bonus'],['partial','soft'],['loss','soft'],['win','win'],['bigwin','laugh']]){
-    c.react(cue,id+cue);const current=document.querySelector<HTMLImageElement>('.ct-current')!;
-    poses.push({cue,expected,pose:c.state().pose,src:current.src});
-   }
-   c.context(false,true,false);results.push({id,poses,state:c.state()});
-  }
-  return results;
- });
- for(const result of results){for(const reaction of result.poses){expect(reaction.pose).toBe(reaction.expected);expect(reaction.src).toContain('/crew/'+result.id+'-'+reaction.expected+'.webp');}expect(result.state.timers).toBe(0);expect(result.state.animations).toBe(0);}
- expect(await page.evaluate(async()=>{const c=(window as any).__crewCaptain,pending=c.select('amara');c.begin();return pending;})).toBe(false);expect((await captain()).character).toBe('ines');
- expect(await page.evaluate(async()=>{const c=(window as any).__crewCaptain,pending=c.select('amara');c.cancelSelection();return pending;})).toBe(false);expect((await captain()).character).toBe('ines');
- expect(await page.evaluate(async()=>{const c=(window as any).__crewCaptain,pending=c.select('mei');c.destroy();return pending;})).toBe(false);expect((await captain()).timers).toBe(0);
- const {writeFile}=await import('node:fs/promises');await writeFile(out+'/crew-reactions.json',JSON.stringify(results,null,2));
-});
-
-test('header controls paint above overlapping pirate art and every tool remains usable',async({page,roomPath})=>{
- await enter(page,roomPath);await topup(page);await open(page);
- const tools=page.locator('.ct-header-tools button'),regions:Buffer[]=[];
- await page.locator('.ct-root').evaluate((e:HTMLElement)=>{e.style.overflow='clip';});
- const capture=async(index:number)=>{const b=(await tools.nth(index).boundingBox())!;return page.screenshot({animations:'disabled',clip:{x:b.x+6,y:b.y+6,width:b.width-12,height:b.height-12}});};
- const {writeFile}=await import('node:fs/promises');
- for(let i=0;i<4;i++){const region=await capture(i);regions.push(region);await writeFile(out+'/toolbar-before-'+i+'.png',region);}
- // Reproduce the reported overhang without changing production geometry or game state.
- await page.evaluate(()=>{
-  const pirate=document.querySelector<HTMLElement>('.ct-captain')!,img=pirate.querySelector<HTMLImageElement>('.ct-current')!,panel=document.querySelector('.ct-header-tools')!.getBoundingClientRect(),b=img.getBoundingClientRect();
-  const scale=Math.min(img.clientWidth/img.naturalWidth,img.clientHeight/img.naturalHeight),w=img.naturalWidth*scale,h=img.naturalHeight*scale;
-  const faceX=b.x+(img.clientWidth-w)/2+w*.6,faceY=b.y+img.clientHeight-h+h*.15;
-  pirate.style.transform=`translate(${panel.x+panel.width/2-faceX}px,${panel.y+panel.height/2-faceY}px)`;
- });
- await page.screenshot({path:out+'/header-overlap.png',animations:'disabled'});
- const sharp=(await import('sharp')).default;
- for(let i=0;i<4;i++){
-  const region=await capture(i);await writeFile(out+'/toolbar-after-'+i+'.png',region);
-  const before=await sharp(regions[i]).raw().toBuffer(),after=await sharp(region).raw().toBuffer();
-  expect(after.length).toBe(before.length);
-  // GPU compositing can round a colour channel by one without changing the layer.
-  const difference=before.reduce((maximum,value,index)=>Math.max(maximum,Math.abs(value-after[index])),0);
-  expect(difference,'Pirate pixels cannot replace the opaque interior of toolbar button '+i).toBeLessThanOrEqual(1);
- }
- await page.locator('.ct-captain').evaluate((e:HTMLElement)=>{e.style.removeProperty('transform');});await page.locator('.ct-root').evaluate((e:HTMLElement)=>{e.style.removeProperty('overflow');});
- for(const [width,height] of [[1440,1000],[1280,720],[390,844]]){
-  await page.setViewportSize({width,height});await expect(tools).toHaveCount(4);
-  for(let i=0;i<4;i++)await expect(tools.nth(i)).toBeInViewport();
-  await page.locator('[data-ct-action=music]').click();await expect(page.locator('[data-ct-action=music]')).toHaveAttribute('aria-pressed','false');await page.locator('[data-ct-action=music]').click();
-  await page.locator('[data-ct-action=sound]').click();await expect(page.locator('[data-ct-action=sound]')).toHaveAttribute('aria-pressed','false');await page.locator('[data-ct-action=sound]').click();
-  for(const action of ['info','history']){
-   await page.locator(`[data-ct-action=${action}]`).click();await expect(page.locator('.ct-modal')).toBeVisible();
-   expect(await page.locator('.ct-header-tools').evaluate(e=>{const b=e.getBoundingClientRect();return !!document.elementFromPoint(b.x+b.width/2,b.y+b.height/2)?.closest('.ct-backdrop');})).toBe(true);
-   await page.locator('.ct-modal').press('Escape');await expect(page.locator('.ct-backdrop')).toBeHidden();
-  }
-  await page.screenshot({path:out+`/header-${width}x${height}.png`});
- }
- expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toEqual([]);
-});
-
-test('catalogue pirate captain cover stays sharp on desktop and mobile and reopens the same round',async({page,roomPath})=>{
- await enter(page,roomPath);await topup(page);await openCatalog(page);
- const card=page.locator(`[data-platform-game="${game}"]`),art=card.locator('.rp-art img');
- await card.scrollIntoViewIfNeeded();
- await expect(art).toHaveAttribute('src',/\/assets\/royal-catalog\/studio-caribbean-treasures\.[a-f0-9]{12}\.webp$/);
- await expect.poll(async()=>art.evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth===512&&img.naturalHeight===320)).toBe(true);
- await page.screenshot({path:out+'/catalog-desktop.png'});
- await page.setViewportSize({width:390,height:844});await page.getByRole('searchbox',{name:'Найти игру',exact:true}).fill('Карибские');
- await expect(page.locator('.rp-card')).toHaveCount(1);await card.scrollIntoViewIfNeeded();await expect(art).toBeInViewport();await shellChat(page);
- await page.screenshot({path:out+'/catalog-mobile.png'});await card.click();
- await expect(page.locator('.ct-root')).toBeVisible();await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.captain?.ready)).toBe(true);
- await expect(page.locator('[data-ct-lines]')).toBeEnabled();await page.locator('[data-ct-lines]').selectOption('1');await page.request.post('/__test/caribbean/force-bonus');const accepted=await action(page,'[data-ct-action=play]');
- await action(page,'[data-ct-action=choose-flagship]');const before=await wallet(page);
- await page.locator('#studio-game-list').click();await expect(art).toHaveAttribute('src',/studio-caribbean-treasures\.[a-f0-9]{12}\.webp$/);await card.scrollIntoViewIfNeeded();await card.click();
- await expect(page.locator('.ct-root')).toBeVisible();expect((await session(page)).id).toBe(accepted.id);expect((await wallet(page)).balance).toBe(before.balance);
- await finish(page);expect((await wallet(page)).entries.filter((e:any)=>e.operationId===accepted.id&&e.kind==='bet')).toHaveLength(1);
-});
-
-test('responsive framing preserves the readable field and full visible captain artwork inside the host',async({page,roomPath})=>{
- test.setTimeout(120000);await enter(page,roomPath);await topup(page);await open(page);
- const measurements:any[]=[];
- for(const [width,height] of [[1440,1000],[1280,720],[1094,803],[1024,768],[900,650],[800,600],[640,480],[500,760],[430,932],[390,844],[342,700],[844,390]]){
-  await page.setViewportSize({width,height});
-  await expect.poll(async()=>page.evaluate(()=>{const d=document.querySelector<HTMLElement>('#mini-dialog')!,s=d.querySelector<HTMLElement>('.mini-stage')!;return d.dataset.gameViewportReady===d.dataset.game+'|'+s.clientWidth+'x'+s.clientHeight+'|off';})).toBe(true);
-  const measured=await page.evaluate(()=>{
-   const root=document.querySelector<HTMLElement>('.ct-root')!,title=root.querySelector<HTMLElement>('.ct-title')!,heading=title.querySelector('h2')!,captain=root.querySelector<HTMLElement>('.ct-captain')!,image=captain.querySelector<HTMLImageElement>('.ct-current')!;
-   const box=(e:Element)=>{const b=e.getBoundingClientRect();return{x:b.x,y:b.y,width:b.width,height:b.height,right:b.right,bottom:b.bottom};};
-   const text=document.createRange();text.selectNodeContents(heading);const b=text.getBoundingClientRect();
-   const visible=getComputedStyle(captain).display!=='none',style=getComputedStyle(image),scale=style.objectFit==='contain'?Math.min(image.clientWidth/image.naturalWidth,image.clientHeight/image.naturalHeight):Math.max(image.clientWidth/image.naturalWidth,image.clientHeight/image.naturalHeight);
-   return{root:box(root),rootOverflowX:root.scrollWidth-root.clientWidth,pageOverflowX:document.documentElement.scrollWidth-innerWidth,title:box(title),titleText:{x:b.x,right:b.right,y:b.y,bottom:b.bottom},captain:visible?{box:box(captain),objectFit:style.objectFit,clippedX:Math.max(0,image.naturalWidth*scale-image.clientWidth),clippedY:Math.max(0,image.naturalHeight*scale-image.clientHeight)}:null,stage:box(root.querySelector('.ct-stage')!),play:box(root.querySelector('[data-ct-action=play]')!),playback:box(root.querySelector('.ct-playback')!),chat:box(document.querySelector('#chat-input')!)};
-  });
-  const board=await page.locator('.ct-board').boundingBox();
-  // A fitting image can still be unusably small when toolbars consume the pane.
-  if(measured.root.width>=700&&measured.root.width/measured.root.height>=4/3){
-   expect(board!.width/measured.root.width,'The short desktop board keeps at least 45% of the game pane width').toBeGreaterThanOrEqual(.45);
-  }
-  if(measured.root.width<=650&&height>540){
-   expect(board!.width/measured.root.width,'Narrow panes keep readable symbols without scrolling').toBeGreaterThanOrEqual(.65);
-  }
-  if(width<=500&&height>=800&&measured.root.height>=520){
-   expect(measured.playback.bottom,'Normal portrait phones show the whole autoplay row above the host footer').toBeLessThanOrEqual(measured.root.bottom+1);
-  }
-  measurements.push({width,height,...measured,board});await page.screenshot({path:out+`/framing-${width}x${height}.png`});
-  await priorityLayout(page);await shellChat(page);
- }
- const {writeFile}=await import('node:fs/promises');await writeFile(out+'/framing-measurements.json',JSON.stringify(measurements,null,2));
- expect(measurements.filter(m=>m.captain&&(m.captain.clippedX>1||m.captain.clippedY>1)), 'All source portrait pixels must fit, without cover cropping').toEqual([]);
- expect(measurements.filter(m=>m.pageOverflowX>1||m.rootOverflowX>1||m.title.width>0&&(m.titleText.x<m.root.x-1||m.titleText.right>m.root.right+1)), 'Text and controls cannot spill horizontally').toEqual([]);
- await page.setViewportSize({width:1280,height:720});await page.request.post('/__test/caribbean/force-bonus');await action(page,'[data-ct-action=play]');
- await layout(page,'framing-bonus-1280x720');await action(page,'[data-ct-action=choose-flagship]');await finish(page);
-});
-
-test('empty balance explains disabled spins, live funding unlocks an exact-cost single line and free spins need no balance',async({page,roomPath})=>{
- await enter(page,roomPath);await open(page);await page.locator('[data-ct-lines]').selectOption('1');await page.locator('[data-ct-stake]').selectOption('1000');
- await expect(page.locator('[data-ct-balance]')).toHaveText('0');await expect(page.locator('[data-ct-action=play]')).toBeDisabled();await expect(page.locator('[data-ct-action=buy]')).toBeDisabled();
- await expect(page.locator('.ct-status')).toContainText('Недостаточно средств: нужно 10 USDT.');
- expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toEqual([]);
- await layout(page,'empty-balance-desktop');await page.setViewportSize({width:390,height:844});await layout(page,'empty-balance-mobile');await page.setViewportSize({width:1440,height:1000});
- await page.getByRole('button',{name:'Открыть тестовый кошелёк',exact:true}).click();await expect(page.locator('#wallet-dialog')).toBeVisible();await page.getByRole('button',{name:'Закрыть кошелёк',exact:true}).click();
- const funded=await page.request.post('/__test/caribbean/topup',{data:{amount:1}});expect(funded.ok()).toBe(true);
- // A real shared-wallet refresh must update this already mounted game without reopening.
- await page.evaluate(async()=>{const path='/src/wallet/WalletClient.ts';await(await import(/* @vite-ignore */path)).demoWallet.refresh();});
- await expect(page.locator('[data-ct-balance]')).toHaveText('1');await expect(page.locator('[data-ct-action=play]')).toBeDisabled();
- await page.locator('[data-ct-stake]').selectOption('100');await expect(page.locator('[data-ct-action=play]')).toBeEnabled();
- await page.request.post('/__test/caribbean/force-bonus');const paid=await action(page,'[data-ct-action=play]');expect(paid.spentUnits).toBe('100');
- await expect(page.locator('[data-ct-balance]')).toHaveText('0');await expect(page.locator('[data-ct-action=choose-flagship]')).toBeEnabled();
- await action(page,'[data-ct-action=choose-flagship]');await expect(page.locator('[data-ct-action=play]')).toBeEnabled();await finish(page);
- expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(1);
- await topup(page);
- let rejected=false;await page.route('**/api/demo-wallet/expansion',async route=>{
-  if(route.request().method()==='POST'&&!rejected){rejected=true;await route.fulfill({status:409,json:{error:'Недостаточно демомонет для начальных ставок.'}});}else await route.continue();
- });
- const refreshed=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='GET');await page.locator('[data-ct-action=play]').click();await refreshed;
- await expect(page.locator('.ct-status')).toHaveText('Недостаточно демомонет для начальных ставок.');
- await expect(page.locator('[data-ct-action=retry]')).toBeHidden();expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(1);
- await page.locator('[data-ct-stake]').selectOption('200');await expect(page.locator('.ct-status')).not.toContainText('Недостаточно');
-});
-
-test('natural bonus, real host/chat, line presets and desktop/mobile layout',async({page,roomPath})=>{
- const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await enter(page,roomPath);await topup(page);await open(page);
- await layout(page,'reference-ready-desktop');
- await page.locator('[data-ct-action=lines-down]').click();await expect(page.locator('[data-ct-lines]')).toHaveValue('10');
- await page.locator('[data-ct-action=lines-up]').click();await expect(page.locator('[data-ct-lines]')).toHaveValue('20');await expect(page.locator('[data-ct-action=lines-up]')).toBeDisabled();
- await page.locator('[data-ct-action=stake-up]').click();await expect(page.locator('[data-ct-stake]')).toHaveValue('200');await page.locator('[data-ct-action=stake-down]').click();await expect(page.locator('[data-ct-stake]')).toHaveValue('100');await expect(page.locator('[data-ct-action=stake-down]')).toBeDisabled();
- await page.locator('[data-ct-lines]').selectOption('5');await page.locator('[data-ct-stake]').selectOption('200');
- await expect(page.locator('[data-ct-action=play]')).toContainText('10');
- await page.locator('[data-ct-action=info]').click();await expect(page.locator('.ct-modal')).toBeVisible();
- await expect(page.locator('.ct-audio-credits')).toContainText('Matthew Pablo');await expect(page.locator('.ct-audio-credits')).toContainText('CC BY 3.0');
- await page.locator('.ct-modal').press('Escape');await expect(page.locator('.ct-backdrop')).toBeHidden();await expect(page.locator('#mini-dialog')).toBeVisible();
- await page.locator('[data-ct-action=lines]').click();await expect(page.locator('.ct-paths polyline')).toHaveCount(5);
- const before=await wallet(page);await page.request.post('/__test/caribbean/force-bonus');const started=await action(page,'[data-ct-action=play]');
- expect(started.view.caribbean.phase).toBe('choice');expect(started.spentUnits).toBe('1000');
- expect((await(await page.request.get('/api/demo-wallet/expansion')).json()).sessions.some((s:any)=>s.gameId===game)).toBe(false);
- await expect(page.locator('[data-ct-lines]')).toBeDisabled();await expect(page.locator('[data-ct-stake]')).toBeDisabled();
- await action(page,'[data-ct-action=choose-flagship]');await action(page,'[data-ct-action=play]');
- await layout(page,'desktop');await page.setViewportSize({width:390,height:844});await layout(page,'mobile');
- const saved=await session(page);await close(page);await open(page);expect((await session(page)).id).toBe(saved.id);
- const done=await finish(page),after=await wallet(page);
- expect(after.balance).toBe(before.balance-10+Number(done.returnedUnits)/100);
- expect(after.entries.filter((e:any)=>e.operationId===done.id&&e.kind==='bet')).toHaveLength(1);
- expect(after.entries.filter((e:any)=>e.kind==='win')).toHaveLength(1);
- await page.locator('[data-ct-action=history]').click();await expect(page.locator('.ct-modal')).toContainText('Флагман');
- await page.locator('.ct-modal').press('Escape');expect(errors).toEqual([]);
-});
-
-test('an accepted start survives a lost response and reopening without duplicate debit',async({page,roomPath})=>{
- await enter(page,roomPath);await topup(page);await open(page);await page.locator('[data-ct-lines]').selectOption('1');
- await page.request.post('/__test/caribbean/force-bonus');
- let lost=false;await page.route('**/api/demo-wallet/expansion',async route=>{
-  if(route.request().method()==='POST'&&!lost){lost=true;const accepted=await route.fetch();expect(accepted.ok(),await accepted.text()).toBe(true);await route.abort('failed');}else await route.continue();
- });
- await page.locator('[data-ct-action=play]').click();await expect(page.locator('[data-ct-action=retry]')).toBeVisible();
- await expect(page.locator('[data-ct-action=retry]')).toBeEnabled();
- const committed=await session(page),before=await wallet(page);expect(committed.state).toBe('active');
- await close(page);await open(page);await expect(page.locator('[data-ct-action=retry]')).toBeVisible();
- await action(page,'[data-ct-action=retry]');expect((await session(page)).id).toBe(committed.id);
- expect((await wallet(page)).balance).toBe(before.balance);
- await action(page,'[data-ct-action=choose-raid]');
- // A lost free-spin reply changes no balance: a successful retry must also clear its old message.
- lost=false;await page.locator('[data-ct-action=play]').click();await expect(page.locator('[data-ct-action=retry]')).toBeVisible();await expect(page.locator('[data-ct-action=retry]')).toBeEnabled();
- await action(page,'[data-ct-action=retry]');await expect(page.locator('.ct-status')).not.toContainText('Ответ не получен');
- await finish(page);
- expect((await wallet(page)).entries.filter((e:any)=>e.operationId===committed.id&&e.kind==='bet')).toHaveLength(1);
-});
-
-test('both purchased tactics show the accepted price and recover after a full reload',async({page,roomPath})=>{
- await enter(page,roomPath);await topup(page);await open(page);await page.locator('[data-ct-lines]').selectOption('1');
- for(const [mode,spins] of [['buy-raid',14],['buy-flagship',6]] as const){
-  const before=await wallet(page);await page.locator('[data-ct-action=buy]').click();
-  await expect(page.locator(`[data-ct-modal=${mode}]`)).toBeVisible();expect((await wallet(page)).balance).toBe(before.balance);
-  const shownPrice=Number((await page.locator('.ct-buy-price').innerText()).replace(/[^\d,.]/g,'').replace(',','.'));
-  const started=await action(page,`[data-ct-modal=${mode}]`);expect(started.view.caribbean.remaining).toBe(spins);
-  expect(started.view.caribbean.settings.mode).toBe(mode);expect(shownPrice).toBe(Number(started.spentUnits)/100);expect(Math.round((await wallet(page)).balance*100)).toBe(Math.round(before.balance*100)-Number(started.spentUnits));
-  await page.reload();await selectEntryMode(page);await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});await expect.poll(async()=>(await state(page)).online).toBe(true);await open(page);
-  expect((await session(page)).id).toBe(started.id);await expect(page.locator('[data-ct-lines]')).toHaveValue('1');await expect(page.locator('[data-ct-action=buy]')).toBeDisabled();
-  const done=await finish(page);expect(Math.round((await wallet(page)).balance*100)).toBe(Math.round(before.balance*100)-Number(done.spentUnits)+Number(done.returnedUnits));
- }
-});
-
-test('switching accounts hides the previous series and restores it only for its owner',async({page,roomPath})=>{
- const email=await enter(page,roomPath);await topup(page);await open(page);await page.locator('[data-ct-lines]').selectOption('1');
- await page.request.post('/__test/caribbean/force-bonus');const original=await action(page,'[data-ct-action=play]');await close(page);
- await page.getByRole('button',{name:'Выйти',exact:true}).click();await selectEntryMode(page);await expect(page.getByLabel('Почта',{exact:true})).toBeVisible();
- await enter(page,roomPath);await open(page);expect(await session(page)).toBeUndefined();await expect(page.locator('.ct-choice')).toBeHidden();
- await expect(page.locator('[data-ct-lines]')).toHaveValue('20');await expect(page.locator('[data-ct-lines]')).toBeEnabled();await close(page);
- await page.getByRole('button',{name:'Выйти',exact:true}).click();await selectEntryMode(page);await expect(page.getByLabel('Почта',{exact:true})).toBeVisible();
- await enter(page,roomPath,email);await open(page);expect((await session(page)).id).toBe(original.id);
- await expect(page.locator('[data-ct-lines]')).toHaveValue('1');await action(page,'[data-ct-action=choose-flagship]');await finish(page);
-});
-
-test('confirmed animation, cannon, skip, mute, zero volume and close release owned audio',async({page,roomPath})=>{
- test.setTimeout(150000);
- await enter(page,roomPath);await topup(page);await page.emulateMedia({reducedMotion:'no-preference'});await open(page);
- await page.evaluate(()=>{const c=(globalThis as any)[Symbol.for('royal.game-host.v1')].gameAudio.context;if(!c)throw Error('Shared context missing');const active=(window as any).__ctSources=new Set(),host=(window as any).__ctHostSources=new Map();(window as any).__ctOwnedCreated=0;for(const name of ['createOscillator','createBufferSource']){const create=c[name].bind(c);c[name]=()=>{const node=create(),stack=new Error().stack??'',owned=stack.includes('/game-modules/studio-caribbean-treasures/')||stack.includes('/games/caribbean-treasures/');if(owned){active.add(node);(window as any).__ctOwnedCreated++;}else host.set(node,stack);node.addEventListener('ended',()=>{active.delete(node);host.delete(node);});return node;};}});
- await page.locator('[data-ct-lines]').selectOption('1');await page.request.post('/__test/caribbean/force-bonus');await action(page,'[data-ct-action=play]');
- await action(page,'[data-ct-action=choose-raid]');await page.request.post('/__test/caribbean/force-cannon');
- await Promise.all([
-  action(page,'[data-ct-action=play]'),
-  page.locator('.ct-cannon-burst').waitFor({state:'visible',timeout:15000}),
- ]);
- await expect(page.locator('.ct-giant small')).toHaveText('Залп увеличил символ');
- await expect(page.locator('.ct-board')).toHaveAccessibleName(/с 2×2 до 3×3/);
- await page.screenshot({path:out+'/cannon-explained.png'});
- const playback=await page.evaluate(()=>(window as any).royalDemo.getMiniState());expect(playback.audio.counts.cannon).toBe(1);expect(playback.accents.filter((a:any)=>a.cue==='stop')).toHaveLength(12);
- expect(playback.captain.history.filter((e:any)=>e.cue==='cannon')).toHaveLength(1);
- expect(playback.captain.history.find((e:any)=>e.cue==='cannon').pose).toBe('surprise');
- expect(new Set(playback.captain.history.filter((e:any)=>e.cue==='stop').map((e:any)=>e.variant)).size).toBe(6);
- const maximumDeviationMs=Math.max(...playback.accents.map((a:any)=>Math.abs(a.deviationMs)));
- const {writeFile}=await import('node:fs/promises');await writeFile(out+'/playback-measurements.json',JSON.stringify({maximumDeviationMs,accents:playback.accents},null,2));expect(maximumDeviationMs).toBeLessThanOrEqual(50);
- await page.locator('[data-ct-action=music]').click();await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().audio.music)).toBe(false);
- await page.locator('[data-ct-action=music]').click();await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().audio.music)).toBe(true);
- await page.locator('[data-ct-action=play]').click();await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().visualPhase)).toBe('reels');
- await expect(page.locator('.ct-strip:not([hidden])')).not.toHaveCount(0);await page.screenshot({path:out+'/reels.png'});
- await page.locator('[data-ct-action=skip]').click();await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().presenting)).toBe(false);
- const saved=await session(page);expect(await page.locator('.ct-cell').evaluateAll(nodes=>nodes.map(n=>Number((n as HTMLElement).dataset.symbol)))).toEqual(saved.view.caribbean.spins.at(-1).frame.grid);
- await page.evaluate(()=>{const audio=(globalThis as any)[Symbol.for('royal.game-host.v1')].gameAudio;audio.setVolume(0);audio.setMuted(false);});
- const before=await page.evaluate(()=>(window as any).royalDemo.getMiniState().audio.counts);await action(page,'[data-ct-action=play]');
- expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().audio.counts)).toEqual(before);
- await page.evaluate(()=>{const audio=(globalThis as any)[Symbol.for('royal.game-host.v1')].gameAudio;audio.setVolume(.35);audio.setMuted(true);});
- await action(page,'[data-ct-action=play]');expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().audio.counts)).toEqual(before);
- await page.locator('[data-ct-action=sound]').click();await page.locator('[data-ct-action=play]').click();
- await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().visualPhase)).toBe('reels');
- await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});
- await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().presenting)).toBe(false);
- const hidden=await page.evaluate(()=>(window as any).royalDemo.getMiniState());expect(hidden.captain.timers).toBe(0);expect(hidden.captain.animations).toBe(0);expect(hidden.visuals).toEqual({animations:0,particles:0});
- await page.evaluate(()=>{delete(document as any).hidden;document.dispatchEvent(new Event('visibilitychange'));});
- await page.locator('[data-ct-action=play]').click();await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().visualPhase)).toBe('reels');
- await page.emulateMedia({reducedMotion:'reduce'});await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().presenting)).toBe(false);await expect(page.locator('.ct-root')).toHaveAttribute('data-motion','reduced');
- const reduced=await session(page);expect(await page.locator('.ct-cell').evaluateAll(nodes=>nodes.map(n=>Number((n as HTMLElement).dataset.symbol)))).toEqual(reduced.view.caribbean.spins.at(-1).frame.grid);
- await close(page);await expect.poll(async()=>page.evaluate(()=>(window as any).__ctSources.size),{timeout:4000}).toBe(0);
- const cleanup=await page.evaluate(()=>({ownedCreated:(window as any).__ctOwnedCreated,ownedRemaining:(window as any).__ctSources.size,hostRemaining:[...(window as any).__ctHostSources.values()]}));expect(cleanup.ownedCreated).toBeGreaterThan(20);await writeFile(out+'/audio-ownership.json',JSON.stringify(cleanup,null,2));
- await open(page);expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().audio.counts)).toEqual({});
- expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().captain.history)).toEqual([]);
- await page.screenshot({path:out+'/desktop-final.png'});
-});
-
-test('extreme stakes, rapid double click, mobile purchase and English recovery keep one paid round',async({page,roomPath})=>{
- await enter(page,roomPath);const funded=await page.request.post('/__test/caribbean/topup',{data:{amount:10000}});expect(funded.ok()).toBe(true);await open(page);
- for(const count of ['1','5','10','20']){await page.locator('[data-ct-lines]').selectOption(count);await page.locator('[data-ct-action=lines]').click();if(await page.locator('[data-ct-action=lines]').getAttribute('aria-pressed')==='false')await page.locator('[data-ct-action=lines]').click();await expect(page.locator('.ct-paths polyline')).toHaveCount(Number(count));}
- for(const stake of ['100','200','500','1000'])await page.locator('[data-ct-stake]').selectOption(stake);
- await expect(page.locator('[data-ct-action=play]')).toContainText('200');const before=await wallet(page);
- await page.route('**/api/demo-wallet/expansion',async route=>{if(route.request().method()==='POST')await new Promise(resolve=>setTimeout(resolve,100));await route.continue();});
- const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');await page.locator('[data-ct-action=play]').dblclick({delay:10});const started=(await(await response).json()).session;
- await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().presenting)).toBe(false);
- if(started.view.caribbean.phase==='choice'){await action(page,'[data-ct-action=choose-flagship]');await finish(page);}
- expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet').length-before.entries.filter((e:any)=>e.kind==='bet').length).toBe(1);
- await page.setViewportSize({width:390,height:844});await page.locator('[data-ct-action=buy]').click();const bought=await action(page,'[data-ct-modal=buy-flagship]');expect(bought.view.caribbean.settings.lines).toBe(20);expect(bought.stakeUnits).toBe('1000');
- await page.goto(roomPath+'&lang=en');await selectEntryMode(page);
- // A full navigation can reach the hall before its previous presence lease expires.
- await expect.poll(async()=>{if((await state(page)).online)return true;const retry=page.locator('#retry-entry');if(await retry.isVisible()&&await retry.isEnabled())await retry.click();return false;},{timeout:35000,intervals:[1000,5000]}).toBe(true);
- await open(page);await expect(page.locator('.ct-heading h2')).toHaveText('Caribbean Treasures');
- expect((await session(page)).id).toBe(bought.id);await finish(page);await expect(page.locator('.ct-status')).toContainText(/round|Round/);
 });
 
 test('recorded orchestral music and Foley render without clipping and end in silence',async({page})=>{
@@ -813,79 +334,3 @@ test('sample loading can fail and retry, and late decode after close cannot rest
  expect(closed.activeSources).toBe(0);expect(closed.ownedGraphs).toBe(0);expect(closed.music).toBe(false);expect(closed.counts).toEqual({});expect(closed.loadedClips).toBe(0);
 });
 
-test('captain blinks and looks at the field, deduplicates reactions and releases her timer',async({page})=>{
- await page.goto('/tests/fixtures/caribbean-audio.html');await page.clock.install();
- await page.evaluate(async()=>{
-  const root=document.createElement('section');root.className='ct-root';
-  root.innerHTML='<span class="ct-portrait-gesture"><img class="ct-portrait-layer"><img class="ct-portrait-layer"></span><span class="ct-captain-caption" hidden></span>';
-  document.body.append(root);const path='/games/caribbean-treasures/CaribbeanCaptain.ts';
-  const {CaribbeanCaptain}=await import(/* @vite-ignore */path);(window as any).__ctCaptain=new CaribbeanCaptain(root);
- });
- const captain=()=>page.evaluate(()=>(window as any).__ctCaptain.state());
- await expect.poll(async()=>(await captain()).ready,{timeout:20000}).toBe(true);
- await page.evaluate(()=>(window as any).__ctCaptain.context(true,false,false));
- await page.clock.runFor(5200);expect((await captain()).pose).toBe('blink');
- await page.clock.runFor(125);expect((await captain()).pose).toBe('idle');
- await page.clock.runFor(5850);expect((await captain()).pose).toBe('blink');
- await page.clock.runFor(125+6500);expect((await captain()).pose).toBe('focus');
- await page.clock.runFor(1400);expect((await captain()).pose).toBe('idle');expect((await captain()).timers).toBe(1);
- await page.evaluate(()=>{const c=(window as any).__ctCaptain;c.begin();c.react('partial','round:1:partial');c.react('partial','round:1:partial');c.finish();});
- expect((await captain()).history).toHaveLength(1);expect((await captain()).pose).toBe('soft');await expect(page.locator('.ct-captain-caption')).toHaveText('Вернулась часть ставки.');
- await page.evaluate(()=>(window as any).__ctCaptain.context(true,true,true));
- expect((await captain()).animations).toBe(0);await expect(page.locator('.ct-captain-caption')).toHaveText('Part of the cost returned.');
- await page.clock.runFor(1200);expect((await captain()).pose).toBe('idle');expect((await captain()).timers).toBe(0);
- await page.evaluate(()=>{const c=(window as any).__ctCaptain;c.context(true,false,false);c.begin();c.react('bigwin','round:2:bigwin');c.finish();});
- expect((await captain()).pose).toBe('laugh');await page.clock.runFor(1300);expect((await captain()).pose).toBe('win');
- await page.evaluate(()=>(window as any).__ctCaptain.context(false,false,false));
- await page.clock.runFor(30000);expect((await captain()).pose).toBe('idle');expect((await captain()).timers).toBe(0);expect((await captain()).animations).toBe(0);
- await page.evaluate(()=>{const c=(window as any).__ctCaptain;c.context(true,false,false);c.destroy();c.react('win','after-close');});
- await page.clock.runFor(30000);expect((await captain()).history).toEqual([]);expect((await captain()).timers).toBe(0);expect((await captain()).animations).toBe(0);
-});
-
-test('saved complete rounds give distinct captain reactions in the real host',async({browser,roomPath})=>{
- test.setTimeout(180000);const context=await browser.newContext({viewport:{width:1440,height:1000},recordVideo:{dir:out+'/video',size:{width:1440,height:1000}}});
- const page=await context.newPage(),videoStartWall=Date.now(),cuts:{name:string;start:number;duration:number}[]=[],results:any[]=[];
- const mini=()=>page.evaluate(()=>(window as any).royalDemo.getMiniState());
- const cut=(name:string,from:any,to:any,tail=1.1)=>cuts.push({name,start:Math.max(0,(from.wallTimeMs-videoStartWall)/1000-.15),duration:(to.wallTimeMs-from.wallTimeMs)/1000+tail+.15});
- try{
-  await enter(page,roomPath);await topup(page);await page.emulateMedia({reducedMotion:'no-preference'});await open(page);
-  for(const [name,cue,pose] of [['partial','partial','soft'],['loss','loss','soft'],['return','return','idle'],['positive','win','win']] as const){
-   const forced=await page.request.post('/__test/caribbean/force-scenario',{data:{name}});expect(forced.ok()).toBe(true);
-   const done=await action(page,'[data-ct-action=play]'),view=await mini(),history=view.captain.history;
-   expect(done.state).toBe('settled');expect(history.at(-1).cue).toBe(cue);expect(history.at(-1).pose).toBe(pose);
-   await expect(page.locator('.ct-status')).toHaveAttribute('data-win',cue==='win'?'win':'');
-   expect(await page.locator('[data-ct-payout]').textContent()).not.toBe('...');
-   const result=history.at(-1),giant=history.findLast((e:any)=>e.cue==='giant'&&e.key.startsWith(done.id));
-   cut(name,giant??result,result);results.push({name,costUnits:done.spentUnits,payoutUnits:done.returnedUnits,captain:history.filter((e:any)=>e.key.startsWith(done.id))});
-   await page.screenshot({path:out+'/reaction-'+name+'.png'});await page.waitForTimeout(1200);
-  }
-  await page.request.post('/__test/caribbean/force-scenario',{data:{name:'natural-flagship'}});
-  const natural=await action(page,'[data-ct-action=play]');expect(natural.view.caribbean.phase).toBe('choice');
-  let history=(await mini()).captain.history;const bonus=history.at(-1);expect(bonus.cue).toBe('bonus');cut('bonus',bonus,bonus);await page.screenshot({path:out+'/reaction-bonus.png'});await page.waitForTimeout(1200);
-  await action(page,'[data-ct-action=choose-flagship]');
-  await page.emulateMedia({reducedMotion:'reduce'});
-  for(let spin=0;spin<5;spin++)await action(page,'[data-ct-action=play]');
-  await page.emulateMedia({reducedMotion:'no-preference'});
-  const [done]=await Promise.all([
-   action(page,'[data-ct-action=play]'),
-   page.locator('.ct-loot-chest').waitFor({state:'visible',timeout:15000}),
-  ]);expect(done.state).toBe('settled');
-  history=(await mini()).captain.history;
-  const grand=history.at(-1);expect(grand.cue).toBe('bigwin');expect(grand.pose).toBe('laugh');cut('bigwin',grand,grand,1.6);
-  await expect(page.locator('.ct-status')).toContainText('Крупный выигрыш!');
-  results.push({name:'natural-flagship',costUnits:done.spentUnits,payoutUnits:done.returnedUnits,captain:history.filter((e:any)=>e.key.startsWith(done.id))});
-  await page.screenshot({path:out+'/reaction-bigwin.png'});await page.waitForTimeout(1800);
-  await expect(page.locator('.ct-sparks')).toHaveCount(0);
-  await page.locator('[data-ct-action=lines]').click();await page.locator('[data-ct-lines]').selectOption('1');
-  await page.locator('[data-ct-action=buy]').click();await action(page,'[data-ct-modal=buy-raid]');
-  await page.request.post('/__test/caribbean/force-cannon');const cannon=await action(page,'[data-ct-action=play]');history=(await mini()).captain.history;
-  const shot=history.findLast((e:any)=>e.cue==='cannon');expect(shot.pose).toBe('surprise');cut('cannon',shot,shot,1.3);
-  results.push({name:'cannon',roundId:cannon.id,captain:history.filter((e:any)=>e.key.startsWith(cannon.id))});
-  await page.emulateMedia({reducedMotion:'reduce'});await finish(page);
-  await page.setViewportSize({width:390,height:844});await page.emulateMedia({reducedMotion:'no-preference'});await layout(page,'motion-mobile');
-  await close(page);
- }finally{
-  const video=page.video();await context.close();const {writeFile}=await import('node:fs/promises');
-  await writeFile(out+'/character-measurements.json',JSON.stringify({video:await video?.path(),videoStartWall,cuts,results},null,2));
- }
-});

@@ -1,5 +1,5 @@
 import {readGameHost} from '../../src/modules/GameHostContract';
-export type CaribbeanCue='click'|'stop'|'giant'|'cannon'|'line'|'bonus'|'loss'|'partial'|'return'|'win'|'bigwin';
+export type CaribbeanCue='click'|'stop'|'giant'|'cannon'|'line'|'bonus'|'loss'|'partial'|'return'|'win'|'bigwin'|'roll'|'blast'|'slash'|'hook'|'thunder'|'chest'|'open'|'reveal'|'choose';
 const ids=['music','stop-a','stop-b','stop-c','click','latch','creak','coins','coins-small','cannon','thud','metal'] as const;
 type Clip=typeof ids[number];
 type Voice={source:AudioBufferSourceNode;gain:GainNode;music:boolean;at:number;end:number;offset:number};
@@ -50,14 +50,14 @@ export class CaribbeanAudio{
   const master=c.createGain(),music=c.createGain(),fx=c.createGain();master.gain.value=.85;music.gain.value=this.music ? .42 : 0;fx.gain.value=.8;
   music.connect(master);fx.connect(master);master.connect(out);return this.graph={context:c,master,music,fx};
  }
- private play(id:Clip,at:number,level:number,music=false,offset=0){
+ private play(id:Clip,at:number,level:number,music=false,offset=0,rate=1){
   const buffer=this.buffers.get(id),g=this.audioGraph();if(!g||!buffer||!this.enabled()||[...this.voices].filter(v=>v.at<=at&&v.end>at).length>=24)return;
-  const c=g.context,source=c.createBufferSource(),gain=c.createGain();source.buffer=buffer;source.loop=music;
+  const c=g.context,source=c.createBufferSource(),gain=c.createGain();source.buffer=buffer;source.loop=music;source.playbackRate.value=rate;
   gain.gain.value=0;gain.gain.setValueAtTime(0,at);gain.gain.linearRampToValueAtTime(level,at+(music?.18:.003));
   source.connect(gain);gain.connect(music?g.music:g.fx);
-  const voice={source,gain,music,at,end:music?Infinity:at+buffer.duration,offset};this.voices.add(voice);
+  const voice={source,gain,music,at,end:music?Infinity:at+buffer.duration/rate,offset};this.voices.add(voice);
   source.onended=()=>{source.disconnect();gain.disconnect();this.voices.delete(voice);if(this.musicVoice===voice)this.musicVoice=undefined;};
-  source.start(at,offset);if(!music)source.stop(at+buffer.duration+.01);
+  source.start(at,offset);if(!music)source.stop(at+buffer.duration/rate+.01);
   this.samples[id]=(this.samples[id]??0)+1;return voice;
  }
  private startMusic(){
@@ -74,21 +74,36 @@ export class CaribbeanAudio{
   const gain=this.graph?.music.gain;if(!gain||!this.music)return;
   gain.cancelScheduledValues(at);gain.setTargetAtTime(.10,at,.025);gain.setTargetAtTime(.42,at+duration,.18);
  }
+ /** The sample that carries the audible accent, and its speed. */
+ private primary(kind:CaribbeanCue,variant:number):[Clip,number]{
+  switch(kind){case'stop':return[(['stop-a','stop-b','stop-c'] as const)[variant%3],1];case'giant':return['thud',1];case'cannon':return['cannon',1];case'blast':return['thud',1];case'line':return['coins-small',1];case'bonus':case'return':case'open':case'choose':return['latch',1];case'loss':case'partial':return['stop-a',1];case'slash':return['metal',1.3];case'hook':return['metal',.8];case'thunder':return['cannon',.4];case'roll':return['creak',1.2];case'chest':return['creak',1];case'click':return['click',1];default:return['coins',1];}
+ }
+ /** Seconds between asking for a sound and hearing its accent. */
+ lead(kind:CaribbeanCue,variant=0){
+  const c=this.host.context;if(!c||!this.enabled()||!this.manifest)return 0;
+  const [clip,rate]=this.primary(kind,variant);return Math.min(.4,.07+this.manifest.files[clip].accentOffsetSeconds/rate+(c.outputLatency||c.baseLatency||0));
+ }
  /** Timestamp includes the measured attack inside the selected recorded sample. */
  cue(kind:CaribbeanCue,variant=0){
   const c=this.host.context;if(!c||!this.enabled()||!this.manifest)return performance.now();
-  const at=c.currentTime+.07;let primary:Clip;
-  if(kind==='click'){primary='click';this.play(primary,at,.35);}
-  else if(kind==='stop'){primary=(['stop-a','stop-b','stop-c'] as const)[variant%3];this.play(primary,at,.36);this.play('metal',at+.012,.045);}
-  else if(kind==='giant'){primary='thud';this.play(primary,at,.5);this.play('creak',at+.025,.13);this.play('latch',at+.035,.12);this.duck(at,.5);}
-  else if(kind==='cannon'){primary='cannon';this.play(primary,at,.8);this.duck(at,1.1);}
-  else if(kind==='line'){primary='coins-small';this.play(primary,at,.2);}
-  else if(kind==='bonus'){primary='latch';this.play(primary,at,.3);this.play('creak',at+.025,.2);this.play('coins-small',at+.12,.22);this.duck(at,.8);}
-  else if(kind==='loss'||kind==='partial'){primary='stop-a';this.play(primary,at,.13);}
-  else if(kind==='return'){primary='latch';this.play(primary,at,.15);}
-  else{primary='coins';this.play(primary,at,kind==='bigwin'?.65:.42);this.play('creak',at,.14);if(kind==='bigwin')this.play('coins-small',at+.28,.32);this.duck(at,kind==='bigwin'?1.7:1.1);}
+  const at=c.currentTime+.07,[primary,rate]=this.primary(kind,variant);
+  if(kind==='click'){this.play(primary,at,.35);}
+  else if(kind==='stop'){this.play(primary,at,.36);this.play('metal',at+.012,.045);}
+  else if(kind==='giant'){this.play(primary,at,.5);this.play('creak',at+.025,.13);this.play('latch',at+.035,.12);this.duck(at,.5);}
+  else if(kind==='cannon'){this.play(primary,at,.8);this.duck(at,1.1);}
+  else if(kind==='line'){this.play(primary,at,.2);}
+  else if(kind==='bonus'){this.play(primary,at,.3);this.play('creak',at+.025,.2);this.play('coins-small',at+.12,.22);this.duck(at,.8);}
+  else if(kind==='loss'||kind==='partial'){this.play(primary,at,.13);}
+  else if(kind==='return')this.play(primary,at,.15);
+  else if(kind==='roll'||kind==='thunder')this.play(primary,at,kind==='roll'?.07:.16,false,0,rate);
+  else if(kind==='blast'){this.play('thud',at,.5);this.play('cannon',at,.3);}
+  else if(kind==='slash'||kind==='hook')this.play(primary,at,kind==='slash'?.12:.22,false,0,rate);
+  else if(kind==='chest')this.play(primary,at,.25);
+  else if(kind==='open'||kind==='choose'){this.play(primary,at,.32);if(kind==='open')this.play('creak',at+.02,.14);}
+  else if(kind==='reveal'){this.play(primary,at,.4);this.duck(at,1.1);}
+  else{this.play(primary,at,kind==='bigwin'?.65:.42);this.play('creak',at,.14);if(kind==='bigwin')this.play('coins-small',at+.28,.32);this.duck(at,kind==='bigwin'?1.7:1.1);}
   this.counts[kind]=(this.counts[kind]??0)+1;
-  const accent=at+this.manifest.files[primary].accentOffsetSeconds,stamp=c.getOutputTimestamp?.();
+  const accent=at+this.manifest.files[primary].accentOffsetSeconds/rate,stamp=c.getOutputTimestamp?.();
   const estimate=stamp&&typeof stamp.contextTime==='number'&&typeof stamp.performanceTime==='number'&&stamp.contextTime>0&&stamp.performanceTime>0?stamp.performanceTime+(accent-stamp.contextTime)*1000:performance.now()+(accent-c.currentTime+(c.outputLatency||c.baseLatency||0))*1000;
   return Math.max(performance.now(),Math.min(performance.now()+1000,estimate));
  }

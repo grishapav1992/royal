@@ -1,6 +1,6 @@
 {
   "name": "@royal/caribbean-treasures",
-  "version": "1.7.3",
+  "version": "1.8.0",
   "private": true,
   "gameId": "studio-caribbean-treasures",
   "apiVersion": 1,
@@ -12,21 +12,21 @@
   ],
   "preload": [
     "caribbean-treasures/harbor.webp",
+    "caribbean-treasures/harbor-mask.webp",
     "caribbean-treasures/captain.webp",
-    "caribbean-treasures/captain-win.webp",
     "caribbean-treasures/frame.webp",
+    "caribbean-treasures/gun.webp",
     "caribbean-treasures/symbol-map.webp",
     "caribbean-treasures/symbol-compass.webp",
     "caribbean-treasures/symbol-pistol.webp",
     "caribbean-treasures/symbol-cutlass.webp",
     "caribbean-treasures/symbol-ruby.webp",
     "caribbean-treasures/symbol-parrot.webp",
+    "caribbean-treasures/captain-win.webp",
     "caribbean-treasures/captain-blink.webp",
     "caribbean-treasures/captain-focus.webp",
     "caribbean-treasures/captain-surprise.webp",
-    "caribbean-treasures/captain-bonus.webp",
-    "caribbean-treasures/captain-soft.webp",
-    "caribbean-treasures/captain-laugh.webp"
+    "caribbean-treasures/captain-bonus.webp"
   ],
   "scripts": {
     "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
