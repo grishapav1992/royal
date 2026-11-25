@@ -3,8 +3,8 @@
   "gameId": "github-crash",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-11-23T09:09:17.127Z",
-  "completedAt": "2026-11-23T09:09:24.459Z",
+  "startedAt": "2026-11-25T10:31:37.840Z",
+  "completedAt": "2026-11-25T10:31:49.480Z",
   "sourceHashes": {
     "server/royalStakeTransport.ts": "8ba026c2dbc9e47e6ef3b982b943b8884120b17daa4d28b970bb55b8aade07be",
     "server/gameWalletRoutes.ts": "1c446f7c814bd0bd5c1c8427a20d83e3c52b5f252f7794a05a6f38928edff007",
@@ -26,7 +26,7 @@
     "scripts/game-math/rtp-stakes-worker.mjs": "f5db2c6be7cc4c68bb07c719eea5ba3db3f0d237d7bf8cd75736c891f91a218d",
     "server-tests/game-stakes.test.ts": "88746b3ea9f26a3c6af228fd3c422d3aeeab7b1eb0034dcb19959bbc90055ea1",
     "server-tests/round-precision.test.ts": "d48a631f198636a97db8e70952c600a47b9cb1d04b20ebc6d08cbfa2cd452abb",
-    "server/games/rush/crash.ts": "18182aa65f5babc4bf693b234aeec8a239646c41d33d4c3126b3abefc7b15a94",
+    "server/games/rush/crash.ts": "3cfd878e6bf74abe06fb3e7a8557023eb03ee33708ebe018b05a2ea4016912b7",
     "scripts/game-math/stake-runtime.mjs": "fcefdf0ea8724c7e1cf76fa2134a52348dab765504a46dfb43f10bfba62572d5",
     "scripts/game-math/stakes-wallet.ts": "2923161534d6015f0be64c9467ce4921550f7a50152b2d7b77c0f7939056c0af",
     "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
@@ -34,9 +34,9 @@
     "scripts/game-math/manual-stake-case.mjs": "fa868d135fd361c26c4bcc41c6e2b0831c0adf2d1744b34fa3a6c237664cebf4",
     "scripts/game-math/manual-stake-pool.mjs": "fc675e82956b25f436dfba08ec1e8893cfeb41772b7b6bd71ab9134095d01596",
     "scripts/game-math/manual-stake-worker.mjs": "54d7257363c6d1cd4ff071197e42a99f9e6a644344a58708d66f11a59ddad5c4",
-    "scripts/game-math/rtp-stakes.mjs": "f1c5c680f5e5f913e430fe050f50596f149a57fb3b7b0834ab8bd6dca8f6240d"
+    "scripts/game-math/rtp-crash.mjs": "06a0f8e1d86fb8f18233534e40736232f4a79b7a7b7bd138921a6eb6707af1c1"
   },
-  "policySha256": "fcac79cb80210a7cfdb0fa954d4dde56e34d7c0c20b626f1be09fdf14f2e8273",
+  "policySha256": "b9a44ace0b5fa17ad734fd64f5e49bd39fb4209052061fd1686d08927201024a",
   "method": "full-round-unbiased-cent-policy-v1",
   "precisionLaw": {
     "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
@@ -51,158 +51,119 @@
     {
       "choice": "all-server-cashout-times",
       "stakeUnits": 10,
-      "kind": "exact-outward-bounds",
+      "kind": "exact-enumeration",
       "rtp": null,
       "rtpBounds": [
-        0.9801980198012696,
-        0.9900000000007105
-      ],
-      "entropyOutcomes": "281474976710656",
-      "cashoutHundredths": [
-        100,
-        9999
-      ],
-      "automaticCap": 100,
-      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+        0.95054289,
+        0.96
+      ]
     },
     {
       "choice": "all-server-cashout-times",
       "stakeUnits": 20,
-      "kind": "exact-outward-bounds",
+      "kind": "exact-enumeration",
       "rtp": null,
       "rtpBounds": [
-        0.9801980198012696,
-        0.9900000000007105
-      ],
-      "entropyOutcomes": "281474976710656",
-      "cashoutHundredths": [
-        100,
-        9999
-      ],
-      "automaticCap": 100,
-      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+        0.95054289,
+        0.96
+      ]
     },
     {
       "choice": "all-server-cashout-times",
       "stakeUnits": 50,
-      "kind": "exact-outward-bounds",
+      "kind": "exact-enumeration",
       "rtp": null,
       "rtpBounds": [
-        0.9801980198012696,
-        0.9900000000007105
-      ],
-      "entropyOutcomes": "281474976710656",
-      "cashoutHundredths": [
-        100,
-        9999
-      ],
-      "automaticCap": 100,
-      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+        0.95054289,
+        0.96
+      ]
     },
     {
       "choice": "all-server-cashout-times",
       "stakeUnits": 100,
-      "kind": "exact-outward-bounds",
+      "kind": "exact-enumeration",
       "rtp": null,
       "rtpBounds": [
-        0.9801980198012696,
-        0.9900000000007105
-      ],
-      "entropyOutcomes": "281474976710656",
-      "cashoutHundredths": [
-        100,
-        9999
-      ],
-      "automaticCap": 100,
-      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+        0.95054289,
+        0.96
+      ]
     },
     {
       "choice": "all-server-cashout-times",
       "stakeUnits": 200,
-      "kind": "exact-outward-bounds",
+      "kind": "exact-enumeration",
       "rtp": null,
       "rtpBounds": [
-        0.9801980198012696,
-        0.9900000000007105
-      ],
-      "entropyOutcomes": "281474976710656",
-      "cashoutHundredths": [
-        100,
-        9999
-      ],
-      "automaticCap": 100,
-      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+        0.95054289,
+        0.96
+      ]
     },
     {
       "choice": "all-server-cashout-times",
       "stakeUnits": 500,
-      "kind": "exact-outward-bounds",
+      "kind": "exact-enumeration",
       "rtp": null,
       "rtpBounds": [
-        0.9801980198012696,
-        0.9900000000007105
-      ],
-      "entropyOutcomes": "281474976710656",
-      "cashoutHundredths": [
-        100,
-        9999
-      ],
-      "automaticCap": 100,
-      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+        0.95054289,
+        0.96
+      ]
     },
     {
       "choice": "all-server-cashout-times",
       "stakeUnits": 1000,
-      "kind": "exact-outward-bounds",
+      "kind": "exact-enumeration",
       "rtp": null,
       "rtpBounds": [
-        0.9801980198012696,
-        0.9900000000007105
-      ],
-      "entropyOutcomes": "281474976710656",
-      "cashoutHundredths": [
-        100,
-        9999
-      ],
-      "automaticCap": 100,
-      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+        0.95054289,
+        0.96
+      ]
     },
     {
       "choice": "all-server-cashout-times",
       "stakeUnits": 2000,
-      "kind": "exact-outward-bounds",
+      "kind": "exact-enumeration",
       "rtp": null,
       "rtpBounds": [
-        0.9801980198012696,
-        0.9900000000007105
-      ],
-      "entropyOutcomes": "281474976710656",
-      "cashoutHundredths": [
-        100,
-        9999
-      ],
-      "automaticCap": 100,
-      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+        0.95054289,
+        0.96
+      ]
     },
     {
       "choice": "all-server-cashout-times",
       "stakeUnits": 5000,
-      "kind": "exact-outward-bounds",
+      "kind": "exact-enumeration",
       "rtp": null,
       "rtpBounds": [
-        0.9801980198012696,
-        0.9900000000007105
-      ],
-      "entropyOutcomes": "281474976710656",
-      "cashoutHundredths": [
-        100,
-        9999
-      ],
-      "automaticCap": 100,
-      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+        0.95054289,
+        0.96
+      ]
     }
   ],
-  "evidence": {},
+  "evidence": {
+    "model": {
+      "tickets": "281474976710656",
+      "acceptedMilliseconds": 76753,
+      "verifiedHundredths": 9900,
+      "minimum": {
+        "atMs": 165,
+        "paidCents": 100,
+        "rtp": 0.95054289
+      },
+      "maximum": {
+        "atMs": 0,
+        "paidCents": 100,
+        "rtp": 0.96
+      },
+      "automaticCap": {
+        "multiplier": 100,
+        "rtp": 0.96
+      },
+      "instantCrash": {
+        "probability": 0.04
+      },
+      "stopping": "Every accepted millisecond returns at most the maximum row, and the next state depends only on survival to the public time. Any adaptive exit rule is a mixture of these rows and cannot exceed it."
+    }
+  },
   "replay": {
     "coverage": [
       {
@@ -212,7 +173,7 @@
         "spins": 128,
         "minimumExtraUnits": 0,
         "maximumExtraUnits": 1,
-        "sha256": "db37164d592f72c7ee8e2cb3573fe664063859279f5e44464fc42c288a518574"
+        "sha256": "a69b52e380ae0723a59c0eab9a7c0f9ce4c811f4a9213b2834ab4c0515d25b8b"
       },
       {
         "choice": "all-server-cashout-times",
@@ -221,7 +182,7 @@
         "spins": 128,
         "minimumExtraUnits": 0,
         "maximumExtraUnits": 1,
-        "sha256": "a35e37491fbfa306e1f89400111284eaa689d42933c875d5bff5ac005eb74637"
+        "sha256": "dba2be6d2ed3396704c678e8757e47462a443a4dc8719dc0039f753cab1ebb9b"
       },
       {
         "choice": "all-server-cashout-times",
@@ -230,7 +191,7 @@
         "spins": 128,
         "minimumExtraUnits": 0,
         "maximumExtraUnits": 1,
-        "sha256": "9fe2464c99f6dd28ded4b54745ce8e902e4fae642011923966089c41dfc122be"
+        "sha256": "146872525df546f206b2bb4a7946e7966fe36e672ef8fbf1194d1a85e1271240"
       },
       {
         "choice": "all-server-cashout-times",
@@ -239,7 +200,7 @@
         "spins": 128,
         "minimumExtraUnits": 0,
         "maximumExtraUnits": 0,
-        "sha256": "85afba277a2d088ce0d0e1bdc954cafe9fed8066cc033abadecb060af5c0eed6"
+        "sha256": "792aa330f5cc1734e10f732d5260b0389a778cbf1fe2945a57aa1174276c6c27"
       },
       {
         "choice": "all-server-cashout-times",
@@ -248,7 +209,7 @@
         "spins": 128,
         "minimumExtraUnits": 0,
         "maximumExtraUnits": 0,
-        "sha256": "0d392c4d04a9ccb2ca6eb0df55a38f13d0c0f5bd8feb20c0b9d4f64a3d8808ba"
+        "sha256": "6100a8c11e1808a9de9d9022984588277edc4c0cd5b3158bef533ad68bdfc3f1"
       },
       {
         "choice": "all-server-cashout-times",
@@ -257,7 +218,7 @@
         "spins": 128,
         "minimumExtraUnits": 0,
         "maximumExtraUnits": 0,
-        "sha256": "ab045b07efc3956c008eafe8b19cecc4ba934be6cc4fba3c0e4f5ef986a22171"
+        "sha256": "19f8fcde7ca950e016e7ae9efd90f568e5b63b492e32c00e561349978dc6bd9d"
       },
       {
         "choice": "all-server-cashout-times",
@@ -266,7 +227,7 @@
         "spins": 128,
         "minimumExtraUnits": 0,
         "maximumExtraUnits": 0,
-        "sha256": "5b7625545472bfc14fed2a3380983af6a4f5f8a73b4854ad28ccd873090d59d4"
+        "sha256": "38cb1b04e5af49648a51acb5d2f30a5a537b687f5c77391bfe9bebdf5cb86974"
       },
       {
         "choice": "all-server-cashout-times",
@@ -275,7 +236,7 @@
         "spins": 128,
         "minimumExtraUnits": 0,
         "maximumExtraUnits": 0,
-        "sha256": "05709377345b1eff5e9b13ea182d031c92ad8f5ae90a4e62e4f7d689f8ad9bd1"
+        "sha256": "7fc5601247549a9919227b6dcfbf1db711afa61559db4311b63f67cbdb011dc0"
       },
       {
         "choice": "all-server-cashout-times",
@@ -284,7 +245,7 @@
         "spins": 128,
         "minimumExtraUnits": 0,
         "maximumExtraUnits": 0,
-        "sha256": "2759ae4c273c507859084097bd1e10a384f667acdc857d6593458efda3b62431"
+        "sha256": "284f76add7244952b014ed42ee8344627cf25ff78f67d0e946cad6ad1d0d6b88"
       }
     ]
   },

@@ -6,7 +6,7 @@ import {DEMO_BETS} from '../../src/shared/demoWallet.ts';
 import {getPlinkoMultipliers, exactPayoutUnits, PLINKO_RISKS} from '../../src/shared/originalGames.ts';
 import {plinkoEngine} from '../../server/games/originals.ts';
 import {PENALTY_BETS, PENALTY_RISKS, penaltyPathQuote} from '../../src/shared/crLeo.ts';
-import {GROWTH_RATE, multiplierAtElapsed, secondsToReachMultiplier} from '../../server/games/rush/crash.ts';
+import {CRASH_RTP_PERCENT, GROWTH_RATE, multiplierAtElapsed, secondsToReachMultiplier} from '../../server/games/rush/crash.ts';
 
 // Audit evidence only. This script cannot change game rules or wallet balances.
 assert.equal(ARCADE_HOUSE_GAMES.length, 12);
@@ -54,12 +54,12 @@ let minimum=Infinity,maximum=0,minimumAt=0,maximumAt=0;
 for(let ms=0;ms<=lastManualMs;ms++) {
   const raw=Math.exp(6*ms/100000), cents=Math.floor(raw*100);
   assert.equal(multiplierAtElapsed(ms/1000),Math.exp(.06*(ms/1000)));
-  // Continuous uniform model: P(point > raw)=.99/raw. Unit flooring can only reduce the return.
-  const expected=cents/100*.99/raw;
-  assert(expected<=.99+1e-12);
+  // Continuous uniform model: P(point > raw)=RTP/raw. Unit flooring can only reduce the return.
+  const expected=cents/100*(CRASH_RTP_PERCENT/100)/raw;
+  assert(expected<=CRASH_RTP_PERCENT/100+1e-12);
   if(expected<minimum){minimum=expected;minimumAt=ms;}if(expected>maximum){maximum=expected;maximumAt=ms;}
 }
-const samples48=2**48, capWinningSamples=Math.floor(.99*samples48/100);
+const samples48=2**48, capWinningSamples=Math.floor(CRASH_RTP_PERCENT/100*samples48/100);
 report.lastExit={fixedAcceptedMillisecondTargets:lastManualMs+1,stakesUnits:DEMO_BETS.map(n=>String(n*100)),minimumContinuousModelRtpPercent:minimum*100,minimumAtMs:minimumAt,maximumContinuousModelRtpPercent:maximum*100,maximumAtMs:maximumAt,capMultiplier:100,cap48BitModelRtpPercent:100*capWinningSamples/samples48*100,maximum48BitDiscretizationErrorRtpPercent:100*100/samples48,method:'Source formula point=max(1,.99/r); r=0 explicitly loses. The server requires a cashout before the authoritative deadline, floors the multiplier to cents, and floors final stake settlement. All integer accepted milliseconds before the 100x cap are checked. At the cap, n=1 through floor(.0099*2^48) auto-pay 100x. Survival is the only future information exposed, so a stopping rule based on elapsed survival cannot raise the conditional fair-value bound.',freeSpinsOrPurchases:false};
 report.commonWallet={liveClientRoute:'/api/demo-wallet/expansion uses DemoWalletStore.expansion with the shared DemoExpansionStore. Current slot accounting uses virtual demo wallet units. NileGameRuntime is tested as an additional adapter, not identified as the active slot route.',startCost:'stakeUnits * selected mode cost, debited once in demoExpansion. Velvet normal=1, booster=2, hyper=10, spotlight=100, super-encore=300. Cosmic normal=1, cosmic-chaos=40, ufo-invasion=75, deep-echo=135. Caramel normal=1, festival=35.',continuations:'Saved stakeUnits and mode are used. Active bonuses report returnedUnits=0; every offered continuation has zero cost; final accumulated payout is credited once.',replay:'Stored request key must match exactly. Existing operation replays skip drawing and money(). Different operation IDs cannot repeat a settled bonus and stale revisions reject duplicate moves.',supplementaryNileAdapter:'NileGameRuntime projects micro-USDT to cents with floor(available/10000), then posts available+(afterCents-beforeCents)*10000. The prior fractional remainder survives. Native wallet writes and the journal append share one transaction.',integrationTest:'server-tests/finance/house-bonus-wallet-audit.test.ts',integrationCoverage:'16 constructed complete bonus scenarios for 8 active slots on both DemoWalletStore and NileGameRuntime, plus four insufficient-purchase cases per adapter. Neopolis complete campaign and journal recovery are covered by existing nile-native-games.test.ts and neopolis-wallet.test.ts.',integrationRunSeparately:true};
 report.limitations=['This is an audit report, not RTP qualification proof. It does not change or extend the legacy qualification baseline.','Plinko and Penalty results are exact enumerations. Last Exit uses the analytic continuous model with a reported 48-bit discretization bound; it does not enumerate 2^48 entropy values.','No production balances or player history were read. These checks describe repository sources, not a verified production image.','Wallet integration tests use deterministic constructed bonus rounds to check accounting; they do not estimate RTP or validate production randomness.'];

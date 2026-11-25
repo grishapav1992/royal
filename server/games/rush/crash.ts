@@ -12,27 +12,34 @@ import { randomBytes } from "crypto";
  */
 export const GROWTH_RATE = 0.06;
 
-/**
- * Crypto-strong uniform sample in [0, 1). 48 bits of entropy is way more
- * than we need but cheap and avoids float bias.
- */
-function uniformRandom(): number {
+/** Return of every fixed cashout target, in percent. New rounds only: an accepted round keeps its stored point. */
+export const CRASH_RTP_PERCENT = 96;
+
+/** Equally likely tickets of one roll: 48 bits of entropy. */
+export const CRASH_TICKETS = 2 ** 48;
+
+/** Crypto-strong uniform ticket in [0, 2^48). */
+function uniformTicket(): number {
   const buf = randomBytes(6);
   let n = 0;
   for (let i = 0; i < 6; i++) n = n * 256 + buf[i];
-  return n / 2 ** 48;
+  return n;
 }
 
 /**
- * Pre-rolls the crash multiplier for the next round. Stake-style formula
- * with a 1% house edge:
- *   crash_at = max(1, 99 / (r * 100))   r ~ Uniform(0, 1)
- * giving 99% RTP for any fixed cashout target.
+ * Crash multiplier of one ticket. Stake-style formula with a 4% house edge:
+ *   crash_at = max(1, 96 / (r * 100))   r ~ Uniform(0, 1)
+ * giving 96% RTP for any fixed cashout target.
  */
-export function rollCrashPoint(): number {
-  const r = uniformRandom();
+export function crashPointFromTicket(ticket: number): number {
+  const r = ticket / CRASH_TICKETS;
   if (r === 0) return 1;
-  return Math.max(1, 99 / (r * 100));
+  return Math.max(1, CRASH_RTP_PERCENT / (r * 100));
+}
+
+/** Pre-rolls the crash multiplier for the next round. */
+export function rollCrashPoint(): number {
+  return crashPointFromTicket(uniformTicket());
 }
 
 /**

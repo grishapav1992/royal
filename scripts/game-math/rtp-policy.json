@@ -2101,7 +2101,7 @@
       "stakePolicyVersion": 1,
       "rulesVersion": 1,
       "progressVersion": 1,
-      "target": 0.99,
+      "target": 0.96,
       "tolerance": 0.01,
       "seeds": [
         4139817,
@@ -2125,10 +2125,10 @@
       "choices": [
         "all-server-cashout-times"
       ],
-      "kind": "crash",
+      "kind": "crash-exact",
       "serverReplayRoundsPerSeed": 64,
       "proof": "docs/game-math/qualifications/shared-stakes-github-crash.json",
-      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "qualificationSource": "scripts/game-math/rtp-crash.mjs",
       "sources": [
         "server/royalStakeTransport.ts",
         "server/gameWalletRoutes.ts",
@@ -2159,7 +2159,7 @@
         "scripts/game-math/manual-stake-pool.mjs",
         "scripts/game-math/manual-stake-worker.mjs"
       ],
-      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "note": "Every 48-bit ticket is settled through the production crash law, clock and cent floor at every accepted millisecond. New rounds return 96% before the cent floor; accepted rounds keep the crash point stored at their start. One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "manualStakeRange": {
         "minimumCents": 10,
         "maximumCents": 10000,
@@ -3334,7 +3334,7 @@
       "stakePolicyVersion": 1,
       "rulesVersion": 1,
       "progressVersion": 1,
-      "target": 0.99,
+      "target": 0.96,
       "tolerance": 0.01,
       "seeds": [
         4139817,
@@ -3358,10 +3358,10 @@
       "choices": [
         "all-server-cashout-times"
       ],
-      "kind": "crash",
+      "kind": "crash-exact",
       "serverReplayRoundsPerSeed": 64,
       "proof": "docs/game-math/qualifications/shared-stakes-github-crash.json",
-      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "qualificationSource": "scripts/game-math/rtp-crash.mjs",
       "sources": [
         "server/royalStakeTransport.ts",
         "server/gameWalletRoutes.ts",
@@ -3392,7 +3392,7 @@
         "scripts/game-math/manual-stake-pool.mjs",
         "scripts/game-math/manual-stake-worker.mjs"
       ],
-      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "note": "Every 48-bit ticket is settled through the production crash law, clock and cent floor at every accepted millisecond. New rounds return 96% before the cent floor; accepted rounds keep the crash point stored at their start. One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "manualStakeRange": {
         "minimumCents": 10,
         "maximumCents": 10000,

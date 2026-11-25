@@ -1,4 +1,5 @@
 import {STAKE_PRECISION_METHOD,validateStakeProof} from './rtp-stakes.mjs';
+import {CRASH_KIND,validateCrashProof} from './rtp-crash.mjs';
 import {TOTE_METHOD,validateToteProof} from './rtp-flag-tote.mjs';
 import {KEYS_METHOD,validateKeysProof} from './rtp-keys.mjs';
 import {HILO_METHOD,validateHiloProof} from './rtp-hilo.mjs';
@@ -44,6 +45,8 @@ export async function stakeInputs(root,gameId){
  const sourceHashes=Object.fromEntries(await Promise.all([...policy.sources,policy.qualificationSource].map(async file=>[file,sourceDigest(await readFile(resolve(root,file)))])));
  return {policy,sourceHashes,policySha256:digest(JSON.stringify(policy))};
 }
+/** The crash law has its own exact model; every other shared policy keeps the common one. */
+export const validateSharedStakeProof=(gameId,inputs,proof)=>inputs.policy.kind===CRASH_KIND?validateCrashProof(gameId,inputs,proof):validateStakeProof(gameId,inputs,proof);
 export function validateRtpProof(gameId, inputs, proof) {
   const { policy: p } = inputs;
   assert.notEqual(p.releaseStatus,'model-only','Mathematical model only: runtime and wallet qualification is still required for '+gameId);
@@ -52,7 +55,7 @@ export function validateRtpProof(gameId, inputs, proof) {
   if (gameId==='studio-neopolis' && p.rulesVersion>=4) assert.equal(p.method,'neopolis-variable-stake-conditional-v4','Variable stakes require conditional qualification');
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
-  if(p.method===STAKE_PRECISION_METHOD)return validateStakeProof(gameId,inputs,proof);
+  if(p.method===STAKE_PRECISION_METHOD)return validateSharedStakeProof(gameId,inputs,proof);
   if(p.method===TOTE_METHOD)return validateToteProof(gameId,inputs,proof);
   if(p.method===KEYS_METHOD){assert.equal(gameId,'variant-keys');return validateKeysProof(p,proof);}
   if(p.method===HILO_METHOD){assert.equal(gameId,'github-hilo');return validateHiloProof(p,proof);}
@@ -343,7 +346,7 @@ export async function checkGameRtp(root, catalog, selected = catalog.map(game =>
   await unchanged();
   let verified=0,stakePoliciesVerified=0;
   for(const{phase,gameId,inputs,proof}of jobs){
-    verify(phase,gameId,inputs.policy.rulesVersion,()=>phase==='stake-policy'?validateStakeProof(gameId,inputs,proof):validateRtpProof(gameId,inputs,proof));
+    verify(phase,gameId,inputs.policy.rulesVersion,()=>phase==='stake-policy'?validateSharedStakeProof(gameId,inputs,proof):validateRtpProof(gameId,inputs,proof));
     if(phase==='stake-policy')stakePoliciesVerified++;else verified++;
   }
   await unchanged();

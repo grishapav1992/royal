@@ -1,5 +1,6 @@
-import {STAKE_PRECISION_METHOD,qualifyStakes,validateStakeProof} from './game-math/rtp-stakes.mjs';
-import {stakeInputs} from './game-math/rtp-gate.mjs';
+import {STAKE_PRECISION_METHOD,qualifyStakes} from './game-math/rtp-stakes.mjs';
+import {stakeInputs,validateSharedStakeProof} from './game-math/rtp-gate.mjs';
+import {CRASH_KIND,qualifyCrash} from './game-math/rtp-crash.mjs';
 import {prepareManualStakeChecks} from './game-math/manual-stakes.mjs';
 import {qualifyFlagTote} from './game-math/rtp-flag-tote.mjs';
 import {qualifyKeys} from './game-math/rtp-keys.mjs';
@@ -38,10 +39,10 @@ const useStakePolicy=args.includes('--stake-policy'),primaryStake=selectedPolicy
 if(useStakePolicy||primaryStake){
  const inputs=useStakePolicy?await stakeInputs(root,gameId):await rtpInputs(root,gameId,selectedRules),startedAt=new Date().toISOString();
  if(inputs.policy.manualStakeRange)await prepareManualStakeChecks([{game:gameId,policy:inputs.policy}],{onProgress:value=>console.log(JSON.stringify(value))});
- const index=args.indexOf('--sample-dir'),sample=await qualifyStakes(gameId,inputs,{sampleDirectory:index<0?undefined:args[index+1]},value=>console.log(JSON.stringify(value)));
+ const index=args.indexOf('--sample-dir'),sample=inputs.policy.kind===CRASH_KIND?await qualifyCrash(gameId,inputs,value=>console.log(JSON.stringify(value))):await qualifyStakes(gameId,inputs,{sampleDirectory:index<0?undefined:args[index+1]},value=>console.log(JSON.stringify(value)));
  assert.deepEqual(useStakePolicy?await stakeInputs(root,gameId):await rtpInputs(root,gameId,selectedRules),inputs,'Sources changed during qualification');
  const proof={schemaVersion:1,gameId,rulesVersion:inputs.policy.rulesVersion,progressVersion:inputs.policy.progressVersion,startedAt,completedAt:new Date().toISOString(),sourceHashes:inputs.sourceHashes,policySha256:inputs.policySha256,...sample};
- validateStakeProof(gameId,inputs,proof);
+ validateSharedStakeProof(gameId,inputs,proof);
  if(args.includes('--write-proof')){await mkdir(dirname(resolve(root,inputs.policy.proof)),{recursive:true});await writeFile(resolve(root,inputs.policy.proof),JSON.stringify(proof,null,2)+'\n');}
  console.log(JSON.stringify({gameId,stakePolicyVersion:1,qualified:true,cases:proof.results.length,serverReplayChecks:proof.serverReplayChecks,walletCases:proof.walletEvidence.cases}));
  process.exit(0);

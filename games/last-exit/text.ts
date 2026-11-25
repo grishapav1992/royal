@@ -16,7 +16,7 @@ export function rulesHtml() {
    'During a run the multiplier is calculated continuously between server replies. The third decimal shows the counter moving; the button amount is approximate. The server confirms the final multiplier and payout. If no reply arrives for 3 seconds, the display pauses until the connection recovers. A crash is not postponed. Closed runs are saved.'),
   text('После завершения кнопка нового заезда закрыта на мгновение, чтобы запоздалое нажатие на выход не начало новый платный заезд.',
    'After a run ends the new run button stays closed for a moment, so a late press of the exit cannot start another paid run.'),
-  text('Основа Crash: расчётный возврат около 99% для фиксированных целей до округления и задержек. Это долгосрочная оценка, не обещание результата отдельного заезда.',
-   'Crash base: approximately 99% theoretical return for fixed targets before rounding and network delays. This is a long-run figure, not a promise for any individual run.'),
+  text('Основа Crash: расчётный возврат около 96% для фиксированных целей до округления и задержек. Это долгосрочная оценка, не обещание результата отдельного заезда.',
+   'Crash base: approximately 96% theoretical return for fixed targets before rounding and network delays. This is a long-run figure, not a promise for any individual run.'),
  ].map(paragraph => `<p>${paragraph}</p>`).join('');
 }
