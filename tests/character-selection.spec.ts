@@ -87,6 +87,10 @@ test('new account selects a ready-made character and keeps it after reloading', 
 
 test('settings replace the fixed character live without reconnecting', async ({ page }) => {
   await createAccount(page, { skin: 1, name: 'Лиззи в клубе' });
+  // Use the clear recovery point so passing guards cannot shift the initial position.
+  await openSettings(page);
+  await page.locator('#recover-player').click();
+  await expect(page.locator('#name-dialog')).toBeHidden();
   const beforeNetwork = await network(page);
   const beforeState = await state(page);
   const beforePortrait = await page.locator('#player-portrait img').getAttribute('src');
