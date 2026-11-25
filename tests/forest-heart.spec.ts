@@ -167,8 +167,12 @@ test('she keeps one unbroken action from the press to the result and never shows
   const settled=await state(page);expect(settled.visual.effects.streams).toEqual([]);
   expect(settled.character.events.map((e:any)=>e.reaction)).toEqual(['awaken','land','channel','flower','pulse','pulse','win']);
   // The celebration stays for a while after the round and then she calms down.
-  await page.waitForTimeout(3200);expect((await state(page)).character.pose).toBe('win');
-  await expect.poll(async()=>(await state(page)).character.pose,{timeout:8000}).toBe('idle');
+  const celebrated=await game(page).locator('.fh').evaluate(async root=>{
+    const character=()=>(root.ownerDocument.defaultView!.parent as any).royalDemo.getMiniState().character,won=character().events.at(-1).atMs;
+    while(character().pose!=='idle'&&character().elapsedMs-won<12000)await new Promise<void>(resolve=>requestAnimationFrame(()=>resolve()));
+    return character().elapsedMs-won;
+  });
+  expect(celebrated).toBeGreaterThanOrEqual(4200);expect(celebrated).toBeLessThan(6500);
 });
 
 test('a loss lowers her eyes, a partial return only nods and a hovered root gets her attention', async ({page,roomPath}) => {
