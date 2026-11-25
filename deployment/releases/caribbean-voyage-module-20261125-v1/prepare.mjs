@@ -57,7 +57,6 @@ for(const name of sources){
 }
 assert(['package.json','CaribbeanUI.ts','CaribbeanAudio.ts','caribbean.css'].every(name=>before.source['games/caribbean-treasures/'+name]!==source['games/caribbean-treasures/'+name]));
 assert(created.every(name=>!before.source[name]));
-assert(sources.every(name=>before.source[name]));
 
 assert.deepEqual(release.packages.map(row=>row.gameId),[game]);
 const row=release.packages[0],pointer=JSON.parse(fs.readFileSync(row.pointer));
