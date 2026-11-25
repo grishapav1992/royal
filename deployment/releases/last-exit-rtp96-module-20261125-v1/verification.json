@@ -1,0 +1,79 @@
+{
+  "published": true,
+  "release": "last-exit-rtp96-module-20261125-v1",
+  "sourceCommit": "ab4db47f2a2fd77240532a23864d73ec185c7526",
+  "baseCommit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/last-exit-rtp96-module-20261125-v1/source.tgz",
+    "sha256": "6d77222379c4a36854d08ec534dcb2b98560aa5f5a3ac2744aaf93e9b1ce2adf",
+    "bytes": 64524,
+    "oldVersion": "1.2.0-7b4b1daf44b6",
+    "imageTag": "royal-game:before-last-exit-rtp96-module-20261125-v1",
+    "image": "sha256:2a3b9ebfb37444da4a752c803fbb742d203b74315df83b38da2d7890b8f79e99",
+    "oldPackageHardlinked": true,
+    "createdSources": []
+  },
+  "module": {
+    "verified": true,
+    "gameId": "github-crash",
+    "version": "1.2.1-8c2c8e17bac1",
+    "bytes": 3283264,
+    "files": 15,
+    "beforeSha256": "446e2a97354adeb5640fe10409663fcf5dd3c938db71c7819e2cf211980b6515",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "d19194585efdbee086f1cdb23763f25076346e45c5b6ce8e9b23a3ac856caf6d",
+    "history": "/opt/royal-game-modules-state/history/20261125T111640-1558fc4614654b7f817ba7c6d8eda18a.json"
+  },
+  "freeBefore": 11355680768,
+  "freeAfter": 11396427776,
+  "hostRestarted": false,
+  "databaseTouched": false,
+  "otherModulesPreserved": true,
+  "runtimeFilesPreserved": 8821,
+  "servicesPreserved": 11,
+  "wrapperSourceCommit": "ab4db47f2a2fd77240532a23864d73ec185c7526",
+  "previousVersion": "1.2.0-7b4b1daf44b6",
+  "pointerSha256": "d19194585efdbee086f1cdb23763f25076346e45c5b6ce8e9b23a3ac856caf6d",
+  "priorPointerSha256": "446e2a97354adeb5640fe10409663fcf5dd3c938db71c7819e2cf211980b6515",
+  "releaseManifestSha256": "8e5999bf37d6d144f61016185c561f567c2e1b5d11b31ae3932183683b27634e",
+  "receiptSha256": "7b8fe1ff53e92e31941f651e12cff1ecc51aa77fefa36642b30d5068a4dd4847",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": false,
+  "note": "Text of the qualified return only. The first attempt was refused before mutation because Forest Heart had been published meanwhile; the package bytes stayed the same and only the production snapshot was refreshed.",
+  "browserReport": {
+    "release": "last-exit-rtp96-module-20261125-v1",
+    "version": "1.2.1-8c2c8e17bac1",
+    "sourceCommit": "ab4db47f2a2fd77240532a23864d73ec185c7526",
+    "moduleManifestSha256": "07e8159c78cbda68ecc8633a967cbef5b055eb65c6954b010d940ad995c23b99",
+    "connectedHostPassed": true,
+    "recoveryPassed": true,
+    "moduleBrowserTests": 11,
+    "hostLayoutTests": 2,
+    "connectedScenarios": 1,
+    "serverAndWalletTests": 38,
+    "host": "local connected host from main sources with chat and a temporary PostgreSQL, serving the exact module bytes and the 96 percent server law",
+    "browser": "Google Chrome",
+    "scenarios": [
+      "rules state 96 percent",
+      "minimum start debits 0.10",
+      "lost response, reopening and settings",
+      "module recovery, audio, loading and layout suite"
+    ],
+    "notes": [
+      "Two host scenarios first failed at sign-in because the module suite shares the vite cache with the stand. They passed on a restarted stand."
+    ],
+    "notTested": [
+      "Safari",
+      "physical phones"
+    ]
+  },
+  "production": {
+    "publicFilesVerifiedBySha256": 15,
+    "browserTestsOnPublicBytes": 11
+  }
+}

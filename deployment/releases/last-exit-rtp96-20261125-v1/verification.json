@@ -1,0 +1,75 @@
+{
+  "release": "last-exit-rtp96-20261125-v1",
+  "published": true,
+  "preparedImage": "sha256:524a479b06f4fb5614af0da5d9ddcddafdd96ea82ee65a4a0227c3ec72a8894f",
+  "runningImage": "sha256:524a479b06f4fb5614af0da5d9ddcddafdd96ea82ee65a4a0227c3ec72a8894f",
+  "containerRestarted": true,
+  "sourceCommit": "ab4db47f2a2fd77240532a23864d73ec185c7526",
+  "changedSources": 1,
+  "clientDeltaFiles": 0,
+  "configurationsAndMountsPreserved": true,
+  "gameDataPreserved": true,
+  "backendDeltaFiles": 1,
+  "otherBackendProgramsAndModulesPreserved": true,
+  "oldAssetsPreserved": true,
+  "otherPersistentServicesPreserved": 10,
+  "baseCommit": "a5ea0803da914ca1ca56d16c77117ffb63347764",
+  "rollbackImage": "sha256:2a3b9ebfb37444da4a752c803fbb742d203b74315df83b38da2d7890b8f79e99",
+  "sourceBackupSha256": "4c3db63743382c0e9627d2f8c144c6c0b99150d63e249f90d6cd9bb671ac8cf9",
+  "financialBackup": {
+    "path": "/opt/royal-backups/last-exit-rtp96-20261125-v1/financial.dump",
+    "sha256": "f53705fdc228dad3e39d24bccb3e97925b41e1d0979401b04a3e61bbd6b47f40",
+    "bytes": 52587469,
+    "databaseRestored": false
+  },
+  "releaseManifestSha256": "8cd89e640f94596c912f45435de6ad333742bbe947588b305ba9912fa87f5979",
+  "receiptSha256": "6001ee7d25c0831af23342ff74b0af6984f6f166dac5a7caa34366f6f3b21596",
+  "backendSha256": "82a4e242fdaa653402f4196b2954e4224cadfd43421a7091eb46909e95e32153",
+  "addedGames": [],
+  "restoredGames": [],
+  "rulesOrMathChanged": true,
+  "math": {
+    "game": "github-crash",
+    "before": "99 percent",
+    "after": "96 percent",
+    "constant": "CRASH_RTP_PERCENT",
+    "rulesVersion": 1,
+    "qualification": "docs/game-math/qualifications/shared-stakes-github-crash.json",
+    "exactBounds": [
+      0.95054289,
+      0.96
+    ],
+    "instantCrashProbability": 0.04,
+    "acceptedRoundsKeepStoredCrashPoint": true
+  },
+  "checks": {
+    "rtp": "39 profiles, 21 stake policies",
+    "typecheck": true,
+    "githubVerified": true,
+    "hostClientByteIdentical": 18,
+    "backendDiff": "only the crash law and the projection header",
+    "serverTests": 38,
+    "rtpGateTests": 48,
+    "stakeAndWalletTests": 30,
+    "builtFileRolls": 3000000,
+    "builtBackendScenarios": 3,
+    "public": {
+      "healthz": 200,
+      "home": 200,
+      "crewWithoutSession": 401
+    },
+    "containerProgramSha256MatchesBuild": true
+  },
+  "maintenance": {
+    "startedAt": 1795605717.0589387,
+    "status": "completed",
+    "freeBefore": 11322167296,
+    "plannedEntries": 32,
+    "plannedImages": 1,
+    "removedEntries": 32,
+    "removedImageTags": 4,
+    "freeAfter": 11345702912,
+    "durationSeconds": 80.51,
+    "timer": "enabled and active"
+  }
+}
