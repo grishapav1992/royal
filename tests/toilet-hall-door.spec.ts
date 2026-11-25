@@ -27,7 +27,9 @@ test('toilet door reaches floor three by walking and click, returns without boun
   try{
     expect((await page.request.post('/api/auth/login',{data:{email:'toilet-door-'+crypto.randomUUID()+'@example.test',password:'Toilet-door-local-123!'}})).ok()).toBe(true);
     expect((await page.request.post('/api/auth/character',{data:{skin:0}})).ok()).toBe(true);
-    await page.goto('/?room='+host.room.roomId);await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
+    await page.goto('/?room='+host.room.roomId);
+    await page.getByRole('button',{name:'В клуб с персонажем'}).click();
+    await expect(page.locator('#chat-input')).toBeEnabled({timeout:25000});
     await expect.poll(async()=>{const s=await state(page);return s.online&&!s.locked&&Number.isFinite(s.serverX);}).toBe(true);
     const settings=page.getByRole('button',{name:'Настройки игрока',exact:true});if(!await settings.isVisible())await page.getByRole('button',{name:'Профиль и настройки',exact:true}).click();
     await settings.click();await page.locator('#recover-player').scrollIntoViewIfNeeded();await page.locator('#recover-player').click();await expect(page.locator('#name-dialog')).toBeHidden();
@@ -44,6 +46,11 @@ test('toilet door reaches floor three by walking and click, returns without boun
     await expect(page.locator('#floor-links [data-floor-target="roof"]')).toHaveCount(1);await expect(page.locator('#floor-links [data-floor-target="github"]')).toHaveCount(1);
     expect((await state(page)).toilet.resident.artLoaded).toBe(true);expect((await state(page)).toilet.openDoors[1]).toBe(false);
     expect((await state(page)).toilet.merchant.artLoaded).toBe(true);
+    const renderDensity=await page.locator('#game canvas').evaluate((canvas:HTMLCanvasElement)=>({
+      actual:canvas.width/canvas.getBoundingClientRect().width,expected:Math.min(2,window.devicePixelRatio),
+    }));
+    expect(renderDensity.actual).toBeCloseTo(renderDensity.expected,1);
+    expect((await state(page)).toilet.resident.bounds.h).toBeLessThan((await state(page)).renderBounds.height);
     await clickWorld(page,TOILET_MERCHANT.x,TOILET_MERCHANT.y-40);
     await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.serverX-TOILET_MERCHANT.approach.x,s.serverY-TOILET_MERCHANT.approach.y);},{timeout:18000}).toBeLessThan(9);
     await expect.poll(async()=>(await state(page)).toilet.merchant.frame).toBe(15);
@@ -87,7 +94,7 @@ test('toilet door reaches floor three by walking and click, returns without boun
     await expect(page.locator('#chat-input')).toBeDisabled();
     await expect(page.locator('#wallet-balance')).toHaveText(balance!);expect(errors).toEqual([]);
   }catch(error){
-    const s=await state(page);console.log('Toilet doorway failure',JSON.stringify({hall:s.hall,x:s.x,y:s.y,serverX:s.serverX,serverY:s.serverY,locked:s.locked,switching:s.switching,nav:s.stairNavigation,errors}));
+    const s=await state(page).catch(()=>null);console.log('Toilet doorway failure',JSON.stringify({hall:s?.hall,x:s?.x,y:s?.y,serverX:s?.serverX,serverY:s?.serverY,locked:s?.locked,switching:s?.switching,nav:s?.stairNavigation,errors}));
     await page.screenshot({path:info.outputPath('failure.png')});throw error;
   }finally{await page.goto('about:blank').catch(()=>{});await Promise.race([host.room.leave(),new Promise(r=>setTimeout(r,1500))]);}
 });

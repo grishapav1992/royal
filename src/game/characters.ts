@@ -14,6 +14,7 @@ export type { Facing } from '../shared/movement';
 export const DIRECTIONS: Facing[] = ['down', 'left', 'right', 'up'];
 export const CHARACTER_RESOLUTION = 3;
 export const CHARACTER_SCALE = 1.8 / CHARACTER_RESOLUTION;
+const PLAYER_CHARACTER_RESOLUTION = 5;
 const W = 32, H = 48, TOP_PADDING = 8, ATLAS_COLUMNS = 23;
 
 type Palette = { skin: string; shade: string; hair: string; hairLight: string; shirt: string; light: string; dark: string; pants: string; shoes: string; style: 'hoodie' | 'long' | 'cap' | 'jacket'; bartender?: boolean; look?: 'curls' | 'beanie' | 'punk' | 'buns' | 'baseball' | 'silver'; width?: number; glasses?: boolean };
@@ -38,10 +39,12 @@ export function createCharacters(scene: Phaser.Scene) {
   palettes.forEach((palette, person) => createCharacterTexture(scene, `citizen-${person}`, (ctx, direction, frame, seated, sip) => drawFrame(ctx, palette, direction, frame, seated, sip, person), person));
 }
 
-export function characterTexture(scene: Phaser.Scene, skin: number, serialized = ''): string {
+export function characterTexture(scene: Phaser.Scene, skin: number, serialized = '', isPlayer = false): string {
+  // The local avatar can fill a close-up without enlarging every remote player's atlas.
+  const resolution = isPlayer ? PLAYER_CHARACTER_RESOLUTION : CHARACTER_RESOLUTION;
   const generated = parseGeneratedAppearance(serialized);
   if (generated) {
-    const key = `avatar-generated-${generated.skinId}`;
+    const key = `avatar-generated-${isPlayer ? 'player-' : ''}${generated.skinId}`;
     if (!scene.textures.exists(key)) {
       const draw = (ctx: CanvasRenderingContext2D, direction: Facing, frame: number, seated: boolean, sip: number) => {
         if (!drawGeneratedSkin(ctx, generated.skinId, direction, frame, seated, sip)) {
@@ -49,10 +52,10 @@ export function characterTexture(scene: Phaser.Scene, skin: number, serialized =
           drawFrame(ctx, palettes[person], direction, frame, seated, sip, person);
         }
       };
-      createCharacterTexture(scene, key, draw, 0);
+      createCharacterTexture(scene, key, draw, 0, resolution);
       if (!hasSkinSheet(generated.skinId)) {
         const load = (attempt: number) => { void loadSkinSheet(generated.skinId).then(() => {
-          if (scene.textures.exists(key)) createCharacterTexture(scene, key, draw, 0);
+          if (scene.textures.exists(key)) createCharacterTexture(scene, key, draw, 0, resolution);
         }).catch(() => {
           if (attempt < 3 && scene.textures.exists(key)) setTimeout(() => load(attempt + 1), (attempt + 1) * 3000);
         }); };
@@ -62,14 +65,25 @@ export function characterTexture(scene: Phaser.Scene, skin: number, serialized =
     return key;
   }
   const appearance = parseAppearance(serialized);
-  if (!appearance) return `citizen-${skin}`;
-  const key = appearanceKey(appearance);
-  if (!scene.textures.exists(key)) createCharacterTexture(scene, key, (ctx, direction, frame, seated, sip) => drawAvatar(ctx, appearance, direction, frame, seated, sip), 0);
+  const baseKey = appearance ? appearanceKey(appearance) : `citizen-${skin}`;
+  if (!appearance && !isPlayer) return baseKey;
+  const key = isPlayer ? `avatar-player-${baseKey}` : baseKey;
+  if (!scene.textures.exists(key)) {
+    const person = appearance ? 0 : skin;
+    createCharacterTexture(scene, key, (ctx, direction, frame, seated, sip) => {
+      if (appearance) drawAvatar(ctx, appearance, direction, frame, seated, sip);
+      else drawFrame(ctx, palettes[person] ?? palettes[0], direction, frame, seated, sip, person);
+    }, person, resolution);
+  }
   return key;
 }
 
-export function characterScaleY(serialized = ''): number {
-  return CHARACTER_SCALE * (parseAppearance(serialized)?.body === 2 ? 1.12 : 1);
+export function characterScaleX(frame: Phaser.Textures.Frame): number {
+  return W * 1.8 / frame.realWidth;
+}
+
+export function characterScaleY(serialized = '', scale = CHARACTER_SCALE): number {
+  return scale * (parseAppearance(serialized)?.body === 2 ? 1.12 : 1);
 }
 
 /** The short hug uses the same sleeves and hands as the player's own outfit. */
@@ -111,26 +125,26 @@ export function createCharacterPortrait(skin: number, serialized: string, frame:
 /** Remove abandoned custom atlases after actors have changed textures or left the hall. */
 export function pruneCharacterTextures(scene: Phaser.Scene, active: Set<string>) {
   for (const key of scene.textures.getTextureKeys()) {
-    if ((!key.startsWith('avatar-v1-') && !key.startsWith('avatar-generated-')) || active.has(key)) continue;
+    if ((!key.startsWith('avatar-v1-') && !key.startsWith('avatar-generated-') && !key.startsWith('avatar-player-')) || active.has(key)) continue;
     for (const direction of DIRECTIONS) for (const action of ['walk', 'idle', 'sit', 'drink', 'sitdrink', 'game', 'win', 'lose']) scene.anims.remove(`${key}-${action}-${direction}`);
     scene.textures.remove(key);
   }
 }
 
-function createCharacterTexture(scene: Phaser.Scene, key: string, draw: (ctx: CanvasRenderingContext2D, direction: Facing, frame: number, seated: boolean, sip: number) => void, person: number) {
+function createCharacterTexture(scene: Phaser.Scene, key: string, draw: (ctx: CanvasRenderingContext2D, direction: Facing, frame: number, seated: boolean, sip: number) => void, person: number, resolution = CHARACTER_RESOLUTION) {
   // Two rows per direction keep every atlas below common mobile texture limits.
   const texture = scene.textures.exists(key) ? scene.textures.get(key) as Phaser.Textures.CanvasTexture
-    : scene.textures.createCanvas(key, W * ATLAS_COLUMNS * CHARACTER_RESOLUTION, H * 8 * CHARACTER_RESOLUTION)!;
+    : scene.textures.createCanvas(key, W * ATLAS_COLUMNS * resolution, H * 8 * resolution)!;
   const ctx = texture.context;
   ctx.resetTransform(); ctx.clearRect(0, 0, texture.width, texture.height);
-  ctx.scale(CHARACTER_RESOLUTION, CHARACTER_RESOLUTION);
+  ctx.scale(resolution, resolution);
   const animate = (config: Phaser.Types.Animations.Animation) => { if (config.key && !scene.anims.exists(config.key)) scene.anims.create(config); };
   DIRECTIONS.forEach((direction, row) => {
     const addFrame = (index: number, pose = index, seated = false, sip = -1) => {
       const x = index % ATLAS_COLUMNS * W, y = (row * 2 + Math.floor(index / ATLAS_COLUMNS)) * H;
       ctx.save(); ctx.translate(x, y + TOP_PADDING);
       draw(ctx, direction, pose, seated, sip); ctx.restore();
-      if (!texture.has(`${direction}-${index}`)) texture.add(`${direction}-${index}`, 0, x * CHARACTER_RESOLUTION, y * CHARACTER_RESOLUTION, W * CHARACTER_RESOLUTION, H * CHARACTER_RESOLUTION);
+      if (!texture.has(`${direction}-${index}`)) texture.add(`${direction}-${index}`, 0, x * resolution, y * resolution, W * resolution, H * resolution);
     };
     const animationFrames = (start: number, count: number) => Array.from({ length: count }, (_, i) => ({ key, frame: `${direction}-${start + i}` }));
     for (let frame = 0; frame < 10; frame++) addFrame(frame);

@@ -72,7 +72,7 @@ test('new account selects a ready-made character and keeps it after reloading', 
   expect(response.request().postDataJSON()).toEqual({ skin: 12, name: 'Гас из клуба' });
   await expectConnected(page);
   await expect.poll(async () => (await state(page)).skin).toBe(12);
-  expect((await state(page)).texture).toBe('citizen-12');
+  expect((await state(page)).texture).toBe('avatar-player-citizen-12');
   expect((await state(page)).appearance).toBe('');
   expect(await savedAccount(page)).toMatchObject({ skin: 12, name: 'Гас из клуба', appearance: null });
 
@@ -80,7 +80,7 @@ test('new account selects a ready-made character and keeps it after reloading', 
   await selectEntryMode(page);
   await expectConnected(page);
   await expect.poll(async () => (await state(page)).skin).toBe(12);
-  expect((await state(page)).texture).toBe('citizen-12');
+  expect((await state(page)).texture).toBe('avatar-player-citizen-12');
   await openSettings(page);
   await expect(page.locator('#settings-character-selection').getByRole('button', { name: 'Гас', exact: true })).toHaveAttribute('aria-pressed', 'true');
 });
@@ -102,7 +102,7 @@ test('settings replace the fixed character live without reconnecting', async ({ 
   expect(response.request().postDataJSON()).toEqual({ skin: 12, name: 'Гас в клубе' });
   await expect(page.locator('#name-dialog')).toBeHidden();
   await expect.poll(async () => (await state(page)).skin).toBe(12);
-  expect((await state(page)).texture).toBe('citizen-12');
+  expect((await state(page)).texture).toBe('avatar-player-citizen-12');
   expect((await state(page)).appearance).toBe('');
   expect((await network(page)).selfId).toBe(beforeNetwork.selfId);
   expect((await network(page)).roomId).toBe(beforeNetwork.roomId);
@@ -153,7 +153,7 @@ test('renaming a legacy custom character preserves its appearance', async ({ pag
 test('explicitly choosing Eddie replaces a legacy custom character with skin zero', async ({ page }) => {
   const appearance = { ...DEFAULT_APPEARANCE, body: 2, top: 5, glasses: 1 };
   await createAccount(page, { appearance, name: 'Кастомный гость' });
-  await expect.poll(async () => (await state(page)).texture).toMatch(/^avatar-v1-/);
+  await expect.poll(async () => (await state(page)).texture).toMatch(/^avatar-player-avatar-v1-/);
   await openSettings(page);
   const selection = page.locator('#settings-character-selection');
   await expect(selection.locator('.character-choice[aria-pressed="true"]')).toHaveCount(0);
@@ -165,13 +165,13 @@ test('explicitly choosing Eddie replaces a legacy custom character with skin zer
   expect(response.ok()).toBe(true);
   expect(response.request().postDataJSON()).toEqual({ skin: 0, name: 'Кастомный гость' });
   await expect(page.locator('#name-dialog')).toBeHidden();
-  await expect.poll(async () => (await state(page)).texture).toBe('citizen-0');
+  await expect.poll(async () => (await state(page)).texture).toBe('avatar-player-citizen-0');
   expect((await state(page)).appearance).toBe('');
   expect(await savedAccount(page)).toMatchObject({ skin: 0, name: 'Кастомный гость', appearance: null });
 
   await page.reload({ waitUntil: 'domcontentloaded' });
   await selectEntryMode(page);
   await expectConnected(page);
-  await expect.poll(async () => (await state(page)).texture).toBe('citizen-0');
+  await expect.poll(async () => (await state(page)).texture).toBe('avatar-player-citizen-0');
   expect((await state(page)).appearance).toBe('');
 });
